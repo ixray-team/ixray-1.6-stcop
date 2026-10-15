@@ -48,12 +48,25 @@ void CResourceManager::OnDeviceDestroy(bool )
 		xr_delete	(_t->second.cs);
 	}
 	m_td.clear		();
+}
 
-	// scripting
-	if (!Device.IsEditorMode())
+void CResourceManager::WarnLuaBlends()
+{
+	xr_vector<char*>* Folder = FS.file_list_open(_game_shaders_, ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
+	if (!Folder)
 	{
-		LS_Unload			();
+		return;
 	}
+
+	for (char* Name : *Folder)
+	{
+		const char* Extension = strext(Name);
+		if (Extension && 0 == xr_strcmp(Extension, ".lua"))
+		{
+			Msg("! Lua shader blend '%s' is not supported, convert it to an XML blend", Name);
+		}
+	}
+	FS.file_list_close(Folder);
 }
 
 void	CResourceManager::OnDeviceCreate	(IReader* F)
@@ -62,10 +75,7 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 	string256	name;
 
-//#ifndef _EDITOR
-	// scripting
-	LS_Load					();
-//#endif
+	WarnLuaBlends			();
 	IReader*	fs			= nullptr;
 	// Load constants
  	fs	 		  			= F->open_chunk	(0);

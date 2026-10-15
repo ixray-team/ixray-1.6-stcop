@@ -1,0 +1,12 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="combine_volumetric"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="1" src="one" dest="one"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_vollight" value="$user$generic2"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_rtlinear"/>
+	</normal>
+</shader>

@@ -1,0 +1,62 @@
+<shader version="2">
+	<normal option="ALLOW_WBOIT_TRANSPARENCY">
+		<pass vs="water_puddles" ps="water"/>
+		<sorting priority="2" strict="0"/>
+		<zb test="1" write="0"/>
+		<distort value="1"/>
+		<fog value="1"/>
+		<blend enable="1" src="one" dest="one"/>
+		<iblend index="2" enable="1" src="destcolor" dest="zero"/>
+		<iblend index="1" enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="water\water_water"/>
+		<texture name="s_nmap" value="water\water_normal"/>
+		<texture name="s_env0" value="$user$sky0"/>
+		<texture name="s_env1" value="$user$sky1"/>
+		<texture name="s_env" value="$user$env"/>
+		<texture name="s_env_dist" value="$user$env_temp"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="s_accumulator" value="$user$accum"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_velocity" value="$user$velocity"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_material" value="$user$material"/>
+		<texture name="s_leaves" value="water\water_foam"/>
+		<texture name="s_caustic" value="water\water_caustic"/>
+		<texture name="s_smap_sun" value="$user$smap_depth_sun"/>
+		<sampler name="smp_smap"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_linear"/>
+	</normal>
+	<normal>
+		<pass vs="water_puddles" ps="water"/>
+		<sorting priority="2" strict="0"/>
+		<zb test="1" write="0"/>
+		<distort value="1"/>
+		<fog value="1"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="water\water_water"/>
+		<texture name="s_nmap" value="water\water_normal"/>
+		<texture name="s_env0" value="$user$sky0"/>
+		<texture name="s_env1" value="$user$sky1"/>
+		<texture name="s_env" value="$user$env"/>
+		<texture name="s_env_dist" value="$user$env_temp"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="s_accumulator" value="$user$accum"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_velocity" value="$user$velocity"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_material" value="$user$material"/>
+		<texture name="s_leaves" value="water\water_foam"/>
+		<texture name="s_caustic" value="water\water_caustic"/>
+		<texture name="s_smap_sun" value="$user$smap_depth_sun"/>
+		<sampler name="smp_smap"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_linear"/>
+	</normal>
+</shader>

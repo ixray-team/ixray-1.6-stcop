@@ -1,0 +1,22 @@
+<shader version="2">
+	<normal>
+		<pass vs="clouds" ps="clouds"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_clouds0" value="null"/>
+		<texture name="s_clouds1" value="null"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<static>
+		<normal>
+			<pass vs="clouds" ps="clouds"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<texture name="s_clouds0" value="null"/>
+			<texture name="s_clouds1" value="null"/>
+			<sampler name="smp_base"/>
+		</normal>
+	</static>
+</shader>

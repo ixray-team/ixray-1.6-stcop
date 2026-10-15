@@ -1,0 +1,52 @@
+<shader version="2" r1_static="1">
+	<normal>
+		<pass vs="deffer_model" ps="deffer_base"/>
+		<fog value="0"/>
+		<emissive value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+		<stencil enable="1" func="always" mask="255" write_mask="127" fail="keep" pass="replace" zfail="keep"/>
+		<stencil_ref value="1"/>
+	</normal>
+	<l_special>
+		<pass vs="deffer_model" ps="model_digiclock_ml"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<emissive value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</l_special>
+	<static>
+		<normal>
+			<pass vs="deffer_model" ps="model_digiclock_ml"/>
+			<fog value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+		<l_point>
+			<pass vs="model_def_point" ps="add_point"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="one" dest="one"/>
+			<aref enable="1" value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<texture name="s_lmap" value="internal\internal_light_attpoint"/>
+			<texture name="s_att" value="internal\internal_light_attpoint"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_point>
+		<l_spot>
+			<pass vs="model_def_spot" ps="add_spot"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="one" dest="one"/>
+			<aref enable="1" value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<texture name="s_lmap" value="internal\internal_light_att"/>
+			<texture name="s_att" value="internal\internal_light_attclip"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_spot>
+	</static>
+</shader>

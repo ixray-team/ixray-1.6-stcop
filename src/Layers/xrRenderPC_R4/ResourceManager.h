@@ -13,7 +13,6 @@
 #include "dx11XMLBlendCompiler.h"
 
 // refs
-struct		lua_State;
 class dx10ConstantBuffer;
 class CSVGStorage;
 
@@ -117,16 +116,12 @@ private:
 	// misc
 	xrCriticalSection creationGuard;
 	void LoadTexture(CTexture* Texture);
+	void WarnLuaBlends();
 
 public:
 	CTextureDescrMngr									m_textures_description;
 	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
-	lua_State*											LSVM;
 	bool												bDeferredLoad;
-private:
-	void							LS_Load				();
-	void							LS_Unload			();
-public:
 	// Miscelaneous
 	void							_ParseList			(sh_list& dest, const char* names);
 	IBlender*						_GetBlender			(const char* Name);
@@ -212,10 +207,7 @@ public:
 
 	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
 	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
-	Shader*							_lua_Create			(const char*		s_shader,	const char* s_textures);
 	Shader*							_Compile			(const char*		s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices);
-	bool							_lua_HasShader		(const char*		s_shader);
-	bool							_lua_HasStatic		(const char*		s_shader);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 

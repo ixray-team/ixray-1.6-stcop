@@ -1,0 +1,14 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="accum_volumetric_sun"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="1" src="one" dest="one"/>
+		<texture name="s_blue_noise" value="shaders\blue_noise_3x3"/>
+		<texture name="s_smap_sun" value="$user$smap_depth_sun"/>
+		<texture name="s_position" value="$user$position"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_jitter"/>
+		<sampler name="smp_smap"/>
+	</normal>
+</shader>

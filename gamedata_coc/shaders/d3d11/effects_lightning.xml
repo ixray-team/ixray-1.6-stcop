@@ -1,0 +1,21 @@
+<shader version="2" r1_static="1">
+	<normal>
+		<pass vs="stub_default" ps="stub_srgb"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="one"/>
+		<aref enable="1" value="2"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<static>
+		<normal>
+			<pass vs="stub_default" ps="stub_default"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="srcalpha" dest="one"/>
+			<aref enable="1" value="2"/>
+			<texture name="s_base" value="{base}"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+	</static>
+</shader>

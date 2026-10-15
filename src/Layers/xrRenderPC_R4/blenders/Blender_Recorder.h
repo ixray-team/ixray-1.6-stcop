@@ -127,6 +127,5 @@ public:
 	~CBlender_Compile	();
 	
 	void				_cpp_Compile		(ShaderElement* _SH);
-	ShaderElement* 		_lua_Compile		(const char* namesp, const char* name);
 };
 #pragma pack(pop)

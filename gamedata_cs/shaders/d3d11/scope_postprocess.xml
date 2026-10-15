@@ -1,0 +1,26 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_notransform_postpr" ps="scope_postprocess"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<texture name="s_base0" value="$user$generic0"/>
+		<texture name="s_base1" value="$user$generic0"/>
+		<texture name="s_noise" value="fx\fx_noise2"/>
+		<texture name="s_scope_tonemap" value="$user$tonemap"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_linear"/>
+	</normal>
+	<l_special>
+		<pass vs="stub_notransform_postpr" ps="scope_postprocess_cm"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<texture name="s_base0" value="$user$generic0"/>
+		<texture name="s_base1" value="$user$generic0"/>
+		<texture name="s_noise" value="fx\fx_noise2"/>
+		<texture name="s_scope_tonemap" value="$user$tonemap"/>
+		<texture name="s_grad0" value="$user$scope_cmap0"/>
+		<texture name="s_grad1" value="$user$scope_cmap1"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_linear"/>
+	</l_special>
+</shader>

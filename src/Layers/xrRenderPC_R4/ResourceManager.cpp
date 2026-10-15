@@ -292,7 +292,7 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 	}
 #if !defined(_EDITOR)
 	// Editors render the deferred path, so they never take the static (R1) blenders
-	if (LightingModeIsStaticRender() && !_lua_HasStatic(s_shader) && !XMLBlendV2::IsStaticBlend(s_shader))
+	if (LightingModeIsStaticRender() && !XMLBlendV2::IsStaticBlend(s_shader))
 	{
 		if (IBlender* blender = _FindBlender(s_shader))
 		{
@@ -305,16 +305,13 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 	if (CXMLBlend::Check(s_shader))
 		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
 
-	if (_lua_HasShader(s_shader))
-		return _lua_Create(s_shader, s_textures);
-
 	if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
 		return pShader;
 
-	if (!_lua_HasShader("stub_default"))
-		FATAL("Can't find stub_default.s");
+	if (!CXMLBlend::Check("stub_default"))
+		FATAL("Can't find stub_default.xml");
 
-	return _lua_Create("stub_default", s_textures);
+	return xr_make_unique<CXMLBlend>("stub_default")->Compile(s_textures);
 }
 
 Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices)

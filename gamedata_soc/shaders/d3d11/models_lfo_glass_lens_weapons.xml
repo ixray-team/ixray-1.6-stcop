@@ -1,0 +1,16 @@
+<shader version="2">
+	<normal>
+		<pass vs="models_reflex_lens" ps="models_reflex_lens"/>
+		<fog value="1"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="0"/>
+		<sorting priority="2" strict="1"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_tonemap" value="$user$tonemap"/>
+		<texture name="s_env0" value="$user$sky0"/>
+		<texture name="s_env1" value="$user$sky1"/>
+		<sampler name="smp_rtlinear"/>
+	</normal>
+</shader>

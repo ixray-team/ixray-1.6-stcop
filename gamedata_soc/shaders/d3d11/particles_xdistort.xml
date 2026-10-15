@@ -1,0 +1,16 @@
+<shader version="2">
+	<l_special>
+		<pass vs="particle" ps="particle_distort"/>
+		<sorting priority="3" strict="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_distort" value="{base}"/>
+		<texture name="s_position" value="$user$position"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_linear"/>
+		<sampler name="smp_nofilter"/>
+	</l_special>
+</shader>

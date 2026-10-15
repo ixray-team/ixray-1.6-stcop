@@ -1,0 +1,56 @@
+<shader version="2">
+	<normal>
+		<pass vs="lod" ps="lod"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="8"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<texture name="s_base0" value="{base}"/>
+		<texture name="s_base1" value="{base}"/>
+		<texture name="s_hemi0" value="{base}_nm"/>
+		<texture name="s_hemi1" value="{base}_nm"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<l_special>
+		<pass vs="lod" ps="lod"/>
+		<blend enable="0" src="one" dest="zero"/>
+		<zb test="1" write="1"/>
+		<fog value="0"/>
+		<stencil enable="1" func="always" mask="255" write_mask="127" fail="keep" pass="replace" zfail="keep"/>
+		<stencil_ref value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_base0" value="{base}"/>
+		<texture name="s_base1" value="{base}"/>
+		<texture name="s_hemi0" value="{base}_nm"/>
+		<texture name="s_hemi1" value="{base}_nm"/>
+		<texture name="s_hemi" value="{base}_nm"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_linear"/>
+	</l_special>
+	<static>
+		<normal>
+			<pass vs="lod" ps="lod"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<aref enable="1" value="8"/>
+			<zb test="1" write="0"/>
+			<fog value="0"/>
+			<texture name="s_base0" value="{base}"/>
+			<texture name="s_base1" value="{base}"/>
+			<texture name="s_hemi0" value="{base}_nm"/>
+			<texture name="s_hemi1" value="{base}_nm"/>
+			<sampler name="smp_base"/>
+		</normal>
+		<l_special>
+			<pass vs="lod" ps="lod"/>
+			<blend enable="0" src="one" dest="zero"/>
+			<aref enable="1" value="200"/>
+			<zb test="1" write="1"/>
+			<fog value="0"/>
+			<texture name="s_base0" value="{base}"/>
+			<texture name="s_base1" value="{base}"/>
+			<texture name="s_hemi0" value="{base}_nm"/>
+			<texture name="s_hemi1" value="{base}_nm"/>
+			<sampler name="smp_base"/>
+		</l_special>
+	</static>
+</shader>

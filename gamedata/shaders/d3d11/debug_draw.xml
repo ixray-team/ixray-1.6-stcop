@@ -1,0 +1,12 @@
+<shader version="2">
+	<normal>
+		<pass vs="debug_draw" ps="debug_draw_nodepth"/>
+		<zb test="1" write="0"/>
+	</normal>
+	<l_special>
+		<pass vs="debug_draw" ps="debug_draw"/>
+		<zb test="0" write="0"/>
+		<texture name="s_position" value="$user$position"/>
+		<sampler name="smp_nofilter"/>
+	</l_special>
+</shader>
