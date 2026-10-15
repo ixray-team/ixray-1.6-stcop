@@ -1,0 +1,10 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_default" ps="stub_default"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="one" dest="one"/>
+		<sorting priority="2" strict="1"/>
+		<texture name="s_base" value="water\water_ryaska1"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

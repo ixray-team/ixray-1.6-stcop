@@ -1,0 +1,11 @@
+<shader version="2">
+	<normal>
+		<pass vs="hud3d" ps="hud3d"/>
+		<fog value="0"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="one"/>
+		<color_write r="1" g="1" b="1" a="0"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

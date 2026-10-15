@@ -1,0 +1,26 @@
+<shader version="2">
+	<normal>
+		<pass vs="model_distort" ps="model_scope_gauss"/>
+		<fog value="1"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="0"/>
+		<sorting priority="2" strict="1"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_image" value="$user$accum"/>
+		<texture name="s_scope_ui" value="$user$ui_pda"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+	</normal>
+	<l_special>
+		<pass vs="scope_lense_mask" ps="scope_lense_mask"/>
+		<zb test="0" write="1"/>
+		<scope value="1"/>
+		<fog value="0"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</l_special>
+</shader>

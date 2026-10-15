@@ -1,0 +1,30 @@
+<shader version="2">
+	<normal>
+		<pass vs="deffer_model" ps="forward_base"/>
+		<fog value="1"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="one" dest="one"/>
+		<aref enable="1" value="0"/>
+		<sorting priority="3" strict="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="sky_s0" value="$user$sky0"/>
+		<texture name="sky_s1" value="$user$sky1"/>
+		<texture name="s_material" value="$user$material"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_material"/>
+	</normal>
+	<l_special>
+		<pass vs="model_distort4glass" ps="particle_distort_hard"/>
+		<sorting priority="3" strict="1"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_distort" value="pfx\pfx_dist_glass4"/>
+		<sampler name="smp_linear"/>
+	</l_special>
+</shader>

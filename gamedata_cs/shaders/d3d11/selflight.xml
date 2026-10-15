@@ -1,0 +1,12 @@
+<shader version="2">
+	<normal>
+		<pass vs="dumb" ps="dumb"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="1" src="zero" dest="one"/>
+		<aref enable="0" value="0"/>
+		<sorting priority="2" strict="0"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

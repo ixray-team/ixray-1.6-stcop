@@ -1,0 +1,19 @@
+<shader version="2">
+	<normal>
+		<pass vs="deffer_model" ps="deffer_base"/>
+		<fog value="0"/>
+		<emissive value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+		<stencil enable="1" func="always" mask="255" write_mask="127" fail="keep" pass="replace" zfail="keep"/>
+		<stencil_ref value="1"/>
+	</normal>
+	<l_special>
+		<pass vs="deffer_model" ps="model_digiclock_hl"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<emissive value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</l_special>
+</shader>

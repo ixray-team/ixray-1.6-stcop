@@ -1,0 +1,10 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_notransform_t" ps="yuv2rgb"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>
