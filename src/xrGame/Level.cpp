@@ -1439,6 +1439,7 @@ void CLevel::OnAlifeSimulatorUnLoaded()
 
 void CLevel::OnAlifeSimulatorLoaded()
 {
+	PROF_EVENT(__FUNCTION__);
 	MapManager().ResetStorage();
 	GameTaskManager()->ResetStorage();
 

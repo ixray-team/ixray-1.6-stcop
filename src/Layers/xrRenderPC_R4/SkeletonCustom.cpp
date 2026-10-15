@@ -144,6 +144,7 @@ CSkeletonX* CKinematics::LL_GetChild(u32 idx)
 
 void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 {
+	PROF_EVENT(__FUNCTION__);
 	//Msg				("skeleton: %s",N);
 	inherited::Load	(N, data, dwFlags);
 
@@ -154,6 +155,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	IReader* LD 	= data->open_chunk(OGF_S_LODS);
     if (LD)
 	{
+		PROF_EVENT("CKinematics::Load: LOD");
         string_path		short_name;
         xr_strcpy		(short_name,sizeof(short_name),N);
 
@@ -249,6 +251,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
     // IK data
 	IReader* IKD 	= data->open_chunk(OGF_S_IKDATA);
     if (IKD){
+		PROF_EVENT("CKinematics::Load: IK data");
         for (u32 i=0; i<bones->size(); i++) {
             CBoneData*	B 	= (*bones)[i];
             u16 vers		= (u16)IKD->r_u32();
@@ -276,6 +279,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 
 	// unique bone faces
 	{
+		PROF_EVENT("CKinematics::Load: unique bone faces");
 		for (u32 bone_idx=0; bone_idx<bones->size(); bone_idx++) {
 			CBoneData*	B 	= (*bones)[bone_idx];
 			for (u32 child_idx=0; child_idx<children.size(); child_idx++){
@@ -310,6 +314,7 @@ void iBuildGroups(CBoneData* B, buffer_vector<u16>& tgt, u16 id, u16& last_id)
 
 void CKinematics::LL_Validate()
 {
+	PROF_EVENT(__FUNCTION__);
 	// check breakable
     bool bCheckBreakable			= false;
     for (u16 k=0; k<LL_BoneCount(); k++){

@@ -37,6 +37,7 @@ void FHierrarhyVisual::Release()
 
 void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 {
+	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual::Load(N,data,dwFlags);
 	if (data->find_chunk(OGF_CHILDREN_L)) 
 	{

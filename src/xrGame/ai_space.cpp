@@ -89,6 +89,7 @@ CAI_Space::~CAI_Space				()
 
 void CAI_Space::load				(const char* level_name)
 {
+	PROF_EVENT(__FUNCTION__);
 	VERIFY					(m_game_graph);
 
 	unload					(true);
