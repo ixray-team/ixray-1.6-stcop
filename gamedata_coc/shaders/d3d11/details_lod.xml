@@ -1,0 +1,14 @@
+<shader version="2">
+	<l_special>
+		<pass vs="lod" ps="lod"/>
+		<blend enable="0" src="one" dest="zero"/>
+		<zb test="1" write="1"/>
+		<fog value="0"/>
+		<stencil enable="1" func="always" mask="255" write_mask="127" fail="keep" pass="replace" zfail="keep"/>
+		<stencil_ref value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_hemi" value="{base}_nm"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_linear"/>
+	</l_special>
+</shader>

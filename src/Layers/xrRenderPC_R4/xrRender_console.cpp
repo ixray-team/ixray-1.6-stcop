@@ -979,7 +979,7 @@ public:
 		}
 	}
 };
-//-----------------------------------------------------------------------
+
 RENDER_API void		xrRender_initconsole	()
 {
 	CMD4(CCC_Integer, "r4_spot_shadow_cache", &g_SpotShadowCacheMode, 0, 2);

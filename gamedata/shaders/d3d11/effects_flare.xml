@@ -1,0 +1,19 @@
+<shader version="2" r1_static="1">
+	<normal>
+		<pass vs="effects_sun" ps="stub_default"/>
+		<blend enable="1" src="srcalpha" dest="one"/>
+		<zb test="0" write="0"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<static>
+		<normal>
+			<pass vs="effects_sun" ps="stub_default"/>
+			<blend enable="1" src="srcalpha" dest="one"/>
+			<zb test="0" write="0"/>
+			<fog value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<sampler name="smp_base"/>
+		</normal>
+	</static>
+</shader>

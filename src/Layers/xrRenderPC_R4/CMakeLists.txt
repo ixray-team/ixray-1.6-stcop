@@ -20,10 +20,6 @@ file(GLOB_RECURSE XRR4_SOURCE_DX11_FILES CONFIGURE_DEPENDS
 	"*.cpp"
 	"*.h"
 )
-file(GLOB XRR4_SOURCE_LUA_FILES CONFIGURE_DEPENDS
-	"../../xrEngine/ai_script_lua*.cpp"
-	"../../xrEngine/ai_script_lua*.h"
-)
 file(GLOB XRR4_SOURCE_OVERLAY_FILES "OverlayAPI/*.*")
 file(GLOB_RECURSE XRR4_SOURCE_INCL_FILES CONFIGURE_DEPENDS "../../Include/*.h")
 
@@ -38,7 +34,6 @@ source_group("render/src" FILES ${XRR4_SOURCE_ALL_FILES})
 source_group("render/include" FILES ${XRR4_SOURCE_INCL_FILES})
 source_group("layers" FILES ${XRR4_SOURCE_COMP_FILES})
 source_group("general_dx11" FILES ${XRR4_SOURCE_DX11_FILES})
-source_group("lua_ext" FILES ${XRR4_SOURCE_LUA_FILES})
 source_group("blend" FILES ${XRR4_SOURCE_BLEND_FILES})
 source_group("particle_core" FILES ${XRR4_SOURCE_PARTICLE_CORE})
 
@@ -46,7 +41,6 @@ source_group("particle_core" FILES ${XRR4_SOURCE_PARTICLE_CORE})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_ALL_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_COMP_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_DX11_FILES})
-list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_LUA_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
 # xrRender_R4 project

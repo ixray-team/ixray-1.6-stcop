@@ -1,0 +1,11 @@
+<shader version="2">
+	<normal>
+		<pass vs="effects_rain" ps="effects_rain"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

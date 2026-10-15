@@ -1,0 +1,14 @@
+<shader version="2">
+	<normal>
+		<pass vs="model_distort" ps="model_clockarrow_h"/>
+		<fog value="1"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="0"/>
+		<sorting priority="2" strict="1"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_lmap" value="$alphadxt1"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

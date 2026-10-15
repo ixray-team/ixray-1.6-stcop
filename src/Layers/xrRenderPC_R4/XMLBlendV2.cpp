@@ -123,17 +123,6 @@ namespace
 		return true;
 	}
 
-	template <size_t Size>
-	xr_string NameOf(const NamedValue (&Table)[Size], u32 Value)
-	{
-		for (const NamedValue& Item : Table)
-		{
-			if (Item.Value == Value)
-				return Item.Name;
-		}
-		return xr_string::ToString(Value);
-	}
-
 	bool ParseBool(const char* Text, u32& Value)
 	{
 		if (!xr_strcmp(Text, "1") || !_stricmp(Text, "true"))
@@ -170,20 +159,6 @@ namespace
 		case EKind::Stencil:	return ParseNamed(StencilNames, Text, Value);
 		case EKind::Cull:		return ParseNamed(CullNames, Text, Value);
 		default:				return false;
-		}
-	}
-
-	xr_string WriteValue(EKind Kind, u32 Value)
-	{
-		switch (Kind)
-		{
-		case EKind::Bool:		return Value ? "1" : "0";
-		case EKind::Int:		return xr_string::ToString(int(Value));
-		case EKind::Blend:		return NameOf(BlendNames, Value);
-		case EKind::Cmp:		return NameOf(CmpNames, Value);
-		case EKind::Stencil:	return NameOf(StencilNames, Value);
-		case EKind::Cull:		return NameOf(CullNames, Value);
-		default:				return "";
 		}
 	}
 
@@ -294,70 +269,6 @@ namespace
 		return true;
 	}
 
-	xr_string Escape(const xr_string& Text)
-	{
-		xr_string Result;
-		for (char Symbol : Text)
-		{
-			switch (Symbol)
-			{
-			case '&':	Result += "&amp;";	break;
-			case '<':	Result += "&lt;";	break;
-			case '>':	Result += "&gt;";	break;
-			case '"':	Result += "&quot;";	break;
-			default:	Result += Symbol;	break;
-			}
-		}
-		return Result;
-	}
-
-	void WriteSet(const XMLBlendV2::ElementSet& Set, const char* Indent, xr_string& Text)
-	{
-		for (const XMLBlendV2::Element& Element : Set.Elements)
-		{
-			const xr_string Tag = Element.Name.empty() ? xr_string("element") : Element.Name;
-			Text += Indent;
-			Text += "<" + Tag;
-			if (Element.Name.empty())
-			{
-				Text += Format(" index=\"%d\" detail=\"%d\"", Element.Index, Element.UseDetail ? 1 : 0).c_str();
-			}
-			if (!Element.Option.empty())
-			{
-				Text += " option=\"" + Escape(Element.Option) + "\"";
-			}
-			Text += ">\r\n";
-
-			for (const BlendOp& Op : Element.Ops)
-			{
-				Text += Indent;
-				Text += "\t<";
-				Text += BlendOps::GetName(Op.Type);
-				for (const AttributeDesc& Attribute : Describe(Op.Type).Attributes)
-				{
-					xr_string Value;
-					if (Attribute.Kind == EKind::String)
-					{
-						Value = Op.Strings[Attribute.Slot];
-						if (Attribute.IsOptional && Value.empty())
-							continue;
-					}
-					else
-					{
-						Value = WriteValue(Attribute.Kind, Op.Values[Attribute.Slot]);
-					}
-					Text += " ";
-					Text += Attribute.Name;
-					Text += "=\"" + Escape(Value) + "\"";
-				}
-				Text += "/>\r\n";
-			}
-
-			Text += Indent;
-			Text += "</" + Tag + ">\r\n";
-		}
-	}
-
 	ShaderElement* CompileElement(CBlender_Compile& C, const BlendOpList& Ops)
 	{
 		ShaderElement E;
@@ -422,180 +333,26 @@ bool XMLBlendV2::IsVersion2(CXml& Parser)
 	return Element && 0 == xr_strcmp(Element->Name(), "shader") && Element->IntAttribute("version", 1) == 2;
 }
 
+namespace
+{
+	bool ParseRoot(tinyxml2::XMLElement* Root, const char* FileName, XMLBlendV2::Script& Result, xr_string& Error)
+	{
+		Result = XMLBlendV2::Script();
+		if (!Root || 0 != xr_strcmp(Root->Name(), "shader") || Root->IntAttribute("version", 1) != 2)
+		{
+			Error = Format("%s: not a version 2 blend", FileName).c_str();
+			return false;
+		}
+
+		Result.IsStaticBlend = Root->BoolAttribute("r1_static", false);
+		return ParseSet(Root, FileName, Result.Dynamic, &Result, Error);
+	}
+}
+
 bool XMLBlendV2::Parse(CXml& Parser, const char* FileName, Script& Result, xr_string& Error)
 {
-	Result = Script();
-	if (!IsVersion2(Parser))
-	{
-		Error = Format("%s: not a version 2 blend", FileName).c_str();
-		return false;
-	}
-
-	tinyxml2::XMLElement* Root = Parser.GetRoot()->ToElement();
-	Result.IsStaticBlend = Root->BoolAttribute("r1_static", false);
-	return ParseSet(Root, FileName, Result.Dynamic, &Result, Error);
-}
-
-bool XMLBlendV2::ParseVersion1(CXml& Parser, const char* FileName, Script& Result, xr_string& Error)
-{
-	Result = Script();
 	XML_NODE* Root = Parser.GetRoot();
-	for (int Iter = 0; Iter < 6; ++Iter)
-	{
-		bool UseDetail = true;
-		string16 Buffer;
-		xr_sprintf(Buffer, "element_%d", Iter);
-		XML_NODE* Node = Parser.NavigateToNode(Root, Buffer);
-		if (!Node)
-		{
-			xr_sprintf(Buffer, "element_nd_%d", Iter);
-			Node = Parser.NavigateToNode(Root, Buffer);
-			UseDetail = false;
-		}
-		if (!Node)
-			continue;
-
-		Element Item;
-		Item.Index = Iter;
-		Item.UseDetail = UseDetail;
-
-		BlendOp Pass;
-		Pass.Type = EBlendOp::PassFull;
-		Pass.Strings[0] = Parser.ReadAttrib(Node, "vs", "false");
-		const char* GS = Parser.ReadAttrib(Node, "gs", nullptr);
-		Pass.Strings[1] = GS ? GS : "";
-		Pass.Strings[2] = Parser.ReadAttrib(Node, "ps", "false");
-		Pass.Values[0] = Parser.ReadAttribBool(Node, "fog", true);
-		Pass.Values[1] = Parser.ReadAttribBool(Node, "zread", true);
-		Pass.Values[2] = Parser.ReadAttribBool(Node, "zwrite", true);
-		Item.Ops.push_back(Pass);
-
-		const auto Add = [&Item](EBlendOp Type, std::initializer_list<u32> Values, std::initializer_list<xr_string> Strings = {})
-		{
-			BlendOp Op;
-			Op.Type = Type;
-			u32 Index = 0;
-			for (u32 Value : Values)
-				Op.Values[Index++] = Value;
-			Index = 0;
-			for (const xr_string& String : Strings)
-				Op.Strings[Index++] = String;
-			Item.Ops.push_back(Op);
-		};
-
-		const auto ReadNamed = [&](auto& Table, XML_NODE* From, const char* Attribute, const char* Default, u32& Value)
-		{
-			const char* Text = Parser.ReadAttrib(From, Attribute, Default);
-			if (!ParseNamed(Table, Text, Value))
-			{
-				SetError(Error, FileName, Attribute, Format("invalid value '%s'", Text).c_str());
-				return false;
-			}
-			return true;
-		};
-
-		if (Parser.ReadAttribBool(Node, "uber_deffer"))
-			Add(EBlendOp::UberDeffer, {});
-
-		if (XML_NODE* Blend = Parser.NavigateToNode(Node, "blend"))
-		{
-			u32 Src = 0, Dest = 0;
-			if (!ReadNamed(BlendNames, Blend, "src", "zero", Src) || !ReadNamed(BlendNames, Blend, "dest", "zero", Dest))
-				return false;
-			Add(EBlendOp::Blend, { u32(Parser.ReadAttribBool(Blend, "status")), Src, Dest });
-		}
-
-		if (XML_NODE* Sorting = Parser.NavigateToNode(Node, "sort"))
-			Add(EBlendOp::Sorting, { u32(Parser.ReadAttribInt(Sorting, "count", 1)), u32(Parser.ReadAttribBool(Sorting, "status")) });
-
-		if (XML_NODE* Cull = Parser.NavigateToNode(Node, "cull_mode"))
-		{
-			u32 Mode = 0;
-			if (!ReadNamed(CullNames, Cull, "mode", "none", Mode))
-				return false;
-			Add(EBlendOp::CullMode, { Mode });
-		}
-
-		if (XML_NODE* Flags = Parser.NavigateToNode(Node, "flags"))
-		{
-			Add(EBlendOp::Distort, { u32(Parser.ReadAttribBool(Flags, "dist")) });
-			Add(EBlendOp::Emissive, { u32(Parser.ReadAttribBool(Flags, "emissive")) });
-			Add(EBlendOp::Wmark, { u32(Parser.ReadAttribBool(Flags, "wmark")) });
-		}
-
-		if (XML_NODE* Atoc = Parser.NavigateToNode(Node, "atoc"))
-			Add(EBlendOp::AlphaToCoverage, { u32(Parser.ReadAttribBool(Atoc, "status")) });
-
-		if (XML_NODE* Aref = Parser.NavigateToNode(Node, "aref"))
-			Add(EBlendOp::Aref, { u32(Parser.ReadAttribBool(Aref, "status")), u32(Parser.ReadAttribInt(Aref, "count", 0)) });
-
-		if (XML_NODE* Color = Parser.NavigateToNode(Node, "color"))
-		{
-			Add(EBlendOp::ColorWrite, { u32(Parser.ReadAttribBool(Color, "r")), u32(Parser.ReadAttribBool(Color, "g")),
-				u32(Parser.ReadAttribBool(Color, "b")), u32(Parser.ReadAttribBool(Color, "a")) });
-		}
-
-		if (XML_NODE* Stencil = Parser.NavigateToNode(Node, "stencil"))
-		{
-			u32 Cmp = 0, Fail = 0, PassOp = 0, ZFail = 0;
-			if (!ReadNamed(CmpNames, Stencil, "cmp", "never", Cmp) || !ReadNamed(StencilNames, Stencil, "fail", "zero", Fail) ||
-				!ReadNamed(StencilNames, Stencil, "pass", "zero", PassOp) || !ReadNamed(StencilNames, Stencil, "zfail", "zero", ZFail))
-				return false;
-			Add(EBlendOp::Stencil, { u32(Parser.ReadAttribBool(Stencil, "status")), Cmp, u32(Parser.ReadAttribInt(Stencil, "mask", 0)),
-				u32(Parser.ReadAttribInt(Stencil, "wmask", 0)), Fail, PassOp, ZFail });
-
-			if (XML_NODE* StencilRef = Parser.NavigateToNode(Stencil, "ref"))
-				Add(EBlendOp::StencilRef, { u32(Parser.ReadAttribInt(StencilRef, "value", 0)) });
-		}
-
-		for (int Index = 0; XML_NODE* Texture = Parser.NavigateToNode(Node, "texture", Index); ++Index)
-		{
-			const xr_string Name = Parser.ReadAttrib(Texture, "name", "none");
-			const xr_string Rt = Parser.ReadAttrib(Texture, "rt", "none");
-			const xr_string Append = Parser.ReadAttrib(Texture, "append", "none");
-			const xr_string Dest = Parser.ReadAttrib(Texture, "dest", "none");
-			if (Name == "none" || Rt == "none")
-				continue;
-
-			if (Rt == "t_base")
-			{
-				const xr_string Base = xr_string("{base}") + (Append != "none" ? Append : xr_string());
-				const xr_string Resource = Dest != "none" ? xr_string(Name + Dest) : Name;
-				Add(EBlendOp::Texture, {}, { Resource, Base });
-			}
-			else
-			{
-				Add(EBlendOp::Texture, {}, { Name, Rt });
-			}
-		}
-
-		for (int Index = 0; XML_NODE* Sampler = Parser.NavigateToNode(Node, "sampler", Index); ++Index)
-		{
-			const xr_string Name = Parser.ReadAttrib(Sampler, "name", "none");
-			if (Name != "none")
-				Add(EBlendOp::Sampler, {}, { Name });
-		}
-
-		Result.Dynamic.Elements.push_back(std::move(Item));
-	}
-	return true;
-}
-
-void XMLBlendV2::Write(const Script& Source, xr_string& Text)
-{
-	Text = "<shader version=\"2\"";
-	if (Source.IsStaticBlend)
-		Text += " r1_static=\"1\"";
-	Text += ">\r\n";
-
-	WriteSet(Source.Dynamic, "\t", Text);
-	if (Source.HasStaticSet)
-	{
-		Text += "\t<static>\r\n";
-		WriteSet(Source.Static, "\t\t", Text);
-		Text += "\t</static>\r\n";
-	}
-	Text += "</shader>\r\n";
+	return ParseRoot(Root ? Root->ToElement() : nullptr, FileName, Result, Error);
 }
 
 Shader* XMLBlendV2::Compile(const Script& Source, const char* Textures)

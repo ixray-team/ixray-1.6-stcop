@@ -1,0 +1,24 @@
+<shader version="2">
+	<normal>
+		<pass vs="model_distort_inv" ps="particle_alphaonly"/>
+		<sorting priority="3" strict="1"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="0"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<l_special>
+		<pass vs="model_distort_inv" ps="particle_distort_hard"/>
+		<sorting priority="3" strict="0"/>
+		<blend enable="1" src="srccolor" dest="invsrcalpha"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<distort value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_distort" value="{base}"/>
+		<sampler name="smp_linear"/>
+	</l_special>
+</shader>

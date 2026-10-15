@@ -1,0 +1,14 @@
+<shader version="2">
+	<normal>
+		<pass vs="wmark" ps="simple"/>
+		<sorting priority="1" strict="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<aref enable="1" value="0"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<wmark value="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_rtlinear"/>
+		<color_write r="1" g="1" b="1" a="0"/>
+	</normal>
+</shader>

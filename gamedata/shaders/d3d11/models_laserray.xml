@@ -1,0 +1,25 @@
+<shader version="2" r1_static="1">
+	<normal>
+		<pass vs="model_distort" ps="base_lplanes"/>
+		<fog value="0"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="one"/>
+		<aref enable="1" value="0"/>
+		<sorting priority="2" strict="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+	<static>
+		<normal>
+			<pass vs="r1_model_lplanes" ps="r1_lplanes"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="srcalpha" dest="one"/>
+			<aref enable="1" value="0"/>
+			<sorting priority="2" strict="1"/>
+			<texture name="s_base" value="{base}"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+	</static>
+</shader>

@@ -1,0 +1,10 @@
+<shader version="2">
+	<normal>
+		<pass vs="effects_wallmark" ps="stub_default_ma"/>
+		<blend enable="1" src="destcolor" dest="srccolor"/>
+		<zb test="1" write="0"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_rtlinear"/>
+		<color_write r="1" g="1" b="1" a="0"/>
+	</normal>
+</shader>

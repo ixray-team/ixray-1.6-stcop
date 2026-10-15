@@ -1,0 +1,105 @@
+<shader version="2" r1_static="1">
+	<normal option="ALLOW_WBOIT_TRANSPARENCY">
+		<pass vs="water" ps="water"/>
+		<sorting priority="2" strict="0"/>
+		<zb test="1" write="0"/>
+		<distort value="1"/>
+		<fog value="1"/>
+		<blend enable="1" src="one" dest="one"/>
+		<iblend index="2" enable="1" src="destcolor" dest="zero"/>
+		<iblend index="1" enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="water\water_ryaska1"/>
+		<texture name="s_nmap" value="water\water_normal"/>
+		<texture name="s_env0" value="$user$sky0"/>
+		<texture name="s_env1" value="$user$sky1"/>
+		<texture name="s_env" value="$user$env"/>
+		<texture name="s_env_dist" value="$user$env_temp"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="s_accumulator" value="$user$accum"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_velocity" value="$user$velocity"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_material" value="$user$material"/>
+		<texture name="s_leaves" value="water\water_foam"/>
+		<texture name="s_caustic" value="water\water_caustic"/>
+		<texture name="s_smap_sun" value="$user$smap_depth_sun"/>
+		<sampler name="smp_smap"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_linear"/>
+	</normal>
+	<normal>
+		<pass vs="water" ps="water"/>
+		<sorting priority="2" strict="0"/>
+		<zb test="1" write="0"/>
+		<distort value="1"/>
+		<fog value="1"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="water\water_ryaska1"/>
+		<texture name="s_nmap" value="water\water_normal"/>
+		<texture name="s_env0" value="$user$sky0"/>
+		<texture name="s_env1" value="$user$sky1"/>
+		<texture name="s_env" value="$user$env"/>
+		<texture name="s_env_dist" value="$user$env_temp"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="s_accumulator" value="$user$accum"/>
+		<texture name="s_position" value="$user$position"/>
+		<texture name="s_velocity" value="$user$velocity"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_material" value="$user$material"/>
+		<texture name="s_leaves" value="water\water_foam"/>
+		<texture name="s_caustic" value="water\water_caustic"/>
+		<texture name="s_smap_sun" value="$user$smap_depth_sun"/>
+		<sampler name="smp_smap"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+		<sampler name="smp_linear"/>
+	</normal>
+	<l_special>
+		<pass vs="water" ps="waterd"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<distort value="1"/>
+		<color_write r="1" g="1" b="1" a="0"/>
+		<texture name="s_base" value="water\water_ryaska1"/>
+		<texture name="s_distort" value="water\water_dudv"/>
+		<texture name="s_position" value="$user$position"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_nofilter"/>
+	</l_special>
+	<static>
+		<normal>
+			<pass vs="r1_water" ps="r1_water"/>
+			<sorting priority="2" strict="1"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<aref enable="1" value="0"/>
+			<zb test="1" write="0"/>
+			<distort value="1"/>
+			<fog value="0"/>
+			<texture name="s_base" value="water\water_ryaska1"/>
+			<texture name="s_nmap" value="water\water_normal"/>
+			<texture name="s_env0" value="$user$sky0"/>
+			<texture name="s_env1" value="$user$sky1"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+		<l_special>
+			<pass vs="r1_waterd" ps="r1_waterd"/>
+			<sorting priority="2" strict="1"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<zb test="1" write="0"/>
+			<fog value="0"/>
+			<distort value="1"/>
+			<texture name="s_base" value="water\water_ryaska1"/>
+			<texture name="s_distort0" value="water\water_dudv"/>
+			<texture name="s_distort1" value="water\water_dudv"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_special>
+	</static>
+</shader>
