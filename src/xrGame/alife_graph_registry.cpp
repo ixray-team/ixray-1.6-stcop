@@ -72,6 +72,7 @@ void CALifeGraphRegistry::update(CSE_ALifeDynamicObject *object)
 }
 
 #include "Level.h"
+#include "HUDManager.h"
 xr_task_group level_load;
 void CALifeGraphRegistry::setup_current_level	()
 {
@@ -82,6 +83,10 @@ void CALifeGraphRegistry::setup_current_level	()
 		GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(level_id);
 		Level().set_name((*I).second.name());
 		int levelid = pApp->Level_ID(*(*I).second.name(), "1.0", true);
+
+		if (!g_hud)
+			g_hud = new CHUDManager();
+
 		level_load.run([=]()
 		{
 			PROF_THREAD("Level Load Thread");
@@ -116,14 +121,6 @@ void CALifeGraphRegistry::setup_current_level	()
 		VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
 	}
 
-	// Level().Load() calls Level_Set() again on its worker and replaces
-	// $level$'s path buffer. Do not read level.ai/cross-table while that
-	// buffer can be freed by the background loader.
-	if (!Device.IsEditorMode())
-	{
-		PROF_EVENT("setup_current_level: wait level_load");
-		level_load.wait();
-	}
 	ai().load					(*(*I).second.name());
 
     g_start_game_vertex_id = 0;
