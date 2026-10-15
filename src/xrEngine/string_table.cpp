@@ -188,10 +188,10 @@ void CStringTable::Load	(const char* xml_file_full)
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 
-	for (XML_NODE* stringNode = uiXml.GetRoot()->FirstChildElement("string"); stringNode;
-		stringNode = stringNode->NextSiblingElement("string"))
+	for (XML_NODE* StringNode = uiXml.GetRoot()->FirstChildElement("string"); StringNode;
+		 StringNode = StringNode->NextSiblingElement("string"))
 	{
-		const char* string_name = uiXml.ReadAttrib(stringNode, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(StringNode, "id", nullptr);
 
 		bool isDublicate = pData->m_StringTable.find(string_name) != pData->m_StringTable.end();
 		if (isDublicate)
@@ -200,7 +200,7 @@ void CStringTable::Load	(const char* xml_file_full)
 			Msg("! duplicate string table id: %s", string_name);
 		}
 
-		const char* string_text		= uiXml.Read(stringNode, "text", 0, nullptr);
+		const char* string_text = uiXml.Read(StringNode, "text", 0, nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );
@@ -210,7 +210,7 @@ void CStringTable::Load	(const char* xml_file_full)
 		STRING_VALUE str_val		= ParseLine(string_text, string_name, true);
 		
 		pData->m_StringTable[string_name] = str_val;
-		const char* gamepad_text = uiXml.Read(stringNode, "text_gamepad", 0, nullptr);
+		const char* gamepad_text = uiXml.Read(StringNode, "text_gamepad", 0, nullptr);
 		if (gamepad_text)
 		{
 			STRING_VALUE str_val = ParseLine(gamepad_text, string_name, true, true);
@@ -227,10 +227,10 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 
-	for (XML_NODE* stringNode = uiXml.GetRoot()->FirstChildElement("string"); stringNode;
-		stringNode = stringNode->NextSiblingElement("string"))
+	for (XML_NODE* StringNode = uiXml.GetRoot()->FirstChildElement("string"); StringNode;
+		 StringNode = StringNode->NextSiblingElement("string"))
 	{
-		const char* string_name = uiXml.ReadAttrib(stringNode, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(StringNode, "id", nullptr);
 
 		bool isDublicate = pData->m_FallbackStringTable.find(string_name) != pData->m_FallbackStringTable.end();
 		if (isDublicate)
@@ -239,7 +239,7 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 			Msg("! duplicate fallback string table id: %s", string_name);
 		}
 
-		const char* string_text		= uiXml.Read(stringNode, "text", 0, nullptr);
+		const char* string_text = uiXml.Read(StringNode, "text", 0, nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[fallback string table] '%s' no translation in '%s'", string_name, pData->m_sFallbackLanguage.c_str() );

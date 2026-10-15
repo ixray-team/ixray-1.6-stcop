@@ -1077,34 +1077,34 @@ static HRESULT create_shader(
 }
 
 
-namespace
+namespace ShaderSource
 {
-	xr_string_view ReadShaderCRCLine(IReader& reader)
+static xr_string_view ReadShaderCRCLine(IReader& Reader)
+{
+	const char* Data = static_cast<const char*>(Reader.pointer());
+	const size_t Available = size_t(Reader.elapsed());
+	size_t Length = 1;
+	while (Length < Available && Data[Length] != '\r' && Data[Length] != '\n')
 	{
-		const char* data = static_cast<const char*>(reader.pointer());
-		const size_t available = size_t(reader.elapsed());
-		size_t length = 1;
-		while (length < available && data[length] != '\r' && data[length] != '\n')
-		{
-			++length;
-		}
-		size_t consumed = length;
-		while (consumed < available && (data[consumed] == '\r' || data[consumed] == '\n'))
-		{
-			++consumed;
-		}
-		reader.advance(intptr_t(consumed));
-		xr_string_view line(data, length);
-		while (!line.empty() && line.front() != 0 && u8(line.front()) <= u8(' '))
-		{
-			line.remove_prefix(1);
-		}
-		while (line.size() > 1 && u8(line.back()) <= u8(' '))
-		{
-			line.remove_suffix(1);
-		}
-		return line;
+		++Length;
 	}
+	size_t Consumed = Length;
+	while (Consumed < Available && (Data[Consumed] == '\r' || Data[Consumed] == '\n'))
+	{
+		++Consumed;
+	}
+	Reader.advance(intptr_t(Consumed));
+	xr_string_view Line(Data, Length);
+	while (!Line.empty() && Line.front() != 0 && u8(Line.front()) <= u8(' '))
+	{
+		Line.remove_prefix(1);
+	}
+	while (Line.size() > 1 && u8(Line.back()) <= u8(' '))
+	{
+		Line.remove_suffix(1);
+	}
+	return Line;
+}
 }
 
 void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
@@ -1114,13 +1114,13 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 
 	while (!F->eof())
 	{
-		const xr_string_view line = ReadShaderCRCLine(*F);
+		const xr_string_view Line = ShaderSource::ReadShaderCRCLine(*F);
 
-		if (line.starts_with('#') &&
-			line.substr(0, line.find('\0')).find("#include") != xr_string_view::npos)
+		if (Line.starts_with('#') &&
+			Line.substr(0, Line.find('\0')).find("#include") != xr_string_view::npos)
 		{
-			const xr_string includeLine(line.data(), u32(line.size()));
-			if (_GetItem(includeLine.c_str(), 1, pFileName, '"'))
+			const xr_string IncludeLine(Line.data(), u32(Line.size()));
+			if (_GetItem(IncludeLine.c_str(), 1, pFileName, '"'))
 			{
 				if(std::find(files.begin(), files.end(), pFileName) == files.end())
 				{
@@ -1142,7 +1142,7 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 			}
 		}
 
-		final_crc = crc32(line.data(), line.size(), final_crc);
+		final_crc = crc32(Line.data(), Line.size(), final_crc);
 	}
 }
 

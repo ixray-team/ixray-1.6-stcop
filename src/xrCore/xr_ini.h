@@ -72,8 +72,8 @@ protected:
 
 	void EvaluateSection	(const xr_string& SectName, xr_vector<xr_string>& Data);
 	bool EvaluateSectionsParallel();
-	static void InsertSectionItem(Sect& section, bool& deleteIfEmpty, const Item& item, InsertType type, const shared_str& deleteMarker);
-	static void ApplySectionListModifiers(Sect& section, Items& items);
+	static void InsertSectionItem(Sect& Section, bool& DeleteIfEmpty, const Item& Entry, InsertType Type, const shared_str& DeleteMarker);
+	static void ApplySectionListModifiers(Sect& Section, Items& SectionItems);
 	void MergeParentSet		(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers);
 
 private:
