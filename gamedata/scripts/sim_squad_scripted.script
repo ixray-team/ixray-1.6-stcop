@@ -668,11 +668,17 @@ function sim_squad_scripted:create_npc(spawn_smart)
         local random_spawn = utils.cfg_get_string(ini, self.settings_id, "npc_random", self, false, "",nil)
         if random_spawn ~= nil then
             random_spawn 				= 	utils.parse_names(random_spawn)
-            local count_min, count_max 	= utils.r_2nums( ini,  self.settings_id, "npc_in_squad", 1, 2 )
-            if count_min > count_max then
+            local count_min, count_max 	= utils.r_2nums( ini,  self.settings_id, "npc_in_squad", 1, nil )
+            count_min = tonumber(count_min)
+		    count_max = tonumber(count_max)
+		    local random_count = 1
+		    if count_max == nil then
+			    random_count = count_min
+            elseif count_min > count_max then
                 abort("min_count can't be greater then max_count [%s]!!!!!", self.settings_id)
+            else
+                random_count	 		= math.random(count_min, count_max)
             end
-            local random_count	 		= math.random(count_min, count_max)
             for i = 1,random_count do
                 local random_id = math.random(1, #random_spawn)
                 self:add_squad_member(random_spawn[random_id], base_spawn_position, base_lvi, base_gvi,random_id)
