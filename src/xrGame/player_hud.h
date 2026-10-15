@@ -407,6 +407,7 @@ struct attachable_hud_item final
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
 	void LoadRigParams				();
+	float* RigField					(const char* key, u32& count);
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
