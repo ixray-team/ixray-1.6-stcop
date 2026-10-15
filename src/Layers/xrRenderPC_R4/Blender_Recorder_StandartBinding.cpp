@@ -577,7 +577,7 @@ static class cl_env_wind : public RHIShaderConstant::Setup
 static class cl_m_hud_params : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) {
-		RCache.set_c(C, RDEVICE.hudViewportData.isRenderProcess, RDEVICE.hudViewportData.isRenderActive, 0.0f, RDEVICE.hudViewportData.renderZoomRotateFactor);
+		RCache.set_c(C, RDEVICE.hudViewportData.isRenderProcess, RDEVICE.hudViewportData.isRenderActive, RDEVICE.hudViewportData.ScopeAberration, RDEVICE.hudViewportData.renderZoomRotateFactor);
 	}
 }    binder_m_hud_params;
 

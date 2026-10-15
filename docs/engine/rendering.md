@@ -95,6 +95,12 @@ R4 initializes `o.dx11_disable_motion_vectors` in `r4.cpp` from the `DISABLE_MOT
 
 Sources: [renderer loading](../../src/xrEngine/EngineAPI.cpp), [R4 frame](../../src/Layers/xrRenderPC_R4/r4_R_render.cpp), [R1 frame](../../src/Layers/xrRenderPC_R1/FStaticRender.cpp), [shader options](../../src/xrCore/EngineExternal.cpp).
 
+## Scope lens chromatic aberration
+
+R4 lens materials share `scope_lens.hlsli`. `SampleScopeScene` reads the scene snapshot and separates its red and blue samples in opposite diagonal directions using the Gunslinger edge-distance formula. The existing `m_hud_params.z` channel carries `scope_abberation`; both legacy constant binding and fixed constant buffers export the same value. No new GPU constant is introduced. Permanent scopes read the weapon's setting; detachable scopes use their own setting with the weapon as fallback. Installed upgrades are reapplied on scope reload.
+
+Sampling uses the source texture dimensions and clamps coordinates to its texel centers. At zero strength, the helper retains the original scene load and skips the extra texture samples. Scene sampling precedes material night vision, the reticle and detector UI. The helper is included by all four lens shaders in every game package.
+
 ## Scope postprocess effects
 
 `scope_nightvision = scope_contrast` and `scope_nightvision = scope_nightvision_gauss` load the configured `.ppe` animation for the weapon. Installed scope effects are reapplied after addon initialization. For R4 3D scopes, the animator supplies an independent postprocess state; the lens material chooses whether R4 processes the world snapshot in `$user$accum` before rendering the lens, detector frames and reticle. Separate color-map aliases and noise timing leave the actor camera postprocess independent. The lens PPE stays active throughout normal zoom-in and zoom-out animations, until the zoom rotation factor reaches zero; switching implementations only after zoom completion would produce a bright material-NVG flash during the transition. Detector UI still requires fully completed zoom. Alternate aim and grenade mode disable the lens effect. `SPPInfo::lerp` adds to color-map influence and interpolation, gray, blur and duality, so `Device.ScopePostprocess` is reset to `pp_zero` before every `Process`, as `CCameraManager::UpdatePPEffectors` does for camera effectors; otherwise the color-map influence grows every frame and the lens turns white.
