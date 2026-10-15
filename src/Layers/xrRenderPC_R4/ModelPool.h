@@ -78,6 +78,23 @@ public:
 	void					DeleteQueuedDeffer	();
 	
 	static bool				IsAsyncLoadEnabled	();
+
+	struct LoadContext
+	{
+		bool				AllowChildrenDuplicate = true;
+	};
+	static LoadContext		CaptureLoadContext	();
+
+	class RENDER_API LoadContextScope
+	{
+	public:
+		explicit LoadContextScope(const LoadContext& Context);
+		~LoadContextScope();
+
+	private:
+		LoadContext			Previous;
+	};
+
 	void					Request				(const char* name);
 	EModelLoadState			GetState			(const char* name);
 	void					WaitRequests		();
