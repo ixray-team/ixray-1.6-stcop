@@ -115,10 +115,9 @@ void CStats::Show()
 	}
 	
 	{
-		float mem_count		= float	(Memory.stat_calls);
+		float mem_count = float(std::atomic_ref(Memory.stat_calls).exchange(0, std::memory_order_relaxed));
 		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
 		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
-		Memory.stat_calls	= 0		;
 	}
 	
 	if (g_dedicated_server)
