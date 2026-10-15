@@ -9,12 +9,21 @@ namespace
 	xr_string pathToXrString(const std::filesystem::path& p)
 	{
 #ifdef IXR_WINDOWS
-		const std::wstring wide = p.wstring();
+		const std::wstring& wide = p.native();
 		if (wide.empty())
 			return xr_string();
 
-		// Prefer ANSI, matching path::string() semantics when representable.
+        string_path buffer;
 		BOOL usedDefaultChar = FALSE;
+        const int written = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(),
+            buffer, sizeof(buffer), nullptr, &usedDefaultChar);
+        if (written > 0 && written < static_cast<int>(sizeof(buffer)) && !usedDefaultChar)
+        {
+            buffer[written] = '\0';
+            return xr_string(buffer);
+        }
+
+		usedDefaultChar = FALSE;
 		const int ansiSize = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), nullptr, 0, nullptr, &usedDefaultChar);
 		if (ansiSize > 0 && !usedDefaultChar)
 		{

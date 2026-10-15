@@ -23,6 +23,7 @@ public:
 
 	void Initialize();
 	bool CanApply(xr_string& TempPath, CLocatorAPI::file& Desc);
+	bool CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc);
 
 	void MountAddons();
 	// Overlays a directory or a .db archive on top of $game_data$ while the game runs.
