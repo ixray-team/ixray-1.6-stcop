@@ -230,7 +230,7 @@ xr_string& _TrimRight( xr_string& str )
     if (l){
         const char* p 		= str.c_str()+l-1;
         while( (p!=b) && (u8(*p)<=u8(' ')) ) p--;
-        if (p!=(str+b))	str.erase	(p-b+1,l-(p-b));
+        if (p != b + l - 1)	str.erase	(p-b+1,l-(p-b));
     }
 	return str;
 }
@@ -275,4 +275,3 @@ shared_str	_ListToSequence(const RStringVec& lst)
 	}
 	return shared_str	(out.c_str());
 }
-
