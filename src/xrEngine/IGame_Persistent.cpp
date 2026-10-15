@@ -124,9 +124,39 @@ void IGame_Persistent::OnGameStart()
 		Prefetch();
 }
 
+xr_string IGame_Persistent::GetPrefetchSection(const char* Prefix) const
+{
+	xr_string section = Prefix;
+	section += m_game_params.m_game_type;
+
+	if (!pSettings->section_exist(section.c_str()))
+	{
+		const xr_string Base = Prefix;
+		if (section.compare(Base + "dm"))
+			section = Base + "deathmatch";
+		if (section.compare(Base + "tdm"))
+			section = Base + "teamdeathmatch";
+		if (section.compare(Base + "ah"))
+			section = Base + "artefacthunt";
+	}
+	return section;
+}
+
 void IGame_Persistent::Prefetch()
 {
 	PROF_EVENT("Prefetch");
+	{
+		PROF_EVENT("Prefetch requests");
+		for (const CInifile::Item& Item : pSettings->r_section(GetPrefetchSection("prefetch_visuals_").c_str()).Data)
+			Render->model_Request(Item.first.c_str());
+
+		for (const CInifile::Item& Item : pSettings->r_section(GetPrefetchSection("prefetch_objects_").c_str()).Data)
+		{
+			const char* Section = Item.first.c_str();
+			if (pSettings->section_exist(Section) && pSettings->line_exist(Section, "visual"))
+				Render->model_Request(pSettings->r_string(Section, "visual"));
+		}
+	}
 	{
 		// prefetch game objects & models
 		PROF_EVENT("Loading objects");

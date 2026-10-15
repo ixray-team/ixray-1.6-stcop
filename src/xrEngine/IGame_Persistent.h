@@ -77,7 +77,8 @@ public:
 	class CEnvironment*				pEnvironment;
 	CEnvironment&					Environment()	{return *pEnvironment;};
 	void							Prefetch			( );
-	IMainMenu*						m_pMainMenu;	
+	xr_string						GetPrefetchSection	(const char* Prefix) const;
+	IMainMenu*						m_pMainMenu;
 
 	virtual	void					UpdatePlayDestroyParticles() {};
 	virtual	void					UpdateParticles		() {};
