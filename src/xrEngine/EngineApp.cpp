@@ -194,6 +194,8 @@ void CEngineApp::DestroyLoadingScreen() { xr_delete(GLoadingScreen); }
 void CEngineApp::LoadDraw()
 {
 	if (g_appLoaded)				return;
+	if (!g_AppInfo.IsPrimaryThread())
+		return;
 	Device.dwFrame += 1;
 
 
@@ -216,7 +218,7 @@ void CEngineApp::LoadForceFinish()
 void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 {
 	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
-	if (GLoadingScreen && isLoadingStagesEnabled)
+	if (GLoadingScreen && isLoadingStagesEnabled && g_AppInfo.IsPrimaryThread())
 	{
 		GLoadingScreen->SetStageTitle(_ls_title);
 	}
@@ -310,7 +312,16 @@ void gen_logo_name(string_path& dest, const char* level_name, int num)
 void CEngineApp::Level_Set(u32 L)
 {
 	if (L >= Levels.size())	return;
-	FS.get_path("$level$")->_set(Levels[L].folder);
+
+	FS_Path* LevelPath = FS.get_path("$level$");
+	if (LevelPath->m_Add == nullptr || 0 != _stricmp(LevelPath->m_Add, Levels[L].folder))
+		LevelPath->_set(Levels[L].folder);
+
+	if (!g_AppInfo.IsPrimaryThread())
+	{
+		VERIFY(Level_Current == L);
+		return;
+	}
 
 	static string_path			path;
 
