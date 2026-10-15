@@ -122,6 +122,10 @@ public:
 		/**/
 		return			true;
 	}
+	IC const NET_Event&	front		() const
+	{
+		return queue.front();
+	}
 	IC void				get			(u16& ID, ALife::_OBJECT_ID& dest, u16& type, NET_Packet& P)
 	{
 		const NET_Event& E	= *queue.begin();
