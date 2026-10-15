@@ -30,6 +30,14 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Inertia and sway", "mass_speed_exponent", nullptr, &g_rig.mass_speed_exponent, nullptr, 1, false, 0.01f },
 	{ "Inertia and sway", "sway_damping_ratio", nullptr, &g_rig.sway_damping_ratio, nullptr, 1, false, 0.01f },
 
+	{ "Stance sway", "stance_sway_scale", "stance_sway_scale", &g_rig.stance_sway_scale, nullptr, 1, false, 0.01f },
+	{ "Stance sway", "stance_sway_crouch", "stance_sway_crouch", &g_rig.stance_sway_crouch, nullptr, 1, false, 0.01f },
+	{ "Stance sway", "stance_sway_smooth", "stance_sway_smooth", &g_rig.stance_sway_smooth, nullptr, 1, false, 0.005f },
+	{ "Stance sway", "stance_sway_inertia", "stance_sway_inertia", &g_rig.stance_sway_inertia, nullptr, 1, false, 0.005f },
+	{ "Stance sway", "stance_sway_damping", "stance_sway_damping", &g_rig.stance_sway_damping, nullptr, 1, false, 0.01f },
+	{ "Stance sway", "stance_sway_pitch", "stance_sway_pitch", &g_rig.stance_sway_pitch, nullptr, 1, false, 0.05f },
+	{ "Stance sway", "stance_sway_max", "stance_sway_max", &g_rig.stance_sway_max, nullptr, 1, false, 0.001f },
+
 	{ "Animation transitions", "hud_inertialization", nullptr, &g_rig.hud_inertialization, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "idle_fade", "idle_fade", &g_rig.idle_fade, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "additive_blend_in", "additive_blend_in", &g_rig.additive_blend_in, nullptr, 1, false, 0.005f },
@@ -50,6 +58,18 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Aim reload", "aim_reload_hud_push_pos", "aim_reload_hud_push_pos", &g_rig.aim_reload_hud_push_pos.x, nullptr, 3, false, 0.0005f },
 	{ "Aim reload", "aim_reload_push_inertia", "aim_reload_push_inertia", &g_rig.aim_reload_push_inertia, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_drop_inertia_out", "aim_reload_drop_inertia_out", &g_rig.aim_reload_drop_inertia_out, nullptr, 1, false, 0.005f },
+
+	{ "Carry pose", "crouch_hud_offset_pos", "crouch_hud_offset_pos", &g_rig.crouch_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Carry pose", "crouch_hud_offset_rot", "crouch_hud_offset_rot", &g_rig.crouch_hud_offset_rot.x, nullptr, 3, false, 0.05f },
+	{ "Carry pose", "crouch_pose_inertia", "crouch_pose_inertia", &g_rig.crouch_pose_inertia, nullptr, 1, false, 0.005f },
+	{ "Carry pose", "crouch_pose_inertia_out", "crouch_pose_inertia_out", &g_rig.crouch_pose_inertia_out, nullptr, 1, false, 0.005f },
+	{ "Carry pose", "crouch_pose_delay", "crouch_pose_delay", &g_rig.crouch_pose_delay, nullptr, 1, false, 0.005f },
+	{ "Carry pose", "walk_hud_offset_pos", "walk_hud_offset_pos", &g_rig.walk_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Carry pose", "walk_hud_offset_rot", "walk_hud_offset_rot", &g_rig.walk_hud_offset_rot.x, nullptr, 3, false, 0.05f },
+	{ "Carry pose", "walk_pose_delay", "walk_pose_delay", &g_rig.walk_pose_delay, nullptr, 1, false, 0.05f },
+	{ "Carry pose", "walk_pose_inertia", "walk_pose_inertia", &g_rig.walk_pose_inertia, nullptr, 1, false, 0.005f },
+	{ "Carry pose", "walk_pose_inertia_out", "walk_pose_inertia_out", &g_rig.walk_pose_inertia_out, nullptr, 1, false, 0.005f },
+	{ "Carry pose", "carry_pose_damping", "carry_pose_damping", &g_rig.carry_pose_damping, nullptr, 1, false, 0.01f },
 
 	{ "Shot animation", "shot_anim_variation", "shot_anim_variation", &g_rig.shot_anim_variation, nullptr, 1, false, 0.01f },
 	{ "Shot animation", "shot_anim_twist", "shot_anim_twist", &g_rig.shot_anim_twist, nullptr, 1, false, 0.01f },
