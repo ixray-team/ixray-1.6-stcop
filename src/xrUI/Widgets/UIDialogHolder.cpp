@@ -245,7 +245,10 @@ void CDialogHolder::StartDialog(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	if (pDialog && pDialog->NeedCenterCursor())
 	{
 		GetUICursor().SetUICursorPosition	(Fvector2().set(512.0f,384.0f));
-		SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+		if (!Core.ParamsData.test(ECoreParams::autotest))
+		{
+			SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+		}
 	}
 	StartMenu(pDialog, bDoHideIndicators);
 }
