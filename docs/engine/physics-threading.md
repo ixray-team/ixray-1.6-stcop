@@ -1,14 +1,26 @@
 # Physics threading
 
-`CPHWorld::Step` runs on the physics owner thread, normally `GameThread` when `mt_physics` is enabled. It uses the shared task scheduler for read-only spatial queries and independent ODE worlds. Worker tasks never call `CPHObject::Collide`, triangle callbacks, debug drawing or game code.
+`CPHWorld::Step` runs on the physics owner thread, normally `GameThread` when `mt_physics` is enabled. It uses the shared task scheduler for spatial queries, static triangle narrowphase on private geometry copies, and independent ODE worlds. Worker tasks never call `CPHObject::Collide`, game triangle callbacks, debug drawing or game code.
 
 ## Collision order
 
 The owner thread walks the live `m_objects` list in its original order. For each object it executes the complete virtual `Collide`: character initialization, ray motions, dynamic collision, static collision, material processing, callbacks, joint creation and dirty-flag updates. Newly activated objects remain eligible for the same live traversal. Static shells and sleeping objects are filtered by their current flags, without snapshot indices.
 
-Narrowphase remains sequential because the triangle collider changes geometry userdata (`pushing_neg`, `neg_tri`, `last_pos`, `tri_material`) and invokes game callbacks. Precomputing all contacts and applying them later changes these dependencies even with object locks. Ray-motion geometry is configured and consumed immediately, so no deferred pair retains a pointer to a reused ray.
+Dynamic narrowphase and contact application remain sequential. Ray-motion geometry is configured and consumed immediately, so no deferred pair retains a pointer to a reused ray. Static narrowphase is prefetched as described below; it never changes the live geometry or userdata on a worker.
 
-The contact buffer is local to each `CollideIntoGroup` call. Its lifetime ends after applying that pair. The level owns one triangle collider, and its scratch storage is used only by the owner thread. No worker-local triangle colliders or whole-step contact arrays are retained.
+The ordinary contact buffer is local to each `CollideIntoGroup` call. Its lifetime ends after applying that pair. The level's triangle collider remains exclusive to the owner; each static worker has a separate collider and query scratch. No whole-step contact arrays are retained.
+
+## Static narrowphase
+
+For each collision window, the owner captures at most 32 supported primitive leaves (sphere, box, custom cylinder). It traverses spaces and transforms, computes each leaf's world pose using ODE's transform multiplication, and prepares private ODE shapes and detached bodies. Body rotation is copied exactly after the ODE setter to avoid quaternion normalization changing the collision matrix. The collider reads the cloned pose, dimensions and linear velocity, and writes a private copy of geometry userdata, including triangle history. The static model, vertices, triangles and material flags are read-only while these tasks run.
+
+Up to eight workers fetch primitive jobs dynamically and generate contacts with their own `dcTriListCollider`. They call its primitive methods directly, avoiding ODE's shared lazy collider dispatch table and temporary modifications of live transform children. The owner waits for completion, then executes the original live object traversal. At the actual static leaf collision, it checks the spatial owner's identity, body identity, exact pose, dimensions, linear velocity and original userdata/history before using the cached result. An earlier dynamic collision or callback that changed these inputs causes an ordinary serial collision instead. Unsupported shapes, arbitrary triangle callbacks, deep hierarchies and leaves outside the bounded window also use that path.
+
+Game initialization explicitly admits only the default `ContactShotMark` and `CharacterContactShotMark` callbacks. They create effects without modifying collision inputs. Workers record their triangle/contact arguments; matching results replay these callbacks on the owner in their original order before `ApplyContacts`. Contacts are remapped to live geometry before replay and application; ODE's enclosing transform and argument-reversal handling still executes normally. Custom triangle callbacks always run through the ordinary collider. Object contact callbacks, materials, island merges, wakeups, joint creation and virtual character collision initialization retain their original owner-thread order.
+
+Each speculative leaf has 128 contact slots and 128 callback-event slots, with two triangle-history copies limited to 4096 triangle IDs. Contact truncation, event overflow or a larger triangle query invalidates the whole result; partial contacts are never applied, and the original collider recomputes them with its normal budget. Worker scratch above 4096 entries is released after each job, and oversized temporary history capacity is released after each window. Query allocation may transiently exceed that bound before detecting overflow; the normal serial collider still handles unrestricted scenes. Pools are bounded by 32 leaves and eight workers, retained for reuse, and released when narrowphase prefetch is disabled, physics becomes serial, or the world is destroyed. This bounds speculative storage independently of the total number of physics objects.
+
+In Debug, workers skip global triangle counters and drawing. Accepted results update the live saved-triangle count on the owner; detailed per-triangle counters describe only the ordinary serial path. Enabling any physics debug draw flag selects the ordinary static collider for complete visualization and counters.
 
 ## Bounded broadphase
 
@@ -42,16 +54,19 @@ The queue holds at most 64 owner pointers (512 bytes of pointer payload on x64),
 | `ph_threads 1` | Serial queries and solver; original live collision order |
 | `ph_threads 2` ... `64` | Requested task count, limited by scheduler concurrency |
 | `ph_parallel_broadphase false` | Disable query prefetch independently |
+| `ph_parallel_narrowphase true` / `false` | Enable (default) or disable static narrowphase prefetch independently |
 | `ph_parallel_islands false` | Disable parallel island stepping independently |
 | `ph_scheduler_overlap true` / `false` | Enable (default) or disable explicitly admitted scheduler work during the solver |
 
-Profiler zones: `PH Collide Collect`, `PH Collide Apply`, `PH Island Step`, `PH Island Step Serial`, and `Physics World Step`. The Apply zone includes sequential narrowphase. Measure the wall time of the complete physics step and frame, including p95/p99, rather than summing concurrent zone durations.
+Profiler zones: `PH Collide`, `PH Collide Prefetch`, `PH Collide Collect`, `PH Collide Snapshot`, `PH Collide Narrowphase`, `PH Static Collision Job`, `PH Static Cache Hit`, `PH Static Narrowphase Serial`, `PH Collide Apply`, `PH Collide Dynamic Apply`, `PH Collide Static Apply`, `PH Island Step`, `PH Island Step Serial`, and `Physics World Step`. `PH Collide` measures collision wall time on the owner, and `PH Collide Prefetch` includes snapshot preparation, task dispatch and the completion wait. `PH Collide Apply` still contains dynamic narrowphase, cache validation, callback replay and joint creation. It is expected to remain on the owner thread. Actual triangle work should appear under worker `PH Collide Narrowphase` zones, with `PH Static Cache Hit` recording results accepted on the owner. `PH Static Narrowphase Serial` shows ordinary leaf collision calls, including unsupported or invalidated cached work.
+
+Compare `ph_parallel_narrowphase false` and `true` with the same scene, thread count and broadphase/island settings. Measure the wall time of the complete physics step and frame, including p95/p99, rather than summing concurrent zone durations. The supplied Tracy CSV before this change reports 6422.23 ms in `PH Collide Apply` across 1233 frames (about 5.21 ms/frame), 14470.34 ms in `CPHWorld::OnFrame` (11.74 ms/frame), and 17152.22 ms summed across `PH Collide Collect` workers. The CSV contains aggregate statistics, so it cannot establish worker wall time, cache coverage or a speedup from this change. The new static narrowphase path has not been built or run at the user's request.
 
 Overlap zones are `Scheduler Physics Independent` and `Vision Physics Independent`. Compare `ph_scheduler_overlap false` and `true` with the same scene and thread count. The solver wall-time zone includes the owner's independent work and wait; do not add that time to concurrent island durations. Check visibility updates, pause/unpause, level reload and serial mode as well as timing. The scheduler-overlap changes have not been built or run at the user's request.
 
 Runtime coverage should include a dense pile, ray-motion objects, sleeping shells, ladders, passable materials and Debug visualization. Compilation alone does not establish scene-wide equivalence or a performance gain.
 
-### Runtime check before scheduler overlap, October 15, 2026
+### Runtime check before scheduler overlap and static narrowphase prefetch, October 15, 2026
 
 The rebuilt engine was run with `D:\ixray-team\cop` as its working directory and the installed addons. A temporary filesystem configuration beside the game's `fsgame.ltx` redirected only `$app_data_root$` to separate test profiles. The filesystem configuration's directory determines `$fs_root$`, so moving it into the build directory changes archive mount paths even when the process working directory is correct.
 

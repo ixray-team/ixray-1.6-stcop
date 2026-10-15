@@ -3,6 +3,7 @@
 #include "PHUpdateObject.h"
 #include "IPHWorld.h"
 #include "physics_scripted.h"
+#include "PHStaticCollisionCache.h"
 #include "../xrEngine/pure.h"
 // refs
 struct	SGameMtlPair;
@@ -52,6 +53,7 @@ class CPHWorld	:	public	pureFrame,
 	xr_vector<SPHCollisionQuery> CollisionQueries;
 	SPHCollideContext SerialCollideContext;
 	xr_task_group PhysicsTasks;
+	xr_unique_ptr<CPHStaticCollisionCache> StaticCollisionCache;
 	bool IsPhysicsPhaseActive = false;
 	bool IsStepping = false;
 
@@ -65,6 +67,8 @@ class CPHWorld	:	public	pureFrame,
 
 public:
 	static SPHCollideContext& GetCollideContext();
+	void SetParallelStaticCallbacks(ContactCallbackFun* Shell, ContactCallbackFun* Character);
+	bool TryCollideStaticCached(dxGeom* Mesh, dxGeom* Primitive, int Flags, dContactGeom* Contacts, int Stride, int& Count);
 	u64							m_steps_num;
 
 private:

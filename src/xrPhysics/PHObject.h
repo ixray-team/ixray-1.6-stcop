@@ -116,7 +116,7 @@ public:
 			void			collision_dynamic_disable();
 virtual		void			ClearRecentlyDeactivated		()										{;}		
 virtual		void			Collide							()										;
-			void PrepareCollisionQuery(SPHCollisionQuery& Query) const;
+void PrepareCollisionQuery(SPHCollisionQuery& Query);
 virtual		void			near_callback					(CPHObject* obj)						{;}
 virtual		void			RMotionsQuery					(qResultVec	&res)						{;}
 virtual		CPHMoveStorage*	MoveStorage						()										{return NULL;}

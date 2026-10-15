@@ -12,6 +12,7 @@
 #include "HUDManager.h"
 
 #include "../xrPhysics/IPHWorld.h"
+#include "../xrPhysics/PHStaticCollisionCache.h"
 
 
 #include "PHCommander.h"
@@ -149,6 +150,7 @@ bool CLevel::net_start_client4()
 
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
 		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
+		ConfigureParallelStaticCallbacks(ContactShotMark, CharacterContactShotMark);
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled

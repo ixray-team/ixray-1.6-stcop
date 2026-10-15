@@ -194,6 +194,7 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 	ContactGroup = dJointGroupCreate(0);
 	dWorldSetGravity(phWorld, 0, -Gravity(), 0);
 	Mesh.Create(0, phWorld);
+	StaticCollisionCache = xr_make_unique<CPHStaticCollisionCache>(Mesh.GetGeom());
 
 	dWorldSetERP(phWorld, Erp(world_spring, world_damping));
 	dWorldSetCFM(phWorld, Cfm(world_spring, world_damping));
@@ -219,6 +220,7 @@ void CPHWorld::Destroy()
 	Engine.Sheduler.ProcessPhysicsIndependent();
 	CollisionQueries.clear();
 	SerialCollideContext.Spatial.clear();
+	StaticCollisionCache.reset();
 	Mesh.Destroy();
 
 #ifdef DEBUG
@@ -608,33 +610,57 @@ SPHCollideContext& CPHWorld::GetCollideContext()
 	return ph_world->SerialCollideContext;
 }
 
+void CPHWorld::SetParallelStaticCallbacks(ContactCallbackFun* Shell, ContactCallbackFun* Character)
+{
+	if (StaticCollisionCache)
+	{
+		StaticCollisionCache->SetCallbacks(Shell, Character);
+	}
+}
+
+bool CPHWorld::TryCollideStaticCached(dxGeom* MeshGeometry, dxGeom* Primitive, int Flags, dContactGeom* Contacts, int Stride, int& Count)
+{
+	return StaticCollisionCache && StaticCollisionCache->TryCollide(MeshGeometry, Primitive, Flags, Contacts, Stride, Count);
+}
+
 void CPHWorld::CollectCollisionQueries(u32 Workers)
 {
+	PROF_EVENT("PH Collide Prefetch");
 	xr_atomic_u32 NextQuery(0);
 	const u32 Count = (u32)CollisionQueries.size();
-	for (SPHCollisionQuery& Query : CollisionQueries)
+	const bool CollectBroadphase = g_PhysicsParallelBroadphase;
+	if (CollectBroadphase)
 	{
-		Query.Spatial.reserve(PhysicsExecution::MaxQueryResults);
-	}
-	const auto CollectLambda = [this, &NextQuery, Count]()
-	{
-		PROF_EVENT("PH Collide Collect");
-		for (;;)
+		for (SPHCollisionQuery& Query : CollisionQueries)
 		{
-			const u32 Index = NextQuery.fetch_add(1);
-			if (Index >= Count)
-			{
-				break;
-			}
-			SPHCollisionQuery& Query = CollisionQueries[Index];
-			Query.IsComplete = g_SpatialSpacePhysic->QueryBoxLimited(Query.Spatial, ESPATIAL_TYPE::PHYSIC, Query.Bounds, PhysicsExecution::MaxQueryResults, Query.Revision);
+			Query.Spatial.reserve(PhysicsExecution::MaxQueryResults);
 		}
-	};
-	for (u32 Worker = 0; Worker < std::min(Workers, Count); ++Worker)
+	}
+	const u32 NarrowphaseWorkers = StaticCollisionCache->Prepare(CollisionQueries, Workers);
+	const u32 TaskCount = std::max(CollectBroadphase ? std::min(Workers, Count) : 0u, NarrowphaseWorkers);
+	PhysicsExecution::TaskWaitScope WaitForQueries(PhysicsTasks);
+	for (u32 Worker = 0; Worker < TaskCount; ++Worker)
 	{
+		const auto CollectLambda = [this, &NextQuery, Count, Worker, CollectBroadphase]()
+		{
+			if (CollectBroadphase)
+			{
+				PROF_EVENT("PH Collide Collect");
+				for (;;)
+				{
+					const u32 Index = NextQuery.fetch_add(1);
+					if (Index >= Count)
+					{
+						break;
+					}
+					SPHCollisionQuery& Query = CollisionQueries[Index];
+					Query.IsComplete = g_SpatialSpacePhysic->QueryBoxLimited(Query.Spatial, ESPATIAL_TYPE::PHYSIC, Query.Bounds, PhysicsExecution::MaxQueryResults, Query.Revision);
+				}
+			}
+			StaticCollisionCache->RunWorker(Worker);
+		};
 		PhysicsTasks.run(CollectLambda);
 	}
-	PhysicsTasks.wait();
 }
 
 void CPHWorld::ProcessCollisions()
@@ -643,12 +669,14 @@ void CPHWorld::ProcessCollisions()
 	{
 		return;
 	}
+	PROF_EVENT("PH Collide");
 	PhysicsExecution::PhaseScope Phase(IsPhysicsPhaseActive);
-	const u32 Workers = g_PhysicsParallelBroadphase && m_objects.Count() >= 8 ? PhysicsExecution::WorkerCount() : 1;
+	const u32 Workers = (g_PhysicsParallelBroadphase || g_PhysicsParallelNarrowphase) && m_objects.Count() >= 8 ? PhysicsExecution::WorkerCount() : 1;
 	const bool IsParallel = Workers > 1;
 	if (!IsParallel)
 	{
 		xr_vector<SPHCollisionQuery>().swap(CollisionQueries);
+		StaticCollisionCache->EndBatch(true);
 	}
 
 	// Keep the live iterator: callbacks can wake objects or remove them.
@@ -688,8 +716,8 @@ void CPHWorld::ProcessCollisions()
 #ifdef DEBUG
 			debug_output().DBG_ObjBeforeCollision(Object);
 #endif
-			// Narrowphase, materials, callbacks, dirty flags and activation retain
-			// their original ordering. Ray motions are consumed immediately.
+			// Apply prefetched static contacts in the original live collision order.
+			// Dynamic contacts, callbacks and ray motions execute on the owner.
 			Object->Collide();
 #ifdef DEBUG
 			debug_output().DBG_ObjAfterCollision(Object);
@@ -701,7 +729,9 @@ void CPHWorld::ProcessCollisions()
 		{
 			Query.Spatial.clear();
 			Query.Owner.reset();
+			Query.Geometry = nullptr;
 		}
+		StaticCollisionCache->EndBatch();
 	}
 	SerialCollideContext.Spatial.clear();
 	if (SerialCollideContext.Spatial.capacity() > PhysicsExecution::MaxQueryResults)

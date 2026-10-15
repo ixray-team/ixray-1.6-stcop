@@ -2,7 +2,7 @@ project(xrPhysics)
 set(XPH_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XPH_SOURCE_ALL_FILES
+file(GLOB_RECURSE XPH_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )

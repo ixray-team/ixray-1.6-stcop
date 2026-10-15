@@ -2,6 +2,7 @@
 #ifndef __DCTRILISTCOLLIDER_INCLUDED__
 #define __DCTRILISTCOLLIDER_INCLUDED__
 #include "dcTriangle.h"
+#include "../xrCore/Collision/xrCDB.h"
 struct	dxGeom;
 struct	dxTriList;
 enum{
@@ -17,6 +18,7 @@ class dcTriListCollider
 {
 	dxGeom* Geometry;	// The geom object
 	dxTriList* GeomData;	// Buffered pointer to classdata
+	CDB::COLLIDER QueryCollider;
 
 	xr_vector<Triangle> 		pos_tries			;
 	xr_vector<Triangle> 		neg_tries			;
@@ -25,6 +27,7 @@ class dcTriListCollider
 public:
 	dcTriListCollider(dxGeom* Geometry);
 	~dcTriListCollider();
+	void TrimScratch(u32 Limit);
 	int CollideBox(dxGeom* Box, int Flags, dContactGeom* Contact, int Stride);
 	int CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride);
 	int CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom* Contacts, int Stride);

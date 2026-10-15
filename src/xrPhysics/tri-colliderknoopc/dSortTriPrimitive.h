@@ -7,6 +7,7 @@
 #include "../MathUtils.h"
 #include "../console_vars.h"
 #include "../PHWorld.h"
+#include "../PHStaticCollisionCache.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrEngine/GameMtlLib.h"
 #ifdef DEBUG
@@ -99,17 +100,23 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 		Fvector aabb; aabb.set(AABB);
 		aabb.mul(ph_console::ph_tri_query_ex_aabb_rate);
 		///////////////////////////////////////////////////////////////////////////////////////////////
-		thread_local CDB::COLLIDER XRC;
+		CDB::COLLIDER& XRC = QueryCollider;
 		XRC.box_options(0);
 		//VERIFY( g_pGameLevel );
 		XRC.box_query(inl_ph_world().ObjectSpace().GetStaticModel(), cast_fv(p), aabb);
+		if (!AcceptParallelStaticTriangleCount((size_t)XRC.r_count()))
+		{
+			return 0;
+		}
 
 		CDB::RESULT* R_begin = XRC.r_begin();
 		CDB::RESULT* R_end = XRC.r_end();
 #ifdef DEBUG
-
-		debug_output().dbg_total_saved_tries() -= (u32)data->cashed_tries.size();
-		debug_output().dbg_new_queries_per_step()++;
+		if (!IsParallelStaticCollision())
+		{
+			debug_output().dbg_total_saved_tries() -= (u32)data->cashed_tries.size();
+			debug_output().dbg_new_queries_per_step()++;
+		}
 #endif
 		data->cashed_tries.resize(0);
 		for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
@@ -117,14 +124,19 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 			data->cashed_tries.push_back(Res->id);
 		}
 #ifdef DEBUG
-		debug_output().dbg_total_saved_tries() += (u32)data->cashed_tries.size();
+		if (!IsParallelStaticCollision())
+		{
+			debug_output().dbg_total_saved_tries() += (u32)data->cashed_tries.size();
+		}
 #endif
 		data->last_aabb_pos.set(cast_fv(p));
 		data->last_aabb_size.set(aabb);
 	}
 #ifdef DEBUG
-	else
+	else if (!IsParallelStaticCollision())
+	{
 		debug_output().dbg_reused_queries_per_step()++;
+	}
 #endif
 ///////////////////////////////////////////////////////////////////////////////////////////////	
 	int			ret	=	0;
@@ -135,8 +147,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 	bool	intersect	=	false	;
 
 #ifdef DEBUG
-	if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriTestAABB))
-		debug_output().DBG_DrawAABB(cast_fv(p), AABB, color_xrgb(0, 0, 255));
+	if (!IsParallelStaticCollision())
+	{
+		if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriTestAABB))
+			debug_output().DBG_DrawAABB(cast_fv(p), AABB, color_xrgb(0, 0, 255));
+	}
 #endif
 
 
@@ -165,8 +180,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 		}
 
 #ifdef DEBUG
-		if (debug_output().ph_dbg_draw_mask().test(phDbgDrawSavedTries))
-			debug_output().DBG_DrawTri(neg_tri.T, V_array.data(), color_xrgb(255, 0, 0));
+		if (!IsParallelStaticCollision())
+		{
+			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawSavedTries))
+				debug_output().DBG_DrawTri(neg_tri.T, V_array.data(), color_xrgb(255, 0, 0));
+		}
 #endif
 
 	}
@@ -185,8 +203,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 		}
 
 #ifdef DEBUG
-		if (debug_output().ph_dbg_draw_mask().test(phDbgDrawSavedTries))
-			debug_output().DBG_DrawTri(b_neg_tri.T, V_array.data(), color_xrgb(0, 0, 255));
+		if (!IsParallelStaticCollision())
+		{
+			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawSavedTries))
+				debug_output().DBG_DrawTri(b_neg_tri.T, V_array.data(), color_xrgb(0, 0, 255));
+		}
 #endif
 
 		}
@@ -198,7 +219,10 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 	for (I=B; I!=E; ++I)
 	{
 #ifdef DEBUG
-		debug_output().dbg_saved_tries_for_active_objects()++;
+		if (!IsParallelStaticCollision())
+		{
+			debug_output().dbg_saved_tries_for_active_objects()++;
+		}
 #endif
 		//if(ignored_tries[I-B])continue;
 		CDB::TRI& Tri = T_array[*I];
@@ -207,16 +231,22 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 		if(!aabb_tri_aabb(Point(p),Point((float*)&AABB),vertices))
 																continue;
 #ifdef DEBUG
-		if (debug_output().ph_dbg_draw_mask().test(phDBgDrawIntersectedTries))
-			debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 255, 0));
-		debug_output().dbg_tries_num()++;
+		if (!IsParallelStaticCollision())
+		{
+			if (debug_output().ph_dbg_draw_mask().test(phDBgDrawIntersectedTries))
+				debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 255, 0));
+			debug_output().dbg_tries_num()++;
+		}
 #endif
 		Triangle	tri;	
 		CalculateTri(&Tri,p,tri,vertices);
 		if(tri.dist<0.f){
 #ifdef DEBUG
-			if (debug_output().ph_dbg_draw_mask().test(phDBgDrawNegativeTries))
-				debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 0, 255));
+			if (!IsParallelStaticCollision())
+			{
+				if (debug_output().ph_dbg_draw_mask().test(phDBgDrawNegativeTries))
+					debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 0, 255));
+			}
 #endif
 			float last_pos_dist=dDOT(last_pos,tri.norm)- tri.pos;
 #ifdef _M_X64
@@ -228,8 +258,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 				if(__aabb_tri(Point(p),Point((float*)&AABB),vertices))
 				{
 #ifdef DEBUG
-					if (debug_output().ph_dbg_draw_mask().test(phDBgDrawTriesChangesSign))
-						debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 255, 0));
+					if (!IsParallelStaticCollision())
+					{
+						if (debug_output().ph_dbg_draw_mask().test(phDBgDrawTriesChangesSign))
+							debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(0, 255, 0));
+					}
 #endif
 					SGameMtl* material=GMLibrary().GetMaterialByIdx(Tri.material);
 					VERIFY( material );
@@ -246,14 +279,20 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 						if( !no_last_pos && !b_passable )
 						{
 #ifdef DEBUG
-							if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriTrace))
-								debug_output().DBG_DrawLine(cast_fv(last_pos), cast_fv(p), color_xrgb(255, 0, 255));
+							if (!IsParallelStaticCollision())
+							{
+								if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriTrace))
+									debug_output().DBG_DrawLine(cast_fv(last_pos), cast_fv(p), color_xrgb(255, 0, 255));
+							}
 #endif
 							dVector3 tri_point;
 							PlanePoint(tri,last_pos,p,last_pos_dist,tri_point);
 #ifdef DEBUG
-							if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriPoint))
-								debug_output().DBG_DrawPoint(cast_fv(tri_point), 0.01f, color_xrgb(255, 0, 255));
+							if (!IsParallelStaticCollision())
+							{
+								if (debug_output().ph_dbg_draw_mask().test(phDbgDrawTriPoint))
+									debug_output().DBG_DrawPoint(cast_fv(tri_point), 0.01f, color_xrgb(255, 0, 255));
+							}
 #endif
 							bool was_intersect = intersect;
 							intersect=intersect||TriContainPoint(	
@@ -265,12 +304,15 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 							b_pased = intersect && !was_intersect;
 							gb_pased = b_pased || gb_pased;
 #ifdef	DEBUG
-							if( b_pased && debug_output().ph_dbg_draw_mask().test(phDbgDrawTriPoint) )
+							if (!IsParallelStaticCollision())
 							{
-								dVectorSet( last_pos, tri_point );
-								debug_output().DBG_OpenCashedDraw( );
-								debug_output().DBG_DrawPoint(cast_fv(tri_point), 0.01f, color_xrgb(255, 0, 255));
-								debug_output().DBG_ClosedCashedDraw( 1000000 );
+								if (b_pased && debug_output().ph_dbg_draw_mask().test(phDbgDrawTriPoint))
+								{
+									dVectorSet(last_pos, tri_point);
+									debug_output().DBG_OpenCashedDraw();
+									debug_output().DBG_DrawPoint(cast_fv(tri_point), 0.01f, color_xrgb(255, 0, 255));
+									debug_output().DBG_ClosedCashedDraw(1000000);
+								}
 							}
 #endif
 						}
@@ -318,11 +360,21 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 		}
 		else{
 #ifdef DEBUG
-			if (debug_output().ph_dbg_draw_mask().test(phDBgDrawPositiveTries))
-				debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(255, 0, 0));
-#endif	
-				if(ret>flags-10) 
-							continue;
+			if (!IsParallelStaticCollision())
+			{
+				if (debug_output().ph_dbg_draw_mask().test(phDBgDrawPositiveTries))
+					debug_output().DBG_DrawTri(&Tri, V_array.data(), color_xrgb(255, 0, 0));
+			}
+#endif
+			if (ret > flags - 10)
+			{
+				MarkParallelStaticCollisionOverflow();
+				if (IsParallelStaticCollision())
+				{
+					return 0;
+				}
+				continue;
+			}
 				if(!b_pushing&&(!intersect||no_last_pos))
 					ret+=primitive.Collide(
 					vertices[0],
@@ -436,7 +488,11 @@ IC int dcTriListCollider::dSortTriPrimitiveCollide (
 					b_neg_tri.dist,
 					o1,o2,flags,
 					CONTACT(contact,*pushing_neg ? ret * skip : 0),
-					skip);	
+					skip);
+			else
+			{
+				MarkParallelStaticCollisionOverflow();
+			}
 			*pushing_b_neg=!!bret;
 			if(*pushing_neg)ret+=bret;
 			else if(*pushing_b_neg)ret=bret;

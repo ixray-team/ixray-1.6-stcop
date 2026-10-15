@@ -2,6 +2,7 @@
 
 #include "EditorLevel.h"
 #include "../xrPhysics/IPHWorld.h"
+#include "../xrPhysics/PHStaticCollisionCache.h"
 #include "PHCommander.h"
 #include "physics_game.h"
 #include "game_cl_base.h"
@@ -112,6 +113,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
 		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
+		ConfigureParallelStaticCallbacks(ContactShotMark, CharacterContactShotMark);
 
 
 		// Send network to single or multithreaded mode

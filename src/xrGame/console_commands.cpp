@@ -2891,6 +2891,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_PHIterations, "ph_iterations");
 	CMD4(CCC_Integer, "ph_threads", &phThreads, 0, 64);
 	CMD2(CCC_Boolean, "ph_parallel_broadphase", &g_PhysicsParallelBroadphase);
+	CMD2(CCC_Boolean, "ph_parallel_narrowphase", &g_PhysicsParallelNarrowphase);
 	CMD2(CCC_Boolean, "ph_parallel_islands", &g_PhysicsParallelIslands);
 	CMD2(CCC_Boolean, "ph_scheduler_overlap", &g_SchedulerPhysicsOverlap);
 

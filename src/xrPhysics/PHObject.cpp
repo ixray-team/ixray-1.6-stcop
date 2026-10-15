@@ -296,9 +296,10 @@ void CPHUpdateObject::Deactivate()
 }
 
 
-void CPHObject::PrepareCollisionQuery(SPHCollisionQuery& Query) const
+void CPHObject::PrepareCollisionQuery(SPHCollisionQuery& Query)
 {
 	Query.Owner = SpatialComponent;
+	Query.Geometry = g_PhysicsParallelNarrowphase && !m_flags.test(fl_collision_disable) && CPHCollideValidator::DoCollideStatic(*this) ? dSpacedGeom() : nullptr;
 	Query.Bounds.setb(SpatialComponent->sphere.P, AABB);
 	Query.Spatial.clear();
 	Query.IsComplete = false;

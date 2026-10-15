@@ -59,6 +59,12 @@ inline bool ValidateCollision(dxGeom* o1, dxGeom* o2){
 
 int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contact, int Stride) throw()
 {
+	int CachedCount = 0;
+	if (ph_world && ph_world->TryCollideStaticCached(TriList, Sphere, Flags, Contact, Stride, CachedCount))
+	{
+		return CachedCount;
+	}
+	PROF_EVENT("PH Static Narrowphase Serial");
 
 	if (ValidateCollision(Sphere, TriList)){
 
@@ -74,6 +80,12 @@ int dCollideSTL(dxGeom* TriList, dxGeom* Sphere, int Flags, dContactGeom* Contac
 
 int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, int Stride)throw()
 {
+	int CachedCount = 0;
+	if (ph_world && ph_world->TryCollideStaticCached(TriList, Box, Flags, Contact, Stride, CachedCount))
+	{
+		return CachedCount;
+	}
+	PROF_EVENT("PH Static Narrowphase Serial");
 
 	if (ValidateCollision(Box, TriList)){
 
@@ -87,6 +99,12 @@ int dCollideBTL(dxGeom* TriList, dxGeom* Box, int Flags, dContactGeom* Contact, 
 
 int dCollideCTL(dxGeom* TriList, dxGeom* Cyl, int Flags, dContactGeom* Contact, int Stride)throw()
 {
+	int CachedCount = 0;
+	if (ph_world && ph_world->TryCollideStaticCached(TriList, Cyl, Flags, Contact, Stride, CachedCount))
+	{
+		return CachedCount;
+	}
+	PROF_EVENT("PH Static Narrowphase Serial");
 
 	if (ValidateCollision(Cyl, TriList)){
 

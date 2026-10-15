@@ -20,6 +20,26 @@ dcTriListCollider::dcTriListCollider(dxGeom* Geometry)
 
 dcTriListCollider::~dcTriListCollider() = default;
 
+void dcTriListCollider::TrimScratch(u32 Limit)
+{
+	if (QueryCollider.r_vec().capacity() > Limit)
+	{
+		xr_vector<CDB::RESULT>().swap(QueryCollider.r_vec());
+	}
+	if (pos_tries.capacity() > Limit)
+	{
+		xr_vector<Triangle>().swap(pos_tries);
+	}
+	if (neg_tries.capacity() > Limit)
+	{
+		xr_vector<Triangle>().swap(neg_tries);
+	}
+	if (gl_cl_tries_state.capacity() > Limit)
+	{
+		xr_vector<flags8>().swap(gl_cl_tries_state);
+	}
+}
+
 int dCollideBP (const dxGeom* o1, const dxGeom* o2, int flags, dContactGeom *contact, int skip);	// ODE internal function
 
 

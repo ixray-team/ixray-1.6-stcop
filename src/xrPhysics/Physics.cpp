@@ -50,6 +50,7 @@ const float			default_world_gravity							=	2*9.81f;
 /////////////////////////////////////////////////////
 int			phIterations											= 18;
 bool g_PhysicsParallelBroadphase = true;
+bool g_PhysicsParallelNarrowphase = true;
 bool g_PhysicsParallelIslands = true;
 int			phThreads												= 0;
 float		phTimefactor = 1.f;
@@ -256,7 +257,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 }
 
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
-{	
+{
+	PROF_EVENT("PH Collide Dynamic Apply");
 	CPHIsland* island1=obj1->DActiveIsland();
 	CPHIsland* island2=obj2->DActiveIsland();
 	obj2->near_callback(obj1);
@@ -271,6 +273,7 @@ void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2)
 
 void CollideStatic(dGeomID o2,CPHObject* obj2)
 {
+	PROF_EVENT("PH Collide Static Apply");
 	CPHIsland* island2=obj2->DActiveIsland();
 	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ContactGroup,island2,island2->MaxJoints());
 }

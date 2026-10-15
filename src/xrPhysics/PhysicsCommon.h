@@ -27,6 +27,7 @@ extern	XRPHYSICS_API	int			phIterations						;
 extern	XRPHYSICS_API	int			phThreads							;
 
 extern XRPHYSICS_API bool g_PhysicsParallelBroadphase;
+extern XRPHYSICS_API bool g_PhysicsParallelNarrowphase;
 extern XRPHYSICS_API bool g_PhysicsParallelIslands;
 
 struct SGameMtl;
