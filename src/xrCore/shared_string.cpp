@@ -26,9 +26,8 @@ struct str_container_impl
 		ZeroMemory(buffer, sizeof(buffer));
 	}
 
-	str_value* find(str_value* value, const char* str)
+	str_value* find_locked(str_value* value, const char* str)
 	{
-		xrSRWLockGuard guard(&rwlock, true);
 		str_value* candidate = buffer[value->dwCRC % buffer_size];
 		while (candidate)
 		{
@@ -45,12 +44,29 @@ struct str_container_impl
 		return nullptr;
 	}
 
-	void insert(str_value* value)
+	str_value* find(str_value* value, const char* str)
+	{
+		xrSRWLockGuard guard(&rwlock, true);
+		str_value* candidate = find_locked(value, str);
+		if (candidate)
+			candidate->dwReference++;
+		return candidate;
+	}
+
+	str_value* insert(str_value* value)
 	{
 		xrSRWLockGuard guard(&rwlock, false);
+		if (str_value* existing = find_locked(value, value->value))
+		{
+			existing->dwReference++;
+			return existing;
+		}
+
 		str_value** element = &buffer[value->dwCRC % buffer_size];
 		value->next = *element;
 		*element = value;
+		value->dwReference++;
+		return value;
 	}
 
 	void clean()
@@ -151,7 +167,12 @@ str_value* str_container::dock(str_c value)
 		result->value_ptr = result->value;
 #endif
 
-		impl->insert(result);
+		str_value* inserted = impl->insert(result);
+		if (inserted != result)
+		{
+			Memory.mem_free(result);
+			result = inserted;
+		}
 	}
 
 	return	result;
@@ -175,4 +196,3 @@ str_container::~str_container()
 	clean();
 	xr_delete(impl);
 }
-

@@ -57,7 +57,7 @@ class XRCORE_API shared_str
 protected:
 	void _dec() { if (!p_) return;	p_->dwReference--; 	if (0 == p_->dwReference)	p_ = nullptr; }
 public:
-	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); if (v) v->dwReference++; _dec(); p_ = v; }
+	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); _dec(); p_ = v; }  
 	void _set(shared_str const& rhs) { str_value* v = rhs.p_; if (v) v->dwReference++; _dec(); p_ = v; }
 
 	const str_value* _get()	const { return p_; }
