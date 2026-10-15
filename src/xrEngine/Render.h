@@ -22,6 +22,14 @@ class CGameFont;
 class IRHISurface;
 struct RHITextureMetadata;
 
+enum class EModelLoadState : u8
+{
+	NotRequested,
+	Loading,
+	Ready,
+	Failed
+};
+
 #ifndef _EDITOR
 extern const float fLightSmoothFactor;
 #else
@@ -295,6 +303,9 @@ public:
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{};
 	virtual void					models_Prefetch			()											{};
 	virtual void					models_Clear			(bool b_complete)							{};
+	virtual void					model_Request			(const char* name)							{};
+	virtual EModelLoadState			model_GetState			(const char* name)							{ return EModelLoadState::Ready; };
+	virtual void					models_WaitRequests		()											{};
 
 	// Occlusion culling
 	virtual bool					occ_visible				(vis_data&	V)								{return false;};

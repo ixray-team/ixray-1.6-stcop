@@ -124,6 +124,85 @@ namespace
 		bool& Target;
 		bool Previous;
 	};
+
+	thread_local bool g_ModelLoaderProfiled = false;
+
+	void MakeModelKey(string_path& Key, const char* Name)
+	{
+		xr_strcpy(Key, Name);
+		_strlwr(Key);
+		if (strext(Key))
+			*strext(Key) = 0;
+	}
+}
+
+bool CModelPool::IsAsyncLoadEnabled()
+{
+	return ps_r__common_flags.test(RFLAG_MT_MODEL_LOAD) && !Device.IsEditorMode();
+}
+
+void CModelPool::Request(const char* name)
+{
+	if (!IsAsyncLoadEnabled() || name == nullptr || name[0] == 0)
+		return;
+
+	string_path Name;
+	MakeModelKey(Name, name);
+	const shared_str Key = Name;
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		if (Models.find(Key) != Models.end())
+			return;
+	}
+	{
+		xrCriticalSectionGuard Guard(RequestedLock);
+		if (!Requested.insert(Key).second)
+			return;
+	}
+
+	RequestTasks.run([this, Key]()
+	{
+		if (!g_ModelLoaderProfiled && !g_AppInfo.IsPrimaryThread())
+		{
+			g_ModelLoaderProfiled = true;
+			PROF_REGISTER_THREAD("Model loader");
+		}
+
+		PROF_EVENT("CModelPool::Request");
+		ModelEntry* Entry = AcquireBase(*Key, nullptr);
+		Entry->Refs--;
+
+		xrCriticalSectionGuard Guard(RequestedLock);
+		Requested.erase(Key);
+	});
+}
+
+EModelLoadState CModelPool::GetState(const char* name)
+{
+	string_path Name;
+	MakeModelKey(Name, name);
+	const shared_str Key = Name;
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		auto It = Models.find(Key);
+		if (It != Models.end())
+		{
+			const ModelEntry* Entry = It->second;
+			if (!Entry->IsReady.load(std::memory_order_acquire))
+				return EModelLoadState::Loading;
+			return Entry->Model ? EModelLoadState::Ready : EModelLoadState::Failed;
+		}
+	}
+
+	xrCriticalSectionGuard Guard(RequestedLock);
+	return Requested.contains(Key) ? EModelLoadState::Loading : EModelLoadState::NotRequested;
+}
+
+void CModelPool::WaitRequests()
+{
+	PROF_EVENT("CModelPool::WaitRequests");
+	RequestTasks.wait();
+	WaitAll();
 }
 
 dxRender_Visual* CModelPool::DuplicateInstance(dxRender_Visual* V)
@@ -304,7 +383,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data)
 
 void CModelPool::Destroy()
 {
-	WaitAll();
+	WaitRequests();
 
 	// Pool
 	{
@@ -595,7 +674,7 @@ void CModelPool::Prefetch()
 
 void CModelPool::ClearPool( bool b_complete)
 {
-	WaitAll();
+	WaitRequests();
 
 	POOL Taken;
 	{
