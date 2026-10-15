@@ -136,6 +136,24 @@ namespace
 	}
 }
 
+CModelPool::LoadContext CModelPool::CaptureLoadContext()
+{
+	LoadContext Context;
+	Context.AllowChildrenDuplicate = g_AllowChildrenDuplicate;
+	return Context;
+}
+
+CModelPool::LoadContextScope::LoadContextScope(const LoadContext& Context)
+	: Previous(CaptureLoadContext())
+{
+	g_AllowChildrenDuplicate = Context.AllowChildrenDuplicate;
+}
+
+CModelPool::LoadContextScope::~LoadContextScope()
+{
+	g_AllowChildrenDuplicate = Previous.AllowChildrenDuplicate;
+}
+
 bool CModelPool::IsAsyncLoadEnabled()
 {
 	return ps_r__common_flags.test(RFLAG_MT_MODEL_LOAD) && !Device.IsEditorMode();
