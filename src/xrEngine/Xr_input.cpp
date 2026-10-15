@@ -4,6 +4,7 @@
 #include "xr_input.h"
 #include "IInputReceiver.h"
 #include "GamepadService.h"
+#include "Autotest.h"
 
 CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
@@ -692,6 +693,11 @@ void CInput::unacquire()
 
 void CInput::acquire()
 {
+	if (Autotest::Active())
+	{
+		return;
+	}
+
 	IsAcquire = true;
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, true);
 }
