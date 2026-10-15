@@ -356,7 +356,7 @@ void CPHStaticCollisionCache::SetCallbacks(ContactCallbackFun* Shell, ContactCal
 	Data->CharacterCallback = Character;
 }
 
-u32 CPHStaticCollisionCache::Prepare(const xr_vector<SPHCollisionQuery>& Queries, u32 Workers)
+u32 CPHStaticCollisionCache::Prepare(const xr_vector<SPHCollisionQuery>& Queries, u32 Count, u32 Workers)
 {
 	PROF_EVENT("PH Collide Snapshot");
 	Data->JobCount = 0;
@@ -375,8 +375,9 @@ u32 CPHStaticCollisionCache::Prepare(const xr_vector<SPHCollisionQuery>& Queries
 		return 0;
 	}
 #endif
-	for (const SPHCollisionQuery& Query : Queries)
+	for (u32 Index = 0; Index < Count; ++Index)
 	{
+		const SPHCollisionQuery& Query = Queries[Index];
 		Data->Capture(Query.Geometry, Query.Owner, nullptr, nullptr, nullptr, 0);
 	}
 	Data->WorkerCount = std::min({Workers, Data->JobCount, StaticCollisionExecution::MaxWorkers});
@@ -398,7 +399,7 @@ void CPHStaticCollisionCache::RunWorker(u32 Worker)
 	dcTriListCollider& Collider = Data->Workers[Worker]->Collider;
 	for (;;)
 	{
-		const u32 Index = Data->NextJob.fetch_add(1);
+		const u32 Index = Data->NextJob.fetch_add(1, std::memory_order_relaxed);
 		if (Index >= Data->JobCount)
 		{
 			break;

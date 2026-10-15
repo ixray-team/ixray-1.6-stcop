@@ -27,7 +27,7 @@ public:
 	explicit CPHStaticCollisionCache(dxGeom* Mesh);
 	~CPHStaticCollisionCache();
 	void SetCallbacks(ContactCallbackFun* Shell, ContactCallbackFun* Character);
-	u32 Prepare(const xr_vector<SPHCollisionQuery>& Queries, u32 Workers);
+	u32 Prepare(const xr_vector<SPHCollisionQuery>& Queries, u32 Count, u32 Workers);
 	void RunWorker(u32 Worker);
 	void EndBatch(bool Release = false);
 	bool TryCollide(dxGeom* Mesh, dxGeom* Primitive, int Flags, dContactGeom* Contacts, int Stride, int& Count);

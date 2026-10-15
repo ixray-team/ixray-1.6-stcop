@@ -5,14 +5,20 @@
 
 void CPHIsland::Step(dReal step)
 {
-	PROF_EVENT("Physics World Step");
 	if (!m_flags.is_active())
+	{
 		return;
+	}
+	PROF_EVENT("Physics World Step");
 
 	if (m_flags.is_exact_integration_prefeared() && nj < max_joint_allowed_for_exeact_integration)
-		dWorldStep(DWorld(), fixed_step);
+	{
+		dWorldStep(DWorld(), step);
+	}
 	else
-		dWorldQuickStep(DWorld(), fixed_step);
+	{
+		dWorldQuickStep(DWorld(), step);
+	}
 }
 
 void CPHIsland::Enable()

@@ -11,7 +11,14 @@
 #		define PROF_STOP_CAPTURE() OPTICK_STOP_CAPTURE();
 #		define PROF_SAVE_CAPTURE(Name) OPTICK_SAVE_CAPTURE(Name);
 #		define PROF_FRAME(Name) OPTICK_FRAME(Name);
-#		define PROF_EVENT(Name) OPTICK_EVENT(Name);
+#if USE_OPTICK
+// A guarded local static publishes each description once across worker threads.
+#define PROF_EVENT(Name)                                                                                                                                               \
+	static const ::Optick::EventDescription* const OPTICK_CONCAT(ProfilerDescription_, __LINE__) = ::Optick::CreateDescription(OPTICK_FUNC, __FILE__, __LINE__, Name); \
+	::Optick::Event OPTICK_CONCAT(ProfilerEvent_, __LINE__)(*OPTICK_CONCAT(ProfilerDescription_, __LINE__));
+#else
+#define PROF_EVENT(Name) ;
+#endif
 #		define PROF_MESSAGE(Name);
 #		define PROF_MEM_ALLOC_CAPTURE(Ptr, Size);
 #		define PROF_MEM_FREE_CAPTURE(Ptr);
@@ -52,7 +59,7 @@
 	 #ifdef defined(IXRAY_PROFILER_%NEW_PROF_NAME%) && defined(DEBUG_DRAW)
 		profiler specific logic
 	 #endif
-	 
+
 	 To keep lightweight checks like:
 	 #ifdef IXRAY_PROFILER_%PROF_NAME%
 		profiler specific logic

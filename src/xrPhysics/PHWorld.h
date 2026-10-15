@@ -4,6 +4,7 @@
 #include "IPHWorld.h"
 #include "physics_scripted.h"
 #include "PHStaticCollisionCache.h"
+#include "PHWorkerPool.h"
 #include "../xrEngine/pure.h"
 // refs
 struct	SGameMtlPair;
@@ -52,7 +53,8 @@ class CPHWorld	:	public	pureFrame,
 
 	xr_vector<SPHCollisionQuery> CollisionQueries;
 	SPHCollideContext SerialCollideContext;
-	xr_task_group PhysicsTasks;
+	CPHWorkerPool PhysicsWorkers;
+	xr_vector<CPHIsland*> SolverIslands;
 	xr_unique_ptr<CPHStaticCollisionCache> StaticCollisionCache;
 	bool IsPhysicsPhaseActive = false;
 	bool IsStepping = false;
@@ -62,7 +64,7 @@ class CPHWorld	:	public	pureFrame,
 	CObjectList*			m_level_objects;
 
 	void ProcessCollisions();
-	void CollectCollisionQueries(u32 Workers);
+	void CollectCollisionQueries(u32 Workers, u32 Count);
 	void StepIslands();
 
 public:

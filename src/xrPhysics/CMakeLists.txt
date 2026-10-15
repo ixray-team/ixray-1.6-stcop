@@ -55,6 +55,11 @@ target_compile_definitions(xrPhysics PRIVATE XRPHYSICS_EXPORTS)
 target_compile_definitions(xrPhysics PRIVATE dSINGLE)
 target_compile_definitions(xrPhysics PRIVATE _USRDLL)
 
+if(MSVC)
+	# Worker failures must unwind physics phase guards and private collision state.
+	target_compile_options(xrPhysics PRIVATE /EHsc)
+endif()
+
 # Linker list
 target_link_libraries(xrPhysics PUBLIC xrCore)
 target_link_libraries(xrPhysics PUBLIC ODE)

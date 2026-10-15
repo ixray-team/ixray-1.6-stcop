@@ -114,26 +114,15 @@ public:
 	PhaseScope& operator=(const PhaseScope&) = delete;
 };
 
-class TaskWaitScope final
-{
-	xr_task_group& Tasks;
-
-public:
-	explicit TaskWaitScope(xr_task_group& PendingTasks) : Tasks(PendingTasks) {}
-	~TaskWaitScope() { Tasks.wait(); }
-	TaskWaitScope(const TaskWaitScope&) = delete;
-	TaskWaitScope& operator=(const TaskWaitScope&) = delete;
-};
-
 static u32 WorkerCount()
 {
 	if (phThreads == 1)
 	{
 		return 1;
 	}
-	const u32 Available = (u32)xr_max_concurrency();
+	const u32 Available = std::max(1u, (u32)CPU::ID().n_threads);
 	const u32 Requested = phThreads > 0 ? (u32)phThreads : 8u;
-	return std::max(1u, std::min(Available, Requested));
+	return std::max(1u, std::min({Available, Requested, CPHWorkerPool::MaxWorkers}));
 }
 }
 
@@ -215,10 +204,11 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 
 void CPHWorld::Destroy()
 {
-	PhysicsTasks.wait();
+	PhysicsWorkers.Stop();
 	Engine.Sheduler.SetPhysicsOverlapEnabled(false);
 	Engine.Sheduler.ProcessPhysicsIndependent();
 	CollisionQueries.clear();
+	SolverIslands.clear();
 	SerialCollideContext.Spatial.clear();
 	StaticCollisionCache.reset();
 	Mesh.Destroy();
@@ -428,6 +418,10 @@ void CPHWorld::FrameStep(dReal step)
 	{
 		return;
 	}
+	if (phThreads == 1 || (!g_PhysicsParallelBroadphase && !g_PhysicsParallelNarrowphase && !g_PhysicsParallelIslands))
+	{
+		PhysicsWorkers.Stop();
+	}
 
 	if (IsFreezed())
 		return;
@@ -623,44 +617,48 @@ bool CPHWorld::TryCollideStaticCached(dxGeom* MeshGeometry, dxGeom* Primitive, i
 	return StaticCollisionCache && StaticCollisionCache->TryCollide(MeshGeometry, Primitive, Flags, Contacts, Stride, Count);
 }
 
-void CPHWorld::CollectCollisionQueries(u32 Workers)
+void CPHWorld::CollectCollisionQueries(u32 Workers, u32 Count)
 {
 	PROF_EVENT("PH Collide Prefetch");
-	xr_atomic_u32 NextQuery(0);
-	const u32 Count = (u32)CollisionQueries.size();
 	const bool CollectBroadphase = g_PhysicsParallelBroadphase;
 	if (CollectBroadphase)
 	{
-		for (SPHCollisionQuery& Query : CollisionQueries)
+		for (u32 Index = 0; Index < Count; ++Index)
 		{
-			Query.Spatial.reserve(PhysicsExecution::MaxQueryResults);
+			CollisionQueries[Index].Spatial.reserve(PhysicsExecution::MaxQueryResults);
 		}
 	}
-	const u32 NarrowphaseWorkers = StaticCollisionCache->Prepare(CollisionQueries, Workers);
-	const u32 TaskCount = std::max(CollectBroadphase ? std::min(Workers, Count) : 0u, NarrowphaseWorkers);
-	PhysicsExecution::TaskWaitScope WaitForQueries(PhysicsTasks);
-	for (u32 Worker = 0; Worker < TaskCount; ++Worker)
+	const u32 NarrowphaseWorkers = StaticCollisionCache->Prepare(CollisionQueries, Count, Workers);
+	const u32 QueryWorkers = CollectBroadphase ? std::min(Workers, (Count + 3) / 4) : 0;
+	const u32 TaskCount = std::max(QueryWorkers, NarrowphaseWorkers);
+	struct CollisionWork
 	{
-		const auto CollectLambda = [this, &NextQuery, Count, Worker, CollectBroadphase]()
+		CPHWorld& World;
+		u32 Count;
+		bool Broadphase;
+		xr_atomic_u32 NextQuery{0};
+	};
+	CollisionWork Work{*this, Count, CollectBroadphase};
+	const auto CollectLambda = [](void* Context, u32 Worker)
+	{
+		auto& Work = *static_cast<CollisionWork*>(Context);
+		if (Work.Broadphase)
 		{
-			if (CollectBroadphase)
+			PROF_EVENT("PH Collide Collect");
+			for (;;)
 			{
-				PROF_EVENT("PH Collide Collect");
-				for (;;)
+				const u32 Index = Work.NextQuery.fetch_add(1, std::memory_order_relaxed);
+				if (Index >= Work.Count)
 				{
-					const u32 Index = NextQuery.fetch_add(1);
-					if (Index >= Count)
-					{
-						break;
-					}
-					SPHCollisionQuery& Query = CollisionQueries[Index];
-					Query.IsComplete = g_SpatialSpacePhysic->QueryBoxLimited(Query.Spatial, ESPATIAL_TYPE::PHYSIC, Query.Bounds, PhysicsExecution::MaxQueryResults, Query.Revision);
+					break;
 				}
+				SPHCollisionQuery& Query = Work.World.CollisionQueries[Index];
+				Query.IsComplete = g_SpatialSpacePhysic->QueryBoxLimited(Query.Spatial, ESPATIAL_TYPE::PHYSIC, Query.Bounds, PhysicsExecution::MaxQueryResults, Query.Revision);
 			}
-			StaticCollisionCache->RunWorker(Worker);
-		};
-		PhysicsTasks.run(CollectLambda);
-	}
+		}
+		Work.World.StaticCollisionCache->RunWorker(Worker);
+	};
+	PhysicsWorkers.Run(TaskCount, CollectLambda, &Work);
 }
 
 void CPHWorld::ProcessCollisions()
@@ -673,6 +671,8 @@ void CPHWorld::ProcessCollisions()
 	PhysicsExecution::PhaseScope Phase(IsPhysicsPhaseActive);
 	const u32 Workers = (g_PhysicsParallelBroadphase || g_PhysicsParallelNarrowphase) && m_objects.Count() >= 8 ? PhysicsExecution::WorkerCount() : 1;
 	const bool IsParallel = Workers > 1;
+	const u32 BatchCapacity = IsParallel ? std::min(PhysicsExecution::MaxQueryObjects, Workers * 4) : 0;
+	CollisionQueries.resize(BatchCapacity);
 	if (!IsParallel)
 	{
 		xr_vector<SPHCollisionQuery>().swap(CollisionQueries);
@@ -685,16 +685,13 @@ void CPHWorld::ProcessCollisions()
 		u32 BatchCount = 1;
 		if (IsParallel)
 		{
-			BatchCount = std::min(PhysicsExecution::MaxQueryObjects, Workers * 4);
-			CollisionQueries.resize(BatchCount);
 			u32 Count = 0;
-			for (PH_OBJECT_I Next = Iterator; Next != m_objects.end() && Count < BatchCount; ++Next)
+			for (PH_OBJECT_I Next = Iterator; Next != m_objects.end() && Count < BatchCapacity; ++Next)
 			{
 				(*Next)->PrepareCollisionQuery(CollisionQueries[Count++]);
 			}
-			CollisionQueries.resize(Count);
 			BatchCount = Count;
-			CollectCollisionQueries(Workers);
+			CollectCollisionQueries(Workers, Count);
 		}
 
 		PROF_EVENT("PH Collide Apply");
@@ -704,12 +701,20 @@ void CPHWorld::ProcessCollisions()
 			SerialCollideContext.Query = nullptr;
 			if (IsParallel)
 			{
-				for (const SPHCollisionQuery& Query : CollisionQueries)
+				if (CollisionQueries[Index].Owner == Object->SpatialComponent)
 				{
-					if (Query.Owner == Object->SpatialComponent)
+					SerialCollideContext.Query = &CollisionQueries[Index];
+				}
+				else
+				{
+					for (u32 QueryIndex = 0; QueryIndex < BatchCount; ++QueryIndex)
 					{
-						SerialCollideContext.Query = &Query;
-						break;
+						const SPHCollisionQuery& Query = CollisionQueries[QueryIndex];
+						if (Query.Owner == Object->SpatialComponent)
+						{
+							SerialCollideContext.Query = &Query;
+							break;
+						}
 					}
 				}
 			}
@@ -746,14 +751,16 @@ void CPHWorld::StepIslands()
 	{
 		return;
 	}
+	PROF_EVENT("PH Island Solve");
 	PhysicsExecution::PhaseScope Phase(IsPhysicsPhaseActive);
-	xr_vector<CPHIsland*> Islands;
+	SolverIslands.clear();
+	SolverIslands.reserve(m_objects.Count());
 	for (CPHObject* Object : m_objects)
 	{
 		CPHIsland& Island = Object->Island();
 		if (Island.IsActive())
 		{
-			Islands.push_back(&Island);
+			SolverIslands.push_back(&Island);
 #ifdef DEBUG
 			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawObjectStatistics))
 			{
@@ -765,10 +772,10 @@ void CPHWorld::StepIslands()
 		}
 	}
 
-	const u32 Count = (u32)Islands.size();
+	const u32 Count = (u32)SolverIslands.size();
 	const u32 AvailableWorkers = g_PhysicsParallelIslands ? PhysicsExecution::WorkerCount() : 1;
 	const bool CanOverlapScheduler = Count > 0 && AvailableWorkers > 1 && g_SchedulerPhysicsOverlap && Engine.Sheduler.HasPhysicsIndependentWork();
-	const u32 Workers = Count >= 4 || CanOverlapScheduler ? std::min(AvailableWorkers, Count) : 1;
+	const u32 Workers = std::min(AvailableWorkers, Count);
 	if (Workers > 1 || CanOverlapScheduler)
 	{
 #ifdef DEBUG
@@ -782,34 +789,33 @@ void CPHWorld::StepIslands()
 		{
 			return First->nj + First->nb > Second->nj + Second->nb;
 		};
-		std::sort(Islands.begin(), Islands.end(), IslandCostLambda);
-		xr_atomic_u32 NextIsland(0);
-		const auto StepLambda = [&Islands, &NextIsland, Count]()
+		std::sort(SolverIslands.begin(), SolverIslands.end(), IslandCostLambda);
+		struct IslandWork
 		{
+			xr_vector<CPHIsland*>& Islands;
+			dReal Step;
+			xr_atomic_u32 NextIsland{0};
+		};
+		IslandWork Work{SolverIslands, fixed_step};
+		const auto StepLambda = [](void* Context, u32 Worker)
+		{
+			auto& Work = *static_cast<IslandWork*>(Context);
 			PROF_EVENT("PH Island Step");
 			for (;;)
 			{
-				const u32 Index = NextIsland.fetch_add(1);
-				if (Index >= Count)
+				const u32 Index = Work.NextIsland.fetch_add(1, std::memory_order_relaxed);
+				if (Index >= Work.Islands.size())
 				{
 					break;
 				}
-				Islands[Index]->Step(fixed_step);
+				Work.Islands[Index]->Step(Work.Step);
 			}
 		};
+		const auto IndependentLambda = [](void* Context, u32 Worker)
 		{
-			PhysicsExecution::TaskWaitScope WaitForIslands(PhysicsTasks);
-			for (u32 Worker = 0; Worker < Workers; ++Worker)
-			{
-				PhysicsTasks.run(StepLambda);
-			}
-			// Only audited game work runs here. ODE bodies and joints stay owned by
-			// the solver until the barrier below; Lua and game callbacks do not run.
-			if (CanOverlapScheduler)
-			{
-				Engine.Sheduler.ProcessPhysicsIndependent();
-			}
-		}
+			Engine.Sheduler.ProcessPhysicsIndependent();
+		};
+		PhysicsWorkers.Run(Workers, StepLambda, &Work, CanOverlapScheduler ? +IndependentLambda : nullptr);
 #ifdef DEBUG
 		for (CPHObject* Object : m_objects)
 		{
