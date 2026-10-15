@@ -228,7 +228,10 @@ bool IGame_Level::Load			(u32 dwNum)
 
 	// HUD + Environment
 	if(!g_hud)
+	{
+		PROF_EVENT("IGame_Level::Load: HUD");
 		g_hud					= (CCustomHUD*)NEW_INSTANCE	(CLSID_HUDMANAGER);
+	}
 
 	// Render-level Load
 	try {
@@ -237,12 +240,24 @@ bool IGame_Level::Load			(u32 dwNum)
 	catch (...) {
 		Msg("Level data empty: %s", temp);
 	}
-	Render->level_Load			(LL_Stream);
+	{
+		PROF_EVENT("IGame_Level::Load: render");
+		Render->level_Load			(LL_Stream);
+	}
 
 	// Objects
-	g_pGamePersistent->Environment().mods_load	();
-	R_ASSERT					(Load_GameSpecific_Before());
-	Objects.Load				();
+	{
+		PROF_EVENT("IGame_Level::Load: environment mods");
+		g_pGamePersistent->Environment().mods_load	();
+	}
+	{
+		PROF_EVENT("IGame_Level::Load: game specific");
+		R_ASSERT					(Load_GameSpecific_Before());
+	}
+	{
+		PROF_EVENT("IGame_Level::Load: objects");
+		Objects.Load				();
+	}
 
 	// Done
 	FS.r_close					( LL_Stream );
@@ -462,5 +477,3 @@ void   IGame_Level::SoundEvent_net_Relcase(CObject* obj)
 	if (!snd_Events.empty())
 		snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) {return d.source->g_object == obj; }), snd_Events.end());
 }
-
-

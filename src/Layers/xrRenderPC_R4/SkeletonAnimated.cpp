@@ -788,6 +788,7 @@ CBlend* CKinematicsAnimated::IBlend_Create()
 
 void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 {
+	PROF_EVENT(__FUNCTION__);
 	string_path fn = {};
 	if (!FS.exist(fn, "$level$", path))
 	{
@@ -823,6 +824,7 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 }
 
 void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameOgf) {
+	PROF_EVENT(__FUNCTION__);
 	string_path nm = {};
 	strcpy(nm, pathOmf);
 
@@ -852,6 +854,7 @@ void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameO
 }
 
 void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
+	PROF_EVENT(__FUNCTION__);
 	inherited::Load(N, data, dwFlags);
 
 	// Globals
@@ -901,6 +904,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 	// initialize motions
 	for (SMotionsSlot& MS : m_Motions)
 	{
+		PROF_EVENT("CKinematicsAnimated::Load: bone motions");
 		MS.bone_motions.clear();
 		MS.bone_motions.reserve(bones->size());
 		
@@ -911,7 +915,10 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 	}
 
 	// Init blend pool
-	IBlend_Startup();
+	{
+		PROF_EVENT("CKinematicsAnimated::IBlend_Startup");
+		IBlend_Startup();
+	}
 }
 
 void CKinematicsAnimated::append_motion_from_path(const char* nameOgf, const char* pathOmf)

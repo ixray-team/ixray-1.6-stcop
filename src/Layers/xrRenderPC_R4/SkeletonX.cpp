@@ -418,6 +418,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount_, u32 iOffset, u32 pCo
 
 void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 {
+	PROF_EVENT(__FUNCTION__);
 	_Load(N, data, vCount);
 	void* _verts_ = data->pointer();
 	if (progressive_mesh)
@@ -425,7 +426,10 @@ void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 	else
 		Fvisual::Load(N, data, dwFlags | VLOAD_NOVERTICES);
 	Engine.External.SetSkinningMode();
-	_DuplicateIndices(data);
+	{
+		PROF_EVENT("CSkeletonX::_DuplicateIndices");
+		_DuplicateIndices(data);
+	}
 
 	vBase = 0;
 	_Load_hw(_verts_);
@@ -433,6 +437,7 @@ void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 
 void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount) 
 {	
+	PROF_EVENT(__FUNCTION__);
 	s_bones_array_const = "sbones_array";
 	s_bones_array_const_old = "sbones_array_old";
 
@@ -818,6 +823,7 @@ ICF void _Load_hw_generic(CSkeletonX& V, void* _verts_, DeclT(&decl)[Size], Vert
 
 void CSkeletonX::_Load_hw(void* _verts_)
 {
+	PROF_EVENT(__FUNCTION__);
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
@@ -851,6 +857,7 @@ void CSkeletonX::_Load_hw(void* _verts_)
 
 void CSkeletonX::AfterLoad(CKinematics* parent, u16 child_idx)
 {
+	PROF_EVENT(__FUNCTION__);
 	SetParent(parent);
 	ChildIDX = child_idx;
 	_CollectBoneFaces();

@@ -35,6 +35,7 @@ void FProgressive::Release	()
 
 void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 {
+	PROF_EVENT(__FUNCTION__);
 	Fvisual::Load	(N,data,dwFlags);
 
 	// normal SWI

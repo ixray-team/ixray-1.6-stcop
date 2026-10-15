@@ -111,6 +111,7 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 
 dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 {
+	PROF_EVENT(__FUNCTION__);
 	R_ASSERT(V);
 	dxRender_Visual* N		= Instance_Create(V->Type);
 	N->Copy			(V);
@@ -258,6 +259,7 @@ CModelPool::~CModelPool()
 
 dxRender_Visual* CModelPool::Instance_Find(const char* N)
 {
+	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual*				Model=nullptr;
 	xr_vector<ModelDef>::iterator	I;
 	for (I=Models.begin(); I!=Models.end(); I++)

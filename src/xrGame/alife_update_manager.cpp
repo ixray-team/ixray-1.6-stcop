@@ -262,21 +262,37 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 
 void CALifeUpdateManager::new_game			(const char* save_name)
 {
+	PROF_EVENT(__FUNCTION__);
 	CActor::ResetDeathStatCarryOver();
 	g_pGamePersistent->SetLoadStageTitle("st_creating_new_game");
 	g_pGamePersistent->LoadTitle		();
 	Msg									("* Creating new game...");
 
-	unload								();
-	reload								(m_section);
-	spawns().load						(save_name);
-	graph().on_load						();
+	{
+		PROF_EVENT("new_game: unload");
+		unload								();
+	}
+	{
+		PROF_EVENT("new_game: reload");
+		reload								(m_section);
+	}
+	{
+		PROF_EVENT("new_game: spawns");
+		spawns().load						(save_name);
+	}
+	{
+		PROF_EVENT("new_game: graph on_load");
+		graph().on_load						();
+	}
 	server().PerformIDgen				(0x0000);
 	time_manager().init					(m_section);
 	VERIFY								(can_register_objects());
 	
 	can_register_objects				(false);
-	spawn_new_objects					();
+	{
+		PROF_EVENT("new_game: spawn_new_objects");
+		spawn_new_objects					();
+	}
 	can_register_objects				(true);
 
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
@@ -289,12 +305,14 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	luabind::functor<void> funct;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_new_game", funct))
 	{
+		PROF_EVENT("new_game: script callback");
 		funct((const char*)save_name);
 	}
 
 	static bool saveOnNewGame = EngineExternal()[EEngineExternalGame::EnableSaveOnNewGame];
 	if (saveOnNewGame)
 	{
+		PROF_EVENT("new_game: save");
 		save(save_name);
 	}
 }
@@ -326,7 +344,10 @@ void CALifeUpdateManager::load			(const char* game_name, bool no_assert, bool ne
 	g_pGamePersistent->SetLoadStageTitle("st_server_connecting");
 	g_pGamePersistent->LoadTitle		(true, g_pGameLevel->name());
 	extern xr_task_group level_load;
-	level_load.wait();
+	{
+		PROF_EVENT("Load Alife Simulator: wait level_load");
+		level_load.wait();
+	}
 }
 
 void CALifeUpdateManager::reload		(const char* section)
