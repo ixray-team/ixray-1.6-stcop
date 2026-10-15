@@ -25,6 +25,11 @@ void CAddonManager::CollectAddons()
     Addons.clear();
 
     const xr_string AddonsRoot = FS.get_path("$arch_dir_addons$")->m_Path;
+    if (FS.IsIgnoredPath(AddonsRoot.c_str(), true))
+    {
+        return;
+    }
+
     if (!std::filesystem::exists(AddonsRoot.c_str()))
     {
         Msg("! Addons directory not found: %s", AddonsRoot.c_str());
@@ -32,8 +37,20 @@ void CAddonManager::CollectAddons()
     }
 
     auto options = std::filesystem::directory_options::follow_directory_symlink;
-    for (auto& Entry : std::filesystem::recursive_directory_iterator(AddonsRoot.c_str(), options))
+    auto end = std::filesystem::recursive_directory_iterator();
+    for (auto it = std::filesystem::recursive_directory_iterator(AddonsRoot.c_str(), options); it != end; ++it)
     {
+        const auto& Entry = *it;
+        const bool isDirectory = Entry.is_directory();
+        if (FS.IsIgnoredPath(Entry.path().string().c_str(), isDirectory))
+    {
+            if (isDirectory)
+            {
+                it.disable_recursion_pending();
+            }
+            continue;
+        }
+
         if (!Entry.is_regular_file())
         {
             continue;

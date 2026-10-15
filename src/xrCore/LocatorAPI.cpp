@@ -38,10 +38,20 @@ void CLocatorAPI::ParseIgnoreList()
 	}
 }
 
-bool CLocatorAPI::CheckSkip(const xr_path& Path) const
+bool CLocatorAPI::IsIgnoredPath(const xr_path& path, bool isDirectory) const
 {
-	auto UnixPath = Path.native();
+	if (IgnoreData.empty())
+	{
+		return false;
+	}
+
+	auto UnixPath = path.native();
 	std::ranges::replace(UnixPath, '\\', '/');
+	if (isDirectory && !UnixPath.empty() && UnixPath.back() != '/')
+	{
+		UnixPath.push_back('/');
+	}
+
 
 	for (const auto& SkipPath : IgnoreData)
 	{
@@ -608,6 +618,11 @@ xr_unique_ptr<xr_vector<scan_chache>>& GetScanCacheBuffer()
 
 bool CLocatorAPI::Recurse(const char* path)
 {
+	if (IsIgnoredPath(path, true))
+	{
+		return false;
+	}
+
 	string_path scanPath;
 	xr_strcpy(scanPath, sizeof(scanPath), path);
 	
@@ -626,11 +641,6 @@ bool CLocatorAPI::Recurse(const char* path)
 	{
 		xr_path elem_path = elem;
 
-		if (CheckSkip(elem_path))
-		{
-			continue;
-		}
-
 		std::error_code Error;
 		const bool IsDir = elem.is_directory(Error);
 		const auto WriteTime = Error ? std::filesystem::file_time_type {} : elem.last_write_time(Error);
@@ -638,6 +648,11 @@ bool CLocatorAPI::Recurse(const char* path)
 		if (Error)
 		{
 			Msg("! FS: Can't read [%s]: %s", elem_path.xstring().c_str(), Error.message().c_str());
+			continue;
+		}
+
+		if (IsIgnoredPath(elem_path, IsDir))
+		{
 			continue;
 		}
 
@@ -955,7 +970,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			[this](const std::string& file, const filewatch::Event Event)
 			{
 				// TODO: Encoding in saves problem!
-				if (CheckSkip(file.c_str()))
+				if (IsIgnoredPath(file.c_str()))
 				{
 					return;
 				}
