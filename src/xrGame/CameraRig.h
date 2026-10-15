@@ -42,11 +42,17 @@ struct SCameraRigParams
 	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_tail = 0.f, left_hand_finger_grip = 1.f;
 	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
 	bool	cam_shoot_mirror	= false;
+	float	stance_sway_scale	= 0.f, stance_sway_crouch = 1.f, stance_sway_smooth = 0.05f, stance_sway_inertia = 0.1f, stance_sway_damping = 0.5f, stance_sway_pitch = 0.f, stance_sway_max = 0.05f;
 	float	sprint_pose_inertia	= 0.08f, sprint_pose_damping = 0.6f, safemode_damping = 0.6f;
 	Fvector	aim_reload_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_push_pos = { 0.f, 0.f, 0.f };
 	float	aim_reload_zoom_out	= 0.f, aim_reload_pose_inertia = 0.15f, aim_reload_pose_inertia_out = 0.05f, aim_reload_push_inertia = 0.04f, aim_reload_drop_inertia_out = 0.04f;
+	Fvector	crouch_hud_offset_pos = { 0.f, 0.f, 0.f };
+	Fvector	crouch_hud_offset_rot = { 0.f, 0.f, 0.f };
+	Fvector	walk_hud_offset_pos = { 0.f, 0.f, 0.f };
+	Fvector	walk_hud_offset_rot = { 0.f, 0.f, 0.f };
+	float	crouch_pose_inertia	= 0.25f, crouch_pose_inertia_out = -1.f, crouch_pose_delay = 0.f, walk_pose_delay = 5.f, walk_pose_inertia = 0.6f, walk_pose_inertia_out = 0.12f, carry_pose_damping = 0.8f;
 };
 
 struct SCameraRigParam
