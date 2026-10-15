@@ -260,9 +260,18 @@ const CAddonManager::AddonInfo* CAddonManager::FindAddon(const CLocatorAPI::file
 
 bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 {
+    if (std::filesystem::is_directory(TempPath.c_str()))
+    {
+        return false;
+    }
+    return CanApplyFile(TempPath, Desc);
+}
+
+bool CAddonManager::CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc)
+{
     const char* DataPath = FS.get_path(_game_data_)->m_Path;
 
-    if (std::filesystem::is_directory(TempPath.c_str()) || TempPath.ends_with("addon.init"))
+    if (TempPath.ends_with("addon.init"))
     {
         return false;
     }
