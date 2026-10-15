@@ -325,9 +325,9 @@ struct attachable_hud_item final
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
 	int								m_aim_bone_id = BI_NONE;
-	u16								m_left_ik_bone = BI_NONE;
-	Fmatrix							m_left_ik_offset = Fidentity;
-	bool							m_left_ik_fixed = false;
+	u16								LeftIkBone = BI_NONE;
+	Fmatrix							LeftIkOffset = Fidentity;
+	bool							LeftIkFixed = false;
 	float							LeftHandAttachBlend = 0.f;
 	float							LeftHandIkBlend = 0.25f;
 	float							LeftHandFingerTail = 0.f;
@@ -348,7 +348,7 @@ struct attachable_hud_item final
 	Fmatrix							LeftHandAttachArmRootRef = Fidentity;
 	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
 	xr_vector<Fvector>				LeftHandAttachPosRef;
-	float							m_aim_reload_motion = 1.f;
+	float							AimReloadMotion = 1.f;
 	Fvector							AimReloadOffsetPos = {};
 	Fvector							AimReloadOffsetRot = {};
 	float							AimReloadZoomOut = 0.f;
@@ -376,17 +376,17 @@ struct attachable_hud_item final
 	float							StanceSwayDamping = 0.5f;
 	float							StanceSwayPitch = 0.f;
 	float							StanceSwayMax = 0.05f;
-	float							m_hud_mass = 1.f;
+	float							HudMass = 1.f;
 	bool							IkEnabled = true;
-	float							m_shot_variation = 0.f;
-	float							m_shot_twist = 0.f;
-	float							m_aim_shot_motion = 1.f;
-	float							m_idle_fade = 0.f;
-	xr_vector<shared_str>			m_additive_motions;
-	float							m_additive_blend_in = 0.f;
-	float							m_additive_blend_out = 0.1f;
-	bool							m_additive_playing = false;
-	shared_str						m_additive_reference;
+	float							ShotVariation = 0.f;
+	float							ShotTwist = 0.f;
+	float							AimShotMotion = 1.f;
+	float							IdleFade = 0.f;
+	xr_vector<shared_str>			AdditiveMotions;
+	float							AdditiveBlendIn = 0.f;
+	float							AdditiveBlendOut = 0.1f;
+	bool							AdditivePlaying = false;
+	shared_str						AdditiveReference;
 	float							SprintPoseInertia = 0.08f;
 	float							SprintPoseDamping = 0.6f;
 	xr_vector<shared_str>			RetargetMotions;
@@ -395,12 +395,12 @@ struct attachable_hud_item final
 	bool							RetargetPlaying = false;
 	MotionID						RetargetMotion;
 	MotionID						RetargetReferenceMotion;
-	xr_vector<shared_str>			m_left_hand_free_motions;
-	bool							m_left_hand_free = false;
-	float							m_inertia_damping = 0.55f;
-	Fvector							m_inertia_vel_pos = zero_vel;
-	Fvector							m_inertia_vel_rot = zero_vel;
-	Fmatrix							m_collision_xform = Fidentity;
+	xr_vector<shared_str>			LeftHandFreeMotions;
+	bool							LeftHandFree = false;
+	float							InertiaDamping = 0.55f;
+	Fvector							InertiaVelPos = zero_vel;
+	Fvector							InertiaVelRot = zero_vel;
+	Fmatrix							CollisionXform = Fidentity;
 	hud_item_measures				m_measures;
 	shared_str						m_visual_name;
 	bool							m_model_combined = false;
@@ -447,7 +447,7 @@ struct attachable_hud_item final
 	MotionID AliasMotion				(const char* alias) const;
 	bool SprintLayered				() const;
 	shared_str SprintLayerReference	() const;
-	float SprintLayerBlend			() const { return std::max(m_idle_fade, 0.1f); }
+	float SprintLayerBlend			() const { return std::max(IdleFade, 0.1f); }
 	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);
@@ -873,9 +873,9 @@ public:
 	IKinematics*	m_legs_model;
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
-	float			m_cycle_fade = 0.f;
-	SHudCycleMode	m_cycle_mode;
-	bool			m_sprinting = false;
+	float			CycleFade = 0.f;
+	SHudCycleMode	CycleMode;
+	bool			Sprinting = false;
 
 	void			SyncSprintBlend		();
 
@@ -920,7 +920,7 @@ public:
 	void			UpdateSprintAdditiveChain();
 	void			CutSprintEnd			();
 
-	float			m_sprint_yield = 0.f;
+	float			SprintYield = 0.f;
 
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
@@ -990,14 +990,14 @@ private:
 
 	IKinematicsAnimated*				m_model = nullptr;
 	xr_vector<u16>						m_ancors;
-	u16									m_left_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
-	u16									m_right_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
-	float								m_left_ik_weight = 0.f;
-	Fmatrix								m_layers_ik_offset = Fidentity;
-	Fvector								m_turn_offset = zero_vel;
-	Fmatrix								m_aim_reload_ref = Fidentity;
-	float								m_aim_reload_weight = 0.f;
-	float								m_aim_reload_release = 1.f;
+	u16									LeftIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	u16									RightIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	float								LeftIkWeight = 0.f;
+	Fmatrix								LayersIkOffset = Fidentity;
+	Fvector								TurnOffset = zero_vel;
+	Fmatrix								AimReloadRef = Fidentity;
+	float								AimReloadWeight = 0.f;
+	float								AimReloadRelease = 1.f;
 	float								AimReloadPoseValue = 0.f;
 	float								AimReloadPoseVelocity = 0.f;
 	float								AimReloadPushValue = 0.f;
@@ -1020,14 +1020,14 @@ private:
 	float								ScriptInertiaTime = 0.f;
 	Fvector								ScriptInertiaPos = {};
 	Fquaternion							ScriptInertiaRot;
-	Fmatrix								m_shot_ref = Fidentity;
-	float								m_shot_weight = 0.f;
-	float								m_shot_release = 1.f;
-	Fvector								m_shot_rot_scale = { 1.f, 1.f, 1.f };
-	Fvector								m_shot_pos_scale = { 1.f, 1.f, 1.f };
-	Fvector2							m_shot_twist = { 0.f, 0.f };
-	bool								m_layers_ik = false;
-	u32									m_movement_key = 0;
+	Fmatrix								ShotRef = Fidentity;
+	float								ShotWeight = 0.f;
+	float								ShotRelease = 1.f;
+	Fvector								ShotRotScale = { 1.f, 1.f, 1.f };
+	Fvector								ShotPosScale = { 1.f, 1.f, 1.f };
+	Fvector2							ShotTwist = { 0.f, 0.f };
+	bool								LayersIk = false;
+	u32									MovementKey = 0;
 	attachable_hud_item*				m_attached_items[2];
 	animator_item*						m_animator_item = nullptr;
 	xr_vector<attachable_hud_item*>		m_pool;
