@@ -1065,6 +1065,24 @@ void attachable_hud_item::LoadRigParams()
 	AimReloadPushPos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "aim_reload_hud_push_pos", rig.aim_reload_hud_push_pos);
 	AimReloadPushInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_push_inertia", rig.aim_reload_push_inertia), 0.f);
 	AimReloadDropInertiaOut = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_reload_drop_inertia_out", rig.aim_reload_drop_inertia_out), 0.f);
+	CrouchOffsetPos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "crouch_hud_offset_pos", rig.crouch_hud_offset_pos);
+	CrouchOffsetRot = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "crouch_hud_offset_rot", rig.crouch_hud_offset_rot);
+	CrouchPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "crouch_pose_inertia", rig.crouch_pose_inertia), 0.f);
+	CrouchPoseInertiaOut = READ_IF_EXISTS(pSettings, r_float, sect_name, "crouch_pose_inertia_out", rig.crouch_pose_inertia_out);
+	CrouchPoseDelay = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "crouch_pose_delay", rig.crouch_pose_delay), 0.f);
+	WalkOffsetPos = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "walk_hud_offset_pos", rig.walk_hud_offset_pos);
+	WalkOffsetRot = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "walk_hud_offset_rot", rig.walk_hud_offset_rot);
+	WalkPoseDelay = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "walk_pose_delay", rig.walk_pose_delay), 0.f);
+	WalkPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "walk_pose_inertia", rig.walk_pose_inertia), 0.f);
+	WalkPoseInertiaOut = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "walk_pose_inertia_out", rig.walk_pose_inertia_out), 0.f);
+	CarryPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "carry_pose_damping", rig.carry_pose_damping), 0.f);
+	StanceSwayScale = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_scale", rig.stance_sway_scale), 0.f);
+	StanceSwayCrouch = READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_crouch", rig.stance_sway_crouch);
+	StanceSwaySmooth = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_smooth", rig.stance_sway_smooth), 0.f);
+	StanceSwayInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_inertia", rig.stance_sway_inertia), 0.f);
+	StanceSwayDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_damping", rig.stance_sway_damping), 0.f);
+	StanceSwayPitch = READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_pitch", rig.stance_sway_pitch);
+	StanceSwayMax = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_max", rig.stance_sway_max), 0.f);
 	SprintPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_inertia", rig.sprint_pose_inertia), 0.f);
 	SprintPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "sprint_pose_damping", rig.sprint_pose_damping), 0.f);
 	m_shot_variation = READ_IF_EXISTS(pSettings, r_float, sect_name, "shot_anim_variation", rig.shot_anim_variation);
@@ -2454,6 +2472,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 		UpdateSprintAdditiveChain();
 	}
 
+	UpdateCarryPose(actor);
+
 	const float ik_share = CCameraRig::HudIkShare();
 	m_layers_ik = ik_share > 0.f && actor != nullptr && m_attached_items[0] != nullptr && !m_attached_items[0]->m_model_combined && m_attached_items[1] == nullptr && m_animator_item == nullptr && m_right_ik_chain[2] != BI_NONE;
 
@@ -2616,6 +2636,10 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
+	const Fmatrix carry_pose = CarryPoseOffset();
+	m_transform.mulB_43(carry_pose);
+	m_transformL.mulB_43(carry_pose);
+
 	if (m_layers_ik)
 	{
 		const hud_item_measures& measures = m_attached_items[0]->m_measures;
@@ -2652,6 +2676,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		rigid.mulB_43(rigid_attach);
 		rigid.mulB_43(scale_layer_offset(script_layers, 1.f - ik_share));
 		rigid.mulB_43(scale_layer_offset(movement_layers, 1.f - ik_share));
+		rigid.mulB_43(scale_layer_offset(carry_pose, 1.f - ik_share));
 
 		m_layers_ik_offset.invert(rigid).mulB_43(m_transform);
 
@@ -4926,6 +4951,69 @@ float player_hud::AimReloadPush() const
 float player_hud::AimReloadDrop() const
 {
 	return std::clamp(AimReloadDropValue, 0.f, 1.f);
+}
+
+void player_hud::UpdateCarryPose(CActor* actor)
+{
+	attachable_hud_item* item = m_attached_items[0];
+	CWeapon* weapon = item != nullptr && item->m_parent_hud_item != nullptr ? item->m_parent_hud_item->cast_weapon() : nullptr;
+	if (!CCameraRig::Enabled() || actor == nullptr || weapon == nullptr)
+	{
+		CrouchPoseValue = 0.f;
+		CrouchPoseVelocity = 0.f;
+		WalkPoseValue = 0.f;
+		WalkPoseVelocity = 0.f;
+		WalkTime = 0.f;
+		CrouchTime = 0.f;
+		StanceHeightLast = -1.f;
+		StanceSwayValue = 0.f;
+		StanceSwayVelocity = 0.f;
+		StanceHeightRate = 0.f;
+		return;
+	}
+
+	const u32 state = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+	const bool zoom = weapon->IsZoomed() || weapon->m_bIsAimStarted;
+	const bool sprint = (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
+	const bool crouch = (state & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0 && !zoom;
+	const bool walking = (state & ACTOR_DEFS::EMoveCommand::mcAnyMove) != 0 && !sprint && !zoom && weapon->GetState() == CHUDState::eIdle;
+
+	WalkTime = walking ? WalkTime + Device.fTimeDelta : 0.f;
+	const float walk_target = walking && WalkTime >= item->WalkPoseDelay ? 1.f : 0.f;
+	CrouchTime = crouch ? CrouchTime + Device.fTimeDelta : 0.f;
+	const float crouch_target = crouch && CrouchTime >= item->CrouchPoseDelay ? 1.f : 0.f;
+
+	const float crouch_half_life = crouch_target < CrouchPoseValue && item->CrouchPoseInertiaOut >= 0.f ? item->CrouchPoseInertiaOut : item->CrouchPoseInertia;
+	HudSpring::Step(CrouchPoseValue, CrouchPoseVelocity, crouch_target, crouch_half_life, item->CarryPoseDamping, Device.fTimeDelta);
+	HudSpring::Step(WalkPoseValue, WalkPoseVelocity, walk_target, walk_target < WalkPoseValue ? item->WalkPoseInertiaOut : item->WalkPoseInertia, item->CarryPoseDamping, Device.fTimeDelta);
+
+	const float height = actor->CurrentHeight;
+	const float dt = Device.fTimeDelta;
+	const float rate = StanceHeightLast >= 0.f && height >= 0.f && dt > EPS ? (height - StanceHeightLast) / dt : 0.f;
+	StanceHeightLast = height;
+	StanceHeightRate += (rate - StanceHeightRate) * (item->StanceSwaySmooth > 0.f ? 1.f - expf(-dt / item->StanceSwaySmooth) : 1.f);
+	StanceSwayValue -= StanceHeightRate * dt * item->StanceSwayScale * (StanceHeightRate < 0.f ? item->StanceSwayCrouch : 1.f);
+
+	HudSpring::Step(StanceSwayValue, StanceSwayVelocity, 0.f, item->StanceSwayInertia / CCameraRig::MassSpeed(item->m_hud_mass), item->StanceSwayDamping, Device.fTimeDelta);
+	StanceSwayValue = std::clamp(StanceSwayValue, -item->StanceSwayMax * 4.f, item->StanceSwayMax * 4.f);
+}
+
+Fmatrix player_hud::CarryPoseOffset() const
+{
+	const attachable_hud_item* item = m_attached_items[0];
+	if (item == nullptr || (fis_zero(CrouchPoseValue) && fis_zero(WalkPoseValue) && fis_zero(StanceSwayValue)))
+	{
+		return Fidentity;
+	}
+
+	Fvector rot = Fvector().set(0.f, 0.f, 0.f).mad(item->CrouchOffsetRot, CrouchPoseValue).mad(item->WalkOffsetRot, WalkPoseValue);
+	const float stance = item->StanceSwayMax > 0.f ? item->StanceSwayMax * tanhf(StanceSwayValue / item->StanceSwayMax) : 0.f;
+	rot.x += item->StanceSwayPitch * stance * 100.f;
+	rot.mul(PI / 180.f);
+	Fmatrix offset;
+	offset.setXYZ(rot);
+	offset.translate_over(Fvector().set(0.f, stance, 0.f).mad(item->CrouchOffsetPos, CrouchPoseValue).mad(item->WalkOffsetPos, WalkPoseValue));
+	return offset;
 }
 
 void player_hud::UpdateSprintPose()
