@@ -514,6 +514,10 @@ void CLevel::ProcessGameEvents		()
 
 		while	(game_events->available(svT))
 		{
+			if (!IsSpawnReady(game_events->front()))
+				break;
+			m_PendingSpawnEvent = nullptr;
+
 			u16 ID,type;
 			ALife::_OBJECT_ID dest;
 			game_events->get	(ID,dest,type,P);

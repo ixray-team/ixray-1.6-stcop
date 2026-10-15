@@ -3529,6 +3529,8 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		}
 	}
 
+	SpawnVisuals::Request(E);
+
 	// create packet and broadcast packet to everybody
 	NET_Packet Packet;
 	if (CL)
