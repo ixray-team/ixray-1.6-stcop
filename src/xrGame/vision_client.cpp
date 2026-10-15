@@ -10,6 +10,7 @@
 #include "vision_client.h"
 #include "Entity.h"
 #include "visual_memory_manager.h"
+#include "../xrEngine/Engine.h"
 
 IC	const CEntity &vision_client::object		() const
 {
@@ -64,12 +65,23 @@ void vision_client::eye_pp_s2					()
 	u32							dwTime = Device.dwTimeGlobal;
 	u32							dwDT = dwTime - m_time_stamp;
 	m_time_stamp				= dwTime;
-	Device.SecondaryTasks.run([=]()
+	PhysicsVisionPosition = m_position;
+	PhysicsVisionDelta = float(dwDT) / 1000.f;
+	PhysicsVisionTransparency = visual().transparency_threshold();
+	if (!Engine.Sheduler.QueuePhysicsIndependent(this))
 	{
-		feel_vision_update(m_position, float(dwDT)/1000.f, visual().transparency_threshold());
-	});
+		// Preserve the asynchronous path when overlap is disabled or the queue is full.
+		Device.SecondaryTasks.run([this, Position = PhysicsVisionPosition, Delta = PhysicsVisionDelta, Transparency = PhysicsVisionTransparency]() mutable
+								  { feel_vision_update(Position, Delta, Transparency); });
+	}
 
 	Device.Statistic->AI_Vis_RayTests.End	();
+}
+
+void vision_client::ExecutePhysicsIndependent()
+{
+	PROF_EVENT("Vision Physics Independent");
+	feel_vision_update(PhysicsVisionPosition, PhysicsVisionDelta, PhysicsVisionTransparency);
 }
 
 float vision_client::shedule_Scale				()
@@ -121,6 +133,7 @@ float vision_client::feel_vision_mtl_transp		(CObject* O, u32 element)
 
 void vision_client::reinit						()
 {
+	Engine.Sheduler.CancelPhysicsIndependent(this);
 	visual().reinit				();
 }
 

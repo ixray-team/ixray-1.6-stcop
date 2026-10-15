@@ -3,6 +3,8 @@
 
 #include "ISheduled.h"
 
+extern ENGINE_API bool g_SchedulerPhysicsOverlap;
+
 class	ENGINE_API	CSheduler
 {
 private:
@@ -30,6 +32,9 @@ private:
 	xr_vector<ItemReg>		Registration	;
 	ISheduled*				m_current_step_obj;
 	bool					m_processing_now;
+	xr_vector<ISheduled*> PhysicsIndependentWork;
+	bool PhysicsOverlapEnabled = false;
+	bool IsProcessingPhysicsWork = false;
 
 	IC void			Push	(Item& I);
 	IC void			Pop		();
@@ -47,6 +52,13 @@ public:
 	void			ProcessStep	();
 	void			Process		();
 	void			Update		();
+
+	// Owner-thread API. Only explicitly audited scheduled work may use this queue.
+	bool QueuePhysicsIndependent(ISheduled* Object);
+	bool HasPhysicsIndependentWork() const;
+	void CancelPhysicsIndependent(ISheduled* Object);
+	void ProcessPhysicsIndependent();
+	void SetPhysicsOverlapEnabled(bool Enabled);
 
 #ifdef DEBUG
 	bool			Registered	(ISheduled *object) const;

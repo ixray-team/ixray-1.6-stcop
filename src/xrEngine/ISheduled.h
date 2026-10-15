@@ -26,4 +26,7 @@ public:
 	virtual	shared_str					shedule_Name		() const	{ return shared_str("unknown"); };
 	virtual bool						shedule_Needed		()			= 0;
 
+	// Explicit opt-in work: no ODE access, Lua, object lifecycle changes or new tasks.
+	// Called on the game thread while independent physics islands may be solving.
+	virtual void ExecutePhysicsIndependent() {}
 };

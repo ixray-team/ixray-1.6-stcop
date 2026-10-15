@@ -30,6 +30,9 @@ private:
 	u32								m_state;
 	u32								m_time_stamp;
 	Fvector							m_position;
+	Fvector PhysicsVisionPosition;
+	float PhysicsVisionDelta = 0.f;
+	float PhysicsVisionTransparency = 0.f;
 
 private:
 	IC		const CEntity			&object					() const;
@@ -47,6 +50,7 @@ public:
 	virtual void					shedule_Update			(u32 dt);
 	virtual	shared_str				shedule_Name			() const;
 	virtual bool					shedule_Needed			();
+	void ExecutePhysicsIndependent() override final;
 
 public:
 	virtual	float					feel_vision_mtl_transp	(CObject *object, u32 element);

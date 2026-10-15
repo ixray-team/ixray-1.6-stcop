@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "../xrEngine/xr_ioc_cmd.h"
+#include "../xrEngine/xrSheduler.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../FDemoRecord.h"
 #include "../FDemoPlay.h"
@@ -2891,6 +2892,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer, "ph_threads", &phThreads, 0, 64);
 	CMD2(CCC_Boolean, "ph_parallel_broadphase", &g_PhysicsParallelBroadphase);
 	CMD2(CCC_Boolean, "ph_parallel_islands", &g_PhysicsParallelIslands);
+	CMD2(CCC_Boolean, "ph_scheduler_overlap", &g_SchedulerPhysicsOverlap);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_NoClip, "g_no_clip");

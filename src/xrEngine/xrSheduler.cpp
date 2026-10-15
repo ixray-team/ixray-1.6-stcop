@@ -6,12 +6,104 @@ float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
 const	float	psShedulerReaction		= 0.1f	;
 bool			g_bSheduleInProgress	= false	;
+bool g_SchedulerPhysicsOverlap = true;
+
+namespace SchedulerExecution
+{
+constexpr u32 MaxPhysicsIndependentWork = 64;
+
+class PhysicsWorkScope final
+{
+	xr_vector<ISheduled*>& Work;
+	bool& IsProcessing;
+
+public:
+	PhysicsWorkScope(xr_vector<ISheduled*>& PendingWork, bool& Processing) : Work(PendingWork), IsProcessing(Processing)
+	{
+		IsProcessing = true;
+	}
+
+	~PhysicsWorkScope()
+	{
+		Work.clear();
+		IsProcessing = false;
+	}
+
+	PhysicsWorkScope(const PhysicsWorkScope&) = delete;
+	PhysicsWorkScope& operator=(const PhysicsWorkScope&) = delete;
+};
+} // namespace SchedulerExecution
+
+void CSheduler::SetPhysicsOverlapEnabled(bool Enabled)
+{
+	PhysicsOverlapEnabled = Enabled;
+}
+
+bool CSheduler::QueuePhysicsIndependent(ISheduled* Object)
+{
+	if (!Object || !m_processing_now || !PhysicsOverlapEnabled || !g_SchedulerPhysicsOverlap || IsProcessingPhysicsWork)
+	{
+		return false;
+	}
+
+	if (std::find(PhysicsIndependentWork.begin(), PhysicsIndependentWork.end(), Object) != PhysicsIndependentWork.end())
+	{
+		return false;
+	}
+	if (PhysicsIndependentWork.size() >= SchedulerExecution::MaxPhysicsIndependentWork)
+	{
+		return false;
+	}
+	PhysicsIndependentWork.push_back(Object);
+	return true;
+}
+
+bool CSheduler::HasPhysicsIndependentWork() const
+{
+	return std::any_of(PhysicsIndependentWork.begin(), PhysicsIndependentWork.end(), [](const ISheduled* Object)
+					   { return Object != nullptr; });
+}
+
+void CSheduler::CancelPhysicsIndependent(ISheduled* Object)
+{
+	// Do not invalidate the drain's iterator when another owner is unregistered.
+	for (ISheduled*& Pending : PhysicsIndependentWork)
+	{
+		if (Pending == Object)
+		{
+			Pending = nullptr;
+		}
+	}
+}
+
+void CSheduler::ProcessPhysicsIndependent()
+{
+	if (m_processing_now || IsProcessingPhysicsWork || PhysicsIndependentWork.empty())
+	{
+		return;
+	}
+	PROF_EVENT("Scheduler Physics Independent");
+	SchedulerExecution::PhysicsWorkScope Scope(PhysicsIndependentWork, IsProcessingPhysicsWork);
+	for (ISheduled*& Pending : PhysicsIndependentWork)
+	{
+		ISheduled* Object = Pending;
+		Pending = nullptr;
+		if (Object)
+		{
+			Object->ExecutePhysicsIndependent();
+		}
+	}
+}
 
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
 {
 	m_current_step_obj	= nullptr;
 	m_processing_now	= false;
+	PhysicsOverlapEnabled = false;
+	IsProcessingPhysicsWork = false;
+	PhysicsIndependentWork.clear();
+	PhysicsIndependentWork.reserve(SchedulerExecution::MaxPhysicsIndependentWork);
 }
 
 void CSheduler::Destroy			()
@@ -40,6 +132,9 @@ void CSheduler::Destroy			()
 	Items.clear			();
 	ItemsProcessed.clear();
 	Registration.clear	();
+	xr_vector<ISheduled*>().swap(PhysicsIndependentWork);
+	PhysicsOverlapEnabled = false;
+	IsProcessingPhysicsWork = false;
 }
 
 void	CSheduler::internal_Registration()
@@ -224,6 +319,7 @@ void	CSheduler::Register		(ISheduled* A, bool RT				)
 
 void CSheduler::Unregister(ISheduled* A)
 {
+	CancelPhysicsIndependent(A);
 #ifdef DEBUG
 	if (!Registered(A))
 	{
@@ -363,6 +459,8 @@ void CSheduler::ProcessStep			()
 
 void CSheduler::Update()
 {
+	// Fallback for callers that do not use the normal GameThread frame phases.
+	ProcessPhysicsIndependent();
 	PROF_EVENT("CSheduler: Update")
 	R_ASSERT(Device.Statistic);
 	// Initialize

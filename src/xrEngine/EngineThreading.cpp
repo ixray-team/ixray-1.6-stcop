@@ -88,6 +88,9 @@ void XRay::Engine::GameThread()
 		Device.seqFrameMT.Process<&pureFrame::OnFrame>();
 	}
 
+	// No fixed step, frozen world or serial solver: finish queued work this frame.
+	::Engine.Sheduler.ProcessPhysicsIndependent();
+
 	// Device.GCThread.Run();
 
 	if (g_pGamePersistent != nullptr)

@@ -16,6 +16,7 @@ ISheduled::ISheduled	()
 extern		bool		g_bSheduleInProgress;
 ISheduled::~ISheduled	()
 {
+	Engine.Sheduler.CancelPhysicsIndependent(this);
 	VERIFY2				(
 		!Engine.Sheduler.Registered(this),
 		make_string<const char*>("0x%08x : %s",this,*shedule_Name())

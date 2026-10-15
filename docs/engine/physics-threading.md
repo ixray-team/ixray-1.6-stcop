@@ -24,6 +24,16 @@ After collision and `PhTune`, only active `CPHIsland` worlds enter the solver ta
 
 QuickStep uses a local generator seeded from `dxWorld::QuickStepSeed`, advanced by that world. Its sequence is independent of worker identity and scheduling order. Global ODE parameters must remain unchanged while solver tasks run. Debug hooks and island statistics execute on the owner thread. Recursive world `Step` / `StepTouch` / `FrameStep` requests during an active step are ignored so callbacks cannot clear its contact group.
 
+## Scheduler overlap
+
+The ordinary scheduler callbacks retain their order and finish before physics: AI, Lua binders, forces, spawning and body destruction are not moved across the step. Only work explicitly submitted with `CSheduler::QueuePhysicsIndependent` may overlap the island solver. Its `ISheduled::ExecutePhysicsIndependent` implementation runs on the game thread, must not access ODE state, call Lua, change object lifetimes or launch further tasks.
+
+The first client is `vision_client` (actor vision). Its ray-test job captures the eye position, elapsed time and transparency threshold during the normal scheduler callback. It then runs while workers solve islands, before their completion barrier and before `PhDataUpdate`. Frustum collection and visual-memory updates remain in the original scheduler callback. Ray results still feed the normal subsequent memory update; deferring the ray job changes when its results become available within the frame. This does not parallelize NPC logic or the entire scheduler, and the ray job was already asynchronous in the previous path, so a performance gain must be measured.
+
+With pending independent work, even a single active island can be dispatched to a worker, provided `ph_threads` permits more than one worker and `ph_parallel_islands` is enabled. The owner drains independent work while that island runs. A scoped wait joins solver tasks before their captured task state goes out of scope, including during exception unwinding.
+
+The queue holds at most 64 owner pointers (512 bytes of pointer payload on x64), with storage reserved during scheduler initialization. Unregistering or destroying an owner cancels its queued work; resetting vision cancels its old request. With overlap disabled, no MT physics world, or a full queue, vision uses its existing `SecondaryTasks` path. If no parallel solve runs (including no fixed step, a frozen world or serial physics), `GameThread` drains queued work after `seqFrameMT` in the same frame. Work is also drained before physics-world teardown while the object space still exists.
+
 ## Controls and verification
 
 | Command | Meaning |
@@ -33,12 +43,15 @@ QuickStep uses a local generator seeded from `dxWorld::QuickStepSeed`, advanced 
 | `ph_threads 2` ... `64` | Requested task count, limited by scheduler concurrency |
 | `ph_parallel_broadphase false` | Disable query prefetch independently |
 | `ph_parallel_islands false` | Disable parallel island stepping independently |
+| `ph_scheduler_overlap true` / `false` | Enable (default) or disable explicitly admitted scheduler work during the solver |
 
 Profiler zones: `PH Collide Collect`, `PH Collide Apply`, `PH Island Step`, `PH Island Step Serial`, and `Physics World Step`. The Apply zone includes sequential narrowphase. Measure the wall time of the complete physics step and frame, including p95/p99, rather than summing concurrent zone durations.
 
+Overlap zones are `Scheduler Physics Independent` and `Vision Physics Independent`. Compare `ph_scheduler_overlap false` and `true` with the same scene and thread count. The solver wall-time zone includes the owner's independent work and wait; do not add that time to concurrent island durations. Check visibility updates, pause/unpause, level reload and serial mode as well as timing. The scheduler-overlap changes have not been built or run at the user's request.
+
 Runtime coverage should include a dense pile, ray-motion objects, sleeping shells, ladders, passable materials and Debug visualization. Compilation alone does not establish scene-wide equivalence or a performance gain.
 
-### Runtime check, October 15, 2026
+### Runtime check before scheduler overlap, October 15, 2026
 
 The rebuilt engine was run with `D:\ixray-team\cop` as its working directory and the installed addons. A temporary filesystem configuration beside the game's `fsgame.ltx` redirected only `$app_data_root$` to separate test profiles. The filesystem configuration's directory determines `$fs_root$`, so moving it into the build directory changes archive mount paths even when the process working directory is correct.
 

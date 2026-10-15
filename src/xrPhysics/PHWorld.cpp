@@ -7,6 +7,7 @@
 #include "dRayMotions.h"
 #include "PHCollideValidator.h"
 #include "../xrEngine/GameMtlLib.h"
+#include "../xrEngine/Engine.h"
 
 #include "params.h"
 #include "../xrServerEntities/PHSynchronize.h"
@@ -113,6 +114,17 @@ public:
 	PhaseScope& operator=(const PhaseScope&) = delete;
 };
 
+class TaskWaitScope final
+{
+	xr_task_group& Tasks;
+
+public:
+	explicit TaskWaitScope(xr_task_group& PendingTasks) : Tasks(PendingTasks) {}
+	~TaskWaitScope() { Tasks.wait(); }
+	TaskWaitScope(const TaskWaitScope&) = delete;
+	TaskWaitScope& operator=(const TaskWaitScope&) = delete;
+};
+
 static u32 WorkerCount()
 {
 	if (phThreads == 1)
@@ -195,6 +207,7 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 
 	StepNumIterations(phIterations);
 	SetStep(ph_console::ph_step_time);
+	Engine.Sheduler.SetPhysicsOverlapEnabled(mt);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -202,6 +215,8 @@ void CPHWorld::Create(bool mt, CObjectSpace* os, CObjectList* lo)
 void CPHWorld::Destroy()
 {
 	PhysicsTasks.wait();
+	Engine.Sheduler.SetPhysicsOverlapEnabled(false);
+	Engine.Sheduler.ProcessPhysicsIndependent();
 	CollisionQueries.clear();
 	SerialCollideContext.Spatial.clear();
 	Mesh.Destroy();
@@ -721,8 +736,10 @@ void CPHWorld::StepIslands()
 	}
 
 	const u32 Count = (u32)Islands.size();
-	const u32 Workers = g_PhysicsParallelIslands && Count >= 4 ? std::min(PhysicsExecution::WorkerCount(), Count) : 1;
-	if (Workers > 1)
+	const u32 AvailableWorkers = g_PhysicsParallelIslands ? PhysicsExecution::WorkerCount() : 1;
+	const bool CanOverlapScheduler = Count > 0 && AvailableWorkers > 1 && g_SchedulerPhysicsOverlap && Engine.Sheduler.HasPhysicsIndependentWork();
+	const u32 Workers = Count >= 4 || CanOverlapScheduler ? std::min(AvailableWorkers, Count) : 1;
+	if (Workers > 1 || CanOverlapScheduler)
 	{
 #ifdef DEBUG
 		for (CPHObject* Object : m_objects)
@@ -750,11 +767,19 @@ void CPHWorld::StepIslands()
 				Islands[Index]->Step(fixed_step);
 			}
 		};
-		for (u32 Worker = 0; Worker < Workers; ++Worker)
 		{
-			PhysicsTasks.run(StepLambda);
+			PhysicsExecution::TaskWaitScope WaitForIslands(PhysicsTasks);
+			for (u32 Worker = 0; Worker < Workers; ++Worker)
+			{
+				PhysicsTasks.run(StepLambda);
+			}
+			// Only audited game work runs here. ODE bodies and joints stay owned by
+			// the solver until the barrier below; Lua and game callbacks do not run.
+			if (CanOverlapScheduler)
+			{
+				Engine.Sheduler.ProcessPhysicsIndependent();
+			}
 		}
-		PhysicsTasks.wait();
 #ifdef DEBUG
 		for (CPHObject* Object : m_objects)
 		{
