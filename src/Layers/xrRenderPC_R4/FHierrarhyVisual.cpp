@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "FHierrarhyVisual.h"
+#include "ModelPool.h"
 #include "../../xrEngine/Fmesh.h"
 
 #include "../../xrEngine/Render.h"
@@ -57,16 +58,38 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 			// From stream
             IReader* OBJ = data->open_chunk(OGF_CHILDREN);
             if (OBJ){
-                IReader* O = OBJ->open_chunk(0);
-                for (int count=1; O; count++) {
-					string_path			name_load,short_name,num;
-					xr_strcpy				(short_name,N);
-					if (strext(short_name)) *strext(short_name)=0;
-					xr_strconcat(name_load,short_name,":",_itoa(count,num,10));
-					children.push_back	((dxRender_Visual*)::Render->model_CreateChild(name_load,O));
-                    O->close			();
-                    O = OBJ->open_chunk	(count);
-                }
+				xr_vector<IReader*> Chunks;
+				for (IReader* O = OBJ->open_chunk(0); O; O = OBJ->open_chunk(u32(Chunks.size())))
+					Chunks.push_back(O);
+
+				string_path short_name;
+				xr_strcpy(short_name, N);
+				if (strext(short_name)) *strext(short_name) = 0;
+
+				children.resize(children.size() + Chunks.size());
+				const size_t First = children.size() - Chunks.size();
+				const auto LoadChild = [&](size_t Index)
+				{
+					string_path name_load, num;
+					xr_strconcat(name_load, short_name, ":", _itoa(int(Index + 1), num, 10));
+					children[First + Index] = (dxRender_Visual*)::Render->model_CreateChild(name_load, Chunks[Index]);
+					Chunks[Index]->close();
+				};
+
+				if (Chunks.size() > 1 && CModelPool::IsAsyncLoadEnabled())
+				{
+					const CModelPool::LoadContext Context = CModelPool::CaptureLoadContext();
+					xr_parallel_for(size_t(0), Chunks.size(), [&](size_t Index)
+					{
+						CModelPool::LoadContextScope Scope(Context);
+						LoadChild(Index);
+					});
+				}
+				else
+				{
+					for (size_t Index = 0; Index < Chunks.size(); ++Index)
+						LoadChild(Index);
+				}
                 OBJ->close();
             }
 			bDontDelete = false;

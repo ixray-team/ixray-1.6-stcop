@@ -4,6 +4,7 @@
 #include "SkeletonAnimated.h"
 #include "AnimationKeyCalculate.h"
 #include "SkeletonX.h"
+#include "ModelPool.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrCore/AnimNotify/AnimNotify.h"
@@ -783,9 +784,9 @@ CBlend* CKinematicsAnimated::IBlend_Create()
 	return nullptr;
 }
 
-void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
+bool CKinematicsAnimated::LoadOmfSlot(const char* path, const char* name, SMotionsSlot& Slot)
 {
-	PROF_EVENT(__FUNCTION__);
+	PROF_EVENT("CKinematicsAnimated::LoadOmf");
 	string_path fn = {};
 	if (!FS.exist(fn, "$level$", path))
 	{
@@ -794,48 +795,79 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 			if (Device.IsEditorMode())
 			{
 				Msg("!Can't find motion file '%s'.", path);
-				return;
+				return false;
 			}
 			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
 		}
 	}
 
-	m_Motions.push_back(SMotionsSlot());
-	if (!m_Motions.back().motions.create_from_file(path, fn, bones))
+	if (!Slot.motions.create_from_file(path, fn, bones))
 	{
-		m_Motions.pop_back();
 		Msg("! error in model [%s]. Unable to load motion file '%s'.", name, path);
+		return false;
+	}
+	return true;
+}
+
+void CKinematicsAnimated::LoadOmfFiles(const xr_vector<xr_string>& Files, const char* nameOgf)
+{
+	const size_t First = m_Motions.size();
+	m_Motions.resize(First + Files.size());
+	xr_vector<u8> IsLoaded(Files.size(), 0);
+
+	const auto LoadFile = [&](size_t Index)
+	{
+		IsLoaded[Index] = LoadOmfSlot(Files[Index].c_str(), nameOgf, m_Motions[First + Index]) ? 1 : 0;
+	};
+
+	if (Files.size() > 1 && CModelPool::IsAsyncLoadEnabled())
+	{
+		xr_parallel_for(size_t(0), Files.size(), LoadFile);
+	}
+	else
+	{
+		for (size_t Index = 0; Index < Files.size(); ++Index)
+			LoadFile(Index);
+	}
+
+	for (size_t Index = Files.size(); Index-- > 0;)
+	{
+		if (!IsLoaded[Index])
+			m_Motions.erase(m_Motions.begin() + (First + Index));
 	}
 }
 
-void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameOgf) {
-	PROF_EVENT(__FUNCTION__);
-	string_path nm = {};
-	strcpy(nm, pathOmf);
+void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
+{
+	LoadOmfFiles({ xr_string(path) }, name);
+}
 
+void CKinematicsAnimated::CollectOmfFiles(const char* pathOmf, xr_vector<xr_string>& Files)
+{
 	if (strstr(pathOmf, "\\*.omf"))
 	{
 		FS_FileSet fset;
 		FS.file_list(fset, _game_meshes_, FS_ListFiles, pathOmf);
 		FS.file_list(fset, "$level$", FS_ListFiles, pathOmf);
 
-		if (fset.size() == 0)
-		{
-			return;
-		}
-
-		m_Motions.reserve(fset.size() - 1);
-
 		for (auto& it : fset)
 		{
-			LoadOmf(it.name.c_str(), nameOgf);
+			Files.emplace_back(it.name.c_str());
 		}
 	}
 	else
 	{
-		xr_strcat(nm, ".omf");
-		LoadOmf(nm, nameOgf);
+		string_path nm = {};
+		xr_strconcat(nm, pathOmf, ".omf");
+		Files.emplace_back(nm);
 	}
+}
+
+void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameOgf) {
+	PROF_EVENT(__FUNCTION__);
+	xr_vector<xr_string> Files;
+	CollectOmfFiles(pathOmf, Files);
+	LoadOmfFiles(Files, nameOgf);
 }
 
 void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
@@ -854,24 +886,26 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 		data->r_stringZ(items_nm, sizeof(items_nm));
 		u32 set_cnt = _GetItemCount(items_nm);
 		R_ASSERT(set_cnt < MAX_ANIM_SLOT);
-		m_Motions.reserve(set_cnt);
+		xr_vector<xr_string> Files;
 		string_path nm = {};
 		for (u32 k = 0; k < set_cnt; ++k)
 		{
 			_GetItem(items_nm, k, nm);
-			ProcessOmfFiles(nm, N);
+			CollectOmfFiles(nm, Files);
 		}
+		LoadOmfFiles(Files, N);
 	}
 	else if (data->find_chunk(OGF_S_MOTION_REFS2))
 	{
 		u32 set_cnt = data->r_u32();
-		m_Motions.reserve(set_cnt);
+		xr_vector<xr_string> Files;
 		string_path nm = {};
 		for (u32 k = 0; k < set_cnt; ++k)
 		{
 			data->r_stringZ(nm, sizeof(nm));
-			ProcessOmfFiles(nm, N);
+			CollectOmfFiles(nm, Files);
 		}
+		LoadOmfFiles(Files, N);
 	}
 	else
 	{

@@ -132,6 +132,9 @@ private:
 	void						IFXBlendSetup			(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone);
 	virtual void				LoadOmf(const char* path, const char* name);
 	virtual	void				ProcessOmfFiles(const char* omfPath, const char* nameOgf);
+	void						CollectOmfFiles(const char* omfPath, xr_vector<xr_string>& Files);
+	void						LoadOmfFiles(const xr_vector<xr_string>& Files, const char* nameOgf);
+	bool						LoadOmfSlot(const char* path, const char* name, SMotionsSlot& Slot);
 //.	bool						LoadMotions				(const char* N, IReader *data);
 public:
 	std::pair<const char*,const char*>	LL_MotionDefName_dbg	(MotionID	ID);
