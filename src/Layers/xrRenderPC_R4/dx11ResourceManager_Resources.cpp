@@ -95,7 +95,7 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
 
 	for (u32 it=0; it<v_passes.size(); it++)
 	{
-		if (v_passes[it]->equal(proto))
+		if (ResourceLifetime::IsAlive(v_passes[it]) && v_passes[it]->equal(proto))
 		{
 			return v_passes[it];
 		}

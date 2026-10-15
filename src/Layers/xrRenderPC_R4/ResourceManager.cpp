@@ -147,7 +147,7 @@ ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 	// Search equal in shaders array
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 it=0; it<v_elements.size(); it++)
-		if (S.equal(*(v_elements[it])))	return v_elements[it];
+		if (ResourceLifetime::IsAlive(v_elements[it]) && S.equal(*(v_elements[it])))	return v_elements[it];
 
 	// Create _new_ entry
 	ShaderElement* N = new ShaderElement();
@@ -266,6 +266,8 @@ Shader*	CResourceManager::_cpp_Create(const char* s_shader, const char* s_textur
 
 Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
+	xrCriticalSectionGuard guard(ResSafe);
+
 	if (!g_dedicated_server)
 	{
 		return	_cpp_Create	(B,s_shader,s_textures,s_constants,s_matrices);
@@ -319,20 +321,23 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 	if (!IsForceBlenderShader(s_shader) && CXMLBlend::Check(s_shader))
 	{
 		xr_string key = MakeXMLBlendKey(s_shader, s_textures);
-		auto it = m_xmlBlendCache.find(key);
 
 #ifndef MASTER_GOLD
 		u32 current_crc = CalculateXMLCRC(s_shader);
 #endif
 
-		if (it != m_xmlBlendCache.end())
 		{
+			xrCriticalSectionGuard CacheGuard(creationGuard);
+			auto it = m_xmlBlendCache.find(key);
+			if (it != m_xmlBlendCache.end() && ResourceLifetime::IsAlive(it->second.shader))
+			{
 #ifndef MASTER_GOLD
-			if (it->second.crc == current_crc)
-				return it->second.shader;
+				if (it->second.crc == current_crc)
+					return it->second.shader;
 #else
-			return it->second.shader;
+				return it->second.shader;
 #endif
+			}
 		}
 
 		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
@@ -346,6 +351,7 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 			entry.crc = current_crc;
 #endif
 
+			xrCriticalSectionGuard CacheGuard(creationGuard);
 			m_xmlBlendCache[key] = entry;
 		}
 	}
@@ -535,7 +541,7 @@ Shader* CResourceManager::_CreateShader(Shader* InShader)
 	// Search equal in shaders array
 	for (Shader* it : v_shaders)
 	{
-		if (InShader->equal(it))
+		if (ResourceLifetime::IsAlive(it) && InShader->equal(it))
 			return it;
 	}
 
