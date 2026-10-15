@@ -1875,10 +1875,9 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 	{
 		constexpr float step = 0.008f;
 		const float omega = std::min(speed / step * CCameraRig::MassSpeed(m_hud_mass), 1.5f / step);
-		Fvector accel;
-		accel.mul(offset, omega * omega).mad(velocity, -2.f * m_inertia_damping * omega);
-		velocity.mad(accel, step);
-		offset.mul(velocity, step);
+		Fvector moved = { 0.f, 0.f, 0.f };
+		HudSpring::Step(moved, velocity, offset, omega, m_inertia_damping, step);
+		offset = moved;
 	};
 
 	if (!spring)
@@ -2479,7 +2478,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	if (turn_smooth > 0.f)
 	{
 		const Fvector local = { turn_offset.dotproduct(cam_trans.i), turn_offset.dotproduct(cam_trans.j), turn_offset.dotproduct(cam_trans.k) };
-		m_turn_offset.lerp(m_turn_offset, local, 1.f - expf(-Device.fTimeDelta / turn_smooth));
+		m_turn_offset.lerp(m_turn_offset, local, HudBlend::Smooth(turn_smooth, Device.fTimeDelta));
 		turn_offset.set(0.f, 0.f, 0.f).mad(cam_trans.i, m_turn_offset.x).mad(cam_trans.j, m_turn_offset.y).mad(cam_trans.k, m_turn_offset.z);
 		trans.c.add(cam_trans.c, turn_offset);
 	}
@@ -3440,7 +3439,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	active = active && !item->m_left_hand_free && !PreviewGripBlocked;
 
-	m_left_ik_weight = item->LeftHandIkBlend > 0.f ? std::clamp(m_left_ik_weight + (active ? Device.fTimeDelta : -Device.fTimeDelta) / item->LeftHandIkBlend, 0.f, 1.f) : (active ? 1.f : 0.f);
+	m_left_ik_weight = HudBlend::Ramp(m_left_ik_weight, active, item->LeftHandIkBlend, Device.fTimeDelta);
 
 	if (active && !LeftGripActive && m_left_ik_weight < 1.f && item->LeftHandFingerTail > 0.f)
 	{
@@ -3472,7 +3471,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	const bool ancor_in_right_hand = ancor_parent != BI_NONE;
 
-	RetargetWeight = item->RetargetPlaying ? 1.f : std::max(RetargetWeight - Device.fTimeDelta / std::max(item->m_idle_fade, 0.1f), 0.f);
+	RetargetWeight = HudBlend::Ramp(RetargetWeight, item->RetargetPlaying, 0.f, std::max(item->m_idle_fade, 0.1f), Device.fTimeDelta);
 	const bool retarget = RetargetWeight > 0.f && !ancor_in_right_hand;
 	if (retarget && item->RetargetPlaying)
 	{
@@ -3485,7 +3484,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 
 	const float sprint_layer = hud_channel_weight(m_model, LAYER_ADDITIVE_CHANNEL);
 	const bool sprint_action = sprint_layer > 0.f && state != CHUDState::eIdle && !item->RetargetPlaying && !item->m_additive_playing;
-	SprintHandWeight = std::clamp(SprintHandWeight + (sprint_action ? Device.fTimeDelta : -Device.fTimeDelta) / item->SprintLayerBlend(), 0.f, 1.f);
+	SprintHandWeight = HudBlend::Ramp(SprintHandWeight, sprint_action, item->SprintLayerBlend(), Device.fTimeDelta);
 
 	Fmatrix sprint_ancor_delta, sprint_right_base, sprint_left_base;
 	const bool sprint_hands = SprintHandWeight > 0.f && sprint_layer > 0.f && SprintBoneDelta(ancor, sprint_ancor_delta);
@@ -3514,7 +3513,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	}
 
 	const float aim_reload_blend = CCameraRig::AimReloadBlend();
-	m_aim_reload_weight = std::clamp(aim_reload_blend > 0.f ? m_aim_reload_weight + (aim_reload ? Device.fTimeDelta : -Device.fTimeDelta) / aim_reload_blend : (aim_reload ? 1.f : 0.f), 0.f, 1.f);
+	m_aim_reload_weight = HudBlend::Ramp(m_aim_reload_weight, aim_reload, aim_reload_blend, Device.fTimeDelta);
 	const float aim_reload_target = m_aim_reload_weight * hud_smooth(m_aim_reload_release);
 	const float aim_reload_half_life = aim_reload_target < AimReloadPoseValue ? item->AimReloadPoseInertiaOut : item->AimReloadPoseInertia;
 	HudSpring::Step(AimReloadPoseValue, AimReloadPoseVelocity, aim_reload_target, aim_reload_half_life, 1.f, Device.fTimeDelta);
@@ -3540,7 +3539,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	}
 
 	const float shot_blend = CCameraRig::ShotAnimBlend();
-	m_shot_weight = std::clamp(shot_blend > 0.f ? m_shot_weight + (firing ? Device.fTimeDelta : -Device.fTimeDelta) / shot_blend : (firing ? 1.f : 0.f), 0.f, 1.f);
+	m_shot_weight = HudBlend::Ramp(m_shot_weight, firing, shot_blend, Device.fTimeDelta);
 
 	const float lean = actor->Cameras().Rig().LeanCounter();
 	const bool move_weapon = has_right && (m_layers_ik || !fis_zero(lean) || m_aim_reload_weight > 0.f || m_shot_weight > 0.f);
@@ -3743,7 +3742,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 				return;
 			}
 
-			const float factor = 1.f - expf(-Device.fTimeDelta / follow);
+			const float factor = HudBlend::Smooth(follow, Device.fTimeDelta);
 			Fquaternion q_from, q_to, q_blend;
 			q_from.set(item->m_left_ik_offset);
 			q_to.set(animated);
@@ -3777,9 +3776,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 			LeftHandAttachHold = std::max(LeftHandAttachHold - Device.fTimeDelta, 0.f);
 
 			const float release_time = std::max(CCameraRig::HudInertialization(), 0.2f);
-			LeftHandAttachWeight = LeftHandAttachReaching || hold
-				? std::min(LeftHandAttachWeight + Device.fTimeDelta / item->LeftHandAttachBlend, 1.f)
-				: std::max(LeftHandAttachWeight - Device.fTimeDelta / release_time, 0.f);
+			LeftHandAttachWeight = HudBlend::Ramp(LeftHandAttachWeight, LeftHandAttachReaching || hold, item->LeftHandAttachBlend, release_time, Device.fTimeDelta);
 
 			float mark_weight = 0.f;
 			MotionID mark_motion;
@@ -5019,7 +5016,7 @@ void player_hud::UpdateCarryPose(CActor* actor)
 	const float dt = Device.fTimeDelta;
 	const float rate = StanceHeightLast >= 0.f && height >= 0.f && dt > EPS ? (height - StanceHeightLast) / dt : 0.f;
 	StanceHeightLast = height;
-	StanceHeightRate += (rate - StanceHeightRate) * (item->StanceSwaySmooth > 0.f ? 1.f - expf(-dt / item->StanceSwaySmooth) : 1.f);
+	StanceHeightRate += (rate - StanceHeightRate) * HudBlend::Smooth(item->StanceSwaySmooth, dt);
 	StanceSwayValue -= StanceHeightRate * dt * item->StanceSwayScale * (StanceHeightRate < 0.f ? item->StanceSwayCrouch : 1.f);
 
 	HudSpring::Step(StanceSwayValue, StanceSwayVelocity, 0.f, item->StanceSwayInertia / CCameraRig::MassSpeed(item->m_hud_mass), item->StanceSwayDamping, Device.fTimeDelta);

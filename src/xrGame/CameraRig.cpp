@@ -640,7 +640,7 @@ bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& ta
 		return false;
 	}
 
-	value.spring_inertion(target, velocity, Device.fTimeDelta, speed * speed, 2.f * speed * g_rig.sway_damping_ratio);
+	HudSpring::Step(value, velocity, target, speed, g_rig.sway_damping_ratio, Device.fTimeDelta);
 	return true;
 }
 
