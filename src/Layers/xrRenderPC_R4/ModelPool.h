@@ -21,12 +21,14 @@ private:
 		IC bool operator()(const shared_str& x, const shared_str& y) const
 		{	return xr_strcmp(x,y)<0;}
 	};
-	struct ModelDef
+
+	struct ModelEntry
 	{
-		shared_str			name;
-		dxRender_Visual*		model;
-        u32					refs;
-        ModelDef()			{ refs=0;model=nullptr; }
+		shared_str			Name;
+		dxRender_Visual*	Model = nullptr;
+		xr_atomic_u32		Refs = 0;
+		xr_atomic_bool		IsReady = false;
+		xrCriticalSection	LoadGuard;
 	};
 
 	typedef xr_multimap<shared_str,dxRender_Visual*,str_pred>	POOL;
@@ -34,23 +36,30 @@ private:
 	typedef xr_map<dxRender_Visual*,shared_str>					REGISTRY;
 	typedef REGISTRY::iterator									REGISTRY_IT;
 private:
-	xr_vector<ModelDef>			Models;				// Reference / Base
-	xr_vector<dxRender_Visual*>	ModelsToDelete;		// 
-	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		// 
+	xr_hash_map<shared_str, ModelEntry*>		Models;
+	xr_hash_map<dxRender_Visual*, ModelEntry*>	ModelsByVisual;
+	xrSRWLock									ModelsLock;
+
+	xrCriticalSection			PoolLock;
+	xr_vector<dxRender_Visual*>	ModelsToDelete;		//
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
-    bool						bForceDiscard;
-    bool						bAllowChildrenDuplicate;
+
+	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		//
 	xrCriticalSection			deffered_del_lock;
+
 	void						Destroy	();
+	ModelEntry*					AcquireBase			(const char* Name, IReader* Data);
+	dxRender_Visual*			DuplicateInstance	(dxRender_Visual* V);
+	void						DestroyBase			(ModelEntry* Entry);
+	void						WaitAll				();
 public:
                             CModelPool			();
 	virtual 				~CModelPool			();
 	dxRender_Visual*		Instance_Create		(u32 Type);
 	dxRender_Visual*		Instance_Duplicate	(dxRender_Visual* V);
-	dxRender_Visual*		Instance_Load		(const char* N, bool allow_register);
-	dxRender_Visual*		Instance_Load		(const char* N, IReader* data, bool allow_register);
-	void					Instance_Register	(const char* N, dxRender_Visual* V);
+	dxRender_Visual*		Instance_Load		(const char* N);
+	dxRender_Visual*		Instance_Load		(const char* N, IReader* data);
 	dxRender_Visual*		Instance_Find		(const char* N);
 
 	dxRender_Visual*		CreatePE			(PS::CPEDef* source);
