@@ -111,6 +111,7 @@ public:
 	static void				ReloadGroup		(const char* group);
 	static const SCameraRigParams& Params	();
 	static const SCameraRigParam* ParamList	(u32& count);
+	static const SCameraRigParam* FindHudParam(const char* hud_key);
 	static float			HudIkShare		();
 	static float			TurnSwaySmooth	();
 	static float			AimReloadBlend	();

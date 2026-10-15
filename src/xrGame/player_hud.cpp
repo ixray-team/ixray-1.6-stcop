@@ -1092,9 +1092,62 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	m_measures.load				(sect_name, m_model, m_model_combined);
 }
 
+struct SHudRigField
+{
+	const char*						Key;
+	float attachable_hud_item::*	Float;
+	Fvector attachable_hud_item::*	Vector;
+	float							Min = -flt_max;
+	float							Max = flt_max;
+};
+
+static const SHudRigField g_hud_rig_fields[] =
+{
+	{ "aim_reload_motion", &attachable_hud_item::m_aim_reload_motion, nullptr },
+	{ "aim_reload_hud_offset_pos", nullptr, &attachable_hud_item::AimReloadOffsetPos },
+	{ "aim_reload_hud_offset_rot", nullptr, &attachable_hud_item::AimReloadOffsetRot },
+	{ "aim_reload_zoom_out", &attachable_hud_item::AimReloadZoomOut, nullptr, 0.f, 1.f },
+	{ "aim_reload_pose_inertia", &attachable_hud_item::AimReloadPoseInertia, nullptr, 0.f },
+	{ "aim_reload_pose_inertia_out", &attachable_hud_item::AimReloadPoseInertiaOut, nullptr, 0.f },
+	{ "aim_reload_hud_push_pos", nullptr, &attachable_hud_item::AimReloadPushPos },
+	{ "aim_reload_push_inertia", &attachable_hud_item::AimReloadPushInertia, nullptr, 0.f },
+	{ "aim_reload_drop_inertia_out", &attachable_hud_item::AimReloadDropInertiaOut, nullptr, 0.f },
+	{ "crouch_hud_offset_pos", nullptr, &attachable_hud_item::CrouchOffsetPos },
+	{ "crouch_hud_offset_rot", nullptr, &attachable_hud_item::CrouchOffsetRot },
+	{ "crouch_pose_inertia", &attachable_hud_item::CrouchPoseInertia, nullptr, 0.f },
+	{ "crouch_pose_inertia_out", &attachable_hud_item::CrouchPoseInertiaOut, nullptr },
+	{ "crouch_pose_delay", &attachable_hud_item::CrouchPoseDelay, nullptr, 0.f },
+	{ "walk_hud_offset_pos", nullptr, &attachable_hud_item::WalkOffsetPos },
+	{ "walk_hud_offset_rot", nullptr, &attachable_hud_item::WalkOffsetRot },
+	{ "walk_pose_delay", &attachable_hud_item::WalkPoseDelay, nullptr, 0.f },
+	{ "walk_pose_inertia", &attachable_hud_item::WalkPoseInertia, nullptr, 0.f },
+	{ "walk_pose_inertia_out", &attachable_hud_item::WalkPoseInertiaOut, nullptr, 0.f },
+	{ "carry_pose_damping", &attachable_hud_item::CarryPoseDamping, nullptr, 0.f },
+	{ "aim_blend_inertia", &attachable_hud_item::AimBlendInertia, nullptr, 0.f },
+	{ "stance_sway_scale", &attachable_hud_item::StanceSwayScale, nullptr, 0.f },
+	{ "stance_sway_crouch", &attachable_hud_item::StanceSwayCrouch, nullptr },
+	{ "stance_sway_smooth", &attachable_hud_item::StanceSwaySmooth, nullptr, 0.f },
+	{ "stance_sway_inertia", &attachable_hud_item::StanceSwayInertia, nullptr, 0.f },
+	{ "stance_sway_damping", &attachable_hud_item::StanceSwayDamping, nullptr, 0.f },
+	{ "stance_sway_pitch", &attachable_hud_item::StanceSwayPitch, nullptr },
+	{ "stance_sway_max", &attachable_hud_item::StanceSwayMax, nullptr, 0.f },
+	{ "sprint_pose_inertia", &attachable_hud_item::SprintPoseInertia, nullptr, 0.f },
+	{ "sprint_pose_damping", &attachable_hud_item::SprintPoseDamping, nullptr, 0.f },
+	{ "shot_anim_variation", &attachable_hud_item::m_shot_variation, nullptr },
+	{ "shot_anim_twist", &attachable_hud_item::m_shot_twist, nullptr },
+	{ "aim_shot_motion", &attachable_hud_item::m_aim_shot_motion, nullptr },
+	{ "idle_fade", &attachable_hud_item::m_idle_fade, nullptr },
+	{ "inertia_damping", &attachable_hud_item::m_inertia_damping, nullptr },
+	{ "additive_blend_in", &attachable_hud_item::m_additive_blend_in, nullptr, 0.f },
+	{ "additive_blend_out", &attachable_hud_item::m_additive_blend_out, nullptr, 0.01f },
+	{ "left_hand_attach_blend", &attachable_hud_item::LeftHandAttachBlend, nullptr, 0.f },
+	{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend, nullptr, 0.f },
+	{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail, nullptr, 0.f, 1.f },
+	{ "left_hand_finger_grip", &attachable_hud_item::LeftHandFingerGrip, nullptr, 0.f, 1.f },
+};
+
 void attachable_hud_item::LoadRigParams()
 {
-	const SCameraRigParams& rig = CCameraRig::Params();
 	const shared_str& sect_name = m_sect_name;
 
 	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
@@ -1116,47 +1169,35 @@ void attachable_hud_item::LoadRigParams()
 		}
 	}
 
-	m_aim_reload_motion = pSettings->read_if_exists<float>(sect_name, "aim_reload_motion", rig.aim_reload_motion);
-	AimReloadOffsetPos = pSettings->read_if_exists<Fvector3>(sect_name, "aim_reload_hud_offset_pos", rig.aim_reload_hud_offset_pos);
-	AimReloadOffsetRot = pSettings->read_if_exists<Fvector3>(sect_name, "aim_reload_hud_offset_rot", rig.aim_reload_hud_offset_rot);
-	AimReloadZoomOut = std::clamp(pSettings->read_if_exists<float>(sect_name, "aim_reload_zoom_out", rig.aim_reload_zoom_out), 0.f, 1.f);
-	AimReloadPoseInertia = std::max(pSettings->read_if_exists<float>(sect_name, "aim_reload_pose_inertia", rig.aim_reload_pose_inertia), 0.f);
-	AimReloadPoseInertiaOut = std::max(pSettings->read_if_exists<float>(sect_name, "aim_reload_pose_inertia_out", rig.aim_reload_pose_inertia_out), 0.f);
-	AimReloadPushPos = pSettings->read_if_exists<Fvector3>(sect_name, "aim_reload_hud_push_pos", rig.aim_reload_hud_push_pos);
-	AimReloadPushInertia = std::max(pSettings->read_if_exists<float>(sect_name, "aim_reload_push_inertia", rig.aim_reload_push_inertia), 0.f);
-	AimReloadDropInertiaOut = std::max(pSettings->read_if_exists<float>(sect_name, "aim_reload_drop_inertia_out", rig.aim_reload_drop_inertia_out), 0.f);
-	CrouchOffsetPos = pSettings->read_if_exists<Fvector3>(sect_name, "crouch_hud_offset_pos", rig.crouch_hud_offset_pos);
-	CrouchOffsetRot = pSettings->read_if_exists<Fvector3>(sect_name, "crouch_hud_offset_rot", rig.crouch_hud_offset_rot);
-	CrouchPoseInertia = std::max(pSettings->read_if_exists<float>(sect_name, "crouch_pose_inertia", rig.crouch_pose_inertia), 0.f);
-	CrouchPoseInertiaOut = pSettings->read_if_exists<float>(sect_name, "crouch_pose_inertia_out", rig.crouch_pose_inertia_out);
-	CrouchPoseDelay = std::max(pSettings->read_if_exists<float>(sect_name, "crouch_pose_delay", rig.crouch_pose_delay), 0.f);
-	WalkOffsetPos = pSettings->read_if_exists<Fvector3>(sect_name, "walk_hud_offset_pos", rig.walk_hud_offset_pos);
-	WalkOffsetRot = pSettings->read_if_exists<Fvector3>(sect_name, "walk_hud_offset_rot", rig.walk_hud_offset_rot);
-	WalkPoseDelay = std::max(pSettings->read_if_exists<float>(sect_name, "walk_pose_delay", rig.walk_pose_delay), 0.f);
-	WalkPoseInertia = std::max(pSettings->read_if_exists<float>(sect_name, "walk_pose_inertia", rig.walk_pose_inertia), 0.f);
-	WalkPoseInertiaOut = std::max(pSettings->read_if_exists<float>(sect_name, "walk_pose_inertia_out", rig.walk_pose_inertia_out), 0.f);
-	CarryPoseDamping = std::max(pSettings->read_if_exists<float>(sect_name, "carry_pose_damping", rig.carry_pose_damping), 0.f);
-	AimBlendInertia = std::max(pSettings->read_if_exists<float>(sect_name, "aim_blend_inertia", rig.aim_blend_inertia), 0.f);
-	StanceSwayScale = std::max(pSettings->read_if_exists<float>(sect_name, "stance_sway_scale", rig.stance_sway_scale), 0.f);
-	StanceSwayCrouch = pSettings->read_if_exists<float>(sect_name, "stance_sway_crouch", rig.stance_sway_crouch);
-	StanceSwaySmooth = std::max(pSettings->read_if_exists<float>(sect_name, "stance_sway_smooth", rig.stance_sway_smooth), 0.f);
-	StanceSwayInertia = std::max(pSettings->read_if_exists<float>(sect_name, "stance_sway_inertia", rig.stance_sway_inertia), 0.f);
-	StanceSwayDamping = std::max(pSettings->read_if_exists<float>(sect_name, "stance_sway_damping", rig.stance_sway_damping), 0.f);
-	StanceSwayPitch = pSettings->read_if_exists<float>(sect_name, "stance_sway_pitch", rig.stance_sway_pitch);
-	StanceSwayMax = std::max(pSettings->read_if_exists<float>(sect_name, "stance_sway_max", rig.stance_sway_max), 0.f);
-	SprintPoseInertia = std::max(pSettings->read_if_exists<float>(sect_name, "sprint_pose_inertia", rig.sprint_pose_inertia), 0.f);
-	SprintPoseDamping = std::max(pSettings->read_if_exists<float>(sect_name, "sprint_pose_damping", rig.sprint_pose_damping), 0.f);
-	m_shot_variation = pSettings->read_if_exists<float>(sect_name, "shot_anim_variation", rig.shot_anim_variation);
-	m_shot_twist = pSettings->read_if_exists<float>(sect_name, "shot_anim_twist", rig.shot_anim_twist);
-	m_aim_shot_motion = pSettings->read_if_exists<float>(sect_name, "aim_shot_motion", rig.aim_shot_motion);
-	m_idle_fade = pSettings->read_if_exists<float>(sect_name, "idle_fade", rig.idle_fade);
-	m_inertia_damping = pSettings->read_if_exists<float>(sect_name, "inertia_damping", rig.inertia_damping);
-	m_additive_blend_in = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_in", rig.additive_blend_in), 0.f);
-	m_additive_blend_out = std::max(pSettings->read_if_exists<float>(sect_name, "additive_blend_out", rig.additive_blend_out), 0.01f);
-	LeftHandAttachBlend = std::max(pSettings->read_if_exists<float>(sect_name, "left_hand_attach_blend", rig.left_hand_attach_blend), 0.f);
-	LeftHandIkBlend = std::max(pSettings->read_if_exists<float>(sect_name, "left_hand_ik_blend", rig.left_hand_ik_blend), 0.f);
-	LeftHandFingerTail = std::clamp(pSettings->read_if_exists<float>(sect_name, "left_hand_finger_tail", rig.left_hand_finger_tail), 0.f, 1.f);
-	LeftHandFingerGrip = std::clamp(pSettings->read_if_exists<float>(sect_name, "left_hand_finger_grip", rig.left_hand_finger_grip), 0.f, 1.f);
+	for (const SHudRigField& it : g_hud_rig_fields)
+	{
+		const SCameraRigParam* param = CCameraRig::FindHudParam(it.Key);
+		if (it.Vector != nullptr)
+		{
+			const Fvector def = param != nullptr ? Fvector().set(param->Value[0], param->Value[1], param->Value[2]) : Fvector().set(0.f, 0.f, 0.f);
+			this->*it.Vector = pSettings->read_if_exists<Fvector3>(sect_name, it.Key, def);
+		}
+		else
+		{
+			const float def = param != nullptr ? param->Value[0] : 0.f;
+			this->*it.Float = std::clamp(pSettings->read_if_exists<float>(sect_name, it.Key, def), it.Min, it.Max);
+		}
+	}
+}
+
+float* attachable_hud_item::RigField(const char* key, u32& count)
+{
+	for (const SHudRigField& it : g_hud_rig_fields)
+	{
+		if (xr_strcmp(it.Key, key) == 0)
+		{
+			count = it.Vector != nullptr ? 3 : 1;
+			return it.Vector != nullptr ? &(this->*it.Vector).x : &(this->*it.Float);
+		}
+	}
+
+	count = 0;
+	return nullptr;
 }
 
 static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion)
