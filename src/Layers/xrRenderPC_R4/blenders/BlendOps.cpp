@@ -2,6 +2,7 @@
 #include "BlendOps.h"
 #include "Blender_Recorder.h"
 #include "../uber_deffer.h"
+#include "../../../xrEngine/EngineAPI.h"
 
 namespace
 {
@@ -29,6 +30,8 @@ namespace
 		"zfunc",
 		"shader_option",
 		"clear_shader_options",
+		"cull_mode",
+		"alpha_to_coverage",
 	};
 	static_assert(std::size(OpNames) == size_t(EBlendOp::Count));
 
@@ -110,6 +113,8 @@ void BlendOps::Apply(CBlender_Compile& C, const BlendOp& Op, bool& IsFirstPass, 
 	case EBlendOp::Sampler:				C.r_dx10Sampler(Op.Strings[0].c_str());					break;
 	case EBlendOp::ShaderOption:		RImplementation.addShaderOption(Op.Strings[0].c_str(), Op.Strings[1].c_str());	break;
 	case EBlendOp::ClearShaderOptions:	RImplementation.clearAllShaderOptions();				break;
+	case EBlendOp::CullMode:			C.r_CullMode(D3DCULL(V[0]));							break;
+	case EBlendOp::AlphaToCoverage:		C.RS.SetRS(XRDX10RS_ALPHATOCOVERAGE, V[0]);				break;
 
 	case EBlendOp::Texture:
 	{
@@ -122,6 +127,16 @@ void BlendOps::Apply(CBlender_Compile& C, const BlendOp& Op, bool& IsFirstPass, 
 		FATAL("Unknown blend operation");
 		break;
 	}
+}
+
+bool BlendOps::IsShaderOptionEnabled(const char* Name)
+{
+#if !defined(_EDITOR)
+	if (!xr_strcmp(Name, "USE_R1_STATIC_LIGHTING"))
+		return LightingModeIsStaticRender();
+#endif
+
+	return EngineExternal().ShadersOptions.contains(xr_string(Name));
 }
 
 const char* BlendOps::GetName(EBlendOp Type)

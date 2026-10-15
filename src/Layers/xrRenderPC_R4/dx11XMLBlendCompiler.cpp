@@ -9,6 +9,7 @@
 #include "dx11XMLBlendCompiler.h"
 #include "dxRenderDeviceRender.h"
 #include "uber_deffer.h"
+#include "XMLBlendV2.h"
 
 CXMLBlend::CXMLBlend(const char* FileName)
 {
@@ -38,6 +39,17 @@ CXMLBlend::~CXMLBlend()
 
 Shader* CXMLBlend::Compile(const char* Texture)
 {
+	if (XMLBlendV2::IsVersion2(Parser))
+	{
+		XMLBlendV2::Script Script;
+		xr_string Error;
+		if (!XMLBlendV2::Parse(Parser, File, Script, Error))
+		{
+			FATAL(Error.c_str());
+		}
+		return XMLBlendV2::Compile(Script, Texture);
+	}
+
 	Shader* pShader = new Shader();
 	XML_NODE* pRoot = Parser.GetRoot();
 	for (u32 Iter = 0; Iter < 6; Iter++)
