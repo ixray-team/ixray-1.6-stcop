@@ -218,7 +218,7 @@ struct 	ENGINE_API	motions_value
 	accel_map			m_cycle;			// motion data itself	(shared)
 	accel_map			m_fx;				// motion data itself	(shared)
 	CPartition			m_partition;		// partition
-	u32					m_dwReference;
+	xr_atomic_u32		m_dwReference;
 	BoneMotionMap		m_motions;
     MotionDefVec		m_mdefs;
 	NotifyVec			m_notifies;
@@ -242,15 +242,26 @@ struct 	ENGINE_API	motions_value
 
 class 	ENGINE_API	motions_container
 {
-	using SharedMotionsMap = xr_map<shared_str, motions_value*>;
+	struct SharedEntry
+	{
+		motions_value*		Value = nullptr;
+		xr_atomic_bool		IsReady = false;
+		xrCriticalSection	LoadGuard;
+	};
+
+	using SharedMotionsMap = xr_map<shared_str, SharedEntry*>;
 	using SharedMotionsMapIt = SharedMotionsMap::iterator;
 
 	SharedMotionsMap	container;
+	xrSRWLock			ContainerGuard;
+
+	motions_value*		Dock				(shared_str Key, vecBones* Bones, IReader* Data, const char* FileName);
 public:
 						motions_container	();
 						~motions_container	();
 	bool				has					(shared_str key);
 	motions_value*		dock				(shared_str key, IReader *data, vecBones* bones);
+	motions_value*		dock_file			(shared_str key, const char* FileName, vecBones* bones);
 	void				dump				();
 	void				clean				(bool force_destroy);
 };
@@ -263,9 +274,10 @@ private:
 	motions_value*		p_;
 protected:
 	// ref-counting
-	void				destroy			()							{	if (0==p_) return;	p_->m_dwReference--; 	if (0==p_->m_dwReference)	p_=0;	}
+	void				destroy			()							{	if (0==p_) return;	if (0==--p_->m_dwReference)	p_=0;	}
 public:
 	bool				create			(shared_str key, IReader *data, vecBones* bones);//{	motions_value* v = g_pMotionsContainer->dock(key,data,bones); if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
+	bool				create_from_file(shared_str key, const char* FileName, vecBones* bones);
 	bool				create			(shared_motions const &rhs);//	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
 public:
 	// construction

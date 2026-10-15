@@ -343,74 +343,117 @@ motions_container::~motions_container()
 
 bool motions_container::has(shared_str key)
 {
-	return (container.find(key) != container.end());
+	xrSRWLockGuard Guard(ContainerGuard, true);
+	SharedMotionsMapIt I = container.find(key);
+	return I != container.end() && I->second->IsReady.load(std::memory_order_acquire) && I->second->Value;
 }
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
-	PROF_EVENT(__FUNCTION__);
-	motions_value* result = 0;
-	SharedMotionsMapIt I = container.find(key);
-	if (I != container.end()) result = I->second;
-	if (0 == result)
+	VERIFY(data);
+	return Dock(key, bones, data, nullptr);
+}
+
+motions_value* motions_container::dock_file(shared_str key, const char* FileName, vecBones* bones)
+{
+	return Dock(key, bones, nullptr, FileName);
+}
+
+motions_value* motions_container::Dock(shared_str Key, vecBones* Bones, IReader* Data, const char* FileName)
+{
+	PROF_EVENT("motions_container::dock");
+	SharedEntry* Entry = nullptr;
 	{
-		// loading motions
-		VERIFY(data);
-		result = new motions_value();
-		result->m_dwReference = 0;
-		bool bres = result->load(key.c_str(), data, bones);
-		if (bres)
-			container.insert(std::make_pair(key, result));
-		else
-			xr_delete(result);
+		xrSRWLockGuard Guard(ContainerGuard, true);
+		SharedMotionsMapIt I = container.find(Key);
+		if (I != container.end())
+			Entry = I->second;
 	}
-	return result;
+
+	bool IsOwner = false;
+	if (Entry == nullptr)
+	{
+		xrSRWLockGuard Guard(ContainerGuard);
+		SharedEntry*& Slot = container[Key];
+		if (Slot == nullptr)
+		{
+			Slot = new SharedEntry();
+			Slot->LoadGuard.Enter();
+			IsOwner = true;
+		}
+		Entry = Slot;
+	}
+
+	if (!IsOwner)
+	{
+		if (!Entry->IsReady.load(std::memory_order_acquire))
+		{
+			xrCriticalSectionGuard Wait(Entry->LoadGuard);
+		}
+		return Entry->Value;
+	}
+
+	IReader* Reader = Data;
+	if (Reader == nullptr && FileName != nullptr)
+		Reader = FS.r_open(FileName);
+
+	motions_value* Result = nullptr;
+	if (Reader != nullptr)
+	{
+		Result = new motions_value();
+		Result->m_dwReference = 0;
+		if (!Result->load(Key.c_str(), Reader, Bones))
+			xr_delete(Result);
+	}
+
+	if (Reader != Data)
+		FS.r_close(Reader);
+
+	Entry->Value = Result;
+	Entry->IsReady.store(true, std::memory_order_release);
+	Entry->LoadGuard.Leave();
+	return Result;
 }
 
 void motions_container::clean(bool force_destroy)
 {
-	SharedMotionsMapIt it = container.begin();
-	SharedMotionsMapIt _E = container.end();
-	if (force_destroy)
+	xrSRWLockGuard Guard(ContainerGuard);
+	for (SharedMotionsMapIt it = container.begin(); it != container.end();)
 	{
-		for (; it != _E; it++)
+		SharedEntry* Entry = it->second;
+		if (!Entry->IsReady.load(std::memory_order_acquire))
 		{
-			motions_value* sv = it->second;
-			xr_delete(sv);
+			VERIFY(!force_destroy);
+			++it;
+			continue;
 		}
-		container.clear();
-	}
-	else
-	{
-		for (; it != _E;)
+
+		if (force_destroy || Entry->Value == nullptr || 0 == Entry->Value->m_dwReference)
 		{
-			motions_value* sv = it->second;
-			if (0 == sv->m_dwReference)
-			{
-				SharedMotionsMapIt i_current = it;
-				SharedMotionsMapIt i_next = ++it;
-				xr_delete(sv);
-				container.erase(i_current);
-				it = i_next;
-			}
-			else
-			{
-				it++;
-			}
+			xr_delete(Entry->Value);
+			xr_delete(Entry);
+			it = container.erase(it);
+		}
+		else
+		{
+			++it;
 		}
 	}
 }
 
 void motions_container::dump()
 {
-	SharedMotionsMapIt it = container.begin();
-	SharedMotionsMapIt _E = container.end();
+	xrSRWLockGuard Guard(ContainerGuard, true);
 	Log("--- motion container --- begin:");
 	u32 sz = sizeof(*this);
-	for (u32 k = 0; it != _E; k++, it++)
+	u32 k = 0;
+	for (const auto& [Key, Entry] : container)
 	{
-		sz += it->second->mem_usage();
-		Msg("#%3d: [%3d/%5d Kb] - %s", k, it->second->m_dwReference, it->second->mem_usage() / 1024, it->first.c_str());
+		if (!Entry->IsReady.load(std::memory_order_acquire) || Entry->Value == nullptr)
+			continue;
+
+		sz += Entry->Value->mem_usage();
+		Msg("#%3d: [%3d/%5d Kb] - %s", k++, Entry->Value->m_dwReference.load(), Entry->Value->mem_usage() / 1024, Key.c_str());
 	}
 	Msg("--- items: %zu, mem usage: %d Kb ", container.size(), sz / 1024);
 	Log("--- motion container --- end.");
@@ -451,6 +494,16 @@ bool CMotionDef::StopAtEnd()
 bool shared_motions::create(shared_str key, IReader* data, vecBones* bones)
 {
 	motions_value* v = g_pMotionsContainer->dock(key, data, bones);
+	if (0 != v)
+		v->m_dwReference++;
+	destroy();
+	p_ = v;
+	return (0 != v);
+}
+
+bool shared_motions::create_from_file(shared_str key, const char* FileName, vecBones* bones)
+{
+	motions_value* v = g_pMotionsContainer->dock_file(key, FileName, bones);
 	if (0 != v)
 		v->m_dwReference++;
 	destroy();
