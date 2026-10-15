@@ -201,6 +201,10 @@ CInifile::~CInifile()
 
 void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& PreviousEvaluations)
 {
+    if (FinalData.contains(SectName))
+    {
+        return;
+    }
 	PreviousEvaluations.push_back(SectName);
 
 	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
@@ -384,7 +388,9 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 
 	// Finalize
 	if (!bDeleteSectionIfEmpty || CurrentSecPair.second.Data.size())
-		FinalData.emplace(CurrentSecPair);
+	{
+		FinalData.emplace(std::move(CurrentSecPair));
+	}
 }
 
 void CInifile::MergeParentSet(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers)
