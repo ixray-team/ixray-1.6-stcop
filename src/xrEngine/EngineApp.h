@@ -17,9 +17,9 @@ class ENGINE_API CEngineApp :
 private:
 	ILoadingScreen* GLoadingScreen;
 
-	int max_load_stage;
+	xr_atomic_s32 max_load_stage;
 
-	int load_stage;
+	xr_atomic_s32 load_stage;
 
 	u32 ll_dwReference;
 
