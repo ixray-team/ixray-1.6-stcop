@@ -17,6 +17,14 @@ struct		lua_State;
 class dx10ConstantBuffer;
 class CSVGStorage;
 
+namespace ResourceLifetime
+{
+	inline bool IsAlive(const xr_resource* Resource)
+	{
+		return Resource->dwReference.load(std::memory_order_acquire) != 0;
+	}
+}
+
 // defs
 class RENDER_API CResourceManager
 {
