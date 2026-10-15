@@ -363,10 +363,8 @@ struct attachable_hud_item final
 	shared_str						m_additive_reference;
 	float							SprintPoseInertia = 0.08f;
 	float							SprintPoseDamping = 0.6f;
-	xr_vector<shared_str>			AdditiveRetargetMotions;
-	shared_str						AdditiveRetargetReference;
 	xr_vector<shared_str>			RetargetMotions;
-	xr_vector<shared_str>			AttachPoseRetargetMotions;
+	shared_str						RetargetReference;
 	shared_str						AttachPoseReference;
 	bool							RetargetPlaying = false;
 	MotionID						RetargetMotion;

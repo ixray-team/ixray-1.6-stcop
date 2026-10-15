@@ -937,16 +937,14 @@ static const shared_str& hud_retarget_source_idle(const shared_str& motion)
 
 				const shared_str idle_motion = _GetItem(idle, 0, name);
 				idles.insert(idle_motion);
-				xr_vector<shared_str> additive;
 				xr_vector<shared_str> retarget;
-				read_list(sect, "additive_retarget_motions", additive);
 				read_list(sect, "retarget_motions", retarget);
 
 				for (const CInifile::Item& line : sect.Data)
 				{
 					const char* alias = line.first.c_str();
 					if (alias == nullptr || strstr(alias, "anm_") != alias || strstr(alias, "anm_bp_") == alias || strstr(alias, "anm_idle") == alias
-						|| line.second.size() == 0 || hud_motion_listed(additive, line.first) || hud_motion_listed(retarget, line.first) != (pass == 1))
+						|| line.second.size() == 0 || hud_motion_listed(retarget, line.first) != (pass == 1))
 					{
 						continue;
 					}
@@ -1007,10 +1005,8 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 	hud_read_motion_list(sect_name, "additive_motions", m_additive_motions);
 	m_additive_reference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_reference", nullptr);
-	hud_read_motion_list(sect_name, "additive_retarget_motions", AdditiveRetargetMotions);
 	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
-	hud_read_motion_list(sect_name, "anim_pose_retarget_motions", AttachPoseRetargetMotions);
-	AdditiveRetargetReference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_retarget_reference", nullptr);
+	RetargetReference = READ_IF_EXISTS(pSettings, r_string, sect_name, "retarget_reference", nullptr);
 	hud_read_motion_list(sect_name, "left_hand_free_motions", m_left_hand_free_motions);
 
 	const char* left_ik_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_ik_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_ik_bone", nullptr));
@@ -2819,35 +2815,22 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 		return shared_str();
 	};
 
+	if (!hud_motion_listed(RetargetMotions, motion))
+	{
+		return false;
+	}
+
 	const shared_str& source = hud_retarget_source_idle(base_name(motion.c_str()));
-	const bool grip = AttachPoseReference.size() != 0;
-	if (hud_motion_listed(AdditiveRetargetMotions, motion))
+	const player_hud_motion* own_idle = OwnIdle();
+	const shared_str own = own_idle != nullptr ? own_idle->m_base_name : shared_str();
+	if (source.size() != 0 ? source != own : RetargetReference.size() != 0)
 	{
-		reference = source.size() != 0 ? source : AdditiveRetargetReference;
+		reference = source.size() != 0 ? source : RetargetReference;
 		return true;
 	}
 
-	if (hud_motion_listed(RetargetMotions, motion))
-	{
-		const player_hud_motion* own_idle = OwnIdle();
-		const shared_str own = own_idle != nullptr ? own_idle->m_base_name : shared_str();
-		if (source.size() != 0 ? source != own : AdditiveRetargetReference.size() != 0)
-		{
-			reference = source.size() != 0 ? source : AdditiveRetargetReference;
-			return true;
-		}
-
-		reference = own;
-		return grip;
-	}
-
-	if (grip && hud_motion_listed(AttachPoseRetargetMotions, motion))
-	{
-		reference = source.size() != 0 ? source : AttachPoseReference;
-		return true;
-	}
-
-	return false;
+	reference = own.size() != 0 ? own : AttachPoseReference;
+	return AttachPoseReference.size() != 0;
 }
 
 const player_hud_motion* attachable_hud_item::OwnIdle() const
@@ -2896,7 +2879,7 @@ bool attachable_hud_item::SprintLayered() const
 	}
 
 	const shared_str alias = "anm_idle_sprint";
-	return hud_motion_listed(RetargetMotions, alias) || hud_motion_listed(AdditiveRetargetMotions, alias) || hud_motion_listed(m_additive_motions, alias);
+	return hud_motion_listed(RetargetMotions, alias) || hud_motion_listed(m_additive_motions, alias);
 }
 
 shared_str attachable_hud_item::SprintLayerReference() const
