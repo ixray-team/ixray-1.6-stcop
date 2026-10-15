@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
+#include "scope_lens.hlsli"
 
 uniform float4 m_hud_params;
 uniform float4 m_zoom_deviation;
@@ -59,7 +60,7 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
     t_base = lerp(base2, t_base, m_zoom_deviation.z);
 	t_base.xyz = detonemap(t_base.xyz);
 	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = SampleScopeScene(I.tc0, pos2d.xy);
 	
 	t_vp2.xyz = ApplyScopeUI(t_vp2.xyz, pos2d.xy);
 
