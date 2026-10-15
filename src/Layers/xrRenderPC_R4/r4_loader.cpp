@@ -29,7 +29,9 @@ using namespace FVF;
 
 void CRender::level_Load(IReader* fs)
 {
+	PROF_EVENT(__FUNCTION__);
 	ResetSunShadowCache();
+
 	if (Target)
 	{
 		Target->InvalidateSpotShadowCache();
@@ -140,25 +142,37 @@ void CRender::level_Load(IReader* fs)
 		g_pGamePersistent->SetLoadStageTitle("st_loading_spatial_db");
 		g_pGamePersistent->LoadTitle();
 		chunk						= fs->open_chunk(fsL_VISUALS);
-		LoadVisuals					(chunk);
+		{
+			PROF_EVENT("CRender::level_Load: visuals");
+			LoadVisuals					(chunk);
+		}
 		chunk->close				();
 
 		// Details
 		g_pGamePersistent->SetLoadStageTitle("st_loading_details");
 		g_pGamePersistent->LoadTitle();
-		Details->Load				();
+		{
+			PROF_EVENT("CRender::level_Load: details");
+			Details->Load				();
+		}
 	}
 
 	// Sectors
 	g_pGamePersistent->SetLoadStageTitle("st_loading_sectors_portals");
 	g_pGamePersistent->LoadTitle();
-	LoadSectors					(fs);
+	{
+		PROF_EVENT("CRender::level_Load: sectors");
+		LoadSectors					(fs);
+	}
 
 	// 3D Fluid
 	Load3DFluid					();
 
 	// HOM
-	HOM.Load					();
+	{
+		PROF_EVENT("CRender::level_Load: HOM");
+		HOM.Load					();
+	}
 
 	if (L_Glows)
 	{

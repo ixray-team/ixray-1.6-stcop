@@ -103,7 +103,10 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 		shader_name = fnS;
 		orig_shader_name = fnS;
 
-		shader.create(fnS, fnT);
+		{
+			PROF_EVENT("dxRender_Visual::Load: shader");
+			shader.create(fnS, fnT);
+		}
 	}
 
     // desc

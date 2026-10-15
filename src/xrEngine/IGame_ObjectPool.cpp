@@ -41,8 +41,15 @@ void IGame_ObjectPool::prefetch()
 		if (pSettings->section_exist(item.first.c_str()))
 		{
 			CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
-			CObject* pObject = (CObject*)NEW_INSTANCE(CLS);
-			pObject->Load(item.first.c_str());
+			CObject* pObject = nullptr;
+			{
+				PROF_EVENT("IGame_ObjectPool::prefetch: NEW_INSTANCE");
+				pObject = (CObject*)NEW_INSTANCE(CLS);
+			}
+			{
+				PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
+				pObject->Load(item.first.c_str());
+			}
 			VERIFY2(pObject->cNameSect().c_str(), item.first.c_str());
 			m_PrefetchObjects.push_back(pObject);
 		}
@@ -65,6 +72,7 @@ void IGame_ObjectPool::clear()
 
 CObject* IGame_ObjectPool::create(const char* name)
 {
+	PROF_EVENT(__FUNCTION__);
 	CLASS_ID CLS		=	pSettings->r_clsid		(name,"class");
 	CObject* O			=	(CObject*) NEW_INSTANCE	(CLS);
 	O->cNameSect_set	(name);

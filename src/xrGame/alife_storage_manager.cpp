@@ -147,6 +147,7 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 
 void CALifeStorageManager::load(IReader* stream, const char* file_name)
 {
+	PROF_EVENT(__FUNCTION__);
 	IReader& source = *stream;
 	CSaveObjectLoad* Obj = nullptr;
 	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
@@ -180,22 +181,53 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{
 		time_manager().Serialize(*Obj);
-		spawns().Serialize(*Obj);
-		graph().on_load();
-		objects().Serialize(*Obj);
-		registry().Serialize(*Obj);
-		CGamedataReloader::Instance().Serialize(*Obj);
+		{
+			PROF_EVENT("ALife load: spawns");
+			spawns().Serialize(*Obj);
+		}
+		{
+			PROF_EVENT("ALife load: graph on_load");
+			graph().on_load();
+		}
+		{
+			PROF_EVENT("ALife load: objects");
+			objects().Serialize(*Obj);
+		}
+		{
+			PROF_EVENT("ALife load: registry");
+			registry().Serialize(*Obj);
+		}
+		{
+			PROF_EVENT("CGamedataReloader Load");
+			CGamedataReloader::Instance().Serialize(*Obj);
+		}
 		xr_delete(Obj);
 	} else
 	{
 		time_manager().load(source);
-		spawns().load(source, file_name);
-		graph().on_load();
-		objects().load(source);
-		registry().load(source);
-		CGamedataReloader::Instance().Load(source);
+		{
+			PROF_EVENT("ALife load: spawns");
+			spawns().load(source, file_name);
+		}
+		{
+			PROF_EVENT("ALife load: graph on_load");
+			graph().on_load();
+		}
+		{
+			PROF_EVENT("ALife load: objects");
+			objects().load(source);
+		}
+		{
+			PROF_EVENT("ALife load: registry");
+			registry().load(source);
+		}
+		{
+			PROF_EVENT("CGamedataReloader Load");
+			CGamedataReloader::Instance().Load(source);
+		}
 	}
 
+	PROF_EVENT("ALife load: register objects");
 	VERIFY(can_register_objects());
 	can_register_objects(false);
 	auto& Objects = objects().objects();
@@ -240,6 +272,7 @@ public:
 
 bool CALifeStorageManager::load(const char* save_name_no_check)
 {
+	PROF_EVENT(__FUNCTION__);
 	const char* game_saves_path		= FS.get_path("$game_saves$")->m_Path;
 
 	string_path					save_name;
@@ -310,8 +343,14 @@ bool CALifeStorageManager::load(const char* save_name_no_check)
 		Taskbar.Update();
 	}
 
-	unload();
-	reload(m_section);
+	{
+		PROF_EVENT("ALife load: unload");
+		unload();
+	}
+	{
+		PROF_EVENT("ALife load: reload");
+		reload(m_section);
+	}
 
 	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{

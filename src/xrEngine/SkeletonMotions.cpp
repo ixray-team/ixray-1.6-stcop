@@ -23,6 +23,7 @@ u16 CPartition::part_id(const shared_str& name) const
 
 void CPartition::load(IKinematics* V, const char* model_name)
 {
+	PROF_EVENT(__FUNCTION__);
 	string_path fn = {}, fn_full = {};
 	xr_strcpy(fn, sizeof(fn), model_name);
 	if (strext(fn))
@@ -81,6 +82,7 @@ u16 find_bone_id(vecBones* bones, shared_str nm)
 //-----------------------------------------------------------------------
 bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 {
+	PROF_EVENT(__FUNCTION__);
 	m_id = N;
 
 	bool bRes = true;
@@ -346,6 +348,7 @@ bool motions_container::has(shared_str key)
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
+	PROF_EVENT(__FUNCTION__);
 	motions_value* result = 0;
 	SharedMotionsMapIt I = container.find(key);
 	if (I != container.end()) result = I->second;

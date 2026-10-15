@@ -159,7 +159,14 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
 
-	if (!O || (!O->net_Spawn	(E))) 
+	bool bSpawned = false;
+	if (O)
+	{
+		PROF_EVENT("g_sv_Spawn: net_Spawn");
+		bSpawned = O->net_Spawn(E);
+	}
+
+	if (!bSpawned) 
 	{
 		if (O)
 		{

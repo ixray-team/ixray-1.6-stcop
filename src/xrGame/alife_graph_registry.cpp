@@ -120,7 +120,10 @@ void CALifeGraphRegistry::setup_current_level	()
 	// $level$'s path buffer. Do not read level.ai/cross-table while that
 	// buffer can be freed by the background loader.
 	if (!Device.IsEditorMode())
+	{
+		PROF_EVENT("setup_current_level: wait level_load");
 		level_load.wait();
+	}
 	ai().load					(*(*I).second.name());
 
     g_start_game_vertex_id = 0;
@@ -218,4 +221,3 @@ void CALifeGraphRegistry::remove	(CSE_ALifeDynamicObject *object, GameGraph::_GR
 	if (update && m_level)
 		level().remove			(object,ai().game_graph().vertex(game_vertex_id)->level_id() != level().level_id());
 }
-
