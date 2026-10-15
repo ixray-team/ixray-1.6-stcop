@@ -71,6 +71,9 @@ protected:
 	string_path DLTXCurrentFileName = {};
 
 	void EvaluateSection	(const xr_string& SectName, xr_vector<xr_string>& Data);
+	bool EvaluateSectionsParallel();
+	static void InsertSectionItem(Sect& section, bool& deleteIfEmpty, const Item& item, InsertType type, const shared_str& deleteMarker);
+	static void ApplySectionListModifiers(Sect& section, Items& items);
 	void MergeParentSet		(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers);
 
 private:

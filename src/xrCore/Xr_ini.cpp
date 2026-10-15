@@ -199,6 +199,113 @@ CInifile::~CInifile()
 	}
 }
 
+void CInifile::InsertSectionItem(Sect& section, bool& bDeleteSectionIfEmpty,
+    const Item& CurrentItem, InsertType Type, const shared_str& deleteMarker)
+{
+    Sect* CurrentSect = &section;
+    if (CurrentItem.first == deleteMarker)
+    {
+        // Delete section
+        bDeleteSectionIfEmpty = true;
+    }
+    else
+    {
+        // Insert item if variable isn't already set
+        CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *CurrentItem.first, item_pred);
+
+        if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(CurrentItem.first))
+        {
+            bool bShouldInsert = false;
+
+            switch (Type)
+            {
+            case InsertType::Override:
+                bShouldInsert = true;
+                break;
+
+            case InsertType::Base:
+                bShouldInsert = false;
+                break;
+
+            case InsertType::Parent:
+                bShouldInsert = (sect_it->second == deleteMarker);
+                break;
+
+            default:
+                bShouldInsert = true;
+                break;
+            }
+
+            if (bShouldInsert)
+                sect_it->second = CurrentItem.second;
+        }
+        else
+            CurrentSect->Data.insert(sect_it, CurrentItem);
+    }
+}
+
+void CInifile::ApplySectionListModifiers(Sect& section, Items& items)
+{
+    Sect* CurrentSect = &section;
+    for (Item& item : items)
+    {
+        // If section exists with item list, split list and perform operation
+        char dltx_listmode = item.first[0];
+        item.first = item.first.c_str() + 1;
+
+        CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *item.first, item_pred);
+        if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(item.first))
+        {
+            // Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
+
+            if (dltx_listmode && sect_it->second != nullptr)
+            {
+                xr_string split_str(sect_it->second.c_str());
+                thread_local xr_vector<xr_string> sect_it_items_vec;
+                split_str.Split(sect_it_items_vec);
+
+                split_str = item.second.c_str();
+                thread_local xr_vector<xr_string> I_items_vec;
+                split_str.Split(I_items_vec);
+
+                // Add or remove to the list
+                auto find_and_store_index = [](const xr_vector<xr_string>& items_vec, const xr_string& item, int& vec_index)
+                    {
+                        auto it = std::find(items_vec.begin(), items_vec.end(), item);
+                        if (it != items_vec.end())
+                        {
+                            vec_index = it - items_vec.begin();
+                            return true;
+                        }
+                        else
+                        {
+                            vec_index = -1;
+                            return false;
+                        }
+                    };
+
+                int vec_index = -1;
+
+                for (const xr_string& item : I_items_vec)
+                {
+                    if (dltx_listmode == '>')
+                    {
+                        sect_it_items_vec.push_back(item);
+                    }
+                    else if (dltx_listmode == '<')
+                    {
+                        while (find_and_store_index(sect_it_items_vec, item, vec_index))
+                        {
+                            sect_it_items_vec.erase(sect_it_items_vec.begin() + vec_index);
+                        }
+                    }
+                }
+                sect_it->second = xr_string().Join(sect_it_items_vec.begin(), sect_it_items_vec.end(), ',').c_str();
+            }
+        }
+    }
+}
+
 void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& PreviousEvaluations)
 {
     if (FinalData.contains(SectName))
@@ -217,48 +324,11 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	std::pair<xr_string, Sect> CurrentSecPair(SectName, Sect(SectName.c_str()));
 	Sect* CurrentSect = &CurrentSecPair.second;
 
-	auto InsertItemWithDelete = [&bDeleteSectionIfEmpty, &CurrentSect](const Item& CurrentItem, InsertType Type)
-		{
-			if (CurrentItem.first == DLTX_DELETE)
-			{
-				// Delete section
-				bDeleteSectionIfEmpty = true;
-			}
-			else
-			{
-				// Insert item if variable isn't already set
-				CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *CurrentItem.first, item_pred);
-
-				if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(CurrentItem.first))
-				{
-					bool bShouldInsert = false;
-
-					switch (Type)
-					{
-					case InsertType::Override:
-						bShouldInsert = true;
-						break;
-
-					case InsertType::Base:
-						bShouldInsert = false;
-						break;
-
-					case InsertType::Parent:
-						bShouldInsert = (sect_it->second == DLTX_DELETE);
-						break;
-
-					default:
-						bShouldInsert = true;
-						break;
-					}
-
-					if (bShouldInsert)
-						sect_it->second = CurrentItem.second;
-				}
-				else
-					CurrentSect->Data.insert(sect_it, CurrentItem);
-			}
-		};
+    const shared_str deleteMarker = DLTX_DELETE;
+    auto InsertItemWithDelete = [&](const Item& item, InsertType type)
+    {
+        InsertSectionItem(*CurrentSect, bDeleteSectionIfEmpty, item, type, deleteMarker);
+    };
 
 	// Insert variables of own data
 	auto InsertData = [&SectName, &InsertItemWithDelete](xr_string_map<xr_string, Sect>& Data, bool bIsBase)
@@ -317,72 +387,12 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	// Delete entries that are still marked DLTX_DELETE
 	for (auto It = CurrentSect->Data.rbegin(); It != CurrentSect->Data.rend(); ++It)
 	{
-		if (It->second == DLTX_DELETE)
+		if (It->second == deleteMarker)
 			CurrentSect->Data.erase(It.base() - 1);
 	}
 
-	// If there is data to modify parameters lists
-	if (OverrideModifyListData.find(SectName) != OverrideModifyListData.end())
-	{
-		Items& items = OverrideModifyListData[SectName];
-		for (Item& item : items)
-		{
-			// If section exists with item list, split list and perform operation
-			char dltx_listmode = item.first[0];
-			item.first = item.first.c_str() + 1;
-
-			CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *item.first, item_pred);
-			if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(item.first))
-			{
-				// Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
-
-				if (dltx_listmode && sect_it->second != nullptr)
-				{
-					xr_string split_str(sect_it->second.c_str());
-					thread_local xr_vector<xr_string> sect_it_items_vec;
-					split_str.Split(sect_it_items_vec);
-
-					split_str = item.second.c_str();
-					thread_local xr_vector<xr_string> I_items_vec;
-					split_str.Split(I_items_vec);
-
-					// Add or remove to the list
-					auto find_and_store_index = [](const xr_vector<xr_string>& items_vec, const xr_string& item, int& vec_index)
-						{
-							auto it = std::find(items_vec.begin(), items_vec.end(), item);
-							if (it != items_vec.end())
-							{
-								vec_index = it - items_vec.begin();
-								return true;
-							}
-							else
-							{
-								vec_index = -1;
-								return false;
-							}
-						};
-
-					int vec_index = -1;
-
-					for (const xr_string& item : I_items_vec)
-					{
-						if (dltx_listmode == '>')
-						{
-							sect_it_items_vec.push_back(item);
-						}
-						else if (dltx_listmode == '<')
-						{
-							while (find_and_store_index(sect_it_items_vec, item, vec_index))
-							{
-								sect_it_items_vec.erase(sect_it_items_vec.begin() + vec_index);
-							}
-						}
-					}
-					sect_it->second = xr_string().Join(sect_it_items_vec.begin(), sect_it_items_vec.end(), ',').c_str();
-				}
-			}
-		}
-	}
+    if (auto modifiers = OverrideModifyListData.find(SectName); modifiers != OverrideModifyListData.end())
+        ApplySectionListModifiers(*CurrentSect, modifiers->second);
 
 	PreviousEvaluations.pop_back();
 
@@ -391,6 +401,173 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	{
 		FinalData.emplace(std::move(CurrentSecPair));
 	}
+}
+
+bool CInifile::EvaluateSectionsParallel()
+{
+    if (!FinalData.empty() || BaseData.size() < 128)
+        return false;
+    size_t itemCount = 0;
+    for (const auto& [name, section] : BaseData)
+        itemCount += section.Data.size();
+    if (itemCount < 4096 || xr_max_concurrency() < 2)
+        return false;
+
+    class SectionNode
+    {
+    public:
+        xr_string Name;
+        Sect Result;
+        const Sect* Base = nullptr;
+        const Sect* Override = nullptr;
+        Items Modifiers;
+        xr_vector<size_t> Parents;
+        size_t Level = 0;
+        u8 Visit = 0;
+        bool Deleted = false;
+    };
+    xr_vector<SectionNode> nodes;
+    nodes.reserve(BaseData.size());
+    xr_hash_map<xr_string, size_t> indices;
+    indices.reserve(BaseData.size());
+    auto addNode = [&](const xr_string& name)
+    {
+        const auto [it, inserted] = indices.emplace(name, nodes.size());
+        if (inserted)
+        {
+            auto& node = nodes.emplace_back();
+            node.Name = name;
+            node.Result.Name = name.c_str();
+            if (auto base = BaseData.find(name); base != BaseData.end())
+                node.Base = &base->second;
+            if (auto overrides = OverrideData.find(name); overrides != OverrideData.end())
+                node.Override = &overrides->second;
+            if (auto modifiers = OverrideModifyListData.find(name); modifiers != OverrideModifyListData.end())
+                node.Modifiers = modifiers->second;
+        }
+        return it->second;
+    };
+    for (const auto& [name, section] : BaseData)
+        addNode(name);
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        xr_vector<xr_string> parents;
+        xr_vector<xr_string> overrides;
+        if (auto base = BaseParentDataMap.find(nodes[i].Name); base != BaseParentDataMap.end())
+            parents = base->second;
+        if (auto mods = OverrideParentDataMap.find(nodes[i].Name); mods != OverrideParentDataMap.end())
+            overrides = mods->second;
+        MergeParentSet(parents, overrides, false);
+        for (auto parent = parents.rbegin(); parent != parents.rend(); ++parent)
+        {
+            const size_t parentIndex = addNode(*parent);
+            nodes[i].Parents.push_back(parentIndex);
+        }
+    }
+
+    xr_vector<size_t> order;
+    order.reserve(nodes.size());
+    auto visit = [&](auto&& self, size_t index) -> bool
+    {
+        auto& node = nodes[index];
+        if (node.Visit == 1)
+            return false;
+        if (node.Visit == 2)
+            return true;
+        node.Visit = 1;
+        for (size_t parent : node.Parents)
+        {
+            if (!self(self, parent))
+                return false;
+            node.Level = std::max(node.Level, nodes[parent].Level + 1);
+        }
+        node.Visit = 2;
+        order.push_back(index);
+        return true;
+    };
+    size_t levelCount = 0;
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        if (!visit(visit, i))
+            return false;
+        levelCount = std::max(levelCount, nodes[i].Level + 1);
+    }
+    xr_vector<xr_vector<size_t>> levels(levelCount);
+    for (size_t index : order)
+        levels[nodes[index].Level].push_back(index);
+    if (std::none_of(levels.begin(), levels.end(), [](const auto& level) { return level.size() >= 32; }))
+        return false;
+
+    const shared_str deleteMarker = DLTX_DELETE;
+    const size_t concurrency = std::min(size_t(4), xr_max_concurrency());
+    for (const auto& level : levels)
+    {
+        auto evaluate = [&](size_t index)
+        {
+            auto& node = nodes[index];
+            bool deleteIfEmpty = false;
+            auto insert = [&](const Items& items, InsertType type)
+            {
+                for (const auto& item : items)
+                    InsertSectionItem(node.Result, deleteIfEmpty, item, type, deleteMarker);
+            };
+            if (node.Override)
+                insert(node.Override->Data, InsertType::Override);
+            if (node.Base)
+                insert(node.Base->Data, InsertType::Base);
+            for (size_t parent : node.Parents)
+                insert(nodes[parent].Result.Data, InsertType::Parent);
+            for (auto item = node.Result.Data.rbegin(); item != node.Result.Data.rend(); ++item)
+                if (item->second == deleteMarker)
+                    node.Result.Data.erase(item.base() - 1);
+            node.Deleted = deleteIfEmpty && node.Result.Data.empty();
+        };
+        for (size_t index : level)
+            for (size_t parent : nodes[index].Parents)
+                if (nodes[parent].Deleted)
+                    return false;
+
+        size_t work = 0;
+        for (size_t index : level)
+        {
+            const auto& node = nodes[index];
+            if (node.Base)
+                work += node.Base->Data.size();
+            if (node.Override)
+                work += node.Override->Data.size();
+            for (size_t parent : node.Parents)
+                work += nodes[parent].Result.Data.size();
+        }
+        if (level.size() >= 32 && work >= 2048)
+        {
+            const size_t workerCount = std::min(concurrency, level.size());
+            xr_parallel_for(size_t(0), workerCount, [&](size_t worker)
+            {
+                for (size_t i = worker; i < level.size(); i += workerCount)
+                    evaluate(level[i]);
+            });
+        }
+        else
+        {
+            for (size_t index : level)
+                evaluate(index);
+        }
+        for (size_t index : level)
+        {
+            auto& node = nodes[index];
+            ApplySectionListModifiers(node.Result, node.Modifiers);
+        }
+    }
+
+    for (size_t index : order)
+    {
+        auto& node = nodes[index];
+        if (!node.Deleted)
+            FinalData.emplace(node.Name, std::move(node.Result));
+        OverrideData.erase(node.Name);
+    }
+    return true;
 }
 
 void CInifile::MergeParentSet(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers)
@@ -1436,8 +1613,13 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	PreviousEvaluations.clear();
 	PreviousEvaluations.reserve(64);
 
-	for (auto& [Name, Section] : BaseData)
-		EvaluateSection(Name, PreviousEvaluations);
+	if (!EvaluateSectionsParallel())
+	{
+		for (auto& [Name, Section] : BaseData)
+		{
+			EvaluateSection(Name, PreviousEvaluations);
+		}
+	}
 
 	// Insert all finalized sections into final container
 	DATA.reserve(DATA.size() + FinalData.size());
