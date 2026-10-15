@@ -1567,38 +1567,32 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		xr_strlwr(NormalizedFileName.data());
 		FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + NormalizedFileName + "_*.ltx").c_str());
 
-		auto GetRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)->xr_string
-		{
-			std::regex Pattern = std::regex(PatternString);
-			std::smatch MatchResult;
-
-			std::string searcher = InputString.c_str();
-			std::regex_search(searcher, MatchResult, Pattern);
-
-			if (MatchResult.begin() == MatchResult.end())
-			{
-				return "";
-			}
-
-			return MatchResult.begin()->str().c_str();
-		};
+		std::optional<std::regex> namePattern;
+		xr_vector<xr_unique_ptr<std::regex>> ambiguousPatterns(AmbiguousFiles.size());
 
 		for (const FS_File& ModFile : ModFiles)
 		{
 			// Determine if we should load this mod file, or if it's meant for a different root file
 			bool bIsModfileMeantForMe = true;
 
+			size_t ambiguousIndex = 0;
 			for (const FS_File& AmbiguousFile : AmbiguousFiles)
 			{
-				xr_string AmbiguousFileName = GetRegexMatch(AmbiguousFile.name, "^.+(?=.ltx$)");
-				xr_string AmbiguousFileMatchPattern = xr_string("mod_") + AmbiguousFileName + "_.+.ltx";
-
-				auto IsFullRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)
+				auto& pattern = ambiguousPatterns[ambiguousIndex++];
+				if (!pattern)
 				{
-					return std::regex_match(InputString, std::regex(PatternString));
-				};
+					if (!namePattern)
+					{
+						namePattern.emplace("^.+(?=.ltx$)");
+					}
+					std::cmatch match;
+					std::regex_search(AmbiguousFile.name.c_str(), match, *namePattern);
+					xr_string ambiguousName = match.empty() ? "" : match[0].str().c_str();
+					xr_string patternString = xr_string("mod_") + ambiguousName + "_.+.ltx";
+					pattern = xr_make_unique<std::regex>(patternString);
+				}
 
-				if (IsFullRegexMatch(ModFile.name, AmbiguousFileMatchPattern))
+				if (std::regex_match(ModFile.name, *pattern))
 				{
 					bIsModfileMeantForMe = false;
 					break;
