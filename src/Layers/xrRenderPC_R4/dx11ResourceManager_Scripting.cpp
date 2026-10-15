@@ -19,6 +19,7 @@
 #include	"luabind/return_reference_to_policy.hpp"
 
 #include	"dxRenderDeviceRender.h"
+#include "blenders/BlendOps.h"
 
 using namespace				luabind;
 
@@ -66,43 +67,62 @@ public:
 #pragma warning( push )
 #pragma warning( disable : 4512)
 // wrapper																																					
-class	adopt_compiler																																		
+class	adopt_compiler
 {
 	CBlender_Compile*		C;
 	bool					&m_bFirstPass;
+	BlendOpList*			Record = nullptr;
 
-	void					TryEndPass()												{	if (!m_bFirstPass) C->r_End(); m_bFirstPass = false;}
-public:
-	adopt_compiler			(CBlender_Compile*	_C, bool& bFirstPass)	: C(_C), m_bFirstPass(bFirstPass)		{ m_bFirstPass = true;}
-	adopt_compiler			(const adopt_compiler&	_C)	: C(_C.C), m_bFirstPass(_C.m_bFirstPass){ }
-
-	adopt_compiler&			_options		(int	P,		bool	S)				{	C->SetParams		(P,S);					return	*this;		}
-	adopt_compiler&			_o_emissive		(bool	E)								{	C->SH->flags.bEmissive=E;					return	*this;		}
-	adopt_compiler&			_o_scope		(bool	E)								{	C->SH->flags.bScopeMask=E;					return	*this;		}
-	adopt_compiler&			_o_distort		(bool	E)								{	C->SH->flags.bDistort=E;					return	*this;		}
-	adopt_compiler&			_o_wmark		(bool	E)								{	C->SH->flags.bWmark=E;						return	*this;		}
-	adopt_compiler&			_pass			(const char*	vs,		const char* ps)				{	TryEndPass();	C->r_Pass(vs,ps,true);		return	*this;		}
-	adopt_compiler&			_passgs			(const char*	vs,		const char*	gs,		const char* ps){	TryEndPass();	C->r_Pass(vs,gs,ps,true);	return	*this;		}
-	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(false,_fog);			return	*this;		}
-	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
-	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
-	adopt_compiler&			_iblend			(int idx, bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(idx, _blend,abSRC,abDST);	return 	*this;		}
-	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
-	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
-	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
-
-	adopt_compiler& ScopePostprocess(bool Enabled)
+	adopt_compiler&			Emit(const BlendOp& Op)
 	{
-		C->SH->flags.ScopePostprocess = Enabled;
+		if (Record)
+			Record->push_back(Op);
+		else
+			BlendOps::Apply(*C, Op, m_bFirstPass, BlendOps::TextureArgs());
 		return *this;
 	}
 
+	static BlendOp			MakeOp(EBlendOp Type, std::initializer_list<u32> Values = {}, std::initializer_list<const char*> Strings = {})
+	{
+		BlendOp Op;
+		Op.Type = Type;
+		u32 Index = 0;
+		for (u32 Value : Values)
+			Op.Values[Index++] = Value;
+		Index = 0;
+		for (const char* String : Strings)
+			Op.Strings[Index++] = String ? String : "";
+		return Op;
+	}
+public:
+	adopt_compiler			(CBlender_Compile*	_C, bool& bFirstPass, BlendOpList* RecordTo = nullptr)	: C(_C), m_bFirstPass(bFirstPass), Record(RecordTo)		{ m_bFirstPass = true;}
+	adopt_compiler			(const adopt_compiler&	_C)	: C(_C.C), m_bFirstPass(_C.m_bFirstPass), Record(_C.Record){ }
+
+	adopt_compiler&			_options		(int	P,		bool	S)				{	return Emit(MakeOp(EBlendOp::Sorting, { u32(P), u32(S) }));		}
+	adopt_compiler&			_o_emissive		(bool	E)								{	return Emit(MakeOp(EBlendOp::Emissive, { u32(E) }));			}
+	adopt_compiler&			_o_scope		(bool	E)								{	return Emit(MakeOp(EBlendOp::Scope, { u32(E) }));				}
+	adopt_compiler&			_o_distort		(bool	E)								{	return Emit(MakeOp(EBlendOp::Distort, { u32(E) }));				}
+	adopt_compiler&			_o_wmark		(bool	E)								{	return Emit(MakeOp(EBlendOp::Wmark, { u32(E) }));				}
+	adopt_compiler&			_pass			(const char*	vs,		const char* ps)				{	return Emit(MakeOp(EBlendOp::Pass, {}, { vs, "", ps }));	}
+	adopt_compiler&			_passgs			(const char*	vs,		const char*	gs,		const char* ps){	return Emit(MakeOp(EBlendOp::Pass, {}, { vs, gs, ps }));	}
+	adopt_compiler&			_fog			(bool	_fog)							{	return Emit(MakeOp(EBlendOp::Fog, { u32(_fog) }));				}
+	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	return Emit(MakeOp(EBlendOp::ZB, { u32(_test), u32(_write) }));	}
+	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	return Emit(MakeOp(EBlendOp::Blend, { u32(_blend), abSRC, abDST }));	}
+	adopt_compiler&			_iblend			(int idx, bool	_blend, u32 abSRC, u32 abDST)	{	return Emit(MakeOp(EBlendOp::IBlend, { u32(idx), u32(_blend), abSRC, abDST }));	}
+	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	return Emit(MakeOp(EBlendOp::Aref, { u32(_aref), aref }));		}
+	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	return Emit(MakeOp(EBlendOp::Texture, {}, { _resname, _texname }));	}
+	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	Emit(MakeOp(EBlendOp::Sampler, {}, { _name }));	return	adopt_dx10sampler(C, Record ? u32(-1) : 0);	}
+
+	adopt_compiler& ScopePostprocess(bool Enabled)
+	{
+		return Emit(MakeOp(EBlendOp::ScopePostprocess, { u32(Enabled) }));
+	}
+
 	//	DX10 specific
-	adopt_compiler&			_dx10color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	C->r_ColorWriteEnable(cR, cG, cB, cA);		return	*this;		}
-	adopt_compiler&			_dx10Stencil	(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail) {C->r_Stencil(Enable, Func, Mask, WriteMask, Fail, Pass, ZFail);		return	*this;		}
-	adopt_compiler&			_dx10StencilRef	(u32 Ref) {C->r_StencilRef(Ref);		return	*this;		}
-	adopt_compiler&			_dx10ZFunc		(u32 Func)								{	C->RS.SetRS	( D3DRS_ZFUNC, Func);			return	*this;		}
-	//adopt_dx10texture		_dx10texture	(const char* _name)							{	u32 s = C->r_dx10Texture(_name,0);			return	adopt_dx10sampler(C,s);	}
+	adopt_compiler&			_dx10color_write_enable (bool cR, bool cG, bool cB, bool cA)		{	return Emit(MakeOp(EBlendOp::ColorWrite, { u32(cR), u32(cG), u32(cB), u32(cA) }));	}
+	adopt_compiler&			_dx10Stencil	(bool Enable, u32 Func, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail) {	return Emit(MakeOp(EBlendOp::Stencil, { u32(Enable), Func, Mask, WriteMask, Fail, Pass, ZFail }));	}
+	adopt_compiler&			_dx10StencilRef	(u32 Ref) {	return Emit(MakeOp(EBlendOp::StencilRef, { Ref }));	}
+	adopt_compiler&			_dx10ZFunc		(u32 Func)								{	return Emit(MakeOp(EBlendOp::ZFunc, { Func }));	}
 };
 #pragma warning( pop )
 
