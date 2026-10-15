@@ -8,6 +8,8 @@
 #include "../Include/xrRender/VisorGlassType.h"
 #include <luabind/class_info.hpp>
 
+#include "alife_space.h"
+
 class IRenderVisual;
 class IMainMenu;
 extern ENGINE_API bool g_dedicated_server;
@@ -59,7 +61,7 @@ public:
 		bool ItemCfgHudGasMaskAvailable = false;
 		bool ItemCfgHudRainDropsAvailable = false;
 		VisorGlassType GlassType = VisorGlassType::Flat;
-		u16 VisorItemId = u16(-1);
+		ALife::_OBJECT_ID VisorItemId = ALife::INVALID_OBJECT_ID;
 		Fvector4 NightVisionPostprocess{};
 	};
 

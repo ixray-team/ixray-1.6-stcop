@@ -2094,13 +2094,13 @@ void CActor::UpdateCL()
 		psHUD_Flags.set(HUD_DRAW_RT, true);
 
 		auto& Params = g_pGamePersistent->ShaderParams;
-		const u16 PreviousVisorItemId = Params.VisorItemId;
+		const auto PreviousVisorItemId = Params.VisorItemId;
 		// Refresh only visor data; night vision parameters persist until the next activation.
 		Params.HelmetCondition = -1.f;
 		Params.ItemCfgHudGasMaskAvailable = false;
 		Params.ItemCfgHudRainDropsAvailable = false;
 		Params.GlassType = VisorGlassType::Flat;
-		Params.VisorItemId = u16(-1);
+		Params.VisorItemId = ALife::INVALID_OBJECT_ID;
 
 		if (g_Alive() && cam_active == eacFirstEye)
 		{
