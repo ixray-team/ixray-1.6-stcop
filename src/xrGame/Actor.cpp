@@ -2236,6 +2236,7 @@ void CActor::UpdateCL()
 			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
 			Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
 			Device.hudViewportData.renderScopeBrightnessJitterValue = pWeapon->m_lens_night_brightness.jitter;
+			Device.hudViewportData.ScopeAberration = pWeapon->ScopeAberration;
 		}
 	}
 	else
@@ -2251,6 +2252,7 @@ void CActor::UpdateCL()
 			Device.hudViewportData.ActorWeaponCondition = -1.0f;
 			Device.hudViewportData.renderScopeBrightnessValue = 0.0f;
 			Device.hudViewportData.renderScopeBrightnessJitterValue = 0.0f;
+			Device.hudViewportData.ScopeAberration = 0.0f;
 
 			// Switch back to third-person if was forced
 			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {

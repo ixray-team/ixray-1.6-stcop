@@ -162,7 +162,7 @@ void FixedConstants::UpdateFrame()
 			cpu_frame.hud_rain.set(0.f, 0.f, 0.f, 0.f);
 	}
 	cpu_frame.nvg_color.set(::nvg_color.r, ::nvg_color.g, ::nvg_color.b, ::nvg_color.a);
-	cpu_frame.m_hud_params.set(float(RDEVICE.hudViewportData.isRenderProcess), float(RDEVICE.hudViewportData.isRenderActive), 0, RDEVICE.hudViewportData.renderZoomRotateFactor);
+	cpu_frame.m_hud_params.set(float(RDEVICE.hudViewportData.isRenderProcess), float(RDEVICE.hudViewportData.isRenderActive), RDEVICE.hudViewportData.ScopeAberration, RDEVICE.hudViewportData.renderZoomRotateFactor);
 	cpu_frame.m_zoom_deviation.set(0, 0, RDEVICE.hudViewportData.renderScopeBrightnessValue, RDEVICE.hudViewportData.renderScopeBrightnessJitterValue);
 	float decr = RDEVICE.hudViewportData.IsElectronicsProblemsDecreasing ? 1.0f : 0.0f;
 	cpu_frame.m_affects.set(RDEVICE.hudViewportData.CurrentElectronicsProblemsCnt / 10.0f, ::Random.randF(0, 1), RDEVICE.hudViewportData.TargetElectronicsProblemsCnt / 10.0f, decr);
