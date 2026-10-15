@@ -8,6 +8,71 @@
 #include <freetype/freetype.h>
 #include <freetype/ftfntfmt.h>
 
+namespace
+{
+    class FontGlyphRaster
+    {
+    public:
+        FT_UInt id = 0;
+        FT_UInt index = 0;
+        FT_Glyph_Metrics metrics{};
+        FT_Bitmap bitmap{};
+        int bitmapTop = 0;
+        xr_vector<u8> pixels;
+        bool isReady = false;
+    };
+
+    class FontGlyphRasterizer
+    {
+    public:
+        FontGlyphRasterizer(const FT_Byte* bytes, FT_Long length, FT_Size_RequestRec request)
+        {
+            if (FT_Init_FreeType(&_library) != 0)
+                return;
+            if (FT_New_Memory_Face(_library, bytes, length, 0, &_face) != 0)
+                return;
+            _isReady = FT_Request_Size(_face, &request) == 0;
+        }
+
+        ~FontGlyphRasterizer()
+        {
+            if (_face)
+                FT_Done_Face(_face);
+            if (_library)
+                FT_Done_FreeType(_library);
+        }
+
+        FontGlyphRasterizer(const FontGlyphRasterizer&) = delete;
+        FontGlyphRasterizer& operator=(const FontGlyphRasterizer&) = delete;
+
+        void Rasterize(FontGlyphRaster& result)
+        {
+            if (!_isReady || (result.index == 0 && result.id != 0))
+                return;
+            if (FT_Load_Glyph(_face, result.index, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL) != 0)
+                return;
+
+            const FT_GlyphSlot glyph = _face->glyph;
+            if (glyph->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY || glyph->bitmap.pitch < 0)
+                return;
+
+            result.metrics = glyph->metrics;
+            result.bitmap = glyph->bitmap;
+            result.bitmapTop = glyph->bitmap_top;
+            result.pixels.resize(size_t(glyph->bitmap.rows) * glyph->bitmap.pitch);
+            if (!result.pixels.empty())
+                CopyMemory(result.pixels.data(), glyph->bitmap.buffer, result.pixels.size());
+            result.bitmap.buffer = result.pixels.data();
+            result.isReady = true;
+        }
+
+    private:
+        FT_Library _library = nullptr;
+        FT_Face _face = nullptr;
+        bool _isReady = false;
+    };
+}
+
 extern u32 TextureDimension;
 thread_local xr_vector<u32> FontBitmap;
 
@@ -328,7 +393,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
-	auto LoadGlyph = [&](FT_UInt glyphID)
+	auto LoadGlyph = [&](FT_UInt glyphID, FontGlyphRaster* prepared = nullptr)
 	{
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
@@ -340,33 +405,39 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 		}
 
-		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
+		FT_UInt FreetypeCharacter = prepared ? prepared->index : FT_Get_Char_Index(OurFont, TrueGlyph);
 		if (FreetypeCharacter == 0 && glyphID != 0)
 		{
 			Msg("! Glyph not found: %d, TrueGlyph: %d", glyphID, TrueGlyph);
 			return;
 		}
 
+        const bool isPrepared = prepared && prepared->isReady;
+        if (!isPrepared)
+        {
 		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
+        }
 		FT_GlyphSlot Glyph = OurFont->glyph;
-		FT_Glyph_Metrics& GlyphMetrics = Glyph->metrics;
+        FT_Glyph_Metrics& GlyphMetrics = isPrepared ? prepared->metrics : Glyph->metrics;
+        FT_Bitmap& GlyphBitmap = isPrepared ? prepared->bitmap : Glyph->bitmap;
+        const int bitmapTop = isPrepared ? prepared->bitmapTop : Glyph->bitmap_top;
 
-		CopyGlyphImageToAtlas(Glyph->bitmap);
+        CopyGlyphImageToAtlas(GlyphBitmap);
 
 		RECT region;
 		region.left = TargetX;
-		region.right = TargetX + Glyph->bitmap.width;
+		region.right = TargetX + GlyphBitmap.width;
 		region.top = TargetY;
 		region.bottom = long(TargetY + FontSizeInPixels);
 
 		ABC widths;
 		widths.abcA = FT_CEIL(GlyphMetrics.horiBearingX);
-		widths.abcB = Glyph->bitmap.width;
+		widths.abcB = GlyphBitmap.width;
 		widths.abcC = FT_CEIL(GlyphMetrics.horiAdvance) - widths.abcB - widths.abcA;
 
-		int GlyphTopScanlineOffset = int(FontSizeInPixels - Glyph->bitmap.rows);
-		int yOffset = -Glyph->bitmap_top - GlyphTopScanlineOffset;
+		int GlyphTopScanlineOffset = int(FontSizeInPixels - GlyphBitmap.rows);
+		int yOffset = -bitmapTop - GlyphTopScanlineOffset;
 		yOffset += (int)FontSizeInPixels; // Return back to the center pos
 		yOffset -= (int)(FontSizeInPixels / 4);
 
@@ -376,12 +447,55 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		TargetX += 4;
 	};
 
-	auto glyphID = FT_Get_First_Char(OurFont, &index);
-	while(index != 0)
-	{
-		LoadGlyph(glyphID);
-		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
-	}
+    const size_t desiredWorkers = std::min(size_t(4), size_t(OurFont->num_glyphs) / 1024);
+    const size_t workerCount = desiredWorkers > 1
+        ? std::min(desiredWorkers, xr_max_concurrency()) : 1;
+    if (workerCount > 1)
+    {
+        xr_vector<FontGlyphRaster> glyphs;
+        glyphs.reserve(size_t(OurFont->num_glyphs));
+        auto glyphID = FT_Get_First_Char(OurFont, &index);
+        size_t lastValid = 0;
+        while (index != 0)
+        {
+            const u32 trueGlyph = Data.OpenType && glyphID <= 0xff
+                ? TranslateSymbolUsingCP1251((char)glyphID) : u32(glyphID);
+            glyphs.emplace_back();
+            auto& glyph = glyphs.back();
+            glyph.id = FT_UInt(glyphID);
+            glyph.index = FT_Get_Char_Index(OurFont, trueGlyph);
+            if (glyph.index != 0 || glyph.id == 0)
+                lastValid = glyphs.size() - 1;
+            glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
+        }
+
+        const auto* fontBytes = (const FT_Byte*)FontFile->pointer();
+        const FT_Long fontLength = FontFile->length();
+        xr_parallel_for(size_t(0), workerCount, [&](size_t worker)
+        {
+            FontGlyphRasterizer rasterizer(fontBytes, fontLength, req);
+            const size_t begin = glyphs.size() * worker / workerCount;
+            const size_t end = glyphs.size() * (worker + 1) / workerCount;
+            for (size_t i = begin; i < end; ++i)
+            {
+                if (i != lastValid)
+                    rasterizer.Rasterize(glyphs[i]);
+            }
+        });
+
+        for (auto& glyph : glyphs)
+            LoadGlyph(glyph.id, &glyph);
+    }
+    else
+    {
+        auto glyphID = FT_Get_First_Char(OurFont, &index);
+        while (index != 0)
+        {
+            LoadGlyph(glyphID);
+            glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
+        }
+    }
+
 
 	fCurrentHeight = FontSizeInPixels;
 
