@@ -148,7 +148,7 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 	}
 
 	// Register file
-	desc.name			= xr_strdup(TempPath.data());
+	desc.name			= TempPath.c_str();
 	desc.vfs			= vfs;
 	desc.crc			= crc;
 	desc.ptr			= ptr;
@@ -157,33 +157,22 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 	desc.modif			= modif;// &(~u32(0x3));
 
 	{
-		xrSRWLockGuard g(m_files_lock, true);
-		files_it			I = m_files.find(desc);
-
-		if (I != m_files.end()) 
+		xrSRWLockGuard g(m_files_lock);
+		const files_it position = m_files.lower_bound(desc);
+		if (position != m_files.end() && xr_strcmp(position->name, desc.name) == 0)
 		{
-			desc.name		= I->name;
-
-			// sad but true, performance option
-			// correct way is to erase and then insert new record:
-			const_cast<file&>(*I)	= desc;
+			desc.name = position->name;
+			const_cast<file&>(*position) = desc;
 			return;
 		}
-		else
-		{
-			desc.name		= xr_strdup(desc.name);
-		}
-	}
 
-	// otherwise insert file
-	{
-		xrSRWLockGuard g(m_files_lock);
-		m_files.insert		(desc);
+		desc.name = xr_strdup(TempPath.c_str());
+		m_files.insert(position, desc);
 	}
 	
 	// Try to register folder(s)
 	string_path			temp;	
-	xr_strcpy			(temp,sizeof(temp),desc.name);
+	xr_strcpy			(temp,sizeof(temp),TempPath.c_str());
 	string_path			path;
 	string_path			folder;
 	while (temp[0]) 
