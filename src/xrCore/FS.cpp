@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "FS_internal.h"
+#include "Platform/FileDescriptor.h"
 
 IReaderBase::~IReaderBase() = default;
 
@@ -40,7 +41,7 @@ bool file_handle_internal(const char* file_name, intptr_t& size, int& file_handl
 			return (false);
 	}
 
-	size = _filelengthi64(file_handle);
+	size = Platform::GetOpenedFileSize(file_handle);
 	
 	return (true);
 }
