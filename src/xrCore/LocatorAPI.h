@@ -143,7 +143,6 @@ private:
 	// IXR: .xrignore
 	xr_vector<xr_path> IgnoreData;
 	void ParseIgnoreList();
-	bool CheckSkip(const xr_path& Path) const;
 
 	// принимает путь/имя файла
 	// возвращает true когда триггер выполнил всё что хотел и нужно удалить (чтоб не копился)
@@ -160,6 +159,8 @@ private:
 	void ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers);
 
 public:
+	bool IsIgnoredPath(const xr_path& path, bool isDirectory = false) const;
+
 	void AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f);
 	void AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f);
 	
