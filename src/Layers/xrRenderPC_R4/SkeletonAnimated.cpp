@@ -822,7 +822,11 @@ void CKinematicsAnimated::LoadOmfFiles(const xr_vector<xr_string>& Files, const 
 
 	if (Files.size() > 1 && CModelPool::IsAsyncLoadEnabled())
 	{
-		xr_parallel_for(size_t(0), Files.size(), LoadFile);
+		xr_parallel_for(size_t(0), Files.size(), [&](size_t Index)
+		{
+			xrTaskBlockingScope Blocking;
+			LoadFile(Index);
+		});
 	}
 	else
 	{
