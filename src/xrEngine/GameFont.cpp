@@ -141,7 +141,7 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
-	FontBitmap.resize(TextureDimension * TextureDimension);
+    FontBitmap.resize(size_t(TextureDimension) * 16);
 	if (!bFreetypeInitialized)
 	{
 		InitializeFreetype();
@@ -175,7 +175,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 		}
 	}
-	ZeroMemory(FontBitmap.data(), sizeof(u32) * (TextureDimension * TextureDimension));
+	ZeroMemory(FontBitmap.data(), FontBitmap.size() * sizeof(u32));
 
 	// есть кучу способов высчитать размер шрифта для скейлинга
 	// 1. основываясь на DPI(PPI), однако, как не вычисляй его он всегда считается исходя из разрешения моника(системы) и 23 дюймов(мб с дровами на моник - из реальных дюймов)
@@ -263,6 +263,12 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			u32 SourceY = 0;
 
 			TargetY2 = TargetY + (u32)FontSizeInPixels;
+            R_ASSERT2(TargetY2 <= TextureDimension, "Font too large, or dimension texture is too small");
+            const size_t RequiredPixels = size_t(TextureDimension) * std::max(16u, std::bit_ceil(TargetY2));
+            if (FontBitmap.size() < RequiredPixels)
+            {
+                FontBitmap.resize(RequiredPixels);
+            }
 			u32 TargetYSaved = TargetY;
 			TargetY = TargetY + u32(FontSizeInPixels - (float)GlyphBitmap.rows);
 
