@@ -8,6 +8,7 @@
 #include "tss.h"
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
+#include "XMLBlendV2.h"
 
 #include "3DFluid/dx103DFluidManager.h"
 //	Already defined in Texture.cpp
@@ -30,11 +31,17 @@ static u32 CalculateXMLCRC(const char* path)
 
 #endif
 
-static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures)
+static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	xr_string key = s_shader ? s_shader : "";
 	key += "|";
 	key += s_textures ? s_textures : "";
+	key += "|";
+	key += s_constants ? s_constants : "";
+	key += "|";
+	key += s_matrices ? s_matrices : "";
+	key += "|";
+	key += xr_string::ToString(Engine.External.GetSkinningMode());
 	if (RImplementation.EditorInstancing)
 	{
 		key += "|inst";
@@ -285,7 +292,7 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 	}
 #if !defined(_EDITOR)
 	// Editors render the deferred path, so they never take the static (R1) blenders
-	if (LightingModeIsStaticRender() && !_lua_HasStatic(s_shader))
+	if (LightingModeIsStaticRender() && !_lua_HasStatic(s_shader) && !XMLBlendV2::IsStaticBlend(s_shader))
 	{
 		if (IBlender* blender = _FindBlender(s_shader))
 		{
@@ -320,7 +327,7 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 	Shader* pShader = nullptr;
 	if (!IsForceBlenderShader(s_shader) && CXMLBlend::Check(s_shader))
 	{
-		xr_string key = MakeXMLBlendKey(s_shader, s_textures);
+		xr_string key = MakeXMLBlendKey(s_shader, s_textures, s_constants, s_matrices);
 
 #ifndef MASTER_GOLD
 		u32 current_crc = CalculateXMLCRC(s_shader);
