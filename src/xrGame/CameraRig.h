@@ -42,6 +42,7 @@ struct SCameraRigParams
 	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_tail = 0.f, left_hand_finger_grip = 1.f;
 	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
 	bool	cam_shoot_mirror	= false;
+	float	aim_blend_inertia	= 0.f;
 	float	stance_sway_scale	= 0.f, stance_sway_crouch = 1.f, stance_sway_smooth = 0.05f, stance_sway_inertia = 0.1f, stance_sway_damping = 0.5f, stance_sway_pitch = 0.f, stance_sway_max = 0.05f;
 	float	sprint_pose_inertia	= 0.08f, sprint_pose_damping = 0.6f, safemode_damping = 0.6f;
 	Fvector	aim_reload_hud_offset_pos = { 0.f, 0.f, 0.f };
