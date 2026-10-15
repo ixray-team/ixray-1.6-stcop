@@ -963,7 +963,7 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 
 	if (result.O && (result.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
-		auto Obj = const_cast<CObject*>(result.GetDynamic());
+		auto Obj = result.O;
 		if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
 			CGameObject* go = Obj->cast_game_object();
