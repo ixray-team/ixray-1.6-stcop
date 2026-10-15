@@ -803,20 +803,8 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 		}
 	}
 
-	// Check compatibility
 	m_Motions.push_back(SMotionsSlot());
-	bool create_res = true;
-	if (!g_pMotionsContainer->has(path)) // optimize fs operations
-	{
-		IReader* MS = FS.r_open(fn);
-		create_res = m_Motions.back().motions.create(path, MS, bones);
-		FS.r_close(MS);
-	}
-	if (create_res)
-	{
-		m_Motions.back().motions.create(path, nullptr, bones);
-	}
-	else
+	if (!m_Motions.back().motions.create_from_file(path, fn, bones))
 	{
 		m_Motions.pop_back();
 		Msg("! error in model [%s]. Unable to load motion file '%s'.", name, path);
