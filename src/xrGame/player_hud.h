@@ -8,6 +8,7 @@
 #include "../../xrUI/ui_base.h"
 
 class player_hud;
+struct SHandsIkFrame;
 class CWatchDevice;
 class CHudItem;
 class CMotionDef;
@@ -943,6 +944,16 @@ private:
 	bool			need_render_hands	();
 	void			update_inertion		(Fmatrix& trans);
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
+	bool			HandsIkBegin		(SHandsIkFrame& F, CActor* actor);
+	void			HandsIkSprint		(SHandsIkFrame& F);
+	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
+	void			HandsIkFingerState	(SHandsIkFrame& F);
+	void			HandsIkWeaponDelta	(SHandsIkFrame& F, const Fmatrix& cam_trans);
+	void			HandsIkHandTargets	(SHandsIkFrame& F);
+	void			HandsIkAttachTarget	(SHandsIkFrame& F);
+	void			HandsIkReach		(SHandsIkFrame& F);
+	void			HandsIkSolve		(SHandsIkFrame& F);
+	void			HandsIkFingers		(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
 	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result);
