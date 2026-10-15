@@ -48,6 +48,10 @@ private:
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		//
 	xrCriticalSection			deffered_del_lock;
 
+	xr_task_group				RequestTasks;
+	xr_hash_set<shared_str>		Requested;
+	xrCriticalSection			RequestedLock;
+
 	void						Destroy	();
 	ModelEntry*					AcquireBase			(const char* Name, IReader* Data);
 	dxRender_Visual*			DuplicateInstance	(dxRender_Visual* V);
@@ -73,6 +77,11 @@ public:
 	void					DeleteQueue			();
 	void					DeleteQueuedDeffer	();
 	
+	static bool				IsAsyncLoadEnabled	();
+	void					Request				(const char* name);
+	EModelLoadState			GetState			(const char* name);
+	void					WaitRequests		();
+
 	void					Prefetch			();
 	void					ClearPool			( bool b_complete );
 

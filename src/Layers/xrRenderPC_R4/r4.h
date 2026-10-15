@@ -442,6 +442,9 @@ public:
 	virtual void 					model_Delete				(IRender_DetailModel* & F);
 	virtual void					models_Prefetch				();
 	virtual void					models_Clear				(bool b_complete);
+	void							model_Request				(const char* name) override;
+	EModelLoadState					model_GetState				(const char* name) override;
+	void							models_WaitRequests			() override;
 
 	// Occlusion culling
 	virtual bool					occ_visible					(vis_data&	V);

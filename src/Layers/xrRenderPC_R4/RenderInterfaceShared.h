@@ -42,6 +42,21 @@ void CRender::models_Clear(bool b_complete)
 	Models->ClearPool(b_complete);
 }
 
+void CRender::model_Request(const char* name)
+{
+	Models->Request(name);
+}
+
+EModelLoadState CRender::model_GetState(const char* name)
+{
+	return Models->GetState(name);
+}
+
+void CRender::models_WaitRequests()
+{
+	Models->WaitRequests();
+}
+
 bool CRender::occ_visible(vis_data& P)
 {
 	if (Device.IsEditorMode())

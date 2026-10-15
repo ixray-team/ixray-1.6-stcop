@@ -206,7 +206,7 @@ Flags32 ps_r2_ls_flags_ext =
 
 Flags32 ps_r__common_flags = 
 { 
-	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD | RFLAG_MT_SKELETONS
+	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD | RFLAG_MT_SKELETONS | RFLAG_MT_MODEL_LOAD
 };
 
 int opt_static = 0;
@@ -1210,6 +1210,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Mask32, "r__mt_skeletons", &ps_r__common_flags, RFLAG_MT_SKELETONS);
+	CMD3(CCC_Mask32, "r__mt_model_load", &ps_r__common_flags, RFLAG_MT_MODEL_LOAD);
 	CMD4(CCC_Integer, "render.experemental.target_res", &g_TextureTargetResolution, 256, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
 	CMD3(CCC_Mask32, "r__deferred_texture_load", &ps_r__common_flags, RFLAG_DD_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
