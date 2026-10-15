@@ -31,6 +31,7 @@ namespace
 	string_path			s_out		= { 0 };
 	string_path			s_cmd		= { 0 };
 	string_path			s_post_cmd	= { 0 };
+	bool				s_post_pending = false;
 	string_path			s_shot		= { 0 };
 	u32					s_shot_every = 0;
 
@@ -198,6 +199,15 @@ namespace Autotest
 
 	void FrameBegin()
 	{
+		// FrameEnd runs inside Device.End(), before the game thread of that frame is waited for.
+		// Commands such as save call scripts and must not overlap with it.
+		if (s_post_pending)
+		{
+			s_post_pending = false;
+			Msg("~ [autotest] post: %s", s_post_cmd);
+			Console->Execute(s_post_cmd);
+		}
+
 		if (!s_started)
 		{
 			s_started	= true;
@@ -302,8 +312,7 @@ namespace Autotest
 
 		if (s_seen == s_warmup && s_post_cmd[0])
 		{
-			Msg("~ [autotest] post: %s", s_post_cmd);
-			Console->Execute(s_post_cmd);
+			s_post_pending = true;
 		}
 
 		if (s_seen++ < s_warmup)
