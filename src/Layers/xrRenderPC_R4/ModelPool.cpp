@@ -109,24 +109,133 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 	return		V;
 }
 
-dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
+namespace
 {
-	PROF_EVENT(__FUNCTION__);
+	thread_local bool g_AllowChildrenDuplicate = true;
+	thread_local bool g_ForceDiscard = false;
+
+	class FlagScope
+	{
+	public:
+		FlagScope(bool& Flag, bool Value) : Target(Flag), Previous(Flag) { Target = Value; }
+		~FlagScope() { Target = Previous; }
+
+	private:
+		bool& Target;
+		bool Previous;
+	};
+}
+
+dxRender_Visual* CModelPool::DuplicateInstance(dxRender_Visual* V)
+{
+	PROF_EVENT("CModelPool::Instance_Duplicate");
 	R_ASSERT(V);
 	dxRender_Visual* N		= Instance_Create(V->Type);
 	N->Copy			(V);
 	N->Spawn		();
-    // inc ref counter
-	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) 
-		if (I->model==V)
-		{ 
-			I->refs++; 
-			break;
-		}
 	return N;
 }
 
-dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName, bool allow_register)
+dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
+{
+	R_ASSERT(V);
+	{
+		// inc ref counter
+		xrSRWLockGuard Guard(ModelsLock, true);
+		auto It = ModelsByVisual.find(V);
+		if (It != ModelsByVisual.end())
+			It->second->Refs++;
+	}
+	return DuplicateInstance(V);
+}
+
+CModelPool::ModelEntry* CModelPool::AcquireBase(const char* Name, IReader* Data)
+{
+	const shared_str Key = Name;
+	ModelEntry* Entry = nullptr;
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		auto It = Models.find(Key);
+		if (It != Models.end())
+		{
+			Entry = It->second;
+			Entry->Refs++;
+		}
+	}
+
+	bool IsOwner = false;
+	if (Entry == nullptr)
+	{
+		xrSRWLockGuard Guard(ModelsLock);
+		ModelEntry*& Slot = Models[Key];
+		if (Slot == nullptr)
+		{
+			Slot = new ModelEntry();
+			Slot->Name = Key;
+			Slot->LoadGuard.Enter();
+			IsOwner = true;
+		}
+		Entry = Slot;
+		Entry->Refs++;
+	}
+
+	if (!IsOwner)
+	{
+		if (!Entry->IsReady.load(std::memory_order_acquire))
+		{
+			xrCriticalSectionGuard Wait(Entry->LoadGuard);
+		}
+		return Entry;
+	}
+
+	dxRender_Visual* V = nullptr;
+	{
+		FlagScope Scope(g_AllowChildrenDuplicate, false);
+		V = Data ? Instance_Load(Name, Data) : Instance_Load(Name);
+	}
+
+	{
+		xrSRWLockGuard Guard(ModelsLock);
+		Entry->Model = V;
+		if (V != nullptr)
+			ModelsByVisual[V] = Entry;
+	}
+
+	Entry->IsReady.store(true, std::memory_order_release);
+	Entry->LoadGuard.Leave();
+	return Entry;
+}
+
+void CModelPool::DestroyBase(ModelEntry* Entry)
+{
+	if (Entry->Model != nullptr)
+	{
+		FlagScope Scope(g_ForceDiscard, true);
+		Entry->Model->Release();
+		xr_delete(Entry->Model);
+	}
+	xr_delete(Entry);
+}
+
+void CModelPool::WaitAll()
+{
+	xr_vector<ModelEntry*> Pending;
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		for (const auto& [Name, Entry] : Models)
+		{
+			if (!Entry->IsReady.load(std::memory_order_acquire))
+				Pending.push_back(Entry);
+		}
+	}
+
+	for (ModelEntry* Entry : Pending)
+	{
+		xrCriticalSectionGuard Wait(Entry->LoadGuard);
+	}
+}
+
+dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName)
 {
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
@@ -178,67 +287,64 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName, bool allow_r
 	V->Load(N,data,0);
 	FS.r_close(data);
 	g_pGamePersistent->RegisterModel(V);
-
-	// Registration
-	if (allow_register)
-	{
-		Instance_Register(N,V);
-	}
-	
 	return V;
 }
 
-dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, bool allow_register)
+dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data)
 {
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
-	
+
 	ogf_header			H;
 	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
 	V = Instance_Create (H.type);
 	V->Load				(name,data,0);
-
-	// Registration
-	if (allow_register) Instance_Register(name,V);
 	return V;
 }
 
-void CModelPool::Instance_Register(const char* N, dxRender_Visual* V)
-{
-	// Registration
-	ModelDef			M;
-	M.name				= N;
-	M.model				= V;
-	Models.push_back	(M);
-}
-
-
 void CModelPool::Destroy()
 {
+	WaitAll();
+
 	// Pool
-	Pool.clear();
+	{
+		xrCriticalSectionGuard Guard(PoolLock);
+		Pool.clear();
+	}
 
 	// Registry
-	while(!Registry.empty())
+	while (true)
 	{
-		REGISTRY_IT it	= Registry.begin();
-		if (it == Registry.end())
-			break;
-
-		dxRender_Visual* V=(dxRender_Visual*)it->first;
+		dxRender_Visual* V = nullptr;
+		{
+			xrCriticalSectionGuard Guard(PoolLock);
+			if (Registry.empty())
+				break;
+			V = Registry.begin()->first;
+		}
 		DeleteInternal	(V,true);
 	}
 
 	// Base/Reference
-	xr_vector<ModelDef>::iterator	I = Models.begin();
-	xr_vector<ModelDef>::iterator	E = Models.end();
-	for (; I!=E; I++)
+	xr_vector<ModelEntry*> Entries;
 	{
-		I->model->Release();
-		xr_delete(I->model);
+		xrSRWLockGuard Guard(ModelsLock);
+		Entries.reserve(Models.size());
+		for (const auto& [Name, Entry] : Models)
+			Entries.push_back(Entry);
+		Models.clear();
+		ModelsByVisual.clear();
 	}
-	
-	Models.clear();
+
+	for (ModelEntry* Entry : Entries)
+	{
+		if (Entry->Model != nullptr)
+		{
+			Entry->Model->Release();
+			xr_delete(Entry->Model);
+		}
+		xr_delete(Entry);
+	}
 
 	// cleanup motions container
 	g_pMotionsContainer->clean(false);
@@ -246,8 +352,6 @@ void CModelPool::Destroy()
 
 CModelPool::CModelPool()
 {
-    bForceDiscard 			= false;
-    bAllowChildrenDuplicate	= true; 
 	g_pMotionsContainer		= new motions_container();
 }
 
@@ -260,16 +364,11 @@ CModelPool::~CModelPool()
 dxRender_Visual* CModelPool::Instance_Find(const char* N)
 {
 	PROF_EVENT(__FUNCTION__);
-	dxRender_Visual*				Model=nullptr;
-	xr_vector<ModelDef>::iterator	I;
-	for (I=Models.begin(); I!=Models.end(); I++)
-	{
-		if (I->name[0]&&(0==xr_strcmp(*I->name,N))) {
-			Model = I->model;
-			break;
-		}
-	}
-	return Model;
+	xrSRWLockGuard Guard(ModelsLock, true);
+	auto It = Models.find(shared_str(N));
+	if (It == Models.end() || !It->second->IsReady.load(std::memory_order_acquire))
+		return nullptr;
+	return It->second->Model;
 }
 
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
@@ -281,36 +380,38 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 //	Msg						("-CREATE %s",low_name);
 
 	// 0. Search POOL
-	POOL_IT	it			=	Pool.find	(low_name);
-	if (it!=Pool.end())
+	dxRender_Visual* Model = nullptr;
 	{
-		// 1. Instance found
-        dxRender_Visual*		Model	= it->second;
-		Model->Spawn		();
-		Pool.erase			(it);
-		return				Model;
-	} else {
-		// 1. Search for already loaded model (reference, base model)
-		dxRender_Visual* Base		= Instance_Find		(low_name);
-
-		if (nullptr==Base)
+		xrCriticalSectionGuard Guard(PoolLock);
+		POOL_IT	it			=	Pool.find	(low_name);
+		if (it!=Pool.end())
 		{
-			// 2. If not found
-			bAllowChildrenDuplicate	= false;
-			if (data)		Base = Instance_Load(low_name,data,true);
-            else			Base = Instance_Load(low_name,true);
-			bAllowChildrenDuplicate	= true;
-		}
-        // 3. If found - return (cloned) reference
-		if (Base)
-		{
-			dxRender_Visual* Model = Instance_Duplicate(Base);
-			Registry.insert(std::make_pair(Model, low_name));
-			return Model;
+			Model			= it->second;
+			Pool.erase		(it);
 		}
 	}
 
-	return nullptr;
+	if (Model != nullptr)
+	{
+		// 1. Instance found
+		Model->Spawn		();
+		return Model;
+	}
+
+	ModelEntry* Entry = AcquireBase(low_name, data);
+	if (Entry->Model == nullptr)
+	{
+		Entry->Refs--;
+		return nullptr;
+	}
+
+	// 3. If found - return (cloned) reference
+	Model = DuplicateInstance(Entry->Model);
+	{
+		xrCriticalSectionGuard Guard(PoolLock);
+		Registry.insert(std::make_pair(Model, shared_str(low_name)));
+	}
+	return Model;
 }
 
 dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
@@ -324,30 +425,37 @@ dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 //.	if (0==Base) Base	 	= Instance_Load(name,data,false);
 	if(nullptr==Base)
 	{
-		if (data)		Base = Instance_Load	(low_name,data,false);
-		else			Base = Instance_Load	(low_name,false);
+		if (data)		Base = Instance_Load	(low_name,data);
+		else			Base = Instance_Load	(low_name);
 	}
 
-    dxRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
+    dxRender_Visual* Model	= g_AllowChildrenDuplicate?Instance_Duplicate(Base):Base;
     return					Model;
 }
 
-extern  xr_atomic_bool ENGINE_API g_bRendering; 
+extern  xr_atomic_bool ENGINE_API g_bRendering;
 void	CModelPool::DeleteInternal	(dxRender_Visual* &V, bool bDiscard)
 {
 	VERIFY					(!g_bRendering);
     if (!V)					return;
 	V->Depart				();
-	if (bDiscard||bForceDiscard){
-    	Discard	(V, true); 
+	if (bDiscard||g_ForceDiscard){
+		Discard	(V, true);
 	}else{
-		//
-		REGISTRY_IT	it		= Registry.find	(V);
-		if (it!=Registry.end())
+		bool IsPooled = false;
 		{
-			// Registry entry found - move it to pool
-			Pool.insert			(std::make_pair(it->second,V));
-		} else {
+			xrCriticalSectionGuard Guard(PoolLock);
+			REGISTRY_IT	it		= Registry.find	(V);
+			if (it!=Registry.end())
+			{
+				// Registry entry found - move it to pool
+				Pool.insert			(std::make_pair(it->second,V));
+				IsPooled			= true;
+			}
+		}
+
+		if (!IsPooled)
+		{
 			// Registry entry not-found - just special type of visual / particles / etc.
 			xr_delete			(V);
 		}
@@ -374,8 +482,9 @@ void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 	if (g_bRendering)
 	{
 		VERIFY(!bDiscard);
+		xrCriticalSectionGuard Guard(PoolLock);
 		ModelsToDelete.push_back(V);
-	} 
+	}
 	else
 	{
 		DeleteInternal(V,bDiscard);
@@ -386,9 +495,14 @@ void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 
 void CModelPool::DeleteQueue()
 {
-	for (u32 it = 0; it < ModelsToDelete.size(); it++)
-		DeleteInternal(ModelsToDelete[it]);
-	ModelsToDelete.clear();
+	xr_vector<dxRender_Visual*> Queue;
+	{
+		xrCriticalSectionGuard Guard(PoolLock);
+		Queue.swap(ModelsToDelete);
+	}
+
+	for (dxRender_Visual*& V : Queue)
+		DeleteInternal(V);
 }
 
 void CModelPool::DeleteQueuedDeffer()
@@ -403,50 +517,50 @@ void CModelPool::DeleteQueuedDeffer()
 
 void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 {
-	//
-	REGISTRY_IT	it = Registry.find(V);
-	if (it != Registry.end())
+	shared_str name;
+	{
+		xrCriticalSectionGuard Guard(PoolLock);
+		REGISTRY_IT	it = Registry.find(V);
+		if (it != Registry.end())
+		{
+			name = it->second;
+			Registry.erase(it);
+		}
+	}
+
+	if (name.size())
 	{
 		// Base
-		const shared_str& name = it->second;
-		xr_vector<ModelDef>::iterator I = Models.begin();
-		xr_vector<ModelDef>::iterator I_e = Models.end();
-
-		for (; I != I_e; ++I)
+		ModelEntry* Removed = nullptr;
 		{
-			if (I->name == name)
+			xrSRWLockGuard Guard(ModelsLock);
+			auto I = Models.find(name);
+			if (I != Models.end())
 			{
+				ModelEntry* Entry = I->second;
 				if (b_complete || strchr(*name, '#'))
 				{
-					VERIFY(I->refs > 0);
-					I->refs--;
-					if (0 == I->refs)
+					VERIFY(Entry->Refs > 0);
+					if (0 == --Entry->Refs)
 					{
-						bForceDiscard = true;
-						I->model->Release();
-						xr_delete(I->model);
+						Removed = Entry;
+						ModelsByVisual.erase(Entry->Model);
 						Models.erase(I);
-						bForceDiscard = false;
 					}
-					break;
 				}
-				else {
-					if (I->refs > 0)
-						I->refs--;
-					break;
+				else if (Entry->Refs > 0)
+				{
+					Entry->Refs--;
 				}
 			}
 		}
-		// Registry
-		xr_delete(V);
-		Registry.erase(it);
-	}
-	else
-	{
-		// Registry entry not-found - just special type of visual / particles / etc.
-		xr_delete(V);
+
+		if (Removed != nullptr)
+			DestroyBase(Removed);
 	}
 
+	// Registry entry not-found - just special type of visual / particles / etc.
+	xr_delete(V);
 	V = nullptr;
 }
 
@@ -474,16 +588,23 @@ void CModelPool::Prefetch()
 		dxRender_Visual* V = Create(item.first.c_str());
 		Delete(V, false);
 	}
+
+	xrSRWLockGuard Guard(ModelsLock, true);
+	Msg("* Model pool: %u base models", u32(Models.size()));
 }
 
 void CModelPool::ClearPool( bool b_complete)
 {
-	POOL_IT	_I			=	Pool.begin();
-	POOL_IT	_E			=	Pool.end();
-	for (;_I!=_E;_I++)	{
-		Discard	(_I->second, b_complete)	;
+	WaitAll();
+
+	POOL Taken;
+	{
+		xrCriticalSectionGuard Guard(PoolLock);
+		Taken.swap(Pool);
 	}
-	Pool.clear			();
+
+	for (auto& [Name, V] : Taken)
+		Discard(V, b_complete);
 }
 
 dxRender_Visual* CModelPool::CreatePE	(PS::CPEDef* source)
