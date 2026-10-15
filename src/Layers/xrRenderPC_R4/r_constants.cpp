@@ -75,7 +75,7 @@ void R_constant_table::merge(R_constant_table* T)
 	handlers_valid = false;
 
 	// Real merge
-	static xr_vector<ref_constant> table_tmp;
+	static thread_local xr_vector<ref_constant> table_tmp;
 	table_tmp.clear();
 	table_tmp.reserve(table.size());
 

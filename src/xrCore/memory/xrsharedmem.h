@@ -1,13 +1,14 @@
 #ifndef xrsharedmemH	
 #define xrsharedmemH
 #pragma once
+#include <atomic>
 
 #pragma pack(push,4)
 //////////////////////////////////////////////////////////////////////////
 #pragma warning(disable : 4200)
 struct		XRCORE_API	smem_value
 {
-	u32					dwReference		;
+	std::atomic<u32>	dwReference		;
 	u32					dwCRC			;
 	u32					dwLength		;
 	u32					_align_16		;
