@@ -221,6 +221,33 @@ inline void xr_parallel_for(BlockRangeType Begin, BlockRangeType End, Body Funct
 #endif
 }
 
+class xrTaskBlockingScope
+{
+public:
+	xrTaskBlockingScope()
+	{
+#ifdef IXR_WINDOWS
+		IsActive = Concurrency::Context::VirtualProcessorId() != -1;
+		if (IsActive)
+			Concurrency::Context::Oversubscribe(true);
+#endif
+	}
+
+	~xrTaskBlockingScope()
+	{
+#ifdef IXR_WINDOWS
+		if (IsActive)
+			Concurrency::Context::Oversubscribe(false);
+#endif
+	}
+
+	xrTaskBlockingScope(const xrTaskBlockingScope&) = delete;
+	xrTaskBlockingScope& operator=(const xrTaskBlockingScope&) = delete;
+
+private:
+	bool IsActive = false;
+};
+
 inline const size_t xr_max_concurrency()
 {
 #ifdef IXR_WINDOWS

@@ -50,7 +50,11 @@ private:
 
 	xr_task_group				RequestTasks;
 	xr_hash_set<shared_str>		Requested;
+	xr_deque<shared_str>		RequestQueue;
+	u32							ActiveLoaders = 0;
 	xrCriticalSection			RequestedLock;
+
+	void						RunLoader			();
 
 	void						Destroy	();
 	ModelEntry*					AcquireBase			(const char* Name, IReader* Data);
