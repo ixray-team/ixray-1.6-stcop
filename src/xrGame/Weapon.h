@@ -411,6 +411,8 @@ public:
 		bool  force_zoom_sound = false;
 	} m_lens_zoom_params;
 
+	float ScopeAberration = 0.0f;
+
 	struct stepped_params
 	{
 		float max_value = 1.0f;

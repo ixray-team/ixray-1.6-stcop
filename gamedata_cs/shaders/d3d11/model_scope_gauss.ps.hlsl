@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
+#include "scope_lens.hlsli"
 
 struct v2p
 {
@@ -16,7 +17,7 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	
     float4 t_base = s_base.Sample(smp_base, I.tc0);
 	float blow_noise	= get_noise(I.tc0*timers.z) * m_affects.x * m_affects.x * 30;	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = SampleScopeScene(I.tc0, pos2d.xy);
 	t_vp2.r += blow_noise;
 	t_vp2.g += blow_noise;
 	t_vp2.b += blow_noise;	

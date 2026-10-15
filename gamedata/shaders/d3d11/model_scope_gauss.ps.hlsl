@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
+#include "scope_lens.hlsli"
 
 float ScopePostprocessActive;
 
@@ -17,7 +18,7 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 	}
 	
     float4 t_base = s_base.Sample(smp_base, I.tc0);
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = SampleScopeScene(I.tc0, pos2d.xy);
 	bool MaterialNightVision = ScopePostprocessActive < 0.5f && m_zoom_deviation.z > 0.0f;
 	if (MaterialNightVision || m_affects.x > 0.0f)
 	{

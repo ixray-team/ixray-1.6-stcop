@@ -4708,6 +4708,9 @@ bool createWpnScopeXML()
 
 void CWeapon::LoadScopeEffects(const char* Section)
 {
+	const shared_str OpticalSection = IsScopePermanent() ? cNameSect() : shared_str(Section);
+	const float WeaponAberration = pSettings->read_if_exists<float>(cNameSect(), "scope_abberation", 0.0f);
+	ScopeAberration = pSettings->read_if_exists<float>(OpticalSection, "scope_abberation", WeaponAberration);
 	const shared_str WeaponDetector = pSettings->read_if_exists<str_c>(cNameSect(), "scope_alive_detector", nullptr);
 	const shared_str WeaponNightVision = pSettings->read_if_exists<str_c>(cNameSect(), "scope_nightvision", nullptr);
 	const bool HasDynamicZoom = pSettings->read_if_exists<bool>(cNameSect(), "scope_dynamic_zoom", false);
@@ -4721,6 +4724,7 @@ void CWeapon::LoadScopeEffects(const char* Section)
 		process_if_exists_set(Parameters.c_str(), "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, false);
 		process_if_exists_set(Parameters.c_str(), "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, false);
 		process_if_exists_set(Parameters.c_str(), "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, false);
+		process_if_exists_set(Parameters.c_str(), "scope_abberation", ScopeAberration, false);
 	}
 
 	RefreshScopeDetector();

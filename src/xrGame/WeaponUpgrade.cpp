@@ -369,6 +369,7 @@ bool CWeapon::InstallScopeEffectsUpgrade(const char* Section, bool IsTest)
 	const bool HasDetector = process_if_exists_set(Section, "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, IsTest);
 	const bool HasNightVision = process_if_exists_set(Section, "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, IsTest);
 	const bool HasDynamicZoom = process_if_exists_set(Section, "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, IsTest);
+	const bool HasAberration = process_if_exists_set(Section, "scope_abberation", ScopeAberration, IsTest);
 	if (!IsTest)
 	{
 		if (HasDetector)
@@ -380,7 +381,7 @@ bool CWeapon::InstallScopeEffectsUpgrade(const char* Section, bool IsTest)
 			RefreshScopeNightVision();
 		}
 	}
-	return HasDetector || HasNightVision || HasDynamicZoom;
+	return HasDetector || HasNightVision || HasDynamicZoom || HasAberration;
 }
 
 bool CWeapon::install_upgrade_hud_sect(const char* section, bool test)

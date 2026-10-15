@@ -76,6 +76,18 @@ The engine maintains the mask when the actor is alive, uses first-person view an
 
 Interference changes shader visibility without switching the device off. Thus a fully suppressed night-vision image still keeps the UI mask, and the device's existing power consumption continues. Weapon and scope night vision use their separate effects and do not create this mask. A 3D night-vision lens with an active `scope_nightvision` PPE profile uses the already processed snapshot and skips its additional material amplification. This prevents applying night vision twice and washing the lens out to white; scopes without an active PPE pass retain their material effect. The same PPE profile remains active while the normal lens fades in and out during zoom animations, so its brightness does not switch to the stronger material effect halfway through the transition. Gauss keeps its `.ppe` effect on 2D scopes. Its 3D `model_scope_gauss` lens shader boosts grayscale, adds a blue tint and applies electronics-interference noise. To use only the shader effect, the Lua lens material must specify `:scope_postprocess(false)`. Setting `true` permits snapshot processing through PPE; when PPE is active, the shader skips its own gain and blue tint while retaining interference noise. The material chooses this behavior independently of profile names in the game component. Target frames still require fully completed zoom.
 
+## Scope lens aberration
+
+R4 supports Gunslinger chromatic aberration for ordinary, night-vision, switchable-reticle and Gauss lenses. The setting retains its original spelling:
+
+```ini
+scope_abberation = 0.006
+```
+
+Permanent scopes read the weapon section. Detachable scopes read their own section with a fallback to the weapon value. Upgrades can override this parameter; installed values are reapplied when scope parameters reload. The default is `0`.
+
+The scene's red and blue channels move in opposite diagonal directions, with increasing separation towards the lens edge. The reticle and UI are composed afterwards. Coordinates use the scene texture dimensions to support render scaling. Zero strength skips the additional image samples. The parameter uses the existing `m_hud_params.z` channel without adding a shader constant.
+
 ## Electronics interference
 
 Night vision uses the existing electronics problems manager. It does not add another emission detector or alter interference for other devices.
