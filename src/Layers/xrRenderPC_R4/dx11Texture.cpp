@@ -148,6 +148,41 @@ bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata
 	return status;
 }
 
+namespace
+{
+	bool FindTextureFile(string_path& FileName, const char* Name)
+	{
+		return FS.exist(FileName, "$level$", Name, ".dds") ||
+			FS.exist(FileName, "$game_saves$", Name, ".dds") ||
+			FS.exist(FileName, _game_textures_, Name, ".dds");
+	}
+}
+
+ERHI_FORMAT CRender::PeekTextureFormat(const char* Name)
+{
+	PROF_EVENT(__FUNCTION__);
+	string_path TextureName = {};
+	xr_strcpy(TextureName, Name);
+	fix_texture_name(TextureName);
+
+	string_path FileName = {};
+	if (!FindTextureFile(FileName, TextureName))
+	{
+		return ERHI_FORMAT::UNKNOWN;
+	}
+
+	IReader* Reader = FS.r_open(FileName);
+	if (Reader == nullptr)
+	{
+		return ERHI_FORMAT::UNKNOWN;
+	}
+
+	TexMetadata Metadata = {};
+	const HRESULT Result = GetMetadataFromDDSMemory(Reader->pointer(), Reader->length(), DDS_FLAGS::DDS_FLAGS_NONE, Metadata);
+	FS.r_close(Reader);
+	return SUCCEEDED(Result) ? (ERHI_FORMAT)Metadata.format : ERHI_FORMAT::UNKNOWN;
+}
+
 IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bStaging)
 {
 	// Moved here just to avoid warning
@@ -194,15 +229,7 @@ IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bSta
 		}
 	}
 
-	if (FS.exist(fn, "$level$", fname, ".dds"))
-	{
-		goto _DDS;
-	}
-	if (FS.exist(fn, "$game_saves$", fname, ".dds"))
-	{
-		goto _DDS;
-	}
-	if (FS.exist(fn, _game_textures_, fname, ".dds"))
+	if (FindTextureFile(fn, fname))
 	{
 		goto _DDS;
 	}
