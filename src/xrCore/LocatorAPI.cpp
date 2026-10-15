@@ -38,10 +38,20 @@ void CLocatorAPI::ParseIgnoreList()
 	}
 }
 
-bool CLocatorAPI::CheckSkip(const xr_path& Path) const
+bool CLocatorAPI::IsIgnoredPath(const xr_path& path, bool isDirectory) const
 {
-	auto UnixPath = Path.native();
+	if (IgnoreData.empty())
+	{
+		return false;
+	}
+
+	auto UnixPath = path.native();
 	std::ranges::replace(UnixPath, '\\', '/');
+	if (isDirectory && !UnixPath.empty() && UnixPath.back() != '/')
+	{
+		UnixPath.push_back('/');
+	}
+
 
 	for (const auto& SkipPath : IgnoreData)
 	{
@@ -598,6 +608,11 @@ xr_unique_ptr<xr_vector<scan_chache>>& GetScanCacheBuffer()
 
 bool CLocatorAPI::Recurse(const char* path)
 {
+	if (IsIgnoredPath(path, true))
+	{
+		return false;
+	}
+
 	string_path scanPath;
 	xr_strcpy(scanPath, sizeof(scanPath), path);
 	
@@ -616,14 +631,15 @@ bool CLocatorAPI::Recurse(const char* path)
 	{
 		xr_path elem_path = elem;
 
-		if (CheckSkip(elem_path))
+		const bool isDirectory = elem.is_directory();
+		if (IsIgnoredPath(elem_path, isDirectory))
 		{
 			continue;
 		}
 
 		GetScanCacheBuffer()->emplace_back();
 		scan_chache& chache = GetScanCacheBuffer()->back();
-		chache.dir = elem.is_directory();
+		chache.dir = isDirectory;
 		chache.ftime = xr_chrono_to_time_t(elem.last_write_time());
 		chache.fsize = (chache.dir ? 0 : elem.file_size());
 		chache.fileName = elem_path.xfilename();
@@ -934,7 +950,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			[this](const std::string& file, const filewatch::Event Event)
 			{
 				// TODO: Encoding in saves problem!
-				if (CheckSkip(file.c_str()))
+				if (IsIgnoredPath(file.c_str()))
 				{
 					return;
 				}
