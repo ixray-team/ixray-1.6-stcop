@@ -386,7 +386,7 @@ void CWeapon::Load		(const char* section)
 			}
 		};
 
-		LoadCamShotParams();
+		IGame_ObjectPool::RunOnPrimaryThread([this]() { LoadCamShotParams(); });
 
 		LoadMoreCameras(m_shot_cams[0], "cam_shoot", "camera_effects\\weapon\\base_shoot.anm");
 		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
