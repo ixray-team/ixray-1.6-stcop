@@ -172,27 +172,53 @@ void CModelPool::Request(const char* name)
 		if (Models.find(Key) != Models.end())
 			return;
 	}
+	static const u32 MaxLoaders = std::max<u32>(u32(xr_max_concurrency()) / 2, 2);
 	{
 		xrCriticalSectionGuard Guard(RequestedLock);
 		if (!Requested.insert(Key).second)
 			return;
+
+		RequestQueue.push_back(Key);
+		if (ActiveLoaders >= MaxLoaders)
+			return;
+		ActiveLoaders++;
 	}
 
-	RequestTasks.run([this, Key]()
+	RequestTasks.run([this]() { RunLoader(); });
+}
+
+void CModelPool::RunLoader()
+{
+	if (!g_ModelLoaderProfiled && !g_AppInfo.IsPrimaryThread())
 	{
-		if (!g_ModelLoaderProfiled && !g_AppInfo.IsPrimaryThread())
+		g_ModelLoaderProfiled = true;
+		PROF_REGISTER_THREAD("Model loader");
+	}
+
+	xrTaskBlockingScope Blocking;
+	while (true)
+	{
+		shared_str Key;
 		{
-			g_ModelLoaderProfiled = true;
-			PROF_REGISTER_THREAD("Model loader");
+			xrCriticalSectionGuard Guard(RequestedLock);
+			if (RequestQueue.empty())
+			{
+				ActiveLoaders--;
+				return;
+			}
+			Key = RequestQueue.front();
+			RequestQueue.pop_front();
 		}
 
-		PROF_EVENT("CModelPool::Request");
-		ModelEntry* Entry = AcquireBase(*Key, nullptr);
-		Entry->Refs--;
+		{
+			PROF_EVENT("CModelPool::Request");
+			ModelEntry* Entry = AcquireBase(*Key, nullptr);
+			Entry->Refs--;
+		}
 
 		xrCriticalSectionGuard Guard(RequestedLock);
 		Requested.erase(Key);
-	});
+	}
 }
 
 EModelLoadState CModelPool::GetState(const char* name)
