@@ -71,8 +71,12 @@ void vision_client::eye_pp_s2					()
 	if (!Engine.Sheduler.QueuePhysicsIndependent(this))
 	{
 		// Preserve the asynchronous path when overlap is disabled or the queue is full.
-		Device.SecondaryTasks.run([this, Position = PhysicsVisionPosition, Delta = PhysicsVisionDelta, Transparency = PhysicsVisionTransparency]() mutable
-								  { feel_vision_update(Position, Delta, Transparency); });
+		const auto VisionLambda = [this, Position = PhysicsVisionPosition, Delta = PhysicsVisionDelta, Transparency = PhysicsVisionTransparency]()
+		{
+			Fvector QueryPosition = Position;
+			feel_vision_update(QueryPosition, Delta, Transparency);
+		};
+		Device.SecondaryTasks.run(VisionLambda);
 	}
 
 	Device.Statistic->AI_Vis_RayTests.End	();
