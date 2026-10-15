@@ -73,9 +73,19 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	{
 		RImplementation.addShaderOption("USE_AREF", "1");
 
-		pTexture->Load();
-
-		ERHI_FORMAT Format = pTexture->get_Format();
+		ERHI_FORMAT Format = pTexture->PeekFormat();
+		if (Format == ERHI_FORMAT::UNKNOWN)
+		{
+			pTexture->Load();
+			Format = pTexture->get_Format();
+		}
+#ifdef DEBUG
+		else
+		{
+			const auto IsBC1 = [](ERHI_FORMAT F) { return F >= ERHI_FORMAT::BC1_TYPELESS && F < ERHI_FORMAT::BC2_TYPELESS; };
+			VERIFY2(IsBC1(Format) == IsBC1(pTexture->get_Format()), *C.L_textures[0]);
+		}
+#endif
 
 		if(Format >= ERHI_FORMAT::BC1_TYPELESS && Format < ERHI_FORMAT::BC2_TYPELESS)
 		{

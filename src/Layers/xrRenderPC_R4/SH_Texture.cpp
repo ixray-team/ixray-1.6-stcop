@@ -403,6 +403,19 @@ void CTexture::WaitForLoad()
 	}
 }
 
+ERHI_FORMAT CTexture::PeekFormat()
+{
+	{
+		xrCriticalSectionGuard Guard(LoadGuard);
+		if (!LoadTask && pSurface)
+		{
+			return pSurface->GetFormat();
+		}
+	}
+
+	return RImplementation.PeekTextureFormat(*cName);
+}
+
 void CTexture::LoadImpl()
 {
 	flags.bLoaded = true;
