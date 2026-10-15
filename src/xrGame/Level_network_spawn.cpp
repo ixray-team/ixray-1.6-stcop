@@ -18,6 +18,103 @@
 #include "alife_simulator.h"
 #include "GameObject.h"
 
+extern ENGINE_API bool g_appLoaded;
+
+void SpawnVisuals::Collect(CSE_Abstract* Entity, xr_vector<shared_str>& Names)
+{
+	if (pSettings->section_exist(Entity->s_name))
+	{
+		if (pSettings->line_exist(Entity->s_name, "visual"))
+			Names.emplace_back(pSettings->r_string(Entity->s_name, "visual"));
+
+		if (pSettings->line_exist(Entity->s_name, "hud"))
+		{
+			const char* Hud = pSettings->r_string(Entity->s_name, "hud");
+			if (pSettings->section_exist(Hud))
+			{
+				if (pSettings->line_exist(Hud, "item_visual"))
+					Names.emplace_back(pSettings->r_string(Hud, "item_visual"));
+				else if (pSettings->line_exist(Hud, "visual"))
+					Names.emplace_back(pSettings->r_string(Hud, "visual"));
+			}
+		}
+	}
+
+	if (CSE_Visual* Visual = Entity->visual())
+	{
+		const char* Name = Visual->get_visual();
+		if (Name && Name[0])
+			Names.emplace_back(Name);
+	}
+}
+
+void SpawnVisuals::Request(CSE_Abstract* Entity)
+{
+	if (g_dedicated_server)
+		return;
+
+	xr_vector<shared_str> Names;
+	Collect(Entity, Names);
+	for (const shared_str& Name : Names)
+		::Render->model_Request(Name.c_str());
+}
+
+bool CLevel::IsSpawnReady(const NET_Event& Event)
+{
+	if (!g_appLoaded || Device.dwPrecacheFrame || g_dedicated_server)
+		return true;
+
+	if (Event.ID != M_SPAWN && Event.ID != M_SPAWN_LOCAL)
+		return true;
+
+	if (m_PendingSpawnEvent != &Event)
+	{
+		PROF_EVENT("CLevel::IsSpawnReady: parse");
+		m_PendingSpawnEvent = &Event;
+		m_PendingSpawnVisuals.clear();
+
+		NET_Packet P;
+		Event.implication(P);
+		u16 dummy16;
+		P.r_begin(dummy16);
+		shared_str s_name;
+		P.r_stringZ(s_name);
+
+		CSE_Abstract* E = F_entity_Create(*s_name);
+		if (E == nullptr)
+			return true;
+
+		if (Event.ID == M_SPAWN_LOCAL)
+		{
+			xr_unique_ptr<CSaveObjectLoad> ObjLoad;
+			ObjLoad.reset(SaveObjectNetPacketHelper::GetLoadObjectFromPacket(P));
+			E->Spawn_Serialize(*ObjLoad);
+		}
+		else
+		{
+			E->Spawn_Read(P);
+		}
+
+		SpawnVisuals::Collect(E, m_PendingSpawnVisuals);
+		F_entity_Destroy(E);
+	}
+
+	for (const shared_str& Name : m_PendingSpawnVisuals)
+	{
+		EModelLoadState State = ::Render->model_GetState(Name.c_str());
+		if (State == EModelLoadState::NotRequested)
+		{
+			::Render->model_Request(Name.c_str());
+			State = ::Render->model_GetState(Name.c_str());
+		}
+
+		if (State == EModelLoadState::Loading)
+			return false;
+	}
+
+	return true;
+}
+
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
 	// Begin analysis

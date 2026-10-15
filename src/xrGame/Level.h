@@ -35,6 +35,7 @@ class	xrServer;
 class	game_cl_GameState;
 class	NET_Queue_Event;
 class	CSE_Abstract;
+class	NET_Event;
 class	CSpaceRestrictionManager;
 class	CSeniorityHierarchyHolder;
 class	CClientSpawnManager;
@@ -329,6 +330,10 @@ public:
 	void						local_Process_Spawn		(NET_Packet& P);
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
+
+	bool						IsSpawnReady			(const NET_Event& Event);
+	const NET_Event*			m_PendingSpawnEvent		= nullptr;
+	xr_vector<shared_str>		m_PendingSpawnVisuals;
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
 
 	// Input
@@ -549,5 +554,11 @@ bool IsGameTypeSingleCompatible();
 //class  CPHWorld;
 //extern CPHWorld*				ph_world;
 extern bool						g_bDebugEvents;
+
+namespace SpawnVisuals
+{
+	void						Collect				(CSE_Abstract* Entity, xr_vector<shared_str>& Names);
+	void						Request				(CSE_Abstract* Entity);
+}
 
 // -------------------------------------------------------------------------------------------------
