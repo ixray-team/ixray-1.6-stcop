@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
+#include "scope_lens.hlsli"
 #include "pnv.hlsli"
 
 uniform float4 m_hud_params;
@@ -23,7 +24,7 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
     float4 t_base = s_base.Sample(smp_base, I.tc0);
 	t_base.xyz = detonemap(t_base.xyz);
 	
-    float4 t_vp2 = s_image[pos2d.xy];
+    float4 t_vp2 = SampleScopeScene(I.tc0, pos2d.xy);
 	
 	// A configured PPE profile has already processed the snapshot, as in a 2D scope.
 	// Apply the material NVG only for scopes without an active PPE effect.

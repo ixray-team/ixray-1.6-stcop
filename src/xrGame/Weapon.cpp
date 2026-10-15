@@ -4352,6 +4352,9 @@ bool createWpnScopeXML()
 
 void CWeapon::LoadScopeEffects(const char* Section)
 {
+	const shared_str OpticalSection = get_ScopeStatus() == ALife::eAddonPermanent ? cNameSect() : shared_str(Section);
+	const float WeaponAberration = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "scope_abberation", 0.0f);
+	ScopeAberration = READ_IF_EXISTS(pSettings, r_float, OpticalSection, "scope_abberation", WeaponAberration);
 	const shared_str WeaponDetector = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_alive_detector", nullptr);
 	const shared_str WeaponNightVision = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_nightvision", nullptr);
 	const bool HasDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "scope_dynamic_zoom", false);
@@ -4365,6 +4368,7 @@ void CWeapon::LoadScopeEffects(const char* Section)
 		process_if_exists_set(Parameters.c_str(), "scope_alive_detector", m_zoom_params.m_sUseBinocularVision, false);
 		process_if_exists_set(Parameters.c_str(), "scope_nightvision", m_zoom_params.m_sUseZoomPostprocess, false);
 		process_if_exists_set(Parameters.c_str(), "scope_dynamic_zoom", m_zoom_params.m_bUseDynamicZoom, false);
+		process_if_exists_set(Parameters.c_str(), "scope_abberation", ScopeAberration, false);
 	}
 
 	RefreshScopeDetector();
