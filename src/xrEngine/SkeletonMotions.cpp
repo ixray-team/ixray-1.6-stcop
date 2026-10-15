@@ -129,7 +129,7 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 				}
 				else
 				{
-					R_ASSERT3(*b_it!=BI_NONE, "Can't find bone:", buf);
+					R_ASSERT4(*b_it!=BI_NONE, "Can't find bone:", buf, N);
 				}
 
 				if (bRes) 
