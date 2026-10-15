@@ -38,17 +38,17 @@ void _draw_cam_pos(CGameFont* pFont)
 	pFont->OnRender	();
 }
 
-void CStats::Show() 
+void CStats::Show()
 {
 	// Stop timers
 	{
-		EngineTOTAL.FrameEnd		();	
-		Sheduler.FrameEnd			();	
-		UpdateClient.FrameEnd		();	
-		Physics.FrameEnd			();	
+		EngineTOTAL.FrameEnd		();
+		Sheduler.FrameEnd			();
+		UpdateClient.FrameEnd		();
+		Physics.FrameEnd			();
 		ph_collision.FrameEnd		();
 		ph_core.FrameEnd			();
-		Animation.FrameEnd			();	
+		Animation.FrameEnd			();
 		AI_Think.FrameEnd			();
 		AI_Range.FrameEnd			();
 		AI_Path.FrameEnd			();
@@ -56,55 +56,55 @@ void CStats::Show()
 		AI_Vis.FrameEnd				();
 		AI_Vis_Query.FrameEnd		();
 		AI_Vis_RayTests.FrameEnd	();
-		
+
 		RenderTOTAL.FrameEnd		();
 		RenderCALC.FrameEnd			();
 		RenderCALC_HOM.FrameEnd		();
-		RenderDUMP.FrameEnd			();	
+		RenderDUMP.FrameEnd			();
 		RenderDUMP_RT.FrameEnd		();
-		RenderDUMP_SKIN.FrameEnd	();	
-		RenderDUMP_Wait.FrameEnd	();	
-		RenderDUMP_Wait_S.FrameEnd	();	
-		RenderDUMP_HUD.FrameEnd		();	
-		RenderDUMP_Glows.FrameEnd	();	
-		RenderDUMP_Lights.FrameEnd	();	
-		RenderDUMP_WM.FrameEnd		();	
-		RenderDUMP_DT_VIS.FrameEnd	();	
-		RenderDUMP_DT_Render.FrameEnd();	
+		RenderDUMP_SKIN.FrameEnd	();
+		RenderDUMP_Wait.FrameEnd	();
+		RenderDUMP_Wait_S.FrameEnd	();
+		RenderDUMP_HUD.FrameEnd		();
+		RenderDUMP_Glows.FrameEnd	();
+		RenderDUMP_Lights.FrameEnd	();
+		RenderDUMP_WM.FrameEnd		();
+		RenderDUMP_DT_VIS.FrameEnd	();
+		RenderDUMP_DT_Render.FrameEnd();
 		RenderDUMP_DT_Cache.FrameEnd();
-		RenderDUMP_Pcalc.FrameEnd	();	
-		RenderDUMP_Scalc.FrameEnd	();	
-		RenderDUMP_Srender.FrameEnd	();	
-		
+		RenderDUMP_Pcalc.FrameEnd	();
+		RenderDUMP_Scalc.FrameEnd	();
+		RenderDUMP_Srender.FrameEnd	();
+
 		Sound.FrameEnd				();
 		Input.FrameEnd				();
-		clRAY.FrameEnd				();	
+		clRAY.FrameEnd				();
 		clBOX.FrameEnd				();
 		clFRUSTUM.FrameEnd			();
-		
+
 		netClient1.FrameEnd			();
 		netClient2.FrameEnd			();
 		netServer.FrameEnd			();
 
 		netClientCompressor.FrameEnd();
 		netServerCompressor.FrameEnd();
-		
+
 		TEST0.FrameEnd				();
 		TEST1.FrameEnd				();
 		TEST2.FrameEnd				();
 		TEST3.FrameEnd				();
 	}
-	
+
 	if (Device.fTimeDelta > EPS_S)
 	{
 		constexpr float smoothing_alpha = 0.10f;
-		
+
 		float raw_fps = 1.f / Device.fTimeDelta;
 		fFPS = raw_fps * smoothing_alpha + fFPS * (1.f - smoothing_alpha);
 
 		float fOne = 0.3f;
 		float fInv = 1.f-fOne;
-		
+
 		if (RenderTOTAL.result > EPS_S)
 		{
 			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
@@ -113,19 +113,19 @@ void CStats::Show()
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
-	
+
 	{
 		float mem_count = float(std::atomic_ref(Memory.stat_calls).exchange(0, std::memory_order_relaxed));
 		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
 		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
 	}
-	
+
 	if (g_dedicated_server)
 		return;
-	
+
 	int frm = 2000;
 	div_t ddd = div(Device.dwFrame,frm);
-	
+
 	if( ddd.rem < frm/2.0f )
 		{
 		pFont->SetColor	(0xFFFFFFFF	);
@@ -139,7 +139,7 @@ void CStats::Show()
 	CGameFont& F = *pFont;
 	float f_base_size = 15.0f;
 	F.SetHeight(f_base_size);
-	
+
 	if (psDeviceFlags.test(rsStatistic))
 	{
 		static float	r_ps		= 0;
@@ -159,16 +159,16 @@ void CStats::Show()
 		F.OutSkip	();
 
 #define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))
-		F.OutNext	("*** ENGINE:  %2.2fms",EngineTOTAL.result);	
+		F.OutNext	("*** ENGINE:  %2.2fms",EngineTOTAL.result);
 		F.OutNext	("Memory:      %2.2fa",fMem_calls);
 		F.OutNext	("uClients:    %2.2fms, %2.1f%%, crow(%d)/active(%d)/total(%d)",UpdateClient.result,PPP(UpdateClient.result),UpdateClient_crows,UpdateClient_active,UpdateClient_total);
 		F.OutNext	("uSheduler:   %2.2fms, %2.1f%%",Sheduler.result,		PPP(Sheduler.result));
 		F.OutNext	("uSheduler_L: %2.2fms",fShedulerLoad);
 		F.OutNext	("uParticles:  Qstart[%d] Qactive[%d] Qdestroy[%d]",	Particles_starting,Particles_active,Particles_destroy);
-		F.OutNext	("Physics:     %2.2fms, %2.1f%%",Physics.result,		PPP(Physics.result));	
-		F.OutNext	("  collider:  %2.2fms", ph_collision.result);	
-		F.OutNext	("  solver:    %2.2fms, %d",ph_core.result,ph_core.count);	
-		F.OutNext	("aiThink:     %2.2fms, %d",AI_Think.result,AI_Think.count);	
+		F.OutNext	("Physics:     %2.2fms, %2.1f%%",Physics.result,		PPP(Physics.result));
+		F.OutNext	("  collider:  %2.2fms", ph_collision.result);
+		F.OutNext	("  solver:    %2.2fms, %d",ph_core.result,ph_core.count);
+		F.OutNext	("aiThink:     %2.2fms, %d",AI_Think.result,AI_Think.count);
 		F.OutNext	("  aiRange:   %2.2fms, %d",AI_Range.result,AI_Range.count);
 		F.OutNext	("  aiPath:    %2.2fms, %d",AI_Path.result,AI_Path.count);
 		F.OutNext	("  aiNode:    %2.2fms, %d",AI_Node.result,AI_Node.count);
@@ -176,25 +176,25 @@ void CStats::Show()
 		F.OutNext	("  Query:     %2.2fms",	AI_Vis_Query.result);
 		F.OutNext	("  RayCast:   %2.2fms",	AI_Vis_RayTests.result);
 		F.OutSkip	();
-								   
+
 #undef  PPP
 #define PPP(a) (100.f*float(a)/float(RenderTOTAL.result))
 		F.OutNext	("*** RENDER:  %2.2fms",RenderTOTAL.result);
-		F.OutNext	("R_CALC:      %2.2fms, %2.1f%%",RenderCALC.result,	PPP(RenderCALC.result));	
+		F.OutNext	("R_CALC:      %2.2fms, %2.1f%%",RenderCALC.result,	PPP(RenderCALC.result));
 		F.OutNext	("  HOM:       %2.2fms, %d",RenderCALC_HOM.result,	RenderCALC_HOM.count);
 		F.OutNext	("  Skeletons: %2.2fms, %d",Animation.result,		Animation.count);
-		F.OutNext	("R_DUMP:      %2.2fms, %2.1f%%",RenderDUMP.result,	PPP(RenderDUMP.result));	
-		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
-		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
-		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
-		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
-		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
-		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);	
+		F.OutNext	("R_DUMP:      %2.2fms, %2.1f%%",RenderDUMP.result,	PPP(RenderDUMP.result));
+		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);
+		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);
+		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);
+		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);
+		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);
+		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);
 		F.OutNext	("  Wallmarks: %2.2fms, %d/%d - %d",RenderDUMP_WM.result,RenderDUMP_WMS_Count,RenderDUMP_WMD_Count,RenderDUMP_WMT_Count);
-		F.OutNext	("  Glows:     %2.2fms",RenderDUMP_Glows.result);	
+		F.OutNext	("  Glows:     %2.2fms",RenderDUMP_Glows.result);
 		F.OutNext	("  Lights:    %2.2fms, %d",RenderDUMP_Lights.result,RenderDUMP_Lights.count);
 		F.OutNext	("  RT:        %2.2fms, %d",RenderDUMP_RT.result,RenderDUMP_RT.count);
-		F.OutNext	("  HUD:       %2.2fms",RenderDUMP_HUD.result);	
+		F.OutNext	("  HUD:       %2.2fms",RenderDUMP_HUD.result);
 		F.OutNext	("  P_calc:    %2.2fms",RenderDUMP_Pcalc.result);
 		F.OutNext	("  S_calc:    %2.2fms",RenderDUMP_Scalc.result);
 		F.OutNext	("  S_render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
@@ -214,7 +214,7 @@ void CStats::Show()
 		F.OutNext	("netServer:   %2.2fms, %d",		netServer.result,netServer.count);
 		F.OutNext	("netClientCompressor:   %2.2fms",	netClientCompressor.result);
 		F.OutNext	("netServerCompressor:   %2.2fms",	netServerCompressor.result);
-		
+
 		F.OutSkip	();
 
 		F.OutSkip	();
@@ -265,7 +265,7 @@ void CStats::Show()
 			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
 			if (Sheduler.result>3.f)		F_.OutNext	("Update     > 3ms:	%3.1f",	Sheduler.result);
 			if (UpdateClient.result>3.f)	F_.OutNext	("UpdateCL   > 3ms: %3.1f",	UpdateClient.result);
-			if (Physics.result>5.f)			F_.OutNext	("Physics    > 5ms: %3.1f",	Physics.result);	
+			if (Physics.result>5.f)			F_.OutNext	("Physics    > 5ms: %3.1f",	Physics.result);
 		}
 	}
 
@@ -288,13 +288,13 @@ void CStats::Show()
 #endif
 
 	{
-		EngineTOTAL.FrameStart		();	
-		Sheduler.FrameStart			();	
-		UpdateClient.FrameStart		();	
-		Physics.FrameStart			();	
+		EngineTOTAL.FrameStart		();
+		Sheduler.FrameStart			();
+		UpdateClient.FrameStart		();
+		Physics.FrameStart			();
 		ph_collision.FrameStart		();
 		ph_core.FrameStart			();
-		Animation.FrameStart		();	
+		Animation.FrameStart		();
 		AI_Think.FrameStart			();
 		AI_Range.FrameStart			();
 		AI_Path.FrameStart			();
@@ -302,32 +302,32 @@ void CStats::Show()
 		AI_Vis.FrameStart			();
 		AI_Vis_Query.FrameStart		();
 		AI_Vis_RayTests.FrameStart	();
-		
+
 		RenderTOTAL.FrameStart		();
 		RenderCALC.FrameStart		();
 		RenderCALC_HOM.FrameStart	();
-		RenderDUMP.FrameStart		();	
+		RenderDUMP.FrameStart		();
 		RenderDUMP_RT.FrameStart	();
-		RenderDUMP_SKIN.FrameStart	();	
-		RenderDUMP_Wait.FrameStart	();	
-		RenderDUMP_Wait_S.FrameStart();	
-		RenderDUMP_HUD.FrameStart	();	
-		RenderDUMP_Glows.FrameStart	();	
-		RenderDUMP_Lights.FrameStart();	
-		RenderDUMP_WM.FrameStart	();	
-		RenderDUMP_DT_VIS.FrameStart();	
-		RenderDUMP_DT_Render.FrameStart();	
-		RenderDUMP_DT_Cache.FrameStart();	
-		RenderDUMP_Pcalc.FrameStart	();	
-		RenderDUMP_Scalc.FrameStart	();	
-		RenderDUMP_Srender.FrameStart();	
-		
+		RenderDUMP_SKIN.FrameStart	();
+		RenderDUMP_Wait.FrameStart	();
+		RenderDUMP_Wait_S.FrameStart();
+		RenderDUMP_HUD.FrameStart	();
+		RenderDUMP_Glows.FrameStart	();
+		RenderDUMP_Lights.FrameStart();
+		RenderDUMP_WM.FrameStart	();
+		RenderDUMP_DT_VIS.FrameStart();
+		RenderDUMP_DT_Render.FrameStart();
+		RenderDUMP_DT_Cache.FrameStart();
+		RenderDUMP_Pcalc.FrameStart	();
+		RenderDUMP_Scalc.FrameStart	();
+		RenderDUMP_Srender.FrameStart();
+
 		Sound.FrameStart			();
 		Input.FrameStart			();
-		clRAY.FrameStart			();	
+		clRAY.FrameStart			();
 		clBOX.FrameStart			();
 		clFRUSTUM.FrameStart		();
-		
+
 		netClient1.FrameStart		();
 		netClient2.FrameStart		();
 		netServer.FrameStart		();
@@ -356,7 +356,7 @@ void CStats::OnDeviceCreate			()
 	if (!g_dedicated_server) {
 		pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
 	}
-	
+
 	if(!pSettings->section_exist("evaluation")
 		||!pSettings->line_exist("evaluation","line1")
 		||!pSettings->line_exist("evaluation","line2")
@@ -367,7 +367,7 @@ void CStats::OnDeviceCreate			()
 	eval_line_2 = pSettings->r_string_wb("evaluation","line2");
 	eval_line_3 = pSettings->r_string_wb("evaluation","line3");
 
-	// 
+	//
 #ifdef DEBUG
 	if (!g_bDisableRedText)
 		xrLogger::AddLogCallback(_LogCallback);
@@ -420,12 +420,12 @@ void CStats::OnRender()
 		}
 	}
 #endif
-	
+
 	if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Device.Statistic->errors.empty())
 	{
 		Device.Statistic->Show();
 	}
-	
+
 	Device.Statistic->RenderTOTAL_Real.End();
 	Device.Statistic->RenderTOTAL_Real.FrameEnd();
 	Device.Statistic->RenderTOTAL.accum = Device.Statistic->RenderTOTAL_Real.accum;

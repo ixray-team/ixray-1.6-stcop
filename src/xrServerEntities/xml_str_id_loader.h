@@ -11,11 +11,11 @@
 
 
 //T_ID    - уникальный текстовый идентификатор (аттрибут id в XML файле)
-//T_INDEX - уникальный числовой индекс 
+//T_INDEX - уникальный числовой индекс
 //T_INIT -  класс где определена статическая InitXmlIdToIndex
 //          функция инициализации file_str и tag_name
 
-//структура хранит строковый id элемента 
+//структура хранит строковый id элемента
 //файл и позицию, где этот элемент находится
 struct ITEM_DATA
 {
@@ -40,7 +40,7 @@ private:
 	static	T_VECTOR*				m_pItemDataVector;
 
 protected:
-	//имена xml файлов (разделенных запятой) из которых 
+	//имена xml файлов (разделенных запятой) из которых
 	//производить загрузку элементов
 	static const char*					file_str;
 	//имена тегов
@@ -114,7 +114,7 @@ const ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bool no_ass
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;
 	}
-		
+
 	return &(*it);
 }
 
@@ -152,8 +152,8 @@ void CSXML_IdToIndex::InitInternal ()
 	string_path	xml_file;
 	int			count = _GetItemCount	(file_str);
 	int			index = 0;
-	xr_hash_set<shared_str> itemIds;
-	for (int it=0; it<count; ++it)	
+	xr_hash_set<shared_str> ItemIds;
+	for (int it=0; it<count; ++it)
 	{
 		_GetItem	(file_str, it, xml_file);
 
@@ -170,29 +170,29 @@ void CSXML_IdToIndex::InitInternal ()
 		int items_num			= uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 
 		int i = 0;
-		for (XML_NODE* itemNode = items_num ? uiXml->GetRoot()->FirstChildElement(tag_name) : nullptr; itemNode;
-			itemNode = itemNode->NextSiblingElement(tag_name), ++i)
+		for (XML_NODE* ItemNode = items_num ? uiXml->GetRoot()->FirstChildElement(tag_name) : nullptr; ItemNode;
+			 ItemNode = ItemNode->NextSiblingElement(tag_name), ++i)
 		{
-			const char* item_name = uiXml->ReadAttrib(itemNode, "id", NULL);
+			const char* item_name = uiXml->ReadAttrib(ItemNode, "id", NULL);
 
 			string256			buf;
 			xr_sprintf				(buf, "id for item don't set, number %d in %s", i, xml_file);
 			R_ASSERT2			(item_name, buf);
 
 
-			const shared_str itemId = item_name;
-			const bool isUnique = itemIds.insert(itemId).second;
-			R_ASSERT3(isUnique, "duplicate item id", item_name);
+			const shared_str ItemId = item_name;
+			const bool IsUnique = ItemIds.insert(ItemId).second;
+			R_ASSERT3(IsUnique, "duplicate item id", item_name);
 
 			ITEM_DATA			data;
-			data.id				= itemId;
+			data.id = ItemId;
 			data.index			= index;
 			data.pos_in_file	= i;
 //.				data.file_name		= xml_file;
 			data._xml			= uiXml;
 			m_pItemDataVector->push_back(data);
 
-			index++; 
+			index++;
 		}
 		if(0==items_num)
 			delete_data(uiXml);

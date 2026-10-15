@@ -160,7 +160,7 @@ LPSTR _ChangeSymbol ( LPSTR name, char src, char dest )
 
 xr_string& _ChangeSymbol	( xr_string& name, char src, char dest )
 {
-	for (xr_string::iterator it=name.begin(); it!=name.end(); it++) 
+	for (xr_string::iterator it=name.begin(); it!=name.end(); it++)
     	if (*it==src) *it=xr_string::value_type(dest);
     return  name;
 }
@@ -230,8 +230,11 @@ xr_string& _TrimRight( xr_string& str )
     if (l){
         const char* p 		= str.c_str()+l-1;
         while( (p!=b) && (u8(*p)<=u8(' ')) ) p--;
-        if (p != b + l - 1)	str.erase	(p-b+1,l-(p-b));
-    }
+		if (p != b + l - 1)
+		{
+			str.erase(p - b + 1, l - (p - b));
+		}
+	}
 	return str;
 }
 

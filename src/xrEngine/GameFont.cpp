@@ -8,70 +8,86 @@
 #include <freetype/freetype.h>
 #include <freetype/ftfntfmt.h>
 
-namespace
+namespace FontLoading
 {
-    class FontGlyphRaster
-    {
-    public:
-        FT_UInt id = 0;
-        FT_UInt index = 0;
-        FT_Glyph_Metrics metrics{};
-        FT_Bitmap bitmap{};
-        int bitmapTop = 0;
-        xr_vector<u8> pixels;
-        bool isReady = false;
-    };
+class FontGlyphRaster final
+{
+public:
+	FT_UInt Id = 0;
+	FT_UInt Index = 0;
+	FT_Glyph_Metrics Metrics{};
+	FT_Bitmap Bitmap{};
+	int BitmapTop = 0;
+	xr_vector<u8> Pixels;
+	bool IsReady = false;
+};
 
-    class FontGlyphRasterizer
-    {
-    public:
-        FontGlyphRasterizer(const FT_Byte* bytes, FT_Long length, FT_Size_RequestRec request)
-        {
-            if (FT_Init_FreeType(&_library) != 0)
-                return;
-            if (FT_New_Memory_Face(_library, bytes, length, 0, &_face) != 0)
-                return;
-            _isReady = FT_Request_Size(_face, &request) == 0;
-        }
+class FontGlyphRasterizer final
+{
+public:
+	FontGlyphRasterizer(const FT_Byte* Bytes, FT_Long Length, FT_Size_RequestRec Request)
+	{
+		if (FT_Init_FreeType(&Library) != 0)
+		{
+			return;
+		}
+		if (FT_New_Memory_Face(Library, Bytes, Length, 0, &Face) != 0)
+		{
+			return;
+		}
+		IsReady = FT_Request_Size(Face, &Request) == 0;
+	}
 
-        ~FontGlyphRasterizer()
-        {
-            if (_face)
-                FT_Done_Face(_face);
-            if (_library)
-                FT_Done_FreeType(_library);
-        }
+	~FontGlyphRasterizer()
+	{
+		if (Face)
+		{
+			FT_Done_Face(Face);
+		}
+		if (Library)
+		{
+			FT_Done_FreeType(Library);
+		}
+	}
 
-        FontGlyphRasterizer(const FontGlyphRasterizer&) = delete;
-        FontGlyphRasterizer& operator=(const FontGlyphRasterizer&) = delete;
+	FontGlyphRasterizer(const FontGlyphRasterizer&) = delete;
+	FontGlyphRasterizer& operator=(const FontGlyphRasterizer&) = delete;
 
-        void Rasterize(FontGlyphRaster& result)
-        {
-            if (!_isReady || (result.index == 0 && result.id != 0))
-                return;
-            if (FT_Load_Glyph(_face, result.index, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL) != 0)
-                return;
+	void Rasterize(FontGlyphRaster& Result)
+	{
+		if (!IsReady || (Result.Index == 0 && Result.Id != 0))
+		{
+			return;
+		}
+		if (FT_Load_Glyph(Face, Result.Index, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL) != 0)
+		{
+			return;
+		}
 
-            const FT_GlyphSlot glyph = _face->glyph;
-            if (glyph->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY || glyph->bitmap.pitch < 0)
-                return;
+		const FT_GlyphSlot Glyph = Face->glyph;
+		if (Glyph->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY || Glyph->bitmap.pitch < 0)
+		{
+			return;
+		}
 
-            result.metrics = glyph->metrics;
-            result.bitmap = glyph->bitmap;
-            result.bitmapTop = glyph->bitmap_top;
-            result.pixels.resize(size_t(glyph->bitmap.rows) * glyph->bitmap.pitch);
-            if (!result.pixels.empty())
-                CopyMemory(result.pixels.data(), glyph->bitmap.buffer, result.pixels.size());
-            result.bitmap.buffer = result.pixels.data();
-            result.isReady = true;
-        }
+		Result.Metrics = Glyph->metrics;
+		Result.Bitmap = Glyph->bitmap;
+		Result.BitmapTop = Glyph->bitmap_top;
+		Result.Pixels.resize(size_t(Glyph->bitmap.rows) * Glyph->bitmap.pitch);
+		if (!Result.Pixels.empty())
+		{
+			CopyMemory(Result.Pixels.data(), Glyph->bitmap.buffer, Result.Pixels.size());
+		}
+		Result.Bitmap.buffer = Result.Pixels.data();
+		Result.IsReady = true;
+	}
 
-    private:
-        FT_Library _library = nullptr;
-        FT_Face _face = nullptr;
-        bool _isReady = false;
-    };
-}
+private:
+	FT_Library Library = nullptr;
+	FT_Face Face = nullptr;
+	bool IsReady = false;
+};
+}  
 
 extern u32 TextureDimension;
 thread_local xr_vector<u32> FontBitmap;
@@ -117,7 +133,7 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section), LineSpacin
 	Data.Size = 14;
 	if (pSettings->line_exist(section, "size"))
 		Data.Size = (u16)pSettings->r_u32(section, "size");
-	
+
 	if (pSettings->line_exist(section, "opentype"))
 		Data.OpenType = pSettings->r_bool(section, "opentype");
 
@@ -169,7 +185,7 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 	return elems;
 }
 
-bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, float& height_px) 
+bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, float& height_px)
 {
 	SDL_DisplayID* displays = SDL_GetDisplays(nullptr);
 	if (!displays)
@@ -206,7 +222,7 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
-    FontBitmap.resize(size_t(TextureDimension) * 16);
+	FontBitmap.resize(size_t(TextureDimension) * 16);
 	if (!bFreetypeInitialized)
 	{
 		InitializeFreetype();
@@ -328,12 +344,12 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			u32 SourceY = 0;
 
 			TargetY2 = TargetY + (u32)FontSizeInPixels;
-            R_ASSERT2(TargetY2 <= TextureDimension, "Font too large, or dimension texture is too small");
-            const size_t RequiredPixels = size_t(TextureDimension) * std::max(16u, std::bit_ceil(TargetY2));
-            if (FontBitmap.size() < RequiredPixels)
-            {
-                FontBitmap.resize(RequiredPixels);
-            }
+			R_ASSERT2(TargetY2 <= TextureDimension, "Font too large, or dimension texture is too small");
+			const size_t RequiredPixels = size_t(TextureDimension) * std::max(16u, std::bit_ceil(TargetY2));
+			if (FontBitmap.size() < RequiredPixels)
+			{
+				FontBitmap.resize(RequiredPixels);
+			}
 			u32 TargetYSaved = TargetY;
 			TargetY = TargetY + u32(FontSizeInPixels - (float)GlyphBitmap.rows);
 
@@ -393,7 +409,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
-	auto LoadGlyph = [&](FT_UInt glyphID, FontGlyphRaster* prepared = nullptr)
+	auto LoadGlyph = [&](FT_UInt glyphID, FontLoading::FontGlyphRaster* Prepared = nullptr)
 	{
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
@@ -405,25 +421,25 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 			}
 		}
 
-		FT_UInt FreetypeCharacter = prepared ? prepared->index : FT_Get_Char_Index(OurFont, TrueGlyph);
+		FT_UInt FreetypeCharacter = Prepared ? Prepared->Index : FT_Get_Char_Index(OurFont, TrueGlyph);
 		if (FreetypeCharacter == 0 && glyphID != 0)
 		{
 			Msg("! Glyph not found: %d, TrueGlyph: %d", glyphID, TrueGlyph);
 			return;
 		}
 
-        const bool isPrepared = prepared && prepared->isReady;
-        if (!isPrepared)
-        {
-		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
-		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
-        }
+		const bool IsPrepared = Prepared && Prepared->IsReady;
+		if (!IsPrepared)
+		{
+			FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
+			R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
+		}
 		FT_GlyphSlot Glyph = OurFont->glyph;
-        FT_Glyph_Metrics& GlyphMetrics = isPrepared ? prepared->metrics : Glyph->metrics;
-        FT_Bitmap& GlyphBitmap = isPrepared ? prepared->bitmap : Glyph->bitmap;
-        const int bitmapTop = isPrepared ? prepared->bitmapTop : Glyph->bitmap_top;
+		FT_Glyph_Metrics& GlyphMetrics = IsPrepared ? Prepared->Metrics : Glyph->metrics;
+		FT_Bitmap& GlyphBitmap = IsPrepared ? Prepared->Bitmap : Glyph->bitmap;
+		const int BitmapTop = IsPrepared ? Prepared->BitmapTop : Glyph->bitmap_top;
 
-        CopyGlyphImageToAtlas(GlyphBitmap);
+		CopyGlyphImageToAtlas(GlyphBitmap);
 
 		RECT region;
 		region.left = TargetX;
@@ -437,7 +453,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		widths.abcC = FT_CEIL(GlyphMetrics.horiAdvance) - widths.abcB - widths.abcA;
 
 		int GlyphTopScanlineOffset = int(FontSizeInPixels - GlyphBitmap.rows);
-		int yOffset = -bitmapTop - GlyphTopScanlineOffset;
+		int yOffset = -BitmapTop - GlyphTopScanlineOffset;
 		yOffset += (int)FontSizeInPixels; // Return back to the center pos
 		yOffset -= (int)(FontSizeInPixels / 4);
 
@@ -447,54 +463,60 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		TargetX += 4;
 	};
 
-    const size_t desiredWorkers = std::min(size_t(4), size_t(OurFont->num_glyphs) / 1024);
-    const size_t workerCount = desiredWorkers > 1
-        ? std::min(desiredWorkers, xr_max_concurrency()) : 1;
-    if (workerCount > 1)
-    {
-        xr_vector<FontGlyphRaster> glyphs;
-        glyphs.reserve(size_t(OurFont->num_glyphs));
-        auto glyphID = FT_Get_First_Char(OurFont, &index);
-        size_t lastValid = 0;
-        while (index != 0)
-        {
-            const u32 trueGlyph = Data.OpenType && glyphID <= 0xff
-                ? TranslateSymbolUsingCP1251((char)glyphID) : u32(glyphID);
-            glyphs.emplace_back();
-            auto& glyph = glyphs.back();
-            glyph.id = FT_UInt(glyphID);
-            glyph.index = FT_Get_Char_Index(OurFont, trueGlyph);
-            if (glyph.index != 0 || glyph.id == 0)
-                lastValid = glyphs.size() - 1;
-            glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
-        }
+	const size_t DesiredWorkers = std::min(size_t(4), size_t(OurFont->num_glyphs) / 1024);
+	const size_t WorkerCount = DesiredWorkers > 1
+								   ? std::min(DesiredWorkers, xr_max_concurrency())
+								   : 1;
+	if (WorkerCount > 1)
+	{
+		xr_vector<FontLoading::FontGlyphRaster> Glyphs;
+		Glyphs.reserve(size_t(OurFont->num_glyphs));
+		auto glyphID = FT_Get_First_Char(OurFont, &index);
+		size_t LastValid = 0;
+		while (index != 0)
+		{
+			const u32 TrueGlyph = Data.OpenType && glyphID <= 0xff
+									  ? TranslateSymbolUsingCP1251((char)glyphID)
+									  : u32(glyphID);
+			Glyphs.emplace_back();
+			auto& Glyph = Glyphs.back();
+			Glyph.Id = FT_UInt(glyphID);
+			Glyph.Index = FT_Get_Char_Index(OurFont, TrueGlyph);
+			if (Glyph.Index != 0 || Glyph.Id == 0)
+			{
+				LastValid = Glyphs.size() - 1;
+			}
+			glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
+		}
 
-        const auto* fontBytes = (const FT_Byte*)FontFile->pointer();
-        const FT_Long fontLength = FontFile->length();
-        xr_parallel_for(size_t(0), workerCount, [&](size_t worker)
-        {
-            FontGlyphRasterizer rasterizer(fontBytes, fontLength, req);
-            const size_t begin = glyphs.size() * worker / workerCount;
-            const size_t end = glyphs.size() * (worker + 1) / workerCount;
-            for (size_t i = begin; i < end; ++i)
+		const auto* FontBytes = (const FT_Byte*)FontFile->pointer();
+		const FT_Long FontLength = FontFile->length();
+		xr_parallel_for(size_t(0), WorkerCount, [&](size_t Worker)
+						{
+            FontLoading::FontGlyphRasterizer Rasterizer(FontBytes, FontLength, req);
+            const size_t Begin = Glyphs.size() * Worker / WorkerCount;
+            const size_t End = Glyphs.size() * (Worker + 1) / WorkerCount;
+            for (size_t Index = Begin; Index < End; ++Index)
             {
-                if (i != lastValid)
-                    rasterizer.Rasterize(glyphs[i]);
-            }
-        });
+                if (Index != LastValid){
+                    Rasterizer.Rasterize(Glyphs[Index]);
+}
+            } });
 
-        for (auto& glyph : glyphs)
-            LoadGlyph(glyph.id, &glyph);
-    }
-    else
-    {
-        auto glyphID = FT_Get_First_Char(OurFont, &index);
-        while (index != 0)
-        {
-            LoadGlyph(glyphID);
-            glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
-        }
-    }
+		for (auto& Glyph : Glyphs)
+		{
+			LoadGlyph(Glyph.Id, &Glyph);
+		}
+	}
+	else
+	{
+		auto glyphID = FT_Get_First_Char(OurFont, &index);
+		while (index != 0)
+		{
+			LoadGlyph(glyphID);
+			glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
+		}
+	}
 
 
 	fCurrentHeight = FontSizeInPixels;
@@ -559,7 +581,7 @@ void CGameFont::MasterOut(
 {
 	if (bCheckDevice && (!Device.b_is_Active))
 		return;
-	
+
 	String rs;
 
 	rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
@@ -576,7 +598,7 @@ void CGameFont::MasterOut(
 	{
 		rs.string_utf8 = Platform::ANSI_TO_UTF8(rs.string);
 	}
-	
+
 	rs.string[sizeof(rs.string) - 1] = 0;
 	if (vs_sz == -1)
 	{
@@ -642,10 +664,10 @@ void CGameFont::OutLeft(float x)
 void CGameFont::OutRight(float x)
 {
 	float max_str_size_in_px = 0.f;
-	
+
 	for (const String& str : strings)
 		max_str_size_in_px = std::max(max_str_size_in_px, SizeOf_(str.string));
-	
+
 	fCurrentX = static_cast<float>(Device.TargetWidth) - max_str_size_in_px - x;
 }
 
@@ -823,7 +845,7 @@ wchar_t CP1251ConvertationTable[] =
 	0x045B, // ћ
 	0x045F, // џ
 
-	0x00A0, //  
+	0x00A0, //
 	0x040E, // Ў
 	0x045E, // ў
 	0x0408, // Ј
@@ -836,7 +858,7 @@ wchar_t CP1251ConvertationTable[] =
 	0x0404, // Є
 	0x00AB, // «
 	0x00AC, // ¬
-	0x00AD, // 
+	0x00AD, //
 	0x00AE, // ®
 	0x0407, // Ї
 

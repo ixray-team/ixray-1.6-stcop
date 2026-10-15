@@ -1,14 +1,16 @@
 #include "stdafx.h"
 #include "../FileDescriptor.h"
 
-intptr_t Platform::GetOpenedFileSize(int descriptor)
+intptr_t Platform::GetOpenedFileSize(int Descriptor)
 {
-    const HANDLE handle = reinterpret_cast<HANDLE>(_get_osfhandle(descriptor));
-    LARGE_INTEGER size;
-    if (GetFileSizeEx(handle, &size))
-        return static_cast<intptr_t>(size.QuadPart);
+	const HANDLE Handle = reinterpret_cast<HANDLE>(_get_osfhandle(Descriptor));
+	LARGE_INTEGER Size;
+	if (GetFileSizeEx(Handle, &Size))
+	{
+		return static_cast<intptr_t>(Size.QuadPart);
+	}
 
-    return _filelengthi64(descriptor);
+	return _filelengthi64(Descriptor);
 }
 
 bool Platform::OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, string1024 flt, const char* offset, bool bMulti)

@@ -96,7 +96,7 @@ private:
 	xr_vector<RuntimeLayer> RuntimeLayers;
 	bool IsRuntimeLayerOpen = false;
 
-	void						Register		(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool isKnownFile = false);
+	void Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool IsKnownFile = false);
 	void						ProcessArchive	(const char* path, const char* base_path = nullptr);
 	void						ProcessOne		(const char* path, system_file* F);
 	bool						Recurse			(const char* path);	
@@ -171,7 +171,7 @@ private:
 	void ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers);
 
 public:
-	bool IsIgnoredPath(const xr_path& path, bool isDirectory = false) const;
+	bool IsIgnoredPath(const xr_path& Path, bool IsDirectory = false) const;
 
 	void AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f);
 	void AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f);

@@ -11,7 +11,7 @@ IReaderBase::~IReaderBase() = default;
 void VerifyPath(const char* path)
 {
 	string1024 tmp;
-	for (int i = 0; path[i]; i++) 
+	for (int i = 0; path[i]; i++)
 	{
 		if (path[i] != Platform::kPreferredSeparator[0] || i == 0)
 			continue;
@@ -42,7 +42,7 @@ bool file_handle_internal(const char* file_name, intptr_t& size, int& file_handl
 	}
 
 	size = Platform::GetOpenedFileSize(file_handle);
-	
+
 	return (true);
 }
 
@@ -112,7 +112,7 @@ void* FileDecompress(const char* fn, const char* sign, intptr_t& size)
 
 //---------------------------------------------------
 // memory
-CMemoryWriter::~CMemoryWriter() 
+CMemoryWriter::~CMemoryWriter()
 {
 	xr_free(data);
 }
@@ -179,7 +179,7 @@ void IWriter::open_chunk	(u32 type)
 void IWriter::close_chunk()
 {
 	VERIFY(!chunk_pos.empty());
-	// se7kills FIXED Memory Leaking (int) convert to (u32) 
+	// se7kills FIXED Memory Leaking (int) convert to (u32)
 	u32 pos = tell();
 	u32 SavePosition = pos - chunk_pos.top() - 4;
 	seek(chunk_pos.top());
@@ -190,7 +190,7 @@ void IWriter::close_chunk()
 
 u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 otherwise
 {
-	if (chunk_pos.empty())	
+	if (chunk_pos.empty())
 		return 0;
 
 	return tell() - chunk_pos.top() - 4;
@@ -201,7 +201,7 @@ void IWriter::w_compressed(void* ptr, u32 count)
 	u8*		dest	= nullptr;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
-	
+
 	if (dest && dest_sz)
 		w(dest,dest_sz);
 	xr_free		(dest);
@@ -268,7 +268,7 @@ IReader* IReader::open_chunk(u32 ID)
 			return new IReader(pointer(), dwSize, tell() + dwSize);
 		}
 	}
-	
+
 	return nullptr;
 }
 
@@ -337,7 +337,7 @@ void IReader::r	(void *p, intptr_t cnt)
 };
 
 IC bool is_term(char a)
-{ 
+{
 	return (a==13)||(a==10);
 }
 
@@ -409,7 +409,7 @@ void IReader::skip_stringZ()
 // temp stream
 CTempReader::~CTempReader()
 {
-	xr_free(data);	
+	xr_free(data);
 }
 
 //---------------------------------------------------
@@ -441,7 +441,7 @@ CCompressedReader::CCompressedReader(const char *name, const char *sign)
 }
 
 CCompressedReader::~CCompressedReader()
-{	
+{
 	xr_free(data);
 }
 
@@ -460,7 +460,7 @@ CVirtualFileRW::CVirtualFileRW(const char* cFileName)
 	R_ASSERT3(data, cFileName, Debug.error2string(GetLastError()));
 }
 
-CVirtualFileRW::~CVirtualFileRW() 
+CVirtualFileRW::~CVirtualFileRW()
 {
     Platform::UnmapFile((void*)data, Size);
 
@@ -536,7 +536,7 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
 	R_ASSERT3(data, cFileName, Debug.error2string(GetLastError()));
 }
 
-CVirtualFileReader::~CVirtualFileReader() 
+CVirtualFileReader::~CVirtualFileReader()
 {
 	if (Size == 0)
 	{

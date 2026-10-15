@@ -13,15 +13,14 @@ namespace
 		if (wide.empty())
 			return xr_string();
 
-        string_path buffer;
+		string_path Buffer;
 		BOOL usedDefaultChar = FALSE;
-        const int written = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(),
-            buffer, sizeof(buffer), nullptr, &usedDefaultChar);
-        if (written > 0 && written < static_cast<int>(sizeof(buffer)) && !usedDefaultChar)
-        {
-            buffer[written] = '\0';
-            return xr_string(buffer);
-        }
+		const int Written = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), Buffer, sizeof(Buffer), nullptr, &usedDefaultChar);
+		if (Written > 0 && Written < static_cast<int>(sizeof(Buffer)) && !usedDefaultChar)
+		{
+			Buffer[Written] = '\0';
+			return xr_string(Buffer);
+		}
 
 		usedDefaultChar = FALSE;
 		const int ansiSize = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), nullptr, 0, nullptr, &usedDefaultChar);
