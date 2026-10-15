@@ -67,18 +67,9 @@ Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 extern float AnimatorHideSpeedFactor;
 
-int g_hud_layers_debug = 0;
-
 static float hud_smooth(float t)
 {
 	return t * t * (3.f - 2.f * t);
-}
-
-static void hud_log_layer(const char* kind, const char* name, const Fmatrix& xform, float blend, float extra)
-{
-	Fvector rot;
-	xform.getXYZ(rot);
-	Msg("[hud layer %u] %s %s blend=%.2f extra=%.2f pos=[%.3f %.3f %.3f] rot=[%.1f %.1f %.1f]", Device.dwFrame, kind, name, blend, extra, VPUSH(xform.c), rad2deg(rot.x), rad2deg(rot.y), rad2deg(rot.z));
 }
 
 float CalcMotionSpeed(const shared_str& anim_name)
@@ -2570,12 +2561,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 		if (anm->part == 0 || anm->part == 2)
 		{
 			m_transform.mulB_43(layer);
-
-			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
-			{
-				hud_log_layer(anm->active ? "script" : "script(fading)", anm->name.c_str(), layer, anm->blend_scale, 0.f);
-			}
-
 			script_layers.mulB_43(layer);
 		}
 		
@@ -2648,11 +2633,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 			m_transform.mulB_43(anm->XFORM());
 			m_transformL.mulB_43(anm->XFORM());
 			movement_layers.mulB_43(anm->XFORM());
-
-			if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
-			{
-				hud_log_layer(anm->playing ? "move" : "move(fading)", anm->name.c_str(), anm->XFORM(), anm->blend_scale, 0.f);
-			}
 		}
 		else
 		{
@@ -2706,13 +2686,6 @@ void player_hud::update(const Fmatrix& cam_trans)
 		rigid.mulB_43(scale_layer_offset(carry_pose, 1.f - ik_share));
 
 		m_layers_ik_offset.invert(rigid).mulB_43(m_transform);
-
-		if (g_hud_layers_debug != 0 && Device.dwFrame % 10 == 0)
-		{
-			hud_log_layer("total", "script", script_layers, 0.f, 0.f);
-			hud_log_layer("total", "movement", movement_layers, 0.f, 0.f);
-			hud_log_layer("total", "ik_offset", m_layers_ik_offset, 0.f, ik_share);
-		}
 		m_transform.set(rigid);
 
 		m_transformL.set(rigid);
