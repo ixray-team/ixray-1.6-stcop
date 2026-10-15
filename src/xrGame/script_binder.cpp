@@ -246,12 +246,22 @@ void CScriptBinder::net_Relcase		(CObject *object)
 	{
 		return;
 	}
-	if (m_object && game_object) {
-		try {
-			m_object->net_Relcase	(game_object->lua_game_object());
-		}
-		catch(...) {
-			clear			();
+
+	if (m_object && m_object->has_net_relcase())
+	{
+		PROF_EVENT("CScriptBinder::net_Relcase")
+		CGameObject *game_object = object->cast_game_object();
+		
+		if (game_object)
+		{
+			try 
+			{
+				m_object->net_Relcase(game_object->lua_game_object());
+			}
+			catch(...)
+			{
+				clear();
+			}
 		}
 	}
 }
