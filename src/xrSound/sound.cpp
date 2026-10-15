@@ -10,7 +10,7 @@ void CSound_manager_interface::_create(int stage)
 	{
 		SoundRender = new CSoundRender_Core();
 		Sound = SoundRender;
-		SoundRender->bPresent = !Core.ParamsData.test(ECoreParams::nosound);
+		SoundRender->bPresent = !Core.ParamsData.test(ECoreParams::nosound) && !Core.ParamsData.test(ECoreParams::autotest);
 	}
 
 	if (!SoundRender->bPresent)
