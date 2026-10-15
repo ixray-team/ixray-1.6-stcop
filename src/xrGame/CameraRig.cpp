@@ -42,6 +42,7 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Animation transitions", "idle_fade", "idle_fade", &g_rig.idle_fade, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "additive_blend_in", "additive_blend_in", &g_rig.additive_blend_in, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "additive_blend_out", "additive_blend_out", &g_rig.additive_blend_out, nullptr, 1, false, 0.005f },
+	{ "Animation transitions", "aim_blend_inertia", "aim_blend_inertia", &g_rig.aim_blend_inertia, nullptr, 1, false, 0.005f },
 
 	{ "Sprint and safemode", "sprint_pose_inertia", "sprint_pose_inertia", &g_rig.sprint_pose_inertia, nullptr, 1, false, 0.005f },
 	{ "Sprint and safemode", "sprint_pose_damping", "sprint_pose_damping", &g_rig.sprint_pose_damping, nullptr, 1, false, 0.01f },

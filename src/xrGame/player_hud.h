@@ -342,6 +342,7 @@ struct attachable_hud_item final
 	float							WalkPoseInertia = 0.6f;
 	float							WalkPoseInertiaOut = 0.12f;
 	float							CarryPoseDamping = 0.8f;
+	float							AimBlendInertia = 0.f;
 	float							StanceSwayScale = 0.f;
 	float							StanceSwayCrouch = 1.f;
 	float							StanceSwaySmooth = 0.05f;
@@ -882,6 +883,7 @@ public:
 	float			AimReloadDrop			() const;
 	void			UpdateCarryPose			(CActor* actor);
 	Fmatrix			CarryPoseOffset			() const;
+	void			TriggerScriptLayersInertia(float half_life);
 	void			UpdateSprintPose		();
 	float			SprintPoseTarget		();
 	float			SprintLayerDeviation	() const;
@@ -987,6 +989,12 @@ private:
 	float								StanceSwayValue = 0.f;
 	float								StanceSwayVelocity = 0.f;
 	float								StanceHeightRate = 0.f;
+	Fmatrix								ScriptLayersLast = Fidentity;
+	bool								ScriptInertiaPending = false;
+	float								ScriptInertiaHalfLife = 0.f;
+	float								ScriptInertiaTime = 0.f;
+	Fvector								ScriptInertiaPos = {};
+	Fquaternion							ScriptInertiaRot;
 	Fmatrix								m_shot_ref = Fidentity;
 	float								m_shot_weight = 0.f;
 	float								m_shot_release = 1.f;

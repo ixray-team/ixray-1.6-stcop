@@ -41,6 +41,7 @@ g_camera_rig_descriptions[] =
 	{ "idle_fade", u8"с, плавный переход рук и оружия в anm_idle* (после выстрела, перезарядки, доставания...); 0 = как в анимациях. Для оружия: idle_fade в hud-секции" },
 	{ "additive_blend_in", u8"с, плавность включения аддитивных анимаций (additive_motions). Для оружия: additive_blend_in в hud-секции" },
 	{ "additive_blend_out", u8"с, плавность выключения аддитивных анимаций (additive_motions). Для оружия: additive_blend_out в hud-секции" },
+	{ "aim_blend_inertia", u8"с, инерциализация при входе в прицел и выходе из него (anim_aim_start / anim_aim_end): скачок позы при прерывании (нажал и сразу отпустил) плавно гасится за это время; 0 = выкл. Для оружия: aim_blend_inertia в hud-секции" },
 
 	{ "sprint_pose_inertia", u8"с, мягкость перехода между позой спринта и сейфмодом (уход сейфмода при входе в спринт, возврат при выходе); 0 = без инерции. Для оружия: sprint_pose_inertia в hud-секции" },
 	{ "sprint_pose_damping", u8"Затухание этого перехода: меньше 1 = небольшой перелёт и доводка (живее), 1 = без перелёта. Для оружия: sprint_pose_damping в hud-секции" },
@@ -176,6 +177,7 @@ static float* CameraRigHudField(attachable_hud_item* item, const char* key)
 		{ "stance_sway_max", &attachable_hud_item::StanceSwayMax },
 		{ "additive_blend_in", &attachable_hud_item::m_additive_blend_in },
 		{ "additive_blend_out", &attachable_hud_item::m_additive_blend_out },
+		{ "aim_blend_inertia", &attachable_hud_item::AimBlendInertia },
 		{ "left_hand_attach_blend", &attachable_hud_item::LeftHandAttachBlend },
 		{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend },
 		{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail },

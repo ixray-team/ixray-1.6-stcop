@@ -3269,6 +3269,10 @@ void CWeapon::OnZoomIn()
 		}
 
 		g_player_hud->UpdateMovementLayers();
+		if (CCameraRig::Enabled())
+		{
+			g_player_hud->TriggerScriptLayersInertia(HudItemData()->AimBlendInertia);
+		}
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
@@ -3329,6 +3333,10 @@ void CWeapon::OnZoomOut()
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[2].has_motion : m_sAimBlendParams[2].has_motion))
 	{
 		g_player_hud->UpdateMovementLayers();
+		if (CCameraRig::Enabled())
+		{
+			g_player_hud->TriggerScriptLayersInertia(HudItemData()->AimBlendInertia);
+		}
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,

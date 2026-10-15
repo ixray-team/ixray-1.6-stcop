@@ -1076,6 +1076,7 @@ void attachable_hud_item::LoadRigParams()
 	WalkPoseInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "walk_pose_inertia", rig.walk_pose_inertia), 0.f);
 	WalkPoseInertiaOut = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "walk_pose_inertia_out", rig.walk_pose_inertia_out), 0.f);
 	CarryPoseDamping = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "carry_pose_damping", rig.carry_pose_damping), 0.f);
+	AimBlendInertia = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "aim_blend_inertia", rig.aim_blend_inertia), 0.f);
 	StanceSwayScale = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_scale", rig.stance_sway_scale), 0.f);
 	StanceSwayCrouch = READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_crouch", rig.stance_sway_crouch);
 	StanceSwaySmooth = std::max(READ_IF_EXISTS(pSettings, r_float, sect_name, "stance_sway_smooth", rig.stance_sway_smooth), 0.f);
@@ -2592,6 +2593,36 @@ void player_hud::update(const Fmatrix& cam_trans)
 			anm->Stop(!anm->mix);
 		}
 	}
+
+	if (ScriptInertiaPending)
+	{
+		ScriptInertiaPending = false;
+		const Fmatrix gap = Fmatrix().mul_43(Fmatrix().invert(script_layers), ScriptLayersLast);
+		ScriptInertiaPos.set(gap.c);
+		ScriptInertiaRot.set(gap);
+		ScriptInertiaTime = 0.f;
+	}
+
+	if (ScriptInertiaHalfLife > 0.f && ScriptInertiaTime < ScriptInertiaHalfLife * 8.f)
+	{
+		const float omega = 1.6783469f / ScriptInertiaHalfLife;
+		const float t = omega * ScriptInertiaTime;
+		const float weight = (1.f + t) * expf(-t);
+		Fquaternion rotation;
+		rotation.slerp(Fquaternion().identity(), ScriptInertiaRot, weight);
+		Fmatrix gap;
+		gap.rotation(rotation);
+		gap.c.mul(ScriptInertiaPos, weight);
+		m_transform.mulB_43(gap);
+		if (m_attached_items[1] == nullptr)
+		{
+			m_transformL.mulB_43(gap);
+		}
+		script_layers.mulB_43(gap);
+		ScriptInertiaTime += Device.fTimeDelta;
+	}
+
+	ScriptLayersLast = script_layers;
 
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
@@ -4996,6 +5027,17 @@ void player_hud::UpdateCarryPose(CActor* actor)
 
 	HudSpring::Step(StanceSwayValue, StanceSwayVelocity, 0.f, item->StanceSwayInertia / CCameraRig::MassSpeed(item->m_hud_mass), item->StanceSwayDamping, Device.fTimeDelta);
 	StanceSwayValue = std::clamp(StanceSwayValue, -item->StanceSwayMax * 4.f, item->StanceSwayMax * 4.f);
+}
+
+void player_hud::TriggerScriptLayersInertia(float half_life)
+{
+	if (half_life <= 0.f)
+	{
+		return;
+	}
+
+	ScriptInertiaPending = true;
+	ScriptInertiaHalfLife = half_life;
 }
 
 Fmatrix player_hud::CarryPoseOffset() const
