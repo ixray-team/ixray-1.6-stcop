@@ -260,7 +260,7 @@ const CAddonManager::AddonInfo* CAddonManager::FindAddon(const CLocatorAPI::file
 
 bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 {
-    const xr_string DataPath = FS.get_path(_game_data_)->m_Path;
+    const char* DataPath = FS.get_path(_game_data_)->m_Path;
 
     if (std::filesystem::is_directory(TempPath.c_str()) || TempPath.ends_with("addon.init"))
     {
@@ -269,12 +269,15 @@ bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 
 	for (auto& Addon : Addons)
 	{
-		xr_string AddonRoot = Addon.EntryDir.c_str();
-		xr_strlwr(AddonRoot);
-
-		const size_t AddonRootLength = AddonRoot.length();
-		const bool IsFileInsideAddon = TempPath.starts_with(AddonRoot) && TempPath.length() > AddonRootLength &&
-									   TempPath[AddonRootLength] == Platform::kPreferredSeparator[0];
+		const char* AddonRoot = Addon.EntryDir.c_str();
+		const size_t AddonRootLength = Addon.EntryDir.size();
+		const auto matchesRootLambda = [](char rootChar, char pathChar)
+		{
+			return char(tolower(rootChar)) == pathChar;
+		};
+		const bool IsFileInsideAddon = TempPath.length() > AddonRootLength &&
+			TempPath[AddonRootLength] == Platform::kPreferredSeparator[0] &&
+			std::equal(AddonRoot, AddonRoot + AddonRootLength, TempPath.begin(), matchesRootLambda);
 
 		if (IsFileInsideAddon)
 		{
