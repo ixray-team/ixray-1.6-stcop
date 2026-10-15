@@ -146,67 +146,12 @@ static const char* CameraRigDescription(const char* key)
 	return nullptr;
 }
 
-static xr_map<shared_str, xr_map<shared_str, float>> g_camera_rig_hud_values;
+static xr_map<shared_str, xr_map<shared_str, Fvector>> g_camera_rig_hud_values;
 
-static float* CameraRigHudField(attachable_hud_item* item, const char* key)
+static float* CameraRigHudField(attachable_hud_item* item, const char* key, u32& count)
 {
-	if (item == nullptr)
-	{
-		return nullptr;
-	}
-
-	static const struct
-	{
-		const char*						Key;
-		float attachable_hud_item::*	Field;
-	}
-	fields[] =
-	{
-		{ "aim_reload_motion", &attachable_hud_item::m_aim_reload_motion },
-		{ "shot_anim_variation", &attachable_hud_item::m_shot_variation },
-		{ "shot_anim_twist", &attachable_hud_item::m_shot_twist },
-		{ "aim_shot_motion", &attachable_hud_item::m_aim_shot_motion },
-		{ "idle_fade", &attachable_hud_item::m_idle_fade },
-		{ "inertia_damping", &attachable_hud_item::m_inertia_damping },
-		{ "stance_sway_scale", &attachable_hud_item::StanceSwayScale },
-		{ "stance_sway_crouch", &attachable_hud_item::StanceSwayCrouch },
-		{ "stance_sway_smooth", &attachable_hud_item::StanceSwaySmooth },
-		{ "stance_sway_inertia", &attachable_hud_item::StanceSwayInertia },
-		{ "stance_sway_damping", &attachable_hud_item::StanceSwayDamping },
-		{ "stance_sway_pitch", &attachable_hud_item::StanceSwayPitch },
-		{ "stance_sway_max", &attachable_hud_item::StanceSwayMax },
-		{ "additive_blend_in", &attachable_hud_item::m_additive_blend_in },
-		{ "additive_blend_out", &attachable_hud_item::m_additive_blend_out },
-		{ "aim_blend_inertia", &attachable_hud_item::AimBlendInertia },
-		{ "left_hand_attach_blend", &attachable_hud_item::LeftHandAttachBlend },
-		{ "left_hand_ik_blend", &attachable_hud_item::LeftHandIkBlend },
-		{ "left_hand_finger_tail", &attachable_hud_item::LeftHandFingerTail },
-		{ "left_hand_finger_grip", &attachable_hud_item::LeftHandFingerGrip },
-		{ "sprint_pose_inertia", &attachable_hud_item::SprintPoseInertia },
-		{ "sprint_pose_damping", &attachable_hud_item::SprintPoseDamping },
-		{ "aim_reload_zoom_out", &attachable_hud_item::AimReloadZoomOut },
-		{ "aim_reload_pose_inertia", &attachable_hud_item::AimReloadPoseInertia },
-		{ "aim_reload_pose_inertia_out", &attachable_hud_item::AimReloadPoseInertiaOut },
-		{ "aim_reload_push_inertia", &attachable_hud_item::AimReloadPushInertia },
-		{ "aim_reload_drop_inertia_out", &attachable_hud_item::AimReloadDropInertiaOut },
-		{ "crouch_pose_inertia", &attachable_hud_item::CrouchPoseInertia },
-		{ "crouch_pose_inertia_out", &attachable_hud_item::CrouchPoseInertiaOut },
-		{ "crouch_pose_delay", &attachable_hud_item::CrouchPoseDelay },
-		{ "walk_pose_delay", &attachable_hud_item::WalkPoseDelay },
-		{ "walk_pose_inertia", &attachable_hud_item::WalkPoseInertia },
-		{ "walk_pose_inertia_out", &attachable_hud_item::WalkPoseInertiaOut },
-		{ "carry_pose_damping", &attachable_hud_item::CarryPoseDamping },
-	};
-
-	for (const auto& it : fields)
-	{
-		if (xr_strcmp(it.Key, key) == 0)
-		{
-			return &(item->*it.Field);
-		}
-	}
-
-	return nullptr;
+	count = 0;
+	return item != nullptr ? item->RigField(key, count) : nullptr;
 }
 
 static attachable_hud_item* CameraRigActiveHudItem(const shared_str& hud_sect)
@@ -225,9 +170,13 @@ static void CameraRigApplyHudValues(attachable_hud_item* item)
 
 	for (const auto& [key, value] : values->second)
 	{
-		if (float* field = CameraRigHudField(item, key.c_str()))
+		u32 count = 0;
+		if (float* field = CameraRigHudField(item, key.c_str(), count))
 		{
-			*field = value;
+			for (u32 i = 0; i < count; i++)
+			{
+				field[i] = value[i];
+			}
 		}
 	}
 }
@@ -337,7 +286,15 @@ static void CameraRigSave()
 	{
 		for (const auto& [key, value] : values)
 		{
-			file.w_float(sect.c_str(), key.c_str(), value);
+			const SCameraRigParam* param = CCameraRig::FindHudParam(key.c_str());
+			if (param != nullptr && param->Count == 3)
+			{
+				file.w_fvector3(sect.c_str(), key.c_str(), value);
+			}
+			else
+			{
+				file.w_float(sect.c_str(), key.c_str(), value.x);
+			}
 		}
 	}
 
@@ -395,13 +352,16 @@ static bool CameraRigDrawParam(const SCameraRigParam& param, const shared_str& h
 	if (param.HudKey != nullptr && hud_sect.size() && pSettings->line_exist(hud_sect, param.HudKey))
 	{
 		ImGui::SameLine();
-		if (float* field = CameraRigHudField(CameraRigActiveHudItem(hud_sect), param.HudKey))
+		u32 field_count = 0;
+		if (float* field = CameraRigHudField(CameraRigActiveHudItem(hud_sect), param.HudKey, field_count))
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.8f, 0.2f, 1.f));
-			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.f);
-			if (ImGui::DragFloat("##hud", field, param.Speed, 0.f, 0.f, "%.4f"))
+			ImGui::SetNextItemWidth(ImGui::GetFontSize() * (field_count == 3 ? 18.f : 8.f));
+			const bool edited = field_count == 3 ? ImGui::DragFloat3("##hud", field, param.Speed, 0.f, 0.f, "%.4f") : ImGui::DragFloat("##hud", field, param.Speed, 0.f, 0.f, "%.4f");
+			if (edited)
 			{
-				g_camera_rig_hud_values[hud_sect][param.HudKey] = *field;
+				Fvector& value = g_camera_rig_hud_values[hud_sect][param.HudKey];
+				value.set(field[0], field_count == 3 ? field[1] : 0.f, field_count == 3 ? field[2] : 0.f);
 				changed = true;
 			}
 
