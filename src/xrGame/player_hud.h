@@ -22,6 +22,12 @@ namespace HudAttachMarks
 
 namespace HudSpring
 {
+	inline void Step(Fvector& value, Fvector& velocity, const Fvector& goal, float omega, float damping, float dt)
+	{
+		const float stiffness = omega * omega;
+		value.spring_inertion(goal, velocity, dt, stiffness, 2.f * damping * std::sqrt(stiffness));
+	}
+
 	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
 	{
 		if (half_life <= 0.f)
@@ -36,15 +42,35 @@ namespace HudSpring
 			return;
 		}
 
-		const float omega = 2.f * 0.69314718f / half_life;
-		const int steps = std::clamp(static_cast<int>(std::ceil(dt * 240.f)), 1, 64);
-		const float step = dt / static_cast<float>(steps);
-		for (int i = 0; i < steps; ++i)
+		Fvector current = { value, 0.f, 0.f };
+		Fvector speed = { velocity, 0.f, 0.f };
+		Step(current, speed, Fvector().set(goal, 0.f, 0.f), 2.f * 0.69314718f / half_life, damping, dt);
+		value = current.x;
+		velocity = speed.x;
+	}
+}
+
+namespace HudBlend
+{
+	inline float Ramp(float weight, bool on, float time_in, float time_out, float dt)
+	{
+		const float time = on ? time_in : time_out;
+		if (time <= 0.f)
 		{
-			const float accel = -omega * omega * (value - goal) - 2.f * damping * omega * velocity;
-			velocity += accel * step;
-			value += velocity * step;
+			return on ? 1.f : 0.f;
 		}
+
+		return std::clamp(weight + (on ? dt : -dt) / time, 0.f, 1.f);
+	}
+
+	inline float Ramp(float weight, bool on, float time, float dt)
+	{
+		return Ramp(weight, on, time, time, dt);
+	}
+
+	inline float Smooth(float time, float dt)
+	{
+		return time > 0.f ? 1.f - expf(-dt / time) : 1.f;
 	}
 }
 
