@@ -110,9 +110,9 @@ void CStringTable::Init		()
 		languages_token.back().id = -1;
 		languages_token.back().name = nullptr;
 	}
-    
+
 	pData = new STRING_TABLE_DATA();
-	
+
 	//имя языка, если не задано (nullptr), то первый <text> в <string> в XML
 	pData->m_sLanguage = pSettings->r_string("string_table", "language");
 
@@ -152,7 +152,7 @@ void CStringTable::Init		()
 	}
 
 	// Load fallback language files if fallback language is different from main language
-	if (pData->m_sFallbackLanguage.size() > 0 && 
+	if (pData->m_sFallbackLanguage.size() > 0 &&
 	    xr_strcmp(pData->m_sLanguage.c_str(), pData->m_sFallbackLanguage.c_str()) != 0)
 	{
 		FS_FileSet fallback_fset;
@@ -188,10 +188,10 @@ void CStringTable::Load	(const char* xml_file_full)
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 
-	for (XML_NODE* stringNode = uiXml.GetRoot()->FirstChildElement("string"); stringNode;
-		stringNode = stringNode->NextSiblingElement("string"))
+	for (XML_NODE* StringNode = uiXml.GetRoot()->FirstChildElement("string"); StringNode;
+		 StringNode = StringNode->NextSiblingElement("string"))
 	{
-		const char* string_name = uiXml.ReadAttrib(stringNode, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(StringNode, "id", nullptr);
 
 		bool isDublicate = pData->m_StringTable.find(string_name) != pData->m_StringTable.end();
 		if (isDublicate)
@@ -200,17 +200,17 @@ void CStringTable::Load	(const char* xml_file_full)
 			Msg("! duplicate string table id: %s", string_name);
 		}
 
-		const char* string_text		= uiXml.Read(stringNode, "text", 0, nullptr);
+		const char* string_text = uiXml.Read(StringNode, "text", 0, nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[string table] '%s' no translation in '%s'", string_name, pData->m_sLanguage.c_str() );
-		
+
 		VERIFY3						(string_text, "string table entry does not have a text", string_name);
-		
+
 		STRING_VALUE str_val		= ParseLine(string_text, string_name, true);
-		
+
 		pData->m_StringTable[string_name] = str_val;
-		const char* gamepad_text = uiXml.Read(stringNode, "text_gamepad", 0, nullptr);
+		const char* gamepad_text = uiXml.Read(StringNode, "text_gamepad", 0, nullptr);
 		if (gamepad_text)
 		{
 			STRING_VALUE str_val = ParseLine(gamepad_text, string_name, true, true);
@@ -227,10 +227,10 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 
-	for (XML_NODE* stringNode = uiXml.GetRoot()->FirstChildElement("string"); stringNode;
-		stringNode = stringNode->NextSiblingElement("string"))
+	for (XML_NODE* StringNode = uiXml.GetRoot()->FirstChildElement("string"); StringNode;
+		 StringNode = StringNode->NextSiblingElement("string"))
 	{
-		const char* string_name = uiXml.ReadAttrib(stringNode, "id", nullptr);
+		const char* string_name = uiXml.ReadAttrib(StringNode, "id", nullptr);
 
 		bool isDublicate = pData->m_FallbackStringTable.find(string_name) != pData->m_FallbackStringTable.end();
 		if (isDublicate)
@@ -239,15 +239,15 @@ void CStringTable::LoadFallback	(const char* xml_file_full)
 			Msg("! duplicate fallback string table id: %s", string_name);
 		}
 
-		const char* string_text		= uiXml.Read(stringNode, "text", 0, nullptr);
+		const char* string_text = uiXml.Read(StringNode, "text", 0, nullptr);
 
 		if(m_bWriteErrorsToLog && string_text)
 			Msg("[fallback string table] '%s' no translation in '%s'", string_name, pData->m_sFallbackLanguage.c_str() );
-		
+
 		if (string_text != nullptr)
 		{
 			STRING_VALUE str_val		= ParseLine(string_text, string_name, false);
-			
+
 			pData->m_FallbackStringTable[string_name] = str_val;
 		}
 	}
@@ -257,7 +257,7 @@ void CStringTable::ReparseKeyBindings()
 {
 	if(pData == nullptr)
 		return;
-	
+
 	for (auto& key : pData->m_string_key_binding)
 	{
 		pData->m_StringTable[key.first] = ParseLine(*key.second, *key.first, false);
@@ -312,7 +312,7 @@ void CStringTable::ReloadLanguage(const char* lang)
 	}
 
 	// Load fallback language files if fallback language is different from main language
-	if (pData->m_sFallbackLanguage.size() > 0 && 
+	if (pData->m_sFallbackLanguage.size() > 0 &&
 	    xr_strcmp(pData->m_sLanguage.c_str(), pData->m_sFallbackLanguage.c_str()) != 0)
 	{
 		FS_FileSet fallback_fset;
@@ -424,7 +424,7 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 		if(pData->m_FallbackStringTable.find(str_id)!=pData->m_FallbackStringTable.end())
 			return  pData->m_FallbackStringTable[str_id];
 	}
-	
+
 	// If not found in either table, return the original string ID
 	return str_id;
 }

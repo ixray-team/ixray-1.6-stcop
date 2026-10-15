@@ -34,17 +34,17 @@ void CUITextureMaster::ParseShTexInfoLegacy(const char* xml_file)
 	CUIXml xml;
 	xml.Load(CONFIG_PATH, UI_PATH, xml_file);
 	shared_str file = xml.Read("file_name", 0, "");
-	XML_NODE* rootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
-	for (XML_NODE* textureNode = rootNode ? rootNode->FirstChildElement("texture") : nullptr; textureNode;
-		textureNode = textureNode->NextSiblingElement("texture"))
+	XML_NODE* RootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
+	for (XML_NODE* TextureNode = RootNode ? RootNode->FirstChildElement("texture") : nullptr; TextureNode;
+		 TextureNode = TextureNode->NextSiblingElement("texture"))
 	{
 		TEX_INFO info;
 		info.file = file;
-		info.rect.x1 = xml.ReadAttribFlt(textureNode, "x", 0.f);
-		info.rect.x2 = xml.ReadAttribFlt(textureNode, "width", 0.f) + info.rect.x1;
-		info.rect.y1 = xml.ReadAttribFlt(textureNode, "y", 0.f);
-		info.rect.y2 = xml.ReadAttribFlt(textureNode, "height", 0.f) + info.rect.y1;
-		shared_str id = xml.ReadAttrib(textureNode, "id", "");
+		info.rect.x1 = xml.ReadAttribFlt(TextureNode, "x", 0.f);
+		info.rect.x2 = xml.ReadAttribFlt(TextureNode, "width", 0.f) + info.rect.x1;
+		info.rect.y1 = xml.ReadAttribFlt(TextureNode, "y", 0.f);
+		info.rect.y2 = xml.ReadAttribFlt(TextureNode, "height", 0.f) + info.rect.y1;
+		shared_str id = xml.ReadAttrib(TextureNode, "id", "");
 		m_textures.insert(std::make_pair(id, info));
 	}
 }
@@ -53,23 +53,23 @@ void CUITextureMaster::ParseShTexInfo(const char* xml_file)
 {
 	CUIXml xml;
 	xml.Load(CONFIG_PATH, "ui\\textures_descr", xml_file);
-	const int filesNum = xml.GetNodesNum("", 0, "file");
-	XML_NODE* rootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
-	for (XML_NODE* fileNode = filesNum ? rootNode->FirstChildElement("file") : nullptr; fileNode;
-		fileNode = fileNode->NextSiblingElement("file"))
+	const int FilesNum = xml.GetNodesNum("", 0, "file");
+	XML_NODE* RootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
+	for (XML_NODE* FileNode = FilesNum ? RootNode->FirstChildElement("file") : nullptr; FileNode;
+		 FileNode = FileNode->NextSiblingElement("file"))
 	{
-		shared_str file = xml.ReadAttrib(fileNode, "name", "");
-		const float fileScale = xml.ReadAttribFlt(fileNode, "scale", 1.f);
-		for (XML_NODE* textureNode = fileNode->FirstChildElement("texture"); textureNode;
-			textureNode = textureNode->NextSiblingElement("texture"))
+		shared_str file = xml.ReadAttrib(FileNode, "name", "");
+		const float fileScale = xml.ReadAttribFlt(FileNode, "scale", 1.f);
+		for (XML_NODE* TextureNode = FileNode->FirstChildElement("texture"); TextureNode;
+			 TextureNode = TextureNode->NextSiblingElement("texture"))
 		{
 			TEX_INFO info;
 			info.file = file;
-			info.rect.x1 = xml.ReadAttribFlt(textureNode, "x", 0.f) * fileScale;
-			info.rect.x2 = xml.ReadAttribFlt(textureNode, "width", 0.f) * fileScale + info.rect.x1;
-			info.rect.y1 = xml.ReadAttribFlt(textureNode, "y", 0.f) * fileScale;
-			info.rect.y2 = xml.ReadAttribFlt(textureNode, "height", 0.f) * fileScale + info.rect.y1;
-			shared_str id = xml.ReadAttrib(textureNode, "id", "");
+			info.rect.x1 = xml.ReadAttribFlt(TextureNode, "x", 0.f) * fileScale;
+			info.rect.x2 = xml.ReadAttribFlt(TextureNode, "width", 0.f) * fileScale + info.rect.x1;
+			info.rect.y1 = xml.ReadAttribFlt(TextureNode, "y", 0.f) * fileScale;
+			info.rect.y2 = xml.ReadAttribFlt(TextureNode, "height", 0.f) * fileScale + info.rect.y1;
+			shared_str id = xml.ReadAttrib(TextureNode, "id", "");
 			m_textures.insert(std::make_pair(id, info));
 		}
 	}
@@ -191,7 +191,7 @@ void CUITextureMaster::GetTextureShader(const shared_str&  texture_name, ui_shad
 
 	R_ASSERT3(it != m_textures.end(), "can't find texture", texture_name.c_str());
 
-	sh->create("hud\\default", *((*it).second.file));	
+	sh->create("hud\\default", *((*it).second.file));
 }
 
 ui_shader CUITextureMaster::CreateTextureShader(const shared_str& texture_name, const shared_str& shader_name)

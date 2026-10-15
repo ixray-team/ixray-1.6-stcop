@@ -25,33 +25,33 @@ void CAddonManager::CollectAddons()
     Addons.clear();
 
     const xr_string AddonsRoot = FS.get_path("$arch_dir_addons$")->m_Path;
-    if (FS.IsIgnoredPath(AddonsRoot.c_str(), true))
-    {
-        return;
-    }
+	if (FS.IsIgnoredPath(AddonsRoot.c_str(), true))
+	{
+		return;
+	}
 
-    if (!std::filesystem::exists(AddonsRoot.c_str()))
+	if (!std::filesystem::exists(AddonsRoot.c_str()))
     {
         Msg("! Addons directory not found: %s", AddonsRoot.c_str());
         return;
     }
 
     auto options = std::filesystem::directory_options::follow_directory_symlink;
-    auto end = std::filesystem::recursive_directory_iterator();
-    for (auto it = std::filesystem::recursive_directory_iterator(AddonsRoot.c_str(), options); it != end; ++it)
-    {
-        const auto& Entry = *it;
-        const bool isDirectory = Entry.is_directory();
-        if (FS.IsIgnoredPath(Entry.path().string().c_str(), isDirectory))
-    {
-            if (isDirectory)
-            {
-                it.disable_recursion_pending();
-            }
-            continue;
-        }
+	auto End = std::filesystem::recursive_directory_iterator();
+	for (auto It = std::filesystem::recursive_directory_iterator(AddonsRoot.c_str(), options); It != End; ++It)
+	{
+		const auto& Entry = *It;
+		const bool IsDirectory = Entry.is_directory();
+		if (FS.IsIgnoredPath(Entry.path().string().c_str(), IsDirectory))
+		{
+			if (IsDirectory)
+			{
+				It.disable_recursion_pending();
+			}
+			continue;
+		}
 
-        if (!Entry.is_regular_file())
+		if (!Entry.is_regular_file())
         {
             continue;
         }
@@ -260,19 +260,19 @@ const CAddonManager::AddonInfo* CAddonManager::FindAddon(const CLocatorAPI::file
 
 bool CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 {
-    if (std::filesystem::is_directory(TempPath.c_str()))
-    {
-        return false;
-    }
-    return CanApplyFile(TempPath, Desc);
+	if (std::filesystem::is_directory(TempPath.c_str()))
+	{
+		return false;
+	}
+	return CanApplyFile(TempPath, Desc);
 }
 
 bool CAddonManager::CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc)
 {
-    const char* DataPath = FS.get_path(_game_data_)->m_Path;
+	const char* DataPath = FS.get_path(_game_data_)->m_Path;
 
-    if (TempPath.ends_with("addon.init"))
-    {
+	if (TempPath.ends_with("addon.init"))
+	{
         return false;
     }
 
@@ -280,13 +280,13 @@ bool CAddonManager::CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc)
 	{
 		const char* AddonRoot = Addon.EntryDir.c_str();
 		const size_t AddonRootLength = Addon.EntryDir.size();
-		const auto matchesRootLambda = [](char rootChar, char pathChar)
+		const auto MatchesRootLambda = [](char RootChar, char PathChar)
 		{
-			return char(tolower(rootChar)) == pathChar;
+			return char(tolower((u8)RootChar)) == PathChar;
 		};
 		const bool IsFileInsideAddon = TempPath.length() > AddonRootLength &&
-			TempPath[AddonRootLength] == Platform::kPreferredSeparator[0] &&
-			std::equal(AddonRoot, AddonRoot + AddonRootLength, TempPath.begin(), matchesRootLambda);
+									   TempPath[AddonRootLength] == Platform::kPreferredSeparator[0] &&
+									   std::equal(AddonRoot, AddonRoot + AddonRootLength, TempPath.begin(), MatchesRootLambda);
 
 		if (IsFileInsideAddon)
 		{

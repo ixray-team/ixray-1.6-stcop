@@ -9,7 +9,7 @@ class XRCORE_API CStreamReader;
 class XRCORE_API CReaderGuarded;
 class XRCORE_API CWriterGuarded;
 
-class XRCORE_API CLocatorAPI  
+class XRCORE_API CLocatorAPI
 {
 	friend class FS_Path;
 
@@ -24,7 +24,7 @@ public:
 		u32						vfs;			// 0xffffffff - standart file
 		u32						crc;			// contents CRC
 		u32						ptr;			// pointer inside vfs
-		u32						size_real;		// 
+		u32						size_real;		//
 		u32						size_compressed;// if (size_real==size_compressed) - uncompressed
 		time_t					modif;			// for editor
 	};
@@ -54,7 +54,7 @@ public:
 
 private:
 
-	struct file_pred 
+	struct file_pred
 	{
 		IC bool operator()	(const file& x, const file& y) const
 		{	return xr_strcmp(x.name,y.name)<0;	}
@@ -68,7 +68,7 @@ private:
 
 	FFVec						rec_files;
 
-    int							m_iLockRescan	; 
+    int							m_iLockRescan	;
     void						check_pathes	();
 
 	xrSRWLock					m_files_lock	;
@@ -84,10 +84,10 @@ private:
 
 	bool IsArchivePhase = false;
 
-	void						Register		(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool isKnownFile = false);
+	void Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif, bool IsKnownFile = false);
 	void						ProcessArchive	(const char* path, const char* base_path = nullptr);
 	void						ProcessOne		(const char* path, system_file* F);
-	bool						Recurse			(const char* path);	
+	bool						Recurse			(const char* path);
 
 	files_it					file_find_it	(const char* n);
 
@@ -108,7 +108,7 @@ public:
 		flCacheFiles			= (1<<6),
 		flScanAppRoot			= (1<<7),
 		flNeedCheck				= (1<<8),
-	};    
+	};
 	Flags32						m_Flags			;
 	u32							dwAllocGranularity;
 	u32							dwOpenCounter;
@@ -120,7 +120,7 @@ private:
 			void				file_from_cache_impl(CStreamReader *&R, LPSTR fname, const file &desc);
 	template <typename T>
 			void				file_from_cache		(T *&R, LPSTR fname, const u32 &fname_size, const file &desc, const char* &source_name);
-			
+
 			void				file_from_archive	(IReader *&R, const char* fname, const file &desc);
 			void				file_from_archive	(CStreamReader *&R, const char* fname, const file &desc);
 
@@ -130,7 +130,7 @@ private:
 			void				copy_file_to_build	(T *&R, const char* source_name);
 
 			bool				check_for_file		(const char* path, const char* _fname, string_path& fname, const file *&desc);
-	
+
 	template <typename T>
 	IC		T					*r_open_impl		(const char* path, const char* _fname);
 			void				ProcessExternalArch	();
@@ -153,17 +153,17 @@ private:
 	xrCriticalSection FilewatcherOnDelCS;
 	xr_vector<FilewatcherTrigger> FilewatcherOnAdd;
 	xr_vector<FilewatcherTrigger> FilewatcherOnDel;
-	
+
 	void FileEventAdd(const char* file);
 	void FileEventDel(const char* file);
 	void ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers);
 
 public:
-	bool IsIgnoredPath(const xr_path& path, bool isDirectory = false) const;
+	bool IsIgnoredPath(const xr_path& Path, bool IsDirectory = false) const;
 
 	void AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f);
 	void AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f);
-	
+
 								CLocatorAPI			();
 								~CLocatorAPI		();
 	void						_initialize			(u32 flags, const char* target_folder=nullptr, const char* fs_name=nullptr);
@@ -187,7 +187,7 @@ public:
 	IWriter*					w_open_ex			(const char* initial, const char* N);
 	IC IWriter*					w_open_ex			(const char* N){return w_open_ex(nullptr,N);}
 	void						w_close				(IWriter* &S, bool force_register = false);
-	
+
 	CWriterGuarded wg_open(const char* initial, const char* N);
 	CWriterGuarded wg_open(const char* N);
 
@@ -200,8 +200,8 @@ public:
 
 	bool						file_find			(const char* full_name, FS_File& f);
 
-    bool 						can_write_to_folder	(const char* path); 
-    bool 						can_write_to_alias	(const char* path); 
+    bool 						can_write_to_folder	(const char* path);
+    bool 						can_write_to_alias	(const char* path);
     bool						can_modify_file		(const char* fname);
     bool						can_modify_file		(const char* path, const char* name);
 
@@ -220,7 +220,7 @@ public:
 	xr_vector<LPSTR>*			file_list_open		(const char* initial, const char* folder,	u32 flags=FS_ListFiles);
 	xr_vector<LPSTR>*			file_list_open		(const char* path,					u32 flags=FS_ListFiles);
 	void						file_list_close		(xr_vector<LPSTR>* &lst);
-                                                     
+
     bool						path_exist			(const char* path);
     FS_Path*					get_path			(const char* path);
     FS_Path*					append_path			(const char* path_alias, const char* root, const char* add, bool recursive);
@@ -250,7 +250,7 @@ class XRCORE_API CFilewatcher
 	bool FilewatcherActive = false;
 
 	CFilewatcher() = default;
-	
+
 public:
 	~CFilewatcher();
 	CFilewatcher(const CFilewatcher&) = delete;

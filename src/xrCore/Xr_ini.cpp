@@ -48,11 +48,11 @@ ICF bool item_pred(const CInifile::Item& x, const char* val)
 XRCORE_API bool _parse(char* dest, const char* src)
 {
 	bool bInsideSTR = false;
-	if (src) 
+	if (src)
 	{
-		while (*src) 
+		while (*src)
 		{
-			if (isspace((u8)*src)) 
+			if (isspace((u8)*src))
 			{
 				if (bInsideSTR)
 				{
@@ -199,119 +199,122 @@ CInifile::~CInifile()
 	}
 }
 
-void CInifile::InsertSectionItem(Sect& section, bool& bDeleteSectionIfEmpty,
-    const Item& CurrentItem, InsertType Type, const shared_str& deleteMarker)
+void CInifile::InsertSectionItem(Sect& Section, bool& bDeleteSectionIfEmpty, const Item& CurrentItem, InsertType Type, const shared_str& DeleteMarker)
 {
-    Sect* CurrentSect = &section;
-    if (CurrentItem.first == deleteMarker)
-    {
-        // Delete section
-        bDeleteSectionIfEmpty = true;
-    }
-    else
-    {
-        // Insert item if variable isn't already set
-        CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *CurrentItem.first, item_pred);
+	Sect* CurrentSect = &Section;
+	if (CurrentItem.first == DeleteMarker)
+	{
+		// Delete section
+		bDeleteSectionIfEmpty = true;
+	}
+	else
+	{
+		// Insert item if variable isn't already set
+		CInifile::SectIt_ SectionIt = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *CurrentItem.first, item_pred);
 
-        if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(CurrentItem.first))
-        {
-            bool bShouldInsert = false;
+		if (SectionIt != CurrentSect->Data.end() && SectionIt->first.equal(CurrentItem.first))
+		{
+			bool bShouldInsert = false;
 
-            switch (Type)
-            {
-            case InsertType::Override:
-                bShouldInsert = true;
-                break;
+			switch (Type)
+			{
+				case InsertType::Override:
+					bShouldInsert = true;
+					break;
 
-            case InsertType::Base:
-                bShouldInsert = false;
-                break;
+				case InsertType::Base:
+					bShouldInsert = false;
+					break;
 
-            case InsertType::Parent:
-                bShouldInsert = (sect_it->second == deleteMarker);
-                break;
+				case InsertType::Parent:
+					bShouldInsert = (SectionIt->second == DeleteMarker);
+					break;
 
-            default:
-                bShouldInsert = true;
-                break;
-            }
+				default:
+					bShouldInsert = true;
+					break;
+			}
 
-            if (bShouldInsert)
-                sect_it->second = CurrentItem.second;
-        }
-        else
-            CurrentSect->Data.insert(sect_it, CurrentItem);
-    }
+			if (bShouldInsert)
+			{
+				SectionIt->second = CurrentItem.second;
+			}
+		}
+		else
+		{
+			CurrentSect->Data.insert(SectionIt, CurrentItem);
+		}
+	}
 }
 
-void CInifile::ApplySectionListModifiers(Sect& section, Items& items)
+void CInifile::ApplySectionListModifiers(Sect& Section, Items& SectionItems)
 {
-    Sect* CurrentSect = &section;
-    for (Item& item : items)
-    {
-        // If section exists with item list, split list and perform operation
-        char dltx_listmode = item.first[0];
-        item.first = item.first.c_str() + 1;
+	Sect* CurrentSect = &Section;
+	for (Item& Entry : SectionItems)
+	{
+		// If section exists with item list, split list and perform operation
+		char ListMode = Entry.first[0];
+		Entry.first = Entry.first.c_str() + 1;
 
-        CInifile::SectIt_ sect_it = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *item.first, item_pred);
-        if (sect_it != CurrentSect->Data.end() && sect_it->first.equal(item.first))
-        {
-            // Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
+		CInifile::SectIt_ SectionIt = std::lower_bound(CurrentSect->Data.begin(), CurrentSect->Data.end(), *Entry.first, item_pred);
+		if (SectionIt != CurrentSect->Data.end() && SectionIt->first.equal(Entry.first))
+		{
+			// Msg("%s has dltx_listmode %s", I.first.c_str(), xr_string(1, dltx_listmode).c_str());
 
-            if (dltx_listmode && sect_it->second != nullptr)
-            {
-                xr_string split_str(sect_it->second.c_str());
-                thread_local xr_vector<xr_string> sect_it_items_vec;
-                split_str.Split(sect_it_items_vec);
+			if (ListMode && SectionIt->second != nullptr)
+			{
+				xr_string SplitString(SectionIt->second.c_str());
+				thread_local xr_vector<xr_string> SectionItemsList;
+				SplitString.Split(SectionItemsList);
 
-                split_str = item.second.c_str();
-                thread_local xr_vector<xr_string> I_items_vec;
-                split_str.Split(I_items_vec);
+				SplitString = Entry.second.c_str();
+				thread_local xr_vector<xr_string> ModifierItems;
+				SplitString.Split(ModifierItems);
 
-                // Add or remove to the list
-                auto find_and_store_index = [](const xr_vector<xr_string>& items_vec, const xr_string& item, int& vec_index)
-                    {
-                        auto it = std::find(items_vec.begin(), items_vec.end(), item);
-                        if (it != items_vec.end())
-                        {
-                            vec_index = it - items_vec.begin();
-                            return true;
-                        }
-                        else
-                        {
-                            vec_index = -1;
-                            return false;
-                        }
-                    };
+				// Add or remove to the list
+				auto FindIndexLambda = [](const xr_vector<xr_string>& ItemList, const xr_string& Entry, int& ItemIndex)
+				{
+					auto It = std::find(ItemList.begin(), ItemList.end(), Entry);
+					if (It != ItemList.end())
+					{
+						ItemIndex = It - ItemList.begin();
+						return true;
+					}
+					else
+					{
+						ItemIndex = -1;
+						return false;
+					}
+				};
 
-                int vec_index = -1;
+				int ItemIndex = -1;
 
-                for (const xr_string& item : I_items_vec)
-                {
-                    if (dltx_listmode == '>')
-                    {
-                        sect_it_items_vec.push_back(item);
-                    }
-                    else if (dltx_listmode == '<')
-                    {
-                        while (find_and_store_index(sect_it_items_vec, item, vec_index))
-                        {
-                            sect_it_items_vec.erase(sect_it_items_vec.begin() + vec_index);
-                        }
-                    }
-                }
-                sect_it->second = xr_string().Join(sect_it_items_vec.begin(), sect_it_items_vec.end(), ',').c_str();
-            }
-        }
-    }
+				for (const xr_string& Entry : ModifierItems)
+				{
+					if (ListMode == '>')
+					{
+						SectionItemsList.push_back(Entry);
+					}
+					else if (ListMode == '<')
+					{
+						while (FindIndexLambda(SectionItemsList, Entry, ItemIndex))
+						{
+							SectionItemsList.erase(SectionItemsList.begin() + ItemIndex);
+						}
+					}
+				}
+				SectionIt->second = xr_string().Join(SectionItemsList.begin(), SectionItemsList.end(), ',').c_str();
+			}
+		}
+	}
 }
 
 void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& PreviousEvaluations)
 {
-    if (FinalData.contains(SectName))
-    {
-        return;
-    }
+	if (FinalData.contains(SectName))
+	{
+		return;
+	}
 	PreviousEvaluations.push_back(SectName);
 
 	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
@@ -324,11 +327,11 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	std::pair<xr_string, Sect> CurrentSecPair(SectName, Sect(SectName.c_str()));
 	Sect* CurrentSect = &CurrentSecPair.second;
 
-    const shared_str deleteMarker = DLTX_DELETE;
-    auto InsertItemWithDelete = [&](const Item& item, InsertType type)
-    {
-        InsertSectionItem(*CurrentSect, bDeleteSectionIfEmpty, item, type, deleteMarker);
-    };
+	const shared_str DeleteMarker = DLTX_DELETE;
+	auto InsertItemWithDelete = [&](const Item& Entry, InsertType Type)
+	{
+		InsertSectionItem(*CurrentSect, bDeleteSectionIfEmpty, Entry, Type, DeleteMarker);
+	};
 
 	// Insert variables of own data
 	auto InsertData = [&SectName, &InsertItemWithDelete](xr_string_map<xr_string, Sect>& Data, bool bIsBase)
@@ -387,12 +390,16 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	// Delete entries that are still marked DLTX_DELETE
 	for (auto It = CurrentSect->Data.rbegin(); It != CurrentSect->Data.rend(); ++It)
 	{
-		if (It->second == deleteMarker)
+		if (It->second == DeleteMarker)
+		{
 			CurrentSect->Data.erase(It.base() - 1);
+		}
 	}
 
-    if (auto modifiers = OverrideModifyListData.find(SectName); modifiers != OverrideModifyListData.end())
-        ApplySectionListModifiers(*CurrentSect, modifiers->second);
+	if (auto Modifiers = OverrideModifyListData.find(SectName); Modifiers != OverrideModifyListData.end())
+	{
+		ApplySectionListModifiers(*CurrentSect, Modifiers->second);
+	}
 
 	PreviousEvaluations.pop_back();
 
@@ -405,169 +412,228 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 
 bool CInifile::EvaluateSectionsParallel()
 {
-    if (!FinalData.empty() || BaseData.size() < 128)
-        return false;
-    size_t itemCount = 0;
-    for (const auto& [name, section] : BaseData)
-        itemCount += section.Data.size();
-    if (itemCount < 4096 || xr_max_concurrency() < 2)
-        return false;
+	if (!FinalData.empty() || BaseData.size() < 128)
+	{
+		return false;
+	}
+	size_t ItemCount = 0;
+	for (const auto& [Name, Section] : BaseData)
+	{
+		ItemCount += Section.Data.size();
+	}
+	if (ItemCount < 4096 || xr_max_concurrency() < 2)
+	{
+		return false;
+	}
 
-    class SectionNode
-    {
-    public:
-        xr_string Name;
-        Sect Result;
-        const Sect* Base = nullptr;
-        const Sect* Override = nullptr;
-        Items Modifiers;
-        xr_vector<size_t> Parents;
-        size_t Level = 0;
-        u8 Visit = 0;
-        bool Deleted = false;
-    };
-    xr_vector<SectionNode> nodes;
-    nodes.reserve(BaseData.size());
-    xr_hash_map<xr_string, size_t> indices;
-    indices.reserve(BaseData.size());
-    auto addNode = [&](const xr_string& name)
-    {
-        const auto [it, inserted] = indices.emplace(name, nodes.size());
-        if (inserted)
-        {
-            auto& node = nodes.emplace_back();
-            node.Name = name;
-            node.Result.Name = name.c_str();
-            if (auto base = BaseData.find(name); base != BaseData.end())
-                node.Base = &base->second;
-            if (auto overrides = OverrideData.find(name); overrides != OverrideData.end())
-                node.Override = &overrides->second;
-            if (auto modifiers = OverrideModifyListData.find(name); modifiers != OverrideModifyListData.end())
-                node.Modifiers = modifiers->second;
-        }
-        return it->second;
-    };
-    for (const auto& [name, section] : BaseData)
-        addNode(name);
+	class SectionNode
+	{
+	public:
+		xr_string Name;
+		Sect Result;
+		const Sect* Base = nullptr;
+		const Sect* Override = nullptr;
+		Items Modifiers;
+		xr_vector<size_t> Parents;
+		size_t Level = 0;
+		u8 Visit = 0;
+		bool Deleted = false;
+	};
+	xr_vector<SectionNode> Nodes;
+	Nodes.reserve(BaseData.size());
+	xr_hash_map<xr_string, size_t> Indices;
+	Indices.reserve(BaseData.size());
+	auto AddNodeLambda = [&](const xr_string& Name)
+	{
+		const auto [It, IsInserted] = Indices.emplace(Name, Nodes.size());
+		if (IsInserted)
+		{
+			auto& Node = Nodes.emplace_back();
+			Node.Name = Name;
+			Node.Result.Name = Name.c_str();
+			if (auto Base = BaseData.find(Name); Base != BaseData.end())
+			{
+				Node.Base = &Base->second;
+			}
+			if (auto Overrides = OverrideData.find(Name); Overrides != OverrideData.end())
+			{
+				Node.Override = &Overrides->second;
+			}
+			if (auto Modifiers = OverrideModifyListData.find(Name); Modifiers != OverrideModifyListData.end())
+			{
+				Node.Modifiers = Modifiers->second;
+			}
+		}
+		return It->second;
+	};
+	for (const auto& [Name, Section] : BaseData)
+	{
+		AddNodeLambda(Name);
+	}
 
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        xr_vector<xr_string> parents;
-        xr_vector<xr_string> overrides;
-        if (auto base = BaseParentDataMap.find(nodes[i].Name); base != BaseParentDataMap.end())
-            parents = base->second;
-        if (auto mods = OverrideParentDataMap.find(nodes[i].Name); mods != OverrideParentDataMap.end())
-            overrides = mods->second;
-        MergeParentSet(parents, overrides, false);
-        for (auto parent = parents.rbegin(); parent != parents.rend(); ++parent)
-        {
-            const size_t parentIndex = addNode(*parent);
-            nodes[i].Parents.push_back(parentIndex);
-        }
-    }
+	for (size_t Index = 0; Index < Nodes.size(); ++Index)
+	{
+		xr_vector<xr_string> Parents;
+		xr_vector<xr_string> Overrides;
+		if (auto Base = BaseParentDataMap.find(Nodes[Index].Name); Base != BaseParentDataMap.end())
+		{
+			Parents = Base->second;
+		}
+		if (auto Mods = OverrideParentDataMap.find(Nodes[Index].Name); Mods != OverrideParentDataMap.end())
+		{
+			Overrides = Mods->second;
+		}
+		MergeParentSet(Parents, Overrides, false);
+		for (auto Parent = Parents.rbegin(); Parent != Parents.rend(); ++Parent)
+		{
+			const size_t ParentIndex = AddNodeLambda(*Parent);
+			Nodes[Index].Parents.push_back(ParentIndex);
+		}
+	}
 
-    xr_vector<size_t> order;
-    order.reserve(nodes.size());
-    auto visit = [&](auto&& self, size_t index) -> bool
-    {
-        auto& node = nodes[index];
-        if (node.Visit == 1)
-            return false;
-        if (node.Visit == 2)
-            return true;
-        node.Visit = 1;
-        for (size_t parent : node.Parents)
-        {
-            if (!self(self, parent))
-                return false;
-            node.Level = std::max(node.Level, nodes[parent].Level + 1);
-        }
-        node.Visit = 2;
-        order.push_back(index);
-        return true;
-    };
-    size_t levelCount = 0;
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        if (!visit(visit, i))
-            return false;
-        levelCount = std::max(levelCount, nodes[i].Level + 1);
-    }
-    xr_vector<xr_vector<size_t>> levels(levelCount);
-    for (size_t index : order)
-        levels[nodes[index].Level].push_back(index);
-    if (std::none_of(levels.begin(), levels.end(), [](const auto& level) { return level.size() >= 32; }))
-        return false;
+	xr_vector<size_t> Order;
+	Order.reserve(Nodes.size());
+	auto VisitLambda = [&](auto&& SelfLambda, size_t Index) -> bool
+	{
+		auto& Node = Nodes[Index];
+		if (Node.Visit == 1)
+		{
+			return false;
+		}
+		if (Node.Visit == 2)
+		{
+			return true;
+		}
+		Node.Visit = 1;
+		for (size_t Parent : Node.Parents)
+		{
+			if (!SelfLambda(SelfLambda, Parent))
+			{
+				return false;
+			}
+			Node.Level = std::max(Node.Level, Nodes[Parent].Level + 1);
+		}
+		Node.Visit = 2;
+		Order.push_back(Index);
+		return true;
+	};
+	size_t LevelCount = 0;
+	for (size_t Index = 0; Index < Nodes.size(); ++Index)
+	{
+		if (!VisitLambda(VisitLambda, Index))
+		{
+			return false;
+		}
+		LevelCount = std::max(LevelCount, Nodes[Index].Level + 1);
+	}
+	xr_vector<xr_vector<size_t>> Levels(LevelCount);
+	for (size_t Index : Order)
+	{
+		Levels[Nodes[Index].Level].push_back(Index);
+	}
+	if (std::none_of(Levels.begin(), Levels.end(), [](const auto& Level)
+					 { return Level.size() >= 32; }))
+	{
+		return false;
+	}
 
-    const shared_str deleteMarker = DLTX_DELETE;
-    const size_t concurrency = std::min(size_t(4), xr_max_concurrency());
-    for (const auto& level : levels)
-    {
-        auto evaluate = [&](size_t index)
-        {
-            auto& node = nodes[index];
-            bool deleteIfEmpty = false;
-            auto insert = [&](const Items& items, InsertType type)
-            {
-                for (const auto& item : items)
-                    InsertSectionItem(node.Result, deleteIfEmpty, item, type, deleteMarker);
-            };
-            if (node.Override)
-                insert(node.Override->Data, InsertType::Override);
-            if (node.Base)
-                insert(node.Base->Data, InsertType::Base);
-            for (size_t parent : node.Parents)
-                insert(nodes[parent].Result.Data, InsertType::Parent);
-            for (auto item = node.Result.Data.rbegin(); item != node.Result.Data.rend(); ++item)
-                if (item->second == deleteMarker)
-                    node.Result.Data.erase(item.base() - 1);
-            node.Deleted = deleteIfEmpty && node.Result.Data.empty();
-        };
-        for (size_t index : level)
-            for (size_t parent : nodes[index].Parents)
-                if (nodes[parent].Deleted)
-                    return false;
+	const shared_str DeleteMarker = DLTX_DELETE;
+	const size_t Concurrency = std::min(size_t(4), xr_max_concurrency());
+	for (const auto& Level : Levels)
+	{
+		auto EvaluateLambda = [&](size_t Index)
+		{
+			auto& Node = Nodes[Index];
+			bool DeleteIfEmpty = false;
+			auto InsertLambda = [&](const Items& SectionItems, InsertType Type)
+			{
+				for (const auto& Entry : SectionItems)
+				{
+					InsertSectionItem(Node.Result, DeleteIfEmpty, Entry, Type, DeleteMarker);
+				}
+			};
+			if (Node.Override)
+			{
+				InsertLambda(Node.Override->Data, InsertType::Override);
+			}
+			if (Node.Base)
+			{
+				InsertLambda(Node.Base->Data, InsertType::Base);
+			}
+			for (size_t Parent : Node.Parents)
+			{
+				InsertLambda(Nodes[Parent].Result.Data, InsertType::Parent);
+			}
+			for (auto Entry = Node.Result.Data.rbegin(); Entry != Node.Result.Data.rend(); ++Entry)
+			{
+				if (Entry->second == DeleteMarker)
+				{
+					Node.Result.Data.erase(Entry.base() - 1);
+				}
+			}
+			Node.Deleted = DeleteIfEmpty && Node.Result.Data.empty();
+		};
+		for (size_t Index : Level)
+		{
+			for (size_t Parent : Nodes[Index].Parents)
+			{
+				if (Nodes[Parent].Deleted)
+				{
+					return false;
+				}
+			}
+		}
 
-        size_t work = 0;
-        for (size_t index : level)
-        {
-            const auto& node = nodes[index];
-            if (node.Base)
-                work += node.Base->Data.size();
-            if (node.Override)
-                work += node.Override->Data.size();
-            for (size_t parent : node.Parents)
-                work += nodes[parent].Result.Data.size();
-        }
-        if (level.size() >= 32 && work >= 2048)
-        {
-            const size_t workerCount = std::min(concurrency, level.size());
-            xr_parallel_for(size_t(0), workerCount, [&](size_t worker)
-            {
-                for (size_t i = worker; i < level.size(); i += workerCount)
-                    evaluate(level[i]);
-            });
-        }
-        else
-        {
-            for (size_t index : level)
-                evaluate(index);
-        }
-        for (size_t index : level)
-        {
-            auto& node = nodes[index];
-            ApplySectionListModifiers(node.Result, node.Modifiers);
-        }
-    }
+		size_t Work = 0;
+		for (size_t Index : Level)
+		{
+			const auto& Node = Nodes[Index];
+			if (Node.Base)
+			{
+				Work += Node.Base->Data.size();
+			}
+			if (Node.Override)
+			{
+				Work += Node.Override->Data.size();
+			}
+			for (size_t Parent : Node.Parents)
+			{
+				Work += Nodes[Parent].Result.Data.size();
+			}
+		}
+		if (Level.size() >= 32 && Work >= 2048)
+		{
+			const size_t WorkerCount = std::min(Concurrency, Level.size());
+			xr_parallel_for(size_t(0), WorkerCount, [&](size_t Worker)
+							{
+                for (size_t Index = Worker; Index < Level.size(); Index += WorkerCount){
+                    EvaluateLambda(Level[Index]);
+} });
+		}
+		else
+		{
+			for (size_t Index : Level)
+			{
+				EvaluateLambda(Index);
+			}
+		}
+		for (size_t Index : Level)
+		{
+			auto& Node = Nodes[Index];
+			ApplySectionListModifiers(Node.Result, Node.Modifiers);
+		}
+	}
 
-    for (size_t index : order)
-    {
-        auto& node = nodes[index];
-        if (!node.Deleted)
-            FinalData.emplace(node.Name, std::move(node.Result));
-        OverrideData.erase(node.Name);
-    }
-    return true;
+	for (size_t Index : Order)
+	{
+		auto& Node = Nodes[Index];
+		if (!Node.Deleted)
+		{
+			FinalData.emplace(Node.Name, std::move(Node.Result));
+		}
+		OverrideData.erase(Node.Name);
+	}
+	return true;
 }
 
 void CInifile::MergeParentSet(xr_vector<xr_string>& ParentsBase, xr_vector<xr_string>& ParentsOverride, bool bIncludeRemovers)
@@ -612,14 +678,14 @@ void CInifile::insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 	}
 }
 
-IC bool	is_empty_line_now(IReader* F) 
-{ 
+IC bool	is_empty_line_now(IReader* F)
+{
 	char* a0 = (char*)F->pointer()-4;
 	char* a1 = (char*)(F->pointer())-3;
 	char* a2 = (char*)F->pointer()-2;
 	char* a3 = (char*)(F->pointer())-1;
-	
-	return (*a0==13) && ( *a1==10) && (*a2==13) && ( *a3==10); 
+
+	return (*a0==13) && ( *a1==10) && (*a2==13) && ( *a3==10);
 };
 
 void CInifile::save_as	(IWriter& writer, bool bcheck) const
@@ -649,12 +715,12 @@ void CInifile::save_as	(IWriter& writer, bool bcheck) const
 					_decorate	(val, *item.second);
 					// only name and value
 					xr_sprintf	(temp, sizeof(temp), "%8s%-32s = %-32s"," ", line_name.c_str(),val);
-				}else 
+				}else
 				{
 					// only name
 					xr_sprintf(temp, sizeof(temp), "%8s%-32s = "," ", line_name.c_str());
 				}
-			}else 
+			}else
 			{
 				// no name, so no value
 				temp[0]		= 0;
@@ -1749,32 +1815,32 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		xr_strlwr(NormalizedFileName.data());
 		FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + NormalizedFileName + "_*.ltx").c_str());
 
-		std::optional<std::regex> namePattern;
-		xr_vector<xr_unique_ptr<std::regex>> ambiguousPatterns(AmbiguousFiles.size());
+		std::optional<std::regex> NamePattern;
+		xr_vector<xr_unique_ptr<std::regex>> AmbiguousPatterns(AmbiguousFiles.size());
 
 		for (const FS_File& ModFile : ModFiles)
 		{
 			// Determine if we should load this mod file, or if it's meant for a different root file
 			bool bIsModfileMeantForMe = true;
 
-			size_t ambiguousIndex = 0;
+			size_t AmbiguousIndex = 0;
 			for (const FS_File& AmbiguousFile : AmbiguousFiles)
 			{
-				auto& pattern = ambiguousPatterns[ambiguousIndex++];
-				if (!pattern)
+				auto& Pattern = AmbiguousPatterns[AmbiguousIndex++];
+				if (!Pattern)
 				{
-					if (!namePattern)
+					if (!NamePattern)
 					{
-						namePattern.emplace("^.+(?=.ltx$)");
+						NamePattern.emplace("^.+(?=.ltx$)");
 					}
-					std::cmatch match;
-					std::regex_search(AmbiguousFile.name.c_str(), match, *namePattern);
-					xr_string ambiguousName = match.empty() ? "" : match[0].str().c_str();
-					xr_string patternString = xr_string("mod_") + ambiguousName + "_.+.ltx";
-					pattern = xr_make_unique<std::regex>(patternString);
+					std::cmatch Match;
+					std::regex_search(AmbiguousFile.name.c_str(), Match, *NamePattern);
+					xr_string AmbiguousName = Match.empty() ? "" : Match[0].str().c_str();
+					xr_string PatternString = xr_string("mod_") + AmbiguousName + "_.+.ltx";
+					Pattern = xr_make_unique<std::regex>(PatternString);
 				}
 
-				if (std::regex_match(ModFile.name, *pattern))
+				if (std::regex_match(ModFile.name, *Pattern))
 				{
 					bIsModfileMeantForMe = false;
 					break;
@@ -1897,12 +1963,12 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 					FS_FileSet fset = {};
 					string_path inc_mask = {};
 					char inc_ext[8] = {};
-					
+
 					_splitpath(inc_name, nullptr, nullptr, inc_mask, inc_ext);
 					xr_string mask = xr_string(inc_mask) + inc_ext;
 					xr_strlwr(inc_path);
 					FS.file_list(fset, inc_path, FS_ListFiles, mask.c_str());
-					
+
 					for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
 					{
 						const char* _name = it->name.c_str();

@@ -80,7 +80,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
-	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
+	else if (CRender::PHASE_REFLECT == RImplementation.phase)
 	{
 		id = SE_R2_REFLECTIONS;
 	}
@@ -113,7 +113,7 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 	return pVisual->shader->E[id]._get();
 }
 
-static class cl_parallax : public RHIShaderConstant::Setup 
+static class cl_parallax : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
 	{
@@ -139,8 +139,8 @@ static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
 	}
 } binder_pos_decompress_params2;
 
-static class cl_water_intensity : public RHIShaderConstant::Setup		
-{	
+static class cl_water_intensity : public RHIShaderConstant::Setup
+{
 	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
@@ -209,8 +209,8 @@ static class cl_invP_hud : public RHIShaderConstant::Setup
 	}
 }	binder_invP_hud;
 
-static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
-{	
+static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup
+{
 	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
@@ -219,9 +219,9 @@ static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup
 	}
 }	binder_sun_shafts_intensity;
 
-static class cl_alpha_ref	: public RHIShaderConstant::Setup 
-{	
-	virtual void setup (RHIShaderConstant* C) 
+static class cl_alpha_ref	: public RHIShaderConstant::Setup
+{
+	virtual void setup (RHIShaderConstant* C)
 	{
 		auto Callback = [C](u32 m_uiAlphaRef)
 		{
@@ -232,7 +232,7 @@ static class cl_alpha_ref	: public RHIShaderConstant::Setup
 } binder_alpha_ref;
 
 static class cl_m_shadow_sun : public RHIShaderConstant::Setup
-{	
+{
 	virtual void setup	(RHIShaderConstant* C)
 	{
 		for(int i = 0; i < 3; i++)
@@ -313,7 +313,7 @@ void CRender::create()
 	o.nullrt = false;
 
 	// SMAP / DST
-	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS; 
+	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS;
 
 	// nvstencil on NV40 and up
 	o.nvstencil = false;
@@ -429,7 +429,7 @@ void CRender::create()
 	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 }
 
-void CRender::destroy() 
+void CRender::destroy()
 {
 	ResetSunShadowCache();
 	// Release the editor's lazily created brush resources while the device is still
@@ -497,7 +497,7 @@ void CRender::reset_begin() {
 	xr_delete(Target);
 	HWOCC.occq_destroy();
 
-	if(LightingModeIsDynamicRender() && !EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) 
+	if(LightingModeIsDynamicRender() && !EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT")))
 	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
@@ -742,14 +742,14 @@ void CRender::Statistics(CGameFont* _F) {
 #endif
 }
 
-xr_string CRender::getShaderParams() 
+xr_string CRender::getShaderParams()
 {
 	static thread_local xr_vector<xr_string> crc_vector;
 
 	crc_vector.resize(0);
 	crc_vector.reserve(16);
 
-	if(!m_ShaderOptions.empty()) 
+	if(!m_ShaderOptions.empty())
 	{
 		for(const auto& [Name, Value] : m_ShaderOptions)
 		{
@@ -790,9 +790,9 @@ xr_string CRender::getShaderParams()
 	return EditorInstancing ? "_inst" : "";
 }
 
-xr_string CRender::getShaderParamsDebug() 
+xr_string CRender::getShaderParamsDebug()
 {
-	if (!m_ShaderOptions.empty()) 
+	if (!m_ShaderOptions.empty())
 	{
 		xr_string params = "";
 
@@ -819,9 +819,9 @@ bool CRender::NeedMotionVectors() const
 	if (LightingModeIsStaticRender())
 		return false;
 
-	return (ps_r_scale_mode >= 2) || 
-	       (ps_r2_aa_type == 3) || 
-	       ps_r4_mblur_quality > 0 || 
+	return (ps_r_scale_mode >= 2) ||
+	       (ps_r2_aa_type == 3) ||
+	       ps_r4_mblur_quality > 0 ||
 	       o.deffered_reflecitons;
 }
 
@@ -868,7 +868,7 @@ void CRender::clearAllShaderOptions()
 	}
 }
 
-void CRender::addShaderOption(const char* name, const char* value) 
+void CRender::addShaderOption(const char* name, const char* value)
 {
 	m_ShaderOptions[name] = value;
 }
@@ -1035,7 +1035,7 @@ static HRESULT create_shader(
 		NODEFAULT;
 	}
 
-	if (disasm) 
+	if (disasm)
 	{
 		ID3DBlob* disasm_ = 0;
 		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
@@ -1051,35 +1051,35 @@ static HRESULT create_shader(
 }
 
 
-namespace
+namespace ShaderSource
 {
-	xr_string_view ReadShaderCRCLine(IReader& reader)
+static xr_string_view ReadShaderCRCLine(IReader& Reader)
+{
+	const char* Data = static_cast<const char*>(Reader.pointer());
+	const size_t Available = size_t(Reader.elapsed());
+	size_t Length = 1;
+	while (Length < Available && Data[Length] != '\r' && Data[Length] != '\n')
 	{
-		const char* data = static_cast<const char*>(reader.pointer());
-		const size_t available = size_t(reader.elapsed());
-		size_t length = 1;
-		while (length < available && data[length] != '\r' && data[length] != '\n')
-		{
-			++length;
-		}
-		size_t consumed = length;
-		while (consumed < available && (data[consumed] == '\r' || data[consumed] == '\n'))
-		{
-			++consumed;
-		}
-		reader.advance(intptr_t(consumed));
-		xr_string_view line(data, length);
-		while (!line.empty() && line.front() != 0 && u8(line.front()) <= u8(' '))
-		{
-			line.remove_prefix(1);
-		}
-		while (line.size() > 1 && u8(line.back()) <= u8(' '))
-		{
-			line.remove_suffix(1);
-		}
-		return line;
+		++Length;
 	}
+	size_t Consumed = Length;
+	while (Consumed < Available && (Data[Consumed] == '\r' || Data[Consumed] == '\n'))
+	{
+		++Consumed;
+	}
+	Reader.advance(intptr_t(Consumed));
+	xr_string_view Line(Data, Length);
+	while (!Line.empty() && Line.front() != 0 && u8(Line.front()) <= u8(' '))
+	{
+		Line.remove_prefix(1);
+	}
+	while (Line.size() > 1 && u8(Line.back()) <= u8(' '))
+	{
+		Line.remove_suffix(1);
+	}
+	return Line;
 }
+}  
 
 void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 {
@@ -1088,13 +1088,13 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 
 	while (!F->eof())
 	{
-		const xr_string_view line = ReadShaderCRCLine(*F);
+		const xr_string_view Line = ShaderSource::ReadShaderCRCLine(*F);
 
-		if (line.starts_with('#') &&
-			line.substr(0, line.find('\0')).find("#include") != xr_string_view::npos)
+		if (Line.starts_with('#') &&
+			Line.substr(0, Line.find('\0')).find("#include") != xr_string_view::npos)
 		{
-			const xr_string includeLine(line.data(), u32(line.size()));
-			if (_GetItem(includeLine.c_str(), 1, pFileName, '"'))
+			const xr_string IncludeLine(Line.data(), u32(Line.size()));
+			if (_GetItem(IncludeLine.c_str(), 1, pFileName, '"'))
 			{
 				if(std::find(files.begin(), files.end(), pFileName) == files.end())
 				{
@@ -1116,7 +1116,7 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 			}
 		}
 
-		final_crc = crc32(line.data(), line.size(), final_crc);
+		final_crc = crc32(Line.data(), Line.size(), final_crc);
 	}
 }
 
@@ -1159,7 +1159,7 @@ HRESULT	CRender::shader_compile(
 	const char* pFunctionName,
 	const char* pTarget,
 	DWORD Flags,
-	void*& result) 
+	void*& result)
 {
 	D3D_SHADER_MACRO defines[128];
 	int def_it = 0;
@@ -1172,15 +1172,15 @@ HRESULT	CRender::shader_compile(
 
 	// options
 	u32 len = xr_strlen(sh_name);
-	
-	for(auto& [Name, Value] : m_ShaderOptions) 
+
+	for(auto& [Name, Value] : m_ShaderOptions)
 	{
 		defines[def_it++] = {
 			Name.c_str(),
 			Value.c_str()
 		};
 	}
-	
+
 	// options
 	// Only vertex shaders read SKIN_*: other stages compile and cache one variant for every skinning mode
 	const int m_skinning = (pTarget != nullptr && pTarget[0] == 'v') ? Engine.External.GetSkinningMode() : -1;
@@ -1524,14 +1524,14 @@ HRESULT	CRender::shader_compile(
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
 
-	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) 
+	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE))
 	{
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 		IReader* file = FS.r_open(file_name);
 
-		if(file->length() > 4) 
+		if(file->length() > 4)
 		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
@@ -1540,7 +1540,7 @@ HRESULT	CRender::shader_compile(
 			{
 				u32 const real_crc = crc32(file->pointer(), file->elapsed());
 
-				if(real_crc == ShaderCRC) 
+				if(real_crc == ShaderCRC)
 				{
 					inShader->m_crc1 = ShaderCRC;
 					inShader->m_crc2 = CodeSRC;
@@ -1553,7 +1553,7 @@ HRESULT	CRender::shader_compile(
 		file->close();
 	}
 
-	if(FAILED(_result)) 
+	if(FAILED(_result))
 	{
 		LPD3DBLOB pShaderBuf = nullptr;
 		LPD3DBLOB pErrorBuf = nullptr;
