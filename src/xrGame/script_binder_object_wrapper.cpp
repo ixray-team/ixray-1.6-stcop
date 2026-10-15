@@ -12,6 +12,7 @@
 #include "script_game_object.h"
 #include "xrServer_Objects_ALife.h"
 #include "luabind/class_info.hpp"
+#include <luabind/detail/class_rep.hpp>
 
 enum class ScriptBinderMethods
 {
@@ -54,11 +55,28 @@ void CScriptBinderObjectWrapper::FinishInitialization()
 	
 	for (int i = (int)ScriptBinderMethods::reinit; i <= (int)ScriptBinderMethods::net_Relcase; ++i)
 	{
-		lua_getfield(L, -1, magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data());
-		ReflectionData[i] = lua_isfunction(L, -1);
-		lua_pop(L, 1);
-		//auto elem = self[magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data()];
-		//ReflectionData[i] = elem && elem.type() == LUA_TFUNCTION;
+		const char* method_name = magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data();
+		class_rep->get_table(L);
+		lua_pushstring(L, method_name);
+		lua_gettable(L, -2);
+		lua_remove(L, -2); // pop class table
+
+		bool overridden = false;
+		if (lua_isfunction(L, -1))
+		{
+			if (lua_iscfunction(L, -1) && lua_getupvalue(L, -1, 3))
+			{
+				bool is_default = (lua_touserdata(L, -1) == reinterpret_cast<void*>(0x1337));
+				lua_pop(L, 1); // pop upvalue
+				overridden = !is_default;
+			}
+			else
+			{
+				overridden = true;
+			}
+		}
+		lua_pop(L, 1); // pop function/nil
+		ReflectionData[i] = overridden;
 	}
 }
 
