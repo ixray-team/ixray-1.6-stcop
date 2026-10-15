@@ -33,62 +33,45 @@ void CUITextureMaster::ParseShTexInfoLegacy(const char* xml_file)
 {
 	CUIXml xml;
 	xml.Load(CONFIG_PATH, UI_PATH, xml_file);
-	shared_str file = xml.Read("file_name",0,""); 
-
-//	shared_textures_it	sht_it = m_shTex.find(texture);
-//	if (m_shTex.end() == sht_it)
-//	{
-		int num = xml.GetNodesNum("",0,"texture");
-//		regions regs;
-		for (int i = 0; i<num; i++)
-		{
-			TEX_INFO info;
-
-			info.file = file;
-
-			info.rect.x1 = xml.ReadAttribFlt("texture",i,"x");
-			info.rect.x2 = xml.ReadAttribFlt("texture",i,"width") + info.rect.x1;
-			info.rect.y1 = xml.ReadAttribFlt("texture",i,"y");
-			info.rect.y2 = xml.ReadAttribFlt("texture",i,"height") + info.rect.y1;
-			shared_str id = xml.ReadAttrib("texture",i,"id");
-
-			m_textures.insert(std::make_pair(id,info));
-		}
-//		m_shTex.insert(std::make_pair(texture, regs));
-//	}
+	shared_str file = xml.Read("file_name", 0, "");
+	XML_NODE* rootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
+	for (XML_NODE* textureNode = rootNode ? rootNode->FirstChildElement("texture") : nullptr; textureNode;
+		textureNode = textureNode->NextSiblingElement("texture"))
+	{
+		TEX_INFO info;
+		info.file = file;
+		info.rect.x1 = xml.ReadAttribFlt(textureNode, "x", 0.f);
+		info.rect.x2 = xml.ReadAttribFlt(textureNode, "width", 0.f) + info.rect.x1;
+		info.rect.y1 = xml.ReadAttribFlt(textureNode, "y", 0.f);
+		info.rect.y2 = xml.ReadAttribFlt(textureNode, "height", 0.f) + info.rect.y1;
+		shared_str id = xml.ReadAttrib(textureNode, "id", "");
+		m_textures.insert(std::make_pair(id, info));
+	}
 }
+
 void CUITextureMaster::ParseShTexInfo(const char* xml_file)
 {
-	CUIXml						xml;
-	xml.Load					(CONFIG_PATH, "ui\\textures_descr", xml_file);
-
-	int files_num				= xml.GetNodesNum("",0,"file");
-
-
-	for(int fi=0; fi<files_num; ++fi)
+	CUIXml xml;
+	xml.Load(CONFIG_PATH, "ui\\textures_descr", xml_file);
+	const int filesNum = xml.GetNodesNum("", 0, "file");
+	XML_NODE* rootNode = xml.GetLocalRoot() ? xml.GetLocalRoot() : xml.GetRoot();
+	for (XML_NODE* fileNode = filesNum ? rootNode->FirstChildElement("file") : nullptr; fileNode;
+		fileNode = fileNode->NextSiblingElement("file"))
 	{
-		XML_NODE* root_node			= xml.GetLocalRoot();
-		shared_str file				= xml.ReadAttrib("file", fi, "name"); 
-		float fileScale				= xml.ReadAttribFlt("file", fi, "scale", 1.f); 
-
-		XML_NODE* node				= xml.NavigateToNode("file", fi);
-
-		int num						= xml.GetNodesNum(node, "texture");
-		for (int i = 0; i<num; i++)
+		shared_str file = xml.ReadAttrib(fileNode, "name", "");
+		const float fileScale = xml.ReadAttribFlt(fileNode, "scale", 1.f);
+		for (XML_NODE* textureNode = fileNode->FirstChildElement("texture"); textureNode;
+			textureNode = textureNode->NextSiblingElement("texture"))
 		{
 			TEX_INFO info;
-
 			info.file = file;
-
-			info.rect.x1 = xml.ReadAttribFlt(node, "texture",i,"x") * fileScale;
-			info.rect.x2 = xml.ReadAttribFlt(node, "texture",i,"width") * fileScale + info.rect.x1;
-			info.rect.y1 = xml.ReadAttribFlt(node, "texture",i,"y") * fileScale;
-			info.rect.y2 = xml.ReadAttribFlt(node, "texture",i,"height") * fileScale + info.rect.y1;
-			shared_str id = xml.ReadAttrib	(node, "texture",i,"id");
-			m_textures.insert(std::make_pair(id,info));
+			info.rect.x1 = xml.ReadAttribFlt(textureNode, "x", 0.f) * fileScale;
+			info.rect.x2 = xml.ReadAttribFlt(textureNode, "width", 0.f) * fileScale + info.rect.x1;
+			info.rect.y1 = xml.ReadAttribFlt(textureNode, "y", 0.f) * fileScale;
+			info.rect.y2 = xml.ReadAttribFlt(textureNode, "height", 0.f) * fileScale + info.rect.y1;
+			shared_str id = xml.ReadAttrib(textureNode, "id", "");
+			m_textures.insert(std::make_pair(id, info));
 		}
-
-		xml.SetLocalRoot		(root_node);
 	}
 }
 

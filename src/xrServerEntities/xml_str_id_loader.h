@@ -152,6 +152,7 @@ void CSXML_IdToIndex::InitInternal ()
 	string_path	xml_file;
 	int			count = _GetItemCount	(file_str);
 	int			index = 0;
+	xr_hash_set<shared_str> itemIds;
 	for (int it=0; it<count; ++it)	
 	{
 		_GetItem	(file_str, it, xml_file);
@@ -168,27 +169,23 @@ void CSXML_IdToIndex::InitInternal ()
 		//общий список
 		int items_num			= uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 
-		for(int i=0; i<items_num; ++i)
+		int i = 0;
+		for (XML_NODE* itemNode = items_num ? uiXml->GetRoot()->FirstChildElement(tag_name) : nullptr; itemNode;
+			itemNode = itemNode->NextSiblingElement(tag_name), ++i)
 		{
-			const char* item_name	= uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
+			const char* item_name = uiXml->ReadAttrib(itemNode, "id", NULL);
 
 			string256			buf;
 			xr_sprintf				(buf, "id for item don't set, number %d in %s", i, xml_file);
 			R_ASSERT2			(item_name, buf);
 
 
-			//проверетить ID на уникальность
-			T_VECTOR::iterator t_it = m_pItemDataVector->begin();
-			for(;m_pItemDataVector->end() != t_it; t_it++)
-			{
-				if(shared_str((*t_it).id) == shared_str(item_name))
-					break;
-			}
-
-			R_ASSERT3(m_pItemDataVector->end() == t_it, "duplicate item id", item_name);
+			const shared_str itemId = item_name;
+			const bool isUnique = itemIds.insert(itemId).second;
+			R_ASSERT3(isUnique, "duplicate item id", item_name);
 
 			ITEM_DATA			data;
-			data.id				= item_name;
+			data.id				= itemId;
 			data.index			= index;
 			data.pos_in_file	= i;
 //.				data.file_name		= xml_file;
