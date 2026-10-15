@@ -26,6 +26,8 @@ enum class EBlendOp : u8
 	ZFunc,				 
 	ShaderOption,		 
 	ClearShaderOptions,
+	CullMode,			 
+	AlphaToCoverage,	 
 	Count
 };
 
@@ -67,6 +69,8 @@ namespace BlendOps
 	xr_string ResolveTexture(const char* Texture, const TextureArgs& Args);
 
 	void Apply(CBlender_Compile& C, const BlendOp& Op, bool& IsFirstPass, const TextureArgs& Args);
+
+	bool IsShaderOptionEnabled(const char* Name);
 
 	const char* GetName(EBlendOp Type);
 	bool FindType(const char* Name, EBlendOp& Type);
