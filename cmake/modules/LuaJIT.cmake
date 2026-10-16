@@ -27,15 +27,107 @@ if(WIN32)
 
 else()
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    FetchContent_Declare(
-        luajit
-        GIT_REPOSITORY https://github.com/ixray-team/luajit-ixray.git
-        GIT_TAG default
-    )
-    FetchContent_MakeAvailable(luajit)
+    if(APPLE)
+        # AI: macOS builds upstream LuaJIT instead of the project's fork: the fork (2.1.0-beta3 plus
+        # AI: its ARM backports) cannot place the JIT's machine code area on Apple Silicon at all.
+        # AI: Verified with a plain process that only dlopen()s the built library and runs one loop:
+        # AI: it dies with "PANIC: unprotected error in call to Lua API" from lj_mcode.c, while
+        # AI: upstream LuaJIT v2.1 runs the same script with the JIT on. The engine itself died the
+        # AI: same way right after the renderer was initialised. Windows and Linux keep the fork.
+        FetchContent_Declare(
+            luajit_apple
+            GIT_REPOSITORY https://github.com/LuaJIT/LuaJIT.git
+            GIT_TAG 2a8e017ef1ece6a95b983ffca073d30609dce7c4
+        )
+        FetchContent_GetProperties(luajit_apple)
+        if(NOT luajit_apple_POPULATED)
+            FetchContent_Populate(luajit_apple)
+        endif()
 
-    set(LUAJIT_INC "${luajit_SOURCE_DIR}/src")
-    set(LUAJIT_LIB "libluajit")
+        # AI: upstream returns a value from its void mcode_setprot() in the MAP_JIT branch, which
+        # AI: current clang rejects as an error; that branch is unused here, so the return goes.
+        file(READ "${luajit_apple_SOURCE_DIR}/src/lj_mcode.c" LUAJIT_MCODE_SRC)
+        set(LUAJIT_MCODE_BEFORE "${LUAJIT_MCODE_SRC}")
+        string(REPLACE
+            "  pthread_jit_write_protect_np((prot & PROT_EXEC));\n  return 0;\n"
+            "  pthread_jit_write_protect_np((prot & PROT_EXEC));\n"
+            LUAJIT_MCODE_SRC "${LUAJIT_MCODE_SRC}")
+        if(NOT LUAJIT_MCODE_SRC STREQUAL LUAJIT_MCODE_BEFORE)
+            file(WRITE "${luajit_apple_SOURCE_DIR}/src/lj_mcode.c" "${LUAJIT_MCODE_SRC}")
+            message(STATUS "LuaJIT: dropped upstream's void return in lj_mcode.c, clang rejects it")
+        endif()
+
+        # AI: upstream ships a Makefile (the fork shipped a CMake project, which is why this module
+        # AI: used FetchContent_MakeAvailable before). Built once, incremental after that. The shared
+        # AI: library matters: luabind links LuaJIT directly (luabind/luabind/CMakeLists.txt) and a
+        # AI: static library used to be absorbed into libluabind.dylib, so the process ended up with
+        # AI: two LuaJIT copies - one inside luabind, one inside xrScripts - and the garbage collector
+        # AI: of one span on objects of the other, which hung luabind::open() forever.
+        set(LUAJIT_APPLE_LIB_DIR "${CMAKE_BINARY_DIR}/luajit")
+        set(LUAJIT_APPLE_DYLIB "${LUAJIT_APPLE_LIB_DIR}/libluajit.dylib")
+
+        if(NOT EXISTS "${LUAJIT_APPLE_DYLIB}")
+            if(CMAKE_OSX_DEPLOYMENT_TARGET)
+                set(LUAJIT_APPLE_DEPLOYMENT_TARGET "${CMAKE_OSX_DEPLOYMENT_TARGET}")
+            else()
+                set(LUAJIT_APPLE_DEPLOYMENT_TARGET "11.0")
+            endif()
+
+            # AI: upstream builds with its own Makefile, and CMAKE_MAKE_PROGRAM is ninja in this
+            # AI: project, so the system make is looked up explicitly.
+            find_program(LUAJIT_MAKE_PROGRAM NAMES make gmake REQUIRED)
+
+            execute_process(
+                COMMAND "${LUAJIT_MAKE_PROGRAM}" -j8 BUILDMODE=dynamic
+                WORKING_DIRECTORY "${luajit_apple_SOURCE_DIR}"
+                ENVIRONMENT "MACOSX_DEPLOYMENT_TARGET=${LUAJIT_APPLE_DEPLOYMENT_TARGET}"
+                RESULT_VARIABLE LUAJIT_BUILD_RESULT
+                OUTPUT_VARIABLE LUAJIT_BUILD_OUTPUT
+                ERROR_VARIABLE LUAJIT_BUILD_OUTPUT
+            )
+            if(NOT LUAJIT_BUILD_RESULT EQUAL 0)
+                message(FATAL_ERROR "LuaJIT: upstream build failed:\n${LUAJIT_BUILD_OUTPUT}")
+            endif()
+
+            # AI: upstream names it libluajit.so and gives it the install name
+            # AI: /usr/local/lib/libluajit-5.1.2.dylib, which does not exist at run time; the library
+            # AI: is taken next to the binaries and pointed at through @rpath, like the other
+            # AI: dependencies (see cmake/clang.cmake for the run path).
+            file(MAKE_DIRECTORY "${LUAJIT_APPLE_LIB_DIR}")
+            configure_file("${luajit_apple_SOURCE_DIR}/src/libluajit.so"
+                           "${LUAJIT_APPLE_DYLIB}" COPYONLY)
+            find_program(LUAJIT_INSTALL_NAME_TOOL NAMES install_name_tool REQUIRED)
+            execute_process(
+                COMMAND "${LUAJIT_INSTALL_NAME_TOOL}" -id "@rpath/libluajit.dylib" "${LUAJIT_APPLE_DYLIB}"
+                RESULT_VARIABLE LUAJIT_ID_RESULT
+            )
+            if(NOT LUAJIT_ID_RESULT EQUAL 0)
+                message(FATAL_ERROR "LuaJIT: install_name_tool -id failed")
+            endif()
+
+            if(CMAKE_BUILD_TYPE)
+                set(LUAJIT_APPLE_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+            else()
+                set(LUAJIT_APPLE_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin")
+            endif()
+            file(COPY "${LUAJIT_APPLE_DYLIB}" DESTINATION "${LUAJIT_APPLE_RUNTIME_DIR}")
+
+            message(STATUS "LuaJIT: built upstream libluajit.dylib for macOS")
+        endif()
+
+        set(LUAJIT_INC "${luajit_apple_SOURCE_DIR}/src")
+        set(LUAJIT_LIB "${LUAJIT_APPLE_DYLIB}")
+    else()
+        FetchContent_Declare(
+            luajit
+            GIT_REPOSITORY https://github.com/ixray-team/luajit-ixray.git
+            GIT_TAG default
+        )
+        FetchContent_MakeAvailable(luajit)
+
+        set(LUAJIT_INC "${luajit_SOURCE_DIR}/src")
+        set(LUAJIT_LIB "libluajit")
+    endif()
 
     # Для luabind
     set(LUA_INCLUDE_DIR "${LUAJIT_INC}" CACHE PATH "" FORCE)

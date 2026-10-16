@@ -478,3 +478,36 @@ cmake -S . -B build-macos -G Ninja \
 - **Следующий упор:** Lua-паника при инициализации игры (`xrScripts`/`xrGame`) — смотреть, какой скрипт
   грузится и что именно не сходится; вероятно, связано с набором данных (используется `gamedata` из
   `cop-baseline` + шейдеры из репозитория).
+
+**Lua-паника: причина найдена и закрыта; вскрыта «двойная LuaJIT»; остался цикл в сборке мусора**
+
+- **Рецепт прогонов (важно):** `ALSOFT_DRIVERS=null` + `VK_ICD_FILENAMES=$PWD/MoltenVK_icd.json` +
+  сторож на `pkill -9 -x xrEngine`. Почему так:
+  - без `ALSOFT_DRIVERS=null` движок **висит** в `ALDeviceList::Enumerate()` (`OpenALDeviceList.cpp:109`):
+    OpenAL Soft перечисляет устройства CoreAudio, а macOS на это спрашивает доступ к звуку (TCC) — запрос ждёт
+    ответа и блокирует прогон (Степану прилетал запрос «зачем микрофон»);
+  - в DEBUG-сборке фатальная ошибка показывает модальную плашку SDL и ждёт клика — сторож обязателен.
+- **Причина паники:** встроенный в движок LuaJIT (форк `ixray-team/luajit-ixray` = 2.1.0-beta3 + их
+  бэкпорты) **не умеет JIT на Apple Silicon**: в `lj_mcode.c` он не может разместить область машинного кода
+  («OS probably ignores hints?» → `LJ_TRERR_MCODEAL`), ошибка уходит наружу, LuaJIT вызывает `panic()` →
+  движок падает. Доказано отдельным процессом (`/tmp/ljtest/run_luajit.c`), который только `dlopen`-ит
+  собранную библиотеку и гоняет цикл: **форк падает, официальный LuaJIT 2.1 — работает**.
+- **Решение (выбор Степана — «дожимать правильный путь»):** `cmake/modules/LuaJIT.cmake` для macOS собирает
+  **официальный LuaJIT v2.1** (пин `2a8e017ef1ece6a95b983ffca073d30609dce7c4`) его собственным Makefile-ом:
+  режим `BUILDMODE=dynamic`, `MACOSX_DEPLOYMENT_TARGET` (11.0), в его `lj_mcode.c` убирается `return 0;` из
+  void-функции (современный clang не пропускает), результат (`libluajit.so`) копируется как
+  `libluajit.dylib` с install name `@rpath/libluajit.dylib` и кладётся рядом с бинарником. Windows/Linux
+  продолжают собирать их форк — их путь не тронут.
+- **Находка №2 (реальный баг):** при статической LuaJIT в процессе оказывалось **две копии** — `.a`
+  «заглатывал» `libluabind.dylib` (он линкует LuaJIT сам, см. `luabind/luabind/CMakeLists.txt:27`), а вторая
+  копия уходила в `xrScripts`, и GC одной библиотеки работал по объектам другой. Проверено `otool -L`
+  (в `libluabind` не было зависимости от LuaJIT, но были её символы). Теперь одна общая
+  `@rpath/libluajit.dylib`.
+- `src/xrScripts/luautf8/luautf8.c`: добавлен `#include <limits.h>` — используется `INT_MAX`, а заголовки
+  официального LuaJIT больше не тянут его транзитивно.
+- **Текущий упор:** даже с одной LuaJIT (и с выключенным JIT — проверял) движок всё ещё висит в
+  `CResourceManager::LS_Load()` → `luabind::open()` → внутри LuaJIT: `sample` показывает сплошные сэмплы в
+  `libluajit` (цикл в GC-пути). Отдельный тест (юзердата с `__gc` + 400k аллокаций) на этом же LuaJIT
+  проходит, то есть зависание специфично для связки luabind + движка. Следующие шаги: собрать LuaJIT с
+  символами и посмотреть в lldb состояние GC (`gcstate`, объект, на котором цикл), либо сравнить
+  `detail::class_registry` luabind-а с новым GC LuaJIT.
