@@ -1,22 +1,27 @@
 #pragma once
 
-ENGINE_API extern Flags32		psHUD_Flags;
-#define HUD_CROSSHAIR			(1<<0)
-#define HUD_CROSSHAIR_DIST		(1<<1)
-#define HUD_WEAPON				(1<<2)
-#define HUD_INFO				(1<<3)
-#define HUD_DRAW				(1<<4)
-#define HUD_CROSSHAIR_RT		(1<<5)
-#define HUD_WEAPON_RT			(1<<6)
-#define HUD_CROSSHAIR_DYNAMIC	(1<<7)
-#define HUD_CROSSHAIR_RT2		(1<<9)
-#define HUD_DRAW_RT				(1<<10)
-#define HUD_WEAPON_RT2			(1<<11)
-#define HUD_DRAW_RT2			(1<<12)
-#define HUD_CROSSHAIR_POINT		(1<<13)
-#define HUD_MINIMAP				(1<<14)
-#define HUD_HIDE_QUICK_SLOTS	(1<<15)
-#define HUD_CONTEXTUAL_STATUS	(1<<16)
+ENGINE_API extern Flags32 psHUD_Flags;
+
+enum
+{
+	HUD_CROSSHAIR = 1 << 0,
+	HUD_CROSSHAIR_DIST = 1 << 1,
+	HUD_WEAPON = 1 << 2,
+	HUD_INFO = 1 << 3,
+	HUD_DRAW = 1 << 4,
+	HUD_CROSSHAIR_RT = 1 << 5,
+	HUD_WEAPON_RT = 1 << 6,
+	HUD_CROSSHAIR_DYNAMIC = 1 << 7,
+	HUD_CROSSHAIR_RT2 = 1 << 9,
+	HUD_DRAW_RT = 1 << 10,
+	HUD_WEAPON_RT2 = 1 << 11,
+	HUD_DRAW_RT2 = 1 << 12,
+	HUD_CROSSHAIR_POINT = 1 << 13,
+	HUD_MINIMAP = 1 << 14,
+	HUD_HIDE_QUICK_SLOTS = 1 << 15,
+	HUD_CONTEXTUAL_STATUS = 1 << 16,
+	HUD_CROSSHAIR_INERTIA = 1 << 17
+};
 
 IC bool HUD_IsQuickSlotsAutoHide()
 {
