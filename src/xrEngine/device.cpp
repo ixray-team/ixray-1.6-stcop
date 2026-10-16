@@ -380,7 +380,7 @@ void CRenderDevice::Run()
 		Timer_MM_Delta = time_system - time_local;
 	}
 
-	g_AppInfo.MainThread = Platform::GetCurrentThread();
+	g_AppInfo.SetMainThread();
 	std::signal(SIGTERM, device_request_quit);
 	std::signal(SIGINT, device_request_quit);
 
