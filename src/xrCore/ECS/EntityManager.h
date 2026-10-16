@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "EntityComponentStorage.h"
 
 class XRCORE_API CECSManager final
@@ -12,7 +12,6 @@ public:
 	CECSManager() = default;
 	~CECSManager();
 
-	// Указатель не стабильный! Не хранить!
 	template <typename T>
 	T& CreateComponent(IECSOwner* Owner)
 	{
@@ -20,7 +19,6 @@ public:
 		return Storage.Create(Owner);
 	}
 
-	// Указатель не стабильный! Не хранить!
 	template <typename T>
 	T* GetComponent(IECSOwner* Owner)
 	{
@@ -64,19 +62,22 @@ private:
 	{
 		static const ECSComponentTypeID TypeID = GetComponentTypeID<T>();
 
-		RWMutex.AcquireShared();
-		auto Iter = ComponentStorages.find(TypeID);
-		RWMutex.ReleaseShared();
-
-		if (Iter == ComponentStorages.end())
 		{
-			xrSRWLockGuard guard(RWMutex, false);
-			CECSComponentStorage<T>* NewStorage = new CECSComponentStorage<T>();
-			ComponentStorages[TypeID] = NewStorage;
-			return *NewStorage;
+			xrSRWLockGuard guard(RWMutex, true);
+			auto Iter = ComponentStorages.find(TypeID);
+			if (Iter != ComponentStorages.end())
+			{
+				return *static_cast<CECSComponentStorage<T>*>(Iter->second);
+			}
 		}
 
-		return *static_cast<CECSComponentStorage<T>*>(Iter->second);
+		xrSRWLockGuard guard(RWMutex, false);
+		IECSComponentStorage*& Storage = ComponentStorages[TypeID];
+		if (Storage == nullptr)
+		{
+			Storage = new CECSComponentStorage<T>();
+		}
+		return *static_cast<CECSComponentStorage<T>*>(Storage);
 	}
 
 private:

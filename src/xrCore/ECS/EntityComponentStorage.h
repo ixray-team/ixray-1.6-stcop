@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 class IECSOwner;
 
@@ -37,7 +37,8 @@ public:
 	{
 		xrSRWLockGuard guard(RWMutex, false);
 		size_t Index = Components.size();
-		T& NewComponent = Components.emplace_back();
+		T& NewComponent = *Components.emplace_back(xr_make_unique<T>());
+		ComponentIndices[&NewComponent] = Index;
 
 		if constexpr (ECSHasSetupOwner<T>)
 		{
@@ -59,24 +60,24 @@ public:
 	{
 		xrSRWLockGuard guard(RWMutex, true);
 		auto Iter = Lookup.find(Owner);
-		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
+		return Iter != Lookup.end() ? Components[Iter->second].get() : nullptr;
 	}
 
 	const T* Get(const IECSOwner* Owner) const
 	{
-		xrSRWLockGuard guard(RWMutex, false);
+		xrSRWLockGuard guard(RWMutex, true);
 		auto Iter = Lookup.find(const_cast<IECSOwner*>(Owner));
-		return Iter != Lookup.end() ? &Components[Iter->second] : nullptr;
+		return Iter != Lookup.end() ? Components[Iter->second].get() : nullptr;
 	}
 
 	IECSOwner* GetOwnerFromComponent(const T* Component) const
 	{
 		xrSRWLockGuard guard(RWMutex, true);
 
-		ptrdiff_t Index = Component - Components.data();
-		if (Index >= 0 && static_cast<size_t>(Index) < Components.size())
+		auto Iter = ComponentIndices.find(Component);
+		if (Iter != ComponentIndices.end())
 		{
-			return static_cast<IECSOwner*>(Owners[Index]);
+			return static_cast<IECSOwner*>(Owners[Iter->second]);
 		}
 
 		return nullptr;
@@ -96,14 +97,16 @@ public:
 
 		if constexpr (ECSHasEndComponent<T>)
 		{
-			Components[Index].EndComponent();
+			Components[Index]->EndComponent();
 		}
 
+		ComponentIndices.erase(Components[Index].get());
 		if (Index != Last)
 		{
 			Components[Index] = std::move(Components[Last]);
 			Owners[Index] = Owners[Last];
 			Lookup[Owners[Index]] = Index;
+			ComponentIndices[Components[Index].get()] = Index;
 		}
 
 		Components.pop_back();
@@ -118,15 +121,17 @@ public:
 		Components.clear();
 		Owners.clear();
 		Lookup.clear();
+		ComponentIndices.clear();
 	}
 
-	inline const xr_vector<T>& Data() const & { return Components; }
+	inline const xr_vector<xr_unique_ptr<T>>& Data() const & { return Components; }
 	inline const xr_vector<void*>& Entities() const & { return Owners; }
 
 	virtual const char* ECS_GetName() const override { return T::ECS_Name(); }
 private:
-	xr_vector<T> Components;
+	xr_vector<xr_unique_ptr<T>> Components;
 	xr_vector<void*> Owners;
 	xr_hash_map<void*, size_t> Lookup;
+	xr_hash_map<const T*, size_t> ComponentIndices;
 	mutable xrSRWLock RWMutex;
 };
