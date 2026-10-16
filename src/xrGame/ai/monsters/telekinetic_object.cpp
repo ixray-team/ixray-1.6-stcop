@@ -169,6 +169,10 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 	{
 		Fvector linear_vel;
 		ph_self_object->PHGetLinearVell(linear_vel);
+		if (linear_vel.square_magnitude() <= EPS_S)
+		{
+			return;
+		}
 
 		float health_loss = 0.f;
 
@@ -201,7 +205,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		health_loss *= entity_alive->conditions().GetMaxHealth();
 
 		// Для тестов оно пока что не под экстерналом
-		if (!GodMode())
+		if (actor && !GodMode())
 		{
 			const float stamina = Actor()->conditions().GetPower();
 
@@ -242,19 +246,12 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 
 			if (need_kick_animator && !Actor()->HudAnimator()->IsAnyAnimatorActive())
 			{
-				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
-				{
-					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
-				};
-
 				Fvector object_pos = Fvector().set(self->last_pos);
 				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
 
 				Fvector hit_dir;
 				hit_dir.sub(damage_receiver_pos, object_pos);
-				hit_dir.normalize();
-
-				bool is_actor_see_monster = GetAngleCos(hit_dir, Device.vCameraDirection) < 0.0f;
+				hit_dir.normalize_safe();
 
 				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 
@@ -281,7 +278,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		SHit HDS = 
 		{
 			health_loss,
-			linear_vel.GetNormalizedCopy(),
+			Fvector().normalize_safe(linear_vel),
 			ph_self_object,
 			entity_alive->character_physics_support()->movement()->ContactBone(),
 			ph_self_object->Position(),

@@ -991,8 +991,9 @@ void CMissile::net_Relcase(CObject* O)
 
 	if (PPhysicsShell() != nullptr && PPhysicsShell()->isActive())
 	{
-		CPhysicsShellHolder* callback_data = (CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData();
-		if (callback_data != nullptr && O == callback_data->dcast_CObject())
+		void* CallbackData = PPhysicsShell()->get_CallbackData();
+		// Other contact handlers, including telekinesis, can own CallbackData.
+		if (CallbackData != nullptr && CallbackData == O->cast_physics_shell_holder())
 		{
 			PPhysicsShell()->remove_ObjectContactCallback(ExitContactCallback);
 			PPhysicsShell()->set_CallbackData(nullptr);
