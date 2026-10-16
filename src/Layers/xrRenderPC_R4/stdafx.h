@@ -11,6 +11,13 @@
 
 #include "../../xrEngine/stdafx.h"
 
+// AI: the fluid renderer (xrRenderDX10/3DFluid) uses the engine's _RELEASE macro, which on
+// AI: Windows arrives transitively through the SDK headers but is missing on the DXVK Native
+// AI: hosts. Pulled in explicitly here, and only when it is not defined already.
+#ifndef _RELEASE
+#include "../../xrEngine/defines.h"
+#endif
+
 #include "imgui.h"
 
 #include <d3d11_1.h>

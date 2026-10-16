@@ -80,7 +80,12 @@ if (WIN32)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
 else()
+    # AI: FlexibleVertexFormat.h lives in the fetched DirectXMesh (its Utilities directory is a
+    # AI: PUBLIC include of DirectX::Mesh). On Windows it is linked in the WIN32 branch above; on
+    # AI: the DXVK Native hosts the renderer needs it as well, otherwise r4_loader.cpp cannot
+    # AI: compile. Fixes the same gap for Linux, which was never finished; Windows is untouched.
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
+    target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
 endif()
 
 ## RenderDoc

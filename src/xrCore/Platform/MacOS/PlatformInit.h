@@ -172,3 +172,21 @@ inline unsigned long GetLastError()
 #ifndef _In_reads_
 #define _In_reads_(x)
 #endif
+
+// AI: Apple Silicon has no AVX. The renderer uses __m256 in three files (the detail manager and
+// AI: the DX10 constant buffer); this minimal stand-in keeps them compiling, with the streaming
+// AI: store reduced to a plain copy, which is equivalent for our use.
+#if defined(IXR_ARM64) && defined(__cplusplus)
+struct __m256
+{
+	float m256_f32[8];
+};
+
+inline void _mm256_stream_ps(float* destination, const __m256& source)
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		destination[i] = source.m256_f32[i];
+	}
+}
+#endif
