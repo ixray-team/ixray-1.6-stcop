@@ -18,9 +18,7 @@
 #include <luabind/class_info.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
-	#define TRACY_CALLSTACK 8
-		#include <tracy/TracyLua.hpp>
-	#undef TRACY_CALLSTACK
+	#include <tracy/TracyLua.hpp>
 #endif
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
@@ -181,6 +179,7 @@ void CScriptEngine::setup_auto_load		()
 
 void CScriptEngine::init()
 {
+	PROF_EVENT("CScriptEngine::init");
 	for (int Iter = ScriptEngine::EScriptProcessors::eScriptProcessorLevel; Iter <= ScriptEngine::EScriptProcessors::eScriptProcessorHelper; Iter++)
 	{
 		if (CScriptProcess* ScriptProces = script_process((ScriptEngine::EScriptProcessors)Iter))
@@ -189,18 +188,24 @@ void CScriptEngine::init()
 		}
 	}
 
-	CScriptStorage::reinit();
+	{
+		PROF_EVENT("ScriptEngine: new VM");
+		CScriptStorage::reinit();
+	}
 
-	luabind::open(lua());
+	{
+		PROF_EVENT("ScriptEngine: export");
+		luabind::open(lua());
 #ifdef IXRAY_PROFILER_TRACY
-	tracy::LuaRegister(lua());
+		tracy::LuaRegister(lua());
 #endif
 
 
-	luabind::bind_class_info(lua());
-	setup_callbacks();
-	g_object_factory->export_classes(lua());
-	setup_auto_load();
+		luabind::bind_class_info(lua());
+		setup_callbacks();
+		g_object_factory->export_classes(lua());
+		setup_auto_load();
+	}
 
 #ifdef DEBUG
 	lua_sethook(lua(), lua_hook_call, LUA_MASKLINE | LUA_MASKCALL | LUA_MASKRET, 0);
@@ -208,14 +213,23 @@ void CScriptEngine::init()
 
 	bool								save = m_reload_modules;
 	m_reload_modules = true;
-	process_file_if_exists("_g", false);
+	{
+		PROF_EVENT("ScriptEngine: _g");
+		process_file_if_exists("_g", false);
+	}
 	m_reload_modules = save;
 
-	register_script_classes();
-	g_object_factory->register_script();
+	{
+		PROF_EVENT("ScriptEngine: register classes");
+		register_script_classes();
+		g_object_factory->register_script();
+	}
 
 #ifdef XRGAME_EXPORTS
-	load_common_scripts();
+	{
+		PROF_EVENT("ScriptEngine: common scripts");
+		load_common_scripts();
+	}
 #endif
 	m_stack_level = lua_gettop(lua());
 
@@ -227,6 +241,7 @@ void CScriptEngine::init()
 
 	if (GAddonsManager != nullptr)
 	{
+		PROF_EVENT("ScriptEngine: addon init scripts");
 		for (auto& Addon : GAddonsManager->Addons)
 		{
 			if (Addon.ScriptInit.size() == 0)
