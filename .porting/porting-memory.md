@@ -96,6 +96,20 @@ cmake -S . -B build-macos -G Ninja \
 3. **`ninja`** (`brew install ninja`).
 4. **`-DCMAKE_FIND_FRAMEWORK=LAST`** + `CMAKE_PREFIX_PATH` + явный `-I…/openal-soft/include` — иначе `find_package(OpenAL)` берёт **системный Apple-фреймворк** (в нём заголовки лежат как `<OpenAL/…>` и нет EFX). Причём Homebrew-овский `openal-soft` — keg-only, и CMake находит его заголовки как `include/AL`, а код включает `<AL/al.h>`, поэтому нужен родительский `include` (на Linux этого не требуется — там заголовки и так в системном пути).
 
+## Рабочий рецепт: родной рендер IX-Ray на macOS через DXVK Native
+
+Решение Степана (16.10, 14:12): **своего рендера не пишем** — на macOS должен работать **родной рендер IX-Ray (R4/D3D11)**. Путь — тот же, что у проекта на Linux: DXVK Native (Vulkan через MoltenVK, окно через SDL3). Это подтверждает и их `AGENTS.md`: «`xrRHI` — D3D9 and D3D11 backends; **Linux uses DXVK Native**».
+
+Что выяснено и сделано:
+
+- **R4, `xrGame`, `xrPlay` включаются флагом `-DIXR_TEST_CI=ON`** (иначе в сборке их нет вообще).
+- **Upstream DXVK master на macOS не собирается:** Apple-линкер не знает GNU-опцию `--version-script`, плюс ошибка `call to 'tzcnt' is ambiguous` в `dxvk_bind_mask.h`. Компиляция при этом проходит целиком — падает только линковка (`libdxvk_dxgi.0.dylib`).
+- **Фиксы живут в форке.** Прописан Apple-only пин: `generalsx-project/dxvk` @ `f66da559fd48cd55ddfebca38ed0f708c0f76a24` (форк рабочий, из проекта GeneralsX — там на нём собирают macOS-порт). Windows/Linux продолжают качать upstream master.
+- **Опции meson различаются по версии:** у форка (DXVK 2.6) — `-Ddxvk_native_wsi=sdl3`, а старые `-Dnative_sdl3=enabled/-Dnative_sdl2/-Dnative_glfw` в нём отсутствуют (meson падает с `Unknown option`). Сделана Apple-only подстановка (`DXVK_WSI_ARGS`), Linux-набор не тронут.
+- **Vulkan SDK от LunarG для сборки не нужен:** хватает заголовков Homebrew (`vulkan-headers`, `vulkan-loader`, `glslang`, `meson`). Он нужен только в рантайме, и там достаточно `MoltenVK` (есть готовый в CrossOver по пути `lib64/libMoltenVK.dylib`, либо релизы KhronosGroup/MoltenVK).
+- **D3D-заголовки для компиляции рендерера** берутся из дерева DXVK: `${DXVK_SOURCE_DIR}/include/native` (там `windows/` и `directx/`) — это то, чего не хватало для `xrRHI`/`D3D11`; путь надо добавить в инклюды после успешной сборки DXVK (проверить фактически).
+- Их стиль (их же `AGENTS.md`): **комментарии на английском**, хак помечается `// HACK:`. Все мои комментарии приведены к английскому.
+
 ## ПРАВИЛО КОММЕНТАРИЕВ (Степан, 16.10)
 
 - Любой комментарий в правках начинается с **`AI:`** (тегирую каждую строку многострочных блоков — так сформулировано правило, и так не остаётся двусмысленности; если Степан захочет тег только на первой строке блока — это правится одной правкой).
