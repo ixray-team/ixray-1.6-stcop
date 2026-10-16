@@ -322,3 +322,27 @@ cmake -S . -B build-macos -G Ninja \
   упадёт. Решение Степана пока не принято; смотреть по факту на автотесте (Task 2.5′).
 - **TODO к Task 2.6′:** положить `libvkd3d-utils.1.dylib`, `libvkd3d-shader.1.dylib`, `libvkd3d.1.dylib`
   рядом с бинарником (`bin/Debug` уже в rpath цели) — список отдаётся переменной `VKD3D_DYLIBS`.
+  **Сделано:** модуль сам копирует их в `bin/<config>` на этапе конфигурации.
+
+**Task 2.5′ — exe собран, начат рантайм (первые два бага macOS-слоя закрыты)**
+- `bin/Debug/xrEngine` собран и слинкован (Task 2.5′ шаг 1) — цель называется **`xrEngine`**, не `xrPlay`.
+- Площадка запуска: `~/Hermes/ixray-mac-port/run-macos/` — бинарники + `fsgame.ltx` + **симлинки** на ассеты
+  (`gamedata`, `levels`, `resources`, `localization`, `mp`, `patches`) + копия `_appdata_`; рантайм-библиотеки:
+  `libsteam_api.dylib` (из `build-macos/dep/steamworks_sdk_164/sdk/redistributable_bin/osx/`), **MoltenVK 1.4.2**
+  (официальный релиз `MoltenVK-macos.tar`) + его `MoltenVK_icd.json`; запуск с `VK_ICD_FILENAMES=$PWD/MoltenVK_icd.json`.
+- **Баг 1 (mac-слой, `Platform/MacOS/OSFile.h`):** `Platform::GetAbsolutePath` — копия linux-версии,
+  `strcpy(dest, realpath(path, 0))`; `realpath` возвращает NULL для пустого/несуществующего пути
+  (`LocatorAPI::setup_fs_path` зовёт его с пустой строкой, когда в имени нет разделителя) → SIGSEGV на старте
+  (`EXC_BAD_ACCESS` в `_platform_strcpy`, подтверждено отчётом о краше). Починено по образцу Windows:
+  результат `realpath` используется, когда он есть, иначе путь строится от текущего каталога (как `_fullpath`).
+- **Баг 2 (общий код, правка платформенно-нейтральна):** `CLocatorAPI::file_find_it` нормализует **ключ
+  поиска** через `Platform::ValidPath`, а на macOS/Linux она переводит `\` → `/`; записи же в `m_files`
+  хранят разделители из конфигов (`\`). Имя, зарегистрированное с `\`, поэтому не находилось, и `Register`
+  падал на `R_ASSERT(I_.second)` — запись признавалась дубликатом самой себя. Правка: если нормализованный
+  ключ не найден, искать исходный. **На Windows `ValidPath` — тождественная функция**, поведение там то же.
+- Итог: FS инициализируется (~0.6 с), движок доходит до чтения `gamedata/configs/system.ltx`.
+- **Текущий упор (следующая сессия):** `InitSettings()` (`src/xrEngine/x_ray.cpp:136`) →
+  `CHECK_OR_EXIT(0 != pSettings->section_count())` → «Cannot find file …/system.ltx» + выход с кодом 1
+  (место выхода поймано lldb: breakpoint на `exit`, кадр `xrDebug::do_exit` ← `InitSettings`). Файл в логе
+  помечен как найденный и загружаемый, но секций 0 → смотреть `check_for_file` / `file_from_cache`
+  в `r_open_impl` (вероятно, `FS.r_open` не находит запись и возвращает пустой читатель).
