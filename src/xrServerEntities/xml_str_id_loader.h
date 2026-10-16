@@ -141,6 +141,7 @@ void CSXML_IdToIndex::DeleteIdToIndexData	()
 TEMPLATE_SPECIALIZATION
 void CSXML_IdToIndex::InitInternal ()
 {
+	PROF_EVENT("CXML_IdToIndex::InitInternal");
 	VERIFY(!m_pItemDataVector);
 	T_INIT::InitXmlIdToIndex();
 

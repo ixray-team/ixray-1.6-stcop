@@ -360,6 +360,8 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 	if(m_SpecificCharacter.size())
 		return m_SpecificCharacter;
 
+	PROF_EVENT("CSE_ALifeTraderAbstract::specific_character");
+
 
 	CCharacterInfo char_info;
 	char_info.Load(character_profile());
@@ -377,6 +379,7 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 	//а потом делаем случайный выбор
 	else
 	{	
+		PROF_EVENT("specific_character: scan profiles");
 		m_CheckedCharacters.clear();
 		m_DefaultCharacters.clear();
 

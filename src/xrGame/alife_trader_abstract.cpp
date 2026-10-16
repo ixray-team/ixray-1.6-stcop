@@ -23,6 +23,7 @@ extern Flags64 psAI_Flags;
 
 void CSE_ALifeTraderAbstract::spawn_supplies()
 {
+	PROF_EVENT("CSE_ALifeTraderAbstract::spawn_supplies");
 	CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(this);
 	VERIFY(dynamic_object);
 	CSE_Abstract* abstract = dynamic_object->alife().spawn_item(pGameGlobals->r_string("actor_item", "pda_item"), base()->o_Position, dynamic_object->m_tNodeID, dynamic_object->m_tGraphID, base()->ID);
@@ -61,6 +62,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 
 		if (specific_character_supply)
 		{
+			PROF_EVENT("spawn_supplies: character supplies");
 			CSpecificCharacter selected_char;
 			selected_char.Load(m_SpecificCharacter);
 			dynamic_object->spawn_supplies(selected_char.SupplySpawn());

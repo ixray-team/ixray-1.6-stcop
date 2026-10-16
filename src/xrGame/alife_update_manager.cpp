@@ -295,11 +295,14 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	}
 	can_register_objects				(true);
 
-	objects().PrepareSpawnIni			();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
-	for ( ; I != E; ++I)
-		(*I).second->on_register		();
+	{
+		PROF_EVENT("new_game: register objects");
+		objects().PrepareSpawnIni			();
+		CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
+		CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
+		for ( ; I != E; ++I)
+			(*I).second->on_register		();
+	}
 
 	Msg									("* New game is successfully created!");
 
