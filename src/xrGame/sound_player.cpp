@@ -207,6 +207,13 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 		sg_SourceType
 	);
 
+	// No sound device: the collection holds empty sounds
+	if (!sound_single.m_sound->_p)
+	{
+		xr_delete				(sound_single.m_sound);
+		return;
+	}
+
 	sound_single.m_sound->_p->g_object		= m_object;
 	sound_single.m_sound->_p->g_userdata	= (*I).second.first.m_data;
 

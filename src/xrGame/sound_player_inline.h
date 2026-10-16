@@ -74,12 +74,10 @@ IC	u32	CSoundPlayer::active_sound_count_script(bool only_playing) const
 
 IC	ref_sound *CSoundPlayer::CSoundCollection::add	(ESoundTypes type, const char* name) const
 {
+	// The caller checked that the file exists. Without a sound device (-nosound, -autotest) create leaves the sound
+	// empty: keep it, so the collection still counts the sound files (scripts abort on an empty one).
 	ref_sound				*temp = new ref_sound();
 	temp->create			(name,st_Effect,type);
-	if (!temp->_p) {
-		xr_delete(temp);
-		return (0);
-	}
 	return					(temp);
 }
 
