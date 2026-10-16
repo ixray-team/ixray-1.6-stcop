@@ -496,7 +496,15 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 	int		_pass			=	0;
 	for (int it=0; it<result_count; it++)	if (result[it])	_pass	++;
 	hemi_value				=	float	(_pass)/float(result_count?result_count:1);
-	hemi_value				*=	ps_r2_dhemi_sky_scale;
+	// R1 uses the raw sky visibility: the sky scale is tuned for the dynamic hemi
+	if (LightingModeIsDynamicRender())
+	{
+		hemi_value *= ps_r2_dhemi_sky_scale;
+	}
+	else
+	{
+		hemi_value *= 2;
+	}
 
 	for (int it=0; it<result_count; it++)
 	{
