@@ -24,6 +24,7 @@
 #include "level_graph.h"
 #include "agent_enemy_manager.h"
 #include "script_game_object.h"
+#include "Actor.h"
 
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
@@ -124,6 +125,14 @@ void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 void CMemoryManager::update			(float time_delta)
 {
 	PROF_EVENT("CMemoryManager::update");
+
+	if (m_object && !m_object->cast_base_monster())
+	{
+		if (CActor* Player = Actor())
+		{
+			Player->UpdateLightAwareness(*m_object);
+		}
+	}
 
 	visual().update		(time_delta);
 	sound().update		();

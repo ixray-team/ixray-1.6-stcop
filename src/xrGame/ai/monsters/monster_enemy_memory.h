@@ -38,6 +38,7 @@ public:
 	bool CanRefreshHiddenTarget(const CEntityAlive* Target);
 	u32 GetRemainingMemoryTime(const SMonsterEnemy& Entry) const;
 	void RememberHeardEnemy(const CEntityAlive* Target, const Fvector& SoundPosition, u32 SoundTime, float HearingRadius = -1.f);
+	void RememberLightEnemy(const CEntityAlive& Target);
 	bool KnowsPlayer(const CEntityAlive* Player) const;
 	bool PlayerWasShared(const CEntityAlive* Player) const { return Player && SharedPlayer == Player; }
 	bool PlayerWasFirstShared(const CEntityAlive* Player) const { return PlayerWasShared(Player) && PlayerFirstKnownThroughSharing; }
