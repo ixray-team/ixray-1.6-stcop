@@ -249,7 +249,10 @@ void FixedConstants::UpdateView()
 	Fmatrix invVP_old;
 	inv44(invVP_old, vp_old);
 	store_Float4x4(cpu_view.m_invVP_old, invVP_old);
-	cpu_view.eye_position.set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z, 1);
+	// The HUD view is camera-relative: its eye sits at the origin
+	const bool IsHudView = std::memcmp(&mV, &Device.mView_hud, sizeof(Fmatrix)) == 0;
+	const Fvector EyePosition = IsHudView ? Fvector().set(0.f, 0.f, 0.f) : Device.vCameraPosition;
+	cpu_view.eye_position.set(EyePosition.x, EyePosition.y, EyePosition.z, 1);
 	cpu_view.eye_direction.set(Device.vCameraDirection.x, Device.vCameraDirection.y, Device.vCameraDirection.z, 0);
 	cpu_view.eye_normal.set(Device.vCameraTop.x, Device.vCameraTop.y, Device.vCameraTop.z, 0);
 	cpu_view.m_taa_jitter.set(ps_r_taa_jitter.x, ps_r_taa_jitter.y, ps_r_taa_jitter.z, float(Device.dwFrame));

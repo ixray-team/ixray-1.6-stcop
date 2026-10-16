@@ -287,7 +287,9 @@ static cl_times binder_times;
 class cl_eye_P		: public RHIShaderConstant::Setup {
 	virtual void setup(RHIShaderConstant* C)
 	{
-		Fvector&		V	= RDEVICE.vCameraPosition;
+		// The HUD view is camera-relative: its eye sits at the origin
+		const bool IsHudView = std::memcmp(&RCache.xforms.m_v, &RDEVICE.mView_hud, sizeof(Fmatrix)) == 0;
+		const Fvector V = IsHudView ? Fvector().set(0.f, 0.f, 0.f) : RDEVICE.vCameraPosition;
 		RCache.set_c	(C,V.x,V.y,V.z,1);
 	}
 };
