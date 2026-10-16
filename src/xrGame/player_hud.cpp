@@ -2070,9 +2070,6 @@ void player_hud::load(const shared_str& player_hud_sect)
 	}
 
 	FingerGripBones.clear();
-	FingerRefPose.clear();
-	FingerRefMotion = MotionID();
-	FingerRefSegment = -1;
 	ArmRetargetMotion = MotionID();
 	for (attachable_hud_item* item : m_pool)
 	{
@@ -3116,9 +3113,10 @@ static float hud_motion_settle(IKinematicsAnimated* ka, const player_hud_motion_
 struct SHudFingerHold
 {
 	MotionID	Motion;
-	int			Segment = -1;
 	float		Hold = 0.f;
-	float		Weight = 0.f;
+	float		StartHold = 0.f;
+	float		StartTime = 0.f;
+	float		Idle = 0.f;
 };
 
 static SHudFingerHold hud_finger_hold(IKinematicsAnimated* ka, const shared_str& mark, float blend)
@@ -3148,8 +3146,6 @@ static SHudFingerHold hud_finger_hold(IKinematicsAnimated* ka, const shared_str&
 		}
 
 		const float time = hud_mark_time(def, B->timeCurrent);
-		CMotion* root = ka->LL_GetRootMotion(B->motionID);
-		const float end = root != nullptr ? hud_mark_time(def, root->GetLength()) : 0.f;
 
 		const SHudMarkSpan span = hud_mark_span(def, mark.c_str(), time);
 		if (span.First == nullptr)
@@ -3159,15 +3155,23 @@ static SHudFingerHold hud_finger_hold(IKinematicsAnimated* ka, const shared_str&
 
 		best = B->blendAmount;
 		result.Motion = B->motionID;
-		if (span.Active == nullptr || span.Active->second >= end - EPS_L || time < span.Active->second)
+		const float speed = def->Speed();
+		const motion_marks::interval* interval = span.Active != nullptr ? span.Active : span.First;
+		result.StartTime = speed <= EPS || fsimilar(speed, 1.f) ? interval->first : interval->first * speed;
+		if (span.Active == nullptr)
 		{
-			result.Segment = -1;
-			result.Weight = 0.f;
+			result.StartHold = 1.f;
+			result.Idle = 0.f;
+		}
+		else if (time <= interval->second)
+		{
+			result.StartHold = std::max(1.f - hud_mark_ramp(time - interval->first, blend), hud_mark_ramp(time - (interval->second - blend), blend));
+			result.Idle = 0.f;
 		}
 		else
 		{
-			result.Segment = span.ActiveIndex + 1;
-			result.Weight = hud_mark_ramp(time - span.Active->second, blend);
+			result.StartHold = 1.f;
+			result.Idle = hud_mark_ramp(time - interval->second, blend);
 		}
 	}
 
@@ -3490,6 +3494,7 @@ struct SHandsIkFrame
 	SHudFingerHold			Finger;
 	bool					FingerMark = false;
 	bool					FingerHold = false;
+	float					FingerStart = 0.f;
 	float					FingerSettle = 0.f;
 	Fmatrix					Delta = Fidentity;
 	Fmatrix					RightTarget = Fidentity;
@@ -3549,8 +3554,9 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	HandsIkWeaponPose(F, actor);
 	HandsIkFingerState(F);
 
-	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f)
+	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f && F.FingerStart <= 0.f)
 	{
+		HandsIkFingerInertia(F);
 		return;
 	}
 
@@ -3560,6 +3566,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	HandsIkReach(F);
 	HandsIkSolve(F);
 	HandsIkFingers(F);
+	HandsIkFingerInertia(F);
 	F.Item->update(true);
 }
 
@@ -3723,29 +3730,14 @@ void player_hud::HandsIkFingerState(SHandsIkFrame& F)
 	attachable_hud_item* item = F.Item;
 	const bool has_left = F.HasLeft;
 
-	const SHudFingerHold finger = has_left ? hud_finger_hold(m_model, item->FingersMark, item->LeftHandAttachBlend > 0.f ? item->LeftHandAttachBlend : 0.1f) : SHudFingerHold();
+	const SHudFingerHold finger = has_left ? hud_finger_hold(m_model, item->FingersMark, 0.3f) : SHudFingerHold();
 	if (has_left && FingerGripBones.empty())
 	{
 		FingerGripBones = left_hand_fingers();
 	}
 
 	const bool finger_mark = finger.Motion.valid() && finger.Hold > 0.f;
-	if (!finger_mark)
-	{
-		FingerRefMotion = MotionID();
-	}
-
-	bool finger_hold = finger_mark && finger.Weight > 0.f && !FingerGripBones.empty();
-	if (finger_hold && finger.Segment >= 0 && (FingerRefMotion != finger.Motion || FingerRefSegment != finger.Segment))
-	{
-		FingerRefMotion = finger.Motion;
-		FingerRefSegment = finger.Segment;
-		CMotion* root = m_model->LL_GetRootMotion(finger.Motion);
-		const float last = root != nullptr ? std::max(root->GetLength() - SAMPLE_SPF * 0.5f, 0.f) : 0.f;
-		hud_motion_local_pose(m_model, finger.Motion, last, FingerGripBones, FingerRefPose);
-	}
-
-	finger_hold = finger_hold && FingerRefMotion == finger.Motion && FingerRefPose.size() == FingerGripBones.size();
+	const bool finger_hold = finger_mark && finger.Idle > 0.f && !FingerGripBones.empty();
 	float finger_settle = 0.f;
 	if (F.HasAttach && F.Weapon != nullptr && !FingerGripBones.empty() && !item->LeftHandFree && (item->AttachPose.size() != 0 || item->LeftHandAttachBlend > 0.f))
 	{
@@ -3756,7 +3748,24 @@ void player_hud::HandsIkFingerState(SHandsIkFrame& F)
 	F.Finger = finger;
 	F.FingerMark = finger_mark;
 	F.FingerHold = finger_hold;
+	float finger_start = 0.f;
+	if (finger_mark && finger.StartHold > 0.f && !FingerGripBones.empty())
+	{
+		if (FingerStartMotion != finger.Motion || !fsimilar(FingerStartTime, finger.StartTime) || FingerStartPose.size() != FingerGripBones.size())
+		{
+			FingerStartMotion = finger.Motion;
+			FingerStartTime = finger.StartTime;
+			hud_motion_local_pose(m_model, finger.Motion, finger.StartTime, FingerGripBones, FingerStartPose, &FingerStartPos);
+		}
+
+		if (FingerStartPose.size() == FingerGripBones.size() && FingerStartPos.size() == FingerGripBones.size())
+		{
+			finger_start = hud_smooth(finger.StartHold) * finger.Hold;
+		}
+	}
+
 	F.FingerSettle = finger_settle;
+	F.FingerStart = finger_start;
 }
 
 void player_hud::HandsIkWeaponDelta(SHandsIkFrame& F)
@@ -4213,6 +4222,66 @@ void player_hud::HandsIkSolve(SHandsIkFrame& F)
 	}
 }
 
+void player_hud::HandsIkFingerInertia(SHandsIkFrame& F)
+{
+	const size_t count = FingerGripBones.size();
+	const float time = CCameraRig::HudInertialization();
+	if (!F.HasLeft || count == 0 || time <= 0.f)
+	{
+		FingerPrevRot.clear();
+		return;
+	}
+
+	const bool fresh = FingerPrevRot.size() != count || Device.dwFrame != FingerResidualFrame + 1;
+	FingerResidualFrame = Device.dwFrame;
+	if (fresh)
+	{
+		FingerPrevRot.assign(count, Fquaternion().identity());
+		FingerPrevPos.assign(count, Fvector().set(0.f, 0.f, 0.f));
+		FingerResidualRot.assign(count, Fquaternion().identity());
+		FingerResidualPos.assign(count, Fvector().set(0.f, 0.f, 0.f));
+	}
+
+	const auto angle = [](const Fquaternion& q)
+	{
+		return 2.f * acosf(std::min(std::abs(q.w), 1.f));
+	};
+
+	const float jump_rot = std::max(deg2rad(8.f), deg2rad(400.f) * Device.fTimeDelta);
+	const float jump_pos = std::max(0.002f, 0.1f * Device.fTimeDelta);
+	const float factor = HudBlend::Smooth(time / 3.f, Device.fTimeDelta);
+	for (size_t i = 0; i < count; ++i)
+	{
+		const u16 bone = FingerGripBones[i];
+		const Fmatrix local = hud_bone_local(F.Model, bone);
+		const Fquaternion current = Fquaternion().set(local);
+		const Fmatrix current_rot = Fmatrix().rotation(current);
+
+		if (!fresh)
+		{
+			const Fmatrix step = Fmatrix().mul_43(Fmatrix().rotation(FingerPrevRot[i]), Fmatrix().invert(current_rot));
+			const float jump = angle(Fquaternion().set(step));
+			const Fvector step_pos = Fvector().sub(FingerPrevPos[i], local.c);
+			if (jump > jump_rot || step_pos.magnitude() > jump_pos)
+			{
+				FingerResidualRot[i].set(Fmatrix().mul_43(Fmatrix().rotation(FingerResidualRot[i]), step));
+				FingerResidualPos[i].add(step_pos);
+			}
+
+			FingerResidualRot[i].slerp(Fquaternion(FingerResidualRot[i]), Fquaternion().identity(), factor);
+			FingerResidualPos[i].mul(1.f - factor);
+		}
+
+		FingerPrevRot[i] = current;
+		FingerPrevPos[i] = local.c;
+
+		const Fquaternion applied = Fquaternion().set(Fmatrix().mul_43(Fmatrix().rotation(FingerResidualRot[i]), current_rot));
+		const Fvector applied_pos = Fvector().add(local.c, FingerResidualPos[i]);
+		hud_blend_local(F.Model, bone, applied, 1.f, &applied_pos);
+	}
+
+}
+
 void player_hud::HandsIkFingers(SHandsIkFrame& F)
 {
 	if (!F.HasLeft)
@@ -4225,6 +4294,14 @@ void player_hud::HandsIkFingers(SHandsIkFrame& F)
 	const xr_vector<u16>& arm_bones = F.ArmBones;
 	const bool finger_hold = F.FingerHold;
 	const float finger_settle = F.FingerSettle;
+
+	if (F.FingerStart > 0.f)
+	{
+		for (size_t i = 0; i < FingerGripBones.size(); ++i)
+		{
+			hud_blend_local(model, FingerGripBones[i], FingerStartPose[i], F.FingerStart, &FingerStartPos[i]);
+		}
+	}
 
 	const bool attach_ref = item->LeftHandAttachRefValid && item->LeftHandAttachPoseRef.size() == arm_bones.size();
 	const bool idle_ref = (finger_hold || finger_settle > 0.f) && !attach_ref && FingerGripReference(item);
@@ -4257,7 +4334,7 @@ void player_hud::HandsIkFingers(SHandsIkFrame& F)
 
 	if (finger_hold)
 	{
-		const float weight = hud_smooth(F.Finger.Weight) * F.Finger.Hold * item->LeftHandFingerGrip;
+		const float weight = hud_smooth(F.Finger.Idle) * F.Finger.Hold * item->LeftHandFingerGrip;
 		for (size_t i = 0; i < FingerGripBones.size() && weight > 0.f; ++i)
 		{
 			Fquaternion grip;
@@ -4267,10 +4344,7 @@ void player_hud::HandsIkFingers(SHandsIkFrame& F)
 				continue;
 			}
 
-			const u16 bone = FingerGripBones[i];
-			const Fmatrix local = hud_bone_local(model, bone);
-			const Fmatrix delta = Fmatrix().mul_43(Fmatrix().rotation(grip), Fmatrix().invert(Fmatrix().rotation(FingerRefPose[i])));
-			hud_blend_local(model, bone, Fquaternion().set(Fmatrix().mul_43(delta, local)), weight, grip_position);
+			hud_blend_local(model, FingerGripBones[i], grip, weight, grip_position);
 		}
 	}
 
