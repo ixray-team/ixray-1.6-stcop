@@ -1789,8 +1789,12 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	AllowIncludeFunc = allow_include_func;
 	R_ASSERT(F);
 	DATA.reserve(16);
-	// Read contents of root file
-	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true, m_file_name[0] ? m_file_name : "<memory>");
+	const xr_string_view Text((const char*)F->pointer() - F->tell(), size_t(F->length()));
+	const bool HasOverrides = m_file_name[0] || Text.find("#include") != xr_string_view::npos || Text.find("![") != xr_string_view::npos;
+	if (HasOverrides)
+	{
+		LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true, m_file_name[0] ? m_file_name : "<memory>");
+	}
 
 	F->seek(0);
 	LTXLoad(F, path, BaseData, BaseParentDataMap, false, true, m_file_name[0] ? m_file_name : "<memory>");
