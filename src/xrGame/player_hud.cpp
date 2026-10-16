@@ -566,6 +566,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 			Fmatrix& fire_mat								= m_model->LL_GetTransform(m_measures.m_fire_bone);
 			fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
 			m_item_transform.transform_tiny					(fd.vLastFP);
+			fd.vLastFP.add(Device.vCameraPosition);
 	
 			fd.vLastFD.set									(m_item_transform.k);
 			VERIFY(_valid(fd.vLastFD));
@@ -581,6 +582,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat			= m_measures.m_fire_bone2 != u16(-1) ? m_model->LL_GetTransform(m_measures.m_fire_bone2) : m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny		(fd.vLastFP2,m_measures.m_fire_point2_offset);
 		m_item_transform.transform_tiny	(fd.vLastFP2);
+		fd.vLastFP2.add(Device.vCameraPosition);
 		VERIFY(_valid(fd.vLastFP2));
 	}
 
@@ -589,6 +591,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat = m_measures.m_shell_bone != u16(-1) ? m_model->LL_GetTransform(m_measures.m_shell_bone) : m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny		(fd.vLastSP,m_measures.m_shell_point_offset);
 		m_item_transform.transform_tiny	(fd.vLastSP);
+		fd.vLastSP.add(Device.vCameraPosition);
 		VERIFY(_valid(fd.vLastSP));
 	}
 }
@@ -4040,6 +4043,7 @@ void animator_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat								= m_item->LL_GetTransform(m_fire_bone);
 		fire_mat.transform_tiny							(fd.vLastFP, m_fire_point_offset);
 		m_item_transform.transform_tiny					(fd.vLastFP);
+		fd.vLastFP.add(Device.vCameraPosition);
 
 		fd.vLastFD.set									(0.f,0.f,1.f);
 		m_item_transform.transform_dir					(fd.vLastFD);

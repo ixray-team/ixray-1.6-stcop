@@ -184,16 +184,26 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 	return I;
 }
 
+ICF float CalcSSADistanceSQ(const Fvector& C)
+{
+	if (RImplementation.val_bHUD)
+	{
+		return C.square_magnitude() + EPS;
+	}
+
+	return Device.vCameraPosition.distance_to_sqr(C) + EPS;
+}
+
 ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
 {
 	float R = V->vis.sphere.R + 0;
-	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	distSQ = CalcSSADistanceSQ(C);
 	return	R / distSQ;
 }
 
 ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 {
-	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	distSQ = CalcSSADistanceSQ(C);
 	return	R / distSQ;
 }
 

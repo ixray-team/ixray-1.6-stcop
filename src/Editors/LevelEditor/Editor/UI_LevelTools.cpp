@@ -297,7 +297,7 @@ bool CLevelTool::UpdateCamera()
 		extern ENGINE_API float psHUD_FOV;
 		Device.mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-		Device.mView_hud.set(Device.mView);
+		Device.mView_hud.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), Device.vCameraDirection, Device.vCameraTop);
 		Device.mFullTransform_hud.mul(Device.mProject_hud, Device.mView_hud);
 
 		return true;
