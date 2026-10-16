@@ -6,6 +6,8 @@
 #define _strcmpi strcasecmp
 #define stricmp strcasecmp
 #define _stricmp stricmp
+// AI: shim for strncasecmp - the Linux platform file has it, the macOS one was missing it
+#define _strnicmp strncasecmp
 #define strcmpi stricmp
 #define lstrcpy strcpy
 #define _vsnprintf vsnprintf

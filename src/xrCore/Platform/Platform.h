@@ -24,6 +24,7 @@
 #	include "BSD/PlatformInit.h"
 #elif defined(__APPLE__)
 #	define IXR_MACOS
+	// AI: Apple Silicon must report ARM64 - without this any Mac was treated as an x64 machine
 #	if defined(__aarch64__)
 #		define IXR_ARM64
 #	else
