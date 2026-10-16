@@ -25,6 +25,15 @@
 | `IXRAY_MP` (мультиплеер) вне v1 | зафиксировано |
 | Baseline меряем в **Evaluation Environment** (Wine + D3DMetal), не кодом порта | зафиксировано |
 
+## ЖЕЛЕЗНОЕ ПРАВИЛО: не ломать другие платформы
+
+**Чужой код не удаляем и не переписываем** (требование Степана, 16.10.2026). Это форк живой игры: **Windows-сборка обязана продолжать работать**, Linux — тоже. Любая правка аддитивная; ветки `MSVC` / `WIN32` / `IXR_WINDOWS` / `IXR_LINUX` не трогаем. Перед каждым коммитом — сверка, что `git diff` не меняет поведение Windows/Linux-ветвей.
+
+**Аудит коммита `1f938e58c`** (проведён по требованию):
+- ветки `MSVC` (`xrCore/CMakeLists.txt`), `WIN32` (`cmake/clang.cmake`), `#include <malloc.h>` (`trivial_encryptor.h`), `wchar_t` (`stack_string.h`) — **целы** ✓
+- ссылок на старое имя `_types.h` в коде не осталось ✓; 75 проектных файлов VS в репозитории этот файл не упоминают ✓; обновлены две ссылки в документации ✓
+- правки, затрагивающие все платформы, — только два случая, и оба платформенно-нейтральны: переименование файла (см. выше) и `.hpp`→`.h` в `sse2neon.cmake` (на `.hpp` не ссылался никто, а все четыре платформы включают `.h`)
+
 ## Watch list (что держать в голове)
 
 1. **Комбинации шейдеров.** Рантайм-компиляция через `D3DCompile` (`src/xrRHI/RHIShaderCompiler.cpp:24`) с макро-комбинациями. Полнота офлайн-печи критична: промах = розовая заглушка. Инструмент dump-комбинаций — обязателен.
@@ -73,30 +82,38 @@ cmake -S . -B build-macos -G Ninja \
 
 Итог: `Configuring done` / `Generating done` ✓ — конфигурация под arm64 проходит.
 
-## Правки, уже сделанные для сборки под macOS (ветка `macos-metal`)
+## Правки для сборки под macOS — коммит `1f938e58c` (ветка `macos-metal`)
 
-| # | Файл | Что сделано | Статус |
-|---|---|---|---|
-| 1 | `cmake/clang.cmake` | `_GNU_SOURCE` и `-fuse-ld=lld` + Linux-пути загорожены `if(NOT APPLE)` | ✅ |
-| 2 | `src/xrCore/Platform/Platform.h` | на Apple при `__aarch64__` определяется `IXR_ARM64` (раньше всегда `IXR_X64`) | ✅ |
-| 3 | `src/xrCore/Platform/MacOS/PlatformInit.h` | убраны `<linux/limits.h>` и glibc-шный `<bits/local_lim.h>` → `<limits.h>`; для Apple в ARM-ветке `<arm_neon.h>` | ✅ |
-| 4 | `cmake/modules/sse2neon.cmake` (новый) + `cmake/modules.cmake` | добавлено скачивание `sse2neon/sse2neon.h` тем же механизмом `download_single_header`, что у `stb`/`nvapi` | ✅ файл скачался (502 КБ) |
+| # | Файл | Что сделано |
+|---|---|---|
+| 1 | `cmake/clang.cmake` | `_GNU_SOURCE`, `-fuse-ld=lld` и Linux-пути — только не для Apple |
+| 2 | `src/xrCore/Platform/Platform.h` | на Apple Silicon определяется `IXR_ARM64` (раньше всегда `IXR_X64` — движок считал M4 «интеловским») |
+| 3 | **`src/xrCore/Platform/PlatformAPI.h`** | **ключевой баг:** ветка macOS проверяла `IXR_APPLE`, а движок определяет `IXR_MACOS` → на macOS не подключался **ни один** платформенный заголовок |
+| 4 | **`src/xrCore/_types.h` → `xr_core_types.h`** | **ключевой баг:** имя `_types.h` перехватывало системный заголовок Apple `<_types.h>` (его включает `<wchar.h>`), из-за чего рассыпался весь SDK |
+| 5 | `Platform/MacOS/PlatformInit.h` | убраны `<linux/limits.h>` и glibc-шный `<bits/local_lim.h>`; ARM-ветка через `<arm_neon.h>` |
+| 6 | `Platform/MacOS/OSFile.h` | macOS не даёт `LOGIN_NAME_MAX`/`HOST_NAME_MAX` → фолбэки `MAXLOGNAME`/`MAXHOSTNAMELEN` из `<sys/param.h>` |
+| 7 | `Platform/MacOS/OSThread.cpp` | `pthread_setname_np` на macOS принимает **один** аргумент (на Linux — два) |
+| 8 | `stack_string.h` | `xr_stack_wstring` не был определён ни для macOS, ни для BSD → ветка `#else` с `char16_t` |
+| 9 | `Crypto/trivial_encryptor.h` | `<malloc.h>` — glibc-only, у macOS такого заголовка нет |
+| 10 | `src/xrCore/CMakeLists.txt` | платформы разведены только для MSVC и Linux → для Darwin собирались исходники **BSD и macOS сразу**; добавлена ветка Darwin |
+| 11 | `cmake/modules/sse2neon.cmake` | качал `sse2neon.hpp`, хотя все четыре платформы включают `sse2neon.h` |
 
-Конфигурация: см. выше. Сборка xrCore: **конфигурация ✓**, компиляция упирается в следующие ошибки.
+**Результат:** PCH собирается ✓, `xrCore` компилируется по-настоящему (было «0 файлов», стало «12/21»).
 
-## Открытые ошибки сборки xrCore (шаг 1.3)
+## Открытые ошибки: слой памяти xrCore
 
-| # | Ошибка | Диагноз | Статус |
-|---|---|---|---|
-| A | `_types.h:2 'cstdint' file not found` при сборке **C**-файла `memory/doug_lea_memory_allocator.c` | `_types.h` — чисто C++-заголовок (`using`, `std::numeric_limits`), а его тянет C-трансляция (вероятно, через форсированный PCH) | ⬜ сделать `_types.h` двуязычным (`__cplusplus`-ветки: `<stdint.h>`/`<limits.h>` + `typedef` вместо `using`) |
-| B | каскад в заголовках Apple SDK: `__darwin_wctype_t`, `__darwin_wctrans_t`, `__DARWIN_WEOF`, `char_type` … | похоже, что-то в цепочке платформенных заголовков ломает `<wchar.h>`/`<sys/_types.h>` (тип `__darwin_*` не определяется) | ⬜ диагностика: скомпилировать минимальный .cpp с `MacOS/PlatformInit.h` + `<wchar.h>` и найти виновника |
-| C | `_MAX_PATH` undeclared в `_types.h:57` | определение есть в `Platform/MacOS/OSFile.h`, но к моменту `_types.h` платформенные заголовки не подключены/сломаны | ⬜ перепроверить после A и B (вероятно, производное) |
+| Файл | Ошибка | Что нужно |
+|---|---|---|
+| `memory/memory_usage.cpp` | нет `<malloc.h>` | на macOS брать `<malloc/malloc.h>` (`malloc_size` вместо `malloc_usable_size`) |
+| `memory/xrMemory_align.cpp` | нет `<malloc.h>` | то же |
+| `memory/xrMemory_pso_Copy.cpp` | `unsupported architecture 'arm64' for MS-style inline assembly` | MS-style `__asm`-блоки → заменить на NEON/`memcpy` под `IXR_ARM64` |
+| `memory/xrMemory_pso_Fill32.cpp` | то же | то же |
 
-## Замечено попутно (пригодится)
+## Системная закономерность (важно для остальных модулей)
 
-- В `CMakePresets.json` у IX-Ray **уже есть пресет `Engine-x64-Wine`** — то есть авторы сами ходят через Wine; это подтверждает, что macOS-путь они держат в уме.
-- `Platform/MacOS/PlatformInit.h` — **практически копия** `Platform/Linux/PlatformInit.h` (отличие: нет `using HDC = void*;`). Папку завели, но под не-Apple её, похоже, никогда не компилировали.
-- `src/xrCore/Platform/Platform.h` разводит платформы по `WIN32 / __linux__ / __FreeBSD__ / __APPLE__` — диспетчеризация для Apple есть ✓.
+В проекте **13 мест**, где ветки написаны только под `IXR_WINDOWS` и `IXR_LINUX`, а Apple не учтён. В пути сборки xrCore задействованы: `xrCore.h`, `xrSyncronize.h`, `_thread_types.h`, `PlatformAPI.h` (исправлен), `stack_string.h` (исправлен). Остальные — в `xrGameSpy` и `Editors` (вне v1).
+
+Ещё одна находка: в проекте **три разных имени** для одной платформы — `IXR_MACOS` (реально определяется в `Platform.h`), `IXR_APPLE` (используется 1 раз, не определён нигде), `IXR_APPLE_SERIES` (упомянут в их же документации и в `Editors/xrEUI`, но нигде не определён). Пока ориентируемся на `IXR_MACOS`.
 
 ## Журнал (append-only)
 
