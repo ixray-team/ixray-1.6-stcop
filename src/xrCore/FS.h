@@ -177,7 +177,15 @@ class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
-	virtual			~IReaderBase()			{}
+#ifdef IXR_MACOS
+	// macOS: a class whose virtual members are all inline or pure has no key function,
+	// so its vtable is emitted as a local weak symbol and other modules cannot link to it.
+	// An out-of-line destructor supplies that key function, so the vtable is emitted once
+	// here in xrCore and exported. Windows and Linux keep the original inline definition.
+	virtual			~IReaderBase();
+#else
+	virtual			~IReaderBase()		{}
+#endif
 
 	virtual CFileReader* cast_file_reader() { return nullptr; }
 	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }
