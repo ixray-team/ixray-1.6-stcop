@@ -73,7 +73,64 @@ void CALifeGraphRegistry::update(CSE_ALifeDynamicObject *object)
 
 #include "Level.h"
 #include "HUDManager.h"
-xr_task_group level_load;
+class CLevelLoadThread
+{
+public:
+	~CLevelLoadThread() { Wait(); }
+
+	void Run(int LevelId)
+	{
+		Wait();
+		Thread = std::thread([LevelId]()
+		{
+			PROF_THREAD("Level Load Thread");
+			Level().Load(LevelId);
+		});
+	}
+
+	void Wait()
+	{
+		if (Thread.joinable())
+		{
+			Thread.join();
+		}
+	}
+
+private:
+	std::thread Thread;
+};
+
+static CLevelLoadThread LevelLoad;
+
+void WaitLevelLoad()
+{
+	LevelLoad.Wait();
+}
+
+shared_str g_StartedLevelName;
+
+bool StartLevelLoad(const shared_str& LevelName)
+{
+	if (g_StartedLevelName == LevelName)
+	{
+		return true;
+	}
+
+	Level().set_name(LevelName);
+	const int LevelId = pApp->Level_ID(LevelName.c_str(), "1.0", true);
+	if (LevelId < 0)
+	{
+		return false;
+	}
+
+	if (!g_hud)
+		g_hud = new CHUDManager();
+
+	g_StartedLevelName = LevelName;
+	LevelLoad.Run(LevelId);
+	return true;
+}
+
 void CALifeGraphRegistry::setup_current_level	()
 {
 	u8 level_id = ai().game_graph().vertex(actor()->m_tGraphID)->level_id();
@@ -81,17 +138,16 @@ void CALifeGraphRegistry::setup_current_level	()
 	if (!Device.IsEditorMode())
 	{
 		GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(level_id);
-		Level().set_name((*I).second.name());
-		int levelid = pApp->Level_ID(*(*I).second.name(), "1.0", true);
+		const shared_str& LevelName = (*I).second.name();
 
-		if (!g_hud)
-			g_hud = new CHUDManager();
-
-		level_load.run([=]()
+		if (g_StartedLevelName.size())
 		{
-			PROF_THREAD("Level Load Thread");
-			Level().Load(levelid);
-		});
+			R_ASSERT3(g_StartedLevelName == LevelName, "The level loaded before ALife differs from the actor level", LevelName.c_str());
+		}
+		else
+		{
+			StartLevelLoad(LevelName);
+		}
 	}
 
 	m_level						= new CALifeLevelRegistry(level_id);

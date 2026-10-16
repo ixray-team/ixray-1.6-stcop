@@ -344,10 +344,10 @@ void CALifeUpdateManager::load			(const char* game_name, bool no_assert, bool ne
 #endif
 	g_pGamePersistent->SetLoadStageTitle("st_server_connecting");
 	g_pGamePersistent->LoadTitle		(true, g_pGameLevel->name());
-	extern xr_task_group level_load;
+	extern void WaitLevelLoad();
 	{
 		PROF_EVENT("Load Alife Simulator: wait level_load");
-		level_load.wait();
+		WaitLevelLoad();
 	}
 }
 

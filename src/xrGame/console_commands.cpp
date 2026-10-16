@@ -2717,6 +2717,8 @@ void CCC_RegisterCommands()
 	// options
 	g_OptConCom.Init();
 	CMD4(CCC_Integer, "particles_workers_count", &(int&)particles_workers_count, 1, 64);
+	extern bool g_MtLevelEarly;
+	CMD2(CCC_Boolean, "mt_level_early", &g_MtLevelEarly);
 
 	CMD1(CCC_ChangeLanguage, "language");
 

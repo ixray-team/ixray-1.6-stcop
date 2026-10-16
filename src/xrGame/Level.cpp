@@ -196,6 +196,11 @@ CLevel::CLevel() :
 	m_demoplay_control = nullptr;
 	m_demo_info	= nullptr;
 
+	{
+		extern shared_str g_StartedLevelName;
+		g_StartedLevelName = nullptr;
+	}
+
 	R_ASSERT				(nullptr==g_player_hud);
 	g_player_hud			= new player_hud();
 	g_player_hud->RequestDefault();
@@ -241,6 +246,13 @@ extern CAI_Space *g_ai_space;
 CLevel::~CLevel()
 {
 	PROF_EVENT("CLevel::~CLevel");
+
+	{
+		extern void WaitLevelLoad();
+		extern shared_str g_StartedLevelName;
+		WaitLevelLoad();
+		g_StartedLevelName = nullptr;
+	}
 	
 	Device.LuaGC.clear();
 

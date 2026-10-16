@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "GamePersistent.h"
+#include "LevelStartInfo.h"
 #include "ImUtils/ImUtils.h"
 #include "../xrEngine/Fmesh.h"
 #include "../xrEngine/XR_IOConsole.h"
@@ -215,8 +216,17 @@ void CGamePersistent::Disconnect()
 
 
 
+bool g_MtLevelEarly = true;
+bool StartLevelLoad(const shared_str& LevelName);
+
 void CGamePersistent::OnGameStart()
 {
+	shared_str LevelName;
+	if (g_MtLevelEarly && g_pGameLevel != nullptr && LevelStartInfo::Find(m_game_params, LevelName))
+	{
+		StartLevelLoad(LevelName);
+	}
+
 	inherited::OnGameStart		();
 	UpdateGameType				();
 }
