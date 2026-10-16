@@ -6,7 +6,9 @@
 #	include <memory>
 #endif
 
-#ifdef IXR_LINUX
+// AI: stb_image_write comes from the module that downloads it; the Linux guard used to be the
+// AI: only one, so macOS never saw the header and every stbi_write_*_to_func call was undeclared.
+#if defined(IXR_LINUX) || defined(IXR_MACOS)
 #	define STB_IMAGE_WRITE_IMPLEMENTATION
 #	define NULL 0
 #	include <stb/stb_image_write.h>

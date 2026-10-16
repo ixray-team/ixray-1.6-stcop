@@ -24,6 +24,12 @@
 #include "../../xrEngine/defines.h"
 #endif
 
+#ifndef _RELEASE
+// AI: defines.h is protected by #pragma once and may already have been included without
+// AI: ENGINE_API by something else above, so the macro is spelled out here as a last resort.
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+
 #include "imgui.h"
 
 #include <d3d11_1.h>

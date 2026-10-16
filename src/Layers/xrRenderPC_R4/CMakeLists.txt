@@ -91,6 +91,14 @@ else()
     target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
 endif()
 
+if(APPLE)
+    # AI: DLSS and FSR3 come from Windows-only vendor SDKs and the macOS plan leaves both out.
+    # AI: Their sources are dropped here; the renderer still refers to the DLSS wrapper, which
+    # AI: DLSSWrapper.h provides as no-ops on macOS. Windows and Linux keep every file.
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/(DLSS|FSR3)Wrapper\\.cpp$")
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "r4_rendertarget_phase_(dlss|fsr)\\.cpp$")
+endif()
+
 ## RenderDoc
 target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")
 
