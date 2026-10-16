@@ -488,7 +488,7 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-IC CLevel&				Level()		{ VERIFY(g_pGameLevel); return *((CLevel*) g_pGameLevel); }
+IC CLevel&				Level()		{ VERIFY(g_pGameLevel); VERIFY2(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread"); return *((CLevel*) g_pGameLevel); }
 IC game_cl_GameState&	Game()		{ auto game = Level().game;	VERIFY(game); return *game;	}
 	u32					GameID();
 

@@ -11,6 +11,7 @@
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/EngineAPI.h"
+#include "../xrEngine/IGame_ObjectPool.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
@@ -4726,6 +4727,12 @@ void CWeapon::RefreshScopeDetector()
 
 void CWeapon::RefreshScopeNightVision()
 {
+	if (IGame_ObjectPool::IsParallelLoad())
+	{
+		IGame_ObjectPool::RunOnPrimaryThread([this]() { RefreshScopeNightVision(); });
+		return;
+	}
+
 	if (m_zoom_params.m_sUseZoomPostprocess.size() > 0)
 	{
 		if (TWeaponNightVision* NightVision = GetOrCreateComponent<TWeaponNightVision>())
@@ -4767,25 +4774,36 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 		xr_delete(m_UIScope);
 	}
 
-	if (!g_dedicated_server)
+	if (!g_dedicated_server && bScopeIsHasTexture)
 	{
-		if (bScopeIsHasTexture)
+		const bool IsDeferred = IGame_ObjectPool::IsParallelLoad();
+		IGame_ObjectPool::RunOnPrimaryThread([this, scope_tex_name, IsDeferred]()
 		{
-			m_UIScope = new CUIStatic();
-			bool result = createWpnScopeXML();
-			if (result && pWpnScopeXml->NavigateToNode(scope_tex_name.c_str()))
-				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
-			else
+			CreateScopeUI(scope_tex_name);
+			if (IsDeferred)
 			{
-				if (result)
-					Msg("! Missing scope [%s] in scopes.xml. Trying to use scope as texture.", scope_tex_name.c_str());
-
-				m_UIScope->InitTexture(scope_tex_name.c_str());
-				m_UIScope->SetStretchTexture(true);
-				m_UIScope->SetWndPos(Fvector2().set(0, 0));
-				m_UIScope->SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+				UpdateZoomCrosshairUI();
 			}
-		}
+		});
+	}
+}
+
+void CWeapon::CreateScopeUI(const shared_str& scope_tex_name)
+{
+	xr_delete(m_UIScope);
+	m_UIScope = new CUIStatic();
+	bool result = createWpnScopeXML();
+	if (result && pWpnScopeXml->NavigateToNode(scope_tex_name.c_str()))
+		CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+	else
+	{
+		if (result)
+			Msg("! Missing scope [%s] in scopes.xml. Trying to use scope as texture.", scope_tex_name.c_str());
+
+		m_UIScope->InitTexture(scope_tex_name.c_str());
+		m_UIScope->SetStretchTexture(true);
+		m_UIScope->SetWndPos(Fvector2().set(0, 0));
+		m_UIScope->SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 	}
 }
 
