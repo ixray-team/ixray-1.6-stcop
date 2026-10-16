@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "FS_internal.h"
 
+#ifdef IXR_MACOS
+// Key function for IReaderBase: keeps its vtable in this module and exported (see FS.h).
+IReaderBase::~IReaderBase() {}
+#endif
+
 //////////////////////////////////////////////////////////////////////
 // Tools
 //////////////////////////////////////////////////////////////////////
