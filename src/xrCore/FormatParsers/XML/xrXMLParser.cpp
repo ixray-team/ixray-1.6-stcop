@@ -10,9 +10,18 @@ static xr_hash_map<xr_string, xr_shared_ptr<xr_string>>& GetXMLCache()
 	return g_xmlCache;
 }
 
+static xrSRWLock& GetXMLCacheLock()
+{
+	static xrSRWLock g_xmlCacheLock;
+	return g_xmlCacheLock;
+}
+
 void CXml::InvalidateCache()
 {
-	GetXMLCache().clear();
+	{
+		xrSRWLockGuard Guard(GetXMLCacheLock());
+		GetXMLCache().clear();
+	}
 	Msg("XML cache invalidated");
 }
 
@@ -23,6 +32,7 @@ void CXml::RemoveFromCache(const char* path_alias, const char* xml_path)
 		return;
 	}
 	xr_string cacheKey = xr_string(path_alias) + "\\" + xml_path;
+	xrSRWLockGuard Guard(GetXMLCacheLock());
 	GetXMLCache().erase(cacheKey);
 }
 
@@ -166,6 +176,7 @@ bool CXml::Load(const char* path, const char* xml_filename)
 	bool HasPreparedDocument = false;
 
 	{
+		xrSRWLockGuard Guard(GetXMLCacheLock(), true);
 		auto& Cache = GetXMLCache();
 		auto it = Cache.find(cacheKey);
 		if (it != Cache.end())
@@ -234,6 +245,7 @@ bool CXml::Load(const char* path, const char* xml_filename)
 
 		cachedContent = xr_make_shared<xr_string>(printer.CStr());
 		{
+			xrSRWLockGuard Guard(GetXMLCacheLock());
 			auto& Cache = GetXMLCache();
 			auto it = Cache.find(cacheKey);
 			if (it == Cache.end())

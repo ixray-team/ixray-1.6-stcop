@@ -114,4 +114,5 @@ private:
 	xr_map<D3D11_RASTERIZER_DESC, ID3D11RasterizerState*> RSCache;
 	xr_map<D3D11_DEPTH_STENCIL_DESC, ID3D11DepthStencilState*> DSSCache;
 	xr_map<D3D11_BLEND_DESC, ID3D11BlendState*> BSCache;
+	xrSRWLock Lock;
 };
