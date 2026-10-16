@@ -14,6 +14,7 @@
 #include "stack_string.h"
 #include "ECS/EntityManager.h"
 #include "IniCache.h"
+#include "IniReadAhead.h"
 
 XRCORE_API xrCore	Core;
 XRCORE_API u32		build_id;
@@ -101,6 +102,7 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		BuildId             = build_id;
 		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
 		EFS._initialize		();
+		g_IniReadAhead		= new CIniReadAhead();
 #if defined(DEBUG) && defined(IXR_WINDOWS)
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());
@@ -121,6 +123,7 @@ void xrCore::_destroy()
 
 		ClearCachedIniFiles();
 		xr_delete(cached_ini_map);
+		xr_delete(g_IniReadAhead);
 		FS._destroy();
 		EFS._destroy();
 		xr_delete(xr_FS);

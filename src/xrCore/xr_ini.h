@@ -39,6 +39,8 @@ public:
     static IC BOOL		IsBOOL		( str_c B)	{ return (xr_strcmp(B,"on")==0 || xr_strcmp(B,"yes")==0 || xr_strcmp(B,"true")==0 || xr_strcmp(B,"1")==0);}
 
 protected:
+	friend class CIniReadAhead;
+
 	enum {eSaveAtEnd = (1<<0), eReadOnly= (1<<1), eOverrideNames=(1<<2),};
 	Flags8			m_flags;
 	string_path		m_file_name;
