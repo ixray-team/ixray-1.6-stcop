@@ -609,3 +609,22 @@ cmake -S . -B build-macos -G Ninja \
   (там `alcCreateContext(pDevice, nullptr)` и такой же предел целей).
 - Ещё одно наблюдение: `-nosound` в этой ветке не отключает звук — `InitSound1/2` вызываются в
   `EngineLoadStage4` безусловно.
+
+**Анимации моделей: падение из-за обнулённой блокировки (баг виден только вне Windows)**
+
+- Стек (пойман `lldb` по `abort`): `abort` ← `std::terminate` ← `std::system_error: mutex lock failed:
+  Invalid argument` ← `std::shared_mutex::lock()` ← `xrSRWLock::AcquireExclusive` ←
+  `CBlendInstance::blend_add` ← `CKinematicsAnimated::Bone_Motion_Start_IM` ← `LL_PlayCycle`
+  (тик анимации модели в R4).
+- Причина: `CBlendInstance` создаётся сырой памятью (`xr_alloc<CBlendInstance>` в
+  `SkeletonAnimated.cpp:669`) и инициализируется `construct()`, который делает
+  `ZeroMemory(this, sizeof(*this))`. Поле `blend_lock` при этом обнуляется, а `xrSRWLock` — обёртка
+  (`src/xrCore/xrSyncronize.h:40`), у которой на Windows внутри `SRWLOCK` (нулевое состояние = свободная
+  блокировка, поэтому баг не проявляется), на Linux `pthread_rwlock_t`, **на macOS `std::shared_mutex`**,
+  для которого нулевое состояние недопустимо → первая же попытка взять блокировку даёт EINVAL.
+- Правка: после `ZeroMemory` блокировка конструируется явно (`new (&blend_lock) xrSRWLock();`) в обоих
+  местах: `src/Layers/xrRender/SkeletonAnimated.cpp` и серверная копия
+  `src/Layers/xrRenderDS_R0/Visual/XRayKinematicsAnimated.cpp`.
+- Правило на будущее: `ZeroMemory(this, sizeof(*this))` в классах с блокировками — искать и проверять
+  (кандидаты в дереве: `src/xrEngine/bone.h:494`, `src/Layers/xrRenderDX10/3DFluid/dx103DFluidRenderer.h:52`).
+  Windows-сборкам это не вредит: там блокировки нулевые валидны.

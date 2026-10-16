@@ -18,6 +18,14 @@ using	namespace animation;
 void		CBlendInstance::construct()
 {	
 	ZeroMemory			(this,sizeof(*this));
+	// AI: ZeroMemory leaves blend_lock all zeroes. That is a valid unlocked lock for the Windows
+	// AI: implementation (SRWLOCK), but on macOS xrSRWLock wraps std::shared_mutex (see
+	// AI: src/xrCore/xrSyncronize.h), for which an all-zero object is invalid: the first lock attempt
+	// AI: fails with "mutex lock failed: Invalid argument" and the engine dies with an uncaught
+	// AI: std::system_error (hit from CBlendInstance::blend_add when a model animation starts). The
+	// AI: instance is allocated raw with xr_alloc and initialised here, so the lock has to be
+	// AI: constructed explicitly.
+	new (&blend_lock) xrSRWLock();
 }
 void		CBlendInstance::blend_add	(CBlend* H)
 {	
