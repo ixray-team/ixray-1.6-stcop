@@ -69,7 +69,7 @@
 	template<>
 	inline CResourceManager::map_CS& CResourceManager::GetShaderMap(){return m_cs;}
 
-    template<typename T>
+	template<typename T>
 	inline T* CResourceManager::CreateShader(const char* _name)
 	{
 		xr_string res_name = _name + RImplementation.getShaderParams();
@@ -84,11 +84,17 @@
 			if (I != sh_map.end())
 			{
 				sh = I->second;
+				if (!ResourceLifetime::IsAlive(sh))
+				{
+					sh_map.erase(I);
+					sh = nullptr;
+				}
 			}
-			else
+			if (!sh)
 			{
 				sh = new T();
 				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+				sh->dwReference.store(1, std::memory_order_release);
 				sh_map.insert(std::make_pair(sh->set_name(name), sh));
 				IsNew = true;
 			}

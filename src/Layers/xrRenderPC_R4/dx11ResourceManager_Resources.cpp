@@ -150,11 +150,17 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		if (I != m_vs.end())
 		{
 			_vs = I->second;
+			if (!ResourceLifetime::IsAlive(_vs))
+			{
+				m_vs.erase(I);
+				_vs = nullptr;
+			}
 		}
-		else
+		if (!_vs)
 		{
 			_vs = new SVS();
 			_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			_vs->dwReference.store(1, std::memory_order_release);
 			m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
 			IsNew = true;
 		}
@@ -283,11 +289,17 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		if (I != m_ps.end())
 		{
 			_ps = I->second;
+			if (!ResourceLifetime::IsAlive(_ps))
+			{
+				m_ps.erase(I);
+				_ps = nullptr;
+			}
 		}
-		else
+		if (!_ps)
 		{
 			_ps = new SPS();
 			_ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			_ps->dwReference.store(1, std::memory_order_release);
 			m_ps.insert(std::make_pair(_ps->set_name(name), _ps));
 			IsNew = true;
 		}
@@ -406,11 +418,17 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 		if (I != m_gs.end())
 		{
 			_gs = I->second;
+			if (!ResourceLifetime::IsAlive(_gs))
+			{
+				m_gs.erase(I);
+				_gs = nullptr;
+			}
 		}
-		else
+		if (!_gs)
 		{
 			_gs = new SGS();
 			_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			_gs->dwReference.store(1, std::memory_order_release);
 			m_gs.insert(std::make_pair(_gs->set_name(name), _gs));
 			IsNew = true;
 		}
