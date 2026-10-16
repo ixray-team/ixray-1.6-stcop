@@ -33,6 +33,13 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*NvGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*IntelGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx(9|11)\\.cpp$")
+
+if(APPLE)
+	# macOS ships no D3D headers: Windows takes them from the SDK, Linux from DXVK.
+	# The Metal backend replaces these backends on macOS (see .porting/porting-memory.md).
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D9/")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/")
+endif()
 endif()
 
 # xrRHI project
