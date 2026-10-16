@@ -80,21 +80,13 @@ void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 		crc = crc32(data->pointer(), size);
 		Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
 #else
-		if (1 == bids.size())
+		if (sw_bones_cnt <= hw_bones_cnt)
 		{
-			// HW- single bone
-			RenderMode = RM_SINGLE;
-			RMS_boneid = *bids.begin();
-		//	Render->shader_option_skinning(0);
+			// Same as client: avoid RM_SINGLE world*bone bake (float precision jitter).
+			RenderMode = RM_SKINNING_1B;
+			RMS_boneid = bids.empty() ? BI_NONE : *bids.begin();
+			RMS_bonecount = sw_bones_cnt + 1;
 		}
-		else
-			if (sw_bones_cnt <= hw_bones_cnt)
-			{
-				// HW- one weight
-				RenderMode = RM_SKINNING_1B;
-				RMS_bonecount = sw_bones_cnt + 1;
-			//	Render->shader_option_skinning(1);
-			}
 			else
 			{
 				R_ASSERT(sw_bones_cnt <= hw_bones_cnt);
@@ -207,11 +199,7 @@ void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
 		Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N);
 		break;
 	}
-#ifdef _EDITOR
-	if (bids.size() > 0)
-#else
-	if (bids.size() > 1)
-#endif
+	if (!bids.empty())
 	{
 		crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
 		BonesUsed.create(crc, bids.size(), &*bids.begin());
