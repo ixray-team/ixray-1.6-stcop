@@ -3,6 +3,7 @@
 #include "FS_internal.h"
 #include "xrDebug_macros.h"
 #include "IniCache.h"
+#include "IniReadAhead.h"
 
 XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map = nullptr;
 
@@ -135,6 +136,26 @@ CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveA
 
 	m_flags.set(eSaveAtEnd, SaveAtEnd);
 	m_flags.set(eReadOnly, ReadOnly);
+
+	if (bLoad && ReadOnly && allow_include_func == nullptr && g_IniReadAhead != nullptr && g_IniReadAhead->Take(szFileName, DATA))
+	{
+#ifdef DEBUG
+		CInifile Check(szFileName, true, true, false);
+		bool IsSame = Check.DATA.size() == DATA.size();
+		for (size_t SectIndex = 0; IsSame && SectIndex < DATA.size(); ++SectIndex)
+		{
+			const Sect& A = DATA[SectIndex];
+			const Sect& B = Check.DATA[SectIndex];
+			IsSame = A.Name == B.Name && A.Data.size() == B.Data.size();
+			for (size_t ItemIndex = 0; IsSame && ItemIndex < A.Data.size(); ++ItemIndex)
+			{
+				IsSame = A.Data[ItemIndex].first == B.Data[ItemIndex].first && A.Data[ItemIndex].second == B.Data[ItemIndex].second;
+			}
+		}
+		VERIFY2(IsSame, (xr_string("Ini read-ahead differs from a fresh parse: ") + szFileName).c_str());
+#endif
+		return;
+	}
 
 	if (bLoad)
 	{

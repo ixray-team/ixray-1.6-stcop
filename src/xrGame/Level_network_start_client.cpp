@@ -7,6 +7,7 @@
 
 #include "ai_space.h"
 #include "player_hud.h"
+#include "../xrCore/IniReadAhead.h"
 #include "game_cl_base.h"
 #include "NET_Queue.h"
 #include "file_transfer.h"
@@ -210,6 +211,7 @@ bool CLevel::net_start_client6()
 {
 	PROF_EVENT("CLevel::net_start_client6");
 	g_pGamePersistent->ObjectPool.FinishPrefetch();
+	g_IniReadAhead->Stop();
 	if (connected_to_server)
 	{
 		// Sync
