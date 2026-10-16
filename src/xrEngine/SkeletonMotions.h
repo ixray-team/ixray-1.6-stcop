@@ -297,7 +297,13 @@ public:
 	CPartition*			partition		()							{	if (p_ == nullptr) return nullptr; return &p_->m_partition;			}
     MotionDefVec*		motion_defs		()							{	if (p_ == nullptr) return nullptr; return &p_->m_mdefs;				}
     CMotionDef*			motion_def		(u16 idx)					{	if (p_ == nullptr || idx >= p_->m_mdefs.size()) return nullptr; return &p_->m_mdefs[idx];			}
-	anim_notify_prefetched& motion_notify	(u16 idx, u16 bone)		{	VERIFY(p_); return p_->m_notifies[idx][bone];			}
+	const anim_notify_prefetched* motion_notify(u16 idx, u16 bone) const
+	{
+		VERIFY(p_);
+		const auto& Notifies = p_->m_notifies[idx];
+		auto It = Notifies.find(bone);
+		return It != Notifies.end() ? &It->second : nullptr;
+	}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}
 

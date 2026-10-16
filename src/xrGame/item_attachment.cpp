@@ -5,14 +5,14 @@
 #include "GameObject.h"
 #include "PhysicsShellHolder.h"
 #include "inventory_item.h"
-static bool try_to_load_attachments = true;
-static xr_hash_map<shared_str, xr_vector<shared_str>> all_attachments;
-void item_attachments_manager::load_attachments(IKinematics* parent_model)
+namespace
 {
-	if (!try_to_load_attachments) return;
+	using AttachmentTable = xr_hash_map<shared_str, xr_vector<shared_str>>;
 
-	if (all_attachments.empty())
+	AttachmentTable BuildAttachmentTable()
 	{
+		PROF_EVENT("item_attachments_manager: BuildAttachmentTable");
+		AttachmentTable all_attachments;
 		auto& sections = pSettings->sections();
 		size_t sections_size = sections.size();
 		xr_string parent_sect, attachment_sect;
@@ -32,11 +32,15 @@ void item_attachments_manager::load_attachments(IKinematics* parent_model)
 				}
 			}
 		}
+		return all_attachments;
 	}
+}
 
+void item_attachments_manager::load_attachments(IKinematics* parent_model)
+{
+	static const AttachmentTable all_attachments = BuildAttachmentTable();
 	if (all_attachments.empty())
 	{
-		try_to_load_attachments = false;
 		return;
 	}
 	auto it = all_attachments.find(m_parent->object().cNameSect());
