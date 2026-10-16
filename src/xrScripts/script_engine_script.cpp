@@ -13,21 +13,24 @@
 
 using namespace luabind;
 
+XREFLECT(LuaExport, Name = "log", Condition = "DevicePtr != nullptr && Device.IsEditorMode()")
 void LuaLog(const char* caMessage)
 {
 #ifndef MASTER_GOLD
-	g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeMessage,"%s",caMessage);
+	g_pScriptEngine->script_log(ScriptStorage::eLuaMessageTypeMessage, "%s", caMessage);
 #endif // #ifndef MASTER_GOLD
 }
 
+XREFLECT(LuaExport, Name = "error_log")
 void ErrorLog(const char* caMessage)
 {
-	g_pScriptEngine->error_log("%s",caMessage);
+	g_pScriptEngine->error_log("%s", caMessage);
 	g_pScriptEngine->print_stack();
-	
+
 	R_ASSERT2(0, caMessage);
 }
 
+XREFLECT(LuaExport, Name = "flush")
 void FlushLogs()
 {
 #ifdef DEBUG
@@ -36,31 +39,36 @@ void FlushLogs()
 #endif // DEBUG
 }
 
+XREFLECT(LuaExport)
 void verify_if_thread_is_running()
 {
 	VERIFY2(g_pScriptEngine->current_thread(), "coroutine.yield() is called outside the LUA thread!");
 }
 
+XREFLECT(LuaExport, Name = "editor")
 bool is_editor()
 {
 #ifdef XRGAME_EXPORTS
-	return		(false);
+	return (false);
 #else
-	return		(true);
+	return (true);
 #endif
 }
 
 #ifdef XRGAME_EXPORTS
-CRenderDevice *get_device()
+XREFLECT(LuaExport, Name = "device")
+CRenderDevice* get_device()
 {
-	return		(&Device);
+	return (&Device);
 }
 
+XREFLECT(LuaExport)
 void trigger_assert(const char* pStringFromLua)
 {
 	R_ASSERT(false && "catch the thing!");
 }
 
+XREFLECT(LuaExport)
 void trigger_vs_log(const char* pStringFromLua)
 {
 #ifdef IXR_WINDOWS
@@ -68,57 +76,67 @@ void trigger_vs_log(const char* pStringFromLua)
 #endif
 }
 
+XREFLECT(LuaExport, Name = "load_script_to_global")
 void LoadScriptToGlobal_script(const char* script_name)
 {
 	LoadScriptToGlobal(g_pScriptEngine->lua(), script_name, false);
 }
 #endif
 
+XREFLECT(LuaExport)
 const char* user_name()
 {
 	return (Core.UserName);
 }
 
+XREFLECT(LuaExport, Name = "prefetch")
 void prefetch_module(const char* file_name)
 {
 	g_pScriptEngine->process_file(file_name);
 }
 
-struct profile_timer_script {
-	CTimer						measure;
-	u64							m_accumulator;
-	u64							m_count;
-	int							m_recurse_mark;
-	
-	IC								profile_timer_script	()
+XREFLECT(LuaExport, Name = "profile_timer", LuaToString)
+struct profile_timer_script
+{
+	CTimer measure;
+	u64 m_accumulator;
+	u64 m_count;
+	int m_recurse_mark;
+
+	XPROPERTY(LuaConstructor)
+	IC profile_timer_script()
 	{
-		m_accumulator			= 0;
-		m_count					= 0;
-		m_recurse_mark			= 0;
+		m_accumulator = 0;
+		m_count = 0;
+		m_recurse_mark = 0;
 	}
 
-	IC								profile_timer_script	(const profile_timer_script &profile_timer)
+	XPROPERTY(LuaConstructor)
+	IC profile_timer_script(const profile_timer_script& profile_timer)
 	{
-		*this					= profile_timer;
+		*this = profile_timer;
 	}
 
-	IC		profile_timer_script&	operator=				(const profile_timer_script &profile_timer)
+	IC profile_timer_script& operator=(const profile_timer_script& profile_timer)
 	{
-		measure					= profile_timer.measure;
-		m_accumulator			= profile_timer.m_accumulator;
-		m_count					= profile_timer.m_count;
-		m_recurse_mark			= profile_timer.m_recurse_mark;
-		return					(*this);
+		measure = profile_timer.measure;
+		m_accumulator = profile_timer.m_accumulator;
+		m_count = profile_timer.m_count;
+		m_recurse_mark = profile_timer.m_recurse_mark;
+		return (*this);
 	}
 
-	IC		bool					operator<				(const profile_timer_script &profile_timer) const
+	XPROPERTY(LuaOperator)
+	IC bool operator<(const profile_timer_script& profile_timer) const
 	{
-		return					(m_accumulator < profile_timer.m_accumulator);
+		return (m_accumulator < profile_timer.m_accumulator);
 	}
 
-	IC		void					start					()
+	XPROPERTY(LuaCallable)
+	IC void start()
 	{
-		if (m_recurse_mark) {
+		if (m_recurse_mark)
+		{
 			++m_recurse_mark;
 			return;
 		}
@@ -128,49 +146,84 @@ struct profile_timer_script {
 		measure.Start();
 	}
 
-	IC		void					stop					()
+	XPROPERTY(LuaCallable)
+	IC void stop()
 	{
 		if (!m_recurse_mark)
+		{
 			return;
+		}
 
 		--m_recurse_mark;
-		
+
 		if (m_recurse_mark)
+		{
 			return;
-		
+		}
+
 		m_accumulator += measure.GetElapsed_mcs();
 	}
 
-	IC		float					time					() const
+	XPROPERTY(LuaCallable)
+	IC float time() const
 	{
 		float result = float(double(m_accumulator));
 		return (result);
 	}
+
+	XPROPERTY(LuaOperator)
+	IC profile_timer_script operator+(const profile_timer_script& portion) const
+	{
+		profile_timer_script result;
+		result.m_accumulator = m_accumulator + portion.m_accumulator;
+		result.m_count = m_count + portion.m_count;
+		return (result);
+	}
 };
 
-IC	profile_timer_script	operator+	(const profile_timer_script &portion0, const profile_timer_script &portion1)
+std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt)
 {
-	profile_timer_script	result;
-	result.m_accumulator	= portion0.m_accumulator + portion1.m_accumulator;
-	result.m_count			= portion0.m_count + portion1.m_count;
-	return					(result);
+	return os << pt.time();
 }
 
-std::ostream& operator<<(std::ostream& os, const profile_timer_script& pt) { return os << pt.time(); }
-
+XREFLECT(LuaExport, Name = "TinyLog")
 void MyLog(const char* A)
 {
 	Log(A);
 }
 
+// Log is overloaded, Lua gets the const char* one.
+XREFLECT(LuaExport, Name = "log1")
+void LuaLog1(const char* Message)
+{
+	Log(Message);
+}
+
 #ifdef XRGAME_EXPORTS
-ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
-ICF	u32	script_time_global_async	()	{ return Device.TimerAsync_MMT(); }
+XREFLECT(LuaExport, Name = "time_global")
+ICF u32 script_time_global()
+{
+	return Device.dwTimeGlobal;
+}
+XREFLECT(LuaExport, Name = "time_global_async")
+ICF u32 script_time_global_async()
+{
+	return Device.TimerAsync_MMT();
+}
 #else
-ICF	u32	script_time_global	()	{ return 0; }
-ICF	u32	script_time_global_async	()	{ return 0; }
+XREFLECT(LuaExport, Name = "time_global")
+ICF u32 script_time_global()
+{
+	return 0;
+}
+XREFLECT(LuaExport, Name = "time_global_async")
+ICF u32 script_time_global_async()
+{
+	return 0;
+}
 #endif
 
+XREFLECT(LuaExport, Name = "IsSupportMP")
 bool CheckMP()
 {
 #ifdef XR_MP_BUILD
@@ -180,14 +233,18 @@ bool CheckMP()
 #endif
 }
 
+XREFLECT(LuaExport, Name = "IsEditor")
 bool IsEditorMode()
 {
 	if (DevicePtr == nullptr)
+	{
 		return false;
+	}
 
 	return Device.IsEditorMode();
 }
 
+XREFLECT(LuaExport)
 void SemiLog(const char* message)
 {
 	Msg(message);
@@ -195,31 +252,38 @@ void SemiLog(const char* message)
 
 namespace ixray::save
 {
-	xr_string CurrentSaveStage = "";
-	void SaveError()
-	{
-		R_ASSERT2(!"Save file is big. Chunk: ", CurrentSaveStage.c_str());
-	}
-
-	void SaveStage(const char* Name)
-	{
-		CurrentSaveStage = Name;
-	}
+xr_string CurrentSaveStage = "";
+XREFLECT(LuaExport, Name = "save.call_error")
+void SaveError()
+{
+	R_ASSERT2(!"Save file is big. Chunk: ", CurrentSaveStage.c_str());
 }
 
+XREFLECT(LuaExport, Name = "save.set_stage")
+void SaveStage(const char* Name)
+{
+	CurrentSaveStage = Name;
+}
+} // namespace ixray::save
+
+XREFLECT(LuaExport, Name = "try_load_file")
 void TryLoadFile(const char* FileName)
 {
 	FS.TryLoad(FileName);
 }
 
+XREFLECT(LuaExport, Name = "debug_print")
 void lua_debug_print(const char* str)
 {
 	if (!xr_strlen(str))
+	{
 		return;
+	}
 
 	Msg("$ DBG:[%lu] %s", Device.dwTimeGlobal, str);
 }
 
+XREFLECT(LuaExport, Name = "help")
 void DumpLuaExports()
 {
 	lua_State* L = g_pScriptEngine->lua();
@@ -234,8 +298,8 @@ void DumpLuaExports()
 		}
 
 		xr_string Result = (*info).name();
-	
-		const xr_vector<xr_string> Need2Remove = { "class ", "struct ", " __ptr64" };
+
+		const xr_vector<xr_string> Need2Remove = {"class ", "struct ", " __ptr64"};
 		for (const auto& Str : Need2Remove)
 		{
 			size_t Pos = 0;
@@ -244,12 +308,12 @@ void DumpLuaExports()
 				Result.erase(Pos, Str.length());
 			}
 		}
-	
+
 		return Result;
 	};
 
 	Registry->iterate_classes(L, [&](lua_State* st, class_rep* crep)
-	{
+							  {
 		if (!crep->bases().empty())
 		{
 			xr_string OutStr = "C++ class ";
@@ -311,10 +375,10 @@ void DumpLuaExports()
 			}
 		}
 
-		Msg("};\n");
-	});
+		Msg("};\n"); });
 }
 
+XREFLECT(LuaExport)
 bool IsTracyConnected()
 {
 #ifdef IXRAY_PROFILER_TRACY
@@ -323,57 +387,11 @@ bool IsTracyConnected()
 	return false;
 }
 
-#pragma optimize("s",on)
-void CScriptEngine::script_register(lua_State *L)
+void XReflectRegister(lua_State* L);
+
+void CScriptEngine::script_register(lua_State* L)
 {
-	module(L)
-	[
-		class_<profile_timer_script>("profile_timer")
-			.def(constructor<>())
-			.def(constructor<profile_timer_script&>())
-			.def(const_self + profile_timer_script())
-			.def(const_self < profile_timer_script())
-			.def(tostring(self))
-			.def("start",&profile_timer_script::start)
-			.def("stop",&profile_timer_script::stop)
-			.def("time",&profile_timer_script::time),
-
-		def("log1",								(void (*)(const char*)) & Log),
-		def("error_log",						&ErrorLog),
-		def("flush",							&FlushLogs),
-		def("prefetch",							&prefetch_module),
-		def("verify_if_thread_is_running",		&verify_if_thread_is_running),
-		def("editor",							&is_editor),
-		def("user_name",						&user_name),
-		def("time_global",						&script_time_global),
-		def("SemiLog",							&SemiLog),
-		def("debug_print",						&lua_debug_print),
-		def("time_global_async",				&script_time_global_async),
-		def("IsSupportMP",						&CheckMP),
-		def("IsEditor",							&IsEditorMode),
-		def("help",								&DumpLuaExports),
-		def("try_load_file",					&TryLoadFile),
-#ifdef XRGAME_EXPORTS
-		def("device",							&get_device),
-		def("load_script_to_global",			&LoadScriptToGlobal_script),
-		def("TinyLog",							&MyLog),
-		def("trigger_assert",					&trigger_assert),
-		def("trigger_vs_log",					&trigger_vs_log),
-#endif // #ifdef XRGAME_EXPORTS
-		def("IsTracyConnected", &IsTracyConnected)
-	];
-
-	if (DevicePtr != nullptr && Device.IsEditorMode())
-	{
-		module(L)
-		[
-			def("log", &LuaLog)
-		];
-	}
-	
-	module(L, "save")
-	[
-		def("call_error", &ixray::save::SaveError),
-		def("set_stage", &ixray::save::SaveStage)
-	];
+	XReflectRegister(L);
 }
+
+#include "script_engine_script.reflect.inl"

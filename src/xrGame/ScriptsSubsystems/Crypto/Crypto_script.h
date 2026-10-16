@@ -2,6 +2,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 
+XREFLECT(LuaExport, Name="FFxCrypto")
 class CFFxCrypto final
 {
 private:
@@ -104,15 +105,20 @@ private:
     };
 
 public:
+	XPROPERTY(LuaConstructor)
 	CFFxCrypto();
 	virtual	~CFFxCrypto();
 	
+	XPROPERTY(LuaCallable, Name="crc64")
 	const char* CRC64(const char* input);
+    XPROPERTY(LuaCallable, Name="sha1")
     const char* SHA1(const char* input);
+    XPROPERTY(LuaCallable, Name="sha256")
     const char* SHA256(const char* input);
+    XPROPERTY(LuaCallable, Name="base64_encode")
     const char* Base64Encode(const char* input);
+    XPROPERTY(LuaCallable, Name="base64_decode")
     const char* Base64Decode(const char* input);
+    XPROPERTY(LuaCallable, Name="xor_encode")
     const char* XorEncode(const char* input, const char* key);
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION;
 };

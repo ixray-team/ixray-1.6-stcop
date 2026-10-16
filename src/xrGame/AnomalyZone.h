@@ -2,11 +2,9 @@
 
 #include "space_restrictor.h"
 #include "../xrEngine/Feel_Touch.h"
-#include "../xrScripts/script_export_space.h"
 #include "ElectricCurve.h"
 #include "RandomSoundEmmiter.h"
 #include "CActorAuraPostEffectsBalancer.h"
-
 
 class CActor;
 class CLAItem;
@@ -15,6 +13,7 @@ class CZoneEffector;
 struct SZoneObjectInfo;
 #define SMALL_OBJECT_RADIUS 0.6f
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CAnomalyZone :		public CSpaceRestrictor,
 						public Feel::Touch
 {
@@ -37,9 +36,10 @@ protected:
 	float m_fVolumetricIntensity = 0.f;
 
 public:
+	XPROPERTY(LuaConstructor)
+	CAnomalyZone();
 
-						CAnomalyZone						();
-	virtual				~CAnomalyZone					();
+	virtual ~CAnomalyZone();
 
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Import(NET_Packet& P) override;
@@ -350,7 +350,6 @@ public:
 // Lain: adde
 private:
 	virtual bool            light_in_slow_mode () { return true; }
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 //информация о объекте, находящемся в зоне

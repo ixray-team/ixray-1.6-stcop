@@ -56,6 +56,7 @@ void CreateShaders();
 // Получить значение времени в текстовом виде
 
 // Точность возвращаемого функцией GetGameDateTimeAsString значения: до часов, до минут, до секунд
+XREFLECT(LuaEnum, Self="xrTime", Name="time_format", Prefix="etp", Exclude="etpTimeToSecondsAndDay")
 enum ETimePrecision
 {
 	etpTimeToHours = 0,
@@ -66,6 +67,7 @@ enum ETimePrecision
 };
 
 // Точность возвращаемого функцией GetGameDateTimeAsString значения: до года, до месяца, до дня
+XREFLECT(LuaEnum, Self="xrTime", Name="date_format", Prefix="edp")
 enum EDatePrecision
 {
 	edpDateToDay,
