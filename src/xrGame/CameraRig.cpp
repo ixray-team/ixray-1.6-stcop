@@ -94,6 +94,8 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Camera layers", "shot_blend_out", nullptr, &g_rig.blend_out[crcShot], nullptr, 1, false, 0.005f },
 	{ "Camera layers", "move_blend_in", nullptr, &g_rig.blend_in[crcMove], nullptr, 1, false, 0.005f },
 	{ "Camera layers", "move_blend_out", nullptr, &g_rig.blend_out[crcMove], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "sprint_blend_in", nullptr, &g_rig.blend_in[crcSprint], nullptr, 1, false, 0.005f },
+	{ "Camera layers", "sprint_blend_out", nullptr, &g_rig.blend_out[crcSprint], nullptr, 1, false, 0.005f },
 
 	{ "Punch", "punch", "rig_punch", &g_rig.punch.x, nullptr, 3, true, 0.01f },
 	{ "Punch", "punch_stiffness", nullptr, &g_rig.punch_stiffness, nullptr, 1, false, 1.f },
@@ -259,6 +261,20 @@ void CCameraRig::FadeChannel(ECameraRigChannel channel)
 void CCameraRig::StopChannel(ECameraRigChannel channel)
 {
 	FadeChannel(channel);
+}
+
+void CCameraRig::SeekChannel(ECameraRigChannel channel, float progress)
+{
+	for (SLayer& layer : Layers)
+	{
+		if (layer.anim == nullptr || !layer.active || layer.fade_out || layer.channel != channel)
+		{
+			continue;
+		}
+
+		const SAnimParams& params = layer.anim->anim_param();
+		layer.anim->SetTime(params.min_t + std::clamp(progress, 0.f, 1.f) * (params.max_t - params.min_t));
+	}
 }
 
 void CCameraRig::PreviewAnim(const char* name, ECameraRigChannel channel, float time, float speed)
