@@ -251,6 +251,7 @@ CLevel::~CLevel()
 		extern void WaitLevelLoad();
 		extern shared_str g_StartedLevelName;
 		WaitLevelLoad();
+		ai().DropLevelPreload();
 		g_StartedLevelName = nullptr;
 	}
 	

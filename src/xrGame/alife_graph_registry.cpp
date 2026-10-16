@@ -128,6 +128,8 @@ bool StartLevelLoad(const shared_str& LevelName)
 
 	g_StartedLevelName = LevelName;
 	LevelLoad.Run(LevelId);
+
+	ai().StartLevelPreload(LevelName);
 	return true;
 }
 

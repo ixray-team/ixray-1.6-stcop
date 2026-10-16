@@ -2115,6 +2115,13 @@ void RenderAIGridEditorWorld()
 	Editor.Draw(&Hit, &Normal);
 }
 
+bool HasAIGridEditorPatch()
+{
+	string_path Path;
+	AIGrid::PatchPath(Path);
+	return FS.exist(Path) != nullptr;
+}
+
 void LoadAIGridEditorPatch()
 {
 	string_path Path;

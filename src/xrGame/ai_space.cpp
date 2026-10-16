@@ -26,6 +26,78 @@
 
 CAI_Space *g_ai_space = 0;
 
+namespace
+{
+	class CAILevelPreload final
+	{
+	public:
+		~CAILevelPreload()
+		{
+			Drop();
+		}
+
+		void Start(const shared_str& Name)
+		{
+			Drop();
+			LevelName = Name;
+			Thread = std::thread([this]()
+			{
+				PROF_THREAD("AI Level Preload");
+				PROF_EVENT("AI Level Preload");
+				Graph.reset(new CLevelGraph());
+
+				if (!HasAIGridEditorPatch())
+				{
+					Covers.reset(new CCoverManager());
+					Covers->compute_static_cover(*Graph);
+				}
+			});
+		}
+
+		bool Take(const char* Name, xr_unique_ptr<CLevelGraph>& OutGraph, xr_unique_ptr<CCoverManager>& OutCovers)
+		{
+			Wait();
+			const bool IsSame = Graph != nullptr && 0 == xr_strcmp(LevelName.c_str(), Name);
+			if (IsSame)
+			{
+				OutGraph = std::move(Graph);
+				OutCovers = std::move(Covers);
+			}
+			Reset();
+			return IsSame;
+		}
+
+		void Drop()
+		{
+			Wait();
+			Reset();
+		}
+
+	private:
+		void Wait()
+		{
+			if (Thread.joinable())
+			{
+				Thread.join();
+			}
+		}
+
+		void Reset()
+		{
+			Graph.reset();
+			Covers.reset();
+			LevelName = nullptr;
+		}
+
+		std::thread Thread;
+		shared_str LevelName;
+		xr_unique_ptr<CLevelGraph> Graph;
+		xr_unique_ptr<CCoverManager> Covers;
+	};
+
+	CAILevelPreload LevelPreload;
+}
+
 CAI_Space::CAI_Space				()
 {
 	m_ef_storage			= 0;
@@ -71,6 +143,7 @@ void CAI_Space::init				()
 
 CAI_Space::~CAI_Space				()
 {
+	LevelPreload.Drop		();
 	unload					();
 	
 	try {
@@ -85,6 +158,16 @@ CAI_Space::~CAI_Space				()
 	xr_delete				(m_cover_manager);
 	xr_delete				(m_ef_storage);
 	VERIFY					(!m_game_graph);
+}
+
+void CAI_Space::StartLevelPreload	(const shared_str& LevelName)
+{
+	LevelPreload.Start		(LevelName);
+}
+
+void CAI_Space::DropLevelPreload	()
+{
+	LevelPreload.Drop		();
 }
 
 void CAI_Space::load				(const char* level_name)
@@ -103,12 +186,16 @@ void CAI_Space::load				(const char* level_name)
 
 	const IGameGraph::SLevel &current_level = game_graph().header().level(level_name);
 
+	xr_unique_ptr<CLevelGraph> PreloadedGraph;
+	xr_unique_ptr<CCoverManager> PreloadedCovers;
+	LevelPreload.Take		(level_name, PreloadedGraph, PreloadedCovers);
+
 #ifndef MASTER_GOLD
 	if(Device.IsEditorMode())
 		m_level_graph = EditorScene->GetLevelGraph();
 	else
 #endif
-	m_level_graph = new CLevelGraph();
+	m_level_graph = PreloadedGraph ? PreloadedGraph.release() : new CLevelGraph();
 
 	game_graph().set_current_level(current_level.id());
 	LoadAIGridEditorPatch();
@@ -123,7 +210,10 @@ void CAI_Space::load				(const char* level_name)
 #endif
 
 	level_graph().level_id	(current_level.id());
-	m_cover_manager->compute_static_cover	();
+	if (PreloadedCovers)
+		m_cover_manager->TakeStaticCover	(*PreloadedCovers);
+	else
+		m_cover_manager->compute_static_cover	();
 	m_moving_objects->on_level_load			();
 
 	VERIFY					(!m_doors_manager);
