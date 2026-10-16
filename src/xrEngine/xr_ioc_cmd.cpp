@@ -772,6 +772,7 @@ void CCC_Register()
 	CMD2(CCC_Boolean,	"mt_prefetch",			&g_MtPrefetch);
 	extern bool g_MtIniPreload;
 	CMD2(CCC_Boolean,	"mt_ini_preload",		&g_MtIniPreload);
+	CMD2(CCC_Boolean,	"ini_mem_cache",		&g_IniMemoryCache);
 #ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
 	CMD1(CCC_TexturesStat,	"stat_textures"		);
