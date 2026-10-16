@@ -190,3 +190,10 @@ inline void _mm256_stream_ps(float* destination, const __m256& source)
 	}
 }
 #endif
+
+// AI: the renderer's D3D helpers come from the Windows SDK, which does not exist on the DXVK
+// AI: Native hosts, and the engine's own defines.h hides _RELEASE behind ENGINE_API, which renderer
+// AI: builds never set. Provided here so every translation unit in the engine sees it.
+#ifndef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
