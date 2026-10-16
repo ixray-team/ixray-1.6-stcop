@@ -65,7 +65,13 @@ void FS_Path::_set(const char* add)
 	{
 		xr_strcat(temp, Platform::kPreferredSeparator);
 	}
-	
+
+	// AI: keep the composed path in the host separator form, the same way FS_Path::_update() does
+	// AI: before every lookup. The game configs carry the Windows separator, and without this the
+	// AI: directory scan registered mixed names (".../run/gamedata\configs/...") that no lookup could
+	// AI: ever match. ValidPath() is the identity on Windows, so that build is unaffected.
+	xr_strcpy(temp, Platform::ValidPath(temp));
+
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }
@@ -88,7 +94,11 @@ void FS_Path::_set_root(const char* root)
 	{
 		xr_strcat(temp,Platform::kPreferredSeparator);
 	}
-	
+
+	// AI: same reason as in FS_Path::_set() above - the composed path has to use the host separator
+	// AI: form, otherwise the scan stores names no lookup can match.
+	xr_strcpy(temp, Platform::ValidPath(temp));
+
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }
