@@ -285,11 +285,11 @@ void CTerrain::ApplySurfaceTemplate()
 	}
 	if (SurfaceShaderXRLC[0])
 	{
-		S->m_ShaderXRLCName = (*SurfaceShaderXRLC);
+		S->SetShaderXRLC(*SurfaceShaderXRLC);
 	}
 	if (SurfaceGameMtl[0])
 	{
-		S->m_GameMtlName = (*SurfaceGameMtl);
+		S->SetGameMtl(*SurfaceGameMtl);
 	}
 }
 

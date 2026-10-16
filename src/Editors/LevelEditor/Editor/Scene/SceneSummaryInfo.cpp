@@ -13,12 +13,14 @@ xr_token summary_texture_type_tokens[]={
 
 void SSceneSummary::Prepare()
 {
-	for (TISetIt t_it=textures.begin(); t_it!=textures.end(); t_it++){
-        STextureInfo* info	= (STextureInfo*)(&(*t_it));
+	for (const auto& texture : textures)
+	{
+        STextureInfo* info	= (STextureInfo*)(&texture);
     	if (!info->bReady) 	info->Prepare();
     }
-	for (OISetIt o_it=objects.begin(); o_it!=objects.end(); o_it++){
-        SObjectInfo* info	= (SObjectInfo*)(&(*o_it));
+	for (const auto& object : objects)
+	{
+        SObjectInfo* info	= (SObjectInfo*)(&object);
     	if (!info->bReady) 	info->Prepare();
     }
 }
@@ -42,29 +44,35 @@ void SSceneSummary::SObjectInfo::Prepare()
             tmp.first		= pref+"\\Geometry\\Faces"; 	tmp.second = _itoa(O->GetFaceCount());			info.push_back	(tmp);
             tmp.first		= pref+"\\Geometry\\Vertices"; 	tmp.second = _itoa(O->GetVertexCount());		info.push_back	(tmp);
             SurfaceVec& surfaces = O->m_Surfaces;
-            for (SurfaceIt it=surfaces.begin(); it!=surfaces.end(); it++){
-            	xr_string pr= pref+xr_string("\\Materials\\")+(*it)->m_Name.c_str();
-	            tmp.first	= pr+"\\Texture"; 		tmp.second = (*it)->m_Texture.c_str();							info.push_back	(tmp);
-	            tmp.first	= pr+"\\Faces"; 		tmp.second = _itoa(O->GetSurfFaceCount((*it)->m_Name.c_str()));info.push_back	(tmp);
+            for (auto& surface : surfaces)
+            {
+            	xr_string pr= pref+xr_string("\\Materials\\")+ surface->_Name();
+	            tmp.first	= pr+"\\Texture"; 		tmp.second = surface->_Texture();							info.push_back	(tmp);
+	            tmp.first	= pr+"\\Faces"; 		tmp.second = _itoa(O->GetSurfFaceCount(surface->_Name()));info.push_back	(tmp);
             }
 	    	Lib.RemoveEditObject(O);
         }
-    }else{
+    }
+	else
+	{
         Msg("!Empty object name found.");
     }
 }
 void SSceneSummary::SObjectInfo::FillProp(PropItemVec& items, const char* main_pref)
 {
 	if (object_name.size()){
-        for (PIVecIt it=info.begin(); it!=info.end(); it++)
-	        PHelper().CreateCaption(items,PrepareKey(main_pref,it->first.c_str()),	it->second.c_str());
-    }
+        for (auto& it : info)
+        {
+	        PHelper().CreateCaption(items,PrepareKey(main_pref, it.first.c_str()), it.second.c_str());
+        }
+	}
 }
 void SSceneSummary::SObjectInfo::Export	(IWriter* F)
 {
 	string1024		tmp;
-    for (PIVecIt it=info.begin(); it!=info.end(); it++){
-        sprintf		(tmp,"%s=%s",it->first.c_str(),it->second.c_str());
+    for (auto& it : info)
+    {
+        sprintf		(tmp,"%s=%s", it.first.c_str(), it.second.c_str());
 		F->w_string	(tmp);
     }
 }
@@ -198,10 +206,13 @@ void SSceneSummary::OnHighlightClick(ButtonValue* V, bool& bDataModified, bool& 
     switch (V->btn_num){
     case 0:{ 
     	ExecCommand				(COMMAND_CLEAR_DEBUG_DRAW);
-        for (TISetIt it=textures.begin(); it!=textures.end(); it++){
-            STextureInfo* info	= (STextureInfo*)(&(*it));
+        for (const auto& texture : textures)
+        {
+            STextureInfo* info	= (STextureInfo*)(&texture);
             if (info->type==sttBase)
-		    	Scene->HighlightTexture	(info->file_name.c_str(),true,info->info.width,info->info.height,true); 
+            {
+	            Scene->HighlightTexture	(info->file_name.c_str(),true,info->info.width,info->info.height,true);
+            }
         }
     }break;
     case 1: ExecCommand(COMMAND_CLEAR_DEBUG_DRAW); break;
@@ -229,8 +240,9 @@ bool SSceneSummary::ExportSummaryInfo(const char* fn)
             pref				+= get_token_name(summary_texture_type_tokens,stt);
             pref				+= "]";
             F->w_string			(pref.c_str());
-            for (TISetIt it=textures.begin(); it!=textures.end(); it++){
-                STextureInfo* info= (STextureInfo*)(&(*it));
+            for (const auto& texture : textures)
+            {
+                STextureInfo* info= (STextureInfo*)(&texture);
                 if (info->type==stt){ 
                     cur_area	+= info->effective_area;
                     info->Export(F,cur_mem_usage);
@@ -247,8 +259,9 @@ bool SSceneSummary::ExportSummaryInfo(const char* fn)
         // objects
         F->w_string				("");
         sprintf					(tmp,"[OBJECTS]");	F->w_string(tmp);
-        for (OISetIt o_it=objects.begin(); o_it!=objects.end(); o_it++){
-            SObjectInfo* info= (SObjectInfo*)(&(*o_it));
+        for (const auto& object : objects)
+        {
+            SObjectInfo* info= (SObjectInfo*)(&object);
             info->Export		(F);
         }
         FS.w_close				(F);
@@ -261,11 +274,11 @@ bool SSceneSummary::OnWeightAfterEditClick(PropValue* sender, float& edit_val)
 {
 	if (sender->tag==0){
     	return edit_val<pm_colors[sender->tag+1].pm;
-    }else if (sender->tag==pm_colors.size()-1){
-    	return edit_val>pm_colors[sender->tag-1].pm;
-    }else{
-		return edit_val>pm_colors[sender->tag-1].pm && edit_val<pm_colors[sender->tag+1].pm;
     }
+	if (sender->tag==pm_colors.size()-1){
+		return edit_val>pm_colors[sender->tag-1].pm;
+	}
+	return edit_val>pm_colors[sender->tag-1].pm && edit_val<pm_colors[sender->tag+1].pm;
 }
 void SSceneSummary::FillProp(PropItemVec& items)
 {
@@ -295,8 +308,9 @@ void SSceneSummary::FillProp(PropItemVec& items)
     PHelper().CreateCaption(items,"Lights\\By Usage\\Procedural",shared_str().printf("%d",light_procedural_cnt));
     PHelper().CreateCaption(items,"Glows\\Count",				shared_str().printf("%d",glow_cnt));
     // objects
-    for (OISetIt o_it=objects.begin(); o_it!=objects.end(); o_it++){
-    	SObjectInfo* info= (SObjectInfo*)(&(*o_it));
+    for (const auto& object : objects)
+    {
+    	SObjectInfo* info= (SObjectInfo*)(&object);
         info->FillProp		(items,"Objects");
     }
     // textures
@@ -321,8 +335,9 @@ void SSceneSummary::FillProp(PropItemVec& items)
             shared_str pref		= PrepareKey("Textures",nm);
             CaptionValue* mem 	= PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Memory Usage").c_str(), "");
             CaptionValue* area 	= PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Effective Area").c_str(), "");
-            for (TISetIt it=textures.begin(); it!=textures.end(); it++){
-                STextureInfo* info= (STextureInfo*)(&(*it));
+            for (const auto& texture : textures)
+            {
+                STextureInfo* info= (STextureInfo*)(&texture);
                 if (info->type==stt){ 
                     cur_area	+= info->effective_area;
                     info->FillProp(items,pref.c_str(),cur_mem_usage);
@@ -340,23 +355,27 @@ void SSceneSummary::FillProp(PropItemVec& items)
     PHelper().CreateCaption	(items,"Sounds\\Occluder\\Vertices",	shared_str().printf("%d",snd_occ_vert_cnt));
     PHelper().CreateCaption	(items,"Sounds\\Sources",				shared_str().printf("%d",sound_source_cnt));
     PHelper().CreateCaption	(items,"Sounds\\Waves\\Count",			shared_str().printf("%zu",waves.size()));
-    for (RStringSetIt w_it=waves.begin(); w_it!=waves.end(); w_it++)
-        PHelper().CreateCaption(items,PrepareKey("Sounds\\Waves",w_it->c_str()),"-");
+    for (const auto& wave : waves)
+    {
+	    PHelper().CreateCaption(items,PrepareKey("Sounds\\Waves", wave.c_str()),"-");
+    }
     // particles
     PHelper().CreateCaption	(items,"Particle System\\Sources",		shared_str().printf("%d",pe_static_cnt));
     PHelper().CreateCaption	(items,"Particle System\\Refs\\Count",	shared_str().printf("%zu",pe_static.size()));
-    for (RStringSetIt pe_it=pe_static.begin(); pe_it!=pe_static.end(); pe_it++)
-        PHelper().CreateCaption(items,PrepareKey("Particle System\\Refs",pe_it->c_str()),"-");
+    for (const auto& pe_it : pe_static)
+    {
+	    PHelper().CreateCaption(items,PrepareKey("Particle System\\Refs", pe_it.c_str()),"-");
+    }
 }
 
 SSceneSummary::SSceneSummary()
 {
 	Clear	();
-    pm_colors.push_back	(SPixelDensityPair(0,0x80FF0000));
-    pm_colors.push_back	(SPixelDensityPair(100,0x80FFFF00));
-    pm_colors.push_back	(SPixelDensityPair(200,0x8000FF00));
-    pm_colors.push_back	(SPixelDensityPair(500,0x8000FFFF));
-    pm_colors.push_back	(SPixelDensityPair(1000,0x800000FF));
+    pm_colors.emplace_back(0,0x80FF0000);
+    pm_colors.emplace_back(100,0x80FFFF00);
+    pm_colors.emplace_back(200,0x8000FF00);
+    pm_colors.emplace_back(500,0x8000FFFF);
+    pm_colors.emplace_back(1000,0x800000FF);
 }
 
 void SSceneSummary::Save()
@@ -424,7 +443,12 @@ void EScene::CollectSummaryInfo	()
     SceneToolsMapPairIt _I = m_SceneTools.begin();
     SceneToolsMapPairIt _E = m_SceneTools.end();
     for (; _I!=_E; _I++)
-        if (_I->second)	_I->second->GetSummaryInfo(&s_summary);
+    {
+	    if (_I->second)
+	    {
+		    _I->second->GetSummaryInfo(&s_summary);
+	    }
+    }
     s_summary.Prepare				();
 }
 

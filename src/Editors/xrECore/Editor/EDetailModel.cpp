@@ -59,7 +59,7 @@ const char* EDetail::GetTextureName()
 {
 	VERIFY(m_pRefs);
 	CSurface* surf		= m_pRefs->m_Surfaces.front(); VERIFY(surf);
-	return surf->m_Texture.c_str();
+	return surf->_Texture();
 }
 
 void EDetail::DefferedLoad()
@@ -71,8 +71,8 @@ void EDetail::OnDeviceCreate()
 	if (!m_pRefs)		return;
 	CSurface* surf		= m_pRefs->m_Surfaces.front();
 	VERIFY				(surf);
-	xr_string	s_name	= surf->m_ShaderName.c_str();
-	xr_string	t_name	= surf->m_Texture.c_str();
+	xr_string	s_name	= surf->_ShaderName();
+	xr_string	t_name	= surf->_Texture();
 	shader.create		(s_name.c_str(),t_name.c_str());
 }
 
@@ -306,7 +306,7 @@ void EDetail::Export(IWriter& F, const char* tex_name, const Fvector2& offs, con
 	CSurface* surf		= m_pRefs->m_Surfaces.front();
 	R_ASSERT			(surf);
 	// write data
-	F.w_stringZ			(surf->m_ShaderName.c_str());
+	F.w_stringZ			(surf->_ShaderName());
 	F.w_stringZ			(tex_name);//surf->m_Texture.c_str());
 
 	F.w_u32				(m_Flags.get());
@@ -334,7 +334,7 @@ void EDetail::Export(const char* name)
 	if (F){
 		Fvector2 offs	= {0,0};
 		Fvector2 scale	= {1,1};
-		Export			(*F,surf->m_Texture.c_str(),offs,scale,false);
+		Export			(*F,surf->_Texture(),offs,scale,false);
 		FS.w_close		(F);
 	}else{
 		Log				("!Can't export detail:",name);

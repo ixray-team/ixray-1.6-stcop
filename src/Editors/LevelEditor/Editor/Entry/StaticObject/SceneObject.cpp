@@ -321,9 +321,22 @@ CEditableObject* CSceneObject::SetReference(const char* ref_name)
 
 void CSceneObject::OnFrame()
 {
-	inherited::OnFrame();
-	if (!m_pReference) return;
-	if (m_pReference) m_pReference->OnFrame();
+	inherited::OnFrame();	
+	if (!m_pReference)
+	{
+		return;
+	}
+	if (m_pReference)
+	{
+		m_pReference->OnFrame();
+	}
+	for(auto& elem : m_Surfaces)
+	{
+		if(elem->UseShared && elem->m_pData.first != elem->m_pData.second->m_Name)
+		{
+			elem->m_pData.first = elem->m_pData.second->m_Name;
+		}
+	}
 
 #if 0
 	if (psDeviceFlags.is(rsStatistic)){
@@ -358,6 +371,47 @@ void CSceneObject::ReferenceChange(PropValue* sender)
 	}
 }
 
+void CSceneObject::OnChangeSharedMode(PropValue* sender)
+{
+	for (CSurface* i : m_Surfaces)
+	{
+		if(i->UseShared != i->UseSharedPrev)
+		{
+			if(i->UseSharedPrev)
+			{
+				auto TempShared = i->m_pData.second;
+				i->m_pData.second = new SSurfaceData(*TempShared);
+			} else
+			{
+				auto Shared = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+				if(!Shared)
+				{
+					CSharedMaterialLibrary::Instance().MakeSharedCopy(i->m_pData.second);
+					Shared = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+				}
+				i->m_pDataOld = i->m_pData.second;
+				i->m_pData.second = Shared;
+			}
+			i->UseSharedPrev = i->UseShared;
+		}	
+	}
+	OnChangeShader(sender);
+	Tools->UpdateProperties();
+}
+
+void CSceneObject::OnChangeSharedMaterial(PropValue* sender)
+{
+	for (CSurface* i : m_Surfaces)
+	{
+		if(i->m_pData.first != i->m_pData.second->m_Name)
+		{
+			i->m_pData.second = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+		}
+	}
+	OnChangeShader(sender);
+	Tools->UpdateProperties();
+}
+
 void CSceneObject::OnChangeShader(PropValue* sender)
 {
 	OnChangeSurface(sender);
@@ -366,7 +420,7 @@ void CSceneObject::OnChangeShader(PropValue* sender)
 
 void CSceneObject::OnChangeSurface(PropValue* sender)
 {
-	m_Flags.set(flUseSurface, 1);
+	m_Flags.set(flUseSurface, true);
 }
 
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
@@ -378,6 +432,30 @@ void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
 {
 	Scene->UndoSave();
 	ClearSurface();
+}
+
+void CSceneObject::OnBatchProcessMaterial(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	switch(value->btn_num)
+	{
+		case 0: // unique
+		{
+			for (auto elem : m_Surfaces)
+			{
+				elem->UseShared = false;
+			}
+			break;
+		}
+		case 1: // shared
+		{
+			for (auto elem : m_Surfaces)
+			{
+				elem->UseShared = true;
+			}
+			break;
+		}
+	}
+	OnChangeSharedMode(value);
 }
 
 void CSceneObject::FillProp(const char* pref, PropItemVec& items)
@@ -397,39 +475,68 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
 	xr_vector<CSurface*> SortedSurfaces(s_lst.begin(), s_lst.end());
 
-	std::sort
-	(
-		SortedSurfaces.begin(), SortedSurfaces.end(),
-		[](const CSurface* a, const CSurface* b)
-		{
-			return xr_strcmp(a->m_Name.c_str(), b->m_Name.c_str()) < 0;
-		}
-	);
+	std::ranges::sort
+	(SortedSurfaces,
+	 [](const CSurface* a, const CSurface* b)
+	 {
+		 return xr_strcmp(a->_Name(), b->_Name()) < 0;
+	 }
+	 );
+
+	{
+		auto BatchButton = PHelper().CreateButton(items, PrepareKey(Pref1.c_str(), "Batch Material Convert"), "All unique,All shared", 0);
+		BatchButton->OnBtnClickEvent.bind(this, &CSceneObject::OnBatchProcessMaterial);
+	}
 
 	for (CSurface* s : SortedSurfaces)
 	{
-		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->m_Name.c_str()).c_str();
-		if (s->m_GameMtlName != occ_name)
+		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->_Name()).c_str();
+		if (s->_GameMtlName() != occ_name)
 		{
-			MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
-			MultiValue->DropCallback = [this, s](const char* File)
+			// TODO: Add switch option
+			auto B = PHelper().CreateBool(items, PrepareKey(Pref2.c_str(), "Use shared material"), &s->UseShared);
+			B->OnChangeEvent.bind(this, &CSceneObject::OnChangeSharedMode);
+
+			if(s->UseShared)
 			{
-				s->m_Texture = File;
-				OnChangeShader(nullptr);
-			};
+				auto SMC = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shared Material Name"), &s->m_pData.first, smSharedMaterial);
+				SMC->OnChangeEvent.bind(this, &CSceneObject::OnChangeSharedMaterial);
+			}
+			
+			MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
+			ChooseValue* CV = nullptr;
+			
+			if(s->UseShared)
+			{
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &s->m_pData.second->m_Texture, smDisabled);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Shader"), &s->m_pData.second->m_ShaderName, smDisabled);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Compile"), &s->m_pData.second->m_ShaderXRLCName, smDisabled);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Mtl"), &s->m_pData.second->m_GameMtlName, smDisabled);
+			} else
+			{
+				MultiValue->DropCallback = [this, s](const char* File)
+				{
+					s->m_pData.second->m_Texture = File;
+					OnChangeShader(nullptr);
+				};
 
-			ChooseValue* Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &s->m_Texture, smTexture);
-			Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &s->m_pData.second->m_Texture, smTexture);
+				CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
 
-			Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Shader"), &s->m_ShaderName, smEShader);
-			Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Shader"), &s->m_pData.second->m_ShaderName, smEShader);
+				CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
 
-			Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Compile"), &s->m_ShaderXRLCName, smCShader);
-			Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-
-			Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Mtl"), &s->m_GameMtlName, smGameMaterial);
-			Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-			Val->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Compile"), &s->m_pData.second->m_ShaderXRLCName, smCShader);
+				CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+				
+				CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Mtl"), &s->m_pData.second->m_GameMtlName, smGameMaterial);
+				CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+				CV->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+			}
+			if(s->m_pDataOld)
+			{
+				xr_delete(s->m_pDataOld);
+			}
 		}
 	}
 
@@ -441,14 +548,16 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
 	inherited::GetSummaryInfo	(inf);
 	CEditableObject* E 	= GetReference(); R_ASSERT(E);
 	if (IsStatic()||IsMUStatic()){
-		for(SurfaceIt 	s_it=E->m_Surfaces.begin(); s_it!=E->m_Surfaces.end(); s_it++){
+		for(auto& elem : E->m_Surfaces)
+		{
 			float area			= 0.f;
 			float pixel_area	= 0.f;
-			for(EditMeshIt m = E->m_Meshes.begin();m!=E->m_Meshes.end();m++){
-				area			+= (*m)->CalculateSurfaceArea(*s_it,true);
-				pixel_area		+= (*m)->CalculateSurfacePixelArea(*s_it,true);
+			for (auto& Mesh : E->m_Meshes)
+			{
+				area			+= Mesh->CalculateSurfaceArea(elem,true);
+				pixel_area		+= Mesh->CalculateSurfacePixelArea(elem,true);
 			}
-			xr_string temp = ChangeFileExt(xr_string(*(*s_it)->m_Texture), "");
+			xr_string temp = ChangeFileExt(xr_string(elem->_Texture()), "");
 			xr_strlwr(temp);
 			inf->AppendTexture(temp.c_str(),SSceneSummary::sttBase,area,pixel_area,E->m_LibName.c_str());
 		}
@@ -482,20 +591,20 @@ extern xr_token ECORE_API eo_type_token[];
 void CSceneObject::OnShowHint(AStringVec& dest)
 {
 	inherited::OnShowHint(dest);
-	dest.push_back(xr_string("Reference: ") + *m_ReferenceName);
-	dest.push_back(xr_string("-------"));
+	dest.emplace_back(xr_string("Reference: ") + *m_ReferenceName);
+	dest.emplace_back("-------");
 	float dist = EContext.UI->ZFar();
 	SRayPickInfo pinf;
 	if (m_pReference->RayPick(dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, _ITransform(), &pinf))
 	{
-		dest.push_back(xr_string("Object Type: ") + get_token_name(eo_type_token, pinf.e_obj->m_objectFlags.flags));
+		dest.emplace_back(xr_string("Object Type: ") + get_token_name(eo_type_token, pinf.e_obj->m_objectFlags.flags));
 		R_ASSERT(pinf.e_mesh);
 		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-		dest.push_back(xr_string("Surface: ") + xr_string(surf->m_Name.c_str()));
-		dest.push_back(xr_string("2 Sided: ") + xr_string(surf->m_Flags.is(CSurface::sf2Sided) ? "on" : "off"));
+		dest.emplace_back(xr_string("Surface: ") + xr_string(surf->_Name()));
+		dest.emplace_back(xr_string("2 Sided: ") + xr_string(surf->_flags().is(SSurfaceData::sf2Sided) ? "on" : "off"));
 		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder))
 		{
-			dest.push_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->_GameMtlName()));
 			int gm_id = surf->_GameMtl();
 			if (gm_id != GAMEMTL_NONE_ID)
 			{
@@ -504,7 +613,7 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 				{
 					string256 Data = {};
 					xr_sprintf(Data, "Occlusion Factor: %3.2f", mtl->fSndOcclusionFactor);
-					dest.push_back(Data);
+					dest.emplace_back(Data);
 				}
 			}
 		}
@@ -513,10 +622,10 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 		}
 		else
 		{
-			dest.push_back(xr_string("Texture: ") + xr_string(surf->m_Texture.c_str()));
-			dest.push_back(xr_string("Shader: ") + xr_string(surf->m_ShaderName.c_str()));
-			dest.push_back(xr_string("LC Shader: ") + xr_string(surf->m_ShaderXRLCName.c_str()));
-			dest.push_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			dest.emplace_back(xr_string("Texture: ") + xr_string(surf->_Texture()));
+			dest.emplace_back(xr_string("Shader: ") + xr_string(surf->_ShaderName()));
+			dest.emplace_back(xr_string("LC Shader: ") + xr_string(surf->_ShaderXRLCName()));
+			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->_GameMtlName()));
 		}
 	}
 }

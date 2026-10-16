@@ -4,7 +4,7 @@
 #include "../Light/light_point.h"
  
 #include "../../../../xrCore/Collision/xrCDB.h"
-#include "../../../Shader_xrLC.h"
+#include "../../../Shader_xrLC_Compilers.h"
 #include "mu_model_face.h"
 #include "../Mesh/xrFace.h"
 #include "../Build/xrLC_GlobalData.h"

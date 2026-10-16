@@ -13,11 +13,11 @@ struct tri	{
 	Fvector	N;
 };
 
-const int	RCAST_MaxTris	= (2*1024);
-const int	RCAST_Count		= 4;
-const int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
-const float	RCAST_Depth		= 1.f;
-const float RCAST_VALID 	= 0.55f;
+constexpr int	RCAST_MaxTris	= (2*1024);
+constexpr int	RCAST_Count		= 4;
+constexpr int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
+constexpr float	RCAST_Depth		= 1.f;
+constexpr float RCAST_VALID 	= 0.55f;
 
 bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 {
@@ -50,7 +50,6 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	}
 
 	// *** Transfer triangles and compute sector
-//	R_ASSERT(dwCount<RCAST_MaxTris);
 	static xr_vector<tri> tris;	tris.reserve(RCAST_MaxTris);	tris.clear();
 	for (DWORD i=0; i<dwCount; i++)
 	{
@@ -59,25 +58,12 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 		if (R->e_obj&&R->e_mesh)
 		{
 			CSurface* surf		= R->e_mesh->GetSurfaceByFaceID(R->tag);
-//.			SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
-//.			if (mtl->Flags.is(SGameMtl::flPassable))continue;
-
-
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
-			if (!c_sh->flags.bCollision) 			continue;
-		}
-  /*
-		if(m_CFModel)
-		{
-			u16 mtl_id 	= R->material;
-
-			if(std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end() )
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+			if (!c_sh->flags.bCollision)
 			{
-//.                Msg("--ignore");
 				continue;
 			}
 		}
-*/
 		tris.push_back	(tri());
 		tri&		D = tris.back();
 		Fvector*	V = R->verts;   
@@ -235,9 +221,10 @@ void ESceneAIMapTool::hash_Initialize()
 
 void ESceneAIMapTool::hash_FillFromNodes()
 {
-	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
-		AINodeVec* V = HashMap((*it)->Pos); R_ASSERT2(V,"AINode position out of bounds.");
-		V->push_back	(*it);
+	for (auto& m_Node : m_Nodes)
+	{
+		AINodeVec* V = HashMap(m_Node->Pos); R_ASSERT2(V,"AINode position out of bounds.");
+		V->push_back	(m_Node);
 	}
 }
 
@@ -302,11 +289,11 @@ SAINode* ESceneAIMapTool::FindNode(Fvector& vAt, float eps)
 	AINodeVec* V = HashMap(vAt);
 	if (!V) return 0;
 
-	for (AINodeIt I=V->begin(); I!=V->end(); I++){
-		SAINode* N = *I;
+	for (auto N : *V)
+	{
 		if (vAt.similar(N->Pos,eps)) return N;
 	}
-	return 0;
+	return nullptr;
 }
  
 bool ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
@@ -357,13 +344,13 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 				m_Nodes.push_back	(new SAINode(N));
 				V->push_back		(m_Nodes.back());
 				return m_Nodes.back();
-			}else return 0;
+			}else return nullptr;
 		}else{
 			// where already was node - return it
 			return old;
 		}
 	}else{ 
-		return 0;
+		return nullptr;
 	}
 }
 
@@ -403,28 +390,28 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 	for (int k=0; k<(int)m_Nodes.size(); k++){
 		SAINode* N 			= m_Nodes[k];
 		// left 
-		if (0==N->n1){
+		if (!N->n1){
 			Pos.set			(N->Pos);
 			Pos.x			-=	m_Params.fPatchSize;
 			if (Pos.distance_to(start->Pos)<=radius)
 				N->n1		=	BuildNode(N->Pos,Pos,bIC);
 		}
 		// fwd
-		if (0==N->n2){
+		if (!N->n2){
 			Pos.set			(N->Pos);
 			Pos.z			+=	m_Params.fPatchSize;
 			if (Pos.distance_to(start->Pos)<=radius)
 				N->n2		=	BuildNode(N->Pos,Pos,bIC);
 		}
 		// right
-		if (0==N->n3){
+		if (!N->n3){
 			Pos.set			(N->Pos);
 			Pos.x			+=	m_Params.fPatchSize;
 			if (Pos.distance_to(start->Pos)<=radius)
 				N->n3		=	BuildNode(N->Pos,Pos,bIC);
 		}
 		// back
-		if (0==N->n4){
+		if (!N->n4){
 			Pos.set			(N->Pos);
 			Pos.z			-=	m_Params.fPatchSize;
 			if (Pos.distance_to(start->Pos)<=radius)
@@ -467,25 +454,25 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 		SAINode* N 			= m_Nodes[k];
 		if (bFromSelectedOnly && !N->flags.is(SAINode::flSelected)) continue;
 		// left 
-		if (0==N->n1){
+		if (!N->n1){
 			Pos.set			(N->Pos);
 			Pos.x			-=	m_Params.fPatchSize;
 			N->n1			=	BuildNode(N->Pos,Pos,false);
 		}
 		// fwd
-		if (0==N->n2){
+		if (!N->n2){
 			Pos.set			(N->Pos);
 			Pos.z			+=	m_Params.fPatchSize;
 			N->n2			=	BuildNode(N->Pos,Pos,false);
 		}
 		// right
-		if (0==N->n3){
+		if (!N->n3){
 			Pos.set			(N->Pos);
 			Pos.x			+=	m_Params.fPatchSize;
 			N->n3			=	BuildNode(N->Pos,Pos,false);
 		}
 		// back
-		if (0==N->n4){
+		if (!N->n4){
 			Pos.set			(N->Pos);
 			Pos.z			-=	m_Params.fPatchSize;
 			N->n4			=	BuildNode(N->Pos,Pos,false);
@@ -572,7 +559,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 	// Streamed out objects have no geometry
 	GWorldPartition.StreamInAll();
 
-	std::sort(m_ignored_materials.begin(), m_ignored_materials.end());
+	std::ranges::sort(m_ignored_materials);
 	bool bRes = false;
 	if (!GetSnapList()->empty()) {
 		if (!RealUpdateSnapList()) return false;
@@ -618,55 +605,57 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 			static CDB::Collector CL; CL.clear();
 			Fvector verts[3];
-			for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
+			for (auto& m_SnapObject : m_SnapObjects)
 			{
 				CEditableObject* E = nullptr;
-				if (CSceneObject* S = smart_cast<CSceneObject*>(*o_it))
+				if (CSceneObject* S = smart_cast<CSceneObject*>(m_SnapObject))
 				{
 					E = S->GetReference();
 				}
-				else if (CTerrain* S = smart_cast<CTerrain*>(*o_it))
+				else if (CTerrain* S = smart_cast<CTerrain*>(m_SnapObject))
 				{
 					E = S->GetReference();
 				}
 				VERIFY(E);
 
 				EditMeshVec& _meshes = E->m_Meshes;
-				for (EditMeshIt m_it = _meshes.begin(); m_it != _meshes.end(); m_it++)
+				for (auto& _meshe : _meshes)
 				{
 					string512 Data = {};
-					sprintf(Data, "%s [%s]", (*o_it)->GetName(), (*m_it)->m_Name.c_str());
+					sprintf(Data, "%s [%s]", m_SnapObject->GetName(), _meshe->m_Name.c_str());
 					pb->Inc(Data);
 
-					const SurfFaces& _sfaces = (*m_it)->m_SurfFaces;
-					for (SurfFaces::const_iterator sp_it = _sfaces.begin(); sp_it != _sfaces.end(); sp_it++)
+					const SurfFaces& _sfaces = _meshe->m_SurfFaces;
+					for (const auto& _sface : _sfaces)
 					{
-						CSurface* surf = sp_it->first;
+						CSurface* surf = _sface.first;
 						// test passable
 
 						u16 mtl_id = surf->_GameMtl();// ->material;
 
-						if (std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end())
+						if (std::ranges::find(m_ignored_materials, mtl_id) != m_ignored_materials.end())
 						{
 							continue;
 						}
 
-						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
+						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 						if (c_sh == nullptr || !c_sh->flags.bCollision)
 						{
 							continue;
 						}
 
 						// collect tris
-						const IntVec& face_lst = sp_it->second;
+						const IntVec& face_lst = _sface.second;
 						CL.reserve(face_lst.size());
-						for (IntVec::const_iterator it = face_lst.begin(); it != face_lst.end(); it++)
+						for (int it : face_lst)
 						{
-							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);
+							E->GetFaceWorld(m_SnapObject->_Transform(), _meshe, it, verts);
 
 							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
-							if (surf->m_Flags.is(CSurface::sf2Sided))
+							if (surf->_flags().is(SSurfaceData::sf2Sided))
+							{
 								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+							}
 						}
 					}
 				}

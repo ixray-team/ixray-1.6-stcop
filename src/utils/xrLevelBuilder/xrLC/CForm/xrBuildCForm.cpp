@@ -12,27 +12,29 @@
 
 int GetVertexIndex(Vertex* Vert)
 {
-	vecVertexIt it = std::lower_bound(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end(), Vert);
+	vecVertexIt it = std::ranges::lower_bound(lc_global_data()->g_vertices(), Vert);
 	R_ASSERT(it != lc_global_data()->g_vertices().end());
 	return int(it - lc_global_data()->g_vertices().begin());
 }
 
 int getCFormVID(vecVertex& V, Vertex* Vertx)
 {
-	vecVertexIt it = std::lower_bound(V.begin(), V.end(), Vertx);
+	vecVertexIt it = std::ranges::lower_bound(V, Vertx);
 	return int(it - V.begin());
 }
 int bCriticalErrCnt = 0;
 
 void TestEdge(Vertex* V1, Vertex* V2, Face* parent)
 {
-	Face* found = 0;
+	Face* found = nullptr;
 	int		f_count = 0;
 
-	for (vecFaceIt I = V1->m_adjacents.begin(); I != V1->m_adjacents.end(); ++I)
+	for (auto test : V1->m_adjacents)
 	{
-		Face* test = *I;
-		if (test == parent) continue;
+		if (test == parent)
+		{
+			continue;
+		}
 		if (test->VContains(V2))
 		{
 			++f_count;
@@ -59,13 +61,12 @@ void CBuild::BuildCForm	()
 		cfVertexMarks.assign(lc_global_data()->g_vertices().size(), false);
 
 		Status("Sorting...");
-		std::sort(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end());
+		std::ranges::sort(lc_global_data()->g_vertices());
 
 		Status("Collecting faces...");
 		cfFaces->reserve(lc_global_data()->g_faces().size());
-		for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); ++I)
+		for (auto F : lc_global_data()->g_faces())
 		{
-			Face* F = *I;
 			if (F->Shader().flags.bCollision)
 			{
 				cfFaces->push_back(F);
@@ -82,19 +83,25 @@ void CBuild::BuildCForm	()
 
 		Status("Collecting vertices...");
 		cfVertices->reserve(lc_global_data()->g_vertices().size());
-		std::sort(cfFaces->begin(), cfFaces->end());
+		std::ranges::sort(*cfFaces);
 
 		for (u32 V = 0; V < lc_global_data()->g_vertices().size(); V++)
+		{
 			if (cfVertexMarks[V])
+			{
 				cfVertices->push_back(lc_global_data()->g_vertices()[V]);
+			}
+		}
 	}
 
 	float	p_total = 0;
 	float	p_cost = 1.f / (cfVertices->size());
 
 	Fbox BB; BB.invalidate();
-	for (vecVertexIt it = cfVertices->begin(); it != cfVertices->end(); it++)
-		BB.modify((*it)->P);
+	for (auto& cfVertice : *cfVertices)
+	{
+		BB.modify(cfVertice->P);
+	}
 
 	// CForm
 	Status("Items to process: %d", cfFaces->size());
@@ -104,10 +111,8 @@ void CBuild::BuildCForm	()
 
 	// Collect faces
 	CDB::CollectorPacked CL(BB, (int)cfVertices->size(), (int)cfFaces->size());
-	for (vecFaceIt F = cfFaces->begin(); F != cfFaces->end(); F++)
+	for (auto T : *cfFaces)
 	{
-		Face* T = *F;
-
 		TestEdge(T->v[0], T->v[1], T);
 		TestEdge(T->v[1], T->v[2], T);
 		TestEdge(T->v[2], T->v[0], T);
@@ -115,7 +120,8 @@ void CBuild::BuildCForm	()
 		CL.add_face(
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, 
-			materials()[T->dwMaterial].sector,
+			GetMaterialSector(*T), 
+			T->flags.bSharedMaterial,
 			T->sm_group
 		);
 		Progress(p_total += p_cost);		// progress
@@ -130,10 +136,11 @@ void CBuild::BuildCForm	()
 
 	// Models
 	Status("Models...");
-	for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	auto& mu_refs_arr = mu_refs();
+	for (u32 ref = 0; ref < mu_refs_arr.size(); ref++)
 	{
-		Progress(float(ref) / float(mu_refs().size()));
-		mu_refs()[ref]->export_cform_game(CL);
+		Progress(float(ref) / float(mu_refs_arr.size()));
+		mu_refs_arr[ref]->export_cform_game(CL);
 	}
 
 	// Simplification
@@ -199,15 +206,14 @@ void CBuild::BuildCForm	()
 	*/
  
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
-	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
+	for (auto F : lc_global_data()->g_faces())
 	{
-		Face* F = *I;
-		F->pDeflector = NULL;
+		F->pDeflector = nullptr;
 	}
 	//FS.w_close(MFS);
 }
 
 void CBuild::BuildPortals(IWriter& fs)
 {
-	fs.w_chunk(fsL_PORTALS, &*portals.begin(), (u32)portals.size() * sizeof(b_portal));
+	fs.w_chunk(fsL_PORTALS, portals.data(), (u32)portals.size() * sizeof(b_portal));
 }

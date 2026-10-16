@@ -116,7 +116,7 @@ namespace CDB
 			}
 		}
 
-		std::sort(edges.begin(), edges.end(), sort_predicate());
+		std::ranges::sort(edges, sort_predicate());
 		dest.assign(edge_count, u32(-1));
 
 		// Сопоставление рёбер между треугольниками
@@ -208,15 +208,16 @@ namespace CDB
 
 	void	CollectorPacked::add_face(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u16 material, u16 sector, u32 _flags									// misc
+		u16 material, u16 sector, bool bSharedMaterial, u32 _flags									// misc
 		)
 	{
 		TRI T;
-		T.verts	[0] = VPack(v0);
-		T.verts	[1] = VPack(v1);
-		T.verts	[2] = VPack(v2);
-		T.material		= material;
-		T.sector		= sector;
+		T.verts[0] = VPack(v0);
+		T.verts[1] = VPack(v1);
+		T.verts[2] = VPack(v2);
+		T.material = material;
+		T.sector = sector;
+		T.shared_material = bSharedMaterial;
 		flags.push_back(_flags);
 		faces.push_back(T);
 
@@ -231,7 +232,7 @@ namespace CDB
 		T.verts	[0] = VPack(v0);
 		T.verts	[1] = VPack(v1);
 		T.verts	[2] = VPack(v2);
-		T.dummy		= dummy;
+		T.dummy = dummy;
 		faces.push_back(T);
 		flags.push_back(_flags);
 	}

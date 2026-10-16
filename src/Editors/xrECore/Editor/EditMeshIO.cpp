@@ -85,28 +85,30 @@ void CEditableMesh::SaveMesh(IWriter& F)
 
 	F.open_chunk	(EMESH_CHUNK_SFACE);
 	F.w_u16			((u16)m_SurfFaces.size()); 	/* surface polygon count*/
-	for (SurfFacesPairIt plp_it=m_SurfFaces.begin(); plp_it!=m_SurfFaces.end(); plp_it++)
-    {
-    	F.w_stringZ	(plp_it->first->m_Name.c_str()); 	/* surface name*/
-    	IntVec& 	pol_lst = plp_it->second;
+	for (auto& m_SurfFace : m_SurfFaces)
+	{
+    	F.w_stringZ	(m_SurfFace.first->_Name()); 	/* surface name*/
+    	IntVec& 	pol_lst = m_SurfFace.second;
         F.w_u32		(pol_lst.size());		/* surface-polygon indices*/
-        F.w			(&*pol_lst.begin(), sizeof(int)*pol_lst.size());
+        F.w			(pol_lst.data(), sizeof(int)*pol_lst.size());
     }
 	F.close_chunk     ();
 
 	F.open_chunk	(EMESH_CHUNK_VMAPS_2);
 	F.w_u32		(m_VMaps.size());
-    for (VMapIt vm_it=m_VMaps.begin(); vm_it!=m_VMaps.end(); vm_it++)
+    for (auto& m_VMap : m_VMaps)
     {
-        F.w_stringZ	((*vm_it)->name);
-        F.w_u8		((*vm_it)->dim);
-		F.w_u8		((u8)(*vm_it)->polymap);
-        F.w_u8		((*vm_it)->type);
-        F.w_u32		((*vm_it)->size());
-        F.w			((*vm_it)->getVMdata(), (*vm_it)->VMdatasize());
-        F.w			((*vm_it)->getVIdata(), (*vm_it)->VIdatasize());
-		if ((*vm_it)->polymap)
-	        F.w		((*vm_it)->getPIdata(), (*vm_it)->PIdatasize());
+        F.w_stringZ	(m_VMap->name);
+        F.w_u8		(m_VMap->dim);
+		F.w_u8		((u8)m_VMap->polymap);
+        F.w_u8		(m_VMap->type);
+        F.w_u32		(m_VMap->size());
+        F.w			(m_VMap->getVMdata(), m_VMap->VMdatasize());
+        F.w			(m_VMap->getVIdata(), m_VMap->VIdatasize());
+		if (m_VMap->polymap)
+		{
+			F.w		(m_VMap->getPIdata(), m_VMap->PIdatasize());
+		}
     }
 	F.close_chunk  	();
 }
@@ -134,8 +136,8 @@ bool CEditableMesh::LoadMesh(IReader& F){
         Log				("!CEditableMesh: Vertices<3.");
      	return false;
     }
-    m_Vertices.resize(vc);
-	F.r					(m_Vertices.data(), vc*sizeof(Fvector));
+		m_Vertices.resize(vc);
+		F.r(m_Vertices.data(), vc*sizeof(Fvector));
 	}
 
     R_ASSERT(F.find_chunk(EMESH_CHUNK_FACES));
@@ -176,11 +178,11 @@ bool CEditableMesh::LoadMesh(IReader& F){
     m_VMRefs.resize		(F.r_u32());
     constexpr int sz_vmpt = sizeof(st_VMapPt);
 
-	for (VMRefsIt r_it = m_VMRefs.begin(); r_it != m_VMRefs.end(); r_it++)
+	for (auto& m_VMRef : m_VMRefs)
 	{
 		u8 cnt = F.r_u8();
-		r_it->resize(cnt);
-		F.r(r_it->data(), sz_vmpt * cnt);
+		m_VMRef.resize(cnt);
+		F.r(m_VMRef.data(), sz_vmpt * cnt);
 	}
 
     R_ASSERT(F.find_chunk(EMESH_CHUNK_SFACE));
@@ -195,55 +197,57 @@ bool CEditableMesh::LoadMesh(IReader& F){
         face_lst.resize	(F.r_u32());
         if (face_lst.empty())
         {
-	        Log			("!Empty surface found: %s",surf->m_Name.c_str());
+	        Log			("!Empty surface found: %s",surf->_Name());
     	 	return false;
         }
-        F.r				(&*face_lst.begin(), face_lst.size()*sizeof(int));
-        std::sort		(face_lst.begin(),face_lst.end());
+        F.r(face_lst.data(), face_lst.size()*sizeof(int));
+        std::ranges::sort(face_lst);
     }
 
     if(F.find_chunk(EMESH_CHUNK_VMAPS_2))
 	{
 		m_VMaps.resize	(F.r_u32());
-		for (VMapIt vm_it=m_VMaps.begin(); vm_it!=m_VMaps.end(); vm_it++)
-        {
-			*vm_it		= xr_make_unique<st_VMap>();
-			F.r_stringZ	((*vm_it)->name);
-			(*vm_it)->dim 	= F.r_u8();
-			(*vm_it)->polymap=F.r_u8();
-			(*vm_it)->type	= F.r_u8();
-			(*vm_it)->resize(F.r_u32());
-			F.r			((*vm_it)->getVMdata(), (*vm_it)->VMdatasize());
-			F.r			((*vm_it)->getVIdata(), (*vm_it)->VIdatasize());
-			if ((*vm_it)->polymap)
-				F.r		((*vm_it)->getPIdata(), (*vm_it)->PIdatasize());
+		for (auto& m_VMap : m_VMaps)
+		{
+			m_VMap = xr_make_unique<st_VMap>();
+			F.r_stringZ	(m_VMap->name);
+			m_VMap->dim = F.r_u8();
+			m_VMap->polymap=F.r_u8();
+			m_VMap->type = F.r_u8();
+			m_VMap->resize(F.r_u32());
+			F.r(m_VMap->getVMdata(), m_VMap->VMdatasize());
+			F.r(m_VMap->getVIdata(), m_VMap->VIdatasize());
+			if (m_VMap->polymap)
+			{
+				F.r(m_VMap->getPIdata(), m_VMap->PIdatasize());
+			}
 		}
 	}else
 	{
 		if(F.find_chunk(EMESH_CHUNK_VMAPS_1))
 		{
 			m_VMaps.resize	(F.r_u32());
-			for (VMapIt vm_it=m_VMaps.begin(); vm_it!=m_VMaps.end(); vm_it++)
+			for (auto& m_VMap : m_VMaps)
 			{
-				*vm_it		= xr_make_unique<st_VMap>();
-				F.r_stringZ	((*vm_it)->name);
-				(*vm_it)->dim 	= F.r_u8();
-				(*vm_it)->type	= F.r_u8();
-				(*vm_it)->resize(F.r_u32());
-				F.r			((*vm_it)->getVMdata(), (*vm_it)->VMdatasize() );
+				m_VMap = xr_make_unique<st_VMap>();
+				F.r_stringZ	(m_VMap->name);
+				m_VMap->dim = F.r_u8();
+				m_VMap->type = F.r_u8();
+				m_VMap->resize(F.r_u32());
+				F.r(m_VMap->getVMdata(), m_VMap->VMdatasize() );
 			}
 		}else
 		{
 			R_ASSERT(F.find_chunk(EMESH_CHUNK_VMAPS_0));
 			m_VMaps.resize	(F.r_u32());
-			for (VMapIt vm_it=m_VMaps.begin(); vm_it!=m_VMaps.end(); vm_it++)
+			for (auto& m_VMap : m_VMaps)
 			{
-				*vm_it		= xr_make_unique<st_VMap>();
-				F.r_stringZ	((*vm_it)->name);
-				(*vm_it)->dim 	= 2;
-				(*vm_it)->type	= vmtUV;
-				(*vm_it)->resize(F.r_u32());
-				F.r			((*vm_it)->getVMdata(), (*vm_it)->VMdatasize() );
+				m_VMap = xr_make_unique<st_VMap>();
+				F.r_stringZ	(m_VMap->name);
+				m_VMap->dim = 2;
+				m_VMap->type = vmtUV;
+				m_VMap->resize(F.r_u32());
+				F.r(m_VMap->getVMdata(), m_VMap->VMdatasize() );
 			}
 		}
 		// update vmaps
@@ -258,7 +262,6 @@ bool CEditableMesh::LoadMesh(IReader& F){
 		m_Parent->bNeedResave = true;
 	}
 
-#if 1
     if (!EPrefs->object_flags.is(epoDeffLoadRB))
     {
         GenerateFNormals	();
@@ -275,11 +278,9 @@ bool CEditableMesh::LoadMesh(IReader& F){
 	    UnloadVNormals		();
     }
     
-    GenerateCFModel();     
+    GenerateCFModel();
 
-#endif
-
-	return 			true;
+	return true;
 }
 //----------------------------------------------------
 

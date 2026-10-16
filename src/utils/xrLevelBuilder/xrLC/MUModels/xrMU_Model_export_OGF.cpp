@@ -31,11 +31,15 @@ template <class T> static void BuildLODNode(T*& pNode,b_lod& LOD,const xr_vector
     }
 
     // Add children
-    for (u32 o = 0; o < generated_ids.size(); o++)
-        pNode->AddChield(generated_ids[o]);
+    for (unsigned int generated_id : generated_ids)
+    {
+	    pNode->AddChield(generated_id);
+    }
 
     if (pNode->chields.empty())
-        return;
+    {
+	    return;
+    }
 
     // Register node
     R_ASSERT(pNode->chields.size());
@@ -100,29 +104,29 @@ void export_ogf( xrMU_Reference& mu_reference )
 	xrMU_Model *model = mu_reference.model;
 	// Export nodes
 	auto MakeRef = [](xrMU_Model& Model, xr_vector<u32>& GeneratedIds, const xrMU_Reference& Ref) -> void{
-		for (xrMU_Model::v_subdivs_it it=Model.m_subdivs.begin(); it!=Model.m_subdivs.end(); it++)
+		for (auto& m_subdiv : Model.m_subdivs)
 		{
 			OGF_Reference*	pOGF	= new OGF_Reference ();
-			b_material*		M		= &(pBuild->materials()[it->material]);	// and it's material
-			R_ASSERT		(M);
 
 			// Common data
 			pOGF->Sector = Ref.sector;
-			pOGF->material = it->material;
+			pOGF->material = m_subdiv.material;
+			pOGF->bSharedMaterial = m_subdiv.bSharedMaterial;
 
 			// Collect textures
-			OGF_Texture				T;
-			TRY(T.name			= pBuild->textures()[M->surfidx].name);
-			TRY(T.pBuildSurface	= &(pBuild->textures()[M->surfidx]));
-			TRY(pOGF->textures.push_back(T));
+			auto& Tex = CBuild::GetTexture(m_subdiv.material, m_subdiv.bSharedMaterial);
+			OGF_Texture T;
+			T.name = Tex.name;
+			T.pBuildSurface	= &Tex;
+			pOGF->textures.push_back(T);
 
 			// Special
-			pOGF->model = it->ogf;
-			pOGF->vb_id	= it->vb_id;
-			pOGF->vb_start = it->vb_start;
-			pOGF->ib_id = it->ib_id;
-			pOGF->ib_start = it->ib_start;
-			pOGF->sw_id = it->sw_id;
+			pOGF->model = m_subdiv.ogf;
+			pOGF->vb_id	= m_subdiv.vb_id;
+			pOGF->vb_start = m_subdiv.vb_start;
+			pOGF->ib_id = m_subdiv.ib_id;
+			pOGF->ib_start = m_subdiv.ib_start;
+			pOGF->sw_id = m_subdiv.sw_id;
 			pOGF->xform.set(Ref.xform);
 			pOGF->c_scale = Ref.c_scale;
 			pOGF->c_bias = Ref.c_bias;

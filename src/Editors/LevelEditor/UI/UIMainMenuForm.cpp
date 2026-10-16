@@ -422,6 +422,8 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Objects"))
 		{
+			DrawMenuItem("Shared Materials Editor", COMMAND_SHARED_MATERIALS_EDITOR);
+			ImGui::Separator();
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
@@ -458,8 +460,8 @@ void UIMainMenuForm::Draw()
 
 				for (; I != E; ++I)
 				{
-					ETextureThumbnail* TH = new ETextureThumbnail((*I).name.c_str(), false);
-					TH->Load((*I).name.c_str(), _textures_);
+					ETextureThumbnail* TH = new ETextureThumbnail(I->name.c_str(), false);
+					TH->Load(I->name.c_str(), _textures_);
 					TH->Save();
 					xr_delete(TH);
 				}
@@ -545,7 +547,9 @@ void UIMainMenuForm::Draw()
                             ExecCommand(COMMAND_WEATHER_PROPERTIES);
                         }
                         if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        {
+	                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        }
                     }
 					bool selected = !psDeviceFlags.test(rsEnvironment);
 					if (ImGui::MenuItem("None", "", &selected))
@@ -554,7 +558,9 @@ void UIMainMenuForm::Draw()
 						EContext.UI->RedrawScene();
 					}
                     if (ImGui::IsItemHovered())
-                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    {
+	                    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    }
 					ImGui::Separator();
 					for (auto& i : g_pGamePersistent->Environment().WeatherCycles)
 					{
@@ -566,7 +572,9 @@ void UIMainMenuForm::Draw()
 							EContext.UI->RedrawScene();
 						}
                         if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        {
+	                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        }
 					}
 
 					ImGui::EndMenu();
@@ -642,9 +650,13 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Properties", ICON_FA_GEAR, "", &selected))
 				{
 					if (selected)
+					{
 						MainForm->GetPropertiesForm()->Open();
+					}
 					else
+					{
 						MainForm->GetPropertiesForm()->Close();
+					}
 				}
 			}
 			{
@@ -668,7 +680,9 @@ void UIMainMenuForm::Draw()
 						ThemeInstance.Show(true);
 					}
 					else
+					{
 						ThemeInstance.Show(false);
+					}
 				}
 			}
 
@@ -680,7 +694,9 @@ void UIMainMenuForm::Draw()
 					auto& W = CUIWidgetsTest::Instance();
 
 					if (!EContext.UI->HasWindow<CUIWidgetsTest>())
-						EContext.UI->Push(&W, false);      // false = не удалять UI менеджером
+					{
+						EContext.UI->Push(&W, false); // false = не удалять UI менеджером
+					}
 
 					W.Show(true);
 				}
@@ -944,7 +960,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		for (CSurface* Surface : Obj->m_Surfaces)
 		{
 			DirFilePath = TexturesObjectPath;
-			xr_string TextureName = Surface->m_Texture.c_str();
+			xr_string TextureName = Surface->_Texture();
 			TextureName += ".dds";
 
 			auto Dirs = TextureName.Split('\\');
@@ -1005,7 +1021,9 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		const xr_string& LodTexture = Obj->GetReference()->GetLODTextureName();
 
 		if (LodTexture.empty())
+		{
 			continue;
+		}
 
 		CopyLodTexture(LodTexture);
 		CopyLodTexture(LodTexture + "_nm");

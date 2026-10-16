@@ -9,6 +9,7 @@
 #include "../../../../xrCore/Collision/xrCDB.h"
 #include "../../UI/CompilersUI.h"
 #include "LightingBackend.h"
+#include "Build/Build.h"
 
 // 2 : Mainthread + UI thread
 xr_atomic_u32 ThreadTaskID_Implication = 0;
@@ -32,7 +33,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
-	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 превышает !
+	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 	cl_globs_cpu->Initialize(defl);
  
 	xr_std_parallel_for([&cl_globs_cpu, &defl]()
@@ -47,10 +48,10 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		Pixel.Jcount = Jcount;
 		Pixel.JD = Jitter2D;
 		
- 		// Размер сетки !
-		u32 TILE_SIZE = 8;
- 		while (true)
+ 		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ !
+	    while (true)
 		{
+			u32 TILE_SIZE = 8;
 			u32 Y = ThreadTaskID_Implication.fetch_add(TILE_SIZE);
 			if (Y >= defl.Height()) break;
 
@@ -126,7 +127,7 @@ void ImplicitLightingExec()
  
 	// Sorting
 	Status("Sorting faces...");
-	xr_map<u32, ImplicitDeflector>	calculator;
+	xr_map<b_BuildTexture*, ImplicitDeflector>	calculator;
 	for (vecFaceIt I = inlc_global_data()->g_faces().begin(); I != inlc_global_data()->g_faces().end(); I++)
 	{
 		Face* F = *I;
@@ -134,17 +135,15 @@ void ImplicitLightingExec()
 		if (!F->hasImplicitLighting())	continue;
 
 		Progress(float(I - inlc_global_data()->g_faces().begin()) / float(inlc_global_data()->g_faces().size()));
-		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-		u32				Tid = M.surfidx;
-		b_BuildTexture* T = &(inlc_global_data()->textures()[Tid]);
+		b_BuildTexture* T = &CBuild::GetTexture(*F);
 
-		auto		it = calculator.find(Tid);
+		auto		it = calculator.find(T);
 		if (it == calculator.end())
 		{
 			ImplicitDeflector	ImpD;
 			ImpD.texture = T;
 			ImpD.faces.push_back(F);
-			calculator.insert(std::make_pair(Tid, ImpD));
+			calculator.insert(std::make_pair(T, ImpD));
  		}
 		else {
 			ImplicitDeflector& ImpD = it->second;

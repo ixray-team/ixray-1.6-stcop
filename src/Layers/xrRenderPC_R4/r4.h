@@ -103,7 +103,8 @@ public:
 
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
-	xr_vector<ref_shader>										Shaders;
+	xr_vector<ref_shader> ShadersLevel;
+	xr_hash_map<shared_str, ref_shader> ShadersShared;
 	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
 	xr_vector<VertexDeclarator>									nDC,xDC;
 	xr_vector<IRHIBuffer*>							nVB,xVB;
@@ -394,13 +395,14 @@ public:
 	void							LoadPlanars();
 
 	// Information
-	virtual void					Statistics					(CGameFont* F);
-	virtual const char*					getShaderPath				()									{ return "d3d11\\";	}
-	virtual ref_shader				getShader					(int id);
-	virtual IRender_Sector*			getSector					(int id);
-	virtual IRenderVisual*			getVisual					(int id);
-	virtual IRender_Sector*			detectSector				(const Fvector& P);
-	virtual IRender_Target*			getTarget					();
+	virtual void Statistics(CGameFont* F);
+	virtual const char* getShaderPath() { return "d3d11\\";	}
+	virtual ref_shader getShader(int id);
+	virtual ref_shader getShaderShared(shared_str id);
+	virtual IRender_Sector* getSector(int id);
+	virtual IRenderVisual* getVisual(int id);
+	virtual IRender_Sector* detectSector(const Fvector& P);
+	virtual IRender_Target* getTarget();
 
 	// Main 
 	virtual void					flush						();

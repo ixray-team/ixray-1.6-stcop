@@ -938,7 +938,7 @@ void CActorTools::FillSurfaceProperties(PropItemVec& items, const char* pref, Li
 	CSurface* SURF = (CSurface*)sender->m_Object;
 	PHelper().CreateCaption			(items, PrepareKey(pref,"Statistic\\Count"),	shared_str().printf("%d",(int)m_pEditObject->m_Surfaces.size()));
 	if (SURF){
-		PHelper().CreateCaption		(items,PrepareKey(pref,"Surface\\Name"),		SURF->m_Name.c_str());
+		PHelper().CreateCaption		(items,PrepareKey(pref,"Surface\\Name"),		SURF->_Name());
 		xr_string _pref			= PrepareKey(pref,"Surface").c_str();
 		m_pEditObject->FillSurfaceProps(SURF,_pref.c_str(),items);
 	}

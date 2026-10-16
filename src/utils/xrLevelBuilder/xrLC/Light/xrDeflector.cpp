@@ -4,7 +4,8 @@
 #include "math.h"
 #include "../Mesh/xrFace.h"
 #include "LightingBackend.h"
- 
+#include "Shader_xrLC.h"
+
 void UpdateCurrentPhase (LPCSTR text)
 {
 	string128 tmp_phase;
@@ -138,9 +139,9 @@ void CDeflector::OA_Export()
 	tN.set			(0,0,0);
 	float density	= 0;
 	float fcount	= 0;
-	for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+	for (auto& UVpoly : UVpolys)
 	{
-		Face	*F = it->owner;
+		Face	*F = UVpoly.owner;
 		Fvector	SN;
 		SN.set	(F->N);
 		SN.mul	(1+EPS*F->CalcArea());
@@ -149,14 +150,16 @@ void CDeflector::OA_Export()
 		density	+= F->Shader().lm_density;
 		fcount	+= 1.f;
 	}
-	if (tN.magnitude()>EPS_S && _valid(tN))	
+	if (tN.magnitude()>EPS_S && _valid(tN))
+	{
 		normal.set(tN).normalize();
+	}
 	else
 	{
 		clMsg("* ERROR: Internal precision error in CDeflector::OA_Export");
-		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+		for (auto& UVpoly : UVpolys)
 		{
-			Face &fc = *((*it).owner);
+			Face &fc = *(UVpoly.owner);
 			inlc_global_data()->err_tjunction().w_fvector3(fc.v[0]->P);
 			inlc_global_data()->err_tjunction().w_fvector3(fc.v[1]->P);
 
@@ -181,9 +184,9 @@ void CDeflector::OA_Export()
 	mView.build_camera(from,at,up);
 
 	Fbox bb; bb.invalidate();
-	for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+	for (auto& UVpoly : UVpolys)
 	{
-		UVtri	*T = &*it;
+		UVtri	*T = &UVpoly;
 		Face	*F = T->owner;
 		Fvector	P;	// projected
 
@@ -230,10 +233,9 @@ bool CDeflector::OA_Place	(Face *owner)
 void CDeflector::OA_Place	(vecFace& lst)
 {
 	UVpolys.clear	();
- 	for (u32 I=0; I<lst.size(); I++)
-	{
+ 	for (auto F : lst)
+    {
 		UVtri T;
-		Face* F			= lst[I];
 		T.owner			= F;
 		F->pDeflector	= this;
 		UVpolys.push_back(T);
@@ -247,9 +249,10 @@ void CDeflector::GetRect	(Fvector2 &min, Fvector2 &max)
 	min = max = it->uv[0];
 	for (;it != UVpolys.end(); it++)
 	{
-		for (int i=0; i<3; i++) {
-			min.min(it->uv[i]);
-			max.max(it->uv[i]);
+		for (auto i : it->uv)
+		{
+			min.min(i);
+			max.max(i);
 		}
 	}
 }
@@ -280,9 +283,8 @@ void CDeflector::RemapUV	(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 si
 	Fvector2		tc;
 	UVtri		tnew;
 	if (bRotate)	{
-		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+		for (auto& T : UVpolys)
 		{
-			UVtri&	T	= *it;
 			tnew.owner	= T.owner;
 			for (int i=0; i<3; i++) 
 			{
@@ -293,9 +295,8 @@ void CDeflector::RemapUV	(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 si
 			dest.push_back	(tnew);
 		}
 	} else {
-		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
+		for (auto& T : UVpolys)
 		{
-			UVtri&	T	= *it;
 			tnew.owner	= T.owner;
 			for (int i=0; i<3; i++) 
 			{
@@ -317,9 +318,9 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 
 
 // Дампинг и сравнение
-u16	CDeflector:: GetBaseMaterial		() 
+Face& CDeflector:: GetBaseMaterial		() 
 {
-	return UVpolys.front().owner->dwMaterial;	
+	return *UVpolys.front().owner;	
 }
 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const

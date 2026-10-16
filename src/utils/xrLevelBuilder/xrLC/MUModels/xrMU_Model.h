@@ -1,5 +1,4 @@
-#ifndef XRMU_MODEL_H
-#define XRMU_MODEL_H
+#pragma once
 
 #include "mu_model_face.h"
 
@@ -31,6 +30,7 @@ public:
 		u32		ib_start;
 
 		u32		sw_id;
+		bool bSharedMaterial;
 	};
 
 	//** 
@@ -87,5 +87,4 @@ public:
 };
 
 void XRLC_LIGHT_API	calc_normals	( xrMU_Model &model );
- 
-#endif
+

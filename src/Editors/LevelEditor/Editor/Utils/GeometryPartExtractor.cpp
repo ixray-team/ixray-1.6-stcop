@@ -21,17 +21,19 @@ void SBPart::recurse_fragment		(SBFace* F, u32& cnt, u32 bone_id, u32 max_faces,
         if (!F->marked)	use_face	(F,cnt,bone_id,area);
         // fill nearest
         SBFaceVec r_vec;
-        for (SBFaceVecIt n_it=F->adjs.begin(); n_it!=F->adjs.end(); n_it++){
+        for (auto& adj : F->adjs)
+        {
             if (cnt>=max_faces)		break;
-            if ((*n_it)->marked)	continue;
-            use_face				(*n_it,cnt,bone_id,area);
-            r_vec.push_back			(*n_it);
+            if (adj->marked)	continue;
+            use_face				(adj,cnt,bone_id,area);
+            r_vec.push_back			(adj);
         }     
         // recurse adjs   	
-        for (SBFaceVecIt a_it=r_vec.begin(); a_it!=r_vec.end(); a_it++){
+        for (auto& a_it : r_vec)
+        {
             if (cnt>=max_faces)					break;
-            if ((*a_it)->bone_id!=(int)bone_id)	continue;
-            recurse_fragment					(*a_it,cnt,bone_id,max_faces,area);
+            if (a_it->bone_id!=(int)bone_id)	continue;
+            recurse_fragment					(a_it,cnt,bone_id,max_faces,area);
         } 
     }
 }
@@ -41,24 +43,27 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
     m_bValid	= true;
     // compute OBB
     FvectorVec pts; pts.reserve		(m_Faces.size()*3);
-    for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-        (*f_it)->marked				= false;
-        for (int k=0; k<3; k++)		pts.push_back((*f_it)->o[k]);
+    for (auto& m_Face : m_Faces)
+    {
+	    m_Face->marked				= false;
+        for (int k=0; k<3; k++)		pts.push_back(m_Face->o[k]);
     }
     ComputeOBB_RAPID				(m_OBB,pts,pts.size()/3);
     // fill adjacent
-    for (SBFaceVecIt a_it=m_Faces.begin(); a_it!=m_Faces.end(); a_it++){
-        SBFace* A					= *a_it;
-        for (int k=0; k<3; k++){
-            SBFaceVec& b_vec		= adjs[A->vert_id[k]];
-            for (SBFaceVecIt b_it=b_vec.begin(); b_it!=b_vec.end(); b_it++){
-                SBFace* B			= *b_it;
-                if (A!=B){
+    for (auto A : m_Faces)
+    {
+	    for (int k : A->vert_id)
+        {
+            SBFaceVec& b_vec		= adjs[k];
+            for (auto B : b_vec)
+            {
+	            if (A!=B){
                     int cnt			= 0;
-                    for (int a=0; a<3; a++) for (int b=0; b<3; b++) if (A->vert_id[a]==B->vert_id[b]) cnt++;
+                    for (int a : A->vert_id)
+	                    for (int b=0; b<3; b++) if (a ==B->vert_id[b]) cnt++;
                     if (cnt>=2){
-                        if (std::find(A->adjs.begin(),A->adjs.end(),B)==A->adjs.end()) A->adjs.push_back(B);
-                        if (std::find(B->adjs.begin(),B->adjs.end(),A)==B->adjs.end()) B->adjs.push_back(A);
+                        if (std::ranges::find(A->adjs,B)==A->adjs.end()) A->adjs.push_back(B);
+                        if (std::ranges::find(B->adjs,A)==B->adjs.end()) B->adjs.push_back(A);
                     }
                 }
             }        
@@ -72,9 +77,9 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
     M.invert						();
 
     // transform vertices & calculate bounding box
-    for (auto f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-        SBFace* F					= (*f_it);
-        if (F->adjs.empty()){	
+    for (auto F : m_Faces)
+    {
+	    if (F->adjs.empty()){	
             ELog.Msg(mtError,"Error face found at pos: [%3.2f,%3.2f,%3.2f]",VPUSH(F->o[0])); 
             Tools->m_DebugDraw.AppendWireFace(F->o[0],F->o[1],F->o[2]);
             m_bValid				= false;
@@ -97,11 +102,15 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
         do{
             SBFace* F					= 0;
             // find unused face
-            for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-                if (!(*f_it)->marked){
-                    F					= *f_it;
+            for (auto& m_Face : m_Faces)
+            {
+                if (!m_Face->marked){
+                    F					= m_Face;
                     int cnt 			= 0;
-                    for (SBFaceVecIt a_it=F->adjs.begin(); a_it!=F->adjs.end(); a_it++) cnt+=(*a_it)->marked?0:1;
+                    for (auto& adj : F->adjs)
+                    {
+	                    cnt+= adj->marked?0:1;
+                    }
                     if ((cnt==0)||(cnt>=2))	break;
                 }
             }
@@ -120,7 +129,7 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
                 string1024 Name;
 				xr_sprintf(Name,"%d",bone_idx);
 
-                m_Bones.push_back		(SBBone( Name,parent_bone,F->surf->m_GameMtlName.c_str(),face_accum,area));
+                m_Bones.emplace_back(Name,parent_bone,F->surf->_GameMtlName(),face_accum,area);
                 parent_bone				= "0";
                 bone_idx				++;
                 face_accum_total		+= face_accum;
@@ -136,27 +145,28 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
             }else{
             	// если проход оказалс€ безрезультатным (т.е. не смогли добавить хоть один фейс) - добавл€ем 
                 //  все неприаттаченные фейсы к 0-кости (иначе зацикливаетс€ (mike - L03_agroprom))
-                for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-                    SBFace* F				= *f_it;
-                    if (-1==F->bone_id){
+                for (auto F : m_Faces)
+                {
+	                if (-1==F->bone_id){
                         F->marked		= true;
                         F->bone_id		= 0;
                         face_accum_total++;
                     }
                 } 
             }
-            for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-                SBFace* F				= *f_it;
-                if (-1==F->bone_id){
+            for (auto F : m_Faces)
+            {
+	            if (-1==F->bone_id){
                     SBFace* P			= 0;
                     if (F->adjs.empty()){
                         F->marked		= true;
                         F->bone_id		= 0;
                         face_accum_total++;
                     }else{
-                        for (SBFaceVecIt a_it=F->adjs.begin(); a_it!=F->adjs.end(); a_it++){ 
-                            if (-1!=(*a_it)->bone_id){	
-	                            P		= *a_it;
+                        for (auto& adj : F->adjs)
+                        { 
+                            if (-1!= adj->bone_id){	
+	                            P		= adj;
                             	break;
                             }
                         }
@@ -172,20 +182,25 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
         }
         
         // calculate bone offset
-        for (auto f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-            SBFace* F					= *f_it;
-        	VERIFY						(F->bone_id!=-1);
+        for (auto F : m_Faces)
+        {
+	        VERIFY						(F->bone_id!=-1);
             SBBone& B					= m_Bones[F->bone_id];
-            for (int k=0; k<3; k++)		B.offset.add(F->o[k]);
+            for (auto k : F->o)
+            {
+	            B.offset.add(k);
+            }
         }
-        for (SBBoneVecIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
-            SBBone& B					= *b_it;
-            VERIFY						(0!=B.f_cnt);
+        for (auto& B : m_Bones)
+        {
+	        VERIFY						(0!=B.f_cnt);
             B.offset.div				(B.f_cnt*3);
         }
         Fvector& offs					= m_Bones.front().offset;
-        for (SBBoneVecIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
-            b_it->offset.sub			(offs);
+        for (auto& m_Bone : m_Bones)
+        {
+	        m_Bone.offset.sub			(offs);
+        }
     }
     return m_bValid;
 }
@@ -206,14 +221,13 @@ bool SBPart::Export	(IWriter& F, u8 infl)
 
     u32 mtl_cnt				= 0;
                                   
-    for (SBFaceVecIt pf_it=m_Faces.begin(); pf_it!=m_Faces.end(); pf_it++)
+    for (auto face : m_Faces)
     {
-    	SBFace* face = *pf_it;
-        int mtl_idx = FindSplit(face->surf->m_ShaderName.c_str(), face->surf->m_Texture.c_str(), 0, face->surf->m_id);
+	    int mtl_idx = FindSplit(face->surf->_ShaderName(), face->surf->_Texture(), 0, face->surf->m_id);
 
         if (mtl_idx<0)
         {
-            m_Splits.push_back(SSplit(face->surf,m_BBox,0));
+            m_Splits.emplace_back(face->surf,m_BBox,0);
             mtl_idx	= mtl_cnt++;
         }
         SSplit& split=m_Splits[mtl_idx];
@@ -226,9 +240,12 @@ bool SBPart::Export	(IWriter& F, u8 infl)
         }
         split.add_face		(v[0], v[1], v[2]);
 
-        if (face->surf->m_Flags.is(CSurface::sf2Sided)){
+        if (face->surf->_flags().is(SSurfaceData::sf2Sided)){
             v[0].norm.invert(); v[1].norm.invert(); v[2].norm.invert();
-            if (!split.add_face(v[0], v[2], v[1])) split.invalid_faces++;
+            if (!split.add_face(v[0], v[2], v[1]))
+            {
+	            split.invalid_faces++;
+            }
         }
     }
 
@@ -236,12 +253,12 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     for (SSplit& Split : m_Splits)
     {
         if (!Split.valid()){
-            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*Split.m_Texture);
+            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*Split.m_SurfaceData->m_Texture);
             bRes = false;
             break;
         }
         if (0!=Split.invalid_faces){
-	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*Split.m_Texture,Split.invalid_faces);
+	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*Split.m_SurfaceData->m_Texture,Split.invalid_faces);
         }
 		Split.CalculateTB();
 	    for (SSkelVert& Vert : Split.m_Verts){
@@ -274,10 +291,11 @@ bool SBPart::Export	(IWriter& F, u8 infl)
 	
     // OGF_CHILDREN
     F.open_chunk	(OGF_CHILDREN);
-    int chield=0;
-    for (auto split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
-	    F.open_chunk(chield++);
-        split_it->Save(F);
+    int children=0;
+    for (auto& m_Split : m_Splits)
+    {
+	    F.open_chunk(children++);
+	    m_Split.Save(F);
 	    F.close_chunk();
     }
     F.close_chunk();
@@ -336,10 +354,13 @@ IC void recurse_tri(SBPart* P, SBFaceVec& faces, SBAdjVec& adjs, SBFace* F)
     F->marked			= true;
 
     // recurse
-    for (int k=0; k<3; k++){
-	    SBFaceVec& PL 	= adjs[F->vert_id[k]];
-        for (SBFaceVecIt pl_it=PL.begin(); pl_it!=PL.end(); pl_it++)
-            recurse_tri	(P,faces,adjs,*pl_it);
+    for (int k : F->vert_id)
+    {
+	    SBFaceVec& PL 	= adjs[k];
+        for (auto& pl_it : PL)
+        {
+	        recurse_tri	(P,faces,adjs, pl_it);
+        }
     }
 }
 
@@ -356,7 +377,7 @@ void CGeomPartExtractor::AppendFace(CSurface* surf, const Fvector* v, const Fvec
 }
 CGeomPartExtractor::CGeomPartExtractor	()
 {
-	m_Verts				= 0;
+	m_Verts				= nullptr;
 }
 void CGeomPartExtractor::Initialize	(const Fbox& bb, float eps, u32 per_bone_face_count_min)
 {
@@ -367,11 +388,15 @@ void CGeomPartExtractor::Initialize	(const Fbox& bb, float eps, u32 per_bone_fac
 void CGeomPartExtractor::Clear		()
 {
     xr_delete		(m_Verts);
-    for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++) 
-    	xr_delete	(*f_it);
+    for (auto& m_Face : m_Faces)
+    {
+	    xr_delete	(m_Face);
+    }
     m_Faces.clear	();
-    for (SBPartVecIt p_it=m_Parts.begin(); p_it!=m_Parts.end(); p_it++) 
-    	xr_delete	(*p_it);
+    for (auto& m_Part : m_Parts)
+    {
+	    xr_delete	(m_Part);
+    }
     m_Parts.clear	();
     m_Adjs.clear	();
 }
@@ -380,18 +405,21 @@ bool CGeomPartExtractor::Process()
     // make adjacement
     {
         m_Adjs.resize	(m_Verts->Vertices().size());
-        for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
-            for (int k=0; k<3; k++) m_Adjs[(*f_it)->vert_id[k]].push_back(*f_it);
+        for (auto& m_Face : m_Faces)
+        {
+	        for (int k=0; k<3; k++) m_Adjs[m_Face->vert_id[k]].push_back(m_Face);
+        }
     }
     // extract parts
     {
 		SPBItem* pb = EContext.UI->ProgressStart(m_Faces.size(), "Extract Parts...");
-        for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
+        for (auto& m_Face : m_Faces)
+        {
 	        pb->Inc();
-            SBFace* F	= *f_it;
+            SBFace* F	= m_Face;
             if (!F->marked){
                 SBPart* P 		= new SBPart();
-                recurse_tri		(P,m_Faces,m_Adjs,*f_it);
+                recurse_tri		(P,m_Faces,m_Adjs, m_Face);
                 m_Parts.push_back	(P);
             }
         }
@@ -400,9 +428,10 @@ bool CGeomPartExtractor::Process()
     // simplify parts
     {
 		SPBItem* pb = EContext.UI->ProgressStart(m_Parts.size(), "Simplify Parts...");
-        for (SBPartVecIt p_it=m_Parts.begin(); p_it!=m_Parts.end(); p_it++){	
+        for (auto& m_Part : m_Parts)
+        {	
 	        pb->Inc();
-        	(*p_it)->prepare	(m_Adjs,m_PerBoneFaceCountMin);
+	        m_Part->prepare	(m_Adjs,m_PerBoneFaceCountMin);
         }
 		EContext.UI->ProgressEnd(pb);
     }

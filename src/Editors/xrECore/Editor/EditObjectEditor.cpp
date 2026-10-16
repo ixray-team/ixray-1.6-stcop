@@ -116,13 +116,13 @@ ref_shader CSurface::_ShaderInstanced()
 
 	m_RTFlags.set(rtInstancedShaderTried, true);
 
-	if (!_Shader() || !m_ShaderName.size() || !m_Texture.size())
+	if (!_Shader() || !_ShaderName() || !_Texture())
 	{
 		return m_ShaderInstanced;
 	}
 
 	RImplementation.SetEditorInstancing(true);
-	m_ShaderInstanced.create(*m_ShaderName, *m_Texture);
+	m_ShaderInstanced.create(_ShaderName(), _Texture());
 	RImplementation.SetEditorInstancing(false);
 
 	if (!CEditorInstanceBatcher::IsShaderSupported(&*m_ShaderInstanced))
@@ -641,20 +641,22 @@ IC bool BE(bool A, bool B)
 bool CEditableObject::CheckShaderCompatible()
 {
 	bool bRes 			= true;
-	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+	for (auto& m_Surface : m_Surfaces)
 	{
-		IBlender* 		B = DEV->_FindBlender(*(*s_it)->m_ShaderName);
-		Shader_xrLC* 	C = EDevice->ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
+		IBlender* B = DEV->_FindBlender(m_Surface->_ShaderName());
+		Shader_xrLC* C = EDevice->ShaderXRLC.Get(m_Surface->_ShaderXRLCName());
 		if (!B||!C){
-			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(),(*s_it)->m_ShaderName.c_str(),(*s_it)->m_ShaderXRLCName.c_str());
-			bRes 		= false;
-		}else{
-			if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex)){
-				ELog.Msg	(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", m_LibName.c_str(),
-					(*s_it)->m_Name.c_str(), (*s_it)->m_ShaderName.c_str(), (*s_it)->m_ShaderXRLCName.c_str());
+			ELog.Msg(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(), m_Surface->_ShaderName(), m_Surface->_ShaderXRLCName());
+			bRes = false;
+		}
+		else if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex))
+		{
+			ELog.Msg(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", m_LibName.c_str(),
+				m_Surface->_Name(),
+				m_Surface->_ShaderName(),
+				m_Surface->_ShaderXRLCName());
 				
-				bRes 		= false;
-			}
+			bRes = false;
 		}
 	}
 	return bRes;

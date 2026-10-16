@@ -81,40 +81,39 @@
 		typename ShaderTypeTraits<T>::MapType::iterator	I = sh_map.find(N);
 
 		if (I!=sh_map.end())
-			return		I->second;
-		else
 		{
-			T*		sh = new T();
-
-			sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-			sh_map.insert(std::make_pair(sh->set_name(name),sh));
-			if (0==_stricmp(_name,"null"))
-			{
-				sh->sh				= NULL;
-				return sh;
-			}
-
-			// Open file
-			string_path					cname;
-			xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
-			FS.update_path				(cname,	_game_shaders_, cname);
-
-			// duplicate and zero-terminate
-			IReader* file				= FS.r_open(cname);
-			R_ASSERT2					( file, cname );
-
-			// Select target
-			const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
-			const char*						c_entry		= "main";
-
-			// Compile
-			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
-
-			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-			FS.r_close					( file );
-
-			return			sh;
+			return		I->second;
 		}
+		T*		sh = new T();
+
+		sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+		sh_map.insert(std::make_pair(sh->set_name(name),sh));
+		if (0==_stricmp(_name,"null"))
+		{
+			sh->sh = nullptr;
+			return sh;
+		}
+
+		// Open file
+		string_path					cname;
+		xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
+		FS.update_path				(cname,	_game_shaders_, cname);
+
+		// duplicate and zero-terminate
+		IReader* file				= FS.r_open(cname);
+		R_ASSERT2					( file, cname );
+
+		// Select target
+		const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
+		const char*						c_entry		= "main";
+
+		// Compile
+		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		FS.r_close					( file );
+
+		return			sh;
 	}
 
 	template<typename T>
@@ -124,7 +123,9 @@
 		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
 
 		if (0==(sh->dwFlags&xr_resource_flagged::RF_REGISTERED))
+		{
 			return;
+		}
 
 		LPSTR N = LPSTR(*sh->cName);
 		typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(N);

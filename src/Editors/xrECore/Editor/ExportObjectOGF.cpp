@@ -1,19 +1,13 @@
 #include "stdafx.h"
 
-
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "Export/MeshMenderVertex.h"
 #include "Export/MeshExportCommon.h"
 #include "../xrEngine/fmesh.h"
-#include "../xrEngine/bone.h"
-#include "../xrEngine/motion.h"
 
-#if 1
-//#include "std_classes.h"
 #include "ui_main.h"
-#endif
 
 CObjectOGFCollectorPacked::CObjectOGFCollectorPacked(const Fbox &bb, int apx_vertices, int apx_faces)
 {
@@ -64,8 +58,8 @@ void CExportObjectOGF::SSplit::SavePart(IWriter& F, CObjectOGFCollectorPacked* p
 
 	// Texture
 	F.open_chunk		(OGF_TEXTURE);
-	F.w_stringZ			(m_Surf->m_Texture.c_str());
-	F.w_stringZ			(m_Surf->m_ShaderName.c_str());
+	F.w_stringZ			(m_Surf->_Texture());
+	F.w_stringZ			(m_Surf->_ShaderName());
 	F.close_chunk		();
 
 	// Vertices
@@ -212,7 +206,7 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
 			SGameMtl* M = PGMLib->GetMaterialByID(surf->_GameMtl());
 			if (nullptr==M)
 			{
-				ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->m_Name.c_str());
+				ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->_Name());
 				bResult 		= false; 
 				break; 
 			}
@@ -220,18 +214,18 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
 			m_Splits.push_back	(new SSplit(surf,m_Source->GetBox()));
 			split				= m_Splits.back();
 		}
-		int 	elapsed_faces 	= surf->m_Flags.is(CSurface::sf2Sided) ?face_lst.size()*2 : face_lst.size();
-		const 	bool b2sided	= !!surf->m_Flags.is(CSurface::sf2Sided);
+		int 	elapsed_faces 	= surf->_flags().is(SSurfaceData::sf2Sided) ?face_lst.size()*2 : face_lst.size();
+		const 	bool b2sided	= !!surf->_flags().is(SSurfaceData::sf2Sided);
 			
 		if (nullptr==split->m_CurrentPart) 
 			split->AppendPart(	(elapsed_faces>0xffff) ? 0xffff : elapsed_faces,
 								(elapsed_faces>0xffff) ? 0xffff : elapsed_faces);
 
 		do{
-			for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); ++f_it)
+			for (int& f_it : face_lst)
 			{
 				bool bNewPart	= false;
-				st_Face& face 	= MESH->m_Faces[*f_it];
+				st_Face& face 	= MESH->m_Faces[f_it];
 				{
 					SOGFVert v[3];
 					for (int k = 0; k < 3; ++k)
@@ -252,7 +246,7 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
 							uv = &vmap.getUV(vm_pt.index);
 						}
 						R_ASSERT2(uv, "uv empty");
-						u32 norm_id = (*f_it) * 3 + k;
+						u32 norm_id = f_it * 3 + k;
 						R_ASSERT2(norm_id < MESH->m_Faces.size() * 3, "Normal index out of range.");
 
 						if (!MESH->m_Normals.empty() && EPrefs->SmoothGroup == ESmoothGroup::Normals)
@@ -288,7 +282,7 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
 
 bool CExportObjectOGF::Prepare(bool gen_tb, CEditableMesh* mesh)
 {
-	if( (m_Source->m_Meshes.size() == 0) ) return false;
+	if( (m_Source->m_Meshes.empty()) ) return false;
 
 	bool bResult 		= true;
 	if (mesh) 
@@ -427,7 +421,7 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 	// write material file
 	for (SSplit* Split : m_Splits)
 	{
-		_splitpath			(Split->m_Surf->m_Texture.c_str(), nullptr, tex_path, tex_name, nullptr );
+		_splitpath			(Split->m_Surf->_Texture(), nullptr, tex_path, tex_name, nullptr );
 
 		xr_sprintf				(tmp,"newmtl %s", tex_name);
 		Fm->w_string		(tmp);
@@ -456,7 +450,7 @@ bool CExportObjectOGF::ExportAsWavefrontOBJ(IWriter& F, const char* fn)
 	u32 SplitIndex			= 0;
 	for (SSplit* Split : m_Splits)
 	{
-		_splitpath			(Split->m_Surf->m_Texture.c_str(), nullptr, nullptr, tex_name, nullptr );
+		_splitpath			(Split->m_Surf->_Texture(), nullptr, nullptr, tex_name, nullptr );
 		xr_sprintf				(tmp,"g %d", SplitIndex);
 		F.w_string			(tmp);
 		xr_sprintf				(tmp,"usemtl %s",tex_name);

@@ -46,6 +46,8 @@ static void CollectLights(GpuScene& Scene)
 	Msg("[GPU] Loaded Lighting: %u size", (u32)Scene.Lights.size());
 }
 
+static xr_map<b_material_shared*, u16> ConvSharedMatToIndex;
+
 static void CollectFaces(GpuScene& Scene, const xr_vector<void*>& Faces)
 {
 	Scene.Faces.resize(Faces.size());
@@ -59,50 +61,94 @@ static void CollectFaces(GpuScene& Scene, const xr_vector<void*>& Faces)
 
 		if (isLC)
 		{
-			Face* F				= (Face*)Fv;
-			FaceGPU.SurfaceID	= lc_global_data()->materials()[F->dwMaterial].surfidx;
-			FaceGPU.Opaque		= F->flags.bOpaque;
-			TC					= F->getTC0();
+			Face* F = (Face*)Fv;
+			FaceGPU.Opaque = F->flags.bOpaque;
+			FaceGPU.Shared = F->flags.bSharedMaterial;
+			TC = F->getTC0();
 		}
 		else
 		{
-			FaceDataEmbree* F	= (FaceDataEmbree*)Fv;
-			FaceGPU.SurfaceID	= gl_data.g_materials[F->dwMaterial].surfidx;
-			FaceGPU.Opaque		= F->bOpaque;
-			TC					= F->getTC0();
+			FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+			FaceGPU.Opaque = F->bOpaque;
+			FaceGPU.Shared = F->bSharedMaterial;
+			TC = F->getTC0();
 		}
 
 		FaceGPU.TC[0] = TC[0];
 		FaceGPU.TC[1] = TC[1];
 		FaceGPU.TC[2] = TC[2];
+
+		if(FaceGPU.Shared)
+		{
+			b_material_shared* ID = nullptr;
+			if(isLC)
+			{
+				Face* F = (Face*)Fv;
+				ID = &lc_global_data()->materials_shared()[F->dwMaterial];
+			} else
+			{
+				FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+				ID = &gl_data.g_materials_shared[F->dwMaterial];
+			}
+			auto It = ConvSharedMatToIndex.find(ID);
+			if (It == ConvSharedMatToIndex.end())
+			{
+				ConvSharedMatToIndex[ID] = ConvSharedMatToIndex.size();
+				FaceGPU.SurfaceID = ConvSharedMatToIndex[ID];
+			} else
+			{
+				FaceGPU.SurfaceID = It->second;	
+			}
+		} else
+		{
+			if(isLC)
+			{
+				Face* F = (Face*)Fv;
+				FaceGPU.SurfaceID = lc_global_data()->materials()[F->dwMaterial].surfidx;
+			} else
+			{
+				FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+				FaceGPU.SurfaceID = gl_data.g_materials[F->dwMaterial].surfidx;
+			}
+		}
 	}
 }
 
 static void CollectTexturesAlpha(GpuScene& Scene)
 {
 	auto& glTextures = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures() : gl_data.g_textures;
+	auto& glTexturesShared = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures_shared() : gl_data.g_textures_shared;
 
 	size_t Allocated = 0;
-	Scene.Textures.resize(glTextures.size());
-	for (size_t Index = 0; Index < glTextures.size(); Index++)
+	auto SingleTexturePrepareFunc = [&](GpuTexture& data, const b_texture& T)
 	{
-		auto& T = glTextures[Index];
-		GpuTexture& Data = Scene.Textures[Index];
-		Data.Width  = T.dwWidth;
-		Data.Height = T.dwHeight;
-
-		if (T.pSurface.Empty() || !T.bHasAlpha)
+		data.Width = T.dwWidth;
+		data.Height = T.dwHeight;
+		if(T.pSurface.Empty() || !T.bHasAlpha)
 		{
-			continue;
+			data.Alpha.clear();
+			return;
 		}
-
-		Data.Alpha.resize(T.dwWidth * T.dwHeight);
+		data.Alpha.resize(T.dwWidth * T.dwHeight);
 		const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
 		for (u32 i = 0; i < T.dwWidth * T.dwHeight; i++)
 		{
-			Data.Alpha[i] = (raw[i] >> 24) & 0xFF;
+			data.Alpha[i] = (raw[i] >> 24) & 0xFF;
 		}
-		Allocated += Data.Alpha.size();
+		Allocated += data.Alpha.size();
+	};
+
+	Scene.Textures.reserve(glTextures.size());
+	for(auto& T : glTextures)
+	{
+		SingleTexturePrepareFunc(Scene.Textures.emplace_back(), T);
+	}
+	Scene.TexturesShared.resize(ConvSharedMatToIndex.size());
+	for(auto& [K, ID] : ConvSharedMatToIndex)
+	{
+		auto V = glTexturesShared.find(K);
+		R_ASSERT(V != glTexturesShared.end());
+		SingleTexturePrepareFunc(Scene.TexturesShared[ID], V->second);
 	}
 
 	Msg("[GPU] Textures[%u] Alpha: %llu mb", (u32)Scene.Textures.size(), (u64)(Allocated / 1024 / 1024));
@@ -131,8 +177,9 @@ void XRay::RayTrace::GPU::BuildScene(GpuScene& Scene)
                 continue;
             }
 
-            u16 SurfaceID = GlobalData->materials()[FacePtr->dwMaterial].surfidx;
-            b_texture& Texture = GlobalData->textures()[SurfaceID];
+        	auto& Texture = CBuild::GetTexture(*FacePtr);
+            //u16 SurfaceID = GlobalData->materials()[FacePtr->dwMaterial].surfidx;
+            //b_texture& Texture = GlobalData->textures()[SurfaceID];
 
             bool IsTransparent = (!Texture.pSurface.Empty() && Texture.bHasAlpha);
             FacePtr->flags.bOpaque = !IsTransparent;
@@ -149,11 +196,13 @@ void XRay::RayTrace::GPU::BuildScene(GpuScene& Scene)
             for (auto& PackedFace : TempBuffer)
             {
                 Face* FacePtr = (Face*)PackedFace.ptr;
-                b_material& Material = GlobalData->materials()[FacePtr->dwMaterial];
-                b_texture& Texture = GlobalData->textures()[Material.surfidx];
+                //b_material& Material = GlobalData->materials()[FacePtr->dwMaterial];
+                //b_texture& Texture = GlobalData->textures()[Material.surfidx];
+            	auto& Texture = CBuild::GetTexture(*FacePtr);
 
                 bool IsTransparent = (!Texture.pSurface.Empty() && Texture.bHasAlpha);
                 FacePtr->flags.bOpaque = IsTransparent;
+            	//FacePtr->flags.bSharedMaterial = FacePtr->flags.bSharedMaterial;
                 GeometryBuilder.AddFace(FacePtr, PackedFace.v1, PackedFace.v2, PackedFace.v3, 0, Ref);
             }
         }
@@ -162,18 +211,19 @@ void XRay::RayTrace::GPU::BuildScene(GpuScene& Scene)
     }
     else if (gCompilerMode.builder_type == LCBuildingType::eDO)
     {
-       auto GlobalData = &gl_data;
+		auto GlobalData = &gl_data;
 
-        // 1. Обрабатываем статическую геометрию
-       for (auto& FaceData : GlobalData->building_embree_faces)
-       {
-           u16 SurfaceID = GlobalData->g_materials[FaceData.dwMaterial].surfidx;
-           b_texture& Texture = GlobalData->g_textures[SurfaceID];
+    	// 1. Обрабатываем статическую геометрию
+		for (auto& FaceData : GlobalData->building_embree_faces)
+		{
+       		auto& Texture = GlobalData->FindTexture(FaceData.dwMaterial, FaceData.bSharedMaterial);
+			//u16 SurfaceID = GlobalData->g_materials[FaceData.dwMaterial].surfidx;
+			//b_texture& Texture = GlobalData->g_textures[SurfaceID];
 
-           bool IsTransparent = (!Texture.pSurface.Empty() && Texture.bHasAlpha);
-           FaceData.bOpaque = !IsTransparent;
-           GeometryBuilder.AddFace(&FaceData, FaceData.v1, FaceData.v2, FaceData.v3, 0);
-       }
+			bool IsTransparent = (!Texture.pSurface.Empty() && Texture.bHasAlpha);
+			FaceData.bOpaque = !IsTransparent;
+			GeometryBuilder.AddFace(&FaceData, FaceData.v1, FaceData.v2, FaceData.v3, 0);
+		}
     }
 
     GeometryBuilder.RemoveDublicates();
