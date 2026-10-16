@@ -240,6 +240,7 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 
 	can_register_objects(true);
 
+	objects().PrepareSpawnIni();
 	for (auto& elem : Objects)
 	{
 		elem.second->on_register();
