@@ -17,26 +17,14 @@ static int				g_rig_enabled = -1;
 static const SCameraRigParam g_rig_params[] =
 {
 	{ "Arms and IK", "hud_ik_share", nullptr, &g_rig.hud_ik_share, nullptr, 1, false, 0.01f },
-	{ "Arms and IK", "lean_hud_counter", nullptr, &g_rig.lean_hud_counter, nullptr, 1, false, 0.01f },
 	{ "Arms and IK", "left_hand_ik_follow", nullptr, &g_rig.left_hand_ik_follow, nullptr, 1, false, 0.005f },
 	{ "Arms and IK", "left_hand_ik_blend", "left_hand_ik_blend", &g_rig.left_hand_ik_blend, nullptr, 1, false, 0.005f },
-	{ "Arms and IK", "left_hand_finger_tail", "left_hand_finger_tail", &g_rig.left_hand_finger_tail, nullptr, 1, false, 0.01f },
 	{ "Arms and IK", "left_hand_finger_grip", "left_hand_finger_grip", &g_rig.left_hand_finger_grip, nullptr, 1, false, 0.01f },
 	{ "Arms and IK", "left_hand_attach_blend", "left_hand_attach_blend", &g_rig.left_hand_attach_blend, nullptr, 1, false, 0.005f },
 
 	{ "Inertia and sway", "turn_sway_smooth", nullptr, &g_rig.turn_sway_smooth, nullptr, 1, false, 0.002f },
 	{ "Inertia and sway", "inertia_speed", nullptr, &g_rig.inertia_speed, nullptr, 1, false, 0.01f },
 	{ "Inertia and sway", "inertia_damping", "inertia_damping", &g_rig.inertia_damping, nullptr, 1, false, 0.01f },
-	{ "Inertia and sway", "mass_speed_exponent", nullptr, &g_rig.mass_speed_exponent, nullptr, 1, false, 0.01f },
-	{ "Inertia and sway", "sway_damping_ratio", nullptr, &g_rig.sway_damping_ratio, nullptr, 1, false, 0.01f },
-
-	{ "Stance sway", "stance_sway_scale", "stance_sway_scale", &g_rig.stance_sway_scale, nullptr, 1, false, 0.01f },
-	{ "Stance sway", "stance_sway_crouch", "stance_sway_crouch", &g_rig.stance_sway_crouch, nullptr, 1, false, 0.01f },
-	{ "Stance sway", "stance_sway_smooth", "stance_sway_smooth", &g_rig.stance_sway_smooth, nullptr, 1, false, 0.005f },
-	{ "Stance sway", "stance_sway_inertia", "stance_sway_inertia", &g_rig.stance_sway_inertia, nullptr, 1, false, 0.005f },
-	{ "Stance sway", "stance_sway_damping", "stance_sway_damping", &g_rig.stance_sway_damping, nullptr, 1, false, 0.01f },
-	{ "Stance sway", "stance_sway_pitch", "stance_sway_pitch", &g_rig.stance_sway_pitch, nullptr, 1, false, 0.05f },
-	{ "Stance sway", "stance_sway_max", "stance_sway_max", &g_rig.stance_sway_max, nullptr, 1, false, 0.001f },
 
 	{ "Animation transitions", "hud_inertialization", nullptr, &g_rig.hud_inertialization, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "idle_fade", "idle_fade", &g_rig.idle_fade, nullptr, 1, false, 0.005f },
@@ -45,7 +33,6 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Animation transitions", "aim_blend_inertia", "aim_blend_inertia", &g_rig.aim_blend_inertia, nullptr, 1, false, 0.005f },
 
 	{ "Sprint and safemode", "sprint_pose_inertia", "sprint_pose_inertia", &g_rig.sprint_pose_inertia, nullptr, 1, false, 0.005f },
-	{ "Sprint and safemode", "sprint_pose_damping", "sprint_pose_damping", &g_rig.sprint_pose_damping, nullptr, 1, false, 0.01f },
 	{ "Sprint and safemode", "safemode_damping", "safemode_damping", &g_rig.safemode_damping, nullptr, 1, false, 0.01f },
 
 	{ "Aim reload", "aim_reload_motion", "aim_reload_motion", &g_rig.aim_reload_motion, nullptr, 1, false, 0.01f },
@@ -57,8 +44,6 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Aim reload", "aim_reload_pose_inertia", "aim_reload_pose_inertia", &g_rig.aim_reload_pose_inertia, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_pose_inertia_out", "aim_reload_pose_inertia_out", &g_rig.aim_reload_pose_inertia_out, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_hud_push_pos", "aim_reload_hud_push_pos", &g_rig.aim_reload_hud_push_pos.x, nullptr, 3, false, 0.0005f },
-	{ "Aim reload", "aim_reload_push_inertia", "aim_reload_push_inertia", &g_rig.aim_reload_push_inertia, nullptr, 1, false, 0.005f },
-	{ "Aim reload", "aim_reload_drop_inertia_out", "aim_reload_drop_inertia_out", &g_rig.aim_reload_drop_inertia_out, nullptr, 1, false, 0.005f },
 
 	{ "Carry pose", "crouch_hud_offset_pos", "crouch_hud_offset_pos", &g_rig.crouch_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
 	{ "Carry pose", "crouch_hud_offset_rot", "crouch_hud_offset_rot", &g_rig.crouch_hud_offset_rot.x, nullptr, 3, false, 0.05f },
@@ -499,7 +484,7 @@ void CCameraRig::UpdateLayers(float dt, Fvector& pos, Fvector& hpb, Fvector& hud
 	}
 }
 
-void CCameraRig::Update(CActor* actor, float fov, float lean)
+void CCameraRig::Update(CActor* actor, float fov)
 {
 	if (!Enabled())
 	{
@@ -548,7 +533,6 @@ void CCameraRig::Update(CActor* actor, float fov, float lean)
 	HudCamPos.mad(hud_pos, shake_pos, g_rig.shake_hud_scale).add(land_pos);
 	HudHpb.mad(Kick.value, land_hpb, g_rig.land_hud_scale - 1.f);
 	HudPos.mad(KickPos.value, land_pos, g_rig.land_hud_scale - 1.f);
-	Lean = lean;
 	UpdateFrame = Device.dwFrame;
 }
 
@@ -599,11 +583,6 @@ void CCameraRig::ApplyHud(Fmatrix& trans)
 	trans.mulB_43(offset);
 }
 
-float CCameraRig::LeanCounter() const
-{
-	return UpdateFrame == Device.dwFrame ? -Lean * g_rig.lean_hud_counter : 0.f;
-}
-
 float CCameraRig::HudIkShare()
 {
 	return Enabled() ? std::clamp(g_rig.hud_ik_share, 0.f, 1.f) : 0.f;
@@ -631,7 +610,7 @@ float CCameraRig::AimReloadTail()
 
 float CCameraRig::MassSpeed(float mass)
 {
-	return g_rig.inertia_speed / powf(std::max(mass, 0.1f), g_rig.mass_speed_exponent);
+	return g_rig.inertia_speed / powf(std::max(mass, 0.1f), 0.25f);
 }
 
 float CCameraRig::ShotAnimBlend()
@@ -649,14 +628,14 @@ float CCameraRig::AimReloadBlend()
 	return g_rig.aim_reload_blend;
 }
 
-bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& target, float speed)
+bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& target, float speed, float damping)
 {
 	if (!Enabled())
 	{
 		return false;
 	}
 
-	HudSpring::Step(value, velocity, target, speed, g_rig.sway_damping_ratio, Device.fTimeDelta);
+	HudSpring::Step(value, velocity, target, speed, damping, Device.fTimeDelta);
 	return true;
 }
 

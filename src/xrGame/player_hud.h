@@ -365,7 +365,6 @@ struct attachable_hud_item final
 	bool							LeftIkFixed = false;
 	float							LeftHandAttachBlend = 0.f;
 	float							LeftHandIkBlend = 0.25f;
-	float							LeftHandFingerTail = 0.f;
 	float							LeftHandFingerGrip = 1.f;
 	shared_str						LeftHandAttachTarget;
 	shared_str						AttachPose;
@@ -390,8 +389,6 @@ struct attachable_hud_item final
 	float							AimReloadPoseInertia = 0.15f;
 	float							AimReloadPoseInertiaOut = 0.05f;
 	Fvector							AimReloadPushPos = {};
-	float							AimReloadPushInertia = 0.04f;
-	float							AimReloadDropInertiaOut = 0.04f;
 	Fvector							CrouchOffsetPos = {};
 	Fvector							CrouchOffsetRot = {};
 	Fvector							WalkOffsetPos = {};
@@ -404,13 +401,6 @@ struct attachable_hud_item final
 	float							WalkPoseInertiaOut = 0.12f;
 	float							CarryPoseDamping = 0.8f;
 	float							AimBlendInertia = 0.f;
-	float							StanceSwayScale = 0.f;
-	float							StanceSwayCrouch = 1.f;
-	float							StanceSwaySmooth = 0.05f;
-	float							StanceSwayInertia = 0.1f;
-	float							StanceSwayDamping = 0.5f;
-	float							StanceSwayPitch = 0.f;
-	float							StanceSwayMax = 0.05f;
 	float							HudMass = 1.f;
 	bool							IkEnabled = true;
 	float							ShotVariation = 0.f;
@@ -423,7 +413,6 @@ struct attachable_hud_item final
 	bool							AdditivePlaying = false;
 	shared_str						AdditiveReference;
 	float							SprintPoseInertia = 0.08f;
-	float							SprintPoseDamping = 0.6f;
 	xr_vector<shared_str>			RetargetMotions;
 	shared_str						RetargetReference;
 	shared_str						AttachPoseReference;
@@ -983,7 +972,7 @@ private:
 	void			HandsIkSprint		(SHandsIkFrame& F);
 	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkFingerState	(SHandsIkFrame& F);
-	void			HandsIkWeaponDelta	(SHandsIkFrame& F, const Fmatrix& cam_trans);
+	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
 	void			HandsIkHandTargets	(SHandsIkFrame& F);
 	void			HandsIkAttachTarget	(SHandsIkFrame& F);
 	void			HandsIkReach		(SHandsIkFrame& F);
@@ -1008,8 +997,6 @@ private:
 	bool								LeftHandAttachReaching = false;
 	u32									LeftHandAttachSnapFrame = u32(-1);
 	bool								LeftGripActive = false;
-	xr_vector<u16>						LeftGripFingerBones;
-	xr_vector<Fquaternion>				LeftGripFingerPose;
 	xr_vector<u16>						FingerGripBones;
 	xr_vector<Fquaternion>				FingerRefPose;
 	MotionID							FingerRefMotion;
@@ -1056,10 +1043,6 @@ private:
 	float								WalkPoseVelocity = 0.f;
 	float								WalkTime = 0.f;
 	float								CrouchTime = 0.f;
-	float								StanceHeightLast = -1.f;
-	float								StanceSwayValue = 0.f;
-	float								StanceSwayVelocity = 0.f;
-	float								StanceHeightRate = 0.f;
 	Fmatrix								ScriptLayersLast = Fidentity;
 	bool								ScriptInertiaPending = false;
 	float								ScriptInertiaHalfLife = 0.f;

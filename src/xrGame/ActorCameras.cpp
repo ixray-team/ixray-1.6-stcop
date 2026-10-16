@@ -561,7 +561,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	if (Level().CurrentEntity() == this && cam_active == eacFirstEye)
 	{
-		Cameras().Rig().Update(this, fFOV, dangle.z);
+		Cameras().Rig().Update(this, fFOV);
 	}
 
 	Cameras().UpdateFromCamera(cam_active==eacLookAt ? cameras[eacLookAt] : cameras[eacFirstEye]);

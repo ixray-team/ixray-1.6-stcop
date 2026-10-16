@@ -34,22 +34,19 @@ struct SCameraRigParams
 	float	land_min_speed		= 4.f, land_max_speed = 14.f, land_pitch = 2.5f, land_roll = 0.8f, land_height = 0.07f;
 	float	land_trauma			= 0.3f, land_hud_scale = 1.6f, land_stiffness = 160.f, land_damping = 12.f;
 	float	strafe_roll			= 0.4f, look_roll = 0.12f, roll_max = 3.f, aim_roll_scale = 0.3f, roll_stiffness = 90.f, roll_damping = 16.f;
-	float	sway_damping_ratio	= 0.6f;
-	float	lean_hud_counter	= 0.7f;
 	float	hud_ik_share		= 0.8f, turn_sway_smooth = 0.05f, aim_reload_blend = 0.25f, left_hand_ik_follow = 0.3f, shot_anim_blend = 0.1f;
-	float	inertia_speed		= 1.3f, mass_speed_exponent = 0.25f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
+	float	inertia_speed		= 1.3f, aim_reload_tail = 0.2f, shot_anim_tail = 0.3f;
 	float	hud_inertialization	= 0.f;
 	float	aim_reload_motion	= 1.f, shot_anim_variation = 0.f, shot_anim_twist = 0.f, aim_shot_motion = 1.f, idle_fade = 0.f, inertia_damping = 0.55f;
-	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_tail = 0.f, left_hand_finger_grip = 1.f;
+	float	additive_blend_in	= 0.f, additive_blend_out = 0.1f, left_hand_attach_blend = 0.f, left_hand_ik_blend = 0.25f, left_hand_finger_grip = 1.f;
 	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
 	bool	cam_shoot_mirror	= false;
 	float	aim_blend_inertia	= 0.f;
-	float	stance_sway_scale	= 0.f, stance_sway_crouch = 1.f, stance_sway_smooth = 0.05f, stance_sway_inertia = 0.1f, stance_sway_damping = 0.5f, stance_sway_pitch = 0.f, stance_sway_max = 0.05f;
-	float	sprint_pose_inertia	= 0.08f, sprint_pose_damping = 0.6f, safemode_damping = 0.6f;
+	float	sprint_pose_inertia	= 0.08f, safemode_damping = 0.6f;
 	Fvector	aim_reload_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_push_pos = { 0.f, 0.f, 0.f };
-	float	aim_reload_zoom_out	= 0.f, aim_reload_pose_inertia = 0.15f, aim_reload_pose_inertia_out = 0.05f, aim_reload_push_inertia = 0.04f, aim_reload_drop_inertia_out = 0.04f;
+	float	aim_reload_zoom_out	= 0.f, aim_reload_pose_inertia = 0.15f, aim_reload_pose_inertia_out = 0.05f;
 	Fvector	crouch_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	crouch_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	walk_hud_offset_pos = { 0.f, 0.f, 0.f };
@@ -97,7 +94,6 @@ class CCameraRig
 	float					WeaponTrauma = 0.f;
 	float					WeaponFovKick = 0.f;
 	float					Trauma = 0.f;
-	float					Lean = 0.f;
 	u32						UpdateFrame = u32(-1);
 	bool					FovValid = false;
 
@@ -122,7 +118,7 @@ public:
 	static float			AimReloadTail	();
 	static float			ShotAnimTail	();
 	static float			HudInertialization();
-	static bool				SpringSway		(Fvector& value, Fvector& velocity, const Fvector& target, float speed);
+	static bool				SpringSway		(Fvector& value, Fvector& velocity, const Fvector& target, float speed, float damping);
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
 	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);
 
@@ -135,8 +131,7 @@ public:
 	void					OnHit			(float power);
 	void					OnExplosion		(float power);
 	void					OnLand			(float speed);
-	void					Update			(CActor* actor, float fov, float lean);
+	void					Update			(CActor* actor, float fov);
 	void					Apply			(SCamEffectorInfo& world, SCamEffectorInfo& hud);
 	void					ApplyHud		(Fmatrix& trans);
-	float					LeanCounter		() const;
 };

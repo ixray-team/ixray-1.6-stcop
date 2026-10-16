@@ -402,7 +402,7 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	Fvector inertia = { m_fHudYawInertia, m_fHudPitchInertia, m_fHudRollInertia };
 	const attachable_hud_item* hi = HudItemData();
 	const float fMassSpeed = fSpeed * CCameraRig::MassSpeed(hi != nullptr ? hi->HudMass : 1.f);
-	if (CCameraRig::SpringSway(inertia, HudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fMassSpeed))
+	if (CCameraRig::SpringSway(inertia, HudInertiaVelocity, Fvector{ fYawTarget, fPitchTarget, fRollTarget }, fMassSpeed, hi != nullptr ? hi->InertiaDamping : CCameraRig::Params().inertia_damping))
 	{
 		m_fHudYawInertia = inertia.x;
 		m_fHudPitchInertia = inertia.y;
