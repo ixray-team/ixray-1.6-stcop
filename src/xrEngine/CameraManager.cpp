@@ -362,14 +362,14 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	m_cam_info.n.crossproduct(m_cam_info.d, m_cam_info.r);
 
 	float aspect = float(Device.TargetHeight) / float(Device.TargetWidth);
+	
+	float sfov = _inertion(m_cam_info.fFov, fFOV_Dest, powf(psCamFovInert, Device.fTimeDelta * 144.f));
+	float sfar = _inertion(m_cam_info.fFar, fFAR_Dest, powf(psCamFarInert, Device.fTimeDelta * 144.f));
+	float saspect = _inertion(m_cam_info.fAspect, fASPECT_Dest * aspect, psCamAspectInert);
 
-	float smoothed_fov = _inertion(m_cam_info.fFov, fFOV_Dest, psCamFovInert);
-	float smoothed_far = _inertion(m_cam_info.fFar, fFAR_Dest, psCamFarInert);
-	float smoothed_aspect = _inertion(m_cam_info.fAspect, fASPECT_Dest * aspect, psCamAspectInert);
-
-	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : smoothed_fov;
-	m_cam_info.fFar = m_cam_info.first_init ? fFAR_Dest : smoothed_far;
-	m_cam_info.fAspect = m_cam_info.first_init ? fASPECT_Dest * aspect : smoothed_aspect;
+	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : sfov;
+	m_cam_info.fFar = m_cam_info.first_init ? fFAR_Dest : sfar;
+	m_cam_info.fAspect = m_cam_info.first_init ? fASPECT_Dest * aspect : saspect;
 	m_cam_info.dont_apply = false;
 
 	UpdateCamEffectors();
