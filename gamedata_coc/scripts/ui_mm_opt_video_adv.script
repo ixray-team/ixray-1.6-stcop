@@ -211,34 +211,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addCheck(self, mode_2, "ui_mm_r2_use_rain_drops", "r2_use_rain_drops", system_depends.sdNothing)
 	handler:addComboBox(self, mode_2, "ui_mm_r2_rain_drops_mode", "r2_rain_drops_mode", 2, false, system_depends.sdNothing)
 
-	handler.enableDof = handler:addCheck(self, mode_2, "ui_mm_dof", "r2_dof_enable", system_depends.sdVidRestart, "enableDof")
-    handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, reloadControls, nil)
-
-	handler.reloadDof = handler:addCheck(self, nil, "ui_mm_dof_reload", "enable_dof_reload", system_depends.sdNothing)
-    
-    local enableReloadDofFunc = function(id)
-		if mode_2(id) then
-			handler.reloadDof:Enable(handler.enableDof:GetCheck())
-			handler.reloadDof:SetCheck(handler.reloadDof:GetCheck() and handler.enableDof:GetCheck())
-			return true
-		end
-		return false
-    end
-	
-    table.insert(handler.m_preconditions, {func=enableReloadDofFunc, control=handler.reloadDof:GetParent()})
-
-   	handler.talkDof = handler:addCheck(self, nil, "ui_mm_dof_talk", "enable_dof_talk", system_depends.sdNothing)
-    
-    local enableTalkDofFunc = function(id)
-		if mode_2(id) then
-			handler.talkDof:Enable(handler.enableDof:GetCheck())
-			handler.talkDof:SetCheck(handler.talkDof:GetCheck() and handler.enableDof:GetCheck())
-			return true
-		end
-		return false
-    end
-	
-    table.insert(handler.m_preconditions, {func=enableTalkDofFunc, control=handler.talkDof:GetParent()})
 	handler:addTrack(self, mode_4, "st_motion_blur_power", "r4_mblur_power", 0.1, false, "float", false, system_depends.sdNothing)
   	handler:addComboBox(self, mode_4, "st_motion_blur_quality", "r4_mblur_quality", 6, false, system_depends.sdSystemRestart)
+
+	ui_mm_dof_options.add(self, handler, mode_2, reloadControls)
 end

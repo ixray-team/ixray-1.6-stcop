@@ -273,8 +273,9 @@ void CRenderTarget::phase_combine()
 
 		//	Set up variable
 		Fvector2 vDofKernel;
+		const float DofKernelSize = ps_r2_dof_kernel_size * (1.0f + (g_DofLensKernelScale - 1.0f) * LensDofFactor);
 		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
-		vDofKernel.mul(ps_r2_dof_kernel_size);
+		vDofKernel.mul(DofKernelSize);
 
 		Fvector3 dof;
 		g_pGamePersistent->GetCurrentDof(dof);
@@ -282,7 +283,7 @@ void CRenderTarget::phase_combine()
 		DrawPassSQ(s_combine, 2, [&]
 		{
 			RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
-			RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
+			RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, DofKernelSize, 0);
 			RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
 			RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
 			RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);

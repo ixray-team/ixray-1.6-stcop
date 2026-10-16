@@ -32,6 +32,9 @@ void CRenderTarget::phase_scene_prepare()
 	GPU_EVENT(phase_scene_prepare);
 
 	GRHI->ClearTarget(rt_Normal->pRT, ERTColor::Gray);
+	// Zero means ordinary scene pixels; only lens geometry writes one.
+	GRHI->ClearTarget(rt_DofScopeMask->pRT, ERTColor::Transparent);
+	LensDofFactor = 0.0f;
 	GRHI->ClearDepthStencil(RDepth, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0L);
 
 	//	Igor: for volumetric lights

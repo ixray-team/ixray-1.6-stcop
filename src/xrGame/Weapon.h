@@ -571,7 +571,6 @@ protected:
 	{
 		bool			m_bZoomEnabled;			//разрешение режима приближения
 		bool			m_bHideCrosshairInZoom;
-//		bool			m_bZoomDofEnabled;
 
 		bool			m_bIsZoomModeNow = false;		//когда режим приближения включен
 		bool			m_bIsAltZoomModeNow = false;		//когда режим приближения включен
@@ -584,8 +583,6 @@ protected:
 		float			m_fZoomRotationFactor = 0.0f;
 		float			m_fZoomRotationFactor2 = 0.0f;
 		
-//		Fvector			m_ZoomDof;
-		Fvector4		m_ReloadDof;
 		bool			m_bUseDynamicZoom;
 		shared_str		m_sUseZoomPostprocess;
 		shared_str		m_sUseBinocularVision;

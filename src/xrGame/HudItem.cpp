@@ -25,6 +25,7 @@ CHudItem::CHudItem()
 
 void CHudItem::SetHudSection(const shared_str& Section)
 {
+	CDofManager::LoadHud(DofSource, Section);
 	hud_sect = Section;
 	CurrentHudDesc = &SHudItemDesc::Registry::Get(hud_sect);
 	m_current_inertion = CurrentHudDesc->Inertion;
@@ -538,6 +539,7 @@ void CHudItem::OnH_A_Independent()
 
 void CHudItem::on_b_hud_detach()
 {
+	CDofManager::StopAction(DofSource);
 	m_sounds.StopAllSounds	();
 }
 
@@ -698,7 +700,9 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMix
 			g_player_hud->OnHudMotionStarted(motion_name);
 		}
 
-		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, disableRandom);
+		const u32 Duration = HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, disableRandom);
+		CDofManager::StartAction(DofSource, motion_name, Duration);
+		return Duration;
 	}
 	else
 	{
@@ -709,6 +713,7 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMix
 
 void CHudItem::StopCurrentAnimWithoutCallback()
 {
+	CDofManager::StopAction(DofSource);
 	m_dwMotionStartTm			= 0;
 	m_dwMotionEndTm				= 0;
 	m_dwMotionCurrTm			= 0;

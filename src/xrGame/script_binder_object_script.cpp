@@ -23,5 +23,7 @@ void CScriptBinderObject::script_register(lua_State *L)
 		class_<CScriptBinderObject, CScriptBinderObjectWrapper>("object_binder")
 			.def_readwrite("object",			&CScriptBinderObject::m_object)
 			.def(								constructor<luabind::object>())
+			.def("update", &CScriptBinderObject::shedule_Update, &CScriptBinderObjectWrapper::shedule_Update_static)
+			.def("net_destroy", &CScriptBinderObject::net_Destroy, &CScriptBinderObjectWrapper::net_Destroy_static)
 	];
 }

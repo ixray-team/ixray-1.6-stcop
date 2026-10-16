@@ -8,9 +8,12 @@
 #include "EatableEffectsDesc.h"
 #include "InventoryItemDesc.h"
 #include "ArtefactDesc.h"
+#include "../DofManager.h"
 
 void ClearDescRegistries()
 {
+	SHudDofDesc::Registry::Clear();
+	SHudDofDefaults::Registry::Clear();
 	SHudItemDesc::Registry::Clear();
 	SCustomDetectorDesc::Registry::Clear();
 	SEliteDetectorDesc::Registry::Clear();

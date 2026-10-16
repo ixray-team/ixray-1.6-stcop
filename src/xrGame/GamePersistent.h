@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../xrEngine/IGame_Persistent.h"
+#include "DofManager.h"
 class CMainMenu;
 class CUICursor;
 class CParticlesObject;
@@ -27,11 +28,10 @@ class CGamePersistent:
 	float				ambient_effect_wind_out_time;
 	bool				ambient_effect_wind_on;
 
-	bool				m_bPickableDOF;
+	CDofManager Dof;
 
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
-	Fvector				m_dof		[4];	// 0-dest 1-current 2-from 3-original
 
 	xr_delegate<void()> m_intro_event;
 
@@ -50,7 +50,6 @@ class CGamePersistent:
 #endif
 
 	void				WeathersUpdate			();
-	void				UpdateDof				();
 
 public:
 	xr_vector<xr_shared_ptr<CParticlesObject>> ps_active;
@@ -100,6 +99,7 @@ public:
 			void		SetPickableEffectorDOF	(bool bSet);
 			void		SetEffectorDOF			(const Fvector& needed_dof);
 			void		RestoreEffectorDOF		();
+	CDofManager& DofManager() { return Dof; }
 
 	virtual void		GetCurrentDof			(Fvector3& dof);
 	virtual void		SetBaseDof				(const Fvector3& dof);

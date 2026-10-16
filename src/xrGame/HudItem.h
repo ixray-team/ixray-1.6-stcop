@@ -29,6 +29,7 @@ class CPhysicsShellHolder;
 
 #include "HudTorchLight.h"
 #include "Descs/HudItemDesc.h"
+#include "DofManager.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -78,6 +79,7 @@ class CHudItem : public CHUDState
 {
 public:
 	CHudItem();
+	SHudDofSource DofSource;
 	virtual	~CHudItem() = default;
 	virtual DLL_Pure* _construct();
 
