@@ -96,6 +96,15 @@ cmake -S . -B build-macos -G Ninja \
 3. **`ninja`** (`brew install ninja`).
 4. **`-DCMAKE_FIND_FRAMEWORK=LAST`** + `CMAKE_PREFIX_PATH` + явный `-I…/openal-soft/include` — иначе `find_package(OpenAL)` берёт **системный Apple-фреймворк** (в нём заголовки лежат как `<OpenAL/…>` и нет EFX). Причём Homebrew-овский `openal-soft` — keg-only, и CMake находит его заголовки как `include/AL`, а код включает `<AL/al.h>`, поэтому нужен родительский `include` (на Linux этого не требуется — там заголовки и так в системном пути).
 
+## КЛЮЧЕВАЯ НАХОДКА: слой RHI завязан на D3D-типы
+
+Проверено (16.10):
+
+- Из **всех** модулей движка RHI нужен только **`xrEngine`** — 4 файла (`EngineAPI.h`, `device.h`, `Autotest.cpp`, `StatGraph.cpp`), и им достаточно **чистых** заголовков `RHI.h` и `RHIEnums.h`. `xrGame`, `xrUI`, `xrSound`, `xrPhysics`, `xrScripts` RHI **не касаются вообще** — они падают лишь транзитивно, из-за сборки самого `xrRHI`.
+- Но `xrRHI` **не является чистым швом**: его реализация включает D3D-заголовки напрямую — `RHI.cpp` → `D3D9/Device.h`, `D3D11/Device.h`, `D3DX*`; `Private/RHIStateCache.h` → `<d3d11.h>`; `RHIShaderCompiler.cpp` → `<d3dcompiler.h>`. На Windows они из Windows SDK, на Linux — из DXVK-Native, на macOS их нет.
+- Пробовали взять заголовки из mingw-w64 (их же путь на Linux): `_mingw.h` даёт `#error Only Win32 target is supported!` без `_WIN32`; с `-D_WIN32 -fms-extensions` конфликтуют `_exception_code`/`_CRTIMP`. **На macOS этот путь не работает** — заголовки только для Win32-таргета. Ставить костыль (подделка D3D-заголовков) не стали — это как раз тот случай, где нужен «стоп/спросить».
+- **Следствие для плана:** порядок фаз скорректирован — «окно на Mac» (Task 1.5) недостижимо раньше, чем `xrRHI` начнёт собираться на macOS, а это и есть работа Phase 2 (Metal-бэкенд + развязка интерфейса RHI от D3D-типов). Phase 1 останавливается на `xrCore` ✅ + `xrSound` ✅ + всех зависимостях ✅.
+
 ## Статус сборки модулей (на 16.10, 13:30)
 
 | Модуль | Состояние | Что мешает |
