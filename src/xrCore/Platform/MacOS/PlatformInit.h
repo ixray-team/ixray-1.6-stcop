@@ -73,6 +73,8 @@ using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;
 using BYTE = unsigned char;
+// AI: LPBYTE is a Windows SDK type the renderer uses; it is missing on this host.
+using LPBYTE = unsigned char*;
 using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
