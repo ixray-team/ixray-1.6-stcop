@@ -200,9 +200,12 @@ static bool ignore_save_incompatibility		()
 void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 {
 	IReader						*chunk;
-	chunk						= file_stream.open_chunk(0);
-	m_header.load				(*chunk);
-	chunk->close				();
+	{
+		PROF_EVENT("Spawns: header");
+		chunk					= file_stream.open_chunk(0);
+		m_header.load			(*chunk);
+		chunk->close			();
+	}
 	R_ASSERT2					(!save_guid || (*save_guid == header().guid()) || ignore_save_incompatibility(),"Saved game doesn't correspond to the spawn : DELETE SAVED GAME!");
 
 	chunk = file_stream.open_chunk(SpawnFileChunks::SpawnGraphOld);
@@ -211,7 +214,10 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 		chunk = file_stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
 		IVERIFY(chunk);
 	}
-	m_spawns.load				(*chunk);
+	{
+		PROF_EVENT("Spawns: spawn graph");
+		m_spawns.load			(*chunk);
+	}
 	chunk->close				();
 
 #if 0
@@ -233,12 +239,18 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 #endif
 
 	chunk						= file_stream.open_chunk(2);
-	load_data					(m_artefact_spawn_positions,*chunk);
+	{
+		PROF_EVENT("Spawns: artefact positions");
+		load_data				(m_artefact_spawn_positions,*chunk);
+	}
 	chunk->close				();
 
 	chunk						= file_stream.open_chunk(3);
 	R_ASSERT2					(chunk,"Spawn version mismatch - REBUILD SPAWN!");
-	ai().patrol_path_storage	(*chunk);
+	{
+		PROF_EVENT("Spawns: patrol paths");
+		ai().patrol_path_storage(*chunk);
+	}
 	chunk->close				();
 
 	VERIFY						(!m_chunk);
@@ -252,14 +264,19 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	R_ASSERT2					(m_chunk,"Spawn version mismatch - REBUILD SPAWN!");
 
 	VERIFY						(!m_game_graph);
-	m_game_graph				= new CGameGraph(*m_chunk);
+	{
+		PROF_EVENT("Spawns: game graph");
+		m_game_graph			= new CGameGraph(*m_chunk);
+	}
 	ai().game_graph				(m_game_graph);
 
 	R_ASSERT2					((header().graph_guid() == ai().game_graph().header().guid()) || ignore_save_incompatibility(),"Spawn doesn't correspond to the graph : REBUILD SPAWN!");
 
-	build_story_spawns			();
-
-	build_root_spawns			();
+	{
+		PROF_EVENT("Spawns: story and root spawns");
+		build_story_spawns		();
+		build_root_spawns		();
+	}
 
     load_spawn_position_from_smart();
 
