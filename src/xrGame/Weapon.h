@@ -365,6 +365,7 @@ public:
 	bool bLoadAltScopesParams(const char* section);
 	void LoadOriginalScopesParams(const char* section);
 	void LoadCurrentScopeParams(const char* section);
+	void CreateScopeUI(const shared_str& scope_tex_name);
 	void LoadScopeEffects(const char* Section);
 	void RefreshScopeDetector();
 	void RefreshScopeNightVision();

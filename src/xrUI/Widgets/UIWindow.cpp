@@ -106,6 +106,7 @@ m_bPP(false),
 m_dwFocusReceiveTime(0),
 m_bCustomDraw(false)
 {
+	VERIFY2(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread");
 	Show					(true);
 	Enable					(true);
 #ifdef LOG_ALL_WNDS

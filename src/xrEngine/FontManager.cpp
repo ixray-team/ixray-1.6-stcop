@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "FontManager.h"
+#include "IGame_ObjectPool.h"
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
@@ -62,6 +63,7 @@ void CFontManager::Render()
 
 CGameFont* CFontManager::GetFont(const shared_str& name, u32 flags /*= 0*/)
 {
+	VERIFY2(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread");
 	auto FontIter = Fonts.find(name);
 	if (FontIter == Fonts.end())
 	{

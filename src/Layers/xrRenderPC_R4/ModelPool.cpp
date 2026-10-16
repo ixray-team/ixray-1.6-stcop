@@ -689,6 +689,13 @@ void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 
 void CModelPool::Prefetch()
 {
+	if (IsAsyncLoadEnabled())
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		Msg("* Model pool: %u base models, prefetch visuals load in the background", u32(Models.size()));
+		return;
+	}
+
 	const xr_string section = g_pGamePersistent->GetPrefetchSection("prefetch_visuals_");
 	CInifile::Sect& sect = pSettings->r_section(section.c_str());
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)

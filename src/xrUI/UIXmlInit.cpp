@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIXmlInit.h"
 #include "../../xrEngine/IGame_Level.h"
+#include "../../xrEngine/IGame_ObjectPool.h"
 #include "UIFontDefines.h"
 #include "../../xrEngine/string_table.h"
 #include "Widgets/UIFrameWindow.h"
@@ -76,6 +77,7 @@ Frect CUIXmlInit::GetFRect(CUIXml& xml_doc, const char* path, int index)
 bool CUIXmlInit::InitWindow(CUIXml& xml_doc, const char* path, 	
 							int index, CUIWindow* pWnd, bool fatal)
 {
+	VERIFY2(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread");
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
 	if (!ValidNode)
 	{

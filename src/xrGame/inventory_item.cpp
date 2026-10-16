@@ -17,6 +17,7 @@
 #include "ui/UIGameSP.h"
 #include "ui/UIActorMenu.h"
 #include "../xrEngine/string_table.h"
+#include "../xrEngine/IGame_ObjectPool.h"
 #include "ai_object_location.h"
 #include "Artefact.h"
 #include "object_broker.h"
@@ -300,7 +301,7 @@ void CInventoryItem::ReadCustomTextAndMarks(const char* section)
 	if (pSettings->line_exist(section, "item_custom_text_font"))
 	{
 		shared_str font_str = pSettings->r_string(section, "item_custom_text_font");
-		m_custom_text_font = UI().Font().GetFont(font_str);
+		IGame_ObjectPool::RunOnPrimaryThread([this, font_str]() { m_custom_text_font = UI().Font().GetFont(font_str); });
 	}
 
 	if (pSettings->line_exist(section, "item_custom_text_clr_inv"))

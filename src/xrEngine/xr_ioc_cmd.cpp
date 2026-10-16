@@ -798,6 +798,8 @@ void CCC_Register()
 	CMD1(CCC_SaveCFG,	"cfg_save"				);
 	CMD1(CCC_LoadCFG,	"cfg_load"				);
 	CMD3(CCC_Mask32,		"mt_particles",			&psDeviceFlags,			mtParticles);
+	extern bool g_MtPrefetch;
+	CMD2(CCC_Boolean,	"mt_prefetch",			&g_MtPrefetch);
 #ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
 	CMD1(CCC_TexturesStat,	"stat_textures"		);
