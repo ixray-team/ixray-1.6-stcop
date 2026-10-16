@@ -173,7 +173,7 @@ class CFileReader;
 class CVirtualFileReader;
 class IReader;
 
-class IReaderBase
+class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}

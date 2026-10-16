@@ -2,6 +2,7 @@
 #include <dlfcn.h>
 #include <alloca.h>
 #include <malloc/malloc.h>
+#include <mach-o/dyld.h>
 
 // glibc names this malloc_usable_size; macOS calls it malloc_size.
 // The rest of the engine (xrMemory_align.cpp) calls it through the _msize macro below,
@@ -21,20 +22,22 @@ namespace Platform
     {
         char Path[256] = {};
         strcpy(Path, Name);
-        strcat(Path, ".so");
+        strcat(Path, ".dylib");
 
-        snprintf(Path, sizeof(Path), "%s.so", Name);
+        snprintf(Path, sizeof(Path), "%s.dylib", Name);
         void* module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
         if (module == nullptr)
         {
-            snprintf(Path, sizeof(Path), "lib%s.so", Name);
+            snprintf(Path, sizeof(Path), "lib%s.dylib", Name);
             module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
             if (module == nullptr)
             {
                 printf("%s\n", strerror(errno));
 
+                // macOS has no /proc; dyld knows where our own executable lives
                 char exec_path[PATH_MAX] = {};
-                readlink("/proc/self/exe", exec_path, sizeof(exec_path));
+                uint32_t exec_path_size = sizeof(exec_path);
+                _NSGetExecutablePath(exec_path, &exec_path_size);
 
                 int start_of_filename = strlen(exec_path);
                 while (start_of_filename > 0 && exec_path[start_of_filename] != '/') {
@@ -42,11 +45,11 @@ namespace Platform
                 }
                 exec_path[start_of_filename--] = '\0';
 
-                snprintf(Path, sizeof(Path), "%s/%s.so", exec_path, Name);
+                snprintf(Path, sizeof(Path), "%s/%s.dylib", exec_path, Name);
                 module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
                 if (module == nullptr)
                 {
-                    snprintf(Path, sizeof(Path), "%s/lib%s.so", exec_path, Name);
+                    snprintf(Path, sizeof(Path), "%s/lib%s.dylib", exec_path, Name);
                     module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
                 }
             }

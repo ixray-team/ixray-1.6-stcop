@@ -96,6 +96,17 @@ cmake -S . -B build-macos -G Ninja \
 3. **`ninja`** (`brew install ninja`).
 4. **`-DCMAKE_FIND_FRAMEWORK=LAST`** + `CMAKE_PREFIX_PATH` + явный `-I…/openal-soft/include` — иначе `find_package(OpenAL)` берёт **системный Apple-фреймворк** (в нём заголовки лежат как `<OpenAL/…>` и нет EFX). Причём Homebrew-овский `openal-soft` — keg-only, и CMake находит его заголовки как `include/AL`, а код включает `<AL/al.h>`, поэтому нужен родительский `include` (на Linux этого не требуется — там заголовки и так в системном пути).
 
+## Статус сборки модулей (на 16.10, 13:30)
+
+| Модуль | Состояние | Что мешает |
+|---|---|---|
+| `xrCore` | ✅ **собран и слинкован** (`libxrCore.dylib`, 6.4 МБ) | — |
+| `xrSound` | 🟡 **компилируется целиком** (452 объекта), линковка падает | `Undefined symbols: vtable for IReaderBase` (см. ниже) |
+| `xrScripts`, `xrPhysics`, `xrEngine`, `xrUI` | 🔴 падают на общей зависимости | `build-macos/_deps/directxmesh-src/DirectXMesh/DirectXMeshP.h:142: 'malloc.h' file not found` — третьесторонняя библиотека Microsoft (DirectXMesh), тянется самим проектом |
+| `xrNetServer` | ⚪ вне v1 | своя ошибка `_localtime64` (MSVC-специфика); нужен только для `IXRAY_MP` |
+
+**Про DirectXMesh:** правильный путь — не править скачанный код, а добавить шаг патча в `cmake/modules/DirectXMesh.cmake` — проект **сам так делает** для других зависимостей (в логе конфигурации видно `-- Added pragma once to nvapi_lite_salend.h`), то есть механизм в `cmake/functions.cmake` уже есть.
+
 ## Известные пробелы macOS-платформы (не блокируют сборку, но починить до запуска)
 
 - `Platform/MacOS/OSMemory.h`: `Platform::LoadLibrary` — копия linux-версии: ищет `/proc/self/exe` (на macOS его нет, нужен `_NSGetExecutablePath`) и добавляет суффикс `.so` вместо `.dylib`.
