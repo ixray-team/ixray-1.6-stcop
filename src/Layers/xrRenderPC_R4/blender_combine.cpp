@@ -90,9 +90,10 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		
 		C.r_Pass("stub_fullscreen_triangle", "combine_2", false, false, false);
 		
-		C.r_dx10Texture("s_position", r2_RT_upscaled_depth);
+		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_normal", r2_RT_N);
 		C.r_dx10Texture("s_image", r2_RT_generic);
+		C.r_dx10Texture("s_dof_scope_mask", r2_RT_dof_scope_mask);
 		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
 		C.r_dx10Texture("s_bloom", r2_RT_bloomA2);
 

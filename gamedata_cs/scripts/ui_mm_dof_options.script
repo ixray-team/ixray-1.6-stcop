@@ -1,0 +1,54 @@
+function add(wnd, handler, modeAllowed, reloadControls)
+	handler:lineFrame(wnd, modeAllowed, "st_dof_options")
+	handler.enableDof = handler:addCheck(wnd, modeAllowed, "ui_mm_dof", "r2_dof_enable", system_depends.sdVidRestart, "enableDof")
+	handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, reloadControls, nil)
+
+	local dofControls = {}
+	local dofEnabled = function(id)
+		if not modeAllowed(id) then return false end
+		for _, control in ipairs(dofControls) do
+			control:Enable(handler.enableDof:GetCheck())
+		end
+		return true
+	end
+	local addDofCheck = function(text, command)
+		local control = handler:addCheck(wnd, dofEnabled, text, command, system_depends.sdNothing)
+		table.insert(dofControls, control)
+	end
+	local addDofTrack = function(text, command, step, name)
+		local control = handler:addTrack(wnd, dofEnabled, text, command, step, false, "float", true, system_depends.sdNothing, name)
+		table.insert(dofControls, control)
+		return control
+	end
+
+	addDofCheck("ui_mm_dof_dynamic", "r2_dynamic_dof")
+	addDofCheck("ui_mm_dof_const_zoom", "r2_const_zoomdof")
+	addDofCheck("ui_mm_dof_hud_animator", "enable_dof_hud_animator")
+	addDofCheck("ui_mm_dof_reload", "enable_dof_reload")
+	addDofCheck("ui_mm_dof_talk", "enable_dof_talk")
+	addDofTrack("ui_mm_dof_kernel", "r2_dof_kernel", 0.1)
+	addDofTrack("ui_mm_dof_lens_kernel_scale", "r2_dof_lens_kernel_scale", 0.1)
+	addDofTrack("ui_mm_dof_sky", "r2_dof_sky", 1)
+	local dofNear = addDofTrack("ui_mm_dof_near", "r2_dof_near", 0.1, "dofNear")
+	local dofFocus = addDofTrack("ui_mm_dof_focus", "r2_dof_focus", 0.1, "dofFocus")
+	local dofFar = addDofTrack("ui_mm_dof_far", "r2_dof_far", 1, "dofFar")
+
+	local updateDofDepthBounds = function()
+		local console = get_console()
+		-- Keep both the pending and saved profiles valid in any apply/undo order.
+		local near = math.max(dofNear:GetFValue(), console:get_float("r2_dof_near"))
+		local focusMin = math.min(dofFocus:GetFValue(), console:get_float("r2_dof_focus"))
+		local focusMax = math.max(dofFocus:GetFValue(), console:get_float("r2_dof_focus"))
+		local far = math.min(dofFar:GetFValue(), console:get_float("r2_dof_far"))
+		dofNear:SetOptFBounds(-10000, focusMin - 0.11)
+		dofFocus:SetOptFBounds(near + 0.11, far - 0.11)
+		dofFar:SetOptFBounds(focusMax + 0.11, 10000)
+	end
+	handler:AddCallback("dofNear", ui_events.TRACK_VALUE_CHANGED, updateDofDepthBounds, nil)
+	handler:AddCallback("dofFocus", ui_events.TRACK_VALUE_CHANGED, updateDofDepthBounds, nil)
+	handler:AddCallback("dofFar", ui_events.TRACK_VALUE_CHANGED, updateDofDepthBounds, nil)
+	handler:AddCallback("dofNear", ui_events.BUTTON_CLICKED, updateDofDepthBounds, nil)
+	handler:AddCallback("dofFocus", ui_events.BUTTON_CLICKED, updateDofDepthBounds, nil)
+	handler:AddCallback("dofFar", ui_events.BUTTON_CLICKED, updateDofDepthBounds, nil)
+	table.insert(handler.m_deffer_ex, {func=updateDofDepthBounds})
+end

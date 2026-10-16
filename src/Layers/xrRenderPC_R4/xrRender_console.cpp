@@ -277,6 +277,7 @@ float		ps_r4_vslr_distance			= 0.7f;				// 1.f
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
 float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
+float g_DofLensKernelScale = 2.0f;
 
 float		ps_r2_def_aref_quality = 115.0f;
 
@@ -1065,6 +1066,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4( CCC_DofFocus,	"r2_dof_focus", &ps_r2_dof.y, tw_min.y, tw_max.y);
 	CMD4( CCC_DofFar,	"r2_dof_far",	&ps_r2_dof.z, tw_min.z, tw_max.z);
 	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
+	CMD4(CCC_Float, "r2_dof_lens_kernel_scale", &g_DofLensKernelScale, 1.0f, 4.0f);
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 

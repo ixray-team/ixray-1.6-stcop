@@ -18,10 +18,6 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 
-#include "GamePersistent.h"
-
-bool EnableTalkDof = true;
-
 CUITalkWnd::CUITalkWnd()
 {
 	m_pActor				= nullptr;
@@ -32,9 +28,6 @@ CUITalkWnd::CUITalkWnd()
 	m_pOthersDialogManager	= nullptr;
 
 	ToTopicMode				();
-
-	const static Fvector4 talkDof = EngineExternal().GetTalkDof();
-	m_TalkDof.set(talkDof);
 
 	const static float fovScale = EngineExternal().GetTalkFovScale();
 	m_talkFovScale = fovScale;
@@ -290,7 +283,6 @@ void CUITalkWnd::Update()
 
 	inherited::Update();
 	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
-	UpdateTalkDof();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
 	if (playing_sound())
@@ -327,12 +319,6 @@ void CUITalkWnd::Show(bool status)
 
 		if (m_pOthersInvOwner->GetFocusingOnNpc())
 		{
-			if (EnableTalkDof && !fsimilar(m_TalkDof.w, -1.0f))
-			{
-				HasTalkDof = true;
-				UpdateTalkDof();
-			}
-
 			SavedFov = g_fov;
 			HasTalkFov = true;
 			g_fov = SavedFov * m_talkFovScale;
@@ -368,35 +354,12 @@ void  CUITalkWnd::ToTopicMode		()
 	m_pCurrentDialog.reset();// = DIALOG_SHARED_PTR((CPhraseDialog*)nullptr);
 }
 
-void CUITalkWnd::UpdateTalkDof()
-{
-	if (!HasTalkDof || !m_pOthersInvOwner)
-	{
-		return;
-	}
-
-	Fvector TargetPosition;
-	m_pOthersInvOwner->cast_game_object()->Center(TargetPosition);
-	Fvector TargetDirection;
-	TargetDirection.sub(TargetPosition, Device.vCameraPosition);
-	const float FocusDistance = std::max(TargetDirection.dotproduct(Device.vCameraDirection), EPS_L);
-	// Keep the configured blur distances relative to the conversation partner.
-	Fvector Dof;
-	Dof.set(FocusDistance + m_TalkDof.x - m_TalkDof.y, FocusDistance, FocusDistance + m_TalkDof.z - m_TalkDof.y);
-	GamePersistent().SetEffectorDOF(Dof);
-}
-
 void CUITalkWnd::RestoreTalkEffects()
 {
 	if (HasTalkFov)
 	{
 		g_fov = SavedFov;
 		HasTalkFov = false;
-	}
-	if (HasTalkDof)
-	{
-		GamePersistent().RestoreEffectorDOF();
-		HasTalkDof = false;
 	}
 }
 

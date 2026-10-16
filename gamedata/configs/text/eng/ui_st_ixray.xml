@@ -1032,4 +1032,14 @@
 	<string id="ui_mm_rain_puddles">
 		<text>Rain puddles</text>
 	</string>
+	<string id="st_dof_options"><text>Depth of field</text></string>
+	<string id="ui_mm_dof_dynamic"><text>Weapon action DOF</text></string>
+	<string id="ui_mm_dof_const_zoom"><text>Fixed focus when aiming</text></string>
+	<string id="ui_mm_dof_hud_animator"><text>Food, medicine and PDA DOF</text></string>
+	<string id="ui_mm_dof_kernel"><text>Blur radius</text></string>
+	<string id="ui_mm_dof_lens_kernel_scale"><text>3D scope blur multiplier</text></string>
+	<string id="ui_mm_dof_sky"><text>Sky focus distance</text></string>
+	<string id="ui_mm_dof_near"><text>Base DOF near distance</text></string>
+	<string id="ui_mm_dof_focus"><text>Base DOF focus distance</text></string>
+	<string id="ui_mm_dof_far"><text>Base DOF far distance</text></string>
 </string_table>
