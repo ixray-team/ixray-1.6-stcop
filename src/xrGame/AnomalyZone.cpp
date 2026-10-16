@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "AnomalyZone.h"
+#include "Bolt.h"
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Actor.h"
@@ -162,6 +163,7 @@ void CAnomalyZone::Load(const char* section)
 	m_zone_flags.set(eIgnoreNonAlive,	pSettings->r_bool(section,	"ignore_nonalive"));
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
 	m_zone_flags.set(eIgnoreArtefact,	pSettings->r_bool(section,	"ignore_artefacts"));
+	m_zone_flags.set(DeleteBolts, pSettings->read_if_exists<bool>(section, "delete_bolts", true));
 
 	//загрузить времена для зоны
 	m_StateTime[eZoneStateIdle]			= -1;
@@ -979,6 +981,19 @@ void CAnomalyZone::feel_touch_new(CObject* O)
 	if (!pGameObject)
 	{
 		return;
+	}
+
+	if (m_zone_flags.test(DeleteBolts))
+	{
+		if (CBolt* Bolt = pGameObject->cast_bolt())
+		{
+			const u32 DestroyTime = Device.dwTimeGlobal + 100;
+			if (Bolt->destroy_time() > DestroyTime)
+			{
+				Bolt->set_destroy_time_now(0xffffffff);
+				Bolt->Destroy();
+			}
+		}
 	}
 
 	CEntityAlive* pEntityAlive = pGameObject->cast_entity_alive();
