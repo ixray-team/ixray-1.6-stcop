@@ -377,5 +377,30 @@ cmake -S . -B build-macos -G Ninja \
      вынесены из `if(NOT vkd3d_POPULATED)` — выполняются на каждой конфигурации (идемпотентно).
 - **Состояние:** FS поднимается, `system.ltx`/`game.ltx` читаются, лог движка пишется, **`xrRender_R4`
   загружается успешно** (в логе `Loading DLL: xrRender_R4` без отката на R2/R1).
-- **Следующий упор:** `xrGame` — `EngineAPI.cpp:136` «Game DLL raised exception during loading or there is no
-  game DLL at all»: модуль игры ещё не собран (в `bin/Debug` нет `libxrGame.dylib`); идёт сборка цели `xrGame`.
+- **Следующий упор:** `xrGame` — `EngineAPI.cpp:136` «Game DLL raised exception during loading or there is no game DLL
+  at all»: модуль игры ещё не собран (в `bin/Debug` нет `libxrGame.dylib`); идёт сборка цели `xrGame`.
+
+**`xrGame` собран, и вскрылся АРХИТЕКТУРНЫЙ БЛОКЕР маршрута DXVK → MoltenVK**
+- `libxrGame.dylib` собран и слинкован (108 МБ, ошибок 0). Движок с ним проходит всё до создания D3D11-устройства.
+- **Блокер (проверено опросом устройства, `/tmp/vkfeat/vkfeat.c`):** MoltenVK 1.4.2 на Apple M4 отдаёт
+  `geometryShader = 0` (у Metal нет стадии геометрических шейдеров) и `transformFeedback = 0`
+  (расширения `VK_EXT_transform_feedback` нет вообще). DXVK 2.6 в `D3D11Device::GetDeviceFeatures()`
+  помечает **обе как обязательные** для уровня 10_1, `DxvkAdapter::checkFeatureSupport()` их не находит → 
+  `D3D11InternalCreateDevice: Maximum supported feature level: 0` → `Minimum required feature level
+  D3D_FEATURE_LEVEL_10_1 not supported` → `E_INVALIDARG`. Рендерер после этого падает на
+  `xrRHI/D3D11/DX11Buffer.cpp:91` (`pDevice`).
+- Что при этом **работает** (из лога): DXVK 2.6 стартует, находит Vulkan-загрузчик, MoltenVK создаёт VkInstance
+  (Vulkan 1.3.357), физическое устройство Apple M4 (16 ГБ, типы памяти), 154 расширения; всё остальное из
+  обязательного набора 10_1 на месте (`tessellationShader`, `depthClamp`, `imageCubeArray`,
+  `textureCompressionBC`, `multiViewport`, `fillModeNonSolid`, `samplerAnisotropy`, `independentBlend` и т.д.).
+  Не хватает ровно: `geometryShader`, `transformFeedback` (а `logicOp` = 0 нужен только для 11_1 — у DXVK
+  он берётся как необязательный).
+- **Масштаб проблемы в самой игре:** геометрических шейдеров в R4 всего **4 из ~206**
+  (`fluid_array*.gs.hlsl` — объёмный эффект 3DFluid, и `test.gs.hlsl`), против 63 `vs`, 135 `ps`, 4 `cs`.
+  То есть GS — периферия, основная часть рендера его не требует.
+- **Варианты (нужно решение Степана):**
+  (а) патч форка DXVK: для macOS снять обязательность `geometryShader`/`transformFeedback` (правка ~10 строк,
+      под флагом сборки) → устройство создастся, игра пойдёт; эффекты на GS (объёмный дым/fluid) будут
+      отключены или сломаны;
+  (б) проверить альтернативный Vulkan-драйвер под Metal (Mesa KosmicKrisp) — вероятно, та же нехватка;
+  (в) сменить цель на R2/D3D9 через DXVK (там требования к фичам ниже) — но это другой рендер, не то, что нужно.
