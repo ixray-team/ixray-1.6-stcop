@@ -29,7 +29,7 @@
 						for (size_t i=0;i<Comps.size();++i) { \
 							ImGui::PushID(i); \
 							ImGui::Text("Owner: %p", Owners[i]); \
-							Comps[i].ECS_DebugDraw(); \
+							Comps[i]->ECS_DebugDraw(); \
 							ImGui::PopID(); \
 						} \
 					}); \
