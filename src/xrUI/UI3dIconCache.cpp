@@ -87,7 +87,8 @@ void UI3dIconCache::Release(IRenderVisual* Visual)
 	}
 	const auto It = Models.find(Instance->second);
 	Instances.erase(Instance);
-	::Render->model_Delete(Visual, true);
+	// UI updates can release an unregistered duplicate on the game thread.
+	::Render->model_Delete_Deffered(Visual);
 	if (--It->second.References == 0)
 	{
 		::Render->model_Delete(It->second.Visual);
