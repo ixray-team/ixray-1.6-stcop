@@ -14,11 +14,14 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include <linux/limits.h>
-#include <bits/local_lim.h>
+#include <limits.h>
 
 #ifdef IXR_ARM64
-#	include <arm64_neon.h>
+#	ifdef __APPLE__
+#		include <arm_neon.h>
+#	else
+#		include <arm64_neon.h>
+#	endif
 #	include <sse2neon/sse2neon.h>
 #else
 #	include <xmmintrin.h>

@@ -5,6 +5,16 @@ using errno_t = int;
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
 
+// macOS <limits.h> does not provide the glibc constants LOGIN_NAME_MAX / HOST_NAME_MAX;
+// <sys/param.h> offers the BSD equivalents instead.
+#include <sys/param.h>
+#ifndef LOGIN_NAME_MAX
+#	define LOGIN_NAME_MAX MAXLOGNAME
+#endif
+#ifndef HOST_NAME_MAX
+#	define HOST_NAME_MAX MAXHOSTNAMELEN
+#endif
+
 #define _lseek64 lseek64
 #define _O_RDONLY O_RDONLY
 #define _open open

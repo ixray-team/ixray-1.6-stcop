@@ -17,7 +17,9 @@ size_t Platform::GetThreadId(ThreadID ID)
 
 void Platform::SetThreadName(const char* name)
 {
-    pthread_setname_np(pthread_self(), name);
+    // Unlike Linux, the macOS variant of pthread_setname_np takes a single argument
+    // and only names the calling thread.
+    pthread_setname_np(name);
 }
 
 long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
