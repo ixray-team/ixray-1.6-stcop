@@ -17,12 +17,11 @@
 #		define PROF_MEM_FREE_CAPTURE(Ptr);
 #	elifdef IXRAY_PROFILER_TRACY
 #		include <tracy/Tracy.hpp>
-#		define TRACY_CALLSTACK 8
 #   	define PROF_THREAD(Name) tracy::SetThreadName(Name);
 #   	define PROF_REGISTER_THREAD(Name) tracy::SetThreadName(Name);
-#   	define PROF_START_THREAD(Name) TracyFiberEnter(Name);
-#   	define PROF_START_THREAD_HINT(Name, Hint) TracyFiberEnterHint(Name, Hint);
-#   	define PROF_STOP_THREAD() TracyFiberLeave;
+#   	define PROF_START_THREAD(Name) tracy::SetThreadName(Name);
+#   	define PROF_START_THREAD_HINT(Name, Hint) tracy::SetThreadName(Name);
+#   	define PROF_STOP_THREAD();
 #   	define PROF_START_CAPTURE();
 #   	define PROF_STOP_CAPTURE();
 #   	define PROF_SAVE_CAPTURE(Name)
@@ -52,7 +51,7 @@
 	 #ifdef defined(IXRAY_PROFILER_%NEW_PROF_NAME%) && defined(DEBUG_DRAW)
 		profiler specific logic
 	 #endif
-	 
+
 	 To keep lightweight checks like:
 	 #ifdef IXRAY_PROFILER_%PROF_NAME%
 		profiler specific logic
