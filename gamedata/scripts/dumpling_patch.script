@@ -1,6 +1,8 @@
 
 function on_game_start()
+	PROF_EVENT_BEGIN("on_game_start")
 	RegisterScriptCallback("actor_on_first_update", this.actor_on_first_update)
+	PROF_EVENT_END()
 end
 
 function actor_on_first_update(binder, delta)
@@ -14,6 +16,7 @@ local ai_locations_flag_objects =
 }
 
 function fix_ai_locations_flags()
+	PROF_EVENT_BEGIN("fix_ai_locations_flags")
 	for i = 1, 65535 do
 		local sobj = alife():object(i)
 		if sobj and sobj.parent_id == 65535 then
@@ -25,4 +28,5 @@ function fix_ai_locations_flags()
 			end
 		end
 	end
+	PROF_EVENT_END()
 end

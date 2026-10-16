@@ -7,6 +7,7 @@
 class "se_monster" (cse_alife_monster_base)
 --------------------
 function se_monster:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_monster:__init")
 	self.ini = nil
 	self.ini_initialized = false
 	self.spawner_present = false
@@ -24,6 +25,7 @@ function se_monster:__init (section) super (section)
 	self.job_online_condlist = nil
 	self.m_registred = false
 	db.offline_objects[self.id] = {}
+	PROF_EVENT_END()
 end
 --------------------
 function se_monster:get_ini()
@@ -68,6 +70,7 @@ function se_monster:STATE_Write(packet)
 end
 --------------------
 function se_monster:STATE_Read(packet, size)
+	PROF_EVENT_BEGIN("se_monster:STATE_Read")
 	cse_alife_monster_base.STATE_Read (self, packet, size)
 	if self.script_version > 10 then
 		local old_lvid = packet:r_stringZ()
@@ -82,9 +85,11 @@ function se_monster:STATE_Read(packet, size)
 			db.offline_objects[self.id].level_vertex_id = tonumber(old_lvid)
 		end
 	end
+	PROF_EVENT_END()
 end
 --------------------
 function se_monster:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_monster:STATE_Serialize")
 	Object:ForChunk("se_monster:STATE", function()
 		cse_alife_monster_base.STATE_Serialize(self, Object)
 		
@@ -120,12 +125,16 @@ function se_monster:STATE_Serialize(Object)
 			end
 		end)
 	end)
+	PROF_EVENT_END()
 end
 --------------------
 function se_monster:on_before_register()
+	PROF_EVENT_BEGIN("se_monster:on_before_register")
+	PROF_EVENT_END()
 end
 --------------------
 function se_monster:on_register()
+	PROF_EVENT_BEGIN("se_monster:on_register")
 	cse_alife_monster_base.on_register( self )
 
 	SendScriptCallback("server_entity_on_register", self, "se_monster")
@@ -148,9 +157,10 @@ function se_monster:on_register()
 	local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
 	local smart_obj = self.board:get_smart_by_name(smart)
 	if smart_obj == nil then
-		return
+		PROF_EVENT_END() return
 	end
 	alife():object(smart_obj.id):register_npc(self)
+	PROF_EVENT_END()
 end
 --------------------
 function se_monster:on_unregister()

@@ -2,9 +2,12 @@ local registred_items = {}
 -- Outfits ---------------------------------------------------------------------
 class "se_outfit" (cse_alife_item_custom_outfit)
 function se_outfit:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_outfit:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_outfit:on_register()
+	PROF_EVENT_BEGIN("se_outfit:on_register")
 	cse_alife_item_custom_outfit.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -19,6 +22,7 @@ function se_outfit:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_outfit")
+	PROF_EVENT_END()
 end
 function se_outfit:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_outfit")
@@ -35,9 +39,12 @@ end
 
 class "se_helmet" (cse_alife_item_helmet)
 function se_helmet:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_helmet:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_helmet:on_register()
+	PROF_EVENT_BEGIN("se_helmet:on_register")
 	cse_alife_item_helmet.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -52,6 +59,7 @@ function se_helmet:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_helmet")
+	PROF_EVENT_END()
 end
 function se_helmet:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_helmet")
@@ -69,9 +77,12 @@ end
 -- Weapons ---------------------------------------------------------------------
 class "se_weapon" (cse_alife_item_weapon)
 function se_weapon:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_weapon:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_weapon:on_register()
+	PROF_EVENT_BEGIN("se_weapon:on_register")
 	cse_alife_item_weapon.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -87,6 +98,7 @@ function se_weapon:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_weapon")
+	PROF_EVENT_END()
 end
 function se_weapon:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_weapon")
@@ -103,9 +115,12 @@ end
 
 class "se_weapon_shotgun" (cse_alife_item_weapon_shotgun)
 function se_weapon_shotgun:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_weapon_shotgun:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_weapon_shotgun:on_register()
+	PROF_EVENT_BEGIN("se_weapon_shotgun:on_register")
 	cse_alife_item_weapon_shotgun.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -119,6 +134,7 @@ function se_weapon_shotgun:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_weapon_shotgun")
+	PROF_EVENT_END()
 end
 function se_weapon_shotgun:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_shotgun")
@@ -135,9 +151,12 @@ end
 
 class "se_weapon_automatic_shotgun" (cse_alife_item_weapon_auto_shotgun)
 function se_weapon_automatic_shotgun:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_weapon_automatic_shotgun:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_weapon_automatic_shotgun:on_register()
+	PROF_EVENT_BEGIN("se_weapon_automatic_shotgun:on_register")
 	cse_alife_item_weapon_auto_shotgun.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -151,6 +170,7 @@ function se_weapon_automatic_shotgun:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_weapon_automatic_shotgun")
+	PROF_EVENT_END()
 end
 function se_weapon_automatic_shotgun:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_automatic_shotgun")
@@ -167,9 +187,12 @@ end
 
 class "se_weapon_magazined" (cse_alife_item_weapon_magazined)
 function se_weapon_magazined:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_weapon_magazined:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_weapon_magazined:on_register()
+	PROF_EVENT_BEGIN("se_weapon_magazined:on_register")
 	cse_alife_item_weapon_magazined.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -183,6 +206,7 @@ function se_weapon_magazined:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_weapon_magazined")
+	PROF_EVENT_END()
 end
 function se_weapon_magazined:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_magazined")
@@ -199,9 +223,12 @@ end
 
 class "se_weapon_magazined_w_gl" (cse_alife_item_weapon_magazined_w_gl)
 function se_weapon_magazined_w_gl:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_weapon_magazined_w_gl:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_weapon_magazined_w_gl:on_register()
+	PROF_EVENT_BEGIN("se_weapon_magazined_w_gl:on_register")
 	cse_alife_item_weapon_magazined_w_gl.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -215,6 +242,7 @@ function se_weapon_magazined_w_gl:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_weapon_magazined_w_gl")
+	PROF_EVENT_END()
 end
 function se_weapon_magazined_w_gl:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_magazined_w_gl")
@@ -232,9 +260,12 @@ end
 -- Items -----------------------------------------------------------------------
 class "se_item"	(cse_alife_item)
 function se_item:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_item:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_item:on_register()
+	PROF_EVENT_BEGIN("se_item:on_register")
 	cse_alife_item.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -248,6 +279,7 @@ function se_item:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_item")
+	PROF_EVENT_END()
 end
 function se_item:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_item")
@@ -264,9 +296,12 @@ end
 
 class "se_item_torch" (cse_alife_item_torch)
 function se_item_torch:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_item_torch:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_item_torch:on_register()
+	PROF_EVENT_BEGIN("se_item_torch:on_register")
 	cse_alife_item_torch.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -280,6 +315,7 @@ function se_item_torch:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_item_torch")
+	PROF_EVENT_END()
 end
 function se_item_torch:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_item_torch")
@@ -297,9 +333,12 @@ end
 --' ФИзобъекты
 class "se_physic" (cse_alife_object_physic)
 function se_physic:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_physic:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_physic:on_register()
+	PROF_EVENT_BEGIN("se_physic:on_register")
 	cse_alife_object_physic.on_register(self)
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -307,6 +346,7 @@ function se_physic:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_physic")
+	PROF_EVENT_END()
 end
 function se_physic:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_physic")
@@ -325,9 +365,12 @@ end
 
 class "se_lamp" (cse_alife_object_hanging_lamp)
 function se_lamp:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_lamp:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_lamp:on_register()
+	PROF_EVENT_BEGIN("se_lamp:on_register")
 	cse_alife_object_hanging_lamp.on_register(self)
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -335,6 +378,7 @@ function se_lamp:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_lamp")
+	PROF_EVENT_END()
 end
 function se_lamp:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_lamp")
@@ -357,10 +401,13 @@ end
 -- AMMO ------------------------------------------------------------------------
 class "se_ammo" (cse_alife_item_ammo)
 function se_ammo:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_ammo:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_ammo:on_register()
+	PROF_EVENT_BEGIN("se_ammo:on_register")
 	cse_alife_item_ammo.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -368,6 +415,7 @@ function se_ammo:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_ammo")
+	PROF_EVENT_END()
 end
 
 function se_ammo:on_unregister()
@@ -389,10 +437,13 @@ end
 -- GRENADES --------------------------------------------------------------------------------------------------------------------------
 class "se_grenade" (cse_alife_item_grenade)
 function se_grenade:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_grenade:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_grenade:on_register()
+	PROF_EVENT_BEGIN("se_grenade:on_register")
 	cse_alife_item_grenade.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -400,6 +451,7 @@ function se_grenade:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_grenade")
+	PROF_EVENT_END()
 end
 
 function se_grenade:on_unregister()
@@ -416,16 +468,20 @@ end
 -- EATEBLE ---------------------------------------------------------------------------------------------------------------------------
 class "se_eatable" (cse_alife_item)
 function se_eatable:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_eatable:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_eatable:on_register()
+	PROF_EVENT_BEGIN("se_eatable:on_register")
 	cse_alife_item.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_eatable")
+	PROF_EVENT_END()
 end
 
 function se_eatable:on_unregister()
@@ -443,10 +499,13 @@ end
 -- INVENTORY BOX ---------------------------------------------------------------------------------------------------------------------
 class "se_invbox" (cse_alife_inventory_box)
 function se_invbox:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_invbox:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_invbox:on_register()
+	PROF_EVENT_BEGIN("se_invbox:on_register")
 	cse_alife_inventory_box.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -454,6 +513,7 @@ function se_invbox:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_invbox")
+	PROF_EVENT_END()
 end
 
 function se_invbox:on_unregister()
@@ -471,10 +531,13 @@ end
 -- EXPLOSIVE -------------------------------------------------------------------------------------------------------------------------
 class "se_explosive" (cse_alife_item_explosive)
 function se_explosive:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_explosive:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_explosive:on_register()
+	PROF_EVENT_BEGIN("se_explosive:on_register")
 	cse_alife_item_explosive.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -482,6 +545,7 @@ function se_explosive:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_explosive")
+	PROF_EVENT_END()
 end
 
 function se_explosive:on_unregister()
@@ -499,10 +563,13 @@ end
 -- PDA -------------------------------------------------------------------------------------------------------------------------------
 class "se_pda" (cse_alife_item_pda)
 function se_pda:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_pda:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 
 function se_pda:on_register()
+	PROF_EVENT_BEGIN("se_pda:on_register")
 	cse_alife_item_pda.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -510,6 +577,7 @@ function se_pda:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_pda")
+	PROF_EVENT_END()
 end
 
 function se_pda:on_unregister()
@@ -526,9 +594,12 @@ end
 
 class "se_detector" (cse_alife_item_detector)
 function se_detector:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_detector:__init")
 	self.secret_item = false
+	PROF_EVENT_END()
 end
 function se_detector:on_register()
+	PROF_EVENT_BEGIN("se_detector:on_register")
 	cse_alife_item_detector.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
@@ -542,6 +613,7 @@ function se_detector:on_register()
 	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_detector")
+	PROF_EVENT_END()
 end
 function se_detector:on_unregister()
 	SendScriptCallback("server_entity_on_register", self, "se_detector")
@@ -559,10 +631,14 @@ end
 ---------------------
 class "se_mgun" (cse_alife_mounted_weapon)
 function se_mgun:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_mgun:__init")
+	PROF_EVENT_END()
 end
 function se_mgun:on_register()
+	PROF_EVENT_BEGIN("se_mgun:on_register")
 	cse_alife_mounted_weapon.on_register( self )
 	SendScriptCallback("server_entity_on_register",self,"se_mgun")
+	PROF_EVENT_END()
 end
 function se_mgun:on_unregister()
 	SendScriptCallback("server_entity_on_unregister",self,"se_mgun")
@@ -575,7 +651,9 @@ function se_mgun:STATE_Write(stpk)
 	cse_alife_mounted_weapon.STATE_Write(self,stpk)
 end
 function se_mgun:STATE_Read(stpk,size)
+	PROF_EVENT_BEGIN("se_mgun:STATE_Read")
 	cse_alife_mounted_weapon.STATE_Read(self,stpk,size)
+	PROF_EVENT_END()
 end
 --------------------------------------------------------------------------------
 function stats()

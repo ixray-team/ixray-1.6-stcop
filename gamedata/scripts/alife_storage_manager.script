@@ -44,10 +44,12 @@ local function on_pstor_load_all(obj,packet)
 end
 
 function on_game_start()
+	PROF_EVENT_BEGIN("on_game_start")
 	if not isMarshal then 
-		return 
+		PROF_EVENT_END() return 
 	end
 	--RegisterScriptCallback("on_pstor_load_all",on_pstor_load_all)
+	PROF_EVENT_END()
 end
 
 -- called from engine!
@@ -148,32 +150,37 @@ function get_state()
 end
 
 function decode(t)
-	return marshal.decode(t)
+	PROF_EVENT_BEGIN("decode")
+	local Result = marshal.decode(t)
+	PROF_EVENT_END()
+	return Result
 end
 
 -- storage based on ID but verified by object name
 function get_game_object_state(obj,create_if_dont_exist)
+	PROF_EVENT_BEGIN("get_game_object_state")
 	local id = obj:id()
 	local name = obj:name()
 	if not (m_data.game_object[id]) then
 		if not (create_if_dont_exist) then
-			return 
+			PROF_EVENT_END() return 
 		end
 		m_data.game_object[id] = {}
 		m_data.game_object[id].name = name
 	end
-	return m_data.game_object[id]
+	PROF_EVENT_END() return m_data.game_object[id]
 end	
 
 function get_se_obj_state(se_obj,create_if_dont_exist)
+	PROF_EVENT_BEGIN("get_se_obj_state")
 	local id = se_obj.id
 	local name = se_obj:name()
 	if not (m_data.se_object[id]) then
 		if not (create_if_dont_exist) then
-			return 
+			PROF_EVENT_END() return 
 		end
 		m_data.se_object[id] = {}
 		m_data.se_object[id].name = name
 	end
-	return m_data.se_object[id]
+	PROF_EVENT_END() return m_data.se_object[id]
 end

@@ -24,9 +24,12 @@ end
 
 class "se_zone_anom" (cse_anomalous_zone)
 function se_zone_anom:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_zone_anom:__init")
 	self.m_registred = false
+	PROF_EVENT_END()
 end
 function se_zone_anom:on_register()
+	PROF_EVENT_BEGIN("se_zone_anom:on_register")
 	cse_anomalous_zone.on_register(self)
 	SendScriptCallback("server_entity_on_register", self, "se_zone_anom")
 	-- Проверяем кастомдату обьекта на наличие стори айди.
@@ -35,6 +38,7 @@ function se_zone_anom:on_register()
 	self.m_registred = true
 	self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
 	self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)
+	PROF_EVENT_END()
 end
 function se_zone_anom:update()
 	cse_anomalous_zone.update(self)
@@ -70,26 +74,29 @@ function se_zone_anom:STATE_Write(packet)
 end
 -- восстановление
 function se_zone_anom:STATE_Read( packet, size )
+	PROF_EVENT_BEGIN("se_zone_anom:STATE_Read")
 	cse_anomalous_zone.STATE_Read( self, packet, size )
 
 	if editor() then
-		return
+		PROF_EVENT_END() return
 	end
 --	if self.m_registred ~= true then
 --		return
 --	end
 
 	if (is_single_player_game() == false) then
-		return
+		PROF_EVENT_END() return
 	end
 
 	local flag = packet:r_u8()
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
 	end
+	PROF_EVENT_END()
 end
 
 function se_zone_anom:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_zone_anom:STATE_Serialize")
 	Object:ForChunk("se_zone_anom:STATE", function()
 		cse_anomalous_zone.STATE_Serialize( self, Object )
 
@@ -133,6 +140,7 @@ function se_zone_anom:STATE_Serialize(Object)
 		    end
         end
 	end)
+	PROF_EVENT_END()
 end
 
 function se_zone_anom:on_unregister()
@@ -142,9 +150,12 @@ end
 
 class "se_zone_torrid" (cse_torrid_zone)
 function se_zone_torrid:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_zone_torrid:__init")
 	self.m_registred = false
+	PROF_EVENT_END()
 end
 function se_zone_torrid:on_register()
+	PROF_EVENT_BEGIN("se_zone_torrid:on_register")
 	cse_torrid_zone.on_register(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_zone_torrid")
@@ -155,6 +166,7 @@ function se_zone_torrid:on_register()
 	self.m_registred = true
 	self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
 	self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)
+	PROF_EVENT_END()
 end
 function se_zone_torrid:update()
 	cse_torrid_zone.update(self)
@@ -190,26 +202,29 @@ function se_zone_torrid:STATE_Write(packet)
 end
 -- восстановление
 function se_zone_torrid:STATE_Read( packet, size )
+	PROF_EVENT_BEGIN("se_zone_torrid:STATE_Read")
 	cse_torrid_zone.STATE_Read( self, packet, size )
 
 	if editor() then
-		return
+		PROF_EVENT_END() return
 	end
 --	if self.m_registred ~= true then
 --		return
 --	end
 
 	if (is_single_player_game() == false) then
-		return
+		PROF_EVENT_END() return
 	end
 
 	local flag = packet:r_u8()
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
 	end
+	PROF_EVENT_END()
 end
 
 function se_zone_torrid:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_zone_torrid:STATE_Serialize")
 	Object:ForChunk("se_zone_torrid:STATE", function()
 		cse_torrid_zone.STATE_Serialize( self, Object )
 
@@ -253,6 +268,7 @@ function se_zone_torrid:STATE_Serialize(Object)
 		    end
         end
 	end)
+	PROF_EVENT_END()
 end
 
 function se_zone_torrid:on_unregister()
@@ -262,8 +278,11 @@ end
 
 class "se_zone_visual" (cse_zone_visual)
 function se_zone_visual:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_zone_visual:__init")
+	PROF_EVENT_END()
 end
 function se_zone_visual:on_register()
+	PROF_EVENT_BEGIN("se_zone_visual:on_register")
 	cse_zone_visual.on_register(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_zone_visual")
@@ -273,6 +292,7 @@ function se_zone_visual:on_register()
 
 	self.artefact_spawn_idle = 60*60*1000*utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_idle", self, false, 24)
 	self.artefact_spawn_rnd = utils.cfg_get_number(system_ini(), self:section_name(), "artefact_spawn_rnd", self, false, 100)
+	PROF_EVENT_END()
 end
 function se_zone_visual:update()
 	cse_zone_visual.update(self)
@@ -305,23 +325,26 @@ function se_zone_visual:STATE_Write(packet)
 end
 -- восстановление
 function se_zone_visual:STATE_Read( packet, size )
+	PROF_EVENT_BEGIN("se_zone_visual:STATE_Read")
 	cse_zone_visual.STATE_Read( self, packet, size )
 
 	if editor() then
-		return
+		PROF_EVENT_END() return
 	end
 
 	if (is_single_player_game() == false) then
-		return
+		PROF_EVENT_END() return
 	end
 
 	local flag = packet:r_u8()
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
 	end
+	PROF_EVENT_END()
 end
 
 function se_zone_visual:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_zone_visual:STATE_Serialize")
 	Object:ForChunk("se_zone_visual:STATE", function()
 		cse_zone_visual.STATE_Serialize( self, Object )
 
@@ -365,6 +388,7 @@ function se_zone_visual:STATE_Serialize(Object)
 		    end
         end
 	end)
+	PROF_EVENT_END()
 end
 
 function se_zone_visual:on_unregister()
@@ -375,9 +399,12 @@ end
 --' Рестрикторы
 class "se_restrictor" (cse_alife_space_restrictor)
 function se_restrictor:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_restrictor:__init")
+	PROF_EVENT_END()
 end
 
 function se_restrictor:on_register()
+	PROF_EVENT_BEGIN("se_restrictor:on_register")
 	cse_alife_space_restrictor.on_register(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_restrictor")
@@ -385,6 +412,7 @@ function se_restrictor:on_register()
 	story_objects.check_spawn_ini_for_story_id(self)
 
 	treasure_manager.get_treasure_manager():register_restrictor(self)
+	PROF_EVENT_END()
 end
 
 function se_restrictor:keep_saved_data_anyway()

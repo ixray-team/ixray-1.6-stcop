@@ -3,14 +3,18 @@
 class "se_heli" (cse_alife_helicopter)
 --------------------
 function se_heli:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_heli:__init")
+	PROF_EVENT_END()
 end
 
 function se_heli:on_register()
+	PROF_EVENT_BEGIN("se_heli:on_register")
 	cse_alife_helicopter.on_register(self)
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_heli")
+	PROF_EVENT_END()
 end
 
 function se_heli:on_unregister()

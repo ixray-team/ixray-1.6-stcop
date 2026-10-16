@@ -519,6 +519,7 @@ function npc_in_actor_frustrum(npc)
 end
 
 function start_game_callback()
+	PROF_EVENT_BEGIN("start_game_callback")
 	aa = alife()
 
 	squad_community_by_behaviour["stalker"] = "stalker"
@@ -611,6 +612,7 @@ function start_game_callback()
 	-- Tестирование оптимизации
 	--local test_object = test_object.test_object_class()
 	--test_object:test()
+	PROF_EVENT_END()
 end
 
 --' Усталость

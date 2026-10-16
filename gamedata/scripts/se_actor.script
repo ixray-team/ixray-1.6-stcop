@@ -1,11 +1,14 @@
 class "se_actor"	(cse_alife_creature_actor)
 --------------------
 function se_actor:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_actor:__init")
 	self.m_registred = false
 	self.start_position_filled = false
+	PROF_EVENT_END()
 end
 
 function se_actor:on_register()
+	PROF_EVENT_BEGIN("se_actor:on_register")
 	cse_alife_creature_actor.on_register(self)
 	
 	SendScriptCallback("se_actor_on_register", self)
@@ -20,6 +23,7 @@ function se_actor:on_register()
 		sim_board.get_sim_board():fill_start_position()
 		self.start_position_filled = true
 	end
+	PROF_EVENT_END()
 end
 
 function se_actor:on_unregister()
@@ -46,12 +50,13 @@ function se_actor:STATE_Write(packet)
 end
 --------------------
 function se_actor:STATE_Read(packet, size)
+	PROF_EVENT_BEGIN("se_actor:STATE_Read")
 	SendScriptCallback("se_actor_on_STATE_Read", self, packet, size)
 	
 	cse_alife_creature_actor.STATE_Read(self, packet, size)
 	-- под LevelEditor не пытаться читать из пакета ничего
 	if editor() then
-		return
+		PROF_EVENT_END() return
 	end
 --	if self.m_registred ~= true then
 --		return
@@ -62,9 +67,11 @@ function se_actor:STATE_Read(packet, size)
 --		story_objects.get_story_objects_registry():load(packet)
 		set_save_marker(packet, "load", true, "se_actor")
 	end
+	PROF_EVENT_END()
 end
 --------------------
 function se_actor:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_actor:STATE_Serialize")
 	Object:ForChunk("se_actor:STATE", function()
 		cse_alife_creature_actor.STATE_Serialize(self, Object)
 		
@@ -78,6 +85,7 @@ function se_actor:STATE_Serialize(Object)
 			end)
 		end
 	end)
+	PROF_EVENT_END()
 end
 
 
