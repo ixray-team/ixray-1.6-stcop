@@ -51,9 +51,55 @@
 | Замер утечки D3D11 + контракт RHI (~153 метода) | ✅ сделано | Task 0.2 |
 | Инвентарь шейдеров (2172 HLSL; 209 под R4) | ✅ сделано | Task 0.3 |
 | Baseline в Evaluation Environment | ⚠️ частично (см. журнал) | Task 0.4 |
-| Сборка ядра под macOS | 🟢 конфигурация ✅, сборка идёт (311/411) | Phase 1 |
+| Сборка ядра под macOS | ✅ **`libxrCore.dylib` собран и слинкован** (Task 1.3) | Phase 1 |
 | Metal-бэкенд | ⬜ не начато | Phase 2 |
 | Игра на Mac | ⬜ не начато | Phase 3 |
+
+## Коммиты ветки `macos-metal`
+
+| Коммит | Что |
+|---|---|
+| `1f938e58c` | первый прорыв: PCH собирается, xrCore компилируется (11 правок) |
+| `234bb9ed4` | правило «не ломать другие платформы» + дочистка ссылок на переименованный файл |
+| `502a8a69b` | **`xrCore` собран и слинкован на arm64** (слой памяти + переименование `thread_t`) |
+
+## Правки второго коммита сборки (`502a8a69b`)
+
+| Файл | Что сделано | Затрагивает другие платформы? |
+|---|---|---|
+| `memory/memory_usage.cpp` | `<malloc.h>` под `#ifndef IXR_MACOS` | нет — Win/Linux видят тот же инклюд |
+| `memory/xrMemory_align.cpp` | то же | нет |
+| `memory/xrMemory_pso_Fill32.cpp` | добавлена ветка `#if defined(IXR_ARM64)` с портативной заливкой; их `IXR_X64` стала `#elif` | нет — x64 и x86-ветки не тронуты |
+| `memory/xrMemory_pso_Copy.cpp` | то же (портативный `memcpy`) | нет |
+| `Platform/MacOS/OSMemory.h` | добавлен `malloc_usable_size` (на macOS это `malloc_size`) | нет — файл только для macOS |
+| `_math.h`, `_math.cpp` | тип движка `thread_t` переименован в `xr_thread_entry_t` (на macOS `thread_t` — системный `mach_port_t`) | только переименование, семантика та же; остальных использований нет (проверено grep) |
+
+## Рабочая команда конфигурации (проверена, Task 1.1 + OpenAL)
+
+```bash
+cd ~/Hermes/ixray-mac-port/ixray-src
+cmake -S . -B build-macos -G Ninja \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_OSX_ARCHITECTURES=arm64 \
+      -DIXRAY_USE_R1=OFF -DIXRAY_USE_R2=OFF \
+      -DIXRAY_PROFILER=OFF \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DCMAKE_FIND_FRAMEWORK=LAST \
+      -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/openal-soft \
+      -DCMAKE_CXX_FLAGS="-I/opt/homebrew/opt/openal-soft/include" \
+      -DCMAKE_C_FLAGS="-I/opt/homebrew/opt/openal-soft/include"
+```
+
+Что откуда:
+1. **`-DCMAKE_POLICY_VERSION_MINIMUM=3.5`** — иначе CMake 4.x отвергает старые `cmake_minimum_required` в зависимостях.
+2. **`ispc`** (`brew install ispc`) — для `redimage`/`ispc_texcomp` (сжатие текстур BC7).
+3. **`ninja`** (`brew install ninja`).
+4. **`-DCMAKE_FIND_FRAMEWORK=LAST`** + `CMAKE_PREFIX_PATH` + явный `-I…/openal-soft/include` — иначе `find_package(OpenAL)` берёт **системный Apple-фреймворк** (в нём заголовки лежат как `<OpenAL/…>` и нет EFX). Причём Homebrew-овский `openal-soft` — keg-only, и CMake находит его заголовки как `include/AL`, а код включает `<AL/al.h>`, поэтому нужен родительский `include` (на Linux этого не требуется — там заголовки и так в системном пути).
+
+## Известные пробелы macOS-платформы (не блокируют сборку, но починить до запуска)
+
+- `Platform/MacOS/OSMemory.h`: `Platform::LoadLibrary` — копия linux-версии: ищет `/proc/self/exe` (на macOS его нет, нужен `_NSGetExecutablePath`) и добавляет суффикс `.so` вместо `.dylib`.
+- **`xrSound` не линкуется:** `Undefined symbols: "vtable for IReaderBase"` (ссылка из `IReaderBase::IReaderBase()` в `SoundRender_Core.cpp.o`). Класс объявлен в `src/xrCore/FS.h:176`, реализация части методов — в `src/xrCore/FS_impl.h`. Все виртуальные — inline или чистые, то есть ключевой функции у класса нет. Гипотеза: у класса нет `XRCORE_API`, и при скрытой видимости (`-fvisibility=hidden`) его vtable не экспортируется из `xrCore` — на Linux/Windows правила экспорта другие, поэтому там работает. Диагностировать отдельно, не угадывать.
 
 ## Грабли окружения (записать и не наступать повторно)
 
