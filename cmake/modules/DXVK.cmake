@@ -38,8 +38,68 @@ FetchContent_GetProperties(dxvk)
 FetchContent_GetProperties(SDL3)
 
 if(NOT dxvk_POPULATED)
-    FetchContent_Populate(dxvk)
-    find_program(MESON meson REQUIRED)
+FetchContent_Populate(dxvk)
+
+# AI: Metal has no geometry shader stage, no transform feedback and no shader cull distance, so
+# AI: MoltenVK reports geometryShader = 0, transformFeedback = 0 (VK_EXT_transform_feedback is
+# AI: absent) and shaderCullDistance = 0. DXVK demands all three as part of its baseline feature
+# AI: level 10_1 set, and without them D3D11InternalCreateDevice() reports "Maximum supported
+# AI: feature level: 0" and fails with E_INVALIDARG. On macOS each of them is taken from what the
+# AI: device actually supports instead of being required; the game uses geometry shaders in four
+# AI: shaders out of about two hundred (the 3DFluid volume effect), so the rest of the renderer is
+# AI: unaffected. Verified on this machine with a VkGetPhysicalDeviceFeatures probe:
+# AI: geometryShader = 0, transformFeedback = 0, shaderCullDistance = 0, while tessellationShader,
+# AI: depthClamp, imageCubeArray, textureCompressionBC, multiViewport and the rest are present.
+# AI: The edit follows the project's own way of touching a fetched dependency (see
+# AI: download_and_fix_nvapi() in cmake/modules/nvapi.cmake) and is APPLE-only.
+if(APPLE)
+    # AI: applies one text replacement to a file inside the fetched dxvk tree and writes it back
+    # AI: only when something changed, so the step is idempotent across configurations.
+    function(dxvk_text_patch DXVK_FILE DXVK_OLD DXVK_NEW)
+        file(READ "${DXVK_FILE}" DXVK_CONTENT)
+        set(DXVK_BEFORE "${DXVK_CONTENT}")
+        string(REPLACE "${DXVK_OLD}" "${DXVK_NEW}" DXVK_CONTENT "${DXVK_CONTENT}")
+        if(NOT DXVK_CONTENT STREQUAL DXVK_BEFORE)
+            file(WRITE "${DXVK_FILE}" "${DXVK_CONTENT}")
+            get_filename_component(DXVK_FILE_NAME "${DXVK_FILE}" NAME)
+            message(STATUS "DXVK: patched ${DXVK_FILE_NAME} for macOS")
+        endif()
+    endfunction()
+
+    # AI: Metal has no geometry shader stage and no transform feedback, so MoltenVK reports
+    # AI: geometryShader = 0 and transformFeedback = 0 (VK_EXT_transform_feedback is absent). DXVK
+    # AI: demands both as part of its baseline feature level 10_1 set, and without them
+    # AI: D3D11InternalCreateDevice() reports "Maximum supported feature level: 0" and fails with
+    # AI: E_INVALIDARG, which left the engine with a null device. On macOS the two are taken from
+    # AI: what the device supports instead of being required; the game uses geometry shaders in
+    # AI: four shaders out of about two hundred (the 3DFluid volume effect), so the rest of the
+    # AI: renderer is unaffected. Verified with a VkGetPhysicalDeviceFeatures probe on this
+    # AI: machine: geometryShader = 0, transformFeedback = 0, the rest of the 10_1 set present.
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/d3d11/d3d11_device.cpp"
+        "enabled.core.features.geometryShader                          = VK_TRUE;"
+        "enabled.core.features.geometryShader                          = supported.core.features.geometryShader;")
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/d3d11/d3d11_device.cpp"
+        "enabled.extTransformFeedback.transformFeedback                = VK_TRUE;"
+        "enabled.extTransformFeedback.transformFeedback                = supported.extTransformFeedback.transformFeedback;")
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/d3d11/d3d11_device.cpp"
+        "enabled.extTransformFeedback.geometryStreams                  = VK_TRUE;"
+        "enabled.extTransformFeedback.geometryStreams                  = supported.extTransformFeedback.geometryStreams;")
+
+    # AI: the feature check only answers "no", which makes a missing device feature a guessing
+    # AI: game; on macOS it names the entry it rejected. Behaviour is unchanged (the expression
+    # AI: still evaluates to false when both the device and the requirement fall out).
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_adapter.cpp"
+        "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature)"
+        "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature         \\\n       || (Logger::err(str::format(\"DXVK: device lacks required feature \", #feature)), false))")
+
+    # AI: SDL_Vulkan_CreateSurface() failures reach the caller as VK_ERROR_OUT_OF_HOST_MEMORY, so
+    # AI: the WSI logs SDL's own message as well.
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/wsi/sdl3/wsi_window_sdl3.cpp"
+        "    return SDL_Vulkan_CreateSurface(window, instance, nullptr, pSurface)\n      ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;"
+        "    if (!SDL_Vulkan_CreateSurface(window, instance, nullptr, pSurface)) {\n      Logger::err(str::format(\"Sdl3WsiDriver::createSurface: SDL_Vulkan_CreateSurface failed: \", SDL_GetError()));\n      return VK_ERROR_OUT_OF_HOST_MEMORY;\n    }\n\n    return VK_SUCCESS;")
+endif()
+
+find_program(MESON meson REQUIRED)
     
     set(SDL3_PC_DIR "${SDL3_BINARY_DIR}/pkgconfig")
     file(MAKE_DIRECTORY ${SDL3_PC_DIR})

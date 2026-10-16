@@ -244,7 +244,18 @@ bool InternalDevice11::CreateD3D11()
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
+#ifdef IXR_WINDOWS
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+#elif defined(IXR_MACOS)
+	// AI: DXVK Native's SDL3 WSI takes the SDL_Window pointer itself as the window handle
+	// AI: (dxvk's include/native/wsi/native_sdl3.h: fromHwnd() reinterprets the handle back into a
+	// AI: SDL_Window*), and the Win32 property above is Windows only, so it yields a null handle here.
+	// AI: Passing the integer window id instead makes every SDL call inside the presenter fail with
+	// AI: "Invalid window" and the swap chain is never created.
+	HWND hwnd = (HWND)g_AppInfo.Window;
+#else
+	HWND hwnd = nullptr;
+#endif
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
