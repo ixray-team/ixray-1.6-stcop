@@ -82,6 +82,8 @@ using LRESULT = long;
 using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
 using HFILE = int;
+// AI: HDC is declared in the Windows and Linux platform files; it was missing here
+using HDC = void*;
 
 #define TRUE  1
 #define FALSE 0

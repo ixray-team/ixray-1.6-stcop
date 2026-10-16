@@ -100,6 +100,12 @@ include("cmake/modules.cmake")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # 3rd libraries
+# AI: macOS has no <malloc.h> - it is a glibc/MSVC header - while 24 engine files include it.
+# AI: The compatibility header lives in src/3rd-party/macos-compat; macOS only, nothing changes elsewhere.
+if(APPLE)
+    include_directories("${CMAKE_SOURCE_DIR}/src/3rd-party/macos-compat")
+endif()
+
 add_subdirectory("src/3rd-party")
 
 # Engine libraries

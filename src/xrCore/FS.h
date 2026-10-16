@@ -178,10 +178,10 @@ class XRCORE_API IReaderBase
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
 #ifdef IXR_MACOS
-	// macOS: a class whose virtual members are all inline or pure has no key function,
-	// so its vtable is emitted as a local weak symbol and other modules cannot link to it.
-	// An out-of-line destructor supplies that key function, so the vtable is emitted once
-	// here in xrCore and exported. Windows and Linux keep the original inline definition.
+	// AI: the class has no key function (all virtual members are inline or pure), so its vtable
+	// AI: went out as a local weak symbol and other modules could not link to it. The out-of-line
+	// AI: destructor supplies that key function: the vtable is emitted once, here in xrCore, and
+	// AI: exported. Approach taken from OpenXRay, where IReader is marked XRCORE_API. Windows/Linux keep the inline one.
 	virtual			~IReaderBase();
 #else
 	virtual			~IReaderBase()		{}

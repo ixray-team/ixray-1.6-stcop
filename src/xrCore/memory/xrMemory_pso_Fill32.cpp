@@ -9,7 +9,7 @@ void  xrMemFill32_x86(LPVOID dest, size_t value, size_t count)
 }
 
 #if defined(IXR_ARM64)
-// ARM64 has no x86 MMX path; use the portable fill, exactly like the x64 branch below.
+// AI: ARM64 has no x86 MMX path; use the portable fill, exactly like the x64 branch below.
 void xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	xrMemFill32_x86(dest, value, count);

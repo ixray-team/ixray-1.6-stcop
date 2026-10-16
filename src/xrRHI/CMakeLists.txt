@@ -35,10 +35,14 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx(9|11)\\.cpp$")
 
 if(APPLE)
-	# macOS ships no D3D headers: Windows takes them from the SDK, Linux from DXVK.
-	# The Metal backend replaces these backends on macOS (see .porting/porting-memory.md).
+	# AI: в macOS нет заголовков D3D: на Windows они из SDK, на Linux из DXVK.
+	# AI: Nothing below is renderer work - these files simply cannot compile without D3D
+	# AI: headers, and the macOS backend (see .porting/porting-memory.md) will replace them.
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D9/")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D11/")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "RHIShaderCompiler\\.cpp$")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "Private/RHIStateCache\\.cpp$")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "Layout/ImGui/RHIImGuiLayout\\.cpp$")
 endif()
 endif()
 
