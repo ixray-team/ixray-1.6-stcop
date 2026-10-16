@@ -72,25 +72,39 @@
     template<typename T>
 	inline T* CResourceManager::CreateShader(const char* _name)
 	{
-		xrCriticalSectionGuard guard(creationGuard);
 		xr_string res_name = _name + RImplementation.getShaderParams();
 		const char* name = res_name.c_str();
-		LPSTR N = LPSTR(name);
 
-		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-		typename ShaderTypeTraits<T>::MapType::iterator	I = sh_map.find(N);
-
-		if (I!=sh_map.end())
-			return		I->second;
-		else
+		T* sh = nullptr;
+		bool IsNew = false;
 		{
-			T*		sh = new T();
+			xrCriticalSectionGuard guard(creationGuard);
+			typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
+			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(LPSTR(name));
+			if (I != sh_map.end())
+			{
+				sh = I->second;
+			}
+			else
+			{
+				sh = new T();
+				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+				sh_map.insert(std::make_pair(sh->set_name(name), sh));
+				IsNew = true;
+			}
+		}
 
-			sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-			sh_map.insert(std::make_pair(sh->set_name(name),sh));
+		if (!IsNew)
+		{
+			sh->CompileState.WaitCompiled();
+			return sh;
+		}
+
+		{
 			if (0==_stricmp(_name,"null"))
 			{
 				sh->sh				= NULL;
+				sh->CompileState.MarkCompiled();
 				return sh;
 			}
 
@@ -111,6 +125,7 @@
 			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
 
 			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+			sh->CompileState.MarkCompiled();
 			FS.r_close					( file );
 
 			return			sh;
@@ -136,4 +151,3 @@
 		}
 		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
 	}
-
