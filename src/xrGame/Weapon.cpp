@@ -18,7 +18,6 @@
 #include "object_broker.h"
 #include "player_hud.h"
 #include "GamePersistent.h"
-#include "EffectorDOF.h"
 #include "debug_renderer.h"
 #include "clsid_game.h"
 #include "WeaponBinocularsVision.h"
@@ -342,14 +341,6 @@ void CWeapon::Load		(const char* section)
 
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
 		m_zoom_params.m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");	
-
-	Fvector			def_dof;
-	def_dof.set		(-1,-1,-1);
-//	m_zoom_params.m_ZoomDof		= pSettings->read_if_exists<Fvector3>(section, "zoom_dof", Fvector().set(-1,-1,-1));
-//	m_zoom_params.m_bZoomDofEnabled	= !def_dof.similar(m_zoom_params.m_ZoomDof);
-
-	m_zoom_params.m_ReloadDof	= pSettings->read_if_exists<Fvector4>(section, "reload_dof", Fvector4().set(-1,-1,-1,-1));
-
 
 	m_bHasTracers			= !!pSettings->read_if_exists<bool>(section, "tracers", true);
 	m_u8TracerColorID		= pSettings->read_if_exists<u8>(section, "tracers_color_ID", u8(-1));
@@ -2931,6 +2922,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 void CWeapon::InitAddons()
 {
+	CDofManager::LoadScope(DofSource, IsScopeAttached() ? GetScopeName() : shared_str());
 	if (IsScopeAttachable())
 	{
 		auto ReachInAllSections = [&](const char* param_name)
@@ -3330,7 +3322,6 @@ void CWeapon::OnZoomIn()
 
 	UpdateZoomCrosshairUI();
 
-	GamePersistent().SetPickableEffectorDOF(true);
 }
 
 void CWeapon::OnZoomOut()
@@ -3376,7 +3367,6 @@ void CWeapon::OnZoomOut()
 		}
 	}
 
-	GamePersistent().SetPickableEffectorDOF(false);
 
 	ResetSubStateTime					();
 
@@ -4165,8 +4155,6 @@ const float &CWeapon::hit_probability	() const
 	return					(m_hit_probability[egdNovice]);
 }
 
-bool EnableDof = true;
-
 void CWeapon::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
@@ -4193,16 +4181,6 @@ void CWeapon::OnStateSwitch	(u8 S)
 		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 		{
 			AmmoBones->UpdateAmmoBones(this, AmmoElapsed.MagazineElapsed, type_to_update);
-		}
-	}
-
-	if(EnableDof && GetState()==eReload)
-	{
-		if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
-		{
-			CActor* current_actor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
-			if (current_actor)
-				current_actor->Cameras().AddCamEffector(new CEffectorDOF(m_zoom_params.m_ReloadDof));
 		}
 	}
 }
@@ -4768,6 +4746,7 @@ void CWeapon::RefreshScopeNightVision()
 
 void CWeapon::LoadCurrentScopeParams(const char* section)
 {
+	CDofManager::LoadScope(DofSource, section);
 	shared_str scope_tex_name = "none";
 	bScopeIsHasTexture = false;
 	if (pSettings->line_exist(section, "scope_texture"))

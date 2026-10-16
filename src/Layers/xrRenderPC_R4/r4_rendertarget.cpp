@@ -593,6 +593,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());
+		rt_DofScopeMask.create(r2_RT_dof_scope_mask, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
 
 		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), HDR_Format);
 		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), HDR_Format);
@@ -1248,4 +1249,4 @@ void CRenderTarget::copy_position()
 
 	GRHI->SetDepthStencilView(nullptr);
 	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
-}
+}

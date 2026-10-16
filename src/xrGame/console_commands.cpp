@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "DofManager.h"
 #include "pch_script.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrCore/CharConv.h"
@@ -3048,14 +3049,11 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
 	CMD1(CCC_MainMenu, "main_menu");
 
-	extern bool EnableDof;
-	CMD2(CCC_Boolean, "enable_dof_reload", &EnableDof);
-
-	extern bool EnableHudAnimatorDof;
-	CMD2(CCC_Boolean, "enable_dof_hud_animator", &EnableHudAnimatorDof);
-
-	extern bool EnableTalkDof;
-	CMD2(CCC_Boolean, "enable_dof_talk", &EnableTalkDof);
+	CMD2(CCC_Boolean, "enable_dof_reload", &g_DofOptions.Reload);
+	CMD2(CCC_Boolean, "r2_dynamic_dof", &g_DofOptions.Dynamic);
+	CMD2(CCC_Boolean, "r2_const_zoomdof", &g_DofOptions.ConstantZoom);
+	CMD2(CCC_Boolean, "enable_dof_hud_animator", &g_DofOptions.HudAnimator);
+	CMD2(CCC_Boolean, "enable_dof_talk", &g_DofOptions.Talk);
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_StartTimeSingle, "start_time_single");

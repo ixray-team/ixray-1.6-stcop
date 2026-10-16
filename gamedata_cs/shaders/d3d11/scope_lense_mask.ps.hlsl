@@ -1,6 +1,12 @@
 #include "common.hlsli"
 
-float main(in PSInputFullscreen I) : SV_Depth
+struct ScopeMaskOutput
+{
+	float Depth : SV_Depth;
+	float DofMask : SV_Target0;
+};
+
+ScopeMaskOutput main(in PSInputFullscreen I)
 {
 	float Depth = s_position.Load(int3(I.hpos.xy, 0)).x;
 	float Alpha = m_hud_params.y * m_hud_params.w;
@@ -12,10 +18,14 @@ float main(in PSInputFullscreen I) : SV_Depth
 	
     float4 t_base = s_base.Sample(smp_base, I.texcoord.xy);
 	
-	if(Depth > Point && Alpha >= 0.5f && t_base.w < 1.0f) 
+	ScopeMaskOutput Result;
+	Result.Depth = Depth;
+	Result.DofMask = 0.0f;
+	if(Depth > Point && Alpha >= 0.5f && t_base.w < 1.0f)
 	{
-		return 1.0f;
+		Result.Depth = 1.0f;
+		Result.DofMask = 1.0f;
 	}
 	
-	return Depth;
+	return Result;
 }

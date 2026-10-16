@@ -83,11 +83,8 @@ protected:
 	void				ToTopicMode				();
 
 private:
-	void UpdateTalkDof();
 	void RestoreTalkEffects();
 	float SavedFov = 0.0f;
 	bool HasTalkFov = false;
-	bool HasTalkDof = false;
-	Fvector4 m_TalkDof = {};
 	float m_talkFovScale;
 };

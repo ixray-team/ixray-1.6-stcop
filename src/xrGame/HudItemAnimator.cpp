@@ -9,10 +9,8 @@
 #include "ParticlesObject.h"
 #include "Actor.h"
 #include "ActorEffector.h"
-#include "EffectorDOF.h"
 
 extern bool m_AnimatorForceHideItems;
-bool EnableHudAnimatorDof = false;
 
 void CHudItemAnimator::StopAnimator()
 {
@@ -29,8 +27,6 @@ void CHudItemAnimator::Load()
 	}
 
 	m_bBlend = pSettings->read_if_exists<bool>(m_section, "blend", false);
-
-	Dof = pSettings->read_if_exists<Fvector4>(m_section, "dof", Fvector4().set(-1.0f, -1.0f, -1.0f, -1.0f));
 }
 
 void CHudItemAnimator::Update()
@@ -167,17 +163,10 @@ void CHudItemAnimator::PlayMotion()
 	g_player_hud->create_animator_item(this, m_section);
 
 	u32 ret = g_player_hud->GetAnimator()->anim_play("anm_show", m_bBlend, m_current_motion_def);
+	CDofManager::StartAction(DofSource, "anm_show", ret);
 
 	m_bNeedActivated = false;
 	m_bIsPlaying = true;
-
-	if (EnableHudAnimatorDof)
-	{
-		if (EnableHudAnimatorDof && !fsimilar(Dof.w, -1.0f))
-		{
-			m_manager->Parent()->Cameras().AddCamEffector(new CEffectorDOF(Dof));
-		}
-	}
 
 	if (m_manager->TargetAnimator() == this)
 	{
@@ -528,6 +517,7 @@ void CBurnAnimator::PlayAnimBurn()
 	g_player_hud->create_animator_item(this, m_section);
 
 	u32 ret = g_player_hud->GetAnimator()->anim_play("anm_show", false, m_current_motion_def);
+	CDofManager::StartAction(DofSource, "anm_show", ret);
 
 	m_bNeedActivated = false;
 	m_bIsPlaying = true;

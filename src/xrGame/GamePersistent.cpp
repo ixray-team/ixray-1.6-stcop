@@ -58,7 +58,6 @@ extern int g_keypress_on_start;
 
 CGamePersistent::CGamePersistent(void)
 {
-	m_bPickableDOF				= false;
 	m_game_params.m_e_game_type	= eGameIDNoGame;
 	ambient_effect_next_time	= 0;
 	ambient_effect_stop_time	= 0;
@@ -108,8 +107,11 @@ CGamePersistent::CGamePersistent(void)
 
 	eQuickLoad				= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
-	if(DofValue)
-	SetBaseDof				(*DofValue);
+	if (DofValue)
+	{
+		SetBaseDof(*DofValue);
+	}
+	Dof.Initialize();
 
 	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
 
@@ -288,6 +290,7 @@ void CGamePersistent::UpdateGameType()
 
 void CGamePersistent::OnGameEnd	()
 {
+	Dof.Reset();
 	inherited::OnGameEnd				();
 
 	xr_delete							(g_stalker_animation_data_storage);
@@ -887,7 +890,7 @@ if (!g_pGameLevel)
 		profiler().clear		();
 #endif
 	
-	UpdateDof();
+	Dof.Update(Device.Paused() ? 0.0f : Device.fTimeDelta);
 }
 
 void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
@@ -1067,65 +1070,27 @@ bool CGamePersistent::CanBePaused()
 }
 void CGamePersistent::SetPickableEffectorDOF(bool bSet)
 {
-	m_bPickableDOF = bSet;
-	if(!bSet)
-		RestoreEffectorDOF();
+	Dof.SetPickable(bSet);
 }
 
 void CGamePersistent::GetCurrentDof(Fvector3& dof)
 {
-	dof = m_dof[1];
+	Dof.GetCurrent(dof);
 }
 
 void CGamePersistent::SetBaseDof(const Fvector3& dof)
 {
-	m_dof[0]=m_dof[1]=m_dof[2]=m_dof[3]	= dof;
+	Dof.SetBase(dof);
 }
 
 void CGamePersistent::SetEffectorDOF(const Fvector& needed_dof)
 {
-	if(m_bPickableDOF)	return;
-	m_dof[0]	= needed_dof;
-	m_dof[2]	= m_dof[1]; //current
+	Dof.SetEffector(needed_dof);
 }
 
 void CGamePersistent::RestoreEffectorDOF()
 {
-	SetEffectorDOF			(m_dof[3]);
-}
-
-
-void CGamePersistent::UpdateDof()
-{
-	PROF_EVENT("CGamePersistent UpdateDof");
-
-	static float diff_far = pSettings->read_if_exists<float>("zone_pick_dof", "far", 70.f);//70.0f;
-	static float diff_near = pSettings->read_if_exists<float>("zone_pick_dof", "near", -70.f);//-70.0f;
-
-	if (m_bPickableDOF)
-	{
-		Fvector pick_dof;
-		pick_dof.y = HUD().GetCurrentRayQuery().range;
-		pick_dof.x = pick_dof.y + diff_near;
-		pick_dof.z = pick_dof.y + diff_far;
-		m_dof[0] = pick_dof;
-		m_dof[2] = m_dof[1]; //current
-	}
-
-	if(m_dof[1].similar(m_dof[0]))
-		return;
-
-	if (m_dof[1].similar(m_dof[0]))
-		return;
-
-	float td = Device.fTimeDelta;
-	Fvector				diff;
-	diff.sub(m_dof[0], m_dof[2]);
-	diff.mul(td / 0.2f); //0.2 sec
-	m_dof[1].add(diff);
-	(m_dof[0].x < m_dof[2].x) ? clamp(m_dof[1].x, m_dof[0].x, m_dof[2].x) : clamp(m_dof[1].x, m_dof[2].x, m_dof[0].x);
-	(m_dof[0].y < m_dof[2].y) ? clamp(m_dof[1].y, m_dof[0].y, m_dof[2].y) : clamp(m_dof[1].y, m_dof[2].y, m_dof[0].y);
-	(m_dof[0].z < m_dof[2].z) ? clamp(m_dof[1].z, m_dof[0].z, m_dof[2].z) : clamp(m_dof[1].z, m_dof[2].z, m_dof[0].z);
+	Dof.RestoreEffector();
 }
 
 void CGamePersistent::OnSectorChanged(int sector)

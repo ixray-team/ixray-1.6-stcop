@@ -330,9 +330,10 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 void R_dsgraph_structure::r_dsgraph_render_scope()
 {
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
+	RImplementation.Target->LensDofFactor = mapHUDScopeMask.size() > 0 && Device.hudViewportData.isRenderActive ? clampr(Device.hudViewportData.renderZoomRotateFactor, 0.0f, 1.0f) : 0.0f;
 	RImplementation.Target->copy_position();
 
-	RImplementation.Target->u_setrt(NULL, NULL, RDepth);
+	RImplementation.Target->u_setrt(RImplementation.Target->rt_DofScopeMask, nullptr, RDepth);
 
 	CHudInitializer initalizer(true);
 	RenderMap(mapHUDScopeMask);

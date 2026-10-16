@@ -210,6 +210,8 @@ public:
 	ref_rt						rt_Revealage;
 
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+	ref_rt rt_DofScopeMask;
+	float LensDofFactor = 0.0f;
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
