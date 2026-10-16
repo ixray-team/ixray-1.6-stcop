@@ -11,7 +11,8 @@ set(TRACY_STATIC OFF CACHE BOOL "" FORCE)
 set(TRACY_NO_VSYNC_CAPTURE 1 CACHE BOOL "" FORCE)
 set(TRACY_ON_DEMAND 1 CACHE BOOL "" FORCE)
 set(TRACY_CALLSTACK 1 CACHE BOOL "" FORCE)
-set(TRACY_FIBERS 1 CACHE BOOL "" FORCE)
+# Engine workers are OS threads; use Tracy's per-thread queues.
+set(TRACY_FIBERS OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(Tracy)
 
