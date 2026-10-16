@@ -8,6 +8,7 @@
 
 #pragma once
 #include "../xrScripts/script_engine.h"
+#include "../xrEngine/IGame_ObjectPool.h"
 
 IC	IGameGraph					&CAI_Space::game_graph				() const
 {
@@ -57,6 +58,7 @@ IC	const CCoverManager			&CAI_Space::cover_manager			() const
 IC	CScriptEngine				&CAI_Space::script_engine			() const
 {
 	VERIFY					(g_pScriptEngine);
+	VERIFY2					(!IGame_ObjectPool::IsParallelLoad(), "Primary-thread work in a parallel CObject::Load: queue it with IGame_ObjectPool::RunOnPrimaryThread");
 	return					(*g_pScriptEngine);
 }
 

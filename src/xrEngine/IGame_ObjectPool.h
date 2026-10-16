@@ -16,6 +16,9 @@ public:
 	CObject*					create				( const char*	name	);
 	void						destroy				( CObject*	O		);
 
+	static void					RunOnPrimaryThread	(std::function<void()>&& Action);
+	static bool					IsParallelLoad		();
+
 	IGame_ObjectPool			();
 	virtual ~IGame_ObjectPool	();
 };
