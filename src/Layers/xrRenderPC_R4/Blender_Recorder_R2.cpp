@@ -216,14 +216,14 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     if (LightingModeIsStaticRender() && aTest)
         RImplementation.addShaderOption("USE_R1_ALPHA_TEST", "1");
 
-    SPS* ps = DEV->_CreatePS(_ps);
-    SVS* vs = DEV->_CreateVS(_vs);
+    ref_ps ps = DEV->_CreatePS(_ps);
+    ref_vs vs = DEV->_CreateVS(_vs);
     dest.ps = ps;
     dest.vs = vs;
     ctable.merge(&ps->constants);
     ctable.merge(&vs->constants);
 
-    SGS* gs = DEV->_CreateGS(_gs);
+    ref_gs gs = DEV->_CreateGS(_gs);
     dest.gs = gs;
 
     dest.hs = DEV->_CreateHS("null");

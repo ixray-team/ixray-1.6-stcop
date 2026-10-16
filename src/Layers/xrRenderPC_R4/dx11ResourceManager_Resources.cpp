@@ -18,7 +18,7 @@
 #include "../../xrCore/FVFLegacy.h"
 using namespace FVF;
 
-SHS*	CResourceManager::_CreateHS			(const char* Name)
+ref_hs	CResourceManager::_CreateHS			(const char* Name)
 {
 	return CreateShader<SHS>(Name);
 }
@@ -28,7 +28,7 @@ void	CResourceManager::_DeleteHS			(const SHS*	HS	)
 	DestroyShader(HS);
 }
 
-SDS*	CResourceManager::_CreateDS			(const char* Name)
+ref_ds	CResourceManager::_CreateDS			(const char* Name)
 {
 	return CreateShader<SDS>(Name);
 }
@@ -38,7 +38,7 @@ void	CResourceManager::_DeleteDS			(const SDS*	DS	)
 	DestroyShader(DS);
 }
 
-SCS*	CResourceManager::_CreateCS			(const char* Name)
+ref_cs	CResourceManager::_CreateCS			(const char* Name)
 {
 	return CreateShader<SCS>(Name);
 }
@@ -129,7 +129,7 @@ void CResourceManager::_DeletePass(const SPass* P)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SVS*	CResourceManager::_CreateVS		(const char* _name)
+ref_vs	CResourceManager::_CreateVS		(const char* _name)
 {
 	xr_string res_name = _name;
 
@@ -143,25 +143,28 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 	const char* name = res_name.c_str();
 
 	SVS* _vs = nullptr;
+	ref_vs Result;
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
 		map_VS::iterator I = m_vs.find(LPSTR(name));
 		if (I != m_vs.end())
 		{
-			_vs = I->second;
-			if (!ResourceLifetime::IsAlive(_vs))
+			if (ResourceLifetime::TryAcquire(I->second, Result))
+			{
+				_vs = I->second;
+			}
+			else
 			{
 				m_vs.erase(I);
-				_vs = nullptr;
 			}
 		}
 		if (!_vs)
 		{
 			_vs = new SVS();
 			_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-			_vs->dwReference.store(1, std::memory_order_release);
 			m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
+			ref_vs(_vs).swap(Result);
 			IsNew = true;
 		}
 	}
@@ -169,13 +172,13 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 	if (!IsNew)
 	{
 		_vs->CompileState.WaitCompiled();
-		return _vs;
+		return Result;
 	}
 
 	{
 		if (0==_stricmp(_name,"null"))	{
 			_vs->CompileState.MarkCompiled();
-			return _vs;
+			return Result;
 		}
 
 		string_path cname;
@@ -238,7 +241,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 			}
 		}
 #endif
-		return _vs;
+		return Result;
 	}
 }
 
@@ -250,7 +253,10 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	map_VS::iterator I	= m_vs.find	(N);
 	if (I!=m_vs.end())	
 	{
-		m_vs.erase(I);
+		if (I->second == vs)
+		{
+			m_vs.erase(I);
+		}
 
 		// A shader that failed to compile has no input signature and no layouts
 		if (!vs->signature)
@@ -276,31 +282,34 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPS*	CResourceManager::_CreatePS			(const char* _name)
+ref_ps	CResourceManager::_CreatePS			(const char* _name)
 {
 	xr_string res_name = _name + RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
 	SPS* _ps = nullptr;
+	ref_ps Result;
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
 		map_PS::iterator I = m_ps.find(LPSTR(name));
 		if (I != m_ps.end())
 		{
-			_ps = I->second;
-			if (!ResourceLifetime::IsAlive(_ps))
+			if (ResourceLifetime::TryAcquire(I->second, Result))
+			{
+				_ps = I->second;
+			}
+			else
 			{
 				m_ps.erase(I);
-				_ps = nullptr;
 			}
 		}
 		if (!_ps)
 		{
 			_ps = new SPS();
 			_ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-			_ps->dwReference.store(1, std::memory_order_release);
 			m_ps.insert(std::make_pair(_ps->set_name(name), _ps));
+			ref_ps(_ps).swap(Result);
 			IsNew = true;
 		}
 	}
@@ -308,14 +317,14 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 	if (!IsNew)
 	{
 		_ps->CompileState.WaitCompiled();
-		return _ps;
+		return Result;
 	}
 
 	{
 		if (0==_stricmp(_name,"null"))	{
 			_ps->ps = nullptr;
 			_ps->CompileState.MarkCompiled();
-			return _ps;
+			return Result;
 		}
 
 		// Open file
@@ -387,7 +396,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		}
 #endif
 
-		return _ps;
+		return Result;
 	}
 }
 
@@ -398,38 +407,44 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 	LPSTR N				= LPSTR		(*ps->cName);
 	map_PS::iterator I	= m_ps.find	(N);
 	if (I!=m_ps.end())	{
-		m_ps.erase(I);
+		if (I->second == ps)
+		{
+			m_ps.erase(I);
+		}
 		return;
 	}
 	Msg	("! ERROR: Failed to find compiled pixel-shader '%s'",*ps->cName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SGS*	CResourceManager::_CreateGS			(const char* _name)
+ref_gs	CResourceManager::_CreateGS			(const char* _name)
 {
 	xr_string res_name = _name + RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
 	SGS* _gs = nullptr;
+	ref_gs Result;
 	bool IsNew = false;
 	{
 		xrCriticalSectionGuard guard(creationGuard);
 		map_GS::iterator I = m_gs.find(LPSTR(name));
 		if (I != m_gs.end())
 		{
-			_gs = I->second;
-			if (!ResourceLifetime::IsAlive(_gs))
+			if (ResourceLifetime::TryAcquire(I->second, Result))
+			{
+				_gs = I->second;
+			}
+			else
 			{
 				m_gs.erase(I);
-				_gs = nullptr;
 			}
 		}
 		if (!_gs)
 		{
 			_gs = new SGS();
 			_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-			_gs->dwReference.store(1, std::memory_order_release);
 			m_gs.insert(std::make_pair(_gs->set_name(name), _gs));
+			ref_gs(_gs).swap(Result);
 			IsNew = true;
 		}
 	}
@@ -437,14 +452,14 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 	if (!IsNew)
 	{
 		_gs->CompileState.WaitCompiled();
-		return _gs;
+		return Result;
 	}
 
 	{
 		if (0==_stricmp(_name,"null"))	{
 			_gs->gs = nullptr;
 			_gs->CompileState.MarkCompiled();
-			return _gs;
+			return Result;
 		}
 
 		// Open file
@@ -489,7 +504,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 
 		FS.r_close				( file );
 
-		return					_gs;
+		return					Result;
 	}
 }
 void	CResourceManager::_DeleteGS			(const SGS* gs)
@@ -499,7 +514,10 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 	LPSTR N				= LPSTR		(*gs->cName);
 	map_GS::iterator I	= m_gs.find	(N);
 	if (I!=m_gs.end())	{
-		m_gs.erase(I);
+		if (I->second == gs)
+		{
+			m_gs.erase(I);
+		}
 		return;
 	}
 	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
