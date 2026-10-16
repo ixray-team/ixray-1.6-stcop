@@ -273,7 +273,7 @@ _DDS:
 	}
 _DDS_CUBE:
 	{
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		HRESULT hr = LoadFromDDSMemory(static_cast<const uint8_t*>(reader->pointer()), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
 		{
 			const char* formatName = magic_enum::enum_name(imageInfo.format).data();
@@ -334,7 +334,7 @@ _DDS_2D:
 
 		img_loaded_lod = get_texture_load_lod(fn, imageInfo.width, imageInfo.height);
 
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		HRESULT hr = LoadFromDDSMemory(static_cast<const uint8_t*>(reader->pointer()), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
 		{
 			const char* formatName = magic_enum::enum_name(imageInfo.format).data();
