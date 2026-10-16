@@ -112,9 +112,12 @@ int CApplication::BeginPlay()
 	splash::SetProgressStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
-	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
+	// AI: a hidden window keeps test runs off the screen, a normal run shows it (that is what makes the
+	// AI: first frame visible); only autotest runs are meant to stay invisible.
+	const bool l_hiddenWindow = strstr(Core.Params, "-autotest") != nullptr;
+	SDL_WindowFlags WndFlags = l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0;
 #ifndef IXR_WINDOWS
-	WndFlags = SDL_WINDOW_VULKAN;
+	WndFlags = SDL_WINDOW_VULKAN | (l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0);
 #endif
 #ifdef IXR_MACOS
 	// AI: SDL3 allows only one of OPENGL/METAL/VULKAN per window (SDL_CreateWindow fails with
@@ -123,7 +126,7 @@ int CApplication::BeginPlay()
 	// AI: SDL_WINDOW_METAL). The Vulkan loader is therefore loaded explicitly right after the window is
 	// AI: created, because SDL does that itself only for SDL_WINDOW_VULKAN windows and DXVK's SDL3 WSI
 	// AI: asks SDL for vkGetInstanceProcAddr.
-	WndFlags = SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN;
+	WndFlags = SDL_WINDOW_VULKAN | (l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0);
 #endif
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
