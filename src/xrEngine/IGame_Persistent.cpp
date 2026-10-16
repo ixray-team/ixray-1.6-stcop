@@ -99,6 +99,7 @@ void IGame_Persistent::Start(const char* op)
 void IGame_Persistent::Disconnect()
 {
 	g_IniReadAhead->Stop();
+	CInifile::ClearMemoryCache();
 	VisorRain.Reset();
 	ShaderParams = {};
 	ShaderParams.HelmetCondition = -1.f;
@@ -264,6 +265,7 @@ void IGame_Persistent::Prefetch()
 void IGame_Persistent::OnGameEnd()
 {
 	g_IniReadAhead->Stop();
+	CInifile::ClearMemoryCache();
 	ObjectPool.clear();
 	Render->models_Clear(true);
 }
