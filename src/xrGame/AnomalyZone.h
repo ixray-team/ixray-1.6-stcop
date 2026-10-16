@@ -117,6 +117,7 @@ protected:
 		eBulletFliesThrough		=(1<<19),
 		eBulletRicochet			=(1<<20),
 		eBulletRandom			=(1<<21),
+		DeleteBolts = (1 << 22),
 	};
 	u32					m_owner_id;
 	u32					m_ttl;
