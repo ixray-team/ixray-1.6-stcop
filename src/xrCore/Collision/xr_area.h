@@ -49,8 +49,8 @@ public:
 	bool								RayQuery			( collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
 	bool								RayQuery			( collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
 
-	ICF xr_vector<CDB::TRI>&			GetStaticTris		() { return Static.get_tris();	}
-	ICF xr_vector<Fvector>&				GetStaticVerts		() { return Static.get_verts(); }
+	ICF xr_vector<CDB::TRI>&			GetStaticTris		() { Static.wait_loading(); return Static.get_tris();	}
+	ICF xr_vector<Fvector>&				GetStaticVerts		() { Static.wait_loading(); return Static.get_verts(); }
 	ICF CDB::MODEL*						GetStaticModel		() { return &Static;			}
 
 	ICF const Fbox&						GetBoundingVolume	() { return m_BoundingVolume;}
