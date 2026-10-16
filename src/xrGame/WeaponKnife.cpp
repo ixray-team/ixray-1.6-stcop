@@ -146,11 +146,17 @@ void CWeaponKnife::Load(const char* section)
 	m_bShowKnifeStats = pSettings->read_if_exists<bool>(section, "show_knife_stats", true);
 
 	m_flags.set(FUsingCondition, pSettings->read_if_exists<bool>(section, "use_condition", false));
+	HasBurerSelfKick = HudSection().size() && pSettings->line_exist(HudSection(), "anm_selfkick");
 }
 
 void CWeaponKnife::LoadSounds(const char* section)
 {
 	inherited::LoadSounds(section);
+	HasBurerSelfKickSound = SoundExist(section, "snd_selfkick");
+	if (HasBurerSelfKickSound)
+	{
+		m_sounds.LoadSound(section, "snd_selfkick", "sndSelfKick", false, SOUND_TYPE_WEAPON_MELEE);
+	}
 
 	if (SoundExist(section, "snd_kick_1") && SoundExist(section, "snd_kick_2"))
 	{
@@ -376,6 +382,10 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 
 void CWeaponKnife::OnKnifeStrike()
 {
+	if (BurerSelfKick)
+	{
+		return;
+	}
 	Fvector	p1, d;
 	p1.set(get_LastFP());
 	d.set(get_LastFD());
@@ -389,6 +399,14 @@ void CWeaponKnife::OnKnifeStrike()
 
 void CWeaponKnife::OnAnimationEnd(u8 state)
 {
+	if (BurerSelfKick && (state == eFire || state == eFire2))
+	{
+		BurerSelfKick = false;
+		attackStarted = false;
+		SetPending(false);
+		SwitchState(eIdle);
+		return;
+	}
 	switch (state)
 	{
 		case eHiding:
@@ -464,8 +482,31 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 	bWorking = false;
 }
 
+bool CWeaponKnife::StartBurerSelfKick()
+{
+	auto* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	if (!Actor || !HasBurerSelfKick || IsPending() || GetState() != eIdle || Actor->PlanningSuicide || Actor->DeathActionStarted || Actor->ControlledTimeRemains > 0)
+	{
+		return false;
+	}
+	BurerSelfKick = true;
+	SwitchState(eFire);
+	return true;
+}
+
 void CWeaponKnife::switch2_Attacking(u8 state)
 {
+	if (BurerSelfKick)
+	{
+		SetPending(true);
+		attackStarted = false;
+		PlayHUDMotion("anm_selfkick", EHudMixType::eMixAll, state);
+		if (HasBurerSelfKickSound)
+		{
+			PlaySound("sndSelfKick", Position());
+		}
+		return;
+	}
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 	if (pActor && pActor->PlanningSuicide && pActor->CheckActorVisibilityForController())
 	{
@@ -527,6 +568,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 
 void CWeaponKnife::switch2_Idle	()
 {
+	BurerSelfKick = false;
 	VERIFY(GetState()==eIdle);
 
 	PlayAnimIdle		();
@@ -535,6 +577,7 @@ void CWeaponKnife::switch2_Idle	()
 
 void CWeaponKnife::switch2_Hiding	()
 {
+	BurerSelfKick = false;
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
 	PlayHUDMotion("anm_hide", EHudMixType::eMixAll, GetState());
@@ -606,7 +649,12 @@ void CWeaponKnife::UpdateCL()
 }
 
 void CWeaponKnife::FireStart()
-{	
+{
+	auto* Owner = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	if (Owner && Owner->BurerEffects.KnifeWindow() && StartBurerSelfKick())
+	{
+		return;
+	}
 	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
 	{
 		if (Actor->ControlledTimeRemains > 0)
@@ -631,6 +679,11 @@ void CWeaponKnife::FireStart()
 
 void CWeaponKnife::Fire2Start()
 {
+	auto* Owner = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	if (Owner && Owner->BurerEffects.KnifeWindow() && StartBurerSelfKick())
+	{
+		return;
+	}
 	if (CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr)
 	{
 		if (Actor->ControlledTimeRemains > 0)

@@ -93,9 +93,10 @@ struct STelekineticObject
 	u32 time_throw_started;
 
 	ETelekineticState state;
-	
+	SCollisionHitCallback* CollisionHit = nullptr;
+
 	STelekineticObject(const STelekineticObjectParams& tele_params);
-	virtual ~STelekineticObject() = default;
+	virtual ~STelekineticObject();
 
 	virtual void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);
 	virtual void set_particle(shared_str& particles_sect);
@@ -157,8 +158,10 @@ struct STelekineticWeaponObject : STelekineticObject
 	u32 weapon_next_phase_time;
 
 	s8 backup_weapon_fire_mode = s8(-1);
+	bool WeaponSetup = false;
 
 	STelekineticWeaponObject(const STelekineticWeaponParams& weapon_params, const STelekineticObjectParams& tele_params);
+	~STelekineticWeaponObject() override;
 
 	void setup_local_weapon_things();
 	void restore_global_weapon_things();
@@ -195,6 +198,9 @@ struct STelekineticGrenadeObject : STelekineticObject
 	u32 grenade_initial_time = 0xffffffffui32;
 	u32 throw_threshold = 700;
 	u32 time_to_explode = 2000;
+	u32 ActivationTime = 0;
+	bool ActivateInactive = true;
+	u32 EmergencyTime = 0;
 
 	STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, const STelekineticObjectParams& tele_params);
 #ifdef DEBUG_DRAW

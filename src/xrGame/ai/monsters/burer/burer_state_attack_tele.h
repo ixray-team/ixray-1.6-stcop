@@ -7,16 +7,16 @@ class CStateBurerAttackTele : public CState<Object>
 	using inherited = CState<Object>;
 
 	xr_vector<CPhysicsShellHolder*> tele_objects;
-	CPhysicsShellHolder* selected_object;
+	ALife::_OBJECT_ID SelectedId = ALife::INVALID_OBJECT_ID;
 	xr_vector<ISpatialShared> m_nearest;
 
 	u32 time_started;
 
-	TTime m_last_grenade_scan;
 	TTime m_anim_end_tick;
 	TTime m_end_tick;
 	float m_initial_health;
-	
+	bool CompletionReached = false;
+
 	enum
 	{
 		ACTION_TELE_STARTED,
@@ -33,7 +33,15 @@ public:
 	virtual void execute();
 	virtual void finalize();
 	virtual void critical_finalize();
-	virtual void remove_links(CObject* object_) { inherited::remove_links(object_); }
+	virtual void remove_links(CObject* Released)
+	{
+		inherited::remove_links(Released);
+		if (Released->ID() == SelectedId)
+		{
+			SelectedId = ALife::INVALID_OBJECT_ID;
+		}
+		std::erase(tele_objects, Released->cast_physics_shell_holder());
+	}
 
 	virtual bool check_start_conditions();
 	virtual bool check_completion();
@@ -59,7 +67,7 @@ private:
 	void FindFreeObjects(xr_vector<ISpatialShared>& tpObjects, const Fvector& pos);
 
 	void FireAllToEnemy();
-	void deactivate();
+	void deactivate(bool Fire);
 };
 
 #include "burer_state_attack_tele_inline.h"

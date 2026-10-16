@@ -84,8 +84,29 @@ class CLevel:
 	public IPureClient
 {
 	u32 NextMonsterCountUpdate = 0;
+	xr_hash_set<ALife::_OBJECT_ID> SecretItems;
 	u32 MonsterCountGeneration = u32(-1);
-	#include "Level_network_Demo.h"
+
+public:
+	void SetSecretItem(ALife::_OBJECT_ID Id, bool Protected)
+	{
+		if (Id == ALife::INVALID_OBJECT_ID)
+		{
+			return;
+		}
+		if (Protected)
+		{
+			SecretItems.insert(Id);
+		}
+		else
+		{
+			SecretItems.erase(Id);
+		}
+	}
+	bool IsSecretItem(ALife::_OBJECT_ID Id) const { return SecretItems.contains(Id); }
+
+private:
+#include "Level_network_Demo.h"
 	void						ClearAllObjects			();
 private:
 #ifdef DEBUG

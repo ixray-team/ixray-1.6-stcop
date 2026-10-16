@@ -36,6 +36,8 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         items: [
           { text: 'Диалоги', link: '/gameplay/general/dialogues' },
           { text: 'Мутанты', link: '/gameplay/general/mutants' },
+          { text: 'Боевая логика бюрера', link: '/gameplay/monsters/burer-combat' },
+          { text: 'Телекинез бюрера', link: '/gameplay/monsters/burer-telekinesis' },
           { text: 'Транспорт', link: '/gameplay/general/transport' },
           { text: 'Персонажи', link: '/gameplay/general/characters' },
           { text: 'Статистика ПДА', link: '/gameplay/general/pda-statistics' },

@@ -3,6 +3,7 @@
 #include "../telekinesis.h"
 #include "../anim_triple.h"
 #include "../scanning_ability.h"
+#include "burer_combat.h"
 #include "../../../../xrScripts/script_export_space.h"
 
 class CCharacterPhysicsSupport;
@@ -185,6 +186,7 @@ public:
 	bool m_force_gravi_attack;
 
 	void StaminaHit();
+	CBurerCombat Combat;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 

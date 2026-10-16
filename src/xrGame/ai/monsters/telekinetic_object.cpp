@@ -33,6 +33,32 @@ void STelekineticObject::set_sound(const ref_sound& snd_hold, const ref_sound& s
 	sound_throw.clone(snd_throw, st_Effect, sg_SourceType);
 }
 
+STelekineticObject::~STelekineticObject()
+{
+	sound_hold.stop();
+	if (!params.object)
+	{
+		return;
+	}
+	if (particle_sect.size())
+	{
+		stop_object_particles();
+	}
+	if (CollisionHit && params.object->get_collision_hit_callback() == CollisionHit)
+	{
+		params.object->set_collision_hit_callback(nullptr);
+	}
+	if (auto* Shell = params.object->PPhysicsShell())
+	{
+		if (Shell->get_CallbackData() == this)
+		{
+			Shell->remove_ObjectContactCallback(collision_callback);
+			Shell->set_CallbackData(nullptr);
+		}
+		Shell->set_ApplyByGravity(true);
+	}
+}
+
 void STelekineticObject::set_particle(shared_str& particles_sect)
 {
 	particle_sect = particles_sect;
@@ -370,6 +396,7 @@ void STelekineticObject::release()
 {
 	if (!params.object || !params.object->m_pPhysicsShell)
 	{
+		switch_state(ETelekineticState::TS_NONE);
 		return;
 	}
 
@@ -404,9 +431,18 @@ void STelekineticObject::throw_object_time(const Fvector& target, float time)
 	transference.sub(target, params.object->Position());
 	TransferenceToThrowVel(transference, time, params.object->EffectiveGravity());
 
-	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
+	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения,
 	// а все рассчёт проходили в кастомном collide_callback.
-	params.object->set_collision_hit_callback(new SCollisionHitCallback(params.object));
+	auto* HitCallback = new SCollisionHitCallback(params.object);
+	params.object->set_collision_hit_callback(HitCallback);
+	if (params.object->get_collision_hit_callback() == HitCallback)
+	{
+		CollisionHit = HitCallback;
+	}
+	else
+	{
+		xr_delete(HitCallback);
+	}
 	params.object->m_pPhysicsShell->set_CallbackData(this);
 	params.object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
 
@@ -529,8 +565,9 @@ void STelekineticWeaponObject::setup_local_weapon_things()
 	{
 		return;
 	}
-	
+
 	backup_weapon_fire_mode = weapon->GetQueueSize();
+	WeaponSetup = true;
 	weapon->SetInitiator(weapon_params.telekinetic_enemy->get_self()->ID());
 	// WEAPON_ININITE_QUEUE (-1) = auto, 1 = single, 2 = burst
 	weapon->SetQueueSize(WEAPON_ININITE_QUEUE); // чтобы пистолетам задать режим стрельбы auto
@@ -538,12 +575,19 @@ void STelekineticWeaponObject::setup_local_weapon_things()
 
 void STelekineticWeaponObject::restore_global_weapon_things()
 {
-	if (weapon == nullptr)
+	if (weapon == nullptr || !WeaponSetup)
 	{
 		return;
 	}
-	weapon->SetInitiator(-1);
+	weapon->SetInitiator(ALife::INVALID_OBJECT_ID);
 	weapon->SetQueueSize(backup_weapon_fire_mode);
+	WeaponSetup = false;
+}
+
+STelekineticWeaponObject::~STelekineticWeaponObject()
+{
+	weapon_end_shooting();
+	restore_global_weapon_things();
 }
 
 #ifdef DEBUG_DRAW
@@ -915,6 +959,7 @@ STelekineticGrenadeObject::STelekineticGrenadeObject(ITelekineticEnemy* tele_ene
 	STelekineticObject(tele_params), telekinetic_enemy(tele_enemy), grenade(smart_cast<CGrenade*>(tele_params.object))
 {
 	STelekineticGrenadeObject::switch_state(ETelekineticState::TS_RAISE);
+	ActivationTime = Device.dwTimeGlobal;
 }
 
 #ifdef DEBUG_DRAW
@@ -961,30 +1006,29 @@ void STelekineticGrenadeObject::perform_keep_object(float ph_step)
 		return;
 	}
 
-	if (grenade->destroy_time() == grenade_initial_time)
+	if (ActivateInactive && grenade->destroy_time() == grenade_initial_time)
 	{
 		grenade->State(CGrenade::eThrowStart);
+		grenade->SetInitiator(telekinetic_enemy->get_self()->ID());
 		grenade->set_destroy_time(time_to_explode);
+		ActivationTime = Device.dwTimeGlobal;
 	}
 }
 
 bool STelekineticGrenadeObject::can_be_thrown()
 {
-	u32 now = time();
-	u32 explode_global_time = grenade->destroy_time();
-
-	u32 activation_time = explode_global_time - time_to_explode;
-	u32 elapsed_since_activation = now - activation_time;
-
-	return elapsed_since_activation > throw_threshold;
+	if (!grenade || grenade->getDestroy() || grenade->H_Parent() || grenade->IsExploding())
+	{
+		return false;
+	}
+	if (grenade->destroy_time() == grenade_initial_time)
+	{
+		return !ActivateInactive;
+	}
+	return grenade->destroy_time() > time() && (time() - ActivationTime > throw_threshold || (EmergencyTime && grenade->destroy_time() - time() <= EmergencyTime));
 }
 
 bool STelekineticGrenadeObject::can_be_picked_up()
 {
-	if (grenade->destroy_time() != grenade_initial_time)
-	{
-		return false;
-	}
-
-	return true;
+	return grenade && !grenade->getDestroy() && !grenade->H_Parent() && !grenade->IsExploding() && (grenade->destroy_time() == grenade_initial_time || grenade->destroy_time() > time());
 }

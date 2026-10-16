@@ -21,6 +21,7 @@ namespace detail
 
 anti_aim_ability::anti_aim_ability (CBaseMonster* const object) : m_object(object)
 {
+	m_detection_level = 0.f;
 	m_effector_id					=	0;
 	m_max_angle						=	0.5f;
 	m_last_activated_tick			=	0;
@@ -65,6 +66,10 @@ void   anti_aim_ability::on_monster_death ()
 
 bool   anti_aim_ability::can_detect ()
 {
+	if (NativeBurerReaction)
+	{
+		return true;
+	}
 	CEntityAlive const* enemy		=	m_object->EnemyMan.get_enemy();
 	Fvector	const	self2enemy		=	enemy->Position() - m_object->Position();
 	Fvector	const	self_dir		=	m_object->Direction();
@@ -79,6 +84,10 @@ bool   anti_aim_ability::can_detect ()
 
 bool   anti_aim_ability::check_start_condition ()
 {
+	if (NativeBurerReaction && !BurerCanRisk())
+	{
+		return false;
+	}
 	if ( is_active() )
 	{
 		return							false;
@@ -124,7 +133,7 @@ bool   anti_aim_ability::check_start_condition ()
 		return							false;
 	}
 
-	if ( m_detection_level < 1.f && !m_object->get_force_anti_aim() )
+	if (m_detection_level < 1.f && !m_object->get_force_anti_aim() && !(NativeBurerReaction && BurerThreat))
 	{
 		return							false;
 	}
@@ -139,6 +148,7 @@ bool   anti_aim_ability::check_start_condition ()
 
 void   anti_aim_ability::activate ()
 {
+	HitDelivered = false;
 	m_man->capture						(this, ControlCom::eControlAnimation);
 	m_man->capture						(this, ControlCom::eControlPath);
 	m_man->capture						(this, ControlCom::eControlMovement);
@@ -192,11 +202,11 @@ void   anti_aim_ability::start_camera_effector ()
 	m_camera_effector_end_tick		= std::max(m_camera_effector_end_tick, m_animation_end_tick);
 
 	Actor()->Cameras().AddCamEffector	(cam_eff);
-	
-	if ( m_callback )
-	{
-		m_callback						();
-	}
+}
+
+bool anti_aim_ability::BurerCanRisk()
+{
+	return !is_active() && Device.dwTimeGlobal >= m_last_activated_tick + static_cast<u32>(m_timeout * 1000.f) && Actor() && Actor()->BurerEffects.CanAntiAim(*Actor());
 }
 
 void   anti_aim_ability::do_deactivate ()
@@ -225,7 +235,7 @@ void   anti_aim_ability::deactivate ()
 
 	m_man->unsubscribe					(this, ControlCom::eventAnimationEnd);
 
-	if ( Actor() )
+	if (Actor() && m_effector_id)
 	{
 		Actor()->Cameras().RemoveCamEffector	((ECamEffectorType)m_effector_id);
 	}
@@ -277,8 +287,10 @@ bool   anti_aim_ability::check_update_condition () const
 
 	PIItem active_item = Actor()->inventory().ActiveItem();
 
-	if (active_item != nullptr && active_item->cast_weapon() == nullptr)
-		return							false;
+	if (!NativeBurerReaction && active_item != nullptr && active_item->cast_weapon() == nullptr)
+	{
+		return false;
+	}
 
 	return								true;
 }
@@ -312,9 +324,21 @@ void   anti_aim_ability::update_schedule ()
 		{
 			return;
 		}
-		if ( m_effector_id == 0 )
+		if (!HitDelivered)
 		{
-			start_camera_effector		();
+			HitDelivered = true;
+			if (NativeBurerReaction)
+			{
+				m_camera_effector_end_tick = m_animation_end_tick;
+			}
+			else
+			{
+				start_camera_effector();
+			}
+			if (m_callback)
+			{
+				m_callback();
+			}
 		}		
 		if ( Device.dwTimeGlobal < m_camera_effector_end_tick )
 		{

@@ -21,6 +21,7 @@
 #include "CustomDevice.h"
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
+#include "ActorBurerEffects.h"
 #include "nvg.h"
 #include "CameraFocus.h"
 
@@ -419,6 +420,7 @@ private:
 	s32						GetShotRndSeed			() const { return m_ShotRndSeed;	};
 
 	CHudAnimatorManager*	HudAnimator() const { return m_hud_animator; }
+	CActorBurerEffects BurerEffects;
 	void					StartAnimator			(const shared_str& section);
 
 public:

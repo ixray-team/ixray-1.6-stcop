@@ -220,6 +220,7 @@ void CWeapon::UpdateFireDependencies_internal(bool need_invalidate)
 
 void CWeapon::Load		(const char* section)
 {
+	BurerSniper = pSettings->read_if_exists<bool>(section, "is_burer_see_sniper_weapon", false);
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 	LoadVfxScales(section);

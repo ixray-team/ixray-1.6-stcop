@@ -480,6 +480,7 @@ public:
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
 	u32 m_iLastShotTime = 0;
+	bool BurerSniper = false;
 
 	xr_vector<std::pair<u8, u32>> m_mags_capacity{};
 

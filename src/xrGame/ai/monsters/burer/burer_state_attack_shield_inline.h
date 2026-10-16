@@ -66,12 +66,17 @@ void CStateBurerShield<Object>::critical_finalize()
 {
 	inherited::critical_finalize();
 	this->object->DeactivateShield();
-	this->object->set_script_capture(false);
+	this->object->set_script_capture(true);
 }
 
 template <class Object>
 bool CStateBurerShield<Object>::check_start_conditions()
 {
+	this->object->Combat.Refresh(*this->object);
+	if (this->object->Combat.Enabled && (this->object->Combat.CloseProtection() || this->object->Combat.Context.UnderWideAim))
+	{
+		return true;
+	}
 	if (current_time() < m_last_shield_started + this->object->shield_time + this->object->shield_cooldown)
 	{
 		return false;
@@ -88,7 +93,16 @@ bool CStateBurerShield<Object>::check_start_conditions()
 template <class Object>
 bool CStateBurerShield<Object>::check_completion()
 {
-	if (current_time() > m_last_shield_started + this->object->shield_time)
+	if (this->object->Combat.Enabled && this->object->Combat.HoldShield(*this->object))
+	{
+		this->object->m_shield_expire_time = current_time() + this->object->shield_time;
+		return false;
+	}
+	if (this->object->Combat.Enabled && this->object->get_force_anti_aim())
+	{
+		return true;
+	}
+	if (current_time() > this->object->m_shield_expire_time)
 	{
 		return true;
 	}

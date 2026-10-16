@@ -16,7 +16,6 @@
 #include "burer_fast_gravi.h"
 #include "ParticlesObject.h"
 #include "../anti_aim_ability.h"
-#include "../anti_aim_ability.h"
 
 #include "../../../Inventory.h"
 #include "../../../ActorCondition.h"
@@ -52,10 +51,14 @@ void CBurer::reinit()
 	DeactivateShield();
 
 	time_last_scan = 0;
+	Combat.Reset();
 }
 
 void CBurer::net_Destroy()
 {
+	CTelekinesis::deactivate();
+	Combat.Reset();
+	DeactivateShield();
 	inherited::net_Destroy();
 }
 
@@ -109,6 +112,7 @@ CBaseMonster* CBurer::get_self()
 void CBurer::Load(const char* section)
 {
 	inherited::Load(section);
+	Combat.Load();
 
 	anim().accel_load(section);
 	anim().accel_chain_add(eAnimWalkFwd, eAnimRun);
@@ -362,6 +366,7 @@ void CBurer::PostLoad(const char* section)
 	if (m_anti_aim)
 	{
 		m_anti_aim->set_callback(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+		m_anti_aim->ConfigureBurer(Combat.Enabled);
 	}
 }
 
@@ -376,6 +381,11 @@ void CBurer::CheckSpecParams(u32 spec_params)
 
 void CBurer::StaminaHit()
 {
+	if (Combat.Enabled)
+	{
+		Combat.StaminaAttack(*this);
+		return;
+	}
 	if (GodMode())
 	{
 		return;
@@ -504,6 +514,15 @@ void CBurer::UpdateGraviObject()
 
 			if (b_enemy_visible)
 			{
+				if (Combat.Enabled && gravi_object.enemy == Actor())
+				{
+					Actor()->BurerEffects.Play(*Actor(), EBurerHit::Gravi, true);
+					Fvector Push;
+					Push.sub(Actor()->Position(), Position());
+					Push.y += .1f;
+					Push.normalize_safe();
+					Actor()->character_physics_support()->movement()->ApplyImpulse(Push, Combat.GraviImpulse);
+				}
 				Fvector impulse_dir;
 
 				impulse_dir.set(0.0f, 0.0f, 1.0f);
@@ -657,7 +676,7 @@ void CBurer::UpdateCL()
 	inherited::UpdateCL();
 	CTelekinesis::schedule_update();
 
-	if (OnServer() && m_shield_active && m_shield_expire_time && Device.dwTimeGlobal >= m_shield_expire_time)
+	if (!Combat.Enabled && OnServer() && m_shield_active && m_shield_expire_time && Device.dwTimeGlobal >= m_shield_expire_time)
 	{
 		DeactivateShield();
 	}
@@ -791,7 +810,7 @@ void CBurer::Die(CObject* who)
 		com_man().ta_deactivate();
 	}
 
-	CTelekinesis::Deactivate();
+	CTelekinesis::deactivate();
 }
 
 void CBurer::net_Relcase(CObject* O)

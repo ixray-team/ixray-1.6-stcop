@@ -20,16 +20,8 @@ struct SFindPred
 
 static bool RemovePred(STelekineticObject* tele_object)
 {
-	if (auto ptr = tele_object->cast_telekinetic_weapon_object())
-	{
-		if (ptr->params.object->H_Parent())
-		{
-			ptr->stop_object_particles();
-			ptr->restore_global_weapon_things();
-		}
-	}
-
 	return !tele_object->get_object() ||
+		   tele_object->get_object()->H_Parent() ||
 		   tele_object->get_object()->getDestroy() ||
 		   !tele_object->get_object()->PPhysicsShell() ||
 		   !tele_object->get_object()->PPhysicsShell()->isActive();
@@ -71,18 +63,24 @@ void CTelekinesis::clear()
 	telekinetic_objects.clear();
 }
 
-void CTelekinesis::deactivate()
+void CTelekinesis::deactivate(bool KeepThrown)
 {
-	active = false;
-
-	for (STelekineticObject* object : telekinetic_objects)
+	for (auto It = telekinetic_objects.begin(); It != telekinetic_objects.end();)
 	{
-		object->release();
-		xr_delete(object);
+		if (KeepThrown && (*It)->get_state() == ETelekineticState::TS_THROW)
+		{
+			++It;
+			continue;
+		}
+		(*It)->release();
+		xr_delete(*It);
+		It = telekinetic_objects.erase(It);
 	}
-
-	clear();
-	Deactivate();
+	active = !telekinetic_objects.empty();
+	if (!active)
+	{
+		Deactivate();
+	}
 }
 
 void CTelekinesis::clear_deactivate()
@@ -196,7 +194,7 @@ void CTelekinesis::schedule_update()
 		return;
 	}
 
-	for (u32 i = 0; i < telekinetic_objects.size(); i++)
+	for (u32 i = 0; i < telekinetic_objects.size();)
 	{
 		STelekineticObject* cur_obj = telekinetic_objects[i];
 		cur_obj->update_state();
@@ -204,6 +202,10 @@ void CTelekinesis::schedule_update()
 		if (cur_obj->is_released())
 		{
 			remove_object(telekinetic_objects.begin() + i);
+		}
+		else
+		{
+			++i;
 		}
 	}
 }
@@ -235,14 +237,29 @@ void CTelekinesis::PhDataUpdate(float step)
 
 void CTelekinesis::clear_notrelevant()
 {
-	telekinetic_objects.erase(
-		std::remove_if(
-			telekinetic_objects.begin(),
-			telekinetic_objects.end(),
-			&RemovePred
-		),
-		telekinetic_objects.end()
-	);
+	for (auto It = telekinetic_objects.begin(); It != telekinetic_objects.end();)
+	{
+		if (RemovePred(*It))
+		{
+			xr_delete(*It);
+			It = telekinetic_objects.erase(It);
+		}
+		else
+		{
+			++It;
+		}
+	}
+	if (telekinetic_objects.empty())
+	{
+		active = false;
+		Deactivate();
+	}
+}
+
+u32 CTelekinesis::GetHeldObjectsCount() const
+{
+	return static_cast<u32>(std::count_if(telekinetic_objects.begin(), telekinetic_objects.end(), [](const STelekineticObject* Object)
+										  { return Object->get_state() == ETelekineticState::TS_RAISE || Object->get_state() == ETelekineticState::TS_KEEP; }));
 }
 
 void CTelekinesis::PhTune(float step)

@@ -68,6 +68,14 @@
 
 using namespace luabind;
 
+namespace TreasureMetadata
+{
+static void SetSecretItem(ALife::_OBJECT_ID Id, bool Protected)
+{
+	Level().SetSecretItem(Id, Protected);
+}
+}
+
 void show_legs(bool val)
 {
 	g_player_hud->m_show_legs += val ? 1 : -1;
@@ -2099,6 +2107,7 @@ void CLevel::script_register(lua_State *L)
 		def("get_view_entity", &get_view_entity_script),
 		def("set_view_entity", &set_view_entity_script),
 		def("spawn_item", &spawn_section),
+		def("set_secret_item", &TreasureMetadata::SetSecretItem),
 		def("get_active_cam", &get_active_cam),
 		def("set_active_cam", &set_active_cam),
 		def("get_start_time", &get_start_time), 

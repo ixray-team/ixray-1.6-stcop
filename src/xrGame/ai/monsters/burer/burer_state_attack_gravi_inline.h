@@ -72,7 +72,7 @@ void CStateBurerAttackGravi<Object>::critical_finalize()
 	inherited::critical_finalize();
 
 	this->object->StopGraviPrepare();
-	this->object->set_script_capture(false);
+	this->object->set_script_capture(true);
 }
 
 template <typename Object>
@@ -148,6 +148,11 @@ void CStateBurerAttackGravi<Object>::ExecuteGraviContinue()
 	float time_to_hold = (abs(dist - this->object->gravi.min_dist) / this->object->gravi.min_dist);
 	clamp(time_to_hold, 0.f, 1.f);
 	time_to_hold *= float(this->object->gravi.time_to_hold);
+	this->object->Combat.Refresh(*this->object);
+	if (this->object->Combat.Enabled && (this->object->Combat.Context.UnderWideAim || this->object->Combat.Context.Explosive))
+	{
+		time_to_hold = 0.f;
+	}
 
 	if (m_time_gravi_started + u32(time_to_hold) >= Device.dwTimeGlobal)
 	{

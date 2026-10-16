@@ -11,6 +11,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [core.md](core.md) | Memory, `FS`, ltx, console, input, sound |
 | [rendering.md](rendering.md) | R1/R2/R4 selection, APIs, dynamic and static frames |
 | [gameplay.md](gameplay.md) | Level, ALife, Lua, class files |
+| [burer-combat.md](burer-combat.md) | Gunslinger burer decisions, actor reactions, grenade/controller lifetime, treasure metadata |
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [build.md](build.md) | Targets and CMake options |

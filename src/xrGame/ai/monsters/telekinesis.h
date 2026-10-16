@@ -36,7 +36,8 @@ public:
 	// активировать объект
 	virtual void append_tobject(STelekineticObject* telekinetic_object);
 	// деактивировать все объекты
-	void deactivate();
+	void deactivate(bool KeepThrown = false);
+	u32 GetHeldObjectsCount() const;
 	// clear objects (does not call release, but call switch to TS_None)
 	void clear_deactivate();
 	// clear

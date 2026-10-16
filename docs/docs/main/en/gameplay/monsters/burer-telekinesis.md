@@ -2,6 +2,8 @@
 
 Section: `![m_burer_e]`
 
+See [burer combat](burer-combat.md) for super hits, attack selection, shield lifetime, active grenades and `[gunslinger_base]` parameters. `Tele_Activate_N_Throw_Grenade` controls inactive grenade activation independently of weapon shooting; active grenades have a separate handling policy.
+
 ---
 
 ## Weapon Shooting

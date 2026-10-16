@@ -90,6 +90,7 @@ protected:
 	bool					m_bAbsolutePositioning;
 	SPPInfo					pp_affected;
 	void					UpdateDeffered();
+	void RemoveInstalledCamEffector(ECamEffectorType Type);
 
 	virtual void			UpdateCamEffectors		();
 	virtual void			UpdatePPEffectors		();
@@ -104,7 +105,7 @@ public:
 	u32						Count					()	{return u32(m_EffectorsCam.size()+m_EffectorsCam_added_deffered.size());}
 	CEffectorCam*			AddCamEffector			(CEffectorCam*		ef);
 	CEffectorCam*			GetCamEffector			(ECamEffectorType	type);
-	void					RemoveCamEffector		(ECamEffectorType	type);
+	void RemoveCamEffector(ECamEffectorType type);
 
 	ECamEffectorType		RequestCamEffectorId	();
 	EEffectorPPType			RequestPPEffectorId		();

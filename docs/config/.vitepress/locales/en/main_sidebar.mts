@@ -36,6 +36,8 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         items: [
           { text: 'Dialogues', link: '/en/gameplay/general/dialogues' },
           { text: 'Mutants', link: '/en/gameplay/general/mutants' },
+          { text: 'Burer combat', link: '/en/gameplay/monsters/burer-combat' },
+          { text: 'Burer telekinesis', link: '/en/gameplay/monsters/burer-telekinesis' },
           { text: 'Transport', link: '/en/gameplay/general/transport' },
           { text: 'Characters', link: '/en/gameplay/general/characters' },
           { text: 'PDA statistics', link: '/en/gameplay/general/pda-statistics' },

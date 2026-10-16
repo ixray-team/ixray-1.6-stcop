@@ -207,7 +207,8 @@ public:
 
 	SDrawStaticStruct*	AddCustomStatic			(const char* id, bool bSingleInstance, float ttlDefault = -1.0f);
 	SDrawStaticStruct*	AddHudMessage			(const char* text, const char* text2 = nullptr, const char* id = nullptr, bool trnslate_second_text = false, float time = 3.f, bool bSingleInstance = true);
-	SDrawStaticStruct*	GetCustomStatic			(const char* id);
+	SDrawStaticStruct* GetCustomStatic(const char* id);
+	bool HasCustomStatic(const char* Id) const;
 	void				RemoveCustomStatic		(const char* id);
 
 	void				CommonMessageOut		(const char* text);
@@ -263,4 +264,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIGameCustom
-extern CUIGameCustom*		CurrentGameUI();
+extern CUIGameCustom* CurrentGameUI();

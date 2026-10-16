@@ -7,7 +7,6 @@ template <typename Object>
 CStateBurerAttackTele<Object>::CStateBurerAttackTele(Object* obj) : inherited(obj)
 {
 	m_anim_end_tick = 0;
-	m_last_grenade_scan = 0;
 }
 
 template <typename Object>
@@ -16,13 +15,14 @@ void CStateBurerAttackTele<Object>::initialize()
 	inherited::initialize();
 
 	m_action = ACTION_TELE_STARTED;
-	selected_object = nullptr;
+	CompletionReached = false;
+	this->object->Combat.BeginTele();
+	SelectedId = ALife::INVALID_OBJECT_ID;
 
 	SelectObjects();
 
 	time_started = 0;
 	m_anim_end_tick = 0;
-	m_last_grenade_scan = 0;
 	m_initial_health = this->object->conditions().GetHealth();
 	m_end_tick = time() + this->object->tele_max_time;
 
@@ -64,7 +64,7 @@ void CStateBurerAttackTele<Object>::execute()
 			this->object->anim().set_override_animation(eAnimTeleFire, 0);
 			ExecuteTeleFire();
 
-			if (this->object->CTelekinesis::get_controlled_objects_count() > 0)
+			if (this->object->CTelekinesis::GetHeldObjectsCount() > 0)
 			{
 				m_action = ACTION_TELE_CONTINUE;
 				break;
@@ -92,9 +92,10 @@ void CStateBurerAttackTele<Object>::execute()
 }
 
 template <typename Object>
-void CStateBurerAttackTele<Object>::deactivate()
+void CStateBurerAttackTele<Object>::deactivate(bool Fire)
 {
 	tele_objects.clear();
+	SelectedId = ALife::INVALID_OBJECT_ID;
 
 	for (STelekineticObject* tobject : this->object->CTelekinesis::get_tele_objects())
 	{
@@ -107,22 +108,25 @@ void CStateBurerAttackTele<Object>::deactivate()
 		tobject->stop_object_particles();
 	}
 
-	FireAllToEnemy();
-	this->object->CTelekinesis::deactivate();
+	if (Fire && this->object->g_Alive() && (!this->object->Combat.Enabled || this->object->Combat.CanFireAll(time_started, m_end_tick)))
+	{
+		FireAllToEnemy();
+	}
+	this->object->CTelekinesis::deactivate(Fire && this->object->g_Alive());
 	this->object->set_script_capture(true);
 }
 
 template <typename Object>
 void CStateBurerAttackTele<Object>::finalize()
 {
-	deactivate();
+	deactivate(true);
 	inherited::finalize();
 }
 
 template <typename Object>
 void CStateBurerAttackTele<Object>::critical_finalize()
 {
-	deactivate();
+	deactivate(CompletionReached);
 	inherited::critical_finalize();
 }
 
@@ -135,34 +139,13 @@ bool CStateBurerAttackTele<Object>::check_start_conditions()
 template <typename Object>
 bool CStateBurerAttackTele<Object>::check_completion()
 {
-	float dist = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
-
-	if (dist < this->object->tele_min_distance)
-	{
-		return true;
-	}
-
-	if (dist > this->object->tele_max_distance)
-	{
-		return true;
-	}
-
-	if (this->object->conditions().GetHealth() < m_initial_health)
-	{
-		return true;
-	}
-
-	if (time() > m_end_tick)
-	{
-		return true;
-	}
-
-	if (m_action == ACTION_COMPLETED)
-	{
-		return true;
-	}
-
-	return false;
+	const float Distance = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
+	CompletionReached = !this->object->EnemyMan.get_enemy() || !this->object->g_Alive() ||
+						this->object->Combat.NeedStopTele(*this->object, time_started) ||
+						(Distance < this->object->tele_min_distance && !(this->object->Combat.Enabled && this->object->Combat.Context.Grenades)) ||
+						Distance > this->object->tele_max_distance || this->object->conditions().GetHealth() < m_initial_health ||
+						time() > m_end_tick || m_action == ACTION_COMPLETED;
+	return CompletionReached;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -188,18 +171,19 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<ISpatialShared>& t
 		CCreature* custom_monster = object->cast_creature();
 		CGrenade* grenade = object->cast_grenade();
 
-		if ((grenade && (grenade->IsExploding() || grenade->destroy_time() != UINT32_MAX)) ||
+		if (object->H_Parent() || (grenade && (grenade->IsExploding() || (!this->object->Combat.Enabled && grenade->destroy_time() != UINT32_MAX))) ||
 			!obj ||
 			!obj->PPhysicsShell() ||
 			!obj->PPhysicsShell()->isActive() ||
 			custom_monster ||
 			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
 			obj->cast_car() ||
-			(obj->m_pPhysicsShell->getMass() < this->object->tele_object_min_mass) ||
-			(obj->m_pPhysicsShell->getMass() > this->object->tele_object_max_mass) ||
+			(!grenade && obj->m_pPhysicsShell->getMass() < this->object->tele_object_min_mass) ||
+			(!grenade && obj->m_pPhysicsShell->getMass() > this->object->tele_object_max_mass) ||
 			(obj == this->object) ||
 			this->object->CTelekinesis::is_active_object(obj) ||
-			!obj->m_pPhysicsShell->get_ApplyByGravity())
+			!obj->m_pPhysicsShell->get_ApplyByGravity() ||
+			!this->object->Combat.CanTeleObject(*obj))
 		{
 			continue;
 		}
@@ -226,7 +210,7 @@ void CStateBurerAttackTele<Object>::FindObjects()
 	float dist = this->object->EnemyMan.GetTrackingPosition().distance_to(this->object->Position());
 	Fvector dir;
 	dir.sub(this->object->EnemyMan.GetTrackingPosition(), this->object->Position());
-	dir.normalize();
+	dir.normalize_safe();
 
 	Fvector pos;
 	pos.mad(this->object->Position(), dir, dist / 2.f);
@@ -257,27 +241,31 @@ void CStateBurerAttackTele<Object>::FireAllToEnemy()
 
 	for (STelekineticObject* telekinetic_object : this->object->CTelekinesis::get_tele_objects())
 	{
-		if (!telekinetic_object->can_be_thrown())
-		{
-			continue;
-		}
-
+		bool Grenade = telekinetic_object->cast_telekinetic_grenade_object() != nullptr;
 		ETelekineticState object_state = telekinetic_object->get_state();
 
-		if (object_state != ETelekineticState::TS_KEEP)
+		if (object_state != ETelekineticState::TS_KEEP && !(Grenade && object_state == ETelekineticState::TS_RAISE))
 		{
 			continue;
 		}
 
 		CPhysicsShellHolder* object = telekinetic_object->get_object();
 
-		if (object == nullptr)
+		if (object == nullptr || object->getDestroy() || object->H_Parent())
+		{
+			continue;
+		}
+		if (!telekinetic_object->can_be_thrown() || (this->object->Combat.Enabled && !Grenade && (!this->object->Combat.TeleAllowed() || Random.randF() >= this->object->Combat.FireAllProbability)))
 		{
 			continue;
 		}
 
 		float const dist_to_enemy = object->Position().distance_to(enemy_pos);
-		float const fire_time = dist_to_enemy / this->object->tele_fly_velocity;
+		float const fire_time = std::max(.1f, dist_to_enemy / std::max(.1f, this->object->tele_fly_velocity));
+		if (auto* Gren = object->cast_grenade(); Gren && this->object->Combat.Enabled && Gren->destroy_time() != u32(-1))
+		{
+			Gren->set_destroy_time_now(std::min(Gren->destroy_time(), Device.dwTimeGlobal + std::max(1u, this->object->Combat.CriticalGrenadeTimer) - 1));
+		}
 
 		this->object->CTelekinesis::throw_object_time(object, enemy_pos, fire_time);
 		this->object->sound().play(CBurer::eMonsterSoundTeleAttack);
@@ -287,31 +275,45 @@ void CStateBurerAttackTele<Object>::FireAllToEnemy()
 template <typename Object>
 void CStateBurerAttackTele<Object>::ExecuteTeleContinue()
 {
-	// if (time_started + this->object->m_tele_time_to_hold > Device.dwTimeGlobal) return;
-
-	if (!this->object->EnemyMan.see_enemy_now())
+	if (!IsActiveObjects() || (time_started && Device.dwTimeGlobal - time_started > 6000))
+	{
+		m_action = ACTION_COMPLETED;
+		return;
+	}
+	if (!this->object->EnemyMan.see_enemy_now() && !(this->object->Combat.Enabled && this->object->Combat.Context.Grenades))
 	{
 		return;
 	}
 
-	for (STelekineticObject* telekinetic_object : this->object->CTelekinesis::get_tele_objects())
+	STelekineticObject* Candidate = nullptr;
+	STelekineticObject* GrenadeCandidate = nullptr;
+	for (STelekineticObject* Held : this->object->CTelekinesis::get_tele_objects())
 	{
-		ETelekineticState object_state = telekinetic_object->get_state();
-
-		if (object_state == ETelekineticState::TS_KEEP && telekinetic_object->can_be_thrown())
+		auto* Item = Held->get_object();
+		if (!Item || Item->getDestroy() || Item->H_Parent() || Held->get_state() != ETelekineticState::TS_KEEP || !Held->can_be_thrown())
 		{
-			m_action = ACTION_TELE_FIRE;
-			selected_object = telekinetic_object ? telekinetic_object->get_object() : nullptr;
-			return;
+			continue;
 		}
-
-		constexpr float max_failure_time = 6000;
-
-		if (!IsActiveObjects() || time_started + max_failure_time < Device.dwTimeGlobal)
+		if (!Candidate)
 		{
-			m_action = ACTION_COMPLETED;
-			return;
+			Candidate = Held;
 		}
+		if (Held->cast_telekinetic_grenade_object() && Device.dwTimeGlobal - Held->time_keep_started > 100)
+		{
+			if (!GrenadeCandidate || Item->cast_grenade()->destroy_time() < GrenadeCandidate->get_object()->cast_grenade()->destroy_time())
+			{
+				GrenadeCandidate = Held;
+			}
+		}
+	}
+	if (this->object->Combat.Enabled && GrenadeCandidate && Random.randF() < .9f)
+	{
+		Candidate = GrenadeCandidate;
+	}
+	if (Candidate)
+	{
+		SelectedId = Candidate->get_object()->ID();
+		m_action = ACTION_TELE_FIRE;
 	}
 }
 
@@ -327,22 +329,41 @@ void CStateBurerAttackTele<Object>::ExecuteTeleFire()
 
 	Fvector enemy_pos = get_head_position(enemy);
 
-	const float dist_to_enemy = selected_object->Position().distance_to(enemy_pos);
-	const float fire_time = dist_to_enemy / this->object->tele_fly_velocity;
+	auto* Found = Level().Objects.net_Find(SelectedId);
+	auto* Selected = Found ? Found->cast_physics_shell_holder() : nullptr;
+	SelectedId = ALife::INVALID_OBJECT_ID;
+	if (!Selected || Selected->getDestroy() || Selected->H_Parent())
+	{
+		return;
+	}
+	const auto& HeldObjects = this->object->CTelekinesis::get_tele_objects();
+	auto Held = std::find_if(HeldObjects.begin(), HeldObjects.end(), [Selected](STelekineticObject* Item)
+							 { return Item->get_object() == Selected; });
+	if (Held == HeldObjects.end() || (*Held)->get_state() != ETelekineticState::TS_KEEP || !(*Held)->can_be_thrown())
+	{
+		return;
+	}
+	const float dist_to_enemy = Selected->Position().distance_to(enemy_pos);
+	const float fire_time = std::max(.1f, dist_to_enemy / std::max(.1f, this->object->tele_fly_velocity));
+	if (auto* Grenade = Selected->cast_grenade(); Grenade && this->object->Combat.Enabled && Grenade->destroy_time() != u32(-1))
+	{
+		Grenade->set_destroy_time_now(std::min(Grenade->destroy_time(), Device.dwTimeGlobal + std::max(1u, this->object->Combat.CriticalGrenadeTimer) - 1));
+	}
 
-	this->object->CTelekinesis::throw_object_time(selected_object, enemy_pos, fire_time);
+	this->object->CTelekinesis::throw_object_time(Selected, enemy_pos, fire_time);
 	this->object->sound().play(CBurer::eMonsterSoundTeleAttack);
 }
 
 template <typename Object>
 bool CStateBurerAttackTele<Object>::IsActiveObjects()
 {
-	return (this->object->CTelekinesis::get_controlled_objects_count() > 0);
+	return this->object->CTelekinesis::GetHeldObjectsCount() > 0;
 }
 
 template <typename Object>
 bool CStateBurerAttackTele<Object>::CheckTeleStart()
 {
+	this->object->Combat.Refresh(*this->object);
 	// проверка на текущую активность
 	if (IsActiveObjects())
 	{
@@ -351,7 +372,7 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
 
 	// проверить дистанцию до врага
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.GetTrackingPosition());
-	if (dist < this->object->tele_min_distance)
+	if (dist < this->object->tele_min_distance && !(this->object->Combat.Enabled && this->object->Combat.Context.Grenades))
 	{
 		return false;
 	}
@@ -370,55 +391,12 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
 	}
 
 	// всё ок можно начинать телекинез
-	return true;
+	return this->object->Combat.TeleAllowed();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза
 //////////////////////////////////////////////////////////////////////////
-class best_object_predicate
-{
-	Fvector enemy_pos;
-	Fvector monster_pos;
-
-public:
-	best_object_predicate(const Fvector& m_pos, const Fvector& pos)
-	{
-		monster_pos = m_pos;
-		enemy_pos = pos;
-	}
-
-	bool operator()(const CGameObject* tpObject1, const CGameObject* tpObject2) const
-	{
-		float dist1 = monster_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-		float dist3 = enemy_pos.distance_to(monster_pos);
-
-		return ((dist1 < dist3) && (dist2 > dist3));
-	};
-};
-
-class best_object_predicate2
-{
-	Fvector enemy_pos;
-	Fvector monster_pos;
-
-public:
-	best_object_predicate2(const Fvector& m_pos, const Fvector& pos)
-	{
-		monster_pos = m_pos;
-		enemy_pos = pos;
-	}
-
-	bool operator()(const CGameObject* tpObject1, const CGameObject* tpObject2) const
-	{
-		float dist1 = enemy_pos.distance_to(tpObject1->Position());
-		float dist2 = enemy_pos.distance_to(tpObject2->Position());
-
-		return dist1 < dist2;
-	}
-};
-
 template <typename Object>
 void CStateBurerAttackTele<Object>::SelectObjects()
 {
@@ -431,12 +409,27 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 	}
 
 	std::sort(
-		tele_objects.begin(), tele_objects.end(), best_object_predicate2(this->object->Position(), this->object->EnemyMan.GetTrackingPosition())
-	);
+		tele_objects.begin(), tele_objects.end(), [this](CPhysicsShellHolder* Left, CPhysicsShellHolder* Right)
+		{
+			auto* LeftGrenade = Left->cast_grenade();
+			auto* RightGrenade = Right->cast_grenade();
+			const u32 LeftTimer = LeftGrenade ? LeftGrenade->destroy_time() : u32(-1);
+			const u32 RightTimer = RightGrenade ? RightGrenade->destroy_time() : u32(-1);
+			if (LeftTimer != RightTimer)
+			{
+				return LeftTimer < RightTimer;
+			}
+			return Left->Position().distance_to_sqr(this->object->EnemyMan.GetTrackingPosition()) < Right->Position().distance_to_sqr(this->object->EnemyMan.GetTrackingPosition()); });
 
-	for (u32 i = 0; i < max; ++i)
+	size_t Weapons = std::count_if(this->object->CTelekinesis::get_tele_objects().begin(), this->object->CTelekinesis::get_tele_objects().end(), [](STelekineticObject* Held)
+								   { return Held->cast_telekinetic_weapon_object() != nullptr; });
+	for (u32 i = 0; i < tele_objects.size() && this->object->CTelekinesis::GetHeldObjectsCount() < max; ++i)
 	{
 		CPhysicsShellHolder* object = tele_objects[i];
+		if (!object || object->getDestroy() || object->H_Parent() || !object->PPhysicsShell() || !object->PPhysicsShell()->isActive() || !this->object->Combat.CanTeleObject(*object))
+		{
+			continue;
+		}
 
 		bool rotate = this->object->m_monster_type != CBaseMonster::eMonsterTypeIndoor;
 		float height = this->object->tele_object_height;
@@ -464,12 +457,9 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 		
 		if (object->cast_weapon_magazined() && this->object->shooting_from_weapon_enable)
 		{
-			size_t weapons_count = std::count_if(this->object->CTelekinesis::get_tele_objects().begin(), this->object->CTelekinesis::get_tele_objects().end(), [](STelekineticObject* tele_object)
-												 { return tele_object->cast_telekinetic_weapon_object(); });
-
-			if (weapons_count >= this->object->max_pickuped_weapons)
+			if (Weapons >= this->object->max_pickuped_weapons)
 			{
-				return;
+				continue;
 			}
 
 			STelekineticWeaponParams weapon_params
@@ -489,9 +479,16 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 
 			tele_obj = new STelekineticWeaponObject(weapon_params, tele_object_params);
 		}
-		else if (object->cast_grenade() && this->object->shooting_from_weapon_enable)
+		else if (object->cast_grenade() && (this->object->activate_n_throw_grenade || (this->object->Combat.Enabled && object->cast_grenade()->destroy_time() != u32(-1))))
 		{
-			tele_obj = new STelekineticGrenadeObject(this->object, tele_object_params);
+			auto* Grenade = new STelekineticGrenadeObject(this->object, tele_object_params);
+			Grenade->ActivateInactive = this->object->activate_n_throw_grenade;
+			if (this->object->Combat.Enabled)
+			{
+				Grenade->EmergencyTime = this->object->Combat.CriticalGrenadeTimer;
+				Grenade->throw_threshold = 100;
+			}
+			tele_obj = Grenade;
 		}
 		else
 		{
@@ -501,10 +498,14 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 		if (!tele_obj->can_be_picked_up())
 		{
 			xr_delete(tele_obj);
-			return;
+			continue;
 		}
 
 		this->object->CTelekinesis::append_tobject(tele_obj);
+		if (tele_obj->cast_telekinetic_weapon_object())
+		{
+			++Weapons;
+		}
 		tele_obj->set_sound(this->object->sound_tele_hold, this->object->sound_tele_throw);
 		tele_obj->set_particle(this->object->particle_tele_object);
 		tele_obj->start_object_particles();

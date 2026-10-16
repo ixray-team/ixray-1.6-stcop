@@ -221,6 +221,11 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic(const char* id, bool bSingleIn
 	return sss;
 }
 
+bool CUIGameCustom::HasCustomStatic(const char* Id) const
+{
+	return m_msgs_xml && m_msgs_xml->NavigateToNode(Id, 0);
+}
+
 SDrawStaticStruct * CUIGameCustom::AddHudMessage(const char* text, const char* text2, const char* id, bool trnslate_second_text, float time, bool bSingleInstance) {
 	VERIFY(text);
 

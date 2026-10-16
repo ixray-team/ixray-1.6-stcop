@@ -52,6 +52,9 @@ protected:
 	u32					dwUpdateSounds_Frame;
 
 	bool				UseAlt = false;
+	bool BurerSelfKick = false;
+	bool HasBurerSelfKick = false;
+	bool HasBurerSelfKickSound = false;
 
 protected:
 	virtual void		LoadFireParams					(const char* section);
@@ -103,6 +106,7 @@ public:
 	bool				m_bShowKnifeStats;
 
 	void				FastKick();
+	bool StartBurerSelfKick();
 
 	virtual bool WpnCanShoot() const override { return false; }
 

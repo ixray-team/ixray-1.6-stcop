@@ -736,6 +736,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 void CActor::net_Destroy	()
 {
+	BurerEffects.Reset(*this);
 	ResetCameraFocus();
 	CActorAuraPostEffectsBalancer::clear_all	();
 

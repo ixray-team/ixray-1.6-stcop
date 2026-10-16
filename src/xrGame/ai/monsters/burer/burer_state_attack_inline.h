@@ -55,6 +55,7 @@ void CStateBurerAttack<Object>::initialize()
 template <typename Object>
 void CStateBurerAttack<Object>::execute()
 {
+	this->object->Combat.Refresh(*this->object);
 	CEntityAlive* enemy = const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
 
 	// Notify squad
@@ -80,6 +81,15 @@ void CStateBurerAttack<Object>::execute()
 
 	if (m_wait_state_end)
 	{
+		const auto& Combat = this->object->Combat;
+		if (Combat.Enabled && Combat.Context.ActorEnemy && Combat.Context.GrenadeTimer < Combat.CriticalGrenadeTimer &&
+			this->current_substate == eStateBurerAttack_Gravi && this->get_state(eStateBurerAttack_Shield)->check_start_conditions())
+		{
+			this->select_state(eStateBurerAttack_Shield);
+			this->get_state_current()->execute();
+			this->prev_substate = this->current_substate;
+			return;
+		}
 		if (this->get_state_current()->check_completion())
 		{
 			m_wait_state_end = false;
@@ -96,12 +106,13 @@ void CStateBurerAttack<Object>::execute()
 	}
 
 	m_allow_anti_aim = true;
-	bool const anti_aim_ready = this->get_state(eStateBurerAttack_AntiAim)->check_start_conditions();
+	bool anti_aim_ready = this->get_state(eStateBurerAttack_AntiAim)->check_start_conditions();
 	m_allow_anti_aim = false;
 
-	bool const gravi_ready = this->get_state(eStateBurerAttack_Gravi)->check_start_conditions();
-	bool const shield_ready = this->get_state(eStateBurerAttack_Shield)->check_start_conditions();
-	bool const tele_ready = this->get_state(eStateBurerAttack_Tele)->check_start_conditions();
+	bool gravi_ready = this->get_state(eStateBurerAttack_Gravi)->check_start_conditions();
+	bool shield_ready = this->get_state(eStateBurerAttack_Shield)->check_start_conditions();
+	bool tele_ready = this->get_state(eStateBurerAttack_Tele)->check_start_conditions();
+	this->object->Combat.CorrectReadiness(*this->object, m_lost_delta_health, anti_aim_ready, gravi_ready, tele_ready, shield_ready, this->prev_substate == eStateBurerAttack_Shield, this->prev_substate == eStateBurerAttack_Tele);
 
 	bool selected_state = true;
 

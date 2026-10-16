@@ -164,6 +164,7 @@ function CTreasureManager:spawn_treasure(treasure_id)
                                                 obj.angle = se_obj.angle
                                                 obj:use_ai_locations(se_obj:used_ai_locations())
                                                 self.items_from_secrets[obj.id] = self.secret_restrs[treasure_id]
+                                                level.set_secret_item(obj.id, true)
                                                 self.secrets[treasure_id].to_find = self.secrets[treasure_id].to_find + 1
                         else
     --[[
@@ -255,6 +256,7 @@ function CTreasureManager:on_item_take(obj_id)
                 news_manager.send_treasure(1)
             end
             self.items_from_secrets[obj_id] = nil
+            level.set_secret_item(obj_id, false)
         end
     end)
 end
@@ -300,6 +302,9 @@ end
 
 function CTreasureManager:load(package)
  	return PROF_EVENT_CLOSURE("load", function()
+        for id in pairs(self.items_from_secrets) do
+            level.set_secret_item(id, false)
+        end
         set_save_marker(package, "load", false, "CTreasureManager")
         self.items_spawned = package:r_bool()
         self.items_from_secrets = {}
@@ -308,6 +313,7 @@ function CTreasureManager:load(package)
             local k = package:r_object_id()
             local v = package:r_object_id()
             self.items_from_secrets[k] = v
+            level.set_secret_item(k, true)
         end
     
         local num = package:r_u16()
@@ -336,6 +342,9 @@ function CTreasureManager:Serialize(Object)
 	Object:ForChunk("CTreasureManager", function()
 		self.items_spawned = Object:s_bool(self.items_spawned)
 		if not Object:IsSave() then
+			for id in pairs(self.items_from_secrets) do
+				level.set_secret_item(id, false)
+			end
 			self.items_from_secrets = {}
 		end
 		if Object:IsSave() then
@@ -383,6 +392,7 @@ function CTreasureManager:Serialize(Object)
 						local v = 0
 						v = Object:s_u32(v)
 						self.items_from_secrets[k] = v
+						level.set_secret_item(k, true)
 					end)
 				end
 			end)

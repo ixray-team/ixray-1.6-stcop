@@ -516,6 +516,7 @@ void CActor::SetActorDirection(float dir)
 
 void CActor::Load	(const char* section )
 {
+	BurerEffects.Load();
 	// Msg						("Loading actor: %s",section);
 	inherited::Load				(section);
 	material().Load				(section);
@@ -1375,6 +1376,7 @@ void CActor::TryRegisterHelpWounded(CAI_Stalker* targetStalker, const CInventory
 
 void CActor::Die	(CObject* who)
 {
+	BurerEffects.Reset(*this);
 	ResetCameraFocus();
 	SpatialComponent->type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
 	SpatialComponent->type |= ESPATIAL_TYPE::ACTOR_DEAD;
@@ -1773,6 +1775,7 @@ void CActor::UpdateLensFOV(CWeapon* wpn, float value)
 #include "game_sv_mp.h"
 void CActor::UpdateCL()
 {
+	BurerEffects.Update(*this);
 	PROF_EVENT("CActor UpdateCL");
 
 	if (g_dedicated_server && g_Alive())
