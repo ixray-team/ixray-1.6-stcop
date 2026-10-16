@@ -3,6 +3,7 @@
 #include "IGame_Persistent.h"
 #include "IGame_ObjectPool.h"
 #include "xr_object.h"
+#include "../xrCore/BackgroundLoad.h"
 
 bool g_MtPrefetch = true;
 
@@ -74,9 +75,11 @@ void IGame_ObjectPool::prefetch()
 	}
 
 	m_IsPrefetchRunning = true;
-	m_PrefetchTasks.run([this]()
+	m_PrefetchNext.store(0, std::memory_order_relaxed);
+	const size_t Workers = std::min<size_t>(BackgroundLoad::WorkerCount(), m_PendingPrefetch.size());
+	for (size_t Worker = 0; Worker < Workers; ++Worker)
 	{
-		xr_parallel_for(size_t(0), m_PendingPrefetch.size(), [this](size_t Index)
+		m_PrefetchTasks.run([this]()
 		{
 			if (!g_PrefetchProfiled && !g_AppInfo.IsPrimaryThread())
 			{
@@ -84,16 +87,20 @@ void IGame_ObjectPool::prefetch()
 				PROF_REGISTER_THREAD("Prefetch worker");
 			}
 
+			xrBackgroundWorkScope Background;
 			xrTaskBlockingScope Blocking;
-			PrefetchItem& Item = m_PendingPrefetch[Index];
-			g_DeferredPrimaryWork = &Item.PrimaryWork;
+			for (size_t Index = m_PrefetchNext.fetch_add(1); Index < m_PendingPrefetch.size(); Index = m_PrefetchNext.fetch_add(1))
 			{
-				PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
-				Item.Object->Load(Item.Section.c_str());
+				PrefetchItem& Item = m_PendingPrefetch[Index];
+				g_DeferredPrimaryWork = &Item.PrimaryWork;
+				{
+					PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
+					Item.Object->Load(Item.Section.c_str());
+				}
+				g_DeferredPrimaryWork = nullptr;
 			}
-			g_DeferredPrimaryWork = nullptr;
 		});
-	});
+	}
 }
 
 void IGame_ObjectPool::WaitPrefetch()

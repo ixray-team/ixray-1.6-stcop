@@ -16,4 +16,8 @@ namespace Platform
 	ThreadID GetCurrentThread();
     size_t GetThreadId(ThreadID ID);
     void SetThreadName(const char* name);
+
+    inline void SetCurrentThreadBackgroundMode(bool)
+    {
+    }
 }
