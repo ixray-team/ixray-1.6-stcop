@@ -445,12 +445,21 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	}
 	PreviousEvaluations.push_back(SectName);
 
-	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
-	xr_vector<xr_string>& OverrideParents = OverrideParentDataMap[SectName];
+	static const xr_vector<xr_string> NoParents;
+	const xr_vector<xr_string>* MergedParents = &NoParents;
+	if (auto OverrideParents = OverrideParentDataMap.find(SectName); OverrideParents != OverrideParentDataMap.end())
+	{
+		xr_vector<xr_string>& Parents = BaseParentDataMap[SectName];
+		MergeParentSet(Parents, OverrideParents->second, false);
+		MergedParents = &Parents;
+	}
+	else if (auto Parents = BaseParentDataMap.find(SectName); Parents != BaseParentDataMap.end())
+	{
+		MergedParents = &Parents->second;
+	}
+	const xr_vector<xr_string>& BaseParents = *MergedParents;
 
 	bool bDeleteSectionIfEmpty = false;
-
-	MergeParentSet(BaseParents, OverrideParents, false);
 
 	std::pair<xr_string, Sect> CurrentSecPair(SectName, Sect(SectName.c_str()));
 	Sect* CurrentSect = &CurrentSecPair.second;
@@ -1815,7 +1824,7 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	// Insert all finalized sections into final container
 	DATA.reserve(DATA.size() + FinalData.size());
 	for (auto &[Name, Section] : FinalData)
-		DATA.push_back(Sect{ Section });
+		DATA.push_back(std::move(Section));
 
 	std::sort(DATA.begin(), DATA.end(), [](const Sect& A, const Sect& B) { return xr_strcmp(*A.Name, *B.Name) < 0; });
 
@@ -1855,6 +1864,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 
 	xr_string_map<xr_string, xr_string> SectionToFilename;
 
+	Sect CurrentStorage;
 	Sect* Current = nullptr;
 	bool bIsCurrentSectionOverride = false;
 
@@ -1897,7 +1907,8 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			// store previous section
 			xr_string CurrentNameStr = Current->Name.c_str();
 
-			if (OutputData.contains(CurrentNameStr))
+			auto [OutputIt, IsNew] = OutputData.try_emplace(CurrentNameStr);
+			if (!IsNew)
 			{
 				if (!bIsCurrentSectionOverride)
 				{
@@ -1912,16 +1923,18 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 				// Overwrite existing override data
 				for (const Item& CurrentItem : Current->Data)
 				{
-					insert_item(&OutputData[CurrentNameStr], CurrentItem);
+					insert_item(&OutputIt->second, CurrentItem);
 				}
-
-				OverrideToFilename[CurrentNameStr][DLTXCurrentFileName] = true;
 			}
 			else
 			{
-				OutputData[CurrentNameStr] = *Current;
+				OutputIt->second = std::move(*Current);
+				SectionToFilename.try_emplace(CurrentNameStr, DLTXCurrentFileName);
+			}
+
+			if (bOverridesOnly)
+			{
 				OverrideToFilename[CurrentNameStr][DLTXCurrentFileName] = true;
-				SectionToFilename[CurrentNameStr] = DLTXCurrentFileName;
 			}
 		}
 
@@ -2125,7 +2138,8 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 				continue;
 			}
 
-			Current = new Sect();
+			CurrentStorage = Sect();
+			Current = &CurrentStorage;
 			*strchr(LTXHelpStr1, ']') = 0;
 			Current->Name = strlwr(&LTXHelpStr1[3]);
 
@@ -2146,7 +2160,8 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 
 			bIsCurrentSectionOverride = strstr(LTXHelpStr1, "![") == &LTXHelpStr1[0]; // Used to detect bad or unintended overrides
 
-			Current = new Sect();
+			CurrentStorage = Sect();
+			Current = &CurrentStorage;
 
 			u32 SectionNameStartPos = (bIsCurrentSectionOverride ? 2 : 1);
 			xr_string SecName = xr_string(LTXHelpStr1).substr(SectionNameStartPos, strchr(LTXHelpStr1, ']') - LTXHelpStr1 - SectionNameStartPos).c_str();
