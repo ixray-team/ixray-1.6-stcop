@@ -53,6 +53,8 @@ private:
 
 public:
 										CAI_Space				();
+			void						StartLevelPreload		(const shared_str& LevelName);
+			void						DropLevelPreload		();
 	virtual								~CAI_Space				();
 			void						init					();
 	IC		IGameGraph					&game_graph				() const;
