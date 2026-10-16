@@ -8,6 +8,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+// AI: INT_MAX is used below; the upstream LuaJIT headers this file is compiled against (macOS uses
+// AI: upstream instead of the project's fork, see cmake/modules/LuaJIT.cmake) no longer pull
+// AI: <limits.h> in transitively.
+#include <limits.h>
 
 #include "unidata.h"
 
