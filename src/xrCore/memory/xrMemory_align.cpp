@@ -2,7 +2,10 @@
 
 
 #include <errno.h>
+#ifndef IXR_MACOS
+// <malloc.h> is a MSVC/glibc header; macOS does not ship it and this file only needs malloc/free
 #include <malloc.h>
+#endif
 
 #include "xrMemory_align.h"
 
