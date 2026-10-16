@@ -295,6 +295,7 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	}
 	can_register_objects				(true);
 
+	objects().PrepareSpawnIni			();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 	for ( ; I != E; ++I)
