@@ -605,7 +605,7 @@ bool CWeapon::install_upgrade_ammo_bones(const char* section, bool test)
 	}
 	else for (int i = 0; i < m_ammoTypes.size(); i++)
 	{
-		static shared_str params_section;
+		shared_str params_section;
 		params_section.printf("ammo_params_section_%d", i);
 		if (pSettings->line_exist(ReachInAllSections(*params_section), *params_section))
 		{
