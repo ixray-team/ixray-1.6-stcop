@@ -536,3 +536,24 @@ cmake -S . -B build-macos -G Ninja \
   `cmake/modules/LuaJIT.cmake` (их Makefile-вызов + `arm64_src`) и проверить, работает ли JIT у их
   версии LuaJIT на этом маке. Если да — их форк LuaJIT + родной luabind IX-Ray и есть рабочая связка,
   а апгрейд LuaJIT/luabind можно отложить.
+
+**РЕЗУЛЬТАТ: их LuaJIT снял и панику, и зависание**
+
+- Собрал `OpenXRay/LuaJIT` (`5a5cd82e`) для macOS и подключил его в `cmake/modules/LuaJIT.cmake`
+  (пин + сборка их Makefile-ом `BUILDMODE=dynamic` + переименование в `libluajit.dylib` с
+  `@rpath/libluajit.dylib`). Собралось чисто, движок слинковался.
+- Прогон: **ни паники (`PANIC`/`LJ_TRERR_MCODEAL`), ни зависания в `luabind::open()`/GC** — движок
+  прошёл весь Lua-этап, прочитал всю библиотеку шейдеров R4 из кеша (`smaa_*`, `contrast_adaptive_sharpening`,
+  `ui_postprocess*`, `gtao_*`, `combine_velocity`) и пошёл дальше в конфиги управления
+  (в собственном логе `_appdata_ixray_/logs/ixray-*.log` видны разборы action_name и т.п.).
+- Падение теперь другое: процесс завершается с кодом **133 (SIGTRAP)** — похоже на сработавший
+  ассерт/`__builtin_trap` уже в новом месте; системного crash-отчёта нет, в stdout ошибки нет
+  (в логе движка он обрывается на середине строки). Следующий шаг: временно вернуть тихий режим
+  ошибок (`Debug._initialize(true)`), чтобы текст ошибки попал в лог, и поймать место.
+- **Важное уточнение к прежнему выводу:** провал mcode у обоих «beta3»-форков (IX-Ray и OpenXRay)
+  воспроизводится в *минимальном* процессе-пробнике (`PANIC ... (13)`), но **внутри движка их сборка
+  работает** — то есть это зависит от раскладки адресного пространства процесса, а не только от
+  библиотеки. Официальный LuaJIT 2.1 в пробнике проходит, но в движке упирается в GC старого luabind.
+- Остались отложенные копии в build-дереве: `_deps/luajit_apple-src.upstream-bak`,
+  `_deps/luajit_apple-subbuild.upstream-bak`, `build-macos/luajit/libluajit.dylib.upstream-bak`
+  (старая сборка официального LuaJIT; удалять их можно только с разрешения Степана).

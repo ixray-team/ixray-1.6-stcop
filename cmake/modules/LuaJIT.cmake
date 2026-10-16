@@ -28,16 +28,17 @@ if(WIN32)
 else()
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     if(APPLE)
-        # AI: macOS builds upstream LuaJIT instead of the project's fork: the fork (2.1.0-beta3 plus
-        # AI: its ARM backports) cannot place the JIT's machine code area on Apple Silicon at all.
-        # AI: Verified with a plain process that only dlopen()s the built library and runs one loop:
-        # AI: it dies with "PANIC: unprotected error in call to Lua API" from lj_mcode.c, while
-        # AI: upstream LuaJIT v2.1 runs the same script with the JIT on. The engine itself died the
-        # AI: same way right after the renderer was initialised. Windows and Linux keep the fork.
+        # AI: macOS builds OpenXRay's LuaJIT fork (OpenXRay/LuaJIT), which is what the OpenXRay engine
+        # AI: runs on Apple Silicon: measured on this Mac, that build keeps the JIT enabled and works,
+        # AI: while the project's own fork (ixray-team/luajit-ixray) ends up in lj_mcode.c's
+        # AI: "OS probably ignores hints?" path (LJ_TRERR_MCODEAL -> unprotected Lua panic) as soon as
+        # AI: the renderer creates its Lua state. Both forks are the same "2.1.0-beta3" generation, so
+        # AI: the engine's scripting layer stays compatible. See references/luaJIT-arm-issue.md in the
+        # AI: openxray-build skill for the measurements behind this. Windows and Linux keep the fork.
         FetchContent_Declare(
             luajit_apple
-            GIT_REPOSITORY https://github.com/LuaJIT/LuaJIT.git
-            GIT_TAG 2a8e017ef1ece6a95b983ffca073d30609dce7c4
+            GIT_REPOSITORY https://github.com/OpenXRay/LuaJIT.git
+            GIT_TAG 5a5cd82e435a7b08d61b4e0af887493d24d9eca1
         )
         FetchContent_GetProperties(luajit_apple)
         if(NOT luajit_apple_POPULATED)
