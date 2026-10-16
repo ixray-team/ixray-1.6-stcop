@@ -34,20 +34,32 @@ void restart_all				()
 		return;
 	}
 
-	MainMenu()->DestroyInternal	(true);
+	{
+		PROF_EVENT("restart_all: main menu");
+		MainMenu()->DestroyInternal	(true);
+	}
 
-	xr_delete(g_object_factory);
-	object_factory();
+	{
+		PROF_EVENT("restart_all: object factory");
+		xr_delete(g_object_factory);
+		object_factory();
+	}
 
 	g_pGamePersistent->ixr_framework_onframe.reset();
-	ai().script_engine().init	();
+	{
+		PROF_EVENT("restart_all: script engine");
+		ai().script_engine().init	();
+	}
 	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", g_pGamePersistent->ixr_framework_onframe);
 
 #ifdef DEBUG
 	ai().moving_objects().clear	();
 #endif // DEBUG
 
-	ClearCachedIniFiles();
+	{
+		PROF_EVENT("restart_all: cached ini");
+		ClearCachedIniFiles();
+	}
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :

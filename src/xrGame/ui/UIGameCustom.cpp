@@ -551,6 +551,7 @@ void CUIGameCustom::UnLoad()
 
 void CUIGameCustom::Load()
 {
+	PROF_EVENT("CUIGameCustom::Load");
 	if(g_pGameLevel)
 	{
 		R_ASSERT				(nullptr==m_msgs_xml);
@@ -563,10 +564,12 @@ void CUIGameCustom::Load()
 		CUIXml inventoryXml;
 		if (inventoryXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
 		{
+			PROF_EVENT("UI: actor menu");
 			m_ActorMenu				= new CUIActorMenu		();
 		}
 		else
 		{
+			PROF_EVENT("UI: inventory windows");
 			m_CarBodyMenu			= new CUICarBodyWnd		();
 			m_InventoryMenu			= new CUIInventoryWnd	();
 			m_TradeMenu				= new CUITradeWnd		();
@@ -574,26 +577,44 @@ void CUIGameCustom::Load()
 		}
 		
 		R_ASSERT				(nullptr==TalkMenu);
-		TalkMenu				= new CUITalkWnd();
+		{
+			PROF_EVENT("UI: talk");
+			TalkMenu			= new CUITalkWnd();
+		}
 
 		R_ASSERT				(nullptr==m_PdaMenu);
-		m_PdaMenu				= new CUIPdaWnd			();
+		{
+			PROF_EVENT("UI: pda");
+			m_PdaMenu			= new CUIPdaWnd			();
+		}
 		
 		R_ASSERT				(nullptr==m_window);
 		m_window				= new CUIWindow			();
 
 		R_ASSERT				(nullptr==UIMainIngameWnd);
-		UIMainIngameWnd			= new CUIMainIngameWnd	();
-		UIMainIngameWnd->Init	();
+		{
+			PROF_EVENT("UI: main ingame");
+			UIMainIngameWnd		= new CUIMainIngameWnd	();
+			UIMainIngameWnd->Init	();
+		}
 
 		R_ASSERT				(nullptr==m_pMessagesWnd);
-		m_pMessagesWnd			= new CUIMessagesWindow();
+		{
+			PROF_EVENT("UI: messages");
+			m_pMessagesWnd		= new CUIMessagesWindow();
+		}
 
 		R_ASSERT				(nullptr==m_RadialMenuWeapon);
-		m_RadialMenuWeapon		= new CUIRadialMenuWeapon();
+		{
+			PROF_EVENT("UI: radial menu");
+			m_RadialMenuWeapon	= new CUIRadialMenuWeapon();
+		}
 
 		R_ASSERT				(nullptr==SleepWnd);
-		SleepWnd				= new CUISleepWnd();
+		{
+			PROF_EVENT("UI: sleep");
+			SleepWnd			= new CUISleepWnd();
+		}
 		
 		Init					(0);
 		Init					(1);

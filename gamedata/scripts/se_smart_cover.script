@@ -6,12 +6,14 @@ registered_smartcovers_by_lv_id = {}
 
 class "se_smart_cover"	(cse_smart_cover)
 function se_smart_cover:__init (section) super (section)
+	PROF_EVENT_BEGIN("se_smart_cover:__init")
 --	printf("se_smart_cover:__init( ) called")
 	self.loopholes				= {}
 	self.last_description			= ""
 	if self.set_available_loopholes ~= nil then
 		self:set_available_loopholes	( self.loopholes )
 	end
+	PROF_EVENT_END()
 end
 function se_smart_cover:STATE_Write (packet)
 	cse_smart_cover.STATE_Write (self, packet)
@@ -29,6 +31,7 @@ function se_smart_cover:STATE_Write (packet)
 --	print_table(self.loopholes)
 end
 function se_smart_cover:STATE_Read (packet, size)
+	PROF_EVENT_BEGIN("se_smart_cover:STATE_Read")
 	cse_smart_cover.STATE_Read (self, packet, size)
 	if self.script_version >= 9 then
 		self.last_description = packet:r_stringZ()
@@ -73,8 +76,10 @@ function se_smart_cover:STATE_Read (packet, size)
 			self.last_description = smart_cover_description
 		end
 	end
+	PROF_EVENT_END()
 end
 function se_smart_cover:STATE_Serialize(Object)
+	PROF_EVENT_BEGIN("se_smart_cover:STATE_Serialize")
 	Object:ForChunk("se_smart_cover:STATE", function()
 		cse_smart_cover.STATE_Serialize (self, Object)
 		Object:ForChunk("se_smart_cover:STATE:data", function()
@@ -133,12 +138,16 @@ function se_smart_cover:STATE_Serialize(Object)
 			end)
 		end)
 	end)
+	PROF_EVENT_END()
 end
 function se_smart_cover:on_before_register()
+	PROF_EVENT_BEGIN("se_smart_cover:on_before_register")
 	cse_smart_cover.on_before_register( self )
 	registered_smartcovers[self:name()] = self
+	PROF_EVENT_END()
 end
 function se_smart_cover:on_register()
+	PROF_EVENT_BEGIN("se_smart_cover:on_register")
 	cse_smart_cover.on_register( self )
 	
 	SendScriptCallback("server_entity_on_register", self, "se_smart_cover")
@@ -150,6 +159,7 @@ function se_smart_cover:on_register()
 	end
 	registered_smartcovers_by_lv_id[level_id][self.m_level_vertex_id] = self
 --	printf("smart_cover [%s] is registered lvlid [%s] lvid[%s]", self:name(), tostring(level_id), tostring(self.m_level_vertex_id))
+	PROF_EVENT_END()
 end
 function se_smart_cover:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_smart_cover")
@@ -187,31 +197,3 @@ function se_smart_cover:FillProps	(pref,items)
 		end
 	end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

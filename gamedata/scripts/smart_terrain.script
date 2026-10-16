@@ -116,6 +116,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 class "se_smart_terrain" (cse_alife_smart_zone)
 function se_smart_terrain:__init(section) super(section)
+	PROF_EVENT_BEGIN("se_smart_terrain:__init")
 	self.initialized	= false
 	self.b_registred	= false
 	self.population		= 0
@@ -130,16 +131,20 @@ function se_smart_terrain:__init(section) super(section)
 
 	self.respawn_radius = 150
 	self.respawn_time   = 1000
+	PROF_EVENT_END()
 end
 function se_smart_terrain:on_before_register()
+	PROF_EVENT_BEGIN("se_smart_terrain:on_before_register")
 	cse_alife_smart_zone.on_before_register(self)
 	self.board = sim_board.get_sim_board()
 	self.board:register_smart(self)
 	self.smart_level = alife():level_name(gg_vertex_level_id(self.m_game_vertex_id))
 	--printf("SMARTLEVEL %s level %s", self:name(), tostring(self.smart_level))
+	PROF_EVENT_END()
 end
 
 function se_smart_terrain:on_register()
+	PROF_EVENT_BEGIN("se_smart_terrain:on_register")
 	cse_alife_smart_zone.on_register(self)
 	
 	SendScriptCallback("server_entity_on_register", self, "se_smart_terrain")
@@ -173,6 +178,7 @@ function se_smart_terrain:on_register()
 	self:register_delayed_npc()
 
 	self.check_time = time_global()
+	PROF_EVENT_END()
 end
 -- анрегистрация объекта в симуляторе.
 -- вызывается симулятором.
@@ -186,12 +192,13 @@ function se_smart_terrain:on_unregister()
 end
 -- чтение custom data.
 function se_smart_terrain:read_params()
+	PROF_EVENT_BEGIN("se_smart_terrain:read_params")
 	self.ini  = self:spawn_ini()
 
 	if not self.ini:section_exist( SMART_TERRAIN_SECT ) then
 		abort( "[smart_terrain %s] no configuration!", self:name() )
 		self.disabled = true
-		return
+		PROF_EVENT_END() return
 	end
 	local filename = utils.cfg_get_string(self.ini, SMART_TERRAIN_SECT, "cfg", 				self, false, "")
 	local fs = getFS()
@@ -274,6 +281,7 @@ function se_smart_terrain:read_params()
 	if not locations_ini:section_exist(self:name()) then
 		printf("! SMART_TERRAIN [%s] has no terrain_mask section in smart_terrain_masks.ltx!!!",self:name())
 	end
+	PROF_EVENT_END()
 end
 
 --*******************************************************
@@ -282,6 +290,7 @@ end
 -- заполнить информацию о персонаже
 -- у монстров нету метода profile_name()
 function se_smart_terrain:fill_npc_info(obj)
+	PROF_EVENT_BEGIN("se_smart_terrain:fill_npc_info")
 	local npc_info = {}
 	printf("filling npc_info for obj [%s]", tostring(obj:name()))
 
@@ -299,7 +308,7 @@ function se_smart_terrain:fill_npc_info(obj)
 		npc_info.stype = modules.stype_mobile
 	end
 
-	return npc_info
+	PROF_EVENT_END() return npc_info
 end
 
 function se_smart_terrain:refresh_script_logic(obj_id)
@@ -313,12 +322,13 @@ end
 
 -- добавить npc в smart terrain.
 function se_smart_terrain:register_npc(obj)
+	PROF_EVENT_BEGIN("se_smart_terrain:register_npc")
 	printf("[smart_terrain %s] register called obj=%s", self:name(), obj:name())
 	self.population = self.population + 1
 
 	if self.b_registred == false then
 		table.insert(self.npc_to_register, obj)
-		return
+		PROF_EVENT_END() return
 	end
 
 	-- Только для монстров, чтобы ходили по смартам.
@@ -338,6 +348,7 @@ function se_smart_terrain:register_npc(obj)
 	else
 		self.arriving_npc[obj.id]  = obj
 	end
+	PROF_EVENT_END()
 end
 
 -- Регистрация НПС в список отложенных. Осуществляется на загрузке или на регистрации НПС, пока не зарегистрен смарт

@@ -210,13 +210,19 @@ bool CLevel::net_start_client5()
 bool CLevel::net_start_client6()
 {
 	PROF_EVENT("CLevel::net_start_client6");
-	g_pGamePersistent->ObjectPool.FinishPrefetch();
+	{
+		PROF_EVENT("client6: FinishPrefetch");
+		g_pGamePersistent->ObjectPool.FinishPrefetch();
+	}
 	g_IniReadAhead->Stop();
 	if (connected_to_server)
 	{
 		// Sync
-		if (!synchronize_map_data())
-			return false;
+		{
+			PROF_EVENT("client6: synchronize_map_data");
+			if (!synchronize_map_data())
+				return false;
+		}
 
 		if (!game_configured)
 		{
@@ -225,6 +231,7 @@ bool CLevel::net_start_client6()
 		}
 		if (!g_dedicated_server)
 		{
+			PROF_EVENT("client6: HUD");
 			g_hud->Load();
 			g_hud->OnConnected();
 		}
@@ -233,6 +240,7 @@ bool CLevel::net_start_client6()
 		{
 			if (!g_dedicated_server)
 			{
+				PROF_EVENT("client6: game OnConnected");
 				game->OnConnected();
 			}
 
@@ -243,15 +251,24 @@ bool CLevel::net_start_client6()
 		}
 
 		g_pGamePersistent->SetLoadStageTitle("st_client_synchronising");
-		pApp->LoadForceFinish();
-		g_pGamePersistent->LoadTitle();
+		{
+			PROF_EVENT("client6: load title");
+			pApp->LoadForceFinish();
+			g_pGamePersistent->LoadTitle();
+		}
 		Device.PreCache(60, true, true);
 	}
 
 	net_start_result_total = connected_to_server;
 
-	ProcessPostponed(false);
+	{
+		PROF_EVENT("client6: ProcessPostponed");
+		ProcessPostponed(false);
+	}
 
-	pApp->LoadEnd();
+	{
+		PROF_EVENT("client6: LoadEnd");
+		pApp->LoadEnd();
+	}
 	return true;
 }
