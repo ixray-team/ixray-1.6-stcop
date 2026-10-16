@@ -489,7 +489,10 @@ void CParticleEffect::Render(float)
 	Fvector c = vis.sphere.P;
 	m_XFORM.transform_tiny(c);
 
-	if (Device.vCameraPosition.distance_to_sqr(c) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
+	// HUD particles are camera-relative
+	Fvector CameraPosition = GetHudMode() ? Fvector().set(0.f, 0.f, 0.f) : Device.vCameraPosition;
+
+	if (CameraPosition.distance_to_sqr(c) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 	{
 		return;
 	}

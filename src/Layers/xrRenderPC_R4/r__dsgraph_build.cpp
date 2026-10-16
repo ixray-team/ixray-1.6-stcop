@@ -58,6 +58,18 @@ ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 	return ssa <= r_ssaDISCARD * (1.f + transition * 11.f);
 }
 
+// HUD visuals and HUD particles are positioned relative to the camera
+ICF bool IsHudVisual(dxRender_Visual* pVisual)
+{
+	if (RImplementation.val_bHUD)
+	{
+		return true;
+	}
+
+	IParticleCustom* pParticle = pVisual->dcast_ParticleCustom();
+	return pParticle && pParticle->GetHudMode();
+}
+
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
 ICF float GetDistFromCamera(const Fvector& from_position)
 {
@@ -75,6 +87,12 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 
 	int opt_level = isStatic ? opt_static : opt_dynamic;
 	if (opt_level < 1)
+	{
+		return true;
+	}
+
+	// Camera-relative positions are not comparable with the world-space camera
+	if (!isStatic && IsHudVisual(pVisual))
 	{
 		return true;
 	}
@@ -184,9 +202,9 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 	return I;
 }
 
-ICF float CalcSSADistanceSQ(const Fvector& C)
+ICF float CalcSSADistanceSQ(const Fvector& C, bool bHUD)
 {
-	if (RImplementation.val_bHUD)
+	if (bHUD)
 	{
 		return C.square_magnitude() + EPS;
 	}
@@ -194,16 +212,21 @@ ICF float CalcSSADistanceSQ(const Fvector& C)
 	return Device.vCameraPosition.distance_to_sqr(C) + EPS;
 }
 
-ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
+ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V, bool bHUD)
 {
 	float R = V->vis.sphere.R + 0;
-	distSQ = CalcSSADistanceSQ(C);
+	distSQ = CalcSSADistanceSQ(C, bHUD);
 	return	R / distSQ;
+}
+
+ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
+{
+	return CalcSSA(distSQ, C, V, !!RImplementation.val_bHUD);
 }
 
 ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 {
-	distSQ = CalcSSADistanceSQ(C);
+	distSQ = CalcSSADistanceSQ(C, !!RImplementation.val_bHUD);
 	return	R / distSQ;
 }
 
@@ -224,8 +247,10 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		pVisual->vis.accept_frame = Device.dwFrame;
 	}
 
+	bool bHUD = IsHudVisual(pVisual);
+
 	float distSQ;
-	float SSA = CalcSSA(distSQ, Center, pVisual);
+	float SSA = CalcSSA(distSQ, Center, pVisual, bHUD);
 	if (SSA <= r_ssaDISCARD && !Force) return;
 
 	// Distortive geometry should be marked and R2 special-cases it
@@ -233,16 +258,6 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	// b) Should be rendered to special distort buffer in another pass
 
 	if (!pVisual->shader._get()) return;
-
-	bool bHUD = !!RI.val_bHUD;
-
-	if (auto pParticle = pVisual->dcast_ParticleCustom())
-	{
-		if (pParticle->GetHudMode())
-		{
-			bHUD = true;
-		}
-	}
 
 	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
 

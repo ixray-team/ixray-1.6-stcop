@@ -149,6 +149,13 @@ void CParticlesObject::Update(u32 _dt, CFrustum* viewbase)
 		{
 			Fvector	P; float R = vis.sphere.R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
+
+			// HUD particles are camera-relative; the spatial DB and culling work in world space
+			if (V->GetHudMode())
+			{
+				P.add(Device.vCameraPosition);
+			}
+
 			if (ESPATIAL_TYPE::NONE == SpatialComponent->type)
 			{
 				// First 'valid' update - register
