@@ -404,3 +404,52 @@ cmake -S . -B build-macos -G Ninja \
       отключены или сломаны;
   (б) проверить альтернативный Vulkan-драйвер под Metal (Mesa KosmicKrisp) — вероятно, та же нехватка;
   (в) сменить цель на R2/D3D9 через DXVK (там требования к фичам ниже) — но это другой рендер, не то, что нужно.
+
+**Решение: патчим форк DXVK (выбор Степана). Устройство и swapchain создаются, движок дошёл до шейдеров**
+
+- **Патч форка делается при конфигурации** из `cmake/modules/DXVK.cmake` (APPLE-only, идемпотентно, через
+  локальный helper `dxvk_text_patch`, по образцу `download_and_fix_nvapi()`), а не руками в дереве сборки:
+  1. `src/d3d11/d3d11_device.cpp` — `geometryShader`, `extTransformFeedback.transformFeedback` и
+     `geometryStreams` берутся из поддерживаемых фич устройства вместо жёсткого `VK_TRUE`. Без этого
+     `D3D11InternalCreateDevice()` давал `Maximum supported feature level: 0` → `E_INVALIDARG` → в движке
+     нулевой `pDevice` (`xrRHI/D3D11/DX11Buffer.cpp:91`). После патча в логе
+     `Using feature level D3D_FEATURE_LEVEL_11_0`.
+  2. `src/dxvk/dxvk_adapter.cpp` — макрос `CHECK_FEATURE_NEED` дополнительно логирует имя невыполненного
+     требования (поведение не меняется: при обоих false выражение по-прежнему даёт false). Это позволило не
+     угадывать недостающие фичи, а получить их списком.
+  3. `src/wsi/sdl3/wsi_window_sdl3.cpp` — при неудаче `SDL_Vulkan_CreateSurface` логируется текст ошибки SDL
+     (вызывающая сторона видит только `VK_ERROR_OUT_OF_HOST_MEMORY`).
+- **Правки движка на этом шаге** (либо платформенно-нейтрально, либо под `IXR_MACOS`):
+  1. `src/xrRHI/D3D11/Device.cpp` — окно для `D3D11CreateDeviceAndSwapChain` на macOS передаётся как
+     **указатель `SDL_Window*`**: в форке `include/native/wsi/native_sdl3.h` `fromHwnd()` делает
+     `reinterpret_cast<SDL_Window*>(hWindow)`. Win32-свойство (`SDL_PROP_WINDOW_WIN32_HWND_POINTER`) даёт на
+     macOS NULL, а целочисленный id окна приводит к «Invalid window» во всех вызовах SDL внутри презентера.
+  2. `src/xrPlay/Application.cpp` — окно создаётся как `SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN`; отдельный
+     `SDLK_WINDOW_METAL` тут не нужен и **вреден**: SDL3 разрешает только один из флагов
+     OPENGL/METAL/VULKAN («Conflicting window graphics flags specified» → `SDL_CreateWindow` возвращает
+     NULL, и дальше движок падал на нулевом окне). Дополнительно вызывается
+     `SDL_Vulkan_LoadLibrary(nullptr)`: SDL грузит Vulkan-загрузчик сам только для окон с флагом VULKAN, а
+     он нужен DXVK WSI (`SDL_Vulkan_GetInstanceExtensions` в `Sdl3WsiDriver`).
+- **Проверенные факты:**
+  - MoltenVK 1.4.2 на Apple M4: `geometryShader = 0`, `transformFeedback = 0` (расширения
+    `VK_EXT_transform_feedback` нет), при этом `tessellationShader`, `depthClamp`, `imageCubeArray`,
+    `textureCompressionBC`, `multiViewport`, `fillModeNonSolid`, `samplerAnisotropy` и остальной базовый
+    набор 10_1 — есть (пробник `/tmp/vkfeat/vkfeat.c`).
+  - SDL грузится **одна**: `DYLD_PRINT_LIBRARIES=1` показывает только нашу
+    `build-macos/bin/Debug/libSDL3.0.dylib` (в brew тоже есть SDL3 3.4.18 — потенциальный источник второй
+    копии, но в текущих прогонах она не подхватывается).
+- **Грабли (важно):** macOS убивает бинарник с `SIGKILL (Code Signature Invalid)` («Killed: 9», пустой лог,
+  в `log show` — `load code signature error`), если подпись dylib/бинарника стала недействительной
+  (`install_name_tool` её ломает, копирование тоже может). Лечится ad-hoc подписью всех файлов площадки:
+  `for f in xrEngine *.dylib; do codesign --force --sign - "$f"; done`.
+- **Данные игры, шейдеры:** у `cop-baseline` набор шейдеров — оригинальный CoP (199 файлов, нет
+  `sslr_render.cs.hlsl`), у репозитория IX-Ray — свой (209 файлов). В `run-macos/fsgame.ltx` путь
+  `$game_shaders$` переключён на `$fs_root$| shaders_ixray\` (симлинк на `ixray-src/gamedata/shaders`);
+  сами данные игры не менялись.
+- **Текущий упор:** компиляция шейдеров — `dx11ResourceManager_Resources.cpp:325` (`_CreatePS`,
+  `Can't compile shader` для `shaders_ixray/d3d11/copy_image.ps.hlsl`). Причина та же, что нашли ранее:
+  vkd3d не понимает HLSL-методы структур — `metalic_roughness_base.hlsli` (`IXRayMaterial O = this;`,
+  `O.Lerp(...)`) даёт `E5030: Unknown modifier "Lerp"` и `E5000: syntax error`. Задето ~11 из 209 шейдеров.
+  Варианты: (а) патч vkd3d — поддержка member-функций; (б) офлайн-компиляция задетых шейдеров внешним
+  HLSL-компилятором с подстановкой в кэш шейдеров движка (`_appdata_ixray_/shaders_cache/`); (в) переписать
+  эти шейдеры без методов структур (наш набор данных, правка небольшая).

@@ -10,6 +10,12 @@
 
 #include "../xrCore/git_version.h"
 
+#ifdef IXR_MACOS
+// AI: SDL_Vulkan_LoadLibrary(), used in BeginPlay() to bring up the Vulkan loader for the Metal
+// AI: window, lives in this header and SDL.h does not pull it in.
+#	include <SDL3/SDL_vulkan.h>
+#endif
+
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
 #endif
@@ -110,8 +116,22 @@ int CApplication::BeginPlay()
 #ifndef IXR_WINDOWS
 	WndFlags = SDL_WINDOW_VULKAN;
 #endif
+#ifdef IXR_MACOS
+	// AI: SDL3 allows only one of OPENGL/METAL/VULKAN per window (SDL_CreateWindow fails with
+	// AI: "Conflicting window graphics flags specified"), and on macOS the Vulkan surface is built from
+	// AI: a Metal view (Cocoa_Vulkan_CreateSurface -> Cocoa_Metal_CreateView, which needs
+	// AI: SDL_WINDOW_METAL). The Vulkan loader is therefore loaded explicitly right after the window is
+	// AI: created, because SDL does that itself only for SDL_WINDOW_VULKAN windows and DXVK's SDL3 WSI
+	// AI: asks SDL for vkGetInstanceProcAddr.
+	WndFlags = SDL_WINDOW_VULKAN | SDL_WINDOW_HIDDEN;
+#endif
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+
+#ifdef IXR_MACOS
+	if (!SDL_Vulkan_LoadLibrary(nullptr))
+		Msg("! AI: SDL_Vulkan_LoadLibrary failed: %s", SDL_GetError());
+#endif
 
 	splash::SetProgressStatus(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
