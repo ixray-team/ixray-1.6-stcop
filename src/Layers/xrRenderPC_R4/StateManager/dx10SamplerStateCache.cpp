@@ -24,6 +24,8 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(RHISampleDesc& de
 {
 	SHandle	hResult;
 
+	xrSRWLockGuard Guard(Lock);
+
 	//	MaxAnisitropy is reset by ValidateState if not aplicable
 	//	to the filter mode used.
 	desc.MaxAnisotropy = m_uiMaxAnisotropy;
@@ -76,6 +78,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const RHISample
 
 void dx10SamplerStateCache::ClearStateArray()
 {
+	xrSRWLockGuard Guard(Lock);
 	for (u32 i=0; i<m_StateArray.size(); ++i)
 	{
 		_RELEASE(m_StateArray[i].m_pState);
@@ -94,6 +97,8 @@ void dx10SamplerStateCache::PrepareSamplerStates(
 {
 	//	It seems that sizeof pSS is 4 wor win32!
 	ZeroMemory(pSS, sizeof(pSS[0])* RHI_COMMONSHADER_SAMPLER_SLOT_COUNT);
+
+	xrSRWLockGuard Guard(Lock, true);
 
 	for ( u32 i=0; i<samplers.size(); ++i )
 	{
@@ -166,6 +171,7 @@ void dx10SamplerStateCache::SetMaxAnisotropy(UINT uiMaxAniso)
 {
 	clamp(uiMaxAniso, (u32)1, (u32)16);
 
+	xrSRWLockGuard Guard(Lock);
 	if (m_uiMaxAnisotropy == uiMaxAniso)
 	{
 		return;
@@ -196,6 +202,7 @@ void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias)
 
 	clamp(mipMapLodBias, -3.0f, 3.0f);
 
+	xrSRWLockGuard Guard(Lock);
 	if (m_mipLodBias == mipMapLodBias) {
 		return;
 	}
