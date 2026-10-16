@@ -198,7 +198,7 @@ CLevel::CLevel() :
 
 	R_ASSERT				(nullptr==g_player_hud);
 	g_player_hud			= new player_hud();
-	g_player_hud->load_default();
+	g_player_hud->RequestDefault();
 	
 	hud_zones_list = nullptr;
 

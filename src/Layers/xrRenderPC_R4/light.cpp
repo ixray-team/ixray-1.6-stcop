@@ -193,7 +193,8 @@ void light::set_rotation(const Fvector& D, const Fvector& R)
 void light::get_sectors()
 {
 	if (LightingModeIsStaticRender()) return;
-	if(RImplementation.SectorsCount()<=1 || SpatialComponent.get() == nullptr) return;
+	if(SpatialComponent.get() == nullptr || SpatialComponent->node_ptr == nullptr) return;
+	if(RImplementation.SectorsCount()<=1) return;
 	xrCriticalSectionGuard guard(&sectors_lc);
 	if(0== SpatialComponent->sector)
 		SpatialComponent->spatial_updatesector();

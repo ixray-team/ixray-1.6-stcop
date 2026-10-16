@@ -684,6 +684,9 @@ public:
 					~player_hud			();
 	void			load				(const shared_str& model_name);
 	void			load_default		();
+	void			RequestDefault		();
+	void			FinishDefaultLoad	(bool IsEarly = false);
+	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
@@ -730,6 +733,7 @@ public:
 	IKinematics*	m_legs_model;
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
+	shared_str		PendingDefaultSect;
 	float			m_cycle_fade = 0.f;
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
