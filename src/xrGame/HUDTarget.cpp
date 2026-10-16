@@ -25,6 +25,7 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
 #include "game_cl_single.h"
+#include "../xrEngine/CameraBase.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -180,28 +181,68 @@ void CHUDTarget::Render()
 		return;
 
 	CObject*	O		= Level().CurrentEntity();
-	if (0==O)			return;
+	if (nullptr==O)			return;
 	CEntity*	E		= O->cast_entity();
-	if (0==E)			return;
+	if (nullptr==E)			return;
 
-	Fvector p1			= Device.vCameraPosition;
-	Fvector dir			= Device.vCameraDirection;
-	
-	// Render cursor
-	u32 C				= colorDefault;
-	
-	Fvector				p2;
-	p2.mad				(p1,dir,PP.RQ.range);
-	Fvector4			pt;
-	Device.mFullTransform.transform(pt, p2);
-	pt.y = -pt.y;
-	float				di_size = C_SIZE/powf(pt.w,.2f);
+	Fvector from = psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? Actor->cam_Active()->Position() : Device.vCameraPosition;
+	Fvector dir = psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? Actor->cam_Active()->Direction() : Device.vCameraDirection;
 
-	targetFont->SetAligment		(CGameFont::alCenter);
-	targetFont->OutSetI			(0.f,0.05f);
+	u32 C = colorDefault;
+
+	Fvector picked;
+	picked.mad(from, dir, PP.RQ.range);
+
+	Fvector4 projected;
+	Device.mFullTransform.transform(projected, picked);
+	projected.y = -projected.y;
+
+	float di_size = C_SIZE / powf(projected.w, .2f);
+
+	targetFont->SetAligment(CGameFont::alCenter);
+
+	Fvector2 screen;
+	screen.set(float(Device.TargetWidth), float(Device.TargetHeight));
+
+	float size_x = screen.x * di_size;
+	float size_y = screen.y * di_size;
+	size_y = size_x;
+
+	float x = (projected.x + 1) * screen.x / 2.0f;
+	float y = (projected.y + 1) * screen.y / 2.0f;
+
+	// отрендерить кружочек или крестик
+	if (!m_bShowCrosshair)
+	{
+		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
+
+		UIRender->PushPoint(x - size_x, y + size_y, 0, C, 0, 1);
+		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
+
+		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
+		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(x + size_x, y - size_y, 0, C, 1, 0);
+
+		UIRender->SetShader(*hShader);
+		UIRender->FlushPrimitive();
+	}
+	else
+	{
+		HUDCrosshair.cross_color = C;
+		HUDCrosshair.dc = {x, y};
+		HUDCrosshair.OnRender();
+	}
 
 	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
-		targetFont->OutSkip		();
+	{
+		targetFont->SetColor(C);
+#ifdef DEBUG
+		targetFont->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
+#else
+		targetFont->OutNext("%4.1f", PP.RQ.range);
+#endif
+	}
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
@@ -262,56 +303,7 @@ void CHUDTarget::Render()
 		clamp(accumulatedTime,0.f,1.f);
 	}
 
-	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
-	{
-		targetFont->OutSetI		(0.f,0.05f);
-		targetFont->SetColor		(C);
-#ifdef DEBUG
-		targetFont->OutNext		("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
-#else
-		targetFont->OutNext		("%4.1f", PP.RQ.range);
-#endif
-	}
-
-	//отрендерить кружочек или крестик
-	if(!m_bShowCrosshair)
-	{
-		
-		UIRender->StartPrimitive	(6, IUIRender::ptTriList, UI().m_currentPointType);
-		
-		Fvector2		scr_size;
-		scr_size.set	(float(Device.TargetWidth) ,float(Device.TargetHeight));
-		float			size_x = scr_size.x	* di_size;
-		float			size_y = scr_size.y * di_size;
-
-		size_y			= size_x;
-
-		float			w_2		= scr_size.x/2.0f;
-		float			h_2		= scr_size.y/2.0f;
-
-		// Convert to screen coords
-		float cx		    = (pt.x+1)*w_2;
-		float cy		    = (pt.y+1)*h_2;
-
-		//	TODO: return code back to indexed rendering since we use quads
-		//	Tri 1
-		UIRender->PushPoint(cx - size_x, cy + size_y, 0, C, 0, 1);
-		UIRender->PushPoint(cx - size_x, cy - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(cx + size_x, cy + size_y, 0, C, 1, 1);
-		//	Tri 2
-		UIRender->PushPoint(cx + size_x, cy + size_y, 0, C, 1, 1);
-		UIRender->PushPoint(cx - size_x, cy - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(cx + size_x, cy - size_y, 0, C, 1, 0);
-
-		// unlock VB and Render it as triangle LIST
-		UIRender->SetShader(*hShader);
-		UIRender->FlushPrimitive();
-
-	}else{
-		//отрендерить прицел
-		HUDCrosshair.cross_color	= C;
-		HUDCrosshair.OnRender		();
-	}
+	psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? targetFont->OutSetI(0.f, .033f) : targetFont->OutSetI(0.f, .033f);
 }
 
 void CHUDTarget::net_Relcase(CObject* O)

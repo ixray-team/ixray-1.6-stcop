@@ -26,6 +26,7 @@ private:
 	ui_shader		hShader;
 public:
 	u32				cross_color;
+	Fvector2		dc;
 
 					CHUDCrosshair	();
 					~CHUDCrosshair	();
