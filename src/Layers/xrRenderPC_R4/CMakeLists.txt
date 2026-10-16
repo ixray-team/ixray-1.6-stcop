@@ -86,6 +86,9 @@ else()
     # AI: compile. Fixes the same gap for Linux, which was never finished; Windows is untouched.
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
     target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
+    # AI: dx11Texture.cpp includes <DirectXTex.h>, which the fetched DirectXTex provides through
+    # AI: its PUBLIC include directory, the same way DirectX::Mesh provides FlexibleVertexFormat.h.
+    target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
 endif()
 
 ## RenderDoc

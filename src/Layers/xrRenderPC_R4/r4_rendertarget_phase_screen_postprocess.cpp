@@ -84,7 +84,7 @@ void CRenderTarget::PhaseGasmask()
 	}
 
 	size_t currentState = 4 - ((1.f * condition) * 4);
-	clamp(currentState, 0ull, 3ull);
+	clamp<size_t>(currentState, 0ull, 3ull); // AI: size_t is unsigned long on macOS, the two bounds are unsigned long long, so the template argument has to be given
 
 	// Set render target
 	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);

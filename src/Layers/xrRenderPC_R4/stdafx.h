@@ -15,6 +15,12 @@
 // AI: Windows arrives transitively through the SDK headers but is missing on the DXVK Native
 // AI: hosts. Pulled in explicitly here, and only when it is not defined already.
 #ifndef _RELEASE
+// AI: xrEngine/defines.h guards _RELEASE and _SHOW_REF behind #ifdef ENGINE_API, which the
+// AI: renderer builds do not set. Defining it here, only when the macro is still missing, keeps
+// AI: the precompiled header working without touching the Windows path.
+#ifndef ENGINE_API
+#define ENGINE_API
+#endif
 #include "../../xrEngine/defines.h"
 #endif
 
