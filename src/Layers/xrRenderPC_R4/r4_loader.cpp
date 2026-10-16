@@ -58,7 +58,7 @@ void CRender::level_Load(IReader* fs)
 	}
 	Target->CreateRainShaders();
 
-	// Shaders
+	// ShadersLevel
 	g_pGamePersistent->SetLoadStageTitle("st_loading_shaders");
 	g_pGamePersistent->LoadTitle		();
 	{
@@ -66,19 +66,29 @@ void CRender::level_Load(IReader* fs)
 		R_ASSERT2					(chunk,"Level doesn't builded correctly.");
 		u32 count = chunk->r_u32	();
 		ShadersLevel.resize				(count);
-		for(u32 i=0; i<count; i++)	// skip first shader as "reserved" one
+
+		xr_vector<std::pair<xr_string, xr_string>> Names(count);
+		for(u32 i=0; i<count; i++)
 		{
-			string512				n_sh,n_tlist;
 			const char*			n		= (const char*)(chunk->pointer());
 			chunk->skip_stringZ		();
 			if (0==n[0])			continue;
-			xr_strcpy					(n_sh,n);
-			LPSTR			delim	= strchr(n_sh,'/');
-			*delim					= 0;
-			xr_strcpy					(n_tlist,delim+1);
-			ShadersLevel[i]				= dxRenderDeviceRender::Instance().Resources->Create(n_sh,n_tlist);
+			const char*			delim	= strchr(n,'/');
+			Names[i].first.assign	(n, size_t(delim - n));
+			Names[i].second			= delim + 1;
 		}
 		chunk->close();
+
+		xr_parallel_for(size_t(0), size_t(count), [this, &Names](size_t i)
+		{
+			if (Names[i].first.empty())
+			{
+				return;
+			}
+
+			xrTaskBlockingScope Blocking;
+			ShadersLevel[i] = dxRenderDeviceRender::Instance().Resources->Create(Names[i].first.c_str(), Names[i].second.c_str());
+		});
 	}
 
 	// Components
@@ -396,7 +406,7 @@ void CRender::level_Unload()
 	m_levels_puddles.resize(0);
 	m_levels_planars.resize(0);
 
-	//*** Shaders
+	//*** ShadersLevel
 	ShadersLevel.clear();
 	ShadersShared.clear();
 	b_loaded					= false;
