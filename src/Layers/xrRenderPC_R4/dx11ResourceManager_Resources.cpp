@@ -69,7 +69,7 @@ SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
 	{
 		SState*				C		= v_states[it];;
 		SimulatorStates&	base	= C->state_code;
-		if (base.equal(state_code))	return C;
+		if (ResourceLifetime::IsAlive(C) && base.equal(state_code))	return C;
 	}
 
 	// Create New
@@ -512,7 +512,7 @@ SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size
 	for (u32 it = 0; it < v_declarations.size(); it++)
 	{
 		SDeclaration* Declaration = v_declarations[it];
-		if (dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()))
+		if (ResourceLifetime::IsAlive(Declaration) && dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()))
 			return Declaration;
 	}
 
@@ -534,7 +534,7 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 		SDeclaration*		D		= v_declarations[it];
 		// Compare against the stored copy by its own length: walking it for a 0xFF
 		// terminator reads past the vector when the declaration was stored elsewhere.
-		if (D->dcl_code.size() == DclSize &&
+		if (ResourceLifetime::IsAlive(D) && D->dcl_code.size() == DclSize &&
 		    0 == memcmp(dcl, D->dcl_code.data(), DclSize * sizeof(D3DVERTEXELEMENT9)))
 			return D;
 	}
@@ -567,7 +567,7 @@ R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
 	xrCriticalSectionGuard guard(creationGuard);
 
 	for (u32 it=0; it<v_constant_tables.size(); it++)
-		if (v_constant_tables[it]->equal(C))	return v_constant_tables[it];
+		if (ResourceLifetime::IsAlive(v_constant_tables[it]) && v_constant_tables[it]->equal(C))	return v_constant_tables[it];
 
 	R_constant_table* NewElem = v_constant_tables.emplace_back((new R_constant_table()));
 	NewElem->_copy(C);
@@ -628,6 +628,7 @@ CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CR
 
 	// ***** first pass - search already created RTC
 	LPSTR N = LPSTR(Name);
+	xrCriticalSectionGuard guard(creationGuard);
 	map_RTC::iterator I = m_rtargets_c.find(N);
 	if(I != m_rtargets_c.end())	return I->second;
 	else {
@@ -642,6 +643,7 @@ CRTC* CResourceManager::_CreateRTC(const char* Name, u32 size, ERHI_FORMAT f, CR
 void	CResourceManager::_DeleteRTC(const CRTC* RT) {
 	if(0 == (RT->dwFlags & xr_resource_flagged::RF_REGISTERED))	return;
 	LPSTR N = LPSTR(*RT->cName);
+	xrCriticalSectionGuard guard(creationGuard);
 	map_RTC::iterator I = m_rtargets_c.find(N);
 	if(I != m_rtargets_c.end()) {
 		m_rtargets_c.erase(I);
@@ -884,7 +886,7 @@ STextureList*	CResourceManager::_CreateTextureList(STextureList& L)
 	for (u32 it=0; it<lst_textures.size(); it++)
 	{
 		STextureList*	base		= lst_textures[it];
-		if (L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
 	}
 
 	STextureList* lst = new STextureList();
@@ -912,7 +914,7 @@ SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 	for (u32 it=0; it<lst_matrices.size(); it++)
 	{
 		SMatrixList*	base		= lst_matrices[it];
-		if (L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
 	}
 
 	SMatrixList* lst = new SMatrixList();
@@ -940,7 +942,7 @@ SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 	for (u32 it=0; it<lst_constants.size(); it++)
 	{
 		SConstantList*	base		= lst_constants[it];
-		if (L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
 	}
 
 	SConstantList* lst = new SConstantList();
@@ -967,7 +969,7 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflection
 	for (u32 it=0; it<v_constant_buffer.size(); it++)
 	{
 		dx10ConstantBuffer*	buf		= v_constant_buffer[it];
-		if (pTempBuffer->Similar(*buf))			
+		if (ResourceLifetime::IsAlive(buf) && pTempBuffer->Similar(*buf))			
 		{
 			xr_delete(pTempBuffer);
 			return buf;
@@ -998,7 +1000,7 @@ SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 	for (u32 it=0; it<v_input_signature.size(); it++)
 	{
 		SInputSignature*	sign		= v_input_signature[it];
-		if ( (pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
+		if ( ResourceLifetime::IsAlive(sign) && (pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
 			(!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
 		{
 			return sign;
