@@ -89,4 +89,11 @@ else()
         add_library(DirectX::Mesh ALIAS DirectXMesh)
         target_include_directories(DirectXMesh PUBLIC ${DirectXMesh_SOURCE_DIR}/Utilities)
     endif()
+
+    # macOS has no <malloc.h> and no MSVC _aligned_malloc/_aligned_free. DirectXMesh is
+    # a fetched library we do not patch, so it gets a small compatibility header through
+    # its own (PRIVATE) include path - macOS only, so Windows and Linux are unaffected.
+    if(APPLE AND TARGET DirectXMesh)
+        target_include_directories(DirectXMesh PRIVATE ${CMAKE_SOURCE_DIR}/src/3rd-party/macos-compat)
+    endif()
 endif()

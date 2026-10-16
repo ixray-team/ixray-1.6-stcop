@@ -53,7 +53,10 @@ static constexpr std::uint32_t FILE_END = 2;
 static constexpr std::uint32_t INVALID_SET_FILE_POINTER = (std::uint32_t)-1;
 
 using __int64 = int64_t;
-using __time64_t = __int64;
+// On MSVC __time64_t and time_t are the same 64-bit type. macOS time_t is 64-bit as
+// well but spelled long, while __int64 maps to long long - different types of equal
+// size, which breaks _localtime64(&time_t_variable) calls. Alias them here.
+using __time64_t = time_t;
 using __time32_t = long;
 using _fsize_t =  unsigned long;
 
