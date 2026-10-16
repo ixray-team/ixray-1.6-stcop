@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "IniReadAhead.h"
+#include "BackgroundLoad.h"
 
 XRCORE_API CIniReadAhead* g_IniReadAhead = nullptr;
 
@@ -61,24 +62,30 @@ void CIniReadAhead::Start(xr_vector<xr_string>&& Paths)
 	OnDemandCount = 0;
 	IsActive.store(true, std::memory_order_release);
 
-	Tasks.run([this]()
+	Next.store(0, std::memory_order_relaxed);
+	const size_t Workers = std::min<size_t>(BackgroundLoad::WorkerCount(), Storage.size());
+	for (size_t Worker = 0; Worker < Workers; ++Worker)
 	{
-		xr_parallel_for(size_t(0), Storage.size(), [this](size_t Index)
+		Tasks.run([this]()
 		{
-			if (!IsActive.load(std::memory_order_acquire))
+			xrBackgroundWorkScope Background;
+			for (size_t Index = Next.fetch_add(1); Index < Storage.size(); Index = Next.fetch_add(1))
 			{
-				return;
-			}
+				if (!IsActive.load(std::memory_order_acquire))
+				{
+					return;
+				}
 
-			Entry& Item = *Storage[Index];
-			EState Expected = EState::Queued;
-			if (Item.State.compare_exchange_strong(Expected, EState::Parsing))
-			{
-				xrTaskBlockingScope Blocking;
-				Parse(Item);
+				Entry& Item = *Storage[Index];
+				EState Expected = EState::Queued;
+				if (Item.State.compare_exchange_strong(Expected, EState::Parsing))
+				{
+					xrTaskBlockingScope Blocking;
+					Parse(Item);
+				}
 			}
 		});
-	});
+	}
 }
 
 void CIniReadAhead::Stop()

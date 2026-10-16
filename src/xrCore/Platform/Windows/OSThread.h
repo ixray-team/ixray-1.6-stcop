@@ -22,6 +22,11 @@ namespace Platform
 		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	}
 
+	inline void SetCurrentThreadBackgroundMode(bool Enable)
+	{
+		SetThreadPriority(::GetCurrentThread(), Enable ? THREAD_MODE_BACKGROUND_BEGIN : THREAD_MODE_BACKGROUND_END);
+	}
+
 	inline ProcessID GetCurrentProcessId()
 	{
 		return ::GetCurrentProcessId();

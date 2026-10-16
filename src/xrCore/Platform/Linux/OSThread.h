@@ -45,6 +45,10 @@ namespace Platform
             pthread_setschedparam(this_thread, policy, &params);
         }
     }
+
+    inline void SetCurrentThreadBackgroundMode(bool)
+    {
+    }
     
     inline ProcessID GetCurrentProcessId()
     {

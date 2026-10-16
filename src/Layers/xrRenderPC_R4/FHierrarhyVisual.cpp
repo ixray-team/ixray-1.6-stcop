@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "FHierrarhyVisual.h"
 #include "ModelPool.h"
+#include "../../xrCore/BackgroundLoad.h"
 #include "../../xrEngine/Fmesh.h"
 
 #include "../../xrEngine/Render.h"
@@ -76,7 +77,7 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 					Chunks[Index]->close();
 				};
 
-				if (Chunks.size() > 1 && CModelPool::IsAsyncLoadEnabled())
+				if (Chunks.size() > 1 && CModelPool::IsAsyncLoadEnabled() && !BackgroundLoad::IsWorker())
 				{
 					const CModelPool::LoadContext Context = CModelPool::CaptureLoadContext();
 					xr_parallel_for(size_t(0), Chunks.size(), [&](size_t Index)

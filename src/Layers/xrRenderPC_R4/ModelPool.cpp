@@ -2,6 +2,7 @@
 
 
 #include "ModelPool.h"
+#include "../../xrCore/BackgroundLoad.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -172,7 +173,7 @@ void CModelPool::Request(const char* name)
 		if (Models.find(Key) != Models.end())
 			return;
 	}
-	static const u32 MaxLoaders = std::max<u32>(u32(xr_max_concurrency()) / 2, 2);
+	const u32 MaxLoaders = BackgroundLoad::WorkerCount();
 	{
 		xrCriticalSectionGuard Guard(RequestedLock);
 		if (!Requested.insert(Key).second)
@@ -195,6 +196,7 @@ void CModelPool::RunLoader()
 		PROF_REGISTER_THREAD("Model loader");
 	}
 
+	xrBackgroundWorkScope Background;
 	xrTaskBlockingScope Blocking;
 	while (true)
 	{
