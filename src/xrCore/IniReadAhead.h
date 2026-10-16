@@ -38,6 +38,7 @@ private:
 	xr_vector<xr_unique_ptr<Entry>>			Storage;
 	xr_task_group							Tasks;
 	std::atomic<bool>						IsActive = false;
+	std::atomic<size_t>						Next = 0;
 	std::atomic<u32>						TakenCount = 0;
 	std::atomic<u32>						OnDemandCount = 0;
 };

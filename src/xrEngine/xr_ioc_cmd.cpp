@@ -12,6 +12,7 @@
 
 #include "GamepadService.h"
 #include "xr_object.h"
+#include "../xrCore/BackgroundLoad.h"
 
 xr_token* vid_quality_token = nullptr;
 
@@ -773,6 +774,8 @@ void CCC_Register()
 	extern bool g_MtIniPreload;
 	CMD2(CCC_Boolean,	"mt_ini_preload",		&g_MtIniPreload);
 	CMD2(CCC_Boolean,	"ini_mem_cache",		&g_IniMemoryCache);
+	CMD4(CCC_Integer,	"mt_bg_load_workers",	&g_BackgroundLoadWorkers, 0, 64);
+	CMD2(CCC_Boolean,	"mt_bg_load_priority",	&g_BackgroundLoadPriority);
 #ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
 	CMD1(CCC_TexturesStat,	"stat_textures"		);

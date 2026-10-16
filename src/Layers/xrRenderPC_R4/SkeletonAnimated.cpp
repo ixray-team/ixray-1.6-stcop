@@ -5,6 +5,7 @@
 #include "AnimationKeyCalculate.h"
 #include "SkeletonX.h"
 #include "ModelPool.h"
+#include "../../xrCore/BackgroundLoad.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrCore/AnimNotify/AnimNotify.h"
@@ -824,7 +825,7 @@ void CKinematicsAnimated::LoadOmfFiles(const xr_vector<xr_string>& Files, const 
 		IsLoaded[Index] = LoadOmfSlot(Files[Index].c_str(), nameOgf, m_Motions[First + Index]) ? 1 : 0;
 	};
 
-	if (Files.size() > 1 && CModelPool::IsAsyncLoadEnabled())
+	if (Files.size() > 1 && CModelPool::IsAsyncLoadEnabled() && !BackgroundLoad::IsWorker())
 	{
 		xr_parallel_for(size_t(0), Files.size(), [&](size_t Index)
 		{
