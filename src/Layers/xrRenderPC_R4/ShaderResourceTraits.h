@@ -70,12 +70,14 @@
 	inline CResourceManager::map_CS& CResourceManager::GetShaderMap(){return m_cs;}
 
 	template<typename T>
-	inline T* CResourceManager::CreateShader(const char* _name)
+	inline resptr_core<T, resptr_base<T>> CResourceManager::CreateShader(const char* _name)
 	{
 		xr_string res_name = _name + RImplementation.getShaderParams();
 		const char* name = res_name.c_str();
 
+		using RefType = resptr_core<T, resptr_base<T>>;
 		T* sh = nullptr;
+		RefType Result;
 		bool IsNew = false;
 		{
 			xrCriticalSectionGuard guard(creationGuard);
@@ -83,19 +85,21 @@
 			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(LPSTR(name));
 			if (I != sh_map.end())
 			{
-				sh = I->second;
-				if (!ResourceLifetime::IsAlive(sh))
+				if (ResourceLifetime::TryAcquire(I->second, Result))
+				{
+					sh = I->second;
+				}
+				else
 				{
 					sh_map.erase(I);
-					sh = nullptr;
 				}
 			}
 			if (!sh)
 			{
 				sh = new T();
 				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-				sh->dwReference.store(1, std::memory_order_release);
 				sh_map.insert(std::make_pair(sh->set_name(name), sh));
+				RefType(sh).swap(Result);
 				IsNew = true;
 			}
 		}
@@ -103,7 +107,7 @@
 		if (!IsNew)
 		{
 			sh->CompileState.WaitCompiled();
-			return sh;
+			return Result;
 		}
 
 		{
@@ -111,7 +115,7 @@
 			{
 				sh->sh				= NULL;
 				sh->CompileState.MarkCompiled();
-				return sh;
+				return Result;
 			}
 
 			// Open file
@@ -134,7 +138,7 @@
 			sh->CompileState.MarkCompiled();
 			FS.r_close					( file );
 
-			return			sh;
+			return			Result;
 		}
 	}
 
@@ -152,7 +156,10 @@
 		
 		if (I!=sh_map.end())
 		{
-			sh_map.erase(I);
+			if (I->second == sh)
+			{
+				sh_map.erase(I);
+			}
 			return;
 		}
 		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);

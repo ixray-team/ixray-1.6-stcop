@@ -22,6 +22,22 @@ namespace ResourceLifetime
 	{
 		return Resource->dwReference.load(std::memory_order_acquire) != 0;
 	}
+
+	template <typename T, typename RefType>
+	bool TryAcquire(T* Resource, RefType& Out)
+	{
+		u32 Count = Resource->dwReference.load(std::memory_order_acquire);
+		do
+		{
+			if (Count == 0)
+			{
+				return false;
+			}
+		} while (!Resource->dwReference.compare_exchange_weak(Count, Count + 1, std::memory_order_acq_rel, std::memory_order_acquire));
+
+		RefType(Resource, false).swap(Out);
+		return true;
+	}
 }
 
 // defs
@@ -160,23 +176,23 @@ public:
 	CRTC*							_CreateRTC			(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void							_DeleteRT			(const CRT*	RT	);
 
-	SGS*							_CreateGS			(const char* Name);
+	ref_gs							_CreateGS			(const char* Name);
 	void							_DeleteGS			(const SGS*	GS);
 	void							_DeleteRTC			(const CRTC* RT);
 
-	SHS*							_CreateHS			(const char* Name);
+	ref_hs							_CreateHS			(const char* Name);
 	void							_DeleteHS			(const SHS*	HS	);
 
-	SDS*							_CreateDS			(const char* Name);
+	ref_ds							_CreateDS			(const char* Name);
 	void							_DeleteDS			(const SDS*	DS	);
 
-	SCS*							_CreateCS			(const char* Name);
+	ref_cs							_CreateCS			(const char* Name);
 	void							_DeleteCS			(const SCS*	CS	);
 
-	SPS*							_CreatePS			(const char* Name);
+	ref_ps							_CreatePS			(const char* Name);
 	void							_DeletePS			(const SPS*	PS	);
 
-	SVS*							_CreateVS			(const char* Name);
+	ref_vs							_CreateVS			(const char* Name);
 	void							_DeleteVS			(const SVS*	VS	);
 
 	SPass*							_CreatePass			(const SPass& proto);
@@ -268,7 +284,7 @@ private:
 	T& GetShaderMap();
 
 	template<typename T>
-	T* CreateShader(const char* name);
+	resptr_core<T, resptr_base<T>> CreateShader(const char* name);
 
 	template<typename T>
 	void DestroyShader(const T* sh);
