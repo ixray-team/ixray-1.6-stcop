@@ -533,7 +533,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		
 		if (cam_active == eacFirstEye)
 		{
-			Cameras().Rig().Update(this, fFOV, dangle.z);
+			Cameras().Rig().Update(this, fFOV);
 		}
 
 		const static bool fp_die = EngineExternal()[EEngineExternalGame::EnableFirstPersonDie];
