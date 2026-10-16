@@ -512,7 +512,9 @@ using xr_stack_string = stack_string<char, StringLength>;
 #ifdef IXR_WINDOWS
 template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<wchar_t, StringLength>;
-#elif defined(IXR_LINUX)
+#else
+// Everything else (Linux, BSD, macOS) keeps wide strings on char16_t (UTF-16):
+// wchar_t is UTF-16 on Windows but UTF-32 on Apple/Linux, so it must not be used here.
 template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<char16_t, StringLength>;
 #endif

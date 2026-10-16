@@ -2,7 +2,10 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
+// macOS has no <malloc.h> (it is a glibc header) and nothing in this header needs it
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 class XRCORE_API trivial_encryptor
