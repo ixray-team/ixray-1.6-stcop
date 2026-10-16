@@ -628,3 +628,37 @@ cmake -S . -B build-macos -G Ninja \
 - Правило на будущее: `ZeroMemory(this, sizeof(*this))` в классах с блокировками — искать и проверять
   (кандидаты в дереве: `src/xrEngine/bone.h:494`, `src/Layers/xrRenderDX10/3DFluid/dx103DFluidRenderer.h:52`).
   Windows-сборкам это не вредит: там блокировки нулевые валидны.
+
+**Ошибки Lua: движок молчал и падал; включён штатный режим обработки**
+
+- Симптом: `terminating due to uncaught exception of type luabind::error: lua runtime error` при
+  спавне объектов уровня (стек: `CWrapperAbstractZone<CSE_ALifeSmartZone>::STATE_Write` ←
+  `CSE_Abstract::Spawn_Write` ← `xrServer::Process_spawn`).
+- Причина: движок написан под luabind **без исключений** — `CScriptEngine::setup_callbacks()`
+  ставит свои обработчики (`luabind::set_error_callback`, `Log`/`Debug.fatal`) только под
+  `#ifdef LUABIND_NO_EXCEPTIONS`. На Windows этот define приходит с конфигурацией Release/
+  RelWithDebInfo, а у нас Debug — поэтому luabind бросал `luabind::error`, ловить его в движке
+  негде, и процесс падал.
+- Правка: `cmake/modules/LuaBind.cmake` — для macOS `target_compile_definitions(luabind PUBLIC
+  LUABIND_NO_EXCEPTIONS)` (PUBLIC, чтобы и код движка видел тот же режим). Windows/Linux не тронуты.
+- Результат: ошибки скриптов теперь идут в лог движка (`[LUA] Error: [string "smart_terrain"]:858: ...`),
+  движок их переживает.
+
+**Данные: нужна родная gamedata IX-Ray, а не ванильная**
+
+- В репозитории (`ixray-src/gamedata/`) лежит **полный набор IX-Ray: 291 скрипт**, а мы запускали с
+  ванильной gamedata из `cop-baseline` (44 скрипта) — отсюда были ошибки `utils.script:588`,
+  `smart_terrain.script:858` и «пропавшие» модели пропсов.
+- Правка площадки: `run-macos/gamedata` теперь симлинк на `../ixray-src/gamedata` (старый симлинк
+  на cop-baseline сохранён рядом как `gamedata.cop-baseline-old`, ничего не удалено).
+- После этого новая игра создаётся, объекты уровня грузятся, ошибок Lua нет.
+
+**Управление снаружи (для автотестов)**
+
+- Клики (`cliclick`) и клавиши (`osascript key code`) **до SDL-окна не доходят** — меню реагирует
+  только на «живого» пользователя. Проверено и кликом в центр пункта, и кликом по заголовку окна.
+  Иногда срабатывает, но нестабильно (один раз новая игра всё же создалась).
+- Надёжный вариант на будущее: временный «пульт» внутри движка (послать `SDL_PushEvent`/вызвать
+  стартовую функцию меню после N секунд) — помечать как TEMPORARY и убирать после проверки.
+- Полезно: `-$ <команда> <параметр>` = выполнить консольную команду после загрузки уровня
+  (`Level_start.cpp:273`), команды консоли: `load` (`CCC_ALifeLoadFrom`), `main_menu` (`CCC_MainMenu`).
