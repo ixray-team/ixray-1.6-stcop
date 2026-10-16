@@ -338,6 +338,35 @@ bool CBaseMonster::ReactToLoudNoise(CObject* Source, int SoundType, const Fvecto
 	return true;
 }
 
+void CBaseMonster::NoticeActorLight(CActor& Player, const Fvector& Point, bool Revealed)
+{
+	if (MonsterPeaceful || !EnemyMan.is_enemy(&Player))
+	{
+		return;
+	}
+
+	SoundElem Stimulus;
+	Stimulus.who = &Player;
+	Stimulus.type = Revealed ? WEAPON_SHOOTING : ActorLight;
+	Stimulus.position = Revealed ? Player.Position() : Point;
+	Stimulus.power = 100.f;
+	Stimulus.time = Device.dwTimeGlobal;
+	Stimulus.CalcValue(Stimulus.time, Position());
+	// Keep the native FSM stimulus without entering the acoustic panic policy.
+	SoundMemory.HearSound(Stimulus);
+	if (Revealed)
+	{
+		EnemyMemory.RememberLightEnemy(Player);
+	}
+	else if (Behavior.Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] && !EnemyMan.get_enemy() && !GetScriptControl() && !EnemyMan.get_script_enemy() && !HasDamagePanic() && !control().is_captured_pure() && !(m_controlled && m_controlled->is_under_control()))
+	{
+		// New behavior consumes attention separately from the legacy sound memory.
+		Behavior.Attention = Point;
+		Behavior.AttentionUntil = Device.dwTimeGlobal + 1500;
+		Behavior.NoiseLookUntil = Behavior.AttentionUntil;
+	}
+}
+
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
 	if (!g_Alive() || GetHearingRangeFactor() <= 0.f) return;

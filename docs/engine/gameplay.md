@@ -55,6 +55,8 @@ Primary thread, `seqFrame`, `src/xrGame/Level.cpp`:
 
 Stalkers: `CActionPlanner` + `stalker_*` (movement, combat, objects, sound memory, visual memory). Monster behavior uses state managers in `ai/monsters`. Path and cover queries go through `ai()`.
 
+Gunslinger actor-light detection supplements visual recognition through native memory evidence. Modder documentation: [Russian](../docs/main/ru/gameplay/equipment/actor-light-perception.md), [English](../docs/main/en/gameplay/equipment/actor-light-perception.md). Engine integration and caching: [Actor light perception](actor-light-perception.md).
+
 ALife: offline = `CSE_*` only, online = client entity. `CALifeUpdateManager` spends a per-frame budget. Switch distance is on the simulator, not `CLevel::OnFrame`.
 
 ## Lua
