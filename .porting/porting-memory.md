@@ -346,3 +346,36 @@ cmake -S . -B build-macos -G Ninja \
   (место выхода поймано lldb: breakpoint на `exit`, кадр `xrDebug::do_exit` ← `InitSettings`). Файл в логе
   помечен как найденный и загружаемый, но секций 0 → смотреть `check_for_file` / `file_from_cache`
   в `r_open_impl` (вероятно, `FS.r_open` не находит запись и возвращает пустой читатель).
+
+**Рантайм, продолжение: движок доходит до загрузки рендерера**
+- **Ассеты.** У `~/Hermes/OpenXRay/game` **неполный** набор: в `gamedata/configs/` только `models`,
+  `scripts`, `text`, `ui` и `openxray.ltx` — **нет `system.ltx`** (в CoP он лежит в архиве
+  `resources/configs.db`). Полный набор — `~/Hermes/ixray-mac-port/cop-baseline` (4.8 ГБ, с архивами
+  `resources/*.db*`, `patches/xpatch_02.db`, `mp/mp_limansk.db`). Площадка запуска
+  (`~/Hermes/ixray-mac-port/run-macos/`) теперь ссылается на него; правило «ассеты не трогать» соблюдено:
+  только симлинки + своя копия `_appdata_`.
+- **Рантайм-обвязка:** `bin/Debug/xrEngine` + dylibs, `libsteam_api.dylib` (из Steamworks SDK, ветка `osx`),
+  **MoltenVK 1.4.2** (официальный релиз) + его `MoltenVK_icd.json`, запуск с `VK_ICD_FILENAMES`.
+- **Грабли тестового запуска (важно):** в DEBUG-сборке фатальная ошибка показывает **модальное окно SDL** и
+  ждёт клика — прогон висит и блокирует Степана. Решение: запускать прогоны с `SDL_VIDEODRIVER=dummy`
+  (окно не создаётся, процесс не блокируется). Флага «тихого» режима у движка нет: `SilentErrorMode`
+  ставится только в dedicated-режиме, `ignore_error_window` в этой ветке не выставляется нигде.
+- **Закрытые баги этого шага:**
+  1. `FS_Path::_set`/`_set_root` (`LocatorAPI_defs.cpp`) собирали `m_Path` **без** `ValidPath`, а
+     `FS_Path::_update` (поиск) — с ним. Сканирование регистрировало «смешанные» имена
+     (`…/run-macos/gamedata\configs/…`), которые не находил ни один поиск. Теперь путь нормализуется при
+     сборке, как в `_update`. (Правка платформенно-нейтральна: на Windows `ValidPath` — тождественна.)
+  2. `LoadArchive` (`LocatorAPI.cpp`) регистрировал имена файлов **из архивов** с виндовыми `\` (они так и
+     записаны внутри архива) → `system.ltx` из `resources/configs.db` не находился. Нормализация добавлена
+     при регистрации.
+  3. `CEngineAPI::CreateRendererList` (`EngineAPI.cpp`) искал `libxrRender_R4.so` (linux-имя, зашито в общей
+     ветке) → список рендереров пустой, `renderer renderer_r4` падал, движок уходил в R1/R2 и умирал на
+     «Render factory is empty!». Добавлена ветка `IXR_MACOS` с именами `.dylib`.
+  4. `cmake/modules/VKD3D.cmake`: ребейзится не только `-id`, но и **зависимости** между тремя библиотеками
+     (`-change /usr/local/lib/libvkd3d-shader.1.dylib → @rpath/…`); иначе `dlopen` рендерера падал на
+     отсутствующем `/usr/local/lib/libvkd3d-shader.1.dylib`. Ребейз и копирование рядом с бинарником
+     вынесены из `if(NOT vkd3d_POPULATED)` — выполняются на каждой конфигурации (идемпотентно).
+- **Состояние:** FS поднимается, `system.ltx`/`game.ltx` читаются, лог движка пишется, **`xrRender_R4`
+  загружается успешно** (в логе `Loading DLL: xrRender_R4` без отката на R2/R1).
+- **Следующий упор:** `xrGame` — `EngineAPI.cpp:136` «Game DLL raised exception during loading or there is no
+  game DLL at all»: модуль игры ещё не собран (в `bin/Debug` нет `libxrGame.dylib`); идёт сборка цели `xrGame`.

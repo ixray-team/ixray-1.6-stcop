@@ -214,6 +214,13 @@ void CEngineAPI::CreateRendererList()
 		const char* r1_name	= "xrRender_R1.dll";
 		const char* r2_name	= "xrRender_R2.dll";
 		const char* r4_name	= "xrRender_R4.dll";
+#elif defined(IXR_MACOS)
+		// AI: macOS builds the renderers as dylibs; the shared (non-Windows) branch below spells the
+		// AI: Linux name, which made this probe miss libxrRender_R4.dylib and drop R4 from the token
+		// AI: list - "renderer renderer_r4" then failed and the engine died on the empty token.
+		const char* r1_name	= "libxrRender_R1.dylib";
+		const char* r2_name	= "libxrRender_R2.dylib";
+		const char* r4_name	= "libxrRender_R4.dylib";
 #else
 		const char* r1_name	= "libxrRender_R1.so";
 		const char* r2_name	= "libxrRender_R2.so";

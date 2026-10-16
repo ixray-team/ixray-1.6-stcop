@@ -103,22 +103,55 @@ if(NOT vkd3d_POPULATED)
         REQUIRED
     )
 
-    # AI: the renderer loads these next to its binary at run time, and bin/<config> is already on
-    # AI: the run path of the targets (see cmake/clang.cmake), so the dylibs are copied there while
-    # AI: configuring. Only the versioned files are used, they are what the @rpath entries name.
-    if(CMAKE_BUILD_TYPE)
-        set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
-    else()
-        set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin")
-    endif()
-    foreach(VKD3D_DYLIB IN LISTS VKD3D_BUILT_DYLIBS)
-        get_filename_component(VKD3D_DYLIB_NAME "${VKD3D_DYLIB}" NAME)
-        if(VKD3D_DYLIB_NAME MATCHES "^libvkd3d.*\\.[0-9]+\\.dylib$")
-            file(COPY "${VKD3D_DYLIB}" DESTINATION "${VKD3D_RUNTIME_DIR}")
-        endif()
-    endforeach()
-
     set(VKD3D_LIBRARIES "${VKD3D_UTILS_LIBRARY}" CACHE FILEPATH "vkd3d shader compiler library" FORCE)
     set(VKD3D_INCLUDE_DIRS "${vkd3d_SOURCE_DIR}/include" CACHE PATH "vkd3d include directory" FORCE)
-    set(VKD3D_DYLIBS "${VKD3D_BUILT_DYLIBS}" CACHE STRING "vkd3d run-time libraries" FORCE)
+endif()
+
+# AI: this runs on every configuration on purpose: the rebase is idempotent and has to be re-applied
+# AI: whenever the tree is rebuilt. libtool writes an install name under /usr/local/lib, which does
+# AI: not exist at run time (the dylibs live next to the binary), and it also records the
+# AI: dependencies between the three libraries with that same absolute prefix, so both the id and
+# AI: every reference have to be rebased to @rpath - rebasing only the id leaves libvkd3d-utils
+# AI: looking for /usr/local/lib/libvkd3d-shader.1.dylib and the renderer then fails to load.
+if(APPLE AND VKD3D_BUILD_DIR)
+    file(GLOB VKD3D_DYLIBS "${VKD3D_BUILD_DIR}/.libs/libvkd3d*.dylib")
+    find_program(VKD3D_INSTALL_NAME_TOOL NAMES install_name_tool REQUIRED)
+
+    foreach(VKD3D_TARGET IN LISTS VKD3D_DYLIBS)
+        get_filename_component(VKD3D_TARGET_NAME "${VKD3D_TARGET}" NAME)
+        if(NOT VKD3D_TARGET_NAME MATCHES "^libvkd3d.*\\.[0-9]+\\.dylib$")
+            continue()
+        endif()
+
+        execute_process(
+            COMMAND "${VKD3D_INSTALL_NAME_TOOL}" -id "@rpath/${VKD3D_TARGET_NAME}" "${VKD3D_TARGET}"
+            RESULT_VARIABLE VKD3D_ID_RESULT
+        )
+        if(NOT VKD3D_ID_RESULT EQUAL 0)
+            message(FATAL_ERROR "install_name_tool -id failed for ${VKD3D_TARGET}")
+        endif()
+
+        foreach(VKD3D_DEP IN LISTS VKD3D_DYLIBS)
+            get_filename_component(VKD3D_DEP_NAME "${VKD3D_DEP}" NAME)
+            if(VKD3D_DEP_NAME MATCHES "^libvkd3d.*\\.[0-9]+\\.dylib$")
+                execute_process(
+                    COMMAND "${VKD3D_INSTALL_NAME_TOOL}" -change "/usr/local/lib/${VKD3D_DEP_NAME}"
+                            "@rpath/${VKD3D_DEP_NAME}" "${VKD3D_TARGET}"
+                    RESULT_VARIABLE VKD3D_CHANGE_RESULT
+                    OUTPUT_QUIET ERROR_QUIET
+                )
+            endif()
+        endforeach()
+
+        # AI: the renderer loads these next to its binary at run time (bin/<config> is on the run path
+        # AI: of the targets, see cmake/clang.cmake), so each dylib is placed there as well.
+        if(CMAKE_BUILD_TYPE)
+            set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+        else()
+            set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin")
+        endif()
+        file(COPY "${VKD3D_TARGET}" DESTINATION "${VKD3D_RUNTIME_DIR}")
+    endforeach()
+
+    set(VKD3D_DYLIBS "${VKD3D_DYLIBS}" CACHE STRING "vkd3d run-time libraries" FORCE)
 endif()
