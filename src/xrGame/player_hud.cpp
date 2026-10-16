@@ -2108,8 +2108,8 @@ const Fvector& player_hud::attach_pos() const
 
 void player_hud::LeftArmCallback(CBoneInstance* B)
 {
-	B->mTransform.mulA_44(m_transformL);
-	B->mTransform.mulA_44(Fmatrix(m_transform).invert());
+	B->mTransform.mulA_43(m_transformL);
+	B->mTransform.mulA_43(Fmatrix().invert(m_transform));
 }
 
 void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
@@ -2201,7 +2201,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	{
 		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.0f)));
 		m_attach_offsetr.c.set(attach_pos());
-		m_transform.mul(trans, m_attach_offsetr);
+		m_transform.mul_43(trans, m_attach_offsetr);
 	}
 
 	{
@@ -2210,7 +2210,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		Fmatrix attach_offset;
 		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));
 		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
-		m_transformL.mul(trans_2, m_attach_offsetl.set(attach_offset));
+		m_transformL.mul_43(trans_2, m_attach_offsetl.set(attach_offset));
 	}
 
 	Fmatrix script_layers = Fidentity;
@@ -2372,7 +2372,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		if (m_watches_bone != BI_NONE)
 		{
 			Fmatrix AttachBone = m_model->dcast_PKinematics()->LL_GetTransform(m_watches_bone);
-			m_watches_transform.mul(m_transform, AttachBone);
+			m_watches_transform.mul_43(m_transform, AttachBone);
 			m_watches_attach_offset.setHPB(VPUSH(Fvector(m_watches_rot).mul(PI / 180.0f)));
 			m_watches_attach_offset.c.set(m_watches_pos);
 			m_watches_transform.mulB_43(m_watches_attach_offset);
@@ -3252,7 +3252,7 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 	if (m_model && !forceLegacyTransform)
 	{
 		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
-		result.mul(m_transform, ancor_m);
+		result.mul_43(m_transform, ancor_m);
 	}
 	else
 	{
