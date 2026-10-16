@@ -581,6 +581,13 @@ bool CRHI::IsTessPass() const
 
 u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
 {
+	// AI: DirectXMesh is built on macOS in this port as well and xrRHI links DirectX::Mesh everywhere,
+	// AI: but its D3D11 overload of ComputeInputLayout() only exists for the MSVC headers: it sits
+	// AI: behind "#if defined(__d3d11_h__)" in DirectXMesh/DirectXMeshUtil.cpp and the non-Windows
+	// AI: branch of DirectXMeshP.h includes no D3D11 header at all. macOS therefore computes the
+	// AI: stride with the very same algorithm - DirectXMesh/DirectXMeshUtil.cpp:267-327 - using the
+	// AI: library's own DirectX::BytesPerElement() for the element sizes, and keeps the Windows call
+	// AI: untouched. The Linux branch is left as it was.
 #ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
@@ -588,6 +595,45 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
 
 		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)Desc, DescSize, Offsets, Strides);
+		return Strides[0];
+	}
+	else
+#elif defined(IXR_MACOS)
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		const D3D11_INPUT_ELEMENT_DESC* Decl = (const D3D11_INPUT_ELEMENT_DESC*)Desc;
+
+		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+		u32 PrevABO[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+		for (u32 j = 0; j < DescSize; ++j)
+		{
+			const u32 Slot = Decl[j].InputSlot;
+			if (Slot >= D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
+			{
+				// ignore bad input slots
+				continue;
+			}
+
+			const size_t Bpe = DirectX::BytesPerElement(Decl[j].Format);
+			if (!Bpe)
+			{
+				// ignore invalid format
+				continue;
+			}
+
+			const u32 Alignment = (Bpe == 1) ? 1 : (Bpe == 2) ? 2 : 4;
+
+			u32 AlignedByteOffset = Decl[j].AlignedByteOffset;
+			if (AlignedByteOffset == D3D11_APPEND_ALIGNED_ELEMENT)
+			{
+				AlignedByteOffset = PrevABO[Slot];
+			}
+
+			Strides[Slot] = std::max<u32>(Strides[Slot], u32(AlignedByteOffset + Bpe));
+			PrevABO[Slot] = u32(AlignedByteOffset + Bpe + (Bpe % Alignment));
+		}
+
 		return Strides[0];
 	}
 	else
