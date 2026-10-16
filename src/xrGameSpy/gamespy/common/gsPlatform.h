@@ -134,7 +134,9 @@
 	#endif // INSOCK
 
 // LINUX and MACOSX
-#elif defined(IXR_LINUX)
+// AI: this POSIX branch was written with MacOSX in mind (see the comments below); macOS needs
+// AI: it too, otherwise the platform switch ends in #error and xrGame cannot include GameSpy.
+#elif defined(IXR_LINUX) || defined(IXR_MACOS)
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
