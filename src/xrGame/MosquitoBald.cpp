@@ -105,7 +105,7 @@ void CMosquitoBald::UpdateSecondaryHit()
 
 			float impulse = m_fHitImpulseScale*power*pGameObject->GetMass();
 			position_in_bone_space.set(0.f,0.f,0.f);
-			CreateHit(pGameObject->ID(),ID(),hit_dir,power,0,position_in_bone_space,impulse,m_eHitTypeBlowout);
+			CreateHit(pGameObject->ID(), ID(), hit_dir, power, 0, position_in_bone_space, impulse, SecondaryHitType);
 		}
 	}
 }
