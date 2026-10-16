@@ -978,6 +978,7 @@ private:
 	void			HandsIkReach		(SHandsIkFrame& F);
 	void			HandsIkSolve		(SHandsIkFrame& F);
 	void			HandsIkFingers		(SHandsIkFrame& F);
+	void			HandsIkFingerInertia	(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
 	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f);
@@ -998,9 +999,15 @@ private:
 	u32									LeftHandAttachSnapFrame = u32(-1);
 	bool								LeftGripActive = false;
 	xr_vector<u16>						FingerGripBones;
-	xr_vector<Fquaternion>				FingerRefPose;
-	MotionID							FingerRefMotion;
-	int									FingerRefSegment = -1;
+	xr_vector<Fquaternion>				FingerStartPose;
+	xr_vector<Fvector>					FingerStartPos;
+	MotionID							FingerStartMotion;
+	float								FingerStartTime = 0.f;
+	xr_vector<Fquaternion>				FingerPrevRot;
+	xr_vector<Fvector>					FingerPrevPos;
+	xr_vector<Fquaternion>				FingerResidualRot;
+	xr_vector<Fvector>					FingerResidualPos;
+	u32									FingerResidualFrame = u32(-1);
 	MotionID							ArmRetargetMotion;
 	xr_vector<Fquaternion>				ArmRetargetPose;
 	Fmatrix								ArmRetargetRootRef = Fidentity;
