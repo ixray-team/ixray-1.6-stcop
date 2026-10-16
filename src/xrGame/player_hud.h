@@ -23,10 +23,53 @@ namespace HudAttachMarks
 
 namespace HudSpring
 {
+	inline void Solve(float& value, float& velocity, float goal, float omega, float damping, float dt)
+	{
+		if (omega <= 0.f || dt <= 0.f)
+		{
+			return;
+		}
+
+		const float offset = value - goal;
+		const float speed = velocity;
+		const float zeta = std::max(damping, 0.f);
+
+		if (std::abs(zeta - 1.f) < 1e-3f)
+		{
+			const float decay = std::exp(-omega * dt);
+			const float slope = speed + omega * offset;
+			value = goal + (offset + slope * dt) * decay;
+			velocity = (speed - omega * slope * dt) * decay;
+		}
+		else if (zeta < 1.f)
+		{
+			const float damped = omega * std::sqrt(1.f - zeta * zeta);
+			const float decay = std::exp(-zeta * omega * dt);
+			const float cosine = std::cos(damped * dt);
+			const float sine = std::sin(damped * dt);
+			const float b = (speed + zeta * omega * offset) / damped;
+			value = goal + decay * (offset * cosine + b * sine);
+			velocity = decay * (speed * cosine - (offset * damped + zeta * omega * b) * sine);
+		}
+		else
+		{
+			const float root = omega * std::sqrt(zeta * zeta - 1.f);
+			const float r1 = -zeta * omega + root;
+			const float r2 = -zeta * omega - root;
+			const float c2 = (speed - r1 * offset) / (r2 - r1);
+			const float c1 = offset - c2;
+			const float e1 = std::exp(r1 * dt);
+			const float e2 = std::exp(r2 * dt);
+			value = goal + c1 * e1 + c2 * e2;
+			velocity = c1 * r1 * e1 + c2 * r2 * e2;
+		}
+	}
+
 	inline void Step(Fvector& value, Fvector& velocity, const Fvector& goal, float omega, float damping, float dt)
 	{
-		const float stiffness = omega * omega;
-		value.spring_inertion(goal, velocity, dt, stiffness, 2.f * damping * std::sqrt(stiffness));
+		Solve(value.x, velocity.x, goal.x, omega, damping, dt);
+		Solve(value.y, velocity.y, goal.y, omega, damping, dt);
+		Solve(value.z, velocity.z, goal.z, omega, damping, dt);
 	}
 
 	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
@@ -38,16 +81,7 @@ namespace HudSpring
 			return;
 		}
 
-		if (dt <= 0.f)
-		{
-			return;
-		}
-
-		Fvector current = { value, 0.f, 0.f };
-		Fvector speed = { velocity, 0.f, 0.f };
-		Step(current, speed, Fvector().set(goal, 0.f, 0.f), 2.f * 0.69314718f / half_life, damping, dt);
-		value = current.x;
-		velocity = speed.x;
+		Solve(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
 	}
 }
 
