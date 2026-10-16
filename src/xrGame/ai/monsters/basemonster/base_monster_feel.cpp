@@ -29,6 +29,28 @@
 #include "../snork/snork.h"
 #include "../pseudogigant/pseudo_gigant.h"
 
+void CBaseMonster::NoticeActorLight(CActor& Player, const Fvector& Point, bool Revealed)
+{
+	if (!EnemyMan.is_enemy(&Player))
+	{
+		return;
+	}
+
+	SoundElem Stimulus;
+	Stimulus.who = &Player;
+	Stimulus.type = Revealed ? WEAPON_SHOOTING : ActorLight;
+	Stimulus.position = Revealed ? Player.Position() : Point;
+	Stimulus.power = 100.f;
+	Stimulus.time = Device.dwTimeGlobal;
+	Stimulus.CalcValue(Stimulus.time, Position());
+	// Keep the native FSM stimulus without entering the acoustic panic policy.
+	SoundMemory.HearSound(Stimulus);
+	if (Revealed)
+	{
+		EnemyMemory.RememberLightEnemy(Player);
+	}
+}
+
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
 	if (!g_Alive())		return;

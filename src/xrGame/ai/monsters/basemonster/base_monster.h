@@ -149,6 +149,7 @@ public:
 
 	virtual void			init							() {}
 
+	void NoticeActorLight(CActor& Player, const Fvector& Point, bool Revealed);
 	virtual void			feel_sound_new					(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 	virtual bool			feel_vision_isRelevant			(CObject* O);
 	virtual bool			feel_touch_on_contact			(CObject* O);
