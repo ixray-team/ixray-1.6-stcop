@@ -4,6 +4,25 @@
 #include "dxRenderDeviceRender.h"
 
 ///////////////////////////////////////////////////////////////////////
+void SShaderCompileState::MarkCompiled()
+{
+	IsCompiled.store(true, std::memory_order_release);
+	IsCompiled.notify_all();
+}
+
+void SShaderCompileState::WaitCompiled()
+{
+	if (IsCompiled.load(std::memory_order_acquire))
+	{
+		return;
+	}
+
+	PROF_EVENT("SShaderCompileState::WaitCompiled");
+	xrTaskBlockingScope Blocking;
+	IsCompiled.wait(false, std::memory_order_acquire);
+}
+
+///////////////////////////////////////////////////////////////////////
 //	SVS
 SVS::SVS() : vs(nullptr)
 	, vs_code(nullptr)
@@ -37,7 +56,6 @@ SInputSignature::~SInputSignature		()			{	_RELEASE(signature); DEV->_DeleteInput
 //	SState
 SState::~SState							()			{	_RELEASE(state);	DEV->_DeleteState		(this);	}
 
-///////////////////////////////////////////////////////////////////////
 //	SDeclaration
 SDeclaration::~SDeclaration()
 {	

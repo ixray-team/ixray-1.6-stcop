@@ -350,7 +350,7 @@ void CRender::create()
 	UpdateRainPuddleMode();
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
-	clearAllShaderOptions();
+	UpdateDefaultShaderOptions();
 
 	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
@@ -761,9 +761,10 @@ xr_string CRender::getShaderParams()
 	crc_vector.resize(0);
 	crc_vector.reserve(16);
 
-	if(!m_ShaderOptions.empty()) 
+	const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
+	if(!ShaderOptions.empty())
 	{
-		for(const auto& [Name, Value] : m_ShaderOptions)
+		for(const auto& [Name, Value] : ShaderOptions)
 		{
 			crc_vector.push_back(Name);
 			crc_vector.back().append(Value);
@@ -804,11 +805,12 @@ xr_string CRender::getShaderParams()
 
 xr_string CRender::getShaderParamsDebug() 
 {
-	if (!m_ShaderOptions.empty()) 
+	const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
+	if (!ShaderOptions.empty())
 	{
 		xr_string params = "";
 
-		for (auto& [Name, Value] : m_ShaderOptions)
+		for (auto& [Name, Value] : ShaderOptions)
 		{
 			params += Name + (Value[0] ? "_" + Value : "") + ",";
 		}
@@ -859,7 +861,7 @@ void CRender::SyncMotionVectors()
 		return;
 
 	o.dx11_disable_motion_vectors = !o.dx11_disable_motion_vectors;
-	clearAllShaderOptions();
+	UpdateDefaultShaderOptions();
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 }
 
@@ -872,31 +874,75 @@ void CRender::SyncReflections()
 
 	// USE_SSLR_REFLECTIONS and USE_SSLR_ON_WATER are shader defines
 	o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-	clearAllShaderOptions();
+	UpdateDefaultShaderOptions();
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 	SyncMotionVectors();
 }
 
-void CRender::clearAllShaderOptions()
+namespace
 {
-	//GPU_EVENT(__FUNCTION__)
-	m_ShaderOptions = EngineExternal().ShadersOptions;
+	xrSRWLock DefaultShaderOptionsLock;
+	ShaderExternalMap DefaultShaderOptions;
 
+	struct ThreadShaderOptions
+	{
+		bool IsInitialized = false;
+		ShaderExternalMap Options;
+	};
+	thread_local ThreadShaderOptions CurrentThreadShaderOptions;
+
+	void CopyDefaultShaderOptions(ThreadShaderOptions& Target)
+	{
+		xrSRWLockGuard Guard(DefaultShaderOptionsLock, true);
+		Target.Options = DefaultShaderOptions;
+		Target.IsInitialized = true;
+	}
+}
+
+void CRender::UpdateDefaultShaderOptions()
+{
+	ShaderExternalMap Options = EngineExternal().ShadersOptions;
 	if (LightingModeIsStaticRender())
 	{
-		addShaderOption("USE_R1_STATIC_LIGHTING", "2");
-		addShaderOption("USE_LEGACY_LIGHT", "1");
+		Options["USE_R1_STATIC_LIGHTING"] = "2";
+		Options["USE_LEGACY_LIGHT"] = "1";
 	}
 
 	if (o.dx11_disable_motion_vectors)
 	{
-		addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		Options["DISABLE_MOTION_VECTORS"] = "1";
 	}
+
+	{
+		xrSRWLockGuard Guard(DefaultShaderOptionsLock);
+		DefaultShaderOptions = std::move(Options);
+	}
+	clearAllShaderOptions();
+}
+
+ShaderExternalMap& CRender::CurrentShaderOptions()
+{
+	ThreadShaderOptions& Current = CurrentThreadShaderOptions;
+	if (!Current.IsInitialized)
+	{
+		CopyDefaultShaderOptions(Current);
+	}
+	return Current.Options;
+}
+
+void CRender::clearAllShaderOptions()
+{
+	CopyDefaultShaderOptions(CurrentThreadShaderOptions);
 }
 
 void CRender::addShaderOption(const char* name, const char* value) 
 {
-	m_ShaderOptions[name] = value;
+	CurrentShaderOptions()[name] = value;
+}
+
+size_t CRender::ShaderOptionsCount()
+{
+	return CurrentShaderOptions().size();
 }
 
 template <typename T>
@@ -1201,7 +1247,7 @@ HRESULT	CRender::shader_compile(
 	// options
 	u32 len = xr_strlen(sh_name);
 	
-	for(auto& [Name, Value] : m_ShaderOptions) 
+	for(auto& [Name, Value] : CurrentShaderOptions())
 	{
 		defines[def_it++] = {
 			Name.c_str(),
