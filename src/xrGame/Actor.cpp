@@ -2017,7 +2017,7 @@ void CActor::UpdateCL()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	bBlockSprint = IsControllerPreparing() || isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
+	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
 	if (IsSafemode() && (pWeapon == nullptr || !pWeapon->AllowSafemode()))
 	{
@@ -4120,7 +4120,7 @@ void CActor::UpdateSuicide(u32 dt)
 
 		if (SuicideItem && (SuicideItem->WpnCanShoot() || SuicideItem->cast_weapon_binoculars()) && SuicideItem->IsZoomed())
 		{
-			SetActorKeyRepeatFlag(kfUNZOOM, true, true);
+			//SetActorKeyRepeatFlag(kfUNZOOM, true, true);
 		}
 
 		if (SuicideItem && SuicideItem->WpnCanShoot())
