@@ -35,7 +35,7 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx(9|11)\\.cpp$")
 
 if(APPLE)
-	# AI: в macOS нет заголовков D3D: на Windows они из SDK, на Linux из DXVK.
+	# AI: macOS ships no D3D headers: Windows takes them from the SDK, Linux from DXVK.
 	# AI: Nothing below is renderer work - these files simply cannot compile without D3D
 	# AI: headers, and the macOS backend (see .porting/porting-memory.md) will replace them.
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "D3D9/")
@@ -60,7 +60,14 @@ target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # -----------------------------------------------------------------------------
 # Linux + DXVK Native поддержка
 # -----------------------------------------------------------------------------
-if(UNIX AND NOT APPLE)
+if(APPLE)
+    # AI: same model as on Linux - IX-Ray's own renderer (R4/D3D11) runs on DXVK Native built
+    # AI: for the host, Vulkan goes through MoltenVK, the window comes from SDL3. No separate
+    # AI: renderer is written for macOS; the Windows and Linux branches below are untouched.
+    target_include_directories(xrRHI PUBLIC ${DXVK_INCLUDE_DIRS})
+    target_compile_definitions(xrRHI PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
+    target_link_libraries(xrRHI PUBLIC ${DXVK_LIBRARIES} Vulkan::Vulkan)
+elseif(UNIX AND NOT APPLE)
     target_include_directories(xrRHI PUBLIC ${DXVK_INCLUDE_DIRS})
     target_compile_definitions(xrRHI PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
     target_link_libraries(xrRHI PUBLIC ${DXVK_LIBRARIES} Vulkan::Vulkan pthread dl)

@@ -24,12 +24,12 @@ else()
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
 
-    # AI: _GNU_SOURCE нужен только Linux (mremap), на Apple он ломает заголовки SDK
+    # AI: _GNU_SOURCE is only needed on Linux (mremap); on Apple it breaks the SDK headers
     if (NOT APPLE)
         add_compile_definitions(_GNU_SOURCE) # AI: mremap
     endif()
 
-    # AI: lld и linux-специфичные пути к библиотекам к тулчейнам Apple не относятся
+    # AI: lld and the Linux-specific library paths do not apply to Apple toolchains
     if (NOT APPLE)
         find_program(LLD_PROGRAM lld)
         if(LLD_PROGRAM)

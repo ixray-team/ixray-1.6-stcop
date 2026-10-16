@@ -143,7 +143,7 @@ else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
 	elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-		# AI: оставляем Platform/MacOS, убираем исходники Linux и BSD
+		# AI: keep Platform/MacOS and drop the Linux and BSD sources
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 	else()

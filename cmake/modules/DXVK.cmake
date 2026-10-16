@@ -4,11 +4,34 @@ endif()
 
 find_package(Vulkan)
 
+# AI: the macOS-fixed DXVK fork is based on DXVK 2.6, where the window-system option is
+# AI: called dxvk_native_wsi and the old native_sdl3/native_sdl2/native_glfw flags are gone.
+# AI: Linux keeps its original set below, untouched.
+if(APPLE)
+    set(DXVK_WSI_ARGS -Ddxvk_native_wsi=sdl3)
+else()
+    set(DXVK_WSI_ARGS -Dnative_sdl3=enabled -Dnative_sdl2=disabled -Dnative_glfw=disabled)
+endif()
+
+# AI: upstream DXVK master does not build with Apple's linker (it passes GNU --version-script,
+# AI: which ld does not know) and fails on an ambiguous tzcnt; the macOS fixes live in a fork,
+# AI: pinned to a fixed commit the way the working macOS ports do it. Windows, Linux and BSD
+# AI: keep fetching upstream master exactly as before.
+if(APPLE)
+    set(DXVK_REPO    "https://github.com/generalsx-project/dxvk.git")
+    set(DXVK_TAG     "f66da559fd48cd55ddfebca38ed0f708c0f76a24")
+    set(DXVK_SHALLOW FALSE)
+else()
+    set(DXVK_REPO    "https://github.com/doitsujin/dxvk.git")
+    set(DXVK_TAG     "master")
+    set(DXVK_SHALLOW TRUE)
+endif()
+
 FetchContent_Declare(
     dxvk
-    GIT_REPOSITORY https://github.com/doitsujin/dxvk.git
-    GIT_TAG        master
-    GIT_SHALLOW    TRUE
+    GIT_REPOSITORY ${DXVK_REPO}
+    GIT_TAG        ${DXVK_TAG}
+    GIT_SHALLOW    ${DXVK_SHALLOW}
 )
 
 FetchContent_GetProperties(dxvk)
@@ -73,9 +96,7 @@ Cflags: -I\${includedir}
                 --prefix=${DXVK_INSTALL_DIR}
                 -Denable_d3d9=true
                 -Denable_d3d11=true
-                -Dnative_sdl3=enabled   
-                -Dnative_sdl2=disabled
-                -Dnative_glfw=disabled
+                ${DXVK_WSI_ARGS}
                 ${MESON_EXTRA_ARGS}
         RESULT_VARIABLE MESON_CONFIG_RESULT
         ERROR_VARIABLE  MESON_CONFIG_ERROR

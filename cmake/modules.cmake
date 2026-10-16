@@ -35,7 +35,9 @@ if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/FSR3.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")
-elseif(LINUX)
+elseif(LINUX OR APPLE)
+    # AI: macOS uses the same model as Linux - IX-Ray's own D3D11 renderer on top of DXVK
+    # AI: Native (Vulkan through MoltenVK, window from SDL3), so the module is needed on both.
     include("${CMAKE_MODULE_PATHEX}/DXVK.cmake")
 endif()
 
