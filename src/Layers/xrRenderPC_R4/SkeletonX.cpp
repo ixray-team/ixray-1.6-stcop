@@ -474,17 +474,13 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 
 				sw_bones_cnt = std::max(sw_bones_cnt, mid);
 			}
-			if (1 == bids.size())
+			if (sw_bones_cnt <= hw_bones_cnt)
 			{
-				// HW- single bone
-				RenderMode = RM_SINGLE;
-				RMS_boneid = *bids.begin();
-				Engine.External.SetSkinningMode(0);
-			}
-			else if (sw_bones_cnt <= hw_bones_cnt)
-			{
-				// HW- one weight
+				// HW 1-weight skinning for all 1-link meshes, including single-bone parts.
+				// RM_SINGLE used to bake bone into world (W = world * bone); float32 mul of a
+				// changing HUD/camera world with per-part bones made bolt/mag jitter vs body.
 				RenderMode = RM_SKINNING_1B;
+				RMS_boneid = bids.empty() ? BI_NONE : *bids.begin();
 				RMS_bonecount = sw_bones_cnt + 1;
 				Engine.External.SetSkinningMode(1);
 			}
@@ -598,11 +594,11 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 		Debug.fatal	(DEBUG_INFO,"Invalid vertex type in skinned model '%s'",N);
 		break;
 	}
-	// The editor keeps the bone list even for single-bone parts.
-	if (bids.size() > (Device.IsEditorMode() ? 0u : 1u))
-    {
-		crc = crc32(&*bids.begin(),bids.size()*sizeof(u16)); 
-		BonesUsed.create(crc,(u32)bids.size(),&*bids.begin());
+	// Needed for visibility; was skipped for RM_SINGLE (used RMS_boneid instead).
+	if (!bids.empty())
+	{
+		crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
+		BonesUsed.create(crc, (u32)bids.size(), &*bids.begin());
 	}
 }
 
