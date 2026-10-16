@@ -974,6 +974,9 @@ public:
 	void			load				(const shared_str& model_name);
 	void			load_default		();
 	void			ReloadRigParams		();
+	void			RequestDefault		();
+	void			FinishDefaultLoad	(bool IsEarly = false);
+	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
@@ -1094,6 +1097,7 @@ public:
 
 	float			SprintYield = 0.f;
 
+	shared_str		PendingDefaultSect;
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
 	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};

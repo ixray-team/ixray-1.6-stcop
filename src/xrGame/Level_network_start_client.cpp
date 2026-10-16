@@ -6,6 +6,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 
 #include "ai_space.h"
+#include "player_hud.h"
 #include "game_cl_base.h"
 #include "NET_Queue.h"
 #include "file_transfer.h"
@@ -184,6 +185,11 @@ void CLevel::ClientSendProfileData	()
 bool CLevel::net_start_client5()
 {
 	PROF_EVENT("CLevel::net_start_client5");
+	if (g_player_hud)
+	{
+		g_player_hud->FinishDefaultLoad();
+	}
+	g_pGamePersistent->ObjectPool.FinishPrefetch();
 	if (connected_to_server)
 	{
 		if (!g_dedicated_server)
@@ -203,6 +209,7 @@ bool CLevel::net_start_client5()
 bool CLevel::net_start_client6()
 {
 	PROF_EVENT("CLevel::net_start_client6");
+	g_pGamePersistent->ObjectPool.FinishPrefetch();
 	if (connected_to_server)
 	{
 		// Sync
