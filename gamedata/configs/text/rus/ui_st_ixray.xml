@@ -1026,4 +1026,14 @@
 	<string id="ui_mm_rain_puddles">
 		<text>Дождевые лужи</text>
 	</string>
+	<string id="st_dof_options"><text>Глубина резкости</text></string>
+	<string id="ui_mm_dof_dynamic"><text>DOF при действиях с оружием</text></string>
+	<string id="ui_mm_dof_const_zoom"><text>Постоянный фокус при прицеливании</text></string>
+	<string id="ui_mm_dof_hud_animator"><text>DOF еды, медикаментов и КПК</text></string>
+	<string id="ui_mm_dof_kernel"><text>Радиус размытия</text></string>
+	<string id="ui_mm_dof_lens_kernel_scale"><text>Усиление размытия 3D-прицела</text></string>
+	<string id="ui_mm_dof_sky"><text>Дистанция фокуса неба</text></string>
+	<string id="ui_mm_dof_near"><text>Ближняя граница базового DOF</text></string>
+	<string id="ui_mm_dof_focus"><text>Дистанция базового фокуса</text></string>
+	<string id="ui_mm_dof_far"><text>Дальняя граница базового DOF</text></string>
 </string_table>

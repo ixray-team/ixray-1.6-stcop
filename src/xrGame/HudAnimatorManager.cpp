@@ -21,6 +21,7 @@ CHudAnimatorBase::~CHudAnimatorBase()
 
 void CHudAnimatorBase::Load()
 {
+	CDofManager::LoadHud(DofSource, m_section, cast_item_animator() != nullptr);
 	m_sounds.Clear();
 
 	m_bCanSprint = pSettings->read_if_exists<bool>(m_section, "can_sprint", false);
@@ -43,6 +44,7 @@ void CHudAnimatorBase::Load()
 
 void CHudAnimatorBase::StopAnimator()
 {
+	CDofManager::StopAction(DofSource);
 	m_bIsPlaying = false;
 	m_manager->Parent()->set_inventory_disabled(false);
 	m_manager->Parent()->set_pda_disabled(false);
@@ -379,6 +381,7 @@ void CHudStateAnimator::PlayMotion(const shared_str& name, bool blend, u8 state)
 	m_on_animation_end_state = state;
 
 	u32 ret = g_player_hud->GetAnimator()->anim_play(name, blend, m_current_motion_def);
+	CDofManager::StartAction(DofSource, name, ret);
 
 	if (ret > 0)
 	{

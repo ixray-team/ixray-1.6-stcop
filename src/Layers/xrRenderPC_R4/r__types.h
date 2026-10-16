@@ -33,6 +33,7 @@
 #define		r2_RT_env_temp		"$user$env_temp"
 
 #define		r2_RT_upscaled_depth "$user$upscaled_depth"
+#define r2_RT_dof_scope_mask "$user$dof_scope_mask"
 #define		r2_RT_upscaled_depth_old "$user$upscaled_depth_old"
 
 #define		r2_RT_ui_depth		"$user$ui_depth"

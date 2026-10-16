@@ -14,12 +14,13 @@ float3 dof(float2 center)
 // x - near y - focus z - far w - sky distance
 float4 dof_params;
 float3 dof_kernel; // x,y - resolution pre-scaled z - just kernel size
+Texture2D<float> s_dof_scope_mask;
 
 float DOFFactor(float depth)
 {
     float dist_to_focus = depth - dof_params.y;
-    float blur_far = saturate(dist_to_focus * rcp(dof_params.z - dof_params.y));
-    float blur_near = saturate(dist_to_focus * rcp(dof_params.x - dof_params.y));
+    float blur_far = saturate(dist_to_focus * rcp(max(dof_params.z - dof_params.y, EPS_S)));
+    float blur_near = saturate(dist_to_focus * rcp(min(dof_params.x - dof_params.y, -EPS_S)));
     float blur = blur_near + blur_far;
     blur *= blur;
     return blur;
@@ -27,7 +28,14 @@ float DOFFactor(float depth)
 
 float sampleDepth(float2 center)
 {
-    float P = 1.0f - s_position.SampleLevel(smp_rtlinear, center, 0).x;
+    // Read raw point-sampled depth: filtering or reprojection loses HUD coverage.
+    float P = s_position.SampleLevel(smp_nofilter, center, 0).x;
+    // HUD occupies the 0..0.02 viewport range and must stay in focus.
+    // Returning focus also prevents HUD colors from contributing to scene blur.
+    if (P < 0.02f)
+    {
+        return dof_params.y;
+    }
     return P > 0.9999f ? dof_params.w : (m_P._34 * rcp(P - m_P._33));
 }
 
@@ -36,9 +44,18 @@ float sampleDepth(float2 center)
 
 float3 dof(float2 center)
 {
+	// The lens samples the sharp scene. Only its surroundings receive weapon DOF.
+	if (s_dof_scope_mask.SampleLevel(smp_nofilter, center, 0) > 0.5f)
+	{
+		return s_image.Sample(smp_rtlinear, center).xyz;
+	}
     // Scale tap offsets based on render target size
     float depth = sampleDepth(center);
     float blur = DOFFactor(depth);
+    if (blur == 0.0f)
+    {
+        return s_image.Sample(smp_rtlinear, center).xyz;
+    }
     float2 scale = 0.5f * screen_res.zw * dof_kernel.z * blur;
 
     // poisson
@@ -66,6 +83,7 @@ float3 dof(float2 center)
         float3 tap_color = s_image.Sample(smp_nofilter, tap).xyz;
         float tap_depth = sampleDepth(tap);
         float tap_contrib = DOFFactor(tap_depth);
+		tap_contrib *= 1.0f - s_dof_scope_mask.SampleLevel(smp_nofilter, tap, 0);
         sum += tap_color * tap_contrib;
         contrib += tap_contrib;
     }

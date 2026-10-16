@@ -2,6 +2,7 @@
 
 #include "HudSound.h"
 #include "Actor.h"
+#include "DofManager.h"
 
 class HUD_SOUND_COLLECTION;
 class CActor;
@@ -56,6 +57,7 @@ protected:
 public:
 
 	CHudAnimatorBase(CHudAnimatorManager* manager) : m_manager(manager) {}
+	SHudDofSource DofSource;
 	virtual ~CHudAnimatorBase();
 
 	virtual void Load();
