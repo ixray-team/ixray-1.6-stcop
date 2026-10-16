@@ -73,7 +73,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		VERIFY3(face_count, "Empty surface arrive.", S->m_Name.c_str());
 
 		int vertex_count = face_count * 3;
-		if (S->m_Flags.is(CSurface::sf2Sided))
+		if (S->_flags().is(SSurfaceData::sf2Sided))
 		{
 			vertex_count *= 2;
 		}
@@ -82,7 +82,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		rb_vec.emplace_back(0, vertex_count);
 		st_RenderBuffer& rb = rb_vec.back();
 
-		const u32 vertex_size = sizeof(svertRender);
+		constexpr u32 vertex_size = sizeof(svertRender);
 		const u32 buffer_size = vertex_size * vertex_count;
 
 		VERIFY2(buffer_size, "Empty buffer size");
@@ -111,8 +111,9 @@ void CEditableMesh::GenerateRenderBuffers()
 void CEditableMesh::UnloadRenderBuffers()
 {
 	if (m_RenderBuffers){
-		for (RBMapPairIt rbmp_it=m_RenderBuffers->begin(); rbmp_it!=m_RenderBuffers->end(); rbmp_it++){
-			for(RBVecIt rb_it=rbmp_it->second.begin(); rb_it!=rbmp_it->second.end(); rb_it++)
+		for (auto& rbmp_it : *m_RenderBuffers)
+		{
+			for(RBVecIt rb_it= rbmp_it.second.begin(); rb_it!= rbmp_it.second.end(); rb_it++)
 				if (rb_it->pGeom){
 					_RELEASE		(rb_it->pGeom->vb);
 					_RELEASE		(rb_it->pGeom->ib);
@@ -208,10 +209,19 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		// geometry collapses for any such shader. Build a stable orthonormal
 		// frame from the normal so they are always valid.
 		Fvector tref(0, 1, 0);
-		if (fabsf(vtx->N.y) > 0.99f) tref.set(0, 0, 1);
+		if (fabsf(vtx->N.y) > 0.99f)
+		{
+			tref.set(0, 0, 1);
+		}
 		vtx->T.crossproduct(vtx->N, tref);
-		if (vtx->T.square_magnitude() < EPS_S) vtx->T.set(1, 0, 0);
-		else vtx->T.normalize_safe();
+		if (vtx->T.square_magnitude() < EPS_S)
+		{
+			vtx->T.set(1, 0, 0);
+		}
+		else
+		{
+			vtx->T.normalize_safe();
+		}
 		vtx->B.crossproduct(vtx->N, vtx->T);
 
 		++vtx;
@@ -236,7 +246,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		}
 
 		// Back (2-sided)
-		if (surf->m_Flags.is(CSurface::sf2Sided))
+		if (surf->_flags().is(SSurfaceData::sf2Sided))
 		{
 			for (int k = 2; k >= 0; --k)
 			{
@@ -278,12 +288,12 @@ struct SelectionColorRaii
 		}
 
 		RCache.hemi.set_selection(sum_color);
-	};
+	}
 
 	~SelectionColorRaii()
 	{
 		RCache.hemi.set_selection(0);
-	};
+	}
 };
 
 void CEditableMesh::RenderSelection(CCustomObject* parent, u32 Color)
@@ -315,7 +325,7 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 {
 	SelectionColorRaii pRenderColor(pParent, m_color_map);
 
-	if (0==m_RenderBuffers) 
+	if (!m_RenderBuffers) 
 	{
 		GenerateRenderBuffers();
 	}
@@ -428,7 +438,7 @@ bool CEditableMesh::SubmitInstance(CCustomObject* pParent, const Fmatrix& parent
 		return false;
 	}
 
-	if (0 == m_RenderBuffers)
+	if (!m_RenderBuffers)
 	{
 		GenerateRenderBuffers();
 	}
@@ -557,7 +567,7 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 				}
 			}
 
-			if (S->m_Flags.is(CSurface::sf2Sided))
+			if (S->_flags.is(SSurfaceData::sf2Sided))
 			{
 				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 			}

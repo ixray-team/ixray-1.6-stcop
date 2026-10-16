@@ -19,8 +19,8 @@ void CSurface::CreateImageData()
 {
 	VERIFY(!ImageData);
 	ImageData = xr_make_unique<SSimpleImage>();
-	ImageData->name = m_Texture;
-	ImageData->layers.push_back(U32Vec());
+	ImageData->name = _Texture();
+	ImageData->layers.emplace_back();
 	ImageLib.LoadTextureData(*ImageData->name, ImageData->layers.back(), ImageData->w, ImageData->h);
 }
 
@@ -38,24 +38,32 @@ void CSurface::Reload()
 		for (const ref_selement& Element : m_Shader->E)
 		{
 			if (!Element)
+			{
 				continue;
+			}
 
 			for (const ref_pass& Pass : Element->passes)
 			{
 				if (!Pass || !Pass->T)
+				{
 					continue;
+				}
 
 				for (const auto& [Stage, Texture] : *Pass->T)
 				{
 					if (Texture && Texture->cName.size())
+					{
 						Textures.emplace_back(Texture->cName.c_str());
+					}
 				}
 			}
 		}
 	}
 
 	if (!Textures.empty())
+	{
 		DEV->ED_UpdateTextures(&Textures);
+	}
 
 	OnDeviceDestroy();
 	RemoveImageData();
@@ -132,25 +140,25 @@ void CEditableObject::VerifyMeshNames()
 {
 	int idx = 0;
 	string1024 nm, pref;
-	for (EditMeshIt m_def = m_Meshes.begin(); m_def != m_Meshes.end(); m_def++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		strcpy(pref, (*m_def)->m_Name.size() ? (*m_def)->m_Name.c_str() : "mesh");
+		strcpy(pref, m_Meshe->m_Name.size() ? m_Meshe->m_Name.c_str() : "mesh");
 		_Trim(pref);
 		strcpy(nm, pref);
-		while (FindMeshByName(nm, *m_def))
+		while (FindMeshByName(nm, m_Meshe))
 		{
 			sprintf(nm, "%s%2d", pref, idx++);
 		}
-		(*m_def)->m_Name = (nm);
+		m_Meshe->m_Name = (nm);
 	}
 }
 
 bool CEditableObject::ContainsMesh(const CEditableMesh* m)
 {
 	VERIFY(m);
-	for (EditMeshIt m_def = m_Meshes.begin(); m_def != m_Meshes.end(); m_def++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		if (m == (*m_def))
+		if (m == m_Meshe)
 		{
 			return true;
 		}
@@ -160,11 +168,11 @@ bool CEditableObject::ContainsMesh(const CEditableMesh* m)
 
 CEditableMesh* CEditableObject::FindMeshByName(const char* name, CEditableMesh* Ignore)
 {
-	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		if ((Ignore != (*m)) && (stricmp((*m)->m_Name.c_str(), name) == 0))
+		if ((Ignore != m_Meshe) && (stricmp(m_Meshe->m_Name.c_str(), name) == 0))
 		{
-			return (*m);
+			return m_Meshe;
 		}
 	}
 	return nullptr;
@@ -174,30 +182,30 @@ void CEditableObject::ClearGeometry()
 {
 	OnDeviceDestroy();
 
-	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		xr_delete(*m);
+		xr_delete(m_Meshe);
 	}
 
-	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+	for (auto& m_Surface : m_Surfaces)
 	{
-		xr_delete(*s_it);
+		xr_delete(m_Surface);
 	}
 
 	m_Meshes.clear();
 	m_Surfaces.clear();
 
 	// bones
-	for (BoneIt b_it = m_Bones.begin(); b_it != m_Bones.end(); b_it++)
+	for (auto& m_Bone : m_Bones)
 	{
-		xr_delete(*b_it);
+		xr_delete(m_Bone);
 	}
 	m_Bones.clear();
 
 	// skeletal motions
-	for (SMotionIt s_it = m_SMotions.begin(); s_it != m_SMotions.end(); s_it++)
+	for (auto& m_SMotion : m_SMotions)
 	{
-		xr_delete(*s_it);
+		xr_delete(m_SMotion);
 	}
 	m_SMotions.clear();
 
@@ -211,9 +219,9 @@ int CEditableObject::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
 		return m_FaceCount;
 	}
 	m_FaceCount = 0;
-	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		m_FaceCount += (*m)->GetFaceCount(bMatch2Sided, bIgnoreOCC);
+		m_FaceCount += m_Meshe->GetFaceCount(bMatch2Sided, bIgnoreOCC);
 	}
 	return m_FaceCount;
 }
@@ -222,9 +230,9 @@ int CEditableObject::GetSurfFaceCount(const char* surf_name)
 {
 	int cnt = 0;
 	CSurface* surf = FindSurfaceByName(surf_name);
-	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		cnt += (*m)->GetSurfFaceCount(surf);
+		cnt += m_Meshe->GetSurfFaceCount(surf);
 	}
 	return cnt;
 }
@@ -236,9 +244,9 @@ int CEditableObject::GetVertexCount()
 		return m_VertexCount;
 	}
 	m_VertexCount = 0;
-	for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		m_VertexCount += (int)(*m)->m_Vertices.size();
+		m_VertexCount += (int)m_Meshe->m_Vertices.size();
 	}
 	return m_VertexCount;
 }
@@ -264,7 +272,7 @@ void CEditableObject::UpdateBox()
 //----------------------------------------------------
 void CEditableObject::RemoveMesh(CEditableMesh* mesh)
 {
-	EditMeshIt m_it = std::find(m_Meshes.begin(), m_Meshes.end(), mesh);
+	EditMeshIt m_it = std::ranges::find(m_Meshes, mesh);
 	VERIFY(m_it != m_Meshes.end());
 	m_Meshes.erase(m_it);
 	xr_delete(mesh);
@@ -272,10 +280,9 @@ void CEditableObject::RemoveMesh(CEditableMesh* mesh)
 
 void CEditableObject::TranslateToWorld(const Fmatrix& parent)
 {
-	EditMeshIt m = m_Meshes.begin();
-	for (; m != m_Meshes.end(); m++)
+	for (auto m : m_Meshes)
 	{
-		(*m)->Transform(parent);
+		m->Transform(parent);
 	}
 
 	OnDeviceDestroy();
@@ -317,14 +324,14 @@ const char* CEditableObject::GenerateSurfaceName(const char* base_name)
 bool CEditableObject::VerifyBoneParts()
 {
 	U8Vec b_use(m_Bones.size(), 0);
-	for (BPIt bp_it = m_BoneParts.begin(); bp_it != m_BoneParts.end(); bp_it++)
+	for (auto& m_BonePart : m_BoneParts)
 	{
-		for (int i = 0; i < int(bp_it->bones.size()); i++)
+		for (int i = 0; i < int(m_BonePart.bones.size()); i++)
 		{
-			int idx = FindBoneByNameIdx(bp_it->bones[i].c_str());
+			int idx = FindBoneByNameIdx(m_BonePart.bones[i].c_str());
 			if (idx == -1)
 			{
-				bp_it->bones.erase(bp_it->bones.begin() + i);
+				m_BonePart.bones.erase(m_BonePart.bones.begin() + i);
 				i--;
 			}
 			else
@@ -334,9 +341,9 @@ bool CEditableObject::VerifyBoneParts()
 		}
 	}
 
-	for (U8It u_it = b_use.begin(); u_it != b_use.end(); u_it++)
+	for (unsigned char& u_it : b_use)
 	{
-		if (*u_it != 1)
+		if (u_it != 1)
 		{
 			return false;
 		}
@@ -382,29 +389,29 @@ void CEditableObject::GetFaceWorld(const Fmatrix& parent, CEditableMesh* M, int 
 
 void CEditableObject::Optimize()
 {
-	for (EditMeshIt m_def = m_Meshes.begin(); m_def != m_Meshes.end(); m_def++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		(*m_def)->OptimizeMesh(false);
-		(*m_def)->RebuildVMaps();
+		m_Meshe->OptimizeMesh(false);
+		m_Meshe->RebuildVMaps();
 	}
 }
 
 bool CEditableObject::Validate()
 {
 	bool bRes = true;
-	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+	for (auto& m_Surface : m_Surfaces)
 	{
-		if (false == (*s_it)->Validate())
+		if (false == m_Surface->Validate())
 		{
-			Msg("!Invalid surface found: Object [%s], Surface [%s].", m_LibName.c_str(), (*s_it)->m_Name.c_str());
+			Msg("!Invalid surface found: Object [%s], Surface [%s].", m_LibName.c_str(), m_Surface->m_Name.c_str());
 			bRes = false;
 		}
 	}
-	for (EditMeshIt m_def = m_Meshes.begin(); m_def != m_Meshes.end(); m_def++)
+	for (auto& m_Meshe : m_Meshes)
 	{
-		if (false == (*m_def)->Validate())
+		if (false == m_Meshe->Validate())
 		{
-			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), (*m_def)->m_Name.c_str());
+			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), m_Meshe->m_Name.c_str());
 			bRes = false;
 		}
 	}

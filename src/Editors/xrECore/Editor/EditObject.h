@@ -2,13 +2,14 @@
 
 #include "../../xrEngine/Bone.h"
 #include "../../xrEngine/Motion.h"
-#	include "../../../Editors/Public/PropertiesListTypes.h"
-#	include "..\Engine\XrGameMaterialLibraryEditors.h"
-#	include "pick_defs.h"
-#	include "..\..\..\Include\xrRender\Kinematics.h"
+#include "../../../Editors/Public/PropertiesListTypes.h"
+#include "..\Engine\XrGameMaterialLibraryEditors.h"
+#include "pick_defs.h"
+#include "..\..\..\Include\xrRender\Kinematics.h"
 
 #include "PhysicsShellHolderEditorBase.h"
 #include "Engine/GameMtlLib.h"
+#include "../xrCore/SharedMaterialLibrary.h"
 #include "ImageManager.h"
 
 //----------------------------------------------------
@@ -40,16 +41,11 @@ class ECORE_API CSurface
 		rtInstancedShaderTried = (1<<1),
 	};
 public:
-	enum EFlags{
-		sf2Sided		= (1<<0),
-	};
-	shared_str			m_Name;
-	shared_str			m_Texture;	//
-	shared_str			m_VMap;		//
-	shared_str			m_ShaderName;
-	shared_str			m_ShaderXRLCName;
-	shared_str			m_GameMtlName;
-	Flags32			m_Flags;
+	xr_pair<shared_str, SSurfaceData*> m_pData;
+	SSurfaceData* m_pDataOld = nullptr;
+	bool UseShared = false;
+	bool UseSharedPrev = false;
+	shared_str			m_VMap;
 	u32				m_dwFVF;
 
 	Flags32			m_RTFlags;
@@ -61,26 +57,28 @@ public:
 public:
 	CSurface		()
 	{
-		m_GameMtlName="default";
 		ImageData.reset();
 		m_Shader	= nullptr;
 		m_RTFlags.zero	();
-		m_Flags.zero	();
 		m_dwFVF		= 0;
 		tag			= 0;
 	}
 	IC bool			Validate		()
 	{
-		return (0!=xr_strlen(m_Texture))&&(0!=xr_strlen(m_ShaderName));
+		if(!IVERIFY(m_pData.second))
+		{
+			return false;
+		}
+		return xr_strlen(m_pData.second->m_Texture) && xr_strlen(m_pData.second->m_ShaderName);
 	}
-#if 1
+
 					~CSurface		();
 	void			CopyFrom		(CSurface* surf);
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
 	ref_shader		_ShaderInstanced();
-#endif
+
 	IC void			SetShader		(const char* name)
 	{
 		R_ASSERT2(name&&name[0],"Empty shader name."); 
