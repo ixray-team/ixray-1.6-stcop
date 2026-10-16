@@ -30,8 +30,10 @@ void	export_geometry		( xrMU_Model &	mu_model )
 	// RT-check, BOX, low-point, frac-size
 	Fbox			BB; 
 	BB.invalidate	();
-	for (xrMU_Model::v_vertices_it vit=mu_model.m_vertices.begin(); vit!=mu_model.m_vertices.end(); vit++)
-		BB.modify	((*vit)->P);
+	for (auto& m_vertice : mu_model.m_vertices)
+	{
+		BB.modify	(m_vertice->P);
+	}
 
 	Fvector			frac_low;
 	float			frac_Ysize;
@@ -39,17 +41,15 @@ void	export_geometry		( xrMU_Model &	mu_model )
 	frac_Ysize		= BB.max.y - BB.min.y;
 
 	// Begin building
-	for (xrMU_Model::v_subdivs_it it=mu_model.m_subdivs.begin(); it!=mu_model.m_subdivs.end(); it++)
+	for (auto& m_subdiv : mu_model.m_subdivs)
 	{
 		// Vertices
 		{
 			g_VB.Begin		(D);
 
-			vecOGF_V&	verts	= it->ogf->data.vertices;
-			for (u32 v_it=0; v_it<verts.size(); v_it++)
+			vecOGF_V&	verts	= m_subdiv.ogf->data.vertices;
+			for (auto& oV : verts)
 			{
-				OGF_Vertex&		oV	= verts[v_it];
-
 				// Position
 				g_VB.Add	(&oV.P,3*sizeof(float));
 
@@ -95,14 +95,16 @@ void	export_geometry		( xrMU_Model &	mu_model )
 				g_VB.Add	(&dummy,2);
 			}
 
-			g_VB.End		(&it->vb_id,&it->vb_start);
+			g_VB.End		(&m_subdiv.vb_id,&m_subdiv.vb_start);
 		}
 
 		// Indices
-		g_IB.Register	(LPWORD(it->ogf->data.faces.data()),LPWORD(it->ogf->data.faces.data() + it->ogf->data.faces.size()),&it->ib_id,&it->ib_start);
+		g_IB.Register	(LPWORD(m_subdiv.ogf->data.faces.data()),LPWORD(m_subdiv.ogf->data.faces.data() + m_subdiv.ogf->data.faces.size()),&m_subdiv.ib_id,&m_subdiv.ib_start);
 
 		// SW
-		if (it->ogf->progressive_test())
-			g_SWI.Register	(&it->sw_id,&it->ogf->data.m_SWI);
+		if (m_subdiv.ogf->progressive_test())
+		{
+			g_SWI.Register	(&m_subdiv.sw_id,&m_subdiv.ogf->data.m_SWI);
+		}
 	}
 }

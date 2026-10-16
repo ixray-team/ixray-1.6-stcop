@@ -25,14 +25,17 @@ static OptixMeshBuffers CommitedScene;
 // Loading Buffers
 static xr_vector<Hardware_TextureData> cpu_tex_gpu;
 
-static int					size_lights;
-static Hardware_Lighting*	gpu_lights = nullptr;			// GPU alloc
+static int size_lights;
+static Hardware_Lighting* gpu_lights = nullptr;			// GPU alloc
 
-static int					size_faces;
-static Hardware_FaceData*	gpu_faces = nullptr;
+static int size_faces;
+static Hardware_FaceData* gpu_faces = nullptr;
 
-static int					size_textures;
+static int size_textures;
 static Hardware_TextureData* gpu_textures = nullptr;
+
+static int size_textures_shared;
+static Hardware_TextureData* gpu_textures_shared = nullptr;
 
 void CudaRayTracer::Initialize()
 {
@@ -284,6 +287,7 @@ static void UploadFaces(const GpuScene& Scene)
 		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
 		FaceGPU.bOpacue = F.Opaque;
 		FaceGPU.bWater  = false;
+		FaceGPU.bShared = F.Shared;
 		FaceGPU.surfidx = F.SurfaceID;
 
 		for (int Corner = 0; Corner < 3; Corner++)
@@ -303,35 +307,38 @@ static void UploadFaces(const GpuScene& Scene)
 
 static void UploadTexturesAlpha(const GpuScene& Scene)
 {
-	cpu_tex_gpu.resize(Scene.Textures.size());
+	cpu_tex_gpu.resize(Scene.Textures.size() + Scene.TexturesShared.size());
 	size_t allocated = 0;
-	for (size_t i = 0; i < Scene.Textures.size(); ++i)
+	auto GPUMoveFunc = [&allocated](Hardware_TextureData*& OutArr, int& OutSize, Hardware_TextureData* Buffer, size_t BufferSize, const xr_vector<GpuTexture>& In)
 	{
-		const GpuTexture& src = Scene.Textures[i];
-
-		if (src.Alpha.empty())
+		for(size_t i = 0; i < In.size(); i++)
 		{
-			cpu_tex_gpu[i].pSurface = nullptr;
+			const auto& Src = In[i];
+			if(Src.Alpha.empty())
+			{
+				Buffer[i].pSurface = nullptr;
+			} else
+			{
+				u8* d_alpha = nullptr;
+				CUDA_CHECK(cudaMalloc(&d_alpha, Src.Alpha.size()));
+				CUDA_CHECK(cudaMemcpy(d_alpha, Src.Alpha.data(), Src.Alpha.size(), cudaMemcpyHostToDevice));
+				Buffer[i].pSurface = d_alpha;
+				allocated += Src.Alpha.size();
+			}
+			Buffer[i].width = Src.Width;
+			Buffer[i].height = Src.Height;
 		}
-		else
-		{
-			unsigned char* d_alpha = nullptr;
-			CUDA_CHECK(cudaMalloc(&d_alpha, src.Alpha.size()));
-			CUDA_CHECK(cudaMemcpy(d_alpha, src.Alpha.data(), src.Alpha.size(), cudaMemcpyHostToDevice));
-
-			cpu_tex_gpu[i].pSurface = d_alpha;
-			allocated += src.Alpha.size();
-		}
-
-		cpu_tex_gpu[i].width     = src.Width;
-		cpu_tex_gpu[i].height    = src.Height;
-	}
-
-	CUDA_CHECK(cudaMalloc((void**)&gpu_textures, cpu_tex_gpu.size() * sizeof(Hardware_TextureData)));
-	CUDA_CHECK(cudaMemcpy(gpu_textures, cpu_tex_gpu.data(), cpu_tex_gpu.size() * sizeof(Hardware_TextureData), cudaMemcpyHostToDevice));
-
-	allocated     += cpu_tex_gpu.size() * sizeof(Hardware_TextureData);
-	size_textures = (int)cpu_tex_gpu.size();
+		
+		CUDA_CHECK ( cudaMalloc((void**)&OutArr, BufferSize * sizeof(Hardware_TextureData)) );
+		CUDA_CHECK(  cudaMemcpy(OutArr,
+			Buffer,
+			BufferSize * sizeof(Hardware_TextureData),
+			cudaMemcpyHostToDevice) );
+		allocated += BufferSize * sizeof(Hardware_TextureData);
+		OutSize = BufferSize;
+	};
+	GPUMoveFunc(gpu_textures, size_textures, cpu_tex_gpu.data(), Scene.Textures.size(), Scene.Textures);
+	GPUMoveFunc(gpu_textures_shared, size_textures_shared, cpu_tex_gpu.data()+Scene.Textures.size(), Scene.TexturesShared.size(), Scene.TexturesShared);
 
 	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu mb", (u32)cpu_tex_gpu.size(), (u64)(allocated / 1024 / 1024));
 }
@@ -367,10 +374,12 @@ void CudaRayTracer::UnloadScene()
 		cudaFree(gpu_lights);
 		cudaFree(gpu_faces);
 		cudaFree(gpu_textures);
+		cudaFree(gpu_textures_shared);
 
 		size_faces = 0;
 		size_lights = 0;
 		size_textures = 0;
+		size_textures_shared = 0;
 
 		// Вычищаем модель уровня из CUDA
 		cudaFree(&CommitedScene.blasBuffer);
@@ -470,6 +479,9 @@ public:
 
 			.textures = gpu_textures,
 			.count_textures = size_textures,
+
+			.textures_shared = gpu_textures_shared,
+			.count_textures_shared = size_textures_shared,
 		};
 
 		// Копируем Стартовые параметры !!! асинхронно

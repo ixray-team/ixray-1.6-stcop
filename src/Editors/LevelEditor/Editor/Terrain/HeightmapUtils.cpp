@@ -146,11 +146,23 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	// Surface properties are owned by the CTerrain object and supplied via
 	// the template — never hardcoded here.
-	Surface->m_Name = ("terrain");
-	if (Template.Shader && Template.Shader[0])			Surface->SetShader(Template.Shader);
-	if (Template.ShaderXRLC && Template.ShaderXRLC[0])	Surface->m_ShaderXRLCName = (Template.ShaderXRLC);
-	if (Template.GameMtl && Template.GameMtl[0])			Surface->m_GameMtlName = (Template.GameMtl);
-	if (Template.Texture && Template.Texture[0])			Surface->SetTexture(Template.Texture);
+	Surface->SetName("terrain");
+	if (Template.Shader && Template.Shader[0])
+	{
+		Surface->SetShader(Template.Shader);
+	}
+	if (Template.ShaderXRLC && Template.ShaderXRLC[0])
+	{
+		Surface->SetShaderXRLC(Template.ShaderXRLC);
+	}
+	if (Template.GameMtl && Template.GameMtl[0])
+	{
+		Surface->SetGameMtl(Template.GameMtl);
+	}
+	if (Template.Texture && Template.Texture[0])
+	{
+		Surface->SetTexture(Template.Texture);
+	}
 	Surface->m_VMap = ("Texture");
 
 	Surface->m_dwFVF = (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
@@ -158,7 +170,9 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	IntVec FaceIndices(Faces.size());
 	for (u32 i = 0; i < Faces.size(); ++i)
+	{
 		FaceIndices[i] = i;
+	}
 
 	Mesh->m_SurfFaces[Surface] = FaceIndices;
 

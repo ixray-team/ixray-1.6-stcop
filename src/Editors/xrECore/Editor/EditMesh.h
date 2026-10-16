@@ -299,7 +299,7 @@ public:
 	bool			m_Chunked = false;
 	bool			IsRenderBufferHidden	(const st_RenderBuffer& RB, const Fmatrix* World) const;
 	bool			IsResultHidden			(const Fmatrix& Parent, const CDB::RESULT& R) const;
-	bool			IsFaceHidden			(const Fmatrix& Parent, u32 FaceIndex) const;
+	bool			IsFaceHidden			(const Fmatrix& Parent, const st_Face& Face) const;
 	std::function<void(Fvector2& uv, int pindex, const Fvector& N)> m_TexGen;
 
 	EditColorMesh m_color_map;

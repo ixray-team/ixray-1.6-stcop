@@ -73,9 +73,9 @@ void OGF::x_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_
 	F.v[2]	= x_BuildVertex(x_vertex(V3));
 	if (!F.Degenerate()) {
 		fast_path_data.faces.push_back(F);
-	} else {
-		if (fast_path_data.vertices.size()>VertCount) 
-			fast_path_data.vertices.erase(fast_path_data.vertices.begin()+VertCount,fast_path_data.vertices.end());
+	} else if (fast_path_data.vertices.size()>VertCount)
+	{
+		fast_path_data.vertices.erase(fast_path_data.vertices.begin()+VertCount,fast_path_data.vertices.end());
 	}
 }
 void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
@@ -86,20 +86,31 @@ void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 	F.v[1]	= _BuildVertex(V2);
 	F.v[2]	= _BuildVertex(V3);
 	if (!F.Degenerate()) {
-		for (itOGF_F I=data.faces.begin(); I!=data.faces.end(); I++)		if (I->Equal(F)) return;
+		for (auto& face : data.faces)
+		{
+			if (face.Equal(F))
+			{
+				return;
+			}
+		}
 		data.faces.push_back	(F);
 		x_BuildFace		(V1,V2,V3,_tc_);
-	} else {
-		if (data.vertices.size()>VertCount) 
-				data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
+	} else if (data.vertices.size()>VertCount)
+	{
+		data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
 	}
 }
 bool OGF::dbg_SphereContainsVertex(Fvector& c, float R)
 {
 	Fsphere	S;	S.set(c,R);
-	for (u32 it=0; it<data.vertices.size(); it++)
-		if (S.contains(data.vertices[it].P))	return	true;
-	return false	;
+	for (auto& vertex : data.vertices)
+	{
+		if (S.contains(vertex.P))
+		{
+			return	true;
+		}
+	}
+	return false;
 }
 
 void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vector<bool>& fmark)
@@ -118,11 +129,12 @@ void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vect
 		} else {
 			// check connectivity
 			bool	bConnected	=	false;
-			for (u32 vid=0; vid<3; vid++)	{
-				u32		id = F.v	[vid];	// search in already registered verts
-				for (u32 sid=0; sid<dest.size(); sid++)
+			for (unsigned int id : F.v)
+			{
+				// search in already registered verts
+				for (unsigned int sid : dest)
 				{
-					if (id==dest[sid])	{
+					if (id== sid)	{
 						bConnected	= true;	// this face shares at least one vertex with already selected faces
 						break;
 					}
@@ -142,7 +154,7 @@ void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vect
 
 void OGF::Optimize()
 {
-	if (data.vertices.size() == 0)
+	if (data.vertices.empty())
 	{
 		//Msg("* ERROR Optimize OGF: %d Verts: data.vertices.size() == 0");
 		return;
@@ -150,14 +162,12 @@ void OGF::Optimize()
 
 	//////////////////////////////////////////////////////////////////////////
 	// Detect relevant number of UV pairs
-	try {
-		R_ASSERT			(data.vertices.size());
-		dwRelevantUV		= data.vertices.front().UV.size();
-		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);
-		if (!SH->flags.bOptimizeUV)		return;
-	} 
-	catch(...) {
-		Msg	("* ERROR: optimize: std-geom : find relevant UV");
+	R_ASSERT(data.vertices.size());
+	dwRelevantUV = data.vertices.front().UV.size();
+	auto& SH = CBuild::shaders().Get(CBuild::GetMaterialReserved(material, bSharedMaterial));
+	if (!SH.flags.bOptimizeUV)
+	{
+		return;
 	}
 
 	// Optimize texture coordinates
@@ -238,15 +248,19 @@ void OGF::MakeProgressive	(float metric_limit)
 		// prepare progressive geom
 		make_progressive_vimp.VIPM_Init				();
 		//clMsg("--- append v start .");
-		for (u32 v_idx=0;  v_idx<data.vertices.size(); v_idx++)	
-			make_progressive_vimp.VIPM_AppendVertex	(data.vertices[v_idx].P,	data.vertices[v_idx].UV[0]					);
+		for (auto& vertice : data.vertices)
+		{
+			make_progressive_vimp.VIPM_AppendVertex	(vertice.P, vertice.UV[0]					);
+		}
 		//clMsg("--- append f start .");
-		for (u32 f_idx=0;  f_idx<data.faces.size();    f_idx++)	
-			make_progressive_vimp.VIPM_AppendFace		(data.faces[f_idx].v[0],	data.faces[f_idx].v[1],	data.faces[f_idx].v[2]	);
+		for (auto& face : data.faces)
+		{
+			make_progressive_vimp.VIPM_AppendFace		(face.v[0], face.v[1], face.v[2]	);
+		}
 		//clMsg("--- append end.");
 
 		// Convert
-		VIPM_Result*	VR		= 0;
+		VIPM_Result*	VR		= nullptr;
 		try						{
 						VR		= make_progressive_vimp.VIPM_Convert			(u32(25),1.f,1);
 		} 
@@ -281,7 +295,9 @@ void OGF::MakeProgressive	(float metric_limit)
 			// OK
 			// Permute vertices
 			for(u32 i=0; i<data.vertices.size(); i++)
+			{
 				data.vertices[VR->permute_verts[i]]=_saved_vertices[i];
+			}
 
 			// Fill indices
 			data.faces.resize			(VR->indices.size()/3);
@@ -314,11 +330,15 @@ void OGF::MakeProgressive	(float metric_limit)
 		// prepare progressive geom
 		make_progressive_vimp.VIPM_Init				();
 		Fvector2				zero; zero.set		(0,0);
-		for (u32 v_idx=0;  v_idx<fast_path_data.vertices.size(); v_idx++)	
-			make_progressive_vimp.VIPM_AppendVertex	(fast_path_data.vertices[v_idx].P,	zero);
+		for (auto& vertice : fast_path_data.vertices)
+		{
+			make_progressive_vimp.VIPM_AppendVertex	(vertice.P,	zero);
+		}
 
-		for (u32 f_idx=0;  f_idx<fast_path_data.faces.size();    f_idx++)	
-			make_progressive_vimp.VIPM_AppendFace		( fast_path_data.faces[f_idx].v[0],	fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
+		for (auto& face : fast_path_data.faces)
+		{
+			make_progressive_vimp.VIPM_AppendFace		(face.v[0], face.v[1], face.v[2]);
+		}
 
 		VIPM_Result*	VR		= 0;
 		try						{
@@ -354,7 +374,9 @@ void OGF::MakeProgressive	(float metric_limit)
 			// Permute vertices
 			vertices_saved			= fast_path_data.vertices;
 			for(u32 i=0; i<fast_path_data.vertices.size(); i++)
+			{
 				fast_path_data.vertices[VR->permute_verts[i]]=vertices_saved[i];
+			}
 
 			// Fill indices
 			fast_path_data.faces.resize			(VR->indices.size()/3);
@@ -391,23 +413,25 @@ void OGF_Node::Save	(IWriter &fs)
 	OGF_Base::Save		(fs);
 
 	// Header
-	fs.open_chunk		(OGF_HEADER);
-	ogf_header H;
-	H.format_version	= xrOGF_FormatVersion;
-	H.type				= MT_HIERRARHY;
-	H.shader_id			= 0;
-	H.bb.min			= bbox.min;
-	H.bb.max			= bbox.max;
-	H.bs.c				= C;
-	H.bs.r				= R;
-	fs.w				(&H,sizeof(H));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_HEADER, [this](IWriter& F)
+	{
+		ogf_header H;
+		H.format_version	= xrOGF_FormatVersion;
+		H.type				= MT_HIERRARHY;
+		H.shader_id			= 0;
+		H.bb.min			= bbox.min;
+		H.bb.max			= bbox.max;
+		H.bs.c				= C;
+		H.bs.r				= R;
+		F.w				(&H,sizeof(H));
+	});
 
 	// Children
-	fs.open_chunk		(OGF_CHILDREN_L);
-	fs.w_u32			((u32)chields.size());
-	fs.w				(&*chields.begin(),(u32)chields.size()*sizeof(u32));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_CHILDREN_L, [this](IWriter& F)
+	{
+		F.w_u32(chields.size());
+		F.w(chields.data(),chields.size()*sizeof(u32));
+	});
 }
 
 extern u16	RegisterShader	(const char* T);
@@ -425,27 +449,31 @@ void OGF_LOD::Save		(IWriter &fs)
 		"/",
 		pBuild->textures()[pBuild->materials()[lod_Material].surfidx].name
 		);
-	fs.open_chunk		(OGF_HEADER);
-	H.format_version	= xrOGF_FormatVersion;
-	H.type				= MT_LOD;
-	H.shader_id			= RegisterShader(sid);
-	H.bb.min			= bbox.min;
-	H.bb.max			= bbox.max;
-	H.bs.c				= C;
-	H.bs.r				= R;
-	fs.w				(&H,sizeof(H));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_HEADER, [this, sid](IWriter& F)
+	{
+		ogf_header H;
+		H.format_version = xrOGF_FormatVersion;
+		H.type = MT_LOD;
+		H.shader_id = RegisterShader(sid);
+		H.bb.min = bbox.min;
+		H.bb.max = bbox.max;
+		H.bs.c = C;
+		H.bs.r = R;
+		F.w(&H,sizeof(H));
+	});
 
 	// Chields
-	fs.open_chunk		(OGF_CHILDREN_L);
-	fs.w_u32			((u32)chields.size());
-	fs.w				(&*chields.begin(),(u32)chields.size()*sizeof(u32));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_CHILDREN_L, [this, sid](IWriter& F)
+	{
+		F.w_u32(chields.size());
+		F.w(chields.data(),chields.size()*sizeof(u32));
+	});
 
 	// Lod-def
-	fs.open_chunk		(OGF_LODDEF2);
-	fs.w				(lod_faces,sizeof(lod_faces));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_LODDEF2, [this, sid](IWriter& F)
+	{
+		F.w(lod_faces,sizeof(lod_faces));
+	});
 }
 
 void OGF_MESH_LODS::Save(IWriter& fs)

@@ -56,6 +56,10 @@ enum OGF_Chuncks {
 	OGF_S_MOTION_REFS2		= 24,	// * changes in format
 	OGF_COLLISION_VERTICES	= 25,
 	OGF_COLLISION_INDICES	= 26,
+	
+	// New
+	OGF_SHARED_MATERIAL_SETTINGS,
+	
     OGF_forcedword			= 0xFFFFFFFF         
 };							
 
@@ -67,7 +71,7 @@ enum OGF_SkeletonVertType	{
 	OGF_VERTEXFORMAT_FVF_NL	= 3*0x12071980,
 };
 
-const u16	xrOGF_SMParamsVersion	= 4;
+constexpr u16	xrOGF_SMParamsVersion	= 4;
 
 // OGF_DESC
 struct ENGINE_API ogf_desc	{
@@ -96,7 +100,7 @@ struct ogf_bsphere	{
 };
 
 // OGF_HEADER
-const u8	xrOGF_FormatVersion		= 4;
+constexpr u8	xrOGF_FormatVersion		= 4;
 struct ogf_header {
 	u8			format_version;			// = xrOGF_FormatVersion
 	u8			type;					// MT

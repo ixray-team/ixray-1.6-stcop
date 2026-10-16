@@ -67,14 +67,17 @@ void CEditableMesh::GenerateRenderBuffers()
 	// Big meshes (terrain) are split into XZ chunks so editor regions can hide parts of them
 	m_Chunked = (m_Box.max.x - m_Box.min.x) > RegionChunkSize * 2.0f || (m_Box.max.z - m_Box.min.z) > RegionChunkSize * 2.0f;
 
-	for (auto sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); ++sp_it)
+	// Big meshes (terrain) are split into XZ chunks so editor regions can hide parts of them
+	m_Chunked = (m_Box.max.x - m_Box.min.x) > RegionChunkSize * 2.0f || (m_Box.max.z - m_Box.min.z) > RegionChunkSize * 2.0f;
+
+	for (auto& m_SurfFace : m_SurfFaces)
 	{
-		IntVec& face_lst = sp_it->second;
-		CSurface* S = sp_it->first;
+		IntVec& face_lst = m_SurfFace.second;
+		CSurface* S = m_SurfFace.first;
 
-		VERIFY3(!face_lst.empty(), "Empty surface arrive.", S->m_Name.c_str());
+		VERIFY3(!face_lst.empty(), "Empty surface arrive.", S->_Name());
 
-		const u32 verts_per_face = S->m_Flags.is(CSurface::sf2Sided) ? 6 : 3;
+		const u32 verts_per_face = S->_flags().is(SSurfaceData::sf2Sided) ? 6 : 3;
 
 		// Faces sorted by chunk; each chunk becomes a vertex range of the same buffer
 		IntVec sorted_faces;
@@ -332,10 +335,19 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		// geometry collapses for any such shader. Build a stable orthonormal
 		// frame from the normal so they are always valid.
 		Fvector tref(0, 1, 0);
-		if (fabsf(vtx->N.y) > 0.99f) tref.set(0, 0, 1);
+		if (fabsf(vtx->N.y) > 0.99f)
+		{
+			tref.set(0, 0, 1);
+		}
 		vtx->T.crossproduct(vtx->N, tref);
-		if (vtx->T.square_magnitude() < EPS_S) vtx->T.set(1, 0, 0);
-		else vtx->T.normalize_safe();
+		if (vtx->T.square_magnitude() < EPS_S)
+		{
+			vtx->T.set(1, 0, 0);
+		}
+		else
+		{
+			vtx->T.normalize_safe();
+		}
 		vtx->B.crossproduct(vtx->N, vtx->T);
 
 		++vtx;
@@ -360,7 +372,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 		}
 
 		// Back (2-sided)
-		if (surf->m_Flags.is(CSurface::sf2Sided))
+		if (surf->_flags().is(SSurfaceData::sf2Sided))
 		{
 			for (int k = 2; k >= 0; --k)
 			{
@@ -390,7 +402,7 @@ struct SelectionColorRaii
 			return;
 		}
 
-		for (auto& [ID, pColor] : It->second)
+		for (auto& pColor : It->second | std::views::values)
 		{
 			if (pColor.first < EDevice->dwRenderFrame)
 			{
@@ -402,12 +414,12 @@ struct SelectionColorRaii
 		}
 
 		RCache.hemi.set_selection(sum_color);
-	};
+	}
 
 	~SelectionColorRaii()
 	{
 		RCache.hemi.set_selection(0);
-	};
+	}
 };
 
 void CEditableMesh::RenderSelection(CCustomObject* parent, u32 Color)
@@ -439,7 +451,7 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 {
 	SelectionColorRaii pRenderColor(pParent, m_color_map);
 
-	if (0==m_RenderBuffers) 
+	if (!m_RenderBuffers) 
 	{
 		GenerateRenderBuffers();
 	}
@@ -550,7 +562,7 @@ bool CEditableMesh::HasSelectionColor(CCustomObject* Parent) const
 		return false;
 	}
 
-	for (auto& [ID, Color] : It->second)
+	for (const auto& Color : It->second | std::views::values)
 	{
 		if (Color.first >= EDevice->dwRenderFrame)
 		{
@@ -568,7 +580,7 @@ bool CEditableMesh::SubmitInstance(CCustomObject* pParent, const Fmatrix& parent
 		return false;
 	}
 
-	if (0 == m_RenderBuffers)
+	if (!m_RenderBuffers)
 	{
 		GenerateRenderBuffers();
 	}
@@ -703,7 +715,7 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 				}
 			}
 
-			if (S->m_Flags.is(CSurface::sf2Sided))
+			if (S->_flags().is(SSurfaceData::sf2Sided))
 			{
 				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 			}

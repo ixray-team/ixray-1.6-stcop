@@ -547,14 +547,14 @@ void CEditorSceneSubmit::DrawSingleInstanced(CEditableSurfaceVisual& Visual)
 	static bool Reported = false;
 	if (!Reported)
 	{
-		Msg("! [EditorSceneSubmit] single copy drawn with an instanced vertex shader (surface '%s')", Visual.Surface ? Visual.Surface->m_Name.c_str() : "?");
+		Msg("! [EditorSceneSubmit] single copy drawn with an instanced vertex shader (surface '%s')", Visual.Surface ? Visual.Surface->_Name() : "?");
 
 		// Which shader the copy carries: its source and whether it is the surface's regular or instanced one
 		Shader* Carried = Visual.shader._get();
 		Msg("! [EditorSceneSubmit]   carried shader '%s' textures '%s' skinning %d", Carried ? Carried->src_shader.c_str() : "?", Carried ? Carried->src_textures.c_str() : "?", Carried ? Carried->src_skinning : -2);
 		if (Visual.Surface)
 		{
-			Msg("! [EditorSceneSubmit]   surface shader '%s' texture '%s': carried == regular %d, carried == instanced %d", Visual.Surface->m_ShaderName.c_str(), Visual.Surface->m_Texture.c_str(),
+			Msg("! [EditorSceneSubmit]   surface shader '%s' texture '%s': carried == regular %d, carried == instanced %d", Visual.Surface->_ShaderName(), Visual.Surface->_Texture(),
 				int(Carried == Visual.Surface->_Shader()._get()), int(Carried == Visual.Surface->_ShaderInstanced()._get()));
 		}
 		Reported = true;

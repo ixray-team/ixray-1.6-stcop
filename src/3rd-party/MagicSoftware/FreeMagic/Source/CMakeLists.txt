@@ -222,6 +222,7 @@ target_compile_definitions(MagicFM PRIVATE _WINDOWS)
 target_compile_definitions(MagicFM PRIVATE _USRDLL)
 target_compile_definitions(MagicFM PRIVATE MAGICFMDLL_EXPORTS)
 target_compile_definitions(MagicFM PRIVATE STRICT)
+target_compile_definitions(MagicFM PRIVATE NDEBUG)
 
 # Linker list
 # target_link_libraries(MagicFM PRIVATE "dbghelp.lib")

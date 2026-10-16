@@ -12,11 +12,11 @@ void Detach(vecFace* S)
 	verts.clear();
 
 	// Collect vertices
-	for (vecFaceIt F = S->begin(); F != S->end(); ++F)
+	for (auto& F : *S)
 	{
 		for (int i = 0; i < 3; ++i)
 		{
-			Vertex* V = (*F)->v[i];
+			Vertex* V = F->v[i];
 			Vertex* VNewCreate;
 			map_v2v_it W = verts.find(V); // iterator
 
@@ -31,9 +31,9 @@ void Detach(vecFace* S)
 				VNewCreate = W->second;
 			}
 
-			VNewCreate->prep_add(*F);
-			V->prep_remove(*F);
-			(*F)->v[i] = VNewCreate;
+			VNewCreate->prep_add(F);
+			V->prep_remove(F);
+			F->v[i] = VNewCreate;
 		}
 	}
 
@@ -92,13 +92,13 @@ void CBuild::xrPhase_UVmap()
 		while (true)
 		{
 			// Сортировка списка в перед с больщими зонами.
-			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);
+			std::ranges::sort(*g_XSplit[SP], sort_faces);
 			if (g_XSplit[SP] == nullptr)
 			{
 				break;
 			}
 			// Select maximal sized poly
-			Face* msF = NULL;
+			Face* msF = nullptr;
 
 			for (auto FACE : *g_XSplit[SP])
 			{
@@ -126,19 +126,17 @@ void CBuild::xrPhase_UVmap()
 			if (!g_XSplit[SP]->empty())
 			{
 				// u32 CapacityOrig = g_XSplit[SP]->capacity();
-				auto rIT = std::remove_if(
-					g_XSplit[SP]->begin(),
-					g_XSplit[SP]->end(),
-					[&](Face* F)
-					{
-						if (F->pDeflector != nullptr)
-						{
-							// xr_delete(F);   // Освобождаем память
-							return true; // Убираем из контейнера
-						}
-						return false;
-					}
-				);
+				auto rIT = std::ranges::remove_if(*g_XSplit[SP],
+				                                  [&](Face* F)
+				                                  {
+					                                  if (F->pDeflector != nullptr)
+					                                  {
+						                                  // xr_delete(F);   // Освобождаем память
+						                                  return true; // Убираем из контейнера
+					                                  }
+					                                  return false;
+				                                  }
+				).begin();
 
 				if (rIT != g_XSplit[SP]->end())
 				{

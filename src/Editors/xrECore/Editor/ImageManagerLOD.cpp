@@ -13,9 +13,13 @@ using Fvector4It = Fvector4Vec::iterator;
 
 bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
-    CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
-    Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
-    if (!c_sh->flags.bRendering) return false;
+    CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); 
+	VERIFY(surf);
+    Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+    if (!c_sh->flags.bRendering)
+    {
+	    return false;
+    }
     const Fvector2*			cuv[3];
     R->e_mesh->GetFaceTC	(R->tag,cuv);
 
@@ -36,14 +40,18 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
     {
         U %= surf->ImageData->w;
         if (U < 0)
-            U += surf->ImageData->w;
+        {
+	        U += surf->ImageData->w;
+        }
     }
 
     if (surf->ImageData->h != 0)
     {
         V %= surf->ImageData->h;
         if (V < 0)
-            V += surf->ImageData->h;
+        {
+	        V += surf->ImageData->h;
+        }
     }
 
 
@@ -233,11 +241,17 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     s32		LOD_CALC_SAMPLES_LIM = LOD_CALC_SAMPLES / 2;
 
     // preload textures
-    for (SurfaceIt surf_it = OBJECT->m_Surfaces.begin(); surf_it != OBJECT->m_Surfaces.end(); surf_it++) {
-        CSurface* surf = *surf_it;
-        Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
-        if (!c_sh->flags.bRendering) continue;
-        if (nullptr == surf->ImageData)surf->CreateImageData();
+    for (auto surf : OBJECT->m_Surfaces)
+    {
+	    Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+        if (!c_sh->flags.bRendering)
+        {
+	        continue;
+        }
+	    if (!surf->ImageData)
+	    {
+		    surf->CreateImageData();
+	    }
     }
 
     // calculate
@@ -306,7 +320,9 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
 
                             float n_mag = N.magnitude();
                             if (!fis_zero(n_mag, EPS))
-                                n_vec.push_back(N.div(n_mag));
+                            {
+	                            n_vec.push_back(N.div(n_mag));
+                            }
                         }
                     }
                 }
@@ -315,7 +331,10 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
                 Fvector N = { 0,0,0 };
                 if (!n_vec.empty()) 
                 {
-                    for (FvectorIt it = n_vec.begin(); it != n_vec.end(); it++) N.add(*it);
+                    for (auto& it : n_vec)
+                    {
+	                    N.add(it);
+                    }
                     N.div(n_vec.size());
                     N.normalize_safe();
                     Mi.transform_dir(N);
@@ -326,21 +345,23 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
                 N.mul(255.f);
                 tgt_n = color_rgba(iFloor(N.x), iFloor(N.y), iFloor(N.z), color_get_A(tgt_c));
 
-                if (0 == color_get_A(tgt_c)) 
-                    continue;
+                if (0 == color_get_A(tgt_c))
+                {
+	                continue;
+                }
 
                 TT.Start();
                 // light points
                 float res_transp = 0.f;
-                for (Fvector4It pt_it = sample_pt_vec.begin(); pt_it != sample_pt_vec.end(); pt_it++)
+                for (auto& pt_it : sample_pt_vec)
                 {
                     float avg_transp = 0.f;
-                    for (BLIt it = simple_hemi.begin(); it != simple_hemi.end(); it++) 
+                    for (auto& it : simple_hemi)
                     {
                         TT1.Start();
                         Fvector 		start;
-                        start.mad(Fvector().set(pt_it->x, pt_it->y, pt_it->z), it->light.direction, -dR);
-                        PQ.prepare_rq(start, it->light.direction, dR, CDB::OPT_CULL);
+                        start.mad(Fvector().set(pt_it.x, pt_it.y, pt_it.z), it.light.direction, -dR);
+                        PQ.prepare_rq(start, it.light.direction, dR, CDB::OPT_CULL);
                         OBJECT->RayQuery(PQ);
                         tR += TT1.GetElapsed_sec();
                         float ray_transp = 1.f;
@@ -360,7 +381,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
                         avg_transp += ray_transp;
                     }
                     avg_transp /= simple_hemi.size();
-                    res_transp = res_transp * (1.f - pt_it->w) + avg_transp * pt_it->w;
+                    res_transp = res_transp * (1.f - pt_it.w) + avg_transp * pt_it.w;
                 }
                 tH += TT.GetElapsed_sec();
                 u8 h = (u8)iFloor(res_transp * 255.f);
@@ -376,7 +397,9 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
 
     // fill alpha to N-channel (HEMI)
     for (int px_idx = 0; px_idx<int(nm_pixels.size()); px_idx++)
-        nm_pixels[px_idx] = subst_alpha(nm_pixels[px_idx], color_get_R(hemi_tmp[px_idx]));
+    {
+	    nm_pixels[px_idx] = subst_alpha(nm_pixels[px_idx], color_get_R(hemi_tmp[px_idx]));
+    }
 
     EContext.UI->ProgressEnd(PB);
 }

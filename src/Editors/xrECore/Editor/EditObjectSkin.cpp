@@ -14,12 +14,12 @@
 // FX: link sphere symbols 
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcSphere.h"
 
-const u32 color_bone_sel_color	=0xFFFFFFFF;
-const u32 color_bone_norm_color	=0xFFFFFF00;
-const u32 color_bone_link_color	=0xFFA0A000;
-const u32 color_bone_sel_cm		=0xFFFF0000;
-const u32 color_bone_norm_cm	=0xFF700000;
-const float joint_size			=0.025f;
+constexpr u32 color_bone_sel_color	=0xFFFFFFFF;
+constexpr u32 color_bone_norm_color	=0xFFFFFF00;
+constexpr u32 color_bone_link_color	=0xFFA0A000;
+constexpr u32 color_bone_sel_cm		=0xFFFF0000;
+constexpr u32 color_bone_norm_cm	=0xFF700000;
+constexpr float joint_size			=0.025f;
 
 void CEditableObject::ResetBones()
 {
@@ -50,40 +50,53 @@ bool CEditableObject::LoadBoneData(IReader& F)
 	bool bRes = true;
     // load bones
     if (!load_bones.empty()){
-		for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
-        	CBone* B	= *b_it;
-            BoneIt n_it = std::find_if(load_bones.begin(),load_bones.end(),fBoneNameEQPred(B->Name()));
+		for (auto& m_Bone : m_Bones)
+		{
+        	CBone* B	= m_Bone;
+            BoneIt n_it = std::ranges::find_if(load_bones,fBoneNameEQPred(B->Name()));
             if (n_it!=load_bones.end())
             {
                 B->CopyData	(*n_it);
-            }else{
-	            ELog.Msg	(mtError,"Can't find bone: '%s'.",*(*b_it)->Name());
+            }
+			else
+				{
+	            ELog.Msg	(mtError,"Can't find bone: '%s'.",*m_Bone->Name());
             	bRes		= false; 
 //                break;
             }
         }
     
-        for (BoneIt n_it=load_bones.begin(); n_it!=load_bones.end(); n_it++)
-            xr_delete(*n_it);
+        for (auto& load_bone : load_bones)
+        {
+	        xr_delete(load_bone);
+        }
 
-        load_bones.clear();
-    }else{
+		load_bones.clear();
+    }
+	else
+	{
         ELog.Msg	(mtError,"Empty bone list.");
     	bRes 		= false;
     }
     // load bone part
-    if (F.find_chunk(EOBJ_CHUNK_BONEPARTS2)){
+    if (F.find_chunk(EEditableObjectChunks::BONEPARTS2)){
     	shared_str 	buf;
         m_BoneParts.resize(F.r_u32());
-        for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
-            F.r_stringZ			(buf); bp_it->alias=buf;
-            bp_it->bones.resize	(F.r_u32());
-            for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++)
-                F.r_stringZ		(*s_it);
+        for (auto& m_BonePart : m_BoneParts)
+        {
+            F.r_stringZ(buf);
+            m_BonePart.alias=buf;
+            m_BonePart.bones.resize	(F.r_u32());
+            for (auto& bone : m_BonePart.bones)
+            {
+	            F.r_stringZ(bone);
+            }
         }
         if (!m_BoneParts.empty()&&!VerifyBoneParts())
             ELog.Msg	(mtError,"Invalid bone parts. Found missing or duplicate bone.");
-    }else{
+    }
+	else
+	{
         ELog.Msg		(mtError,"Can't load bone parts. Invalid version.");
     }
     return bRes;
@@ -97,13 +110,16 @@ void CEditableObject::SaveBoneData(IWriter& F)
         F.close_chunk		();
     }
     // save bone part
-    F.open_chunk	(EOBJ_CHUNK_BONEPARTS2);
+    F.open_chunk	(EEditableObjectChunks::BONEPARTS2);
     F.w_u32			(m_BoneParts.size());
-    for (BPIt bp_it=m_BoneParts.begin(); bp_it!=m_BoneParts.end(); bp_it++){
-        F.w_stringZ	(bp_it->alias.c_str());
-        F.w_u32		(bp_it->bones.size());
-        for (RStringVecIt s_it=bp_it->bones.begin(); s_it!=bp_it->bones.end(); s_it++)
-            F.w_stringZ(*s_it);
+    for (auto& m_BonePart : m_BoneParts)
+    {
+        F.w_stringZ	(m_BonePart.alias.c_str());
+        F.w_u32		(m_BonePart.bones.size());
+        for (auto& bone : m_BonePart.bones)
+        {
+	        F.w_stringZ(bone);
+        }
     }
     F.close_chunk	();
 }

@@ -89,8 +89,10 @@ bool CSHCompilerTools::Save()
     EFS.MarkFile(fn, false);
     bool bRes = m_Library.Save(fn);
 
-    if (bRes) 
-        m_bModified = false;
+    if (bRes)
+    {
+	    m_bModified = false;
+    }
 
     return bRes;
 }
@@ -101,7 +103,7 @@ Shader_xrLC* CSHCompilerTools::FindItem(const char* name)
     {
         return m_Library.Get(name);
     }
-    else return 0;
+    return nullptr;
 }
 
 void CSHCompilerTools::AppendItem(const char* path, const char* parent_name)
@@ -151,7 +153,7 @@ void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* na
         R_ASSERT(name && name[0]);
         if (m_Shader && stricmp(m_Shader->Name, name) == 0)
         {
-            m_Shader = 0;
+            m_Shader = nullptr;
             STools->UpdateProperties(true);
         }
         m_Library.Remove(name);
@@ -168,21 +170,26 @@ void CSHCompilerTools::SetCurrentItem(const char* name, bool bView)
     {
         m_Shader = S;
         STools->UpdateProperties();
-        if (bView)	ViewSetCurrentItem(name);
+        if (bView)	
+		{
+			ViewSetCurrentItem(name);
+		}
     }
 }
 
 void CSHCompilerTools::ResetCurrentItem()
 {
-    m_Shader = 0;
+    m_Shader = nullptr;
 }
 
 void CSHCompilerTools::FillItemList()
 {
     ListItemsVec items;
-    Shader_xrLCVec& lst = m_Library.Library();
-    for (Shader_xrLCIt it = lst.begin(); it != lst.end(); it++)
-        LHelper().CreateItem(items, it->Name, 0);
+    auto& lst = m_Library.Library();
+    for (auto& it : lst)
+    {
+	    LHelper().CreateItem(items, it.Name, 0);
+    }
 
     Ext.m_Items->AssignItems(items, nullptr);
 }

@@ -3,8 +3,9 @@
 #include "EditMesh.h"
 #include "Export/MeshVertPack.h"
 
+struct SSurfaceData;
 //---------------------------------------------------------------------------
-const int clpSMX = 28, clpSMY=16, clpSMZ=28;
+constexpr int clpSMX = 28, clpSMY=16, clpSMZ=28;
 //---------------------------------------------------------------------------
 // refs                                           
 class CEditableObject;
@@ -128,24 +129,30 @@ protected:
     struct ECORE_API SSplit: 
         public CSkeletonCollectorPacked
     {
-    	shared_str		m_Shader;
-        shared_str		m_Texture;
-        u16 			m_PartID;
-        Fbox			m_Box;
-        U16Vec			m_UsedBones;
-        u16             m_id;
+    	SSurfaceData* m_SurfaceData = nullptr;
+    	bool bIsShared = false;
+        u16 m_PartID;
+        Fbox m_Box;
+        U16Vec m_UsedBones;
+        u16 m_id;
 
         // Progressive
 		ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
-	    u32				m_SkeletonLinkType;
+	    u32 m_SkeletonLinkType;
     public:
-        SSplit (CSurface* surf, const Fbox& bb, u16 part);
+        SSplit(CSurface* surf, const Fbox& bb, u16 part);
 
         bool valid()
         {
-        	if (m_Verts.empty()) return false;
-        	if (m_Faces.empty()) return false;
-            return true;
+        	if (m_Verts.empty())
+	        {
+		        return false;
+	        }
+	        if (m_Faces.empty())
+	        {
+		        return false;
+	        }
+	        return true;
         }
 		void 			MakeProgressive				();
         void			MakeStripify				();
@@ -158,7 +165,9 @@ protected:
         {
             m_Box.invalidate();
             for (SSkelVert& Vert : m_Verts)
-                m_Box.modify(Vert.offs);
+            {
+	            m_Box.modify(Vert.offs);
+            }
         }
     };
     using SplitVec = xr_vector<SSplit>;

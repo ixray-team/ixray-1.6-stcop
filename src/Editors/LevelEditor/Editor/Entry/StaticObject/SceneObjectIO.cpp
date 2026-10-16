@@ -53,7 +53,7 @@ void CSceneObject::ApplySurfaceOverrides()
         CSurface* Surf = nullptr;
         for (CSurface* It : m_Surfaces)
         {
-            if (It->m_Name == Override.Name.c_str())
+            if (It->m_pData.second->m_Name == Override.Name.c_str())
             {
                 Surf = It;
                 break;
@@ -71,8 +71,8 @@ void CSceneObject::ApplySurfaceOverrides()
         }
 
         Surf->SetShader(Override.Shader.c_str());
-        Surf->m_ShaderXRLCName = Override.ShaderXRLC.c_str();
-        Surf->m_GameMtlName = Override.GameMtl.c_str();
+        Surf->SetShaderXRLC(Override.ShaderXRLC.c_str());
+        Surf->SetGameMtl(Override.GameMtl.c_str());
         Surf->SetTexture(Override.Texture.c_str());
         Surf->m_VMap = Override.VMap.c_str();
         Surf->OnDeviceCreate();
@@ -92,7 +92,7 @@ void CSceneObject::CaptureSurfaceOverrides(xr_vector<SSurfaceOverride>& Dest) co
     Dest.clear();
     for (const CSurface* Surf : m_Surfaces)
     {
-        Dest.push_back({ Surf->m_Name.c_str(), Surf->m_ShaderName.c_str(), Surf->m_ShaderXRLCName.c_str(), Surf->m_GameMtlName.c_str(), Surf->m_Texture.c_str(), Surf->m_VMap.c_str() });
+        Dest.push_back({ Surf->_Name(), Surf->_ShaderName(), Surf->_ShaderXRLCName(), Surf->_GameMtlName(), Surf->_Texture(), Surf->m_VMap.c_str() });
     }
 }
 

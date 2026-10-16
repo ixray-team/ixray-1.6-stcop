@@ -8,6 +8,72 @@
 #include "../xrEngine/motion.h"
 #include "../xrEngine/bone.h"
 
+void CEditableObject::OnChangeSharedMode(PropValue* sender)
+{
+	for (CSurface* i : m_Surfaces)
+	{
+		if(i->UseShared != i->UseSharedPrev)
+		{
+			if(i->UseSharedPrev)
+			{
+				auto TempShared = i->m_pData.second;
+				i->m_pData.second = new SSurfaceData(*TempShared);
+			} else
+			{
+				auto Shared = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+				if(!Shared)
+				{
+					CSharedMaterialLibrary::Instance().MakeSharedCopy(i->m_pData.second);
+					Shared = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+				}
+				i->m_pDataOld = i->m_pData.second;
+				i->m_pData.second = Shared;
+			}
+			i->UseSharedPrev = i->UseShared;
+		}	
+	}
+	OnChangeShader(sender);
+	//Tools->UpdateProperties();
+}
+
+void CEditableObject::OnChangeSharedMaterial(PropValue* sender)
+{
+	for (CSurface* i : m_Surfaces)
+	{
+		if(i->m_pData.first != i->m_pData.second->m_Name)
+		{
+			i->m_pData.second = CSharedMaterialLibrary::Instance().GetData(i->m_pData.first);
+		}
+	}
+	OnChangeShader(sender);
+	//Tools->UpdateProperties();
+}
+
+void CEditableObject::OnBatchProcessMaterial(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	switch(value->btn_num)
+	{
+		case 0: // unique
+		{
+			for (auto elem : m_Surfaces)
+			{
+				elem->UseShared = false;
+			}
+			break;
+		}
+		case 1: // shared
+		{
+			for (auto elem : m_Surfaces)
+			{
+				elem->UseShared = true;
+			}
+			break;
+		}
+	}
+	bModif = true;
+	OnChangeSharedMode(value);
+}
+
 void CEditableObject::OnChangeShader(PropValue*)
 {
     OnDeviceDestroy	();
@@ -16,22 +82,42 @@ void CEditableObject::OnChangeShader(PropValue*)
 
 void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropItemVec& items)
 {
-    MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(pref, "TextureView"));
-    PropValue* V = nullptr;
+	
+	auto B = PHelper().CreateBool(items, PrepareKey(pref, "Use shared material"), &SURF->UseShared);
+	B->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMode);
 
-    V = MultiValue->CreateValue(PrepareKey(pref, "Texture"), &SURF->m_Texture, smTexture);
-    V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
+	if(SURF->UseShared)
+	{
+		auto SMC = PHelper().CreateChoose(items, PrepareKey(pref, "Shared Material Name"), &SURF->m_pData.first, smSharedMaterial);
+		SMC->OnChangeEvent.bind(this, &CEditableObject::OnChangeSharedMaterial);
+	}
+	
+	MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(pref, "TextureView"));
+	PropValue* V = nullptr;
+	
+	if(SURF->UseShared)
+	{
+		V = MultiValue->CreateValue(PrepareKey(pref, "Texture"), &SURF->m_pData.second->m_Texture, smDisabled);
+		V= MultiValue->CreateValue(PrepareKey(pref, "Shader"), &SURF->m_pData.second->m_ShaderName, smDisabled);
+		V = MultiValue->CreateValue(PrepareKey(pref, "Compile"), &SURF->m_pData.second->m_ShaderXRLCName, smDisabled);
+		V = MultiValue->CreateValue(PrepareKey(pref, "Game Mtl"), &SURF->m_pData.second->m_GameMtlName, smDisabled);
+		PHelper().CreateCaption(items, PrepareKey(pref, "2 Sided"), SURF->m_pData.second->m_Flags.test(SSurfaceData::sf2Sided) ? "true" : "false");
+	} else
+	{
+		V = MultiValue->CreateValue(PrepareKey(pref, "Texture"), &SURF->m_pData.second->m_Texture, smTexture);
+		V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 
-    V = MultiValue->CreateValue(PrepareKey(pref, "Shader"), &SURF->m_ShaderName, smEShader);
-    V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
+		V = MultiValue->CreateValue(PrepareKey(pref, "Shader"), &SURF->m_pData.second->m_ShaderName, smEShader);
+		V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 
-    V = MultiValue->CreateValue(PrepareKey(pref, "Compile"), &SURF->m_ShaderXRLCName, smCShader);
-    V = MultiValue->CreateValue(PrepareKey(pref, "Game Mtl"), &SURF->m_GameMtlName, smGameMaterial);
+		V = MultiValue->CreateValue(PrepareKey(pref, "Compile"), &SURF->m_pData.second->m_ShaderXRLCName, smCShader);
+		V = MultiValue->CreateValue(PrepareKey(pref, "Game Mtl"), &SURF->m_pData.second->m_GameMtlName, smGameMaterial);
 
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "2 Sided"), &SURF->m_Flags, CSurface::sf2Sided);
-    V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
-    
-    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->m_Name.c_str())));
+		V = PHelper().CreateFlag32(items, PrepareKey(pref, "2 Sided"), &SURF->m_pData.second->m_Flags, SSurfaceData::sf2Sided);
+		V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
+	}
+		
+    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->_Name())));
 }
 
 xr_token ECORE_API eo_type_token[]={
@@ -110,8 +196,8 @@ void CEditableObject::FillSurfaceList(const char* pref, ListItemsVec& items, int
 {
     SurfaceVec& s_lst 	= m_Surfaces;
 	if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
-    for (SurfaceIt s_it=s_lst.begin(); s_it!=s_lst.end(); s_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->m_Name.c_str()).c_str(), modeID, 0, *s_it);
+    for (auto& s_it : s_lst)
+	    LHelper().CreateItem(items, PrepareKey(pref, s_it->_Name()).c_str(), modeID, 0, s_it);
 }
 //---------------------------------------------------------------------------
 
@@ -119,10 +205,11 @@ void CEditableObject::FillBoneList(const char* pref, ListItemsVec& items, int mo
 {
     BoneVec& b_lst 		= m_Bones;
     if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
-    for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++){
-    	xr_string pt	= MakeFullBonePath(*b_it);
-    	xr_string path	= (!pt.size())?pref:PrepareKey(pref, pt.c_str()).c_str();
-		LHelper().CreateItem(items, PrepareKey(path.c_str(), (*b_it)->Name().c_str()).c_str(), modeID, 0, *b_it);
+    for (auto& b_it : b_lst)
+    {
+    	xr_string pt	= MakeFullBonePath(b_it);
+    	xr_string path	= (pt.empty())?pref:PrepareKey(pref, pt.c_str()).c_str();
+		LHelper().CreateItem(items, PrepareKey(path.c_str(), b_it->Name().c_str()).c_str(), modeID, 0, b_it);
     }
 }
 
@@ -130,6 +217,8 @@ void CEditableObject::FillMotionList(const char* pref, ListItemsVec& items, int 
 {
     SMotionVec&	m_lst	= m_SMotions;
 	if (pref) LHelper().CreateItem(items, pref,  modeID, ListItem::flSorted);
-    for (SMotionIt m_it=m_lst.begin(); m_it!=m_lst.end(); m_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*m_it)->Name()).c_str(), modeID, 0, *m_it);
+    for (auto& m_it : m_lst)
+    {
+	    LHelper().CreateItem(items, PrepareKey(pref, m_it->Name()).c_str(), modeID, 0, m_it);
+    }
 }
