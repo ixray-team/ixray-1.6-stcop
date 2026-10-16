@@ -33,70 +33,74 @@ CCoverManager::~CCoverManager				()
 	xr_delete				(m_smart_covers_storage);
 }
 
-IC	bool CCoverManager::edge_vertex		(u32 index) const
+IC	bool CCoverManager::edge_vertex		(const ILevelGraph& Graph, u32 index) const
 {
-	ILevelGraph::CVertex	*v = ai().level_graph().vertex(index);
+	ILevelGraph::CVertex	*v = Graph.vertex(index);
 	return					(
-		(!ai().level_graph().valid_vertex_id(v->link(0)) && (v->high_cover(0) < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(1)) && (v->high_cover(1) < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(2)) && (v->high_cover(2) < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(3)) && (v->high_cover(3) < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(0)) && (v->low_cover(0)  < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(1)) && (v->low_cover(1)  < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(2)) && (v->low_cover(2)  < MIN_COVER_VALUE)) ||
-		(!ai().level_graph().valid_vertex_id(v->link(3)) && (v->low_cover(3)  < MIN_COVER_VALUE))
+		(!Graph.valid_vertex_id(v->link(0)) && (v->high_cover(0) < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(1)) && (v->high_cover(1) < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(2)) && (v->high_cover(2) < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(3)) && (v->high_cover(3) < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(0)) && (v->low_cover(0)  < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(1)) && (v->low_cover(1)  < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(2)) && (v->low_cover(2)  < MIN_COVER_VALUE)) ||
+		(!Graph.valid_vertex_id(v->link(3)) && (v->low_cover(3)  < MIN_COVER_VALUE))
 	);
 }
 
-IC	bool CCoverManager::cover			(ILevelGraph::CVertex *v, u32 index0, u32 index1) const
+IC	bool CCoverManager::cover			(const ILevelGraph& Graph, ILevelGraph::CVertex *v, u32 index0, u32 index1) const
 {
 	return					(
-		ai().level_graph().valid_vertex_id(v->link(index0)) &&
-		ai().level_graph().valid_vertex_id(ai().level_graph().vertex(v->link(index0))->link(index1)) &&
-		m_temp[ai().level_graph().vertex(v->link(index0))->link(index1)]
+		Graph.valid_vertex_id(v->link(index0)) &&
+		Graph.valid_vertex_id(Graph.vertex(v->link(index0))->link(index1)) &&
+		m_temp[Graph.vertex(v->link(index0))->link(index1)]
 	);
 }
 
-IC	bool CCoverManager::critical_point	(ILevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const
+IC	bool CCoverManager::critical_point	(const ILevelGraph& Graph, ILevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const
 {
 	return					(
-		!ai().level_graph().valid_vertex_id(v->link(index)) &&
+		!Graph.valid_vertex_id(v->link(index)) &&
 		(
-			!ai().level_graph().valid_vertex_id(v->link(index0)) || 
-			!ai().level_graph().valid_vertex_id(v->link(index1)) ||
-			cover(v,index0,index) || 
-			cover(v,index1,index)
+			!Graph.valid_vertex_id(v->link(index0)) || 
+			!Graph.valid_vertex_id(v->link(index1)) ||
+			cover(Graph,v,index0,index) || 
+			cover(Graph,v,index1,index)
 		)
 	);
 }
 
-IC	bool CCoverManager::critical_cover	(u32 index) const
+IC	bool CCoverManager::critical_cover	(const ILevelGraph& Graph, u32 index) const
 {
-	ILevelGraph::CVertex	*v = ai().level_graph().vertex(index);
+	ILevelGraph::CVertex	*v = Graph.vertex(index);
 	return					(
-		critical_point(v,0,1,3) || 
-		critical_point(v,2,1,3) || 
-		critical_point(v,1,0,2) || 
-		critical_point(v,3,0,2)
+		critical_point(Graph,v,0,1,3) || 
+		critical_point(Graph,v,2,1,3) || 
+		critical_point(Graph,v,1,0,2) || 
+		critical_point(Graph,v,3,0,2)
 	);
 }
 
 void CCoverManager::compute_static_cover	()
 {
+	compute_static_cover	(ai().level_graph());
+}
+
+void CCoverManager::compute_static_cover	(const ILevelGraph& Graph)
+{
 	clear					();
 	xr_delete				(m_covers);
-	m_covers				= new CPointQuadTree(ai().level_graph().header().box(),ai().level_graph().header().cell_size()*.5f,8*65536,4*65536);
-	m_temp.resize			(ai().level_graph().header().vertex_count());
+	m_covers				= new CPointQuadTree(Graph.header().box(),Graph.header().cell_size()*.5f,8*65536,4*65536);
+	m_temp.assign			(Graph.header().vertex_count(), 0);
 
-	const ILevelGraph& Graph = ai().level_graph();
-	const u32 LevelVertexCount = ai().level_graph().header().vertex_count();
+	const u32 LevelVertexCount = Graph.header().vertex_count();
 
 	xr_parallel_for(0u, LevelVertexCount, [&](u32 range)
 	{
 		const ILevelGraph::CVertex& vertex = *Graph.vertex(range);
 		if (vertex.high_cover(0) + vertex.high_cover(1) + vertex.high_cover(2) + vertex.high_cover(3))
 		{
-			m_temp[range] = edge_vertex(range);
+			m_temp[range] = edge_vertex(Graph, range);
 			return;
 		}
 
@@ -104,20 +108,32 @@ void CCoverManager::compute_static_cover	()
 		{
 			if (vertex.low_cover(0) + vertex.low_cover(1) + vertex.low_cover(2) + vertex.low_cover(3))
 			{
-				m_temp[range] = edge_vertex(range);
+				m_temp[range] = edge_vertex(Graph, range);
 				return;
 			}
 		}
 
-		m_temp[range] = false;
+		m_temp[range] = 0;
 	});
 
 	for (u32 i = 0; i < LevelVertexCount; ++i)
-		if (m_temp[i] && critical_cover(i))
-			m_covers->insert(new CCoverPoint(ai().level_graph().vertex_position(ai().level_graph().vertex(i)),i));
+		if (m_temp[i] && critical_cover(Graph, i))
+			m_covers->insert(new CCoverPoint(Graph.vertex_position(Graph.vertex(i)),i));
 
 	VERIFY					(!m_smart_covers_storage);
 	m_smart_covers_storage	= new smart_cover::storage();
+}
+
+void CCoverManager::TakeStaticCover			(CCoverManager& Source)
+{
+	clear					();
+	xr_delete				(m_covers);
+	VERIFY					(!m_smart_covers_storage);
+	m_covers				= Source.m_covers;
+	m_smart_covers_storage	= Source.m_smart_covers_storage;
+	Source.m_covers			= nullptr;
+	Source.m_smart_covers_storage = nullptr;
+	Source.m_temp.clear		();
 }
 
 void CCoverManager::clear_covers			(PointVector &covers)
@@ -175,11 +191,11 @@ void CCoverManager::RefreshStaticCoverForEditor()
 		{
 			HasCover |= Vertex.high_cover(D) != 0 || (Graph.header().version() != XRAI_SOC_VERSION && Vertex.low_cover(D) != 0);
 		}
-		m_temp[I] = Graph.IsEditorNodeEnabled(I) && HasCover && edge_vertex(I);
+		m_temp[I] = Graph.IsEditorNodeEnabled(I) && HasCover && edge_vertex(Graph, I);
 	}
 	for (u32 I = 0; I < Graph.header().vertex_count(); ++I)
 	{
-		if (!m_temp[I] || !critical_cover(I))
+		if (!m_temp[I] || !critical_cover(Graph, I))
 		{
 			continue;
 		}

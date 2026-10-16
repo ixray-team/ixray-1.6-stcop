@@ -13,6 +13,7 @@
 #include <luabind/luabind.hpp>
 
 class CCoverPoint;
+class ILevelGraph;
 
 namespace LevelGraph {
 	class	CVertex;
@@ -34,7 +35,7 @@ public:
 
 protected:
 	CPointQuadTree					*m_covers;
-	xr_vector<bool>					m_temp;
+	xr_vector<u8>					m_temp;
 	PointVector EditorRetiredCovers;
 	mutable PointVector				m_nearest;
 
@@ -45,10 +46,10 @@ private:
 
 
 protected:
-	IC		bool					edge_vertex				(u32 index) const;
-	IC		bool					cover					(LevelGraph::CVertex *v, u32 index0, u32 index1) const;
-	IC		bool					critical_point			(LevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const;
-	IC		bool					critical_cover			(u32 index) const;
+	IC		bool					edge_vertex				(const ILevelGraph& Graph, u32 index) const;
+	IC		bool					cover					(const ILevelGraph& Graph, LevelGraph::CVertex *v, u32 index0, u32 index1) const;
+	IC		bool					critical_point			(const ILevelGraph& Graph, LevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const;
+	IC		bool					critical_cover			(const ILevelGraph& Graph, u32 index) const;
 
 private:
 	template <typename _evaluator_type, typename _restrictor_type>
@@ -62,6 +63,8 @@ public:
 									CCoverManager			();
 	virtual							~CCoverManager			();
 			void					compute_static_cover	();
+			void					compute_static_cover	(const ILevelGraph& Graph);
+			void					TakeStaticCover			(CCoverManager& Source);
 			void RefreshStaticCoverForEditor();
 			IC CPointQuadTree& covers() const;
 			IC CPointQuadTree* get_covers();
