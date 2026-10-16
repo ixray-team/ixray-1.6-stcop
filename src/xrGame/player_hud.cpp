@@ -4799,6 +4799,17 @@ void player_hud::detach_item_idx(u16 idx)
 	m_attached_items[idx]->m_parent_hud_item->on_b_hud_detach();
 	StopAllBlendAnms(true);
 
+	CObject* entity = Level().CurrentControlEntity();
+	CActor* actor = entity != nullptr ? entity->cast_actor() : nullptr;
+	if (actor != nullptr && (idx == 0 || m_attached_items[0] == nullptr))
+	{
+		CCameraRig& rig = actor->Cameras().Rig();
+		rig.StopChannel(crcMotion);
+		rig.StopChannel(crcAction);
+		rig.StopChannel(crcShot);
+		rig.StopChannel(crcSprint);
+	}
+
 	m_attached_items[idx]->m_parent_hud_item = nullptr;
 	m_attached_items[idx] = nullptr;
 
