@@ -41,6 +41,10 @@ elseif(LINUX OR APPLE)
     include("${CMAKE_MODULE_PATHEX}/DXVK.cmake")
 endif()
 
+# AI: the run-time HLSL compiler for the renderer on macOS comes from vkd3d; the module decides
+# AI: this itself and does nothing on the other platforms. See cmake/modules/VKD3D.cmake.
+include("${CMAKE_MODULE_PATHEX}/VKD3D.cmake")
+
 # Headers only libraries
 include("${CMAKE_MODULE_PATHEX}/FastDynamicCast.cmake")
 include("${CMAKE_MODULE_PATHEX}/magic_enum.cmake")

@@ -59,6 +59,11 @@ if(APPLE)
     # AI: the excluded files own four entry points of CRenderTarget, so macOS supplies them as
     # AI: no-ops (see the file itself). Windows and Linux keep the real implementations.
     list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/r4_rendertarget_phase_upscalers_macos.cpp")
+    # AI: DirectXTex compiles DirectXTexD3D11.cpp (DirectX::CreateTextureEx) for Windows only, and
+    # AI: that source cannot be built here: it needs the Windows header stack, which clashes with the
+    # AI: DXVK headers the renderer uses. The one entry point the renderer calls is ported in the file
+    # AI: below. Windows and Linux keep upstream.
+    list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/DirectXTexD3D11_macos.cpp")
 endif()
 
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
@@ -100,6 +105,12 @@ else()
     # AI: dx11Texture.cpp includes <DirectXTex.h>, which the fetched DirectXTex provides through
     # AI: its PUBLIC include directory, the same way DirectX::Mesh provides FlexibleVertexFormat.h.
     target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
+    if(APPLE)
+        # AI: the renderer compiles HLSL at run time (D3DCompile and the reflection/disassembly
+        # AI: entry points used by create_shader in r4.cpp). Windows takes them from the Windows
+        # AI: SDK above; on macOS they come from vkd3d, built by cmake/modules/VKD3D.cmake.
+        target_link_libraries(xrRender_R4 PRIVATE ${VKD3D_LIBRARIES})
+    endif()
 endif()
 
 ## RenderDoc

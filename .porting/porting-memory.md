@@ -254,3 +254,71 @@ cmake -S . -B build-macos -G Ninja \
   - оформлен `discovery-report.md`;
   - Task 0.4 (baseline): скачана и распакована сборка r1.3.6 в `cop-baseline/`, создана бутылка CrossOver `ixray`, снят баг с `concrt140` (см. грабли). **Открыто:** окно «IX-Ray Engine» открывается, но экран чёрный (CPU 0%). Отложено — не блокирует Phase 1.
   - **Следующий шаг: Phase 1, Task 1.1** (пресет сборки macOS + `brew install ninja`).
+
+### 2026-10-16, сессия 2 — Task 2.3′ (компилятор шейдеров) и разбор Task 2.4′
+
+**vkd3d собран нативно на macOS/arm64 — ✅**
+- Источник: **официальный релиз 2.1** (tarball от 24.08.2026):
+  `https://dl.winehq.org/vkd3d/source/vkd3d-2.1.tar.xz` → `/tmp/vkd3d-2.1`, out-of-tree сборка в `build-probe`.
+- **git-master НЕ собирается:** `configure` проходит, но `libs/vkd3d/device.c` требует свежие D3D12-фичи
+  (`D3D12_FEATURE_D3D12_OPTIONS19/21`), которых нет в сгенерированных `vkd3d_d3d12.h`; в git-дереве нет
+  widl-заголовков, а `widl` на macOS отсутствует. Рабочий путь — только релизный tarball.
+- Потребовалось: `brew install bison` (системный bison 2.3 не понимает `%code`, нужен
+  `/opt/homebrew/opt/bison/bin` **в PATH на этапе make**), `vulkan-headers` + `spirv-headers`
+  (`CPPFLAGS="-I/opt/homebrew/opt/vulkan-headers/include -I/opt/homebrew/opt/spirv-headers/include"`),
+  `--disable-demos --disable-tests --without-spirv-tools`. `-Wl,--version-script` в Makefile.am уже под
+  `HAVE_LD_VERSION_SCRIPT` — на Darwin не применяется сам.
+- Артефакты: `libvkd3d-utils.dylib`, `libvkd3d-shader.dylib`, `libvkd3d.dylib`, `vkd3d-compiler`, `vkd3d-dxbc`.
+- **Проверено `nm`:** `libvkd3d-utils` экспортирует ровно то, что просит R4 — `D3DCompile`, `D3DReflect`,
+  `D3DDisassemble`, `D3DGetInputSignatureBlob` (+ `D3DCompile2`, `D3DPreprocess`, `D3DCreateBlob`, …).
+
+**БЛОКЕР: vkd3d не умеет HLSL member-функции (`this`) — проверено на 2.1 И на master**
+- Тест `/tmp/vkd3d-test/compile_test.c` (линк с `libvkd3d-utils`, свой `ID3DInclude`) реально компилирует
+  шейдер R4: `D3DPreprocess` проходит, `D3DCompile` падает на
+  `E5030: Unknown modifier "Lerp"` / `E5030: Unknown modifier "IXRayMaterial"` / `E5000: syntax error, unexpected '('`.
+- Причина: `gamedata/shaders/d3d11/metalic_roughness_base.hlsli:33-58` — метод внутри `struct IXRayMaterial`
+  (`IXRayMaterial Lerp(...) { IXRayMaterial O = this; ... }`). В лексере vkd3d `this` в списке `RESERVED3`
+  (`libs/vkd3d-shader/hlsl.l:57`) — просто не реализовано; в `hlsl_struct_field` нет понятия «метод».
+- Масштаб: этот заголовок тянут ~11 файлов R4 (все `metalic_roughness*`).
+- Разведка готового патча: issues/MR в GitLab vkd3d по «member function»/«method» — **0**; поиск по коммитам
+  через API — 401 (нужен токен). Готового патча не нашли.
+
+**Task 2.4′ (`DirectX::CreateTextureEx`) — корень найден; «SAL-заглушек» недостаточно**
+- Воспроизведено в изоляции: `wsl/wrladapter.h: unknown type name '_In_opt_'`, `'_Inout_'`,
+  `declaration of 'U' shadows template parameter`, `expected ')'`.
+- Разбор цепочки (`-H`): `DirectXTexP.h:141-143` (ветка `!WIN32`) включает `<wsl/winadapter.h>` →
+  `<unknwn.h>`, и он разрешается в **DXVK-заголовок** (`dxvk/unknwn.h` → `windows_base.h`), где SAL не
+  определён; заглушки DirectX-Headers (`wsl/stubs/basetsd.h`, где `_In_opt_`/`_Inout_` есть) в цепочку
+  не попадают. Плюс на не-Windows ветке `DirectXTexP.h` **не включает `<d3d11.h>`** (на Windows его даёт
+  ветка `_WIN32_WINNT >= WIN10`) — файл рассчитан на Windows-стек заголовков.
+- **Главный факт (проверено компиляцией `/tmp/probe/guards.cpp`):** два стека Windows-заголовков
+  **несовместимы в одном TU** — DXVK (`windows_base.h`: `typedef INT BOOL;`, `unsigned long DWORD`) и
+  WSL-заглушки DirectX-Headers (`basetsd.h`: `typedef uint32_t UINT, ULONG, DWORD, BOOL;`) дают
+  `error: typedef redefinition with different types`. Порядок инклюдов это не лечит.
+- Следствие: подход плана «дать файлу SAL-заглушки» **не сработает**. Нужно решение Степана:
+  (а) маленький macOS-шим с реализацией `CreateTextureEx` против DXVK-заголовков (по образцу
+  `src/3rd-party/macos-compat/`), либо (б) другой способ получить символ (пока не найден).
+
+**Состояние 2.2′ (перепроверено сборкой):** `libxrRender_R4.dylib` не слинкован, незакрытых символов 5 групп:
+`D3DCompile`, `D3DDisassemble`, `D3DGetInputSignatureBlob`, `D3DReflect` (все из `r4.cpp`) +
+`DirectX::CreateTextureEx` (из `dx11Texture.cpp`). Компиляция — 0 ошибок.
+
+**ИТОГ сессии 2 — `libxrRender_R4.dylib` СЛИНКОВАН ✅**
+- **Task 2.4′ — закрыта.** `DirectX::CreateTextureEx` портирован в
+  `src/Layers/xrRenderPC_R4/DirectXTexD3D11_macos.cpp` (MIT). Тело — **дословно из апстрима**
+  (`DirectXTex/DirectXTexD3D11.cpp`, строки 445-637) ради возможности диффать с оригиналом; отличия только
+  два: внутренний макрос `HRESULT_E_NOT_SUPPORTED` и отсутствующий в DXVK-заголовках `E_UNEXPECTED` заменены
+  локальными константами. Комментарии апстрима внутри тела оставлены как есть (это чужой код, как в
+  `DDSTextureLoader9.cpp`); наши пояснения — в шапке файла, каждая строка с `AI:`. Файл добавлен в цель
+  `xrRender_R4` **только под `if(APPLE)`**.
+- **Task 2.3′ (линковка) — закрыта.** Новый `cmake/modules/VKD3D.cmake` собирает релизный vkd3d 2.1 под
+  macOS на этапе конфигурации (FetchContent + autotools, `bison` из Homebrew в PATH, Vulkan/SPIR-V заголовки,
+  `--disable-demos --disable-tests --without-spirv-tools`), ребейзит install_name на `@rpath/...` и отдаёт
+  `VKD3D_LIBRARIES`; `xrRender_R4` линкует `libvkd3d-utils` **только под `if(APPLE)`**.
+- **Проверено:** `cmake --build build-macos --target xrRender_R4` → **EXIT=0**, незакрытых символов **0**;
+  `nm -gU` видит определённый `DirectX::CreateTextureEx`; `otool -L` — зависимость
+  `@rpath/libvkd3d-utils.1.dylib`; четыре шейдерных символа резолвятся ею.
+- **Открыто (линковку не блокирует):** member-функции HLSL в vkd3d — рантайм-компиляция ~11 шейдеров R4
+  упадёт. Решение Степана пока не принято; смотреть по факту на автотесте (Task 2.5′).
+- **TODO к Task 2.6′:** положить `libvkd3d-utils.1.dylib`, `libvkd3d-shader.1.dylib`, `libvkd3d.1.dylib`
+  рядом с бинарником (`bin/Debug` уже в rpath цели) — список отдаётся переменной `VKD3D_DYLIBS`.
