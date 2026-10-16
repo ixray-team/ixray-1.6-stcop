@@ -29,34 +29,38 @@ struct IXRayMaterial
 	float Sun;
 	
 	uint MaterialID;
-	
-	IXRayMaterial Lerp(in IXRayMaterial B, float Factor)
-	{
-		IXRayMaterial O = this;
-
-	#ifndef USE_LEGACY_LIGHT
-		O.Metalness = lerp(Metalness, B.Metalness, Factor);
-		O.Roughness = lerp(Roughness, B.Roughness, Factor);
-		O.Specular = lerp(Specular, B.Specular, Factor);
-		O.AO = lerp(AO, B.AO, Factor);
-	#else
-		O.Gloss = lerp(Gloss, B.Gloss, Factor);
-		O.Material = lerp(Material, B.Material, Factor);
-	#endif
-
-		O.SSS = lerp(SSS, B.SSS, Factor);
-
-		O.Normal = lerp(Normal, B.Normal, Factor);
-		O.Normal = normalize(O.Normal);
-
-		O.Color = lerp(Color, B.Color, Factor);
-
-		O.Hemi = lerp(Hemi, B.Hemi, Factor);
-		O.Sun = lerp(Sun, B.Sun, Factor);
-
-		return O;
-	}
 };
+
+// AI: vkd3d, the HLSL compiler of the macOS route (D3DCompile through DXVK Native), does not parse
+// AI: member functions - the IXRayMaterial::Lerp() method made it fail with 'Unknown modifier "Lerp"'.
+// AI: The body below is the original one, with `this` spelled out as the first argument, so the
+// AI: result is the same. Plain HLSL, so the Windows and Linux builds compile this file unchanged.
+IXRayMaterial IXRayMaterial_Lerp(in IXRayMaterial A, in IXRayMaterial B, float Factor)
+{
+	IXRayMaterial O = A;
+
+#ifndef USE_LEGACY_LIGHT
+	O.Metalness = lerp(A.Metalness, B.Metalness, Factor);
+	O.Roughness = lerp(A.Roughness, B.Roughness, Factor);
+	O.Specular = lerp(A.Specular, B.Specular, Factor);
+	O.AO = lerp(A.AO, B.AO, Factor);
+#else
+	O.Gloss = lerp(A.Gloss, B.Gloss, Factor);
+	O.Material = lerp(A.Material, B.Material, Factor);
+#endif
+
+	O.SSS = lerp(A.SSS, B.SSS, Factor);
+
+	O.Normal = lerp(A.Normal, B.Normal, Factor);
+	O.Normal = normalize(O.Normal);
+
+	O.Color = lerp(A.Color, B.Color, Factor);
+
+	O.Hemi = lerp(A.Hemi, B.Hemi, Factor);
+	O.Sun = lerp(A.Sun, B.Sun, Factor);
+
+	return O;
+}
 
 #define BASE_ID 0
 #define OBJECT_ID 1
