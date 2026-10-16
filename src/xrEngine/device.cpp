@@ -308,11 +308,11 @@ void CRenderDevice::CalculateTransforms()
 	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
 		Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
-	mView_hud.set(mView);
+	mView_hud.build_camera_dir(Fvector().set(0.f, 0.f, 0.f), vCameraDirection, vCameraTop);
 	mFullTransform_hud.mul(mProject_hud, mView_hud);
 
 	mFullTransform_hud_special.mul(Fmatrix().build_projection(deg2rad(psHUD_FOV), Device.fASPECT,
-		Device.fViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane), mView_hud);
+		Device.fViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane), mView);
 	mInv3x4FullTransform_hud_special.invert(mFullTransform_hud_special);
 
 	mView_saved = mView;

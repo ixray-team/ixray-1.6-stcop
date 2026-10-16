@@ -2297,8 +2297,11 @@ void CActor::UpdateCL()
 	Fmatrix							trans;
 	Cameras().hud_camera_Matrix(trans);
 
-	if(IsFocused())
-		g_player_hud->update			(trans);
+	if (IsFocused())
+	{
+		trans.c.sub(Device.vCameraPosition);
+		g_player_hud->update(trans);
+	}
 
 	pPickup->SetPickupMode(false);
 
