@@ -172,6 +172,8 @@ cmake -S . -B build-macos -G Ninja \
 
 ## Грабли окружения (записать и не наступать повторно)
 
+- **Инструмент правки файлов переводит файл в CRLF целиком**, из-за чего `git diff` показывает изменённым весь файл, а не одну строку. Если файл в репозитории был с LF — diff превращается в шум на сотни строк. Лечится так: восстановить файл из индекса (`git checkout -- <файл>`), определить перевод строки в файле и дописать нужный блок скриптом, а не редактором. В спорных случаях сверять `git diff --numstat` перед коммитом.
+
 1. **CrossOver игнорирует `WINEPREFIX`** — бутылка выбирается через **`CX_BOTTLE`** (иначе `Unable to find the 'default' bottle`).
 2. **CrossOver игнорирует `WINEDLLOVERRIDES`** — override'ы только через реестр бутылки (`user.reg`, секция `[Software\Wine\DllOverrides]`) или `wine reg add`.
 3. **IX-Ray требует настоящий VC++ Runtime** (использует `concrt140`/Concurrency Runtime). Без него: `unimplemented function concrt140.dll.??0_TaskCollection... aborting`. Лечение: `vc_redist.x64.exe` в бутылку + CRT в `DllOverrides` = `native`.
