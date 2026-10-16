@@ -228,6 +228,33 @@ void CMonsterEnemyMemory::SetRetention(SMonsterEnemy& Entry, const SMonsterEnemy
 	}
 }
 
+void CMonsterEnemyMemory::RememberLightEnemy(const CEntityAlive& Target)
+{
+	// A fresh light observation supersedes an inspected or unreachable old position.
+	UnreachableIgnoredTargets.erase(&Target);
+	const auto Previous = m_objects.find(&Target);
+	if (Previous != m_objects.end())
+	{
+		Previous->second.UnreachableSearchUntil = 0;
+		Previous->second.ReachedPointTime = 0;
+		Previous->second.NavigationFallback = false;
+	}
+	add_enemy(&Target, Target.Position(), Target.ai_location().level_vertex_id(), Device.dwTimeGlobal);
+	const auto Entry = m_objects.find(&Target);
+	if (Entry != m_objects.end())
+	{
+		Entry->second.Evidence = "LIGHT";
+		Entry->second.OriginTime = Device.dwTimeGlobal;
+	}
+	if (smart_cast<const CAI_Dog*>(monster))
+	{
+		if (CMonsterSquad* Squad = monster_squad().get_squad(monster))
+		{
+			Squad->set_home_in_danger();
+		}
+	}
+}
+
 void CMonsterEnemyMemory::RememberHeardEnemy(const CEntityAlive* Target, const Fvector& SoundPosition, u32 SoundTime, float HearingRadius)
 {
 	if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ||
