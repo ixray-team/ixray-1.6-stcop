@@ -45,6 +45,7 @@ public:
 	IC		const OBJECT_REGISTRY	&objects				() const;
 	IC		OBJECT_REGISTRY			&objects				();
 	const xr_vector<CSE_ALifeDynamicObject*> objects_vec() const;
+	void							PrepareSpawnIni			() const;
 };
 
 #include "alife_object_registry_inline.h"

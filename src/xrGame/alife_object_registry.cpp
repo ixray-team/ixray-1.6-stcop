@@ -281,3 +281,13 @@ void CALifeObjectRegistry::Serialize(ISaveObject& Object)
 
 	}
 }
+
+void CALifeObjectRegistry::PrepareSpawnIni() const
+{
+	PROF_EVENT("ALife: parse spawn_ini");
+	const xr_vector<CSE_ALifeDynamicObject*> Objects = objects_vec();
+	xr_parallel_for(size_t(0), Objects.size(), [&Objects](size_t Index)
+	{
+		Objects[Index]->spawn_ini();
+	});
+}
