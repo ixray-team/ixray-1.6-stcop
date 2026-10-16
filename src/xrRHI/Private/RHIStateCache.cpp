@@ -12,6 +12,14 @@ RHIStateCache::~RHIStateCache()
 
 ID3D11RasterizerState* RHIStateCache::GetRasterizerState(const D3D11_RASTERIZER_DESC& Desc)
 {
+    {
+        xrSRWLockGuard Guard(Lock, true);
+        auto It = RSCache.find(Desc);
+        if (It != RSCache.end())
+            return It->second;
+    }
+
+    xrSRWLockGuard Guard(Lock);
     auto It = RSCache.find(Desc);
     if (It != RSCache.end())
         return It->second;
@@ -29,6 +37,14 @@ ID3D11RasterizerState* RHIStateCache::GetRasterizerState(const D3D11_RASTERIZER_
 
 ID3D11DepthStencilState* RHIStateCache::GetDepthStencilState(const D3D11_DEPTH_STENCIL_DESC& Desc)
 {
+    {
+        xrSRWLockGuard Guard(Lock, true);
+        auto It = DSSCache.find(Desc);
+        if (It != DSSCache.end())
+            return It->second;
+    }
+
+    xrSRWLockGuard Guard(Lock);
     auto It = DSSCache.find(Desc);
     if (It != DSSCache.end())
         return It->second;
@@ -46,6 +62,14 @@ ID3D11DepthStencilState* RHIStateCache::GetDepthStencilState(const D3D11_DEPTH_S
 
 ID3D11BlendState* RHIStateCache::GetBlendState(const D3D11_BLEND_DESC& Desc)
 {
+    {
+        xrSRWLockGuard Guard(Lock, true);
+        auto It = BSCache.find(Desc);
+        if (It != BSCache.end())
+            return It->second;
+    }
+
+    xrSRWLockGuard Guard(Lock);
     auto It = BSCache.find(Desc);
     if (It != BSCache.end())
         return It->second;
@@ -63,6 +87,7 @@ ID3D11BlendState* RHIStateCache::GetBlendState(const D3D11_BLEND_DESC& Desc)
 
 void RHIStateCache::ClearCache()
 {
+    xrSRWLockGuard Guard(Lock);
     for (auto& Pair : RSCache)
         if (Pair.second) Pair.second->Release();
     RSCache.clear();

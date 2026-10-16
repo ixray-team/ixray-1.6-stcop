@@ -70,6 +70,7 @@ private:
 
 	u32						m_uiMaxAnisotropy;
 	float m_mipLodBias;
+	mutable xrSRWLock		Lock;
 };
 
 extern	dx10SamplerStateCache	SSManager;
