@@ -144,10 +144,16 @@ void CServerEntityWrapper::load				(IReader &stream)
 		string64				s_name;
 		net_packet.r_stringZ	(s_name);
 	
-		m_object				= F_entity_Create(s_name);
+		{
+			PROF_EVENT("Spawn entry: F_entity_Create");
+			m_object			= F_entity_Create(s_name);
+		}
 
 		R_ASSERT3				(m_object,"Can't create entity.",s_name);
-		m_object->Spawn_Read	(net_packet);
+		{
+			PROF_EVENT("Spawn entry: Spawn_Read");
+			m_object->Spawn_Read(net_packet);
+		}
 	
 		chunk					= stream.open_chunk(1);
 	
@@ -158,7 +164,10 @@ void CServerEntityWrapper::load				(IReader &stream)
 
 		net_packet.r_begin		(ID);
 		R_ASSERT2				(M_UPDATE == ID,"Invalid packet ID (!= M_UPDATE)!");
-		m_object->UPDATE_Read	(net_packet);
+		{
+			PROF_EVENT("Spawn entry: UPDATE_Read");
+			m_object->UPDATE_Read(net_packet);
+		}
 	}
 #else
 	R_ASSERT(false);

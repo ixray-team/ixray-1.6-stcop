@@ -65,6 +65,7 @@ void CSpecificCharacter::Load(shared_str id)
 
 void CSpecificCharacter::load_shared	(const char*)
 {
+	PROF_EVENT("CSpecificCharacter::load_shared");
 #if 0
 	CTimer			timer;
 	timer.Start		();

@@ -78,6 +78,7 @@ void CCharacterInfo::InitSpecificCharacter (shared_str new_id)
 
 void CCharacterInfo::load_shared	(const char*)
 {
+	PROF_EVENT("CCharacterInfo::load_shared");
 	const ITEM_DATA& item_data = *id_to_index::GetById(m_ProfileId);
 
 	CUIXml*		pXML		= item_data._xml;
