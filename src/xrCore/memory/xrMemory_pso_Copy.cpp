@@ -7,7 +7,13 @@ void xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
 	memcpy(dest, src, n);
 }
 
-#if defined(IXR_X64)
+#if defined(IXR_ARM64)
+// ARM64 has no x86 MMX path; use the portable copy, exactly like the x64 branch below.
+void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
+{
+	xrMemCopy_x86(dest, src, n);
+}
+#elif defined(IXR_X64)
 void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);

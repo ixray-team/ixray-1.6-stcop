@@ -1,5 +1,8 @@
 #include "stdafx.h"
+#ifndef IXR_MACOS
+// <malloc.h> is a MSVC/glibc header; macOS does not ship it and only the Windows branch below needs it
 #include <malloc.h>
+#endif
 
 #ifdef IXR_WINDOWS
 XRCORE_API void vminfo(size_t* _free, size_t* reserved, size_t* committed) {
