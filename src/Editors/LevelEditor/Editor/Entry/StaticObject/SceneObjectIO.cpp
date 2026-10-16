@@ -72,11 +72,11 @@ bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
                     xr_string Name;
                     ini_stream.r_string(Name);
                     CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+                    for (auto& m_Surface : m_Surfaces)
                     {
-                        if ((*sf_it)->m_Name == Name.c_str())
+                        if (m_Surface->_Name() == Name)
                         {
-                            Surf = *sf_it;
+                            Surf = m_Surface;
                             break;
                         }
                     }
@@ -131,14 +131,14 @@ void CSceneObject::SaveLTX(CInifile& ini, const char* sect_name)
         ini_stream.sect = sect_name;
         ini_stream.move_begin();
         ini_stream.w_u32(m_Surfaces.size());
-        for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+        for (auto& m_Surface : m_Surfaces)
         {
-            ini_stream.w_stringZ((*sf_it)->m_Name.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_ShaderName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_ShaderXRLCName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_GameMtlName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_Texture.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_VMap.c_str());
+            ini_stream.w_stringZ(m_Surface->m_Name.c_str());
+            ini_stream.w_stringZ(m_Surface->m_ShaderName.c_str());
+            ini_stream.w_stringZ(m_Surface->m_ShaderXRLCName.c_str());
+            ini_stream.w_stringZ(m_Surface->m_GameMtlName.c_str());
+            ini_stream.w_stringZ(m_Surface->m_Texture.c_str());
+            ini_stream.w_stringZ(m_Surface->m_VMap.c_str());
         }
     }
 
@@ -228,11 +228,11 @@ bool CSceneObject::LoadStream(IReader& F)
                     xr_string Name;
                     F.r_stringZ(Name);
                     CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+                    for (auto& m_Surface : m_Surfaces)
                     {
-                        if ((*sf_it)->m_Name == Name.c_str())
+                        if (m_Surface->_Name() == Name)
                         {
-                            Surf = *sf_it;
+                            Surf = m_Surface;
                             break;
                         }
                     }
@@ -254,7 +254,7 @@ bool CSceneObject::LoadStream(IReader& F)
             }
         }
         if (!bRes) break;
-    }while(0);
+    }while(false);
 
     return bRes;
 }

@@ -11,26 +11,26 @@ bool SceneBuilder::BuildHOMModel()
 
 	F.open_chunk(1);
 	ObjectList& lst = Scene->ListObj(OBJCLASS_SCENEOBJECT);
-	for (ObjectIt it=lst.begin(); it!=lst.end(); it++)
+	for (auto& it : lst)
 	{
-		CSceneObject* S 	= (CSceneObject*)(*it);
+		CSceneObject* S 	= (CSceneObject*)it;
 		CEditableObject* E	= S->GetReference(); R_ASSERT(E);
 		if (E->m_objectFlags.is(CEditableObject::eoHOM))
 		{
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->m_Meshes.begin(); m_it!=E->m_Meshes.end(); ++m_it)
+			for (auto& m_Meshe : E->m_Meshes)
 			{
-				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
+				for (SurfFacesPairIt sf_it= m_Meshe->m_SurfFaces.begin(); sf_it!= m_Meshe->m_SurfFaces.end(); ++sf_it)
 				{
-					bool b2Sided = sf_it->first->m_Flags.is(CSurface::sf2Sided);
+					bool b2Sided = sf_it->first->_flags().is(SSurfaceData::sf2Sided);
 					IntVec& i_lst= sf_it->second;
-					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
+					for (int& i_it : i_lst)
 					{
-						st_Face& face = (*m_it)->m_Faces[*i_it];
-						for (int k=0; k<3; ++k)
+						st_Face& face = m_Meshe->m_Faces[i_it];
+						for (auto& k : face.pv)
 						{
-							parent.transform_tiny	(v,(*m_it)->m_Vertices[face.pv[k].pindex]);
+							parent.transform_tiny	(v, m_Meshe->m_Vertices[k.pindex]);
 							F.w_fvector3			(v);
 						}
 						F.w_u32						(b2Sided);
@@ -41,21 +41,21 @@ bool SceneBuilder::BuildHOMModel()
 		{
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->m_Meshes.begin(); m_it!=E->m_Meshes.end(); ++m_it)
+			for (auto& m_Meshe : E->m_Meshes)
 			{
-				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); ++sf_it)
+				for (SurfFacesPairIt sf_it= m_Meshe->m_SurfFaces.begin(); sf_it!= m_Meshe->m_SurfFaces.end(); ++sf_it)
 				{
-					CSurface* S 	= sf_it->first;
-					if(S->m_GameMtlName=="materials\\occ")
+					CSurface* S = sf_it->first;
+					if(S->_GameMtlName() == shared_str("materials\\occ"))
 					{
-						bool b2Sided 	= S->m_Flags.is(CSurface::sf2Sided);
+						bool b2Sided 	= S->_flags().is(SSurfaceData::sf2Sided);
 						IntVec& i_lst	= sf_it->second;
 						for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); ++i_it)
 						{
-							st_Face& face = (*m_it)->m_Faces[*i_it];
-							for (int k=0; k<3; ++k)
+							st_Face& face = m_Meshe->m_Faces[*i_it];
+							for (auto& k : face.pv)
 							{
-								parent.transform_tiny	(v,(*m_it)->m_Vertices[face.pv[k].pindex]);
+								parent.transform_tiny	(v, m_Meshe->m_Vertices[k.pindex]);
 								F.w_fvector3			(v);
 							}
 							F.w_u32						(b2Sided);
@@ -86,8 +86,9 @@ bool SceneBuilder::BuildSOMModel()
 
 	F.open_chunk	(1);
 	ObjectList& lst = Scene->ListObj(OBJCLASS_SCENEOBJECT);
-	for (ObjectIt it=lst.begin(); it!=lst.end(); it++){
-		CSceneObject* S 	= (CSceneObject*)(*it);
+	for (auto& it : lst)
+	{
+		CSceneObject* S 	= (CSceneObject*)it;
 		CEditableObject* E	= S->GetReference(); R_ASSERT(E);
 		if (E->m_objectFlags.is(CEditableObject::eoSoundOccluder)){ 
 			Fvector 		v;
@@ -106,18 +107,20 @@ bool SceneBuilder::BuildSOMModel()
 					}
 					SGameMtl* mtl 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 
-					if (0==mtl)
+					if (!mtl)
 					{
 						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
 						bResult 		= false; 
 						break; 
 					}
-					bool b2Sided 		= surf->m_Flags.is(CSurface::sf2Sided);
+					bool b2Sided 		= surf->_flags().is(SSurfaceData::sf2Sided);
 					IntVec& i_lst		= sf_it->second;
-					for (IntIt i_it=i_lst.begin(); i_it!=i_lst.end(); i_it++){
-						st_Face& face 	= (*m_it)->m_Faces[*i_it];
-						for (int k=0; k<3; k++){
-							parent.transform_tiny(v,(*m_it)->m_Vertices[face.pv[k].pindex]);
+					for (int& i_it : i_lst)
+					{
+						st_Face& face 	= (*m_it)->m_Faces[i_it];
+						for (auto& k : face.pv)
+						{
+							parent.transform_tiny(v,(*m_it)->m_Vertices[k.pindex]);
 							F.w_fvector3(v);
 						}
 						F.w_u32			(b2Sided);
