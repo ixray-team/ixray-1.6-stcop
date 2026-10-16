@@ -131,6 +131,7 @@ protected:
 	float				m_fMaxPower;
 	//сила постоянного небольшого демеджа (для огненных и ядовитых мин)
 	float				m_fSecondaryHitPower;
+	ALife::EHitType SecondaryHitType = ALife::eHitTypeWound;
 
 	//линейный коэффициент затухания в зависимости от расстояния
 	float				m_fAttenuation;
