@@ -84,11 +84,11 @@ void IGame_Persistent::Start(const char* op)
 	// change game type
 	if ((0 != xr_strcmp(prev_type, m_game_params.m_game_type)))
 	{
-		if (*m_game_params.m_game_type)
-			OnGameStart();
-
 		if (g_hud)
 			DEL_INSTANCE(g_hud);
+
+		if (*m_game_params.m_game_type)
+			OnGameStart();
 	}
 	else
 	{
