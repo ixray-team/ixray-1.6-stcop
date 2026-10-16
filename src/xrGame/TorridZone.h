@@ -3,12 +3,14 @@
 
 class CObjectAnimator;
 
+XREFLECT(LuaExport)
 class CTorridZone final : public CMosquitoBald
 {
 	using inherited = CAnomalyZone;
 	CObjectAnimator* m_animator;
 
 public:
+	XPROPERTY(LuaConstructor)
 	CTorridZone();
 	virtual ~CTorridZone();
 	virtual void UpdateWorkload(u32 dt);

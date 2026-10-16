@@ -2143,21 +2143,6 @@ void CLevel::script_register(lua_State *L)
 		def("stop_current_cutscene", &CCutsceneManager::FinishCurrentCutscene)
 	];
 
-	module(L)
-		[
-			class_<SCutsceneObjectElement>("SCutsceneObjectElement")
-				.def("set_all_bones_visibility", &SCutsceneObjectElement::SetAllBonesVisibility)
-				.def("set_bone_visibility", &SCutsceneObjectElement::SetBoneVisibility)
-				.def("set_parent", &SCutsceneObjectElement::SetParent)
-				.def("set_anim_to_play", &SCutsceneObjectElement::SetAnimToPlay)
-				.def("set_on_finish_func", &SCutsceneObjectElement::SetOnFinishFunc)
-				.def("get_bone_id", &SCutsceneObjectElement::GetBoneID)
-				.def("set_bones_weapon", &SCutsceneObjectElement::SetBonesWeapon),
-			class_<CCutsceneItem>("CCutsceneItem")
-				.def("create_object_element", &CCutsceneItem::CreateObjectElement)
-				.def("set_pivot_object", &CCutsceneItem::SetPivotObject)
-		];
-
 	module(L, "player_hud")
 	[
 		def("show_legs", &show_legs)
@@ -2175,25 +2160,6 @@ void CLevel::script_register(lua_State *L)
 
 	module(L)
 	[
-	   class_<CRayPick>("ray_pick")
-	   .def(								constructor<>())
-	   .def(								constructor<Fvector&, Fvector&, float, collide::rq_target, CScriptGameObject*>())
-	   .def("set_position",					&CRayPick::set_position)
-	   .def("set_direction",				&CRayPick::set_direction)
-	   .def("set_range",					&CRayPick::set_range)
-	   .def("set_flags",					&CRayPick::set_flags)
-	   .def("set_ignore_object",			&CRayPick::set_ignore_object)
-	   .def("query",						&CRayPick::query)
-	   .def("get_result",					&CRayPick::get_result)
-	   .def("get_object",					&CRayPick::get_object)
-	   .def("get_distance",					&CRayPick::get_distance)
-	   .def("get_element",					&CRayPick::get_element)	
-	   .def("get_material",					&CRayPick::get_material),
-    class_<script_rq_result>("rq_result")
-      .def_readonly("object",			&script_rq_result::O)
-      .def_readonly("range",			&script_rq_result::range)
-      .def_readonly("element",		&script_rq_result::element)
-      .def(								constructor<>()), 	
     class_<enum_exporter<collide::rq_target> >("rq_target")
       .enum_("targets")
     [
@@ -2251,44 +2217,6 @@ void CLevel::script_register(lua_State *L)
 
 	module(L,"game")
 	[
-		class_< xrTime >("CTime")
-			.enum_("date_format")
-			[
-				value("DateToDay",		int(InventoryUtilities::edpDateToDay)),
-				value("DateToMonth",	int(InventoryUtilities::edpDateToMonth)),
-				value("DateToYear",		int(InventoryUtilities::edpDateToYear))
-			]
-			.enum_("time_format")
-			[
-				value("TimeToHours",	int(InventoryUtilities::etpTimeToHours)),
-				value("TimeToMinutes",	int(InventoryUtilities::etpTimeToMinutes)),
-				value("TimeToSeconds",	int(InventoryUtilities::etpTimeToSeconds)),
-				value("TimeToMilisecs",	int(InventoryUtilities::etpTimeToMilisecs))
-			]
-			.def(						constructor<>()				)
-			.def(						constructor<const xrTime&>())
-			.def(const_self <			xrTime()					)
-			.def(const_self <=			xrTime()					)
-			.def(const_self >			xrTime()					)
-			.def(const_self >=			xrTime()					)
-			.def(const_self ==			xrTime()					)
-			.def(self +					xrTime()					)
-			.def(self -					xrTime()					)
-
-			.def("diffSec"				,&xrTime::diffSec_script)
-			.def("add"					,&xrTime::add_script)
-			.def("sub"					,&xrTime::sub_script)
-
-			.def("save"					,&xrTime::Save)
-			.def("load"					,&xrTime::Load)
-
-			.def("setHMS"				,&xrTime::setHMS)
-			.def("setHMSms"				,&xrTime::setHMSms)
-			.def("set"					,&xrTime::set)
-			.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
-			.def("dateToString"			,&xrTime::dateToString)
-			.def("timeToString"			,&xrTime::timeToString)
-			.def("Serialize", &ctime_serialize),
 			// declarations
 			def("time",					get_time),
 			def("get_game_time",		get_time_struct),

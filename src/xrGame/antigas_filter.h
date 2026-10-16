@@ -1,8 +1,7 @@
 #pragma once
-
 #include "inventory_item_object.h"
-#include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class AntigasFilter final : public CInventoryItemObject
 {
 private:
@@ -12,12 +11,11 @@ public:
 	HitImmunity::HitTypeSVec m_FilterProtection = {};
 	HitImmunity::HitTypeSVec m_FilterDamage = {};
 
+	XPROPERTY(LuaConstructor)
 	AntigasFilter();
 	virtual	~AntigasFilter();
 
 	virtual void Load(const char* section) override;
 
 	bool IsAllowed();
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

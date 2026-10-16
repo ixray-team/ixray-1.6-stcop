@@ -529,20 +529,3 @@ const char* CFFxCrypto::XorEncode(const char* input, const char* key)
 
     return result.c_str();
 }
-
-using namespace luabind;
-#pragma optimize("s",on)
-void CFFxCrypto::script_register(lua_State* L)
-{
-    module(L)
-        [
-            class_<CFFxCrypto>("FFxCrypto")
-                .def(constructor<>())
-                .def("crc64", &CFFxCrypto::CRC64)
-                .def("sha1", &CFFxCrypto::SHA1)
-                .def("sha256", &CFFxCrypto::SHA256)
-                .def("base64_encode", &CFFxCrypto::Base64Encode)
-                .def("base64_decode", &CFFxCrypto::Base64Decode)
-                .def("xor_encode", &CFFxCrypto::XorEncode)
-        ];
-}

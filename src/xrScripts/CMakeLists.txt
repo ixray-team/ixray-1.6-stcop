@@ -45,6 +45,9 @@ endif()
 add_library(xrScripts SHARED ${XRPS_SRC_FILES})
 set_target_properties(xrScripts PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
+# XREFLECT Lua bindings
+ixray_reflect_lua(xrScripts xrScripts PCH "stdafx.h" SOURCES ${XRPS_SRC_FILES})
+
 # Include directories
 target_include_directories(xrScripts PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrScripts PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
