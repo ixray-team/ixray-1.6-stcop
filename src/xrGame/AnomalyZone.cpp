@@ -159,6 +159,11 @@ void CAnomalyZone::Load(const char* section)
 	m_fHitImpulseScale		= pSettings->r_float(section,			"hit_impulse_scale");
 	m_fEffectiveRadius		= pSettings->r_float(section,			"effective_radius");
 	m_eHitTypeBlowout		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
+	SecondaryHitType = m_eHitTypeBlowout;
+	if (pSettings->line_exist(section, "secondary_hit_type"))
+	{
+		SecondaryHitType = ALife::g_tfString2HitType(pSettings->r_string(section, "secondary_hit_type"));
+	}
 
 	m_zone_flags.set(eIgnoreNonAlive,	pSettings->r_bool(section,	"ignore_nonalive"));
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
