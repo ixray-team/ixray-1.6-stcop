@@ -72,48 +72,64 @@
     template<typename T>
 	inline T* CResourceManager::CreateShader(const char* _name)
 	{
-		xrCriticalSectionGuard guard(creationGuard);
 		xr_string res_name = _name + RImplementation.getShaderParams();
 		const char* name = res_name.c_str();
-		LPSTR N = LPSTR(name);
 
-		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
-		typename ShaderTypeTraits<T>::MapType::iterator	I = sh_map.find(N);
-
-		if (I!=sh_map.end())
+		T* sh = nullptr;
+		bool IsNew = false;
 		{
-			return		I->second;
+			xrCriticalSectionGuard guard(creationGuard);
+			typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
+			typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(LPSTR(name));
+			if (I != sh_map.end())
+			{
+				sh = I->second;
+			}
+			else
+			{
+				sh = new T();
+				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+				sh_map.insert(std::make_pair(sh->set_name(name), sh));
+				IsNew = true;
+			}
 		}
-		T*		sh = new T();
 
-		sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-		sh_map.insert(std::make_pair(sh->set_name(name),sh));
-		if (0==_stricmp(_name,"null"))
+		if (!IsNew)
 		{
-			sh->sh = nullptr;
+			sh->CompileState.WaitCompiled();
 			return sh;
 		}
 
-		// Open file
-		string_path					cname;
-		xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
-		FS.update_path				(cname,	_game_shaders_, cname);
+		{
+			if (0==_stricmp(_name,"null"))
+			{
+				sh->sh = nullptr;
+				sh->CompileState.MarkCompiled();
+				return sh;
+			}
 
-		// duplicate and zero-terminate
-		IReader* file				= FS.r_open(cname);
-		R_ASSERT2					( file, cname );
+			// Open file
+			string_path					cname;
+			xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
+			FS.update_path				(cname,	_game_shaders_, cname);
 
-		// Select target
-		const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
-		const char*						c_entry		= "main";
+			// duplicate and zero-terminate
+			IReader* file				= FS.r_open(cname);
+			R_ASSERT2					( file, cname );
 
-		// Compile
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+			// Select target
+			const char*						c_target	= ShaderTypeTraits<T>::GetCompilationTarget();
+			const char*						c_entry		= "main";
 
-		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
-		FS.r_close					( file );
+			// Compile
+			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
 
-		return			sh;
+			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+			sh->CompileState.MarkCompiled();
+			FS.r_close					( file );
+
+			return			sh;
+		}
 	}
 
 	template<typename T>
@@ -123,9 +139,7 @@
 		typename ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<typename ShaderTypeTraits<T>::MapType>();
 
 		if (0==(sh->dwFlags&xr_resource_flagged::RF_REGISTERED))
-		{
 			return;
-		}
 
 		LPSTR N = LPSTR(*sh->cName);
 		typename ShaderTypeTraits<T>::MapType::iterator I = sh_map.find(N);
@@ -137,4 +151,3 @@
 		}
 		Msg	("! ERROR: Failed to find compiled geometry shader '%s'", *sh->cName);
 	}
-

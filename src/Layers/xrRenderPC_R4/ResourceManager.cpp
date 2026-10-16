@@ -13,7 +13,60 @@
 #include "3DFluid/dx103DFluidManager.h"
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
-static xrCriticalSection ResSafe;
+
+namespace
+{
+	xrSRWLock ShaderCreateLock;
+	thread_local u32 ShaderCreateDepth = 0;
+
+	class ShaderCreateScope
+	{
+	public:
+		explicit ShaderCreateScope(bool IsExclusive = false) : IsExclusive(IsExclusive)
+		{
+			if (ShaderCreateDepth++ != 0)
+			{
+				return;
+			}
+
+			IsOwner = true;
+			if (IsExclusive)
+			{
+				ShaderCreateLock.AcquireExclusive();
+			}
+			else
+			{
+				ShaderCreateLock.AcquireShared();
+			}
+			RImplementation.clearAllShaderOptions();
+		}
+
+		~ShaderCreateScope()
+		{
+			--ShaderCreateDepth;
+			if (!IsOwner)
+			{
+				return;
+			}
+
+			if (IsExclusive)
+			{
+				ShaderCreateLock.ReleaseExclusive();
+			}
+			else
+			{
+				ShaderCreateLock.ReleaseShared();
+			}
+		}
+
+		ShaderCreateScope(const ShaderCreateScope&) = delete;
+		ShaderCreateScope& operator=(const ShaderCreateScope&) = delete;
+
+	private:
+		bool IsExclusive = false;
+		bool IsOwner = false;
+	};
+}
 
 #ifndef MASTER_GOLD
 static u32 CalculateXMLCRC(const char* path)
@@ -51,7 +104,8 @@ static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures, c
 
 void CResourceManager::ClearXMLBlendCache()
 {
-	xrCriticalSectionGuard guard(ResSafe);
+	ShaderCreateScope Scope(true);
+	xrCriticalSectionGuard CacheGuard(creationGuard);
 	m_xmlBlendCache.clear();
 }
 
@@ -174,8 +228,6 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 
 Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
-	xrCriticalSectionGuard guard(creationGuard);
-
 	CBlender_Compile	C;
 	Shader				S;
 
@@ -273,7 +325,7 @@ Shader*	CResourceManager::_cpp_Create(const char* s_shader, const char* s_textur
 
 Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
-	xrCriticalSectionGuard guard(ResSafe);
+	ShaderCreateScope Scope;
 
 	if (!g_dedicated_server)
 	{
@@ -316,7 +368,7 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 
 Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices)
 {
-	xrCriticalSectionGuard guard(ResSafe);
+	ShaderCreateScope Scope;
 
 	if (g_dedicated_server)
 		return nullptr;
@@ -380,7 +432,7 @@ void CResourceManager::RecompileShaders()
 	{
 		RImplementation.Target->InvalidateSpotShadowCache();
 	}
-	xrCriticalSectionGuard guard(ResSafe);
+	ShaderCreateScope Scope(true);
 
 	const int skinning = Engine.External.GetSkinningMode();
 
@@ -391,6 +443,7 @@ void CResourceManager::RecompileShaders()
 			continue;
 
 		Engine.External.SetSkinningMode(S->src_skinning);
+		RImplementation.clearAllShaderOptions();
 		Shader* N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
 		if (N == S)
 			continue;

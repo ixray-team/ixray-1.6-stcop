@@ -131,7 +131,6 @@ void CResourceManager::_DeletePass(const SPass* P)
 //--------------------------------------------------------------------------------------------------------------
 SVS*	CResourceManager::_CreateVS		(const char* _name)
 {
-	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name;
 
 	const int m_skinning = Engine.External.GetSkinningMode();
@@ -143,21 +142,33 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 	res_name += RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
-	LPSTR N = LPSTR(name);
-	map_VS::iterator I = m_vs.find(N);
-
-	if (I!=m_vs.end())	
+	SVS* _vs = nullptr;
+	bool IsNew = false;
 	{
-		return I->second;
-	}
-	else
-	{
-		SVS* _vs = new SVS();
-		_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
-
-		if (0==_stricmp(_name,"null"))
+		xrCriticalSectionGuard guard(creationGuard);
+		map_VS::iterator I = m_vs.find(LPSTR(name));
+		if (I != m_vs.end())
 		{
+			_vs = I->second;
+		}
+		else
+		{
+			_vs = new SVS();
+			_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
+			IsNew = true;
+		}
+	}
+
+	if (!IsNew)
+	{
+		_vs->CompileState.WaitCompiled();
+		return _vs;
+	}
+
+	{
+		if (0==_stricmp(_name,"null"))	{
+			_vs->CompileState.MarkCompiled();
 			return _vs;
 		}
 
@@ -205,6 +216,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		_vs->CompileState.MarkCompiled();
 
 		// ����������� �������� � �������
 #if 0 //ndef _EDITOR
@@ -260,20 +272,37 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 //--------------------------------------------------------------------------------------------------------------
 SPS*	CResourceManager::_CreatePS			(const char* _name)
 {
-	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name + RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
-	LPSTR N				= LPSTR(name);
-	map_PS::iterator I	= m_ps.find	(N);
-	if (I!=m_ps.end())	return		I->second;
-	else
+	SPS* _ps = nullptr;
+	bool IsNew = false;
 	{
-		SPS*	_ps					=	new SPS	();
-		_ps->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_ps.insert					(std::make_pair(_ps->set_name(name),_ps));
+		xrCriticalSectionGuard guard(creationGuard);
+		map_PS::iterator I = m_ps.find(LPSTR(name));
+		if (I != m_ps.end())
+		{
+			_ps = I->second;
+		}
+		else
+		{
+			_ps = new SPS();
+			_ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			m_ps.insert(std::make_pair(_ps->set_name(name), _ps));
+			IsNew = true;
+		}
+	}
+
+	if (!IsNew)
+	{
+		_ps->CompileState.WaitCompiled();
+		return _ps;
+	}
+
+	{
 		if (0==_stricmp(_name,"null"))	{
-			_ps->ps				= nullptr;
+			_ps->ps = nullptr;
+			_ps->CompileState.MarkCompiled();
 			return _ps;
 		}
 
@@ -327,6 +356,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		_ps->CompileState.MarkCompiled();
 
 		// ����������� �������� � �������
 
@@ -365,20 +395,37 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 //--------------------------------------------------------------------------------------------------------------
 SGS*	CResourceManager::_CreateGS			(const char* _name)
 {
-	xrCriticalSectionGuard guard(creationGuard);
 	xr_string res_name = _name + RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
-	LPSTR N = LPSTR(name);
-	map_GS::iterator I	= m_gs.find	(N);
-	if (I!=m_gs.end())	return		I->second;
-	else
+	SGS* _gs = nullptr;
+	bool IsNew = false;
 	{
-		SGS*	_gs					=	new SGS	();
-		_gs->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-		m_gs.insert					(std::make_pair(_gs->set_name(name),_gs));
+		xrCriticalSectionGuard guard(creationGuard);
+		map_GS::iterator I = m_gs.find(LPSTR(name));
+		if (I != m_gs.end())
+		{
+			_gs = I->second;
+		}
+		else
+		{
+			_gs = new SGS();
+			_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+			m_gs.insert(std::make_pair(_gs->set_name(name), _gs));
+			IsNew = true;
+		}
+	}
+
+	if (!IsNew)
+	{
+		_gs->CompileState.WaitCompiled();
+		return _gs;
+	}
+
+	{
 		if (0==_stricmp(_name,"null"))	{
-			_gs->gs				= nullptr;
+			_gs->gs = nullptr;
+			_gs->CompileState.MarkCompiled();
 			return _gs;
 		}
 
@@ -420,6 +467,7 @@ SGS*	CResourceManager::_CreateGS			(const char* _name)
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		_gs->CompileState.MarkCompiled();
 
 		FS.r_close				( file );
 

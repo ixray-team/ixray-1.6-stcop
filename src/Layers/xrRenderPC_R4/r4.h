@@ -483,13 +483,14 @@ public:
 
 	void							addShaderOption				(const char* name, const char* value = "");
 	void							clearAllShaderOptions		();
+	void							UpdateDefaultShaderOptions	();
 
 	bool							NeedMotionVectors			() const;
 	bool							MotionVectorsDisabled		() const;
 	void							SyncMotionVectors			();
 	void							SyncReflections				();
 
-	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
+	size_t							ShaderOptionsCount			();
 
 	virtual bool					InIndoor					() override { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount				() override { return Sectors.size(); }
@@ -545,7 +546,7 @@ private:
 	IBlender*						EditorZoneBlender			= nullptr;
 
 private:
-	ShaderExternalMap				m_ShaderOptions;
+	ShaderExternalMap&				CurrentShaderOptions		();
 
 protected:
 	virtual void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) override;
