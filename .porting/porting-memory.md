@@ -511,3 +511,28 @@ cmake -S . -B build-macos -G Ninja \
   проходит, то есть зависание специфично для связки luabind + движка. Следующие шаги: собрать LuaJIT с
   символами и посмотреть в lldb состояние GC (`gcstate`, объект, на котором цикл), либо сравнить
   `detail::class_registry` luabind-а с новым GC LuaJIT.
+
+**Наводка Степана: смотрим, как Lua сделана в OpenXRay (он работает на этом маке)**
+
+- Рабочее дерево OpenXRay: **`/Users/stepan/STALKER-Call-of-Pripyat`** (исходники в `build/xray-16`,
+  собранная игра в `build/xray-16/bin/arm64/Release/xr_3da`, игровые данные — в `~/Hermes/OpenXRay/game`).
+  Там же `Externals/{LuaJIT,LuaJIT-proj,luabind}`.
+- **Ключевой факт:** их рабочий мак-билд использует **ту же старую LuaJIT 2.1.0-beta3**, причём
+  `LUAJIT_DISABLE_JIT:BOOL=OFF` и `LUAJIT_DISABLE_GC64:BOOL=OFF` (JIT включён!), и в их `lj_mcode.c`
+  **нет** `MAP_JIT` — и всё работает. Значит провал mcode у IX-Ray — это разница **сборки** (их
+  `Externals/LuaJIT-proj/CMakeLists.txt` гоняет их Makefile с `-O3 -fomit-frame-pointer
+  -fno-stack-protector -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -U_FORTIFY_SOURCE`, `arm64_src`,
+  `buildvm_arch.h`), а не отсутствие ARM64-поддержки в LuaJIT. **Это главный неисследованный путь.**
+- LuaJIT и luabind у них — отдельные `.dylib` (`xrLuaJIT.dylib`, `xrLuabind.dylib`; `xrLuabind` линкуется
+  с `@rpath/xrLuaJIT.dylib`) — то же, к чему пришли мы.
+- **Их luabind — свой форк `OpenXRay/luabind-deboostified`** (локальный коммит `8da131b8`, «Safe class
+  registry cache»), а IX-Ray тянет `ForserX/luabind-latest`. Пробовал переключить macOS на их luabind:
+  собирается и линкуется, но дальше начинается **новый API** (`enum_`, `return_reference_to`,
+  `module_[...]`, нет `get_globals`, нет `luabind_memory.h`, нет `functor.hpp`) → нужен **порт всего слоя
+  привязок** (десятки файлов `src/xrScripts/exports`, `src/xrGame`). Для быстрого пути НЕ годится,
+  ветку откатил (в дереве снова старый luabind). У них `functor` возвращён их же файлом
+  `src/xrScriptEngine/Functor.hpp`, `get_globals` заменён на `luabind::globals(L)`.
+- Следующий шаг (дешёвый и по наводке): **повторить их рецепт сборки LuaJIT** для macOS в
+  `cmake/modules/LuaJIT.cmake` (их Makefile-вызов + `arm64_src`) и проверить, работает ли JIT у их
+  версии LuaJIT на этом маке. Если да — их форк LuaJIT + родной luabind IX-Ray и есть рабочая связка,
+  а апгрейд LuaJIT/luabind можно отложить.
