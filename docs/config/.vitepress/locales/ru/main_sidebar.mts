@@ -53,6 +53,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'Общая информация', link: '/gameplay/equipment/general-information' },
             { text: 'Стекло маски и капли дождя', link: '/gameplay/equipment/visor-glass' },
           { text: 'Приборы ночного видения', link: '/gameplay/equipment/night-vision' },
+          { text: 'Реакция AI на фонарь актёра', link: '/gameplay/equipment/actor-light-perception' },
           { text: 'Апгрейды предметов', link: '/gameplay/equipment/item-upgrades' },
         ],
       },

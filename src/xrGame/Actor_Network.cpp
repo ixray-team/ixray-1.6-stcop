@@ -736,6 +736,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 void CActor::net_Destroy	()
 {
+	LightPerception.Reset();
 	ResetCameraFocus();
 	CActorAuraPostEffectsBalancer::clear_all	();
 
@@ -811,6 +812,7 @@ void CActor::net_Destroy	()
 
 void CActor::net_Relcase(CObject* O)
 {
+	LightPerception.Reset();
 	ReleaseCameraFocusTarget(O);
 	VERIFY(O);
 	CGameObject* GO = O->cast_game_object();

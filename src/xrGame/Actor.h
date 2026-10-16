@@ -23,6 +23,7 @@
 #include "HudAnimatorManager.h"
 #include "nvg.h"
 #include "CameraFocus.h"
+#include "ActorLightPerception.h"
 
 using namespace ACTOR_DEFS;
 
@@ -91,6 +92,7 @@ class CActor:
 private:
 	typedef CEntityAlive	inherited;
 	CameraFocus Focus;
+	ActorLightPerception LightPerception;
 	CGameObject* FocusTarget = nullptr;
 	Fvector FocusPoint = {};
 	Fvector FocusOffset = {};
@@ -109,6 +111,7 @@ public:
 										CActor				();
 	virtual								~CActor				();
 	void OnFrame();
+	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 
 									public:

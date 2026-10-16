@@ -15,6 +15,7 @@ public:
 						~CMonsterEnemyMemory	();
 
 	void				init_external			(CBaseMonster *M, TTime mem_time);
+	void RememberLightEnemy(const CEntityAlive& Target);
 	void				update					();
 
 	// -----------------------------------------------------
