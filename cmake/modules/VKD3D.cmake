@@ -103,6 +103,21 @@ if(NOT vkd3d_POPULATED)
         REQUIRED
     )
 
+    # AI: the renderer loads these next to its binary at run time, and bin/<config> is already on
+    # AI: the run path of the targets (see cmake/clang.cmake), so the dylibs are copied there while
+    # AI: configuring. Only the versioned files are used, they are what the @rpath entries name.
+    if(CMAKE_BUILD_TYPE)
+        set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+    else()
+        set(VKD3D_RUNTIME_DIR "${CMAKE_BINARY_DIR}/bin")
+    endif()
+    foreach(VKD3D_DYLIB IN LISTS VKD3D_BUILT_DYLIBS)
+        get_filename_component(VKD3D_DYLIB_NAME "${VKD3D_DYLIB}" NAME)
+        if(VKD3D_DYLIB_NAME MATCHES "^libvkd3d.*\\.[0-9]+\\.dylib$")
+            file(COPY "${VKD3D_DYLIB}" DESTINATION "${VKD3D_RUNTIME_DIR}")
+        endif()
+    endforeach()
+
     set(VKD3D_LIBRARIES "${VKD3D_UTILS_LIBRARY}" CACHE FILEPATH "vkd3d shader compiler library" FORCE)
     set(VKD3D_INCLUDE_DIRS "${vkd3d_SOURCE_DIR}/include" CACHE PATH "vkd3d include directory" FORCE)
     set(VKD3D_DYLIBS "${VKD3D_BUILT_DYLIBS}" CACHE STRING "vkd3d run-time libraries" FORCE)

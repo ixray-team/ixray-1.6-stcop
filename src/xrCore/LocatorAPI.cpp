@@ -1609,6 +1609,17 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 	file desc_f;
 	desc_f.name = file_name;
 	files_it I = m_files.find(desc_f);
+
+	// AI: ValidPath() rewrites the separators for the host - on macOS and Linux it turns the Windows
+	// AI: one into '/', while the entries keep whatever the game configs carried. Look the unmodified
+	// AI: key up as well, otherwise a name is never found when the two forms differ (on Windows this
+	// AI: is the same lookup: ValidPath() is the identity there).
+	if (I == m_files.end())
+	{
+		desc_f.name = InputPath;
+		I = m_files.find(desc_f);
+	}
+
 	return (I);
 }
 
