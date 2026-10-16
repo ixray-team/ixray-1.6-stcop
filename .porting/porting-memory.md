@@ -590,3 +590,22 @@ cmake -S . -B build-macos -G Ninja \
 - Старт небыстрый: до меню ~4 минуты (шейдеры + загрузка). Для наблюдения запускать без `-autotest`.
 - Что дальше: (1) новая игра/загрузка сейва → уровень и геймплей, (2) проверить ввод (мышь/клавиатура)
   и звук в игре, (3) при желании — убрать временные бэкапы в build-дереве.
+
+**Звук починен: движок падал на инициализации OpenAL**
+
+- Симптом: движок умирал на старте с `terminating due to uncaught exception of type
+  std::__1::system_error: mutex lock failed: Invalid argument` — окно исчезало ещё до меню.
+- Отладчик (`breakpoint set -n __cxa_throw`) показал точную цепочку: `alGenSources` →
+  `al::Context::throw_error` в `libopenal` → `CSoundRender_TargetA::_initialize`
+  (`src/xrSound/SoundRender_TargetA.cpp:33`) → `CSoundRender_CoreA::_initialize` → `InitSound2()`
+  (`x_ray.cpp:170`) → `EngineLoadStage4()`.
+- Причина: на маке стоит **OpenAL Soft 1.25** (Homebrew), который **бросает C++ исключение** при ошибке,
+  а движок написан под OpenAL, который просто выставлял код ошибки: его код ниже как раз читает
+  `alGetError()` и умеет продолжать без звука — до этой проверки дело просто не доходило.
+- Правка: вызов `alGenSources` обёрнут в `try/catch` (с пояснением), ошибка пишется в лог, цель звука не
+  инициализируется, движок продолжает работу по своей же error-ветке.
+- Проверено прогоном: движок доходит до меню и играет `gamedata/sounds/music/menu.ogg`, исключений нет.
+  Строка `! SOUND: OpenAL: Max targets - 256` — нормальное поведение: то же самое в рабочем OpenXRay
+  (там `alcCreateContext(pDevice, nullptr)` и такой же предел целей).
+- Ещё одно наблюдение: `-nosound` в этой ветке не отключает звук — `InitSound1/2` вызываются в
+  `EngineLoadStage4` безусловно.
