@@ -356,7 +356,7 @@ void TAmmoBones::SAmmoBonesParams::Load(const shared_str& section, s32 base_node
 		}
 	}
 
-	static shared_str configuration;
+	shared_str configuration;
 
 	if (ConfigurationMap.size() > 0)
 	{

@@ -369,17 +369,21 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bM
 		}
 		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
 
-		auto& Notify = m_Motions[motion_ID.slot].motions.motion_notify(motion_ID.idx, (*bones)[P.bones[i]]->GetSelfID());
-		if (!Notify.data.empty())
+		const anim_notify_prefetched* Notify = m_Motions[motion_ID.slot].motions.motion_notify(motion_ID.idx, (*bones)[P.bones[i]]->GetSelfID());
+		if (Notify != nullptr && !Notify->data.empty())
 		{
 			auto& BoneNotifySlot = B->notifies[(*bones)[P.bones[i]]->GetSelfID()];
-			BoneNotifySlot.keyframes.resize(Notify.order.size());
-			BoneNotifySlot.current_notify_index = B->speed > 0 ? 0 : Notify.order.size()-1;
-			for (u32 i = 0; i < Notify.order.size(); ++i)
+			BoneNotifySlot.keyframes.resize(Notify->order.size());
+			BoneNotifySlot.current_notify_index = B->speed > 0 ? 0 : Notify->order.size()-1;
+			for (u32 i = 0; i < Notify->order.size(); ++i)
 			{
 				auto& notify = BoneNotifySlot.keyframes[i];
-				notify.key = Notify.order[i];
-				notify.assigned = Notify.data[notify.key];
+				notify.key = Notify->order[i];
+				auto Data = Notify->data.find(notify.key);
+				if (Data != Notify->data.end())
+				{
+					notify.assigned = Data->second;
+				}
 			}
 		}
 	}
