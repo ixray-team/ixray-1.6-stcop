@@ -197,3 +197,14 @@ inline void _mm256_stream_ps(float* destination, const __m256& source)
 #ifndef _RELEASE
 #define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
 #endif
+
+// AI: the engine's own _RELEASE macro (xrEngine/defines.h) expands to (x) = NULL, and NULL is
+// AI: not visible in every translation unit here, which made the macro fail to parse. Provided
+// AI: once, for both C and C++ consumers.
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL nullptr
+#else
+#define NULL ((void*)0)
+#endif
+#endif
