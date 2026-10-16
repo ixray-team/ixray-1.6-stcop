@@ -889,6 +889,10 @@ void CRender::UpdateDefaultShaderOptions()
 
 	{
 		xrSRWLockGuard Guard(DefaultShaderOptionsLock);
+		if (!DefaultShaderOptions.empty() && DefaultShaderOptions != Options)
+		{
+			Msg("* Default shader options changed: %u -> %u", u32(DefaultShaderOptions.size()), u32(Options.size()));
+		}
 		DefaultShaderOptions = std::move(Options);
 	}
 	clearAllShaderOptions();

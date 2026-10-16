@@ -1752,6 +1752,7 @@ player_hud::~player_hud()
 
 void player_hud::load(const shared_str& player_hud_sect)
 {
+	PendingDefaultSect = nullptr;
 	if (player_hud_sect == m_sect_name)
 	{
 		return;
@@ -1955,6 +1956,7 @@ bool player_hud::need_render_hands()
 
 void player_hud::render_hud()
 {
+	EnsureDefaultLoaded();
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 	bool animatorPlaying = m_animator_item && m_animator_item->IsPlaying;
@@ -2136,6 +2138,7 @@ static Fmatrix scale_layer_offset(const Fmatrix& offset, float factor)
 
 void player_hud::update(const Fmatrix& cam_trans)
 {
+	EnsureDefaultLoaded();
 	if(!m_attached_items[0] && !m_attached_items[1] && !m_animator_item)
 	{
 		m_transform.set(cam_trans);
@@ -3098,6 +3101,7 @@ void player_hud::OnShotAnimation(const attachable_hud_item* item)
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 {
+	EnsureDefaultLoaded();
 	xr_vector<attachable_hud_item*>::iterator it = m_pool.begin();
 	xr_vector<attachable_hud_item*>::iterator it_e = m_pool.end();
 	for(;it!=it_e;++it)
@@ -3158,6 +3162,7 @@ bool player_hud::allow_activation(CHudItem* item)
 
 void player_hud::attach_item(CHudItem* item)
 {
+	EnsureDefaultLoaded();
 	attachable_hud_item* pi = create_hud_item(item->HudSection());
 	int item_idx = pi->m_attach_place_idx;
 
@@ -3824,11 +3829,47 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 	}
 }
 
+static shared_str DefaultPlayerHudSection()
+{
+	static shared_str actorHudDefault = pSettings->read_if_exists<str_c>(
+		"actor", "player_hud_default", "actor_hud");
+	return actorHudDefault;
+}
+
 void player_hud::load_default()
 {
-	static auto actorHudDefault = pSettings->read_if_exists<str_c>(
-		"actor", "player_hud_default", "actor_hud");
-	load(actorHudDefault);
+	load(DefaultPlayerHudSection());
+}
+
+void player_hud::RequestDefault()
+{
+	PendingDefaultSect = DefaultPlayerHudSection();
+	for (const char* Line : { "visual", "legs_visual", "visual_watches" })
+	{
+		if (pSettings->line_exist(PendingDefaultSect, Line))
+		{
+			::Render->model_Request(pSettings->r_string(PendingDefaultSect, Line));
+		}
+	}
+}
+
+void player_hud::FinishDefaultLoad(bool IsEarly)
+{
+	if (!PendingDefaultSect.size())
+	{
+		return;
+	}
+
+#ifdef DEBUG
+	if (IsEarly)
+	{
+		Msg("! player_hud loaded before the end of level loading");
+	}
+#endif
+	PROF_EVENT("player_hud::FinishDefaultLoad");
+	const shared_str Section = PendingDefaultSect;
+	PendingDefaultSect = nullptr;
+	load(Section);
 }
 
 animator_item* player_hud::create_animator_item(CHudAnimatorBase* animator, const shared_str& section)

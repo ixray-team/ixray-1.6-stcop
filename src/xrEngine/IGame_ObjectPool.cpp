@@ -10,19 +10,6 @@ namespace
 {
 	thread_local xr_vector<std::function<void()>>* g_DeferredPrimaryWork = nullptr;
 	thread_local bool g_PrefetchProfiled = false;
-
-	struct PrefetchItem
-	{
-		CObject*								Object = nullptr;
-		shared_str								Section;
-		xr_vector<std::function<void()>>		PrimaryWork;
-	};
-
-	void LoadPrefetchItem(PrefetchItem& Item)
-	{
-		PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
-		Item.Object->Load(Item.Section.c_str());
-	}
 }
 
 IGame_ObjectPool::IGame_ObjectPool(void)
@@ -53,13 +40,13 @@ IGame_ObjectPool::~IGame_ObjectPool(void)
 void IGame_ObjectPool::prefetch()
 {
 	R_ASSERT(m_PrefetchObjects.empty());
+	R_ASSERT(m_PendingPrefetch.empty());
 
 	// prefetch objects
 	const xr_string section = g_pGamePersistent->GetPrefetchSection("prefetch_objects_");
 	CInifile::Sect const& sect = pSettings->r_section(section.c_str());
 
-	xr_vector<PrefetchItem> Items;
-	Items.reserve(sect.Data.size());
+	m_PendingPrefetch.reserve(sect.Data.size());
 	for (const CInifile::Item& item : sect.Data)
 	{
 		if (!pSettings->section_exist(item.first.c_str()))
@@ -69,15 +56,27 @@ void IGame_ObjectPool::prefetch()
 		}
 
 		CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
-		PrefetchItem& Item = Items.emplace_back();
+		PrefetchItem& Item = m_PendingPrefetch.emplace_back();
 		Item.Section = item.first;
 		PROF_EVENT("IGame_ObjectPool::prefetch: NEW_INSTANCE");
 		Item.Object = (CObject*)NEW_INSTANCE(CLS);
 	}
 
-	if (g_MtPrefetch)
+	if (!g_MtPrefetch)
 	{
-		xr_parallel_for(size_t(0), Items.size(), [&Items](size_t Index)
+		for (PrefetchItem& Item : m_PendingPrefetch)
+		{
+			PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
+			Item.Object->Load(Item.Section.c_str());
+		}
+		FinishPrefetch();
+		return;
+	}
+
+	m_IsPrefetchRunning = true;
+	m_PrefetchTasks.run([this]()
+	{
+		xr_parallel_for(size_t(0), m_PendingPrefetch.size(), [this](size_t Index)
 		{
 			if (!g_PrefetchProfiled && !g_AppInfo.IsPrimaryThread())
 			{
@@ -86,21 +85,40 @@ void IGame_ObjectPool::prefetch()
 			}
 
 			xrTaskBlockingScope Blocking;
-			PrefetchItem& Item = Items[Index];
+			PrefetchItem& Item = m_PendingPrefetch[Index];
 			g_DeferredPrimaryWork = &Item.PrimaryWork;
-			LoadPrefetchItem(Item);
+			{
+				PROF_EVENT("IGame_ObjectPool::prefetch: CObject::Load");
+				Item.Object->Load(Item.Section.c_str());
+			}
 			g_DeferredPrimaryWork = nullptr;
 		});
-	}
-	else
+	});
+}
+
+void IGame_ObjectPool::WaitPrefetch()
+{
+	if (!m_IsPrefetchRunning)
 	{
-		for (PrefetchItem& Item : Items)
-		{
-			LoadPrefetchItem(Item);
-		}
+		return;
 	}
 
-	for (PrefetchItem& Item : Items)
+	PROF_EVENT("IGame_ObjectPool::WaitPrefetch");
+	m_PrefetchTasks.wait();
+	m_IsPrefetchRunning = false;
+}
+
+void IGame_ObjectPool::FinishPrefetch()
+{
+	VERIFY(g_AppInfo.IsPrimaryThread());
+	if (m_PendingPrefetch.empty())
+	{
+		return;
+	}
+
+	PROF_EVENT("IGame_ObjectPool::FinishPrefetch");
+	WaitPrefetch();
+	for (PrefetchItem& Item : m_PendingPrefetch)
 	{
 		for (std::function<void()>& Action : Item.PrimaryWork)
 		{
@@ -109,10 +127,18 @@ void IGame_ObjectPool::prefetch()
 		VERIFY2(Item.Object->cNameSect().c_str(), Item.Section.c_str());
 		m_PrefetchObjects.push_back(Item.Object);
 	}
+	m_PendingPrefetch.clear();
 }
 
 void IGame_ObjectPool::clear()
 {
+	WaitPrefetch();
+	for (PrefetchItem& Item : m_PendingPrefetch)
+	{
+		xr_delete(Item.Object);
+	}
+	m_PendingPrefetch.clear();
+
 	// Clear POOL
 	ObjectVecIt it			= m_PrefetchObjects.begin();
 	ObjectVecIt itE			= m_PrefetchObjects.end();

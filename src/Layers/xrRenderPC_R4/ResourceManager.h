@@ -121,7 +121,7 @@ private:
 public:
 	CTextureDescrMngr									m_textures_description;
 	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
-	bool												bDeferredLoad;
+	std::atomic<bool>									bDeferredLoad;
 	// Miscelaneous
 	void							_ParseList			(sh_list& dest, const char* names);
 	IBlender*						_GetBlender			(const char* Name);
