@@ -12,13 +12,14 @@ enum ECameraRigChannel
 	crcAction,
 	crcShot,
 	crcMove,
+	crcSprint,
 	crcCount
 };
 
 struct SCameraRigParams
 {
-	float	blend_in[crcCount]	= { 0.12f, 0.08f, 0.f, 0.15f };
-	float	blend_out[crcCount]	= { 0.25f, 0.15f, 0.08f, 0.3f };
+	float	blend_in[crcCount]	= { 0.12f, 0.08f, 0.f, 0.15f, 0.1f };
+	float	blend_out[crcCount]	= { 0.25f, 0.15f, 0.08f, 0.3f, 0.2f };
 	float	fov_stiffness		= 500.f, fov_damping = 45.f;
 	float	shot_fov_kick		= 0.f, aim_fov_kick_scale = 0.5f;
 	Fvector	punch				= { 0.45f, 0.2f, 0.35f };
@@ -127,6 +128,7 @@ public:
 
 	bool					PlayAnim		(const char* name, ECameraRigChannel channel, float speed, bool hud_affect, const Fvector& scale_hpb = { 1.f, 1.f, 1.f }, const Fvector& scale_pos = { 1.f, 1.f, 1.f });
 	void					StopChannel		(ECameraRigChannel channel);
+	void					SeekChannel		(ECameraRigChannel channel, float progress);
 	void					PreviewAnim		(const char* name, ECameraRigChannel channel, float time, float speed);
 	void					ResetWeaponCache();
 	void					OnShot			(CWeapon* weapon);

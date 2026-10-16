@@ -948,6 +948,7 @@ public:
 	float			SprintPoseTarget		();
 	float			SprintLayerDeviation	() const;
 	void			ResolveSprintAdditive	(attachable_hud_item* item);
+	float			SprintEndMatch		(float start_progress) const;
 	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f);
 	void			StopSprintAdditive		(float blend);
 	float			SprintAdditiveProgress	(MotionID motion) const;
@@ -990,7 +991,7 @@ private:
 	void			HandsIkFingers		(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result);
+	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);
