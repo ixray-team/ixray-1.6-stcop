@@ -662,3 +662,30 @@ cmake -S . -B build-macos -G Ninja \
   стартовую функцию меню после N секунд) — помечать как TEMPORARY и убирать после проверки.
 - Полезно: `-$ <команда> <параметр>` = выполнить консольную команду после загрузки уровня
   (`Level_start.cpp:273`), команды консоли: `load` (`CCC_ALifeLoadFrom`), `main_menu` (`CCC_MainMenu`).
+
+**Как стартовать новую игру командой (найдено для автотестов)**
+
+Меню не жмётся извне, но «Новая игра» — это просто консольные команды
+(`gamedata/scripts/ui_main_menu.script`, `main_menu:StartGame`):
+
+```
+g_game_difficulty gd_novice
+start server(all/single/alife/new) client(localhost)
+main_menu off
+```
+
+Их можно выполнить откуда угодно: из консоли движка (`Console->Execute(...)`), через
+`-autotest_cmd "<команды>"` или `run_string`/`run_script` (команды консоли из
+`src/xrGame/console_commands.cpp`). Временный «пульт» в `CRenderDevice::message_loop` (по переменной
+окружения, помечен TEMPORARY) для этого подходит, но откатывается: синтетические события от другого
+процесса до окна не доходят, а команды консоли — работают.
+
+**Следующее препятствие (после перехода на родную gamedata)**
+
+- При старте движок упирается в модальную плашку `Fatal Error`:
+  `File: src/xrCore/FS.cpp:56 / Function: FileDownload / Description: Can't read from file /`
+  `Arguments: _appdata_ixray_/logs/` — то есть каталог логов читают как файл (стек-путь идёт через
+  `CLocatorAPI` → `FileDownload`). Похоже на манифест/список файлов системы аддонов IX-Ray
+  (`xrAddons`/DLTX), где одним из элементов оказался каталог.
+- Пока не исследовано. Плашка модальная и блокирует движок — в автотестах от неё спасает
+  watchdog/авто-закрытие, а в обычном прогоне нужно закрыть руками.
