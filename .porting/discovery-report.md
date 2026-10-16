@@ -160,4 +160,4 @@ CMake preset (1.1) → Platform APPLE (1.2) → xrCore (1.3) → xrSound/xrScrip
 | Windows-сборка для baseline | `~/Hermes/ixray-mac-port/win-build/` |
 | Копия CoP для baseline | `~/Hermes/ixray-mac-port/cop-baseline/` |
 | GPTK-скиллы/дока/сэмпл | `~/Hermes/ixray-mac-port/gptk/` |
-| План порта | `~/Hermes/ixray-mac-port/.hermes/plans/2026-10-16_124500-ixray-macos-metal-port.md` |
+| План порта | `~/Hermes/ixray-mac-port/.hermes/plans/2026-10-16_124500-ixray-macos-dxvk-native-port.md` |
