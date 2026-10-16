@@ -26,6 +26,97 @@ static constexpr const char* DLTX_DELETE = "DLTX_DELETE";
 
 XRCORE_API CInifile* pSettings = nullptr;
 
+XRCORE_API bool g_IniMemoryCache = true;
+
+namespace
+{
+	class CIniMemoryCache final
+	{
+	public:
+		static constexpr size_t MaxTextSize = 64 * 1024;
+
+		bool Find(xr_string_view Text, size_t Hash, CInifile::Root& Target)
+		{
+			xrSRWLockGuard Guard(Lock, true);
+			auto It = Entries.find(Hash);
+			if (It == Entries.end())
+			{
+				return false;
+			}
+
+			for (const Entry& Item : It->second)
+			{
+				if (xr_string_view(Item.Text) == Text)
+				{
+					Target = Item.Data;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		void Add(xr_string_view Text, size_t Hash, const CInifile::Root& Data)
+		{
+			xrSRWLockGuard Guard(Lock);
+			xr_vector<Entry>& Bucket = Entries[Hash];
+			for (const Entry& Item : Bucket)
+			{
+				if (xr_string_view(Item.Text) == Text)
+				{
+					return;
+				}
+			}
+			Bucket.push_back(Entry{ xr_string(Text.data(), Text.size()), Data });
+		}
+
+		void Clear()
+		{
+			xr_hash_map<size_t, xr_vector<Entry>> Old;
+			{
+				xrSRWLockGuard Guard(Lock);
+				Old.swap(Entries);
+			}
+		}
+
+	private:
+		struct Entry
+		{
+			xr_string Text;
+			CInifile::Root Data;
+		};
+
+		xrSRWLock Lock;
+		xr_hash_map<size_t, xr_vector<Entry>> Entries;
+	};
+
+	CIniMemoryCache& MemoryCache()
+	{
+		static CIniMemoryCache* Cache = new CIniMemoryCache();
+		return *Cache;
+	}
+
+	[[maybe_unused]] bool IsSameData(const CInifile::Root& A, const CInifile::Root& B)
+	{
+		bool IsSame = A.size() == B.size();
+		for (size_t SectIndex = 0; IsSame && SectIndex < A.size(); ++SectIndex)
+		{
+			const CInifile::Sect& SectA = A[SectIndex];
+			const CInifile::Sect& SectB = B[SectIndex];
+			IsSame = SectA.Name == SectB.Name && SectA.Data.size() == SectB.Data.size();
+			for (size_t ItemIndex = 0; IsSame && ItemIndex < SectA.Data.size(); ++ItemIndex)
+			{
+				IsSame = SectA.Data[ItemIndex].first == SectB.Data[ItemIndex].first && SectA.Data[ItemIndex].second == SectB.Data[ItemIndex].second;
+			}
+		}
+		return IsSame;
+	}
+}
+
+void CInifile::ClearMemoryCache()
+{
+	MemoryCache().Clear();
+}
+
 CInifile* CInifile::Create(const char* szFileName, bool ReadOnly)
 {	return new CInifile(szFileName,ReadOnly); }
 
@@ -120,7 +211,34 @@ CInifile::CInifile(IReader* F, const char* path, allow_include_func_t allow_incl
 	m_flags.set(eSaveAtEnd, false);
 	m_flags.set(eReadOnly, true);
 	m_flags.set(eOverrideNames, false);
+
+	const xr_string_view Text((const char*)F->pointer() - F->tell(), size_t(F->length()));
+	if (Text.empty())
+	{
+		AllowIncludeFunc = allow_include_func;
+		return;
+	}
+
+	const bool IsCached = g_IniMemoryCache && allow_include_func == nullptr && Text.size() <= CIniMemoryCache::MaxTextSize && Text.find("#include") == xr_string_view::npos;
+	if (!IsCached)
+	{
+		Load(F, path, allow_include_func);
+		return;
+	}
+
+	const size_t Hash = std::hash<xr_string_view>()(Text);
+	if (MemoryCache().Find(Text, Hash, DATA))
+	{
+#ifdef DEBUG
+		CInifile Check((const char*)nullptr, true, false, false);
+		Check.Load(F, path);
+		VERIFY2(IsSameData(DATA, Check.DATA), (xr_string("Ini memory cache differs from a fresh parse: ") + xr_string(Text.data(), std::min<size_t>(Text.size(), 128))).c_str());
+#endif
+		return;
+	}
+
 	Load(F, path, allow_include_func);
+	MemoryCache().Add(Text, Hash, DATA);
 }
 
 CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveAtEnd, u32 sect_count, allow_include_func_t allow_include_func)
@@ -141,18 +259,7 @@ CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveA
 	{
 #ifdef DEBUG
 		CInifile Check(szFileName, true, true, false);
-		bool IsSame = Check.DATA.size() == DATA.size();
-		for (size_t SectIndex = 0; IsSame && SectIndex < DATA.size(); ++SectIndex)
-		{
-			const Sect& A = DATA[SectIndex];
-			const Sect& B = Check.DATA[SectIndex];
-			IsSame = A.Name == B.Name && A.Data.size() == B.Data.size();
-			for (size_t ItemIndex = 0; IsSame && ItemIndex < A.Data.size(); ++ItemIndex)
-			{
-				IsSame = A.Data[ItemIndex].first == B.Data[ItemIndex].first && A.Data[ItemIndex].second == B.Data[ItemIndex].second;
-			}
-		}
-		VERIFY2(IsSame, (xr_string("Ini read-ahead differs from a fresh parse: ") + szFileName).c_str());
+		VERIFY2(IsSameData(DATA, Check.DATA), (xr_string("Ini read-ahead differs from a fresh parse: ") + szFileName).c_str());
 #endif
 		return;
 	}
@@ -1682,13 +1789,6 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	AllowIncludeFunc = allow_include_func;
 	R_ASSERT(F);
 	DATA.reserve(16);
-	OverrideModifyListData.reserve(16);
-	FinalData.reserve(16);
-	BaseData.reserve(16);
-	OverrideData.reserve(16);
-	BaseParentDataMap.reserve(16);
-	OverrideParentDataMap.reserve(16);
-	OverrideToFilename.reserve(16);
 	// Read contents of root file
 	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true, m_file_name[0] ? m_file_name : "<memory>");
 

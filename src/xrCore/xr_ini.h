@@ -36,6 +36,7 @@ public:
 
 	static CInifile*	Create		( str_c szFileName, bool ReadOnly=TRUE);
 	static void			Destroy		( CInifile*);
+	static void			ClearMemoryCache();
     static IC BOOL		IsBOOL		( str_c B)	{ return (xr_strcmp(B,"on")==0 || xr_strcmp(B,"yes")==0 || xr_strcmp(B,"true")==0 || xr_strcmp(B,"1")==0);}
 
 protected:
@@ -298,3 +299,4 @@ public:
 
 // Main configuration file
 extern XRCORE_API CInifile* pSettings;
+extern XRCORE_API bool g_IniMemoryCache;

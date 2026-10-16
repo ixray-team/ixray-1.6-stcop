@@ -124,6 +124,7 @@ void xrCore::_destroy()
 		ClearCachedIniFiles();
 		xr_delete(cached_ini_map);
 		xr_delete(g_IniReadAhead);
+		CInifile::ClearMemoryCache();
 		FS._destroy();
 		EFS._destroy();
 		xr_delete(xr_FS);
