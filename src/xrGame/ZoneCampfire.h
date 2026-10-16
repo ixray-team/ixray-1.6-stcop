@@ -1,6 +1,7 @@
 #pragma once
 #include "MosquitoBald.h"
 
+XREFLECT(LuaExport)
 class CZoneCampfire final : public CMosquitoBald
 {
 	using inherited = CMosquitoBald;
@@ -18,17 +19,19 @@ protected:
 	virtual void UpdateWorkload(u32 dt);
 
 public:
+	XPROPERTY(LuaConstructor)
 	CZoneCampfire();
 	virtual ~CZoneCampfire();
 	virtual void Load(const char* section);
 	virtual void GoEnabledState();
 	virtual void GoDisabledState();
 
+	XPROPERTY(LuaCallable, Name="turn_on")
 	void turn_on_script();
+	XPROPERTY(LuaCallable, Name="turn_off")
 	void turn_off_script();
+	XPROPERTY(LuaCallable)
 	bool is_on();
 	virtual void shedule_Update(u32 dt);
 	CZoneCampfire* cast_zone_campfire() override { return this; }
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

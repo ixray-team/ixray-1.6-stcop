@@ -3,6 +3,8 @@
 #include "linker.h"
 
 #ifdef XRSE_FACTORY_EXPORTS
-#undef SCRIPTS_API
-#define SCRIPTS_API
+#	undef SCRIPTS_API
+#	define SCRIPTS_API
 #endif
+
+#include "xrReflect.h"

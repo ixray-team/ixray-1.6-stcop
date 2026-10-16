@@ -8,6 +8,10 @@ set(IXRAY_FOLDER_GAME FOLDER "Engine/Game")
 add_subdirectory("xrCore")
 
 if(NOT IXRAY_COMPRESSOR_ONLY)
+    # Build-time generator for XREFLECT Lua bindings
+    add_subdirectory("utils/xrReflectTool")
+    set_target_properties(xrReflectTool PROPERTIES ${IXRAY_FOLDER_PREBUILD})
+
     add_subdirectory("xrSound")
     add_subdirectory("xrNetServer")
     add_subdirectory("xrEngine")

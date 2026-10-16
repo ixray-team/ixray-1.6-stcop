@@ -1,13 +1,14 @@
 #pragma once
 
 #include "AnomalyZone.h"
-#include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport)
 class CMosquitoBald : public CAnomalyZone
 {
 	using inherited = CAnomalyZone;
 
 public:
+	XPROPERTY(LuaConstructor)
 	CMosquitoBald();
 	virtual ~CMosquitoBald();
 
@@ -22,6 +23,4 @@ protected:
 	//для того чтобы blowout обновился один раз
 	//после того как зона перключилась в другое состояние
 	bool m_bLastBlowoutUpdate;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

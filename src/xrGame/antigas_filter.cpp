@@ -68,14 +68,3 @@ void AntigasFilter::Load(const char* section)
 		clamp(m_FilterDamage[ALife::eHitTypeLightBurn], 0.0f, 1.0f);
 	}
 }
-
-using namespace luabind;
-#pragma optimize("s",on)
-void AntigasFilter::script_register(lua_State* L)
-{
-	module(L)
-		[
-			class_<AntigasFilter, CGameObject>("AntigasFilter")
-				.def(constructor<>())
-		];
-}

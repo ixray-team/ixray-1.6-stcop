@@ -203,14 +203,3 @@ bool CNVG::OnVNGPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox)
 
     return false;
 }
-
-using namespace luabind;
-#pragma optimize("s",on)
-void CNVG::script_register(lua_State* L)
-{
-    module(L)
-        [
-            class_<CNVG, CGameObject>("CNVG")
-                .def(constructor<>())
-        ];
-}

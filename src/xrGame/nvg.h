@@ -1,7 +1,6 @@
 #pragma once
 
 #include "inventory_item_object.h"
-#include "../xrScripts/script_export_space.h"
 #include "IPowerManager.h"
 #include "EffectorNightVision.h"
 
@@ -9,6 +8,7 @@
 
 class CNightVisionEffector;
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CNVG final : 
 	public CInventoryItemObject,
 	public IPowerManager
@@ -21,6 +21,7 @@ private:
 	CNightVisionEffector* m_nvg_effector;
 
 public:
+	XPROPERTY(LuaConstructor)
 	CNVG() = default;
 	~CNVG() = default;
 	virtual void Load(const char* section) override;
@@ -51,6 +52,4 @@ public:
 
 	bool OnVNGPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
 	bool OnVNGPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
