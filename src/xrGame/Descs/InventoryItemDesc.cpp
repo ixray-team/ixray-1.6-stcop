@@ -29,17 +29,11 @@ void SInventoryItemDesc::Load(const shared_str& Section)
 		}
 	}
 
-	m_can_trade = pSettings->read_if_exists<bool>(Section, "can_trade", true);
-	m_highlight_equipped = !!pSettings->read_if_exists<bool>(Section, "highlight_equipped", false);
-	m_icon_name = pSettings->read_if_exists<str_c>(Section, "icon_name", nullptr);
-
 	const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
-	m_legacy_upgrade_mode = pSettings->read_if_exists<bool>(Section, "legacy_upgrade_mode", isLegacyUpgrade);
+	m_legacy_upgrade_mode = isLegacyUpgrade;
 
-	m_custom_text_auto_uses = pSettings->read_if_exists<bool>(Section, "item_custom_text_auto_uses", false);
+	XReflect::ReadIni(*this, Section);
+
 	m_custom_text_anchor = CInventoryItem::ParseInvCellAnchor(pSettings->read_if_exists<str_c>(Section, "item_custom_text_anchor", "bottom_right"));
 	m_custom_mark_anchor = CInventoryItem::ParseInvCellAnchor(pSettings->read_if_exists<str_c>(Section, "item_custom_mark_anchor", "bottom_right"));
-
-	m_holder_range_modifier = pSettings->read_if_exists<float>(Section, "holder_range_modifier", 1.f);
-	m_holder_fov_modifier = pSettings->read_if_exists<float>(Section, "holder_fov_modifier", 1.f);
 }

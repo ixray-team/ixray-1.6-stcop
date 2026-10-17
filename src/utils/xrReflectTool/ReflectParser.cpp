@@ -368,10 +368,10 @@ namespace XReflectTool
 			"int", "char", "float", "double", "long", "short", "unsigned", "signed", "bool", "void", "const", "volatile", "wchar_t", "auto"
 		};
 
-		const std::set<std::string> ClassSpecifiers = { "LuaExport", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
+		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
 		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Name", "Prefix", "Exclude" };
 		const std::set<std::string> FunctionSpecifiers = { "LuaExport", "Name", "Condition", "Self", "Policies" };
-		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Policies", "Prefix", "Exclude" };
+		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Policies", "Prefix", "Exclude", "IniRead", "IniReadExist", "If" };
 
 		// Lua-bindable operators and the luabind expression operator for each.
 		const std::set<std::string> SupportedOperators = { "+", "-", "*", "/", "==", "<", "<=", ">", ">=" };
@@ -809,15 +809,17 @@ namespace XReflectTool
 					PendingClass = false;
 					if (CheckSpecifiers(PendingSpecs, ClassSpecifiers))
 					{
-						if (!PendingSpecs.Has("LuaExport"))
+						if (!PendingSpecs.Has("LuaExport") && !PendingSpecs.Has("IniRead"))
 						{
-							Error(PendingSpecs.Line, "XREFLECT on a class requires LuaExport");
+							Error(PendingSpecs.Line, "XREFLECT on a class requires LuaExport or IniRead");
 						}
 
 						ClassInfo Class;
 						Class.File = File.Path;
 						Class.Line = PendingSpecs.Line;
 						Class.QualifiedName = ScopePrefix(true) + Name;
+						Class.LuaExport = PendingSpecs.Has("LuaExport");
+						Class.IniRead = PendingSpecs.Has("IniRead");
 						Class.LuaName = PendingSpecs.Get("Name", Name);
 						Class.Condition = PendingSpecs.Condition;
 						Class.RuntimeCondition = PendingSpecs.Get("Condition");
@@ -897,6 +899,30 @@ namespace XReflectTool
 
 				ClassInfo& Class = File.Classes[Owner->ClassIndex];
 
+				if (Specs.Has("IniRead") && Specs.Has("IniReadExist"))
+				{
+					Error(Specs.Line, "use either IniRead or IniReadExist");
+					return Next;
+				}
+				bool IsIniField = Specs.Has("IniRead") || Specs.Has("IniReadExist");
+				if (IsIniField && !Class.IniRead)
+				{
+					Error(Specs.Line, "XPROPERTY(IniRead / IniReadExist) requires XREFLECT(IniRead) on the class");
+					return Next;
+				}
+				if (!IsIniField && (Specs.Has("If") || (Specs.Has("Prefix") && !Specs.Has("LuaEnum"))))
+				{
+					Error(Specs.Line, "If and Prefix on a field apply to IniRead / IniReadExist only");
+					return Next;
+				}
+
+				bool IsLuaMember = !IsIniField || Specs.Has("LuaReadOnly") || Specs.Has("LuaReadWrite");
+				if (IsLuaMember && !Class.LuaExport)
+				{
+					Error(Specs.Line, "Lua members require XREFLECT(LuaExport) on the class");
+					return Next;
+				}
+
 				if (Text(Index) == "enum")
 				{
 					if (!Specs.Has("LuaEnum"))
@@ -924,6 +950,12 @@ namespace XReflectTool
 
 				MemberInfo Member;
 				Member.Condition = Specs.Condition;
+
+				if (Paren != std::string::npos && IsIniField)
+				{
+					Error(Specs.Line, "IniRead / IniReadExist apply to fields only");
+					return Next;
+				}
 
 				if (Paren != std::string::npos)
 				{
@@ -988,9 +1020,9 @@ namespace XReflectTool
 				}
 
 				bool ReadOnly = Specs.Has("LuaReadOnly");
-				if (!ReadOnly && !Specs.Has("LuaReadWrite"))
+				if (!IsIniField && !ReadOnly && !Specs.Has("LuaReadWrite"))
 				{
-					Error(Specs.Line, "XPROPERTY on a field requires LuaReadOnly or LuaReadWrite");
+					Error(Specs.Line, "XPROPERTY on a field requires LuaReadOnly, LuaReadWrite or IniRead");
 					return Next;
 				}
 				if (IsStatic)
@@ -1013,6 +1045,29 @@ namespace XReflectTool
 				Member.Function.CppName = Decl.back().Text;
 				Member.LuaName = Specs.Get("Name", Member.Function.CppName);
 				Member.ReadOnly = ReadOnly;
+				Member.LuaExport = IsLuaMember;
+				Member.IniRead = IsIniField;
+				Member.IniRequired = Specs.Has("IniRead");
+				Member.IniNested = Specs.Has("Prefix");
+				Member.IniKey = Member.IniNested ? Specs.Get("Prefix") : Member.LuaName;
+				if (Member.IniNested && !Member.IniRequired)
+				{
+					Error(Specs.Line, "nested fields with Prefix use IniRead; the nested struct decides per field");
+					return Next;
+				}
+				Member.IniIf = Specs.Get("If");
+				if (Specs.Has("If"))
+				{
+					auto Condition = std::find_if(Class.Members.begin(), Class.Members.end(), [&](const MemberInfo& Other)
+					{
+						return Other.Kind == EMemberKind::Field && Other.IniRead && !Other.IniNested && Other.Function.CppName == Member.IniIf;
+					});
+					if (Condition == Class.Members.end())
+					{
+						Error(Specs.Line, "If must name an IniRead field declared earlier in the class");
+						return Next;
+					}
+				}
 				Class.Members.push_back(std::move(Member));
 				return Next;
 			}
@@ -1333,7 +1388,7 @@ namespace XReflectTool
 				std::vector<std::string> Bases;
 				for (const std::string& Base : Class->PublicBases)
 				{
-					if (const ClassInfo* BaseClass = Resolve(Class, Base))
+					if (const ClassInfo* BaseClass = Resolve(Class, Base); BaseClass && BaseClass->LuaExport)
 					{
 						Bases.push_back(BaseClass->QualifiedName);
 					}

@@ -7,21 +7,7 @@ void SHudItemDesc::Load(const shared_str& HudSection)
 	{
 		return;
 	}
-	m_fHudFov = pSettings->read_if_exists<float>(HudSection, "hud_fov", 0.0f);
-	m_fHudFovFactor = pSettings->read_if_exists<float>(HudSection, "hud_fov_factor", 1.0f);
-
-	m_fLookOutSpeedKoef = pSettings->read_if_exists<float>(HudSection, "lookout_speed_koef", 1.0f);
-	m_fLookOutAmplK = pSettings->read_if_exists<float>(HudSection, "lookout_ampl_k", 1.0f);
-
-	BaseYPRParams.m_fHudYawInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_yaw_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudPitchInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_pitch_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudRollInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_roll_inertia_k", 0.0f);
-	BaseYPRParams.m_fHudInertiaSpeed = pSettings->read_if_exists<float>(HudSection, "hud_inertia_speed", 10.0f);
-
-	ZoomYPRParams.m_fHudYawInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_zoom_yaw_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudPitchInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_zoom_pitch_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudRollInertiaK = pSettings->read_if_exists<float>(HudSection, "hud_zoom_roll_inertia_k", 0.0f);
-	ZoomYPRParams.m_fHudInertiaSpeed = pSettings->read_if_exists<float>(HudSection, "hud_zoom_inertia_speed", 10.0f);
+	XReflect::ReadIni(*this, HudSection);
 
 	Inertion.PitchOffsetR = pSettings->read_if_exists<float>(HudSection, "inertion_pitch_offset_r", PITCH_OFFSET_R);
 	Inertion.PitchOffsetD = pSettings->read_if_exists<float>(HudSection, "inertion_pitch_offset_d", PITCH_OFFSET_D);
@@ -34,12 +20,6 @@ void SHudItemDesc::Load(const shared_str& HudSection)
 	m_jitter_params.pos_amplitude = pSettings->read_if_exists<float>(HudSection, "jitter_pos_amplitude", m_jitter_params.pos_amplitude);
 	m_jitter_params.rot_amplitude = pSettings->read_if_exists<float>(HudSection, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
 	m_jitter_params.stop_time = floor(pSettings->read_if_exists<float>(HudSection, "jitter_stop_time", 3.0f) * 1000.f);
-
-	m_bDisableBore = pSettings->read_if_exists<bool>(HudSection, "disable_bore", false);
-
-	pSettings->r_bool_nullable(HudSection, "use_blending_movement", m_bBlendMovement);
-	pSettings->r_float_nullable(HudSection, "controller_time", ControllerTime);
-	pSettings->r_bool_nullable(HudSection, "prohibit_suicide", ProhibitSuicide);
 
 	if (m_bBlendMovement)
 	{
