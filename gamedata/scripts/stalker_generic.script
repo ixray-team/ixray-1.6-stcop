@@ -201,12 +201,26 @@ function is_need_invulnerability(npc)
         local invulnerability = utils.cfg_get_string(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, "", nil)
     
         if invulnerability == nil then
+            if npc_st.InvulnerabilityIni ~= nil then
+                npc_st.InvulnerabilityIni = nil
+                npc_st.InvulnerabilitySection = nil
+                npc_st.InvulnerabilitySource = nil
+                npc_st.InvulnerabilityCondlist = nil
+            end
             return false
         end
     
-        invulnerability = xr_logic.parse_condlist(npc, "invulnerability", "invulnerability", invulnerability)
+        if npc_st.InvulnerabilityIni ~= npc_st.ini or
+            npc_st.InvulnerabilitySection ~= npc_st.active_section or
+            npc_st.InvulnerabilitySource ~= invulnerability then
+            local Condlist = xr_logic.parse_condlist(npc, "invulnerability", "invulnerability", invulnerability)
+            npc_st.InvulnerabilityIni = npc_st.ini
+            npc_st.InvulnerabilitySection = npc_st.active_section
+            npc_st.InvulnerabilitySource = invulnerability
+            npc_st.InvulnerabilityCondlist = Condlist
+        end
     
-        return xr_logic.pick_section_from_condlist(db.actor, npc, invulnerability) == "true"
+        return xr_logic.pick_section_from_condlist(db.actor, npc, npc_st.InvulnerabilityCondlist) == "true"
     end)
 end
 

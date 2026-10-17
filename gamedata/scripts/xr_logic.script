@@ -546,29 +546,44 @@ end
 
 -- st - storage активной схемы
 function issue_event(npc, st, event_fn, ...)
-	local args = { ... }
+	local ArgumentCount = select("#", ...)
+	local Argument
+	local Arguments
+	if ArgumentCount == 1 then
+		Argument = ...
+	elseif ArgumentCount > 1 then
+		Arguments = { ... }
+	end
 
-	return PROF_EVENT_CLOSURE("issue_event", function()
-		if not st or not st.actions then
-			return
-		end
+	PROF_EVENT_BEGIN("issue_event")
+	if not st or not st.actions then
+		PROF_EVENT_END()
+		return nil
+	end
 
-		local activation_count = 0
-		local action_ptr, is_active = 0, 0
+	local activation_count = 0
+	local action_ptr, is_active = 0, 0
 
-		for action_ptr, is_active in pairs(st.actions) do
-			if is_active and action_ptr[event_fn] then
-				action_ptr[event_fn](action_ptr, unpack(args))
-				activation_count = activation_count + 1
+	for action_ptr, is_active in pairs(st.actions) do
+		if is_active and action_ptr[event_fn] then
+			if Arguments then
+				action_ptr[event_fn](action_ptr, unpack(Arguments))
+			elseif Argument ~= nil then
+				action_ptr[event_fn](action_ptr, Argument)
+			else
+				action_ptr[event_fn](action_ptr)
 			end
+			activation_count = activation_count + 1
 		end
+	end
 
-		--	if activation_count == 0 and
-		--		event_fn == "activate_scheme"
-		--	then
-		--		abort("xr_logic: issue_event: activate_scheme handler not found, active_scheme is '%s'", db.storage[npc:id()].active_scheme)
-		--	end
-	end)
+	--	if activation_count == 0 and
+	--		event_fn == "activate_scheme"
+	--	then
+	--		abort("xr_logic: issue_event: activate_scheme handler not found, active_scheme is '%s'", db.storage[npc:id()].active_scheme)
+	--	end
+	PROF_EVENT_END()
+	return nil
 end
 
 --' Функция проверяет выполняется ли у активной схемы заданная функция
@@ -588,40 +603,128 @@ function check_action(npc, st, event_fn, p)
 end
 
 
+local CondlistFunctionNameParts = {}
+
+local function GetCondlistFunctionNameParts(Name)
+	local Parts = CondlistFunctionNameParts[Name]
+	if not Parts then
+		Parts = ffx_string_utils.explode(Name, ".")
+		CondlistFunctionNameParts[Name] = Parts
+	end
+	return Parts
+end
+
 function pick_section_from_condlist(actor, npc, condlist)
-	return PROF_EVENT_CLOSURE("pick_section_from_condlist", function() 
-        local rval = nil -- math.random(100)
-        	--printf("_bp: pick_section_from_condlist: rval = %d", rval)
-        
-		local newsect = nil
-		local infop_conditions_met
-		for n, cond in pairs(condlist) do
-			infop_conditions_met = true -- изначально считаем, что все условия переключения удовлетворены
-			for inum, infop in pairs(cond.infop_check) do
-				if infop.prob then
-					if not rval then
-						rval = math.random(100)
+	PROF_EVENT_BEGIN("pick_section_from_condlist")
+	local rval = nil -- math.random(100)
+		--printf("_bp: pick_section_from_condlist: rval = %d", rval)
+
+	local newsect = nil
+	local infop_conditions_met
+	for n, cond in pairs(condlist) do
+		infop_conditions_met = true -- изначально считаем, что все условия переключения удовлетворены
+		for inum, infop in pairs(cond.infop_check) do
+			if infop.prob then
+				if not rval then
+					rval = math.random(100)
+				end
+				if infop.prob < rval then
+					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					break
+				end
+			elseif infop.func then
+				local splitted = GetCondlistFunctionNameParts(infop.func)
+				local func_ref = nil
+				if #splitted == 1 then
+					if not xr_conditions[infop.func] then
+						if type(npc.name) == "function" then
+							abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+								"not defined in xr_conditions.script", npc:name(), infop.func)
+						else
+							abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+								"not defined in xr_conditions.script", tostring(npc.name), infop.func)
+						end
 					end
-					if infop.prob < rval then
-						infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-						break
+					func_ref = xr_conditions[infop.func]
+					if type(func_ref) ~= "function" then
+						abort("object '%s': pick_section_from_condlist: object '%s' in xr_conditions.script is " ..
+							"not a function", if_then_else(npc, npc:name(), "nil"), infop.func)
 					end
-				elseif infop.func then
-					local splitted = ffx_string_utils.explode(infop.func, ".")
+				else
+					local namespace = splitted[1]
+					local func = splitted[2]
+					if not _G[namespace] or not _G[namespace][func] then
+						abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+							"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
+					end
+					func_ref = _G[namespace][func]
+					if type(func_ref) ~= "function" then
+						abort("object '%s': pick_section_from_condlist: object '%s' in %s.script is " ..
+							"not a function", if_then_else(npc, npc:name(), "nil"), func, namespace)
+					end
+				end
+				if infop.params then
+					if func_ref(actor, npc, infop.params) then
+						if not infop.expected then
+							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							break
+						end
+					else
+						if infop.expected then
+							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							break
+						end
+					end
+				else
+					if func_ref(actor, npc) then
+						if not infop.expected then
+							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							break
+						end
+					else
+						if infop.expected then
+							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							break
+						end
+					end
+				end
+			elseif has_alife_info(infop.name) then
+				if not infop.required then
+					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					break
+				else
+					--'printf("PASSED: actor has infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+				end
+			else
+				if infop.required then
+					--'printf("FAILED: actor has NO infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+					infop_conditions_met = false -- инфопоршена нет, но он нужен
+					break
+				else
+					--'printf("PASSED: actor has NO infop '%s', which is not needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+				end
+			end
+		end
+		--printf("_bp: infop_cond_met = %s", utils.to_str(infop_conditions_met))
+		if infop_conditions_met then
+			-- Условия выполнены. Независимо от того, задана ли секция, нужно проставить требуемые
+			-- infoportions:
+			for inum, infop in pairs(cond.infop_set) do
+				if db.actor == nil then
+					abort("TRYING TO SET INFOS THEN ACTOR IS NIL")
+				end
+				if infop.func then
+					local splitted = GetCondlistFunctionNameParts(infop.func)
 					local func_ref = nil
 					if #splitted == 1 then
-						if not xr_conditions[infop.func] then
-							if type(npc.name) == "function" then
-								abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-									"not defined in xr_conditions.script", npc:name(), infop.func)
-							else
-								abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-									"not defined in xr_conditions.script", tostring(npc.name), infop.func)
-							end
+						if not xr_effects[infop.func] then
+							abort("object '%s': pick_section_from_condlist: function '%s' is " ..
+								"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
 						end
-						func_ref = xr_conditions[infop.func]
+						func_ref = xr_effects[infop.func]
 						if type(func_ref) ~= "function" then
-							abort("object '%s': pick_section_from_condlist: object '%s' in xr_conditions.script is " ..
+							abort("object '%s': pick_section_from_condlist: object '%s' in xr_effects.script is " ..
 								"not a function", if_then_else(npc, npc:name(), "nil"), infop.func)
 						end
 					else
@@ -638,109 +741,35 @@ function pick_section_from_condlist(actor, npc, condlist)
 						end
 					end
 					if infop.params then
-						if func_ref(actor, npc, infop.params) then
-							if not infop.expected then
-								infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-								break
-							end
-						else
-							if infop.expected then
-								infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-								break
-							end
-						end
+						func_ref(actor, npc, infop.params)
 					else
-						if func_ref(actor, npc) then
-							if not infop.expected then
-								infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-								break
-							end
-						else
-							if infop.expected then
-								infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
-								break
-							end
-						end
+						func_ref(actor, npc)
 					end
-				elseif has_alife_info(infop.name) then
-					if not infop.required then
-						--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-						infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-						break
-					else
-						--'printf("PASSED: actor has infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+				elseif infop.required then
+					if not has_alife_info(infop.name) then
+						actor:give_info_portion(infop.name)
 					end
 				else
-					if infop.required then
-						--'printf("FAILED: actor has NO infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-						infop_conditions_met = false -- инфопоршена нет, но он нужен
-						break
-					else
-						--'printf("PASSED: actor has NO infop '%s', which is not needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+					if has_alife_info(infop.name) then
+						--printf("*INFO [disabled]*: npc='%s' id='%s'", actor:name(),infop.name)
+						disable_info(infop.name)
 					end
 				end
 			end
-			--printf("_bp: infop_cond_met = %s", utils.to_str(infop_conditions_met))
-			if infop_conditions_met then
-				-- Условия выполнены. Независимо от того, задана ли секция, нужно проставить требуемые
-				-- infoportions:
-				for inum, infop in pairs(cond.infop_set) do
-					if db.actor == nil then
-						abort("TRYING TO SET INFOS THEN ACTOR IS NIL")
-					end
-					if infop.func then
-						local splitted = ffx_string_utils.explode(infop.func, ".")
-						local func_ref = nil
-						if #splitted == 1 then
-							if not xr_effects[infop.func] then
-								abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-									"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
-							end
-							func_ref = xr_effects[infop.func]
-							if type(func_ref) ~= "function" then
-								abort("object '%s': pick_section_from_condlist: object '%s' in xr_effects.script is " ..
-									"not a function", if_then_else(npc, npc:name(), "nil"), infop.func)
-							end
-						else
-							local namespace = splitted[1]
-							local func = splitted[2]
-							if not _G[namespace] or not _G[namespace][func] then
-								abort("object '%s': pick_section_from_condlist: function '%s' is " ..
-									"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
-							end
-							func_ref = _G[namespace][func]
-							if type(func_ref) ~= "function" then
-								abort("object '%s': pick_section_from_condlist: object '%s' in %s.script is " ..
-									"not a function", if_then_else(npc, npc:name(), "nil"), func, namespace)
-							end
-						end
-						if infop.params then
-							func_ref(actor, npc, infop.params)
-						else
-							func_ref(actor, npc)
-						end
-					elseif infop.required then
-						if not has_alife_info(infop.name) then
-							actor:give_info_portion(infop.name)
-						end
-					else
-						if has_alife_info(infop.name) then
-							--printf("*INFO [disabled]*: npc='%s' id='%s'", actor:name(),infop.name)
-							disable_info(infop.name)
-						end
-					end
-				end
-				if cond.section == "never" then
-					return nil
-				else
-					return cond.section
-				end
+			if cond.section == "never" then
+				PROF_EVENT_END()
+				return nil
+			else
+				local SchedulerResult = cond.section
+				PROF_EVENT_END()
+				return SchedulerResult
 			end
 		end
-	
-		--printf("_bp: pick_section_from_condlist: nil")
-		return nil
-    end)
+	end
+
+	--printf("_bp: pick_section_from_condlist: nil")
+	PROF_EVENT_END()
+	return nil
 end
 
 
@@ -788,129 +817,143 @@ function cond_name(cond, etalon)
 	return string.find( cond, "^"..etalon.."%d*$" ) ~= nil
 end
 
+local SwitchConditionKinds = {}
+
+local function GetSwitchConditionKind(Name)
+	local Kind = SwitchConditionKinds[Name]
+	if not Kind then
+		Kind = string.gsub(Name, "%d+$", "")
+		SwitchConditionKinds[Name] = Kind
+	end
+	return Kind
+end
+
 function try_switch_to_another_section(npc, st, actor)
-	return PROF_EVENT_CLOSURE("try_switch_to_another_section", function() 
-		local l = st.logic
-		local npc_id = npc:id()
+	PROF_EVENT_BEGIN("try_switch_to_another_section")
+	local l = st.logic
+	local npc_id = npc:id()
 
-		if not actor then
-			abort("try_switch_to_another_section(): error in implementation of scheme '%s': actor is nil", st.scheme)
-			return
-		end
+	if not actor then
+		abort("try_switch_to_another_section(): error in implementation of scheme '%s': actor is nil", st.scheme)
+		PROF_EVENT_END()
+		return nil
+	end
 
-		if not l then
-			abort("Can't find script switching information in storage, scheme '%s'", db.storage[npc:id()].active_scheme)
-		end
+	if not l then
+		abort("Can't find script switching information in storage, scheme '%s'", db.storage[npc:id()].active_scheme)
+	end
 
-		local switched = false
-		for n, c in pairs(l) do
-			--printf("_bp: %d: %s", time_global(), c.name)
-			if cond_name(c.name, "on_actor_dist_le") then
-				--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
-				if see_actor(npc) and distance_between(actor, npc) <= c.v1 then
-					--printf("_bp: conditions met")
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_dist_le_nvis") then
-				if distance_between(actor, npc) <= c.v1 then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_dist_ge") then
-				--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
-				-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le, где <=
-				if see_actor(npc) and distance_between(actor, npc) > c.v1 then
-					--printf("_bp: conditions met")
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_dist_ge_nvis") then
-				-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le_nvis, где <=
-				if distance_between(actor, npc) > c.v1 then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_signal") then
-				--printf("_bp: on_signal (c.v1 = %s)", c.v1)
-				if st.signals and st.signals[c.v1] then
-					--printf("_bp: on_signal (c.v1 = %s) signalled [%s]", c.v1, npc:name())
-					--printf("_bp: signalled")
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			-- FIXME: не дублировать тут имена, оставить один on_info, но добавлять несколько его экземпляров в список
-			elseif cond_name(c.name, "on_info") then
+	local switched = false
+	for n, c in pairs(l) do
+		local Kind = GetSwitchConditionKind(c.name)
+		--printf("_bp: %d: %s", time_global(), c.name)
+		if Kind == "on_actor_dist_le" then
+			--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
+			if see_actor(npc) and distance_between(actor, npc) <= c.v1 then
+				--printf("_bp: conditions met")
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-			elseif cond_name(c.name, "on_timer") then
-				--printf("_bp: on_timer: %d >= %d", time_global(),
-				--	db.storage[npc_id].activation_time + c.v1)
-				if time_global() >= db.storage[npc_id].activation_time + c.v1 then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-
-			-- GAMETIME added by Stohe.
-			elseif cond_name(c.name, "on_game_timer") then
-				if  game.get_game_time():diffSec(db.storage[npc_id].activation_game_time) >= c.v1 then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-
-			elseif cond_name(c.name, "on_actor_in_zone") then
-				if utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_not_in_zone") then
-				if not utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_npc_in_zone") then
-				if utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_npc_not_in_zone") then
-				if not utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_inside") then
-				if utils.npc_in_zone(actor, npc) then
-	--				printf("_bp: TRUE")
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_actor_outside") then
-				if not utils.npc_in_zone(actor, npc) then
-					switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-				end
-			elseif cond_name(c.name, "on_npc_inside") then
-			    local other_npc = level.object_by_id(tonumber(c.npc_id))
-			    if not other_npc then
-			    	abort("Invalid NPC [%d] for on_npc_inside in [%s]", c.npc_id, npc:name())
-			    end
-			    if utils.npc_in_zone(other_npc, npc) then
-			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-			    end
-		    elseif cond_name(c.name, "on_npc_outside") then
-			    local other_npc = level.object_by_id(tonumber(c.npc_id))
-			    if not other_npc then
-			    	abort("Invalid NPC [%d] for on_npc_outside in [%s]", c.npc_id, npc:name())
-			    end
-			    if not utils.npc_in_zone(other_npc, npc) then
-			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-			    end
-		    elseif cond_name(c.name, "on_self_in_zone") then
-			    if utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
-			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-			    end
-		    elseif cond_name(c.name, "on_self_not_in_zone") then
-			    if not utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
-			    	switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
-			    end
-		    else
-				abort(
-					"WARNING: object '%s': try_switch_to_another_section: unknown condition '%s' encountered",
-					npc:name(), c.name)
 			end
-			if switched == true then
-				break
+		elseif Kind == "on_actor_dist_le_nvis" then
+			if distance_between(actor, npc) <= c.v1 then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
+		elseif Kind == "on_actor_dist_ge" then
+			--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
+			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le, где <=
+			if see_actor(npc) and distance_between(actor, npc) > c.v1 then
+				--printf("_bp: conditions met")
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_actor_dist_ge_nvis" then
+			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le_nvis, где <=
+			if distance_between(actor, npc) > c.v1 then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_signal" then
+			--printf("_bp: on_signal (c.v1 = %s)", c.v1)
+			if st.signals and st.signals[c.v1] then
+				--printf("_bp: on_signal (c.v1 = %s) signalled [%s]", c.v1, npc:name())
+				--printf("_bp: signalled")
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		-- FIXME: не дублировать тут имена, оставить один on_info, но добавлять несколько его экземпляров в список
+		elseif Kind == "on_info" then
+			switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+		elseif Kind == "on_timer" then
+			--printf("_bp: on_timer: %d >= %d", time_global(),
+			--	db.storage[npc_id].activation_time + c.v1)
+			if time_global() >= db.storage[npc_id].activation_time + c.v1 then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+
+		-- GAMETIME added by Stohe.
+		elseif Kind == "on_game_timer" then
+			if  game.get_game_time():diffSec(db.storage[npc_id].activation_game_time) >= c.v1 then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+
+		elseif Kind == "on_actor_in_zone" then
+			if utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_actor_not_in_zone" then
+			if not utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_npc_in_zone" then
+			if utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_npc_not_in_zone" then
+			if not utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_actor_inside" then
+			if utils.npc_in_zone(actor, npc) then
+--				printf("_bp: TRUE")
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_actor_outside" then
+			if not utils.npc_in_zone(actor, npc) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_npc_inside" then
+			local other_npc = level.object_by_id(tonumber(c.npc_id))
+			if not other_npc then
+				abort("Invalid NPC [%d] for on_npc_inside in [%s]", c.npc_id, npc:name())
+			end
+			if utils.npc_in_zone(other_npc, npc) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_npc_outside" then
+			local other_npc = level.object_by_id(tonumber(c.npc_id))
+			if not other_npc then
+				abort("Invalid NPC [%d] for on_npc_outside in [%s]", c.npc_id, npc:name())
+			end
+			if not utils.npc_in_zone(other_npc, npc) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_self_in_zone" then
+			if utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		elseif Kind == "on_self_not_in_zone" then
+			if not utils.npc_in_zone(npc, db.zone_by_name[c.zone_id]) then
+				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			end
+		else
+			abort(
+				"WARNING: object '%s': try_switch_to_another_section: unknown condition '%s' encountered",
+				npc:name(), c.name)
 		end
+		if switched == true then
+			break
+		end
+	end
 
-		return switched
-	end)
+	local SchedulerResult = switched
+	PROF_EVENT_END()
+	return SchedulerResult
 end
 
 function is_active(npc, st)

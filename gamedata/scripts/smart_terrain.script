@@ -1468,15 +1468,16 @@ function se_smart_terrain:get_alife_task()
 end
 
 function smart_terrain_squad_count(board_smart_squads)
-	return PROF_EVENT_CLOSURE("smart_terrain_squad_count", function()
-        local count = 0
-        for k,v in pairs(board_smart_squads) do
-            if v:get_script_target() == nil then
-                count = count + 1
-            end
-        end
-        return count
-    end)
+	PROF_EVENT_BEGIN("smart_terrain_squad_count")
+	local count = 0
+	for k,v in pairs(board_smart_squads) do
+		if v:get_script_target() == nil then
+			count = count + 1
+		end
+	end
+	local SchedulerResult = count
+	PROF_EVENT_END()
+	return SchedulerResult
 end
 
 function se_smart_terrain:sim_available()
@@ -1545,69 +1546,78 @@ end
 
 -- Мой прекондишн.
 function se_smart_terrain:target_precondition(squad, need_to_dec_population)
-	return PROF_EVENT_CLOSURE("target_precondition", function()
-        if self.respawn_only_smart == true then
-            return false
-        end
-    
-        local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
-        if need_to_dec_population then
-            squad_count = squad_count - 1
-        end
-        if squad_count ~= nil and (self.max_population <= squad_count) then
-            --printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
-    --		if tonumber(self.props["surge"]) > 0 and xr_conditions.surge_started() then
-    --			printf("SURGE_SMART_STATS : smart [%s]\n max_population = %d \ squad_count = %d", self:name(), self.max_population, squad_count)
-    --		end
-            return false
-        end
-    
-        local squad_params = sim_board.simulation_activities[squad.player_id]
-        if squad_params == nil or squad_params.smart == nil then
-            --printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
-            return false
-        end
-    
-        if tonumber(self.props["resource"] )> 0 then
-            local smart_params = squad_params.smart.resource
-            if smart_params ~= nil and smart_params.prec(squad, self) then
-                return true
-            end
-        end
-        if tonumber(self.props["base"] )> 0 then
-            local smart_params = squad_params.smart.base
-            if smart_params ~= nil and smart_params.prec(squad, self) then
-                return true
-            end
-        end
-        if tonumber(self.props["lair"] )> 0 then
-            local smart_params = squad_params.smart.lair
-            if smart_params ~= nil and smart_params.prec(squad, self) then
-                return true
-            end
-        end
-        if tonumber(self.props["territory"] )> 0 then
-            local smart_params = squad_params.smart.territory
-            if smart_params ~= nil and smart_params.prec(squad, self) then
-                return true
-            end
-        end
-        if tonumber(self.props["surge"] )> 0 then
-            local smart_params = squad_params.smart.surge
-            if smart_params ~= nil and smart_params.prec(squad, self) then
-                return true
-            end
-        end
-        --printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
-        return false
-    end)
+	PROF_EVENT_BEGIN("target_precondition")
+	if self.respawn_only_smart == true then
+		PROF_EVENT_END()
+		return false
+	end
+
+	local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
+	if need_to_dec_population then
+		squad_count = squad_count - 1
+	end
+	if squad_count ~= nil and (self.max_population <= squad_count) then
+		--printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
+--		if tonumber(self.props["surge"]) > 0 and xr_conditions.surge_started() then
+--			printf("SURGE_SMART_STATS : smart [%s]\n max_population = %d \ squad_count = %d", self:name(), self.max_population, squad_count)
+--		end
+		PROF_EVENT_END()
+		return false
+	end
+
+	local squad_params = sim_board.simulation_activities[squad.player_id]
+	if squad_params == nil or squad_params.smart == nil then
+		--printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
+		PROF_EVENT_END()
+		return false
+	end
+
+	if tonumber(self.props["resource"] )> 0 then
+		local smart_params = squad_params.smart.resource
+		if smart_params ~= nil and smart_params.prec(squad, self) then
+			PROF_EVENT_END()
+			return true
+		end
+	end
+	if tonumber(self.props["base"] )> 0 then
+		local smart_params = squad_params.smart.base
+		if smart_params ~= nil and smart_params.prec(squad, self) then
+			PROF_EVENT_END()
+			return true
+		end
+	end
+	if tonumber(self.props["lair"] )> 0 then
+		local smart_params = squad_params.smart.lair
+		if smart_params ~= nil and smart_params.prec(squad, self) then
+			PROF_EVENT_END()
+			return true
+		end
+	end
+	if tonumber(self.props["territory"] )> 0 then
+		local smart_params = squad_params.smart.territory
+		if smart_params ~= nil and smart_params.prec(squad, self) then
+			PROF_EVENT_END()
+			return true
+		end
+	end
+	if tonumber(self.props["surge"] )> 0 then
+		local smart_params = squad_params.smart.surge
+		if smart_params ~= nil and smart_params.prec(squad, self) then
+			PROF_EVENT_END()
+			return true
+		end
+	end
+	--printf("smart terrain [%s] precondition returns false for squad [%s]", self:name(), squad:name())
+	PROF_EVENT_END()
+	return false
 end
 
 -- Посчитать мой приоритет для отряда.
 function se_smart_terrain:evaluate_prior(squad)
-	return PROF_EVENT_CLOSURE("evaluate_prior", function()
-	    return simulation_objects.evaluate_prior(self, squad)
-    end)
+	PROF_EVENT_BEGIN("evaluate_prior")
+	local SchedulerResult = simulation_objects.evaluate_prior(self, squad)
+	PROF_EVENT_END()
+	return SchedulerResult
 end
 
 -- Респаун симуляции.

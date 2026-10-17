@@ -107,43 +107,46 @@ end
 
 --' Возвращает скриптовую цель.
 function sim_squad_scripted:get_script_target()
-	return PROF_EVENT_CLOSURE("get_script_target", function()
-        local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
-    
-        if new_target == nil then
-    --		printf("[%s] get_script_target nil_condlist", self.id)
-            return nil
-        end
-    
-        if new_target ~= self.last_target then
-            self.last_target = new_target
-            --' Парсим новые задачи для отряда
-            self.parsed_targets = utils.parse_names(new_target)
-    
-            if self.need_free_update ~= true then
-                self.next_target = 1
-            else
-                self.need_free_update = false
-            end
-        end
-        if self.parsed_targets[self.next_target] == nil then
-            self.next_target = 1
-        end
-    
-    
-        local nt = self:pick_next_target()
-        if nt == "nil" then
-            return nil
-        elseif nt == "loop" then
-            self.next_target = 1
-            nt = self:pick_next_target()
-        end
-        local point = self.board.smarts_by_names[nt]
-        if point == nil then
-            abort("Incorrect next point [%s] for squad [%s]", tostring(nt),  tostring(self.id))
-        end
-        return point.id
-    end)
+	PROF_EVENT_BEGIN("get_script_target")
+	local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
+
+	if new_target == nil then
+--		printf("[%s] get_script_target nil_condlist", self.id)
+		PROF_EVENT_END()
+		return nil
+	end
+
+	if new_target ~= self.last_target then
+		self.last_target = new_target
+		--' Парсим новые задачи для отряда
+		self.parsed_targets = utils.parse_names(new_target)
+
+		if self.need_free_update ~= true then
+			self.next_target = 1
+		else
+			self.need_free_update = false
+		end
+	end
+	if self.parsed_targets[self.next_target] == nil then
+		self.next_target = 1
+	end
+
+
+	local nt = self:pick_next_target()
+	if nt == "nil" then
+		PROF_EVENT_END()
+		return nil
+	elseif nt == "loop" then
+		self.next_target = 1
+		nt = self:pick_next_target()
+	end
+	local point = self.board.smarts_by_names[nt]
+	if point == nil then
+		abort("Incorrect next point [%s] for squad [%s]", tostring(nt),  tostring(self.id))
+	end
+	local SchedulerResult = point.id
+	PROF_EVENT_END()
+	return SchedulerResult
 end
 
 

@@ -44,10 +44,11 @@ function black_screen(actor, npc)
 end
 --Проверка, встречается ли в имени чувака одна из строк .
 function check_npc_name (actor , npc , p)
-	if npc:name() == nil then return false end
+	local Name = npc:name()
+	if Name == nil then return false end
 	local name_exist = false
 	for k,v in pairs(p) do
-		if string.find( npc:name(), v ) ~= nil then
+		if string.find(Name, v) ~= nil then
 			name_exist = true
 		end
 	end
