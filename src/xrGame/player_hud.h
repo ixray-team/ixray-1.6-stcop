@@ -414,6 +414,7 @@ struct attachable_hud_item final
 	float							ShotTwist = 0.f;
 	float							AimShotMotion = 1.f;
 	float							IdleFade = 0.f;
+	float							SprintBlendIn = 0.f;
 	xr_vector<shared_str>			AdditiveMotions;
 	float							AdditiveBlendIn = 0.f;
 	float							AdditiveBlendOut = 0.1f;
@@ -425,6 +426,7 @@ struct attachable_hud_item final
 	xr_hash_map<shared_str, SHudRetargetLayer>	RetargetLayers;
 	shared_str						AttachPoseReference;
 	bool							RetargetPlaying = false;
+	bool							RetargetLayerPlaying = false;
 	MotionID						RetargetMotion;
 	MotionID						RetargetReferenceMotion;
 	xr_vector<shared_str>			LeftHandFreeMotions;
@@ -927,6 +929,11 @@ public:
 	MotionID				SprintLoopMotion;
 	MotionID				SprintEndMotion;
 	MotionID				SprintReferenceMotion;
+	bool					SprintLayerSeam = false;
+	bool					SprintLeftFree = false;
+	u32						SprintLayerFrame = u32(-1);
+	Fmatrix					SprintLayerPrev[2] = { Fidentity, Fidentity };
+	Fmatrix					SprintLayerResidual[2] = { Fidentity, Fidentity };
 	float					SprintEndPower = 1.f;
 	float					SprintPose = 0.f;
 	float					SprintPoseShape = 0.f;
@@ -948,11 +955,12 @@ public:
 	float			SprintLayerDeviation	() const;
 	void			ResolveSprintAdditive	(attachable_hud_item* item);
 	float			SprintEndMatch		(float start_progress) const;
-	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f);
+	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f, bool inertialize = false);
 	void			StopSprintAdditive		(float blend);
 	float			SprintAdditiveProgress	(MotionID motion) const;
 	void			UpdateSprintAdditive	(bool sprint);
 	void			UpdateSprintAdditiveChain();
+	void			UpdateRetargetLayerWeight();
 	void			CutSprintEnd			();
 
 	float			SprintYield = 0.f;
@@ -980,6 +988,7 @@ private:
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
 	bool			HandsIkBegin		(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkSprint		(SHandsIkFrame& F);
+	void			SprintLayerSmooth	(SHandsIkFrame& F);
 	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkFingerState	(SHandsIkFrame& F);
 	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
