@@ -4,7 +4,10 @@
 #include <thread>
 #include <sched.h>
 
-using ThreadID = pthread_t;
+// AI: CarbonCore (CoreServices, pulled in by filewatch.hpp) declares "typedef unsigned long ThreadID";
+// AI: a different-type alias here would fail to compile in every TU that sees both. Match its type -
+// AI: pthread handles still fit (the pointer and unsigned long are both 64-bit on arm64).
+using ThreadID = unsigned long;
 using ProcessID = pid_t;
 
 inline void Sleep(size_t Time)
@@ -51,6 +54,8 @@ namespace Platform
 
     inline void WaitForSingleObject(ThreadID ID)
     {
-        pthread_join(ID, nullptr);
+        // AI: the handle came in as the Carbon-compatible integer ThreadID (see the alias above),
+        // AI: cast it back to pthread_t for the join.
+        pthread_join((pthread_t)ID, nullptr);
     }
 }

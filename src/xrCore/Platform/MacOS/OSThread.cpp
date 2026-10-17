@@ -7,7 +7,7 @@ u32 Platform::GetCoresCount()
 
 ThreadID Platform::GetCurrentThread()
 {
-	return pthread_self();
+	return (ThreadID)pthread_self(); // AI: ThreadID is unsigned long here to match CarbonCore, see OSThread.h
 }
 
 size_t Platform::GetThreadId(ThreadID ID)
