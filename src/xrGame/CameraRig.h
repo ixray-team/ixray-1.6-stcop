@@ -42,7 +42,7 @@ struct SCameraRigParams
 	float	cam_shoot_variation	= 0.f, cam_shoot_speed_variation = 0.f;
 	bool	cam_shoot_mirror	= false;
 	float	aim_blend_inertia	= 0.f;
-	float	sprint_pose_inertia	= 0.08f, safemode_damping = 0.6f;
+	float	sprint_pose_inertia	= 0.08f, safemode_damping = 0.6f, sprint_blend_in = 0.f;
 	Fvector	aim_reload_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	aim_reload_hud_push_pos = { 0.f, 0.f, 0.f };

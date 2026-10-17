@@ -1070,7 +1070,7 @@ void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi
 	LL_BlendKeys(Result, keys);
 
 	const u16 SelfID = bd->GetSelfID();
-	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID]);
+	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID], channel_mask);
 
 	Fmatrix RES;
 	RES.mk_xform(Result.Q, Result.T);
@@ -1252,9 +1252,9 @@ void CKinematicsAnimated::InertialAdvance()
 	}
 
 	const float Dt = std::min(Gap, 0.1f);
-	const float HalfLife = m_InertialTime / 3.f;
 	for (SInertialBone& S : m_InertialBones)
 	{
+		const float HalfLife = (S.Time > 0.f ? S.Time : m_InertialTime) / 3.f;
 		if (S.Valid && m_InertialDelta > EPS_S && Gap <= 0.1f)
 		{
 			S.SourceVelocityT.sub(S.LastT, S.PrevT).div(m_InertialDelta);
@@ -1288,7 +1288,7 @@ void CKinematicsAnimated::InertialAdvance()
 	m_InertialDelta = Dt;
 }
 
-void CKinematicsAnimated::InertialMarkPart(u16 part)
+void CKinematicsAnimated::InertialMarkPart(u16 part, float time, u8 channel)
 {
 	if (m_InertialBones.empty() || part >= MAX_PARTS)
 	{
@@ -1300,6 +1300,8 @@ void CKinematicsAnimated::InertialMarkPart(u16 part)
 		if (Bone < m_InertialBones.size())
 		{
 			m_InertialBones[Bone].Pending = true;
+			m_InertialBones[Bone].Time = time;
+			m_InertialBones[Bone].Channel = channel;
 		}
 	}
 }
@@ -1342,7 +1344,7 @@ void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
 	}
 }
 
-void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update)
+void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update, u8 channel_mask)
 {
 	if (bone >= m_InertialBones.size())
 	{
@@ -1350,6 +1352,11 @@ void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update)
 	}
 
 	SInertialBone& S = m_InertialBones[bone];
+	if (!update && S.Channel != 0 && (channel_mask & (1 << S.Channel)) == 0)
+	{
+		return;
+	}
+
 	if (update && S.Pending)
 	{
 		S.Pending = false;
