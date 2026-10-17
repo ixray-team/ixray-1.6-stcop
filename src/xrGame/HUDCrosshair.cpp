@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "../xrEngine/CustomHUD.h"
 #include "HUDCrosshair.h"
 //.#include "UIStaticItem.h"
 #include "../../xrUI/ui_base.h"
