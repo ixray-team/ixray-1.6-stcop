@@ -17,7 +17,8 @@
 
 // Reflection markers for xrReflectTool (src/utils/xrReflectTool).
 // The macros expand to nothing for the compiler. xrReflectTool scans headers
-// before the build and generates luabind registration code for them.
+// before the build and generates luabind registration code and ini readers for them.
+
 struct lua_State;
 
 #define XREFLECT(...)
@@ -30,6 +31,53 @@ namespace XReflect
 	{
 		static void Register(lua_State* L);
 	};
+
+	template <typename T>
+	struct IniReader
+	{
+		static void Read(T& Object, const CInifile& Ini, const char* Section, const char* Prefix);
+	};
+
+	namespace Detail
+	{
+		inline const char* IniKey(string256& Buffer, const char* Prefix, const char* Key)
+		{
+			if (!Prefix || !Prefix[0])
+			{
+				return Key;
+			}
+			xr_strconcat(Buffer, Prefix, Key);
+			return Buffer;
+		}
+	}
+
+	template <typename T>
+	void ReadIniValue(const CInifile& Ini, const char* Section, const char* Prefix, const char* Key, T& Value, bool Required)
+	{
+		string256 Buffer;
+		const char* Line = Detail::IniKey(Buffer, Prefix, Key);
+		if constexpr (std::is_same_v<T, shared_str>)
+		{
+			Value = Required ? Ini.r_string(Section, Line) : Ini.read_if_exists<str_c>(Section, Line, Value.c_str());
+		}
+		else
+		{
+			Value = Required ? Ini.read<T>(Section, Line) : Ini.read_if_exists<T>(Section, Line, Value);
+		}
+	}
+
+	template <typename T>
+	void ReadIniNested(const CInifile& Ini, const char* Section, const char* Prefix, const char* NestedPrefix, T& Value)
+	{
+		string256 Buffer;
+		IniReader<T>::Read(Value, Ini, Section, Detail::IniKey(Buffer, Prefix, NestedPrefix));
+	}
+
+	template <typename T>
+	void ReadIni(T& Object, const shared_str& Section, const CInifile& Ini = *pSettings)
+	{
+		IniReader<T>::Read(Object, Ini, Section.c_str(), "");
+	}
 }
 
 // Grants the generated code access to non-public members.

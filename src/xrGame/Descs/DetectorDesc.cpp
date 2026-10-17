@@ -23,8 +23,7 @@ void SDetectListDesc::Load(const shared_str& Section, const char* Prefix)
 
 void SCustomDetectorDesc::Load(const shared_str& Section)
 {
-	AfDetectRadius = pSettings->read_if_exists<float>(Section, "af_radius", 30.0f);
-	AfVisRadius = pSettings->read_if_exists<float>(Section, "af_vis_radius", 2.0f);
+	XReflect::ReadIni(*this, Section);
 	Artefacts.Load(Section, "af");
 }
 
@@ -32,7 +31,7 @@ void SEliteDetectorDesc::Load(const shared_str& Section)
 {
 	SCustomDetectorDesc::Load(Section);
 
-	UiXmlTag = pSettings->read_if_exists<str_c>(Section, "ui_xml_tag", *UiXmlTag);
+	XReflect::ReadIni(*this, Section);
 
 	Fvector AttachPos = pSettings->r_fvector3(Section, "ui_p");
 	Fvector AttachRot = pSettings->r_fvector3(Section, "ui_r");

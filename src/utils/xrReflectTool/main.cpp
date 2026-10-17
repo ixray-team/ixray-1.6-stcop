@@ -14,7 +14,7 @@
 // OTHER LIABILITY ARISING FROM THE USE OF THIS FILE.
 
 // xrReflectTool: scans sources for XREFLECT / XPROPERTY markers (src/xrScripts/xrReflect.h)
-// and generates luabind registration code. Runs before the module that owns the sources is
+// and generates luabind registration code and ini readers. Runs before the module that owns the sources is
 // compiled, so it is a standalone tool that uses only the standard library.
 //
 // xrReflectTool --module <Name> --sources <list file> --output-dir <dir> [--pch <header>] [--stamp <file>]
@@ -22,10 +22,12 @@
 // Output:
 //   <Module>.reflect.gen.cpp  header reflections and XReflectRegister(lua_State*)
 //   <stem>.reflect.inl        reflections declared in <stem>.cpp; that .cpp includes it at the end
+//   <Module>.ini.gen.cpp      XReflect::IniReader<T> for XREFLECT(IniRead) classes
 
 #include "ReflectModel.h"
 #include "ReflectParser.h"
 #include "LuaGenerator.h"
+#include "IniGenerator.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -155,6 +157,7 @@ int main(int Argc, char** Argv)
 	if (Errors.empty())
 	{
 		GenerateLua(Module, Pch, OutputDir, Files, Classes, Errors);
+		GenerateIni(Module, Pch, OutputDir, Files, Classes, Errors);
 	}
 
 	if (!Errors.empty())

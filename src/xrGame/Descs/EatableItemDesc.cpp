@@ -4,14 +4,11 @@
 
 void SEatableItemDesc::Load(const shared_str& Section)
 {
-	if (pSettings->line_exist(Section, "animator_sect"))
-	{
-		m_sUseAnimator = pSettings->r_string(Section, "animator_sect");
+	XReflect::ReadIni(*this, Section);
 
-		if (pSettings->line_exist(m_sUseAnimator, "last_use_section"))
-		{
-			m_sLastUseAnimator = pSettings->r_string(m_sUseAnimator, "last_use_section");
-		}
+	if (m_sUseAnimator.size() && pSettings->line_exist(m_sUseAnimator, "last_use_section"))
+	{
+		m_sLastUseAnimator = pSettings->r_string(m_sUseAnimator, "last_use_section");
 	}
 
 	if (pSettings->line_exist(Section, "eat_portions_num"))
@@ -25,9 +22,6 @@ void SEatableItemDesc::Load(const shared_str& Section)
 
 	float EatCondition = pSettings->read_if_exists<float>(Section, "eat_condition", 1);
 	m_iMaxUses /= EatCondition;
-
-	UseText = pSettings->read_if_exists<str_c>(Section, "use_text", "st_use");
-	m_bConsumeChargeOnUse = pSettings->read_if_exists<bool>(Section, "consume_charge_on_use", true);
 }
 
 void SEatableEffectsDesc::Load(const shared_str& Section)

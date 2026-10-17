@@ -9,6 +9,8 @@ add_executable(xrReflectTool
 	"ReflectParser.cpp"
 	"LuaGenerator.h"
 	"LuaGenerator.cpp"
+	"IniGenerator.h"
+	"IniGenerator.cpp"
 )
 set_target_properties(xrReflectTool PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 target_compile_features(xrReflectTool PRIVATE cxx_std_23)
@@ -22,6 +24,7 @@ function(ixray_reflect_lua TARGET MODULE)
 	set(GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/Generated")
 	set(LIST_FILE "${GEN_DIR}/${MODULE}.reflect.sources")
 	set(OUTPUT_FILE "${GEN_DIR}/${MODULE}.reflect.gen.cpp")
+	set(INI_OUTPUT_FILE "${GEN_DIR}/${MODULE}.ini.gen.cpp")
 	set(STAMP_FILE "${GEN_DIR}/${MODULE}.reflect.stamp")
 
 	list(JOIN ARG_SOURCES "\n" SOURCE_LINES)
@@ -35,7 +38,7 @@ function(ixray_reflect_lua TARGET MODULE)
 	# The tool rewrites its outputs only when their content changes; the stamp tracks the run.
 	add_custom_command(
 		OUTPUT "${STAMP_FILE}"
-		BYPRODUCTS "${OUTPUT_FILE}"
+		BYPRODUCTS "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}"
 		COMMAND xrReflectTool --module "${MODULE}" --sources "${LIST_FILE}" --output-dir "${GEN_DIR}" ${PCH_ARGS} --stamp "${STAMP_FILE}"
 		DEPENDS xrReflectTool ${ARG_SOURCES} "${LIST_FILE}"
 		COMMENT "xrReflectTool: ${MODULE}"
@@ -46,8 +49,8 @@ function(ixray_reflect_lua TARGET MODULE)
 	set_target_properties(${TARGET}_reflect PROPERTIES FOLDER "Engine/Pre Build")
 	add_dependencies(${TARGET} ${TARGET}_reflect)
 
-	set_source_files_properties("${OUTPUT_FILE}" PROPERTIES GENERATED ON SKIP_UNITY_BUILD_INCLUSION ON)
-	target_sources(${TARGET} PRIVATE "${OUTPUT_FILE}")
+	set_source_files_properties("${OUTPUT_FILE}" "${INI_OUTPUT_FILE}" PROPERTIES GENERATED ON SKIP_UNITY_BUILD_INCLUSION ON)
+	target_sources(${TARGET} PRIVATE "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}")
 	target_include_directories(${TARGET} PRIVATE "${GEN_DIR}")
-	source_group("generated" FILES "${OUTPUT_FILE}")
+	source_group("generated" FILES "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}")
 endfunction()

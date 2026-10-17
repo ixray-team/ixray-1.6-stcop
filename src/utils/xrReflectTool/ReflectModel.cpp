@@ -54,6 +54,15 @@ namespace XReflectTool
 	}
 
 
+	std::string Guard(const std::string& Condition, const std::string& Enclosing, const std::string& Text)
+	{
+		if (Condition.empty() || Condition == Enclosing)
+		{
+			return Text;
+		}
+		return "#if " + Condition + "\n" + Text + "#endif\n";
+	}
+
 	std::string ReadFile(const std::filesystem::path& Path)
 	{
 		std::ifstream Stream(Path, std::ios::binary);

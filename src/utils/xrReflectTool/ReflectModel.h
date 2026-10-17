@@ -82,6 +82,16 @@ namespace XReflectTool
 		std::vector<std::pair<std::string, std::string>> Enumerators; // Lua name, C++ name
 		// Extension: free function bound as a method, its qualified name.
 		std::string QualifiedName;
+		// Field: exported to Lua and/or read from ini by XReflect::IniReader.
+		bool LuaExport = true;
+		bool IniRead = false;
+		// IniRead: CInifile::read, the key must exist. IniReadExist: read_if_exists.
+		bool IniRequired = false;
+		// Nested reflected struct read with IniPrefix prepended to its keys.
+		bool IniNested = false;
+		std::string IniKey;
+		// Read only when this earlier IniRead field of the class is true.
+		std::string IniIf;
 	};
 
 	struct ClassInfo
@@ -92,6 +102,8 @@ namespace XReflectTool
 		std::string LuaName;
 		std::string Condition;
 		std::string RuntimeCondition;
+		bool LuaExport = false;
+		bool IniRead = false;
 		bool Constructible = false;
 		bool ToString = false;
 		std::vector<std::string> PublicBases;
@@ -133,6 +145,9 @@ namespace XReflectTool
 	std::string Trim(std::string Text);
 	std::vector<std::string> SplitList(const std::string& Text, char Separator);
 	std::string JoinList(const std::vector<std::string>& Items);
+
+	// Emits Text under "#if Condition" unless the condition is empty or already in force.
+	std::string Guard(const std::string& Condition, const std::string& Enclosing, const std::string& Text);
 
 	std::string ReadFile(const std::filesystem::path& Path);
 	std::string ToCrlf(const std::string& Text);
