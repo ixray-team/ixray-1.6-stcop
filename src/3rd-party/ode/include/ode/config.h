@@ -35,6 +35,8 @@ extern "C"
 #include <stdio.h>
 #include <stdarg.h>
 #if defined(__APPLE__)
+#include <alloca.h>
+#include <stdlib.h>
 #else
 #include <malloc.h>		// for alloca under windows
 #endif

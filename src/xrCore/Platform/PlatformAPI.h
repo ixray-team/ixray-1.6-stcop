@@ -8,4 +8,5 @@
 #elif defined(IXR_BSD)
 #	include "BSD/PlatformAPI.h"
 #elif defined(IXR_MACOS)
+#	include "MacOS/PlatformAPI.h"
 #endif
