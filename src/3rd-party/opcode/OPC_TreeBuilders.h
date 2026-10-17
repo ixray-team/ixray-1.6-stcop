@@ -77,7 +77,7 @@
 		 */
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		virtual						float			GetSplittingValue(udword index, udword axis)	const	= 0;
-		virtual						Point			GetSplittingValues(udword index)		const	= 0;
+		virtual						IceMaths::Point			GetSplittingValues(udword index)		const	= 0;
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/**
@@ -138,7 +138,7 @@
 
 		virtual	bool			ComputeGlobalBox(const dTriIndex* primitives, udword nb_prims, IceMaths::AABB& global_box)	const;
 		virtual	float			GetSplittingValue(udword index, udword axis)									const;
-		virtual	Point			GetSplittingValues(udword index) const;
+		virtual	IceMaths::Point			GetSplittingValues(udword index) const;
 		virtual	float			GetSplittingValue(const dTriIndex* primitives, udword nb_prims, const IceMaths::AABB& global_box, udword axis)	const;
 
 		const						IceMaths::Point*			mVertexArray;		//!< Shortcut to an app-controlled array of vertices.
@@ -154,7 +154,7 @@
 
 		virtual	bool			ComputeGlobalBox(const dTriIndex* primitives, udword nb_prims, IceMaths::AABB& global_box)	const;
 		virtual	float			GetSplittingValue(udword index, udword axis)									const;
-		virtual	Point			GetSplittingValues(udword index) const;
+		virtual	IceMaths::Point			GetSplittingValues(udword index) const;
 
 		const						IceMaths::AABB*			mAABBArray;			//!< Shortcut to an app-controlled array of AABBs.
 	};
@@ -170,7 +170,7 @@
 		virtual	bool			ComputeGlobalBox(const dTriIndex* primitives, udword nb_prims, IceMaths::AABB& global_box)	const;
 		virtual	float			GetSplittingValue(udword index, udword axis)									const;
 		virtual	float			GetSplittingValue(const dTriIndex* primitives, udword nb_prims, const IceMaths::AABB& global_box, udword axis)	const;
-		virtual	Point			GetSplittingValues(udword index) const;
+		virtual	IceMaths::Point			GetSplittingValues(udword index) const;
 
 		const				MeshInterface*			mIMesh;			//!< Shortcut to an app-controlled mesh interface
 	};

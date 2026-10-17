@@ -23,9 +23,9 @@ namespace CPU
 {
 	XRCORE_API u64 qpc_freq = 0;
 	
-	XRCORE_API const processor_info& ID()
+	XRCORE_API const struct processor_info& ID()
 	{
-		static processor_info SingletonID;
+		static struct processor_info SingletonID;
 		return SingletonID;
 	}
 	
