@@ -174,15 +174,9 @@ class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
-#ifdef IXR_MACOS
-	// AI: the class has no key function (all virtual members are inline or pure), so its vtable
-	// AI: went out as a local weak symbol and other modules could not link to it. The out-of-line
-	// AI: destructor supplies that key function: the vtable is emitted once, here in xrCore, and
-	// AI: exported. Approach taken from OpenXRay, where IReader is marked XRCORE_API. Windows/Linux keep the inline one.
-	virtual			~IReaderBase();
-#else
-	virtual			~IReaderBase()		{}
-#endif
+	// AI: plain defaulted destructor (ForserX, PR #382 review): with no key function the vtable
+	// AI: is emitted as a weak symbol in every module, so shared libraries link fine.
+	virtual ~IReaderBase() = default;
 
 	virtual CFileReader* cast_file_reader() { return nullptr; }
 	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }
