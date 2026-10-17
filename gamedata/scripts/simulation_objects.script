@@ -93,27 +93,29 @@ function is_on_the_same_level(obj1, obj2)
 end
 
 function evaluate_prior(target, squad)
-	return PROF_EVENT_CLOSURE("evaluate_prior", function()
-        local prior = 0
-        if not target:target_precondition(squad) or not is_on_the_same_level(target, squad) then
-            return prior
-        else
-            prior = 3
-        end
-        for k,v in pairs (squad.behaviour) do
-            local squad_koeff = tonumber(v)
-            local target_koeff = 0
-            if target.props[k] ~= nil then
-                target_koeff = tonumber(target.props[k])
-            end
-            prior = prior + squad_koeff*target_koeff
-        end
-        return prior*evaluate_prior_by_dist(target, squad)
-    end)
+	PROF_EVENT_BEGIN("evaluate_prior")
+	local prior = 0
+	if not target:target_precondition(squad) or not is_on_the_same_level(target, squad) then
+		local SchedulerResult = prior
+		PROF_EVENT_END()
+		return SchedulerResult
+	else
+		prior = 3
+	end
+	for k,v in pairs (squad.behaviour) do
+		local squad_koeff = tonumber(v)
+		local target_koeff = 0
+		if target.props[k] ~= nil then
+			target_koeff = tonumber(target.props[k])
+		end
+		prior = prior + squad_koeff*target_koeff
+	end
+	local SchedulerResult = prior*evaluate_prior_by_dist(target, squad)
+	PROF_EVENT_END()
+	return SchedulerResult
 end
 
 
 --***********************************************************************************************
 --*										DEBUG_FUNCTIONS								
 --***********************************************************************************************
-
