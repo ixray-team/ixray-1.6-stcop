@@ -787,8 +787,17 @@ bool CUIDragDropListEx::CanSetItem(CUICellItem* itm){
 
 CUICellItem* CUIDragDropListEx::RemoveItem(CUICellItem* itm, bool force_root)
 {
-	if (pInput->GetControllerMode() && itm == m_selected_item && itm->ChildsCount() == 0)
-		DeselectSelected();
+	if (itm == m_selected_item && itm->ChildsCount() == 0)
+	{
+		if (pInput->GetControllerMode())
+		{
+			DeselectSelected();
+		}
+		else
+		{
+			m_selected_item = nullptr;
+		}
+	}
 
 	CUICellItem* i				= m_container->RemoveItem		(itm, force_root);
 	i->SetOwnerList				((CUIDragDropListEx*)nullptr);
