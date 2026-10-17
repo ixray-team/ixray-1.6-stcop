@@ -345,7 +345,7 @@ protected:
 
 	PIItem m_lastFocusRecivedItem = nullptr;
 	CUICellItem* m_cell_lastFocusRecivedItem = nullptr;
-	u16 m_lastFocusLostItem_id = u16(0xffff);
+	ALife::_OBJECT_ID m_lastFocusLostItem_id = ALife::INVALID_OBJECT_ID;
 
 	const char* m_onItemFocusLost = {};
 	bool m_isItemFocusLost = false;
