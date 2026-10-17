@@ -182,7 +182,7 @@ void CHudItem::SwitchState(u8 S)
 		return;
 
 	SetNextState( S );
-
+	OnStateSwitch(S);
 	if (object().Local() && !object().getDestroy())	
 	{
 		// !!! Just single entry for given state !!!
@@ -201,7 +201,7 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 		{
 			u8				S;
 			P.r_u8			(S);
-			OnStateSwitch	(S);
+		//	OnStateSwitch	(S);
 		}
 		break;
 	}
@@ -396,6 +396,7 @@ void CHudItem::SendHiddenItem()
 		object().u_EventSend	(P, net_flags(true, true, false, true));
 		SetPending(true);
 		SetNextState(eHiding);
+		OnStateSwitch(eHiding);
 	}
 }
 
