@@ -810,3 +810,16 @@ main_menu off
   (Windows); слоты приведены к u64 явно (visual_memory_manager, alife_spawn_registry).
 - LuaJIT: cmake/modules/LuaJIT.cmake — дословно develop'овский (ixray-team/luajit-ixray @ default,
   FetchContent, таргет `libluajit`); собрался чисто, Lua найден как 5.1.3.
+
+### Правило комментариев ОТМЕНЕНО (17.10, вечер): работаем по ИХ agents.md
+
+- Степан: комментарии больше НЕ с тегом `AI:` — только по их AGENTS.md/code-style-cpp.md:
+  английские, короткие, `// TODO:` / `// BUG:` / `// HACK:` (HACK обязателен для kludge),
+  краткое описание файла при необходимости. Всё остальное стирается.
+- Коммит `7e022d80c`: сняты 300+ AI-строк по всей ветке (54 файла); остались только
+  однострочные HACK на: ключ-функцию IReaderBase (FS.h/FS.cpp), реконструкцию blend_lock
+  после ZeroMemory (оба SkeletonAnimated), переименования из-за коллизий macOS
+  (`xr_thread_entry_t`, ThreadID=unsigned long, TriPoint, ValidGoalPosition), noexcept
+  SkeletonBatch, _RELEASE без NULL (R4 stdafx), шапки DXVK/VKD3D/LuaBind/DirectXTexD3D11_macos.
+- Аудит перед сдачей: `git grep -n 'AI:' -- ':!.porting'` пуст (совпадения "AI" в PROF_EVENT/
+  xrAI/Editors — апстримные, не наши).
