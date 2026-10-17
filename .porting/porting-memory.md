@@ -754,3 +754,31 @@ main_menu off
 7. **Новые отдельные краши порта:** переключение раскладки флажком меню-бара во время игры; переход в fullscreen в настройках игры. Не разобраны.
 8. **Случайные SIGSEGV на старте внутри LuaJIT (lua_pushlstring)** - не воспроизвели отдельно; возможно часть падений была п.1-3. Перепроверить после фиксов.
 9. **Fork: macos-metal опубликован** на github.com/Stepan-sovok1917/ixray-1.6-stcop (publish через GitHub Desktop; терминальный push без кредов не работает - creds только в Desktop).
+
+## Сессия 17.10, вечер-2: переезд порта на develop (указание разработчика движка)
+
+- Разработчик движка (ForserX, через Степана): основа порта теперь **ветка develop** апстрима (327+
+  коммитов вперёд от default). Форк-ветка `develop` добавлена в Stepan-sovok1917/ixray-1.6-stcop —
+  проверено: fork/develop == origin/develop (cba654748 на момент переезда).
+- **macos-metal перебазирован на origin/develop** (все 41 коммит; бэкап старой базы — ветка
+  `macos-metal-backup-default-base`, старое build-дерево — `build-macos-default-base/`).
+  Публикация форка — через GitHub Desktop (перезапись ветки), терминал без кредов.
+- **LuaJIT: только их форк `ixray-team/luajit-ixray`** (наш APPLE-оверрайд на OpenXRay/LuaJIT удалён,
+  `cmake/modules/LuaJIT.cmake` снова дословно апстримный — не-Windows путь уже качает luajit-ixray
+  @ default через FetchContent, таргет `libluajit`).
+- **PR #382 «Macos metal»** открыт ForserX'ом из нашей macos-metal в их default; там же ревью. Комментарии
+  интегрированы (коммит `6a797bfd0`): (1) `virtual ~IReaderBase() = default` вместо внешнего
+  деструктора-«ключевой функции»; (2) блоки `#pragma warning + <malloc.h>` — реликтии, malloc объявлен
+  через PCH (xrCore.h → stdlib.h). Сняты в файлах, которые трогает PR.
+- Develop переработал движок относительно default — что важно для порта:
+  - **звук переписан целиком** (`src/xrSound/New/`, `SoundRender_TargetA` больше нет) — наш фикс
+    «OpenAL Soft бросает исключения» не применяется; ПРОВЕРИТЬ в рантайме, как новый бэкенд
+    переживает alGenSources/перечисление устройств на macOS (старая ловушка TCC-запроса);
+  - `_types.h` переехал в `Template/_types.h` и переписан — наш rename в xr_core_types.h не нужен;
+  - `thread_t` теперь `CPU::thread_t` (Kernel/CPU.h) — rename xr_thread_entry_t не нужен;
+  - общие файлы рендера переехали: `xrRender/SkeletonAnimated.cpp` → `xrRenderPC_R4/`;
+  - OLD-плановские исключения D3D9/D3D11 из xrRHI при перебазировке выброшены (полный бэкенд как было).
+- Стиль правок теперь сверять с их `AGENTS.md` (в корне develop; копия — в скилле,
+  `references/upstream-AGENTS.md`): English-комментарии, UTF-8+CRLF, `// HACK:`, зависимости вниз.
+- Прогоны: харнесс-патч (`IXR_AUTOSTART`/`IXR_SILENT`/`IXR_NIGHT`) сохранён в
+  `~/Hermes/ixray-mac-port/porting-tmp/harness-20261017.patch` и ПОКА НЕ ПЕРЕНЕСЁН на develop-дерево.
