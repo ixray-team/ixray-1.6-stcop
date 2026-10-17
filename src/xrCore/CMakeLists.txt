@@ -95,6 +95,14 @@ target_link_libraries(xrCore PUBLIC LZO::lzo2)
 target_link_libraries(xrCore PRIVATE yaml-cpp)
 target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
+# AI: filewatch.hpp uses FSEvents and a CFRunLoop on macOS; without these frameworks the
+# AI: xrCore link fails on _kCFRunLoopDefaultMode. Other platforms get their backends from the OS.
+if(APPLE)
+
+	target_link_libraries(xrCore PRIVATE "-framework CoreFoundation" "-framework CoreServices")
+
+endif()
+
 if(WIN32)
 	if(NOT IXR_ARM_ENABLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		target_link_libraries(xrCore PRIVATE dxerr)
