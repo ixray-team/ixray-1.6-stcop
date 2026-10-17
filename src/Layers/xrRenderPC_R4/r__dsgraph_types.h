@@ -49,7 +49,7 @@
 
 		static	void	*alloc		(const u32 &n)	{	return g_render_lua_allocator.malloc_impl((u32)n);	}
 		template <typename T>
-		static	void	dealloc		(T *&p)			{	g_render_lua_allocator.free_impl((void*&)p);	}
+		static	void	dealloc		(T *&p) noexcept			{	g_render_lua_allocator.free_impl((void*&)p);	}
 	};
 
 #	define render_alloc				doug_lea_alloc

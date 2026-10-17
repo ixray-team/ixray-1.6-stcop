@@ -54,7 +54,8 @@ struct xr_allocator {
 
 	static	void	*alloc		(const u32 n)	{	return xr_malloc((u32)n);	}
 	template <typename T>
-	static	void	dealloc		(T *&p)			{	xr_free(p);					}
+// AI: noexcept for the same reason as xalloc::deallocate above (xr_free never throws).
+	static	void	dealloc		(T *&p) noexcept			{	xr_free(p);					}
 };
 
 template<class _Ty,	class _Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (true);							}
