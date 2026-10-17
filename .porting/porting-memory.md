@@ -823,3 +823,33 @@ main_menu off
   SkeletonBatch, _RELEASE без NULL (R4 stdafx), шапки DXVK/VKD3D/LuaBind/DirectXTexD3D11_macos.
 - Аудит перед сдачей: `git grep -n 'AI:' -- ':!.porting'` пуст (совпадения "AI" в PROF_EVENT/
   xrAI/Editors — апстримные, не наши).
+
+### develop-база: рендер ожил; новый блокер — порча памяти при компиляции шейдеров (20.10.17, ночь)
+
+- **Сборка на develop полностью линкуется** (9 модулей), выкладка в run-macos + codesign ok.
+- **Прогон дошёл до компиляции шейдеров R4** (vkd3d пишет W4300/W5300, кэш пишется) — весь стек
+  DXVK 2.6 → MoltenVK → R4 жив. Путь до этого был цепочкой из трёх новых проблем:
+  1. **DXVK не находил brew loader**: dxvk_native dlopen`ит "libvulkan.dylib"/"libvulkan.1.dylib" по имени,
+     а brew keg-only → фолбэк на ПРЯМОЙ MoltenVK → нет loader-расширения VK_KHR_portability_enumeration →
+     лоадер бы пропустил, но direct-режим отдаёт инстанс без устройств. Лечение: в скрипт прогона добавлен
+     `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/opt/vulkan-loader/lib` (скрипт в скилле обновлён).
+  2. **Лоадер 1.4 требует флаг** VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR (иначе "Found no
+     drivers", -9). DXVK ставит флаг только если portability-расширение пережило согласование. Патч №4
+     (dxvk_instance.cpp): флаг — безусловно (коммит в DXVK.cmake).
+  3. **shaderCullDistance**: через лоадер MoltenVK отдаёт 0, DXVK требует её в базовом наборе адаптера и
+     включает безусловно → "Maximum supported feature level: 0". Патчи №5-6: в адаптере — снять из базовых,
+     в d3d11 GetDeviceFeatures — брать из supported. (Патчей DXVK теперь 8; diagnose через
+     DXVK_LOG_LEVEL=debug: "DXVK: device lacks required feature core.features.shaderCullDistance".)
+- Плашка "FileDownload /users/stepan/hermes/" (чтение каталога как файла) — гасится тихим режимом;
+  харнесс (IXR_AUTOSTART/IXR_SILENT) перенесён на develop-дерево ВРУЧНУЮ (device.cpp/Application.cpp,
+  TEMPORARY, не коммитить). Старый harness-патч 20261017 на develop НЕ ложится.
+- **ОТКРЫТАЯ ЗАДАЧА N1 (актуальная)**: недетерминированный SIGSEGV при компиляции шейдеров
+  (stub_default.ps.hlsl и др.): путь файла в аргументах — мусор из памяти
+  ("ixray-mac-/ord11/...", каждый запуск разный), затем SIGSEGV. Похоже на гонку/порчу буфера пути
+  в потоке компиляции шейдеров. Разбор: lldb по точке краша, DXVK_LOG_LEVEL=debug;
+  воспроизведение: IXR_SILENT=1 IXR_AUTOSTART=1 run-engine-test.sh (вылет через ~1-2 мин после старта
+  компиляции шейдеров уровня/постпроцесса).
+- publish: локальная macos-metal переписана (rebase + переподпись автора на ugl <stepan_ber@list.ru>);
+  fork/macos-metal на GitHub отстаёт — нужен force push через GitHub Desktop (терминал без кредов).
+- build-macos-default-base (старое дерево) удалено с диска (не мной; место освобождалось) — старых
+  бинарников больше нет; бэкап КОДА остаётся в ветке macos-metal-backup-default-base.
