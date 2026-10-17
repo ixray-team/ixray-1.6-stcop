@@ -1766,6 +1766,11 @@ void CWeapon::UpdateCL()
 	{
 		s32 autoaim_period = GetAutoAimPeriod();
 		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (pActor != nullptr && IsWorking() && (pActor->GetMovementState(eReal) & mcSprint) != 0)
+		{
+			FireEnd();
+		}
+
 		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget()
 			&& (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) > std::floor(m_fLastRechargeTime * 1000.0f) || m_fRechargeTime == 0.0f))
 		{
@@ -1942,6 +1947,11 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
+				if (!(flags & CMD_START) && ParentIsActor())
+				{
+					H_Parent()->cast_actor()->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, false);
+				}
+
 				if (m_pInventory != nullptr && m_pInventory->IsSlotBlocked(this))
 				{
 					return false;
@@ -1966,10 +1976,17 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							return false;
 						}
+
+						if ((pActor->GetMovementState(eReal) & mcSprint) != 0)
+						{
+							pActor->SetMovementState(eWishful, mcSprint, false);
+							pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
+							return true;
+						}
 					}
 				}
 
-				if (flags&CMD_START) 
+				if (flags&CMD_START)
 				{
 					m_bAutoAimNeedReleaseShot = false;
 					m_bAutoAimNeedAutoShot = false;
@@ -4250,7 +4267,7 @@ bool CWeapon::NeedBlockSprint() const
 	const u8 State = GetState();
 	const static bool IsDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	const bool layered_action = State == eReload || State == eSwitchMode || State == eSafemodeSwitch || !IsPending() && State != eFire && State != eFire2 && State != eHiding && State != eHidden;
+	const bool layered_action = State == eReload || State == eSwitchMode || State == eSafemodeSwitch || !IsPending() && State != eHiding && State != eHidden;
 	if (layered_action && SprintLayered())
 	{
 		return m_bIsAimAnimationPlaying;
@@ -4263,7 +4280,7 @@ bool CWeapon::NeedBlockSprint() const
 
 	const static bool IsBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return State == eFire || State == eFire2 || IsPending() && (State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload) || m_bIsAimAnimationPlaying;
+	return IsPending() && (State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload) || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()
