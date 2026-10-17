@@ -799,7 +799,7 @@ void CUIActorMenuBase::InvalidateAllTransientCellRefs()
 	m_pCurrentCellItem = nullptr;
 	m_cell_lastFocusRecivedItem = nullptr;
 	m_lastFocusRecivedItem = nullptr;
-	m_lastFocusLostItem_id = u16(-1);
+	m_lastFocusLostItem_id = ALife::INVALID_OBJECT_ID;
 	CUICellItem::m_mouse_selected_item = nullptr;
 	InvalidateDerivedCellRefsForList(nullptr);
 	InfoCurItem(nullptr);
