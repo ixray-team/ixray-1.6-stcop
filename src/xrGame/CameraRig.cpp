@@ -33,6 +33,7 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Animation transitions", "aim_blend_inertia", "aim_blend_inertia", &g_rig.aim_blend_inertia, nullptr, 1, false, 0.005f },
 
 	{ "Sprint and safemode", "sprint_pose_inertia", "sprint_pose_inertia", &g_rig.sprint_pose_inertia, nullptr, 1, false, 0.005f },
+	{ "Sprint and safemode", "sprint_blend_in", "sprint_blend_in", &g_rig.sprint_blend_in, nullptr, 1, false, 0.005f },
 	{ "Sprint and safemode", "safemode_damping", "safemode_damping", &g_rig.safemode_damping, nullptr, 1, false, 0.01f },
 
 	{ "Aim reload", "aim_reload_motion", "aim_reload_motion", &g_rig.aim_reload_motion, nullptr, 1, false, 0.01f },

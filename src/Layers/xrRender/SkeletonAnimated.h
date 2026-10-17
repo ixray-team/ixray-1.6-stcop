@@ -79,6 +79,8 @@ virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, co
 		Fvector					VelocityR = {};
 		Fvector					OffsetT = {};
 		Fvector					VelocityT = {};
+		float					Time = 0.f;
+		u8						Channel = 0;
 		bool					Valid = false;
 		bool					Pending = false;
 		bool					Enabled = true;
@@ -90,9 +92,9 @@ virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, co
 	float						m_InertialDelta = 0.0f;
 
 	void						InertialAdvance			();
-	void						InertialMarkPart		( u16 part );
+	void						InertialMarkPart		( u16 part, float time = 0.f, u8 channel = 0 );
 	void						InertialAddSeam			( u16 part, const CBlend& blend );
-	void						InertialApply			( u16 bone, CKey& key, bool update );
+	void						InertialApply			( u16 bone, CKey& key, bool update, u8 channel_mask );
 public:
 
 	virtual void				OnCalculateBones		();
@@ -224,6 +226,7 @@ public:
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
 	void						LL_ResetInertialization	() override;
+	void						LL_InertializePart		(u16 part, float time, u8 channel) override { InertialMarkPart(part, time, channel); }
 	bool						LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result) override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
 };
