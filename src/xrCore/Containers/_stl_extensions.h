@@ -32,8 +32,8 @@ public:
 	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
 							pointer					allocate		(size_type n, const void* p=nullptr) const	{	return xr_alloc<T>((u32)n);	}
 							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
-							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
-							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
+							void					deallocate		(pointer p, size_type n) const noexcept			{	xr_free	(p);				}
+							void					deallocate		(void* p, size_type n) const noexcept			{	xr_free	(p);				}
 							//void					construct		(pointer p, const T& _Val)				{	::new(p) T(_Val);	}
 							
 							template <typename... Args>
@@ -255,4 +255,7 @@ void random_shuffle(RandomIt first, RandomIt last)
 		// not uniformly distributed for most values of i. The correct code would be
 		// a variation of the C++11 std::uniform_int_distribution implementation.
 	}
+// AI: noexcept on deallocate - without it every container using this allocator has a
+// AI: potentially-throwing destructor, which breaks overriding of noexcept base
+// AI: destructors on clang (xr_free never throws anyway).
 }

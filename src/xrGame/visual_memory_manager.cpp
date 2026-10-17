@@ -881,7 +881,7 @@ void CVisualMemoryManager::Serialize(ISaveObject& Object)
 		
 		if(Object.IsSave())
 		{
-			auto ObjectsSize = m_objects->size();
+			u64 ObjectsSize = m_objects->size(); // AI: spell the save type out - size_t is unsigned long, the save slot is u64
 			Object << ObjectsSize;
 			BEGIN_ARRAY(Object)
 			{
@@ -906,7 +906,7 @@ void CVisualMemoryManager::Serialize(ISaveObject& Object)
 			}
 		} else
 		{
-			size_t ObjectsSize;
+			u64 ObjectsSize; // AI: match the save slot type, size_t differs from u64 on LP64
 			Object << ObjectsSize;
 			BEGIN_ARRAY(Object)
 			{
