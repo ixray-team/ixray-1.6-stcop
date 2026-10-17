@@ -58,6 +58,15 @@ if(APPLE)
 
     # The portability ICD is only enumerated when the instance flag is set; the extension
     # negotiation can drop it on some loader builds, so set the flag unconditionally.
+    # Metal has no shader cull distance: MoltenVK reports 0, and DXVK requires it in the
+    # adapter baseline and enables it unconditionally for the device. Make it optional.
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_adapter.cpp"
+        "        && CHECK_FEATURE_NEED(core.features.shaderCullDistance)"
+        "        && true")
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/d3d11/d3d11_device.cpp"
+        "enabled.core.features.shaderCullDistance                      = VK_TRUE;"
+        "enabled.core.features.shaderCullDistance                      = supported.core.features.shaderCullDistance;")
+
     dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_instance.cpp"
         "if (m_extensionSet.supports(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))"
         "if (true) // macOS: the MoltenVK ICD is a portability driver, always enumerate it")
