@@ -56,6 +56,12 @@ if(APPLE)
         "enabled.extTransformFeedback.geometryStreams                  = VK_TRUE;"
         "enabled.extTransformFeedback.geometryStreams                  = supported.extTransformFeedback.geometryStreams;")
 
+    # The portability ICD is only enumerated when the instance flag is set; the extension
+    # negotiation can drop it on some loader builds, so set the flag unconditionally.
+    dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_instance.cpp"
+        "if (m_extensionSet.supports(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))"
+        "if (true) // macOS: the MoltenVK ICD is a portability driver, always enumerate it")
+
     dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_adapter.cpp"
         "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature)"
         "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature         \\\n       || (Logger::err(str::format(\"DXVK: device lacks required feature \", #feature)), false))")
