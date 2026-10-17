@@ -16,7 +16,7 @@ static u32 SkeletonWorkerLimit()
 	return Limit;
 }
 
-SkeletonBatch::~SkeletonBatch()
+SkeletonBatch::~SkeletonBatch() noexcept
 {
 	Wait();
 }
