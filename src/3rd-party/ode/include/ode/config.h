@@ -36,7 +36,12 @@ extern "C"
 
 #include <stdio.h>
 #include <stdarg.h>
+#if defined(__APPLE__)
+#include <alloca.h>		// AI: macOS has no <malloc.h>; alloca lives here
+#include <stdlib.h>		// AI: ...and malloc/realloc live here
+#else
 #include <malloc.h>		// for alloca under windows
+#endif
 #include <string.h>
 #include <math.h>
 #include <stdint.h>

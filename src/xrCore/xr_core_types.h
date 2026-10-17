@@ -2,6 +2,9 @@
 #include <cstdint>
 #include <limits>
 
+// AI: this file used to be named _types.h, which collided with the Apple SDK header <_types.h>
+// AI: that <wchar.h> includes; the compiler then took ours instead of the system one.
+
 // Type defs
 using s8 = std::int8_t;
 using u8 = std::uint8_t;

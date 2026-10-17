@@ -11,6 +11,10 @@ using	namespace animation;
 void		CBlendInstance::construct()
 {
 	ZeroMemory(this, sizeof(*this));
+	// AI: see the same place in src/Layers/xrRender/SkeletonAnimated.cpp: ZeroMemory leaves blend_lock
+	// AI: all zeroes, which is only a valid unlocked lock for the Windows implementation of xrSRWLock;
+	// AI: on macOS it wraps std::shared_mutex and the first lock fails with "Invalid argument".
+	new (&blend_lock) xrSRWLock();
 }
 void		CBlendInstance::blend_add(CBlend* H)
 {

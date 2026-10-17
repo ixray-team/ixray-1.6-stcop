@@ -14,11 +14,14 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include <linux/limits.h>
-#include <bits/local_lim.h>
+#include <limits.h>
 
 #ifdef IXR_ARM64
-#	include <arm64_neon.h>
+#	ifdef __APPLE__
+#		include <arm_neon.h>
+#	else
+#		include <arm64_neon.h>
+#	endif
 #	include <sse2neon/sse2neon.h>
 #else
 #	include <xmmintrin.h>
@@ -70,6 +73,8 @@ using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;
 using BYTE = unsigned char;
+// AI: LPBYTE is a Windows SDK type the renderer uses; it is missing on this host.
+using LPBYTE = unsigned char*;
 using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
@@ -79,6 +84,8 @@ using LRESULT = long;
 using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
 using HFILE = int;
+// AI: HDC is declared in the Windows and Linux platform files; it was missing here
+using HDC = void*;
 
 #define TRUE  1
 #define FALSE 0
@@ -166,4 +173,40 @@ inline unsigned long GetLastError()
 
 #ifndef _In_reads_
 #define _In_reads_(x)
+#endif
+
+// AI: Apple Silicon has no AVX. The renderer uses __m256 in three files (the detail manager and
+// AI: the DX10 constant buffer); this minimal stand-in keeps them compiling, with the streaming
+// AI: store reduced to a plain copy, which is equivalent for our use.
+#if defined(IXR_ARM64) && defined(__cplusplus)
+struct __m256
+{
+	float m256_f32[8];
+};
+
+inline void _mm256_stream_ps(float* destination, const __m256& source)
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		destination[i] = source.m256_f32[i];
+	}
+}
+#endif
+
+// AI: the renderer's D3D helpers come from the Windows SDK, which does not exist on the DXVK
+// AI: Native hosts, and the engine's own defines.h hides _RELEASE behind ENGINE_API, which renderer
+// AI: builds never set. Provided here so every translation unit in the engine sees it.
+#ifndef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+
+// AI: the engine's own _RELEASE macro (xrEngine/defines.h) expands to (x) = NULL, and NULL is
+// AI: not visible in every translation unit here, which made the macro fail to parse. Provided
+// AI: once, for both C and C++ consumers.
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL nullptr
+#else
+#define NULL ((void*)0)
+#endif
 #endif

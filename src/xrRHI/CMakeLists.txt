@@ -49,7 +49,14 @@ target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # -----------------------------------------------------------------------------
 # Linux + DXVK Native поддержка
 # -----------------------------------------------------------------------------
-if(UNIX AND NOT APPLE)
+if(APPLE)
+    # AI: same model as on Linux - IX-Ray's own renderer (R4/D3D11) runs on DXVK Native built
+    # AI: for the host, Vulkan goes through MoltenVK, the window comes from SDL3. No separate
+    # AI: renderer is written for macOS; the Windows and Linux branches below are untouched.
+    target_include_directories(xrRHI PUBLIC ${DXVK_INCLUDE_DIRS})
+    target_compile_definitions(xrRHI PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
+    target_link_libraries(xrRHI PUBLIC ${DXVK_LIBRARIES} Vulkan::Vulkan)
+elseif(UNIX AND NOT APPLE)
     target_include_directories(xrRHI PUBLIC ${DXVK_INCLUDE_DIRS})
     target_compile_definitions(xrRHI PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
     target_link_libraries(xrRHI PUBLIC ${DXVK_LIBRARIES} Vulkan::Vulkan pthread dl)

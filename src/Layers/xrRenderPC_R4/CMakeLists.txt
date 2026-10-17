@@ -50,6 +50,22 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_LUA_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
 # xrRender_R4 project
+if(APPLE)
+    # AI: DLSS and FSR3 come from Windows-only vendor SDKs and the macOS plan leaves both out.
+    # AI: Their sources are dropped here; the renderer still refers to the DLSS wrapper, which
+    # AI: DLSSWrapper.h provides as no-ops on macOS. Windows and Linux keep every file.
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/(DLSS|FSR3)Wrapper\\.cpp$")
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "r4_rendertarget_phase_(dlss|fsr)\\.cpp$")
+    # AI: the excluded files own four entry points of CRenderTarget, so macOS supplies them as
+    # AI: no-ops (see the file itself). Windows and Linux keep the real implementations.
+    list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/r4_rendertarget_phase_upscalers_macos.cpp")
+    # AI: DirectXTex compiles DirectXTexD3D11.cpp (DirectX::CreateTextureEx) for Windows only, and
+    # AI: that source cannot be built here: it needs the Windows header stack, which clashes with the
+    # AI: DXVK headers the renderer uses. The one entry point the renderer calls is ported in the file
+    # AI: below. Windows and Linux keep upstream.
+    list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/DirectXTexD3D11_macos.cpp")
+endif()
+
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
 target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 
@@ -80,7 +96,21 @@ if (WIN32)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
 else()
+    # AI: FlexibleVertexFormat.h lives in the fetched DirectXMesh (its Utilities directory is a
+    # AI: PUBLIC include of DirectX::Mesh). On Windows it is linked in the WIN32 branch above; on
+    # AI: the DXVK Native hosts the renderer needs it as well, otherwise r4_loader.cpp cannot
+    # AI: compile. Fixes the same gap for Linux, which was never finished; Windows is untouched.
     target_compile_definitions(xrRender_R4 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
+    target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
+    # AI: dx11Texture.cpp includes <DirectXTex.h>, which the fetched DirectXTex provides through
+    # AI: its PUBLIC include directory, the same way DirectX::Mesh provides FlexibleVertexFormat.h.
+    target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
+    if(APPLE)
+        # AI: the renderer compiles HLSL at run time (D3DCompile and the reflection/disassembly
+        # AI: entry points used by create_shader in r4.cpp). Windows takes them from the Windows
+        # AI: SDK above; on macOS they come from vkd3d, built by cmake/modules/VKD3D.cmake.
+        target_link_libraries(xrRender_R4 PRIVATE ${VKD3D_LIBRARIES})
+    endif()
 endif()
 
 ## RenderDoc

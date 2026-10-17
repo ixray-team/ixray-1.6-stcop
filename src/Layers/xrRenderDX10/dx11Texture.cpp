@@ -126,7 +126,9 @@ bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata
 		return status;
 
 	DirectX::TexMetadata metadata;
-	HRESULT hr = DirectX::GetMetadataFromDDSMemory(pReader->pointer(), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
+	// AI: pointer() hands out void*, which no longer converts implicitly to the const uint8_t* the
+	// AI: current DirectXTex expects (the older Windows build accepted it), hence the explicit cast.
+	HRESULT hr = DirectX::GetMetadataFromDDSMemory(static_cast<const uint8_t*>(pReader->pointer()), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
 
 	if (SUCCEEDED(hr))
 	{
@@ -204,7 +206,7 @@ _DDS:
 #endif // DEBUG
 		img_size = reader->length();
 		R_ASSERT(reader);
-		HRESULT hr = GetMetadataFromDDSMemory(reader->pointer(), reader->length(), textureFlag, imageInfo);
+		HRESULT hr = GetMetadataFromDDSMemory(static_cast<const uint8_t*>(reader->pointer()), reader->length(), textureFlag, imageInfo);
 
 		if (imageInfo.width > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
 			imageInfo.height > D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION)
@@ -271,7 +273,7 @@ _DDS:
 	}
 _DDS_CUBE:
 	{
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		HRESULT hr = LoadFromDDSMemory(static_cast<const uint8_t*>(reader->pointer()), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
 		{
 			const char* formatName = magic_enum::enum_name(imageInfo.format).data();
@@ -332,7 +334,7 @@ _DDS_2D:
 
 		img_loaded_lod = get_texture_load_lod(fn, imageInfo.width, imageInfo.height);
 
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		HRESULT hr = LoadFromDDSMemory(static_cast<const uint8_t*>(reader->pointer()), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
 		{
 			const char* formatName = magic_enum::enum_name(imageInfo.format).data();

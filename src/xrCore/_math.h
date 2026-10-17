@@ -20,6 +20,7 @@ extern XRCORE_API	void	_initialize_cpu			();
 extern XRCORE_API	void	_initialize_cpu_thread	();
 
 // threading
-using thread_t = void(void*);
+// AI: xr_thread_entry_t rather than thread_t: macOS declares thread_t (a mach_port_t) in <mach/thread_act.h>
+using xr_thread_entry_t = void(void*);
 extern XRCORE_API void thread_name(const char* name);
-extern XRCORE_API ThreadID thread_spawn(thread_t* entry, const char* name, unsigned	stack, void* arglist);
+extern XRCORE_API ThreadID thread_spawn(xr_thread_entry_t* entry, const char* name, unsigned	stack, void* arglist);

@@ -30,7 +30,17 @@ bool	CSoundRender_TargetA::_initialize		()
 	inherited::_initialize();
     // initialize buffer
 	A_CHK(alGenBuffers	(sdef_target_count, pBuffers));	
-    alGenSources		(1, &pSource);
+    // AI: OpenAL Soft, the implementation used on macOS, throws on errors, while the OpenAL the engine
+    // AI: was written for only set the error state which the code below then reads with alGetError().
+    // AI: Without this the exception escapes the engine and it dies during sound initialisation
+    // AI: ("terminating due to uncaught exception ... mutex lock failed" was a later symptom of that);
+    // AI: here the error is reported like the error path below and the target is simply not initialised.
+    try {
+        alGenSources(1, &pSource);
+    } catch (const std::exception& e) {
+        Msg("! sound: OpenAL threw while creating a source: %s", e.what());
+        return false;
+    }
    
     ALenum error_		= alGetError();
     if (AL_NO_ERROR==error_){

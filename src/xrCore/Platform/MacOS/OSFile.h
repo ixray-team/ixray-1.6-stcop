@@ -5,6 +5,16 @@ using errno_t = int;
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
 
+// AI: macOS <limits.h> does not provide the glibc constants LOGIN_NAME_MAX / HOST_NAME_MAX;
+// AI: <sys/param.h> offers the BSD equivalents instead.
+#include <sys/param.h>
+#ifndef LOGIN_NAME_MAX
+#	define LOGIN_NAME_MAX MAXLOGNAME
+#endif
+#ifndef HOST_NAME_MAX
+#	define HOST_NAME_MAX MAXHOSTNAMELEN
+#endif
+
 #define _lseek64 lseek64
 #define _O_RDONLY O_RDONLY
 #define _open open
@@ -43,7 +53,10 @@ static constexpr std::uint32_t FILE_END = 2;
 static constexpr std::uint32_t INVALID_SET_FILE_POINTER = (std::uint32_t)-1;
 
 using __int64 = int64_t;
-using __time64_t = __int64;
+// AI: on MSVC __time64_t and time_t are the same 64-bit type. macOS time_t is 64-bit as
+// AI: well but spelled long, while __int64 maps to long long - different types of equal
+// AI: size, which breaks _localtime64(&time_t_variable) calls. Alias them here.
+using __time64_t = time_t;
 using __time32_t = long;
 using _fsize_t =  unsigned long;
 
@@ -337,11 +350,38 @@ namespace Platform
         return (size_t)bytesRead;
     }
 
-    IC void GetAbsolutePath(char* in_path, char* out_buffer, [[maybe_unused]] size_t BufferSize)
+    IC void GetAbsolutePath(char* in_path, char* out_buffer, size_t BufferSize)
     {
-        char* tmp_path = realpath(out_buffer, 0);
-        strcpy(in_path, tmp_path);
-        free(tmp_path);
+        // AI: the Windows implementation is _fullpath(), which always produces an absolute path -
+        // AI: for a relative or empty argument it returns the current directory. realpath() is the
+        // AI: equivalent that exists on macOS, but it returns NULL when the path does not exist yet
+        // AI: (LocatorAPI calls this with an empty string when the file name carries no separator),
+        // AI: and the previous code copied that NULL into the destination. Keep the realpath()
+        // AI: result when it succeeds, otherwise fall back to the current working directory, which
+        // AI: is what _fullpath() does and what the callers rely on.
+        char* tmp_path = realpath(out_buffer, nullptr);
+        if (tmp_path)
+        {
+            snprintf(in_path, BufferSize, "%s", tmp_path);
+            free(tmp_path);
+            return;
+        }
+
+        if (out_buffer && out_buffer[0] == '/')
+        {
+            snprintf(in_path, BufferSize, "%s", out_buffer);
+            return;
+        }
+
+        char current_directory[PATH_MAX];
+        if (getcwd(current_directory, sizeof(current_directory)))
+        {
+            snprintf(in_path, BufferSize, "%s/%s", current_directory, out_buffer ? out_buffer : "");
+        }
+        else
+        {
+            in_path[0] = 0;
+        }
     }
 }
 

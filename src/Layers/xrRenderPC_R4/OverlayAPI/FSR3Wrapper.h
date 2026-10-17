@@ -1,5 +1,19 @@
 #pragma once
 
+#if defined(IXR_MACOS)
+// AI: FSR3 comes from AMD's FidelityFX SDK, which is Windows-only, and the macOS plan leaves
+// AI: upscaling out. The wrapper keeps the entry point the shared renderer calls, as a no-op;
+// AI: the vendor headers are never included here. The Windows implementation below is untouched.
+class Fsr3Wrapper
+{
+public:
+	bool GetRenderScale(float&) { return false; }
+	void Destroy() {}
+};
+
+inline Fsr3Wrapper g_Fsr3Wrapper;
+
+#else
 #include <FidelityFX/host/ffx_fsr3upscaler.h>
 #include <FidelityFX/host/backends/dx11/ffx_dx11.h>
 
@@ -79,3 +93,4 @@ private:
 };
 
 extern Fsr3Wrapper g_Fsr3Wrapper;
+#endif

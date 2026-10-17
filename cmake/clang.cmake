@@ -23,13 +23,20 @@ else()
     )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
-    add_compile_definitions(_GNU_SOURCE) # mremap
-    
-    find_program(LLD_PROGRAM lld)
-    if(LLD_PROGRAM)
-        add_link_options("-fuse-ld=lld")
-        link_directories(/usr/lib64 /usr/local/lib64)
-    endif(LLD_PROGRAM)
+
+    # AI: _GNU_SOURCE is only needed on Linux (mremap); on Apple it breaks the SDK headers
+    if (NOT APPLE)
+        add_compile_definitions(_GNU_SOURCE) # AI: mremap
+    endif()
+
+    # AI: lld and the Linux-specific library paths do not apply to Apple toolchains
+    if (NOT APPLE)
+        find_program(LLD_PROGRAM lld)
+        if(LLD_PROGRAM)
+            add_link_options("-fuse-ld=lld")
+            link_directories(/usr/lib64 /usr/local/lib64)
+        endif(LLD_PROGRAM)
+    endif()
 
     if (IXRAY_ASAN)
         add_link_options(-fsanitize=address)
