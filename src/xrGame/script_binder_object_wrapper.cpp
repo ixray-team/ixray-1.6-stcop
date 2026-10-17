@@ -13,6 +13,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "luabind/class_info.hpp"
 #include <luabind/detail/class_rep.hpp>
+#include <luabind/detail/class_registry.hpp>
 
 enum class ScriptBinderMethods
 {
@@ -52,31 +53,27 @@ void CScriptBinderObjectWrapper::FinishInitialization()
 		return;
 	}
 	ReflectionData = ObjectsReflectionData[ClassName];
-	
+
+	// A method is overridden when the script class resolves it to something other than the object_binder default.
+	luabind::detail::class_rep* BaseRep = luabind::detail::class_registry::get_registry(L)->find_class(LUABIND_TYPEID(CScriptBinderObject));
+	I_ASSERT(BaseRep);
+
 	for (int i = (int)ScriptBinderMethods::reinit; i <= (int)ScriptBinderMethods::net_Relcase; ++i)
 	{
 		const char* method_name = magic_enum::enum_name<ScriptBinderMethods>((ScriptBinderMethods)i).data();
+
 		class_rep->get_table(L);
 		lua_pushstring(L, method_name);
 		lua_gettable(L, -2);
 		lua_remove(L, -2); // pop class table
 
-		bool overridden = false;
-		if (lua_isfunction(L, -1))
-		{
-			if (lua_iscfunction(L, -1) && lua_getupvalue(L, -1, 3))
-			{
-				bool is_default = (lua_touserdata(L, -1) == reinterpret_cast<void*>(0x1337));
-				lua_pop(L, 1); // pop upvalue
-				overridden = !is_default;
-			}
-			else
-			{
-				overridden = true;
-			}
-		}
-		lua_pop(L, 1); // pop function/nil
-		ReflectionData[i] = overridden;
+		BaseRep->get_table(L);
+		lua_pushstring(L, method_name);
+		lua_rawget(L, -2);
+		lua_remove(L, -2); // pop base class table
+
+		ReflectionData[i] = lua_isfunction(L, -2) && !lua_rawequal(L, -2, -1);
+		lua_pop(L, 2); // pop both functions/nils
 	}
 }
 
@@ -245,4 +242,4 @@ void CScriptBinderObjectWrapper::net_Relcase_static		(CScriptBinderObject *scrip
 bool CScriptBinderObjectWrapper::has_net_relcase() const
 {
 	return ReflectionData && ReflectionData[int(ScriptBinderMethods::net_Relcase)];
-}
+}
