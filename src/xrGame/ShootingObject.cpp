@@ -417,7 +417,7 @@ void CShootingObject::UpdateEffects()
 		HudParticleParentFromWorld(pos);
 	}
 
-	u32 dwTime = Device.dwTimeGlobal;
+	u32 dwTime = Device.dwTimeDelta;
 
 	for (size_t i = 0; i < flame_particles.size();)
 	{
@@ -425,8 +425,7 @@ void CShootingObject::UpdateEffects()
 		flame_particles[i]->SetHudMode(in_hud_mode);
 		if (in_hud_mode)
 		{
-			flame_particles[i]->Update(dwTime - flame_particles[i]->dwLastTime);
-			flame_particles[i]->dwLastTime = dwTime;
+			flame_particles[i]->Update(dwTime);
 		}
 
 		if (!flame_particles[i]->IsPlaying() || flame_particles[i]->m_NeedDestroy)
@@ -441,8 +440,7 @@ void CShootingObject::UpdateEffects()
 		smoke_particles[i]->SetHudMode(in_hud_mode);
 		if (in_hud_mode)
 		{
-			smoke_particles[i]->Update(dwTime - smoke_particles[i]->dwLastTime);
-			smoke_particles[i]->dwLastTime = dwTime;
+			smoke_particles[i]->Update(dwTime);
 		}
 
 		if (!smoke_particles[i]->IsPlaying() || smoke_particles[i]->m_NeedDestroy)

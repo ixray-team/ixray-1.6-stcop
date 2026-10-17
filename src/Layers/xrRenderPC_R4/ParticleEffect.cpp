@@ -146,7 +146,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				for (u32 i = 0; i < p_cnt; i++)
 				{
 					Particle& m = particles[i];
-					if(!RImplementation.ViewBase.testSphere_dirty(vis.sphere.P, vis.sphere.R))
+					if(!GetHudMode() && !RImplementation.ViewBase.testSphere_dirty(vis.sphere.P, vis.sphere.R))
 					{
 						m.posI.set(m.pos);
 						m.rotI = m.rot;
@@ -489,10 +489,7 @@ void CParticleEffect::Render(float)
 	Fvector c = vis.sphere.P;
 	m_XFORM.transform_tiny(c);
 
-	// HUD particles are camera-relative
-	Fvector CameraPosition = GetHudMode() ? Fvector().set(0.f, 0.f, 0.f) : Device.vCameraPosition;
-
-	if (CameraPosition.distance_to_sqr(c) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
+	if (!GetHudMode() && Device.vCameraPosition.distance_to_sqr(c) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 	{
 		return;
 	}
