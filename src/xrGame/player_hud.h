@@ -132,6 +132,13 @@ struct SHudCycleMode
 	bool			FadeAdditive = false;
 	MotionID		Reference;
 };
+
+struct SHudRetargetLayer
+{
+	shared_str		Motion;
+	shared_str		Reference;
+};
+
 enum EHudOffsetAxis : u8
 {
 	eAxisPos,
@@ -415,6 +422,7 @@ struct attachable_hud_item final
 	float							SprintPoseInertia = 0.08f;
 	xr_vector<shared_str>			RetargetMotions;
 	shared_str						RetargetReference;
+	xr_hash_map<shared_str, SHudRetargetLayer>	RetargetLayers;
 	shared_str						AttachPoseReference;
 	bool							RetargetPlaying = false;
 	MotionID						RetargetMotion;
@@ -467,6 +475,8 @@ struct attachable_hud_item final
 	bool need_renderable			();
 	u8 LeftHandAttachMotionMode		(const shared_str& motion) const;
 	bool RetargetMode				(const shared_str& motion, shared_str& reference) const;
+	bool RetargetLayer				(const shared_str& alias, MotionID& motion, shared_str& reference) const;
+	void LoadRetargetLayers			();
 	const player_hud_motion* OwnIdle	() const;
 	MotionID AliasMotion				(const char* alias) const;
 	bool SprintLayered				() const;
@@ -489,7 +499,7 @@ struct attachable_hud_item final
 	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
 	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
-	void		PlayRetargetBase	();
+	void		PlayRetargetBase	(const shared_str& alias);
 	void		UpdateAttachPose	();
 	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd, bool disable_random);
 
@@ -981,7 +991,7 @@ private:
 	void			HandsIkFingerInertia	(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f);
+	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);

@@ -1005,6 +1005,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	AdditiveReference = READ_IF_EXISTS(pSettings, r_string, sect_name, "additive_reference", nullptr);
 	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
 	RetargetReference = READ_IF_EXISTS(pSettings, r_string, sect_name, "retarget_reference", nullptr);
+	LoadRetargetLayers();
 	hud_read_motion_list(sect_name, "left_hand_free_motions", LeftHandFreeMotions);
 
 	const char* left_ik_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "left_hand_ik_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "left_hand_ik_bone", nullptr));
@@ -1123,12 +1124,12 @@ float* attachable_hud_item::RigField(const char* key, u32& count)
 	return nullptr;
 }
 
-static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion)
+static CBlend* hud_playing_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion, u8 channel = 0, MotionID reference = MotionID())
 {
 	for (u32 i = 0, count = ka->LL_PartBlendsCount(part); i < count; i++)
 	{
 		CBlend* B = ka->LL_PartBlend(part, i);
-		if (B != nullptr && B->channel == 0 && B->motionID == motion && !B->stop_at_end && B->blend_state() != CBlend::eFalloff)
+		if (B != nullptr && B->channel == channel && B->motionID == motion && B->additive_ref == reference && !B->stop_at_end && B->blend_state() != CBlend::eFalloff)
 		{
 			return B;
 		}
@@ -1141,6 +1142,11 @@ static CBlend* hud_play_cycle(IKinematicsAnimated* ka, u16 part, MotionID motion
 {
 	if (mode.Type == EHudCycleMode::Additive)
 	{
+		if (CBlend* Playing = mode.Loop ? hud_playing_cycle(ka, part, motion, ADDITIVE_CHANNEL, mode.Reference) : nullptr)
+		{
+			return Playing;
+		}
+
 		ka->LL_FadeCycle(part, 1.f / mode.BlendOut, 1 << ADDITIVE_CHANNEL);
 		CMotionDef* def = ka->LL_GetMotionDef(motion);
 		const bool blend_in = mode.BlendIn > 0.f;
@@ -1307,9 +1313,9 @@ void attachable_hud_item::anim_play_bonepart(const shared_str& anim, bool bMixIn
 	}
 }
 
-void attachable_hud_item::PlayRetargetBase()
+void attachable_hud_item::PlayRetargetBase(const shared_str& alias)
 {
-	player_hud_motion* base = m_hand_motions.find_motion("anm_idle");
+	player_hud_motion* base = m_hand_motions.find_motion(alias);
 	if (base == nullptr || base->m_animations.empty() || g_player_hud->GetModel() == nullptr)
 	{
 		return;
@@ -1404,10 +1410,17 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	const bool idle = strstr(anm_name_b.c_str(), "anm_idle") == anm_name_b.c_str();
 	const bool rig = CCameraRig::Enabled();
 	shared_str retarget_reference;
-	const bool retarget = RetargetMode(anm_name_b, retarget_reference);
+	MotionID HandsMotion = M.mid;
+	const bool Layer = RetargetLayer(anm_name_b, HandsMotion, retarget_reference);
+	const bool retarget = Layer || RetargetMode(anm_name_b, retarget_reference);
+	if (Layer && retarget_reference.size() == 0)
+	{
+		retarget_reference = anm->m_base_name;
+	}
+
 	if (retarget)
 	{
-		PlayRetargetBase();
+		PlayRetargetBase(Layer ? anm_name_b : shared_str("anm_idle"));
 	}
 
 	g_player_hud->CycleFade = idle && rig ? IdleFade : 0.f;
@@ -1430,13 +1443,13 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	RetargetPlaying = retarget;
 	if (retarget)
 	{
-		RetargetMotion = M.mid;
-		RetargetReferenceMotion = mode.Reference.valid() ? mode.Reference : M.mid;
+		RetargetMotion = HandsMotion;
+		RetargetReferenceMotion = mode.Reference.valid() ? mode.Reference : HandsMotion;
 	}
 	LeftHandFree = rig && hud_motion_listed(LeftHandFreeMotions, anm_name_b);
 
 	IKinematicsAnimated* kaModel = m_model_combined ? m_model->dcast_PKinematicsAnimated() : nullptr;
-	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed, kaModel);	
+	u32 ret = g_player_hud->anim_play(m_attach_place_idx, HandsMotion, need_mix_hands, md, speed, kaModel);
 	if(m_model->dcast_PKinematicsAnimated() != nullptr)
 	{
 		shared_str item_anm_name;
@@ -2839,6 +2852,50 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 	return AttachPoseReference.size() != 0;
 }
 
+bool attachable_hud_item::RetargetLayer(const shared_str& alias, MotionID& motion, shared_str& reference) const
+{
+	const auto It = RetargetLayers.find(alias);
+	if (It == RetargetLayers.end() || m_model_combined || !CCameraRig::Enabled() || g_player_hud->GetModel() == nullptr || hud_motion_listed(RetargetMotions, alias))
+	{
+		return false;
+	}
+
+	const MotionID Layer = g_player_hud->GetModel()->ID_Cycle_Safe(It->second.Motion);
+	if (!Layer.valid())
+	{
+		return false;
+	}
+
+	motion = Layer;
+	reference = It->second.Reference;
+	return true;
+}
+
+void attachable_hud_item::LoadRetargetLayers()
+{
+	RetargetLayers.clear();
+	for (auto It = RetargetMotions.begin(); It != RetargetMotions.end();)
+	{
+		if (!pSettings->section_exist(*It))
+		{
+			++It;
+			continue;
+		}
+
+		const shared_str Reference = READ_IF_EXISTS(pSettings, r_string, *It, "retarget_reference", nullptr);
+		for (const CInifile::Item& Line : pSettings->r_section(*It).Data)
+		{
+			if (strstr(Line.first.c_str(), "anm_") == Line.first.c_str() && Line.second.size() != 0)
+			{
+				string128 Motion;
+				RetargetLayers[Line.first] = { _GetItem(Line.second.c_str(), 0, Motion), Reference };
+			}
+		}
+
+		It = RetargetMotions.erase(It);
+	}
+}
+
 const player_hud_motion* attachable_hud_item::OwnIdle() const
 {
 	const player_hud_motion* numbered = nullptr;
@@ -2918,7 +2975,7 @@ u8 attachable_hud_item::LeftHandAttachMotionMode(const shared_str& motion) const
 		return 0;
 	}
 
-	if (hud_motion_listed(LeftHandAttachAnimatedArmMotions, motion) || hud_motion_listed(RetargetMotions, motion))
+	if (hud_motion_listed(LeftHandAttachAnimatedArmMotions, motion))
 	{
 		return 2;
 	}
@@ -3295,34 +3352,12 @@ bool player_hud::LeftHandAttachReference(attachable_hud_item* item)
 	return !arm_bones.empty() && m_model->LL_GetMotionBoneTransform(M.mid, hands_time, arm_bones[0], item->LeftHandAttachArmRootRef);
 }
 
-static const player_hud_motion* hud_current_idle(attachable_hud_item* item)
+bool player_hud::RetargetHandTarget(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength)
 {
-	if (CHudItem* hud_item = item->m_parent_hud_item)
-	{
-		if (const player_hud_motion* current = item->m_hand_motions.find_motion(hud_item->SetCurrentStateAnimation(hud_item->SetCurrentIdleAnimation())))
-		{
-			return current;
-		}
-	}
-
-	if (const player_hud_motion* idle = item->m_hand_motions.find_motion("anm_idle"))
-	{
-		return idle;
-	}
-
-	return item->OwnIdle();
-}
-
-bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength)
-{
-	const player_hud_motion* idle = hud_current_idle(item);
-	if (m_model == nullptr || idle == nullptr || idle->m_animations.empty() || wrist == BI_NONE || !motion.valid() || !reference.valid())
+	if (m_model == nullptr || wrist == BI_NONE || !motion.valid() || !reference.valid())
 	{
 		return false;
 	}
-
-	const MotionID idle_motion = idle->m_animations[0].mid;
-	const float idle_time = std::max(hud_motion_time(m_model, idle_motion), 0.f);
 
 	const auto relative = [&](MotionID sample, float at, Fmatrix& out)
 	{
@@ -3378,26 +3413,14 @@ bool player_hud::RetargetHandTarget(attachable_hud_item* item, u16 ancor, u16 wr
 		}
 	}
 
-	bool target_valid = false;
-	if (channel == LAYER_ADDITIVE_CHANNEL)
-	{
-		const u8 base_mask = u8(~(1 << LAYER_ADDITIVE_CHANNEL));
-		Fmatrix ancor_base, wrist_base;
-		target_valid = m_model->LL_GetBoneTransformMasked(ancor, base_mask, ancor_base) && m_model->LL_GetBoneTransformMasked(wrist, base_mask, wrist_base);
-		if (target_valid)
-		{
-			target.mul_43(Fmatrix().invert(ancor_base), wrist_base);
-		}
-	}
-	else
-	{
-		target_valid = relative(idle_motion, idle_time, target);
-	}
-
-	if (!target_valid || !relative(reference, 0.f, reference_relative))
+	const u8 BaseMask = u8(~((1 << channel) | (1 << LAYER_ADDITIVE_CHANNEL)));
+	Fmatrix AncorBase, WristBase;
+	if (!m_model->LL_GetBoneTransformMasked(ancor, BaseMask, AncorBase) || !m_model->LL_GetBoneTransformMasked(wrist, BaseMask, WristBase) || !relative(reference, 0.f, reference_relative))
 	{
 		return false;
 	}
+
+	target.mul_43(Fmatrix().invert(AncorBase), WristBase);
 
 	if (strength < 1.f)
 	{
@@ -3626,10 +3649,10 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 
 	RetargetWeight = HudBlend::Ramp(RetargetWeight, item->RetargetPlaying, 0.f, std::max(item->IdleFade, 0.1f), Device.fTimeDelta);
 	const bool retarget = RetargetWeight > 0.f && !ancor_in_right_hand;
-	if (retarget && item->RetargetPlaying)
+	if (retarget)
 	{
-		RetargetRightValid = has_right && RetargetHandTarget(item, ancor, RightIkChain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetRightTarget);
-		RetargetLeftValid = has_left && RetargetHandTarget(item, ancor, LeftIkChain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetLeftTarget);
+		RetargetRightValid = has_right && RetargetHandTarget(ancor, RightIkChain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetRightTarget);
+		RetargetLeftValid = has_left && RetargetHandTarget(ancor, LeftIkChain[2], item->RetargetMotion, ADDITIVE_CHANNEL, item->RetargetReferenceMotion, RetargetLeftTarget);
 	}
 
 	F.Item = item;
@@ -3664,8 +3687,8 @@ void player_hud::HandsIkSprint(SHandsIkFrame& F)
 	F.SprintLeft = sprint_hands && has_left && SprintBaseTransform(LeftIkChain[2], F.SprintLeftBase);
 
 	const MotionID sprint_motion = sprint_layer > 0.f && SprintAdditiveEnabled() ? hud_dominant_motion(m_model, LAYER_ADDITIVE_CHANNEL) : MotionID();
-	F.SprintLayerRight = sprint_motion.valid() && has_right && !ancor_in_right_hand && RetargetHandTarget(item, ancor, RightIkChain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, F.SprintRightLayer, hud_smooth(sprint_layer));
-	F.SprintLayerLeft = sprint_motion.valid() && has_left && RetargetHandTarget(item, ancor, LeftIkChain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, F.SprintLeftLayer, hud_smooth(sprint_layer));
+	F.SprintLayerRight = sprint_motion.valid() && has_right && !ancor_in_right_hand && RetargetHandTarget(ancor, RightIkChain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, F.SprintRightLayer, hud_smooth(sprint_layer));
+	F.SprintLayerLeft = sprint_motion.valid() && has_left && RetargetHandTarget(ancor, LeftIkChain[2], sprint_motion, LAYER_ADDITIVE_CHANNEL, SprintReferenceMotion, F.SprintLeftLayer, hud_smooth(sprint_layer));
 	F.SprintLayer = sprint_layer;
 }
 
