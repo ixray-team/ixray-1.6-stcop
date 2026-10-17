@@ -349,12 +349,13 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//LV: Point lights will be fixed later... I hope
 	if (L == nullptr)
 		return;
-	GPU_EVENT(accum_volumetric_lv);
-
+	
 	if (!L->flags.bVolumetric || (ps_ssfx_volumetric.x > 0 && ps_ssfx_volumetric.y > 0))
 	{
 		return;
 	}
+
+	GPU_EVENT(accum_volumetric_lv);
 
 	phase_vol_accumulator();
 
