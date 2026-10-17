@@ -782,3 +782,31 @@ main_menu off
   `references/upstream-AGENTS.md`): English-комментарии, UTF-8+CRLF, `// HACK:`, зависимости вниз.
 - Прогоны: харнесс-патч (`IXR_AUTOSTART`/`IXR_SILENT`/`IXR_NIGHT`) сохранён в
   `~/Hermes/ixray-mac-port/porting-tmp/harness-20261017.patch` и ПОКА НЕ ПЕРЕНЕСЁН на develop-дерево.
+
+### Переезд на develop: фаза сборки (17.10, вечер-2, продолжение)
+
+- Перебазировка: 41 коммит, 7 конфликтов. Бэкапы: ветка `macos-metal-backup-default-base`,
+  каталог `build-macos-default-base/` (не удалять без Степана). Новый build-каталог: `build-macos`.
+- Конфигурация на develop прошла с тем же рецептом скилла (openal-пути, IXR_TEST_CI=ON, policy 3.5).
+- **Коллизии типов macOS на develop** — корень: filewatch.hpp (его инклюдит LocatorAPI.h) тянет
+  CoreServices/CarbonCore в КАЖДЫЙ TU xrCore → системные имена в глобальной области:
+  - `ThreadID` (CarbonCore: unsigned long) против нашего `pthread_t` → алиас MacOS-слоя выровнен
+    с CarbonCore (идентичные typedef легальны), обратное приведение в pthread_join/GetCurrentThread;
+  - `thread_t` (Mach: mach_port_t) против глобального `using thread_t` в Kernel/CPU.h (НЕЙМСПЕЙСА там
+    нет — namespace закрывается раньше!) → алиас переименован в `xr_thread_entry_t` (как в старом порте);
+  - `processor_info` (mach-функция скрывает тег структуры) → добавлено слово `struct` в местах
+    использования (Kernel/CPU.*, xr_cpuid.*);
+  - `Point` (MacTypes) против `IceMaths::Point` opcode → квалификация в OPC_TreeBuilders.h;
+  - `Point(CBaseMonster&...)` — их функция в MonsterBehavior.inl → переименована в `ValidGoalPosition`;
+  - `Platform::JoinThread` отсутствовал в MacOS-слое → добавлен по образцу Linux;
+  - xrCore: `-framework CoreFoundation CoreServices` (символ `_kCFRunLoopDefaultMode` из filewatch);
+  - `xalloc::deallocate` без noexcept → все контейнеры с «кидающим» деструктором → конфликт
+    с noexcept-деструктором IRender_interface на clang → noexcept добавлен (xr_free не бросает).
+- **Ревью ForserX по PR #382 интегрировано**: `= default` у IReaderBase работает ТОЛЬКО с вынесенным
+  определением (FS.cpp); инлайн-вариант реально роняет линковку xrSound — проверено обеими вариантами.
+  `#pragma warning + <malloc.h>`-блоки сняты в файлах PR (GametaskManager, space_restriction_holder,
+  Crypto/trivial_encryptor) — malloc приходит из stdlib.h через PCH (xrCore.h).
+- Сохранение: `size_t` ≠ `u64` на LP64 — их код «Object << ObjectsSize» жил только на LLP64
+  (Windows); слоты приведены к u64 явно (visual_memory_manager, alife_spawn_registry).
+- LuaJIT: cmake/modules/LuaJIT.cmake — дословно develop'овский (ixray-team/luajit-ixray @ default,
+  FetchContent, таргет `libluajit`); собрался чисто, Lua найден как 5.1.3.
