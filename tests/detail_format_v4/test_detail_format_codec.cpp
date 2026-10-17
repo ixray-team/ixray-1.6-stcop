@@ -1,4 +1,5 @@
 #include "../../src/xrCore/DetailFormatCodec.h"
+#include "../../src/xrCore/DetailRuntimeSlot.h"
 
 #include <algorithm>
 #include <array>
@@ -124,6 +125,43 @@ void testConversionAndBounds()
     CHECK(decodeSlot(Version::V4, bad.data(), bad.size(), final) == Status::ReservedBitsSet);
 }
 
+void testRuntimeConversion()
+{
+    for (Version version : {Version::V3, Version::V4})
+    {
+        Slot original = example();
+        if (version == Version::V4)
+            original.ids = {63, 255, 1024, EmptyId};
+        const std::size_t stride = version == Version::V3 ? SlotSizeV3 : SlotSizeV4;
+        std::array<std::uint8_t, SlotSizeV4> bytes{};
+        CHECK(encodeSlot(version, original, bytes.data(), stride) == Status::Ok);
+        Slot decoded;
+        CHECK(decodeSlot(version, bytes.data(), stride, decoded) == Status::Ok);
+        const RuntimeSlot runtime = toRuntimeSlot(decoded);
+        CHECK(runtime.y_base == original.yBase);
+        CHECK(runtime.y_height == original.yHeight);
+        CHECK(runtime.r_id(0) == original.ids[0]);
+        CHECK(runtime.r_id(1) == original.ids[1]);
+        CHECK(runtime.r_id(2) == original.ids[2]);
+        CHECK(runtime.r_id(3) == original.ids[3]);
+        CHECK(runtime.r_id(4) == EmptyId);
+        CHECK(runtime.r_ybase() == float(original.yBase) * .2f - 200.f);
+        CHECK(runtime.r_yheight() == float(original.yHeight) * .1f);
+        CHECK(runtime.c_hemi == original.cHemi);
+        CHECK(runtime.c_dir == original.cDir);
+        CHECK(runtime.c_r == original.cR);
+        CHECK(runtime.c_g == original.cG);
+        CHECK(runtime.c_b == original.cB);
+        for (std::size_t i = 0; i < 4; ++i)
+        {
+            CHECK(runtime.palette[i].a0 == original.palettes[i].alpha[0]);
+            CHECK(runtime.palette[i].a1 == original.palettes[i].alpha[1]);
+            CHECK(runtime.palette[i].a2 == original.palettes[i].alpha[2]);
+            CHECK(runtime.palette[i].a3 == original.palettes[i].alpha[3]);
+        }
+    }
+}
+
 void testHeader()
 {
     Header h{4, 1024, -500, 701, 1582, 1582};
@@ -182,6 +220,7 @@ void testChunks()
 int main()
 {
     testV3Golden();
+    testRuntimeConversion();
     testV4Roundtrips();
     testConversionAndBounds();
     testHeader();

@@ -74,8 +74,13 @@ void CDetailManager::Load()
 	dtFS = FS.r_open(fn);
 
 	// Header
-	dtFS->r_chunk_safe(0,&dtH,sizeof(dtH));
-	R_ASSERT(dtH.version == DETAIL_VERSION);
+	R_ASSERT2(dtFS->r_chunk_safe(0, &dtH, sizeof(dtH)), "Invalid level.details header");
+	R_ASSERT2(dtH.version == DETAIL_VERSION ||
+		dtH.version == static_cast<u32>(ixray::detail_format::Version::V4),
+		"Unsupported level.details detail version");
+	R_ASSERT2(dtH.version != static_cast<u32>(ixray::detail_format::Version::V4) ||
+		dtH.object_count <= ixray::detail_format::MaxModelsV4,
+		"Too many detail models for v4");
 	u32 m_count = dtH.object_count;
 
 	// Models
@@ -89,10 +94,23 @@ void CDetailManager::Load()
 	}
 	m_fs->close();
 
-	// Get pointer to database (slots)
+	// Always decode v3/v4 slots into a wide-ID game-only runtime structure.
+	// In particular, a 20-byte v4 disk record must NEVER be cast to DetailSlot*.
 	IReader* m_slots = dtFS->open_chunk(2);
-	dtSlots = (DetailSlot*)m_slots->pointer();
+	R_ASSERT2(m_slots, "Missing level.details slot chunk");
+	const ixray::detail_format::Header shape{
+		dtH.version, dtH.object_count, dtH.offs_x, dtH.offs_z, dtH.size_x, dtH.size_z};
+	std::vector<ixray::detail_format::Slot> decoded;
+	const auto decode_status = ixray::detail_format::decodeSlots(
+		static_cast<ixray::detail_format::Version>(dtH.version), shape,
+		static_cast<const std::uint8_t*>(m_slots->pointer()), static_cast<std::size_t>(m_slots->length()), decoded);
 	m_slots->close();
+	R_ASSERT2(decode_status == ixray::detail_format::Status::Ok,
+		ixray::detail_format::statusMessage(decode_status));
+	dtSlotsOwned.resize(decoded.size());
+	for (std::size_t i = 0; i < decoded.size(); ++i)
+		dtSlotsOwned[i] = ixray::detail_format::toRuntimeSlot(decoded[i]);
+	dtSlots = dtSlotsOwned.empty() ? nullptr : dtSlotsOwned.data();
 
 	// Initialize 'vis' and 'cache'
 	cache_ReInitialize();
@@ -131,7 +149,10 @@ void CDetailManager::Unload		()
 	}
 #endif
 	objects.clear();
-
+#ifndef _EDITOR
+	dtSlotsOwned.clear();
+#endif
+	dtSlots = nullptr;
 	FS.r_close(dtFS);
 }
 

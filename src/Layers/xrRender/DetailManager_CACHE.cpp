@@ -77,12 +77,12 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 {
 	int sx = cg2w_X(gx);
 	int sz = cg2w_Z(gz);
-	DetailSlot&	DS = QueryDB(sx,sz);
+	RuntimeDetailSlot&	DS = QueryDB(sx,sz);
 
-	D->empty = (DS.id0==DetailSlot::ID_Empty)&&
-				(DS.id1==DetailSlot::ID_Empty)&&
-				(DS.id2==DetailSlot::ID_Empty)&&
-				(DS.id3==DetailSlot::ID_Empty);
+	D->empty = (DS.id0==RuntimeDetailSlot::ID_Empty)&&
+				(DS.id1==RuntimeDetailSlot::ID_Empty)&&
+				(DS.id2==RuntimeDetailSlot::ID_Empty)&&
+				(DS.id3==RuntimeDetailSlot::ID_Empty);
 
 	// Unpacking
 	u32 old_type = D->type;
@@ -269,7 +269,7 @@ void CDetailManager::cache_Update(const Fvector& view)
     }
 }
 
-DetailSlot&	CDetailManager::QueryDB(int sx, int sz)
+RuntimeDetailSlot&	CDetailManager::QueryDB(int sx, int sz)
 {
 	int db_x = sx+dtH.offs_x;
 	int db_z = sz+dtH.offs_z;
@@ -281,10 +281,10 @@ DetailSlot&	CDetailManager::QueryDB(int sx, int sz)
 	else
 	{
 		// Empty slot
-		DS_empty.w_id(0,DetailSlot::ID_Empty);
-		DS_empty.w_id(1,DetailSlot::ID_Empty);
-		DS_empty.w_id(2,DetailSlot::ID_Empty);
-		DS_empty.w_id(3,DetailSlot::ID_Empty);
+		DS_empty.w_id(0,RuntimeDetailSlot::ID_Empty);
+		DS_empty.w_id(1,RuntimeDetailSlot::ID_Empty);
+		DS_empty.w_id(2,RuntimeDetailSlot::ID_Empty);
+		DS_empty.w_id(3,RuntimeDetailSlot::ID_Empty);
 		return DS_empty;
 	}
 }
