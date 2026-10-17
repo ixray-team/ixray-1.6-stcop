@@ -663,7 +663,11 @@ function r_CTime( p )
 		return t
 	else
 		--set_save_marker(p, "load", true, "CTIME")
-		return 0
+		-- AI: was `return 0` - a plain number, not a CTime. Callers store this value and later
+		-- AI: index it as an object (w_CTime -> t:get, diffSec), which is a Lua runtime error
+		-- AI: (fatal in Debug builds of the engine). "No time" must be nil, matching w_CTime,
+		-- AI: which writes the -1 (255) marker for a nil time.
+		return nil
 	end
 end
 ---------------------------------------------------------------------------
