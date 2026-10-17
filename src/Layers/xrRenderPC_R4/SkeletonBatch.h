@@ -10,7 +10,9 @@ class SkeletonBatch
 {
 public:
 	SkeletonBatch() = default;
-	~SkeletonBatch();
+	// HACK: must be noexcept - R_dsgraph_structure holds this by value and overrides the noexcept
+	// HACK: destructors of IRender_interface/pureFrame on compilers that enforce the override (clang).
+	~SkeletonBatch() noexcept;
 
 	SkeletonBatch(const SkeletonBatch&) = delete;
 	SkeletonBatch& operator=(const SkeletonBatch&) = delete;
