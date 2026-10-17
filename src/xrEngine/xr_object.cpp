@@ -48,10 +48,7 @@ void CObject::MakeMeCrow			()
 		return;
 
 #if defined(IXR_MACOS)
-	// AI: If the CAS failed, another thread already made this object a crow this frame:
-	// AI: dwFrame_AsCrow then equals device_frame_id and there is nothing left to do.
-	// AI: The former VERIFY turned that benign race into a fatal on Debug builds.
-	return;
+	return; // the CAS winner already made this object a crow
 #else
 	VERIFY							( dwFrame_AsCrow == device_frame_id );
 #endif

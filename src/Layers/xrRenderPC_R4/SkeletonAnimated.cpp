@@ -15,13 +15,7 @@ using namespace animation;
 void CBlendInstance::construct()
 {
 	ZeroMemory(this, sizeof(*this));
-	// AI: ZeroMemory leaves blend_lock all zeroes. That is a valid unlocked lock for the Windows
-	// AI: implementation (SRWLOCK), but on macOS xrSRWLock wraps std::shared_mutex (see
-	// AI: Kernel/xrSyncronize.h), for which an all-zero object is invalid: the first lock attempt
-	// AI: fails with "mutex lock failed: Invalid argument" and the engine dies with an uncaught
-	// AI: std::system_error (hit from CBlendInstance::blend_add when a model animation starts).
-	// AI: The instance is allocated raw with xr_alloc and initialised here, so the lock has to be
-	// AI: (re)constructed in place after the wipe.
+	// HACK: the wiped lock is invalid on macOS (std::shared_mutex), reconstruct it in place.
 	new (&blend_lock) xrSRWLock();
 }
 
@@ -88,8 +82,6 @@ std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(Mo
 	for (_I	= s_mots.motion_map()->begin(); _I!=_E; ++_I)	if (_I->second==ID.idx) return std::make_pair(*_I->first,*s_mots.id());
 	return std::make_pair((const char*)nullptr,(const char*)nullptr);
 }
-
-
 
 static const char* name_bool( bool v )
 {

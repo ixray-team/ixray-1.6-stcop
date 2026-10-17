@@ -130,8 +130,6 @@ bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata
 		return status;
 
 	DirectX::TexMetadata metadata;
-	// AI: pointer() hands out void*, which no longer converts implicitly to the const uint8_t* the
-	// AI: current DirectXTex expects (the older Windows build accepted it), hence the explicit cast.
 	HRESULT hr = DirectX::GetMetadataFromDDSMemory(static_cast<const uint8_t*>(pReader->pointer()), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
 
 	if (SUCCEEDED(hr))

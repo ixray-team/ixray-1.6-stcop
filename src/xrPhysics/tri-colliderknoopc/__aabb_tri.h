@@ -1,6 +1,6 @@
 #pragma  once
-// AI: "Point" renamed to TriPoint - a global Carbon type on macOS made the name ambiguous (port change).
 
+	// HACK: renamed from Point - a global Carbon type on macOS.
 	class  TriPoint
 	{
 		public:

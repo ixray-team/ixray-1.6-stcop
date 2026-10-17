@@ -1,4 +1,3 @@
-// AI: "Point" renamed to TriPoint - a global Carbon type on macOS made the name ambiguous (port change).
 #ifndef D_SORT_TRI_PRIMITIVE_H
 #define D_SORT_TRI_PRIMITIVE_H
 #include "dTriCollideK.h"

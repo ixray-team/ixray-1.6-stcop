@@ -4,9 +4,6 @@
 #include <malloc/malloc.h>
 #include <mach-o/dyld.h>
 
-// AI: glibc names this malloc_usable_size; macOS calls it malloc_size.
-// AI: The rest of the engine (xrMemory_align.cpp) calls it through the _msize macro below,
-// AI: so the equivalent is provided here, in the platform layer.
 inline size_t malloc_usable_size(void* p)
 {
     return malloc_size(p);
@@ -34,7 +31,6 @@ namespace Platform
             {
                 printf("%s\n", strerror(errno));
 
-                // AI: macOS has no /proc; dyld knows where our own executable lives
                 char exec_path[PATH_MAX] = {};
                 uint32_t exec_path_size = sizeof(exec_path);
                 _NSGetExecutablePath(exec_path, &exec_path_size);

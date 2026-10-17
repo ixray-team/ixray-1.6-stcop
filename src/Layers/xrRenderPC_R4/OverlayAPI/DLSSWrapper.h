@@ -1,8 +1,5 @@
 #pragma once
 
-// AI: NVIDIA's DLSS SDK is Windows-only, and the macOS plan leaves DLSS out. On macOS the vendor
-// AI: header is never included and the wrapper keeps the same public surface as no-ops, so the
-// AI: renderer code compiles unchanged. The Windows implementation below is untouched.
 #if !defined(IXR_MACOS)
 #include <ngx/nvsdk_ngx.h>
 #include <ngx/nvsdk_ngx_helpers.h>
@@ -79,8 +76,6 @@ private:
 extern DLSSWrapper g_DLSSWrapper;
 
 #if defined(IXR_MACOS)
-// AI: no-op bodies for the macOS build. DLSS is disabled there, so every entry point the renderer
-// AI: calls simply reports "not available" instead of touching NVIDIA's SDK.
 inline void DLSSWrapper::Create() {}
 inline void DLSSWrapper::Destroy() {}
 inline bool DLSSWrapper::GetRenderScale(float&) { return false; }

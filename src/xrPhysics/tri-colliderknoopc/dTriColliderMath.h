@@ -1,4 +1,3 @@
-// AI: "Point" renamed to TriPoint - a global Carbon type on macOS made the name ambiguous (port change).
 #ifndef D_TRI_COLLIDER_MATH_H
 #define D_TRI_COLLIDER_MATH_H
 #include "__aabb_tri.h"

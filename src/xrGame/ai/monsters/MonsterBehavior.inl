@@ -212,7 +212,7 @@ SInvestigation* KnowBody(CBaseMonster& Monster, u32 ID, const Fvector& Position)
 	}
 	return Selected;
 }
-// AI: renamed from "Point" - a global Carbon type on macOS, unqualified lookup collided.
+// HACK: renamed from "Point" - a global Carbon type on macOS.
 bool ValidGoalPosition(CBaseMonster& Monster, Fvector& Position, u32& Vertex)
 {
 	if (!World().Nodes || !Monster.Home->at_home(Position) || Monster.Behavior.CrossesDanger(Monster, Position) ||

@@ -23,8 +23,6 @@
 
 /* per-machine configuration */
 
-
-
 #ifndef _ODE_CONFIG_H_
 
 #define _ODE_CONFIG_H_
@@ -37,8 +35,6 @@ extern "C"
 #include <stdio.h>
 #include <stdarg.h>
 #if defined(__APPLE__)
-#include <alloca.h>		// AI: macOS has no <malloc.h>; alloca lives here
-#include <stdlib.h>		// AI: ...and malloc/realloc live here
 #else
 #include <malloc.h>		// for alloca under windows
 #endif
@@ -68,8 +64,6 @@ static union { unsigned char __c[8]; double __d; } __ode_huge_val =
 
 #endif
 
-
-
 #if defined(dSINGLE)
 
 #define dInfinity _INFINITY4
@@ -80,13 +74,9 @@ static union { unsigned char __c[8]; double __d; } __ode_huge_val =
 
 #endif
 
-
-
 #define SHAREDLIBIMPORT __declspec (dllimport)
 
 #define SHAREDLIBEXPORT __declspec (dllexport)
-
-
 
 /* some types. assume `int' >= 32 bits */
 
@@ -102,10 +92,6 @@ typedef unsigned short  uint16;
 
 typedef unsigned char   uint8;
 
-
-
-
-
 /* an integer type that we can safely cast a pointer to and from without
 
  * loss of bits.
@@ -113,10 +99,6 @@ typedef unsigned char   uint8;
  */
 
 typedef uintptr_t intP;
-
-
-
-
 
 /* if we're compiling on a pentium, we may need to know the clock rate so
 
@@ -130,8 +112,6 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #ifdef PENTIUM
 
 #ifndef PENTIUM_HZ
@@ -141,10 +121,6 @@ typedef uintptr_t intP;
 #endif
 
 #endif
-
-
-
-
 
 /* the efficient alignment. most platforms align data structures to some
 
@@ -162,13 +138,7 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #define EFFICIENT_ALIGNMENT 16
-
-
-
-
 
 /* for unix, define this if your system supports anonymous memory maps
 
@@ -176,21 +146,13 @@ typedef uintptr_t intP;
 
  */
 
-
-
 #define MMAP_ANONYMOUS
-
-
-
-
 
 #ifdef __cplusplus
 
 }
 
 #endif
-
-
 
 #endif
 

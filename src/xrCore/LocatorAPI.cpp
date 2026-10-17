@@ -406,10 +406,6 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 		}
 		xr_strconcat(full, fs_entry_point, name);
 
-		// AI: names inside the archives keep the separators they were packed with (the Windows one),
-		// AI: while FS_Path::_update() builds the lookup key in host form, so an archive entry could
-		// AI: never be found on macOS or Linux. Normalise it once here, on registration, exactly like
-		// AI: the rest of the file list does. ValidPath() is the identity on Windows.
 		xr_strcpy(full, Platform::ValidPath(full));
 
 		Register		(full,A.vfs_idx,crc,ptr,size_real,size_compr,0);
@@ -1720,10 +1716,6 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 	desc_f.name = file_name;
 	files_it I = m_files.find(desc_f);
 
-	// AI: ValidPath() rewrites the separators for the host - on macOS and Linux it turns the Windows
-	// AI: one into '/', while the entries keep whatever the game configs carried. Look the unmodified
-	// AI: key up as well, otherwise a name is never found when the two forms differ (on Windows this
-	// AI: is the same lookup: ValidPath() is the identity there).
 	if (I == m_files.end())
 	{
 		desc_f.name = InputPath;

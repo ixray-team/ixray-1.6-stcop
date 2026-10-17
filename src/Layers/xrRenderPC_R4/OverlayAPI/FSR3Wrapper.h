@@ -1,9 +1,6 @@
 #pragma once
 
 #if defined(IXR_MACOS)
-// AI: FSR3 comes from AMD's FidelityFX SDK, which is Windows-only, and the macOS plan leaves
-// AI: upscaling out. The wrapper keeps the entry point the shared renderer calls, as a no-op;
-// AI: the vendor headers are never included here. The Windows implementation below is untouched.
 class Fsr3Wrapper
 {
 public:

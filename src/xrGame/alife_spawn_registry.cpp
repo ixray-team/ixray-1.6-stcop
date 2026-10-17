@@ -309,7 +309,7 @@ void CALifeSpawnRegistry::serialize_updates(ISaveObject& Object)
 	{
 		if (Object.IsSave())
 		{
-			u64 Value = m_spawns.vertices().size(); // AI: match the save slot type, size_t differs from u64 on LP64
+			u64 Value = m_spawns.vertices().size();
 			Object << Value;
 			BEGIN_ARRAY(Object)
 			{

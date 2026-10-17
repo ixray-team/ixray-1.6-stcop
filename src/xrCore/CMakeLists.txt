@@ -37,7 +37,6 @@ else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
 	elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-		# AI: keep Platform/MacOS and drop the Linux and BSD sources
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 	else()
@@ -95,11 +94,10 @@ target_link_libraries(xrCore PUBLIC LZO::lzo2)
 target_link_libraries(xrCore PRIVATE yaml-cpp)
 target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
-# AI: filewatch.hpp uses FSEvents and a CFRunLoop on macOS; without these frameworks the
-# AI: xrCore link fails on _kCFRunLoopDefaultMode. Other platforms get their backends from the OS.
 if(APPLE)
 
-	target_link_libraries(xrCore PRIVATE "-framework CoreFoundation" "-framework CoreServices")
+	# filewatch.hpp needs FSEvents and CoreFoundation on macOS.
+target_link_libraries(xrCore PRIVATE "-framework CoreFoundation" "-framework CoreServices")
 
 endif()
 

@@ -1,16 +1,6 @@
-// AI: macOS port shim for DirectXTex.
-// AI: Upstream builds DirectXTex/DirectXTexD3D11.cpp only for "BUILD_DX11 AND WIN32", but the
-// AI: renderer (CRender::texture_load in dx11Texture.cpp) calls DirectX::CreateTextureEx from it.
-// AI: That source cannot be built here: its non-Windows branch (DirectXTexP.h) pulls the
-// AI: DirectX-Headers WSL stubs, and those are incompatible with the DXVK headers the renderer is
-// AI: compiled against - the two stacks typedef BOOL/UINT/DWORD differently, which is a hard
-// AI: "typedef redefinition with different types" error in a single translation unit.
-// AI: This file is therefore the port of the one entry point the renderer needs. The body is kept
-// AI: verbatim from upstream so it can be diffed against the original:
-// AI:   DirectXTex/DirectXTexD3D11.cpp, CreateTextureEx() (MIT licence),
-// AI:   https://github.com/microsoft/DirectXTex
-// AI: It is added to the xrRender_R4 target for APPLE only; Windows and Linux keep upstream.
 
+// DirectX::CreateTextureEx ported verbatim from Microsoft DirectXTex (MIT): the Windows include
+// stack and DXVK's are incompatible in one translation unit, so only this function is taken.
 #include "stdafx.h"
 
 #include <cassert>
@@ -20,11 +10,8 @@
 
 #include <DirectXTex.h>
 
-// AI: upstream spells this as the internal HRESULT_E_NOT_SUPPORTED macro
-// AI: (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)).
 static constexpr HRESULT XrHresultNotSupported = static_cast<HRESULT>(0x80070032L);
 
-// AI: E_UNEXPECTED comes from winerror.h, which the DXVK headers do not provide.
 static constexpr HRESULT XrHresultUnexpected = static_cast<HRESULT>(0x8000FFFFL);
 
 HRESULT DirectX::CreateTextureEx(ID3D11Device* pDevice,

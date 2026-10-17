@@ -54,7 +54,6 @@ struct xr_allocator {
 
 	static	void	*alloc		(const u32 n)	{	return xr_malloc((u32)n);	}
 	template <typename T>
-// AI: noexcept for the same reason as xalloc::deallocate above (xr_free never throws).
 	static	void	dealloc		(T *&p) noexcept			{	xr_free(p);					}
 };
 
@@ -256,7 +255,4 @@ void random_shuffle(RandomIt first, RandomIt last)
 		// not uniformly distributed for most values of i. The correct code would be
 		// a variation of the C++11 std::uniform_int_distribution implementation.
 	}
-// AI: noexcept on deallocate - without it every container using this allocator has a
-// AI: potentially-throwing destructor, which breaks overriding of noexcept base
-// AI: destructors on clang (xr_free never throws anyway).
 }

@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "FS_internal.h"
 
-// AI: out-of-line defaulted destructor - the key function that keeps IReaderBase's vtable in
-// AI: this module and exported (see FS.h; a plain inline "= default" does not link on macOS).
+// HACK: see FS.h - supplies IReaderBase's key function.
 IReaderBase::~IReaderBase() = default;
 
 //////////////////////////////////////////////////////////////////////

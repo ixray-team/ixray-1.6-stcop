@@ -137,10 +137,6 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_ind_overvolume_svg_inited = false;
 	m_ind_radiation_svg_inited = false;
 	m_ind_starvation_svg_inited = false;
-	// AI: The m_ind_* statics are assigned in Init() only when their XML node exists; left
-	// AI: uninitialized they carry heap garbage on macOS (fresh allocations are zeroed on
-	// AI: Windows, which is why upstream never hit this) and the SVG init lambda then
-	// AI: dereferences it. The indicators read as nullptr either way on Windows.
 	m_ind_bleeding = nullptr;
 	m_ind_weapon_broken = nullptr;
 	m_ind_helmet_broken = nullptr;

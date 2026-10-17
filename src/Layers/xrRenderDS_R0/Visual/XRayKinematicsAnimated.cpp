@@ -11,9 +11,7 @@ using	namespace animation;
 void		CBlendInstance::construct()
 {
 	ZeroMemory(this, sizeof(*this));
-	// AI: see the same place in src/Layers/xrRender/SkeletonAnimated.cpp: ZeroMemory leaves blend_lock
-	// AI: all zeroes, which is only a valid unlocked lock for the Windows implementation of xrSRWLock;
-	// AI: on macOS it wraps std::shared_mutex and the first lock fails with "Invalid argument".
+	// HACK: the wiped lock is invalid on macOS (std::shared_mutex), reconstruct it in place.
 	new (&blend_lock) xrSRWLock();
 }
 void		CBlendInstance::blend_add(CBlend* H)
@@ -66,8 +64,6 @@ std::pair<LPCSTR, LPCSTR> CDS0_KinematicsAnimated::LL_MotionDefName_dbg(MotionID
 	for (_I = s_mots.motion_map()->begin(); _I != _E; ++_I)	if (_I->second == ID.idx) return std::make_pair(*_I->first, *s_mots.id());
 	return std::make_pair((LPCSTR)0, (LPCSTR)0);
 }
-
-
 
 static LPCSTR name_bool(bool v)
 {
@@ -1045,8 +1041,6 @@ void	CDS0_KinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance
 	*/
 
 }
-
-
 
 void CDS0_KinematicsAnimated::OnCalculateBones()
 {

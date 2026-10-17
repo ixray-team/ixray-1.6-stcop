@@ -1,22 +1,16 @@
+# DXVK Native for macOS: the R4 renderer runs its D3D11 on top of it (MoltenVK, SDL3 window).
 if(NOT SDL3_SOURCE_DIR)
     message(FATAL_ERROR "SDL3_SOURCE_DIR not set. Please include SDL3 configuration first.")
 endif()
 
 find_package(Vulkan)
 
-# AI: the macOS-fixed DXVK fork is based on DXVK 2.6, where the window-system option is
-# AI: called dxvk_native_wsi and the old native_sdl3/native_sdl2/native_glfw flags are gone.
-# AI: Linux keeps its original set below, untouched.
 if(APPLE)
     set(DXVK_WSI_ARGS -Ddxvk_native_wsi=sdl3)
 else()
     set(DXVK_WSI_ARGS -Dnative_sdl3=enabled -Dnative_sdl2=disabled -Dnative_glfw=disabled)
 endif()
 
-# AI: upstream DXVK master does not build with Apple's linker (it passes GNU --version-script,
-# AI: which ld does not know) and fails on an ambiguous tzcnt; the macOS fixes live in a fork,
-# AI: pinned to a fixed commit the way the working macOS ports do it. Windows, Linux and BSD
-# AI: keep fetching upstream master exactly as before.
 if(APPLE)
     set(DXVK_REPO    "https://github.com/generalsx-project/dxvk.git")
     set(DXVK_TAG     "f66da559fd48cd55ddfebca38ed0f708c0f76a24")
@@ -40,21 +34,7 @@ FetchContent_GetProperties(SDL3)
 if(NOT dxvk_POPULATED)
 FetchContent_Populate(dxvk)
 
-# AI: Metal has no geometry shader stage, no transform feedback and no shader cull distance, so
-# AI: MoltenVK reports geometryShader = 0, transformFeedback = 0 (VK_EXT_transform_feedback is
-# AI: absent) and shaderCullDistance = 0. DXVK demands all three as part of its baseline feature
-# AI: level 10_1 set, and without them D3D11InternalCreateDevice() reports "Maximum supported
-# AI: feature level: 0" and fails with E_INVALIDARG. On macOS each of them is taken from what the
-# AI: device actually supports instead of being required; the game uses geometry shaders in four
-# AI: shaders out of about two hundred (the 3DFluid volume effect), so the rest of the renderer is
-# AI: unaffected. Verified on this machine with a VkGetPhysicalDeviceFeatures probe:
-# AI: geometryShader = 0, transformFeedback = 0, shaderCullDistance = 0, while tessellationShader,
-# AI: depthClamp, imageCubeArray, textureCompressionBC, multiViewport and the rest are present.
-# AI: The edit follows the project's own way of touching a fetched dependency (see
-# AI: download_and_fix_nvapi() in cmake/modules/nvapi.cmake) and is APPLE-only.
 if(APPLE)
-    # AI: applies one text replacement to a file inside the fetched dxvk tree and writes it back
-    # AI: only when something changed, so the step is idempotent across configurations.
     function(dxvk_text_patch DXVK_FILE DXVK_OLD DXVK_NEW)
         file(READ "${DXVK_FILE}" DXVK_CONTENT)
         set(DXVK_BEFORE "${DXVK_CONTENT}")
@@ -66,15 +46,6 @@ if(APPLE)
         endif()
     endfunction()
 
-    # AI: Metal has no geometry shader stage and no transform feedback, so MoltenVK reports
-    # AI: geometryShader = 0 and transformFeedback = 0 (VK_EXT_transform_feedback is absent). DXVK
-    # AI: demands both as part of its baseline feature level 10_1 set, and without them
-    # AI: D3D11InternalCreateDevice() reports "Maximum supported feature level: 0" and fails with
-    # AI: E_INVALIDARG, which left the engine with a null device. On macOS the two are taken from
-    # AI: what the device supports instead of being required; the game uses geometry shaders in
-    # AI: four shaders out of about two hundred (the 3DFluid volume effect), so the rest of the
-    # AI: renderer is unaffected. Verified with a VkGetPhysicalDeviceFeatures probe on this
-    # AI: machine: geometryShader = 0, transformFeedback = 0, the rest of the 10_1 set present.
     dxvk_text_patch("${dxvk_SOURCE_DIR}/src/d3d11/d3d11_device.cpp"
         "enabled.core.features.geometryShader                          = VK_TRUE;"
         "enabled.core.features.geometryShader                          = supported.core.features.geometryShader;")
@@ -85,15 +56,10 @@ if(APPLE)
         "enabled.extTransformFeedback.geometryStreams                  = VK_TRUE;"
         "enabled.extTransformFeedback.geometryStreams                  = supported.extTransformFeedback.geometryStreams;")
 
-    # AI: the feature check only answers "no", which makes a missing device feature a guessing
-    # AI: game; on macOS it names the entry it rejected. Behaviour is unchanged (the expression
-    # AI: still evaluates to false when both the device and the requirement fall out).
     dxvk_text_patch("${dxvk_SOURCE_DIR}/src/dxvk/dxvk_adapter.cpp"
         "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature)"
         "#define CHECK_FEATURE_NEED(feature) \\\n  (m_deviceFeatures.feature         \\\n       || !required.feature         \\\n       || (Logger::err(str::format(\"DXVK: device lacks required feature \", #feature)), false))")
 
-    # AI: SDL_Vulkan_CreateSurface() failures reach the caller as VK_ERROR_OUT_OF_HOST_MEMORY, so
-    # AI: the WSI logs SDL's own message as well.
     dxvk_text_patch("${dxvk_SOURCE_DIR}/src/wsi/sdl3/wsi_window_sdl3.cpp"
         "    return SDL_Vulkan_CreateSurface(window, instance, nullptr, pSurface)\n      ? VK_SUCCESS : VK_ERROR_OUT_OF_HOST_MEMORY;"
         "    if (!SDL_Vulkan_CreateSurface(window, instance, nullptr, pSurface)) {\n      Logger::err(str::format(\"Sdl3WsiDriver::createSurface: SDL_Vulkan_CreateSurface failed: \", SDL_GetError()));\n      return VK_ERROR_OUT_OF_HOST_MEMORY;\n    }\n\n    return VK_SUCCESS;")

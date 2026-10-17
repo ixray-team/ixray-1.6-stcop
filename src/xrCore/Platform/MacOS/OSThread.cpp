@@ -7,7 +7,7 @@ u32 Platform::GetCoresCount()
 
 ThreadID Platform::GetCurrentThread()
 {
-	return (ThreadID)pthread_self(); // AI: ThreadID is unsigned long here to match CarbonCore, see OSThread.h
+	return (ThreadID)pthread_self();
 }
 
 size_t Platform::GetThreadId(ThreadID ID)
@@ -17,8 +17,6 @@ size_t Platform::GetThreadId(ThreadID ID)
 
 void Platform::SetThreadName(const char* name)
 {
-    // AI: unlike Linux, the macOS variant of pthread_setname_np takes a single argument
-    // AI: and only names the calling thread.
     pthread_setname_np(name);
 }
 

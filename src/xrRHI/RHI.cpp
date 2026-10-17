@@ -546,13 +546,6 @@ bool CRHI::IsTessPass() const
 
 u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
 {
-	// AI: DirectXMesh is built on macOS in this port as well and xrRHI links DirectX::Mesh everywhere,
-	// AI: but its D3D11 overload of ComputeInputLayout() only exists for the MSVC headers: it sits
-	// AI: behind "#if defined(__d3d11_h__)" in DirectXMesh/DirectXMeshUtil.cpp and the non-Windows
-	// AI: branch of DirectXMeshP.h includes no D3D11 header at all. macOS therefore computes the
-	// AI: stride with the very same algorithm - DirectXMesh/DirectXMeshUtil.cpp:267-327 - using the
-	// AI: library's own DirectX::BytesPerElement() for the element sizes, and keeps the Windows call
-	// AI: untouched. The Linux branch is left as it was.
 #ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
