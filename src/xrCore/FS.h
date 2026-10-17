@@ -174,9 +174,11 @@ class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
-	// AI: plain defaulted destructor (ForserX, PR #382 review): with no key function the vtable
-	// AI: is emitted as a weak symbol in every module, so shared libraries link fine.
-	virtual ~IReaderBase() = default;
+	// AI: ForserX (PR #382 review) asked for a plain defaulted destructor. Taken verbatim, the inline
+	// AI: destructor leaves the class without a key function, the vtable is emitted as a local symbol
+	// AI: and other modules (xrSound) fail to link on macOS. The default definition moved next to the
+	// AI: other out-of-line members (FS.cpp) supplies the key function; other platforms are unchanged.
+	virtual ~IReaderBase();
 
 	virtual CFileReader* cast_file_reader() { return nullptr; }
 	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }
