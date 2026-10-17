@@ -2,7 +2,7 @@
 #include "BackgroundLoad.h"
 
 XRCORE_API int g_BackgroundLoadWorkers = 0;
-XRCORE_API bool g_BackgroundLoadPriority = true;
+XRCORE_API bool g_BackgroundLoadPriority = false;
 
 namespace
 {
