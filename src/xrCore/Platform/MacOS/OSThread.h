@@ -58,4 +58,14 @@ namespace Platform
         // AI: cast it back to pthread_t for the join.
         pthread_join((pthread_t)ID, nullptr);
     }
+
+    inline void JoinThread(ThreadID ID)
+    {
+        // AI: macOS version of the Linux helper - the handle is the integer ThreadID (see the
+        // AI: alias above), cast it back to pthread_t for the join.
+        if (ID != 0)
+        {
+            pthread_join((pthread_t)ID, nullptr);
+        }
+    }
 }
