@@ -6,14 +6,11 @@ local k,v = 0,0
 
 class "action_timer"
 function action_timer:__init(obj, storage)
-	return PROF_EVENT_CLOSURE("__init", function()
         self.object = obj
         self.st = storage
-    end)
 end
 
 function action_timer:update(delta)
-	return PROF_EVENT_CLOSURE("prereq_functor_a", function()
         local actor = db.actor
         if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
             return
@@ -48,16 +45,13 @@ function action_timer:update(delta)
                 xr_logic.switch_to_section(self.object, self.st.ini, xr_logic.pick_section_from_condlist(db.actor, self.object, v.state))
             end
         end
-    end)
 end
 
 function action_timer:deactivate(delta)
-	return PROF_EVENT_CLOSURE("deactivate", function()
         self.st.ui:RemoveCustomStatic(self.st.timer_id)
         if self.st.string ~= nil then
             self.st.ui:RemoveCustomStatic("hud_timer_text")
         end
-    end)
 end
 
 --function action_timer:save()
@@ -73,14 +67,11 @@ function time2str(n)
 end
 ---------------------------------------------------------------------------------------------------------------------
 function add_to_binder(obj, ini, scheme, section, storage)
-	return PROF_EVENT_CLOSURE("add_to_binder", function()
         local action = action_timer(obj, storage)
         xr_logic.subscribe_action_for_events(obj, storage, action)
-    end)
 end
 
 function set_scheme(obj, ini, scheme, section, gulag_name)
-	return PROF_EVENT_CLOSURE("set_scheme", function()
         local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
         st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
         st.type = utils.cfg_get_string( ini, section, "type", obj, false, "", "inc")
@@ -107,11 +98,9 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
             local timer_text = st.ui:GetCustomStatic("hud_timer_text"):wnd()
             timer_text:TextControl():SetTextST(st.string)
         end
-    end)
 end
 
 function parse_data(npc,s)
-	return PROF_EVENT_CLOSURE("parse_data", function()
         local t = {}
     
             if s then
@@ -133,5 +122,4 @@ function parse_data(npc,s)
             end
         end
             return t
-    end)
 end

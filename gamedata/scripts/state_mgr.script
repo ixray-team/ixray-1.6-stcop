@@ -18,7 +18,6 @@ function evaluator_state_mgr_idle:__init(name, state_manager) super (nil, name)
 end
 
 function evaluator_state_mgr_idle:evaluate()
-	return PROF_EVENT_CLOSURE("evaluator_state_mgr_idle", function()
         local t = self.st.target_state == "idle" and
                  --not self.st.planner:evaluator(self.st.properties["locked"]):evaluate() and
                 not self.st.planner:evaluator(self.st.properties["animstate_locked"]):evaluate() and
@@ -62,7 +61,6 @@ function evaluator_state_mgr_idle:evaluate()
     
     
         return false
-    end)
 end
 
 --' Мы уже в безраличном состоянии idle или нет ()учет с проверкой alife
@@ -73,7 +71,6 @@ function evaluator_state_mgr_idle_alife:__init(name, state_manager) super (nil, 
 end
 
 function evaluator_state_mgr_idle_alife:evaluate()
-    return PROF_EVENT_CLOSURE("evaluator_state_mgr_idle_alife", function()
         if not self.object:alive() then
             return true
         end
@@ -120,7 +117,6 @@ function evaluator_state_mgr_idle_alife:evaluate()
             end
     --	end
     --	return true
-    end)
 end
 
 --' Мы уже в безраличном состоянии idle или нет ()учет с проверкой alife
@@ -131,7 +127,6 @@ function evaluator_state_mgr_idle_items:__init(name, state_manager) super (nil, 
 end
 
 function evaluator_state_mgr_idle_items:evaluate()
-    return PROF_EVENT_CLOSURE("evaluator_state_mgr_idle_items", function()
         if not self.object:alive() then
             return true
         end
@@ -177,7 +172,6 @@ function evaluator_state_mgr_idle_items:evaluate()
             end
     --	end
     --	return true
-    end)
 end
 
 
@@ -187,13 +181,11 @@ function evaluator_state_mgr_logic_active:__init(name, state_manager) super (nil
 	self.t = nil
 end
 function evaluator_state_mgr_logic_active:evaluate()
-	return PROF_EVENT_CLOSURE("evaluate", function()
         --printf("evaluator_state_mgr_logic_active [%s] active_section[%s]", self.object:name(), tostring(db.storage[self.object:id()].active_section))
         if db.storage[self.object:id()].active_section == nil then
             return false
         end
         return true
-    end)
 end
 
 --' Переход в idle
@@ -202,7 +194,6 @@ function act_state_mgr_to_idle:__init(name,state_manager) super (nil, name)
 	self.st = state_manager
 end
 function act_state_mgr_to_idle:initialize()
-	return PROF_EVENT_CLOSURE("initialize", function()
         action_base.initialize(self)
     --'	self.object:movement_enabled(true)
     
@@ -219,11 +210,9 @@ function act_state_mgr_to_idle:initialize()
         self.st:set_state("idle")
         utils.send_to_nearest_accessible_vertex( self.object, self.object:level_vertex_id() )
         self.object:set_path_type           	( game_object.level_path )
-    end)
 end
 
 function act_state_mgr_to_idle:execute()
-	return PROF_EVENT_CLOSURE("execute", function()
         utils.send_to_nearest_accessible_vertex( self.object, self.object:level_vertex_id() )
         self.object:set_path_type           	( game_object.level_path )
         if self.object:best_enemy() then
@@ -238,7 +227,6 @@ function act_state_mgr_to_idle:execute()
         end
         self.st:set_state("idle")
         action_base.execute(self)
-    end)
 end
 function act_state_mgr_to_idle:finalize()
 	-- По завершению перехода нужно записать -1 в указатель "на кого смотреть",
@@ -260,7 +248,6 @@ function eva_state_mgr_end:__init(name, st) super (nil, name)
 	self.mgr = nil
 end
 function eva_state_mgr_end:evaluate()
-	return PROF_EVENT_CLOSURE("evaluate", function()
         if self.mgr == nil then
             self.mgr = self.object:motivation_action_manager()
         end
@@ -290,7 +277,6 @@ function eva_state_mgr_end:evaluate()
         end
     
         return false
-    end)
 end
 
 --' Залочен ли менеджер
@@ -299,14 +285,12 @@ function eva_state_mgr_locked:__init(name, st) super (nil, name)
 	self.st = st
 end
 function eva_state_mgr_locked:evaluate()
-    return PROF_EVENT_CLOSURE("evaluate", function()
         --printf("%s weapon locked %s", self.object:name(), tostring(self.st.planner:evaluator(self.st.properties["weapon_locked"]):evaluate()))
         --printf("%s turning %s", self.object:name(), tostring(self.object:is_body_turning()))
     
         return self.st.planner:initialized() and (
                  self.st.planner:evaluator(self.st.properties["weapon_locked"]):evaluate() or
                  self.object:is_body_turning() )
-    end)
 end
 
 class "eva_state_mgr_locked_external" (property_evaluator)
@@ -338,7 +322,6 @@ function act_state_mgr_end:execute()
 	self:weapon_update()
 end
 function act_state_mgr_end:weapon_update()
-    return PROF_EVENT_CLOSURE("weapon_update", function()
         -- Коллбек на завершение состояния
         if self.st.callback ~= nil then
             if self.st.callback.begin == nil then
@@ -408,7 +391,6 @@ function act_state_mgr_end:weapon_update()
             --printf("[%s] not shooting", self.object:name())
             self.object:set_item(state_mgr_weapon.get_idle_state(self.st.target_state), self.object:best_weapon())
         end
-    end)
 end
 function act_state_mgr_end:finalize()
 	action_base.finalize(self)
@@ -448,7 +430,6 @@ function state_manager:__init(npc)
 	self.pos_direction_applied = false
 end
 function state_manager:set_state(state_name, callback, timeout, target, extra)
-	return PROF_EVENT_CLOSURE("set_state", function()
         --printf("Set State called: for %s State: %s", self.npc:name(), state_name)
         --callstack()
     
@@ -558,7 +539,6 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
                 end
             end
         end
-    end)
 end
 
 function state_manager:get_state()
@@ -566,7 +546,6 @@ function state_manager:get_state()
 end
 
 function state_manager:update()
-	return PROF_EVENT_CLOSURE("update", function() 
 		--printf("Update called for stalker [%s]", self.npc:name())
 		-- Обрабатываем коллбек
 		if self.animation.states.current_state == state_lib.states[self.target_state].animation then
@@ -607,7 +586,6 @@ function state_manager:update()
 		end
 
 		--self.planner:show("")
-	end)
 end
 
 
@@ -615,19 +593,15 @@ end
 
 
 function set_state(npc, state_name, callback, timeout, target, extra)
-	return PROF_EVENT_CLOSURE("set_state", function()
         if db.storage[npc:id()].state_mgr then
             db.storage[npc:id()].state_mgr:set_state(state_name, callback, timeout, target, extra)
         end
-    end)
 end
 function get_state(npc)
-	return PROF_EVENT_CLOSURE("get_state", function()
         if db.storage[npc:id()].state_mgr then
             return db.storage[npc:id()].state_mgr:get_state()
         end
         return nil
-    end)
 end
 
 
@@ -639,7 +613,6 @@ end
 
 
 function bind_manager(object)
-	return PROF_EVENT_CLOSURE("bind_manager", function()
         local manager = object:motivation_action_manager()
     
     
@@ -704,12 +677,10 @@ function bind_manager(object)
     
     
         return state_manager
-    end)
 end
 
 
 function is_npc_in_combat(npc)
-	return PROF_EVENT_CLOSURE("is_npc_in_combat", function()
         local mgr = npc:motivation_action_manager()
     
         if not mgr:initialized() then
@@ -719,5 +690,4 @@ function is_npc_in_combat(npc)
         local current_action_id = mgr:current_action_id()
         return  current_action_id == stalker_ids.action_combat_planner or
                 current_action_id == stalker_ids.action_post_combat_wait
-    end)
 end

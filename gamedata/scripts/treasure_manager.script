@@ -48,7 +48,6 @@ function CTreasureManager:initialize()
 end
 
 function CTreasureManager:fill(se_obj, treasure_id)
-	return PROF_EVENT_CLOSURE("fill", function()
         if(self.secrets[treasure_id]) then
                     local item = self.secrets[treasure_id].items[se_obj:section_name()]
             if(item) then
@@ -68,11 +67,9 @@ function CTreasureManager:fill(se_obj, treasure_id)
         else
             abort("Attempt to register item [%s] in unexistent secret [%s]", se_obj:name(), treasure_id)
         end
-    end)
 end
 
 function CTreasureManager:register_item(se_obj)
-	return PROF_EVENT_CLOSURE("register_item", function()
         local spawn_ini = se_obj:spawn_ini()
         if(spawn_ini:section_exist("secret")) then
             local result, id, value
@@ -85,20 +82,16 @@ function CTreasureManager:register_item(se_obj)
             end
             return self:fill(se_obj, value)
         end
-    end)
 end
 
 function CTreasureManager:register_restrictor(se_obj)
-	return PROF_EVENT_CLOSURE("register_restrictor", function()
         local spawn_ini = se_obj:spawn_ini()
         if(spawn_ini:section_exist("secret")) then
             self.secret_restrs[se_obj:name()] = se_obj.id
         end
-    end)
 end
 
 function CTreasureManager:update()
-	return PROF_EVENT_CLOSURE("update", function()
         if not(self.items_spawned) then
                 for k,v in pairs(self.secrets) do
                         self:spawn_treasure(k)
@@ -138,11 +131,9 @@ function CTreasureManager:update()
                 end
                     end
             end
-    end)
 end
 
 function CTreasureManager:spawn_treasure(treasure_id)
-	return PROF_EVENT_CLOSURE("spawn_treasure", function()
         if not(self.secrets[treasure_id]) then
             abort("There is no stored secret [%s]", tostring(treasure_id))
         end
@@ -179,11 +170,9 @@ function CTreasureManager:spawn_treasure(treasure_id)
                         end
             end
         end
-    end)
 end
 
 function CTreasureManager:give_treasure(treasure_id, spawn)
-	return PROF_EVENT_CLOSURE("give_treasure", function()
         if not(self.secrets[treasure_id]) then
             abort("There is no stored secret [%s]", tostring(treasure_id))
         end
@@ -211,11 +200,9 @@ function CTreasureManager:give_treasure(treasure_id, spawn)
         self.secrets[treasure_id].given = true
         news_manager.send_treasure(0)
         printf("Give secret [%s]", treasure_id)
-    end)
 end
 
 function CTreasureManager:give_random()
-	return PROF_EVENT_CLOSURE("give_random", function()
         local rnd_tbl = {}
         for k,v in pairs(self.secrets) do
                     if not(v.given) then
@@ -227,11 +214,9 @@ function CTreasureManager:give_random()
             return
         end
         printf("There are no treasures avaliable!")
-    end)
 end
 
 function CTreasureManager:on_item_take(obj_id)
-	return PROF_EVENT_CLOSURE("on_item_take", function()
         local restr_id = self.items_from_secrets[obj_id]
         local treasure_id = nil
         for k,v in pairs(self.secret_restrs) do
@@ -256,7 +241,6 @@ function CTreasureManager:on_item_take(obj_id)
             end
             self.items_from_secrets[obj_id] = nil
         end
-    end)
 end
 
 -- [GUNSLINGER mod]
@@ -266,7 +250,6 @@ function CTreasureManager:is_secret_item(obj_id)
 end
 -- [/GUNSLINGER mod]
 function CTreasureManager:save(package)
-	return PROF_EVENT_CLOSURE("save", function()
         set_save_marker(package, "save", false, "CTreasureManager")
         package:w_bool(self.items_spawned)
         local num = 0
@@ -295,11 +278,9 @@ function CTreasureManager:save(package)
             package:w_u8(v.to_find)
         end
         set_save_marker(package, "save", true, "CTreasureManager")
-    end)
 end
 
 function CTreasureManager:load(package)
- 	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(package, "load", false, "CTreasureManager")
         self.items_spawned = package:r_bool()
         self.items_from_secrets = {}
@@ -329,7 +310,6 @@ function CTreasureManager:load(package)
             end
         end
         set_save_marker(package, "load", true, "CTreasureManager")
-    end)
 end
 
 function CTreasureManager:Serialize(Object)

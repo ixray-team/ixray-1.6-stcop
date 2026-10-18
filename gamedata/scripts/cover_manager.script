@@ -27,7 +27,6 @@ function CCover_manager:unregister_squad(squad)
 	self.is_valid = false
 end
 function CCover_manager:calculate_covers(position)
-	return PROF_EVENT_CLOSURE("calculate_covers", function()
         --printf("CCover_manager:calculate_covers() valid[%s]", tostring(self.is_valid))
         --callstack()
         if self.is_valid == true then
@@ -70,11 +69,9 @@ function CCover_manager:calculate_covers(position)
         for k,v in pairs(npc_table) do
             v:unregister_in_combat()
         end
-   end)
 end
 
 function CCover_manager:save(packet)
-	return PROF_EVENT_CLOSURE("save", function()
         set_save_marker(packet, "save", false, "CCover_manager")
     
         packet:w_bool(self.is_valid)
@@ -98,11 +95,9 @@ function CCover_manager:save(packet)
         end
     
         set_save_marker(packet, "save", true, "CCover_manager")
-    end)
 end
 
 function CCover_manager:load(packet)
-	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(packet, "load", false, "CCover_manager")
     
         self.is_valid = packet:r_bool()
@@ -128,7 +123,6 @@ function CCover_manager:load(packet)
         end
     
         set_save_marker(packet, "load", true, "CCover_manager")
-    end)
 end
 
 function CCover_manager:Serialize(Object)
@@ -191,7 +185,6 @@ end
 
 -- Есть ли у объекта выбранный смарт кавер
 function has_smart_cover(se_obj, smrttrn)
-	return PROF_EVENT_CLOSURE("has_smart_cover", function()
         local cmanager = smrttrn.combat_manager.cover_manager
         local npc_id = se_obj.id
         local cover = cmanager.cover_table[npc_id]
@@ -222,12 +215,10 @@ function has_smart_cover(se_obj, smrttrn)
         end
     
         return false
-    end)
 end
 
 -- Есть ли у объекта выбранный кавер
 function has_cover(se_obj, smrttrn)
-	return PROF_EVENT_CLOSURE("has_cover", function()
         local cmanager = smrttrn.combat_manager.cover_manager
         local cover = cmanager.cover_table[se_obj.id]
         if cover == nil then
@@ -255,13 +246,10 @@ function has_cover(se_obj, smrttrn)
         end
     
         return true
-    end)
 end
 
 -- Получить выбранный кавер объекта
 function get_cover(obj, smrttrn)
-	return PROF_EVENT_CLOSURE("get_cover", function()
         local cmanager = smrttrn.combat_manager.cover_manager
         return cmanager.cover_table[obj:id()]
-    end)
 end

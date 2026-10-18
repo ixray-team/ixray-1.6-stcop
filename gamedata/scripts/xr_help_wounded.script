@@ -13,7 +13,6 @@ function evaluator_wounded_exist:__init(name, storage, npc) super (nil, name)
 end
 
 function evaluator_wounded_exist:evaluate()
-	return PROF_EVENT_CLOSURE("evaluate", function() 
 	    local npc = self.object
     
     	if not npc:alive() then
@@ -89,7 +88,6 @@ function evaluator_wounded_exist:evaluate()
     	end
     
     	return false
-	end)
 end
 
 

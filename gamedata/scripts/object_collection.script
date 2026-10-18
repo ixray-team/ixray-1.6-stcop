@@ -16,7 +16,6 @@ function object_collection:__init()
 end
 
 function object_collection:get_id()	
-    return PROF_EVENT_CLOSURE("get_id", function()
         printf("get_id called [%s]", self.m_count)
     
         self.m_count					= self.m_count + 1
@@ -32,18 +31,15 @@ function object_collection:get_id()
             self.m_given[i] 			= true
             return i
         end
-    end)
 end
 
 function object_collection:remove(id)
-    return PROF_EVENT_CLOSURE("remove", function()
         printf("remove called [%s]", tostring(id))
         if self.m_given[id] == true then
             self.m_given[id] = nil
             self.m_free[id] = 1
             self.m_count = self.m_count - 1
         end
-    end)
 end
 
 function object_collection:size()
@@ -51,7 +47,6 @@ function object_collection:size()
 end
 
 function object_collection:save(packet)
-	return PROF_EVENT_CLOSURE("save", function()
         set_save_marker(packet, "save", false, "object_collection")
     
         printf("SAVE OBJECT COLLECTION")
@@ -86,11 +81,9 @@ function object_collection:save(packet)
         
         set_save_marker(packet, "save", true, "object_collection")
         
-    end)
 end
 
 function object_collection:load(packet)
-	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(packet, "load", false, "object_collection")
     
         printf("LOAD OBJECT COLLECTION")
@@ -121,7 +114,6 @@ function object_collection:load(packet)
         printf("--------")
         
         set_save_marker(packet, "load", true, "object_collection")
-    end)
 end
 function object_collection:Serialize(Object)
 	Object:ForChunk("object_collection", function()
@@ -175,4 +167,3 @@ function object_collection:Serialize(Object)
 		end
 	end)
 end
-

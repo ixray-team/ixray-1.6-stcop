@@ -64,13 +64,14 @@ function PROF_EVENT_END()
 	return nil
 end
 
---[[
-Description: Executes a callable function wrapped in a profiling event. If profiler is not connected, the function is called directly. Returns the result(s) of the callable.
-Parameters:
-  name (string)(required) - Name of the profiling event.
-  callable (function)(required) - The function to be executed and profiled.
-Return: (*) - The return value(s) of the callable function, or nil if callable is not provided.
-]]
+function PROF_EVENT_CALL(name, callable, ...)
+	if ixr_tracy_profiler then
+		return ixr_tracy_profiler.prof_event_call(name, callable, ...)
+	end
+
+	return callable(...)
+end
+
 function PROF_EVENT_CLOSURE(name, callable)
 	if ixr_tracy_profiler then 
 		return ixr_tracy_profiler.prof_event_closure(name, callable)
