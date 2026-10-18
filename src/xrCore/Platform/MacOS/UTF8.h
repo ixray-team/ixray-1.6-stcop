@@ -7,6 +7,7 @@ namespace Platform
 	XRCORE_API const char* ANSI_TO_TCHAR(const char* C);
 	XRCORE_API const char* ANSI_TO_TCHAR_U8(const char* C);
 	//XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& C);
+	XRCORE_API size_t CP1251_PATH_TO_UTF8(const char* In, char* Out, size_t OutSize);
 
 	// HACK: TCHAR is char on this platform, so font code walking `wideStr[i]` would step
 	// UTF-8 BYTES instead of codepoints. Decode once, iterate glyphs (same as the

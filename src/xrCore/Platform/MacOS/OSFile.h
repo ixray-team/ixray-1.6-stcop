@@ -2,6 +2,9 @@
 
 using errno_t = int;
 
+#include <errno.h>
+#include "UTF8.h"
+
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
 
@@ -78,7 +81,24 @@ inline int _mkdir(const char *dir)
     return mkdir(dir, S_IRWXU);
 }
 
-#define _wfopen_s fopen_s
+inline errno_t _wfopen_s_cp1251(FILE** File, const char* Path, const char* Mode)
+{
+#if defined(__APPLE__)
+    *File = fopen(Path, Mode);
+    if (*File == nullptr && (errno == EILSEQ || errno == EINVAL))
+    {
+        // Engine strings are CP1251 while macOS paths must be UTF-8.
+        char Utf8[_MAX_PATH];
+        Platform::CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+        *File = fopen(Utf8, Mode);
+    }
+    return *File == nullptr ? errno : 0;
+#else
+    return fopen_s(File, Path, Mode);
+#endif
+}
+
+#define _wfopen_s _wfopen_s_cp1251
 
 #define _A_HIDDEN 0x02
 #define _A_SUBDIR 0x00000010
@@ -255,6 +275,13 @@ namespace Platform
         auto FlagsRight = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
         auto FileSource = open(Path, FlagsLeft, FlagsRight);
+        if (FileSource == -1 && errno == EILSEQ)
+        {
+            // Engine strings are CP1251 while macOS paths must be UTF-8.
+            char Utf8[_MAX_PATH];
+            CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+            FileSource = open(Utf8, FlagsLeft, FlagsRight);
+        }
         //R_ASSERT3(FileSource != -1, Path, "Error file create");
         return FileSource;
     }
@@ -263,7 +290,13 @@ namespace Platform
     {
         const char* Path = ValidPath(FilePath);
         auto Handle = open(Path, O_RDONLY);
-
+        if (Handle == -1 && errno == EILSEQ)
+        {
+            // Engine strings are CP1251 while macOS paths must be UTF-8.
+            char Utf8[_MAX_PATH];
+            CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+            Handle = open(Utf8, O_RDONLY);
+        }
         return Handle;
     }
 

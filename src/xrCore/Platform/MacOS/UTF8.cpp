@@ -64,6 +64,40 @@ XRCORE_API xr_string Platform::ANSI_TO_UTF8(const xr_string& ansi)
 	return utf8;
 }
 
+XRCORE_API size_t Platform::CP1251_PATH_TO_UTF8(const char* In, char* Out, size_t OutSize)
+{
+	// Same conversion as ANSI_TO_UTF8 but with C types: usable from OSFile.h,
+	// which sits in the include chain before xrstring.h.
+	size_t o = 0;
+	for (const unsigned char* p = (const unsigned char*)In; *p && o + 4 < OutSize; ++p)
+	{
+		unsigned char c = *p;
+		if (c < 0x80)
+		{
+			Out[o++] = (char)c;
+			continue;
+		}
+		unsigned short u = CP1251_to_UCS2[c - 0x80];
+		if (u < 0x80)
+		{
+			Out[o++] = (char)u;
+		}
+		else if (u < 0x800)
+		{
+			Out[o++] = (char)(0xC0 | (u >> 6));
+			Out[o++] = (char)(0x80 | (u & 0x3F));
+		}
+		else
+		{
+			Out[o++] = (char)(0xE0 | (u >> 12));
+			Out[o++] = (char)(0x80 | ((u >> 6) & 0x3F));
+			Out[o++] = (char)(0x80 | (u & 0x3F));
+		}
+	}
+	Out[o] = 0;
+	return o;
+}
+
 namespace Platform
 {
 	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const char* C)
