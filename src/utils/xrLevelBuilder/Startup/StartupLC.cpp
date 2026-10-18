@@ -1,16 +1,11 @@
 #include "../xrLC/StdAfx.h"
 #include "../xrLC/Build/Build.h"
 #include "../xrLC/Build/xrLC_GlobalData.h"
+#include "../xrLC/Light/LightingBackend.h"
  
 #include "../UI/CompilersUI.h"
 extern CompilersMode gCompilerMode;
 
-#ifdef LCCUDA_BUILD
-namespace XRay::RayTrace::CUDA
-{
-	void ForgetPreviewFaces();
-}
-#endif
 
 // xrLC
 CBuild* pBuild = NULL;
@@ -76,9 +71,7 @@ void StartupLC()
 		FS.update_path(lfn, _game_levels_, Name.data());
 		pBuild->Run(lfn);
 		xr_delete(pBuild);
-#ifdef LCCUDA_BUILD
-		XRay::RayTrace::CUDA::ForgetPreviewFaces();
-#endif
+		GetLightingBackend().OnLevelFinished();
 
 		PhaseEnd();
 	}
