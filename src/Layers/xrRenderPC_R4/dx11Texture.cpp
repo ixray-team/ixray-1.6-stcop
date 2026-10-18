@@ -203,6 +203,11 @@ _DDS:
 	{
 		// Load and get header
 		reader = FS.r_open(fn);
+		if (!reader)
+		{
+			Msg("! texture_load: r_open failed for '%s' (resolved '%s')", fname, fn);
+			return nullptr;
+		}
 #ifdef DEBUG
 		Msg("* Loaded: %s[%d]", fn, reader->length());
 #endif // DEBUG

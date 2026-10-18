@@ -2,12 +2,14 @@
 RWTexture2D<float> u_hiz_src : register(u0);
 RWTexture2D<float> u_hiz_dst : register(u1);
 
+// HACK: vkd3d HLSL has no GetDimensions on RWTexture2D; the engine passes the sizes instead.
+float4 HiZSizes; // xy = source size, zw = destination size
+
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID)
 {
-	uint2 SrcSize, DstSize;
-	u_hiz_src.GetDimensions(SrcSize.x, SrcSize.y);
-	u_hiz_dst.GetDimensions(DstSize.x, DstSize.y);
+	uint2 SrcSize = uint2(HiZSizes.xy);
+	uint2 DstSize = uint2(HiZSizes.zw);
 
 	if (any(DTid >= DstSize))
 	{

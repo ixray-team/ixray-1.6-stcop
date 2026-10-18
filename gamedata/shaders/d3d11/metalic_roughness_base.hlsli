@@ -33,10 +33,6 @@ struct IXRayMaterial
 	uint MaterialID;
 };
 
-// AI: vkd3d, the HLSL compiler of the macOS route (D3DCompile through DXVK Native), does not parse
-// AI: member functions - the IXRayMaterial::Lerp() method made it fail with 'Unknown modifier "Lerp"'.
-// AI: The body below is the original one, with `this` spelled out as the first argument, so the
-// AI: result is the same. Plain HLSL, so the Windows and Linux builds compile this file unchanged.
 IXRayMaterial IXRayMaterial_Lerp(in IXRayMaterial A, in IXRayMaterial B, float Factor)
 {
 	IXRayMaterial O = A;

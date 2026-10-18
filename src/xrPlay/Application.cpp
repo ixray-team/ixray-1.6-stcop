@@ -9,6 +9,9 @@
 #include "../xrEngine/string_table.h"
 
 #include "../xrCore/git_version.h"
+#if defined(IXR_MACOS)
+#include <cstdlib>
+#endif
 
 #ifdef IXR_MACOS
 #	include <SDL3/SDL_vulkan.h>
@@ -173,6 +176,11 @@ CApplication::CApplication(ENTRY_ARGS)
 		CommandLine += argv[i];
 		CommandLine += " ";
 	}
+	// Windows fills Core.Params from GetCommandLine; on other platforms it stayed
+	// EMPTY, silently disabling every command-line switch (-nointro, -autotest, ...).
+	xr_strcpy(Core.Params, sizeof(Core.Params), CommandLine.c_str());
+	for (char* p = Core.Params; *p; ++p)
+		*p = (*p >= 'A' && *p <= 'Z') ? char(*p - 'A' + 'a') : *p;
 #endif
 }
 

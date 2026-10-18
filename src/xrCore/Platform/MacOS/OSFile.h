@@ -146,7 +146,9 @@ namespace Platform
 
     IC const char* ValidPath(const char* In)
     {
-        static std::string NewPath;
+        // BUG: shared static was corrupted by concurrent FS users (threads got each other's paths);
+        // thread_local keeps the old 'valid until next call' lifetime per thread.
+        static thread_local std::string NewPath;
         NewPath.clear();
 
         bool LastWasSlash = false;
@@ -181,7 +183,7 @@ namespace Platform
 
     IC const char* RestorePath(const char* In)
     {
-        static std::string NewPath;
+        static thread_local std::string NewPath;
         NewPath = In;
 
         std::replace(NewPath.begin(), NewPath.end(), '/', '\\');

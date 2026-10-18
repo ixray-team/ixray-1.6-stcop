@@ -1509,6 +1509,31 @@ bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_p
 		desc_f.name = temp_path.data();
 		
 		I = m_files.find(desc_f);
+#ifdef IXR_MACOS
+		// Custom data often carries bare config paths; with unpacked gamedata those
+		// live under the configs root, so retry the whole lookup there.
+		if (I == m_files.end() && (path == nullptr || 0 != xr_strcmp(path, "$game_config$")))
+		{
+			string_path retry;
+			xr_strcpy(retry, _fname);
+			xr_strlwr(retry);
+			update_path(retry, "$game_config$", retry);
+
+			desc_f.name = retry;
+			I = m_files.find(desc_f);
+			if (I == m_files.end())
+			{
+				xr_string retry_back = retry;
+				std::replace(retry_back.begin(), retry_back.end(), '/', '\\');
+				desc_f.name = retry_back.data();
+				I = m_files.find(desc_f);
+				if (I != m_files.end())
+					xr_strcpy(fname, retry_back.data());
+			}
+			else
+				xr_strcpy(fname, retry);
+		}
+#endif
 		if (I == m_files.end()) {
 			return false;
 		}

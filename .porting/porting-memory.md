@@ -853,3 +853,175 @@ main_menu off
   fork/macos-metal на GitHub отстаёт — нужен force push через GitHub Desktop (терминал без кредов).
 - build-macos-default-base (старое дерево) удалено с диска (не мной; место освобождалось) — старых
   бинарников больше нет; бэкап КОДА остаётся в ветке macos-metal-backup-default-base.
+
+### Сессия 18.10, утро: ночной откат и восстановление (GC64 фундаментально)
+
+- Ночная смена (упрощённая модель) результатов не дала и навредила: стёрла build-macos,
+  конфигурировала без -DCMAKE_POLICY_VERSION_MINIMUM=3.5 (падала на yaml-cpp, sed-правки не
+  проходили), отчиталась о фиксе r__occlusion.cpp, которого не делала; закоммитила временный
+  харнесс (d770c7c6e, TEMPORARY — перед пушем выкинуть).
+- Перескачка _deps затёрла GC64-фикс (жил руками в _deps/luajit-src) — ловушка «править скачанную
+  зависимость руками» (грабля 9).
+- ФИКС ПЕРЕНЕСЁН в cmake/modules/LuaJIT.cmake: FetchContent_Populate + идемпотентный патч
+  (-D GC64 в DASM_FLAGS arm64 у DarwinAppleClang.cmake) + add_subdirectory. Переживает перескачки.
+  Проверено: dynasm.lua получает -D GC64 (генерация buildvm_arch.h из vm_arm64.dasc).
+- LocatorAPI фолбэк $game_config$ возвращён (check_for_file, гейт IXR_MACOS, +25 строк) — чинит
+  abort zat_b14_spawner.
+- Окклюзия «8 байт»: текущий develop-код уже читает u64/8 байт (r__occlusion.cpp:126,137) —
+  потерянный при бисекции дифф, похоже, не нужен; проверить поведением ламп на прогоне.
+- Полная пересборка ОК (конфигурация + 9 модулей, exit 0), выкладка в run-macos + codesign ОК.
+  Ловушка: develop'овский LuaJIT линкуется как @rpath/libluajit.2.dylib — в run-macos класть
+  libluajit{,.2,.2.1}.dylib из _deps/luajit-build/lib (старый безверсионный перезаписан).
+- Статус GC64: подтверждён на уровне сборки; рантайм-проверка (нет SIGSEGV на компиляции шейдеров)
+  НЕ сделана — Степан не подтвердил прогон, игру не запускали.
+- Коммитить GC64 + LocatorAPI только после успешного прогона («сначала работает, потом пуш»).
+
+### Сессия 18.10, утро-2: Степан играет; семь закрытых крашей (день)
+
+Запуск для игры (не автотест). Краш-лестница пройдена снизу вверх, всё подтверждено живыми прогонами:
+1. **Текстуры: NULL-разыменование** — dx11Texture.cpp:207 в DEBUG разыменовывает reader ДО
+   R_ASSERT(reader); на незакрывшемся файле - SIGSEGV по адресу 0. Фикс: проверка до разыменования +
+   Msg с именем файла (вернуть nullptr). Файл CRLF-смешанный - править байтовыми якорями.
+2. **Гонка путей: Platform::ValidPath/RestorePath (Platform/MacOS/OSFile.h) держали общий
+   static std::string** - потоки при старте перезаписывали путь друг у друга (мусорные пути,
+   «Can't read from file» на живых файлах). Фикс: static thread_local. Linux-слой - та же мина
+   (не трогали). Проверка факта: пробник mmap RWX - macOS 27 ЗАПРЕЩАЕТ голый RWX (EACCES), MAP_JIT - ок.
+3. **SSLR: vkd3d не умеет GetDimensions на RWTexture2D** (E5005, sslr_hiz_reduce.cs.hlsl) - FATAL
+   «Can't compile shader». Фикс: размеры передаёт движок через float4 HiZSizes (RCache.set_c в цикле
+   редуцирования r4_rendertarget_phase_sslr.cpp; SRV-вариант GetDimensions в vkd3d работает - Tex2D ок).
+4. **LuaJIT MCODEAL (panic (27))** - lj_trace_err(MCODEAL): JIT не мог выделить mcode; причина -
+   macOS 27 отказывает в RWX-mmap, а форк luajit-ixray не использует MAP_JIT. ВРЕМЕННО (env-независимо,
+   но гейт IXR_MACOS): luaJIT_setmode(ENGINE|OFF) в ОБОИХ стейтах - xrScripts/script_storage.cpp
+   (после luaopen_jit) И R4 dx11ResourceManager_Scripting.cpp::LS_Load (ТОЖЕ после luaopen_jit -
+   до него НЕ работает, luaopen_jit переинициализирует JIT). Нюанс: у рендера свой Lua-стейт
+   (LSVM) для пайплайна шейдеров - он создаётся РАНЬШЕ скриптового и паникует первым.
+   Полноценный фикс (порт MAP_JIT из официального LuaJIT + pthread_jit_write_protect_np) - TODO,
+   нужен доступ к официальному исходнику (GitHub/LuaJIT.org недоступны из этой сети).
+5. **Бесконечная рекурсия CGameFont::WidthOf(const char*)** - не-UTF8 строка «конвертируется» через
+   ANSI_TO_UTF8, который в macOS-слое был identity → рекурсия → стек-оверфлов в отрисовке меню
+   (CUIMMShniaga). Фикс: настоящая конвертация CP1251↔UTF-8 по таблице в Platform/MacOS/UTF8.cpp
+   (таблица сгенерирована питон-кодеком cp1251). Это же чинит русский текст движка на macOS.
+   ИЗВЕСТНЫЙ ОСТАТОК: WidthOf меряет ширину по БАЙТАМ UTF-8 (ANSI_TO_TCHAR - identity, char*),
+   ширины кириллицы врут - косметика, играть не мешает. Чинить отдельным шагом (декод UTF-8 в WidthOf).
+- Лестница крашей: текстуры(NULL) → гонка путей → шейдер SSLR → MCODEAL → шрифты(рекурсия) → МЕНЮ ЖИВО.
+- Коммитить всё это одним логическим набором только после игры Степана; коммит d770c7c6e (харнесс) уже
+  выкинут из истории по его просьбе (reset HEAD~1, правки остались в дереве).
+
+### Сессия 18.10, день: автономный автотест доведён до входа в уровень; новые фиксы
+
+- **Автостарт стал полностью автономным** (device.cpp, TEMPORARY): проверка ПЕРЕНЕСЕНА ВНУТРЬ while-цикла
+  message_loop (снаружи выполнялась один раз до меню и никогда не срабатывала - корень «висит в меню»),
+  порог - 170 сек wall clock (steady_clock, не dwTimeGlobal: меню+загрузка ~3 мин, ранний start server
+  теряется); перед стартом - `keypress_on_start 0` (есть такая консольная команда!) - убирает экран
+  «Нажмите любую клавишу» после загрузки уровня; скриншоты - AXRaise окна xrEngine + screencapture
+  (весь экран бесполезен, если окно игры не наверху - поверх висит окно Hermes/рабочий стол).
+- **Core.Params был ПУСТ на не-Windows** (апстримный баг: xrCore.cpp заполняет Params только под
+  IXR_WINDOWS) - ВСЕ ключи командной строки молча мертвы (-nointro, -autotest, -$...). Фикс:
+  CApplication (Application.cpp, не-Windows ветка) копирует CommandLine в Core.Params + lowercase.
+  Проверено логом: `Core.Params: ./xrengine -r4 -nointro`.
+- **-nointro портирован из OpenXRay** (GamePersistent.cpp, allow_intro: гейт логового интро; авторство
+  указано в комментарии). Внимание: «intro_start game_loaded» после Going online - это ДРУГОЕ интро
+  (гейтится g_keypress_on_start, отключается keypress_on_start 0).
+- **Текст починен совсем**: WidthOf (GameFont.cpp) и dxFontRender::RenderBase ходили по БАЙТАМ UTF-8
+  (TCHAR=char) - кириллица выпадала/съезжала. Теперь Platform::DecodeUtf8CodePoints (UTF8.h, std::vector)
+  декодирует в кодпоинты, оба места шагают по глифам. `std::vector`, не xr_vector (UTF8.h включается рано).
+- **Краш filewatch (SIGABRT ~1 мин в уровне)**: filewatch.hpp FSEvents-поток падает на ассерте в notify()
+  при событиях ФС (пишутся логи/кэш/сейвы). Фикс: НЕ включать filewatcher на macOS (x_ray.cpp:415,
+  #ifndef IXR_MACOS; хот-релоад gamedata там выключен). Штатный шлюз: CFilewatcher::GetFilewatcherActive.
+- **Сохранение падает**: `Can't write file: savedgames/root - <кириллица>.scop` - EILSEQ: имя файла из
+  cp1251 идёт в POSIX open без конвертации в UTF-8. НЕ ЧИНЕНО - следующий шаг (конвертация имени в
+  FS-слое; UTF8_to_CP1251 уже есть в macOS UTF8.cpp).
+- **INFOPORTION missing** (`attempt to use non-existent INFOPORTION [zat_b101_give_task]` и др.) - красные
+  строки в логе/консоли: сюжетные инфопорции не зарегистрированы, при этом info_up_* (842 шт.) загружены.
+  НЕ разобрано; на геометрию не влияет (симуляция жила 111k кадров).
+- **ГЛАВНАЯ ОТКРЫТАЯ ПРОБЛЕМА (та же, что на старой базе)**: в геймплее рисуются ТОЛЬКО небо+HUD,
+  ниже горизонта серая пустота, правая половина окна чёрная. ЗАТО подтверждено: экран ЗАГРУЗКИ уровня
+  рисует статичную арт-картинку корректно, HUD/текст/шрифты живы, симуляция идёт. Следствие: сломан
+  именно геймплейный проход мира (G-buffer/deffer_base/спатиал-дб), а не конвейер. Кандидаты на разбор:
+  статистика рендера (o_rendered/o_culled - culling vs transform), отличия render-кода old-base vs develop,
+  swapchain/размеры RT (чёрная половина!), depth. filewatch-краш убивал игру через минуту - теперь убран,
+  станет легче дебажить.
+- **Логотип «Зов Припяти» в меню вверх ногами** (UV-flip) - косметика, в список.
+- Зрение (vision_analyze) снова работает (был недельный лимит ollama-cloud); пиксельная математика
+  (sips → BMP → среднее/сигма по полосам) - рабочий запасной анализ.
+- Сохранение сессии: СТЕПАН УСТАЛ от «зависаний» - в длинных прогонах сообщать статус каждые ~2-3 мин
+  короткой строкой (что запущено и сколько ждать), не молчать.
+
+### Сессия 18.10, день-3 (параллельная): СИНТЕТИЧЕСКИЙ ВВОД РАБОТАЕТ - миф «не доходит» опровергнут
+
+Доказано живыми lldb-брейкпоинтами на работающей игре (xrEngine, develop):
+- System Events key code -> NSEvent -> SDL 3.2.22 -> SDL_EVENT_KEY_DOWN -> on_event -> KBState - ВСЁ ДОХОДИТ;
+- чистый SDL3-пробник (тот же dylib) получает синтетические клавиши без вопросов;
+- CInput::OnFrame тикает каждый кадр, dispatch доходит до CLevel, бинд находится (W -> kFWD через get_binded_action).
+
+ПОЧЕМУ КЛАВИШИ «НЕ РАБОТАЛИ» все эти дни: автономный прогон уходит в состояния, где весь ввод
+легально съедается верхним получателем из cbStack, а не баг доставки:
+1. **game_over (CUISequencer)** - после смерти актёра туториал «game_over» захватывает ввод и ждёт клавишу;
+   автономка никогда не «нажимает любую клавишу» -> висит вечно, весь ввод глотается.
+   СНМАЕТСЯ ОДНИМ Esc (bind kQUIT -> CUISequencer::Stop; проверено: IsActive=false, стек [dummy,CLevel]).
+2. Мёртвый актёр после снятого game_over: CLevel игнорирует вообще всё (нет консоли, нет меню) -
+   инстанс только перезапускать.
+3. CUISequencer::OnFrame при !Device.b_is_Active молча не тикает (заморозка заставки при потере фокуса).
+
+Диагностика на будущее (5 минут вместо часов): lldb -p $(pgrep -x xrEngine):
+`expr -- ::pInput->KBState[<scan>]` (доставка), `expr -- (void*)::pInput->cbStack.back()` (кто ест ввод),
+`expr -- (char*)((CUISequencer*)::pInput->cbStack.back())->m_name` (какой туториал застрял).
+Имена типов в batch-выражениях: ::pInput работает, ::Device парсится как ObjC - обходить через фреймы движка.
+
+Следствие для автопрогонов: харнессу нужен шаг «нажми любую клавишу»/god-mode (`g_god on`),
+чтобы прогоны не застревали в game_over; синтетический ввод можно смело использовать для меню.
+
+### Сессия 18.10, день-2: только небо - первый раунд расследования (методы)
+
+- **lldb-пробник живого движка работает**: `lldb -b -p $(pgrep -x xrEngine) -o "expr -- Device.dwFrame" -o detach -o quit`
+  читает глобалы без перезапуска. Прочитано на живом уровне: stats.ic_total=0, ic_culled=0, o_queries=0,
+  o_culled=0 за 35 минут. НО доверять нельзя: параллельный lldb-прицеп, похоже, оставил процесс SIGSTOP
+  (вторые чтения пустые, лог остановился на загрузке UI-текстур). Правило: ОДИН прицеп за раз, длинный
+  таймаут, детач проверять; процесс после убитого lldb может остаться остановленным - pkill.
+- Инкременты счётчиков: ic_total - light_smapvis.cpp:48 (теневой проход!), o_queries - r__occlusion.cpp:88
+  (occq_create). Нули = smap и light-vis проходы не выполнялись ВООБЩЕ за сессию.
+- **filewatch-фикс подтверждён долговечностью**: движок жил 40+ минут в уровне (раньше падал через ~1 мин).
+- Автостарт: ~170с Wall clock + keypress_on_start 0 + rs_stats on на 230с (всё в device.cpp, TEMPORARY) -
+  воспроизводимо доходит до «Going online». В одном из прогонов лог остановился на загрузке UI-текстур -
+  то ли мой SIGSTOP, то ли ещё зависание - перепроверить.
+- **r4.cpp:687 CRender::Statistics(CGameFont*)** - экранная статистика (rs_stats on): LT/LV, smap, OccQ
+  total/culled, iCULL visible/culled; счётчики сбрасываются при каждом вызове.
+- рычаги на следующий заход: (1) чистый lldb-пробник дважды с паузой (dwFrame растёт? stats нули?) -
+  различить «рендер идёт, мира нет» vs «движок стоит»; (2) сравнить render-код old-base (ветка
+  macos-metal-backup-default-base, там геометрия РИСОВАЛАСЬ) vs develop в deffer-пути; (3) INFOPORTION
+  (сюжетные порции не регистрируются, info_up_* загружены) - тот же симптом «часть XML не долетела»,
+  что и сейв-имя EILSEQ - искать общий корень в чтении конфиг-архивов.
+
+### Точка останова перед компрессом (18.10, 14:10) - охота на «только небо»
+
+- Главный рендер на develop: **src/Layers/xrRenderPC_R4/r4_R_render.cpp** (переименован из r4.cpp -
+  поэтому старые grep'и по r4.cpp были пустыми). `CRender::render_main(deffered, zfill)` - строка 40;
+  вызовы: 572 (zfill), 597 (deffer - основной), 855 (forward). render_menu - 330.
+- render_main: сектор-обход через g_SpatialSpace->q_frustum(lstRenderablesMain, ...) при pLastSector.
+  КЛЮЧЕВОЕ УСЛОВИЕ: `if (pLastSector)` - если сектор не определён, весь проход мира пропускается!
+  (проверить в живом движке: pLastSector != null, Sectors.size(), lstRenderablesMain.size()).
+- Дифф old-base vs develop по r4_R_render.cpp: 959+/862- (большая переработка).
+- Следующие шаги после компресса: (1) lldb-пробник на живом уровне: pLastSector, Sectors.size(),
+  lstRenderablesMain.size(), HOM готов?; (2) если lstRenderables пуст - q_frustum/сектора; (3) если
+  полон - сравнение render_main со старой базой построчно.
+- Прочее в работе: сейв-имя EILSEQ (конвертация в FS), INFOPORTION (сюжетные XML), логотип вверх ногами.
+
+### 18.10 15:00 — «ТОЛЬКО НЕБО» ПОЧИНЕН (главный открытый баг закрыт!)
+
+Корень: MakeMeCrow (xrEngine/xr_object.cpp) — CAS через Platform::AtomicCompareExchange((long*)&u32-поле).
+На macOS long=8 байт vs u32=4 → CAS бил по соседней памяти, всегда мимо; кто-то заглушил VERIFY хаком
+`#if defined(IXR_MACOS) return;` → ни один объект не становился crow → UpdateCL не звался ни разу →
+камера актёра навсегда (0,0,0) → pLastSector=NULL → render_main пропускал проход мира → только небо+HUD.
+Подтверждено lldb: vLastCameraPos=0, pLastSector=0, lstRenderablesMain=0 при живом акторе (256,19.8,550).
+
+ФИКС: Platform::AtomicCompareExchangeU32(unsigned int*) на macOS+Windows+Linux (atomic на точной ширине),
+в MakeMeCrow вызов заменён на U32-версию, мак-заглушка удалена, VERIFY возвращён (проходит).
+Файлы: xrCore/Platform/{MacOS,Windows,Linux}/OSThread.{h,cpp}, xrEngine/xr_object.cpp.
+Внимание: u32 не виден в платформенных OSThread.h — там unsigned int.
+
+Проверено lldb после фикса: pLastSector!=NULL, lstRenderablesMain=127, камера=(256.2,21.5,550.8).
+Степан через AnyDesk подтвердил: «Работает! Уровень загрузился!»
+
+СЛЕДУЮЩИЙ БАГ (его слова): «поломана текстура террейна» — разбирать (терраин-текстуры/details/BC-форматы).
+При дампе статистики рендера: счётчики ic/o — сбрасываются оверлеем rs_stats, доверять можно только
+если читать сразу после кадра. lldb-пробник: один прицеп за раз, длинный таймаут, VERIFY отсоединения.
