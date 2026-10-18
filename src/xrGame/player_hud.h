@@ -975,6 +975,7 @@ public:
 	void			load_default		();
 	void			ReloadRigParams		();
 	void			RequestDefault		();
+	static void		RequestAllHands		();
 	void			FinishDefaultLoad	(bool IsEarly = false);
 	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
 	void			update				(const Fmatrix& trans);
