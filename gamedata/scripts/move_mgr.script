@@ -111,7 +111,6 @@ end
 --' нужно вызвать метод set_movement_state, который включит перемещение по вейпоинтам с нужной
 --' скоростью.
 function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, team, suggested_state, move_cb_info, no_validation, continue, use_default_sound)
-	return PROF_EVENT_CLOSURE("reset", function()
         printf("move_mgr:reset() [%s]", self.object:name())
     
         --' сколько ждать в точке, где играем анимацию
@@ -220,7 +219,6 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
             self.object:patrol_path_make_inactual()
         end
         self:setup_movement_by_patrol_path()
-    end)
 end
 
 --' продолжить движение со следующей точки, а не с ближайшей.
@@ -231,7 +229,6 @@ function move_mgr:continue()
 end
 
 function move_mgr:setup_movement_by_patrol_path()
-	return PROF_EVENT_CLOSURE("setup_movement_by_patrol_path", function()
         self.object:set_path_type(game_object.patrol_path)
         self.object:set_detail_path_type(move.line)
     
@@ -255,20 +252,16 @@ function move_mgr:setup_movement_by_patrol_path()
         end
     
         local sect = self.object:section()
-    end)
 end
 
 function move_mgr:arrived_to_first_waypoint()
-	return PROF_EVENT_CLOSURE("arrived_to_first_waypoint", function()
 	    return self.last_index ~= nil
-    end)
 end
 
 
 --' Проверка синхронизации с остальными солдатами на пути.
 --' Возвращает true, если дальнейшее движение разрешено.
 function move_mgr:sync_ok()
-	return PROF_EVENT_CLOSURE("sync_ok", function()
         if self.team then
             local s = sync[self.team]
             local self_id = self.object:id()
@@ -285,11 +278,9 @@ function move_mgr:sync_ok()
             end
         end
         return true
-    end)
 end
 
 function move_mgr:update()
-    return PROF_EVENT_CLOSURE("reset", function()
         --printf("move_mgr:update(self.state == %s)", utils.to_str(self.state))
         --printf("move_mgr:update(self.object:anims == %d)", self.object:animation_count())
     
@@ -321,38 +312,30 @@ function move_mgr:update()
             end
             return
         end
-	end)
 end
 
 function move_mgr:set_current_state_moving(state)
-	return PROF_EVENT_CLOSURE("set_current_state_moving", function()
         self.cur_state_moving = state
         self:update_movement_state()
-    end)
 end
 
 function move_mgr:finalize(npc)
-	return PROF_EVENT_CLOSURE("finalize", function()
         if self.team then
             sync[self.team][self.object:id()] = nil
         end
         -- чтобы избежать дальнейшего движения по пути при установке рестрикторов
         self.object:set_path_type(game_object.level_path)
-    end)
 end
 
 --'-----------------------------------------------------------------------------
 --' IMPLEMENTATION
 --'-----------------------------------------------------------------------------
 function move_mgr:update_movement_state()
-	return PROF_EVENT_CLOSURE("update_movement_state", function()
 	    --printf("%s UPDATE movement state to %s", self.object:name(), self.cur_state_moving)
         state_mgr.set_state(self.object, self.cur_state_moving, nil, nil, nil)
-    end)
 end
 
 function move_mgr:update_standing_state(look_pos, snd)
-	return PROF_EVENT_CLOSURE("update_standing_state", function()
         --printf("_bp [%s]: update_standing_state: snd='%s', pt_wait_time = %s path = %s", self.object:name(), utils.to_str(snd), utils.to_str(self.pt_wait_time),  self.path_walk)
         state_mgr.set_state(self.object, self.cur_state_standing,
             { obj = self, func = self.time_callback, turn_end_func = self.turn_end_callback },
@@ -360,11 +343,9 @@ function move_mgr:update_standing_state(look_pos, snd)
             { look_position = look_pos },
             nil,
             snd )
-    end)
 end
 
 function move_mgr:time_callback()
-	return PROF_EVENT_CLOSURE("time_callback", function()
         --printf("_bp [%s]: time_callback", self.object:name())
         local sigtm = self.path_look_info[self.last_look_index]["sigtm"]
         if sigtm then
@@ -400,11 +381,9 @@ function move_mgr:time_callback()
                     self.object:name(), self.path_walk)
             end
         end
-    end)
 end
 
 function move_mgr:scheme_set_signal(sig)
-	return PROF_EVENT_CLOSURE("scheme_set_signal", function()
         local npc_id = self.object:id()
         local stor = db.storage[npc_id]
         --printf("_bp: object '%s': move_mgr: scheme_set_signal '%s', active scheme '%s'",
@@ -415,11 +394,9 @@ function move_mgr:scheme_set_signal(sig)
                  signals[sig] = true
             end
         end
-    end)
 end
 
 function move_mgr:turn_end_callback()
-	return PROF_EVENT_CLOSURE("turn_end_callback", function()
         local syn = self.path_look_info[self.last_look_index]["syn"]
         if syn then
             self.syn_signal = self.path_look_info[self.last_look_index]["sig"]
@@ -479,11 +456,9 @@ function move_mgr:turn_end_callback()
             local look_pos = self.patrol_look:point(self.last_look_index)
             self:update_standing_state(look_pos, anim_synced_snd)
         end
-    end)
 end
 
 function move_mgr:waypoint_callback(obj, action_type, index)
-	return PROF_EVENT_CLOSURE("waypoint_callback", function()
         --printf("move_mgr:waypoint_callback(): name=%s, index=%d", self.object:name(), index)
     
         if index == -1 or index == nil then
@@ -596,5 +571,4 @@ function move_mgr:waypoint_callback(obj, action_type, index)
             abort("object '%s': path_walk '%s', index %d: cannot find corresponding point(s) on path_look '%s'",
                 self.object:name(), tostring(self.path_walk), tostring(index), tostring(self.path_look))
         end
-    end)
 end

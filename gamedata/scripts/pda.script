@@ -82,7 +82,6 @@ local upgrade_closed = false
 local npc_dlg_id = nil
 
 function actor_menu_mode(mode)
-	return PROF_EVENT_CLOSURE("actor_menu_mode", function()
         SendScriptCallback("on_actor_wnd_mode_switch", mode)
         
         if(mode==0) then
@@ -141,7 +140,6 @@ function actor_menu_mode(mode)
             SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
             npc_dlg_id = nil
         end
-    end)
 end
 
 function inventory_wnd_opened()
@@ -181,7 +179,6 @@ function dead_body_search_wnd_closed()
 end
 
 function dialog_wnd_showed()
-	return PROF_EVENT_CLOSURE("dialog_wnd_showed", function()
         dialog_closed = false
         for k,v in pairs(db.storage) do
             local npc = v.object
@@ -197,7 +194,6 @@ function dialog_wnd_showed()
             end
         end
         --printf("---:>Talk Dialog show")
-    end)
 end
 
 function dialog_wnd_closed()
@@ -207,7 +203,6 @@ end
 
 -- CoCray
 function get_time_elapsed()
-	return PROF_EVENT_CLOSURE("get_time_elapsed", function()
         local s_time = level.get_start_time()
         local seconds = tonumber(game.get_game_time():diffSec(s_time))
         
@@ -220,12 +215,10 @@ function get_time_elapsed()
         end
         
         return string.format("%d %s",seconds/60/60/24,game.translate_string("ui_st_days"))
-    end)
-end 
+end
 --//
 
 function get_stat(index) -- index= int        return string
-	return PROF_EVENT_CLOSURE("get_stat", function()
         if(index==0) then
             return tostring(get_time_elapsed())
         elseif(index==1) then
@@ -242,7 +235,6 @@ function get_stat(index) -- index= int        return string
             return tostring(xr_statistic.actor_statistic.founded_secrets)
         end
         return "Unknown"
-    end)
 end
 
 killed_monsters_tbl =
@@ -373,7 +365,6 @@ function set_state_need_info_for_draw_spots(state)
 end
 
 function fill_primary_objects()
-	return PROF_EVENT_CLOSURE("fill_primary_objects", function()
         for k,v in pairs(primary_objects_tbl) do
             if type(v) == "table" and v.target ~= nil then
                 if primary_locations_cache[v.target] == nil then
@@ -394,11 +385,9 @@ function fill_primary_objects()
                 end
             end
         end
-    end)
 end
 
 function fill_sleep_zones()
-	return PROF_EVENT_CLOSURE("fill_sleep_zones", function()
         return ffx_cache_utils.get_cached("fill_sleep_zones_cached", function()
             local sim = alife()
             local actor_pos = db.actor:position()
@@ -432,7 +421,6 @@ function fill_sleep_zones()
                 end
             end
         end, 2500, nil)
-    end)
 end
 
 function add_quick_slot_items_on_game_start()
@@ -448,7 +436,6 @@ function add_quick_slot_items_on_game_start()
 end
 
 function change_anomalies_names()
-	return PROF_EVENT_CLOSURE("change_anomalies_names", function()
         if has_alife_info("jup_b32_scanner_reward") then
             for k,v in pairs(change_objects_tbl) do
                 if has_alife_info(v.group) and not v.enabled then
@@ -483,7 +470,6 @@ function change_anomalies_names()
                 end
             end
         end
-    end)
 end
 
 -- CoCray

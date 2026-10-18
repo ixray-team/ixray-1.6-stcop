@@ -5,7 +5,6 @@ Smart terrain binder
 --------------------------------------------------------------------------------------------------------------------]]
 
 function bind( obj )
-    return PROF_EVENT_CLOSURE("bind", function()
         local ini = obj:spawn_ini()
     
         if not ini then
@@ -23,7 +22,6 @@ function bind( obj )
                 abort( "You must use SMART_TERRAIN instead of SCRIPT_ZONE %s", obj:name() )
             end
         end
-    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -34,7 +32,6 @@ function smart_terrain_binder:__init( obj ) super( obj )
 end
 
 function smart_terrain_binder:net_spawn( server_object )
-	return PROF_EVENT_CLOSURE("net_spawn", function()    
         -- получить ссылку на настоящий серверный объект
         self.se_smart_terrain = alife():object( server_object.id )
     
@@ -42,23 +39,18 @@ function smart_terrain_binder:net_spawn( server_object )
         db.add_smart_terrain( self.se_smart_terrain )
     
         return true
-    end)
 end
 
 function smart_terrain_binder:net_destroy()
-    return PROF_EVENT_CLOSURE("net_destroy", function()
         xr_sound.stop_sounds_by_id(self.object:id())
         
         db.del_zone( self.object )
         db.del_smart_terrain( self.se_smart_terrain )
-	end)
 end
 
 function smart_terrain_binder:update( delta )
-    return PROF_EVENT_CLOSURE("update", function()
         SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
         self.se_smart_terrain:update()
-    end)
 end
 
 function smart_terrain_binder:Serialize(Object)

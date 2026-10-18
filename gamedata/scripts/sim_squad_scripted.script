@@ -27,7 +27,6 @@ class "sim_squad_scripted" (cse_alife_online_offline_group)
 --***********************************************************************************************
 
 function sim_squad_scripted:__init(section) super (section)
-	return PROF_EVENT_CLOSURE("__init", function()
         --' смарт, в котором сейчас находится отряд.
         self.smart_id 			= nil
         self.board 				= sim_board.get_sim_board()
@@ -49,11 +48,9 @@ function sim_squad_scripted:__init(section) super (section)
         self:init_squad()
     
         self:set_squad_behaviour()
-    end)
 end
 --' Инициализация
 function sim_squad_scripted:init_squad()
-	return PROF_EVENT_CLOSURE("init_squad", function()
         self.player_id 			= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "faction", self, true, "")
         self.action_condlist	= xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", ""))
         self.death_condlist		= xr_logic.parse_condlist(self, "death_condlist", "on_death", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "on_death", self, false, "", ""))
@@ -66,13 +63,10 @@ function sim_squad_scripted:init_squad()
         self.always_arrived		= utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_arrived", self, false)
         self:set_location_types_section("stalker_terrain")
         self:set_squad_sympathy()
-    end)
 end
 
 -- Инициализация отряда на загрузке
 function sim_squad_scripted:init_squad_on_load()
-	
-	return PROF_EVENT_CLOSURE("init_squad_on_load", function()
         -- Прописываем сквад в нужные смарты
         printf("Init squad %s on load", self.id)
         self:set_squad_sympathy()
@@ -82,12 +76,10 @@ function sim_squad_scripted:init_squad_on_load()
             self.board:enter_smart(self, self.smart_id, true)
         end
         self.need_to_reset_location_masks = true 
-    end)
 end
 
 -- Вычитываем настройки поведения сквада.
 function sim_squad_scripted:set_squad_behaviour()
-	return PROF_EVENT_CLOSURE("set_squad_behaviour", function()
         self.behaviour		= {}
         local behaviour_section = utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "behaviour", self, false, "", self.player_id)
         if not squad_behaviour_ini:section_exist(behaviour_section) then
@@ -98,7 +90,6 @@ function sim_squad_scripted:set_squad_behaviour()
             local result, prop_name, prop_condlist = squad_behaviour_ini:r_line(behaviour_section,j,"","")
             self.behaviour[prop_name] = prop_condlist
         end
-    end)
 end
 
 --***********************************************************************************************
@@ -152,16 +143,13 @@ end
 
 --' Выбор следующей цели
 function sim_squad_scripted:pick_next_target()
-	return PROF_EVENT_CLOSURE("pick_next_target", function()
         --printf("Picking next target for [%s] = %s by %s", self:section_name(), tostring(self.parsed_targets[self.next_target]), self.next_target)
         return self.parsed_targets[self.next_target]  
-    end)
 end
 
 
 --' Проверка пришел ли отряд в очередной поинт
 function sim_squad_scripted:check_squad_come_to_point()
-	return PROF_EVENT_CLOSURE("check_squad_come_to_point", function()
         --printf("[%s] check squad point", self.id)
         if self.parsed_targets == nil then
             return true
@@ -175,22 +163,18 @@ function sim_squad_scripted:check_squad_come_to_point()
             end
         end
         return false
-    end)
 end
 
 --' Проверка пришел ли отряд в очередной поинт
 function sim_squad_scripted:update_current_action()
-	return PROF_EVENT_CLOSURE("update_current_action", function()
         local is_finished =	self.current_action:update(false)
         if not is_finished then
             return false
         end
         return true  
-    end)
 end
 
 function sim_squad_scripted:update()
-	return PROF_EVENT_CLOSURE("update", function()
         cse_alife_online_offline_group.update (self)
         	self:refresh()
         
@@ -292,7 +276,6 @@ function sim_squad_scripted:update()
         		SendScriptCallback("squad_on_after_level_change", self, self.level_name, cur_lvl)
         		self.level_name = cur_lvl
         	end
-    end)
 end
 
 
@@ -306,14 +289,12 @@ function sim_squad_scripted:clear_assigned_target()
 end
 
 function sim_squad_scripted:assigned_target_avaliable()
-	return PROF_EVENT_CLOSURE("assigned_target_avaliable", function()
         local target_obj = self.assigned_target_id and alife():object(self.assigned_target_id)
         if target_obj == nil then
             return false
         end
         -- В данном случае нужно проверять попьюлейшн минус один, т.к. я уже состою в смарте.
         return target_obj:target_precondition(self, true)
-    end)
 end
 
 local function can_help_actor(squad)
@@ -357,7 +338,6 @@ end
 
 --' Апдейт отряда для выбора симуляционных целей.
 function sim_squad_scripted:generic_update()
-	return PROF_EVENT_CLOSURE("generic_update", function()
         --printf("Squad[%s] UPDATE", self.id)
         --' Если у нас есть незавершенное действие - ждем пока оно завершится.
         self.sound_manager:update()
@@ -400,12 +380,10 @@ function sim_squad_scripted:generic_update()
             self.assigned_target_id = self.board:get_squad_target(self).id
         end
         self:get_next_action(true)
-    end)
 end
 
 --' Получение следующего экшна на выполнение
 function sim_squad_scripted:get_next_action(under_simulation)
-	return PROF_EVENT_CLOSURE("get_next_action", function()
         local squad_target = alife():object(self.assigned_target_id)
         --printf("assigned_target = [%s]", tostring(self.assigned_target_id))
         if self.current_target_id == nil then
@@ -429,7 +407,6 @@ function sim_squad_scripted:get_next_action(under_simulation)
             self.current_action = sim_squad_actions.reach_target(self)
             self.current_action:make(under_simulation)
         end
-    end)
 end
 
 --***********************************************************************************************
@@ -437,7 +414,6 @@ end
 --***********************************************************************************************
 --' Удаление персонажей отряда
 function sim_squad_scripted:remove_squad()
-	return PROF_EVENT_CLOSURE("remove_squad", function()
         local squad_npcs = {}
     
         local npcCount = self:npc_count() -1
@@ -454,22 +430,18 @@ function sim_squad_scripted:remove_squad()
             end
         end
         self:hide()
-    end)
 end
 
 --' Удаление конкретного персонажа отряда
 function sim_squad_scripted:remove_npc(npc_id)
-	return PROF_EVENT_CLOSURE("remove_npc", function()
         local se_npc = alife():object(npc_id)
         self:on_npc_death(se_npc, nil)
         --printf("releasing object ["..se_npc:name().."]")
         alife():release(se_npc, true)
-    end)
 end
 
 --' Убийство НПС
 function sim_squad_scripted:on_npc_death(se_npc, se_killer)
-	return PROF_EVENT_CLOSURE("on_npc_death", function()
         printf("Squad %s. Killed member %s", tostring(self.id), se_npc.id)
     
         SendScriptCallback("squad_on_npc_death", self, se_npc, se_killer)
@@ -491,11 +463,9 @@ function sim_squad_scripted:on_npc_death(se_npc, se_killer)
             return
         end
         self:refresh()
-    end)
 end
 
 function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_smart_id)
-	return PROF_EVENT_CLOSURE("assign_squad_member_to_smart", function()
         local obj = alife():object(member_id)
         if obj ~= nil then
             --printf("    npc [%s] smart [%s]", obj:name(), tostring(obj.m_smart_terrain_id))
@@ -511,12 +481,10 @@ function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_s
                 smart:register_npc(obj)
             end
         end
-    end)
 end
 
 --' Назначение смарта
 function sim_squad_scripted:assign_smart(smart)
-	return PROF_EVENT_CLOSURE("assign_smart", function()
         local old_smart = self.smart_id
         self.smart_id = smart and smart.id
     
@@ -525,11 +493,9 @@ function sim_squad_scripted:assign_smart(smart)
             local currentId = self:getSquadMemberId(i)
             self:assign_squad_member_to_smart(currentId, smart, old_smart)
         end
-    end)
 end
 
 function sim_squad_scripted:check_invulnerability()
-	return PROF_EVENT_CLOSURE("check_invulnerability", function()
         if self.squad_online ~= true then
             return
         end
@@ -546,21 +512,17 @@ function sim_squad_scripted:check_invulnerability()
                 end
             end
         end
-    end)
 end
 
 function sim_squad_scripted:set_location_types_section (section)
-	return PROF_EVENT_CLOSURE("set_location_types_section", function()
     --	printf("set_location_types_section[%s] for [%s]", tostring(section), tostring(self:name()))
         if locations_ini:section_exist(section) then
             local result, id, value	= locations_ini:r_line(section,0,"","")
             self:add_location_type(id)
         end
-    end)
 end
 
 function sim_squad_scripted:set_location_types(new_smart_name)
-	return PROF_EVENT_CLOSURE("set_location_types", function()
         local default_location = "stalker_terrain"
         printf("set_location_types for squad [%s]", self:name())
         self:clear_location_types()
@@ -596,11 +558,9 @@ function sim_squad_scripted:set_location_types(new_smart_name)
                 end
             end
         end
-    end)
 end
 
 function sim_squad_scripted:add_squad_member(spawn_section, spawn_position, lv_id, gv_id, sect_number)
-	return PROF_EVENT_CLOSURE("add_squad_member", function()
         local spawn_sections_ltx = system_ini()
         local custom_data = utils.cfg_get_string(spawn_sections_ltx, spawn_section, "custom_data", self, false, "", "default_custom_data.ltx")
         if custom_data ~= "default_custom_data.ltx" then
@@ -626,12 +586,10 @@ function sim_squad_scripted:add_squad_member(spawn_section, spawn_position, lv_i
         SendScriptCallback("squad_on_add_npc", self, obj, spawn_section, spawn_position, lv_id, gv_id)
     
         return obj.id
-    end)
 end
 
 --' Создание чуваков в отряд
 function sim_squad_scripted:create_npc(spawn_smart)
-	return PROF_EVENT_CLOSURE("create_npc", function()
         local ini = system_ini()
         local spawn_sections = utils.parse_names(utils.cfg_get_string(ini, self.settings_id, "npc", self, false, "", ""))
     
@@ -693,11 +651,9 @@ function sim_squad_scripted:create_npc(spawn_smart)
     
         self.smart_id = spawn_smart.id
         self:refresh()
-    end)
 end
 
 function sim_squad_scripted:set_squad_sympathy(sympathy)
-	return PROF_EVENT_CLOSURE("set_squad_sympathy", function()
         local symp = sympathy or self.sympathy
         if (symp ~= nil) then
             local npcCount = self:npc_count() -1
@@ -714,7 +670,6 @@ function sim_squad_scripted:set_squad_sympathy(sympathy)
                 end
             end
         end
-    end)
 end
 
 local function set_relation(npc1, npc2, new_relation)
@@ -734,7 +689,6 @@ local function set_relation(npc1, npc2, new_relation)
 end
 
 function sim_squad_scripted:set_squad_relation(relation)
-	return PROF_EVENT_CLOSURE("set_squad_relation", function()
         local rel = relation or self.relationship
         if (rel ~= nil) then
             local npcCountLast = self:npc_count() - 1
@@ -748,7 +702,6 @@ function sim_squad_scripted:set_squad_relation(relation)
                 end
             end
         end
-    end)
 end
 
 local function reset_animation(npc)
@@ -784,7 +737,6 @@ local function reset_animation(npc)
 end
 
 function sim_squad_scripted:set_squad_position(position)
-	return PROF_EVENT_CLOSURE("sim_squad_scripted", function()
         if self.online == false then
             self:force_change_position(position)
         end
@@ -804,11 +756,9 @@ function sim_squad_scripted:set_squad_position(position)
                 k.position = position
             end
         end
-    end)
 end
 
 function sim_squad_scripted:has_detector()
-	return PROF_EVENT_CLOSURE("has_detector", function()
         local npcCountLast = self:npc_count() - 1
         for i = 0, npcCountLast, 1 do
             local currentId = self:getSquadMemberId(i)
@@ -817,17 +767,14 @@ function sim_squad_scripted:has_detector()
             end
         end
         return false
-    end)
 end
 
 function sim_squad_scripted:get_squad_community()
-	return PROF_EVENT_CLOSURE("get_squad_community", function()
         local squad_community = squad_community_by_behaviour[self.player_id]
         if squad_community == nil then
             abort("squad community is 'nil' for player_id [%s]", self.player_id)
         end
         return squad_community
-    end)
 end
 
 --***********************************************************************************************
@@ -835,7 +782,6 @@ end
 --***********************************************************************************************
 
 function sim_squad_scripted:STATE_Write(packet)
-	return PROF_EVENT_CLOSURE("STATE_Write", function()
         cse_alife_online_offline_group.STATE_Write (self, packet)
         set_save_marker(packet, "save", false, "sim_squad_scripted")
         
@@ -846,11 +792,9 @@ function sim_squad_scripted:STATE_Write(packet)
         packet:w_stringZ(tostring(self.smart_id))
         
         set_save_marker(packet, "save", true, "sim_squad_scripted")
-    end)
 end
 
 function sim_squad_scripted:STATE_Read(packet, size)
-	return PROF_EVENT_CLOSURE("STATE_Read", function()
         cse_alife_online_offline_group.STATE_Read (self, packet, size)
         set_save_marker(packet, "load", false, "sim_squad_scripted")
     
@@ -879,7 +823,6 @@ function sim_squad_scripted:STATE_Read(packet, size)
     
         self:init_squad_on_load()
         set_save_marker(packet, "load", true, "sim_squad_scripted")    
-    end)
 end
 
 function sim_squad_scripted:STATE_Serialize(Object)
@@ -935,7 +878,6 @@ end
 --***********************************************************************************************
 
 function sim_squad_scripted:on_register()
-	return PROF_EVENT_CLOSURE("on_register", function()
         cse_alife_online_offline_group.on_register( self )
         
         SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
@@ -945,11 +887,9 @@ function sim_squad_scripted:on_register()
         story_objects.check_spawn_ini_for_story_id(self)
         simulation_objects.get_sim_obj_registry():register(self)
         SendScriptCallback("squad_on_register", self)
-    end)
 end
 
 function sim_squad_scripted:on_unregister()
-	return PROF_EVENT_CLOSURE("on_unregister", function()
         SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
         SendScriptCallback("squad_on_unregister", self)
         --' Отрегистрация в таскменеджере
@@ -967,19 +907,14 @@ function sim_squad_scripted:on_unregister()
             end
             smart.already_spawned[self.respawn_point_prop_section].num = smart.already_spawned[self.respawn_point_prop_section].num - 1
         end
-    end)
 end
 
 function sim_squad_scripted:can_switch_offline()
-	return PROF_EVENT_CLOSURE("can_switch_offline", function()
         return cse_alife_online_offline_group.can_switch_offline(self)
-    end)
 end
 
 function sim_squad_scripted:can_switch_online()
-	return PROF_EVENT_CLOSURE("can_switch_online", function()
 	    return cse_alife_online_offline_group.can_switch_online(self)
-    end)
 end
 
 --***********************************************************************************************
@@ -1007,30 +942,25 @@ is_squad_monster =
 }
 
 function sim_squad_scripted:refresh()
-	return PROF_EVENT_CLOSURE("refresh", function()
         if(self:commander_id()==nil) then
             self:hide()
             return
         end
         self:show()
-    end)
 end
 
 
 function sim_squad_scripted:hide()
-	return PROF_EVENT_CLOSURE("refresh", function()
         if(self.current_spot_id==nil) or (self.spot_section==nil) then
             return
         end
         level.map_remove_object_spot(self.current_spot_id, self.spot_section)
         self.current_spot_id = nil
         self.spot_section = nil
-    end)
 end
 
 --' Показать отряд на карте
 function sim_squad_scripted:show()
-	return PROF_EVENT_CLOSURE("show", function()
         if self.show_disabled then
             self:hide()
             return
@@ -1110,11 +1040,9 @@ function sim_squad_scripted:show()
 		dbg_register_spot(self.current_spot_id, spot)
 		dbg_remove_spots()
 
-	end)
 end
 
 function sim_squad_scripted:get_squad_props()
-	return PROF_EVENT_CLOSURE("get_squad_props", function()
         if dev_debug then
             local t = "["..tostring(self:name()).."]\\n"..
                         "current_target = ["..tostring(self.current_target_id and alife():object(self.current_target_id) and alife():object(self.current_target_id):name()).."]\\n"..
@@ -1126,7 +1054,6 @@ function sim_squad_scripted:get_squad_props()
         else
             return ""
         end
-    end)
 end
 
 
@@ -1141,7 +1068,6 @@ function sim_squad_scripted:get_location()
 end
 
 function sim_squad_scripted:get_current_task()
-	return PROF_EVENT_CLOSURE("get_current_task", function()
         if self.assigned_target_id ~= nil and alife():object(self.assigned_target_id) ~= nil then
             local smart_terrain = alife():object(self.assigned_target_id)
             if smart_terrain.arriving_npc ~= nil and smart_terrain.arriving_npc[self:commander_id()] == nil
@@ -1152,7 +1078,6 @@ function sim_squad_scripted:get_current_task()
             return alife():object(self.assigned_target_id):get_alife_task()
         end
         return self:get_alife_task()
-    end)
 end
 
 -- Достигнут ли я отрядом выбравшим меня как цель.
@@ -1167,7 +1092,6 @@ end
 
 -- Вызывается 1 раз в момент выбора меня как цели.
 function sim_squad_scripted:on_reach_target(squad)
-	return PROF_EVENT_CLOSURE("on_reach_target", function()
         squad:set_location_types()
         local npcCountLast = squad:npc_count() - 1
         for i = 0, npcCountLast, 1 do
@@ -1177,15 +1101,12 @@ function sim_squad_scripted:on_reach_target(squad)
             end
         end
         self.board:assign_squad_to_smart(squad, nil)
-    end)
 end
 
 -- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
 function sim_squad_scripted:get_alife_task()
-	return PROF_EVENT_CLOSURE("get_alife_task", function()
         --printf("Returning alife task for object [%s] game_vertex [%s] level_vertex [%s] position %s", self.id, self.m_game_vertex_id, self.m_level_vertex_id, vec_to_str(self.position))
         return CALifeSmartTerrainTask(self.m_game_vertex_id, self.m_level_vertex_id)
-    end)
 end
 
 local smarts_by_no_assault_zones = {
@@ -1195,7 +1116,6 @@ local smarts_by_no_assault_zones = {
 }
 
 function sim_squad_scripted:sim_available()
-	return PROF_EVENT_CLOSURE("sim_available", function()
         for k,v in pairs (smarts_by_no_assault_zones) do
             local zone = db.zone_by_name[k]
             if zone and zone:inside(self.position) then
@@ -1223,12 +1143,10 @@ function sim_squad_scripted:sim_available()
             end
         end
         return true
-    end)
 end
 
 -- Мой прекондишн.
 function sim_squad_scripted:target_precondition(squad)
-	return PROF_EVENT_CLOSURE("target_precondition", function()
         local squad_params = sim_board.simulation_activities[squad.player_id]
         if squad_params == nil or squad_params.squad == nil then
             return false
@@ -1300,12 +1218,9 @@ function sim_squad_scripted:target_precondition(squad)
     
         return false
         ]]
-    end)
 end
 
 -- Посчитать мой приоритет для отряда.
 function sim_squad_scripted:evaluate_prior(squad)
-	return PROF_EVENT_CLOSURE("evaluate_prior", function()
         return simulation_objects.evaluate_prior(self, squad)
-    end)
 end

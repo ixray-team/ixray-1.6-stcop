@@ -23,16 +23,13 @@ end
 
 --' Зарегистрировать НПС.
 function sound_manager:register_npc(npc_id)
-	return PROF_EVENT_CLOSURE("register_npc", function()
         printf("Register sm npc [%s]:[%s]", self.id, npc_id)
         table.insert(self.npc, {npc_id = npc_id})
         --print_table(self.npc)
-    end)
 end
 
 --' Отрегистрировать нпс
 function sound_manager:unregister_npc(npc_id)
-	return PROF_EVENT_CLOSURE("unregister_npc", function()
         printf("UnRegister sm npc [%s]:[%s]", self.id, npc_id)
     
         if self.last_playing_npc == npc_id and
@@ -58,7 +55,6 @@ function sound_manager:unregister_npc(npc_id)
             table.remove(self.npc, remove_id)
         end
         --print_table(self.npc)
-    end)
 end
 
 --' Установить нпс, как разказчика.
@@ -69,7 +65,6 @@ end
 
 --' Обновление
 function sound_manager:update()
-	return PROF_EVENT_CLOSURE("update", function()
         --printf("Updating sm [%s]", self.id)
         if self.story == nil then
             --printf("no story")
@@ -209,42 +204,33 @@ function sound_manager:update()
     
         self.phrase_timeout = nil
         self.phrase_idle = next_phrase.timeout * 1000
-    end)
 end
 
 --' Рандомный выбор разказчика (вызывается если на момент рассказа рассказчика нет)
 function sound_manager:choose_random_storyteller()
-	return PROF_EVENT_CLOSURE("choose_random_storyteller", function()
         self.storyteller = self.npc[math.random(1,#self.npc)].npc_id
-    end)
 end
 
 --' Закончил ли саунд менеджер играть свою историю
 function sound_manager:is_finished()
-	return PROF_EVENT_CLOSURE("is_finished", function()
         if self.story == nil then
             return true
         end
         return self.story:is_finished()
-    end)
 end
 
 --' Установить какую историю менеджер должен отыграть
 function sound_manager:set_story(story_id)
-	return PROF_EVENT_CLOSURE("set_story", function()
         self.story = CStory(story_id)
         --printf("Set story sm [%s] = [%s]", self.id, story_id)
-    end)
 end
 
 --' Создать новый саунд-менеджер. Нужно передать уникальный айдишник
 function get_sound_manager(id)
-	return PROF_EVENT_CLOSURE("get_sound_manager", function()
         if sound_managers[id] == nil then
             sound_managers[id] = sound_manager(id)
         end
         return sound_managers[id]
-    end)
 end
 
 

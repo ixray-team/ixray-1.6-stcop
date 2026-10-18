@@ -9,7 +9,6 @@
 sound_table = {}
 
 function set_sound_play(npc_id, sound, faction, point)
-    return PROF_EVENT_CLOSURE("set_sound_play", function()
         --printf("SET_SOUND_PLAY. theme[%s] object[%s]", tostring(sound), npc_id)
         if sound == nil then
             return
@@ -44,11 +43,9 @@ function set_sound_play(npc_id, sound, faction, point)
             return sound_table[npc_id].snd_obj
         end
             return sound_table[npc_id] and sound_table[npc_id].snd_obj
-    end)
 end
 
 function update(npc_id)
-		return PROF_EVENT_CLOSURE("update", function() 
             if sound_table[npc_id] then
             --		local t = type(sound_table[npc_id])
                     if not(sound_table[npc_id]:is_playing(npc_id)) then
@@ -62,13 +59,11 @@ function update(npc_id)
                                 sound_table[npc_id] = nil
                     end
                 end
-		end)
 end
 
 looped_sound = {}
 
 function play_sound_looped(npc_id, sound)
-	return PROF_EVENT_CLOSURE("play_sound_looped", function()
         local snd_theme = sound_theme.theme[sound]
         if snd_theme == nil then
             abort("play_sound_looped. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
@@ -86,11 +81,9 @@ function play_sound_looped(npc_id, sound)
             end
             looped_sound[npc_id][sound] = snd_theme
         end
-    end)
 end
 
 function stop_sound_looped(npc_id, sound)
-	return PROF_EVENT_CLOSURE("stop_sound_looped", function()
         if sound then
             --[bug] баг - не проверили looped_sound[npc_id] на nil. Исправлено 11.12.16. Sin!
             if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
@@ -111,12 +104,10 @@ function stop_sound_looped(npc_id, sound)
                         looped_sound[npc_id] = nil
             end
         end
-    end)
 end
 
 -- Добавлена 07.03.17. Sin!
 function is_played_sound_looped(npc_id, sound)
-	return PROF_EVENT_CLOSURE("is_played_sound_looped", function()
         if sound then
             if looped_sound[npc_id] and (type(looped_sound[npc_id][sound]) ~= "string") then
                 if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
@@ -133,22 +124,18 @@ function is_played_sound_looped(npc_id, sound)
             end
         end
         return false
-    end)
 end
 
 function set_volume_sound_looped(npc_id, sound, level)
-	return PROF_EVENT_CLOSURE("set_volume_sound_looped", function()
         if looped_sound[npc_id] then
             if looped_sound[npc_id][sound] and looped_sound[npc_id][sound]:is_playing(npc_id) then
                 printf("looped sound ["..tostring(sound).."] for obj ["..npc_id.."] set volume "..level)
                 looped_sound[npc_id][sound]:set_volume(level)
             end
         end
-    end)
 end
 
 function actor_save(thread)
-	return PROF_EVENT_CLOSURE("actor_save", function()
         set_save_marker(thread, "save", false, "sound_actor_save")
         for k,v in pairs(sound_theme.theme) do
             v:save(thread)
@@ -192,11 +179,9 @@ function actor_save(thread)
             end
         end
         set_save_marker(thread, "save", true, "sound_actor_save")
-    end)
 end
 
 function actor_load(thread)
-	return PROF_EVENT_CLOSURE("actor_load", function()
         set_save_marker(thread, "load", false, "sound_actor_save")
         for k,v in pairs(sound_theme.theme) do
             v:load(thread)
@@ -222,7 +207,6 @@ function actor_load(thread)
             end
         end
         set_save_marker(thread, "load", true, "sound_actor_save")
-    end)
 end
 
 function actor_Serialize(Object)
@@ -314,23 +298,19 @@ function actor_Serialize(Object)
 end
 
 function save_npc(thread, npc_id)
-	return PROF_EVENT_CLOSURE("save_npc", function()
         set_save_marker(thread, "save", false, "sound_npc_save")
         for k,v in pairs(sound_theme.theme) do
             v:save_npc(thread, npc_id)
         end
         set_save_marker(thread, "save", true, "sound_npc_save")
-    end)
 end
 
 function load_npc(thread, npc_id)
-	return PROF_EVENT_CLOSURE("load_npc", function()
         set_save_marker(thread, "load", false, "sound_npc_save")
         for k,v in pairs(sound_theme.theme) do
             v:load_npc(thread, npc_id)
         end
         set_save_marker(thread, "load", true, "sound_npc_save")
-    end)
 end
 function Serialize_npc(Object, npc_id)
 	Object:ForChunk("sound_npc_save", function()
@@ -350,7 +330,6 @@ function start_game_callback()
 end
 
 function stop_all_sounds()
-	return PROF_EVENT_CLOSURE("stop_all_sounds", function()
         for k,v in pairs(sound_table) do
             if(type(v)~="string") then
                 v:stop()
@@ -364,11 +343,9 @@ function stop_all_sounds()
                 end
             end
         end
-    end)
 end
 
 function stop_sounds_by_id(obj_id)
-	return PROF_EVENT_CLOSURE("stop_sounds_by_id", function()
         local sound = sound_table[obj_id]
         if sound and sound.stop then
             sound:stop(obj_id)
@@ -381,20 +358,17 @@ function stop_sounds_by_id(obj_id)
                 end
             end
         end
-    end)
 end
 
 -- FFx0001 restore functions
 local sound_object_by_path = {}
 
 function stop_all_sound_object()
-	return PROF_EVENT_CLOSURE("stop_all_sound_object", function()
         for k,v in pairs(sound_object_by_path) do
             if v:playing() then
                 v:stop()
             end
         end
-    end)
 end
 
 function clear_all_sound_object()
@@ -402,10 +376,8 @@ function clear_all_sound_object()
 end
 
 function get_safe_sound_object(path)
-	return PROF_EVENT_CLOSURE("get_safe_sound_object", function()
         if sound_object_by_path[path] == nil then
             sound_object_by_path[path] = sound_object(path)
         end
         return sound_object_by_path[path]
-    end)
 end

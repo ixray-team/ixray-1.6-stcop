@@ -413,7 +413,6 @@ end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:update(delta)
-	return PROF_EVENT_CLOSURE("update", function() 
 		if string.find(command_line(), "-designer") then
 			return
 		end
@@ -550,11 +549,9 @@ function actor_binder:update(delta)
 		
 		SendScriptCallback("update", delta) -- IX-Ray
 		SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
-	end)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
-	return PROF_EVENT_CLOSURE("save", function()
         if (utils.level_changing()) then
             SendScriptCallback("on_level_changing")
             SendScriptCallback("actor_on_level_changing")
@@ -626,14 +623,12 @@ function actor_binder:save(packet)
         
         SendScriptCallback("save", packet) -- IX-Ray
         SendScriptCallback("actor_on_save", packet) -- IX-Ray
-    end)
 end
 
 
 ----------------------------------------------------------------------------------------------------------------------
 
 function actor_binder:load(reader)
-	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(reader, "load", false, "actor_binder")
         --' Загружаем уровень сложности
         local game_difficulty = reader:r_u8()
@@ -689,7 +684,6 @@ function actor_binder:load(reader)
     
         SendScriptCallback("load", reader) -- IX-Ray
         SendScriptCallback("actor_on_load", reader) -- IX-Ray
-    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -841,7 +835,6 @@ local function spawn_achivement_items(items_table, count, inv_box_story_id)
 end
 
 function actor_binder:check_detective_achievement()
-	return PROF_EVENT_CLOSURE("check_detective_achievement", function()
         if not has_alife_info("detective_achievement_gained") then
             return
         end
@@ -853,11 +846,9 @@ function actor_binder:check_detective_achievement()
             xr_effects.send_tip(db.actor, nil, {"st_detective_news","got_medicine"})
             self.last_detective_achievement_spawn_time = game.get_game_time()
         end
-    end)
 end
 
 function actor_binder:check_mutant_hunter_achievement()
-	return PROF_EVENT_CLOSURE("check_mutant_hunter_achievement", function()
         if not has_alife_info("mutant_hunter_achievement_gained") then
             return
         end
@@ -869,25 +860,21 @@ function actor_binder:check_mutant_hunter_achievement()
             xr_effects.send_tip(db.actor, nil, {"st_mutant_hunter_news","got_ammo"})
             self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
         end
-    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 
 function check_for_weapon_hide_by_zones()
-	return PROF_EVENT_CLOSURE("check_for_weapon_hide_by_zones", function()
         for k,v in pairs(weapon_hide) do
             if v == true then
                 return true
             end
         end
         return false
-    end)
 end
 
 -- Weapon functions
 function hide_weapon(zone_id)
-	return PROF_EVENT_CLOSURE("hide_weapon", function()
         local active_section = nil
         if db.storage[zone_id] then
             active_section = db.storage[zone_id].active_section
@@ -895,11 +882,9 @@ function hide_weapon(zone_id)
         printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
         
         weapon_hide[zone_id] = true
-    end)
 end
 
 function restore_weapon(zone_id)
-	return PROF_EVENT_CLOSURE("restore_weapon", function()
         local active_section = nil
         if db.storage[zone_id] then
             active_section = db.storage[zone_id].active_section
@@ -907,15 +892,4 @@ function restore_weapon(zone_id)
         printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
         
         weapon_hide[zone_id] = false
-    end)
 end
-
-
-
-
-
-
-
-
-
-

@@ -361,7 +361,6 @@ end
 
 -- отпустить npc
 function se_smart_terrain:unregister_npc(obj)
-	return PROF_EVENT_CLOSURE("unregister_npc", function()
         --callstack()
         printf("smart [%s] unregister npc [%s]", self:name(), obj:name())
     
@@ -393,12 +392,10 @@ function se_smart_terrain:unregister_npc(obj)
         end
     
         abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
-    end)
 end
 
 -- Убрать убитого
 function se_smart_terrain:clear_dead(obj)
-	return PROF_EVENT_CLOSURE("clear_dead", function()
         if self.npc_info[obj.id] ~= nil then
             -- Устанавливаем таймер смерти на работе
             self.dead_time[self.npc_info[obj.id].job_id] = game.get_game_time()
@@ -419,17 +416,14 @@ function se_smart_terrain:clear_dead(obj)
         end
     
         abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
-    end)
 end
 
 -- выдать объекту задание.
 function se_smart_terrain:task(obj)
-	return PROF_EVENT_CLOSURE("task", function()
         if self.arriving_npc[obj.id] ~= nil then
             return self.smart_alife_task
         end
         return self.job_data[self.npc_info[obj.id].job_id].alife_task
-    end)
 end
 
 
@@ -438,7 +432,6 @@ end
 --*******************************************************
 -- Загрузка работ (из gulag_general)
 function se_smart_terrain:load_jobs()
-	return PROF_EVENT_CLOSURE("load_jobs", function()
         --printf("LOAD JOBS %s", self:name())
         -- Загружаем иерархию работ
         self.jobs = gulag_general.load_job(self)
@@ -547,13 +540,11 @@ function se_smart_terrain:load_jobs()
             v.level_id       = gg_vertex_level_id(v.game_vertex_id)
             v.position       = v.alife_task:position()
         end
-    end)
 end
 
 -- Апдейт работ смарттеррейна.
 -- Если передается object, то значит нужно найти только для него
 function se_smart_terrain:update_jobs()
-	return PROF_EVENT_CLOSURE("update_jobs", function()
         self:check_alarm()
         --printf("UPDATE JOBS %s", self:name())
     
@@ -577,12 +568,10 @@ function se_smart_terrain:update_jobs()
         for k,v in pairs(self.npc_info) do
             self:select_npc_job(v)
         end
-    end)
 end
 
 -- Выбор работы для персонажа
 function se_smart_terrain:select_npc_job(npc_info)
-	return PROF_EVENT_CLOSURE("select_npc_job", function()
         -- Выбираем работу
         local selected_job_id, selected_job_prior, selected_job_link = job_iterator(self.jobs, npc_info, 0, self)
         if selected_job_id == nil then
@@ -633,12 +622,10 @@ function se_smart_terrain:select_npc_job(npc_info)
                 self:setup_logic(obj_storage.object)
             end
         end
-    end)
 end
 
 -- настроить логику для объекта, который в онлайне.
 function se_smart_terrain:setup_logic(obj)
-	return PROF_EVENT_CLOSURE("setup_logic", function()
         --printf("setup npc logic %s", obj:name())
         --	callstack()
         if not obj then
@@ -662,25 +649,19 @@ function se_smart_terrain:setup_logic(obj)
         end
     
         xr_logic.activate_by_section(obj, ltx, sect, job.prefix_name or self:name(), false)
-    end)
 end
 
 -- получить работу, которую занимает объект
 function se_smart_terrain:getJob(obj_id)
-	return PROF_EVENT_CLOSURE("getJob", function()
         return self.npc_info[obj_id] and self.job_data[self.npc_info[obj_id].job_id]
-    end)
 end
 
 -- Получение персонажа, который занимает указанную работу.
 function se_smart_terrain:idNPCOnJob(job_name)
-	return PROF_EVENT_CLOSURE("idNPCOnJob", function()
         return self.npc_by_job_section[job_name]
-    end)
 end
 
 function se_smart_terrain:switch_to_desired_job(npc)
-	return PROF_EVENT_CLOSURE("switch_to_desired_job", function()
         -- Берем текущую работу НПС
         local npc_id = npc:id()
         local npc_info = self.npc_info[npc_id]
@@ -745,7 +726,6 @@ function se_smart_terrain:switch_to_desired_job(npc)
         self.npc_info[changing_npc_id].job_id = -1
         self.npc_info[changing_npc_id].job_prior = -1
         self:select_npc_job(self.npc_info[changing_npc_id])
-    end)
 end
 
 
@@ -754,7 +734,6 @@ end
 --*******************************************************
 -- сохранение
 function se_smart_terrain:STATE_Write(packet)
-	return PROF_EVENT_CLOSURE("STATE_Write", function()
         cse_alife_smart_zone.STATE_Write(self, packet)
     
         set_save_marker(packet, "save", false, "se_smart_terrain")
@@ -830,12 +809,10 @@ function se_smart_terrain:STATE_Write(packet)
         packet:w_u8(self.population)
     
         set_save_marker(packet, "save", true, "se_smart_terrain")
-    end)
 end
 
 -- восстановление
 function se_smart_terrain:STATE_Read(packet, size)
-	return PROF_EVENT_CLOSURE("STATE_Read", function()
         cse_alife_smart_zone.STATE_Read(self, packet, size)
     
         -- под LevelEditor не пытаться читать из пакета ничего
@@ -920,7 +897,6 @@ function se_smart_terrain:STATE_Read(packet, size)
         self.population = packet:r_u8()
     
         set_save_marker(packet, "load", true, "se_smart_terrain")
-    end)
 end
 
 function se_smart_terrain:STATE_Serialize(Object)
@@ -1109,7 +1085,6 @@ end
 
 -- Инициализация НПС после загрузки.
 function se_smart_terrain:init_npc_after_load()
-	return PROF_EVENT_CLOSURE("init_npc_after_load", function()
         local function find_job(jobs, npc_info)
             for k,v in pairs(jobs) do
                 if v.jobs ~= nil then
@@ -1157,13 +1132,11 @@ function se_smart_terrain:init_npc_after_load()
                 self.npc_info[k] = nil
             end
         end
-    end)
 end
 
 
 --' Возвращает отформатированную строку свойств смарта
 function se_smart_terrain:get_smart_props()
-	return PROF_EVENT_CLOSURE("get_smart_props", function()
         local props = smart_names.get_smart_terrain_name(self)
         if(props==nil) or (_G.dev_debug) then
             props = self:name().."  ["..self.id.."]\\n"..
@@ -1187,14 +1160,12 @@ function se_smart_terrain:get_smart_props()
                 end
         end
         return props
-    end)
 end
 
 
 
 --' Отрисовка смарта на игровом поле
 function se_smart_terrain:show()
-	return PROF_EVENT_CLOSURE("show", function()
         local time = time_global()
         if(self.showtime~=nil) and (self.showtime+200>=time) then
             return
@@ -1233,24 +1204,19 @@ function se_smart_terrain:show()
         end
     
         end
-    end)
 end
 
 --' Обновление информации о смарте на игровом поле
 function se_smart_terrain:refresh()
-	return PROF_EVENT_CLOSURE("refresh", function()
         self:show()
-    end)
 end
 
 --' Убирание отрисовки смарта на игровом поле
 function se_smart_terrain:hide()
-	return PROF_EVENT_CLOSURE("hide", function()
         if self.smrt_showed_spot == nil then
             return
         end
         level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
-    end)
 end
 
 
@@ -1269,7 +1235,6 @@ end
 -- В онлайне вызывается через binder.
 -- Также может вызваться принудительно из xr_effects
 function se_smart_terrain:update()
-	return PROF_EVENT_CLOSURE("update", function()
         cse_alife_smart_zone.update( self )
         if dev_debug then
             self:refresh() -- Не забыть потом заремить
@@ -1337,33 +1302,27 @@ function se_smart_terrain:update()
         simulation_objects.get_sim_obj_registry():update_avaliability(self)
         
         SendScriptCallback("smart_terrain_on_update", self)
-    end)
 end
 
 -- Переведение смарта в напряженное состояние
 function se_smart_terrain:set_alarm()
-	return PROF_EVENT_CLOSURE("set_alarm", function()
         self.smart_alarm_time = game.get_game_time()
-    end)
 end
 
 -- Проверяет. а не прошел ли аларм в смарте
 function se_smart_terrain:check_alarm()
-	return PROF_EVENT_CLOSURE("check_alarm", function()
         if self.smart_alarm_time == nil then
             return
         end
         if game.get_game_time():diffSec(self.smart_alarm_time) > 21600 then -- 6 Игровых часов
             self.smart_alarm_time = nil
         end
-    end)
 end
 
 
 -- установить логику и сообщить смарту, что объект перешёл в онлайн.
 -- вызывается из net_spawn() объектов
 function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
-	return PROF_EVENT_CLOSURE("setup_gulag_and_logic_on_spawn", function()
         local sim = alife()
         local sobject = alife():object(obj:id())
         if sim ~= nil and sobject then
@@ -1385,12 +1344,10 @@ function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
         else
             xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
         end
-    end)
 end
 
 -- Убираем объект из смарта при смерти
 function on_death(obj)
-	return PROF_EVENT_CLOSURE("on_death", function()
         local sim = alife()
         if sim then
             local obj = sim:object(obj.id)
@@ -1401,7 +1358,6 @@ function on_death(obj)
                 sim:object(strn_id):clear_dead(obj)
             end
         end
-    end)
 end
 
 
@@ -1410,14 +1366,11 @@ end
 --***********************************************************************************************
 -- Получить позицию, левел вертекс, гейм вертекс обьекта.
 function se_smart_terrain:get_location()
-	return PROF_EVENT_CLOSURE("get_location", function()
 	    return self.position, self.m_level_vertex_id, self.m_game_vertex_id
-    end)
 end
 
 -- Достигнут ли я отрядом выбравшим меня как цель.
 function se_smart_terrain:am_i_reached(squad)
-	return PROF_EVENT_CLOSURE("am_i_reached", function()
         local squad_pos, squad_lv_id, squad_gv_id = squad:get_location()
         local target_pos, target_lv_id, target_gv_id = self:get_location()
         if gg_vertex_level_id(squad_gv_id) ~= gg_vertex_level_id(target_gv_id) then
@@ -1427,24 +1380,20 @@ function se_smart_terrain:am_i_reached(squad)
             return squad_pos:distance_to_sqr(target_pos) <= 25
         end
         return squad.always_arrived or squad_pos:distance_to_sqr(target_pos) <= self.arrive_dist^2
-    end)
 end
 
 -- Вызывается 1 раз после достижения меня отрядом выбравшим меня как цель.
 function se_smart_terrain:on_after_reach(squad)
-	return PROF_EVENT_CLOSURE("on_after_reach", function()
         local npcCountLast = squad:npc_count() - 1
         for i = 0, npcCountLast, 1 do
             local obj = squad:getSquadMember(i)
             squad.board:setup_squad_and_group(obj)
         end
         squad.current_target_id = self.id
-    end)
 end
 
 -- Вызывается 1 раз в момент выбора меня как цели.
 function se_smart_terrain:on_reach_target(squad)
-    return PROF_EVENT_CLOSURE("on_reach_target", function()
     --	squad.sound_manager:set_storyteller(squad:commander_id())
     --	squad.sound_manager:set_story("squad_begin_attack")
         squad:set_location_types(self:name())
@@ -1457,14 +1406,11 @@ function se_smart_terrain:on_reach_target(squad)
             end
         end
     --	self.board:exit_smart(squad, squad.smart_id)
-    end)
 end
 
 -- Возвращает CALifeSmartTerrainTask на меня, вызывается из smart_terrain:task()
 function se_smart_terrain:get_alife_task()
-	return PROF_EVENT_CLOSURE("get_alife_task", function()
         return self.smart_alife_task
-    end)
 end
 
 function smart_terrain_squad_count(board_smart_squads)
@@ -1481,12 +1427,10 @@ function smart_terrain_squad_count(board_smart_squads)
 end
 
 function se_smart_terrain:sim_available()
-	return PROF_EVENT_CLOSURE("sim_available", function()
         if self.base_on_actor_control ~= nil and self.base_on_actor_control.status ~= smart_terrain_control.NORMAL then
             return false
         end
         return true
-    end)
 end
 
 local is_squad_monster =
@@ -1499,7 +1443,6 @@ local is_squad_monster =
 	["monster_special"] = true
 }
 function surge_stats()
-	return PROF_EVENT_CLOSURE("surge_stats", function()
 	    local sim_obj_registry = simulation_objects.get_sim_obj_registry().objects
 	    local sim_squads = {}
 	    local sim_smarts = {}
@@ -1541,7 +1484,6 @@ function surge_stats()
         for k,v in pairs(surge_stats_levels) do
 	        print_smarts_and_squads_by_level(v)
         end
-    end)
 end
 
 -- Мой прекондишн.
@@ -1623,7 +1565,6 @@ end
 -- Респаун симуляции.
 
 function se_smart_terrain:check_respawn_params(respawn_params)
-	return PROF_EVENT_CLOSURE("check_respawn_params", function()
         --printf("CHECK RESPAWN PARAMS %s", self:name())
         self.respawn_params 	= {}
         self.already_spawned	= {}
@@ -1655,11 +1596,9 @@ function se_smart_terrain:check_respawn_params(respawn_params)
             self.respawn_params[prop_name].num		= spawn_num
             self.already_spawned[prop_name].num		= 0
         end
-    end)
 end
 
 function se_smart_terrain:call_respawn()
-	return PROF_EVENT_CLOSURE("call_respawn", function()
         local available_sects = {}
         printf("respawn called from smart_terrain [%s]", self:name())
         for k,v in pairs(self.respawn_params) do
@@ -1682,11 +1621,9 @@ function se_smart_terrain:call_respawn()
             end
             self.already_spawned[sect_to_spawn].num = self.already_spawned[sect_to_spawn].num + 1
         end
-    end)
 end
 
 function se_smart_terrain:try_respawn()
-	return PROF_EVENT_CLOSURE("try_respawn", function()
         local flags = {
             disabled = false
         }
@@ -1727,5 +1664,4 @@ function se_smart_terrain:try_respawn()
 
         self.last_respawn_update = curr_time
         self:call_respawn()
-    end)
 end
