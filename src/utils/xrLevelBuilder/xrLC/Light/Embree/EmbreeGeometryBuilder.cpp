@@ -159,3 +159,4 @@ void TriangleContainer::ClearFaces()
     faces_v.shrink_to_fit();
     verts_v.shrink_to_fit();
 }
+

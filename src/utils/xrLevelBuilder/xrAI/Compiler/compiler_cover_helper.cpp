@@ -41,7 +41,7 @@ void compute_non_covers()
 	{
 		g_covers->all(nearest);
 		delete_data(nearest);
-		xr_delete(g_covers);			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+		xr_delete(g_covers);			// Удаляем !
 
 		Fbox					aabb;
 		CalculateHeight(aabb);

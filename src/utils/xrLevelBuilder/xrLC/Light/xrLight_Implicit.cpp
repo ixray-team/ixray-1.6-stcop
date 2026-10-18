@@ -8,7 +8,6 @@
 
 #include "../../../../xrCore/Collision/xrCDB.h"
 #include "../../UI/CompilersUI.h"
-#include "LightingBackend.h"
 
 // 2 : Mainthread + UI thread
 xr_atomic_u32 ThreadTaskID_Implication = 0;
@@ -32,7 +31,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
-	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 превышает !
 	cl_globs_cpu->Initialize(defl);
  
 	xr_std_parallel_for([&cl_globs_cpu, &defl]()
@@ -47,7 +46,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		Pixel.Jcount = Jcount;
 		Pixel.JD = Jitter2D;
 		
- 		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ !
+ 		// Размер сетки !
 		u32 TILE_SIZE = 8;
  		while (true)
 		{
@@ -119,6 +118,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	xr_delete(cl_globs_cpu);
 }
 
+extern void RunImplicitGPU(ImplicitDeflector& defl); 
 
 void ImplicitLightingExec()
 {
@@ -159,7 +159,12 @@ void ImplicitLightingExec()
 		Status("Lighting implicit map '%s'...", defl.texture->name);
 
 		// Setup cache
-		GetLightingBackend().LightImplicit(defl);
+#ifdef LCCUDA_BUILD
+		if (gCompilerMode.CUDA)
+			RunImplicitGPU(defl);
+		else
+#endif
+			RunImplicitMultithread(defl);
 
  		defl.faces.clear();
 		defl.faces.shrink_to_fit();

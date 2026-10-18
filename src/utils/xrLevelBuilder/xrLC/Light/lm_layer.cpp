@@ -77,23 +77,23 @@ u32 lm_layer::Area()
 	return (width + 2 * BORDER) * (height + 2 * BORDER);
 }
 
-// Apply borders (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+// Apply borders (Новая релизация)
 bool lm_layer::ApplyBorders(u32 ref)
 {
 	bool bNeedContinue = false;
 
-	// пїЅпїЅпїЅпїЅпїЅ surface пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+	// Копия surface для чтения (читаем старые значения)
   	xr_vector<base_color> newBuffer;
 	newBuffer.resize(surface.size());
  
 	auto src = surface.data();
 	auto dst = newBuffer.data();
 
-	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// Сбор соседей
 	base_color_c out;
 	u32 idx, nidx;
 
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// Проходим по всем пикселям
 	u32 count = 0;
 	for (u32 y = 0; y < height; ++y)
 	{
@@ -102,7 +102,7 @@ bool lm_layer::ApplyBorders(u32 ref)
 			idx = y * width + x;
 			dst[idx] = src[idx];
 
-			// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			// только пустые пиксели
 			if (marker[idx] != 0) continue;
 
  			count = 0; out.clear_color();
@@ -115,7 +115,7 @@ bool lm_layer::ApplyBorders(u32 ref)
 				{
 					int nx = (int)x + dx;
 					if (nx < 0 || nx >= (int)width) continue;
-					if (dx == 0 && dy == 0) continue; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+					if (dx == 0 && dy == 0) continue; // сам пиксель
 
 					nidx = ny * width + nx;
 					if (marker[nidx] > ref)
@@ -133,10 +133,10 @@ bool lm_layer::ApplyBorders(u32 ref)
 				continue;
 			}
 
-			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			// усредняем
 			out.scale(count);
 
-			// пїЅпїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅ base_color
+			// геттер/сеттер base_color
 			dst[idx]._set(out);
 			marker[idx] = u8(std::min(ref, 255u));
 
@@ -332,3 +332,5 @@ bool lm_layer::compress_Zero()
 	}
 	return false;
 }
+
+

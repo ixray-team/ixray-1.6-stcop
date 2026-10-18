@@ -10,7 +10,7 @@
 
 #include "../../../../xrEngine/xrLevel.h"
 #include "alife_space.h"
-#include "../../xrEngine/AI/graph_abstract.h"
+#include "../../../../xrEngine/AI/graph_abstract.h"
 
 class ISaveObject;
 class CLevelGraph;

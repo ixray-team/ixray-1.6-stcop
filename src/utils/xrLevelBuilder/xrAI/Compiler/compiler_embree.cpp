@@ -61,13 +61,13 @@ void CEmbreeRayTracer::LoadGeomBuffer()
   
  	rtcCommitGeometry(Geometry);
 	rtcAttachGeometry(Scene, Geometry);
-	rtcReleaseGeometry(Geometry);		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ ? 
+	rtcReleaseGeometry(Geometry);		// Релизим геометрию зачем нам она ? 
 
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	// Завершаем построение 
 	rtcCommitScene(Scene);
 }
 
-// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+// Без инстансов и разной геометрии !
 
 void CEmbreeRayTracer::Initialize( )
 {
@@ -99,3 +99,4 @@ void CEmbreeRayTracer::Deinitialize()
 
 	static_geom.ClearAll();
 }
+

@@ -97,7 +97,7 @@ void WriteAutoRegFile(const xr_vector<RegisteredLevel>& Levels)
 		Writer->w_string(Line);
 	}
 
-	FS.w_close(Writer);
+	FS.w_close(Writer, true);
 }
 
 xr_vector<xr_string> GameLevelsRegistry::FindUnregistered(const xr_vector<xr_string>& Levels)

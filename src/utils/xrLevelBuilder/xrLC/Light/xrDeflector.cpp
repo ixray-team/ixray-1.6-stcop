@@ -3,12 +3,14 @@
 #include "../Build/xrLC_GlobalData.h"
 #include "math.h"
 #include "../Mesh/xrFace.h"
-#include "LightingBackend.h"
  
 void UpdateCurrentPhase (LPCSTR text)
 {
+	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
 	string128 tmp_phase;
-	sprintf(tmp_phase, "LIGHT: %s (*%s*)", text, GetLightingBackend().GetName());
+	sprintf(tmp_phase, "LIGHT: %s (*%s*)", text, Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
 	Phase(tmp_phase);
 }
 

@@ -16,3 +16,4 @@ struct XRLC_LIGHT_API UVtri : public _TCF
 	void computeAABB(const Fbox2& bounds);
 	bool overlapsCell(u32 cx, u32 cy) const;
 };
+

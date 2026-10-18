@@ -127,7 +127,7 @@ void	xrCover	(bool pure_covers)
 		g_cover_nodes.assign(g_nodes.size(),true);
 
 	// Start threads, wait, continue --- perform all the work 
-	// se7kills : пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	// se7kills : Переработал 
 	static xr_atomic_u32 tAtomicIndex = 0;
 	tAtomicIndex = 0;
 	thread_local CDB::COLLIDER		DB;

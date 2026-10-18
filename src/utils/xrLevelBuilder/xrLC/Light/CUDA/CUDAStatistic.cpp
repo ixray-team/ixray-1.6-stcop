@@ -7,27 +7,6 @@
 #include <nvml.h>
 #pragma comment(lib, "nvml.lib")
  
-// nvcuda.dll and nvml.dll are delay-loaded: check them before the first CUDA/NVML call
-bool IsCudaAvailable()
-{
-	static const bool Available = []
-	{
-		HMODULE CudaDriver = LoadLibraryA("nvcuda.dll");
-		HMODULE Nvml = LoadLibraryA("nvml.dll");
-		const bool Result = CudaDriver != nullptr && Nvml != nullptr;
-
-		if (!Result)
-		{
-			Msg("! CUDA backend disabled: NVIDIA driver libraries not found");
-		}
-
-		// Keep loaded modules: the delay-load helper reuses them
-		return Result;
-	}();
-
-	return Available;
-}
-
 static bool isStatisticInitilized = false;
 static nvmlDevice_t device = nullptr;
 
@@ -61,11 +40,6 @@ xr_vector<float> get_mem_usage()
 
 void CudaStatisticThread()
 {
-	if (!IsCudaAvailable())
-	{
-		return;
-	}
-
 	nvmlReturn_t result = nvmlInit();
 	if (!isStatisticInitilized)
 	{

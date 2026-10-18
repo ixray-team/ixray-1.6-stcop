@@ -11,7 +11,7 @@
 #include "luabind/luabind_memory.h"
 #include "Save/MemoryBuffer.h"
 #include "Save/SaveManager.h"
-#include "../xrAI/factory_api.h"
+#include "../xrLevelBuilder/xrAI/factory_api.h"
 
 // SWIContainer g_SWI, x_SWI;
 // VBContainer g_VB, x_VB;

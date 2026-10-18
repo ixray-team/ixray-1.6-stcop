@@ -16,3 +16,4 @@ b_params	&g_params()
 #ifdef _MANAGED
 #pragma managed(pop)
 #endif
+

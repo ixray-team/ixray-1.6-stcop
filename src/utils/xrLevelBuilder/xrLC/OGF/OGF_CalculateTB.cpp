@@ -11,7 +11,7 @@ void OGF::CalculateTB()
 {
 	if (!gCompilerMode.LC_OGF_TANGENT)  return;
  
-	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
+	// Лучше так чем мусор в потоке !
 	xr_vector<MeshMender::Vertex>	mender_in_out_verts;
 	xr_vector<unsigned int>			mender_in_out_indices;
 	xr_vector<unsigned int>			mender_mapping_out_to_in_vert;
@@ -69,3 +69,4 @@ void OGF::CalculateTB()
 	mender_in_out_indices			.clear( );
 	mender_mapping_out_to_in_vert	.clear( );
 }
+

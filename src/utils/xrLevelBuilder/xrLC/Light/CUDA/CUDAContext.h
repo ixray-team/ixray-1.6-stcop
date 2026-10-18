@@ -40,19 +40,19 @@ extern size_t GetCudaMemoryFree();
 class OptixContext
 {
 private:
-    CUdevice cuDev; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
-    CUcontext cuCtx;// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+    CUdevice cuDev; // Для удаления 
+    CUcontext cuCtx;// Для удаления 
 
     OptixDeviceContext optixContext = nullptr;
     OptixPipeline m_pipeline = nullptr;
 
-    //ProgramGroups пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //ProgramGroups для последующей выгрузки
 	OptixProgramGroup raygen_prog_group = nullptr;
 	OptixProgramGroup missGroup = nullptr;
 	OptixProgramGroup hit_group = nullptr;
     //
 
-    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //для последущей выгрузки
     OptixModule module = nullptr;
 
     OptixShaderBindingTable m_sbt = {};
@@ -84,7 +84,7 @@ public:
     OptixPipeline GetPipeline() const { return m_pipeline; }
     OptixShaderBindingTable& GetSBT() { return m_sbt; }
 
-    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CUDA stream
+    // Создание CUDA stream
     static CUstream CreateCudaStream()
     {
         CUstream stream;
@@ -92,7 +92,7 @@ public:
         return stream;
     }
 
-    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CUDA stream
+    // Уничтожение CUDA stream
     static void DestroyCudaStream(CUstream stream)
     {
         if (stream)
