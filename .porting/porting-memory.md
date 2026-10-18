@@ -1025,3 +1025,117 @@ main_menu off
 СЛЕДУЮЩИЙ БАГ (его слова): «поломана текстура террейна» — разбирать (терраин-текстуры/details/BC-форматы).
 При дампе статистики рендера: счётчики ic/o — сбрасываются оверлеем rs_stats, доверять можно только
 если читать сразу после кадра. lldb-пробник: один прицеп за раз, длинный таймаут, VERIFY отсоединения.
+
+### 18.10 15:10 — мыльный террейн: первый круг, гипотезы отсеяны
+
+ОТСЕЯНО: g_TextureTargetResolution=8192 (норм), texture_lod=0 (user.ltx:716), загрузчик dx11Texture
+(LoadFromDDSMemory+CreateTextureEx, мипы полные, Reduce только при img_loaded_lod>0), текстуры террейна
+загружаются без ошибок (terrain_zaton.dds[4194432], mask[4194432]), detail_grnd_*.dds загрузились →
+textures_descr читаются (каталога gamedata/textures_descr/ в run-dir НЕТ, но описания приходят - видимо из архива).
+
+ОСТАВШИЕСЯ ГИПОТЕЗЫ (проверять в таком порядке):
+1. Шейдерный рефакторинг develop (847 файлов vs old-base): потерян UV-канал/деталь-слой террейна →
+   базовая текстура растянута = мыло. Смотреть terrain-ветку в gamedata/shaders/shared/common.hlsli
+   и материал террейна; сравнить dt_params (Blender_Recorder_StandartBinding.cpp:790) с HLSL-именем.
+2. Сэмплеры: ps_r__tf_Anisotropic (CSCompiler.cpp:65) vs dx10StateUtils.cpp:209/486 (MaxAnisotropy=1).
+3. Спросить Степана: на старой базе террейн был чёткий? мыло вблизи или только вдали? (вайб: вблизи тоже - UV).
+Коммиты дня: 838e7d76c (только небо), 665c4927c (батч). Грязно и ПРАВИЛЬНО: device.cpp (автостарт),
+Application.cpp (silent). engine exit code 133 при выходе через lldb quit - норма, не краш.
+
+### 18.10 15:15 — мыльный террейн: важные факты (продолжение)
+
+- Степан: нечёткий террейн был ВСЕГДА (и на старой базе тоже) - это НЕ регрессия develop, фундаментальная
+  вещь порта. Мыло ВБЛИЗИ ТОЖЕ → не анизотропка/мипы, а UV/деталь-слой/неправильная текстура.
+- Загадка: движок в логе видит «count of .thm files=2748», физически в run-macos/gamedata/textures
+  только 44 .thm (на 346 .dds). Архивов *.db в run-macos НЕТ. $game_data$ в fsgame.ltx указывает
+  только на run-dir. Откуда 2748 - выяснить (может file_list рекурсивный по другому корню?).
+- detail_grnd_*.dds загружаются → детали запрашиваются → descr-данные ДО где-то есть (не textures_descr -
+  той папки нет вовсе, на develop детали читаются из .thm: TextureDescrManager::LoadTHM/LoadLTX
+  (textures/textures.ltx - НЕТ в run-dir!)).
+- textures.ltx в gamedata/textures ОТСУТСТВУЕТ - проверить, нужен ли (LoadLTX тихо пропускает).
+- След. шаги: (1) разгадать 2748-vs-44; (2) проверить dt_params: C++ ставит (Blender_Recorder_
+  StandartBinding.cpp:790 r_Constant("dt_params", detail_scaler)) - есть ли это имя в HLSL рефакторa
+  (common.hlsli) и потребляет ли его terrain-ветка; (3) UV-каналы террейна в vkd3d-шейдерах.
+- Для сравнения: попросить Степана скрин террейна крупно (или словить свой).
+
+### 18.10 15:30 — архивы подключены, остался file_list
+
+- НАЙДЕНА полная установка игры: ~/Library/Application Support/GSC Game World/S.T.A.L.K.E.R. - Call of Pripyat/
+  (уровни/, ресурсы/ с db0-4, патчи/, gamedata - оверлей). OpenXRay/game - её копия.
+- Раскладка_run-macos теперь как в оригинале: levels/{levels.db0,db1}, resources/{configs.db,resources.db0-4},
+  patches/xpatch_02.db в КОРНЕ run-macos (fsgame.ltx строки $arch_dir_levels$/resources/patches уже были,
+  мой ранний grep их не поймал - искал не те имена). gamedata - СИМЛИНК на ixray-src/gamedata (аккуратнее
+  с find/du - нужны -L). Из исходников убраны случайно скопированные туда db (через mv).
+- ДЕБАГ-ПЕЧАТИ в LocatorAPI.cpp (TEMPORARY, не коммитить): [ARCH] ProcessArchive, [FS] Recurse,
+  [FS] db candidate (последняя - до проверки расширения, мусорит). С它们 понять: archives ATTACH (31 шт,
+  включая levels.db0/db1). НО LoadTHM("$level$") по-прежнему 0 (2748 - это _game_textures_, загадка 44-vs-
+  2748 остаётся). ВЫВОД: FS.file_list не видит содержимое архивов под $level$ (gamedata/levels) - либо
+  пути регистрации архивных файлов без префикса levels/, либо file_list не ищет в архивах.
+- ВАЖНО: лог движка открывается ПОСЛЕ FS-init - ранние печати только в stdout (запускать с
+  > /tmp/xr-xxx.log и смотреть ТУДА).
+- Незакрыто: террейн мыльный всегда (не регрессия develop). После починки file_list - проверить террейн.
+
+### 18.10 15:40 — ГЛАВНАЯ НАХОДКА: скан-кэш Recurse + чеклист продолжения
+
+- **Recurse (LocatorAPI.cpp:608) использует ОБЩИЙ GetScanCacheBuffer()**: oldSize/newSize + рекурсивный
+  вызов Recurse(N) ВНУТРИ цикла по этому же буферу (строка 671) → вложенные вызовы дописывают в буфер,
+  внешний цикл обрабатывает ЧУЖИЕ записи → файлы других каталогов регистрируются не там. Это объясняет
+  «2748 thm» при 44 физических. ФИКС (след. сессия): локальный вектор на вызов (как в апстриме xray-16 -
+  у них рекурсия через собственный список, проверить их LocatorAPI::Recurse ~630) + прогнать.
+- file_list (1151) требует СУЩЕСТВУЮЩУЮ запись каталога в m_files (find-or-0) - Register НЕ создаёт
+  родительские папки. gamedata/levels/ создан (mkdir) - нужен для $level$.
+- -auto_load_arch ВОССТАНОВЛЕН по апстриму (strstr по Core.Params; наш ParamsData никто не выставлял)
+  LocatorAPI.cpp ~477 - КОММИТНУТЬ (реальный фикс, авторство OpenXRay). Сейчас грязный вместе с
+  дебаг-принтами [ARCH]/[FS] - принты СНЕСТЬ перед коммитом.
+- Архивы подключаются (31 ProcessArchive). Полная установка игры: ~/Library/Application Support/GSC
+  Game World/S.T.A.L.K.E.R. - Call of Pripyat/. Раскладка run-macos: levels/, resources/, patches/ в корне.
+- gamedata - симлинк на ixray-src/gamedata; find/du требуют -L.
+- Прогон: IXR_AUTOSTART + -auto_load_arch; счётчики thm всё ещё 2748/0 - после фикса буфера должны стать
+  честными; затем проверить террейн (гипотеза: без thm-описаний деталь-слой террейна выключен = мыло).
+- Загрузчик текстур, лимиты, mip - проверены, ОК. Windows = эталон (резонный вопрос Степана).
+
+### 18.10 15:50 — КЛЮЧЕВОЕ ОТКРЫТИЕ по file_list (след. сессия начинает отсюда)
+
+- Дебаг [ARCH] register показал: файлы архивов регистрируются в m_files КАК ОТНОСИТЕЛЬНЫЕ пути
+  («gamedata/textures/outro/5a_bloodsucker_live.ogm»), а физические файлы - АБСОЛЮТНЫМИ
+  («/users/.../run-macos/gamedata/...»). file_list делает find(абс.путь каталога) + strncmp-префикс -
+  архивные записи под абсолютный префикс НЕ попадают → LoadTHM($level$)=0, детали террейна не живут.
+- ФИКС-КАНДИДАТЫ (в порядке предпочтения): (1) в LoadArchive строить full АБСОЛЮТНЫМ
+  (fs_entry_point = абсолютный $fs_root$ m_Path - сейчас там './' или относительное) - тогда все записи
+  единообразны; (2) научить file_list искать оба варианта. Проверить, как апстрим xray-16 строит
+  fs_entry_point (у них working dir = game root, относительное работает единообразно).
+- (архив levels.db0: header auto_load=true, entry_point=$fs_root$\gamedata\; 2748 thm - записи ИЗ
+  архивов resources.db*, физически в gamedata/textures только 44 thm/346 dds - так и было задумано:
+  полный контент в архивах, loose - оверлей).
+- Папка gamedata/levels/ в run-dir должна СУЩЕСТВОВАТЬ (создана).
+- Все дебаг-принты на месте ([ARCH]/[FS]/[THM]) - перед коммитом снять; -auto_load_arch фикс
+  (strstr по Core.Params, авторство OpenXRay) - КОММИТИТЬ.
+- ПРОГОН ДЛЯ ПРОВЕРКИ: после фикса путей - счётчик LoadTHM($level$) должен стать >0; затем террейн.
+
+### 15:55 — последняя попытка дня (не сработала, контекст исчерпан)
+- Абсолютизация fs_entry_point через Core.ApplicationPath не сработала (он пуст/относителен при таком
+  запуске); замена на std::filesystem::current_path() СКОМПИЛИРОВАЛАСЬ, но register всё ещё относительный
+  «gamedata/...» - значит ранние attaches идут ДРУГИМ путём (первый ProcessArchive в stdout line 36-42,
+  до моего патча?), либо ветка не та. След. шаг: переносить дебаг-принт РЯДОВОГО register (уже стоит,
+  6 шт) + проверить, какой LoadArchive/ProcessArchive вызывается ранним (AddonsManager? rescan?), и
+  абсолютизировать ИМЕННО его. Либо: file_list/find - научить сравнивать оба префикса.
+- Прогон-проверка после любого фикса: счётчик LoadTHM($level$) > 0 → затем террейн (гипотеза деталей).
+
+### 18.10 17:40 — ТЕРРЕЙН ПОЧИНЕН И ЗАКОММИЧЕН (d407acbea) + вердикт по инфопоршням
+
+- ТЕРРЕЙН: подтвердил Степан визуально. Фикс = нормализация ключей деталей ('\ ' vs '/') при
+  регистрации и во всех лукапах CTextureDescrMngr (GetDetailTexture/GetBumpName/UseSteepParallax/
+  UsePBRTexures + LoadTHM/LoadLTX). ПОМНИТЬ: shared_str бывает NULL - в normalize_tex_key стоит guard
+  (без него SIGSEGV в strlen - уже поймали).
+- ИНФОПОРШНИ (красные строки) - ВЕРДИКТ: НЕ баг порта, а данные IX-Ray. Цепочка: file list из
+  system.ltx [info_portions] files=; info_zaton.xml грузится и его порции регистрируются (в дампе
+  консоли есть [66]=[zat_b14_recon_place] и др.); конкретной порции zat_a1_game_start_saved в
+  gameplay-xml НЕТ (grep=0), на неё ссылается configs/scripts/zaton/zat_b101_logic.ltx.
+  На Windows IX-Ray с теми же данными будет та же красная строка. Лечится только контент-патчем
+  gamedata (добавить порцию), не движком.
+- Архивы (levels.db0/db1, resources.db0-4, configs.db, xpatch) подключаются сами - в шапках
+  auto_load=true, флаг -auto_load_arch НЕ нужен (восстановленный код прав). Держать раскладку:
+  run-macos/{levels,resources,patches}/ + gamedata/levels/ (пустой каталог нужен для $level$).
+- Дебаг-принты вычищены откатом; рабочие правки сейчас ТОЛЬКО TextureDescrManager (закоммичен).
+- Харнесс: не забывать PID-привязку quit-подоболочек (sleep 330; lldb -p $EPID), иначе старые
+  обёртки убивают новые движки (источник фантомных вылетов этим вечером).

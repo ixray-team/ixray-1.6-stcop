@@ -116,7 +116,13 @@ int CApplication::BeginPlay()
 	}
 
 	splash::SetProgressStatus(5, "Initializing debugger");
+#if defined(IXR_MACOS)
+	// TEMPORARY (macOS port, unattended test runs): fatal errors go to the engine log
+	// instead of a modal box when IXR_SILENT is set. Do not commit.
+	Debug._initialize(getenv("IXR_SILENT") != nullptr);
+#else
 	Debug._initialize(false);
+#endif
 	
 	splash::SetProgressStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
