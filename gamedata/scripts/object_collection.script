@@ -1,10 +1,5 @@
 local function empty(container)
-	return PROF_EVENT_CLOSURE("empty", function()
-        for i,j in pairs(container) do
-            return false
-        end	
-        return true
-    end)
+	return next(container) == nil
 end
 
 class "object_collection"

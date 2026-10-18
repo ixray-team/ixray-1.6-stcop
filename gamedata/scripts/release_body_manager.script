@@ -11,17 +11,14 @@ function override_idle_after_death(val)
 end
 
 local function add_to_release_table(release_tbl, object_id)
-	return PROF_EVENT_CLOSURE("add_to_release_table", function()
         printf("add to release_objects_table ["..object_id.."]")
         local obj_params = {}
         obj_params.id = object_id
         obj_params.death_time = time_global()
         table.insert(release_tbl, obj_params)
-    end)
 end
 
 local function find_nearest_obj_to_release(release_tbl)
-	return PROF_EVENT_CLOSURE("find_nearest_obj_to_release", function()
         local max_distanse = 4900
         local pos_in_table = nil
         local actor = db.actor
@@ -41,7 +38,6 @@ local function find_nearest_obj_to_release(release_tbl)
             end
         end
         return pos_in_table
-    end)
 end
 
 local RB_manager = nil
