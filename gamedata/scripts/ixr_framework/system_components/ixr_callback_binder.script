@@ -26,20 +26,17 @@ function manage_callbacks(script_name, all_callbacks, _ref, is_set, use_callback
 		if (callback[callback_name]) then 
 			if _ref[callable_function] then 
 				if is_set then 
+					local zone_name = "engine call binder:[" .. tostring(script_name) .. "] callback:[" .. tostring(callback_name) .. "]"
 					local wrapper = function(...)
-                        return _proxy_call(callback_name, script_name, _ref, callable_function, ...)
+                        return _proxy_call(zone_name, _ref, callable_function, ...)
                     end
 					local msg = "binder ["..script_name.."] register callback:[" .. tostring(callback_name).."]"
-					PROF_EVENT_CLOSURE("+ " .. msg, function()
-						_ref.object:set_callback(callback[callback_name], wrapper, _ref)
-					end)
+					_ref.object:set_callback(callback[callback_name], wrapper, _ref)
 					
 					custom_log(msg, is_set, use_callback_logs, script_name, obj_id, obj_section)
 				else
 					local msg = "binder ["..script_name.."] unregister callback:[" .. tostring(callback_name).."]"
-					PROF_EVENT_CLOSURE("- ".. msg, function()
-						_ref.object:set_callback(callback[callback_name], nil)
-					end)
+					_ref.object:set_callback(callback[callback_name], nil)
 					
 					custom_log(msg, is_set, use_callback_logs, script_name, obj_id, obj_section)
 				end
@@ -65,9 +62,6 @@ function custom_log(text, is_set, use_callback_logs, script_name, obj_id, obj_se
 	end
 end
 
-function _proxy_call(callback_name, script_name, _ref, callable_function, ...)
-	local args = {...}
-	return PROF_EVENT_CLOSURE("engine call binder:[" .. tostring(script_name) .. "] callback:[" .. tostring(callback_name) .. "]", function()
-		return _ref[callable_function](unpack(args))
-	end)
+function _proxy_call(zone_name, _ref, callable_function, ...)
+	return PROF_EVENT_CALL(zone_name, _ref[callable_function], ...)
 end

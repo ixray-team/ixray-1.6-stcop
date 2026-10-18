@@ -298,7 +298,6 @@ function sim_squad_scripted:assigned_target_avaliable()
 end
 
 local function can_help_actor(squad)
-	return PROF_EVENT_CLOSURE("can_help_actor", function()
         if empty(xr_combat_ignore.fighting_with_actor_npcs) then
             return false
         end
@@ -313,11 +312,9 @@ local function can_help_actor(squad)
             return true
         end
         return false  
-    end)
 end
 
 local function get_help_target_id(squad)
-	return PROF_EVENT_CLOSURE("get_help_target_id", function()
         if not can_help_actor(squad) then
             return nil
         end
@@ -332,7 +329,6 @@ local function get_help_target_id(squad)
             end
         end
         return nil
-    end)
 end
 
 
@@ -673,7 +669,6 @@ function sim_squad_scripted:set_squad_sympathy(sympathy)
 end
 
 local function set_relation(npc1, npc2, new_relation)
-	return PROF_EVENT_CLOSURE("set_relation", function()
         local goodwill = 0
         if(new_relation=="enemy") then
             goodwill = -1000
@@ -685,7 +680,6 @@ local function set_relation(npc1, npc2, new_relation)
         else
             abort("Npc not set in goodwill function!!!")
         end
-    end)
 end
 
 function sim_squad_scripted:set_squad_relation(relation)
@@ -705,7 +699,6 @@ function sim_squad_scripted:set_squad_relation(relation)
 end
 
 local function reset_animation(npc)
-	return PROF_EVENT_CLOSURE("reset_animation", function()
         local state_mgr = db.storage[npc:id()].state_mgr
         if state_mgr == nil then
             return
@@ -733,7 +726,6 @@ local function reset_animation(npc)
     
         npc:set_body_state(move.standing)
         npc:set_mental_state(anim.free)
-    end)
 end
 
 function sim_squad_scripted:set_squad_position(position)
