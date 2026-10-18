@@ -49,18 +49,19 @@ FS_Path::~FS_Path	()
 	xr_free	(m_Add);
 	xr_free	(m_DefExt);
 	xr_free	(m_FilterCaption);
+	for (LPSTR Retired : m_Retired)
+	{
+		xr_free(Retired);
+	}
 }
 
 void FS_Path::_set(const char* add)
 {
-	// m_Add
 	R_ASSERT		(add);
-	xr_free			(m_Add);
-	m_Add			= xr_strlwr(xr_strdup(add));
+	LPSTR			NewAdd = xr_strlwr(xr_strdup(add));
 
-	// m_Path
 	string_path		temp;
-	xr_strconcat(temp,m_Root,m_Add);
+	xr_strconcat(temp,m_Root,NewAdd);
 	if (temp[xr_strlen(temp)-1]!= Platform::kPreferredSeparator[0])
 	{
 		xr_strcat(temp, Platform::kPreferredSeparator);
@@ -70,8 +71,15 @@ void FS_Path::_set(const char* add)
 	xr_strcpy(temp, Platform::ValidPath(temp));
 #endif
 
-	xr_free			(m_Path);
-	m_Path			= xr_strlwr(xr_strdup(temp));
+	LPSTR			NewPath = xr_strlwr(xr_strdup(temp));
+
+	std::atomic_thread_fence(std::memory_order_release);
+	if (m_Add != nullptr)
+		m_Retired.push_back(m_Add);
+	if (m_Path != nullptr)
+		m_Retired.push_back(m_Path);
+	m_Add			= NewAdd;
+	m_Path			= NewPath;
 }
 
 void FS_Path::_set_root(const char* root)
@@ -140,4 +148,3 @@ bool XRCORE_API PatternMatch(const char* s, const char* mask)
 		mask=mp; s=cp++;
 	}
 }
-
