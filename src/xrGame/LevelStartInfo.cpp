@@ -124,7 +124,8 @@ bool LevelStartInfo::Find(const IGame_Persistent::params& Params, shared_str& Le
 		return false;
 	}
 
-	if (0 == xr_strcmp(Params.m_new_or_load, "load"))
+	const bool IsTransition = !Params.m_new_or_load[0] && CSavedGameWrapper::valid_saved_game(Params.m_game_or_spawn);
+	if (0 == xr_strcmp(Params.m_new_or_load, "load") || IsTransition)
 	{
 		if (!CSavedGameWrapper::valid_saved_game(Params.m_game_or_spawn))
 		{

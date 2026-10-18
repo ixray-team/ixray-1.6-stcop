@@ -65,6 +65,8 @@ private:
 	xrCriticalSection PendingStageTitleLock;
 	xr_string PendingStageTitle;
 	xr_string PendingLevelLogo;
+	xr_string PendingTip[3];
+	bool IsTipPending = false;
 };
 
 extern ENGINE_API CEngineApp* pApp;
