@@ -118,6 +118,7 @@ void CPhysicItem::CreatePhysicsShell()
 
 bool CPhysicItem::net_Spawn			(CSE_Abstract* DC)
 {
+	PROF_EVENT("CPhysicItem::net_Spawn");
 	if (!inherited::net_Spawn(DC))
 		return (false);
 	IKinematics* pK = PKinematics(Visual());

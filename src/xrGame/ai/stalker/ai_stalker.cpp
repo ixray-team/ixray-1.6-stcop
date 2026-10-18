@@ -633,6 +633,7 @@ void CAI_Stalker::LookAtActor(CBoneInstance* HeadBone, float Weight)
 
 bool CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 {
+	PROF_EVENT("CAI_Stalker::net_Spawn");
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
 	CSE_ALifeHumanStalker			*tpHuman = smart_cast<CSE_ALifeHumanStalker*>(e);
 	R_ASSERT						(tpHuman);

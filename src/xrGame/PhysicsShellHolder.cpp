@@ -96,6 +96,7 @@ enum EEnableState
 static u8 st_enable_state=(u8)stNotDefitnite;
 bool CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 {
+	PROF_EVENT("CPhysicsShellHolder::net_Spawn");
 	st_enable_state=(u8)stNotDefitnite;
 	b_sheduled									=	true;
 	bool ret=inherited::net_Spawn				(DC);//load

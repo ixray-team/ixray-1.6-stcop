@@ -349,6 +349,7 @@ void CBaseMonster::reinit()
 
 bool CBaseMonster::net_Spawn (CSE_Abstract* DC) 
 {
+	PROF_EVENT("CBaseMonster::net_Spawn");
 	if (!inherited::net_Spawn(DC))
 		return(false);
 

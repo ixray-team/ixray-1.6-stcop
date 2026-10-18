@@ -611,6 +611,7 @@ const item_attachment* CInventoryItem::GetRealattachment(shared_str child_sect_n
 /////////// network ///////////////////////////////
 bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 {
+	PROF_EVENT("CInventoryItem::net_Spawn");
 	VERIFY(!m_pInventory);
 
 	m_flags.set(FInInterpolation, false);

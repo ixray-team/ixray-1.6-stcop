@@ -1095,6 +1095,7 @@ void CWeapon::LoadBulletPattern(const char* section, const char* pattern_name, S
 
 bool CWeapon::net_Spawn(CSE_Abstract* DC)
 {
+	PROF_EVENT("CWeapon::net_Spawn");
 	bool bResult = inherited::net_Spawn(DC);
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeItemWeapon* E = e->cast_item_weapon();

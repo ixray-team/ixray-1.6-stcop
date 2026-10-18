@@ -147,6 +147,7 @@ void CEntity::Load		(const char* section)
 
 bool CEntity::net_Spawn		(CSE_Abstract* DC)
 {
+	PROF_EVENT("CEntity::net_Spawn");
 	m_level_death_time		= 0;
 	m_game_death_time		= 0;
 	m_killer_id				= ALife::INVALID_OBJECT_ID;

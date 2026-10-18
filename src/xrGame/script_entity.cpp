@@ -544,6 +544,7 @@ const char* CScriptEntity::GetPatrolPathName()
 
 bool CScriptEntity::net_Spawn		(CSE_Abstract* DC)
 {
+	PROF_EVENT("CScriptEntity::net_Spawn");
 	m_initialized					= true;
 	object().setVisible				(true);
 	object().setEnabled				(true);

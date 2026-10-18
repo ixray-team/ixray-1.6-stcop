@@ -238,6 +238,7 @@ void CObject::Load				(const char* section )
 
 bool CObject::net_Spawn			(CSE_Abstract* data)
 {
+	PROF_EVENT("CObject::net_Spawn");
 	PositionStack.clear			();
 
 	VERIFY(_valid(renderable.xform));
