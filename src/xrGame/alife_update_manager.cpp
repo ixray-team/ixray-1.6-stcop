@@ -302,7 +302,10 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 		CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
 		CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 		for ( ; I != E; ++I)
+		{
 			(*I).second->on_register		();
+			pApp->LoadPulse					();
+		}
 	}
 
 	Msg									("* New game is successfully created!");
