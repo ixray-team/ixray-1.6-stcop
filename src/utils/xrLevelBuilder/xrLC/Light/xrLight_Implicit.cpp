@@ -8,6 +8,7 @@
 
 #include "../../../../xrCore/Collision/xrCDB.h"
 #include "../../UI/CompilersUI.h"
+#include "LightingBackend.h"
 
 // 2 : Mainthread + UI thread
 xr_atomic_u32 ThreadTaskID_Implication = 0;
@@ -118,7 +119,6 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	xr_delete(cl_globs_cpu);
 }
 
-extern void RunImplicitGPU(ImplicitDeflector& defl); 
 
 void ImplicitLightingExec()
 {
@@ -159,12 +159,7 @@ void ImplicitLightingExec()
 		Status("Lighting implicit map '%s'...", defl.texture->name);
 
 		// Setup cache
-#ifdef LCCUDA_BUILD
-		if (gCompilerMode.CUDA)
-			RunImplicitGPU(defl);
-		else
-#endif
-			RunImplicitMultithread(defl);
+		GetLightingBackend().LightImplicit(defl);
 
  		defl.faces.clear();
 		defl.faces.shrink_to_fit();

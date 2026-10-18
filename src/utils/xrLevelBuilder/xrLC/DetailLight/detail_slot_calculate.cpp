@@ -11,6 +11,7 @@
 #include "../../../../xrCore/Collision/cl_intersect.h"
 #include "global_calculation_data.h"
 #include "../Light/xrDeflector.h"
+#include "../Light/LightingBackend.h"
 
 //-----------------------------------------------------------------------------------------------------------------
 const int	LIGHT_Count				=	7;
@@ -50,7 +51,6 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	Selected.select		( gl_data.g_lights, S.P, S.R );
  
 	// lighting itself
-	base_color_c	amount;
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
 
@@ -101,103 +101,23 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 			}
 			if (P.y<BB.min.y) continue;
 			
- 			if (gCompilerMode.Embree)
-			{
-				// light point
-				DetailsTask data;
-				data.SetDataRays(_x, _z, P, t_n, S.R, S.P);
-				rayTasks.push_back(data);
-
-			}
-#ifdef LCCUDA_BUILD
-			else if (gCompilerMode.CUDA)
-			{
-				size_t idx= GPUTaskinSystem.MakeKey(_x, _z);
- 				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
-			}
-#endif
+			// light point
+			DetailsTask data;
+			data.SetDataRays(_x, _z, P, t_n, S.R, S.P);
+			rayTasks.push_back(data);
 
 			count			+= 1;
 		}
 	}
 
 
-	if (gCompilerMode.Embree)
-	{
-		LightPoint_Details(rayTasks, Selected, 0);			// Идеально пакетные пашут ибо 225 из одной позиции запросов !
- 		for (auto& task : rayTasks)
- 			amount.add( task.C );
-		rayTasks.clear();
-
-		// calculation of luminocity (225 samples на 1 травинку) может и много :)
-		amount.scale(count);
-		amount.mul(.5f);
-
-		// Пишется результат в (level.details) !
-		DS.c_dir = DS.w_qclr(amount.sun, 15);
-		DS.c_hemi = DS.w_qclr(amount.hemi, 15);
-		DS.c_r = DS.w_qclr(amount.rgb.x, 15);
-		DS.c_g = DS.w_qclr(amount.rgb.y, 15);
-		DS.c_b = DS.w_qclr(amount.rgb.z, 15);
-	}
+	GetLightingBackend().LightDetailSlot(DS, rayTasks, Selected, count);
+	rayTasks.clear();
 
  	
 	////////////////////////////////////////////////////////////
 	return true;
 }
-
-#ifdef LCCUDA_BUILD
-#include "../Light/CUDA/xrCuda_PackedLights.h"
-xr_vector<u32>			 samples;
-xr_vector<base_color_c>  detail_colors;
-u32 size_x;
-u32 size_z;
-
-void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C) 
-{
-	u32 x = GPUTaskinSystem.GetU(IndexTask);
-	u32 z = GPUTaskinSystem.GetV(IndexTask);	
-	
-	u32 idx = z * size_x + x;
-	samples[idx]++;
-	detail_colors[idx].add(C);
-}
-
-void ApplyColorsGPU()
-{
-	for (auto x = 0; x < gl_data.slots_data.size_x(); x++)
-	for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
-	{
-		// Getter - Detail Slot
-		auto& DS = gl_data.slots_data.get_slot(x, z);
-
-		u32 idx			= z * size_x + x;
-		auto& count		= samples[idx];
-		if (count > 0)
-		{
-			auto& color = detail_colors[idx];
-			color.scale(count);
-			color.mul(.5f);
-
-			// Пишется результат в (level.details) !
-			DS.c_dir	= DS.w_qclr(color.sun, 15);
-			DS.c_hemi	= DS.w_qclr(color.hemi, 15);
-			DS.c_r		= DS.w_qclr(color.rgb.x, 15);
-			DS.c_g		= DS.w_qclr(color.rgb.y, 15);
-			DS.c_b		= DS.w_qclr(color.rgb.z, 15);
-
-			// if (color.hemi > 0.001)
-			// 	Msg("Colors x[%u] z[%u] Hemi: %.3f Sampl: %u", x,z, color.hemi, count);
-		}
- 	}
-
-	samples.clear();
-	samples.shrink_to_fit();
-
-	detail_colors.clear();
-	detail_colors.shrink_to_fit();
-}
-#endif
 
 void xrLight_Details()
 {
@@ -207,72 +127,37 @@ void xrLight_Details()
 	xr_atomic_u32 IndexTask = 0;
 	IndexTask = 0;
 	 
-	if (gCompilerMode.Embree)
-	{
-		Status("Embree Initialize Models ...");
-		EmbreeMain.InitializeDetails(gl_data.building_embree_faces);
+	ILightingBackend& Backend = GetLightingBackend();
+	Backend.BeginDetails();
 
-		xr_std_parallel_for([&IndexTask]()
-			{
-				while (true)
-				{
-					u32 Z = IndexTask.fetch_add(1);
-					if (Z >= gl_data.slots_data.size_z()) break;
-
-					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
-					{
-						detail_slot_calculate(X, Z);
-					}
-
-					clMsg("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
-				}
-
-				rayTasks.clear();
-				rayTasks.shrink_to_fit();
-			}, gCompilerMode.ThreadsPerWork
-		);
-	}
-#ifdef LCCUDA_BUILD
-	else
-	{
- 		size_x = gl_data.slots_data.size_x();
-		size_z = gl_data.slots_data.size_z();
-
-		samples.resize(size_x * size_z);
-		detail_colors.resize(size_x * size_z);
-
-		GPUTaskinSystem.InitializeGPU();
-		GPUTaskinSystem.InitializeGPU_Model();
-
-		GPUTaskinSystem.ColorsMapType = eDetails;
-
-		xr_std_parallel_for([&IndexTask]()
+	xr_std_parallel_for([&IndexTask, &Backend]()
 		{
 			while (true)
 			{
 				u32 Z = IndexTask.fetch_add(1);
-				AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
-
 				if (Z >= gl_data.slots_data.size_z()) break;
 
 				for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+				{
 					detail_slot_calculate(X, Z);
-			}
-			
-			GPUTaskinSystem.LightPointPacked_run_tasks(); 
-		}, gCompilerMode.ThreadsPerWork );
+				}
 
-		ApplyColorsGPU();
-	}
-#endif
+				AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
+			}
+
+			Backend.FinishDetailsThread();
+
+			rayTasks.clear();
+			rayTasks.shrink_to_fit();
+		}, gCompilerMode.ThreadsPerWork
+	);
+
+	Backend.EndDetails();
 
 	Phase("Unloading data buffers...");
 	gl_data.xrUnload();
  
 	EmbreeMain.IntelEmbereUnloadAll();
-#ifdef LCCUDA_BUILD
-	GPUTaskinSystem.DestroyGPU_Model();
-#endif
 
 	Msg("Total processing: %u ms.", start_time.GetElapsed_ms());
 }

@@ -10,9 +10,7 @@
 #include "../MUModels/mu_model_light.h"
 #include "light_point.h"
 
-#ifdef LCCUDA_BUILD
-#	include "CUDA/CUDARayCast.h"
-#endif 
+#include "LightingBackend.h"
 
 extern XRCORE_API bool			g_bEnableStatGather;
 
@@ -22,87 +20,9 @@ void	CBuild::LMaps					()
 
 	UpdateCurrentPhase("LMaps");
 
-#ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA)
-	{
-		// Se7kills 
- 		CTimer start_time; start_time.Start();
+	GetLightingBackend().LightDeflectors();
+	GetLightingBackend().OnStageFinished(ELightingStage::Deflectors);
 
-		GPUTaskinSystem.RestartALL();
-		GPUTaskinSystem.ColorsMapType = eDeflectors;
-		GPUTaskinSystem.current_flags = LGetCurrentFlags();
-
-		auto& deflectors = lc_global_data()->g_deflectors();
-
-		xr_atomic_u32 IndexTaskID = 0, IndexTaskApply = 0;
-		xr_std_parallel_for([&IndexTaskID, &deflectors]()
-			{
-				while (true)
-				{
-					u32 Index = IndexTaskID.fetch_add(1);
-					if (Index >= deflectors.size())
-					{
-						break;
-					}
-					CDeflector* D = deflectors[Index];
-					D->LightGPU();
-					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
-				}
-				GPUTaskinSystem.LightPointPacked_run_tasks(); //   !
-			},
-			gCompilerMode.ThreadsPerWork );
-		GPUTaskinSystem.RestartALL();
-
-		xr_std_parallel_for([&IndexTaskApply, &deflectors]()
-			{
-				while (true)
-				{
-					u32 Index = IndexTaskApply.fetch_add(1);
-					if (Index >= deflectors.size()) break;
-					CDeflector* D = deflectors[Index];
-
-					D->ApplyColors();
-					D->ApplyExpandBordersGPU();
-					AditionalData("*** [LMAPS] ApplyID [%u/%u]", Index, deflectors.size());
-				}
-			},
-			gCompilerMode.ThreadsPerWork );
-
-		clMsg("%f seconds", start_time.GetElapsed_sec());
-   	}
-	else
-#endif
-	{
-		// Main process (4 threads)
-		Status("Lighting...");
-
-		CTimer start_time; 
-		start_time.Start();
-		
-		xr_atomic_u32 LmapsTaskID = 0;
-		xr_std_parallel_for([&LmapsTaskID]()
-		{
- 			base_lighting	LightsSelected;
-			while (true)
-			{
-				// Get task
-				u32 IndexTask = LmapsTaskID.fetch_add(1);
-				if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
- 				CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
-				D->Light(&LightsSelected);
-				AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
-			}
-		}, gCompilerMode.ThreadsPerWork );
-		clMsg("%f seconds", start_time.GetElapsed_sec());
-	}
-
-
-#ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA)
-	{
-		XRay::RayTrace::CUDA::CapturePreviewBakedColors(false);
-	}
-#endif
 	xrPhase_MergeLM();
 }
  
@@ -111,16 +31,7 @@ void CBuild::Light()
 	auto InitModel = [this]()
 	{
 		InitializeEmbreeDevice();
-
-#ifdef LCCUDA_BUILD
-		if (gCompilerMode.CUDA)
-		{
-			GPUTaskinSystem.InitializeGPU();
-			GPUTaskinSystem.InitializeGPU_Model();				// Memory Usage 150-300MB !
-		}
-		else
-#endif
- 			EmbreeMain.InitializeGeometry();
+		GetLightingBackend().InitializeLevel();
 	};
 
 	auto BuildingUV = [this]()
@@ -161,21 +72,11 @@ void CBuild::Light()
 
 	//****************************************** Vertex
 	LightVertex();
-#ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA)
-	{
-		XRay::RayTrace::CUDA::CapturePreviewBakedColors(true);
-	}
-#endif
+	GetLightingBackend().OnStageFinished(ELightingStage::Vertices);
 
 	//****************************************** Starting MU
 	run_mu_light();
-#ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA)
-	{
-		XRay::RayTrace::CUDA::CapturePreviewMU();
-	}
-#endif
+	GetLightingBackend().OnStageFinished(ELightingStage::MUModels);
 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
@@ -183,9 +84,7 @@ void CBuild::Light()
 
 	// Unloading Ray Casting Models !
 	EmbreeMain.IntelEmbereUnloadAll();
-#ifdef LCCUDA_BUILD
-	GPUTaskinSystem.DestroyGPU_Model();
-#endif
+	GetLightingBackend().ReleaseLevel();
 }
 
 void CBuild::LightVertex	()
