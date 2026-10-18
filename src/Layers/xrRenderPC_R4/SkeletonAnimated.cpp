@@ -926,8 +926,9 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
 
 	R_ASSERT(m_Motions.size());
 
-	m_Partition = m_Motions[0].motions.partition();
-	m_Partition->load(this, N);
+	OwnPartition = xr_make_unique<CPartition>(*m_Motions[0].motions.partition());
+	OwnPartition->load(this, N);
+	m_Partition = OwnPartition.get();
 
 	// initialize motions
 	for (SMotionsSlot& MS : m_Motions)
