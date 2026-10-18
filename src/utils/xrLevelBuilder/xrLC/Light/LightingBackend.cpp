@@ -3,8 +3,14 @@
 #include "../../UI/CompilersUI.h"
 #include "Embree/EmbreeLightingBackend.h"
 
-#ifdef LCCUDA_BUILD
-#	include "CUDA/CudaLightingBackend.h"
+#ifdef LCGPU_BUILD
+#	include "GPU/GpuLightingBackend.h"
+#	ifdef LCCUDA_BUILD
+#		include "CUDA/CudaRayTracer.h"
+#	endif
+#	ifdef LCVULKAN_BUILD
+#		include "Vulkan/VulkanRayTracer.h"
+#	endif
 #endif
 
 ILightingBackend& GetLightingBackend()
@@ -12,10 +18,20 @@ ILightingBackend& GetLightingBackend()
 	static EmbreeLightingBackend Embree;
 
 #ifdef LCCUDA_BUILD
-	static CudaLightingBackend Cuda;
+	static CudaRayTracer CudaTracer;
+	static GpuLightingBackend Cuda(CudaTracer);
 	if (gCompilerMode.CUDA)
 	{
 		return Cuda;
+	}
+#endif
+
+#ifdef LCVULKAN_BUILD
+	static VulkanRayTracer VulkanTracer;
+	static GpuLightingBackend Vulkan(VulkanTracer);
+	if (gCompilerMode.Vulkan)
+	{
+		return Vulkan;
 	}
 #endif
 

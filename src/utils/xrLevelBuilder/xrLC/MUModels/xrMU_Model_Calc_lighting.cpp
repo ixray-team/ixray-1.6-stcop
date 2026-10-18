@@ -178,7 +178,7 @@ void xrMU_Model::calc_lighting	()
 	for (v_vertices_it vit=m_vertices.begin(); vit!=m_vertices.end(); vit++)
 		BB.modify	((*vit)->P);
 
-	if (gCompilerMode.Embree || gCompilerMode.CUDA)
+	if (gCompilerMode.Embree || gCompilerMode.CUDA || gCompilerMode.Vulkan)
 	{
 		xr_vector<FaceDataEmbree> faces;
  		export_cform_rcast_new(faces, Fidentity);

@@ -14,9 +14,6 @@
 extern CompilersMode gCompilerMode;
 extern global_claculation_data gl_data;
 
-// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно
-// Влияет на яркость на выходе (если близко к 0 будет занулятся)
-#define EmbreeEnergyMAX 0.16f
 thread_local RTCOccludedArguments args;
 thread_local RayQueryContext data_hits;
 
@@ -38,13 +35,14 @@ inline bool CalculateEnergy(const b_texture& T, const Fvector2* TC, float& energ
  	U = (U % T.dwWidth + T.dwWidth)   % T.dwWidth;
 	V = (V % T.dwHeight + T.dwHeight) % T.dwHeight;
   	
-	// Energy 
-	u32 ALPHA = color_get_A(((u32*)*T.pSurface)[V * T.dwWidth + U]);
- 	energy *= 1.f - (float(ALPHA) / 255.f);
-
-	if (energy < EmbreeEnergyMAX)
- 		energy = 0.f;
- 	return energy > EmbreeEnergyMAX;
+	// Same rule as CUDA/CuTrace.cu and Vulkan/VkTrace.comp: a texel blocks the ray when alpha^2 >= 0.5
+	float Alpha = float(color_get_A(((u32*)*T.pSurface)[V * T.dwWidth + U])) / 255.f;
+	if (Alpha * Alpha >= 0.5f)
+	{
+		energy = 0.f;
+		return false;
+	}
+	return true;
 }
 
 void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
@@ -67,7 +65,6 @@ void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
 	}
 }
 
-#define MAX_HITS 4
 void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
@@ -89,12 +86,6 @@ void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 
 		float& hit_u = RTCHitN_u(args->hit, args->N, i);
 		float& hit_v = RTCHitN_v(args->hit, args->N, i);
-
-		// Собираем только N хитов остальные игнорим
-		if (ctxt->hits_result[i]++ >= MAX_HITS)
-		{
-			continue;
-		}
 
 		bool bSearching = false;
 		if (UD->DummyType == 1)

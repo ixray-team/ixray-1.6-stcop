@@ -976,6 +976,7 @@ void SaveCompilerCfg()
 	Serializer->Write("do", gCompilerMode.DO);
 	Serializer->Write("Embree", gCompilerMode.Embree);
 	Serializer->Write("CUDA", gCompilerMode.CUDA);
+	Serializer->Write("Vulkan", gCompilerMode.Vulkan);
 	Serializer->Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer->Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer->Write("ClearTemp", gCompilerMode.ClearTemp);
@@ -1055,6 +1056,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	Serializer->Read("do", gCompilerMode.DO);
 	Serializer->Read("Embree", gCompilerMode.Embree);
 	Serializer->Read("CUDA", gCompilerMode.CUDA);
+	Serializer->Read("Vulkan", gCompilerMode.Vulkan);
 	Serializer->Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer->Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer->Read("ClearTemp", gCompilerMode.ClearTemp);

@@ -927,44 +927,171 @@ void DrawAIConfig()
 
 extern bool SaveCForm;
 
+enum class ELightBackend
+{
+	Embree,
+	CUDA,
+	Vulkan
+};
+
+namespace LightBackendIcons
+{
+	// CPU chip: body, die and pins on every side
+	void DrawCpu(ImDrawList* List, ImVec2 C, float S, ImU32 Color)
+	{
+		const float H = S * 0.30f;
+		const float T = std::max(1.5f, S * 0.05f);
+		List->AddRect(ImVec2(C.x - H, C.y - H), ImVec2(C.x + H, C.y + H), Color, S * 0.06f, 0, T);
+		List->AddRectFilled(ImVec2(C.x - H * 0.45f, C.y - H * 0.45f), ImVec2(C.x + H * 0.45f, C.y + H * 0.45f), Color, S * 0.03f);
+		for (int Pin = -1; Pin <= 1; Pin++)
+		{
+			const float O = Pin * H * 0.55f;
+			const float L = S * 0.13f;
+			List->AddLine(ImVec2(C.x + O, C.y - H), ImVec2(C.x + O, C.y - H - L), Color, T);
+			List->AddLine(ImVec2(C.x + O, C.y + H), ImVec2(C.x + O, C.y + H + L), Color, T);
+			List->AddLine(ImVec2(C.x - H, C.y + O), ImVec2(C.x - H - L, C.y + O), Color, T);
+			List->AddLine(ImVec2(C.x + H, C.y + O), ImVec2(C.x + H + L, C.y + O), Color, T);
+		}
+	}
+
+	// Graphics card: board, two fans and the PCIe connector
+	void DrawGpu(ImDrawList* List, ImVec2 C, float S, ImU32 Color)
+	{
+		const float W = S * 0.44f;
+		const float H = S * 0.24f;
+		const float T = std::max(1.5f, S * 0.05f);
+		List->AddRect(ImVec2(C.x - W, C.y - H), ImVec2(C.x + W, C.y + H), Color, S * 0.05f, 0, T);
+		List->AddRectFilled(ImVec2(C.x - W * 0.55f, C.y + H), ImVec2(C.x + W * 0.25f, C.y + H + S * 0.08f), Color);
+		for (int Fan = -1; Fan <= 1; Fan += 2)
+		{
+			const ImVec2 FanCenter(C.x + Fan * W * 0.48f, C.y);
+			const float R = H * 0.72f;
+			List->AddCircle(FanCenter, R, Color, 20, T);
+			for (int Blade = 0; Blade < 3; Blade++)
+			{
+				const float Angle = Blade * 2.0944f + 0.4f;
+				List->AddLine(FanCenter, ImVec2(FanCenter.x + cosf(Angle) * R * 0.8f, FanCenter.y + sinf(Angle) * R * 0.8f), Color, T);
+			}
+		}
+	}
+
+	// Ray query: a ray hitting a triangle
+	void DrawRay(ImDrawList* List, ImVec2 C, float S, ImU32 Color)
+	{
+		const float T = std::max(1.5f, S * 0.05f);
+		const ImVec2 A(C.x + S * 0.05f, C.y - S * 0.38f);
+		const ImVec2 B(C.x + S * 0.42f, C.y + S * 0.30f);
+		const ImVec2 D(C.x - S * 0.22f, C.y + S * 0.34f);
+		List->AddTriangle(A, B, D, Color, T);
+
+		const ImVec2 Hit(C.x + S * 0.08f, C.y + S * 0.08f);
+		const ImVec2 Origin(C.x - S * 0.44f, C.y - S * 0.30f);
+		List->AddLine(Origin, Hit, Color, T);
+		List->AddCircleFilled(Hit, S * 0.07f, Color, 12);
+		List->AddCircleFilled(Origin, S * 0.05f, Color, 12);
+	}
+}
+
+// One tile per ray tracing backend; backends missing from this build are shown disabled
+static void DrawLightBackendSwitcher()
+{
+	struct BackendTile
+	{
+		ELightBackend Backend;
+		const char* Label;
+		const char* Tooltip;
+		bool Available;
+		void (*DrawIcon)(ImDrawList*, ImVec2, float, ImU32);
+	};
+
+#ifdef LCCUDA_BUILD
+	constexpr bool HasCuda = true;
+#else
+	constexpr bool HasCuda = false;
+#endif
+#ifdef LCVULKAN_BUILD
+	constexpr bool HasVulkan = true;
+#else
+	constexpr bool HasVulkan = false;
+#endif
+
+	const BackendTile Tiles[] =
+	{
+		{ ELightBackend::Embree, "Embree", "Trace light rays on the CPU with Intel Embree.", true, &LightBackendIcons::DrawCpu },
+		{ ELightBackend::CUDA, "CUDA", HasCuda ? "Trace light rays on the GPU with Nvidia CUDA + OptiX." : "Not built: enable IXRAY_UTILS_OPTIX.", HasCuda, &LightBackendIcons::DrawGpu },
+		{ ELightBackend::Vulkan, "Vulkan", HasVulkan ? "Trace light rays on any GPU with VK_KHR_ray_query (NVIDIA RTX, AMD RDNA2+, Intel Arc)." : "Not built: enable IXRAY_UTILS_VULKAN.", HasVulkan, &LightBackendIcons::DrawRay },
+	};
+
+	ELightBackend Current = ELightBackend::Embree;
+	if (HasCuda && gCompilerMode.CUDA)
+	{
+		Current = ELightBackend::CUDA;
+	}
+	else if (HasVulkan && gCompilerMode.Vulkan)
+	{
+		Current = ELightBackend::Vulkan;
+	}
+
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	const float TileCount = (float)std::size(Tiles);
+	const float TileWidth = std::max(48.0f, (ImGui::GetContentRegionAvail().x - Style.ItemSpacing.x * (TileCount - 1)) / TileCount);
+	const float TileHeight = 34.0f + ImGui::GetTextLineHeight() + Style.FramePadding.y * 3;
+	const float IconSize = 30.0f;
+
+	ImDrawList* List = ImGui::GetWindowDrawList();
+	for (const BackendTile& Tile : Tiles)
+	{
+		if (&Tile != Tiles)
+		{
+			ImGui::SameLine();
+		}
+
+		ImGui::PushID(Tile.Label);
+		ImGui::BeginDisabled(!Tile.Available);
+
+		const bool Selected = Tile.Backend == Current;
+		const ImVec2 Min = ImGui::GetCursorScreenPos();
+		const ImVec2 Max(Min.x + TileWidth, Min.y + TileHeight);
+
+		if (ImGui::InvisibleButton("##Backend", ImVec2(TileWidth, TileHeight)))
+		{
+			Current = Tile.Backend;
+		}
+		const bool Hovered = ImGui::IsItemHovered();
+
+		ImU32 Background = ImGui::GetColorU32(Selected ? ImGuiCol_ButtonActive : Hovered ? ImGuiCol_ButtonHovered : ImGuiCol_FrameBg);
+		ImU32 Foreground = ImGui::GetColorU32(Selected ? ImGuiCol_Text : ImGuiCol_TextDisabled);
+		if (!Tile.Available)
+		{
+			Background = ImGui::GetColorU32(ImGuiCol_FrameBg, 0.5f);
+			Foreground = ImGui::GetColorU32(ImGuiCol_TextDisabled, 0.5f);
+		}
+
+		List->AddRectFilled(Min, Max, Background, Style.FrameRounding + 2.0f);
+		if (Selected)
+		{
+			List->AddRect(Min, Max, ImGui::GetColorU32(ImGuiCol_CheckMark), Style.FrameRounding + 2.0f, 0, 2.0f);
+		}
+
+		const ImVec2 IconCenter(Min.x + TileWidth * 0.5f, Min.y + Style.FramePadding.y + IconSize * 0.5f + 2.0f);
+		Tile.DrawIcon(List, IconCenter, IconSize, Foreground);
+
+		const ImVec2 LabelSize = ImGui::CalcTextSize(Tile.Label);
+		List->AddText(ImVec2(Min.x + (TileWidth - LabelSize.x) * 0.5f, Max.y - LabelSize.y - Style.FramePadding.y), Foreground, Tile.Label);
+
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("%s", Tile.Tooltip);
+		ImGui::PopID();
+	}
+
+	gCompilerMode.Embree = Current == ELightBackend::Embree;
+	gCompilerMode.CUDA = Current == ELightBackend::CUDA;
+	gCompilerMode.Vulkan = Current == ELightBackend::Vulkan;
+}
+
 void DrawCompilerConfig()
 {
-	ImGui::PushID("LightPreset");
-	{
-		static int RadioID = -1;
-		if (RadioID < 0)
-		{
-			RadioID = 0;
-			RadioID += 1 * (int)gCompilerMode.Embree;
-			RadioID += 2 * (int)gCompilerMode.CUDA;
-		}
-
-		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
-		ImGui::SetItemTooltip("Trace light rays on the CPU with Intel Embree.");
-#ifdef LCCUDA_BUILD
-		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
-		ImGui::SetItemTooltip("Trace light rays on the GPU with Nvidia CUDA.");
-
-		switch (RadioID)
-		{
-			case 1:
-				gCompilerMode.CUDA = false;
-				gCompilerMode.Embree = true;
-				break;
-			case 2:
-				gCompilerMode.CUDA = true;
-				gCompilerMode.Embree = false;
-				break;
-			default:
-				break;
-		}
-#else
-		RadioID = 1;
-		gCompilerMode.Embree = true;
-		gCompilerMode.CUDA = false;
-#endif
-	}
-	ImGui::PopID();
+	DrawLightBackendSwitcher();
 	ImGui::Separator();
 
 
@@ -1486,7 +1613,7 @@ void RenderCompilerUI(int X, int Y)
 				unsigned int UsageCuda = 0, UsageMemory = 0;
 				CudaUsage(UsageCuda, UsageMemory);
 
-				ImGui::Text("CUDA Usage: %u", UsageCuda);
+				ImGui::Text("GPU Usage: %u", UsageCuda);
 				auto data = get_cuda_usage();
 				DrawGpuGraph(data.data(), data.size(), 100.0f);
 
