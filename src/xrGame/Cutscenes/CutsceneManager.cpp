@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "CutsceneManager.h"
 #include "Level.h"
 #include "debug_renderer.h"
