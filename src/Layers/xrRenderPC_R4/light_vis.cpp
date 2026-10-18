@@ -40,9 +40,20 @@ void light::vis_prepare()
 		skiptest = true;
 	}
 
-	vis.distance = Device.vCameraPosition.distance_to(SpatialComponent->sphere.P);
+	Fvector QueryCenter = SpatialComponent->sphere.P;
+	float QueryRadius = SpatialComponent->sphere.R;
+	if (flags.type == IRender_Light::OMNIPART)
+	{
+		// A cube face includes diagonal corners, not just a circular 90-degree cone.
+		// Enclose the apex and the corners with center distance and radius sqrt(3) / 2 * range.
+		// Keep the spatial sphere unchanged here: it also controls light fading and detail selection.
+		constexpr float SphereScale = 0.8660254037844386f;
+		QueryRadius = range * SphereScale;
+		QueryCenter.mad(position, direction, QueryRadius);
+	}
+	vis.distance = Device.vCameraPosition.distance_to(QueryCenter);
 
-	if (skiptest || vis.distance <= (SpatialComponent->sphere.R * 1.01f + safe_area + (SpatialComponent->sphere.R * 0.1f)))
+	if (skiptest || vis.distance <= (QueryRadius * 1.01f + safe_area + (QueryRadius * 0.1f)))
 	{
 		// small error
 		vis.visible = true;
