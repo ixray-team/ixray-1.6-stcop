@@ -52,6 +52,7 @@ obj/
 lib/
 bin/
 build/
+!src/utils/xrLevelBuilder/xrLC/Build/
 publish/
 
 # Temporary files
