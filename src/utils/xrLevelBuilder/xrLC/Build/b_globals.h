@@ -7,3 +7,7 @@ constexpr u32 c_SS_maxsize			= 32;			// meters
 constexpr u32 c_PM_FaceLimit			= 128;			// face-limit
 constexpr float c_PM_MetricLimit_static	= 0.10f;		// vertex-count-simplification-limit
 constexpr float c_PM_MetricLimit_mu		= 0.05f;		// vertex-count-simplification-limit
+
+
+
+

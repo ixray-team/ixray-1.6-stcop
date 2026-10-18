@@ -20,3 +20,4 @@ void CBuild::CalcNormals()
 	MU_ModelsCalculateNormals();
 	IsolateVertices(true);
 }
+
