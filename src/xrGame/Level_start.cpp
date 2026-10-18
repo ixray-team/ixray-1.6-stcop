@@ -8,6 +8,8 @@
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/device.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "GamePersistent.h"
+#include "LevelStartInfo.h"
 #include "MainMenu.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "MainMenu.h"
@@ -121,6 +123,13 @@ shared_str level_name(const shared_str &server_options);
 bool CLevel::net_start1				()
 {
 	PROF_EVENT("CLevel::net_start1");
+	GamePersistent().IsLoadTipShown = false;
+	shared_str TipLevelName;
+	if (!g_dedicated_server && LevelStartInfo::Find(g_pGamePersistent->m_game_params, TipLevelName))
+	{
+		GamePersistent().ShowLoadTip(TipLevelName, true);
+	}
+
 	// Start client and server if need it
 	if (m_caServerOptions.size())
 	{
@@ -181,7 +190,7 @@ void CLevel::ConnectServer()
 void CLevel::FinishConnectServer()
 {
 	if (net_start_result_total && !g_dedicated_server)
-		g_pGamePersistent->LoadTitle(true, map_data.m_name);
+		g_pGamePersistent->LoadTitle(!GamePersistent().IsLoadTipShown, map_data.m_name);
 }
 
 bool CLevel::net_start2				()
