@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "../xrCore/BackgroundLoad.h"
 
 #include "ai_space.h"
 #include "player_hud.h"
@@ -186,6 +187,8 @@ void CLevel::ClientSendProfileData	()
 bool CLevel::net_start_client5()
 {
 	PROF_EVENT("CLevel::net_start_client5");
+	BackgroundLoad::SetStage(EBackgroundLoadStage::FinishLoading);
+
 	if (g_player_hud)
 	{
 		g_player_hud->FinishDefaultLoad();
@@ -214,7 +217,6 @@ bool CLevel::net_start_client6()
 		PROF_EVENT("client6: FinishPrefetch");
 		g_pGamePersistent->ObjectPool.FinishPrefetch();
 	}
-	g_IniReadAhead->Stop();
 	if (connected_to_server)
 	{
 		// Sync

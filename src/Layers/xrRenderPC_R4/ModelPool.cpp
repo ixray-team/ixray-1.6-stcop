@@ -215,6 +215,7 @@ void CModelPool::RunLoader()
 	while (true)
 	{
 		shared_str Key;
+		bool IsMoreLoaders = false;
 		{
 			xrCriticalSectionGuard Guard(RequestedLock);
 			xr_deque<shared_str>* Queue = nullptr;
@@ -235,6 +236,18 @@ void CModelPool::RunLoader()
 			Key = Queue->front();
 			Queue->pop_front();
 			Queued.erase(Key);
+
+			const size_t Pending = RequestQueues[0].size() + RequestQueues[1].size() + RequestQueues[2].size();
+			if (Pending > 0 && ActiveLoaders < BackgroundLoad::WorkerCount())
+			{
+				ActiveLoaders++;
+				IsMoreLoaders = true;
+			}
+		}
+
+		if (IsMoreLoaders)
+		{
+			RequestTasks.run([this]() { RunLoader(); });
 		}
 
 		{
@@ -333,6 +346,7 @@ CModelPool::ModelEntry* CModelPool::AcquireBase(const char* Name, IReader* Data)
 	{
 		if (!Entry->IsReady.load(std::memory_order_acquire))
 		{
+			PROF_EVENT("CModelPool: wait for a pending load");
 			xrCriticalSectionGuard Wait(Entry->LoadGuard);
 		}
 		return Entry;

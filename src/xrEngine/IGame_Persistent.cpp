@@ -3,6 +3,7 @@
 
 #include "IGame_Persistent.h"
 #include "../xrCore/IniReadAhead.h"
+#include "../xrCore/BackgroundLoad.h"
 
 #include "Environment.h"
 #include "x_ray.h"
@@ -98,6 +99,7 @@ void IGame_Persistent::Start(const char* op)
 
 void IGame_Persistent::Disconnect()
 {
+	BackgroundLoad::SetStage(EBackgroundLoadStage::Gameplay);
 	g_IniReadAhead->Stop();
 	CInifile::ClearMemoryCache();
 	VisorRain.Reset();
@@ -201,6 +203,7 @@ namespace
 
 void IGame_Persistent::OnGameStart()
 {
+	BackgroundLoad::SetStage(EBackgroundLoadStage::PrimaryLoading);
 	loading_save_timer.Start();
 	loading_save_timer_started = true;
 	Msg("* Game Loading Timer: Started!");
@@ -264,6 +267,7 @@ void IGame_Persistent::Prefetch()
 
 void IGame_Persistent::OnGameEnd()
 {
+	BackgroundLoad::SetStage(EBackgroundLoadStage::Gameplay);
 	g_IniReadAhead->Stop();
 	CInifile::ClearMemoryCache();
 	ObjectPool.clear();

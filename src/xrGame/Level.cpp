@@ -3,6 +3,8 @@
 #include "FDemoRecord.h"
 #include "FDemoPlay.h"
 #include "../xrEngine/Environment.h"
+#include "../xrCore/BackgroundLoad.h"
+#include "../xrCore/IniReadAhead.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "ParticlesObject.h"
 #include "Level.h"
@@ -676,6 +678,18 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame()
 {
+	if (Device.dwPrecacheFrame == 0 && BackgroundLoad::GetStage() == EBackgroundLoadStage::FinishLoading)
+	{
+		BackgroundLoad::SetStage(EBackgroundLoadStage::Gameplay);
+		m_IniReadAheadStopTime = Device.dwTimeContinual + 10000;
+	}
+
+	if (m_IniReadAheadStopTime != 0 && Device.dwTimeContinual >= m_IniReadAheadStopTime)
+	{
+		m_IniReadAheadStopTime = 0;
+		g_IniReadAhead->Stop();
+	}
+
 	if (g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed))
 	{
 		const u32 Generation = g_MonsterLogicTelemetry.Generation.load(std::memory_order_relaxed);
