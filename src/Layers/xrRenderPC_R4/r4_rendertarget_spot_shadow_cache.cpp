@@ -95,7 +95,8 @@ static bool CanStoreDepth(const light& Source)
 {
 	return g_SpotShadowCacheMode > 0 && !Device.IsEditorMode() && LightingModeIsDynamicRender() && RImplementation.b_loaded &&
 		   psDeviceFlags.test(rsDrawStatic) && !psDeviceFlags.test(rsClearBB) &&
-		   Source.flags.type == IRender_Light::SPOT && !Source.flags.bHudMode && Source.SpatialComponent && Source.SpatialComponent->sector;
+		   (Source.flags.type == IRender_Light::SPOT || Source.flags.type == IRender_Light::OMNIPART) &&
+		   !Source.flags.bHudMode && Source.SpatialComponent && Source.SpatialComponent->sector;
 }
 
 static u32 DepthTexelBytes(ERHI_FORMAT Format)
