@@ -313,6 +313,7 @@ public:
 	virtual void					model_Request			(const char* name, EModelRequestPriority Priority = EModelRequestPriority::Normal)	{};
 	virtual EModelLoadState			model_GetState			(const char* name)							{ return EModelLoadState::Ready; };
 	virtual void					models_WaitRequests		()											{};
+	virtual void					models_GetLoaded		(xr_vector<shared_str>& Names)				{};
 
 	// Occlusion culling
 	virtual bool					occ_visible				(vis_data&	V)								{return false;};

@@ -52,6 +52,11 @@ EModelLoadState CRender::model_GetState(const char* name)
 	return Models->GetState(name);
 }
 
+void CRender::models_GetLoaded(xr_vector<shared_str>& Names)
+{
+	Models->GetLoaded(Names);
+}
+
 void CRender::models_WaitRequests()
 {
 	Models->WaitRequests();

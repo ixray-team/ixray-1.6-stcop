@@ -8,6 +8,7 @@
 #include "PHCommander.h"
 #include "NET_Queue.h"
 #include "MainMenu.h"
+#include "../xrCore/BackgroundLoad.h"
 #include "space_restriction_manager.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
@@ -150,6 +151,10 @@ extern CUISequencer * g_tutorial2;
 void CLevel::net_Stop()
 {
 	Msg("- Disconnect");
+	if (BackgroundLoad::GetStage() == EBackgroundLoadStage::Gameplay && Device.dwPrecacheFrame == 0)
+	{
+		g_pGamePersistent->SaveLearnedModels(name().c_str());
+	}
 	m_postponedPackets.clear();
 	script_client_events.clear();
 

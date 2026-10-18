@@ -445,6 +445,7 @@ public:
 	void							model_Request				(const char* name, EModelRequestPriority Priority) override;
 	EModelLoadState					model_GetState				(const char* name) override;
 	void							models_WaitRequests			() override;
+	void							models_GetLoaded			(xr_vector<shared_str>& Names) override;
 
 	// Occlusion culling
 	virtual bool					occ_visible					(vis_data&	V);

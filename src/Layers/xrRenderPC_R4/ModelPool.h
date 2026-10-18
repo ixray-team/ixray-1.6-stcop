@@ -103,6 +103,7 @@ public:
 	void					Request				(const char* name, EModelRequestPriority Priority);
 	EModelLoadState			GetState			(const char* name);
 	void					WaitRequests		();
+	void					GetLoaded			(xr_vector<shared_str>& Names);
 
 	void					Prefetch			();
 	void					ClearPool			( bool b_complete );

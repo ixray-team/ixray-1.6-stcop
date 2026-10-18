@@ -78,6 +78,8 @@ public:
 	CEnvironment&					Environment()	{return *pEnvironment;};
 	void							Prefetch			( );
 	xr_string						GetPrefetchSection	(const char* Prefix) const;
+	void							RequestLearnedModels(const char* LevelName);
+	void							SaveLearnedModels	(const char* LevelName);
 	IMainMenu*						m_pMainMenu;
 
 	virtual	void					UpdatePlayDestroyParticles() {};
