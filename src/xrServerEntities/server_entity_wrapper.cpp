@@ -8,6 +8,9 @@
 
 #include "StdAfx.h"
 #include "server_entity_wrapper.h"
+#ifdef XRGAME_EXPORTS
+#include "../xrEngine/EngineApp.h"
+#endif
 #include "xrServer_Objects.h"
 #include "xrMessages.h"
 #include "../xrCore/Save/MemoryBuffer.h"
@@ -101,6 +104,9 @@ void CServerEntityWrapper::save				(IWriter &stream)
 
 void CServerEntityWrapper::load				(IReader &stream)
 {
+#ifdef XRGAME_EXPORTS
+	pApp->LoadPulse();
+#endif
 #ifndef _LEVEL_EDITOR
 	
 	if (IsAdvancedSerialization())

@@ -52,6 +52,7 @@ void CALifeSurgeManager::spawn_new_spawns			()
 		CSE_ALifeDynamicObject* spawn = AbstarctObject.cast_alife_dynamic_object();
 
 		create(object, spawn, ObjectID);
+		pApp->LoadPulse();
 	}
 }
 

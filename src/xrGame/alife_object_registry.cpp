@@ -243,6 +243,7 @@ void CALifeObjectRegistry::load(IReader& file_stream)
 	{
 		auto Temp = get_object(file_stream);
 		add(Temp);
+		pApp->LoadPulse();
 	}
 
 	Msg("* %d objects are successfully loaded", count);
