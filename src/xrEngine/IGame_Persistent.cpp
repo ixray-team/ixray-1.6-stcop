@@ -243,11 +243,11 @@ void IGame_Persistent::Prefetch()
 		{
 			const char* Section = Item.first.c_str();
 			if (pSettings->section_exist(Section) && pSettings->line_exist(Section, "visual"))
-				Render->model_Request(pSettings->r_string(Section, "visual"));
+				Render->model_Request(pSettings->r_string(Section, "visual"), EModelRequestPriority::Normal);
 		}
 
 		for (const CInifile::Item& Item : pSettings->r_section(GetPrefetchSection("prefetch_visuals_").c_str()).Data)
-			Render->model_Request(Item.first.c_str());
+			Render->model_Request(Item.first.c_str(), EModelRequestPriority::Low);
 	}
 	{
 		// prefetch game objects & models

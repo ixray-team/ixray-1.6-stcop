@@ -42,9 +42,9 @@ void CRender::models_Clear(bool b_complete)
 	Models->ClearPool(b_complete);
 }
 
-void CRender::model_Request(const char* name)
+void CRender::model_Request(const char* name, EModelRequestPriority Priority)
 {
-	Models->Request(name);
+	Models->Request(name, Priority);
 }
 
 EModelLoadState CRender::model_GetState(const char* name)
