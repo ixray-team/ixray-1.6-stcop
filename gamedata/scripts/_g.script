@@ -179,14 +179,24 @@ function round (value)
 end
 
 
+local function ObjectDistanceBetween(Object1, Object2)
+	if type(Object1) == "userdata" and type(Object2) == "userdata" then
+		local NativeDistance = Object1.DistanceTo
+		if NativeDistance and Object2.DistanceTo == NativeDistance then
+			return NativeDistance(Object1, Object2)
+		end
+	end
+	return Object1:position():distance_to(Object2:position())
+end
+
 function distance_between(obj1, obj2)
-	return obj1:position():distance_to(obj2:position())
+	return ObjectDistanceBetween(obj1, obj2)
 end
 
 -- Если один объект nil, например нет актера, то считаем, что он далеко
 function distance_between_safe(obj1, obj2)
 	if(obj1 == nil or obj2 == nil) then return 100000 end
-	return obj1:position():distance_to(obj2:position())
+	return ObjectDistanceBetween(obj1, obj2)
 end
 
 local aa = nil
