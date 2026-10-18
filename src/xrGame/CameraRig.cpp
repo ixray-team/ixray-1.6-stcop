@@ -34,6 +34,8 @@ static const SCameraRigParam g_rig_params[] =
 
 	{ "Sprint and safemode", "sprint_pose_inertia", "sprint_pose_inertia", &g_rig.sprint_pose_inertia, nullptr, 1, false, 0.005f },
 	{ "Sprint and safemode", "sprint_blend_in", "sprint_blend_in", &g_rig.sprint_blend_in, nullptr, 1, false, 0.005f },
+	{ "Sprint and safemode", "sprint_left_grip_range", "sprint_left_grip_range", &g_rig.sprint_left_grip_range, nullptr, 1, false, 0.01f },
+	{ "Sprint and safemode", "sprint_left_cancel_return", "sprint_left_cancel_return", &g_rig.sprint_left_cancel_return, nullptr, 1, false, 0.005f },
 	{ "Sprint and safemode", "safemode_damping", "safemode_damping", &g_rig.safemode_damping, nullptr, 1, false, 0.01f },
 
 	{ "Aim reload", "aim_reload_motion", "aim_reload_motion", &g_rig.aim_reload_motion, nullptr, 1, false, 0.01f },
