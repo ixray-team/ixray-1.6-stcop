@@ -55,14 +55,14 @@ public:
 	void RunTaskGPU(ImplicitDeflector& deflector)
 	{
 		defl = &deflector;
-		ImplicitCalcGlobs* cl_globs_gpu = new ImplicitCalcGlobs(); // 4096 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+		ImplicitCalcGlobs* cl_globs_gpu = new ImplicitCalcGlobs(); // 4096 превышает !
   		cl_globs_gpu->Initialize(deflector);
 
 		GPUTaskinSystem.RestartALL();
  		GPUTaskinSystem.current_flags = LGetCurrentFlags();
 		GPUTaskinSystem.ColorsMapType = eImplicit;
 
-		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 
+		// Однопоточный режим пока что 
 		xr_atomic_u32 task_height = 0;
 		xr_std_parallel_for([&cl_globs_gpu, &task_height, this]()
 		{
@@ -108,7 +108,7 @@ public:
 				}
   			};
 
-			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+			// Остаток доработать 
 			GPUTaskinSystem.LightPointPacked_run_tasks();
 
 		}, gCompilerMode.ThreadsPerWork);
