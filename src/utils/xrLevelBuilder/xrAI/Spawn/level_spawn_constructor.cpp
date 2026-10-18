@@ -6,7 +6,7 @@
 //	Description : Level spawn constructor
 ////////////////////////////////////////////////////////////////////////////
 
-#include "../StdAfx.h"
+#include "StdAfx.h"
 #include "level_spawn_constructor.h"
 #include "../Graph/level_graph.h"
 #include "../Graph/graph_engine.h"
@@ -22,8 +22,8 @@
 #include "restriction_space.h"
 #include <random>
 
-#include "../../xrCore/Save/SaveManager.h"
-#include "../../xrCore/Save/SaveObject.h"
+#include "../../../../xrCore/Save/SaveManager.h"
+#include "../../../../xrCore/Save/SaveObject.h"
 
 #define IGNORE_ZERO_SPAWN_POSITIONS
 

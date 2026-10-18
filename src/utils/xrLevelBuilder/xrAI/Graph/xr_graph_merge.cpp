@@ -6,7 +6,7 @@
 //	Description : Merging level graphs for off-line AI NPC computations
 ////////////////////////////////////////////////////////////////////////////
 
-#include "../StdAfx.h"
+#include "StdAfx.h"
 #include "../../../../xrCore/xr_ini.h"
 #include "../../../../xrEngine/xrLevel.h"
 #include "../xrAI.h"
@@ -21,7 +21,7 @@
 #include <direct.h>
 #include <random>
 
-#include "../../xrCore/Save/SaveManager.h"
+#include "../../../../xrCore/Save/SaveManager.h"
 
 thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 

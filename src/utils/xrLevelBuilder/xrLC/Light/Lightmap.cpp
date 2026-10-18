@@ -133,7 +133,7 @@ void CLightmap::Save(LPCSTR path)
 	lm_texture.dwHeight = lm.height;
 	lm_texture.pSurface.Clear();
 
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RGB + SUN
+	// Записываем RGB + SUN
 	if (true)
 	{
 		string_path				FN;
@@ -175,7 +175,7 @@ void CLightmap::Save(LPCSTR path)
 		}
 	}
  
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Hemi + SUN
+	// Записываем Hemi + SUN
 	if (true)
 	{
  		xr_vector<u32>			hemi_packed;
@@ -207,6 +207,6 @@ void CLightmap::Save(LPCSTR path)
 	}
 	 
 
-	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	// Освобождаем память
 	lm.clear_memory();
 }

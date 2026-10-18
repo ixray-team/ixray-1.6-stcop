@@ -13,3 +13,4 @@ class ENGINE_API	CXRShader;
 typedef FixedVector<sh_name,sh_STAGE_MAX*sh_PASS_MAX>	tex_names;
 typedef FixedVector<CTexture*,sh_STAGE_MAX>				tex_vector;
 typedef FixedVector<tex_vector,sh_PASS_MAX>				tex_handles;
+

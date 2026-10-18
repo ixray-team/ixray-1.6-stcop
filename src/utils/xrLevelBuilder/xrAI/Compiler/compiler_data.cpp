@@ -359,13 +359,13 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 				const Shader_xrLC& SH = GetShader(F.dwMaterial);
 				if (!SH.flags.bLIGHT_CastShadow) continue;
  
-				// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ MU-Models !
+				// косяки по MU-Models !
 				Fvector P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 
-				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+				// Поченил !
 				auto& Fnew = build_faces.emplace_back();
 				Fnew.SetFace(P[0], P[1], P[2], nullptr);
 				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
@@ -375,7 +375,7 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 	}
 	xrCalculateOpacity();
 
-	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ BOX-QUERY пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ t_n !
+	// Изза сраного BOX-QUERY Для расщета t_n !
 	auto& CDATA = CAIRayTrace.static_geom;
  	CDATA.ClearAll();
 
@@ -411,5 +411,5 @@ void IComputeData::xrUnload()
 	build_faces.clear();
 	build_faces.shrink_to_fit();
 
- 	CAIRayTrace.Deinitialize(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
+ 	CAIRayTrace.Deinitialize(); // Выгрузка !
 }

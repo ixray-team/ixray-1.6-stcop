@@ -7,7 +7,7 @@
 #include "../../UI/CompilersUI.h"
  
 // mu-light
-#include "../Light/LightingBackend.h"
+#include "../Light/CUDA/xrCuda_PackedLights.h"
 #include "../Light/light_point.h"
 #include "../Light/xrDeflector.h"
 void run_mu_light()
@@ -32,5 +32,27 @@ void run_mu_light()
 		} 
 	}, gCompilerMode.ThreadsPerWork);
 
-	GetLightingBackend().LightMURefs();
+ 	if (!gCompilerMode.CUDA)
+	{
+ 		ThreadTaskID = 0;
+		xr_std_parallel_for([&ThreadTaskID]()
+		{
+			while (true)
+			{
+				int tID = ThreadTaskID.fetch_add(1);
+				if (tID >= inlc_global_data()->mu_refs().size()) break;
+				
+				// Light references
+				inlc_global_data()->mu_refs()[tID]->calc_lighting();
+				AditionalData("MuRefs %d/%d", tID, inlc_global_data()->mu_refs().size());
+			}
+		}, gCompilerMode.ThreadsPerWork);
+ 	}
+	else 
+ 	{
+#ifdef LCCUDA_BUILD
+		extern void RunMURefsGPU();
+		RunMURefsGPU();
+#endif
+	}
 }
