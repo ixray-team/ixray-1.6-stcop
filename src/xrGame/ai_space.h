@@ -46,6 +46,7 @@ private:
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);
+			void						patrol_path_storage		(CPatrolPathStorage *Storage);
 			void						patrol_path_storage_from_editor();
 			void						set_alife				(CALifeSimulator *alife_simulator);
 			void						game_graph				(IGameGraph *game_graph);

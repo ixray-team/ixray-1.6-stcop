@@ -285,6 +285,12 @@ void CAI_Space::patrol_path_storage		(IReader &stream)
 	m_patrol_path_storage->load		(stream);
 }
 
+void CAI_Space::patrol_path_storage		(CPatrolPathStorage *Storage)
+{
+	xr_delete						(m_patrol_path_storage);
+	m_patrol_path_storage			= Storage;
+}
+
 void CAI_Space::patrol_path_storage_from_editor()
 {
 	if (g_dedicated_server)
