@@ -14,10 +14,10 @@ file(GLOB_RECURSE UTILS_LVLFCONV_RES_FILES
     "*.bmp"
 )
 file(GLOB_RECURSE UTILS_LVLFCONV_SOURCE_LOG_FILES CONFIGURE_DEPENDS
-    "../xrForms/cl_log.cpp"
-    "../xrForms/cl_log.h"
-    "../xrForms/imgui_impl_sdlrenderer3.cpp"
-    "../xrForms/imgui_impl_sdlrenderer3.h"
+    "../xrLevelBuilder/Common/cl_log.cpp"
+    "../xrLevelBuilder/Common/cl_log.h"
+    "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.cpp"
+    "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.h"
     "../../xrServerEntities/server_entity_wrapper.h"
     "../../xrServerEntities/server_entity_wrapper.cpp"
     "../../xrServerEntities/server_entity_wrapper_inline.h"

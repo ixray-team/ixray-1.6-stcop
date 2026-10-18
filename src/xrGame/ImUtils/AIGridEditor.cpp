@@ -9,7 +9,7 @@
 #include "../../xrEngine/AI/level_graph_format.h"
 #include "../../xrEngine/GameMtlLib.h"
 #include "../../xrUI/ui_defs.h"
-#include "../../utils/xrAI/AIMapExport.h"
+#include "../../utils/xrLevelBuilder/xrAI/AIMapExport.h"
 #include <cmath>
 
 namespace AIGrid

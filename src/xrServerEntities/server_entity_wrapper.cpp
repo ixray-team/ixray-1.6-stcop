@@ -16,7 +16,7 @@
 #ifdef AI_COMPILER
 #	include "factory_api.h"
 #elif UTILS_FORMS_EXPORTS
-# include "../xrAI/factory_api.h"
+# include "../utils/xrLevelBuilder/xrAI/factory_api.h"
 #endif
 
 struct ISE_Abstract;

@@ -1,7 +1,7 @@
 #include "xrCore.h"
 #define SCRIPTS_API
 #include "../../xrEngine/_d3d_extensions.h"
-#include "../xrLC/vbm.h"
+#include "../xrLevelBuilder/xrLC/CForm/vbm.h"
 #include "FormatParsers/LevelCForm/CFormIO.h"
 #include "FormatParsers/LevelGeom/GeomIO.h"
 #include "ConverterUI.h"
@@ -11,7 +11,7 @@
 #include "luabind/luabind_memory.h"
 #include "Save/MemoryBuffer.h"
 #include "Save/SaveManager.h"
-#include "../xrAI/factory_api.h"
+#include "../xrLevelBuilder/xrAI/factory_api.h"
 
 // SWIContainer g_SWI, x_SWI;
 // VBContainer g_VB, x_VB;

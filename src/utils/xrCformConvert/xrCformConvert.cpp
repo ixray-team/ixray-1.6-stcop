@@ -1,6 +1,6 @@
 #include "xrCore.h"
 #include "FormatParsers/json/JsonSerialize.h"
-#include "../xrForms/cl_log.h"
+#include "../xrLevelBuilder/Common/cl_log.h"
 #include "ConverterUI.h"
 
 #include <luabind/luabind.hpp>
@@ -8,7 +8,7 @@
 #include <timeapi.h>
 
 #include "../../Editors/xrEUI/imgui_impl_sdl3.h"
-#include "../xrForms/imgui_impl_sdlrenderer3.h"
+#include "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.h"
 
 #include "CompilerIcons.h"
 
