@@ -1153,7 +1153,8 @@ HRESULT	CRender::shader_compile(
 	}
 	
 	// options
-	const int m_skinning = Engine.External.GetSkinningMode();
+	// Only vertex shaders read SKIN_*: other stages compile and cache one variant for every skinning mode
+	const int m_skinning = (pTarget != nullptr && pTarget[0] == 'v') ? Engine.External.GetSkinningMode() : -1;
 	{
 		xr_sprintf(c_smapsize, "%04d", u32(o.smapsize));
 
