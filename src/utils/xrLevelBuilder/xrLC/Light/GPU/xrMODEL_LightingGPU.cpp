@@ -36,7 +36,7 @@ void RunMURefsGPU()
 				MRef->calc_lighting_cuda_1();
 			};
 
-			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			// Завершаем накопленые данные
 			GPUTaskinSystem.LightPointPacked_run_tasks();
 	}, gCompilerMode.ThreadsPerWork);
 	Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
@@ -61,7 +61,7 @@ void RunMURefsGPU()
 
 	Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
-	GPUTaskinSystem.RestartALL(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+	GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 
 }
 
 // Capture RAYS
@@ -231,7 +231,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 
 	colors_cuda.clear();
 
-	// se7kills: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
+	// se7kills: ’от€бы пам€ть убрать из юза
 	SafeVertices.clear();
 	SafeVertices.shrink_to_fit();
 }
