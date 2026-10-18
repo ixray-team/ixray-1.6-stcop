@@ -238,7 +238,9 @@ IC u16 COperatorAbstract::weight	(const CSConditionState &condition0, const CSCo
 	return					(min_weight());
 }
 
-IC u16 COperatorAbstract::min_weight	() const
+// Not IC: template users (CProblemSolver::Search, CActionBase::weight) live in
+// other translation units, and an inline definition emits no symbol in Release.
+u16 COperatorAbstract::min_weight	() const
 {
 	if (m_weight_actual)
 		return				(m_min_weight);

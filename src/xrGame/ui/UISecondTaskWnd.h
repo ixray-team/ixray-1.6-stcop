@@ -108,7 +108,7 @@ public:
 	virtual			~UITaskListWndItem	() = default;
 
 			bool	init_task			( CGameTask* task, UITaskListWnd* parent );
-	IC		u32		get_priority_task	() const;
+		u32		get_priority_task	() const;
 	CGameTask*		get_task			() { return m_task; }
 
 	virtual void 	OnFocusReceive		();

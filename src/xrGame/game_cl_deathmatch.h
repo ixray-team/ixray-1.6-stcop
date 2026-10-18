@@ -173,4 +173,4 @@ private:
 			void		AdditionalAmmoInserter		(aditional_ammo_t::value_type const & sect_name);
 };
 
-IC bool	DM_Compare_Players		(game_PlayerState* p1, game_PlayerState* p2);
+bool	DM_Compare_Players		(game_PlayerState* p1, game_PlayerState* p2);

@@ -122,7 +122,7 @@ public:
 			void			ShowChildren		(bool show);
 	
 	//абсолютные координаты
-	IC void					GetAbsoluteRect		(Frect& r) ;
+	void					GetAbsoluteRect		(Frect& r) ;
 	IC void					GetAbsolutePos		(Fvector2& p) 	{Frect abs; GetAbsoluteRect(abs); p.set(abs.x1,abs.y1);}
 
 
