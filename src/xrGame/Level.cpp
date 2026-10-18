@@ -206,6 +206,7 @@ CLevel::CLevel() :
 	R_ASSERT				(nullptr==g_player_hud);
 	g_player_hud			= new player_hud();
 	g_player_hud->RequestDefault();
+	player_hud::RequestAllHands();
 	
 	hud_zones_list = nullptr;
 
