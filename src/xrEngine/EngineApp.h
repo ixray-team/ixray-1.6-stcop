@@ -44,6 +44,7 @@ public:
 	void LoadStage(int MaxStages);
 	virtual void LoadSwitch();
 	virtual void LoadDraw();
+	void LoadPulse();
 	virtual void LoadForceFinish();
 	virtual void SetLoadStageTitle(const char* _ls_title);
 
@@ -57,6 +58,10 @@ public:
 	virtual void load_draw_internal();
 	void SetLoadingScreen(ILoadingScreen* newScreen);
 	virtual void DestroyLoadingScreen();
+
+private:
+	static constexpr u32 LoadPulsePeriod = 50;
+	u32 LastLoadDraw = 0;
 };
 
 extern ENGINE_API CEngineApp* pApp;

@@ -237,6 +237,7 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 			elem.second->ID = server().PerformIDgen(id);
 			VERIFY(id == elem.second->ID);
 			register_object(elem.second, false);
+			pApp->LoadPulse();
 		}
 
 		can_register_objects(true);
@@ -245,6 +246,7 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 		for (auto& elem : Objects)
 		{
 			elem.second->on_register();
+			pApp->LoadPulse();
 		}
 	}
 

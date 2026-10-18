@@ -207,6 +207,7 @@ void CEngineApp::LoadDraw()
 	Device.dwFrame += 1;
 
 
+	LastLoadDraw = Device.TimerAsync();
 	if (!Device.Begin())		return;
 
 	if (g_dedicated_server)
@@ -215,6 +216,16 @@ void CEngineApp::LoadDraw()
 		load_draw_internal();
 
 	Device.End();
+}
+
+void CEngineApp::LoadPulse()
+{
+	if (g_appLoaded || !g_AppInfo.IsPrimaryThread())
+		return;
+	if (Device.TimerAsync() - LastLoadDraw < LoadPulsePeriod)
+		return;
+	PROF_EVENT("CEngineApp::LoadPulse");
+	LoadDraw();
 }
 
 void CEngineApp::LoadForceFinish()
