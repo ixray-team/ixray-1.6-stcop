@@ -110,6 +110,7 @@ public:
 	MotionsSlotVec								m_Motions;
 
     CPartition*									m_Partition;
+	xr_unique_ptr<CPartition>					OwnPartition;
 	
 	IBlendDestroyCallback						*m_blend_destroy_callback;
 	IUpdateTracksCallback						*m_update_tracks_callback;
