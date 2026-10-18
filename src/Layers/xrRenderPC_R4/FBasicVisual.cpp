@@ -29,10 +29,19 @@ dxRender_Visual::dxRender_Visual		()
 
 dxRender_Visual::~dxRender_Visual		()
 {
+	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
+	{
+		// ModelPool defers destruction until rendering ends. Clear snapshots at the next light boundary.
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 }
 
 void dxRender_Visual::Release		()
 {
+	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 }
 
 //CStatTimer						tscreate;
@@ -89,6 +98,10 @@ void dxRender_Visual::reload_shader()
 	}
 	shader.create(*shader_name, *texture_name);
 	Engine.External.SetSkinningMode(old_mode);
+	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 }
 void dxRender_Visual::restore_shader()
 {
@@ -99,6 +112,10 @@ void dxRender_Visual::restore_shader()
 	}
 	shader.create(*orig_shader_name, *texture_name);
 	Engine.External.SetSkinningMode(old_mode);
+	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 }
 void dxRender_Visual::restore_texture()
 {
@@ -109,6 +126,10 @@ void dxRender_Visual::restore_texture()
 	}
 	shader.create(*shader_name, *orig_texture_name);
 	Engine.External.SetSkinningMode(old_mode);
+	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 }
 
 #define PCOPY(a)	a = pFrom->a

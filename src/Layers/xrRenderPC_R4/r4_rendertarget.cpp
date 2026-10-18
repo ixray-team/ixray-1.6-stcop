@@ -1091,6 +1091,7 @@ void CRenderTarget::CreateFSTriangle()
 
 CRenderTarget::~CRenderTarget	()
 {
+	ClearSpotShadowCache();
 	if (EditorWindowDepth != nullptr)
 	{
 		GRHI->SetDepthStencilView(nullptr);

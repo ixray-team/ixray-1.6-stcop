@@ -5,6 +5,7 @@
 
 void	CRender::render_lights	(light_Package& LP)
 {
+	Target->BeginSpotShadowCacheFrame();
 	//////////////////////////////////////////////////////////////////////////
 	// Refactor order based on ability to pack shadow-maps
 	// 1. calculate area + sort in descending order
@@ -103,91 +104,113 @@ void	CRender::render_lights	(light_Package& LP)
 					break;
 
 				source.pop_back();
-				if (L->flags.bOccq && !L->flags.bHudMode)
-					Lights_LastFrame.push_back(L);
+				if (!Target->CheckSpotShadowGraph())
+				{
+					++stats.s_finalclip;
+					continue;
+				}
 
 				// render
 				phase = PHASE_SMAP;
-				r_pmask(true, /*!!RImplementation.o.Tshadows*/ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
+				r_pmask(true, /*!!RImplementation.o.Tshadows*/ ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
-				PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
-				bool decorative_light = false;
-				if (L->flags.bHudMode)
+				if (Target->CanCacheSpotShadow(*L))
 				{
-					L_spot_s.push_back(L);
-					decorative_light = true;
-				}
-				else if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) ||
-					     (L->decor_object[1] && !L->decor_object[1]->getDestroy()) ||
-						 (L->decor_object[2] && !L->decor_object[2]->getDestroy()) ||
-						 (L->decor_object[3] && !L->decor_object[3]->getDestroy()) ||
-						 (L->decor_object[4] && !L->decor_object[4]->getDestroy()) ||
-						 (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
-				{
-					RImplementation.marker++;			// !!! critical here
-					RImplementation.set_Object(0);
-					for (int f = 0; f < 6; f++)
+					if (Target->RenderSpotShadow(*L))
 					{
-						if (L->decor_object[f] && !L->decor_object[f]->getDestroy())
-						{
-							L->decor_object[f]->renderable_Render();
-							decorative_light = true;
-						}
+						++stats.s_merged;
+						L_spot_s.push_back(L);
+					}
+					else
+					{
+						++stats.s_finalclip;
 					}
 				}
 				else
 				{
-					PROF_EVENT("r_dsgraph_render_subspace");
-					r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
-				}
-
-				if (L->flags.bOccq && !L->flags.bHudMode)
-					L->svis.begin();
-
-				bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-				bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-				if (bNormal || bSpecial)
-				{
-					stats.s_merged++;
-					L_spot_s.push_back(L);
-					Target->phase_smap_spot(L);
-					RCache.set_xform_world(Fidentity);
-					RCache.set_xform_view(L->X.S.view);
-					RCache.set_xform_project(L->X.S.project);
-					r_dsgraph_render_graph(0);
-
-					if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
-						psDeviceFlags.is(rsDetails) &&
-						GetDetails() && GetDetails()->dtSlots &&
-						L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+					Target->CountLegacySpotShadow();
+					if (L->flags.bOccq && !L->flags.bHudMode)
 					{
-						GetDetails()->hw_Render(L);
+						Lights_LastFrame.push_back(L);
 					}
-
-					L->X.S.transluent = false;
-					if (bSpecial)
+					PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
+					bool decorative_light = false;
+					if (L->flags.bHudMode)
 					{
-						L->X.S.transluent = true;
-						Target->phase_smap_spot_tsh(L);
-
+						L_spot_s.push_back(L);
+						decorative_light = true;
+					}
+					else if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
+					{
+						RImplementation.marker++; // !!! critical here
+						RImplementation.set_Object(0);
+						for (int f = 0; f < 6; f++)
 						{
-							PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
-							r_dsgraph_render_graph(1); // normal level, secondary priority
-						}
-
-						{
-							PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
-							r_dsgraph_render_sorted(); // strict-sorted geoms
+							if (L->decor_object[f] && !L->decor_object[f]->getDestroy())
+							{
+								L->decor_object[f]->renderable_Render();
+								decorative_light = true;
+							}
 						}
 					}
-				}
-				else
-				{
-					stats.s_finalclip++;
-				}
+					else
+					{
+						PROF_EVENT("r_dsgraph_render_subspace");
+						r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
+					}
 
-				if (L->flags.bOccq && !L->flags.bHudMode)
-					L->svis.end();
+					if (L->flags.bOccq && !L->flags.bHudMode)
+					{
+						L->svis.begin();
+					}
+
+					bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
+					bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+					if (bNormal || bSpecial)
+					{
+						stats.s_merged++;
+						L_spot_s.push_back(L);
+						Target->phase_smap_spot(L);
+						RCache.set_xform_world(Fidentity);
+						RCache.set_xform_view(L->X.S.view);
+						RCache.set_xform_project(L->X.S.project);
+						r_dsgraph_render_graph(0);
+
+						if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
+							psDeviceFlags.is(rsDetails) &&
+							GetDetails() && GetDetails()->dtSlots &&
+							L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+						{
+							GetDetails()->hw_Render(L);
+						}
+
+						L->X.S.transluent = false;
+						if (bSpecial)
+						{
+							L->X.S.transluent = true;
+							Target->phase_smap_spot_tsh(L);
+
+							{
+								PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
+								r_dsgraph_render_graph(1); // normal level, secondary priority
+							}
+
+							{
+								PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
+								r_dsgraph_render_sorted(); // strict-sorted geoms
+							}
+						}
+					}
+					else
+					{
+						stats.s_finalclip++;
+					}
+
+					if (L->flags.bOccq && !L->flags.bHudMode)
+					{
+						L->svis.end();
+					}
+				}
 				r_pmask(true, false);
 			}
 			{
