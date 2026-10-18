@@ -35,7 +35,7 @@ function action_timer:update(delta)
         local Timer = self.st.timer
         local DisplayKey = self.st.timer_id or Timer
         local Display = TimerDisplays[DisplayKey]
-        if not Display or Display.Hours ~= hours or Display.Minutes ~= minutes or Display.Seconds ~= seconds or Display.Window ~= Timer then
+        if not Display or Display.Hours ~= hours or Display.Minutes ~= minutes or Display.Seconds ~= seconds or not rawequal(Display.Window, Timer) then
             local str = tostring(hours)..":"..sr_timer.time2str(minutes)..":"..sr_timer.time2str(seconds)
 
             Timer:TextControl():SetTextST(str)
