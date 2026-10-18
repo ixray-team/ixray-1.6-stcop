@@ -8,7 +8,7 @@
 #include "Embree/EmbreeRayTrace.h"
 
 // se7kills: Packed Task pool
-#include "CUDA/xrCuda_PackedLights.h"
+#include "GPU/GpuPackedLighting.h"
 
 class  base_lighting;
 extern EmbreeRayTraceModel EmbreeMain;

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "CudaLightingBackend.h"
+#include "GpuLightingBackend.h"
 
 #include "../../Build/Build.h"
 #include "../../Build/xrLC_GlobalData.h"
@@ -9,24 +9,30 @@
 #include "../xrDeflector.h"
 #include "../xrLightVertex.h"
 #include "../light_point.h"
-#include "CUDARayCast.h"
-#include "xrCuda_PackedLights.h"
+#include "GpuRayTracer.h"
+#include "GpuPackedLighting.h"
 
 extern void RunImplicitGPU(ImplicitDeflector& defl);
 extern void RunMURefsGPU();
 
-void CudaLightingBackend::InitializeLevel()
+const char* GpuLightingBackend::GetName() const
 {
+	return Tracer.GetName();
+}
+
+void GpuLightingBackend::InitializeLevel()
+{
+	GPUTaskinSystem.Tracer = &Tracer;
 	GPUTaskinSystem.InitializeGPU();
 	GPUTaskinSystem.InitializeGPU_Model();				// Memory Usage 150-300MB !
 }
 
-void CudaLightingBackend::ReleaseLevel()
+void GpuLightingBackend::ReleaseLevel()
 {
 	GPUTaskinSystem.DestroyGPU_Model();
 }
 
-void CudaLightingBackend::LightAdaptiveHT(CBuild& Build)
+void GpuLightingBackend::LightAdaptiveHT(CBuild& Build)
 {
 	clMsg("Start Processing AdaptiveHT : MEMORY: %u mb", GetHeapMemory() / 1024 / 1024);
 
@@ -57,12 +63,12 @@ void CudaLightingBackend::LightAdaptiveHT(CBuild& Build)
 	GPUTaskinSystem.RestartALL();
 }
 
-void CudaLightingBackend::LightImplicit(ImplicitDeflector& Deflector)
+void GpuLightingBackend::LightImplicit(ImplicitDeflector& Deflector)
 {
 	RunImplicitGPU(Deflector);
 }
 
-void CudaLightingBackend::LightDeflectors()
+void GpuLightingBackend::LightDeflectors()
 {
 	// Se7kills
 	CTimer start_time; start_time.Start();
@@ -110,7 +116,7 @@ void CudaLightingBackend::LightDeflectors()
 	clMsg("%f seconds", start_time.GetElapsed_sec());
 }
 
-void CudaLightingBackend::LightVertices(u32 Flags)
+void GpuLightingBackend::LightVertices(u32 Flags)
 {
 	int INDEX = 0;
 	GPUTaskinSystem.RestartALL();
@@ -152,30 +158,30 @@ void CudaLightingBackend::LightVertices(u32 Flags)
 	GPUTaskinSystem.RestartALL();
 }
 
-void CudaLightingBackend::LightMURefs()
+void GpuLightingBackend::LightMURefs()
 {
 	RunMURefsGPU();
 }
 
-void CudaLightingBackend::OnStageFinished(ELightingStage Stage)
+void GpuLightingBackend::OnStageFinished(ELightingStage Stage)
 {
 	switch (Stage)
 	{
 	case ELightingStage::Deflectors:
-		XRay::RayTrace::CUDA::CapturePreviewBakedColors(false);
+		XRay::RayTrace::GPU::CapturePreviewBakedColors(false);
 		break;
 	case ELightingStage::Vertices:
-		XRay::RayTrace::CUDA::CapturePreviewBakedColors(true);
+		XRay::RayTrace::GPU::CapturePreviewBakedColors(true);
 		break;
 	case ELightingStage::MUModels:
-		XRay::RayTrace::CUDA::CapturePreviewMU();
+		XRay::RayTrace::GPU::CapturePreviewMU();
 		break;
 	}
 }
 
-void CudaLightingBackend::OnLevelFinished()
+void GpuLightingBackend::OnLevelFinished()
 {
-	XRay::RayTrace::CUDA::ForgetPreviewFaces();
+	XRay::RayTrace::GPU::ForgetPreviewFaces();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -228,7 +234,7 @@ static void ApplyColorsGPU()
 	detail_colors.shrink_to_fit();
 }
 
-void CudaLightingBackend::BeginDetails()
+void GpuLightingBackend::BeginDetails()
 {
 	size_x = gl_data.slots_data.size_x();
 	size_z = gl_data.slots_data.size_z();
@@ -236,13 +242,14 @@ void CudaLightingBackend::BeginDetails()
 	samples.resize(size_x * size_z);
 	detail_colors.resize(size_x * size_z);
 
+	GPUTaskinSystem.Tracer = &Tracer;
 	GPUTaskinSystem.InitializeGPU();
 	GPUTaskinSystem.InitializeGPU_Model();
 
 	GPUTaskinSystem.ColorsMapType = eDetails;
 }
 
-void CudaLightingBackend::LightDetailSlot(DetailSlot& Slot, xr_vector<DetailsTask>& Samples, base_lighting& Lights, u32 Count)
+void GpuLightingBackend::LightDetailSlot(DetailSlot& Slot, xr_vector<DetailsTask>& Samples, base_lighting& Lights, u32 Count)
 {
 	for (DetailsTask& Task : Samples)
 	{
@@ -251,12 +258,12 @@ void CudaLightingBackend::LightDetailSlot(DetailSlot& Slot, xr_vector<DetailsTas
 	}
 }
 
-void CudaLightingBackend::FinishDetailsThread()
+void GpuLightingBackend::FinishDetailsThread()
 {
 	GPUTaskinSystem.LightPointPacked_run_tasks();
 }
 
-void CudaLightingBackend::EndDetails()
+void GpuLightingBackend::EndDetails()
 {
 	ApplyColorsGPU();
 	GPUTaskinSystem.DestroyGPU_Model();
