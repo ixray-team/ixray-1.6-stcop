@@ -446,12 +446,26 @@ function get_sim_board()
 	return board
 end
 
+local TargetSelectionBuffers = {}
+
+local function TargetPriorityLess(Left, Right)
+	return Left.prior > Right.prior
+end
+
 function sim_board:get_squad_target(squad)
         --printf("List of available target for %s", squad.id)
     
-        local available_targets = {}
+        local BufferCount = #TargetSelectionBuffers
+        local Buffer = TargetSelectionBuffers[BufferCount]
+        if Buffer then
+            TargetSelectionBuffers[BufferCount] = nil
+        else
+            Buffer = { Targets = {}, Rows = {} }
+        end
+        local available_targets = Buffer.Targets
+        local Rows = Buffer.Rows
+        local EligibleCount = 0
         local most_priority_task = nil
-        local max_prior = 0
         for k,v in pairs(simulation_objects.get_sim_obj_registry().objects)	do
             local curr_prior = 0
             -- Проверка против выдачи таска на себя.
@@ -459,17 +473,33 @@ function sim_board:get_squad_target(squad)
                 curr_prior = v:evaluate_prior(squad)
             end
             if curr_prior > 0 then
-                local target_tbl = {prior = curr_prior, target = v}
-                table.insert(available_targets, target_tbl)
+                EligibleCount = EligibleCount + 1
+                local Row = Rows[EligibleCount]
+                if not Row then
+                    Row = {}
+                    Rows[EligibleCount] = Row
+                end
+                Row.prior = curr_prior
+                Row.target = v
+                available_targets[EligibleCount] = Row
             end
         end
         if #available_targets > 0 then
-            table.sort(available_targets, function(a,b) return a.prior > b.prior end)
+            table.sort(available_targets, TargetPriorityLess)
             local max_id = math.floor(0.3 * #available_targets)
             if max_id == 0 then max_id = 1 end
             most_priority_task = available_targets[math.random(max_id)].target
         end
         --print_table(available_targets)
+        for Index = 1, EligibleCount do
+            local Row = Rows[Index]
+            Row.prior = nil
+            Row.target = nil
+            available_targets[Index] = nil
+        end
+        if #TargetSelectionBuffers < 2 then
+            TargetSelectionBuffers[#TargetSelectionBuffers + 1] = Buffer
+        end
         --printf("end of List of available target for %s", squad.id)
         return most_priority_task or (squad.smart_id and alife():object(squad.smart_id)) or squad
 end
