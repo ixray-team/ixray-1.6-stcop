@@ -20,7 +20,8 @@ ILightingBackend& GetLightingBackend()
 #ifdef LCCUDA_BUILD
 	static CudaRayTracer CudaTracer;
 	static GpuLightingBackend Cuda(CudaTracer);
-	if (gCompilerMode.CUDA)
+	extern bool IsCudaAvailable();
+	if (gCompilerMode.CUDA && IsCudaAvailable())
 	{
 		return Cuda;
 	}
