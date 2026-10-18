@@ -3,6 +3,9 @@
 using errno_t = int;
 
 #include <errno.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "UTF8.h"
 
 #define _MAX_PATH PATH_MAX + 1
@@ -244,6 +247,13 @@ namespace Platform
 	
     IC std::string GetUsrName() 
     {
+        // getlogin_r reflects the TTY session and returns "root" (or fails)
+        // for LaunchServices launches; the uid always identifies the owner.
+        struct passwd* pw = getpwuid(getuid());
+        if (pw != nullptr && pw->pw_name != nullptr)
+        {
+            return std::string(pw->pw_name);
+        }
         char UserName[LOGIN_NAME_MAX];
         if (getlogin_r(UserName, sizeof(UserName)) == 0) 
         {
