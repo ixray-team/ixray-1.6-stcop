@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 #include "CutsceneManager.h"
 #include "Level.h"
 #include "debug_renderer.h"
@@ -119,7 +119,6 @@ void CCutsceneManager::Update()
 
 void CCutsceneManager::Render()
 {
-	Device.seqParallel.emplace_back(this, &CCutsceneManager::Update);
 	if (m_pCurrentCutscene) {
 		if (m_bToDelete)
 		{
