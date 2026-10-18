@@ -415,6 +415,8 @@ struct attachable_hud_item final
 	float							AimShotMotion = 1.f;
 	float							IdleFade = 0.f;
 	float							SprintBlendIn = 0.f;
+	float							SprintLeftGripRange = 0.6f;
+	float							SprintLeftCancelReturn = 0.35f;
 	xr_vector<shared_str>			AdditiveMotions;
 	float							AdditiveBlendIn = 0.f;
 	float							AdditiveBlendOut = 0.1f;
@@ -931,6 +933,18 @@ public:
 	MotionID				SprintReferenceMotion;
 	bool					SprintLayerSeam = false;
 	bool					SprintLeftFree = false;
+
+	struct SSprintLeftCancel
+	{
+		bool				Active = false;
+		float				Weight = 0.f;
+		float				Hold = 1.f;
+		float				Time = 0.f;
+		Fmatrix				Relative = Fidentity;
+	};
+
+	SSprintLeftCancel		SprintLeftCancel;
+	Fmatrix					LeftWristLast = Fidentity;
 	u32						SprintLayerFrame = u32(-1);
 	Fmatrix					SprintLayerPrev[2] = { Fidentity, Fidentity };
 	Fmatrix					SprintLayerResidual[2] = { Fidentity, Fidentity };
@@ -954,10 +968,10 @@ public:
 	float			SprintPoseTarget		();
 	float			SprintLayerDeviation	() const;
 	void			ResolveSprintAdditive	(attachable_hud_item* item);
-	float			SprintEndMatch		(float start_progress) const;
 	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f, bool inertialize = false);
 	void			StopSprintAdditive		(float blend);
 	float			SprintAdditiveProgress	(MotionID motion) const;
+	void			FreezeSprintAdditive	(MotionID motion);
 	void			UpdateSprintAdditive	(bool sprint);
 	void			UpdateSprintAdditiveChain();
 	void			UpdateRetargetLayerWeight();
@@ -988,6 +1002,8 @@ private:
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
 	bool			HandsIkBegin		(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkSprint		(SHandsIkFrame& F);
+	void			HandsIkSprintLeft	(SHandsIkFrame& F, MotionID SprintMotion, float SprintLayer);
+	void			BeginSprintLeftCancel();
 	void			SprintLayerSmooth	(SHandsIkFrame& F);
 	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
 	void			HandsIkFingerState	(SHandsIkFrame& F);
@@ -1000,7 +1016,7 @@ private:
 	void			HandsIkFingerInertia	(SHandsIkFrame& F);
 	bool			LeftHandAttachReference	(attachable_hud_item* item);
 	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f);
+	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f, float* deviation = nullptr);
 	xr_vector<u16>	left_arm_blend_bones() const;
 	xr_vector<u16>	left_hand_fingers() const;
 	bool			FingerGripReference	(attachable_hud_item* item);
