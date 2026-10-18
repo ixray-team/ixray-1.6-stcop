@@ -177,6 +177,10 @@ private:
 	void FreeIDImpl(ALife::_OBJECT_ID ID);
 
 #ifdef DEBUG
+	// The IDs set in m_id_chunks, kept per server like them
+	size_t DebugIDCount = 0;
+	xr_set<ALife::_OBJECT_ID> DebugUsedIDs;
+
 	void VerifyIDDebug();
 #endif
 
