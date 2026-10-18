@@ -1,0 +1,304 @@
+#include "stdafx.h"
+#include "CUDAContext.h"
+
+#include <fstream>
+#include <filesystem>
+#include <string>
+
+// CUDA RUNTIME GET MEMORY ()
+size_t GetCudaMemoryUsed()
+{
+	size_t total, Free;
+	cudaMemGetInfo(&Free, &total);
+	return total-Free;
+}
+
+xr_path GetExecutableDir()
+{
+#ifdef IXR_WINDOWS
+	char path[MAX_PATH];
+	GetModuleFileNameA(nullptr, path, MAX_PATH);
+	return xr_path(path).parent_path();
+#else
+	char result[PATH_MAX];
+	ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+	if (count == -1)
+		throw std::runtime_error("Failed to read /proc/self/exe");
+	return xr_path(xr_string(result, count)).parent_path();
+#endif
+}
+
+// Чтобы CUDA Выделела память CPU - > Heap не рос там где не нужно !
+bool OptixContext::Initialize()
+{
+	// clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
+	// cudaFree(0); // Затычка инициализации Девайса !
+
+	CUDA_CHECK_2( cuInit(0) ); // Инициализация !
+
+    // без двойной инициализации
+	CUDA_CHECK_2(cuDeviceGet(&cuDev, cudaDeviceId));
+	CUDA_CHECK_2(cuDevicePrimaryCtxRetain(&cuCtx, cuDev));
+	CUDA_CHECK_2(cuCtxSetCurrent(cuCtx));
+
+	string256 deviceName;
+	CUDA_CHECK_2(cuDeviceGetName(deviceName, sizeof(deviceName), cuDev));
+
+	int major = 0, minor = 0;
+	CUDA_CHECK_2(cuDeviceGetAttribute(&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, cuDev));
+	CUDA_CHECK_2(cuDeviceGetAttribute(&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, cuDev));
+
+	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceName, major, minor);
+
+	// --- 3. OptiX ---
+	// OPTIX_CHECK(optixInit());
+	// se7kills: Это место постоянно выделяет 37мб памяти ! Всегда растет !
+    OPTIX_CHECK(optixInitWithHandle(&OptixLibHandle)); // Сохраняем Handle для последующей очистки, optixInit делает невозможным выгрузку библиотеки
+ 
+	OptixDeviceContextOptions options = {};
+	options.logCallbackFunction = &OptixLogCallback;
+	options.logCallbackLevel	= 0;
+	options.validationMode		= OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF;
+
+#ifdef DEBUG
+	options.logCallbackLevel = 4;
+	options.validationMode		= OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
+#endif
+
+	// В этом режиме OptiX требует НЕ nullptr
+ 	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
+ 
+	// --- 4. Pipeline ---
+	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
+	CreatePipeline(fullPtxPath.xstring().c_str());
+
+	clMsg("[Cuda] Loaded Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
+
+	return true;
+} 
+
+void OptixContext::Destroy()
+{
+	CUDA_CHECK(cudaDeviceSynchronize());
+
+	// Рекорды конечно выглядят невинно, находясь в структуре в стеке, но они выделяются через cuMemAlloc!
+	cuMemFree(m_sbt.raygenRecord);
+	m_sbt.raygenRecord = 0;
+	cuMemFree(m_sbt.missRecordBase);
+	m_sbt.missRecordBase = 0;
+	cuMemFree(m_sbt.hitgroupRecordBase);
+	m_sbt.hitgroupRecordBase = 0;
+
+	if (m_pipeline)
+	{
+		optixPipelineDestroy(m_pipeline);
+		m_pipeline = nullptr;
+	}
+
+	if (missGroup)
+	{
+		optixProgramGroupDestroy(missGroup);
+		missGroup = nullptr;
+	}
+	if (raygen_prog_group)
+	{
+		optixProgramGroupDestroy(raygen_prog_group);
+		raygen_prog_group = nullptr;
+	}
+	if (hit_group)
+	{
+		optixProgramGroupDestroy(hit_group);
+		hit_group = nullptr;
+	}
+
+	if (module)
+	{
+		optixModuleDestroy(module);
+		module  = nullptr;
+	}
+
+	if (optixContext)
+	{
+		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
+		optixContext = nullptr;
+	}
+
+	if (OptixLibHandle)
+	{
+		OPTIX_CHECK(optixUninitWithHandle(OptixLibHandle));
+		OptixLibHandle = nullptr;
+	}
+
+	CUDA_CHECK_2(cuDevicePrimaryCtxRelease_v2(cuDev));
+	CUDA_CHECK  (cudaDeviceReset()); 
+}
+
+// Структура для записи SBT
+struct __align__(OPTIX_SBT_RECORD_ALIGNMENT) RayGenRecord
+{
+	char header[OPTIX_SBT_RECORD_HEADER_SIZE];
+};
+
+struct __align__(OPTIX_SBT_RECORD_ALIGNMENT) MissRecord
+{
+	char header[OPTIX_SBT_RECORD_HEADER_SIZE];
+};
+
+struct __align__(OPTIX_SBT_RECORD_ALIGNMENT) HitGroupRecord
+{
+	char header[OPTIX_SBT_RECORD_HEADER_SIZE];
+	// Здесь можно добавить данные материала
+};
+
+// Функция для создания пайплайна
+void OptixContext::CreatePipeline(const char* ptxCode)
+{
+	auto LoadPTXLambda = [](const std::string & filename)
+	{
+		clMsg("Optix Loading PTX File: %s", filename.c_str());
+		std::ifstream file(filename, std::ios::binary);
+		if (!file) 
+			throw std::runtime_error("Failed to open PTX file");
+		return std::string(std::istreambuf_iterator<char>(file), {});
+	};
+
+	// Создание модуля
+	OptixModuleCompileOptions moduleCompileOptions = {};
+	moduleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
+	moduleCompileOptions.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
+	moduleCompileOptions.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_DEFAULT;
+
+	OptixPipelineCompileOptions pipelineCompileOptions = {};
+	pipelineCompileOptions.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY;
+	pipelineCompileOptions.usesMotionBlur = false;
+	
+	// Todo Сделать где то глобальным параметром через DEFINE
+	pipelineCompileOptions.numPayloadValues = 2;	// se7kills (Важное влияет на количество аргументов OptixTrace)
+	pipelineCompileOptions.numAttributeValues = 2;
+	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
+	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params
+
+	char log[2048];
+	size_t sizeof_log = sizeof(log);
+
+	auto PtxData = LoadPTXLambda(ptxCode);
+
+	optixModuleCreate(
+		optixContext,
+		&moduleCompileOptions,
+		&pipelineCompileOptions,
+		PtxData.c_str(),
+		PtxData.size(),
+		log,
+		&sizeof_log,
+		&module
+	);
+
+	clMsg("*** PTX SIZE: %u", PtxData.size());
+
+	// Создание программных групп
+	OptixProgramGroupOptions programGroupOptions = {};
+
+	OptixProgramGroupDesc raygen_prog_group_desc = {};
+	raygen_prog_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+	raygen_prog_group_desc.raygen.module = module;
+	raygen_prog_group_desc.raygen.entryFunctionName = "__raygen__rg";
+
+	sizeof_log = sizeof(log);
+	optixProgramGroupCreate(
+		optixContext,
+		&raygen_prog_group_desc,
+		1,
+		&programGroupOptions,
+		log,
+		&sizeof_log,
+		&raygen_prog_group
+	);
+
+	OptixProgramGroupDesc missDesc = {};
+	missDesc.kind = OPTIX_PROGRAM_GROUP_KIND_MISS;
+	missDesc.miss.module = module; 
+	missDesc.miss.entryFunctionName = "__miss__ms";
+
+	// 2. Создаем Miss-программную группу
+	optixProgramGroupCreate(
+		optixContext,
+		&missDesc,
+		1,
+		&programGroupOptions,
+		log,
+		&sizeof_log,
+		&missGroup
+	);
+
+	// Создаем описание хит-группы
+	OptixProgramGroupDesc hit_group_desc = {};
+	hit_group_desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+	hit_group_desc.hitgroup.moduleCH = module;  // closest-hit
+	hit_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
+	hit_group_desc.hitgroup.moduleAH = module;  // any-hit (опционально)
+	hit_group_desc.hitgroup.entryFunctionNameAH = "__anyhit__ah";
+
+	optixProgramGroupCreate(
+		optixContext,
+		&hit_group_desc,
+		1,
+		&programGroupOptions,
+		nullptr,
+		0,
+		&hit_group
+	);
+	// Создание пайплайна
+	OptixProgramGroup programGroups[] = { raygen_prog_group, missGroup, hit_group };
+
+	OptixPipelineLinkOptions pipelineLinkOptions = {};
+	pipelineLinkOptions.maxTraceDepth = 1;
+
+	sizeof_log = sizeof(log);
+	optixPipelineCreate(
+		optixContext,
+		&pipelineCompileOptions,
+		&pipelineLinkOptions,
+		programGroups,
+		sizeof(programGroups) / sizeof(programGroups[0]),
+		log,
+		&sizeof_log,
+		&m_pipeline
+	);
+
+	// Настройка SBT
+	CUdeviceptr raygenRecord;
+	size_t raygenRecordSize = sizeof(RayGenRecord);
+	cuMemAlloc(&raygenRecord, raygenRecordSize);
+
+	RayGenRecord rgSbt;
+	optixSbtRecordPackHeader(raygen_prog_group, &rgSbt);
+	cuMemcpyHtoD(raygenRecord, &rgSbt, raygenRecordSize);
+
+	// Miss
+	CUdeviceptr missRecord;
+	size_t missRecordSize = sizeof(MissRecord);
+	cuMemAlloc(&missRecord, missRecordSize);
+
+	MissRecord msSbt;
+	optixSbtRecordPackHeader(missGroup, &msSbt);
+	cuMemcpyHtoD(missRecord, &msSbt, missRecordSize);
+
+	// HitGroup
+	CUdeviceptr hitgroupRecord;
+	size_t hitgroupRecordSize = sizeof(HitGroupRecord);
+	cuMemAlloc(&hitgroupRecord, hitgroupRecordSize);
+
+	HitGroupRecord hgSbt;
+	optixSbtRecordPackHeader(hit_group, &hgSbt);
+	cuMemcpyHtoD(hitgroupRecord, &hgSbt, hitgroupRecordSize);
+
+	// 3. Корректная настройка SBT
+	m_sbt.raygenRecord = raygenRecord;
+	m_sbt.missRecordBase = missRecord;
+	m_sbt.missRecordStrideInBytes = sizeof(MissRecord);
+	m_sbt.missRecordCount = 1;
+	m_sbt.hitgroupRecordBase = hitgroupRecord;  // Исправлено: указатель на выделенную память
+	m_sbt.hitgroupRecordStrideInBytes = sizeof(HitGroupRecord);
+	m_sbt.hitgroupRecordCount = 1;
+}
