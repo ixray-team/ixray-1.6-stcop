@@ -1045,7 +1045,7 @@ end
 --   1 = { infop_check = { 1 = {"infop1" = true} }, infop_set = { 1 = {"infop2" = false } }, section = "section1" },
 --   2 = { infop_check = { 1 = {"infop3" = true}, 2 = {"infop4" = false} }, infop_set = {}, section = "section2" },
 -- }
-function parse_condlist(npc, section, field, src)
+local function ParseCondlist(npc, section, field, src)
 		local lst = {}
 
 		-- 1) Разбиваем на разделенные запятыми части:
@@ -1105,6 +1105,32 @@ function parse_condlist(npc, section, field, src)
 			n = n + 1
 		end
 		return lst
+end
+local ParsedCondlists = {}
+
+local function CopyCondlistTable(Source)
+	local Result = {}
+	for Key, Value in pairs(Source) do
+		if type(Value) == "table" then
+			Result[Key] = CopyCondlistTable(Value)
+		else
+			Result[Key] = Value
+		end
+	end
+	return Result
+end
+
+local function ParseCondlistCached(npc, section, field, src)
+	local Parsed = ParsedCondlists[src]
+	if Parsed == nil then
+		Parsed = ParseCondlist(npc, section, field, src)
+		ParsedCondlists[src] = Parsed
+	end
+	return CopyCondlistTable(Parsed)
+end
+
+function parse_condlist(npc, section, field, src)
+	return PROF_EVENT_CALL("parse_condlist", ParseCondlistCached, npc, section, field, src)
 end
 
 function cfg_get_number_and_condlist(ini, section, field, npc)
@@ -1196,6 +1222,29 @@ function add_condition(lst, at, cond)
 end
 
 
+local SwitchConditionTypes = {}
+local function AddSwitchConditionType(func, cond)
+	SwitchConditionTypes[#SwitchConditionTypes + 1] = { func, "^" .. cond .. "%d*$" }
+end
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_actor_dist_le"      )
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_actor_dist_le_nvis" )
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_actor_dist_ge"      )
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_actor_dist_ge_nvis" )
+AddSwitchConditionType( function(...) return cfg_get_string_and_condlist(...) end, "on_signal"             )
+AddSwitchConditionType( function(...) return cfg_get_condlist(...) end           , "on_info"               )
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_timer"              )
+AddSwitchConditionType( function(...) return cfg_get_number_and_condlist(...) end, "on_game_timer"         )
+AddSwitchConditionType( function(...) return cfg_get_string_and_condlist(...) end, "on_actor_in_zone"      )
+AddSwitchConditionType( function(...) return cfg_get_string_and_condlist(...) end, "on_actor_not_in_zone"  )
+AddSwitchConditionType( function(...) return cfg_get_condlist(...) end           , "on_actor_inside"       )
+AddSwitchConditionType( function(...) return cfg_get_condlist(...) end           , "on_actor_outside"      )
+AddSwitchConditionType( function(...) return cfg_get_npc_and_zone(...) end       , "on_npc_in_zone"        )
+AddSwitchConditionType( function(...) return cfg_get_npc_and_zone(...) end       , "on_npc_not_in_zone"    )
+AddSwitchConditionType( function(...) return cfg_get_npc(...) end                , "on_npc_inside"         )
+AddSwitchConditionType( function(...) return cfg_get_npc(...) end                , "on_npc_outside"        )
+AddSwitchConditionType( function(...) return cfg_get_zone(...) end               , "on_self_in_zone"       )
+AddSwitchConditionType( function(...) return cfg_get_zone(...) end               , "on_self_not_in_zone"   )
+
 function cfg_get_switch_conditions(ini, section, npc)
         local l = {}
         local t
@@ -1204,43 +1253,22 @@ function cfg_get_switch_conditions(ini, section, npc)
             return
         end
         local line_count = ini:line_count(section)
-    
-        local function add_conditions(func, cond)
-            for line_number = 0, line_count - 1 do
-                local result, id, value  = ini:r_line(section,line_number,"","")
-                if string.find( id, "^"..cond.."%d*$" ) ~= nil then
-                    c = func(ini, section, id, npc)
+
+        local Keys = {}
+        for line_number = 0, line_count - 1 do
+            local result, id = ini:r_line(section, line_number, "", "")
+            Keys[line_number + 1] = id
+        end
+
+        for _, Condition in ipairs(SwitchConditionTypes) do
+            local func, pattern = Condition[1], Condition[2]
+            for _, id in ipairs(Keys) do
+                if string.find(id, pattern) ~= nil then
+                    local c = func(ini, section, id, npc)
                     n = add_condition(l, n, c)
                 end
             end
-        --[[	local c = func(ini, section, cond, npc)
-            while c ~= nil do
-                n = add_condition(l, n, c, npc)
-    
-                i = i + 1
-    
-                c = func(ini, section, cond..i, npc)
-            end]]--
         end
-    
-        add_conditions( cfg_get_number_and_condlist, "on_actor_dist_le"      )
-        add_conditions( cfg_get_number_and_condlist, "on_actor_dist_le_nvis" )
-        add_conditions( cfg_get_number_and_condlist, "on_actor_dist_ge"      )
-        add_conditions( cfg_get_number_and_condlist, "on_actor_dist_ge_nvis" )
-        add_conditions( cfg_get_string_and_condlist, "on_signal"             )
-        add_conditions( cfg_get_condlist           , "on_info"               )
-        add_conditions( cfg_get_number_and_condlist, "on_timer"              )
-        add_conditions( cfg_get_number_and_condlist, "on_game_timer"         )
-        add_conditions( cfg_get_string_and_condlist, "on_actor_in_zone"      )
-        add_conditions( cfg_get_string_and_condlist, "on_actor_not_in_zone"  )
-        add_conditions( cfg_get_condlist           , "on_actor_inside"       )
-        add_conditions( cfg_get_condlist           , "on_actor_outside"      )
-        add_conditions( cfg_get_npc_and_zone       , "on_npc_in_zone"        )
-        add_conditions( cfg_get_npc_and_zone       , "on_npc_not_in_zone"    )
-    	add_conditions( cfg_get_npc				   , "on_npc_inside"		 )
-	    add_conditions( cfg_get_npc				   , "on_npc_outside"		 )
-	    add_conditions( cfg_get_zone			   , "on_self_in_zone"		 )
-	    add_conditions( cfg_get_zone			   , "on_self_not_in_zone"	 )
 
         return l
 end
