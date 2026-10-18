@@ -7,7 +7,7 @@
 namespace SpotShadowCacheUtils
 {
 constexpr u32 MaxEntries = 128;
-constexpr u32 Lifetime = 600;
+constexpr u32 Lifetime = 1000;
 constexpr u32 TextureRetryFrames = 30;
 
 class CopyBlender final : public IBlender
