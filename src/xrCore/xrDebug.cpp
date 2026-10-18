@@ -4,6 +4,7 @@
 
 #include "Kernel/EngineExternal.h"
 #include "Kernel/os_clipboard.h"
+#include "CrashDumpHelper.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -425,6 +426,22 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 		ExInfo.ExceptionPointers = pExceptionInfo;
 		ExInfo.ClientPointers = false;
 
+		// The full dump takes seconds while the other threads run on: the process may end before it is written.
+		// A small dump with the stacks goes first, next to it.
+		{
+			string_path SmallDumpPath;
+			xr_strcpy(SmallDumpPath, szDumpPath);
+			if (char* Extension = strrchr(SmallDumpPath, '.'))
+				*Extension = 0;
+			xr_strcat(SmallDumpPath, "_small.mdmp");
+			HANDLE hSmallFile = ::CreateFileA(SmallDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (hSmallFile != INVALID_HANDLE_VALUE)
+			{
+				MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hSmallFile, MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithThreadInfo), &ExInfo, nullptr, nullptr);
+				::CloseHandle(hSmallFile);
+			}
+		}
+
 		// write the dump
 		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo | MiniDumpWithPrivateReadWriteMemory);
 
@@ -533,11 +550,26 @@ void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo)
 
 LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 {
-	ProcessStackTrace(pExceptionInfo);
+	// One thread reports the crash. Another thread failing meanwhile (a corrupted heap often fails on several)
+	// waits here instead of ending the process before the dump is written.
+	static std::atomic<DWORD> CrashingThread = 0;
+	DWORD ExpectedThread = 0;
+	const DWORD CurrentThread = ::GetCurrentThreadId();
+	if (!CrashingThread.compare_exchange_strong(ExpectedThread, CurrentThread) && ExpectedThread != CurrentThread)
+	{
+		::Sleep(INFINITE);
+	}
 
 #ifdef USE_OWN_MINI_DUMP
-	save_mini_dump		(pExceptionInfo);
+	// Before the stack trace: the symbol engine takes seconds and allocates from a heap that may be broken.
+	// The helper process writes the dumps without this process allocating; without it the dump is written here.
+	if (!CrashDumpHelper::Write(pExceptionInfo))
+	{
+		save_mini_dump	(pExceptionInfo);
+	}
 #endif // USE_OWN_MINI_DUMP
+
+	ProcessStackTrace(pExceptionInfo);
 
 	if (!error_after_dialog)
 	{

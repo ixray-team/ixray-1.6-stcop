@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "../xrCore/CrashDumpHelper.h"
 
 #if defined(IXR_APPLE_SERIES)
 #include <limits.h>
@@ -28,6 +29,12 @@ static void PrepareExecutableFolderLaunch()
 
 int ENTRY_FUNCTION(ENTRY_ARGS)
 {
+	// A copy of this executable started to write the crash dumps of the engine
+	if (CrashDumpHelper::RunIfRequested())
+	{
+		return 0;
+	}
+
 #if defined(IXR_APPLE_SERIES)
 	PrepareExecutableFolderLaunch();
 #endif

@@ -1411,6 +1411,16 @@ struct CCC_TimeFactorSingle : public CCC_Float {
 
 };
 
+class CCC_Crash : public IConsole_Command {
+public:
+	CCC_Crash(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void Execute(const char* /**args/**/) {
+		VERIFY3(false, "This is a test crash", "Do not post it as a bug");
+		int* pointer = 0;
+		*pointer = 0;
+	}
+};
+
 #ifdef DEBUG
 class CCC_RadioGroupMask2;
 class CCC_RadioMask :public CCC_Mask32
@@ -1471,15 +1481,6 @@ static CCC_RadioMask x##CCC_RadioMask2(p4,p5,p6);		Console->AddCommand(&x##CCC_R
 static CCC_RadioGroupMask2 x##CCC_RadioGroupMask2(&x##CCC_RadioMask1,&x##CCC_RadioMask2);\
 }
 
-class CCC_Crash : public IConsole_Command {
-public:
-	CCC_Crash(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* /**args/**/) {
-		VERIFY3(false, "This is a test crash", "Do not post it as a bug");
-		int* pointer = 0;
-		*pointer = 0;
-	}
-};
 
 class CCC_DumpModelBones : public IConsole_Command {
 public:
@@ -3069,10 +3070,11 @@ void CCC_RegisterCommands()
 #ifndef MASTER_GOLD
 	CMD4(CCC_Vector3, "psp_cam_offset_r", &CCameraLook2::m_cam_offset_r, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
 	CMD4(CCC_Vector3, "psp_cam_offset_l", &CCameraLook2::m_cam_offset_l, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
+	// Checks the crash handler and the dumps
+	CMD1(CCC_Crash, "crash");
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
-	CMD1(CCC_Crash, "crash");
 	CMD1(CCC_DumpObjects, "dump_all_objects");
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
 	CMD2(CCC_Boolean, "death_anim_debug", &death_anim_debug);
