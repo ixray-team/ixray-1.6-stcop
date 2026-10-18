@@ -3655,9 +3655,6 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 }
 
 #ifdef DEBUG
-static size_t debug_num = 0;
-static xr_set<ALife::_OBJECT_ID> UsedIDsDebug = {};
-
 void xrServer::VerifyIDDebug()
 {
 	size_t result = 0;
@@ -3678,7 +3675,7 @@ void xrServer::VerifyIDDebug()
 			}
 		}
 	}
-	VERIFY(result == debug_num);
+	VERIFY(result == DebugIDCount);
 }
 #endif
 
@@ -3687,8 +3684,8 @@ void xrServer::clear_ids()
 	xrCriticalSectionGuard g(m_id_chunksCS);
 	m_id_chunks.clear();
 #ifdef DEBUG
-	debug_num = 0;
-	UsedIDsDebug.clear();
+	DebugIDCount = 0;
+	DebugUsedIDs.clear();
 #endif
 }
 
@@ -3773,7 +3770,7 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 #define PackAcquire(num) \
 	if(!Pack.bset.n##num){ \
 		Result = CalcID(num-1);\
-		VERIFY(!UsedIDsDebug.contains(Result)); \
+		VERIFY(!DebugUsedIDs.contains(Result)); \
 		Pack.bset.n##num = true; \
 	}
 #else
@@ -3825,7 +3822,7 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			auto& Pack = LLChunk.pack[0];
 			Pack.bset.n1 = true;
 			Result = i1Shift*(m_id_chunks.size()-1);
-			VERIFY(!UsedIDsDebug.contains(Result));
+			VERIFY(!DebugUsedIDs.contains(Result));
 		}
 		R_ASSERT(Result != ALife::INVALID_OBJECT_ID);
 		if (Result > m_TopValidID || m_TopValidID == ALife::INVALID_OBJECT_ID)
@@ -3833,9 +3830,9 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			m_TopValidID = Result;
 		}
 #ifdef DEBUG
-		debug_num++;
+		DebugIDCount++;
 		VerifyIDDebug();
-		UsedIDsDebug.insert(Result);
+		DebugUsedIDs.insert(Result);
 #endif
 		return Result;
 	}
@@ -3856,6 +3853,11 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 		{
 			Pack.set |= 1 << Mod;
 			Result = ID;
+#ifdef DEBUG
+			DebugIDCount++;
+			VerifyIDDebug();
+			DebugUsedIDs.insert(Result);
+#endif
 			if (Pack.set == 255)
 			{
 				IVERIFY(LLChunk.empty);
@@ -3868,11 +3870,6 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			}
 		}
 	}
-#ifdef DEBUG
-	debug_num++;
-	VerifyIDDebug();
-	UsedIDsDebug.insert(Result);
-#endif
 	IVERIFY(ID == Result);
 	if (Result > m_TopValidID || m_TopValidID == ALife::INVALID_OBJECT_ID)
 	{
@@ -3911,6 +3908,11 @@ void xrServer::FreeIDImpl(ALife::_OBJECT_ID ID)
 		if (IVERIFY((Pack.set & (1 << Mod))))
 		{
 			Pack.set &= ~(1 << Mod);
+#ifdef DEBUG
+			DebugIDCount--;
+			VerifyIDDebug();
+			DebugUsedIDs.erase(ID);
+#endif
 		}
 		if (PackBecameFree)
 		{
@@ -3921,12 +3923,6 @@ void xrServer::FreeIDImpl(ALife::_OBJECT_ID ID)
 			++Chunk.empty;
 		}
 	}
-	
-#ifdef DEBUG
-	debug_num--;
-	VerifyIDDebug();
-	UsedIDsDebug.erase(ID);
-#endif
 }
 
 #ifdef DEBUG
