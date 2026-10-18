@@ -35,3 +35,19 @@ long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
 
     return old;
 }
+
+unsigned int Platform::AtomicCompareExchangeU32(unsigned int* ptr, unsigned int expected, unsigned int desired)
+{
+    u32 old = expected;
+    __atomic_compare_exchange_n
+    (
+        ptr,
+        &old,
+        desired,
+        false,
+        __ATOMIC_SEQ_CST,
+        __ATOMIC_SEQ_CST
+    );
+
+    return old;
+}

@@ -104,3 +104,8 @@ long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
 {
 	return _InterlockedCompareExchange(ptr, desired, expected);
 }
+
+unsigned int Platform::AtomicCompareExchangeU32(unsigned int* ptr, unsigned int expected, unsigned int desired)
+{
+	return (u32)_InterlockedCompareExchange((long*)ptr, (long)desired, (long)expected);
+}
