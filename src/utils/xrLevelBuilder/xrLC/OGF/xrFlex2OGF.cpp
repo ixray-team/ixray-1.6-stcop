@@ -1,0 +1,201 @@
+#include "StdAfx.h"
+#include "../Build/Build.h"
+#include "OGF_Face.h"
+#include "../CForm/vbm.h"
+//#include "std_classes.h"
+#include "../Light/Lightmap.h"
+#include "../Mesh/xrFace.h"
+
+#define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
+
+void CBuild::validate_splits			()
+{
+	u32 Errors = 0;
+
+	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
+	{
+		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
+		if ((*it)->size() > c_SS_HighVertLimit*2)		{
+			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
+			Errors++;
+		}
+	};
+
+	clMsg("! Validate errors splits: %u", Errors);
+}
+
+void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] ) 
+{
+	for (u32 fv=0; fv<3; fv++)
+	{
+		V[fv].P.set	(FF.v[fv]->P);
+		V[fv].N.set	(FF.v[fv]->N); 
+		V[fv].T		= FF.basis_tangent[fv];
+		V[fv].B		= FF.basis_binormal[fv];
+		V[fv].Color	= FF.v[fv]->C;
+	}
+	
+	// Normal order
+	FixedVector<_TCF,2>::const_iterator TC=FF.tc.begin(); 
+	for (;TC!=FF.tc.end(); TC++)
+	{
+		V[0].UV.push_back(TC->uv[0]);
+		V[1].UV.push_back(TC->uv[1]);
+		V[2].UV.push_back(TC->uv[2]);
+	}
+}
+
+void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
+{
+	OGF_Vertex	V[3];
+	// Geometry
+	Face2OGF_Vertices( FF, V );
+	// build face
+	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
+	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
+}
+
+void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
+{
+	for (vecFaceCit Fit=faces.begin(); Fit!=faces.end(); Fit++)
+	{
+		Face*	FF = *Fit;
+		R_ASSERT(FF);
+		OGF_AddFace( ogf, *FF, _tc_ );
+	}
+}
+#include "../../UI/CompilersUI.h"
+
+void CBuild::Flex2OGF()
+{
+	float p_total	= 0;
+	float p_cost	= 1/float(g_XSplit.size());
+
+	validate_splits	();
+
+	g_tree.clear	();
+	g_tree.reserve	(4096);
+
+	clMsg("Splits to convert: %u", g_XSplit.size() );
+	 
+	// for (auto SV  = 0 ; SV< g_XSplit.size(); SV++)
+	xrCriticalSection cs;
+  	xr_atomic_u32 ProgressID = 0;
+
+	xr_std_parallel_for([&ProgressID, &cs, this]()
+	{
+		while(true)
+		{ 
+			u32 sID		= ProgressID.fetch_add(1);
+			if (sID >= g_XSplit.size()) break;
+ 
+			auto& faces = g_XSplit[sID];
+ 			OGF*		pOGF	= new OGF ();
+			Face*		F		= (* faces->begin() );	// first face	
+			R_ASSERT	(F);
+			b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
+			auto Sector = M->sector;
+			
+			try 
+			{
+				// Common data
+				pOGF->Sector		= Sector;
+				pOGF->material		= F->dwMaterial;
+			
+				// Collect textures
+				OGF_Texture			T;
+				T.pBuildSurface = &textures()[M->surfidx];
+				T.name = T.pBuildSurface->name;
+				pOGF->textures.push_back(T);
+			
+				try {
+					if (F->hasImplicitLighting())
+					{
+						// specific lmap
+						string_path		tn;
+						xr_strconcat(tn,*T.name,"_lm.dds");
+						T.name			= tn;
+						T.pBuildSurface		= T.pBuildSurface;	// Leave surface intact
+						R_ASSERT		(pOGF);
+						pOGF->textures.push_back(T);
+					} else {
+						// If lightmaps persist
+						CLightmap*	LM	= F->lmap_layer;
+						if (LM)	
+						{
+							string_path	fn;
+							xr_sprintf		(fn,"%s_1",LM->lm_texture.name); 
+							T.name		= fn;
+							T.pBuildSurface	= &(LM->lm_texture);
+							R_ASSERT	(T.pBuildSurface);
+							R_ASSERT	(pOGF);
+							pOGF->textures.push_back(T);					 
+							xr_sprintf		(fn,"%s_2",LM->lm_texture.name); 
+							T.name		= fn;
+							pOGF->textures.push_back(T);
+						}
+					}
+				} 
+				catch (...)
+				{ 
+					Msg("* ERROR: Flex2OGF, model# %d, *textures*", sID);
+				}
+			
+		
+				// Collect faces & vertices
+				F->CacheOpacity	();
+ 				try 
+				{
+					BuildOGFGeom(*pOGF, *faces, !(F->flags.bOpaque));
+				} 
+				catch (...)
+				{  
+					Msg("* ERROR: Flex2OGF, model# %d, *faces*", sID);
+				}
+			} 
+			catch (...)
+			{
+				Msg("* ERROR: Flex2OGF, 1st part, model# %d", sID);
+			}
+ 	
+			try
+			{
+				pOGF->Optimize();
+				pOGF->CalcBounds();
+  				pOGF->MakeProgressive(c_PM_MetricLimit_static);
+ 				pOGF->Stripify();
+ 			}
+			catch (...)
+			{
+				Msg("* ERROR: Flex2OGF, 2nd part, model# %d", sID);
+			}
+ 
+			R_ASSERT(!std::isinf(pOGF->bbox.min.x));
+			R_ASSERT(!std::isinf(pOGF->bbox.min.y));
+ 			R_ASSERT(!std::isinf(pOGF->bbox.min.z));
+
+			R_ASSERT(!std::isinf(pOGF->bbox.max.x));
+			R_ASSERT(!std::isinf(pOGF->bbox.max.y));
+			R_ASSERT(!std::isinf(pOGF->bbox.max.z));
+
+			cs.Enter();
+
+			if (pOGF->data.faces.empty())
+			{
+				Msg("Found zero faces in mesh!");
+			}
+			else
+			{
+				g_tree.push_back(pOGF);
+			}
+
+		
+			Progress(float(sID) / float(g_XSplit.size()));
+			AditionalData("Progress: %u/%u", sID, g_XSplit.size());
+
+			cs.Leave();
+		}
+	}, gCompilerMode.ThreadsPerWork
+	);
+}
+ 

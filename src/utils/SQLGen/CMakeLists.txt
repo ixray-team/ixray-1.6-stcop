@@ -9,7 +9,7 @@ file(GLOB_RECURSE SQL_Gen_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 )
 
 file(GLOB_RECURSE SQL_Gen_SOURCE_IMGUI_FILES CONFIGURE_DEPENDS
-    "../xrForms/imgui_impl_sdlrenderer3.*"
+    "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.*"
     "../../editors/xrEUI/imgui_impl_sdl3.*"
     "../../Editors/xrEUI/spectrum.*"
     "ImGuiSpinner.*"
