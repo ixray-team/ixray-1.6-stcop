@@ -170,3 +170,4 @@ void CBuild::xrPhase_TangentBasis()
 	mender_in_out_indices			.clear( );
 	mender_mapping_out_to_in_vert	.clear( );
 }
+
