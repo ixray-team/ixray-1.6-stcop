@@ -685,6 +685,7 @@ public:
 	void			load				(const shared_str& model_name);
 	void			load_default		();
 	void			RequestDefault		();
+	static void		RequestAllHands		();
 	void			FinishDefaultLoad	(bool IsEarly = false);
 	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
 	void			update				(const Fmatrix& trans);

@@ -3853,6 +3853,54 @@ void player_hud::RequestDefault()
 	}
 }
 
+void player_hud::RequestAllHands()
+{
+	static bool IsRequested = false;
+	if (IsRequested)
+	{
+		return;
+	}
+	IsRequested = true;
+
+	PROF_EVENT("player_hud::RequestAllHands");
+	xr_hash_set<shared_str> Sections;
+	Sections.insert(DefaultPlayerHudSection());
+	for (CInifile::Sect& Sect : pSettings->sections())
+	{
+		if (Sect.line_exist("player_hud_section"))
+		{
+			Sections.insert(pSettings->r_string(Sect.Name, "player_hud_section"));
+		}
+	}
+
+	u32 Count = 0;
+	for (const shared_str& Section : Sections)
+	{
+		if (!pSettings->section_exist(Section))
+		{
+			continue;
+		}
+
+		for (const char* Line : { "visual", "legs_visual", "visual_watches" })
+		{
+			if (!pSettings->line_exist(Section, Line))
+			{
+				continue;
+			}
+
+			const char* Visual = pSettings->r_string(Section, Line);
+			string_path FileName;
+			xr_strconcat(FileName, Visual, strext(Visual) ? "" : ".ogf");
+			if (FS.exist(_game_meshes_, FileName))
+			{
+				::Render->model_Request(Visual, EModelRequestPriority::Low);
+				++Count;
+			}
+		}
+	}
+	Msg("* Hands of %u player hud sections: %u models requested", u32(Sections.size()), Count);
+}
+
 void player_hud::FinishDefaultLoad(bool IsEarly)
 {
 	if (!PendingDefaultSect.size())

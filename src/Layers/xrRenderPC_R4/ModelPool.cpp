@@ -772,7 +772,13 @@ void CModelPool::ClearPool( bool b_complete)
 	}
 
 	for (auto& [Name, V] : Taken)
-		Discard(V, b_complete);
+		Discard(V, false);
+
+	if (b_complete)
+	{
+		xrSRWLockGuard Guard(ModelsLock, true);
+		Msg("* Model pool: %u base models kept", u32(Models.size()));
+	}
 }
 
 dxRender_Visual* CModelPool::CreatePE	(PS::CPEDef* source)
