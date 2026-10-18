@@ -33,6 +33,7 @@ public:
 	CObject			*ignore_object, *decor_object[6];
 	vis_data		hom			;
 	u32				frame_render;
+	u64 SpotShadowCacheId;
 	
 	xr_vector<IRender_Sector*> m_sectors;
 

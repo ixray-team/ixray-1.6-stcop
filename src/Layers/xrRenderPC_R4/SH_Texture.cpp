@@ -46,6 +46,7 @@ void CTexture::surface_set(IRHISurface* surf)
 {
 	xrCriticalSectionGuard Guard(LoadGuard);
 	FinishLoading();
+	ShadowCacheRevision.fetch_add(1, std::memory_order_relaxed);
 	if (surf)			surf->AddRef();
 	_RELEASE(pSurface);
 	_RELEASE(m_pSRView);
@@ -361,6 +362,23 @@ bool CTexture::StartLoading()
 	return true;
 }
 
+bool CTexture::CanCacheShadow(bool& Pending, u64& Revision)
+{
+	xrCriticalSectionGuard Guard(LoadGuard);
+	Revision = ShadowCacheRevision.load(std::memory_order_relaxed);
+	Pending = false;
+	if (!can_unload || !cName || strchr(*cName, '$'))
+	{
+		return false;
+	}
+	Pending = LoadTask != nullptr || !flags.bLoaded || flags.bLoadedAsStaging;
+	if (Pending)
+	{
+		return false;
+	}
+	return pSurface && m_pSRView && !flags.bUser && !pAVI && !pTheora && seqDATA.empty();
+}
+
 void CTexture::FinishLoading()
 {
 	if (LoadTask)
@@ -559,6 +577,7 @@ void CTexture::Unload()
 	xrCriticalSectionGuard Guard(LoadGuard);
 	FinishLoading();
 	if (!can_unload) return;
+	ShadowCacheRevision.fetch_add(1, std::memory_order_relaxed);
 	flags.bLoaded = false;
 	flags.bLoadedAsStaging = false;
 

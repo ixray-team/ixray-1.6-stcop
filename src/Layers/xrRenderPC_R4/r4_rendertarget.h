@@ -4,6 +4,7 @@
 #include "ScreenPostProcessTypes.h"
 
 class light;
+class dxRender_Visual;
 struct SPPInfo;
 
 //#define DU_SPHERE_NUMVERTEX 92
@@ -21,7 +22,115 @@ private:
 	u32							dwAccumulatorClearMark;
 	float NightVisionInterference = 0.0f;
 	bool NightVisionInterferenceInitialized = false;
+
+	struct SpotShadowCacheKey
+	{
+		Fmatrix View;
+		Fmatrix Project;
+		IRender_Sector* Sector = nullptr;
+		u32 Size = 0;
+		ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
+		u64 Revision = 0;
+		float MipBias = 0.f;
+		int Anisotropy = 0;
+
+		bool operator==(const SpotShadowCacheKey& Other) const;
+		bool HasSameGeometry(const SpotShadowCacheKey& Other) const;
+	};
+
+	enum class SpotShadowCacheState
+	{
+		Pending,
+		Ready
+	};
+
+	struct SpotShadowCacheEntry
+	{
+		SpotShadowCacheKey Key;
+		u64 LightId = 0;
+		ref_rt Depth;
+		ref_shader CopyShader;
+		SpotShadowCacheState State = SpotShadowCacheState::Pending;
+		u32 LastSeenFrame = 0;
+		u32 LastUsedFrame = 0;
+		u32 StableObservations = 0;
+		xr_vector<dxRender_Visual*> CachedCasters;
+		xr_hash_set<dxRender_Visual*> CachedCasterSet;
+		xr_vector<dxRender_Visual*> PerFrameCasters;
+		xr_vector<std::pair<ref_texture, u64>> Textures;
+		bool Classified = false;
+		u32 NextTextureCheckFrame = 0;
+		xr_vector<ref_texture> PendingTextures;
+		u64 Bytes = 0;
+		xr_string PerFrameReason;
+	};
+
+	struct SpotShadowCacheStatistics
+	{
+		u32 Lights = 0;
+		u32 Hits = 0;
+		u32 Builds = 0;
+		u32 Restores = 0;
+		u32 Pending = 0;
+		u32 Direct = 0;
+		u32 Evictions = 0;
+		u32 StaticCasters = 0;
+		u32 PerFrameCasters = 0;
+		u32 DynamicPasses = 0;
+		u32 SpecialPasses = 0;
+		u32 TexturePending = 0;
+		u32 BudgetLimited = 0;
+		u32 CapacityLimited = 0;
+		u32 ResourceFailures = 0;
+		u32 Classifications = 0;
+		u32 Invalidations = 0;
+		u32 CachedSkips = 0;
+		u32 DuplicateSkips = 0;
+		u32 DirtyGraphs = 0;
+		u32 FrameStaticItems = 0;
+		u32 FrameDynamicItems = 0;
+		u32 LegacyLights = 0;
+		u32 TextureInvalidations = 0;
+		u32 GeometryInvalidations = 0;
+		u32 DepthInvalidations = 0;
+		u32 CasterReclassifications = 0;
+		u32 PendingTextureChecks = 0;
+		u64 RestoredPixels = 0;
+	};
+
+	xr_vector<SpotShadowCacheEntry> SpotShadowCache;
+	STextureList SpotShadowEmptyTextures;
+	xr_atomic_u64 SpotShadowContentRevision = 1;
+	u64 SpotShadowAppliedRevision = 0;
+	u64 SpotShadowCacheBytes = 0;
+	u64 SpotShadowResourceSerial = 0;
+	u32 SpotShadowStatisticsFrame = u32(-1);
+	int SpotShadowLastMode = -1;
+	SpotShadowCacheStatistics SpotShadowStatistics;
+
+	SpotShadowCacheKey MakeSpotShadowCacheKey(const light& Source) const;
+	SpotShadowCacheEntry* FindSpotShadowCache(const light& Source, const SpotShadowCacheKey& Key);
+	void ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntry& Entry);
+	bool HasSpotShadowTextureChanges(const SpotShadowCacheEntry& Entry) const;
+	bool HasSpotShadowPendingTextureChanges(SpotShadowCacheEntry& Entry);
+	bool BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& Entry);
+	void RestoreSpotShadowCache(const light& Source, SpotShadowCacheEntry& Entry);
+	void ReleaseSpotShadowDepth(SpotShadowCacheEntry& Entry);
+	void TrimSpotShadowCache(u64 RequiredBytes = 0, SpotShadowCacheEntry* Keep = nullptr);
+
 public:
+	void BeginSpotShadowCacheFrame();
+	bool CanCacheSpotShadow(const light& Source) const;
+	bool CheckSpotShadowGraph();
+	void CountLegacySpotShadow()
+	{
+		++SpotShadowStatistics.Lights;
+		++SpotShadowStatistics.LegacyLights;
+	}
+	bool RenderSpotShadow(light& Source);
+	void ClearSpotShadowCache();
+	void InvalidateSpotShadowCache();
+	void DumpSpotShadowCache() const;
 	enum	eStencilOptimizeMode
 	{
 		SO_Light = 0,	//	Default
@@ -372,6 +481,7 @@ public:
 	void						phase_smap_direct_tsh	(light* L,	u32 sub_phase);
 	void						phase_smap_spot_clear	();
 	void						phase_smap_spot			(light* L);
+	void SetupSpotShadowTarget(IRHIDepthStencilView* Depth, u32 Width, u32 Height, RHIViewport Viewport, IRHIRenderTargetView* Color = nullptr);
 	void						phase_smap_spot_tsh		(light* L);
 	void						phase_accumulator		();
 	void						phase_vol_accumulator	();

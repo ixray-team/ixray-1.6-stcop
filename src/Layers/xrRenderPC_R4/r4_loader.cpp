@@ -29,6 +29,11 @@ using namespace FVF;
 
 void CRender::level_Load(IReader* fs)
 {
+	if (Target)
+	{
+		Target->InvalidateSpotShadowCache();
+		Target->ClearSpotShadowCache();
+	}
 	R_ASSERT						(0!=g_pGameLevel);
 	R_ASSERT						(!b_loaded);
 
@@ -307,6 +312,11 @@ void CRender::level_Unload()
 {
 	if (0==g_pGameLevel)		return;
 	if (!b_loaded)				return;
+	if (Target)
+	{
+		Target->InvalidateSpotShadowCache();
+		Target->ClearSpotShadowCache();
+	}
 	if (o.ProceduralRainPuddles)
 	{
 		RainPuddleWater.Build();

@@ -61,6 +61,7 @@ public:
 	u32							Type		;				// visual's type
 	vis_data					vis			;				// visibility-data
 	ref_shader					shader		;				// pipe state, shared
+	xr_atomic_bool IsSpotShadowCacheReferenced = false;
 	shared_str					texture_name, orig_texture_name;
 	shared_str					shader_name, orig_shader_name;
 	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored

@@ -1,12 +1,16 @@
 #include "stdafx.h"
+
 #include "../../xrEngine/EngineAPI.h"
 #include "light.h"
+
+static xr_atomic_u64 g_SpotShadowCacheLightSerial = 0;
 
 static const float	SQRT2		=	1.4142135623730950488016887242097f;
 static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
 
 light::light()
 {
+	SpotShadowCacheId = g_SpotShadowCacheLightSerial.fetch_add(1, std::memory_order_relaxed) + 1;
 	ISpatialOwner::spatial_create(g_SpatialSpace, this, ESPATIAL_TYPE::LIGHTSOURCE);
 	flags.type		= POINT;
 	flags.bStatic	= false;

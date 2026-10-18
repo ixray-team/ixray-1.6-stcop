@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "light_smapvis.h"
 #include "light.h"
 #include "FBasicVisual.h"
 

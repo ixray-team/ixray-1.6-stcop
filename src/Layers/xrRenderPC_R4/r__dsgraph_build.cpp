@@ -11,8 +11,135 @@
 #include "FTreeVisual.h"
 #include "ParticleEffect.h"
 #include "newproject_dsgraph_constants.h"
+#include "dx10StateUtils.h"
 
 using namespace R_dsgraph;
+
+namespace SpotShadowCasters
+{
+static bool IsShadowBaseShader(const shared_str& Name)
+{
+	constexpr size_t Length = sizeof("shadow_base") - 1;
+	if (!Name || strncmp(*Name, "shadow_base", Length) != 0)
+	{
+		return false;
+	}
+	const char* Suffix = *Name + Length;
+	while (*Suffix)
+	{
+		if (*Suffix++ != '_')
+		{
+			return false;
+		}
+		if (*Suffix >= '0' && *Suffix <= '9')
+		{
+			do
+			{
+				++Suffix;
+			} while (*Suffix >= '0' && *Suffix <= '9');
+		}
+		else if (strncmp(Suffix, "puddles", 7) == 0)
+		{
+			Suffix += 7;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool IsDepthOnlyShadowPass(const SPass& Pass)
+{
+	if (!Pass.state)
+	{
+		return false;
+	}
+	D3D_BLEND_DESC Blend;
+	D3D_DEPTH_STENCIL_DESC Depth;
+	dx10StateUtils::ResetDescription(Blend);
+	dx10StateUtils::ResetDescription(Depth);
+	Pass.state->state_code.UpdateDesc(Blend);
+	Pass.state->state_code.UpdateDesc(Depth);
+	const auto HarmlessStencil = [](const auto& Face)
+	{
+		return Face.StencilFunc == D3D11_COMPARISON_ALWAYS && Face.StencilFailOp == D3D11_STENCIL_OP_KEEP &&
+			   Face.StencilDepthFailOp == D3D11_STENCIL_OP_KEEP && Face.StencilPassOp == D3D11_STENCIL_OP_KEEP;
+	};
+	return !Blend.RenderTarget[0].BlendEnable && !Blend.AlphaToCoverageEnable && Depth.DepthEnable && Depth.DepthWriteMask == D3D11_DEPTH_WRITE_MASK_ALL &&
+		   (!Depth.StencilEnable || (HarmlessStencil(Depth.FrontFace) && HarmlessStencil(Depth.BackFace))) &&
+		   (Depth.DepthFunc == D3D11_COMPARISON_LESS || Depth.DepthFunc == D3D11_COMPARISON_LESS_EQUAL);
+}
+
+static bool IsSpotShadowCacheCaster(const ShaderElement& Element, R_dsgraph_structure::SpotShadowBuildContext& Context)
+{
+	const auto RejectLambda = [&](const char* Reason)
+	{
+		Context.RejectionReason = Reason;
+		return false;
+	};
+	if (Element.flags.iPriority / 2 != 0 || Element.flags.bStrictB2F || Element.flags.bEmissive || Element.flags.bDistort || Element.flags.bWmark || Element.passes.size() != 1)
+	{
+		return RejectLambda("element_flags_or_pass_count");
+	}
+
+	const ref_pass& Reference = Element.passes[0];
+	if (!Reference)
+	{
+		return RejectLambda("missing_pass");
+	}
+	const SPass& Pass = *Reference;
+	if (!Pass.vs || !Pass.ps || !Pass.state)
+	{
+		return RejectLambda("missing_shader_or_state");
+	}
+	if (!IsShadowBaseShader(Pass.vs->cName) || !IsShadowBaseShader(Pass.ps->cName))
+	{
+		return RejectLambda("shader_program");
+	}
+	if ((Pass.gs && Pass.gs->gs) || (Pass.hs && Pass.hs->sh) || (Pass.ds && Pass.ds->sh) || (Pass.cs && Pass.cs->sh))
+	{
+		return RejectLambda("additional_shader_stages");
+	}
+	if ((Pass.M && !Pass.M->empty()) || (Pass.C && !Pass.C->empty()))
+	{
+		return RejectLambda("animated_matrix_or_constant");
+	}
+	if (Pass.iPriority != u8(-1) && Pass.iPriority / 2 != 0)
+	{
+		return RejectLambda("pass_priority");
+	}
+
+	if (!IsDepthOnlyShadowPass(Pass))
+	{
+		return RejectLambda("depth_blend_or_stencil_state");
+	}
+
+	if (Pass.T)
+	{
+		xr_vector<std::pair<ref_texture, u64>> Textures;
+		Textures.reserve(Pass.T->size());
+		for (const auto& Texture : *Pass.T)
+		{
+			bool Pending = false;
+			u64 Revision = 0;
+			if (!Texture.second || !Texture.second->CanCacheShadow(Pending, Revision))
+			{
+				if (Pending)
+				{
+					Context.PendingTextures.push_back(Texture.second);
+				}
+				Context.RejectedTexture = Texture.second ? Texture.second->cName : shared_str();
+				return RejectLambda(Pending ? "texture_pending" : "texture_not_cacheable");
+			}
+			Textures.emplace_back(Texture.second, Revision);
+		}
+		Context.Textures.insert(Context.Textures.end(), Textures.begin(), Textures.end());
+	}
+	return true;
+}
+} // namespace SpotShadowCasters
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Scene graph actual insertion and sorting ////////////////////////////////////////////////////////
@@ -233,9 +360,18 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center, bool Force)
 {
 	CRender& RI = RImplementation;
+	if (SpotShadowCachedCasters && SpotShadowCachedCasters->contains(pVisual))
+	{
+		++SpotShadowCachedSkips;
+		return;
+	}
 
 	if (pVisual->vis.marker == RI.marker)	
 	{
+		if (SpotShadowPass && !SpotShadowBuild)
+		{
+			++SpotShadowDuplicateSkips;
+		}
 		return;
 	}
 
@@ -261,7 +397,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
 
-	if (!RI.val_bUI && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
+	if (SpotShadowPass && (bHUD || RI.val_bUI))
+	{
+		return;
+	}
+
+	if (!SpotShadowPass && !RI.val_bUI && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
 	{
 		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
 		mapSorted_Node* N = test.insertInAnyWay(distSQ);
@@ -273,7 +414,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		N->val.se = sh_d;		// 4=L_special
 	}
 
-	if (sh_d && sh_d->flags.bScopeMask && pmask[0]) 
+	if (!SpotShadowPass && sh_d && sh_d->flags.bScopeMask && pmask[0])
 	{
 		mapHUDScopeMask.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 	}
@@ -338,12 +479,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 			return;
 		}
 
-		if (LightingModeIsDynamicRender() && sh->flags.bEmissive)
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bEmissive)
 		{
 			mapEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 		}
 
-		if (LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
 		{
 			mapWmark.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 			return;
@@ -397,9 +538,18 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 {
 	CRender& RI = RImplementation;
+	if (SpotShadowCachedCasters && SpotShadowCachedCasters->contains(pVisual))
+	{
+		++SpotShadowCachedSkips;
+		return;
+	}
 
 	if (pVisual->vis.marker == RI.marker)	
 	{
+		if (SpotShadowPass && !SpotShadowBuild)
+		{
+			++SpotShadowDuplicateSkips;
+		}
 		return;
 	}
 
@@ -411,10 +561,9 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		pVisual->vis.accept_frame = Device.dwFrame;
 	}
 
-	float distSQ;
-
-	float SSA = CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
-	if (SSA <= r_ssaDISCARD)
+	float distSQ = 0.f;
+	float SSA = SpotShadowBuild ? 1.f : CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
+	if (!SpotShadowBuild && SSA <= r_ssaDISCARD)
 	{
 		return;
 	}
@@ -425,7 +574,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	if (!pVisual->shader._get()) return;
 	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
 
-	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
+	if (!SpotShadowPass && !SpotShadowBuild && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
 	{
 		mapDistort.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
 	}
@@ -436,22 +585,45 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	{
 		return;
 	}
+	if (SpotShadowBuild && SpotShadowBuild->CollectOnly)
+	{
+		SpotShadowBuild->RejectionReason = nullptr;
+		SpotShadowBuild->RejectedTexture = nullptr;
+		const bool FixedGeometry = pVisual->Type == MT_NORMAL || pVisual->Type == MT_PROGRESSIVE;
+		if (FixedGeometry && SpotShadowCasters::IsSpotShadowCacheCaster(*sh, *SpotShadowBuild))
+		{
+			SpotShadowBuild->CachedCasters.push_back(pVisual);
+		}
+		else
+		{
+			SpotShadowBuild->PerFrameCasters.push_back(pVisual);
+			if (!SpotShadowBuild->PerFrameReason.empty())
+			{
+				return;
+			}
+			const SPass* Pass = !sh->passes.empty() && sh->passes[0] ? &*sh->passes[0] : nullptr;
+			string2048 Diagnostic;
+			xr_sprintf(Diagnostic, "%s visual_type=%u shader=%s vs=%s ps=%s texture=%s", FixedGeometry ? SpotShadowBuild->RejectionReason : "animated_or_unsupported_visual", pVisual->Type, pVisual->shader_name ? *pVisual->shader_name : "<unnamed>", Pass && Pass->vs && Pass->vs->cName ? *Pass->vs->cName : "<none>", Pass && Pass->ps && Pass->ps->cName ? *Pass->ps->cName : "<none>", SpotShadowBuild->RejectedTexture ? *SpotShadowBuild->RejectedTexture : "<none>");
+			SpotShadowBuild->PerFrameReason = Diagnostic;
+		}
+		return;
+	}
 
 	if (pmask[sh->flags.iPriority / 2])
 	{
 		// strict-sorting selection
 		if (sh->flags.bStrictB2F)
 		{
-			mapSorted.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
+			mapSorted.insertInAnyWay(distSQ, {SSA, nullptr, pVisual, Fidentity, sh});
 			return;
 		}
 
-		if (LightingModeIsDynamicRender() && sh->flags.bEmissive)
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bEmissive)
 		{
 			mapEmissive.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
 		}
 
-		if (LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
 		{
 			mapWmark.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
 			return;
@@ -580,7 +752,7 @@ ICF void r_dsgraph_insert_static_lod(dxRender_Visual* pVisual)
 	FLOD* pV = (FLOD*)pVisual;
 	float D; float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
 	ssa *= pV->lod_factor;
-	if (ssa < r_ssaLOD_A)
+	if (ssa < r_ssaLOD_A && !RI.SpotShadowPass)
 	{
 		if (ssa < r_ssaDISCARD)	return;
 		mapLOD_Node* N = RI.mapLOD.insertInAnyWay(D);
@@ -741,6 +913,11 @@ IC float fog_cull_distance()
 
 void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
+	if (SpotShadowBuild)
+	{
+		CollectSpotShadowStatic(pVisual, planes);
+		return;
+	}
 	//PROF_EVENT("add_Static")
 	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, phase == CRender::PHASE_SMAP, *val_pTransform))
 	{
@@ -802,6 +979,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 			{
 				add_leafs_Static(Casted->children);
 			}
+			return;
 		}
 	case MT_TREE_ST:
 	case MT_TREE_PM:
@@ -814,6 +992,59 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		// General type of visual
 		r_dsgraph_insert_static(pVisual);
 	}return;
+	}
+}
+
+void R_dsgraph_structure::CollectSpotShadowStatic(dxRender_Visual* Visual, u32 Planes)
+{
+	if (!Visual)
+	{
+		return;
+	}
+	if (View->testAABB(Visual->vis.box.data(), Planes) == fcvNone)
+	{
+		return;
+	}
+	// Even a visual without a shadow shader can become a caster after a material reload.
+	Visual->IsSpotShadowCacheReferenced.store(true, std::memory_order_relaxed);
+	switch (Visual->Type)
+	{
+		case MT_MESH_LODS:
+		case MT_LOD:
+		{
+			// Keep the parent so per-frame collection can select the camera-dependent LOD.
+			if (Visual->vis.marker != RImplementation.marker)
+			{
+				Visual->vis.marker = RImplementation.marker;
+				SpotShadowBuild->PerFrameCasters.push_back(Visual);
+				if (SpotShadowBuild->PerFrameReason.empty())
+				{
+					string128 Reason;
+					xr_sprintf(Reason, "camera_dependent_lod_group visual_type=%u", Visual->Type);
+					SpotShadowBuild->PerFrameReason = Reason;
+				}
+			}
+			return;
+		}
+		case MT_HIERRARHY:
+		case MT_LOD0:
+		case MT_LOD1:
+		case MT_LOD2:
+		case MT_LOD3:
+		case MT_LOD4:
+		{
+			// A billboard parent contributes its actual shadow geometry, never a camera-facing quad.
+			for (dxRender_Visual* Child : static_cast<FHierrarhyVisual*>(Visual)->children)
+			{
+				CollectSpotShadowStatic(Child, Planes);
+			}
+			return;
+		}
+		default:
+		{
+			r_dsgraph_insert_static(Visual);
+			return;
+		}
 	}
 }
 

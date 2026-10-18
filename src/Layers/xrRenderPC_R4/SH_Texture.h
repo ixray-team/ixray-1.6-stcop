@@ -32,6 +32,8 @@ public:
 	void								Preload			();
 	void								Load			();
 	bool StartLoading();
+	bool CanCacheShadow(bool& Pending, u64& Revision);
+	u64 GetShadowCacheRevision() const { return ShadowCacheRevision.load(std::memory_order_relaxed); }
 	void WaitForLoad();
 	void								PostLoad		();
 	void								Unload			(void);
@@ -76,6 +78,7 @@ private:
 	xrCriticalSection LoadGuard;
 	xr_unique_ptr<xr_task_group> LoadTask;
 	xr_atomic_bool IsLoading = false;
+	xr_atomic_u64 ShadowCacheRevision = 0;
 	void FinishLoading();
 	void LoadImpl();
 
