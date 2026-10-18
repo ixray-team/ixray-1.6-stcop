@@ -42,7 +42,9 @@ file(GLOB XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Objects_ALife_Monsters.cpp"
     "../../xrServerEntities/xrServer_Object_Base.cpp"
     "../../xrServerEntities/xrServer_Space.cpp"
-    "../../xrEngine/xrLoadSurface.cpp"
+    "../../xrServerEntities/server_entity_wrapper.h"
+    "../../xrServerEntities/server_entity_wrapper.cpp"
+    "../../xrServerEntities/server_entity_wrapper_inline.h"
     "../../xrGame/game_level_cross_table.cpp"
 )
 
@@ -80,6 +82,44 @@ else()
     list(FILTER XLC_SOURCE_FILES EXCLUDE REGEX "/CUDA/.*")
 endif()
 
+# Check Vulkan ray query
+set(VULKAN_RT_AVAILABLE OFF)
+
+if (IXRAY_UTILS_VULKAN)
+    find_package(Vulkan COMPONENTS glslangValidator)
+
+    if (Vulkan_FOUND AND Vulkan_GLSLANG_VALIDATOR_EXECUTABLE)
+        message(STATUS "Vulkan ray query enabled: ${Vulkan_VERSION}")
+        set(VULKAN_RT_AVAILABLE ON)
+    else()
+        message(WARNING "Vulkan requested but the Vulkan SDK (with glslangValidator) was not found!")
+    endif()
+endif()
+
+set(XLC_VULKAN_SPIRV "${CMAKE_CURRENT_BINARY_DIR}/generated/VkTrace.spv.h")
+if (VULKAN_RT_AVAILABLE)
+    add_custom_command(
+        OUTPUT "${XLC_VULKAN_SPIRV}"
+        COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE}
+            -V --target-env vulkan1.2
+            --vn VkTraceSpv
+            -o "${XLC_VULKAN_SPIRV}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/Vulkan/VkTrace.comp"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/Vulkan/VkTrace.comp"
+        COMMENT "Compiling VkTrace.comp to SPIR-V"
+        VERBATIM
+    )
+    list(APPEND XLC_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/Vulkan/VkTrace.comp")
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/Vulkan/VkTrace.comp" PROPERTIES HEADER_FILE_ONLY TRUE)
+else()
+    list(FILTER XLC_SOURCE_FILES EXCLUDE REGEX "/Vulkan/.*")
+endif()
+
+# Shared GPU lighting (any GPU tracer)
+if (NOT OPTIX_AVAILABLE AND NOT VULKAN_RT_AVAILABLE)
+    list(FILTER XLC_SOURCE_FILES EXCLUDE REGEX "/Light/GPU/.*")
+endif()
+
 # Source groups
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${UTILS_FORMS_SOURCE_FILES} ${XLC_SOURCE_FILES} ${XAI_SOURCE_FILES})
 source_group("xrLC/Editor" FILES ${XLC_SOURCE_EDITOR_PUBLIC_FILES})
@@ -92,15 +132,10 @@ list(APPEND XAI_SOURCE_FILES ${XAI_SOURCE_ENTT_FILES})
 add_executable(xrLevelBuilder WIN32 ${UTILS_FORMS_SOURCE_FILES} ${XLC_SOURCE_FILES} ${XAI_SOURCE_FILES})
 target_include_directories(xrLevelBuilder PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Compiler"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Graph"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Spawn"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrServerEntities/"
     "${IXRAY_SDK_INC}"
-    "${XLB_PACKAGES}/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/"
     "${XLB_PACKAGES}/directxmesh_desktop_2019.2024.6.5.1/include/"
     "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/include/"
     "${XLB_EMBREE}/build/native/include/"
@@ -132,6 +167,19 @@ endfunction()
 if (MSVC)
     xlb_precompiled_header(xrLC "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/StdAfx.h" "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/StdAfx.cpp" ${XLC_SOURCE_FILES})
     xlb_precompiled_header(xrAI "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/StdAfx.h" "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/StdAfx.cpp" ${XAI_SOURCE_FILES})
+endif()
+
+# Apply GPU tracers
+if (OPTIX_AVAILABLE OR VULKAN_RT_AVAILABLE)
+    target_compile_definitions(xrLevelBuilder PRIVATE LCGPU_BUILD)
+endif()
+
+if (VULKAN_RT_AVAILABLE)
+    target_sources(xrLevelBuilder PRIVATE "${XLC_VULKAN_SPIRV}")
+    source_group("xrLC/Light/Vulkan" FILES "${XLC_VULKAN_SPIRV}")
+    target_compile_definitions(xrLevelBuilder PRIVATE LCVULKAN_BUILD)
+    target_include_directories(xrLevelBuilder PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+    target_link_libraries(xrLevelBuilder PRIVATE Vulkan::Vulkan)
 endif()
 
 # Apply CUDA/OptiX

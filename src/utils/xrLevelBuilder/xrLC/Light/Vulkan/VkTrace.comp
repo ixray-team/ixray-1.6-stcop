@@ -1,0 +1,239 @@
+#version 460
+#extension GL_EXT_ray_query : require
+
+// Port of CUDA/CuTrace.cu: one invocation lights one sample point with every light
+
+layout(local_size_x = 64) in;
+
+#define LP_DONT_RGB		(1u << 1)
+#define LP_DONT_HEMI	(1u << 2)
+#define LP_DONT_SUN		(1u << 3)
+
+#define LT_DIRECT		0
+#define LT_POINT		1
+#define LT_SECONDARY	2
+
+#define KIND_SUN		0
+#define KIND_HEMI		1
+#define KIND_RGB		2
+
+#define EPS_S			0.0000001
+
+struct Light
+{
+	vec4 Diffuse;		// w: type (LT_*)
+	vec4 Position;		// w: kind (KIND_*)
+	vec4 Direction;		// w: range
+	vec4 Params0;		// range2, falloff, attenuation0, attenuation1
+	vec4 Params1;		// attenuation2, energy
+};
+
+struct Face
+{
+	vec2 TC0;
+	vec2 TC1;
+	vec2 TC2;
+	uint Surface;
+	uint Opaque;
+};
+
+struct Ray
+{
+	vec4 Position;
+	vec4 Direction;
+};
+
+struct Color
+{
+	vec4 RgbSun;
+	vec4 Hemi;
+};
+
+layout(set = 0, binding = 0) uniform accelerationStructureEXT Scene;
+layout(set = 0, binding = 1, std430) readonly buffer LightsBuffer { Light Lights[]; };
+layout(set = 0, binding = 2, std430) readonly buffer FacesBuffer { Face Faces[]; };
+layout(set = 0, binding = 3, std430) readonly buffer TexturesBuffer { uvec4 Textures[]; };	// alpha offset, width, height, has alpha
+layout(set = 0, binding = 4, std430) readonly buffer AlphaBuffer { uint Alpha[]; };			// 4 texels per uint
+layout(set = 0, binding = 5, std430) readonly buffer RaysBuffer { Ray Rays[]; };
+layout(set = 0, binding = 6, std430) writeonly buffer ColorsBuffer { Color Colors[]; };
+
+layout(push_constant) uniform Constants
+{
+	uint Flags;
+	uint RayCount;
+	uint LightCount;
+} PC;
+
+vec3 NormalizeSafe(vec3 V)
+{
+	float Magnitude = dot(V, V);
+	return Magnitude > EPS_S ? V * inversesqrt(Magnitude) : V;
+}
+
+float CalculateEnergy(Face F, vec2 Barycentrics)
+{
+	uvec4 T = Textures[F.Surface];
+	if (T.w == 0u)
+	{
+		return 1.0;
+	}
+
+	float B0 = 1.0 - Barycentrics.x - Barycentrics.y;
+	vec2 UV = F.TC0 * B0 + F.TC1 * Barycentrics.x + F.TC2 * Barycentrics.y;
+
+	float Width = float(T.y);
+	float Height = float(T.z);
+	uint U = uint(mod(floor(UV.x * Width + 0.5), Width));
+	uint V = uint(mod(floor(UV.y * Height + 0.5), Height));
+
+	uint Texel = T.x + V * T.y + U;
+	float A = float((Alpha[Texel >> 2] >> ((Texel & 3u) * 8u)) & 0xFFu) / 255.0;
+	return A * A;
+}
+
+float Visibility(vec3 Origin, vec3 Direction, float MaxT)
+{
+	rayQueryEXT Query;
+	rayQueryInitializeEXT(Query, Scene, gl_RayFlagsNoneEXT, 0xFF, Origin, 0.001, Direction, MaxT);
+
+	while (rayQueryProceedEXT(Query))
+	{
+		if (rayQueryGetIntersectionTypeEXT(Query, false) != gl_RayQueryCandidateIntersectionTriangleEXT)
+		{
+			continue;
+		}
+
+		Face F = Faces[rayQueryGetIntersectionPrimitiveIndexEXT(Query, false)];
+
+		// Embree-equivalent rule: binary cut, transparent texels let the ray through
+		if (F.Opaque != 0u || CalculateEnergy(F, rayQueryGetIntersectionBarycentricsEXT(Query, false)) >= 0.5)
+		{
+			return 0.0;
+		}
+	}
+
+	return 1.0;
+}
+
+void CalculatePoint(vec3 P, vec3 N, Light L, inout vec3 Rgb, inout float Sun, inout float Hemi)
+{
+	vec3 Pnew = P + N * 0.01;
+
+	uint Type = uint(L.Diffuse.w);
+	uint Kind = uint(L.Position.w);
+	vec3 LightPosition = L.Position.xyz;
+	vec3 LightDirection = L.Direction.xyz;
+	float Range = L.Direction.w;
+	float Range2 = L.Params0.x;
+	float Falloff = L.Params0.y;
+	float Attenuation0 = L.Params0.z;
+	float Attenuation1 = L.Params0.w;
+	float Attenuation2 = L.Params1.x;
+	float Energy = L.Params1.y;
+
+	bool IsSunOrHemi = Kind != KIND_RGB;
+	float Att = 0.0;
+
+	if (Type == LT_DIRECT)
+	{
+		vec3 Ldir = -LightDirection;
+		float D = dot(Ldir, N);
+		if (D <= 0.0)
+			return;
+
+		float Trace = Visibility(Pnew, Ldir, 1000.0);
+		Att = IsSunOrHemi ? Energy * Trace : D * Energy * Trace;
+	}
+	else if (Type == LT_POINT)
+	{
+		vec3 Delta = P - LightPosition;
+		float SqD = dot(Delta, Delta);
+		if (SqD > Range2)
+			return;
+
+		vec3 Ldir = NormalizeSafe(LightPosition - P);
+		float D = dot(Ldir, N);
+		if (D <= 0.0)
+			return;
+
+		float R = sqrt(SqD);
+		float Trace = Visibility(Pnew, Ldir, R);
+		float Scale = D * Energy * Trace;
+
+		if (IsSunOrHemi)
+		{
+			Att = Scale / (Attenuation0 + Attenuation1 * R + Attenuation2 * SqD);
+		}
+		else
+		{
+			Att = Scale * (1.0 / (Attenuation0 + Attenuation1 * R + Attenuation2 * SqD) - R * Falloff);
+		}
+	}
+	else if (Type == LT_SECONDARY)
+	{
+		vec3 Delta = P - LightPosition;
+		float SqD = dot(Delta, Delta);
+		if (SqD > Range2)
+			return;
+
+		vec3 Ldir = NormalizeSafe(LightPosition - P);
+		float D = dot(Ldir, N);
+		if (D <= 0.0)
+			return;
+
+		D *= -dot(Ldir, LightDirection);
+		if (D <= 0.0)
+			return;
+
+		float R = sqrt(SqD);
+		float Trace = Visibility(Pnew, Ldir, R);
+		Att = pow(D, 0.125) * Energy * Trace * (1.0 - R / Range);
+	}
+
+	if (Kind == KIND_SUN)
+	{
+		Sun += Att;
+	}
+	else if (Kind == KIND_HEMI)
+	{
+		Hemi += Att;
+	}
+	else
+	{
+		Rgb += Att * L.Diffuse.xyz;
+	}
+}
+
+void main()
+{
+	uint Index = gl_GlobalInvocationID.x;
+	if (Index >= PC.RayCount)
+	{
+		return;
+	}
+
+	vec3 P = Rays[Index].Position.xyz;
+	vec3 N = Rays[Index].Direction.xyz;
+
+	vec3 Rgb = vec3(0.0);
+	float Sun = 0.0;
+	float Hemi = 0.0;
+
+	for (uint LightIndex = 0u; LightIndex < PC.LightCount; LightIndex++)
+	{
+		Light L = Lights[LightIndex];
+		uint Kind = uint(L.Position.w);
+
+		if (((PC.Flags & LP_DONT_HEMI) != 0u && Kind == KIND_HEMI) ||
+			((PC.Flags & LP_DONT_RGB) != 0u && Kind == KIND_RGB) ||
+			((PC.Flags & LP_DONT_SUN) != 0u && Kind == KIND_SUN))
+		{
+			continue;
+		}
+
+		CalculatePoint(P, N, L, Rgb, Sun, Hemi);
+	}
+
+	Colors[Index].RgbSun = vec4(Rgb, Sun);
+	Colors[Index].Hemi = vec4(Hemi, 0.0, 0.0, 0.0);
+}
