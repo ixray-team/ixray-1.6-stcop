@@ -178,6 +178,42 @@ void testHeader()
     CHECK(encodeHeader(h, bytes.data(), bytes.size() - 1) == Status::BadSize);
 }
 
+// Regression: IDs over 1023 are real model IDs, not truncated or empty.
+// A v4 file with 1025 models must preserve ID 1024 across slot and runtime conversions.
+void test1025Models()
+{
+    Header header{4, 1025, -123, 456, 4, 2};
+    std::vector<Slot> original(8);
+    for (std::size_t i = 0; i < original.size(); ++i)
+        original[i].ids = {1024, static_cast<std::uint16_t>(i), EmptyId, 1023};
+
+    std::vector<std::uint8_t> encoded;
+    CHECK(encodeSlots(Version::V4, header, original, encoded) == Status::Ok);
+    CHECK(encoded.size() == original.size() * SlotSizeV4);
+
+    std::vector<Slot> decoded;
+    CHECK(decodeSlots(Version::V4, header, encoded.data(), encoded.size(), decoded) == Status::Ok);
+    CHECK(decoded.size() == original.size());
+    for (std::size_t i = 0; i < original.size(); ++i)
+    {
+        assertSame(original[i], decoded[i]);
+        const RuntimeSlot runtime = toRuntimeSlot(decoded[i]);
+        CHECK(runtime.r_id(0) == 1024);
+        CHECK(runtime.r_id(3) == 1023);
+        CHECK(runtime.r_id(2) == EmptyId);
+    }
+
+    // No truncation to 8 bits, 10 bits, or the legacy v3 6-bit IDs.
+    Header insufficient = header;
+    insufficient.objectCount = 1024;
+    CHECK(decodeSlots(Version::V4, insufficient, encoded.data(), encoded.size(), decoded)
+          == Status::InvalidModelReference);
+    CHECK(encodeSlots(Version::V4, insufficient, original, encoded)
+          == Status::InvalidModelReference);
+    CHECK(encodeSlot(Version::V3, original[0], encoded.data(), SlotSizeV3)
+          == Status::UnrepresentableId);
+}
+
 void testChunks()
 {
     Header header{4, 1024, 0, 0, 2, 2};
@@ -222,6 +258,7 @@ int main()
     testV3Golden();
     testRuntimeConversion();
     testV4Roundtrips();
+    test1025Models();
     testConversionAndBounds();
     testHeader();
     testChunks();

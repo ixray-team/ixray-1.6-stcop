@@ -1,11 +1,14 @@
-# Detail v4 binary format — initial codec milestone
+# Detail v4 binary format and game runtime integration
 
 Applies to ixray-team/ixray-1.6-stcop `default` at
 `478899e687b1e5d7eab834120a252ca01b3dca36`.
 
-> **Status: proposed v4 / implemented standalone codec.** No gameplay or Level
-> Editor integration yet. v3 behaviour is preserved; the new codec is an
-> opt-in dependency for subsequent integration commits.
+> **Status on the `detail-v4` branch:** the portable v3/v4 codec and game
+> renderer loader are implemented. A game smoke test using a Zaton v4 file
+> with 1025 model subchunks and referenced ID 1024 succeeded. The Level Editor,
+> `detail_object.part` writer, detail exporter and lighting compiler are **not**
+> yet upgraded to generate/modify v4 in the normal asset pipeline. These are
+> separate milestones. The game renderer retains v3 compatibility.
 
 ## Versioning and envelope
 
@@ -113,34 +116,47 @@ bit-field ABI promise.
   the generator's `u8` ID locals, and per-color-group `u8` counts must be
   addressed in later integration patches.
 
-## First milestone files and standalone tests
+## Implemented components and standalone tests
 
-- `src/xrCore/DetailFormatCodec.h`
-- `src/xrCore/DetailFormatCodec.cpp`
-- `tests/detail_format_v4/CMakeLists.txt`
-- `tests/detail_format_v4/test_detail_format_codec.cpp`
+- `src/xrCore/DetailFormatCodec.{h,cpp}` — portable, validated v3/v4 codec.
+- `src/xrCore/DetailRuntimeSlot.h` — 16-bit model IDs in the renderer.
+- `src/Layers/xrRender/DetailManager{.h,.cpp,_CACHE.cpp,_Decompress.cpp}` —
+  game runtime decoding and rendering with wide IDs (legacy editor layout retained).
+- `tests/detail_format_v4/test_detail_format_codec.cpp` — portable unit tests,
+  including a complete 1025-model v4 slot roundtrip with ID 1024.
+- `tests/detail_format_v4/test_real_v3_file.cpp` — optional real v3 fixture,
+  byte-exact roundtrip and runtime conversion.
+- `tests/detail_format_v4/test_real_v4_file.cpp` — optional real v4 fixture,
+  requires at least 1025 numbered model subchunks and a referenced ID >=1024;
+  validates the real outer container and slot payload byte-for-byte.
 
-From the repository root:
+The tests are an **independent CMake project**, not part of the engine's
+`IXRAY_TESTS` option. Configure them separately; otherwise CTest in the main
+engine build will not list them. On Windows, for example:
 
-```sh
-cmake -S tests/detail_format_v4 -B build-detail-format-tests
-cmake --build build-detail-format-tests
-ctest --test-dir build-detail-format-tests --output-on-failure
+```powershell
+cmake -S tests/detail_format_v4 -B build/detail-v4-tests -G "Visual Studio 17 2022" -A x64 `
+  -DIXRAY_DETAIL_V3_FILE="D:/ixray/sdk/gamedata/levels/zaton/level.details" `
+  -DIXRAY_DETAIL_V4_FILE="D:/ixray/IXRay-Source-r136/build/detail-v4-zaton-stress/level.details"
+cmake --build build/detail-v4-tests --config Release --parallel 4
+ctest --test-dir build/detail-v4-tests -C Release --output-on-failure
 ```
 
-This isolated test project needs only C++17 and a C++ compiler; it does not
-link DirectX, the full IX-Ray engine, or platform-specific SDK dependencies.
-It checks v3 golden bytes, v3->v4 round-tripping, boundary IDs, reserved bits,
-malformed lengths, invalid references and count/size overflow.
+The C++ tests need only C++17; they do not link DirectX or the game. If the
+optional fixture paths are omitted, only the codec unit test is registered.
+The v4 real-file test verifies encoded references and mesh subchunk framing,
+**not** the visual quality, actual mesh diversity, or GPU draw calls.
 
-## Still required before gameplay use
+## Remaining integration before full authoring of v4 maps
 
-1. Add a normalized slot store to `CDetailManager`, with versioned loading.
-2. Update `EDetailManager` `.part` load/save and `build.details` export/remap.
-3. Update the generator's object IDs and independent color-index counts.
-4. Update `xrLC_Light` to correctly read/write v4 while lighting.
-5. Optionally extend PCore readers, and measure texture-atlas and draw-call
-   costs on 64, 128, 256, 512, and 1024-model maps.
+1. Update `EDetailManager` `.part` load/save and `build.details` export/remap.
+2. Update the detail generator's model IDs and independent color-index counts.
+3. Update `xrLC_Light` to correctly read/write v4 while lighting.
+4. Coordinate support in SDK tooling / converters while retaining existing
+   v3 assets and unmodified v3 loading.
+5. Benchmark memory, atlas, GPU rendering and draw-call costs on maps with
+   large **distinct** model libraries. The existing 1025-model smoke-test
+   duplicates one original mesh into additional numbered model entries.
 
-**This initial patch deliberately does not change the runtime behaviour or
-write v4 game files from the editor.**
+The Detail v4 game runtime reads v3 and v4 already. This does **not** mean
+that the editor/compiler asset-export pipeline writes v4 yet.
