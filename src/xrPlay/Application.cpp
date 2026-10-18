@@ -138,6 +138,13 @@ int CApplication::BeginPlay()
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
 
+#if defined(IXR_MACOS)
+	// LaunchServices starts a bare executable in the background, so the window
+	// would open unfocused and input would go to the previously active app.
+	// Raise the window (and the app with it) right after creation.
+	SDL_RaiseWindow(g_AppInfo.Window);
+#endif
+
 #ifdef IXR_MACOS
 	if (!SDL_Vulkan_LoadLibrary(nullptr))
 		Msg("! SDL_Vulkan_LoadLibrary failed: %s", SDL_GetError());
@@ -233,6 +240,11 @@ void CApplication::MigrateToGameWindow()
 		psDeviceFlags.set(rsFullscreen, FALSE);
 	else
 		SDL_ShowWindow(g_AppInfo.Window);
+
+#if defined(IXR_MACOS)
+	// Keep the game window frontmost when the launch came from Finder.
+	SDL_RaiseWindow(g_AppInfo.Window);
+#endif
 
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
