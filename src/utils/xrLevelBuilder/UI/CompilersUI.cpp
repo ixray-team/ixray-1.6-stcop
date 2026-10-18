@@ -1005,9 +1005,12 @@ static void DrawLightBackendSwitcher()
 	};
 
 #ifdef LCCUDA_BUILD
-	constexpr bool HasCuda = true;
+	extern bool IsCudaAvailable();
+	const bool HasCuda = IsCudaAvailable();
+	const char* CudaTooltip = HasCuda ? "Trace light rays on the GPU with Nvidia CUDA + OptiX." : "No NVIDIA driver found.";
 #else
 	constexpr bool HasCuda = false;
+	const char* CudaTooltip = "Not built: enable IXRAY_UTILS_OPTIX.";
 #endif
 #ifdef LCVULKAN_BUILD
 	constexpr bool HasVulkan = true;
@@ -1018,7 +1021,7 @@ static void DrawLightBackendSwitcher()
 	const BackendTile Tiles[] =
 	{
 		{ ELightBackend::Embree, "Embree", "Trace light rays on the CPU with Intel Embree.", true, &LightBackendIcons::DrawCpu },
-		{ ELightBackend::CUDA, "CUDA", HasCuda ? "Trace light rays on the GPU with Nvidia CUDA + OptiX." : "Not built: enable IXRAY_UTILS_OPTIX.", HasCuda, &LightBackendIcons::DrawGpu },
+		{ ELightBackend::CUDA, "CUDA", CudaTooltip, HasCuda, &LightBackendIcons::DrawGpu },
 		{ ELightBackend::Vulkan, "Vulkan", HasVulkan ? "Trace light rays on any GPU with VK_KHR_ray_query (NVIDIA RTX, AMD RDNA2+, Intel Arc)." : "Not built: enable IXRAY_UTILS_VULKAN.", HasVulkan, &LightBackendIcons::DrawRay },
 	};
 
@@ -1565,10 +1568,12 @@ void RenderCompilerUI(int X, int Y)
 		if (!hideLogSection)
 		{
 #ifdef LCCUDA_BUILD
-			if (ImGui::BeginChild("LogSection", ImVec2(nSize * 3, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			extern bool IsCudaAvailable();
+			const bool ShowGpuUsage = IsCudaAvailable();
 #else
-			if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			constexpr bool ShowGpuUsage = false;
 #endif
+			if (ImGui::BeginChild("LogSection", ImVec2(ShowGpuUsage ? nSize * 3 : windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
 			{
 				ImGuiListClipper clipper;
 
@@ -1594,9 +1599,12 @@ void RenderCompilerUI(int X, int Y)
 			}
 
 #ifdef LCCUDA_BUILD
-			ImGui::SameLine();
+			if (ShowGpuUsage)
+			{
+				ImGui::SameLine();
+			}
 
-			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
+			if (ShowGpuUsage &&ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
 				extern void CudaStatisticThread();

@@ -188,6 +188,12 @@ if(OPTIX_AVAILABLE)
     target_include_directories(xrLevelBuilder PRIVATE ${OptiX_INCLUDE_DIRS})
     target_link_libraries(xrLevelBuilder PRIVATE ${OptiX_LIBRARIES} CUDA::cudart_static CUDA::cuda_driver CUDA::nvml)
 
+    # nvcuda.dll and nvml.dll ship only with the NVIDIA driver: load them lazily so the tool starts on AMD/Intel
+    if (MSVC)
+        target_link_options(xrLevelBuilder PRIVATE "/DELAYLOAD:nvcuda.dll" "/DELAYLOAD:nvml.dll")
+        target_link_libraries(xrLevelBuilder PRIVATE delayimp.lib)
+    endif()
+
     add_custom_command(
         TARGET xrLevelBuilder PRE_BUILD
         COMMAND ${CUDAToolkit_NVCC_EXECUTABLE}
