@@ -65,10 +65,17 @@ float4 sample_reflections(float2 tc, float3x3 TBNw_inv, float3 w_pos, float3 w_n
 	return float4(reflections, current_lum() * smoothstep(0, 0.03, angle_factor) * color.a);
 }
 
+// calc_model_lq_lighting of r1_static.hlsli, which this shader doesn't include
+float3 dirt_lighting(float3 normal)
+{
+	float3 sun = L_sun_color.xyz * max(0.0f, dot(normal, -L_sun_dir_w.xyz));
+	return (normal.y * 0.5f + 0.5f) * L_dynamic_props.w * L_hemi_color.xyz + L_ambient.xyz + L_dynamic_props.xyz * sun;
+}
+
 float4 sample_dirt(float2 tc, float3 w_nrm)
 {	
 	float4 color = s_base.Sample(smp_rtlinear, float2(tc.x / 2, tc.y / 2 + 0.5));
-	return float4(color.rgb * 2 * calc_model_lq_lighting(w_nrm), color.a);
+	return float4(color.rgb * 2 * dirt_lighting(w_nrm), color.a);
 }
 
 float4 rgba_blend(float4 b, float4 a)
