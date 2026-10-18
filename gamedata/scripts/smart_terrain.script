@@ -1221,14 +1221,12 @@ end
 
 
 local function is_only_monsters_on_jobs(npc_info)
-	return PROF_EVENT_CLOSURE("is_only_monsters_on_jobs", function()
         for k,v in pairs (npc_info) do
             if v.is_monster == false then
                 return false
             end
         end
         return true
-    end)
 end
 
 -- Обновление.

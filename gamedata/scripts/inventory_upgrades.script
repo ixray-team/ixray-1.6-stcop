@@ -210,7 +210,6 @@ function issue_property( param1, name )
 end
 
 local function how_much_repair( item_name, item_condition )
-	return PROF_EVENT_CLOSURE("how_much_repair", function()
         local ltx = system_ini()
         local cost = ltx:r_u32(item_name, "cost")
         local class = ltx:r_string(item_name, "class")
@@ -223,7 +222,6 @@ local function how_much_repair( item_name, item_condition )
         result = flags_table.new_value
             
         return result
-    end)
 end
 
 function can_repair_item( item_name, item_condition, mechanic ) --( string, float, string )

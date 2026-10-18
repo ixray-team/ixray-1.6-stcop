@@ -822,7 +822,6 @@ local mutant_hunter_achievement_items	= {	"ammo_5.45x39_ap",
 											"ammo_12x76_zhekan"}
 
 local function spawn_achivement_items(items_table, count, inv_box_story_id)
-	return PROF_EVENT_CLOSURE("spawn_achivement_items", function()
         local inv_box = alife():object(get_story_object_id(inv_box_story_id))
         for i = 1,count do
             alife():create(items_table[math.random(#items_table)],
@@ -831,7 +830,6 @@ local function spawn_achivement_items(items_table, count, inv_box_story_id)
                             inv_box.m_game_vertex_id,
                             inv_box.id)
         end
-    end)
 end
 
 function actor_binder:check_detective_achievement()

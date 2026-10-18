@@ -22,12 +22,14 @@ args:
   (none)
 retval: (none) - the function returns nothing.
 
---// Execute a function inside a profiling event. If the profiler is not connected, the function is called directly. Returns the function results. Applies to the current script context.
-PROF_EVENT_CLOSURE(name, callable)
+--// Call callable(...) inside a profiling event. If the profiler is not connected, the function is called directly. Returns all results of callable. Applies to the current script context.
+--// Pass a function created once, not a closure built on every call: nothing is allocated per call and LuaJIT can compile the caller.
+PROF_EVENT_CALL(name, callable, ...)
 args:
   name (string)(required) - profiling event name.
-  callable (function)(required) - function to execute and profile.
-retval: (*) - return values of callable, or nil if callable is not provided.
+  callable (function)(required) - function to call and profile.
+  ... - arguments passed to callable.
+retval: (*) - all return values of callable.
 ```
 
 ### Implementation examples:
@@ -39,11 +41,9 @@ local data = load_data_from_file("config.json")
 process_data(data)
 PROF_EVENT_END() -- end profiling
 
---// Example using PROF_EVENT_CLOSURE.
+--// Example using PROF_EVENT_CALL.
 --// Wrap a function call in a profiling event. If the profiler is connected, the event is recorded; otherwise the function runs without profiling.
-local result = PROF_EVENT_CLOSURE("Save data", function()
-    return save_to_database(data)
-end)
+local result = PROF_EVENT_CALL("Save data", save_to_database, data)
 
 --// Nested event example.
 --// Create nested zones for detailed analysis.
@@ -64,18 +64,19 @@ PROF_EVENT_END()
 
 ### Profiling examples that preserve the original return value
 ```lua
---// Example: compute a factorial with profiling through a closure.
---// The function result is returned to the caller; the calculation is wrapped in PROF_EVENT_CLOSURE.
---// Function arguments are available inside the closure without additional handling.
+--// Example: compute a factorial with profiling.
+--// The body is a function created once; the public function passes its arguments to it through PROF_EVENT_CALL.
+local function calculate_factorial_impl(n)
+    if n <= 1 then return 1 end
+    local result = 1
+    for i = 2, n do
+        result = result * i
+    end
+    return result
+end
+
 function calculate_factorial(n)
-    return PROF_EVENT_CLOSURE("Calculate factorial", function()
-        if n <= 1 then return 1 end
-        local result = 1
-        for i = 2, n do
-            result = result * i
-        end
-        return result
-    end)
+    return PROF_EVENT_CALL("Calculate factorial", calculate_factorial_impl, n)
 end
 
 --// Call the function: the result is returned and profiling runs automatically.
@@ -88,10 +89,7 @@ SemiLog("Factorial 10 =" .. calculate_factorial(10))
 -- A profiled wrapper that accepts arbitrary arguments, passes them to the function,
 -- and returns all results while preserving profiling.
 function profiled_call(func, ...)
-    local args = {...}
-    return PROF_EVENT_CLOSURE("Call function " .. tostring(func), function()
-        return func(table.unpack(args)) -- unpack the arguments ... in their original order
-    end)
+    return PROF_EVENT_CALL("Call function", func, ...)
 end
 
 -- Usage example:

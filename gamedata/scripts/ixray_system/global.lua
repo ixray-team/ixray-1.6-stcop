@@ -72,14 +72,6 @@ function PROF_EVENT_CALL(name, callable, ...)
 	return callable(...)
 end
 
-function PROF_EVENT_CLOSURE(name, callable)
-	if ixr_tracy_profiler then 
-		return ixr_tracy_profiler.prof_event_closure(name, callable)
-	end
-	
-	return callable()
-end
-
 --  ####################################################################################################################
 -- 										OVERRIDE ORIGINAL ENTRY POINT
 --  ####################################################################################################################
