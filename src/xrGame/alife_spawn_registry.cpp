@@ -11,6 +11,7 @@
 #include "object_broker.h"
 #include "game_base.h"
 #include "ai_space.h"
+#include "patrol_path_storage.h"
 #include "game_graph.h"
 #include "GamePersistent.h"
 
@@ -208,6 +209,16 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	}
 	R_ASSERT2					(!save_guid || (*save_guid == header().guid()) || ignore_save_incompatibility(),"Saved game doesn't correspond to the spawn : DELETE SAVED GAME!");
 
+	IReader						*PatrolChunk = file_stream.open_chunk(3);
+	R_ASSERT2					(PatrolChunk,"Spawn version mismatch - REBUILD SPAWN!");
+	CPatrolPathStorage			*Patrols = new CPatrolPathStorage();
+	xr_task_group				PatrolTask;
+	PatrolTask.run([PatrolChunk, Patrols]()
+	{
+		PROF_EVENT("Spawns: patrol paths");
+		Patrols->load			(*PatrolChunk);
+	});
+
 	chunk = file_stream.open_chunk(SpawnFileChunks::SpawnGraphOld);
 	if (!chunk)
 	{
@@ -245,13 +256,12 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	}
 	chunk->close				();
 
-	chunk						= file_stream.open_chunk(3);
-	R_ASSERT2					(chunk,"Spawn version mismatch - REBUILD SPAWN!");
 	{
-		PROF_EVENT("Spawns: patrol paths");
-		ai().patrol_path_storage(*chunk);
+		PROF_EVENT("Spawns: wait patrol paths");
+		PatrolTask.wait			();
 	}
-	chunk->close				();
+	PatrolChunk->close			();
+	ai().patrol_path_storage	(Patrols);
 
 	VERIFY						(!m_chunk);
 	m_chunk						= file_stream.open_chunk(4);
