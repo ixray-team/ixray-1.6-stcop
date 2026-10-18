@@ -30,6 +30,13 @@ enum class EModelLoadState : u8
 	Failed
 };
 
+enum class EModelRequestPriority : u8
+{
+	High,	 
+	Normal,	 
+	Low		 
+};
+
 #ifndef _EDITOR
 extern const float fLightSmoothFactor;
 #else
@@ -303,7 +310,7 @@ public:
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{};
 	virtual void					models_Prefetch			()											{};
 	virtual void					models_Clear			(bool b_complete)							{};
-	virtual void					model_Request			(const char* name)							{};
+	virtual void					model_Request			(const char* name, EModelRequestPriority Priority = EModelRequestPriority::Normal)	{};
 	virtual EModelLoadState			model_GetState			(const char* name)							{ return EModelLoadState::Ready; };
 	virtual void					models_WaitRequests		()											{};
 

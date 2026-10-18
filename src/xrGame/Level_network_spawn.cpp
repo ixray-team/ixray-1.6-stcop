@@ -56,7 +56,7 @@ void SpawnVisuals::Request(CSE_Abstract* Entity)
 	xr_vector<shared_str> Names;
 	Collect(Entity, Names);
 	for (const shared_str& Name : Names)
-		::Render->model_Request(Name.c_str());
+		::Render->model_Request(Name.c_str(), EModelRequestPriority::High);
 }
 
 bool CLevel::IsSpawnReady(const NET_Event& Event)
@@ -104,7 +104,7 @@ bool CLevel::IsSpawnReady(const NET_Event& Event)
 		EModelLoadState State = ::Render->model_GetState(Name.c_str());
 		if (State == EModelLoadState::NotRequested)
 		{
-			::Render->model_Request(Name.c_str());
+			::Render->model_Request(Name.c_str(), EModelRequestPriority::High);
 			State = ::Render->model_GetState(Name.c_str());
 		}
 

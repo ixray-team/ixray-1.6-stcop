@@ -444,7 +444,7 @@ public:
 	virtual void 					model_Delete				(IRender_DetailModel* & F);
 	virtual void					models_Prefetch				() override;
 	virtual void					models_Clear				(bool b_complete) override;
-	void							model_Request				(const char* name) override;
+	void							model_Request				(const char* name, EModelRequestPriority Priority) override;
 	EModelLoadState					model_GetState				(const char* name) override;
 	void							models_WaitRequests			() override;
 

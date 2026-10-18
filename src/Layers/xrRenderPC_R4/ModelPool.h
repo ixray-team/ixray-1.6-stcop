@@ -50,7 +50,8 @@ private:
 
 	xr_task_group				RequestTasks;
 	xr_hash_set<shared_str>		Requested;
-	xr_deque<shared_str>		RequestQueue;
+	xr_deque<shared_str>		RequestQueues[3];
+	xr_hash_map<shared_str, EModelRequestPriority>	Queued;
 	u32							ActiveLoaders = 0;
 	xrCriticalSection			RequestedLock;
 
@@ -99,7 +100,7 @@ public:
 		LoadContext			Previous;
 	};
 
-	void					Request				(const char* name);
+	void					Request				(const char* name, EModelRequestPriority Priority);
 	EModelLoadState			GetState			(const char* name);
 	void					WaitRequests		();
 
