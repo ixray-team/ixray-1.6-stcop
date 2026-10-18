@@ -68,7 +68,7 @@ void XRay::Engine::GameThread()
 
 	{
 		PROF_EVENT("Sheduler");
-		if (!Device.Paused())
+		if (!Device.Paused() && !Device.IsPrecacheSpawning)
 		{
 			::Engine.Sheduler.Update();
 		}

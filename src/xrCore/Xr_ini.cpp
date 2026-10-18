@@ -310,7 +310,7 @@ CInifile::~CInifile()
 			Msg("!Can't save inifile: %s", m_file_name);
 	}
 
-	if (cached_ini_map == nullptr || !g_AppInfo.IsPrimaryThread())
+	if (cached_ini_map == nullptr || !(g_AppInfo.IsPrimaryThread() || g_AppInfo.IsAsyncLoadThread()))
 	{
 		return;
 	}

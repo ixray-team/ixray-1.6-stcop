@@ -34,6 +34,7 @@ void restart_all				()
 		return;
 	}
 
+	if (!g_AppInfo.IsAsyncLoadThread())
 	{
 		PROF_EVENT("restart_all: main menu");
 		MainMenu()->DestroyInternal	(true);
