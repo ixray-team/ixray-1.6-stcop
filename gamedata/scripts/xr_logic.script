@@ -118,7 +118,6 @@ function generic_scheme_overrides(npc)
 --	gulag_name - имя гулага, если скрипт включается гулагом, а не биндером
 --]]--
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name)
-	return PROF_EVENT_CLOSURE("configure_schemes", function()
         --printf("DEBUG: enable_scripts: npc:name()=%s", npc:name())
     
         local npc_id = npc:id()
@@ -201,12 +200,10 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
         end
     
         return st.ini
-    end)
 end
 
 -- Вызывается биндером с целью определить первую активную схему
 function determine_section_to_activate(npc, ini, section_logic, actor)
-	return PROF_EVENT_CLOSURE("determine_section_to_activate", function()
         if not ini:section_exist(section_logic) then
             return "nil"
         end
@@ -232,14 +229,12 @@ function determine_section_to_activate(npc, ini, section_logic, actor)
             end
         end
         return active_section
-    end)
 end
 
 ------------------------------------------------------------------------------------------------------------
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В enable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function disable_generic_schemes(npc, stype)
-	return PROF_EVENT_CLOSURE("disable_generic_schemes", function()
         if stype == modules.stype_stalker then
             xr_combat.disable_scheme(npc, "combat")
             xr_hit.disable_scheme(npc, "hit")
@@ -256,14 +251,12 @@ function disable_generic_schemes(npc, stype)
         elseif stype == modules.stype_heli then
             xr_hit.disable_scheme(npc, "hit")
         end
-    end)
 end
 
 ------------------------------------------------------------------------------------------------------------
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В disable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function enable_generic_schemes(ini, npc, stype, section)
-	return PROF_EVENT_CLOSURE("enable_generic_schemes", function()
         if stype == modules.stype_stalker then
             --xr_reactions.set_reactions(npc, ini, "reactions", section)
             xr_danger.set_danger(npc, ini, "danger", "danger")
@@ -346,14 +339,12 @@ function enable_generic_schemes(ini, npc, stype, section)
                 xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
             end
         end
-    end)
 end
 
 -- Существует два способа вызова функции: с передаванием секции или без нее
 -- В обоих случаях передавать gulag_name ОБЯЗАТЕЛЬНО
 -- Если section не передана, то она берется из работы переданного гулага.
 function activate_by_section(npc, ini, section, gulag_name, loading)
-	return PROF_EVENT_CLOSURE("activate_by_section", function()
         --printf("LOGIC[%s]: Object '%s': activate_by_section: looking for section '%s'", tostring(time_global()), npc:name(), section)
     
         if loading == nil then
@@ -425,7 +416,6 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
         else
             issue_event(npc, db.storage[npc_id][scheme], "reset_scheme", loading, npc)
         end
-    end)
 end
 
 --[[
@@ -435,7 +425,6 @@ end
 	]] --
 
 function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
-	return PROF_EVENT_CLOSURE("reset_generic_schemes_on_scheme_switch", function()
         --printf("_bp: reset_generic_schemes_on_scheme_switch: npc:name()='%s'", npc:name())
         local st = db.storage[npc:id()]
     
@@ -493,11 +482,9 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
                 mob_release(npc)
             end
         end
-    end)
 end
 
 function assign_storage_and_bind(npc, ini, scheme, section)
-    return PROF_EVENT_CLOSURE("assign_storage_and_bind", function()
         local npc_id = npc:id()
         local st
     
@@ -519,11 +506,9 @@ function assign_storage_and_bind(npc, ini, scheme, section)
         st["ini"] = ini
     
         return st
-    end)
 end
 
 function subscribe_action_for_events(npc, storage, new_action)
-	return PROF_EVENT_CLOSURE("subscribe_action_for_events", function()
         --printf("DEBUG: registering new action for reset event (npc:name() = '%s')", npc:name())
     
         if not storage.actions then
@@ -531,17 +516,14 @@ function subscribe_action_for_events(npc, storage, new_action)
         end
     
         storage.actions[new_action] = true
-    end)
 end
 
 function unsubscribe_action_from_events(npc, storage, new_action)
-	return PROF_EVENT_CLOSURE("unsubscribe_action_from_events", function()
         if not storage.actions then
             storage.actions = {}
         end
     
         storage.actions[new_action] = nil
-    end)
 end
 
 -- st - storage активной схемы
@@ -588,7 +570,6 @@ end
 
 --' Функция проверяет выполняется ли у активной схемы заданная функция
 function check_action(npc, st, event_fn, p)
-	return PROF_EVENT_CLOSURE("check_action", function()
 		if not st or not st.actions then
 			return true
 		end
@@ -599,7 +580,6 @@ function check_action(npc, st, event_fn, p)
 			end
 		end
 		return true
-	end)
 end
 
 
@@ -776,7 +756,6 @@ end
 -- Выполняет переключение на указанную секцию, если задана.
 -- Если section == nil, остается работать старая секция.
 function switch_to_section(npc, ini, section)
-	return PROF_EVENT_CLOSURE("switch_to_section", function() 
 	
 		if section == "" or section == nil then
 			return false
@@ -806,7 +785,6 @@ function switch_to_section(npc, ini, section)
 		--printf("section = [%s]5", tostring(section))
 		return true
 		
-	end)
 end
 
 function see_actor(npc)
@@ -957,7 +935,6 @@ function try_switch_to_another_section(npc, st, actor)
 end
 
 function is_active(npc, st)
-	return PROF_EVENT_CLOSURE("is_active", function()
         if st.section == nil then
             abort("npc '%s': st.section is nil, active section is '%s'",
                 npc:name(), utils.to_str(db.storage[npc:id()].active_section))
@@ -966,7 +943,6 @@ function is_active(npc, st)
     
         -- Текущая секция активна и не сработало ни одно из условий переключения на другие секции
         return is_act
-    end)
 end
 
 
@@ -979,7 +955,6 @@ end
 -- Заполнить массив:
 -- { "infop_name" = true/false }.
 function parse_infop1(rslt, str)
-	return PROF_EVENT_CLOSURE("parse_infop1", function()
         --printf("_bp: parse_infop: %s", utils.to_str(str))
         if str then
             local infop_name, sign
@@ -1004,11 +979,9 @@ function parse_infop1(rslt, str)
                 infop_n = infop_n + 1
             end
         end
-    end)
 end
 
 function parse_func_params(str)
-	return PROF_EVENT_CLOSURE("parse_infop", function()
         local lst = {}
         local n
         for par in string.gfind(str, "%s*([^:]+)%s*") do
@@ -1017,11 +990,9 @@ function parse_func_params(str)
             else table.insert(lst, par) end
         end
         return lst
-    end)
 end
 
 function parse_infop(rslt, str)
-	return PROF_EVENT_CLOSURE("parse_infop", function()
         --printf("_bp: parse_infop1: %s", utils.to_str(str))
         if str then
             local infop_name, sign
@@ -1065,7 +1036,6 @@ function parse_infop(rslt, str)
                 infop_n = infop_n + 1
             end
         end
-    end)
 end
 
 -- Распарсивает строку src вида:
@@ -1076,7 +1046,6 @@ end
 --   2 = { infop_check = { 1 = {"infop3" = true}, 2 = {"infop4" = false} }, infop_set = {}, section = "section2" },
 -- }
 function parse_condlist(npc, section, field, src)
-	return PROF_EVENT_CLOSURE("parse_condlist", function() 
 		local lst = {}
 
 		-- 1) Разбиваем на разделенные запятыми части:
@@ -1136,11 +1105,9 @@ function parse_condlist(npc, section, field, src)
 			n = n + 1
 		end
 		return lst
-	end)
 end
 
 function cfg_get_number_and_condlist(ini, section, field, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_number_and_condlist", function() 
 		local str = utils.cfg_get_string(ini, section, field, npc, false, "")
 		if not str then
 			return nil
@@ -1158,11 +1125,9 @@ function cfg_get_number_and_condlist(ini, section, field, npc)
 		t.condlist = parse_condlist(npc, section, field, par[2])
 	
 		return t
-	end)
 end
 
 function cfg_get_string_and_condlist(ini, section, field, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_string_and_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1180,11 +1145,9 @@ function cfg_get_string_and_condlist(ini, section, field, npc)
         t.condlist = parse_condlist(npc, section, field, par[2])
     
         return t
-    end)
 end
 
 function cfg_get_two_strings_and_condlist(ini, section, field, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_two_strings_and_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1203,11 +1166,9 @@ function cfg_get_two_strings_and_condlist(ini, section, field, npc)
         t.condlist = parse_condlist(npc, section, field, par[3])
     
         return t
-    end)
 end
 
 function cfg_get_condlist(ini, section, field, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1224,22 +1185,18 @@ function cfg_get_condlist(ini, section, field, npc)
         t.condlist = parse_condlist(npc, section, field, par[1])
     
         return t
-    end)
 end
 
 function add_condition(lst, at, cond)
-	return PROF_EVENT_CLOSURE("mob_release", function()
         if cond then
             lst[at] = cond
             return at + 1
         end
         return at
-    end)
 end
 
 
 function cfg_get_switch_conditions(ini, section, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_switch_conditions", function()
         local l = {}
         local t
         local n = 1
@@ -1286,11 +1243,9 @@ function cfg_get_switch_conditions(ini, section, npc)
 	    add_conditions( cfg_get_zone			   , "on_self_not_in_zone"	 )
 
         return l
-    end)
 end
 
 function cfg_get_overrides(ini, section, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_overrides", function()
         local l = {}
     
     --	l.meet_enabled      = utils.cfg_get_bool(ini, section, "meet_enabled", npc, false)
@@ -1328,11 +1283,9 @@ function cfg_get_overrides(ini, section, npc)
         end
         
         return l
-    end)
 end
 
 function cfg_get_npc_and_zone(ini, section, field, npc)
-	return PROF_EVENT_CLOSURE("cfg_get_npc_and_zone", function()
         local t = cfg_get_two_strings_and_condlist(ini, section, field, npc)
     
         if t then
@@ -1353,7 +1306,6 @@ function cfg_get_npc_and_zone(ini, section, field, npc)
         end
     
         return t
-    end)
 end
 
 -- Возвращает ссылку на оверрайды, зарегистрированные в активной на данный момент секции,
@@ -1363,15 +1315,12 @@ function generic_scheme_overrides(npc)
 end
 
 function mob_release(mob)
-	return PROF_EVENT_CLOSURE("mob_release", function()
         if mob:get_script() then
             mob:script(false, script_name())
         end
-    end)
 end
 
 function mob_capture(mob, reset_actions)
-	return PROF_EVENT_CLOSURE("mob_capture", function()
         if reset_actions == nil then
             abort("mob_capture: reset_actions parameter's value is not specified")
         end
@@ -1383,17 +1332,13 @@ function mob_capture(mob, reset_actions)
                 mob:script(true, script_name())
             end
         end
-    end)
 end
 
 function mob_captured(mob)
-	return PROF_EVENT_CLOSURE("mob_captured", function()
         return mob:get_script()
-    end)
 end
 
 function save_logic(obj, packet)
-	return PROF_EVENT_CLOSURE("save_logic", function()
         local npc_id = obj:id()
         local cur_tm = time_global()
     
@@ -1405,11 +1350,9 @@ function save_logic(obj, packet)
     
         -- GAMETIME added by Stohe.
         utils.w_CTime(packet, db.storage[npc_id].activation_game_time)
-    end)
 end
 
 function load_logic(obj, reader)
-	return PROF_EVENT_CLOSURE("load_logic", function()
         local npc_id = obj:id()
         local cur_tm = time_global()
     
@@ -1417,7 +1360,6 @@ function load_logic(obj, reader)
     
         -- GAMETIME added by Stohe.
         db.storage[npc_id].activation_game_time = utils.r_CTime(reader)
-    end)
 end
 
 function Serialize_logic(obj, Object)
@@ -1453,16 +1395,13 @@ local pstor_string = 1
 local pstor_boolean = 2
 
 function pstor_is_registered_type(tv)
-	return PROF_EVENT_CLOSURE("pstor_is_registered_type", function()
         if tv ~= "boolean" and tv ~= "string" and tv ~= "number" then
             return false
         end
         return true
-    end)
 end
 
 function pstor_store(obj, varname, val)
-	return PROF_EVENT_CLOSURE("pstor_store", function()
         local npc_id = obj:id()
     
         if db.storage[npc_id].pstor == nil then
@@ -1473,11 +1412,9 @@ function pstor_store(obj, varname, val)
             abort("xr_logic: pstor_store: not registered type '%s' encountered", tv)
         end
         db.storage[npc_id].pstor[varname] = val
-    end)
 end
 
 function pstor_retrieve(obj, varname, defval)
-	return PROF_EVENT_CLOSURE("pstor_retrieve", function()
         local npc_id = obj:id()
     
         if db.storage[npc_id].pstor ~= nil then
@@ -1491,11 +1428,9 @@ function pstor_retrieve(obj, varname, defval)
         end
         --abort("xr_logic: pstor_retrieve: variable '%s' does not exist", varname)
         return nil
-    end)
 end
 
 function pstor_save_all(obj, packet)
-	return PROF_EVENT_CLOSURE("pstor_save_all", function()
         local npc_id = obj:id()
         local pstor = db.storage[npc_id].pstor
         if not pstor then
@@ -1526,11 +1461,9 @@ function pstor_save_all(obj, packet)
                 abort("xr_logic: pstor_save_all: not registered type '%s' encountered", tv)
             end
         end
-    end)
 end
 
 function pstor_load_all(obj, reader)
-	return PROF_EVENT_CLOSURE("pstor_load_all", function()
         local npc_id = obj:id()
         local pstor = db.storage[npc_id].pstor
         if not pstor then
@@ -1553,7 +1486,6 @@ function pstor_load_all(obj, reader)
             end
             --printf("_bp: pstor_load_all: loaded [%s]='%s'", varname, utils.to_str(pstor[varname]))
         end
-    end)
 end
 
 function pstor_Serialize_all(obj, Object)
@@ -1630,7 +1562,6 @@ function pstor_Serialize_all(obj, Object)
 end
 
 function save_obj(obj, packet)
-	return PROF_EVENT_CLOSURE("save_obj", function()
         --printf("save_obj: obj:name()='%s'", obj:name())
         set_save_marker(packet, "save", false, "object"..obj:name())
         local npc_id = obj:id()
@@ -1685,11 +1616,9 @@ function save_obj(obj, packet)
     
         pstor_save_all(obj, packet)
         set_save_marker(packet, "save", true, "object"..obj:name())
-    end)
 end
 
 function load_obj(obj, reader)
-	return PROF_EVENT_CLOSURE("load_obj", function()
         --printf("load_obj: obj:name()='%s'", obj:name())
         set_save_marker(reader, "load", false, "object"..obj:name())
         local npc_id = obj:id()
@@ -1742,7 +1671,6 @@ function load_obj(obj, reader)
     
         pstor_load_all(obj, reader)
         set_save_marker(reader, "load", true, "object"..obj:name())
-    end)
 end
 
 function Serialize_obj(obj, Object)
@@ -1805,7 +1733,6 @@ function Serialize_obj(obj, Object)
 end
 
 function get_customdata_or_ini_file(npc, filename)
-	return PROF_EVENT_CLOSURE("get_customdata_or_ini_file", function()
         --printf( "get_customdata_or_ini_file: filename=%s", filename )
         local st = db.storage[npc:id()]
         if filename == "<customdata>" then
@@ -1831,11 +1758,9 @@ function get_customdata_or_ini_file(npc, filename)
             return get_cached_ini(filename)
         end
         --printf("custom_data_or_ini:6!!!")
-    end)
 end
 
 function initialize_obj(obj, st, loaded, actor, stype)
-	return PROF_EVENT_CLOSURE("initialize_obj", function()
         if not loaded then
             local ini_filename = "<customdata>"
             local ini = get_customdata_or_ini_file(obj, ini_filename)
@@ -1859,5 +1784,4 @@ function initialize_obj(obj, st, loaded, actor, stype)
                 xr_logic.activate_by_section(obj, ini, st.loaded_active_section, st.loaded_gulag_name, true)
             end
         end
-    end)
 end

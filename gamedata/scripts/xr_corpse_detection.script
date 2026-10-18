@@ -166,7 +166,6 @@ function evaluator_corpse:__init(name, storage, npc) super (nil, name)
 end
 
 function evaluator_corpse:evaluate()
-	return PROF_EVENT_CLOSURE("evaluate", function()
         -- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
         	if surge_manager.is_started() then
         		return false
@@ -249,7 +248,6 @@ function evaluator_corpse:evaluate()
         	end
         
         	return false
-    end)
 end
 
 
@@ -271,7 +269,6 @@ function action_search_corpse:initialize()
 	state_mgr.set_state(self.object, "patrol")
 end
 function action_search_corpse:execute ()
-	return PROF_EVENT_CLOSURE("execute", function()
         action_base.execute(self)
     
         if self.object:position():distance_to_sqr(self.a.vertex_position) > 2 then
@@ -280,7 +277,6 @@ function action_search_corpse:execute ()
     
         state_mgr.set_state(self.object, "search_corpse", nil, nil, {look_position = self.a.vertex_position})
         xr_sound.set_sound_play(self.object:id(), "corpse_loot_begin")
-    end)
 end
 
 function action_search_corpse:finalize ()
@@ -294,18 +290,15 @@ end
 local transfer_to_npc = nil
 local last_transferred_items_count = 0
 function get_item(dead_npc, item)
-	return PROF_EVENT_CLOSURE("get_item", function()
         SendScriptCallback("npc_on_get_all_from_corpse", transfer_to_npc, dead_npc, item, (lootable_table[item:section()] or false))
     
         if lootable_table[item:section()] == true then
             dead_npc:transfer_item(item, transfer_to_npc)
             last_transferred_items_count = last_transferred_items_count+1
         end
-    end)
 end
 
 function get_all_from_corpse(npc)
-	return PROF_EVENT_CLOSURE("get_all_from_corpse", function()
         if not (db.actor) then 
             return 
         end
@@ -332,14 +325,12 @@ function get_all_from_corpse(npc)
             
         -- Fix for stalkers which 'hanging' while looting (from unofficial 1.6.03)
         state_mgr.set_state(npc, "patrol") 
-    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
 function add_to_binder(npc, char_ini, scheme, section, st)
-	return PROF_EVENT_CLOSURE("add_to_binder", function()
         local operators	= {}
         local properties  = {}
     
@@ -374,24 +365,18 @@ function add_to_binder(npc, char_ini, scheme, section, st)
     
         action = manager:action (operators["state_mgr_to_idle_alife"])
         action:add_precondition		(world_property(properties["corpse_exist"],		false))
-    end)
 end
 
 function set_corpse_detection(npc, ini, scheme, section)
-	return PROF_EVENT_CLOSURE("set_corpse_detection", function()
         local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-    end)
 end
 
 
 function reset_corpse_detection(npc, scheme, st, section)
-    return PROF_EVENT_CLOSURE("reset_corpse_detection", function()
 	    st.corpse_detection.corpse_detection_enabled = utils.cfg_get_bool(st.ini, section, "corpse_detection_enabled", npc, false, true)
-    end)
 end
 
 function is_under_corpse_detection(npc)
-	return PROF_EVENT_CLOSURE("is_under_corpse_detection", function()
         local mgr = npc:motivation_action_manager()
     
         if not mgr:initialized() then
@@ -400,5 +385,4 @@ function is_under_corpse_detection(npc)
     
         local current_action_id = mgr:current_action_id() 
         return  current_action_id == xr_actions_id.corpse_exist
-    end)
 end

@@ -72,6 +72,26 @@ function prof_event_end()
 	end
 end
 
+local function finish_zone(...)
+	tracy.ZoneEnd()
+	return ...
+end
+
+function prof_event_call(name, callable, ...)
+	if name and is_profiler_connected() and tracy then
+		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
+			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
+			tracy.ZoneBeginN(string.format(PROF_EVENT_DETALIZED_INFO_FORMAT, tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+		else
+			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
+		end
+
+		return finish_zone(callable(...))
+	end
+
+	return callable(...)
+end
+
 function prof_event_closure(name, callable)
 	if name and is_profiler_connected() and tracy then
 		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then

@@ -13,7 +13,6 @@ function evaluator_contact:__init(name, storage) super (nil, name)
 	self.a = storage
 end
 function evaluator_contact:evaluate()
-	return PROF_EVENT_CLOSURE("evaluate", function()
         if self.a.meet_set ~= true then return false end
     
     --	if self.a.meet_only_at_path == true and not db.storage[self.object:id()].move_mgr:arrived_to_first_waypoint() then
@@ -48,7 +47,6 @@ function evaluator_contact:evaluate()
         else
             return false
         end
-    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -102,7 +100,6 @@ function Cmeet_manager:__init(npc, storage)
 end
 
 function Cmeet_manager:update_state()
-	return PROF_EVENT_CLOSURE("update_state", function()
         local state = nil
         local victim = nil
     
@@ -144,11 +141,9 @@ function Cmeet_manager:update_state()
         if tostring(snd) ~= "nil" then
             xr_sound.set_sound_play(self.npc:id(), snd)
         end
-    end)
 end
 
 function Cmeet_manager:set_start_distance()
-	return PROF_EVENT_CLOSURE("set_start_distance", function()
         if db.actor == nil then
             self.hello_passed = false
             self.bye_passed = false
@@ -184,11 +179,9 @@ function Cmeet_manager:set_start_distance()
         else
             self.current_distance = nil
         end
-    end)
 end
 
 function Cmeet_manager:update()
-	return PROF_EVENT_CLOSURE("update", function() 
 	    -- Определение, в каком радиусе находимся
         	local distance = self.npc:position():distance_to(db.actor:position())
         
@@ -346,11 +339,9 @@ function Cmeet_manager:update()
         			self.trade_enable = trade_enable
         		end
         end
-	end)
 end
 
 function notify_on_use(victim, who)
-	return PROF_EVENT_CLOSURE("notify_on_use", function()
         --printf("NOTIFY [%s] used by [%s]", victim:name(), who:name())
     
         -- Если мы мертвы - на юзание не реагировать
@@ -377,7 +368,6 @@ function notify_on_use(victim, who)
         then
             xr_abuse.add_abuse(victim, 1)
         end
-    end)
 end
 
 
@@ -385,7 +375,6 @@ end
 -- binder
 ----------------------------------------------------------------------------------------------------------------------
 function add_to_binder(object, char_ini, scheme, section, st)
-	return PROF_EVENT_CLOSURE("add_to_binder", function()
         local operators		= {}
         local properties	= {}
     
@@ -429,7 +418,6 @@ function add_to_binder(object, char_ini, scheme, section, st)
         st.meet_manager = Cmeet_manager(object, st)
     
         xr_logic.subscribe_action_for_events(object, st, st.meet_manager)
-    end)
 end
 
 
@@ -438,14 +426,11 @@ end
 -- Вызывается только в начале на чтении логики, создает экшены, эвалуаторы и производит
 -- первичную настройку.
 function set_meet(npc, ini, scheme, section)
-	return PROF_EVENT_CLOSURE("set_meet", function()
 	    local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-    end)
 end
 
 -- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
 function reset_meet(npc, scheme, st, section)
-	return PROF_EVENT_CLOSURE("reset_meet", function()
         local meet_section
     --	printf("[%s]", utils.to_str(st.section_logic))
         if scheme == nil or scheme == "nil" then
@@ -455,13 +440,11 @@ function reset_meet(npc, scheme, st, section)
         end
     
         init_meet(npc, st.ini, meet_section, st.meet, scheme)
-    end)
 end
 
 
 -- Функция чтения настроек. В нее передается секция, откуда их нужно читать.
 function init_meet(npc, ini, section, st, scheme)
-	return PROF_EVENT_CLOSURE("init_meet", function()
         --printf("MEET SECTION [%s][%s][%s]", tostring(st.meet_section), tostring(section), tostring(scheme))
     
         if tostring(section) == st.meet_section and
@@ -610,7 +593,6 @@ function init_meet(npc, ini, section, st, scheme)
         --print_table(st.far_distance)
         -- флажок, что функция хотя бы раз вызывалась
         st.meet_set = true
-    end)
 end
 
 function disable_scheme(npc, scheme)
@@ -620,7 +602,6 @@ end
 
 --- Находится ли чувак в данный момент в состоянии мита
 function is_meet(npc)
-	return PROF_EVENT_CLOSURE("is_meet", function() 
         local manager = npc:motivation_action_manager()
             if manager and manager:initialized() then
                 local id = manager:current_action_id()
@@ -629,11 +610,9 @@ function is_meet(npc)
                 end
             end
             return false
-	end)
 end
 
 function process_npc_usability(npc)
-    return PROF_EVENT_CLOSURE("process_npc_usability", function()
         if xr_wounded.is_wounded(npc) then
             if npc:relation(db.actor) == game_object.enemy then
                 npc:disable_talk()
@@ -664,5 +643,4 @@ function process_npc_usability(npc)
                 npc:stop_talk()
             end
         end
-    end)
 end

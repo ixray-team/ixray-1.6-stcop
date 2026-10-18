@@ -49,7 +49,6 @@ local RB_manager = nil
 class "Crelease_body"
 
 function Crelease_body:__init()
-	return PROF_EVENT_CLOSURE("__init", function()
         self.release_objects_table = {} -- таблица "СТЕК" трупов
         self.keep_items_table = {} -- таблица квестовых предметов
         self.body_max_count = 15 -- количество тел которое одновременно может находится в игре
@@ -67,11 +66,9 @@ function Crelease_body:__init()
         end
         
         SendScriptCallback("release_body_manager_on_init", self)
-    end)
 end
 
 function Crelease_body:moving_dead_body(obj)
-	return PROF_EVENT_CLOSURE("moving_dead_body", function()
         printf("current body name ["..obj:name().."]")
         printf("-------table-------")
         print_table(self.release_objects_table)
@@ -92,11 +89,9 @@ function Crelease_body:moving_dead_body(obj)
             end
             add_to_release_table(self.release_objects_table, object_id)
         end
-    end)
 end
 
 function Crelease_body:try_to_release()
-	return PROF_EVENT_CLOSURE("try_to_release", function()
         printf("dead body -> ["..self.body_max_count.."]")
         local pos_in_table = nil
         local overflow_count = #self.release_objects_table - self.body_max_count
@@ -118,13 +113,11 @@ function Crelease_body:try_to_release()
     
             table.remove(self.release_objects_table, pos_in_table)
         end
-    end)
 end
 
 
 
 function Crelease_body:inspection_result(obj)
-	return PROF_EVENT_CLOSURE("inspection_result", function()
         for k,v in pairs(self.keep_items_table) do
             if obj:object(self.keep_items_table[k]) ~= nil then
                 printf("Object << "..obj:name().." >> presence_in_keep_items_table") -- в инвентаре есть квестовый предмет
@@ -148,11 +141,9 @@ function Crelease_body:inspection_result(obj)
             return false
         end
         return true
-    end)
 end
 
 function  Crelease_body:check_for_known_info(obj)
-	return PROF_EVENT_CLOSURE("check_for_known_info", function()
         local char_ini = ""
         local spawn_ini = obj:spawn_ini()
         local filename = nil
@@ -174,11 +165,9 @@ function  Crelease_body:check_for_known_info(obj)
             return true
         end
         return false
-    end)
 end
 
 function Crelease_body:save(packet)
-	return PROF_EVENT_CLOSURE("save", function()
         set_save_marker(packet, "save", false, "Crelease_body")
         local count = #self.release_objects_table
         packet:w_u16(count)
@@ -188,11 +177,9 @@ function Crelease_body:save(packet)
         local level_id = gg_vertex_level_id(alife():actor().m_game_vertex_id)
         packet:w_u16(level_id)
         set_save_marker(packet, "save", true, "Crelease_body")
-    end)
 end
 
 function Crelease_body:load(reader)
-	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(reader, "load", false, "Crelease_body")
         local count = reader:r_u16()
         self.release_objects_table = {}
@@ -206,7 +193,6 @@ function Crelease_body:load(reader)
             self.release_objects_table = {}
         end
         set_save_marker(reader, "load", true, "Crelease_body")
-    end)
 end
 
 function Crelease_body:Serialize(Object)
@@ -243,10 +229,8 @@ function Crelease_body:Serialize(Object)
 end
 
 function get_release_body_manager()
-	return PROF_EVENT_CLOSURE("get_release_body_manager", function()
         if(RB_manager==nil) then
             RB_manager = Crelease_body()
         end
         return RB_manager
-    end)
 end

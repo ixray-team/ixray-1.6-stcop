@@ -77,7 +77,6 @@ function PatrolManager:__init(path_name)
 end
 --' Добавление нового персонажа
 function PatrolManager:add_npc(npc, leader)
-    return PROF_EVENT_CLOSURE("add_npc", function()
             --'validate npc
             if npc == nil or npc:alive() == false or self.npc_list[npc:id()] ~= nil then
                  return
@@ -101,11 +100,9 @@ function PatrolManager:add_npc(npc, leader)
     
             printf ("[XR_PATROL] NPC %s added to patrol manager %s", npc:name (), self.path_name)
             self:reset_positions ()
-    end)
 end
 --' Удаление персонажа
 function PatrolManager:remove_npc(npc)
-	return PROF_EVENT_CLOSURE("remove_npc", function()
             if npc == nil then return end
             if self.npc_list[npc:id()] == nil then
             return
@@ -118,11 +115,9 @@ function PatrolManager:remove_npc(npc)
                  self.commander_id = -1
                  self:reset_positions ()
             end
-    end)
 end
 --' Пересчет занимаемых позиций
 function PatrolManager:reset_positions()
-	return PROF_EVENT_CLOSURE("reset_positions", function()
             local form_ = formations[self.formation]
             local index = 1
             for key, data in pairs(self.npc_list) do
@@ -141,11 +136,9 @@ function PatrolManager:reset_positions()
                          index = index + 1
                     end
             end
-        end)
 end
 --' Установление формации
 function PatrolManager:set_formation(formation)
-    return PROF_EVENT_CLOSURE("set_formation", function()
         if formation == nil then
              abort ("Invalid formation (nil) for PatrolManager[%s]", self.path_name)
         end
@@ -154,12 +147,10 @@ function PatrolManager:set_formation(formation)
         end
         self.formation = formation
         self:reset_positions ()
-    end)
 end
 
 --' Получить командира патруля
 function PatrolManager:get_commander(npc)
-    return PROF_EVENT_CLOSURE("get_commander", function()
         if npc == nil then
              abort ("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
         end
@@ -180,11 +171,9 @@ function PatrolManager:get_commander(npc)
              abort ("Patrol commander not present in PatrolManager[%s]", self.path_name)
         end
         return commander
-    end)
 end
 --' Получить параметры действия NPC
 function PatrolManager:get_npc_command(npc)
-    return PROF_EVENT_CLOSURE("get_npc_command", function()
         if npc == nil then
              abort("Invalid NPC on call PatrolManager:get_npc_command in PatrolManager[%s]", self.path_name)
         end
@@ -247,11 +236,9 @@ function PatrolManager:get_npc_command(npc)
         end
     
         return vertex, dir, self.current_state
-    end)
 end
 --' Установить действие НПС
 function PatrolManager:set_command(npc, command, formation)
-    return PROF_EVENT_CLOSURE("set_command", function()
         if npc == nil or npc:alive () == false then
             self:remove_npc(npc)
             return
@@ -267,7 +254,6 @@ function PatrolManager:set_command(npc, command, formation)
         self.commander_lid = npc:level_vertex_id ()
         self.commander_dir = npc:direction ()
         self:update ()
-    end)
 end
 
 --' Является ли указанный НПС командиром.
@@ -277,14 +263,12 @@ end
 
 --' Находится ли командир патруля в схеме XR_MEET
 function PatrolManager:is_commander_in_meet()
-    return PROF_EVENT_CLOSURE("is_commander_in_meet", function()
         if self.commander_id == -1 then return false end
         local npc = self.npc_list[self.commander_id].soldier
         if npc ~= nil and npc:alive () == true then
              return xr_meet.is_meet (npc)
         end
         return false
-    end)
 end
 
 --' Апдейт
@@ -335,8 +319,6 @@ function action_commander:initialize()
 end
 
 function action_commander:activate_scheme()
-		
-	return PROF_EVENT_CLOSURE("activate_scheme", function()
         self.st.signals = {}
         printf ("[XR_PATROL] SET PATROL PATH : %s", self.st.path_walk)
         if self.st.path_walk_info == nil then
@@ -349,11 +331,9 @@ function action_commander:activate_scheme()
             self.st.team, self.st.suggested_state, {obj = self, func = self.formation_callback})
     
             patrols[self.st.patrol_key]:set_command(self.object, self.cur_state, self.st.formation)
-    end)
 end
 
 function action_commander:execute()
-	return PROF_EVENT_CLOSURE("execute", function()
         action_base.execute(self)
         self.move_mgr:update()
     
@@ -385,41 +365,31 @@ function action_commander:execute()
         end
         --printf("FORMATION %s", self.st.formation)
             patrols[self.st.patrol_key]:set_command(self.object, new_state, self.st.formation)
-    end)
 end
 
 ----------------------
 function action_commander:finalize()
-	return PROF_EVENT_CLOSURE("finalize", function()
         if self.object:alive () == true then
             patrols[self.st.patrol_key]:set_command(self.object, "guard", self.st.formation)
             self.move_mgr:finalize()
         end
         
         action_base.finalize(self) 
-    end)
 end
 ----------------------
 function action_commander:deactivate(npc)
-	return PROF_EVENT_CLOSURE("deactivate", function()
 	    patrols[self.st.patrol_key]:remove_npc(npc)
-    end)
 end
 ----------------------
 function action_commander:death_callback(npc)
-	return PROF_EVENT_CLOSURE("death_callback", function()
 	    patrols[self.st.patrol_key]:remove_npc(npc)
-    end)
 end
 ----------------------
 function action_commander:net_destroy(npc)
-    return PROF_EVENT_CLOSURE("net_destroy", function()
         self:deactivate(npc)
-    end)
 end
 ----------------------
 function action_commander:formation_callback(mode, number, index)
-    return PROF_EVENT_CLOSURE("formation_callback", function()
         if number == 0 then
              self.st.formation = "line"
         elseif number == 1 then
@@ -428,7 +398,6 @@ function action_commander:formation_callback(mode, number, index)
              self.st.formation = "back"
         end
         printf("FORMATION CALLBACK. %s", self.st.formation)
-    end)
 end
 
 
@@ -466,7 +435,6 @@ function action_patrol:activate_scheme()
 end
 
 function action_patrol:execute()
-	return PROF_EVENT_CLOSURE("execute", function()
         action_base.execute (self)
     
         if self.time_to_update - time_global() > 0 then
@@ -488,38 +456,29 @@ function action_patrol:execute()
     
         --'перемещаемся по пути
         state_mgr.set_state(self.object, self.cur_state)
-    end)
 end
 
 function action_patrol:finalize()
-	return PROF_EVENT_CLOSURE("finalize", function()
         if self.object:alive () == true then
             self.move_mgr:finalize()
         end
         
         action_base.finalize(self)
-    end)
 end
 
 function action_patrol:formation_callback(mode, number, index)
 end
 
 function action_patrol:death_callback(npc)
-	return PROF_EVENT_CLOSURE("death_callback", function()
 	    patrols[self.st.patrol_key]:remove_npc(npc)
-    end)
 end
 
 function action_patrol:deactivate(npc)
-    return PROF_EVENT_CLOSURE("deactivate", function()
         patrols[self.st.patrol_key]:remove_npc(npc)
-    end)
 end
 
 function action_patrol:net_destroy(npc)
-    return PROF_EVENT_CLOSURE("net_destroy", function()
         self:deactivate(npc)
-    end)
 end
 
 
@@ -527,7 +486,6 @@ end
 --' Patrol binder
 --'--------------------------------------------------------------------------------------------------------------------
 function add_to_binder(object, ini, scheme, section, storage)
-	return PROF_EVENT_CLOSURE("add_to_binder", function()
         local operators		= {}
         local properties	= {}
     
@@ -575,12 +533,10 @@ function add_to_binder(object, ini, scheme, section, storage)
     
         action = manager:action     (xr_actions_id.alife)
         action:add_precondition		(world_property(properties["patrol_end"],		true))
-    end)
 end
 
 -- включение патруля
 function set_scheme(npc, ini, scheme, section, gulag_name)
-	return PROF_EVENT_CLOSURE("set_scheme", function()
         printf ("XR_PATROL CALLED 'SET_SCHEME' FOR NPC %s", npc:name ())
         local st = xr_logic.assign_storage_and_bind (npc, ini, scheme, section)
     
@@ -626,5 +582,4 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
                  patrols[st.patrol_key] = PatrolManager(st.path_name)
         end
         patrols[st.patrol_key]:add_npc(npc, st.commander)
-    end)
 end

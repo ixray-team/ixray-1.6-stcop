@@ -146,7 +146,6 @@ simulation_activities = {
 
 class "sim_board"
 function sim_board:__init()
-	return PROF_EVENT_CLOSURE("__init", function()
         --' Таблица содержащая смарты и данные о них в формате:
         --' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
         self.smarts = {}
@@ -171,7 +170,6 @@ function sim_board:__init()
         self.tmp_entered_squad = {}
     
         printf("CREATE NEW SIM BOARD [%s]", tostring(self.sid))
-    end)
 end
 function sim_board:start_sim()
 	self.simulation_started = true
@@ -187,7 +185,6 @@ end
 
 --' Регистрация нового смарта.
 function sim_board:register_smart(obj)
-	return PROF_EVENT_CLOSURE("register_smart", function()
         printf("register_smart %s", obj:name())
         if self.smarts[obj.id] ~= nil then
             abort("Smart already exist in list [%s]", obj:name())
@@ -196,11 +193,9 @@ function sim_board:register_smart(obj)
         self.smarts[obj.id] = {smrt = obj, squads = {}, stayed_squad_quan = 0}
     
         self.smarts_by_names[obj:name()] = obj
-    end)
 end
 -- Инициализация смарта
 function sim_board:init_smart(obj)
-	return PROF_EVENT_CLOSURE("init_smart", function()
         if self.tmp_assigned_squad[obj.id] ~= nil then
             for k,v in pairs(self.tmp_assigned_squad[obj.id]) do
                 self:assign_squad_to_smart(v, obj.id)
@@ -213,23 +208,19 @@ function sim_board:init_smart(obj)
             end
             self.tmp_entered_squad[obj.id] = nil
         end
-    end)
 end
 
 --' АнРегистрация смарта.
 function sim_board:unregister_smart(obj)
-	return PROF_EVENT_CLOSURE("unregister_smart", function()
         if self.smarts[obj.id] == nil then
             abort("Trying to unregister nil smart [%s]", obj:name())
         end
     
         self.smarts[obj.id] = nil
-    end)
 end
 
 --' Создание нового отряда
 function sim_board:create_squad(spawn_smart, sq_id)
-	return PROF_EVENT_CLOSURE("create_squad", function()
         printf("create squad called")
         local squad_id = tostring(sq_id)
     
@@ -258,12 +249,10 @@ function sim_board:create_squad(spawn_smart, sq_id)
         end
         
         return squad
-    end)
 end
 
 --' Удалить отряд
 function sim_board:remove_squad(squad)
-	return PROF_EVENT_CLOSURE("create_squad", function()
         printf("Remove squad %s", tostring(squad.id))
         if squad.current_action == nil or
             squad.current_action.dest_smrt == nil
@@ -275,11 +264,9 @@ function sim_board:remove_squad(squad)
         self:assign_squad_to_smart(squad, nil)
     
         squad:remove_squad()
-    end)
 end
 --' Назначение отряда в смарт.
 function sim_board:assign_squad_to_smart(squad, smart_id)
-	return PROF_EVENT_CLOSURE("assign_squad_to_smart", function()
         -- Если смарта нету (например на загрузке он еще не загружен), то мы загоняем данные
         -- во временную таблицу. И на загрузке смарта автодобавляем их.
         --printf("assigned squad %s to smart [%s].", tostring(squad.id), tostring(smart_id))
@@ -318,12 +305,10 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
         self.smarts[smart_id].smrt:refresh()
         
         SendScriptCallback("squad_on_enter_smart", squad, self.smarts[smart_id].smrt)
-    end)
 end
 
 --' Отряд покидает смарт (уменьшаются ресурсы)
 function sim_board:exit_smart(squad, smart_id)
-	return PROF_EVENT_CLOSURE("exit_smart", function()
         if smart_id == nil then
             return
         end
@@ -345,12 +330,10 @@ function sim_board:exit_smart(squad, smart_id)
         smart.squads[squad.id] = nil
     
         --smart.smrt:refresh()
-    end)
 end
 
 --' Отряд занимает смарт (увеличиваются ресурсы)
 function sim_board:enter_smart(squad, smart_id, after_load)
-	return PROF_EVENT_CLOSURE("enter_smart", function()
         callstack()
         if self.smarts[smart_id] == nil then
             printf("   to tmp")
@@ -373,12 +356,10 @@ function sim_board:enter_smart(squad, smart_id, after_load)
     
         smart.stayed_squad_quan = smart.stayed_squad_quan + 1
         squad.items_spawned = false
-    end)
 end
 
 -- установить squad и group в соответствии с работой
 function sim_board:setup_squad_and_group(obj)
-	return PROF_EVENT_CLOSURE("setup_squad_and_group", function()
         --printf("tsg["..obj:name().."]")
         local level_name = level.name()
         --' Группу берем из уровня.
@@ -414,12 +395,10 @@ function sim_board:setup_squad_and_group(obj)
         end
         change_team_squad_group(obj, obj.team, obj_sq, obj.group)
         --printf("TSG3: [%s][%s][%s]", tostring(obj.team), tostring(obj.squad), tostring(obj.group))
-    end)
 end
 
 --' Заполнение стартового расположения
 function sim_board:fill_start_position()
-	return PROF_EVENT_CLOSURE("fill_start_position", function()
         SendScriptCallback("fill_start_position")
     
         if self.start_position_filled == true then
@@ -448,7 +427,6 @@ function sim_board:fill_start_position()
                 end
             end
         end
-    end)
 end
 
 --' Возвратить смарт по его имени.
@@ -469,7 +447,6 @@ function get_sim_board()
 end
 
 function sim_board:get_squad_target(squad)
-	return PROF_EVENT_CLOSURE("get_squad_target", function()
         --printf("List of available target for %s", squad.id)
     
         local available_targets = {}
@@ -495,7 +472,6 @@ function sim_board:get_squad_target(squad)
         --print_table(available_targets)
         --printf("end of List of available target for %s", squad.id)
         return most_priority_task or (squad.smart_id and alife():object(squad.smart_id)) or squad
-    end)
 end
 
 local targets_by_squad_id = {}
