@@ -5,12 +5,8 @@
 #include "../../Build/Build.h"
 
 #include "../../Mesh/xrFace.h"
-#include "CUDARayCast.h"
-#include "CUDAContext.h"
- 
-struct OptixMeshBuffers;
- 
-class OptixGeometryBuilder
+// Collects ray-cast triangles and welds them before they go to a GPU tracer
+class GpuGeometryBuilder
 {
 private:
     // Remove Dublicates Private:
@@ -273,30 +269,4 @@ public:
         FaceExtras.swap(NewExtras);
     }
 
-    bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
-    bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene );
-
-    // Initialize Model
-    void InitializeModelNEW()
-    {
-        vertices.clear(); 
-        triangles.clear();
-        facePointers.clear(); 
-
-        for (auto& Face : raw_faces)
-        {
-            CDB::TRI tri;
-            tri.dummy = 0;
-
-            for (auto k = 0; k < 3; k++)
-            {
-                vertices.push_back(Face.v[k]);
-                tri.verts[k] = vertices.size() - 1;
-            }
-            triangles.push_back(tri);
-            facePointers.push_back(Face.F);
-        }
-        raw_faces.clear();
-   
-    }
 };

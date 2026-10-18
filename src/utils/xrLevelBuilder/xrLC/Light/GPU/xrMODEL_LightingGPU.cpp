@@ -10,8 +10,8 @@
 
 
 // **** CUDA CODE  **** // 
-#ifdef LCCUDA_BUILD
-#include "xrCuda_PackedLights.h"
+#ifdef LCGPU_BUILD
+#include "GpuPackedLighting.h"
 #include "../light_point.h"
 
 void RunMURefsGPU()

@@ -32,6 +32,7 @@ struct CompilersMode
 	bool Silent = false;
 	bool Embree = true;
 	bool CUDA = true;
+	bool Vulkan = false;
 
  	bool EmbreeBVHCompact	= false; //  Traversing
 	bool EmbreeBVHRobust	= false; //  Traversing

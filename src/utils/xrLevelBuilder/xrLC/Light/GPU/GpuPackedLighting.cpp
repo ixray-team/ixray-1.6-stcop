@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "xrCuda_PackedLights.h"
+#include "GpuPackedLighting.h"
+#include "GpuRayTracer.h"
 
 #include "../../../UI/CompilersUI.h"
-#include "CUDARayCast.h"
 #include "../light_point.h"
 #include "../../Build/xrLC_GlobalData.h"
 #include "../../Mesh/xrFace.h"
@@ -11,27 +11,29 @@
 
 CUDA_PackedLighting GPUTaskinSystem;
 thread_local xr_vector<RayRecvestIndex>	recvest_array;
+thread_local xr_vector<base_color_c>		recvest_colors;
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
 extern void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C);
   
-// Initialize TASKS
-#define MAX_RAYS_PER_TASK   64*1024				// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	64*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
- 
+#define MAX_RAYS_PER_TASK   IGpuRayTracer::MaxRaysPerBatch		// Общее кол-во Задач (на запуск GPU)
+
 // Initializes
 void CUDA_PackedLighting::InitializeGPU()
 {
- 	XRay::RayTrace::CUDA::InitializeGPU();
+	R_ASSERT(Tracer);
+	Tracer->Initialize();
 }
 
 void CUDA_PackedLighting::InitializeGPU_Model()
 {
- 	XRay::RayTrace::CUDA::InitializeModel();
+	GpuScene Scene;
+	XRay::RayTrace::GPU::BuildScene(Scene);
+	Tracer->LoadScene(Scene);
 }
 
 void CUDA_PackedLighting::DestroyGPU_Model()
 {
- 	XRay::RayTrace::CUDA::UnloadingModel();
+	Tracer->UnloadScene();
 	RestartALL();
 }
 
@@ -63,18 +65,10 @@ void CUDA_PackedLighting::LightPointPacked_run_tasks(bool unload)
 {
 	if (recvest_array.size() > 0)
 	{
-		// Initialize
-		XRay::RayTrace::CUDA::RayTraceInitialize(current_flags, MAX_RAYS_PER_TASK);
-
-		// Tasks
-		for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
-			XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RecvestID], RecvestID);
-
 		// Запускаем трейсинг
-		XRay::RayTrace::CUDA::RayTraceRun();
+		Tracer->Trace(current_flags, recvest_array, recvest_colors);
+		auto& colors = recvest_colors;
 
-		// Получаем результаты
-		auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
 		for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
 		{
 			auto& RAY_INFO = recvest_array[RecvestID];
@@ -113,9 +107,11 @@ void CUDA_PackedLighting::LightPointPacked_run_tasks(bool unload)
  	
  	if (unload)
 	{
-		clMsg("* [CUDA] Unloading Rays");
+		clMsg("* [GPU] Unloading Rays");
 		recvest_array.shrink_to_fit();
-		XRay::RayTrace::CUDA::RayTraceUnload();
+		recvest_colors.clear();
+		recvest_colors.shrink_to_fit();
+		Tracer->ReleaseThreadData();
 	}
 }
  

@@ -2,10 +2,15 @@
 #include "../../Mesh/xrFace.h"
 #include "../../Base/base_color.h"
 #include "../xrRaysDefines.h"
+
+class IGpuRayTracer;
  
+// Batches LightPoint requests and dispatches them to the active GPU tracer
 class CUDA_PackedLighting
 {
 public:
+	IGpuRayTracer* Tracer = nullptr;
+
 	// Unordered for maps
 	size_t MakeKey(u32 U, u32 V)
 	{

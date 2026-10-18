@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "CUDAGeometryBuilder.h"
+#include "GpuGeometryBuilder.h"
+#include "GpuRayTracer.h"
 #include "../../Build/Build.h"
 // Scene Global Data
 #include "../../Build/xrLC_GlobalData.h"
@@ -11,203 +12,106 @@
 #include "../xrDeflector.h"
 #include "../Lightmap.h"
 
-bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
+static void RememberPreviewFaces(const xr_vector<void*>& Faces, const xr_vector<u8>& Kinds, const xr_vector<void*>& Extras);
+
+static void CollectLights(GpuScene& Scene)
 {
-    if (vertices.empty() || triangles.empty()) return false;
-  
-    // 0. Временные буферы для построения
-    CUdeviceptr  d_tempBuffer;
-    CUdeviceptr  d_tmp_vertexBuffer;
-    CUdeviceptr  d_tmp_indexBuffer;
-   
-    // 1. Загружаем вершины на GPU
-    CUDA_CHECK_2(cuMemAlloc(&d_tmp_vertexBuffer, sizeof(Fvector) * vertices.size()));
-    CUDA_CHECK_2(cuMemcpyHtoD(d_tmp_vertexBuffer, vertices.data(), sizeof(Fvector) * vertices.size()));
+	auto& Lights = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->L_static() : gl_data.g_lights;
 
+	auto Add = [&Scene](R_Light& L, u16 Type)
+	{
+		GpuLight& Light		= Scene.Lights.emplace_back();
+		Light.Type			= L.type;
+		Light.LightType		= Type;
+		Light.Diffuse.set	(L.diffuse.x, L.diffuse.y, L.diffuse.z);
+		Light.Position		= L.position;
+		Light.Direction		= L.direction;
+		Light.Range			= L.range;
+		Light.Range2		= L.range2;
+		Light.Falloff		= L.falloff;
+		Light.Attenuation0	= L.attenuation0;
+		Light.Attenuation1	= L.attenuation1;
+		Light.Attenuation2	= L.attenuation2;
+		Light.Energy		= L.energy;
+	};
 
-    // 2. Загружаем индексы на GPU
-	CUDA_CHECK_2(cuMemAlloc(&d_tmp_indexBuffer, sizeof(CDB::TRI) * triangles.size()));
-	CUDA_CHECK_2(cuMemcpyHtoD(d_tmp_indexBuffer, triangles.data(), sizeof(CDB::TRI) * triangles.size()));
+	Scene.Lights.reserve(Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size());
+	for (auto& HEMI : Lights.hemi)
+		Add(HEMI, GpuLightKind::Hemi);
+	for (auto& SUN : Lights.sun)
+		Add(SUN, GpuLightKind::Sun);
+	for (auto& RGB : Lights.rgb)
+		Add(RGB, GpuLightKind::RGB);
 
-
-    // 3. Настройка входных данных для BLAS
-    OptixBuildInput buildInput = {};
-    buildInput.type                                 = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
-
-    buildInput.triangleArray.vertexFormat           = OPTIX_VERTEX_FORMAT_FLOAT3;
-    buildInput.triangleArray.vertexStrideInBytes    = sizeof(Fvector);
-    buildInput.triangleArray.numVertices            = static_cast<uint32_t>(vertices.size());
-    buildInput.triangleArray.vertexBuffers          = &d_tmp_vertexBuffer;
-
-    buildInput.triangleArray.indexFormat            = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
-    buildInput.triangleArray.indexStrideInBytes     = sizeof(CDB::TRI);
-    buildInput.triangleArray.numIndexTriplets       = static_cast<uint32_t>(triangles.size());
-    buildInput.triangleArray.indexBuffer            = d_tmp_indexBuffer;
-
-    static uint32_t flags                           = OPTIX_GEOMETRY_FLAG_NONE; 
-    buildInput.triangleArray.flags = &flags;
-    buildInput.triangleArray.numSbtRecords = 1;
-
-    // 4. Настройка параметров сборки
-    OptixAccelBuildOptions accelOptions = {};
-    accelOptions.operation           = OPTIX_BUILD_OPERATION_BUILD;
-    accelOptions.buildFlags          = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
-    accelOptions.buildFlags         |= OPTIX_BUILD_FLAG_ALLOW_COMPACTION;
-
-    // 5. Вычисление требуемой памяти
-    OptixAccelBufferSizes bufferSizes;
-    OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &accelOptions, &buildInput, 1, &bufferSizes));
-     
-    // 6. Выделение памяти
-	CUDA_CHECK_2(cuMemAlloc(&d_tempBuffer, bufferSizes.tempSizeInBytes));
-	CUDA_CHECK_2(cuMemAlloc(&outBuffers.blasBuffer, bufferSizes.outputSizeInBytes));
-     
-    // 7. Готовим дескриптор для запроса размера компактации
-    OptixAccelEmitDesc emitDesc = {};
-    CUdeviceptr d_compactedSize;
-	CUDA_CHECK_2(cuMemAlloc(&d_compactedSize, sizeof(uint64_t)));
-    emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
-    emitDesc.result = d_compactedSize;
-
-    CUstream stream;
-	CUDA_CHECK_2(cuStreamCreate(&stream, CU_STREAM_DEFAULT));
-    // 8. Сборка BLAS
-    OPTIX_CHECK(  optixAccelBuild
-    (
-        context,
-        stream, // CUDA stream
-        &accelOptions,
-        &buildInput,
-        1,
-        d_tempBuffer,
-        bufferSizes.tempSizeInBytes,
-        outBuffers.blasBuffer,
-        bufferSizes.outputSizeInBytes,
-        &outBuffers.blasHandle,
-        &emitDesc, 1
-    ));
-
-    CUDA_CHECK_2(cuStreamSynchronize(stream));
-
-    // 9. Узнаём размер скомпактированной структуры
-    uint64_t compactedSize = 0;
-    CUDA_CHECK_2(cuMemcpyDtoH(&compactedSize, d_compactedSize, sizeof(uint64_t)));
-    CUDA_CHECK_2(cuMemFree(d_compactedSize));
-    
-    // 10. Компактация, если это выгодно
-    size_t size_precompact = bufferSizes.outputSizeInBytes;
-    if (compactedSize != 0 && compactedSize < bufferSizes.outputSizeInBytes)
-    {
-        CUdeviceptr d_compactedBuffer;
-		CUDA_CHECK_2(cuMemAlloc(&d_compactedBuffer, compactedSize));
-        OptixTraversableHandle compactedHandle;
-        OPTIX_CHECK(optixAccelCompact(
-            context,
-            stream, // stream
-            outBuffers.blasHandle,
-            d_compactedBuffer,
-            compactedSize,
-            &compactedHandle
-        ));
-
-        CUDA_CHECK_2(cuStreamSynchronize(stream));
-
-		// Освобождаем старый буфер
-        CUDA_CHECK_2(cuMemFree(outBuffers.blasBuffer));
-
-        // Сохраняем компактный
-        outBuffers.blasBuffer = d_compactedBuffer;
-        outBuffers.blasHandle = compactedHandle;
-    }
- 
-    // 11. Освобождаем временный буфер
-    CUDA_CHECK_2(cuStreamDestroy(stream));
-    
-    CUDA_CHECK_2(cuMemFree(d_tempBuffer));
-	CUDA_CHECK_2(cuMemFree(d_tmp_vertexBuffer));
-	CUDA_CHECK_2(cuMemFree(d_tmp_indexBuffer));
-      
-    return true;
+	Msg("[GPU] Loaded Lighting: %u size", (u32)Scene.Lights.size());
 }
 
-bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene)
+static void CollectFaces(GpuScene& Scene, const xr_vector<void*>& Faces)
 {
-    if (outScene.blasHandle == 0) {
-        Msg("! ERROR: Invalid BLAS handle");
-        return false;
-    }
+	Scene.Faces.resize(Faces.size());
 
-    // 1. Строим TLAS (один экземпляр BLAS)
-    OptixInstance instance = {};
-    float transform[12] = {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f
-    };
+	bool isLC = gCompilerMode.builder_type == LCBuildingType::eLC;
+	for (size_t IndexFace = 0; IndexFace < Faces.size(); IndexFace++)
+	{
+		void* Fv = Faces[IndexFace];
+		GpuFace& FaceGPU = Scene.Faces[IndexFace];
+		Fvector2* TC = nullptr;
 
-    memcpy(instance.transform, transform, sizeof(transform));
-    instance.instanceId = 0;
-    instance.sbtOffset = 0;
-    instance.visibilityMask = 255;
-    instance.flags = OPTIX_INSTANCE_FLAG_NONE;
-    instance.traversableHandle = outScene.blasHandle;
+		if (isLC)
+		{
+			Face* F				= (Face*)Fv;
+			FaceGPU.SurfaceID	= lc_global_data()->materials()[F->dwMaterial].surfidx;
+			FaceGPU.Opaque		= F->flags.bOpaque;
+			TC					= F->getTC0();
+		}
+		else
+		{
+			FaceDataEmbree* F	= (FaceDataEmbree*)Fv;
+			FaceGPU.SurfaceID	= gl_data.g_materials[F->dwMaterial].surfidx;
+			FaceGPU.Opaque		= F->bOpaque;
+			TC					= F->getTC0();
+		}
 
-    // 2. Алокация под GPU
-    CUdeviceptr d_instances;
-	CUDA_CHECK_2(cuMemAlloc(&d_instances, sizeof(OptixInstance)));
-	CUDA_CHECK_2(cuMemcpyHtoD(d_instances, &instance, sizeof(OptixInstance)));
-
-    // 3. Входные данные для структуры 
-    OptixBuildInput buildInput = {};
-    buildInput.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
-    buildInput.instanceArray.instances = d_instances;
-    buildInput.instanceArray.numInstances = 1;
-
-
-    // 4. Настройка параметров сборки
-    OptixAccelBuildOptions buildOptions = {};
-    buildOptions.buildFlags = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE; // OPTIX_BUILD_FLAG_PREFER_FAST_TRACE
-    buildOptions.operation  = OPTIX_BUILD_OPERATION_BUILD;
-
-    // 5. Вычисление требуемой памяти
-    OptixAccelBufferSizes bufferSizes;
-    OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &buildOptions, &buildInput, 1, &bufferSizes));
-
-    // 6. Выделение памяти
-    CUdeviceptr d_tempBuffer;
-	CUDA_CHECK_2(cuMemAlloc(&d_tempBuffer, bufferSizes.tempSizeInBytes));
-	CUDA_CHECK_2(cuMemAlloc(&outScene.tlasBuffer, bufferSizes.outputSizeInBytes));
- 
-    CUstream stream;
-	CUDA_CHECK_2(cuStreamCreate(&stream, CU_STREAM_DEFAULT));
-
-    OPTIX_CHECK(optixAccelBuild(
-        context,
-        stream,
-        &buildOptions,
-        &buildInput,
-        1,
-        d_tempBuffer,
-        bufferSizes.tempSizeInBytes,
-        outScene.tlasBuffer,
-        bufferSizes.outputSizeInBytes,
-        &outScene.tlasHandle,
-        nullptr, 0
-     ));
-
-    CUDA_CHECK_2(cuStreamSynchronize(stream));
-	CUDA_CHECK_2(cuStreamDestroy(stream));
-
-    CUDA_CHECK_2(cuMemFree(d_tempBuffer));
-	CUDA_CHECK_2(cuMemFree(d_instances));
-
-    return true;
+		FaceGPU.TC[0] = TC[0];
+		FaceGPU.TC[1] = TC[1];
+		FaceGPU.TC[2] = TC[2];
+	}
 }
-  
+
+static void CollectTexturesAlpha(GpuScene& Scene)
+{
+	auto& glTextures = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures() : gl_data.g_textures;
+
+	size_t Allocated = 0;
+	Scene.Textures.resize(glTextures.size());
+	for (size_t Index = 0; Index < glTextures.size(); Index++)
+	{
+		auto& T = glTextures[Index];
+		GpuTexture& Data = Scene.Textures[Index];
+		Data.Width  = T.dwWidth;
+		Data.Height = T.dwHeight;
+
+		if (T.pSurface.Empty() || !T.bHasAlpha)
+		{
+			continue;
+		}
+
+		Data.Alpha.resize(T.dwWidth * T.dwHeight);
+		const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
+		for (u32 i = 0; i < T.dwWidth * T.dwHeight; i++)
+		{
+			Data.Alpha[i] = (raw[i] >> 24) & 0xFF;
+		}
+		Allocated += Data.Alpha.size();
+	}
+
+	Msg("[GPU] Textures[%u] Alpha: %llu mb", (u32)Scene.Textures.size(), (u64)(Allocated / 1024 / 1024));
+}
+
 struct FaceDataEmbree;
-bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext Context, OptixMeshBuffers& OutScene)
+void XRay::RayTrace::GPU::BuildScene(GpuScene& Scene)
 {
-    OptixGeometryBuilder GeometryBuilder;
+    GpuGeometryBuilder GeometryBuilder;
     size_t StartMemory = GetHeapMemory();
 
     if (gCompilerMode.builder_type == LCBuildingType::eLC)
@@ -215,7 +119,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext Context
         xrLC_GlobalData* GlobalData = lc_global_data();
         if (!GlobalData)
         {
-            return false;
+            return;
         }
 
         // 1. Обрабатываем статическую геометрию
@@ -259,10 +163,6 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext Context
     else if (gCompilerMode.builder_type == LCBuildingType::eDO)
     {
        auto GlobalData = &gl_data;
-       if (!GlobalData)
-       {
-           return false;
-       }
        
         // 1. Обрабатываем статическую геометрию
        for (auto& FaceData : GlobalData->building_embree_faces)
@@ -280,21 +180,6 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext Context
     GeometryBuilder.RemoveDublicateFaces();
     Msg("*[GPU Accel Structure] Collected Structure Faces Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
   
-    StartMemory = GetHeapMemory();
-
-    // 3. Строим BLAS
-    if (!GeometryBuilder.BuildBLAS(Context, OutScene))
-    {
-        return false;
-    }
-  
-     // 4. Строим TLAS
-    if (!GeometryBuilder.BuildTLAS(Context, OutScene))
-    {
-        return false;
-    }
-    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
-
     Fbox SceneBox;
     SceneBox.invalidate();
     for (const Fvector& Vertex : GeometryBuilder.vertices)
@@ -315,13 +200,23 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext Context
     SceneBox.getcenter(PreviewCenter);
     SceneBox.getsize(PreviewSize);
     PublishLightPreviewScene(GeometryBuilder.vertices, PreviewIndices, PreviewCenter, PreviewSize.magnitude() * 0.5f);
-    XRay::RayTrace::CUDA::RememberPreviewFaces(GeometryBuilder.facePointers, GeometryBuilder.FaceKinds, GeometryBuilder.FaceExtras);
+    RememberPreviewFaces(GeometryBuilder.facePointers, GeometryBuilder.FaceKinds, GeometryBuilder.FaceExtras);
 
-    XRay::RayTrace::CUDA::InitializeFaces(GeometryBuilder.facePointers);
+    Scene.Vertices.swap(GeometryBuilder.vertices);
+    Scene.Indices.reserve(GeometryBuilder.triangles.size() * 3);
+    for (const CDB::TRI& Triangle : GeometryBuilder.triangles)
+    {
+        Scene.Indices.push_back(Triangle.verts[0]);
+        Scene.Indices.push_back(Triangle.verts[1]);
+        Scene.Indices.push_back(Triangle.verts[2]);
+    }
+
+    CollectFaces(Scene, GeometryBuilder.facePointers);
+    CollectLights(Scene);
+    CollectTexturesAlpha(Scene);
 
     GeometryBuilder.Clear();
     GeometryBuilder.MemoryDealoc();
-    return true;
 }
 
 static xr_vector<Face*> PreviewLevelFaces;
@@ -392,7 +287,7 @@ static LightPreviewMap CopyDeflectorLayer(const lm_layer& Layer)
 	return Map;
 }
 
-void XRay::RayTrace::CUDA::RememberPreviewFaces(const xr_vector<void*>& Faces, const xr_vector<u8>& Kinds, const xr_vector<void*>& Extras)
+static void RememberPreviewFaces(const xr_vector<void*>& Faces, const xr_vector<u8>& Kinds, const xr_vector<void*>& Extras)
 {
 	PreviewLevelFaces.assign(Faces.size(), nullptr);
 	PreviewMuRefs.assign(Faces.size(), nullptr);
@@ -416,7 +311,7 @@ void XRay::RayTrace::CUDA::RememberPreviewFaces(const xr_vector<void*>& Faces, c
 	PublishLightPreviewColors(PreviewCornerRgb);
 }
 
-void XRay::RayTrace::CUDA::ForgetPreviewFaces()
+void XRay::RayTrace::GPU::ForgetPreviewFaces()
 {
 	// Face*/xrMU_Reference* are owned by the level and die with CBuild
 	PreviewLevelFaces.clear();
@@ -427,7 +322,7 @@ void XRay::RayTrace::CUDA::ForgetPreviewFaces()
 	PreviewLayerId.clear();
 }
 
-void XRay::RayTrace::CUDA::CapturePreviewBakedColors(bool IncludeVertex)
+void XRay::RayTrace::GPU::CapturePreviewBakedColors(bool IncludeVertex)
 {
 	if (PreviewLevelFaces.empty())
 	{
@@ -491,10 +386,10 @@ void XRay::RayTrace::CUDA::CapturePreviewBakedColors(bool IncludeVertex)
 	}
 
 	PublishLightPreviewMaps(PreviewUv, PreviewLayerId, Maps);
-	Msg("[Preview] CUDA LMaps: %u triangles, %u with UV, %u layers", (u32)PreviewLevelFaces.size(), Mapped, (u32)Maps.size());
+	Msg("[Preview] GPU LMaps: %u triangles, %u with UV, %u layers", (u32)PreviewLevelFaces.size(), Mapped, (u32)Maps.size());
 }
 
-void XRay::RayTrace::CUDA::CapturePreviewMU()
+void XRay::RayTrace::GPU::CapturePreviewMU()
 {
 	if (PreviewMuRefs.empty() || PreviewCornerRgb.size() < PreviewMuRefs.size() * 9)
 	{
@@ -555,5 +450,5 @@ void XRay::RayTrace::CUDA::CapturePreviewMU()
 	}
 
 	PublishLightPreviewColors(PreviewCornerRgb);
-	Msg("[Preview] CUDA MU: %u triangles painted", Painted);
+	Msg("[Preview] GPU MU: %u triangles painted", Painted);
 }

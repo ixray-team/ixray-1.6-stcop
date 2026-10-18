@@ -7,7 +7,7 @@
 
 #include "../../xrCore/Collision/xrCDB.h"
 
-#ifdef LCCUDA_BUILD
+#ifdef LCGPU_BUILD
 
 class CImplicitDeflector
 {

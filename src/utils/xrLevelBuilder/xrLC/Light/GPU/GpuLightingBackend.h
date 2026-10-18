@@ -1,12 +1,18 @@
 #pragma once
 #include "../LightingBackend.h"
 
-// GPU backend: CUDA + OptiX
-class CudaLightingBackend final :
+class IGpuRayTracer;
+
+// GPU backend: batches LightPoint requests for an IGpuRayTracer (CUDA, Vulkan)
+class GpuLightingBackend final :
 	public ILightingBackend
 {
+	IGpuRayTracer& Tracer;
+
 public:
-	const char* GetName() const override { return "CUDA"; }
+	explicit GpuLightingBackend(IGpuRayTracer& InTracer) : Tracer(InTracer) {}
+
+	const char* GetName() const override;
 
 	void InitializeLevel() override;
 	void ReleaseLevel() override;

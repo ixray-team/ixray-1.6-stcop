@@ -77,11 +77,10 @@ void EmbreeInstancedModel::InitializeModel(xr_vector<FaceDataEmbree>& faces)
 {
 	TriangleContainer geom_builder_opacue;
 	TriangleContainer geom_builder_transp;
+	// MU faces always block rays, same as the GPU tracers (see GPU/GpuScene.cpp)
 	for (auto& F : faces)
 	{
-		Face* Fc = (Face*)F.ptr;
-		auto& geom = Fc->flags.bOpaque ? geom_builder_opacue : geom_builder_transp;
-		geom.AddFaceRaw(F.ptr, F.v1, F.v2, F.v3);
+		geom_builder_opacue.AddFaceRaw(F.ptr, F.v1, F.v2, F.v3);
 	}
 	geom_builder_opacue.useMsg = false;
 	geom_builder_transp.useMsg = false;
@@ -153,11 +152,10 @@ void EmbreeRayTraceModel::BuildRayTraceModel()
 		{
 			faces.clear();
 			REF->export_cform_rcast_new(faces);
+			// MU faces always block rays, same as the GPU tracers (see GPU/GpuScene.cpp)
 			for (auto& F : faces)
 			{
-				bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
-				auto& buf = isOpacue || !use_transp ? opacue_geom : transp_geom;
-				buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+				opacue_geom.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
 			}
 		}
 	}
