@@ -284,15 +284,7 @@ public:
 
 	ICF void remove_from_seq_parallel(const xr_delegate<void()>& delegate)
 	{
-		xr_vector<xr_delegate<void()>>::iterator I = std::find(
-			seqParallel.begin(),
-			seqParallel.end(),
-			delegate
-		);
-		if (I != seqParallel.end())
-		{
-			seqParallel.erase(I);
-		}
+		std::erase(seqParallel, delegate);
 	}
 
 	ICF void transform_hud2world(Fmatrix& xf)
