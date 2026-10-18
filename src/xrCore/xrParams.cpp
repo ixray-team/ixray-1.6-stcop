@@ -5,6 +5,11 @@ template <>
 struct magic_enum::customize::enum_range<ECoreParams> 
 {
 	static constexpr bool is_flags = true;
+	// ECoreParams flags go up to 1<<30 (autotest): magic_enum's default search
+	// range (~4096) never sees them, so -autotest/-r4/-noshadows silently
+	// did nothing on non-Windows.
+	static constexpr int min = 0;
+	static constexpr int max = std::numeric_limits<int>::max();
 };
 
 void LoadParams()
