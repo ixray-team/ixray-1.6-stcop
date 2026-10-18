@@ -46,8 +46,12 @@ CUIActorMenu::~CUIActorMenu()
 
 void CUIActorMenu::Construct()
 {
+	PROF_EVENT("CUIActorMenu::Construct");
 	CUIXml								uiXml;
-	uiXml.Load							(CONFIG_PATH, UI_PATH, "actor_menu.xml");
+	{
+		PROF_EVENT("ActorMenu: xml");
+		uiXml.Load						(CONFIG_PATH, UI_PATH, "actor_menu.xml");
+	}
 
 	inherited::InitBase					(uiXml);
 
@@ -61,20 +65,26 @@ void CUIActorMenu::Construct()
 	AttachChild							(m_LeftBackground);
 	xml_init.InitStatic					(uiXml, "left_background", 0, m_LeftBackground);
 
-	m_pUpgradeWnd						= new CUIInventoryUpgradeWnd(); 
-	AttachChild							(m_pUpgradeWnd);
-	m_pUpgradeWnd->SetAutoDelete		(true);
-	m_pUpgradeWnd->Init					();
+	{
+		PROF_EVENT("ActorMenu: upgrade window");
+		m_pUpgradeWnd						= new CUIInventoryUpgradeWnd(); 
+		AttachChild							(m_pUpgradeWnd);
+		m_pUpgradeWnd->SetAutoDelete		(true);
+		m_pUpgradeWnd->Init					();
+	}
 
-	m_ActorCharacterInfo				= new CUICharacterInfo();
-	m_ActorCharacterInfo->SetAutoDelete	(true);
-	AttachChild							(m_ActorCharacterInfo);
-	m_ActorCharacterInfo->InitCharacterInfo(&uiXml, "actor_ch_info");
+	{
+		PROF_EVENT("ActorMenu: character info");
+		m_ActorCharacterInfo				= new CUICharacterInfo();
+		m_ActorCharacterInfo->SetAutoDelete	(true);
+		AttachChild							(m_ActorCharacterInfo);
+		m_ActorCharacterInfo->InitCharacterInfo(&uiXml, "actor_ch_info");
 
-	m_PartnerCharacterInfo				= new CUICharacterInfo();
-	m_PartnerCharacterInfo->SetAutoDelete(true);
-	AttachChild							(m_PartnerCharacterInfo);
-	m_PartnerCharacterInfo->InitCharacterInfo( &uiXml, "partner_ch_info" );
+		m_PartnerCharacterInfo				= new CUICharacterInfo();
+		m_PartnerCharacterInfo->SetAutoDelete(true);
+		AttachChild							(m_PartnerCharacterInfo);
+		m_PartnerCharacterInfo->InitCharacterInfo( &uiXml, "partner_ch_info" );
+	}
 	
 	m_RightDelimiter			= UIHelper::CreateStatic(uiXml, "right_delimiter", this);
 
@@ -110,7 +120,10 @@ void CUIActorMenu::Construct()
 		m_QuickSlotsHighlight[0] = UIHelper::CreateStatic(uiXml, "quick_slot_highlight", this);
 		m_QuickSlotsHighlight[0]->Show(false);
 	}
-	inherited::InitSlots		(uiXml);
+	{
+		PROF_EVENT("ActorMenu: slots");
+		inherited::InitSlots		(uiXml);
+	}
 
 	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
