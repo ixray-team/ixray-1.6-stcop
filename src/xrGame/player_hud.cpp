@@ -3495,7 +3495,7 @@ void player_hud::RequestDefault()
 	{
 		if (pSettings->line_exist(PendingDefaultSect, Line))
 		{
-			::Render->model_Request(pSettings->r_string(PendingDefaultSect, Line));
+			::Render->model_Request(pSettings->r_string(PendingDefaultSect, Line), EModelRequestPriority::High);
 		}
 	}
 }

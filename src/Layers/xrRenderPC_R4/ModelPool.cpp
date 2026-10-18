@@ -160,7 +160,7 @@ bool CModelPool::IsAsyncLoadEnabled()
 	return ps_r__common_flags.test(RFLAG_MT_MODEL_LOAD) && !Device.IsEditorMode();
 }
 
-void CModelPool::Request(const char* name)
+void CModelPool::Request(const char* name, EModelRequestPriority Priority)
 {
 	if (!IsAsyncLoadEnabled() || name == nullptr || name[0] == 0)
 		return;
@@ -176,10 +176,24 @@ void CModelPool::Request(const char* name)
 	const u32 MaxLoaders = BackgroundLoad::WorkerCount();
 	{
 		xrCriticalSectionGuard Guard(RequestedLock);
+		auto QueuedIt = Queued.find(Key);
+		if (QueuedIt != Queued.end())
+		{
+			if (u8(Priority) < u8(QueuedIt->second))
+			{
+				xr_deque<shared_str>& From = RequestQueues[u8(QueuedIt->second)];
+				From.erase(std::find(From.begin(), From.end(), Key));
+				RequestQueues[u8(Priority)].push_back(Key);
+				QueuedIt->second = Priority;
+			}
+			return;
+		}
+
 		if (!Requested.insert(Key).second)
 			return;
 
-		RequestQueue.push_back(Key);
+		Queued.emplace(Key, Priority);
+		RequestQueues[u8(Priority)].push_back(Key);
 		if (ActiveLoaders >= MaxLoaders)
 			return;
 		ActiveLoaders++;
@@ -203,13 +217,24 @@ void CModelPool::RunLoader()
 		shared_str Key;
 		{
 			xrCriticalSectionGuard Guard(RequestedLock);
-			if (RequestQueue.empty())
+			xr_deque<shared_str>* Queue = nullptr;
+			for (xr_deque<shared_str>& Candidate : RequestQueues)
+			{
+				if (!Candidate.empty())
+				{
+					Queue = &Candidate;
+					break;
+				}
+			}
+
+			if (Queue == nullptr)
 			{
 				ActiveLoaders--;
 				return;
 			}
-			Key = RequestQueue.front();
-			RequestQueue.pop_front();
+			Key = Queue->front();
+			Queue->pop_front();
+			Queued.erase(Key);
 		}
 
 		{
