@@ -259,6 +259,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 }
 
 #include "../xrEngine/IGame_Persistent.h"
+#include "GamePersistent.h"
 #include "Actor.h"
 
 void CALifeUpdateManager::new_game			(const char* save_name)
@@ -350,7 +351,7 @@ void CALifeUpdateManager::load			(const char* game_name, bool no_assert, bool ne
 	// Msg									("* Loading alife simulator is successfully completed (%7.3f Mb)",float(Memory.mem_usage() - memory_usage)/1048576.0);
 #endif
 	g_pGamePersistent->SetLoadStageTitle("st_server_connecting");
-	g_pGamePersistent->LoadTitle		(true, g_pGameLevel->name());
+	g_pGamePersistent->LoadTitle		(!GamePersistent().IsLoadTipShown, g_pGameLevel->name());
 	extern void WaitLevelLoad();
 	{
 		PROF_EVENT("Load Alife Simulator: wait level_load");

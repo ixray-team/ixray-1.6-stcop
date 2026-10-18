@@ -92,6 +92,8 @@ public:
 	virtual void		OnRenderPPUI_main		() override;
 	virtual void		OnRenderPPUI_PP			() override;
 	virtual void		LoadTitle				(bool change_tip = false, shared_str map_name = "") override;
+	void				ShowLoadTip				(const shared_str& map_name, bool IsReseeded);
+	bool				IsLoadTipShown			= false;
     void				SetLoadStageTitle		(const char* ls_title = nullptr) override;
 
 	virtual bool		CanBePaused				() override;
@@ -113,4 +115,3 @@ public:
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}
 
 #endif //GamePersistentH
-

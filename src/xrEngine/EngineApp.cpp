@@ -208,6 +208,12 @@ void CEngineApp::LoadDraw()
 				GLoadingScreen->SetStageTitle(PendingStageTitle.c_str());
 			PendingStageTitle.clear();
 		}
+		if (IsTipPending)
+		{
+			if (GLoadingScreen)
+				GLoadingScreen->SetStageTip(PendingTip[0].c_str(), PendingTip[1].c_str(), PendingTip[2].c_str());
+			IsTipPending = false;
+		}
 		if (!PendingLevelLogo.empty())
 		{
 			if (GLoadingScreen)
@@ -262,6 +268,16 @@ void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 
 void CEngineApp::LoadTitleInt(const char* str1, const char* str2, const char* str3)
 {
+	if (g_AppInfo.IsAsyncLoadThread())
+	{
+		xrCriticalSectionGuard Guard(PendingStageTitleLock);
+		PendingTip[0] = str1 ? str1 : "";
+		PendingTip[1] = str2 ? str2 : "";
+		PendingTip[2] = str3 ? str3 : "";
+		IsTipPending = true;
+		return;
+	}
+
 	if (GLoadingScreen)
 	{
 		GLoadingScreen->SetStageTip(str1, str2, str3);

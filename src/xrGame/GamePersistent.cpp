@@ -1030,9 +1030,24 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
-	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
-	if(change_tip && !disableLoadScreenTips)
+	if (change_tip)
 	{
+		ShowLoadTip(map_name, false);
+	}
+}
+
+void CGamePersistent::ShowLoadTip(const shared_str& map_name, bool IsReseeded)
+{
+	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
+	if(!disableLoadScreenTips)
+	{
+		if (IsReseeded)
+		{
+			luabind::functor<void> Seed;
+			if (ai().script_engine().functor("math.randomseed", Seed))
+				Seed(int(CPU::QPC() & 0x3fffffff));
+		}
+
 		string512				buff;
 		u8						tip_num;
 		luabind::functor<u8>	m_functor;
@@ -1057,6 +1072,7 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 			xr_sprintf			(buff, "ls_mp_tip_%d", tip_num);
 
 		pApp->LoadTitleInt		(g_pStringTable->translate("ls_header").c_str(), tmp.c_str(), g_pStringTable->translate(buff).c_str());
+		IsLoadTipShown			= true;
 	}
 }
 
