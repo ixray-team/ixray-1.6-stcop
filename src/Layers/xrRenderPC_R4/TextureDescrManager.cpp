@@ -389,7 +389,7 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 
 ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_name) const
 {
-	if (auto I = m_texture_details.find(tex_name); I != m_texture_details.end())
+	if (auto I = m_texture_details.find(normalize_tex_key(tex_name)); I != m_texture_details.end())
 	{
 		return &I->second.m_spec->ShadersOptions;
 	}
@@ -399,7 +399,7 @@ ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_na
 
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(normalize_tex_key(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_spec)
@@ -412,7 +412,7 @@ float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 
 void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, bool& bDiffuse, bool& bBump) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(normalize_tex_key(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_assoc)
