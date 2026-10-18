@@ -251,6 +251,7 @@ void VisualCallback(IKinematics *tpKinematics);
 
 bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 {
+	PROF_EVENT("CGameObject::net_Spawn");
 	VERIFY							(!m_spawned);
 	m_spawned						= true;
 	m_spawn_time					= Device.dwFrame;

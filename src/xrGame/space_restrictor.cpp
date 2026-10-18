@@ -38,6 +38,7 @@ float CSpaceRestrictor::Radius		() const
 
 bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 {
+	PROF_EVENT("CSpaceRestrictor::net_Spawn");
 	actual(false);
 
 	CSE_Abstract* abstract = (CSE_Abstract*)data;

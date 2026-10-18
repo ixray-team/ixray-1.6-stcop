@@ -476,6 +476,7 @@ void	CActor::net_Import_Physic_proceed	( )
 
 bool CActor::net_Spawn(CSE_Abstract* DC)
 {
+	PROF_EVENT("CActor::net_Spawn");
 	ResetCameraFocus();
 	m_holder_id				= ALife::INVALID_OBJECT_ID;
 	m_snd_noise			= 0.0f;

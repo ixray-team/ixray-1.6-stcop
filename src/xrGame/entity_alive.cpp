@@ -305,6 +305,7 @@ void CEntityAlive::shedule_Update(u32 dt)
 
 bool CEntityAlive::net_Spawn	(CSE_Abstract* DC)
 {
+	PROF_EVENT("CEntityAlive::net_Spawn");
 	//установить команду в соответствии с community
 /*	if(monster_community->team() != 255)
 		id_Team = monster_community->team();*/

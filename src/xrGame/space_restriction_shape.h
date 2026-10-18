@@ -23,6 +23,7 @@ public:
 protected:
 	CSpaceRestrictor		*m_restrictor;
 	bool					m_default;
+	xrCriticalSection		InitLock;
 
 protected:
 	IC			Fvector		position				(const CCF_Shape::shape_def &data) const;
