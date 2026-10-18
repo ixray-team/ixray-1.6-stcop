@@ -5,7 +5,7 @@
 #include "light_point.h"
 
 #include "../../../../xrCore/Collision/xrCDB.h"
-#include "CUDA/xrCuda_PackedLights.h"
+#include "LightingBackend.h"
 #include "xrDeflector.h"
 
 //-----------------------------------------------------------------------
@@ -77,7 +77,6 @@ bool GetTranslucency(const Vertex* V,float &v_trans )
 	return bVertexLight;
 }
 
-xr_atomic_u32 TasksIds = 0;
 void LightVertex()
 {
 	g_trans = new mapVert();
@@ -88,78 +87,7 @@ void LightVertex()
 	Status("Calculating...");
 
 	u32 flags = LGetCurrentFlags() | LP_dont_hemi;
- 	if (!gCompilerMode.CUDA)
-	{
- 		TasksIds = 0;
-		xr_std_parallel_for([flags]()
-		{
-			while (true)
-			{
-				u32 tID = TasksIds.fetch_add(1);
-				if (tID >= lc_global_data()->g_vertices().size()) break;
-
-				Vertex* V = lc_global_data()->g_vertices()[tID];
-				float		v_trans = 0.f;
-				if (GetTranslucency(V, v_trans))
-				{
-					base_color_c		vC, old;
-					V->C._get(old);
-
-					LightPoint(EmbreeMain, vC, V->P, V->N, lc_global_data()->L_static(), flags, 0);
-
-					vC._tmp_ = v_trans;
-					vC.mul(.5f);
-					vC.hemi = old.hemi;			// preserve pre-calculated hemisphere
-					V->C._set(vC);
-
-					g_trans_register(V);
-				}
-			}
-		}, gCompilerMode.ThreadsPerWork);
-	}
-	else
- 	{
-#ifdef LCCUDA_BUILD
-		int INDEX = 0;
-		GPUTaskinSystem.RestartALL();
-		GPUTaskinSystem.ColorsMapType = eCommon;
-  		GPUTaskinSystem.current_flags = flags;
-
-		xr_vector<float> v_transparency;
-		v_transparency.resize(lc_global_data()->g_vertices().size());
-		for (auto V : lc_global_data()->g_vertices())
-		{
-			float		v_trans = 0.f;
- 			if (GetTranslucency(V, v_trans))
-			{
-				GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(INDEX, 0), nullptr, V->P, V->N, 0);
-			}
- 			v_transparency[INDEX] = v_trans;
-			INDEX++;
-		}
-
-		GPUTaskinSystem.LightPointPacked_run_tasks();
-		for (auto& C : GPUTaskinSystem.task_colors)
-		{
-			int INDEX = GPUTaskinSystem.GetU(C.first);
-			auto& V = lc_global_data()->g_vertices()[INDEX];
-			auto& vC = C.second;
-			float Transparency = v_transparency[INDEX];
-
-			base_color_c old;
-			V->C._get(old);
-
-			vC._tmp_ = Transparency;
-			vC.mul(.5f);
-			vC.hemi = old.hemi;
-			V->C._set(vC);
-
-			g_trans_register(V);
-		}
-
-		GPUTaskinSystem.RestartALL();
-#endif
-	}
+	GetLightingBackend().LightVertices(flags);
  
 	// Process all groups
 	Status("Transluenting...");
