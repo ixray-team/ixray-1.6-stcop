@@ -64,6 +64,8 @@ void CHUDManager::OnFrameMT()
 	if (Device.dwPrecacheFrame == 0)
 		Level().GameTaskManager()->UpdateTasks();
 
+	CCutsceneManager::GetInstance().Update();
+
 	xrCriticalSectionGuard guard(&ui_lock);
 	if (pUIGame) 
 		pUIGame->OnFrame();
