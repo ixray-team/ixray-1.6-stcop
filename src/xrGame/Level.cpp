@@ -688,6 +688,7 @@ void CLevel::OnFrame()
 	{
 		m_IniReadAheadStopTime = 0;
 		g_IniReadAhead->Stop();
+		g_pGamePersistent->SaveLearnedModels(name().c_str());
 	}
 
 	if (g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed))
