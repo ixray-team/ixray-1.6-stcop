@@ -35,19 +35,24 @@ IC	float CSpaceRestrictionShape::radius			(const CCF_Shape::shape_def &data) con
 IC	CSpaceRestrictionShape::CSpaceRestrictionShape	(CSpaceRestrictor *space_restrictor, bool default_restrictor)
 {
 	m_default					= default_restrictor;
-	m_initialized				= true;
-	
 
 	VERIFY						(space_restrictor);
 	m_restrictor				= space_restrictor;
-	
-	build_border				();
+
+	m_initialized				= false;
 }
 
 IC	void CSpaceRestrictionShape::initialize			()
 {
+	if (m_initialized)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard Guard(InitLock);
 	if (!m_initialized)
 	{
+		PROF_EVENT("CSpaceRestrictionShape: build border");
 		m_initialized = true;
 		build_border();
 	}

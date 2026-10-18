@@ -210,7 +210,6 @@ void CSpaceRestrictionShape::test_correctness	()
 
 bool CSpaceRestrictionShape::inside	(const Fsphere &sphere)
 {
-	VERIFY							(m_initialized);
 	VERIFY							(m_restrictor);
 	return							(m_restrictor->inside(sphere));
 }

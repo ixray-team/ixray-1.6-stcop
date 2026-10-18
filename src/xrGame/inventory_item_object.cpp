@@ -78,6 +78,7 @@ void CInventoryItemObject::OnEvent(NET_Packet& P, u16 type)
 
 bool CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
 {
+	PROF_EVENT("CInventoryItemObject::net_Spawn");
 	bool res = CPhysicItem::net_Spawn(DC);
 	CInventoryItem::net_Spawn(DC);
 
