@@ -28,6 +28,7 @@ FHierrarhyVisual::~FHierrarhyVisual()
 
 void FHierrarhyVisual::Release()
 {
+	dxRender_Visual::Release();
 	if (!bDontDelete) {
 		for (u32 i=0; i<children.size(); i++)
 			children[i]->Release();

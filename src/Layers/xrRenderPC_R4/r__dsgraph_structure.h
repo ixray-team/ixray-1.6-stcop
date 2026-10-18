@@ -27,12 +27,40 @@ public:
 class	R_dsgraph_structure										: public IRender_interface, public pureFrame
 {
 public:
-	IRenderable*												val_pObject;
-	Fmatrix*													val_pTransform;
-	Fmatrix*													val_pLocalTransform;
-	bool														val_bHUD;
-	bool														val_bUI;
-	bool														val_bInvisible;
+	enum class SubspaceGeometry
+	{
+		All,
+		StaticOnly,
+		DynamicOnly
+	};
+
+	struct SpotShadowBuildContext
+	{
+		bool CollectOnly = true;
+		bool IsDepthCacheBuild = false;
+		xr_vector<ref_texture> PendingTextures;
+		xr_vector<dxRender_Visual*> CachedCasters;
+		xr_vector<dxRender_Visual*> PerFrameCasters;
+		xr_vector<std::pair<ref_texture, u64>> Textures;
+		const char* RejectionReason = nullptr;
+		shared_str RejectedTexture;
+		xr_string PerFrameReason;
+	};
+
+	SpotShadowBuildContext* SpotShadowBuild = nullptr;
+	bool SpotShadowPass = false;
+	const xr_hash_set<dxRender_Visual*>* SpotShadowCachedCasters = nullptr;
+	u32 SpotShadowCachedSkips = 0;
+	u32 SpotShadowDuplicateSkips = 0;
+	u32 SpotShadowStaticItems = 0;
+	u32 SpotShadowDynamicItems = 0;
+
+	IRenderable* val_pObject;
+	Fmatrix* val_pTransform;
+	Fmatrix* val_pLocalTransform;
+	bool val_bHUD;
+	bool val_bUI;
+	bool val_bInvisible;
 	bool														val_bRecordMP;		// record nearest for multi-pass
 
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
@@ -151,6 +179,7 @@ public:
 	}
 
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);
+	void CollectSpotShadowStatic(dxRender_Visual* Visual, u32 Planes);
 	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false, bool Force = false); // if detected node's full visibility
 
 	void		r_pmask											(bool deffered = false, bool forward = false, bool wallmarks = false) { pmask[0] = deffered; pmask[1] = forward; pmask[2] = wallmarks; }
@@ -172,6 +201,8 @@ public:
 	void		r_dsgraph_render_distort						();
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
 	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
+	void r_dsgraph_render_subspace(IRender_Sector* Sector, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, CObject* Ignore = nullptr);
+	void r_dsgraph_render_subspace(IRender_Sector* Sector, CFrustum* Frustum, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, bool PrecisePortals = false, CObject* Ignore = nullptr);
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 	void renderImGuiDebugWindow_SVGStorage() override;
 

@@ -366,6 +366,10 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 
 void CResourceManager::RecompileShaders()
 {
+	if (RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 	xrCriticalSectionGuard guard(ResSafe);
 
 	const int skinning = Engine.External.GetSkinningMode();
@@ -441,6 +445,10 @@ void CResourceManager::WaitForTextureLoading()
 
 void CResourceManager::ReloadTextureDescriptions()
 {
+	if (RImplementation.Target)
+	{
+		RImplementation.Target->InvalidateSpotShadowCache();
+	}
 	xrCriticalSectionGuard Guard(creationGuard);
 	WaitForTextureLoading();
 	m_textures_description.UnLoad();

@@ -4,6 +4,9 @@
 
 bool UseWeaponRainDrops = true;
 
+int g_SpotShadowCacheMode = 0;
+int g_SpotShadowCacheBudgetMb = 64;
+
 u32 g_RainDropsMode = 0;
 static xr_token RainDropsModeTokens[] =
 	{
@@ -899,9 +902,47 @@ public:
 };
 
 extern Fvector3 ps_ssfx_volumetric;
+
+class CCC_SpotShadowCacheClear : public IConsole_Command
+{
+public:
+	explicit CCC_SpotShadowCacheClear(const char* Name) : IConsole_Command(Name)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	void Execute(const char*) override
+	{
+		if (RImplementation.Target)
+		{
+			RImplementation.Target->InvalidateSpotShadowCache();
+		}
+	}
+};
+
+class CCC_SpotShadowCacheStats : public IConsole_Command
+{
+public:
+	explicit CCC_SpotShadowCacheStats(const char* Name) : IConsole_Command(Name)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	void Execute(const char*) override
+	{
+		if (RImplementation.Target)
+		{
+			RImplementation.Target->DumpSpotShadowCache();
+		}
+	}
+};
 //-----------------------------------------------------------------------
 RENDER_API void		xrRender_initconsole	()
 {
+	CMD4(CCC_Integer, "r4_spot_shadow_cache", &g_SpotShadowCacheMode, 0, 2);
+	CMD4(CCC_Integer, "r4_spot_shadow_cache_mb", &g_SpotShadowCacheBudgetMb, 1, 1024);
+	CMD1(CCC_SpotShadowCacheClear, "r4_spot_shadow_cache_clear");
+	CMD1(CCC_SpotShadowCacheStats, "r4_spot_shadow_cache_stats");
 	CMD1(CCC_MonsterLogic, "monster_logic");
 	CMD1(CCC_MonsterLogicStats, "monster_logic_stats");
 	CMD1(CCC_MonsterLogicDraw, "monster_logic_draw");

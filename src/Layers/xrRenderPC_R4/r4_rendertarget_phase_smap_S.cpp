@@ -8,19 +8,20 @@ void CRenderTarget::phase_smap_spot_clear()
 
 void CRenderTarget::phase_smap_spot(light* L)
 {
-	// Targets + viewport
-	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
-
 	RHIViewport VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
-	GRHI->SetViewport(VP);
+	SetupSpotShadowTarget(rt_smap_depth->pZRT, rt_smap_depth->dwWidth, rt_smap_depth->dwHeight, VP, rt_smap_surf->pRT);
+}
 
-	// Misc - draw only front-faces //back-faces
+void CRenderTarget::SetupSpotShadowTarget(IRHIDepthStencilView* Depth, u32 Width, u32 Height, RHIViewport Viewport, IRHIRenderTargetView* Color)
+{
+	u_setrt(Width, Height, Color, nullptr, nullptr, Depth);
+	GRHI->SetViewport(Viewport);
+	RCache.set_Scissor(nullptr);
+	GRHI->StateManager->SetDepthEnable(TRUE);
+	GRHI->StateManager->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	GRHI->StateManager->SetDepthFunc(D3DCMP_LESSEQUAL);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(false);
-
-	// no transparency
-	#pragma todo("can optimize for multi-lights covering more than say 50%...")
-
 	RCache.set_ColorWriteEnable(false);
 }
 

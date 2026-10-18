@@ -76,7 +76,12 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 										mapNormalItems&				items	= Ntex.val;
 										for (_NormalItem& Ni : items)
 										{
-											float LOD = calcLOD(Ni.ssa, Ni.R);
+											VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Ni.pVisual));
+											if (SpotShadowPass && (!SpotShadowBuild || !SpotShadowBuild->IsDepthCacheBuild))
+											{
+												++SpotShadowStaticItems;
+											}
+											float LOD = SpotShadowBuild ? 1.f : calcLOD(Ni.ssa, Ni.R);
 											RCache.LOD.set_LOD(LOD);
 											if (Ni.geom)
 											{
@@ -146,11 +151,16 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 									{
 										for (_MatrixItem& Ni : visuals)
 										{
+											VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(Ni.pVisual));
 											if (Ni.pVisual->shader == nullptr)
 											{
 												continue;
 											}
 											RCache.set_xform_world(Ni.Matrix);
+											if (SpotShadowPass)
+											{
+												++SpotShadowDynamicItems;
+											}
 											RImplementation.apply_object(Ni.pObject);
 											RImplementation.apply_lmaterial();
 	
@@ -163,7 +173,14 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	
 									auto& particles = items.particles;
 									for (dxRender_Visual* pVisual : particles)
+									{
+										VERIFY(!SpotShadowCachedCasters || !SpotShadowCachedCasters->contains(pVisual));
+										if (SpotShadowPass)
+										{
+											++SpotShadowDynamicItems;
+										}
 										pVisual->Render(0);
+										}
 									if (_clear)items.particles.clear();
 	
 								}if(_clear) tex.clear();
@@ -341,28 +358,35 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 // sub-space rendering - shortcut to render with frustum extracted from matrix
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
+	CFrustum Frustum;
+	Frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
+	r_dsgraph_render_subspace(_sector, &Frustum, mCombined, _cop, _dynamic, _precise_portals, O);
+}
+
+void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* Sector, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, CObject* Ignore)
+{
+	CFrustum Frustum;
+	Frustum.CreateFromMatrix(Combined, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
+	r_dsgraph_render_subspace(Sector, &Frustum, Combined, Origin, Geometry, false, Ignore);
+}
+
+void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* Sector, CFrustum* Frustum, Fmatrix& Combined, Fvector& Origin, bool Dynamic, bool PrecisePortals, CObject* Ignore)
+{
+	r_dsgraph_render_subspace(Sector, Frustum, Combined, Origin, Dynamic ? SubspaceGeometry::All : SubspaceGeometry::StaticOnly, PrecisePortals, Ignore);
+}
+
+void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, SubspaceGeometry Geometry, bool _precise_portals, CObject* O)
+{
 	// The editors have no sectors: collect their scene for the frustum
 	if (Device.IsEditorMode())
 	{
-		CFrustum	EditorFrustum;
-		EditorFrustum.CreateFromMatrix	(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
-		RImplementation.EditorRenderSubspace(EditorFrustum);
+		RImplementation.EditorRenderSubspace(*_frustum);
 		return;
 	}
 
-	if(!_sector) return;
-	CFrustum	temp;
-	temp.CreateFromMatrix			(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
-	r_dsgraph_render_subspace		(_sector,&temp,mCombined,_cop,_dynamic,_precise_portals, O);
-}
-
-// sub-space rendering - main procedure
-void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
-{
 	PROF_EVENT("r_dsgraph_render_subspace")
-	if (Device.IsEditorMode())
+	if (!_sector)
 	{
-		RImplementation.EditorRenderSubspace(*_frustum);
 		return;
 	}
 	VERIFY							(_sector);
@@ -391,7 +415,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 	// Dynamic objects are collected before static geometry: worker threads calculate their skeletons
 	// while the static hierarchy is traversed
-	const bool DrawDynamic = _dynamic && psDeviceFlags.test(rsDrawDynamic);
+	const bool DrawDynamic = Geometry != SubspaceGeometry::StaticOnly && psDeviceFlags.test(rsDrawDynamic);
 	if (DrawDynamic)
 	{
 		CollectSubspaceDynamic(ViewSave);
@@ -401,7 +425,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	{
 		PROF_EVENT("add_static");
 	// Determine visibility for static geometry hierrarhy
-		if(psDeviceFlags.test(rsDrawStatic))
+		if (Geometry != SubspaceGeometry::DynamicOnly && psDeviceFlags.test(rsDrawStatic))
 		{
 			for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 			{
