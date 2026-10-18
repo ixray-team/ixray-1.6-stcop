@@ -27,11 +27,15 @@ private:
 	{
 		xr_string				Path;
 		std::atomic<EState>		State = EState::Queued;
+		u32						TakeOrder = u32(-1);
 		CInifile::Root			Data;
 	};
 
 	static xr_string MakeKey(const char* Path);
 	static void Parse(Entry& Item);
+	static void GetLearnedPath(string_path& Path);
+	static xr_vector<xr_string> ReadLearned();
+	void WriteLearned();
 
 	xrSRWLock								Lock;
 	xr_hash_map<xr_string, Entry*>			Entries;
@@ -41,6 +45,7 @@ private:
 	std::atomic<size_t>						Next = 0;
 	std::atomic<u32>						TakenCount = 0;
 	std::atomic<u32>						OnDemandCount = 0;
+	xr_vector<xr_string>					PreviousLearned;
 };
 
 extern XRCORE_API CIniReadAhead* g_IniReadAhead;

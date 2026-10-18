@@ -37,24 +37,136 @@ void CIniReadAhead::Parse(Entry& Item)
 	Item.State.notify_all();
 }
 
+namespace
+{
+	constexpr u32 LearnedVersion = 1;
+}
+
+void CIniReadAhead::GetLearnedPath(string_path& Path)
+{
+	FS.update_path(Path, "$app_data_root$", "ini_read_ahead.bin");
+}
+
+xr_vector<xr_string> CIniReadAhead::ReadLearned()
+{
+	xr_vector<xr_string> Keys;
+	string_path Path;
+	GetLearnedPath(Path);
+	if (!FS.exist(Path))
+	{
+		return Keys;
+	}
+
+	IReader* Reader = FS.r_open(Path);
+	if (Reader == nullptr)
+	{
+		return Keys;
+	}
+
+	if (Reader->length() >= 2 * sizeof(u32) && Reader->r_u32() == LearnedVersion)
+	{
+		const u32 Count = Reader->r_u32();
+		Keys.reserve(Count);
+		for (u32 Index = 0; Index < Count && !Reader->eof(); ++Index)
+		{
+			Reader->r_stringZ(Keys.emplace_back());
+		}
+	}
+	FS.r_close(Reader);
+	return Keys;
+}
+
+void CIniReadAhead::WriteLearned()
+{
+	xr_vector<const Entry*> Taken;
+	for (const xr_unique_ptr<Entry>& Item : Storage)
+	{
+		if (Item->TakeOrder != u32(-1))
+		{
+			Taken.push_back(Item.get());
+		}
+	}
+	if (Taken.empty())
+	{
+		return;
+	}
+	std::sort(Taken.begin(), Taken.end(), [](const Entry* Left, const Entry* Right) { return Left->TakeOrder < Right->TakeOrder; });
+
+	xr_vector<xr_string> Keys;
+	xr_hash_set<xr_string> Written;
+	for (const Entry* Item : Taken)
+	{
+		xr_string Key = MakeKey(Item->Path.c_str());
+		if (Written.insert(Key).second)
+		{
+			Keys.push_back(std::move(Key));
+		}
+	}
+	for (const xr_string& Key : PreviousLearned)
+	{
+		if (Written.insert(Key).second)
+		{
+			Keys.push_back(Key);
+		}
+	}
+
+	string_path Path;
+	GetLearnedPath(Path);
+	IWriter* Writer = FS.w_open(Path);
+	if (Writer == nullptr)
+	{
+		return;
+	}
+	Writer->w_u32(LearnedVersion);
+	Writer->w_u32(u32(Keys.size()));
+	for (const xr_string& Key : Keys)
+	{
+		Writer->w_stringZ(Key);
+	}
+	FS.w_close(Writer);
+}
+
 void CIniReadAhead::Start(xr_vector<xr_string>&& Paths)
 {
 	Stop();
 
 	{
 		xrSRWLockGuard Guard(Lock);
-		Storage.reserve(Paths.size());
+		xr_hash_map<xr_string, xr_string*> Available;
 		for (xr_string& Path : Paths)
 		{
-			xr_string Key = MakeKey(Path.c_str());
+			Available.emplace(MakeKey(Path.c_str()), &Path);
+		}
+
+		auto Add = [this](xr_string&& Key, xr_string& Path)
+		{
 			if (Entries.contains(Key))
 			{
-				continue;
+				return;
 			}
-
 			Entry* Item = Storage.emplace_back(xr_make_unique<Entry>()).get();
 			Item->Path = std::move(Path);
 			Entries.emplace(std::move(Key), Item);
+		};
+
+		PreviousLearned.clear();
+		for (xr_string& Key : ReadLearned())
+		{
+			auto Iter = Available.find(Key);
+			if (Iter != Available.end())
+			{
+				PreviousLearned.push_back(Key);
+				Add(std::move(Key), *Iter->second);
+			}
+		}
+
+		if (Storage.empty())
+		{
+			Storage.reserve(Paths.size());
+			for (xr_string& Path : Paths)
+			{
+				Add(MakeKey(Path.c_str()), Path);
+			}
 		}
 	}
 
@@ -100,6 +212,7 @@ void CIniReadAhead::Stop()
 
 	xrSRWLockGuard Guard(Lock);
 	Msg("* Ini read-ahead: %u files, %u taken, %u parsed on demand", u32(Storage.size()), TakenCount.load(), OnDemandCount.load());
+	WriteLearned();
 	Entries.clear();
 	Storage.clear();
 }
@@ -138,6 +251,6 @@ bool CIniReadAhead::Take(const char* Path, CInifile::Root& Target)
 	}
 
 	Target.swap(Item.Data);
-	++TakenCount;
+	Item.TakeOrder = TakenCount++;
 	return true;
 }
