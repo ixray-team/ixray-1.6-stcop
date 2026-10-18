@@ -559,7 +559,14 @@ function get_nearest_waypoint(obj, pathname, ptr, cnt)
 end
 
 function npc_in_zone(npc, zone)
-	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
+	if npc == nil or zone == nil then
+		return false
+	end
+	local ContainsObject = zone.ContainsObject
+	if ContainsObject then
+		return ContainsObject(zone, npc)
+	end
+	return zone:inside(npc:position())
 end
 
 ------------------------- запись/загрузка CTime ---------------------------
