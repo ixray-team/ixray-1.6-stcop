@@ -2719,6 +2719,8 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer, "particles_workers_count", &(int&)particles_workers_count, 1, 64);
 	extern bool g_MtLevelEarly;
 	CMD2(CCC_Boolean, "mt_level_early", &g_MtLevelEarly);
+	extern bool g_MtAsyncLoad;
+	CMD2(CCC_Boolean, "mt_async_load", &g_MtAsyncLoad);
 
 	CMD1(CCC_ChangeLanguage, "language");
 
@@ -3167,6 +3169,8 @@ void CCC_RegisterCommands()
 
 	extern int ps_events_time_budget_ms;
 	CMD4(CCC_Integer, "g_events_time_budget_ms", &ps_events_time_budget_ms, 0, 100);
+	extern int ps_precache_events_budget_ms;
+	CMD4(CCC_Integer, "g_precache_events_budget_ms", &ps_precache_events_budget_ms, 0, 100);
 
 #ifdef XR_MP_BUILD
 	register_mp_console_commands();

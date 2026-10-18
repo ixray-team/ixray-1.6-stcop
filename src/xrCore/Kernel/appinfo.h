@@ -16,6 +16,12 @@ public:
 	void SetMainThread();
 	bool IsSecondaryThread() const noexcept;
 	bool IsPrimaryThread() const noexcept;
+
+	void SetAsyncLoadThread(bool IsActive);
+	bool IsAsyncLoadThread() const noexcept;
+
+private:
+	std::atomic<size_t> AsyncLoadThreadId = 0;
 };
 
 extern XRCORE_API CAppInfo g_AppInfo;

@@ -290,6 +290,10 @@ protected:
 
 	bool				net_start1				();
 	bool				net_start2				();
+	void				ConnectServer			();
+	void				FinishConnectServer		();
+	xr_unique_ptr<XRayWorkerThread>	AsyncConnectThread;
+	std::atomic<bool>	IsAsyncConnectDone		= false;
 	bool				net_start3				();
 	bool				net_start4				();
 	bool				net_start5				();
@@ -339,6 +343,9 @@ public:
 	void						local_Process_Spawn		(NET_Packet& P);
 	void						ProcessPacket			(u16 ID, NET_Packet& P, ALife::_OBJECT_ID dest, u16 type);
 	void						ProcessPostponed		(bool timeLimit);
+	int							GameEventsBudget		() const;
+	bool						HasPendingGameEvents	();
+	u32							m_PrecacheHoldStart		= 0;
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
 
