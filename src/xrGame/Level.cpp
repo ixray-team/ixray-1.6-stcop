@@ -590,14 +590,30 @@ void CLevel::ProcessPacket(u16 ID, NET_Packet& P, ALife::_OBJECT_ID dest, u16 ty
 	}
 }
 
+int ps_precache_events_budget_ms = 8;
+
+int CLevel::GameEventsBudget() const
+{
+	extern ENGINE_API bool g_appLoaded;
+	if (!g_appLoaded)
+		return 0;
+	return (Device.dwPrecacheFrame != 0) ? ps_precache_events_budget_ms : ps_events_time_budget_ms;
+}
+
+bool CLevel::HasPendingGameEvents()
+{
+	return !m_postponedPackets.empty() || game_events->available(timeServer() - NET_Latency);
+}
+
 void CLevel::ProcessPostponed(bool timeLimit)
 {
 	PROF_EVENT("CLevel::ProcessPostponed");
+	const int Budget = timeLimit ? GameEventsBudget() : 0;
 	while (!m_postponedPackets.empty())
 	{
-		if (timeLimit && (ps_events_time_budget_ms > 0))
+		if (Budget > 0)
 		{
-			if (m_eventsTimer.GetElapsed_ms() >= (u32)ps_events_time_budget_ms)
+			if (m_eventsTimer.GetElapsed_ms() >= (u32)Budget)
 			{
 				break;
 			}
@@ -630,10 +646,8 @@ void CLevel::ProcessGameEvents		()
 			ALife::_OBJECT_ID dest;
 			game_events->get	(ID,dest,type,P);
 
-			extern ENGINE_API bool g_appLoaded;
-			const bool isGameplay = g_appLoaded && (Device.dwPrecacheFrame == 0);
-
-			if ((ps_events_time_budget_ms <= 0) || (!isGameplay) || (m_eventsTimer.GetElapsed_ms() < (u32)ps_events_time_budget_ms))
+			const int Budget = GameEventsBudget();
+			if ((Budget <= 0) || (m_eventsTimer.GetElapsed_ms() < (u32)Budget))
 			{
 				ProcessPacket(ID, P, dest, type);
 			}
@@ -787,6 +801,21 @@ void CLevel::OnFrame()
 	}
 
 	ProcessGameEvents();
+
+	bool IsPrecacheSpawning = false;
+	if (Device.dwPrecacheFrame != 0 && HasPendingGameEvents())
+	{
+		if (m_PrecacheHoldStart == 0)
+			m_PrecacheHoldStart = Device.dwTimeContinual;
+		IsPrecacheSpawning = Device.dwTimeContinual - m_PrecacheHoldStart < 3000;
+		if (IsPrecacheSpawning && Device.dwPrecacheFrame == 1)
+			Device.dwPrecacheFrame = 2;
+	}
+	else if (Device.dwPrecacheFrame == 0)
+	{
+		m_PrecacheHoldStart = 0;
+	}
+	Device.IsPrecacheSpawning = IsPrecacheSpawning;
 
 	if (m_bNeed_CrPr)
 	{

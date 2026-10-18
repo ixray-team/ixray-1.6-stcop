@@ -238,6 +238,7 @@ public:
 
 	virtual void	Pause							(bool bOn, bool bTimer, bool bSound, const char* reason);
 	bool	Paused							();
+	bool	IsPrecacheSpawning				= false;
 
 	// Scene control
 	virtual void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);

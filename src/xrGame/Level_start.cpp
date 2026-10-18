@@ -8,6 +8,7 @@
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/device.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "MainMenu.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "MainMenu.h"
 #include "../xrEngine/string_table.h"
@@ -161,23 +162,73 @@ bool CLevel::net_start1				()
 	return true;
 }
 
+bool g_MtAsyncLoad = true;
+
+void CLevel::ConnectServer()
+{
+	PROF_EVENT("CLevel::ConnectServer");
+	GameDescriptionData game_descr;
+	if ((m_connect_server_err=Server->Connect(m_caServerOptions, game_descr))!=xrServer::ErrNoError)
+	{
+		net_start_result_total = false;
+		Msg				("! Failed to start server.");
+		return;
+	}
+	Server->SLS_Default		();
+	map_data.m_name			= Server->level_name(m_caServerOptions);
+}
+
+void CLevel::FinishConnectServer()
+{
+	if (net_start_result_total && !g_dedicated_server)
+		g_pGamePersistent->LoadTitle(true, map_data.m_name);
+}
+
 bool CLevel::net_start2				()
 {
 	PROF_EVENT("CLevel::net_start2");
-	if (net_start_result_total && m_caServerOptions.size())
+	if (!net_start_result_total || !m_caServerOptions.size())
 	{
-		GameDescriptionData game_descr;
-		if ((m_connect_server_err=Server->Connect(m_caServerOptions, game_descr))!=xrServer::ErrNoError)
-		{
-			net_start_result_total = false;
-			Msg				("! Failed to start server.");
-			return true;
-		}
-		Server->SLS_Default		();
-		map_data.m_name			= Server->level_name(m_caServerOptions);
-		if (!g_dedicated_server)
-			g_pGamePersistent->LoadTitle(true, map_data.m_name);
+		return true;
 	}
+
+	if (!g_MtAsyncLoad || g_dedicated_server)
+	{
+		ConnectServer();
+		FinishConnectServer();
+		return true;
+	}
+
+	if (!AsyncConnectThread)
+	{
+		MainMenu()->DestroyInternal(true);
+
+		IsAsyncConnectDone.store(false, std::memory_order_relaxed);
+		AsyncConnectThread = xr_make_unique<XRayWorkerThread>([this]()
+		{
+			g_AppInfo.SetAsyncLoadThread(true);
+			ConnectServer();
+			g_AppInfo.SetAsyncLoadThread(false);
+			IsAsyncConnectDone.store(true, std::memory_order_release);
+		}, "X-Ray Loading Thread");
+		AsyncConnectThread->Run();
+		return false;
+	}
+
+	CTimer FrameTimer;
+	FrameTimer.Start();
+	while (!IsAsyncConnectDone.load(std::memory_order_acquire) && FrameTimer.GetElapsed_ms() < 15)
+	{
+		Sleep(1);
+	}
+
+	if (!IsAsyncConnectDone.load(std::memory_order_acquire))
+	{
+		return false;
+	}
+
+	AsyncConnectThread.reset();
+	FinishConnectServer();
 	return true;
 }
 
@@ -390,4 +441,3 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 
 	R_ASSERT				(Load_GameSpecific_After ());
 }
-

@@ -200,6 +200,21 @@ void CEngineApp::LoadDraw()
 
 
 	LastLoadDraw = Device.TimerAsync();
+	{
+		xrCriticalSectionGuard Guard(PendingStageTitleLock);
+		if (!PendingStageTitle.empty())
+		{
+			if (GLoadingScreen)
+				GLoadingScreen->SetStageTitle(PendingStageTitle.c_str());
+			PendingStageTitle.clear();
+		}
+		if (!PendingLevelLogo.empty())
+		{
+			if (GLoadingScreen)
+				GLoadingScreen->SetLevelLogo(PendingLevelLogo.c_str());
+			PendingLevelLogo.clear();
+		}
+	}
 	if (!Device.Begin())		return;
 
 	if (g_dedicated_server)
@@ -207,7 +222,10 @@ void CEngineApp::LoadDraw()
 	else
 		load_draw_internal();
 
+	const u32 PrecacheFrames = Device.dwPrecacheFrame;
+	Device.dwPrecacheFrame = 0;
 	Device.End();
+	Device.dwPrecacheFrame = PrecacheFrames;
 }
 
 void CEngineApp::LoadPulse()
@@ -229,7 +247,12 @@ void CEngineApp::LoadForceFinish()
 void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 {
 	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
-	if (GLoadingScreen && isLoadingStagesEnabled && g_AppInfo.IsPrimaryThread())
+	if (isLoadingStagesEnabled && g_AppInfo.IsAsyncLoadThread())
+	{
+		xrCriticalSectionGuard Guard(PendingStageTitleLock);
+		PendingStageTitle = _ls_title;
+	}
+	else if (GLoadingScreen && isLoadingStagesEnabled && g_AppInfo.IsPrimaryThread())
 	{
 		GLoadingScreen->SetStageTitle(_ls_title);
 	}
@@ -328,7 +351,8 @@ void CEngineApp::Level_Set(u32 L)
 	if (LevelPath->m_Add == nullptr || 0 != _stricmp(LevelPath->m_Add, Levels[L].folder))
 		LevelPath->_set(Levels[L].folder);
 
-	if (!g_AppInfo.IsPrimaryThread())
+	const bool IsAsyncLoad = g_AppInfo.IsAsyncLoadThread();
+	if (!g_AppInfo.IsPrimaryThread() && !IsAsyncLoad)
 	{
 		VERIFY(Level_Current == L);
 		return;
@@ -377,7 +401,12 @@ void CEngineApp::Level_Set(u32 L)
 		}
 	}
 
-	if (path[0] && GLoadingScreen)
+	if (path[0] && IsAsyncLoad)
+	{
+		xrCriticalSectionGuard Guard(PendingStageTitleLock);
+		PendingLevelLogo = path;
+	}
+	else if (path[0] && GLoadingScreen)
 		GLoadingScreen->SetLevelLogo(path);
 }
 

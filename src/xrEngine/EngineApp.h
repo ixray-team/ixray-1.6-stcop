@@ -60,6 +60,9 @@ public:
 private:
 	static constexpr u32 LoadPulsePeriod = 50;
 	u32 LastLoadDraw = 0;
+	xrCriticalSection PendingStageTitleLock;
+	xr_string PendingStageTitle;
+	xr_string PendingLevelLogo;
 };
 
 extern ENGINE_API CEngineApp* pApp;
