@@ -3,6 +3,7 @@
 ----------------------------------------------------------------------------------------------------
 
 local k,v = 0,0
+local TimerDisplays = setmetatable({}, { __mode = "k" })
 
 class "action_timer"
 function action_timer:__init(obj, storage)
@@ -28,13 +29,23 @@ function action_timer:update(delta)
         if value_time <= 0 then
             value_time = 0
         end
-        -- Формируем строку счетчика
         local hours = math.floor(value_time/3600000)
         local minutes = math.floor(value_time/60000 - hours*60)
         local seconds = math.floor(value_time/1000 - hours*3600 - minutes*60)
-        local str = tostring(hours)..":"..sr_timer.time2str(minutes)..":"..sr_timer.time2str(seconds)
-    
-        self.st.timer:TextControl():SetTextST(str)
+        local Timer = self.st.timer
+        local DisplayKey = self.st.timer_id or Timer
+        local Display = TimerDisplays[DisplayKey]
+        if not Display or Display.Hours ~= hours or Display.Minutes ~= minutes or Display.Seconds ~= seconds or Display.Window ~= Timer then
+            local str = tostring(hours)..":"..sr_timer.time2str(minutes)..":"..sr_timer.time2str(seconds)
+
+            Timer:TextControl():SetTextST(str)
+            if not Display then
+                Display = setmetatable({}, { __mode = "v" })
+                TimerDisplays[DisplayKey] = Display
+            end
+            Display.Hours, Display.Minutes, Display.Seconds = hours, minutes, seconds
+            Display.Window = Timer
+        end
     
         -- Определяем нужно ли куда то переходить.
         for k,v in pairs(self.st.on_value) do
@@ -48,6 +59,7 @@ function action_timer:update(delta)
 end
 
 function action_timer:deactivate(delta)
+        TimerDisplays[self.st.timer_id or self.st.timer] = nil
         self.st.ui:RemoveCustomStatic(self.st.timer_id)
         if self.st.string ~= nil then
             self.st.ui:RemoveCustomStatic("hud_timer_text")
@@ -92,6 +104,7 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
         st.ui = get_hud()
         st.ui:AddCustomStatic(st.timer_id, true)
         st.timer = st.ui:GetCustomStatic(st.timer_id):wnd()
+        TimerDisplays[st.timer_id] = nil
     
         if st.string ~= nil then
             st.ui:AddCustomStatic("hud_timer_text", true)

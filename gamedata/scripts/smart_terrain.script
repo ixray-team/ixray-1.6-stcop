@@ -18,11 +18,6 @@ local valid_territory = {
 --' Проверка, что нпс подходит работе
 local function job_avail_to_npc(npc_info, job_info, smart)
 	--printf("job_avail_to_npc %s job %s smart %s", npc_info.se_obj:name(), tostring(job_info.job_id), smart:name())
-	local job = smart.job_data[job_info.job_id]
-	if job ~= nil then
-		job = job.section
-	end
-
 	if smart.dead_time[job_info.job_id] ~= nil then
 		return false
 	end
@@ -542,6 +537,10 @@ function se_smart_terrain:load_jobs()
         end
 end
 
+local function NpcJobPriorityLess(Left, Right)
+	return Left.job_prior < Right.job_prior
+end
+
 -- Апдейт работ смарттеррейна.
 -- Если передается object, то значит нужно найти только для него
 function se_smart_terrain:update_jobs()
@@ -564,7 +563,7 @@ function se_smart_terrain:update_jobs()
         end
     
         -- Сортируем НПС по увеличению приоритета занимаемой работы
-        table.sort(self.npc_info, function(a,b) return a.job_prior < b.job_prior end )
+        table.sort(self.npc_info, NpcJobPriorityLess)
         for k,v in pairs(self.npc_info) do
             self:select_npc_job(v)
         end
