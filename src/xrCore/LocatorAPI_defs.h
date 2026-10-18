@@ -61,6 +61,8 @@ public:
 	LPSTR		m_DefExt;
 	LPSTR		m_FilterCaption;
     Flags32		m_Flags;
+private:
+	xr_vector<LPSTR>	m_Retired;
 public:
 				FS_Path		(const char* _Root, const char* _Add, const char* _DefExt=nullptr, const char* _FilterString=nullptr, u32 flags=0);
 				~FS_Path	();
