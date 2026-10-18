@@ -17,15 +17,11 @@ local ai_locations_flag_objects =
 
 function fix_ai_locations_flags()
 	PROF_EVENT_BEGIN("fix_ai_locations_flags")
-	for i = 1, 65535 do
-		local sobj = alife():object(i)
+	local sim = alife()
+	for _, name in pairs(ai_locations_flag_objects) do
+		local sobj = sim:object(name)
 		if sobj and sobj.parent_id == 65535 then
-			for _, name in pairs(ai_locations_flag_objects) do
-				if sobj:name() == name then
-					sobj:use_ai_locations(false)
-					break
-				end
-			end
+			sobj:use_ai_locations(false)
 		end
 	end
 	PROF_EVENT_END()
