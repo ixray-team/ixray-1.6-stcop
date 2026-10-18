@@ -355,6 +355,16 @@ void CSE_ALifeTraderAbstract::OnChangeProfile(PropValue* sender)
 
 #endif
 
+namespace
+{
+	class CProfileCandidates
+	{
+	public:
+		xr_vector<shared_str> Matching;
+		xr_vector<shared_str> Defaults;
+	};
+}
+
 shared_str CSE_ALifeTraderAbstract::specific_character()
 {
 	if(m_SpecificCharacter.size())
@@ -379,48 +389,60 @@ shared_str CSE_ALifeTraderAbstract::specific_character()
 	//а потом делаем случайный выбор
 	else
 	{	
-		PROF_EVENT("specific_character: scan profiles");
 		m_CheckedCharacters.clear();
-		m_DefaultCharacters.clear();
-
-		for(int i=0; i<=CSpecificCharacter::GetMaxIndex(); i++)
+		static xrCriticalSection CandidatesLock;
+		static xr_hash_map<shared_str, CProfileCandidates>* CandidatesCache = new xr_hash_map<shared_str, CProfileCandidates>();
+		xrCriticalSectionGuard CandidatesGuard(CandidatesLock);
+		auto CandidatesIt = CandidatesCache->find(character_profile());
+		if (CandidatesIt == CandidatesCache->end())
 		{
-			CSpecificCharacter spec_char;
-			shared_str id = CSpecificCharacter::IndexToId(i);
-			spec_char.Load(id);
-
-			if(spec_char.data()->m_bNoRandom) continue;
-
-			bool class_found = false;
-			for(std::size_t j=0; j<spec_char.data()->m_Classes.size(); j++)
+			PROF_EVENT("specific_character: scan profiles");
+			CProfileCandidates& Result = (*CandidatesCache)[character_profile()];
+			for (int i = 0; i <= CSpecificCharacter::GetMaxIndex(); i++)
 			{
-				if(char_info.data()->m_Class == spec_char.data()->m_Classes[j])
-				{
-					class_found = true;
-					break;
-				}
-			}
-			if(!char_info.data()->m_Class.size() || class_found)
-			{
-				//запомнить пподходящий персонаж с флажком m_bDefaultForCommunity
-				if(spec_char.data()->m_bDefaultForCommunity)
-					m_DefaultCharacters.push_back(id);
+				CSpecificCharacter spec_char;
+				shared_str id = CSpecificCharacter::IndexToId(i);
+				spec_char.Load(id);
 
-				if(char_info.data()->m_Rank == -type_max(s32) || std::abs(spec_char.Rank() - char_info.data()->m_Rank)<RANK_DELTA)
+				if (spec_char.data()->m_bNoRandom)
+					continue;
+
+				bool class_found = false;
+				for (std::size_t j = 0; j < spec_char.data()->m_Classes.size(); j++)
 				{
-					if(char_info.data()->m_Reputation == -type_max(s32) || std::abs(spec_char.Reputation() - char_info.data()->m_Reputation)<REPUTATION_DELTA)
+					if (char_info.data()->m_Class == spec_char.data()->m_Classes[j])
 					{
-#ifdef XRGAME_EXPORTS
-						int* count = nullptr;
-						if(ai().get_alife())
-							count = ai().alife().registry().get<CSpecificCharacterRegistry>().object(id, true);
-						//если индекс еще не был использован
-						if(nullptr == count)
-#endif
-							m_CheckedCharacters.push_back(id);
+						class_found = true;
+						break;
+					}
+				}
+				if (!char_info.data()->m_Class.size() || class_found)
+				{
+					//запомнить пподходящий персонаж с флажком m_bDefaultForCommunity
+					if (spec_char.data()->m_bDefaultForCommunity)
+						Result.Defaults.push_back(id);
+
+					if (char_info.data()->m_Rank == -type_max(s32) || std::abs(spec_char.Rank() - char_info.data()->m_Rank) < RANK_DELTA)
+					{
+						if (char_info.data()->m_Reputation == -type_max(s32) || std::abs(spec_char.Reputation() - char_info.data()->m_Reputation) < REPUTATION_DELTA)
+							Result.Matching.push_back(id);
 					}
 				}
 			}
+			CandidatesIt = CandidatesCache->find(character_profile());
+		}
+		const CProfileCandidates& Candidates = CandidatesIt->second;
+		m_DefaultCharacters = Candidates.Defaults;
+		for (const shared_str& id : Candidates.Matching)
+		{
+#ifdef XRGAME_EXPORTS
+			int* count = nullptr;
+			if(ai().get_alife())
+				count = ai().alife().registry().get<CSpecificCharacterRegistry>().object(id, true);
+			//если индекс еще не был использован
+			if(nullptr == count)
+#endif
+				m_CheckedCharacters.push_back(id);
 		}
 		R_ASSERT3(!m_DefaultCharacters.empty(), 
 			"no default specific character set for class", *char_info.data()->m_Class);
