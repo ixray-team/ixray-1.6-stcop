@@ -378,164 +378,56 @@ void	light::xform_calc			()
 	}
 }
 
-static u32 quantize_smap_size_nearest(u32 raw, u32 atlas_size, u32 min_size)
+namespace LightShadowSizing
 {
-	static const u32 buckets[] =
+static u32 QuantizeSize(u32 RequestedSize, u32 MinSize, u32 MaxSize)
+{
+	// Include larger tiles for the 3072 and 4096 atlas settings.
+	constexpr u32 Sizes[] = {32, 48, 64, 96, 128, 192, 256, 384, 512, 768, 1024, 1536, 2048};
+
+	u32 Result = MinSize;
+	u32 BestDifference = u32(-1);
+
+	for (const u32 Size : Sizes)
 	{
-		32, 64, 128, 256, 512, 1024, 2048
-	};
-
-	u32 max_size = atlas_size / 2;
-	if (max_size < min_size)
-		max_size = min_size;
-
-	raw = clampr(raw, min_size, max_size);
-
-	u32 result = min_size;
-	u32 best_diff = u32(-1);
-
-	for (u32 i = 0; i < sizeof(buckets) / sizeof(buckets[0]); ++i)
-	{
-		u32 b = buckets[i];
-		if (b < min_size)
-			continue;
-		if (b > max_size)
-			break;
-
-		u32 diff = (raw > b) ? (raw - b) : (b - raw);
-		if (diff < best_diff)
+		if (Size < MinSize)
 		{
-			best_diff = diff;
-			result = b;
+			continue;
+		}
+		if (Size > MaxSize)
+		{
+			break;
+		}
+
+		const u32 Difference = RequestedSize > Size ? RequestedSize - Size : Size - RequestedSize;
+		if (Difference < BestDifference)
+		{
+			BestDifference = Difference;
+			Result = Size;
 		}
 	}
 
-	return result;
+	return Result;
 }
+} // namespace LightShadowSizing
 
 void light::optimize_smap_size()
 {
-	const u32 cached_size = X.S.size;
-
 	X.S.posX = 0;
 	X.S.posY = 0;
 	X.S.transluent = false;
 
-	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
-	// Note: we clamp screen space area to ONE, although it is not correct at all
-
-	float dist = Device.vCameraPosition.distance_to(SpatialComponent->sphere.P) - SpatialComponent->sphere.R;
-
-	if (dist < 0)	
-	{
-		dist = 0;
-	}
-
-	float ssa = clampr(range * range / (1.f + dist * dist), 0.f, 1.f);
-
-	// compute how large the light is - give more texels to larger lights, assume 8m as being optimal radius
-	float sizefactor = range / 8.f; // 4m = .5, 8m=1.f, 16m=2.f, 32m=4.f
-
-	// compute how wide the light frustum is - assume 90deg as being optimal
-	float widefactor = cone / PI_DIV_2;
-
-	// factors
-	float factor0 = powf(ssa, 1.f / 2.f); // ssa is quadratic
-	float factor1 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference
-	float factor2 = powf(widefactor, 1.f / 2.f); // make it linear ???
-
-	if (flags.type == IRender_Light::SPOT)
-	{
-		float duel_dot = 1.f - 0.5f * Device.vCameraDirection.dotproduct(direction);
-		factor0 *= powf(duel_dot, 1.f / 4.f);
-	}
-
-	float factor = ps_r2_ls_squality * factor0 * factor1 * factor2;
-
-	u32 raw_size = iFloor(factor * SMAP_adapt_optimal);
-	raw_size = clampr(raw_size, (u32)SMAP_adapt_min, (u32)SMAP_adapt_max);
-
-	const u32 atlas_size = RImplementation.o.smapsize;
-
-	// important: do not let one light consume too much atlas
-	u32 atlas_max = atlas_size / 2;
-	if (atlas_max < (u32)SMAP_adapt_min)
-		atlas_max = SMAP_adapt_min;
-
-	raw_size = std::min(raw_size, atlas_max);
-
-	// quantize to allocator-friendly buckets
-	u32 new_size = quantize_smap_size_nearest(raw_size, atlas_size, SMAP_adapt_min);
-
-	// bucket-based hysteresis
-	if (cached_size != 0)
-	{
-		// keep previous bucket unless raw size clearly exceeds it
-		if (new_size < cached_size)
-		{
-			if (raw_size > cached_size * 3 / 4)
-				new_size = cached_size;
-		}
-		else if (new_size > cached_size)
-		{
-			if (raw_size < new_size)
-				new_size = cached_size;
-		}
-	}
-
-	X.S.size = new_size;
+	constexpr float ReferenceRange = 8.f;
+	const float RangeFactor = std::max(range, 0.f) / ReferenceRange;
+	const float AngleFactor = std::max(cone, 0.f) / PI_DIV_2;
+	// Quality 1 uses a quarter of the atlas side for an 8-unit, 90-degree light.
+	// Square-root growth limits depth memory; camera motion and previous sizes are not inputs.
+	const float RequestedSize = float(SMAP_adapt_optimal) * ps_r2_ls_squality * sqrtf(RangeFactor * AngleFactor);
+	const u32 MinSize = SMAP_adapt_min;
+	const u32 MaxSize = SMAP_adapt_max;
+	const u32 ClampedSize = u32(clampr(RequestedSize, float(MinSize), float(MaxSize)));
+	X.S.size = LightShadowSizing::QuantizeSize(ClampedSize, MinSize, MaxSize);
 }
-
-
-//void light::optimize_smap_size()
-//{
-//	int _cached_size = X.S.size;
-//
-//	X.S.posX = 0;
-//	X.S.posY = 0;
-//
-//	X.S.size = SMAP_adapt_max;
-//	X.S.transluent = false;
-//
-//	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
-//	// Note: we clamp screen space area to ONE, although it is not correct at all
-//
-//	float dist = Device.vCameraPosition.distance_to(SpatialComponent->sphere.P) - SpatialComponent->sphere.R;
-//
-//	if (dist < 0)	
-//	{
-//		dist = 0;
-//	}
-//
-//	float ssa = clampr(range * range / (1.f + dist * dist), 0.f, 1.f);
-//
-//	// compute how large the light is - give more texels to larger lights, assume 8m as being optimal radius
-//	float sizefactor = range / 8.f; // 4m = .5, 8m=1.f, 16m=2.f, 32m=4.f
-//
-//	// compute how wide the light frustum is - assume 90deg as being optimal
-//	float widefactor = cone / PI_DIV_2;
-//
-//	// factors
-//	float factor0 = powf(ssa, 1.f / 2.f); // ssa is quadratic
-//	float factor1 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference
-//	float factor2 = powf(widefactor, 1.f / 2.f); // make it linear ???
-//
-//	if (flags.type == IRender_Light::SPOT)
-//	{
-//		float duel_dot = 1.f - 0.5f * Device.vCameraDirection.dotproduct(direction);
-//		factor0 *= powf(duel_dot, 1.f / 4.f);
-//	}
-//
-//	float factor = ps_r2_ls_squality * factor0 * factor1 * factor2;
-//
-//	// final size calc
-//	u32 _size = iFloor(factor * SMAP_adapt_optimal);
-//	if (_size < SMAP_adapt_min)	_size = SMAP_adapt_min;
-//	if (_size > SMAP_adapt_max)	_size = SMAP_adapt_max;
-//	int _epsilon = iCeil(float(_size) * 0.01f);
-//	int _diff = std::abs(int(_size) - int(_cached_size));
-//	X.S.size = (_diff >= _epsilon) ? _size : _cached_size;
-//}
 
 //								+X,				-X,				+Y,				-Y,			+Z,				-Z
 static	Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
