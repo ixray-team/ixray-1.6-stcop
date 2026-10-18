@@ -55,7 +55,7 @@ xr_string::xr_string(Super&& other)
 }
 
 xr_string::xr_string(const char* Str)
-	: Super(Str)
+	: Super(Str ? Str : "")
 {
 }
 
