@@ -241,10 +241,26 @@ void CApplication::MigrateToGameWindow()
 	else
 		SDL_ShowWindow(g_AppInfo.Window);
 
+	// TEMPORARY (macOS port, unattended profiling): IXR_OFFSCREEN parks the
+	// window far off the screen so night runs wake nobody.
+	if (getenv("IXR_OFFSCREEN") != nullptr)
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+
 #if defined(IXR_MACOS)
 	// Keep the game window frontmost when the launch came from Finder.
-	SDL_RaiseWindow(g_AppInfo.Window);
+	// IXR_OFFSCREEN night runs skip this so the display stays asleep.
+	if (getenv("IXR_OFFSCREEN") == nullptr)
+		SDL_RaiseWindow(g_AppInfo.Window);
 #endif
+
+	// TEMPORARY (macOS port, autotest debugging): headless runs kept a hidden
+	// window whose swapchain present starved the frame loop; keep the window
+	// visible but far off the screen instead.
+	if (headless)
+	{
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+		SDL_ShowWindow(g_AppInfo.Window);
+	}
 
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
@@ -253,7 +269,7 @@ void CApplication::MigrateToGameWindow()
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 
 	if (headless)
-		SDL_HideWindow(g_AppInfo.Window);
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
 }
 
 void CApplication::LoadCustomSettings()

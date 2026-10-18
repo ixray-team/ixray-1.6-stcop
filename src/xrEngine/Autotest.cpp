@@ -239,7 +239,8 @@ namespace Autotest
 			s_clock.Start();
 		}
 
-		SDL_HideWindow(g_AppInfo.Window);
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+		SDL_ShowWindow(g_AppInfo.Window);
 
 		g_bEnableStatGather = true;
 
@@ -250,8 +251,36 @@ namespace Autotest
 		if (Device.Statistic)
 			Device.Statistic->errors.clear();
 
-		if (s_cmd[0] && g_pGamePersistent && g_pGamePersistent->m_pMainMenu &&
-			g_pGamePersistent->m_pMainMenu->IsActive() && g_loading_events.empty())
+		// The "press any key" gate would keep the main menu inactive forever in
+		// an unattended run, so clear it as soon as the console exists.
+		static bool s_gate_cleared = false;
+		if (!s_gate_cleared && Console != nullptr)
+		{
+			s_gate_cleared = true;
+			Console->Execute("keypress_on_start 0");
+		}
+
+		// TEMPORARY (macOS port, autotest debugging): dump why the start command
+		// has not fired yet. Written to a file because the engine log is buffered.
+		static u32 s_last_dump = 0;
+		if (Device.dwFrame > s_last_dump + 300)
+		{
+			s_last_dump = Device.dwFrame;
+			if (FILE* f = fopen("/tmp/autotest_state.txt", "w"))
+			{
+				fprintf(f, "frame=%u s_cmd='%s' gamepersistent=%d console=%d loading_events=%u menu_active=%d\n",
+					Device.dwFrame,
+					s_cmd[0] ? s_cmd : "<empty>",
+					g_pGamePersistent ? 1 : 0,
+					Console != nullptr ? 1 : 0,
+					(u32)g_loading_events.size(),
+					(g_pGamePersistent && g_pGamePersistent->m_pMainMenu) ? (int)g_pGamePersistent->m_pMainMenu->IsActive() : -1);
+				fclose(f);
+			}
+		}
+
+		if (s_cmd[0] && g_pGamePersistent && Console != nullptr &&
+			g_loading_events.empty())
 		{
 			Console->Execute("keypress_on_start 0");
 

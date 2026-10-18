@@ -3,6 +3,7 @@
 using errno_t = int;
 
 #include <errno.h>
+#include <dlfcn.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -215,6 +216,13 @@ namespace Platform
 
     IC std::filesystem::path GetBinaryFolderPath()
     {
+        /* /proc/self/exe is Linux-only; on macOS resolve the executable via
+        ** dladdr (the engine and all DLLs ship in the same folder). */
+        Dl_info dl_info;
+        if (dladdr((void*)GetBinaryFolderPath, &dl_info) && dl_info.dli_fname)
+        {
+            return std::filesystem::path(dl_info.dli_fname).parent_path();
+        }
         char result[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
         if (count == -1)
