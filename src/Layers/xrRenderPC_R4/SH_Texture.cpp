@@ -342,10 +342,9 @@ bool CTexture::StartLoading()
 		return true;
 	}
 
-	// Video playback and texture sequences stay on the calling thread.
 	string_path FileName;
 	if (strchr(*cName, '$') || FS.exist(FileName, _game_textures_, *cName, ".ogm") ||
-		FS.exist(FileName, _game_textures_, *cName, ".avi") || FS.exist(FileName, _game_textures_, *cName, ".seq"))
+		FS.exist(FileName, _game_textures_, *cName, ".avi"))
 	{
 		return false;
 	}
