@@ -7,15 +7,27 @@ XRCORE_API bool g_BackgroundLoadPriority = false;
 namespace
 {
 	thread_local bool IsWorkerThread = false;
+	std::atomic<EBackgroundLoadStage> Stage = EBackgroundLoadStage::Gameplay;
 }
 
 u32 BackgroundLoad::WorkerCount()
 {
-	if (g_BackgroundLoadWorkers > 0)
+	const u32 Limit = g_BackgroundLoadWorkers > 0 ? u32(g_BackgroundLoadWorkers) : std::max<u32>(u32(xr_max_concurrency()) / 2, 2);
+	if (Stage.load(std::memory_order_relaxed) == EBackgroundLoadStage::FinishLoading)
 	{
-		return u32(g_BackgroundLoadWorkers);
+		return std::max<u32>(Limit, u32(xr_max_concurrency()));
 	}
-	return std::max<u32>(u32(xr_max_concurrency()) / 2, 2);
+	return Limit;
+}
+
+void BackgroundLoad::SetStage(EBackgroundLoadStage NewStage)
+{
+	Stage.store(NewStage, std::memory_order_relaxed);
+}
+
+EBackgroundLoadStage BackgroundLoad::GetStage()
+{
+	return Stage.load(std::memory_order_relaxed);
 }
 
 bool BackgroundLoad::IsWorker()

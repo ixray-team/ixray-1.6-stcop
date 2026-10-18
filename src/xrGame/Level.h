@@ -344,6 +344,7 @@ public:
 
 	bool						IsSpawnReady			(const NET_Event& Event);
 	const NET_Event*			m_PendingSpawnEvent		= nullptr;
+	u32							m_IniReadAheadStopTime	= 0;
 	xr_vector<shared_str>		m_PendingSpawnVisuals;
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
 
