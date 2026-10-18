@@ -282,6 +282,17 @@ EModelLoadState CModelPool::GetState(const char* name)
 	return Requested.contains(Key) ? EModelLoadState::Loading : EModelLoadState::NotRequested;
 }
 
+void CModelPool::GetLoaded(xr_vector<shared_str>& Names)
+{
+	xrSRWLockGuard Guard(ModelsLock, true);
+	Names.reserve(Names.size() + Models.size());
+	for (const auto& [Name, Entry] : Models)
+	{
+		if (Entry->IsReady.load(std::memory_order_acquire) && Entry->Model != nullptr)
+			Names.push_back(Name);
+	}
+}
+
 void CModelPool::WaitRequests()
 {
 	PROF_EVENT("CModelPool::WaitRequests");

@@ -92,6 +92,7 @@ bool	CLevel::net_start_client3				()
 			shared_str const & server_options = Server->GetConnectOptions();
 			level_name	= name().c_str();//Server->level_name		(server_options).c_str();
 			level_ver	= Server->level_version		(server_options).c_str(); //1.0
+			g_pGamePersistent->RequestLearnedModels(level_name);
 		} else					//multiplayer
 		{
 			level_name		= get_net_DescriptionData().map_name;

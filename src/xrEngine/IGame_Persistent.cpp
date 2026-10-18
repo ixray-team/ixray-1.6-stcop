@@ -265,6 +265,105 @@ void IGame_Persistent::Prefetch()
 	}
 }
 
+namespace
+{
+	constexpr u32 LearnedModelsVersion = 1;
+
+	void GetLearnedModelsPath(string_path& Path, const char* LevelName)
+	{
+		string_path FileName;
+		xr_strconcat(FileName, "learned_models_", LevelName, ".bin");
+		FS.update_path(Path, "$app_data_root$", FileName);
+	}
+
+	xr_vector<xr_string> ReadLearnedModels(const char* LevelName)
+	{
+		xr_vector<xr_string> Names;
+		string_path Path;
+		GetLearnedModelsPath(Path, LevelName);
+		if (!FS.exist(Path))
+			return Names;
+
+		IReader* Reader = FS.r_open(Path);
+		if (Reader == nullptr)
+			return Names;
+
+		if (Reader->length() >= 2 * sizeof(u32) && Reader->r_u32() == LearnedModelsVersion)
+		{
+			const u32 Count = Reader->r_u32();
+			Names.reserve(Count);
+			for (u32 Index = 0; Index < Count && !Reader->eof(); ++Index)
+				Reader->r_stringZ(Names.emplace_back());
+		}
+		FS.r_close(Reader);
+		return Names;
+	}
+
+	bool LearnedModelExists(const xr_string& Name)
+	{
+		string_path FileName;
+		xr_strconcat(FileName, Name.c_str(), ".ogf");
+		return FS.exist(_game_meshes_, FileName) != nullptr;
+	}
+}
+
+void IGame_Persistent::RequestLearnedModels(const char* LevelName)
+{
+	if (LevelName == nullptr || LevelName[0] == 0 || Core.ParamsData.test(ECoreParams::noprefetch))
+		return;
+
+	PROF_EVENT("RequestLearnedModels");
+	u32 Count = 0;
+	for (const xr_string& Name : ReadLearnedModels(LevelName))
+	{
+		if (!LearnedModelExists(Name))
+			continue;
+		Render->model_Request(Name.c_str(), EModelRequestPriority::Low);
+		++Count;
+	}
+	if (Count != 0)
+		Msg("* Learned models of '%s': %u requested", LevelName, Count);
+}
+
+void IGame_Persistent::SaveLearnedModels(const char* LevelName)
+{
+	if (LevelName == nullptr || LevelName[0] == 0)
+		return;
+
+	PROF_EVENT("SaveLearnedModels");
+	xr_vector<shared_str> Loaded;
+	Render->models_GetLoaded(Loaded);
+	if (Loaded.empty())
+		return;
+
+	xr_vector<xr_string> Names;
+	xr_hash_set<xr_string> Written;
+	for (const shared_str& Name : Loaded)
+	{
+		if (Written.emplace(Name.c_str()).second)
+			Names.emplace_back(Name.c_str());
+	}
+	for (xr_string& Name : ReadLearnedModels(LevelName))
+	{
+		if (!Written.contains(Name) && LearnedModelExists(Name))
+		{
+			Written.insert(Name);
+			Names.push_back(std::move(Name));
+		}
+	}
+
+	string_path Path;
+	GetLearnedModelsPath(Path, LevelName);
+	IWriter* Writer = FS.w_open(Path);
+	if (Writer == nullptr)
+		return;
+	Writer->w_u32(LearnedModelsVersion);
+	Writer->w_u32(u32(Names.size()));
+	for (const xr_string& Name : Names)
+		Writer->w_stringZ(Name);
+	FS.w_close(Writer);
+}
+
 void IGame_Persistent::OnGameEnd()
 {
 	BackgroundLoad::SetStage(EBackgroundLoadStage::Gameplay);
