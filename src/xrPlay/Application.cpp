@@ -9,6 +9,7 @@
 #include "../xrEngine/string_table.h"
 
 #include "../xrCore/git_version.h"
+#include "../xrCore/CrashDumpHelper.h"
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
@@ -40,6 +41,7 @@ int CApplication::Run()
 
 	SteamWorks.BeginPlay();
 	InitEngine();
+	CrashDumpHelper::Start();
 
 	if (!headless)
 	{
