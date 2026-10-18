@@ -15,14 +15,25 @@
 
 struct CBorderMergePredicate {
 	CSpaceRestrictionShape			*m_restriction;
+	Fvector2						m_center;
+	float							m_max_distance_sqr;
 
 	IC			CBorderMergePredicate	(CSpaceRestrictionShape *restriction)
 	{
 		m_restriction				= restriction;
+		Fvector						center;
+		restriction->m_restrictor->Center(center);
+		m_center.set				(center.x,center.z);
+		m_max_distance_sqr			= _sqr(restriction->m_restrictor->Radius() + ai().level_graph().header().cell_size());
 	}
 
 	IC	void	operator()				(const ILevelGraph::CVertex &vertex) const
 	{
+		float						x, z;
+		ai().level_graph().unpack_xz(vertex.position(),x,z);
+		if (_sqr(x - m_center.x) + _sqr(z - m_center.y) > m_max_distance_sqr)
+			return;
+
 		if (m_restriction->inside(ai().level_graph().vertex_id(&vertex),true) && !m_restriction->inside(ai().level_graph().vertex_id(&vertex),false))
 			m_restriction->m_border.push_back	(ai().level_graph().vertex_id(&vertex));
 	}
