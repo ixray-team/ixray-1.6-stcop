@@ -11,7 +11,9 @@
 #include "script_storage.h"
 #include "script_thread.h"
 #include "lua_ext.h"
+#ifdef IXR_MACOS
 #include <luajit.h>
+#endif
 #include "script_process.h"
 
 const char*	file_header = "\

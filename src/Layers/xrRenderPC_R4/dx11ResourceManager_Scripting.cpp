@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#ifdef IXR_MACOS
 #include <luajit.h>
+#endif
 #include "../../xrEngine/EngineAPI.h"
 
 
