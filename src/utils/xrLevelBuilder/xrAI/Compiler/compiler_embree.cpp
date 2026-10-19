@@ -99,4 +99,3 @@ void CEmbreeRayTracer::Deinitialize()
 
 	static_geom.ClearAll();
 }
-

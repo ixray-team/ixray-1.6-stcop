@@ -32,7 +32,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
-	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 превышает !
+	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 	cl_globs_cpu->Initialize(defl);
  
 	xr_std_parallel_for([&cl_globs_cpu, &defl]()
@@ -47,7 +47,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		Pixel.Jcount = Jcount;
 		Pixel.JD = Jitter2D;
 		
- 		// Размер сетки !
+ 		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ !
 		u32 TILE_SIZE = 8;
  		while (true)
 		{

@@ -53,4 +53,3 @@ struct L_rect {
 	IC int	SizeY()
 	{	return b.y-a.y+1; }
 };
-

@@ -332,5 +332,3 @@ bool lm_layer::compress_Zero()
 	}
 	return false;
 }
-
-

@@ -69,4 +69,3 @@ void OGF::CalculateTB()
 	mender_in_out_indices			.clear( );
 	mender_mapping_out_to_in_vert	.clear( );
 }
-

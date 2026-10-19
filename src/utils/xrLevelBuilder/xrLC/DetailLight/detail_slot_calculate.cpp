@@ -161,4 +161,3 @@ void xrLight_Details()
 
 	Msg("Total processing: %u ms.", start_time.GetElapsed_ms());
 }
-

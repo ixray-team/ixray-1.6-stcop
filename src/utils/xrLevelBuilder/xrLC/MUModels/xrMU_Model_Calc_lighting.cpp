@@ -200,4 +200,3 @@ void xrMU_Model::calc_lighting	()
 	}
 }
  
-

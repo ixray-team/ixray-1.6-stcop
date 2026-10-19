@@ -42,9 +42,7 @@ file(GLOB XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Objects_ALife_Monsters.cpp"
     "../../xrServerEntities/xrServer_Object_Base.cpp"
     "../../xrServerEntities/xrServer_Space.cpp"
-    "../../xrServerEntities/server_entity_wrapper.h"
-    "../../xrServerEntities/server_entity_wrapper.cpp"
-    "../../xrServerEntities/server_entity_wrapper_inline.h"
+    "../../xrEngine/xrLoadSurface.cpp"
     "../../xrGame/game_level_cross_table.cpp"
 )
 
@@ -132,10 +130,15 @@ list(APPEND XAI_SOURCE_FILES ${XAI_SOURCE_ENTT_FILES})
 add_executable(xrLevelBuilder WIN32 ${UTILS_FORMS_SOURCE_FILES} ${XLC_SOURCE_FILES} ${XAI_SOURCE_FILES})
 target_include_directories(xrLevelBuilder PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Compiler"
+    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Graph"
+    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Spawn"
+    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrServerEntities/"
     "${IXRAY_SDK_INC}"
+    "${XLB_PACKAGES}/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/"
     "${XLB_PACKAGES}/directxmesh_desktop_2019.2024.6.5.1/include/"
     "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/include/"
     "${XLB_EMBREE}/build/native/include/"

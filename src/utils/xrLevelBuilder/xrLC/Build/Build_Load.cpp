@@ -455,6 +455,3 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// 
 	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
 }
-
-
-

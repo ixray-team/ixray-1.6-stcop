@@ -29,4 +29,3 @@ namespace ELight{
 };
 
 #endif
-
