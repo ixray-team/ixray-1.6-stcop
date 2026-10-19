@@ -68,7 +68,8 @@ jobs:
         run: |
           cmake `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
-            -DIXRAY_CI=ON
+            -DIXRAY_CI=ON `
+            -DIXRAY_UTILS_OPTIX=ON
 
       - name: Build utilities
         run: |
@@ -84,6 +85,8 @@ jobs:
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/CuTrace.ptx
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/licenses/
 
       - name: Upload symbols
         uses: actions/upload-artifact@v7
@@ -317,7 +320,7 @@ jobs:
           mkdir `
             ${{ github.workspace }}/bin
           move `
-            ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.* `
+            ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/* `
             ${{ github.workspace }}/bin
 
       - name: Upload utilities

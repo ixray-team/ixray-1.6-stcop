@@ -52,28 +52,16 @@ file(GLOB XAI_SOURCE_ENTT_FILES
 set(OPTIX_AVAILABLE OFF)
 
 if (IXRAY_UTILS_OPTIX)
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        find_package(CUDAToolkit)
-    endif()
-
-    if(CUDAToolkit_FOUND)
-        find_package(OptiX)
-
-        if(OptiX_FOUND)
-            message(STATUS "OptiX enabled: ${OptiX_VERSION}")
-            set(OPTIX_AVAILABLE ON)
-        else()
-            message(WARNING "OptiX requested but not found!")
-        endif()
-    else()
-        message(WARNING "CUDA not found, OptiX disabled")
-    endif()
+    include("${CMAKE_SOURCE_DIR}/cmake/modules/NvidiaOptix.cmake")
+    PrepareNvidiaOptix()
+    message(STATUS "CUDA enabled: ${CUDAToolkit_VERSION}")
+    message(STATUS "OptiX enabled: ${OptiX_VERSION}")
+    set(OPTIX_AVAILABLE ON)
 else()
     message(STATUS "OptiX manually disabled")
 endif()
 
 if(OPTIX_AVAILABLE)
-    message(STATUS "CUDA found: ${CUDAToolkit_VERSION}")
     list(APPEND XLC_SOURCE_FILES ${XLC_SOURCE_CUDA_FILES})
     set_source_files_properties(${XLC_SOURCE_CUDA_FILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 else()
@@ -186,7 +174,19 @@ endif()
 if(OPTIX_AVAILABLE)
     target_compile_definitions(xrLevelBuilder PRIVATE LCCUDA_BUILD)
     target_include_directories(xrLevelBuilder PRIVATE ${OptiX_INCLUDE_DIRS})
-    target_link_libraries(xrLevelBuilder PRIVATE ${OptiX_LIBRARIES} CUDA::cudart_static CUDA::cuda_driver CUDA::nvml)
+    # Generate an import-only library: newer SDK cuda.lib files also contain driver wrapper code.
+    set(XlcCudaDriverLibrary "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/NvidiaDriver.lib")
+    add_custom_command(
+        OUTPUT "${XlcCudaDriverLibrary}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>"
+        COMMAND "${CMAKE_AR}" /nologo /machine:x64
+            "/def:${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/CUDA/NvidiaDriver.def"
+            "/out:${XlcCudaDriverLibrary}"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/CUDA/NvidiaDriver.def"
+        COMMENT "Generating NVIDIA driver import library"
+        VERBATIM
+    )
+    target_link_libraries(xrLevelBuilder PRIVATE CUDA::cudart_static CUDA::nvml "${XlcCudaDriverLibrary}")
 
     # nvcuda.dll and nvml.dll ship only with the NVIDIA driver: load them lazily so the tool starts on AMD/Intel
     if (MSVC)
@@ -194,21 +194,39 @@ if(OPTIX_AVAILABLE)
         target_link_libraries(xrLevelBuilder PRIVATE delayimp.lib)
     endif()
 
+    set(XlcPtx "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/CuTrace.ptx")
     add_custom_command(
-        TARGET xrLevelBuilder PRE_BUILD
-        COMMAND ${CUDAToolkit_NVCC_EXECUTABLE}
-            -ptx
+        OUTPUT "${XlcPtx}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>"
+        COMMAND "${CUDAToolkit_NVCC_EXECUTABLE}"
+            --ptx
             "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/CUDA/CuTrace.cu"
-            -o "${IXRAY_OUTPUT}/CuTrace.ptx"
-            -Xcompiler "/MD"
-            -I"${OptiX_INCLUDE_DIRS}"
-            -I"${CUDAToolkit_INCLUDE_DIRS}"
+            -o "${XlcPtx}"
+            --compiler-bindir "${CMAKE_CXX_COMPILER}"
+            --std=c++17 --machine=64
+            "-I${OptiX_INCLUDE_DIRS}"
             --gpu-architecture=compute_75
-            --gpu-code=sm_75
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/xrLC/Light/CUDA/CuTrace.cu"
+        DEPENDS ${XLC_SOURCE_CUDA_FILES} ${IXRAY_OPTIX_HEADERS} "${CUDAToolkit_NVCC_EXECUTABLE}"
         COMMENT "Compiling CuTrace.cu to PTX"
         VERBATIM
     )
+    set(XlcPublishedPtx "${IXRAY_OUTPUT}/CuTrace.ptx")
+    set(XlcNvidiaNotice "${IXRAY_OUTPUT}/licenses/NVIDIA/README.txt")
+    file(GLOB XlcNvidiaLicenseFiles CONFIGURE_DEPENDS "${IXRAY_NVIDIA_LICENSE_DIR}/*")
+    add_custom_command(
+        OUTPUT "${XlcPublishedPtx}" "${XlcNvidiaNotice}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XlcPtx}" "${XlcPublishedPtx}"
+        COMMAND ${CMAKE_COMMAND} -E rm -rf "${IXRAY_OUTPUT}/licenses/NVIDIA"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${IXRAY_NVIDIA_LICENSE_DIR}" "${IXRAY_OUTPUT}/licenses/NVIDIA"
+        DEPENDS "${XlcPtx}" ${XlcNvidiaLicenseFiles}
+        COMMENT "Copying NVIDIA runtime artifacts"
+        VERBATIM
+    )
+    set(XlcNvidiaArtifacts "${XlcCudaDriverLibrary}" "${XlcPtx}" "${XlcPublishedPtx}" "${XlcNvidiaNotice}")
+    set_source_files_properties(${XlcNvidiaArtifacts} PROPERTIES HEADER_FILE_ONLY TRUE)
+    target_sources(xrLevelBuilder PRIVATE ${XlcNvidiaArtifacts})
+    source_group("xrLC/Light/CUDA" FILES ${XlcNvidiaArtifacts})
 endif()
 
 # Linker list
