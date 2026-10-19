@@ -51,6 +51,9 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
 	pFace = face;
 	pBack = back;
 	marker = 0xffffffff;
+	FadeMarker = 0xffffffff;
+	Visits = 0;
+	OnPath = false;
 
 	Fvector N, T;
 
@@ -96,25 +99,47 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 	sPoly	S,D;
 	for	(u32 I=0; I<m_portals.size(); I++)
 	{
-		if (m_portals[I]->marker == PortalTraverser.i_marker) continue;
-
 		CPortal* PORTAL = m_portals[I];
-		CSector* pSector;
+
+		// A portal may be crossed through several openings of one traversal: a sector reached by
+		// two paths needs both frustums. It is never crossed twice on one path, and the visit
+		// limit keeps traversal of dense portal graphs bounded.
+		if (PORTAL->marker != PortalTraverser.i_marker)
+		{
+			PORTAL->marker	= PortalTraverser.i_marker;
+			PORTAL->Visits	= 0;
+			PORTAL->OnPath	= false;
+		}
+		if (PORTAL->OnPath || PORTAL->Visits >= CPortalTraverser::MaxPortalVisits) continue;
+
+		// A frustum built from a portal the view point lies on is degenerate, so such portals
+		// lead in both directions and keep the current frustum
+		const bool NearPortal = PortalTraverser.IsNearPortal(*PORTAL);
 
 		// Select sector (allow intersecting portals to be finely classified)
-		if (PORTAL->bDualRender) {
+		CSector* pSector;
+		if (NearPortal) {
 			pSector = PORTAL->getSector						(this);
 		} else {
 			pSector = PORTAL->getSectorBack					(PortalTraverser.i_vBase);
-			if (pSector==this)								continue;
-			if (pSector==nullptr)							continue;
-			if (pSector==PortalTraverser.i_start)			continue;
 		}
+		if (pSector==this)								continue;
+		if (pSector==nullptr)							continue;
+		if (pSector==PortalTraverser.i_start)			continue;	// already has the whole view frustum
 
 		// Early-out sphere
 		if (!F.testSphere_dirty(PORTAL->S.P,PORTAL->S.R))	continue;
 
-		if(PortalTraverser.i_options&CPortalTraverser::VQ_FADE|CPortalTraverser::VQ_SSA&&psGameFlags.test(rsDrawPortals))
+		if (NearPortal)
+		{
+			PORTAL->Visits++;
+			PORTAL->OnPath		= true;
+			pSector->traverse	(F,R_scissor);
+			PORTAL->OnPath		= false;
+			continue;
+		}
+
+		if(psGameFlags.test(rsDrawPortals))
 			PortalTraverser.fade_portal			(PORTAL,1.f);
 		else
 		{
@@ -145,7 +170,7 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 
 		// Scissor and optimized HOM-testing
 		_scissor			scissor	;
-		if (PortalTraverser.i_options&CPortalTraverser::VQ_SCISSOR && (!PORTAL->bDualRender))
+		if (PortalTraverser.i_options&CPortalTraverser::VQ_SCISSOR)
 		{
 			// Build scissor rectangle in projection-space
 			Fbox2	bb;	bb.invalidate(); float depth = flt_max;
@@ -167,7 +192,6 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 				if (t.y > bb.max.y) bb.max.y	= t.y;
 				if (t.z < depth)	depth		= t.z;
 			}
-			// Msg	("bb(%s): (%f,%f)-(%f,%f), d=%f", PORTAL->bDualRender?"true":"false",bb.min.x, bb.min.y, bb.max.x, bb.max.y,depth);
 			if (depth<EPS)	{
 				scissor	= R_scissor;
 
@@ -208,10 +232,10 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// Create _new_ frustum and recurse
 		CFrustum				Clip;
 		Clip.CreateFromPortal	(P, PORTAL->P.n, PortalTraverser.i_vBase,PortalTraverser.i_mXFORM);
-		PORTAL->marker			= PortalTraverser.i_marker;
-		PORTAL->bDualRender		= false;
-		if(pSector)
-			pSector->traverse		(Clip,scissor);
+		PORTAL->Visits++;
+		PORTAL->OnPath			= true;
+		pSector->traverse		(Clip,scissor);
+		PORTAL->OnPath			= false;
 	}
 }
 

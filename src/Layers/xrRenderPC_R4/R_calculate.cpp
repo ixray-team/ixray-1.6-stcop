@@ -64,19 +64,6 @@ void CRender::Calculate		()
 		vLastCameraPos.set(Device.vCameraPosition);
 	}
 
-	// Check if camera is too near to some portal - if so force DualRender
-	if (HasSectors && rmPortals) 
-	{
-		float	eps			= Device.fViewportNear+EPS_L;
-		Fvector box_radius; box_radius.set(eps,eps,eps);
-		Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
-		Sectors_xrc.box_query	(rmPortals,Device.vCameraPosition,box_radius);
-		for (int K=0; K<Sectors_xrc.r_count(); K++)	{
-			CPortal*	pPortal		= (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= true;
-		}
-	}
-
 	// The unlit editor view (no weather) has no sun
 	if (!Device.IsEditorMode() || EditorIsLit())
 	{
