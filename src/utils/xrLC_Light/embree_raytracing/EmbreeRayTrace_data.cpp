@@ -173,6 +173,11 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 
  	for (auto& MU : lc_global_data()->mu_models())
 	{
+ 		if (MU->IsLOD)
+ 		{
+			instances.push_back(nullptr);
+ 			continue;
+ 		}
  		EmbreeInstancedModel* InstanceModel = new EmbreeInstancedModel();
 		InstanceModel->InitializeModel(MU->EmbreeInstanceCopy());
 		instances.push_back(InstanceModel);
@@ -180,7 +185,7 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 
 	for (auto& MU_REF : lc_global_data()->mu_refs())
 	{
-		instances[MU_REF->model->m_lod_ID]->SetInstance(IntelScene, MU_REF->xform, LastGeomID);
+		instances[MU_REF->ModelID]->SetInstance(IntelScene, MU_REF->xform, LastGeomID);
 	}
 }
 
