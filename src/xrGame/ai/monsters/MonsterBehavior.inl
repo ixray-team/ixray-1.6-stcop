@@ -212,7 +212,8 @@ SInvestigation* KnowBody(CBaseMonster& Monster, u32 ID, const Fvector& Position)
 	}
 	return Selected;
 }
-bool Point(CBaseMonster& Monster, Fvector& Position, u32& Vertex)
+// HACK: renamed from "Point" - a global Carbon type on macOS.
+bool ValidGoalPosition(CBaseMonster& Monster, Fvector& Position, u32& Vertex)
 {
 	if (!World().Nodes || !Monster.Home->at_home(Position) || Monster.Behavior.CrossesDanger(Monster, Position) ||
 		!ai().level_graph().valid_vertex_position(Position))
@@ -1102,7 +1103,7 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 						Candidate.x += cosf(float(Attempt) * 1.3f) * float(Attempt);
 						Candidate.z += sinf(float(Attempt) * 1.3f) * float(Attempt);
 					}
-					if (Point(Monster, Candidate, GoalVertex))
+					if (ValidGoalPosition(Monster, Candidate, GoalVertex))
 					{
 						Goal = Candidate;
 						Move = true;
@@ -1171,7 +1172,7 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 						break;
 					}
 				}
-				if (!Visited && Point(Monster, Candidate, GoalVertex))
+				if (!Visited && ValidGoalPosition(Monster, Candidate, GoalVertex))
 				{
 					Goal = Candidate;
 					Move = true;
@@ -1264,7 +1265,7 @@ void SMonsterBehavior::Update(CBaseMonster& Monster)
 				Step.normalize();
 			}
 			Candidate.mad(Step, 4.f + float(Attempt) * std::max(2.f, HazardRadius * .4f));
-			if (Point(Monster, Candidate, GoalVertex))
+			if (ValidGoalPosition(Monster, Candidate, GoalVertex))
 			{
 				Escape = true;
 				break;

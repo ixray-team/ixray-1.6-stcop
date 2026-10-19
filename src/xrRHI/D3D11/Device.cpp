@@ -1,4 +1,9 @@
 #include "Device.h"
+
+#ifdef IXR_APPLE_SERIES
+// Implemented in MacMetalBridge.mm: SDL window -> NSView* for DXMT's swapchain.
+extern "C" void* IxrDxmtGetNSView(void* sdl_window);
+#endif
 #include "../RHITopologyUtils.h"
 
 #ifdef IXR_WINDOWS
@@ -244,7 +249,14 @@ bool InternalDevice11::CreateD3D11()
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
+#ifdef IXR_WINDOWS
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+#elif defined(IXR_APPLE_SERIES)
+	// DXMT wants the NSView as its "HWND"; MacMetalBridge.mm turns it into a CAMetalLayer.
+	HWND hwnd = (HWND)IxrDxmtGetNSView(g_AppInfo.Window);
+#else
+	HWND hwnd = nullptr;
+#endif
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;

@@ -663,7 +663,8 @@ function r_CTime( p )
 		return t
 	else
 		--set_save_marker(p, "load", true, "CTIME")
-		return 0
+		-- "no time" must be nil here: a number breaks w_CTime when saved back.
+		return nil
 	end
 end
 ---------------------------------------------------------------------------

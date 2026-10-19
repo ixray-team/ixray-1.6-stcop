@@ -1,4 +1,5 @@
 project(xrRHI)
+
 set(XRHI_SRC_FILES)
 
 # Files import
@@ -29,7 +30,7 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*AMDGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*NvGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*IntelGPUTransferee.*")
-	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx11\\.cpp$")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx(9|11)\\.cpp$")
 endif()
 
 # xrRHI project
@@ -46,9 +47,14 @@ target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # -----------------------------------------------------------------------------
 # Linux + DXVK Native поддержка
 # -----------------------------------------------------------------------------
-if(UNIX AND NOT APPLE)
+if(APPLE)
+    target_include_directories(xrRHI PUBLIC ${DXMT_INCLUDE_DIRS})
+    target_compile_definitions(xrRHI PRIVATE XR_USE_NATIVE_D3D11=1)
+    target_link_libraries(xrRHI PUBLIC ${DXMT_LIBRARIES})
+    target_link_libraries(xrRHI PRIVATE "-framework Cocoa" "-framework Metal" "-framework QuartzCore")
+elseif(UNIX AND NOT APPLE)
     target_include_directories(xrRHI PUBLIC ${DXVK_INCLUDE_DIRS})
-    target_compile_definitions(xrRHI PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
+    target_compile_definitions(xrRHI PRIVATE XR_USE_NATIVE_D3D11=1 DXVK_WSI_DRIVER_SDL3=1)
     target_link_libraries(xrRHI PUBLIC ${DXVK_LIBRARIES} Vulkan::Vulkan pthread dl)
 elseif(WIN32)
     target_link_libraries(xrRHI PUBLIC WindowsSDK::D3D11)

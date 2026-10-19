@@ -14,11 +14,14 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include <linux/limits.h>
-#include <bits/local_lim.h>
+#include <limits.h>
 
 #ifdef IXR_ARM64
-#	include <arm64_neon.h>
+#	ifdef __APPLE__
+#		include <arm_neon.h>
+#	else
+#		include <arm64_neon.h>
+#	endif
 #	include <sse2neon/sse2neon.h>
 #else
 #	include <xmmintrin.h>
@@ -42,7 +45,7 @@
 #define __stdcall /* __attribute__((__stdcall__)) */
 
 #define CALLBACK
-#ifndef XR_USE_DXVK_NATIVE
+#ifndef XR_USE_NATIVE_D3D11
 #   define HWND void*
 #   define LPARAM void*
 #   define WPARAM void*
@@ -70,6 +73,7 @@ using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;
 using BYTE = unsigned char;
+using LPBYTE = unsigned char*;
 using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
@@ -79,6 +83,7 @@ using LRESULT = long;
 using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
 using HFILE = int;
+using HDC = void*;
 
 #define TRUE  1
 #define FALSE 0
@@ -166,4 +171,31 @@ inline unsigned long GetLastError()
 
 #ifndef _In_reads_
 #define _In_reads_(x)
+#endif
+
+#if defined(IXR_ARM64) && defined(__cplusplus)
+struct __m256
+{
+	float m256_f32[8];
+};
+
+inline void _mm256_stream_ps(float* destination, const __m256& source)
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		destination[i] = source.m256_f32[i];
+	}
+}
+#endif
+
+#ifndef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL nullptr
+#else
+#define NULL ((void*)0)
+#endif
 #endif

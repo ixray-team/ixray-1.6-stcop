@@ -15,6 +15,8 @@ using namespace animation;
 void CBlendInstance::construct()
 {
 	ZeroMemory(this, sizeof(*this));
+	// HACK: the wiped lock is invalid on macOS (std::shared_mutex), reconstruct it in place.
+	new (&blend_lock) xrSRWLock();
 }
 
 void CBlendInstance::blend_add(CBlend* H)
@@ -80,8 +82,6 @@ std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(Mo
 	for (_I	= s_mots.motion_map()->begin(); _I!=_E; ++_I)	if (_I->second==ID.idx) return std::make_pair(*_I->first,*s_mots.id());
 	return std::make_pair((const char*)nullptr,(const char*)nullptr);
 }
-
-
 
 static const char* name_bool( bool v )
 {

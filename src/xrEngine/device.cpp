@@ -325,12 +325,71 @@ void CRenderDevice::CalculateTransforms()
 	vCameraTop_saved = vCameraTop;
 }
 
+#if defined(IXR_APPLE_SERIES)
+// TEMPORARY (macOS port, unattended test runs): console-command autostart, gated by the
+// IXR_AUTOSTART environment variable. Do not commit.
+#include "XR_IOConsole.h"
+#include <cstdlib>
+#include <chrono>
+#endif
 volatile bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
+#if defined(IXR_APPLE_SERIES)
+	// TEMPORARY (macOS port): start a new game the same way the main menu does.
+	static bool ai_autostart_done = false;
+	static bool ai_stats_enabled = false;
+	static bool ai_params_logged = false;
+	// Wall clock: the menu and its loading take ~3 minutes, an early "start server"
+	// lands before the menu exists and is silently lost. IXR_AUTOSTART_DELAY
+	// overrides the delay for slow builds (debug interpreter loads for minutes).
+	static const std::chrono::steady_clock::time_point ai_launch = std::chrono::steady_clock::now();
+	const int ai_delay = getenv("IXR_AUTOSTART_DELAY") ? atoi(getenv("IXR_AUTOSTART_DELAY")) : 170;
+	const bool ai_autostart_armed = getenv("IXR_AUTOSTART") != nullptr;
+	if (ai_autostart_armed && !ai_params_logged)
+	{
+		ai_params_logged = true;
+		Msg("* IXR_AUTOSTART armed (delay %ds), Core.Params: %s", ai_delay, Core.Params);
+	}
+#endif
 	while (!quiting)
 	{
+#if defined(IXR_APPLE_SERIES)
+		// The check must live INSIDE the loop: message_loop entry happens long before
+		// the menu is up, and a one-shot check there never fires again.
+		if (ai_autostart_armed && !ai_autostart_done
+			&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - ai_launch).count() > ai_delay)
+		{
+			ai_autostart_done = true;
+			// The post-load "press any key" gate needs real input; skip it for unattended runs.
+			Console->Execute("keypress_on_start 0");
+			Console->Execute("g_game_difficulty gd_novice");
+			Console->Execute("start server(all/single/alife/new) client(localhost)");
+			Console->Execute("main_menu off");
+		}
+		// TEMPORARY (macOS port): file-based state for unattended debugging, the
+		// engine log is buffered and useless for live checks.
+		static u32 s_state_dump_frame = 0;
+		if (Device.dwFrame > s_state_dump_frame + 600)
+		{
+			s_state_dump_frame = Device.dwFrame + 600;
+			if (FILE* f = fopen("/tmp/engine_state.txt", "w"))
+			{
+				fprintf(f, "frame=%u autostart_done=%d delay=%d\n",
+					Device.dwFrame, ai_autostart_done ? 1 : 0, ai_delay);
+				fclose(f);
+			}
+		}
+		// Turn the on-screen render stats on once the level is up, so an unattended
+		// run can be diagnosed from a screenshot.
+		if (ai_autostart_armed && !ai_stats_enabled
+			&& std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - ai_launch).count() > 230)
+		{
+			ai_stats_enabled = true;
+			Console->Execute("rs_stats on");
+		}
+#endif
 		GRHI->BeginFrame();
 
 		SDL_Event event;

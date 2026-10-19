@@ -9,6 +9,26 @@
 
 #include "../../xrEngine/stdafx.h"
 
+#ifndef NULL
+#define NULL nullptr
+#endif
+
+// HACK: the D3D-headers _RELEASE expands with NULL, which does not parse here; NULL-free variant.
+#ifndef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+
+#ifndef _RELEASE
+#ifndef ENGINE_API
+#define ENGINE_API
+#endif
+#include "../../xrEngine/defines.h"
+#endif
+
+#ifndef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+
 #include "imgui.h"
 
 #include <d3d11_1.h>
@@ -43,3 +63,14 @@ IC	void jitter(CBlender_Compile& C)
 
 	C.r_dx10Sampler("smp_jitter");
 }
+#if defined(IXR_APPLE_SERIES)
+#undef NULL
+#define NULL 0
+
+#undef _RELEASE
+#define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
+#endif
+#if defined(IXR_APPLE_SERIES)
+inline int32_t ffxFsr3UpscalerGetJitterPhaseCount(int32_t, int32_t) { return 1; }
+inline void ffxFsr3UpscalerGetJitterOffset(float* x, float* y, int32_t, int32_t) { *x = 0.f; *y = 0.f; }
+#endif

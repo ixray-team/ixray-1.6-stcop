@@ -25,4 +25,9 @@ set(LUA_LIB ${LUAJIT_LIB})
 
 FetchContent_MakeAvailable(luabind)
 
+if(APPLE)
+    # macOS Debug builds otherwise die on uncaught luabind errors.
+target_compile_definitions(luabind PUBLIC LUABIND_NO_EXCEPTIONS)
+endif()
+
 set_target_properties(luabind PROPERTIES FOLDER "3rd Party")

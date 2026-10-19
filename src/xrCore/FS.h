@@ -170,11 +170,12 @@ class CFileReader;
 class CVirtualFileReader;
 class IReader;
 
-class IReaderBase
+class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
-	virtual			~IReaderBase()			{}
+	// HACK: out-of-line destructor is the key function that exports the vtable to other modules.
+	virtual ~IReaderBase();
 
 	virtual CFileReader* cast_file_reader() { return nullptr; }
 	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }

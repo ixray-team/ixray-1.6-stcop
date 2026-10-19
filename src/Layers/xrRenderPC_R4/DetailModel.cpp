@@ -8,7 +8,13 @@ struct vertHW
 	u32 normal = 0;
 };
 
-extern constexpr u8 q_N(float v);
+// Local copy of the quantizer from XRayFSkinned.cpp (dedicated server renderer,
+// not linked here): constexpr bodies emit no symbol in Release builds.
+static constexpr u8 q_N(float v)
+{
+	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
+	return u8(_v);
+}
 
 static RHIInputElementDesc dwDecl[] =
 {

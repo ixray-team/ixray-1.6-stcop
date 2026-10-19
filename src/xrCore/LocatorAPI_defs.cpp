@@ -65,7 +65,9 @@ void FS_Path::_set(const char* add)
 	{
 		xr_strcat(temp, Platform::kPreferredSeparator);
 	}
-	
+
+	xr_strcpy(temp, Platform::ValidPath(temp));
+
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }
@@ -88,7 +90,9 @@ void FS_Path::_set_root(const char* root)
 	{
 		xr_strcat(temp,Platform::kPreferredSeparator);
 	}
-	
+
+	xr_strcpy(temp, Platform::ValidPath(temp));
+
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }

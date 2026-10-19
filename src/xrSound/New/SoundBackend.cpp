@@ -34,6 +34,11 @@
 struct sound_backend_state {
     std::atomic<bool> is_running;
     std::atomic<bool> is_stopping;
+    // Device switch requested by the game thread; applied by the mixer thread so the
+    // frame thread never blocks inside CoreAudio (SDL_OpenAudioDevice can stall for
+    // seconds in the HAL while a device starts).
+    std::atomic<u32> pending_device;
+    std::atomic<bool> pending_valid;
     u64 read_position;
     u64 write_position;
     SDL_AudioStream* stream;
@@ -51,30 +56,37 @@ static sound_backend_state backend_state;
 static void
 Snd_Initialize()
 {
-    xrCriticalSectionGuard deviceGuard(backend_state.device_lock);
     SDL_AudioSpec spec = {};
     spec.channels = SND_CHANNEL_COUNT;
     spec.format = SDL_AUDIO_F32;
     spec.freq = SND_SAMPLERATE;
 
-    backend_state.device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
-    backend_state.stream = SDL_CreateAudioStream(&spec, &spec);
+    // Open outside device_lock: CoreAudio can block for seconds while starting the
+    // device IO thread, and the game thread must never wait on that.
+    SDL_AudioDeviceID device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+    SDL_AudioStream* stream = SDL_CreateAudioStream(&spec, &spec);
 
-    R_ASSERT2(backend_state.stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
-    if (backend_state.device == 0) {
+    R_ASSERT2(stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
+    if (device == 0) {
         Msg("! Couldn't open audio device; continuing without audio output: %s", SDL_GetError());
-    } else if (!SDL_BindAudioStream(backend_state.device, backend_state.stream) ||
-        !SDL_ResumeAudioDevice(backend_state.device)) {
+    } else if (!SDL_BindAudioStream(device, stream) ||
+        !SDL_ResumeAudioDevice(device)) {
         Msg("! Couldn't start audio device; continuing without audio output: %s", SDL_GetError());
-        SDL_UnbindAudioStream(backend_state.stream);
-        SDL_CloseAudioDevice(backend_state.device);
-        backend_state.device = 0;
+        SDL_UnbindAudioStream(stream);
+        SDL_CloseAudioDevice(device);
+        device = 0;
     }
 
-    backend_state.buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
-    backend_state.output_buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
-    memset(backend_state.buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
-    memset(backend_state.output_buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
+    float* buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
+    float* output_buffer = xr_alloc<float>(SND_BLOCKSIZE * SND_CHANNEL_COUNT);
+    memset(buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
+    memset(output_buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
+
+    xrCriticalSectionGuard deviceGuard(backend_state.device_lock);
+    backend_state.device = device;
+    backend_state.stream = stream;
+    backend_state.buffer = buffer;
+    backend_state.output_buffer = output_buffer;
     backend_state.is_running = true;
 }
 
@@ -94,12 +106,73 @@ Snd_Shutdown()
 }
 
 static void
+Snd_ApplyPendingDevice()
+{
+    if (!backend_state.pending_valid.exchange(false)) {
+        return;
+    }
+
+    const u32 target = backend_state.pending_device.load();
+
+    SDL_AudioDeviceID old_device = 0;
+    {
+        xrCriticalSectionGuard deviceGuard(backend_state.device_lock);
+        old_device = backend_state.device;
+    }
+
+    if (old_device == target) {
+        return;
+    }
+
+    SDL_AudioSpec spec = {};
+    spec.channels = SND_CHANNEL_COUNT;
+    spec.format = SDL_AUDIO_F32;
+    spec.freq = SND_SAMPLERATE;
+
+    // Runs on the mixer thread: a stuck CoreAudio open only stalls audio, never a frame.
+    SDL_AudioDeviceID new_device = SDL_OpenAudioDevice(target, &spec);
+    if (new_device == 0) {
+        Msg("! Couldn't open audio device: %s", SDL_GetError());
+        return;
+    }
+
+    // Detach from the old device first: SDL_BindAudioStream fails when the stream is
+    // still bound, which used to leave the stream unbound (silence) and the mixer
+    // spinning forever on a queue nobody consumes.
+    if (old_device != 0) {
+        SDL_PauseAudioDevice(old_device);
+    }
+    SDL_UnbindAudioStream(backend_state.stream);
+
+    if (!SDL_BindAudioStream(new_device, backend_state.stream) || !SDL_ResumeAudioDevice(new_device)) {
+        Msg("! Error change device: %s", SDL_GetError());
+        SDL_UnbindAudioStream(backend_state.stream);
+        if (old_device != 0) {
+            SDL_BindAudioStream(old_device, backend_state.stream);
+            SDL_ResumeAudioDevice(old_device);
+        }
+        SDL_CloseAudioDevice(new_device);
+        return;
+    }
+
+    {
+        xrCriticalSectionGuard deviceGuard(backend_state.device_lock);
+        backend_state.device = new_device;
+    }
+
+    if (old_device != 0) {
+        SDL_CloseAudioDevice(old_device);
+    }
+}
+
+static void
 Snd_ThreadProc(void*)
 {
     PROF_THREAD("Sound Thread");
 
     Snd_Initialize();
     while (!backend_state.is_stopping) {
+        Snd_ApplyPendingDevice();
         PROF_EVENT("Sound: WASAPI update");
         u8* output = (u8*)backend_state.output_buffer;
 
@@ -174,46 +247,11 @@ XRay::Sound::Backend::Initialize(audio_render_callback render_callback, audio_pr
 void
 XRay::Sound::Backend::ChangeDevice(u32 device_id)
 {
-    xrCriticalSectionGuard deviceGuard(backend_state.device_lock);
-    if (!backend_state.is_running) {
-        return;
-    }
-
-    SDL_AudioDeviceID old_device = backend_state.device;
-    if (old_device == device_id) {
-        return;
-    }
-
-    SDL_AudioSpec spec = {};
-    spec.channels = SND_CHANNEL_COUNT;
-    spec.format = SDL_AUDIO_F32;
-    spec.freq = SND_SAMPLERATE;
-    SDL_AudioDeviceID new_device = SDL_OpenAudioDevice(device_id, &spec);
-    if (new_device == 0) {
-        Msg("! Couldn't open audio device: %s", SDL_GetError());
-        return;
-    }
-
-    if (old_device != 0) {
-        SDL_PauseAudioDevice(old_device);
-    }
-
-    SDL_UnbindAudioStream(backend_state.stream);
-    if (!SDL_BindAudioStream(new_device, backend_state.stream) || !SDL_ResumeAudioDevice(new_device)) {
-        Msg("!Error change device: %s", SDL_GetError());
-        SDL_UnbindAudioStream(backend_state.stream);
-        if (old_device != 0) {
-            SDL_BindAudioStream(old_device, backend_state.stream);
-            SDL_ResumeAudioDevice(old_device);
-        }
-        SDL_CloseAudioDevice(new_device);
-        return;
-    }
-
-    backend_state.device = new_device;
-    if (old_device != 0) {
-        SDL_CloseAudioDevice(old_device);
-    }
+    // Called from the frame thread. Defer the actual switch to the mixer thread:
+    // SDL_OpenAudioDevice can block for seconds inside CoreAudio, which would freeze
+    // the whole engine and (with device_lock held) deadlock against the mixer.
+    backend_state.pending_device.store(device_id);
+    backend_state.pending_valid.store(true);
 }
 
 void

@@ -9,6 +9,13 @@
 #include "../xrEngine/string_table.h"
 
 #include "../xrCore/git_version.h"
+#if defined(IXR_APPLE_SERIES)
+#include <cstdlib>
+#endif
+
+#ifdef IXR_APPLE_SERIES
+#	include <SDL3/SDL_vulkan.h>
+#endif
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
@@ -109,17 +116,46 @@ int CApplication::BeginPlay()
 	}
 
 	splash::SetProgressStatus(5, "Initializing debugger");
+#if defined(IXR_APPLE_SERIES)
+	// TEMPORARY (macOS port, unattended test runs): fatal errors go to the engine log
+	// instead of a modal box when IXR_SILENT is set. Do not commit.
+	Debug._initialize(getenv("IXR_SILENT") != nullptr);
+#else
 	Debug._initialize(false);
+#endif
 	
 	splash::SetProgressStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
-	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
+	const bool l_hiddenWindow = strstr(Core.Params, "-autotest") != nullptr;
+	SDL_WindowFlags WndFlags = l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0;
 #ifndef IXR_WINDOWS
-	WndFlags = SDL_WINDOW_VULKAN;
+	WndFlags = SDL_WINDOW_VULKAN | (l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0);
+#endif
+#ifdef IXR_APPLE_SERIES
+	WndFlags = SDL_WINDOW_VULKAN | (l_hiddenWindow ? SDL_WINDOW_HIDDEN : 0);
 #endif
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+	if (!g_AppInfo.Window && (WndFlags & SDL_WINDOW_VULKAN))
+	{
+		// A build without a Vulkan loader (e.g. DXMT native) presents through its own
+		// Metal layer, so the window does not need a Vulkan surface.
+		WndFlags = (WndFlags & ~SDL_WINDOW_VULKAN) | SDL_WINDOW_METAL;
+		g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+	}
+
+#if defined(IXR_APPLE_SERIES)
+	// LaunchServices starts a bare executable in the background, so the window
+	// would open unfocused and input would go to the previously active app.
+	// Raise the window (and the app with it) right after creation.
+	SDL_RaiseWindow(g_AppInfo.Window);
+#endif
+
+#ifdef IXR_APPLE_SERIES
+	if (!SDL_Vulkan_LoadLibrary(nullptr))
+		Msg("! SDL_Vulkan_LoadLibrary failed: %s", SDL_GetError());
+#endif
 
 	splash::SetProgressStatus(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
@@ -160,6 +196,11 @@ CApplication::CApplication(ENTRY_ARGS)
 		CommandLine += argv[i];
 		CommandLine += " ";
 	}
+	// Windows fills Core.Params from GetCommandLine; on other platforms it stayed
+	// EMPTY, silently disabling every command-line switch (-nointro, -autotest, ...).
+	xr_strcpy(Core.Params, sizeof(Core.Params), CommandLine.c_str());
+	for (char* p = Core.Params; *p; ++p)
+		*p = (*p >= 'A' && *p <= 'Z') ? char(*p - 'A' + 'a') : *p;
 #endif
 }
 
@@ -207,6 +248,27 @@ void CApplication::MigrateToGameWindow()
 	else
 		SDL_ShowWindow(g_AppInfo.Window);
 
+	// TEMPORARY (macOS port, unattended profiling): IXR_OFFSCREEN parks the
+	// window far off the screen so night runs wake nobody.
+	if (getenv("IXR_OFFSCREEN") != nullptr)
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+
+#if defined(IXR_APPLE_SERIES)
+	// Keep the game window frontmost when the launch came from Finder.
+	// IXR_OFFSCREEN night runs skip this so the display stays asleep.
+	if (getenv("IXR_OFFSCREEN") == nullptr)
+		SDL_RaiseWindow(g_AppInfo.Window);
+#endif
+
+	// TEMPORARY (macOS port, autotest debugging): headless runs kept a hidden
+	// window whose swapchain present starved the frame loop; keep the window
+	// visible but far off the screen instead.
+	if (headless)
+	{
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+		SDL_ShowWindow(g_AppInfo.Window);
+	}
+
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
 	Console->Execute("vid_restart");
@@ -214,7 +276,7 @@ void CApplication::MigrateToGameWindow()
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 
 	if (headless)
-		SDL_HideWindow(g_AppInfo.Window);
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
 }
 
 void CApplication::LoadCustomSettings()

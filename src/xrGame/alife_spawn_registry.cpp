@@ -309,7 +309,7 @@ void CALifeSpawnRegistry::serialize_updates(ISaveObject& Object)
 	{
 		if (Object.IsSave())
 		{
-			auto Value = m_spawns.vertices().size();
+			u64 Value = m_spawns.vertices().size();
 			Object << Value;
 			BEGIN_ARRAY(Object)
 			{

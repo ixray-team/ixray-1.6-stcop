@@ -1,5 +1,16 @@
 #pragma once
 
+#if defined(IXR_APPLE_SERIES)
+class Fsr3Wrapper
+{
+public:
+	bool GetRenderScale(float&) { return false; }
+	void Destroy() {}
+};
+
+inline Fsr3Wrapper g_Fsr3Wrapper;
+
+#else
 #include <FidelityFX/host/ffx_fsr3upscaler.h>
 #include <FidelityFX/host/backends/dx11/ffx_dx11.h>
 
@@ -79,3 +90,4 @@ private:
 };
 
 extern Fsr3Wrapper g_Fsr3Wrapper;
+#endif

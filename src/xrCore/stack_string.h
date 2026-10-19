@@ -512,7 +512,7 @@ using xr_stack_string = stack_string<char, StringLength>;
 #ifdef IXR_WINDOWS
 template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<wchar_t, StringLength>;
-#elif defined(IXR_LINUX)
+#else
 template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<char16_t, StringLength>;
 #endif

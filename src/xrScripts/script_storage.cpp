@@ -11,6 +11,9 @@
 #include "script_storage.h"
 #include "script_thread.h"
 #include "lua_ext.h"
+#ifdef IXR_APPLE_SERIES
+#include <luajit.h>
+#endif
 #include "script_process.h"
 
 const char*	file_header = "\
@@ -68,6 +71,13 @@ void CScriptStorage::reinit	()
 
 	// LuaJIT
 	luajit::open_lib(lua(), LUA_JITLIBNAME, luaopen_jit);
+#ifdef IXR_APPLE_SERIES
+	// HACK: this LuaJIT build has no MAP_JIT support, and macOS denies plain RWX mmap,
+	// so the first compiled trace panics with MCODEAL. Interpreter-only until LuaJIT
+	// gets the macOS MAP_JIT port.
+	luaJIT_setmode(lua(), 0, LUAJIT_MODE_ENGINE | LUAJIT_MODE_OFF);
+	Msg("* LuaJIT: JIT disabled for macOS (no MAP_JIT in this build)");
+#endif
 	luajit::open_lib(lua(), LUA_BITLIBNAME, luaopen_bit);
 	luajit::open_lib(lua(), LUA_FFILIBNAME, luaopen_ffi);
 

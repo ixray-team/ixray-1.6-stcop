@@ -42,9 +42,13 @@ if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/FSR3.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")
+elseif(APPLE)
+    include("${CMAKE_MODULE_PATHEX}/DXMT.cmake")
 elseif(LINUX)
     include("${CMAKE_MODULE_PATHEX}/DXVK.cmake")
 endif()
+
+include("${CMAKE_MODULE_PATHEX}/VKD3D.cmake")
 
 # Headers only libraries
 include("${CMAKE_MODULE_PATHEX}/FastDynamicCast.cmake")

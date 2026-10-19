@@ -592,9 +592,15 @@ void CGamePersistent::destroy_particles(bool all_particles)
 	VERIFY(ps_needtoplay.empty() && (!all_particles || ps_active.empty()));
 }
 
+// Approach from OpenXRay (GamePersistent.cpp, allow_intro): -nointro skips the logo movies.
+static bool allow_intro_logo()
+{
+	return nullptr == strstr(Core.Params, "-nointro");
+}
+
 void CGamePersistent::start_logo_intro()
 {
-	if (!g_keypress_on_start)
+	if (!g_keypress_on_start || !allow_intro_logo())
 	{
 		m_intro_event.clear();
 		Console->Show();

@@ -82,7 +82,7 @@ public:
 			void	SetScrollPos		(int value);
 			void	SetScrollBarProfile	(const char* profile);
 			bool	ReinitScrollBar		();
-IC			bool	NeedShowScrollBar	();		// no comment
+	bool	NeedShowScrollBar	();		// no comment
 			float	GetHorizIndent		();		// left + right indent
 			float	GetVertIndent		();		// top + bottom indent
 			void	UpdateChildrenLenght();		// set default width for all children

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef IXR_APPLE_SERIES
+#include <luajit.h>
+#endif
 #include "../../xrEngine/EngineAPI.h"
 
 
@@ -165,6 +168,13 @@ void	CResourceManager::LS_Load			()
 	luaopen_string	(LSVM);
 	luaopen_math	(LSVM);
 	luaopen_jit		(LSVM);
+#ifdef IXR_APPLE_SERIES
+	// HACK: this LuaJIT build has no MAP_JIT support, and macOS denies plain RWX mmap,
+	// so the first compiled trace panics with MCODEAL. Interpreter-only until LuaJIT
+	// gets the macOS MAP_JIT port (same as script_storage.cpp). Must run AFTER luaopen_jit.
+	if (!luaJIT_setmode(LSVM, 0, LUAJIT_MODE_ENGINE | LUAJIT_MODE_OFF))
+		Msg("! LuaJIT: failed to disable JIT for the shader pipeline VM");
+#endif
 
 	luabind::open						(LSVM);
 #ifdef LUABIND_NO_EXCEPTIONS
