@@ -136,9 +136,21 @@ Snd_ApplyPendingDevice()
         return;
     }
 
+    // Detach from the old device first: SDL_BindAudioStream fails when the stream is
+    // still bound, which used to leave the stream unbound (silence) and the mixer
+    // spinning forever on a queue nobody consumes.
+    if (old_device != 0) {
+        SDL_PauseAudioDevice(old_device);
+    }
+    SDL_UnbindAudioStream(backend_state.stream);
+
     if (!SDL_BindAudioStream(new_device, backend_state.stream) || !SDL_ResumeAudioDevice(new_device)) {
         Msg("! Error change device: %s", SDL_GetError());
         SDL_UnbindAudioStream(backend_state.stream);
+        if (old_device != 0) {
+            SDL_BindAudioStream(old_device, backend_state.stream);
+            SDL_ResumeAudioDevice(old_device);
+        }
         SDL_CloseAudioDevice(new_device);
         return;
     }
