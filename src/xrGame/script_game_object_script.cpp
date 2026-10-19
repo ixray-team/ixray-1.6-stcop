@@ -43,8 +43,61 @@
 #include "ActorHelmet.h"
 #include "Inventory.h"
 #include "Weapon.h"
+#include "Actor.h"
+#include "ActorCondition.h"
 
 using namespace luabind;
+
+namespace ScriptObjectQueries
+{
+	float DistanceTo(const CScriptGameObject& From, const CScriptGameObject& To)
+	{
+		return From.object().Position().distance_to(To.object().Position());
+	}
+
+	bool ContainsObject(const CScriptGameObject* Zone, const CScriptGameObject* Target)
+	{
+		return Zone && Target && Zone->inside(Target->object().Position());
+	}
+}
+
+namespace ScriptActorConditions
+{
+	template <PlayerAddiction CActorCondition::* Addiction>
+	float GetRate(CScriptGameObject* Object)
+	{
+		CActor* Actor = Object ? Object->object().cast_actor() : nullptr;
+		return Actor ? (Actor->conditions().*Addiction).Variability : 0.0f;
+	}
+
+	template <PlayerAddiction CActorCondition::* Addiction>
+	void AddRate(CScriptGameObject* Object, float Delta)
+	{
+		CActor* Actor = Object ? Object->object().cast_actor() : nullptr;
+		if (!Actor || !_valid(Delta))
+		{
+			return;
+		}
+
+		float& Rate = (Actor->conditions().*Addiction).Variability;
+		const float NewRate = Rate + Delta;
+		if (_valid(NewRate))
+		{
+			Rate = std::max(0.0f, NewRate);
+		}
+	}
+
+	void HealWounds(CScriptGameObject* Object, float Value)
+	{
+		if (!Object || !_valid(Value))
+		{
+			return;
+		}
+
+		clamp(Value, 0.0f, 1.0f);
+		Object->SetBleeding(Value);
+	}
+}
 
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
 
@@ -145,6 +198,7 @@ void CScriptGameObject::script_register(lua_State *L)
 			.property("bleeding",				&CScriptGameObject::GetBleeding,		&CScriptGameObject::SetBleeding)
 			.property("thirst",					&CScriptGameObject::GetThirst,			&CScriptGameObject::SetThirst)
 			.property("sleepiness",				&CScriptGameObject::GetSleepiness,		&CScriptGameObject::SetSleepiness)
+			.property("sleep", &CScriptGameObject::GetSleepiness, &CScriptGameObject::SetSleepiness)
 			.property("intoxication",			&CScriptGameObject::GetIntoxication,	&CScriptGameObject::SetIntoxication)
 
 //			.def("get_bleeding",				&CScriptGameObject::GetBleeding)
@@ -824,6 +878,15 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def("active_zone_contact",			&CScriptGameObject::active_zone_contact)
 			.def("inside",						(bool (CScriptGameObject::*)(const Fvector &, float) const)(&CScriptGameObject::inside))
 			.def("inside",						(bool (CScriptGameObject::*)(const Fvector &) const)(&CScriptGameObject::inside))
+			.def("ContainsObject", &ScriptObjectQueries::ContainsObject)
+			.def("add_actor_v_satiety", &ScriptActorConditions::AddRate<&CActorCondition::Satiety>)
+			.def("add_actor_v_sleep", &ScriptActorConditions::AddRate<&CActorCondition::Sleepiness>)
+			.def("add_actor_v_thirst", &ScriptActorConditions::AddRate<&CActorCondition::Thirst>)
+			.def("get_actor_v_satiety", &ScriptActorConditions::GetRate<&CActorCondition::Satiety>)
+			.def("get_actor_v_sleep", &ScriptActorConditions::GetRate<&CActorCondition::Sleepiness>)
+			.def("get_actor_v_thirst", &ScriptActorConditions::GetRate<&CActorCondition::Thirst>)
+			.def("set_bleeding_ex", &ScriptActorConditions::HealWounds)
+			.def("DistanceTo", &ScriptObjectQueries::DistanceTo)
 			.def("set_fastcall",				&CScriptGameObject::set_fastcall)
 			.def("set_const_force",				&CScriptGameObject::set_const_force)
 			.def("info_add",					&CScriptGameObject::info_add)
@@ -978,6 +1041,8 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def("set_ruck_to_default", &CScriptGameObject::SetDefaultToRuck)
 			.def("get_entity_ignored_by_monsters_state", &CScriptGameObject::GetEntityIgnoredByMonstersState)
 			.def("set_entity_ignored_by_monsters_state", &CScriptGameObject::SetEntityIgnoredByMonstersState)
+			.def("get_ignore_monsters", &CScriptGameObject::GetEntityIgnoredByMonstersState)
+			.def("set_ignore_monsters", &CScriptGameObject::SetEntityIgnoredByMonstersState)
 			// FFx0001 --
 
 			.def("is_on_belt",					&CScriptGameObject::IsOnBelt)

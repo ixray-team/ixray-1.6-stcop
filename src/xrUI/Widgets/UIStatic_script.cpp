@@ -27,9 +27,9 @@ void CUIStatic::script_register(lua_State *L)
 		.def("GetTextureColor", 	&CUIStatic::GetTextureColor)
 		.def("AdjustHeightToText", 	&CUIStatic::AdjustHeightToText)
 		.def("AdjustWidthToText", 	&CUIStatic::AdjustWidthToText)
-		.def("GetStretchTexture", 	&CUIStatic::GetStretchTexture)														  
+		.def("GetStretchTexture", 	&CUIStatic::GetStretchTexture)
 		.def("TextControl",			&CUIStatic::TextItemControl)
-			
+
        .def("SetText",				(void (CUIStatic::*)(const char*)) (&CUIStatic::SetText))
        .def("SetTextST",			(void (CUIStatic::*)(const char*)) (&CUIStatic::SetTextST))
 
@@ -71,6 +71,7 @@ void CUIStatic::script_register(lua_State *L)
 
         .def("SetHeading",			&CUIStatic::SetHeading)
         .def("GetHeading",			&CUIStatic::GetHeading)
+		.def("SetHint", &CUIStatic::SetHint)
 
         .def("SetElipsis",			&CUIStatic::SetEllipsis)
         .def("SetEllipsis",			&CUIStatic::SetEllipsis_script)

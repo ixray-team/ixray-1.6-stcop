@@ -28,8 +28,8 @@ struct UI_API lanim_cont_xf :
 };
 
 class UI_API CUIStatic :
-	public CUIWindow, 
-	public ITextureOwner, 
+	public CUIWindow,
+	public ITextureOwner,
 	public CUILightAnimColorConrollerImpl
 {
 	friend class CUIXmlInit;
@@ -80,7 +80,7 @@ public:
 	virtual u32				GetTextureColor			() const					{ return m_UIStaticItem.GetTextureColor();}
 	virtual void			SetTextureRect			(const Frect& r)			{m_UIStaticItem.SetTextureRect(r);}
 	virtual const Frect&	GetTextureRect			() const					{return m_UIStaticItem.GetTextureRect();}
-	
+
 	virtual bool			InitTexture				(const char* tex_name, bool fatal = true);
 	virtual bool			InitTextureEx			(const char* tex_name, const char* sh_name="hud\\default", bool fatal = true);
 	CUIStaticItem*			GetStaticItem			()							{return &m_UIStaticItem;}
@@ -126,7 +126,7 @@ public:
 			void 			AdjustHeightToText		();
 			void 			AdjustWidthToText		();
 
-	
+
 			void			SetShader				(const ui_shader& sh);
 			CUIStaticItem&	GetUIStaticItem			()						{return m_UIStaticItem;}
 
@@ -180,6 +180,7 @@ protected:
 public:
 	CUILines*		TextItemControl						();
 	shared_str		m_stat_hint_text;
+	void SetHint(const char* Text) { m_stat_hint_text = Text ? Text : ""; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
