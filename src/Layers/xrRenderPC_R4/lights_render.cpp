@@ -179,7 +179,7 @@ void	CRender::render_lights	(light_Package& LP)
 						if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
 							psDeviceFlags.is(rsDetails) &&
 							GetDetails() && GetDetails()->dtSlots &&
-							L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+							L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) <= _sqr(40.f + L->SpatialComponent->sphere.R))
 						{
 							GetDetails()->hw_Render(L);
 						}
