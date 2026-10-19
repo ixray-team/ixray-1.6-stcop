@@ -23,6 +23,7 @@
 #include "../../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 #include "../../cover_evaluators.h"
 #include "../../xrServer.h"
+#include "../../Level.h"
 #include "../../../xrEngine/xr_level_controller.h"
 #include "../../../Include/xrRender/Kinematics.h"
 #include "../../../xrServerEntities/character_info.h"
@@ -67,7 +68,6 @@
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
 #	include "../../alife_object_registry.h"
-#	include "../../Level.h"
 #	include "../../map_location.h"
 #	include "../../map_manager.h"
 #endif // DEBUG
@@ -521,15 +521,23 @@ void CAI_Stalker::Die				(CObject* who)
 
 	if (OnServer())
 	{
-		TIItemContainer::iterator	I = inventory().m_all.begin();
-		TIItemContainer::iterator	E = inventory().m_all.end();
-		for ( ; I != E; ++I) {
-			if (std::find(weapon->m_ammoTypes.begin(),weapon->m_ammoTypes.end(),(*I)->object().cNameSect()) == weapon->m_ammoTypes.end())
+		for (PIItem Item : inventory().m_all)
+		{
+			auto& Object = Item->object();
+			if (std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), Object.cNameSect()) == weapon->m_ammoTypes.end())
+			{
 				continue;
+			}
 
-			NET_Packet				packet;
-			u_EventGen				(packet,GE_DESTROY,(*I)->object().ID());
-			u_EventSend				(packet);
+			// The death callback can remove ammo before the client inventory processes its destroy events.
+			if (Object.getDestroy() || Object.object_removed() || !Level().Server->ID_to_entity(Object.ID()))
+			{
+				continue;
+			}
+
+			NET_Packet Packet;
+			u_EventGen(Packet, GE_DESTROY, Object.ID());
+			u_EventSend(Packet);
 		}
 	}
 }
