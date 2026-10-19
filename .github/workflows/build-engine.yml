@@ -178,9 +178,24 @@ jobs:
 
       - name: Build engine
         run: |
+          $log = Join-Path $env:RUNNER_TEMP 'build-engine.log'
           cmake `
             --build `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
+            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }} 2>&1 |
+            Tee-Object -FilePath $log
+          $buildCode = $LASTEXITCODE
+          if ($buildCode -ne 0) {
+            # Surface compiler/linker errors as workflow annotations: they stay readable
+            # through the public check-runs API even though raw logs need admin rights.
+            $hits = Select-String -Path $log -Pattern 'error C[0-9]{4}','error LNK[0-9]{4}','fatal error' |
+              Select-Object -First 25
+            foreach ($hit in $hits) {
+              $line = ($hit.Line -replace "[\r\n]+", ' ').Trim()
+              if ($line.Length -gt 800) { $line = $line.Substring(0, 800) }
+              Write-Host "::error::$line"
+            }
+            exit $buildCode
+          }
 
       - name: Upload binaries
         uses: actions/upload-artifact@v7
