@@ -1,0 +1,37 @@
+xrLevelBuilder NVIDIA components
+
+CUDA and OptiX components are licensed separately from IX-Ray. The IX-Ray
+license does not replace or expand the rights granted by NVIDIA.
+
+This distribution includes compiled application code, CUDA Runtime code and
+OptiX header-derived code. See the accompanying CUDA and OptiX license files
+and OptiX-Header-Notices.txt for NVIDIA's terms, copyright notices and BSD
+notices. Use the NVIDIA backend only with supported NVIDIA hardware.
+The NVIDIA driver is installed separately; driver DLLs are not included.
+The build generates an import-only library for the driver entry points used
+by xrLevelBuilder instead of embedding the SDK's cuda.lib driver wrappers.
+
+Publisher requirements
+
+Keep these license materials with the application and CuTrace.ptx. The
+publisher must arrange enforceable recipient terms consistent with NVIDIA's
+distribution requirements, including DesignWorks Agreement section 1.1(ii)
+and CUDA Agreement section 1.1.2. Including these files alone does not arrange
+recipient acceptance. Commercial OptiX applications also require the
+notification specified in DesignWorks Agreement section 1.5. Applicable
+export controls and restrictions on recipients and uses remain in force.
+
+Build dependencies
+
+The automatic downloader obtains OptiX 9.0.0 headers and CUDA 13.4.3 Windows
+components directly from NVIDIA, with pinned SHA-256 checksums. Build tools,
+SDK headers and dependency archives are not part of the application package.
+Do not publish the build's _deps/nvidia directory as a standalone SDK package.
+Explicitly supplied SDKs retain their own versions and accompanying licenses.
+
+Sources
+
+https://github.com/NVIDIA/optix-dev/tree/v9.0.0
+https://github.com/NVIDIA/optix-dev/blob/v9.0.0/LICENSE.txt
+https://docs.nvidia.com/cuda/eula/index.html
+https://developer.download.nvidia.com/compute/cuda/redist/redistrib_13.4.3.json

@@ -1,0 +1,17 @@
+LIBRARY nvcuda.dll
+EXPORTS
+    cuInit
+    cuDeviceGet
+    cuDeviceGetName
+    cuDeviceGetAttribute
+    cuDevicePrimaryCtxRetain
+    cuDevicePrimaryCtxRelease_v2
+    cuCtxSetCurrent
+    cuGetErrorString
+    cuMemAlloc_v2
+    cuMemFree_v2
+    cuMemcpyHtoD_v2
+    cuMemcpyDtoH_v2
+    cuStreamCreate
+    cuStreamDestroy_v2
+    cuStreamSynchronize
