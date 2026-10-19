@@ -120,7 +120,7 @@ void xrLC_GlobalData::clear()
 	FacesStorage.clear();
 	FacesStorage.shrink_to_fit();
 
-	// se7kills (Проверил это отгружается хорошо !)
+	// se7kills (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !)
 	for (auto& surface : textures())
 		surface.pSurface.Clear();
  	textures().clear();
@@ -130,7 +130,7 @@ void xrLC_GlobalData::clear()
 	_shaders.Unload();
 	clMsg("[xrLC_Remove] mem textures: %u mb", GetHeapMemory() / 1024 / 1024);
 
-	// Пометка чтобы не трогало векторы (_g_faces, _g_vertex) в деструкторе !
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (_g_faces, _g_vertex) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 	g_bUnregister = false;
  	
 	for (auto F : _g_faces)
@@ -151,7 +151,7 @@ void xrLC_GlobalData::clear()
 	
 	clMsg("[xrLC_Remove] mem faces-vertex: %u mb", GetHeapMemory() / 1024 / 1024);
  
-	// Не замечал утечек памяти !
+	// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !
 	vec_clear(_mu_models); 
 	vec_clear(_mu_refs);
 	mu_mesh_clear();

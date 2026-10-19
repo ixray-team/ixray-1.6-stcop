@@ -1,7 +1,7 @@
 #include "xrCore.h"
 #define SCRIPTS_API
 #include "../../xrEngine/_d3d_extensions.h"
-#include "../xrLC/vbm.h"
+#include "../xrLevelBuilder/xrLC/CForm/vbm.h"
 #include "FormatParsers/LevelCForm/CFormIO.h"
 #include "FormatParsers/LevelGeom/GeomIO.h"
 #include "ConverterUI.h"
