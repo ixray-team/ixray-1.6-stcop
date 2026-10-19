@@ -26,7 +26,9 @@ public:
 	Fplane							P;
 	Fsphere							S;
 	u32								marker;
-	bool							bDualRender;
+	u32								FadeMarker;
+	u32								Visits;			// crossings during the traversal with marker
+	bool							OnPath;			// crossed by the current traversal path
 
 	void							Setup								(Fvector* V, int vcnt, CSector* face, CSector* back);
 
@@ -81,9 +83,12 @@ public:
 		VQ_FADE		= (1<<3),				// requires SSA to work
 	};
 public:
+	static constexpr u32					MaxPortalVisits = 8;
+
 	u32										i_marker;		// input
 	u32										i_options;		// input:	culling options
 	Fvector									i_vBase;		// input:	"view" point
+	float									NearDistance;	// portals closer to the view point are crossed without narrowing
 	Fmatrix									i_mXFORM;		// input:	4x4 xform
 	Fmatrix									i_mXFORM_01;	// 
 	CSector*								i_start;		// input:	starting point
@@ -98,6 +103,7 @@ public:
 	void							traverse			(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
 	void							fade_portal			(CPortal* _p, float ssa);
 	void							fade_render			();
+	bool							IsNearPortal		(const CPortal& Portal) const;
 };
 
 extern	CPortalTraverser PortalTraverser	;
