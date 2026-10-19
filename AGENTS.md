@@ -25,6 +25,8 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 
 Keep dependencies downward. Do not add game or renderer implementation dependencies to `xrCore`; existing collision code uses shared render interfaces from `src/Include/xrRender`.
 
+Coordinate system: left-handed (LH), with +Y pointing up.
+
 ## Frame
 
 `CApplication::Run` → `BeginPlay` → `InitEngine` → `MigrateToGameWindow` → `EngineLoopAndDestroy` → `Device.Run` → `message_loop` (SDL, then `on_idle`).
