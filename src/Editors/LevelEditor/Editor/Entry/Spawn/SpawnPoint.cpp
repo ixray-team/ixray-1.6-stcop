@@ -262,10 +262,13 @@ void CSpawnPoint::SSpawnData::Create(const char* _entity_ref)
 		if (pSettings->line_exist(_entity_ref, "idle_particles"))
 		{
 			shared_str m_sIdleParticles = pSettings->r_string(_entity_ref, "idle_particles");
-			if (IdleParticle = ::Render->model_CreateParticles(*m_sIdleParticles))
+			if (m_sIdleParticles.size() > 0)
 			{
-				IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
-				Particles->Play();
+				if (IdleParticle = ::Render->model_CreateParticles(*m_sIdleParticles))
+				{
+					IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
+					Particles->Play();
+				}
 			}
 		}
 
