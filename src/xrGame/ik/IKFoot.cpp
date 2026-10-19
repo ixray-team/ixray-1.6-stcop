@@ -402,11 +402,31 @@ u16	CIKFoot::get_ref_bone				( const Fmatrix & foot_transform, const Fmatrix &to
 }
 void	CIKFoot::set_ref_bone				( )
 {
-	set_ref_bone(
-		get_ref_bone(	Kinematics()->LL_GetTransform( m_foot_bone_id )	,	
-						Kinematics()->LL_GetTransform( m_toe_bone_id ) 
-					)
-		);
+	Fvector n0,n1;
+	get_local_vector( 2, n0, m_foot_normal );
+	get_local_vector( 3, n1, m_foot_normal );
+
+	Kinematics()->LL_GetTransform( m_foot_bone_id ).transform_tiny( n0 );
+	Kinematics()->LL_GetTransform( m_toe_bone_id ).transform_tiny( n1 );
+
+	n0.normalize_safe();
+	n1.normalize_safe();
+	const float dot = n0.dotproduct( n1 );
+
+	if( m_ref_bone == 2 )
+	{
+		if( dot < 0.985f )
+			set_ref_bone( 3 );
+	}
+	else if( m_ref_bone == 3 )
+	{
+		if( dot > 0.995f )
+			set_ref_bone( 2 );
+	}
+	else
+	{
+		set_ref_bone( dot < 0.99f ? 3 : 2 );
+	}
 }
 void	CIKFoot::SetFootGeom		( ik_foot_geom &fg, const Fmatrix &ref_bone, const Fmatrix& object_matrix ) const
 {
