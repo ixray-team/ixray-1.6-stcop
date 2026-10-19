@@ -177,7 +177,7 @@ unsigned __stdcall thread_entry(void* _params)
 	xr_thread_entry_t* entry = startup->entry;
 	void* arglist = startup->args;
 
-	free(startup->name);
+	xr_free(startup->name);
 	xr_delete(startup);
 
 	_initialize_cpu_thread();
@@ -194,7 +194,7 @@ void* pthread_entry(void* params)
 	xr_thread_entry_t* entry = startup->entry;
 	void* arglist = startup->args;
 
-	free(startup->name);
+	xr_free(startup->name);
 	xr_delete(startup);
 
 	_initialize_cpu_thread();
