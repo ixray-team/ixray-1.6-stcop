@@ -202,6 +202,17 @@ void CHudItem::renderable_Render()
 				on_renderable_Render();
 		}
 	}
+	if (!_hud_render)
+	{
+		if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+		{
+			LightTorch->UpdateTorchFromObject(this);
+		}
+		if (THudLightLaser* LightLaser = m_object->GetComponent<THudLightLaser>())
+		{
+			LightLaser->UpdateTorchFromObject(this);
+		}
+	}
 }
 
 void CHudItem::SwitchState(u8 S)
@@ -505,9 +516,17 @@ void CHudItem::UpdateCL()
 		}
 	}
 
-	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+	if (GetHUDmode())
 	{
-		LightTorch->UpdateTorchFromObject(this);
+		if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
+		{
+			LightTorch->UpdateTorchFromObject(this);
+		}
+
+		if (THudLightLaser* LightLaser = m_object->GetComponent<THudLightLaser>())
+		{
+			LightLaser->UpdateTorchFromObject(this);
+		}
 	}
 
 	if (ScriptWindow)
