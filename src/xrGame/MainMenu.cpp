@@ -609,8 +609,28 @@ void CMainMenu::SwitchToMultiplayerMenu()
 
 void CMainMenu::DestroyInternal(bool bForce)
 {
-	if(m_startDialog && ((m_deactivated_frame < Device.dwFrame+4)||bForce) )
-		xr_delete		(m_startDialog);
+	if (!m_startDialog)
+	{
+		return;
+	}
+	if (IsActive())
+	{
+		if (!bForce)
+		{
+			return;
+		}
+		// Async loading can destroy the menu while it still owns input and render callbacks.
+		Activate(false);
+		if (IsActive())
+		{
+			return;
+		}
+	}
+	if (m_deactivated_frame < Device.dwFrame + 4 || bForce)
+	{
+		CleanInternals();
+		xr_delete(m_startDialog);
+	}
 }
 
 void CMainMenu::OnNewPatchFound(const char* VersionName, const char* URL)
