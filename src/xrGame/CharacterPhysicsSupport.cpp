@@ -767,6 +767,8 @@ void CCharacterPhysicsSupport::RemoveActiveWeaponCollision()
 	m_active_item_obj = 0;
 
 	bone_fix_clear();
+
+	//m_pPhysicsShell->UnSetPrefereExactIntegration();
 }
 
 void CCharacterPhysicsSupport::bone_fix_clear()
@@ -974,7 +976,7 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 	if (IsGameTypeSingle())
 	{
 		//use exact integration for ragdolls in single
-		m_pPhysicsShell->SetPrefereExactIntegration();
+		//m_pPhysicsShell->SetPrefereExactIntegration();
 
 		const static bool isDeadBodyRagdoll = EngineExternal()[EEngineExternalPhysical::DeadBodyRagdoll];
 		if (!isDeadBodyRagdoll)
