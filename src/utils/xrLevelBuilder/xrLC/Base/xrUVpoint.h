@@ -35,4 +35,3 @@ struct UVpoint {
 	
 	IC Fvector2& conv()	{ return *( (Fvector2*)this ); };
 };
-

@@ -61,7 +61,7 @@ void CBuild::Light()
 	BuildingUV();
 	InitModel();
   
-	//****************************************** AdaptiveHT 
+	//****************************************** AdaptiveHT ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	xrPhase_AdaptiveHT_calculate();		
 	
 	//****************************************** Implicit

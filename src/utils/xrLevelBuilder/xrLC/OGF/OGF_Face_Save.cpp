@@ -677,4 +677,3 @@ void OGF_Reference::LoadForCompile(IReader* R)
 		}
 	}
 }
-
