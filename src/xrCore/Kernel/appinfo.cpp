@@ -3,11 +3,6 @@
 
 XRCORE_API CAppInfo g_AppInfo;
 
-bool CAppInfo::IsSecondaryThread() const noexcept
-{
-	return SecondaryThread == Platform::GetCurrentThread();
-}
-
 void CAppInfo::SetMainThread()
 {
 	MainThread = Platform::GetCurrentThread();
