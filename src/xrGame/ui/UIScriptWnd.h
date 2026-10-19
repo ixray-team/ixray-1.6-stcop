@@ -16,12 +16,16 @@ typedef CALLBACKS::iterator			CALLBACK_IT;
 
 private:
 			CALLBACKS			m_callbacks;
+	bool StopMovement = true;
 	virtual void				SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			SCallbackInfo*		NewCallback			();
 protected:
 			bool				Load				(const char* xml_name);
 
 public:
+	void SetStopAnyMove(bool Stop) { StopMovement = Stop; }
+	bool StopAnyMove() override { return StopMovement; }
+
 			void				Register			(CUIWindow* pChild);
 			void				Register			(CUIWindow* pChild, const char* name);
 								CUIDialogWndEx		();

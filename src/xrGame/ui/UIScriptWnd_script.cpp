@@ -37,6 +37,7 @@ void CUIDialogWndEx::script_register(lua_State *L)
 			)
 		)
 		.def("Load",			&BaseType::Load)
+		.def("SetStopAnyMove", &BaseType::SetStopAnyMove)
 	];
 }
 
