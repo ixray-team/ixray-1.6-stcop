@@ -12,6 +12,7 @@
 #		define PROF_SAVE_CAPTURE(Name) OPTICK_SAVE_CAPTURE(Name);
 #		define PROF_FRAME(Name) OPTICK_FRAME(Name);
 #		define PROF_EVENT(Name) OPTICK_EVENT(Name);
+#		define PROF_EVENT_DYNAMIC(Name) OPTICK_TAG("Name", Name);
 #		define PROF_MESSAGE(Name);
 #		define PROF_MEM_ALLOC_CAPTURE(Ptr, Size);
 #		define PROF_MEM_FREE_CAPTURE(Ptr);
@@ -27,6 +28,7 @@
 #   	define PROF_SAVE_CAPTURE(Name)
 #   	define PROF_FRAME(Name) FrameMark;
 #		define PROF_EVENT(Name) ZoneScopedN(Name);
+#		define PROF_EVENT_DYNAMIC(Name) ZoneText(Name, xr_strlen(Name));
 #		define PROF_MESSAGE(Name) TracyMessageL(Name)
 #		define PROF_MEM_ALLOC_CAPTURE(Ptr, Size) TracyAlloc(Ptr, Size);
 #		define PROF_MEM_FREE_CAPTURE(Ptr) TracyFree(Ptr);

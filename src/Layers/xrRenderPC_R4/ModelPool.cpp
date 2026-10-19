@@ -413,6 +413,7 @@ void CModelPool::WaitAll()
 dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName)
 {
 	PROF_EVENT(__FUNCTION__);
+	PROF_EVENT_DYNAMIC(InputName ? InputName : "<unnamed>");
 	dxRender_Visual	*V;
 	string_path		fn;
 	string_path		name;
@@ -468,6 +469,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName)
 dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data)
 {
 	PROF_EVENT(__FUNCTION__);
+	PROF_EVENT_DYNAMIC(name ? name : "<unnamed>");
 	dxRender_Visual	*V;
 
 	ogf_header			H;
