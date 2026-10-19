@@ -110,7 +110,6 @@ void CUIInventoryUpgradeWnd::Init()
 	}
 
 	LoadCellsBacks(uiXml);
-	LoadSchemes(uiXml);
 
 	m_selectorFrame = new CUIFrameWindow();
 	if (m_selectorFrame->InitTexture("ui_inv_item_selector_tri", false))
@@ -279,6 +278,15 @@ void CUIInventoryUpgradeWnd::UpdateAllUpgrades()
 
 void CUIInventoryUpgradeWnd::SetCurScheme(const shared_str& id)
 {
+	if (m_schemes.empty())
+	{
+		// Controls and callbacks are ready at startup; build the upgrade cells only when an item needs them.
+		PROF_EVENT("CUIInventoryUpgradeWnd::LoadSchemes");
+		CUIXml SchemeXml;
+		SchemeXml.Load(CONFIG_PATH, UI_PATH, g_inventory_upgrade_xml);
+		LoadSchemes(SchemeXml);
+	}
+
 	for (const auto& scheme : m_schemes)
 	{
 		if (scheme->name._get() == id._get())
