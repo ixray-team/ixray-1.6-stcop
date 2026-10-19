@@ -1422,7 +1422,10 @@ void CPHShell::SetPrefereExactIntegration()
 {
 	CPHObject::SetPrefereExactIntegration();
 }
-
+void CPHShell::UnSetPrefereExactIntegration()
+{
+	CPHObject::UnSetPrefereExactIntegration();
+}
 void CPHShell::add_Element					(CPhysicsElement* E)		  {
 	CPHElement* ph_element=cast_PHElement(E);
 	ph_element->SetShell(this);
