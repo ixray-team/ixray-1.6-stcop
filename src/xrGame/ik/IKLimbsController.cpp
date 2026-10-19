@@ -257,20 +257,16 @@ void TIKLimbsController::ObjectShift(float static_shift, const SCalculateData cd
 
 void TIKLimbsController::ShiftObject(const SCalculateData cd[max_size])
 {
-	IKinematics* skeleton_animated = m_object->Visual()->dcast_PKinematics();
-	VERIFY(skeleton_animated);
+	IKinematics* pK = m_object->Visual()->dcast_PKinematics();
+	VERIFY(pK);
 
 	const float y_shift = _object_shift.shift();
-	const u16 bones_count = skeleton_animated->LL_BoneCount();
-	for (u16 i = 0; i < bones_count; ++i)
-		skeleton_animated->LL_GetTransform(i).c.y += y_shift;
-
+	CBoneInstance* BI = &pK->LL_GetBoneInstance(0);
+	const u16 bones_count = pK->LL_BoneCount();
 	for (u16 i = 0; i < bones_count; ++i)
 	{
-		CBoneInstance& bi = skeleton_animated->LL_GetBoneInstance(i);
-		if (bi.callback())
-			bi.callback()(&bi);
-		skeleton_animated->LL_GetTransform_R(i).c.y += y_shift;
+		BI[i].mTransform.c.y += y_shift;
+		BI[i].mRenderTransform.c.y += y_shift;
 	}
 }
 

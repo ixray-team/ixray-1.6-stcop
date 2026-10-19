@@ -1,5 +1,7 @@
 #pragma once
 
+class CObject;
+
 class ik_foot_geom
 {
 public:
@@ -43,5 +45,9 @@ struct SIKCollideData
 	Fplane			m_plane		;
 	Fvector			m_pick_dir	;
 	bool			collided	;
-	SIKCollideData	(): m_pick_dir( Fvector( ).set( 0, -1, 0 ) ), collided( false ), m_collide_point( ik_foot_geom::toe ){}
+	CObject*		m_support_object;
+	// support bone/element of the object (u16(-1) for static geometry); a rotating
+	// part (rotor, turret, ...) moves through its bone transform
+	u16				m_support_bone;
+	SIKCollideData	(): m_pick_dir( Fvector( ).set( 0, -1, 0 ) ), collided( false ), m_support_object( nullptr ), m_support_bone( u16(-1) ), m_collide_point( ik_foot_geom::toe ){}
 };

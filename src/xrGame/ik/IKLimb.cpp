@@ -80,6 +80,12 @@ CIKLimb::CIKLimb( const CIKLimb& l ):
 		m_id				( l.m_id )	,				
 		m_collide			( l.m_collide ),				
 		collide_data		( l.collide_data ),
+		m_plant_object		( l.m_plant_object ),
+		m_plant_bone		( l.m_plant_bone ),
+		m_plant_xform		( l.m_plant_xform ),
+		m_plant_valid		( l.m_plant_valid ),
+		m_plant_resting		( l.m_plant_resting ),
+		m_plant_rejected	( l.m_plant_rejected ),
 		anim_state			( l.anim_state ),
 		collider			( l.collider ),
 		state_predict		( l.state_predict )
@@ -117,6 +123,11 @@ void CIKLimb::Invalidate()
 	m_bones[3]				=BI_NONE											;
 	m_K						=0													;
 	m_collide				= false												;
+	m_plant_object			= nullptr											;
+	m_plant_bone			= u16(-1)											;
+	m_plant_valid			= false												;
+	m_plant_resting			= false												;
+	m_plant_rejected		= false												;
 #ifdef	DEBUG
 		dbg_disabled		= false												;
 #endif
@@ -536,6 +547,18 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 		return;
 	}
 	get_blend_speed_limits(cd.l, cd.a, cd, sv_state);
+
+	if (cd.l < 0.005f)
+	{
+		m_plant_resting = true;
+	}
+	else if (cd.l > 0.03f)
+	{
+		m_plant_resting = false;
+		m_plant_rejected = false;
+	}
+	const bool foot_resting = m_plant_resting;
+
 	cd.state.foot_step = m_foot.GetFootStepMatrix(cd.state.goal, cd, cld, true, !!ik_allign_free_foot) && cd.state.foot_step;
 
 	cd.state.blend_to = cd.state.goal;
@@ -560,6 +583,58 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 		Blending(cd);
 	}
 
+	if (!cd.state.foot_step)
+	{
+		CObject* support = cld.m_support_object;
+
+		if (foot_resting && !m_plant_rejected && cld.collided && support != nullptr)
+		{
+			const Fmatrix frame = GetSupportFrame( support, cld.m_support_bone );
+
+			if (m_plant_valid && m_plant_object == support && m_plant_bone == cld.m_support_bone)
+			{
+				Fmatrix inv;	inv.invert(m_plant_xform);
+				Fmatrix local;	local.mul_43(inv, cd.state.goal.get());
+				Fmatrix moved;	moved.mul_43(frame, local);
+
+				Fmatrix delta;	delta.mul_43(frame, inv);
+				Fvector axis;	float angle;
+				get_axis_angle(delta, axis, angle);
+				angle = std::abs(angle);
+
+				Fvector hip;	cd.m_obj->transform_tiny(hip, Kinematics()->LL_GetTransform(m_bones[0]).c);
+				const float reach = Fvector().sub(moved.c, hip).magnitude();
+
+				static const float plant_max_trans = 0.25f;
+				static const float plant_max_rot = 0.35f;
+				if (delta.c.magnitude() < plant_max_trans && angle < plant_max_rot && reach < m_limb.Length() * 0.98f)
+				{
+					cd.state.goal.set(moved, cd.state.goal.collide_state());
+					cd.state.blend_to.set(moved, cd.state.blend_to.collide_state());
+					cd.state.collide_pos.set(moved, cd.state.collide_pos.collide_state());
+					m_plant_xform = frame;
+				}
+				else
+				{
+					m_plant_rejected = true;
+					m_plant_valid = false;
+				}
+			}
+			else
+			{
+				m_plant_object = support;
+				m_plant_bone = cld.m_support_bone;
+				m_plant_xform = frame;
+				m_plant_valid = true;
+			}
+		}
+		else if (!foot_resting)
+		{
+			m_plant_object = nullptr;
+			m_plant_bone = u16(-1);
+			m_plant_valid = false;
+		}
+	}
 
 #ifdef IK_DBG_STATE_SEQUENCE
 	m_dbg_matrises.next_state(cd);
@@ -663,6 +738,40 @@ static const float unstuck_tolerance_angular	=	M_PI/4.f;
 
 void	CIKLimb::SetNewStepGoal	( const SIKCollideData &cld, SCalculateData& cd )
 {
+	const bool planted = state_valide( sv_state ) && sv_state.foot_step() && anim_state.glue();
+
+	if( planted )
+	{
+		if( cld.m_support_object != nullptr )
+		{
+			const Fmatrix frame = GetSupportFrame( cld.m_support_object, cld.m_support_bone );
+			if( m_plant_valid && m_plant_object == cld.m_support_object && m_plant_bone == cld.m_support_bone )
+			{
+				Fmatrix inv;	inv.invert( m_plant_xform );
+				Fmatrix local;	local.mul_43( inv, cd.state.collide_pos.get() );
+				Fmatrix moved;	moved.mul_43( frame, local );
+				cd.state.collide_pos.set( moved, cd.state.collide_pos.collide_state() );
+			}
+			m_plant_object = cld.m_support_object;
+			m_plant_bone = cld.m_support_bone;
+			m_plant_xform = frame;
+			m_plant_valid = true;
+		}
+		else
+		{
+			m_plant_object = nullptr;
+			m_plant_bone = u16(-1);
+			m_plant_valid = false;
+		}
+	}
+	else
+	{
+		m_plant_object = cld.m_support_object;
+		m_plant_bone = cld.m_support_bone;
+		m_plant_valid = ( m_plant_object != nullptr );
+		if( m_plant_valid )
+			m_plant_xform = GetSupportFrame( m_plant_object, m_plant_bone );
+	}
 
 	if( !state_valide( sv_state ) )
 	{
@@ -787,8 +896,39 @@ void	CIKLimb::ToeTimeDiffPredict	( Fvector &v ) const
 	v.set(0,-1,0);
 }
 
+Fmatrix CIKLimb::GetSupportFrame( CObject *object, u16 bone ) const
+{
+	Fmatrix frame;
+	frame.identity();
+
+	if( object == nullptr )
+		return frame;
+
+	frame.set( object->XFORM() );
+
+	if( bone == u16(-1) || object->Visual() == nullptr )
+		return frame;
+
+	IKinematics* K = object->Visual()->dcast_PKinematics();
+	if( K == nullptr || bone >= K->LL_BoneCount() )
+		return frame;
+
+	Fmatrix bone_xform;	bone_xform.set( K->LL_GetTransform( bone ) );
+
+	Fmatrix result;
+	result.mul_43( frame, bone_xform );
+	return result;
+}
+
 IC void	CIKLimb::GetPickDir( Fvector &v, SCalculateData& cd ) const
 {
+	if( collide_data.collided && std::abs( collide_data.m_plane.n.y ) > 0.5f )
+	{
+		v.set( collide_data.m_plane.n );
+		if( v.y > 0.f )
+			v.invert();
+		return;
+	}
 	v.set( 0, -1, 0 );
 }
 
@@ -845,7 +985,8 @@ float CIKLimb::ObjShiftDown(float current_shift, const SCalculateData& cd) const
 	float l = m_limb.Length();
 
 	float ShiftAbs = l * l - g.x * g.x - g.z * g.z;
-	ShiftAbs = std::abs(ShiftAbs);
+	if (ShiftAbs < 0.f)
+		ShiftAbs = 0.f;
 
 	float Result = -g.y - _sqrt(ShiftAbs);
 	return Result;
