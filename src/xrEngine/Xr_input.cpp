@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "string_table.h"
-#include "../xrCore/Platform/MacOS/MacProbe.h"
 
 #include "xr_input.h"
 #include "IInputReceiver.h"
@@ -257,7 +256,6 @@ void CInput::KeyboardUpdate()
 		if (KBState[i] != old_KBState[i])
 		{
 			old_KBState[i] = KBState[i];
-			MacProbe::Log("DSP key=%zu down=%u ts=%llu frame=%u", i, Pressed ? 1u : 0u, MacProbe::NowNs(), Device.dwFrame);
 			if (Pressed)
 			{
 				cbStack.back()->IR_OnKeyboardPress((int)i);
@@ -460,7 +458,6 @@ void CInput::MouseUpdate( )
 	for (size_t i = 0; i < COUNT_MOUSE_BUTTONS; i++) {
 		bool Pressed = !!mouseState[i];
 		if (mouseState[i] != old_mouseState[i]) {
-			MacProbe::Log("DSP mouse=%zu down=%u ts=%llu frame=%u", i, Pressed ? 1u : 0u, MacProbe::NowNs(), Device.dwFrame);
 			if (Pressed) {
 				cbStack.back()->IR_OnMousePress((int)i);
 			} else {
