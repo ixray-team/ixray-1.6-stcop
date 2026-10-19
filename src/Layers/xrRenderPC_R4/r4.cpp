@@ -237,19 +237,50 @@ static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 	{
 		for(int i = 0; i < 3; i++)
 		{
-			Fmatrix m_TexelAdjust = 
-			{
-				0.5f, 0.0f, 0.0f, 0.0f,
-				0.0f, -0.5f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0, 0.0f,
-				0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1.0f
-			};
-
-			Fmatrix xf_project; xf_project.mul(m_TexelAdjust, RImplementation.m_sun_cascades[i].xform);
-			RCache.set_ca(C, i, xf_project);
+			Fmatrix Transform;
+			Fvector4 Capture, Warp;
+			RImplementation.GetSunShadowConstants(i, Transform, Capture, Warp);
+			RCache.set_ca(C, i, Transform);
 		}
 	}
 }	binder_m_shadow_sun;
+
+class SunShadowArrayConstant final : public RHIShaderConstant::Setup
+{
+public:
+	explicit SunShadowArrayConstant(bool IsWarpValue) : IsWarp(IsWarpValue) {}
+	~SunShadowArrayConstant() override = default;
+
+	void setup(RHIShaderConstant* Constant) override
+	{
+		for (u32 Index = 0; Index < 3; ++Index)
+		{
+			Fmatrix Transform;
+			Fvector4 Capture, Warp;
+			RImplementation.GetSunShadowConstants(Index, Transform, Capture, Warp);
+			RCache.set_ca(Constant, Index, IsWarp ? Warp : Capture);
+		}
+	}
+
+private:
+	bool IsWarp;
+};
+
+class SunShadowCacheConstant final : public RHIShaderConstant::Setup
+{
+public:
+	SunShadowCacheConstant() = default;
+	~SunShadowCacheConstant() override = default;
+
+	void setup(RHIShaderConstant* Constant) override
+	{
+		RCache.set_c(Constant, float(RImplementation.GetSunShadowCacheMode()), 0, 0, 0);
+	}
+};
+
+static SunShadowArrayConstant g_SunCaptureConstant(false);
+static SunShadowArrayConstant g_SunWarpConstant(true);
+static SunShadowCacheConstant g_SunCacheConstant;
 
 template <typename T>
 class cl_m_dev_cal : public RHIShaderConstant::Setup
@@ -333,6 +364,9 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterHeightRange", &g_RainPuddleWaterHeightRangeBinder);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleControl", &g_RainPuddleControlBinder);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunCaptureDirectionDepth", &g_SunCaptureConstant);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunReceiverWarpBias", &g_SunWarpConstant);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunCacheParams", &g_SunCacheConstant);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
@@ -397,6 +431,7 @@ void CRender::create()
 
 void CRender::destroy() 
 {
+	ResetSunShadowCache();
 	// Release the editor's lazily created brush resources while the device is still
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
 	DetailLayers_EditorDestroy();
@@ -429,6 +464,7 @@ void CRender::destroy()
 }
 
 void CRender::reset_begin() {
+	ResetSunShadowCache();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())
 	{

@@ -172,7 +172,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 	}
 
-	if(cascade_index >= 2)
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 	{
 		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;
@@ -215,4 +215,3 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	WboitBufferPack(O, I.tctexgen);
 #endif
 }
-
