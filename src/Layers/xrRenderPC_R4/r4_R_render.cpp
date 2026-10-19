@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "r1_GlowManager.h"
+#include "StaticTraversalStats.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "FBasicVisual.h"
@@ -150,16 +151,23 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 				else
 				{
+					const bool CaptureStats = phase == CRender::PHASE_NORMAL && g_StaticTraversalStats.BeginFrame();
 					for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 					{
 						CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
 						dxRender_Visual* root = sector->root();
+						g_StaticTraversalStats.BeginSector(sector);
 
-						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) 
+						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
 						{
 							set_Frustum(&(sector->r_frustums[v_it]));
 							add_Geometry(root);
 						}
+						g_StaticTraversalStats.EndSector();
+					}
+					if (CaptureStats)
+					{
+						g_StaticTraversalStats.EndFrame();
 					}
 				}
 			}
