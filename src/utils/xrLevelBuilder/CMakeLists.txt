@@ -120,15 +120,10 @@ list(APPEND XAI_SOURCE_FILES ${XAI_SOURCE_ENTT_FILES})
 add_executable(xrLevelBuilder WIN32 ${UTILS_FORMS_SOURCE_FILES} ${XLC_SOURCE_FILES} ${XAI_SOURCE_FILES})
 target_include_directories(xrLevelBuilder PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Compiler"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Graph"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI/Spawn"
-    "${CMAKE_CURRENT_SOURCE_DIR}/xrAI"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../xrServerEntities/"
     "${IXRAY_SDK_INC}"
-    "${XLB_PACKAGES}/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/"
     "${XLB_PACKAGES}/directxmesh_desktop_2019.2024.6.5.1/include/"
     "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/include/"
     "${XLB_EMBREE}/build/native/include/"
@@ -215,16 +210,23 @@ if(OPTIX_AVAILABLE)
         COMMENT "Compiling CuTrace.cu to PTX"
         VERBATIM
     )
-    add_custom_target(xrLevelBuilderNvidiaArtifacts
+    set(XlcPublishedPtx "${IXRAY_OUTPUT}/CuTrace.ptx")
+    set(XlcNvidiaNotice "${IXRAY_OUTPUT}/licenses/NVIDIA/README.txt")
+    file(GLOB XlcNvidiaLicenseFiles CONFIGURE_DEPENDS "${IXRAY_NVIDIA_LICENSE_DIR}/*")
+    add_custom_command(
+        OUTPUT "${XlcPublishedPtx}" "${XlcNvidiaNotice}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XlcPtx}" "${IXRAY_OUTPUT}/CuTrace.ptx"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XlcPtx}" "${XlcPublishedPtx}"
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${IXRAY_OUTPUT}/licenses/NVIDIA"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${IXRAY_NVIDIA_LICENSE_DIR}" "${IXRAY_OUTPUT}/licenses/NVIDIA"
-        DEPENDS "${XlcPtx}" "${XlcCudaDriverLibrary}"
+        DEPENDS "${XlcPtx}" ${XlcNvidiaLicenseFiles}
+        COMMENT "Copying NVIDIA runtime artifacts"
         VERBATIM
     )
-    set_target_properties(xrLevelBuilderNvidiaArtifacts PROPERTIES FOLDER "Utils")
-    add_dependencies(xrLevelBuilder xrLevelBuilderNvidiaArtifacts)
+    set(XlcNvidiaArtifacts "${XlcCudaDriverLibrary}" "${XlcPtx}" "${XlcPublishedPtx}" "${XlcNvidiaNotice}")
+    set_source_files_properties(${XlcNvidiaArtifacts} PROPERTIES HEADER_FILE_ONLY TRUE)
+    target_sources(xrLevelBuilder PRIVATE ${XlcNvidiaArtifacts})
+    source_group("xrLC/Light/CUDA" FILES ${XlcNvidiaArtifacts})
 endif()
 
 # Linker list
