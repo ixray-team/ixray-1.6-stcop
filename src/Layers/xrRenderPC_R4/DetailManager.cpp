@@ -226,9 +226,7 @@ void CDetailManager::Render()
 		mFullTransform.mul(mProject, Device.mView);
 		CFrustum View; View.CreateFromMatrix(mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-		Device.DetailsTask.run
-		(
-			[=]()
+		auto UpdateTask = [=]()
 			{
 				if (!EditorMode)
 				{
@@ -387,8 +385,18 @@ void CDetailManager::Render()
 					}
 				}
 				task_finished.store(true);
-			}
-		);
+			};
+
+		// Editor slot unpacking picks scene geometry through the shared XRC collider, which the
+		// primary thread also uses for picking. Keep the editor update on the primary thread.
+		if (EditorMode)
+		{
+			UpdateTask();
+		}
+		else
+		{
+			Device.DetailsTask.run(UpdateTask);
+		}
 	}
 
 	float factor = 0.3f;
