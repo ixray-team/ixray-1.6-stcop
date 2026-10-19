@@ -140,6 +140,20 @@ public:
 	xr_list<light*>												v_all_lights_dque;
 
 private:
+	sun::CascadePreparation PreparedSunCascades[3];
+	STextureList SunShadowEmptyTextures;
+	u32 NextSunCascade = 0;
+	u32 LastSunUpdateFrame = u32(-1);
+	u32 SunUpdateCount = 0;
+	u32 SunUpdatedMask = 0;
+	int LastSunCacheMode = 0;
+	bool IsSunCacheInitialized = false;
+
+	void PrepareSunCascade(u32 Index);
+	u32 GetSunCascadePlacement(u32 Index) const;
+	void ResetSunShadowCache();
+	void BeginSunShadowFrame();
+
 	// Loading / Unloading
 	void							LoadVisuals					(IReader	*fs);
 	void							LoadLights					(IReader	*fs);
@@ -174,6 +188,9 @@ public:
 	void							render_sun_cascade			(u32 cascade_ind);
 	void							init_cacades				();
 	void							render_sun_cascades			();
+	int GetSunShadowCacheMode() const;
+	void GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const;
+	void DumpSunShadowCache() const;
 	void							render_reflections			();
 
 	bool is_render_cubemap = false;

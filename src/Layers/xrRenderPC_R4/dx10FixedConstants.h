@@ -112,7 +112,12 @@ struct alignas(16) CBLight
 	Fvector4 m_shadow[4];
 	Fvector4 m_sunmask[3];
 	Fvector4 L_dynamic_xform[4];
+	Fvector4 SunCaptureDirectionDepth[3];
+	Fvector4 SunReceiverWarpBias[3];
+	Fvector4 SunCacheParams;
 };
+
+static_assert(sizeof(CBLight) == 544, "Keep cb_light synchronized with common_decl.hlsli and r1_decl.hlsli");
 
 namespace FixedConstants
 {
@@ -123,6 +128,7 @@ namespace FixedConstants
 	RENDER_API void Destroy();
 	RENDER_API void UpdateFrame();
 	RENDER_API void UpdateView();
+	RENDER_API void UpdateSunShadows();
 	RENDER_API void UpdateObject(const Fmatrix& mW);
 	RENDER_API void UpdateMaterial();
 	RENDER_API void BindFrame();

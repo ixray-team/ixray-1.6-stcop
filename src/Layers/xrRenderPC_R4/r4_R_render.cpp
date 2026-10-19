@@ -492,6 +492,7 @@ void CRender::Render()
 	}
 
 	RImplementation.o.distortion = false;
+	BeginSunShadowFrame();
 
 	if (o.offscreen_reflecitons && !o.dx11_use_legacy_light)
 	{
