@@ -284,7 +284,7 @@ public:
 	accel_map*			fx				()							{	if (p_ == nullptr) return nullptr; return &p_->m_fx;					}
 	CPartition*			partition		()							{	if (p_ == nullptr) return nullptr; return &p_->m_partition;			}
     MotionDefVec*		motion_defs		()							{	if (p_ == nullptr) return nullptr; return &p_->m_mdefs;				}
-    CMotionDef*			motion_def		(u16 idx)					{	if (p_ == nullptr) return nullptr; return &p_->m_mdefs[idx];			}
+    CMotionDef*			motion_def		(u16 idx)					{	if (p_ == nullptr || idx >= p_->m_mdefs.size()) return nullptr; return &p_->m_mdefs[idx];			}
 	anim_notify_prefetched& motion_notify	(u16 idx, u16 bone)		{	VERIFY(p_); return p_->m_notifies[idx][bone];			}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}

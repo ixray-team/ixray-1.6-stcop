@@ -238,7 +238,6 @@ public:
 	void							TrampleAnimateItems		();
 	xr_vector<u32>					TrampleActiveSlots;
 
-	template<typename T>
 	void							hw_Render_dump	(const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 
 	// get unpacked slot

@@ -398,6 +398,10 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bM
 CBlend*	CKinematicsAnimated::LL_PlayCycle		(u16 part, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
 	VERIFY					(motion_ID.valid()); 
+	if (motion_ID.slot >= m_Motions.size())
+	{
+		return nullptr;
+	}
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
 	if (m_def == nullptr)
@@ -429,6 +433,10 @@ CBlend*	CKinematicsAnimated::PlayCycle		(MotionID motion_ID,  bool bMixIn, PlayC
 	{	
 		return nullptr;
 	}
+	if (motion_ID.slot >= m_Motions.size())
+	{
+		return nullptr;
+	}
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
 	if (m_def == nullptr)
@@ -444,6 +452,10 @@ CBlend*	CKinematicsAnimated::PlayCycle		(MotionID motion_ID,  bool bMixIn, PlayC
 CBlend*	CKinematicsAnimated::PlayCycle		(u16 partition, MotionID motion_ID,  bool bMixIn, PlayCallback Callback, LPVOID CallbackParam,u8 channel /*= 0*/)
 {	
 	VERIFY					(motion_ID.valid()); 
+	if (motion_ID.slot >= m_Motions.size())
+	{
+		return nullptr;
+	}
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
 	if (m_def == nullptr)

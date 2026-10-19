@@ -271,9 +271,11 @@ void CDetailManager::hw_Unload()
 
 void CDetailManager::hw_Render(light* L)
 {
+	if (!psDeviceFlags.is(rsDetails)) return;
 	PROF_EVENT("CDetailManager::hw_Render");
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_xform_world(Fidentity);
+	if (!L)
+		RCache.set_xform_world(Fidentity);
 
 	Fvector4 wave, wave_old;
 
@@ -286,7 +288,7 @@ void CDetailManager::hw_Render(light* L)
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
-		hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
+		hw_Render_dump(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 	}
 
 	// Wave1
@@ -294,20 +296,19 @@ void CDetailManager::hw_Render(light* L)
 		PROF_EVENT("Wave1")
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
-		hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
+		hw_Render_dump(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 	}
 
 	// Still
 	if(RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
-		hw_Render_dump<CDetail::SlotItem>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
+		hw_Render_dump(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
-template<typename T>
 void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
 	const bool EditorMode = Device.IsEditorMode();
@@ -365,6 +366,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;
+			auto& items = Object.m_items[render_key][var_id];
+			u32 totalInstances = items.size();
+			if (totalInstances == 0) continue;
+
 			RCache.set_Element(Object.shader->E[lod_id], 0);
 			if (!EditorMode && ps_trample_enabled)
 			{
@@ -372,9 +377,6 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				RCache.set_c("trample_params", tp_val);
 				RCache.FlushConstants();
 			}
-			auto& items = Object.m_items[render_key][var_id];
-			u32 totalInstances = items.size();
-			if (totalInstances == 0) continue;
 
 			auto it = DetailInstanceBuffers.lower_bound(totalInstances);
 
@@ -405,14 +407,13 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (instanceCount == 0)
 					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
-				static_cast<T*>(pSubRes.pData)[instanceCount++] = Instance;
+				static_cast<CDetail::SlotItem*>(pSubRes.pData)[instanceCount++] = Instance;
 
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
 					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
 					instanceCount = 0; //Reset
-
 				}
 			}
 
@@ -428,10 +429,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	{
 		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
 		{
-		for (CDetail* DPtr : objects)
-		{
-			CDetail& D = *DPtr;
-			RCache.set_Element(D.shader->E[lod_id], 0);
+			for (CDetail* DPtr : objects)
+			{
+				CDetail& D = *DPtr;
+				RCache.set_Element(D.shader->E[lod_id], 0);
 				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
@@ -490,7 +491,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 
 					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
-					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
+					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(CDetail::SlotItem));
 
 					currentBuffer->Unmap();
 					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
