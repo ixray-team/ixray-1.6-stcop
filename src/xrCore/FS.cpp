@@ -475,65 +475,41 @@ void CMultiReader::AppendReader(IReader& reader)
 
 void CMultiReader::advance(intptr_t cnt)
 {
-	R_ASSERT(Pos + cnt >= 0); // we can move backward, right?
-	R_ASSERT(Pos + cnt <= FullSize);
-	Pos += cnt;
-	VERIFY(reader_index < readers.size());
-	if (Pos < readers[reader_index].first)
-	{
-		do
-		{
-			VERIFY(reader_index > 0);
-			reader_index--;
-		} while (Pos < readers[reader_index].first);
-	} else
-	{
-		while (reader_index + 1 < readers.size() && Pos > readers[reader_index + 1].first)
-		{
-			reader_index++;
-		}
-	}
-	readers[reader_index].second->seek(Pos - readers[reader_index].first);
+	seek(Pos + cnt);
 }
 
 void CMultiReader::r(void* p, intptr_t cnt)
 {
-	R_ASSERT(cnt > 0); // we can move backward, right?
-	R_ASSERT(Pos + cnt <= FullSize);
-	auto ElapsedToRead = cnt;
-	auto CurPtr = (u8*)p;
-	while (ElapsedToRead > 0)
+	R_ASSERT(cnt > 0);
+	R_ASSERT(cnt <= elapsed());
+
+	auto Remaining = cnt;
+	auto Destination = static_cast<u8*>(p);
+	while (Remaining > 0)
 	{
-		VERIFY(reader_index < readers.size());
-		auto& reader = readers[reader_index];
-		auto ToRead = std::min(ElapsedToRead, reader.second->elapsed());
-		reader.second->r(CurPtr, ToRead);
-		CurPtr += ToRead;
-		ElapsedToRead -= ToRead;
-		if (reader.second->eof())
-		{
-			reader_index++;
-		}
-		if (!IVERIFY(ElapsedToRead >= 0))
-		{
-			break;
-		}
+		// A previous read may have left another part at an arbitrary offset.
+		seek(Pos);
+		auto& Reader = *readers[reader_index].second;
+		const auto Count = std::min(Remaining, Reader.elapsed());
+		R_ASSERT(Count > 0);
+		Reader.r(Destination, Count);
+		Destination += Count;
+		Remaining -= Count;
+		Pos += Count;
 	}
-	Pos += cnt;
 }
 
 void CMultiReader::seek(intptr_t ptr)
 {
-	R_ASSERT(Pos >= 0); // we can move backward, right?
-	R_ASSERT(Pos <= FullSize);
+	R_ASSERT(ptr >= 0);
+	R_ASSERT(ptr <= FullSize);
+	R_ASSERT(!readers.empty());
+
 	Pos = ptr;
-	for (reader_index = 0; reader_index < readers.size(); reader_index++)
+	reader_index = 0;
+	while (reader_index + 1 < readers.size() && readers[reader_index + 1].first <= Pos)
 	{
-		if (readers[reader_index].first > Pos)
-		{
-			reader_index--;
-			break;
-		}
+		++reader_index;
 	}
 	readers[reader_index].second->seek(Pos - readers[reader_index].first);
 }
