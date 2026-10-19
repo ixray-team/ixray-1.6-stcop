@@ -9,12 +9,10 @@ public:
 #endif
 
 	ThreadID MainThread = NULL;
-	ThreadID SecondaryThread = NULL;
 	size_t MainThreadId = 0;
 
 public:
 	void SetMainThread();
-	bool IsSecondaryThread() const noexcept;
 	bool IsPrimaryThread() const noexcept;
 
 	void SetAsyncLoadThread(bool IsActive);
