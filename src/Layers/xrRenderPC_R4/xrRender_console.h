@@ -6,6 +6,7 @@
 
 // Common
 extern RENDER_API int g_SpotShadowCacheMode;
+extern RENDER_API int g_SunShadowCacheMode;
 extern RENDER_API int g_SpotShadowCacheBudgetMb;
 extern RENDER_API int g_TextureTargetResolution;
 extern RENDER_API	u32			ps_r_sun_shafts;	//=	0;

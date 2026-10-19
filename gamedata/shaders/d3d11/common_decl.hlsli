@@ -112,6 +112,9 @@ cbuffer cb_light : register(b4)
     float4x4 m_shadow;
     float3x4 m_sunmask;
     float4x4 L_dynamic_xform;
+	float4 SunCaptureDirectionDepth[3];
+	float4 SunReceiverWarpBias[3];
+	float4 SunCacheParams;
 };
 
 #endif

@@ -35,7 +35,7 @@ float4 main(PSInput I) : SV_Target
 		Shadow *= shadow_sun(smap_texcoord, cascade_index);
 	}
 	
-	if(cascade_index >= 2)
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 	{
 		float3 Factor = smoothstep(0.5f, 0.49f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;

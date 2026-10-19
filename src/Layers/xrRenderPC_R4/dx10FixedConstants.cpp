@@ -260,13 +260,7 @@ void FixedConstants::UpdateView()
 	cpu_view.scaled_screen_res.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	cpu_view.pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
-	for (int i = 0; i < 3 && !Device.IsEditorMode() && i < (int)RImplementation.m_sun_cascades.size(); ++i)
-	{
-		Fmatrix adj{0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1};
-		Fmatrix xf;
-		xf.mul(adj, RImplementation.m_sun_cascades[i].xform);
-		store_Float4x4(&cpu_light.m_shadow_sun[i * 4], xf);
-	}
+	UpdateSunShadows();
 
 	const R_xforms& x = RCache.xforms;
 	store_Float3x4(cpu_object.m_WV, x.m_wv);
@@ -278,6 +272,21 @@ void FixedConstants::UpdateView()
 	dirty_light = true;
 	BindView();
 }
+void FixedConstants::UpdateSunShadows()
+{
+	cpu_light.SunCacheParams.set(float(RImplementation.GetSunShadowCacheMode()), 0, 0, 0);
+	if (!Device.IsEditorMode())
+	{
+		for (u32 Index = 0; Index < 3; ++Index)
+		{
+			Fmatrix Transform;
+			RImplementation.GetSunShadowConstants(Index, Transform, cpu_light.SunCaptureDirectionDepth[Index], cpu_light.SunReceiverWarpBias[Index]);
+			store_Float4x4(&cpu_light.m_shadow_sun[Index * 4], Transform);
+		}
+	}
+	dirty_light = true;
+}
+
 void FixedConstants::UpdateObject(const Fmatrix& mW)
 {
 	const R_xforms& x = RCache.xforms;
@@ -684,6 +693,12 @@ bool FixedConstants::OnSet(u32 h, const Fvector4& A)
 {
 	switch (h)
 	{
+		case chash("SunCacheParams"):
+		{
+			cpu_light.SunCacheParams = A;
+			dirty_light = true;
+			break;
+		}
 		case chash("L_dynamic_props"):
 		{
 			cpu_object.L_dynamic_props.set(A.x, A.y, A.z, A.w);
@@ -957,6 +972,17 @@ bool FixedConstants::OnSetA(u32 h, u32 e, const Fvector4& A)
 {
 	switch (h)
 	{
+		case chash("SunCaptureDirectionDepth"):
+		case chash("SunReceiverWarpBias"):
+		{
+			if (e < 3)
+			{
+				Fvector4* Values = h == chash("SunCaptureDirectionDepth") ? cpu_light.SunCaptureDirectionDepth : cpu_light.SunReceiverWarpBias;
+				Values[e] = A;
+				dirty_light = true;
+			}
+			break;
+		}
 		case chash("m_plmap_clamp"):
 		{
 			R_ASSERT(e < 2);

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IRenderable.h"
+#include "../../xrEngine/EngineAPI.h"
 
 #include "FBasicVisual.h"
 #include "R_sun_support.h"
@@ -57,6 +58,116 @@ void CRender::init_cacades()
 
  	m_sun_cascades[2].size = 160;
  	m_sun_cascades[2].bias = m_sun_cascades[2].size*fBias;
+	ResetSunShadowCache();
+}
+
+void CRender::ResetSunShadowCache()
+{
+	for (sun::cascade& Cascade : m_sun_cascades)
+	{
+		Cascade.IsValid = false;
+		Cascade.xform.identity();
+		Cascade.CaptureDepthRange = 0;
+		Cascade.CaptureBias = 0;
+		Cascade.CaptureFrame = 0;
+	}
+	for (sun::CascadePreparation& Prepared : PreparedSunCascades)
+	{
+		Prepared.PrepareMilliseconds = 0;
+		Prepared.RenderMilliseconds = 0;
+	}
+	NextSunCascade = 0;
+	LastSunUpdateFrame = u32(-1);
+	SunUpdateCount = 0;
+	SunUpdatedMask = 0;
+	IsSunCacheInitialized = false;
+}
+
+int CRender::GetSunShadowCacheMode() const
+{
+	return Device.IsEditorMode() || !LightingModeIsDynamicRender() ? 0 : g_SunShadowCacheMode;
+}
+
+u32 CRender::GetSunCascadePlacement(u32 Index) const
+{
+	u32 Placement = ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ? 1 : 0;
+	if (Index == 2)
+	{
+		Placement |= Target->need_to_render_sunshafts() ? 2 : 0;
+		Placement |= o.offscreen_reflecitons ? 4 : 0;
+		Placement |= psDeviceFlags.test(rsClearBB) ? 8 : 0;
+	}
+	return Placement;
+}
+
+void CRender::BeginSunShadowFrame()
+{
+	const int Mode = GetSunShadowCacheMode();
+	if (Mode > 0 && LastSunCacheMode == 0)
+	{
+		ResetSunShadowCache();
+	}
+	LastSunCacheMode = Mode;
+	const light* Sun = (light*)Lights.sun_adapted._get();
+	if (Mode > 0 && Sun)
+	{
+		Fvector Direction = Sun->direction;
+		Direction.normalize_safe();
+		const bool HasGap = LastSunUpdateFrame != u32(-1) && Device.dwFrame - LastSunUpdateFrame > 1;
+		for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
+		{
+			sun::cascade& Cascade = m_sun_cascades[Index];
+			const float Size = Index == 2 && psDeviceFlags.test(rsClearBB) ? 1000.f : Cascade.size;
+			if (HasGap || Cascade.CaptureMapSize != o.smapsize || Cascade.CaptureSize != Size ||
+				Cascade.CapturePlacement != GetSunCascadePlacement(Index) || !(Cascade.CaptureDirection.dotproduct(Direction) >= 0.994f))
+			{
+				Cascade.IsValid = false;
+			}
+		}
+	}
+	// Reflections can sample the captures before this frame's sun pass.
+	FixedConstants::UpdateSunShadows();
+}
+
+void CRender::GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const
+{
+	Transform.identity();
+	Capture.set(0, 0, 0, 0);
+	Warp.set(0, 0, 0, 0);
+	if (Index >= m_sun_cascades.size())
+	{
+		return;
+	}
+	const sun::cascade& Cascade = m_sun_cascades[Index];
+	Fmatrix Adjust{0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, Cascade.CaptureBias, 1};
+	Transform.mul(Adjust, Cascade.xform);
+	Capture.set(Cascade.CaptureDirection.x, Cascade.CaptureDirection.y, Cascade.CaptureDirection.z, Cascade.IsValid ? Cascade.CaptureDepthRange : 0.f);
+	Warp.w = Cascade.CaptureBias;
+	const light* Sun = (light*)Lights.sun_adapted._get();
+	if (GetSunShadowCacheMode() == 2 && Cascade.IsValid && Sun)
+	{
+		Fvector Direction = Sun->direction;
+		Direction.normalize_safe();
+		const float Cosine = Cascade.CaptureDirection.dotproduct(Direction);
+		Fvector Difference;
+		Difference.sub(Direction, Cascade.CaptureDirection);
+		if (Cosine >= 0.994f && Difference.square_magnitude() > 1e-12f)
+		{
+			Direction.mul(-1.f / Cosine).add(Cascade.CaptureDirection);
+			Warp.set(Direction.x, Direction.y, Direction.z, Cascade.CaptureBias);
+		}
+	}
+}
+
+void CRender::DumpSunShadowCache() const
+{
+	Msg("* sun shadow cache: mode=%d updates=%u last_frame=%u rendered_mask=%u next=%u", GetSunShadowCacheMode(), SunUpdateCount, LastSunUpdateFrame, SunUpdatedMask, NextSunCascade + 1);
+	for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
+	{
+		const sun::cascade& Cascade = m_sun_cascades[Index];
+		const sun::CascadePreparation& Prepared = PreparedSunCascades[Index];
+		Msg("* sun cascade %u: valid=%d capture_frame=%u age=%u prepare_cpu=%.3fms render_cpu=%.3fms", Index + 1, Cascade.IsValid, Cascade.CaptureFrame, Device.dwFrame - Cascade.CaptureFrame, Prepared.PrepareMilliseconds, Prepared.RenderMilliseconds);
+	}
 }
 
 void CRender::render_sun_cascades()
@@ -82,13 +193,34 @@ void CRender::render_sun_cascades()
 		0.f, 0.f, (float)RImplementation.o.smapsize, (float)RImplementation.o.smapsize, 0.f, 1.f
 	};
 
-	GRHI->SetViewport(viewport);
-
-	for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+	const bool IsCached = GetSunShadowCacheMode() > 0;
+	if (!IsCached || LastSunUpdateFrame != Device.dwFrame)
 	{
-		render_sun_cascade(i);
+		GRHI->SetViewport(viewport);
+		for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
+		{
+			PreparedSunCascades[Index].RenderMilliseconds = 0;
+			// Placement rays are chained even when a depth slice is reused.
+			PrepareSunCascade(Index);
+		}
+
+		const bool ShouldRenderAll = !IsCached || !IsSunCacheInitialized;
+		SunUpdatedMask = 0;
+		for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
+		{
+			if (ShouldRenderAll || Index == NextSunCascade)
+			{
+				render_sun_cascade(Index);
+				SunUpdatedMask |= 1u << Index;
+			}
+		}
+		NextSunCascade = ShouldRenderAll ? 0 : (NextSunCascade + 1) % 3;
+		IsSunCacheInitialized = true;
+		LastSunUpdateFrame = Device.dwFrame;
+		++SunUpdateCount;
 	}
 
+	FixedConstants::UpdateSunShadows();
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);
@@ -97,6 +229,9 @@ void CRender::render_sun_cascades()
 	viewport.Height = (float)RCache.get_height();
 
 	GRHI->SetViewport(viewport);
+	// Detach the array DSV before any lighting pass binds its SRV.
+	Target->phase_accumulator();
+	GRHI->ApplyRenderTargetChange();
 	Target->accum_direct_cascade();
 
 	if (b_need_to_render_sunshafts)
@@ -111,14 +246,15 @@ void CRender::render_sun_cascades()
 	}
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+void CRender::PrepareSunCascade(u32 Index)
 {
-	PROF_EVENT("Render Cascade");
+	CTimer PrepareTimer;
+	PrepareTimer.Start();
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
 
 	Fvector cam_dir = Device.vCameraDirection;
 
-	if (cascade_ind == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
+	if (Index == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
 	{
 		cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
 	}
@@ -177,7 +313,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			t_cuboid light_cuboid;
 			{
 				// Initialize the first cascade rays, then each cascade will initialize rays for next one.
-				if (cascade_ind == 0 || m_sun_cascades[cascade_ind].reset_chain)
+				if (Index == 0 || m_sun_cascades[Index].reset_chain)
 				{
 					Fvector3				near_p, edge_vec;
 					for (int p = 0; p < 4; p++)
@@ -192,7 +328,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 					}
 				}
 				else
-					light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
+					light_cuboid.view_frustum_rays = m_sun_cascades[Index].rays;
 
 				light_cuboid.view_ray.P = Device.vCameraPosition;
 				light_cuboid.view_ray.D = cam_dir;
@@ -205,9 +341,10 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			light_top_plane.build_unit_normal(L_pos, L_dir);
 			float dist = light_top_plane.classify(Device.vCameraPosition);
 
-			float map_size = m_sun_cascades[cascade_ind].size;
+			float map_size = m_sun_cascades[Index].size;
 
 			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size);
+			PreparedSunCascades[Index].DepthRange = dist + 1.41421f * map_size - 0.1f;
 
 			// build viewport xform
 			float	view_dim = float(RImplementation.o.smapsize);
@@ -241,21 +378,25 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 
 			Fvector lightXZshift;
-			light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
+			light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[Index].size, m_sun_cascades[Index].reset_chain);
 			Fvector proj_view = cam_dir;
 			proj_view.y = 0;
 			proj_view.normalize();
 			//			lightXZshift.mad(proj_view, 20);
 
 						// Initialize rays for the next cascade
-			if (cascade_ind < m_sun_cascades.size() - 1)
-				m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
+			if (Index < m_sun_cascades.size() - 1)
+			{
+				m_sun_cascades[Index + 1].rays = light_cuboid.view_frustum_rays;
+			}
 
 #ifdef	_DEBUG
 			static bool draw_debug = false;
-			if (draw_debug && cascade_ind == 0)
+			if (draw_debug && Index == 0)
+			{
 				for (u32 it = 0; it < cull_planes.size(); it++)
 					RImplementation.Target->dbg_addplane(cull_planes[it], it * 0xFFF);
+			}
 #endif
 
 			Fvector cam_shifted = L_pos;
@@ -309,15 +450,25 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 				cull_xform.mulB_44(adjust);
 			}
 
-			m_sun_cascades[cascade_ind].xform = cull_xform;
-
-			s32		limit = RImplementation.o.smapsize - 1;
-			fuckingsun->X.D.minX = 0;
-			fuckingsun->X.D.maxX = limit;
-			fuckingsun->X.D.minY = 0;
-			fuckingsun->X.D.maxY = limit;
 		}
 	}
+	PreparedSunCascades[Index].Transform = cull_xform;
+	PreparedSunCascades[Index].CullPosition = cull_COP;
+	PreparedSunCascades[Index].PrepareMilliseconds = PrepareTimer.GetElapsed_sec() * 1000.f;
+}
+
+void CRender::render_sun_cascade(u32 cascade_ind)
+{
+	PROF_EVENT("Render Cascade");
+	GPU_EVENT(RenderSunCascade);
+	CTimer RenderTimer;
+	RenderTimer.Start();
+	const sun::CascadePreparation& Prepared = PreparedSunCascades[cascade_ind];
+	light* fuckingsun = (light*)Lights.sun_adapted._get();
+	Fmatrix cull_xform = Prepared.Transform;
+	Fvector cull_COP = Prepared.CullPosition;
+	fuckingsun->X.D.minX = fuckingsun->X.D.minY = 0;
+	fuckingsun->X.D.maxX = fuckingsun->X.D.maxY = o.smapsize - 1;
 
 	// Begin SMAP-render
 	{
@@ -335,6 +486,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		// Finalize & Cleanup
 		fuckingsun->X.D.combine = cull_xform;
 
+		RCache.set_Textures(&SunShadowEmptyTextures);
+		GRHI->ShaderResourceCache->Apply();
+		Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
+		GRHI->ApplyRenderTargetChange();
+		// Empty captures must discard the previous slice as well.
+		GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+
 		// Render shadow-map
 		//. !!! We should clip based on shrinked frustum (again)
 		{
@@ -343,8 +501,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			if (bNormal || bSpecial)
 			{
-				GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-				Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
 				RCache.set_xform_world(Fidentity);
 				RCache.set_xform_view(Fidentity);
 
@@ -374,4 +530,16 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		r_pmask(true, false);
 	}
 
+	sun::cascade& Cascade = m_sun_cascades[cascade_ind];
+	Cascade.xform = Prepared.Transform;
+	Cascade.CaptureDirection = fuckingsun->direction;
+	Cascade.CaptureDirection.normalize_safe();
+	Cascade.CaptureDepthRange = Prepared.DepthRange;
+	Cascade.CaptureBias = Cascade.bias;
+	Cascade.CaptureSize = Cascade.size;
+	Cascade.CaptureMapSize = o.smapsize;
+	Cascade.CapturePlacement = GetSunCascadePlacement(cascade_ind);
+	Cascade.CaptureFrame = Device.dwFrame;
+	Cascade.IsValid = true;
+	PreparedSunCascades[cascade_ind].RenderMilliseconds = RenderTimer.GetElapsed_sec() * 1000.f;
 }

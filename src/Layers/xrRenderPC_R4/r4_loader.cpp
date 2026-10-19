@@ -29,6 +29,7 @@ using namespace FVF;
 
 void CRender::level_Load(IReader* fs)
 {
+	ResetSunShadowCache();
 	if (Target)
 	{
 		Target->InvalidateSpotShadowCache();
@@ -310,6 +311,7 @@ void CRender::LoadPlanars()
 
 void CRender::level_Unload()
 {
+	ResetSunShadowCache();
 	if (0==g_pGameLevel)		return;
 	if (!b_loaded)				return;
 	if (Target)
