@@ -37,16 +37,17 @@ CHudInitializer::~CHudInitializer()
 	}
 }
 
-void CHudInitializer::SetHudMode()
+void CHudInitializer::SetHudMode(bool IsCameraRelative)
 {
-	Device.mView.set(Device.mView_hud);
+	// Light positions and volumes stay in world space for spatial queries and shadow maps.
+	Device.mView.set(IsCameraRelative ? Device.mView_hud : Device.mView_saved);
 	Device.mProject.set(Device.mProject_hud);
-	Device.mFullTransform.set(Device.mFullTransform_hud);
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
 
-	if(Device.m_pRender) 
+	if (Device.m_pRender)
 	{
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-		Device.m_pRender->SetCacheXformOld(Device.mView_hud_old, Device.mProject_hud_old);
+		Device.m_pRender->SetCacheXformOld(IsCameraRelative ? Device.mView_hud_old : Device.mView_old, Device.mProject_hud_old);
 	}
 
 	if (b_ajust)
@@ -66,7 +67,7 @@ void CHudInitializer::SetDefaultMode()
 	Device.mProject.set(s_mProject_saved);
 	Device.mFullTransform.set(s_mFullTransform_saved);
 
-	if(Device.m_pRender) 
+	if(Device.m_pRender)
 	{
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);

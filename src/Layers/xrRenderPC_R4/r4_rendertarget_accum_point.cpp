@@ -21,7 +21,7 @@ void CRenderTarget::accum_point		(light* L)
 
 	if(L->flags.bHudMode) 
 	{
-		initalizer.SetHudMode();
+		initalizer.SetHudMode(false);
 	}
 
 	// Common

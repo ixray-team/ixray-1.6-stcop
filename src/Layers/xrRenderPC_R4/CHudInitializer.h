@@ -5,7 +5,7 @@ public:
 	CHudInitializer(bool, bool = false);
 	~CHudInitializer();
 
-	void SetHudMode();
+	void SetHudMode(bool IsCameraRelative = true);
 	void SetDefaultMode();
 private:
 	bool b_auto_setup;
