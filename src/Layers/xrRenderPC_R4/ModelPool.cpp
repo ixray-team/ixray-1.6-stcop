@@ -291,19 +291,24 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 		// 1. Search for already loaded model (reference, base model)
 		dxRender_Visual* Base		= Instance_Find		(low_name);
 
-		if (nullptr==Base){
+		if (nullptr==Base)
+		{
 			// 2. If not found
 			bAllowChildrenDuplicate	= false;
 			if (data)		Base = Instance_Load(low_name,data,true);
             else			Base = Instance_Load(low_name,true);
 			bAllowChildrenDuplicate	= true;
-			if (Device.IsEditorMode() && !Base)		return nullptr;
 		}
         // 3. If found - return (cloned) reference
-        dxRender_Visual*		Model	= Instance_Duplicate(Base);
-        Registry.insert		( std::make_pair(Model,low_name) );
-        return				Model;
+		if (Base)
+		{
+			dxRender_Visual* Model = Instance_Duplicate(Base);
+			Registry.insert(std::make_pair(Model, low_name));
+			return Model;
+		}
 	}
+
+	return nullptr;
 }
 
 dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
