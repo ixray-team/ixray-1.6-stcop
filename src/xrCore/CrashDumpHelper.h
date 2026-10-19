@@ -7,10 +7,10 @@ namespace CrashDumpHelper
 {
 	// In the executable entry, before anything else: runs the helper and returns true if this process is one
 	XRCORE_API bool RunIfRequested();
-	// Starts the helper of this process once the logs folder is known (xrCore::_initialize)
+	// Starts the helper of this process once the logs folder is known (after CApplication::InitEngine).
 	XRCORE_API void Start();
 	// From the unhandled exception filter: the helper writes a small dump with the stacks, then a full one.
-	// False if there is no helper or it did not answer: the caller writes the dump itself.
+	// False if the helper is unavailable or could not write any dump: the caller writes the dump itself.
 	bool Write(void* ExceptionPointers);
 }
 
