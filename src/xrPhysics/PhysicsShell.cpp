@@ -69,6 +69,20 @@ CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_stat
 	//m_pPhysicsShell->SmoothElementsInertia(0.3f);
 	pPhysicsShell->SetAirResistance();//0.0014f,1.5f
 
+	u16 joints_size = pPhysicsShell->get_JointsNumber();
+	if (joints_size > 0)
+	{
+		for (u16 j_idx = 0; j_idx < joints_size; j_idx++)
+		{
+			CPhysicsJoint* J = pPhysicsShell->get_JointByStoreOrder(j_idx);
+			if (J->IsWheelJoint())
+			{
+				pPhysicsShell->SetPrefereExactIntegration();
+				break;
+			}
+		}
+	}
+
 	return pPhysicsShell;
 }
 
@@ -148,11 +162,11 @@ CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state, c
 	return P_build_Shell	(obj,not_active_state,f_bones);
 }
 
-static BONE_P_MAP bone_map=BONE_P_MAP();
+thread_local BONE_P_MAP bone_map=BONE_P_MAP();
 CPhysicsShell*	P_build_Shell	( IPhysicsShellHolder* obj, bool not_active_state, U16Vec& fixed_bones )
 {
-	bone_map.clear			();
-	CPhysicsShell*			pPhysicsShell = 0;
+	bone_map.clear();
+	CPhysicsShell* pPhysicsShell = 0;
 	if(!fixed_bones.empty())
 		for ( U16It it=fixed_bones.begin(); it!=fixed_bones.end(); it++ )
 			bone_map.insert( std::make_pair( *it, physicsBone() ) );
@@ -160,8 +174,6 @@ CPhysicsShell*	P_build_Shell	( IPhysicsShellHolder* obj, bool not_active_state, 
 
 	// fix bones
 	BONE_P_PAIR_IT i=bone_map.begin(), e=bone_map.end();
-	if( i!=e ) 
-		pPhysicsShell->SetPrefereExactIntegration();
 	for(;i!=e;i++)
 	{
 		CPhysicsElement* fixed_element=i->second.element;
