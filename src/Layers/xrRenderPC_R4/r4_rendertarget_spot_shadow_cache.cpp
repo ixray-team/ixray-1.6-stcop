@@ -299,29 +299,6 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 	}
 	else
 	{
-		// Camera-near portal flags must not become permanent input to a cached view.
-		xr_vector<CPortal*> DualPortals;
-		for (IRender_Portal* Interface : Renderer.Portals)
-		{
-			CPortal* Portal = static_cast<CPortal*>(Interface);
-			if (Portal->bDualRender)
-			{
-				DualPortals.push_back(Portal);
-				Portal->bDualRender = false;
-			}
-		}
-		auto RestorePortalsLambda = [&]
-		{
-			for (IRender_Portal* Interface : Renderer.Portals)
-			{
-				static_cast<CPortal*>(Interface)->bDualRender = false;
-			}
-			for (CPortal* Portal : DualPortals)
-			{
-				Portal->bDualRender = true;
-			}
-		};
-		xr_scope_exit RestorePortals(std::move(RestorePortalsLambda));
 		Renderer.r_dsgraph_render_subspace(Entry.Key.Sector, &Frustum, Source.X.S.combine, Source.position, R_dsgraph_structure::SubspaceGeometry::StaticOnly, true);
 		++SpotShadowStatistics.Classifications;
 	}

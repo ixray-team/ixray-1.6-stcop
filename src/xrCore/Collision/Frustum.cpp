@@ -100,11 +100,9 @@ CFrustum& CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, 
 		P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
 	}
 
-	// Base creation
+	// Base creation. The portal plane is not a near plane: geometry of the sector behind the
+	// portal may stick out through the opening towards the viewer
 	CreateFromPoints(poly->begin(), poly->size(), vBase);
-
-	// Near clipping plane
-	_add(P);
 
 	// Far clipping plane
 	Fmatrix& M = mFullXFORM;
