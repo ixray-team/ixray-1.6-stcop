@@ -37,7 +37,7 @@ void CRenderTarget::accum_spot(light* L)
 
 	if(L->flags.bHudMode) 
 	{
-		initalizer.SetHudMode();
+		initalizer.SetHudMode(false);
 	}
 
 	bool	bIntersect = false; //enable_scissor(L);

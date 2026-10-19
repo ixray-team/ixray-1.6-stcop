@@ -1032,7 +1032,9 @@ void CWatchDevice::SyncLedLight(u32 Index)
 		1.0f
 	);
 
-	Led.Light->set_position(Led.Anchor.c);
+	Fvector LightPosition;
+	LightPosition.add(Led.Anchor.c, Device.vCameraPosition);
+	Led.Light->set_position(LightPosition);
 	Led.Light->set_color(Color);
 	Led.Light->set_range(std::max(0.0f, Present.LightRange));
 	if (!Led.Light->get_active())
