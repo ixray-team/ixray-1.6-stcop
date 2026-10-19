@@ -163,23 +163,23 @@ void XRay::RayTrace::GPU::BuildScene(GpuScene& Scene)
     else if (gCompilerMode.builder_type == LCBuildingType::eDO)
     {
        auto GlobalData = &gl_data;
-       
+
         // 1. Обрабатываем статическую геометрию
        for (auto& FaceData : GlobalData->building_embree_faces)
        {
            u16 SurfaceID = GlobalData->g_materials[FaceData.dwMaterial].surfidx;
            b_texture& Texture = GlobalData->g_textures[SurfaceID];
-       
+
            bool IsTransparent = (!Texture.pSurface.Empty() && Texture.bHasAlpha);
            FaceData.bOpaque = !IsTransparent;
            GeometryBuilder.AddFace(&FaceData, FaceData.v1, FaceData.v2, FaceData.v3, 0);
        }
     }
- 
-    GeometryBuilder.RemoveDublicates();  
+
+    GeometryBuilder.RemoveDublicates();
     GeometryBuilder.RemoveDublicateFaces();
     Msg("*[GPU Accel Structure] Collected Structure Faces Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
-  
+
     Fbox SceneBox;
     SceneBox.invalidate();
     for (const Fvector& Vertex : GeometryBuilder.vertices)
@@ -396,9 +396,9 @@ void XRay::RayTrace::GPU::CapturePreviewMU()
 		return;
 	}
 
-	xr_hash_map<_vertex*, u32> VertIndex;
-	xrMU_Model* CachedModel = nullptr;
-	u32 Painted = 0;
+	CTimer CaptureTimer;
+	CaptureTimer.Start();
+	xr_hash_map<xrMU_Model*, xr_vector<size_t>> TrianglesByModel;
 
 	for (size_t Index = 0; Index < PreviewMuRefs.size(); ++Index)
 	{
@@ -413,42 +413,56 @@ void XRay::RayTrace::GPU::CapturePreviewMU()
 			continue;
 		}
 
-		if (Ref->model != CachedModel)
-		{
-			VertIndex.clear();
-			VertIndex.reserve(Ref->model->m_vertices.size());
-			for (u32 VertexIndex = 0; VertexIndex < Ref->model->m_vertices.size(); ++VertexIndex)
-			{
-				VertIndex[Ref->model->m_vertices[VertexIndex]] = VertexIndex;
-			}
-			CachedModel = Ref->model;
-		}
+		TrianglesByModel[Ref->model].push_back(Index);
+	}
 
-		u8 Tmp[9];
-		bool Ok = true;
-		for (int Corner = 0; Corner < 3; ++Corner)
+	// GPU face deduplication sorts by geometry, interleaving models and references.
+	// Index each model once and keep only one vertex lookup alive at a time.
+	xr_hash_map<_vertex*, u32> VertIndex;
+	u32 Painted = 0;
+	u32 ModelsIndexed = 0;
+	for (const auto& ModelTriangles : TrianglesByModel)
+	{
+		const xrMU_Model& Model = *ModelTriangles.first;
+		VertIndex.clear();
+		VertIndex.reserve(Model.m_vertices.size());
+		for (u32 VertexIndex = 0; VertexIndex < Model.m_vertices.size(); ++VertexIndex)
 		{
-			auto It = VertIndex.find(FacePtr->v[Corner]);
-			if (It == VertIndex.end() || It->second >= Ref->color.size())
-			{
-				Ok = false;
-				break;
-			}
-			EncodeBaked(Ref->color[It->second], Tmp + Corner * 3);
+			VertIndex[Model.m_vertices[VertexIndex]] = VertexIndex;
 		}
-		if (!Ok)
-		{
-			continue;
-		}
+		++ModelsIndexed;
+		AditionalData("[Preview] GPU MU: model %u/%u", ModelsIndexed, (u32)TrianglesByModel.size());
 
-		u8* Dst = &PreviewCornerRgb[Index * 9];
-		for (int Channel = 0; Channel < 9; ++Channel)
+		for (size_t Index : ModelTriangles.second)
 		{
-			Dst[Channel] = Tmp[Channel];
+			const xrMU_Reference& Ref = *PreviewMuRefs[Index];
+			const _face& Face = *PreviewMuFaces[Index];
+			u8 Tmp[9];
+			bool IsValid = true;
+			for (int Corner = 0; Corner < 3; ++Corner)
+			{
+				auto It = VertIndex.find(Face.v[Corner]);
+				if (It == VertIndex.end() || It->second >= Ref.color.size())
+				{
+					IsValid = false;
+					break;
+				}
+				EncodeBaked(Ref.color[It->second], Tmp + Corner * 3);
+			}
+			if (!IsValid)
+			{
+				continue;
+			}
+
+			u8* Dst = &PreviewCornerRgb[Index * 9];
+			for (int Channel = 0; Channel < 9; ++Channel)
+			{
+				Dst[Channel] = Tmp[Channel];
+			}
+			++Painted;
 		}
-		++Painted;
 	}
 
 	PublishLightPreviewColors(PreviewCornerRgb);
-	Msg("[Preview] GPU MU: %u triangles painted", Painted);
+	Msg("[Preview] GPU MU: %u triangles painted, %u models indexed, %.3fs", Painted, ModelsIndexed, CaptureTimer.GetElapsed_sec());
 }
