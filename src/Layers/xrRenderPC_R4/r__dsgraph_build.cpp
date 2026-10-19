@@ -12,6 +12,7 @@
 #include "ParticleEffect.h"
 #include "newproject_dsgraph_constants.h"
 #include "dx10StateUtils.h"
+#include "StaticTraversalStats.h"
 
 using namespace R_dsgraph;
 
@@ -544,11 +545,21 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		return;
 	}
 
-	if (pVisual->vis.marker == RI.marker)	
+	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
+	if (Stats)
+	{
+		++Stats->InsertCalls;
+	}
+
+	if (pVisual->vis.marker == RI.marker)
 	{
 		if (SpotShadowPass && !SpotShadowBuild)
 		{
 			++SpotShadowDuplicateSkips;
+		}
+		if (Stats)
+		{
+			++Stats->InsertDuplicates;
 		}
 		return;
 	}
@@ -565,6 +576,10 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	float SSA = SpotShadowBuild ? 1.f : CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
 	if (!SpotShadowBuild && SSA <= r_ssaDISCARD)
 	{
+		if (Stats)
+		{
+			++Stats->InsertDiscarded;
+		}
 		return;
 	}
 
@@ -581,9 +596,13 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 
 	// Select shader
 	ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ);
-	if (!sh) 
+	if (!sh)
 	{
 		return;
+	}
+	if (Stats)
+	{
+		++Stats->Inserted;
 	}
 	if (SpotShadowBuild && SpotShadowBuild->CollectOnly)
 	{
@@ -843,21 +862,50 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 	//PROF_EVENT("add_leafs_Static")
 	CRender& RI = RImplementation;
 	float fog_distance = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
 	for(dxRender_Visual* pVisual : children)
 	{
 		vis_data& vis = pVisual->vis;
+		if (Stats)
+		{
+			++Stats->Visited;
+		}
 		if (FullDetailRejectStatic(pVisual))
+		{
+			if (Stats)
+			{
+				++Stats->RejectFullDetail;
+			}
 			continue;
+		}
 
 		if (RI.phase == CRender::PHASE_NORMAL)
 		if (!RI.HOM.visible(vis))
+		{
+			if (Stats)
+			{
+				++Stats->RejectHOM;
+			}
 			continue;
+		}
 
 		if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, RI.phase == CRender::PHASE_SMAP, *RI.val_pTransform))
+		{
+			if (Stats)
+			{
+				++Stats->RejectValuable;
+			}
 			continue;
+		}
 
 		if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_distance + vis.sphere.R))
+		{
+			if (Stats)
+			{
+				++Stats->RejectFog;
+			}
 			continue;
+		}
 
 		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 
@@ -866,6 +914,10 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		{
 			case MT_HIERRARHY:
 			{
+				if (Stats)
+				{
+					++Stats->FullHierarchies;
+				}
 				// Add all children, doesn't perform any tests
 				add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
 			}continue;
@@ -919,8 +971,17 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 	}
 	//PROF_EVENT("add_Static")
+	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
+	if (Stats)
+	{
+		++Stats->Visited;
+	}
 	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, phase == CRender::PHASE_SMAP, *val_pTransform))
 	{
+		if (Stats)
+		{
+			++Stats->RejectValuable;
+		}
 		return;
 	}
 
@@ -936,17 +997,41 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		VIS = View->testSAABB	(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
 	}
 
-	if (fcvNone==VIS)		
+	if (fcvNone==VIS)
+	{
+		if (Stats)
+		{
+			++Stats->RejectFrustum;
+		}
 		return;
+	}
 
 	if (FullDetailRejectStatic(pVisual))
+	{
+		if (Stats)
+		{
+			++Stats->RejectFullDetail;
+		}
 		return;
+	}
 	if(phase==CRender::PHASE_NORMAL)
 	if (!RImplementation.HOM.visible(vis))
+	{
+		if (Stats)
+		{
+			++Stats->RejectHOM;
+		}
 		return;
+	}
 
 	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_cull_distance() + vis.sphere.R))
+	{
+		if (Stats)
+		{
+			++Stats->RejectFog;
+		}
 		return;
+	}
 
 	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 
@@ -960,11 +1045,19 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 		if (fcvPartial == VIS)
 		{
+			if (Stats)
+			{
+				++Stats->PartialHierarchies;
+			}
 			for (dxRender_Visual* V : pV->children)
 				add_Static(V, planes);
 		}
 		else
 		{
+			if (Stats)
+			{
+				++Stats->FullHierarchies;
+			}
 			add_leafs_Static(pV->children);
 		}
 		}return;
