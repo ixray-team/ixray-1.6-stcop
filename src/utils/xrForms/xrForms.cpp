@@ -681,7 +681,7 @@ void Startup(LPSTR lpCmdLine)
 	for (auto& I : GetIterationData())
 	{
 		clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time).c_str());
-	} 
+	}
 
 	// Close log
 	xrLogger::FlushLog();
