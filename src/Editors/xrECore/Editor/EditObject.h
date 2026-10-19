@@ -78,23 +78,104 @@ public:
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
 	ref_shader		_ShaderInstanced();
+	
+	IC const char* _Name() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_Name;}
+	IC const char* _ShaderName() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_ShaderName;}
+	IC const char* _GameMtlName() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_GameMtlName;}
+	IC const char* _ShaderXRLCName() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_ShaderXRLCName;}
+	IC const char* _Texture() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_Texture;}
 
-	IC void			SetShader		(const char* name)
+	IC bool IsSharedMode() { return UseShared; }
+	IC Flags32& _flags() { IVERIFY(m_pData.second); return m_pData.second->m_Flags;}
+	IC Flags32 _flags() const { if(!IVERIFY(m_pData.second)) {return {};} return m_pData.second->m_Flags;}
+	IC void SetSharedData(SSurfaceData* Data)
 	{
-		R_ASSERT2(name&&name[0],"Empty shader name."); 
-		m_ShaderName=name; 
-#if 1
-		OnDeviceDestroy(); 
-#endif
+		if(Data)
+		{
+			if(!UseShared)
+			{
+				xr_delete(m_pData.second);
+			}
+			UseShared = true;
+			UseSharedPrev = true;
+			m_pData.second = Data;
+			m_pData.first = Data->m_Name;
+		} else
+		{
+			if(!UseShared && m_pData.second)
+			{
+				xr_delete(m_pData.second);
+			}
+			m_pData.second = new SSurfaceData();
+			UseShared = false;
+			UseSharedPrev = false;
+		}
 	}
-	IC void			SetTexture		(const char* name){string512 buf; xr_strcpy(buf, sizeof(buf), name); if(strext(buf)) *strext(buf)=0; m_Texture=buf;}
-#if 1
-	IC u32			_GameMtl		()const	{return PGMLib->GetMaterialID	(*m_GameMtlName);}
-	IC void			OnDeviceCreate	()
+	IC void SetName(const char* name){if(IVERIFY(m_pData.second)) { m_pData.second->m_Name=name;} m_pData.first = name;}
+	
+	IC void SetShader(const char* name)
+	{
+		if(!IVERIFY(m_pData.second))
+		{
+			return;
+		}
+		R_ASSERT2(name&&name[0],"Empty shader name."); 
+		m_pData.second->m_ShaderName=name; 
+		OnDeviceDestroy(); 
+	}
+	IC void SetShaderXRLC(const char* name)
+	{
+		if(!IVERIFY(m_pData.second))
+		{
+			return;
+		}
+		m_pData.second->m_ShaderXRLCName=name;
+	}
+	IC void	SetGameMtl(const char* name)
+	{
+		if(!IVERIFY(m_pData.second))
+		{
+			return;
+		}
+		m_pData.second->m_GameMtlName=name;
+	}
+	IC void	SetTexture(const char* name)
+	{
+		if(!IVERIFY(m_pData.second))
+		{
+			return;
+		}
+		string512 buf; 
+		xr_strcpy(buf, sizeof(buf), name); 
+		if(strext(buf))
+		{
+			*strext(buf)=0;
+		}
+		m_pData.second->m_Texture=buf;
+	}
+	IC u32 _GameMtl() const
+	{
+		if(!IVERIFY(m_pData.second))
+		{
+			return GAMEMTL_NONE_ID;
+		}
+		return PGMLib->GetMaterialID(*m_pData.second->m_GameMtlName);
+	}
+	IC void	OnDeviceCreate()
 	{ 
+		if(!IVERIFY(m_pData.second))
+		{
+			return;
+		}
 		R_ASSERT(!m_RTFlags.is(rtValidShader));
-		if (m_ShaderName.size()&&m_Texture.size())	m_Shader.create(*m_ShaderName,*m_Texture); 
-		else                                       	m_Shader.create("editor\\wire");
+		if (m_pData.second->m_ShaderName.size() && m_pData.second->m_Texture.size())
+		{
+			m_Shader.create(_ShaderName(), _Texture());
+		}
+		else
+		{
+			m_Shader.create("editor\\wire");
+		}
 		m_RTFlags.set(rtValidShader,true);
 	}
 	IC void			ShareShaderFrom	(CSurface* surf)
@@ -116,8 +197,6 @@ public:
 	{
 		return !m_RTFlags.is(rtValidShader);
 	}
-
-#endif
 };
 
 using SurfaceVec = xr_vector<CSurface*>;
@@ -153,9 +232,7 @@ class ECORE_API CEditableObject :
 	friend class TfrmEditLibrary;
 	friend class MeshExpUtility;
 
-#if 1
 	ref_geom 		vs_SkeletonGeom;
-#endif
 // desc
 	shared_str 		m_CreateName;
 	__time32_t			m_CreateTime;
@@ -226,7 +303,10 @@ protected:
 
 	void   OnChangeTransform		(PropValue* prop);
 	void  	OnChangeShader			(PropValue* prop);
+	void OnChangeSharedMode(PropValue* sender);
+	void OnChangeSharedMaterial(PropValue* sender);
 public:
+	void OnBatchProcessMaterial(ButtonValue* value, bool& bModif, bool& bSafe);
 	enum{
 		LS_RBUFFERS	= (1<<0),
 	};
@@ -350,7 +430,7 @@ public:
 	bool 			Load					(IReader&);
 	void 			Save					(IWriter&);
 	IC void			SetLoadInfo				(const char* fname, time_t version) { m_LoadName = fname; m_ObjectVersion = version; }
-#if 1
+
 	void 			FillMotionList			(const char* pref, ListItemsVec& items, int modeID);
 	void 			FillBoneList			(const char* pref, ListItemsVec& items, int modeID);
 	void			FillSurfaceList			(const char* pref, ListItemsVec& items, int modeID);
@@ -358,7 +438,6 @@ public:
 	void 			FillBasicProps			(const char* pref, PropItemVec& items);
 	void 			FillSummaryProps		(const char* pref, PropItemVec& items);
 	bool			CheckShaderCompatible	();
-#endif
 
 	// contains methods
 	CEditableMesh* 	FindMeshByName			(const char* name, CEditableMesh* Ignore=nullptr);
@@ -478,26 +557,33 @@ private:
 	int m_VertexCount;
 
 };
-//----------------------------------------------------
-#define EOBJ_CURRENT_VERSION		0x0010
-//----------------------------------------------------
-#define EOBJ_CHUNK_OBJECT_BODY		0x7777
-#define EOBJ_CHUNK_VERSION		  	0x0900
-#define EOBJ_CHUNK_REFERENCE     	0x0902
-#define EOBJ_CHUNK_FLAGS           	0x0903
-#define EOBJ_CHUNK_SURFACES			0x0905
-#define EOBJ_CHUNK_SURFACES2		0x0906
-#define EOBJ_CHUNK_SURFACES3		0x0907
-#define EOBJ_CHUNK_EDITMESHES      	0x0910
-#define EOBJ_CHUNK_CLASSSCRIPT     	0x0912
-#define EOBJ_CHUNK_BONES			0x0913
-#define EOBJ_CHUNK_SMOTIONS			0x0916
-#define EOBJ_CHUNK_SURFACES_XRLC	0x0918
-#define EOBJ_CHUNK_BONEPARTS		0x0919
-#define EOBJ_CHUNK_ACTORTRANSFORM	0x0920
-#define EOBJ_CHUNK_BONES2			0x0921
-#define EOBJ_CHUNK_DESC				0x0922
-#define EOBJ_CHUNK_BONEPARTS2		0x0923
-#define EOBJ_CHUNK_SMOTIONS2		0x0924
-#define EOBJ_CHUNK_LODS				0x0925
-#define EOBJ_CHUNK_SMOTIONS3		0x0926
+
+enum class EEditableObjectChunks
+{
+	OBJECT_BODY = 0x7777,
+	VERSION = 0x0900,
+	REFERENCE = 0x0902,
+	FLAGS = 0x0903,
+	SURFACES = 0x0905,
+	SURFACES2 = 0x0906,
+	SURFACES3 = 0x0907,
+	SURFACES_SHARED = 0x0908,
+	EDITMESHES = 0x0910,
+	CLASSSCRIPT = 0x0912,
+	BONES = 0x0913,
+	SMOTIONS = 0x0916,
+	SURFACES_XRLC = 0x0918,
+	BONEPARTS = 0x0919,
+	ACTORTRANSFORM = 0x0920,
+	BONES2 = 0x0921,
+	DESC = 0x0922,
+	BONEPARTS2 = 0x0923,
+	SMOTIONS2 = 0x0924,
+	LODS = 0x0925,
+	SMOTIONS3 = 0x0926,
+};
+
+enum class EEditableObjectVersions
+{
+	Vanilla = 0x0010,
+};

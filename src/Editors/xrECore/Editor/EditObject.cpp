@@ -76,13 +76,8 @@ CSurface::~CSurface()
 
 void CSurface::CopyFrom(CSurface* surf)
 {
-	m_Name = surf->m_Name;
-	m_Texture = surf->m_Texture;
+	m_pData = surf->m_pData;
 	m_VMap = surf->m_VMap;
-	m_ShaderName = surf->m_ShaderName;
-	m_ShaderXRLCName = surf->m_ShaderXRLCName;
-	m_GameMtlName = surf->m_GameMtlName;
-	m_Flags = surf->m_Flags;
 	m_dwFVF = surf->m_dwFVF;
 	m_id = surf->m_id;
 	m_bEditorVisible = surf->m_bEditorVisible;
@@ -91,6 +86,11 @@ void CSurface::CopyFrom(CSurface* surf)
 	m_ShaderInstanced = nullptr;
 	m_RTFlags.set(rtValidShader | rtInstancedShaderTried, false);
 	ImageData.reset();
+	if (!UseShared)
+	{
+		m_pData.second = new SSurfaceData(*m_pData.second);
+		m_pData.first = m_pData.second->m_Name;
+	}
 }
 
 CEditableObject::CEditableObject(const char* name) :
