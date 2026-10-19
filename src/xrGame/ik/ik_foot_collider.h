@@ -67,6 +67,12 @@ class ik_foot_collider
 			ik_pick_query				previous_side_query;
 
 			SIKCollideData				previous_data;
+
+			// last accepted support plane, used to keep the surface stable while it
+			// moves/rotates (no flipping between points or triangles)
+			Fplane						previous_plane;
+			bool						previous_plane_valid;
+			u32							previous_plane_time;
 public:
 			ik_foot_collider			();
 	void	collide						( SIKCollideData &cld,const ik_foot_geom& foot_geom , CGameObject *O, bool foot_step );

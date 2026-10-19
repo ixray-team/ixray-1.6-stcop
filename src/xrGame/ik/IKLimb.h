@@ -14,6 +14,7 @@ class	IKinematics;
 struct	SCalculateData;
 struct	SIKCollideData;
 class	CGameObject;
+class	CObject;
 class	motion_marks;
 class	ik_goal_matrix;
 
@@ -69,6 +70,7 @@ IC				void		AnimGoal			( Fmatrix &gl );
 	
 				float		SwivelAngle			( const Fmatrix &ihip, const SCalculateData& cd );
 				void		GetKnee				( Fvector &knee, const SCalculateData& cd ) const;
+				Fmatrix		GetSupportFrame		( CObject *object, u16 bone ) const;
 				void		GetPickDir			( Fvector &v,  SCalculateData& cd ) const;
 				void		ToeTimeDiff			( Fvector &v, const SCalculateData& cd ) const;
 				void		ToeTimeDiffPredict	( Fvector &v ) const;
@@ -92,6 +94,13 @@ private:
 
 	bool					m_collide;
 	SIKCollideData			collide_data;
+
+	CObject					*m_plant_object;
+	u16						m_plant_bone;
+	Fmatrix					m_plant_xform;
+	bool					m_plant_valid;
+	bool					m_plant_resting;
+	bool					m_plant_rejected;
 
 	ik_anim_state			anim_state;
 	ik_limb_state			sv_state;
