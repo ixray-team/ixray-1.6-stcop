@@ -1239,6 +1239,8 @@ HRESULT	CRender::shader_compile(
 	DWORD Flags,
 	void*& result) 
 {
+	PROF_EVENT("CRender::shader_compile");
+	PROF_EVENT_DYNAMIC(name);
 	D3D_SHADER_MACRO defines[128];
 	int def_it = 0;
 
@@ -1638,18 +1640,25 @@ HRESULT	CRender::shader_compile(
 
 		includer Includer;
 
-		_result = D3DCompile(
-			pSrcData,
-			SrcDataLen,
-			name,
-			defines, &Includer, pFunctionName,
-			pTarget,
-			Flags, 0,
-			&pShaderBuf,
-			&pErrorBuf
-		);
+		{
+			PROF_EVENT("CRender::D3DCompile");
+			PROF_EVENT_DYNAMIC(name);
+			_result = D3DCompile(
+				pSrcData,
+				SrcDataLen,
+				name,
+				defines,
+				&Includer,
+				pFunctionName,
+				pTarget,
+				Flags,
+				0,
+				&pShaderBuf,
+				&pErrorBuf
+			);
+		}
 
-		if(SUCCEEDED(_result))
+		if (SUCCEEDED(_result))
 		{
 			IWriter* file = FS.w_open(file_name);
 			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
