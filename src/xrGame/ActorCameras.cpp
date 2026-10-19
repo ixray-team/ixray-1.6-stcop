@@ -480,7 +480,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	camera_h = CurrentHeight;
 
-	Fvector point = { 0, camera_h + current_ik_cam_shift, 0 };
+	CamPivot = {0, camera_h + current_ik_cam_shift, 0};
 	Fvector dangle = { 0,0,0 };
 	Fmatrix xform;
 	xform.setXYZ(0, r_torso.yaw, 0);
@@ -488,14 +488,14 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	if (this == Level().CurrentControlEntity())
 	{
-		cam_Lookout(xform, point.y);
+		cam_Lookout(xform, CamPivot.y);
 	}
 
 	if (!fis_zero(r_torso.roll))
 	{
-		float radius = point.y * 0.5f;
+		float radius = CamPivot.y * 0.5f;
 		float valid_angle = r_torso.roll / 2.f;
-		calc_point(point, radius, 0, valid_angle);
+		calc_point(CamPivot, radius, 0, valid_angle);
 		dangle.z = (PI_DIV_2 - ((PI + valid_angle) / 2));
 	}
 
@@ -516,20 +516,20 @@ void CActor::cam_Update(float dt, float fFOV)
 			fPrevCamPos = flCurrentPlayerY - 0.2f;
 		}
 
-		point.y += fPrevCamPos - flCurrentPlayerY;
+		CamPivot.y += fPrevCamPos - flCurrentPlayerY;
 	}
 	else 
 	{
 		fPrevCamPos = flCurrentPlayerY;
 	}
 
-	xform.transform_tiny(point);
-	fFOV = UpdateCameraFocus(point, fFOV, dt);
+	xform.transform_tiny(CamPivot);
+	fFOV = UpdateCameraFocus(CamPivot, fFOV, dt);
 
 	if (Level().CurrentEntity() == this)
 	{
 		cam_Active()->f_fov = fFOV;
-		cam_Active()->Update(point, dangle);
+		cam_Active()->Update(CamPivot, dangle);
 	}
 
 	if (Level().CurrentEntity() == this)

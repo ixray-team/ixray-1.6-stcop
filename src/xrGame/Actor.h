@@ -594,7 +594,6 @@ public:
 	bool					CanJump					();
 	bool					CanMove					();
 	float					CameraHeight			();
-	float					CurrentHeight; // Alex ADD: for smooth crouch
 	bool					CanSprint				();
 	bool					CanRun					();
 	void			StopAnyMove				() override;
@@ -624,6 +623,8 @@ public:
 
 	bool					bBlockSprint;
 	u32						m_iKeyFlags = 0;
+	float CurrentHeight; // Alex ADD: for smooth crouch
+	Fvector CamPivot;
 
 public:
 	Fvector					GetMovementSpeed		() const {return NET_SavedAccel;};
