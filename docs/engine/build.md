@@ -31,6 +31,7 @@ Root `CMakeLists.txt`.
 | `IXRAY_USE_R1` | ON | D3D9 static renderer |
 | `IXRAY_USE_R2` | ON | D3D9 dynamic renderer |
 | `IXRAY_UTILS` | OFF | `xrAI`, `xrLC`, `xrCompress`, other tools |
+| `IXRAY_UTILS_OPTIX` | OFF | Require CUDA/OptiX lighting in Windows x64 MSVC `xrLevelBuilder` |
 | `IXRAY_EDITORS` | OFF | `src/Editors` |
 | `IXRAY_PLUGINS` | OFF | Max / Maya |
 | `IXRAY_TESTS` | OFF | `src/test` |
@@ -50,5 +51,40 @@ Defines: Debug = `DEBUG` + `DEBUG_DRAW`. RelWithDebInfo = `DEBUG_DRAW`. Release 
 Unity errors point at the batch, not the `.cpp`. Set `IXRAY_UNITYBUILD=OFF` to map them.
 
 Deps: `src/3rd-party`, `cmake/modules.cmake` (LuaJIT, luabind, ODE, Ogg/Vorbis, FreeType, ImGui, Theora, OpenAL). Windows packages via NuGet. SDL: window and input. Audio playback uses OpenAL.
+
+## xrLevelBuilder CUDA/OptiX
+
+Enable the NVIDIA backend to download its build dependencies automatically:
+
+```powershell
+cmake --preset Utilities-x64-Windows -DIXRAY_UTILS_OPTIX=ON
+cmake --build --preset Utilities-x64-Windows-RelWithDebInfo --target xrLevelBuilder
+```
+
+Without explicit SDK roots, configuration downloads SHA-256-pinned OptiX 9.0.0 headers
+and the NVCC, CRT, CUDA Runtime, NVML development, CCCL and NVVM components of CUDA 13.4.3.
+The NVIDIA release manifest is also pinned by SHA-256.
+They are extracted under `build/x64/Utilities-Windows/_deps/nvidia/`, outside the published
+NuGet packages. No system-wide CUDA installation or GPU is needed to compile PTX.
+MSVC must be supported by the selected CUDA version; use the VS 2022 preset for the
+downloaded CUDA 13.4.3 toolchain. The NVIDIA backend requires a compatible GPU and
+driver at runtime. Use a driver supporting CUDA 13.4 PTX (R615 or newer); the lower
+OptiX 9.0.0 driver minimum alone does not guarantee compatibility with newer PTX.
+
+To use installed SDKs or an offline setup, pass `-DCUDAToolkit_ROOT=<cuda-root>` and
+`-DOptiX_ROOT=<optix-root>` (the directory containing
+`include/`). CUDA must be at least 12.8 and OptiX at least 9. Their accompanying licenses
+must be present; nonstandard layouts can specify `IXRAY_CUDA_LICENSE_FILE` and
+`IXRAY_OPTIX_LICENSE_FILE`. An enabled OptiX backend fails configuration if a required
+dependency is missing. Leave `IXRAY_UTILS_OPTIX=OFF` for CPU-only builds.
+
+Ship `CuTrace.ptx` beside `xrLevelBuilder.exe` and preserve `licenses/NVIDIA/` from the
+build output. Driver DLLs and the `_deps/nvidia/` build directory must not be included in
+the utility archive. CI builds both Debug and RelWithDebInfo with OptiX enabled and
+preserves these runtime files when publishing. GPU execution needs a separate GPU test.
+
+Downloading and using the SDKs is governed by the [CUDA license](https://docs.nvidia.com/cuda/eula/index.html)
+and [OptiX license](https://github.com/NVIDIA/optix-dev/blob/v9.0.0/LICENSE.txt).
+See [NVIDIA distribution requirements](../../doc/NVIDIA-Dependencies.txt) when publishing utilities.
 
 Sources: [root options](../../CMakeLists.txt), [engine targets](../../src/CMakeLists.txt), [sound dependencies](../../src/xrSound/CMakeLists.txt).
