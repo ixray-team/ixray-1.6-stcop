@@ -1,8 +1,8 @@
 #pragma once
 
 #if !defined(IXR_MACOS)
-#include <ngx/nvsdk_ngx.h>
-#include <ngx/nvsdk_ngx_helpers.h>
+#include <nvsdk_ngx.h>
+#include <nvsdk_ngx_helpers.h>
 #endif
 
 class DLSSWrapper
