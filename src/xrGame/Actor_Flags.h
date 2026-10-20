@@ -19,4 +19,4 @@ enum
 };
 
 extern Flags32 psActorFlags;
-extern ICF bool GodMode();	
+extern bool GodMode();	

@@ -1,22 +1,30 @@
+# DXVK Native for Linux: the R4 renderer runs its D3D11 on top of it (SDL3 window).
 if(NOT SDL3_SOURCE_DIR)
     message(FATAL_ERROR "SDL3_SOURCE_DIR not set. Please include SDL3 configuration first.")
 endif()
 
 find_package(Vulkan)
 
+set(DXVK_WSI_ARGS -Dnative_sdl3=enabled -Dnative_sdl2=disabled -Dnative_glfw=disabled)
+
+set(DXVK_REPO    "https://github.com/doitsujin/dxvk.git")
+set(DXVK_TAG     "master")
+set(DXVK_SHALLOW TRUE)
+
 FetchContent_Declare(
     dxvk
-    GIT_REPOSITORY https://github.com/doitsujin/dxvk.git
-    GIT_TAG        master
-    GIT_SHALLOW    TRUE
+    GIT_REPOSITORY ${DXVK_REPO}
+    GIT_TAG        ${DXVK_TAG}
+    GIT_SHALLOW    ${DXVK_SHALLOW}
 )
 
 FetchContent_GetProperties(dxvk)
 FetchContent_GetProperties(SDL3)
 
 if(NOT dxvk_POPULATED)
-    FetchContent_Populate(dxvk)
-    find_program(MESON meson REQUIRED)
+FetchContent_Populate(dxvk)
+
+find_program(MESON meson REQUIRED)
     
     set(SDL3_PC_DIR "${SDL3_BINARY_DIR}/pkgconfig")
     file(MAKE_DIRECTORY ${SDL3_PC_DIR})
@@ -24,9 +32,6 @@ if(NOT dxvk_POPULATED)
     if(WIN32)
         set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/SDL3-shared${CMAKE_STATIC_LIBRARY_SUFFIX}")
         set(MESON_EXTRA_ARGS "")
-    elseif(APPLE)
-        set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/libSDL3-shared.dylib")
-        set(MESON_EXTRA_ARGS "-Dcpp_args=-D__unix__")
     else()
         set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/libSDL3-shared.so")
         set(MESON_EXTRA_ARGS "")
@@ -74,9 +79,7 @@ Cflags: -I\${includedir}
                 -Denable_d3d8=false
                 -Denable_d3d9=false
                 -Denable_d3d11=true
-                -Dnative_sdl3=enabled   
-                -Dnative_sdl2=disabled
-                -Dnative_glfw=disabled
+                ${DXVK_WSI_ARGS}
                 ${MESON_EXTRA_ARGS}
         RESULT_VARIABLE MESON_CONFIG_RESULT
         ERROR_VARIABLE  MESON_CONFIG_ERROR

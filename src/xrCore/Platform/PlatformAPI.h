@@ -7,6 +7,6 @@
 #	include "Linux/PlatformAPI.h"
 #elif defined(IXR_BSD)
 #	include "BSD/PlatformAPI.h"
-#elif defined(IXR_APPLE)
-#   include "MacOS/PlatformAPI.h"
+#elif defined(IXR_APPLE_SERIES)
+#	include "MacOS/PlatformAPI.h"
 #endif

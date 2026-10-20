@@ -14,7 +14,8 @@ using namespace animation;
 // BoneInstance methods
 void CBlendInstance::construct()
 {
-	ZeroMemory(this, sizeof(*this));
+	// Instances are constructed by new[]; only the blend list is reset here, the lock stays valid.
+	Blend.clear();
 }
 
 void CBlendInstance::blend_add(CBlend* H)
@@ -80,8 +81,6 @@ std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(Mo
 	for (_I	= s_mots.motion_map()->begin(); _I!=_E; ++_I)	if (_I->second==ID.idx) return std::make_pair(*_I->first,*s_mots.id());
 	return std::make_pair((const char*)nullptr,(const char*)nullptr);
 }
-
-
 
 static const char* name_bool( bool v )
 {
@@ -693,7 +692,7 @@ void	CKinematicsAnimated::IBoneInstances_Create()
 {
     inherited::IBoneInstances_Create();
 	u32				size	= (u32)bones->size();
-	blend_instances			= xr_alloc<CBlendInstance>(size);
+	blend_instances			= new CBlendInstance[size];
 	for (u32 i=0; i<size; i++)
 		blend_instances[i].construct();
 }
@@ -702,7 +701,7 @@ void	CKinematicsAnimated::IBoneInstances_Destroy()
 {
     inherited::IBoneInstances_Destroy();
 	if (blend_instances) {
-		xr_free(blend_instances);
+		delete[] blend_instances;
 		blend_instances = nullptr;
 	}
 }

@@ -85,7 +85,7 @@ inline bool  TriPlaneContainPoint(const dReal* v0,const dReal* v1,const dReal* v
  }
 
 
- ICF	void InitTriangle(CDB::TRI* XTri,Triangle& triangle,const Point* VRT)
+ ICF	void InitTriangle(CDB::TRI* XTri,Triangle& triangle,const TriPoint* VRT)
  {
 	 dVectorSub(triangle.side0,VRT[1],VRT[0])				;
 	 dVectorSub(triangle.side1,VRT[2],VRT[1])				;
@@ -96,7 +96,7 @@ inline bool  TriPlaneContainPoint(const dReal* v0,const dReal* v1,const dReal* v
  }
  ICF	void InitTriangle(CDB::TRI* XTri,Triangle& triangle,const Fvector*	 V_array)
  {
-	 const Point vertices[3]={Point((dReal*)&V_array[XTri->verts[0]]),Point((dReal*)&V_array[XTri->verts[1]]),Point((dReal*)&V_array[XTri->verts[2]])};
+	 const TriPoint vertices[3]={TriPoint((dReal*)&V_array[XTri->verts[0]]),TriPoint((dReal*)&V_array[XTri->verts[1]]),TriPoint((dReal*)&V_array[XTri->verts[2]])};
 	 InitTriangle(XTri,triangle,vertices);
  }
 
@@ -106,7 +106,7 @@ inline bool  TriPlaneContainPoint(const dReal* v0,const dReal* v1,const dReal* v
 	 triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
  }
 
- ICF	void CalculateTri(CDB::TRI* XTri,const float* pos,Triangle& triangle,const Point* VRT)
+ ICF	void CalculateTri(CDB::TRI* XTri,const float* pos,Triangle& triangle,const TriPoint* VRT)
  {
 	 InitTriangle(XTri,triangle,VRT);
 	 triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;

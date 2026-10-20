@@ -556,6 +556,45 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 		return Strides[0];
 	}
 	else
+#elif defined(IXR_APPLE_SERIES)
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		const D3D11_INPUT_ELEMENT_DESC* Decl = (const D3D11_INPUT_ELEMENT_DESC*)Desc;
+
+		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+		u32 PrevABO[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+		for (u32 j = 0; j < DescSize; ++j)
+		{
+			const u32 Slot = Decl[j].InputSlot;
+			if (Slot >= D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
+			{
+				// ignore bad input slots
+				continue;
+			}
+
+			const size_t Bpe = DirectX::BytesPerElement(Decl[j].Format);
+			if (!Bpe)
+			{
+				// ignore invalid format
+				continue;
+			}
+
+			const u32 Alignment = (Bpe == 1) ? 1 : (Bpe == 2) ? 2 : 4;
+
+			u32 AlignedByteOffset = Decl[j].AlignedByteOffset;
+			if (AlignedByteOffset == D3D11_APPEND_ALIGNED_ELEMENT)
+			{
+				AlignedByteOffset = PrevABO[Slot];
+			}
+
+			Strides[Slot] = std::max<u32>(Strides[Slot], u32(AlignedByteOffset + Bpe));
+			PrevABO[Slot] = u32(AlignedByteOffset + Bpe + (Bpe % Alignment));
+		}
+
+		return Strides[0];
+	}
+	else
 #endif
 	{
 		VERIFY(!"Implement me!");

@@ -406,6 +406,10 @@ void CLocatorAPI::LoadArchive(archive& A, const char* entrypoint)
 		}
 		xr_strconcat(full, fs_entry_point, name);
 
+#ifndef IXR_WINDOWS
+		xr_strcpy(full, Platform::ValidPath(full));
+#endif
+
 		Register		(full,A.vfs_idx,crc,ptr,size_real,size_compr,0);
 	}
 	hdr->close			();
@@ -1507,6 +1511,31 @@ bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_p
 		desc_f.name = temp_path.data();
 		
 		I = m_files.find(desc_f);
+#ifdef IXR_APPLE_SERIES
+		// Custom data often carries bare config paths; with unpacked gamedata those
+		// live under the configs root, so retry the whole lookup there.
+		if (I == m_files.end() && (path == nullptr || 0 != xr_strcmp(path, "$game_config$")))
+		{
+			string_path retry;
+			xr_strcpy(retry, _fname);
+			xr_strlwr(retry);
+			update_path(retry, "$game_config$", retry);
+
+			desc_f.name = retry;
+			I = m_files.find(desc_f);
+			if (I == m_files.end())
+			{
+				xr_string retry_back = retry;
+				std::replace(retry_back.begin(), retry_back.end(), '/', '\\');
+				desc_f.name = retry_back.data();
+				I = m_files.find(desc_f);
+				if (I != m_files.end())
+					xr_strcpy(fname, retry_back.data());
+			}
+			else
+				xr_strcpy(fname, retry);
+		}
+#endif
 		if (I == m_files.end()) {
 			return false;
 		}
@@ -1713,6 +1742,15 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 	file desc_f;
 	desc_f.name = file_name;
 	files_it I = m_files.find(desc_f);
+
+#if defined(IXR_APPLE_SERIES)
+	if (I == m_files.end())
+	{
+		desc_f.name = InputPath;
+		I = m_files.find(desc_f);
+	}
+#endif
+
 	return (I);
 }
 

@@ -39,8 +39,8 @@ void CObject::MakeMeCrow			()
 	u32 const device_frame_id		= Device.dwFrame;
 	u32 const object_frame_id		= dwFrame_AsCrow;
 	if (
-			(u32)Platform::AtomicCompareExchange(
-				(long*)&dwFrame_AsCrow,
+			(u32)Platform::AtomicCompareExchangeU32(
+				&dwFrame_AsCrow,
 				object_frame_id,
 				device_frame_id
 			) == device_frame_id

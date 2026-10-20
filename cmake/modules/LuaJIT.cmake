@@ -32,7 +32,27 @@ else()
         GIT_REPOSITORY https://github.com/ixray-team/luajit-ixray.git
         GIT_TAG default
     )
-    FetchContent_MakeAvailable(luajit)
+    FetchContent_GetProperties(luajit)
+    if(NOT luajit_POPULATED)
+        FetchContent_Populate(luajit)
+        if(APPLE)
+            # lj_arch.h hard-enables GC64 on arm64 (LJ_TARGET_GC64); DynASM must get
+            # the matching -D GC64, otherwise the generated JIT layout corrupts memory.
+            set(LUAJIT_DARWIN_CMAKE "${luajit_SOURCE_DIR}/cmake/Compilers/DarwinAppleClang.cmake")
+            if(EXISTS "${LUAJIT_DARWIN_CMAKE}")
+                file(READ "${LUAJIT_DARWIN_CMAKE}" LUAJIT_DARWIN_TEXT)
+                string(FIND "${LUAJIT_DARWIN_TEXT}" "-D GC64" LUAJIT_GC64_POS)
+                if(LUAJIT_GC64_POS EQUAL -1)
+                    string(REPLACE
+                        "set(DASM_FLAGS -D JIT -D FFI -D ENDIAN_LE -D FPU -D HFABI -D DUALNUM -D P64)"
+                        "set(DASM_FLAGS -D JIT -D FFI -D ENDIAN_LE -D FPU -D HFABI -D DUALNUM -D P64 -D GC64)"
+                        LUAJIT_DARWIN_TEXT "${LUAJIT_DARWIN_TEXT}")
+                    file(WRITE "${LUAJIT_DARWIN_CMAKE}" "${LUAJIT_DARWIN_TEXT}")
+                endif()
+            endif()
+        endif()
+        add_subdirectory(${luajit_SOURCE_DIR} ${luajit_BINARY_DIR})
+    endif()
 
     set(LUAJIT_INC "${luajit_SOURCE_DIR}/src")
     set(LUAJIT_LIB "libluajit")

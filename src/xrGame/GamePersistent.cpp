@@ -592,9 +592,14 @@ void CGamePersistent::destroy_particles(bool all_particles)
 	VERIFY(ps_needtoplay.empty() && (!all_particles || ps_active.empty()));
 }
 
+IC bool AllowIntroLogo()
+{
+	return nullptr == strstr(Core.Params, "-nointro");
+}
+
 void CGamePersistent::start_logo_intro()
 {
-	if (!g_keypress_on_start)
+	if (!g_keypress_on_start || !AllowIntroLogo())
 	{
 		m_intro_event.clear();
 		Console->Show();

@@ -81,15 +81,52 @@ void CInput::MouseScroll(float d)
 void CInput::MousePressed(int button)
 {
 	mouseState[button] = 1;
+
+	// Dispatch the edge right away. The frame-rate diff below loses taps shorter than
+	// one frame (press+release inside the same poll collapse to no change), which is
+	// exactly what happens at 20 FPS with a quick click.
+#if defined(IXR_APPLE_SERIES)
+	if (!Device.dwPrecacheFrame && !cbStack.empty() && !CImGuiManager::Instance().IsCapturingInputs())
+	{
+		old_mouseState[button] = 1;
+		cbStack.back()->IR_OnMousePress(button);
+	}
+#endif
 }
 
 void CInput::MouseReleased(int button)
 {
 	mouseState[button] = 0;
+
+#if defined(IXR_APPLE_SERIES)
+	if (!Device.dwPrecacheFrame && !cbStack.empty() && !CImGuiManager::Instance().IsCapturingInputs())
+	{
+		old_mouseState[button] = 0;
+		cbStack.back()->IR_OnMouseRelease(button);
+	}
+#endif
 }
 
 void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 {
+	// Same reasoning as the mouse path: dispatch the edge immediately, keep the polled
+	// state for IR_OnKeyboardHold. A tap shorter than one frame must not be dropped.
+#if defined(IXR_APPLE_SERIES)
+	if (KBState[scancode] != IsPressed && !Device.dwPrecacheFrame && !cbStack.empty()
+		&& !CImGuiManager::Instance().IsCapturingInputs())
+	{
+		old_KBState[scancode] = IsPressed;
+		if (IsPressed)
+		{
+			cbStack.back()->IR_OnKeyboardPress((int)scancode);
+		}
+		else
+		{
+			cbStack.back()->IR_OnKeyboardRelease((int)scancode);
+		}
+	}
+
+#endif
 	KBState[scancode] = IsPressed;
 }
 

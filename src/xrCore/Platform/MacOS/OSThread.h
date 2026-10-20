@@ -4,7 +4,8 @@
 #include <thread>
 #include <sched.h>
 
-using ThreadID = pthread_t;
+// HACK: must match CarbonCore's "unsigned long" ThreadID - CarbonCore reaches every module through CoreServices.
+using ThreadID = unsigned long;
 using ProcessID = pid_t;
 
 inline void Sleep(size_t Time)
@@ -19,6 +20,8 @@ namespace Platform
     XRCORE_API size_t GetThreadId(ThreadID ID);
     XRCORE_API void SetThreadName(const char* name);
     XRCORE_API long AtomicCompareExchange(long* ptr, long expected, long desired);
+    // 32-bit variant: 'long' is 8 bytes on Darwin, so CAS on u32 fields must not go through 'long'.
+    XRCORE_API unsigned int AtomicCompareExchangeU32(unsigned int* ptr, unsigned int expected, unsigned int desired);
 
     inline void SetCurrentThreadHighPriority()
     {
@@ -51,6 +54,14 @@ namespace Platform
 
     inline void WaitForSingleObject(ThreadID ID)
     {
-        pthread_join(ID, nullptr);
+        pthread_join((pthread_t)ID, nullptr);
+    }
+
+    inline void JoinThread(ThreadID ID)
+    {
+        if (ID != 0)
+        {
+            pthread_join((pthread_t)ID, nullptr);
+        }
     }
 }

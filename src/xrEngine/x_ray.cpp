@@ -412,7 +412,11 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	compute_build_id			();
+#ifndef IXR_APPLE_SERIES
+	// HACK: filewatch's FSEvents backend asserts and aborts the game ~1 min in on macOS
+	// (its notify() runs on the FSEvents thread). Hot-reload of gamedata is off there.
 	CFilewatcher::instance().SetFilewatcherActive(true);
+#endif
 	Core._initialize			("IXRay",nullptr, true, fsgame[0] ? fsgame : nullptr);
 
 	InitSettings				();

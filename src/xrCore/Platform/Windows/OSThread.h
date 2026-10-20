@@ -9,6 +9,8 @@ namespace Platform
 	XRCORE_API size_t GetThreadId(ThreadID ID);
 	XRCORE_API void SetThreadName(const char* Name);
 	XRCORE_API long AtomicCompareExchange(long* ptr, long expected, long desired);
+	// 32-bit variant: 'long' is 8 bytes on Darwin/Linux, so CAS on u32 fields must not go through 'long'.
+	XRCORE_API unsigned int AtomicCompareExchangeU32(unsigned int* ptr, unsigned int expected, unsigned int desired);
 
 	inline void SetCurrentThreadHighPriority()
 	{

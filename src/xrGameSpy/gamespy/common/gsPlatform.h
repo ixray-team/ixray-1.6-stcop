@@ -134,7 +134,7 @@
 	#endif // INSOCK
 
 // LINUX and MACOSX
-#elif defined(IXR_LINUX)
+#elif defined(IXR_LINUX) || defined(IXR_APPLE_SERIES)
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>

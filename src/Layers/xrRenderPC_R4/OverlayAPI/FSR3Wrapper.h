@@ -1,5 +1,27 @@
 #pragma once
 
+#if defined(IXR_APPLE_SERIES)
+class Fsr3Wrapper
+{
+public:
+	bool GetRenderScale(float&) { return false; }
+	void Destroy() {}
+};
+
+inline Fsr3Wrapper g_Fsr3Wrapper;
+
+inline int32_t ffxFsr3UpscalerGetJitterPhaseCount(int32_t, int32_t)
+{
+	return 1;
+}
+
+inline void ffxFsr3UpscalerGetJitterOffset(float* X, float* Y, int32_t, int32_t)
+{
+	*X = 0.f;
+	*Y = 0.f;
+}
+
+#else
 #include <FidelityFX/host/ffx_fsr3upscaler.h>
 #include <FidelityFX/host/backends/dx11/ffx_dx11.h>
 
@@ -79,3 +101,4 @@ private:
 };
 
 extern Fsr3Wrapper g_Fsr3Wrapper;
+#endif
