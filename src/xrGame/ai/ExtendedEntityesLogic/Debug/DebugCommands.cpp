@@ -16,7 +16,7 @@ void CELSharedDebugCommands::Synchronize()
 	}
 	SControl DrawControl;
 	SControl TextControl;
-	if (Read("monster_debug_3d", DrawControl) && Read("monster_debug_3d_text", TextControl))
+	if (Read("monster_debug_3d_shapes", DrawControl) && Read("monster_debug_3d_text", TextControl))
 	{
 		CELSharedDebug::Instance().SetDrawEnabled(DrawControl.Mode != 0, TextControl.Mode != 0);
 	}

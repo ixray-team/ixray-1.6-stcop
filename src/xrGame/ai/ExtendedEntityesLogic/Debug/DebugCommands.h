@@ -8,17 +8,13 @@ public:
 	static void Register()
 	{
 		static CCommand LogicCommand("monster_logic", EKind::Logic);
-		static CCommand DrawCommand("monster_debug_3d", EKind::Draw);
+		static CCommand DrawCommand("monster_debug_3d_shapes", EKind::Draw);
 		static CCommand TextCommand("monster_debug_3d_text", EKind::Text);
 		static CCommand StatsCommand("monster_debug_hud", EKind::Stats);
-		static CCommand LegacyDrawCommand("monster_logic_draw", EKind::Draw, &DrawCommand);
-		static CCommand LegacyStatsCommand("monster_logic_stats", EKind::Stats, &StatsCommand);
 		Console->AddCommand(&LogicCommand);
 		Console->AddCommand(&DrawCommand);
 		Console->AddCommand(&StatsCommand);
 		Console->AddCommand(&TextCommand);
-		Console->AddCommand(&LegacyDrawCommand);
-		Console->AddCommand(&LegacyStatsCommand);
 	}
 	static void Synchronize();
 
@@ -39,17 +35,12 @@ private:
 	class CCommand final : public IConsole_Command
 	{
 	public:
-		CCommand(const char* Name, EKind CommandKind, CCommand* AliasTarget = nullptr) : IConsole_Command(Name), Kind(CommandKind), Alias(AliasTarget)
+		CCommand(const char* Name, EKind CommandKind) : IConsole_Command(Name), Kind(CommandKind)
 		{
 			Control.Mode = Kind == EKind::Logic ? -1 : 0;
 		}
 		void Execute(const char* Arguments) override
 		{
-			if (Alias)
-			{
-				Alias->Execute(Arguments);
-				return;
-			}
 			int Mode;
 			if (!xr_strcmp(Arguments, "reset") && Kind == EKind::Stats)
 			{
@@ -91,17 +82,12 @@ private:
 		}
 		SControl Read() const
 		{
-			if (Alias)
-			{
-				return Alias->Read();
-			}
 			xrCriticalSectionGuard Guard(ControlLock);
 			return Control;
 		}
 
 	private:
 		EKind Kind;
-		CCommand* Alias = nullptr;
 		mutable xrCriticalSection ControlLock;
 		SControl Control;
 	};

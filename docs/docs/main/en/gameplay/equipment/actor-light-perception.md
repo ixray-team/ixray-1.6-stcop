@@ -138,24 +138,11 @@ Repeat for headlamp, hand and weapon torches. Also check distance boundaries, tr
 
 To distinguish G08 from ordinary vision precisely, use breakpoints in `ActorLightPerception::Update`, `CSoundMemoryManager::NoticeActorLight` and the `EnemyMemory` insertion. An attack by itself does not prove that the light reaction fired.
 
-### Diagnosing a missing reaction
+### Reaction diagnostics
 
-On R4, run `monster_logic_draw on` and aim the central HUD ray at the tested monster or NPC. While the HUD ray targets it, the log receives at most one `[actor_light]` line per second:
+On R4, enable `monster_debug_3d_shapes on` for geometry and `monster_debug_3d_text on` for labels. With extended logic active, the yellow light marker shows the source point, accumulated interest and investigation. Light does not add its owner to enemy memory; existing visual perception confirms enemies. Use `monster_debug_hud on` for timings and `monster_debug_hud reset` to reset them.
 
-| Field | Meaning |
-| --- | --- |
-| `stage=no_gunslinger_base` | The shared settings section is not loaded |
-| `stage=filtered` | Processing stopped at a filter; inspect `server`, `view`, `hostile` and `ignored`; `vision` is informational and does not block light |
-| `stage=ai_ignore_actor` | Debug actor ignoring is enabled |
-| `stage=no_active_torch` | None of the three sources is recognized as active |
-| `stage=visibility`, `result=0` | Source found, but no additional detection |
-| `stage=visibility`, `result=1` | Suspicion delivered |
-| `stage=visibility`, `result=2` | Actor revelation delivered |
-| `source_range` | Selected source cutoff |
-| `beam_hit` | First dynamic blocker ID; `65535` means no dynamic blocker |
-| `spot` | Whether a valid illuminated point exists within the cutoff |
-
-The `LIGHT` label in monster memory debug information indicates strong light evidence. Disable diagnostics with `monster_logic_draw off`. Diagnostics do not switch the torch on or change detection results.
+The `[actor_light]` console trace has been removed. Inspect filters and vanilla detection with breakpoints in `ActorLightPerception::Update` and `CBaseMonster::NoticeActorLight`.
 
 ## See also
 

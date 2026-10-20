@@ -49,7 +49,7 @@ Configuration is stored on the actor. Source selection and the camera ray are ca
 
 ## Diagnostics
 
-On R4, enable `monster_logic_draw on` and aim the HUD ray at the tested observer. While it is targeted, the log receives at most one `[actor_light]` line per second. Stages distinguish missing `[gunslinger_base]`, observer filters, `ai_ignore_actor`, no active source and the visibility result. `result=0/1/2` means none/suspicion/revealed. `source_range` is the selected source cutoff; `beam_hit` is the first blocker ID (`65535` means no dynamic blocker), and `spot` indicates a valid illuminated point. The server/view/hostile/ignored flags help identify a filtered observer; `vision` is informational and `vision=0` does not prevent light detection. Revealed monster memory is labelled `LIGHT` in the existing behavior debug display. Disable with `monster_logic_draw off`.
+On R4, enable `monster_debug_3d_shapes on` for geometry and `monster_debug_3d_text on` for labels. Extended monsters show a yellow light-interest marker without acquiring an enemy from light alone. Use `monster_debug_hud on` for timings and `monster_debug_hud reset` to reset them. The `[actor_light]` console trace and legacy command aliases have been removed; inspect vanilla detection using breakpoints in `ActorLightPerception::Update` and `CBaseMonster::NoticeActorLight`.
 
 ## Manual acceptance
 
