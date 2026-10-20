@@ -45,6 +45,7 @@
 #include "FreeMP/game_sv_freemp.h"
 #include "ParticlesObject.h"
 #include "Weapon.h"
+#include "HUDCrosshair.h"
 #include "gamespy/GameSpy_Full.h"
 #include "../xrCore/discord/discord.h"
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
@@ -116,6 +117,17 @@ xr_token quicksave_count_token[] =
 	{ "10",	10 },
 	{ "20",	20 },
 	{ nullptr,	 0 }
+};
+
+u32 crosshair_mode = DEFAULT;
+float crosshair_inertia_factor = .9f;
+
+xr_token hud_crosshair_modes[] =
+{
+	{"default", DEFAULT},
+	{"inertia", INERTIA},
+	{"extended", EXTENDED},
+	{nullptr, 0}
 };
 
 extern float	_delta_pos;
@@ -2790,7 +2802,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask32, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
 	CMD3(CCC_Mask32, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
 	CMD3(CCC_Mask32, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
-	CMD3(CCC_Mask32, "hud_crosshair_inertia", &psHUD_Flags, HUD_CROSSHAIR_INERTIA);
+	CMD3(CCC_Token, "hud_crosshair_mode", &crosshair_mode, hud_crosshair_modes);
+	CMD4(CCC_Float, "hud_crosshair_inertia_factor", &crosshair_inertia_factor, 0.f, .999f);
 
 	CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 5.0f, 180.0f);
 	CMD4(CCC_Float, "fov", &g_base_fov, 5.0f, 180.0f);
