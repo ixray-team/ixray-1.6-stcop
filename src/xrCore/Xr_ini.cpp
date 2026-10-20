@@ -48,6 +48,7 @@ namespace
 			{
 				if (xr_string_view(Item.Text) == Text)
 				{
+					PROF_EVENT("INI memory: cache hit");
 					Target = Item.Data;
 					return true;
 				}
@@ -218,10 +219,17 @@ CInifile::CInifile(IReader* F, const char* path, allow_include_func_t allow_incl
 		AllowIncludeFunc = allow_include_func;
 		return;
 	}
+	if (Text.size() > 8 * 1024)
+	{
+		string32 TextSize;
+		xr_sprintf(TextSize, "%zu bytes", Text.size());
+		PROF_EVENT_DYNAMIC(TextSize);
+	}
 
 	const bool IsCached = g_IniMemoryCache && allow_include_func == nullptr && Text.size() <= CIniMemoryCache::MaxTextSize && Text.find("#include") == xr_string_view::npos;
 	if (!IsCached)
 	{
+		PROF_EVENT("INI memory: uncached parse");
 		Load(F, path, allow_include_func);
 		return;
 	}
@@ -237,8 +245,11 @@ CInifile::CInifile(IReader* F, const char* path, allow_include_func_t allow_incl
 		return;
 	}
 
-	Load(F, path, allow_include_func);
-	MemoryCache().Add(Text, Hash, DATA);
+	{
+		PROF_EVENT("INI memory: cache miss");
+		Load(F, path, allow_include_func);
+		MemoryCache().Add(Text, Hash, DATA);
+	}
 }
 
 CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveAtEnd, u32 sect_count, allow_include_func_t allow_include_func)

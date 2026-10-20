@@ -220,26 +220,37 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 		VERIFY(can_register_objects());
 		can_register_objects(false);
 		auto& Objects = objects().objects();
-		for (auto& elem : Objects) {
-			ALife::_OBJECT_ID id = elem.second->ID;
-			elem.second->ID = server().PerformIDgen(id);
-			VERIFY(id == elem.second->ID);
-			register_object(elem.second, false);
-			pApp->LoadPulse();
+		{
+			PROF_EVENT("ALife load: native registration");
+			for (auto& elem : Objects)
+			{
+				ALife::_OBJECT_ID id = elem.second->ID;
+				elem.second->ID = server().PerformIDgen(id);
+				VERIFY(id == elem.second->ID);
+				register_object(elem.second, false);
+				pApp->LoadPulse();
+			}
 		}
 
 		can_register_objects(true);
 
 		objects().PrepareSpawnIni();
-		for (auto& elem : Objects)
 		{
-			elem.second->on_register();
-			pApp->LoadPulse();
+			PROF_EVENT("ALife load: script registration");
+			for (auto& elem : Objects)
+			{
+				PROF_EVENT("ALife load: object on_register");
+				PROF_EVENT_DYNAMIC(elem.second->s_name.c_str() ? elem.second->s_name.c_str() : "<unnamed>");
+				elem.second->on_register();
+				pApp->LoadPulse();
+			}
 		}
 	}
 
 	if (!g_pGameLevel)
+	{
 		return;
+	}
 
 	Level().autosave_manager().on_game_loaded();
 }
