@@ -49,6 +49,12 @@ void CRenderTarget::phase_sslr()
 		{
 			const u32 MipWidth = std::max(rt_sslr_hiz->dwWidth >> MipLevel, 1u);
 			const u32 MipHeight = std::max(rt_sslr_hiz->dwHeight >> MipLevel, 1u);
+#if defined(IXR_APPLE_SERIES)
+			// HACK: see sslr_hiz_reduce.cs.hlsl - vkd3d HLSL lacks RWTexture2D::GetDimensions.
+			const u32 SrcWidth = std::max(rt_sslr_hiz->dwWidth >> (MipLevel - 1), 1u);
+			const u32 SrcHeight = std::max(rt_sslr_hiz->dwHeight >> (MipLevel - 1), 1u);
+			RCache.set_c("HiZSizes", float(SrcWidth), float(SrcHeight), float(MipWidth), float(MipHeight));
+#endif
 
 			ID3D11UnorderedAccessView* MipUAV[2] =
 			{

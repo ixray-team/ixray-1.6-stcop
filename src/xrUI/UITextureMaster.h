@@ -53,7 +53,7 @@ public:
 	static ui_shader CreateTextureShader	(const shared_str& texture_name, const shared_str& shader_name);
 
 protected:
-	IC	static bool IsSh				(const shared_str& texture_name);
+	static bool IsSh				(const shared_str& texture_name);
 
 	static xr_map<shared_str, TEX_INFO>	m_textures;
 

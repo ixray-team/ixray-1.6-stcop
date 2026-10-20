@@ -636,8 +636,16 @@ float CGameFont::WidthOf(const char* str)
 	float size = 0;
 	const float spacing = GetLetterSpacing() * g_current_font_scale.x;
 
+#ifdef IXR_APPLE_SERIES
+	// HACK: TCHAR is char here; step codepoints, not UTF-8 bytes (see Platform::DecodeUtf8CodePoints).
+	xr_vector<int> codePoints;
+	Platform::DecodeUtf8CodePoints(str, codePoints);
+	const int* wideStr = codePoints.data();
+	const int length = (int)codePoints.size();
+#else
 	auto wideStr = Platform::ANSI_TO_TCHAR(str);
 	const int length = DynamicFontLen(wideStr);
+#endif
 	for (int i = 0; i < length; i++)
 	{
 		if (g_FontManager->GamepadButtonMappings[wideStr[i]] &&

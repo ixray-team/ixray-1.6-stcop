@@ -135,8 +135,16 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			Y -= 0.5f;
 			Y2 -= 0.5f;
 
-			const xr_special_char* UniStr = nullptr; 
 			bool IsUTF8Str = IsUTF8(str.string);
+#ifdef IXR_APPLE_SERIES
+			// HACK: TCHAR is char here; decode once and step one glyph at a time
+			// (Windows walks wchar_t codepoints). See Platform::DecodeUtf8CodePoints.
+			xr_vector<int> codePoints;
+			Platform::DecodeUtf8CodePoints(IsUTF8Str ? str.string : str.string_utf8.c_str(), codePoints);
+			const int* UniStr = codePoints.data();
+			const int glyphCount = (int)codePoints.size();
+#else
+			const xr_special_char* UniStr = nullptr; 
 			if (IsUTF8Str)
 			{
 				UniStr = Platform::ANSI_TO_TCHAR(str.string);
@@ -145,8 +153,10 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			{
 				UniStr = Platform::ANSI_TO_TCHAR(str.string_utf8.c_str());
 			}
+			const int glyphCount = length;
+#endif
 
-			for(int i = 0; i < length; i++) 
+			for(int i = 0; i < glyphCount; i++) 
 			{
 				CGameFont::Glyph* glyphInfo = nullptr;
 

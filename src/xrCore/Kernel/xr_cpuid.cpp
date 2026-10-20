@@ -34,9 +34,9 @@ unsigned long countSetBits(ulong_t bitMask)
 	return bitSetCount;
 }
 
-unsigned int query_processor_info(processor_info* pinfo)
+unsigned int query_processor_info(struct processor_info* pinfo)
 {
-	memset(pinfo, 0, sizeof(processor_info));
+	memset(pinfo, 0, sizeof(struct processor_info));
 #if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
 	std::bitset<32> f_1_ECX;
 	std::bitset<32> f_1_EDX;

@@ -1,30 +1,31 @@
 #pragma  once
 
-	class  Point
+	// HACK: renamed from Point - a global Carbon type on macOS.
+	class  TriPoint
 	{
 		public:
 
 		//! Empty constructor
-		IC				Point() = default;
+		IC				TriPoint() = default;
 		//! Constructor from floats
-		IC				Point(float _x, float _y, float _z) : x(_x), y(_y), z(_z)	{}
+		IC				TriPoint(float _x, float _y, float _z) : x(_x), y(_y), z(_z)	{}
 		//! Constructor from array
-		IC				Point(float f[3]) : x(f[0]), y(f[1]), z(f[2])				{}
+		IC				TriPoint(float f[3]) : x(f[0]), y(f[1]), z(f[2])				{}
 		//! Constructor from array
-		IC				Point(const float f[3]) : x(f[0]), y(f[1]), z(f[2])			{}
+		IC				TriPoint(const float f[3]) : x(f[0]), y(f[1]), z(f[2])			{}
 		//! Copy constructor
-		IC				Point(const Point& p) : x(p.x), y(p.y), z(p.z)				{}
+		IC				TriPoint(const TriPoint& p) : x(p.x), y(p.y), z(p.z)				{}
 		//! Destructor
-		IC				~Point() = default;
+		IC				~TriPoint() = default;
 
 		//! Returns MIN(x, y, z);
 		//IC	float		Min()								const		{ return MIN(x, MIN(y, z));												}
 		//! Returns MAX(x, y, z);
 		//IC	float		Max()								const		{ return MAX(x, MAX(y, z));												}
 		//! TO BE DOCUMENTED
-		//IC	Point&		Min(const Point& p)								{ x = MIN(x, p.x); y = MIN(y, p.y); z = MIN(z, p.z);	return *this;	}
+		//IC	TriPoint&		Min(const TriPoint& p)								{ x = MIN(x, p.x); y = MIN(y, p.y); z = MIN(z, p.z);	return *this;	}
 		//! TO BE DOCUMENTED
-		//IC	Point&		Max(const Point& p)								{ x = MAX(x, p.x); y = MAX(y, p.y); z = MAX(z, p.z);	return *this;	}
+		//IC	TriPoint&		Max(const TriPoint& p)								{ x = MAX(x, p.x); y = MAX(y, p.y); z = MAX(z, p.z);	return *this;	}
 
 		//! Computes square magnitude
 		IC	float		SquareMagnitude()					const		{ return x*x + y*y + z*z;												}
@@ -42,54 +43,54 @@
 						}
 
 		// Arithmetic operators
-		//! Operator for Point Negate = - Point
-		ICF	Point		operator-()							const		{ return Point(-x, -y, -z);							}
+		//! Operator for TriPoint Negate = - TriPoint
+		ICF	TriPoint		operator-()							const		{ return TriPoint(-x, -y, -z);							}
 
-		//! Operator for Point Plus = Point + Point.
-		ICF	Point		operator+(const Point& p)			const		{ return Point(x + p.x, y + p.y, z + p.z);			}
-		//! Operator for Point Minus = Point - Point.
-		ICF	Point		operator-(const Point& p)			const		{ return Point(x - p.x, y - p.y, z - p.z);			}
-		//! Operator for Point Scale = Point * float.
-		ICF	Point		operator*(float s)					const		{ return Point(x * s,   y * s,   z * s );			}
-		//! Operator for Point Scale = float * Point.
-		friend			Point		operator*(float s, const Point& p)				{ return Point(s * p.x, s * p.y, s * p.z);			}
-		//! Operator for Point Scale = Point / float.
-		ICF	Point		operator/(float s)					const		{ s = 1.0f / s; return Point(x * s, y * s, z * s);	}
+		//! Operator for TriPoint Plus = TriPoint + TriPoint.
+		ICF	TriPoint		operator+(const TriPoint& p)			const		{ return TriPoint(x + p.x, y + p.y, z + p.z);			}
+		//! Operator for TriPoint Minus = TriPoint - TriPoint.
+		ICF	TriPoint		operator-(const TriPoint& p)			const		{ return TriPoint(x - p.x, y - p.y, z - p.z);			}
+		//! Operator for TriPoint Scale = TriPoint * float.
+		ICF	TriPoint		operator*(float s)					const		{ return TriPoint(x * s,   y * s,   z * s );			}
+		//! Operator for TriPoint Scale = float * TriPoint.
+		friend			TriPoint		operator*(float s, const TriPoint& p)				{ return TriPoint(s * p.x, s * p.y, s * p.z);			}
+		//! Operator for TriPoint Scale = TriPoint / float.
+		ICF	TriPoint		operator/(float s)					const		{ s = 1.0f / s; return TriPoint(x * s, y * s, z * s);	}
 
-		//! Operator for float DotProd = Point | Point.
-		ICF	float		operator|(const Point& p)			const		{ return x*p.x + y*p.y + z*p.z;						}
-		//! Operator for Point VecProd = Point ^ Point.
-		ICF	Point		operator^(const Point& p)			const
+		//! Operator for float DotProd = TriPoint | TriPoint.
+		ICF	float		operator|(const TriPoint& p)			const		{ return x*p.x + y*p.y + z*p.z;						}
+		//! Operator for TriPoint VecProd = TriPoint ^ TriPoint.
+		ICF	TriPoint		operator^(const TriPoint& p)			const
 						{
-							return Point(
+							return TriPoint(
 							y * p.z - z * p.y,
 							z * p.x - x * p.z,
 							x * p.y - y * p.x );
 						}
 
-		//! Operator for Point += Point.
-		ICF	Point&		operator+=(const Point& p)						{ x += p.x; y += p.y; z += p.z;	return *this;		}
-		//! Operator for Point += float.
-		ICF	Point&		operator+=(float s)								{ x += s;   y += s;   z += s;	return *this;		}
+		//! Operator for TriPoint += TriPoint.
+		ICF	TriPoint&		operator+=(const TriPoint& p)						{ x += p.x; y += p.y; z += p.z;	return *this;		}
+		//! Operator for TriPoint += float.
+		ICF	TriPoint&		operator+=(float s)								{ x += s;   y += s;   z += s;	return *this;		}
 
-		//! Operator for Point -= Point.
-		ICF	Point&		operator-=(const Point& p)						{ x -= p.x; y -= p.y; z -= p.z;	return *this;		}
-		//! Operator for Point -= float.
-		ICF	Point&		operator-=(float s)								{ x -= s;   y -= s;   z -= s;	return *this;		}
-		//! Operator for Point *= float.
-		ICF	Point&		operator*=(float s)								{ x *= s; y *= s; z *= s;		return *this;		}
-		//! Operator for Point /= float.
-		ICF	Point&		operator/=(float s)								{ s = 1.0f/s; x *= s; y *= s; z *= s; return *this; }
+		//! Operator for TriPoint -= TriPoint.
+		ICF	TriPoint&		operator-=(const TriPoint& p)						{ x -= p.x; y -= p.y; z -= p.z;	return *this;		}
+		//! Operator for TriPoint -= float.
+		ICF	TriPoint&		operator-=(float s)								{ x -= s;   y -= s;   z -= s;	return *this;		}
+		//! Operator for TriPoint *= float.
+		ICF	TriPoint&		operator*=(float s)								{ x *= s; y *= s; z *= s;		return *this;		}
+		//! Operator for TriPoint /= float.
+		ICF	TriPoint&		operator/=(float s)								{ s = 1.0f/s; x *= s; y *= s; z *= s; return *this; }
 
 		// Arithmetic operators
-		//! Operator for Point Mul = Point * Matrix3x3.
-	//					Point		operator*(const Matrix3x3& mat)		const;
-		//! Operator for Point Mul = Point * Matrix4x4.
-	//					Point		operator*(const Matrix4x4& mat)		const;
-		//! Operator for Point *= Matrix3x3.
-	///					Point&		operator*=(const Matrix3x3& mat);
-		//! Operator for Point *= Matrix4x4.
-	//					Point&		operator*=(const Matrix4x4& mat);
+		//! Operator for TriPoint Mul = TriPoint * Matrix3x3.
+	//					TriPoint		operator*(const Matrix3x3& mat)		const;
+		//! Operator for TriPoint Mul = TriPoint * Matrix4x4.
+	//					TriPoint		operator*(const Matrix4x4& mat)		const;
+		//! Operator for TriPoint *= Matrix3x3.
+	///					TriPoint&		operator*=(const Matrix3x3& mat);
+		//! Operator for TriPoint *= Matrix4x4.
+	//					TriPoint&		operator*=(const Matrix4x4& mat);
 
 		//! Access as array
 		ICF				operator	const	float*() const	{ return &x; }
@@ -103,8 +104,8 @@
 	};
 //using namespace CDB;
 using namespace Opcode;
-//typedef float*	Point;	
-//typedef	dVector3 Point
+//typedef float*	TriPoint;	
+//typedef	dVector3 TriPoint
 //! This macro quickly finds the min & max values among 3 variables
 #define FINDMINMAX(x0, x1, x2, min, max)	\
 	min = max = x0;							\
@@ -118,9 +119,9 @@ using namespace Opcode;
 	if(x0>max&&x1>max&&x2>max)return false;
 
 //! TO BE DOCUMENTED
-ICF bool planeBoxOverlap_slow(const Point& normal, const float d, const Point& maxbox)
+ICF bool planeBoxOverlap_slow(const TriPoint& normal, const float d, const TriPoint& maxbox)
 {
-	Point vmin, vmax;
+	TriPoint vmin, vmax;
 	if(normal[0]>0.0f)	{ vmin[0] =-maxbox[0]; vmax[0]= maxbox[0]; }
 	else				{ vmin[0] = maxbox[0]; vmax[0]=-maxbox[0]; }
 	if(normal[1]>0.0f)	{ vmin[1] =-maxbox[1]; vmax[1]= maxbox[1]; }
@@ -132,7 +133,7 @@ ICF bool planeBoxOverlap_slow(const Point& normal, const float d, const Point& m
 	return	false		;
 }
 
-ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
+ICF bool planeBoxOverlap(const TriPoint& normal, const float d, const TriPoint& maxbox)
 {
 	float norm_box_proj= std::abs(maxbox.x*normal.x)+ std::abs(maxbox.y*normal.y)+ std::abs(maxbox.z*normal.z);
 	if(d>-norm_box_proj&&d<norm_box_proj)return true;
@@ -189,9 +190,9 @@ ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox
 	
 
 
-IC	bool		aabb_tri_aabb(Point center,Point extents,const Point* mLeafVerts)
+IC	bool		aabb_tri_aabb(TriPoint center,TriPoint extents,const TriPoint* mLeafVerts)
 {
-	Point v0, v1, v2;
+	TriPoint v0, v1, v2;
 	//Fvector v0,v1,v2;
 	v0.x = mLeafVerts[0].x - center.x;
 	v1.x = mLeafVerts[1].x - center.x;
@@ -222,9 +223,9 @@ IC	bool		aabb_tri_aabb(Point center,Point extents,const Point* mLeafVerts)
 	// 2) Test if the box intersects the plane of the triangle
 	// compute plane equation of triangle: normal*x+d=0
 	// ### could be precomputed since we use the same leaf triangle several times
-	const Point e0 = v1 - v0;
-	const Point e1 = v2 - v1;
-	const Point normal = e0 ^ e1;
+	const TriPoint e0 = v1 - v0;
+	const TriPoint e1 = v2 - v1;
+	const TriPoint normal = e0 ^ e1;
 	const float d = -normal|v0;
 	bool	r0 = planeBoxOverlap(normal, d, extents);
 	
@@ -240,10 +241,10 @@ IC	bool		aabb_tri_aabb(Point center,Point extents,const Point* mLeafVerts)
 	if(!r0)		return false;
 	return true;
 }
-IC	bool		__aabb_tri		(Point center,Point extents,const Point* mLeafVerts)
+IC	bool		__aabb_tri		(TriPoint center,TriPoint extents,const TriPoint* mLeafVerts)
 	{
 		// move everything so that the boxcenter is in (0,0,0) 
-		Point v0, v1, v2;
+		TriPoint v0, v1, v2;
 		//Fvector v0,v1,v2;
 		v0.x = mLeafVerts[0].x - center.x;
 		v1.x = mLeafVerts[1].x - center.x;
@@ -274,9 +275,9 @@ IC	bool		__aabb_tri		(Point center,Point extents,const Point* mLeafVerts)
 		// 2) Test if the box intersects the plane of the triangle
 		// compute plane equation of triangle: normal*x+d=0
 		// ### could be precomputed since we use the same leaf triangle several times
-		const Point e0 = v1 - v0;
-		const Point e1 = v2 - v1;
-		const Point normal = e0 ^ e1;
+		const TriPoint e0 = v1 - v0;
+		const TriPoint e1 = v2 - v1;
+		const TriPoint normal = e0 ^ e1;
 		const float d = -normal|v0;
 		bool	r0 = planeBoxOverlap(normal, d, extents);
 #ifdef DEBUG
@@ -316,7 +317,7 @@ IC	bool		__aabb_tri		(Point center,Point extents,const Point* mLeafVerts)
 			AXISTEST_Y02(e1.z, e1.x, fez1, fex1);
 			AXISTEST_Z0(e1.y, e1.x, fey1, fex1);
 			
-			const Point e2 = mLeafVerts[0] - mLeafVerts[2];
+			const TriPoint e2 = mLeafVerts[0] - mLeafVerts[2];
 			const float fey2 = std::abs(e2.y);
 			const float fez2 = std::abs(e2.z);
 			AXISTEST_X2(e2.z, e2.y, fez2, fey2);

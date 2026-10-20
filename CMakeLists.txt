@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.26)
 project(IXRay)
 
+if(APPLE)
+	# Needed for src/xrRHI/D3D11/MacMetalBridge.mm (DXMT native host bridge).
+	enable_language(OBJCXX)
+endif()
+
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_TESTS "Apply tests to solution" OFF)
@@ -100,6 +105,10 @@ include("cmake/modules.cmake")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # 3rd libraries
+if(APPLE)
+    include_directories("${CMAKE_SOURCE_DIR}/src/3rd-party/macos-compat")
+endif()
+
 add_subdirectory("src/3rd-party")
 
 # Engine libraries

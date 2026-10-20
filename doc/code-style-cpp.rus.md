@@ -134,7 +134,7 @@
 | `const wchar_t[64]`  | `wstring64`  |
 | `const wchar_t[128]` | `wstring128` |
 
-Полное описание типов находится в [этом](../src/xrCore/_types.h) файле
+Полное описание типов находится в [этом](../src/xrCore/xr_core_types.h) файле
 
 ### Контейнеры
 

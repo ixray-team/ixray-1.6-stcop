@@ -90,7 +90,7 @@ void CALifeMonsterBrain::on_location_change	()
 {
 }
 
-IC	CSE_ALifeSmartZone &CALifeMonsterBrain::smart_terrain	()
+CSE_ALifeSmartZone &CALifeMonsterBrain::smart_terrain	()
 {
 	VERIFY							(object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID);
 	if (m_smart_terrain && (object().m_smart_terrain_id == m_smart_terrain->ID))

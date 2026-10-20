@@ -7,7 +7,7 @@ u32 Platform::GetCoresCount()
 
 ThreadID Platform::GetCurrentThread()
 {
-	return pthread_self();
+	return (ThreadID)pthread_self();
 }
 
 size_t Platform::GetThreadId(ThreadID ID)
@@ -17,12 +17,28 @@ size_t Platform::GetThreadId(ThreadID ID)
 
 void Platform::SetThreadName(const char* name)
 {
-    pthread_setname_np(pthread_self(), name);
+    pthread_setname_np(name);
 }
 
 long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
 {
     long old = expected;
+    __atomic_compare_exchange_n
+    (
+        ptr,
+        &old,
+        desired,
+        false,
+        __ATOMIC_SEQ_CST,
+        __ATOMIC_SEQ_CST
+    );
+
+    return old;
+}
+
+unsigned int Platform::AtomicCompareExchangeU32(unsigned int* ptr, unsigned int expected, unsigned int desired)
+{
+    u32 old = expected;
     __atomic_compare_exchange_n
     (
         ptr,

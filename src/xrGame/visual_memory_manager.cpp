@@ -881,7 +881,7 @@ void CVisualMemoryManager::Serialize(ISaveObject& Object)
 		
 		if(Object.IsSave())
 		{
-			auto ObjectsSize = m_objects->size();
+			u64 ObjectsSize = m_objects->size();
 			Object << ObjectsSize;
 			BEGIN_ARRAY(Object)
 			{
@@ -906,7 +906,7 @@ void CVisualMemoryManager::Serialize(ISaveObject& Object)
 			}
 		} else
 		{
-			size_t ObjectsSize;
+			u64 ObjectsSize;
 			Object << ObjectsSize;
 			BEGIN_ARRAY(Object)
 			{

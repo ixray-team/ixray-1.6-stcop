@@ -66,7 +66,10 @@ function PsyAntenna:__init				()
 	self.pp:start						();
 end
 function PsyAntenna:__finalize			()
-	self.pp:finish 						();
+	-- the constructor early-returns when the actor is not spawned yet, so pp may be nil
+	if self.pp then
+		self.pp:finish 							();
+	end
 end;
 
 g_PsyAntenna	 						= PsyAntenna();
