@@ -95,6 +95,11 @@ void CActor::AddGameTask(const CInfoPortion* info_portion) const
 
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
+	if (!g_AppInfo.IsPrimaryThread())
+	{
+		AddGameNews_deffered(news_data, 0);
+		return;
+	}
 
 	GAME_NEWS_VECTOR& news_vector	= game_news_registry->registry().objects();
 	news_data.receive_time			= Level().GetGameTime();
@@ -247,6 +252,7 @@ void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
 {
 	GAME_NEWS_DATA * d = new GAME_NEWS_DATA(news_data);
 	//*d = news_data;
+	xrCriticalSectionGuard guard(DefferedMessagesLock);
 	m_defferedMessages.push_back( SDefNewsMsg() );
 	m_defferedMessages.back().news_data = d;
 	m_defferedMessages.back().time = Device.dwTimeGlobal+delay;
@@ -255,16 +261,21 @@ void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
 
 void CActor::UpdateDefferedMessages()
 {
-	while( m_defferedMessages.size() )
+	while (true)
 	{
-		SDefNewsMsg& M = m_defferedMessages.back();
-		if(M.time <=Device.dwTimeGlobal)
+		GAME_NEWS_DATA* newsData = nullptr;
 		{
-			AddGameNews					(*M.news_data);		
-			xr_delete					(M.news_data);
-			m_defferedMessages.pop_back	();
-		}else
-			break;
+			xrCriticalSectionGuard guard(DefferedMessagesLock);
+			if (m_defferedMessages.empty() || m_defferedMessages.back().time > Device.dwTimeGlobal)
+			{
+				break;
+			}
+			newsData = m_defferedMessages.back().news_data;
+			m_defferedMessages.pop_back();
+		}
+
+		AddGameNews(*newsData);
+		xr_delete(newsData);
 	}
 }
 
