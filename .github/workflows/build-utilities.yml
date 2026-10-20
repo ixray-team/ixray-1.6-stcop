@@ -1,4 +1,4 @@
-name: 'Build utilities'
+name: 'Utilities'
 
 on:
   push:
@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-utilities:
-    name: 'Build utilities'
+    name: 'Windows'
 
     strategy:
       matrix:
@@ -112,7 +112,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   build-targets:
-    name: 'Build targets'
+    name: 'Linux'
 
     strategy:
       matrix:
@@ -237,7 +237,7 @@ jobs:
           if-no-files-found: ignore
 
   pack-assets:
-    name: 'Pack assets'
+    name: 'Assets'
 
     needs:
       - build-utilities
@@ -284,7 +284,7 @@ jobs:
           include-hidden-files: true
 
   publish-utilities:
-    name: 'Publish utilities'
+    name: 'Publish'
 
     needs:
       - pack-assets

@@ -1,4 +1,4 @@
-name: 'Build plugins'
+name: 'Plugins'
 
 on:
   push:
@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-plugins:
-    name: 'Build plugins'
+    name: 'Windows'
 
     strategy:
       matrix:
