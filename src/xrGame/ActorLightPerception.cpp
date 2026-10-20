@@ -4,7 +4,7 @@
 #include "Creature.h"
 #include "Torch.h"
 #include "Weapon.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "Level.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
