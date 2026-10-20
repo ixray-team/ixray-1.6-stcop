@@ -110,9 +110,8 @@ if(NOT EXISTS "${DXMT_D3D_HEADERS}/d3d11_4.h")
 endif()
 
 # The D3D headers DXMT ships include <windows.h>; the engine runs without one,
-# so sdk/windows-compat provides the small set of Win32 types they need.
 list(APPEND DXMT_INCLUDE_DIRS
-    "${CMAKE_CURRENT_LIST_DIR}/../../sdk/windows-compat"
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/3rd-party/windows-compat"
     "${DXMT_D3D_HEADERS}")
 
 # Keep the dylib next to the executable, so a run directory only needs the
