@@ -173,6 +173,7 @@ protected:
 		bool operator < (const SDefNewsMsg& other) const {return time>other.time;}
 	};
 	xr_vector<SDefNewsMsg> m_defferedMessages;
+	xrCriticalSection DefferedMessagesLock;
 	void UpdateDefferedMessages();
 public:
 	void			AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay);
