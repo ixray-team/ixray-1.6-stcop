@@ -170,7 +170,7 @@ void CELSharedDebug::PublishEvent(SELDebugEvent Event, u32 Lifetime)
 	xr_vector<SELDebugEvent>::iterator Iterator;
 	for (Iterator = Events.begin(); Iterator != Events.end(); ++Iterator)
 	{
-		if (Iterator->Kind == Event.Kind && Iterator->OwnerIdentifier == Event.OwnerIdentifier && Iterator->TargetIdentifier == Event.TargetIdentifier)
+		if (Iterator->Kind == Event.Kind && Iterator->OwnerIdentifier == Event.OwnerIdentifier && Iterator->TargetIdentifier == Event.TargetIdentifier && Iterator->StimulusType == Event.StimulusType)
 		{
 			if (Event.Kind == EELDebugEvent::Damage && Iterator->TargetGeneration == Event.TargetGeneration && s32(Device.dwTimeGlobal - Iterator->ExpiresAt) < 0)
 			{

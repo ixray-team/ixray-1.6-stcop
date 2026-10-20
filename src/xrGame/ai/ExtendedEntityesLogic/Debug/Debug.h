@@ -72,6 +72,7 @@ struct SELDebugEvent
 	shared_str Label;
 	Fobb Bounds = {};
 	u32 TargetGeneration = 0;
+	u32 StimulusType = 0;
 };
 enum class EELDebugGroup : u8
 {

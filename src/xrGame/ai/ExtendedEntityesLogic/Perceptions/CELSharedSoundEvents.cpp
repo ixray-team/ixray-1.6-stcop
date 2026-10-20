@@ -142,7 +142,7 @@ bool CELSharedSoundEvents::HasPublished(const SELSoundEvent& Event)
 			continue;
 		}
 		if (EventIterator->Kind == EELSoundKind::Explosion ||
-			(Event.SourceIdentifier == EventIterator->SourceIdentifier && Event.SoundType == EventIterator->SoundType))
+			(Event.SourceIdentifier == EventIterator->SourceIdentifier && Event.SoundType == EventIterator->SoundType && Event.Kind == EventIterator->Kind))
 		{
 			return true;
 		}

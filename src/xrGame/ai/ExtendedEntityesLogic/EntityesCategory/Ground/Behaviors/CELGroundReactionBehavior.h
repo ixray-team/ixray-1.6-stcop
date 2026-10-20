@@ -12,6 +12,7 @@ public:
 private:
 	bool SelectPoint();
 	Fvector SourcePosition = {0.f, 0.f, 0.f};
+	Fvector PlannedSourcePosition = {0.f, 0.f, 0.f};
 	Fvector ReactionPosition = {0.f, 0.f, 0.f};
 	u32 ReactionVertex = u32(-1);
 	u32 Until = 0;

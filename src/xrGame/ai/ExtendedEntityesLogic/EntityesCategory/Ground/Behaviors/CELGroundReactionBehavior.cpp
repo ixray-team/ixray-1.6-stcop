@@ -11,9 +11,10 @@
 // Настраивает условия следующего запуска схемы.
 void CELGroundReactionBehavior::Configure(const Fvector& SoundPosition, u32 ReactionUntil, bool ShouldFlee)
 {
-	if (IsFleeing != ShouldFlee || SourcePosition.distance_to_sqr(SoundPosition) > 4.f)
+	if (IsFleeing != ShouldFlee || (HasPoint ? PlannedSourcePosition : SourcePosition).distance_to_sqr(SoundPosition) > 4.f)
 	{
 		HasPoint = false;
+		NextPoint = 0;
 		SearchPhase = 0;
 	}
 	SourcePosition = SoundPosition;
@@ -75,6 +76,7 @@ bool CELGroundReactionBehavior::SelectPoint()
 		}
 		if (CELGroundLocalSearch::Resolve(Adapter, Candidate, Candidate, CandidateVertex))
 		{
+			PlannedSourcePosition = SourcePosition;
 			ReactionPosition = Candidate;
 			ReactionVertex = CandidateVertex;
 			return true;

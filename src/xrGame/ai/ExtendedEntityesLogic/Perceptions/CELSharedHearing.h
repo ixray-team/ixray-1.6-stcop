@@ -51,6 +51,7 @@ struct SELNoiseAttention
 	u32 LastDecay = 0;
 	Fvector Position = {0.f, 0.f, 0.f};
 	EELNoiseType NoiseType = EELNoiseType::Other;
+	bool IsActorSound = false;
 	float Interest = 0.f;
 	float Fear = 0.f;
 };
@@ -78,6 +79,8 @@ private:
 	u32 NextReaction = 0;
 	u32 AttentionPriority = 0;
 	u32 AttentionStartedAt = 0;
+	u32 LastAttentionEventAt = 0;
 	u16 AttentionSource = u16(-1);
 	EELNoiseType AttentionNoiseType = EELNoiseType::Other;
+	bool AttentionIsActorSound = false;
 };

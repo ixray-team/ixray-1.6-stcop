@@ -12,6 +12,22 @@ struct SColumn
 	u32 Row = 0;
 };
 
+// Draw a column at its own world point with consistent screen spacing.
+void AppendAt(SColumn& Column, const char* Label, u32 Color)
+{
+	const Fvector ToAnchor = Fvector().sub(Column.Anchor, Device.vCameraPosition);
+	const float Depth = ToAnchor.dotproduct(Device.vCameraDirection);
+	if (Depth <= EPS_L || Device.TargetHeight == 0 || Device.mProject._22 <= EPS_L)
+	{
+		return;
+	}
+	constexpr float LineHeightPixels = 22.f;
+	const float Step = 2.f * Depth * LineHeightPixels / (Device.mProject._22 * float(Device.TargetHeight));
+	Fvector Position;
+	Position.mad(Column.Anchor, Device.vCameraTop, Step * float(++Column.Row));
+	HUD().world_prims.append_text3d(Position, Label, Color);
+}
+
 // Разносит подписи одного владельца вверх от тела с постоянным экранным шагом, независимо от дальности.
 void Append(xr_map<u16, SColumn>& Columns, u16 OwnerIdentifier, const Fvector& Fallback, const char* Label, u32 Color, bool DrawText)
 {
@@ -27,17 +43,7 @@ void Append(xr_map<u16, SColumn>& Columns, u16 OwnerIdentifier, const Fvector& F
 		Found = Columns.emplace(OwnerIdentifier, Column).first;
 	}
 	SColumn& Column = Found->second;
-	const Fvector ToAnchor = Fvector().sub(Column.Anchor, Device.vCameraPosition);
-	const float Depth = ToAnchor.dotproduct(Device.vCameraDirection);
-	if (Depth <= EPS_L || Device.TargetHeight == 0 || Device.mProject._22 <= EPS_L)
-	{
-		return;
-	}
-	constexpr float LineHeightPixels = 22.f;
-	const float Step = 2.f * Depth * LineHeightPixels / (Device.mProject._22 * float(Device.TargetHeight));
-	Fvector Position;
-	Position.mad(Column.Anchor, Device.vCameraTop, Step * float(++Column.Row));
-	HUD().world_prims.append_text3d(Position, Label, Color);
+	AppendAt(Column, Label, Color);
 }
 } // namespace ExtendedEntityesWorldLabels
 
@@ -96,6 +102,7 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			ExtendedEntityesWorldLabels::Append(Columns, RecordIterator->OwnerIdentifier, RecordIterator->Position, Label, color_rgba(255, 150, 30, 255), DrawText);
 		}
 	}
+	xr_vector<ExtendedEntityesWorldLabels::SColumn> SoundColumns;
 	xr_vector<SELDebugEvent>::const_iterator Event;
 	u32 PointIndex;
 	xr_map<u16, xr_vector<u16>> KnownAnomalies;
@@ -218,7 +225,25 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 			{
 				xr_sprintf(Label, "#%u -> #%u | %s", Event->OwnerIdentifier, Event->TargetIdentifier, Event->Label.c_str());
 			}
-			ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Finish, Label, Color, DrawText);
+			if (Event->Kind == EELDebugEvent::Sound || Event->Kind == EELDebugEvent::Light)
+			{
+				if (DrawText)
+				{
+					auto Column = std::find_if(SoundColumns.begin(), SoundColumns.end(), [&Event](const ExtendedEntityesWorldLabels::SColumn& Candidate)
+											   { return Candidate.Anchor.distance_to_sqr(Event->Finish) < .25f; });
+					if (Column == SoundColumns.end())
+					{
+						SoundColumns.emplace_back();
+						Column = SoundColumns.end() - 1;
+						Column->Anchor = Event->Finish;
+					}
+					ExtendedEntityesWorldLabels::AppendAt(*Column, Label, Color);
+				}
+			}
+			else
+			{
+				ExtendedEntityesWorldLabels::Append(Columns, Event->OwnerIdentifier, Event->Finish, Label, Color, DrawText);
+			}
 		}
 	}
 	xr_map<u16, xr_vector<u16>>::iterator Known;

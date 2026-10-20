@@ -112,7 +112,9 @@ void CELSharedHearing::Investigate(const Fvector& Position, u16 Source, u32 Dura
 	AttentionPosition = Position;
 	AttentionSource = Source;
 	AttentionStartedAt = Device.dwTimeGlobal;
+	LastAttentionEventAt = AttentionStartedAt;
 	AttentionNoiseType = EELNoiseType::Death;
+	AttentionIsActorSound = false;
 	AttentionPriority = Importance;
 	PanicUntil = 0;
 	InvestigateUntil = AttentionStartedAt + Duration;
@@ -203,12 +205,27 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 		SourceAttention->Kind = Event.Kind;
 		SourceAttention->LastDecay = Event.OccurredAt;
 	}
-	if (SourceAttention->LastEvent && s32(Event.OccurredAt - SourceAttention->LastEvent) < s32(Profile.NoiseInterestInterval))
+	// Repeated evidence from the investigated object refreshes only its last heard point.
+	// This bypasses accumulation throttling, without reading the live object's position.
+	if (CanAttract && Event.SourceIdentifier != u16(-1) && Event.SourceIdentifier == AttentionSource &&
+		s32(InvestigateUntil - Device.dwTimeGlobal) > 0 && s32(PanicUntil - Device.dwTimeGlobal) <= 0 &&
+		s32(Event.OccurredAt - LastAttentionEventAt) > 0)
 	{
-		return true;
+		AttentionPosition = Event.Position;
+		AttentionNoiseType = Type;
+		AttentionIsActorSound = Event.IsActorSound;
+		AttentionPriority = std::max(AttentionPriority, Priority(Type, Profile));
+		LastAttentionEventAt = Event.OccurredAt;
+		InvestigateUntil = Event.OccurredAt + Profile.NoiseSearchTime;
 	}
 	SourceAttention->Position = Event.Position;
 	SourceAttention->NoiseType = Type;
+	SourceAttention->IsActorSound = Event.IsActorSound;
+	if (SourceAttention->LastEvent && s32(Event.OccurredAt - SourceAttention->LastEvent) < s32(Profile.NoiseInterestInterval))
+	{
+		PublishDebug(ListenerPosition, Profile, ListenerIdentifier);
+		return true;
+	}
 	const float Decay = float(Event.OccurredAt - SourceAttention->LastDecay) * .001f * Profile.NoiseDecay;
 	SourceAttention->Interest = std::max(0.f, SourceAttention->Interest - Decay);
 	SourceAttention->Fear = std::max(0.f, SourceAttention->Fear - Decay);
@@ -223,13 +240,15 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	}
 	const u32 IncomingPriority = Priority(Type, Profile);
 	const bool HasActiveAttention = s32(InvestigateUntil - Event.OccurredAt) > 0 || s32(PanicUntil - Event.OccurredAt) > 0;
-	// Equal and weaker events accumulate separately, without moving the active search anchor.
+	// Other equal and weaker sources accumulate without stealing the current investigation.
 	if (HasActiveAttention && IncomingPriority <= AttentionPriority)
 	{
+		PublishDebug(ListenerPosition, Profile, ListenerIdentifier);
 		return true;
 	}
 	if (s32(Event.OccurredAt - NextReaction) < 0 && (!HasActiveAttention || IncomingPriority <= AttentionPriority))
 	{
+		PublishDebug(ListenerPosition, Profile, ListenerIdentifier);
 		return true;
 	}
 	if (CanFrighten && (SourceAttention->Fear >= FearThreshold || Random.randF() < PanicChance))
@@ -237,8 +256,10 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 		AttentionPosition = Event.Position;
 		AttentionSource = Event.SourceIdentifier;
 		AttentionNoiseType = Type;
+		AttentionIsActorSound = Event.IsActorSound;
 		AttentionPriority = IncomingPriority;
 		AttentionStartedAt = Event.OccurredAt;
+		LastAttentionEventAt = Event.OccurredAt;
 		PanicUntil = Event.OccurredAt + Profile.NoisePanicDuration;
 		InvestigateUntil = 0;
 		NextReaction = Event.OccurredAt + Profile.NoiseCooldown;
@@ -249,8 +270,10 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 		AttentionPosition = Event.Position;
 		AttentionSource = Event.SourceIdentifier;
 		AttentionNoiseType = Type;
+		AttentionIsActorSound = Event.IsActorSound;
 		AttentionPriority = IncomingPriority;
 		AttentionStartedAt = Event.OccurredAt;
+		LastAttentionEventAt = Event.OccurredAt;
 		InvestigateUntil = Event.OccurredAt + Profile.NoiseSearchTime;
 		NextReaction = Event.OccurredAt + Profile.NoiseCooldown;
 		SourceAttention->Interest = 0.f;
@@ -279,10 +302,6 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 	string256 Label;
 	for (AttentionIterator = Attention.begin(); AttentionIterator != Attention.end(); ++AttentionIterator)
 	{
-		if (ReactionRemaining > 0 && Priority(AttentionIterator->NoiseType, Profile) < AttentionPriority)
-		{
-			continue;
-		}
 		Decay = float(CurrentTime - AttentionIterator->LastDecay) * .001f * Profile.NoiseDecay;
 		RemainingAttention = std::max(AttentionIterator->Interest, AttentionIterator->Fear) - Decay;
 		if (RemainingAttention <= 0.f)
@@ -292,6 +311,7 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 		Lifetime = Profile.NoiseDecay > 0.f ? u32(std::min(1500.f, RemainingAttention / Profile.NoiseDecay * 1000.f)) : 1500u;
 		DebugEvent.Kind = AttentionIterator->NoiseType == EELNoiseType::Light ? EELDebugEvent::Light : EELDebugEvent::Sound;
 		DebugEvent.TargetIdentifier = AttentionIterator->SourceIdentifier;
+		DebugEvent.StimulusType = u32(AttentionIterator->NoiseType);
 		DebugEvent.Finish = AttentionIterator->Position;
 		if (AttentionIterator->NoiseType == EELNoiseType::Light)
 		{
@@ -299,7 +319,7 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 		}
 		else
 		{
-			xr_sprintf(Label, "Услышан: %s (источник #%u)", CELSharedPerceptionProfiles::NoiseName(AttentionIterator->NoiseType), AttentionIterator->SourceIdentifier);
+			xr_sprintf(Label, "%s%s | услышан, интерес %.2f", CELSharedPerceptionProfiles::NoiseName(AttentionIterator->NoiseType), AttentionIterator->IsActorSound ? " ГГ" : "", RemainingAttention);
 		}
 		DebugEvent.Label = Label;
 		CELSharedDebug::Instance().PublishEvent(DebugEvent, Lifetime);
@@ -309,11 +329,13 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 		return;
 	}
 	DebugEvent.TargetIdentifier = AttentionSource;
+	DebugEvent.StimulusType = u32(AttentionNoiseType);
 	DebugEvent.Finish = AttentionPosition;
 	DebugEvent.Kind = AttentionNoiseType == EELNoiseType::Light ? EELDebugEvent::Light : EELDebugEvent::Sound;
-	xr_sprintf(Label, AttentionNoiseType == EELNoiseType::Light ? "СВЕТ: замечен источник" : "Услышан: %s", CELSharedPerceptionProfiles::NoiseName(AttentionNoiseType));
+	xr_sprintf(Label, AttentionNoiseType == EELNoiseType::Light ? "СВЕТ: замечен источник" : "%s%s | исследование точки", CELSharedPerceptionProfiles::NoiseName(AttentionNoiseType), AttentionIsActorSound ? " ГГ" : "");
 	DebugEvent.Label = Label;
 	CELSharedDebug::Instance().PublishEvent(DebugEvent, std::min(1500u, u32(ReactionRemaining)));
+	DebugEvent.Radius = 0.f;
 	DebugEvent.Kind = s32(PanicUntil - CurrentTime) > 0 ? EELDebugEvent::Fear : EELDebugEvent::Interest;
 	DebugEvent.Label = AttentionNoiseType == EELNoiseType::Light ? "СВЕТ: интерес, исследование точки" : DebugEvent.Kind == EELDebugEvent::Fear ? "Испуг: уход от звука"
 																																				: "Интерес: исследование звука";
@@ -324,8 +346,9 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 void CELSharedHearing::Clear()
 {
 	Attention.clear();
+	AttentionIsActorSound = false;
 	AttentionSource = u16(-1);
-	InvestigateUntil = PanicUntil = NextReaction = AttentionPriority = AttentionStartedAt = 0;
+	InvestigateUntil = PanicUntil = NextReaction = AttentionPriority = AttentionStartedAt = LastAttentionEventAt = 0;
 }
 
 // Удаляет накопленный шум и активную реакцию исчезнувшего источника.
@@ -337,7 +360,8 @@ void CELSharedHearing::RemoveObject(u16 SourceIdentifier)
 	if (AttentionSource == SourceIdentifier)
 	{
 		AttentionSource = u16(-1);
-		InvestigateUntil = PanicUntil = NextReaction = AttentionPriority = AttentionStartedAt = 0;
+		AttentionIsActorSound = false;
+		InvestigateUntil = PanicUntil = NextReaction = AttentionPriority = AttentionStartedAt = LastAttentionEventAt = 0;
 	}
 }
 
