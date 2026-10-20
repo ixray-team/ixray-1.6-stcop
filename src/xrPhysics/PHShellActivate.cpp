@@ -214,14 +214,21 @@ void CPHShell::Deactivate()
 	R_ASSERT2(!CPHObject::IsFreezed(),"can not deactivate freezed !!!");
 	ZeroCallbacks();
 	VERIFY(ph_world&&ph_world->Exist());
-	if(isFullActive())
+	if (isFullActive())
 	{
-		vis_update_deactivate();
-		CPHObject::activate();
-		ph_world->Freeze();
-		CPHObject::UnFreeze();
-		ph_world->StepTouch();
-		ph_world->UnFreeze();
+		// Skip world StepTouch while the owner is being destroyed: contact callbacks
+		// (sound/particles) would call into a half-destroyed GameObject vtable.
+		IPhysicsShellHolder* RefObject = PhysicsRefObject();
+		const bool SkipTouch = !RefObject || RefObject->ObjectGetDestroy();
+		if (!SkipTouch)
+		{
+			vis_update_deactivate();
+			CPHObject::activate();
+			ph_world->Freeze();
+			CPHObject::UnFreeze();
+			ph_world->StepTouch();
+			ph_world->UnFreeze();
+		}
 	}
 	spatial_unregister();
 	
