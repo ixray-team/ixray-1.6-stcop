@@ -74,10 +74,6 @@ protected:
 public:
 
 	EAction					m_tAction;
-	bool SearchInspectionAvailable = false;
-	EAction SearchInspectionAction = ACT_LOOK_AROUND;
-	u32 SearchInspectionDuration = 1000;
-	void ConfigureSearchInspection();
 
 	float					m_prev_character_velocity;
 

@@ -150,7 +150,6 @@ struct XRSOUND_API ref_sound
 	float					TimeToPropagade = 0.0f;	//!< timer for periodic AI sound-event propagation
 public:
 							ref_sound				();
-	ref_sound(const ref_sound& Other);
 							~ref_sound				();
 
 	IC u32		            slot				    ()						{return _p?_p->slot:0;}

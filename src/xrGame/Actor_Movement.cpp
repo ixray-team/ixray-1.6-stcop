@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 
 #include "Actor.h"
-#include "ai/monsters/basemonster/base_monster.h"
-#include "../xrCore/Kernel/EngineExternal.h"
 #include "InventoryVolumeSystem.h"
 #include "Inventory.h"
 #include "Weapon.h"
@@ -238,21 +236,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		{
 			mstate_real			|=	mcJump;
 			m_bJumpKeyPressed	=	true;
-			if (EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
-			{
-				const float NoiseRadius = EngineExternal().GetMonsterLogicIniFile()->read_if_exists<float>("monsters_logic", "MonsterActorJumpSoundRadius", 20.f);
-				xr_vector<ISpatialShared> Listeners;
-				g_SpatialSpace->q_sphere(Listeners, 0, ESPATIAL_TYPE::REACTTOSOUND, Position(), std::clamp(NoiseRadius, 0.f, 500.f));
-				for (const auto& Spatial : Listeners)
-				{
-					CObject* Object = Spatial ? Spatial->dcast_CObject() : nullptr;
-					CBaseMonster* Monster = Object ? Object->cast_base_monster() : nullptr;
-					if (Monster && Monster->g_Alive() && !Monster->getDestroy())
-					{
-						Monster->feel_sound_new(this, SOUND_TYPE_STEP | SOUND_TYPE_ACTOR_JUMP, nullptr, Position(), 1.f);
-					}
-				}
-			}
 			const float jump_modifier = GetArtefactJumpHeightModifier();
 			Jump = m_fJumpSpeed * (1.0f + jump_modifier);
 			if (Jump < 0.0f)

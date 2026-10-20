@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-#include "../../../../xrEngine/MonsterLogicTelemetry.h"
 #include "base_monster.h"
 #include "../../../EntityCondition.h"
 
@@ -17,7 +16,6 @@
 void CBaseMonster::UpdateMemory()
 {
 	PROF_EVENT("Update Memory");
-	CMonsterLogicTimerScope MemoryTimer(EMonsterLogicTimer::Memory);
 	// Обновить память
 	if (OnServer())
 	{

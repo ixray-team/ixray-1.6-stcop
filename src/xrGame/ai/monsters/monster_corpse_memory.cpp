@@ -124,7 +124,7 @@ CORPSE_MAP_IT CMonsterCorpseMemory::find_best_corpse()
 	float			min_dist = flt_max;
 
 	for (CORPSE_MAP_IT I = m_objects.begin(); I != m_objects.end(); I++) {
-		if (!monster->Behavior.Avoids(*monster, I->second.position) && I->second.position.distance_to(monster->Position()) < min_dist) {
+		if (I->second.position.distance_to(monster->Position()) < min_dist) {
 			min_dist = I->second.position.distance_to(monster->Position());
 			it = I;
 		}

@@ -59,46 +59,35 @@ bool CEnemyManager::is_useful				(const CEntityAlive *entity_alive) const
 
 bool CEnemyManager::useful					(const CEntityAlive *entity_alive) const
 {
-	return IsUsefulTarget(entity_alive, true);
-}
-
-bool CEnemyManager::UsefulForRememberedTarget(const CEntityAlive* Target) const
-{
-	// A saved destination may remain valid after the target leaves the AI graph.
-	return IsUsefulTarget(Target, false);
-}
-
-bool CEnemyManager::IsUsefulTarget(const CEntityAlive* Target, bool RequireValidVertex) const
-{
 	PROF_EVENT("CEnemyManager::useful");
 
 #ifndef MASTER_GOLD
-	if (const_cast<CEntityAlive*>(Target)->cast_actor() && psAI_Flags.test(aiIgnoreActor))
+	if (const_cast<CEntityAlive*>(entity_alive)->cast_actor() && psAI_Flags.test(aiIgnoreActor))
 		return				(false);
 #endif // MASTER_GOLD
 
-	if (!Target->g_Alive())
+	if (!entity_alive->g_Alive())
 		return				(false);
 
-	if ((Target->SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
+	if ((entity_alive->SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return				(false);
 
-	if ((m_object->ID() == Target->ID()) || !m_object->is_relation_enemy(Target))
+	if ((m_object->ID() == entity_alive->ID()) || !m_object->is_relation_enemy(entity_alive))
 		return				(false);
 
-	if (!ai().get_level_graph() || (RequireValidVertex && !ai().level_graph().valid_vertex_id(Target->ai_location().level_vertex_id())))
+	if (!ai().get_level_graph() || !ai().level_graph().valid_vertex_id(entity_alive->ai_location().level_vertex_id()))
 		return				(false);
 
 	if	(
 			m_object->human_being() &&
-			!Target->human_being() &&
-			!expedient(Target) &&
-			(evaluate(Target) >= m_ignore_monster_threshold) &&
-			(m_object->Position().distance_to(Target->Position()) >= m_max_ignore_distance)
+			!entity_alive->human_being() &&
+			!expedient(entity_alive) &&
+			(evaluate(entity_alive) >= m_ignore_monster_threshold) &&
+			(m_object->Position().distance_to(entity_alive->Position()) >= m_max_ignore_distance)
 		)
 		return				(false);
 
-	return					(m_useful_callback ? m_useful_callback(m_object->lua_game_object(),Target->lua_game_object()) : true);
+	return					(m_useful_callback ? m_useful_callback(m_object->lua_game_object(),entity_alive->lua_game_object()) : true);
 }
 
 float CEnemyManager::do_evaluate			(const CEntityAlive *object) const

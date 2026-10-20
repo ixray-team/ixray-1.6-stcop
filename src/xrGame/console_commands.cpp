@@ -2166,7 +2166,6 @@ public:
 	}
 };
 
-#include "MonsterLogicTestSpawn.h"
 
 #include "alife_smart_terrain_registry.h"
 class CCC_SpawnSquad : public IConsole_Command {

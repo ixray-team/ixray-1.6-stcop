@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "HudSound.h"
-#include "../xrSound/ai_sounds.h"
 
 float HUD_SOUND_ITEM::g_fHudSndFrequency = 1.0f;
 float HUD_SOUND_ITEM::g_fHudSndVolumeFactor = 1.0f;
@@ -61,8 +60,6 @@ void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, ref_sound&
 		"In section [%s], line [%s] does not contain sound", section, line));
 
 	_GetItem(str, 0, buf_str);
-	// Preserve gunshot semantics but distinguish suppressed sound propagation.
-	if (strstr(line, "silencer") || strstr(line, "silncer")) type |= SOUND_TYPE_SUPPRESSED;
 	snd.create(buf_str, sound_type, type);
 
 	if (volume != nullptr)

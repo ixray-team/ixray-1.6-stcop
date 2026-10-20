@@ -52,8 +52,6 @@ public:
 								CEnemyManager		(CCreature *object);
 	virtual void				reload				(const char* section);
 	virtual bool				useful				(const CEntityAlive *object) const;
-			bool				UsefulForRememberedTarget(const CEntityAlive* Target) const;
-			bool				IsUsefulTarget(const CEntityAlive* Target, bool RequireValidVertex) const;
 	virtual bool				is_useful			(const CEntityAlive *object) const;
 	virtual	float				evaluate			(const CEntityAlive *object) const;
 	virtual	float				do_evaluate			(const CEntityAlive *object) const;

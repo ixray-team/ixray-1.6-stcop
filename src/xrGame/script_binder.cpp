@@ -240,13 +240,6 @@ void CScriptBinder::net_Relcase		(CObject *object)
 	}
 	PROF_EVENT("CScriptBinder::net_Relcase")
 	CGameObject						*game_object = object->cast_game_object();
-	// Autonomous native crows do not own script links. Explicitly scripted
-	// flyers retain notification semantics during ordinary online/offline changes.
-	if (game_object && game_object->CLS_ID == CLSID_AI_SCAVENGER_CROW && !game_object->ScriptCallbacksEnabled())
-	{
-		return;
-	}
-
 	if (m_object && m_object->has_net_relcase())
 	{
 		PROF_EVENT("CScriptBinder::net_Relcase")

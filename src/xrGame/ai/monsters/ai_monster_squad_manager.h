@@ -22,8 +22,6 @@ class CMonsterSquadManager {
 	using MONSTER_TEAM_VEC_IT = MONSTER_TEAM_VEC::iterator;
 
 	MONSTER_TEAM_VEC team;
-	u32 LinksCleanupFrame = u32(-1);
-	xr_hash_set<const CObject*> CleanedLinks;
 
 public:
 	CMonsterSquadManager	();
@@ -38,7 +36,6 @@ public:
 	void			update					(CEntity *entity);
 
 	void			remove_links			(CObject *O);
-	void ClearLinksForTeardown();
 };
 
 

@@ -11,31 +11,6 @@ CEngineExternal::CEngineExternal() :
 	string_path fname;
 	FS.update_path(fname, _game_config_, "engine_external.ltx");
 	pOptions = new CInifile(fname);
-	MonsterLogicEnabled = pOptions->read_if_exists<bool>("gameplay", "UseDeathOrDieMonstersLogic", false);
-	FS.update_path(fname, _game_config_, "new_monsters_logic.ltx");
-	MonsterLogicConfigAvailable = FS.exist(_game_config_, "new_monsters_logic.ltx");
-	MonsterLogicOptions = new CInifile(fname, true, MonsterLogicConfigAvailable);
-	float SharingMin = MonsterLogicOptions->read_if_exists<float>("monsters_logic", "MonsterEnemySharingIntervalMin", 3.f);
-	float SharingMax = MonsterLogicOptions->read_if_exists<float>("monsters_logic", "MonsterEnemySharingIntervalMax", 5.f);
-	if (!_valid(SharingMin) || SharingMin < .25f || SharingMin > 60.f)
-	{
-		SharingMin = 3.f;
-	}
-	if (!_valid(SharingMax) || SharingMax < .25f || SharingMax > 60.f)
-	{
-		SharingMax = 5.f;
-	}
-	if (SharingMax < SharingMin)
-	{
-		std::swap(SharingMin, SharingMax);
-	}
-	MonsterEnemySharingIntervalMin = u32(SharingMin * 1000.f);
-	MonsterEnemySharingIntervalMax = u32(SharingMax * 1000.f);
-	MonsterEnemySharingCloseRatio = MonsterLogicOptions->read_if_exists<float>("monsters_logic", "MonsterEnemySharingCloseRatio", .25f);
-	if (!_valid(MonsterEnemySharingCloseRatio) || MonsterEnemySharingCloseRatio < 0.f || MonsterEnemySharingCloseRatio > 1.f)
-	{
-		MonsterEnemySharingCloseRatio = .25f;
-	}
 
 	if (pOptions->section_exist("shaders_options"))
 	{
@@ -68,7 +43,6 @@ CEngineExternal::CEngineExternal() :
 
 CEngineExternal::~CEngineExternal() 
 {
-	xr_delete(MonsterLogicOptions);
 	xr_delete(pOptions);
 }
 

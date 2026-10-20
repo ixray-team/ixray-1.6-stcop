@@ -73,8 +73,7 @@ TEMPLATE_SPECIALIZATION
 void CStateGroupEatAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	// Interrupted meals must release the body even when the eating state is incomplete.
-	if ( (corpse==this->object->EatedCorpse) && this->object->EatedCorpse )
+	if ( (corpse==this->object->EatedCorpse) && this->object->EatedCorpse && check_completion() )
 	{
 		if (this->object->character_physics_support()->movement()->PHCapture())
 			this->object->character_physics_support()->movement()->PHReleaseObject();
@@ -315,7 +314,6 @@ void CStateGroupEatAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 bool CStateGroupEatAbstract::check_completion()
 {
-	if (this->object->HasPriorityNoise()) return true;
 	if (corpse != this->object->EatedCorpse) return true;
 	if (!hungry()) return true;
 
@@ -325,7 +323,6 @@ bool CStateGroupEatAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 bool CStateGroupEatAbstract::check_start_conditions()
 {
-	if (this->object->HasPriorityNoise()) return false;
 	if (this->object->EatedCorpse) return true;
 	return (
 		this->object->CorpseMan.get_corpse() && 

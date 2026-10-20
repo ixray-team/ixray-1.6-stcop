@@ -4,7 +4,6 @@
 #include "../../entity_alive.h"
 #include "basemonster/base_monster.h"
 #include "monster_home.h"
-#include "../../../xrCore/Kernel/EngineExternal.h"
 
 void CMonsterSquad::ProcessAttack()
 {
@@ -38,18 +37,7 @@ void CMonsterSquad::ProcessAttack()
 			continue;
 		}
 
-		const bool MonsterMembers = std::all_of(monsters->begin(), monsters->end(), [](const CEntity* Member)
-		{
-			return smart_cast<const CBaseMonster*>(Member) != nullptr;
-		});
-		if (MonsterMembers && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
-		{
-			assign_monsters_target_dirs(it_enemy->second, it_enemy->first);
-		}
-		else
-		{
-			Attack_AssignTargetDir(it_enemy->second, it_enemy->first);
-		}
+		Attack_AssignTargetDir(it_enemy->second, it_enemy->first);
 
 		// a squad of CBaseMonster-s ? 
 // 		if ( smart_cast<CBaseMonster*>(*(monsters->begin())) )
@@ -153,10 +141,7 @@ void CMonsterSquad::get_index_in_squad(ENTITY_VEC &members, const CEntity *m_ene
 		pEntity = members.back();
 		pEntity->cast_entity_alive()->m_squad_index = m_index;
 		CEntity* enemy = const_cast<CEntity*>(m_enemy);
-		if (!EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation])
-		{
-			pEntity->cast_base_monster()->SetEnemy(enemy != nullptr ? enemy->cast_entity_alive() : nullptr);
-		}
+		pEntity->cast_base_monster()->SetEnemy(enemy != nullptr ? enemy->cast_entity_alive() : nullptr);
 		members.pop_back();
 	}
 }
@@ -256,7 +241,7 @@ Fvector   CMonsterSquad::calc_monster_target_dir (CBaseMonster* monster, const C
 	VERIFY(monster);
 	VERIFY(enemy);
 
-	const Fvector enemy_pos = monster->EnemyMan.GetKnownEnemyPosition(smart_cast<const CEntityAlive*>(enemy));
+	const Fvector enemy_pos = enemy->Position();
 	Fvector home2enemy = enemy_pos;
 	home2enemy.sub(monster->Home->get_home_point());
 

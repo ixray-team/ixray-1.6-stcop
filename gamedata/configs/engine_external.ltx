@@ -92,13 +92,10 @@ EnableBlockSprintInReload = false        ; Enable block sprint in reload
 DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
 SprintFovFactor = 3.0                   ; FOV magnification power while running
 
-; Monsters ai (required custom monsters configs and shared monsters options new_monsters_logic.ltx)
-UseDeathOrDieMonstersLogic = false ; Enable additional monster logic
-
 [spawn_supplies]
 EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
 ;; select one option ;;
-EnableSpawnFullRandomLoadout				= false; Spawn all sections by once random loadout included for npc
+EnableSpawnFullRandomLoadout				= false; Spawn all sections by once random loadout included for npc 
 EnableSpawnOnceRandomItemPerEachLoadouts	= true; Spawn by one item each loadouts included for npc (CoC Style)
 EnableSpawnOnceRandomitemByRandomLoadout	= false; Spawn once random item by all included loadouts for npc
 
@@ -118,9 +115,9 @@ PreferedFallbackLanguage = eng
 MaterialOCC = false                     ; Use materail occ info
 
 [system]
-AdvancedSerialization = false           ; Enable new save and load system
+AdvancedSerialization = false           ; Enable new save and load system 
 AdvancedSerializationDebugLog = false   ; In case of serious problems with save corruption, can turn extended logging (heavily affects on performance)
-EngineScriptStoryID = false             ; Enable StoryID from engine
+EngineScriptStoryID = false             ; Enable StoryID from engine 
 EngineAmmoRepacker = false              ; Enable automatic ammo repacker from engine
 CustomMessageInClipboardOnCrash = false ; Enable custom message to clipboard on crash (make string for st_clipboard_error_message)
 
@@ -129,10 +126,10 @@ CustomMessageInClipboardOnCrash = false ; Enable custom message to clipboard on 
 ;; Extended sections
 
 [player_hud]
-PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your omf file pathes
+PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your omf file pathes 
 
 ; Need [gameplay]:EnableActorStepWallmarks
-[step_wallmark]
+[step_wallmark] 
 materials = earth, test1                ; Material names
 left_mark = l_foot                      ; left foot wallmark section
 right_mark = r_foot                     ; right foot wallmark section

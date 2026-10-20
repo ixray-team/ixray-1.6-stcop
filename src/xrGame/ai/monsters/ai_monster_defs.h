@@ -494,21 +494,6 @@ struct SMonsterEnemy {
 	u32		vertex;
 	TTime	time;
 	float	danger;
-	u32 RetentionTime = 0;
-	u32 ForgetTime = 0;
-	u32 ReachedPointTime = 0;
-	u32 UnreachableSearchUntil = 0;
-	u32 ApproachUntil = 0, ApproachProgressTime = 0;
-	u32 OwnObservationTime = 0, OriginTime = 0;
-	bool OwnVisiblePreviously = false;
-	bool InspectionCommitted = false;
-	bool NavigationFallback = false;
-	Fvector Trail[5]{};
-	u32 TrailTimes[5]{};
-	const char* Evidence = "OBSERVATION";
-	u32 TrailCount = 0;
-	Fvector TrailHeading = {0.f, 0.f, 0.f};
-	bool HasTrailHeading = false;
 };
 
 class CEntityAlive;

@@ -98,7 +98,6 @@ public:
 
 	// -----------------------------------------------------------------
 
-	void ClearLinksForTeardown();
 	void			RegisterMember		(CEntity *pE);
 	void			RemoveMember		(CEntity *pE);
 
@@ -113,7 +112,7 @@ public:
 	// -----------------------------------------------------------------
 
 	void			UpdateGoal			(CEntity *pE, const SMemberGoal	&goal);
-	void			InformSquadAboutEnemy	(CEntityAlive const * const enemy, CBaseMonster* Source = nullptr);
+	void			InformSquadAboutEnemy	(CEntityAlive const * const enemy);
 	void			UpdateCommand		(const CEntity *pE, const SSquadCommand &com);
 	
 	void			GetGoal				(CEntity *pE, SMemberGoal &goal);

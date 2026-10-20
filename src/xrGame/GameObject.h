@@ -122,7 +122,6 @@ protected:
 	int						m_script_clsid;
 	u32						m_spawn_time;
 public:
-	virtual bool ScriptCallbacksEnabled() const { return true; }
 	CGameObject();
 	virtual ~CGameObject();
 public:

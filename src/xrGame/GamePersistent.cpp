@@ -50,7 +50,6 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "HUDManager.h"
-#include "MonsterEnemySharingDebug.h"
 #include "ImUtils/AIGridEditor.h"
 #include "../xrUI/UICursor.h"
 
@@ -998,7 +997,6 @@ void CGamePersistent::OnRenderPPUI_main()
 	{
 		Level().BulletManager().Render();
 
-		MonsterEnemySharingDebug().Draw(HUD().world_prims);
 		HUD().draw_prims();
 #ifdef DEBUG_DRAW
 		RenderAIGridEditorWorld();

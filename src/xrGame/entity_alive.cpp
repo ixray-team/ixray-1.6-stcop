@@ -401,10 +401,7 @@ void CEntityAlive::Die	(CObject* who)
 	inherited::Die(who);
 	
 	const CGameObject *who_object = who ? who->cast_game_object() : NULL;
-	if (ScriptCallbacksEnabled())
-	{
-		callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
-	}
+	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
 
 	if (!getDestroy() && (IsGameTypeSingle())) {
 		NET_Packet		P;

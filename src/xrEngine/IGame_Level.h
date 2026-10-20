@@ -89,7 +89,6 @@ public:	// deferred sound events
 		Feel::Sound*			dest	;
 		ref_sound_data_ptr		source	;
 		float					power	;
-		Fvector Position;
 	};
 	xr_vector<_esound_delegate>	snd_Events;
 public:
@@ -141,10 +140,6 @@ public:
 	virtual	void				SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
 	virtual void				LoadEditor(shared_str LevelName) {};
-
-	// Game-owned operations invoked by renderer console commands.
-	virtual u32 ReloadMonsterLogicOptions() { return 0; }
-	virtual void SetMonsterLogicDraw(bool Enabled) {}
 
 	ICF void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0, 255, 100, 255), shared_str str = "+")
 	{

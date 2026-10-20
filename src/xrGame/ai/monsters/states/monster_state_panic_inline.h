@@ -68,11 +68,6 @@ void CStateMonsterPanicAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::check_force_state()
 {
-	if (this->object->HasDamagePanic())
-	{
-		this->select_state(eStatePanic_Run);
-		return;
-	}
 	if (this->current_substate == eStatePanic_FaceUnprotectedArea)
 	{
 		// если видит врага

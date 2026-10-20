@@ -26,9 +26,6 @@ namespace Feel
 		xr_vector<ISpatialShared>	r_spatial;
 		CObject*					m_owner;
 		CFrustum					Frustum;
-		CObject* AttentionObject = nullptr;
-		u32 AttentionUntil = 0;
-		float AttentionAngle = 0.f, AttentionRadius = 0.f;
 		xrSRWLock					lock_query, lock_visible;
 
 		void						o_new		(CObject* E);
@@ -47,10 +44,6 @@ namespace Feel
 			CObject*			O;
 			float				fuzzy;		// note range: (-1[no]..1[yes])
 			float				Cache_vis;
-			bool OwnTraceVisible = false;
-			u32 OwnObservationTime = 0;
-			float OwnExposureMilliseconds = 0.f;
-			Fvector OwnObservationPosition;
 			u16					bone_id;
 		};
 		xr_vector<feel_visible_Item>	feel_visible;
@@ -60,10 +53,6 @@ namespace Feel
 		void						feel_vision_update		(Fvector& P, float dt, float vis_threshold);
 		void						feel_vision_relcase		(CObject* object);
 		void						feel_vision_get			(xr_vector<CObject*>& R);
-		void SetAttentionVisionObject(CObject* Object, u32 Until, float Angle = 0.f, float Radius = 0.f);
-		void GetOwnVisibleObjects(xr_vector<CObject*>& Objects);
-		bool GetOwnVisionObservation(const CObject* Object, Fvector& Position, u32& Time);
-		bool GetOwnVisionExposure(const CObject* Object, float& Milliseconds);
 		Fvector						feel_vision_get_vispoint(CObject* _O);
 		virtual		bool			feel_vision_isRelevant	(CObject* O)					= 0;
 		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	

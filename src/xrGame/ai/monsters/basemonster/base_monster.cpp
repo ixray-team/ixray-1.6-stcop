@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include "../../../../xrEngine/MonsterLogicTelemetry.h"
 #include "base_monster.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../Hit.h"
@@ -245,13 +244,8 @@ bool enemy_inaccessible (CBaseMonster * const object)
 		return false;
 	}
 
-	Fvector const enemy_pos = object->EnemyMan.GetTrackingPosition();
-	const u32 EnemyVertex = object->EnemyMan.GetTrackingVertex();
-	if (!ai().level_graph().valid_vertex_id(EnemyVertex))
-	{
-		return true;
-	}
-	Fvector const enemy_vert_pos = ai().level_graph().vertex_position(EnemyVertex);
+	Fvector const enemy_pos			=	enemy->Position();
+	Fvector const enemy_vert_pos	=	ai().level_graph().vertex_position(enemy->ai_location().level_vertex_id());
 	
 	float const xz_dist_to_vertex	=	enemy_vert_pos.distance_to_xz(enemy_pos);
 	float const y_dist_to_vertex	= std::abs(enemy_vert_pos.y - enemy_pos.y);
@@ -271,7 +265,7 @@ bool enemy_inaccessible (CBaseMonster * const object)
 	if ( !ai().level_graph().valid_vertex_position(enemy_pos) )
 		return							true;
 	
-	if ( !ai().level_graph().valid_vertex_id(EnemyVertex) )
+	if ( !ai().level_graph().valid_vertex_id(enemy->ai_location().level_vertex_id()) )
 		return							true;
 	
 	return								false;
@@ -284,7 +278,7 @@ bool CBaseMonster::enemy_accessible ()
 
 	if ( EnemyMan.get_enemy() )
 	{
-		u32 const enemy_vertex		=	EnemyMan.GetTrackingVertex();
+		u32 const enemy_vertex		=	EnemyMan.get_enemy()->ai_location().level_vertex_id();
 		if ( ai_location().level_vertex_id() == enemy_vertex )
 			return						false;
 	}
@@ -348,7 +342,6 @@ void CBaseMonster::Serialize(ISaveObject& Object)
 
 void CBaseMonster::UpdateCL()
 {
-	CMonsterLogicTimerScope ClientTimer(EMonsterLogicTimer::ClientUpdate);
 	PROF_EVENT("CBaseMonster::UpdateCL")
 #ifdef DEBUG
 	if ( Level().CurrentEntity() == this )
@@ -393,7 +386,6 @@ void CBaseMonster::UpdateCL()
 
 void CBaseMonster::shedule_Update(u32 dt)
 {
-	CMonsterLogicTimerScope ScheduleTimer(EMonsterLogicTimer::Schedule);
 	PROF_EVENT("CBaseMonster::shedule_Update")
 #ifdef DEBUG
 	if ( is_paused () )
@@ -446,7 +438,6 @@ void CBaseMonster::shedule_Update(u32 dt)
 
 void CBaseMonster::Die(CObject* who)
 {
-	Behavior.OnDeath(*this);
 	SpatialComponent->type &= ~ESPATIAL_TYPE::MONSTER_ALIVE;
 	SpatialComponent->type |= ESPATIAL_TYPE::MONSTER_DEAD;
 
@@ -515,8 +506,6 @@ void CBaseMonster::Hit(SHit* pHDS)
 		}
 	}
 	inherited::Hit(pHDS);
-	// Damage reaction must also run for hits without a skeleton bone.
-	ReactToActorDamage(conditions().GetHealthLost(), pHDS->who);
 }
 
 void CBaseMonster::PHHit(SHit &H)
@@ -770,12 +759,6 @@ void CBaseMonster::TranslateActionToPathParams()
 		des_mask = MonsterMovement::eVelocityParameterInvisible;
 	}
 
-	if (is_state(StateMan->get_state_type(), eStateAttack) && ShouldApproachHiddenEnemy() && !control().is_captured_pure())
-	{
-		vel_mask = m_bDamaged ? MonsterMovement::eVelocityParamsWalkDamaged : MonsterMovement::eVelocityParamsWalk;
-		des_mask = m_bDamaged ? MonsterMovement::eVelocityParameterWalkDamaged : MonsterMovement::eVelocityParameterWalkNormal;
-	}
-
 	if (m_force_real_speed) vel_mask = des_mask;
 
 	if (bEnablePath) {
@@ -789,7 +772,7 @@ void CBaseMonster::TranslateActionToPathParams()
 
 u32 CBaseMonster::get_attack_rebuild_time()
 {
-	float dist = EnemyMan.GetTrackingPosition().distance_to(Position());
+	float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
 	return (100 + u32(20.f * dist));
 }
 

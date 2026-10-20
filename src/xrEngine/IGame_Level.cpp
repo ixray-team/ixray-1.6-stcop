@@ -5,8 +5,6 @@
 #include "CameraManager.h"
 #include "CustomHUD.h"
 #include "Feel_Sound.h"
-#include "../xrSound/ai_sounds.h"
-#include "../xrCore/Kernel/EngineExternal.h"
 #include "Render.h"
 #include "std_classes.h"
 #include "xrLevel.h"
@@ -377,14 +375,11 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 
 	VERIFY(_valid(range) );
 	range = std::min(range,p.max_ai_distance);
-	if (S->g_type != int(0xffffffff) && (S->g_type & SOUND_TYPE_SUPPRESSED)) range *= .3f;
 	VERIFY(_valid(snd_position));
 	VERIFY(_valid(p.max_ai_distance));
 	VERIFY(_valid(p.volume));
 
-	// Monster distance hearing must not be clipped by asset range or occlusion.
-	const float QueryRange = EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? 500.f : range;
-	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { QueryRange,QueryRange,QueryRange });
+	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { range,range,range });
 
 	// Iterate
 	for (auto& spatial : snd_ER)
@@ -398,20 +393,7 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 		// Energy and signal
 		VERIFY(_valid(spatial->sphere.P));
 		float dist = snd_position.distance_to(spatial->sphere.P);
-		const float DistanceRange = L->GetDistanceSoundRange(S->g_type, S->g_object);
-		if (DistanceRange >= 0.f)
-		{
-			const float HearingFactor = std::clamp(L->GetHearingRangeFactor(), 0.f, 1.f);
-			if (DistanceRange > 0.f && HearingFactor > 0.f && dist <= DistanceRange * HearingFactor)
-			{
-				snd_Events.push_back({ L, S, 1.f, snd_position });
-			}
-			continue;
-		}
-		if (S->g_type != int(0xffffffff) && (S->g_type & SOUND_TYPE_MELEE)) continue;
 		if (dist>p.max_ai_distance) continue;
-		const float HearingFactor = std::clamp(L->GetHearingRangeFactor(), 0.f, 1.f);
-		if (HearingFactor <= 0.f || dist > range * HearingFactor) continue;
 		VERIFY(_valid(dist));
 		float Power = (1.f-dist/p.max_ai_distance)*p.volume;
 		VERIFY(_valid(Power));
@@ -421,7 +403,7 @@ void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 			VERIFY(_valid(occ));
 			Power *= occ;
 			if (Power>EPS_S)
-				snd_Events.push_back({ L, S, Power, snd_position });
+				snd_Events.push_back({ L, S, Power });
 		}
 	}
 }
@@ -439,7 +421,7 @@ void IGame_Level::SoundEvent_Dispatch()
 				D.source->g_object, 
 				D.source->g_type, 
 				D.source->g_userdata, 
-				D.Position,
+				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position, 
 				D.power
 			);
 		}

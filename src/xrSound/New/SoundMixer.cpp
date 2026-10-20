@@ -884,7 +884,6 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 	}
 
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	xr_vector<ref_sound_data_ptr> PendingEvents;
 	for (const auto& Command : GMixer.cmd)
 	{
 		switch (Command.id)
@@ -894,9 +893,6 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				bool IsSoundExists = (Command.param1 && GMixer.sounds.contains((ref_sound*)Command.param1));
 				ref_sound* RefSound = IsSoundExists ? (ref_sound*)Command.param1 : nullptr;
 				u16 Flags = Command.param0;
-				// Overlapping playback passes its emitter in the command, without changing the reusable sound reference.
-				CObject* PlaybackObject = (Flags & (u16)Flags::NoFeedback) ?
-					reinterpret_cast<CObject*>(Command.param3) : (RefSound ? RefSound->_g_object() : nullptr);
 
 				auto& ActualSlot = GMixer.slots[Command.slot - 1];
 				Snd_ReleaseVoiceEffects(ActualSlot, SoundEffectOp::Destroy);
@@ -945,32 +941,47 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				// Start decoding the first cache line immediately (off the audio thread) so the sound is ready by the time it is rendered.
 				Snd_QueueDecode(&ActualSlot.sound_name, 0);
 
-				if (ActualSlot.flags & (u16)Flags::Spatial && RefSound != nullptr && PlaybackObject != nullptr)
+				if (ActualSlot.flags & (u16)Flags::Spatial && RefSound != nullptr && RefSound->_g_object() != nullptr)
 				{
-					ActualSlot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)PlaybackObject)->renderable.xform.c;
+					ActualSlot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)RefSound->_g_object())->renderable.xform.c;
 				}
 
 				ActualSlot.doppler = 1.0f;
 				ActualSlot.velocity.set(0.0f, 0.0f, 0.0f);
 				ActualSlot.prev_position = ActualSlot.parameters[(u32)Mixer::ParameterId::Position];
 
-				if (Handler && RefSound && RefSound->_p && PlaybackObject)
+				if (Handler != nullptr)
 				{
-					int GameType = RefSound->_p->g_type;
-					if (GameType == int(sg_SourceType))
+					float Clip = Source.Desc.max_ai_distance * Source.Desc.volume;
+					float Range = std::min(Source.Desc.max_ai_distance, Clip);
+
+					if (Range >= 0.1f && RefSound != nullptr && RefSound->_p != nullptr)
 					{
-						GameType = int(Source.Desc.game_type);
-						RefSound->_p->g_type = GameType;
+						if (CObject* Object = RefSound->_g_object())
+						{
+							int GameType = RefSound->_p->g_type;
+							if (GameType == (int)sg_SourceType)
+							{
+								GameType = (int)Source.Desc.game_type;
+								RefSound->_p->g_type = GameType;
+							}
+
+							if (Flags & (u16)Flags::NoFeedback)
+							{
+								ref_sound_data_ptr DataPtr = new ref_sound_data();
+								DataPtr->slot = Command.slot;
+								DataPtr->g_type = GameType;
+								DataPtr->g_object = Object;
+								DataPtr->dont_destroy_slot = true;
+								DataPtr->fn_attached[0] = Source.Desc.path;
+								Handler(DataPtr, Range);
+							}
+							else
+							{
+								Handler(RefSound->_p, Range);
+							}
+						}
 					}
-					// Preserve each playback's emitter and type until all queued parameters are applied.
-					ref_sound_data_ptr Data = new ref_sound_data();
-					Data->slot = Command.slot;
-					Data->g_type = GameType;
-					Data->g_object = PlaybackObject;
-					Data->g_userdata = RefSound->_p->g_userdata;
-					Data->dont_destroy_slot = true;
-					Data->fn_attached[0] = Source.Desc.path;
-					PendingEvents.push_back(Data);
 				}
 
 				if (!fis_zero(Command.param2))
@@ -1079,15 +1090,6 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 		}
 	}
 
-	// PlayNoFeedback queues position/range/volume after play. AI must see their final values.
-	for (const auto& Event : PendingEvents)
-	{
-		const auto& Slot = GMixer.slots[Event->slot - 1];
-		if (Slot.state != State::Playing && Slot.state != State::Delay) continue;
-		const CSound_params Params = Event->get_params();
-		const float Range = std::min(Params.max_ai_distance, Params.max_ai_distance * Params.volume);
-		if (Range >= .1f) Handler(Event, Range);
-	}
 	GMixer.cmd.resize(0);
 	g_SoundStats.update_time_micros = (Snd_GetTimestamp() - TimeStamp) / 1000;
 
@@ -1556,7 +1558,7 @@ Fvector* Mixer::GetParameters(u32 SlotID)
 	return GMixer.slots[SlotID - 1].parameters;
 }
 
-ref_sound::ref_sound() : _unique_id(0)
+ref_sound::ref_sound()
 {
 	xrSRWLockGuard Guard1(GMixer.manage_lock);
 
@@ -1564,14 +1566,6 @@ ref_sound::ref_sound() : _unique_id(0)
 	{
 		GMixer.sounds.emplace(this);
 	}
-}
-
-// Sound pools copy references during insertion and reallocation; every live address must be registered.
-ref_sound::ref_sound(const ref_sound& Other) : ref_sound()
-{
-	_unique_id = Other._unique_id;
-	_p = Other._p;
-	TimeToPropagade = Other.TimeToPropagade;
 }
 
 ref_sound::~ref_sound()

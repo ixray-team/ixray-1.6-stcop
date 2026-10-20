@@ -1,7 +1,5 @@
 #pragma once
 
-#include <atomic>
-
 enum class EEngineExternalUI
 {
 	//HQIcons,
@@ -76,16 +74,6 @@ enum class EEngineExternalGame
 	None
 };
 
-enum class EEngineExternalMonstersLogic
-{
-	EnableMonsterFactionEnemySharingIsolation,
-	EnableMonsterFriendlyEnemySharing,
-	EnableMonsterDistributedTargeting,
-	EnableMonsterEnemySharingCallSounds,
-	EnableMonsterVisionIgnoreFoliage,
-	None
-};
-
 enum class EEngineExternalRender 
 {
 	DisableLoadScreenTips,
@@ -154,17 +142,7 @@ class XRCORE_API CEngineExternal final
 		return Cache[(ntype)ID];
 	}
 	
-private:
-	std::atomic<int> MonsterLogicOverride{-1};
-	float MonsterEnemySharingCloseRatio = .25f;
-	u32 MonsterEnemySharingIntervalMin = 3000;
-	u32 MonsterEnemySharingIntervalMax = 5000;
 public:
-	u32 GetMonsterEnemySharingIntervalMin() const { return MonsterEnemySharingIntervalMin; }
-	u32 GetMonsterEnemySharingIntervalMax() const { return MonsterEnemySharingIntervalMax; }
-	float GetMonsterEnemySharingCloseRatio() const { return MonsterEnemySharingCloseRatio; }
-	void SetMonsterLogicOverride(int Value) { MonsterLogicOverride.store(Value, std::memory_order_relaxed); }
-	int GetMonsterLogicOverride() const { return MonsterLogicOverride.load(std::memory_order_relaxed); }
 	CEngineExternal();
 	~CEngineExternal();
 
@@ -212,21 +190,6 @@ public:
 		return CachedGetSettings<EEngineExternalSpawnSupplies>(pOptions, Type, ID);
 	}
 
-	ICF bool operator[](const EEngineExternalMonstersLogic& ID) const
-	{
-		if (!MonsterLogicConfigAvailable)
-		{
-			return false;
-		}
-		const int Override = GetMonsterLogicOverride();
-		if (ID == EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation)
-		{
-			return Override >= 0 ? Override != 0 : MonsterLogicEnabled;
-		}
-		static xr_stack_string16 Type = "monsters_logic";
-		return CachedGetSettings<EEngineExternalMonstersLogic>(MonsterLogicOptions, Type, ID);
-	}
-
 	ICF bool operator[](const EEngineExternalRender& ID) const
 	{
 		static xr_stack_string16 Type = "render";
@@ -262,16 +225,12 @@ public:
 	Ivector2 gamesaveSize;
 
 	CInifile* GetIniFile();
-	CInifile* GetMonsterLogicIniFile() const { return MonsterLogicOptions; }
 private:
 	void InitPlatform(const char* pPlatformName);
 
 private:
 	EEngineExternalPlatform m_platform_type;
 	CInifile* pOptions;
-	CInifile* MonsterLogicOptions = nullptr;
-	bool MonsterLogicEnabled = false;
-	bool MonsterLogicConfigAvailable = false;
 };
 
 const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform);

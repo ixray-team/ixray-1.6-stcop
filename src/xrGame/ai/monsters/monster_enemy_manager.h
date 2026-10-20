@@ -30,27 +30,6 @@ class CMonsterEnemyManager {
 	u32					enemy_vertex_enemy_last_seen;
 
 	u32					m_time_updated;
-	u32 PlayerExposureTargetID = u32(-1);
-	float PlayerExposureConsumed = 0.f;
-	float PlayerExposureAccumulated = 0.f;
-	bool PlayerVisualAcquired = false;
-	u32 PlayerExposureLastVisibleTime = 0;
-	u32 OwnVisionFrame = u32(-1);
-	xr_vector<CObject*> OwnVisibleObjects;
-	ALife::_OBJECT_ID PendingBroadcastID = ALife::INVALID_OBJECT_ID;
-	u32 NextSharingUpdate = 0;
-	u32 NextSharingReceive = 0;
-	u32 SharingPeerCursor = 0;
-	const CEntityAlive* SharingTargetCursor = nullptr;
-	const CEntityAlive* DamageFocus = nullptr;
-	u32 DamageFocusUntil = 0;
-	const CEntityAlive* AssignedEnemy = nullptr;
-	u32 AssignmentUntil = 0;
-	u32 NextDistributionUpdate = 0;
-	u32 NextCallSoundTime = 0;
-	u32 NavigationTargetID = u32(-1), NavigationCheckTime = 0, NavigationVertex = u32(-1);
-	Fvector NavigationPosition = {0.f, 0.f, 0.f}, NavigationObservedPosition = {0.f, 0.f, 0.f};
-	xr_vector<u16> CalledEnemyIds;
 	u32					m_time_start_see_enemy;
 
 public:
@@ -87,27 +66,7 @@ public:
 	bool				is_enemy					(const CEntityAlive *obj);
 
 	// обновить врага в соответствии с врагом у monster
-	void				transfer_enemy				(CBaseMonster *friend_monster, bool ParentLink = false);
-	void ResetEnemySharingState(bool ResetSelection = false);
-	void FocusDamageAttacker(const CEntityAlive* Attacker);
-	bool HasDamageFocus(const CEntityAlive* Target) const;
-	bool ReceiveSharedEnemy(CBaseMonster* Source, const CEntityAlive* Target, bool ValidatedSource = false, bool Immediate = false);
-	bool ReceiveKnownEnemies(CBaseMonster* Source, bool Immediate = false);
-	void FinishEnemySharing(CBaseMonster* Source, const xr_vector<const CEntityAlive*>& Accepted);
-	const CEntityAlive* GetAssignedEnemy();
-	void DistributeEnemies(xr_vector<CBaseMonster*>& Members);
-	bool EmitEnemyCall(const xr_vector<const CEntityAlive*>& Targets);
-	const Fvector& GetTrackingPosition();
-	const Fvector& GetKnownEnemyPosition(const CEntityAlive* Target);
-	u32 GetTrackingVertex();
-	const Fvector& GetNavigationPosition();
-	u32 GetNavigationVertex();
-	bool CanHearEnemySharing(CBaseMonster* Source);
-	bool CanAcceptEnemySharing(bool Immediate = false) const;
-	bool CanReceiveFrom(CBaseMonster* Source) const;
-	bool HasDirectEnemyEvidence(const CEntityAlive* Target);
-	void ResetPlayerVisualAcquisition(const CEntityAlive* Target = nullptr);
-	void UpdateEnemySharing(const CEntityAlive* BroadcastTarget = nullptr, bool Immediate = false);
+	void				transfer_enemy				(CBaseMonster *friend_monster);
 
 	u32					get_my_vertex_enemy_last_seen		() {return my_vertex_enemy_last_seen;}
 	u32					get_enemy_vertex_enemy_last_seen	() {return enemy_vertex_enemy_last_seen;}
