@@ -18,6 +18,12 @@ static bool ResourcesAlive()
 //
 STextureList::~STextureList()
 {
+	// Unregistered lists can outlive the render device (for example, CRender members).
+	if ((dwFlags & xr_resource_flagged::RF_REGISTERED) == 0)
+	{
+		return;
+	}
+
 	if (ResourcesAlive())
 	{
 		DEV->_DeleteTextureList(this);
