@@ -29,7 +29,6 @@ class CUICellItem :public CUI3dStatic
 {
 private:
 	typedef		CUI3dStatic	inherited;
-	CUIXml		uiXml;
 protected:
 	xr_vector<CUICellItem*> m_childs;
 
@@ -105,7 +104,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
 	virtual CUICellItem* ui_cast_cell_item() { return this; }
-	CUIXml& GetXml() { return uiXml;};
+	CUIXml& GetXml();
 public:
 	static CUICellItem*		m_mouse_selected_item;
 				void*		m_pData;

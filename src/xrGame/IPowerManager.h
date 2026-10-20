@@ -14,7 +14,7 @@ class IPowerManager:
 private:
 	bool use_power_cells = false;
 	bool use_power_bank = false;
-	float power_drain_value = 0.f;
+	float power_drain_value = 0.f; // Energy units per second while enabled.
 	bool is_power_cell_installed = false;
 	CInventoryItem* selfObject = nullptr;
 	CObject* m_parent = nullptr;

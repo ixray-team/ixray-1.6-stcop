@@ -61,7 +61,14 @@ PowerBank* IPowerManager::GetPowerBank()
 
 void IPowerManager::DrainPower()
 {
-	if (!initialized || !is_enabled || GetPowerDrainValue() <= 0.f)
+	if (!initialized || !is_enabled || Device.Paused() || GetPowerDrainValue() <= 0.f)
+	{
+		return;
+	}
+
+	// Use unsmoothed game time so low FPS and frame delta smoothing cannot change the rate.
+	float DrainAmount = GetPowerDrainValue() * (float(Device.dwTimeDelta) * .001f);
+	if (DrainAmount <= 0.f)
 	{
 		return;
 	}
@@ -74,7 +81,7 @@ void IPowerManager::DrainPower()
 			float power = pwr_bank->GetPower();
 			if (power > 0.f)
 			{
-				pwr_bank->DecreasePower(GetPowerDrainValue());
+				pwr_bank->DecreasePower(DrainAmount);
 				return;
 			}
 		}
@@ -82,7 +89,7 @@ void IPowerManager::DrainPower()
 
 	if (GetUsePowerCell() && IsPowerCellInstalled())
 	{
-		m_power_cell.current_power -= power_drain_value;
+		m_power_cell.current_power -= DrainAmount;
 		clamp(m_power_cell.current_power, 0.f, m_power_cell.max_power);
 	}
 }
