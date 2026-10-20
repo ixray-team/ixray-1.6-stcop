@@ -61,16 +61,17 @@ void SpawnVisuals::Request(CSE_Abstract* Entity)
 
 bool CLevel::IsSpawnReady(const NET_Event& Event)
 {
-	if (!g_appLoaded || Device.dwPrecacheFrame || g_dedicated_server)
-		return true;
-
 	if (Event.ID != M_SPAWN && Event.ID != M_SPAWN_LOCAL)
+	{
+		PendingSpawnID = ALife::INVALID_OBJECT_ID;
 		return true;
+	}
 
 	if (m_PendingSpawnEvent != &Event)
 	{
 		PROF_EVENT("CLevel::IsSpawnReady: parse");
 		m_PendingSpawnEvent = &Event;
+		PendingSpawnID = ALife::INVALID_OBJECT_ID;
 		m_PendingSpawnVisuals.clear();
 
 		NET_Packet P;
@@ -82,7 +83,9 @@ bool CLevel::IsSpawnReady(const NET_Event& Event)
 
 		CSE_Abstract* E = F_entity_Create(*s_name);
 		if (E == nullptr)
+		{
 			return true;
+		}
 
 		if (Event.ID == M_SPAWN_LOCAL)
 		{
@@ -95,8 +98,22 @@ bool CLevel::IsSpawnReady(const NET_Event& Event)
 			E->Spawn_Read(P);
 		}
 
-		SpawnVisuals::Collect(E, m_PendingSpawnVisuals);
+		PendingSpawnID = E->ID;
+		if (!g_dedicated_server)
+		{
+			SpawnVisuals::Collect(E, m_PendingSpawnVisuals);
+		}
 		F_entity_Destroy(E);
+	}
+
+	if (const CObject* ExistingObject = Objects.net_Find(PendingSpawnID); ExistingObject && ExistingObject->getDestroy())
+	{
+		return false;
+	}
+
+	if (!g_appLoaded || Device.dwPrecacheFrame || g_dedicated_server)
+	{
+		return true;
 	}
 
 	for (const shared_str& Name : m_PendingSpawnVisuals)
@@ -109,7 +126,9 @@ bool CLevel::IsSpawnReady(const NET_Event& Event)
 		}
 
 		if (State == EModelLoadState::Loading)
+		{
 			return false;
+		}
 	}
 
 	return true;
