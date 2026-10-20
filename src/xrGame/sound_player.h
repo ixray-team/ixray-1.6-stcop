@@ -63,6 +63,7 @@ public:
 	};
 
 	struct CSoundSingle : public CSoundParams {
+		ESoundTypes GameSoundType = ESoundTypes(0);
 		ref_sound								*m_sound;
 		u32										m_start_time;
 		u32										m_stop_time;
@@ -83,11 +84,7 @@ public:
 			xr_delete							(m_sound);
 		}
 
-				void	play_at_pos				(CObject *object, const Fvector &position)
-		{
-			m_sound->play_at_pos				(object,position);
-			m_started							= true;
-		}
+		void play_at_pos(CObject* object, const Fvector& position);
 
 		IC		bool	started					() const
 		{

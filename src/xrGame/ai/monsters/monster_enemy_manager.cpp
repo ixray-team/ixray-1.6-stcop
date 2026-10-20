@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "monster_enemy_manager.h"
 #include "basemonster/base_monster.h"
 #include "../ai_monsters_misc.h"
@@ -270,6 +271,10 @@ const Fvector&   CMonsterEnemyManager::get_enemy_position ()
 
 void CMonsterEnemyManager::transfer_enemy(CBaseMonster *friend_monster)
 {
+	if (ExtendedEntityes::Transfer(*monster, friend_monster))
+	{
+		return;
+	}
 	// если у friend_monster нет врага
 	if (!friend_monster->EnemyMan.get_enemy()) return;
 

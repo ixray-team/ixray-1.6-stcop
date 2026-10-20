@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
@@ -160,6 +161,7 @@ void CLevel::net_Stop()
 		SaveDemoInfo();
 
 	remove_objects				();
+	ExtendedEntityes::Clear();
 	
 	//WARNING ! remove_objects() uses this flag, so position of this line must e here ..
 	game_configured				= false;

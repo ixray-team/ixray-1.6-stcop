@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "monster_enemy_memory.h"
 #include "basemonster/base_monster.h"
@@ -221,6 +222,10 @@ SMonsterEnemy CMonsterEnemyMemory::get_enemy_info()
 ENEMIES_MAP_IT CMonsterEnemyMemory::find_best_enemy()
 {
 	ENEMIES_MAP_IT	it = m_objects.end();
+	if (ExtendedEntityes::SelectEnemy(*monster, m_objects, it))
+	{
+		return it;
+	}
 	float			max_value = 0.f;
 
 	// find best at home first

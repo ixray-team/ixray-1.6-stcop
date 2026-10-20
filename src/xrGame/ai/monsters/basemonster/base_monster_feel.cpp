@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
+#include "ai/ExtendedEntityesLogic/CoreComponent/TExtendedEntityesLogic.h"
+#include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
 #include "pch_script.h"
 #include "base_monster.h"
 #include "../../../Actor.h"
@@ -31,8 +34,17 @@
 
 void CBaseMonster::NoticeActorLight(CActor& Player, const Fvector& Point, bool Revealed)
 {
-	if (MonsterPeaceful || !EnemyMan.is_enemy(&Player))
+	if (!EnemyMan.is_enemy(&Player))
 	{
+		return;
+	}
+
+	if (CELSharedSettings::IsEnabled())
+	{
+		if (TExtendedEntityesLogic* Component = GetComponent<TExtendedEntityesLogic>())
+		{
+			Component->NoticeActorLight(Point);
+		}
 		return;
 	}
 
@@ -47,14 +59,7 @@ void CBaseMonster::NoticeActorLight(CActor& Player, const Fvector& Point, bool R
 	SoundMemory.HearSound(Stimulus);
 	if (Revealed)
 	{
-		EnemyMemory.RememberLightEnemy(Player);
-	}
-	else if (Behavior.Enabled && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] && !EnemyMan.get_enemy() && !GetScriptControl() && !EnemyMan.get_script_enemy() && !HasDamagePanic() && !control().is_captured_pure() && !(m_controlled && m_controlled->is_under_control()))
-	{
-		// New behavior consumes attention separately from the legacy sound memory.
-		Behavior.Attention = Point;
-		Behavior.AttentionUntil = Device.dwTimeGlobal + 1500;
-		Behavior.NoiseLookUntil = Behavior.AttentionUntil;
+		EnemyMemory.add_enemy(&Player);
 	}
 }
 
@@ -66,6 +71,10 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 	if (this == who)	return;
 
 	PROF_EVENT("CBaseMonster::feel_sound_new");
+	if (ExtendedEntityes::Hear(*this, who, u32(eType), Position, power))
+	{
+		return;
+	}
 
 	if (user_data)
 		user_data->accept	(sound_user_data_visitor());
@@ -438,3 +447,8 @@ void CBaseMonster::critical_wounded_state_start()
 }
 
 
+
+float CBaseMonster::feel_vision_mtl_transp(CObject* Object, u32 ElementIdentifier)
+{
+	return ExtendedEntityes::VisionTransparency(*this, Object, ElementIdentifier);
+}

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 
 #include "Actor.h"
 #include "InventoryVolumeSystem.h"
@@ -251,6 +252,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			if (!GodMode())
 				conditions().ConditionJump(inventory().TotalWeight() / MaxCarryWeight());
 
+			ExtendedEntityes::PublishJump(this, Position());
 			callback(GameObject::eOnActorJumpBegin)(Position());
 		}
 

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "Actor.h"
 #include "HUDManager.h"
@@ -1244,6 +1245,7 @@ void CActor::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b
 		}
 	}
 
+	ExtendedEntityes::PublishStep(this, b_on_ground);
 	CGameObject::FootStepCallback(power, b_play, b_on_ground, b_hud_view);
 }
 

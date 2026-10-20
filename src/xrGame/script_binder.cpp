@@ -232,12 +232,6 @@ bool CScriptBinder::net_SaveRelevant()
 
 void CScriptBinder::net_Relcase		(CObject *object)
 {
-	// Destruction callbacks still release each binder's own resources. The
-	// discarded world needs no N-by-N Lua notifications or argument wrappers.
-	if (!m_object || (g_pGameLevel && Level().IsWorldTeardown()))
-	{
-		return;
-	}
 	PROF_EVENT("CScriptBinder::net_Relcase")
 	CGameObject						*game_object = object->cast_game_object();
 	if (m_object && m_object->has_net_relcase())

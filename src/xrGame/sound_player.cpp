@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "sound_player.h"
 #include "../xrScripts/script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"
@@ -16,6 +17,13 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
+
+void CSoundPlayer::CSoundSingle::play_at_pos(CObject* object, const Fvector& position)
+{
+	m_sound->play_at_pos(object, position);
+	ExtendedEntityes::PublishSound(object, u32(GameSoundType), position);
+	m_started = true;
+}
 
 CSoundPlayer::CSoundPlayer			(CObject *object)
 {
@@ -182,6 +190,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 
 	CSoundSingle				sound_single;
 	(CSoundParams&)sound_single	= (CSoundParams&)sound;
+	sound_single.GameSoundType = sound.m_type;
 	sound_single.m_bone_id		= smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(sound.m_bone_name);
 	R_ASSERT					  (sound_single.m_bone_id != BI_NONE);
 

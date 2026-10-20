@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "base_monster.h"
 #include "../../../ai_space.h"
 #include "../../../Hit.h"
@@ -269,6 +270,7 @@ void CBaseMonster::reload	(const char* section)
 
 void CBaseMonster::reinit()
 {
+	ExtendedEntityes::Detach(*this);
 	inherited::reinit					();
 	CInventoryOwner::reinit				();
 
@@ -365,11 +367,13 @@ bool CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	else
 		SpatialComponent->type |= ESPATIAL_TYPE::MONSTER_DEAD;
 
+	ExtendedEntityes::Attach(*this);
 	return(true);
 }
 
 void CBaseMonster::net_Destroy()
 {
+	ExtendedEntityes::Detach(*this);
 	// функция должена быть вызвана перед inherited
 	if (m_controlled) m_controlled->on_destroy	();
 	if (StateMan) StateMan->critical_finalize	();

@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 
 #include "WeaponKnife.h"
 #include "Entity.h"
@@ -257,6 +258,7 @@ void CWeaponKnife::OnStateSwitch	(u8 S)
 
 void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 {
+	ExtendedEntityes::PublishMelee(H_Parent(), pos);
 	if (oldStrikeMethod)
 	{
 		MakeShot(pos, dir);

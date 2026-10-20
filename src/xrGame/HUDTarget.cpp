@@ -259,7 +259,10 @@ void CHUDTarget::Render()
 			{
 				if (auto BaseMonster = E_->cast_base_monster(); BaseMonster)
 				{
-					C = colorEnemy;
+					if (BaseMonster->ShouldMarkAsEnemy())
+					{
+						C = colorEnemy;
+					}
 				}
 				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{

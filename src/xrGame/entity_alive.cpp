@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "entity_alive.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "InventoryOwner.h"
 #include "Inventory.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -342,6 +343,7 @@ void CEntityAlive::HitImpulse	(float /**amount/**/, Fvector& /**vWorldDir/**/, F
 
 void CEntityAlive::Hit(SHit* pHDS)
 {
+	const float PreviousHealth = GetfHealth();
 	SHit HDS = *pHDS;
 	m_lastHitBoneID = HDS.boneID;
 	m_lastHitWhoID = HDS.who ? HDS.who->ID() : ALife::_OBJECT_ID(-1);
@@ -372,6 +374,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 	conditions().SetConditionDeltaTime(0);
 	//-------------------------------------------
 	inherited::Hit(&HDS);
+	ExtendedEntityes::RecordHit(*this, HDS.whoID, PreviousHealth);
 
 	if (g_Alive()) 
 	{

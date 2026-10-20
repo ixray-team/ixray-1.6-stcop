@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "FDemoRecord.h"
 #include "FDemoPlay.h"
@@ -616,6 +617,7 @@ void CLevel::MakeReconnect()
 
 void CLevel::OnFrame()
 {
+	ExtendedEntityes::BeginFrame();
 #ifdef DEBUG
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG

@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "base_monster.h"
 #include "../../../EntityCondition.h"
 
@@ -19,7 +20,7 @@ void CBaseMonster::UpdateMemory()
 	// Обновить память
 	if (OnServer())
 	{
-		EnemyMemory.update();
+		ExtendedEntityes::UpdateMemory(*this);
 		SoundMemory.UpdateHearing();
 		CorpseMemory.update();
 		HitMemory.update();

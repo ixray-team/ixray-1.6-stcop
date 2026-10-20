@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "HudSound.h"
 
 float HUD_SOUND_ITEM::g_fHudSndFrequency = 1.0f;
@@ -129,6 +130,7 @@ void HUD_SOUND_ITEM::PlaySound(HUD_SOUND_ITEM& hud_snd, const Fvector& position,
 		hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(sounds_pool_size)];
 	}
 
+	ExtendedEntityes::PublishHudSound(parent, hud_snd, position);
 	float ai_vol = hud_snd.m_activeSnd->volume;
 	float vol = hud_snd.m_activeSnd->volume * (b_hud_mode ? psHUDSoundVolume : 1.0f) * g_fHudSndVolumeFactor;
 

@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 
 #include "Explosive.h"
 
@@ -328,6 +329,7 @@ void CExplosive::Explode()
 #endif
 //	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
 	OnBeforeExplosion();
+	ExtendedEntityes::PublishExplosion(cast_game_object(), pos);
 	//играем звук взрыва
 	CObject* who = nullptr;
 	if (Initiator() != ALife::INVALID_OBJECT_ID) {

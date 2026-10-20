@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
+#include "../../xrGame/ai/ExtendedEntityesLogic/Debug/DebugCommands.h"
 
 bool UseWeaponRainDrops = true;
 
@@ -860,6 +861,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r4_spot_shadow_cache_mb", &g_SpotShadowCacheBudgetMb, 1, 1024);
 	CMD1(CCC_SpotShadowCacheClear, "r4_spot_shadow_cache_clear");
 	CMD1(CCC_SpotShadowCacheStats, "r4_spot_shadow_cache_stats");
+	CELSharedDebugCommands::Register();
 
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 

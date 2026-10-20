@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ActorLightPerception.h"
+#include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
 #include "Actor.h"
 #include "Creature.h"
 #include "Torch.h"
@@ -14,7 +15,7 @@
 #include "ai_object_location.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "../xrEngine/MonsterLogicTelemetry.h"
+#include "ai/ExtendedEntityesLogic/Debug/Debug.h"
 #include "HUDManager.h"
 #ifndef MASTER_GOLD
 #include "ai_debug.h"
@@ -184,7 +185,7 @@ ActorLightPerception::Visibility ActorLightPerception::SeePoint(CCreature& Obser
 
 void ActorLightPerception::Report(CActor& Player, CCreature& Observer, const char* Stage, Visibility Seen)
 {
-	if (!g_MonsterLogicTelemetry.DrawEnabled.load(std::memory_order_relaxed) ||
+	if (!CELSharedDebug::Instance().IsDrawEnabled() ||
 		HUD().GetCurrentRayQuery().O != &Observer || s32(Device.dwTimeGlobal - NextDebugTime) < 0)
 	{
 		return;
@@ -260,6 +261,13 @@ void ActorLightPerception::Update(CActor& Player, CCreature& Observer)
 	Report(Player, Observer, "visibility", Seen);
 	if (Seen == Visibility::None)
 	{
+		return;
+	}
+
+	if (CBaseMonster* Monster = Observer.cast_base_monster(); Monster && CELSharedSettings::IsEnabled())
+	{
+		// Extended monsters receive only an interest point, without acoustic callbacks or enemy evidence.
+		Monster->NoticeActorLight(Player, SourcePosition, false);
 		return;
 	}
 

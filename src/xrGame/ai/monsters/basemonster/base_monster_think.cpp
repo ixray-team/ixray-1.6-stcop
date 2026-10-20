@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "ai/ExtendedEntityesLogic/EntryPoint.h"
 #include "base_monster.h"
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
@@ -33,8 +34,13 @@ void CBaseMonster::Think()
 void CBaseMonster::update_fsm()
 {
 	PROF_EVENT("FSM");
-	StateMan->update				();
+	if (ExtendedEntityes::UpdateBehavior(*this, Device.fTimeDelta))
+	{
+		return;
+	}
 	
+	StateMan->update				();
+
 	// завершить обработку установленных в FSM параметров
 	post_fsm_update					();
 	
