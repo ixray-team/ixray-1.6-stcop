@@ -30,7 +30,7 @@ defaults:
 
 jobs:
   build-engine:
-    name: 'Build engine'
+    name: 'Windows'
 
     strategy:
       matrix:

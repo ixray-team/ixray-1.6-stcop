@@ -40,7 +40,11 @@ else()
             GIT_TAG v1.3.7
         )
         
+        # libvorbis 1.3.7 declares cmake_minimum_required(VERSION 2.8.12), which CMake 4 rejects.
+        set(IXR_SAVED_POLICY_VERSION_MINIMUM "${CMAKE_POLICY_VERSION_MINIMUM}")
+        set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
         FetchContent_MakeAvailable(libvorbis)
+        set(CMAKE_POLICY_VERSION_MINIMUM "${IXR_SAVED_POLICY_VERSION_MINIMUM}")
 
         target_link_libraries(vorbis PUBLIC Ogg::ogg)
         target_link_libraries(vorbisfile PUBLIC Ogg::ogg)

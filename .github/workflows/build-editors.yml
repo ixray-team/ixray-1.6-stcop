@@ -1,4 +1,4 @@
-name: 'Build editors'
+name: 'Editors'
 
 on:
   push:
@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-editors:
-    name: 'Build editors'
+    name: 'Windows'
 
     strategy:
       matrix:
@@ -108,7 +108,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   pack-assets:
-    name: 'Pack assets'
+    name: 'Assets'
     needs: [build-editors]
     strategy:
       matrix:
@@ -180,7 +180,7 @@ jobs:
           include-hidden-files: true
 
   publish-editors:
-    name: 'Publish editors ${{ matrix.variant }}'
+    name: 'Publish (${{ matrix.variant }})'
     needs: [pack-assets]
     strategy:
       matrix:
