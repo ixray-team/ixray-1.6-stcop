@@ -233,6 +233,8 @@ void CEngineAPI::CreateRendererList()
 
 #ifdef IXR_WINDOWS
 		const char* r4_name	= "xrRender_R4.dll";
+#elif defined(IXR_APPLE_SERIES)
+		const char* r4_name	= "libxrRender_R4.dylib";
 #else
 		const char* r4_name	= "libxrRender_R4.so";
 #endif

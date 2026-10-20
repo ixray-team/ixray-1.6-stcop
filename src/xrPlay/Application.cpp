@@ -115,7 +115,10 @@ int CApplication::BeginPlay()
 	EnumerateDisplayModes();
 
 	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
-#ifndef IXR_WINDOWS
+#if defined(IXR_APPLE_SERIES)
+	// DXMT presents through its own CAMetalLayer (see MacMetalBridge.mm), no Vulkan surface.
+	WndFlags |= SDL_WINDOW_METAL;
+#elif !defined(IXR_WINDOWS)
 	WndFlags = SDL_WINDOW_VULKAN;
 #endif
 
@@ -160,6 +163,10 @@ CApplication::CApplication(ENTRY_ARGS)
 		CommandLine += argv[i];
 		CommandLine += " ";
 	}
+	// Windows fills Core.Params from GetCommandLine; on other platforms it stayed
+	// EMPTY, silently disabling every command-line switch (-nointro, -autotest, ...).
+	xr_strcpy(Core.Params, sizeof(Core.Params), CommandLine.c_str());
+	xr_strlwr(Core.Params);
 #endif
 }
 
@@ -207,6 +214,21 @@ void CApplication::MigrateToGameWindow()
 	else
 		SDL_ShowWindow(g_AppInfo.Window);
 
+#if defined(IXR_APPLE_SERIES)
+	// LaunchServices starts a bare executable in the background; raise the window
+	// so input does not go to the previously active app.
+	if (!headless)
+	{
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
+	else
+	{
+		// HACK: a hidden window starves DXMT presents; keep it visible but off screen.
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+		SDL_ShowWindow(g_AppInfo.Window);
+	}
+#endif
+
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
 	Console->Execute("vid_restart");
@@ -214,7 +236,13 @@ void CApplication::MigrateToGameWindow()
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
 
 	if (headless)
+	{
+#if defined(IXR_APPLE_SERIES)
+		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
+#else
 		SDL_HideWindow(g_AppInfo.Window);
+#endif
+	}
 }
 
 void CApplication::LoadCustomSettings()

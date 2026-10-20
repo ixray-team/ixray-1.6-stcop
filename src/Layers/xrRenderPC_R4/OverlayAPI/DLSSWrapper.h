@@ -1,7 +1,9 @@
 #pragma once
 
+#if !defined(IXR_APPLE_SERIES)
 #include <nvsdk_ngx.h>
 #include <nvsdk_ngx_helpers.h>
+#endif
 
 class DLSSWrapper
 {
@@ -60,8 +62,10 @@ public:
     ~DLSSWrapper();
 
 private:
+#if !defined(IXR_APPLE_SERIES)
     NVSDK_NGX_Parameter* NgxParameters = nullptr;
     NVSDK_NGX_Handle* Handle = nullptr;
+#endif
 
     Ivector2 DisplaySize{};
 
@@ -70,3 +74,15 @@ private:
 };
 
 extern DLSSWrapper g_DLSSWrapper;
+
+#if defined(IXR_APPLE_SERIES)
+inline void DLSSWrapper::Create() {}
+inline void DLSSWrapper::Destroy() {}
+inline bool DLSSWrapper::GetRenderScale(float&) { return false; }
+inline void DLSSWrapper::Resize(const ContextParameters&) {}
+inline uint32_t DLSSWrapper::GetOptimalPresetForScale(float) { return 0; }
+inline bool DLSSWrapper::Draw(const DrawParameters&) { return false; }
+inline DLSSWrapper::~DLSSWrapper() {}
+
+inline DLSSWrapper g_DLSSWrapper;
+#endif

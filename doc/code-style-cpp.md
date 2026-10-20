@@ -134,7 +134,7 @@ PascalCase should be used for the names of new files, and the style that has alr
 | `const wchar_t[64]`  | `wstring64`  |
 | `const wchar_t[128]` | `wstring128` |
 
-The full description of the types is in [this](../src/xrCore/_types.h) file
+The full description of the types is in [this](../src/xrCore/xr_core_types.h) file
 
 ### Containers
 

@@ -6,7 +6,7 @@
 #	include <memory>
 #endif
 
-#ifdef IXR_LINUX
+#if defined(IXR_LINUX) || defined(IXR_APPLE_SERIES)
 #	define STB_IMAGE_WRITE_IMPLEMENTATION
 #	define NULL 0
 #	include <stb/stb_image_write.h>

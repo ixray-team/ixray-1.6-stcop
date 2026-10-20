@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-#ifndef XR_USE_DXVK_NATIVE
+#ifndef XR_USE_NATIVE_D3D11
 struct RECT
 {
     int left;

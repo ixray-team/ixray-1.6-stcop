@@ -89,4 +89,8 @@ else()
         add_library(DirectX::Mesh ALIAS DirectXMesh)
         target_include_directories(DirectXMesh PUBLIC ${DirectXMesh_SOURCE_DIR}/Utilities)
     endif()
+
+    if(APPLE AND TARGET DirectXMesh)
+        target_include_directories(DirectXMesh PRIVATE ${CMAKE_SOURCE_DIR}/src/3rd-party/macos-compat)
+    endif()
 endif()

@@ -2,8 +2,23 @@
 
 using errno_t = int;
 
+#include <errno.h>
+#include <dlfcn.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include "UTF8.h"
+
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
+
+#include <sys/param.h>
+#ifndef LOGIN_NAME_MAX
+#	define LOGIN_NAME_MAX MAXLOGNAME
+#endif
+#ifndef HOST_NAME_MAX
+#	define HOST_NAME_MAX MAXHOSTNAMELEN
+#endif
 
 #define _lseek64 lseek64
 #define _O_RDONLY O_RDONLY
@@ -43,7 +58,7 @@ static constexpr std::uint32_t FILE_END = 2;
 static constexpr std::uint32_t INVALID_SET_FILE_POINTER = (std::uint32_t)-1;
 
 using __int64 = int64_t;
-using __time64_t = __int64;
+using __time64_t = time_t;
 using __time32_t = long;
 using _fsize_t =  unsigned long;
 
@@ -70,7 +85,24 @@ inline int _mkdir(const char *dir)
     return mkdir(dir, S_IRWXU);
 }
 
-#define _wfopen_s fopen_s
+inline errno_t _wfopen_s_cp1251(FILE** File, const char* Path, const char* Mode)
+{
+#if defined(__APPLE__)
+    *File = fopen(Path, Mode);
+    if (*File == nullptr && (errno == EILSEQ || errno == EINVAL))
+    {
+        // Engine strings are CP1251 while macOS paths must be UTF-8.
+        char Utf8[_MAX_PATH];
+        Platform::CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+        *File = fopen(Utf8, Mode);
+    }
+    return *File == nullptr ? errno : 0;
+#else
+    return fopen_s(File, Path, Mode);
+#endif
+}
+
+#define _wfopen_s _wfopen_s_cp1251
 
 #define _A_HIDDEN 0x02
 #define _A_SUBDIR 0x00000010
@@ -138,7 +170,9 @@ namespace Platform
 
     IC const char* ValidPath(const char* In)
     {
-        static std::string NewPath;
+        // BUG: shared static was corrupted by concurrent FS users (threads got each other's paths);
+        // thread_local keeps the old 'valid until next call' lifetime per thread.
+        static thread_local std::string NewPath;
         NewPath.clear();
 
         bool LastWasSlash = false;
@@ -173,7 +207,7 @@ namespace Platform
 
     IC const char* RestorePath(const char* In)
     {
-        static std::string NewPath;
+        static thread_local std::string NewPath;
         NewPath = In;
 
         std::replace(NewPath.begin(), NewPath.end(), '/', '\\');
@@ -182,6 +216,13 @@ namespace Platform
 
     IC std::filesystem::path GetBinaryFolderPath()
     {
+        /* /proc/self/exe is Linux-only; on macOS resolve the executable via
+        ** dladdr (the engine and all DLLs ship in the same folder). */
+        Dl_info dl_info;
+        if (dladdr((void*)GetBinaryFolderPath, &dl_info) && dl_info.dli_fname)
+        {
+            return std::filesystem::path(dl_info.dli_fname).parent_path();
+        }
         char result[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
         if (count == -1)
@@ -214,6 +255,13 @@ namespace Platform
 	
     IC std::string GetUsrName() 
     {
+        // getlogin_r reflects the TTY session and returns "root" (or fails)
+        // for LaunchServices launches; the uid always identifies the owner.
+        struct passwd* pw = getpwuid(getuid());
+        if (pw != nullptr && pw->pw_name != nullptr)
+        {
+            return std::string(pw->pw_name);
+        }
         char UserName[LOGIN_NAME_MAX];
         if (getlogin_r(UserName, sizeof(UserName)) == 0) 
         {
@@ -245,6 +293,13 @@ namespace Platform
         auto FlagsRight = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
         auto FileSource = open(Path, FlagsLeft, FlagsRight);
+        if (FileSource == -1 && errno == EILSEQ)
+        {
+            // Engine strings are CP1251 while macOS paths must be UTF-8.
+            char Utf8[_MAX_PATH];
+            CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+            FileSource = open(Utf8, FlagsLeft, FlagsRight);
+        }
         //R_ASSERT3(FileSource != -1, Path, "Error file create");
         return FileSource;
     }
@@ -253,7 +308,13 @@ namespace Platform
     {
         const char* Path = ValidPath(FilePath);
         auto Handle = open(Path, O_RDONLY);
-
+        if (Handle == -1 && errno == EILSEQ)
+        {
+            // Engine strings are CP1251 while macOS paths must be UTF-8.
+            char Utf8[_MAX_PATH];
+            CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
+            Handle = open(Utf8, O_RDONLY);
+        }
         return Handle;
     }
 
@@ -337,11 +398,31 @@ namespace Platform
         return (size_t)bytesRead;
     }
 
-    IC void GetAbsolutePath(char* in_path, char* out_buffer, [[maybe_unused]] size_t BufferSize)
+    IC void GetAbsolutePath(char* in_path, char* out_buffer, size_t BufferSize)
     {
-        char* tmp_path = realpath(out_buffer, 0);
-        strcpy(in_path, tmp_path);
-        free(tmp_path);
+        char* tmp_path = realpath(out_buffer, nullptr);
+        if (tmp_path)
+        {
+            snprintf(in_path, BufferSize, "%s", tmp_path);
+            free(tmp_path);
+            return;
+        }
+
+        if (out_buffer && out_buffer[0] == '/')
+        {
+            snprintf(in_path, BufferSize, "%s", out_buffer);
+            return;
+        }
+
+        char current_directory[PATH_MAX];
+        if (getcwd(current_directory, sizeof(current_directory)))
+        {
+            snprintf(in_path, BufferSize, "%s/%s", current_directory, out_buffer ? out_buffer : "");
+        }
+        else
+        {
+            in_path[0] = 0;
+        }
     }
 }
 

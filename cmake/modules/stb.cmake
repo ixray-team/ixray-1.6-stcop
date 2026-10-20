@@ -3,7 +3,7 @@ download_single_header(
     "stb/stb_image.h"
 )
 
-if (LINUX)
+if (LINUX OR APPLE)
     download_single_header(
         "https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image_write.h"
         "stb/stb_image_write.h"

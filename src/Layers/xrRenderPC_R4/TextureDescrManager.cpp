@@ -16,6 +16,15 @@ public:
 	}
 };
 
+static shared_str NormalizeTexKey(const shared_str& Name)
+{
+#ifdef IXR_WINDOWS
+	return Name;
+#else
+	return Name.size() ? shared_str(Platform::ValidPath(Name.c_str())) : Name;
+#endif
+}
+
 void fix_texture_thm_name(LPSTR fn)
 {
 	LPSTR _ext = strext(fn);
@@ -44,8 +53,9 @@ void CTextureDescrMngr::LoadLTX()
 			{
 				const CInifile::Item& item	= *I;
 
-				texture_desc& desc		= m_texture_details[item.first];
-				cl_dt_scaler*& dts = m_detail_scalers[item.first];
+				shared_str key = NormalizeTexKey(item.first);
+				texture_desc& desc		= m_texture_details[key];
+				cl_dt_scaler*& dts = m_detail_scalers[key];
 				desc.m_assoc			= new texture_assoc();
 
 				string_path				T;
@@ -80,7 +90,7 @@ void CTextureDescrMngr::LoadLTX()
 			{
 				const CInifile::Item& item	= *I2;
 
-				texture_desc& desc		= m_texture_details[item.first];
+				texture_desc& desc		= m_texture_details[NormalizeTexKey(item.first)];
 				desc.m_spec				= new texture_spec();
 
 				string_path				bmode, bparallax;
@@ -116,7 +126,7 @@ void CTextureDescrMngr::LoadLTX()
 			{
 				CInifile::Item item	= *I;
 
-				texture_desc& desc		= m_texture_details[item.first];
+				texture_desc& desc		= m_texture_details[NormalizeTexKey(item.first)];
 				desc.m_type				= (STextureParams::ETType)atoi(item.second.c_str());
 			}
 		}//"types"
@@ -181,8 +191,9 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 			STextureParams::ttTerrain	== tp.type ||
 			STextureParams::ttNormalMap	== tp.type	)
 		{
-			texture_desc& desc = m_texture_details[fn];
-			cl_dt_scaler*& dts = m_detail_scalers[fn];
+			shared_str key = NormalizeTexKey(shared_str(fn));
+			texture_desc& desc = m_texture_details[key];
+			cl_dt_scaler*& dts = m_detail_scalers[key];
 
 			if (tp.detail_name.size() &&
 				tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
@@ -335,7 +346,7 @@ CTextureDescrMngr::~CTextureDescrMngr()
 
 shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_spec)
@@ -348,7 +359,7 @@ shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
 
 bool CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_spec)
@@ -360,7 +371,7 @@ bool CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 }
 
 bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
-	auto I = m_texture_details.find(tex_name);
+	auto I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if(I != m_texture_details.end()) {
 		if(I->second.m_spec) {
 			return I->second.m_spec->m_use_pbr;
@@ -371,7 +382,7 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 
 ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_name) const
 {
-	if (auto I = m_texture_details.find(tex_name); I != m_texture_details.end())
+	if (auto I = m_texture_details.find(NormalizeTexKey(tex_name)); I != m_texture_details.end())
 	{
 		return &I->second.m_spec->ShadersOptions;
 	}
@@ -381,7 +392,7 @@ ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_na
 
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_spec)
@@ -394,7 +405,7 @@ float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
 
 void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, bool& bDiffuse, bool& bBump) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_assoc)
@@ -408,14 +419,14 @@ void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, bool& bDiff
 
 bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const
 {
-	map_TD::const_iterator I = m_texture_details.find	(tex_name);
+	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
 	{
 		if(I->second.m_assoc)
 		{
             texture_assoc* TA = I->second.m_assoc;
 			res	= TA->detail_name.c_str();
-			map_CS::const_iterator It2 = m_detail_scalers.find(tex_name);
+			map_CS::const_iterator It2 = m_detail_scalers.find(NormalizeTexKey(tex_name));
 			CS	= It2==m_detail_scalers.end()?nullptr:It2->second;//TA->cs;
 			return true;
 		}

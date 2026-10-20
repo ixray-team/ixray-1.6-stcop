@@ -117,7 +117,7 @@ void CRenderTarget::PhaseEffectSQ(EffectSQ Effect)
 		else
 		{
 			size_t CurrentState = 4 - ((1.f * Condition) * 4);
-			clamp(CurrentState, 0ull, 3ull);
+			clamp<size_t>(CurrentState, 0ull, 3ull); // size_t is unsigned long on macOS, the bounds are unsigned long long
 
 			DrawBackBuffer(*this, s_gasmask, (u32)CurrentState);
 		}

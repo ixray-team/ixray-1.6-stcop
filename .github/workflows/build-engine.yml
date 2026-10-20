@@ -139,6 +139,97 @@ jobs:
             --config ${{ matrix.config }} \
             -j$(nproc)
 
+  build-engine-macos:
+    name: 'Build engine (macOS)'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        system:
+          - macos-15
+        preset:
+          - Engine
+        platform:
+          - arm64
+        config:
+          - RelWithDebInfo
+          - Release
+
+    defaults:
+      run:
+        shell: bash
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # DXMT needs LLVM 15 and meson, vkd3d needs bison and the Vulkan/SPIR-V headers.
+      - name: Install macOS dependencies
+        run: |
+          brew update
+          brew install \
+            ninja \
+            meson \
+            pkg-config \
+            llvm@15 \
+            bison \
+            vulkan-headers \
+            spirv-headers \
+            tbb \
+            lzo \
+            libogg \
+            ispc
+
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+
+      - name: Verify compiler
+        run: |
+          clang --version
+          "$(brew --prefix llvm@15)/bin/llvm-config" --version
+
+      - name: Cache fetched dependencies
+        uses: actions/cache@v6
+        with:
+          key: ${{ matrix.system }}-${{ matrix.config }}-deps-${{ hashFiles('cmake/modules/**') }}
+          restore-keys: |
+            ${{ matrix.system }}-${{ matrix.config }}-deps-
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps
+
+      - name: Configure engine
+        run: |
+          cmake \
+            -S . \
+            -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DDXMT_LLVM_PATH="$(brew --prefix llvm@15)" \
+            -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
+            -DIXRAY_CI=ON \
+            -DIXRAY_PROFILER=OFF
+
+      - name: Build engine
+        run: |
+          cmake \
+            --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            --target xrEngine xrGame xrRender_R4 \
+            -j$(sysctl -n hw.ncpu)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/
+          if-no-files-found: warn
+
   build-engine:
     name: 'Build engine'
 
@@ -178,9 +269,24 @@ jobs:
 
       - name: Build engine
         run: |
+          $log = Join-Path $env:RUNNER_TEMP 'build-engine.log'
           cmake `
             --build `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
+            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }} 2>&1 |
+            Tee-Object -FilePath $log
+          $buildCode = $LASTEXITCODE
+          if ($buildCode -ne 0) {
+            # Surface compiler/linker errors as workflow annotations: they stay readable
+            # through the public check-runs API even though raw logs need admin rights.
+            $hits = Select-String -Path $log -Pattern 'error C[0-9]{4}','error LNK[0-9]{4}','fatal error' |
+              Select-Object -First 25
+            foreach ($hit in $hits) {
+              $line = ($hit.Line -replace "[\r\n]+", ' ').Trim()
+              if ($line.Length -gt 800) { $line = $line.Substring(0, 800) }
+              Write-Host "::error::$line"
+            }
+            exit $buildCode
+          }
 
       - name: Upload binaries
         uses: actions/upload-artifact@v7

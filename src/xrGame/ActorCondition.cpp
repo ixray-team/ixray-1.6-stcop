@@ -29,7 +29,9 @@
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f
 
-ICF bool GodMode()
+// Not ICF: callers live in other translation units (xrUI, xrGame), and an
+// always_inline definition leaves no symbol for them in Release builds.
+bool GodMode()
 {
 	return IsGameTypeSingle() && psActorFlags.test(AF_GOD_MODE | AF_DISABLE_CONDITION_TEST);
 }

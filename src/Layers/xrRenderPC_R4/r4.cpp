@@ -1398,6 +1398,14 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = '1'; ++len;
 	}
 
+#if defined(IXR_APPLE_SERIES)
+	// vkd3d HLSL lacks some intrinsics (e.g. RWTexture2D::GetDimensions); shaders branch on this.
+	// The shader cache is per platform, so sh_name needs no suffix.
+	defines[def_it].Name = "IXR_VKD3D_COMPILER";
+	defines[def_it].Definition = "1";
+	def_it++;
+#endif
+
 	// finish
 	defines[def_it].Name = 0;
 	defines[def_it].Definition = 0;

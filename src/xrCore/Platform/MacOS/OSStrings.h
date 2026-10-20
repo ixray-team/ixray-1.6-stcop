@@ -6,6 +6,7 @@
 #define _strcmpi strcasecmp
 #define stricmp strcasecmp
 #define _stricmp stricmp
+#define _strnicmp strncasecmp
 #define strcmpi stricmp
 #define lstrcpy strcpy
 #define _vsnprintf vsnprintf
@@ -354,7 +355,7 @@ IC int _cdecl _ui64toa_s(uint64_t value, char *str, size_t size, int radix)
     return 0;
 }
 
-#ifndef XR_USE_DXVK_NATIVE
+#ifndef XR_USE_NATIVE_D3D11
 using LARGE_INTEGER = long long;
 using ULARGE_INTEGER = unsigned long long;
 #endif

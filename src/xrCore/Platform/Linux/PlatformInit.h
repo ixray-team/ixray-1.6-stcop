@@ -42,7 +42,7 @@
 #define __stdcall /* __attribute__((__stdcall__)) */
 
 #define CALLBACK
-#ifndef XR_USE_DXVK_NATIVE
+#ifndef XR_USE_NATIVE_D3D11
 #   define HWND void*
 #   define LPARAM void*
 #   define WPARAM void*

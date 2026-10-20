@@ -36,6 +36,9 @@ else()
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
+	elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
 	else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 	endif()
@@ -90,6 +93,13 @@ target_link_libraries(xrCore PUBLIC TBB::tbb)
 target_link_libraries(xrCore PUBLIC LZO::lzo2)
 target_link_libraries(xrCore PRIVATE yaml-cpp)
 target_link_libraries(xrCore PRIVATE opcode-prosectors)
+
+if(APPLE)
+
+	# filewatch.hpp needs FSEvents and CoreFoundation on macOS.
+target_link_libraries(xrCore PRIVATE "-framework CoreFoundation" "-framework CoreServices")
+
+endif()
 
 if(WIN32)
 	if(NOT IXR_ARM_ENABLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

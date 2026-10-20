@@ -1711,7 +1711,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 					nullptr,
 					SW_HIDE
 				);
-#elif defined(IXR_MACOS)
+#elif defined(IXR_APPLE_SERIES)
 				xr_string cmd = "open -a \"Visual Studio Code\" \"" + Path.xstring() + "\"";
 				system(cmd.c_str());
 #else
@@ -1801,7 +1801,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 			nullptr,
 			SW_SHOW
 		);
-#elif defined(IXR_MACOS)
+#elif defined(IXR_APPLE_SERIES)
 		xr_string cmd = "open -R \"" + Path.xstring() + "\"";
 		system(cmd.c_str());
 #else

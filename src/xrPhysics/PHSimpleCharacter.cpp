@@ -873,8 +873,8 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 		SGameMtl* m = GMLibrary().GetMaterialByIdx(Res->material);
 		if (m->Flags.test(SGameMtl::flPassable))continue;
 		//CDB::TRI* T = T_array + Res->id;
-		Point vertices[3] = { Point((dReal*)&Res->verts[0]),Point((dReal*)&Res->verts[1]),Point((dReal*)&Res->verts[2]) };
-		if (__aabb_tri(Point((float*)&center_forbid), Point((float*)&AABB_forbid), vertices))
+		TriPoint vertices[3] = { TriPoint((dReal*)&Res->verts[0]),TriPoint((dReal*)&Res->verts[1]),TriPoint((dReal*)&Res->verts[2]) };
+		if (__aabb_tri(TriPoint((float*)&center_forbid), TriPoint((float*)&AABB_forbid), vertices))
 		{
 			if (test_sides(center_forbid, sd_dir, accel, obb_fb, Res->id))
 			{
@@ -895,8 +895,8 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	{
 		SGameMtl* m = GMLibrary().GetMaterialByIdx(Res->material);
 		if (m->Flags.test(SGameMtl::flPassable))continue;
-		Point vertices[3] = { Point((dReal*)&Res->verts[0]),Point((dReal*)&Res->verts[1]),Point((dReal*)&Res->verts[2]) };
-		if (__aabb_tri(Point((float*)&center), Point((float*)&AABB_), vertices)) 
+		TriPoint vertices[3] = { TriPoint((dReal*)&Res->verts[0]),TriPoint((dReal*)&Res->verts[1]),TriPoint((dReal*)&Res->verts[2]) };
+		if (__aabb_tri(TriPoint((float*)&center), TriPoint((float*)&AABB_), vertices)) 
 		{
 			if (test_sides(center, sd_dir, accel, obb, Res->id))
 			{
