@@ -87,49 +87,19 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
-#ifdef IXR_WINDOWS
+		// The load menu reads this file as DDS, so write DDS on every platform.
+		// The old non-Windows path wrote PNG into a file named *.dds, and the
+		// menu crashed parsing it.
 		Hr = SaveToDDSMemory(*Small.GetImage(0,0,0), DirectX::DDS_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
 			return false;
 		}
-		
+
 		auto Fs = FS.w_open(Name);
 		R_ASSERT(Fs);
 		Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
 		FS.w_close(Fs, true);
-#else
-		// Linux: save directly to file as PNG
-		const Image* SrcImg = Small.GetImage(0,0,0);
-		
-		auto Fs = FS.w_open(Name);
-		if (Fs)
-		{
-			struct CallbackData
-			{
-				IWriter* fs;
-			} cbData = {Fs};
-			
-			stbi_write_png_to_func(
-				[](void* context, void* data, int size) {
-					CallbackData* cb = (CallbackData*)context;
-					cb->fs->w(data, size);
-				},
-				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
-			);
-			FS.w_close(Fs, true);
-			Hr = S_OK;
-		}
-		else
-		{
-			Hr = E_FAIL;
-		}
-		
-		if (FAILED(Hr))
-		{
-			return false;
-		}
-#endif
 	}
 	break;
 
