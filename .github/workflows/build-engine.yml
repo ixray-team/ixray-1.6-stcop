@@ -1,4 +1,4 @@
-name: 'Build engine'
+name: 'Engine'
 
 on:
   push:
@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-engine-linux:
-    name: 'Build engine (Linux)'
+    name: 'Linux'
 
     strategy:
       matrix:
@@ -140,7 +140,7 @@ jobs:
             -j$(nproc)
 
   build-engine-macos:
-    name: 'Build engine (macOS)'
+    name: 'macOS'
 
     strategy:
       fail-fast: false
@@ -167,7 +167,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      # DXMT needs LLVM 15 and meson, vkd3d needs bison and the Vulkan/SPIR-V headers.
+      # DXMT needs LLVM 15 and meson, vkd3d needs bison, the Vulkan/SPIR-V headers
+      # and the Perl JSON module (its configure script generates tables with it).
+      # vkd3d's configure also insists on libvulkan/libMoltenVK even though the engine
+      # only uses its shader compiler.
       - name: Install macOS dependencies
         run: |
           brew update
@@ -182,9 +185,17 @@ jobs:
             tbb \
             lzo \
             libogg \
-            ispc
+            libvorbis \
+            ispc \
+            cpanminus \
+            molten-vk \
+            vulkan-loader
 
           echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+
+          cpanm --notest --local-lib "$HOME/perl5" JSON
+          echo "PERL5LIB=$HOME/perl5/lib/perl5" >> "$GITHUB_ENV"
+          PERL5LIB="$HOME/perl5/lib/perl5" perl -MJSON -e 'print "JSON $JSON::VERSION\n"'
 
       - name: Verify compiler
         run: |
@@ -210,6 +221,7 @@ jobs:
             -DCMAKE_C_COMPILER=clang \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DDXMT_LLVM_PATH="$(brew --prefix llvm@15)" \
             -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
             -DIXRAY_CI=ON \
@@ -231,7 +243,7 @@ jobs:
           if-no-files-found: warn
 
   build-engine:
-    name: 'Build engine'
+    name: 'Windows'
 
     strategy:
       matrix:
@@ -320,7 +332,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   pack-assets:
-    name: 'Pack assets (${{ matrix.variant }})'
+    name: 'Assets (${{ matrix.variant }})'
     needs: [build-engine]
     strategy:
       matrix:
@@ -375,7 +387,7 @@ jobs:
             fsgame.ltx
           include-hidden-files: true
   publish-engine:
-    name: 'Publish engine ${{ matrix.variant }}'
+    name: 'Publish (${{ matrix.variant }})'
     needs: [pack-assets]
     strategy:
       matrix:

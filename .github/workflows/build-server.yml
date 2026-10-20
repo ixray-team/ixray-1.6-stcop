@@ -1,4 +1,4 @@
-name: 'Build server'
+name: 'Server'
 
 on:
   push:
@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-server:
-    name: 'Build server'
+    name: 'Windows'
 
     strategy:
       matrix:
@@ -108,7 +108,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   pack-assets:
-    name: 'Pack assets'
+    name: 'Assets'
 
     needs:
       - build-server
@@ -155,7 +155,7 @@ jobs:
           include-hidden-files: true
 
   publish-server:
-    name: 'Publish server'
+    name: 'Publish'
 
     needs:
       - pack-assets
