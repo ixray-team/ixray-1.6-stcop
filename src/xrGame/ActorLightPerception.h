@@ -22,7 +22,6 @@ private:
 
 	void UpdateSource(CActor& Player);
 	Visibility SeePoint(CCreature& Observer, const Fvector& Point, CObject* Target = nullptr);
-	void Report(CActor& Player, CCreature& Observer, const char* Stage, Visibility Seen = Visibility::None);
 
 	bool Enabled = false;
 	float WeaponDistance = 45.f;
@@ -31,7 +30,6 @@ private:
 	float RevealDistance = 20.f;
 	float NoticeDistance = 60.f;
 	u32 SourceFrame = u32(-1);
-	u32 NextDebugTime = 0;
 	float SourceDistance = -1.f;
 	Fvector SourcePosition = {};
 	Fvector LightPoint = {};

@@ -15,8 +15,6 @@
 #include "ai_object_location.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "ai/ExtendedEntityesLogic/Debug/Debug.h"
-#include "HUDManager.h"
 #ifndef MASTER_GOLD
 #include "ai_debug.h"
 #endif
@@ -89,7 +87,6 @@ void ActorLightPerception::Load()
 void ActorLightPerception::Reset()
 {
 	SourceFrame = u32(-1);
-	NextDebugTime = 0;
 	SourceDistance = -1.f;
 	HitObjectId = u16(-1);
 	HasLightPoint = false;
@@ -183,55 +180,27 @@ ActorLightPerception::Visibility ActorLightPerception::SeePoint(CCreature& Obser
 	return Distance <= RevealDistance ? Visibility::Revealed : Visibility::Suspicious;
 }
 
-void ActorLightPerception::Report(CActor& Player, CCreature& Observer, const char* Stage, Visibility Seen)
-{
-	if (!CELSharedDebug::Instance().IsDrawEnabled() ||
-		HUD().GetCurrentRayQuery().O != &Observer || s32(Device.dwTimeGlobal - NextDebugTime) < 0)
-	{
-		return;
-	}
-	NextDebugTime = Device.dwTimeGlobal + 1000;
-	Msg("[actor_light] observer=%s id=%u stage=%s enabled=%u source_range=%.2f beam_hit=%u spot=%u result=%u server=%u view=%u vision=%u hostile=%u ignored=%u",
-		*Observer.cName(),
-		u32(Observer.ID()),
-		Stage,
-		u32(Enabled),
-		SourceDistance,
-		u32(HitObjectId),
-		u32(HasLightPoint),
-		u32(Seen),
-		u32(OnServer()),
-		u32(Level().CurrentViewEntity() == &Player),
-		u32(Observer.memory().visual().enabled()),
-		u32(Observer.is_relation_enemy(&Player)),
-		u32(Player.m_bEntityIgnoredByMonsters));
-}
-
 void ActorLightPerception::Update(CActor& Player, CCreature& Observer)
 {
 	if (!Enabled)
 	{
-		Report(Player, Observer, "no_gunslinger_base");
 		return;
 	}
 	if (!IsGameTypeSingleCompatible() || !OnServer() || !Observer.g_Alive() || Observer.getDestroy() ||
 		!Player.g_Alive() || Player.getDestroy() || Level().CurrentViewEntity() != &Player ||
 		Player.m_bEntityIgnoredByMonsters || !Observer.is_relation_enemy(&Player))
 	{
-		Report(Player, Observer, "filtered");
 		return;
 	}
 #ifndef MASTER_GOLD
 	if (psAI_Flags.test(aiIgnoreActor))
 	{
-		Report(Player, Observer, "ai_ignore_actor");
 		return;
 	}
 #endif
 	UpdateSource(Player);
 	if (SourceDistance < 0.f)
 	{
-		Report(Player, Observer, "no_active_torch");
 		return;
 	}
 
@@ -258,7 +227,6 @@ void ActorLightPerception::Update(CActor& Player, CCreature& Observer)
 			}
 		}
 	}
-	Report(Player, Observer, "visibility", Seen);
 	if (Seen == Visibility::None)
 	{
 		return;
