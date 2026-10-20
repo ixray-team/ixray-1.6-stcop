@@ -11,35 +11,12 @@
 #include "uilinestd.h"
 #include "../ui_base.h"
 
-//#define LOG_ALL_LINES
-#ifdef LOG_ALL_LINES
-int ListSubLinesCount = 0;
-struct DBGList{
-	CUISubLine*		wnd;
-	int				num;
-};
-xr_vector<DBGList>	dbg_list_sublines;
-UI_API void dump_list_sublines(){
-	Msg("------Total  SubLines %d",dbg_list_sublines.size());
-	xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
-	for(;_it!=dbg_list_sublines.end();++_it)
-		Msg("--leak detected ---- SubLine = %d",(*_it).num);
-}
-#else
-UI_API void dump_list_sublines(){}
-#endif
-
-CUISubLine::CUISubLine(const CUISubLine& other){
+CUISubLine::CUISubLine(const CUISubLine& other)
+{
 	m_color = other.m_color;
 	m_last_in_line = other.m_last_in_line;
 	m_text = other.m_text;
 	m_pTempLine = nullptr;
-#ifdef LOG_ALL_LINES
-	ListSubLinesCount++;
-	dbg_list_sublines.push_back(DBGList());
-	dbg_list_sublines.back().wnd = this;
-	dbg_list_sublines.back().num = ListSubLinesCount;
-#endif
 }
 
 CUISubLine& CUISubLine::operator=(const CUISubLine& other)
@@ -52,43 +29,26 @@ CUISubLine& CUISubLine::operator=(const CUISubLine& other)
 }
 
 CUISubLine::CUISubLine()
-:m_color(0),m_pTempLine(nullptr),m_last_in_line(false)
+	: m_color(0), m_pTempLine(nullptr), m_last_in_line(false)
 {
-#ifdef LOG_ALL_LINES
-	ListSubLinesCount++;
-	dbg_list_sublines.push_back(DBGList());
-	dbg_list_sublines.back().wnd = this;
-	dbg_list_sublines.back().num = ListSubLinesCount;
-#endif
-
 }
 
-CUISubLine::~CUISubLine(){
+CUISubLine::~CUISubLine()
+{
 	xr_delete(m_pTempLine);
-#ifdef LOG_ALL_LINES
-	xr_vector<DBGList>::iterator _it = dbg_list_sublines.begin();
-	bool bOK = false;
-	for(;_it!=dbg_list_sublines.end();++_it){
-		if((*_it).wnd == this){
-			bOK = true;
-			dbg_list_sublines.erase(_it);
-			break;
-		}
-	}
-	if(!bOK)
-		Msg("CUISubLine::~CUISubLine()!!!!!!!!!!!!!!!!!!!!!!! cannot find window in list");
-#endif
-
 }
 
 const CUISubLine* CUISubLine::Cut2Pos(int i)
 {
-	R_ASSERT2(i < (int)m_text.size(), make_string<const char*>("CUISubLine::Cut2Pos - invalid parameter [%d][%d]",i,m_text.size()));
+	R_ASSERT2(i < (int)m_text.size(), make_string<const char*>("CUISubLine::Cut2Pos - invalid parameter [%d][%d]", i, m_text.size()));
 
-	if (!m_pTempLine) m_pTempLine = new CUISubLine();
+	if (!m_pTempLine)
+	{
+		m_pTempLine = new CUISubLine();
+	}
 	m_pTempLine->m_color = m_color;
-	m_pTempLine->m_text.assign(m_text,0,i+1);	
-	m_text.replace(0, i+1, "");
+	m_pTempLine->m_text.assign(m_text, 0, i + 1);
+	m_text.replace(0, i + 1, "");
 
 	return m_pTempLine;
 }
@@ -107,12 +67,12 @@ void CUISubLine::Draw(CGameFont* pFont, float x, float y, u32 colorOverride) con
 
 void CUISubLine::DrawWS(CGameFont* pFont, float x, float y, u32 colorOverride) const
 {
-	u32 drawColor = m_color;
+	u32 DrawColor = m_color;
 	if (colorOverride != 0)
 	{
-		const u32 alpha = (color_get_A(colorOverride) * color_get_A(m_color)) / 255;
-		drawColor = subst_alpha(colorOverride, alpha);
+		const u32 Alpha = (color_get_A(colorOverride) * color_get_A(m_color)) / 255;
+		DrawColor = subst_alpha(colorOverride, Alpha);
 	}
-	pFont->SetColor(drawColor);
+	pFont->SetColor(DrawColor);
 	pFont->Out(x, y, "%s", m_text.c_str());
 }
