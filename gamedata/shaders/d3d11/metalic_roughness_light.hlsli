@@ -83,7 +83,7 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
-	return GammaToLinear(Radiance.xyz * saturate(3.5f * SSS + 0.1f));
+	return GammaToLinear(Radiance.xyz * saturate(1.5f * SSS));
 }
 
 // Thick translucent surfaces (skin): view-dependent transmission and soft terminator, tinted towards red
