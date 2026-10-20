@@ -8,6 +8,7 @@
 #include "RenderAPI.h"
 
 #include "Shader.h"
+#include "ResourceLifetime.h"
 #include	"tss_def.h"
 #include	"TextureDescrManager.h"
 #include "dx11XMLBlendCompiler.h"
@@ -15,30 +16,6 @@
 // refs
 class dx10ConstantBuffer;
 class CSVGStorage;
-
-namespace ResourceLifetime
-{
-	inline bool IsAlive(const xr_resource* Resource)
-	{
-		return Resource->dwReference.load(std::memory_order_acquire) != 0;
-	}
-
-	template <typename T, typename RefType>
-	bool TryAcquire(T* Resource, RefType& Out)
-	{
-		u32 Count = Resource->dwReference.load(std::memory_order_acquire);
-		do
-		{
-			if (Count == 0)
-			{
-				return false;
-			}
-		} while (!Resource->dwReference.compare_exchange_weak(Count, Count + 1, std::memory_order_acq_rel, std::memory_order_acquire));
-
-		RefType(Resource, false).swap(Out);
-		return true;
-	}
-}
 
 // defs
 class RENDER_API CResourceManager
@@ -162,17 +139,17 @@ public:
 
 	CMatrix*						_CreateMatrix		(const char* Name);
 	void							_DeleteMatrix		(const CMatrix*  M);
-	Shader*							_CreateShader		(Shader* InShader);
+	ref_shader _CreateShader(Shader* InShader);
 	CConstant*						_CreateConstant		(const char* Name);
 	void							_DeleteConstant		(const CConstant* C);
 
-	R_constant_table*				_CreateConstantTable(R_constant_table& C);
+	ref_ctable _CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-	dx10ConstantBuffer*				_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
+	ref_cbuffer _CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
 	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
-	SInputSignature*				_CreateInputSignature(ID3DBlob* pBlob);
+	ref_input_sign _CreateInputSignature(ID3DBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);
 
 	CRT*							_CreateRT			(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
@@ -198,32 +175,32 @@ public:
 	ref_vs							_CreateVS			(const char* Name);
 	void							_DeleteVS			(const SVS*	VS	);
 
-	SPass*							_CreatePass			(const SPass& proto);
+	ref_pass _CreatePass(const SPass& proto);
 	void							_DeletePass			(const SPass* P	);
 
 	// Shader compiling / optimizing
-	SState*							_CreateState		(SimulatorStates& Code);
+	ref_state _CreateState(SimulatorStates& Code);
 	void							_DeleteState		(const SState* SB);
 
-	SDeclaration*					_CreateDecl			(D3DVERTEXELEMENT9* dcl);
-	SDeclaration*					_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize);
+	ref_declaration _CreateDecl(D3DVERTEXELEMENT9* dcl);
+	ref_declaration _CreateDecl(const RHIInputElementDesc* dcl, size_t declSize);
 	void							_DeleteDecl			(const SDeclaration* dcl);
 
-	STextureList*					_CreateTextureList	(STextureList& L);
+	ref_texture_list _CreateTextureList(STextureList& L);
 	void							_DeleteTextureList	(const STextureList* L);
 
-	SMatrixList*					_CreateMatrixList	(SMatrixList& L);
+	ref_matrix_list _CreateMatrixList(SMatrixList& L);
 	void							_DeleteMatrixList	(const SMatrixList* L);
 
-	SConstantList*					_CreateConstantList	(SConstantList& L);
+	ref_constant_list _CreateConstantList(SConstantList& L);
 	void							_DeleteConstantList	(const SConstantList* L);
 
-	ShaderElement*					_CreateElement		(ShaderElement& L);
+	ref_selement _CreateElement(ShaderElement& L);
 	void							_DeleteElement		(const ShaderElement* L);
 
-	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
-	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
-	Shader*							_Compile			(const char*		s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices);
+	ref_shader _cpp_Create(const char* s_shader, const char* s_textures = nullptr, const char* s_constants = nullptr, const char* s_matrices = nullptr);
+	ref_shader _cpp_Create(IBlender* B, const char* s_shader = nullptr, const char* s_textures = nullptr, const char* s_constants = nullptr, const char* s_matrices = nullptr);
+	ref_shader _Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 
@@ -238,8 +215,8 @@ public:
 	void			reset_end				();
 
 	// Creation/Destroying
-	Shader*			Create					(const char* s_shader=nullptr, const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
-	Shader*			Create					(IBlender*	B,		const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
+	ref_shader Create(const char* s_shader = nullptr, const char* s_textures = nullptr, const char* s_constants = nullptr, const char* s_matrices = nullptr);
+	ref_shader Create(IBlender* B, const char* s_shader = nullptr, const char* s_textures = nullptr, const char* s_constants = nullptr, const char* s_matrices = nullptr);
 	void			Delete					(const Shader*		S	);
 	void			RecompileShaders		();
 	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}

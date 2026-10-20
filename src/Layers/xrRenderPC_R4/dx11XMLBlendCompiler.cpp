@@ -37,7 +37,7 @@ CXMLBlend::~CXMLBlend()
 	xr_delete(pCompiler);
 }
 
-Shader* CXMLBlend::Compile(const char* Texture)
+ref_shader CXMLBlend::Compile(const char* Texture)
 {
 	if (XMLBlendV2::IsVersion2(Parser))
 	{
@@ -76,12 +76,12 @@ Shader* CXMLBlend::Compile(const char* Texture)
 		}
 	}
 
-	Shader* ResultShader = DEV->_CreateShader(pShader);
+	ref_shader ResultShader = DEV->_CreateShader(pShader);
 	xr_delete(pShader);
 	return ResultShader;
 }
 
-ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
+ref_selement CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 {
 	pCompiler->SH = new ShaderElement();
 	pCompiler->RS.Invalidate();
@@ -250,7 +250,7 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 	}
 
 	pCompiler->r_End();
-	ShaderElement* pTryElement = DEV->_CreateElement(*pCompiler->SH);
+	ref_selement pTryElement = DEV->_CreateElement(*pCompiler->SH);
 	xr_delete(pCompiler->SH);
 	return pTryElement;
 }

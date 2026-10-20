@@ -201,14 +201,18 @@ void	CResourceManager::_ParseList(sh_list& dest, const char* names)
 	}
 }
 
-ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
+ref_selement CResourceManager::_CreateElement(ShaderElement& S)
 {
+	ref_selement Result;
 	if (S.passes.empty())		return	nullptr;
 
 	// Search equal in shaders array
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 it=0; it<v_elements.size(); it++)
-		if (ResourceLifetime::IsAlive(v_elements[it]) && S.equal(*(v_elements[it])))	return v_elements[it];
+		if (ResourceLifetime::IsAlive(v_elements[it]) && S.equal(*(v_elements[it])) && ResourceLifetime::TryAcquire(v_elements[it], Result))
+		{
+			return Result;
+		}
 
 	// Create _new_ entry
 	ShaderElement* N = new ShaderElement();
@@ -227,7 +231,7 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 	Msg	("! ERROR: Failed to find compiled 'shader-element'");
 }
 
-Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+ref_shader CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	CBlender_Compile	C;
 	Shader				S;
@@ -304,11 +308,11 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 		S.E[5]				= _CreateElement	(E);
 	}
 	
-	Shader* ResultShader = _CreateShader(&S);
+	ref_shader ResultShader = _CreateShader(&S);
 	return ResultShader;
 }
 
-Shader*	CResourceManager::_cpp_Create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+ref_shader CResourceManager::_cpp_Create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	if (!g_dedicated_server)
 	{
@@ -324,7 +328,7 @@ Shader*	CResourceManager::_cpp_Create(const char* s_shader, const char* s_textur
 	return nullptr;
 }
 
-Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+ref_shader CResourceManager::Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	ShaderCreateScope Scope;
 
@@ -336,11 +340,11 @@ Shader*CResourceManager::Create(IBlender* B, const char* s_shader, const char* s
 	return nullptr;
 }
 
-Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+ref_shader CResourceManager::_Compile(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	if (IsForceBlenderShader(s_shader))
 	{
-		if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
+		if (ref_shader pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
 			return pShader;
 	}
 #if !defined(_EDITOR)
@@ -358,7 +362,7 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 	if (CXMLBlend::Check(s_shader))
 		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
 
-	if (Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
+	if (ref_shader pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
 		return pShader;
 
 	if (!CXMLBlend::Check("stub_default"))
@@ -367,14 +371,14 @@ Shader* CResourceManager::_Compile(const char* s_shader, const char* s_textures,
 	return xr_make_unique<CXMLBlend>("stub_default")->Compile(s_textures);
 }
 
-Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	const char* s_constants,	const char* s_matrices)
+ref_shader CResourceManager::Create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
 {
 	ShaderCreateScope Scope;
 
 	if (g_dedicated_server)
 		return nullptr;
 
-	Shader* pShader = nullptr;
+	ref_shader pShader;
 	if (!IsForceBlenderShader(s_shader) && CXMLBlend::Check(s_shader))
 	{
 		xr_string key = MakeXMLBlendKey(s_shader, s_textures, s_constants, s_matrices);
@@ -386,14 +390,18 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 		{
 			xrCriticalSectionGuard CacheGuard(creationGuard);
 			auto it = m_xmlBlendCache.find(key);
-			if (it != m_xmlBlendCache.end() && ResourceLifetime::IsAlive(it->second.shader))
+			if (it != m_xmlBlendCache.end())
 			{
 #ifndef MASTER_GOLD
 				if (it->second.crc == current_crc)
-					return it->second.shader;
-#else
-				return it->second.shader;
 #endif
+				{
+					ref_shader Cached;
+					if (ResourceLifetime::TryAcquire(it->second.shader, Cached))
+					{
+						return Cached;
+					}
+				}
 			}
 		}
 
@@ -402,7 +410,7 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 		if (pShader)
 		{
 			XMLBlendCacheEntry entry;
-			entry.shader = pShader;
+			entry.shader = pShader._get();
 
 #ifndef MASTER_GOLD
 			entry.crc = current_crc;
@@ -415,6 +423,7 @@ Shader* CResourceManager::Create	(const char* s_shader,	const char* s_textures,	
 	else
 		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
 
+	xrCriticalSectionGuard MetadataGuard(creationGuard);
 	if (pShader && !pShader->src_shader)
 	{
 		pShader->src_shader = s_shader;
@@ -445,13 +454,11 @@ void CResourceManager::RecompileShaders()
 
 		Engine.External.SetSkinningMode(S->src_skinning);
 		RImplementation.clearAllShaderOptions();
-		Shader* N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
+		ref_shader N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
 		if (N == S)
 			continue;
 
 		S->_copy(*N);
-		if (!N->dwReference)
-			xr_delete(N);
 	}
 
 	Engine.External.SetSkinningMode(skinning);
@@ -592,15 +599,18 @@ void CResourceManager::ED_UpdateTextures(xr_vector<xr_string>* names)
 	// DeferredUpload	();
 }
 
-Shader* CResourceManager::_CreateShader(Shader* InShader)
+ref_shader CResourceManager::_CreateShader(Shader* InShader)
 {
+	ref_shader Result;
 	xrCriticalSectionGuard guard(creationGuard);
 
 	// Search equal in shaders array
 	for (Shader* it : v_shaders)
 	{
-		if (ResourceLifetime::IsAlive(it) && InShader->equal(it))
-			return it;
+		if (ResourceLifetime::IsAlive(it) && InShader->equal(it) && ResourceLifetime::TryAcquire(it, Result))
+		{
+			return Result;
+		}
 	}
 
 	// Create _new_ entry
