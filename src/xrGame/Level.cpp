@@ -595,9 +595,8 @@ int ps_precache_events_budget_ms = 8;
 int CLevel::GameEventsBudget() const
 {
 	extern ENGINE_API bool g_appLoaded;
-	if (!g_appLoaded)
-		return 0;
-	return (Device.dwPrecacheFrame != 0) ? ps_precache_events_budget_ms : ps_events_time_budget_ms;
+	const bool IsGameplay = g_appLoaded && (Device.dwPrecacheFrame == 0);
+	return IsGameplay ? ps_events_time_budget_ms : 0;
 }
 
 bool CLevel::HasPendingGameEvents()
