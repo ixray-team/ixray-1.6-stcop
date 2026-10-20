@@ -24,7 +24,8 @@
 #include "trade_parameters.h"
 #include "clsid_game.h"
 #include "Actor.h"
-#include "Actor.h"
+#include "Level.h"
+#include "xrServer.h"
 
 extern u32 get_rank(const shared_str& section);
 
@@ -492,13 +493,26 @@ void CAI_Stalker::remove_personal_only_ammo			(const CInventoryItem *item)
 		if (found)
 			continue;
 
-		for (i = inventory().m_all.begin(); i != e; ++i) {
-			if (xr_strcmp(*I,(*i)->object().cNameSect()))
+		for (i = inventory().m_all.begin(); i != e; ++i)
+		{
+			auto& Object = (*i)->object();
+			if (xr_strcmp(*I, Object.cNameSect()))
+			{
 				continue;
+			}
 
-			NET_Packet		packet;
-			u_EventGen		(packet,GE_DESTROY,(*i)->object().ID());
-			u_EventSend		(packet);
+			// Same race as stalker Die(): ammo may already be gone on the server or queued for destroy.
+			if (Object.getDestroy() || Object.object_removed())
+			{
+				continue;
+			}
+
+			if (Level().Server && !Level().Server->ID_to_entity(Object.ID()))
+			{
+				continue;
+			}
+
+			Object.DestroyObject();
 		}
 	}
 }
