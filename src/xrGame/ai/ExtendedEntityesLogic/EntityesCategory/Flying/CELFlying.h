@@ -28,8 +28,4 @@ protected:
 	CELFlyingBehaviorManager BehaviorManager;
 	u32 VisionCursor = 0;
 	u32 NextSphereVisionAt = 0;
-	void DiagnoseFlight(float ActualSpeed, bool CanMove);
-	u32 StalledAt = 0;
-	u32 LastStallLogAt = 0;
-	bool HasStallLog = false;
 };

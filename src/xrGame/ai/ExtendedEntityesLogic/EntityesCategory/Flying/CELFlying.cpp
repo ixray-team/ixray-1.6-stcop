@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
-#include "Navigation/CELSharedFlyingSpaceCache.h"
 #include "ai/ExtendedEntityesLogic/EntityesCategory/Flying/CELFlying.h"
 #include "ai/ExtendedEntityesLogic/EntityesCategory/Flying/Behaviors/CELFlyingBehaviorBase.h"
 #include "ai/ExtendedEntityesLogic/Debug/Debug.h"
@@ -9,10 +8,6 @@
 #include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
 #include "ai/ExtendedEntityesLogic/CELSharedPerceptionBudget.h"
 #include "Level.h"
-#include "ai/ExtendedEntityesLogic/Navigation/CELSharedNavigationScheduler.h"
-#include "ai/ExtendedEntityesLogic/EntityesCategory/Flying/Navigation/CELFlyingGeometry.h"
-#include "ai/ExtendedEntityesLogic/EntityesCategory/Flying/Navigation/CELSharedFlyingGraph.h"
-#include "ai/ExtendedEntityesLogic/EntityesCategory/Flying/CELFlyingEntityBase.h"
 
 // Связывает общую логику воздушной категории с необходимыми службами и состоянием владельца.
 CELFlying::CELFlying(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELComponentBase(std::move(OwnerAdapter), OwnerProfile), FlightSettings(CELFlyingSettings::Read(*Adapter->Monster().cNameSect())), Movement(*Adapter, FlightSettings), BehaviorManager(*this, *Adapter, FlightSettings, Movement) {}
@@ -92,7 +87,6 @@ void CELFlying::FrameUpdate(float DeltaTime)
 		return;
 	}
 	const bool CanMove = Adapter->CanControl();
-	const Fvector PreviousPosition = Adapter->Monster().Position();
 	if (CanMove)
 	{
 		if (TargetIdentifier == u16(-1))
@@ -109,10 +103,6 @@ void CELFlying::FrameUpdate(float DeltaTime)
 			BehaviorManager.AfterMovement();
 			++Handoffs;
 		} while (RemainingTime > EPS_L && Movement.HasRoute() && Handoffs < 4);
-	}
-	if (DeltaTime > EPS_L)
-	{
-		DiagnoseFlight(PreviousPosition.distance_to(Adapter->Monster().Position()) / DeltaTime, CanMove);
 	}
 	if (!CELSharedDebug::Instance().IsDrawEnabled())
 	{
@@ -162,80 +152,4 @@ void CELFlying::RemoveObject(u16 ObjectIdentifier)
 		ClearBehavior();
 	}
 	CELComponentBase::RemoveObject(ObjectIdentifier);
-}
-
-// Временно пишет причины зависания только с включённой отладкой; общая частота ограничена 16 строками в секунду.
-void CELFlying::DiagnoseFlight(float ActualSpeed, bool CanMove)
-{
-	const CELFlyingEntityBase* Flyer = CELSharedDebug::Instance().IsEnabled() ? smart_cast<CELFlyingEntityBase*>(&Adapter->Monster()) : nullptr;
-	if (!CELSharedDebug::Instance().IsEnabled() || !Adapter->Monster().g_Alive() || Movement.IsLandingFlight() || (Flyer && Flyer->IsFlightGrounded()))
-	{
-		StalledAt = 0;
-		HasStallLog = false;
-		return;
-	}
-	const u32 Now = Device.dwTimeGlobal;
-	const bool Stalled = ActualSpeed < .2f;
-	if (Stalled && !StalledAt)
-	{
-		StalledAt = Now;
-	}
-	if ((Stalled && (Now - StalledAt < 300 || (HasStallLog && Now - LastStallLogAt < 2000))) || (!Stalled && !HasStallLog))
-	{
-		if (!Stalled)
-		{
-			StalledAt = 0;
-		}
-		return;
-	}
-	static u32 WindowAt = 0;
-	static u32 Lines = 0;
-	if (Now - WindowAt >= 250)
-	{
-		WindowAt = Now;
-		Lines = 0;
-	}
-	if (Lines >= 4)
-	{
-		return;
-	}
-	++Lines;
-	const SELBehaviorValidation State = BehaviorManager.FlightValidation();
-	const Fvector& Position = Adapter->Monster().Position();
-	Msg("[EL flight] id=%u target=%u %s duration_ms=%u actual_speed=%.2f control=%u route=%u partial=%u blocked=%u progress=%.2f mode=%s state=%s reason=%s workers=%u geometry=%u captures=%u rays_left=%u rays_limit=%u emergency_rays_left=%u air_cache_hits=%u air_cache_misses=%u air_cache_tiles=%u request_age_ms=%u route_ready_ms=%u continuity=%u stalled_route=%u pos=(%.2f,%.2f,%.2f)",
-		Adapter->Monster().ID(),
-		TargetIdentifier,
-		Stalled ? "STALL" : "RESUMED",
-		Now - StalledAt,
-		ActualSpeed,
-		unsigned(CanMove),
-		unsigned(Movement.HasRoute()),
-		unsigned(Movement.IsAwaitingTail()),
-		unsigned(Movement.WasBlocked()),
-		Movement.Progress(),
-		BehaviorManager.FlightMode(),
-		State.Reason,
-		CanMove ? Movement.StopReason() : "Внешнее или штатное управление",
-		ExtendedEntityes::Navigation().OutstandingRequests(),
-		CELFlyingGeometry::OutstandingRequests(),
-		CELSharedFlyingGraph::OutstandingRequests(),
-		ExtendedEntityes::Navigation().GeometryRaysRemaining(),
-		CELSharedSettings::Work().FlightGeometryRays,
-		ExtendedEntityes::Navigation().EmergencyRaysRemaining(),
-		CELSharedFlyingSpaceCache::Hits(),
-		CELSharedFlyingSpaceCache::Misses(),
-		CELSharedFlyingSpaceCache::TileCount(),
-		BehaviorManager.PendingRouteAge(),
-		BehaviorManager.LastRouteReadyMilliseconds(),
-		unsigned(Movement.IsContinuityFlight()),
-		unsigned(Movement.IsStalled()),
-		Position.x,
-		Position.y,
-		Position.z);
-	HasStallLog = Stalled;
-	LastStallLogAt = Now;
-	if (!Stalled)
-	{
-		StalledAt = 0;
-	}
 }

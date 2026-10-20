@@ -451,10 +451,6 @@ void CELFlyingAttackBehavior::OnRouteActivated()
 	if (!IsReplacement)
 	{
 		HasHitPass = false;
-		PassContactChecks = 0;
-		PassClosestGap = FLT_MAX;
-		HasReportedPass = false;
-		HadContactNode = false;
 	}
 	Movement.SetContactTarget(ActivePhase == EELAttackPhase::Dive ? Observation.TargetIdentifier : u16(-1));
 	if (ActivePhase == EELAttackPhase::Dive)
@@ -500,7 +496,6 @@ void CELFlyingAttackBehavior::AfterMovement()
 {
 	if (HasContactSample && !HasHitPass && HasVisibleTarget && ActivePhase == EELAttackPhase::Dive && !Movement.IsContinuityFlight())
 	{
-		++PassContactChecks;
 		HasHitPass = Attack.TryHit(Adapter, Settings, Observation.TargetIdentifier, PreviousContact, PreviousTargetTransform);
 		Adapter.Monster().XFORM().transform_tiny(PreviousContact, CELFlyingAttack::LocalContactPoint(Adapter.Monster()));
 		CEntityAlive* Target = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
@@ -514,7 +509,6 @@ void CELFlyingAttackBehavior::AfterMovement()
 	{
 		Animation.Fly();
 	}
-	DebugPass();
 	CELFlyingBehaviorBase::AfterMovement();
 }
 
@@ -525,50 +519,4 @@ void CELFlyingAttackBehavior::OnRouteRejected()
 	NeedsDifferentEntry = true;
 	IsCorrectingDive = false;
 	CorrectionAttempts = 2;
-}
-
-// Выводит один итог захода; отправка HitEntity и подтверждённая потеря здоровья намеренно различаются.
-void CELFlyingAttackBehavior::DebugPass()
-{
-	if (ActivePhase != EELAttackPhase::Dive || !CELSharedDebug::Instance().IsEnabled())
-	{
-		return;
-	}
-	HadContactNode = HadContactNode || Movement.CanSpliceAt(ActiveContact);
-	CEntityAlive* Target = HasVisibleTarget ? ExtendedEntityes::FindEntity(Observation.TargetIdentifier) : nullptr;
-	if (Target)
-	{
-		Fvector Point;
-		Adapter.Monster().XFORM().transform_tiny(Point, CELFlyingAttack::LocalContactPoint(Adapter.Monster()));
-		Fmatrix Inverse;
-		Inverse.invert(Target->XFORM());
-		Inverse.transform_tiny(Point);
-		Fvector Center;
-		Fvector HalfSize;
-		Target->BoundingBox().get_CD(Center, HalfSize);
-		HalfSize.mul(Settings.AttackTargetScale);
-		const Fvector Minimum = Fvector().sub(Center, HalfSize);
-		const Fvector Maximum = Fvector().add(Center, HalfSize);
-		Fvector Closest = Point;
-		clamp(Closest.x, Minimum.x, Maximum.x);
-		clamp(Closest.y, Minimum.y, Maximum.y);
-		clamp(Closest.z, Minimum.z, Maximum.z);
-		PassClosestGap = std::min(PassClosestGap, Point.distance_to(Closest));
-	}
-	if (!HasReportedPass && !Movement.IsAwaitingTail() && !Movement.CanSpliceAt(ActiveContact))
-	{
-		Msg("[EL flight attack] id=%u target=%u hit_sent=%u checks=%u closest_gap=%.3f contact_distance=%.3f visible=%u contact_node=%u corrections=%u target_speed=%.2f reason=%s",
-			Adapter.Monster().ID(),
-			Observation.TargetIdentifier,
-			unsigned(HasHitPass),
-			PassContactChecks,
-			PassClosestGap == FLT_MAX ? -1.f : PassClosestGap,
-			Settings.AttackDistance,
-			unsigned(HasVisibleTarget),
-			unsigned(HadContactNode),
-			CorrectionAttempts,
-			TargetVelocity.magnitude(),
-			PassContactChecks ? Attack.LastContactResult() : "Нет зрительного подтверждения контакта");
-		HasReportedPass = true;
-	}
 }

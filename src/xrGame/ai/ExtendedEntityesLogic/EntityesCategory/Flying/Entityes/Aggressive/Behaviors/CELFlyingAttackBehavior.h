@@ -76,9 +76,4 @@ private:
 	bool ActiveDivePass = true;
 	bool IsCorrectingDive = false;
 	u32 CorrectionAttempts = 0;
-	u32 PassContactChecks = 0;
-	float PassClosestGap = FLT_MAX;
-	bool HasReportedPass = false;
-	bool HadContactNode = false;
-	void DebugPass();
 };
