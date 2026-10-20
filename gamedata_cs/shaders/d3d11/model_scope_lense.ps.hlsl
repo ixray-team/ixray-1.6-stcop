@@ -15,8 +15,8 @@ float parralax_fade(in float2 tc, in float3 Point)
     float3 dp1 = ddx_fine(Point);
     float3 dp2 = ddy_fine(Point);
 	
-    float2 duv1 = ddx(tc);
-    float2 duv2 = ddy(tc);
+    float2 duv1 = ddx_fine(tc);
+    float2 duv2 = ddy_fine(tc);
 	
 	float3 N = normalize(cross(dp1, dp2));
 
@@ -52,8 +52,8 @@ float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 		return 0.0f;
 	}
 
-	float3 Point = GbufferGetPointRealUnjitter(pos2d.xy * pos_decompression_params2.zw, pos2d.z);
-	float Fade = parralax_fade(I.tc0, Point);
+	// Differentiate the interpolated position, avoiding quantization in the HUD depth range.
+	float Fade = parralax_fade(I.tc0, I.tc1);
 
     float4 t_base = s_base.Sample(smp_base, I.tc0);
 	t_base.xyz = detonemap(t_base.xyz);
