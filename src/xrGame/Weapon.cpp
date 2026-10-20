@@ -1844,10 +1844,10 @@ void CWeapon::ProcessScope()
 				HudItemData()->set_bone_visible(Bone, IsVisible, true);
 			}
 		});
-	if (!Scope)
-	{
-		Model->CalculateBones_Invalidate();
-	}
+	// Showing a previously hidden scope leaves its zero-scale matrix until the skeleton is recalculated.
+	// Restore it before collision queries can disable the scope's bone shape.
+	Model->CalculateBones_Invalidate();
+	Model->CalculateBones(true);
 }
 
 void CWeapon::HideOneUpgradeLevel(const char* section)
