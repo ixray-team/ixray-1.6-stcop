@@ -540,9 +540,8 @@ void CAI_Stalker::Die				(CObject* who)
 				continue;
 			}
 
-			NET_Packet Packet;
-			u_EventGen(Packet, GE_DESTROY, Object.ID());
-			u_EventSend(Packet);
+			// DestroyObject marks object_removed so a second death/loot path cannot queue another GE_DESTROY.
+			Object.DestroyObject();
 		}
 	}
 }

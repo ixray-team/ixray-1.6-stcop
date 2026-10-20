@@ -3118,14 +3118,14 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, A
 	}
 #endif
 
-	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest); // ��� ������ ���� ���������
+	CSE_Abstract* e_dest = game->get_entity_from_eid(id_dest);
 	if (!e_dest)
 	{
 #ifndef MASTER_GOLD
 		Msg("!SV:ge_destroy: [%d] not found on server", id_dest);
 #endif // #ifndef MASTER_GOLD
 		return;
-	};
+	}
 
 	R_ASSERT(e_dest);
 	xrClientData* c_dest = e_dest->owner; // ������, ��� ����
@@ -3148,9 +3148,17 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, A
 
 		while (!e_dest->children.empty())
 		{
-			Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
+			const ALife::_OBJECT_ID ChildID = *e_dest->children.begin();
+			if (!game->get_entity_from_eid(ChildID))
+			{
+				// Stale child id left after a prior destroy; drop it so the loop cannot spin forever.
+				e_dest->children.erase(e_dest->children.begin());
+				continue;
+			}
+
+			Process_event_destroy(P, sender, time, ChildID, pEventPack);
 		}
-	};
+	}
 
 	if (ALife::INVALID_OBJECT_ID == parent_id && nullptr == pEventPack)
 	{
@@ -3325,6 +3333,14 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	if (!e_entity)
 	{
 		Msg("! ERROR on rejecting: entity not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent, id_entity, Device.dwFrame);
+		// Keep parent.children consistent when the child was already destroyed elsewhere.
+		if (CSE_Abstract* Parent = game->get_entity_from_eid(id_parent))
+		{
+			if (auto Child = std::find(Parent->children.begin(), Parent->children.end(), id_entity); Child != Parent->children.end())
+			{
+				Parent->children.erase(Child);
+			}
+		}
 		return false;
 	}
 
