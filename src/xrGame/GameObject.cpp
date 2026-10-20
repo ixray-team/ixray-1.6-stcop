@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "GameObject.h"
+#include "inventory_item.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "ai_space.h"
@@ -907,16 +908,27 @@ bool CGameObject::NeedToDestroyObject()	const
 
 void CGameObject::DestroyObject()			
 {
-	
-	if(m_bObjectRemoved)	return;
-	m_bObjectRemoved		= true;
-	if (getDestroy())		return;
+	if (m_bObjectRemoved)
+	{
+		return;
+	}
+
+	m_bObjectRemoved = true;
+	if (getDestroy())
+	{
+		return;
+	}
+
+	if (CInventoryItem* Item = cast_inventory_item())
+	{
+		Item->SetDropManual(false);
+	}
 
 	if (Local())
-	{	
-		NET_Packet		P;
-		u_EventGen		(P,GE_DESTROY,ID());
-		u_EventSend		(P);
+	{
+		NET_Packet P;
+		u_EventGen(P, GE_DESTROY, ID());
+		u_EventSend(P);
 	}
 }
 
