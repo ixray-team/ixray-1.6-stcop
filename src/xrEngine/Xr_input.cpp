@@ -361,6 +361,15 @@ const xr_map<int, char> russian_lookup_key_table = {
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
+#ifdef __APPLE__
+	// The Cyrillic CP1251 table below is a Windows-layout hack; on macOS it
+	// leaves UI hints and quick-slot labels empty. SDL knows the real names.
+	const char* name = SDL_GetScancodeName((SDL_Scancode)dik);
+	if (name == nullptr || name[0] == 0)
+		return false;
+	xr_strcpy(dest_str, dest_sz, name);
+	return true;
+#else
 #ifdef IXR_WINDOWS
 	LANGID lang_locale = PRIMARYLANGID(LOWORD(HandleToLong(GetKeyboardLayout(0))));
 	if (lang_locale != LANG_RUSSIAN) {
@@ -381,6 +390,7 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	dest_str[1] = 0;
 
 	return true;
+#endif // __APPLE__
 }
 
 #define MOUSE_1		(SDL_SCANCODE_COUNT + 100)
