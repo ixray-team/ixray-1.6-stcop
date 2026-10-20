@@ -619,6 +619,12 @@ void CLevel::ProcessPostponed(bool timeLimit)
 			}
 		}
 
+		const auto SpawnID = m_postponedPackets.front().SpawnID;
+		if (const CObject* ExistingObject = Objects.net_Find(SpawnID); ExistingObject && ExistingObject->getDestroy())
+		{
+			break;
+		}
+
 		PacketData pd = std::move(m_postponedPackets.front());
 		m_postponedPackets.pop_front();
 		ProcessPacket(pd.ID, pd.Packet, pd.dest, pd.type);
@@ -647,7 +653,7 @@ void CLevel::ProcessGameEvents		()
 			game_events->get	(ID,dest,type,P);
 
 			const int Budget = GameEventsBudget();
-			if ((Budget <= 0) || (m_eventsTimer.GetElapsed_ms() < (u32)Budget))
+			if (m_postponedPackets.empty() && ((Budget <= 0) || (m_eventsTimer.GetElapsed_ms() < (u32)Budget)))
 			{
 				ProcessPacket(ID, P, dest, type);
 			}
@@ -658,6 +664,7 @@ void CLevel::ProcessGameEvents		()
 				pd.ID = ID;
 				pd.dest = dest;
 				pd.type = type;
+				pd.SpawnID = PendingSpawnID;
 				m_postponedPackets.push_back(std::move(pd));
 			}
 		}
