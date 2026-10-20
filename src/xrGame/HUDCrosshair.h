@@ -8,6 +8,15 @@
 
 #include "../../xrUI/ui_defs.h"
 
+enum HudCrosshairMode : u8
+{
+	DEFAULT = 0,
+	INERTIA,
+	EXTENDED
+};
+
+extern u32 crosshair_mode;
+extern float crosshair_inertia_factor;
 
 class CHUDCrosshair	
 {

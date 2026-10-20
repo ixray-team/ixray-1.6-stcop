@@ -110,7 +110,7 @@ void CHUDCrosshair::OnRender ()
 	Fvector2		center, scr_size;
 	scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
 
-	psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? center.set(dc.x, dc.y) : center.set(scr_size.x / 2.0f, scr_size.y / 2.0f);
+	crosshair_mode != DEFAULT ? center.set(dc.x, dc.y) : center.set(scr_size.x / 2.0f, scr_size.y / 2.0f);
 	UIRender->StartPrimitive(10, IUIRender::ptLineList, UI().m_currentPointType);
 
 	float cross_length					= cross_length_perc*scr_size.x;
