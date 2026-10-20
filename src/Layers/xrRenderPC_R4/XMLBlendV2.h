@@ -1,5 +1,6 @@
 #pragma once
 #include "blenders/BlendOps.h"
+#include "Shader.h"
 
 class Shader;
 class CXml;
@@ -36,7 +37,7 @@ namespace XMLBlendV2
 	bool IsVersion2(CXml& Parser);
 	bool Parse(CXml& Parser, const char* FileName, Script& Result, xr_string& Error);
 
-	Shader* Compile(const Script& Source, const char* Textures);
+	ref_shader Compile(const Script& Source, const char* Textures);
 
 	bool IsStaticBlend(const char* ShaderName);
 }

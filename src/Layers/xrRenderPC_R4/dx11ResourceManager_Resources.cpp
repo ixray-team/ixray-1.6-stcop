@@ -61,15 +61,19 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SState*		CResourceManager::_CreateState		(SimulatorStates& state_code)
+ref_state CResourceManager::_CreateState(SimulatorStates& state_code)
 {
+	ref_state Result;
 	xrCriticalSectionGuard guard(creationGuard);
 	// Search equal state-code 
 	for (u32 it=0; it<v_states.size(); it++)
 	{
 		SState*				C		= v_states[it];;
 		SimulatorStates&	base	= C->state_code;
-		if (ResourceLifetime::IsAlive(C) && base.equal(state_code))	return C;
+		if (ResourceLifetime::IsAlive(C) && base.equal(state_code) && ResourceLifetime::TryAcquire(C, Result))
+		{
+			return Result;
+		}
 	}
 
 	// Create New
@@ -89,15 +93,16 @@ void		CResourceManager::_DeleteState		(const SState* state)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SPass* CResourceManager::_CreatePass(const SPass& proto)
+ref_pass CResourceManager::_CreatePass(const SPass& proto)
 {
+	ref_pass Result;
 	xrCriticalSectionGuard guard(creationGuard);
 
 	for (u32 it=0; it<v_passes.size(); it++)
 	{
-		if (ResourceLifetime::IsAlive(v_passes[it]) && v_passes[it]->equal(proto))
+		if (ResourceLifetime::IsAlive(v_passes[it]) && v_passes[it]->equal(proto) && ResourceLifetime::TryAcquire(v_passes[it], Result))
 		{
-			return v_passes[it];
+			return Result;
 		}
 	}
 
@@ -540,16 +545,19 @@ static bool dcl_equal(const RHIInputElementDesc* a, size_t aDeclSize, const RHII
 	return 0 == memcmp(a, b, aDeclSize * sizeof(RHIInputElementDesc));
 }
 
-SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize)
+ref_declaration CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize)
 {
+	ref_declaration Result;
 	xrCriticalSectionGuard guard(creationGuard);
 
 	// Search equal code
 	for (u32 it = 0; it < v_declarations.size(); it++)
 	{
 		SDeclaration* Declaration = v_declarations[it];
-		if (ResourceLifetime::IsAlive(Declaration) && dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()))
-			return Declaration;
+		if (ResourceLifetime::IsAlive(Declaration) && dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()) && ResourceLifetime::TryAcquire(Declaration, Result))
+		{
+			return Result;
+		}
 	}
 
 	SDeclaration* Declaration = new SDeclaration();
@@ -560,14 +568,18 @@ SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size
 	return Declaration;
 }
 
-SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
+ref_declaration CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 {
+	ref_declaration Result;
 	xrCriticalSectionGuard guard(creationGuard);
 	// Search equal code
 	for (u32 it=0; it<v_declarations.size(); it++)
 	{
 		SDeclaration*		D		= v_declarations[it];;
-		if (ResourceLifetime::IsAlive(D) && dcl_equal(dcl,&*D->dcl_code.begin()))	return D;
+		if (ResourceLifetime::IsAlive(D) && dcl_equal(dcl, &*D->dcl_code.begin()) && ResourceLifetime::TryAcquire(D, Result))
+		{
+			return Result;
+		}
 	}
 
 	// Create _new
@@ -592,21 +604,23 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
+ref_ctable CResourceManager::_CreateConstantTable(R_constant_table& C)
 {
+	ref_ctable Result;
 	if (C.empty())		return nullptr;
 
 	xrCriticalSectionGuard guard(creationGuard);
 
 	for (u32 it=0; it<v_constant_tables.size(); it++)
-		if (ResourceLifetime::IsAlive(v_constant_tables[it]) && v_constant_tables[it]->equal(C))	return v_constant_tables[it];
+		if (ResourceLifetime::IsAlive(v_constant_tables[it]) && v_constant_tables[it]->equal(C) && ResourceLifetime::TryAcquire(v_constant_tables[it], Result))
+		{
+			return Result;
+		}
 
 	R_constant_table* NewElem = v_constant_tables.emplace_back((new R_constant_table()));
 	NewElem->_copy(C);
 	NewElem->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	return NewElem;
-
-	return v_constant_tables.back		();
 }
 void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 {
@@ -688,7 +702,7 @@ SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t De
 {
 	xrCriticalSectionGuard guard(creationGuard);
 
-	SDeclaration* dcl = _CreateDecl(DescList, DeclSize);
+	ref_declaration dcl = _CreateDecl(DescList, DeclSize);
 	u32 vb_stride = (u32)GRHI->GetInputElementDescStride(DescList, DeclSize);
 
 	// ***** first pass - search already loaded shader
@@ -713,7 +727,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb
 	xrCriticalSectionGuard guard(creationGuard);
 	R_ASSERT			(decl && vb);
 
-	SDeclaration* dcl	= _CreateDecl			(decl);
+	ref_declaration dcl = _CreateDecl(decl);
 	u32 vb_stride = (u32)ComputeVertexSize(decl, 0);
 
 	// ***** first pass - search already loaded shader
@@ -911,14 +925,18 @@ void	CResourceManager::_DeleteConstant		(const CConstant* C)
 bool	cmp_tl	(const std::pair<u32,ref_texture>& _1, const std::pair<u32,ref_texture>& _2)	{
 	return _1.first < _2.first;
 }
-STextureList*	CResourceManager::_CreateTextureList(STextureList& L)
+ref_texture_list CResourceManager::_CreateTextureList(STextureList& L)
 {
+	ref_texture_list Result;
 	xrCriticalSectionGuard guard(creationGuard);
 	std::sort	(L.begin(),L.end(),cmp_tl);
 	for (u32 it=0; it<lst_textures.size(); it++)
 	{
 		STextureList*	base		= lst_textures[it];
-		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base) && ResourceLifetime::TryAcquire(base, Result))
+		{
+			return Result;
+		}
 	}
 
 	STextureList* lst = new STextureList();
@@ -936,8 +954,9 @@ void			CResourceManager::_DeleteTextureList(const STextureList* L)
 	Msg	("! ERROR: Failed to find compiled list of textures");
 }
 //--------------------------------------------------------------------------------------------------------------
-SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
+ref_matrix_list CResourceManager::_CreateMatrixList(SMatrixList& L)
 {
+	ref_matrix_list Result;
 	bool bEmpty = true;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
@@ -946,7 +965,10 @@ SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 	for (u32 it=0; it<lst_matrices.size(); it++)
 	{
 		SMatrixList*	base		= lst_matrices[it];
-		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base) && ResourceLifetime::TryAcquire(base, Result))
+		{
+			return Result;
+		}
 	}
 
 	SMatrixList* lst = new SMatrixList();
@@ -964,8 +986,9 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 	Msg	("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
-SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
+ref_constant_list CResourceManager::_CreateConstantList(SConstantList& L)
 {
+	ref_constant_list Result;
 	bool bEmpty = true;
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
@@ -974,7 +997,10 @@ SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 	for (u32 it=0; it<lst_constants.size(); it++)
 	{
 		SConstantList*	base		= lst_constants[it];
-		if (ResourceLifetime::IsAlive(base) && L.equal(*base))			return base;
+		if (ResourceLifetime::IsAlive(base) && L.equal(*base) && ResourceLifetime::TryAcquire(base, Result))
+		{
+			return Result;
+		}
 	}
 
 	SConstantList* lst = new SConstantList();
@@ -992,8 +1018,9 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
-dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
+ref_cbuffer CResourceManager::_CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable)
 {
+	ref_cbuffer Result;
 	VERIFY(pTable);
 	xrCriticalSectionGuard guard(creationGuard);
 	dx10ConstantBuffer	*pTempBuffer = new dx10ConstantBuffer(pTable);
@@ -1001,10 +1028,10 @@ dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(ID3DShaderReflection
 	for (u32 it=0; it<v_constant_buffer.size(); it++)
 	{
 		dx10ConstantBuffer*	buf		= v_constant_buffer[it];
-		if (ResourceLifetime::IsAlive(buf) && pTempBuffer->Similar(*buf))			
+		if (ResourceLifetime::IsAlive(buf) && pTempBuffer->Similar(*buf) && ResourceLifetime::TryAcquire(buf, Result))
 		{
 			xr_delete(pTempBuffer);
-			return buf;
+			return Result;
 		}
 	}
 
@@ -1024,18 +1051,19 @@ void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SInputSignature* CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
+ref_input_sign CResourceManager::_CreateInputSignature(ID3DBlob* pBlob)
 {
+	ref_input_sign Result;
 	VERIFY(pBlob);
 
 	xrCriticalSectionGuard guard(creationGuard);
 	for (u32 it=0; it<v_input_signature.size(); it++)
 	{
 		SInputSignature*	sign		= v_input_signature[it];
-		if ( ResourceLifetime::IsAlive(sign) && (pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
-			(!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
+		if (ResourceLifetime::IsAlive(sign) && (pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
+			(!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))) && ResourceLifetime::TryAcquire(sign, Result))
 		{
-			return sign;
+			return Result;
 		}
 	}
 
