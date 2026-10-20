@@ -65,6 +65,7 @@ protected:
 
 public:
 	u32 EditorRevision = 0;
+	bool HasNativeVertexOrder() const { return SearchNodes.empty(); }
 	bool IsEditorNodeEnabled(u32 ID) const { return valid_vertex_id(ID) && (EditorDeletedNodes.empty() || !EditorDeletedNodes[ID]); }
 	typedef u32 const_iterator;
 	typedef u32 const_spawn_iterator;

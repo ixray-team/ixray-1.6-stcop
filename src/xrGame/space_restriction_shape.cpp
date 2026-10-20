@@ -12,6 +12,8 @@
 #include "level_graph.h"
 #include "space_restrictor.h"
 #include "graph_engine.h"
+#include "RestrictionVertexRange.h"
+#include "ImUtils/AIGridEditor.h"
 
 struct CBorderMergePredicate {
 	CSpaceRestrictionShape			*m_restriction;
@@ -41,6 +43,51 @@ struct CBorderMergePredicate {
 	IC	bool operator()					(u32 level_vertex_id) const
 	{
 		return						(m_restriction->inside(level_vertex_id,false));
+	}
+
+	void Collect(const Fvector& Start, const Fvector& EndPosition) const
+	{
+		const auto& Graph = ai().level_graph();
+		if (Device.IsEditorMode() || Graph.EditorRevision != 0 || !Graph.HasNativeVertexOrder() || HasAIGridEditorPatch())
+		{
+			Graph.iterate_vertices(Start, EndPosition, *this);
+			return;
+		}
+		const u32 Count = Graph.header().vertex_count();
+		if (Count == 0)
+		{
+			return;
+		}
+		const auto* Nodes = Graph.vertex(u32(0));
+		const auto* Begin = Nodes;
+		const auto* End = Nodes + Count;
+		if (Graph.valid_vertex_position(Start))
+		{
+			Begin = std::lower_bound(Nodes, End, Graph.vertex_position(Start).xz(), [](const ILevelGraph::CVertex& Node, u32 Key)
+			{
+				return Node.position().xz() < Key;
+			});
+		}
+		if (Graph.valid_vertex_position(EndPosition))
+		{
+			End = std::upper_bound(Nodes, End, Graph.vertex_position(EndPosition).xz(), [](u32 Key, const ILevelGraph::CVertex& Node)
+			{
+				return Key < Node.position().xz();
+			});
+			if (End != Nodes + Count)
+			{
+				++End;
+			}
+		}
+		const float Radius = _sqrt(m_max_distance_sqr);
+		const float CellSize = Graph.header().cell_size();
+		const float OriginZ = Graph.header().box().min.z;
+		const int FirstZ = std::max(0, iFloor((m_center.y - Radius - OriginZ) / CellSize) - 1);
+		const int LastZ = std::min(int(Graph.row_length()) - 1, iCeil((m_center.y + Radius - OriginZ) / CellSize) + 1);
+		if (FirstZ <= LastZ)
+		{
+			RestrictionVertexRange::Visit(Begin, End, Graph.row_length(), u32(FirstZ), u32(LastZ), *this);
+		}
 	}
 };
 
@@ -103,7 +150,7 @@ void CSpaceRestrictionShape::fill_shape		(const CCF_Shape::shape_def &shape)
 		}
 		default : NODEFAULT;
 	}
-	ai().level_graph().iterate_vertices(start,dest,CBorderMergePredicate(this));
+	CBorderMergePredicate(this).Collect(start, dest);
 
 #ifdef DEBUG
 	ai().level_graph().iterate_vertices(start,dest,CShapeTestPredicate(this));
