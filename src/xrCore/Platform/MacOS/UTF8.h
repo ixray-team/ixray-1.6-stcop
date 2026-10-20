@@ -1,6 +1,5 @@
 #pragma once
 #include <wctype.h>
-#include <vector>
 
 namespace Platform
 {
@@ -12,7 +11,9 @@ namespace Platform
 	// HACK: TCHAR is char on this platform, so font code walking `wideStr[i]` would step
 	// UTF-8 BYTES instead of codepoints. Decode once, iterate glyphs (same as the
 	// Windows wchar_t path).
-	inline void DecodeUtf8CodePoints(const char* s, std::vector<int>& out)
+	// Template: xr_vector is not declared yet at this point of the include chain.
+	template <typename Container>
+	inline void DecodeUtf8CodePoints(const char* s, Container& out)
 	{
 		while (*s)
 		{

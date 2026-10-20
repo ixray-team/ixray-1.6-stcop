@@ -30,7 +30,7 @@ defaults:
 
 jobs:
   build-engine:
-    name: 'Windows'
+    name: 'Windows (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:

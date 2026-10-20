@@ -818,8 +818,8 @@ float CInifile::r_float(str_c S, str_c L)const
 #define DEBUG_NONOTIFY(cond) (cond)
 #define DEBUG_NOTIFY(cond, message, ...) I_ASSERT_M(cond, message, __VA_ARGS__)
 #else
-#define DEBUG_NONOTIFY(cond) [&](){cond; return true;}()
-#define DEBUG_NOTIFY(cond, message, ...) [&](){cond; return true;}()
+#define DEBUG_NONOTIFY(cond) [&](){ (void)(cond); return true; }()
+#define DEBUG_NOTIFY(cond, message, ...) [&](){ (void)(cond); return true; }()
 #endif
 
 #pragma warning(push, 0)

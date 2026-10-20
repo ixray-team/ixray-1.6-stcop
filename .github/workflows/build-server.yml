@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-server:
-    name: 'Windows'
+    name: 'Windows (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:
@@ -155,7 +155,7 @@ jobs:
           include-hidden-files: true
 
   publish-server:
-    name: 'Publish'
+    name: 'Publish (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     needs:
       - pack-assets

@@ -8,6 +8,16 @@ if(WIN32)
         "${ENGINE_THRA}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll"
     )
 else()
+    if(PkgConfig_FOUND)
+        pkg_check_modules(THEORA QUIET IMPORTED_TARGET theora)
+    endif()
+endif()
+
+if(NOT WIN32 AND THEORA_FOUND)
+    message(STATUS "Using system Theora from pkg-config")
+    add_library(Theora::theora INTERFACE IMPORTED)
+    target_link_libraries(Theora::theora INTERFACE PkgConfig::THEORA Ogg::ogg)
+elseif(NOT WIN32)
     message(STATUS "Setting up Theora build...")
     
     set(THEORA_BUILD_DIR ${CMAKE_BINARY_DIR}/theora_build)
@@ -48,7 +58,7 @@ else()
     add_dependencies(Theora::theora theora_build_target)
     
     target_include_directories(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/include> $<INSTALL_INTERFACE:include>)
-    target_link_libraries(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/lib/libtheora.a> $<INSTALL_INTERFACE:-ltheora> ogg)
+    target_link_libraries(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/lib/libtheora.a> $<INSTALL_INTERFACE:-ltheora> Ogg::ogg)
     
     message(STATUS "Theora will be built during compilation")
 endif()

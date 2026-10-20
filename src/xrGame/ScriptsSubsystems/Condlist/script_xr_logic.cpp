@@ -9,6 +9,7 @@
 
 #include "ScriptsSubsystems/Condlist/CondlistGC.h"
 #include <charconv>
+#include "../xrCore/CharConv.h"
 
 CScriptXRParser::CScriptXRParser() :
 	m_nCurrentIndex{}, m_pLevel(nullptr), m_pXRConditions(nullptr), m_pXREffects(nullptr)
@@ -669,7 +670,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(CCondlistEmbedded& condlist
 					}
 					else
 					{
-						result = std::from_chars(begin, end, t2, std::chars_format::general);
+						result = CharConv::FromChars(begin, end, t2);
 
 						if (result.ec == std::errc() && result.ptr == end)
 						{
@@ -846,7 +847,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(CCondlistEmbedded& condlist
 						}
 						else
 						{
-							result = std::from_chars(begin, end, t2, std::chars_format::general);
+							result = CharConv::FromChars(begin, end, t2);
 
 							if (result.ec == std::errc() && result.ptr == end)
 							{
