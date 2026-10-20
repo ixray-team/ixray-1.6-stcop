@@ -12,9 +12,7 @@
 #include "ai_object_location.h"
 #include "level_graph.h"
 
-#ifdef DEBUG
-#	include "Creature.h"
-#endif
+#include "Creature.h"
 
 CDetailPathManager::CDetailPathManager	(CRestrictedObject *object)
 {
@@ -35,6 +33,9 @@ void CDetailPathManager::reinit			()
 {
 	m_actuality				= false;
 	m_failed				= false;
+	BuildFailureReason = "none";
+	LastFailureLogTime = 0;
+	HasLoggedFailure = false;
 	m_start_position		= Fvector().set(0,0,0);
 	m_dest_position			= Fvector().set(0,0,0);
 	m_current_travel_point	= u32(-1);
@@ -99,46 +100,74 @@ bool CDetailPathManager::try_get_direction(Fvector& direction) const
 	return					true;
 }
 
-void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 intermediate_index)
+void CDetailPathManager::build_path(const xr_vector<u32>& level_path, u32 intermediate_index)
 {
+	m_actuality = false;
+	m_failed = true;
+	BuildFailureReason = "none";
+	if (level_path.empty() || intermediate_index >= level_path.size())
+	{
+		m_path.clear();
+		return;
+	}
+
 	GraphRevision = ai().level_graph().EditorRevision;
-	if (valid(m_start_position) && valid(m_dest_position)) {
-		switch (m_path_type) {
-			case eDetailPathTypeSmooth : {
-				build_smooth_path(level_path,intermediate_index);
+	if (valid(m_start_position) && valid(m_dest_position))
+	{
+		switch (m_path_type)
+		{
+			case eDetailPathTypeSmooth:
+			{
+				build_smooth_path(level_path, intermediate_index);
 				break;
 			}
-			case eDetailPathTypeSmoothDodge : {
-				build_smooth_path(level_path,intermediate_index);
+			case eDetailPathTypeSmoothDodge:
+			{
+				build_smooth_path(level_path, intermediate_index);
 				break;
 			}
-			case eDetailPathTypeSmoothCriteria : {
-				build_smooth_path(level_path,intermediate_index);
+			case eDetailPathTypeSmoothCriteria:
+			{
+				build_smooth_path(level_path, intermediate_index);
 				break;
 			}
-			default : NODEFAULT;
+			default: NODEFAULT;
 		}
-		if (failed()) {
+		if (failed())
+		{
 #ifndef MASTER_GOLD
-			Msg						("! DetailPathManager has failed : from [%f,%f,%f] to [%f,%f,%f]", VPUSH(ai().level_graph().vertex_position(level_path.front())), VPUSH(ai().level_graph().vertex_position(level_path.back())));
-#endif // #ifndef MASTER_GOLD
+			if (!HasLoggedFailure || Device.dwTimeGlobal - LastFailureLogTime >= 1000)
+			{
+				HasLoggedFailure = true;
+				LastFailureLogTime = Device.dwTimeGlobal;
+				Msg("! DetailPathManager has failed for object %s: stage [%s], vertices [%u -> %u], points [%u], velocity mask [%u], desirable mask [%u], from [%f,%f,%f] to [%f,%f,%f]",
+					m_restricted_object ? *m_restricted_object->object().cName() : "unknown",
+					BuildFailureReason,
+					level_path.front(),
+					level_path.back(),
+					(u32)level_path.size(),
+					m_velocity_mask,
+					m_desirable_mask,
+					VPUSH(m_start_position),
+					VPUSH(m_dest_position));
 #ifdef DEBUG
-			Msg						("! DetailPathManager has failed for object %s : from [%f,%f,%f] to [%f,%f,%f]", m_restricted_object ? *m_restricted_object->object().cName() : "unknown", VPUSH(ai().level_graph().vertex_position(level_path.front())), VPUSH(ai().level_graph().vertex_position(level_path.back())));
-			Msg						("List of available velocities :");
-			xr_vector<STravelParamsIndex>::const_iterator	I = m_start_params.begin();
-			xr_vector<STravelParamsIndex>::const_iterator	E = m_start_params.end();
-			for ( ; I != E; ++I)
-				Msg					("[%d] : [%f][%f]",(*I).index,(*I).linear_velocity,(*I).angular_velocity);
-
-//			for (;;)
-//				build_smooth_path(level_path,intermediate_index);
+				Msg("List of available velocities:");
+				for (const auto& Params : m_start_params)
+				{
+					Msg("[%u] : [%f][%f]", Params.index, Params.linear_velocity, Params.angular_velocity);
+				}
 #endif
+			}
+#endif // #ifndef MASTER_GOLD
+			return;
 		}
 
-		if (valid()) {
-			m_actuality				= true;
-			m_current_travel_point	= 0;
-			m_time_path_built		= Device.dwTimeGlobal;
+		if (valid())
+		{
+			HasLoggedFailure = false;
+			m_actuality = true;
+			m_current_travel_point = 0;
+			m_time_path_built = Device.dwTimeGlobal;
 		}
 	}
 }
