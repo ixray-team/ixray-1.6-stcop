@@ -9,12 +9,12 @@ if(WIN32)
         "${SND_OGG}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.dll"
     )
 else()
-   pkg_check_modules(OGG QUIET ogg)
+   pkg_check_modules(OGG QUIET IMPORTED_TARGET ogg)
     if(OGG_FOUND)
         add_library(Ogg::ogg INTERFACE IMPORTED)
         set_target_properties(Ogg::ogg PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${OGG_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${OGG_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES PkgConfig::OGG
         )
     else()
         # FetchContent fallback

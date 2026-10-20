@@ -608,7 +608,7 @@ protected:
 		string32		param_name;
 		param_name[0]	= 0;
 
-		sscanf_s(args_string, "%16s %32s",
+		sscanf_s(args_string, "%15s %31s",
 			action_name, (u32)sizeof(action_name),
 			param_name, (u32)sizeof(param_name));
 		m_action_param = param_name;

@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-utilities:
-    name: 'Windows'
+    name: 'Windows (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:
@@ -112,7 +112,7 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   build-targets:
-    name: 'Linux'
+    name: 'Linux (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:
@@ -284,7 +284,7 @@ jobs:
           include-hidden-files: true
 
   publish-utilities:
-    name: 'Publish'
+    name: 'Publish (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     needs:
       - pack-assets

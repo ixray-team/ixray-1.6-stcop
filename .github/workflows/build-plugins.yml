@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-plugins:
-    name: 'Windows'
+    name: 'Windows (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:

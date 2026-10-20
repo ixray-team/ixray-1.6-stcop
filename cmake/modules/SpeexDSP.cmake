@@ -16,7 +16,7 @@ else()
 
     if(NOT TARGET SpeexDSP::SpeexDSP)
         if(PkgConfig_FOUND)
-            pkg_check_modules(SPEEXDSP QUIET SpeexDSP)
+            pkg_check_modules(SPEEXDSP QUIET IMPORTED_TARGET SpeexDSP)
         endif()
 
         if(SPEEXDSP_FOUND)
@@ -25,7 +25,7 @@ else()
             add_library(SpeexDSP::SpeexDSP INTERFACE IMPORTED)
             set_target_properties(SpeexDSP::SpeexDSP PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${SPEEXDSP_INCLUDE_DIRS}"
-                INTERFACE_LINK_LIBRARIES "${SPEEXDSP_LIBRARIES}"
+                INTERFACE_LINK_LIBRARIES PkgConfig::SPEEXDSP
             )
         else()
             message(STATUS "speexdsp not found, fetching from source...")

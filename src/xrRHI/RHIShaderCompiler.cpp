@@ -51,9 +51,9 @@ HRESULT CRHIShaderCompilerShell::Build([[maybe_unused]] const char* shader_dir,
     char outPath[L_tmpnam];
     char errPath[L_tmpnam];
 #else
-    char* srcPath = "shader.hlsl";
-    char* outPath = "out.bin";
-    char* errPath = "err.txt";
+    const char* srcPath = "shader.hlsl";
+    const char* outPath = "out.bin";
+    const char* errPath = "err.txt";
 #endif
 
     //std::tmpnam(srcPath);

@@ -44,7 +44,11 @@ IC	void jitter(CBlender_Compile& C)
 	C.r_dx10Sampler("smp_jitter");
 }
 #if defined(IXR_APPLE_SERIES)
-// HACK: the DXMT D3D headers redefine _RELEASE through NULL, which does not parse here.
+// HACK: the DXMT D3D / windows-compat headers leave NULL unusable (it expands to nothing),
+// and redefine _RELEASE through it. Restore both after all D3D includes.
+#undef NULL
+#define NULL 0
+
 #undef _RELEASE
 #define _RELEASE(x) { if (x) { (x)->Release(); (x) = nullptr; } }
 #endif

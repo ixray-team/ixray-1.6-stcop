@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "../xrEngine/xr_ioc_cmd.h"
+#include "../xrCore/CharConv.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../FDemoRecord.h"
 #include "../FDemoPlay.h"
@@ -2058,7 +2059,7 @@ public:
 					return false;
 				}
 			}
-			const auto Result = std::from_chars(First, Last, Value);
+			const auto Result = CharConv::FromChars(First, Last, Value);
 			return Result.ec == std::errc{} && Result.ptr == Last;
 		};
 		if (IsParsed && ArgumentCount >= 2)

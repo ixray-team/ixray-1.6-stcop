@@ -17,7 +17,7 @@ else()
     
     if(NOT TARGET Opus::Opus)
         if(PkgConfig_FOUND)
-            pkg_check_modules(OPUS QUIET opus)
+            pkg_check_modules(OPUS QUIET IMPORTED_TARGET opus)
         endif()
     
         if(OPUS_FOUND)
@@ -26,7 +26,7 @@ else()
             add_library(Opus::Opus INTERFACE IMPORTED)
             set_target_properties(Opus::Opus PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${OPUS_INCLUDE_DIRS}"
-                INTERFACE_LINK_LIBRARIES "${OPUS_LIBRARIES}"
+                INTERFACE_LINK_LIBRARIES PkgConfig::OPUS
             )
         else()
             set(CMAKE_POSITION_INDEPENDENT_CODE ON)

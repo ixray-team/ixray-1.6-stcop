@@ -1,14 +1,14 @@
 include(FetchContent)
 
 if(PkgConfig_FOUND)
-	pkg_check_modules(FREETYPE QUIET freetype2)
+	pkg_check_modules(FREETYPE QUIET IMPORTED_TARGET freetype2)
 endif()
 
 if(FREETYPE_FOUND)
 	add_library(FreeType::FreeType INTERFACE IMPORTED)
 	set_target_properties(FreeType::FreeType PROPERTIES
 		INTERFACE_INCLUDE_DIRECTORIES "${FREETYPE_INCLUDE_DIRS}"
-		INTERFACE_LINK_LIBRARIES "${FREETYPE_LIBRARIES}"
+		INTERFACE_LINK_LIBRARIES PkgConfig::FREETYPE
 	)
 else()
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)

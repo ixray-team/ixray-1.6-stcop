@@ -120,10 +120,12 @@ void CGroupHierarchyHolder::unregister_in_squad			(CEntity *member)
 	if (leader() && (leader()->ID() == member->ID())) {
 		update_leader					();
 		if (squad().leader()->ID() == member->ID())
+		{
 			if (leader())
 				squad().leader			(leader());
 			else
 				squad().update_leader	();
+		}
 	}
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 }
