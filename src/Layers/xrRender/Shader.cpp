@@ -10,24 +10,76 @@
 
 #include "dxRenderDeviceRender.h"
 
+static bool ResourcesAlive()
+{
+	return DevicePtr != nullptr && Device.m_pRender != nullptr && DEV != nullptr;
+}
 
 //
-STextureList::~STextureList				()			{	if (DEV) DEV->_DeleteTextureList	(this);			}
-SMatrixList::~SMatrixList				()			{	if (DEV) DEV->_DeleteMatrixList		(this);			}
-SConstantList::~SConstantList			()			{	if (DEV) DEV->_DeleteConstantList	(this);			}
-SPass::~SPass							()			{	if (DEV) DEV->_DeletePass			(this);			}
-ShaderElement::~ShaderElement			()			{	if (DEV) DEV->_DeleteElement		(this);			}
-SGeometry::~SGeometry					()			{	if (DEV) DEV->DeleteGeom			(this);			}
-Shader::~Shader							()			{	if (DEV) DEV->Delete				(this);			}
-																							 
-//////////////////////////////////////////////////////////////////////////					 
-void	resptrcode_shader::create		(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+STextureList::~STextureList()
 {
-	_set(DEV->Create		(s_shader,s_textures,s_constants,s_matrices));
+	// Unregistered lists can outlive the render device (for example, CRender members).
+	if ((dwFlags & xr_resource_flagged::RF_REGISTERED) == 0)
+	{
+		return;
+	}
+
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteTextureList(this);
+	}
 }
-void	resptrcode_shader::create		(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+SMatrixList::~SMatrixList()
 {
-	_set(DEV->Create		(B,s_shader,s_textures,s_constants,s_matrices));
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteMatrixList(this);
+	}
+}
+SConstantList::~SConstantList()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteConstantList(this);
+	}
+}
+SPass::~SPass()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeletePass(this);
+	}
+}
+ShaderElement::~ShaderElement()
+{
+	if (ResourcesAlive())
+	{
+		DEV->_DeleteElement(this);
+	}
+}
+SGeometry::~SGeometry()
+{
+	if (ResourcesAlive())
+	{
+		DEV->DeleteGeom(this);
+	}
+}
+Shader::~Shader()
+{
+	if (ResourcesAlive())
+	{
+		DEV->Delete(this);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void resptrcode_shader::create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+{
+	_set(DEV->Create(s_shader, s_textures, s_constants, s_matrices));
+}
+void resptrcode_shader::create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+{
+	_set(DEV->Create(B, s_shader, s_textures, s_constants, s_matrices));
 }
 
 //////////////////////////////////////////////////////////////////////////
