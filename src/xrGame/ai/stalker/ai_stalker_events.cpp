@@ -14,6 +14,7 @@
 #include "../../../xrServerEntities/xrMessages.h"
 #include "../../ShootingObject.h"
 #include "../../Level.h"
+#include "../../xrServer.h"
 #include "../../ai_monster_space.h"
 #include "../../CharacterPhysicsSupport.h"
 
@@ -65,12 +66,15 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 				Msg("TAKE - %s (%d)", *O->cName(),O->ID());
 #endif
 			}
-			else {
-//				DropItemSendMessage(O);
-				NET_Packet				P_;
-				u_EventGen				(P_,GE_OWNERSHIP_REJECT,ID());
-				P_ << O->ID();
-				u_EventSend				(P_);
+			else
+			{
+				if (!O->getDestroy() && Level().Server && Level().Server->ID_to_entity(O->ID()))
+				{
+					NET_Packet P_;
+					u_EventGen(P_, GE_OWNERSHIP_REJECT, ID());
+					P_ << O->ID();
+					u_EventSend(P_);
+				}
 
 #ifndef SILENCE
 				Msg("TAKE - can't take! - Dropping for valid server information %s (%d)", *O->cName(),O->ID());

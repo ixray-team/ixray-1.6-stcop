@@ -1236,18 +1236,26 @@ void CInventory::UpdateDropTasks()
 
 void CInventory::UpdateDropItem(PIItem pIItem)
 {
-	if (pIItem->GetDropManual())
+	if (!pIItem->GetDropManual())
 	{
-		pIItem->SetDropManual(false);
-		pIItem->DenyTrade();
+		return;
+	}
 
-		if (OnServer())
-		{
-			NET_Packet P;
-			pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->object().H_Parent()->ID());
-			P << pIItem->object().ID();
-			pIItem->object().u_EventSend(P);
-		}
+	pIItem->SetDropManual(false);
+	pIItem->DenyTrade();
+
+	CGameObject& Object = pIItem->object();
+	if (Object.getDestroy() || Object.object_removed() || !Object.H_Parent())
+	{
+		return;
+	}
+
+	if (OnServer())
+	{
+		NET_Packet P;
+		Object.u_EventGen(P, GE_OWNERSHIP_REJECT, Object.H_Parent()->ID());
+		P << Object.ID();
+		Object.u_EventSend(P);
 	}
 }
 
