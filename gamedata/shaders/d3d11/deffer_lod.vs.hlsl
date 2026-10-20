@@ -26,7 +26,7 @@ void main(in v_tree I, out p_bumped_new O)
 
     float2 tc = I.tc.xy * consts.xy;
     float sun = I.Nh.w * c_sun.x + c_sun.y;
-    float hemi = I.Nh.w * c_scale.w + c_bias.w;
+    float hemi = saturate((I.Nh.w * c_scale.w + c_bias.w) * 0.5f);
 
 #ifdef USE_LENGTH_BUFFER
 	O.lmap = I.Nh.w * c_scale.xyz + c_bias.xyz;
