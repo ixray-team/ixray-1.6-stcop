@@ -100,11 +100,29 @@ void CAgentEnemyManager::fill_enemies			()
 	m_enemies.clear					();
 
 	{
-		CAgentMemberManager::iterator	I = object().member().combat_members().begin();
-		CAgentMemberManager::iterator	E = object().member().combat_members().end();
-		for ( ; I != E; ++I) {
-			(*I)->probability			(1.f);
-			(*I)->object().memory().fill_enemies	(CEnemyFiller(&m_enemies,object().member().mask(&(*I)->object())));
+		// Copy pointers so mid-loop membership changes cannot invalidate iteration.
+		CAgentMemberManager::MEMBER_STORAGE CombatMembers = object().member().combat_members();
+		for (CMemberOrder* Order : CombatMembers)
+		{
+			if (!Order)
+			{
+				continue;
+			}
+
+			CAI_Stalker& Member = Order->object();
+			if (Member.getDestroy() || !Member.g_Alive())
+			{
+				continue;
+			}
+
+			CMemoryManager* Memory = Member.GetMemoryManager();
+			if (!Memory)
+			{
+				continue;
+			}
+
+			Order->probability(1.f);
+			Memory->fill_enemies(CEnemyFiller(&m_enemies, object().member().mask(&Member)));
 		}
 	}
 

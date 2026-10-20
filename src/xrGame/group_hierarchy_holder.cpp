@@ -167,6 +167,7 @@ void CGroupHierarchyHolder::unregister_member			(CEntity *member)
 {
 	unregister_in_group			(member);
 	unregister_in_squad			(member);
-	unregister_in_agent_manager	(member);
+	// Clear shared memory pointers before the last member deletes the squad vectors.
 	unregister_in_group_senses	(member);
+	unregister_in_agent_manager	(member);
 }
