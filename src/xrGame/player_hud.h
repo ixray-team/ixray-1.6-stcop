@@ -72,6 +72,18 @@ namespace HudSpring
 		Solve(value.z, velocity.z, goal.z, omega, damping, dt);
 	}
 
+	inline void Follow(Fvector& value, Fvector& velocity, const Fvector& goal, float half_life, float damping, float dt)
+	{
+		if (half_life <= 0.f)
+		{
+			value = goal;
+			velocity.set(0.f, 0.f, 0.f);
+			return;
+		}
+
+		Step(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
+	}
+
 	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
 	{
 		if (half_life <= 0.f)
@@ -84,6 +96,31 @@ namespace HudSpring
 		Solve(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
 	}
 }
+
+struct SHudVectorSpring
+{
+	Fvector Value = {};
+	Fvector Velocity = {};
+};
+
+struct SHudLeftFollow
+{
+	Fquaternion Rotation;
+	Fvector Position = {};
+	Fvector PositionVelocity = {};
+	Fvector RotationVelocity = {};
+	u32 Frame = u32(-1);
+};
+
+struct SHudHandJump
+{
+	u32 StatePrev = 0;
+	float FallSpeed = 0.f;
+	float Time = 1000.f;
+	float Power = 0.f;
+	float Weight = 0.f;
+	float Velocity = 0.f;
+};
 
 namespace HudBlend
 {
@@ -407,6 +444,25 @@ struct attachable_hud_item final
 	float							WalkPoseInertia = 0.6f;
 	float							WalkPoseInertiaOut = 0.12f;
 	float							CarryPoseDamping = 0.8f;
+	Fvector							LookSwayPos = {};
+	float							AimSwayScale = 0.2f;
+	float							LookSwayInertia = 0.04f;
+	float							LookSwayDamping = 0.8f;
+	Fvector							LeftSwayLook = {};
+	Fvector							LeftSwayBob = {};
+	Fvector							LeftSwayJump = {};
+	Fvector							RightSwayLook = {};
+	Fvector							RightSwayJump = {};
+	xr_vector<u16>					LeftHandItemBones;
+	xr_vector<u16>					RightHandItemBones;
+	Fvector							LeftBobPos = { 1.f, 1.f, 1.f };
+	Fvector							LeftBobRot = { 1.f, 1.f, 1.f };
+	float							LeftFollowLag = 0.f;
+	float							LeftFollowTurn = 1.f;
+	Fvector							LeftFollowMove = { 1.f, 1.f, 1.f };
+	float							LeftFollowMoveRot = 1.f;
+	float							HandSwayInertia = 0.08f;
+	float							HandSwayDamping = 0.6f;
 	float							AimBlendInertia = 0.f;
 	float							HudMass = 1.f;
 	bool							IkEnabled = true;
@@ -436,6 +492,8 @@ struct attachable_hud_item final
 	float							InertiaDamping = 0.55f;
 	Fvector							InertiaVelPos = zero_vel;
 	Fvector							InertiaVelRot = zero_vel;
+	float							LandingRecoverTime = 1000.f;
+	float							AirTime = 0.f;
 	Fmatrix							CollisionXform = Fidentity;
 	hud_item_measures				m_measures;
 	shared_str						m_visual_name;
@@ -1010,6 +1068,13 @@ private:
 	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
 	void			HandsIkHandTargets	(SHandsIkFrame& F);
 	void			HandsIkAttachTarget	(SHandsIkFrame& F);
+	bool			HandsIkSwayNeeded	(const SHandsIkFrame& F) const;
+	void			HandsIkLeftSway		(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
+	void			HandsIkRightSway	(SHandsIkFrame& F, CActor* actor);
+	void			HandsIkItemBones	(SHandsIkFrame& F, const Fmatrix* WristBefore, const Fmatrix& AncorBefore);
+	void			HandsIkLeftFollow	(SHandsIkFrame& F, const Fmatrix& CamTrans, float Free, CActor* actor);
+	Fmatrix			LeftFollowTarget	(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor);
+	void			UpdateHandJump		(CActor* actor, float HalfLife);
 	void			HandsIkReach		(SHandsIkFrame& F);
 	void			HandsIkSolve		(SHandsIkFrame& F);
 	void			HandsIkFingers		(SHandsIkFrame& F);
@@ -1069,6 +1134,11 @@ private:
 	u16									RightIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
 	float								LeftIkWeight = 0.f;
 	Fmatrix								LayersIkOffset = Fidentity;
+	Fmatrix								MovementLayersOffset = Fidentity;
+	SHudVectorSpring					LeftSway;
+	SHudVectorSpring					RightSway;
+	SHudHandJump						HandJump;
+	SHudLeftFollow						LeftFollow;
 	Fvector								TurnOffset = zero_vel;
 	Fmatrix								AimReloadRef = Fidentity;
 	float								AimReloadWeight = 0.f;
