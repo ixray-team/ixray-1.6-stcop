@@ -149,11 +149,16 @@ static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dCon
 	VERIFY(mtl_pair);
 	VERIFY(c);
 
-	CPHSoundPlayer* sp = nullptr;
+	IPhysicsShellHolder* RefObject = data->ph_ref_object;
+	if (!RefObject || RefObject->ObjectGetDestroy())
+	{
+		return;
+	}
 
+	CPHSoundPlayer* sp = nullptr;
 	try
 	{
-		sp = data->ph_ref_object->ObjectPhSoundPlayer();
+		sp = RefObject->ObjectPhSoundPlayer();
 	}
 	catch (...)
 	{
