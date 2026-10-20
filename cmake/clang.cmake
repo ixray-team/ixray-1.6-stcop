@@ -2,7 +2,10 @@
 add_compile_options(-Wno-switch -Wno-unused-result -Wno-deprecated-declarations -Wno-inconsistent-missing-override -Wno-inline-new-delete)
 add_compile_options(-Wno-implicit-exception-spec-mismatch -Wno-macro-redefined -Wno-unused-local-typedef -Wno-microsoft-unqualified-friend)
 add_compile_options(-Wno-comment)
-add_compile_options(-msse4.2) # crc32
+# SSE4.2 (crc32) exists only on x86; arm64 gets crc32 from sse2neon.
+if (NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64|ARM64)$" AND NOT CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
+    add_compile_options(-msse4.2)
+endif()
 
 if (WIN32)
     add_compile_options(-Wno-microsoft-template-shadow -Wno-overloaded-virtual -Wno-unknown-pragmas -Wno-class-conversion -Wno-reorder-ctor)

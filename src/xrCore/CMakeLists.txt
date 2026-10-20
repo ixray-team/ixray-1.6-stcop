@@ -46,7 +46,10 @@ endif()
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
-target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})
+if(WIN32)
+	# Prebuilt SDK libraries exist only for Windows.
+	target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})
+endif()
 
 if(IXRAY_ASAN)
 	target_compile_definitions(xrCore PRIVATE PURE_ONLY)

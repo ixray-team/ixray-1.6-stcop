@@ -16,21 +16,21 @@ if(WIN32)
     )
 else()
     if(PkgConfig_FOUND)
-        pkg_check_modules(VORBIS QUIET vorbis)
-        pkg_check_modules(VORBISFILE QUIET vorbisfile)
+        pkg_check_modules(VORBIS QUIET IMPORTED_TARGET vorbis)
+        pkg_check_modules(VORBISFILE QUIET IMPORTED_TARGET vorbisfile)
     endif()
 
     if(VORBIS_FOUND AND VORBISFILE_FOUND)
         add_library(Vorbis::vorbis INTERFACE IMPORTED)
         set_target_properties(Vorbis::vorbis PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${VORBIS_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${VORBIS_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES PkgConfig::VORBIS
         )
 
         add_library(Vorbis::vorbisfile INTERFACE IMPORTED)
         set_target_properties(Vorbis::vorbisfile PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${VORBISFILE_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${VORBISFILE_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES PkgConfig::VORBISFILE
         )
     else()
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)

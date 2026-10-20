@@ -34,9 +34,9 @@ int CApplication::Run()
 	// plat
 	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
 
-	std::jthread s;
+	std::thread s;
 	if (!headless)
-		s = std::jthread(splash::Show);
+		s = std::thread(splash::Show);
 
 	SteamWorks.BeginPlay();
 	InitEngine();

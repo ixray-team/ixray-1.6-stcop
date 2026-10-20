@@ -162,11 +162,11 @@
 	}()))
 #endif
 #else // DEBUG
-#	if defined(_MSC_VER)
+#	if defined(IXR_WINDOWS)
 #		define NODEFAULT __assume(0)
 #	else
-#		include <cassert>
-#		define NODEFAULT assert(false)
+#		include <cassert> // kept: other code relies on it coming through here
+#		define NODEFAULT __builtin_unreachable()
 #	endif
 
 #	define VERIFY(...)				do {} while (0)

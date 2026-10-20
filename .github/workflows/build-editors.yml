@@ -32,7 +32,7 @@ defaults:
 
 jobs:
   build-editors:
-    name: 'Windows'
+    name: 'Windows (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }})'
 
     strategy:
       matrix:
@@ -180,7 +180,7 @@ jobs:
           include-hidden-files: true
 
   publish-editors:
-    name: 'Publish (${{ matrix.variant }})'
+    name: 'Publish (${{ matrix.system }}, ${{ matrix.platform }}, ${{ matrix.config }}, ${{ matrix.variant }})'
     needs: [pack-assets]
     strategy:
       matrix:
