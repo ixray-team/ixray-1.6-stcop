@@ -45,8 +45,7 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 		discard;
 	}
 
-	float3 Point = GbufferGetPointRealJitter(pos2d.xy * pos_decompression_params2.zw, pos2d.z);
-	float Fade = parralax_fade(I.tc0, Point);
+	float Fade = parralax_fade(I.tc0, I.tc1);
 
     float2 coords = I.tc0;
     coords.x *= 0.5f;
