@@ -253,6 +253,7 @@ public:
 		u16 ID = 0;
 		ALife::_OBJECT_ID dest = 0;
 		u16 type = 0;
+		ALife::_OBJECT_ID SpawnID = ALife::INVALID_OBJECT_ID;
 	};
 	xr_deque<PacketData>		m_postponedPackets;
 	CTimer						m_eventsTimer;
@@ -351,6 +352,7 @@ public:
 
 	bool						IsSpawnReady			(const NET_Event& Event);
 	const NET_Event*			m_PendingSpawnEvent		= nullptr;
+	ALife::_OBJECT_ID PendingSpawnID = ALife::INVALID_OBJECT_ID;
 	u32							m_IniReadAheadStopTime	= 0;
 	xr_vector<shared_str>		m_PendingSpawnVisuals;
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
