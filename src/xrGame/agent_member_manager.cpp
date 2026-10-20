@@ -57,6 +57,7 @@ void CAgentMemberManager::add					(CEntity *member)
 	iterator					I = std::find_if(m_members.begin(),m_members.end(), CMemberPredicate(stalker));
 	VERIFY						(I == m_members.end());
 	m_members.push_back			(new CMemberOrder(stalker));
+	m_actuality = false;
 }
 
 void CAgentMemberManager::remove				(CEntity *member)
@@ -183,7 +184,9 @@ CAgentMemberManager::MEMBER_STORAGE &CAgentMemberManager::combat_members	()
 	}
 
 	if (m_actuality)
-		return							(m_combat_members);
+	{
+		return m_combat_members;
+	}
 
 	m_combat_members.clear();
 	for (CMemberOrder* Order : members())
