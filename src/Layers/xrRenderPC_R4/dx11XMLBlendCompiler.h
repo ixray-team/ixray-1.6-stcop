@@ -12,8 +12,8 @@ class CXMLBlend
 public:
 	CXMLBlend(const char* FileName);
 	~CXMLBlend();
-	Shader* Compile(const char* Texture);
-	ShaderElement* MakeShader(const char* Texture, XML_NODE* pElement);
+	ref_shader Compile(const char* Texture);
+	ref_selement MakeShader(const char* Texture, XML_NODE* pElement);
 
 	static bool			Check(const char* FileName);
 

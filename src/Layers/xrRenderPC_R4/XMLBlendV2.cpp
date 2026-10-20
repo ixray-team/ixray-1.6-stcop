@@ -269,7 +269,7 @@ namespace
 		return true;
 	}
 
-	ShaderElement* CompileElement(CBlender_Compile& C, const BlendOpList& Ops)
+	ref_selement CompileElement(CBlender_Compile& C, const BlendOpList& Ops)
 	{
 		ShaderElement E;
 		C.SH = &E;
@@ -355,7 +355,7 @@ bool XMLBlendV2::Parse(CXml& Parser, const char* FileName, Script& Result, xr_st
 	return ParseRoot(Root ? Root->ToElement() : nullptr, FileName, Result, Error);
 }
 
-Shader* XMLBlendV2::Compile(const Script& Source, const char* Textures)
+ref_shader XMLBlendV2::Compile(const Script& Source, const char* Textures)
 {
 	const ElementSet& Set = Source.Active();
 

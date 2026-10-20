@@ -50,7 +50,11 @@ SCS::~SCS								()			{	_RELEASE(sh);		DEV->_DeleteCS			(this);	}
 ///////////////////////////////////////////////////////////////////////
 //	SInputSignature
 SInputSignature::SInputSignature(ID3DBlob* pBlob)	{ VERIFY(pBlob); signature=pBlob; signature->AddRef();};
-SInputSignature::~SInputSignature		()			{	_RELEASE(signature); DEV->_DeleteInputSignature(this); }
+SInputSignature::~SInputSignature()
+{
+	DEV->_DeleteInputSignature(this);
+	_RELEASE(signature);
+}
 
 ///////////////////////////////////////////////////////////////////////
 //	SState
