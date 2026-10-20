@@ -217,6 +217,7 @@ public:
 			bool				is_special_killer		(CObject *obj);
 
 	IC		CMemoryManager		&memory					() const;
+	CMemoryManager*				GetMemoryManager		() const { return m_memory_manager; }
 	virtual float				feel_vision_mtl_transp	(CObject* O, u32 element);
 	virtual	void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 
