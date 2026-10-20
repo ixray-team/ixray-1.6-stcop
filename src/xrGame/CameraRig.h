@@ -5,6 +5,7 @@ class CActor;
 class CWeapon;
 class CObjectAnimator;
 class IKinematics;
+struct attachable_hud_item;
 
 enum ECameraRigChannel
 {
@@ -51,6 +52,18 @@ struct SCameraRigParams
 	Fvector	crouch_hud_offset_rot = { 0.f, 0.f, 0.f };
 	Fvector	walk_hud_offset_pos = { 0.f, 0.f, 0.f };
 	Fvector	walk_hud_offset_rot = { 0.f, 0.f, 0.f };
+	Fvector	look_sway_pos		= { 0.004f, 0.003f, 0.002f };
+	float	aim_sway_scale		= 0.2f, look_sway_inertia = 0.04f, look_sway_damping = 0.8f;
+	Fvector	left_hand_sway_look	= { 0.f, 0.f, 0.f };
+	Fvector	left_hand_sway_bob	= { 0.f, 0.f, 0.f };
+	Fvector	left_hand_sway_jump	= { 0.f, 0.f, 0.f };
+	Fvector	right_hand_sway_look = { 0.f, 0.f, 0.f };
+	Fvector	right_hand_sway_jump = { 0.f, 0.f, 0.f };
+	Fvector	left_hand_bob_pos	= { 1.f, 1.f, 1.f };
+	Fvector	left_hand_bob_rot	= { 1.f, 1.f, 1.f };
+	float	left_hand_follow_lag = 0.f, left_hand_follow_turn = 1.f, left_hand_follow_move_rot = 1.f;
+	Fvector	left_hand_follow_move = { 1.f, 1.f, 1.f };
+	float	hand_sway_inertia	= 0.08f, hand_sway_damping = 0.6f;
 	float	crouch_pose_inertia	= 0.25f, crouch_pose_inertia_out = -1.f, crouch_pose_delay = 0.f, walk_pose_delay = 5.f, walk_pose_inertia = 0.6f, walk_pose_inertia_out = 0.12f, carry_pose_damping = 0.8f;
 };
 
@@ -87,18 +100,22 @@ class CCameraRig
 	};
 
 	SLayer					Layers[12];
-	SSpring					Punch, Kick, KickPos, Land, Roll, Fov;
+	SSpring					Punch, Kick, KickPos, Land, Roll, Fov, LookSway;
 	Fvector					WorldPos = {}, WorldHpb = {}, HudCamPos = {}, HudCamHpb = {}, HudPos = {}, HudHpb = {};
 	shared_str				WeaponSect;
 	Fvector					WeaponPunch = {}, WeaponKickPos = {}, WeaponKickRot = {};
 	float					WeaponTrauma = 0.f;
 	float					WeaponFovKick = 0.f;
 	float					Trauma = 0.f;
+	Fvector					LookRate = {};
+	float					LookAim = 0.f;
+	u32						LookFrame = u32(-1);
 	u32						UpdateFrame = u32(-1);
 	bool					FovValid = false;
 
 	void					FadeChannel		(ECameraRigChannel channel);
 	void					UpdateLayers	(float dt, Fvector& pos, Fvector& hpb, Fvector& hud_pos, Fvector& hud_hpb);
+	void					UpdateLookSway	(const attachable_hud_item* item);
 
 public:
 							~CCameraRig		();
@@ -118,7 +135,9 @@ public:
 	static float			AimReloadTail	();
 	static float			ShotAnimTail	();
 	static float			HudInertialization();
-	static bool				SpringSway		(Fvector& value, Fvector& velocity, const Fvector& target, float speed, float damping);
+	static bool				SpringSway		(Fvector& value, Fvector& velocity, const Fvector& target, float half_life, float damping);
+	static float			LookHalfLife	(const attachable_hud_item* item);
+	static float			LookDamping		(const attachable_hud_item* item);
 	static void				TransformBone	(IKinematics* model, u16 bone, const Fmatrix& delta);
 	static void				SolveLimb		(IKinematics* model, const u16* chain, const Fmatrix& target, float weight);
 
@@ -133,5 +152,6 @@ public:
 	void					OnLand			(float speed);
 	void					Update			(CActor* actor, float fov);
 	void					Apply			(SCamEffectorInfo& world, SCamEffectorInfo& hud);
-	void					ApplyHud		(Fmatrix& trans);
+	void					ApplyHud		(Fmatrix& trans, const attachable_hud_item* item);
+	const Fvector&			LookSwayOffset	() const { return LookSway.value; }
 };

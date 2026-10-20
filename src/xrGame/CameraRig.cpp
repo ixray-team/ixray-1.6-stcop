@@ -25,6 +25,10 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Inertia and sway", "turn_sway_smooth", nullptr, &g_rig.turn_sway_smooth, nullptr, 1, false, 0.002f },
 	{ "Inertia and sway", "inertia_speed", nullptr, &g_rig.inertia_speed, nullptr, 1, false, 0.01f },
 	{ "Inertia and sway", "inertia_damping", "inertia_damping", &g_rig.inertia_damping, nullptr, 1, false, 0.01f },
+	{ "Inertia and sway", "look_sway_pos", "look_sway_pos", &g_rig.look_sway_pos.x, nullptr, 3, false, 0.0005f },
+	{ "Inertia and sway", "aim_sway_scale", "aim_sway_scale", &g_rig.aim_sway_scale, nullptr, 1, false, 0.01f },
+	{ "Inertia and sway", "look_sway_inertia", "look_sway_inertia", &g_rig.look_sway_inertia, nullptr, 1, false, 0.005f },
+	{ "Inertia and sway", "look_sway_damping", "look_sway_damping", &g_rig.look_sway_damping, nullptr, 1, false, 0.01f },
 
 	{ "Animation transitions", "hud_inertialization", nullptr, &g_rig.hud_inertialization, nullptr, 1, false, 0.005f },
 	{ "Animation transitions", "idle_fade", "idle_fade", &g_rig.idle_fade, nullptr, 1, false, 0.005f },
@@ -47,6 +51,20 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Aim reload", "aim_reload_pose_inertia", "aim_reload_pose_inertia", &g_rig.aim_reload_pose_inertia, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_pose_inertia_out", "aim_reload_pose_inertia_out", &g_rig.aim_reload_pose_inertia_out, nullptr, 1, false, 0.005f },
 	{ "Aim reload", "aim_reload_hud_push_pos", "aim_reload_hud_push_pos", &g_rig.aim_reload_hud_push_pos.x, nullptr, 3, false, 0.0005f },
+
+	{ "Hand sway", "left_hand_sway_look", "left_hand_sway_look", &g_rig.left_hand_sway_look.x, nullptr, 3, false, 0.05f },
+	{ "Hand sway", "left_hand_sway_bob", "left_hand_sway_bob", &g_rig.left_hand_sway_bob.x, nullptr, 3, false, 0.05f },
+	{ "Hand sway", "left_hand_sway_jump", "left_hand_sway_jump", &g_rig.left_hand_sway_jump.x, nullptr, 3, false, 0.1f },
+	{ "Hand sway", "right_hand_sway_look", "right_hand_sway_look", &g_rig.right_hand_sway_look.x, nullptr, 3, false, 0.05f },
+	{ "Hand sway", "right_hand_sway_jump", "right_hand_sway_jump", &g_rig.right_hand_sway_jump.x, nullptr, 3, false, 0.1f },
+	{ "Hand sway", "left_hand_follow_lag", "left_hand_follow_lag", &g_rig.left_hand_follow_lag, nullptr, 1, false, 0.005f },
+	{ "Hand sway", "left_hand_follow_turn", "left_hand_follow_turn", &g_rig.left_hand_follow_turn, nullptr, 1, false, 0.01f },
+	{ "Hand sway", "left_hand_follow_move", "left_hand_follow_move", &g_rig.left_hand_follow_move.x, nullptr, 3, false, 0.01f },
+	{ "Hand sway", "left_hand_follow_move_rot", "left_hand_follow_move_rot", &g_rig.left_hand_follow_move_rot, nullptr, 1, false, 0.01f },
+	{ "Hand sway", "left_hand_bob_pos", "left_hand_bob_pos", &g_rig.left_hand_bob_pos.x, nullptr, 3, false, 0.01f },
+	{ "Hand sway", "left_hand_bob_rot", "left_hand_bob_rot", &g_rig.left_hand_bob_rot.x, nullptr, 3, false, 0.01f },
+	{ "Hand sway", "hand_sway_inertia", "hand_sway_inertia", &g_rig.hand_sway_inertia, nullptr, 1, false, 0.005f },
+	{ "Hand sway", "hand_sway_damping", "hand_sway_damping", &g_rig.hand_sway_damping, nullptr, 1, false, 0.01f },
 
 	{ "Carry pose", "crouch_hud_offset_pos", "crouch_hud_offset_pos", &g_rig.crouch_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
 	{ "Carry pose", "crouch_hud_offset_rot", "crouch_hud_offset_rot", &g_rig.crouch_hud_offset_rot.x, nullptr, 3, false, 0.05f },
@@ -522,6 +540,11 @@ void CCameraRig::Update(CActor* actor, float fov)
 	const float roll = std::clamp(lateral * g_rig.strafe_roll - actor->fFPCamYawMagnitude * g_rig.look_roll, -g_rig.roll_max, g_rig.roll_max) * lerp(1.f, g_rig.aim_roll_scale, aim);
 	Roll.value.spring_inertion(Fvector().set(0.f, 0.f, roll), Roll.velocity, dt, g_rig.roll_stiffness, g_rig.roll_damping);
 
+	LookRate.x = std::clamp(actor->fFPCamYawMagnitude, -PI_MUL_2, PI_MUL_2);
+	LookRate.y = std::clamp(actor->fFPCamPitchMagnitude, -PI_MUL_2, PI_MUL_2);
+	LookRate.z = _sqrt(LookRate.x * LookRate.x + LookRate.y * LookRate.y);
+	LookAim = aim;
+
 	Trauma = std::max(Trauma - g_rig.trauma_decay * dt, 0.f);
 	const float shake = Trauma * Trauma * std::min(Fov.value.x / std::max(g_fov, 1.f), 1.f);
 	const float time = Device.fTimeGlobal * g_rig.shake_frequency;
@@ -573,16 +596,48 @@ void CCameraRig::Apply(SCamEffectorInfo& world, SCamEffectorInfo& hud)
 	hud.fFov = Fov.value.x;
 }
 
-void CCameraRig::ApplyHud(Fmatrix& trans)
+static float rig_mass_factor(const attachable_hud_item* item)
+{
+	return powf(std::max(item != nullptr ? item->HudMass : 1.f, 0.1f), 0.25f);
+}
+
+void CCameraRig::UpdateLookSway(const attachable_hud_item* item)
+{
+	if (LookFrame == Device.dwFrame)
+	{
+		return;
+	}
+
+	LookFrame = Device.dwFrame;
+
+	const Fvector& LookPos = item != nullptr ? item->LookSwayPos : g_rig.look_sway_pos;
+	const float Scale = lerp(1.f, item != nullptr ? item->AimSwayScale : g_rig.aim_sway_scale, LookAim);
+	const Fvector Target = Fvector().set(LookRate.x * LookPos.x, -LookRate.y * LookPos.y, -LookRate.z * LookPos.z).mul(Scale);
+	SpringSway(LookSway.value, LookSway.velocity, Target, LookHalfLife(item), LookDamping(item));
+}
+
+float CCameraRig::LookHalfLife(const attachable_hud_item* item)
+{
+	return (item != nullptr ? item->LookSwayInertia : g_rig.look_sway_inertia) * rig_mass_factor(item);
+}
+
+float CCameraRig::LookDamping(const attachable_hud_item* item)
+{
+	return item != nullptr ? item->LookSwayDamping : g_rig.look_sway_damping;
+}
+
+void CCameraRig::ApplyHud(Fmatrix& trans, const attachable_hud_item* item)
 {
 	if (UpdateFrame != Device.dwFrame)
 	{
 		return;
 	}
 
+	UpdateLookSway(item);
+
 	Fmatrix offset;
 	offset.setHPB(HudHpb.x, HudHpb.y, HudHpb.z);
-	offset.c = HudPos;
+	offset.c.add(HudPos, LookSway.value);
 	trans.mulB_43(offset);
 }
 
@@ -631,14 +686,14 @@ float CCameraRig::AimReloadBlend()
 	return g_rig.aim_reload_blend;
 }
 
-bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& target, float speed, float damping)
+bool CCameraRig::SpringSway(Fvector& value, Fvector& velocity, const Fvector& target, float half_life, float damping)
 {
 	if (!Enabled())
 	{
 		return false;
 	}
 
-	HudSpring::Step(value, velocity, target, speed, damping, Device.fTimeDelta);
+	HudSpring::Follow(value, velocity, target, half_life, damping, Device.fTimeDelta);
 	return true;
 }
 

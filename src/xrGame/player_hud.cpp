@@ -7,6 +7,8 @@
 #include "ActorEffector.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "InertionData.h"
+#include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
 #include "Inventory.h"
 #include "WeaponBinoculars.h"
 #include "WeaponPistol.h"
@@ -1056,6 +1058,23 @@ static const SHudRigField g_hud_rig_fields[] =
 	{ "walk_pose_inertia", &attachable_hud_item::WalkPoseInertia, nullptr, 0.f },
 	{ "walk_pose_inertia_out", &attachable_hud_item::WalkPoseInertiaOut, nullptr, 0.f },
 	{ "carry_pose_damping", &attachable_hud_item::CarryPoseDamping, nullptr, 0.f },
+	{ "look_sway_pos", nullptr, &attachable_hud_item::LookSwayPos },
+	{ "aim_sway_scale", &attachable_hud_item::AimSwayScale, nullptr, 0.f },
+	{ "look_sway_inertia", &attachable_hud_item::LookSwayInertia, nullptr, 0.f },
+	{ "look_sway_damping", &attachable_hud_item::LookSwayDamping, nullptr, 0.f },
+	{ "left_hand_sway_look", nullptr, &attachable_hud_item::LeftSwayLook },
+	{ "left_hand_sway_bob", nullptr, &attachable_hud_item::LeftSwayBob },
+	{ "left_hand_sway_jump", nullptr, &attachable_hud_item::LeftSwayJump },
+	{ "right_hand_sway_look", nullptr, &attachable_hud_item::RightSwayLook },
+	{ "right_hand_sway_jump", nullptr, &attachable_hud_item::RightSwayJump },
+	{ "left_hand_follow_lag", &attachable_hud_item::LeftFollowLag, nullptr, 0.f },
+	{ "left_hand_follow_turn", &attachable_hud_item::LeftFollowTurn, nullptr, 0.f, 1.f },
+	{ "left_hand_follow_move", nullptr, &attachable_hud_item::LeftFollowMove },
+	{ "left_hand_follow_move_rot", &attachable_hud_item::LeftFollowMoveRot, nullptr, 0.f, 1.f },
+	{ "left_hand_bob_pos", nullptr, &attachable_hud_item::LeftBobPos },
+	{ "left_hand_bob_rot", nullptr, &attachable_hud_item::LeftBobRot },
+	{ "hand_sway_inertia", &attachable_hud_item::HandSwayInertia, nullptr, 0.f },
+	{ "hand_sway_damping", &attachable_hud_item::HandSwayDamping, nullptr, 0.f },
 	{ "aim_blend_inertia", &attachable_hud_item::AimBlendInertia, nullptr, 0.f },
 	{ "sprint_pose_inertia", &attachable_hud_item::SprintPoseInertia, nullptr, 0.f },
 	{ "sprint_blend_in", &attachable_hud_item::SprintBlendIn, nullptr, 0.f },
@@ -1076,6 +1095,24 @@ static const SHudRigField g_hud_rig_fields[] =
 void attachable_hud_item::LoadRigParams()
 {
 	const shared_str& sect_name = m_sect_name;
+
+	const auto load_bones = [&](const char* key, xr_vector<u16>& bones)
+	{
+		bones.clear();
+		const char* list = READ_IF_EXISTS(pSettings, r_string, sect_name, key, nullptr);
+		string128 bone_name;
+		for (int i = 0, count = list != nullptr ? _GetItemCount(list) : 0; i < count; ++i)
+		{
+			const u16 bone = m_model->LL_BoneID(_GetItem(list, i, bone_name));
+			if (bone != BI_NONE)
+			{
+				bones.push_back(bone);
+			}
+		}
+	};
+
+	load_bones("left_hand_item_bones", LeftHandItemBones);
+	load_bones("right_hand_item_bones", RightHandItemBones);
 
 	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
 	{
@@ -1864,6 +1901,30 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		}
 	}
 
+	const float StepTime = delta * 0.001f;
+	const bool Airborne = (real & (mcJump | mcFall | mcLanding | mcLanding2)) != 0;
+	if (Airborne)
+	{
+		AirTime += StepTime;
+	}
+	else
+	{
+		if (AirTime > 0.3f)
+		{
+			LandingRecoverTime = 0.f;
+		}
+
+		AirTime = 0.f;
+		LandingRecoverTime += StepTime;
+	}
+
+	constexpr float LandingRecover = 0.6f;
+	if (CCameraRig::Enabled() && !Airborne && LandingRecoverTime < LandingRecover && itm->GetState() != CHUDState::eHiding)
+	{
+		const float Fade = hud_smooth(std::clamp((LandingRecoverTime - LandingRecover * 0.5f) / (LandingRecover * 0.5f), 0.f, 1.f));
+		factor = lerp(factor, std::max(factor, current_params.move_stabilize_factor), 1.f - Fade);
+	}
+
 	targetpos.add(pos);
 	targetrot.add(rot);
 
@@ -2497,7 +2558,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	const Fmatrix trans_turn = trans;
 	if (actor != nullptr)
 	{
-		actor->Cameras().Rig().ApplyHud(trans);
+		actor->Cameras().Rig().ApplyHud(trans, m_attached_items[0] != nullptr ? m_attached_items[0] : m_attached_items[1]);
 
 		CWeapon* weapon = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr ? m_attached_items[0]->m_parent_hud_item->cast_weapon() : nullptr;
 		const u32 key = (actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & (ACTOR_DEFS::EMoveCommand::mcAnyMove | ACTOR_DEFS::EMoveCommand::mcSprint | ACTOR_DEFS::EMoveCommand::mcAccel | ACTOR_DEFS::EMoveCommand::mcCrouch)) | (weapon != nullptr && weapon->IsZoomed() ? 0x80000000 : 0);
@@ -2693,6 +2754,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 			}
 		}
 	}
+
+	MovementLayersOffset = movement_layers;
 
 	const Fmatrix carry_pose = CarryPoseOffset();
 	m_transform.mulB_43(carry_pose);
@@ -3598,7 +3661,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	HandsIkWeaponPose(F, actor);
 	HandsIkFingerState(F);
 
-	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f && F.FingerStart <= 0.f)
+	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f && F.FingerStart <= 0.f && !HandsIkSwayNeeded(F))
 	{
 		HandsIkFingerInertia(F);
 		LeftWristLast = AnimRelative;
@@ -3608,11 +3671,17 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	HandsIkWeaponDelta(F);
 	HandsIkHandTargets(F);
 	HandsIkAttachTarget(F);
+	UpdateHandJump(actor, F.Item->HandSwayInertia);
+	HandsIkLeftSway(F, cam_trans, actor);
+	HandsIkRightSway(F, actor);
 	HandsIkReach(F);
+	const Fmatrix WristBefore[2] = { F.HasLeft ? F.Model->LL_GetTransform(LeftIkChain[2]) : Fidentity, F.HasRight ? F.Model->LL_GetTransform(RightIkChain[2]) : Fidentity };
+	const Fmatrix AncorBefore = F.Model->LL_GetTransform(F.Ancor);
 	HandsIkSolve(F);
 	HandsIkFingers(F);
 	HandsIkFingerInertia(F);
 	F.Item->update(true);
+	HandsIkItemBones(F, WristBefore, AncorBefore);
 	if (F.HasLeft)
 	{
 		LeftWristLast = hud_wrist_relative(F.Model, F.Ancor, LeftIkChain[2]);
@@ -4202,6 +4271,275 @@ void player_hud::HandsIkAttachTarget(SHandsIkFrame& F)
 	attach_target_weight = 1.f;
 }
 
+static bool hud_is_unit(const Fvector& Value)
+{
+	return Value.similar(Fvector().set(1.f, 1.f, 1.f));
+}
+
+static Fmatrix hud_weighted_transform(const Fmatrix& Transform, float Weight)
+{
+	Fquaternion Rotation;
+	Rotation.slerp(Fquaternion().identity(), Fquaternion().set(Transform), Weight);
+	Fmatrix Result;
+	Result.rotation(Rotation);
+	Result.c.mul(Transform.c, Weight);
+	return Result;
+}
+
+static bool hud_left_follow_custom(const attachable_hud_item* Item)
+{
+	return Item->LeftFollowLag > 0.f || Item->LeftFollowTurn < 1.f || !hud_is_unit(Item->LeftFollowMove) || Item->LeftFollowMoveRot < 1.f || !hud_is_unit(Item->LeftBobPos) || !hud_is_unit(Item->LeftBobRot);
+}
+
+static bool hud_hand_sway_custom(const attachable_hud_item* Item)
+{
+	return !fis_zero(Item->LeftSwayLook.square_magnitude()) || !fis_zero(Item->LeftSwayBob.square_magnitude()) || !fis_zero(Item->LeftSwayJump.square_magnitude()) || !fis_zero(Item->RightSwayLook.square_magnitude()) || !fis_zero(Item->RightSwayJump.square_magnitude());
+}
+
+bool player_hud::HandsIkSwayNeeded(const SHandsIkFrame& F) const
+{
+	if (!F.HasLeft && !F.HasRight)
+	{
+		return false;
+	}
+
+	return hud_hand_sway_custom(F.Item) || hud_left_follow_custom(F.Item) || LeftSway.Value.square_magnitude() > EPS_S || LeftSway.Velocity.square_magnitude() > EPS_S || RightSway.Value.square_magnitude() > EPS_S || RightSway.Velocity.square_magnitude() > EPS_S;
+}
+
+Fmatrix player_hud::LeftFollowTarget(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor)
+{
+	attachable_hud_item* Item = F.Item;
+	Fmatrix Target = Fmatrix().mul_43(Seen, Fmatrix().invert(MovementLayersOffset));
+
+	if (!hud_is_unit(Item->LeftFollowMove) || Item->LeftFollowMoveRot < 1.f)
+	{
+		const auto& Tune = Item->m_measures.m_hands_positions.hands_offsets_tune;
+		const Fquaternion Current = HudRotation::FromEuler(Item->hands_attach_rot());
+		Fquaternion Wanted;
+		Wanted.slerp(HudRotation::FromEuler(Tune[EHudOffsetAxis::eAxisRot][EHudOffsetType::eDefault]), Current, Item->LeftFollowMoveRot);
+
+		Fmatrix Attach;
+		Attach.rotation(Current);
+		Attach.c = Item->hands_attach_pos();
+		Fmatrix Rest;
+		Rest.rotation(Wanted);
+		const Fvector& RestPos = Tune[EHudOffsetAxis::eAxisPos][EHudOffsetType::eDefault];
+		Rest.c.sub(Item->hands_attach_pos(), RestPos).mul(Item->LeftFollowMove).add(RestPos);
+		Target.mulB_43(Fmatrix().mul_43(Fmatrix().invert(Attach), Rest));
+	}
+
+	if (Item->LeftFollowTurn < 1.f)
+	{
+		Fmatrix LookPre, Look;
+		if (Item->m_parent_hud_item->GetHudLookInertia(LookPre, Look))
+		{
+			const Fmatrix Pre = Fmatrix().mul_43(Fmatrix().invert(CamTrans), LookPre);
+			const Fmatrix Scaled = Fmatrix().mul_43(scale_layer_offset(Look, Item->LeftFollowTurn), Fmatrix().invert(Look));
+			Target.mulA_43(Fmatrix().mul_43(Fmatrix().mul_43(Pre, Scaled), Fmatrix().invert(Pre)));
+		}
+
+		Target.c.mad(actor->Cameras().Rig().LookSwayOffset(), Item->LeftFollowTurn - 1.f);
+	}
+
+	return Target;
+}
+
+void player_hud::HandsIkLeftFollow(SHandsIkFrame& F, const Fmatrix& CamTrans, float Free, CActor* actor)
+{
+	const attachable_hud_item* Item = F.Item;
+	const Fmatrix Hud = Fmatrix().mul_43(Fmatrix().invert(CamTrans), m_transform);
+	const Fmatrix Seen = Fmatrix().mul_43(Hud, F.Delta);
+	const bool Continuous = LeftFollow.Frame + 1 == Device.dwFrame;
+	LeftFollow.Frame = Device.dwFrame;
+
+	if (!hud_left_follow_custom(Item))
+	{
+		return;
+	}
+
+	const Fmatrix Target = LeftFollowTarget(F, CamTrans, Seen, actor);
+	const Fquaternion TargetRotation = Fquaternion().set(Target);
+	if (!Continuous || Item->LeftFollowLag <= 0.f)
+	{
+		LeftFollow = { TargetRotation, Target.c, {}, {}, Device.dwFrame };
+	}
+	else
+	{
+		Fvector Offset = HudRotation::Delta(TargetRotation, LeftFollow.Rotation);
+		HudSpring::Follow(Offset, LeftFollow.RotationVelocity, zero_vel, Item->LeftFollowLag, Item->HandSwayDamping, Device.fTimeDelta);
+		LeftFollow.Rotation = HudRotation::Apply(Offset, TargetRotation);
+		HudSpring::Follow(LeftFollow.Position, LeftFollow.PositionVelocity, Target.c, Item->LeftFollowLag, Item->HandSwayDamping, Device.fTimeDelta);
+	}
+
+	if (Free <= 0.f)
+	{
+		return;
+	}
+
+	Fmatrix Desired;
+	Desired.rotation(LeftFollow.Rotation);
+	Desired.c = LeftFollow.Position;
+
+	Fvector LayerRot;
+	MovementLayersOffset.getXYZ(LayerRot);
+	Fmatrix Bob;
+	Bob.setXYZ(Fvector().mul(LayerRot, Item->LeftBobRot));
+	Bob.translate_over(Fvector().mul(MovementLayersOffset.c, Item->LeftBobPos));
+	Desired.mulB_43(Bob);
+
+	const Fmatrix Correction = Fmatrix().mul_43(Fmatrix().mul_43(Fmatrix().invert(Hud), Desired), Fmatrix().mul_43(Fmatrix().invert(Seen), Hud));
+	F.LeftTarget.mulA_43(hud_weighted_transform(Correction, Free));
+}
+
+void player_hud::UpdateHandJump(CActor* actor, float HalfLife)
+{
+	const u32 State = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+	const float VerticalSpeed = actor->character_physics_support()->movement()->GetVelocity().y;
+	const bool Airborne = (State & (mcJump | mcFall)) != 0;
+
+	if ((State & mcJump) != 0 && (HandJump.StatePrev & mcJump) == 0)
+	{
+		HandJump.Time = 0.f;
+		HandJump.Power = 1.f;
+	}
+
+	constexpr u32 LandingFlags = mcLanding | mcLanding2;
+	if ((State & LandingFlags) != 0 && (HandJump.StatePrev & LandingFlags) == 0)
+	{
+		HandJump.Time = 0.f;
+		HandJump.Power = -std::clamp(-HandJump.FallSpeed / 6.f, 0.f, 1.f);
+	}
+
+	HandJump.StatePrev = State;
+	HandJump.FallSpeed = Airborne ? std::min(VerticalSpeed, HandJump.FallSpeed) : 0.f;
+	HandJump.Time += Device.fTimeDelta;
+	if (!Airborne && HandJump.Time >= 0.15f)
+	{
+		HandJump.Power = 0.f;
+	}
+
+	const bool Rising = Airborne && VerticalSpeed > 0.f && HandJump.Power >= 1.f;
+	const float Target = Rising || HandJump.Time < 0.15f ? HandJump.Power : 0.f;
+	HudSpring::Step(HandJump.Weight, HandJump.Velocity, Target, std::abs(Target) > std::abs(HandJump.Weight) ? HalfLife * 0.5f : HalfLife, 1.f, Device.fTimeDelta);
+}
+
+static Fmatrix hud_pivot_rotation(const Fvector& Hpb, const Fvector& Pivot)
+{
+	Fmatrix Rotation;
+	Rotation.setHPB(Hpb.x, Hpb.y, Hpb.z);
+	Fvector Rotated;
+	Rotation.transform_dir(Rotated, Pivot);
+	Rotation.c.sub(Pivot, Rotated);
+	return Rotation;
+}
+
+static Fvector hud_look_sway(CActor* actor, const Fvector& Look)
+{
+	const float Yaw = std::clamp(actor->fFPCamYawMagnitude, -PI_MUL_2, PI_MUL_2);
+	const float Pitch = std::clamp(actor->fFPCamPitchMagnitude, -PI_MUL_2, PI_MUL_2);
+	return Fvector().set(-Yaw * Look.y, -Pitch * Look.x, Yaw * Look.z);
+}
+
+static Fvector hud_jump_sway(const Fvector& Jump, float Weight)
+{
+	return Fvector().set(Jump.y, Jump.x, Jump.z).mul(Weight * PI / 180.f);
+}
+
+void player_hud::HandsIkLeftSway(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor)
+{
+	const attachable_hud_item* Item = F.Item;
+	if (!F.HasLeft)
+	{
+		LeftSway = {};
+		return;
+	}
+
+	const float AttachWeight = F.HasAttach ? std::clamp(F.AttachTargetWeight >= 0.f ? F.AttachTargetWeight : F.AttachWeight, 0.f, 1.f) : 0.f;
+	const float Free = 1.f - hud_smooth(AttachWeight);
+
+	HandsIkLeftFollow(F, CamTrans, Free, actor);
+
+	const Fvector Bob = Fvector().mul(MovementLayersOffset.c, 100.f);
+	const Fvector& BobScale = Item->LeftSwayBob;
+	const Fvector Target = hud_look_sway(actor, Item->LeftSwayLook).add(Fvector().set(-Bob.x * BobScale.y, Bob.y * BobScale.x, Bob.x * BobScale.z)).mul(Free * PI / 180.f);
+	HudSpring::Follow(LeftSway.Value, LeftSway.Velocity, Target, Item->HandSwayInertia, Item->HandSwayDamping, Device.fTimeDelta);
+
+	const Fvector Hpb = hud_jump_sway(Item->LeftSwayJump, HandJump.Weight * Free).add(LeftSway.Value);
+	if (Hpb.square_magnitude() > EPS_S)
+	{
+		F.LeftTarget.mulA_43(hud_pivot_rotation(Hpb, F.LeftTarget.c));
+	}
+}
+
+void player_hud::HandsIkRightSway(SHandsIkFrame& F, CActor* actor)
+{
+	const attachable_hud_item* Item = F.Item;
+	if (!F.HasRight)
+	{
+		RightSway = {};
+		return;
+	}
+
+	const Fvector Target = hud_look_sway(actor, Item->RightSwayLook).mul(PI / 180.f);
+	HudSpring::Follow(RightSway.Value, RightSway.Velocity, Target, Item->HandSwayInertia, Item->HandSwayDamping, Device.fTimeDelta);
+
+	const Fvector Hpb = hud_jump_sway(Item->RightSwayJump, HandJump.Weight).add(RightSway.Value);
+	if (Hpb.square_magnitude() <= EPS_S)
+	{
+		return;
+	}
+
+	const Fmatrix Rotation = hud_pivot_rotation(Hpb, F.RightTarget.c);
+	F.RightTarget.mulA_43(Rotation);
+	if (!F.AncorInRightHand)
+	{
+		F.Delta.mulA_43(Rotation);
+	}
+}
+
+void player_hud::HandsIkItemBones(SHandsIkFrame& F, const Fmatrix* WristBefore, const Fmatrix& AncorBefore)
+{
+	attachable_hud_item* Item = F.Item;
+	IKinematics* ItemModel = Item->m_model;
+	if (ItemModel == nullptr || Item->m_model_combined || Item->LeftHandItemBones.empty() && Item->RightHandItemBones.empty())
+	{
+		return;
+	}
+
+	const Fmatrix ItemBefore = Fmatrix().mul_43(AncorBefore, Item->m_attach_offset);
+	const Fmatrix ItemAfterInverse = Fmatrix().invert(Fmatrix().mul_43(F.Model->LL_GetTransform(F.Ancor), Item->m_attach_offset));
+	const u16 Root = ItemModel->LL_GetBoneRoot();
+	const Fvector RootPos = ItemModel->LL_GetTransform(Root).c;
+	const Fvector RootBind = Fmatrix().invert(ItemModel->LL_GetData(Root).m2b_transform).c;
+
+	const auto Follow = [&](const xr_vector<u16>& Bones, u16 Wrist, const Fmatrix& Before)
+	{
+		if (Bones.empty() || Wrist == BI_NONE)
+		{
+			return;
+		}
+
+		const Fmatrix Hand = Fmatrix().mul_43(F.Model->LL_GetTransform(Wrist), Fmatrix().invert(Before));
+		const Fmatrix Delta = Fmatrix().mul_43(Fmatrix().mul_43(ItemAfterInverse, Hand), ItemBefore);
+
+		for (u16 Bone : Bones)
+		{
+			const float Rest = Fmatrix().invert(ItemModel->LL_GetData(Bone).m2b_transform).c.distance_to(RootBind);
+			const float Separation = ItemModel->LL_GetTransform(Bone).c.distance_to(RootPos) - Rest;
+			const float Weight = hud_smooth(std::clamp((Separation - 0.01f) / 0.03f, 0.f, 1.f));
+			if (Weight <= 0.f)
+			{
+				continue;
+			}
+
+			CCameraRig::TransformBone(ItemModel, Bone, hud_weighted_transform(Delta, Weight));
+		}
+	};
+
+	Follow(Item->LeftHandItemBones, F.HasLeft ? LeftIkChain[2] : BI_NONE, WristBefore[0]);
+	Follow(Item->RightHandItemBones, F.HasRight ? RightIkChain[2] : BI_NONE, WristBefore[1]);
+}
+
 void player_hud::HandsIkReach(SHandsIkFrame& F)
 {
 	IKinematics* model = F.Model;
@@ -4576,7 +4914,10 @@ void player_hud::update_inertion(Fmatrix& trans)
 		}
 
 		st_last_dir.mad						(diff_dir, inertion.TendtoSpeed*Device.fTimeDelta);
-		origin.mad							(diff_dir, inertion.OriginOffset);
+		if (!CCameraRig::Enabled())
+		{
+			origin.mad						(diff_dir, inertion.OriginOffset);
+		}
 
 		float pitch							= angle_normalize_signed(xform.k.getP());
 		origin.mad							(xform.k,	-pitch * inertion.PitchOffsetD);
