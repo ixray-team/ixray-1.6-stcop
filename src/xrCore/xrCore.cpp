@@ -102,7 +102,10 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		BuildId             = build_id;
 		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
 		EFS._initialize		();
-		g_IniReadAhead		= new CIniReadAhead();
+		if (g_IniReadAhead == nullptr)
+		{
+			g_IniReadAhead = new CIniReadAhead();
+		}
 #if defined(DEBUG) && defined(IXR_WINDOWS)
 		Msg					("CRT heap 0x%08x",_get_heap_handle());
 		Msg					("Process heap 0x%08x",GetProcessHeap());
@@ -121,9 +124,9 @@ void xrCore::_destroy()
 	{
 		g_Discord.Shutdown();
 
+		xr_delete(g_IniReadAhead);
 		ClearCachedIniFiles();
 		xr_delete(cached_ini_map);
-		xr_delete(g_IniReadAhead);
 		CInifile::ClearMemoryCache();
 		FS._destroy();
 		EFS._destroy();
