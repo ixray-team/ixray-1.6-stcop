@@ -46,6 +46,14 @@ endif()
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
+if(IXRAY_USE_MIMALLOC AND NOT IXRAY_ASAN)
+	target_link_libraries(xrCore PRIVATE mimalloc-static)
+	target_compile_definitions(xrCore PRIVATE IXRAY_USE_MIMALLOC)
+	add_custom_command(TARGET xrCore POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}/licenses"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "${mimalloc_SOURCE_DIR}/LICENSE" "${IXRAY_OUTPUT}/licenses/mimalloc-LICENSE.txt"
+	)
+endif()
 if(WIN32)
 	# Prebuilt SDK libraries exist only for Windows.
 	target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})

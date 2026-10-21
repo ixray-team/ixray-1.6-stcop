@@ -16,6 +16,7 @@ option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution"
 option(IXRAY_MP_SQL "Use SQL Database system for FreeMP mode" OFF)
 option(IXRAY_PLUGINS "Enable X-Ray Plugins" OFF)
 option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
+option(IXRAY_USE_MIMALLOC "Use mimalloc for the engine heap (disabled with ASAN)" ON)
 option(IXRAY_LDEBUG "Enable LUA_DEBUG mode" OFF)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
@@ -50,7 +51,7 @@ endif()
 # Add new build types
 include("cmake/shipping.cmake")
 
-# Wrap CMake general configs 
+# Wrap CMake general configs
 set(CMAKE_CONFIGURATION_TYPES ${IXR_CONFIGURATIONS_STR} CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
@@ -117,7 +118,7 @@ add_subdirectory("src")
 # Plugins
 add_subdirectory("src/plugins")
 
-# Test 
+# Test
 if (IXRAY_TESTS)
 	add_subdirectory("src/test")
 endif()
