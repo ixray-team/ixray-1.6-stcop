@@ -67,6 +67,7 @@ struct SCameraRigParams
 	Fvector	turn_pivot_look		= { 0.f, 0.f, 0.f };
 	float	turn_pivot_max		= 6.f, turn_pivot_inertia = 0.07f, turn_pivot_damping = 0.5f, aim_turn_pivot_scale = 0.3f, turn_pivot_grip_lag = 1.f;
 	float	turn_pivot_lift		= 0.f, turn_pivot_lift_pos = 0.f, turn_pivot_lift_max = 0.01f, turn_pivot_lift_inertia = 0.08f, turn_pivot_lift_fall = 1.f, turn_tilt = 0.f, turn_tilt_max = 8.f;
+	float	shot_fingers_chance	= 0.f, shot_fingers_delay = 0.2f, shot_fingers_blend = 0.08f, shot_fingers_burst_chance = 0.f, shot_fingers_max_chance = 1.f, shot_fingers_full_chance = 0.f;
 	float	crouch_pose_inertia	= 0.25f, crouch_pose_inertia_out = -1.f, crouch_pose_delay = 0.f, walk_pose_delay = 5.f, walk_pose_inertia = 0.6f, walk_pose_inertia_out = 0.12f, carry_pose_damping = 0.8f;
 };
 
