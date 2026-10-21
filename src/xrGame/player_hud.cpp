@@ -4313,8 +4313,14 @@ static bool hud_left_follow_custom(const attachable_hud_item* Item)
 	return Item->LeftFollowLag > 0.f || Item->LeftFollowTurn < 1.f || !hud_is_unit(Item->LeftFollowMove) || Item->LeftFollowMoveRot < 1.f || !hud_is_unit(Item->LeftBobPos) || !hud_is_unit(Item->LeftBobRot);
 }
 
-static bool hud_turn_pivot_custom(const attachable_hud_item* Item)
+static bool hud_turn_pivot_custom(const SHandsIkFrame& F)
 {
+	const attachable_hud_item* Item = F.Item;
+	if (F.Weapon == nullptr || F.Weapon->cast_weapon_knife() != nullptr || Item->m_model_combined)
+	{
+		return false;
+	}
+
 	return !fis_zero(Item->TurnPivotLook.square_magnitude()) || Item->TurnPivotGripLag < 1.f || !fis_zero(Item->TurnPivotLift) || !fis_zero(Item->TurnPivotLiftPos) || !fis_zero(Item->TurnTilt);
 }
 
@@ -4335,7 +4341,7 @@ bool player_hud::HandsIkSwayNeeded(const SHandsIkFrame& F) const
 		return Spring.Value.square_magnitude() > EPS_S || Spring.Velocity.square_magnitude() > EPS_S;
 	};
 
-	return hud_hand_sway_custom(F.Item) || hud_left_follow_custom(F.Item) || hud_turn_pivot_custom(F.Item) || Moving(TurnPivot.Lag) || Moving(TurnPivot.Lift) || std::abs(TurnPivot.Tilt) > EPS_S || std::abs(TurnPivot.TiltVelocity) > EPS_S || Moving(LeftSway) || Moving(RightSway);
+	return hud_hand_sway_custom(F.Item) || hud_left_follow_custom(F.Item) || hud_turn_pivot_custom(F) || Moving(TurnPivot.Lag) || Moving(TurnPivot.Lift) || std::abs(TurnPivot.Tilt) > EPS_S || std::abs(TurnPivot.TiltVelocity) > EPS_S || Moving(LeftSway) || Moving(RightSway);
 }
 
 Fmatrix player_hud::LeftFollowTarget(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor)
@@ -4609,7 +4615,7 @@ Fvector player_hud::TurnGripShift(const attachable_hud_item* Item, const Fvector
 void player_hud::HandsIkTurnPivot(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor)
 {
 	const attachable_hud_item* Item = F.Item;
-	if (Item->m_model_combined)
+	if (!hud_turn_pivot_custom(F))
 	{
 		TurnPivot = {};
 		return;
