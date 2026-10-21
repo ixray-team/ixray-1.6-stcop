@@ -1,6 +1,8 @@
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/finders" ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATHEX "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
+include("${CMAKE_MODULE_PATHEX}/mimalloc.cmake")
+
 include("${CMAKE_MODULE_PATHEX}/SDL3.cmake")
 include("${CMAKE_MODULE_PATHEX}/LuaJIT.cmake")
 include("${CMAKE_MODULE_PATHEX}/LuaBind.cmake")

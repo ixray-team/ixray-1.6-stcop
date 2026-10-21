@@ -1,10 +1,8 @@
 #include "stdafx.h"
 
-
-
-#include "memory_alloc_pure.h"
-#include "memory_alloc_xr.h"
+#ifdef IXRAY_USE_MIMALLOC
 #include "memory_alloc_mimalloc.h"
+#endif
 
 #include "xrsharedmem.h"
 
@@ -26,19 +24,6 @@ xrMemory::xrMemory()
 	mem_copy	= xrMemCopy_x86;
 	mem_fill	= xrMemFill_x86;
 	mem_fill32	= xrMemFill32_x86;
-
-//#ifdef MASTER_GOLD
-//	pAlloc = CMemAllocMimalloc::Create();
-#if !defined(PURE_ONLY) && !defined(IXR_LINUX)
-	//if (!!strstr(GetCommandLineA(), "-pure_alloc"))
-	//{
-		pAlloc = CMemAllocPure::Create();
-	//} else {
-	//	pAlloc = CMemAllocXRay::Create();
-	//}
-#else
-	pAlloc = CMemAllocPure::Create();
-#endif
 }
 
 void xrMemory::_initialize()
@@ -76,6 +61,17 @@ void xrMemory::_destroy()
 void xrMemory::mem_compact()
 {
 	PROF_EVENT("mem_compact");
+	if (g_pStringContainer)
+	{
+		g_pStringContainer->clean();
+	}
+	if (g_pSharedMemoryContainer)
+	{
+		g_pSharedMemoryContainer->clean();
+	}
+#ifdef IXRAY_USE_MIMALLOC
+	CMemAllocMimalloc::Compact();
+#endif
 #ifdef IXR_WINDOWS
 	RegFlushKey(HKEY_CLASSES_ROOT);
 	RegFlushKey(HKEY_CURRENT_USER);
@@ -85,8 +81,6 @@ void xrMemory::mem_compact()
 	}
 
 	HeapCompact(GetProcessHeap(), 0);
-	if (g_pStringContainer)			g_pStringContainer->clean();
-	if (g_pSharedMemoryContainer)	g_pSharedMemoryContainer->clean();
 #endif
 }
 
