@@ -8,6 +8,10 @@ Init order: `CECSManager`, INI cache, Windows COM + `Core.Params`/`LoadParams`, 
 
 `Memory` (`src/xrCore/memory/xrMemory.h`): `xr_alloc` / `xr_free` / `xr_new` / `xr_delete`. Luabind uses the same heap in game mode (`setup_luabind_allocator` in `xrGameInitialize` skips editor mode).
 
+The engine heap defaults to mimalloc 3.5.3 (`IXRAY_USE_MIMALLOC=ON`); ASAN builds always use CRT. The release source archive is SHA-256-pinned and fetched by CMake, or supplied offline with `FETCHCONTENT_SOURCE_DIR_MIMALLOC`. A single static copy is linked privately into `xrCore`; the license is copied to `licenses/mimalloc-LICENSE.txt` beside the binaries. CRT interception is disabled. All `Memory` allocations, including calls before its constructor and after `Memory._destroy`, use the same compile-time-selected backend. Do not pass CRT/library-owned pointers to `xr_free` or `xr_realloc`.
+
+Ordinary, sized and nothrow new/delete use `Memory`; standard over-aligned new/delete retain their matching runtime allocator. `xr_alloc` and `xr_delete` do not support over-aligned types. LuaJIT's VM still uses `luaL_newstate()` and its own allocator. `mem_usage()` with mimalloc returns a statistics snapshot of allocated block bytes (including size-class rounding), saturated to the legacy `u32` range; `pBlocksUsed` is the snapshot's allocated block count and `pBlocksFree` is zero (unavailable). It excludes CRT allocations and GPU memory. `mem_compact()` cleans shared containers before asking mimalloc to collect unused memory; collection does not guarantee that every worker's cached memory is returned immediately.
+
 `shared_str` is an interned pointer. Use it for section names and keys. `Memory.mem_compact()` is called during device create/destroy, precache completion, and some AI/ALife operations.
 
 Containers: `xr_vector`, `xr_map`, `xr_hash_map`, `xr_string`. Map in [doc/code-style-cpp.md](../../doc/code-style-cpp.md).

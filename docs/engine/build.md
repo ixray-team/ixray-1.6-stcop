@@ -38,6 +38,7 @@ Root `CMakeLists.txt`.
 | `IXRAY_MP` | OFF | `xrRender_DS0`; `xrServer`, `xrServerCLI`, `xrGameSpy` also require `IXR_TEST_CI` |
 | `IXRAY_MP_SQL` | OFF | FreeMP SQL |
 | `IXRAY_ASAN` | OFF | full rebuild required |
+| `IXRAY_USE_MIMALLOC` | ON | mimalloc 3.5.3 engine heap; automatically bypassed with `IXRAY_ASAN=ON`. Set OFF for CRT comparison |
 | `IXRAY_LDEBUG` | OFF | `LUABIND_DEBUG_SCRIPTS`; affects MSVC Debug exception flags |
 | `IXRAY_UNITYBUILD` | ON | `xrGame` unity batches. `IXRAY_BUILD_BATCH_SIZE` default 32 |
 | `IXRAY_PROFILER` | ON | Optick unless `IXRAY_PROFILER_TRACY` is enabled. `PROF_EVENT` / `PROF_FRAME` |
