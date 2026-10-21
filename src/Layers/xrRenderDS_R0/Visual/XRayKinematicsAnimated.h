@@ -153,6 +153,7 @@ public:
 	void LL_SetInertialization(float) override {}
 	void LL_SetInertializationBone(u16, bool) override {}
 	void LL_ResetInertialization() override {}
+	void LL_SetSmoothBlend(bool) override {}
 	void LL_InertializePart(u16 part, float time, u8 channel) override {}
 	bool LL_GetBoneTransformMasked(u16, u8, Fmatrix&) override { return false; }
 	bool LL_GetMotionBoneTransform(MotionID, float, u16, Fmatrix&) override { return false; }

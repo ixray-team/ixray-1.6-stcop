@@ -300,6 +300,7 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 
 	B.channel		= channel;
 	B.additive_ref.invalidate();
+	B.SmoothWeight	= SmoothBlend;
 	B.fall_at_end	= B.stop_at_end && (channel > 1);
 }
 void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone)
@@ -311,6 +312,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.blendFalloff	= blendFalloff;
 	B.blendPower	= Power;
 	B.speed			= Speed;
+	B.SmoothWeight	= SmoothBlend;
 	B.motionID		= motion_ID;
 	B.timeCurrent	= 0;
 	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[bone]->at(motion_ID.idx).GetLength();
@@ -1022,7 +1024,7 @@ void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 			float weight = 0.f;
 			for (int i = 0; i < keys.chanel_blend_conts[j]; ++i)
 			{
-				weight += keys.blends[j][i]->blendAmount;
+				weight += j == LAYER_ADDITIVE_CHANNEL ? keys.blends[j][i]->blendAmount : keys.blends[j][i]->Weight();
 			}
 
 			weight = std::clamp(weight, 0.f, 1.f);
@@ -1306,7 +1308,7 @@ void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
 	Start.timeCurrent = 0.f;
 	Start.stop_at_end = true;
 
-	const float Weight = std::clamp(blend.blendAmount, 0.f, 1.f);
+	const float Weight = std::clamp(blend.Weight(), 0.f, 1.f);
 	const bool Forward = blend.speed >= 0.f;
 	for (u16 Bone : (*m_Partition)[part].bones)
 	{

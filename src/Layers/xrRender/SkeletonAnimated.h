@@ -90,6 +90,7 @@ virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, co
 	float						m_InertialTime = 0.0f;
 	float						m_InertialStamp = -1.0f;
 	float						m_InertialDelta = 0.0f;
+	bool						SmoothBlend = false;
 
 	void						InertialAdvance			();
 	void						InertialMarkPart		( u16 part, float time = 0.f, u8 channel = 0 );
@@ -226,6 +227,7 @@ public:
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
 	void						LL_ResetInertialization	() override;
+	void						LL_SetSmoothBlend		(bool enabled) override { SmoothBlend = enabled; }
 	void						LL_InertializePart		(u16 part, float time, u8 channel) override { InertialMarkPart(part, time, channel); }
 	bool						LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result) override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
