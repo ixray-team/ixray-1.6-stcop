@@ -112,6 +112,16 @@ struct SHudLeftFollow
 	u32 Frame = u32(-1);
 };
 
+struct SHudTurnPivot
+{
+	Fvector2 Rate = {};
+	float LiftSpeed = 0.f;
+	SHudVectorSpring Lag;
+	SHudVectorSpring Lift;
+	float Tilt = 0.f;
+	float TiltVelocity = 0.f;
+};
+
 struct SHudHandJump
 {
 	u32 StatePrev = 0;
@@ -463,6 +473,20 @@ struct attachable_hud_item final
 	float							LeftFollowMoveRot = 1.f;
 	float							HandSwayInertia = 0.08f;
 	float							HandSwayDamping = 0.6f;
+	Fvector							TurnPivotLook = {};
+	float							TurnPivotMax = 6.f;
+	float							TurnPivotInertia = 0.07f;
+	float							TurnPivotDamping = 0.5f;
+	float							AimTurnPivotScale = 0.3f;
+	float							TurnPivotGripLag = 1.f;
+	float							TurnPivotLift = 0.f;
+	float							TurnPivotLiftPos = 0.f;
+	float							TurnPivotLiftMax = 0.01f;
+	float							TurnPivotLiftInertia = 0.08f;
+	float							TurnPivotLiftFall = 1.f;
+	float							TurnTilt = 0.f;
+	float							TurnTiltMax = 8.f;
+	u16								TurnPivotBone = BI_NONE;
 	float							AimBlendInertia = 0.f;
 	float							HudMass = 1.f;
 	bool							IkEnabled = true;
@@ -1071,6 +1095,10 @@ private:
 	bool			HandsIkSwayNeeded	(const SHandsIkFrame& F) const;
 	void			HandsIkLeftSway		(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
 	void			HandsIkRightSway	(SHandsIkFrame& F, CActor* actor);
+	void			HandsIkTurnPivot	(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
+	void			UpdateTurnPivot		(const attachable_hud_item* Item, CActor* actor);
+	Fvector			TurnPivotPoint		(const SHandsIkFrame& F) const;
+	Fvector			TurnGripShift		(const attachable_hud_item* Item, const Fvector& Pivot, const Fmatrix& CamTrans, CActor* actor) const;
 	void			HandsIkItemBones	(SHandsIkFrame& F, const Fmatrix* WristBefore, const Fmatrix& AncorBefore);
 	void			HandsIkLeftFollow	(SHandsIkFrame& F, const Fmatrix& CamTrans, float Free, CActor* actor);
 	Fmatrix			LeftFollowTarget	(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor);
@@ -1137,6 +1165,7 @@ private:
 	Fmatrix								MovementLayersOffset = Fidentity;
 	SHudVectorSpring					LeftSway;
 	SHudVectorSpring					RightSway;
+	SHudTurnPivot						TurnPivot;
 	SHudHandJump						HandJump;
 	SHudLeftFollow						LeftFollow;
 	Fvector								TurnOffset = zero_vel;

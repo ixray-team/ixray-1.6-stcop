@@ -1075,6 +1075,19 @@ static const SHudRigField g_hud_rig_fields[] =
 	{ "left_hand_bob_rot", nullptr, &attachable_hud_item::LeftBobRot },
 	{ "hand_sway_inertia", &attachable_hud_item::HandSwayInertia, nullptr, 0.f },
 	{ "hand_sway_damping", &attachable_hud_item::HandSwayDamping, nullptr, 0.f },
+	{ "turn_pivot_look", nullptr, &attachable_hud_item::TurnPivotLook },
+	{ "turn_pivot_max", &attachable_hud_item::TurnPivotMax, nullptr, 0.f },
+	{ "turn_pivot_inertia", &attachable_hud_item::TurnPivotInertia, nullptr, 0.f },
+	{ "turn_pivot_damping", &attachable_hud_item::TurnPivotDamping, nullptr, 0.f },
+	{ "turn_pivot_lift_fall", &attachable_hud_item::TurnPivotLiftFall, nullptr, 1.f },
+	{ "aim_turn_pivot_scale", &attachable_hud_item::AimTurnPivotScale, nullptr, 0.f },
+	{ "turn_pivot_grip_lag", &attachable_hud_item::TurnPivotGripLag, nullptr, 0.f, 1.f },
+	{ "turn_pivot_lift", &attachable_hud_item::TurnPivotLift, nullptr },
+	{ "turn_pivot_lift_pos", &attachable_hud_item::TurnPivotLiftPos, nullptr },
+	{ "turn_pivot_lift_max", &attachable_hud_item::TurnPivotLiftMax, nullptr, 0.f },
+	{ "turn_pivot_lift_inertia", &attachable_hud_item::TurnPivotLiftInertia, nullptr, 0.f },
+	{ "turn_tilt", &attachable_hud_item::TurnTilt, nullptr },
+	{ "turn_tilt_max", &attachable_hud_item::TurnTiltMax, nullptr, 0.f },
 	{ "aim_blend_inertia", &attachable_hud_item::AimBlendInertia, nullptr, 0.f },
 	{ "sprint_pose_inertia", &attachable_hud_item::SprintPoseInertia, nullptr, 0.f },
 	{ "sprint_blend_in", &attachable_hud_item::SprintBlendIn, nullptr, 0.f },
@@ -1113,6 +1126,9 @@ void attachable_hud_item::LoadRigParams()
 
 	load_bones("left_hand_item_bones", LeftHandItemBones);
 	load_bones("right_hand_item_bones", RightHandItemBones);
+
+	const char* pivot_bone = READ_IF_EXISTS(pSettings, r_string, sect_name, "turn_pivot_bone", READ_IF_EXISTS(pSettings, r_string, "camera_rig", "turn_pivot_bone", "wpn_body"));
+	TurnPivotBone = m_model_combined ? BI_NONE : m_model->LL_BoneID(pivot_bone);
 
 	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
 	{
@@ -3671,6 +3687,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	}
 
 	HandsIkWeaponDelta(F);
+	HandsIkTurnPivot(F, cam_trans, actor);
 	HandsIkHandTargets(F);
 	HandsIkAttachTarget(F);
 	UpdateHandJump(actor, F.Item->HandSwayInertia);
@@ -4293,6 +4310,11 @@ static bool hud_left_follow_custom(const attachable_hud_item* Item)
 	return Item->LeftFollowLag > 0.f || Item->LeftFollowTurn < 1.f || !hud_is_unit(Item->LeftFollowMove) || Item->LeftFollowMoveRot < 1.f || !hud_is_unit(Item->LeftBobPos) || !hud_is_unit(Item->LeftBobRot);
 }
 
+static bool hud_turn_pivot_custom(const attachable_hud_item* Item)
+{
+	return !fis_zero(Item->TurnPivotLook.square_magnitude()) || Item->TurnPivotGripLag < 1.f || !fis_zero(Item->TurnPivotLift) || !fis_zero(Item->TurnPivotLiftPos) || !fis_zero(Item->TurnTilt);
+}
+
 static bool hud_hand_sway_custom(const attachable_hud_item* Item)
 {
 	return !fis_zero(Item->LeftSwayLook.square_magnitude()) || !fis_zero(Item->LeftSwayBob.square_magnitude()) || !fis_zero(Item->LeftSwayJump.square_magnitude()) || !fis_zero(Item->RightSwayLook.square_magnitude()) || !fis_zero(Item->RightSwayJump.square_magnitude());
@@ -4305,7 +4327,12 @@ bool player_hud::HandsIkSwayNeeded(const SHandsIkFrame& F) const
 		return false;
 	}
 
-	return hud_hand_sway_custom(F.Item) || hud_left_follow_custom(F.Item) || LeftSway.Value.square_magnitude() > EPS_S || LeftSway.Velocity.square_magnitude() > EPS_S || RightSway.Value.square_magnitude() > EPS_S || RightSway.Velocity.square_magnitude() > EPS_S;
+	const auto Moving = [](const SHudVectorSpring& Spring)
+	{
+		return Spring.Value.square_magnitude() > EPS_S || Spring.Velocity.square_magnitude() > EPS_S;
+	};
+
+	return hud_hand_sway_custom(F.Item) || hud_left_follow_custom(F.Item) || hud_turn_pivot_custom(F.Item) || Moving(TurnPivot.Lag) || Moving(TurnPivot.Lift) || std::abs(TurnPivot.Tilt) > EPS_S || std::abs(TurnPivot.TiltVelocity) > EPS_S || Moving(LeftSway) || Moving(RightSway);
 }
 
 Fmatrix player_hud::LeftFollowTarget(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor)
@@ -4497,6 +4524,111 @@ void player_hud::HandsIkRightSway(SHandsIkFrame& F, CActor* actor)
 	{
 		F.Delta.mulA_43(Rotation);
 	}
+}
+
+static float hud_soft_limit(float Value, float Max)
+{
+	return Max > 0.f ? Max * tanhf(Value / Max) : Value;
+}
+
+static Fmatrix hud_rotation_about(const Fmatrix& Rotation, const Fvector& Pivot)
+{
+	Fmatrix Result = Rotation;
+	Fvector Rotated;
+	Result.transform_dir(Rotated, Pivot);
+	Result.c.sub(Pivot, Rotated);
+	return Result;
+}
+
+void player_hud::UpdateTurnPivot(const attachable_hud_item* Item, CActor* actor)
+{
+	SHudTurnPivot& T = TurnPivot;
+	const float Dt = Device.fTimeDelta;
+	const float Aim = lerp(1.f, Item->AimTurnPivotScale, Item->m_parent_hud_item->GetAimFactor());
+	const float RateSmooth = HudBlend::Smooth(Item->TurnPivotInertia * 0.5f, Dt);
+	T.Rate.x += (std::clamp(actor->fFPCamYawMagnitude, -PI_MUL_2, PI_MUL_2) - T.Rate.x) * RateSmooth;
+	T.Rate.y += (std::clamp(actor->fFPCamPitchMagnitude, -PI_MUL_2, PI_MUL_2) - T.Rate.y) * RateSmooth;
+	const float Yaw = T.Rate.x * Aim;
+	const float Pitch = T.Rate.y * Aim;
+
+	const float Max = Item->TurnPivotMax;
+	const Fvector& Look = Item->TurnPivotLook;
+	const Fvector LagTarget = { deg2rad(hud_soft_limit(-Yaw * Look.y, Max)), deg2rad(hud_soft_limit(-Pitch * Look.x, Max)), deg2rad(hud_soft_limit(Yaw * Look.z, Max)) };
+	HudSpring::Follow(T.Lag.Value, T.Lag.Velocity, LagTarget, Item->TurnPivotInertia, Item->TurnPivotDamping, Dt);
+	HudSpring::Step(T.Tilt, T.TiltVelocity, deg2rad(hud_soft_limit(-Yaw * Item->TurnTilt, Item->TurnTiltMax)), Item->TurnPivotInertia, 1.f, Dt);
+
+	const float Speed = std::abs(Yaw);
+	const float Envelope = Speed > T.LiftSpeed ? Item->TurnPivotLiftInertia : Item->TurnPivotLiftInertia * std::max(Item->TurnPivotLiftFall, 1.f);
+	T.LiftSpeed += (Speed - T.LiftSpeed) * HudBlend::Smooth(Envelope, Dt);
+	const Fvector LiftTarget = { deg2rad(hud_soft_limit(T.LiftSpeed * Item->TurnPivotLift, Max)), hud_soft_limit(T.LiftSpeed * Item->TurnPivotLiftPos, Item->TurnPivotLiftMax), 0.f };
+	HudSpring::Follow(T.Lift.Value, T.Lift.Velocity, LiftTarget, Item->TurnPivotLiftInertia, 1.f, Dt);
+}
+
+Fvector player_hud::TurnPivotPoint(const SHandsIkFrame& F) const
+{
+	const attachable_hud_item* Item = F.Item;
+	Fvector Pivot;
+	if (Item->TurnPivotBone != BI_NONE)
+	{
+		Pivot = Item->m_model->LL_GetTransform(Item->TurnPivotBone).c;
+		Item->m_attach_offset.transform_tiny(Pivot);
+		F.Model->LL_GetTransform(F.Ancor).transform_tiny(Pivot);
+	}
+	else
+	{
+		Pivot = F.Model->LL_GetTransform(F.HasRight ? RightIkChain[2] : F.Ancor).c;
+	}
+
+	F.Delta.transform_tiny(Pivot);
+	return Pivot;
+}
+
+Fvector player_hud::TurnGripShift(const attachable_hud_item* Item, const Fvector& Pivot, const Fmatrix& CamTrans, CActor* actor) const
+{
+	Fvector World;
+	m_transform.transform_tiny(World, Pivot);
+	Fvector Settled = World;
+	Fmatrix LookPre, Look;
+	if (Item->m_parent_hud_item->GetHudLookInertia(LookPre, Look))
+	{
+		Fmatrix().mul_43(Fmatrix().mul_43(LookPre, Fmatrix().invert(Look)), Fmatrix().invert(LookPre)).transform_tiny(Settled);
+	}
+
+	Fvector Sway;
+	CamTrans.transform_dir(Sway, actor->Cameras().Rig().LookSwayOffset());
+	Settled.sub(Sway);
+
+	Fvector Shift;
+	Fmatrix().invert(m_transform).transform_dir(Shift, Fvector().sub(Settled, World));
+	return Shift.mul(1.f - Item->TurnPivotGripLag);
+}
+
+void player_hud::HandsIkTurnPivot(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor)
+{
+	const attachable_hud_item* Item = F.Item;
+	if (Item->m_model_combined)
+	{
+		TurnPivot = {};
+		return;
+	}
+
+	UpdateTurnPivot(Item, actor);
+	const SHudTurnPivot& T = TurnPivot;
+
+	const Fmatrix ModelToCam = Fmatrix().mul_43(Fmatrix().invert(CamTrans), m_transform);
+	const Fmatrix CamToModel = Fmatrix().invert(ModelToCam);
+	Fvector Pivot = TurnPivotPoint(F);
+
+	Fvector Shift = Item->TurnPivotGripLag < 1.f ? TurnGripShift(Item, Pivot, CamTrans, actor) : Fvector().set(0.f, 0.f, 0.f);
+	Fvector Up;
+	CamToModel.transform_dir(Up, Fvector().set(0.f, T.Lift.Value.y, 0.f));
+	Shift.add(Up);
+	F.Delta.mulA_43(Fmatrix().translate(Shift));
+	Pivot.add(Shift);
+
+	const Fmatrix CamRotation = Fmatrix().setHPB(T.Lag.Value.x, T.Lag.Value.y + T.Lift.Value.x, T.Lag.Value.z + T.Tilt);
+	const Fmatrix Rotation = Fmatrix().mul_43(Fmatrix().mul_43(CamToModel, CamRotation), ModelToCam);
+	F.Delta.mulA_43(hud_rotation_about(Rotation, Pivot));
 }
 
 void player_hud::HandsIkItemBones(SHandsIkFrame& F, const Fmatrix* WristBefore, const Fmatrix& AncorBefore)
