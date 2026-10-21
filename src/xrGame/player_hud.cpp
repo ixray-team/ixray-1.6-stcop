@@ -2830,6 +2830,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_model->dcast_PKinematics()->CalculateBones(true);
 	}
 
+	UpdateShotFingers(true);
+
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
 
@@ -2840,6 +2842,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_animator_item->update(true);
 
 	update_hands_ik(cam_trans, actor);
+	UpdateShotFingers(false);
 
 	{
 		if (m_watches_bone != BI_NONE)
@@ -5263,6 +5266,220 @@ void player_hud::OnShotAnimation(const attachable_hud_item* item)
 	ShotRotScale.set(1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation));
 	ShotPosScale.set(1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation), 1.f + ::Random.randFs(variation));
 	ShotTwist.set(::Random.randFs(item->ShotTwist), ::Random.randFs(item->ShotTwist));
+
+	const SCameraRigParams& rig = CCameraRig::Params();
+	++ShotFingers.BurstShots;
+	const float base = rig.shot_fingers_chance;
+	const float chance = base > 0.f ? std::min(base + rig.shot_fingers_burst_chance * float(ShotFingers.BurstShots - 1), std::max(rig.shot_fingers_max_chance, base)) : 0.f;
+	ShotFingers.Pending = chance > 0.f && ::Random.randF() < chance;
+	ShotFingers.SinceShot = 0.f;
+	ShotFingers.Stopping = ShotFingers.Active;
+}
+
+static xr_vector<u16> hud_bone_descendants(IKinematics* kinematics, u16 bone, u16 exclude)
+{
+	xr_vector<u16> bones = { bone };
+	for (size_t i = 0; i < bones.size(); ++i)
+	{
+		for (CBoneData* child : kinematics->LL_GetData(bones[i]).children)
+		{
+			if (child->GetSelfID() != exclude)
+			{
+				bones.push_back(child->GetSelfID());
+			}
+		}
+	}
+
+	bones.erase(bones.begin());
+	return bones;
+}
+
+void player_hud::StartShotFingers(attachable_hud_item* item)
+{
+	SHudShotFingers& S = ShotFingers;
+	const SHudRetargetLayer* layer = nullptr;
+	for (const auto& [alias, it] : item->RetargetLayers)
+	{
+		if (alias == "anm_idle")
+		{
+			layer = &it;
+			break;
+		}
+
+		if (layer == nullptr && strstr(alias.c_str(), "anm_idle") == alias.c_str())
+		{
+			layer = &it;
+		}
+	}
+
+	const MotionID motion = layer != nullptr && layer->Motion.size() != 0 ? m_model->ID_Cycle_Safe(layer->Motion) : MotionID();
+	CMotionDef* def = motion.valid() ? m_model->LL_GetMotionDef(motion) : nullptr;
+	if (def == nullptr)
+	{
+		return;
+	}
+
+	const xr_string prefix = READ_IF_EXISTS(pSettings, r_string, "camera_rig", "shot_fingers_mark", "mm_shoot");
+	const float speed = def->Speed() <= EPS ? 1.f : def->Speed();
+	CMotion* root = m_model->LL_GetRootMotion(motion);
+	const float length = root != nullptr ? root->GetLength() / speed : flt_max;
+
+	xr_vector<std::pair<float, float>> intervals;
+	for (const motion_marks& marks : def->marks)
+	{
+		const xr_string_view mark_name = marks.name.c_str();
+		if (!mark_name.starts_with(prefix) || mark_name.size() != prefix.size() && mark_name[prefix.size()] != '_')
+		{
+			continue;
+		}
+
+		for (const motion_marks::interval& interval : marks.intervals)
+		{
+			intervals.emplace_back(interval.first, interval.second);
+		}
+	}
+
+	std::sort(intervals.begin(), intervals.end());
+	for (size_t i = 0; i < intervals.size(); ++i)
+	{
+		const float next = i + 1 < intervals.size() ? intervals[i + 1].first : length;
+		intervals[i].second = std::min({ intervals[i].second, length, next });
+	}
+
+	std::erase_if(intervals, [](const std::pair<float, float>& it) { return it.second <= it.first + EPS_L; });
+	if (intervals.empty())
+	{
+		return;
+	}
+
+	IKinematics* kinematics = m_model->dcast_PKinematics();
+	S.Full = ::Random.randF() < CCameraRig::Params().shot_fingers_full_chance;
+	if (S.Full)
+	{
+		S.Bones = hud_bone_descendants(kinematics, kinematics->LL_GetBoneRoot(), BI_NONE);
+	}
+	else
+	{
+		S.Bones.clear();
+		const u16 ancor = m_ancors[item->m_attach_place_idx];
+		for (const u16 wrist : { RightIkChain[2], LeftIkChain[2] })
+		{
+			if (wrist != BI_NONE)
+			{
+				const xr_vector<u16> fingers = hud_bone_descendants(kinematics, wrist, ancor);
+				S.Bones.insert(S.Bones.end(), fingers.begin(), fingers.end());
+			}
+		}
+	}
+
+	const std::pair<float, float>& interval = intervals[::Random.randI(intervals.size())];
+	S.Speed = speed;
+	S.First = interval.first;
+	S.Second = interval.second;
+	S.Motion = motion;
+	if (S.Bones.empty() || !hud_motion_local_pose(m_model, motion, S.First * S.Speed, S.Bones, S.Reference, &S.ReferencePos))
+	{
+		return;
+	}
+
+	S.Time = 0.f;
+	S.Fade = 1.f;
+	S.Stopping = false;
+	S.Active = true;
+}
+
+void player_hud::UpdateShotFingers(bool BeforeIk)
+{
+	SHudShotFingers& S = ShotFingers;
+	attachable_hud_item* item = m_attached_items[0];
+	if (item == nullptr || item->m_model_combined || m_model == nullptr || !CCameraRig::Enabled())
+	{
+		S = {};
+		return;
+	}
+
+	if (!BeforeIk)
+	{
+		if (S.Active && !S.Full)
+		{
+			ApplyShotFingers();
+		}
+
+		return;
+	}
+
+	const float blend = CCameraRig::Params().shot_fingers_blend;
+	const bool idle = item->m_parent_hud_item->GetState() == CHUDState::eIdle;
+	if (idle)
+	{
+		S.BurstShots = 0;
+	}
+
+	if (S.Pending)
+	{
+		S.SinceShot += Device.fTimeDelta;
+		if (!S.Active && idle && S.SinceShot >= CCameraRig::Params().shot_fingers_delay)
+		{
+			S.Pending = false;
+			StartShotFingers(item);
+		}
+	}
+
+	if (!S.Active)
+	{
+		return;
+	}
+
+	S.Time += Device.fTimeDelta;
+	if (S.Stopping)
+	{
+		S.Fade = blend > EPS ? S.Fade - Device.fTimeDelta / blend : 0.f;
+	}
+
+	const float time = S.First + S.Time;
+	if (time >= S.Second || S.Fade <= 0.f)
+	{
+		S.Active = false;
+		return;
+	}
+
+	const float edge = std::min(blend, (S.Second - S.First) * 0.5f);
+	S.Weight = hud_smooth(hud_mark_ramp(time - S.First, edge) * hud_mark_ramp(S.Second - time, edge) * std::clamp(S.Fade, 0.f, 1.f));
+	if (S.Full)
+	{
+		ApplyShotFingers();
+	}
+}
+
+void player_hud::ApplyShotFingers()
+{
+	SHudShotFingers& S = ShotFingers;
+	const float time = S.First + S.Time;
+	const float weight = S.Weight;
+	xr_vector<Fquaternion> pose;
+	xr_vector<Fvector> positions;
+	if (weight <= 0.f || !hud_motion_local_pose(m_model, S.Motion, time * S.Speed, S.Bones, pose, &positions) || pose.size() != S.Reference.size() || positions.size() != S.ReferencePos.size())
+	{
+		return;
+	}
+
+	IKinematics* kinematics = m_model->dcast_PKinematics();
+	for (size_t i = 0; i < S.Bones.size(); ++i)
+	{
+		const u16 bone = S.Bones[i];
+		Fmatrix reference, sample;
+		reference.rotation(S.Reference[i]);
+		sample.rotation(pose[i]);
+		const Fmatrix delta = Fmatrix().mul_43(Fmatrix().invert(reference), sample);
+
+		const Fmatrix parent = kinematics->LL_GetTransform(kinematics->LL_GetData(bone).GetParentID());
+		const Fmatrix bone_ms = kinematics->LL_GetTransform(bone);
+		const Fmatrix local = Fmatrix().mul_43(Fmatrix().invert(parent), bone_ms);
+		Fmatrix moved_local = Fmatrix().mul_43(local, hud_weighted_transform(delta, weight));
+		moved_local.c.mad(local.c, Fvector().sub(positions[i], S.ReferencePos[i]), weight);
+		const Fmatrix moved = Fmatrix().mul_43(parent, moved_local);
+		CCameraRig::TransformBone(kinematics, bone, Fmatrix().mul_43(moved, Fmatrix().invert(bone_ms)));
+	}
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)

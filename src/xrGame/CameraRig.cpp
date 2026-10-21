@@ -80,6 +80,13 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Weapon turn", "turn_tilt", "turn_tilt", &g_rig.turn_tilt, nullptr, 1, false, 0.05f },
 	{ "Weapon turn", "turn_tilt_max", "turn_tilt_max", &g_rig.turn_tilt_max, nullptr, 1, false, 0.05f },
 
+	{ "Shot fingers", "shot_fingers_chance", nullptr, &g_rig.shot_fingers_chance, nullptr, 1, false, 0.01f },
+	{ "Shot fingers", "shot_fingers_delay", nullptr, &g_rig.shot_fingers_delay, nullptr, 1, false, 0.005f },
+	{ "Shot fingers", "shot_fingers_blend", nullptr, &g_rig.shot_fingers_blend, nullptr, 1, false, 0.005f },
+	{ "Shot fingers", "shot_fingers_burst_chance", nullptr, &g_rig.shot_fingers_burst_chance, nullptr, 1, false, 0.005f },
+	{ "Shot fingers", "shot_fingers_max_chance", nullptr, &g_rig.shot_fingers_max_chance, nullptr, 1, false, 0.01f },
+	{ "Shot fingers", "shot_fingers_full_chance", nullptr, &g_rig.shot_fingers_full_chance, nullptr, 1, false, 0.01f },
+
 	{ "Carry pose", "crouch_hud_offset_pos", "crouch_hud_offset_pos", &g_rig.crouch_hud_offset_pos.x, nullptr, 3, false, 0.0005f },
 	{ "Carry pose", "crouch_hud_offset_rot", "crouch_hud_offset_rot", &g_rig.crouch_hud_offset_rot.x, nullptr, 3, false, 0.05f },
 	{ "Carry pose", "crouch_pose_inertia", "crouch_pose_inertia", &g_rig.crouch_pose_inertia, nullptr, 1, false, 0.005f },
