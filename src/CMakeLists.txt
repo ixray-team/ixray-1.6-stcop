@@ -43,6 +43,9 @@ if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
 endif()
 
 if(NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
+    if(WIN32)
+        add_subdirectory("xrCrashDumpHelper")
+    endif()
     add_subdirectory("xrPlay")
 endif()
 

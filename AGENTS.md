@@ -7,6 +7,7 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 | Path | Binary | Owns |
 | --- | --- | --- |
 | `src/xrPlay` | `xrEngine.exe` | `CApplication::Run`, SDL window, splash |
+| `src/xrCrashDumpHelper` | `xrCrashDumpHelper.exe` | Crash dump helper process (Windows, no engine/profiler dependencies) |
 | `src/xrCore` | `xrCore.dll` | `Memory`, `FS`, `CInifile`, log, `xrDebug`, addons |
 | `src/xrEngine` | `xrEngineCore.dll` | `Device`, loop, input, console, scheduler, `CEngineAPI` |
 | `src/xrRHI` | `xrRHI.dll` | D3D9 and D3D11 backends (`D3D9/`, `D3D11/`); Linux uses DXVK Native |
