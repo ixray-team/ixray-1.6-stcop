@@ -23,7 +23,7 @@ CYaml::CYaml(const char* path, const char* FileName)
 
 YAML::Node CYaml::NavigateToNode(const YAML::Node& BaseNode, const char* ChildNodeName) const
 {
-	// Node don't have childs 
+	// Node don't have childs
 	if (!BaseNode || !BaseNode.IsMap())
 		return YAML::Node();
 
@@ -36,7 +36,7 @@ YAML::Node CYaml::NavigateToNode(const YAML::Node& BaseNode, const char* ChildNo
 			const YAML::Node& SafeNode = Iter.second;
 			if (!SafeNode.IsMap())
 			{
-				// Only for map type! You is scalar? Bye-bye! 
+				// Only for map type! You is scalar? Bye-bye!
 				continue;
 			}
 			YAML::Node pNode = std::move(NavigateToNode(SafeNode, ChildNodeName));
@@ -52,7 +52,15 @@ YAML::Node CYaml::NavigateToNode(const YAML::Node& BaseNode, const char* ChildNo
 const char* CYaml::GetString(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr)
 {
 	const YAML::Node node = NavigateToNode(BaseNode, ChildNodeName);
-	return node && !node.IsNull() ? node.as<std::string>().c_str() : DefaultStr;
+	if (node && !node.IsNull())
+	{
+		if (!node.IsScalar())
+		{
+			throw YAML::TypedBadConversion<std::string>(node.Mark());
+		}
+		return node.Scalar().c_str();
+	}
+	return DefaultStr;
 }
 
 xr_string CYaml::GetStringRoot(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr)
