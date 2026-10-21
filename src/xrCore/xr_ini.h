@@ -68,6 +68,7 @@ protected:
 	xr_string_map<xr_string, xr_vector<xr_string>> BaseParentDataMap;
 	xr_string_map<xr_string, xr_vector<xr_string>> OverrideParentDataMap;
 	xr_string_map<xr_string, xr_string_map<xr_string, bool>> OverrideToFilename;
+	xr_string_map<xr_string, xr_string_map<xr_string, u32>> DuplicateLines;
 
 	string_path DLTXCurrentFileName = {};
 
@@ -100,6 +101,7 @@ public:
 	Sect&		r_section		( const shared_str& S	)const;
 	bool		line_exist		( const char* S, const char* L )const;
 	bool		line_exist		( const shared_str& S, const shared_str& L )const;
+	u32			DuplicateLineCount( const char* S, const char* L )const;
 	u32			line_count		( const char* S			)const;
 	u32			line_count		( const shared_str& S	)const;
 	u32			section_count	( )const;

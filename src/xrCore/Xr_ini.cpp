@@ -516,6 +516,26 @@ bool CInifile::line_exist( const char* S, const char* L )const
 	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);
 }
 
+u32 CInifile::DuplicateLineCount(const char* S, const char* L) const
+{
+	if (S == nullptr || L == nullptr)
+	{
+		return 0;
+	}
+
+	xr_string Section = S;
+	xr_strlwr(Section.data());
+
+	const auto SectionIt = DuplicateLines.find(Section);
+	if (SectionIt == DuplicateLines.end())
+	{
+		return 0;
+	}
+
+	const auto LineIt = SectionIt->second.find(xr_string(L));
+	return LineIt != SectionIt->second.end() ? LineIt->second : 0;
+}
+
 u32	CInifile::line_count(const char* Sname)const
 {
 	Sect&	S = r_section(Sname);
@@ -1448,6 +1468,16 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 				Item I;
 				I.first = (name[0] ? name : nullptr);
 				I.second = bIsDelete ? DLTX_DELETE : (LTXHelpStr2[0] ? LTXHelpStr2 : nullptr);
+
+				if (*I.first && I.first.c_str()[0] != '<' && I.first.c_str()[0] != '>' && Current != nullptr && bIsCurrentSectionOverride == bOverridesOnly)
+				{
+					const auto Existing = std::lower_bound(Current->Data.begin(), Current->Data.end(), *I.first, item_pred);
+					if (Existing != Current->Data.end() && Existing->first.equal(I.first))
+					{
+						u32& Count = DuplicateLines[Current->Name.c_str()][I.first.c_str()];
+						Count = Count == 0 ? 2 : Count + 1;
+					}
+				}
 
 				if (*I.first || *I.second)
 				{
