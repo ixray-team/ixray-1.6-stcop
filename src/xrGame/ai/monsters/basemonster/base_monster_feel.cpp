@@ -7,9 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-#include "ai/ExtendedEntityesLogic/EntryPoint.h"
-#include "ai/ExtendedEntityesLogic/CoreComponent/TExtendedEntityesLogic.h"
-#include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "pch_script.h"
 #include "base_monster.h"
 #include "../../../Actor.h"
@@ -39,12 +37,9 @@ void CBaseMonster::NoticeActorLight(CActor& Player, const Fvector& Point, bool R
 		return;
 	}
 
-	if (CELSharedSettings::IsEnabled())
+	if (ExtendedEntityes::IsEnabled())
 	{
-		if (TExtendedEntityesLogic* Component = GetComponent<TExtendedEntityesLogic>())
-		{
-			Component->NoticeActorLight(Point);
-		}
+		ExtendedEntityes::NoticeActorLight(*this, Point);
 		return;
 	}
 

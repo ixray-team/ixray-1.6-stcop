@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "ai/ExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "monster_enemy_manager.h"
 #include "basemonster/base_monster.h"
 #include "../ai_monsters_misc.h"

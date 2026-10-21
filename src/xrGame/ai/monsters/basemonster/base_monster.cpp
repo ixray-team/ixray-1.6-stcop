@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "ai/ExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "base_monster.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../Hit.h"

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ActorLightPerception.h"
-#include "ai/ExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "Actor.h"
 #include "Creature.h"
 #include "Torch.h"
@@ -232,7 +232,7 @@ void ActorLightPerception::Update(CActor& Player, CCreature& Observer)
 		return;
 	}
 
-	if (CBaseMonster* Monster = Observer.cast_base_monster(); Monster && CELSharedSettings::IsEnabled())
+	if (CBaseMonster* Monster = Observer.cast_base_monster(); Monster && ExtendedEntityes::IsEnabled())
 	{
 		// Extended monsters receive only an interest point, without acoustic callbacks or enemy evidence.
 		Monster->NoticeActorLight(Player, SourcePosition, false);

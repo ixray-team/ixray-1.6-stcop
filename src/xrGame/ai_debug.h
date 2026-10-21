@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "FFxGameHostAPI.h"
 
 #ifdef DEBUG_DRAW
 	enum : u32 
@@ -51,5 +52,5 @@
 		aiUseSmartCovers			  = 1 << 30,
 		aiUseSmartCoversAnimationSlot = 1ULL << 31ULL,
 	};
-	extern Flags64 psAI_Flags;
+	extern FFX_GAME_HOST_API Flags64 psAI_Flags;
 #endif

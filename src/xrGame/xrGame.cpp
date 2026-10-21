@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "FFxExtendedEntityesModule.h"
 #include "DynamicWallmarkZone.h"
 #include "object_factory.h"
 #include "../../xrUI/xrUIXmlParser.h"
@@ -123,6 +124,8 @@ extern "C"
 	{
 		AllEditors_Shutdown();
 		g_imgui_editor_request_manager.requests.wait();
+		xr_delete(g_object_factory);
+		FFxExtendedEntityesShutdown();
 		luabind::allocator = nullptr;
 		xr_delete(pGameGlobals);
 	}

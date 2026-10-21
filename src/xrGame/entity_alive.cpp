@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "entity_alive.h"
-#include "ai/ExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "InventoryOwner.h"
 #include "Inventory.h"
 #include "../xrPhysics/PhysicsShell.h"

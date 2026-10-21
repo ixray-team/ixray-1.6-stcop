@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
-#include "../../xrGame/ai/ExtendedEntityesLogic/Debug/DebugCommands.h"
+#include "../../FFxExtendedEntityesLogic/Debug/DebugCommands.h"
 
 bool UseWeaponRainDrops = true;
 

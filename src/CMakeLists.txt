@@ -33,6 +33,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 
     if(IXR_TEST_CI)
         add_subdirectory("xrGame")
+        add_subdirectory("FFxExtendedEntityesLogic")
     endif()
 endif()
 
@@ -44,6 +45,7 @@ endif()
 
 if(NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
     add_subdirectory("xrPlay")
+    add_dependencies(xrEngine FFxExtendedEntityesLogic)
 endif()
 
 # Move libraries
@@ -59,6 +61,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 
     if(IXR_TEST_CI)
         set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
+        set_target_properties(FFxExtendedEntityesLogic PROPERTIES ${IXRAY_FOLDER_GAME})
     endif()
     
     if(IXRAY_MP)

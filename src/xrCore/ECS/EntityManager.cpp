@@ -31,3 +31,8 @@ void CECSManager::DestroyAllForOwner(IECSOwner* Owner)
 		Storage->Destroy(Owner);
 	}
 }
+CECSManager::ECSComponentTypeID CECSManager::GenerateComponentTypeID()
+{
+	static std::atomic<ECSComponentTypeID> LastID = 0;
+	return LastID++;
+}

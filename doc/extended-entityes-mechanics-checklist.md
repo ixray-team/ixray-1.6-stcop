@@ -10,7 +10,7 @@
 - **Сверить** — подробный перенос пока не доказан. Нельзя заменять этот статус на «Код» по одному имени класса.
 - `[ ]` в сценариях — открытая игровая приёмка. Закрывать только с результатом, секциями существ, сценой и режимом команд. Статическую правку не считать игровым успехом.
 
-Все пути C++ ниже относительны `src/xrGame/ai/ExtendedEntityesLogic/`, кроме явно помеченных штатных файлов. При исправлении обновлять строку механики, связанные дефекты и сценарии; сохранять причину изменения. Новые регрессии добавлять сюда, а не терять в журнале беседы.
+Все пути C++ ниже относительны `src/FFxExtendedEntityesLogic/`, кроме явно помеченных штатных файлов. При исправлении обновлять строку механики, связанные дефекты и сценарии; сохранять причину изменения. Новые регрессии добавлять сюда, а не терять в журнале беседы.
 
 ## Источники и приоритет требований
 
@@ -213,12 +213,12 @@ D03/D04/D06/D07/D08 — вывод о риске из исполнения, не
 
 ### Быстрые переходы к основным местам сверки
 
-- [Общие наблюдения, зрение, контакт, приём сообщений](../src/xrGame/ai/ExtendedEntityesLogic/CoreComponent/CELComponentBase.cpp).
-- [Слуховые накопители и сроки реакции](../src/xrGame/ai/ExtendedEntityesLogic/Perceptions/CELSharedHearing.cpp), [сарафан](../src/xrGame/ai/ExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.cpp).
-- [Выбор действия Ground](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/CELGroundAttackBase.cpp), [наземный поиск](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/Behaviors/CELGroundSearchBehavior.cpp).
-- [Выбор действия Flying](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/CELFlyingAttackBase.cpp), [фазы и цель налёта](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingAttackBehavior.cpp).
-- [Контакт и нанесение урона](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/CELFlyingAttack.cpp), [фактическое движение](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/CELFlyingMovement.cpp).
-- [Воздушная подготовка и принятие маршрута](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/Behaviors/CELFlyingBehaviorBase.cpp), [публикация состояния летуна в debug](../src/xrGame/ai/ExtendedEntityesLogic/EntityesCategory/Flying/CELFlying.cpp).
+- [Общие наблюдения, зрение, контакт, приём сообщений](../src/FFxExtendedEntityesLogic/CoreComponent/CELComponentBase.cpp).
+- [Слуховые накопители и сроки реакции](../src/FFxExtendedEntityesLogic/Perceptions/CELSharedHearing.cpp), [сарафан](../src/FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.cpp).
+- [Выбор действия Ground](../src/FFxExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/CELGroundAttackBase.cpp), [наземный поиск](../src/FFxExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/Behaviors/CELGroundSearchBehavior.cpp).
+- [Выбор действия Flying](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/CELFlyingAttackBase.cpp), [фазы и цель налёта](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingAttackBehavior.cpp).
+- [Контакт и нанесение урона](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/CELFlyingAttack.cpp), [фактическое движение](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/CELFlyingMovement.cpp).
+- [Воздушная подготовка и принятие маршрута](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/Behaviors/CELFlyingBehaviorBase.cpp), [публикация состояния летуна в debug](../src/FFxExtendedEntityesLogic/EntityesCategory/Flying/CELFlying.cpp).
 
 ## Игровая приёмка
 

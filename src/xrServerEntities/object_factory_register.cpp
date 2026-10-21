@@ -16,7 +16,7 @@
 #include "xrServer_Objects_ALife_All.h"
 #include "xrServer_Objects_Alife_Smartcovers.h"
 #include "clsid_game.h"
-#include "../xrGame/ai/ExtendedEntityesLogic/CoreComponent/CELNativeRegistration.h"
+#include "../FFxExtendedEntityesLogic/CoreComponent/CELNativeRegistration.h"
 
 // client entities includes
 #ifndef NO_XR_GAME

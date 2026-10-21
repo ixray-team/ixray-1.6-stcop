@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "FFxGameHostAPI.h"
 
 class CGameGraph;
 class CGameLevelCrossTable;
@@ -78,6 +79,6 @@ public:
 
 IC	CAI_Space	&ai	();
 
-extern CAI_Space *g_ai_space;
+extern FFX_GAME_HOST_API CAI_Space *g_ai_space;
 
 #include "ai_space_inline.h"

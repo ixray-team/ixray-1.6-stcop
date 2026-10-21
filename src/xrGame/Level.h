@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FFxGameHostAPI.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrNetServer/NET_Client.h"
@@ -58,7 +59,7 @@ class CUIWorldSpaceManager;
 #endif
 
 
-extern float g_fov;
+extern FFX_GAME_HOST_API float g_fov;
 extern float g_base_fov;
 
 const int maxRP = 64;

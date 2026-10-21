@@ -1,4 +1,5 @@
 #pragma once
+#include "FFxGameHostAPI.h"
 #include "../../xrUI/ui_defs.h"
 struct LevelInspector final
 {
@@ -364,9 +365,9 @@ struct LevelInspector final
 
 	ICF void append_obb(const Fobb& obb, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
-		extern Fvector obb_vertices[8];
-		extern lindex obb_lindices[12];
-		extern tindex obb_tindices[12];
+		extern FFX_GAME_HOST_DATA_IMPORT Fvector obb_vertices[8];
+		extern FFX_GAME_HOST_DATA_IMPORT lindex obb_lindices[12];
+		extern FFX_GAME_HOST_DATA_IMPORT tindex obb_tindices[12];
 
 		swap_color_channels(lcolor);
 		swap_color_channels(tcolor);
@@ -413,9 +414,9 @@ struct LevelInspector final
 
 	ICF void append_ellipse(const Fmatrix& matrix, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
-		extern Fvector sphere_vertices[114];
-		extern lindex sphere_lindices[48];
-		extern tindex sphere_tindices[224];
+		extern FFX_GAME_HOST_DATA_IMPORT Fvector sphere_vertices[114];
+		extern FFX_GAME_HOST_DATA_IMPORT lindex sphere_lindices[48];
+		extern FFX_GAME_HOST_DATA_IMPORT tindex sphere_tindices[224];
 
 		swap_color_channels(lcolor);
 		swap_color_channels(tcolor);
@@ -478,7 +479,7 @@ struct LevelInspector final
 		append_geometry(vertices, cylinder_lindices, cylinder_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_cone(const Fcylinder& cone/*когда-то добавлю отдельный класс Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
+	ICF void append_cone(const Fcylinder& cone/*Р С”Р С•Р С–Р Т‘Р В°-РЎвЂљР С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎР‹ Р С•РЎвЂљР Т‘Р ВµР В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р В»Р В°РЎРѓРЎРѓ Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector cone_vertices[17];
 		extern lindex cone_lindices[32];

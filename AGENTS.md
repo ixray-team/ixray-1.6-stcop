@@ -16,6 +16,7 @@ C++23 X-Ray 1.6 fork. Engine internals: [docs/engine](docs/engine/README.md). St
 | `src/Layers/xrRender`, `xrRenderDX9`, `xrRenderDX10` | Shared renderer sources | Common scene, resources, blenders, and DX9/DX11 code compiled into renderer DLLs |
 | `src/Layers/xrRenderDS_R0` | `xrRender_DS0.dll` | Dedicated server (`IXRAY_MP`) |
 | `src/xrGame` | `xrGame.dll` | Level, actor, AI, ALife, weapons, `*_script.cpp` |
+| `src/FFxExtendedEntityesLogic` | `FFxExtendedEntityesLogic.dll` | Optional extended monster behavior; runtime API loaded by xrGame |
 | `src/xrScripts` | `xrScripts.dll` | LuaJIT + luabind. `ai().script_engine()` |
 | `src/xrPhysics` | `xrPhysics.dll` | ODE via `CPHWorld` / `CPHShell` |
 | `src/xrSound` | `xrSound.dll` | OpenAL audio, Ogg/Vorbis |

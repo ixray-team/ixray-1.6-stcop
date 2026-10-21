@@ -198,6 +198,12 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFraction.*")
 
 # xrGame project
 add_library(xrGame SHARED ${XGM_SRC_FILES})
+# The dynamically loaded extension links against the game host, never the reverse.
+set_target_properties(xrGame PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+if(MSVC)
+	target_compile_options(xrGame PRIVATE /GL-)
+endif()
+target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 # XREFLECT Lua bindings
 ixray_reflect_lua(xrGame xrGame PCH "StdAfx.h" SOURCES ${XGM_SRC_FILES})
@@ -207,10 +213,6 @@ if (IXRAY_UNITYBUILD)
 	set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 	set_source_files_properties(CActorAuraPostEffectsBalancer.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 
-	# Keep the extension out of vanilla unity batches and compile its sources independently.
-	set(XGM_EXTENDED_ENTITYES_SOURCES ${XGM_SRC_FILES})
-	list(FILTER XGM_EXTENDED_ENTITYES_SOURCES INCLUDE REGEX "/ai/ExtendedEntityesLogic/.*[.]cpp$")
-	set_source_files_properties(${XGM_EXTENDED_ENTITYES_SOURCES} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif()
 if(MSVC)
     target_compile_options(xrGame PRIVATE /bigobj)
@@ -269,4 +271,22 @@ source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})
 # RedImage
 if(IXRAY_MP)
 	target_link_libraries(xrGame PUBLIC RedImage::RedImage)
+endif()
+if(MSVC)
+	add_custom_command(TARGET xrGame PRE_LINK
+		COMMAND "${CMAKE_COMMAND}"
+			"-DFFX_DUMPBIN=$<TARGET_PROPERTY:xrGame,FFX_DUMPBIN>"
+			"-DFFX_OBJECT_LIST=${CMAKE_CURRENT_BINARY_DIR}/../FFxExtendedEntityesLogic/module-objects-$<CONFIG>.txt"
+			"-DFFX_HOST_OBJECT_LIST=${CMAKE_CURRENT_BINARY_DIR}/host-objects-$<CONFIG>.txt"
+			"-DFFX_EXPORTS=${CMAKE_CURRENT_BINARY_DIR}/ffx-host-$<CONFIG>.def"
+			-P "${CMAKE_SOURCE_DIR}/cmake/FFxGameHostExports.cmake"
+		COMMENT "Limit game-host exports to the symbols used by FFxExtendedEntityesLogic"
+		VERBATIM
+	)
+endif()
+
+file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/host-objects-$<CONFIG>.txt" CONTENT "$<JOIN:$<TARGET_OBJECTS:xrGame>,\n>")
+
+if(MSVC)
+	target_link_options(xrGame PRIVATE "/DEF:${CMAKE_CURRENT_BINARY_DIR}/ffx-host-$<CONFIG>.def")
 endif()

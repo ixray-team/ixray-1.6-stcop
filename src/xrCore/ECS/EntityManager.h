@@ -45,12 +45,25 @@ public:
 		return Storage.GetOwnerFromComponent(Component);
 	}
 
-private:
-	inline ECSComponentTypeID GenerateComponentTypeID()
+	template <typename T>
+	void RemoveStorage()
 	{
-		static std::atomic<ECSComponentTypeID> LastID = 0;
-		return LastID++;
+		const ECSComponentTypeID TypeID = GetComponentTypeID<T>();
+		xrSRWLockGuard Guard(RWMutex, false);
+		auto Found = ComponentStorages.find(TypeID);
+		if (Found != ComponentStorages.end())
+		{
+			Found->second->DestroyAll();
+			xr_delete(Found->second);
+			ComponentStorages.erase(Found);
+		}
+#ifdef DEBUG_DRAW
+		ECS_DrawFuncs.erase(TypeID);
+#endif
 	}
+
+private:
+	ECSComponentTypeID GenerateComponentTypeID();
 
 	template <typename T>
 	ECSComponentTypeID GetComponentTypeID()

@@ -1,4 +1,5 @@
 #pragma once
+#include "FFxGameHostAPI.h"
 
 #include "../xrEngine/Feel_Touch.h"
 #include "../xrEngine/Feel_Sound.h"
@@ -1105,7 +1106,7 @@ IC	CActorCondition	&CActor::conditions	() const{ VERIFY(m_entity_condition); ret
 extern Fvector      g_start_position;
 extern int          g_start_game_vertex_id;
 extern shared_str   g_start_position_smart;
-extern CActor*		g_actor;
-extern CActor*		g_actor_single;
+extern FFX_GAME_HOST_API CActor*		g_actor;
+extern FFX_GAME_HOST_API CActor*		g_actor_single;
 CActor*				Actor		();
 extern const float	s_fFallTime;
