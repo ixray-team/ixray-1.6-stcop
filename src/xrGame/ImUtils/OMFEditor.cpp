@@ -41,8 +41,7 @@ struct OMFData
 	{
 		int32_t section_id;
 		uint32_t section_size;
-		// dynamically allocated
-		char* data;
+		xr_vector<char> data;
 		omf_name_t name;
 	};
 
@@ -122,14 +121,7 @@ struct OMFData
 
 	void destroy()
 	{
-		for (auto& anim : data_anim.anims)
-		{
-			if (anim.data)
-			{
-				delete[] anim.data;
-				anim.data = nullptr;
-			}
-		}
+		data_anim.anims.clear();
 	}
 };
 
@@ -311,14 +303,14 @@ struct COMFFileAnimProvider : IOMFAnimDataProvider
 
 		const OMFData::AnimVector& anim = m_data->data_anim.anims[index];
 
-		if (anim.data == nullptr)
+		if (anim.data.size() < sizeof(int))
 		{
 			return 0.0f;
 		}
 
 		// key count is stored at the beginning of the anim section
 		int num_keys = 0;
-		std::memcpy(&num_keys, anim.data, sizeof(num_keys));
+		std::memcpy(&num_keys, anim.data.data(), sizeof(num_keys));
 		return static_cast<float>(num_keys) / 30.0f;
 	}
 
@@ -653,6 +645,7 @@ struct CImGuiOMFEditor : SOMFEditorUIState
 		{
 			xr_delete(omf);
 		}
+		xr_delete(temp_omf);
 	}
 
 	bool is_show_popup_boneparts_rename_has_collision{};
@@ -799,9 +792,9 @@ bool OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 		OMFEditor_ReadString(av.name, file);
 
 		uint32_t data_size = av.section_size - (av.name.size() + 1);
-		av.data = new char[data_size];
+		av.data.resize(data_size);
 
-		file.read(&av.data[0], data_size);
+		file.read(av.data.data(), data_size);
 	}
 
 	return true;
@@ -843,7 +836,7 @@ bool OMFEditor_SaveOMF_AnimData(
 		file.write(reinterpret_cast<const char*>(&anim.section_id), sizeof(anim.section_id));
 		file.write(reinterpret_cast<const char*>(&anim.section_size), sizeof(anim.section_size));
 		file.write(anim.name.c_str(), anim.name.size() + 1);
-		file.write(anim.data, (anim.section_size - (anim.name.size() + 1)));
+		file.write(anim.data.data(), (anim.section_size - (anim.name.size() + 1)));
 	}
 
 	return file.good();
@@ -1942,9 +1935,9 @@ void OMFEditor_MergeWith(
 
 					temp_id = 0;
 
-					for (const auto& anim : from.data_anim.anims)
+					for (auto& anim : from.data_anim.anims)
 					{
-						pState->omf->data_anim.anims.push_back(anim);
+						pState->omf->data_anim.anims.push_back(std::move(anim));
 
 						from.data_animparams.params[temp_id].motion_id = static_cast<decltype(OMFData::AnimParamsData::AnimParams::motion_id)>(pState->omf->data_animparams.params.size());
 						pState->omf->data_animparams.params.push_back(from.data_animparams.params[temp_id]);
@@ -3410,7 +3403,7 @@ void RenderOMFEditor_Draw_Game_Info(
 										}
 									}
 								}
-								ImGui::PopID();		
+								ImGui::PopID();
 								++i;
 							}
 						}
