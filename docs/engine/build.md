@@ -19,8 +19,9 @@ Default Windows targets (`src/CMakeLists.txt`). Compressor-only builds retain `x
 | `xrRender_R4` | `xrRender_R4.dll` | `src/Layers/xrRenderPC_R4` |
 | `xrGame` | `xrGame.dll` | `src/xrGame` |
 | `xrEngine` | `xrEngine.exe` | `src/xrPlay` |
+| `xrCrashDumpHelper` | `xrCrashDumpHelper.exe` | `src/xrCrashDumpHelper` |
 
-R1/R2 are controlled by `IXRAY_USE_R1` / `IXRAY_USE_R2`. R4, `xrGame`, and `xrPlay` are added when `IXR_TEST_CI` is true; all are skipped in compressor-only builds. `xrRHI` includes D3D9 and D3D11 backends (DXVK Native on Linux). Missing R4 triggers an R2 load attempt; if no renderer loaded, `CEngineAPI::Initialize` falls back to R1. See [rendering.md](rendering.md).
+`xrCrashDumpHelper` is Windows-only and is built with `xrPlay`. R1/R2 are controlled by `IXRAY_USE_R1` / `IXRAY_USE_R2`. R4, `xrGame`, and `xrPlay` are added when `IXR_TEST_CI` is true; all are skipped in compressor-only builds. `xrRHI` includes D3D9 and D3D11 backends (DXVK Native on Linux). Missing R4 triggers an R2 load attempt; if no renderer loaded, `CEngineAPI::Initialize` falls back to R1. See [rendering.md](rendering.md).
 
 ## Options
 
