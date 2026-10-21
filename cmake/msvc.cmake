@@ -39,7 +39,8 @@ add_compile_options("$<$<CONFIG:RELEASE>:/GF>" "$<$<CONFIG:RELWITHDEBINFO>:/GF>"
 add_compile_options("$<$<CONFIG:RELEASE>:/Oi>" "$<$<CONFIG:RELWITHDEBINFO>:/Oi>")
 add_compile_options("$<$<CONFIG:RELEASE>:/Oy>" "$<$<CONFIG:RELWITHDEBINFO>:/Oy>")
 add_compile_options("$<$<CONFIG:RELEASE>:/GT>" "$<$<CONFIG:RELWITHDEBINFO>:/GT>")
-add_compile_options("$<$<CONFIG:RELEASE>:/GL>" "$<$<CONFIG:RELWITHDEBINFO>:/GL>")
+# Object files inspected by dumpbin must opt out without conflicting /GL flags.
+add_compile_options("$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:RELWITHDEBINFO>>:$<IF:$<BOOL:$<TARGET_PROPERTY:IXRAY_DISABLE_GL>>,/GL-,/GL>>")
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ob2>")
 add_compile_options("$<$<CONFIG:RELWITHDEBINFO>:/Ot>")
 add_link_options("$<$<CONFIG:RELEASE>:/LTCG:incremental>" "$<$<CONFIG:RELWITHDEBINFO>:/LTCG:incremental>")

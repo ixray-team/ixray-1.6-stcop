@@ -24,7 +24,8 @@ target_compile_definitions(FFxExtendedEntityesLogicObjects PRIVATE
 )
 target_link_libraries(FFxExtendedEntityesLogic PRIVATE xrGame)
 if(MSVC)
-	target_compile_options(FFxExtendedEntityesLogicObjects PRIVATE /bigobj /GL-)
+	target_compile_options(FFxExtendedEntityesLogicObjects PRIVATE /bigobj)
+	set_property(TARGET FFxExtendedEntityesLogicObjects PROPERTY IXRAY_DISABLE_GL ON)
 endif()
 
 target_link_libraries(FFxExtendedEntityesLogicObjects PRIVATE xrEngineCore xrPhysics xrScripts xrUI luabind IKAN)

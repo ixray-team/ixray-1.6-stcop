@@ -201,7 +201,7 @@ add_library(xrGame SHARED ${XGM_SRC_FILES})
 # The dynamically loaded extension links against the game host, never the reverse.
 set_target_properties(xrGame PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 if(MSVC)
-	target_compile_options(xrGame PRIVATE /GL-)
+	set_property(TARGET xrGame PROPERTY IXRAY_DISABLE_GL ON)
 endif()
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
