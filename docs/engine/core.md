@@ -1,6 +1,6 @@
 # Core
 
-`Core._initialize` in stage 1 (`src/xrCore/xrCore.cpp`). `Core._destroy` in `EndPlay`. `init_counter` gates most initialization and final destruction; ECS manager and INI cache allocation occur before that guard.
+`Core._initialize` in stage 1 (`src/xrCore/xrCore.cpp`). `Core._destroy` in `EndPlay`. `init_counter` gates shared initialization and final destruction, including the ECS manager and INI cache. Nested initialization retains these owners. `CEngineAPI::Destroy` calls `ClearCachedIniFiles` after game shutdown and before unloading `xrGame`: cached polymorphic objects need their defining modules' RTTI and vtables. ALife restart uses the same cleanup. It detaches entries before deletion because INI destructors may unregister themselves. Final Core destruction clears any remaining entries before shutting down the filesystem and deletes the cache owner.
 
 Init order: `CECSManager`, INI cache, Windows COM + `Core.Params`/`LoadParams`, paths and user/computer names, `CPU::Detect`, `Memory._initialize`, `xrLogger::InitLog`, CPU/RTC initialization, `FS` = `CLocatorAPI`, `EFS`, expression manager, Discord. When filesystem initialization is requested, `FS._initialize` uses `flScanAppRoot`; `-build` / `-ebuild` add copy-out flags. There is no `CFilewatcher` startup in this branch.
 

@@ -13,6 +13,7 @@
 #include "discord/discord.h"
 #include "stack_string.h"
 #include "ECS/EntityManager.h"
+#include "IniCache.h"
 
 XRCORE_API xrCore	Core;
 XRCORE_API u32		build_id;
@@ -33,14 +34,13 @@ extern xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb, bool init_fs, const char* fs_fname)
 {
-	GECSManager = new CECSManager;
-
-	cached_ini_map = new xr_hash_map<xr_string, CInifile*>();
-
 	PROF_EVENT("xrCore::_initialize");
 	xr_strcpy					(ApplicationName,_ApplicationName);
 	if (0==init_counter) 
 	{
+		GECSManager = new CECSManager;
+		cached_ini_map = new xr_hash_map<xr_string, CInifile*>();
+
 		// Init COM so we can use CoCreateInstance
 #ifdef IXR_WINDOWS
         CoInitializeEx	(nullptr, COINIT_MULTITHREADED);
@@ -117,6 +117,8 @@ void xrCore::_destroy()
 	--init_counter;
 	if (0 == init_counter)
 	{
+		ClearCachedIniFiles();
+		xr_delete(cached_ini_map);
 		FS._destroy();
 		EFS._destroy();
 		xr_delete(xr_FS);
@@ -129,7 +131,6 @@ void xrCore::_destroy()
 			xr_free(buffer);
 			xr_delete(trained_model);
 		}
-		xr_delete(cached_ini_map);
 		Memory._destroy();
 	}
 }
