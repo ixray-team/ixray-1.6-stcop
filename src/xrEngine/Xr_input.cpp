@@ -109,6 +109,15 @@ void CInput::MouseReleased(int button)
 
 void CInput::KeyboardButtonUpdate(SDL_Scancode scancode, bool IsPressed)
 {
+#if !defined(IXR_WINDOWS)
+	// ISO keyboards report the key that carries `~` as NONUSBACKSLASH, while the
+	// "console" action is bound to GRAVE. Deliver the same scancode for both so
+	// the console opens on every layout.
+	if (scancode == SDL_SCANCODE_NONUSBACKSLASH)
+	{
+		scancode = SDL_SCANCODE_GRAVE;
+	}
+#endif
 	// Same reasoning as the mouse path: dispatch the edge immediately, keep the polled
 	// state for IR_OnKeyboardHold. A tap shorter than one frame must not be dropped.
 #if defined(IXR_APPLE_SERIES)
