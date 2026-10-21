@@ -122,6 +122,26 @@ struct SHudTurnPivot
 	float TiltVelocity = 0.f;
 };
 
+struct SHudShotFingers
+{
+	bool Pending = false;
+	bool Active = false;
+	bool Stopping = false;
+	bool Full = false;
+	float Weight = 0.f;
+	float SinceShot = 0.f;
+	u32 BurstShots = 0;
+	float Time = 0.f;
+	float First = 0.f;
+	float Second = 0.f;
+	float Speed = 1.f;
+	float Fade = 1.f;
+	MotionID Motion;
+	xr_vector<u16> Bones;
+	xr_vector<Fquaternion> Reference;
+	xr_vector<Fvector> ReferencePos;
+};
+
 struct SHudHandJump
 {
 	u32 StatePrev = 0;
@@ -988,6 +1008,9 @@ public:
 
 	void			UpdateWeaponOffset(u32 delta);
 	void			OnShotAnimation		(const attachable_hud_item* item);
+	void			UpdateShotFingers	(bool BeforeIk);
+	void			ApplyShotFingers	();
+	void			StartShotFingers	(attachable_hud_item* item);
 	void			OnHudMotionStarted	(const shared_str& motion);
 
 	IKinematics*	m_legs_model;
@@ -1166,6 +1189,7 @@ private:
 	SHudVectorSpring					LeftSway;
 	SHudVectorSpring					RightSway;
 	SHudTurnPivot						TurnPivot;
+	SHudShotFingers						ShotFingers;
 	SHudHandJump						HandJump;
 	SHudLeftFollow						LeftFollow;
 	Fvector								TurnOffset = zero_vel;
