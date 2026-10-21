@@ -1188,6 +1188,7 @@ void attachable_hud_item::LoadRigParams()
 	if (IKinematicsAnimated* animated = m_model->dcast_PKinematicsAnimated())
 	{
 		animated->LL_SetInertialization(CCameraRig::HudInertialization());
+		animated->LL_SetSmoothBlend(CCameraRig::Enabled());
 
 		const char* exclude = pSettings->read_if_exists<str_c>(sect_name, "inertialization_exclude_bones", pSettings->read_if_exists<str_c>("camera_rig", "hud_inertialization_exclude_bones", nullptr));
 		if (exclude != nullptr)
@@ -2259,6 +2260,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 	if (m_model)
 	{
 		m_model->LL_SetInertialization(CCameraRig::HudInertialization());
+		m_model->LL_SetSmoothBlend(CCameraRig::Enabled());
 	}
 
 	if (m_model)
@@ -3131,10 +3133,10 @@ static float hud_motion_amount(IKinematicsAnimated* ka, MotionID motion)
 		const CBlend* B = ka->LL_PartBlend(0, i);
 		if (B != nullptr && B->channel == 0)
 		{
-			total += B->blendAmount;
+			total += B->Weight();
 			if (B->motionID == motion)
 			{
-				amount += B->blendAmount;
+				amount += B->Weight();
 			}
 		}
 	}
@@ -3292,15 +3294,15 @@ static float hud_motion_settle(IKinematicsAnimated* ka, const player_hud_motion_
 
 		if (B->blend_state() == CBlend::eFalloff)
 		{
-			settled += B->blendAmount;
+			settled += B->Weight();
 		}
 		else if (ahead)
 		{
 			const float speed = std::abs(B->speed) > EPS ? std::abs(B->speed) : 1.f;
-			settled += B->blendAmount * (1.f - hud_mark_ramp(std::max(B->timeTotal - B->timeCurrent, 0.f) / speed, settle_time));
+			settled += B->Weight() * (1.f - hud_mark_ramp(std::max(B->timeTotal - B->timeCurrent, 0.f) / speed, settle_time));
 		}
 
-		total += B->blendAmount;
+		total += B->Weight();
 	}
 
 	return total > 0.f ? std::clamp(settled / total, 0.f, 1.f) : 0.f;
@@ -3333,10 +3335,10 @@ static SHudFingerHold hud_finger_hold(IKinematicsAnimated* ka, const shared_str&
 			continue;
 		}
 
-		total += B->blendAmount;
+		total += B->Weight();
 
 		CMotionDef* def = ka->LL_GetMotionDef(B->motionID);
-		if (def == nullptr || def->marks.empty() || B->blendAmount <= best)
+		if (def == nullptr || def->marks.empty() || B->Weight() <= best)
 		{
 			continue;
 		}
@@ -3349,7 +3351,7 @@ static SHudFingerHold hud_finger_hold(IKinematicsAnimated* ka, const shared_str&
 			continue;
 		}
 
-		best = B->blendAmount;
+		best = B->Weight();
 		result.Motion = B->motionID;
 		const float speed = def->Speed();
 		const motion_marks::interval* interval = span.Active != nullptr ? span.Active : span.First;
@@ -3523,8 +3525,8 @@ bool player_hud::RetargetHandTarget(u16 ancor, u16 wrist, MotionID motion, u8 ch
 		}
 
 		const Fquaternion q = Fquaternion().set(sample);
-		total += B->blendAmount;
-		const float share = B->blendAmount / total;
+		total += B->Weight();
+		const float share = B->Weight() / total;
 		if (share >= 1.f)
 		{
 			rotation = q;
@@ -6488,6 +6490,7 @@ void player_hud::ReloadRigParams()
 	if (m_model != nullptr)
 	{
 		m_model->LL_SetInertialization(CCameraRig::HudInertialization());
+		m_model->LL_SetSmoothBlend(CCameraRig::Enabled());
 	}
 
 	for (attachable_hud_item* item : m_pool)

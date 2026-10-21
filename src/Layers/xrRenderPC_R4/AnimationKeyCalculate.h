@@ -302,8 +302,8 @@ ICF void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_B
 		break;
 	case 2:
 		{
-			float w0 = BA[0]->blendAmount;
-			float w1 = BA[1]->blendAmount;
+			float w0 = BA[0]->Weight();
+			float w1 = BA[1]->Weight();
 			float ws = w0+w1;
 			float w;
 			if (fis_zero(ws))	w = 0;
@@ -333,7 +333,7 @@ ICF void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_B
 			float   total 	= 0;
 			ConsistantKey		S[MAX_BLENDED];
 			for (int i=0; i<b_count; i++)					
-				S[i] = { R + i, BA[i]->blendAmount };
+				S[i] = { R + i, BA[i]->Weight() };
 
 			std::sort	(S,S+b_count);
 			CKey		tmp;

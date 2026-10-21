@@ -110,6 +110,7 @@ public:
 	virtual void						LL_SetInertialization(float time) = 0;
 	virtual void						LL_SetInertializationBone(u16 bone, bool enabled) = 0;
 	virtual void						LL_ResetInertialization() = 0;
+	virtual void						LL_SetSmoothBlend(bool enabled) = 0;
 	virtual void						LL_InertializePart(u16 part, float time, u8 channel) = 0;
 	virtual bool						LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result) = 0;
 	virtual bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) = 0;
