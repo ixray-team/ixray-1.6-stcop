@@ -18,7 +18,6 @@ IC	void CScriptTokenList::add		(const char* name, int id)
 {
 	VERIFY					((token(name) == m_token_list.end()) && (token(id) == m_token_list.end()));
 	xr_token				temp;
-	//! memory leak is here
 	temp.name				= xr_strdup(name);
 	temp.id					= id;
 	m_token_list.pop_back	();
@@ -31,11 +30,20 @@ IC	void CScriptTokenList::remove	(const char* name)
 {
 	iterator				I = token(name);
 	VERIFY					(I != m_token_list.end());
+	if (I == m_token_list.end())
+	{
+		return;
+	}
+	xr_free(I->name);
 	m_token_list.erase		(I);
 }
 
 IC	void CScriptTokenList::clear	()
 {
+	for (xr_token& Token : m_token_list)
+	{
+		xr_free(Token.name);
+	}
 	m_token_list.clear		();
 	xr_token				temp;
 	ZeroMemory				(&temp,sizeof(temp));
