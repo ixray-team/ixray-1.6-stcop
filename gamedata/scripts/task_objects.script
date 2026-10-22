@@ -473,14 +473,14 @@ function CGeneralTask:give_task(community)
 
 	xr_logic.pick_section_from_condlist(db.actor, db.actor, self.on_init)
 
-	if self.current_target ~= nil then
+	if self.quest_data.current_target ~= nil then
 		t:set_map_location(self.spot)
-		t:set_map_object_id(self.current_target)
+		t:set_map_object_id(self.quest_data.current_target)
 
 		if(self.storyline) then
-			level.map_add_object_spot(self.current_target, "ui_storyline_task_blink", "")
+			level.map_add_object_spot(self.quest_data.current_target, "ui_storyline_task_blink", "")
 		else
-			level.map_add_object_spot(self.current_target, "ui_secondary_task_blink", "")
+			level.map_add_object_spot(self.quest_data.current_target, "ui_secondary_task_blink", "")
 		end
 	end
 	local time = 0
