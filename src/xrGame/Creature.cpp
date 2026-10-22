@@ -558,7 +558,7 @@ void CCreature::eye_pp_s2()
 
 	Device.SecondaryTasks.run([=]
 	{
-		PROF_THREAD("feel_vision_update parallel");
+		PROF_EVENT("feel_vision_update parallel");
 		feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold()); 
 	});
 

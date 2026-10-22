@@ -3329,7 +3329,8 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 	CSE_Abstract* e_parent = game->get_entity_from_eid(id_parent);
 	CSE_Abstract* e_entity = game->get_entity_from_eid(id_entity);
 
-	VERIFY2(e_entity, make_string<const char*>("entity not found. parent_id = [%d], entity_id = [%d], frame = [%d]", id_parent, id_entity, Device.dwFrame));
+	// A client object can outlive its server entity for a few frames (the destroy event waits in the event budget):
+	// not a bug, the reject is dropped
 	if (!e_entity)
 	{
 		Msg("! ERROR on rejecting: entity not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent, id_entity, Device.dwFrame);
@@ -3344,7 +3345,6 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
 		return false;
 	}
 
-	VERIFY2(e_parent, make_string<const char*>("parent not found. parent_id = [%d], entity_id = [%d], frame = [%d]", id_parent, id_entity, Device.dwFrame));
 	if (!e_parent)
 	{
 		Msg("! ERROR on rejecting: parent not found. parent_id = [%d], entity_id = [%d], frame = [%d].", id_parent, id_entity, Device.dwFrame);

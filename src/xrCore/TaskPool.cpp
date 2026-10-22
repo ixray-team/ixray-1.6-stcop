@@ -299,8 +299,10 @@ namespace
 {
 	CTaskPool& GetPool()
 	{
-		static CTaskPool Pool;
-		return Pool;
+		// Never destroyed: on an exit() without xrCore::_destroy the static destructors run while workers may still
+		// finish a task under its lock
+		static CTaskPool* Pool = new CTaskPool();
+		return *Pool;
 	}
 }
 

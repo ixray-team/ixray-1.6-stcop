@@ -1711,7 +1711,6 @@ void LevelInspector::DrawGameGraph()
 		u16 v_cnt = graph.header().vertex_count();
 		xr_parallel_for(u16(0), v_cnt, [&](u16 global_vid)
 		{
-			PROF_START_THREAD("build_graph_nodes");
 			PROF_EVENT("build_graph_points_and_links");
 			const IGameGraph::CVertex* global_vertex = graph.vertex(global_vid);
 

@@ -541,7 +541,7 @@ void AllEditors_SendRequest(const SRequestData& req)
 
 void AllEditors_ExecuteRequest(const SRequestData& req)
 {
-	PROF_START_THREAD("AllEditors_SendRequest");
+	PROF_EVENT("AllEditors_ExecuteRequest");
 	eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
 
 	switch (et)
@@ -573,7 +573,6 @@ void AllEditors_ExecuteRequest(const SRequestData& req)
 		break;
 	}
 	}
-	PROF_STOP_THREAD();
 }
 
 void AllEditors_OnPressed(int key)
