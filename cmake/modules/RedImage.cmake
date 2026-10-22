@@ -18,19 +18,24 @@ else()
         set(BUILD_SQUISH_WITH_SSE2 OFF CACHE BOOL "Build squish with SSE2" FORCE)
     endif()
 
+    # A CI cache can hold a RedImage checkout older than this pin, and FetchContent
+    # never updates a hash-pinned checkout, so configure dies with "Requested git ref
+    # ... is not present locally". network.cmake appends UPDATE_DISCONNECTED TRUE to
+    # every declaration, hence the global flag is lifted just for this dependency.
+    set(_ixr_fc_updates "${FETCHCONTENT_UPDATES_DISCONNECTED}")
+    set(FETCHCONTENT_UPDATES_DISCONNECTED OFF)
+
     FetchContent_Declare(
         redimage
         GIT_REPOSITORY https://github.com/RedPandaProjects/RedImage.git
         # Pinned: master previously contained x86-only ISPC targets and a missing
         # Vector.inl include, both fixed upstream in this merge commit.
         GIT_TAG 9999e29e0e1196a408220636d87a273414b887e0
-        # The commit is pinned, so CMake marks the checkout as never needing an update.
-        # CI restores build/_deps from cache, and a cached clone taken before the pin
-        # fails with "Requested git ref ... is not present locally".
-        UPDATE_DISCONNECTED FALSE
         ${REDIMAGE_ARGS}
     )
     FetchContent_MakeAvailable(redimage)
+
+    set(FETCHCONTENT_UPDATES_DISCONNECTED "${_ixr_fc_updates}")
 
     if(NOT TARGET RedImage::RedImage)
         add_library(RedImage::RedImage INTERFACE IMPORTED)
