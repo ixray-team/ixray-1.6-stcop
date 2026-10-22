@@ -181,6 +181,7 @@ unsigned __stdcall thread_entry(void* _params)
 	xr_delete(startup);
 
 	_initialize_cpu_thread();
+	TaskPool::ApplyThreadRole(EThreadRole::System);
 
 	// call
 	entry(arglist);
@@ -198,6 +199,7 @@ void* pthread_entry(void* params)
 	xr_delete(startup);
 
 	_initialize_cpu_thread();
+	TaskPool::ApplyThreadRole(EThreadRole::System);
 
 	// call
 	entry(arglist);

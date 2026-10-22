@@ -192,7 +192,6 @@ void CIniReadAhead::Start(xr_vector<xr_string>&& Paths)
 				EState Expected = EState::Queued;
 				if (Item.State.compare_exchange_strong(Expected, EState::Parsing))
 				{
-					xrTaskBlockingScope Blocking;
 					Parse(Item);
 				}
 			}
@@ -240,7 +239,6 @@ bool CIniReadAhead::Take(const char* Path, CInifile::Root& Target)
 	}
 	else if (Expected == EState::Parsing)
 	{
-		xrTaskBlockingScope Blocking;
 		Item.State.wait(EState::Parsing, std::memory_order_acquire);
 	}
 

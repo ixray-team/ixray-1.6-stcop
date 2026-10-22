@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-XRayWorkerThread::XRayWorkerThread(Callback InCallback, const char* TN)
-	: Function(std::move(InCallback)), ThreadName(TN)
+XRayWorkerThread::XRayWorkerThread(Callback InCallback, const char* TN, EThreadRole InRole)
+	: Function(std::move(InCallback)), ThreadName(TN), Role(InRole)
 {
 	ThreadHandle = thread_spawn(&XRayWorkerThread::ThreadProc, ThreadName.c_str(), 0, this);
 }
@@ -14,14 +14,14 @@ XRayWorkerThread::~XRayWorkerThread()
 void XRayWorkerThread::Run()
 {
 	Counter.fetch_add(1, std::memory_order_release);
-	Counter.notify_one();
+	Counter.notify_all();
 }
 
 void XRayWorkerThread::Wait()
 {
-	while (Counter.load(std::memory_order_acquire) > 0)
+	for (u32 Count = Counter.load(std::memory_order_acquire); Count > 0; Count = Counter.load(std::memory_order_acquire))
 	{
-		std::this_thread::yield();
+		Counter.wait(Count, std::memory_order_acquire);
 	}
 }
 
@@ -44,6 +44,7 @@ void XRayWorkerThread::Stop()
 void XRayWorkerThread::ThreadProc(void* InThis)
 {
 	XRayWorkerThread* This = (XRayWorkerThread*)InThis;
+	TaskPool::ApplyThreadRole(This->Role);
 	PROF_START_THREAD(This->ThreadName.c_str());
 
 	while (true)
@@ -61,6 +62,7 @@ void XRayWorkerThread::ThreadProc(void* InThis)
 		This->Function();
 
 		This->Counter.fetch_sub(1, std::memory_order_release);
+		This->Counter.notify_all();
 	}
 
 	PROF_STOP_THREAD();

@@ -86,7 +86,6 @@ void CRender::level_Load(IReader* fs)
 				return;
 			}
 
-			xrTaskBlockingScope Blocking;
 			Shaders[i] = dxRenderDeviceRender::Instance().Resources->Create(Names[i].first.c_str(), Names[i].second.c_str());
 		});
 	}

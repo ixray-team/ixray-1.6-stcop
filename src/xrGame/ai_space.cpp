@@ -40,9 +40,8 @@ namespace
 		{
 			Drop();
 			LevelName = Name;
-			Thread = std::thread([this]()
+			Task.run([this]()
 			{
-				PROF_THREAD("AI Level Preload");
 				PROF_EVENT("AI Level Preload");
 				Graph.reset(new CLevelGraph());
 
@@ -76,10 +75,7 @@ namespace
 	private:
 		void Wait()
 		{
-			if (Thread.joinable())
-			{
-				Thread.join();
-			}
+			Task.wait();
 		}
 
 		void Reset()
@@ -89,7 +85,7 @@ namespace
 			LevelName = nullptr;
 		}
 
-		std::thread Thread;
+		xr_task_group Task;
 		shared_str LevelName;
 		xr_unique_ptr<CLevelGraph> Graph;
 		xr_unique_ptr<CCoverManager> Covers;

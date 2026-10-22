@@ -75,6 +75,8 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 
 		rtc_initialize		();
 
+		TaskPool::Initialize();
+
 		xr_FS				= new CLocatorAPI	();
 
 		xr_EFS				= new EFS_Utils		();
@@ -125,6 +127,7 @@ void xrCore::_destroy()
 		g_Discord.Shutdown();
 
 		xr_delete(g_IniReadAhead);
+		TaskPool::Shutdown();
 		ClearCachedIniFiles();
 		xr_delete(cached_ini_map);
 		CInifile::ClearMemoryCache();

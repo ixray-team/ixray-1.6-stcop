@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <ppl.h>
 #include "Build.h"
 #include "xrLC_GlobalData.h"
 #include "../Mesh/xrFace.h"
