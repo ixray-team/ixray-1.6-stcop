@@ -2450,7 +2450,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 	}
 	Fvector box_c, box_hs;
 	pKinematics->dcast_RenderVisual()->getVisData().box.get_CD(box_c, box_hs);
-	float dist_to_cam_sqr = Device.vCameraPosition.distance_to_sqr(xform.c);
+	float dist_to_cam_sqr = hud_mode ? xform.c.square_magnitude() : Device.vCameraPosition.distance_to_sqr(xform.c);
 	if (hud_mode || dist_to_cam_sqr <= 2500.f)
 	{
 		Fmatrix obb_xform, bone_xform;
@@ -2695,6 +2695,10 @@ void LevelInspector::DrawHud()
 		{
 			firedeps fd;
 			hi->setup_firedeps(fd);
+
+			fd.vLastFP = hi->m_parent->ToHud(fd.vLastFP);
+			fd.vLastFP2 = hi->m_parent->ToHud(fd.vLastFP2);
+			fd.vLastSP = hi->m_parent->ToHud(fd.vLastSP);
 
 			Fobb obb; obb.identity();
 			obb.m_rotate.i.set(hi->m_item_transform.i);

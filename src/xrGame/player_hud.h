@@ -688,7 +688,7 @@ public:
 	static void		RequestAllHands		();
 	void			FinishDefaultLoad	(bool IsEarly = false);
 	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
-	void			update				(const Fmatrix& trans);
+	void			update				(const Fmatrix& world_cam_trans);
 	void			render_hud			();	
 	void			render_item_ui		();
 	bool			render_item_ui_query();
@@ -725,6 +725,10 @@ public:
 	bool			GetHandsVisible(){return m_bhands_visible;};
 
 	Fmatrix&		GetTransform(){return m_transform;};
+
+	Fvector			ToWorld(const Fvector& Position) const { return Fvector().add(Position, CameraOrigin); }
+	Fmatrix			ToWorld(const Fmatrix& Transform) const { Fmatrix Result = Transform; Result.c.add(CameraOrigin); return Result; }
+	Fvector			ToHud(const Fvector& Position) const { return Fvector().sub(Position, CameraOrigin); }
 
 	void			UpdateWeaponOffset(u32 delta);
 	void			OnShotAnimation		(const attachable_hud_item* item);
@@ -775,6 +779,7 @@ private:
 
 	Fmatrix								m_transform;
 	Fmatrix								m_transformL;
+	Fvector								CameraOrigin = {};
 
 	IKinematicsAnimated*				m_model = nullptr;
 	xr_vector<u16>						m_ancors;

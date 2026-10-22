@@ -9,6 +9,40 @@
 #include "../../xrEngine/xr_efflensflare.h"
 #include "r__types.h"
 
+namespace
+{
+	class CameraCenteredView
+	{
+	public:
+		CameraCenteredView()
+		{
+			SavedView = RCache.xforms.m_v;
+			SavedViewOld = RCache.xforms.m_v_old;
+
+			Fmatrix View = SavedView;
+			View.c.set(0.f, 0.f, 0.f);
+			Fmatrix ViewOld = SavedViewOld;
+			ViewOld.c.set(0.f, 0.f, 0.f);
+
+			RCache.set_xform_view(View);
+			RCache.set_xform_view_old(ViewOld);
+		}
+
+		~CameraCenteredView()
+		{
+			RCache.set_xform_view(SavedView);
+			RCache.set_xform_view_old(SavedViewOld);
+		}
+
+		CameraCenteredView(const CameraCenteredView&) = delete;
+		CameraCenteredView& operator=(const CameraCenteredView&) = delete;
+
+	private:
+		Fmatrix SavedView;
+		Fmatrix SavedViewOld;
+	};
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // half box def
@@ -222,7 +256,6 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	Fmatrix mSkyOld = mSky;
 
 	mSky.rotateY(env.CurrentEnv->sky_rotation);
-	mSky.translate_over(Device.vCameraPosition);
 
 	u32 i_offset, v_offset;
 	u32 C = color_rgba(iFloor(env.CurrentEnv->sky_color.x * 255.f), iFloor(env.CurrentEnv->sky_color.y * 255.f), iFloor(env.CurrentEnv->sky_color.z * 255.f), iFloor(env.CurrentEnv->weight * 255.f));
@@ -243,17 +276,22 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	RCache.Vertex.Unlock(12, sh_2geom->vb_stride);
 
 	// Render
-	RCache.set_xform_world(mSky);
+	{
+		CameraCenteredView View;
 
-	RCache.set_xform_world_old(mSkyOld);
+		RCache.set_xform_world(mSky);
 
-	RCache.set_Geometry(sh_2geom);
-	RCache.set_Shader(sh_2sky);
+		RCache.set_xform_world_old(mSkyOld);
 
-	RCache.set_Textures(&mixRen.sky_r_textures_env);
-	RCache.set_Textures(&mixRen.sky_r_textures);
+		RCache.set_Geometry(sh_2geom);
+		RCache.set_Shader(sh_2sky);
 
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
+		RCache.set_Textures(&mixRen.sky_r_textures_env);
+		RCache.set_Textures(&mixRen.sky_r_textures);
+
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
+	}
+
 	env.eff_LensFlare->Render(true, false, false);
 
 	// Sun
@@ -269,7 +307,6 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 	mScale.scale(10, 0.4f, 10);
 	mXFORM.rotateY(env.CurrentEnv->sky_rotation);
 	mXFORM.mulB_43(mScale);
-	mXFORM.translate_over(Device.vCameraPosition);
 
 	Fvector wd0, wd1;
 	Fvector4 wind_dir;
@@ -293,6 +330,8 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 	RCache.Vertex.Unlock((u32)env.CloudsVerts.size(), clouds_geom.stride());
 
 	// Render
+	CameraCenteredView View;
+
 	RCache.set_xform_world(mXFORM);
 
 	RCache.set_Geometry(clouds_geom);

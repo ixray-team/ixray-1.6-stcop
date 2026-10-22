@@ -576,12 +576,14 @@ void CDemoRecord::update_frustum_capture()
 
 						if (b_r0)
 						{
-							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, g_player_hud->attached_item(0)->m_item_transform);
+							Fmatrix item_xform = g_player_hud->ToWorld(g_player_hud->attached_item(0)->m_item_transform);
+							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(0)->m_model, item_xform);
 						}
 
 						if (b_r1)
 						{
-							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, g_player_hud->attached_item(1)->m_item_transform);
+							Fmatrix item_xform = g_player_hud->ToWorld(g_player_hud->attached_item(1)->m_item_transform);
+							HUD().world_prims.DrawSkeleton(g_player_hud->attached_item(1)->m_model, item_xform);
 						}
 
 						if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying || g_player_hud->GetHandsVisible() || b_r0 || b_r1)
@@ -590,14 +592,16 @@ void CDemoRecord::update_frustum_capture()
 							{
 								if (IKinematics* hands_kin = g_player_hud->GetModel()->dcast_PKinematics())
 								{
-									HUD().world_prims.DrawSkeleton(hands_kin, g_player_hud->GetTransform());
+									Fmatrix hands_xform = g_player_hud->ToWorld(g_player_hud->GetTransform());
+									HUD().world_prims.DrawSkeleton(hands_kin, hands_xform);
 								}
 							}
 						}
 
 						if (g_player_hud->GetAnimator() && g_player_hud->GetAnimator()->IsPlaying && g_player_hud->GetAnimator()->m_item != nullptr)
 						{
-							HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, g_player_hud->GetAnimator()->m_item_transform);
+							Fmatrix animator_xform = g_player_hud->ToWorld(g_player_hud->GetAnimator()->m_item_transform);
+							HUD().world_prims.DrawSkeleton(g_player_hud->GetAnimator()->m_item, animator_xform);
 						}
 					}
 					HUD().world_prims.m_skeleton_flags = old_flags;
@@ -782,7 +786,8 @@ bool CDemoRecord::refresh_bone_attachment()
 			return false;
 		}
 
-		bone_holder_xform = &g_player_hud->GetTransform();
+		HudBoneHolderXform = g_player_hud->ToWorld(g_player_hud->GetTransform());
+		bone_holder_xform = &HudBoneHolderXform;
 		bone_holder_kinematics = g_player_hud->GetModel()->dcast_PKinematics();
 		break;
 
@@ -798,7 +803,8 @@ bool CDemoRecord::refresh_bone_attachment()
 			return false;
 		}
 
-		bone_holder_xform = &item->m_item_transform;
+		HudBoneHolderXform = g_player_hud->ToWorld(item->m_item_transform);
+		bone_holder_xform = &HudBoneHolderXform;
 		bone_holder_kinematics = item->m_model;
 		break;
 	}
@@ -812,7 +818,8 @@ bool CDemoRecord::refresh_bone_attachment()
 			return false;
 		}
 
-		bone_holder_xform = &anim->m_item_transform;
+		HudBoneHolderXform = g_player_hud->ToWorld(anim->m_item_transform);
+		bone_holder_xform = &HudBoneHolderXform;
 		bone_holder_kinematics = anim->m_item;
 		break;
 	}

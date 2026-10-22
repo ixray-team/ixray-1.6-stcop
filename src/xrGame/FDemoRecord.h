@@ -94,6 +94,7 @@ public:
 	CObject* bone_holder = nullptr;
 	IKinematics* bone_holder_kinematics = nullptr;
 	const Fmatrix* bone_holder_xform = nullptr;
+	Fmatrix HudBoneHolderXform = Fidentity;
 	u16 bone_id = BI_NONE;
 
 	enum class e_bone_holder_type : u8

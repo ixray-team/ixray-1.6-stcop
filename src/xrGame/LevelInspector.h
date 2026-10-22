@@ -146,7 +146,7 @@ struct LevelInspector final
 	{
 		Fvector4 v_res;
 		if(hud_mode)
-			Device.mFullTransform_hud_special.transform(v_res, pos);
+			Device.mFullTransform_hud.transform(v_res, pos);
 		else
 			Device.mFullTransform.transform(v_res, pos);
 

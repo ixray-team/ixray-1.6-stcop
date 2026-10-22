@@ -2303,7 +2303,6 @@ void CActor::UpdateCL()
 
 	if (IsFocused())
 	{
-		trans.c.sub(Device.vCameraPosition);
 		g_player_hud->update(trans);
 	}
 
