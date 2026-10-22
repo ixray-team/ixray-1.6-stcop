@@ -32,7 +32,7 @@ bool CRenderTarget::phase_fsr()
 	fsr3Params.motionvectorResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
 	fsr3Params.depthbufferResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
 
-	fsr3Params.reactiveMapResource = nullptr;
+	fsr3Params.reactiveMapResource = (ID3D11Resource*)ReactiveMask->pSurface->GetRawTexture();
 	fsr3Params.transparencyAndCompositionResource = nullptr;
 
 	fsr3Params.resolvedColorResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();

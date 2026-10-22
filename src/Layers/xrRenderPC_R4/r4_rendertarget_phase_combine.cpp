@@ -157,6 +157,8 @@ void CRenderTarget::phase_combine()
 		GRHI->ClearTarget(rt_Generic_2->pRT);
 	}
 
+	GRHI->ClearTarget(ReactiveMask->pRT);
+
 	// Forward rendering
 	{
 		GPU_EVENT(Forward_rendering);

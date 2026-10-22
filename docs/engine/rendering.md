@@ -73,6 +73,10 @@ Detector upgrades are applied after HUD/addon initialization. `LoadScopeEffects`
 
 `rt_ui_pda` (`$user$ui_pda`) uses RGBA16F to retain coverage alpha. `hud_scope_detector` writes linear premultiplied color with `ONE / INVSRCALPHA` blending, preserving overlapping frames. The scope shaders sample it in normalized screen coordinates, recover straight color and apply `lerp(World, UI.xyz, UI.w)` before scope fade and the reticle. Normalized coordinates keep the overlay aligned when render resolution differs from display resolution. Ordinary, variable-reticle, night-vision and Gauss scope materials bind `s_scope_ui` to the shared texture.
 
+## R4 reactive mask
+
+`ReactiveMask` (`$user$reactive`, R8, render resolution) marks translucent pixels whose content changes every frame and must not be taken from history. `phase_combine` clears it before forward rendering; translucent forward effects blend their coverage into it. TAA (`taa_render`) lowers the history weight and narrows K-DOP clipping by it, FSR receives it as the reactive mask and DLSS as `pInBiasCurrentColorMask`.
+
 ## R2 dynamic frame
 
 R2 has its own `CRender::Render` in `src/Layers/xrRenderPC_R2/r2_R_render.cpp` and D3D9 render targets and phases. It collects visibility, fills the deferred scene, accumulates lighting, combines the result, and draws forward geometry. R4-specific upscalers and motion-vector targets belong to R4 sources.
