@@ -952,12 +952,15 @@ function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
 	return temp
 end
 
-function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_scroll, depend, reg_name)
+function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_scroll, depend, reg_name, hint)
 	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
 	local temp = self.xml:InitComboBox("main_dialog:list_template", _st)
 	local tempText = self.xml:InitTextWnd("main_dialog:cap_template", _st)
 	if wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	if hint then
+		_st:SetHint(game.translate_string(hint))
 	end
 	temp:SetListLength(list_length)
 	temp:SetVertScroll(show_scroll)
