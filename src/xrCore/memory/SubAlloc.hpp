@@ -36,7 +36,7 @@ inline void PrefetchData(void* Addr)
 }
 inline void BLK_NODE::insert(void* pv,int NU) {
     MEM_BLK* p=(MEM_BLK*) pv;               link(p);
-    p->Stamp=~0UL;                          p->NU=NU;
+    p->Stamp=~0u;                          p->NU=NU;
     Stamp++;
 }
 inline UINT U2B(UINT NU) { return 8*NU+4*NU; }
@@ -179,7 +179,7 @@ inline void FreeUnits(void* ptr,UINT NU) {
 inline void SpecialFreeUnit(void* ptr)
 {
     if ((BYTE*) ptr != UnitsStart)          BList->insert(ptr,1);
-    else { *(DWORD*) ptr=~0UL;              UnitsStart += UNIT_SIZE; }
+    else { *(DWORD*) ptr=~0u;              UnitsStart += UNIT_SIZE; }
 }
 inline void* MoveUnitsUp(void* OldPtr,UINT NU)
 {

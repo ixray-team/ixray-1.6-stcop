@@ -48,7 +48,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		}
 		else
 		{
-			if (dt && dt[0])
+			if (dt[0])
 			{
 				Msg("! Texture [%s] has no detail bump [%s]", C.L_textures[0].c_str(), dt);
 			}
@@ -115,20 +115,20 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.AddDefine("USE_STEEPPARALLAX", "1");
 	}
 
-	if(dt && dt[0] && C.bDetail_Diffuse)
+	if(dt[0] && C.bDetail_Diffuse)
 	{
 		C.AddDefine("USE_TDETAIL", "1");
 	}
 
 	if (C.bDetail_Diffuse)
 	{
-		if (!dt || !dt[0])
+		if (!dt[0])
 		{
 			Msg("! Texture [%s] has no detail texture", C.L_textures[0].c_str());
 		}
 	}
 
-	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse)
+	if(bHasDetailBump && dt[0] && C.bDetail_Diffuse)
 	{
 		C.AddDefine("USE_TDETAIL_BUMP", "1");
 	}
@@ -301,7 +301,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.r_dx10Texture("s_bump", fnameA);
 	}
 
-	if(dt && dt[0]) {
+	if(dt[0]) {
 		C.r_dx10Texture("s_detail", dt);
 	}
 

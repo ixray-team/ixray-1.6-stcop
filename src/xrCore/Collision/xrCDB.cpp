@@ -64,7 +64,7 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 
 	status.store(S_BUILD);
 
-	auto LoaderLamda = [=]()
+	auto LoaderLamda = [&]()
 	{
 		// A task-pool task: the thread is the pool's, only a zone here
 		PROF_EVENT("build cform");

@@ -41,7 +41,7 @@ float   monster_aura::override_if_debug(const char* var_name, float const value)
 
 	return m_object->override_if_debug(full_var_name, value);
 #else // DEBUG
-	var_name;							// prevent warning
+	(void)var_name;							// prevent warning
 	return value;
 #endif // DEBUG
 }
