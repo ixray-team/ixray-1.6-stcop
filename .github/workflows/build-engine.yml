@@ -213,14 +213,24 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps
 
       # Older caches carry a RedImage checkout with local modifications from the patch
-      # script that used to live in cmake/patches. FetchContent stashes those changes
-      # before updating the pinned ref and then cannot unstash them, so drop the tree.
-      - name: Drop a modified RedImage checkout
+      # script that used to live in cmake/patches, and FetchContent stashes those changes
+      # before moving to the pinned ref and then cannot unstash them. When the cached
+      # tree is dirty or does not contain the pin, remove the tree together with its
+      # build and stamp directories, otherwise only the update step runs and fails on a
+      # checkout that is no longer a git repository.
+      - name: Drop a stale RedImage checkout
         run: |
-          SRC="build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps/redimage-src"
-          if [ -d "$SRC/.git" ] && ! git -C "$SRC" diff --quiet; then
-            echo "Cached RedImage checkout has local changes; dropping $SRC"
-            rm -rf "$SRC"
+          BASE="build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps"
+          SRC="$BASE/redimage-src"
+          PIN=9999e29e0e1196a408220636d87a273414b887e0
+          if [ -d "$SRC" ]; then
+            DIRTY=no
+            git -C "$SRC" diff --quiet 2>/dev/null || DIRTY=yes
+            git -C "$SRC" cat-file -e "$PIN^{commit}" 2>/dev/null || DIRTY=yes
+            if [ "$DIRTY" = yes ]; then
+              echo "Cached RedImage checkout is stale or modified; re-cloning"
+              rm -rf "$SRC" "$BASE/redimage-build" "$BASE/redimage-subbuild"
+            fi
           fi
 
       - name: Configure engine
