@@ -165,7 +165,7 @@ void THudVertexAssignedPatricles::UpdateHudPArticles()
 		normal_dir.normalize();
 		XF.j.set(normal_dir);
 		Fvector::generate_orthonormal_basis(XF.j, XF.k, XF.i);
-		XF.c.set(trix.face_c_pos);
+		XF.c = g_player_hud->ToWorld(trix.face_c_pos);
 		pg_vertex_info.particle->SetXFORM(XF);
 		pg_vertex_info.particle->SetHudMode(true);
 		u32 dwTime = Device.dwTimeGlobal;

@@ -516,7 +516,7 @@ void CMissile::OnAnimationEnd(u8 state)
 		Actor()->NotifySuicideShotCallbackIfNeeded();
 		m_dwDestroyTime = 0xffffffff;
 		cast_grenade()->SetInitiator(H_Parent()->ID());
-		XFORM().set(HudItemData()->m_item_transform);
+		XFORM().set(g_player_hud->ToWorld(HudItemData()->m_item_transform));
 		Destroy();
 		return;
 	}
@@ -696,7 +696,7 @@ void CMissile::Throw()
 
 			if (HID || Animator)
 			{
-				m_throw_matrix.set(HID ? HID->m_item_transform : Animator && Animator->m_item ? Animator->m_item_transform : Fidentity);
+				m_throw_matrix.set(g_player_hud->ToWorld(HID ? HID->m_item_transform : Animator && Animator->m_item ? Animator->m_item_transform : Fidentity));
 
 				Fvector cam_pos = Device.vCameraPosition;
 				Fvector throw_pos = m_throw_matrix.c;

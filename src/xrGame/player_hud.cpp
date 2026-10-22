@@ -492,6 +492,7 @@ void attachable_hud_item::update_hud_additional(Fmatrix& trans)
 
 	m_collision_box.m_halfsize = m_measures.m_collision_params.obb_scale;
 	trans.transform_tiny(m_collision_box.m_translate, m_measures.m_collision_params.obb_pos);
+	m_collision_box.m_translate = m_parent->ToWorld(m_collision_box.m_translate);
 	m_collision_box.m_rotate.set(trans);
 
 	CDB::COLLIDER xrc;
@@ -571,7 +572,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 			Fmatrix& fire_mat								= m_model->LL_GetTransform(m_measures.m_fire_bone);
 			fire_mat.transform_tiny							(fd.vLastFP, m_measures.m_fire_point_offset);
 			m_item_transform.transform_tiny					(fd.vLastFP);
-			fd.vLastFP.add(Device.vCameraPosition);
+			fd.vLastFP = m_parent->ToWorld(fd.vLastFP);
 	
 			fd.vLastFD.set									(m_item_transform.k);
 			VERIFY(_valid(fd.vLastFD));
@@ -587,7 +588,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat			= m_measures.m_fire_bone2 != u16(-1) ? m_model->LL_GetTransform(m_measures.m_fire_bone2) : m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny		(fd.vLastFP2,m_measures.m_fire_point2_offset);
 		m_item_transform.transform_tiny	(fd.vLastFP2);
-		fd.vLastFP2.add(Device.vCameraPosition);
+		fd.vLastFP2 = m_parent->ToWorld(fd.vLastFP2);
 		VERIFY(_valid(fd.vLastFP2));
 	}
 
@@ -596,7 +597,7 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat = m_measures.m_shell_bone != u16(-1) ? m_model->LL_GetTransform(m_measures.m_shell_bone) : m_model->LL_GetTransform(m_measures.m_fire_bone);
 		fire_mat.transform_tiny		(fd.vLastSP,m_measures.m_shell_point_offset);
 		m_item_transform.transform_tiny	(fd.vLastSP);
-		fd.vLastSP.add(Device.vCameraPosition);
+		fd.vLastSP = m_parent->ToWorld(fd.vLastSP);
 		VERIFY(_valid(fd.vLastSP));
 	}
 }
@@ -2250,9 +2251,14 @@ void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 }
 
-void player_hud::update(const Fmatrix& cam_trans)
+void player_hud::update(const Fmatrix& world_cam_trans)
 {
 	EnsureDefaultLoaded();
+
+	CameraOrigin.set(Device.vCameraPosition);
+	Fmatrix cam_trans = world_cam_trans;
+	cam_trans.c.sub(CameraOrigin);
+
 	if(!m_attached_items[0] && !m_attached_items[1] && !m_animator_item)
 	{
 		m_transform.set(cam_trans);
@@ -3779,7 +3785,7 @@ void animator_item::setup_firedeps(firedeps& fd)
 		Fmatrix& fire_mat								= m_item->LL_GetTransform(m_fire_bone);
 		fire_mat.transform_tiny							(fd.vLastFP, m_fire_point_offset);
 		m_item_transform.transform_tiny					(fd.vLastFP);
-		fd.vLastFP.add(Device.vCameraPosition);
+		fd.vLastFP = m_parent->ToWorld(fd.vLastFP);
 
 		fd.vLastFD.set									(0.f,0.f,1.f);
 		m_item_transform.transform_dir					(fd.vLastFD);

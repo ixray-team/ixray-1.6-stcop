@@ -20,11 +20,6 @@
 #define HIT_POWER_EPSILON 0.05f
 #define WALLMARK_SIZE 0.04f
 
-ICF void HudParticleParentFromWorld(Fmatrix& pos)
-{
-	pos.c.sub(Device.vCameraPosition);
-}
-
 CShootingObject::CShootingObject()
 {
 	fShotTimeCounter				= 0;
@@ -256,11 +251,6 @@ void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 		in_hud_mode = false;
 
-	if (in_hud_mode)
-	{
-		HudParticleParentFromWorld(pos);
-	}
-
 	m_pShellParticles->UpdateParent(pos, parent_vel);
 	m_pShellParticles->Play(in_hud_mode);
 	ShellParticles.push_back(m_pShellParticles);
@@ -341,11 +331,6 @@ void CShootingObject::StartSmokeParticle(const Fvector& parent_vel)
 	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 		in_hud_mode = false;
 
-	if (in_hud_mode)
-	{
-		HudParticleParentFromWorld(pos);
-	}
-
 	particles_ptr->SetScale(VfxSmokeScale);
 	particles_ptr->UpdateParent(pos, parent_vel);
 	particles_ptr->Play(in_hud_mode);
@@ -398,11 +383,6 @@ void CShootingObject::StartFlameParticle()
 	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 		in_hud_mode = false;
 
-	if (in_hud_mode)
-	{
-		HudParticleParentFromWorld(pos);
-	}
-
 	particles_ptr->SetScale(VfxShootScale);
 	particles_ptr->SetXFORM(pos);
 	particles_ptr->Play(in_hud_mode);
@@ -419,11 +399,6 @@ void CShootingObject::UpdateEffects()
 	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 	{
 		in_hud_mode = false;
-	}
-
-	if (in_hud_mode)
-	{
-		HudParticleParentFromWorld(pos);
 	}
 
 	u32 dwTime = Device.dwTimeDelta;

@@ -199,8 +199,7 @@ void attachable_hud_item::debug_draw_firedeps()
 		setup_firedeps		(fd);
 		
 		Fobb obb;
-		Fmatrix trans = m_item_transform;
-		trans.c.add(Device.vCameraPosition);
+		Fmatrix trans = m_parent->ToWorld(m_item_transform);
 		Device.transform_hud2world(trans);
 		obb.m_rotate.i.set(trans.i);
 		obb.m_rotate.j.set(trans.j);

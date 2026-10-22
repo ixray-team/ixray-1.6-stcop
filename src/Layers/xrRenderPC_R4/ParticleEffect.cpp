@@ -102,7 +102,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 		return;
 	}
 
-	if (0==m_RT_Flags.is(flRT_LiveUpdate))
+	if (!IsFrameStepped())
 	{
 		m_MemDT += frame_dt;
 		int	StepCount = 0;
@@ -394,7 +394,7 @@ void CParticleEffect::UpdateCache()
     Fvector& cam_top = RDEVICE.vCameraTop_saved;
     Fvector& cam_right = RDEVICE.vCameraRight_saved;
 
-	if (m_RT_Flags.is(flRT_LiveUpdate))
+	if (IsFrameStepped())
 	{
 		auto PosArr = particles.pos_arr;
 		auto PosIArr = particles.posI_arr;
@@ -673,6 +673,8 @@ void CParticleEffect::Render(float)
 
 	GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 
+	const bool HudMode = GetHudMode();
+
 	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(PAPI::Particles::LITBUFF));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
@@ -684,6 +686,13 @@ void CParticleEffect::Render(float)
 		for (u32 i = 0u; i < batch_size; ++i)
 		{
 			buff[i] = particles.buff_arr[start_idx + i];
+			if (HudMode)
+			{
+				for (FVF::LIT& Vertex : buff[i].buff)
+				{
+					Vertex.p.sub(Device.vCameraPosition);
+				}
+			}
 		}
 		RCache.Vertex.Unlock(vertices_in_batch, geom->vb_stride);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
@@ -766,7 +775,7 @@ void CParticleEffect::RenderEditor()
 			PAPI::Particles::LITBUFF* pv_start = (PAPI::Particles::LITBUFF*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			PAPI::Particles::LITBUFF* pv = pv_start;
 
-			if (m_RT_Flags.is(flRT_LiveUpdate))
+			if (IsFrameStepped())
 			{
 				auto PosArr = particles.pos_arr;
 				auto PosIArr = particles.posI_arr;
@@ -999,6 +1008,16 @@ void CParticleEffect::RenderEditor()
 				}
 			}
 			
+			if (GetHudMode())
+			{
+				for (PAPI::Particles::LITBUFF* Sprite = pv_start; Sprite != pv; ++Sprite)
+				{
+					for (FVF::LIT& Vertex : Sprite->buff)
+					{
+						Vertex.p.sub(Device.vCameraPosition);
+					}
+				}
+			}
 			dwCount = u32(pv - pv_start) * 4;
 			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
 

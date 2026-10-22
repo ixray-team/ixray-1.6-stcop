@@ -186,18 +186,6 @@ ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 	return ssa <= r_ssaDISCARD * (1.f + transition * 11.f);
 }
 
-// HUD visuals and HUD particles are positioned relative to the camera
-ICF bool IsHudVisual(dxRender_Visual* pVisual)
-{
-	if (RImplementation.val_bHUD)
-	{
-		return true;
-	}
-
-	IParticleCustom* pParticle = pVisual->dcast_ParticleCustom();
-	return pParticle && pParticle->GetHudMode();
-}
-
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
 ICF float GetDistFromCamera(const Fvector& from_position)
 {
@@ -219,8 +207,7 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 		return true;
 	}
 
-	// Camera-relative positions are not comparable with the world-space camera
-	if (!isStatic && IsHudVisual(pVisual))
+	if (!isStatic && RImplementation.val_bHUD)
 	{
 		return true;
 	}
@@ -330,9 +317,9 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 	return I;
 }
 
-ICF float CalcSSADistanceSQ(const Fvector& C, bool bHUD)
+ICF float CalcSSADistanceSQ(const Fvector& C)
 {
-	if (bHUD)
+	if (RImplementation.val_bHUD)
 	{
 		return C.square_magnitude() + EPS;
 	}
@@ -340,22 +327,28 @@ ICF float CalcSSADistanceSQ(const Fvector& C, bool bHUD)
 	return Device.vCameraPosition.distance_to_sqr(C) + EPS;
 }
 
-ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V, bool bHUD)
-{
-	float R = V->vis.sphere.R + 0;
-	distSQ = CalcSSADistanceSQ(C, bHUD);
-	return	R / distSQ;
-}
-
 ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
 {
-	return CalcSSA(distSQ, C, V, !!RImplementation.val_bHUD);
+	float R = V->vis.sphere.R + 0;
+	distSQ = CalcSSADistanceSQ(C);
+	return	R / distSQ;
 }
 
 ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 {
-	distSQ = CalcSSADistanceSQ(C, !!RImplementation.val_bHUD);
+	distSQ = CalcSSADistanceSQ(C);
 	return	R / distSQ;
+}
+
+ICF bool IsHudVisual(dxRender_Visual* pVisual)
+{
+	if (RImplementation.val_bHUD)
+	{
+		return true;
+	}
+
+	IParticleCustom* pParticle = pVisual->dcast_ParticleCustom();
+	return pParticle && pParticle->GetHudMode();
 }
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center, bool Force)
@@ -384,11 +377,11 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		pVisual->vis.accept_frame = Device.dwFrame;
 	}
 
-	bool bHUD = IsHudVisual(pVisual);
-
 	float distSQ;
-	float SSA = CalcSSA(distSQ, Center, pVisual, bHUD);
+	float SSA = CalcSSA(distSQ, Center, pVisual);
 	if (SSA <= r_ssaDISCARD && !Force) return;
+
+	bool bHUD = IsHudVisual(pVisual);
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order

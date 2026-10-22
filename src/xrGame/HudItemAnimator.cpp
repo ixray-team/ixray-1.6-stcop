@@ -479,7 +479,6 @@ void CBurnAnimator::Update()
 		Fmatrix pos;
 		pos.set(get_ParticlesXFORM());
 		pos.c.set(get_CurrentFirePoint());
-		pos.c.sub(Device.vCameraPosition);
 		m_pFlameParticles->UpdateParent(pos, zero_vel);
 	}
 	UpdateFireDependencies();
@@ -494,7 +493,6 @@ void CBurnAnimator::StartFlameParticle()
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(get_CurrentFirePoint());
-	pos.c.sub(Device.vCameraPosition);
 
 	m_pFlameParticles->UpdateParent(pos, zero_vel);
 	m_pFlameParticles->Play(true);

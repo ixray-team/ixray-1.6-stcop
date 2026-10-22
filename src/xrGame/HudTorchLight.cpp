@@ -213,8 +213,8 @@ void THudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 
 		if (isHudMode)
 		{
-			lightPos.add(Device.vCameraPosition);
-			omniPos.add(Device.vCameraPosition);
+			lightPos = g_player_hud->ToWorld(lightPos);
+			omniPos = g_player_hud->ToWorld(omniPos);
 			Device.transform_hud2world(lightPos, lightDir);
 			Device.transform_hud2world(omniPos);
 		}
@@ -460,7 +460,7 @@ void THudLightLaser::UpdateTorchFromObject(CHudItem* item) const
 
 		if (isHudMode)
 		{
-			lightPos.add(Device.vCameraPosition);
+			lightPos = g_player_hud->ToWorld(lightPos);
 			Device.transform_hud2world(lightPos, lightDir);
 		}
 
