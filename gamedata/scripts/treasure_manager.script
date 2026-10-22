@@ -48,89 +48,89 @@ function CTreasureManager:initialize()
 end
 
 function CTreasureManager:fill(se_obj, treasure_id)
-        if(self.secrets[treasure_id]) then
-                    local item = self.secrets[treasure_id].items[se_obj:section_name()]
-            if(item) then
-                for i=1,#item do
-                                if not(item[i].item_ids) then
-                                        item[i].item_ids = {}
-                                end
-                                local count = #item[i].item_ids
-                    if(count<item[i].count) then
-                                        item[i].item_ids[count+1] = se_obj.id
-                        return true
-                    end
+    if(self.secrets[treasure_id]) then
+                local item = self.secrets[treasure_id].items[se_obj:section_name()]
+        if(item) then
+            for i=1,#item do
+                            if not(item[i].item_ids) then
+                                    item[i].item_ids = {}
+                            end
+                            local count = #item[i].item_ids
+                if(count<item[i].count) then
+                                    item[i].item_ids[count+1] = se_obj.id
+                    return true
                 end
-            else
-                abort("Attempt to register unknown item [%s] in secret [%s]", se_obj:section_name(), treasure_id)
             end
         else
-            abort("Attempt to register item [%s] in unexistent secret [%s]", se_obj:name(), treasure_id)
+            abort("Attempt to register unknown item [%s] in secret [%s]", se_obj:section_name(), treasure_id)
         end
+    else
+        abort("Attempt to register item [%s] in unexistent secret [%s]", se_obj:name(), treasure_id)
+    end
 end
 
 function CTreasureManager:register_item(se_obj)
-        local spawn_ini = se_obj:spawn_ini()
-        if(spawn_ini:section_exist("secret")) then
-            local result, id, value
-            result, id, value	= spawn_ini:r_line("secret",0,"","")
-            if id ~= "name" then
-                abort("There is no 'name' field in [secret] section for object [%s]", se_obj:name())
-            end
-            if value == "" then
-                abort("Field 'name' in [secret] section got no value for object [%s]", se_obj:name())
-            end
-            return self:fill(se_obj, value)
+    local spawn_ini = se_obj:spawn_ini()
+    if(spawn_ini:section_exist("secret")) then
+        local result, id, value
+        result, id, value	= spawn_ini:r_line("secret",0,"","")
+        if id ~= "name" then
+            abort("There is no 'name' field in [secret] section for object [%s]", se_obj:name())
         end
+        if value == "" then
+            abort("Field 'name' in [secret] section got no value for object [%s]", se_obj:name())
+        end
+        return self:fill(se_obj, value)
+    end
 end
 
 function CTreasureManager:register_restrictor(se_obj)
-        local spawn_ini = se_obj:spawn_ini()
-        if(spawn_ini:section_exist("secret")) then
-            self.secret_restrs[se_obj:name()] = se_obj.id
-        end
+    local spawn_ini = se_obj:spawn_ini()
+    if(spawn_ini:section_exist("secret")) then
+        self.secret_restrs[se_obj:name()] = se_obj.id
+    end
 end
 
 function CTreasureManager:update()
-        if not(self.items_spawned) then
-                for k,v in pairs(self.secrets) do
-                        self:spawn_treasure(k)
-                end
-            self.items_spawned = true
-        end
-        local global_time = time_global()
-        if(self.check_time and global_time-self.check_time<=500) then
-            return
-        end
-        self.check_time = global_time
-    
+    if not(self.items_spawned) then
             for k,v in pairs(self.secrets) do
-                    if(v.given) then
-                if(v.empty) then
-                                local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
-                                if(sect=="true") and not v.checked then
-                                    -- [GUNSLINGER mod]
-                                        local spot_type = v.spot
-                                        if spot_type == nil then
-                                            spot_type = "treasure"
-                                        end	
-                                        level.map_remove_object_spot(self.secret_restrs[k], spot_type)
-                                    -- [/GUNSLINGER mod]
-                                        xr_statistic.inc_founded_secrets_counter()
-                                        v.empty = nil
-                        v.checked = true
-                                        printf("Empty secret [%s] remove map spot!", k)
-                                end
-                elseif(v.refreshing and v.checked) then
-                                local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.refreshing)
-                                if(sect=="true") then
-                                        v.given = false
-                                        v.checked = false
-                                        printf("Given secret [%s] now is avaliable!", k)
-                                end
-                end
-                    end
+                    self:spawn_treasure(k)
             end
+        self.items_spawned = true
+    end
+    local global_time = time_global()
+    if(self.check_time and global_time-self.check_time<=500) then
+        return
+    end
+    self.check_time = global_time
+
+        for k,v in pairs(self.secrets) do
+                if(v.given) then
+            if(v.empty) then
+                            local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
+                            if(sect=="true") and not v.checked then
+                                -- [GUNSLINGER mod]
+                                    local spot_type = v.spot
+                                    if spot_type == nil then
+                                        spot_type = "treasure"
+                                    end	
+                                    level.map_remove_object_spot(self.secret_restrs[k], spot_type)
+                                -- [/GUNSLINGER mod]
+                                    xr_statistic.inc_founded_secrets_counter()
+                                    v.empty = nil
+                    v.checked = true
+                                    printf("Empty secret [%s] remove map spot!", k)
+                            end
+            elseif(v.refreshing and v.checked) then
+                            local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.refreshing)
+                            if(sect=="true") then
+                                    v.given = false
+                                    v.checked = false
+                                    printf("Given secret [%s] now is avaliable!", k)
+                            end
+            end
+                end
+        end
 end
 
 function CTreasureManager:spawn_treasure(treasure_id)
@@ -173,74 +173,74 @@ function CTreasureManager:spawn_treasure(treasure_id)
 end
 
 function CTreasureManager:give_treasure(treasure_id, spawn)
-        if not(self.secrets[treasure_id]) then
-            abort("There is no stored secret [%s]", tostring(treasure_id))
-        end
-        if(self.secrets[treasure_id].given) then
-            printf("Secret [%s] already given!", treasure_id)
-            return
-        end
-        if(self.secrets[treasure_id].to_find==0 and not(self.secrets[treasure_id].empty)) then
-            news_manager.send_treasure(2)
-            printf("Secret [%s] already empty", treasure_id)
-            return
-        end
-        if(spawn) then
-            self:spawn_treasure(treasure_id)
-        end
-        
-        -- [GUNSLINGER mod]
-        local spot_type = self.secrets[treasure_id].spot
-        if spot_type == nil then
-            spot_type = "treasure"
-        end	
-        level.map_add_object_spot_ser(self.secret_restrs[treasure_id], spot_type, "")
-        -- [/GUNSLINGER mod]
-        
-        self.secrets[treasure_id].given = true
-        news_manager.send_treasure(0)
-        printf("Give secret [%s]", treasure_id)
+    if not(self.secrets[treasure_id]) then
+        abort("There is no stored secret [%s]", tostring(treasure_id))
+    end
+    if(self.secrets[treasure_id].given) then
+        printf("Secret [%s] already given!", treasure_id)
+        return
+    end
+    if(self.secrets[treasure_id].to_find==0 and not(self.secrets[treasure_id].empty)) then
+        news_manager.send_treasure(2)
+        printf("Secret [%s] already empty", treasure_id)
+        return
+    end
+    if(spawn) then
+        self:spawn_treasure(treasure_id)
+    end
+
+    -- [GUNSLINGER mod]
+    local spot_type = self.secrets[treasure_id].spot
+    if spot_type == nil then
+        spot_type = "treasure"
+    end	
+    level.map_add_object_spot_ser(self.secret_restrs[treasure_id], spot_type, "")
+    -- [/GUNSLINGER mod]
+
+    self.secrets[treasure_id].given = true
+    news_manager.send_treasure(0)
+    printf("Give secret [%s]", treasure_id)
 end
 
 function CTreasureManager:give_random()
-        local rnd_tbl = {}
-        for k,v in pairs(self.secrets) do
-                    if not(v.given) then
-                table.insert(rnd_tbl, k)
-                    end
-        end
-        if(#rnd_tbl~=0) then
-                self:give_treasure(rnd_tbl[math.random(1,#rnd_tbl)])
-            return
-        end
-        printf("There are no treasures avaliable!")
+    local rnd_tbl = {}
+    for k,v in pairs(self.secrets) do
+                if not(v.given) then
+            table.insert(rnd_tbl, k)
+                end
+    end
+    if(#rnd_tbl~=0) then
+            self:give_treasure(rnd_tbl[math.random(1,#rnd_tbl)])
+        return
+    end
+    printf("There are no treasures avaliable!")
 end
 
 function CTreasureManager:on_item_take(obj_id)
-        local restr_id = self.items_from_secrets[obj_id]
-        local treasure_id = nil
-        for k,v in pairs(self.secret_restrs) do
-            if(restr_id==v) then
-                treasure_id = k
-            end
+    local restr_id = self.items_from_secrets[obj_id]
+    local treasure_id = nil
+    for k,v in pairs(self.secret_restrs) do
+        if(restr_id==v) then
+            treasure_id = k
         end
-        if(treasure_id) then
-                    self.secrets[treasure_id].to_find = self.secrets[treasure_id].to_find - 1
-            if(self.secrets[treasure_id].to_find==0) then
-                -- [GUNSLINGER mod]
-                local spot_type = self.secrets[treasure_id].spot
-                if spot_type == nil then
-                    spot_type = "treasure"
-                end	
-                level.map_remove_object_spot(self.secret_restrs[treasure_id], spot_type)
-                -- [/GUNSLINGER mod]
-                xr_statistic.inc_founded_secrets_counter()
-                printf("Secret [%s] now is empty!", treasure_id)
-                self.secrets[treasure_id].checked = true
-                news_manager.send_treasure(1)
-            end
-            self.items_from_secrets[obj_id] = nil
+    end
+    if(treasure_id) then
+                self.secrets[treasure_id].to_find = self.secrets[treasure_id].to_find - 1
+        if(self.secrets[treasure_id].to_find==0) then
+            -- [GUNSLINGER mod]
+            local spot_type = self.secrets[treasure_id].spot
+            if spot_type == nil then
+                spot_type = "treasure"
+            end	
+            level.map_remove_object_spot(self.secret_restrs[treasure_id], spot_type)
+            -- [/GUNSLINGER mod]
+            xr_statistic.inc_founded_secrets_counter()
+            printf("Secret [%s] now is empty!", treasure_id)
+            self.secrets[treasure_id].checked = true
+            news_manager.send_treasure(1)
         end
+        self.items_from_secrets[obj_id] = nil
+    end
 end
 
 -- [GUNSLINGER mod]
@@ -250,66 +250,66 @@ function CTreasureManager:is_secret_item(obj_id)
 end
 -- [/GUNSLINGER mod]
 function CTreasureManager:save(package)
-        set_save_marker(package, "save", false, "CTreasureManager")
-        package:w_bool(self.items_spawned)
-        local num = 0
-        for k,v in pairs(self.items_from_secrets) do
-            num = num + 1
+    set_save_marker(package, "save", false, "CTreasureManager")
+    package:w_bool(self.items_spawned)
+    local num = 0
+    for k,v in pairs(self.items_from_secrets) do
+        num = num + 1
+    end
+    package:w_u16(num)
+    for k,v in pairs(self.items_from_secrets) do
+        package:w_object_id(k)
+        package:w_object_id(v)
+    end
+
+    num = 0
+    for k,v in pairs(self.secrets) do
+        num = num + 1
+    end
+    package:w_u16(num)
+    for k,v in pairs(self.secrets) do
+        if not(self.secret_restrs[k]) then
+            package:w_object_id(-1)
+        else
+            package:w_object_id(self.secret_restrs[k])
         end
-        package:w_u16(num)
-        for k,v in pairs(self.items_from_secrets) do
-            package:w_object_id(k)
-            package:w_object_id(v)
-        end
-    
-        num = 0
-        for k,v in pairs(self.secrets) do
-            num = num + 1
-        end
-        package:w_u16(num)
-        for k,v in pairs(self.secrets) do
-            if not(self.secret_restrs[k]) then
-                package:w_object_id(-1)
-            else
-                package:w_object_id(self.secret_restrs[k])
-            end
-            package:w_bool(v.given)
-            package:w_bool(v.checked)
-            package:w_u8(v.to_find)
-        end
-        set_save_marker(package, "save", true, "CTreasureManager")
+        package:w_bool(v.given)
+        package:w_bool(v.checked)
+        package:w_u8(v.to_find)
+    end
+    set_save_marker(package, "save", true, "CTreasureManager")
 end
 
 function CTreasureManager:load(package)
-        set_save_marker(package, "load", false, "CTreasureManager")
-        self.items_spawned = package:r_bool()
-        self.items_from_secrets = {}
-        local num = package:r_u16()
-        for i=1,num do
-            local k = package:r_object_id()
-            local v = package:r_object_id()
-            self.items_from_secrets[k] = v
-        end
-    
-        local num = package:r_u16()
-        for i=1,num do
-            local id = package:r_object_id()
-            for k,v in pairs(self.secret_restrs) do
-                if(v==id) then
-                    id = k
-                    break
-                end
-            end
-            local given = package:r_bool()
-            local checked = package:r_bool()
-            local to_find = package:r_u8()
-            if(id ~= alife_const.invalid_object_id and self.secrets[id]) then
-                self.secrets[id].given = given
-                self.secrets[id].checked = checked
-                self.secrets[id].to_find = to_find
+    set_save_marker(package, "load", false, "CTreasureManager")
+    self.items_spawned = package:r_bool()
+    self.items_from_secrets = {}
+    local num = package:r_u16()
+    for i=1,num do
+        local k = package:r_object_id()
+        local v = package:r_object_id()
+        self.items_from_secrets[k] = v
+    end
+
+    local num = package:r_u16()
+    for i=1,num do
+        local id = package:r_object_id()
+        for k,v in pairs(self.secret_restrs) do
+            if(v==id) then
+                id = k
+                break
             end
         end
-        set_save_marker(package, "load", true, "CTreasureManager")
+        local given = package:r_bool()
+        local checked = package:r_bool()
+        local to_find = package:r_u8()
+        if(id ~= alife_const.invalid_object_id and self.secrets[id]) then
+            self.secrets[id].given = given
+            self.secrets[id].checked = checked
+            self.secrets[id].to_find = to_find
+        end
+    end
+    set_save_marker(package, "load", true, "CTreasureManager")
 end
 
 function CTreasureManager:Serialize(Object)
@@ -332,7 +332,7 @@ function CTreasureManager:Serialize(Object)
 					end)
 				end
 			end)
-			
+
 			local num = 0
 			for k,v in pairs(self.secrets) do
 				num = num + 1
@@ -366,7 +366,7 @@ function CTreasureManager:Serialize(Object)
 					end)
 				end
 			end)
-			
+
 			local num = 0
 			num = Object:s_u32(num)
 			Object:ForArray(function()

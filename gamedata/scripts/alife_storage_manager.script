@@ -3,17 +3,17 @@
 	on save game name. What this means is that you can save entire tables to disk instead of saving to object packet.
 	This script was created to alleviate issues with using packets to save dynamic data (pstor) which lead to save corruption.
 	Also it removes some restrictions on what you can save.
-	
+
 	*only store valid lua types such as numbers, strings, boolean, functions or tables that contain these valid types. Userdata needs to have a special
 	__persist function defined in it's metatable. See how it is done for CTime in _G.script
-	
+
 	*Supposedly you can save userdata if you write a proper __persist method for the metatable but I have failed to achieve proper results with serializing CTime.
-	
+
 	*You must register for 'save_state' and 'load_state' and add your own table to m_data for it to be encoded then stored in *.scoc
 	*Although marshal is pretty fast, keep in mind that encoding/decoding a ton of data, saves will start to noticeablely take longer to save/load.
 	*For testing/debugging you can uncomment the print_table calls in save_state and load_state. It will save the before and after tables to print_table.txt in your main directory.
-		
-	
+
+
 	by: Alundaio
 --]]
 local m_data = {}
@@ -44,12 +44,10 @@ local function on_pstor_load_all(obj,packet)
 end
 
 function on_game_start()
-	PROF_EVENT_BEGIN("on_game_start")
 	if not isMarshal then 
-		PROF_EVENT_END() return 
+		return 
 	end
 	--RegisterScriptCallback("on_pstor_load_all",on_pstor_load_all)
-	PROF_EVENT_END()
 end
 
 -- called from engine!
@@ -57,7 +55,7 @@ function CALifeStorageManager_before_save(fname)
 	if not isMarshal then 
 		return 
 	end
-	
+
 	m_data.GAME_VERSION = GAME_VERSION
     if not m_data.se_object then
         m_data.se_object = {}
@@ -65,24 +63,24 @@ function CALifeStorageManager_before_save(fname)
     if not m_data.game_object then
         m_data.game_object = {}
     end
-	
+
 	SendScriptCallback("save_state", m_data)
-	
+
 	-- save pstor
 	if m_data == nil then
 		m_data = {}
 	end
-		
+
 	if m_data.game_object == nil then
 		m_data.game_object = {}
 	end
-	
+
 	for id,t in pairs(db.storage) do
 		if (m_data.game_object[id]) then
 			if (t.pstor and not is_empty(t.pstor)) then
 				m_data.game_object[id].pstor_all = t.pstor
 			end
-			
+
 			-- serialization with game.CTime.__persist
 			if (t.pstor_ctime and not is_empty(t.pstor_ctime)) then 
 				m_data.game_object[id].pstor_ctime = t.pstor_ctime
@@ -99,13 +97,13 @@ function CALifeStorageManager_before_save(fname)
 	end
 
    SetStorageVar("pstor", m_data or {})
-    
+
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
-	
+
 	local _path = getFS():update_path('$game_saves$', '')
-	
+
 	SendScriptCallback("save_file_created", _path, fname)
 end 
 
@@ -118,9 +116,9 @@ function CALifeStorageManager_new_game(fname)
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
-	
+
 	local _path = getFS():update_path('$game_saves$', '')
-	
+
 	SendScriptCallback("new_game_created", _path, fname)
 end
 
@@ -134,7 +132,7 @@ function CALifeStorageManager_load(fname)
 	if not isMarshal then 
 		return 
 	end
-	
+
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
@@ -150,37 +148,33 @@ function get_state()
 end
 
 function decode(t)
-	PROF_EVENT_BEGIN("decode")
 	local Result = marshal.decode(t)
-	PROF_EVENT_END()
 	return Result
 end
 
 -- storage based on ID but verified by object name
 function get_game_object_state(obj,create_if_dont_exist)
-	PROF_EVENT_BEGIN("get_game_object_state")
 	local id = obj:id()
 	local name = obj:name()
 	if not (m_data.game_object[id]) then
 		if not (create_if_dont_exist) then
-			PROF_EVENT_END() return 
+			return 
 		end
 		m_data.game_object[id] = {}
 		m_data.game_object[id].name = name
 	end
-	PROF_EVENT_END() return m_data.game_object[id]
+	return m_data.game_object[id]
 end	
 
 function get_se_obj_state(se_obj,create_if_dont_exist)
-	PROF_EVENT_BEGIN("get_se_obj_state")
 	local id = se_obj.id
 	local name = se_obj:name()
 	if not (m_data.se_object[id]) then
 		if not (create_if_dont_exist) then
-			PROF_EVENT_END() return 
+			return 
 		end
 		m_data.se_object[id] = {}
 		m_data.se_object[id].name = name
 	end
-	PROF_EVENT_END() return m_data.se_object[id]
+	return m_data.se_object[id]
 end

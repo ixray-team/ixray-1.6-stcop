@@ -8,7 +8,6 @@
 class "se_stalker"	(cse_alife_human_stalker)
 --------------------
 function se_stalker:__init (section) super (section)
-	PROF_EVENT_BEGIN("se_stalker:__init")
 	self.ini = nil
 	self.ini_initialized = false
 
@@ -34,7 +33,6 @@ function se_stalker:__init (section) super (section)
 	end
 
 	self.board = sim_board.get_sim_board()
-	PROF_EVENT_END()
 end
 --------------------
 function se_stalker:get_ini()
@@ -78,7 +76,6 @@ function se_stalker:STATE_Write(packet)
 end
 --------------------
 function se_stalker:STATE_Read(packet, size)
-	PROF_EVENT_BEGIN("se_stalker:STATE_Read")
 	cse_alife_human_stalker.STATE_Read (self, packet, size)
 	if self.script_version > 10 then
 		local old_lvid = packet:r_stringZ()
@@ -94,11 +91,9 @@ function se_stalker:STATE_Read(packet, size)
 		end
 	end
 	self.death_droped = packet:r_bool()
-	PROF_EVENT_END()
 end
 --------------------
 function se_stalker:STATE_Serialize(Object)
-	PROF_EVENT_BEGIN("se_stalker:STATE_Serialize")
 	Object:ForChunk("se_stalker:STATE", function()
 		cse_alife_human_stalker.STATE_Serialize (self, Object)
 		Object:ForChunk("se_stalker:STATE:data", function()
@@ -134,20 +129,16 @@ function se_stalker:STATE_Serialize(Object)
 			self.death_droped = Object:s_bool(self.death_droped )
 		end)
 	end)
-	PROF_EVENT_END()
 end
 --------------------
 function se_stalker:on_before_register()
-	PROF_EVENT_BEGIN("se_stalker:on_before_register")
-	PROF_EVENT_END()
 end
 --------------------
 function se_stalker:on_register()
-	PROF_EVENT_BEGIN("se_stalker:on_register")
 	cse_alife_human_stalker.on_register( self )
-	
+
 	SendScriptCallback("server_entity_on_register", self, "se_stalker")
-	
+
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 
@@ -168,10 +159,9 @@ function se_stalker:on_register()
 	local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
 	local smart_obj = self.board:get_smart_by_name(smart)
 	if smart_obj == nil then
-			PROF_EVENT_END() return
+			return
 	end
 	alife():object(smart_obj.id):register_npc(self)
-	PROF_EVENT_END()
 end
 --------------------
 function se_stalker:on_unregister()
@@ -216,17 +206,13 @@ end
 --'Торговец
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
-	PROF_EVENT_BEGIN("se_trader:__init")
 
-	PROF_EVENT_END()
 end
 
 function se_trader:on_register()
-	PROF_EVENT_BEGIN("se_trader:on_register")
 	--story_objects.check_spawn_ini_for_story_id(self)
 	SendScriptCallback("server_entity_on_register", self, "se_trader")
 	cse_alife_trader.on_register(self)
-	PROF_EVENT_END()
 end
 
 function se_trader:on_unregister()
