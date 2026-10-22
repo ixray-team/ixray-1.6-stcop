@@ -64,6 +64,7 @@ publish/
 temp/
 gamedata*_origin/
 patch*/
+!cmake/patches/
 
 # Generated files
 imgui.ini
