@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "XrGameManager.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
+#include "../../../xrCore/IniCache.h"
 
 XrGameManager* g_XrGameManager = nullptr;
 extern "C" 
@@ -27,6 +28,8 @@ XrGameManager::XrGameManager()
 
 XrGameManager::~XrGameManager()
 {
+	// Cached ini files may be created by xrGame; delete them while its code is still loaded
+	ClearCachedIniFiles();
 	FreeLibrary(m_hGame);
 }
 

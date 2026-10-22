@@ -578,6 +578,13 @@ u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 			continue;
 		}
 
+		// $hemi lights only emulate hemisphere lighting for the lightmap builder
+		const char* ControlName = Light->GetLControlName();
+		if (ControlName && 0 == xr_strcmp(ControlName, LCONTROL_HEMI))
+		{
+			continue;
+		}
+
 		if (EDevice->vCameraPosition.distance_to_sqr(Light->GetPosition()) > _sqr(EPrefs->LightDistance))
 		{
 			continue;

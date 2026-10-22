@@ -10,29 +10,36 @@ UIObjectListItem::~UIObjectListItem()
 {
 }
 
+bool UIObjectListItem::PassesFilter() const
+{
+	if (!Object)
+	{
+		return true;
+	}
+
+	if (UIObjectList::Form->m_Filter[0] && strstr(Object->GetName(), UIObjectList::Form->m_Filter) == 0)
+	{
+		return false;
+	}
+
+	switch (UIObjectList::Form->m_Mode)
+	{
+	case UIObjectList::M_Visible:
+		return Object->Visible();
+	case UIObjectList::M_Inbvisible:
+		return !Object->Visible();
+	default:
+		return true;
+	}
+}
+
 float UIObjectListItem::Draw()
 {
 	float Result = -1;
 
-	if (UIObjectList::Form->m_Filter[0]&& Object)
+	if (!PassesFilter())
 	{
-		if (strstr(Object->GetName(), UIObjectList::Form->m_Filter) == 0)
-			return Result;
-	}
-	switch (UIObjectList::Form->m_Mode)
-	{
-	case UIObjectList::M_All:
-		break;
-	case UIObjectList::M_Visible:
-		if (Object && !Object->Visible())
-			return Result;
-		break;
-	case UIObjectList::M_Inbvisible:
-		if (Object && Object->Visible())
-			return Result;
-		break;
-	default:
-		break;
+		return Result;
 	}
 
 	ImGui::TableNextRow();
@@ -162,22 +169,35 @@ void UIObjectListItem::DrawRoot()
 	float ScrollPos = -1;
 	size_t SelectedObjectsCounter = 0;
 
-	// Cheap pre-scan (no ImGui calls): count selected objects and remember the
+	// Cheap pre-scan (no ImGui calls): collect the items that pass the filter so the
+	// clipper only sizes the list for them, count selected objects and remember the
 	// first selected index so we can keep it visible through the clipper.
+	static xr_vector<UIObjectListItem*> VisibleItems;
+	VisibleItems.clear();
+
 	int FocusIndex = -1;
-	for (size_t i = 0; i < Items.size(); i++)
+	for (UITreeItem* Item : Items)
 	{
-		UIObjectListItem* RItem = (UIObjectListItem*)Items[i];
+		UIObjectListItem* RItem = (UIObjectListItem*)Item;
 		if (RItem->Object && RItem->Object->Selected())
 		{
 			SelectedObjectsCounter++;
-			if (FocusIndex < 0)
-				FocusIndex = (int)i;
 		}
+
+		if (!RItem->PassesFilter())
+		{
+			continue;
+		}
+
+		if (FocusIndex < 0 && RItem->Object && RItem->Object->Selected())
+		{
+			FocusIndex = (int)VisibleItems.size();
+		}
+		VisibleItems.push_back(RItem);
 	}
 
 	ImGuiListClipper clipper;
-	clipper.Begin((int)Items.size());
+	clipper.Begin((int)VisibleItems.size());
 	if (FocusIndex >= 0 && SelectedObjectsCounter < 2)
 		clipper.IncludeItemByIndex(FocusIndex);
 
@@ -185,7 +205,7 @@ void UIObjectListItem::DrawRoot()
 	{
 		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
 		{
-			UIObjectListItem* CastedItem = (UIObjectListItem*)Items[i];
+			UIObjectListItem* CastedItem = VisibleItems[i];
 			float NewScrollPos = CastedItem->Draw();
 			if (NewScrollPos != -1)
 				ScrollPos = NewScrollPos;
