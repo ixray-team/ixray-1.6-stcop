@@ -23,6 +23,9 @@ private:
 	// Visualization	(drops)
 	IRender_DetailModel*			DM_Drop;
 	ref_geom						hGeom_Drops;
+
+	Fvector							PrevCameraPosition = {};
+	bool							HasPrevCamera = false;
 };
 
 #endif	//	RainRender_included

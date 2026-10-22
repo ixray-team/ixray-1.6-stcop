@@ -53,6 +53,7 @@ private:
 	xr_vector<Item>					items;
 
 	xr_vector<rain_sprite>			m_sprites;
+	xr_vector<Fvector>				SpriteMotion;
 	States							state;
 
 	// Particles
@@ -95,10 +96,12 @@ public:
 	void Enable(bool Value);
 
 	float HudDropsTime() const { return m_hudDropsTime; }
+	float SkyVisibility() const { return SkyVisibilityFactor; }
 	float HudDropsAmount() const { return m_hudDropsAmount; }
 
 private:
 	float m_hudDropsTime = 0.f;
 	float m_hudDropsAmount = 0.f;
+	float SkyVisibilityFactor = 0.f;
 	void UpdateHudDrops(float rain, float sky);
 };

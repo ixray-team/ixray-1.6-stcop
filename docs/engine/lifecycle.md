@@ -110,7 +110,7 @@ xrEngine.exe -autotest -autotest_frames 120 -autotest_warmup 150 -autotest_timeo
 | `-autotest_shot [N]` | off | `$logs$\autotest_NNNN.tga` every N measured frames. Flag with no N means every frame |
 | `-autotest_cmd <cmds>` | — | Console commands once the main menu is up and `g_loading_events` is empty. Split on `;`. Also runs `keypress_on_start 0` |
 
-`-autotest_cmd` copies the rest of `Core.Params`. Put it last. This branch does not implement `-autotest_post_cmd`. Autotest does not force windowed mode or suppress error dialogs; configure those separately if needed.
+`-autotest_cmd` copies the rest of `Core.Params`. Put it last. `-autotest_post_cmd <cmd>` runs one console command on the level when warmup ends (for example `set_weather default_rain`); place it before `-autotest_cmd`. Autotest does not force windowed mode or suppress error dialogs; configure those separately if needed.
 
 CSV columns: `frame,calc_ms,dump_ms,total_ms,calls,verts,polys,static_dips,hash`.
 

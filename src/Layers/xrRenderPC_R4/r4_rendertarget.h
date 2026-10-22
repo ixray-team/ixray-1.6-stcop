@@ -178,6 +178,10 @@ public:
 	ref_rt						rt_Surface;
 	ref_rt						rt_Velocity;
 	ref_rt						ReactiveMask;
+	ref_rt						RainRefraction;
+	ref_rt						RainDepth;
+	ref_shader					RainLayers;
+	ref_shader					RainRefractionBlur;
 	ref_rt						rt_ui_pda;
 
 	ref_rt						rt_ui_depth;
@@ -470,6 +474,10 @@ public:
 	void						phase_planar			();
 
 	void						PhaseEffectSQ			(EffectSQ Effect);
+	void						PhaseRainStreaksBegin();
+	void						PhaseRainStreaksEnd();
+	void						PhaseRainLayers(float SkyVisibility);
+	void						CreateRainStreakTargets(ERHI_FORMAT Format);
 
 	void						phase_scene_forward		();
 	void						phase_scene_prepare		();

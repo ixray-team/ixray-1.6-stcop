@@ -296,6 +296,7 @@ void CEffect_Rain::OnFrame()
 		hemi_factor = !RayPick(Position, Direction, Distance, collide::rqtBoth);
 	}
 
+	SkyVisibilityFactor = hemi_factor;
 	UpdateHudDrops(factor, hemi_factor);
 
 	ref_sound& CurDropSnd = factor < 0.7f ? snd_RoofDroplets : snd_RoofDropletsHard;
@@ -417,7 +418,11 @@ void CEffect_Rain::UpdateItems()
 
 	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(env.max_desired_items));
 	items.resize(desired_items);
-	m_sprites.clear(); m_sprites.reserve(items.size());
+	{
+		xrCriticalSectionGuard guard(&rainCS);
+		m_sprites.clear(); m_sprites.reserve(items.size());
+		SpriteMotion.clear(); SpriteMotion.reserve(items.size());
+	}
 
 	// build source plane
 	Fplane src_plane;
@@ -511,6 +516,7 @@ void CEffect_Rain::UpdateItems()
 				Fvector().mad(pos_head,lineTop,-rain_width)	,u_rain_color,Sprite_UV[s][2].x,Sprite_UV[s][2].y,
 				Fvector().mad(pos_head,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][3].x,Sprite_UV[s][3].y
 			});
+		SpriteMotion.push_back(Fvector().mul(one.D, one.fSpeed * dt));
 	}
 }
 
