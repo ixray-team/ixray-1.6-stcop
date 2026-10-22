@@ -238,80 +238,7 @@ void CHUDTarget::Render()
 		return;
 	}
 
-	const bool actor_camera = crosshair_mode != DEFAULT;
-	Fvector from = actor_camera ? Actor->cam_Active()->Position() : Device.vCameraPosition;
-	Fvector dir = actor_camera ? Actor->cam_Active()->Direction() : Device.vCameraDirection;
-
 	u32 C = colorDefault;
-
-	Fvector picked;
-	is_extended_inertia ? picked.set(extended_inertia_target) : picked.mad(from, dir, PP.RQ.range);
-
-	Fvector4 projected;
-	Device.mFullTransform.transform(projected, picked);
-	projected.y = -projected.y;
-
-	float di_size = C_SIZE / powf(projected.w, .2f);
-
-	targetFont->SetAligment(CGameFont::alCenter);
-
-	Fvector2 screen;
-	screen.set(float(Device.TargetWidth), float(Device.TargetHeight));
-
-	float size_x = screen.x * di_size;
-	float size_y = screen.y * di_size;
-	size_y = size_x;
-
-	float x = (projected.x + 1) * screen.x / 2.0f;
-	float y = (projected.y + 1) * screen.y / 2.0f;
-
-	HUDCrosshair.dc.x = x;
-	HUDCrosshair.dc.y = y;
-	HUDCrosshair.cross_color = C;
-
-	if (crosshair_mode != DEFAULT)
-	{
-		float t = powf(crosshair_inertia_factor, Device.fTimeDelta * 144.f);
-
-		HUDCrosshair.dc.x = _inertion(HUDCrosshair.dc.x, x, t);
-		HUDCrosshair.dc.y = _inertion(HUDCrosshair.dc.y, y, t);
-
-		x = HUDCrosshair.dc.x;
-		y = HUDCrosshair.dc.y;
-	}
-
-	crosshair_mode == EXTENDED ? targetFont->OutSet(x, y) : targetFont->OutSetI(0.f, .033f);
-
-	// отрендерить кружочек или крестик
-	if (!m_bShowCrosshair)
-	{
-		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
-
-		UIRender->PushPoint(x - size_x, y + size_y, 0, C, 0, 1);
-		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
-
-		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
-		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(x + size_x, y - size_y, 0, C, 1, 0);
-
-		UIRender->SetShader(*hShader);
-		UIRender->FlushPrimitive();
-	}
-	else
-	{
-		HUDCrosshair.OnRender();
-	}
-
-	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
-	{
-		targetFont->SetColor(C);
-#ifdef DEBUG
-		targetFont->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
-#else
-		targetFont->OutNext("%4.1f", PP.RQ.range);
-#endif
-	}
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
@@ -372,7 +299,77 @@ void CHUDTarget::Render()
 		clamp(accumulatedTime,0.f,1.f);
 	}
 
-	// targetFont->OutSetI(0.f, .033f);
+	HUDCrosshair.cross_color = C;
+
+	const bool actor_camera = crosshair_mode != DEFAULT;
+	Fvector from = actor_camera ? Actor->cam_Active()->Position() : Device.vCameraPosition;
+	Fvector dir = actor_camera ? Actor->cam_Active()->Direction() : Device.vCameraDirection;
+
+
+	Fvector picked;
+	is_extended_inertia ? picked.set(extended_inertia_target) : picked.mad(from, dir, PP.RQ.range);
+
+	Fvector4 projected;
+	Device.mFullTransform.transform(projected, picked);
+	projected.y = -projected.y;
+
+	float di_size = C_SIZE / powf(projected.w, .2f);
+
+	targetFont->SetAligment(CGameFont::alCenter);
+
+	Fvector2 screen;
+	screen.set(float(Device.TargetWidth), float(Device.TargetHeight));
+
+	float size_x = screen.x * di_size;
+	float size_y = screen.y * di_size;
+	size_y = size_x;
+
+	float x = (projected.x + 1) * screen.x / 2.0f;
+	float y = (projected.y + 1) * screen.y / 2.0f;
+
+	if (crosshair_mode != DEFAULT)
+	{
+		HUDCrosshair.dc.x = _inertion(HUDCrosshair.dc.x, x, powf(crosshair_inertia_factor, Device.fTimeDelta * 144.f));
+		HUDCrosshair.dc.y = _inertion(HUDCrosshair.dc.y, y, powf(crosshair_inertia_factor, Device.fTimeDelta * 144.f));
+	}
+	else
+	{
+		HUDCrosshair.dc.x = x;
+		HUDCrosshair.dc.y = y;
+	}
+
+	crosshair_mode == EXTENDED ? targetFont->OutSet(HUDCrosshair.dc.x, HUDCrosshair.dc.y) : targetFont->OutSetI(0.f, .033f);
+
+	// отрендерить кружочек или крестик
+	if (!m_bShowCrosshair)
+	{
+		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
+
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y + size_y, 0, C, 0, 1);
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
+
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y - size_y, 0, C, 1, 0);
+
+		UIRender->SetShader(*hShader);
+		UIRender->FlushPrimitive();
+	}
+	else
+	{
+		HUDCrosshair.OnRender();
+	}
+
+	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
+	{
+		targetFont->SetColor(C);
+#ifdef DEBUG
+		targetFont->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
+#else
+		targetFont->OutNext("%4.1f", PP.RQ.range);
+#endif
+	}
 }
 
 void CHUDTarget::net_Relcase(CObject* O)
