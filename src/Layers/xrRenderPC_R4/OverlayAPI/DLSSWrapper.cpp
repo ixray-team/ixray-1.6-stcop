@@ -6,6 +6,7 @@ DLSSWrapper g_DLSSWrapper;
 
 extern ENGINE_API u32 ps_render_scale_preset;
 extern ENGINE_API float ps_render_scale;
+extern ENGINE_API u32 ps_r_dlss_model;
 
 u32 DLSSWrapper::GetOptimalPresetForScale(float scale)
 {
@@ -178,18 +179,22 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 	NVSDK_NGX_PerfQuality_Value PerfQualityValue = NVSDK_NGX_PerfQuality_Value_DLAA;
 	shared_str RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
 
+	NVSDK_NGX_DLSS_Hint_Render_Preset PresetValue = NVSDK_NGX_DLSS_Hint_Render_Preset_K;
+
 	switch (PresetID)
 	{
 		case 4:
 		{
 			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_UltraPerformance;
 			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
+			PresetValue = NVSDK_NGX_DLSS_Hint_Render_Preset_L;
 			break;
 		}
 		case 3:
 		{
 			PerfQualityValue = NVSDK_NGX_PerfQuality_Value_MaxPerf;
 			RenderPreset = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
+			PresetValue = NVSDK_NGX_DLSS_Hint_Render_Preset_M;
 			break;
 		}
 		case 2:
@@ -212,9 +217,28 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 		}
 	}
 
-	NgxParameters->Set(*RenderPreset, static_cast<int>(NVSDK_NGX_DLSS_Hint_Render_Preset_K));
+	switch (ps_r_dlss_model)
+	{
+		case 1:
+		{
+			PresetValue = NVSDK_NGX_DLSS_Hint_Render_Preset_E;
+			break;
+		}
+		case 2:
+		{
+			PresetValue = NVSDK_NGX_DLSS_Hint_Render_Preset_K;
+			break;
+		}
+		case 3:
+		{
+			PresetValue = PresetID == 4 ? NVSDK_NGX_DLSS_Hint_Render_Preset_L : NVSDK_NGX_DLSS_Hint_Render_Preset_M;
+			break;
+		}
+	}
 
-	Msg("* Resize DLSSWrapper Render Preset [%s]", *RenderPreset);
+	NgxParameters->Set(*RenderPreset, static_cast<unsigned int>(PresetValue));
+
+	Msg("* Resize DLSSWrapper Render Preset [%s] = %c", *RenderPreset, 'A' + int(PresetValue) - 1);
 
 	NVSDK_NGX_DLSS_Create_Params DLSSCreateParams = {};
 

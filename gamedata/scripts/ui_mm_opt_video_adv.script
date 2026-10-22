@@ -91,6 +91,16 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
  	handler:addComboBox(self, scalePresetPrec, "ui_mm_r_scale_preset", "vid_scale_preset", 7, false, system_depends.sdVidRestart, "scalePreset")
     handler:AddCallback("scalePreset", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
+
+	local dlssModelPrec = function(id)
+		if mode_4(id) then
+			local scale_mode = handler:GetComboBox("scaleMode")
+			return scale_mode:GetValueOf(scale_mode:CurrentID()) == "st_filter_dlss"
+		end
+		return false
+	end
+
+	handler:addComboBox(self, dlssModelPrec, "ui_mm_r_dlss_model", "r_dlss_model", 4, false, system_depends.sdVidRestart, "dlssModel", "ui_mm_r_dlss_model_hint")
 	
 	local vidScalePrec = function(id)
 		if mode_4(id) then

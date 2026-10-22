@@ -1036,4 +1036,22 @@
 	<string id="ui_mm_dof_near"><text>Ближняя граница базового DOF</text></string>
 	<string id="ui_mm_dof_focus"><text>Дистанция базового фокуса</text></string>
 	<string id="ui_mm_dof_far"><text>Дальняя граница базового DOF</text></string>
+	<string id="ui_mm_r_dlss_model">
+		<text>Модель DLSS</text>
+	</string>
+	<string id="st_dlss_model_auto">
+		<text>Авто</text>
+	</string>
+	<string id="st_dlss_model_cnn">
+		<text>Свёрточная нейронная сеть</text>
+	</string>
+	<string id="st_dlss_model_transformer">
+		<text>Модель преобразования</text>
+	</string>
+	<string id="st_dlss_model_transformer2">
+		<text>Модель преобразования 2-го поколения</text>
+	</string>
+	<string id="ui_mm_r_dlss_model_hint">
+		<text>Авто - модель выбирается по режиму качества.\nСвёрточная нейронная сеть - классическая модель DLSS, самая быстрая, но менее стабильная.\nМодель преобразования - более стабильное изображение и качественное сглаживание.\nМодель преобразования 2-го поколения (DLSS 4.5) - лучшее качество, рассчитана на видеокарты RTX 40 и новее. На RTX 20 и 30 лучше выбрать свёрточную нейронную сеть.\nТребуется перезапуск видео.</text>
+	</string>
 </string_table>
