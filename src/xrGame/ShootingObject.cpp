@@ -50,6 +50,13 @@ CShootingObject::~CShootingObject()
 
 void CShootingObject::destroy_particles()
 {
+	for (auto& Particle : ShellParticles)
+	{
+		Particle->Destroy();
+	}
+
+	ShellParticles.clear();
+
 	for (auto& Particle : smoke_particles)
 	{
 		Particle->Destroy();
@@ -254,7 +261,7 @@ void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 
 	m_pShellParticles->UpdateParent(pos, parent_vel);
 	m_pShellParticles->Play(in_hud_mode);
-	
+	ShellParticles.push_back(m_pShellParticles);
 }
 
 void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared_str& section)
@@ -418,6 +425,25 @@ void CShootingObject::UpdateEffects()
 	}
 
 	u32 dwTime = Device.dwTimeDelta;
+
+	for (size_t Index = 0; Index < ShellParticles.size();)
+	{
+		auto& Particle = ShellParticles[Index];
+		Particle->SetHudMode(in_hud_mode);
+		if (in_hud_mode)
+		{
+			Particle->Update(dwTime);
+		}
+
+		if (!Particle->IsPlaying() || Particle->m_NeedDestroy)
+		{
+			fast_erase(ShellParticles, Index);
+		}
+		else
+		{
+			++Index;
+		}
+	}
 
 	for (size_t i = 0; i < flame_particles.size();)
 	{

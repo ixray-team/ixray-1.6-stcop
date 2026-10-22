@@ -190,6 +190,7 @@ protected:
 	shared_str m_sFlameSilencerParticles;
 	shared_str m_sFlameGlauncherParticles;
 
+	xr_vector<xr_shared_ptr<CParticlesObject>> ShellParticles;
 	xr_vector<xr_shared_ptr<CParticlesObject>> smoke_particles;
 	xr_vector<xr_shared_ptr<CParticlesObject>> flame_particles;
 
