@@ -25,6 +25,7 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR=""
 MODE=""
 DATA_DIR=""
+GAME_DIR=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -42,13 +43,13 @@ BUILD_DIR="${BUILD_DIR:-${REPO_DIR}/build}"
 
 if [ -z "${MODE}" ]; then
     echo "Что собрать?"
-    echo "  1) собрать движок"
-    echo "  2) собрать игру целиком (распространяемая версия)"
+    echo "  1) собрать игру целиком (распространяемая версия)"
+    echo "  2) собрать движок"
     printf "Введите 1 или 2 [1]: "
     read -r choice || true
     case "${choice:-1}" in
-        1) MODE="engine" ;;
-        2) MODE="game" ;;
+        1) MODE="game" ;;
+        2) MODE="engine" ;;
         *) echo "Нужно 1 или 2" >&2; exit 1 ;;
     esac
 fi
@@ -190,9 +191,11 @@ package_game() {
         exit 1
     fi
 
-    local game_dir=""
-    if ! game_dir="$(find_game_dir)"; then
-        game_dir="$(prompt_for_game_dir)"
+    local game_dir="${GAME_DIR}"
+    if [ -z "${game_dir}" ]; then
+        if ! game_dir="$(find_game_dir)"; then
+            game_dir="$(prompt_for_game_dir)"
+        fi
     fi
     if [ ! -d "${game_dir}" ]; then
         echo "ОШИБКА: папка с игрой не найдена: '${game_dir}'" >&2
@@ -272,6 +275,23 @@ install_to_applications() {
     return 0
 }
 
+# Для распространяемой сборки данные игры нужны заранее: спрашиваем до сборки, чтобы
+# не ждать компиляцию ради сообщения «папки нет».
+if [ "${MODE}" = "game" ] && [ -z "${GAME_DIR}" ]; then
+    if ! GAME_DIR="$(find_game_dir)"; then
+        GAME_DIR="$(prompt_for_game_dir)"
+    fi
+    if [ -z "${GAME_DIR}" ] || [ ! -d "${GAME_DIR}" ]; then
+        echo "ОШИБКА: папка с игрой не найдена" >&2
+        exit 1
+    fi
+    if [ ! -d "${GAME_DIR}/levels" ] || [ ! -d "${GAME_DIR}/resources" ]; then
+        echo "ОШИБКА: в '${GAME_DIR}' нет levels/resources — это не папка Зова Припяти" >&2
+        exit 1
+    fi
+    echo "Данные игры: ${GAME_DIR}"
+fi
+
 # --- сборка ------------------------------------------------------------------
 
 echo "Репозиторий: ${REPO_DIR}"
@@ -282,7 +302,12 @@ else
     echo "Что собираем: движок"
 fi
 
-cmake -S "${REPO_DIR}" -B "${BUILD_DIR}" -G Ninja -DCMAKE_BUILD_TYPE=Release
+# yaml-cpp 0.6 требует политику 3.5, иначе конфигурация падает; -Wno-author/-Wno-deprecated
+# скрывают предупреждения сторонних проектов, которые мы всё равно не правим.
+cmake -S "${REPO_DIR}" -B "${BUILD_DIR}" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -Wno-author -Wno-deprecated
 
 # Сборка инкрементальная: повторный запуск пересобирает только изменившееся.
 ninja -C "${BUILD_DIR}"
