@@ -79,6 +79,11 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		return;
 	}
 
+	if (C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_NORMAL_LQ)
+	{
+		RImplementation.addShaderOption("USE_DETAIL_TERRAIN_TINT", "1");
+	}
+
 	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ)
 	{
 		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
@@ -99,6 +104,10 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 	{
 	case SE_R2_NORMAL_HQ:
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
+		C.r_dx10Texture("s_grass_tint_color", "$user$grass_terrain_tint_color");
+		C.r_dx10Texture("s_grass_tint_height", "$user$grass_terrain_tint_height");
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 		C.r_CullMode(D3DCULL_NONE);
@@ -106,6 +115,10 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		break;
 	case SE_R2_NORMAL_LQ:
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
+		C.r_dx10Texture("s_grass_tint_color", "$user$grass_terrain_tint_color");
+		C.r_dx10Texture("s_grass_tint_height", "$user$grass_terrain_tint_height");
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_dx10Sampler("smp_rtlinear");
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 		C.r_CullMode(D3DCULL_NONE);

@@ -1,6 +1,9 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 #include "hud_raindrops.hlsli"
+#ifdef USE_DETAIL_TERRAIN_TINT
+#include "grass_terrain_tint.hlsli"
+#endif
 
 #ifdef EDITOR_MODE
 uniform float4 editor_selection;
@@ -53,7 +56,10 @@ void main(p_bumped_new I,
 #endif
 
 #ifdef FIX_CULL_NORMAL
-	float3(I.M1.z, I.M2.z, I.M3.z) *= is_front_face * 2.0f - 1.0f;
+	float face_sign = is_front_face ? 1.0f : -1.0f;
+	I.M1.z *= face_sign;
+	I.M2.z *= face_sign;
+	I.M3.z *= face_sign;
 	
 	#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
 		cotangent_frame(I);
@@ -70,6 +76,9 @@ void main(p_bumped_new I,
 #endif
 
     SloadNew(I, M);
+#ifdef USE_DETAIL_TERRAIN_TINT
+    M.Color.rgb = GrassTerrainTintApply(M.Color.rgb, I.terrain_tint);
+#endif
 
 #ifdef USE_AREF
 	#if defined(USE_HASHED_AREF) && !defined(DETAIL_SHADOW_PASS)

@@ -13,6 +13,33 @@
 #include "../../xrEngine/date_time.h"
 #include "../../xrEngine/EngineAPI.h"
 
+namespace GrassTerrainTintBindings
+{
+class Binding final : public RHIShaderConstant::Setup
+{
+public:
+	explicit Binding(u32 Field) : Field(Field) {}
+	void setup(RHIShaderConstant* Constant) override
+	{
+		Fvector4 Value;
+		switch (Field)
+		{
+		case 0: Value = RImplementation.GrassTerrainTint.GetBounds(); break;
+		case 1: Value = RImplementation.GrassTerrainTint.GetHeightRange(); break;
+		case 2: Value = RImplementation.GrassTerrainTint.GetParameters(); break;
+		default: Value = RImplementation.GrassTerrainTint.GetOptions(); break;
+		}
+		RCache.set_c(Constant, Value.x, Value.y, Value.z, Value.w);
+	}
+private:
+	u32 Field;
+};
+static Binding Bounds(0);
+static Binding HeightRange(1);
+static Binding Parameters(2);
+static Binding Options(3);
+}
+
 // matrices
 class ScopePostprocessBinding final : public RHIShaderConstant::Setup
 {
@@ -763,6 +790,10 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("ui_icon_direction", &g_UIIconDirectionBinding);
 	r_Constant("ui_emissive_tint", &g_UIIconEmissiveTintBinding);
 
+	r_Constant("grass_tint_bounds", &GrassTerrainTintBindings::Bounds);
+	r_Constant("grass_tint_height_range", &GrassTerrainTintBindings::HeightRange);
+	r_Constant("grass_tint_params", &GrassTerrainTintBindings::Parameters);
+	r_Constant("grass_tint_options", &GrassTerrainTintBindings::Options);
 	r_Constant("screen_res", &binder_screen_res);
 	r_Constant("def_aref", &binder_def_aref);
 

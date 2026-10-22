@@ -304,124 +304,146 @@ struct gbuffer_data
     float3 N;
     float hemi;
     float3 C;
-    fl…64402 tokens truncated…d_texture_load", &ps_r__common_flags, RFLAG_DD_TEX_LOAD);
-	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
-	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
-	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
-	CMD3(CCC_Mask32, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
-	CMD3(CCC_Mask32, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
-	
-	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
-	CMD3(CCC_Token, "r4_mblur_quality", &ps_r4_mblur_quality, mblur_quality_token);
-	CMD4(CCC_Float, "r4_mblur_power", &ps_r4_mblur_power, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r1_full_detail_distance_scale", &ps_r1_full_detail_distance_scale, 0.1f, 1.0f);
+    float gloss;
 
-	CMD3(CCC_Mask32, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
+    float sss;
+};
 
-	CMD4(CCC_Float, "r2_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
-	CMD3(CCC_Mask32, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
-	CMD3(CCC_Mask32, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
-	CMD3(CCC_Mask32, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
-	CMD3(CCC_Mask32, "r2_saturation", &ps_r2_ls_flags_ext, R2FLAG_SPP_SATURATION);
-	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);
-	CMD3(CCC_Mask32, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
-
-	CMD3(CCC_Mask32, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
-	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
-	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
-	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
-	CMD3(CCC_Mask32, "r4_translucent_shadows", &ps_r2_ls_flags_ext, R4FLAG_TSHDOWS);
-	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
-
-	CMD3(CCC_Mask32, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
-	CMD3(CCC_Mask32, "r4_rain_puddles", &ps_r2_ls_flags_ext, R4FLAG_RAIN_PUDDLES);
-
-	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
-	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
-	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
-	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
-
-	// added by Papa Doenitz 2026-03-05
-	CMD2(CCC_Boolean, "r2_new_autoexposure", &ps_r2_new_autoexposure);
-	CMD4(CCC_Float, "r2_autoexposure_key", &ps_r2_autoexposure_key, 0.01f, 1.0f);
-	CMD4(CCC_Float, "r2_autoexposure_min", &ps_r2_autoexposure_min, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_max", &ps_r2_autoexposure_max, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_bias", &ps_r2_autoexposure_bias, -10.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_speed", &ps_r2_autoexposure_speed, 0.0f, 100.0f);
-
-	CMD2(CCC_Boolean, "r2_autoexposure_use_center_weight", &ps_r2_autoexposure_center_weight);
-	CMD4(CCC_Float, "r2_autoexposure_min_weight", &ps_r2_autoexposure_min_weight, 0.0f, 0.9f);
-	CMD4(CCC_Float, "r2_autoexposure_gaussian", &ps_r2_autoexposure_gaussian, 0.0f, 10.0f);
-
-	CMD2(CCC_Boolean, "r2_autoexposure_use_soft_log", &ps_r2_autoexposure_soft_log);
-	CMD4(CCC_Float, "r2_autoexposure_soft_log_k", &ps_r2_autoexposure_soft_log_k, 0.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_soft_limiter", &ps_r2_autoexposure_soft_limiter, 0.0f, 10.0f);
-	CMD4(CCC_Float, "r2_autoexposure_soft_sensetivity", &ps_r2_autoexposure_sensitivity, 0.0f, 10.0f);
-
-	CMD4(CCC_Float, "r2_bloom_amount", &ps_r2_bloom_amount, 0.0f, 3.0f);
-	CMD4(CCC_Float, "r2_bloom_desaturation", &ps_r2_bloom_desaturation, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r2_bloom_tint_amount", &ps_r2_bloom_tint_amount, 0.0f, 1.0f);
-	CMD4(CCC_Vector3, "r2_bloom_tint_color", &ps_r2_bloom_tint_color, Fvector().set(0.0f, 0.0f, 0.0f), Fvector().set(1.0f, 1.0f, 1.0f));
-
-
-
-	CMD2(CCC_Boolean, "r2_new_bloom_tonemap", &ps_r2_new_bloom_tonemap);
-	CMD2(CCC_Boolean, "r2_crossfeed", &ps_r2_crossfeed);
-	CMD2(CCC_Boolean, "r2_vibrance", &ps_r2_vibrance);
-	CMD4(CCC_Float, "r2_tonemap_compression", &ps_r2_tonemap_compression, 0.0f, 10.0f);
-	CMD4(CCC_Float, "r2_tonemap_desaturation", &ps_r2_tonemap_desaturation, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r2_tonemap_vibrance", &ps_r2_tonemap_vibrance, -1.0f, 1.0f);
-	CMD4(CCC_Float, "r2_tonemap_crossfeed", &ps_r2_tonemap_crossfeed, 0.0f, 0.9f);
-	// end of new tonemapping/bloom/autoexposure settings
-
-
-
-
-#ifdef DEBUG_DRAW
-	CMD4(CCC_Integer, "r__lsleep_frames", &ps_r__LightSleepFrames, 4, 30);
-	CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
-	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
-	CMD4(CCC_Float, "r__wallmark_shift_pp", &ps_r__WallmarkSHIFT, 0.0f, 1.f);
-	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
-	CMD2(CCC_Boolean, "r__wallmark_dyn", &ps_r__WallmarkDyn);
-
-	//	Allow real-time fog config reload
-	CMD1(CCC_Fog_Reload, "r3_fog_reload");
-
-	CMD3(CCC_Mask32, "r4_wireframe", &ps_r2_ls_flags_ext, R2FLAGEXT_WIREFRAME);//Need restart
-	CMD2(CCC_R2GM, "r2em", &ps_r2_gmaterial);
-
-	CMD2(CCC_Boolean, "ui_dbg_graphic", &Engine.External.EditorStates[(int)EditorUI::Shaders]);
-	CMD1(CCC_DumpResources, "dump_resources");
-
-	CMD2(CCC_Boolean, "r_particles_real_dt", &ps_r2_particle_dt);
-	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
-	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
-
-	// test
-	CMD4(CCC_Float, "r_developer_float_1", &ps_r__test_exp_to_shaders_1, -10000000.0f, 10000000.0f);
-	CMD4(CCC_Float, "r_developer_float_2", &ps_r__test_exp_to_shaders_2, -10000000.0f, 10000000.0f);
-	CMD4(CCC_Float, "r_developer_float_3", &ps_r__test_exp_to_shaders_3, -10000000.0f, 10000000.0f);
-	CMD4(CCC_Float, "r_developer_float_4", &ps_r__test_exp_to_shaders_4, -10000000.0f, 10000000.0f);
-	CMD1(CCC_memory_stats, "render_memory_stats");
-
-	CMD4(CCC_Integer, "r2_wait_sleep", &ps_r2_wait_sleep, 0, 1);
-	CMD4(CCC_Integer, "r2_dhemi_count", &ps_r2_dhemi_count, 4, 25);
-	CMD4(CCC_Float, "r2_dhemi_sky_scale", &ps_r2_dhemi_sky_scale, 0.0f, 100.f);
-	CMD4(CCC_Float, "r2_dhemi_light_scale", &ps_r2_dhemi_light_scale, 0, 100.f);
-	CMD4(CCC_Float, "r2_dhemi_light_flow", &ps_r2_dhemi_light_flow, 0, 1.f);
-	CMD4(CCC_Float, "r2_dhemi_smooth", &ps_r2_lt_smooth, 0.f, 10.f);
-	CMD3(CCC_Mask32, "rs_hom_depth_draw", &ps_r2_ls_flags_ext, R_FLAGEXT_HOM_DEPTH_DRAW);
-	CMD3(CCC_Mask32, "r2_shadow_cascede_zcul", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_ZCULLING);
-	CMD3(CCC_Mask32, "r2_exp_splitscene", &ps_r2_ls_flags, R2FLAG_EXP_SPLIT_SCENE);
-	CMD3(CCC_Mask32, "r2_exp_donttest_uns", &ps_r2_ls_flags, R2FLAG_EXP_DONT_TEST_UNSHADOWED);
-
-	CMD4(CCC_Integer, "rs_dbg_draw_depth", &r_debug_render_depth, 0, 1);
-#endif
-}
-
-void xrRender_apply_tf()
+////////////////////////////////////////////////////////////////
+//	Defer bumped
+struct p_bumped_new
 {
-	Console->Execute("r__tf_aniso");
-	Console->Execute("r__tf_mipbias");
-}
+    float4 hpos : SV_POSITION;
+
+    float4 tcdh : TEXCOORD0; // Texture coordinates, sun_occlusion || lm-hemi
+    float4 position : TEXCOORD1; // position + hemi
+    float3 M1 : TEXCOORD2; // nmap 2 eye - 1
+    float3 M2 : TEXCOORD3; // nmap 2 eye - 2
+    float3 M3 : TEXCOORD4; // nmap 2 eye - 3
+#ifdef USE_DETAIL_TERRAIN_TINT
+    float4 terrain_tint : TEXCOORD8; // linear ground color and per-vertex influence
+#endif
+	
+#ifdef USE_LENGTH_BUFFER
+	#ifndef USE_LM_HEMI
+		float3 lmap : TEXCOORD5;
+	#endif
+#else
+	#ifndef DISABLE_MOTION_VECTORS
+		float4 hpos_curr : TEXCOORD5;
+		float4 hpos_old : TEXCOORD6;
+	#endif
+#endif
+
+#ifdef USE_HUD_RAINDROPS
+    float4 drops_basis : TEXCOORD7;
+#endif
+};
+
+struct p_bilbord
+{
+    float4 hpos : SV_POSITION;
+    float4 af : COLOR1;
+
+    float3 position : TEXCOORD0;
+    float2 tc0 : TEXCOORD1;
+    float2 tc1 : TEXCOORD2;
+
+#ifndef DISABLE_MOTION_VECTORS
+    float4 hpos_curr : TEXCOORD3;
+    float4 hpos_old : TEXCOORD4;
+#endif
+};
+
+//	Shadow
+struct v_shadow_direct_aref
+{
+    float4 P : POSITION; // (float,float,float,1)
+    int4 tc : TEXCOORD0; // (u,v,frac,???)
+};
+
+struct v_shadow_direct
+{
+    float4 P : POSITION; // (float,float,float,1)
+};
+
+struct v2p_shadow_direct_aref
+{
+    float2 tc0 : TEXCOORD0; // Diffuse map for aref
+    float4 hpos : SV_POSITION; // Clip-space position         (for rasterization)
+};
+
+struct v2p_shadow_direct
+{
+    float4 hpos : SV_POSITION; // Clip-space position         (for rasterization)
+};
+
+struct p_shadow_direct_aref
+{
+    float2 tc0 : TEXCOORD0; // Diffuse map for aref
+};
+
+struct p_shadow
+{
+    float2 tc0 : TEXCOORD0;
+    float4 hpos : SV_POSITION;
+};
+
+struct v2p_screen
+{
+    float2 tc0 : TEXCOORD0;
+    float4 HPos : POSITIONT; // Clip-space position (for rasterization)
+};
+
+//	Model
+struct v_model
+{
+    float4 P : POSITION; // (float,float,float,1)
+    float3 N : NORMAL; // (nx,ny,nz)
+    float3 T : TANGENT; // (nx,ny,nz)
+    float3 B : BINORMAL; // (nx,ny,nz)
+    float2 tc : TEXCOORD0; // (u,v)
+	
+#ifndef DISABLE_MOTION_VECTORS
+    float4 P_old : TEXCOORD1; // (float,float,float,1)
+#endif
+};
+
+//	Tree
+struct v_tree
+{
+    float4 P : POSITION; // (float,float,float,1)
+    float4 Nh : NORMAL; // (nx,ny,nz)
+    float3 T : TANGENT; // tangent
+    float3 B : BINORMAL; // binormal
+    int4 tc : TEXCOORD0; // (u,v,frac,???)
+};
+
+//	Details
+struct v_detail
+{
+    float4 pos : POSITION; // position, frac
+    float2 tc : TEXCOORD0; // texcoord
+    float4 N : NORMAL; // (nx,ny,nz)
+};
+
+//	Fullscreen triangle
+struct PSInputFullscreen
+{
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
+};
+
+struct VSInputFullscreen
+{
+    float2 texcoord : TEXCOORD0;
+    float4 hpos : POSITIONT;
+};
+
+struct VSOutputFullscreen
+{
+    float4 hpos : SV_POSITION;
+    float2 texcoord : TEXCOORD0;
+};
+
+#endif //	common_iostructs_h_included
