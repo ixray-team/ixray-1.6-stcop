@@ -4,7 +4,7 @@ add_compile_options(-Wno-implicit-exception-spec-mismatch -Wno-macro-redefined -
 add_compile_options(-Wno-comment)
 # Diagnostics that only fire on the third-party D3D headers and on legacy inheritance:
 # they are not actionable here and would drown the real warnings.
-add_compile_options(-Wno-extern-c-compat -Wno-enum-compare-switch -Wno-dangling-else -Wno-trigraphs -Wno-inaccessible-base)
+add_compile_options(-Wno-mismatched-tags -Wno-extern-c-compat -Wno-enum-compare-switch -Wno-dangling-else -Wno-trigraphs -Wno-inaccessible-base)
 # Third-party code (RedImage/nvtt, the Metal bridge) and the linker noise from repeated static libs.
 add_compile_options(-Wno-expansion-to-defined -Wno-nontrivial-memcall -Wno-arc-bridge-casts-disallowed-in-nonarc)
 add_compile_options(-Wno-deprecated-comma-subscript -Wno-unused-value "-Wno-#pragma-messages")
