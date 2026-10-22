@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<string_table>
+	<string id="ui_mm_renderer_hint">
+		<text>Rendering mode. Static lighting (R1 and R4 static) uses baked light without dynamic shadows and suits weak PCs. The dynamic DX11 renderer (R4) adds shadows from every light, SSAO, volumetric light and other modern effects.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,230,190,60]medium%c[default],  VRAM %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_quality_presets_hint">
+		<text>A ready-made set of graphics settings, from Minimum to Ultra. Picking a preset overwrites the advanced settings. A good starting point: pick a preset, then tweak individual options.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,230,190,60]medium%c[default],  VRAM %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="ui_mm_resolution_hint">
+		<text>Screen resolution. Higher resolution gives a sharper image, but GPU load grows almost linearly with pixel count: 4K is about four times heavier than 1080p.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  VRAM %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_brightness_hint">
+		<text>Overall image brightness. Adjust it to your monitor and room lighting.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_mm_contrast_hint">
+		<text>Image contrast: the difference between dark and bright areas.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_mm_gamma_hint">
+		<text>Gamma correction. Changes the brightness of mid-tones without touching black and white. Helps to see details in shadows.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_mm_bloom_amount_hint">
+		<text>Strength of the glow around bright lights and highlights. Only the intensity changes, the effect itself is always computed.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_mm_fullscreen_hint">
+		<text>Fullscreen mode. Usually gives slightly lower input latency and steadier frame rate than windowed mode. A window is handier for switching to other programs.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_rs_device_active_hint">
+		<text>The game keeps running and rendering when its window is minimized or inactive. When off, the game pauses and does not load the PC while you are in another window. Does not affect in-game FPS.</text>
+	</string>
+	<string id="ui_mm_vsync_hint">
+		<text>Vertical sync: the frame rate is locked to the monitor refresh rate, removing screen tearing. Adds a little input latency. Caps FPS, so it reduces GPU load.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]reduces%c[default]</text>
+	</string>
+	<string id="ui_mm_screenshot_format_hint">
+		<text>Screenshot file format. JPG is small but lossy. PNG and TGA are lossless but produce much larger files.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="ui_mm_detail_density_hint">
+		<text>Density of grass and small vegetation. High density makes fields look lusher, but greatly increases the number of drawn objects.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,230,190,60]medium%c[default],  RAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_grass_distance_hint">
+		<text>Distance at which grass is visible. A larger distance hides the grass pop-in border but multiplies the amount of grass in frame.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_vis_distance_hint">
+		<text>World draw distance. Objects beyond it are not drawn and are hidden by fog.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  CPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_geometry_lod_hint">
+		<text>Level of detail of models at a distance. Higher values keep objects at full detail longer before switching to simplified versions.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_texture_quality_hint">
+		<text>Texture resolution. High quality gives crisp surfaces up close but needs a lot of video memory. When VRAM runs out you get stutter and texture streaming.\n%c[255,150,150,150]Performance cost:%c[default] VRAM %c[255,235,80,60]high%c[default],  RAM %c[255,230,190,60]medium%c[default],  GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_anisotropic_hint">
+		<text>Anisotropic filtering: keeps textures sharp at grazing angles (roads, floors, distant ground). Almost free on modern GPUs, 16x is recommended.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r1_detail_textures_hint">
+		<text>Extra detail textures layered over the base ones when surfaces are viewed up close.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_detail_bump_hint">
+		<text>Detail bump: fine surface relief up close using additional normal maps.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default],  VRAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_steep_parallax_hint">
+		<text>Parallax occlusion: stones, bricks and tiles look three-dimensional without extra geometry. Noticeably loads the GPU when many such surfaces are on screen.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_r4_enable_tessellation_hint">
+		<text>DX11 tessellation: the GPU subdivides surfaces into extra polygons so that relief becomes real geometry. One of the heaviest options.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="ui_mm_r_scale_mode_hint">
+		<text>Image scaling method. Linear simply stretches the image. DLSS (NVIDIA RTX GPUs) and FSR (any GPU) render at a lower resolution and reconstruct details, noticeably raising FPS. They also anti-alias the image.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]reduces%c[default],  VRAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r_scale_preset_hint">
+		<text>Internal resolution for DLSS and FSR. Native renders at full resolution (best anti-aliasing). Quality, Balanced, Performance and Ultra Performance render fewer and fewer pixels: higher FPS, less detail.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]reduces%c[default]</text>
+	</string>
+	<string id="ui_mm_r_dlss_model_hint">
+		<text>DLSS neural network model.\n%c[255,240,240,240]Auto%c[default] - the model is chosen by the quality mode.\n%c[255,240,240,240]Convolutional neural network%c[default] - classic model, fastest but less stable.\n%c[255,240,240,240]Transformer model%c[default] - more stable image and better anti-aliasing.\n%c[255,240,240,240]2nd gen transformer model%c[default] (DLSS 4.5) - best quality, designed for RTX 40 and newer. RTX 20 and 30 owners should pick the convolutional network.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_vid_scale_hint">
+		<text>Internal resolution scale. Below 100% the frame is rendered smaller and upscaled (higher FPS, softer image). Above 100% is supersampling: a very sharp image at a huge cost.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  VRAM %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_cas_sharpening_hint">
+		<text>AMD CAS sharpening. Restores sharpness lost to anti-aliasing and upscaling. Too high a value causes halos on contrasting edges.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_hashed_alpha_test_hint">
+		<text>Smooths alpha-tested edges of foliage, grass and fences. Instead of a hard cutoff it uses noise that TAA, DLSS or FSR then resolve. Removes vegetation shimmering. Very expensive in forests and tall grass: more pixels of every leaf and grass blade pass, so overdraw grows.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="ui_mm_supersample_hint">
+		<text>Edge anti-aliasing method.\n%c[255,240,240,240]FXAA%c[default] - fastest, slightly blurs the image.\n%c[255,240,240,240]SMAA%c[default] - cleaner than FXAA with almost no blur.\n%c[255,240,240,240]TAA%c[default] - best quality and no shimmering, but may ghost in motion.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  VRAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_sun_quality_hint">
+		<text>Shadow resolution of lamps, flashlights and other local lights. Higher values give sharp shadows without jagged edges.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  VRAM %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_light_distance_hint">
+		<text>Distance at which local lights keep shining and casting shadows. Affects how many lights are processed at once.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_npc_torch_hint">
+		<text>NPC flashlights cast real light and shadows. At night in crowded places it noticeably loads the system.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_volumetric_light_hint">
+		<text>Volumetric light: beams from lamps and flashlights are visible in air, dust and fog. Very atmospheric but heavy on the GPU.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="ui_mm_r4_hud_shadows_hint">
+		<text>Screen-space shadows on the player hands and weapon: the environment casts shadows onto the HUD.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r_actor_shadow_hint">
+		<text>Shadow cast by the player character body.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_sun_hint">
+		<text>Dynamic sun shadows. The basis of daytime lighting. Without them the world looks flat, but it is one of the heaviest options.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_details_shadows_hint">
+		<text>Grass casts sun shadows. Heavy on the GPU in open areas.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_lights_details_hint">
+		<text>Grass also casts shadows from local lights: flashlights, lamps, campfires.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_cloud_shadows_hint">
+		<text>Cloud shadows moving across the ground.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_sun_quality_hint">
+		<text>Sun shadow quality: cascade count and resolution, edge softness. Higher values give sharper and longer shadows, but the cost grows fast.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  VRAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_sun_shafts_hint">
+		<text>Sun shafts shining through foliage and windows. Quality sets the number of ray-marching steps.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_r__smap_size_hint">
+		<text>Shadow map resolution. Larger maps give sharper shadows with fewer jagged edges, but use more video memory.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default],  VRAM %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_ssao_text_hint">
+		<text>Ambient occlusion: shadows in corners, crevices and under objects give the scene depth.\n%c[255,240,240,240]SSAO%c[default] - fast classic variant, %c[255,230,190,60]medium cost%c[default].\n%c[255,240,240,240]GTAO%c[default] - more accurate and softer, but %c[255,235,80,60]very heavy%c[default] on the GPU. Enable it only with plenty of FPS headroom.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="ui_mm_soft_water_hint">
+		<text>Soft water edges: a smooth transition at shores instead of a hard line.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_soft_particles_hint">
+		<text>Soft particles: smoke, dust and fire do not get a hard cut where they intersect geometry.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r3_dynamic_wet_surfaces_hint">
+		<text>Surfaces get wet in the rain and dry out afterwards.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_sslr_water_hint">
+		<text>Screen-space reflections on water: puddles and ponds reflect the surroundings. Only what is visible on screen can be reflected.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_r3_volumetric_smoke_hint">
+		<text>Volumetric smoke and fog computed as a physical simulation. Beautiful, but one of the heaviest options.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default],  VRAM %c[255,230,190,60]medium%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_puddles_hint">
+		<text>Volumetric puddles on levels with reflections and ripples.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_rain_puddles_hint">
+		<text>Puddles form during rain and evaporate afterwards.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default],  VRAM %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_dynamic_wallmarks_hint">
+		<text>Bullet, blood and dirt marks on characters and moving objects.\n%c[255,150,150,150]Performance cost:%c[default] CPU %c[255,230,190,60]medium%c[default],  GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_vignette_hint">
+		<text>Darkening at the screen edges.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_aberration_hint">
+		<text>Chromatic aberration: colored fringes at the screen edges imitating a lens.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_saturation_hint">
+		<text>Saturation color grading for a more vivid image.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r4_use_gasmask_hint">
+		<text>Gas mask or helmet glass effect: cracks, dirt and fogging on screen.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops_hint">
+		<text>Rain drops on screen when the player looks up in the rain.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_r2_rain_drops_mode_hint">
+		<text>How rain drops on the glass are drawn.\n%c[255,240,240,240]Texture%c[default] - a prebuilt animated texture, %c[255,110,200,90]almost free%c[default].\n%c[255,240,240,240]Procedural%c[default] - drops are computed by a shader in real time, look more lively and realistic, but are %c[255,235,80,60]expensive%c[default] on the GPU.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,235,80,60]high%c[default]</text>
+	</string>
+	<string id="st_motion_blur_power_hint">
+		<text>Motion blur strength. Only the intensity changes: performance depends on the effect quality.\n%c[255,150,150,150]Performance cost:%c[default] %c[255,110,200,90]no performance impact%c[default]</text>
+	</string>
+	<string id="st_motion_blur_quality_hint">
+		<text>Motion blur quality: samples per pixel. Higher gives smoother blur without banding.\n%c[255,150,150,150]Requires game restart.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,230,190,60]medium%c[default]</text>
+	</string>
+	<string id="ui_mm_master_volume_hint">
+		<text>Overall volume of sound effects: footsteps, ambience, voices, mutants.</text>
+	</string>
+	<string id="ui_mm_shoot_volume_hint">
+		<text>Volume of gunshots and explosions separately from other effects. Handy when gunfire is deafening and quiet ambient sounds are hard to hear.</text>
+	</string>
+	<string id="ui_mm_music_volume_hint">
+		<text>Music volume: background themes, combat music, guitar and radio at campfires.</text>
+	</string>
+	<string id="ui_mm_snd_device_hint">
+		<text>Sound output device: speakers, headphones, HDMI monitor and so on.</text>
+	</string>
+	<string id="ui_mm_dynamic_music_hint">
+		<text>Combat music: during a fight the ambient theme switches to tense music and returns once the danger is gone.</text>
+	</string>
+	<string id="ui_mm_eax_hint">
+		<text>EFX environment effects: reverb and echo depend on the place - caves, rooms and open areas sound different.\n%c[255,150,150,150]Performance cost:%c[default] CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_mouse_sense_hint">
+		<text>Mouse sensitivity when controlling the in-game camera.</text>
+	</string>
+	<string id="ui_mm_mouse_sense_ui_hint">
+		<text>Mouse cursor speed in menus, inventory and PDA, separate from in-game sensitivity.</text>
+	</string>
+	<string id="ui_mm_invert_mouse_hint">
+		<text>Inverts the vertical mouse axis: moving the mouse forward tilts the camera down, like in flight simulators.</text>
+	</string>
+	<string id="ui_mm_gamepad_prefix_hint">
+		<text>Which button icons to show in prompts: Xbox, PlayStation 4 or PlayStation 5. None - detect automatically from the connected gamepad.</text>
+	</string>
+	<string id="st_gamepad_sensibility_hint">
+		<text>Right stick sensitivity when controlling the camera.</text>
+	</string>
+	<string id="st_gamepad_invert_hint">
+		<text>Inverts the vertical axis of the camera stick.</text>
+	</string>
+	<string id="ui_mm_gamepad_vibration_hint">
+		<text>Gamepad vibration on shooting, hits and explosions.</text>
+	</string>
+	<string id="ui_mm_gyroscope_enabled_hint">
+		<text>Gyro aiming: the camera turns when you tilt the gamepad. Works on gamepads with a gyroscope (DualShock 4, DualSense and similar). Handy for precise aiming.</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_x_hint">
+		<text>Inverts the horizontal gyro axis.</text>
+	</string>
+	<string id="ui_mm_gyroscope_invert_y_hint">
+		<text>Inverts the vertical gyro axis.</text>
+	</string>
+	<string id="ui_mm_gyroscope_sens_hint">
+		<text>Gyro sensitivity: how far the camera turns when you tilt the gamepad.</text>
+	</string>
+	<string id="ui_mm_gyroscope_deadzone_hint">
+		<text>Gyro dead zone: small movements and hand tremor are ignored. Increase it if the crosshair drifts while the gamepad is at rest.</text>
+	</string>
+	<string id="ui_mm_difficulty_hint">
+		<text>Difficulty level. Affects damage taken by the player and dealt by enemies, as well as enemy accuracy. Can be changed at any time.</text>
+	</string>
+	<string id="ui_mm_lang_hint">
+		<text>In-game text language: interface, dialogs, item and task descriptions.</text>
+	</string>
+	<string id="st_quicksaves_count_hint">
+		<text>How many quick saves to keep. A new quick save replaces the oldest one, so you can always roll back a few steps.</text>
+	</string>
+	<string id="ui_mm_fov_hint">
+		<text>Field of view - the camera viewing angle. Higher values show more to the sides, handy on wide monitors, but distort the image edges.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default],  CPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="st_3d_scopes_hint">
+		<text>Three-dimensional scopes: instead of a flat full-screen scope texture you aim through the actual scope on the weapon, and the image is magnified. The surroundings stay visible around the scope. Works only on weapons that support 3D scopes.\n%c[255,150,150,150]Performance cost:%c[default] GPU %c[255,110,200,90]low%c[default]</text>
+	</string>
+	<string id="ui_mm_bobbing_factor_hint">
+		<text>Strength of camera and weapon bobbing while walking and running. Lower it if bobbing causes motion sickness.</text>
+	</string>
+	<string id="ui_mm_hit_slowmo_hint">
+		<text>When hit by a bullet or a blow, time briefly slows down and the aim gets knocked off.</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle_hint">
+		<text>Toggle aiming: one press enters aim mode, another press exits it. When off, you have to hold the button.</text>
+	</string>
+	<string id="ui_mm_important_save_hint">
+		<text>Automatic saves at key story moments.</text>
+	</string>
+	<string id="ui_mm_show_weapon_hint">
+		<text>Show the player weapon and hands on screen.</text>
+	</string>
+	<string id="ui_mm_crouch_toggle_hint">
+		<text>Toggle crouch: one press crouches, another press stands up. When off, you have to hold the button.</text>
+	</string>
+	<string id="st_autosaves_enabled_hint">
+		<text>Periodic timed autosaves.</text>
+	</string>
+	<string id="st_autosaves_interval_hint">
+		<text>Interval between autosaves in minutes.</text>
+	</string>
+	<string id="ui_mm_show_crosshair_hint">
+		<text>Show the crosshair in the center of the screen.</text>
+	</string>
+	<string id="ui_mm_dyn_crosshair_hint">
+		<text>Dynamic crosshair: it spreads while moving and shooting, showing the current weapon spread.</text>
+	</string>
+	<string id="ui_mm_crosshair_distance_hint">
+		<text>Show the distance to the target in meters next to the crosshair.</text>
+	</string>
+	<string id="ui_mm_tips_hint">
+		<text>Target info: the crosshair changes color depending on whether you look at a friend, a neutral or an enemy, and shows the character name.</text>
+	</string>
+	<string id="ui_st_disable_hud_hint">
+		<text>Show the game HUD: health, ammo, minimap, indicators. Turn off for screenshots or full immersion.</text>
+	</string>
+	<string id="ui_rs_fps_show_hint">
+		<text>Show the frames-per-second counter in the corner of the screen.</text>
+	</string>
+	<string id="ui_mm_show_minimap_hint">
+		<text>Show the minimap in the corner of the screen.</text>
+	</string>
+	<string id="ui_mm_hide_quick_slots_hint">
+		<text>The quick slots panel hides automatically and appears when a slot is used or by a dedicated show quick slots key (bound in the controls).</text>
+	</string>
+</string_table>

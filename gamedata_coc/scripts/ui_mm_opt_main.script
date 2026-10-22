@@ -3,6 +3,7 @@ class "options_dialog" (CUIScriptWnd)
 function options_dialog:__init() super()
 
 	self.m_preconditions	= {}
+	self.hint_items		= {}
 	self.focusIndex = 1 --MTB_Jakub_Jurek [JP-165] reset index value
 	self.m_deffer_ex	= {}
     self:InitControls()
@@ -118,6 +119,12 @@ function options_dialog:InitControls()
 	if self.xml:NodeExist("gamepad_legend", 0) then
 		self.gamepad_legend = self.xml:InitGamepadLegend("gamepad_legend", self)
 		self:Register(self.gamepad_legend, "gamepad_legend")
+	end
+
+	if self.xml:NodeExist("hint_wnd", 0) then
+		self.hint_wnd = self.xml:InitFrame("hint_wnd", self)
+		self.hint_text = self.xml:InitTextWnd("hint_wnd:text", self.hint_wnd)
+		self.hint_wnd:Show(false)
 	end
 end
 
@@ -435,6 +442,8 @@ end
 
 function options_dialog:Update()
 	CUIScriptWnd.Update(self)
+
+	self:UpdateHint()
 	
 	self.tab_input:Show(self.tab:GetActiveId() == "controls")
 	
@@ -931,6 +940,7 @@ function options_dialog:addTrack(wnd, prec, text, command, step, invert, mode, s
 	end
 	temp:SetStep(step)
 	tempText:SetTextST(text)
+	self:attachHint(wnd, _st, tempText, text)
 	self:addControl(wnd, tempText, temp, _st)
 	return temp
 end
@@ -948,6 +958,7 @@ function options_dialog:addCheck(wnd, prec, text, command, depend, reg_name)
 		self:Register(temp, reg_name)
 	end
 	tempText:SetTextST(text)
+	self:attachHint(wnd, _st, tempText, text)
 	self:addControl(wnd, tempText, temp, _st)
 	return temp
 end
@@ -959,9 +970,6 @@ function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_
 	if wnd:WindowName() == "dlg_video_adv" then
 		table.insert(self.m_preconditions, {func=prec, control=_st})
 	end
-	if hint then
-		_st:SetHint(game.translate_string(hint))
-	end
 	temp:SetListLength(list_length)
 	temp:SetVertScroll(show_scroll)
 	temp:AssignProps(command, self:GetPropsName(wnd))
@@ -970,8 +978,84 @@ function options_dialog:addComboBox(wnd, prec, text, command, list_length, show_
 		self:Register(temp, reg_name)
 	end
 	tempText:SetTextST(text)
+	self:attachHint(wnd, _st, tempText, text, hint)
 	self:addControl(wnd, tempText, temp, _st)
 	return temp
+end
+
+function options_dialog:attachHint(wnd, row, caption, text, hint)
+	local key = hint or (text .. "_hint")
+	local str = game.translate_string(key)
+	if str == key then
+		return
+	end
+
+	table.insert(self.hint_items, {wnd = wnd, row = row, caption = caption, text = str})
+end
+
+function options_dialog:UpdateHint()
+	if not self.hint_wnd then
+		return
+	end
+
+	local cur = self:GetCurTabWnd()
+	local found = nil
+
+	if main_menu.in_controller_mode() then
+		local focused = cur and cur.focusList and cur.focusList[self.focusIndex]
+		if focused then
+			for _, item in ipairs(self.hint_items) do
+				if item.row == focused[3] then
+					found = item
+					break
+				end
+			end
+		end
+	else
+		for _, item in ipairs(self.hint_items) do
+			if item.wnd:IsShown() and item.row:IsShown() and item.caption:IsCursorOverWindow() then
+				found = item
+				break
+			end
+		end
+	end
+
+	if not found then
+		self.hint_wnd:Show(false)
+		self.hint_current = nil
+		return
+	end
+
+	local pad = self.hint_text:GetWndPos()
+	if self.hint_current ~= found then
+		self.hint_text:SetText(found.text)
+		self.hint_text:AdjustHeightToText()
+		self.hint_wnd:SetWndSize(vector2():set(self.hint_wnd:GetWidth(), self.hint_text:GetHeight() + pad.y * 2))
+		self.hint_current = found
+	end
+
+	local w = self.hint_wnd:GetWidth()
+	local h = self.hint_wnd:GetHeight()
+	local x, y
+
+	if main_menu.in_controller_mode() then
+		local rect = found.row:GetAbsoluteRect()
+		x = rect.x2 + 8
+		y = rect.y1
+	else
+		local cursor = GetCursorPosition()
+		x = cursor.x + 16
+		y = cursor.y + 16
+		if y + h > 764 then
+			y = cursor.y - h - 8
+		end
+	end
+
+	x = math.max(4, math.min(x, 1020 - w))
+	y = math.max(4, math.min(y, 764 - h))
+
+	self.hint_wnd:SetWndPos(vector2():set(x, y))
+	self.hint_wnd:Show(true)
 end
 
 function options_dialog:OnBtnShowGamepadLayout()

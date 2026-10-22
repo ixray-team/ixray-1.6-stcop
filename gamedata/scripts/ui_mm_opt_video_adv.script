@@ -100,7 +100,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return false
 	end
 
-	handler:addComboBox(self, dlssModelPrec, "ui_mm_r_dlss_model", "r_dlss_model", 4, false, system_depends.sdVidRestart, "dlssModel", "ui_mm_r_dlss_model_hint")
+	handler:addComboBox(self, dlssModelPrec, "ui_mm_r_dlss_model", "r_dlss_model", 4, false, system_depends.sdVidRestart, "dlssModel")
 	
 	local vidScalePrec = function(id)
 		if mode_4(id) then

@@ -40,6 +40,12 @@
 			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
 		</auto_static>
 	</gamepad_legend>
+  <hint_wnd x="0" y="0" width="272" height="60">
+  	<texture>ui_icons_PDA_tooltips</texture>
+  	<text x="10" y="10" width="252" height="20" complex_mode="1">
+  		<text font="letterica16" r="225" g="225" b="225" align="l"/>
+  	</text>
+  </hint_wnd>
   <main_dialog>
       <scroll_v	x="0" y="10" width="385" height="313"
 					right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
