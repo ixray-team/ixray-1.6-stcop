@@ -502,83 +502,41 @@ void CGamePersistent::UpdateParticles()
 		frustum.CreateFromMatrix(Device.mFullTransform_saved, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 		extern u32 particles_workers_count;
-		static u32 last_count = particles_workers_count;
-		static xr_vector<std::pair<u32, xr_vector<xr_shared_ptr<CParticlesObject>>>> workers(last_count);
 
-		if (particles_workers_count <= 1)
+		const size_t particles_count = ps_active.size();
+		constexpr size_t chunk_size = 32;
+		std::atomic<size_t> next_chunk = 0;
+
+		auto update_chunks = [this, dwTime, particles_count, &next_chunk]()
 		{
-			for (xr_shared_ptr<CParticlesObject> particle : ps_active)
+			PROF_EVENT("Particle worker");
+
+			for (size_t start = next_chunk.fetch_add(chunk_size); start < particles_count; start = next_chunk.fetch_add(chunk_size))
 			{
-				if (!particle->m_NeedDestroy && !particle->GetHudMode())
+				const size_t stop = std::min(start + chunk_size, particles_count);
+				for (size_t i = start; i < stop; ++i)
 				{
+					CParticlesObject* particle = ps_active[i].get();
+					if (particle->m_NeedDestroy || particle->GetHudMode())
+						continue;
+
 					particle->Update(dwTime - particle->dwLastTime, &frustum);
 					particle->dwLastTime = dwTime;
 				}
 			}
-			return;
-		}
+		};
 
-		if (last_count != particles_workers_count)
-		{
-			last_count = particles_workers_count;
-			workers.resize(last_count);
-		}
-
-		for (u32 i = 0; i < last_count; ++i)
-		{
-			workers[i].first = 0;
-			workers[i].second.clear();
-		}
-
-		std::sort(ps_active.begin(), ps_active.end(),
-			[](const xr_shared_ptr<CParticlesObject>& a, const xr_shared_ptr<CParticlesObject>& b)
-			{
-				return a->GetSpriteCount() > b->GetSpriteCount();
-			});
-
-		for (auto& particle : ps_active)
-		{
-			u32 min_group = 0;
-			for (u32 i = 0; i < last_count; ++i)
-			{
-				if (workers[i].first < workers[min_group].first)
-					min_group = i;
-			}
-			if (!particle->m_NeedDestroy && !particle->GetHudMode())
-			{
-				workers[min_group].second.push_back(particle);
-				workers[min_group].first += particle->GetSpriteCount();
-			}
-		}
+		const size_t chunks_count = (particles_count + chunk_size - 1) / chunk_size;
+		const size_t helpers_count = std::min<size_t>(particles_workers_count > 1 ? particles_workers_count - 1 : 0, chunks_count > 1 ? chunks_count - 1 : 0);
 
 		static xr_task_group particle_tasks;
-
-		for (u32 i = 0; i < last_count; ++i)
+		for (size_t i = 0; i < helpers_count; ++i)
 		{
-			particle_tasks.run([i, dwTime]()
-			{
-				PROF_EVENT("Particle worker");
-
-				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
-				{
-					return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->sphere.P) < Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->sphere.P);
-				});
-
-				for (xr_shared_ptr<CParticlesObject>& particle : workers[i].second)
-				{
-					if (particle->m_NeedDestroy) continue;
-					particle->Update(dwTime - particle->dwLastTime, &frustum);
-					particle->dwLastTime = dwTime;
-				}
-			});
+			particle_tasks.run([&update_chunks]() { update_chunks(); });
 		}
 
+		update_chunks();
 		particle_tasks.wait();
-
-		for (u32 i = 0; i < last_count; ++i)
-		{
-			workers[i].second.clear();
-		}
 	}
 }
 
