@@ -12,4 +12,6 @@ public:
 	void ClearSelcted(UIObjectListItem*Without=nullptr);
 protected:
 	virtual UITreeItem* CreateItem(shared_str Name);
+private:
+	bool PassesFilter() const;
 };
