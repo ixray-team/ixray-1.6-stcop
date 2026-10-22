@@ -24,6 +24,10 @@ else()
         # Pinned: master previously contained x86-only ISPC targets and a missing
         # Vector.inl include, both fixed upstream in this merge commit.
         GIT_TAG 9999e29e0e1196a408220636d87a273414b887e0
+        # The commit is pinned, so CMake marks the checkout as never needing an update.
+        # CI restores build/_deps from cache, and a cached clone taken before the pin
+        # fails with "Requested git ref ... is not present locally".
+        UPDATE_DISCONNECTED FALSE
         ${REDIMAGE_ARGS}
     )
     FetchContent_MakeAvailable(redimage)
