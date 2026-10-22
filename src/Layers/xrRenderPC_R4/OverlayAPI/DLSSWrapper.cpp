@@ -50,7 +50,15 @@ void DLSSWrapper::Create()
 
 	if (!DLSSInited)
 	{
-		Result = NVSDK_NGX_D3D11_Init(1602, L"", RDevice);
+		string_path LogsPath = {};
+		FS.update_path(LogsPath, "$logs$", "");
+
+		wchar_t LogsPathW[_MAX_PATH] = {};
+		MultiByteToWideChar(CP_ACP, 0, LogsPath, -1, LogsPathW, _MAX_PATH);
+
+		Result = NVSDK_NGX_D3D11_Init_with_ProjectID(
+			"5cd873f3-9331-4d2f-8756-0d8dbd823fbf", NVSDK_NGX_ENGINE_TYPE_CUSTOM, "1.6",
+			LogsPathW, RDevice);
 
 		if (Result != NVSDK_NGX_Result_Success)
 		{
@@ -67,12 +75,15 @@ void DLSSWrapper::Create()
 		return;
 	}
 
-	uint32_t NeedsUpdatedDriver = 1;
+	uint32_t NeedsUpdatedDriver = 0;
 	Result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_NeedsUpdatedDriver, &NeedsUpdatedDriver);
 
-	if (NeedsUpdatedDriver)
+	if (NVSDK_NGX_SUCCEED(Result) && NeedsUpdatedDriver)
 	{
-		Msg("! PLEASE UPDATE YOUR DRIVER");
+		uint32_t MinDriverMajor = 0, MinDriverMinor = 0;
+		NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_MinDriverVersionMajor, &MinDriverMajor);
+		NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_MinDriverVersionMinor, &MinDriverMinor);
+		Msg("! DLSS requires a newer NVIDIA driver (minimum %u.%u)", MinDriverMajor, MinDriverMinor);
 	}
 
 	uint32_t DlssAvailable = 0;
@@ -139,7 +150,7 @@ bool DLSSWrapper::GetRenderScale(float& RenderScale)
 		return false;
 	}
 
-	Msg("* DLSS Target - %dx%d, Min - %dx%d, Max - %dx%d, Sharp - %f", RenderW, RenderH, MaxW, MaxH, MinW, MinH, Sharp);
+	Msg("* DLSS Target - %ux%u, Min - %ux%u, Max - %ux%u", RenderW, RenderH, MinW, MinH, MaxW, MaxH);
 	RenderScale = float(RenderH) / float(Device.TargetHeight);
 
 	return true;
@@ -228,6 +239,8 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 		Created = false;
 		return;
 	}
+
+	HistoryInvalid = true;
 #endif
 }
 
@@ -269,7 +282,6 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 
 	DLSSEvalParams.Feature.pInColor = params.unresolvedColorResource;
 	DLSSEvalParams.Feature.pInOutput = params.resolvedColorResource;
-	DLSSEvalParams.Feature.InSharpness = params.sharpness;
 
 	DLSSEvalParams.pInDepth = params.depthbufferResource;
 	DLSSEvalParams.pInMotionVectors = params.motionvectorResource;
@@ -280,7 +292,8 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	DLSSEvalParams.InJitterOffsetX = params.cameraJitterX;
 	DLSSEvalParams.InJitterOffsetY = params.cameraJitterY;
 
-	DLSSEvalParams.InReset = params.cameraReset;
+	DLSSEvalParams.InReset = params.cameraReset || HistoryInvalid;
+	HistoryInvalid = false;
 
 	DLSSEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
 	DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
