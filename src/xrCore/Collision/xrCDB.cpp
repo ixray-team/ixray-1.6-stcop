@@ -66,7 +66,8 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 
 	auto LoaderLamda = [=]()
 	{
-		PROF_START_THREAD("build cform");
+		// A task-pool task: the thread is the pool's, only a zone here
+		PROF_EVENT("build cform");
 
 		// verts
 		if (verts.empty())
@@ -94,7 +95,6 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 			{
 				Msg("* Collision DB cache found...");
 				status.store(S_READY);
-				PROF_STOP_THREAD();
 				return;
 			}
 			else
@@ -122,7 +122,6 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 #ifdef DEBUG
 			Msg("! Collision build failed");
 #endif
-			PROF_STOP_THREAD();
 			return;
 		}
 
@@ -136,7 +135,6 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 		Msg("+ Collision build succeeded");
 #endif
 		status.store(S_READY);
-		PROF_STOP_THREAD();
 	};
 
 	if (UseDelay)

@@ -557,11 +557,7 @@ void CGamePersistent::UpdateParticles()
 		{
 			particle_tasks.run([i, dwTime]()
 			{
-				string64 worker_name;
-				u32 normalized = i;
-				xr_sprintf(worker_name, "Particle worker #%u", ++normalized);
-
-				PROF_THREAD(worker_name);
+				PROF_EVENT("Particle worker");
 
 				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{
