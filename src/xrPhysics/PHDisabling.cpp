@@ -8,6 +8,12 @@
 #endif
 
 extern CPHWorld* ph_world;
+
+static const float disabling_reference_step = 0.01f;
+IC float disabling_step_scale()
+{
+	return disabling_reference_step / fixed_step;
+}
 SDisableVector::SDisableVector()
 {
 	Init();
@@ -18,6 +24,7 @@ SDisableVector::SDisableVector()
 void	SDisableVector::Reset()
 {
 	sum.set(0.f,0.f,0.f);
+	path=0.f;
 }
 
 void	SDisableVector::Init()
@@ -32,7 +39,9 @@ float	SDisableVector::Update(const Fvector& new_vector)
 	dif.sub(new_vector,previous);
 	previous.set(new_vector);
 	sum.add(dif);
-	return dif.magnitude();
+	float mag=dif.magnitude();
+	path+=mag;
+	return mag;
 }
 
 float	SDisableVector::UpdatePrevious(const Fvector& new_vector)
@@ -45,7 +54,7 @@ float	SDisableVector::UpdatePrevious(const Fvector& new_vector)
 
 float	SDisableVector::SumMagnitude()
 {
-	return sum.magnitude();
+	return path;
 }
 
 SDisableUpdateState::SDisableUpdateState()
@@ -99,7 +108,7 @@ void	CBaseDisableData::Disabling()
 	m_count--;
 
 	UpdateL1();
-
+	m_stateL1.disable=false;
 	CheckState(m_stateL1);
 
 	if(m_count==0)//ph_world->disable_count==dis_frames//m_count==m_frames
@@ -140,22 +149,22 @@ void	CPHDisablingBase::UpdateValues(const Fvector &new_pos,const Fvector &new_ve
 
 	if(m_count<m_frames)
 	{
-		float			velocity_param		=	m_mean_velocity		.Update(new_pos)		/ fixed_step;
-		float			acceleration_param	=	m_mean_acceleration	.Update(new_vel)		/ fixed_step;
+		float			velocity_param		=	m_mean_velocity		.Update(new_pos)		* disabling_step_scale();
+		float			acceleration_param	=	m_mean_acceleration	.Update(new_vel)		* disabling_step_scale();
 		CheckState						(m_stateL1,velocity_param*m_frames,acceleration_param*m_frames)	;
 	}
 	else
 	{
-		float			velocity_param		=	m_mean_velocity		.UpdatePrevious(new_pos)		/ fixed_step;
-		float			acceleration_param	=	m_mean_acceleration	.UpdatePrevious(new_vel)		/ fixed_step;
+		float			velocity_param		=	m_mean_velocity		.UpdatePrevious(new_pos)		* disabling_step_scale();
+		float			acceleration_param	=	m_mean_acceleration	.UpdatePrevious(new_vel)		* disabling_step_scale();
 		CheckState						(m_stateL1,velocity_param*m_frames,acceleration_param*m_frames)	;
 	}
 }
 void	CPHDisablingBase::UpdateL2()
 {
 					m_stateL2			.	Reset						()							;
-	float			velocity_param		=	m_mean_velocity		.SumMagnitude()/m_frames			/ fixed_step;
-	float			acceleration_param	=	m_mean_acceleration	.SumMagnitude()/m_frames			/ fixed_step;
+	float			velocity_param		=	m_mean_velocity		.SumMagnitude()/m_frames			* disabling_step_scale();
+	float			acceleration_param	=	m_mean_acceleration	.SumMagnitude()/m_frames			* disabling_step_scale();
 
 	CheckState						(m_stateL2,velocity_param,acceleration_param)					;
 
@@ -255,6 +264,7 @@ void	CPHDisablingFull::UpdateL1()
 	state=m_stateL1;
 	CPHDisablingTranslational::UpdateL1();
 	m_stateL1&=state; 
+	CheckJointsState(m_stateL1,float(m_frames));
 }
 
 void	CPHDisablingFull::UpdateL2()
@@ -264,6 +274,49 @@ void	CPHDisablingFull::UpdateL2()
 	state=m_stateL2;
 	CPHDisablingTranslational::UpdateL2();
 	m_stateL2&=state;
+	CheckJointsState(m_stateL2,1.f);
+}
+
+void	CPHDisablingFull::CheckJointsState(SDisableUpdateState& state, float scale)
+{
+	dBodyID			body				=	get_body();
+	const	dReal	*pos				=	dBodyGetPosition(body);
+	const	dReal	*lvel				=	dBodyGetLinearVel(body);
+	const	dReal	*avel				=	dBodyGetAngularVel(body);
+	const	float	to_step				=	disabling_reference_step*scale;
+	const	float	reanable			=	worldDisablingParams.reanable_factor;
+	const	SOneDDOParams& tparams		=	CPHDisablingTranslational::m_params;
+	const	SOneDDOParams& rparams		=	CPHDisablingRotational::m_params;
+
+	int				num					=	dBodyGetNumJoints(body);
+	for(int i=0;i<num;++i)
+	{
+		dJointID	joint				=	dBodyGetJoint(body,i);
+		if(dJointGetType(joint)==dJointTypeContact)	continue;
+		dBodyID		other				=	dJointGetBody(joint,0);
+		if(other==body)	other			=	dJointGetBody(joint,1);
+
+		Fvector		rel_l,rel_w;
+		if(other)
+		{
+			dVector3	other_point_vel;
+			dBodyGetPointVel(other,pos[0],pos[1],pos[2],other_point_vel);
+			rel_l.sub(cast_fv(lvel),cast_fv(other_point_vel));
+			rel_w.sub(cast_fv(avel),cast_fv(dBodyGetAngularVel(other)));
+		}
+		else
+		{
+			rel_l.set(cast_fv(lvel));
+			rel_w.set(cast_fv(avel));
+		}
+
+		float		l					=	rel_l.magnitude()*to_step;
+		float		w					=	rel_w.magnitude()*to_step;
+		if(l>=tparams.velocity||w>=rparams.velocity)
+			state.disable				=	false;
+		if(l>tparams.velocity*reanable||w>rparams.velocity*reanable)
+			state.enable				=	true;
+	}
 }
 
 void CPHDisablingFull::set_DisableParams(const SAllDDOParams& params)
