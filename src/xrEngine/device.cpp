@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <csignal>
 #include "../xrCore/Collision/Frustum.h"
 
 #include "x_ray.h"
@@ -158,6 +159,22 @@ void CRenderDevice::on_idle		()
 	const bool IsMainMenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
 
 	Platform::SetThreadName("X-Ray Primary Thread");
+	// TEMPORARY: per-second frame timing (env-gated).
+	if (getenv("IXR_PERF_LOG"))
+	{
+		static u32 s_frames = 0; static u32 s_lastMs = 0; static float s_accum = 0.f; static float s_max = 0.f;
+		++s_frames; s_accum += Device.fTimeDelta;
+		if (Device.fTimeDelta > s_max) s_max = Device.fTimeDelta;
+		const u32 now = SDL_GetTicks();
+		if (s_lastMs == 0) s_lastMs = now;
+		else if (now - s_lastMs >= 1000)
+		{
+			const float fps = s_frames * 1000.f / float(now - s_lastMs);
+			Msg("* [PERF] fps=%.1f frame=%.1fms max=%.1fms", fps, s_accum * 1000.f / s_frames, s_max * 1000.f);
+			s_frames = 0; s_accum = 0.f; s_max = 0.f; s_lastMs = now;
+		}
+	}
+
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
@@ -327,6 +344,14 @@ void CRenderDevice::CalculateTransforms()
 
 volatile bool quiting = false;
 
+// Quit requests that arrive as signals (pkill, Ctrl+C, a supervisor stopping the
+// process) must go through the normal shutdown path: the frame loop stops and the
+// engine saves its settings and closes the shader cache cleanly.
+static void device_request_quit(int)
+{
+	quiting = true;
+}
+
 void CRenderDevice::message_loop()
 {
 	while (!quiting)
@@ -336,6 +361,9 @@ void CRenderDevice::message_loop()
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
+			// TEMPORARY: how long an event waited in the queue (env-gated).
+			if (getenv("IXR_LAT_LOG") && (event.type == SDL_EVENT_KEY_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN))
+				Msg("* [LAT] type=%u queue_ms=%.1f", event.type, (double)(SDL_GetTicksNS() - event.common.timestamp) / 1000000.0);
 			if (!on_event(event))
 			{
 				quiting = true;
@@ -374,6 +402,9 @@ void CRenderDevice::Run()
 	}
 
 	g_AppInfo.MainThread = Platform::GetCurrentThread();
+	std::signal(SIGTERM, device_request_quit);
+	std::signal(SIGINT, device_request_quit);
+
 	// Message cycle
 	seqAppStart.Process<&pureAppStart::OnAppStart>();
 
