@@ -177,6 +177,7 @@ public:
 	ref_rt						rt_Color;			// 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
 	ref_rt						rt_Surface;
 	ref_rt						rt_Velocity;
+	ref_rt						ReactiveMask;
 	ref_rt						rt_ui_pda;
 
 	ref_rt						rt_ui_depth;

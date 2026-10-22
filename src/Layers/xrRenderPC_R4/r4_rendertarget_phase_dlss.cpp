@@ -34,7 +34,7 @@ bool CRenderTarget::phase_dlss()
 	dlssParams.depthbufferResource = (ID3D11Texture2D*)rt_Position->pSurface->GetRawTexture();
 
 	dlssParams.exposureResource = nullptr;
-	dlssParams.reactiveMapResource = nullptr;
+	dlssParams.reactiveMapResource = (ID3D11Texture2D*)ReactiveMask->pSurface->GetRawTexture();
 	dlssParams.transparencyAndCompositionResource = nullptr;
 
 	dlssParams.resolvedColorResource = (ID3D11Texture2D*)rt_Generic->pSurface->GetRawTexture();

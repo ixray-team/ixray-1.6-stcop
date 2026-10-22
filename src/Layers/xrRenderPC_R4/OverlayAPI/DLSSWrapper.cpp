@@ -286,6 +286,7 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
 
 	DLSSEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
+	DLSSEvalParams.pInBiasCurrentColorMask = params.reactiveMapResource;
 	DLSSEvalParams.InFrameTimeDeltaInMsec = params.frameTimeDelta;
 	
 	NVSDK_NGX_Result Result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &DLSSEvalParams);
