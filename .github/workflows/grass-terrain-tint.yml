@@ -3,6 +3,13 @@ name: Grass terrain tint - Windows
 on:
   push:
     branches: [feature/grass-terrain-tint]
+    paths:
+      - 'src/Layers/xrRenderPC_R4/**'
+      - 'gamedata/shaders/**'
+      - 'tests/grass_terrain_tint/**'
+      - 'util/grass-terrain-tint/*.ps1'
+      - 'util/grass-terrain-tint/*.cmd'
+      - '.github/workflows/grass-terrain-tint.yml'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +44,12 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@v7
+      - name: Compile actual Direct3D 11 shader variants
+        run: |
+          $fxc = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\fxc.exe" | Sort-Object FullName -Descending | Select-Object -First 1
+          if (!$fxc) { throw 'Windows SDK FXC was not found' }
+          python tests/grass_terrain_tint/validate_shaders.py --backend fxc --compiler $fxc.FullName --output build/grass-tint-fxc
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Configure R4 engine
         run: cmake --preset Engine-x64-Windows -DIXRAY_USE_R1=OFF -DIXRAY_USE_R2=OFF -DIXRAY_PROFILER=OFF
       - name: Build engine and R4
@@ -64,6 +77,7 @@ jobs:
           path: |
             build/x64/Engine-Windows/bin/Release/*.exe
             build/x64/Engine-Windows/bin/Release/*.dll
+            build/x64/Engine-Windows/bin/Release/*.txt
             gamedata/shaders/**
             util/grass-terrain-tint/**
           if-no-files-found: error

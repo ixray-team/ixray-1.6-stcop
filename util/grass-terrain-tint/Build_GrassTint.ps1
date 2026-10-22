@@ -45,7 +45,7 @@ if (!(Test-Path $patch) -and (Test-Path (Join-Path $repositoryRoot 'CMakePresets
     }
     if (!(Test-Path $SourceRoot)) {
         $env:GIT_LFS_SKIP_SMUDGE = '1'
-        Invoke-Checked $git @('clone', '--filter=blob:none', '--no-checkout', $manifest.repository, $SourceRoot)
+        Invoke-Checked $git @('clone', '--config', 'core.autocrlf=false', '--filter=blob:none', '--no-checkout', $manifest.repository, $SourceRoot)
         Invoke-Checked $git @('-C', $SourceRoot, '-c', 'core.autocrlf=false', 'checkout', '--detach', $manifest.baseline)
     }
     if (!(Test-Path (Join-Path $SourceRoot '.git'))) { throw "SourceRoot is not a Git checkout: $SourceRoot" }
@@ -64,8 +64,8 @@ if (!(Test-Path $patch) -and (Test-Path (Join-Path $repositoryRoot 'CMakePresets
         if ($hash -ne $entry.patched_sha256) { $patched = $false }
     }
     if ($original) {
-        Invoke-Checked $git @('-C', $SourceRoot, 'apply', '--check', '--whitespace=nowarn', $patch)
-        Invoke-Checked $git @('-C', $SourceRoot, 'apply', '--whitespace=nowarn', $patch)
+        Invoke-Checked $git @('-C', $SourceRoot, '-c', 'core.autocrlf=false', 'apply', '--check', '--whitespace=nowarn', $patch)
+        Invoke-Checked $git @('-C', $SourceRoot, '-c', 'core.autocrlf=false', 'apply', '--whitespace=nowarn', $patch)
     } elseif (!$patched) {
         throw 'Source files differ from both the baseline and this package. Use a new separate SourceRoot.'
     }

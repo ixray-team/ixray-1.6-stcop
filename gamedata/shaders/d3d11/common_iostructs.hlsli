@@ -142,869 +142,169 @@ struct v2p_build
 
 struct p_build
 {
-    float2 Tex0 :…55867 tokens truncated…		ps_wind_sw_con_min = 0.2f;
-float		ps_wind_sw_con_max = 0.6f;
-float		ps_wind_sw_spd_min = 0.3f;
-float		ps_wind_sw_spd_max = 1.5f;
-float		ps_wind_sw_ang_min = 75.0f;
-float		ps_wind_sw_ang_max = 105.0f;
-
-// Test float exported to shaders for development
-float		ps_r__test_exp_to_shaders_1	= 1.0f;
-float		ps_r__test_exp_to_shaders_2	= 1.0f;
-float		ps_r__test_exp_to_shaders_3	= 1.0f;
-float		ps_r__test_exp_to_shaders_4	= 1.0f;
-
-bool		ps_r2_particle_dt			= false;
-
-int			r_debug_render_depth		= 0;
-
-#include "../../xrEngine/XR_IOConsole.h"
-#include	"../../xrEngine/xr_ioc_cmd.h"
-#include "../../xrEngine/IGame_Level.h"
-#include "../../xrEngine/MonsterLogicTelemetry.h"
-#include "../../xrCore/Kernel/EngineExternal.h"
-
-class CCC_MonsterLogic : public IConsole_Command
+    float2 Tex0 : TEXCOORD0;
+    float2 Tex1 : TEXCOORD1;
+    float2 Tex2 : TEXCOORD2;
+    float2 Tex3 : TEXCOORD3;
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
+};
+////////////////////////////////////////////////////////////////
+//	filter	(bloom_filter)
+struct v_filter
 {
-public:
-	CCC_MonsterLogic(const char* Name) : IConsole_Command(Name) {}
-	void Execute(const char* Args) override
-	{
-		int Value;
-		if (!xr_strcmp(Args, "on") || !xr_strcmp(Args, "1"))
-		{
-			Value = 1;
-		}
-		else if (!xr_strcmp(Args, "off") || !xr_strcmp(Args, "0"))
-		{
-			Value = 0;
-		}
-		else if (!xr_strcmp(Args, "config"))
-		{
-			Value = -1;
-		}
-		else
-		{
-			InvalidSyntax();
-			return;
-		}
-		EngineExternal().SetMonsterLogicOverride(Value);
-		const u32 Count = g_pGameLevel ? g_pGameLevel->ReloadMonsterLogicOptions() : 0;
-		g_MonsterLogicTelemetry.Reset();
-		Msg("Monster logic: %s; refreshed %u monsters", EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterFactionEnemySharingIsolation] ? "ON" : "VANILLA", Count);
-	}
-	void Status(TStatus& S) override
-	{
-		const int Value = EngineExternal().GetMonsterLogicOverride();
-		xr_strcpy(S, Value < 0 ? "config" : (Value ? "on" : "off"));
-	}
-	void Info(TInfo& I) override { xr_strcpy(I, "on/off/config"); }
-	void Save(IWriter*) override {}
+    float4 P : POSITIONT;
+    float4 Tex0 : TEXCOORD0;
+    float4 Tex1 : TEXCOORD1;
+    float4 Tex2 : TEXCOORD2;
+    float4 Tex3 : TEXCOORD3;
+    float4 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
+    float4 Tex7 : TEXCOORD7;
 };
 
-class CCC_MonsterLogicDraw : public IConsole_Command
+struct v2p_filter
 {
-public:
-	CCC_MonsterLogicDraw(const char* Name) : IConsole_Command(Name) {}
-	void Execute(const char* Args) override
-	{
-		const bool On = !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
-		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
-		{
-			InvalidSyntax();
-			return;
-		}
-		g_MonsterLogicTelemetry.DrawEnabled.store(On, std::memory_order_relaxed);
-		if (g_pGameLevel) g_pGameLevel->SetMonsterLogicDraw(On);
-		if (On)
-		{
-			Msg("* Player sharing: green=own sight, white=close detection, yellow=radio, cyan=wireless, magenta=call; transfer arrows last 5s; yellow cross/up arrow=last known point while memory is valid");
-		}
-	}
-	void Status(TStatus& S) override { xr_strcpy(S, g_MonsterLogicTelemetry.DrawEnabled.load(std::memory_order_relaxed) ? "on" : "off"); }
-	void Info(TInfo& I) override { xr_strcpy(I, "on/off: player enemy sharing spheres and arrows"); }
-	void Save(IWriter*) override {}
+    float4 Tex0 : TEXCOORD0;
+    float4 Tex1 : TEXCOORD1;
+    float4 Tex2 : TEXCOORD2;
+    float4 Tex3 : TEXCOORD3;
+    float4 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
+    float4 Tex7 : TEXCOORD7;
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
-class CCC_MonsterLogicStats : public IConsole_Command
+struct p_filter
 {
-public:
-	CCC_MonsterLogicStats(const char* Name) : IConsole_Command(Name) {}
-	void Execute(const char* Args) override
-	{
-		if (!xr_strcmp(Args, "reset"))
-		{
-			g_MonsterLogicTelemetry.Reset();
-			return;
-		}
-		const bool Full = !xr_strcmp(Args, "full") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
-		const bool On = Full || !xr_strcmp(Args, "brief") || !xr_strcmp(Args, "on") || !xr_strcmp(Args, "1");
-		if (!On && xr_strcmp(Args, "off") && xr_strcmp(Args, "0"))
-		{
-			InvalidSyntax();
-			return;
-		}
-		g_MonsterLogicTelemetry.Detailed.store(Full, std::memory_order_relaxed);
-		g_MonsterLogicTelemetry.Enabled.store(On, std::memory_order_relaxed);
-		g_MonsterLogicTelemetry.Reset();
-		if (On)
-		{
-			Console->Execute("rs_fps_show on");
-		}
-	}
-	void Status(TStatus& S) override
-	{
-		xr_strcpy(S, !g_MonsterLogicTelemetry.Enabled.load(std::memory_order_relaxed) ? "off" :
-			g_MonsterLogicTelemetry.Detailed.load(std::memory_order_relaxed) ? "full" : "brief");
-	}
-	void Info(TInfo& I) override { xr_strcpy(I, "on/off/brief/full/reset"); }
-	void Save(IWriter*) override {}
+    float4 Tex0 : TEXCOORD0;
+    float4 Tex1 : TEXCOORD1;
+    float4 Tex2 : TEXCOORD2;
+    float4 Tex3 : TEXCOORD3;
+    float4 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
+    float4 Tex7 : TEXCOORD7;
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
-
-
-#	include "StateManager/dx10SamplerStateCache.h"
-
-//-----------------------------------------------------------------------
-class CCC_tf_Aniso : public CCC_Integer
+////////////////////////////////////////////////////////////////
+//	aa_AA
+struct v_aa_AA
 {
-public:
-	void	apply	()	{
-		if (0==RDevice)	return	;
-		int	val = *value;	clamp(val,1,16);
-		SSManager.SetMaxAnisotropy(val);
-	}
-	CCC_tf_Aniso(const char* N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
-	virtual void Execute	(const char* args)
-	{
-		CCC_Integer::Execute	(args);
-		apply					();
-	}
-	virtual void	Status	(TStatus& S)
-	{	
-		CCC_Integer::Status		(S);
-		apply					();
-	}
+    float4 P : POSITIONT;
+    float2 Tex0 : TEXCOORD0;
+    float2 Tex1 : TEXCOORD1;
+    float2 Tex2 : TEXCOORD2;
+    float2 Tex3 : TEXCOORD3;
+    float2 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
 };
 
-class CCC_tf_MipBias: public CCC_Float {
-public:
-	CCC_tf_MipBias(const char* N, float* v) : CCC_Float(N, v, -3.0f, 3.0f) {};
-	void apply() {
-		if (0 == RDevice) {
-			return;
-		}
-		float val = *value;
-		clamp(val, -3.0f, 3.0f);
-		SSManager.SetMipLodBias(val);
-	}
-	virtual void Execute(const char* args) {
-		CCC_Float::Execute(args);
-		apply();
-	}
-
-	virtual void Status(TStatus& S) {
-		CCC_Float::Status(S);
-		apply();
-	}
-};
-
-class CCC_R2GM : public CCC_Float
+struct v2p_aa_AA
 {
-public:
-	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-	virtual void	Execute	(const char* args)
-	{
-		if (0==xr_strcmp(args,"on"))	{
-			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,true);
-		} else if (0==xr_strcmp(args,"off"))	{
-			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,false);
-		} else {
-			CCC_Float::Execute	(args);
-			if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	{
-				static const char*	name[4]	=	{ "oren", "blin", "phong", "metal" };
-				float	mid		= *value	;
-				int		m0		= iFloor(mid)	% 4;
-				int		m1		= (m0+1)		% 4;
-				float	frc		= mid - float(iFloor(mid));
-				Msg		("* material set to [%s]-[%s], with lerp of [%f]",name[m0],name[m1],frc);
-			}
-		}
-	}
+    float2 Tex0 : TEXCOORD0;
+    float2 Tex1 : TEXCOORD1;
+    float2 Tex2 : TEXCOORD2;
+    float2 Tex3 : TEXCOORD3;
+    float2 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
-class CCC_Screenshot : public IConsole_Command
+
+struct p_aa_AA
 {
-public:
-	CCC_Screenshot(const char* N) : IConsole_Command(N)  { };
-	virtual void Execute(const char* args) {
-		if (g_dedicated_server)
-			return;
-
-		string_path	name;	name[0]=0;
-		sscanf		(args,"%s",	name);
-		const char*		image	= xr_strlen(name)?name:0;
-		::Render->Screenshot(IRender_interface::SM_NORMAL,image);
-	}
+    float2 Tex0 : TEXCOORD0;
+    float2 Tex1 : TEXCOORD1;
+    float2 Tex2 : TEXCOORD2;
+    float2 Tex3 : TEXCOORD3;
+    float2 Tex4 : TEXCOORD4;
+    float4 Tex5 : TEXCOORD5;
+    float4 Tex6 : TEXCOORD6;
+    //	float4 	HPos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
-//-----------------------------------------------------------------------
-class CCC_Preset :
-	public CCC_Token
+struct p_aa_AA_sun
 {
-public:
-	CCC_Preset(const char* N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
-
-	virtual void	Execute	(const char* args)	{
-		CCC_Token::Execute	(args);
-		string_path		_cfg;
-		string_path		cmd;
-
-		auto setConfig = [&](const char* basePath)
-		{
-			xr_string path = xr_string("ixray_settings\\") + basePath;
-			if (FS.exist(_game_config_, path.c_str()))
-			{
-				xr_strcpy(_cfg, path.c_str());
-			}
-			else
-			{
-				xr_strcpy(_cfg, basePath);
-			}
-		};
-
-		switch	(*value)	{
-			case 0: setConfig("rspec_minimum.ltx"); break;
-			case 1: setConfig("rspec_low.ltx"); break;
-			case 2: setConfig("rspec_default.ltx"); break;
-			case 3: setConfig("rspec_high.ltx"); break;
-			case 4: setConfig("rspec_extreme.ltx"); break;
-			case 5: setConfig("rspec_ultra.ltx"); break;
-		}
-		FS.update_path			(_cfg,_game_config_,_cfg);
-		xr_strconcat(cmd,"cfg_load", " ", _cfg);
-		Console->Execute		(cmd);
-	}
+    float2 tc : TEXCOORD0;
+    float2 unused : TEXCOORD1;
+    float2 LT : TEXCOORD2;
+    float2 RT : TEXCOORD3;
+    float2 LB : TEXCOORD4;
+    float2 RB : TEXCOORD5;
+    //	float4 	HPos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
-class CCC_memory_stats : public IConsole_Command
+////////////////////////////////////////////////////////////////
+//	dumb
+struct v_dumb
 {
-protected	:
-
-public		:
-
-	CCC_memory_stats(const char* N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
-
-	virtual void	Execute	(const char* args)
-	{
-		u32 m_base = 0;
-		u32 c_base = 0;
-		u32 m_lmaps = 0; 
-		u32 c_lmaps = 0;
-
-		dxRenderDeviceRender::Instance().ResourcesGetMemoryUsage( m_base, c_base, m_lmaps, c_lmaps );
-	}
-
+    float4 P : POSITION; // Clip-space position 	(for rasterization)
 };
 
-class CCC_DofFar : public CCC_Float
+struct v2p_dumb
 {
-public:
-	CCC_DofFar(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
-		: CCC_Float( N, V, _min, _max){}
-
-	virtual void Execute(const char* args) 
-	{
-		float v = float(atof(args));
-
-		if (v<ps_r2_dof.y+0.1f)
-		{
-			char	pBuf[256];
-			snprintf(pBuf, sizeof(pBuf) / sizeof(pBuf[0]), "float value greater or equal to r2_dof_focus+0.1");
-			Msg("~ Invalid syntax in call to '%s'",cName);
-			Msg("~ Valid arguments: %s", pBuf);
-			Console->Execute("r2_dof_focus");
-		}
-		else
-		{
-			CCC_Float::Execute(args);
-			if(g_pGamePersistent)
-				g_pGamePersistent->SetBaseDof(ps_r2_dof);
-		}
-	}
-
-	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
-class CCC_DofNear : public CCC_Float
+////////////////////////////////////////////////////////////////
+//	Volume
+struct v2p_volume
 {
-public:
-	CCC_DofNear(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
-		: CCC_Float( N, V, _min, _max){}
-
-	virtual void Execute(const char* args) 
-	{
-		float v = float(atof(args));
-
-		if (v>ps_r2_dof.y-0.1f)
-		{
-			char	pBuf[256];
-			snprintf(pBuf, sizeof(pBuf) / sizeof(pBuf[0]), "float value less or equal to r2_dof_focus-0.1");
-			Msg("~ Invalid syntax in call to '%s'",cName);
-			Msg("~ Valid arguments: %s", pBuf);
-			Console->Execute("r2_dof_focus");
-		}
-		else
-		{
-			CCC_Float::Execute(args);
-			if(g_pGamePersistent)
-				g_pGamePersistent->SetBaseDof(ps_r2_dof);
-		}
-	}
-
-	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+    float4 tc : TEXCOORD0;
+    float4 hpos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
-
-class CCC_DofFocus : public CCC_Float
+struct p_volume
 {
-public:
-	CCC_DofFocus(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
-		: CCC_Float( N, V, _min, _max){}
-
-	virtual void Execute(const char* args) 
-	{
-		float v = float(atof(args));
-
-		if (v>ps_r2_dof.z-0.1f)
-		{
-			char	pBuf[256];
-			snprintf(pBuf, sizeof(pBuf) / sizeof(pBuf[0]), "float value less or equal to r2_dof_far-0.1");
-			Msg("~ Invalid syntax in call to '%s'",cName);
-			Msg("~ Valid arguments: %s", pBuf);
-			Console->Execute("r2_dof_far");
-		}
-		else if (v<ps_r2_dof.x+0.1f)
-		{
-			char	pBuf[256];
-			snprintf(pBuf, sizeof(pBuf) / sizeof(pBuf[0]), "float value greater or equal to r2_dof_far-0.1");
-			Msg("~ Invalid syntax in call to '%s'",cName);
-			Msg("~ Valid arguments: %s", pBuf);
-			Console->Execute("r2_dof_near");
-		}
-		else{
-			CCC_Float::Execute(args);
-			if(g_pGamePersistent)
-				g_pGamePersistent->SetBaseDof(ps_r2_dof);
-			}
-	}
-
-	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+    float4 tc : TEXCOORD0;
+    //	float4 	hpos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
-
-class CCC_Dof : public CCC_Vector3
+////////////////////////////////////////////////////////////////
+//	Static
+struct v_static
 {
-public:
-	CCC_Dof(const char* N, Fvector* V, const Fvector _min, const Fvector _max) : 
-	  CCC_Vector3(N, V, _min, _max) {;}
-
-	virtual void	Execute	(const char* args)
-	{
-		Fvector v;
-		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	
-			InvalidSyntax(); 
-		else if ( (v.x > v.y-0.1f) || (v.z < v.y+0.1f))
-		{
-			InvalidSyntax();
-			Msg("x <= y - 0.1");
-			Msg("y <= z - 0.1");
-		}
-		else
-		{
-			CCC_Vector3::Execute(args);
-			if(g_pGamePersistent)
-				g_pGamePersistent->SetBaseDof(ps_r2_dof);
-		}
-	}
-	virtual void	Status	(TStatus& S)
-	{	
-		xr_sprintf	(S,"%f,%f,%f",value->x,value->y,value->z);
-	}
-	virtual void	Info	(TInfo& I)
-	{	
-		xr_sprintf(I,"vector3 in range [%f,%f,%f]-[%f,%f,%f]",min.x,min.y,min.z,max.x,max.y,max.z);
-	}
-
-};
-
-class CCC_DumpResources : public IConsole_Command
-{
-public:
-	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
-	{
-		dxRenderDeviceRender::Instance().Resources->Dump(false);
-	}
-};
-
-//	Allow real-time fog config reload
-#if defined(DEBUG_DRAW)
-#include "3DFluid/dx103DFluidManager.h"
-
-class CCC_Fog_Reload : public IConsole_Command
-{
-public:
-	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
-	{
-		FluidManager.UpdateProfiles();
-	}
-};
+    float4 Nh : NORMAL; // (nx,ny,nz,hemi occlusion)
+    float4 T : TANGENT; // tangent
+    float4 B : BINORMAL; // binormal
+    int2 tc : TEXCOORD0; // (u,v)
+#ifdef USE_LM_HEMI
+    int2 lmh : TEXCOORD1; // (lmu,lmv)
 #endif
-
-class CCC_DetailRadius : public CCC_Integer
-{
-public:
-	CCC_DetailRadius(const char* N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
-	{
-	};
-	
-	virtual void Execute(const char* args) {
-		CCC_Integer::Execute(args);
-
-		dm_current_size				= iFloor((float)ps_r__detail_radius/4)*2;
-		dm_current_slide_window_line		= dm_current_size*2/4;		// assuming cache1_count = 4
-		dm_current_cache_line		= dm_current_size+1+dm_current_size;
-		dm_current_cache_size		= dm_current_cache_line*dm_current_cache_line;
-		dm_current_fade				= float(2*dm_current_size)-.5f;
-
-		if (RImplementation.b_loaded && (dm_current_size != dm_size))
-		{
-			Device.DetailsTask.wait();
-			RImplementation.Details->cache_ReInitialize();
-		}
-	}
-	
-	virtual void Status(TStatus& S) {
-		CCC_Integer::Status(S);
-	}
+    float4 P : POSITION; // (float,float,float,1)
 };
 
-class CCC_DetailDensity : public CCC_Float
+struct v_static_color
 {
-public:
-	CCC_DetailDensity(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
-		: CCC_Float(N, V, _min, _max) {
-	}
+    float4 P : POSITION; // (float,float,float,1)
 
-	virtual void Execute(LPCSTR args) {
-		CCC_Float::Execute(args);
+    float4 Nh : NORMAL; // (nx,ny,nz,hemi occlusion)
+    float4 T : TANGENT; // tangent
+    float4 B : BINORMAL; // binormal
 
-		if (RImplementation.b_loaded)
-		{
-			Device.DetailsTask.wait();
-			RImplementation.Details->cache_ReInitialize();
-		}
-	}
+    float4 color : COLOR0; // (r,g,b,dir-occlusion)	//	Swizzle before use!!!
+    int2 tc : TEXCOORD0; // (u,v)
 
-	virtual void Status(TStatus& S) {
-		CCC_Float::Status(S);
-	}
+#ifdef USE_LM_HEMI
+    int2 lmh : TEXCOORD1; // (lmu,lmv)
+#endif
 };
 
-class CCC_DetailReloadDetails : public CCC_Float
+struct gbuffer_data
 {
-public:
-	CCC_DetailReloadDetails(LPCSTR N, float* V, float _min = 0.0f, float _max = 10000.0f)
-		: CCC_Float(N, V, _min, _max) {
-	}
+    float3 P;
+    float3 P_hud;
+    float3 P_real;
 
-	virtual void Execute(LPCSTR args) {
-		CCC_Float::Execute(args);
-		RImplementation.Details->RequestCacheRebuild();
-	}
+    float depth;
 
-	virtual void Status(TStatus& S) {
-		CCC_Float::Status(S);
-	}
-};
-
-class CCC_DetailReloadDetails_Boolean : public CCC_Boolean
-{
-public:
-	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
-		: CCC_Boolean(N, V) {}
-
-	virtual void Execute(const char* args) {
-		CCC_Boolean::Execute(args);
-		RImplementation.Details->RequestCacheRebuild();
-	}
-};
-
-// Manual bake: regenerate the precomputed fields from the current console settings
-// and persist them to disk immediately. Useful when tweaking r__detail_* via console
-// and wanting the files updated without waiting for the next level load.
-class GrassTerrainTintRebuildCommand final : public IConsole_Command
-{
-public:
-	GrassTerrainTintRebuildCommand(const char* Name) : IConsole_Command(Name) { bEmptyArgsHandled = true; }
-	void Execute(const char*) override { RImplementation.GrassTerrainTint.RequestRebuild(); }
-};
-
-class CCC_DetailLayersForceBake : public IConsole_Command
-{
-public:
-	CCC_DetailLayersForceBake(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-	virtual void Execute(const char* args)
-	{
-		if (!RImplementation.Details|| !RImplementation.b_loaded)
-		{
-			Msg("! detail_layers: no loaded level, nothing to bake");
-			return;
-		}
-		Device.DetailsTask.wait();
-		// Rebuild first so stale in-memory fields never hit the disk, then persist.
-		RImplementation.Details->cache_ReInitialize();
-		RImplementation.Details->DetailLayers_SaveToBake();
-	}
-};
-
-// Rollback: restore the r__detail_* console state from the baked settings.txt and load
-// the last bake from disk. Restoring the settings first keeps crc consistent - otherwise
-// a later console flag flip or level restart would recompute/overwrite the bake.
-class CCC_DetailLayersForceLoad : public IConsole_Command
-{
-public:
-	CCC_DetailLayersForceLoad(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-	virtual void Execute(const char* args)
-	{
-		if (!RImplementation.Details|| !RImplementation.b_loaded)
-		{
-			Msg("! detail_layers: no loaded level, nothing to load");
-			return;
-		}
-		Device.DetailsTask.wait();
-		RImplementation.Details->DetailLayers_ApplySettingsFromBake();
-		// crc now matches the baked settings -> fields come back from disk.
-		RImplementation.Details->cache_ReInitialize();
-	}
-};
-
-extern Fvector3 ps_ssfx_volumetric;
-
-class SunShadowCacheStats final : public IConsole_Command
-{
-public:
-	explicit SunShadowCacheStats(const char* Name) : IConsole_Command(Name)
-	{
-		bEmptyArgsHandled = true;
-	}
-	~SunShadowCacheStats() override = default;
-
-	void Execute(const char*) override
-	{
-		RImplementation.DumpSunShadowCache();
-	}
-};
-
-class CCC_SpotShadowCacheClear : public IConsole_Command
-{
-public:
-	explicit CCC_SpotShadowCacheClear(const char* Name) : IConsole_Command(Name)
-	{
-		bEmptyArgsHandled = true;
-	}
-
-	void Execute(const char*) override
-	{
-		if (RImplementation.Target)
-		{
-			RImplementation.Target->InvalidateSpotShadowCache();
-		}
-	}
-};
-
-class CCC_SpotShadowCacheStats : public IConsole_Command
-{
-public:
-	explicit CCC_SpotShadowCacheStats(const char* Name) : IConsole_Command(Name)
-	{
-		bEmptyArgsHandled = true;
-	}
-
-	void Execute(const char*) override
-	{
-		if (RImplementation.Target)
-		{
-			RImplementation.Target->DumpSpotShadowCache();
-		}
-	}
-};
-//-----------------------------------------------------------------------
-RENDER_API void		xrRender_initconsole	()
-{
-	CMD4(CCC_Integer, "r4_spot_shadow_cache", &g_SpotShadowCacheMode, 0, 2);
-	CMD4(CCC_Integer, "r4_sun_shadow_cache", &g_SunShadowCacheMode, 0, 2);
-	CMD1(SunShadowCacheStats, "r4_sun_shadow_cache_stats");
-	CMD4(CCC_Integer, "r4_spot_shadow_cache_mb", &g_SpotShadowCacheBudgetMb, 1, 1024);
-	CMD1(CCC_SpotShadowCacheClear, "r4_spot_shadow_cache_clear");
-	CMD1(CCC_SpotShadowCacheStats, "r4_spot_shadow_cache_stats");
-	CMD1(CCC_MonsterLogic, "monster_logic");
-	CMD1(CCC_MonsterLogicStats, "monster_logic_stats");
-	CMD1(CCC_MonsterLogicDraw, "monster_logic_draw");
-
-	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
-
-	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
-	CMD4(CCC_Integer,	"r__anim_cubic",		&g_AnimCubicInterpolation,	0,	1	);
-	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
-
-// Common
-	CMD1(CCC_Screenshot,"screenshot"			);
-	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
-
-	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-	CMD4(CCC_Float,		"r__mu_lod",			&ps_r__LOD_MU_X,			0.1f,	3.0f);
-
-	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
-	CMD3(CCC_Token, "r4.sharpening.mode", &ps_r4_sharpening_mode, sharpening_mode_token);
-
-#ifdef DEBUG
-	CMD4(CCC_Float,		"r__mu4_discard_lod",	&ps_r__LOD_MU4_discard,		0.001f, 10.0f);
-	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
-	CMD4(CCC_Float,		"r__detail_l_aniso",	&ps_r__Detail_l_aniso,		.1f,	.5f		);
-#endif // DEBUG
-
-	CMD2(CCC_tf_Aniso, "r__tf_aniso", &ps_r__tf_Anisotropic); //	{1..16}
-	CMD2(CCC_tf_MipBias, "r__tf_mipbias", &ps_r__tf_Mipbias);//	{-3 +3}
-
-	// R1
-	CMD4(CCC_Float,		"r1_lmodel_lerp",		&ps_r1_lmodel_lerp,			0,		0.333f	);
-	CMD3(CCC_Mask32,		"r1_dlights",			&ps_r1_flags,				R1FLAG_DLIGHTS	);
-	CMD4(CCC_Float,		"r1_dlights_clip",		&ps_r1_dlights_clip,		10.f,	150.f	);
-	CMD4(CCC_Float,		"r1_pps_u",				&ps_r1_pps_u,				-1.f,	+1.f	);
-	CMD4(CCC_Float,		"r1_pps_v",				&ps_r1_pps_v,				-1.f,	+1.f	);
-
-	// R1-specific
-	CMD4(CCC_Integer,	"r1_glows_per_frame",	&ps_r1_GlowsPerFrame,		2,		32		);
-	CMD3(CCC_Mask32,		"r1_detail_textures",	&ps_r2_ls_flags,			R1FLAG_DETAIL_TEXTURES);
-
-	CMD4(CCC_Float,		"r1_fog_luminance",		&ps_r1_fog_luminance,		0.2f,	5.f	);
-
-	// R2
-	CMD4(CCC_Float,		"r2_ssa_lod_a",			&ps_r2_ssaLOD_A,			0,		512		);
-	CMD4(CCC_Float,		"r2_ssa_lod_b",			&ps_r2_ssaLOD_B,			0,		512		);
-
-	// R2-specific
-	CMD3(CCC_Mask32,		"r2_tonemap",			&ps_r2_ls_flags,			R2FLAG_TONEMAP	);
-	CMD4(CCC_Float,		"r2_tonemap_middlegray",&ps_r2_tonemap_middlegray,	0.0f,	2.0f	);
-	CMD4(CCC_Float,		"r2_tonemap_adaptation",&ps_r2_tonemap_adaptation,	0.01f,	10.0f	);
-	CMD4(CCC_Float,		"r2_tonemap_lowlum",	&ps_r2_tonemap_low_lum,		0.0001f,1.0f	);
-	CMD4(CCC_Float,		"r2_tonemap_amount",	&ps_r2_tonemap_amount,		0.0000f,1.0f	);
-
-	CMD4(CCC_Float,		"r2_ls_bloom_kernel_scale",&ps_r2_ls_bloom_kernel_scale,	0.5f,	2.f);
-	CMD4(CCC_Float,		"r2_ls_bloom_kernel_g",	&ps_r2_ls_bloom_kernel_g,	1.f,	7.f		);
-	CMD4(CCC_Float,		"r2_ls_bloom_kernel_b",	&ps_r2_ls_bloom_kernel_b,	0.01f,	1.f		);
-	CMD4(CCC_Float,		"r2_ls_bloom_threshold",&ps_r2_ls_bloom_threshold,	0.f,	1.f		);
-	CMD4(CCC_Float,		"r2_ls_bloom_speed",	&ps_r2_ls_bloom_speed,		0.f,	100.f	);
-	CMD3(CCC_Mask32,		"r2_ls_bloom_fast",		&ps_r2_ls_flags,			R2FLAG_FASTBLOOM);
-	CMD4(CCC_Float,		"r2_ls_squality",		&ps_r2_ls_squality,			.5f,	10.f		);
-
-	CMD3(CCC_Mask32,		"r2_zfill",				&ps_r2_ls_flags,			R2FLAG_ZFILL	);
-	CMD4(CCC_Float,		"r2_zfill_depth",		&ps_r2_zfill,				.001f,	.5f		);
-	CMD3(CCC_Mask32,		"r2_allow_r1_lights",	&ps_r2_ls_flags,			R2FLAG_R1LIGHTS	);
-
-	CMD4(CCC_Float,		"r2_gloss_factor",		&ps_r2_gloss_factor,		.0f,	10.f	);
-
-#ifdef DEBUG
-	CMD3(CCC_Mask32,		"r2_use_nvdbt",			&ps_r2_ls_flags,			R2FLAG_USE_NVDBT);
-	CMD3(CCC_Mask32,		"r2_mt",				&ps_r2_ls_flags,			R2FLAG_EXP_MT_CALC);
-#endif // DEBUG
-
-	CMD3(CCC_Mask32,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
-	CMD3(CCC_Mask32,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
-	CMD3(CCC_Mask32,		"r2_lights_details",	&ps_r2_ls_flags,			R2FLAG_LIGHTS_DETAILS);
-	CMD3(CCC_Mask32,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
-	
-	CMD4(CCC_Float,		"r2_sun_bias",			&ps_r2_sun_bias,			-0.5,	+0.5	);
-	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	50.f	);
-	CMD4(CCC_Float,		"r2_sun_far",			&ps_r2_sun_far,				51.f,	180.f	);
-	CMD4(CCC_Float,		"r2_sun_depth_far_scale",&ps_r2_sun_depth_far_scale,0.5,	1.5		);
-	CMD4(CCC_Float,		"r2_sun_depth_near_scale",&ps_r2_sun_depth_near_scale,0.5,	1.5		);
-
-	CMD4(CCC_Float,		"r2_sun_lumscale",		&ps_r2_sun_lumscale,		-1.0,	+3.0	);
-	CMD4(CCC_Float,		"r2_sun_lumscale_hemi",	&ps_r2_sun_lumscale_hemi,	0.0,	+3.0	);
-	CMD4(CCC_Float,		"r2_sun_lumscale_amb",	&ps_r2_sun_lumscale_amb,	0.0,	+3.0	);
-	CMD4(CCC_Float,		"r2_sun_lumscale_sky",	&ps_r2_sun_lumscale_sky,	0.0,	+3.0	);
-
-	CMD4(CCC_Float,		"r2_ls_depth_scale",	&ps_r2_ls_depth_scale,		0.5,	1.5		);
-	CMD4(CCC_Float,		"r2_ls_depth_bias",		&ps_r2_ls_depth_bias,		-0.5,	+0.5	);
-
-	CMD4(CCC_Float,		"r2_parallax_h",		&ps_r2_df_parallax_h,		.0f,	.5f		);
-	CMD4(CCC_Float,		"r2_parallax_range",	&ps_r2_df_parallax_range,	5.0f,	175.0f	);
-
-	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.2f,	1.f		);
-
-	//	Igor: Depth of field
-	Fvector	tw_min = {}, tw_max = {};
-	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
-	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
-	CMD4( CCC_DofNear,	"r2_dof_near",	&ps_r2_dof.x, tw_min.x, tw_max.x);
-	CMD4( CCC_DofFocus,	"r2_dof_focus", &ps_r2_dof.y, tw_min.y, tw_max.y);
-	CMD4( CCC_DofFar,	"r2_dof_far",	&ps_r2_dof.z, tw_min.z, tw_max.z);
-	CMD4(CCC_Float,		"r2_dof_kernel",&ps_r2_dof_kernel_size,				.0f,	10.f);
-	CMD4(CCC_Float, "r2_dof_lens_kernel_scale", &g_DofLensKernelScale, 1.0f, 4.0f);
-	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
-	CMD3(CCC_Mask32,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
-
-	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
-	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
-	CMD3(CCC_Token,		"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
-
-	CMD3(CCC_Mask32,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
-	CMD3(CCC_Mask32,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
-
-	CMD3(CCC_Token,		"r2_sun_quality",				&ps_r_sun_quality,			qsun_quality_token);
-
-	//	Igor: need restart
-	CMD3(CCC_Mask32,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
-	CMD3(CCC_Mask32,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
-
-	CMD3(CCC_Mask32,		"r3_dynamic_wet_surfaces",		&ps_r2_ls_flags,			R3FLAG_DYN_WET_SURF);
-	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_near",	&ps_r3_dyn_wet_surf_near,	10,	70		);
-	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	30,	100		);
-	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
-
-	CMD3(CCC_Mask32,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
-	CMD3(CCC_Mask32, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
-	CMD4(CCC_Integer,	"r4_tess_max",		&ps_r4_tess_max,	1,	7	);
-	CMD4(CCC_Float,		"r4_tess_dist_near",&ps_r4_tess_dist_near,	0.f, 50.f);
-	CMD4(CCC_Float,		"r4_tess_dist_far",	&ps_r4_tess_dist_far,	0.f, 100.f);
-
-	CMD3(CCC_Mask32, "r4_vslr_enable", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
-	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
-
-	// IX-Ray
-	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
-	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
-	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
-
-	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_alternative_tree_assets", &ps_r__detail_use_alternative_tree_assets);
-	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_cluster_mix_tree_assets", &ps_r__detail_use_cluster_mix_tree_assets);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_seed", &ps_r__detail_cluster_seed, 0, 9999);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_min", &ps_r__detail_cluster_patch_size_min, 1.0f, 200.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_max", &ps_r__detail_cluster_patch_size_max, 1.0f, 200.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_sharpness", &ps_r__detail_cluster_sharpness, 1.0f, 20.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_min", &ps_r__detail_cluster_warp_min, 0.0f, 3.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_max", &ps_r__detail_cluster_warp_max, 0.0f, 3.0f);
-
-
-	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_frequency", &ps_r__detail_fmb_layer_1_frequency, 0.0f, 1.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_amplitude", &ps_r__detail_fmb_layer_1_amplitude, 0.0f, 10.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_seed", &ps_r__detail_fmb_layer_1_seed, 0, 9999);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_1_power", &ps_r__detail_fmb_layer_1_power, 0.0f, 1.0f);
-
-	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_2", &ps_r__detail_fmb_use_layer_2);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_frequency", &ps_r__detail_fmb_layer_2_frequency, 0.0f, 1.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_amplitude", &ps_r__detail_fmb_layer_2_amplitude, 0.0f, 10.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_seed", &ps_r__detail_fmb_layer_2_seed, 0, 9999);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_2_power", &ps_r__detail_fmb_layer_2_power, 0.0f, 1.0f);
-
-	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_3", &ps_r__detail_fmb_use_layer_3);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_frequency", &ps_r__detail_fmb_layer_3_frequency, 0.0f, 1.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_amplitude", &ps_r__detail_fmb_layer_3_amplitude, 0.0f, 10.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_seed", &ps_r__detail_fmb_layer_3_seed, 0, 9999);
-	CMD4(CCC_DetailReloadDetails, "r__detail_fmb_layer_3_power", &ps_r__detail_fmb_layer_3_power, 0.0f, 1.0f);
-
-	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
-
-	CMD4(CCC_Float, "r__detail_trample_bend", &ps_trample_bend, 0.0f, 20.0f);
-	CMD4(CCC_Float, "r__detail_trample_squash", &ps_trample_squash, 0.0f, 20.0f);
-	CMD4(CCC_Float, "r__detail_trample_trail_min", &ps_trample_trail_min, 0.05f, 10.0f);
-	CMD4(CCC_Float, "r__detail_trample_trail_max", &ps_trample_trail_max, 0.1f, 50.0f);
-	CMD4(CCC_Float, "r__detail_trample_obj_radius_scale", &ps_trample_obj_radius_scale, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_trample_actor_radius_scale", &ps_trample_actor_radius_scale, 0.0f, 2.0f);
-	CMD2(CCC_Boolean, "r__detail_trample_enabled", (bool*)&ps_trample_enabled);
-	CMD4(CCC_Float, "r__detail_trample_cooltime", &ps_trample_cooltime, 0.5f, 600.0f);
-	CMD4(CCC_Float, "r__detail_trample_draw_radius", &ps_trample_draw_radius, 25.0f, 200.0f);
-	CMD4(CCC_Float, "r__detail_trample_brush_fill", &ps_trample_brush_fill, 0.1f, 1.0f);
-	CMD4(CCC_Float, "r__detail_trample_press_speed", &ps_trample_press_speed, 0.1f, 50.0f);
-
-	CMD2(CCC_Boolean, "r__detail_use_procedural_wind", (bool*)&ps_wind_enabled);
-	CMD4(CCC_Integer, "r__detail_wind_mode", &ps_wind_mode, 0, 1);
-	CMD4(CCC_Float, "r__detail_wind_blend", &ps_wind_blend, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_noise_scale", &ps_wind_noise_scale, 0.0f, 20.0f);
-	CMD4(CCC_Float, "r__detail_wind_noise_speed", &ps_wind_noise_speed, 0.001f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_noise_angle", &ps_wind_noise_angle, 0.0f, 360.0f);
-	CMD2(CCC_Boolean, "r__detail_wind_xz_enabled", (bool*)&ps_wind_xz_enabled);
-	CMD2(CCC_Boolean, "r__detail_wind_swirl_enabled", (bool*)&ps_wind_swirl_enabled);
-	CMD2(CCC_Boolean, "r__detail_wind_xz1_on", (bool*)&ps_wind_xz1_on);
-	CMD4(CCC_Float, "r__detail_wind_xz1_scale_min", &ps_wind_xz1_scale_min, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_scale_max", &ps_wind_xz1_scale_max, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_int_min", &ps_wind_xz1_int_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_int_max", &ps_wind_xz1_int_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_con_min", &ps_wind_xz1_con_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_con_max", &ps_wind_xz1_con_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_spd_min", &ps_wind_xz1_spd_min, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_spd_max", &ps_wind_xz1_spd_max, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_ang_min", &ps_wind_xz1_ang_min, 0.0f, 360.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz1_ang_max", &ps_wind_xz1_ang_max, 0.0f, 360.0f);
-	CMD2(CCC_Boolean, "r__detail_wind_xz2_on", (bool*)&ps_wind_xz2_on);
-	CMD4(CCC_Float, "r__detail_wind_xz2_scale_min", &ps_wind_xz2_scale_min, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_scale_max", &ps_wind_xz2_scale_max, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_int_min", &ps_wind_xz2_int_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_int_max", &ps_wind_xz2_int_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_con_min", &ps_wind_xz2_con_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_con_max", &ps_wind_xz2_con_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_spd_min", &ps_wind_xz2_spd_min, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_spd_max", &ps_wind_xz2_spd_max, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_ang_min", &ps_wind_xz2_ang_min, 0.0f, 360.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz2_ang_max", &ps_wind_xz2_ang_max, 0.0f, 360.0f);
-	CMD2(CCC_Boolean, "r__detail_wind_xz3_on", (bool*)&ps_wind_xz3_on);
-	CMD4(CCC_Float, "r__detail_wind_xz3_scale_min", &ps_wind_xz3_scale_min, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_scale_max", &ps_wind_xz3_scale_max, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_int_min", &ps_wind_xz3_int_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_int_max", &ps_wind_xz3_int_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_con_min", &ps_wind_xz3_con_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_con_max", &ps_wind_xz3_con_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_spd_min", &ps_wind_xz3_spd_min, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_spd_max", &ps_wind_xz3_spd_max, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_ang_min", &ps_wind_xz3_ang_min, 0.0f, 360.0f);
-	CMD4(CCC_Float, "r__detail_wind_xz3_ang_max", &ps_wind_xz3_ang_max, 0.0f, 360.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_scale_min", &ps_wind_sw_scale_min, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_scale_max", &ps_wind_sw_scale_max, 0.0f, 2.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_int_min", &ps_wind_sw_int_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_int_max", &ps_wind_sw_int_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_con_min", &ps_wind_sw_con_min, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_con_max", &ps_wind_sw_con_max, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_spd_min", &ps_wind_sw_spd_min, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_spd_max", &ps_wind_sw_spd_max, 0.0f, 5.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_ang_min", &ps_wind_sw_ang_min, 0.0f, 360.0f);
-	CMD4(CCC_Float, "r__detail_wind_sw_ang_max", &ps_wind_sw_ang_max, 0.0f, 360.0f);
-
-	CMD2(CCC_Boolean, "r__grass_tint", &g_GrassTerrainTintEnabled);
-	CMD2(CCC_Boolean, "r__grass_tint_green_only", &g_GrassTerrainTintGreenOnly);
-	CMD4(CCC_Float, "r__grass_tint_strength", &g_GrassTerrainTintStrength, 0.0f, 1.0f);
-	CMD4(CCC_Float, "r__grass_tint_radius", &g_GrassTerrainTintRadius, 0.0f, 32.0f);
-	CMD4(CCC_Float, "r__grass_tint_height", &g_GrassTerrainTintHeightLimit, 0.1f, 10.0f);
-	CMD4(CCC_Integer, "r__grass_tint_resolution", &g_GrassTerrainTintResolution, 256, 2048);
-	CMD4(CCC_Integer, "r__grass_tint_debug", &g_GrassTerrainTintDebug, 0, 2);
-	CMD1(GrassTerrainTintRebuildCommand, "r__grass_tint_rebuild");
-	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
-	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");
-
-
-	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
-	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
-	CMD3(CCC_Mask32, "r__mt_skeletons", &ps_r__common_flags, RFLAG_MT_SKELETONS);
-	CMD4(CCC_Integer, "render.experemental.target_res", &g_TextureTargetResolution, 256, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
-	CMD3(CCC_Mask32, "r__deferred_texture_load", &ps_r__common_flags, RFLAG_DD_TEX_LOAD);
+    float mtl;
+    float3 N;
+    float hemi;
+    float3 C;
+    fl…64402 tokens truncated…d_texture_load", &ps_r__common_flags, RFLAG_DD_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
 	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);

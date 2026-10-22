@@ -11,6 +11,13 @@ else()
 endif()
 add_test(NAME grass_tint_math COMMAND grass_tint_math_tests)
 
+find_program(POWERSHELL_EXECUTABLE NAMES pwsh powershell)
+if(POWERSHELL_EXECUTABLE)
+    add_test(NAME grass_tint_runtime_setup COMMAND
+        "${POWERSHELL_EXECUTABLE}" -NoProfile -ExecutionPolicy Bypass -File
+        "${CMAKE_CURRENT_SOURCE_DIR}/test_prepare_runtime.ps1")
+endif()
+
 find_package(Python3 COMPONENTS Interpreter QUIET)
 find_program(GLSLANG_EXECUTABLE NAMES glslangValidator glslang)
 if(Python3_FOUND AND GLSLANG_EXECUTABLE)

@@ -76,7 +76,11 @@ Get-ChildItem $BinaryDir -File | Where-Object { $_.Extension -in @('.exe', '.dll
 Copy-Item (Join-Path $ShaderDir '*') $shaders -Recurse -Force
 
 # A new filesystem file must live next to the original: IX-Ray derives $fs_root$ from its location.
-$fsName = 'fs_grass_terrain_tint_v01.ltx'
+$hashAlgorithm = [Security.Cryptography.SHA256]::Create()
+try {
+    $tag = ([BitConverter]::ToString($hashAlgorithm.ComputeHash([Text.Encoding]::UTF8.GetBytes($TestRoot.ToLowerInvariant())))).Replace('-', '').Substring(0, 8).ToLowerInvariant()
+} finally { $hashAlgorithm.Dispose() }
+$fsName = 'fs_grass_tint_' + $tag + '.ltx'
 $fsPath = Join-Path $GameRoot $fsName
 $signature = '; IXRay GrassTerrainTint isolated test v0.1'
 if (Test-Path $fsPath) {
@@ -102,8 +106,8 @@ if (!(Test-Path $userConfig)) {
         'r__grass_tint_height 1.5', 'r__grass_tint_resolution 1024', 'r__grass_tint_green_only on', 'r__grass_tint_debug 0')
     [IO.File]::WriteAllLines($userConfig, $settings, $encoding)
 }
-$launcher = @('@echo off', 'setlocal', 'pushd "' + $GameRoot + '"',
-    '"' + (Join-Path $bin 'xrEngine.exe') + '" -r4 -fsltx ' + $fsName + ' %*', 'set "GAME_RESULT=%ERRORLEVEL%"',
+$launcher = @('@echo off', 'setlocal DisableDelayedExpansion', ('pushd "' + $GameRoot + '" || exit /b 1'),
+    ('"' + (Join-Path $bin 'xrEngine.exe') + '" -r4 -fsltx ' + $fsName + ' %*'), 'set "GAME_RESULT=%ERRORLEVEL%"',
     'popd', 'exit /b %GAME_RESULT%')
 [IO.File]::WriteAllLines((Join-Path $TestRoot 'Run_GrassTint.cmd'), $launcher, $encoding)
 Write-Host "Test ready: $TestRoot\Run_GrassTint.cmd"

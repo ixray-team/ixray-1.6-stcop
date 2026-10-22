@@ -9,6 +9,7 @@ import subprocess
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--compiler", required=True)
+    parser.add_argument("--backend", choices=("glslang", "fxc"), default="glslang")
     parser.add_argument("--output", type=pathlib.Path, required=True)
     args = parser.parse_args()
     root = pathlib.Path(__file__).resolve().parents[2]
@@ -44,10 +45,17 @@ def main():
 
     logs = []
     for name, file, stage, defines in cases:
-        command = [args.compiler, "-D", "-V", "--target-env", "vulkan1.1", "-S", stage,
-                   "-e", "main", "--auto-map-bindings", "--auto-map-locations", "-l", "-q",
-                   f"-I{shaders}", *(f"-D{x}" for x in defines), str(shaders / file),
-                   "-o", str(args.output / f"{name}.spv")]
+        assembly = args.output / f"{name}.asm"
+        if args.backend == "fxc":
+            profile = "vs_5_0" if stage == "vert" else "ps_5_0"
+            command = [args.compiler, "/nologo", "/T", profile, "/E", "main", "/I", str(shaders),
+                       *(f"/D{x}" for x in defines), "/Fo", str(args.output / f"{name}.cso"),
+                       "/Fc", str(assembly), str(shaders / file)]
+        else:
+            command = [args.compiler, "-D", "-V", "--target-env", "vulkan1.1", "-S", stage,
+                       "-e", "main", "--auto-map-bindings", "--auto-map-locations", "-l", "-q",
+                       f"-I{shaders}", *(f"-D{x}" for x in defines), str(shaders / file),
+                       "-o", str(args.output / f"{name}.spv")]
         result = subprocess.run(command, capture_output=True, text=True)
         output = result.stdout + result.stderr
         logs.append(f"CASE {name}\n{' '.join(command)}\n{output}")
@@ -55,10 +63,13 @@ def main():
             print(output)
             raise SystemExit(f"FAIL: {name}")
         if name.startswith("grass_vs_"):
+            reflection = assembly.read_text() if args.backend == "fxc" else output
             for resource, binding in (("s_grass_tint_color", 1), ("s_grass_tint_height", 2)):
-                if not re.search(rf"{resource}:.*binding {binding},", output):
+                pattern = rf"dcl_resource_texture2d.*\bt{binding}\b" if args.backend == "fxc" else rf"{resource}:.*binding {binding},"
+                if not re.search(pattern, reflection):
                     raise SystemExit(f"FAIL: {name}: unexpected VS slot for {resource}")
-            if "topLevelArrayStride 48" not in output:
+            layout_ok = re.search(r"dcl_resource_structured\s+t0,\s*48\b", reflection) if args.backend == "fxc" else "topLevelArrayStride 48" in reflection
+            if not layout_ok:
                 raise SystemExit(f"FAIL: {name}: detail instance buffer layout changed")
         print(f"PASS: {name}")
     (args.output / "compilation.log").write_text("\n".join(logs), encoding="utf-8")
