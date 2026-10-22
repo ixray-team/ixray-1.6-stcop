@@ -75,7 +75,7 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 	string256	name;
 
-	WarnLuaBlends			();
+	//WarnLuaBlends			();
 	IReader*	fs			= nullptr;
 	// Load constants
  	fs	 		  			= F->open_chunk	(0);
