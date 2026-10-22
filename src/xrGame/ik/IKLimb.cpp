@@ -925,6 +925,7 @@ IC void	CIKLimb::GetPickDir( Fvector &v, SCalculateData& cd ) const
 	if( collide_data.collided && std::abs( collide_data.m_plane.n.y ) > 0.5f )
 	{
 		v.set( collide_data.m_plane.n );
+		v.normalize();
 		if( v.y > 0.f )
 			v.invert();
 		return;
