@@ -72,12 +72,7 @@ function prof_event_end()
 	end
 end
 
-local function finish_zone(...)
-	tracy.ZoneEnd()
-	return ...
-end
-
-function prof_event_call(name, callable, ...)
+function prof_event_closure(name, callable)
 	if name and is_profiler_connected() and tracy then
 		if USE_DRAW_DETALIZED_INFO_IN_PROFILER then
 			local data = ffx_callable_utils.find_caller_source_tracy(STACK_TRACE_LEVEL, true)
@@ -85,9 +80,21 @@ function prof_event_call(name, callable, ...)
 		else
 			tracy.ZoneBeginN(string.format(PROF_EVENT_MINIMAL_INFO_FORMAT, tostring(name)))
 		end
-
-		return finish_zone(callable(...))
+		
+		local result
+		
+		if callable then
+			result = callable()
+		end
+		
+		tracy.ZoneEnd()
+		
+		return result
+    else
+        if callable then
+			return callable()
+		end
 	end
-
-	return callable(...)
+	
+	return nil
 end

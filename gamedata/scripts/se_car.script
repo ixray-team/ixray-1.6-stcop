@@ -2,23 +2,19 @@
 class "se_car" (cse_alife_car)
 --------------------
 function se_car:__init (section) super (section)
-	PROF_EVENT_BEGIN("se_car:__init")
 	--log("_bp: set_car:__init")
 	self.ini = nil
 	self.spawner_present = false
-	PROF_EVENT_END()
 end
 
 function se_car:on_register()
-	PROF_EVENT_BEGIN("se_car:on_register")
 	cse_alife_car.on_register(self)
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
-	
+
 	--from test xr_effects.spawn_object_in(db.actor, nil, {"wpn_pm","my_moskvich_story_id"})
-	
+
 	SendScriptCallback("server_entity_on_register", self, "se_car")
-	PROF_EVENT_END()
 end
 function se_car:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_car")

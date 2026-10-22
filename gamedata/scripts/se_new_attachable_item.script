@@ -5,7 +5,6 @@
 class "CSE_NewAttachableItem"				(cse_alife_item)
 
 function CSE_NewAttachableItem:__init		(section) super(section)
-	PROF_EVENT_BEGIN("CSE_NewAttachableItem:__init")
 	log							("CSE_NewAttachableItem::CSE_NewAttachableItem called!")
 	-- s8
 --	self._s8_0					= 8
@@ -121,7 +120,6 @@ function CSE_NewAttachableItem:__init		(section) super(section)
 	self._choose_14				= ""
 	self._choose_15				= ""
 	self._choose_16				= ""
-	PROF_EVENT_END()
 end
 
 function CSE_NewAttachableItem:__finalize	()
@@ -230,7 +228,6 @@ function CSE_NewAttachableItem:STATE_Write	(packet)
 end
 
 function CSE_NewAttachableItem:STATE_Read	(packet, size)
-	PROF_EVENT_BEGIN("CSE_NewAttachableItem:STATE_Read")
 	log							("CSE_NewAttachableItem::STATE_Read called!")
 	cse_alife_item.STATE_Read	(self,packet,size)
 	-- s8
@@ -329,11 +326,9 @@ function CSE_NewAttachableItem:STATE_Read	(packet, size)
 	self._choose_14				= packet:r_stringZ()
 	self._choose_15				= packet:r_stringZ()
 	self._choose_16				= packet:r_stringZ()
-	PROF_EVENT_END()
 end
 
 function CSE_NewAttachableItem:STATE_Serialize(Object)
-	PROF_EVENT_BEGIN("CSE_NewAttachableItem:STATE_Serialize")
 	Object:ForChunk("CSE_NewAttachableItem:STATE", function()
 		log("CSE_NewAttachableItem::STATE_Write called!")
 		cse_alife_item.STATE_Serialize	(self,Object)
@@ -431,7 +426,6 @@ function CSE_NewAttachableItem:STATE_Serialize(Object)
 			self._choose_16 = Object:s_stringZ			(self._choose_16)
 		end)
 	end)
-	PROF_EVENT_END()
 end
 
 function CSE_NewAttachableItem:FillProps	(pref,items)
