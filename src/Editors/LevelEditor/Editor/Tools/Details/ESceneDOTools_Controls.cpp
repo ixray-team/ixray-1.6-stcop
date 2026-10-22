@@ -4,14 +4,22 @@
 void EDetailManager::CreateControls()
 {
     AddControl(new TUI_CustomControl(estDefault, etaSelect, this));
-    // changing the sub target re-activates the tool, which resets the action to etaSelect,
-    // so the brush has to answer to both actions
-    AddControl(new TUI_ControlDOPaint(estDOPaint, etaSelect, this));
     AddControl(new TUI_ControlDOPaint(estDOPaint, etaAdd, this));
     // frame
     pForm = new UIDOTool();
     ((UIDOTool*)pForm)->DM = this;
     // pFrame = new TfraDetailObject((TComponent*)0, this);
+}
+
+void EDetailManager::OnActivate()
+{
+    // the base resets the action to etaSelect, which runs after the paint button already
+    // asked for etaAdd (the sub target change is deferred), so request the brush action last
+    inherited::OnActivate();
+    if (sub_target == estDOPaint)
+    {
+        ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
+    }
 }
 
 void EDetailManager::RemoveControls()
