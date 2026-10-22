@@ -17,7 +17,13 @@
 #include "Private/RHIRenderViewManager.h"
 
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
-RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
+RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles
+#if defined(__APPLE__)
+    // The first launch has no user.ltx yet, and the interface only behaves in fullscreen
+    // on macOS, so start there instead of a window.
+    | rsFullscreen
+#endif
+};
 RHI_API Ivector2 HalfTarget = { 0, 0 };
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
