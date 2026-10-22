@@ -1,20 +1,16 @@
 class "se_level_changer" (cse_alife_level_changer)
 --------------------
 function se_level_changer:__init(section) super (section)
-	PROF_EVENT_BEGIN("se_level_changer:__init")
 	self.enabled = true
 	self.hint = "level_changer_invitation"
-	PROF_EVENT_END()
 end
 --------------------
 function se_level_changer:on_register()
-	PROF_EVENT_BEGIN("se_level_changer:on_register")
 	cse_alife_level_changer.on_register(self)
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
-	
+
 	SendScriptCallback("server_entity_on_register", self, "se_level_changer")
-	PROF_EVENT_END()
 end
 --------------------
 function se_level_changer:on_unregister()
@@ -33,22 +29,19 @@ function se_level_changer:STATE_Write(packet)
 end
 --------------------
 function se_level_changer:STATE_Read(packet, size)
-	PROF_EVENT_BEGIN("se_level_changer:STATE_Read")
 	cse_alife_level_changer.STATE_Read(self, packet, size)
 	-- под LevelEditor не пытаться читать из пакета ничего
 	if editor() then
-		PROF_EVENT_END() return
+		return
 	end
 
 	set_save_marker(packet, "load", false, "se_level_changer")
 	self.enabled = packet:r_bool()
 	self.hint = packet:r_stringZ()
 	set_save_marker(packet, "load", true, "se_level_changer")
-	PROF_EVENT_END()
 end
 --------------------
 function se_level_changer:STATE_Serialize(Object)
-	PROF_EVENT_BEGIN("se_level_changer:STATE_Serialize")
 	Object:ForChunk("se_level_changer:STATE", function()
 		cse_alife_level_changer.STATE_Serialize(self, Object)
 		if not editor() or Object:IsSave() then
@@ -58,5 +51,4 @@ function se_level_changer:STATE_Serialize(Object)
 			end)
 		end
 	end)
-	PROF_EVENT_END()
 end

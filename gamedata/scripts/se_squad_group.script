@@ -1,15 +1,11 @@
 class "se_squad" (cse_alife_online_offline_group)
 function se_squad:__init (section) super (section)
-	PROF_EVENT_BEGIN("se_squad:__init")
-	PROF_EVENT_END()
 end
 function se_squad:on_register()
-	PROF_EVENT_BEGIN("se_squad:on_register")
 	cse_alife_online_offline_group.on_register( self )
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
-	PROF_EVENT_END()
 end
 function se_squad:on_unregister()
 	--' Отрегистрация в таскменеджере
@@ -33,15 +29,11 @@ function se_squad:STATE_Write(packet)
 	cse_alife_online_offline_group.STATE_Write (self, packet)
 end
 function se_squad:STATE_Read(packet)
-	PROF_EVENT_BEGIN("se_squad:STATE_Read")
 	cse_alife_online_offline_group.STATE_Read (self, packet)
-	PROF_EVENT_END()
 end
 
 function se_squad:STATE_Serialize(Object)
-	PROF_EVENT_BEGIN("se_squad:STATE_Serialize")
 	Object:ForChunk("se_squad:STATE", function()
 		cse_alife_online_offline_group.STATE_Serialize (self, Object)
 	end)
-	PROF_EVENT_END()
 end

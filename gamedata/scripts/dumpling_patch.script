@@ -1,8 +1,6 @@
 
 function on_game_start()
-	PROF_EVENT_BEGIN("on_game_start")
 	RegisterScriptCallback("actor_on_first_update", this.actor_on_first_update)
-	PROF_EVENT_END()
 end
 
 function actor_on_first_update(binder, delta)
@@ -16,7 +14,6 @@ local ai_locations_flag_objects =
 }
 
 function fix_ai_locations_flags()
-	PROF_EVENT_BEGIN("fix_ai_locations_flags")
 	local sim = alife()
 	for _, name in pairs(ai_locations_flag_objects) do
 		local sobj = sim:object(name)
@@ -24,5 +21,4 @@ function fix_ai_locations_flags()
 			sobj:use_ai_locations(false)
 		end
 	end
-	PROF_EVENT_END()
 end

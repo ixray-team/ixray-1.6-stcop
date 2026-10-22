@@ -47,7 +47,7 @@ local all_callbacks = {
 	["on_actor_hit_fall"]		= "actor_on_hit_fall",
 	["on_actor_jump_begin"]		= "actor_on_jump_begin",
 	["on_actor_jump_end"]		= "actor_on_jump_end",
-	
+
 	["hud_animation_end"]		= "actor_on_hud_animation_end",
 }
 
@@ -107,15 +107,15 @@ function actor_binder:net_spawn(data)
 	self.already_jumped = false
 	-- self.loaded = false
 	benchmark.main()							          --' Distemper 06.2008 --
-	
+
 	SendScriptCallback("on_game_load", binder)
-	
+
 	return true
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
 	SendScriptCallback("actor_on_net_destroy", self) -- IX-Ray
-	
+
 	xr_sound.stop_sounds_by_id(self.object:id())
 	local board_factions = sim_board.get_sim_board().players
 	if(board_factions) then
@@ -166,7 +166,7 @@ end
 function actor_binder:on_actor_before_death(whoID)
 	local flags = { ret_value = true }
 	SendScriptCallback("actor_on_before_death", whoID, flags) -- IX-Ray
-	
+
 	if flags.ret_value then
 		local killer = level.object_by_id(whoID) or db.actor
 		db.actor:kill(killer, true)
@@ -178,7 +178,7 @@ function actor_binder:take_item_from_box(box, item)
 	if not box or not item then
 		return
 	end
-	
+
 	local box_name = box:name()
 	SendScriptCallback("actor_on_item_take_from_box", box, item) -- IX-Ray
 end
@@ -188,11 +188,11 @@ function actor_binder:info_callback(npc, info_id)
 	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
 	--' Сюжет
 	-- Отметки на карте
-	
+
 	if not npc or not info_id then
 		return
 	end
-	
+
 	SendScriptCallback("actor_on_info_callback", npc, info_id) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -202,11 +202,11 @@ function actor_binder:on_trade(item, sell_bye, money)
 	else
 		 game_stats.money_trade_update (-money)
 	end
-	
+
 	if not item then
 		return
 	end
-	
+
 	SendScriptCallback("actor_on_trade", item, sell_bye, money) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -221,17 +221,17 @@ end
 function actor_binder:on_item_take(obj, m_last_dropped_owner_id)
 	if obj and obj:id() then 
 		SendScriptCallback("on_item_take", obj, db.actor ~= nil)
-		
+
 		if db.actor then
 			local is_take_from_ground = (m_last_dropped_owner_id == alife_const.invalid_object_id or m_last_dropped_owner_id == db.actor:id())
 			local before_transfer_parent_id = nil
-			
+
 			if not is_take_from_ground then
 				before_transfer_parent_id = m_last_dropped_owner_id
 			end
-			
+
 			SendScriptCallback("actor_on_item_take", obj, before_transfer_parent_id, is_take_from_ground)
-			
+
 			if is_take_from_ground then
 				SendScriptCallback("actor_on_item_take_from_ground", obj)
 			end
@@ -264,7 +264,7 @@ end
 function actor_binder:on_item_drop(obj)
 	if obj and obj:id() then 
 		SendScriptCallback("on_item_drop", obj, db.actor ~= nil)
-		
+
 		if db.actor then 
 			SendScriptCallback("actor_on_item_drop", obj)
 		end
@@ -519,7 +519,7 @@ function actor_binder:update(delta)
 			self.object:activate_slot(self.loaded_active_slot)
 			self.loaded_slot_applied = true
 		end
-		
+
 		xr_s.on_actor_update(delta)
 
 		if(self.surge_manager) then
@@ -541,149 +541,149 @@ function actor_binder:update(delta)
 		--	self.loaded = true
 		--end
 		treasure_manager.get_treasure_manager():update()
-		
+
 		if self.first_update then
 			self.first_update = false
 			SendScriptCallback("actor_on_first_update", self, delta) -- IX-Ray
 		end
-		
+
 		SendScriptCallback("update", delta) -- IX-Ray
 		SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
-        if (utils.level_changing()) then
-            SendScriptCallback("on_level_changing")
-            SendScriptCallback("actor_on_level_changing")
-        end
-    
-        set_save_marker(packet, "save", false, "actor_binder")
-        --' Сохраняем уровень сложности
-        packet:w_u8(level.get_game_difficulty())
-        --' Сохраняем данные об отключенном вводе
-        if self.st.disable_input_time == nil then
-            packet:w_bool(false)
-        else
+    if (utils.level_changing()) then
+        SendScriptCallback("on_level_changing")
+        SendScriptCallback("actor_on_level_changing")
+    end
+
+    set_save_marker(packet, "save", false, "actor_binder")
+    --' Сохраняем уровень сложности
+    packet:w_u8(level.get_game_difficulty())
+    --' Сохраняем данные об отключенном вводе
+    if self.st.disable_input_time == nil then
+        packet:w_bool(false)
+    else
+        packet:w_bool(true)
+        utils.w_CTime(packet, self.st.disable_input_time)
+    end
+    xr_logic.pstor_save_all(self.object, packet)
+    self.weather_manager:save(packet)
+    release_body_manager.get_release_body_manager():save(packet)
+    self.surge_manager:save(packet)
+    sr_psy_antenna.save( packet )
+    packet:w_bool(sim_board.get_sim_board().simulation_started)
+
+    xr_sound.actor_save(packet)
+    packet:w_stringZ(tostring(self.last_level_name))
+    xr_statistic.save(packet)
+    treasure_manager.get_treasure_manager():save(packet)
+
+    local n = 0
+    for k,v in pairs(db.script_ids) do
+        n = n + 1
+    end
+    packet:w_u8(n)
+    for k,v in pairs (db.script_ids) do
+        packet:w_object_id(k)
+        packet:w_stringZ(v)
+    end
+    task_manager.get_task_manager():save(packet)
+
+--	packet:w_bool(self.actor_weapon_on_start)
+
+    packet:w_u8(self.object:active_slot())
+
+
+    local deimos_exist = false
+    for k,v in pairs(db.zone_by_name) do
+        if(db.storage[v:id()] and db.storage[v:id()].active_scheme=="sr_deimos") then
+            deimos_exist = true
             packet:w_bool(true)
-            utils.w_CTime(packet, self.st.disable_input_time)
+            packet:w_float(db.storage[v:id()].sr_deimos.intensity)
         end
-        xr_logic.pstor_save_all(self.object, packet)
-        self.weather_manager:save(packet)
-        release_body_manager.get_release_body_manager():save(packet)
-        self.surge_manager:save(packet)
-        sr_psy_antenna.save( packet )
-        packet:w_bool(sim_board.get_sim_board().simulation_started)
-    
-        xr_sound.actor_save(packet)
-        packet:w_stringZ(tostring(self.last_level_name))
-        xr_statistic.save(packet)
-        treasure_manager.get_treasure_manager():save(packet)
-    
-        local n = 0
-        for k,v in pairs(db.script_ids) do
-            n = n + 1
-        end
-        packet:w_u8(n)
-        for k,v in pairs (db.script_ids) do
-            packet:w_object_id(k)
-            packet:w_stringZ(v)
-        end
-        task_manager.get_task_manager():save(packet)
-    
-    --	packet:w_bool(self.actor_weapon_on_start)
-        
-        packet:w_u8(self.object:active_slot())
-    
-    
-        local deimos_exist = false
-        for k,v in pairs(db.zone_by_name) do
-            if(db.storage[v:id()] and db.storage[v:id()].active_scheme=="sr_deimos") then
-                deimos_exist = true
-                packet:w_bool(true)
-                packet:w_float(db.storage[v:id()].sr_deimos.intensity)
-            end
-        end
-        if not deimos_exist then
-            packet:w_bool(false)
-        end
-    
-        if self.last_detective_achievement_spawn_time == nil then
-            packet:w_bool(false)
-        else
-            packet:w_bool(true)
-            utils.w_CTime(packet, self.last_detective_achievement_spawn_time)
-        end
-        if self.last_mutant_hunter_achievement_spawn_time == nil then
-            packet:w_bool(false)
-        else
-            packet:w_bool(true)
-            utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
-        end
-        set_save_marker(packet, "save", true, "actor_binder")
-        
-        SendScriptCallback("save", packet) -- IX-Ray
-        SendScriptCallback("actor_on_save", packet) -- IX-Ray
+    end
+    if not deimos_exist then
+        packet:w_bool(false)
+    end
+
+    if self.last_detective_achievement_spawn_time == nil then
+        packet:w_bool(false)
+    else
+        packet:w_bool(true)
+        utils.w_CTime(packet, self.last_detective_achievement_spawn_time)
+    end
+    if self.last_mutant_hunter_achievement_spawn_time == nil then
+        packet:w_bool(false)
+    else
+        packet:w_bool(true)
+        utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
+    end
+    set_save_marker(packet, "save", true, "actor_binder")
+
+    SendScriptCallback("save", packet) -- IX-Ray
+    SendScriptCallback("actor_on_save", packet) -- IX-Ray
 end
 
 
 ----------------------------------------------------------------------------------------------------------------------
 
 function actor_binder:load(reader)
-        set_save_marker(reader, "load", false, "actor_binder")
-        --' Загружаем уровень сложности
-        local game_difficulty = reader:r_u8()
-        printf("load game_difficulty %s", tostring(game_difficulty))
-        get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
-        local stored_input_time = reader:r_u8()
-        if stored_input_time == true then
-            self.st.disable_input_time = utils.r_CTime(reader)
-        end
-        xr_logic.pstor_load_all(self.object, reader)
-        self.weather_manager:load(reader)
-        release_body_manager.get_release_body_manager():load(reader)
-    --	self.surge_manager:initialize()
-        self.surge_manager:load(reader)
-        self.f_surge_manager_loaded = true
-        sr_psy_antenna.load(reader)
-        sim_board.get_sim_board().simulation_started = reader:r_bool()
-    
-        xr_sound.actor_load(reader)
-        local n = reader:r_stringZ()
-        if(n~="nil") then
-            self.last_level_name = n
-        end
-        xr_statistic.load(reader)
-        treasure_manager.get_treasure_manager():load(reader)
-        n = reader:r_u8()
-        for i = 1,n do
-            db.script_ids[reader:r_object_id()] = reader:r_stringZ()
-        end
-    
-        task_manager.get_task_manager():load(reader)
-    
-    --	self.actor_weapon_on_start = reader:r_bool()
-        
-        self.loaded_active_slot = reader:r_u8()
-        
-        self.loaded_slot_applied = false
-    
-        local b = reader:r_bool()
-        if(b) then
-            self.deimos_intensity = reader:r_float()
-        end
-    
-        local stored_achievement_time = reader:r_bool()
-        if stored_achievement_time == true then
-            self.last_detective_achievement_spawn_time = utils.r_CTime(reader)
-        end
-        stored_achievement_time = reader:r_bool()
-        if stored_achievement_time == true then
-            self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
-        end
-        set_save_marker(reader, "load", true, "actor_binder")
-    
-        SendScriptCallback("load", reader) -- IX-Ray
-        SendScriptCallback("actor_on_load", reader) -- IX-Ray
+    set_save_marker(reader, "load", false, "actor_binder")
+    --' Загружаем уровень сложности
+    local game_difficulty = reader:r_u8()
+    printf("load game_difficulty %s", tostring(game_difficulty))
+    get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+    local stored_input_time = reader:r_u8()
+    if stored_input_time == true then
+        self.st.disable_input_time = utils.r_CTime(reader)
+    end
+    xr_logic.pstor_load_all(self.object, reader)
+    self.weather_manager:load(reader)
+    release_body_manager.get_release_body_manager():load(reader)
+--	self.surge_manager:initialize()
+    self.surge_manager:load(reader)
+    self.f_surge_manager_loaded = true
+    sr_psy_antenna.load(reader)
+    sim_board.get_sim_board().simulation_started = reader:r_bool()
+
+    xr_sound.actor_load(reader)
+    local n = reader:r_stringZ()
+    if(n~="nil") then
+        self.last_level_name = n
+    end
+    xr_statistic.load(reader)
+    treasure_manager.get_treasure_manager():load(reader)
+    n = reader:r_u8()
+    for i = 1,n do
+        db.script_ids[reader:r_object_id()] = reader:r_stringZ()
+    end
+
+    task_manager.get_task_manager():load(reader)
+
+--	self.actor_weapon_on_start = reader:r_bool()
+
+    self.loaded_active_slot = reader:r_u8()
+
+    self.loaded_slot_applied = false
+
+    local b = reader:r_bool()
+    if(b) then
+        self.deimos_intensity = reader:r_float()
+    end
+
+    local stored_achievement_time = reader:r_bool()
+    if stored_achievement_time == true then
+        self.last_detective_achievement_spawn_time = utils.r_CTime(reader)
+    end
+    stored_achievement_time = reader:r_bool()
+    if stored_achievement_time == true then
+        self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
+    end
+    set_save_marker(reader, "load", true, "actor_binder")
+
+    SendScriptCallback("load", reader) -- IX-Ray
+    SendScriptCallback("actor_on_load", reader) -- IX-Ray
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ function actor_binder:Serialize(Object)
 				level.set_game_difficulty(game_difficulty_by_num[game_difficulty])
 				--get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 			end
-		
+
 			if Object:IsSave() then
 				if self.st.disable_input_time ~= nil then
                     Object:ForChunk("actor_binder:data:disable_input_time", function()
@@ -715,7 +715,7 @@ function actor_binder:Serialize(Object)
 				    self.st.disable_input_time:Serialize(Object)
                 end)
 			end
-		
+
 			xr_logic.pstor_Serialize_all(self.object, Object)
 			self.weather_manager:Serialize(Object)
 			release_body_manager.get_release_body_manager():Serialize(Object)
@@ -725,7 +725,7 @@ function actor_binder:Serialize(Object)
             end
 			sr_psy_antenna.Serialize( Object )
 			sim_board.get_sim_board().simulation_started = Object:s_bool(sim_board.get_sim_board().simulation_started)
-		
+
 			xr_sound.actor_Serialize(Object)
 			if Object:IsSave() then
                 if self.last_level_name then
@@ -739,7 +739,7 @@ function actor_binder:Serialize(Object)
 				    self.last_level_name = Object:s_stringZ(n)
                 end)
 			end
-            
+
 		    xr_statistic.Serialize(Object)
 		    treasure_manager.get_treasure_manager():Serialize(Object)
 		    task_manager.get_task_manager():Serialize(Object)
@@ -750,7 +750,7 @@ function actor_binder:Serialize(Object)
 				self.loaded_active_slot = Object:s_u8(self.loaded_active_slot)
 	            self.loaded_slot_applied = false
 			end
-		
+
 			if Object:IsSave() then
 				local deimos_exist = false
 				for k,v in pairs(db.zone_by_name) do
@@ -774,7 +774,7 @@ function actor_binder:Serialize(Object)
 					self.deimos_intensity = Object:s_float(self.deimos_intensity)
 				end
 			end
-		
+
 			if Object:IsSave() then
 				if self.last_detective_achievement_spawn_time ~= nil then
                     Object:ForChunk("actor_binder:data:last_detective_achievement_spawn_time", function()
@@ -798,7 +798,7 @@ function actor_binder:Serialize(Object)
 			end
 		end)
 	end)
-    
+
 	if Object:IsSave() then
 	    SendScriptCallback("save", packet) -- IX-Ray
 	    SendScriptCallback("actor_on_save", reader) -- IX-Ray
@@ -822,72 +822,72 @@ local mutant_hunter_achievement_items	= {	"ammo_5.45x39_ap",
 											"ammo_12x76_zhekan"}
 
 local function spawn_achivement_items(items_table, count, inv_box_story_id)
-        local inv_box = alife():object(get_story_object_id(inv_box_story_id))
-        for i = 1,count do
-            alife():create(items_table[math.random(#items_table)],
-                            inv_box.position,
-                            inv_box.m_level_vertex_id,
-                            inv_box.m_game_vertex_id,
-                            inv_box.id)
-        end
+    local inv_box = alife():object(get_story_object_id(inv_box_story_id))
+    for i = 1,count do
+        alife():create(items_table[math.random(#items_table)],
+                        inv_box.position,
+                        inv_box.m_level_vertex_id,
+                        inv_box.m_game_vertex_id,
+                        inv_box.id)
+    end
 end
 
 function actor_binder:check_detective_achievement()
-        if not has_alife_info("detective_achievement_gained") then
-            return
-        end
-        if self.last_detective_achievement_spawn_time == nil then
-            self.last_detective_achievement_spawn_time = game.get_game_time()
-        end
-        if game.get_game_time():diffSec(self.last_detective_achievement_spawn_time) > 43200 then
-            spawn_achivement_items(detective_achievement_items, 4, "zat_a2_actor_treasure")
-            xr_effects.send_tip(db.actor, nil, {"st_detective_news","got_medicine"})
-            self.last_detective_achievement_spawn_time = game.get_game_time()
-        end
+    if not has_alife_info("detective_achievement_gained") then
+        return
+    end
+    if self.last_detective_achievement_spawn_time == nil then
+        self.last_detective_achievement_spawn_time = game.get_game_time()
+    end
+    if game.get_game_time():diffSec(self.last_detective_achievement_spawn_time) > 43200 then
+        spawn_achivement_items(detective_achievement_items, 4, "zat_a2_actor_treasure")
+        xr_effects.send_tip(db.actor, nil, {"st_detective_news","got_medicine"})
+        self.last_detective_achievement_spawn_time = game.get_game_time()
+    end
 end
 
 function actor_binder:check_mutant_hunter_achievement()
-        if not has_alife_info("mutant_hunter_achievement_gained") then
-            return
-        end
-        if self.last_mutant_hunter_achievement_spawn_time == nil then
-            self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
-        end
-        if game.get_game_time():diffSec(self.last_mutant_hunter_achievement_spawn_time) > 43200 then
-            spawn_achivement_items(mutant_hunter_achievement_items, 5, "jup_b202_actor_treasure")
-            xr_effects.send_tip(db.actor, nil, {"st_mutant_hunter_news","got_ammo"})
-            self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
-        end
+    if not has_alife_info("mutant_hunter_achievement_gained") then
+        return
+    end
+    if self.last_mutant_hunter_achievement_spawn_time == nil then
+        self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
+    end
+    if game.get_game_time():diffSec(self.last_mutant_hunter_achievement_spawn_time) > 43200 then
+        spawn_achivement_items(mutant_hunter_achievement_items, 5, "jup_b202_actor_treasure")
+        xr_effects.send_tip(db.actor, nil, {"st_mutant_hunter_news","got_ammo"})
+        self.last_mutant_hunter_achievement_spawn_time = game.get_game_time()
+    end
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 
 function check_for_weapon_hide_by_zones()
-        for k,v in pairs(weapon_hide) do
-            if v == true then
-                return true
-            end
+    for k,v in pairs(weapon_hide) do
+        if v == true then
+            return true
         end
-        return false
+    end
+    return false
 end
 
 -- Weapon functions
 function hide_weapon(zone_id)
-        local active_section = nil
-        if db.storage[zone_id] then
-            active_section = db.storage[zone_id].active_section
-        end
-        printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
-        
-        weapon_hide[zone_id] = true
+    local active_section = nil
+    if db.storage[zone_id] then
+        active_section = db.storage[zone_id].active_section
+    end
+    printf("[WEAPON_CONTROL]:hiding weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+
+    weapon_hide[zone_id] = true
 end
 
 function restore_weapon(zone_id)
-        local active_section = nil
-        if db.storage[zone_id] then
-            active_section = db.storage[zone_id].active_section
-        end
-        printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
-        
-        weapon_hide[zone_id] = false
+    local active_section = nil
+    if db.storage[zone_id] then
+        active_section = db.storage[zone_id].active_section
+    end
+    printf("[WEAPON_CONTROL]:restoring weapon from zone [%s] in section [%s]!!!", tostring(zone_id), tostring(active_section))
+
+    weapon_hide[zone_id] = false
 end

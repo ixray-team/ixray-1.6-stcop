@@ -17,7 +17,6 @@ end
 --'--------------------------------------------------------------------------------------------------------------------
 class "npc_sound"
 function npc_sound:__init(snd_ini, section)
-	PROF_EVENT_BEGIN("npc_sound:__init")
 	self.class_id = "npc_sound"
 		--' Параметры вычитывания звука
 	self.prefix = utils.cfg_get_bool(snd_ini, section, "npc_prefix", nil, false, false)
@@ -52,7 +51,6 @@ function npc_sound:__init(snd_ini, section)
  	end
 
 	SendScriptCallback("on_npc_sound_init", self, snd_ini, section)
-	PROF_EVENT_END()
 end
 function npc_sound:reset(npc_id)
 	local npc = db.storage[npc_id] and db.storage[npc_id].object
@@ -78,7 +76,6 @@ function npc_sound:is_playing(npc_id)
 	return obj:active_sound_count() ~= 0 or (self.pda_snd_obj and self.pda_snd_obj:playing())
 end
 function npc_sound:init_npc(npc)
-	PROF_EVENT_BEGIN("npc_sound:init_npc")
 	--printf("Init %s snd NPC %s", self.section, npc:name())
 	local npc_id = npc:id()
 
@@ -125,7 +122,6 @@ function npc_sound:init_npc(npc)
 			self.can_play_sound[npc_id] = true
 		end
 	end
-	PROF_EVENT_END()
 end
 function npc_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -207,7 +203,7 @@ function npc_sound:play(npc_id, faction, point, msg)
 		--' Пропускаем.
 		return false
 	end
-	
+
 	--printf("playing sound "..self.played_id)
 	if npc ~= nil then
 		-- play_sound (u32 internal_type, u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
@@ -215,17 +211,17 @@ function npc_sound:play(npc_id, faction, point, msg)
 
 		SendScriptCallback("on_npc_sound_play", self, npc_id, faction, point, msg)
 	end
-	
+
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
 	local f = getFS()
-	
+
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
 		if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
 			self.pda_snd_obj:stop()
 		end
-		
+
 		self.pda_snd_obj = sound_object(snd.."_pda")
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), self.delay_sound, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
@@ -236,7 +232,7 @@ function npc_sound:play(npc_id, faction, point, msg)
 	else
 		self.can_play_sound[npc_id] = false
 	end
-	
+
 	if snd then
 		--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
 		local snd_st, num_copy = string.gsub(snd, "\\", "_")
@@ -381,7 +377,6 @@ end
 --'--------------------------------------------------------------------------------------------------------------------
 class "actor_sound"
 function actor_sound:__init(snd_ini, section)
-	PROF_EVENT_BEGIN("actor_sound:__init")
 	self.class_id = "actor_sound"
 		--' Параметры вычитывания звука
 	self.stereo = utils.cfg_get_bool(snd_ini, section, "actor_stereo", nil, false, false)
@@ -423,7 +418,6 @@ function actor_sound:__init(snd_ini, section)
 	end
 
 	SendScriptCallback("on_actor_sound_init", self, snd_ini, section)
-	PROF_EVENT_END()
 end
 function actor_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -590,7 +584,7 @@ end
 
 function actor_sound:Serialize_npc(Object)
 	--Object:ForChunk("actor_sound:npc", function()
-		
+
 	--end)
 end
 
@@ -600,7 +594,6 @@ end
 --'--------------------------------------------------------------------------------------------------------------------
 class "object_sound"
 function object_sound:__init(snd_ini, section)
-	PROF_EVENT_BEGIN("object_sound:__init")
 	self.class_id = "object_sound"
 	--' Параметры вычитывания звука
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
@@ -635,7 +628,6 @@ function object_sound:__init(snd_ini, section)
 	end
 
 	SendScriptCallback("on_object_sound_init", self, snd_ini, section)
-	PROF_EVENT_END()
 end
 function object_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -803,7 +795,7 @@ end
 
 function object_sound:Serialize_npc(Object)
 	--Object:ForChunk("object_sound:npc", function()
-		
+
 	--end)
 end
 --'--------------------------------------------------------------------------------------------------------------------
@@ -811,7 +803,6 @@ end
 --'--------------------------------------------------------------------------------------------------------------------
 class "looped_sound"
 function looped_sound:__init(snd_ini, section)
-	PROF_EVENT_BEGIN("looped_sound:__init")
 	self.class_id = "looped_sound"
 	--' Параметры вычитывания звука
 	self.path = utils.cfg_get_string(snd_ini, section, "path", nil, true, "")
@@ -827,7 +818,6 @@ function looped_sound:__init(snd_ini, section)
 	if self.sound == nil then
 		abort("There are no looped sound with path: %s", self.path)
 	end
-	PROF_EVENT_END()
 end
 function looped_sound:is_playing ()
 	if(self.snd_obj~=nil) then
@@ -864,7 +854,7 @@ function looped_sound:load(thread)
 end
 function looped_sound:Serialize(Object)
 	--Object:ForChunk("looped_sound", function()
-		
+
 	--end)
 end
 function looped_sound:save_npc(thread)
@@ -873,14 +863,13 @@ function looped_sound:load_npc(thread)
 end
 function looped_sound:Serialize_npc(Object)
 	--Object:ForChunk("looped_sound:npc", function()
-		
+
 	--end)
 end
 --'--------------------------------------------------------------------------------------------------------------------
 --' Загрузка звуков
 --'--------------------------------------------------------------------------------------------------------------------
 function load_sound()
-	PROF_EVENT_BEGIN("load_sound")
 	local snd_ini = ini_file("misc\\script_sound.ltx")
 
 	theme = {}
@@ -902,11 +891,9 @@ function load_sound()
 	end
 
 	snd_ini:section_for_each(LoadSection)
-	PROF_EVENT_END()
 end
 --' Загрузка звуков НПС
 function init_npc_sound(npc)
-	PROF_EVENT_BEGIN("init_npc_sound")
 	for k,v in pairs(theme) do
 		if v.init_npc then
 			--printf("checking %s for %s (%s)", v.section, npc:name(), character_community(npc))
@@ -915,5 +902,4 @@ function init_npc_sound(npc)
 			end
 		end
 	end
-	PROF_EVENT_END()
 end
