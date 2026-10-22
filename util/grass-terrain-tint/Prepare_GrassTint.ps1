@@ -102,8 +102,8 @@ if (!(Test-Path $userConfig)) {
     $settings = @()
     if ($originalConfig -and (Test-Path $originalConfig)) { $settings = [IO.File]::ReadAllLines($originalConfig, $encoding) }
     $settings = @($settings | Where-Object { $_ -notmatch '^\s*(renderer\s|r__grass_tint\S*\s)' })
-    $settings += @('renderer renderer_r4', 'r__grass_tint on', 'r__grass_tint_strength 0.2', 'r__grass_tint_radius 2',
-        'r__grass_tint_height 1.5', 'r__grass_tint_resolution 1024', 'r__grass_tint_green_only on', 'r__grass_tint_debug 0')
+    $settings += @('renderer renderer_r4', 'r__grass_tint 1', 'r__grass_tint_strength 0.2', 'r__grass_tint_radius 2',
+        'r__grass_tint_height 1.5', 'r__grass_tint_resolution 1024', 'r__grass_tint_green_only 1', 'r__grass_tint_debug 0')
     [IO.File]::WriteAllLines($userConfig, $settings, $encoding)
 }
 $launcher = @('@echo off', 'setlocal DisableDelayedExpansion', ('pushd "' + $GameRoot + '" || exit /b 1'),

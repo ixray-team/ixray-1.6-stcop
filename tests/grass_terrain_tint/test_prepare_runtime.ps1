@@ -44,6 +44,7 @@ try {
     $testUser = Join-Path $runtime 'userdata\user.ltx'
     $settings = [IO.File]::ReadAllText($testUser)
     Check ($settings.Contains('custom_setting 123') -and $settings.Contains('renderer renderer_r4')) 'Existing settings must be copied and renderer selected'
+    Check ($settings.Contains('r__grass_tint 1') -and $settings.Contains('r__grass_tint_green_only 1')) 'Boolean settings must use tokens accepted by CCC_Boolean'
     Check ($settings.Contains('r__grass_tint_strength 0.2') -and !$settings.Contains('r__grass_tint_strength 0.8')) 'Feature defaults must replace stale settings'
     [IO.File]::AppendAllText($testUser, "`ncustom_test_setting 456`n")
     & $prepare @arguments

@@ -865,9 +865,28 @@ public:
 	}
 };
 
-// Manual bake: regenerate the precomputed fields from the current console settings
-// and persist them to disk immediately. Useful when tweaking r__detail_* via console
-// and wanting the files updated without waiting for the next level load.
+// Grass terrain tint accepts the legacy switch tokens as well as numeric booleans.
+class GrassTerrainTintBoolean final : public CCC_Boolean
+{
+public:
+	GrassTerrainTintBoolean(const char* Name, bool* Value) : CCC_Boolean(Name, Value) {}
+	void Execute(const char* Args) override
+	{
+		if (EQ(Args, "on"))
+		{
+			CCC_Boolean::Execute("1");
+		}
+		else if (EQ(Args, "off"))
+		{
+			CCC_Boolean::Execute("0");
+		}
+		else
+		{
+			CCC_Boolean::Execute(Args);
+		}
+	}
+};
+
 class GrassTerrainTintRebuildCommand final : public IConsole_Command
 {
 public:
@@ -875,6 +894,9 @@ public:
 	void Execute(const char*) override { RImplementation.GrassTerrainTint.RequestRebuild(); }
 };
 
+// Manual bake: regenerate the precomputed fields from the current console settings
+// and persist them to disk immediately. Useful when tweaking r__detail_* via console
+// and wanting the files updated without waiting for the next level load.
 class CCC_DetailLayersForceBake : public IConsole_Command
 {
 public:
@@ -1210,8 +1232,8 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__detail_wind_sw_ang_min", &ps_wind_sw_ang_min, 0.0f, 360.0f);
 	CMD4(CCC_Float, "r__detail_wind_sw_ang_max", &ps_wind_sw_ang_max, 0.0f, 360.0f);
 
-	CMD2(CCC_Boolean, "r__grass_tint", &g_GrassTerrainTintEnabled);
-	CMD2(CCC_Boolean, "r__grass_tint_green_only", &g_GrassTerrainTintGreenOnly);
+	CMD2(GrassTerrainTintBoolean, "r__grass_tint", &g_GrassTerrainTintEnabled);
+	CMD2(GrassTerrainTintBoolean, "r__grass_tint_green_only", &g_GrassTerrainTintGreenOnly);
 	CMD4(CCC_Float, "r__grass_tint_strength", &g_GrassTerrainTintStrength, 0.0f, 1.0f);
 	CMD4(CCC_Float, "r__grass_tint_radius", &g_GrassTerrainTintRadius, 0.0f, 32.0f);
 	CMD4(CCC_Float, "r__grass_tint_height", &g_GrassTerrainTintHeightLimit, 0.1f, 10.0f);
