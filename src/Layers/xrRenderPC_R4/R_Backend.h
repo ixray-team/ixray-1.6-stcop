@@ -9,7 +9,7 @@
 #include "../../xrRHI/RHIEnums.h"
 #include "../../xrRHI/RHITopologyUtils.h"
 
-#	include "..\xrRenderPC_R4\r_backend_lod.h"
+#	include "R_Backend_LOD.h"
 
 #include "FVF.h"
 #include "dx10FixedConstants.h"

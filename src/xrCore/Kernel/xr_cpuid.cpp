@@ -36,7 +36,18 @@ unsigned long countSetBits(ulong_t bitMask)
 
 unsigned int query_processor_info(struct processor_info* pinfo)
 {
-	memset(pinfo, 0, sizeof(struct processor_info));
+	// Field by field: the struct has a user-declared constructor, so memset/assignment
+	// either warns or is not available.
+	pinfo->family = 0;
+	pinfo->model = 0;
+	pinfo->stepping = 0;
+	pinfo->isAmd = false;
+	pinfo->isIntel = false;
+	pinfo->vendor[0] = 0;
+	pinfo->modelName[0] = 0;
+	pinfo->features = 0;
+	pinfo->n_cores = 0;
+	pinfo->n_threads = 0;
 #if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
 	std::bitset<32> f_1_ECX;
 	std::bitset<32> f_1_EDX;

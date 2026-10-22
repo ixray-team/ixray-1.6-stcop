@@ -126,8 +126,9 @@ IC void		xrPREAD_MARKER	(IReader& fs)
 
 #define xrPREAD_PROP(fs,ID,data) \
 { \
-	R_ASSERT(ID==xrPREAD(fs)); fs.r(&data,sizeof(data)); \
-	switch (ID) \
+	const u32 _propId = xrPREAD(fs); \
+	R_ASSERT(ID==_propId); fs.r(&data,sizeof(data)); \
+	switch (_propId) \
 	{ \
 	case xrPID_TOKEN:	fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));	break; \
 	case xrPID_CLSID:	fs.advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));			break; \

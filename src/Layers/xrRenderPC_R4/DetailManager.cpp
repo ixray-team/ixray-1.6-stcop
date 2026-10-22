@@ -226,7 +226,7 @@ void CDetailManager::Render()
 		mFullTransform.mul(mProject, Device.mView);
 		CFrustum View; View.CreateFromMatrix(mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-		auto UpdateTask = [=]()
+		auto UpdateTask = [=, this]()
 			{
 				if (!EditorMode)
 				{
