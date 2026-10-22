@@ -49,7 +49,7 @@ endif()
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
-if(IXRAY_USE_MIMALLOC AND NOT IXRAY_ASAN)
+if(IXRAY_USE_MIMALLOC AND IXRAY_MIMALLOC_AVAILABLE AND NOT IXRAY_ASAN)
 	target_link_libraries(xrCore PRIVATE mimalloc-static)
 	target_compile_definitions(xrCore PRIVATE IXRAY_USE_MIMALLOC)
 	add_custom_command(TARGET xrCore POST_BUILD

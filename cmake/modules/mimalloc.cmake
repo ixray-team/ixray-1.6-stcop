@@ -1,3 +1,12 @@
+# On macOS the engine ships several dylibs: a static mimalloc inside xrCore frees memory
+# that other modules allocated through the system allocator, which crashes in mi_free.
+if(APPLE)
+    set(IXRAY_MIMALLOC_AVAILABLE FALSE)
+    message(STATUS "Engine heap: CRT (mimalloc is Windows-only here)")
+    return()
+endif()
+set(IXRAY_MIMALLOC_AVAILABLE TRUE)
+
 if(NOT IXRAY_USE_MIMALLOC OR IXRAY_ASAN)
     if(IXRAY_USE_MIMALLOC AND IXRAY_ASAN)
         message(STATUS "Engine heap: CRT (mimalloc disabled for Address Sanitizer)")
