@@ -32,7 +32,7 @@ bool IGame_ObjectPool::IsParallelLoad()
 	return g_DeferredPrimaryWork != nullptr;
 }
 
-IGame_ObjectPool::~IGame_ObjectPool(void)
+IGame_ObjectPool::~IGame_ObjectPool(void) noexcept
 {
 	clear();
 	R_ASSERT			(m_PrefetchObjects.empty());

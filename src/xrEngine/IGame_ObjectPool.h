@@ -35,6 +35,6 @@ public:
 	static bool					IsParallelLoad		();
 
 	IGame_ObjectPool			();
-	virtual ~IGame_ObjectPool	();
+	virtual ~IGame_ObjectPool	() noexcept;
 };
 //-----------------------------------------------------------------------------------------------------------
