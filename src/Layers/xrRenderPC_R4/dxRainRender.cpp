@@ -2,6 +2,110 @@
 #include "dxRainRender.h"
 #include "../../xrEngine/Rain.h"
 
+namespace RainStreaks
+{
+	struct Vertex
+	{
+		Fvector Position;
+		u32 Color;
+		Fvector2 UV;
+		Fvector Motion;
+		Fvector Side;
+	};
+
+	static D3DVERTEXELEMENT9 Declaration[] =
+	{
+		{ 0, 0,  D3DDECLTYPE_FLOAT3,	D3DDECLMETHOD_DEFAULT,	D3DDECLUSAGE_POSITION,	0 },
+		{ 0, 12, D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT,	D3DDECLUSAGE_COLOR,		0 },
+		{ 0, 16, D3DDECLTYPE_FLOAT2,	D3DDECLMETHOD_DEFAULT,	D3DDECLUSAGE_TEXCOORD,	0 },
+		{ 0, 24, D3DDECLTYPE_FLOAT3,	D3DDECLMETHOD_DEFAULT,	D3DDECLUSAGE_TEXCOORD,	1 },
+		{ 0, 36, D3DDECLTYPE_FLOAT3,	D3DDECLMETHOD_DEFAULT,	D3DDECLUSAGE_TEXCOORD,	2 },
+		D3DDECL_END()
+	};
+
+	constexpr u32 MaxLights = 8;
+
+	static u32 GatherLights(Fvector4 (&Position)[MaxLights], Fvector4 (&Color)[MaxLights], Fvector4 (&Direction)[MaxLights])
+	{
+		if (LightingModeIsStaticRender())
+		{
+			return 0;
+		}
+
+		const Fvector& Eye = Device.vCameraPosition;
+		const float Reach = g_pGamePersistent->Environment().source_rain_radius_render + 5.0f;
+
+		std::pair<float, light*> Best[MaxLights];
+		u32 Count = 0;
+
+		auto Consider = [&](light* L)
+		{
+			if (!L || L->flags.bHudMode || L->range < EPS_L)
+			{
+				return;
+			}
+
+			const float Distance = Eye.distance_to(L->position) - L->range;
+			if (Distance > Reach)
+			{
+				return;
+			}
+
+			if (Count < MaxLights)
+			{
+				Best[Count++] = { Distance, L };
+				return;
+			}
+
+			u32 Worst = 0;
+			for (u32 It = 1; It < MaxLights; ++It)
+			{
+				if (Best[It].first > Best[Worst].first)
+				{
+					Worst = It;
+				}
+			}
+
+			if (Distance < Best[Worst].first)
+			{
+				Best[Worst] = { Distance, L };
+			}
+		};
+
+		const light_Package& Package = RImplementation.Lights.package;
+		for (light* L : Package.v_point)
+		{
+			Consider(L);
+		}
+		for (light* L : Package.v_spot)
+		{
+			Consider(L);
+		}
+		for (light* L : Package.v_shadowed)
+		{
+			Consider(L);
+		}
+
+		for (u32 It = 0; It < Count; ++It)
+		{
+			const light* L = Best[It].second;
+			Position[It].set(L->position.x, L->position.y, L->position.z, L->range);
+			Color[It].set(L->color.r, L->color.g, L->color.b, 0.0f);
+
+			if (L->flags.type == IRender_Light::SPOT)
+			{
+				Direction[It].set(L->direction.x, L->direction.y, L->direction.z, std::cos(L->cone * 0.5f));
+			}
+			else
+			{
+				Direction[It].set(0.0f, 0.0f, 0.0f, -2.0f);
+			}
+		}
+
+		return Count;
+	}
+}
+
 dxRainRender::dxRainRender()
 {
 	IReader* F = FS.r_open(_game_meshes_,"dm\\rain.dm"); 
@@ -10,8 +114,8 @@ dxRainRender::dxRainRender()
 	DM_Drop	= ::RImplementation.model_CreateDM		(F);
 
 	//
-	SH_Rain.create("effects\\rain","fx\\fx_rain");
-	hGeom_Rain.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+	SH_Rain.create("effects\\rain_streaks","fx\\rain_streak_drop");
+	hGeom_Rain.create(RainStreaks::Declaration, RCache.Vertex.Buffer(), RCache.QuadIB);
 	hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 	
 	FS.r_close(F);
@@ -37,24 +141,89 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	if (factor<EPS_L || total_sprites == 0)
 		return;
 
+	RImplementation.Target->PhaseRainStreaksBegin();
+
 	// perform update
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Shader(SH_Rain);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Geometry(hGeom_Rain);
 
-	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(CEffect_Rain::rain_sprite));
+	const auto& SpriteMotion = owner.SpriteMotion;
+	total_sprites = std::min(total_sprites, (u32)SpriteMotion.size());
+
+	Fvector4 LightPosition[RainStreaks::MaxLights];
+	Fvector4 LightColor[RainStreaks::MaxLights];
+	Fvector4 LightDirection[RainStreaks::MaxLights];
+	const u32 LightCount = RainStreaks::GatherLights(LightPosition, LightColor, LightDirection);
+
+	for (u32 It = 0; It < LightCount; ++It)
+	{
+		RCache.set_ca("rain_lights_position", It, LightPosition[It]);
+		RCache.set_ca("rain_lights_color", It, LightColor[It]);
+		RCache.set_ca("rain_lights_direction", It, LightDirection[It]);
+	}
+
+	RCache.set_c("rain_refraction_params", g_RainRefraction, float(LightCount), 0.0f, 0.0f);
+
+	float WidthScale = g_RainWidthScale;
+
+	constexpr float Exposure = 1.0f / 30.0f;
+	Fvector CameraShift = Fvector().sub(Device.vCameraPosition, PrevCameraPosition);
+	if (!HasPrevCamera || CameraShift.square_magnitude() > 4.0f || Device.fTimeDelta < EPS_L)
+	{
+		CameraShift.set(0.0f, 0.0f, 0.0f);
+	}
+	else
+	{
+		CameraShift.mul(Exposure / Device.fTimeDelta);
+	}
+
+	PrevCameraPosition = Device.vCameraPosition;
+	HasPrevCamera = true;
+
+	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(4u * sizeof(RainStreaks::Vertex));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
-		CEffect_Rain::rain_sprite* buff = (CEffect_Rain::rain_sprite*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
+		RainStreaks::Vertex* buff = (RainStreaks::Vertex*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
-			buff[i] = m_sprites[start_idx + i];
+		{
+			const CEffect_Rain::rain_sprite& Sprite = m_sprites[start_idx + i];
+			const Fvector& Motion = SpriteMotion[start_idx + i];
+
+			const Fvector TrailCenter = Fvector().add(Sprite.buff[0].p, Sprite.buff[1].p).mul(0.5f);
+			const Fvector HeadCenter = Fvector().add(Sprite.buff[2].p, Sprite.buff[3].p).mul(0.5f);
+			const float Length = TrailCenter.distance_to(HeadCenter);
+
+			Fvector Stretch = CameraShift;
+			const float StretchLength = Stretch.magnitude();
+			if (StretchLength > 0.5f * Length)
+			{
+				Stretch.mul(0.5f * Length / StretchLength);
+			}
+
+			for (u32 Pair = 0u; Pair < 4u; Pair += 2u)
+			{
+				const auto& Left = Sprite.buff[Pair];
+				const auto& Right = Sprite.buff[Pair + 1u];
+
+				Fvector Center = Pair == 0u ? Fvector().add(TrailCenter, Stretch) : HeadCenter;
+				Fvector Side = Fvector().sub(Right.p, Left.p).mul(0.5f * WidthScale);
+
+				*buff++ = { Center, Left.color, Left.uv, Motion, Fvector().invert(Side) };
+				*buff++ = { Center, Right.color, Right.uv, Motion, Side };
+			}
+		}
 		RCache.Vertex.Unlock(vertices_in_batch, hGeom_Rain->vb_stride);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
 	}
+
+	RImplementation.Target->PhaseRainLayers(owner.SkyVisibility());
+
+	RImplementation.Target->PhaseRainStreaksEnd();
 
 	// Particles
 	CEffect_Rain::Particle*	P = owner.particle_active;

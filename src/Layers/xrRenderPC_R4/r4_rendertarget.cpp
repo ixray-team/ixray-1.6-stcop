@@ -512,6 +512,7 @@ CRenderTarget::CRenderTarget()
         const auto format = ERHI_FORMAT::R8G8B8A8_UNORM;
         rt_Generic_0.create(r2_RT_generic0, width, height, format);
         rt_Generic_1.create(r2_RT_generic1, width, height, format);
+        CreateRainStreakTargets(format);
         rt_Generic.create(r2_RT_generic, width, height, format);
         rt_Back_Buffer.create(r2_RT_backbuffer_final, width, height, format);
         rt_BackbufferLUT.create(r2_RT_backbuffer_lut, width, height, format);
@@ -591,6 +592,7 @@ CRenderTarget::CRenderTarget()
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_SNORM);
 		ReactiveMask.create(r2_RT_reactive, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
+		CreateRainStreakTargets(HDR_Format);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());

@@ -294,6 +294,8 @@ float		ps_r2_gloss_factor = 3.14f;
 
 int			ps_r__detail_radius = 120;
 float		ps_r4_cas_sharpening = 0.0f;
+float		g_RainRefraction = 1.0f;
+float		g_RainWidthScale = 0.1f;
 u32			ps_r4_sharpening_mode = 0;
 
 xr_token sharpening_mode_token[] =
@@ -1261,6 +1263,8 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
 	CMD3(CCC_Mask32, "r4_translucent_shadows", &ps_r2_ls_flags_ext, R4FLAG_TSHDOWS);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r4_rain_refraction", &g_RainRefraction, 0.0f, 4.0f);
+	CMD4(CCC_Float, "r4_rain_width_scale", &g_RainWidthScale, 0.01f, 1.0f);
 
 	CMD3(CCC_Mask32, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
 	CMD3(CCC_Mask32, "r4_rain_puddles", &ps_r2_ls_flags_ext, R4FLAG_RAIN_PUDDLES);
