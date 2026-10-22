@@ -125,6 +125,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				}
 			}
 			Pholder.Update(fDT_STEP);
+			chache_frame.store(u32(-1));
 
 			PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
 			Pholder.GetParticles(particles, p_cnt);
@@ -334,6 +335,7 @@ void CParticleEffect::UpdateCache()
 {
 	// PROF_EVENT(__FUNCTION__);
 
+	xrCriticalSectionGuard update_guard(&onframe_lock);
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite) || !m_RT_Flags.is(flRT_Playing))
 		return;
 
@@ -494,6 +496,7 @@ void CParticleEffect::Render(float)
 		return;
 	}
 
+	xrCriticalSectionGuard update_guard(&onframe_lock);
 	UpdateCache();
 
 	xrCriticalSectionGuard guard(&cache_lock);
