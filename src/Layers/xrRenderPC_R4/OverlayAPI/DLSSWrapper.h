@@ -39,8 +39,6 @@ public:
         float cameraJitterX = 0.f;
         float cameraJitterY = 0.f;
         
-        float sharpness = 0.f;
-
         float frameTimeDelta = 0.f;
 
         float nearPlane = 1.f;
@@ -71,6 +69,7 @@ private:
 
     bool DLSSInited = false;
     bool Created = false;
+    bool HistoryInvalid = true;
 };
 
 extern DLSSWrapper g_DLSSWrapper;
