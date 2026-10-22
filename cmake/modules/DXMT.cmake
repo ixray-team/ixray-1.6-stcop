@@ -54,8 +54,17 @@ else()
 
         message(STATUS "Configuring DXMT native...")
 
+        # DXMT is third-party: its own warnings are not actionable here and would hide
+        # the ones from the engine. Linker noise (duplicate libraries, re-exported LLVM
+        # dylibs) is silenced the same way.
+        set(DXMT_CXX_FLAGS "-Wno-return-type -Wno-sometimes-uninitialized -Wno-unused-function -Wno-mismatched-tags -Wno-deprecated-declarations")
+        set(DXMT_C_FLAGS "-Wno-unused-function -Wno-mismatched-tags -Wno-deprecated-declarations")
+        set(DXMT_LDFLAGS "-Wl,-no_warn_duplicate_libraries")
+
         execute_process(
-            COMMAND ${MESON} setup ${DXMT_SETUP_ARGS}
+            COMMAND ${CMAKE_COMMAND} -E env
+                    "CXXFLAGS=${DXMT_CXX_FLAGS}" "CFLAGS=${DXMT_C_FLAGS}" "LDFLAGS=${DXMT_LDFLAGS}"
+                    ${MESON} setup ${DXMT_SETUP_ARGS}
                     ${dxmt_SOURCE_DIR} ${DXMT_BUILD_DIR}
                     --buildtype=release
                     --prefix=${DXMT_INSTALL_DIR}
