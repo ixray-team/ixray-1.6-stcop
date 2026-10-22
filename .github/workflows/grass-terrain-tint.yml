@@ -20,29 +20,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cancel-bootstrap-builds:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-    steps:
-      - name: Cancel unrelated builds triggered by the initial branch creation
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          gh api "repos/$GH_REPO/actions/runs?branch=feature%2Fgrass-terrain-tint&head_sha=a2a67539f4a437c52a4ef918f1934166647971c1&per_page=100" \
-            --jq '.workflow_runs[] | select(.head_sha == "a2a67539f4a437c52a4ef918f1934166647971c1") | select(.status != "completed") | .id' |
-          while read -r run; do
-            gh api --method POST "repos/$GH_REPO/actions/runs/$run/cancel" || true
-          done
   windows:
-    needs: cancel-bootstrap-builds
+    permissions:
+      contents: read
+      actions: write
     runs-on: windows-2022
     timeout-minutes: 90
     defaults:
       run:
         shell: pwsh
     steps:
+      - name: Cancel builds triggered by the initial branch creation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $runs = gh api "repos/$env:GH_REPO/actions/runs?branch=feature%2Fgrass-terrain-tint&per_page=100" | ConvertFrom-Json
+          foreach ($run in $runs.workflow_runs) {
+            if ($run.head_sha -eq 'a2a67539f4a437c52a4ef918f1934166647971c1' -and $run.status -ne 'completed') {
+              gh api --method POST "repos/$env:GH_REPO/actions/runs/$($run.id)/cancel"
+            }
+          }
+          $global:LASTEXITCODE = 0
       - uses: actions/checkout@v7
       - name: Compile actual Direct3D 11 shader variants
         run: |
@@ -55,7 +54,7 @@ jobs:
       - name: Build engine and R4
         run: |
           $log = Join-Path $env:RUNNER_TEMP 'grass-tint-build.log'
-          cmake --build --preset Engine-x64-Windows-Release --target xrEngine xrGame xrRender_R4 --parallel 4 2>&1 | Tee-Object -FilePath $log
+          cmake --build --preset Engine-x64-Windows-Release --target xrRender_R4 xrEngine xrGame --parallel 4 2>&1 | Tee-Object -FilePath $log
           $code = $LASTEXITCODE
           if ($code -ne 0) {
             Select-String -Path $log -Pattern 'error C[0-9]{4}','error LNK[0-9]{4}','fatal error' | Select-Object -First 30 | ForEach-Object {
