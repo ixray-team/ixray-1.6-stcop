@@ -62,6 +62,7 @@ static void CollectFaces(GpuScene& Scene, const xr_vector<void*>& Faces)
 			Face* F				= (Face*)Fv;
 			FaceGPU.SurfaceID	= lc_global_data()->materials()[F->dwMaterial].surfidx;
 			FaceGPU.Opaque		= F->flags.bOpaque;
+			FaceGPU.Shared = F->flags.bSharedMaterial;
 			TC					= F->getTC0();
 		}
 		else
@@ -69,6 +70,7 @@ static void CollectFaces(GpuScene& Scene, const xr_vector<void*>& Faces)
 			FaceDataEmbree* F	= (FaceDataEmbree*)Fv;
 			FaceGPU.SurfaceID	= gl_data.g_materials[F->dwMaterial].surfidx;
 			FaceGPU.Opaque		= F->bOpaque;
+			FaceGPU.Shared = F->bSharedMaterial;
 			TC					= F->getTC0();
 		}
 

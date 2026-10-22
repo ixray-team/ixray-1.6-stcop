@@ -448,7 +448,7 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 	(SortedSurfaces,
 	 [](const CSurface* a, const CSurface* b)
 	 {
-		 return xr_strcmp(a->m_Name.c_str(), b->m_Name.c_str()) < 0;
+		 return xr_strcmp(a->_Name(), b->_Name()) < 0;
 	 }
 	 );
 
@@ -459,7 +459,7 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 
 	for (CSurface* s : SortedSurfaces)
 	{
-		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->m_Name.c_str()).c_str();
+		shared_str Pref2 = PrepareKey(Pref1.c_str(), s->_Name()).c_str();
 		if (s->_GameMtlName() != occ_name)
 		{
 			// TODO: Add switch option
@@ -569,11 +569,11 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 		dest.emplace_back(xr_string("Object Type: ") + get_token_name(eo_type_token, pinf.e_obj->m_objectFlags.flags));
 		R_ASSERT(pinf.e_mesh);
 		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-		dest.emplace_back(xr_string("Surface: ") + xr_string(surf->m_Name.c_str()));
+		dest.emplace_back(xr_string("Surface: ") + xr_string(surf->_Name()));
 		dest.emplace_back(xr_string("2 Sided: ") + xr_string(surf->_flags().is(SSurfaceData::sf2Sided) ? "on" : "off"));
 		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder))
 		{
-			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->_GameMtlName()));
 			int gm_id = surf->_GameMtl();
 			if (gm_id != GAMEMTL_NONE_ID)
 			{
@@ -591,10 +591,10 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 		}
 		else
 		{
-			dest.emplace_back(xr_string("Texture: ") + xr_string(surf->m_Texture.c_str()));
-			dest.emplace_back(xr_string("Shader: ") + xr_string(surf->m_ShaderName.c_str()));
-			dest.emplace_back(xr_string("LC Shader: ") + xr_string(surf->m_ShaderXRLCName.c_str()));
-			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			dest.emplace_back(xr_string("Texture: ") + xr_string(surf->_Texture()));
+			dest.emplace_back(xr_string("Shader: ") + xr_string(surf->_ShaderName()));
+			dest.emplace_back(xr_string("LC Shader: ") + xr_string(surf->_ShaderXRLCName()));
+			dest.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->_GameMtlName()));
 		}
 	}
 }

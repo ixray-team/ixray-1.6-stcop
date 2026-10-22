@@ -651,19 +651,25 @@ bool CSector::Validate(bool bMsg)
 	for (SItemIt it=sector_items.begin();it!=sector_items.end();it++){
 		for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++){
 			CSurface* surf 		= sf_it->first;
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 			if (c_sh == nullptr)
 			{
-				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->m_ShaderXRLCName.c_str(), surf->m_Name.c_str());
+				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->_ShaderXRLCName(), surf->_Name());
 				bRes = false;
 				continue;
 			}
 
-			if (c_sh->flags.bRendering)	bRenderableFound = true;
+			if (c_sh->flags.bRendering)
+			{
+				bRenderableFound = true;
+			}
 		}
 	}
 	if (!bRenderableFound){
-		if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+		if (bMsg)
+		{
+			ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+		}
 		bRes 		= false;
 	}        
 	return bRes;

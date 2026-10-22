@@ -117,7 +117,7 @@ void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropIte
 		V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 	}
 		
-    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->m_Name.c_str())));
+    PHelper().CreateCaption(items, PrepareKey(pref, "Face Count"), shared_str().printf("%d", GetSurfFaceCount(SURF->_Name())));
 }
 
 xr_token ECORE_API eo_type_token[]={
@@ -196,8 +196,8 @@ void CEditableObject::FillSurfaceList(const char* pref, ListItemsVec& items, int
 {
     SurfaceVec& s_lst 	= m_Surfaces;
 	if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
-    for (SurfaceIt s_it=s_lst.begin(); s_it!=s_lst.end(); s_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->m_Name.c_str()).c_str(), modeID, 0, *s_it);
+    for (auto& s_it : s_lst)
+	    LHelper().CreateItem(items, PrepareKey(pref, s_it->_Name()).c_str(), modeID, 0, s_it);
 }
 //---------------------------------------------------------------------------
 
@@ -205,10 +205,11 @@ void CEditableObject::FillBoneList(const char* pref, ListItemsVec& items, int mo
 {
     BoneVec& b_lst 		= m_Bones;
     if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
-    for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++){
-    	xr_string pt	= MakeFullBonePath(*b_it);
-    	xr_string path	= (!pt.size())?pref:PrepareKey(pref, pt.c_str()).c_str();
-		LHelper().CreateItem(items, PrepareKey(path.c_str(), (*b_it)->Name().c_str()).c_str(), modeID, 0, *b_it);
+    for (auto& b_it : b_lst)
+    {
+    	xr_string pt	= MakeFullBonePath(b_it);
+    	xr_string path	= (pt.empty())?pref:PrepareKey(pref, pt.c_str()).c_str();
+		LHelper().CreateItem(items, PrepareKey(path.c_str(), b_it->Name().c_str()).c_str(), modeID, 0, b_it);
     }
 }
 
@@ -216,6 +217,8 @@ void CEditableObject::FillMotionList(const char* pref, ListItemsVec& items, int 
 {
     SMotionVec&	m_lst	= m_SMotions;
 	if (pref) LHelper().CreateItem(items, pref,  modeID, ListItem::flSorted);
-    for (SMotionIt m_it=m_lst.begin(); m_it!=m_lst.end(); m_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*m_it)->Name()).c_str(), modeID, 0, *m_it);
+    for (auto& m_it : m_lst)
+    {
+	    LHelper().CreateItem(items, PrepareKey(pref, m_it->Name()).c_str(), modeID, 0, m_it);
+    }
 }

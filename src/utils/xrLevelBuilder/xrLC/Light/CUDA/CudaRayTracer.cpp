@@ -284,6 +284,7 @@ static void UploadFaces(const GpuScene& Scene)
 		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
 		FaceGPU.bOpacue = F.Opaque;
 		FaceGPU.bWater  = false;
+		FaceGPU.bShared = F.Shared;
 		FaceGPU.surfidx = F.SurfaceID;
 
 		for (int Corner = 0; Corner < 3; Corner++)

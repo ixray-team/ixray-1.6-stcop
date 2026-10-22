@@ -13,6 +13,7 @@
 
 #include "ui_main.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
+#include "Export/MeshMenderVertex.h"
 #include "Export/MeshExportCommon.h"
 
 #include <DirectXMesh.h>
@@ -211,9 +212,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 
 		if(m_SkeletonLinkType==1)
 		{
-			for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); ++v_it)
+			for (auto& pV : m_Verts)
 			{
-				SSkelVert& pV = *v_it;
 				pV.sort_by_weight();
 				F.w(&pV.offs,sizeof(Fvector));		// position (offset)
 				F.w(&pV.norm,sizeof(Fvector));		// normal
@@ -225,9 +225,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 		}
 		else if(m_SkeletonLinkType==2)
 		{
-			for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+			for (auto& pV : m_Verts)
 			{
-				SSkelVert& pV = *v_it;
 				pV.sort_by_weight();
 				float _weight_b0 = 0.0f;
 
@@ -255,9 +254,8 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 		}
 		else if(m_SkeletonLinkType==3 || m_SkeletonLinkType==4)
 		{
-			for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+			for (auto& pV : m_Verts)
 			{
-				SSkelVert& pV = *v_it;
 				pV.sort_by_weight();
 				u32 i = 0;
 
@@ -326,9 +324,13 @@ void CExportSkeleton::SSplit::MakeProgressive()
 {
 	processor_skeleton.VIPM_Init	();
 	for (SSkelVert& Vert : m_Verts)
+	{
 		processor_skeleton.VIPM_AppendVertex(Vert.offs,Vert.uv);
+	}
 	for (SSkelFace& Face : m_Faces)
+	{
 		processor_skeleton.VIPM_AppendFace(Face.v[0],Face.v[1],Face.v[2]);
+	}
 
 	VIPM_Result* R = processor_skeleton.VIPM_Convert(u32(-1),1.f,1);
 
@@ -336,8 +338,10 @@ void CExportSkeleton::SSplit::MakeProgressive()
 		// Permute vertices
 		SkelVertVec temp_list = m_Verts;
 		for(u32 i=0; i<temp_list.size(); i++)
+		{
 			m_Verts[R->permute_verts[i]]=temp_list[i];
-	
+		}
+
 		// Fill indices
 		m_Faces.resize	(R->indices.size()/3);
 		for (u32 f_idx=0; f_idx<m_Faces.size(); f_idx++){
@@ -350,7 +354,9 @@ void CExportSkeleton::SSplit::MakeProgressive()
 		// Fill SWR
 		m_SWR.resize		(R->swr_records.size());
 		for (u32 swr_idx=0; swr_idx!=m_SWR.size(); swr_idx++)
+		{
 			m_SWR[swr_idx]	= R->swr_records[swr_idx];
+		}
 	}else{
 		Log("!..Can't make progressive.");
 	}
@@ -496,7 +502,10 @@ int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 
 
 IC void BuildGroups(CBone* B, U16Vec& tgt, u16 id, u16& last_id)
 {
-	if (B->IK_data.ik_flags.is(SJointIKData::flBreakable)) id = ++last_id;
+	if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))
+	{
+		id = ++last_id;
+	}
 	tgt[B->SelfID]	= id;
 	for (BoneIt bone_it=B->children.begin(); bone_it!=B->children.end(); bone_it++)
 	{

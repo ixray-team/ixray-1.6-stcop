@@ -131,35 +131,40 @@ void OGF::Save			(IWriter &fs)
 	// clMsg			("* %d faces",faces.size());
 	geom_batch_average	((u32)data.vertices.size(),(u32)data.faces.size());
 
-	// Texture & shader
-	std::string			Tname;
-	for (u32 i=0; i<textures.size(); i++)	{
-		if (!Tname.empty()) Tname += ',';
-		string256		t;
-		xr_strcpy			(t,*textures[i].name);
-		if (strchr(t,'.')) *strchr(t,'.')=0;
-		Tname			+= t;
-	}
-	string1024			sid;
-	xr_strconcat(sid,
-		pBuild->shader_render[pBuild->materials()[material].shader].name,
-		"/",
-		Tname.c_str()
-		);
-
 	// Create header
 	ogf_header			H;
 	H.format_version	= xrOGF_FormatVersion;
 	H.type				= data.m_SWI.count?MT_PROGRESSIVE:MT_NORMAL;
-	H.shader_id			= RegisterShader			(sid);
+	if (bSharedMaterial)
+	{
+		H.shader_id = 0;
+	} else
+	{
+		// Texture & shader
+		std::string			Tname;
+		for (u32 i=0; i<textures.size(); i++)	{
+			if (!Tname.empty()) Tname += ',';
+			string256		t;
+			xr_strcpy			(t,*textures[i].name);
+			if (strchr(t,'.')) *strchr(t,'.')=0;
+			Tname			+= t;
+		}
+		string1024			sid;
+		xr_strconcat(sid,
+			pBuild->GetMaterialShaderName(material, bSharedMaterial),
+			"/",
+			Tname.c_str()
+			);
+		H.shader_id = RegisterShader(sid);
+	}
 	H.bb.min			= bbox.min;
 	H.bb.max			= bbox.max;
 	H.bs.c				= C;
 	H.bs.r				= R;
 
 	// Vertices
-	const Shader_xrLC*	SH	=	pBuild->shaders().Get		(pBuild->materials()[material].reserved);
-	bool bVertexColors	=	(SH->flags.bLIGHT_Vertex);
+	auto& SH = pBuild->shaders().Get(pBuild->GetMaterialReserved(material, bSharedMaterial));
+	bool bVertexColors	= SH.flags.bLIGHT_Vertex;
 	
 	switch (H.type) 
 	{
@@ -170,92 +175,132 @@ void OGF::Save			(IWriter &fs)
 	}
 
 	// Header
-	fs.open_chunk			(OGF_HEADER);
-	fs.w					(&H,sizeof(H));
-	fs.close_chunk			();
+	fs.make_chunk(OGF_HEADER, [this, H](IWriter& F)
+	{
+		F.w(&H,sizeof(H));
+	});
+	
+	fs.make_chunk(OGF_SHARED_MATERIAL_SETTINGS, [this](IWriter& F)
+	{
+		F.w_u8(bSharedMaterial);
+		if (bSharedMaterial)
+		{
+			F.w_stringZ(pBuild->materials_shared()[material].Name);
+			R_ASSERT(textures.size()>0);
+			xr_string ShaderDescr = "";
+			for (u32 i = 1; i < textures.size(); i++)
+			{
+				ShaderDescr.append(",");
+				ShaderDescr.append(textures[i].name.c_str());
+			}
+			F.w_stringZ(ShaderDescr);
+		}
+	});
 }
 
 void OGF_Reference::Save	(IWriter &fs)
 {
 	OGF_Base::Save		(fs);
-
-	// geom_batch_average	(vertices.size(),faces.size());	// don't use reference(s) as batch estimate
-
-	// Texture & shader
-	std::string			Tname;
-	for (u32 i=0; i<textures.size(); i++)
-	{
-		if (!Tname.empty()) Tname += ',';
-		string256		t;
-		xr_strcpy			(t,*textures[i].name);
-		if (strchr(t,'.')) *strchr(t,'.')=0;
-		Tname			+= t;
-	}
-	string1024			sid	;
-	xr_strconcat(sid,
-		pBuild->shader_render[pBuild->materials()[material].shader].name,
-		"/",
-		Tname.c_str()
-		);
-
+	
 	// Create header
 	ogf_header			H;
 	H.format_version	= xrOGF_FormatVersion;
 	H.type				= model->data.m_SWI.count?MT_TREE_PM:MT_TREE_ST;
-	H.shader_id			= RegisterShader	(sid);
+	if (bSharedMaterial)
+	{
+		H.shader_id = 0;
+	} else
+	{
+		std::string			Tname;
+		for (u32 i=0; i<textures.size(); i++)
+		{
+			if (!Tname.empty()) Tname += ',';
+			string256		t;
+			xr_strcpy			(t,*textures[i].name);
+			if (strchr(t,'.')) *strchr(t,'.')=0;
+			Tname			+= t;
+		}
+		string1024			sid	;
+		xr_strconcat(sid,
+			pBuild->GetMaterialShaderName(material, bSharedMaterial),
+			"/",
+			Tname.c_str()
+			);
+		
+		H.shader_id = RegisterShader(sid);
+	}
 	H.bb.min			= bbox.min;
 	H.bb.max			= bbox.max;
 	H.bs.c				= C;
 	H.bs.r				= R;
 
 	// Vertices
-	fs.open_chunk		(OGF_GCONTAINER);
-	fs.w_u32			(vb_id);
-	fs.w_u32			(vb_start);
-	fs.w_u32			((u32)model->data.vertices.size());
-
-	fs.w_u32			(ib_id);
-	fs.w_u32			(ib_start);
-	fs.w_u32			((u32)model->data.faces.size()*3);
-	fs.close_chunk		();
+	fs.make_chunk(OGF_GCONTAINER, [this](IWriter& F)
+	{
+		F.w_u32(vb_id);
+		F.w_u32(vb_start);
+		F.w_u32(model->data.vertices.size());
+		F.w_u32(ib_id);
+		F.w_u32(ib_start);
+		F.w_u32(model->data.faces.size()*3);
+	});
 
 	// Special
-	fs.open_chunk		(OGF_TREEDEF2);
-	fs.w				(&xform,	sizeof(xform));
-	fs.w				(&c_scale,	5*sizeof(float));
-	fs.w				(&c_bias,	5*sizeof(float));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_TREEDEF2, [this](IWriter& F)
+	{
+		F.w(&xform, sizeof(xform));
+		F.w(&c_scale, 5*sizeof(float));
+		F.w(&c_bias, 5*sizeof(float));
+	});
 
 	// Header
-	fs.open_chunk		(OGF_HEADER);
-	fs.w				(&H,sizeof(H));
-	fs.close_chunk		();
+	fs.make_chunk(OGF_HEADER, [this, H](IWriter& F)
+	{
+		F.w(&H,sizeof(H));
+	});
+	
+	fs.make_chunk(OGF_SHARED_MATERIAL_SETTINGS, [this](IWriter& F)
+	{
+		F.w_u8(bSharedMaterial);
+		if (bSharedMaterial)
+		{
+			F.w_stringZ(pBuild->materials_shared()[material].Name);
+			xr_string ShaderDescr = "";
+			for (u32 i = 1; i < textures.size(); i++)
+			{
+				ShaderDescr.append(",");
+				ShaderDescr.append(textures[i].name.c_str());
+			}
+			F.w_stringZ(ShaderDescr);
+		}
+	});
 
 	// progressive
 	if (H.type==MT_TREE_PM){
 		// SW
-		fs.open_chunk		(OGF_SWICONTAINER);
-		fs.w_u32			(sw_id);
-		fs.close_chunk		();
+		fs.make_chunk(OGF_SWICONTAINER, [this](IWriter& F)
+		{
+			F.w_u32(sw_id);
+		});
 	}
 }
 
 void	OGF::PreSave		(u32 tree_id)
 {
-	const Shader_xrLC*	SH	=	pBuild->shaders().Get		(pBuild->materials()[material].reserved);
-	bool bVertexColored	=	(SH->flags.bLIGHT_Vertex);
+	auto& SH = pBuild->shaders().Get(pBuild->GetMaterialReserved(material, bSharedMaterial));
+	bool bVertexColored	= SH.flags.bLIGHT_Vertex;
 
 	// X-vertices/faces
-	if (fast_path_data.vertices.size() && fast_path_data.faces.size())
+	if (!fast_path_data.vertices.empty() && !fast_path_data.faces.empty())
 	{
 		// clMsg			("%4d: v(%3d)/f(%3d)",tree_id,fast_path_data.vertices.size(),fast_path_data.faces.size());
 
 		VDeclarator		x_D;
 		x_D.set			(x_decl_vert);
 		x_VB.Begin		(x_D);
-		for (itXV V=fast_path_data.vertices.begin(); V!=fast_path_data.vertices.end(); V++)
+		for (auto& vertice : fast_path_data.vertices)
 		{
-			x_vert		v	(V->P);
+			x_vert		v	(vertice.P);
 			x_VB.Add		(&v,sizeof(v));
 		}
 		x_VB.End		(&fast_path_data.vb_id,&fast_path_data.vb_start);
@@ -268,9 +313,9 @@ void	OGF::PreSave		(u32 tree_id)
 		// vertex-colored
 		D.set			(r1_decl_vert);
 		g_VB.Begin		(D);
-		for (itOGF_V V=data.vertices.begin(); V!=data.vertices.end(); V++)
+		for (auto& vertice : data.vertices)
 		{
-			r1v_vert	v	(V->P,V->N,V->T,V->B,V->Color,V->UV[0]);
+			r1v_vert	v	(vertice.P, vertice.N, vertice.T, vertice.B, vertice.Color, vertice.UV[0]);
 			g_VB.Add		(&v,sizeof(v));
 		}
 		g_VB.End		(&data.vb_id,&data.vb_start);
@@ -278,9 +323,9 @@ void	OGF::PreSave		(u32 tree_id)
 		// lmap-colored
 		D.set			(r1_decl_lmap);
 		g_VB.Begin		(D);
-		for (itOGF_V V=data.vertices.begin(); V!=data.vertices.end(); V++)
+		for (auto& vertice : data.vertices)
 		{
-			r1v_lmap	v	(V->P,V->N,V->T,V->B,V->Color,V->UV[0],V->UV[1]);
+			r1v_lmap	v	(vertice.P, vertice.N, vertice.T, vertice.B, vertice.Color, vertice.UV[0], vertice.UV[1]);
 			g_VB.Add		(&v,sizeof(v));
 		}
 		g_VB.End		(&data.vb_id,&data.vb_start);
@@ -627,6 +672,7 @@ void OGF_Reference::SaveForCompile(IWriter* W)
 	W->open_chunk(eSaveHeaderRef);
 
 	W->w_u32(material);	
+	W->w_u8(bSharedMaterial);
 	W->w_u32(vb_id);
 	W->w_u32(vb_start);
 	W->w_u32(ib_id);
@@ -655,6 +701,7 @@ void OGF_Reference::LoadForCompile(IReader* R)
 	if (R->open_chunk(eSaveHeaderRef))
 	{
 		material = R->r_u32();
+		bSharedMaterial = R->r_u8();
 		vb_id = R->r_u32();
 		vb_start = R->r_u32();
 		ib_id = R->r_u32();

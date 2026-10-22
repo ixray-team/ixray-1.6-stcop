@@ -18,13 +18,13 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 		CSurface* surf 		= sp_it->first;
 		int gm_id			= surf->_GameMtl(); 
 		if (gm_id==GAMEMTL_NONE_ID){
-			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(), surf->m_Name.c_str());
+			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(), surf->_Name());
 			bResult 		= false; 
 			break; 
 		}
 		SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (!M){
-			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
+			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->m_Name.c_str(), mesh->m_Parent->m_LibName.c_str(),surf->_Name());
 			bResult 		= false; 
 			break; 
 		}
@@ -32,14 +32,14 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 
 		// check engine shader compatibility
 		if (!ignore_shader){
-			IBlender* 		B = DEV->_FindBlender(surf->m_ShaderName.c_str()); 
+			IBlender* 		B = DEV->_FindBlender(surf->_ShaderName()); 
 			if (!B){
-				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->m_ShaderName.c_str(),mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
+				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->_ShaderName(),mesh->m_Parent->m_LibName.c_str(),surf->_Name());
 				bResult 	= false; 
 				break; 
 			}
 			if (B->canBeLMAPped()){ 
-				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->m_Parent->m_LibName.c_str(),surf->m_Name.c_str(),surf->m_ShaderName.c_str());
+				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->m_Parent->m_LibName.c_str(),surf->_Name(),surf->_ShaderName());
 				bResult 	= false; 
 				break; 
 			}
@@ -297,13 +297,15 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 
 				Fvector local_normal	        = {0,0,0};
 
-				const char* mat_name = NULL;
+				const char* mat_name = nullptr;
 				for (SBFaceVecIt it=P->m_Faces.begin(); it!=P->m_Faces.end(); it++)
 				{
 					for (u32 k=0; k<3; k++)
+					{
 						local_normal.add	        ((*it)->n[k]);
+					}
 
-					mat_name     = (*it)->surf->m_GameMtlName.c_str();
+					mat_name     = (*it)->surf->_GameMtlName();
 				}
 
 				local_normal.normalize_safe		();

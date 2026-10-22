@@ -3,7 +3,7 @@
 #include "../xrEngine/Shader_xrLC.h"
 #include "../xrCore/SharedMaterialLibrary.h"
 
-IC void post_process_materials(const Shader_xrLC_LIB	&shaders, const xr_vector<b_shader> &shader_compile, xr_vector<b_material> &materials )
+IC void post_process_materials(const Shader_xrLC_LIB& shaders, const xr_vector<b_shader>& shader_compile, xr_vector<b_material>& materials )
 {
  	for (u32 m=0; m<materials.size(); m++)
 	{
@@ -41,11 +41,5 @@ IC void post_process_materials_shared(const Shader_xrLC_LIB	&shaders, xr_vector<
 			M.reserved = u16(-1);
 		}
 	}
-}
-
-IC const Shader_xrLC& shader( u16 dwMaterial, const Shader_xrLC_LIB &shaders, const xr_vector<b_material>& materials )
-{
- 	u32 shader_id = materials[dwMaterial].reserved;
-	return *( shaders.Get( shader_id ) );
 }
 

@@ -44,23 +44,27 @@ public:
 	}
 };
 
-using Shader_xrLCVec = xr_vector<Shader_xrLC>;
-using Shader_xrLCIt = Shader_xrLCVec::iterator;
-
 class Shader_xrLC_LIB
 {
-	Shader_xrLCVec			library;
-public:
-	void					Load	(const char* name)
+	xr_vector<Shader_xrLC> library;
+	xr_hash_map<shared_str, u32> NameToIndex;
+	
+	void Rehash()
 	{
-		IReader* fs = FS.r_open(name);
+		NameToIndex.clear();
+		for (u32 i = 0; i < library.size(); ++i)
+		{
+			NameToIndex[library[i].Name] = i;
+		}
+	}
+public:
+	void Load(str_c name)
+	{
+		auto fs = FS.rg_open(name);
 		if(!fs){
-			string256		inf;
-			extern HWND		logWindow;
-			xr_sprintf(inf,sizeof(inf),"Build failed!\nCan't load shaders library: '%s'",name);
-//			clMsg			(inf);
-//			MessageBox		(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
-			FATAL			(inf);
+			string256 inf;
+			xr_sprintf (inf,sizeof(inf),"Build failed!\nCan't load shaders library: '%s'",name);
+			FATAL(inf);
 			return;
 		};
 
@@ -68,7 +72,7 @@ public:
 		R_ASSERT(int(fs->length()) == int(count*sizeof(Shader_xrLC)));
 		library.resize(count);
 		fs->r(library.data(),fs->length());
-        FS.r_close(fs);
+		Rehash();
 	}
 	bool Save(const char* name)
 	{
@@ -77,39 +81,34 @@ public:
 			F->w(library.data(),(u32)library.size()*sizeof(Shader_xrLC));
     	    FS.w_close(F);
             return true;
-        }else{
-        	return false;
         }
+		return false;
 	}
 	void Unload()
 	{
 		library.clear		();
 	}
-	u32 GetID(const char* name)
+	u32 GetID(const char* name) const
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
+		auto it = NameToIndex.find(name);
+		if (it == NameToIndex.end())
 		{
-			if (!_stricmp(name,it->Name))
-			{
-				return u32(it-library.begin());
-			}
+			return u32(-1);
 		}
-		return u32(-1);
+		return it->second;
 	}
 	Shader_xrLC* Get(const char* name)
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
+		auto ID = GetID(name);
+		if (ID == u32(-1))
 		{
-			if (!_stricmp(name,it->Name))
-			{
-				return &(*it);
-			}
+			return nullptr;
 		}
-		return nullptr;
+		return &library[ID];
 	}
-	Shader_xrLC* Get(int id)
+	Shader_xrLC& Get(int id)
 	{
-		return &library[id];
+		return library[id];
 	}
 	Shader_xrLC* Append(Shader_xrLC* parent=nullptr)
 	{
@@ -118,17 +117,26 @@ public:
 	}
 	void Remove(const char* name)
 	{
-		for (Shader_xrLCIt it=library.begin(); it!=library.end(); it++)
-			if (!_stricmp(name,it->Name)){
-            	library.erase(it);
-                break;
-            }
+		auto ID = GetID(name);
+		if (ID == u32(-1))
+		{
+			return;
+		}
+		auto it = library.begin() + GetID(name);
+		VERIFY(it < library.end());
+		library.erase(it);
+		Rehash();
 	}
 	void Remove(int id)
 	{
 		library.erase(library.begin()+id);
+		Rehash();
 	}
-	Shader_xrLCVec& Library()
+	auto& Library()
+	{
+		return library;
+	}
+	const auto& Library	() const
 	{
 		return library;
 	}

@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "UISharedMaterialsLibrary.h"
-#include "imgui_internal.h"
 
 UISharedMaterialsLibrary* UISharedMaterialsLibrary::Form = nullptr;
 
@@ -63,7 +62,7 @@ void UISharedMaterialsLibrary::Show()
     if (NeedToPush)
     {
         Form->InitObjects();
-        UI->Push(Form, false);
+        EContext.UI->Push(Form, false);
         //modif_map.clear();
     }
 }
@@ -224,72 +223,12 @@ void UISharedMaterialsLibrary::OnItemFocused(ListItem* item)
                 Surface->Release();
                 xr_delete(m_Thm);
             }
-            
-            /*CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &s->m_pData.second->m_Texture, smTexture);
-            CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-
-            CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Shader"), &s->m_pData.second->m_ShaderName, smEShader);
-            CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-
-            CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Compile"), &s->m_pData.second->m_ShaderXRLCName, smCShader);
-            CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-				
-            CV = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Mtl"), &s->m_pData.second->m_GameMtlName, smGameMaterial);
-            CV->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-            CV->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);*/
         }
-        
-        /*EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
-
-        if (m_Thm && m_Thm->_FaceCount() != 0 && m_Thm->_VertexCount() != 0)
-        {
-            IRHISurface* Surface = nullptr;
-            m_Thm->Update(Surface);
-
-            m_RealTexture = new CTexture();
-            m_RealTexture->surface_set(Surface);
-            Surface->Release();
-
-            m_Thm->FillInfo(Info);
-            PreviewProps->AssignItems(Info);
-        }
-        else
-        {
-            PHelper().CreateCaption(Info, "Faces", "THM not found");
-            PHelper().CreateCaption(Info, "Vertexes", "THM not found");
-            PreviewProps->AssignItems(Info);
-        }*/
-
-        /*if (m_Preview)
-        {
-            FocusedItems = ActualItemList().m_SelectedItems;
-            SelectionToReference(&FocusedItems);
-        }
-
-        if (bShowProps)
-            OnPropertiesClick();*/
-    }
-    else
-    {
-        //bShowProps = false;
     }
 
-    UI->RedrawScene();
+    EContext.UI->RedrawScene();
 }
 
 void UISharedMaterialsLibrary::OnItemUnfocused(ListItem* item)
 {
-    /*if (!m_Preview)
-        return;
-
-    if (item != nullptr)
-    {
-        auto Iter = std::find(FocusedItems.begin(), FocusedItems.end(), item);
-		
-        if (Iter != FocusedItems.end())
-        {
-            FocusedItems.erase(Iter);
-            SelectionToReference(&FocusedItems);
-        }
-    }*/
 }

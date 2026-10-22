@@ -101,7 +101,7 @@ bool SceneBuilder::BuildSOMModel()
 					int gm_id			= surf->_GameMtl(); 
 					if (gm_id==GAMEMTL_NONE_ID)
 					{ 
-						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->_Name());
 						bResult 		= false; 
 						break; 
 					}
@@ -109,7 +109,7 @@ bool SceneBuilder::BuildSOMModel()
 
 					if (!mtl)
 					{
-						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->m_Name.c_str());
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->m_Name, (*m_it)->m_Parent->m_LibName.c_str(),surf->_Name());
 						bResult 		= false; 
 						break; 
 					}

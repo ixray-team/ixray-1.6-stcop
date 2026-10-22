@@ -417,7 +417,7 @@ void SceneBuilder::SaveBuild()
 			F->w		(m.faces.data(),sizeof(b_face)*m.faces.size());
 			// lod_id
 			F->w_u16	(m.lod_id);
-			F->w		(m.m_smgroups.data(),sizeof(int)*m.faces.size());
+			F->w		(m.smgroups.data(),sizeof(int)*m.faces.size());
 		}
 		F->close_chunk	();
 		
@@ -525,7 +525,7 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 			continue;
 		}
 
-		if (!EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str())->flags.bCollision)
+		if (!EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName())->flags.bCollision)
 		{
 			continue;
 		}
@@ -658,37 +658,37 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		}
 		if (gm_id<0)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains bad game material.",surf->m_Name.c_str());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains bad game material.",surf->_Name());
 			bResult 		= false;
 			break;
 		}
 		SGameMtl* M = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (nullptr==M)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->m_Name.c_str());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->_Name());
 			bResult 		= false;
 			break;
 		}
 		if (M->Flags.is(SGameMtl::flBreakable))
 		{
-			ELog.Msg		(mtInformation,"Surface: '%s' contains breakable game material.",surf->m_Name.c_str());
+			ELog.Msg		(mtInformation,"Surface: '%s' contains breakable game material.",surf->_Name());
 			continue;
 		}
 		if (M->Flags.is(SGameMtl::flClimable))
 		{
-			ELog.Msg		(mtInformation,"Surface: '%s' contains climable game material.",surf->m_Name.c_str());
+			ELog.Msg		(mtInformation,"Surface: '%s' contains climable game material.",surf->_Name());
 			continue;
 		}
 		if (M->Flags.is(SGameMtl::flDynamic))
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains non-static game material.",surf->m_Name.c_str());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains non-static game material.",surf->_Name());
 			bResult 		= false;
 			break;
 		}
 		u32 dwTexCnt 		= ((surf->m_dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
 		if (dwTexCnt!=1)
 		{
-			ELog.DlgMsg		(mtError,"Surface: '%s' contains more than 1 texture refs.",surf->m_Name.c_str());
+			ELog.DlgMsg		(mtError,"Surface: '%s' contains more than 1 texture refs.",surf->_Name());
 			bResult 		= false; 
 			break; 
 		}
@@ -1019,9 +1019,9 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 
 	// scene statssm
 	b_mu_model& MStat = l_mu_models[model_idx];
-	for (u32 mu_vi=0; mu_vi<(u32)MStat.m_iVertexCount; ++mu_vi)
+	for (u32 mu_vi=0; mu_vi<(u32)MStat.vertices.size(); ++mu_vi)
 	{
-		l_scene_stat->add_muvert(obj->_Transform(),MStat.m_pVertices[mu_vi]);
+		l_scene_stat->add_muvert(obj->_Transform(),MStat.vertices[mu_vi]);
 	}
 	
 	return true;
@@ -1046,13 +1046,13 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 	M.lod_id = lod_id;
 	int vert_it=0, face_it=0;
 
-	M.m_iFaceCount = obj->GetFaceCount();
-	M.m_iVertexCount = obj->GetVertexCount();
+	auto FaceCount = obj->GetFaceCount();
+	auto VertexCount = obj->GetVertexCount();
 	strcpy(M.name,O->m_LibName.c_str());
 
-	M.m_pFaces = xr_alloc<b_face>(M.m_iFaceCount);
-	M.m_pVertices = xr_alloc<b_vertex>(M.m_iVertexCount);
-	M.m_smgroups = xr_alloc<u32>(M.m_iFaceCount);
+	M.faces.resize(FaceCount);
+	M.vertices.resize(VertexCount);
+	M.smgroups.resize(FaceCount);
 	// parse mesh data
 	Fmatrix T;
 	T.identity();
@@ -1074,7 +1074,7 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 
 	for(EditMeshIt MESH=O->m_Meshes.begin();MESH!=O->m_Meshes.end();++MESH)
 	{
-		if (!M.m_iVertexCount || !M.m_iFaceCount)
+		if (M.vertices.empty() || M.faces.empty())
 		{
 			continue;
 		}
@@ -1084,8 +1084,6 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		}
 	}
 
-	M.m_iVertexCount = vert_it;
-	M.m_iFaceCount = face_it;
 	return model_idx;
 }
 
@@ -1540,7 +1538,7 @@ int SceneBuilder::BuildMaterial(CSurface* surf, int sector_num, bool allow_draft
 		}
 		return mtl_idx;
 	}
-	return BuildMaterial(surf->m_ShaderName.c_str(),surf->m_ShaderXRLCName.c_str(),surf->m_Texture.c_str(),((surf->m_dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
+	return BuildMaterial(surf->_ShaderName(),surf->_ShaderXRLCName(),surf->_Texture(),((surf->m_dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT),sector_num,allow_draft);
 }
 int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, const char* tx_name, u32 tx_cnt, int sector_num, bool allow_draft)
 {

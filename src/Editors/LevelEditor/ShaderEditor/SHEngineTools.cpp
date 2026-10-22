@@ -1017,11 +1017,11 @@ void CSHEngineTools::OnShowHint(AStringVec& ss)
 		{
 			R_ASSERT(pinf.e_mesh);
 			CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-			ss.emplace_back(xr_string("Surface: ") + xr_string(surf->m_Name.c_str()));
-			ss.emplace_back(xr_string("Texture: ") + xr_string(surf->m_Texture.c_str()));
-			ss.emplace_back(xr_string("Shader: ") + xr_string(surf->m_ShaderName.c_str()));
-			ss.emplace_back(xr_string("LC Shader: ") + xr_string(surf->m_ShaderXRLCName.c_str()));
-			ss.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->m_GameMtlName.c_str()));
+			ss.emplace_back(xr_string("Surface: ") + xr_string(surf->_Name()));
+			ss.emplace_back(xr_string("Texture: ") + xr_string(surf->_Texture()));
+			ss.emplace_back(xr_string("Shader: ") + xr_string(surf->_ShaderName()));
+			ss.emplace_back(xr_string("LC Shader: ") + xr_string(surf->_ShaderXRLCName()));
+			ss.emplace_back(xr_string("Game Mtl: ") + xr_string(surf->_GameMtlName()));
 			ss.emplace_back(xr_string("2 Sided: ") + xr_string(surf->_flags().is(SSurfaceData::sf2Sided) ? "on" : "off"));
 		}
 	}

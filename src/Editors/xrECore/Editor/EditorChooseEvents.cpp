@@ -235,9 +235,9 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void FillEShader(ChooseItemVec& items, void* param)
     {
-        for (auto& elem : EDevice->Resources->_GetBlenders())
+        for (const auto& key : DEV->_GetBlenders() | std::views::keys)
         {
-            items.emplace_back(elem.first, "");
+            items.emplace_back(key, "");
         }
     }
     //---------------------------------------------------------------------------
@@ -458,7 +458,7 @@ namespace ChoseEvents
     void FillSkeletonBonesObject(ChooseItemVec& items, void* param)
     {
         CEditableObject* eo = (CEditableObject*)param;
-        for (auto elem : eo->Bones())
+        for (auto elem : eo->m_Bones)
         {
             items.emplace_back(elem->Name().c_str(), "");
         }

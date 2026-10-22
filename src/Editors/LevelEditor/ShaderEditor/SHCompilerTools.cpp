@@ -185,7 +185,7 @@ void CSHCompilerTools::ResetCurrentItem()
 void CSHCompilerTools::FillItemList()
 {
     ListItemsVec items;
-    Shader_xrLCVec& lst = m_Library.Library();
+    auto& lst = m_Library.Library();
     for (auto& it : lst)
     {
 	    LHelper().CreateItem(items, it.Name, 0);

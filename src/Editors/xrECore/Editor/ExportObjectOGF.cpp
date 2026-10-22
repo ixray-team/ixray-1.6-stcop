@@ -3,6 +3,7 @@
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
+#include "Export/MeshMenderVertex.h"
 #include "Export/MeshExportCommon.h"
 #include "../xrEngine/fmesh.h"
 

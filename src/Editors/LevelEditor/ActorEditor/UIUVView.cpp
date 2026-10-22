@@ -44,12 +44,12 @@ void CUIUVView::UpdateTexture()
 		return;
 	}
 
-	if (CurrentSurface->m_Texture.c_str() == nullptr)
+	if (CurrentSurface->_Texture() == nullptr)
 	{
 		return;
 	}
 
-	xr_string TexName = CurrentSurface->m_Texture.c_str();
+	xr_string TexName = CurrentSurface->_Texture();
 	TexName += ".dds";
 
 	string_path FullPath = {};
@@ -133,9 +133,9 @@ void CUIUVView::Draw()
 			if (CurrentSurface)
 			{
 				ImGui::SameLine(0, 10.0f);
-				ImGui::Text("Surface: %s", CurrentSurface->m_Name.c_str());
+				ImGui::Text("Surface: %s", CurrentSurface->_Name());
 				ImGui::SameLine(0, 10.0f);
-				ImGui::Text("Texture: %s", CurrentSurface->m_Texture.c_str());
+				ImGui::Text("Texture: %s", CurrentSurface->_Texture());
 			}
 
 			ImGui::PopStyleVar(2);

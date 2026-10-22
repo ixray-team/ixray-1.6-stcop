@@ -293,7 +293,7 @@ CSurface* CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id)
 {
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{
-		if (stricmp((*s_it)->m_Name.c_str(), surf_name) == 0)
+		if (stricmp((*s_it)->_Name(), surf_name) == 0)
 		{
 			if (s_id)
 			{
@@ -403,15 +403,15 @@ bool CEditableObject::Validate()
 	{
 		if (false == m_Surface->Validate())
 		{
-			Msg("!Invalid surface found: Object [%s], Surface [%s].", m_LibName.c_str(), m_Surface->m_Name.c_str());
+			Msg("!Invalid surface found: Object [%s], Surface [%s].", m_LibName.c_str(), m_Surface->_Name());
 			bRes = false;
 		}
 	}
-	for (auto& m_Meshe : m_Meshes)
+	for (auto& m_Mesh : m_Meshes)
 	{
-		if (false == m_Meshe->Validate())
+		if (false == m_Mesh->Validate())
 		{
-			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), m_Meshe->m_Name.c_str());
+			Msg("!Invalid mesh found: Object [%s], Mesh [%s].", m_LibName.c_str(), m_Mesh->m_Name.c_str());
 			bRes = false;
 		}
 	}

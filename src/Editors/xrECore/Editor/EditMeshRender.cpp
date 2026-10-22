@@ -567,7 +567,7 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 				}
 			}
 
-			if (S->_flags.is(SSurfaceData::sf2Sided))
+			if (S->_flags().is(SSurfaceData::sf2Sided))
 			{
 				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 			}

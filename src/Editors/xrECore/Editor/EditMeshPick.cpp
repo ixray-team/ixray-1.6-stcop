@@ -34,7 +34,7 @@ void CEditableMesh::GenerateCFModel()
 			}
 			st_Face& F = m_Faces[face_id];
 			CL.add_face_D(m_Vertices[F.pv[0].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[2].pindex], face_id);
-			if (m_SurfFace.first->_flags.is(SSurfaceData::sf2Sided))
+			if (m_SurfFace.first->_flags().is(SSurfaceData::sf2Sided))
 			{
 				CL.add_face_D(m_Vertices[F.pv[2].pindex], m_Vertices[F.pv[1].pindex], m_Vertices[F.pv[0].pindex], face_id);
 			}

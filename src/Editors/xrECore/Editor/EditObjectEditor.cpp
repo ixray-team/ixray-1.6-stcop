@@ -523,7 +523,7 @@ bool CEditableObject::CheckShaderCompatible()
 	for (auto& m_Surface : m_Surfaces)
 	{
 		IBlender* B = DEV->_FindBlender(m_Surface->_ShaderName());
-		Shader_xrLC* C = EDevice->ShaderXRLC.Get(*m_Surface->_ShaderXRLCName());
+		Shader_xrLC* C = EDevice->ShaderXRLC.Get(m_Surface->_ShaderXRLCName());
 		if (!B||!C){
 			ELog.Msg(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(), m_Surface->_ShaderName(), m_Surface->_ShaderXRLCName());
 			bRes = false;

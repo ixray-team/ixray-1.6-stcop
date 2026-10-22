@@ -1175,10 +1175,13 @@ bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
 {
 	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
     	((EDetail*)(*it))->OnDeviceCreate();
-        CEditableObject* E 	= ((EDetail*)(*it))->m_pRefs;
-		if (!E)				continue;
-	    CSurface* surf		= E->m_Surfaces.front(); VERIFY(surf);
-		inf->AppendTexture	(surf->m_Texture.c_str(),SSceneSummary::sttDO,0,0,"$DETAILS$");
+        CEditableObject* E = ((EDetail*)(*it))->m_pRefs;
+		if (!E)
+		{
+			continue;
+		}
+	    CSurface* surf = E->m_Surfaces.front(); VERIFY(surf);
+		inf->AppendTexture	(surf->_Texture(),SSceneSummary::sttDO,0,0,"$DETAILS$");
     }
     return true;
 }

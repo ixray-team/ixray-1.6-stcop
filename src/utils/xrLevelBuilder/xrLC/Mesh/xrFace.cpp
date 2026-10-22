@@ -4,6 +4,7 @@
 #include "../Light/xrDeflector.h"
 #include "../Build/xrLC_GlobalData.h"
 #include "../Light/Lightmap.h"
+#include "Build/Build.h"
 
 volatile u32					dwInvalidFaces;//= 0;
 u32		InvalideFaces()
@@ -13,8 +14,17 @@ u32		InvalideFaces()
 
 const Shader_xrLC&	base_Face::Shader		()const
 {
-	VERIFY( inlc_global_data() );
-	return shader( dwMaterial, inlc_global_data()->shaders(), inlc_global_data()->materials() );
+	const auto data = inlc_global_data();
+	VERIFY(data);
+	if (flags.bSharedMaterial)
+	{
+		auto& Arr = data->materials_shared();
+		VERIFY( dwMaterial < Arr.size());
+		return data->shaders().Get(Arr[dwMaterial].reserved);
+	}
+	auto& Arr = data->materials();
+	VERIFY( dwMaterial < Arr.size());
+	return data->shaders().Get(Arr[dwMaterial].reserved);
 }
 
 void base_Face::CacheOpacity()
@@ -22,12 +32,11 @@ void base_Face::CacheOpacity()
 	flags.bOpaque = true;
 	VERIFY(inlc_global_data());
 
-	b_material& M = inlc_global_data()->materials()[dwMaterial];
-	b_BuildTexture& T = inlc_global_data()->textures()[M.surfidx];
+	b_BuildTexture& T = pBuild->GetTexture(dwMaterial, flags.bSharedMaterial);
 	flags.bOpaque = !T.bHasAlpha;
 
 	// pSurface was possible deleted
-	if (!flags.bOpaque && (!T.HasSurface()))
+	if (!flags.bOpaque && !T.HasSurface())
 	{
 		flags.bOpaque = true;
 		clMsg("Strange face detected... Has alpha without texture... [%s]", T.name);
@@ -57,7 +66,9 @@ Tvertex<DataVertex>::Tvertex()
 {
  	R_ASSERT( inlc_global_data() );
 	if( inlc_global_data()->vert_construct_register() )
-	  	inlc_global_data()->g_vertices().push_back(this);
+	{
+		inlc_global_data()->g_vertices().push_back(this);
+	}
 }
 
 template<>
@@ -65,14 +76,17 @@ Tvertex<DataVertex>::~Tvertex()
 {
  	if (g_bUnregister) 
 	{
-		vecVertexIt F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), this);
+		vecVertexIt F = std::ranges::find(inlc_global_data()->g_vertices(), this);
 		if (F!=inlc_global_data()->g_vertices().end())
 		{
 			vecVertex& verts = inlc_global_data()->g_vertices();
 			std::swap( *F, *( verts.end()-1 ) );
 			verts.pop_back();
 		}
-		else clMsg("* ERROR: Unregistered VERTEX destroyed");
+		else
+		{
+			clMsg("* ERROR: Unregistered VERTEX destroyed");
+		}
 	}
 
 	m_adjacents.clear();
@@ -95,12 +109,12 @@ Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 template<>
 Tface<DataVertex>::Tface()
 {
- 	pDeflector				= 0;
+ 	pDeflector				= nullptr;
 	flags.bSplitted			= false;
  	inlc_global_data()->g_faces().push_back		(this);
 
 	sm_group				= u32(-1);
-	lmap_layer				= NULL;
+	lmap_layer				= nullptr;
 }
 
 template<>
@@ -108,7 +122,7 @@ Tface<DataVertex>::~Tface()
 {
 	if (g_bUnregister) 
 	{
-		vecFaceIt F = std::find(inlc_global_data()->g_faces().begin(), inlc_global_data()->g_faces().end(), this);
+		vecFaceIt F = std::ranges::find(inlc_global_data()->g_faces(), this);
 		if (F!=inlc_global_data()->g_faces().end())
 		{
 			vecFace& faces = inlc_global_data()->g_faces();
@@ -119,9 +133,11 @@ Tface<DataVertex>::~Tface()
 	}
 
 	// Remove 'this' from adjacency info in vertices
-	for (int i=0; i<3; ++i)
-		v[i]->prep_remove(this);
- 	lmap_layer				= NULL;
+	for (auto& i : v)
+	{
+		i->prep_remove(this);
+	}
+	lmap_layer				= nullptr;
 }
  
 template<>
@@ -209,11 +225,12 @@ void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3)
 
 bool DataFace::hasImplicitLighting()
 {
-	if (0==this)								return false;
-	if (!Shader().flags.bRendering)				return false;
+	if (!Shader().flags.bRendering)
+	{
+		return false;
+	}
 	VERIFY( inlc_global_data() );
-	b_material& M		= inlc_global_data()->materials()		[dwMaterial];
-	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
+	auto& T = pBuild->GetTexture(dwMaterial, flags.bSharedMaterial);
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
 

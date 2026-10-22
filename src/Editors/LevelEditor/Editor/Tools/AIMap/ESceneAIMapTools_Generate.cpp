@@ -50,7 +50,6 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	}
 
 	// *** Transfer triangles and compute sector
-//	R_ASSERT(dwCount<RCAST_MaxTris);
 	static xr_vector<tri> tris;	tris.reserve(RCAST_MaxTris);	tris.clear();
 	for (DWORD i=0; i<dwCount; i++)
 	{
@@ -59,25 +58,12 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 		if (R->e_obj&&R->e_mesh)
 		{
 			CSurface* surf		= R->e_mesh->GetSurfaceByFaceID(R->tag);
-//.			SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
-//.			if (mtl->Flags.is(SGameMtl::flPassable))continue;
-
-
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
-			if (!c_sh->flags.bCollision) 			continue;
-		}
-  /*
-		if(m_CFModel)
-		{
-			u16 mtl_id 	= R->material;
-
-			if(std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end() )
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+			if (!c_sh->flags.bCollision)
 			{
-//.                Msg("--ignore");
 				continue;
 			}
 		}
-*/
 		tris.push_back	(tri());
 		tri&		D = tris.back();
 		Fvector*	V = R->verts;   
@@ -649,7 +635,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 							continue;
 						}
 
-						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
+						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 						if (c_sh == nullptr || !c_sh->flags.bCollision)
 						{
 							continue;
@@ -664,7 +650,9 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
 							if (surf->_flags().is(SSurfaceData::sf2Sided))
+							{
 								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+							}
 						}
 					}
 				}

@@ -576,7 +576,7 @@ void CEditableMesh::Create(st_Face* faces, u32 face_count, Fvector* vertices, u3
 	if (m_SurfFaces.empty())
 	{
 		CSurface* surf = new CSurface();
-		surf->m_Name = ("default");
+		surf->SetName("default");
 		surf->SetShader("default");
 		m_Parent->m_Surfaces.push_back(surf);
 

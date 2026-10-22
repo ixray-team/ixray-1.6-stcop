@@ -263,21 +263,24 @@ CCustomObject* ESceneObjectTool::CreateObject(LPVOID data, const char* name)
 void ESceneObjectTool::HighlightTexture(const char* tex_name, bool allow_ratio, u32 t_width, u32 t_height, bool mark)
 {
 	if (tex_name&&tex_name[0]){
-        for (ObjectIt a_it=m_Objects.begin(); a_it!=m_Objects.end(); a_it++){
-            CSceneObject* s_obj		= smart_cast<CSceneObject*>(*a_it);
+        for (auto& m_Object : m_Objects)
+        {
+            CSceneObject* s_obj		= smart_cast<CSceneObject*>(m_Object);
             if (s_obj->Visible()){
                 CEditableObject* e_obj	= s_obj->GetReference(); VERIFY(e_obj);
                 SurfaceVec& s_vec		= e_obj->m_Surfaces;
-                for (SurfaceIt it=s_vec.begin(); it!=s_vec.end(); it++){
-                    if (0==stricmp((*it)->m_Texture.c_str(),tex_name)){
+                for (auto& it : s_vec)
+                {
+                    if (0==stricmp(it->_Texture(),tex_name)){
                         Fvector 		verts[3];
                         for (EditMeshIt mesh_it=e_obj->m_Meshes.begin(); mesh_it!=e_obj->m_Meshes.end(); mesh_it++){
                             const SurfFaces& surf_faces			= (*mesh_it)->m_SurfFaces;
-                            SurfFaces::const_iterator  sf_it 	= surf_faces.find(*it);
+                            SurfFaces::const_iterator  sf_it 	= surf_faces.find(it);
                             if (sf_it!=surf_faces.end()){
                                 const IntVec& lst				= sf_it->second;
-                                for (IntVec::const_iterator i_it=lst.begin(); i_it!=lst.end(); i_it++){
-                                    e_obj->GetFaceWorld	(s_obj->_Transform(),*mesh_it,*i_it,verts);
+                                for (int i_it : lst)
+                                {
+                                    e_obj->GetFaceWorld	(s_obj->_Transform(),*mesh_it, i_it,verts);
                                     u32 clr	= 0x80FFFFFF;
                                     if (allow_ratio){
                                         // select color
@@ -286,7 +289,7 @@ void ESceneObjectTool::HighlightTexture(const char* tex_name, bool allow_ratio, 
                                         e01.sub			(verts[1],verts[0]);
                                         e02.sub			(verts[2],verts[0]);
                                         float area		= c.crossproduct(e01,e02).magnitude()/2.f;
-                                        (*mesh_it)->GetFaceTC(*i_it,tc);
+                                        (*mesh_it)->GetFaceTC(i_it,tc);
                                         e01.sub			(Fvector().set(tc[1]->x,tc[1]->y,0),Fvector().set(tc[0]->x,tc[0]->y,0));
                                         e02.sub			(Fvector().set(tc[2]->x,tc[2]->y,0),Fvector().set(tc[0]->x,tc[0]->y,0));
                                         float p_area	= c.crossproduct(e01,e02).magnitude()/2.f;
@@ -294,7 +297,10 @@ void ESceneObjectTool::HighlightTexture(const char* tex_name, bool allow_ratio, 
                                         clr 			= SSceneSummary::SelectPMColor(pm);
                                     }
                                     Tools->m_DebugDraw.AppendSolidFace(verts[0],verts[1],verts[2],clr,false);
-                                    if (mark)	Tools->m_DebugDraw.AppendWireFace(verts[0],verts[1],verts[2],clr,false);
+                                    if (mark)
+                                    {
+	                                    Tools->m_DebugDraw.AppendWireFace(verts[0],verts[1],verts[2],clr,false);
+                                    }
                                 }
                             }
                         }

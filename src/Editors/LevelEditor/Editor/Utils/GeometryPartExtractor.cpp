@@ -129,7 +129,7 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
                 string1024 Name;
 				xr_sprintf(Name,"%d",bone_idx);
 
-                m_Bones.emplace_back(Name,parent_bone,F->surf->m_GameMtlName.c_str(),face_accum,area);
+                m_Bones.emplace_back(Name,parent_bone,F->surf->_GameMtlName(),face_accum,area);
                 parent_bone				= "0";
                 bone_idx				++;
                 face_accum_total		+= face_accum;
@@ -223,7 +223,7 @@ bool SBPart::Export	(IWriter& F, u8 infl)
                                   
     for (auto face : m_Faces)
     {
-	    int mtl_idx = FindSplit(face->surf->m_ShaderName.c_str(), face->surf->m_Texture.c_str(), 0, face->surf->m_id);
+	    int mtl_idx = FindSplit(face->surf->_ShaderName(), face->surf->_Texture(), 0, face->surf->m_id);
 
         if (mtl_idx<0)
         {
@@ -253,12 +253,12 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     for (SSplit& Split : m_Splits)
     {
         if (!Split.valid()){
-            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*Split.m_Texture);
+            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*Split.m_SurfaceData->m_Texture);
             bRes = false;
             break;
         }
         if (0!=Split.invalid_faces){
-	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*Split.m_Texture,Split.invalid_faces);
+	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*Split.m_SurfaceData->m_Texture,Split.invalid_faces);
         }
 		Split.CalculateTB();
 	    for (SSkelVert& Vert : Split.m_Verts){

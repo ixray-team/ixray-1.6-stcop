@@ -32,6 +32,7 @@ struct GpuFace
 	Fvector2 TC[3];
 	u16 SurfaceID;
 	bool Opaque;
+	bool Shared;
 };
 
 // Alpha channel of a texture; empty when the texture never cuts rays
