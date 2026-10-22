@@ -72,10 +72,15 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 
 	if (C.bEditor)
 	{
+		if (C.iElement != SE_R2_DETAIL_SHADOW_HQ && C.iElement != SE_R2_DETAIL_SHADOW_LQ)
+		{
+			RImplementation.addShaderOption("FIX_CULL_NORMAL", "1");
+		}
 
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_CullMode(D3DCULL_NONE);
 		uber_deffer_editor_end(C);
+		RImplementation.clearAllShaderOptions();
 		return;
 	}
 
