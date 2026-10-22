@@ -1,0 +1,42 @@
+#include "../../src/Layers/xrRenderPC_R4/GrassTerrainTintMath.h"
+
+#include <iostream>
+#include <limits>
+#include <utility>
+
+int main()
+{
+	int Failures = 0;
+	auto Check = [&](bool Condition, const char* Name)
+	{
+		if (!Condition)
+		{
+			std::cerr << "FAIL: " << Name << '\n';
+			++Failures;
+		}
+	};
+	for (const auto& [Requested, Expected] : {
+			 std::pair{-1, 256u}, {0, 256u}, {256, 256u}, {257, 512u}, {511, 512u}, {512, 512u}, {1024, 1024u}, {1025, 2048u}, {2048, 2048u}, {4096, 2048u}
+		 })
+	{
+		Check(GrassTerrainTint::MapResolution(Requested) == Expected, "bounded power-of-two map size");
+	}
+	auto Near = [](float A, float B)
+	{ return std::abs(A - B) < 0.0001f; };
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, 2), 1), "two-meter filter at one meter per texel");
+	Check(Near(GrassTerrainTint::SmoothingMip(2048, 1024, 1024, 2), 0), "rectangular level uses larger texel footprint");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, 4), 2), "four-meter filter");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, 0), 0), "zero filter radius");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, -5), 0), "negative filter radius");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, 1e20f), 10), "mip never exceeds allocated chain");
+	Check(Near(GrassTerrainTint::SmoothingMip(0, 1024, 1024, 2), 0), "empty map bounds");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 0, 2), 0), "unallocated map");
+	Check(Near(GrassTerrainTint::SmoothingMip(std::numeric_limits<float>::infinity(), 1024, 1024, 2), 0), "nonfinite map bounds");
+	Check(Near(GrassTerrainTint::SmoothingMip(1024, 1024, 1024, std::numeric_limits<float>::quiet_NaN()), 0), "nonfinite filter radius");
+	if (Failures)
+	{
+		return 1;
+	}
+	std::cout << "PASS: terrain tint resolution limits and spatial filter footprint (20 cases)\n";
+	return 0;
+}

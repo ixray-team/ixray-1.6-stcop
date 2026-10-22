@@ -1,0 +1,59 @@
+name: Grass terrain tint - Windows
+
+on:
+  push:
+    branches: [feature/grass-terrain-tint]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: grass-terrain-tint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+      - name: Configure R4 engine
+        run: cmake --preset Engine-x64-Windows -DIXRAY_USE_R1=OFF -DIXRAY_USE_R2=OFF -DIXRAY_PROFILER=OFF
+      - name: Build engine and R4
+        run: |
+          $log = Join-Path $env:RUNNER_TEMP 'grass-tint-build.log'
+          cmake --build --preset Engine-x64-Windows-Release --target xrEngine xrGame xrRender_R4 --parallel 4 2>&1 | Tee-Object -FilePath $log
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            Select-String -Path $log -Pattern 'error C[0-9]{4}','error LNK[0-9]{4}','fatal error' | Select-Object -First 30 | ForEach-Object {
+              Write-Host ('::error::' + $_.Line)
+            }
+            exit $code
+          }
+      - name: Check terrain map math
+        run: |
+          cmake -S tests/grass_terrain_tint -B build/grass-tint-checks -A x64
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --build build/grass-tint-checks --config Release
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          ctest --test-dir build/grass-tint-checks -C Release --output-on-failure
+      - name: Upload ready test files
+        uses: actions/upload-artifact@v7
+        with:
+          name: ixray-grass-terrain-tint-Windows-x64-${{ github.sha }}
+          path: |
+            build/x64/Engine-Windows/bin/Release/*.exe
+            build/x64/Engine-Windows/bin/Release/*.dll
+            gamedata/shaders/**
+            util/grass-terrain-tint/**
+          if-no-files-found: error
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: grass-tint-build-log
+          path: ${{ runner.temp }}/grass-tint-build.log
