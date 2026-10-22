@@ -21,10 +21,7 @@ RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | 
 #if defined(IXR_APPLE_SERIES)
     // The first launch has no user.ltx yet, and the interface only behaves in fullscreen
     // on macOS, so start there instead of a window.
-#endif
-#if defined(IXR_APPLE_SERIES)
-    // The first launch has no user.ltx yet, and the interface only behaves in fullscreen
-    // on macOS, so start there instead of a window.
+    | rsFullscreen
 #endif
 };
 RHI_API Ivector2 HalfTarget = { 0, 0 };
