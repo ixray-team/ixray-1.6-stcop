@@ -1,3 +1,5 @@
+#ifndef dxRainRender_included
+#define dxRainRender_included
 #pragma once
 
 #include "../../Include/xrRender/RainRender.h"
@@ -6,31 +8,24 @@ class dxRainRender : public IRainRender
 {
 public:
 	dxRainRender();
-	~dxRainRender() override;
-	void Copy(IRainRender& Source) override;
-	void Render(CEffect_Rain& Owner) override;
-	const Fsphere& GetDropBounds() const override;
+	virtual ~dxRainRender() override;
+	virtual void Copy(IRainRender &_in) override;
+
+	virtual void Render(CEffect_Rain &owner) override;
+
+	virtual const Fsphere& GetDropBounds() const override;
 
 private:
-	class InstanceStream
-	{
-	public:
-		InstanceStream() = default;
-		InstanceStream(const InstanceStream&) = delete;
-		InstanceStream& operator=(const InstanceStream&) = delete;
-		~InstanceStream();
-		bool Upload(const void* Data, u32 Count, u32 Stride);
-		IRHIShaderResourceView* View = nullptr;
+	// Visualization	(rain)
+	ref_shader						SH_Rain;
+	ref_geom						hGeom_Rain;
 
-	private:
-		IRHIBuffer* Buffer = nullptr;
-		u32 Capacity = 0;
-	};
+	// Visualization	(drops)
+	IRender_DetailModel*			DM_Drop;
+	ref_geom						hGeom_Drops;
 
-	ref_shader AirShader;
-	ref_shader ImpactShader;
-	ref_geom Geometry;
-	InstanceStream AirStream;
-	InstanceStream ImpactStream;
-	Fsphere DropBounds;
+	Fvector							PrevCameraPosition = {};
+	bool							HasPrevCamera = false;
 };
+
+#endif	//	RainRender_included
