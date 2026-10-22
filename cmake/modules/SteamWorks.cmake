@@ -131,7 +131,9 @@ find_package_handle_standard_args(Steamworks
 if(Steamworks_FOUND AND NOT TARGET Steamworks::Steamworks)
 	set(STEAMWORKS_LIBRARIES "${STEAMWORKS_LIBRARY}")
 
-	if(WIN32)
+	# macOS links the dylib by @loader_path, so it has to sit next to the executable;
+	# Windows needs the DLL there for the same reason.
+	if(WIN32 OR APPLE)
 		set(STEAMWORKS_DLLS "${STEAMWORKS_DLL}")
 	else()
 		set(STEAMWORKS_DLLS "")

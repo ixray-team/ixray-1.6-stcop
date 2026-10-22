@@ -126,8 +126,8 @@ IC void		xrPREAD_MARKER	(IReader& fs)
 
 #define xrPREAD_PROP(fs,ID,data) \
 { \
-	const u32 _propId = xrPREAD(fs); \
-	R_ASSERT(ID==_propId); fs.r(&data,sizeof(data)); \
+		R_ASSERT(ID==xrPREAD(fs)); fs.r(&data,sizeof(data)); \
+	volatile u32 _propId = ID; /* keeps the switch from folding to a constant */ \
 	switch (_propId) \
 	{ \
 	case xrPID_TOKEN:	fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));	break; \
