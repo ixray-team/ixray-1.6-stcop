@@ -103,6 +103,11 @@ int CApplication::BeginPlay()
 {
 	PROF_EVENT("BEGIN_PLAY");
 
+#if defined(IXR_APPLE_SERIES)
+	// Default fullscreen uses a separate Space, which drops the window's key status and with it
+	// every mouse click. The non-Spaces path is a borderless window on the current Space.
+	SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
+#endif
 	SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_STEAMDECK, "1");
 	SDL_SetHint("SDL_GAMECONTROLLER_ALLOW_STEAM_VIRTUAL_GAMEPAD", "1");
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))

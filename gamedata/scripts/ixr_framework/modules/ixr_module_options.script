@@ -1096,7 +1096,13 @@ end
 -- #######################################
 
 function get_controll(name)
-	return get_menu_ref().ixr_controlls[name]
+	local ref = get_menu_ref()
+	-- The options menu may not be built yet (a main menu command can be dispatched
+	-- before it is initialised); report "no control" instead of indexing nil.
+	if not ref or not ref.ixr_controlls then
+		return nil
+	end
+	return ref.ixr_controlls[name]
 end
 
 function set_controll(name, controll)

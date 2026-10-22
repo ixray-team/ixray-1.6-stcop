@@ -87,6 +87,18 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
+		// The back buffer carries no meaningful alpha (the swap chain format ignores it and
+		// the render target may be filled with zeroes there), while the load menu draws the
+		// thumbnail with blending - an alpha of 0 turns every save preview into a black square.
+		{
+			u8* Pixels = reinterpret_cast<u8*>(Small.GetPixels());
+			const size_t PixelCount = Small.GetPixelsSize() / 4;
+			for (size_t i = 0; i < PixelCount; ++i)
+			{
+				Pixels[i * 4 + 3] = 0xff;
+			}
+		}
+
 		// The load menu reads this file as DDS, so write DDS on every platform.
 		// The old non-Windows path wrote PNG into a file named *.dds, and the
 		// menu crashed parsing it.
