@@ -212,6 +212,17 @@ jobs:
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps
 
+      # Older caches carry a RedImage checkout with local modifications from the patch
+      # script that used to live in cmake/patches. FetchContent stashes those changes
+      # before updating the pinned ref and then cannot unstash them, so drop the tree.
+      - name: Drop a modified RedImage checkout
+        run: |
+          SRC="build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps/redimage-src"
+          if [ -d "$SRC/.git" ] && ! git -C "$SRC" diff --quiet; then
+            echo "Cached RedImage checkout has local changes; dropping $SRC"
+            rm -rf "$SRC"
+          fi
+
       - name: Configure engine
         run: |
           cmake \
