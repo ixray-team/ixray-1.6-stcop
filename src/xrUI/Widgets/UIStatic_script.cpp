@@ -29,6 +29,7 @@ void CUIStatic::script_register(lua_State *L)
 		.def("AdjustWidthToText", 	&CUIStatic::AdjustWidthToText)
 		.def("GetStretchTexture", 	&CUIStatic::GetStretchTexture)
 		.def("TextControl",			&CUIStatic::TextItemControl)
+		.def("SetHint",				&CUIStatic::SetHint)
 
        .def("SetText",				(void (CUIStatic::*)(const char*)) (&CUIStatic::SetText))
        .def("SetTextST",			(void (CUIStatic::*)(const char*)) (&CUIStatic::SetTextST))
