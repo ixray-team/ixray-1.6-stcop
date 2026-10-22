@@ -86,7 +86,4 @@
 	<string id="st_dlss_model_transformer2">
 		<text>2nd gen transformer model</text>
 	</string>
-	<string id="ui_mm_r_dlss_model_hint">
-		<text>Auto - the model is chosen by the quality mode.\nConvolutional neural network - classic DLSS model, fastest but less stable.\nTransformer model - more stable image and better anti-aliasing.\n2nd gen transformer model (DLSS 4.5) - best quality, designed for RTX 40 series and newer. RTX 20 and 30 owners should pick the convolutional neural network.\nRequires video restart.</text>
-	</string>
 </string_table>
