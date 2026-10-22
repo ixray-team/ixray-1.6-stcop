@@ -88,8 +88,5 @@ function(target_validate_pch target target_path)
     endif()
 endfunction()
 
-# Discord
-option(IXRAY_DISCORD_RPC "Enable Discord activity" ON)
-
 # Configure dependencies
 set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/3rd-Party/renderdoc")

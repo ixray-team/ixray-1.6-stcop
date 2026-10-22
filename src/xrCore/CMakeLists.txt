@@ -31,7 +31,6 @@ if (MSVC)
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
 else()
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
-	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
 
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
@@ -42,6 +41,10 @@ else()
 	else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 	endif()
+endif()
+
+if(NOT WIN32 OR NOT IXRAY_DISCORD_RPC)
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
 endif()
 
 # xrCore project
@@ -63,8 +66,9 @@ if(IXRAY_ASAN)
 	target_compile_definitions(xrCore PRIVATE PURE_ONLY)
 endif()
 
-if (IXRAY_DISCORD_RPC)
-	target_compile_definitions(xrCore PRIVATE IXR_ENABLE_DISCORD)
+if(WIN32 AND IXRAY_DISCORD_RPC)
+	target_compile_definitions(xrCore PUBLIC IXR_ENABLE_DISCORD)
+	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
 endif()
 
 # Includes 
@@ -117,7 +121,6 @@ if(WIN32)
 		target_link_libraries(xrCore PRIVATE dxerr)
 	endif()
 
-	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::WinMM)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::DBGHELP)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::FAULTREP)
