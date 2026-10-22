@@ -207,8 +207,6 @@ jobs:
         uses: actions/cache@v6
         with:
           key: ${{ matrix.system }}-${{ matrix.config }}-deps-${{ hashFiles('cmake/modules/**') }}
-          restore-keys: |
-            ${{ matrix.system }}-${{ matrix.config }}-deps-
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/_deps
 

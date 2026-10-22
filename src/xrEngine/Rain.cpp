@@ -220,7 +220,11 @@ ICF void Born(CEffect_Rain::Item& dest)
 
 	float height = env.max_distance + env.add_const_dist_coefficient;
 
-	RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth), Device.dwTimeGlobal, Device.dwTimeDelta);
+	// RayPick shortens height to the distance of the hit, so the two calls must be sequenced:
+	// inside one expression the read of height and its update are unsequenced, and MSVC and clang
+	// pick different orders. With clang the drop kept its full length and fell through roofs.
+	const bool bHit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
+	RenewItem(dest, height, bHit, Device.dwTimeGlobal, Device.dwTimeDelta);
 }
 
 void CEffect_Rain::Enable(bool status)

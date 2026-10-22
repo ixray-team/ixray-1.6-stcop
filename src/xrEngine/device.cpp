@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <csignal>
 #include "../xrCore/Collision/Frustum.h"
 
 #include "x_ray.h"
@@ -327,6 +328,12 @@ void CRenderDevice::CalculateTransforms()
 
 volatile bool quiting = false;
 
+// engine saves its settings and closes the shader cache cleanly.
+static void device_request_quit(int)
+{
+	quiting = true;
+}
+
 void CRenderDevice::message_loop()
 {
 	while (!quiting)
@@ -374,6 +381,9 @@ void CRenderDevice::Run()
 	}
 
 	g_AppInfo.MainThread = Platform::GetCurrentThread();
+	std::signal(SIGTERM, device_request_quit);
+	std::signal(SIGINT, device_request_quit);
+
 	// Message cycle
 	seqAppStart.Process<&pureAppStart::OnAppStart>();
 

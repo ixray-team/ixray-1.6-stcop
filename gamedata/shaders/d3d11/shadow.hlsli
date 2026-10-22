@@ -18,7 +18,10 @@ Texture2D jitter1;
 bool IsSunCaptureCoordValid(float3 Coord)
 {
 	const float Margin = 4.0f / SMAP_size;
-	return all(isfinite(Coord)) && all(Coord.xy > Margin) && all(Coord.xy < 1.0f - Margin) && Coord.z > 0.0f && Coord.z < 1.0f;
+	// vkd3d-shader, which provides D3DCompile on macOS and Linux, has no
+	// isfinite intrinsic. NaN and Inf both fail this comparison, so it rejects
+	// the same values as isfinite did.
+	return all(abs(Coord) <= 3.402823466e+38F) && all(Coord.xy > Margin) && all(Coord.xy < 1.0f - Margin) && Coord.z > 0.0f && Coord.z < 1.0f;
 }
 
 // Correct the receiver for a changed sun direction, using the original capture.

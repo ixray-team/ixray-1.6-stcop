@@ -330,6 +330,7 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 	else 
 	{
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
+		SDL_SetWindowBordered(g_AppInfo.Window, true);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
 		const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
@@ -337,6 +338,11 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 			SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 		}
 	}
+
+#if defined(__APPLE__)
+	// macOS routes the first click into window activation, so it never reaches the game.
+	SDL_RaiseWindow(g_AppInfo.Window);
+#endif
 
 	ResizeBuffers(width, height);
 }
