@@ -70,6 +70,8 @@ namespace PS
 		virtual void		SetLiveUpdate		(bool b) override {m_RT_Flags.set(flRT_LiveUpdate,b);}
 		virtual bool		GetLiveUpdate		() override {return m_RT_Flags.is(flRT_LiveUpdate);}
 
+		bool IsFrameStepped() const {return m_RT_Flags.is_any(flRT_LiveUpdate | flRT_HUDmode);}
+
 		virtual float		GetTimeLimit		() override
 		{VERIFY(m_Def); return m_Def->m_Flags.is(CPEDef::dfTimeLimit)?m_Def->m_fTimeLimit:-1.f;}
 

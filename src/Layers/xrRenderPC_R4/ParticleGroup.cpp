@@ -221,7 +221,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	C->SetScale(emitter->GetScale());
 
 	Fmatrix M; M.identity();
-	Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+	Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->IsFrameStepped()?Device.fTimeDelta:fDT_STEP);
 	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 	{
 		M.set(emitter->m_XFORM);
@@ -257,7 +257,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 	if(!C->IsLooped())
 	{
 		Fmatrix M; M.identity();
-		Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+		Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->IsFrameStepped()?Device.fTimeDelta:fDT_STEP);
 		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 		{
 			M.set(emitter->m_XFORM);
@@ -394,7 +394,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 						M.translate(PosArr[i]);
 						Fvector vel;
 						vel.sub(PosArr[i], PosBArr[i]);
-						vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate) ? Device.fTimeDelta : fDT_STEP);
+						vel.div(C->IsFrameStepped() ? Device.fTimeDelta : fDT_STEP);
 						C->UpdateParent(M, vel, false);
 					}
 				}
