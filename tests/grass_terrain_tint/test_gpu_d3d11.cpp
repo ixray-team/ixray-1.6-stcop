@@ -119,12 +119,21 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		Sampler.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		Sampler.AddressU = Sampler.AddressV = Sampler.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		Sampler.MaxLOD = D3D11_FLOAT32_MAX;
+		Sampler.MaxAnisotropy = 1;
 		Sampler.ComparisonFunc = D3D11_COMPARISON_NEVER;
 		Verify(Device->CreateSamplerState(&Sampler, &PointSampler), "Create point sampler");
 		Sampler.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 		Verify(Device->CreateSamplerState(&Sampler, &LinearSampler), "Create linear sampler");
 
-		struct Vertex { float Position[4]; int UV[2]; float Tangent[4]; float Binormal[4]; };
+		struct Vertex
+		{
+			float Position[4];
+			int UV[2];
+			float Tangent[4];
+			float Binormal[4];
+			float Normal[4];
+			int Lightmap[2];
+		};
 		std::array<Vertex, 4> Vertices = {};
 		for (u32 Index = 0; Index < 4; ++Index)
 		{
@@ -142,8 +151,10 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_SINT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0}};
-		Verify(Device->CreateInputLayout(Layout, 4, CaptureVSCode->GetBufferPointer(), CaptureVSCode->GetBufferSize(), &InputLayout), "Create capture input layout");
+			{"BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 1, DXGI_FORMAT_R32G32_SINT, 0, 72, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+		Verify(Device->CreateInputLayout(Layout, 6, CaptureVSCode->GetBufferPointer(), CaptureVSCode->GetBufferSize(), &InputLayout), "Create capture input layout");
 		Stride = sizeof(Vertex);
 
 		for (const Vector& Pixel : {GroundColor, Vector{1, 0, 0, 0}, Vector{0.5f, 0.5f, 0.5f, 1}})
@@ -340,8 +351,14 @@ private:
 			}
 			auto Data = Buffer(Bytes.data(), u32(Bytes.size()), D3D11_BIND_CONSTANT_BUFFER);
 			ID3D11Buffer* Pointer = Data.Get();
-			if (Vertex) Context->VSSetConstantBuffers(Binding.BindPoint, 1, &Pointer);
-			else Context->PSSetConstantBuffers(Binding.BindPoint, 1, &Pointer);
+			if (Vertex)
+			{
+				Context->VSSetConstantBuffers(Binding.BindPoint, 1, &Pointer);
+			}
+			else
+			{
+				Context->PSSetConstantBuffers(Binding.BindPoint, 1, &Pointer);
+			}
 		}
 	}
 
@@ -349,16 +366,28 @@ private:
 	{
 		D3D11_SHADER_INPUT_BIND_DESC Binding;
 		Verify(Reflection(Code)->GetResourceBindingDescByName(Name, &Binding), "Find texture binding");
-		if (Vertex) Context->VSSetShaderResources(Binding.BindPoint, 1, &View);
-		else Context->PSSetShaderResources(Binding.BindPoint, 1, &View);
+		if (Vertex)
+		{
+			Context->VSSetShaderResources(Binding.BindPoint, 1, &View);
+		}
+		else
+		{
+			Context->PSSetShaderResources(Binding.BindPoint, 1, &View);
+		}
 	}
 
 	void Sampler(ID3DBlob* Code, bool Vertex, const char* Name, ID3D11SamplerState* State)
 	{
 		D3D11_SHADER_INPUT_BIND_DESC Binding;
 		Verify(Reflection(Code)->GetResourceBindingDescByName(Name, &Binding), "Find sampler binding");
-		if (Vertex) Context->VSSetSamplers(Binding.BindPoint, 1, &State);
-		else Context->PSSetSamplers(Binding.BindPoint, 1, &State);
+		if (Vertex)
+		{
+			Context->VSSetSamplers(Binding.BindPoint, 1, &State);
+		}
+		else
+		{
+			Context->PSSetSamplers(Binding.BindPoint, 1, &State);
+		}
 	}
 
 	std::vector<char> Read(ID3D11Texture2D* Source, u32 PixelSize)
