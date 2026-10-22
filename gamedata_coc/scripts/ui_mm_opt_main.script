@@ -4,6 +4,7 @@ function options_dialog:__init() super()
 
 	self.m_preconditions	= {}
 	self.hint_items		= {}
+	self.vram_rows		= {}
 	self.focusIndex = 1 --MTB_Jakub_Jurek [JP-165] reset index value
 	self.m_deffer_ex	= {}
     self:InitControls()
@@ -444,6 +445,7 @@ function options_dialog:Update()
 	CUIScriptWnd.Update(self)
 
 	self:UpdateHint()
+	self:UpdateVram()
 	
 	self.tab_input:Show(self.tab:GetActiveId() == "controls")
 	
@@ -991,6 +993,224 @@ function options_dialog:attachHint(wnd, row, caption, text, hint)
 	end
 
 	table.insert(self.hint_items, {wnd = wnd, row = row, caption = caption, text = str})
+end
+
+function options_dialog:addVramBar(wnd, prec)
+	local _st = self.xml:InitStatic("main_dialog:templ_item", nil)
+	local bar = self.xml:InitProgressBar("main_dialog:vram_bar", _st)
+	local value = self.xml:InitTextWnd("main_dialog:vram_text", _st)
+	local caption = self.xml:InitTextWnd("main_dialog:cap_template", _st)
+	if wnd:WindowName() == "dlg_video_adv" then
+		table.insert(self.m_preconditions, {func=prec, control=_st})
+	end
+	caption:SetTextST("ui_mm_vram")
+	self:attachHint(wnd, _st, caption, "ui_mm_vram")
+	self:addControl(wnd, nil, nil, _st)
+	table.insert(self.vram_rows, {bar = bar, value = value})
+end
+
+function options_dialog:GetPendingRenderScale(con)
+	local track = self:GetTrackBar("scaleTrack")
+	local vid_scale = track and track:GetFValue() or con:get_float("vid_scale")
+
+	local mode = self:GetComboBox("scaleMode")
+	if not mode then
+		return vid_scale
+	end
+
+	local mode_value = mode:GetValueOf(mode:CurrentID())
+	if mode_value == "st_filter_linear" or mode_value == "st_filter_point" then
+		return vid_scale
+	end
+
+	local presets = {
+		st_scale_native = 1.0,
+		st_scale_quality = 0.667,
+		st_scale_balanced = 0.58,
+		st_scale_performance = 0.5,
+		st_scale_ultraperformance = 0.333,
+	}
+
+	local preset = self:GetComboBox("scalePreset")
+	if preset then
+		return presets[preset:GetValueOf(preset:CurrentID())] or vid_scale
+	end
+	return vid_scale
+end
+
+function options_dialog:GetVramState(con, pending)
+	local state = {}
+
+	local function combo_value(name, fallback)
+		local combo = pending and self:GetComboBox(name)
+		if combo then
+			return combo:GetValueOf(combo:CurrentID())
+		end
+		return fallback
+	end
+
+	local function check_value(name, command)
+		local check = pending and self:GetCheck(name)
+		if check then
+			return check:GetCheck()
+		end
+		return con:get_bool(command)
+	end
+
+	local renderer = combo_value("combo_renderer", con:get_token("renderer"))
+	state.dynamic = renderer ~= "renderer_r1" and renderer ~= "renderer_r4_static"
+
+	local dev = device()
+	state.width, state.height = dev.width, dev.height
+	local w, h = string.match(combo_value("vidMode", ""), "(%d+)x(%d+)")
+	if pending and w then
+		state.width, state.height = tonumber(w), tonumber(h)
+	end
+
+	state.scale_mode = combo_value("scaleMode", con:get_token("vid_scale_mode"))
+	state.dlss_model = combo_value("dlssModel", con:get_token("r_dlss_model"))
+	state.scale = pending and self:GetPendingRenderScale(con) or nil
+	state.smap = tonumber(combo_value("smapSize", con:get_token("r2_smap_size"))) or 2048
+	state.sun = check_value("enableSun", "r2_sun")
+	state.rain_puddles = check_value("rainPuddles", "r4_rain_puddles")
+	state.volumetric_smoke = check_value("volSmoke", "r3_volumetric_smoke")
+	return state
+end
+
+function options_dialog:EstimateVramState(state, render_px)
+	local mb = 1024 * 1024
+	local display_px = state.width * state.height
+	local result = {}
+
+	if state.dynamic then
+		result.render_targets = (117 * render_px + 76 * display_px) / mb
+		result.shadow_maps = 8 * state.smap * state.smap / mb
+	else
+		result.render_targets = 48 * display_px / mb
+		result.shadow_maps = 0
+	end
+
+	local extra = 0
+	if state.dynamic then
+		if state.sun then
+			extra = extra + 12 * state.smap * state.smap / mb
+		end
+		if state.rain_puddles then
+			extra = extra + 16
+		end
+		if state.volumetric_smoke then
+			extra = extra + 14
+		end
+
+		local upscaler_bpp = {
+			st_filter_fsr = 28,
+			st_filter_xess = 28,
+		}
+		local dlss_bpp = {
+			st_dlss_model_auto = 40,
+			st_dlss_model_cnn = 24,
+			st_dlss_model_transformer = 40,
+			st_dlss_model_transformer2 = 48,
+		}
+		local bpp = upscaler_bpp[state.scale_mode]
+		if state.scale_mode == "st_filter_dlss" then
+			bpp = dlss_bpp[state.dlss_model] or 40
+		end
+		if bpp then
+			extra = extra + bpp * display_px / mb
+		end
+	end
+	result.extra = extra
+	return result
+end
+
+function options_dialog:UpdateVram()
+	if #self.vram_rows == 0 then
+		return
+	end
+
+	self.vram_tick = (self.vram_tick or 0) - 1
+	if self.vram_tick > 0 then
+		return
+	end
+	self.vram_tick = 10
+
+	local info = get_video_memory_info()
+	if not info.valid then
+		return
+	end
+
+	local con = get_console()
+	local in_level = level.present() and info.textures > 0
+	local tex_lod = con:get_integer("texture_lod")
+
+	local current = self:GetVramState(con, false)
+	local pending = self:GetVramState(con, true)
+
+	local current_render_px = math.max(1, info.render_width * info.render_height)
+	local pending_render_px = pending.width * pending.height * pending.scale * pending.scale
+
+	local current_est = self:EstimateVramState(current, current_render_px)
+	local pending_est = self:EstimateVramState(pending, pending_render_px)
+
+	local other = math.max(0, info.usage - info.render_targets - info.shadow_maps - info.textures - current_est.extra)
+
+	if in_level then
+		con:execute(string.format("vram_textures_mb %.0f", info.textures))
+		con:execute("vram_textures_lod " .. tex_lod)
+		con:execute(string.format("vram_other_mb %.0f", other))
+	end
+
+	local base_tex, base_lod = info.textures, tex_lod
+	if not in_level then
+		base_tex = con:get_float("vram_textures_mb")
+		base_lod = con:get_integer("vram_textures_lod")
+		if base_tex <= 0 then
+			base_tex, base_lod = 1536, 0
+		end
+		other = math.max(other + info.textures, con:get_float("vram_other_mb"))
+	end
+
+	local new_lod = tex_lod
+	local tex_track = self:GetTrackBar("texQuality")
+	if tex_track then
+		new_lod = tex_track:GetIValue()
+	end
+	local textures = base_tex * math.pow(3, base_lod - new_lod)
+
+	local render_targets = pending_est.render_targets
+	if current.dynamic == pending.dynamic and current_est.render_targets > 0 then
+		render_targets = info.render_targets * pending_est.render_targets / current_est.render_targets
+	end
+
+	local shadow_maps = pending_est.shadow_maps
+	if current.dynamic == pending.dynamic and current_est.shadow_maps > 0 then
+		shadow_maps = info.shadow_maps * pending_est.shadow_maps / current_est.shadow_maps
+	end
+
+	local total = other + render_targets + shadow_maps + textures + pending_est.extra
+	local budget = info.budget
+	local gb = game.translate_string("ui_mm_vram_gb")
+
+	local ratio = budget > 0 and total / budget or 0
+	local color
+	if ratio < 0.8 then
+		color = GetARGB(255, 110, 200, 90)
+	elseif ratio < 1.0 then
+		color = GetARGB(255, 230, 190, 60)
+	else
+		color = GetARGB(255, 235, 80, 60)
+	end
+
+	for _, row in ipairs(self.vram_rows) do
+		row.bar:SetProgressPos(math.min(100, ratio * 100))
+		row.value:SetTextColor(color)
+		if budget > 0 then
+			row.value:SetText(string.format("%.1f / %.1f %s", total / 1024, budget / 1024, gb))
+		else
+			row.value:SetText(string.format("~%.1f %s", total / 1024, gb))
+		end
+	end
 end
 
 function options_dialog:UpdateHint()
