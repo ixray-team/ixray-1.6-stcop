@@ -12,10 +12,17 @@ if (WIN32)
         "${REDIMAGE_BIN}"
     )
 else()
+    if(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+        # libsquish enables SSE2 by default, which cannot be compiled for arm64.
+        set(BUILD_SQUISH_WITH_SSE2 OFF CACHE BOOL "Build squish with SSE2" FORCE)
+    endif()
+
     FetchContent_Declare(
         redimage
         GIT_REPOSITORY https://github.com/RedPandaProjects/RedImage.git
-        GIT_TAG master
+        # Pinned: master previously contained x86-only ISPC targets and a missing
+        # Vector.inl include, both fixed upstream in this merge commit.
+        GIT_TAG 9999e29e0e1196a408220636d87a273414b887e0
     )
     FetchContent_MakeAvailable(redimage)
 

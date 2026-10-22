@@ -57,6 +57,12 @@ xr_token							qpreset_token							[ ]={
 };
 
 u32 ps_r2_smapsize = 2048;
+// DXMT emulates tessellation with mesh shaders: a high factor multiplies the triangle count
+// instead of using fixed-function hardware, which costs far more than on Windows. 7 keeps the
+// original behaviour; lowering it trades a little surface smoothness for a lot of frame time.
+int ps_r4_tess_max = 7;
+float ps_r4_tess_dist_near = 2.f;
+float ps_r4_tess_dist_far = 4.f;
 xr_token qsmapsize_token[] = {
 	{ "1024", 1024 },
 	{ "2048", 2048 },
@@ -1090,6 +1096,9 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 	CMD3(CCC_Mask32, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
+	CMD4(CCC_Integer,	"r4_tess_max",		&ps_r4_tess_max,	1,	7	);
+	CMD4(CCC_Float,		"r4_tess_dist_near",&ps_r4_tess_dist_near,	0.f, 50.f);
+	CMD4(CCC_Float,		"r4_tess_dist_far",	&ps_r4_tess_dist_far,	0.f, 100.f);
 
 	CMD3(CCC_Mask32, "r4_vslr_enable", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
 	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
