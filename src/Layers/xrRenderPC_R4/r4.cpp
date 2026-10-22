@@ -1360,9 +1360,8 @@ HRESULT	CRender::shader_compile(
 	}
 
 	if(o.dx11_disable_motion_vectors) {
-		defines[def_it].Name = "DISABLE_MOTION_VECTORS";
-		defines[def_it].Definition = "1";
-		def_it++;
+		// The macro is already provided by addShaderOption(); passing it twice makes
+		// the shader compiler report a macro redefinition for every permutation.
 		sh_name[len] = '1'; ++len;
 	}
 	else {

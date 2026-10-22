@@ -20,7 +20,15 @@ static void PrepareExecutableFolderLaunch()
 		if (dir != nullptr)
 		{
 			*dir = '\0';
-			chdir(path);
+			// Jump next to the executable only when the game files are there. Inside a
+			// macOS bundle they live in Contents/Resources and the launcher has already
+			// set that directory, so chdir would only break the lookup of fsgame.ltx.
+			string_path fsgame;
+			xr_sprintf(fsgame, "%s/fsgame.ltx", path);
+			if (std::filesystem::exists(fsgame))
+			{
+				chdir(path);
+			}
 		}
 	}
 }
