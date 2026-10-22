@@ -13,7 +13,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  cancel-bootstrap-builds:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Cancel unrelated builds triggered by the initial branch creation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api "repos/$GH_REPO/actions/runs?branch=feature%2Fgrass-terrain-tint&head_sha=a2a67539f4a437c52a4ef918f1934166647971c1&per_page=100" \
+            --jq '.workflow_runs[] | select(.head_sha == "a2a67539f4a437c52a4ef918f1934166647971c1") | select(.status != "completed") | .id' |
+          while read -r run; do
+            gh api --method POST "repos/$GH_REPO/actions/runs/$run/cancel" || true
+          done
   windows:
+    needs: cancel-bootstrap-builds
     runs-on: windows-2022
     timeout-minutes: 90
     defaults:
