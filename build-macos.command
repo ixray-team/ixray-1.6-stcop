@@ -1,17 +1,17 @@
 #!/bin/bash
-# Сборка IX-Ray на macOS из чистого репозитория.
+# Сборка IX-Ray на macOS. Двойной щелчок в Finder или запуск из терминала.
 #
-#   ./build-macos.sh                        — спросит, что собрать
-#   ./build-macos.sh --engine               — собрать движок
-#   ./build-macos.sh --game                 — собрать игру целиком (распространяемая версия)
-#   ./build-macos.sh --game --data <папка>  — то же, папку с игрой указать сразу
+#   ./build-macos.command                        — спросит, что собрать
+#   ./build-macos.command --engine               — собрать движок
+#   ./build-macos.command --game                 — собрать игру целиком (распространяемая версия)
+#   ./build-macos.command --game --data <папка>  — то же, папку с игрой указать сразу
 #
 # «Собрать движок» — только бинарники, они появятся в <build>/bin/Release. Чтобы играть,
 # рядом с ними должны лежать данные игры (fsgame.ltx, gamedata, levels, resources, ...).
 #
 # «Собрать игру целиком» — движок, его библиотеки и данные игры складываются в
-# IX-Ray.app, который можно перетащить в /Applications. Если папка с оригинальной
-# игрой не найдена, скрипт попросит перетащить её в окно терминала.
+# IX-Ray.app, который сразу ставится в /Applications. Если папка с оригинальной игрой
+# не найдена, скрипт попросит перетащить её в окно терминала.
 #
 # Всё стороннее (DXMT, SDL3, vkd3d, TBB, lzo2, RedImage, yaml-cpp, Steam SDK,
 # freetype, ogg, theora) CMake скачивает и собирает сам.
@@ -134,6 +134,13 @@ PLIST
 }
 
 prompt_for_game_dir() {
+    if [ ! -t 0 ]; then
+        echo "ОШИБКА: файлы игры не найдены. Запустите сборку из Terminal" >&2
+        echo "(двойной щелчок по build-macos.command) и укажите папку с игрой." >&2
+        printf ''
+        return 0
+    fi
+
     {
         echo
         echo "Нужны файлы оригинальной игры S.T.A.L.K.E.R.: Зов Припяти."
@@ -152,11 +159,19 @@ prompt_for_game_dir() {
 }
 
 find_game_dir() {
-    local candidate
+    local candidate bundle
     for candidate in "${DATA_DIR}" "${REPO_DIR}/../cop-baseline" "${REPO_DIR}/../run"; do
         [ -n "${candidate}" ] || continue
         if [ -d "${candidate}" ] && [ -d "${candidate}/levels" ] && [ -d "${candidate}/resources" ]; then
             printf '%s' "${candidate}"
+            return 0
+        fi
+    done
+    # A bundle built earlier already carries the game files, so re-packing does not need
+    # the original installation.
+    for bundle in "${BUILD_DIR}/IX-Ray.app/Contents/Resources" "/Applications/IX-Ray.app/Contents/Resources"; do
+        if [ -d "${bundle}/levels" ] && [ -d "${bundle}/resources" ]; then
+            printf '%s' "${bundle}"
             return 0
         fi
     done
@@ -238,7 +253,23 @@ LAUNCH
     codesign --force --deep --sign - "${app}" >/dev/null 2>&1 || \
         echo "ПРЕДУПРЕЖДЕНИЕ: подпись не удалась, Gatekeeper может ругаться" >&2
 
-    echo "Готово: ${app} ($(du -sh "${app}" | cut -f1))"
+    echo "Собрано: ${app} ($(du -sh "${app}" | cut -f1))"
+}
+
+install_to_applications() {
+    local app="${BUILD_DIR}/IX-Ray.app"
+    local target="/Applications/IX-Ray.app"
+
+    echo "Устанавливаю в /Applications..."
+    osascript -e 'tell application "IX-Ray" to quit' >/dev/null 2>&1 || true
+
+    if ! rm -rf "${target}" 2>/dev/null || ! ditto "${app}" "${target}" 2>/dev/null; then
+        echo "ПРЕДУПРЕЖДЕНИЕ: нет прав на запись в /Applications." >&2
+        echo "Перетащите ${app} в /Applications вручную." >&2
+        return 1
+    fi
+    echo "Установлено: ${target}"
+    return 0
 }
 
 # --- сборка ------------------------------------------------------------------
@@ -259,9 +290,11 @@ ninja -C "${BUILD_DIR}"
 echo
 if [ "${MODE}" = "game" ]; then
     package_game
-    echo "Перетащите ${BUILD_DIR}/IX-Ray.app в /Applications, чтобы установить."
+    install_to_applications || true
+    echo
+    echo "Приятной игры!"
 else
     echo "Готово. Бинарники: ${BUILD_DIR}/bin/Release"
     echo "Это сборка движка, бандл не собирался. Игру целиком собирает:"
-    echo "  ./build-macos.sh --game"
+    echo "  ./build-macos.command --game"
 fi
