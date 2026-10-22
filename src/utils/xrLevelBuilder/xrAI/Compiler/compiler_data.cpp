@@ -2,6 +2,8 @@
 #include "compiler.h"
 #include "../../UI/CompilersUI.h"
 #include "compiler_embree.h"
+#include "xrCore/SharedMaterialLibrary.h"
+#include "xrCore/Collision/override/Model.h"
 
 template <class T>
 void transfer(const char* name, xr_vector<T>& dest, IReader& F, u32 chunk)
@@ -62,6 +64,7 @@ void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 
 			// Load level data
 			transfer("materials", comp_data.g_materials, *fs, EB_Materials);
+			transfer("materials", comp_data.g_materials_shared, *fs, EB_MaterialsShared);
 			transfer("shaders_xrlc", comp_data.g_shader_compile, *fs, EB_Shaders_Compile);
 
 			// process textures
@@ -70,6 +73,11 @@ void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 
 			Status("Processing textures...");
 			{
+				auto TextureProcess = [&](b_BuildTexture& BT)
+				{
+					
+				};
+				
 				F = fs->open_chunk(EB_Textures);
 				u32 tex_count = F->length() / sizeof(b_texture_real);
 				for (u32 t = 0; t < tex_count; t++)
@@ -359,13 +367,13 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 				const Shader_xrLC& SH = GetShader(F.dwMaterial);
 				if (!SH.flags.bLIGHT_CastShadow) continue;
  
-				// косяки по MU-Models !
+				// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ MU-Models !
 				Fvector P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 
-				// Поченил !
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 				auto& Fnew = build_faces.emplace_back();
 				Fnew.SetFace(P[0], P[1], P[2], nullptr);
 				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
@@ -375,7 +383,7 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 	}
 	xrCalculateOpacity();
 
-	// Изза сраного BOX-QUERY Для расщета t_n !
+	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ BOX-QUERY пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ t_n !
 	auto& CDATA = CAIRayTrace.static_geom;
  	CDATA.ClearAll();
 
@@ -411,5 +419,5 @@ void IComputeData::xrUnload()
 	build_faces.clear();
 	build_faces.shrink_to_fit();
 
- 	CAIRayTrace.Deinitialize(); // Выгрузка !
+ 	CAIRayTrace.Deinitialize(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 }
