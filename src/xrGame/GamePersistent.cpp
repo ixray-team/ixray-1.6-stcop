@@ -574,6 +574,11 @@ void CGamePersistent::UpdateParticles()
 		}
 
 		particle_tasks.wait();
+
+		for (u32 i = 0; i < last_count; ++i)
+		{
+			workers[i].second.clear();
+		}
 	}
 }
 
