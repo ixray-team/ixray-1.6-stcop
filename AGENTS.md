@@ -65,6 +65,7 @@ CMake ≥ 3.26, x64, output `build/bin/<Config>/`. Details: [docs/engine/build.m
 
 ## Code rules
 
+- Unix style: code must be cross-platform across Windows, Linux, and macOS and must build with Clang. Use portable types (`u32`, `s32`, `u64`, `size_t`, `char`, ...), never WinAPI types (`DWORD`, `WORD`, `BOOL`, `HANDLE`, `LPCSTR`, `UINT`, ...). No WinAPI calls in shared code; if WinAPI is required, keep it under `#ifdef _WIN32` (or in `Platform` code) and write a cross-platform equivalent for Linux and macOS. No MSVC-only extensions.
 - Types: `u32`, `xr_vector`, `xr_string`, `xr_string_view`, `xr_hash_map`, `xr_hash_set`, `xr_unique_ptr`, `shared_str`. `#pragma once`. `std::` only when no IXR alias exists, or before `Memory._initialize`.
 - Locks: `xrCriticalSection` + `xrCriticalSectionGuard`, or `xrSRWLock` + `xrSRWLockGuard` (`shared = true` for readers). No `std::mutex`, `std::shared_mutex`, or `std::lock_guard`.
 - RAII for memory, files, threads, mutexes, OS handles, SDL, and GPU objects. A one-off resource in the whole engine can be acquired and released by hand.
@@ -75,3 +76,17 @@ CMake ≥ 3.26, x64, output `build/bin/<Config>/`. Details: [docs/engine/build.m
 - Client renderers are separate DLLs: `xrRender_R1`, `xrRender_R2`, `xrRender_R4`. `renderer_r1`, `renderer_r2`, and `renderer_r4` select them via `rsR2` / `rsR4` in `xr_ioc_cmd.cpp`. `CEngineAPI::InitializeNotDedicated` tries R4, then R2 on load failure; `Initialize` falls back to R1. `GetAPI()` returns D3D11 for `rsR4`, otherwise D3D9. `CreateRendererList` checks renderer library presence. This branch has no `ELightingMode`, `LightingModeIsStatic()` / `LightingModeIsDynamic()`, or `renderer_r4_static`.
 - `VERIFY` is enabled only with `DEBUG`. `R_ASSERT` is stripped with `SHIPPING_BUILD`; checks that must survive Shipping need explicit control flow (or `CHECK_OR_EXIT` for fatal errors).
 - Swapchain and Lua stay off `PreRenderThread`. `GRHI` draws stay on the primary thread.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+
+Rules:
+- When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
