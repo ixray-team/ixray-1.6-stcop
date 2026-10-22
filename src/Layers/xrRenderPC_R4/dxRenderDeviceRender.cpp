@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
+
+#ifdef IXR_WINDOWS
+#	include <dxgi1_4.h>
+#endif
 #include "SVGStorage.h"
 
 #include "dxDebugRender.h"
@@ -191,6 +195,58 @@ void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32
 {
 	if (Resources)
 		Resources->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+}
+
+bool dxRenderDeviceRender::GetVideoMemoryInfo(SVideoMemoryInfo& Info)
+{
+	if (!Resources)
+	{
+		return false;
+	}
+
+	Resources->_GetVideoMemoryUsage(Info.RenderTargets, Info.ShadowMaps, Info.Textures);
+
+	Info.RenderWidth = u32(RCache.get_width());
+	Info.RenderHeight = u32(RCache.get_height());
+
+#ifdef IXR_WINDOWS
+	IDXGIDevice* DxgiDevice = nullptr;
+	if (RDevice && SUCCEEDED(RDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&DxgiDevice)))
+	{
+		IDXGIAdapter* Adapter = nullptr;
+		if (SUCCEEDED(DxgiDevice->GetAdapter(&Adapter)))
+		{
+			IDXGIAdapter3* Adapter3 = nullptr;
+			DXGI_QUERY_VIDEO_MEMORY_INFO MemoryInfo = {};
+
+			if (SUCCEEDED(Adapter->QueryInterface(__uuidof(IDXGIAdapter3), (void**)&Adapter3)) &&
+				SUCCEEDED(Adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &MemoryInfo)))
+			{
+				Info.Budget = MemoryInfo.Budget;
+				Info.Usage = MemoryInfo.CurrentUsage;
+			}
+			else
+			{
+				DXGI_ADAPTER_DESC Desc = {};
+				if (SUCCEEDED(Adapter->GetDesc(&Desc)))
+				{
+					Info.Budget = Desc.DedicatedVideoMemory;
+				}
+			}
+
+			if (Adapter3)
+			{
+				Adapter3->Release();
+			}
+
+			Adapter->Release();
+		}
+
+		DxgiDevice->Release();
+	}
+#endif
+
+	return true;
 }
 
 void dxRenderDeviceRender::ResourcesStoreNecessaryTextures()

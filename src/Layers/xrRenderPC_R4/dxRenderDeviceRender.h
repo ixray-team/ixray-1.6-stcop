@@ -35,6 +35,7 @@ public:
 	void ResourcesDeferredUpload() override;
 	void ResourcesDeferredUnload() override;
 	void ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps) override;
+	bool GetVideoMemoryInfo(SVideoMemoryInfo& Info) override;
 	void ResourcesDestroyNecessaryTextures() override;
 	void ResourcesStoreNecessaryTextures()override ;
 	void ResourcesDumpMemoryUsage() override;
