@@ -95,7 +95,7 @@ namespace CDB
 		BVHNode* root = nullptr;
 		u16 Sector = u16(-1);
 		xr_atomic_bool IsBuilt = false;
-		mutable xr_task_group load_task;
+		mutable xr_task_group load_task{ ETaskPriority::Background };
 		
 		~MODEL();
 

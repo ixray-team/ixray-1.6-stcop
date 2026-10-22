@@ -291,7 +291,7 @@ public:
 	// Multi-threading
 	xr_task_group DetailsTask;
 	xr_task_group SecondaryTasks;
-	xr_task_group async_tasks;
+	xr_task_group async_tasks{ ETaskPriority::Background };
 
 	//XRayWorkerThread GCThread;
 	XRayWorkerThread PreRenderThread;

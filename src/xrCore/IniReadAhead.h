@@ -40,7 +40,7 @@ private:
 	xrSRWLock								Lock;
 	xr_hash_map<xr_string, Entry*>			Entries;
 	xr_vector<xr_unique_ptr<Entry>>			Storage;
-	xr_task_group							Tasks;
+	xr_task_group							Tasks{ ETaskPriority::Background };
 	std::atomic<bool>						IsActive = false;
 	std::atomic<size_t>						Next = 0;
 	std::atomic<u32>						TakenCount = 0;

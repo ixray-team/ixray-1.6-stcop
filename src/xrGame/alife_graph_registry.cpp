@@ -81,23 +81,20 @@ public:
 	void Run(int LevelId)
 	{
 		Wait();
-		Thread = std::thread([LevelId]()
+		Task.run([LevelId]()
 		{
-			PROF_THREAD("Level Load Thread");
+			PROF_EVENT("Level Load Task");
 			Level().Load(LevelId);
 		});
 	}
 
 	void Wait()
 	{
-		if (Thread.joinable())
-		{
-			Thread.join();
-		}
+		Task.wait();
 	}
 
 private:
-	std::thread Thread;
+	xr_task_group Task;
 };
 
 static CLevelLoadThread LevelLoad;

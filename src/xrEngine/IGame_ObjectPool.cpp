@@ -88,7 +88,6 @@ void IGame_ObjectPool::prefetch()
 			}
 
 			xrBackgroundWorkScope Background;
-			xrTaskBlockingScope Blocking;
 			for (size_t Index = m_PrefetchNext.fetch_add(1); Index < m_PendingPrefetch.size(); Index = m_PrefetchNext.fetch_add(1))
 			{
 				PrefetchItem& Item = m_PendingPrefetch[Index];

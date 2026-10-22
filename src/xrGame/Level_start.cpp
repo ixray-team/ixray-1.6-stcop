@@ -208,19 +208,20 @@ bool CLevel::net_start2				()
 		return true;
 	}
 
-	if (!AsyncConnectThread)
+	if (!IsAsyncConnectStarted)
 	{
 		MainMenu()->DestroyInternal(true);
 
 		IsAsyncConnectDone.store(false, std::memory_order_relaxed);
-		AsyncConnectThread = xr_make_unique<XRayWorkerThread>([this]()
+		IsAsyncConnectStarted = true;
+		AsyncConnectTask.run([this]()
 		{
+			PROF_EVENT("CLevel::ConnectServer task");
 			g_AppInfo.SetAsyncLoadThread(true);
 			ConnectServer();
 			g_AppInfo.SetAsyncLoadThread(false);
 			IsAsyncConnectDone.store(true, std::memory_order_release);
-		}, "X-Ray Loading Thread");
-		AsyncConnectThread->Run();
+		});
 		return false;
 	}
 
@@ -236,7 +237,8 @@ bool CLevel::net_start2				()
 		return false;
 	}
 
-	AsyncConnectThread.reset();
+	AsyncConnectTask.wait();
+	IsAsyncConnectStarted = false;
 	FinishConnectServer();
 	return true;
 }

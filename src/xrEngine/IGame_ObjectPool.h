@@ -18,7 +18,7 @@ class ENGINE_API 				IGame_ObjectPool
 	};
 
 	xr_vector<PrefetchItem>		m_PendingPrefetch;
-	xr_task_group				m_PrefetchTasks;
+	xr_task_group				m_PrefetchTasks{ ETaskPriority::Background };
 	bool						m_IsPrefetchRunning = false;
 	std::atomic<size_t>			m_PrefetchNext = 0;
 

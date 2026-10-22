@@ -15,6 +15,14 @@ inline void Sleep(size_t Time)
 
 namespace Platform
 {
+	struct CpuCore
+	{
+		unsigned long long LogicalMask;
+		unsigned char EfficiencyClass;
+	};
+	inline unsigned int GetCpuCores(CpuCore*, unsigned int) { return 0; }
+	inline void SetCurrentThreadAffinity(unsigned long long) {}
+
 	XRCORE_API unsigned int GetCoresCount();
 	XRCORE_API ThreadID GetCurrentThread();
     XRCORE_API size_t GetThreadId(ThreadID ID);

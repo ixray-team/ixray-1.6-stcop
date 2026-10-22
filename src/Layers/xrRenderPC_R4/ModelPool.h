@@ -48,7 +48,7 @@ private:
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		//
 	xrCriticalSection			deffered_del_lock;
 
-	xr_task_group				RequestTasks;
+	xr_task_group				RequestTasks{ ETaskPriority::Background };
 	xr_hash_set<shared_str>		Requested;
 	xr_deque<shared_str>		RequestQueues[3];
 	xr_hash_map<shared_str, EModelRequestPriority>	Queued;

@@ -57,11 +57,9 @@ void XRay::Engine::GameThread()
 		{
 			Device.async_tasks.run([=]()
 			{
-				PROF_START_THREAD("Async Task");
 				PROF_EVENT("Save writing task");
 				task->WriteSavedDataImpl();
 				xr_delete(task);
-				PROF_STOP_THREAD();
 			});
 		}
 	}

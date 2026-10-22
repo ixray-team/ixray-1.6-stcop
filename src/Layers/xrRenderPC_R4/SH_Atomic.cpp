@@ -18,7 +18,6 @@ void SShaderCompileState::WaitCompiled()
 	}
 
 	PROF_EVENT("SShaderCompileState::WaitCompiled");
-	xrTaskBlockingScope Blocking;
 	IsCompiled.wait(false, std::memory_order_acquire);
 }
 

@@ -82,7 +82,7 @@ void MODEL::build_simple()
 {
 	load_task.run([&]()
 	{
-		PROF_START_THREAD("build collision")
+		PROF_EVENT("build collision");
 		VERIFY(!IsBuilt);
 		auto EmbreeDevice = GetEmbreeDevice();
 		InstaceScene = rtcNewScene(EmbreeDevice);
@@ -155,7 +155,6 @@ void MODEL::build_simple()
 		tree = CDB::BuildModel(Config);
 	
 		IsBuilt = true;
-		PROF_STOP_THREAD()
 	});
 }
 

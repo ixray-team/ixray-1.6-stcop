@@ -211,7 +211,6 @@ void CModelPool::RunLoader()
 	}
 
 	xrBackgroundWorkScope Background;
-	xrTaskBlockingScope Blocking;
 	while (true)
 	{
 		shared_str Key;
