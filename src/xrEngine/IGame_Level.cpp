@@ -182,7 +182,12 @@ bool IGame_Level::Load			(u32 dwNum)
 	xrCriticalSectionGuard guard(lloadcs);
 	if (bReady) return true;
 	// Initialize level data
-	pApp->Level_Set				( dwNum );
+	// Level_ID(..., true) selects the path before scheduling the background load.
+	// Replacing it again races with the parallel AI-map load reading $level$.
+	if (pApp->Level_Current != dwNum)
+	{
+		pApp->Level_Set(dwNum);
+	}
 	string_path					temp;
 	if (!FS.exist(temp, "$level$", "level.ltx"))
 		Debug.fatal	(DEBUG_INFO,"Can't find level configuration file '%s'.",temp);
