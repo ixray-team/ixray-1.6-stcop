@@ -165,7 +165,9 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 											RImplementation.apply_lmaterial();
 	
 											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-											RCache.LOD.set_LOD(LOD);
+											// Distance lets tessellation fade out with it (see R_LOD::set_LOD).
+											const float tess_dist = Device.vCameraPosition.distance_to(Ni.Matrix.c) - Ni.pVisual->vis.sphere.R;
+											RCache.LOD.set_LOD(LOD, tess_dist);
 											Ni.pVisual->Render(LOD);
 										}if (_clear)items.visuals.clear();
 										continue;

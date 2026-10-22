@@ -11,7 +11,7 @@ public:
 
 	void			unmap() {c_LOD = 0;}
 	void			set_LOD(RHIShaderConstant* C) {c_LOD = C;}
-	void			set_LOD(float LOD);
+	void			set_LOD(float LOD, float dist = -1.f);
 };
 
 #endif // #ifndef R_BACKEND_LOD_H_INCLUDED

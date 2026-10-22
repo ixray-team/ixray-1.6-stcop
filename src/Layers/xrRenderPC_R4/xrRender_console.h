@@ -16,6 +16,8 @@ extern RENDER_API	u32			ps_r2_smapsize;
 // Upper bound for the tessellation factor: DXMT emulates tessellation with mesh shaders and
 // a high factor multiplies the triangle count instead of using fixed-function hardware.
 extern RENDER_API	int			ps_r4_tess_max;
+extern RENDER_API	float			ps_r4_tess_dist_near;
+extern RENDER_API	float			ps_r4_tess_dist_far;
 extern RENDER_API	xr_token	qsmapsize_token[];
 
 extern ENGINE_API u32 ps_r_scale_mode;
