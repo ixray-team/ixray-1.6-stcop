@@ -81,7 +81,7 @@ xr_vector<xr_string> xr_string::Split(u32 NumberOfSplits, ...) const
 
 	for (u32 i = 0; i < NumberOfSplits; ++i)
 	{
-		char splitCh = va_arg(args, char);
+		char splitCh = (char)va_arg(args, int);
 
 		//special case for first try
 		if (i == 0)

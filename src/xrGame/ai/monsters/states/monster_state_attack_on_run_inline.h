@@ -533,7 +533,7 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 												 motion, 
 												 attack_animation_length);
 					 
-			got_animation_info; VERIFY			(got_animation_info);
+			VERIFY			(got_animation_info);
 
 			m_attack_end_time				=	current_time() + TTime(1000*attack_animation_length);
 			this->object->anim().set_override_animation (anim, m_animation_index[m_attack_side]);

@@ -556,7 +556,7 @@ void CCreature::eye_pp_s2()
 	u32 dwDT = dwTime - eye_pp_timestamp;
 	eye_pp_timestamp = dwTime;
 
-	Device.SecondaryTasks.run([=]
+	Device.SecondaryTasks.run([=, this]
 	{
 		PROF_THREAD("feel_vision_update parallel");
 		feel_vision_update(eye_matrix.c, float(dwDT) / 1000.f, memory().visual().transparency_threshold()); 

@@ -3039,7 +3039,7 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_SCRIPT))
 	{
 		auto oid = GO->ID();
-		Device.callback(500, [=]()
+		Device.callback(500, [=, this]()
 			{
 				if (!g_pGameLevel || !g_pGameLevel->CurrentViewEntity() || !g_hud)
 					return;

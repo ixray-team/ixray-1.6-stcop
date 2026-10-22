@@ -64,7 +64,7 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 
 	status.store(S_BUILD);
 
-	auto LoaderLamda = [=]()
+	auto LoaderLamda = [&]()
 	{
 		PROF_START_THREAD("build cform");
 

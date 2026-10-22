@@ -730,7 +730,7 @@ public:
 			strncpy_s(saved_game, sizeof(saved_game), args, _MAX_PATH - 1);
 		}
 
-		if (saved_game && *saved_game)
+		if (*saved_game)
 		{
 			xr_strcpy(g_last_saved_game, saved_game);
 
@@ -2006,7 +2006,7 @@ public:
 				}
 			}
 
-			Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+			Fvector3 point = Fvector3().mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 			for (size_t i = 0; i < count; i++) {
 				auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
@@ -2054,7 +2054,7 @@ public:
 
 			if (pSettings->section_exist(nameSection))
 			{
-				Fvector3 madPos = madPos.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+				Fvector3 madPos = Fvector3().mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 				NET_Packet		P;
 				P.w_begin(M_REMOTE_CONTROL_CMD);

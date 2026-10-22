@@ -635,7 +635,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
-	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, (u16)m_UIPropertiesBox->GetClickedItem()->GetData() );		break;
+	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, (u16)(uintptr_t)m_UIPropertiesBox->GetClickedItem()->GetData() );		break;
 	case INVENTORY_TO_BELT_ACTION:	
 		ToBelt( cell_item, false );		break;
 	case INVENTORY_TO_BAG_ACTION:
