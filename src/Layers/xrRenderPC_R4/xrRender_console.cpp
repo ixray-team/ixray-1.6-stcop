@@ -1216,7 +1216,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__grass_tint_radius", &g_GrassTerrainTintRadius, 0.0f, 32.0f);
 	CMD4(CCC_Float, "r__grass_tint_height", &g_GrassTerrainTintHeightLimit, 0.1f, 10.0f);
 	CMD4(CCC_Integer, "r__grass_tint_resolution", &g_GrassTerrainTintResolution, 256, 2048);
-	CMD4(CCC_Integer, "r__grass_tint_debug", &g_GrassTerrainTintDebug, 0, 2);
+	CMD4(CCC_Integer, "r__grass_tint_debug", &g_GrassTerrainTintDebug, 0, 4);
 	CMD1(GrassTerrainTintRebuildCommand, "r__grass_tint_rebuild");
 	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
 	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");

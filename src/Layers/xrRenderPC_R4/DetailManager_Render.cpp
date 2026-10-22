@@ -319,6 +319,8 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	}
 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
+	// Each material may use a different custom constant buffer for the tint parameters.
+	const bool FlushTintConstants = !phase_shmap;
 	if(!phase_shmap)
 		RImplementation.apply_lmaterial(); //Material ID
 
@@ -412,7 +414,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, FlushTintConstants);
 					instanceCount = 0; //Reset
 				}
 			}
@@ -421,7 +423,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			if (instanceCount > 0)
 			{
 				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, FlushTintConstants);
 			}
 		}
 	}
@@ -444,7 +446,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				{
 					GRHI->ShaderResourceCache->SetVSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
 					RCache.set_Geometry(D.hw_Geom);
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0, FlushTintConstants);
 				}
 			}
 		}
@@ -494,7 +496,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(CDetail::SlotItem));
 
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, FlushTintConstants);
 
 					offset += chunkSize;
 				}

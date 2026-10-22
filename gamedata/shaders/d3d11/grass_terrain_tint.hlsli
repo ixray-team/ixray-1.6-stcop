@@ -17,13 +17,17 @@ float4 GrassTerrainTintSample(float3 root, float localHeight)
     float2 uv = (root.xz - grass_tint_bounds.xy) * grass_tint_bounds.zw;
     if (any(uv < 0.0f) || any(uv > 1.0f))
     {
-        return float4(1.0f, 1.0f, 1.0f, 0.0f);
+        return float4(1.0f, 1.0f, 1.0f, -1.0f);
     }
     float coverage = s_grass_tint_color.SampleLevel(smp_nofilter, uv, 0.0f).a;
     float groundHeight = s_grass_tint_height.SampleLevel(smp_nofilter, uv, 0.0f).r;
-    if (coverage < 0.5f || abs(root.y - groundHeight) > grass_tint_params.z)
+    if (coverage < 0.5f)
     {
-        return float4(1.0f, 1.0f, 1.0f, 0.0f);
+        return float4(1.0f, 1.0f, 1.0f, -2.0f);
+    }
+    if (abs(root.y - groundHeight) > grass_tint_params.z)
+    {
+        return float4(1.0f, 1.0f, 1.0f, -3.0f);
     }
     float4 color = s_grass_tint_color.SampleLevel(smp_rtlinear, uv, grass_tint_params.y);
     float weight = lerp(1.0f, 0.55f, saturate(localHeight));
@@ -32,6 +36,19 @@ float4 GrassTerrainTintSample(float3 root, float localHeight)
 
 float3 GrassTerrainTintApply(float3 baseColor, float4 tint)
 {
+    // Test the detail shader independently from terrain coverage and height rejection.
+    if (grass_tint_params.w > 2.5f && grass_tint_params.w < 3.5f)
+    {
+        return float3(1.0f, 0.0f, 1.0f);
+    }
+    if (grass_tint_params.w > 3.5f)
+    {
+        if (tint.a > 0.0f) return float3(0.0f, 1.0f, 0.0f);
+        if (tint.a < -2.5f) return float3(1.0f, 1.0f, 0.0f);
+        if (tint.a < -1.5f) return float3(1.0f, 0.0f, 0.0f);
+        if (tint.a < -0.5f) return float3(0.0f, 0.0f, 1.0f);
+        return float3(0.25f, 0.25f, 0.25f);
+    }
     if (tint.a <= 0.0f || grass_tint_options.y < 0.5f)
     {
         return baseColor;

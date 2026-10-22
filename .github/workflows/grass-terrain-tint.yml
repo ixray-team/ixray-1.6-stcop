@@ -49,7 +49,15 @@ jobs:
           if (!$fxc) { throw 'Windows SDK FXC was not found' }
           python tests/grass_terrain_tint/validate_shaders.py --backend fxc --compiler $fxc.FullName --output build/grass-tint-fxc
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-      - name: Configure R4 engine
+      - name: Execute real tint shaders on D3D11 WARP
+        run: |
+          cmake -S tests/grass_terrain_tint -B build/grass-tint-gpu-checks -A x64
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --build build/grass-tint-gpu-checks --config Release --target grass_tint_gpu_tests
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          ctest --test-dir build/grass-tint-gpu-checks -C Release -R grass_tint_gpu --output-on-failure
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Configure R4 engine build
         run: cmake --preset Engine-x64-Windows -DIXRAY_USE_R1=OFF -DIXRAY_USE_R2=OFF -DIXRAY_PROFILER=OFF
       - name: Build engine and R4
         run: |
@@ -66,9 +74,9 @@ jobs:
         run: |
           cmake -S tests/grass_terrain_tint -B build/grass-tint-checks -A x64
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          cmake --build build/grass-tint-checks --config Release
+          cmake --build build/grass-tint-checks --config Release --target grass_tint_math_tests
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          ctest --test-dir build/grass-tint-checks -C Release --output-on-failure
+          ctest --test-dir build/grass-tint-checks -C Release -E grass_tint_gpu --output-on-failure
       - name: Upload ready test files
         uses: actions/upload-artifact@v7
         with:

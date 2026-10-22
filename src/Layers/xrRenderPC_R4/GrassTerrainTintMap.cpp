@@ -157,12 +157,15 @@ void GrassTerrainTintMap::Update(CRender& Renderer)
 		auto RestoreTargets = [&]
 		{
 			Renderer.Target->u_setrt(PreviousWidth, PreviousHeight, Previous0, Previous1, Previous2, Previous3, PreviousDepth);
+			Renderer.rmNormal();
 			Renderer.phase = PreviousPhase;
 			RCache.set_Scissor(nullptr);
 		};
 		xr_scope_exit Restore(std::move(RestoreTargets));
 		Renderer.phase = CRender::PHASE_NORMAL;
 		Renderer.Target->u_setrt(Color, Height, DepthTarget->pZRT);
+		// Binding render targets does not resize the viewport in this renderer.
+		Renderer.rmNormal();
 		GRHI->ClearTarget(Color->pRT, ERTColor::Transparent);
 		GRHI->ClearTarget(Height->pRT, ERTColor::Transparent);
 		GRHI->ClearDepthStencil(DepthTarget->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0);
@@ -177,7 +180,7 @@ void GrassTerrainTintMap::Update(CRender& Renderer)
 	}
 	GRHI->GenerateMips(Color->pTexture->get_SRView());
 	Ready = true;
-	Msg("* Grass terrain tint: %ux%u, %zu terrain surfaces, XZ=(%.1f,%.1f)..(%.1f,%.1f), %.2f ms",
+	Msg("* Grass terrain tint: %ux%u, %zu terrain surfaces, XZ=(%.1f,%.1f)..(%.1f,%.1f), %.2f ms [v0.1.2, viewport matched to map]",
 		Resolution,
 		Resolution,
 		Terrain.size(),
@@ -200,6 +203,7 @@ void GrassTerrainTintMap::DrawDebug(CRender& Renderer)
 		DebugShader.create(&Blender, "grass_terrain_tint_debug");
 	}
 	Renderer.Target->u_setrt(RCache.get_width(), RCache.get_height(), Renderer.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
+	Renderer.rmNormal();
 	RCache.set_Element(DebugShader->E[0]);
 	RCache.set_Geometry(Renderer.Target->FSTriangleGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
