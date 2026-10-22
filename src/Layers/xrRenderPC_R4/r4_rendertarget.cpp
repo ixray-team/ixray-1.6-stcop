@@ -590,6 +590,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, HDR_Format);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_SNORM);
+		ReactiveMask.create(r2_RT_reactive, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());
