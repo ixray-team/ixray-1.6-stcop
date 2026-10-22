@@ -151,8 +151,8 @@ void GrassTerrainTintMap::Update(CRender& Renderer)
 		auto* Previous2 = RCache.get_RT(2);
 		auto* Previous3 = RCache.get_RT(3);
 		auto* PreviousDepth = GRHI->GetDepthStencilView();
-		const u32 PreviousWidth = RCache.get_target_width();
-		const u32 PreviousHeight = RCache.get_target_height();
+		const u32 PreviousWidth = Renderer.Target->get_width();
+		const u32 PreviousHeight = Renderer.Target->get_height();
 		const u32 PreviousPhase = Renderer.phase;
 		auto RestoreTargets = [&]
 		{
@@ -202,7 +202,7 @@ void GrassTerrainTintMap::DrawDebug(CRender& Renderer)
 		GrassTerrainTint::DebugBlender Blender;
 		DebugShader.create(&Blender, "grass_terrain_tint_debug");
 	}
-	Renderer.Target->u_setrt(RCache.get_width(), RCache.get_height(), Renderer.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
+	Renderer.Target->u_setrt(Renderer.Target->rt_BackbufferLUT->dwWidth, Renderer.Target->rt_BackbufferLUT->dwHeight, Renderer.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
 	Renderer.rmNormal();
 	RCache.set_Element(DebugShader->E[0]);
 	RCache.set_Geometry(Renderer.Target->FSTriangleGeom);
