@@ -279,4 +279,13 @@
 	<string id="ui_mm_hide_quick_slots_hint">
 		<text>The quick slots panel hides automatically and appears when a slot is used or by a dedicated show quick slots key (bound in the controls).</text>
 	</string>
+	<string id="ui_mm_vram">
+		<text>Video memory</text>
+	</string>
+	<string id="ui_mm_vram_gb">
+		<text>GB</text>
+	</string>
+	<string id="ui_mm_vram_hint">
+		<text>Estimated video memory usage with the selected settings and the amount the system gives to the game. Updates as soon as you change options, before applying them.\n%c[255,110,200,90]Green%c[default] - enough headroom.\n%c[255,230,190,60]Yellow%c[default] - memory is almost full.\n%c[255,235,80,60]Red%c[default] - not enough video memory, expect stutter and texture streaming.\n%c[255,150,150,150]Texture and geometry usage is refined after a level is loaded: open the settings during gameplay for a more accurate estimate.</text>
+	</string>
 </string_table>

@@ -32,6 +32,20 @@
 		</text>
 	</hint_wnd>
 	<main_dialog>
+		<vram_bar x="190" y="13" width="137" height="4" horz="1" min="0" max="100">
+			<background stretch="1">
+				<texture color="black" a="200">ui\ixr_options\white</texture>
+			</background>
+			<progress stretch="1">
+				<texture>ui\ixr_options\white</texture>
+			</progress>
+			<min_color r="110" g="200" b="90"/>
+			<middle_color r="110" g="200" b="90"/>
+			<max_color r="235" g="80" b="60"/>
+		</vram_bar>
+		<vram_text x="335" y="5" width="90" height="20">
+			<text font="letterica16" r="235" g="235" b="235" align="r" vert_align="c"/>
+		</vram_text>
         <scroll_v x="0" y="0" width="450" height="320"
             right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
             vert_interval="0" always_show_scroll="0"/>
