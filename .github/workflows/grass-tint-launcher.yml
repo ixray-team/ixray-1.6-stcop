@@ -1,0 +1,32 @@
+name: Grass tint - Windows PowerShell launcher
+
+on:
+  push:
+    branches: [feature/grass-terrain-tint]
+    paths:
+      - '.github/workflows/grass-tint-launcher.yml'
+      - 'util/grass-terrain-tint/*.ps1'
+      - 'tests/grass_terrain_tint/test_prepare_runtime.ps1'
+
+permissions:
+  contents: read
+
+jobs:
+  launcher:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate under Windows PowerShell 5.1
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSVersionTable.PSVersion
+          foreach ($path in Get-ChildItem util/grass-terrain-tint/*.ps1) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($path.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count) { throw ($errors | Out-String) }
+          }
+          & tests/grass_terrain_tint/test_prepare_runtime.ps1
