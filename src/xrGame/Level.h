@@ -293,7 +293,8 @@ protected:
 	bool				net_start2				();
 	void				ConnectServer			();
 	void				FinishConnectServer		();
-	xr_unique_ptr<XRayWorkerThread>	AsyncConnectThread;
+	xr_task_group		AsyncConnectTask;
+	bool				IsAsyncConnectStarted	= false;
 	std::atomic<bool>	IsAsyncConnectDone		= false;
 	bool				net_start3				();
 	bool				net_start4				();

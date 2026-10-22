@@ -564,8 +564,8 @@ void CRenderDevice::FrameMove()
 CRenderDevice::CRenderDevice() : 
 	dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr), 
 	//GCThread(XRay::Engine::GCThread, "X-Ray GC Thread"),
-	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread"),
-	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread")
+	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread", EThreadRole::PreRender),
+	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread", EThreadRole::Game)
 {
 	b_is_Active = true;
 	b_is_Ready = false;

@@ -92,7 +92,7 @@ void dxRenderDeviceRender::DestroyHW()
 	CImGuiManager::Instance().Destroy(true);
 }
 
-xr_task_group thm_reload_task;
+xr_task_group thm_reload_task{ ETaskPriority::Background };
 
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight)
 {

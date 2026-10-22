@@ -69,7 +69,7 @@ namespace CDB
 		xr_vector<TRI> tris;
 		xr_vector<Fvector> verts;
 		mutable xr_atomic_u32 status = S_INIT;		// 0=ready, 1=init, 2=building
-		mutable xr_task_group load_task;
+		mutable xr_task_group load_task{ ETaskPriority::Background };
 	public:
 		~MODEL();
 

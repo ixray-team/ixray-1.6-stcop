@@ -2,6 +2,46 @@
 
 #pragma intrinsic(_InterlockedCompareExchange)
 
+unsigned int Platform::GetCpuCores(CpuCore* Cores, unsigned int MaxCount)
+{
+	DWORD Size = 0;
+	GetLogicalProcessorInformationEx(RelationProcessorCore, nullptr, &Size);
+	if (Size == 0)
+	{
+		return 0;
+	}
+
+	xr_vector<u8> Buffer(Size);
+	if (!GetLogicalProcessorInformationEx(RelationProcessorCore, (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)Buffer.data(), &Size))
+	{
+		return 0;
+	}
+
+	unsigned int Count = 0;
+	for (DWORD Offset = 0; Offset < Size && Count < MaxCount;)
+	{
+		const auto* Info = (const SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)(Buffer.data() + Offset);
+		Offset += Info->Size;
+		if (Info->Relationship != RelationProcessorCore || Info->Processor.GroupCount == 0 || Info->Processor.GroupMask[0].Group != 0)
+		{
+			continue;
+		}
+
+		Cores[Count].LogicalMask = Info->Processor.GroupMask[0].Mask;
+		Cores[Count].EfficiencyClass = Info->Processor.EfficiencyClass;
+		Count++;
+	}
+	return Count;
+}
+
+void Platform::SetCurrentThreadAffinity(unsigned long long LogicalMask)
+{
+	if (LogicalMask != 0)
+	{
+		SetThreadAffinityMask(::GetCurrentThread(), DWORD_PTR(LogicalMask));
+	}
+}
+
 u32 Platform::GetCoresCount()
 {
 	bool allocatedBuffer = false;

@@ -63,7 +63,8 @@ struct SoundSourcePoolState
 	xrSRWLock CacheLock;
 	xrCriticalSection DecodeLock;
 	xr_vector<SoundDecodeCommand> DecodeQueue;
-	XRayWorkerThread* DecodeThread = nullptr;
+	xr_task_group DecodeTasks;
+	std::atomic<bool> IsDecoding = false;
 	xr_vector<u32> FreeCacheLines;
 	xr_vector<SoundCacheLine*> CacheChunks;
 	xr_hash_map<xr_string, SoundSourceState> Sources;
@@ -79,7 +80,7 @@ struct OggCommentDecl
 
 xrSRWLock g_SoundSourceLock;
 sound_stats g_SoundStats = {};
-static SoundSourcePoolState GSourcePool = {};
+static SoundSourcePoolState GSourcePool;
 
 static const OggCommentDecl OggCommentDecls[] =
 {
@@ -659,6 +660,8 @@ void Snd_ReleaseSource(const xr_string* Name)
 	GSourcePool.Sources.erase(Found);
 }
 
+static void Snd_StartDecoder();
+
 void Snd_QueueDecode(const xr_string* Name, u32 Position)
 {
 	if (Name->empty())
@@ -681,8 +684,7 @@ void Snd_QueueDecode(const xr_string* Name, u32 Position)
 		GSourcePool.DecodeQueue.push_back({*Name, Position});
 	}
 
-	// One Run() per queued command: the worker pops exactly one command per wakeup
-	GSourcePool.DecodeThread->Run();
+	Snd_StartDecoder();
 }
 
 void Snd_PrefetchSource(const SoundSourceState* Source, const xr_string* Name, u32 Position, bool IsLooped)
@@ -783,14 +785,14 @@ u32 Snd_CopyCached(const SoundSourceState* Source, u32 Position, float** OutData
 	return FramesCount;
 }
 
-static void Snd_DecodeNext()
+static bool Snd_DecodeNext()
 {
 	SoundDecodeCommand Request;
 	{
 		xrCriticalSectionGuard Guard(GSourcePool.DecodeLock);
 		if (GSourcePool.DecodeQueue.empty())
 		{
-			return;
+			return false;
 		}
 
 		Request = GSourcePool.DecodeQueue.front();
@@ -804,6 +806,38 @@ static void Snd_DecodeNext()
 		Snd_UpdateCache(Source, Request.Position);
 		Snd_ReleaseSource(&Request.Name);
 	}
+	return true;
+}
+
+static bool Snd_HasDecodeRequests()
+{
+	xrCriticalSectionGuard Guard(GSourcePool.DecodeLock);
+	return !GSourcePool.DecodeQueue.empty();
+}
+
+static void Snd_StartDecoder()
+{
+	if (GSourcePool.IsDecoding.exchange(true))
+	{
+		return;
+	}
+
+	GSourcePool.DecodeTasks.run([]()
+	{
+		PROF_EVENT("Sound Decoder");
+		while (true)
+		{
+			while (Snd_DecodeNext())
+			{
+			}
+
+			GSourcePool.IsDecoding.store(false);
+			if (!Snd_HasDecodeRequests() || GSourcePool.IsDecoding.exchange(true))
+			{
+				return;
+			}
+		}
+	});
 }
 
 static void Snd_FreeCacheChunks()
@@ -822,12 +856,11 @@ void Snd_InitSources()
 	Snd_FreeCacheChunks();
 	Snd_GrowCacheLines();
 
-	GSourcePool.DecodeThread = new XRayWorkerThread(Snd_DecodeNext, "Sound Decode Thread");
 }
 
 void Snd_ShutdownSources()
 {
-	xr_delete(GSourcePool.DecodeThread);
+	GSourcePool.DecodeTasks.wait();
 
 	GSourcePool.DecodeQueue.clear();
 	for (auto& Source : GSourcePool.Sources)

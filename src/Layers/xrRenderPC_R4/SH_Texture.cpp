@@ -350,7 +350,7 @@ bool CTexture::StartLoading()
 	}
 
 	Preload();
-	LoadTask = xr_make_unique<xr_task_group>();
+	LoadTask = xr_make_unique<xr_task_group>(ETaskPriority::Background);
 	auto LoadLambda = [this]()
 	{
 		PROF_EVENT("CTexture::LoadAsync");

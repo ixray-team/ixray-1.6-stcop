@@ -212,7 +212,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	IReader						*PatrolChunk = file_stream.open_chunk(3);
 	R_ASSERT2					(PatrolChunk,"Spawn version mismatch - REBUILD SPAWN!");
 	CPatrolPathStorage			*Patrols = new CPatrolPathStorage();
-	xr_task_group				PatrolTask;
+	xr_task_group				PatrolTask{ ETaskPriority::Background };
 	PatrolTask.run([PatrolChunk, Patrols]()
 	{
 		PROF_EVENT("Spawns: patrol paths");

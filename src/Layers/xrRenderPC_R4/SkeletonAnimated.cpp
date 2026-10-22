@@ -832,7 +832,6 @@ void CKinematicsAnimated::LoadOmfFiles(const xr_vector<xr_string>& Files, const 
 	{
 		xr_parallel_for(size_t(0), Files.size(), [&](size_t Index)
 		{
-			xrTaskBlockingScope Blocking;
 			LoadFile(Index);
 		});
 	}

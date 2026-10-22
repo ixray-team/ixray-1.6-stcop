@@ -82,7 +82,6 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 					const CModelPool::LoadContext Context = CModelPool::CaptureLoadContext();
 					xr_parallel_for(size_t(0), Chunks.size(), [&](size_t Index)
 					{
-						xrTaskBlockingScope Blocking;
 						CModelPool::LoadContextScope Scope(Context);
 						LoadChild(Index);
 					});

@@ -10,7 +10,7 @@ public:
 	using Callback = std::function<void()>;
 
 public:
-	explicit XRayWorkerThread(Callback InCallback, const char* TN);
+	explicit XRayWorkerThread(Callback InCallback, const char* TN, EThreadRole InRole = EThreadRole::System);
 	~XRayWorkerThread();
 
 	XRayWorkerThread(const XRayWorkerThread&) = delete;
@@ -30,6 +30,7 @@ private:
 	volatile bool MustExit = false;
 
 	xr_string ThreadName;
+	EThreadRole Role = EThreadRole::System;
 	xr_atomic_u32 Counter = 0;
 	ThreadID ThreadHandle = 0;
 };
