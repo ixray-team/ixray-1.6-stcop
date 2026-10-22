@@ -1,8 +1,8 @@
-# On macOS the engine ships several dylibs: a static mimalloc inside xrCore frees memory
-# that other modules allocated through the system allocator, which crashes in mi_free.
+# A static mimalloc inside libxrCore freed memory that other dylibs allocated with the
+# system allocator, and the engine died in mi_free within seconds of startup.
 if(APPLE)
     set(IXRAY_MIMALLOC_AVAILABLE FALSE)
-    message(STATUS "Engine heap: CRT (mimalloc is Windows-only here)")
+    message(STATUS "Engine heap: CRT (mimalloc disabled on macOS)")
     return()
 endif()
 set(IXRAY_MIMALLOC_AVAILABLE TRUE)
