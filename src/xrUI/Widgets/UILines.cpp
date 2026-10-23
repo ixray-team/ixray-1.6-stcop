@@ -284,7 +284,8 @@ void CUILines::ParseText(bool force)
 			{
 				bool b_last_ch = (idx == sub_len - 1);
 
-				if (isspace(sbl.m_text[idx]))
+				bool bSpace = utf16text != nullptr ? iswspace(utf16text[idx]) : isspace((u8)sbl.m_text[idx]);
+				if (bSpace)
 				{
 					has_space_from_prev = false;
 					last_space_idx = idx;
@@ -327,9 +328,10 @@ void CUILines::ParseText(bool force)
 					{
 						buff[0] = '\0';
 						tmp_line.AddSubLine(buff, sbl.m_color);
+						idx = curr_w_pos - 1;
 					}
 				}
-				else
+				if (!bOver)
 				{
 					curr_width += w1;
 				}
