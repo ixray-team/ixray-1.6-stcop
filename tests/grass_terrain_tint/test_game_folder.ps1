@@ -12,6 +12,7 @@ try {
         [IO.Directory]::CreateDirectory((Join-Path $game $path)) | Out-Null
     }
     [IO.File]::WriteAllText((Join-Path $game 'bin\xrEngine.exe'), 'Fixture, never execute')
+    [IO.File]::WriteAllText((Join-Path $game 'bin\xrRender_R4.dll'), 'Fixture renderer')
     [IO.File]::WriteAllText((Join-Path $game 'gamedata\shaders\d3d11\grass_terrain_tint.hlsli'), '// Fixture')
     $fs = Join-Path $game 'fsgame.ltx'
     [IO.File]::WriteAllLines($fs, @(
@@ -65,7 +66,57 @@ try {
     Remove-Item $originalUser
     & $prepare -GameRoot $game
     Check ([IO.File]::ReadAllText($user).Contains('renderer renderer_r4')) 'First install without user.ltx must create a valid test profile'
-    Write-Host 'PASS: legacy filesystem repair, exact backup, custom paths, alias parsing, repeat setup, and missing user.ltx'
+    # Reproduce a downloaded Actions artifact with bin\Release and no explicit root.
+    $releaseGame = Join-Path $fixture 'game [release] with spaces'
+    foreach ($path in @('bin\Release', 'gamedata\shaders\d3d11')) {
+        [IO.Directory]::CreateDirectory((Join-Path $releaseGame $path)) | Out-Null
+    }
+    [IO.File]::WriteAllText((Join-Path $releaseGame 'bin\Release\xrEngine.exe'), 'Fixture, never execute')
+    [IO.File]::WriteAllText((Join-Path $releaseGame 'bin\Release\xrRender_R4.dll'), 'Fixture renderer')
+    [IO.File]::WriteAllText((Join-Path $releaseGame 'gamedata\shaders\d3d11\grass_terrain_tint.hlsli'), '// Fixture')
+    $releaseFs = Join-Path $releaseGame 'fsgame.ltx'
+    [IO.File]::WriteAllLines($releaseFs, @(
+        '$app_data_root$ = true|false||',
+        '$game_data$ = true|false|$fs_root$|gamedata',
+        '$game_config$ = true|false|$game_data$|configs'
+    ))
+    $installedPrepare = Join-Path $releaseGame 'Prepare_GameFolder.ps1'
+    [IO.File]::Copy($prepare, $installedPrepare)
+    Push-Location ([IO.Path]::GetTempPath())
+    try {
+        & $installedPrepare
+        $releaseUser = Join-Path $releaseGame '_appdata_grass_tint_\user.ltx'
+        Check ([IO.File]::ReadAllText($releaseUser).Contains('renderer renderer_r4')) 'Default root and bin\Release must work from another working directory'
+        Check (!(Test-Path -LiteralPath (Join-Path $releaseGame 'bin\xrEngine.exe'))) 'Setup must keep the compiled files in their existing directory'
+        & $installedPrepare -GameRoot ''
+        Check ([IO.File]::ReadAllText($releaseUser).Contains('r__grass_tint 1')) 'An explicitly empty root must safely use the script directory'
+    } finally { Pop-Location }
+    # Empty roots reached through another alias must also avoid Join-Path errors.
+    [IO.File]::WriteAllLines($releaseFs, @(
+        '$empty_profile$ = true|false||',
+        '$app_data_root$ = true|false|$empty_profile$|userdata',
+        '$game_data$ = true|false|$fs_root$|gamedata',
+        '$game_config$ = true|false|$game_data$|configs'
+    ))
+    & $installedPrepare -GameRoot $releaseGame
+    Check ([IO.File]::ReadAllText($releaseUser).Contains('renderer renderer_r4')) 'An empty original profile must not block test startup'
+    if ($env:OS -eq 'Windows_NT') {
+        # Run the real CMD launcher with a harmless CMD stub instead of a game binary.
+        $run = Join-Path $PSScriptRoot '..\..\util\grass-terrain-tint\Run_GrassTint.cmd'
+        $commandText = [IO.File]::ReadAllText($run).Replace('xrEngine.exe', 'xrEngine.cmd')
+        [IO.File]::WriteAllText((Join-Path $releaseGame 'Run_GrassTint.cmd'), $commandText)
+        [IO.File]::WriteAllLines((Join-Path $releaseGame 'bin\Release\xrEngine.cmd'), @(
+            '@echo off',
+            '>engine-args.txt echo %*',
+            'exit /b 0'
+        ))
+        $cmdArguments = '/d /c ""' + (Join-Path $releaseGame 'Run_GrassTint.cmd') + '" -launcher_probe"'
+        $process = Start-Process -FilePath $env:ComSpec -ArgumentList $cmdArguments -WorkingDirectory ([IO.Path]::GetTempPath()) -Wait -PassThru
+        Check ($process.ExitCode -eq 0) 'CMD launcher must complete successfully with bin\Release'
+        $engineArgs = [IO.File]::ReadAllText((Join-Path $releaseGame 'engine-args.txt'))
+        Check ($engineArgs.Trim() -eq '-r4 -fsltx fsgame_grass_tint.ltx -launcher_probe') 'CMD must use the game root and preserve engine arguments'
+    }
+    Write-Host 'PASS: legacy repair, backups, repeat setup, default/empty roots, empty profile aliases, bin\Release and CMD startup'
 } finally {
     if (Test-Path $fixture) { Remove-Item $fixture -Recurse -Force }
 }

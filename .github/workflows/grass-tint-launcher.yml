@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/grass-tint-launcher.yml'
       - 'util/grass-terrain-tint/*.ps1'
+      - 'util/grass-terrain-tint/*.cmd'
       - 'tests/grass_terrain_tint/test_prepare_runtime.ps1'
       - 'tests/grass_terrain_tint/test_game_folder.ps1'
 
