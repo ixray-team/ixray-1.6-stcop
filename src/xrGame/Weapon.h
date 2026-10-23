@@ -788,6 +788,7 @@ protected:
 
 	virtual bool			MovingAnimAllowedNow	() override;
 	virtual void			OnStateSwitch			(u8 S) override;
+	virtual bool			OverlayAllowed			(u8 Base, u8 Host) const override;
 
 	virtual void			switch2_Suicide();
 	virtual void			switch2_SuicideStop();
