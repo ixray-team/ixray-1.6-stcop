@@ -379,6 +379,7 @@ protected:
 
 	virtual shared_str			OverlayIdleAnimation	();
 	virtual void				OnOverlayResume			()				{}
+	virtual bool				OverlayAllowed			(u8 Base, u8 Host) const	{ return false; }
 
 private:
 	struct SHudOverlayBase
@@ -400,6 +401,7 @@ private:
 
 	void						ProcessMotionMarks		(const CMotionDef* Def, u32 StartTm, u32 PrevTm, u32 CurrTm, u8 State);
 	void						UpdateOverlay			();
+	void						StartOverlay			();
 	void						ResumeOverlay			();
 	void						PlayOverlayIdle			();
 
@@ -408,7 +410,6 @@ private:
 
 public:
 	bool						CanStartOverlay			() const;
-	void						StartOverlay			();
 	bool						OverlayActive			() const		{ return Overlay.Active; }
 	u8							AnimState				() const		{ return Overlay.Active && GetState() == Overlay.HostState ? Overlay.State : GetState(); }
 

@@ -1476,6 +1476,12 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 	}
 
 	const bool overlay = rig && ForceAdditive;
+	if (retarget && rig && KeepAdditive && AdditivePlaying)
+	{
+		PlayRetargetBase(Layer ? anm_name_b : shared_str("anm_idle"));
+		return 0;
+	}
+
 	if (retarget && !overlay)
 	{
 		PlayRetargetBase(Layer ? anm_name_b : shared_str("anm_idle"));
@@ -3553,6 +3559,56 @@ static float hud_channel_weight(IKinematicsAnimated* ka, u8 channel)
 	return std::clamp(weight, 0.f, 1.f);
 }
 
+static void HudOverlayHandRelative(IKinematicsAnimated* Model, u16 Ancor, u16 Wrist, const Fmatrix& Base, Fmatrix& Result)
+{
+	const auto Relative = [&](MotionID Motion, float Time, Fmatrix& Out)
+	{
+		Fmatrix AncorMs, WristMs;
+		if (!Model->LL_GetMotionBoneTransform(Motion, Time, Ancor, AncorMs) || !Model->LL_GetMotionBoneTransform(Motion, Time, Wrist, WristMs))
+		{
+			return false;
+		}
+
+		Out.mul_43(Fmatrix().invert(AncorMs), WristMs);
+		return true;
+	};
+
+	Fquaternion Rotation;
+	Rotation.identity();
+	Fvector Position = { 0.f, 0.f, 0.f };
+	float Total = 0.f;
+	for (u32 i = 0, Count = Model->LL_PartBlendsCount(0); i < Count; i++)
+	{
+		const CBlend* B = Model->LL_PartBlend(0, i);
+		Fmatrix Now, Start;
+		if (B == nullptr || B->channel != ADDITIVE_CHANNEL || B->blend_state() == CBlend::eFREE_SLOT || B->blendAmount <= 0.f || B->additive_ref.valid() || !Relative(B->motionID, B->timeCurrent, Now) || !Relative(B->motionID, 0.f, Start))
+		{
+			continue;
+		}
+
+		const Fquaternion Delta = Fquaternion().set(Fmatrix().mul_43(Now, Fmatrix().invert(Start)));
+		const Fvector Shift = Fvector().sub(Now.c, Start.c);
+		const float Weight = B->Weight();
+		Total += Weight;
+		const float Share = Total > EPS ? Weight / Total : 1.f;
+		Rotation.slerp(Fquaternion(Rotation), Delta, Share);
+		Position.lerp(Position, Shift, Share);
+	}
+
+	if (Total <= 0.f)
+	{
+		Result.set(Base);
+		return;
+	}
+
+	const float Amount = std::min(Total, 1.f);
+	Rotation.slerp(Fquaternion().identity(), Fquaternion(Rotation), Amount);
+	Position.mul(Amount);
+
+	Result.mul_43(Fmatrix().rotation(Rotation), Base);
+	Result.c.add(Base.c, Position);
+}
+
 bool player_hud::SprintBaseTransform(u16 bone, Fmatrix& result) const
 {
 	return bone != BI_NONE && m_model->LL_GetBoneTransformMasked(bone, u8(~(1 << LAYER_ADDITIVE_CHANNEL)), result);
@@ -3813,6 +3869,25 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 
 	F.OverlayRight = Overlay && has_right && !ancor_in_right_hand && m_model->LL_GetBoneTransformMasked(RightIkChain[2], OverlayMask, F.OverlayRightBase);
 	F.OverlayLeft = Overlay && has_left && !item->LeftHandFree && m_model->LL_GetBoneTransformMasked(LeftIkChain[2], OverlayMask, F.OverlayLeftBase);
+
+	const auto OverlayHand = [&](u16 Wrist, Fmatrix& Base)
+	{
+		const Fmatrix Relative = Fmatrix().mul_43(Fmatrix().invert(F.AdditiveAncorBase), Base);
+		Fmatrix Moved;
+		HudOverlayHandRelative(m_model, ancor, Wrist, Relative, Moved);
+		Base.mul_43(F.AdditiveAncorBase, Moved);
+	};
+
+	if (F.OverlayRight)
+	{
+		OverlayHand(RightIkChain[2], F.OverlayRightBase);
+	}
+
+	if (F.OverlayLeft)
+	{
+		OverlayHand(LeftIkChain[2], F.OverlayLeftBase);
+	}
+
 	return true;
 }
 

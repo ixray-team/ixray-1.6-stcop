@@ -181,6 +181,11 @@ void CHudItem::SwitchState(u8 S)
 		return;
 	}
 
+	if (S != GetState() && OverlayAllowed(GetState(), S) && CanStartOverlay())
+	{
+		StartOverlay();
+	}
+
 	SetNextState( S );
 	OnStateSwitch(S);
 	if (object().Local() && !object().getDestroy())	

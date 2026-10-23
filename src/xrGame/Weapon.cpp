@@ -4208,6 +4208,52 @@ const float &CWeapon::hit_probability	() const
 
 bool EnableDof = true;
 
+bool CWeapon::OverlayAllowed(u8 Base, u8 Host) const
+{
+	switch (Host)
+	{
+	case eFire:
+	case eFire2:
+	case eReload:
+	case eMisfire:
+	case eSwitchMode:
+	case eEmptyClick:
+	case eLightMis:
+	case eKick:
+	case eMagCheck:
+	case eFiremodeCheck:
+	case eLoadChamber:
+	case eUnloadChamber:
+	case eChamberCheck:
+	case ePump:
+	case eSafemodeSwitch:
+		break;
+	default:
+		return false;
+	}
+
+	switch (Base)
+	{
+	case eShowing:
+	case eBore:
+	case eReload:
+	case eMisfire:
+	case eSwitchMode:
+	case eLightMis:
+	case eKick:
+	case eMagCheck:
+	case eFiremodeCheck:
+	case eLoadChamber:
+	case eUnloadChamber:
+	case eChamberCheck:
+	case ePump:
+	case eSafemodeSwitch:
+		return true;
+	default:
+		return false;
+	}
+}
+
 void CWeapon::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
