@@ -103,7 +103,7 @@ void CActor::PickupModeUpdate()
 			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
 			m_pUsableObject &&
 			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) &&
-			pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
+			pPickup->CanPickItem(CamPivot, m_pObjectWeLookingAt))
 		{
 			m_pUsableObject->use(this);
 			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
@@ -115,7 +115,7 @@ void CActor::PickupModeUpdate()
 			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
 			m_pObjectWeLookingAt->cast_inventory_item()->CanTake() &&
 			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) &&
-			pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
+			pPickup->CanPickItem(CamPivot, m_pObjectWeLookingAt))
 		{
 			if (m_pUsableObject && !m_pUsableObject->nonscript_usable())
 			{
@@ -146,13 +146,12 @@ void CActor::PickupModeUpdate_COD()
 	};
 
 	Fmatrix project, view, transform;
-	view.build_camera_dir(cam_FirstEye()->vPosition, cam_Active()->vDirection, cam_Active()->vNormal);
-	project.build_projection(deg2rad(cam_Active()->f_fov), cam_Active()->f_aspect, Device.fViewportNear, 2.45f);
+	view.build_camera_dir(CamPivot, cam_Active()->vDirection, cam_Active()->vNormal);
+	project.build_projection(deg2rad(cam_Active()->f_fov), cam_Active()->f_aspect, Device.fViewportNear, CHUDTarget::PICKUP_DISTANCE);
 	transform.mul(project, view);
+	CFrustum pickup_frustum; pickup_frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
-	CFrustum frustum;
-	frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
-	g_SpatialSpace->q_frustum(ISpatialResult, 0, ESPATIAL_TYPE::ITEM, frustum);
+	g_SpatialSpace->q_frustum(ISpatialResult, 0, ESPATIAL_TYPE::ITEM, pickup_frustum);
 
 	float maxlen = 1000.0f;
 	CInventoryItem* pNearestItem = nullptr;
@@ -161,39 +160,22 @@ void CActor::PickupModeUpdate_COD()
 	{
 		ISpatial* spatial_ = spatial.get();
 		CObject* O = spatial_->dcast_CObject();
-		if (O == nullptr || O->getDestroy() || O->H_Parent())
+		if (O == nullptr || O->getDestroy() || !O->getVisible() || O->H_Parent() || O->cast_explosive_rocket())
 		{
 			continue;
 		}
 
-		CGameObject* GO = O->cast_game_object();
-		if (GO == nullptr || GO->cast_explosive_rocket())
-		{
-			continue;
-		}
-
-		CInventoryItem* pIItem = GO->cast_inventory_item();
-		if (!pIItem || !pIItem->CanTake())
-		{
-			continue;
-		}
-
-		CMissile* pMissile = GO->cast_missile();
-		if (pMissile != nullptr && !pMissile->Useful())
+		CInventoryItem* pIItem = O->cast_inventory_item();
+		if (!pIItem || !pIItem->CanTake() || !pIItem->Useful())
 		{
 			continue;
 		}
 
 		Fvector A, B, tmp;
-		pIItem->object().Center(A);
+		O->Center(A);
 
-		if (A.distance_to(Position()) > CHUDTarget::PICKUP_DISTANCE)
-		{
-			continue;
-		}
-
-		tmp.sub(A, cam_Active()->vPosition);
-		B.mad(cam_Active()->vPosition, cam_Active()->vDirection, tmp.dotproduct(cam_Active()->vDirection));
+		tmp.sub(A, CamPivot);
+		B.mad(CamPivot, cam_Active()->vDirection, tmp.dotproduct(cam_Active()->vDirection));
 
 		float len = B.distance_to_sqr(A);
 		if (len > 1.0f)
@@ -210,7 +192,7 @@ void CActor::PickupModeUpdate_COD()
 
 	if (pNearestItem != nullptr)
 	{
-		if (!pPickup->CanPickItem(frustum, cam_FirstEye()->vPosition, &pNearestItem->object()) || (HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
+		if (!pPickup->CanPickItem(CamPivot, &pNearestItem->object()) || (HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 		{
 			pNearestItem = nullptr;
 		}
@@ -218,12 +200,9 @@ void CActor::PickupModeUpdate_COD()
 
 	if (pNearestItem != nullptr)
 	{
-		if (CGameObject* pNearestItemGameObject = pNearestItem->cast_game_object())
+		if (Level().m_feel_deny.is_object_denied(pNearestItem->cast_game_object()))
 		{
-			if (Level().m_feel_deny.is_object_denied(pNearestItemGameObject) || !pNearestItemGameObject->getVisible())
-			{
-				pNearestItem = nullptr;
-			}
+			pNearestItem = nullptr;
 		}
 	}
 
