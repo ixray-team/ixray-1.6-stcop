@@ -546,7 +546,10 @@ bool CDetailPathManager::init_build(
 	}
 
 	if (m_start_params.empty())
-		return							(false);
+	{
+		BuildFailureReason = "no available velocities";
+		return false;
+	}
 
 	m_dest_params.clear					();
 	m_dest_params.push_back				(STravelParamsIndex(0.f,PI_MUL_2,u32(-1)));
@@ -872,16 +875,34 @@ void CDetailPathManager::build_smooth_path		(
 
 	xr_vector<STravelParamsIndex>		&finish_params = m_use_dest_orientation ? m_start_params : m_dest_params;
 
-	if (!fill_key_points(level_path,intermediate_index,start,dest)) {
+	if (!fill_key_points(level_path, intermediate_index, start, dest))
+	{
+		BuildFailureReason = "key point selection";
 		if (m_restricted_object)
+		{
 			m_restricted_object->remove_border();
+		}
 		return;
 	}
 
-	postprocess_key_points				(level_path,intermediate_index,start,dest,finish_params,straight_line_index,straight_line_index_negative);
+	const bool CanRetryWithoutOptimization = m_key_points.size() > 2;
+	BuildFailureReason = "trajectory";
+	postprocess_key_points(level_path, intermediate_index, start, dest, finish_params, straight_line_index, straight_line_index_negative);
 
-	build_path_via_key_points			(start,dest,finish_params,straight_line_index,straight_line_index_negative);
+	build_path_via_key_points(start, dest, finish_params, straight_line_index, straight_line_index_negative);
+
+	// Moving key points can leave too little room for the permitted turning radius.
+	// Retry the original points through the same trajectory and restriction checks.
+	if (failed() && CanRetryWithoutOptimization)
+	{
+		if (fill_key_points(level_path, intermediate_index, start, dest))
+		{
+			build_path_via_key_points(start, dest, finish_params, straight_line_index, straight_line_index_negative);
+		}
+	}
 
 	if (m_restricted_object)
+	{
 		m_restricted_object->remove_border();
+	}
 }

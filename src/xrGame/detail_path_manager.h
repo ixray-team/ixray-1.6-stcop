@@ -94,6 +94,9 @@ private:
 private:
 	bool										m_actuality;
 	bool										m_failed;
+	const char* BuildFailureReason = "none";
+	u32 LastFailureLogTime = 0;
+	bool HasLoggedFailure = false;
 	EDetailPathType								m_path_type;
 
 private:
