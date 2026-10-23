@@ -1044,7 +1044,7 @@ void CUIRankingWnd::get_favorite_weapon()
 				m_favorite_weapon_icon->SetIconVisual(VisualName);
 				if (m_favorite_weapon_icon->GetVisual())
 				{
-					Fvector rot = Fvector().set(0, 0, 0);
+					Fvector rot = {};
 					rot = pSettings->read_if_exists<Fvector3>(str, "3d_static_rotate", rot);
 					rot.mul(M_PI / 180.0f);
 					m_favorite_weapon_icon->SetXYZ(rot);
