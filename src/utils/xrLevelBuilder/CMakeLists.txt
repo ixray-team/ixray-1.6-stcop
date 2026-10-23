@@ -213,16 +213,23 @@ if(OPTIX_AVAILABLE)
         COMMENT "Compiling CuTrace.cu to PTX"
         VERBATIM
     )
-    add_custom_target(xrLevelBuilderNvidiaArtifacts
+    set(XlcPublishedPtx "${IXRAY_OUTPUT}/CuTrace.ptx")
+    set(XlcNvidiaNotice "${IXRAY_OUTPUT}/licenses/NVIDIA/README.txt")
+    file(GLOB XlcNvidiaLicenseFiles CONFIGURE_DEPENDS "${IXRAY_NVIDIA_LICENSE_DIR}/*")
+    add_custom_command(
+        OUTPUT "${XlcPublishedPtx}" "${XlcNvidiaNotice}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XlcPtx}" "${IXRAY_OUTPUT}/CuTrace.ptx"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XlcPtx}" "${XlcPublishedPtx}"
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${IXRAY_OUTPUT}/licenses/NVIDIA"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${IXRAY_NVIDIA_LICENSE_DIR}" "${IXRAY_OUTPUT}/licenses/NVIDIA"
-        DEPENDS "${XlcPtx}" "${XlcCudaDriverLibrary}"
+        DEPENDS "${XlcPtx}" ${XlcNvidiaLicenseFiles}
+        COMMENT "Copying NVIDIA runtime artifacts"
         VERBATIM
     )
-    set_target_properties(xrLevelBuilderNvidiaArtifacts PROPERTIES FOLDER "Utils")
-    add_dependencies(xrLevelBuilder xrLevelBuilderNvidiaArtifacts)
+    set(XlcNvidiaArtifacts "${XlcCudaDriverLibrary}" "${XlcPtx}" "${XlcPublishedPtx}" "${XlcNvidiaNotice}")
+    set_source_files_properties(${XlcNvidiaArtifacts} PROPERTIES HEADER_FILE_ONLY TRUE)
+    target_sources(xrLevelBuilder PRIVATE ${XlcNvidiaArtifacts})
+    source_group("xrLC/Light/CUDA" FILES ${XlcNvidiaArtifacts})
 endif()
 
 # Linker list
