@@ -1,6 +1,6 @@
 #pragma once
 class CActor;
-
+class CCameraBase;
 class CPickUpManager
 {
 	CActor* Owner;
@@ -15,8 +15,7 @@ public:
 	CPickUpManager(CActor* Owner);
 	
 	void RenderInfo();
-
-	bool CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item);
+	bool CanPickItem(const Fvector& from, CObject* item);
 
 	IC void SetPickupRadius(float Radius) { PickupInfoRadius = Radius; }
 	IC void SetPickupMode(bool State) { PickupMode = State; }

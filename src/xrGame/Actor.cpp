@@ -2052,7 +2052,7 @@ void CActor::UpdateCL()
 				else if (m_pObjectWeLookingAt &&
 						 m_pObjectWeLookingAt->cast_inventory_item() &&
 						 m_pObjectWeLookingAt->cast_inventory_item()->CanTake() &&
-						 pPickup->CanPickItem(Render->ViewBase, cam_FirstEye()->vPosition, m_pObjectWeLookingAt))
+						 pPickup->CanPickItem(CamPivot, m_pObjectWeLookingAt))
 				{
 					m_sDefaultObjAction = m_sInventoryItemUseAction;
 				}

@@ -90,7 +90,7 @@ void CObject::cNameVisual_set	(shared_str N)
 		NameVisual = N;
 		renderable.visual = Render->model_Create(*N);
 
-		if (IKinematics* new_k = renderable.visual->dcast_PKinematics())
+		if (IKinematics* new_k = renderable.visual ? renderable.visual->dcast_PKinematics() : nullptr)
 		{
 			new_k->SetParentObjectId(ID());
 
