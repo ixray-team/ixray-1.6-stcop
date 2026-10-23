@@ -11,7 +11,8 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 	u32		line_size		= SoundRender->cache.get_linesize();
 	char*	dest			= (char*)SoundRender->cache.get_dataptr	(CAT,line);
 	u32		buf_offs		= (line*line_size) / 2 / m_wformat.nChannels;
-	u32		left_file		= dwBytesTotal - buf_offs;
+	u32		line_offs		= line*line_size;
+	u32		left_file		= (dwBytesTotal > line_offs) ? dwBytesTotal - line_offs : 0;
 	u32		left			= (u32)std::min(left_file,line_size);
 
 	// seek
@@ -65,10 +66,20 @@ void CSoundRender_Source::LoadWave	(const char* pName)
 	fTimeTotal					= s_f_def_source_footer + dwBytesTotal/float(m_wformat.nAvgBytesPerSec);
 
 	vorbis_comment*	ovm		= ov_comment(&m_ovf,-1);
-	if (ovm->comments)
+	const bool bXRayComment = ovm->comments && ovm->comment_lengths[0] >= int(sizeof(u32) + 2 * sizeof(float) + sizeof(u32));
+	if (ovm->comments && !bXRayComment)
+	{
+		Msg("~ Missing X-Ray ogg-comment, defaults used, file: %s", pname.c_str());
+	}
+	else if (ovm->comments)
 	{
 		IReader F			(ovm->user_comments[0],ovm->comment_lengths[0]);
 		u32 vers			= F.r_u32	();
+		const u32 NeedSize	= (vers == 0x0001) ? 16 : (vers == 0x0002) ? 20 : (vers == OGG_COMMENT_VERSION) ? 24 : 0;
+		if (NeedSize == 0 || u32(ovm->comment_lengths[0]) < NeedSize)
+		{
+			vers			= u32(-1);
+		}
         if (vers==0x0001){
 			m_fMinDist		= F.r_float	();
 			m_fMaxDist		= F.r_float	();

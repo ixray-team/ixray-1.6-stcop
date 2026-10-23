@@ -49,6 +49,7 @@ void CSoundRender_Source::i_decompress_fr(OggVorbis_File* ovf, char* _dest, u32 
 //	char		eof = 0;
 	int			current_section;
 	long		TotalRet = 0, ret;
+	u32			ErrorCount = 0;
 
 //.	char		*PCM;
 //.	PCM = new char[left];
@@ -62,12 +63,20 @@ void CSoundRender_Source::i_decompress_fr(OggVorbis_File* ovf, char* _dest, u32 
 		if (ret == 0) break;
 		else if (ret < 0) 		// Error in bitstream
 		{
-		//
+			if (ret != OV_HOLE || ++ErrorCount > 16)
+			{
+				Msg("! SOUND: ogg decode error %d in '%s'", (int)ret, pname.c_str());
+				break;
+			}
 		}
 		else
 		{
 			TotalRet += ret;
 		}
+	}
+	if (TotalRet < (long)left)
+	{
+		Memory.mem_fill(_dest + TotalRet, 0, left - TotalRet);
 	}
 //.	memcpy(_dest, PCM,TotalRet);
 //.	delete [] PCM;
