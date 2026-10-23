@@ -18,6 +18,7 @@ public:
 	DECLARE_XR_DELEGATE(GetItemMoveActionSlot, ENodeMoveActionSlot, Node*);
 	DECLARE_XR_DELEGATE(OnMoveItem, bool, Node*);
 	DECLARE_XR_DELEGATE(OnDrawItemExtra, void, Node&);
+	DECLARE_XR_DELEGATE(OnDrawMenuEditExtra, void, Node*);
 
 private:
 	TOnILItemsFocused OnItemsFocusedEvent;
@@ -38,6 +39,7 @@ private:
 		{ENodeMoveActionSlot::Default, {this, &UIItemListForm::ItemMoveActionDefault}}
 	};
 	TOnDrawItemExtra OnDrawItemExtraEvent;
+	TOnDrawMenuEditExtra OnDrawMenuEditExtraEvent;
 
 public:
 	UIItemListForm();
@@ -148,6 +150,11 @@ public:
 	IC void SetOnDrawItemExtraEvent(TOnDrawItemExtra e)
 	{
 		OnDrawItemExtraEvent = e;
+	}
+	// Extra items at the end of the item context menu
+	IC void SetOnDrawMenuEditExtraEvent(TOnDrawMenuEditExtra e)
+	{
+		OnDrawMenuEditExtraEvent = e;
 	}
 	IC void SetFilter(const char* filter)
 	{

@@ -2,13 +2,13 @@
 #include "stdafx.h"
 
 
-#include "../../Layers/xrRenderPC_R4/PSLibrary.h"
-#include "../../Layers/xrRenderPC_R4/ParticleEffect.h"
-#include "../../Layers/xrRenderPC_R4/ParticleGroup.h"
-#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
+#include "../../../Layers/xrRenderPC_R4/PSLibrary.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleEffect.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleGroup.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 
 #include "ParticleEffectActions.h"
-#include "../xrEProps/FolderLib.h"
+#include "../../xrEProps/FolderLib.h"
 
 xr_token2* actions_token = nullptr;
 

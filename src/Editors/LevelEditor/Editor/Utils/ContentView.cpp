@@ -6,6 +6,7 @@
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
 #include "IconsFontAwesome6.h"
 #include "../../UI/UITextureViewer.h"
 
@@ -1737,6 +1738,19 @@ bool CContentView::DrawContext(const xr_path& Path)
 				}
 
 				EContext.UI->Push(MeshView);
+			}
+
+			if (ImGui::MenuItem("Edit in Particle Editor"))
+			{
+				void* Ptr = ParticlesCache[Path.xstring()];
+				if (Path.extension().string() == ".pg")
+				{
+					UIParticleEditorForm::Open(((PS::CPGDef*)Ptr)->m_Name.c_str());
+				}
+				else
+				{
+					UIParticleEditorForm::Open(((PS::CPEDef*)Ptr)->m_Name.c_str());
+				}
 			}
 		}
 		else if (Path.extension().string() == ".level")

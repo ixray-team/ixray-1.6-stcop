@@ -229,6 +229,10 @@ void CRender::EditorRenderUnlit()
 	Target->phase_scene_prepare();
 	GRHI->ClearTarget(Target->rt_Color->pRT, ClearColor);
 
+	// The unlit image has no distortion pass: keep distortive visuals out of mapDistort,
+	// like the deferred path does before its main calc
+	o.distortion = false;
+
 	r_pmask(true, false, true);
 	phase = PHASE_NORMAL;
 	render_main(true);

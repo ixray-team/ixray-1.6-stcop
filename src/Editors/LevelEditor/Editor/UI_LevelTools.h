@@ -119,6 +119,14 @@ public:
 	virtual CDetailManager*	GetSceneDetails		();
 
 	virtual void		ShowProperties		(const char* focused_item);
+
+	// Particle Editor hooks from the renderer
+	virtual void		PlayCurrent			(int idx = -1) override;
+	virtual void		StopCurrent			(bool bFinishPlaying) override;
+	virtual void		SelectEffect		(const char* name) override;
+	virtual void		RemoveAction		(u32 idx, bool bForced = false) override;
+	virtual void		SetCurrentPG		(PS::CPGDef* P) override;
+	virtual void		EditPAC				(PS::CPACDef* PAC) override;
 	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,true); if (bForced) OnFrame();}
 	virtual bool UpdateCamera();
 private:

@@ -10,6 +10,8 @@
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
 #include "Nodes/UIDialogsView.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
 #include "UI/UIEditLibrary.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
@@ -74,10 +76,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI = new CLevelMain();
 	EContext.UI->RegisterCommands();
 	EContext.UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialogs", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Animations", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap", nullptr});
 	EContext.UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
+	const int ObjectLibraryTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_FIRE " Particles", []()->bool {return PTools != nullptr && PTools->IsModified(); }});
+	const int ParticleEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -144,8 +149,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI->Push(g_DialogEditor, false);
 
 	g_ObjectLibrary = UIEditLibrary::Init();
-	g_ObjectLibrary->TabIndex = (int)EContext.UI->GeneralTabs.size() - 1;
+	g_ObjectLibrary->TabIndex = ObjectLibraryTab;
 	EContext.UI->Push(g_ObjectLibrary, false);
+
+	UIParticleEditorForm::Create(ParticleEditorTab);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
