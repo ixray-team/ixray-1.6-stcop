@@ -1479,21 +1479,18 @@ void CWeapon::UpdateCL()
 	{
 		if (TWeaponNightVision* NightVision = GetComponent<TWeaponNightVision>())
 		{
-			if (!need_renderable())
+			const float Factor = GetNightPPEFactor();
+			if (!need_renderable() && Factor > EPS)
 			{
 				if (!NightVision->IsActive())
 				{
 					NightVision->SwitchNightVision(true);
 				}
-				else
-				{
-					float val = GetNightPPEFactor();
-
-					if (val >= 0.0f)
-					{
-						set_pp_effector_factor2(effWeaponNightVision, val);
-					}
-				}
+				set_pp_effector_factor2(effWeaponNightVision, Factor);
+			}
+			else if (NightVision->IsActive())
+			{
+				NightVision->SwitchNightVision(false);
 			}
 		}
 	}
@@ -4776,6 +4773,28 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 	m_lens_night_brightness.jitter = READ_IF_EXISTS(pSettings, r_float, sect, "jitter_brightness", 1.0f);
 	m_lens_night_brightness.min_factor = READ_IF_EXISTS(pSettings, r_float, sect, "scope_nightvision_min_factor", 0.0f);
 
+	u32 DefaultStep = READ_IF_EXISTS(pSettings, r_u32, sect, "default_brightness_step", m_lens_night_brightness.steps);
+	for (const shared_str& Upgrade : m_upgrades)
+	{
+		const shared_str Parameters = pSettings->r_string(Upgrade, "section");
+		float Value;
+		if (process_if_exists_set(Parameters.c_str(), "max_night_brightness", Value, false))
+		{
+			m_lens_night_brightness.max_value = Value / 3.0f;
+		}
+		if (process_if_exists_set(Parameters.c_str(), "min_night_brightness", Value, false))
+		{
+			m_lens_night_brightness.min_value = Value / 3.0f;
+		}
+		if (process_if_exists_set(Parameters.c_str(), "steps_brightness", m_lens_night_brightness.steps, false))
+		{
+			DefaultStep = m_lens_night_brightness.steps;
+		}
+		process_if_exists_set(Parameters.c_str(), "default_brightness_step", DefaultStep, false);
+		process_if_exists_set(Parameters.c_str(), "jitter_brightness", m_lens_night_brightness.jitter, false);
+		process_if_exists_set(Parameters.c_str(), "scope_nightvision_min_factor", m_lens_night_brightness.min_factor, false);
+	}
+
 	bool b_r2 = !!psDeviceFlags.test(rsR2);
 	b_r2 |= !!psDeviceFlags.test(rsR4);
 
@@ -4786,14 +4805,14 @@ void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
 
 	if (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps)
 	{
-		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0)
+		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0 && m_lens_night_brightness.steps > 0)
 		{
 			m_lens_night_brightness.cur_step = m_lens_night_brightness.lens_night_brightness_saved_step;
 			m_lens_night_brightness.lens_night_brightness_saved_step = -1;
 		}
 		else
 		{
-			m_lens_night_brightness.cur_step = READ_IF_EXISTS(pSettings, r_u32, sect, "default_brightness_step", m_lens_night_brightness.steps);
+			m_lens_night_brightness.cur_step = DefaultStep;
 		}
 
 		SetNightBrightness(m_lens_night_brightness.cur_step, false);
