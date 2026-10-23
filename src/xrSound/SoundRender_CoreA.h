@@ -6,6 +6,7 @@
 #include "OpenALDeviceList.h"
 
 #include <AL/efx.h>
+#include <AL/alext.h>
 
 class SoundVoiceChat;
 
@@ -28,6 +29,18 @@ class CSoundRender_CoreA:
 	ALCdevice* 				pDevice;
     ALCcontext*				pContext;
 	ALDeviceList*			pDeviceList;
+
+	xr_string				DeviceName;
+	LPALCREOPENDEVICESOFT	alcReopenDevice = nullptr;
+	bool					bDisconnectSupported = false;
+	bool					bDeviceLost = false;
+	float					NextDeviceCheckTime = 0.f;
+
+	void					check_device_connection	();
+
+public:
+	std::atomic<bool>		bDefaultDeviceChanged = false;
+private:
 
 	struct SListener{
 		Fvector				position;

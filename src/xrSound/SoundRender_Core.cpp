@@ -86,7 +86,6 @@ void CSoundRender_Core::_initialize(int stage)
 }
 
 extern xr_vector<u8> g_target_temp_data;
-extern xr_vector<u8> g_target_temp_data_16;
 
 void CSoundRender_Core::_clear()
 {
@@ -105,7 +104,6 @@ void CSoundRender_Core::_clear()
 	s_emitters.clear();
 
 	g_target_temp_data.clear();
-	g_target_temp_data_16.clear();
 }
 
 void CSoundRender_Core::stop_emitters()

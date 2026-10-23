@@ -2,9 +2,6 @@
 #include "NotificationClient.h"
 
 #include "../SoundRender_CoreA.h"
-#include "../SoundRender_Emitter.h"
-#include "../SoundRender_TargetA.h"
-#include <AL/al.h>
 
 CNotificationClient::CNotificationClient() :
     m_pEnumerator(nullptr)
@@ -21,8 +18,9 @@ inline bool CNotificationClient::Start()
 {
     // Initialize the COM library for the current thread
     HRESULT ihr = CoInitialize(NULL);
+    m_bComInitialized = SUCCEEDED(ihr);
 
-    if (SUCCEEDED(ihr)) {
+    if (m_bComInitialized) {
         // Create the device enumerator
         IMMDeviceEnumerator* pEnumerator;
         HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
@@ -35,6 +33,7 @@ inline bool CNotificationClient::Start()
         }
 
         CoUninitialize();
+        m_bComInitialized = false;
     }
 
     return false;
@@ -46,10 +45,15 @@ inline void CNotificationClient::Close()
     if (m_pEnumerator) {
         m_pEnumerator->UnregisterEndpointNotificationCallback(this);
         m_pEnumerator->Release();
+        m_pEnumerator = nullptr;
     }
 
     // Uninitialize the COM library for the current thread
-    CoUninitialize();
+    if (m_bComInitialized)
+    {
+        CoUninitialize();
+        m_bComInitialized = false;
+    }
 }
 
 inline STDMETHODIMP_(HRESULT __stdcall) CNotificationClient::OnDeviceAdded(LPCWSTR pwstrDeviceId) 
@@ -63,42 +67,9 @@ inline STDMETHODIMP_(HRESULT __stdcall) CNotificationClient::OnDeviceAdded(LPCWS
 
 inline STDMETHODIMP_(HRESULT __stdcall) CNotificationClient::OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDeviceId)
 {
-    // Default audio device has been changed.
-    ALDeviceDesc deviceDesc = SoundRenderA->pDeviceList->GetDeviceDesc(snd_device_id);
-
-    xr_string DeviceName = deviceDesc.name;
-    if (DeviceName == "Default Device")
+    if (flow == eRender && role == eConsole && SoundRenderA != nullptr)
     {
-        SoundRenderA->bReady = false;
-        SoundRenderA->pause_emitters(true);
-
-        ALCdevice* OldDevice = SoundRenderA->pDevice;
-        ALCcontext* OldContect = SoundRenderA->pContext;
-
-        for (u32 it = 0; it < SoundRenderA->s_targets.size(); it++)
-        {
-            CSoundRender_TargetA* AlTarget = (CSoundRender_TargetA*)SoundRenderA->s_targets[it];
-            AlTarget->_destroy();
-        }
-
-        SoundRenderA->DestroyEffect();
-        SoundRenderA->pDevice = alcOpenDevice(deviceDesc.name_al);
-        SoundRenderA->pContext = alcCreateContext(SoundRenderA->pDevice, nullptr);
-
-        alcMakeContextCurrent(SoundRenderA->pContext);
-        alcDestroyContext(OldContect);
-
-        //alcCloseDevice(OldDevice);
-
-        for (u32 it = 0; it < SoundRenderA->s_targets.size(); it++)
-        {
-            CSoundRender_TargetA* AlTarget = (CSoundRender_TargetA*)((CSoundRender_Emitter*)SoundRenderA->s_targets[it]);
-            AlTarget->_initialize();
-        }
-
-        SoundRenderA->LoadEffect();
-        SoundRenderA->pause_emitters(false);
-        SoundRenderA->bReady = true;
+        SoundRenderA->bDefaultDeviceChanged = true;
     }
 
     return S_OK;
