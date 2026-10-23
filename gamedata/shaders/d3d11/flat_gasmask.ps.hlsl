@@ -4,6 +4,7 @@
 
 uniform float4 mask_control;
 uniform float4 visor_rain;
+uniform float4 screen_res;
 Texture2D s_droplets;
 Texture2D s_mask_nm_1;
 Texture2D s_mask_nm_2;

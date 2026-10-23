@@ -2,6 +2,7 @@
 #include "shared\VisorDrops.hlsli"
 
 uniform float4 visor_rain;
+uniform float4 screen_res;
 
 float4 main(PSInputFullscreen I) : SV_Target
 {
