@@ -33,7 +33,7 @@ monster_aura::~monster_aura ()
 	remove_pp_effector();
 }
 
-float   monster_aura::override_if_debug(const char* var_name, float const value) const
+float   monster_aura::override_if_debug([[maybe_unused]] const char* var_name, float const value) const
 {
 #ifdef DEBUG
 	string256 full_var_name;
@@ -41,7 +41,6 @@ float   monster_aura::override_if_debug(const char* var_name, float const value)
 
 	return m_object->override_if_debug(full_var_name, value);
 #else // DEBUG
-	(void)var_name;							// prevent warning
 	return value;
 #endif // DEBUG
 }
