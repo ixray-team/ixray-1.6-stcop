@@ -554,6 +554,11 @@ static class cl_rain_params : public RHIShaderConstant::Setup {
 
 	virtual void setup(RHIShaderConstant* C)
 	{
+		if (g_pGameLevel == nullptr)
+		{
+			return;
+		}
+
 #ifdef _EDITOR
 		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
@@ -648,6 +653,11 @@ static class cl_m_timearrow : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
 	{
+		if (g_pGameLevel == nullptr)
+		{
+			return;
+		}
+
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
@@ -668,6 +678,11 @@ static class cl_m_timearrow2 : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
 	{
+		if (g_pGameLevel == nullptr)
+		{
+			return;
+		}
+
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
@@ -685,6 +700,10 @@ static class cl_digiclock : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
 	{
+		if (g_pGameLevel == nullptr)
+		{
+			return;
+		}
 		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		split_time(g_pGameLevel->GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 
