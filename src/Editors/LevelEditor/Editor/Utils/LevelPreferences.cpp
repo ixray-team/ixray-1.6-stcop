@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "LevelPreferences.h"
 #include "ContentView.h"
+#include "../../ParticleEditor/UIParticleEditorForm.h"
 
 #include "../xrECore/Editor/UILogForm.h"
 
@@ -61,6 +62,54 @@ const nlohmann::json* GetObjectSafe(const nlohmann::json& j, const char* key)
 	return &(*it);
 }
 
+void CLevelPreferences::LoadContentView(const nlohmann::json& Data, CContentView* View)
+{
+	GetSafe(Data, "CurPath", View->CurrentDir);
+
+	if (!std::filesystem::exists(xr_path(View->CurrentDir)))
+	{
+		View->CurrentDir = View->RootDir;
+	}
+
+	GetSafe(Data, "ViewMode", View->ViewMode);
+	GetSafe(Data, "ISEPath", View->VirtualPath);
+	GetSafe(Data, "IsSpawnElement", View->IsSpawnElement);
+	GetSafe(Data, "IsParticles", View->IsParticles);
+
+	if (View->IsSpawnElement)
+	{
+		View->RescanISEDirectory(View->VirtualPath);
+	}
+	else if (View->IsParticles)
+	{
+		// The particles folder is virtual: its listing comes from the particle library
+		View->RescanParticlesDirectory(View->VirtualPath);
+	}
+}
+
+void CLevelPreferences::SaveContentView(nlohmann::json& Data, const CContentView* View) const
+{
+	Data["CurPath"] = View->CurrentDir;
+	Data["ISEPath"] = View->VirtualPath;
+	Data["IsSpawnElement"] = View->IsSpawnElement;
+	Data["IsParticles"] = View->IsParticles;
+	Data["ViewMode"] = View->ViewMode;
+}
+
+void CLevelPreferences::LoadParticleBrowser(CContentView* View)
+{
+	if (ParticleBrowserSettings.empty())
+	{
+		return;
+	}
+
+	const nlohmann::json Data = nlohmann::json::parse(ParticleBrowserSettings.c_str(), nullptr, false);
+	if (Data.is_object())
+	{
+		LoadContentView(Data, View);
+	}
+}
+
 void CLevelPreferences::Load()
 {
 	if (JSONData.is_discarded() || JSONData.is_null())
@@ -104,21 +153,18 @@ void CLevelPreferences::Load()
 
 	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
 	{
-		GetSafe(*cb, "CurPath", GContentView->CurrentDir);
+		LoadContentView(*cb, GContentView);
+	}
 
-		if (!std::filesystem::exists(xr_path(GContentView->CurrentDir)))
-		{
-			GContentView->CurrentDir = GContentView->RootDir;
-		}
-
-		GetSafe(*cb, "ViewMode", GContentView->ViewMode);
-		GetSafe(*cb, "ISEPath", GContentView->VirtualPath);
-		GetSafe(*cb, "IsSpawnElement", GContentView->IsSpawnElement);
-
-		if (GContentView->IsSpawnElement)
-		{
-			GContentView->RescanISEDirectory(GContentView->VirtualPath);
-		}
+	// The Particles tab browser is created after the preferences are loaded
+	ParticleBrowserSettings.clear();
+	if (const auto* pcb = GetObjectSafe(JSONData, "ParticleContentBrowser"))
+	{
+		ParticleBrowserSettings = pcb->dump().c_str();
+	}
+	if (CContentView* ParticleBrowser = UIParticleEditorForm::GetContentView())
+	{
+		LoadParticleBrowser(ParticleBrowser);
 	}
 
 	if (const auto* pie = GetObjectSafe(JSONData, "PIE"))
@@ -182,10 +228,15 @@ void CLevelPreferences::Save()
 	JSONData["ExperimentalLOD"]["UseMULODs"] = UseMULODs;
 	JSONData["ExperimentalLOD"]["DisableBillboardLOD"] = DisableBillboardLOD;
 
-	JSONData["ContentBrowser"]["CurPath"] = GContentView->CurrentDir;
-	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
-	JSONData["ContentBrowser"]["IsSpawnElement"] = GContentView->IsSpawnElement;
-	JSONData["ContentBrowser"]["ViewMode"] = GContentView->ViewMode;
+	SaveContentView(JSONData["ContentBrowser"], GContentView);
+	if (CContentView* ParticleBrowser = UIParticleEditorForm::GetContentView())
+	{
+		SaveContentView(JSONData["ParticleContentBrowser"], ParticleBrowser);
+	}
+	else if (!ParticleBrowserSettings.empty())
+	{
+		JSONData["ParticleContentBrowser"] = nlohmann::json::parse(ParticleBrowserSettings.c_str(), nullptr, false);
+	}
 	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
 	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;

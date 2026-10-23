@@ -2,6 +2,8 @@
 #include "../../xrEUI/imgui_IconMenuItem.h"
 
 #include "../Nodes/UIMacroView.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
 #include "../Editor/Utils/GitIntegration.h"
 #include "UIGitWindow.h"
@@ -116,9 +118,31 @@ void UIMainMenuForm::Draw()
 		ImVec2 cp;
 		if (ImGui::BeginMenu("File")){
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
-			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
-			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
-			DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
+			if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+			{
+				if (ImGui::MenuItemI("Open", ICON_FA_FILE_IMPORT, *GetCommandShortcat(COMMAND_LOAD)))
+				{
+					Particles->LoadXR();
+				}
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					Particles->SaveCurrent();
+				}
+				if (ImGui::MenuItemI("Save All", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Particles->Save(false);
+				}
+				if (ImGui::MenuItemI("Save .xr", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Particles->Save(true);
+				}
+			}
+			else
+			{
+				DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
+				DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
+				DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
+			}
 			ImGui::Separator();
 
 			DrawMenuItemI("Open Selection", ICON_FA_FILE_IMPORT, COMMAND_LOAD_SELECTION);
@@ -170,9 +194,34 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::Separator();
 
+			if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+			{
+				if (ImGui::MenuItemI("Reload", ICON_FA_ARROWS_ROTATE, ""))
+				{
+					if (Particles->IfModified())
+					{
+						Particles->Reload();
+					}
+				}
+				if (ImGui::MenuItemI("Compact", ICON_FA_COMPRESS, ""))
+				{
+					Particles->Compact(0, 0);
+				}
+			}
+
 			if (ImGui::BeginMenuI("Validate##list", ICON_FA_CIRCLE_CHECK))
 			{
-				DrawMenuItemI("Validate", ICON_FA_CIRCLE_CHECK, COMMAND_VALIDATE_SCENE);
+				if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+				{
+					if (ImGui::MenuItemI("Validate", ICON_FA_CIRCLE_CHECK, ""))
+					{
+						Particles->Validate(true);
+					}
+				}
+				else
+				{
+					DrawMenuItemI("Validate", ICON_FA_CIRCLE_CHECK, COMMAND_VALIDATE_SCENE);
+				}
 				ImGui::Separator();
 				if (ImGui::BeginMenuI("Make Missing LODs", ICON_FA_IMAGES, !EPrefs->UseMULODs))
 				{
@@ -491,8 +540,6 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Windows"))
 		{
-			//DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
-
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
 			{
 				static CUIMacroView* View = nullptr;
@@ -503,6 +550,11 @@ void UIMainMenuForm::Draw()
 				}
 
 				View->Show(true);
+			}
+
+			if (ImGui::MenuItemI("Particle Editor", ICON_FA_FIRE, ""))
+			{
+				UIParticleEditorForm::Open();
 			}
 
 			ImGui::Separator();

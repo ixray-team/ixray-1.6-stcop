@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 
-#include "../../Include/xrRender/DrawUtils.h"
-#include "../../Editors/Public/PropertiesListHelper.h"
+#include "../../../Include/xrRender/DrawUtils.h"
+#include "../../../Editors/Public/PropertiesListHelper.h"
 #include "ParticleEffectActions.h"
 
 using namespace PAPI;

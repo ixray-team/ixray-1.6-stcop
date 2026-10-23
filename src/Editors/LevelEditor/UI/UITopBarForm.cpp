@@ -3,6 +3,8 @@
 #include <shellapi.h>
 #include "IconsFontAwesome6.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
 
 UITopBarForm::UITopBarForm()
 {
@@ -108,7 +110,22 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
+				CParticleTool* Particles = UIParticleEditorForm::GetActiveTool();
+				if (Particles != nullptr)
+				{
+					// Particles tab: the button plays the edited particle instead of the level
+					auto PlayParticle = [Particles]() { Particles->PlayCurrent(); };
+					auto StopParticle = [Particles]() { Particles->StopCurrent(false); };
+					if (Particles->IsPlaying())
+					{
+						IMGUI_HINT_BUTTON("StopParticle", m_tTerminated, "Stop Particle", ImDrawFlags_RoundCornersLeft, StopParticle);
+					}
+					else
+					{
+						IMGUI_HINT_BUTTON("PlayParticle", Icons["play_in_editor"], "Play Particle", ImDrawFlags_RoundCornersLeft, PlayParticle);
+					}
+				}
+				else if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
 				{
 					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ImDrawFlags_RoundCornersLeft, ClickTerminated);
 				}
@@ -251,10 +268,22 @@ void UITopBarForm::ClickNew()
 }
 void UITopBarForm::ClickOpen()
 {
+	if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+	{
+		Particles->LoadXR();
+		return;
+	}
+
 	ExecCommand(COMMAND_LOAD);
 }
 void UITopBarForm::ClickSave()
 {
+	if (UIParticleEditorForm::IsActive())
+	{
+		UIParticleEditorForm::SaveCurrent();
+		return;
+	}
+
 	ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()));
 }
 void UITopBarForm::ClickReloadConfigs()

@@ -358,6 +358,12 @@ void UILightingForm::Update()
 
 	if (!Form->IsClosed())
 	{
+		// Lighting belongs to the scene workspace only
+		if (EContext.UI->ActiveTabIndex != 0)
+		{
+			return;
+		}
+
 		ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_FirstUseEver, { 0.5f, 0.5f });
 		ImGui::SetNextWindowSize({ 380.f, 520.f }, ImGuiCond_FirstUseEver);
 		// Stable ID: the dock layout is saved by it
