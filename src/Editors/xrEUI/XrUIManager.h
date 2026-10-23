@@ -80,6 +80,8 @@ public:
 
 	bool IsEnableInput = true;
 	int ActiveTabIndex = 0;
+	// Tab the top bar selects on its next draw (-1 = none)
+	int RequestedTabIndex = -1;
 	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
 	void* SearchIcon = nullptr;

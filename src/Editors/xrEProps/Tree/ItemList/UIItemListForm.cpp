@@ -534,6 +534,11 @@ void UIItemListForm::DrawMenuEdit()
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		}
 
+		if (!OnDrawMenuEditExtraEvent.empty())
+		{
+			OnDrawMenuEditExtraEvent(N);
+		}
+
 		ImGui::EndPopup();
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 3));

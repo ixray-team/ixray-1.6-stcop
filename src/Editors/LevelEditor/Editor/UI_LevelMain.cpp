@@ -7,6 +7,8 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)EContext.UI;
@@ -163,6 +165,12 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 	if (!Scene->locked())
 	{
+		// Open shortcut on the Particles tab loads a particles .xr
+		if (!p1.IsString() && UIParticleEditorForm::IsActive())
+		{
+			return PTools->LoadXR();
+		}
+
 		if (!p1.IsString())
 		{
 			xr_string temp_fn = LTools->m_LastFileName.c_str();
@@ -269,6 +277,12 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		{
 			if (p1.IsInteger())
 			{
+				// Save shortcut on the Particles tab saves the current particle
+				if (UIParticleEditorForm::IsActive())
+				{
+					return UIParticleEditorForm::SaveCurrent();
+				}
+
 				return ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()), 0);
 			}
 

@@ -4,13 +4,14 @@
 
 
 #include "UI_ParticleTools.h"
+#include "UI_PACEditorForm.h"
 #include "IconsFontAwesome6.h"
 
-#include "../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
-#include "../../xrEngine/ObjectAnimator.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
+#include "../../../xrEngine/ObjectAnimator.h"
 #include "ParticleEffectActions.h"
 //------------------------------------------------------------------------------
-CParticleTool*	PTools=(CParticleTool*)Tools;
+CParticleTool*	PTools = nullptr;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 //static Fvector zero_vec={0.f,0.f,0.f};
@@ -79,6 +80,7 @@ bool CParticleTool::OnCreate()
 		ListProp->SetVerifyItemMove({this, &CParticleTool::VerifyParticleMoveItem});
 		ListProp->SetGetItemMoveActionSlot({this, &CParticleTool::GetItemMoveActionSlot});
 		ListProp->SetOnMoveItemEvent(ENodeMoveActionSlot::First, {this, &CParticleTool::ActionItemMoveAction}); // Move action
+		ListProp->SetOnDrawMenuEditExtraEvent({this, &CParticleTool::OnDrawListMenu});
 	};
 	ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
 	ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Groups)]);
@@ -88,6 +90,8 @@ bool CParticleTool::OnCreate()
 	m_ParentAnimator= new CObjectAnimator();
 
 	m_ObjectProps = new UIPropertiesForm();
+	// Small fixed list: without the search box it sizes to its rows instead of filling the window
+	m_ObjectProps->DisableSearch(true);
 	FillObjectPrefs();
 	return true;
 }
@@ -118,7 +122,7 @@ bool CParticleTool::IfModified()
 	if (m_bModified){
 		int mr = ELog.DlgMsg(mtConfirmation, mbYes|mbNo|mbCancel, "The particles has been modified.\nDo you want to save your changes?");
 		switch(mr){
-		case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; else m_bModified = false; break;
+		case mrYes: if (!Save(false)) return false; else m_bModified = false; break;
 		case mrNo: m_bModified = false; break;
 		case mrCancel: return false;
 		}
@@ -137,9 +141,9 @@ void CParticleTool::OnItemModified()
 	Modified();
 	if (m_LibPED)
 		CompileEffect				();
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	UpdateProperties();
 }
-#include "../../xrEngine/IGame_Persistent.h"
+#include "../../../xrEngine/IGame_Persistent.h"
 
 void CParticleTool::RenderEnvironment()
 {
@@ -488,6 +492,79 @@ void CParticleTool::Reload()
 	UpdateProperties(true);
 }
 
+template <class T>
+static bool SaveParticleFile(T* Def, const char* Name, const char* Ext)
+{
+	if (Def == nullptr)
+	{
+		return false;
+	}
+
+	if (!Def->Validate(true))
+	{
+		ELog.DlgMsg(mtError, "Particle '%s' is invalid and can't be saved.", Name);
+		return false;
+	}
+
+	string_path FileName;
+	FS.update_path(FileName, "$game_particles$", Name);
+	xr_strcat(FileName, Ext);
+	FS.file_delete(FileName);
+
+	CInifile Ini(FileName, false, false, false);
+	Def->Save2(Ini);
+	Ini.save_as(FileName);
+	Msg("* Particle saved: %s", FileName);
+	return true;
+}
+
+bool CParticleTool::SaveCurrent()
+{
+	VERIFY(m_bReady);
+
+	switch (m_EditMode)
+	{
+	case emEffect:
+	case emAction:
+		return m_LibPED != nullptr && SaveParticleFile(m_LibPED, m_LibPED->m_Name.c_str(), ".pe");
+	case emGroup:
+	case emEffectSlot:
+		return m_LibPGD != nullptr && SaveParticleFile(m_LibPGD, m_LibPGD->m_Name.c_str(), ".pg");
+	case emAnimCurve:
+		return m_LibAC != nullptr && SaveParticleFile(m_LibAC, m_LibAC->getName(), ".pac");
+	default:
+		ELog.DlgMsg(mtInformation, "Select a particle to save.");
+		return false;
+	}
+}
+
+bool CParticleTool::LoadXR()
+{
+	xr_string temp_fn;
+	if (!EFS.GetOpenName("$game_data$", temp_fn, false, NULL, 0))
+	{
+		return false;
+	}
+
+	string_path gamedata = {};
+	FS.update_path(gamedata, "$game_data$", "");
+	xr_path temp = gamedata;
+	size_t Pos = temp_fn.find(temp.xfilename(), 0);
+
+	if (Pos == xr_string::npos)
+	{
+		Msg("Incorrect Path!!! [%s]", temp_fn.c_str());
+		return false;
+	}
+
+	xr_string NormalPath = temp_fn.substr(Pos);
+	RImplementation.PSLibrary.OnDestroy();
+	RImplementation.PSLibrary.Load(NormalPath.c_str());
+	ResetCurrent();
+	UpdateProperties();
+	return true;
+}
+
 void CheckEffect(const xr_string& group_path, const shared_str& eff_full_name, xr_string& res_name, bool bRenameOnly)
 {
 	res_name						= group_path + "effects\\" + EFS.ExtractFileName(eff_full_name.c_str());
@@ -518,39 +595,36 @@ void CheckEffect(const xr_string& group_path, const shared_str& eff_full_name, x
 
 CCommandVar CParticleTool::CreateGroupFromSelected(CCommandVar p1, CCommandVar p2)
 {
-	/*PS::CPEDef* curr = m_LibPED;
-	if(!curr)
+	PS::CPEDef* Effect = m_LibPED;
+	if (Effect == nullptr)
 	{
-		ELog.DlgMsg	(mtError,"Select Effect first.");
+		ELog.DlgMsg(mtError, "Select Effect first.");
 		return false;
 	}
-	const shared_str& eff_name		= curr->m_Name;
-	PS::CPGDef* pg					= AppendPG(0);
 
-	xr_string grp_name				= eff_name.c_str();
-	pg->m_Name						= grp_name.c_str();
+	// The effect keeps its name, so the groups that already use it stay valid
+	xr_string GroupName = Effect->m_Name.c_str();
+	GroupName += "_group";
+	for (int Index = 1; FindPG(GroupName.c_str()) != nullptr; ++Index)
+	{
+		GroupName = Effect->m_Name.c_str();
+		GroupName += "_group_" + xr_string::ToString(Index);
+	}
 
-	pg->m_fTimeLimit				= 0.0f;
-	PS::CPGDef::SEffect* eff 		= xr_new<PS::CPGDef::SEffect>();
-	pg->m_Effects.push_back	   		(eff);
-	eff->m_EffectName				= eff_name;
+	PS::CPGDef* Group = RImplementation.PSLibrary.AppendPGD(nullptr);
+	Group->m_Name = GroupName.c_str();
+	Group->m_fTimeLimit = 0.0f;
 
-	eff->m_Flags.set				(PS::CPGDef::SEffect::flEnabled,true);
-	eff->m_Time0					= 0.0f;
-	eff->m_Time1					= 0.0f;
+	PS::CPGDef::SEffect* GroupEffect = new PS::CPGDef::SEffect();
+	GroupEffect->m_EffectName = Effect->m_Name;
+	GroupEffect->m_Flags.set(PS::CPGDef::SEffect::flEnabled, true);
+	GroupEffect->m_Time0 = 0.0f;
+	GroupEffect->m_Time1 = 0.0f;
+	Group->m_Effects.push_back(GroupEffect);
 
-
-	xr_string						tmp;
-	xr_string group_path 			= EFS.ExtractFilePath(grp_name.c_str());
-	CheckEffect						(group_path, eff->m_EffectName, tmp, true);
-
-	eff->m_EffectName				= tmp.c_str();
-
-	curr->m_Name					= tmp.c_str();
-	
-	ExecCommand						(COMMAND_UPDATE_PROPERTIES);
-	
-	m_PList->SelectItem				(grp_name.c_str());*/
+	Modified();
+	UpdateProperties(true);
+	SelectListItem(0, GroupName.c_str(), true, false, true);
    
 	return 							true;
 }
@@ -832,79 +906,212 @@ void CParticleTool::SetCurrentPG(PS::CPGDef* P, PS::CPGDef::SEffect* Ef)
 	}
 }
 
-void CParticleTool::DrawReferenceList()
+static void DrawReferenceRow(const char* Name, const char* Role, bool Missing, int RowID)
 {
-	switch (m_EditMode)
+	ImGui::PushID(RowID);
+	ImGui::TableNextRow();
+
+	ImGui::TableNextColumn();
+	if (Missing)
 	{
-	case emEffectSlot:
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 90, 90, 255));
+		ImGui::Text(ICON_FA_TRIANGLE_EXCLAMATION " %s", Name);
+		ImGui::PopStyleColor();
+		if (ImGui::IsItemHovered())
 		{
-			R_ASSERT(false);
-			break;
-		}
-	case emGroup:
-		{
-			if (m_EditPG->GetDefinition())
-			{
-				xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it = m_EditPG->GetDefinition()->m_Effects.begin();
-				xr_vector<PS::CPGDef::SEffect*>::const_iterator pe_it_e = m_EditPG->GetDefinition()->m_Effects.end();
-				for (; pe_it != pe_it_e; ++pe_it)
-				{
-					ImGui::Text((*pe_it)->m_EffectName.c_str()? (*pe_it)->m_EffectName.c_str() :0);
-				}
-				if (m_EditPG->GetDefinition()->m_Flags.test(PS::CPGDef::SEffect::flOnPlayChild))
-					ImGui::Text((*pe_it)->m_OnPlayChildName.c_str());
-				if (m_EditPG->GetDefinition()->m_Flags.test(PS::CPGDef::SEffect::flOnBirthChild))
-					ImGui::Text((*pe_it)->m_OnBirthChildName.c_str());
-				if (m_EditPG->GetDefinition()->m_Flags.test(PS::CPGDef::SEffect::flOnDeadChild))
-					ImGui::Text((*pe_it)->m_OnDeadChildName.c_str());
-			}
-			break;
-		}
-	case emAction:
-		{
-			R_ASSERT(false);
-			break;
-		}
-	case emEffect:
-		{
-			if (m_EditPE->GetDefinition())
-			{
-				PS::PGDIt G = RImplementation.PSLibrary.FirstPGD();
-				PS::PGDIt G_e = RImplementation.PSLibrary.LastPGD();
-				for (; G != G_e; ++G)
-				{
-					PS::CPGDef* def = (*G);
-					PS::CPGDef::EffectIt pe_it = def->m_Effects.begin();
-					PS::CPGDef::EffectIt pe_it_e = def->m_Effects.end();
-					for (; pe_it != pe_it_e; ++pe_it)
-					{
-						if ((*pe_it)->m_EffectName == m_EditPE->Name())
-						{
-							ImGui::Text(def->m_Name.c_str());
-						}
-						else if ((*pe_it)->m_OnPlayChildName == m_EditPE->Name())
-						{
-							ImGui::Text(def->m_Name.c_str());
-						}
-						else if ((*pe_it)->m_OnBirthChildName == m_EditPE->Name())
-						{
-							ImGui::Text(def->m_Name.c_str());
-						}
-						else if ((*pe_it)->m_OnDeadChildName == m_EditPE->Name())
-						{
-							ImGui::Text(def->m_Name.c_str());
-						}
-					}
-				}
-			}
-			break;
-		}
-	case emAnimCurve:
-		{
-			R_ASSERT(false);
-			break;
+			ImGui::SetTooltip("Particle not found in the library");
 		}
 	}
+	else if (ImGui::Selectable(Name, false, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap | ImGuiSelectableFlags_AllowDoubleClick))
+	{
+		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			PTools->SelectEffect(Name);
+		}
+	}
+
+	ImGui::TableNextColumn();
+	ImGui::TextDisabled("%s", Role);
+
+	ImGui::TableNextColumn();
+	if (!Missing && ImGui::SmallButton(ICON_FA_ARROW_RIGHT " Open"))
+	{
+		PTools->SelectEffect(Name);
+	}
+	ImGui::PopID();
+}
+
+static void DrawLevelReferences(const char* ParticleName)
+{
+	ImGui::SeparatorText(ICON_FA_MOUNTAIN " Level objects");
+
+	if (Scene == nullptr || !Scene->valid() || Scene->GetOTool(OBJCLASS_PS) == nullptr)
+	{
+		ImGui::TextDisabled("No level loaded");
+		return;
+	}
+
+	xr_vector<EParticlesObject*> Users;
+	for (CCustomObject* Object : Scene->ListObj(OBJCLASS_PS))
+	{
+		EParticlesObject* Particles = static_cast<EParticlesObject*>(Object);
+		const char* RefName = Particles->GetReferenceName();
+		if (RefName != nullptr && 0 == stricmp(RefName, ParticleName))
+		{
+			Users.push_back(Particles);
+		}
+	}
+
+	if (Users.empty())
+	{
+		ImGui::TextDisabled("Not used on the level");
+		return;
+	}
+
+	if (ImGui::SmallButton(ICON_FA_OBJECT_GROUP " Select all in scene"))
+	{
+		Scene->SelectObjects(false);
+		for (EParticlesObject* Object : Users)
+		{
+			Object->Select(true);
+		}
+		Scene->ZoomExtents(OBJCLASS_PS, true);
+		EContext.UI->RequestedTabIndex = 0;
+	}
+
+	if (ImGui::BeginTable("##LevelReferences", 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_Resizable))
+	{
+		ImGui::TableSetupColumn("Object", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("##Actions", ImGuiTableColumnFlags_WidthFixed);
+
+		int RowID = 0;
+		for (EParticlesObject* Object : Users)
+		{
+			ImGui::PushID(RowID++);
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			ImGui::Text(ICON_FA_FIRE " %s", Object->GetName());
+			ImGui::TableNextColumn();
+			if (ImGui::SmallButton(ICON_FA_CROSSHAIRS " Select"))
+			{
+				Scene->SelectObjects(false);
+				Object->Select(true);
+				Scene->ZoomExtents(OBJCLASS_PS, true);
+				EContext.UI->RequestedTabIndex = 0;
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndTable();
+	}
+}
+
+void CParticleTool::DrawReferenceList()
+{
+	static string256 Filter = {};
+
+	const bool IsEffect = (m_EditMode == emEffect || m_EditMode == emAction) && m_EditPE->GetDefinition() != nullptr;
+	const bool IsGroup = (m_EditMode == emGroup || m_EditMode == emEffectSlot) && m_EditPG->GetDefinition() != nullptr;
+	if (!IsEffect && !IsGroup)
+	{
+		ImGui::TextDisabled("Select a particle effect or group");
+		return;
+	}
+
+	const char* CurrentName = IsEffect ? m_EditPE->Name().c_str() : m_EditPG->Name().c_str();
+	ImGui::Text("%s %s", IsEffect ? ICON_FA_FIRE : ICON_FA_LAYER_GROUP, CurrentName);
+
+	ImGui::PushItemWidth(-1);
+	ImGui::InputTextWithHint("##ReferenceFilter", ICON_FA_MAGNIFYING_GLASS " Filter...", Filter, sizeof(Filter));
+	ImGui::PopItemWidth();
+
+	auto PassFilter = [](const char* Name)
+	{
+		if (Filter[0] == 0)
+		{
+			return true;
+		}
+		xr_string Lower = Name;
+		xr_string FilterLower = Filter;
+		xr_strlwr(Lower);
+		xr_strlwr(FilterLower);
+		return Lower.Contains(FilterLower);
+	};
+
+	ImGui::SeparatorText(IsEffect ? ICON_FA_LAYER_GROUP " Used by groups" : ICON_FA_FIRE " Uses effects");
+
+	const ImGuiTableFlags TableFlags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_Resizable;
+	u32 Count = 0;
+	if (ImGui::BeginTable("##ParticleReferences", 3, TableFlags))
+	{
+		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Role", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn("##Actions", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableHeadersRow();
+
+		int RowID = 0;
+		if (IsEffect)
+		{
+			const shared_str& EffectName = m_EditPE->Name();
+			for (PS::PGDIt G = RImplementation.PSLibrary.FirstPGD(); G != RImplementation.PSLibrary.LastPGD(); ++G)
+			{
+				PS::CPGDef* Group = *G;
+				xr_string Roles;
+				for (PS::CPGDef::SEffect* Slot : Group->m_Effects)
+				{
+					auto AddRole = [&Roles](const char* Role)
+					{
+						if (!Roles.Contains(Role))
+						{
+							Roles += Roles.empty() ? "" : ", ";
+							Roles += Role;
+						}
+					};
+					if (Slot->m_EffectName == EffectName) AddRole("Effect");
+					if (Slot->m_OnPlayChildName == EffectName) AddRole("On Play");
+					if (Slot->m_OnBirthChildName == EffectName) AddRole("On Birth");
+					if (Slot->m_OnDeadChildName == EffectName) AddRole("On Dead");
+				}
+
+				if (!Roles.empty() && PassFilter(Group->m_Name.c_str()))
+				{
+					DrawReferenceRow(Group->m_Name.c_str(), Roles.c_str(), false, RowID++);
+					++Count;
+				}
+			}
+		}
+		else
+		{
+			int SlotIndex = 0;
+			for (PS::CPGDef::SEffect* Slot : m_EditPG->GetDefinition()->m_Effects)
+			{
+				++SlotIndex;
+				auto AddRow = [&](const shared_str& Name, const char* Role)
+				{
+					if (Name.size() == 0 || !PassFilter(Name.c_str()))
+					{
+						return;
+					}
+					string64 RoleText;
+					xr_sprintf(RoleText, "#%d %s", SlotIndex, Role);
+					DrawReferenceRow(Name.c_str(), RoleText, FindPE(Name.c_str()) == nullptr, RowID++);
+					++Count;
+				};
+
+				AddRow(Slot->m_EffectName, Slot->m_Flags.is(PS::CPGDef::SEffect::flEnabled) ? "Effect" : "Effect (off)");
+				if (Slot->m_Flags.is(PS::CPGDef::SEffect::flOnPlayChild)) AddRow(Slot->m_OnPlayChildName, "On Play");
+				if (Slot->m_Flags.is(PS::CPGDef::SEffect::flOnBirthChild)) AddRow(Slot->m_OnBirthChildName, "On Birth");
+				if (Slot->m_Flags.is(PS::CPGDef::SEffect::flOnDeadChild)) AddRow(Slot->m_OnDeadChildName, "On Dead");
+			}
+		}
+		ImGui::EndTable();
+	}
+
+	if (Count == 0)
+	{
+		ImGui::TextDisabled(IsEffect ? "Not used by any group" : "No effects");
+	}
+
+	DrawLevelReferences(CurrentName);
 }
 
 PS::CPACDef* CParticleTool::FindPAC(const char* name)
@@ -918,7 +1125,7 @@ PS::CPACDef* CParticleTool::AppendPAC(PS::CPACDef* src, const char* path)
 	PS::CPACDef* S 		= RImplementation.PSLibrary.AppendPACD(src);
 	S->setName(path);
 
-	ExecCommand			(COMMAND_UPDATE_PROPERTIES,true);
+	UpdateProperties(true);
 	SelectListItem(0, path,true,false,true);
 	return S;
 }
@@ -1036,6 +1243,26 @@ void CParticleTool::StopCurrent(bool bFinishPlaying)
 	VERIFY(m_bReady);
 	m_EditPE->Stop(bFinishPlaying);
 	m_EditPG->Stop(bFinishPlaying);
+}
+
+void CParticleTool::OnDrawListMenu(UIItemListForm::Node* Node)
+{
+	if (m_EditMode != emEffect || m_LibPED == nullptr)
+	{
+		return;
+	}
+
+	ImGui::Separator();
+	if (ImGui::MenuItem(ICON_FA_LAYER_GROUP " Create Group From Effect"))
+	{
+		CreateGroupFromSelected(0, 0);
+		ImGui::CloseCurrentPopup();
+	}
+}
+
+bool CParticleTool::IsPlaying() const
+{
+	return (m_EditPE != nullptr && m_EditPE->IsPlaying()) || (m_EditPG != nullptr && m_EditPG->IsPlaying());
 }
 
 void CParticleTool::SelectEffect(const char* name)
@@ -1212,7 +1439,7 @@ PS::CPEDef* CParticleTool::AppendPE(PS::CPEDef* src, const char* path)
 	VERIFY(m_bReady);
 	PS::CPEDef* S = RImplementation.PSLibrary.AppendPED(src);
 	S->m_Name = path;
-	ExecCommand(COMMAND_UPDATE_PROPERTIES, true);
+	UpdateProperties(true);
 	SelectListItem(0, path, true, false, true);
 	return S;
 }
@@ -1223,12 +1450,12 @@ PS::CPGDef*	CParticleTool::AppendPG(PS::CPGDef* src, const char* path)
 	PS::CPGDef* S 		= RImplementation.PSLibrary.AppendPGD(src);
 	S->m_Name			= path;
 
-	ExecCommand			(COMMAND_UPDATE_PROPERTIES,true);
+	UpdateProperties(true);
 	SelectListItem(0, path,true,false,true);
 	return S;
 }
 
-#include "../xrECore/Editor/EditMesh.h"
+#include "../../xrECore/Editor/EditMesh.h"
 
 bool CParticleTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
 {

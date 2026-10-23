@@ -3,9 +3,9 @@
 #define UI_ParticleToolsH
 
 //. ?#include "ParticleSystem.h"
-#include "../../Layers/xrRenderPC_R4/ParticleEffect.h"
-#include "../../Layers/xrRenderPC_R4/ParticleGroup.h"
-#include "../../xrEngine/pure.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleEffect.h"
+#include "../../../Layers/xrRenderPC_R4/ParticleGroup.h"
+#include "../../../xrEngine/pure.h"
 #include "ParticleEffectActions.h"
 
 // refs
@@ -208,18 +208,10 @@ public:
     
     CCommandVar			Compact				(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CreateGroupFromSelected(CCommandVar p1, CCommandVar p2);
-    // commands
-    CCommandVar			CommandSelectPreviewObj	(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandEditPreviewProps	(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSave				(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSaveXR			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandLoadXR			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandSaveBackup		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandReload			(CCommandVar p1, CCommandVar p2);
-    CCommandVar			CommandValidate			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandClear			(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandPlayCurrent		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandStopCurrent		(CCommandVar p1, CCommandVar p2);
+	bool				LoadXR				();
+	bool				SaveCurrent			();
+	bool				IsPlaying			() const;
+	void				OnDrawListMenu		(UIItemListForm::Node* Node);
     void OnDrawUI();
 };
 #define SYSTEM_PREFIX 	"Systems"
