@@ -659,10 +659,6 @@ void CWeaponMagazined::FireStart()
 
 				inherited::FireStart();
 				//R_ASSERT(parent);
-				if (CurrentState != eFire && IsActor && CanStartOverlay())
-				{
-					StartOverlay();
-				}
 				SwitchState(eFire);
 			}
 		}
