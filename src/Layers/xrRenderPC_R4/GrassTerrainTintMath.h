@@ -5,10 +5,12 @@
 
 namespace GrassTerrainTint
 {
-inline unsigned MapResolution(int Requested)
+inline unsigned MapResolution(int Requested, unsigned Source = 2048, float Scale = 1.0f)
 {
 	unsigned Result = 256;
-	const unsigned Limit = static_cast<unsigned>(std::clamp(Requested, 256, 2048));
+	const float Base = Requested > 0 ? float(Requested) : float(Source ? Source : 2048);
+	const float Multiplier = std::isfinite(Scale) ? std::clamp(Scale, 1.0f, 4.0f) : 1.0f;
+	const unsigned Limit = static_cast<unsigned>(std::ceil(std::clamp(Base * Multiplier, 256.0f, 8192.0f)));
 	while (Result < Limit)
 	{
 		Result *= 2;

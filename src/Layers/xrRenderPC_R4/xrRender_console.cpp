@@ -894,6 +894,13 @@ public:
 	void Execute(const char*) override { RImplementation.GrassTerrainTint.RequestRebuild(); }
 };
 
+class GrassTerrainTintInfoCommand final : public IConsole_Command
+{
+public:
+	GrassTerrainTintInfoCommand(const char* Name) : IConsole_Command(Name) { bEmptyArgsHandled = true; }
+	void Execute(const char*) override { RImplementation.GrassTerrainTint.PrintInfo(); }
+};
+
 // Manual bake: regenerate the precomputed fields from the current console settings
 // and persist them to disk immediately. Useful when tweaking r__detail_* via console
 // and wanting the files updated without waiting for the next level load.
@@ -1235,11 +1242,18 @@ RENDER_API void		xrRender_initconsole	()
 	CMD2(GrassTerrainTintBoolean, "r__grass_tint", &g_GrassTerrainTintEnabled);
 	CMD2(GrassTerrainTintBoolean, "r__grass_tint_green_only", &g_GrassTerrainTintGreenOnly);
 	CMD4(CCC_Float, "r__grass_tint_strength", &g_GrassTerrainTintStrength, 0.0f, 1.0f);
+	CMD4(CCC_Integer, "r__grass_tint_mode", &g_GrassTerrainTintMode, 0, 1);
+	CMD4(CCC_Float, "r__grass_tint_brightness", &g_GrassTerrainTintBrightness, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r__grass_tint_saturation", &g_GrassTerrainTintSaturation, 0.0f, 2.0f);
+	CMD4(CCC_Float, "r__grass_tint_contrast", &g_GrassTerrainTintContrast, 0.25f, 2.0f);
+	CMD4(CCC_Float, "r__grass_tint_tips", &g_GrassTerrainTintTips, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r__grass_tint_resolution_scale", &g_GrassTerrainTintResolutionScale, 1.0f, 4.0f);
 	CMD4(CCC_Float, "r__grass_tint_radius", &g_GrassTerrainTintRadius, 0.0f, 32.0f);
 	CMD4(CCC_Float, "r__grass_tint_height", &g_GrassTerrainTintHeightLimit, 0.1f, 10.0f);
-	CMD4(CCC_Integer, "r__grass_tint_resolution", &g_GrassTerrainTintResolution, 256, 2048);
+	CMD4(CCC_Integer, "r__grass_tint_resolution", &g_GrassTerrainTintResolution, 0, 8192);
 	CMD4(CCC_Integer, "r__grass_tint_debug", &g_GrassTerrainTintDebug, 0, 4);
 	CMD1(GrassTerrainTintRebuildCommand, "r__grass_tint_rebuild");
+	CMD1(GrassTerrainTintInfoCommand, "r__grass_tint_info");
 	CMD1(CCC_DetailLayersForceBake, "r__detail_bake_force");
 	CMD1(CCC_DetailLayersForceLoad, "r__detail_bake_force_load");
 

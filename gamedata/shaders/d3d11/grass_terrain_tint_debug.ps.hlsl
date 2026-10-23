@@ -1,4 +1,5 @@
 #include "common.hlsli"
+#include "grass_terrain_tint_color.hlsli"
 
 uniform float4 grass_tint_bounds;
 Texture2D s_grass_tint_color;
@@ -17,6 +18,6 @@ float4 main(VSOutputFullscreen I) : SV_Target
     float4 color = s_grass_tint_color.SampleLevel(smp_rtlinear, uv, 0.0f);
     float checker = fmod(floor(uv.x * 64.0f) + floor(uv.y * 64.0f), 2.0f);
     float3 background = lerp(0.08f, 0.14f, checker).xxx;
-    float3 albedo = LinearToGamma(max(color.rgb / max(color.a, 0.0001f), 0.0f));
+    float3 albedo = GrassTerrainTintToGamma(color.rgb / max(color.a, 0.0001f));
     return float4(lerp(background, albedo, saturate(color.a)), 1.0f);
 }

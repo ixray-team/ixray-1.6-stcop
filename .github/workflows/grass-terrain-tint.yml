@@ -9,6 +9,8 @@ on:
       - 'tests/grass_terrain_tint/**'
       - 'util/grass-terrain-tint/*.ps1'
       - 'util/grass-terrain-tint/*.cmd'
+      - 'util/grass-terrain-tint/*.py'
+      - 'util/grass-terrain-tint/*.ltx'
       - '.github/workflows/grass-terrain-tint.yml'
   workflow_dispatch:
 
@@ -77,6 +79,16 @@ jobs:
           cmake --build build/grass-tint-checks --config Release --target grass_tint_math_tests
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           ctest --test-dir build/grass-tint-checks -C Release -E grass_tint_gpu --output-on-failure
+      - name: Package ready game update
+        run: |
+          python util/grass-terrain-tint/package_update.py --renderer build/x64/Engine-Windows/bin/Release/xrRender_R4.dll --output build/COP_Detail_terrain_tint_Update_v0.2.zip --commit ${{ github.sha }}
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Upload ready game update
+        uses: actions/upload-artifact@v7
+        with:
+          name: COP_Detail_terrain_tint_Update_v0.2
+          path: build/COP_Detail_terrain_tint_Update_v0.2.zip
+          if-no-files-found: error
       - name: Upload ready test files
         uses: actions/upload-artifact@v7
         with:

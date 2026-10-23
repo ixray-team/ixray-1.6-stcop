@@ -27,7 +27,8 @@ public:
 		case 0: Value = RImplementation.GrassTerrainTint.GetBounds(); break;
 		case 1: Value = RImplementation.GrassTerrainTint.GetHeightRange(); break;
 		case 2: Value = RImplementation.GrassTerrainTint.GetParameters(); break;
-		default: Value = RImplementation.GrassTerrainTint.GetOptions(); break;
+		case 3: Value = RImplementation.GrassTerrainTint.GetOptions(); break;
+		default: Value = RImplementation.GrassTerrainTint.GetAdjustment(); break;
 		}
 		RCache.set_c(Constant, Value.x, Value.y, Value.z, Value.w);
 	}
@@ -38,6 +39,7 @@ static Binding Bounds(0);
 static Binding HeightRange(1);
 static Binding Parameters(2);
 static Binding Options(3);
+static Binding Adjustment(4);
 }
 
 // matrices
@@ -794,6 +796,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("grass_tint_height_range", &GrassTerrainTintBindings::HeightRange);
 	r_Constant("grass_tint_params", &GrassTerrainTintBindings::Parameters);
 	r_Constant("grass_tint_options", &GrassTerrainTintBindings::Options);
+	r_Constant("grass_tint_adjustment", &GrassTerrainTintBindings::Adjustment);
 	r_Constant("screen_res", &binder_screen_res);
 	r_Constant("def_aref", &binder_def_aref);
 

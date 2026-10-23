@@ -1,9 +1,12 @@
 #ifndef GRASS_TERRAIN_TINT_INCLUDED
 #define GRASS_TERRAIN_TINT_INCLUDED
 
+#include "grass_terrain_tint_color.hlsli"
+
 uniform float4 grass_tint_bounds;
 uniform float4 grass_tint_params;
 uniform float4 grass_tint_options;
+uniform float4 grass_tint_adjustment;
 
 Texture2D s_grass_tint_color : register(t1);
 Texture2D s_grass_tint_height : register(t2);
@@ -30,7 +33,7 @@ float4 GrassTerrainTintSample(float3 root, float localHeight)
         return float4(1.0f, 1.0f, 1.0f, -3.0f);
     }
     float4 color = s_grass_tint_color.SampleLevel(smp_rtlinear, uv, grass_tint_params.y);
-    float weight = lerp(1.0f, 0.55f, saturate(localHeight));
+    float weight = lerp(1.0f, saturate(grass_tint_options.z), saturate(localHeight));
     return float4(color.rgb / max(color.a, 0.0001f), weight);
 }
 
@@ -55,7 +58,7 @@ float3 GrassTerrainTintApply(float3 baseColor, float4 tint)
     }
     if (grass_tint_params.w > 0.5f && grass_tint_params.w < 1.5f)
     {
-        return LinearToGamma(max(tint.rgb, 0.0f));
+        return GrassTerrainTintToGamma(tint.rgb);
     }
     float strength = saturate(grass_tint_params.x * tint.a);
     if (grass_tint_options.x > 0.5f)
@@ -70,10 +73,26 @@ float3 GrassTerrainTintApply(float3 baseColor, float4 tint)
     {
         return baseColor;
     }
-    float3 chroma = clamp(tint.rgb / luminance, 0.45f, 1.8f);
-    float3 original = GammaToLinear(max(baseColor, 0.0f));
-    float3 colored = original * chroma;
-    colored *= dot(original, luma) / max(dot(colored, luma), 0.0001f);
-    return LinearToGamma(lerp(original, colored, strength));
+    float3 original = GrassTerrainTintToLinear(baseColor);
+    float3 ground = max(lerp(luminance.xxx, tint.rgb, grass_tint_adjustment.y), 0.0f);
+    float3 chroma = ground / max(dot(ground, luma), 0.0001f);
+    float originalLuminance = dot(original, luma);
+    float3 colored;
+    if (grass_tint_options.w > 0.5f)
+    {
+        // Replace the source hue, retaining the blade's grayscale texture and relief.
+        // A multiplicative tint cannot turn strongly green grass into yellow dry grass.
+        float relief = originalLuminance * pow(max(originalLuminance / 0.18f, 0.0001f), grass_tint_adjustment.z - 1.0f);
+        colored = chroma * relief;
+    }
+    else
+    {
+        // The original soft tint remains available for subtle color grading.
+        colored = original * clamp(chroma, 0.45f, 1.8f);
+        colored *= originalLuminance / max(dot(colored, luma), 0.0001f);
+    }
+    float brightness = lerp(1.0f, clamp(luminance / 0.18f, 0.25f, 3.0f), grass_tint_adjustment.x);
+    colored *= brightness;
+    return GrassTerrainTintToGamma(lerp(original, colored, strength));
 }
 #endif

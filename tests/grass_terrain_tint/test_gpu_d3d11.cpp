@@ -55,6 +55,21 @@ constexpr u32 Resolution = 16;
 constexpr Vector BaseColor = {0.15f, 0.5f, 0.1f, 1.0f};
 constexpr Vector GroundColor = {0.8f, 0.2f, 0.1f, 1.0f};
 
+struct TintSettings
+{
+	Vector Base = BaseColor;
+	Vector Adjustment = {0, 1, 1, 0};
+	float Tips = 1;
+	float LocalHeight = 0;
+	int BlendMode = 1;
+	bool GreenOnly = false;
+};
+
+float Luminance(const Vector& Color)
+{
+	return 0.2126f * std::pow(Color[0], 2.2f) + 0.7152f * std::pow(Color[1], 2.2f) + 0.0722f * std::pow(Color[2], 2.2f);
+}
+
 class WarpFixture
 {
 public:
@@ -72,18 +87,19 @@ public:
 #include "common.hlsli"
 #include "grass_terrain_tint.hlsli"
 uniform float4 probe_root;
+uniform float4 probe_base;
 struct ProbeOutput { float4 position : SV_POSITION; float4 tint : TEXCOORD0; };
 ProbeOutput ProbeVS(uint Id : SV_VertexID)
 {
     ProbeOutput O;
     float2 UV = float2((Id << 1) & 2, Id & 2);
     O.position = float4(UV * float2(2, -2) + float2(-1, 1), 0, 1);
-    O.tint = GrassTerrainTintSample(probe_root.xyz, 0);
+    O.tint = GrassTerrainTintSample(probe_root.xyz, probe_root.w);
     return O;
 }
 float4 ProbePS(ProbeOutput I) : SV_Target
 {
-    return float4(GrassTerrainTintApply(float3(0.15, 0.5, 0.1), I.tint), 1);
+    return float4(GrassTerrainTintApply(probe_base.rgb, I.tint), 1);
 }
 )";
 		ProbeVSCode = Compile("grass_terrain_tint_capture.vs.hlsl", ProbeSource, "ProbeVS", "vs_5_0");
@@ -91,7 +107,7 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		Verify(Device->CreateVertexShader(ProbeVSCode->GetBufferPointer(), ProbeVSCode->GetBufferSize(), nullptr, &ProbeVS), "Create probe VS");
 		Verify(Device->CreatePixelShader(ProbePSCode->GetBufferPointer(), ProbePSCode->GetBufferSize(), nullptr, &ProbePS), "Create probe PS");
 
-		Color = Texture(Resolution, Resolution, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, nullptr, true);
+		Color = Texture(Resolution, Resolution, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, nullptr, true);
 		Height = Texture(Resolution, Resolution, DXGI_FORMAT_R32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		Depth = Texture(Resolution, Resolution, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
 		Output = Texture(1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET);
@@ -166,11 +182,14 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		}
 	}
 
-	void Capture(bool CorrectViewport)
+	void Capture(bool CorrectViewport, const Vector& Ground = GroundColor)
 	{
 		ID3D11ShaderResourceView* Empty[4] = {};
 		Context->VSSetShaderResources(0, 4, Empty);
 		Context->PSSetShaderResources(0, 4, Empty);
+		ComPtr<ID3D11Resource> Material;
+		MaterialViews[0]->GetResource(&Material);
+		Context->UpdateSubresource(Material.Get(), 0, nullptr, Ground.data(), sizeof(Vector), 0);
 		ID3D11RenderTargetView* Targets[] = {ColorTarget.Get(), HeightTarget.Get()};
 		Context->OMSetRenderTargets(2, Targets, DepthTarget.Get());
 		Context->OMSetDepthStencilState(CaptureDepth.Get(), 0);
@@ -227,7 +246,7 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		return Error;
 	}
 
-	Vector Probe(int Mode, Vector Root, float Strength = 1, bool Enabled = true)
+	Vector Probe(int Mode, Vector Root, float Strength = 1, bool Enabled = true, const TintSettings& Settings = {})
 	{
 		ID3D11RenderTargetView* Target = OutputTarget.Get();
 		Context->OMSetRenderTargets(1, &Target, nullptr);
@@ -236,9 +255,11 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		Context->RSSetViewports(1, &Viewport);
 		Context->VSSetShader(ProbeVS.Get(), nullptr, 0);
 		Context->PSSetShader(ProbePS.Get(), nullptr, 0);
+		Root[3] = Settings.LocalHeight;
 		const Values Constants = {{"grass_tint_bounds", {-1, -1, 0.5f, 0.5f}},
 			{"grass_tint_params", {Strength, 0, 0.01f, float(Mode)}},
-			{"grass_tint_options", {0, Enabled ? 1.0f : 0.0f, 0, 0}}, {"probe_root", Root}};
+			{"grass_tint_options", {Settings.GreenOnly ? 1.0f : 0.0f, Enabled ? 1.0f : 0.0f, Settings.Tips, float(Settings.BlendMode)}},
+			{"grass_tint_adjustment", Settings.Adjustment}, {"probe_root", Root}, {"probe_base", Settings.Base}};
 		SetConstants(ProbeVSCode.Get(), true, Constants);
 		SetConstants(ProbePSCode.Get(), false, Constants);
 		Resource(ProbeVSCode.Get(), true, "s_grass_tint_color", ColorView.Get());
@@ -449,6 +470,51 @@ int main(int Count, char** Arguments)
 		Check(Near(Fixture.Probe(1, Root), GroundColor), "Tint debug must read the captured terrain color");
 		Check(Near(Fixture.Probe(0, Root, 0), BaseColor), "Strength zero must keep the original color");
 		Check(!Near(Fixture.Probe(0, Root), BaseColor, 0.03f), "Strength one must visibly change the grass color");
+		const Vector Sand = {0.78f, 0.64f, 0.3f, 1};
+		const Vector Green = {0.14f, 0.48f, 0.08f, 1};
+		Fixture.Capture(true, Sand);
+		const Vector DryGrass = Fixture.Probe(0, Root);
+		Check(DryGrass[0] > DryGrass[1] && DryGrass[1] > DryGrass[2] * 1.5f, "Green source grass on sand must turn yellow-brown");
+		Check(std::abs(Luminance(DryGrass) - Luminance(BaseColor)) < 0.006f, "Brightness zero must retain the blade's luminance");
+		TintSettings Settings;
+		Fixture.Capture(true, Green);
+		const Vector SameGrassOnGreen = Fixture.Probe(0, Root);
+		Check(SameGrassOnGreen[1] > SameGrassOnGreen[0] * 1.8f && !Near(SameGrassOnGreen, DryGrass, 0.12f), "The same grass texture must follow green and sandy terrain with a strong hue change");
+		Settings.Base = {0.6f, 0.44f, 0.2f, 1};
+		const Vector LiveGrass = Fixture.Probe(0, Root, 1, true, Settings);
+		Check(LiveGrass[1] > LiveGrass[0] * 1.8f && LiveGrass[1] > LiveGrass[2] * 1.8f, "Dry source grass on green terrain must turn green");
+		Check(!Near(LiveGrass, DryGrass, 0.12f), "The same shader must produce a clearly different terrain hue");
+		Settings.Base = BaseColor;
+		Settings.Adjustment[1] = 0;
+		const Vector Grey = Fixture.Probe(0, Root, 1, true, Settings);
+		Check(Near(Grey, {Grey[0], Grey[0], Grey[0], 1}), "Saturation zero must produce a neutral result");
+		Settings.Adjustment[1] = 1;
+		Settings.Tips = 0;
+		Settings.LocalHeight = 1;
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), BaseColor), "Tip influence zero must keep the original tips");
+		Settings.Tips = 1;
+		const Vector FullTip = Fixture.Probe(0, Root, 1, true, Settings);
+		Settings.LocalHeight = 0;
+		Check(Near(FullTip, Fixture.Probe(0, Root, 1, true, Settings)), "Full tip influence must match the root hue");
+		Settings.Base = {0.6f, 0.44f, 0.2f, 1};
+		Settings.GreenOnly = true;
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), Settings.Base), "Optional green-only mask must protect non-green pixels");
+		Settings = {};
+		Fixture.Capture(true, Sand);
+		Settings.Adjustment[0] = 1;
+		const Vector Bright = Fixture.Probe(0, Root, 1, true, Settings);
+		Check(Luminance(Bright) > Luminance(DryGrass) * 1.2f, "Brightness control must transfer the bright sand luminance");
+		Settings.Adjustment[0] = 0;
+		Settings.Base = {0.08f, 0.2f, 0.04f, 1};
+		const Vector FineRelief = Fixture.Probe(0, Root, 1, true, Settings);
+		Check(Luminance(FineRelief) < Luminance(DryGrass) * 0.5f, "Dark blade texture detail must remain dark after recoloring");
+		Settings.Adjustment[2] = 2;
+		Check(Luminance(Fixture.Probe(0, Root, 1, true, Settings)) < Luminance(FineRelief), "Contrast must control the retained blade relief");
+		Settings.Base = {0, 0, 0, 1};
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), {0, 0, 0, 1}), "Black blade detail must remain black and finite");
+		Settings = {};
+		Settings.BlendMode = 0;
+		Check(!Near(Fixture.Probe(0, Root, 1, true, Settings), DryGrass, 0.03f), "Legacy soft tint must remain distinct from full hue transfer");
 		Check(Near(Fixture.Probe(4, Root), {0, 1, 0, 1}), "Valid terrain lookup must be green");
 		Vector Above = Root;
 		Above[1] += 2;
@@ -458,7 +524,7 @@ int main(int Count, char** Arguments)
 		Check(Near(Fixture.Probe(4, Root, 1, false), {0.25f, 0.25f, 0.25f, 1}), "Disabled tint must be grey");
 		Fixture.ClearCoverage();
 		Check(Near(Fixture.Probe(4, Root), {1, 0, 0, 1}), "Missing coverage must be red");
-		std::cout << "PASS: D3D11 WARP executed real capture/sample/apply HLSL; old viewport reproduced; corrected world heights, tint strength, and diagnostics verified\n";
+		std::cout << "PASS: real D3D11 capture and tint; green grass on sand becomes dry yellow, dry grass on green terrain becomes green; brightness, saturation, contrast, tips, source detail, legacy mode and diagnostics verified\n";
 		return 0;
 	}
 	catch (const std::exception& Error)

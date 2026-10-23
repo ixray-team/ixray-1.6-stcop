@@ -25,6 +25,12 @@ if(POWERSHELL_EXECUTABLE)
     add_test(NAME grass_tint_runtime_setup COMMAND
         "${POWERSHELL_EXECUTABLE}" -NoProfile -ExecutionPolicy Bypass -File
         "${CMAKE_CURRENT_SOURCE_DIR}/test_prepare_runtime.ps1")
+    add_test(NAME grass_tint_game_folder COMMAND
+        "${POWERSHELL_EXECUTABLE}" -NoProfile -ExecutionPolicy Bypass -File
+        "${CMAKE_CURRENT_SOURCE_DIR}/test_game_folder.ps1")
+    add_test(NAME grass_tint_update_install COMMAND
+        "${POWERSHELL_EXECUTABLE}" -NoProfile -ExecutionPolicy Bypass -File
+        "${CMAKE_CURRENT_SOURCE_DIR}/test_install_update.ps1")
 endif()
 
 find_package(Python3 COMPONENTS Interpreter QUIET)

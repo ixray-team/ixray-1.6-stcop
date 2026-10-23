@@ -9,6 +9,7 @@ on:
       - 'util/grass-terrain-tint/*.cmd'
       - 'tests/grass_terrain_tint/test_prepare_runtime.ps1'
       - 'tests/grass_terrain_tint/test_game_folder.ps1'
+      - 'tests/grass_terrain_tint/test_install_update.ps1'
 
 permissions:
   contents: read
@@ -33,3 +34,4 @@ jobs:
           }
           & tests/grass_terrain_tint/test_prepare_runtime.ps1
           & tests/grass_terrain_tint/test_game_folder.ps1
+          & tests/grass_terrain_tint/test_install_update.ps1

@@ -93,9 +93,10 @@ if (!(Test-Path -LiteralPath $user)) {
         $settings = @([IO.File]::ReadAllLines((Join-Path $originalProfile 'user.ltx'), $encoding))
     }
     $settings = @($settings | Where-Object { $_ -notmatch '^\s*(renderer\s|r__grass_tint\S*\s)' })
-    $settings += @('renderer renderer_r4', 'r__grass_tint 1', 'r__grass_tint_strength 0.2',
-        'r__grass_tint_radius 2', 'r__grass_tint_height 1.5', 'r__grass_tint_resolution 1024',
-        'r__grass_tint_green_only 1', 'r__grass_tint_debug 0')
+    $settings += @('renderer renderer_r4', 'r__grass_tint 1', 'r__grass_tint_mode 1', 'r__grass_tint_strength 0.9',
+        'r__grass_tint_brightness 0.35', 'r__grass_tint_saturation 1.1', 'r__grass_tint_contrast 1', 'r__grass_tint_tips 0.9',
+        'r__grass_tint_radius 0.25', 'r__grass_tint_height 1.5', 'r__grass_tint_resolution 0', 'r__grass_tint_resolution_scale 1',
+        'r__grass_tint_green_only 0', 'r__grass_tint_debug 0')
     [IO.File]::WriteAllLines($user, $settings, $encoding)
 }
 Write-Host "Startup ready. Engine: $binaryDir\xrEngine.exe"

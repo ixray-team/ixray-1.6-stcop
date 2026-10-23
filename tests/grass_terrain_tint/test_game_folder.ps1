@@ -53,8 +53,9 @@ try {
     $user = Join-Path $game '_appdata_grass_tint_\user.ltx'
     $settings = [IO.File]::ReadAllText($user)
     Check ($settings.Contains('custom_setting 123') -and $settings.Contains('renderer renderer_r4')) 'Existing settings must be copied with R4 selected'
-    Check ($settings.Contains('r__grass_tint 1') -and $settings.Contains('r__grass_tint_green_only 1')) 'Boolean settings must use tokens accepted by CCC_Boolean'
-    Check ($settings.Contains('r__grass_tint_strength 0.2') -and !$settings.Contains('r__grass_tint_strength 0.8')) 'New test must use the feature defaults'
+    Check ($settings.Contains('r__grass_tint 1') -and $settings.Contains('r__grass_tint_green_only 0')) 'Boolean settings must use tokens accepted by CCC_Boolean'
+    Check ($settings.Contains('r__grass_tint_strength 0.9') -and !$settings.Contains('r__grass_tint_strength 0.8')) 'New test must use the feature defaults'
+    Check ($settings.Contains('r__grass_tint_mode 1') -and $settings.Contains('r__grass_tint_resolution 0')) 'New profiles must use color transfer and source-sized auto resolution'
     [IO.File]::AppendAllText($user, "`ncustom_test_setting 456`n")
     $fixedHash = (Get-FileHash $fs).Hash
     & $prepare -GameRoot $game
