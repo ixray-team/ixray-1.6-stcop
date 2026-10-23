@@ -336,22 +336,39 @@ void CRender::render_menu	()
 	RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }
 
+#include "../../Include/xrRender/UIRender.h"
+
 void CRender::RenderUI(Fcolor* color)
 {
-	auto* UITarget = RCache.get_RT();
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, Target->rt_Normal->pRT, UITarget, RDepth);
-	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
-	rmNormal();
+	auto& IconTint = dxRenderDeviceRender::Instance().UIIconTint;
+	IconTint = color ? *color : Fcolor{1.0f, 1.0f, 1.0f, 1.0f};
 
-	r_dsgraph_render_ui();
+	auto* UITarget = RCache.get_RT();
 
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, RDepth);
 	rmNormal();
 
+	CHK_DX(RDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW));
+	CHK_DX(RDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE));
+
+	CHK_DX(RDevice->SetRenderState(D3DRS_STENCILENABLE, FALSE));
+	CHK_DX(RDevice->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA));
+	CHK_DX(RDevice->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, FALSE));
+
+	auto Scissor = UIRender->GetScissor();
+	UIRender->SetScissor(&Scissor);
+
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+
+	const bool UISaved = val_bUI;
+	set_UI(true);
+	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
+	set_UI(UISaved);
 
 	marker++;
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, nullptr);
+	IconTint.set(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void CRender::Render()

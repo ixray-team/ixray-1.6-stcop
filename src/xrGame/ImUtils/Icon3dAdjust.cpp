@@ -13,7 +13,7 @@
 
 void Render3DIconLightingControls()
 {
-	if (!ImGui::CollapsingHeader("DX11 icon lighting"))
+	if (!ImGui::CollapsingHeader("3D icon lighting"))
 	{
 		return;
 	}
@@ -21,7 +21,7 @@ void Render3DIconLightingControls()
 	auto* Settings = Device.m_pRender->GetUIIconLighting();
 	if (!Settings)
 	{
-		ImGui::TextDisabled("Lighting controls require renderer_r4.");
+		ImGui::TextDisabled("Lighting controls are not supported by this renderer.");
 		return;
 	}
 	ImGui::ColorEdit3("Light color", &Settings->Color.x);

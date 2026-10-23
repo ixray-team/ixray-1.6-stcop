@@ -40,6 +40,25 @@ float		r_dtex_range		= 50.f;
 //////////////////////////////////////////////////////////////////////////
 ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud)
 {
+	if (!!RImplementation.val_bUI)
+	{
+		if (auto* Element = pVisual->shader->UIElement._get())
+		{
+			return Element;
+		}
+
+		// Lua shaders keep distortion and emissive passes in the same slot.
+		auto* Element = pVisual->shader->E[SE_R2_UI]._get();
+		if (Element && !Element->flags.bDistort && !Element->flags.bEmissive)
+		{
+			return Element;
+		}
+
+		// Deferred passes write G-buffer data to COLOR0, so only forward (sorted) passes can stand in.
+		Element = pVisual->shader->E[SE_R2_NORMAL_LQ]._get();
+		return Element && Element->flags.iPriority > 1 ? Element : nullptr;
+	}
+
 	int		id	= SE_R2_SHADOW;
 	if	(CRender::PHASE_NORMAL == RImplementation.phase)
 	{

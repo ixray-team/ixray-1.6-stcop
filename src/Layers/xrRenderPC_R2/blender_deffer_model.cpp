@@ -51,6 +51,12 @@ void	CBlender_deffer_model::Load(IReader& fs, u16 version) {
 void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 	IBlender::Compile(C);
 
+	if(C.iElement == SE_R2_UI) {
+		const bool Blend = oStrictSorting.value || (oBlend.value && oAREF.value < 16);
+		uber_deffer_ui(C, Blend, !!oBlend.value && !Blend);
+		return;
+	}
+
 	if(oStrictSorting.value || (oBlend.value && oAREF.value < 16)) {
 		switch(C.iElement) {
 			case SE_R2_NORMAL_HQ:

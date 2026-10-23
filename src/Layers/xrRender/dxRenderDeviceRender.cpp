@@ -522,11 +522,7 @@ void dxRenderDeviceRender::InvalidateRenderCache()
 
 UIIconLighting* dxRenderDeviceRender::GetUIIconLighting()
 {
-#ifdef USE_DX11
 	return &IconLighting;
-#else
-	return nullptr;
-#endif
 }
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
