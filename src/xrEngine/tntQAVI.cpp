@@ -348,6 +348,7 @@ bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 		return	true;
 	}
 #endif
+	return	false;
 }
 
 // минимум проверок на валидность переданного для преролла кадра - нужна скорость

@@ -49,7 +49,7 @@ endif()
 
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
-if(IXRAY_USE_MIMALLOC AND NOT IXRAY_ASAN)
+if(IXRAY_USE_MIMALLOC AND IXRAY_MIMALLOC_AVAILABLE AND NOT IXRAY_ASAN)
 	target_link_libraries(xrCore PRIVATE mimalloc-static)
 	target_compile_definitions(xrCore PRIVATE IXRAY_USE_MIMALLOC)
 	add_custom_command(TARGET xrCore POST_BUILD
@@ -89,7 +89,13 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Profiler
-if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
+# Optick ships as a Windows nuget package, so on other platforms the profiler is off
+# unless the Tracy backend is picked.
+if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY AND NOT WIN32)
+	message(STATUS "Optick profiler is Windows-only: profiling disabled")
+endif()
+
+if (WIN32 AND IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
 	target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
 	target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

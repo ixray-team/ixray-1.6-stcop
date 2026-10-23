@@ -64,7 +64,7 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 
 	status.store(S_BUILD);
 
-	auto LoaderLamda = [=]()
+	auto LoaderLamda = [=, this]()   // may run asynchronously: capture by value
 	{
 		PROF_START_THREAD("build cform");
 

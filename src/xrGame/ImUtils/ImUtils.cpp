@@ -507,7 +507,10 @@ const char* clsid_manager::translateCLSID(CLASS_ID id) {
 			name[i] = '\0';
 		}
 	}
-	return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+	// The caller keeps the pointer, so the text has to outlive this call.
+	static thread_local xr_string translated;
+	translated = g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+	return translated.c_str();
 }
 
 void InitImGuiInGameInputReceiver()

@@ -1028,7 +1028,7 @@ u32	CMissile::ef_weapon_type		() const
 bool CMissile::render_item_ui_query()
 {
 	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem() && m_pInventory->ActiveItem() == this;
-	bool parent_actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	CActor* parent_actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 	return b_is_active_item && !m_bUseAltThrow && (GetState() == eReady) && !m_throw && parent_actor;
 }
 

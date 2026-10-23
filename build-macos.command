@@ -1,21 +1,31 @@
 #!/bin/bash
-# Сборка IX-Ray на macOS из чистого репозитория.
+# Сборка IX-Ray на macOS. Двойной щелчок в Finder или запуск из терминала.
 #
-#   ./build-macos.sh                        — спросит, что собрать
-#   ./build-macos.sh --engine               — собрать движок
-#   ./build-macos.sh --game                 — собрать игру целиком (распространяемая версия)
-#   ./build-macos.sh --game --data <папка>  — то же, папку с игрой указать сразу
+#   ./build-macos.command                        — спросит, что собрать
+#   ./build-macos.command --engine               — собрать движок
+#   ./build-macos.command --game                 — собрать игру целиком (распространяемая версия)
+#   ./build-macos.command --game --data <папка>  — то же, папку с игрой указать сразу
 #
 # «Собрать движок» — только бинарники, они появятся в <build>/bin/Release. Чтобы играть,
 # рядом с ними должны лежать данные игры (fsgame.ltx, gamedata, levels, resources, ...).
 #
 # «Собрать игру целиком» — движок, его библиотеки и данные игры складываются в
-# IX-Ray.app, который можно перетащить в /Applications. Если папка с оригинальной
-# игрой не найдена, скрипт попросит перетащить её в окно терминала.
+# IX-Ray.app, который сразу ставится в /Applications. Если папка с оригинальной игрой
+# не найдена, скрипт попросит перетащить её в окно терминала.
 #
 # Всё стороннее (DXMT, SDL3, vkd3d, TBB, lzo2, RedImage, yaml-cpp, Steam SDK,
 # freetype, ogg, theora) CMake скачивает и собирает сам.
 set -euo pipefail
+
+# Русские строки печатаются зелёным, чтобы их было легко отличить от вывода cmake/ninja.
+if [ -t 1 ]; then
+    GREEN=$'\033[32m'; RESET=$'\033[0m'
+else
+    GREEN=""; RESET=""
+fi
+say() {
+    printf '%s%s%s\n' "${GREEN}" "$*" "${RESET}"
+}
 
 usage() {
     sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
@@ -25,6 +35,7 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR=""
 MODE=""
 DATA_DIR=""
+GAME_DIR=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -41,20 +52,20 @@ done
 BUILD_DIR="${BUILD_DIR:-${REPO_DIR}/build}"
 
 if [ -z "${MODE}" ]; then
-    echo "Что собрать?"
-    echo "  1) собрать движок"
-    echo "  2) собрать игру целиком (распространяемая версия)"
+    say "Что собрать?"
+    say "  1) собрать игру целиком (распространяемая версия)"
+    say "  2) собрать движок"
     printf "Введите 1 или 2 [1]: "
     read -r choice || true
     case "${choice:-1}" in
-        1) MODE="engine" ;;
-        2) MODE="game" ;;
+        1) MODE="game" ;;
+        2) MODE="engine" ;;
         *) echo "Нужно 1 или 2" >&2; exit 1 ;;
     esac
 fi
 
 if [ "$(uname -s)" != "Darwin" ]; then
-    echo "ОШИБКА: этот скрипт собирает только macOS-версию" >&2
+    say "ОШИБКА: этот скрипт собирает только macOS-версию" >&2
     exit 1
 fi
 
@@ -83,11 +94,11 @@ require llvm-config llvm@15
 
 if [ ${#MISSING[@]} -gt 0 ]; then
     if ! command -v brew >/dev/null 2>&1; then
-        echo "ОШИБКА: не хватает инструментов: ${MISSING[*]}" >&2
-        echo "Поставьте Homebrew (https://brew.sh) и запустите скрипт снова." >&2
+        say "ОШИБКА: не хватает инструментов: ${MISSING[*]}" >&2
+        say "Поставьте Homebrew (https://brew.sh) и запустите скрипт снова." >&2
         exit 1
     fi
-    echo "Устанавливаю: ${MISSING[*]}"
+    say "Устанавливаю: ${MISSING[*]}"
     brew install "${MISSING[@]}"
 fi
 
@@ -134,11 +145,18 @@ PLIST
 }
 
 prompt_for_game_dir() {
+    if [ ! -t 0 ]; then
+        say "ОШИБКА: файлы игры не найдены. Запустите сборку из Terminal" >&2
+        say "(двойной щелчок по build-macos.command) и укажите папку с игрой." >&2
+        printf ''
+        return 0
+    fi
+
     {
         echo
-        echo "Нужны файлы оригинальной игры S.T.A.L.K.E.R.: Зов Припяти."
-        echo "Перетащите папку с игрой в это окно и нажмите Enter"
-        echo "(внутри должны быть fsgame.ltx, levels, resources, localization)."
+        say "Нужны файлы оригинальной игры S.T.A.L.K.E.R.: Зов Припяти."
+        say "Перетащите папку с игрой в это окно и нажмите Enter"
+        say "(внутри должны быть fsgame.ltx, levels, resources, localization)."
         printf "> "
     } >&2
 
@@ -152,11 +170,19 @@ prompt_for_game_dir() {
 }
 
 find_game_dir() {
-    local candidate
+    local candidate bundle
     for candidate in "${DATA_DIR}" "${REPO_DIR}/../cop-baseline" "${REPO_DIR}/../run"; do
         [ -n "${candidate}" ] || continue
         if [ -d "${candidate}" ] && [ -d "${candidate}/levels" ] && [ -d "${candidate}/resources" ]; then
             printf '%s' "${candidate}"
+            return 0
+        fi
+    done
+    # A bundle built earlier already carries the game files, so re-packing does not need
+    # the original installation.
+    for bundle in "/Applications/IX-Ray.app/Contents/Resources" "${BUILD_DIR}/IX-Ray.app/Contents/Resources"; do
+        if [ -d "${bundle}/levels" ] && [ -d "${bundle}/resources" ]; then
+            printf '%s' "${bundle}"
             return 0
         fi
     done
@@ -171,35 +197,39 @@ package_game() {
     local bin="${BUILD_DIR}/bin/Release"
 
     if [ ! -x "${bin}/xrEngine" ]; then
-        echo "ОШИБКА: ${bin}/xrEngine не найден" >&2
+        say "ОШИБКА: ${bin}/xrEngine не найден" >&2
         exit 1
     fi
 
-    local game_dir=""
-    if ! game_dir="$(find_game_dir)"; then
-        game_dir="$(prompt_for_game_dir)"
+    local game_dir="${GAME_DIR}"
+    if [ -z "${game_dir}" ]; then
+        if ! game_dir="$(find_game_dir)"; then
+            game_dir="$(prompt_for_game_dir)"
+        fi
     fi
     if [ ! -d "${game_dir}" ]; then
-        echo "ОШИБКА: папка с игрой не найдена: '${game_dir}'" >&2
+        say "ОШИБКА: папка с игрой не найдена: '${game_dir}'" >&2
         exit 1
     fi
     if [ ! -d "${game_dir}/levels" ] || [ ! -d "${game_dir}/resources" ]; then
-        echo "ОШИБКА: в '${game_dir}' нет levels/resources — это не папка Зова Припяти" >&2
+        say "ОШИБКА: в '${game_dir}' нет levels/resources — это не папка Зова Припяти" >&2
         exit 1
     fi
 
     rm -rf "${app}"
     mkdir -p "${macos}" "${res}"
 
-    echo "Складываю движок..."
+    say "Складываю движок..."
     cp -p "${bin}/xrEngine" "${macos}/"
-    for lib in "${bin}"/*.dylib; do
+    # Some libraries land in a nested Release/ directory (the Steam dylib does), so look
+    # one level deeper as well.
+    for lib in "${bin}"/*.dylib "${bin}"/*/*.dylib; do
         [ -e "${lib}" ] && cp -p "${lib}" "${macos}/"
     done
 
     # Движок читает всё из Contents/Resources, поэтому бандл не зависит от рабочего
     # дерева. gamedata — своя, модовая; остальное берётся из оригинальной игры.
-    echo "Копирую данные игры из ${game_dir} (это может занять несколько минут)..."
+    say "Копирую данные игры из ${game_dir} (это может занять несколько минут)..."
     # fsgame.ltx must be the one from this repository: the original game file does not
     # know about the mod's paths ($game_particles$ and friends).
     if [ -f "${REPO_DIR}/fsgame.ltx" ]; then
@@ -236,22 +266,86 @@ LAUNCH
     make_icon "${res}/IXRay.icns"
 
     codesign --force --deep --sign - "${app}" >/dev/null 2>&1 || \
-        echo "ПРЕДУПРЕЖДЕНИЕ: подпись не удалась, Gatekeeper может ругаться" >&2
+        say "ПРЕДУПРЕЖДЕНИЕ: подпись не удалась, Gatekeeper может ругаться" >&2
 
-    echo "Готово: ${app} ($(du -sh "${app}" | cut -f1))"
+    say "Собрано: ${app} ($(du -sh "${app}" | cut -f1))"
 }
+
+install_to_applications() {
+    local app="${BUILD_DIR}/IX-Ray.app"
+    local target="/Applications/IX-Ray.app"
+
+    say "Устанавливаю в /Applications..."
+    osascript -e 'tell application "IX-Ray" to quit' >/dev/null 2>&1 || true
+
+    # Move, not copy: one copy of the 4.8 GB bundle is enough, and build/IX-Ray.app would
+    # otherwise stay behind as a second installation.
+    if ! rm -rf "${target}" 2>/dev/null || ! mv "${app}" "${target}" 2>/dev/null; then
+        say "ПРЕДУПРЕЖДЕНИЕ: не удалось перенести бандл в /Applications." >&2
+        say "Перетащите ${app} в /Applications вручную." >&2
+        return 1
+    fi
+    say "Установлено: ${target}"
+    return 0
+}
+
+move_to_trash() {   # $1 = путь; кладём в Корзину, чтобы можно было вернуть
+    local target="$1"
+    osascript -e "tell application \"Finder\" to delete POSIX file \"${target}\"" >/dev/null 2>&1
+}
+
+offer_cleanup() {
+    say ""
+    say "Остались файлы сборки: ${BUILD_DIR}"
+    say "Для игры они не нужны: игра уже установлена в /Applications и запускается сама."
+    say "Переместить их в Корзину? Оттуда можно вернуть."
+    printf "%sПереместить в Корзину? [y/N]: %s" "${GREEN}" "${RESET}"
+    local answer
+    read -r answer || true
+    case "${answer:-n}" in
+        y|Y|д|Д)
+            move_to_trash "${BUILD_DIR}"
+            say "Файлы сборки перемещены в Корзину."
+            ;;
+        *)
+            say "Оставил как есть."
+            ;;
+    esac
+}
+
+# Для распространяемой сборки данные игры нужны заранее: спрашиваем до сборки, чтобы
+# не ждать компиляцию ради сообщения «папки нет».
+if [ "${MODE}" = "game" ] && [ -z "${GAME_DIR}" ]; then
+    if ! GAME_DIR="$(find_game_dir)"; then
+        GAME_DIR="$(prompt_for_game_dir)"
+    fi
+    if [ -z "${GAME_DIR}" ] || [ ! -d "${GAME_DIR}" ]; then
+        say "ОШИБКА: папка с игрой не найдена" >&2
+        exit 1
+    fi
+    if [ ! -d "${GAME_DIR}/levels" ] || [ ! -d "${GAME_DIR}/resources" ]; then
+        say "ОШИБКА: в '${GAME_DIR}' нет levels/resources — это не папка Зова Припяти" >&2
+        exit 1
+    fi
+    say "Данные игры: ${GAME_DIR}"
+fi
 
 # --- сборка ------------------------------------------------------------------
 
-echo "Репозиторий: ${REPO_DIR}"
-echo "Каталог сборки: ${BUILD_DIR}"
+say "Репозиторий: ${REPO_DIR}"
+say "Каталог сборки: ${BUILD_DIR}"
 if [ "${MODE}" = "game" ]; then
-    echo "Что собираем: игру целиком"
+    say "Что собираем: игру целиком"
 else
-    echo "Что собираем: движок"
+    say "Что собираем: движок"
 fi
 
-cmake -S "${REPO_DIR}" -B "${BUILD_DIR}" -G Ninja -DCMAKE_BUILD_TYPE=Release
+# yaml-cpp 0.6 требует политику 3.5, иначе конфигурация падает; -Wno-author/-Wno-deprecated
+# скрывают предупреждения сторонних проектов, которые мы всё равно не правим.
+cmake -S "${REPO_DIR}" -B "${BUILD_DIR}" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -Wno-author -Wno-deprecated
 
 # Сборка инкрементальная: повторный запуск пересобирает только изменившееся.
 ninja -C "${BUILD_DIR}"
@@ -259,9 +353,11 @@ ninja -C "${BUILD_DIR}"
 echo
 if [ "${MODE}" = "game" ]; then
     package_game
-    echo "Перетащите ${BUILD_DIR}/IX-Ray.app в /Applications, чтобы установить."
+    install_to_applications || true
+    echo
+    say "Приятной игры!"
 else
-    echo "Готово. Бинарники: ${BUILD_DIR}/bin/Release"
-    echo "Это сборка движка, бандл не собирался. Игру целиком собирает:"
-    echo "  ./build-macos.sh --game"
+    say "Готово. Бинарники: ${BUILD_DIR}/bin/Release"
+    say "Это сборка движка, бандл не собирался. Игру целиком собирает:"
+    echo "  ./build-macos.command --game"
 fi

@@ -312,7 +312,7 @@ void CUIActorMenu::Construct()
 
 	m_pInventorySorter					= new CInventorySorter();
 
-	const struct SSortTabsLayoutNode
+	struct SSortTabsLayoutNode
 	{
 		ESortTabsLayoutSlot slot;
 		const char* node;
@@ -335,7 +335,7 @@ void CUIActorMenu::Construct()
 		{ eSortTabsDeadBody, "inventory_sort_order_tabs_container_deadbody_bag", "inventory_sort_order_tabs_container_deadbody_bag" }
 	};
 
-	const struct SSortTabsSystemInit
+	struct SSortTabsSystemInit
 	{
 		EInventorySortSystem system;
 		u8 systemIndex;

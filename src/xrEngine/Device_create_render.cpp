@@ -321,11 +321,18 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 
 	if (psDeviceFlags.is(rsFullscreen)) 
 	{
+#if defined(__APPLE__)
+		// Do not pin a display mode: SDL3 then uses the current desktop resolution, while a
+		// mode that is missing from the list (a fresh install starts from 1024x768) leaves
+		// the window windowed.
+		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+#else
 		SDL_DisplayMode displayMode;
 		displayMode.w = psCurrentVidMode[0];
 		displayMode.h = psCurrentVidMode[1];
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+#endif
 	}
 	else 
 	{
