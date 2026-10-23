@@ -1,9 +1,9 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
-#include "scope_lens.hlsli"
 #include "pnv.hlsli"
 
 uniform float4 m_hud_params;
+#include "scope_lens.hlsli"
 float ScopePostprocessActive;
 
 
