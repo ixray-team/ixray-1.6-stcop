@@ -3615,6 +3615,9 @@ struct SHandsIkFrame
 	bool					SprintLeftPin = false;
 	float					SprintLeftPinWeight = 0.f;
 	Fmatrix					SprintLeftPinTarget = Fidentity;
+	bool					Overlay = false;
+	bool					AdditiveBase = false;
+	Fmatrix					AdditiveAncorBase = Fidentity;
 	Fmatrix					OverlayAncorDelta = Fidentity;
 	Fmatrix					OverlayRightBase = Fidentity;
 	Fmatrix					OverlayLeftBase = Fidentity;
@@ -3800,11 +3803,12 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 	F.RetargetLeft = retarget && has_left && RetargetLeftValid;
 
 	const u8 OverlayMask = u8(~(1 << ADDITIVE_CHANNEL));
-	Fmatrix OverlayAncorBase;
-	const bool Overlay = item->AdditiveOverlay && hud_channel_weight(m_model, ADDITIVE_CHANNEL) > 0.f && m_model->LL_GetBoneTransformMasked(ancor, OverlayMask, OverlayAncorBase);
+	F.AdditiveBase = item->AdditivePlaying && hud_channel_weight(m_model, ADDITIVE_CHANNEL) > 0.f && m_model->LL_GetBoneTransformMasked(ancor, OverlayMask, F.AdditiveAncorBase);
+	const bool Overlay = item->AdditiveOverlay && F.AdditiveBase;
+	F.Overlay = Overlay;
 	if (Overlay)
 	{
-		F.OverlayAncorDelta.mul_43(model->LL_GetTransform(ancor), Fmatrix().invert(OverlayAncorBase));
+		F.OverlayAncorDelta.mul_43(model->LL_GetTransform(ancor), Fmatrix().invert(F.AdditiveAncorBase));
 	}
 
 	F.OverlayRight = Overlay && has_right && !ancor_in_right_hand && m_model->LL_GetBoneTransformMasked(RightIkChain[2], OverlayMask, F.OverlayRightBase);
@@ -3969,7 +3973,11 @@ void player_hud::HandsIkWeaponPose(SHandsIkFrame& F, CActor* actor)
 	HudSpring::Step(AimReloadDropValue, AimReloadDropVelocity, aim_reload_drop, aim_reload_drop < AimReloadDropValue ? item->AimReloadPoseInertiaOut : item->AimReloadPoseInertia, 1.f, Device.fTimeDelta);
 
 	const bool firing = weapon != nullptr && (state == CWeapon::eFire || state == CWeapon::eFire2) && (item->ShotVariation > 0.f || item->ShotTwist > 0.f || item->AimShotMotion < 1.f);
-	if (state == CHUDState::eIdle && ShotWeight <= 0.f)
+	if (F.Overlay || (firing && F.AdditiveBase))
+	{
+		ShotRef.mul_43(Fmatrix().invert(sprint_layer_ancor), F.AdditiveAncorBase);
+	}
+	else if (!firing && ShotWeight <= 0.f)
 	{
 		ShotRef.mul_43(Fmatrix().invert(sprint_layer_ancor), model->LL_GetTransform(ancor));
 	}
@@ -5613,6 +5621,17 @@ void player_hud::attach_item(CHudItem* item)
 			RetargetLeftValid = false;
 			RetargetRightValid = false;
 			ArmRetargetMotion = MotionID();
+			ShotWeight = 0.f;
+			ShotRelease = 1.f;
+			ShotFingers = {};
+			AimReloadWeight = 0.f;
+			AimReloadRelease = 1.f;
+			AimReloadPoseValue = 0.f;
+			AimReloadPoseVelocity = 0.f;
+			AimReloadPushValue = 0.f;
+			AimReloadPushVelocity = 0.f;
+			AimReloadDropValue = 0.f;
+			AimReloadDropVelocity = 0.f;
 			m_model->LL_ResetInertialization();
 		}
 
