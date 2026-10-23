@@ -129,6 +129,7 @@ extern "C"
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
 	{
+		CinemaFilmMaker_Shutdown();
 		CDynamicWallmarkRegistry::Instance().ClearWallmarks();
 	}
 

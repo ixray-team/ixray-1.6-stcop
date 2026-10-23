@@ -19,6 +19,7 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "../../xrUI/UIHelper.h"
 #include "Cutscenes/CutsceneManager.h"
+#include "ImUtils/ImUtils.h"
 
 extern CUIGameCustom* CurrentGameUI() { return g_hud ? ((CHUDManager*)g_hud)->GetGameUI() : nullptr; }
 
@@ -131,6 +132,8 @@ bool need_render_hud()
 
 void CHUDManager::Render_Last()
 {
+	CinemaFilmMaker_Render();
+
 	CObject* O = g_pGameLevel->CurrentViewEntity();
 	if (!O)
 	{
@@ -138,7 +141,7 @@ void CHUDManager::Render_Last()
 	}
 	::Render->set_Object(O->H_Root());
 	CCutsceneManager::GetInstance().Render();
-	
+
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))return;
 	if (0==pUIGame)					return;
 
