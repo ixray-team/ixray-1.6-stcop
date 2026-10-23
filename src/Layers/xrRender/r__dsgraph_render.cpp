@@ -10,6 +10,7 @@
 #include "FBasicVisual.h"
 #include "CHudInitializer.h"
 #include "SkeletonCustom.h"
+#include "dxRenderDeviceRender.h"
 #include "SVGStorage.h"
 
 using namespace		R_dsgraph;
@@ -209,7 +210,6 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
 
-#ifdef USE_DX11
 	if (auto* Constant = RCache.get_c("ui_emissive_tint")._get())
 	{
 		const auto* Settings = RImplementation.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
@@ -223,6 +223,13 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 		}
 	}
 
+	if (auto* Constant = RCache.get_c("ui_static_color")._get())
+	{
+		const Fcolor& Tint = dxRenderDeviceRender::Instance().UIIconTint;
+		RCache.set_c(Constant, Tint.r, Tint.g, Tint.b, Tint.a);
+	}
+
+#ifdef USE_DX11
 	if (emissive)
 	{
 		GRHI->StateManager->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -248,7 +255,8 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 	RImplementation.apply_object(N.val.pObject);
 	RImplementation.apply_lmaterial();
 
-	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
+	// Icons are close-ups: always draw progressive meshes at full detail.
+	V->Render(RImplementation.val_bUI ? 1.0f : calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
 ICF void sorted_L1(mapSorted_Node* N)
@@ -273,7 +281,7 @@ void R_dsgraph_structure::r_dsgraph_render_ui()
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
-#if	RENDER!=R_R1
+#ifdef USE_DX11
 	RenderMap(mapUIEmissive);
 #endif
 

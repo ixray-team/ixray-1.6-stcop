@@ -102,10 +102,15 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		switch (C.iElement)
 		{
 		case SE_R1_UI:
-			vsname = psname =	"model_env_hq"; 
-			if (oBlend.value)	C.r_Pass	(vsname,"model_env_sl",true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
-			else				C.r_Pass	(vsname,"model_env_sl",true);
+			if (!UIIconShadersAvailable())
+			{
+				break;
+			}
+			RImplementation.addShaderOption("UI_ENV_MAP", "1");
+			if (oBlend.value)	C.r_Pass	("model_ui","ui_base",false,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
+			else				C.r_Pass	("model_ui","ui_base",false);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
+			C.r_Sampler			("env_s0",	"shaders\\newsky_viewport#small",false,D3DTADDRESS_CLAMP);
 			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
 			C.r_End				();
 			break;
@@ -157,6 +162,12 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
+
+	if (C.iElement == SE_R2_UI)
+	{
+		uber_deffer_ui(C, !!oBlend.value, false);
+		return;
+	}
 
 	if(oBlend.value) {
 		switch(C.iElement) {

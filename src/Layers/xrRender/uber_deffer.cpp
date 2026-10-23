@@ -439,3 +439,45 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 		C.r_End();
 	}
 }
+bool UIIconShadersAvailable()
+{
+	// Old gamedata without the icon shaders falls back to the regular passes instead of failing to compile.
+	static const bool Available = []
+	{
+		string_path Path;
+		const bool Exists = !!FS.exist(Path, "$game_shaders$", ::Render->getShaderPath(), "ui_base.ps.hlsl");
+		if (!Exists)
+		{
+			Msg("! 3D icon shaders are missing in [%s], icons use the regular passes", ::Render->getShaderPath());
+		}
+		return Exists;
+	}();
+	return Available;
+}
+
+#if RENDER == R_R2
+void uber_deffer_ui(CBlender_Compile& C, bool Blend, bool Aref)
+{
+	if (!UIIconShadersAvailable())
+	{
+		return;
+	}
+
+	if (Blend)
+	{
+		RImplementation.addShaderOption("UI_ALPHA_BLEND", "1");
+	}
+
+	uber_deffer(C, false, "deffer_model", "ui_base", Aref, nullptr, true);
+
+	if (Blend)
+	{
+		C.PassSET_ZB(true, false);
+		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+	}
+
+	C.r_Sampler("s_material", r2_material, false, D3DTADDRESS_CLAMP);
+	C.r_Sampler("env_s0", "shaders\\newsky_viewport#small", false, D3DTADDRESS_CLAMP);
+	C.r_End();
+}
+#endif

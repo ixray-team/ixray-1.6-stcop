@@ -101,10 +101,14 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 		switch (C.iElement)
 		{
 		case SE_R1_UI:
-			vsname = psname =	"model_def_hq";
-			if (oBlend.value)	C.r_Pass	(vsname,"simple",true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
-			else				C.r_Pass	(vsname,"simple",true);
+			if (!UIIconShadersAvailable())
+			{
+				break;
+			}
+			if (oBlend.value)	C.r_Pass	("model_ui","ui_base",false,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
+			else				C.r_Pass	("model_ui","ui_base",false);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
+			C.r_Sampler			("env_s0",	"shaders\\newsky_viewport#small",false,D3DTADDRESS_CLAMP);
 			C.r_End				();
 			break;
 		case SE_R1_NORMAL_HQ:	
