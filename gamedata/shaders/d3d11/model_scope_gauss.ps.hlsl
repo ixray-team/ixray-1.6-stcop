@@ -1,9 +1,10 @@
 #include "common.hlsli"
 #include "scope_ui.hlsli"
-#include "scope_lens.hlsli"
 
 uniform float4 m_hud_params;
+#include "scope_lens.hlsli"
 uniform float4 m_affects;
+uniform float4 m_zoom_deviation;
 float ScopePostprocessActive;
 
 struct v2p

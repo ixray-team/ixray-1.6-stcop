@@ -2,6 +2,7 @@
 #define SCOPE_UI_HLSLI
 
 Texture2D s_scope_ui;
+uniform float4 scaled_screen_res;
 
 float3 ApplyScopeUI(float3 Color, float2 ScreenPosition)
 {
