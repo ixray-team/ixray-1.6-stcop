@@ -55,6 +55,9 @@ public:
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
 	R_dsgraph::mapHUD_T											mapHUDScopeMask;
+#ifndef USE_DX11
+	bool ScopeSceneRequired = false;
+#endif
 	R_dsgraph::mapSorted_T										mapHUDDistort;
 
 	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;

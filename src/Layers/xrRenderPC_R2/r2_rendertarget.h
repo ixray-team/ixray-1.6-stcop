@@ -55,6 +55,7 @@ public:
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_ui_pda;
+	ref_rt ScopeSceneTarget;
 	//	Igor: for volumetric lights
 	ref_rt						rt_Generic_2;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Bloom_1;			// 32bit, dim/4	(r,g,b,?)
@@ -148,6 +149,8 @@ private:
 	ref_geom					g_combine_2UV;
 	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_AA;
+
+	ref_shader ScopeDepthResetShader;
 	ref_shader					s_combine_dbg_0;
 	ref_shader					s_combine_dbg_1;
 	ref_shader					s_combine_dbg_Accumulator;
@@ -220,6 +223,8 @@ public:
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
 	void						phase_scene_end			();
+	void RenderScopeDepthReset();
+	void CopyScopeScene();
 	void						phase_occq				();
 	void						phase_wallmarks			();
 	void						phase_smap_direct		(light* L,	u32 sub_phase);

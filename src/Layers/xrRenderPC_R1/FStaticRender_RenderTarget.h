@@ -18,6 +18,10 @@ private:
 	ref_rt				RT_color_map;
 	ref_rt				RT_distort;
 	ref_rt				RT_ui_pda;
+	ref_rt ScopeSceneTarget;
+
+	ref_shader ScopeDepthResetShader;
+	ref_geom ScopeDepthResetGeom;
 
 	//FXAA
 	ref_shader s_fxaa;
@@ -76,6 +80,8 @@ public:
 
 	void				Begin				();
 	void				End					();
+	void RenderScopeDepthReset();
+	void CopyScopeScene();
 
 	void				DoAsyncScreenshot	();
 

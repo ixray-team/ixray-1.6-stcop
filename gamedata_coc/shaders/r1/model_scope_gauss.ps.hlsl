@@ -1,36 +1,32 @@
 #include "common.hlsli"
 
-struct 	v2p
+#include "scope_lens.hlsli"
+
+struct v2p
 {
- 	float4 	tc0: 		TEXCOORD0;	// base
- 	float4 	tc1: 		TEXCOORD1;	// environment
-  	float4	c0:			COLOR0;		// sun.(fog*fog)
+	float2 tc0 : TEXCOORD0; // base
+	float4 tc1 : TEXCOORD1;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-// Pixel
-uniform sampler2D	s_vp2;
-uniform sampler2D	s_noise;
-
-float4 	main	( v2p I )	: COLOR
+float Random(float2 co)
 {
-	float4	t_base 	= tex2D	(s_base,I.tc0);
+	return 0.5f + frac(sin(dot(co.xy, float2(12.9898f, 78.233f))) * 43758.5453f) * 0.5f;
+}
 
+float4 main(v2p I) : COLOR
+{
+	float4 t_base = tex2D(s_base, I.tc0);
+	float2 SceneUV = GetScopeSceneUV(I.tc1);
+	float4 t_vp2 = SampleScopeScene(I.tc0, SceneUV);
 
-	I.tc0.x = (I.tc0.x-0.5f)*m_hud_params.x+0.5f+m_zoom_deviation.x;	// Растягиваем картинку в линзе так, чтобы на любом разрешении экрана были правильные пропорции
-	I.tc0.y	= I.tc0.y+m_zoom_deviation.y;
-	float4	t_vp2	 = tex2D (s_vp2, I.tc0);			// Изображение со второго вьюпорта
+	float noise = Random(SceneUV * timers.z) * m_zoom_deviation.w;
+	float gray = (t_vp2.r + t_vp2.g + t_vp2.b) * m_zoom_deviation.z * 7.0f;
+	t_vp2.rgb = t_vp2.rgb * (1.0f - m_zoom_deviation.z) + gray;
+	t_vp2.b += (0.4f + noise) * m_zoom_deviation.z;
 
-	t_vp2.b = t_vp2.b + (t_vp2.r + t_vp2.g + t_vp2.b+1)*m_zoom_deviation.z;
+	float Interference = m_affects.x * m_affects.x;
+	t_vp2.rgb += (Random(SceneUV * timers.y) - 0.5f) * Interference * 30.0f;
 
-	//получаем пиксель шума и масштабируем его в соответствии с текущим уровнем проблем
-	float4 t_noise = tex2D(s_noise, I.tc0) * m_affects.x * 2;
-	t_vp2.rgb += t_noise.rgb;
-
-	// Миксуем с сеткой
-	float4 res = lerp	(t_vp2, t_base, t_base.a);
-
-	// out
-	return  float4	(res.r, res.g, res.b, min(m_hud_params.y, m_hud_params.a));
+	float3 final = lerp(t_vp2.rgb, t_base.rgb, t_base.a);
+	return float4(final, GetScopeLensAlpha());
 }

@@ -375,6 +375,24 @@ void R_dsgraph_structure::r_dsgraph_render_scope()
 
 	CHudInitializer initalizer(true);
 	RenderMap(mapHUDScopeMask);
+#else
+	ScopeSceneRequired = mapHUDScopeMask.size() > 0;
+	if (!ScopeSceneRequired)
+	{
+		return;
+	}
+
+	{
+		CHudInitializer initalizer(true, true);
+		RCache.set_ColorWriteEnable(false);
+		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x80, 0x80, 0x80, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		RenderMap(mapHUDScopeMask);
+	}
+
+	RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x80, 0x80, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_ZERO, D3DSTENCILOP_KEEP);
+	RImplementation.Target->RenderScopeDepthReset();
+	RCache.set_Stencil(FALSE);
+	RCache.set_ColorWriteEnable();
 #endif
 }
 
