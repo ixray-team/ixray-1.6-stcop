@@ -47,8 +47,19 @@ public:
 	}
 };
 
+class UIIconTintBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		const Fcolor& Tint = dxRenderDeviceRender::Instance().UIIconTint;
+		RCache.set_c(Constant, Tint.r, Tint.g, Tint.b, Tint.a);
+	}
+};
+
 static UIIconLightBinding g_UIIconLightBinding;
 static UIIconDirectionBinding g_UIIconDirectionBinding;
+static UIIconTintBinding g_UIIconTintBinding;
 
 class UIIconEmissiveTintBinding final : public RHIShaderConstant::Setup
 {
@@ -805,6 +816,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("ui_icon_light", &g_UIIconLightBinding);
 	r_Constant("ui_icon_direction", &g_UIIconDirectionBinding);
 	r_Constant("ui_emissive_tint", &g_UIIconEmissiveTintBinding);
+	r_Constant("ui_static_color", &g_UIIconTintBinding);
 
 	r_Constant("screen_res", &binder_screen_res);
 	r_Constant("def_aref", &binder_def_aref);

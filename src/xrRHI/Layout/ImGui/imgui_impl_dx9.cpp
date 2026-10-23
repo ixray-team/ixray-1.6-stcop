@@ -97,6 +97,19 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
     vp.MaxZ = 1.0f;
     bd->pd3dDevice->SetViewport(&vp);
 
+    // Engine draws inside user callbacks rebind buffers and leave state behind, so restore it here.
+    bd->pd3dDevice->SetStreamSource(0, bd->pVB, 0, sizeof(CUSTOMVERTEX));
+    bd->pd3dDevice->SetIndices(bd->pIB);
+    bd->pd3dDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
+    bd->pd3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
+    bd->pd3dDevice->SetRenderState(D3DRS_SRGBWRITEENABLE, false);
+    bd->pd3dDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
+    bd->pd3dDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+    bd->pd3dDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+    bd->pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+    bd->pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+    bd->pd3dDevice->SetSamplerState(0, D3DSAMP_SRGBTEXTURE, false);
+
     // Setup render state: fixed-pipeline, alpha-blending, no face culling, no depth testing, shade mode (for gradient), bilinear sampling.
     bd->pd3dDevice->SetPixelShader(nullptr);
     bd->pd3dDevice->SetVertexShader(nullptr);
@@ -232,10 +245,6 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     }
     bd->pVB->Unlock();
     bd->pIB->Unlock();
-    bd->pd3dDevice->SetStreamSource(0, bd->pVB, 0, sizeof(CUSTOMVERTEX));
-    bd->pd3dDevice->SetIndices(bd->pIB);
-    bd->pd3dDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
-
     // Setup desired DX state
     ImGui_ImplDX9_SetupRenderState(draw_data);
 

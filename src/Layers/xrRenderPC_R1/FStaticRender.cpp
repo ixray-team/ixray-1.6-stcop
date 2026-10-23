@@ -30,6 +30,10 @@ ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, floa
 {
 	if (!!RImplementation.val_bUI)
 	{
+		if (auto* Element = pVisual->shader->UIElement._get())
+		{
+			return Element;
+		}
 		if (auto pSh = pVisual->shader->E[SE_R1_UI]._get())
 		{
 			return pSh;
@@ -511,21 +515,34 @@ void CRender::Calculate				()
 
 void CRender::RenderUI(Fcolor* color)
 {
+	auto& IconTint = dxRenderDeviceRender::Instance().UIIconTint;
+	IconTint = color ? *color : Fcolor{1.0f, 1.0f, 1.0f, 1.0f};
+
 	auto* UITarget = RCache.get_RT();
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, RDepth);
 	rmNormal();
 
+	CHK_DX(RDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW));
+	CHK_DX(RDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE));
+
+	auto Scissor = UIRender->GetScissor();
+	UIRender->SetScissor(&Scissor);
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 
+	const bool UISaved = val_bUI;
+	set_UI(true);
 	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
+	set_UI(UISaved);
 
 	marker++;
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), UITarget, nullptr, nullptr, nullptr);
 
 	rmNormal();
+	UIRender->SetScissor(&Scissor);
 
 	mapDistort.clear();
+	IconTint.set(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void CRender::Render()
