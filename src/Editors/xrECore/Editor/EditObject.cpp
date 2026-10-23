@@ -77,6 +77,7 @@ CSurface::~CSurface()
 void CSurface::CopyFrom(CSurface* surf)
 {
 	m_pData = surf->m_pData;
+	UseShared = surf->UseShared;
 	m_VMap = surf->m_VMap;
 	m_dwFVF = surf->m_dwFVF;
 	m_id = surf->m_id;

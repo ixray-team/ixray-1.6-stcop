@@ -64,13 +64,13 @@ void CEditableMesh::GenerateRenderBuffers()
 	GenerateVNormals(nullptr);
 	VERIFY(!m_VertexNormals.empty() || !m_Normals.empty());
 
-	for (auto sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); ++sp_it)
+	for (auto& m_SurfFace : m_SurfFaces)
 	{
-		IntVec& face_lst = sp_it->second;
-		CSurface* S = sp_it->first;
+		IntVec& face_lst = m_SurfFace.second;
+		CSurface* S = m_SurfFace.first;
 
 		const int face_count = face_lst.size();
-		VERIFY3(face_count, "Empty surface arrive.", S->m_Name.c_str());
+		VERIFY3(face_count, "Empty surface arrive.", S->_Name());
 
 		int vertex_count = face_count * 3;
 		if (S->_flags().is(SSurfaceData::sf2Sided))
@@ -111,14 +111,16 @@ void CEditableMesh::GenerateRenderBuffers()
 void CEditableMesh::UnloadRenderBuffers()
 {
 	if (m_RenderBuffers){
-		for (auto& rbmp_it : *m_RenderBuffers)
+		for (auto& val : *m_RenderBuffers | std::views::values)
 		{
-			for(RBVecIt rb_it= rbmp_it.second.begin(); rb_it!= rbmp_it.second.end(); rb_it++)
+			for(RBVecIt rb_it= val.begin(); rb_it!= val.end(); rb_it++)
+			{
 				if (rb_it->pGeom){
 					_RELEASE		(rb_it->pGeom->vb);
 					_RELEASE		(rb_it->pGeom->ib);
 					rb_it->pGeom.destroy();
 				}
+			}
 		}
 		m_RenderBuffers.reset();
 	}
@@ -276,7 +278,7 @@ struct SelectionColorRaii
 			return;
 		}
 
-		for (auto& [ID, pColor] : It->second)
+		for (auto& pColor : It->second | std::views::values)
 		{
 			if (pColor.first < EDevice->dwRenderFrame)
 			{
@@ -420,7 +422,7 @@ bool CEditableMesh::HasSelectionColor(CCustomObject* Parent) const
 		return false;
 	}
 
-	for (auto& [ID, Color] : It->second)
+	for (const auto& Color : It->second | std::views::values)
 	{
 		if (Color.first >= EDevice->dwRenderFrame)
 		{

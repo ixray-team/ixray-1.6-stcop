@@ -290,6 +290,7 @@ bool CEditableObject::Load(IReader& F)
 		for (auto& m_Surface : m_Surfaces)
 		{
 			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
 			F.r_stringZ	(buf);
 			m_Surface->SetName(buf.c_str());
 			F.r_stringZ	(buf);
@@ -317,6 +318,7 @@ bool CEditableObject::Load(IReader& F)
 		for (auto& m_Surface : m_Surfaces)
 		{
 			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
 			F.r_stringZ	(buf);
 			m_Surface->SetName(buf.c_str());
 			F.r_stringZ	(buf);
@@ -343,6 +345,7 @@ bool CEditableObject::Load(IReader& F)
 		for (auto& m_Surface : m_Surfaces)
 		{
 			m_Surface = new CSurface();
+			m_Surface->SetSharedData(nullptr);
 			F.r_stringZ(buf);
 			m_Surface->SetName(buf.c_str());
 			F.r_stringZ(sh_name);
