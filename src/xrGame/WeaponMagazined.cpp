@@ -659,10 +659,14 @@ void CWeaponMagazined::FireStart()
 
 				inherited::FireStart();
 				//R_ASSERT(parent);
+				if (CurrentState != eFire && IsActor && CanStartOverlay())
+				{
+					StartOverlay();
+				}
 				SwitchState(eFire);
 			}
 		}
-		else if (!IsPending() && GetState() != eFire)
+		else if (!IsPending() && GetState() != eFire && !(CurrentState == eReload && IsActor && CanStartOverlay()))
 		{
 			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 			{
@@ -2103,6 +2107,20 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 	inherited::OnAnimationEnd(state);
 }
 
+void CWeaponMagazined::OnOverlayResume()
+{
+	m_iShotNum = 0;
+	if (m_fOldBulletSpeed != 0.f)
+	{
+		SetBulletSpeed(m_fOldBulletSpeed);
+	}
+}
+
+shared_str CWeaponMagazined::OverlayIdleAnimation()
+{
+	return IsZoomed() ? SetCurrentAimAnimation() : inherited::OverlayIdleAnimation();
+}
+
 void CWeaponMagazined::switch2_Idle	()
 {
 	m_iShotNum = 0;
@@ -3456,7 +3474,7 @@ void CWeaponMagazined::PlayAnimShoot()
 
 	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());
 
-	if (g_player_hud != nullptr && H_Parent() != nullptr && H_Parent() == Level().CurrentControlEntity())
+	if (g_player_hud != nullptr && H_Parent() != nullptr && H_Parent() == Level().CurrentControlEntity() && !OverlayActive())
 	{
 		g_player_hud->OnShotAnimation(HudItemData());
 	}
