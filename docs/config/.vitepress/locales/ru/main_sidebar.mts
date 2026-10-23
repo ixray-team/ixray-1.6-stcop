@@ -23,6 +23,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'XMLOverride', link: '/configs/xml-override' },
       { text: 'Локализация игры', link: '/configs/localization' },
       { text: 'Кодировка файлов', link: '/configs/file-encoding' },
+      { text: 'Заметки для мододелов', link: '/configs/modder-notes' },
       { text: 'Групповое подключение файлов по маске', link: '/configs/group-file-connection-using-masks' },
       { text: 'Пользовательские пресеты параметров', link: '/configs/preset-user-parameters' },
     ],
