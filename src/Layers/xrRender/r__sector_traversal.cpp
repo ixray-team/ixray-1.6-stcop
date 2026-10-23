@@ -36,6 +36,7 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 	i_mXFORM			= mXFORM;
 	i_mXFORM_01.mul		(m_viewport_01,mXFORM);
 	i_start				= (CSector*)start;
+	NearDistance		= Device.fViewportNear + EPS_L;
 	r_sectors.clear		();
 	_scissor			scissor;
 	scissor.set			(0,0,1,1);
@@ -60,8 +61,22 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 	}
 }
 
+bool CPortalTraverser::IsNearPortal(const CPortal& Portal) const
+{
+	if (std::abs(Portal.P.classify(i_vBase)) > NearDistance)
+	{
+		return false;
+	}
+	return i_vBase.distance_to_sqr(Portal.S.P) <= _sqr(Portal.S.R + NearDistance);
+}
+
 void CPortalTraverser::fade_portal	(CPortal* _p, float ssa)
 {
+	// The portal may be reached by several traversal paths
+	if (_p->FadeMarker == i_marker)
+		return;
+	_p->FadeMarker = i_marker;
+
 	if(RImplementation.HOM.visible(_p->S) || psGameFlags.test(rsDrawPortals))
 		f_portals.push_back				(std::make_pair(_p,ssa));
 }
