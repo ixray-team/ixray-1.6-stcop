@@ -345,13 +345,13 @@ void CHUDTarget::Render()
 	{
 		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
 
-		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y + size_y, 0, C, 0, 1);
-		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
+		UIRender->PushPoint(x - size_x, y + size_y, 0, C, 0, 1);
+		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
 
-		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
-		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y - size_y, 0, C, 1, 0);
+		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
+		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(x + size_x, y - size_y, 0, C, 1, 0);
 
 		UIRender->SetShader(*hShader);
 		UIRender->FlushPrimitive();
