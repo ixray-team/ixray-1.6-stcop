@@ -203,7 +203,14 @@ void CSoundRender_CoreA::_initialize(int stage)
 	R_ASSERT						(snd_device_id>=0 && snd_device_id<pDeviceList->GetNumDevices());
 	const ALDeviceDesc& deviceDesc	= pDeviceList->GetDeviceDesc(snd_device_id);
     // OpenAL device
-    pDevice						= alcOpenDevice		(deviceDesc.name_al);
+    DeviceName					= deviceDesc.name_al;
+    pDevice						= alcOpenDevice		(DeviceName.empty() ? nullptr : DeviceName.c_str());
+	if (pDevice == nullptr && !DeviceName.empty())
+	{
+		Msg("! SOUND: OpenAL: Can't open device '%s', using system default", deviceDesc.name);
+		DeviceName.clear();
+		pDevice					= alcOpenDevice		(nullptr);
+	}
 	if (pDevice == nullptr)
 	{
 		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create device.");
@@ -225,6 +232,12 @@ void CSoundRender_CoreA::_initialize(int stage)
 		return;
 	}
     
+    if (alcIsExtensionPresent(pDevice, "ALC_SOFT_reopen_device"))
+    {
+        alcReopenDevice			= FUNCTION_CAST(LPALCREOPENDEVICESOFT, alcGetProcAddress(pDevice, "alcReopenDeviceSOFT"));
+    }
+    bDisconnectSupported		= alcIsExtensionPresent(pDevice, "ALC_EXT_disconnect");
+
     // clear errors
 	alGetError					();
 	alcGetError					(pDevice);
@@ -324,12 +337,72 @@ void CSoundRender_CoreA::update(const Fvector& P, const Fvector& D, const Fvecto
 
     inherited::update(P, D, N);
 
+    check_device_connection();
+
 #ifdef XR_MP_BUILD
     if (pSoundVoiceChat)
     {
         pSoundVoiceChat->Update(P, D, N);
     }
 #endif
+}
+
+void CSoundRender_CoreA::check_device_connection()
+{
+    if (!pDevice)
+    {
+        return;
+    }
+
+    if (bDefaultDeviceChanged.exchange(false) && DeviceName.empty() && alcReopenDevice)
+    {
+        if (alcReopenDevice(pDevice, nullptr, nullptr))
+        {
+            Msg("SOUND: OpenAL: switched output to the new system default device");
+            bDeviceLost = false;
+        }
+    }
+
+    if (!bDisconnectSupported)
+    {
+        return;
+    }
+
+    float Time = Timer.GetElapsed_sec();
+    if (Time < NextDeviceCheckTime)
+    {
+        return;
+    }
+    NextDeviceCheckTime = Time + 1.f;
+
+    ALCint Connected = ALC_TRUE;
+    alcGetIntegerv(pDevice, ALC_CONNECTED, 1, &Connected);
+    if (Connected)
+    {
+        return;
+    }
+
+    if (!bDeviceLost)
+    {
+        Msg("! SOUND: OpenAL: output device disconnected");
+        bDeviceLost = true;
+    }
+
+    if (!alcReopenDevice)
+    {
+        return;
+    }
+
+    if (!DeviceName.empty() && alcReopenDevice(pDevice, DeviceName.c_str(), nullptr))
+    {
+        Msg("SOUND: OpenAL: output device reconnected");
+        bDeviceLost = false;
+    }
+    else if (alcReopenDevice(pDevice, nullptr, nullptr))
+    {
+        Msg("SOUND: OpenAL: switched output to the system default device");
+        bDeviceLost = false;
+    }
 }
 
 void CSoundRender_CoreA::_clear	()

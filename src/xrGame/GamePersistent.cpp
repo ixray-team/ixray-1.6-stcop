@@ -339,7 +339,14 @@ void CGamePersistent::WeathersUpdate()
 					pos.y += 10.f;
 					snd._p->g_type = ESoundTypes::SOUND_TYPE_WORLD_AMBIENT;
 
-					snd.play_at_pos(0, pos);
+					if (snd.handle() && snd.handle()->channels_num() == 2)
+					{
+						snd.play_at_pos(0, Fvector().set(0.f, 0.f, 0.f), sm_2D);
+					}
+					else
+					{
+						snd.play_at_pos(0, pos);
+					}
 
 					if (!snd.handle() || Core.ParamsData.test(ECoreParams::nosound))
 						continue;

@@ -235,6 +235,16 @@ void CSoundRender_Emitter::update(float dt)
 	}
 }
 
+IC float linear_attenuation(const CSound_params& Params, float Dist)
+{
+	float MinMax = Params.max_distance - Params.min_distance;
+	if (MinMax <= EPS_L)
+	{
+		return (Dist <= Params.max_distance) ? 1.f : 0.f;
+	}
+	return (Params.max_distance - Dist) / MinMax;
+}
+
 IC void	volume_lerp(float& c, float t, float s, float dt)
 {
 	float diff		= t - c;
@@ -263,8 +273,7 @@ bool CSoundRender_Emitter::update_culling(float dt)
 
 		// Calc attenuated volume
 		//LostAlphaRus in
-		float min_max = p_source.max_distance - p_source.min_distance;
-		volume_att = (p_source.max_distance - dist) / min_max;
+		volume_att = linear_attenuation(p_source, dist);
 		clamp(volume_att, 0.f, p_source.volume);
 
 		float volume_factor = 0.0f;
@@ -329,17 +338,16 @@ float CSoundRender_Emitter::priority()
 {
 	float volume_att = 1.f;
 
-	float dist = SoundRender->listener_position().distance_to(p_source.position);
-
 	if (b2D)
 	{
-		volume_att = p_source.min_distance / (psSoundRolloff * dist);
+		float dist = p_source.position.magnitude();
+		volume_att = (dist > EPS_L) ? p_source.min_distance / (psSoundRolloff * dist) : 1.f;
 		clamp(volume_att, 0.f, 1.f);
 	}
 	else
 	{
-		float min_max = p_source.max_distance - p_source.min_distance;
-		volume_att = (p_source.max_distance - dist) / min_max;
+		float dist = SoundRender->listener_position().distance_to(p_source.position);
+		volume_att = linear_attenuation(p_source, dist);
 		clamp(volume_att, 0.f, p_source.volume);
 	}
 
