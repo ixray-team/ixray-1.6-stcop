@@ -114,7 +114,7 @@ void export_ogf( xrMU_Reference& mu_reference )
 			pOGF->bSharedMaterial = m_subdiv.bSharedMaterial;
 
 			// Collect textures
-			auto& Tex = pBuild->GetTexture(m_subdiv.material, m_subdiv.bSharedMaterial);
+			auto& Tex = CBuild::GetTexture(m_subdiv.material, m_subdiv.bSharedMaterial);
 			OGF_Texture T;
 			T.name = Tex.name;
 			T.pBuildSurface	= &Tex;

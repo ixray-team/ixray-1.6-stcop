@@ -45,7 +45,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 			pOGF->bSharedMaterial = it->bSharedMaterial;
 
 			// Collect textures
-			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
+			auto& Tex = CBuild::GetTexture(it->material, it->bSharedMaterial);
 			OGF_Texture T;
 			T.name = Tex.name;
 			T.pBuildSurface = &Tex;

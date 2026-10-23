@@ -73,9 +73,9 @@ void OGF::x_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_
 	F.v[2]	= x_BuildVertex(x_vertex(V3));
 	if (!F.Degenerate()) {
 		fast_path_data.faces.push_back(F);
-	} else {
-		if (fast_path_data.vertices.size()>VertCount) 
-			fast_path_data.vertices.erase(fast_path_data.vertices.begin()+VertCount,fast_path_data.vertices.end());
+	} else if (fast_path_data.vertices.size()>VertCount)
+	{
+		fast_path_data.vertices.erase(fast_path_data.vertices.begin()+VertCount,fast_path_data.vertices.end());
 	}
 }
 void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
@@ -86,20 +86,31 @@ void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 	F.v[1]	= _BuildVertex(V2);
 	F.v[2]	= _BuildVertex(V3);
 	if (!F.Degenerate()) {
-		for (itOGF_F I=data.faces.begin(); I!=data.faces.end(); I++)		if (I->Equal(F)) return;
+		for (auto& face : data.faces)
+		{
+			if (face.Equal(F))
+			{
+				return;
+			}
+		}
 		data.faces.push_back	(F);
 		x_BuildFace		(V1,V2,V3,_tc_);
-	} else {
-		if (data.vertices.size()>VertCount) 
-				data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
+	} else if (data.vertices.size()>VertCount)
+	{
+		data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
 	}
 }
 bool OGF::dbg_SphereContainsVertex(Fvector& c, float R)
 {
 	Fsphere	S;	S.set(c,R);
-	for (u32 it=0; it<data.vertices.size(); it++)
-		if (S.contains(data.vertices[it].P))	return	true;
-	return false	;
+	for (auto& vertex : data.vertices)
+	{
+		if (S.contains(vertex.P))
+		{
+			return	true;
+		}
+	}
+	return false;
 }
 
 void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vector<bool>& fmark)
@@ -153,7 +164,7 @@ void OGF::Optimize()
 	// Detect relevant number of UV pairs
 	R_ASSERT(data.vertices.size());
 	dwRelevantUV = data.vertices.front().UV.size();
-	auto& SH = pBuild->shaders().Get(pBuild->GetMaterialReserved(material, bSharedMaterial));
+	auto& SH = CBuild::shaders().Get(CBuild::GetMaterialReserved(material, bSharedMaterial));
 	if (!SH.flags.bOptimizeUV)
 	{
 		return;
