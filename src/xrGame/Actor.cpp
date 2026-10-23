@@ -3457,6 +3457,9 @@ float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type
 
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 {
+	if (EngineExternal().ShadowOfChernobylMode())
+		return 1.0f - HitArtefactsOnBeltLegacy(1.0f, hit_type);
+
 	float sum = 0.0f;
 
 	for (const PIItem item : inventory().m_belt)
