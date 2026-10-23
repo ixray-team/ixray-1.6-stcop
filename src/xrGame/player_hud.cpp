@@ -1475,36 +1475,43 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 		retarget_reference = anm->m_base_name;
 	}
 
-	if (retarget)
+	const bool overlay = rig && ForceAdditive;
+	if (retarget && !overlay)
 	{
 		PlayRetargetBase(Layer ? anm_name_b : shared_str("anm_idle"));
 	}
 
 	g_player_hud->CycleFade = idle && rig ? IdleFade : 0.f;
 
-	const bool additive = rig && (retarget || hud_motion_listed(AdditiveMotions, anm_name_b));
+	const bool listed = hud_motion_listed(AdditiveMotions, anm_name_b);
+	const bool additive = rig && (retarget || overlay || listed);
+	const bool keep_additive = rig && KeepAdditive && AdditivePlaying;
 	SHudCycleMode& mode = g_player_hud->CycleMode;
-	mode.Type = additive ? EHudCycleMode::Additive : AdditivePlaying && idle ? EHudCycleMode::KeepBase : EHudCycleMode::Replace;
+	mode.Type = additive ? EHudCycleMode::Additive : AdditivePlaying && (idle || keep_additive) ? EHudCycleMode::KeepBase : EHudCycleMode::Replace;
 	mode.BlendIn = AdditiveBlendIn;
 	mode.BlendOut = AdditiveBlendOut;
 	mode.Loop = additive && idle && strstr(anm_name_b.c_str(), "_start") == nullptr && strstr(anm_name_b.c_str(), "_end") == nullptr;
-	mode.FadeAdditive = !additive && AdditivePlaying;
+	mode.FadeAdditive = !additive && AdditivePlaying && !keep_additive;
 	mode.Reference = MotionID();
-	const shared_str& reference = retarget ? retarget_reference : AdditiveReference;
+	const shared_str reference = retarget ? retarget_reference : listed ? AdditiveReference : shared_str();
 	if (additive && reference.size() != 0 && !m_model_combined && g_player_hud->GetModel() != nullptr)
 	{
 		mode.Reference = g_player_hud->GetModel()->ID_Cycle_Safe(reference);
 	}
 
-	AdditivePlaying = additive;
-	RetargetPlaying = retarget;
-	RetargetLayerPlaying = Layer && additive;
-	if (retarget)
+	AdditiveOverlay = overlay || (keep_additive && AdditiveOverlay);
+	AdditivePlaying = additive || keep_additive;
+	if (!overlay)
 	{
-		RetargetMotion = HandsMotion;
-		RetargetReferenceMotion = mode.Reference.valid() ? mode.Reference : HandsMotion;
+		RetargetPlaying = retarget;
+		RetargetLayerPlaying = Layer && additive;
+		if (retarget)
+		{
+			RetargetMotion = HandsMotion;
+			RetargetReferenceMotion = mode.Reference.valid() ? mode.Reference : HandsMotion;
+		}
+		LeftHandFree = rig && hud_motion_listed(LeftHandFreeMotions, anm_name_b);
 	}
-	LeftHandFree = rig && hud_motion_listed(LeftHandFreeMotions, anm_name_b);
 
 	IKinematicsAnimated* kaModel = m_model_combined ? m_model->dcast_PKinematicsAnimated() : nullptr;
 	u32 ret = g_player_hud->anim_play(m_attach_place_idx, HandsMotion, need_mix_hands, md, speed, kaModel);
@@ -3608,6 +3615,11 @@ struct SHandsIkFrame
 	bool					SprintLeftPin = false;
 	float					SprintLeftPinWeight = 0.f;
 	Fmatrix					SprintLeftPinTarget = Fidentity;
+	Fmatrix					OverlayAncorDelta = Fidentity;
+	Fmatrix					OverlayRightBase = Fidentity;
+	Fmatrix					OverlayLeftBase = Fidentity;
+	bool					OverlayRight = false;
+	bool					OverlayLeft = false;
 	bool					ReloadState = false;
 	bool					Firing = false;
 	bool					MoveWeapon = false;
@@ -3682,7 +3694,7 @@ void player_hud::update_hands_ik(const Fmatrix& cam_trans, CActor* actor)
 	HandsIkWeaponPose(F, actor);
 	HandsIkFingerState(F);
 
-	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f && F.FingerStart <= 0.f && !HandsIkSwayNeeded(F))
+	if (!F.MoveWeapon && !F.RetargetRight && !F.RetargetLeft && !F.OverlayRight && !F.OverlayLeft && !F.SprintRight && !F.SprintLeft && !F.SprintLayerRight && !F.SprintLayerLeft && !(F.HasAttach && (LeftIkWeight > 0.f || F.Item->LeftHandAttachBlend > 0.f)) && !F.FingerHold && F.FingerSettle <= 0.f && F.FingerStart <= 0.f && !HandsIkSwayNeeded(F))
 	{
 		HandsIkFingerInertia(F);
 		LeftWristLast = AnimRelative;
@@ -3737,7 +3749,7 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 		return false;
 	}
 
-	const u32 state = item->m_parent_hud_item->GetState();
+	const u32 state = item->m_parent_hud_item->AnimState();
 	bool active = m_attached_items[1] == nullptr && item->LeftIkBone != BI_NONE;
 	if (active)
 	{
@@ -3786,6 +3798,17 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 	F.AncorInRightHand = ancor_in_right_hand;
 	F.RetargetRight = retarget && has_right && RetargetRightValid;
 	F.RetargetLeft = retarget && has_left && RetargetLeftValid;
+
+	const u8 OverlayMask = u8(~(1 << ADDITIVE_CHANNEL));
+	Fmatrix OverlayAncorBase;
+	const bool Overlay = item->AdditiveOverlay && hud_channel_weight(m_model, ADDITIVE_CHANNEL) > 0.f && m_model->LL_GetBoneTransformMasked(ancor, OverlayMask, OverlayAncorBase);
+	if (Overlay)
+	{
+		F.OverlayAncorDelta.mul_43(model->LL_GetTransform(ancor), Fmatrix().invert(OverlayAncorBase));
+	}
+
+	F.OverlayRight = Overlay && has_right && !ancor_in_right_hand && m_model->LL_GetBoneTransformMasked(RightIkChain[2], OverlayMask, F.OverlayRightBase);
+	F.OverlayLeft = Overlay && has_left && !item->LeftHandFree && m_model->LL_GetBoneTransformMasked(LeftIkChain[2], OverlayMask, F.OverlayLeftBase);
 	return true;
 }
 
@@ -4114,6 +4137,11 @@ void player_hud::HandsIkHandTargets(SHandsIkFrame& F)
 		sprint_blend(right_target, F.SprintRightBase);
 	}
 
+	if (F.OverlayRight)
+	{
+		right_target.mul_43(delta, Fmatrix().mul_43(F.OverlayAncorDelta, F.OverlayRightBase));
+	}
+
 	if (F.RetargetRight)
 	{
 		retarget_blend(right_target, RetargetRightTarget);
@@ -4134,6 +4162,11 @@ void player_hud::HandsIkHandTargets(SHandsIkFrame& F)
 	if (F.SprintLeft)
 	{
 		sprint_blend(left_target, F.SprintLeftBase);
+	}
+
+	if (F.OverlayLeft)
+	{
+		left_target.mul_43(delta, Fmatrix().mul_43(F.OverlayAncorDelta, F.OverlayLeftBase));
 	}
 
 	if (F.RetargetLeft)
@@ -5589,6 +5622,7 @@ void player_hud::attach_item(CHudItem* item)
 		}
 
 		pi->AdditivePlaying = false;
+		pi->AdditiveOverlay = false;
 		pi->RetargetPlaying = false;
 
 		if (item_idx == 0 && m_attached_items[1])

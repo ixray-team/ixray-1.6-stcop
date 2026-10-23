@@ -521,6 +521,9 @@ struct attachable_hud_item final
 	float							AdditiveBlendIn = 0.f;
 	float							AdditiveBlendOut = 0.1f;
 	bool							AdditivePlaying = false;
+	bool							ForceAdditive = false;
+	bool							KeepAdditive = false;
+	bool							AdditiveOverlay = false;
 	shared_str						AdditiveReference;
 	float							SprintPoseInertia = 0.08f;
 	xr_vector<shared_str>			RetargetMotions;

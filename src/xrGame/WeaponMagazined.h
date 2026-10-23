@@ -232,6 +232,8 @@ protected:
 	virtual shared_str SetCurrentAimAnimation();
 	virtual shared_str SetCurrentIdleAnimation();
 	shared_str SetCurrentPumpAnimation();
+	virtual shared_str OverlayIdleAnimation() override;
+	virtual void OnOverlayResume() override;
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration() final override;

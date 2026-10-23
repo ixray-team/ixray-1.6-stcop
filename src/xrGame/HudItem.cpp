@@ -165,8 +165,21 @@ void CHudItem::renderable_Render()
 
 void CHudItem::SwitchState(u8 S)
 {
-	if (OnClient()) 
+	if (OnClient())
 		return;
+
+	if (Overlay.Active && GetState() == Overlay.HostState && (S == eIdle || S == Overlay.State))
+	{
+		if (Overlay.Finishing)
+		{
+			PlayOverlayIdle();
+		}
+		else
+		{
+			ResumeOverlay();
+		}
+		return;
+	}
 
 	SetNextState( S );
 	OnStateSwitch(S);
@@ -196,6 +209,18 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 
 void CHudItem::OnStateSwitch(u8 S)
 {
+	if (Overlay.Active && !Overlay.Finishing)
+	{
+		if (Overlay.HostState == u8(-1) && S != Overlay.State)
+		{
+			Overlay.HostState = S;
+		}
+		else if (S != Overlay.HostState)
+		{
+			Overlay = {};
+		}
+	}
+
 	u8 old_state = GetState();
 	SetState			(S);
 	
@@ -449,33 +474,154 @@ bool CHudItem::GetHudLookInertia(Fmatrix& pre, Fmatrix& xform) const
 	return true;
 }
 
+void CHudItem::ProcessMotionMarks(const CMotionDef* Def, u32 StartTm, u32 PrevTm, u32 CurrTm, u8 State)
+{
+	if (Def == nullptr || GetState() == eHidden)
+	{
+		return;
+	}
+
+	const float PrevTime = (float(PrevTm) - float(StartTm)) / 1000.0f;
+	const float CurrTime = (float(CurrTm) - float(StartTm)) / 1000.0f;
+	for (const motion_marks& M : Def->marks)
+	{
+		if (!M.is_empty() && M.pick_mark(PrevTime) == nullptr && M.pick_mark(CurrTime) != nullptr)
+		{
+			OnMotionMark(State, M);
+		}
+	}
+}
+
+bool CHudItem::CanStartOverlay() const
+{
+	const u8 State = GetState();
+	if (UnpendedState != State || State == eIdle || State == eHiding || State == eHidden || IsPending() || Overlay.Active)
+	{
+		return false;
+	}
+
+	if (!m_bStopAtEndAnimIsRunning || m_current_motion_def == nullptr || !CCameraRig::Enabled())
+	{
+		return false;
+	}
+
+	attachable_hud_item* Hud = const_cast<CHudItem*>(this)->HudItemData();
+	return Hud != nullptr && (!Hud->AdditivePlaying || Hud->AdditiveOverlay) && g_player_hud != nullptr && Hud == g_player_hud->attached_item(0);
+}
+
+void CHudItem::StartOverlay()
+{
+	SHudOverlayBase Base;
+	Base.Active = true;
+	Base.State = m_startedMotionState;
+	Base.RndIdx = m_started_rnd_anim_idx;
+	Base.Motion = m_current_motion;
+	Base.Def = m_current_motion_def;
+	Base.StartTm = m_dwMotionStartTm;
+	Base.CurrTm = m_dwMotionCurrTm;
+	Base.EndTm = m_dwMotionEndTm;
+	StopCurrentAnimWithoutCallback();
+	Overlay = Base;
+}
+
+void CHudItem::UpdateOverlay()
+{
+	if (!Overlay.Active || Overlay.Finishing)
+	{
+		return;
+	}
+
+	if (GetState() != Overlay.HostState)
+	{
+		Overlay = {};
+		return;
+	}
+
+	const u32 Now = Device.dwTimeGlobal;
+	const u8 State = Overlay.State;
+	ProcessMotionMarks(Overlay.Def, Overlay.StartTm, Overlay.CurrTm, Now, State);
+	if (!Overlay.Active)
+	{
+		return;
+	}
+
+	Overlay.CurrTm = Now;
+	if (Now <= Overlay.EndTm)
+	{
+		return;
+	}
+
+	Overlay.Finishing = true;
+	OnAnimationEnd(State);
+	Overlay = {};
+}
+
+void CHudItem::ResumeOverlay()
+{
+	const SHudOverlayBase Base = Overlay;
+	Overlay = {};
+
+	SetNextState(Base.State);
+	SetState(Base.State);
+	m_current_motion = Base.Motion;
+	m_current_motion_def = Base.Def;
+	m_started_rnd_anim_idx = Base.RndIdx;
+	m_startedMotionState = Base.State;
+	m_dwMotionStartTm = Base.StartTm;
+	m_dwMotionCurrTm = Base.CurrTm;
+	m_dwMotionEndTm = Base.EndTm;
+	m_bStopAtEndAnimIsRunning = Base.Def != nullptr;
+	UnpendedState = Base.State;
+	SetPending(false);
+	OnOverlayResume();
+
+	if (g_player_hud != nullptr && HudItemData() != nullptr && HudItemData() == g_player_hud->attached_item(0) && CCameraRig::Enabled())
+	{
+		g_player_hud->UpdateMovementLayers();
+	}
+}
+
+shared_str CHudItem::OverlayIdleAnimation()
+{
+	return SetCurrentStateAnimation(SetCurrentIdleAnimation());
+}
+
+void CHudItem::PlayOverlayIdle()
+{
+	attachable_hud_item* Hud = HudItemData();
+	if (Hud == nullptr)
+	{
+		return;
+	}
+
+	const shared_str Name = OverlayIdleAnimation();
+	if (!HudAnimationExist(Name))
+	{
+		return;
+	}
+
+	const shared_str Motion = m_current_motion;
+	const CMotionDef* Def = m_current_motion_def;
+	const u8 RndIdx = m_started_rnd_anim_idx;
+
+	Hud->KeepAdditive = true;
+	PlayHUDMotion_noCB(Name, EHudMixType::eMixAll, false);
+	Hud->KeepAdditive = false;
+
+	m_current_motion = Motion;
+	m_current_motion_def = Def;
+	m_started_rnd_anim_idx = RndIdx;
+}
+
 void CHudItem::UpdateCL()
 {
+	UpdateOverlay();
+
 	if (m_current_motion_def)
 	{
 		if (m_bStopAtEndAnimIsRunning)
 		{
-			const xr_vector<motion_marks>& marks = m_current_motion_def->marks;
-			if (GetState() != eHidden && !marks.empty())
-			{
-				float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm) / 1000.0f;
-				float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm) / 1000.0f;
-
-				for (auto& M : marks)
-				{
-					if (M.is_empty())
-					{
-						continue;
-					}
-
-					auto Iprev = M.pick_mark(motion_prev_time);
-					auto Icurr = M.pick_mark(motion_curr_time);
-					if (Iprev == nullptr && Icurr != nullptr)
-					{
-						OnMotionMark(m_startedMotionState, M);
-					}
-				}
-			}
+			ProcessMotionMarks(m_current_motion_def, m_dwMotionStartTm, m_dwMotionCurrTm, Device.dwTimeGlobal, m_startedMotionState);
 
 			m_dwMotionCurrTm = Device.dwTimeGlobal;
 			if (m_dwMotionCurrTm > m_dwMotionEndTm)
@@ -661,6 +807,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state, b
 		PlaySound("sndByMotion", m_object->Position());
 	}
 
+	UnpendedState = u8(-1);
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn, disableRandom);
 	if (anim_time>0)
 	{
@@ -703,14 +850,18 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMix
 			Device.dwFrame);
 	}
 
-	if (HudItemData())
+	if (attachable_hud_item* Hud = HudItemData())
 	{
-		if (g_player_hud != nullptr && HudItemData() == g_player_hud->attached_item(0))
+		const bool Additive = Overlay.Active && !Overlay.Finishing && GetState() == Overlay.HostState;
+		if (!Additive && g_player_hud != nullptr && Hud == g_player_hud->attached_item(0))
 		{
 			g_player_hud->OnHudMotionStarted(motion_name);
 		}
 
-		return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, disableRandom);
+		Hud->ForceAdditive = Additive;
+		const u32 Time = Hud->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, disableRandom);
+		Hud->ForceAdditive = false;
+		return Time;
 	}
 	else
 	{
@@ -726,6 +877,7 @@ void CHudItem::StopCurrentAnimWithoutCallback()
 	m_dwMotionCurrTm			= 0;
 	m_bStopAtEndAnimIsRunning	= false;
 	m_current_motion_def		= nullptr;
+	Overlay						= {};
 }
 
 bool CHudItem::GetHUDmode()
@@ -1175,6 +1327,7 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 	if (mark.name == "mm_unpend")
 	{
 		SetPending(false);
+		UnpendedState = state;
 
 		if (g_player_hud != nullptr && HudItemData() != nullptr && HudItemData() == g_player_hud->attached_item(0) && CCameraRig::Enabled())
 		{

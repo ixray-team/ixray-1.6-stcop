@@ -377,9 +377,40 @@ protected:
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
 
+	virtual shared_str			OverlayIdleAnimation	();
+	virtual void				OnOverlayResume			()				{}
+
 private:
+	struct SHudOverlayBase
+	{
+		bool					Active = false;
+		bool					Finishing = false;
+		u8						State = 0;
+		u8						HostState = u8(-1);
+		u8						RndIdx = u8(-1);
+		shared_str				Motion;
+		const CMotionDef*		Def = nullptr;
+		u32						StartTm = 0;
+		u32						CurrTm = 0;
+		u32						EndTm = 0;
+	};
+
+	SHudOverlayBase				Overlay;
+	u8							UnpendedState = u8(-1);
+
+	void						ProcessMotionMarks		(const CMotionDef* Def, u32 StartTm, u32 PrevTm, u32 CurrTm, u8 State);
+	void						UpdateOverlay			();
+	void						ResumeOverlay			();
+	void						PlayOverlayIdle			();
+
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;
+
+public:
+	bool						CanStartOverlay			() const;
+	void						StartOverlay			();
+	bool						OverlayActive			() const		{ return Overlay.Active; }
+	u8							AnimState				() const		{ return Overlay.Active && GetState() == Overlay.HostState ? Overlay.State : GetState(); }
 
 public:
 	const shared_str&			HudSection				() const		{ return hud_sect;}

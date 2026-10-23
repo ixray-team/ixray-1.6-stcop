@@ -591,6 +591,10 @@ void CWeaponMagazinedWGrenade::FireStart()
 	}
 
 	CWeapon::FireStart();
+	if (CurrentState != eFire && ParentIsActor() && CanStartOverlay())
+	{
+		StartOverlay();
+	}
 	SwitchState(eFire);
 }
 
