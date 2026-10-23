@@ -235,6 +235,7 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create(r2_RT_generic0, w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		rt_Generic_1.create(r2_RT_generic1, w, h, ERHI_FORMAT::B8G8R8A8_UNORM);
+		ScopeSceneTarget.create("$user$scope_scene", w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 
 		//	Igor: for volumetric lights
 		//	temp: for higher quality blends
@@ -366,6 +367,7 @@ CRenderTarget::CRenderTarget		()
 		s_combine_dbg_Accumulator.create	("effects\\screen_set",		r2_RT_accum			);
 		g_combine_VP.create					(dwDecl,		RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine.create					(FVF::F_TL,		RCache.Vertex.Buffer(), RCache.QuadIB);
+		ScopeDepthResetShader.create("scope_depth_reset");
 		g_combine_2UV.create				(FVF::F_TL2uv,	RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine_cuboid.create				(FVF::F_L,	RCache.Vertex.Buffer(), RCache.Index.Buffer());
 

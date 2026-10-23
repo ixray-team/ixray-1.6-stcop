@@ -1,36 +1,22 @@
 #include "common.hlsli"
-uniform    float4        screen_res;
+uniform float4 screen_res;
 #include "pnv.hlsli"
+#include "scope_lens.hlsli"
 
-struct 	v2p
+struct v2p
 {
- 	float4 	tc0: 		TEXCOORD0;	// base
- 	float4 	tc1: 		TEXCOORD1;	// environment
-  	float4	c0:			COLOR0;		// sun.(fog*fog)
+	float2 tc0 : TEXCOORD0; // base
+	float4 tc1 : TEXCOORD1;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-// Pixel
-uniform sampler2D	s_vp2;
-
-float4 	main	( v2p I )	: COLOR
+float4 main(v2p I) : COLOR
 {
+	float4 t_base = tex2D(s_base, I.tc0);
+	float2 SceneUV = GetScopeSceneUV(I.tc1);
+	float4 t_vp2 = SampleScopeScene(I.tc0, SceneUV);
 
-	float4	t_base 	= tex2D	(s_base,I.tc0);
+	t_vp2.rgb = calc_night_vision_effect(SceneUV, t_vp2, float3(1.0f, 2.0f, 1.0f)).rgb;
 
-	I.tc0.x = (I.tc0.x-0.5f)*m_hud_params.x+0.5f+m_zoom_deviation.x;	// Растягиваем картинку в линзе так, чтобы на любом разрешении экрана были правильные пропорции
-	I.tc0.y	= I.tc0.y+m_zoom_deviation.y;
-	float4	t_vp2	 = tex2D (s_vp2, I.tc0);			// Изображение со второго вьюпорта
-
-	float4	final	 = float4 (0, 0, 0, 0);
-
-	//** Ночной режим **// //Зеленый ПНВ
-	t_vp2.rgb = calc_night_vision_effect(I.tc0, t_vp2, float3(1.0, 2.0, 1.0));
-
-	// Миксуем с сеткой
-	float4 res = lerp	(t_vp2, t_base, t_base.a);
-
-	// out
-	return  float4	(res.r, res.g, res.b, min(m_hud_params.y, m_hud_params.a));
+	float3 final = lerp(t_vp2.rgb, t_base.rgb, t_base.a);
+	return float4(final, GetScopeLensAlpha());
 }

@@ -448,12 +448,23 @@ void CRender::Render()
 	bool	split_the_scene_to_minimize_wait		= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
+	if (mapHUDScopeMask.size() > 0)
+	{
+		split_the_scene_to_minimize_wait = false;
+	}
+
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
+		if (mapHUDScopeMask.size() > 0)
+		{
+			Target->u_setrt(Target->rt_Position, nullptr, nullptr, RDepth);
+			r_dsgraph_render_scope();
+			Target->phase_scene_begin();
+		}
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
@@ -621,8 +632,14 @@ void CRender::render_forward				()
 
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
 		PortalTraverser.fade_render				()	;					// faded-portals
-		r_dsgraph_render_sorted					()	;					// strict-sorted geoms
+		r_dsgraph_render_sorted					(false)	;				// strict-sorted geoms
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
+		if (ScopeSceneRequired)
+		{
+			Target->CopyScopeScene();
+			ScopeSceneRequired = false;
+		}
+		r_dsgraph_render_sorted_hud();
 	}
 
 	RImplementation.o.distortion				= false;				// disable distorion
