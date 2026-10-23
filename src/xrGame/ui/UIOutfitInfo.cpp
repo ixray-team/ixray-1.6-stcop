@@ -254,7 +254,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 	}
 	for ( u32 i = 0; i < max_count; ++i )
 	{	
-		if ( !m_items[i] || (i == ALife::eHitTypeFireWound && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode()))
+		if ( !m_items[i] || i == ALife::eHitTypeFireWound )
 		{
 			continue;
 		}
@@ -288,7 +288,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		}
 	}
 
-	if ( m_items[ALife::eHitTypeFireWound] && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode() )
+	if ( m_items[ALife::eHitTypeFireWound] )
 	{
 		IKinematics* ikv = PKinematics(actor->Visual());
 		VERIFY( ikv );
