@@ -3208,7 +3208,7 @@ CUIStatic* CWeapon::ZoomTexture()
 
 bool CWeapon::Allow3DScopes() const
 {
-	return psDeviceFlags.test(rsR4) && g_3d_scopes && m_Allow3DScope;
+	return g_3d_scopes && m_Allow3DScope;
 }
 
 bool CWeapon::UseScopeTexture()

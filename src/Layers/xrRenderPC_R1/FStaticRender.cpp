@@ -569,6 +569,7 @@ void CRender::Render()
 	o.vis_intersect								= false			;
 	phase										= PHASE_NORMAL	;
 	r_dsgraph_render_hud						();				// hud
+	r_dsgraph_render_scope();
 	r_dsgraph_render_graph						(0);			// normal level
 	if(Details)Details->Render					();				// grass / details
 	r_dsgraph_render_lods						(true,false);	// lods - FB
@@ -593,10 +594,16 @@ void CRender::Render()
 	L_Dynamic->render							(1);			// addititional light sources, secondary priority
 	phase = PHASE_NORMAL;
 	PortalTraverser.fade_render					();				// faded-portals
-	r_dsgraph_render_sorted						();				// strict-sorted geoms
+	r_dsgraph_render_sorted						(false);			// strict-sorted geoms
 	if(L_Glows)L_Glows->Render					();				// glows
 	g_pGamePersistent->Environment().RenderFlares	();				// lens-flares
 	g_pGamePersistent->Environment().RenderLast	();				// rain/thunder-bolts
+	if (ScopeSceneRequired)
+	{
+		Target->CopyScopeScene();
+		ScopeSceneRequired = false;
+	}
+	r_dsgraph_render_sorted_hud();
 
 #if DEBUG
 	for (int _priority=0; _priority<2; ++_priority)

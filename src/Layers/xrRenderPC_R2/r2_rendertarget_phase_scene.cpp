@@ -55,3 +55,28 @@ void	CRenderTarget::phase_scene_end		()
 {
 	disable_aniso	();
 }
+
+void CRenderTarget::RenderScopeDepthReset()
+{
+	u32 Offset = 0;
+	const float Width = float(RCache.get_width());
+	const float Height = float(RCache.get_height());
+	const u32 Color = color_rgba(255, 255, 255, 255);
+	FVF::TL* Vertices = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	Vertices[0].set(0.0f, Height, 1.0f, 1.0f, Color, 0.0f, 1.0f);
+	Vertices[1].set(0.0f, 0.0f, 1.0f, 1.0f, Color, 0.0f, 0.0f);
+	Vertices[2].set(Width, Height, 1.0f, 1.0f, Color, 1.0f, 1.0f);
+	Vertices[3].set(Width, 0.0f, 1.0f, 1.0f, Color, 1.0f, 0.0f);
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
+
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_Element(ScopeDepthResetShader->E[0]);
+	RCache.set_Geometry(g_combine);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+}
+
+void CRenderTarget::CopyScopeScene()
+{
+	GRHI->CopySurface(ScopeSceneTarget->pRT, RCache.get_RT());
+}
