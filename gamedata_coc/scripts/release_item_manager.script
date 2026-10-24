@@ -61,7 +61,7 @@ function clear()
 		local sim = alife()
 		for id,t in pairs(items_marked_for_removal) do 
 			local se_obj = sim:object(id)
-			if (se_obj and se_obj.parent_id == 65535 and se_obj:name() == t[1] and game.get_game_time():diffSec(t[2]) >= 86400) then
+			if (se_obj and se_obj.parent_id == alife_const.invalid_object_id and se_obj:name() == t[1] and game.get_game_time():diffSec(t[2]) >= 86400) then
 				if not (se_obj.online) then
 					--printf("release %s",t[1])
 					safe_release_manager.release(se_obj)

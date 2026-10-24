@@ -875,7 +875,7 @@ function debug_ui:OnButton_create_clicked()
 	
 	if (item.use_level_spawn) then 
 		if (level.spawn_item) then
-			level.spawn_item(section,pos,lvid,65535,false)
+			level.spawn_item(section,pos,lvid,alife_const.invalid_object_id,false)
 			self:SendOutput("UISpawner: Spawned")
 		end
 		return

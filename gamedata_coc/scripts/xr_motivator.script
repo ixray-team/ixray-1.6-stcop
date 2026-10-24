@@ -141,7 +141,7 @@ function motivator_binder:net_spawn(sobject)
 	
 	xr_reach_task.add_reach_task_action(self.object)
 	
-	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+	local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and alife_object(se_obj.group_id)
 	if (squad and axr_companions.companion_squads[squad.id]) then
 		axr_companions.setup_companion_logic(self.object,self.st,self.loaded)
 	else

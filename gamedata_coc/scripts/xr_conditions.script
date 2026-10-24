@@ -1377,7 +1377,7 @@ function target_squad_name(actor, obj, p)
 	end
 	--callstack()
 	if IsStalker(obj) or IsMonster(obj) then
-		local squad = obj.group_id and obj.group_id ~= 65535 and alife_object(obj.group_id)
+		local squad = obj.group_id and obj.group_id ~= alife_const.invalid_object_id and alife_object(obj.group_id)
 		if not (squad) then
 			return false
 		end
@@ -2136,7 +2136,7 @@ end
 -- Returns true if calling NPC has the surrender flag
 function npc_surrendered_any(actor,npc,p)
 	local st = db.storage[npc:id()]
-	return st and st.victim_surrender >= 0 and st.victim_surrender < 65534 or false
+	return st and st.victim_surrender >= 0 and st.victim_surrender < alife_const.invalid_object_id - 1 or false
 end
 
 function actor_class(actor,npc,p)
@@ -2151,7 +2151,7 @@ end
 -- param 1 is player_id (squad behavior, see _g.script)
 function squad_behavior(actor,npc,p)
 	local se_npc = type(npc.id) == "function" and alife_object(npc:id()) or npc
-	local squad = se_npc and se_npc.parent_id ~= 65535 and alife_object(se_npc.parent_id)
+	local squad = se_npc and se_npc.parent_id ~= alife_const.invalid_object_id and alife_object(se_npc.parent_id)
 	return p and p[1] and squad and squad.player_id == p[1] or false
 end
 

@@ -139,7 +139,7 @@ local function on_game_load()
 		local se_obj = alife_object(cid)
 		if (se_obj) then 
 			non_task_companions[se_obj.id] = true
-			local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+			local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and alife_object(se_obj.group_id)
 			if (squad) then
 				companion_squads[squad.id] = squad
 			end
@@ -235,7 +235,7 @@ function setup_companion_logic(npc,st,loaded,cannot_dismiss)
 	local sim = alife()
 	local se_npc = sim:object(id)
 	local unreg_id = se_npc and se_npc.m_smart_terrain_id
-	if (unreg_id and unreg_id ~= 65535) then
+	if (unreg_id and unreg_id ~= alife_const.invalid_object_id) then
 		local unreg = sim:object(unreg_id)
 		if (unreg) then
 			unreg:unregister_npc(se_npc)

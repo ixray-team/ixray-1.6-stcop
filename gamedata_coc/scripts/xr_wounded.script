@@ -114,14 +114,14 @@ function action_wounded:execute()
 	
 	local id = npc:id()
 	local pid = db.storage[id].victim_surrender
-	local po = pid and pid < 65534 and db.storage[pid] and db.storage[pid].object
+	local po = pid and pid < alife_const.invalid_object_id - 1 and db.storage[pid] and db.storage[pid].object
 	if (po and not utils.load_var(npc,"victim_surrender")) then
 		state_mgr.set_state(npc,"prisoner",nil,nil,nil,{fast_set = true})
 		return
 	end
 	
 	if (pid ~= nil) then
-		db.storage[id].victim_surrender = 65535
+		db.storage[id].victim_surrender = alife_const.invalid_object_id
 	end
 
 	local wound_manager_sound = utils.load_var(npc, "wounded_sound")

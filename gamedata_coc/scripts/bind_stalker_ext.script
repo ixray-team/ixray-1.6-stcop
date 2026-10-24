@@ -39,7 +39,7 @@ end
 function actor_on_net_spawn()
 	local con = get_console()
 	local sim = alife()
-	for i=1,65534 do
+	for _,i in ipairs(alife_object_ids()) do
 		local se_obj = sim:object(i)
 		if (se_obj and se_obj:clsid() == clsid.phantom) then
 			--printf("release phantom")

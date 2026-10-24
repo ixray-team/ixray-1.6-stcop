@@ -196,7 +196,7 @@ function pda_relations_tab:autoupdate()
 			self.companion_info[i].dist_wnd:SetText(string.format(game.translate_string("st_distance_to")..": %.2f", se_obj.position:distance_to(db.actor:position())))
 
 			-- leader and relation status
-			local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+			local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and alife_object(se_obj.group_id)
 			if (squad and squad:commander_id() == se_obj.id) then
 				self.companion_info[i].leader_wnd:Show(true)
 				self.companion_info[i].leader_wnd:InitTexture("ui_minimap_squad_leader")
@@ -407,7 +407,7 @@ function pda_relations_tab:CreateContextMenu(npc,id)
 	if not (se_obj) then 
 		return 
 	end
-	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+	local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and alife_object(se_obj.group_id)
 
 	-- Actions 
 	local action_1 = nil -- Main

@@ -645,7 +645,7 @@ function monster_hud_show(hud)
 
 		hud:add_msg("Section Name",sobj:section_name())
 		hud:add_msg("ID",near:id())
-		if (sobj.parent_id and sobj.parent_id ~= 65535) then 
+		if (sobj.parent_id and sobj.parent_id ~= alife_const.invalid_object_id) then 
 			hud:add_msg("Parent ID",sobj.parent_id)
 		end
 		--hud:add_msg("Name",near:name())
@@ -676,7 +676,7 @@ function monster_hud_show(hud)
 			hud:add_msg("CombatIgnoreCond",xr_logic.pick_section_from_condlist(be, near, st.overrides.combat_ignore.condlist))
 		end
 
-		local smart = sobj.m_smart_terrain_id and sobj.m_smart_terrain_id ~= 65535 and alife_object(sobj.m_smart_terrain_id)
+		local smart = sobj.m_smart_terrain_id and sobj.m_smart_terrain_id ~= alife_const.invalid_object_id and alife_object(sobj.m_smart_terrain_id)
 		local npc_info = smart and smart.npc_info[near:id()]
 		if (npc_info) then 
 			if (npc_info.job) then
@@ -1103,7 +1103,7 @@ function position_hud_show(hud)
 		__tmr_pos_hud = nil
 		_g_o_count = 0
 		local sim = alife()
-		for i=1,65534 do
+		for _,i in ipairs(alife_object_ids()) do
 			if (sim:object(i) ~= nil) then
 				_g_o_count = _g_o_count + 1
 			end
@@ -1211,10 +1211,10 @@ function stalker_info_hud_show(hud)
 		hud:add_msg("Section",sobj:section_name())
 		hud:add_msg("SID",get_object_story_id(near:id()))
 		hud:add_msg("CLSID",near:clsid())
-		if (sobj.parent_id and sobj.parent_id ~= 65535) then 
+		if (sobj.parent_id and sobj.parent_id ~= alife_const.invalid_object_id) then 
 			hud:add_msg("Parent ID",sobj.parent_id)
 		end
-		if (sobj.group_id and sobj.group_id ~= 65535) then 
+		if (sobj.group_id and sobj.group_id ~= alife_const.invalid_object_id) then 
 			hud:add_msg("Squad ID",sobj.group_id)
 		end
 		hud:add_msg("Community",character_community(near))
@@ -1226,7 +1226,7 @@ function stalker_info_hud_show(hud)
 		hud:add_msg("rx_dont_shoot",st.rx_dont_shoot)
 		local sight_type = near:sight_params()
 		hud:add_msg("Sight Type",sight_type and sight_type.m_sight_type)
-		local smrt = sobj.m_smart_terrain_id and sobj.m_smart_terrain_id ~= 65535 and alife_object(sobj.m_smart_terrain_id)
+		local smrt = sobj.m_smart_terrain_id and sobj.m_smart_terrain_id ~= alife_const.invalid_object_id and alife_object(sobj.m_smart_terrain_id)
 		hud:add_msg("m_smart_terrain_id",smrt and smrt:name())
 		if (smrt) then
 			local arriving = smrt.arriving_npc[sobj.id]
@@ -1331,7 +1331,7 @@ function stalker_info_hud_show(hud)
 
 		local vo = near:best_enemy()
 		if (vo and vo:alive() and IsStalker(vo) and IsWounded(vo)) then
-			if (db.storage[vo:id()] and db.storage[vo:id()].victim_surrender and db.storage[vo:id()].victim_surrender < 65534) then
+			if (db.storage[vo:id()] and db.storage[vo:id()].victim_surrender and db.storage[vo:id()].victim_surrender < alife_const.invalid_object_id - 1) then
 				hud:add_msg("Kill wounded",vo:name())
 			end
 		end
@@ -1625,7 +1625,7 @@ function weapon_hud_show(hud)
 		local data = sobj and IsWeapon(wpn) and stpk_utils.get_weapon_data(sobj)
 		local sec = wpn:section()
 		hud:add_msg("Weapon",sec)
-		local owner = sobj and sobj.parent_id ~= 65535 and level.object_by_id(sobj.parent_id)
+		local owner = sobj and sobj.parent_id ~= alife_const.invalid_object_id and level.object_by_id(sobj.parent_id)
 		if (owner) then
 			hud:add_msg("Owner",owner:name())
 		end

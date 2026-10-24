@@ -312,7 +312,7 @@ function action.debug_hold_action(p)
 		_G.DEV_DEBUG_HOLD_ACTION_1 = true
 		local squad
 		local sim = alife()
-		for i=1,65534 do 
+		for _,i in ipairs(alife_object_ids()) do 
 			squad = sim:object(i)
 			if (squad and squad:clsid() == clsid.online_offline_group_s) then
 				if (squad.first_update) then

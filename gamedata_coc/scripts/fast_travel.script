@@ -96,7 +96,7 @@ local function on_game_load()
 	
 	if not (is_empty(quick_travel_smarts)) then
 		local sim = alife()
-		for i=1,65534 do 
+		for _,i in ipairs(alife_object_ids()) do 
 			local smart = sim:object(i)
 			if (smart and smart:clsid() == clsid.smart_terrain and quick_travel_smarts[smart:name()]) then
 				if (xr_statistic.actor_statistic.smart_terrain_visited[smart:name()]) then

@@ -72,8 +72,22 @@ function start_game_callback()
 	pda.add_quick_slot_items_on_game_start()
 end
 
+function is_valid_object_id(id)
+	return id ~= nil and id ~= alife_const.invalid_object_id
+end
+
+function alife_object_ids()
+	local ids = {}
+	for id in alife():objects() do
+		if (id ~= 0) then
+			ids[#ids + 1] = id
+		end
+	end
+	return ids
+end
+
 function alife_object(id)
-	if (id == nil or id >= 65535) then
+	if not (is_valid_object_id(id)) then
 		callstack()
 		printf("ALIFE OBJECT ID IS %s!",id)
 		return
@@ -1293,12 +1307,12 @@ function get_object_squad(object,caller)
 	if not (object) then
 		return
 	end
-		if (object.group_id ~= nil and object.group_id ~= 65535) then
+		if (object.group_id ~= nil and object.group_id ~= alife_const.invalid_object_id) then
 		return alife_object(object.group_id)
 	end
 		local sim = alife()
 	local se_obj = type(object.id) == "function" and sim:object(object:id())
-	return se_obj and se_obj.group_id ~= 65535 and sim:object(se_obj.group_id) or nil
+	return se_obj and se_obj.group_id ~= alife_const.invalid_object_id and sim:object(se_obj.group_id) or nil
 end
 
 function get_story_squad(story_id)

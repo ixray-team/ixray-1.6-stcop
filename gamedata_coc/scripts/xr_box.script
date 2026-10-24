@@ -92,7 +92,7 @@ function create_items(obj, section, number, rnd)
 			if number > 0 then
 				local position = vector():set(obj:position())
 				position.y = obj:position().y + 0.3 --+ math.random(30,50)/100
-				create_ammo(section,position,obj:level_vertex_id(),obj:game_vertex_id(),65535,number)
+				create_ammo(section,position,obj:level_vertex_id(),obj:game_vertex_id(),alife_const.invalid_object_id,number)
 			end
 		end
 	else

@@ -606,7 +606,7 @@ function cmd.waypoint(me,txt,owner,p)
 	local gg = game_graph()
 	
 	local t = {}
-	for id=1,65534 do
+	for _,id in ipairs(alife_object_ids()) do
 		smart = sim:object(id)
 		if (smart and smart:clsid() == clsid.smart_terrain) then
 			gname = smart:name()
@@ -1226,7 +1226,7 @@ function cmd.object(me,txt,owner,p)
 	if (wrd == "count") then
 		local count = 0
 		local a = alife()
-		for i=1, 65534 do 
+		for _,i in ipairs(alife_object_ids()) do 
 			local se_obj = a:object(i)
 			if (se_obj) then 
 				count = count + 1
@@ -1766,7 +1766,7 @@ function cmd.game_graph(me,txt,owner,p)
 		local gg = game_graph()
 		local vertex
 		local sim = alife()
-		for i=1,65534 do
+		for _,i in ipairs(alife_object_ids()) do
 			local se_obj = sim:object(i)
 			if (se_obj) and not (gg:valid_vertex_id(se_obj.m_game_vertex_id)) then
 				issues[#issues+1] = se_obj:name()
@@ -1964,7 +1964,7 @@ function cmd.inventory_owner(me,txt,owner,p)
 		
 		local sim = alife()
 		local count = 0
-		for i=1,65534 do 
+		for _,i in ipairs(alife_object_ids()) do 
 			local se_obj = sim:object(i)
 			if (se_obj and se_obj.parent_id == id) then 
 				sim:release(se_obj,true)

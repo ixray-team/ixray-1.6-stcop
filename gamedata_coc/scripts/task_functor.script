@@ -60,7 +60,7 @@ function get_squad_id_by_task_var(var_name,no_check_online)
 		return
 	end
 
-	local squad = se_npc.group_id and se_npc.group_id ~= 65535 and sim:object(se_npc.group_id)
+	local squad = se_npc.group_id and se_npc.group_id ~= alife_const.invalid_object_id and sim:object(se_npc.group_id)
 	if not (squad) then
 		if (no_check_online) then
 			return

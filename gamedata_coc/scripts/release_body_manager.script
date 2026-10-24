@@ -126,7 +126,7 @@ function Crelease_body:clear(all,dist)
 			return
 		end
 
-		local se_obj = id and id ~= 0 and id ~= 65535 and sim:object(id)
+		local se_obj = id and id ~= 0 and id ~= alife_const.invalid_object_id and sim:object(id)
 		cls = se_obj and se_obj:clsid()
 		if (cls) and (IsStalker(nil,cls) or IsMonster(nil,cls)) and not (se_obj:alive()) then
 			if (all) then
