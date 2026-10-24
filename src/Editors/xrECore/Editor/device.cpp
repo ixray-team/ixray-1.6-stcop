@@ -16,6 +16,7 @@
 #include "device_win_custom.h"
 #include "../../../Include/xrRender/UIRender.h"
 #include "../../../Include/xrRender/RenderFactory.h"
+#include <lunasvg.h>
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
@@ -105,6 +106,98 @@ CEditorRenderDevice::~CEditorRenderDevice()
 
 typedef void __cdecl ttapi_Done_func(void);
 
+extern const char* IX_RAY_LOGO;
+extern const char* IX_MIN_ICON;
+extern const char* IX_MAX_ICON;
+extern const char* IX_CLOSE_ICON;
+
+static void CopyStartupSvg(IRHISurface* Target, const char* Svg, u32 Size, u32 PosX, u32 PosY)
+{
+	const ERHI_FORMAT Format = Target->GetFormat();
+	const bool IsRGBA = Format == ERHI_FORMAT::R8G8B8A8_UNORM || Format == ERHI_FORMAT::R8G8B8A8_UNORM_SRGB;
+	if (Size == 0 || PosX + Size > Target->GetWidth() || PosY + Size > Target->GetHeight())
+	{
+		return;
+	}
+
+	auto Document = lunasvg::Document::loadFromData(Svg);
+	if (!Document)
+	{
+		return;
+	}
+
+	lunasvg::Bitmap Bitmap = Document->renderToBitmap(Size, Size);
+	u32* Pixels = (u32*)Bitmap.data();
+	for (u32 Idx = 0; Idx < Size * Size; ++Idx)
+	{
+		u32 Pixel = Pixels[Idx];
+		if (IsRGBA)
+		{
+			Pixel = (Pixel & 0x0000FF00) | ((Pixel & 0xFF) << 16) | ((Pixel >> 16) & 0xFF);
+		}
+		Pixels[Idx] = Pixel | 0xFF000000;
+	}
+
+	RHISubResource SubResource{};
+	SubResource.Data = Pixels;
+	SubResource.DataSize = Size * Size * 4;
+	SubResource.Width = Size;
+	SubResource.Height = Size;
+	SubResource.RowPitch = Size * 4;
+	SubResource.TextureFormat = Format;
+
+	const RHIBox Box = {PosX, PosY, 0, PosX + Size, PosY + Size, 1};
+	Target->UpdateData(0, 0, &SubResource, Box);
+}
+
+static void DrawStartupFrame()
+{
+	IRHIRenderTargetView* BackBuffer = GRHI->DevicePtr ? GRHI->DevicePtr->SwapChainRTV : nullptr;
+	if (BackBuffer == nullptr)
+	{
+		return;
+	}
+
+	const float Black[4] = {0.f, 0.f, 0.f, 1.f};
+	GRHI->ClearTarget(BackBuffer, Black);
+
+	IRHISurface* Target = BackBuffer->GetSurface();
+	const ERHI_FORMAT Format = Target ? Target->GetFormat() : ERHI_FORMAT::UNKNOWN;
+	const bool IsBGRA = Format == ERHI_FORMAT::B8G8R8A8_UNORM || Format == ERHI_FORMAT::B8G8R8A8_UNORM_SRGB;
+	const bool IsRGBA = Format == ERHI_FORMAT::R8G8B8A8_UNORM || Format == ERHI_FORMAT::R8G8B8A8_UNORM_SRGB;
+
+	if (IsBGRA || IsRGBA)
+	{
+		const u32 Width = Target->GetWidth();
+		const u32 Height = Target->GetHeight();
+
+		constexpr u32 LogoSize = 256;
+		CopyStartupSvg(Target, IX_RAY_LOGO, LogoSize, (Width - std::min(Width, LogoSize)) / 2, (Height - std::min(Height, LogoSize)) / 2);
+
+		float Dpi = SDL_GetWindowDisplayScale(g_AppInfo.Window);
+		if (Dpi <= 0.f)
+		{
+			Dpi = 1.f;
+		}
+
+		const u32 ButtonW = u32(52.f * Dpi);
+		const u32 ButtonH = u32(26.f * Dpi);
+		const u32 IconSize = u32(10.f * Dpi);
+
+		const char* Icons[] = {IX_MIN_ICON, IX_MAX_ICON, IX_CLOSE_ICON};
+		if (Width > ButtonW * 3)
+		{
+			for (u32 Idx = 0; Idx < 3; ++Idx)
+			{
+				const u32 ButtonX = Width - ButtonW * (3 - Idx);
+				CopyStartupSvg(Target, Icons[Idx], IconSize, ButtonX + (ButtonW - IconSize) / 2, (ButtonH - IconSize) / 2);
+			}
+		}
+	}
+
+	GRHI->Present();
+}
+
 void CEditorRenderDevice::Initialize()
 {
     m_DefaultMat.set(1,1,1);
@@ -136,6 +229,9 @@ void CEditorRenderDevice::Initialize()
 	
 	SDL_ShowWindow(g_AppInfo.Window);
 	SDL_RaiseWindow(g_AppInfo.Window);
+
+	// The window has no background brush: show a black frame with the logo until the first editor frame
+	DrawStartupFrame();
 	
 
 	if (psDeviceFlags.test(mtSound))
