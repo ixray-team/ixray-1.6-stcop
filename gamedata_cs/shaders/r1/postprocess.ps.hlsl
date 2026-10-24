@@ -1,5 +1,5 @@
 #include "common.hlsli"
-#include "shared/night_vision.hlsli"
+#include "shared\night_vision.hlsli"
 
 struct v2p
 {
