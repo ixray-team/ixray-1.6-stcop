@@ -96,6 +96,22 @@ void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 	
 }
 
+void CNightVisionEffector::RefreshNightVision()
+{
+	if (!GetStatus() || !IsActive())
+	{
+		return;
+	}
+
+	SwitchNightVision(false, false);
+	m_pActor->Cameras().RemovePPEffector((EEffectorPPType)effNightvision);
+	SwitchNightVision(true, false);
+	if (IsActive())
+	{
+		PlaySounds(eIdleSound);
+	}
+}
+
 CNightVisionEffector::CNightVisionEffector(CActor* actor)
 {
 	m_pActor = actor;
