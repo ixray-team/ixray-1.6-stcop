@@ -700,6 +700,11 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		{			
 			if (!IVERIFY(f_it < (int)mesh->m_Faces.size()))
 			{
+				dwInvalidFaces++;
+				if (surf->_flags().is(SSurfaceData::sf2Sided))
+				{
+					dwInvalidFaces++;
+				}
 				continue;
 			}
 			st_Face& face = mesh->m_Faces[f_it];
@@ -714,43 +719,45 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 				LTools->m_DebugDraw.AppendWireFace(p0,p1,p2);
 
 				dwInvalidFaces++;
+				if (surf->_flags().is(SSurfaceData::sf2Sided))
+				{
+					dwInvalidFaces++;
+				}
 				continue;
 			}
 			R_ASSERT				(face_it<faces.size());
 			b_face& first_face 		= faces[face_it];
-			{
-				smooth_groups[face_it] = mesh->m_SmoothGroups[f_it];
-				smooth_groups[face_it] &= ~(1<<3);
+			smooth_groups[face_it] = mesh->m_SmoothGroups[f_it];
+			smooth_groups[face_it] &= ~(1<<3);
 
-				first_face.dwMaterial = (u16)m_id;
-				first_face.dwMaterialGame = gm_id;
-				if (surf->UseShared)
-				{
-					first_face.flags |= b_face_flags::UseSharedMaterial;
-				}
-				for (int k=0; k<3; ++k)
-				{
-					st_FaceVert& fv = face.pv[k];
-					// vertex index
-					R_ASSERT2((fv.pindex+point_offs)<vert_it,"Index out of range");
-					first_face.v[k] = fv.pindex+point_offs;
-					// uv maps
-					int offs = 0;
-					for (u32 t=0; t<dwTexCnt; ++t)
-					{
-						st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref][t];
-						st_VMap& vmap		= *mesh->m_VMaps[vm_pt.vmap_index];
-						if (vmap.type!=vmtUV)
-						{
-							++offs;
-							--t;
-							continue;
-						}
-						first_face.t[k].set(vmap.getUV(vm_pt.index));
-					}
-				}
-			++face_it;
+			first_face.dwMaterial = (u16)m_id;
+			first_face.dwMaterialGame = gm_id;
+			if (surf->UseShared)
+			{
+				first_face.flags |= b_face_flags::UseSharedMaterial;
 			}
+			for (int k=0; k<3; ++k)
+			{
+				st_FaceVert& fv = face.pv[k];
+				// vertex index
+				R_ASSERT2((fv.pindex+point_offs)<vert_it,"Index out of range");
+				first_face.v[k] = fv.pindex+point_offs;
+				// uv maps
+				int offs = 0;
+				for (u32 t=0; t<dwTexCnt; ++t)
+				{
+					st_VMapPt& vm_pt 	= mesh->m_VMRefs[fv.vmref][t];
+					st_VMap& vmap		= *mesh->m_VMaps[vm_pt.vmap_index];
+					if (vmap.type!=vmtUV)
+					{
+						++offs;
+						--t;
+						continue;
+					}
+					first_face.t[k].set(vmap.getUV(vm_pt.index));
+				}
+			}
+			++face_it;
 
 			if (surf->_flags().is(SSurfaceData::sf2Sided))
 			{
@@ -866,17 +873,6 @@ int	GetModelIdx( const char* model_name )
 	}
 	return   model_idx;
 }
-
-//bool GetMuStaticCformData( CSceneObject* obj,mesh_build_data &data, bool b_selected_only )
-//{
-//   CEditableObject *O = obj->GetReference();
-//   int model_idx		= GetModelIdx(O->GetName());
-	 // detect sector
-//    CSector* S 			= PortalUtils.FindSector(obj,*O->m_Meshes.begin());
-//    int sect_num 		= S?S->m_sector_num:Builder.m_iDefaultSectorNum;
-//}
-
-
 
 bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 {
