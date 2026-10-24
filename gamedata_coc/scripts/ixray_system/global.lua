@@ -755,6 +755,21 @@ function IsActionThrottled(name, interval_ms)
 	return true
 end
 
+--[[
+Description: Checks whether the action is not allowed to be performed, whether a sufficient amount of time has passed relative to the previous call.
+Parameters:
+  name (string)(required) 	- key name throttler.
+  interval_ms (int)(required) - time interval calls in milliseconds
+Returns: (bool) - returns true if call allow, otherwise false.
+ --]]
+function IsNotActionThrottled(name, interval_ms)
+	if IsModuleLoaded("ixr_throttlers") then
+		return (not GetModule("ixr_throttlers").is_action_throttled(name, interval_ms))
+	end
+	
+	return false
+end
+
 --  ####################################################################################################################
 --                                         IXR LOGS
 --  ####################################################################################################################

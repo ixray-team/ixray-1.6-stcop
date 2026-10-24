@@ -156,6 +156,12 @@ function ixr_framework.init(log_reinit)
 	if log_reinit == nil then
 		log_reinit = true
 	end
+
+	-- get_module and is_module_loaded call init(false) on every use: once initialized there is
+	-- nothing to configure, and the log setters below walk the call stack
+	if not log_reinit and ixr_framework.dynamic_vars.is_initialized then
+		return
+	end
 	
 	ixr_logs.set_use_file_log(ixr_framework.use_file_log)
 	ixr_logs.set_use_console_log(ixr_framework.use_console_log)
