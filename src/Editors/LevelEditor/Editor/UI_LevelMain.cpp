@@ -9,6 +9,7 @@
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
+#include "ShaderEditor/UIShaderEditorForm.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)EContext.UI;
@@ -169,6 +170,12 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 		return Actor->CommandLoad(p1, p2);
 	}
 
+	// Open shortcut on the Shaders tab reloads the current library
+	if (!p1.IsString() && UIShaderEditorForm::IsActive())
+	{
+		return UIShaderEditorForm::ReloadCurrent();
+	}
+
 	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
@@ -274,6 +281,12 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		return Actor->CommandSave(p1, p2);
 	}
 
+	// Save shortcut on the Shaders tab saves the shader libraries
+	if (!p1.IsString() && UIShaderEditorForm::IsActive())
+	{
+		return UIShaderEditorForm::SaveAll();
+	}
+
 	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
@@ -347,6 +360,13 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
 	{
 		return Actor->CommandClear(p1, p2);
+	}
+
+	// Clear on the Shaders tab resets the preview camera
+	if (UIShaderEditorForm::IsActive())
+	{
+		EContext.UI->CurrentView().m_Camera.Reset();
+		return true;
 	}
 
 	LUI->LoaderEvent.wait();
@@ -1621,6 +1641,7 @@ void CLevelMain::OnDrawUI()
 	UIObjectList::Update();
 	UIGitWindow::Update();
 	UIActorEditorForm::Update();
+	UIShaderEditorForm::Update();
 	if (LTools->GetToolForm())
 	{
 		LTools->GetToolForm()->OnDrawUI();

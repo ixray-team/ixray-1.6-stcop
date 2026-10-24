@@ -125,6 +125,72 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	m_textures_description.Load				();
 }
 
+void CResourceManager::ED_ReloadLibrary(IReader* F)
+{
+	string256 Name;
+
+	// Constants and matrices are referenced by the compiled shaders: load into the existing objects
+	if (IReader* Chunk = F->open_chunk(0))
+	{
+		while (!Chunk->eof())
+		{
+			Chunk->r_stringZ(Name, sizeof(Name));
+			if (CConstant* Item = _CreateConstant(Name))
+			{
+				Item->Load(Chunk);
+			}
+		}
+		Chunk->close();
+	}
+
+	if (IReader* Chunk = F->open_chunk(1))
+	{
+		while (!Chunk->eof())
+		{
+			Chunk->r_stringZ(Name, sizeof(Name));
+			if (CMatrix* Item = _CreateMatrix(Name))
+			{
+				Item->Load(Chunk);
+			}
+		}
+		Chunk->close();
+	}
+
+	if (IReader* Blenders = F->open_chunk(2))
+	{
+		int ChunkID = 0;
+		while (IReader* Chunk = Blenders->open_chunk(ChunkID))
+		{
+			CBlender_DESC Desc;
+			Chunk->r(&Desc, sizeof(Desc));
+			IBlender* Blender = IBlender::Create(Desc.CLS);
+			if (Blender == nullptr)
+			{
+				Msg("! Renderer doesn't support blender '%s'", Desc.cName);
+			}
+			else
+			{
+				Chunk->seek(0);
+				Blender->Load(*Chunk, Desc.version);
+
+				map_BlenderIt It = m_blenders.find(Desc.cName);
+				if (It == m_blenders.end())
+				{
+					m_blenders.insert(std::make_pair(xr_strdup(Desc.cName), Blender));
+				}
+				else
+				{
+					xr_delete(It->second);
+					It->second = Blender;
+				}
+			}
+			Chunk->close();
+			ChunkID++;
+		}
+		Blenders->close();
+	}
+}
+
 void	CResourceManager::OnDeviceCreate	(const char* shName)
 {
 	if (Device.IsEditorMode() && !FS.exist(shName)) return;

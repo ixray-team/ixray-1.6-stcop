@@ -88,13 +88,8 @@ public:
     ISHTools*			FindTools			(EToolsID id);
   //  ISHTools*			FindTools			(TElTabSheet* sheet);
 
-    // commands
-    CCommandVar 		CommandSave			(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandReload		(CCommandVar p1, CCommandVar p2);
-    CCommandVar 		CommandClear		(CCommandVar p1, CCommandVar p2);
-
-    CCommandVar 		CommandUpdateList	(CCommandVar p1, CCommandVar p2);
+    // Draws the deferred dialogs of every tool
+    void				OnDrawUI			();
 };
 extern CShaderTool*	STools;
 //---------------------------------------------------------------------------

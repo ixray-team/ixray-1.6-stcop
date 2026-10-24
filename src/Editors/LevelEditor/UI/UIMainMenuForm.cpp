@@ -4,6 +4,7 @@
 #include "../Nodes/UIMacroView.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ShaderEditor/UIShaderEditorForm.h"
 #include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
 #include "../Editor/Utils/GitIntegration.h"
@@ -136,6 +137,17 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Save .xr", ICON_FA_FLOPPY_DISK, ""))
 				{
 					Particles->Save(true);
+				}
+			}
+			else if (UIShaderEditorForm::IsActive())
+			{
+				if (ImGui::MenuItemI("Reload", ICON_FA_ARROWS_ROTATE, *GetCommandShortcat(COMMAND_LOAD)))
+				{
+					UIShaderEditorForm::ReloadCurrent();
+				}
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					UIShaderEditorForm::SaveAll();
 				}
 			}
 			else if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
@@ -600,6 +612,11 @@ void UIMainMenuForm::Draw()
 			if (ImGui::MenuItemI("Actor Editor", ICON_FA_PERSON, ""))
 			{
 				UIActorEditorForm::Open();
+			}
+
+			if (ImGui::MenuItemI("Shader Editor", ICON_FA_PALETTE, ""))
+			{
+				UIShaderEditorForm::Open();
 			}
 
 			ImGui::Separator();

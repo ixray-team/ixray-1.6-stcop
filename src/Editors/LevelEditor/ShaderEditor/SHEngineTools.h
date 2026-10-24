@@ -128,6 +128,8 @@ friend class TfrmShaderProperties;
     bool  			OnPreviewObjectRefChange(PropValue* sender, u32& edit_val); 
     void  			OnPreviewObjectRefChange(const char*name);
 public:
+    // The forced blender only applies to the preview: set it back when the Shaders tab is shown again
+    void					RestoreForceBlender	();
 	CMemoryWriter			m_RenderShaders;
 
     IBlender*				m_CurrentBlender;

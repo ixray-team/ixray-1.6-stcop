@@ -4,8 +4,7 @@
 															   
 #include "SHEngineTools.h"
 #include "UI_shadertools.h"
-#include "ui_shadermain.h"
-#include "../xrECore/Editor/EditMesh.h"
+#include "../../xrECore/Editor/EditMesh.h"
 //------------------------------------------------------------------------------
 class CCollapseBlender: public CParseBlender{
 public:
@@ -195,7 +194,7 @@ void CSHEngineTools::OnFrame()
 {
 	if (m_bNeedResetShaders){
 		RealResetShaders();
-	   // ExecCommand		(COMMAND_UPDATE_LIST);
+	   // STools->UpdateList		();
 	}
 	if (m_RemoteRenBlender){
 		RealRenameItem		(m_RenBlenderOldName.c_str(),m_RenBlenderNewName.c_str());
@@ -286,9 +285,9 @@ void CSHEngineTools::RealResetShaders()
 	}
 	// save to temp file
 	PrepareRender		();
-	// reset device shaders from temp file
+	// apply the edited library in place: a device reset would destroy the scene models
 	IReader data		(m_RenderShaders.pointer(), m_RenderShaders.size());
-	EDevice->Reset		(&data,true);
+	DEV->ED_ReloadLibrary(&data);
 	UpdatePreviewShader();
 	// enable props vis update
 	m_bFreezeUpdate 	= false;
@@ -666,7 +665,7 @@ void CSHEngineTools::OnRemoveItem(UIItemListForm::Node& node)
 		if (m_CurrentBlender == I->second)
 		{
 			m_CurrentBlender = 0;
-			Tools->UpdateProperties(true);
+			STools->UpdateProperties(true);
 		}
 		xr_delete		(I->second);
 	   
@@ -712,7 +711,7 @@ void CSHEngineTools::UpdateStreamFromObject()
 	m_BlenderStream.clear();
 	if (m_CurrentBlender) m_CurrentBlender->Save(m_BlenderStream);
 	// init properties
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	STools->UpdateProperties();
 }
 
 void CSHEngineTools::UpdateObjectFromStream()
@@ -881,6 +880,14 @@ void CSHEngineTools::OnDeviceCreate()
 	ResetShaders		();
 }
 
+void CSHEngineTools::RestoreForceBlender()
+{
+	if (m_PreviewObject && !m_bCustomEditObject)
+	{
+		DEV->SetForceBlenderShader(m_CurrentBlender ? m_CurrentBlender->getName() : nullptr);
+	}
+}
+
 void CSHEngineTools::UpdateObjectShader()
 {
 	// apply this shader to non custom object
@@ -1013,8 +1020,8 @@ void CSHEngineTools::AppendItem(const char* path, CLASS_ID cls_id, IBlender* par
 	std::pair<BlenderPairIt, bool> I = m_Blenders.insert(std::make_pair(xr_strdup(m_LastSelection.c_str()), B));
 	R_ASSERT2(I.second, "shader.xr - found duplicate name!!!");
 	// insert to TreeView
-	ExecCommand(COMMAND_UPDATE_LIST);
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	STools->UpdateList();
+	STools->UpdateProperties();
 
 	ResetShaders(true);
 	Modified();

@@ -13,6 +13,8 @@
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
+#include "ShaderEditor/UI_shadertools.h"
+#include "ShaderEditor/UIShaderEditorForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
@@ -82,6 +84,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const int ParticleEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 	EContext.UI->GeneralTabs.push_back({ICON_FA_PERSON " Actors", []()->bool {return ATools != nullptr && ATools->IsModified(); }});
 	const int ActorEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_PALETTE " Shaders", []()->bool {return STools != nullptr && STools->IsModified(); }});
+	const int ShaderEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -149,6 +153,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	UIParticleEditorForm::Create(ParticleEditorTab);
 	UIActorEditorForm::Create(ActorEditorTab);
+	UIShaderEditorForm::Create(ShaderEditorTab);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -332,6 +337,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	// Gives Tools back to the level tool before COMMAND_DESTROY
 	UIActorEditorForm::Destroy();
+	UIShaderEditorForm::Destroy();
 
 	// The shared content browser icons hold textures: release them before the device
 	CContentView::ClearIcons();
