@@ -864,7 +864,8 @@ void CUIActorMenuBase::DonateCurrentItem(CUICellItem* cell_item)
 		make_string<const char*>("Failed to get functor <onDonateCurrentItem>, item = %s", item->m_section_id.c_str())
 	);
 
-	funct(GetPartner()->cast_game_object()->lua_game_object(), item->object().lua_game_object());
+	if (!funct(GetPartner()->cast_game_object()->lua_game_object(), item->object().lua_game_object()))
+		return;
 	//-Alundaio
 
 	CUICellItem* itm = invlist->RemoveItem(cell_item, false);

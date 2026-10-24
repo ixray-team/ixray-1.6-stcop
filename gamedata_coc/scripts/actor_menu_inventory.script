@@ -32,31 +32,26 @@ ex. if (to_slot == EDDListType.iActorSlot) then
 function on_game_start()
 	RegisterScriptCallback("CInventory_ItemAvailableToTrade", this.CInventory_ItemAvailableToTrade)
 	RegisterScriptCallback("CUIActorMenu_CanMoveToPartner", this.CUIActorMenu_CanMoveToPartner)
-	RegisterScriptCallback("CUIActorMenu_DonateCurrentItem", this.CUIActorMenu_DonateCurrentItem)
 end
 
 -- called from engine!
 -- useful for when doing npc:use(db.actor) when NPC is alive
 -- basically what is available in the corpse loot menu while npc is alive
-function CInventory_ItemAvailableToTrade(npc,item)
+function CInventory_ItemAvailableToTrade(npc,item,flags)
 	-- if (xr_corpse_detection.lootable_table[item:section()]) then 
 		-- return true
 	-- end
 	if (db.actor:has_info("ui_pda") and npc:has_info("npcx_is_companion")) then
 		local m_data = alife_storage_manager.get_state()
 		if (m_data and m_data.companion_borrow_item and m_data.companion_borrow_item[item:id()]) then
-			return true
+			return
 		end
-		return false
-	else
-		return true
+		flags.ret_value = false
 	end
-	return false
 end
 
-local flags = { ret_value = true }
 -- called from engine
-function CUIActorMenu_CanMoveToPartner(obj,itm,actor_weight,partner_weight,item_weight,partner_total_weight,partner_max_carry_weight, flags)    
+function CUIActorMenu_CanMoveToPartner(obj,itm,item_weight,partner_total_weight,partner_max_carry_weight,flags)
     if (ActorMenu.get_menu_mode() == 4 and IsStalker(obj) and obj:has_info("npcx_is_companion") and partner_total_weight >= 100) then 
 		flags.ret_value = false
         return
