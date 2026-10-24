@@ -100,10 +100,13 @@ function arena_zone_binder:save(packet)
 	object_binder.save(self, packet)
 	set_save_marker(packet, "save", false, "arena_zone_binder")
 	
-	local num = #self.saved_obj
-	packet:w_u8(num)
+	local num = 0
 	for k,v in pairs(self.saved_obj) do
-		packet:w_u16(k)
+		num = num + 1
+	end
+	w_object_id_count(packet, num, true)
+	for k,v in pairs(self.saved_obj) do
+		packet:w_object_id(k)
 	end
 	set_save_marker(packet, "save", true, "arena_zone_binder")
 end
@@ -113,9 +116,9 @@ function arena_zone_binder:load(packet)
 	object_binder.load(self, packet)
 	set_save_marker(packet, "load", false, "arena_zone_binder")
 
-	local num = packet:r_u8()	
+	local num, wide_ids = r_object_id_count(packet, true)
 	for i=1,num do
-		self.saved_obj[packet:r_u16()] = true
+		self.saved_obj[r_object_id_compat(packet, wide_ids)] = true
 	end	
 	set_save_marker(packet, "load", true, "arena_zone_binder")
 end

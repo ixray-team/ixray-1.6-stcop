@@ -60,10 +60,10 @@ function se_heli:STATE_Write(packet)
 	cse_alife_helicopter.STATE_Write(self,packet)
 	--printf("STATE_Write %s",self.respawn_point_id)
 	if (self.respawn_point_prop_section) then
-		packet:w_u16(self.assigned_target_id or 65535)
-		packet:w_u16(self.current_target_id or 65535)
-		packet:w_u16(self.m_smart_terrain_id or 65535)
-		packet:w_u16(self.respawn_point_id or 65535)
+		packet:w_object_id(self.assigned_target_id or alife_const.invalid_object_id)
+		packet:w_object_id(self.current_target_id or alife_const.invalid_object_id)
+		packet:w_object_id(self.m_smart_terrain_id or alife_const.invalid_object_id)
+		packet:w_object_id(self.respawn_point_id or alife_const.invalid_object_id)
 		packet:w_stringZ(tostring(self.respawn_point_prop_section))
 	end
 end 
@@ -72,20 +72,21 @@ function se_heli:STATE_Read(packet,size)
 	cse_alife_helicopter.STATE_Read(self, packet, size)
 	--printf("size=%s elapsed=%s",size,packet:r_elapsed())
 	if (packet:r_elapsed() > 0) then
-		self.assigned_target_id = packet:r_u16()
-		if (self.assigned_target_id == 65535) then 
+		local wide_ids = self.script_version >= 13
+		self.assigned_target_id = r_object_id_compat(packet, wide_ids)
+		if not (is_valid_object_id(self.assigned_target_id)) then 
 			self.assigned_target_id = nil
 		end 	
-		self.current_target_id = packet:r_u16()
-		if (self.current_target_id == 65535) then 
+		self.current_target_id = r_object_id_compat(packet, wide_ids)
+		if not (is_valid_object_id(self.current_target_id)) then 
 			self.current_target_id = nil
 		end
-		self.m_smart_terrain_id = packet:r_u16()
-		if (self.m_smart_terrain_id == 65535) then 
+		self.m_smart_terrain_id = r_object_id_compat(packet, wide_ids)
+		if not (is_valid_object_id(self.m_smart_terrain_id)) then 
 			self.m_smart_terrain_id = nil
 		end 
-		self.respawn_point_id = packet:r_u16()
-		if (self.respawn_point_id == 65535) then 
+		self.respawn_point_id = r_object_id_compat(packet, wide_ids)
+		if not (is_valid_object_id(self.respawn_point_id)) then 
 			self.respawn_point_id = nil
 		end 
 		self.respawn_point_prop_section = packet:r_stringZ()
