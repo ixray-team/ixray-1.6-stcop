@@ -33,7 +33,6 @@ function get_object_data(sobj)
 		["SM_P_DOG"] = this.get_monster_data,
 		["SM_DOG_P"] = this.get_monster_data,
 		["SM_DOG_F"] = this.get_monster_data,
-		["AI_RAT"]   = this.get_monster_data,
 		["SM_SNORK"] = this.get_monster_data,
 		["SM_TUSHK"] = this.get_monster_data,
 		["SM_ZOMBI"] = this.get_monster_data,
@@ -95,7 +94,7 @@ function get_object_data(sobj)
 		["II_ANTIR"] = this.get_item_data,
 		["II_BOTTL"] = this.get_item_data,
 		["II_FOOD"]  = this.get_item_data,
-		["S_FOOD"]   = this.get_item_data,
+		["S_FOOD"]   = this.get_eatable_data,
 
 		["S_PDA"]    = this.get_item_pda_data,
 		["D_PDA"]    = this.get_item_pda_data,
@@ -139,7 +138,7 @@ function get_object_data(sobj)
 		["ZS_GALAN"] = this.get_anom_zone_data,
 		["ZS_MINCE"] = this.get_anom_zone_data,
 		["ZS_RADIO"] = this.get_anom_zone_data,
-		["ZS_TORRD"] = this.get_anom_zone_data,
+		["ZS_TORRD"] = this.get_torrid_zone_data,
 		["Z_RUSTYH"] = this.get_visual_zone_data,
 		["ZS_BFUZZ"] = this.get_visual_zone_data,
 		["ZS_AMEBA"] = this.get_visual_zone_data,
@@ -147,7 +146,7 @@ function get_object_data(sobj)
 		["Z_RADIO"]  = this.get_anom_zone_data,
 		["Z_CFIRE"]  = this.get_anom_zone_data,
 		["Z_NOGRAV"] = this.get_anom_zone_data,
-		["Z_TORRID"] = this.get_anom_zone_data
+		["Z_TORRID"] = this.get_torrid_zone_data
 	}
 	local class = system_ini():r_string_ex(sobj:section_name(),"class")
 	if (class == nil or class == "") then 
@@ -183,7 +182,6 @@ function set_object_data(t,sobj)
 		["SM_P_DOG"] = this.set_monster_data,
 		["SM_DOG_P"] = this.set_monster_data,
 		["SM_DOG_F"] = this.set_monster_data,
-		["AI_RAT"]   = this.set_monster_data,
 		["SM_SNORK"] = this.set_monster_data,
 		["SM_TUSHK"] = this.set_monster_data,
 		["SM_ZOMBI"] = this.set_monster_data,
@@ -211,6 +209,15 @@ function set_object_data(t,sobj)
 		["II_DOC"]   = this.set_item_document_data,
 
 		["SO_HLAMP"] = this.set_lamp_data,
+		["O_HLAMP"] = this.set_lamp_data,
+		["TORCH"]  = this.set_item_data,
+		["O_PHYSIC"] = this.set_physic_data,
+		["O_DSTRBL"] = this.set_physic_data,
+		["O_INVBOX"] = this.set_inv_box_data,
+		["EQU_STLK"]   = this.set_item_data,
+		["EQU_HLMET"]  = this.set_item_data,
+		["II_EXPLO"]  = this.set_item_data,
+		["AMMO"]   = this.set_ammo_data,
 		--["O_SEARCH"] = "cse_alife_object_projector",
 		["TORCH_S"]  = this.set_item_data,
 
@@ -236,7 +243,7 @@ function set_object_data(t,sobj)
 		["II_ANTIR"] = this.set_item_data,
 		["II_BOTTL"] = this.set_item_data,
 		["II_FOOD"]  = this.set_item_data,
-		["S_FOOD"]   = this.set_item_data,
+		["S_FOOD"]   = this.set_eatable_data,
 
 		["S_PDA"]    = this.set_item_pda_data,
 		["D_PDA"]    = this.set_item_pda_data,
@@ -278,14 +285,16 @@ function set_object_data(t,sobj)
 		["ZS_GALAN"] = this.set_anom_zone_data,
 		["ZS_MINCE"] = this.set_anom_zone_data,
 		["ZS_RADIO"] = this.set_anom_zone_data,
-		["ZS_TORRD"] = this.set_anom_zone_data,
-		["ZS_BFUZZ"] = this.set_anom_zone_data,
+		["ZS_TORRD"] = this.set_torrid_zone_data,
+		["ZS_BFUZZ"] = this.set_visual_zone_data,
+		["Z_RUSTYH"] = this.set_visual_zone_data,
+		["ZS_AMEBA"] = this.set_visual_zone_data,
 
 		["Z_MBALD"]  = this.set_anom_zone_data,
 		["Z_RADIO"]  = this.set_anom_zone_data,
 		["Z_CFIRE"]  = this.set_anom_zone_data,
 		["Z_NOGRAV"] = this.set_anom_zone_data,
-		["Z_TORRID"] = this.set_anom_zone_data
+		["Z_TORRID"] = this.set_torrid_zone_data
 	}
 	local class = system_ini():r_string_ex(sobj:section_name(),"class")
 	if (class == nil or class == "") then 
@@ -311,14 +320,17 @@ function get_abstract_data(stpk)
     t.name = stpk:r_stringZ()
     t.s_gameid = stpk:r_u8()
     t.s_rp = stpk:r_u8()
-    stpk:r_vec3(t.position)
-    stpk:r_vec3(t.direction)
+    t.position = stpk:r_vec3()
+    t.direction = stpk:r_vec3()
     t.respawn_time = stpk:r_u16()
-    t.object_id = stpk:r_u16()
-    t.parent_id = stpk:r_u16()
-    t.phantom_id = stpk:r_u16()
+    local object_id_lo = stpk:r_u16()
+    local parent_id_lo = stpk:r_u16()
+    local phantom_id_lo = stpk:r_u16()
     t.s_flags = stpk:r_u16()
     t.version = stpk:r_u16()
+    t.object_id = stpk:r_u16() * 65536 + object_id_lo
+    t.parent_id = stpk:r_u16() * 65536 + parent_id_lo
+    t.phantom_id = stpk:r_u16() * 65536 + phantom_id_lo
     t.cse_abstract__unk1_h16 = stpk:r_u16()
     t.script_version = stpk:r_u16()
     t.unused = stpk:r_u16()
@@ -342,11 +354,14 @@ function set_abstract_data(t,stpk)
     stpk:w_vec3(t.position)
     stpk:w_vec3(t.direction)
     stpk:w_u16(t.respawn_time)
-    stpk:w_u16(t.object_id)
-    stpk:w_u16(t.parent_id)
-    stpk:w_u16(t.phantom_id)
+    stpk:w_u16(t.object_id % 65536)
+    stpk:w_u16(t.parent_id % 65536)
+    stpk:w_u16(t.phantom_id % 65536)
     stpk:w_u16(t.s_flags)
     stpk:w_u16(t.version)
+    stpk:w_u16(math.floor(t.object_id / 65536))
+    stpk:w_u16(math.floor(t.parent_id / 65536))
+    stpk:w_u16(math.floor(t.phantom_id / 65536))
     stpk:w_u16(t.cse_abstract__unk1_h16)
     stpk:w_u16(t.script_version)
     stpk:w_u16(t.unused)
@@ -544,7 +559,7 @@ function get_item_pda_data(sobj)
 	stpk_utils.parse_cse_alife_object_properties_packet(t,stpk)
 	stpk_utils.parse_cse_visual_properties_packet(t,stpk)
 	stpk_utils.parse_cse_alife_item_properties_packet(t,stpk)
-	t.original_owner = stpk:r_u16()
+	t.original_owner = stpk:r_u32()
 	t.specific_character = stpk:r_stringZ()
 	t.info_portion = stpk:r_stringZ()
 	return t
@@ -556,7 +571,7 @@ function set_item_pda_data(t,sobj)
 		stpk_utils.fill_cse_alife_object_properties_packet(t,stpk)
 		stpk_utils.fill_cse_visual_properties_packet(t,stpk)
 		stpk_utils.fill_cse_alife_item_properties_packet(t,stpk)
-		stpk:w_u16(t.original_owner)
+		stpk:w_u32(t.original_owner)
 		stpk:w_stringZ(t.specific_character)
 		stpk:w_stringZ(t.info_portion)
 		local size = stpk:w_tell()
@@ -651,6 +666,7 @@ function get_monster_data(sobj)
 	stpk_utils.parse_cse_alife_creature_abstract_properties_packet(t,stpk)
 	stpk_utils.parse_cse_alife_monster_abstract_properties_packet(t,stpk)
 	stpk_utils.parse_cse_ph_skeleton_properties_packet(t,stpk)
+	stpk_utils.parse_cse_alife_monster_base_properties_packet(t,stpk)
 	stpk_utils.parse_se_monster_properties_packet(t,stpk)
 	return t
 end
@@ -663,6 +679,7 @@ function set_monster_data(t,sobj)
 		stpk_utils.fill_cse_alife_creature_abstract_properties_packet(t,stpk)
 		stpk_utils.fill_cse_alife_monster_abstract_properties_packet(t,stpk)
 		stpk_utils.fill_cse_ph_skeleton_properties_packet(t,stpk)
+		stpk_utils.fill_cse_alife_monster_base_properties_packet(t,stpk)
 		stpk_utils.fill_se_monster_properties_packet(t,stpk)
 		local size = stpk:w_tell()
 		stpk:r_seek(2)
@@ -887,6 +904,60 @@ function set_space_restrictor_data(t,sobj)
 end
 
 
+function get_eatable_data(sobj)
+	local t = get_item_data(sobj)
+	if t and data_left(stpk) then
+		t.remaining_uses = stpk:r_u8()
+	end
+	return t
+end
+
+function set_eatable_data(t,sobj)
+	if sobj then
+		stpk:w_begin(0)
+		stpk_utils.fill_cse_alife_object_properties_packet(t,stpk)
+		stpk_utils.fill_cse_visual_properties_packet(t,stpk)
+		stpk_utils.fill_cse_alife_item_properties_packet(t,stpk)
+		stpk:w_u8(t.remaining_uses or 0)
+		local size = stpk:w_tell()
+		stpk:r_seek(2)
+
+		sobj:STATE_Read(stpk,size)
+	end
+end
+
+function get_torrid_zone_data(sobj)
+	if not sobj then
+		return
+	end
+	stpk:w_begin(0)
+	sobj:STATE_Write(stpk)
+	stpk:r_seek(2)
+
+	local t = {}
+	stpk_utils.parse_cse_alife_object_properties_packet(t,stpk)
+	stpk_utils.parse_cse_shape_properties_packet(t,stpk)
+	stpk_utils.parse_cse_alife_space_restrictor_properties_packet(t,stpk)
+	stpk_utils.parse_cse_alife_custom_zone_properties_packet(t,stpk)
+	stpk_utils.parse_cse_motion_properties_packet(t,stpk)
+	return t
+end
+
+function set_torrid_zone_data(t,sobj)
+	if sobj then
+		stpk:w_begin(0)
+		stpk_utils.fill_cse_alife_object_properties_packet(t,stpk)
+		stpk_utils.fill_cse_shape_properties_packet(t,stpk)
+		stpk_utils.fill_cse_alife_space_restrictor_properties_packet(t,stpk)
+		stpk_utils.fill_cse_alife_custom_zone_properties_packet(t,stpk)
+		stpk_utils.fill_cse_motion_properties_packet(t,stpk)
+		local size = stpk:w_tell()
+		stpk:r_seek(2)
+
+		sobj:STATE_Read(stpk,size)
+	end
+end
+
 function get_anom_zone_data(sobj)
 	if not sobj then
 		return
@@ -1077,14 +1148,17 @@ function parse_cse_abstract_properties_packet(ret,stpk)
     t.name = stpk:r_stringZ()
     t.s_gameid = stpk:r_u8()
     t.s_rp = stpk:r_u8()
-    stpk:r_vec3(t.position)
-    stpk:r_vec3(t.direction)
+    t.position = stpk:r_vec3()
+    t.direction = stpk:r_vec3()
     t.respawn_time = stpk:r_u16()
-    t.object_id = stpk:r_u16()
-    t.parent_id = stpk:r_u16()
-    t.phantom_id = stpk:r_u16()
+    local object_id_lo = stpk:r_u16()
+    local parent_id_lo = stpk:r_u16()
+    local phantom_id_lo = stpk:r_u16()
     t.s_flags = stpk:r_u16()
     t.version = stpk:r_u16()
+    t.object_id = stpk:r_u16() * 65536 + object_id_lo
+    t.parent_id = stpk:r_u16() * 65536 + parent_id_lo
+    t.phantom_id = stpk:r_u16() * 65536 + phantom_id_lo
     t.cse_abstract__unk1_h16 = stpk:r_u16()
     t.script_version = stpk:r_u16()
     t.unused = stpk:r_u16()
@@ -1156,14 +1230,14 @@ function parse_cse_shape_properties_packet(ret,stpk)
 			ret.shapes[i].shtype = shape_type
 			if shape_type == 0 then
 				-- sphere
-				stpk:r_vec3(ret.shapes[i].offset)
+				ret.shapes[i].offset = stpk:r_vec3()
 				ret.shapes[i].radius = stpk:r_float()
 			else
 				-- box
-				stpk:r_vec3(ret.shapes[i].v1)
-				stpk:r_vec3(ret.shapes[i].v2)
-				stpk:r_vec3(ret.shapes[i].v3)
-				stpk:r_vec3(ret.shapes[i].offset)
+				ret.shapes[i].v1 = stpk:r_vec3()
+				ret.shapes[i].v2 = stpk:r_vec3()
+				ret.shapes[i].v3 = stpk:r_vec3()
+				ret.shapes[i].offset = stpk:r_vec3()
 			end
 		end
 	end
@@ -1217,14 +1291,14 @@ end
 function parse_cse_ph_skeleton_properties_packet(ret,stpk)
 	ret.skeleton_name = stpk:r_stringZ()
 	ret.skeleton_flags = stpk:r_u8()
-	ret.source_id = stpk:r_u16()
+	ret.source_id = stpk:r_u32()
 	return ret
 end
 
 function fill_cse_ph_skeleton_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.skeleton_name)
 	stpk:w_u8(ret.skeleton_flags)
-	stpk:w_u16(ret.source_id)
+	stpk:w_u32(ret.source_id)
 end
 
 --[[
@@ -1301,7 +1375,9 @@ end
 
 -- se_smart_cover_properties
 function parse_se_smart_cover_properties_packet(ret,stpk)
+	ret.loopholes = {}
 	if (data_left(stpk)) then
+		ret.last_description = stpk:r_stringZ()
 		local n = stpk:r_u8()
 		for i = 1, n do
 			local loophole_id = stpk:r_stringZ()
@@ -1316,8 +1392,9 @@ function parse_se_smart_cover_properties_packet(ret,stpk)
 end
 
 function fill_se_smart_cover_properties_packet(ret,stpk)
-	stpk:w_stringZ(ret.last_description)
+	stpk:w_stringZ(ret.last_description or "nil")
 	local n = 0
+	ret.loopholes = ret.loopholes or {}
 	for k,v in pairs (ret.loopholes) do
 		n = n + 1
 	end
@@ -1434,9 +1511,9 @@ function parse_cse_alife_creature_abstract_properties_packet(ret,stpk)
 	ret.g_squad = stpk:r_u8()
 	ret.g_group = stpk:r_u8()
 	ret.health = stpk:r_float()
-	ret.dynamic_out_restrictions = read_chunk(stpk, stpk:r_s32(), "u16")
-	ret.dynamic_in_restrictions = read_chunk(stpk, stpk:r_s32(), "u16")
-	ret.killer_id = stpk:r_u16()
+	ret.dynamic_out_restrictions = read_chunk(stpk, stpk:r_s32(), "u32")
+	ret.dynamic_in_restrictions = read_chunk(stpk, stpk:r_s32(), "u32")
+	ret.killer_id = stpk:r_u32()
 	ret.game_death_time = read_chunk(stpk, 8, "u8")
 	return ret
 end
@@ -1448,12 +1525,12 @@ function fill_cse_alife_creature_abstract_properties_packet(ret,stpk)
 	stpk:w_float(ret.health)
 
 	stpk:w_s32(#ret.dynamic_out_restrictions)
-	write_chunk(stpk, ret.dynamic_out_restrictions, "u16")
+	write_chunk(stpk, ret.dynamic_out_restrictions, "u32")
 
 	stpk:w_s32(#ret.dynamic_in_restrictions)
-	write_chunk(stpk, ret.dynamic_in_restrictions, "u16")
+	write_chunk(stpk, ret.dynamic_in_restrictions, "u32")
 
-	stpk:w_u16(ret.killer_id)
+	stpk:w_u32(ret.killer_id)
 	write_chunk(stpk, ret.game_death_time, "u8")
 end
 
@@ -1461,7 +1538,7 @@ end
 function parse_cse_alife_monster_abstract_properties_packet(ret,stpk)
 	ret.base_out_restrictors = stpk:r_stringZ()
 	ret.base_in_restrictors = stpk:r_stringZ()
-	ret.smart_terrain_id = stpk:r_u16()
+	ret.smart_terrain_id = stpk:r_u32()
 	ret.smart_terrain_task_active = stpk:r_u8()
 	return ret
 end
@@ -1469,7 +1546,7 @@ end
 function fill_cse_alife_monster_abstract_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.base_out_restrictors)
 	stpk:w_stringZ(ret.base_in_restrictors)
-	stpk:w_u16(ret.smart_terrain_id)
+	stpk:w_u32(ret.smart_terrain_id)
 	stpk:w_u8(ret.smart_terrain_task_active)
 end
 
@@ -1543,7 +1620,7 @@ function parse_cse_alife_creature_actor_properties_packet(ret,stpk,upd)
 		ret.upd_actor_weapon = stpk:r_u8()
 		ret.upd_num_items = stpk:r_u16()
 	else
-		ret.holder_id = stpk:r_u16()
+		ret.holder_id = stpk:r_u32()
 	end
 	return ret
 end
@@ -1559,7 +1636,7 @@ function fill_cse_alife_creature_actor_properties_packet(ret,stpk,upd)
 		stpk:w_u8(ret.upd_actor_weapon)
 		stpk:w_u16(ret.upd_num_items)
 	else
-		stpk:w_u16(ret.holder_id)
+		stpk:w_u32(ret.holder_id)
 	end
 end
 
@@ -1581,12 +1658,12 @@ end
 
 -- cse_alife_monster_base_properties
 function parse_cse_alife_monster_base_properties_packet(ret,stpk)
-	ret.spec_object_id = stpk:r_u16()
+	ret.spec_object_id = stpk:r_u32()
 	return ret
 end
 
 function fill_cse_alife_monster_base_properties_packet(ret,stpk)
-	stpk:w_u16(ret.spec_object_id)
+	stpk:w_u32(ret.spec_object_id)
 end
 
 -- se_monster_properties
@@ -1679,8 +1756,8 @@ end
 function parse_cse_alife_level_changer_properties_packet(ret,stpk)
 	ret.dest_game_vertex_id = stpk:r_u16()
 	ret.dest_level_vertex_id = stpk:r_s32()
-	stpk:r_vec3(ret.dest_position)
-	stpk:r_vec3(ret.dest_direction)
+	ret.dest_position = stpk:r_vec3()
+	ret.dest_direction = stpk:r_vec3()
 	ret.dest_level_name = stpk:r_stringZ()
 	ret.dest_graph_point = stpk:r_stringZ()
 	ret.silent_mode = stpk:r_u8()
@@ -1707,7 +1784,7 @@ function parse_se_level_changer_properties_packet(ret,stpk)
 end
 
 function fill_se_level_changer_properties_packet(ret,stpk)
-	stpk:w_bool(ret.enabled or true)
+	stpk:w_bool(ret.enabled ~= false)
 	stpk:w_stringZ(ret.hint or "")
 	stpk:w_u16(ret.se_level_changer_save_marker or 0)
 end
@@ -1769,8 +1846,6 @@ function fill_se_zone_anom_properties_packet(ret,stpk)
 		if ret.last_spawn_time == 1 then
 			utils.w_CTime(stpk, ret.c_time)
 		end
-	else
-		stpk:w_u8(0)
 	end
 end
 
@@ -1803,15 +1878,13 @@ function fill_se_zone_visual_properties_packet(ret,stpk)
 		if ret.last_spawn_time == 1 then
 			utils.w_CTime(stpk, ret.c_time)
 		end
-	else
-		stpk:w_u8(0)
 	end
 end
 
 -- cse_alife_online_offline_group_properties
 function parse_cse_alife_online_offline_group_properties_packet(ret,stpk)
 	ret.members_count = stpk:r_s32()
-	ret.members = read_chunk(stpk, ret.members_count, "u16")
+	ret.members = read_chunk(stpk, ret.members_count, "u32")
 	if data_left(stpk) then
 		-- sim_squad_scripted:
 		ret.current_target_id = stpk:r_stringZ()
@@ -1824,7 +1897,7 @@ end
 
 function fill_cse_alife_online_offline_group_properties_packet(ret,stpk)
 	stpk:w_s32(ret.members_count)
-	write_chunk(stpk, ret.members, "u16")
+	write_chunk(stpk, ret.members, "u32")
 
 	--if ret.current_target_id ~= nil then
 		stpk:w_stringZ(ret.current_target_id or "nil")
@@ -1861,6 +1934,9 @@ function parse_cse_alife_item_weapon_properties_packet(ret,stpk)
 	ret.cur_scope = stpk:r_u8()
 	ret.chamber_ammo_type = stpk:r_u8()
 	ret.chamber_elapsed = stpk:r_u16()
+	if data_left(stpk) then
+		ret.grenade_mode = stpk:r_u8()
+	end
 	return ret
 end
 
@@ -1878,6 +1954,9 @@ function fill_cse_alife_item_weapon_properties_packet(ret,stpk)
 	stpk:w_u8(ret.cur_scope)
 	stpk:w_u8(ret.chamber_ammo_type)
 	stpk:w_u16(ret.chamber_elapsed)
+	if ret.grenade_mode ~= nil then
+		stpk:w_u8(ret.grenade_mode)
+	end
 	return ret
 end
 
