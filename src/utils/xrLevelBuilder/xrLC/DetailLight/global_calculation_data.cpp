@@ -282,7 +282,7 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			R_ASSERT(Slot);
 			return *Slot;
 		}
-		return gl_data.g_shaders_xrlc[gl_data.g_materials[ID]];
+		return gl_data.g_shaders_xrlc->Get(gl_data.g_materials[ID].shader_xrlc);
 	};
 	Status("Loading Vertices...");
 	xr_vector<Fvector> vertexs;
