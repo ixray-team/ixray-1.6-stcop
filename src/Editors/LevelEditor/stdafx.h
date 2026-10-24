@@ -148,7 +148,6 @@
 #include "UI/UIDOOneColor.h"
 #include "UI/UIDOShuffle.h"
 #include "UI/UIWorldPropertiesFrom.h"
-#include "UI/ObjectList/UIObjectListItem.h"
 #include "UI/ObjectList/UIObjectList.h"
 #include "UI/UIPropertiesModal.h"
 #include "UI/UITopBarForm.h"

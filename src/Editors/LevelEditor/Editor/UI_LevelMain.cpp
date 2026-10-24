@@ -1318,6 +1318,11 @@ bool CLevelMain::ApplyShortCut(u32 Key, TShiftState Shift)
 		return true;
 	}
 
+	if (UIObjectList::ConsumesShortcut(Key))
+	{
+		return true;
+	}
+
 	return inherited::ApplyShortCut(Key, Shift);
 }
 

@@ -744,7 +744,7 @@ void UIMainMenuForm::Draw()
 			bool selected = UIObjectList::IsOpen();
 			ImGui::SetCursorPosY((EContext.UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
 
-			if (ImGui::Checkbox("Object List", &selected))
+			if (ImGui::Checkbox("Outliner", &selected))
 			{
 				if (UIObjectList::IsOpen())
 				{
