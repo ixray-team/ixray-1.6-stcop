@@ -57,6 +57,17 @@ float4 main(_input I) : COLOR0
     // here should be distance fog
     float distance = length(P.xyz);
     float fog = saturate(distance * fog_params.w + fog_params.x);
+    
+    
+     float gray = dot(color.xyz, float3(0.3, 0.59, 0.11));
+    color.xyz = lerp(
+        float3(gray, gray, gray),
+        color.xyz,
+        0.65 + (dot(Ldynamic_color.xyz, float3(1, 1, 1)) / 3.0) * 0.2
+    );
+    
+    
+    
     color = lerp(color, fog_color, fog);
 
     return float4(color, fog * fog);

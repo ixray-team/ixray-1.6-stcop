@@ -60,7 +60,15 @@ float4 main(PSInputFullscreen I) : SV_Target
 	Fog = GammaToLinear(Fog);
 	
 	Color = lerp(Color, GammaToLinear(fog_color.xyz), Fog);
-	
+    
+    float gray = dot(Color.xyz, float3(0.3, 0.59, 0.11));
+    Color.xyz = lerp(
+        float3(gray, gray, gray),
+        Color.xyz,
+        0.65 + (dot(Ldynamic_color.xyz, float3(1, 1, 1)) / 3.0) * 0.2
+    );
+    
+    
     return float4(Color, Fog * Fog);
 }
 

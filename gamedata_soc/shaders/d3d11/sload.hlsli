@@ -268,6 +268,26 @@ inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 	#ifndef USE_LEGACY_LIGHT
 		M.Roughness = L_material.w * 0.25f + 0.15f;
 		M.Specular = M.Specular * M.Specular;
+        
+        if (M.Specular < 0.1f)
+        {
+            M.Metalness = M.Specular / 2.0f;
+            
+            if (M.Metalness < 0.005f)
+            {
+            
+                if (M.Metalness > 0.000f)
+                {
+                    M.Metalness = M.Metalness * 5.0f;
+                    
+                }
+                //M.Metalness = 10.05f;
+            }
+        }
+        
+        
+        
+        
 	#endif
 
 	#ifndef USE_TRUE_NORMAL_MAP
