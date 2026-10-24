@@ -12,6 +12,7 @@
 #include "nvg.h"
 #include "ui/UIGameCustom.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/IGame_Menu.h"
 
 ENGINE_API extern bool turn_nvg;
 ENGINE_API extern Fcolor nvg_color;
@@ -244,7 +245,8 @@ bool CNightVisionEffector::IsActive()
 void CNightVisionEffector::UpdateMask(CUIGameCustom& GameUI)
 {
 	// Interference suppresses the shader, while the powered device keeps its UI mask.
-	if (m_bNightVisionOn && IsActive() && m_pActor->g_Alive() && m_pActor->HUDview())
+	const bool MenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+	if (!MenuActive && m_bNightVisionOn && IsActive() && m_pActor->g_Alive() && m_pActor->HUDview())
 	{
 		GameUI.AddCustomStatic("nv_tunnel", true);
 	}
