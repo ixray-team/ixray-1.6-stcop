@@ -4,7 +4,7 @@
 
 #include "SHGameMtlPairTools.h"
 #include "UI_shadertools.h"
-#include "../xrEProps/FolderLib.h"
+#include "../../xrEProps/FolderLib.h"
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ void CSHGameMtlPairTools::SetCurrentItem(const char* name, bool bView)
     // set material
 	if (m_MtlPair!=S){
         m_MtlPair = S;
-	    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	    STools->UpdateProperties();
 	 	if (bView) ViewSetCurrentItem(name);
    }
 }

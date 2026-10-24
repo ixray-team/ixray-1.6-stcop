@@ -4,12 +4,12 @@
 
 
 #include "efx-presets.h"
-#include "ui_shadermain.h"
-#include "../../xrSound/stdafx.h"
-#include "../../xrSound/Sound.h"
-#include "../xrECore/Editor/D3DUtils.h"
+#include "../../../xrSound/stdafx.h"
+#include "../../../xrSound/Sound.h"
+#include "../../xrECore/Editor/D3DUtils.h"
 
 #include "SHSoundEnvTools.h"
+#include "UI_shadertools.h"
 //------------------------------------------------------------------------------
 
 #define EAX_ENVIRONMENT_GENERIC 0
@@ -400,8 +400,8 @@ void CSHSoundEnvTools::AppendItem(const char* folder_name, const char* parent_na
 	CSoundRender_Environment* S 	= m_Library.Append(parent);
 	if (!parent)		S->set_default();
 	S->name				= m_LastSelection.c_str();
-	ExecCommand			(COMMAND_UPDATE_LIST);
-	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+	STools->UpdateList			();
+	STools->UpdateProperties			();
 	Modified			();
 }
 
@@ -411,8 +411,8 @@ void CSHSoundEnvTools::OnRenameItem(UIItemListForm::Node& node, const char* old_
 		ApplyChanges	();
 		CSoundRender_Environment* S = m_Library.Get(old_full_name); R_ASSERT(S);
 		S->name			= new_full_name;
-		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
-		ExecCommand		(COMMAND_UPDATE_LIST);
+		STools->UpdateProperties		();
+		STools->UpdateList		();
 	}
 }
 
@@ -432,7 +432,7 @@ void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* na
 		if (m_Env && m_Env->name == name)
 		{
 			m_Env = 0;
-			Tools->UpdateProperties(true);
+			STools->UpdateProperties(true);
 		}
 		m_Library.Remove(name);
 	}
@@ -445,7 +445,7 @@ void CSHSoundEnvTools::SetCurrentItem(const char* name, bool bView)
 	if (m_Env!=S){
 		m_Env 			= S;
 		if (m_Env) 		m_EnvSrc = *m_Env;
-		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		STools->UpdateProperties();
 		if (bView) ViewSetCurrentItem(name);
 	}
 	UseEnvironment	();
@@ -477,7 +477,7 @@ void  CSHSoundEnvTools::OnEnvSizeChange(PropValue* sender)
 	test_env.ReverbDelay 		= m_EnvSrc.ReverbDelay;
 	CSound_environment* E		= m_Env;
 	//Sound->set_environment_size	(&test_env,&E);
-	ExecCommand					(COMMAND_UPDATE_PROPERTIES);
+	STools->UpdateProperties					();
 }
 
 void CSHSoundEnvTools::OnEnvChange(PropValue* sender)
@@ -529,7 +529,7 @@ void CSHSoundEnvTools::OnEnvChange(PropValue* sender)
 	m_Env->HFReference = Preset->Preset.flHFReference;
 	m_Env->LFReference = Preset->Preset.flLFReference;
 
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	STools->UpdateProperties();
 }
 
 void CSHSoundEnvTools::RealUpdateList()

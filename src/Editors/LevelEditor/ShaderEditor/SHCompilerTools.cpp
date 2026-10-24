@@ -4,7 +4,7 @@
 
 
 #include "SHCompilerTools.h"
-#include "ui_shadermain.h"
+#include "UI_shadertools.h"
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -111,8 +111,8 @@ void CSHCompilerTools::AppendItem(const char* path, const char* parent_name)
     Shader_xrLC* S = m_Library.Append(parent);
     m_LastSelection = pref;
     strcpy(S->Name, m_LastSelection.c_str());
-    ExecCommand(COMMAND_UPDATE_LIST);
-    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+    STools->UpdateList();
+    STools->UpdateProperties();
     Modified();
 
 }
@@ -125,8 +125,8 @@ void CSHCompilerTools::OnRenameItem(UIItemListForm::Node& node, const char* old_
         Shader_xrLC* S = FindItem(old_full_name); R_ASSERT(S);
         strcpy(S->Name, new_full_name);
         if (S == m_Shader) {
-            ExecCommand(COMMAND_UPDATE_PROPERTIES);
-            ExecCommand(COMMAND_UPDATE_LIST);
+            STools->UpdateProperties();
+            STools->UpdateList();
 
             m_LastSelection = m_Shader->Name;
 
@@ -152,7 +152,7 @@ void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* na
         if (m_Shader && stricmp(m_Shader->Name, name) == 0)
         {
             m_Shader = 0;
-            Tools->UpdateProperties(true);
+            STools->UpdateProperties(true);
         }
         m_Library.Remove(name);
     }
@@ -167,7 +167,7 @@ void CSHCompilerTools::SetCurrentItem(const char* name, bool bView)
     if (m_Shader != S) 
     {
         m_Shader = S;
-        ExecCommand(COMMAND_UPDATE_PROPERTIES);
+        STools->UpdateProperties();
         if (bView)	ViewSetCurrentItem(name);
     }
 }

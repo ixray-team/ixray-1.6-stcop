@@ -5,6 +5,7 @@
 #include "../xrECore/Editor/imgui_EditorEx.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ShaderEditor/UIShaderEditorForm.h"
 #include "../ActorEditor/ActorEditor.h"
 
 UITopBarForm::UITopBarForm()
@@ -275,6 +276,12 @@ void UITopBarForm::ClickOpen()
 		return;
 	}
 
+	if (UIShaderEditorForm::IsActive())
+	{
+		UIShaderEditorForm::ReloadCurrent();
+		return;
+	}
+
 	ExecCommand(COMMAND_LOAD);
 }
 void UITopBarForm::ClickSave()
@@ -282,6 +289,12 @@ void UITopBarForm::ClickSave()
 	if (UIParticleEditorForm::IsActive())
 	{
 		UIParticleEditorForm::SaveCurrent();
+		return;
+	}
+
+	if (UIShaderEditorForm::IsActive())
+	{
+		UIShaderEditorForm::SaveAll();
 		return;
 	}
 

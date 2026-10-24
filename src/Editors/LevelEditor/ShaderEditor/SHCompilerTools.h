@@ -2,7 +2,7 @@
 #ifndef SHCompilerToolsH
 #define SHCompilerToolsH
 
-#include "../../xrEngine/Shader_xrLC.h"
+#include "../../../xrEngine/Shader_xrLC.h"
 #include "SHToolsInterface.h"
 
 // refs

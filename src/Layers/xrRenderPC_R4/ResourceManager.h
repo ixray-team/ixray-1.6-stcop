@@ -132,6 +132,9 @@ public:
 
 	// Editor cooperation
 	void							ED_UpdateBlender	(const char* Name, IBlender*		data);
+	// Applies an edited shader library (shaders.xr layout) without a device reset,
+	// so the render models stay alive
+	void							ED_ReloadLibrary	(IReader* F);
 	void							ED_UpdateTextures	(xr_vector<xr_string>* names);
 
 	// Low level resource creation

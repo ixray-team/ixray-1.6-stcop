@@ -14,6 +14,7 @@ file(GLOB_RECURSE ELE_SOURCE_EDITOR_UTILS_FILES CONFIGURE_DEPENDS "Editor/Utils/
 file(GLOB_RECURSE ELE_SOURCE_ENGINE_FILES CONFIGURE_DEPENDS "Engine/*.*")
 file(GLOB_RECURSE ELE_SOURCE_PARTICLE_EDITOR_FILES CONFIGURE_DEPENDS "ParticleEditor/*.*")
 file(GLOB_RECURSE ELE_SOURCE_ACTOR_EDITOR_FILES CONFIGURE_DEPENDS "ActorEditor/*.*")
+file(GLOB_RECURSE ELE_SOURCE_SHADER_EDITOR_FILES CONFIGURE_DEPENDS "ShaderEditor/*.*")
 
 file(GLOB_RECURSE ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES CONFIGURE_DEPENDS
     "../../xrServerEntities/server_entity_wrapper.h"
@@ -36,6 +37,7 @@ source_group("editor/ui" FILES ${ELE_SOURCE_UI_FILES})
 source_group("engine/core" FILES ${ELE_SOURCE_ENGINE_FILES})
 source_group("editor/particles" FILES ${ELE_SOURCE_PARTICLE_EDITOR_FILES})
 source_group("editor/actor" FILES ${ELE_SOURCE_ACTOR_EDITOR_FILES})
+source_group("editor/shaders" FILES ${ELE_SOURCE_SHADER_EDITOR_FILES})
 source_group("editor/actor/postprocess" FILES ${ELE_SOURCE_POSTPROCESS_FILES})
 source_group("le/src" FILES ${ELE_SOURCE_ENTRY_CODE_FILES})
 source_group("le/res" FILES ${ELE_SOURCE_ENTRY_RES_FILES})
@@ -75,6 +77,9 @@ target_link_libraries(LevelEditor PUBLIC xrSE_Factory)
 target_link_libraries(LevelEditor PUBLIC PCore)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
 add_dependencies(LevelEditor xrGame)
+
+# VS input-signature reflection of the Shader Editor preview (CPreviewObject) needs the D3D11 reflection API
+target_link_libraries(LevelEditor PUBLIC d3d11.lib d3dcompiler.lib dxguid.lib)
 
 # Move precompiled header
 target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})

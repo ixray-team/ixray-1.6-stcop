@@ -4,10 +4,10 @@
 
 
 #include "UI_shadertools.h"
-#include "../../xrEngine/GameMtlLib.h"
+#include "../../../xrEngine/GameMtlLib.h"
 
 //------------------------------------------------------------------------------
-CShaderTool*STools=(CShaderTool*)Tools;
+CShaderTool*STools = nullptr;
 //------------------------------------------------------------------------------
 
 CShaderTool::CShaderTool()
@@ -32,7 +32,7 @@ void CShaderTool::OnChangeEditor(ISHTools* tools)
 	if (m_Current) m_Current->OnDeactivate();
 	m_Current = tools; R_ASSERT(m_Current);
 	m_Current->OnActivate();
-    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+    UpdateProperties();
 }
 //---------------------------------------------------------------------------
 
@@ -224,6 +224,14 @@ void CShaderTool::Reload()
         Current()->Reload();
 }
 
+void CShaderTool::OnDrawUI()
+{
+	for (auto& Tool : m_Tools)
+	{
+		Tool.second->OnDrawUI();
+	}
+}
+
 #include "SHEngineTools.h"
 #include "SHGameMtlTools.h"
 #include "SHGameMtlPairTools.h"
@@ -301,7 +309,7 @@ void  CShaderTool::OnItemFocused(ListItem* items)
     Current()->m_CurrentItem = items;
     name = Current()->m_CurrentItem->Key();
     Current()->SetCurrentItem(name, false);
-    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+    UpdateProperties();
 }
 
 bool CShaderTool::GetSelectionPosition	(Fmatrix& result)

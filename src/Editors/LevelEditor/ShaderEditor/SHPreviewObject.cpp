@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "SHPreviewObject.h"
-#include "../xrECore/Editor/EditMesh.h"
+#include "../../xrECore/Editor/EditMesh.h"
 #include <algorithm>
 
 static DXGI_FORMAT CompTypeToFormat(D3D_REGISTER_COMPONENT_TYPE e, UINT mask, u32& outSize)

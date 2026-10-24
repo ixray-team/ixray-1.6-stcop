@@ -3,8 +3,8 @@
 
 
 #include "SHToolsInterface.h"
-#include "../xrEProps/FolderLib.h"
-#include "../xrECore/Editor/ui_main.h"
+#include "../../xrEProps/FolderLib.h"
+#include "../../xrECore/Editor/ui_main.h"
 
 ISHTools::ISHTools(const ISHInit& init)
 {

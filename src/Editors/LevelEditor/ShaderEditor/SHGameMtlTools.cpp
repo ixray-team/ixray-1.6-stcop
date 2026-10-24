@@ -2,9 +2,8 @@
 #include "stdafx.h"
 
 #include "SHGameMtlTools.h"
-#include "../Public/PropertiesListHelper.h"
-#include "ui_shadermain.h"
-#include "../xrEProps/FolderLib.h"
+#include "../../Public/PropertiesListHelper.h"
+#include "../../xrEProps/FolderLib.h"
 #include "UI_shadertools.h"
 //------------------------------------------------------------------------------
 
@@ -69,7 +68,11 @@ void CSHGameMtlTools::OnDrawUI()
 bool CSHGameMtlTools::OnCreate()
 {
 	m_GameMtlPairTools	= STools->FindTools(aeMtlPair); R_ASSERT(m_GameMtlPairTools);
-    Load();
+    // The Level Editor loads the library at startup and the scene holds its materials
+    if (GameMaterialLibraryEditors->CountMaterial() == 0)
+    {
+        Load();
+    }
     return true;
 }
 
@@ -162,8 +165,8 @@ void CSHGameMtlTools::AppendItem(const char* path, bool dynamic, SGameMtl* paren
     m_LastSelection = path;
     S->m_Name = m_LastSelection.c_str();
     if (!parent)		S->Flags.set(SGameMtl::flDynamic, dynamic);
-    ExecCommand(COMMAND_UPDATE_LIST);
-    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+    STools->UpdateList();
+    STools->UpdateProperties();
     Modified();
 }
 
@@ -173,8 +176,8 @@ void CSHGameMtlTools::OnRenameItem(UIItemListForm::Node& node, const char* old_f
         SGameMtl* S = FindItem(old_full_name); R_ASSERT(S);
         S->m_Name		= new_full_name;
         if (S==m_Mtl){
-            ExecCommand	(COMMAND_UPDATE_PROPERTIES);
-            ExecCommand	(COMMAND_UPDATE_LIST);
+            STools->UpdateProperties	();
+            STools->UpdateList	();
             m_LastSelection = m_Mtl->m_Name.c_str();
 
             m_Mtl = 0;
@@ -200,7 +203,7 @@ void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, const char* nam
         if (m_Mtl&&m_Mtl->m_Name == name)
         {
             m_Mtl = 0;
-            Tools->UpdateProperties(true);
+            STools->UpdateProperties(true);
         }
         GameMaterialLibraryEditors->RemoveMaterial(name);
     }
@@ -214,7 +217,7 @@ void CSHGameMtlTools::SetCurrentItem(const char* name, bool bView)
     // load material
 	if (m_Mtl!=S){
         m_Mtl = S;
-	    ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	    STools->UpdateProperties();
 	 	if (bView) ViewSetCurrentItem(name);
    	}
 }
