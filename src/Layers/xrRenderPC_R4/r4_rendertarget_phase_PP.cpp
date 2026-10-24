@@ -45,8 +45,8 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
-	p0.set				(.5f/tw, .5f/th).add			(shift);
-	p1.set				((tw+.5f)/tw, (th+.5f)/th ).add	(shift);
+	p0.set				(shift.x, shift.y);
+	p1.set				(1.f, 1.f);
 
 	// Calculate Duality TC
 	float	shift_u		= param_duality_h*.5f;
@@ -149,10 +149,10 @@ void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 	if (ScopeInfo)
 	{
 		const float Shift = ScopeInfo->blur * 0.5f;
-		r0.set((0.5f + Shift) / _w, (0.5f + Shift) / _h);
-		r1.set(1.0f + r0.x - ScopeInfo->duality.h * 0.5f, 1.0f + r0.y - ScopeInfo->duality.v * 0.5f);
+		r0.set(Shift / _w, Shift / _h);
+		r1.set(1.0f - ScopeInfo->duality.h * 0.5f, 1.0f - ScopeInfo->duality.v * 0.5f);
 		l0.set(r0.x + ScopeInfo->duality.h * 0.5f, r0.y + ScopeInfo->duality.v * 0.5f);
-		l1.set(1.0f + r0.x, 1.0f + r0.y);
+		l1.set(1.0f, 1.0f);
 	}
 	u_calc_tc_noise(n0, n1, ScopeInfo ? ScopeInfo->noise.grain : param_noise_scale, ScopeInfo ? ScopeInfo->noise.fps : param_noise_fps, ScopeInfo != nullptr);
 
