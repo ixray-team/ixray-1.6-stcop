@@ -665,7 +665,7 @@ void UIActorLibrary::FillProperties()
 
 			for (SurfaceIt Iter = NE->m_Surfaces.begin(); Iter != NE->m_Surfaces.end(); Iter++)
 			{
-				AnsiString Pref = AnsiString("Surfaces\\") + (*Iter)->m_Name.c_str();
+				AnsiString Pref = AnsiString("Surfaces\\") + (*Iter)->_Name();
 				PropValue* V = PHelper().CreateCaption(Info, Pref.c_str(), "");
 				V->tag = (int)*Iter;
 				NE->FillSurfaceProps(*Iter, Pref.c_str(), Info);
@@ -759,7 +759,7 @@ void UIActorLibrary::PickCallback()
 			CSurface* Surf = Info.e_mesh->GetSurfaceByFaceID(Info.inf.id);
 			if (Surf != nullptr)
 			{
-				ATools->SelectListItem(SURFACES_PREFIX, Surf->m_Name.c_str(), true, false, true);
+				ATools->SelectListItem(SURFACES_PREFIX, Surf->_Name(), true, false, true);
 			}
 		}
 		return;
@@ -778,7 +778,7 @@ void UIActorLibrary::PickCallback()
 			continue;
 
 		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
-		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->m_Name.c_str());
+		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
 
 		Itm = Props->FindPropItem(PrevClick.c_str());
 		if (Itm == nullptr)

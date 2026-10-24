@@ -36,8 +36,10 @@ namespace
 		Fvector2 TC[3];
 		u32 Surface;
 		u32 Opaque;
+		u32 Shared;
+		u32 Padding; // std430: struct size rounded up to alignment 8 (36 → 40)
 	};
-	static_assert(sizeof(ShaderFace) == 32);
+	static_assert(sizeof(ShaderFace) == 40);
 
 	struct ShaderRay
 	{
@@ -62,7 +64,7 @@ namespace
 
 	constexpr u32 ThreadGroupSize = 64;
 	constexpr u32 MaxBatches = 256;
-	constexpr u32 SceneBindings = 7;
+	constexpr u32 SceneBindings = 9;
 }
 
 // Buffer with its own memory allocation
@@ -176,6 +178,8 @@ public:
 	VulkanBuffer Faces;
 	VulkanBuffer Textures;
 	VulkanBuffer Alpha;
+	VulkanBuffer TexturesShared;
+	VulkanBuffer AlphaShared;
 	u32 LightCount = 0;
 	bool SceneLoaded = false;
 
@@ -697,7 +701,7 @@ VulkanContext::Batch* VulkanContext::AcquireBatch()
 	SceneWrite.accelerationStructureCount = 1;
 	SceneWrite.pAccelerationStructures = &Tlas;
 
-	const VulkanBuffer* Buffers[SceneBindings] = { nullptr, &Lights, &Faces, &Textures, &Alpha, &NewBatch->Rays, &NewBatch->Colors };
+	const VulkanBuffer* Buffers[SceneBindings] = { nullptr, &Lights, &Faces, &Textures, &Alpha, &NewBatch->Rays, &NewBatch->Colors, &TexturesShared, &AlphaShared };
 	VkDescriptorBufferInfo BufferInfos[SceneBindings] = {};
 	VkWriteDescriptorSet Writes[SceneBindings] = {};
 	for (u32 Binding = 0; Binding < SceneBindings; Binding++)
@@ -770,6 +774,8 @@ void VulkanContext::DestroyScene()
 	Faces.Reset();
 	Textures.Reset();
 	Alpha.Reset();
+	TexturesShared.Reset();
+	AlphaShared.Reset();
 	LightCount = 0;
 	SceneLoaded = false;
 }
@@ -878,6 +884,7 @@ void VulkanRayTracer::LoadScene(const GpuScene& Scene)
 			Dst.TC[2] = F.TC[2];
 			Dst.Surface = F.SurfaceID;
 			Dst.Opaque = F.Opaque ? 1 : 0;
+			Dst.Shared = F.Shared ? 1 : 0;
 		}
 		Ctx.Faces = Ctx.CreateDeviceBuffer(Faces.data(), Faces.size() * sizeof(ShaderFace), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		Msg("[Vulkan] Faces[%u] Allocated: %u mb", (u32)Faces.size(), (u32)(Faces.size() * sizeof(ShaderFace) / 1024 / 1024));
@@ -913,6 +920,38 @@ void VulkanRayTracer::LoadScene(const GpuScene& Scene)
 		Ctx.Textures = Ctx.CreateDeviceBuffer(TextureInfo.data(), TextureInfo.size() * sizeof(u32), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		Ctx.Alpha = Ctx.CreateDeviceBuffer(Alpha.data(), Alpha.size(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		Msg("[Vulkan] Textures[%u] Alpha: %u mb", (u32)Scene.Textures.size(), (u32)(Alpha.size() / 1024 / 1024));
+	}
+
+	// Alpha textures shared: one byte buffer, each texture addressed by its offset
+	{
+		xr_vector<u32> TextureInfo(Scene.TexturesShared.size() * 4);
+		size_t AlphaSize = 0;
+		for (const GpuTexture& Texture : Scene.TexturesShared)
+		{
+			AlphaSize += Texture.Alpha.size();
+		}
+
+		xr_vector<u8> Alpha((AlphaSize + 3) & ~size_t(3));
+		size_t Offset = 0;
+		for (size_t Index = 0; Index < Scene.TexturesShared.size(); Index++)
+		{
+			const GpuTexture& Texture = Scene.TexturesShared[Index];
+			TextureInfo[Index * 4 + 0] = (u32)Offset;
+			TextureInfo[Index * 4 + 1] = Texture.Width;
+			TextureInfo[Index * 4 + 2] = Texture.Height;
+			TextureInfo[Index * 4 + 3] = Texture.Alpha.empty() ? 0 : 1;
+
+			if (!Texture.Alpha.empty())
+			{
+				memcpy(Alpha.data() + Offset, Texture.Alpha.data(), Texture.Alpha.size());
+				Offset += Texture.Alpha.size();
+			}
+		}
+		R_ASSERT2(Alpha.size() <= u32(-1), "[Vulkan] Alpha shared textures exceed 4 GB");
+
+		Ctx.TexturesShared = Ctx.CreateDeviceBuffer(TextureInfo.data(), TextureInfo.size() * sizeof(u32), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		Ctx.AlphaShared = Ctx.CreateDeviceBuffer(Alpha.data(), Alpha.size(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		Msg("[Vulkan] TexturesShared[%u] Alpha: %u mb", (u32)Scene.TexturesShared.size(), (u32)(Alpha.size() / 1024 / 1024));
 	}
 
 	Ctx.SceneLoaded = true;

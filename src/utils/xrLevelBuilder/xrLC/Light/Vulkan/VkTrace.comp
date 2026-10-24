@@ -35,6 +35,7 @@ struct Face
 	vec2 TC2;
 	uint Surface;
 	uint Opaque;
+	uint Shared;
 };
 
 struct Ray
@@ -54,6 +55,8 @@ layout(set = 0, binding = 1, std430) readonly buffer LightsBuffer { Light Lights
 layout(set = 0, binding = 2, std430) readonly buffer FacesBuffer { Face Faces[]; };
 layout(set = 0, binding = 3, std430) readonly buffer TexturesBuffer { uvec4 Textures[]; };	// alpha offset, width, height, has alpha
 layout(set = 0, binding = 4, std430) readonly buffer AlphaBuffer { uint Alpha[]; };			// 4 texels per uint
+layout(set = 0, binding = 7, std430) readonly buffer TexturesSharedBuffer { uvec4 TexturesShared[]; };	// alpha offset, width, height, has alpha
+layout(set = 0, binding = 8, std430) readonly buffer AlphaSharedBuffer { uint AlphaShared[]; };			// 4 texels per uint
 layout(set = 0, binding = 5, std430) readonly buffer RaysBuffer { Ray Rays[]; };
 layout(set = 0, binding = 6, std430) writeonly buffer ColorsBuffer { Color Colors[]; };
 
@@ -72,7 +75,15 @@ vec3 NormalizeSafe(vec3 V)
 
 float CalculateEnergy(Face F, vec2 Barycentrics)
 {
-	uvec4 T = Textures[F.Surface];
+	uvec4 T;
+	if (F.Shared != 0u)
+	{
+		T = TexturesShared[F.Surface];
+	}
+	else
+	{
+		T = Textures[F.Surface];
+	}
 	if (T.w == 0u)
 	{
 		return 1.0;
