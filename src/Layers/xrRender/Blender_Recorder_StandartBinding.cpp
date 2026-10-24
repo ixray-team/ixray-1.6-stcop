@@ -738,6 +738,47 @@ class cl_NVG_Color : public RHIShaderConstant::Setup
 };
 static cl_NVG_Color binder_NVG_Color;
 
+extern ENGINE_API bool turn_nvg;
+
+class NightVisionStateBinding final : public RHIShaderConstant::Setup
+{
+	u32 Frame = u32(-1);
+	float Interference = 0.0f;
+	bool Initialized = false;
+
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		if (Frame != Device.dwFrame)
+		{
+			const float Target = clampr(Device.hudViewportData.CurrentElectronicsProblemsCnt / 10.0f, 0.0f, 1.0f);
+			if (!Initialized || Frame + 1 != Device.dwFrame)
+			{
+				Interference = Target;
+			}
+			else
+			{
+				const float MaxDelta = 0.2f * clampr(Device.fTimeDelta, 0.0f, 0.1f);
+				Interference += clampr(Target - Interference, -MaxDelta, MaxDelta);
+			}
+			Initialized = turn_nvg;
+			Frame = Device.dwFrame;
+		}
+		RCache.set_c(Constant, turn_nvg ? 1.0f : 0.0f, Interference, 0.0f, 0.0f);
+	}
+};
+static NightVisionStateBinding g_NightVisionStateBinder;
+
+class NightVisionProfileBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+		RCache.set_c(Constant, g_pGamePersistent->ShaderParams.NightVisionPostprocess);
+	}
+};
+static NightVisionProfileBinding g_NightVisionProfileBinder;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -839,6 +880,8 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_timearrow2", &binder_m_timearrow2);
 	r_Constant("m_digiclock", &binder_digiclock);
 	r_Constant("nvg_color", &binder_NVG_Color);
+	r_Constant("NightVisionState", &g_NightVisionStateBinder);
+	r_Constant("NightVisionProfile", &g_NightVisionProfileBinder);
 
 	if (detail_scaler)
 	{

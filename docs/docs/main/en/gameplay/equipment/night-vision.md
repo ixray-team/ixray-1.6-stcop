@@ -2,7 +2,7 @@
 
 Night vision uses three shader profiles with different color, gain, noise and edge attenuation. The device also draws a separate UI mask. Electronics interference fades the shader effect out while the mask remains visible until the device is switched off.
 
-This page describes the current branch and the `gamedata`, `gamedata_soc`, `gamedata_cs` and `gamedata_coc` packages. The shader effect works with R4 dynamic lighting, including both material pipelines. Static lighting uses the existing PPE effect; the UI mask works there too, but the shader interference behavior described below applies to R4.
+This page describes the current branch and the `gamedata`, `gamedata_soc`, `gamedata_cs` and `gamedata_coc` packages. The shader profiles, UI mask and electronics interference work with R1, R2 and R4. R1 and R2 apply the shader effect in their final postprocess pass; R4 uses its dedicated night-vision pass. Profiles with `shader_effect_range = 0` retain the existing PPE effect. Upgrading the active helmet or outfit refreshes enabled night vision immediately, without toggling it.
 
 ## Equipment and profiles
 

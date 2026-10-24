@@ -1,4 +1,5 @@
 #include "common.hlsli"
+#include "shared/night_vision.hlsli"
 
 struct v2p
 {
@@ -30,5 +31,5 @@ float4 main(v2p I) : COLOR
     //		image	= (image + c_brightness) * I.color;		// mad ?
 
     // out
-    return float4(image, 1.0f); // +mov
+    return float4(ApplyNightVision(image, I.tc0), 1.0f); // +mov
 }
