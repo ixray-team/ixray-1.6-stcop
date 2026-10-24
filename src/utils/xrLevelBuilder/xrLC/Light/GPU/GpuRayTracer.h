@@ -51,6 +51,7 @@ struct GpuScene
 	xr_vector<GpuFace> Faces;
 	xr_vector<GpuLight> Lights;
 	xr_vector<GpuTexture> Textures;
+	xr_vector<GpuTexture> TexturesShared;
 };
 
 // GPU implementation of LightPoint for a batch of sample points
