@@ -546,6 +546,33 @@ void CGroupObject::GroupObjects(ObjectList& lst)
 		UpdatePivot(0, false);
 }
 
+void CGroupObject::AttachObjects(ObjectList& lst)
+{
+	for (CCustomObject* Obj : lst)
+	{
+		if (Obj == this || Obj->GetOwner() == this)
+			continue;
+
+		if (CGroupObject* Old = smart_cast<CGroupObject*>(Obj->GetOwner()))
+			Old->DetachObject(Obj);
+
+		LL_AppendObject(Obj);
+	}
+
+	if (m_ObjectsInGroup.size())
+		UpdatePivot(0, false);
+}
+
+void CGroupObject::DetachObject(CCustomObject* object)
+{
+	ObjectsInGroup::iterator it = std::find(m_ObjectsInGroup.begin(), m_ObjectsInGroup.end(), object);
+	if (it == m_ObjectsInGroup.end())
+		return;
+
+	m_ObjectsInGroup.erase(it);
+	object->OnDetach();
+}
+
 void CGroupObject::UngroupObjects()
 {
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)

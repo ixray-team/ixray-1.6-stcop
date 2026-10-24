@@ -26,6 +26,7 @@ public:
     CSectorItem		(CSceneObject* o, CEditableMesh* m, shared_str MeshName);
     void GetTransform(Fmatrix& parent);
     bool IsItem		(const char* O, const char* M);
+    IC CSceneObject* GetSceneObject() const { return object; }
     IC bool IsItem(CSceneObject* o, CEditableMesh* m) const { return (o == object) && (m == mesh); }
     IC bool IsItem(const CSectorItem& Item) const { return (Item.object == object) && (Item.mesh == mesh); }
 };
@@ -67,6 +68,8 @@ class CSector :
     void			UpdateVolume();
 public:
 	u8    			m_map_idx;
+
+	const SItemVec&	GetItems	() const { return sector_items; }
 
 					CSector		(LPVOID data, const char* name);
 	void 			Construct	(LPVOID data);
