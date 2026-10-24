@@ -42,9 +42,9 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
-	p0.set				(.5f/tw, .5f/th).add			(shift);
-	p1.set				((tw+.5f)/tw, (th+.5f)/th ).add	(shift);
-
+	p0.set				(shift.x,shift.y);
+	p1.set				(1.f,1.f);
+    
 	// Calculate Duality TC
 	float	shift_u		= param_duality_h*.5f;
 	float	shift_v		= param_duality_v*.5f;
