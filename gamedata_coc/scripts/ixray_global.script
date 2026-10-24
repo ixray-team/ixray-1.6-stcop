@@ -20,10 +20,6 @@ _G.log = function (str)
     end
 end
 
-function register(object_factory)
-	class_registrator.cs_register(object_factory, "CCar", "se_car.se_car", "SCRPTCAR", "car_s")
-end
-
 _G.convert_class_name = function(obj)
 	if obj then
 		local name = class_info(obj).name
