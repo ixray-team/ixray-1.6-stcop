@@ -170,7 +170,7 @@
 // 133	 CSE_ALifeItemWeapon			added a_chamber_elapsed
 // 134	 CSE_ALifeItemWeaponMagazinedWGL	added m_bGrenadeMode
 //------------------------------------------------------------------------------
-#define SPAWN_VERSION u16(134)
+#define SPAWN_VERSION u16(135)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
 public:
