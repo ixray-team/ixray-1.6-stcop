@@ -147,6 +147,9 @@ void CRenderDevice::on_idle		()
 #ifdef IXRAY_PROFILER // optick
 	PROF_FRAME("CPU FRAME BEGIN");
 #endif
+#ifdef DEBUG_DRAW
+	g_FrameProfiler.Frame();
+#endif
 
 	PROF_EVENT("on_idle");
 
