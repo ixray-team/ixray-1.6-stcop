@@ -162,8 +162,20 @@ void CLevelPreferences::Load()
 		GetSafe(*windows, "world_properties", OpenWorldProperties);
 		GetSafe(*windows, "snap_list", OpenSnapList);
 		GetSafe(*windows, "light_anim", OpenLightAnim);
+		GetSafe(*windows, "world_partition", OpenWorldPartition);
 
 		GetSafe(*windows, "log_clear_in_pie", UILogForm::bClearInPIE);
+	}
+
+	if (const auto* partition = GetObjectSafe(JSONData, "world_partition"))
+	{
+		bool PartitionEnabled = GWorldPartition.IsEnabled();
+		GetSafe(*partition, "enabled", PartitionEnabled);
+		GWorldPartition.SetEnabled(PartitionEnabled);
+		GetSafe(*partition, "unload_disabled", GWorldPartition.UnloadDisabled);
+		GetSafe(*partition, "stream_around_camera", GWorldPartition.StreamAroundCamera);
+		GetSafe(*partition, "stream_radius", GWorldPartition.StreamRadius);
+		GetSafe(*partition, "stream_budget", GWorldPartition.StreamBudget);
 	}
 
 	if (const auto* comp = GetObjectSafe(JSONData, "Compilers Path"))
@@ -283,6 +295,12 @@ void CLevelPreferences::Save()
 	JSONData["windows"]["snap_list"] = OpenSnapList;
 	JSONData["windows"]["log_clear_in_pie"] = UILogForm::bClearInPIE;
 	JSONData["windows"]["light_anim"] = OpenLightAnim;
+	JSONData["windows"]["world_partition"] = OpenWorldPartition;
+	JSONData["world_partition"]["enabled"] = GWorldPartition.IsEnabled();
+	JSONData["world_partition"]["unload_disabled"] = GWorldPartition.UnloadDisabled;
+	JSONData["world_partition"]["stream_around_camera"] = GWorldPartition.StreamAroundCamera;
+	JSONData["world_partition"]["stream_radius"] = GWorldPartition.StreamRadius;
+	JSONData["world_partition"]["stream_budget"] = GWorldPartition.StreamBudget;
 	
 	JSONData["LibaryEditor"]["Preview"] = PreviewRenderLibrary;
 	JSONData["PIE"]["ArtPos"] = PIEArtSpawnPos;

@@ -103,6 +103,11 @@ void UIMainForm::LoadWindowsStates()
 {
 	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
 
+	if (LPrefs->OpenWorldPartition)
+	{
+		UIWorldPartition::Show();
+	}
+
 	if (LPrefs->OpenObjectList)
 	{
 		UIObjectList::Show();
@@ -144,6 +149,7 @@ UIMainForm::~UIMainForm()
 	LPrefs->OpenWorldProperties = !m_WorldProperties->IsClosed();
 	LPrefs->OpenObjectList = UIObjectList::IsOpen();
 	LPrefs->OpenLightAnim = UIEditLightAnim::IsOpen();
+	LPrefs->OpenWorldPartition = UIWorldPartition::IsOpen();
 
 	ClearChooseEvents();
 	xr_delete(m_WorldProperties);
@@ -262,6 +268,7 @@ void UIMainForm::DrawMenuItemI(const char* label, const char* icon, int command,
 
 void UIMainForm::Draw()
 {
+	PROF_EVENT("UIMainForm::Draw")
 	bOpen = true;
 	m_MainMenu->Draw();
 	m_TopBar->Draw();

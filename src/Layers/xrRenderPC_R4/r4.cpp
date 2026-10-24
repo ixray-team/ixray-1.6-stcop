@@ -742,6 +742,18 @@ void CRender::Statistics(CGameFont* _F) {
 #endif
 }
 
+static thread_local bool g_EditorInstancing = false;
+
+void CRender::SetEditorInstancing(bool Value)
+{
+	g_EditorInstancing = Value;
+}
+
+bool CRender::IsEditorInstancing() const
+{
+	return g_EditorInstancing;
+}
+
 xr_string CRender::getShaderParams() 
 {
 	static thread_local xr_vector<xr_string> crc_vector;
@@ -774,7 +786,7 @@ xr_string CRender::getShaderParams()
 			params += "_puddles";
 		}
 
-		if (EditorInstancing)
+		if (IsEditorInstancing())
 		{
 			params += "_inst";
 		}
@@ -784,10 +796,10 @@ xr_string CRender::getShaderParams()
 
 	if (o.ProceduralRainPuddles)
 	{
-		return EditorInstancing ? "_puddles_inst" : "_puddles";
+		return IsEditorInstancing() ? "_puddles_inst" : "_puddles";
 	}
 
-	return EditorInstancing ? "_inst" : "";
+	return IsEditorInstancing() ? "_inst" : "";
 }
 
 xr_string CRender::getShaderParamsDebug() 
@@ -803,7 +815,7 @@ xr_string CRender::getShaderParamsDebug()
 
 		params[params.size() - 1] = ' ';
 
-		if (EditorInstancing)
+		if (IsEditorInstancing())
 		{
 			params += "[inst]";
 		}
@@ -811,7 +823,7 @@ xr_string CRender::getShaderParamsDebug()
 		return params;
 	}
 
-	return EditorInstancing ? "[inst]" : "";
+	return IsEditorInstancing() ? "[inst]" : "";
 }
 
 bool CRender::NeedMotionVectors() const
@@ -1390,7 +1402,7 @@ HRESULT	CRender::shader_compile(
 		sh_name[len] = 'e'; ++len;
 	}
 
-	if (EditorInstancing) {
+	if (IsEditorInstancing()) {
 		defines[def_it].Name = "USE_EDITOR_INSTANCING";
 		defines[def_it].Definition = "1";
 		def_it++;

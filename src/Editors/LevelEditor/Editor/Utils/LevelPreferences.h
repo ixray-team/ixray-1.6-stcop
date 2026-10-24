@@ -42,6 +42,7 @@ public:
 	bool OpenWorldProperties;
 	bool OpenSnapList;
 	bool OpenLightAnim;
+	bool OpenWorldPartition = false;
 	bool PreviewRenderLibrary = false;
 
 	// Actor Editor

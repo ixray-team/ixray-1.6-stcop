@@ -181,6 +181,8 @@ void CEditableObject::ClearGeometry()
 
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{
+		// Library objects are unloaded while the device lives (streaming)
+		(*s_it)->OnDeviceDestroy();
 		xr_delete(*s_it);
 	}
 

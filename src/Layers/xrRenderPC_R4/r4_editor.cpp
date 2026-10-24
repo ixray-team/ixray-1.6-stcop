@@ -222,6 +222,11 @@ void CRender::EditorRenderUnlit()
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = nullptr;
 
+	if (g_EditorRenderHost)
+	{
+		g_EditorRenderHost->PrepareScene();
+	}
+
 	// G-buffer of the opaque scene; the albedo starts with the editor background colour, so the
 	// whole albedo is the final unlit image
 	float ClearColor[4] = { EditorClearColor.r, EditorClearColor.g, EditorClearColor.b, EditorClearColor.a };

@@ -116,6 +116,7 @@ public:
 
 	virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity);
 	virtual void		SubmitShadowCasters	();
+	virtual void		PrepareScene		();
 	virtual CDetailManager*	GetSceneDetails		();
 
 	virtual void		ShowProperties		(const char* focused_item);

@@ -483,7 +483,11 @@ public:
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
 public:
-	bool							EditorInstancing			= false;
+	// Shaders created by this thread get the editor instancing variant. Per thread: objects load
+	// on worker threads while the main thread creates instanced shaders, and a shared flag
+	// compiled their regular shaders as instanced.
+	void							SetEditorInstancing			(bool Value);
+	bool							IsEditorInstancing			() const;
 
 	void							Initialize					();
 	void							ShutDown					();

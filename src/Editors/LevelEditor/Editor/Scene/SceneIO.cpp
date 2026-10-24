@@ -367,6 +367,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 			EFS.MarkFile	(full_name.c_str(),true);
 		}
 		part_prefix		= LevelPartPath(full_name.c_str());
+		GWorldPartition.SaveLevelState(part_prefix.c_str());
 	}
 
 	
@@ -809,6 +810,7 @@ bool EScene::OnLoadAppendObject(CCustomObject* O)
 
 bool EScene::LoadLTX(const char* map_name, bool bUndo)
 {
+	PROF_EVENT("EScene::LoadLTX")
 	DWORD version = 0;
 	if (!map_name||(0==map_name[0])) return false;
 
@@ -846,6 +848,9 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		}
 
 		m_LevelOp.ReadLTX	(ini);
+
+		// Before the objects: streaming decides at load which references to skip
+		GWorldPartition.LoadLevelState(LevelPartPath(full_name.c_str()).c_str());
 
 		Fvector hpb, pos;
 		pos					= ini.r_fvector3("camera","pos");
@@ -911,6 +916,7 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 
 bool EScene::Load(const char* map_name, bool bUndo)
 {
+	PROF_EVENT("EScene::Load")
 	u32 version = 0;
 
 	if (!map_name||(0==map_name[0])) return false;

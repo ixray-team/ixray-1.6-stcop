@@ -97,6 +97,7 @@ void EScene::SetPlayInEditorRayPickCall(bool Value)
 
 CCustomObject *EScene::RayPickObject(float nearest_dist, const Fvector& start, const Fvector& direction, ObjClassID classfilter, SRayPickInfo* pinf, ObjectList* from_list)
 {
+	PROF_EVENT("EScene::RayPickObject")
 	if(!valid()) return 0;
 
 	xrCriticalSectionGuard guard(PickUpLock);

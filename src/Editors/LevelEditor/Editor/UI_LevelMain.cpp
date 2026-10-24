@@ -1642,8 +1642,11 @@ Ivector2 CLevelMain::GetRenderMousePosition() const
 
 void CLevelMain::OnDrawUI()
 {
+	PROF_EVENT("CLevelMain::OnDrawUI")
 	inherited::OnDrawUI();
+	GWorldPartition.Update();
 	UIObjectList::Update();
+	UIWorldPartition::Update();
 	UIGitWindow::Update();
 	UIActorEditorForm::Update();
 	UIShaderEditorForm::Update();

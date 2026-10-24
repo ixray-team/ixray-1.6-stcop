@@ -35,7 +35,7 @@ static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures)
 	xr_string key = s_shader ? s_shader : "";
 	key += "|";
 	key += s_textures ? s_textures : "";
-	if (RImplementation.EditorInstancing)
+	if (RImplementation.IsEditorInstancing())
 	{
 		key += "|inst";
 	}

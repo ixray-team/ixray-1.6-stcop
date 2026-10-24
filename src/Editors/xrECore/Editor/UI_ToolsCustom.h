@@ -249,6 +249,8 @@ public:
 
     // Shadow casters of the scene for the renderer shadow-map passes (submit draw pass)
     virtual void		SubmitShadowCasters	() { Render(); }
+    // Adds the static objects of the frame to the prepared submit list
+    virtual void		PrepareScene		() {}
 
     // Placed point/spot lights for the game lighting pipeline (LevelEditor).
     // Returns the total number of eligible lights; writes up to Capacity.

@@ -225,11 +225,25 @@ void ESceneCustomOTool::ShowObjects(bool flag, bool bAllowSelectionFlag, bool bS
 
 bool ESceneCustomOTool::RayPick(CCustomObject*& object, float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
 {
+	PROF_EVENT("ESceneCustomOTool::RayPick")
     object = 0;
 
     if (!Scene->GetPlayInEditorRayPickCall())
     {
         return false;
+    }
+
+    // Rain picks a ray every frame: the partition narrows it to the cells the ray crosses
+    static thread_local xr_vector<CCustomObject*> Candidates;
+    Candidates.clear();
+    if (GWorldPartition.CollectAlongRay(start, direction, distance, Candidates))
+    {
+        for (CCustomObject* _F : Candidates)
+        {
+            if (_F->FClassID == FClassID && _F->Visible() && _F->RayPick(distance, start, direction, pinf))
+                object = _F;
+        }
+        return !!object;
     }
 
     for (CCustomObject* _F : m_Objects)
@@ -312,6 +326,7 @@ int ESceneCustomOTool::LockObjects(bool flag, bool bAllowSelectionFlag, bool bSe
 
 CCustomObject* ESceneCustomOTool::FindObjectByName(const char* name, CCustomObject* pass)
 {
+	PROF_EVENT("ESceneCustomOTool::FindObjectByName")
     xr_atomic_bool bFound = false;
     CCustomObject* Result = nullptr;
 
@@ -325,18 +340,20 @@ CCustomObject* ESceneCustomOTool::FindObjectByName(const char* name, CCustomObje
                 return;
             }
 
-            shared_str _name = CO->GetName();
+            // A reference to the stored name: building a shared_str from the string would look it
+            // up in the global string table under its lock on every object
+            const char* _name = CO->FName.c_str();
 
-            if (!_name || _name == "" || _name == " ")
+            if (!_name || _name[0] == 0 || (_name[0] == ' ' && _name[1] == 0))
             {
                 Msg("!!! Error _name = %s, %s, %s", Scene->GetOTool(CO->FClassID)->ClassName(), CO->GetName(), CO->FName.c_str());
                 Msg("!!! Try FIX name");
                 CO->SetName(Scene->GetOTool(CO->FClassID)->ClassName());
-                _name = CO->GetName();
+                _name = CO->FName.c_str();
             }
 
             R_ASSERT3(_name, "Invalid object name, position:", (std::to_string(CO->GetPosition().x) + ", " + std::to_string(CO->GetPosition().y) + ", " + std::to_string(CO->GetPosition().z)).c_str());
-            if ((pass != CO) && (0 == strcmp(*_name, name)))
+            if ((pass != CO) && (0 == strcmp(_name, name)))
             {
                 Result = CO;
                 bFound = true;

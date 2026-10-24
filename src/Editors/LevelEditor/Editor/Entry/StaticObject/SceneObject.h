@@ -24,6 +24,40 @@ private:
 	Fbox			m_TBBox;
 	// options
     Flags32			m_Flags;
+
+	// Per-object surface settings kept while the reference is not loaded
+	struct SSurfaceOverride
+	{
+		xr_string Name;
+		xr_string Shader;
+		xr_string ShaderXRLC;
+		xr_string GameMtl;
+		xr_string Texture;
+		xr_string VMap;
+	};
+	xr_vector<SSurfaceOverride> PendingSurfaces;
+	// The record is loaded but the library object is streamed out
+	bool			ReferencePending = false;
+	bool			StreamPinned = false;
+	// World bounds of a streamed out reference, read once from the .object headers
+	Fbox			StreamBox;
+	bool			StreamBoxValid = false;
+
+	bool			ResolveReference		(const char* Name);
+	void			ApplySurfaceOverrides	();
+	void			CaptureSurfaceOverrides	(xr_vector<SSurfaceOverride>& Dest) const;
+	// Loads the reference now or leaves it to world partition streaming
+	bool			LoadReference			();
+public:
+	IC bool			IsReferencePending		() const { return ReferencePending; }
+	// World bounds whether the reference is loaded or streamed out
+	bool			GetStreamBox			(Fbox& Box);
+	// Loads the library object of a streamed out object
+	bool			StreamIn				();
+	// Releases the library object, keeping everything needed to save and load it again
+	void			StreamOut				();
+	// Loads the object and keeps it loaded, for objects other data points into
+	void			PinStreaming			();
 public:
     virtual void 	SetScale				(const Fvector& scale)
     {
@@ -56,7 +90,7 @@ public:
 	CEditableObject*SetReference			(const char* ref_name);
 	CEditableObject*UpdateReference			();
 	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->m_Meshes:0;}
-    virtual const char*	RefName					() {return m_pReference?m_pReference->m_LibName.c_str():0;}
+    virtual const char*	RefName					() {return m_pReference?m_pReference->m_LibName.c_str():(ReferencePending?m_ReferenceName.c_str():0);}
     virtual bool	CanAttach				() {return true;}
 
     // statistics methods
@@ -69,6 +103,8 @@ public:
 
     // render methods
 	virtual bool 	IsRender				();
+	// Adds this object to the prepared submit list of the frame
+	void			PrepareSubmit			();
 	virtual void 	Render					(int priority, bool strictB2F);
 	virtual u32		RenderPriorityMask() const;
 	void 			RenderSelection			(u32 color=0x80E64646);

@@ -1,4 +1,12 @@
 #include "stdafx.h"
+#include "../../../../xrECore/Editor/EditorSceneSubmit.h"
+
+// Values attached to the enclosing profiler event (Optick only)
+#if defined(DEBUG_DRAW) && defined(IXRAY_PROFILER)
+#	define PROF_TAG(Name, Value) OPTICK_TAG(Name, Value);
+#else
+#	define PROF_TAG(Name, Value)
+#endif
 
 #define BLINK_TIME 300.f
 
@@ -79,6 +87,7 @@ int CSceneObject::GetVertexCount()
 void CSceneObject::OnUpdateTransform()
 {
 	inherited::OnUpdateTransform();
+	StreamBoxValid = false;
 	// update bounding volume
 	if (m_pReference){
 		m_TBBox.set		(m_pReference->GetBox());
@@ -113,6 +122,9 @@ void CSceneObject::Render(int priority, bool strictB2F)
 	{
 		return;
 	}
+
+	PROF_EVENT("CSceneObject::Render")
+	PROF_TAG("Reference", m_ReferenceName.c_str())
 
 	if (m_CO_Flags.test(flObjectInGroup))
 	{
@@ -151,6 +163,25 @@ void CSceneObject::Render(int priority, bool strictB2F)
 
 	Scene->SelectLightsForObject(this);
 	m_pReference->Render(this, _Transform(), priority, strictB2F, &m_Surfaces);
+}
+
+void CSceneObject::PrepareSubmit()
+{
+	// Skeletons and grouped objects of a hidden group take the regular path
+	if (!IsLoaded || !m_pReference || m_pReference->IsSkeleton())
+	{
+		return;
+	}
+
+	if (m_CO_Flags.test(flObjectInGroup) && !Scene->GetTool(OBJCLASS_GROUP)->IsVisible())
+	{
+		return;
+	}
+
+	SDeferredSubmit& Job = GEditorSceneSubmit.AddPrepared(this);
+	Job.Object = m_pReference;
+	Job.Transform = _Transform();
+	Job.Surfaces = &m_Surfaces;
 }
 
 u32 CSceneObject::RenderPriorityMask() const

@@ -204,6 +204,8 @@ public:
 	void 			Render(const Fmatrix& camera);
 	// Geometry of the scene objects only (shadow-map passes of the renderer)
 	void 			RenderShadowCasters();
+	// Static objects of the scene passes, for the frame-wide prepared submit list
+	void 			PrepareSubmit();
 	void 			OnFrame(float dT);
 
 	virtual void 	AppendObject(CCustomObject* object, bool bExecUnd = true);
