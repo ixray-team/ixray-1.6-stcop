@@ -1,0 +1,7 @@
+<shader version="2">
+	<normal>
+		<pass vs="sprite" ps="sprite"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>

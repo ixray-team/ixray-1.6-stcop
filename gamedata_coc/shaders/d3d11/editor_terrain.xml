@@ -1,0 +1,6 @@
+<shader version="2">
+	<normal>
+		<pass vs="editor" ps="simple_color"/>
+		<zb test="1" write="1"/>
+	</normal>
+</shader>
