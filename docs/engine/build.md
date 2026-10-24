@@ -42,7 +42,7 @@ Root `CMakeLists.txt`.
 | `IXRAY_USE_MIMALLOC` | ON | mimalloc 3.5.3 engine heap; automatically bypassed with `IXRAY_ASAN=ON`. Set OFF for CRT comparison |
 | `IXRAY_LDEBUG` | OFF | `LUABIND_DEBUG_SCRIPTS`; affects MSVC Debug exception flags |
 | `IXRAY_UNITYBUILD` | ON | `xrGame` unity batches. `IXRAY_BUILD_BATCH_SIZE` default 32 |
-| `IXRAY_PROFILER` | ON | Optick unless `IXRAY_PROFILER_TRACY` is enabled. `PROF_EVENT` / `PROF_FRAME` |
+| `IXRAY_PROFILER` | ON | Optick unless `IXRAY_PROFILER_TRACY` is enabled. `PROF_EVENT` / `PROF_FRAME`. Debug and RelWithDebInfo also feed `PROF_EVENT` into the in-game flame graph (Debug > Profiler, `Kernel/FrameProfiler.h`) whatever this option is |
 | `IXRAY_PROFILER_TRACY` | OFF | Tracy |
 | `IXRAY_USE_COMPRESSOR` | ON | `xrCompress` target, even with `IXRAY_UTILS=OFF` |
 | `IXRAY_COMPRESSOR_ONLY` | OFF | CI: compressor target only |
