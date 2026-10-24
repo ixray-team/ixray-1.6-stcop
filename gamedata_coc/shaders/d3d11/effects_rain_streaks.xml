@@ -1,0 +1,12 @@
+<shader version="2">
+	<normal>
+		<pass vs="effects_rain_streaks" ps="effects_rain_streaks"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_rain_refraction" value="$user$rain_refraction"/>
+		<texture name="s_position" value="$user$rain_depth"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_nofilter"/>
+	</normal>
+</shader>

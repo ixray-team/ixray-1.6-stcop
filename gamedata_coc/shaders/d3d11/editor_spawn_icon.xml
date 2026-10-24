@@ -1,0 +1,8 @@
+<shader version="2">
+	<element index="0" detail="1">
+		<pass_full vs="stub_default" ps="stub_default" fog="0" zread="1" zwrite="1"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_base"/>
+	</element>
+</shader>

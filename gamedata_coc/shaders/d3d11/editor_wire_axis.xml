@@ -1,0 +1,5 @@
+<shader version="2">
+	<element index="0" detail="1">
+		<pass_full vs="stub_notransform_t" ps="simple_color_axis" fog="0" zread="1" zwrite="1"/>
+	</element>
+</shader>

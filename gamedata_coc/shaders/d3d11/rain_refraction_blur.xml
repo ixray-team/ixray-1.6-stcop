@@ -1,0 +1,10 @@
+<shader version="2">
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="rain_refraction_blur"/>
+		<fog value="0"/>
+		<zb test="0" write="0"/>
+		<blend enable="0" src="one" dest="zero"/>
+		<texture name="s_image" value="$user$generic0"/>
+		<sampler name="smp_rtlinear"/>
+	</normal>
+</shader>

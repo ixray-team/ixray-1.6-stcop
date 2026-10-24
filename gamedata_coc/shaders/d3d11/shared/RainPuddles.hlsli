@@ -73,7 +73,12 @@ float GetRainPuddleWaterVisibility(float3 ViewPoint)
 	return 1.0f;
 }
 
-float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float3 ViewPoint, out float3 WaterNormal, out float2 Refraction)
+float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float3 ViewPoint, 
+#ifdef RAIN_PUDDLE_COMPUTE
+	float TerrainHeight,
+	bool HasTerrainHeight,
+#endif
+out float3 WaterNormal, out float2 Refraction)
 {
 	WaterNormal = mul((float3x3)m_V, float3(0.0f, 1.0f, 0.0f));
 	Refraction = 0.0f;
@@ -91,24 +96,48 @@ float GetRainPuddle(float2 TexCoord, float3 FlatNormal, float3 ViewPoint, out fl
 	}
 
 	float3 WorldNormal = mul((float3x3)m_invV, normalize(FlatNormal));
-#ifdef RAIN_PUDDLE_COMPUTE
-	// Fade shallow terrain slopes after contour smoothing to avoid triangle-shaped cuts.
-	float Tilt = max(abs(WorldNormal.x), abs(WorldNormal.z));
-	float Slope = (1.0f - smoothstep(0.05f, 0.2f, Tilt)) * step(0.0f, WorldNormal.y);
-#else
-	// Terrain Upgrade's slope test, restricted to upward-facing surfaces.
-	float Slope = saturate((0.1f - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13.0f) * step(0.0f, WorldNormal.y);
-#endif
-	float Noise = RAIN_PUDDLE_SAMPLE(s_puddles_perlin, smp_base, TexCoord * 15.0f).r;
-	float Amount = saturate((Noise - 0.12f) * Wetness);
-#ifndef RAIN_PUDDLE_COMPUTE
-	Amount *= Slope;
-#endif
-	// Keep the original soft edge transition (border hardness 0.15).
-	Amount = smoothstep(0.0f, 0.255f, Amount);
-#ifdef RAIN_PUDDLE_COMPUTE
-	Amount *= Slope;
-#endif
+	/*
+	#ifdef RAIN_PUDDLE_COMPUTE
+		// Fade shallow terrain slopes after contour smoothing to avoid triangle-shaped cuts.
+		float Tilt = max(abs(WorldNormal.x), abs(WorldNormal.z));
+		float Slope = (1.0f - smoothstep(0.05f, 0.2f, Tilt)) * step(0.0f, WorldNormal.y);
+	#else
+		// Terrain Upgrade's slope test, restricted to upward-facing surfaces.
+		float Slope = saturate((0.1f - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13.0f) * step(0.0f, WorldNormal.y);
+	#endif
+		float Noise = RAIN_PUDDLE_SAMPLE(s_puddles_perlin, smp_base, TexCoord * 15.0f).r;
+		float Amount = saturate((Noise - 0.12f) * Wetness);
+	#ifndef RAIN_PUDDLE_COMPUTE
+		Amount *= Slope;
+	#endif
+		// Keep the original soft edge transition (border hardness 0.15).
+		Amount = smoothstep(0.0f, 0.255f, Amount);
+	#ifdef RAIN_PUDDLE_COMPUTE
+		Amount *= Slope;
+	#endif
+	*/
+	#ifdef RAIN_PUDDLE_COMPUTE
+		if (!HasTerrainHeight)
+		{
+			return 0.0f;
+		}
+
+		float MaxFillHeight = 0.6f;
+		float HeightEdgeWidth = 2.0f / 127.0f;
+
+		float WaterLevel = Wetness * MaxFillHeight;
+		float FillDepth = WaterLevel - TerrainHeight;
+		float Amount = smoothstep(0.0f, HeightEdgeWidth, FillDepth);
+		float Tilt = max(abs(WorldNormal.x), abs(WorldNormal.z));
+		float Slope = (1.0f - smoothstep(0.05f, 0.2f, Tilt)) * step(0.0f, WorldNormal.y);
+		Amount *= Slope;
+	#else
+		float Noise = RAIN_PUDDLE_SAMPLE(s_puddles_perlin, smp_base, TexCoord * 15.0f).r;
+		// Terrain Upgrade's slope test, restricted to upward-facing surfaces.
+		float Slope = saturate((0.1f - max(abs(WorldNormal.x), abs(WorldNormal.z))) * 13.0f) * step(0.0f, WorldNormal.y);
+		float Amount = saturate((Noise - 0.12f) * Wetness) * Slope;
+		Amount = smoothstep(0.0f, 0.255f, Amount);
+	#endif
 	Amount *= WaterVisibility;
 	[branch]
 	if (Amount <= 0.0f)

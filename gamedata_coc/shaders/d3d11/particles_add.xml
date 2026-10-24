@@ -1,0 +1,14 @@
+<shader version="2">
+	<normal>
+		<pass vs="particle" ps="particle_add"/>
+		<sorting priority="3" strict="0"/>
+		<blend enable="1" src="one" dest="one"/>
+		<aref enable="0" value="0"/>
+		<zb test="1" write="0"/>
+		<fog value="0"/>
+		<texture name="s_base" value="{base}"/>
+		<texture name="s_position" value="$user$position"/>
+		<sampler name="smp_base"/>
+		<sampler name="smp_nofilter"/>
+	</normal>
+</shader>
