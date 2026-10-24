@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/IGame_Menu.h"
 #include "../../xrEngine/Environment.h"
 
 #include "../xrRender/dxEnvironmentRender.h"
@@ -325,7 +326,8 @@ void CRenderTarget::phase_combine()
 
 	
 	//Aight, so here we should enable/disable nvg
-	if (turn_nvg)
+	const bool MenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+	if (turn_nvg && !MenuActive)
 	{
 		GPU_EVENT(phase_nvg);
 		phase_nvg();
