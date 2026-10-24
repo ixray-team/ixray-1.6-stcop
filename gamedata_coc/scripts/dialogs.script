@@ -378,7 +378,7 @@ end
 function npc_is_surrendered(a,b)
 	local npc = who_is_npc(a, b)
 	local st = db.storage[npc:id()]
-	local po = st and st.victim_surrender and st.victim_surrender < 65534 and level.object_by_id(st.victim_surrender)
+	local po = st and st.victim_surrender and st.victim_surrender < alife_const.invalid_object_id - 1 and level.object_by_id(st.victim_surrender)
 	--printf("npc_is_surrendered: surrendered to %s",st.victim_surrender)
 	if (po) then
 		return true
@@ -389,7 +389,7 @@ end
 function npc_is_not_surrendered(a,b)
 	local npc = who_is_npc(a, b)
 	local st = db.storage[npc:id()]
-	local po = st and st.victim_surrender and st.victim_surrender < 65534 and level.object_by_id(st.victim_surrender)
+	local po = st and st.victim_surrender and st.victim_surrender < alife_const.invalid_object_id - 1 and level.object_by_id(st.victim_surrender)
 	if not (po) then
 		return false
 	end

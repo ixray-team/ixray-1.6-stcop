@@ -146,10 +146,10 @@ function on_init_bounty_hunt(actor,npc,p)
 		faction_lookup[p[i]] = true
 	end 
 	
-	for i=1,65534 do 
+	for _,i in ipairs(alife_object_ids()) do 
 		local se_obj = sim:object(i)
 		-- find random sim stalker
-		if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive() and sfind(se_obj:section_name(),"sim_default") and get_object_story_id(i) == nil) and (se_obj.group_id == nil or se_obj.group_id == 65535 or get_object_story_id(se_obj.group_id) == nil) then
+		if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive() and sfind(se_obj:section_name(),"sim_default") and get_object_story_id(i) == nil) and (se_obj.group_id == nil or se_obj.group_id == alife_const.invalid_object_id or get_object_story_id(se_obj.group_id) == nil) then
 			comm = alife_character_community(se_obj)
 			if (faction_lookup[comm] == true) then 
 				table.insert(valid_targets,i)
@@ -2345,7 +2345,7 @@ function flush_smart_terrain(actor,obj,p)
 			local se_obj = alife_object(k.id)
 			if (se_obj) then
 				local smart_id = se_obj.m_smart_terrain_id
-				if (smart_id and smart_id ~= 65535) then
+				if (smart_id and smart_id ~= alife_const.invalid_object_id) then
 					local smart = alife_object(smart_id)
 					if (smart) then
 						smart:unregister_npc(se_obj)
@@ -4142,7 +4142,7 @@ function jup_b200_count_found(actor)
 			local parent = material_obj:parent()
 			if parent then
 				local parent_id = parent:id()
-				if parent_id ~= 65535 and parent_id == actor:id() then
+				if parent_id ~= alife_const.invalid_object_id and parent_id == actor:id() then
 					cnt = cnt + 1
 				end
 			end
@@ -4174,7 +4174,7 @@ function make_a_wish(actor,npc,p)
 	action_list[3] = function()
 		local sim = alife()
 		local squad
-		for i=1,65534 do
+		for _,i in ipairs(alife_object_ids()) do
 			squad = sim:object(i)
 			if (squad and squad:clsid() == clsid.online_offline_group_s) then 
 				SIMBOARD:assign_squad_to_smart(squad, nil)
@@ -4552,7 +4552,7 @@ function disable_monolith_zones(actor,npc,p)
 		["zone_monolith"] = true
 	}
 	local sim = alife()
-	for i=1,65534 do 
+	for _,i in ipairs(alife_object_ids()) do 
 		local se_obj = sim:object(i)
 		if (se_obj and remove_sections[se_obj:section_name()]) then 
 			sim:release(se_obj,true)
@@ -4568,7 +4568,7 @@ function disable_generator_zones(actor,npc,p)
 		["generator_dust_static"] = true
 	}
 	local sim = alife()
-	for i=1,65534 do 
+	for _,i in ipairs(alife_object_ids()) do 
 		local se_obj = sim:object(i)
 		if (se_obj and remove_sections[se_obj:section_name()]) then 
 			sim:release(se_obj,true)

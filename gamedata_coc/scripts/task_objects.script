@@ -173,9 +173,9 @@ function CGeneralTask:check_task(tm)
 		return
 	end
 	
-	local se_obj = self.task_giver_id and self.task_giver_id ~= 65535 and alife_object(self.task_giver_id)
+	local se_obj = self.task_giver_id and self.task_giver_id ~= alife_const.invalid_object_id and alife_object(self.task_giver_id)
 	if (se_obj) then 
-		local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+		local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and alife_object(se_obj.group_id)
 		if (squad) then 
 			self.task_giver_id = squad:commander_id()
 		end

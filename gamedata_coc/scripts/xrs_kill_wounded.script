@@ -40,7 +40,7 @@ local function npc_on_update(npc,st)
 		return
 	end
 	
-	if (st.victim_surrender == nil or st.victim_surrender == 65534) then -- override NPC roll
+	if (st.victim_surrender == nil or st.victim_surrender == alife_const.invalid_object_id - 1) then -- override NPC roll
 		local active_item = db.actor:active_item()
 		if not (active_item and IsWeapon(active_item)) then
 			return
@@ -60,7 +60,7 @@ local function npc_on_update(npc,st)
 		end
 
 		if ( (math.random(1,100)/100) >= ActorKillWoundedChance) then
-			st.victim_surrender = 65535
+			st.victim_surrender = alife_const.invalid_object_id
 			return
 		end
 
@@ -298,7 +298,7 @@ function act_kill_wounded:begin_kill_wounded(vo)
 				vst.victim_surrender = self.object:id()
 				printf("victim surrender to %s",vst.victim_surrender)
 			else
-				vst.victim_surrender = 65534
+				vst.victim_surrender = alife_const.invalid_object_id - 1
 			end
 		end
 	end

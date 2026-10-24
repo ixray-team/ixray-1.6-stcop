@@ -38,9 +38,9 @@ function actor_on_before_death(whoID,flags)
 	local avail_entities = {}
 	local squad_mates = {}
 	--local faction_mates = {}
-	for i=1,65534 do 
+	for _,i in ipairs(alife_object_ids()) do 
 		local se_obj = sim:object(i)
-		if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive() and se_obj:community() ~= "zombied" and se_obj.group_id ~= 65535) then 
+		if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive() and se_obj:community() ~= "zombied" and se_obj.group_id ~= alife_const.invalid_object_id) then 
 			if (IsSurvivalMode() or get_object_story_id(se_obj.group_id) == nil) then
 				if (axr_companions.companion_squads[se_obj.group_id]) then 
 					table.insert(squad_mates,se_obj.id)
@@ -157,7 +157,7 @@ function actor_on_before_death(whoID,flags)
 	game_relations.set_community_goodwill_for_faction("actor_"..faction)
 	
 	-- copy all items except ignored
-	for i=1,65534 do 
+	for _,i in ipairs(alife_object_ids()) do 
 		local se_item = sim:object(i)
 		if (se_item and se_item.parent_id == se_obj.id) then
 			local sec = se_item:section_name()

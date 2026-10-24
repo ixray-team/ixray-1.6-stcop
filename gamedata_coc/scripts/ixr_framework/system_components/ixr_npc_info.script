@@ -1,4 +1,4 @@
-local OBJECT_ID_MAX_VALUE = 65535
+local OBJECT_ID_MAX_VALUE = alife_const.invalid_object_id
 
 local sight_type_names = {
     [-1] = "eSightTypeDummy",

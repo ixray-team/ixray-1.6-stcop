@@ -82,7 +82,7 @@ function generic_object_binder:update(delta)
 		xr_logic.try_switch_to_another_section(self.object, self.st[self.st.active_scheme], db.actor)
 	end
 	
-	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and sim:object(se_obj.group_id)
+	local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and sim:object(se_obj.group_id)
 	if (squad and squad:commander_id() == self.object:id()) then
 		squad:update()
 	end

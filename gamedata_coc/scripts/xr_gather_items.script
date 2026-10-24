@@ -148,7 +148,7 @@ function gather_item(npc)
 	st.vid = nil
 	st.vid_pos = nil
 
-	local itm = selected_id and selected_id ~= 0 and selected_id ~=65535 and level.object_by_id(selected_id)
+	local itm = selected_id and selected_id ~= 0 and selected_id ~= alife_const.invalid_object_id and level.object_by_id(selected_id)
 	local loot_table = UseCorpseLootTable ~= true and LootTable or xr_corpse_detection.lootable_table
 	if (itm == nil or loot_table[itm:section()] == nil) then
 		--printf("nooooo!  itm=%s lootable=%s",itm and itm:name(), itm and loot_table[itm:section()])
@@ -210,8 +210,8 @@ function eva_gather_itm:find_valid_item()
 	end
 	
 	if (self.st.selected_id) then 
-		local se_itm = self.st.selected_id ~= 0 and self.st.selected_id ~= 65535 and alife_object(self.st.selected_id)
-		if (se_itm and se_itm.parent_id == 65535) then
+		local se_itm = self.st.selected_id ~= 0 and self.st.selected_id ~= alife_const.invalid_object_id and alife_object(self.st.selected_id)
+		if (se_itm and se_itm.parent_id == alife_const.invalid_object_id) then
 			local itm = level.object_by_id(se_itm.id)
 			if (itm) then
 				return true
@@ -307,10 +307,10 @@ function eva_gather_itm:find_valid_item()
 	local itm_id = self.st.memory[self.st.index]
 	self.st.index = self.st.index + 1
 
-	local itm = itm_id and itm_id ~= 0 and itm_id ~= 65535 and level.object_by_id(itm_id)
+	local itm = itm_id and itm_id ~= 0 and itm_id ~= alife_const.invalid_object_id and level.object_by_id(itm_id)
 	local se_itm = itm and loot_table[itm:section()] and Items[itm_id] == nil and alife_object(itm_id)
 
-	if not (se_itm and se_itm.parent_id == 65535) then
+	if not (se_itm and se_itm.parent_id == alife_const.invalid_object_id) then
 		return false
 	end
 	
@@ -433,7 +433,7 @@ local function execute_gather_item(npc,self)
 		return
 	end
 
-	local se_itm = self.st.selected_id ~= 65535 and self.st.selected_id ~= 0 and alife_object(self.st.selected_id)
+	local se_itm = self.st.selected_id ~= alife_const.invalid_object_id and self.st.selected_id ~= 0 and alife_object(self.st.selected_id)
 	local dist = npc:position():distance_to(self.st.vid_pos)
 
 	if (se_itm and IsArtefact(nil,se_itm:clsid())) then

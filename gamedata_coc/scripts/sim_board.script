@@ -243,7 +243,7 @@ local community_groups = {}
 function simulation_board:setup_squad_and_group(se_obj)
 	--alun_utils.debug_write(strformat("simulation_board:setup_squad_and_group %s",obj and obj:name()))
 	local sim = alife()
-	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and sim:object(se_obj.group_id)
+	local squad = se_obj.group_id and se_obj.group_id ~= alife_const.invalid_object_id and sim:object(se_obj.group_id)
 	if not (squad) then
 		change_team_squad_group(se_obj, se_obj.team, se_obj.squad, 0)
 		return

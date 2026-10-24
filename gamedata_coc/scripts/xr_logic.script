@@ -820,12 +820,12 @@ function cfg_get_npc_and_zone(ini, section, field, npc,cond_name)
 		local id = get_story_object_id(t.v1)
 		if not (id) then 
 			printf("object '%s': section '%s': field '%s': there is no object with story_id '%s'",npc:name(), section, field, t.v1)
-			t.npc_id = 65535
+			t.npc_id = alife_const.invalid_object_id
 		end 
 		
 		local sim = alife()
 		local se_obj = sim:object(id)
-		t.npc_id = se_obj ~= nil and se_obj.id or 65535
+		t.npc_id = se_obj ~= nil and se_obj.id or alife_const.invalid_object_id
 	end
 
 	return t

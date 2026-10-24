@@ -298,7 +298,7 @@ local function eval_danger(self)
 	--[[
 	local sim = alife()
 	local se_obj = sim:object(id)
-	if (se_obj and se_obj.m_smart_terrain_id ~= 65535) then
+	if (se_obj and se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id) then
 		sim:object(se_obj.m_smart_terrain_id):set_alarm()
 	end
 	--]]

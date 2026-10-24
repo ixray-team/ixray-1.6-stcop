@@ -97,7 +97,7 @@ end
 
 function evaluator_wounded_exist:find_valid_target()
 	if (self.a.selected_id) then
-		local vo = self.a.selected_id and self.a.selected_id ~= 65535 and self.a.selected_id ~= 0 and db.storage[self.a.selected_id] and db.storage[self.a.selected_id].object
+		local vo = self.a.selected_id and self.a.selected_id ~= alife_const.invalid_object_id and self.a.selected_id ~= 0 and db.storage[self.a.selected_id] and db.storage[self.a.selected_id].object
 		if (vo and IsStalker(vo) and vo:alive() and IsWounded(vo)) then 
 			return true 
 		end

@@ -92,7 +92,7 @@ local function get_smart_terrain_target(se_obj)
 	end
 
 	if not (most_priority_task) then
-		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and alife_object(se_obj.m_smart_terrain_id)
+		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id and alife_object(se_obj.m_smart_terrain_id)
 		return smart and not smart.disabled and smart
 	end
 
@@ -164,7 +164,7 @@ function force_target_destination(id,target_id)
 	
 	local gg = game_graph()
 	if gg:vertex(se_obj.m_game_vertex_id):level_id() == gg:vertex(se_target.m_game_vertex_id):level_id() then
-		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and sim:object(se_obj.m_smart_terrain_id)
+		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= alife_const.invalid_object_id and sim:object(se_obj.m_smart_terrain_id)
 		if (smart) then 
 			smart:unregister_npc(se_obj)
 		end

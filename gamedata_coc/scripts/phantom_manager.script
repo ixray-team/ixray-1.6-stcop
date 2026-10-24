@@ -22,7 +22,7 @@ end
 
 function spawn_dynamic_phantom(sec,pos,lvid)
 	--alun_utils.debug_write("spawn_dynamic_phantom")
-	level.spawn_item(sec,pos,4294967295,65535,false)
+	level.spawn_item(sec,pos,4294967295,alife_const.invalid_object_id,false)
 end
 
 function dynamic_phantom_count(sec)

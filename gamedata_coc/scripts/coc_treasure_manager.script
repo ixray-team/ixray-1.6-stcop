@@ -37,7 +37,7 @@ local function on_game_load()
 	end
 
 	local sim = alife()
-	for i=1, 65534 do
+	for _,i in ipairs(alife_object_ids()) do
 		local se_obj = sim:object(i)
 		if (se_obj) then
 			if (IsInvbox(nil,se_obj:clsid())) then
