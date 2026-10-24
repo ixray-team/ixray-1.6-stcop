@@ -3,6 +3,7 @@
 
 #include "ThmProperties.h"
 #include "SoundPreview.h"
+#include "ParticlePreview.h"
 
 class CContentView:
 	public IEditorWnd
@@ -154,6 +155,7 @@ private:
 
 	// Icon database shared by every content browser: a file icon is created once
 	static xr_hash_map<xr_string, IconData> Icons;
+	static CParticlePreviewCache ParticlePreviews;
 
 	xr_hash_map<xr_string, void*> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;

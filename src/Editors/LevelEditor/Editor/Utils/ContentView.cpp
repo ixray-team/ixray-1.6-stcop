@@ -14,9 +14,11 @@
 CContentView* GContentView = nullptr;
 
 xr_hash_map<xr_string, CContentView::IconData> CContentView::Icons;
+CParticlePreviewCache CContentView::ParticlePreviews;
 
 void CContentView::ClearIcons()
 {
+	ParticlePreviews.Clear();
 	Icons.clear();
 }
 
@@ -300,6 +302,7 @@ void CContentView::Draw()
 	}
 
 	UpdateSoundPreview();
+	ParticlePreviews.Update();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
@@ -864,8 +867,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 			if (ParentPath == path)
 			{
 				FileOptData FileInfo;
-				FileInfo.File = Name;
-				FileInfo.File.replace_extension(ext);
+				FileInfo.File = xr_string(Name) + "." + ext;
 
 				Files.push_back(FileInfo);
 				ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
@@ -887,7 +889,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 		else if (path.empty() && !PEPath.has_parent_path())
 		{
 			FileOptData FileInfo;
-			FileInfo.File = Name;
+			FileInfo.File = xr_string(Name) + "." + ext;
 			Files.push_back(FileInfo);
 			ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
 		}
@@ -1061,6 +1063,7 @@ void CContentView::Destroy()
 	SoundPreviews.Clear();
 
 	MenuIcon.destroy();
+	ParticlePreviews.Clear();
 	Icons.clear();
 
 	IsWndDestroyed = true;
@@ -1761,10 +1764,20 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		else if (Path.extension().string() == ".pg" || Path.extension().string() == ".pe")
 		{
-			if (ImGui::MenuItem("Open"))
+			const bool IsGroup = Path.extension().string() == ".pg";
+			auto Found = ParticlesCache.find(Path.xstring());
+			void* Ptr = Found != ParticlesCache.end() ? Found->second : nullptr;
+
+			if (Ptr == nullptr)
+			{
+				xr_path DefName = Path;
+				DefName.replace_extension();
+				Ptr = IsGroup ? (void*)RImplementation.PSLibrary.FindPGD(DefName.xstring().c_str()) : (void*)RImplementation.PSLibrary.FindPED(DefName.xstring().c_str());
+			}
+
+			if (Ptr != nullptr && ImGui::MenuItem("Open"))
 			{
 				CViewportParticle* MeshView = new CViewportParticle;
-				void* Ptr = ParticlesCache[Path.xstring()];
 
 				if (Path.extension().string() == ".pg")
 				{
@@ -1778,9 +1791,8 @@ bool CContentView::DrawContext(const xr_path& Path)
 				EContext.UI->Push(MeshView);
 			}
 
-			if (ImGui::MenuItem("Edit in Particle Editor"))
+			if (Ptr != nullptr && ImGui::MenuItem("Edit in Particle Editor"))
 			{
-				void* Ptr = ParticlesCache[Path.xstring()];
 				if (Path.extension().string() == ".pg")
 				{
 					UIParticleEditorForm::Open(((PS::CPGDef*)Ptr)->m_Name.c_str());
@@ -1964,6 +1976,20 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 {
 	if (Icons.contains(IconPath))
 		return Icons[IconPath];
+
+	if (IsParticles && (IconPath.ends_with(".pe") || IconPath.ends_with(".pg")))
+	{
+		auto Found = ParticlesCache.find(IconPath);
+		if (Found == ParticlesCache.end())
+			return Icons["file"];
+
+		ref_texture Preview = ParticlePreviews.Get(IconPath, Found->second, IconPath.ends_with(".pg"));
+		if (!Preview)
+			return Icons["file"];
+
+		Icons[IconPath] = { Preview, false };
+		return Icons[IconPath];
+	}
 
 	if (IconPath.Contains(".~"))
 		return Icons["backup"];
