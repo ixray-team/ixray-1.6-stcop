@@ -90,7 +90,7 @@ function activate_feature()
 	end
 	feature_is_active = true
 	AddUniqueCall(main_loop)
-	RegisterScriptCallback("on_game_end",on_actor_destroy)
+	RegisterScriptCallback("actor_on_net_destroy",on_actor_destroy)
 end 
 
 function deactivate_feature()
@@ -99,7 +99,7 @@ function deactivate_feature()
 	end
 	feature_is_active = false
 	RemoveUniqueCall(main_loop)
-	UnregisterScriptCallback("on_game_end",on_actor_destroy)
+	UnregisterScriptCallback("actor_on_net_destroy",on_actor_destroy)
 	finish_theme()
 end
 
