@@ -367,7 +367,8 @@ end
 -- Добавление анимации, установка коллбека
 function animation:add_anim(anm, state)
 	local npc = self.npc
-	if (self.mgr.animation_position and self.mgr.animation_direction and not self.mgr.animation_direction_applied) then
+	local force_position = self.states.anim_marker == MARKER_IN and self.states.seq_id == 1
+	if (self.mgr.animation_position and self.mgr.animation_direction and (not self.mgr.animation_direction_applied or force_position)) then
 		self.mgr.animation_direction_applied = true
 		local dir = self.mgr.animation_direction
 		local rot_y = -math.deg(math.atan2(dir.x, dir.z))
