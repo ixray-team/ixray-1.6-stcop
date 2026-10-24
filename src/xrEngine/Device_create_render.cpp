@@ -340,10 +340,10 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		}
 	}
 
-#if defined(__APPLE__)
-	// macOS routes the first click into window activation, so it never reaches the game.
-	SDL_RaiseWindow(g_AppInfo.Window);
-#endif
+	if (!g_dedicated_server && !Autotest::Active())
+	{
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
 
 	ResizeBuffers(width, height);
 }
