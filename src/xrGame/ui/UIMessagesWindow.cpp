@@ -138,7 +138,9 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 	pItem->UIMsgText.AdjustHeightToText	();
 	
     pItem->SetColorAnimation			("ui_main_msgs_short", LA_ONLYALPHA|LA_TEXTCOLOR|LA_TEXTURECOLOR, float(news->show_time));
-	
+	pItem->ResetColorAnimation;
+    
+    
 	pItem->UIIcon.InitTexture			(news->texture_name.c_str());
 	
 	Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
