@@ -980,6 +980,7 @@ void CScriptGameObject::script_register(lua_State *L)
 
 			//
 			.def("iterate_feel_touch",			&CScriptGameObject::IterateFeelTouch)
+			.def("get_luminocity_hemi", 			&CScriptGameObject::GetLuminocityHemi)
 			.def("get_luminocity", 				&CScriptGameObject::GetLuminocity)
 			.def("bone_visible", 				&CScriptGameObject::IsBoneVisible)
 			.def("set_bone_visible", 			&CScriptGameObject::SetBoneVisible)
