@@ -59,6 +59,7 @@ struct TintSettings
 {
 	Vector Base = BaseColor;
 	Vector Adjustment = {0, 1, 1, 0};
+	float MaskUV = 5.0f / 6.0f;
 	float Tips = 1;
 	float LocalHeight = 0;
 	int BlendMode = 1;
@@ -85,9 +86,11 @@ public:
 
 		const char* ProbeSource = R"(
 #include "common.hlsli"
+#define USE_DETAIL_TINT_MASK 1
 #include "grass_terrain_tint.hlsli"
 uniform float4 probe_root;
 uniform float4 probe_base;
+uniform float4 probe_mask;
 struct ProbeOutput { float4 position : SV_POSITION; float4 tint : TEXCOORD0; };
 ProbeOutput ProbeVS(uint Id : SV_VertexID)
 {
@@ -99,7 +102,7 @@ ProbeOutput ProbeVS(uint Id : SV_VertexID)
 }
 float4 ProbePS(ProbeOutput I) : SV_Target
 {
-    return float4(GrassTerrainTintApply(probe_base.rgb, I.tint), 1);
+    return float4(GrassTerrainTintApply(probe_base.rgb, I.tint, GrassTerrainTintMask(probe_mask.xy)), 1);
 }
 )";
 		ProbeVSCode = Compile("grass_terrain_tint_capture.vs.hlsl", ProbeSource, "ProbeVS", "vs_5_0");
@@ -110,6 +113,16 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		Color = Texture(Resolution, Resolution, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, nullptr, true);
 		Height = Texture(Resolution, Resolution, DXGI_FORMAT_R32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		Depth = Texture(Resolution, Resolution, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
+		const std::array<unsigned char, 12> MaskPixels = {0, 0, 0, 255, 128, 128, 128, 255, 255, 255, 255, 255};
+		D3D11_TEXTURE2D_DESC MaskDescription = {};
+		MaskDescription.Width = 3;
+		MaskDescription.Height = MaskDescription.MipLevels = MaskDescription.ArraySize = 1;
+		MaskDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		MaskDescription.SampleDesc.Count = 1;
+		MaskDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		D3D11_SUBRESOURCE_DATA MaskData = {MaskPixels.data(), 12, 0};
+		Verify(Device->CreateTexture2D(&MaskDescription, &MaskData, &MaskTexture), "Create atlas mask");
+		Verify(Device->CreateShaderResourceView(MaskTexture.Get(), nullptr, &MaskView), "Create atlas mask SRV");
 		Output = Texture(1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET);
 		Verify(Device->CreateRenderTargetView(Color.Get(), nullptr, &ColorTarget), "Create color RTV");
 		Verify(Device->CreateRenderTargetView(Height.Get(), nullptr, &HeightTarget), "Create height RTV");
@@ -259,11 +272,13 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		const Values Constants = {{"grass_tint_bounds", {-1, -1, 0.5f, 0.5f}},
 			{"grass_tint_params", {Strength, 0, 0.01f, float(Mode)}},
 			{"grass_tint_options", {Settings.GreenOnly ? 1.0f : 0.0f, Enabled ? 1.0f : 0.0f, Settings.Tips, float(Settings.BlendMode)}},
-			{"grass_tint_adjustment", Settings.Adjustment}, {"probe_root", Root}, {"probe_base", Settings.Base}};
+			{"grass_tint_adjustment", Settings.Adjustment}, {"probe_root", Root}, {"probe_base", Settings.Base}, {"probe_mask", {Settings.MaskUV, 0.5f, 0, 0}}};
 		SetConstants(ProbeVSCode.Get(), true, Constants);
 		SetConstants(ProbePSCode.Get(), false, Constants);
 		Resource(ProbeVSCode.Get(), true, "s_grass_tint_color", ColorView.Get());
 		Resource(ProbeVSCode.Get(), true, "s_grass_tint_height", HeightView.Get());
+		Resource(ProbePSCode.Get(), false, "s_grass_tint_mask", MaskView.Get());
+		Sampler(ProbePSCode.Get(), false, "smp_base", PointSampler.Get());
 		Sampler(ProbeVSCode.Get(), true, "smp_nofilter", PointSampler.Get());
 		Sampler(ProbeVSCode.Get(), true, "smp_rtlinear", LinearSampler.Get());
 		Context->IASetInputLayout(nullptr);
@@ -441,10 +456,10 @@ private:
 	ComPtr<ID3DBlob> CaptureVSCode, CapturePSCode, ProbeVSCode, ProbePSCode;
 	ComPtr<ID3D11VertexShader> CaptureVS, ProbeVS;
 	ComPtr<ID3D11PixelShader> CapturePS, ProbePS;
-	ComPtr<ID3D11Texture2D> Color, Height, Depth, Output;
+	ComPtr<ID3D11Texture2D> Color, Height, Depth, Output, MaskTexture;
 	ComPtr<ID3D11RenderTargetView> ColorTarget, HeightTarget, OutputTarget;
 	ComPtr<ID3D11DepthStencilView> DepthTarget;
-	ComPtr<ID3D11ShaderResourceView> ColorView, HeightView;
+	ComPtr<ID3D11ShaderResourceView> ColorView, HeightView, MaskView;
 	ComPtr<ID3D11SamplerState> PointSampler, LinearSampler;
 	ComPtr<ID3D11RasterizerState> RasterState;
 	ComPtr<ID3D11DepthStencilState> CaptureDepth, ProbeDepth;
@@ -477,6 +492,13 @@ int main(int Count, char** Arguments)
 		Check(DryGrass[0] > DryGrass[1] && DryGrass[1] > DryGrass[2] * 1.5f, "Green source grass on sand must turn yellow-brown");
 		Check(std::abs(Luminance(DryGrass) - Luminance(BaseColor)) < 0.006f, "Brightness zero must retain the blade's luminance");
 		TintSettings Settings;
+		Settings.MaskUV = 1.0f / 6.0f;
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), BaseColor), "Black atlas mask must preserve source color");
+		Check(Near(Fixture.Probe(1, Root, 1, true, Settings), BaseColor), "Black mask must also protect terrain color preview");
+		Settings.MaskUV = 0.5f;
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), Fixture.Probe(0, Root, 128.0f / 255.0f)), "Grey mask must scale tint strength linearly");
+		Settings = {};
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), DryGrass), "White atlas mask must retain full tint");
 		Fixture.Capture(true, Green);
 		const Vector SameGrassOnGreen = Fixture.Probe(0, Root);
 		Check(SameGrassOnGreen[1] > SameGrassOnGreen[0] * 1.8f && !Near(SameGrassOnGreen, DryGrass, 0.12f), "The same grass texture must follow green and sandy terrain with a strong hue change");

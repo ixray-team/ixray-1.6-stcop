@@ -79,9 +79,25 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		return;
 	}
 
+	// Resolve alongside the actual atlas. A full path keeps masks from different
+	// levels distinct in the shared texture cache, including archived levels.
+	string_path TintMaskPath = {};
+	bool HasTintMask = false;
 	if (C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_NORMAL_LQ)
 	{
 		RImplementation.addShaderOption("USE_DETAIL_TERRAIN_TINT", "1");
+		string_path AtlasName = {};
+		xr_strcpy(AtlasName, C.L_textures[0]);
+		fix_texture_name(AtlasName);
+		xr_string MaskName = AtlasName;
+		MaskName += "_tint";
+		HasTintMask = FS.exist(TintMaskPath, "$level$", MaskName.c_str(), ".dds") ||
+			FS.exist(TintMaskPath, _game_textures_, MaskName.c_str(), ".dds");
+		if (HasTintMask)
+		{
+			RImplementation.addShaderOption("USE_DETAIL_TINT_MASK", "1");
+			Msg("* Grass terrain tint: atlas mask %s", TintMaskPath);
+		}
 	}
 
 	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ)
@@ -106,6 +122,10 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_dx10Texture("s_grass_tint_color", "$user$grass_terrain_tint_color");
 		C.r_dx10Texture("s_grass_tint_height", "$user$grass_terrain_tint_height");
+		if (HasTintMask)
+		{
+			C.r_dx10Texture("s_grass_tint_mask", TintMaskPath);
+		}
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
@@ -117,6 +137,10 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_dx10Texture("s_grass_tint_color", "$user$grass_terrain_tint_color");
 		C.r_dx10Texture("s_grass_tint_height", "$user$grass_terrain_tint_height");
+		if (HasTintMask)
+		{
+			C.r_dx10Texture("s_grass_tint_mask", TintMaskPath);
+		}
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);

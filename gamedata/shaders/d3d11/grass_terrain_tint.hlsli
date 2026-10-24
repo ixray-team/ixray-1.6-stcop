@@ -37,7 +37,21 @@ float4 GrassTerrainTintSample(float3 root, float localHeight)
     return float4(color.rgb / max(color.a, 0.0001f), weight);
 }
 
-float3 GrassTerrainTintApply(float3 baseColor, float4 tint)
+#ifdef USE_DETAIL_TINT_MASK
+Texture2D s_grass_tint_mask;
+#endif
+
+float GrassTerrainTintMask(float2 atlasUV)
+{
+#ifdef USE_DETAIL_TINT_MASK
+    // Red is linear data, not opacity. Use the same UV/filter as the detail atlas.
+    return saturate(s_grass_tint_mask.Sample(smp_base, atlasUV).r);
+#else
+    return 1.0f;
+#endif
+}
+
+float3 GrassTerrainTintApply(float3 baseColor, float4 tint, float maskWeight = 1.0f)
 {
     // Test the detail shader independently from terrain coverage and height rejection.
     if (grass_tint_params.w > 2.5f && grass_tint_params.w < 3.5f)
@@ -58,9 +72,9 @@ float3 GrassTerrainTintApply(float3 baseColor, float4 tint)
     }
     if (grass_tint_params.w > 0.5f && grass_tint_params.w < 1.5f)
     {
-        return GrassTerrainTintToGamma(tint.rgb);
+        return lerp(baseColor, GrassTerrainTintToGamma(tint.rgb), saturate(maskWeight));
     }
-    float strength = saturate(grass_tint_params.x * tint.a);
+    float strength = saturate(grass_tint_params.x * tint.a) * saturate(maskWeight);
     if (grass_tint_options.x > 0.5f)
     {
         // Preserve flowers, dry stems and neutral stones in mixed detail atlases.

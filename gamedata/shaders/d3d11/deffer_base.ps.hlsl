@@ -77,7 +77,7 @@ void main(p_bumped_new I,
 
     SloadNew(I, M);
 #ifdef USE_DETAIL_TERRAIN_TINT
-    M.Color.rgb = GrassTerrainTintApply(M.Color.rgb, I.terrain_tint);
+    M.Color.rgb = GrassTerrainTintApply(M.Color.rgb, I.terrain_tint, GrassTerrainTintMask(I.tcdh.xy));
 #endif
 
 #ifdef USE_AREF

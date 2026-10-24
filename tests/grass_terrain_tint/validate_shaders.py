@@ -43,6 +43,10 @@ def main():
     add("untinted_vs", "deffer_detail.vs.hlsl", "vert")
     add("untinted_ps", "deffer_base.ps.hlsl", "frag", "USE_AREF=1", "FIX_CULL_NORMAL=1", "USE_LEGACY_LIGHT=1")
 
+    for name, file, stage, defines in list(cases):
+        if name.startswith(("grass_ps_", "grass_vs_")):
+            add(name + "_masked", file, stage, *defines, "USE_DETAIL_TINT_MASK=1")
+
     logs = []
     for name, file, stage, defines in cases:
         assembly = args.output / f"{name}.asm"
