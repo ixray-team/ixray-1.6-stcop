@@ -196,7 +196,9 @@ struct SDeclaration;
 		u32			dwStartVertex;
 		u32			dwNumVertex;
 		ref_geom 	pGeom;
-		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(nullptr){;}
+		// Local bounds of a spatial chunk; invalid for an unchunked surface
+		Fbox		ChunkBox;
+		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(nullptr){ChunkBox.invalidate();}
 	};
 	using RBVector = xr_vector<st_RenderBuffer>;
 	using RBVecIt = RBVector::iterator;
@@ -225,6 +227,20 @@ class ECORE_API CEditableMesh
 
 public:
 	static 			bool m_bDraftMeshMode;
+
+	// Editor region filter: returns true when a world point lies in a disabled region.
+	// Large meshes are split into chunks so parts of them can be hidden and skipped by picking.
+	using RegionHiddenFn = bool (*)(const Fvector& WorldPoint);
+	static RegionHiddenFn RegionHidden;
+	// Drops chunks outside the view frustum when drawing (picking keeps them)
+	static bool CullChunksByView;
+	static constexpr float RegionChunkSize = 25.0f;
+
+	bool			IsChunked				() const { return m_Chunked; }
+	// Surfaces with faces in this mesh and their buffers; null until the buffers are generated
+	const RBMap*	GetRenderBuffers		() const { return m_RenderBuffers.get(); }
+	static bool		IsPointHidden			(const Fmatrix& Parent, const Fvector& LocalPoint);
+	static Fvector	SnapToChunkCenter		(const Fvector& LocalPoint);
 
 	void 			GenerateRenderBuffers();
 	void 			UnloadRenderBuffers();
@@ -280,6 +296,10 @@ protected:
 #endif
 public:
 	xr_unique_ptr<RBMap> m_RenderBuffers;
+	bool			m_Chunked = false;
+	bool			IsRenderBufferHidden	(const st_RenderBuffer& RB, const Fmatrix* World) const;
+	bool			IsResultHidden			(const Fmatrix& Parent, const CDB::RESULT& R) const;
+	bool			IsFaceHidden			(const Fmatrix& Parent, u32 FaceIndex) const;
 	std::function<void(Fvector2& uv, int pindex, const Fvector& N)> m_TexGen;
 
 	EditColorMesh m_color_map;
@@ -330,7 +350,8 @@ public:
 	void 			RenderSkeleton			(CCustomObject*, const Fmatrix& parent, CSurface* S);
 
 	// Geometry of a surface only, for the renderer scene graph (it sets the shader pass)
-	void			RenderGeometry			(CCustomObject*, CSurface* S);
+	// World is needed to hide chunks of disabled regions; null draws every chunk
+	void			RenderGeometry			(CCustomObject*, CSurface* S, const Fmatrix* World = nullptr);
 	// Geometry of a surface drawn InstanceCount times (instanced vertex shader of the current pass)
 	void			RenderGeometryInstanced	(CSurface* S, u32 InstanceCount);
 	void			RenderSkeletonGeometry	(CCustomObject*, CSurface* S);

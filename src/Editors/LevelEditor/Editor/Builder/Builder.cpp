@@ -42,6 +42,9 @@ SceneBuilder::~SceneBuilder()
 
 bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	if(m_save_as_object)
 	{
 		EvictResource	();
@@ -247,6 +250,9 @@ bool SceneBuilder::MakePlanars()
 
 bool SceneBuilder::MakeAIMap(bool Legacy)
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text;
 	do
 	{
@@ -271,6 +277,9 @@ bool SceneBuilder::MakeAIMap(bool Legacy)
 
 bool SceneBuilder::MakeDetails()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	EContext.UI->BeginEState(esBuildLevel);
 
 	xr_string error_text;
@@ -294,6 +303,9 @@ bool SceneBuilder::MakeDetails()
 
 bool SceneBuilder::MakeHOM()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text = "";
 	EContext.UI->ResetBreak();
 	ELog.Msg(mtInformation, "Making started...");
@@ -333,6 +345,9 @@ bool SceneBuilder::MakeHOM()
 
 bool SceneBuilder::MakeSOM()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text = "";
 	EContext.UI->ResetBreak();
 	ELog.Msg(mtInformation, "Making started...");

@@ -121,9 +121,9 @@ ref_shader CSurface::_ShaderInstanced()
 		return m_ShaderInstanced;
 	}
 
-	RImplementation.EditorInstancing = true;
+	RImplementation.SetEditorInstancing(true);
 	m_ShaderInstanced.create(*m_ShaderName, *m_Texture);
-	RImplementation.EditorInstancing = false;
+	RImplementation.SetEditorInstancing(false);
 
 	if (!CEditorInstanceBatcher::IsShaderSupported(&*m_ShaderInstanced))
 	{
@@ -139,8 +139,10 @@ static const float ssaLim = 64.f * 64.f / (640 * 480);
 
 void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
 {
+	PROF_EVENT("CEditableObject::Render")
 	if (!(m_LoadState.is(LS_RBUFFERS)))
 	{
+		PROF_EVENT("CEditableObject::DefferedLoadRP")
 		DefferedLoadRP();
 	}
 
@@ -190,6 +192,7 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 		{
 			if (psDeviceFlags.is(rsEdgedFaces) && (1 == priority) && (false == strictB2F))
 			{
+				PROF_EVENT("CEditableObject::RenderEdge")
 		 		RenderEdge(pParent);
 			}
 
@@ -201,6 +204,12 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 			if (IsSkeleton())
 			{
 				Engine.External.SetSkinningMode(4);
+			}
+
+			if (SubmitPass && !IsSkeleton())
+			{
+				SubmitSurfaces(pParent, parent, priority, strictB2F, surfaces);
+				return;
 			}
 
 			size_t s_id = 0;
@@ -266,6 +275,118 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 			}
 
 			Engine.External.SetSkinningMode();
+		}
+	}
+}
+
+void CEditableObject::SubmitSurfaces(CCustomObject* pParent, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
+{
+	// The scene passes use the pairs collected for the frame; shadow passes have their own
+	// frustums and collect again
+	if (!GEditorSceneSubmit.ShadowCollect)
+	{
+		if (SDeferredSubmit* Job = GEditorSceneSubmit.FindPrepared(pParent); Job != nullptr && Job->Object == this)
+		{
+			GEditorSceneSubmit.ApplyPrepared(*Job, priority, strictB2F);
+			return;
+		}
+	}
+
+	// While the scene pass collects objects the work runs later, spread over worker threads
+	if (GEditorSceneSubmit.IsDeferring())
+	{
+		SDeferredSubmit& Job = GEditorSceneSubmit.AddDeferred();
+		Job.Object = this;
+		Job.Parent = pParent;
+		Job.Transform = parent;
+		Job.Priority = priority;
+		Job.StrictB2F = strictB2F;
+		Job.Surfaces = surfaces;
+		GEditorSceneSubmit.LaunchDeferred(Job);
+		return;
+	}
+
+	PROF_EVENT("CEditableObject::SubmitSurfaces")
+	static SDeferredSubmit Job;
+	Job.Object = this;
+	Job.Parent = pParent;
+	Job.Transform = parent;
+	Job.Priority = priority;
+	Job.StrictB2F = strictB2F;
+	Job.Surfaces = surfaces;
+	CollectSubmitPairs(Job);
+	GEditorSceneSubmit.ApplyDeferred(Job);
+}
+
+void CEditableObject::CollectSubmitPairs(SDeferredSubmit& Job) const
+{
+	Job.Selected.clear();
+	Job.Pairs.clear();
+	Job.Fallback.clear();
+
+	// Surfaces of this pass, once per object instead of once per mesh
+	for (size_t s_id = 0; s_id < m_Surfaces.size(); ++s_id)
+	{
+		CSurface* Surface = m_Surfaces[s_id];
+		if (!Surface->m_bEditorVisible)
+		{
+			continue;
+		}
+
+		const int Priority = Surface->_Priority();
+		const bool StrictB2F = Surface->_StrictB2F();
+		if (Job.Priority != SDeferredSubmit::AllPriorities && (Priority != Job.Priority || StrictB2F != Job.StrictB2F))
+		{
+			continue;
+		}
+
+		SDeferredSubmit::SSelected& Sel = Job.Selected.emplace_back();
+		Sel.Surface = Surface;
+		Sel.Priority = Priority;
+		Sel.StrictB2F = StrictB2F;
+		Sel.DrawSurface = (Job.Surfaces != nullptr && Job.Surfaces->size() > s_id) ? (*Job.Surfaces)[s_id] : Surface;
+	}
+
+	if (Job.Selected.empty())
+	{
+		return;
+	}
+
+	// Walk the surfaces each mesh has faces of: a large object has hundreds of meshes and
+	// surfaces, and most pairs are empty
+	for (CEditableMesh* Mesh : m_Meshes)
+	{
+		const RBMap* Buffers = Mesh->GetRenderBuffers();
+		if (Buffers == nullptr)
+		{
+			// Submit generates the buffers on first use, on the primary thread
+			Job.Fallback.push_back(Mesh);
+			continue;
+		}
+
+		if (!Mesh->m_Flags.is(CEditableMesh::flVisible))
+		{
+			continue;
+		}
+
+		Fbox Box;
+		Mesh->GetBox(Box);
+		Box.xform(Job.Transform);
+		if (!::Render->occ_visible(Box))
+		{
+			continue;
+		}
+
+		for (const auto& [Surface, Vector] : *Buffers)
+		{
+			for (u32 Index = 0; Index < u32(Job.Selected.size()); ++Index)
+			{
+				if (Job.Selected[Index].Surface == Surface)
+				{
+					Job.Pairs.push_back({ Mesh, Index });
+					break;
+				}
+			}
 		}
 	}
 }

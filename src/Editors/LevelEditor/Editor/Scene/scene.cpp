@@ -99,6 +99,8 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 {
 	VERIFY			  	(object);
 	VERIFY				(m_Valid);
+	// The partition keeps object pointers per cell
+	GWorldPartition.MarkDirty();
 
 	switch (object->FClassID)
 	{
@@ -134,6 +136,7 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 {
 	VERIFY(object);
 	VERIFY(m_Valid);
+	GWorldPartition.MarkDirty();
 
 	switch (object->FClassID)
 	{
@@ -220,6 +223,7 @@ int EScene::MultiRenameObjects()
 
 void EScene::OnFrame( float dT )
 {
+	PROF_EVENT("EScene::OnFrame")
 	if(!valid()) return;
 	if(locked()) return;
 
@@ -295,6 +299,7 @@ void EScene::Unload(bool bEditableOnly)
 ECORE_API xrGUID generate_guid();
 void EScene::Clear(bool bEditableToolsOnly)
 {
+	GWorldPartition.MarkDirty();
 	Device.DetailsTask.wait();
 
 	// clear snap
@@ -409,6 +414,7 @@ void EScene::Modified()
 	}
 	m_RTFlags.set(flRT_Modified|flRT_Unsaved,true);
 	g_scene_physics.OnSceneModified();
+	GWorldPartition.MarkDirty();
 	UIObjectList::Refresh();
 }
 
@@ -485,6 +491,9 @@ bool EScene::ExportGame(SExportStreams* F)
 
 bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTestGlow, bool bTestShaderCompatible, bool bFullTest)
 {
+	// Validation checks the library objects of static objects
+	GWorldPartition.StreamInAll();
+
 	bool bRes = true;
 	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
 	SceneToolsMapPairIt t_end 	= m_SceneTools.end();

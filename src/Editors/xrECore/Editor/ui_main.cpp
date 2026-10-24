@@ -514,6 +514,7 @@ ECORE_API xrCriticalSection temp_render_lock;
 
 void TUI::Redraw()
 {
+	PROF_EVENT("TUI::Redraw")
 	xrCriticalSectionGuard guard_lock(temp_render_lock);
 
 	PrepareRedraw();
@@ -646,6 +647,8 @@ void TUI::Redraw()
 			{
 				RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
 				RImplementation.EditorOcclusionCulling = EPrefs->OcclusionCulling;
+				GEditorSceneSubmit.InstancingEnabled = EPrefs->Instancing;
+				GEditorSceneSubmit.ShadowInstancingEnabled = EPrefs->ShadowInstancing;
 				RImplementation.EditorHemi = EPrefs->Hemi;
 				RImplementation.EditorDynamicLights = EPrefs->DynamicLights;
 				RImplementation.EditorLightShadows = EPrefs->LightShadows;
@@ -752,6 +755,7 @@ void TUI::RealRedrawScene()
 
 void TUI::OnFrame()
 {
+	PROF_EVENT("TUI::OnFrame")
 	EDevice->FrameMove();
 	SndLib->OnFrame();
 	// tools on frame
@@ -770,6 +774,7 @@ void TUI::OnFrame()
 
 bool TUI::Idle()
 {
+	PROF_FRAME("Editor")
 	VERIFY(m_bReady);
 
 	MSG msg;
@@ -794,7 +799,10 @@ bool TUI::Idle()
 		RealResetUI();
 	}
 
-	Sleep(1);
+	{
+		PROF_EVENT("TUI::Idle Sleep")
+		Sleep(1);
+	}
 
 	if (g_pGamePersistent)
 	{
@@ -840,7 +848,10 @@ bool TUI::Idle()
 		RealQuit();
 	}
 
-	Device.SecondaryTasks.wait();
+	{
+		PROF_EVENT("TUI::Idle wait secondary")
+		Device.SecondaryTasks.wait();
+	}
 
 	return !m_AppClosed;
 }

@@ -586,6 +586,15 @@ CDetailManager* CLevelTool::GetSceneDetails()
 	return DetailTool && DetailTool->IsObjectsDrawn() ? DetailTool : nullptr;
 }
 
+void CLevelTool::PrepareScene()
+{
+	EEditorState est = EContext.UI->GetEState();
+	if (est == esEditScene || est == esEditLightAnim)
+	{
+		Scene->PrepareSubmit();
+	}
+}
+
 void CLevelTool::SubmitShadowCasters()
 {
 	EEditorState est = EContext.UI->GetEState();

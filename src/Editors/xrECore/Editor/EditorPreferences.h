@@ -81,6 +81,8 @@ public:
 	u32				scene_clear_color;
 	float			LightDistance = 150.f;
 	bool			OcclusionCulling = true;
+	bool			Instancing = true;
+	bool			ShadowInstancing = true;
 	// Lighting window
 	float			Hemi = 0.5f;
 	bool			DynamicLights = true;

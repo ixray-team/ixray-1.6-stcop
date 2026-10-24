@@ -142,6 +142,7 @@
 #include "Editor/Scene/scene.h"
 #include "Editor/Scene/SceneGraph.h"
 #include "Editor/Scene/SceneSummaryInfo.h"
+#include "Editor/Scene/WorldPartition.h"
 #include "Editor/Builder/Builder.h"
 
 #include "UI/UIMainMenuForm.h"
@@ -149,6 +150,7 @@
 #include "UI/UIDOShuffle.h"
 #include "UI/UIWorldPropertiesFrom.h"
 #include "UI/ObjectList/UIObjectList.h"
+#include "UI/WorldPartition/UIWorldPartition.h"
 #include "UI/UIPropertiesModal.h"
 #include "UI/UITopBarForm.h"
 

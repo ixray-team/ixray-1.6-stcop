@@ -296,6 +296,10 @@ public:
 
 	// render methods
 	void 			Render					(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
+	// Scene submit pass of a static object: adds every mesh surface of the pass to the scene graph
+	void			SubmitSurfaces			(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces);
+	// Thread-safe part of the submit: the surfaces of the pass and the visible mesh/surface pairs
+	void			CollectSubmitPairs		(struct SDeferredSubmit& Job) const;
 	u32				RenderPriorityMask() const;
 	
 	void 			RenderSelection			(CCustomObject*, CEditableMesh* m=0, u32 c=0x40E64646);

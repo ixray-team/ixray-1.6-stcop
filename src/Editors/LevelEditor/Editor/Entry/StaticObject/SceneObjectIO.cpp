@@ -8,105 +8,225 @@
 #define SCENEOBJ_CHUNK_PLACEMENT     	0x0904
 #define SCENEOBJ_CHUNK_FLAGS			0x0905
 #define SCENEOBJ_CHUNK_SURFACE			0x0906
+
+bool CSceneObject::ResolveReference(const char* Name)
+{
+    if (SetReference(Name))
+    {
+        return true;
+    }
+
+    ELog.Msg(mtError, "CSceneObject: '%s' not found in library", Name);
+    bool bRes = false;
+
+    xr_string _new_name;
+    if (Scene->GetSubstObjectName(Name, _new_name))
+    {
+        xr_string _message;
+        _message = "Object [" + xr_string(Name) + "] not found. Relace it with [" + _new_name + "] or select other from library?";
+        if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, _message.c_str()))
+        {
+            bRes = SetReference(_new_name.c_str());
+        }
+    }
+
+    if (!bRes && !Scene->isSkipCantFindDialog())
+    {
+        if (ELog.DlgMsg(mtSkip, "CSceneObject: '%s' not found in library", Name) == mrSkip)
+        {
+            Scene->setSkipCantFindDialog(true);
+        }
+    }
+    else if (!bRes)
+    {
+        Msg("! CSceneObject: '%s' not found in library", Name);
+    }
+
+    Scene->Modified();
+    return bRes;
+}
+
+void CSceneObject::ApplySurfaceOverrides()
+{
+    for (const SSurfaceOverride& Override : PendingSurfaces)
+    {
+        CSurface* Surf = nullptr;
+        for (CSurface* It : m_Surfaces)
+        {
+            if (It->m_Name == Override.Name.c_str())
+            {
+                Surf = It;
+                break;
+            }
+        }
+
+        if (!Surf)
+        {
+            continue;
+        }
+
+        if (!Surf->IsVoid())
+        {
+            Surf->OnDeviceDestroy();
+        }
+
+        Surf->SetShader(Override.Shader.c_str());
+        Surf->m_ShaderXRLCName = Override.ShaderXRLC.c_str();
+        Surf->m_GameMtlName = Override.GameMtl.c_str();
+        Surf->SetTexture(Override.Texture.c_str());
+        Surf->m_VMap = Override.VMap.c_str();
+        Surf->OnDeviceCreate();
+    }
+
+    PendingSurfaces.clear();
+}
+
+void CSceneObject::CaptureSurfaceOverrides(xr_vector<SSurfaceOverride>& Dest) const
+{
+    if (ReferencePending)
+    {
+        Dest = PendingSurfaces;
+        return;
+    }
+
+    Dest.clear();
+    for (const CSurface* Surf : m_Surfaces)
+    {
+        Dest.push_back({ Surf->m_Name.c_str(), Surf->m_ShaderName.c_str(), Surf->m_ShaderXRLCName.c_str(), Surf->m_GameMtlName.c_str(), Surf->m_Texture.c_str(), Surf->m_VMap.c_str() });
+    }
+}
+
+bool CSceneObject::GetStreamBox(Fbox& Box)
+{
+    if (!ReferencePending)
+    {
+        return GetBox(Box);
+    }
+
+    if (!StreamBoxValid)
+    {
+        StreamBoxValid = true;
+        if (GWorldPartition.PeekReferenceBounds(m_ReferenceName.c_str(), StreamBox))
+        {
+            StreamBox.xform(_Transform());
+        }
+        else
+        {
+            StreamBox.invalidate();
+        }
+    }
+
+    Box = StreamBox;
+    return Box.min.x <= Box.max.x;
+}
+
+bool CSceneObject::LoadReference()
+{
+    UpdateTransform(true);
+    if (GWorldPartition.ShouldDeferReference(m_ReferenceName.c_str(), _Transform()))
+    {
+        ReferencePending = true;
+        return true;
+    }
+
+    ReferencePending = false;
+    const bool bRes = ResolveReference(m_ReferenceName.c_str());
+    ApplySurfaceOverrides();
+    return bRes;
+}
+
+bool CSceneObject::StreamIn()
+{
+	PROF_EVENT("CSceneObject::StreamIn")
+    if (!ReferencePending)
+    {
+        return true;
+    }
+
+    ReferencePending = false;
+    const bool bRes = ResolveReference(m_ReferenceName.c_str());
+    ApplySurfaceOverrides();
+    UpdateTransform(true);
+    return bRes;
+}
+
+void CSceneObject::PinStreaming()
+{
+    StreamPinned = true;
+    StreamIn();
+}
+
+void CSceneObject::StreamOut()
+{
+	PROF_EVENT("CSceneObject::StreamOut")
+    if (ReferencePending || StreamPinned || !m_pReference)
+    {
+        return;
+    }
+
+    if (m_Flags.test(flUseSurface))
+    {
+        CaptureSurfaceOverrides(PendingSurfaces);
+    }
+    else
+    {
+        PendingSurfaces.clear();
+    }
+
+    for (CEditableMesh* Mesh : m_pReference->m_Meshes)
+    {
+        Mesh->RemoveColor(this);
+    }
+
+    for (CSurface* Surf : m_Surfaces)
+    {
+        Surf->OnDeviceDestroy();
+        xr_delete(Surf);
+    }
+    m_Surfaces.clear();
+
+    Lib.RemoveEditObject(m_pReference);
+    m_pReference = nullptr;
+    m_TBBox.invalidate();
+    ReferencePending = true;
+}
+
 bool CSceneObject::LoadLTX(CInifile& ini, const char* sect_name)
 {
-    bool bRes = true;
-	do
+    u32 version = ini.r_u32(sect_name, "version");
+
+    CCustomObject::LoadLTX(ini, sect_name);
+
+    m_ReferenceName = ini.r_string(sect_name, "reference_name");
+
+    m_Flags.assign(ini.r_u32(sect_name, "flags"));
+
+    PendingSurfaces.clear();
+    if (m_Flags.test(flUseSurface))
     {
-        u32 version = ini.r_u32(sect_name, "version");
-
-		CCustomObject::LoadLTX						(ini, sect_name);
-
-        xr_string ref_name  = ini.r_string			(sect_name, "reference_name");
-
-        if (!SetReference(ref_name.c_str()))
+        SIniFileStream ini_stream;
+        ini_stream.ini = &ini;
+        ini_stream.sect = sect_name;
+        ini_stream.move_begin();
+        if (ini.line_exist(sect_name, ini_stream.gen_name()))
         {
-            ELog.Msg            ( mtError, "CSceneObject: '%s' not found in library", ref_name.c_str() );
-            bRes                = false;
-            int mr              = mrNone;
-
-            xr_string       _new_name;
-            bool b_found    = Scene->GetSubstObjectName(ref_name.c_str(), _new_name);
-            if(b_found)
-            {
-                xr_string _message;
-                _message = "Object ["+ref_name+"] not found. Relace it with ["+_new_name+"] or select other from library?";
-                mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _message.c_str());
-                if(mrYes==mr)
-                {
-                    bRes = SetReference(_new_name.c_str());
-                }
-            }
-
-            if(!bRes && !Scene->isSkipCantFindDialog())
-            {
-                if (ELog.DlgMsg(mtSkip, "CSceneObject: '%s' not found in library", ref_name.data()) == mrSkip)
-                {
-                    Scene->setSkipCantFindDialog(true);
-                }
-            }
-            else 
-            {
-                Msg("! CSceneObject: '%s' not found in library", ref_name.data());
-            }
-
-            Scene->Modified();
-        }
-//        if(!CheckVersion())
-//            ELog.Msg( mtError, "CSceneObject: '%s' different file version!", ref_name.c_str() );
-
-      	m_Flags.assign(ini.r_u32(sect_name, "flags"));
-        if (m_Flags.test(flUseSurface))
-        {
-            SIniFileStream 			ini_stream;
-            ini_stream.ini = &ini;
-            ini_stream.sect = sect_name;
             ini_stream.move_begin();
-            if (ini.line_exist(sect_name, ini_stream.gen_name()))
+            u32 Size;
+            ini_stream.r_u32(Size);
+            for (u32 i = 0; i < Size; i++)
             {
-                ini_stream.move_begin();
-                u32 Size;
-                ini_stream.r_u32(Size);
-                for (u32 i = 0; i < Size; i++)
-                {
-                    xr_string Name;
-                    ini_stream.r_string(Name);
-                    CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
-                    {
-                        if ((*sf_it)->m_Name == Name.c_str())
-                        {
-                            Surf = *sf_it;
-                            break;
-                        }
-                    }
-
-                    if (Surf)
-                    {
-                        if (!Surf->IsVoid())
-                            Surf->OnDeviceDestroy();
-                    }
-                    {
-                        ini_stream.r_string(Name);
-                        if (Surf)Surf->SetShader(Name.c_str());
-                        ini_stream.r_string(Name);
-                        if (Surf)Surf->m_ShaderXRLCName = (Name.c_str());
-                        ini_stream.r_string(Name);
-                        if (Surf)Surf->m_GameMtlName = (Name.c_str());
-                        ini_stream.r_string(Name);
-                        if (Surf)Surf->SetTexture(Name.c_str());
-                        ini_stream.r_string(Name);
-                        if (Surf)Surf->m_VMap = (Name.c_str());
-                    }
-
-                    if (Surf) Surf->OnDeviceCreate();
-                }
+                SSurfaceOverride& Override = PendingSurfaces.emplace_back();
+                ini_stream.r_string(Override.Name);
+                ini_stream.r_string(Override.Shader);
+                ini_stream.r_string(Override.ShaderXRLC);
+                ini_stream.r_string(Override.GameMtl);
+                ini_stream.r_string(Override.Texture);
+                ini_stream.r_string(Override.VMap);
             }
         }
+    }
 
-
-        if (!bRes) break;
-    }while(0);
+    const bool bRes = LoadReference();
 
     IsLoaded = true;
 
@@ -119,144 +239,80 @@ void CSceneObject::SaveLTX(CInifile& ini, const char* sect_name)
 
     ini.w_u32					(sect_name, "version", SCENEOBJ_CURRENT_VERSION);
 
-    // reference object version
-    R_ASSERT					(m_pReference);
+    // reference object version; a streamed out object keeps its name
     ini.w_string				(sect_name, "reference_name", m_ReferenceName.c_str());
 
 	ini.w_u32					(sect_name, "flags", m_Flags.get());
     if (m_Flags.test(flUseSurface))
     {
+        xr_vector<SSurfaceOverride> Surfaces;
+        CaptureSurfaceOverrides(Surfaces);
+
         SIniFileStream 			ini_stream;
         ini_stream.ini = &ini;
         ini_stream.sect = sect_name;
         ini_stream.move_begin();
-        ini_stream.w_u32(m_Surfaces.size());
-        for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+        ini_stream.w_u32(Surfaces.size());
+        for (const SSurfaceOverride& Surf : Surfaces)
         {
-            ini_stream.w_stringZ((*sf_it)->m_Name.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_ShaderName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_ShaderXRLCName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_GameMtlName.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_Texture.c_str());
-            ini_stream.w_stringZ((*sf_it)->m_VMap.c_str());
+            ini_stream.w_stringZ(Surf.Name.c_str());
+            ini_stream.w_stringZ(Surf.Shader.c_str());
+            ini_stream.w_stringZ(Surf.ShaderXRLC.c_str());
+            ini_stream.w_stringZ(Surf.GameMtl.c_str());
+            ini_stream.w_stringZ(Surf.Texture.c_str());
+            ini_stream.w_stringZ(Surf.VMap.c_str());
         }
     }
-
 }
 
 
 bool CSceneObject::LoadStream(IReader& F)
 {
-    bool bRes = true;
-	do{
-        u16 version = 0;
-        string1024 buf;
-        R_ASSERT(F.r_chunk(SCENEOBJ_CHUNK_VERSION,&version));
+    u16 version = 0;
+    string1024 buf;
+    R_ASSERT(F.r_chunk(SCENEOBJ_CHUNK_VERSION,&version));
 
-        if (version==0x0010)
+    if (version==0x0010)
+    {
+        R_ASSERT(F.find_chunk(SCENEOBJ_CHUNK_PLACEMENT));
+        F.r_fvector3(FPosition);
+        F.r_fvector3(FRotation);
+        F.r_fvector3(FScale);
+    }
+
+    CCustomObject::LoadStream(F);
+
+    R_ASSERT(F.find_chunk(SCENEOBJ_CHUNK_REFERENCE));
+    if(version<=0x0011)
+    {
+        F.r_u32();
+        F.r_u32();
+    }
+    F.r_stringZ	(buf,sizeof(buf));
+    m_ReferenceName = buf;
+
+    // flags
+    if (F.find_chunk(SCENEOBJ_CHUNK_FLAGS)){
+        m_Flags.assign(F.r_u32());
+    }
+
+    PendingSurfaces.clear();
+    if (m_Flags.test(flUseSurface) && F.find_chunk(SCENEOBJ_CHUNK_SURFACE))
+    {
+        u32 Size = F.r_u32();
+        for (u32 i = 0; i < Size; i++)
         {
-	        R_ASSERT(F.find_chunk(SCENEOBJ_CHUNK_PLACEMENT));
-    	    F.r_fvector3(FPosition);
-	        F.r_fvector3(FRotation);
-    	    F.r_fvector3(FScale);
+            SSurfaceOverride& Override = PendingSurfaces.emplace_back();
+            F.r_stringZ(Override.Name);
+            F.r_stringZ(Override.Shader);
+            F.r_stringZ(Override.ShaderXRLC);
+            F.r_stringZ(Override.GameMtl);
+            F.r_stringZ(Override.Texture);
+            F.r_stringZ(Override.VMap);
         }
+    }
 
-		CCustomObject::LoadStream(F);
-
-        R_ASSERT(F.find_chunk(SCENEOBJ_CHUNK_REFERENCE));
-        if(version<=0x0011)
-        {
-                F.r_u32();
-                F.r_u32();
-        }
-        F.r_stringZ	(buf,sizeof(buf));
-
-        if (!SetReference(buf))
-        {
-            ELog.Msg(mtError, "CSceneObject: '%s' not found in library", buf);
-            bRes = false;
-            int mr = mrNone;
-
-            xr_string       _new_name;
-            bool b_found = Scene->GetSubstObjectName(buf, _new_name);
-            if (b_found)
-            {
-                xr_string _message;
-                _message = "Object [" + xr_string(buf) + "] not found. Relace it with [" + _new_name + "] or select other from library?";
-                mr = ELog.DlgMsg(mtConfirmation, mbYes | mbNo, _message.c_str());
-                if (mrYes == mr)
-                {
-                    bRes = SetReference(_new_name.c_str());
-                }
-            }
-
-            static bool SkipErrors = false;
-            if (!bRes)
-            {
-                if (SkipErrors)
-                {
-                    ELog.Msg(mtError, "CSceneObject: '%s' not found in library", buf);
-                }
-                else
-                {
-                    SkipErrors = ELog.DlgMsg(mtSkip, "CSceneObject: '%s' not found in library", buf) == mrSkip;
-                }
-            }
-
-            Scene->Modified();
-        }
-       
-        
-
-
-//        if(!CheckVersion()){
-//            ELog.Msg( mtError, "CSceneObject: '%s' different file version!", buf );
-//            }
-
-        // flags
-        if (F.find_chunk(SCENEOBJ_CHUNK_FLAGS)){
-        	m_Flags.assign(F.r_u32());
-        }
-        if (m_Flags.test(flUseSurface))
-        {
-            if (F.find_chunk(SCENEOBJ_CHUNK_SURFACE))
-            {
-
-                u32 Size = F.r_u32();
-                for (u32 i = 0; i < Size; i++)
-                {
-                    xr_string Name;
-                    F.r_stringZ(Name);
-                    CSurface* Surf = nullptr;
-                    for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
-                    {
-                        if ((*sf_it)->m_Name == Name.c_str())
-                        {
-                            Surf = *sf_it;
-                            break;
-                        }
-                    }
-                    if (Surf) Surf->OnDeviceDestroy();
-                    {
-                        F.r_stringZ(Name);
-                        if (Surf)Surf->SetShader(Name.c_str());
-                        F.r_stringZ(Name);
-                        if (Surf)Surf->m_ShaderXRLCName = (Name.c_str());
-                        F.r_stringZ(Name);
-                        if (Surf)Surf->m_GameMtlName = (Name.c_str());
-                        F.r_stringZ(Name);
-                        if (Surf)Surf->SetTexture(Name.c_str());
-                        F.r_stringZ(Name);
-                        if (Surf)Surf->m_VMap = (Name.c_str());
-                    }
-                    if (Surf) Surf->OnDeviceCreate();
-                }
-            }
-        }
-        if (!bRes) break;
-    }while(0);
-
-    return bRes;
+    return LoadReference();
 }
 
 void CSceneObject::SaveStream(IWriter& F)
@@ -267,32 +323,32 @@ void CSceneObject::SaveStream(IWriter& F)
 	F.w_u16			(SCENEOBJ_CURRENT_VERSION);
 	F.close_chunk	();
 
-    // reference object version
-    F.open_chunk	(SCENEOBJ_CHUNK_REFERENCE); R_ASSERT2(m_pReference,"Empty SceneObject REFS");
+    // reference object version; a streamed out object keeps its name
+    F.open_chunk	(SCENEOBJ_CHUNK_REFERENCE);
     F.w_stringZ		(m_ReferenceName);
     F.close_chunk	();
 
     F.open_chunk	(SCENEOBJ_CHUNK_FLAGS);
 	F.w_u32			(m_Flags.flags);
     F.close_chunk	();
-    
+
     if (m_Flags.test(flUseSurface))
     {
+        xr_vector<SSurfaceOverride> Surfaces;
+        CaptureSurfaceOverrides(Surfaces);
+
         F.open_chunk(SCENEOBJ_CHUNK_SURFACE);
 
-        F.w_u32(m_Surfaces.size());
-        for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
+        F.w_u32(Surfaces.size());
+        for (const SSurfaceOverride& Surf : Surfaces)
         {
-            F.w_stringZ((*sf_it)->m_Name.c_str());
-            F.w_stringZ((*sf_it)->m_ShaderName.c_str());
-            F.w_stringZ((*sf_it)->m_ShaderXRLCName.c_str());
-            F.w_stringZ((*sf_it)->m_GameMtlName.c_str());
-            F.w_stringZ((*sf_it)->m_Texture.c_str());
-            F.w_stringZ((*sf_it)->m_VMap.c_str());
+            F.w_stringZ(Surf.Name.c_str());
+            F.w_stringZ(Surf.Shader.c_str());
+            F.w_stringZ(Surf.ShaderXRLC.c_str());
+            F.w_stringZ(Surf.GameMtl.c_str());
+            F.w_stringZ(Surf.Texture.c_str());
+            F.w_stringZ(Surf.VMap.c_str());
         }
         F.close_chunk();
     }
 }
-
-
-

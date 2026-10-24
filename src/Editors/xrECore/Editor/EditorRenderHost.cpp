@@ -106,6 +106,17 @@ namespace
 			AxisObject->Render(NULL, M, 2, false);
 		}
 
+		void PrepareScene() override
+		{
+			PROF_EVENT("EditorRenderHost::PrepareScene")
+			GEditorSceneSubmit.BeginPrepared();
+			if (Tools)
+			{
+				Tools->PrepareScene();
+			}
+			GEditorSceneSubmit.LaunchPrepared();
+		}
+
 		void SubmitScene() override
 		{
 			// Same scene code as the overlay pass; the submit draw pass routes surfaces and
@@ -114,6 +125,7 @@ namespace
 			{
 				Tools->Render();
 			}
+			GEditorSceneSubmit.WaitPrepared();
 			GEditorSceneSubmit.Flush();
 		}
 
@@ -132,11 +144,13 @@ namespace
 
 		void SubmitShadowCasters() override
 		{
+			GEditorSceneSubmit.ShadowCollect = true;
 			if (Tools)
 			{
 				Tools->SubmitShadowCasters();
 			}
 			GEditorSceneSubmit.Flush();
+			GEditorSceneSubmit.ShadowCollect = false;
 		}
 
 		u32 CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity) override

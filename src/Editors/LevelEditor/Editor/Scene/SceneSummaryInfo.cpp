@@ -430,6 +430,9 @@ void EScene::CollectSummaryInfo	()
 
 void EScene::ShowSummaryInfo()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
     PropItemVec items;
     // fill items
     s_summary.FillProp(items);

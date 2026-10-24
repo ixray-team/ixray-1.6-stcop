@@ -239,6 +239,15 @@ void UIMainMenuForm::Draw()
 						MainForm->GetWorldPropertiesFrom()->Close();
 				}
 
+				bool PartitionOpen = UIWorldPartition::IsOpen();
+				if (ImGui::MenuItemI("World Partition", ICON_FA_TABLE_CELLS, "", &PartitionOpen))
+				{
+					if (PartitionOpen)
+						UIWorldPartition::Show();
+					else
+						UIWorldPartition::Close();
+				}
+
 				if (ImGui::MenuItemI("Export as archive", ICON_FA_FILE_ZIPPER))
 				{
 					ExportLevelAsArchive();
@@ -680,6 +689,39 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
+#if defined(IXRAY_PROFILER)
+		// The viewport stops redrawing while the cursor is outside the window: capturing from
+		// here keeps the frames of the editor itself in the capture
+		if (ImGui::BeginMenu("Profiler"))
+		{
+			static bool Capturing = false;
+			if (ImGui::MenuItem("Optick Start Capture", nullptr, false, !Capturing))
+			{
+				PROF_START_CAPTURE();
+				Capturing = true;
+			}
+
+			if (ImGui::MenuItem("Optick Stop Capture", nullptr, false, Capturing))
+			{
+				PROF_STOP_CAPTURE();
+				Capturing = false;
+
+				string256 CurrentDate{};
+				string256 CurrentTime{};
+
+				Time Now{};
+				xr_strconcat(CurrentDate, Now.GetYearString().c_str(), ".", Now.GetMonthString().c_str(), ".", Now.GetDayString().c_str());
+				xr_strconcat(CurrentTime, Now.GetHoursString().c_str(), ".", Now.GetMinutesString().c_str(), ".", Now.GetSecondsString().c_str());
+				string_path FileName{};
+				xr_strconcat(FileName, "ixray-editor-optick-", CurrentDate, "-", CurrentTime, ".opt");
+
+				PROF_SAVE_CAPTURE(FileName);
+				Msg("* Optick capture saved: %s", FileName);
+			}
+			ImGui::EndMenu();
+		}
+#endif
+
 		if (ImGui::BeginMenu("Help"))
 		{
 			if (ImGui::MenuItem("Wiki", ""))
@@ -755,7 +797,8 @@ void UIMainMenuForm::Draw()
 					UIObjectList::Show();
 				}
 			}
-			
+
+
 			ImGui::SameLine();
 			
 			// Git icon button

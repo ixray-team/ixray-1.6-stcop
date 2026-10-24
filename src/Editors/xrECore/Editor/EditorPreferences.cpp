@@ -188,6 +188,8 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
 	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
 	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
+	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
+	PHelper().CreateBool	(props,"Viewport\Instancing in Shadows",		&ShadowInstancing);
 
 	PHelper().CreateFlag32	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
 	PHelper().CreateFlag32	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
@@ -420,6 +422,8 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "render_radius", EDevice->RenderRadius);
 		GetSafe(*render, "light_distance", LightDistance);
 		GetSafe(*render, "occlusion_culling", OcclusionCulling);
+		GetSafe(*render, "instancing", Instancing);
+		GetSafe(*render, "shadow_instancing", ShadowInstancing);
 		GetSafe(*render, "hemi", Hemi);
 		GetSafe(*render, "dynamic_lights", DynamicLights);
 		GetSafe(*render, "light_shadows", LightShadows);
@@ -574,6 +578,8 @@ void CCustomPreferences::Save()
 	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
 	JSONData["render"]["light_distance"]=LightDistance;
 	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
+	JSONData["render"]["instancing"]=Instancing;
+	JSONData["render"]["shadow_instancing"]=ShadowInstancing;
 	JSONData["render"]["hemi"]=Hemi;
 	JSONData["render"]["dynamic_lights"]=DynamicLights;
 	JSONData["render"]["light_shadows"]=LightShadows;

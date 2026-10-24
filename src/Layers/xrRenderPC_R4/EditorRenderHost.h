@@ -53,6 +53,8 @@ public:
 
 	virtual void DrawAxis(const Fmatrix& Transform) = 0;
 
+	// Called once the view frustum of the frame is built, before the scene passes
+	virtual void PrepareScene() {}
 	virtual void SubmitScene() = 0;
 	virtual void SubmitShadowCasters()
 	{

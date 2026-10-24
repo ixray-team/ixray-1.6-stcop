@@ -19,6 +19,8 @@ CSectorItem::CSectorItem(CSceneObject* o, CEditableMesh* m, shared_str NewMeshNa
 {
 	object=o;
 	mesh=m;
+	if (object)
+		object->PinStreaming();
 	MeshName = NewMeshName;
 }
 
@@ -385,6 +387,9 @@ void CSector::LoadSectorDef(IReader* F)
 		return;
 	}
 
+	// Sectors keep mesh pointers, so their objects never stream out
+	sitem.object->PinStreaming();
+
 	if (!(sitem.object->IsStatic() || sitem.object->IsMUStatic()))
 	{
 		ELog.Msg(mtError, "Sector Item contains object '%s' - can't load.\nObject is dynamic.", o_name);
@@ -428,6 +433,9 @@ void CSector::LoadSectorDefLTX(CInifile& ini, const char* sect_name, u32 item_id
 		m_bHasLoadError = true;
 		return;
 	}
+
+	// Sectors keep mesh pointers, so their objects never stream out
+	sitem.object->PinStreaming();
 
 	if (!(sitem.object->IsStatic() || sitem.object->IsMUStatic()))
 	{

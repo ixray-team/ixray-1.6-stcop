@@ -106,6 +106,7 @@ UIObjectList::~UIObjectList()
 
 void UIObjectList::Draw()
 {
+	PROF_EVENT("UIObjectList::Draw")
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 300));
 
 	if (!ImGui::Begin("Outliner", &bOpen))
@@ -732,8 +733,8 @@ void UIObjectList::Rebuild()
 
 		for (CCustomObject* Object : List)
 		{
-			// Grouped objects are listed under their group
-			if (Object->GetOwner())
+			// Grouped objects are listed under their group, disabled regions are left out
+			if (Object->GetOwner() || Object->RegionDisabled())
 				continue;
 
 			Node N;
@@ -745,7 +746,8 @@ void UIObjectList::Rebuild()
 				Group->GetObjects(Members);
 				SortObjects(Members);
 				for (CCustomObject* Member : Members)
-					N.Children.push_back({ Member, {} });
+					if (!Member->RegionDisabled())
+						N.Children.push_back({ Member, {} });
 			}
 			else if (CSector* Sector = smart_cast<CSector*>(Object))
 			{
@@ -758,7 +760,8 @@ void UIObjectList::Rebuild()
 				}
 				SortObjects(Members);
 				for (CCustomObject* Member : Members)
-					N.Children.push_back({ Member, {} });
+					if (!Member->RegionDisabled())
+						N.Children.push_back({ Member, {} });
 			}
 
 			F.Nodes.push_back(std::move(N));
@@ -1087,6 +1090,7 @@ void UIObjectList::DropSelection(CGroupObject* Target)
 
 void UIObjectList::Update()
 {
+	PROF_EVENT("UIObjectList::Update")
 	if (Form)
 	{
 		if (!Form->IsClosed())

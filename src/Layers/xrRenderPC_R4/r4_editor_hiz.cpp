@@ -37,10 +37,10 @@ namespace
 		}
 	};
 
-	// The camera may differ from the read-back frame this much before the data is ignored
-	// (fast moves, another viewport)
-	constexpr float MaxCameraShift = 2.f;
-	constexpr float MinCameraDirectionDot = 0.97f;
+	// The depth is one or two frames old: any camera move uncovers what it hid, so the data
+	// is used only while the camera stands still (then it shows the frame being drawn)
+	constexpr float MaxCameraShift = 0.01f;
+	constexpr float MinCameraDirectionDot = 0.99999f;
 }
 
 CEditorHiZ::~CEditorHiZ()

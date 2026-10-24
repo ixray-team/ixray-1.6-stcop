@@ -70,7 +70,10 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	XRC.ray_query(m_CFModel.get(), S, D, pinf.m_Dist);
 	for (int r = 0; r < XRC.r_count(); r++)
 	{
-		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		if (!IsResultHidden(parent, XRC.r_begin()[r]))
+		{
+			pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		}
 	}
 }
 
@@ -91,7 +94,10 @@ void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	XRC.box_query(m_CFModel.get(), c, d);
 	for (int r = 0; r < XRC.r_count(); r++)
 	{
-		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		if (!IsResultHidden(parent, XRC.r_begin()[r]))
+		{
+			pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		}
 	}
 }
 
@@ -110,7 +116,9 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 		m_CFModel->wait_loading();
 	}
 
-	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
+	// With hidden regions the nearest hit may be hidden, so all hits are tested
+	const bool FilterRegions = m_Chunked && RegionHidden;
+	XRC.ray_options(FilterRegions ? CDB::OPT_CULL : (CDB::OPT_ONLYNEAREST | CDB::OPT_CULL));
 
 	Fvector S, D;
 	inv_parent.transform_tiny(S, start);
@@ -118,9 +126,26 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 
 	XRC.ray_query(m_CFModel.get(), S, D, _sqrt_flt_max);
 
-	if (XRC.r_count())
+	CDB::RESULT* I = nullptr;
+	if (FilterRegions)
 	{
-		CDB::RESULT* I = XRC.r_begin();
+		Fmatrix parent;
+		parent.invert(inv_parent);
+		for (CDB::RESULT* R = XRC.r_begin(); R != XRC.r_end(); R++)
+		{
+			if ((!I || R->range < I->range) && !IsResultHidden(parent, *R))
+			{
+				I = R;
+			}
+		}
+	}
+	else if (XRC.r_count())
+	{
+		I = XRC.r_begin();
+	}
+
+	if (I)
+	{
 		if (I->range < distance)
 		{
 			if (pinf)
@@ -237,20 +262,29 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 	dest.getradius(d);
 
 	XRC.box_query(m_CFModel.get(), c, d);
-	if (XRC.r_count())
+
+	Fmatrix parent;
+	parent.invert(inv_parent);
+
+	bool Found = false;
+	for (CDB::RESULT* I = XRC.r_begin(); I != XRC.r_end(); I++)
 	{
-		pinf.push_back(SBoxPickInfo());
-		pinf.back().e_obj = m_Parent;
-		pinf.back().e_mesh = this;
-		for (CDB::RESULT* I = XRC.r_begin(); I != XRC.r_end(); I++)
+		if (IsResultHidden(parent, *I))
 		{
-			pinf.back().AddRESULT(m_CFModel.get(), I);
+			continue;
 		}
 
-		return true;
+		if (!Found)
+		{
+			pinf.push_back(SBoxPickInfo());
+			pinf.back().e_obj = m_Parent;
+			pinf.back().e_mesh = this;
+			Found = true;
+		}
+		pinf.back().AddRESULT(m_CFModel.get(), I);
 	}
 
-	return false;
+	return Found;
 }
 
 bool CEditableMesh::FrustumPick(const CFrustum& frustum, const Fmatrix& parent)
@@ -268,13 +302,28 @@ bool CEditableMesh::FrustumPick(const CFrustum& frustum, const Fmatrix& parent)
 			parent.transform_tiny(p[k], m_Vertices[m_Faces[i].pv[k].pindex]);
 		}
 
-		if (frustum.testPolyInside(p, 3))
+		if (frustum.testPolyInside(p, 3) && !IsFaceHidden(parent, i))
 		{
 			return true;
 		}
 	}
 
 	return false;
+}
+
+bool CEditableMesh::IsFaceHidden(const Fmatrix& Parent, u32 FaceIndex) const
+{
+	if (!m_Chunked || !RegionHidden)
+	{
+		return false;
+	}
+
+	const st_Face& Face = m_Faces[FaceIndex];
+	Fvector Center;
+	Center.add(m_Vertices[Face.pv[0].pindex], m_Vertices[Face.pv[1].pindex]);
+	Center.add(m_Vertices[Face.pv[2].pindex]);
+	Center.div(3.0f);
+	return IsPointHidden(Parent, SnapToChunkCenter(Center));
 }
 
 void CEditableMesh::FrustumPickFaces(const CFrustum& frustum, const Fmatrix& parent, U32Vec& fl)

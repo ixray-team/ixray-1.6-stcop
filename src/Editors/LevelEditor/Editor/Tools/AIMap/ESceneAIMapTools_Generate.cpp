@@ -569,6 +569,9 @@ void ESceneAIMapTool::UpdateLinks(SAINode* N, bool bIC)
 
 bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	std::sort(m_ignored_materials.begin(), m_ignored_materials.end());
 	bool bRes = false;
 	if (!GetSnapList()->empty()) {
