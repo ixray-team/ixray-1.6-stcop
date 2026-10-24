@@ -29,7 +29,7 @@
 #include "../xrEngine/IGame_Level.h"
 #include "../xrPhysics/xrPhysics.h"
 #else
-#include "../Editors/ActorEditor/stdafx.h"
+#include "../Editors/LevelEditor/stdafx.h"
 #endif
 
 #include "../xrEngine/Editor/XrEditorSceneInterface.h"

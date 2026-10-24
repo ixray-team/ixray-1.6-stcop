@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "../xrECore/Editor/Library.h"
+#include "ActorEditor.h"
+#include "../../xrECore/Editor/Library.h"
 
 xr_token sa_token[] = 
 {

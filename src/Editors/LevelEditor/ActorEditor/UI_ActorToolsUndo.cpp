@@ -1,4 +1,5 @@
-#include "stdafx.h"         
+#include "stdafx.h"
+#include "ActorEditor.h"
                                                                                 
                                         
 #include "UI_ActorTools.h"           

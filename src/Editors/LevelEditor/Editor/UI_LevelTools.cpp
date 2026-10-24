@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
-#include "UI/UIEditLibrary.h"
 #include "Scene/LEPhysics.h"
 #include "../Viewports/ViewportMesh.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
@@ -546,10 +545,6 @@ void CLevelTool::Render()
 	// draw scene
 	switch(est)
 	{
-		case esEditLibrary:
-			UIEditLibrary::OnRender(); 
-			break;
-
 		case esEditLightAnim:
 		case esEditScene:
 			Scene->Render(EContext.UI->CurrentView().m_Camera.GetTransform());

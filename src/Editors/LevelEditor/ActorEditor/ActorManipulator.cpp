@@ -1,9 +1,10 @@
 #include "stdafx.h"
+#include "ActorEditor.h"
 
-#include "IM_Manipulator.h"
-#include "../xrEUI/ImGuizmo.h"
+#include "ActorManipulator.h"
+#include "../../xrEUI/ImGuizmo.h"
 
-IM_Manipulator imManipulator;
+CActorManipulator g_ActorManipulator;
 
 static void BuildCylinderBasis(const Fvector& Dir, Fmatrix& Result)
 {
@@ -36,7 +37,7 @@ static float PickChangedAxis(const Fvector& Scale, float Current)
 	return Result;
 }
 
-void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, float canvasHeight)
+void CActorManipulator::Render(float canvasX, float canvasY, float canvasWidth, float canvasHeight)
 {
 	CBone* Bone = nullptr;
 	const ETAction Action = ATools->GetAction();
@@ -73,7 +74,7 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 	UpdateState();
 }
 
-void IM_Manipulator::UpdateState()
+void CActorManipulator::UpdateState()
 {
 	if (ImGuizmo::IsUsing() && !m_active)
 	{
@@ -87,7 +88,7 @@ void IM_Manipulator::UpdateState()
 	}
 }
 
-CBone* IM_Manipulator::GetShapeBone() const
+CBone* CActorManipulator::GetShapeBone() const
 {
 	CEditableObject* Object = ATools->CurrentObject();
 	if (Object == nullptr)
@@ -106,7 +107,7 @@ CBone* IM_Manipulator::GetShapeBone() const
 	return nullptr;
 }
 
-void IM_Manipulator::BuildShapeMatrix(CBone* Bone, Fmatrix& Result, bool WithScale) const
+void CActorManipulator::BuildShapeMatrix(CBone* Bone, Fmatrix& Result, bool WithScale) const
 {
 	const SBoneShape& Shape = Bone->shape;
 	Fvector Scale = { 1.f, 1.f, 1.f };
@@ -139,7 +140,7 @@ void IM_Manipulator::BuildShapeMatrix(CBone* Bone, Fmatrix& Result, bool WithSca
 	}
 }
 
-void IM_Manipulator::ApplyTransform(CBone* Bone, const Fmatrix& BoneMatrix, const Fmatrix& ShapeMatrix)
+void CActorManipulator::ApplyTransform(CBone* Bone, const Fmatrix& BoneMatrix, const Fmatrix& ShapeMatrix)
 {
 	Fmatrix InvBone;
 	InvBone.invert(BoneMatrix);
@@ -168,13 +169,13 @@ void IM_Manipulator::ApplyTransform(CBone* Bone, const Fmatrix& BoneMatrix, cons
 	EContext.UI->RedrawScene();
 }
 
-void IM_Manipulator::CommandMove(CBone* Bone, const Fmatrix& BoneMatrix)
+void CActorManipulator::CommandMove(CBone* Bone, const Fmatrix& BoneMatrix)
 {
 	float  MoveSnap[3];
 	float* PtrMoveSnap = ATools->GetSettings(etfMSnap) ? MoveSnap : nullptr;
 
 	if (PtrMoveSnap)
-		std::fill_n(MoveSnap, std::size(MoveSnap), Tools->m_MoveSnap);
+		std::fill_n(MoveSnap, std::size(MoveSnap), ATools->m_MoveSnap);
 
 	Fmatrix ShapeLocal;
 	BuildShapeMatrix(Bone, ShapeLocal, false);
@@ -193,7 +194,7 @@ void IM_Manipulator::CommandMove(CBone* Bone, const Fmatrix& BoneMatrix)
 		ApplyTransform(Bone, BoneMatrix, ShapeMatrix);
 }
 
-void IM_Manipulator::CommandRotate(CBone* Bone, const Fmatrix& BoneMatrix)
+void CActorManipulator::CommandRotate(CBone* Bone, const Fmatrix& BoneMatrix)
 {
 	if (Bone->shape.type == SBoneShape::stSphere)
 		return;
@@ -201,7 +202,7 @@ void IM_Manipulator::CommandRotate(CBone* Bone, const Fmatrix& BoneMatrix)
 	float RotateSnap;
 	float* PtrRotateSnap = ATools->GetSettings(etfASnap) ? &RotateSnap : nullptr;
 	if (PtrRotateSnap)
-		RotateSnap = rad2deg(Tools->m_RotateSnapAngle);
+		RotateSnap = rad2deg(ATools->m_RotateSnapAngle);
 
 	Fmatrix ShapeLocal;
 	BuildShapeMatrix(Bone, ShapeLocal, false);
@@ -220,19 +221,19 @@ void IM_Manipulator::CommandRotate(CBone* Bone, const Fmatrix& BoneMatrix)
 		ApplyTransform(Bone, BoneMatrix, ShapeMatrix);
 }
 
-void IM_Manipulator::CommandScale(CBone* Bone, const Fmatrix& BoneMatrix)
+void CActorManipulator::CommandScale(CBone* Bone, const Fmatrix& BoneMatrix)
 {
 	float  ScaleSnap[3];
 	float* PtrScaleSnap = ATools->GetSettings(etfScaleFixed) ? ScaleSnap : nullptr;
 
 	if (PtrScaleSnap)
-		std::fill_n(ScaleSnap, std::size(ScaleSnap), Tools->m_ScaleFixed);
+		std::fill_n(ScaleSnap, std::size(ScaleSnap), ATools->m_ScaleFixed);
 
 	float  BoundsSnap[3];
 	float* PtrBoundsSnap = ATools->GetSettings(etfMSnap) ? BoundsSnap : nullptr;
 
 	if (PtrBoundsSnap)
-		std::fill_n(BoundsSnap, std::size(BoundsSnap), Tools->m_MoveSnap);
+		std::fill_n(BoundsSnap, std::size(BoundsSnap), ATools->m_MoveSnap);
 
 	// ImGuizmo returns absolute axis lengths, so the shape sizes are packed into the matrix scale
 	Fmatrix ShapeLocal;

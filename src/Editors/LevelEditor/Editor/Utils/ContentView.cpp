@@ -7,10 +7,31 @@
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
 #include "IconsFontAwesome6.h"
 #include "../../UI/UITextureViewer.h"
 
 CContentView* GContentView = nullptr;
+
+xr_hash_map<xr_string, CContentView::IconData> CContentView::Icons;
+
+void CContentView::ClearIcons()
+{
+	Icons.clear();
+}
+
+void CContentView::InvalidateIcon(const xr_string& FullPath)
+{
+	xr_string Path = FullPath;
+	xr_strlwr(Path);
+
+	for (auto It = Icons.begin(); It != Icons.end();)
+	{
+		xr_string IconPath = It->first;
+		xr_strlwr(IconPath);
+		It = IconPath == Path ? Icons.erase(It) : std::next(It);
+	}
+}
 
 CContentView::CContentView(xr_string NewWindowName)
 	: WatcherPtr(nullptr), WindowName(NewWindowName)
@@ -1082,6 +1103,25 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 
 void CContentView::Init()
 {
+	// The shared icons are loaded by the first browser
+	if (!Icons.contains("Folder"))
+	{
+		LoadBaseIcons();
+	}
+
+	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
+
+	LoadExtDest();
+
+	SoundPreviews.Initialize();
+
+	xr_string Files = pSettings->r_string("dialogs", "files");
+	Files.RemoveWhitespaces();
+	GameDialogs = Files.Split(',');
+}
+
+void CContentView::LoadBaseIcons()
+{
 	Icons["Folder"] = {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
 	Icons[".."]		= {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
 	Icons["thm"]	= {DEV->_CreateTexture("ed\\content_browser\\thm"),		true};
@@ -1102,16 +1142,7 @@ void CContentView::Init()
 	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
 
-	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
-
 	LoadCustomIcons();
-	LoadExtDest();
-
-	SoundPreviews.Initialize();
-
-	xr_string Files = pSettings->r_string("dialogs", "files");
-	Files.RemoveWhitespaces();
-	GameDialogs = Files.Split(',');
 }
 
 void CContentView::LoadExtDest()
@@ -1200,6 +1231,8 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
 		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
+		// Actor Editor viewport: models, motions and bone settings
+		WeCanDrag = WeCanDrag || Extension == ".ogf" || Extension == ".skl" || Extension == ".skls" || Extension == ".omf" || Extension == ".bones";
 		
 		bool IsGameLogicFile = false;
 		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
@@ -1697,6 +1730,11 @@ bool CContentView::DrawContext(const xr_path& Path)
 				MeshView->OpenModel(Path);
 
 				EContext.UI->Push(MeshView);
+			}
+
+			if (ImGui::MenuItem("Edit in Actor Editor"))
+			{
+				UIActorEditorForm::Open(Path.xstring().c_str());
 			}
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")

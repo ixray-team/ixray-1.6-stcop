@@ -1,7 +1,8 @@
 #include "stdafx.h"
+#include "../ActorEditor.h"
 #include "UIBatchTools.h"
 
-#include "../../../plugins/PCore/xr_ogf_format.h"
+#include "../../../../plugins/PCore/xr_ogf_format.h"
 
 #include <algorithm>
 #include <filesystem>

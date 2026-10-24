@@ -2,7 +2,7 @@
 
 class CBone;
 
-class IM_Manipulator
+class CActorManipulator
 {
 public:
 	bool m_active = false;
@@ -22,4 +22,4 @@ private:
 	void UpdateState();
 };
 
-extern IM_Manipulator imManipulator;
+extern CActorManipulator g_ActorManipulator;

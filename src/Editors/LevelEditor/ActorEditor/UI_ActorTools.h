@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 #ifndef UI_ActorToolsH
 #define UI_ActorToolsH
-#include "../../Include/xrRender/animation_motion.h"
-#include "../xrEProps/UIBoneView.h"
+#include "../../../Include/xrRender/animation_motion.h"
+#include "../../xrEProps/UIBoneView.h"
 #include "UIUVView.h"
 
 // refs
@@ -333,10 +333,10 @@ public:
 
 
 	// commands
-	CCommandVar			CommandClear		(CCommandVar p1, CCommandVar p2);
-	CCommandVar 		CommandLoad			(CCommandVar p1, CCommandVar p2);
+	CCommandVar			CommandClear		(CCommandVar p1 = {}, CCommandVar p2 = {});
+	CCommandVar 		CommandLoad			(CCommandVar p1 = {}, CCommandVar p2 = {});
 	CCommandVar         CommandSaveBackup	(CCommandVar p1, CCommandVar p2);
-	CCommandVar         CommandSave			(CCommandVar p1, CCommandVar p2);
+	CCommandVar         CommandSave			(CCommandVar p1 = {}, CCommandVar p2 = {});
 	CCommandVar         CommandImport		(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandImportOMF	(CCommandVar p1, CCommandVar p2);
 	CCommandVar         CommandExportDM		(CCommandVar p1, CCommandVar p2);

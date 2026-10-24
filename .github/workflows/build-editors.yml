@@ -73,7 +73,7 @@ jobs:
         run: |
           cmake `
             --build `
-            --target LevelEditor ActorEditor ShaderEditor `
+            --target LevelEditor ShaderEditor `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries

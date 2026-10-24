@@ -60,6 +60,11 @@ private:
 
 public:
 	CContentView(xr_string WindowName = "Content Browser");
+
+	// Drops the cached icon of a file in every content browser, so it is reloaded
+	static void InvalidateIcon(const xr_string& FullPath);
+	// Releases the shared icons while the device is alive
+	static void ClearIcons();
 	virtual void Draw() override;
 	void DrawHeader();
 	void FindFile();
@@ -81,6 +86,7 @@ public:
 
 	void RemoveCustomIcon(const xr_string&);
 	void LoadCustomIcons();
+	void LoadBaseIcons();
 
 private:
 	void CollectAllFolder();
@@ -146,7 +152,8 @@ private:
 	xr_string WindowName;
 	ImVec2 BtnSize{};
 
-	xr_hash_map<xr_string, IconData> Icons;
+	// Icon database shared by every content browser: a file icon is created once
+	static xr_hash_map<xr_string, IconData> Icons;
 
 	xr_hash_map<xr_string, void*> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;

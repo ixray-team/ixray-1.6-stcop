@@ -15,6 +15,8 @@ class CUIUVView :
 	float Zoom;
 	ImVec2 PanOffset;
 	bool NeedUpdate;
+	// Own visibility flag: a closed IEditorWnd::bOpen makes the UI manager drop the window
+	bool IsOpen;
 
 public:
 	CUIUVView();

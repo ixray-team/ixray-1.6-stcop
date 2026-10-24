@@ -87,6 +87,12 @@ bool TUI_CustomControl::HiddenMode()
 
 void DragDrop(const xr_string& Path, int Type)
 {
+	// Actor Editor files are not placed on the level
+	if (Path.ends_with(".ogf") || Path.ends_with(".skl") || Path.ends_with(".skls") || Path.ends_with(".omf") || Path.ends_with(".bones"))
+	{
+		return;
+	}
+
 	Fvector p, n;
 	if (LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
 	{
