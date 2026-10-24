@@ -6,6 +6,7 @@
 #include "blenders/Blender.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/IGame_Menu.h"
 #include "../../xrEngine/Environment.h"
 
 #include "dxRenderDeviceRender.h"
@@ -764,7 +765,8 @@ public:
 			Initialized = turn_nvg;
 			Frame = Device.dwFrame;
 		}
-		RCache.set_c(Constant, turn_nvg ? 1.0f : 0.0f, Interference, 0.0f, 0.0f);
+		const bool MenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+		RCache.set_c(Constant, turn_nvg && !MenuActive ? 1.0f : 0.0f, Interference, 0.0f, 0.0f);
 	}
 };
 static NightVisionStateBinding g_NightVisionStateBinder;
