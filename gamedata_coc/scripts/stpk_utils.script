@@ -1292,13 +1292,31 @@ function parse_cse_ph_skeleton_properties_packet(ret,stpk)
 	ret.skeleton_name = stpk:r_stringZ()
 	ret.skeleton_flags = stpk:r_u8()
 	ret.source_id = stpk:r_u32()
+	if (bit.band(ret.skeleton_flags, 4) ~= 0) then
+		ret.skeleton_saved_header = read_chunk(stpk, 34, "u8")
+		ret.skeleton_saved_bones = stpk:r_u16()
+		local size = ret.skeleton_saved_bones * 8
+		if (ret.skeleton_saved_bones > 64) then
+			size = size + 8
+		end
+		ret.skeleton_saved_data = read_chunk(stpk, size, "u8")
+	end
 	return ret
 end
 
 function fill_cse_ph_skeleton_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.skeleton_name)
-	stpk:w_u8(ret.skeleton_flags)
+	local flags = ret.skeleton_flags
+	if not (ret.skeleton_saved_header) then
+		flags = bit.band(flags, bit.bnot(4))
+	end
+	stpk:w_u8(flags)
 	stpk:w_u32(ret.source_id)
+	if (bit.band(flags, 4) ~= 0) then
+		write_chunk(stpk, ret.skeleton_saved_header, "u8")
+		stpk:w_u16(ret.skeleton_saved_bones)
+		write_chunk(stpk, ret.skeleton_saved_data, "u8")
+	end
 end
 
 --[[
