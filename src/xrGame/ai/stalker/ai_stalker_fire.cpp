@@ -493,19 +493,17 @@ void CAI_Stalker::update_best_item_info_impl()
 	{
 		luabind::functor<CScriptGameObject*> funct;
 		R_ASSERT2(ai().script_engine().functor(m_onUpdateBestWeaponName, funct), "failed to get OnUpdateBestWeapon functor");
-		if (memory().enemy().selected())
+		CScriptGameObject* GO = funct(this->lua_game_object(), m_best_item_to_kill ? m_best_item_to_kill->cast_game_object()->lua_game_object() : nullptr);
+		if (GO)
 		{
-			CScriptGameObject* GO = funct(this->lua_game_object(), m_best_item_to_kill ? m_best_item_to_kill->cast_game_object()->lua_game_object() : nullptr);
-			if (GO)
+			CInventoryItem* bw = GO->object().cast_inventory_item();
+			if (bw)
 			{
-				CInventoryItem* bw = GO->object().cast_inventory_item();
-				if (bw)
-				{
-					m_item_actuality = true;
-					m_best_item_to_kill = bw;
-					m_best_ammo = bw;
-					m_best_item_value = ai().ef_storage().m_pfWeaponEffectiveness->ffGetValue();
-				}
+				m_item_actuality = true;
+				m_best_item_to_kill = bw;
+				m_best_ammo = bw;
+				m_best_item_value = flt_max;
+				return;
 			}
 		}
 	}
