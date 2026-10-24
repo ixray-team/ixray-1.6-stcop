@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - '**'
-      - '!feature/grass-terrain-tint'
     paths:
       - '.github/workflows/**'
       - 'cmake/**'
