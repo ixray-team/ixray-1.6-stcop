@@ -217,18 +217,17 @@ void CApplication::MigrateToGameWindow()
 	PROF_EVENT("MigrateToGameWindow");
 	const bool headless = Autotest::Active();
 	if (headless)
-		psDeviceFlags.set(rsFullscreen, FALSE);
-	else
-		SDL_ShowWindow(g_AppInfo.Window);
-
-#if defined(IXR_APPLE_SERIES)
-	// LaunchServices starts a bare executable in the background; raise the window
-	// so input does not go to the previously active app.
-	if (!headless)
 	{
-		SDL_RaiseWindow(g_AppInfo.Window);
+		psDeviceFlags.set(rsFullscreen, FALSE);
 	}
 	else
+	{
+		SDL_ShowWindow(g_AppInfo.Window);
+		splash::FocusWindow(g_AppInfo.Window);
+	}
+
+#if defined(IXR_APPLE_SERIES)
+	if (headless)
 	{
 		// HACK: a hidden window starves DXMT presents; keep it visible but off screen.
 		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
@@ -249,6 +248,10 @@ void CApplication::MigrateToGameWindow()
 #else
 		SDL_HideWindow(g_AppInfo.Window);
 #endif
+	}
+	else
+	{
+		splash::FocusWindow(g_AppInfo.Window);
 	}
 }
 

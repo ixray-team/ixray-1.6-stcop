@@ -182,6 +182,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
+	if (s.joinable())
+	{
+		s.join();
+	}
+	splash::FocusWindow(g_AppInfo.Window);
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -323,7 +328,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
-	s.join();
+	//s.join();
 
 	// Gives Tools back to the level tool before COMMAND_DESTROY
 	UIActorEditorForm::Destroy();

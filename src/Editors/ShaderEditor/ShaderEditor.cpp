@@ -49,6 +49,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
+	if (s.joinable())
+	{
+		s.join();
+	}
+	splash::FocusWindow(g_AppInfo.Window);
 
 	bool NeedExit = false;
 	while (!NeedExit)
@@ -135,7 +140,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		MainForm->Frame();
 	}
-	s.join();
+
 	xr_delete(MainForm);
 	Core._destroy();
 	return 0;
