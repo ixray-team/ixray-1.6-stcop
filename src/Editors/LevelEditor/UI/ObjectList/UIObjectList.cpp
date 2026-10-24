@@ -127,6 +127,12 @@ void UIObjectList::Update()
 	{
 		if (!Form->IsClosed())
 		{
+			// The object list belongs to the scene workspace only
+			if (EContext.UI->ActiveTabIndex != 0)
+			{
+				return;
+			}
+
 			Form->BeginDraw();
 			Form->Draw();
 			Form->EndDraw();

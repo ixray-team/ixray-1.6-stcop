@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "ActorEditor.h"
 
 UIBoneForm* UIBoneForm::Form = nullptr;
 UIBoneForm::UIBoneForm() {}

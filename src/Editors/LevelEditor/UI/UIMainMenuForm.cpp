@@ -4,6 +4,7 @@
 #include "../Nodes/UIMacroView.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
 #include "../Editor/Utils/GitIntegration.h"
 #include "UIGitWindow.h"
@@ -137,6 +138,18 @@ void UIMainMenuForm::Draw()
 					Particles->Save(true);
 				}
 			}
+			else if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+			{
+				DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					Actor->CommandSave(CCommandVar(), CCommandVar());
+				}
+				if (ImGui::MenuItemI("Save As...", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Actor->CommandSave(CCommandVar(), 1);
+				}
+			}
 			else
 			{
 				DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
@@ -149,7 +162,32 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Save Selection", ICON_FA_FLOPPY_DISK, COMMAND_SAVE_SELECTION);
 			ImGui::Separator();
 
-			if (ImGui::BeginMenu("Open Recent", *GetCommandShortcat(COMMAND_LOAD)))
+			if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+			{
+				AStringVec& RecentFiles = static_cast<CLevelPreferences*>(EPrefs)->ActorRecentFiles;
+				if (ImGui::BeginMenu("Open Recent"))
+				{
+					for (const xr_string& File : RecentFiles)
+					{
+						if (ImGui::MenuItem(File.c_str(), ""))
+						{
+							Actor->CommandLoad(Platform::UTF8_to_CP1251(File), CCommandVar());
+							break;
+						}
+					}
+
+					if (!RecentFiles.empty())
+					{
+						ImGui::Separator();
+						if (ImGui::MenuItem("Clear List", ""))
+						{
+							RecentFiles.clear();
+						}
+					}
+					ImGui::EndMenu();
+				}
+			}
+			else if (ImGui::BeginMenu("Open Recent", *GetCommandShortcat(COMMAND_LOAD)))
 			{
 				for (auto& str : EPrefs->scene_recent_list)
 				{
@@ -174,6 +212,8 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
 			ImGui::EndMenu();
 		}
+
+		UIActorEditorForm::DrawMainMenu();
 		
 
 		if (ImGui::BeginMenu("Scene")){
@@ -555,6 +595,11 @@ void UIMainMenuForm::Draw()
 			if (ImGui::MenuItemI("Particle Editor", ICON_FA_FIRE, ""))
 			{
 				UIParticleEditorForm::Open();
+			}
+
+			if (ImGui::MenuItemI("Actor Editor", ICON_FA_PERSON, ""))
+			{
+				UIActorEditorForm::Open();
 			}
 
 			ImGui::Separator();

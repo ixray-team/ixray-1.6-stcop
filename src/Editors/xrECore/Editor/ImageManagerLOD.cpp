@@ -94,7 +94,8 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
     // set render params
 
     u32 cc						= 	EPrefs->scene_clear_color;
-    EPrefs->scene_clear_color 	= 	0x0000000;
+    // Key color of the background: no LOD texture uses pure magenta
+    EPrefs->scene_clear_color 	= 	0x00FF00FF;
     psDeviceFlags.zero			();
 	psDeviceFlags.set			(rsFilterLinear,true);
 	GEditorDraw.FillMode			= D3DFILL_SOLID;
@@ -113,13 +114,8 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 	u32 SrcW = tgt_w * lod_ss_quality;
 	u32 SrcH = tgt_h * lod_ss_quality;
 
-	// Render each angle into its own offscreen render target on the GPU.
-	xr_vector<ref_rt> SrcRTs;
-	SrcRTs.resize(LOD_SAMPLE_COUNT);
-
-	xr_vector<ref_rt> DepRTs;
-	DepRTs.resize(LOD_SAMPLE_COUNT);
-
+	// Each angle is a frame of the editor scene pipeline: the background has the key color and becomes transparent
+	constexpr int KeyTolerance = 24;
 	for (int Frame = 0; Frame < LOD_SAMPLE_COUNT; Frame++)
 	{
 		float Angle = Frame * (PI_MUL_2 / LOD_SAMPLE_COUNT);
@@ -134,81 +130,63 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 		BoundBox.xform(MatrixV);
 
 		MatrixP.build_projection_ortho(R, BoundBox.max.y - BoundBox.min.y, BoundBox.min.z, BoundBox.max.z);
-		RCache.set_xform_project(MatrixP);
-		RCache.set_xform_view(MatrixV);
-		EDevice->mFullTransform.mul(MatrixP, MatrixV);
 
-		string_path NormalTexPath;
-		xr_sprintf(NormalTexPath, "$user$lod_src_%d", Frame);
-		SrcRTs[Frame].create(NormalTexPath, SrcW, SrcH, ERHI_FORMAT::B8G8R8A8_UNORM);
-		xr_sprintf(NormalTexPath, "$user$lod_dep_%d", Frame);
-		DepRTs[Frame].create(NormalTexPath, SrcW, SrcH, ERHI_FORMAT::R24G8_TYPELESS);
-
-		EDevice->RenderScreenshotRT(SrcRTs[Frame], DepRTs[Frame]);
-	}
-
-	bool IsGPU = false;
-	ref_rt AtlasRT;
-	AtlasRT.create("$user$lod_atlas", Pitch, tgt_h, ERHI_FORMAT::R8G8B8A8_UNORM, 1, CRT::USE_UAV_FLAG);
-	if (EDevice->DownsampleLODAtlas(SrcRTs, AtlasRT, tgt_w, tgt_h, LOD_SAMPLE_COUNT, lod_ss_quality))
-	{
-		U32Vec AtlasPixels;
-		if (EDevice->ReadbackRT(AtlasRT, AtlasPixels) && AtlasPixels.size() == tgt_data.size())
+		u32 FrameW = 0, FrameH = 0;
+		if (!EDevice->RenderSceneFrame(MatrixV, MatrixP, PixelsVec, FrameW, FrameH) || FrameW == 0 || FrameH == 0)
 		{
-			bool IsEmpty = true;
-			for (u32 Idx = 0; Idx < AtlasPixels.size(); ++Idx)
+			Msg("! LOD: can't render the angle %d", Frame);
+			continue;
+		}
+
+		const u32 Key = PixelsVec[0];
+		auto IsKey = [Key, KeyTolerance](u32 Color)
+		{
+			for (u32 Shift = 0; Shift < 24; Shift += 8)
 			{
-				if (AtlasPixels[Idx] != 0)
+				const int Delta = int((Color >> Shift) & 0xFF) - int((Key >> Shift) & 0xFF);
+				if (Delta > KeyTolerance || Delta < -KeyTolerance)
 				{
-					IsEmpty = false;
-					break;
+					return false;
 				}
 			}
-			if (!IsEmpty)
-			{
-				CopyMemory(tgt_data.data(), AtlasPixels.data(), tgt_data.size() * sizeof(u32));
-				IsGPU = true;
-			}
-			Msg("! LOD: compute atlas %s (nonzero=%u/%u)", IsEmpty ? "EMPTY->CPU" : "OK", (u32)AtlasPixels.size() - (IsEmpty ? AtlasPixels.size() : 0), (u32)AtlasPixels.size());
-		}
-		else
-		{
-			Msg("! LOD: compute readback failed -> CPU");
-		}
-	}
-	else
-	{
-		Msg("! LOD: compute path unavailable -> CPU");
-	}
+			return true;
+		};
 
-	if (!IsGPU)
-	{
+		// The ortho frame fills the viewport: SrcW x SrcH samples, then a Quality x Quality box filter
 		u32 Quality = lod_ss_quality;
-		for (int Frame = 0; Frame < LOD_SAMPLE_COUNT; Frame++)
+		for (u32 y = 0; y < tgt_h; y++)
 		{
-			EDevice->ReadbackRT(SrcRTs[Frame], PixelsVec);
-			for (u32 y = 0; y < tgt_h; y++)
+			for (u32 x = 0; x < tgt_w; x++)
 			{
-				for (u32 x = 0; x < tgt_w; x++)
+				u32 B = 0, G = 0, Rc = 0, A = 0;
+				for (u32 IdxY = 0; IdxY < Quality; IdxY++)
 				{
-					u32 B = 0, G = 0, R = 0, A = 0;
-					for (u32 IdxY = 0; IdxY < Quality; IdxY++)
+					for (u32 IdxX = 0; IdxX < Quality; IdxX++)
 					{
-						for (u32 IdxX = 0; IdxX < Quality; IdxX++)
+						const u32 SrcX = std::min(((x * Quality + IdxX) * FrameW) / SrcW, FrameW - 1);
+						const u32 SrcY = std::min(((y * Quality + IdxY) * FrameH) / SrcH, FrameH - 1);
+						const u32 Pixel = PixelsVec[SrcY * FrameW + SrcX];
+						if (IsKey(Pixel))
 						{
-							u32 Pixels = PixelsVec[(y * Quality + IdxY) * SrcW + (x * Quality + IdxX)];
-							B += (Pixels >> 0) & 0xFF;
-							G += (Pixels >> 8) & 0xFF;
-							R += (Pixels >> 16) & 0xFF;
-							A += (Pixels >> 24) & 0xFF;
+							continue;
 						}
+
+						B += (Pixel >> 0) & 0xFF;
+						G += (Pixel >> 8) & 0xFF;
+						Rc += (Pixel >> 16) & 0xFF;
+						A += 0xFF;
 					}
-					u32 Q2 = Quality * Quality;
-					// Swap R/B: source is B8G8R8A8 (B in low byte, R in byte 2),
-					// but LOD/TGA consumers expect R,G,B,A, so swap the channels.
-					u32 Color = ((A / Q2) << 24) | ((B / Q2) << 16) | ((G / Q2) << 8) | (R / Q2);
-					tgt_data[y * Pitch + Frame * tgt_w + x] = Color;
 				}
+
+				const u32 Q2 = Quality * Quality;
+				const u32 Covered = A / 0xFF;
+				u32 Color = 0;
+				if (Covered != 0)
+				{
+					// B8G8R8X8 is already the ARGB layout of color_rgba
+					Color = color_rgba(Rc / Covered, G / Covered, B / Covered, A / Q2);
+				}
+				tgt_data[y * Pitch + Frame * tgt_w + x] = Color;
 			}
 		}
 	}

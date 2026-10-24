@@ -1,18 +1,20 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
+#include "ActorEditor.h"
+#include "../Editor/Utils/ContentView.h"
 
 #define dSINGLE
-#include "../../Include/xrRender/animation_blend.h"
-#include "../../xrPhysics/Physics.h"
-#include "../xrECore/Editor/EditMesh.h"
-#include "../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
-#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
-#include "../../plugins/PCore/xr_ogf.h"
-#include "../../plugins/PCore/xr_ogf_v4.h"
-#include "../../plugins/PCore/xr_writer.h"
+#include "../../../Include/xrRender/animation_blend.h"
+#include "../../../xrPhysics/Physics.h"
+#include "../../xrECore/Editor/EditMesh.h"
+#include "../../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
+#include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../../../plugins/PCore/xr_ogf.h"
+#include "../../../plugins/PCore/xr_ogf_v4.h"
+#include "../../../plugins/PCore/xr_writer.h"
 
-CActorTools*	ATools=(CActorTools*)Tools;
+CActorTools*	ATools = nullptr;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 
@@ -58,8 +60,8 @@ CActorTools::~CActorTools()
 	xr_delete(UVView);
 }
 
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../xrECore/Editor/D3DUtils.h"
+#include "../../../xrEngine/IGame_Persistent.h"
+#include "../../xrECore/Editor/D3DUtils.h"
 
 const u32 color_bone_sel_color = 0xFFFFFFFF;
 const u32 color_bone_norm_color = 0xFFFFFF00;
@@ -73,6 +75,18 @@ void CActorTools::Render()
 	if (!m_bReady) return;
 	PrepareLighting();
 	m_PreviewObject.Render();
+
+	// Library objects are previewed while no object is edited, or captured for their LOD
+	if (UIActorLibrary::IsPreviewForced())
+	{
+		UIActorLibrary::OnRender();
+		return;
+	}
+
+	if (!m_pEditObject)
+	{
+		UIActorLibrary::OnRender();
+	}
 	if (m_pEditObject) 
 	{
 		Fmatrix World = Fidentity;
@@ -80,7 +94,7 @@ void CActorTools::Render()
 			m_pEditObject->UpdateObjectXform(World);
 		}
 		m_RenderObject.OnRender();
-		if (m_RenderObject.IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
+		if (m_RenderObject.IsRenderable() && UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine)
 		{
 			RImplementation.model_RenderSingle(m_RenderObject.m_pVisual, m_RenderObject.ObjectXFORM(), m_RenderObject.m_fLOD);
 			RCache.set_xform_world(World);
@@ -143,7 +157,7 @@ void CActorTools::OnFrame()
 		m_AVTransform.mul(mTranslate, mRotate);
 		m_AVTransform.mulB_43(mScale);
 
-		if (!MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
+		if (!UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine)
 		{
 			m_pEditObject->OnFrame();
 
@@ -153,18 +167,18 @@ void CActorTools::OnFrame()
 			}
 		}
 
-		if (!MainForm->GetKeyForm()->AutoChange())
+		if (!UIActorEditorForm::GetKeyForm()->AutoChange())
 		{
-			m_pEditObject->m_SMParam.t_current = float(MainForm->GetKeyForm()->Position()) ;
+			m_pEditObject->m_SMParam.t_current = float(UIActorEditorForm::GetKeyForm()->Position()) ;
 		}
 		//CKinematicsAnimated* KA = dynamic_cast<CKinematicsAnimated*>(m_RenderObject.m_pVisual);
 		if (m_RenderObject.IsRenderable() && m_pEditObject->IsSkeleton() && m_RenderObject.m_pVisual)
 		{
 
 			CKinematicsAnimated* KA = dynamic_cast<CKinematicsAnimated*>(m_RenderObject.m_pVisual);
-			if (KA && !MainForm->GetKeyForm()->AutoChange() && m_RenderObject.m_pBlend)
+			if (KA && !UIActorEditorForm::GetKeyForm()->AutoChange() && m_RenderObject.m_pBlend)
 			{
-				float tm = float(MainForm->GetKeyForm()->Position());
+				float tm = float(UIActorEditorForm::GetKeyForm()->Position());
 				for (int k = 0; k < MAX_PARTS; k++)
 				{
 					if (KA->LL_PartBlendsCount(k))
@@ -178,7 +192,7 @@ void CActorTools::OnFrame()
 			IKinematics* K = m_RenderObject.m_pVisual->dcast_PKinematics();
 			VERIFY(K);
 			// K->Bone_Calculate			(&K->LL_GetData(K->LL_GetBoneRoot()),&Fidentity);
-			if (!MainForm->GetKeyForm()->AutoChange())
+			if (!UIActorEditorForm::GetKeyForm()->AutoChange())
 				K->Bone_Calculate(&K->LL_GetData(K->LL_GetBoneRoot()), &Fidentity);
 			else
 				K->CalculateBones(true);
@@ -193,7 +207,17 @@ void CActorTools::OnFrame()
 	if (m_Flags.is(flMakeThumbnail))
 	{
 		m_Flags.set(flMakeThumbnail, false);
-		RealMakeThumbnail();
+
+		// The next frame shows only the object
+		ImageLib.BeginThumbnailCapture();
+		EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+		(
+			[this]()
+			{
+				RealMakeThumbnail();
+				ImageLib.EndThumbnailCapture();
+			}
+		);
 	}
 	if (m_Flags.is(flGenerateLODHQ)|| m_Flags.is(flGenerateLODLQ))
 	{
@@ -260,7 +284,7 @@ bool CActorTools::IfModified()
 		int mr = ELog.DlgMsg(mtConfirmation, "The '%s' has been modified.\nDo you want to save your changes?", GetEditFileName().c_str());
 		switch (mr)
 		{
-		case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; else { m_bObjectModified = false; }break;
+		case mrYes: if (!CommandSave(CCommandVar(), CCommandVar())) return false; else { m_bObjectModified = false; }break;
 		case mrNo: m_bObjectModified = false; break;
 		case mrCancel: return false;
 		}
@@ -378,7 +402,7 @@ bool CActorTools::Load(const char* obj_name)
 		// delete visual
 		m_RenderObject.Clear();
 
-		MainForm->GetLeftBarForm()->SetRenderMode(false);
+		UIActorEditorForm::SetRenderMode(false);
 
 		UpdateProperties();
 
@@ -474,7 +498,7 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 
 	switch (m_Action) {
 	case etaSelect:
-		switch (MainForm->GetLeftBarForm()->GetPickMode())
+		switch (UIActorEditorForm::GetPickMode())
 		{
 			case 2:
 			{
@@ -721,7 +745,7 @@ bool CActorTools::RayPick(const Fvector& start, const Fvector& dir, float& dist,
 
 void CActorTools::GetStatTime(float& a, float& b, float& c)
 {
-	if (m_RenderObject.IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend)
+	if (m_RenderObject.IsRenderable() && UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine && m_RenderObject.m_pBlend)
 	{
 		a = 0;
 		b = m_RenderObject.m_pBlend->timeTotal / m_RenderObject.m_pBlend->speed;
@@ -734,7 +758,7 @@ void CActorTools::GetStatTime(float& a, float& b, float& c)
 	}
 	else
 	{
-		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor && m_pEditObject && m_pEditObject->m_ActiveSMotion)
+		if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Editor && m_pEditObject && m_pEditObject->m_ActiveSMotion)
 		{
 			SAnimParams& P = m_pEditObject->m_SMParam;
 			a = P.min_t;
@@ -752,7 +776,7 @@ void CActorTools::GetStatTime(float& a, float& b, float& c)
 
 bool CActorTools::IsEngineMode()
 {
-	return MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine;
+	return UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine;
 }
 
 void CActorTools::SelectPreviewObject(bool bClear)
@@ -804,7 +828,7 @@ bool CActorTools::Import(const char* initial, const char* obj_name)
 		m_pEditObject = O;
 		// delete visual
 		m_RenderObject.Clear();
-		MainForm->GetLeftBarForm()->SetRenderMode(false);
+		UIActorEditorForm::SetRenderMode(false);
 
 		UpdateProperties();
 		return true;
@@ -964,7 +988,7 @@ bool CActorTools::ExportCPP(const char* name)
 	return false;
 }
 
-#include "../xrECore/Editor/EDetailModel.h"
+#include "../../xrECore/Editor/EDetailModel.h"
 bool CActorTools::ExportDM(const char* name)
 {
 	VERIFY(m_bReady);
@@ -1103,6 +1127,10 @@ void CActorTools::RealMakeThumbnail()
 
 		if (ImageLib.CreateOBJThumbnail(tex_name.c_str(), obj, F.time_write)) {
 			ELog.Msg(mtInformation, "Thumbnail successfully created.");
+
+			string_path ObjectFile;
+			FS.update_path(ObjectFile, _objects_, obj_name.c_str());
+			CContentView::InvalidateIcon(FS.fix_path(xr_string(ObjectFile)));
 		}
 		else {
 			ELog.Msg(mtError, "Making thumbnail failed.");
@@ -1117,8 +1145,8 @@ void CActorTools::RealGenerateLOD(bool hq)
 {
 	if (m_pEditObject)
 	{
-		bool engine_render = MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine;
-		MainForm->GetLeftBarForm()->SetRenderMode(false);
+		bool engine_render = UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine;
+		UIActorEditorForm::SetRenderMode(false);
 		CEditableObject* O = m_pEditObject;
 
 		if (O && O->IsMUStatic())
@@ -1149,7 +1177,7 @@ void CActorTools::RealGenerateLOD(bool hq)
 		{
 			ELog.Msg(mtError, "Can't create LOD texture from non 'Multiple Usage' object.", O->m_LibName.c_str());
 		}
-		MainForm->GetLeftBarForm()->SetRenderMode(engine_render);
+		UIActorEditorForm::SetRenderMode(engine_render);
 	}
 
 }
@@ -1222,7 +1250,7 @@ void CActorTools::PhysicsSimulate()
 	if (!m_pEditObject)return;
 	m_IsPhysics = true;
 	CreatePhysicsWorld();
-	if (MainForm->GetLeftBarForm()->GetRenderMode() != UILeftBarForm::Render_Editor)
+	if (UIActorEditorForm::GetRenderMode() != UIActorEditorForm::Render_Editor)
 		m_RenderObject.CreatePhysicsShell(&m_AVTransform);
 	else
 		m_pEditObject->CreatePhysicsShell(&m_AVTransform);

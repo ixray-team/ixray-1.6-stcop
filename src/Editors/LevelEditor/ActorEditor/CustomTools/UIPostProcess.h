@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrGame/PostprocessAnimator.h"
+#include "../../../../xrGame/PostprocessAnimator.h"
 
 class CMainPPE:
     public IEditorWnd

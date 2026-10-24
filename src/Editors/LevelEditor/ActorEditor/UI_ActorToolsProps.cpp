@@ -1,8 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+#include "ActorEditor.h"
 
-#include "../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
-#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
+#include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
 //------------------------------------------------------------------------------
 
 void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
@@ -110,7 +111,7 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
 				}
 
 				OnMotionKeysModified	();
-				ExecCommand				(COMMAND_UPDATE_PROPERTIES);
+				ATools->UpdateProperties();
 				bModif = true;
 			}else
 				bModif = false;
@@ -146,7 +147,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 			bool bRes = false;
 			for (AStringIt it = lst.begin(); it != lst.end(); it++)
 				if (AppendMotion(it->c_str())) bRes = true;
-			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			ATools->UpdateProperties();
 			if (bRes)	OnMotionKeysModified();
 			else 		ELog.DlgMsg(mtError, "Append not completed.");
 			bModif = false;
@@ -170,7 +171,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 								RemoveMotion(((CSMotion*)(*it)->m_Object)->Name());
 							}
 							SelectListItem(MOTIONS_PREFIX, 0, true, false, false);
-							ExecCommand(COMMAND_UPDATE_PROPERTIES);
+							ATools->UpdateProperties();
 							OnMotionKeysModified();
 						};
 
@@ -262,6 +263,11 @@ void CActorTools::RealUpdateProperties()
 			m_ObjectItems->SelectItem(Item->Key(), false);
 		}
 	}
+	else if (m_pEditObject)
+	{
+		// A freshly loaded object shows its own properties
+		SelectListItem(OBJECT_PREFIX, 0, true, false, true);
+	}
 }
 //------------------------------------------------------------------------------
 							   
@@ -325,7 +331,7 @@ void  CActorTools::OnMotionRefsChange(PropValue* sender)
 	}
 
 	OnMotionKeysModified	();
-	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
+	ATools->UpdateProperties();
 }
 
 void  CActorTools::OnBoxAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
@@ -337,7 +343,7 @@ void  CActorTools::OnBoxAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	case 2: BONE->shape.box.m_rotate.k.set(0,0,1); break;
 	}
 	Fvector::generate_orthonormal_basis_normalized(BONE->shape.box.m_rotate.k,BONE->shape.box.m_rotate.j,BONE->shape.box.m_rotate.i);
-	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
+	ATools->UpdateProperties();
 }
 
 void  CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe)
@@ -348,10 +354,10 @@ void  CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe
 	case 1: BONE->shape.cylinder.m_direction.set(0,1,0); break;
 	case 2: BONE->shape.cylinder.m_direction.set(0,0,1); break;
 	}
-	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
+	ATools->UpdateProperties();
 }
 
-#include "../../xrEngine/envelope.h"
+#include "../../../xrEngine/envelope.h"
 
 Fvector StartMotionPoint, EndMotionPoint;
 void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, ListItem* sender)
@@ -363,7 +369,7 @@ void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, Lis
 	xr_string m_cnt;
 	if (m_pEditObject->m_SMotionRefs.size())
 	{
-		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
+		if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine)
 		{
 			CKinematicsAnimated* V = PKinematicsAnimated(m_RenderObject.m_pVisual);
 			if (V) m_cnt = xr_string::ToString(V->LL_CycleCount() + V->LL_FXCount());
@@ -518,7 +524,7 @@ static const char* axis[3]=
 
 void  CActorTools::OnJointTypeChange(PropValue* V)
 {
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	ATools->UpdateProperties();
 }
 
 void CActorTools::OnShapeTypeChange(PropValue* V)
@@ -547,7 +553,7 @@ void CActorTools::OnShapeTypeChange(PropValue* V)
 	}
 	#endif
 	EContext.UI->RedrawScene();
-	ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	ATools->UpdateProperties();
 }
 
 void  CActorTools::OnBindTransformChange(PropValue* V)
@@ -724,7 +730,7 @@ void  CActorTools::OnBoneEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	switch (V->btn_num){
 	case 0:
 		m_pEditObject->GotoBindPose();
-		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		ATools->UpdateProperties();
 		bModif = false;
 	break;
 	case 1:
@@ -734,7 +740,7 @@ void  CActorTools::OnBoneEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	break;
 	case 2:
 		m_pEditObject->ClampByLimits(false); 
-		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		ATools->UpdateProperties();
 		bModif = false;
 	break;
 	}

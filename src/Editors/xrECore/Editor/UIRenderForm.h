@@ -6,7 +6,7 @@ class ECORE_API                                     UIRenderForm: public IEditor
 {
 public:
 	using DragCallback = void(const xr_string&, int);
-	DragCallback* DragFunctor;
+	DragCallback* DragFunctor = nullptr;
 
 public:
 	UIRenderForm();

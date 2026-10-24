@@ -2,8 +2,12 @@
 #include "LevelPreferences.h"
 #include "ContentView.h"
 #include "../../ParticleEditor/UIParticleEditorForm.h"
+#include "../../ActorEditor/ActorEditor.h"
 
 #include "../xrECore/Editor/UILogForm.h"
+
+extern ECORE_API bool g_force16BitTransformQuant;
+extern ECORE_API bool g_force32BitTransformQuant;
 
 template<typename T>
 T GetSafe(const nlohmann::json& j, const char* key, T& Out)
@@ -110,6 +114,36 @@ void CLevelPreferences::LoadParticleBrowser(CContentView* View)
 	}
 }
 
+void CLevelPreferences::LoadActorBrowser(CContentView* View)
+{
+	if (ActorBrowserSettings.empty())
+	{
+		return;
+	}
+
+	const nlohmann::json Data = nlohmann::json::parse(ActorBrowserSettings.c_str(), nullptr, false);
+	if (Data.is_object())
+	{
+		LoadContentView(Data, View);
+	}
+}
+
+void CLevelPreferences::AppendActorRecentFile(const char* Name)
+{
+	const xr_string File = Platform::ANSI_TO_UTF8(Name);
+	auto It = std::find(ActorRecentFiles.begin(), ActorRecentFiles.end(), File);
+	if (It != ActorRecentFiles.end())
+	{
+		ActorRecentFiles.erase(It);
+	}
+
+	ActorRecentFiles.insert(ActorRecentFiles.begin(), File);
+	while (ActorRecentFiles.size() > 10)
+	{
+		ActorRecentFiles.pop_back();
+	}
+}
+
 void CLevelPreferences::Load()
 {
 	if (JSONData.is_discarded() || JSONData.is_null())
@@ -167,6 +201,40 @@ void CLevelPreferences::Load()
 		LoadParticleBrowser(ParticleBrowser);
 	}
 
+	ActorBrowserSettings.clear();
+	if (const auto* acb = GetObjectSafe(JSONData, "ActorContentBrowser"))
+	{
+		ActorBrowserSettings = acb->dump().c_str();
+	}
+	if (CContentView* ActorBrowser = UIActorEditorForm::GetContentView())
+	{
+		LoadActorBrowser(ActorBrowser);
+	}
+
+	if (const auto* ae = GetObjectSafe(JSONData, "ActorEditor"))
+	{
+		GetSafe(*ae, "AlwaysShowKeyBar12", ActorAlwaysShowKeyBar12);
+		GetSafe(*ae, "AlwaysShowKeyBar34", ActorAlwaysShowKeyBar34);
+		GetSafe(*ae, "Force16BitAnims", g_force16BitTransformQuant);
+		GetSafe(*ae, "Force32BitAnims", g_force32BitTransformQuant);
+
+		int Smooth = (int)SmoothGroup;
+		SmoothGroup = (ESmoothGroup)GetSafe(*ae, "SmoothGroup", Smooth);
+
+		ActorRecentFiles.clear();
+		auto Recent = ae->find("RecentFiles");
+		if (Recent != ae->end() && Recent->is_array())
+		{
+			for (const auto& File : *Recent)
+			{
+				if (File.is_string())
+				{
+					ActorRecentFiles.push_back(File.get<std::string>().c_str());
+				}
+			}
+		}
+	}
+
 	if (const auto* pie = GetObjectSafe(JSONData, "PIE"))
 	{
 		GetSafe(*pie, "ArtPos", PIEArtSpawnPos);
@@ -219,6 +287,17 @@ void CLevelPreferences::Save()
 	JSONData["LibaryEditor"]["Preview"] = PreviewRenderLibrary;
 	JSONData["PIE"]["ArtPos"] = PIEArtSpawnPos;
 
+	JSONData["ActorEditor"]["AlwaysShowKeyBar12"] = ActorAlwaysShowKeyBar12;
+	JSONData["ActorEditor"]["AlwaysShowKeyBar34"] = ActorAlwaysShowKeyBar34;
+	JSONData["ActorEditor"]["Force16BitAnims"] = g_force16BitTransformQuant;
+	JSONData["ActorEditor"]["Force32BitAnims"] = g_force32BitTransformQuant;
+	JSONData["ActorEditor"]["SmoothGroup"] = (int)SmoothGroup;
+	JSONData["ActorEditor"]["RecentFiles"] = nlohmann::json::array();
+	for (const xr_string& File : ActorRecentFiles)
+	{
+		JSONData["ActorEditor"]["RecentFiles"].push_back(File.c_str());
+	}
+
 	JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
 	JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
 	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
@@ -236,6 +315,14 @@ void CLevelPreferences::Save()
 	else if (!ParticleBrowserSettings.empty())
 	{
 		JSONData["ParticleContentBrowser"] = nlohmann::json::parse(ParticleBrowserSettings.c_str(), nullptr, false);
+	}
+	if (CContentView* ActorBrowser = UIActorEditorForm::GetContentView())
+	{
+		SaveContentView(JSONData["ActorContentBrowser"], ActorBrowser);
+	}
+	else if (!ActorBrowserSettings.empty())
+	{
+		JSONData["ActorContentBrowser"] = nlohmann::json::parse(ActorBrowserSettings.c_str(), nullptr, false);
 	}
 	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
@@ -267,6 +354,9 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 
 	PHelper().CreateBool(items, "Experimental\\LOD\\Use MU LODs (4-level)", &UseMULODs);
 	PHelper().CreateBool(items, "Experimental\\LOD\\Disable Billboard LOD", &DisableBillboardLOD);
+
+	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 12", &ActorAlwaysShowKeyBar12);
+	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 34", &ActorAlwaysShowKeyBar34);
 
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
 	SceneToolsMapPairIt _E 	= Scene->LastTool();

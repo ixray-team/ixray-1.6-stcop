@@ -5,6 +5,7 @@
 #include "../xrECore/Editor/imgui_EditorEx.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ActorEditor/ActorEditor.h"
 
 UITopBarForm::UITopBarForm()
 {
@@ -281,6 +282,12 @@ void UITopBarForm::ClickSave()
 	if (UIParticleEditorForm::IsActive())
 	{
 		UIParticleEditorForm::SaveCurrent();
+		return;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		Actor->CommandSave(CCommandVar(), CCommandVar());
 		return;
 	}
 

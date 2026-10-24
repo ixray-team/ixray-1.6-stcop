@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../ActorEditor.h"
 #include "UIPostProcess.h"
 
 static CMainPPE MyForm;

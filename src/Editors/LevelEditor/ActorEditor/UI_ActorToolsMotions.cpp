@@ -1,17 +1,18 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
+#include "ActorEditor.h"
 
 
 #include "UI_ActorTools.h"
-#include "../xrECore/Editor/ui_main.h"
-#include "../xrECore/Editor/EditObject.h"
-#include "../../xrEngine/motion.h"
-#include "../../xrEngine/bone.h"
-#include "../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
-#include "../../xrEngine/Fmesh.h"
-#include "../xrEProps/FolderLib.h"
-#include "../../xrPhysics/PhysicsShell.h"
+#include "../../xrECore/Editor/ui_main.h"
+#include "../../xrECore/Editor/EditObject.h"
+#include "../../../xrEngine/motion.h"
+#include "../../../xrEngine/bone.h"
+#include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../../../xrEngine/Fmesh.h"
+#include "../../xrEProps/FolderLib.h"
+#include "../../../xrPhysics/PhysicsShell.h"
 //---------------------------------------------------------------------------
 MotionID EngineModel::FindMotionID(const char* name, u16 slot)
 {
@@ -42,7 +43,7 @@ CMotion*	EngineModel::FindMotionKeys(const char* name, u16 slot)
 void EngineModel::FillMotionList(const char* pref, ListItemsVec& items, int modeID)
 {
 	LHelper().CreateItem(items, pref, modeID, 0);
-	if (IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
+	if (IsRenderable() && UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine) 
 	{
 		CKinematicsAnimated* SA = PKinematicsAnimated(m_pVisual);
 		if (SA) {
@@ -252,13 +253,13 @@ void CActorTools::OnMotionKeysModified()
 {
 	Modified			();
 	m_Flags.set			(flUpdateMotionKeys,true);
-	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
+	if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine){
 		m_Flags.set		(flUpdateMotionKeys,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,true,false)){
 			PlayMotion();
 		}else{
 			m_RenderObject.DeleteVisual();
-			  MainForm->GetLeftBarForm()->SetRenderMode(false);
+			  UIActorEditorForm::SetRenderMode(false);
 		}
 	}
 	OnMotionDefsModified();
@@ -268,13 +269,13 @@ void CActorTools::OnMotionDefsModified()
 {
 	Modified			();
 	m_Flags.set			(flUpdateMotionDefs,true);
-	if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
+	if ( UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine){
 		m_Flags.set		(flUpdateMotionDefs,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,false,true)){
 			PlayMotion();
 		}else{
 			m_RenderObject.DeleteVisual();
-			  MainForm->GetLeftBarForm()->SetRenderMode(false);
+			  UIActorEditorForm::SetRenderMode(false);
 		}
 	}
 	UndoSave			();
@@ -283,13 +284,13 @@ void CActorTools::OnMotionDefsModified()
 void CActorTools::OnGeometryModified()
 {
 	Modified			();
-	if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
+	if ( UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine){
 		m_Flags.set		(flUpdateGeometry,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,true,false,false)){
 			PlayMotion();
 		}else{
 			m_RenderObject.DeleteVisual();
-			  MainForm->GetLeftBarForm()->SetRenderMode(false);
+			  UIActorEditorForm::SetRenderMode(false);
 		}
 	}
 	UndoSave			();  
@@ -331,7 +332,7 @@ void CActorTools::MakePreview()
 {
 	if (!VerifyMotionRefs())
 	{
-		MainForm->GetLeftBarForm()->SetRenderMode(false);
+		UIActorEditorForm::SetRenderMode(false);
 		return;
 	}
 
@@ -347,7 +348,7 @@ void CActorTools::MakePreview()
 		else
 		{
 			m_RenderObject.DeleteVisual();
-			MainForm->GetLeftBarForm()->SetRenderMode(false);
+			UIActorEditorForm::SetRenderMode(false);
 		}
 	}
 	else
@@ -360,7 +361,7 @@ void CActorTools::PlayMotion()
 {
 	if (m_pEditObject)
 	{
-		if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+		if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Editor)
 		{
 			m_pEditObject->SkeletonPlay();
 			if (m_PreviewObject.SelectedObject != nullptr)
@@ -368,7 +369,7 @@ void CActorTools::PlayMotion()
 				m_PreviewObject.SelectedObject->SkeletonPlay();
 			}
 		}
-		else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
+		else if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine) 
 		{
 			if (m_Flags.is(flUpdateMotionKeys)) { OnMotionKeysModified(); }
 			if (m_Flags.is(flUpdateMotionDefs)) { OnMotionDefsModified(); }
@@ -383,7 +384,7 @@ void CActorTools::StopMotion()
 	if (m_pEditObject == nullptr)
 		return;
 
-	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+	if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Editor)
 	{
 		m_pEditObject->SkeletonStop();
 
@@ -392,7 +393,7 @@ void CActorTools::StopMotion()
 			m_PreviewObject.SelectedObject->SkeletonStop();
 		}
 	}
-	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) {
+	else if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine && m_RenderObject.m_pBlend) {
 		m_RenderObject.m_pBlend->playing = false;
 		m_RenderObject.m_pBlend->timeCurrent = 0;
 	}
@@ -403,7 +404,7 @@ void CActorTools::PauseMotion()
 	if (m_pEditObject == nullptr)
 		return;
 
-	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Editor)
+	if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Editor)
 	{
 		m_pEditObject->SkeletonPause(true);
 
@@ -412,7 +413,7 @@ void CActorTools::PauseMotion()
 			m_PreviewObject.SelectedObject->SkeletonPause(true);
 		}
 	}
-	else if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine && m_RenderObject.m_pBlend) 
+	else if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine && m_RenderObject.m_pBlend) 
 	{
 		m_RenderObject.m_pBlend->playing = !m_RenderObject.m_pBlend->playing;
 	}
@@ -469,6 +470,6 @@ void CActorTools::RemoveMarksChannel(bool b12)
 			}
 		}
 
-		ExecCommand					(COMMAND_UPDATE_PROPERTIES);
+		ATools->UpdateProperties();
 	}
 }

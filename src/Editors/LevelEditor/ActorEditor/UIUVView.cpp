@@ -1,7 +1,8 @@
 #include "stdafx.h"
+#include "ActorEditor.h"
 #include "UIUVView.h"
-#include "../xrECore/Editor/EditMesh.h"
-#include "../xrECore/Editor/EditObject.h"
+#include "../../xrECore/Editor/EditMesh.h"
+#include "../../xrECore/Editor/EditObject.h"
 
 CUIUVView::CUIUVView()
 {
@@ -10,7 +11,7 @@ CUIUVView::CUIUVView()
 	Zoom = 1.0f;
 	PanOffset = ImVec2(0, 0);
 	NeedUpdate = false;
-	bOpen = false;
+	IsOpen = false;
 
 	Texture = new CTexture;
 }
@@ -21,7 +22,7 @@ CUIUVView::~CUIUVView()
 
 void CUIUVView::Show(bool State)
 {
-	bOpen = State;
+	IsOpen = State;
 }
 
 void CUIUVView::SetSurface(CSurface* surf, CEditableObject* obj)
@@ -95,7 +96,7 @@ void CUIUVView::UpdateTexture()
 
 void CUIUVView::Draw()
 {
-	if (!bOpen)
+	if (!IsOpen)
 	{
 		return;
 	}
@@ -108,7 +109,7 @@ void CUIUVView::Draw()
 	ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), ImVec2(FLT_MAX, FLT_MAX));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
-	if (ImGui::Begin("UV View", &bOpen))
+	if (ImGui::Begin("UV View", &IsOpen))
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
 		if (ImGui::BeginChild("##UVViewTopPanel", {0, 26}))

@@ -48,6 +48,10 @@ public:
     bool		MakeGameTexture		(const char* game_name, u32* data, const STextureParams& tp);
     void		CreateTextureThumbnail(ETextureThumbnail* THM, const xr_string& src_name, const char* path=nullptr, bool bSetDefParam=true);
     bool		CreateOBJThumbnail	(const char* tex_name, CEditableObject* obj, time_t age);
+    // The viewport frames between these calls show only the objects: no grid, environment, fog or helpers.
+    // CreateOBJThumbnail captures the frame rendered after BeginThumbnailCapture.
+    void		BeginThumbnailCapture();
+    void		EndThumbnailCapture	();
     void		CreateLODTexture	(CEditableObject* object, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int samples, int quality);
     void		CreateLODTexture	(CEditableObject* object, const char* tex_name, 	u32 tgt_w, u32 tgt_h, int samples, time_t age, int quality);
     void		CreateGameTexture	(const char* src_name, ETextureThumbnail* thumb=nullptr);
