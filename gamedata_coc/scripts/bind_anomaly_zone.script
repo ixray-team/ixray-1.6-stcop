@@ -422,9 +422,9 @@ function anomaly_zone_binder:save(thread)
 	for k,v in pairs(self.artefact_ways_by_id) do
 		count = count + 1
 	end
-	thread:w_u16(count)
+	w_object_id_count(thread, count)
 	for k,v in pairs(self.artefact_ways_by_id) do
-		thread:w_u16(k)
+		thread:w_object_id(k)
 		thread:w_stringZ(v)
 	end
 ----------------optimize this---------------------------------------------------
@@ -432,9 +432,9 @@ function anomaly_zone_binder:save(thread)
 	for k,v in pairs(self.artefact_points_by_id) do
 		count = count + 1
 	end
-	thread:w_u16(count)
+	w_object_id_count(thread, count)
 	for k,v in pairs(self.artefact_points_by_id) do
-		thread:w_u16(k)
+		thread:w_object_id(k)
 		thread:w_u8(v)
 	end
 --------------------------------------------------------------------------------
@@ -457,18 +457,18 @@ function anomaly_zone_binder:load(thread)
 	set_save_marker(thread, "load", false, "anomaly_zone_binder")
 	object_binder.load(self, thread)
 
-	local count = thread:r_u16()
+	local count, wide_ids = r_object_id_count(thread)
 	for i=1,count do
-		local art_id = thread:r_u16()
+		local art_id = r_object_id_compat(thread, wide_ids)
 		local way_name = thread:r_stringZ()
 		artefact_ways_by_id[art_id] = way_name
 		self.artefact_ways_by_id[art_id] = way_name
 		parent_zones_by_artefact_id[art_id] = self
 	end
 ----------------optimize this---------------------------------------------------
-	local count = thread:r_u16()
+	local count, wide_ids = r_object_id_count(thread)
 	for i=1,count do
-		local art_id = thread:r_u16()
+		local art_id = r_object_id_compat(thread, wide_ids)
 		local point_name = thread:r_u8()
 		artefact_points_by_id[art_id] = point_name
 		self.artefact_points_by_id[art_id] = point_name

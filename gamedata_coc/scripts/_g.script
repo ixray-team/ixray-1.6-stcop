@@ -86,6 +86,31 @@ function alife_object_ids()
 	return ids
 end
 
+function w_object_id_count(pk, n, narrow)
+	if (narrow) then
+		pk:w_u8(255)
+	else
+		pk:w_u16(65535)
+	end
+	pk:w_u32(n)
+end
+
+function r_object_id_count(pk, narrow)
+	local n = narrow and pk:r_u8() or pk:r_u16()
+	if (n == (narrow and 255 or 65535)) then
+		return pk:r_u32(), true
+	end
+	return n, false
+end
+
+function r_object_id_compat(pk, wide)
+	if (wide) then
+		return pk:r_object_id()
+	end
+	local id = pk:r_u16()
+	return id == 65535 and alife_const.invalid_object_id or id
+end
+
 function alife_object(id)
 	if not (is_valid_object_id(id)) then
 		callstack()

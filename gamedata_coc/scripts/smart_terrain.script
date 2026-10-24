@@ -905,7 +905,7 @@ function se_smart_terrain:STATE_Write(packet)
 
 	alun_utils.w_stpk(packet,"u8",n,"arriving_npc count")
 	for k,v in pairs(self.arriving_npc) do
-		alun_utils.w_stpk(packet,"u16",k,"arriving_npc id")
+		packet:w_object_id(k)
 	end
 
 
@@ -918,7 +918,7 @@ function se_smart_terrain:STATE_Write(packet)
 	--printf("%s:STATE_Write   JobCount=%s",self:name(),n)
 	alun_utils.w_stpk(packet,"u8",n,"npc_info count")
 	for id,info in pairs(self.npc_info) do
-		alun_utils.w_stpk(packet,"u16",id,"npc_info id")
+		packet:w_object_id(id)
 		alun_utils.w_stpk(packet,"stringZ",info.job and info.job.section or "nil","npc_info.job_section")
 		alun_utils.w_stpk(packet,"bool",info.begin_job,"npc_info.begin_job")
 		alun_utils.w_stpk(packet,"stringZ",tostring(info.need_job),"npc_info.need_job")
@@ -974,11 +974,12 @@ function se_smart_terrain:STATE_Read(packet, size)
 	--set_save_marker(packet, "load", false, "se_smart_terrain")
 
 	-- Информацию о НПС, идущих в смарт
+	local wide_ids = self.script_version >= 13
 	local n = packet:r_u8()
 	self.arriving_npc = {}
 	for i = 1,n do
-		local id = packet:r_u16()
-		if (id < 65535) then
+		local id = r_object_id_compat(packet, wide_ids)
+		if (is_valid_object_id(id)) then
 			self.arriving_npc[id] = false
 		end
 	end
@@ -988,16 +989,16 @@ function se_smart_terrain:STATE_Read(packet, size)
 	self.load_info = {}
 	local id
 	for i = 1,n do
-		id = packet:r_u16()
+		id = r_object_id_compat(packet, wide_ids)
 		self.load_info[id] = {}
 		self.load_info[id].job_section = packet:r_stringZ()
 		self.load_info[id].begin_job = packet:r_bool()
 		self.load_info[id].need_job = packet:r_stringZ()
 	end
 
-	if (self.load_info[65535]) then
+	if (self.load_info[alife_const.invalid_object_id]) then
 		printf("%s:STATE_Read: invalid id in npc_info table. Check for save corruption or error in smart_terrain job system.")
-		self.load_info[65535] = nil
+		self.load_info[alife_const.invalid_object_id] = nil
 	end
 
 	--[[
