@@ -7,7 +7,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$SourceCommit = '3da2cb5ca7fbf7c08afa30a29bc4876f1525204f'
+$SourceCommit = '6a600c1e7a0a8a0107abb6693ec05339582f37c1'
 $Repository = 'https://github.com/r3tr0-hub/ixray-1.6-stcop.git'
 if ([string]::IsNullOrWhiteSpace($GameRoot)) { $GameRoot = $PSScriptRoot }
 if ([string]::IsNullOrWhiteSpace($GameRoot)) { throw 'Pass -GameRoot with the game folder.' }
@@ -36,14 +36,14 @@ if ($LASTEXITCODE -ne 0) { throw 'Cannot read source checkout HEAD.' }
 $changes = @(& $git -C $SourceRoot status --porcelain)
 if ($LASTEXITCODE -ne 0 -or $changes.Count -gt 0) { throw 'SourceRoot contains local changes. Keep your changes and use a separate clean SourceRoot.' }
 if ($head -ne $SourceCommit) {
-    if ($head -ne '4d005d67968089e4c8148cf953c39d893ca59baf' -and $head -ne '1b18555e5fc8d9116b262bbb1402dfed10018eb2') {
+    if ($head -ne '4d005d67968089e4c8148cf953c39d893ca59baf' -and $head -ne '1b18555e5fc8d9116b262bbb1402dfed10018eb2' -and $head -ne '3da2cb5ca7fbf7c08afa30a29bc4876f1525204f' -and $head -ne 'a5960a9e78b1119fbc33c947d985e75233796750') {
         throw 'This is not the clean v0.2 test checkout. Pass a separate -SourceRoot.'
     }
     Invoke-Checked $git @('-C', $SourceRoot, 'fetch', $Repository, 'feature/grass-terrain-tint')
     Invoke-Checked $git @('-C', $SourceRoot, '-c', 'core.autocrlf=false', 'checkout', '--detach', $SourceCommit)
 }
 $utility = Join-Path $SourceRoot 'util\grass-terrain-tint'
-Write-Host ('Building Grass Terrain Tint v0.2 + atlas mask from ' + $SourceCommit)
+Write-Host ('Building Grass Terrain Tint v0.2 + atlas alpha mask from ' + $SourceCommit)
 Write-Host ('Source: ' + $SourceRoot)
 & (Join-Path $utility 'Build_GrassTint.ps1') -BuildOnly -Jobs $Jobs
 if (!$?) { throw 'The engine build or shader tests failed. The installed game has not been updated.' }
@@ -74,7 +74,7 @@ foreach ($name in @('common_iostructs.hlsli', 'deffer_base.ps.hlsl', 'deffer_det
 }
 foreach ($path in Get-ChildItem -LiteralPath $utility -Filter 'grass_tint_*.ltx') { Stage-File $path.FullName ('presets/' + $path.Name) }
 foreach ($name in @('Run_GrassTint.cmd', 'Prepare_GameFolder.ps1')) { Stage-File (Join-Path $utility $name) $name }
-@{ version = '0.2-mask'; commit = $SourceCommit; files = $files } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $payload 'manifest.json') -Encoding UTF8
+@{ version = '0.2-alpha-mask'; commit = $SourceCommit; files = $files } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $payload 'manifest.json') -Encoding UTF8
 [IO.File]::Copy((Join-Path $utility 'Install_GrassTint_Update.ps1'), (Join-Path $stage 'Install_GrassTint_Update.ps1'), $true)
 & (Join-Path $stage 'Install_GrassTint_Update.ps1') -GameRoot $GameRoot
 if (!$?) { throw 'Compilation finished, but installation did not complete. See the error above.' }
