@@ -8,6 +8,8 @@
 
 
 #include "Blender_detail_still.h"
+
+void fix_texture_name(char* Name);
 #include "uber_deffer.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -87,7 +89,7 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 	{
 		RImplementation.addShaderOption("USE_DETAIL_TERRAIN_TINT", "1");
 		string_path AtlasName = {};
-		xr_strcpy(AtlasName, C.L_textures[0]);
+		xr_strcpy(AtlasName, C.L_textures[0].c_str());
 		fix_texture_name(AtlasName);
 		xr_string MaskName = AtlasName;
 		MaskName += "_tint";

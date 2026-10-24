@@ -44,8 +44,8 @@ Texture2D s_grass_tint_mask;
 float GrassTerrainTintMask(float2 atlasUV)
 {
 #ifdef USE_DETAIL_TINT_MASK
-    // Red is linear data, not opacity. Use the same UV/filter as the detail atlas.
-    return saturate(s_grass_tint_mask.Sample(smp_base, atlasUV).r);
+    // Opacity controls tint strength; RGB is ignored. Match the detail atlas UV/filter.
+    return saturate(s_grass_tint_mask.Sample(smp_base, atlasUV).a);
 #else
     return 1.0f;
 #endif

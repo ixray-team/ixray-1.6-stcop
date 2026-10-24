@@ -113,7 +113,7 @@ float4 ProbePS(ProbeOutput I) : SV_Target
 		Color = Texture(Resolution, Resolution, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, nullptr, true);
 		Height = Texture(Resolution, Resolution, DXGI_FORMAT_R32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		Depth = Texture(Resolution, Resolution, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
-		const std::array<unsigned char, 12> MaskPixels = {0, 0, 0, 255, 128, 128, 128, 255, 255, 255, 255, 255};
+		const std::array<unsigned char, 12> MaskPixels = {255, 255, 255, 0, 0, 255, 0, 128, 0, 0, 0, 255};
 		D3D11_TEXTURE2D_DESC MaskDescription = {};
 		MaskDescription.Width = 3;
 		MaskDescription.Height = MaskDescription.MipLevels = MaskDescription.ArraySize = 1;
@@ -493,12 +493,12 @@ int main(int Count, char** Arguments)
 		Check(std::abs(Luminance(DryGrass) - Luminance(BaseColor)) < 0.006f, "Brightness zero must retain the blade's luminance");
 		TintSettings Settings;
 		Settings.MaskUV = 1.0f / 6.0f;
-		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), BaseColor), "Black atlas mask must preserve source color");
-		Check(Near(Fixture.Probe(1, Root, 1, true, Settings), BaseColor), "Black mask must also protect terrain color preview");
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), BaseColor), "Transparent atlas mask must preserve source color");
+		Check(Near(Fixture.Probe(1, Root, 1, true, Settings), BaseColor), "Transparent mask must also protect terrain color preview");
 		Settings.MaskUV = 0.5f;
-		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), Fixture.Probe(0, Root, 128.0f / 255.0f)), "Grey mask must scale tint strength linearly");
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), Fixture.Probe(0, Root, 128.0f / 255.0f)), "Half-transparent alpha mask must scale tint strength linearly");
 		Settings = {};
-		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), DryGrass), "White atlas mask must retain full tint");
+		Check(Near(Fixture.Probe(0, Root, 1, true, Settings), DryGrass), "Opaque black RGB atlas mask must retain full tint");
 		Fixture.Capture(true, Green);
 		const Vector SameGrassOnGreen = Fixture.Probe(0, Root);
 		Check(SameGrassOnGreen[1] > SameGrassOnGreen[0] * 1.8f && !Near(SameGrassOnGreen, DryGrass, 0.12f), "The same grass texture must follow green and sandy terrain with a strong hue change");
