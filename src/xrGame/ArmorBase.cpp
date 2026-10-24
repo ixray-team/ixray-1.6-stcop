@@ -2,6 +2,9 @@
 #include "ArmorBase.h"
 #include "object_broker.h"
 #include "Actor.h"
+#include "ActorHelmet.h"
+#include "CustomOutfit.h"
+#include "EffectorNightVision.h"
 #include "game_cl_base.h"
 #include "Level.h"
 #include "Inventory.h"
@@ -209,7 +212,24 @@ bool CArmorBase::install_upgrade_impl(const char* section, bool test)
 	result |= process_if_exists(section, "explosion_protection", m_HitTypeProtection[ALife::eHitTypeExplosion], test);
 	result |= process_if_exists(section, "fire_wound_protection", m_HitTypeProtection[ALife::eHitTypeFireWound], test);
 
-	result |= process_if_exists_set(section, "nightvision_sect", m_NightVisionSect, test);
+	const shared_str PreviousNightVisionSection = m_NightVisionSect;
+	const bool HasNightVisionUpgrade = process_if_exists_set(section, "nightvision_sect", m_NightVisionSect, test);
+	result |= HasNightVisionUpgrade;
+	if (!test && HasNightVisionUpgrade && PreviousNightVisionSection != m_NightVisionSect)
+	{
+		CActor* Actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+		if (Actor && Actor->inventory().InSlot(this))
+		{
+			CHelmet* Helmet = Actor->GetHelmet();
+			const bool IsNightVisionSource = Helmet && Helmet->GetNV_Sect().size()
+				? static_cast<CArmorBase*>(Helmet) == this
+				: static_cast<CInventoryItem*>(Actor->GetOutfit()) == static_cast<CInventoryItem*>(this);
+			if (IsNightVisionSource && Actor->GetNightVisionEffector())
+			{
+				Actor->GetNightVisionEffector()->RefreshNightVision();
+			}
+		}
+	}
 
 	result |= process_if_exists_set(section, "torch_available", m_bTorchAvailable, test);
 

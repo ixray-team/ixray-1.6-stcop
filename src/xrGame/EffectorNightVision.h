@@ -32,6 +32,7 @@ public:
 	void	SwitchNightVision();
 	void	SwitchNightVision(bool vision_on, bool use_sounds = true);
 	bool	GetStatus() const { return m_bNightVisionOn; }
+	void RefreshNightVision();
 	void UpdateMask(CUIGameCustom& GameUI);
 };
 
