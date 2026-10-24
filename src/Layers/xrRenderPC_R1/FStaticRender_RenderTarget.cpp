@@ -3,6 +3,8 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../xrRender/blender_fxaa.h"
 
+extern ENGINE_API bool turn_nvg;
+
 static LPCSTR		RTname			= "$user$rendertarget";
 static LPCSTR		RTTempName = "$user$rendertarget_temp";
 static LPCSTR		RTname_color_map= "$user$rendertarget_color_map";
@@ -336,7 +338,7 @@ bool CRenderTarget::NeedPostProcess()
 		int		_b	= std::abs((int)(param_color_add.z*255));
 		if (_r>2 || _g>2 || _b>2)	_cadd	= true	;
 	}
-	return _blur || _gray || _noise || _dual || _cbase || _cadd || _cmap || _menu_pp; 
+	return turn_nvg || _blur || _gray || _noise || _dual || _cbase || _cadd || _cmap || _menu_pp;
 }
 
 bool CRenderTarget::Perform		()
