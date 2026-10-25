@@ -52,6 +52,9 @@ const char* actor::get_name				( ) const
 //Alundaio: add the ability to get lua game object
 CScriptGameObject* actor::lua_game_object() const
 {
+	if (m_object.getDestroy())
+		return nullptr;
+
 	return m_object.lua_game_object();
 }
 //Alundaio: END
