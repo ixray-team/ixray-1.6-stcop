@@ -253,23 +253,16 @@ function dm_init_surrender_dialog(dialog)
 	add_dialog("",0,"st_surrender_victim")
 
 	add_dialog(0,1,"st_surrender_query_victim_4","dialogs.victim_is_bounty")
-		add_script_dialog(1,9,"dialogs.surrender_victim_answers_bounty")
-			add_dialog(9,20,"st_surrender_actor_2",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
-			add_dialog(9,21,"st_surrender_actor_3",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
+		add_script_dialog(1,9,"dialogs.surrender_victim_answers_bounty",nil,"dialogs.set_victim_surrendered")
+			add_dialog(9,20,"st_surrender_actor_2",nil,"dialogs.break_dialog")
 			
 	add_dialog(0,2,"st_surrender_query_victim_1")
-		add_script_dialog(2,10,"dialogs.surrender_victim_answers_1")
-			add_dialog(10,20,"st_surrender_actor_2",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
-			add_dialog(10,21,"st_surrender_actor_3",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
-
-	add_dialog(0,3,"st_surrender_query_victim_2")
-		add_script_dialog(3,11,"dialogs.surrender_victim_answers_1")
-			add_dialog(11,20,"st_surrender_actor_2",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
-			add_dialog(11,21,"st_surrender_actor_3",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
+		add_script_dialog(2,10,"dialogs.surrender_victim_answers_1",nil,"dialogs.set_victim_surrendered")
+			add_dialog(10,20,"st_surrender_actor_2",nil,"dialogs.break_dialog")
 
 	add_dialog(0,4,"st_surrender_query_victim_3")
-		add_script_dialog(4,12,"dialogs.surrender_victim_answers_2")
-			add_dialog(12,20,"st_surrender_actor_1",nil,{"dialogs.set_victim_surrendered","dialogs.break_dialog"})
+		add_script_dialog(4,12,"dialogs.surrender_victim_answers_2",nil,"dialogs.set_victim_surrendered")
+			add_dialog(12,20,"st_surrender_actor_1",nil,"dialogs.break_dialog")
 end
 
 
