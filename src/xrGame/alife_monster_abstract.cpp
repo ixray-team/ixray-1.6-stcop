@@ -30,7 +30,7 @@ void CSE_ALifeMonsterAbstract::add_online							(const bool &update_registries)
 
 void CSE_ALifeMonsterAbstract::add_offline							(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries)
 {
-	inherited1::add_offline			(saved_children,update_registries);
+	inherited1::add_offline			(saved_children,update_registries && (m_group_id == ALife::INVALID_OBJECT_ID));
 	brain().on_switch_offline		();
 }
 
