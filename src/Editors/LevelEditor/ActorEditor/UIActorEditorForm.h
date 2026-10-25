@@ -56,6 +56,9 @@ private:
 	void DrawObjectTool();
 	void DrawObjectItems();
 	void DrawProperties();
+	void DrawReferences();
+	void StartReferenceSearch(const xr_string& Name);
+	void SyncReferences();
 	void DrawSkeletonFlag(const char* Id, const char* Icon, const char* Hint, u32 Flag, ImDrawFlags Rounding);
 	void SetSmooth(ESmoothGroup Smooth);
 	void SetAnim(EAnimMode Anim);
@@ -72,4 +75,18 @@ private:
 	RenderMode Mode = Render_Editor;
 	EAnimMode AnimMode = e8bit;
 	bool Simulate = false;
+
+	// Reference View: the scene is copied on the primary thread, a task matches the references
+	struct SReferenceEntry
+	{
+		shared_str ObjectName;
+		shared_str RefName;
+	};
+	xr_vector<SReferenceEntry> ReferenceSnapshot;
+	xr_vector<u32> ReferenceMatches;
+	xr_vector<shared_str> References;
+	xr_string ReferenceTarget;
+	xr_task_group ReferenceTask;
+	std::atomic_bool ReferenceDone = true;
+	bool ReferenceRunning = false;
 };
