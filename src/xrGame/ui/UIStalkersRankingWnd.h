@@ -13,6 +13,11 @@ class CSE_ALifeTraderAbstract;
 class UIHint;
 class CUIGamepadLegend;
 
+namespace StalkersRanking
+{
+struct Entry;
+}
+
 class CUIStalkersRankingWnd: public CUIWindow
 {
 	typedef CUIWindow inherited;
@@ -36,8 +41,8 @@ protected:
 	CUICharacterInfo*		UICharacterInfo;
 	void					FillList			();
 	CUIScrollView*			UIList;
-	void					AddStalkerItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
-	void					AddActorItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
+	void AddStalkerItem(CUIXml* xml, int num, const StalkersRanking::Entry& Item);
+	void AddActorItem(CUIXml* xml, int num, const StalkersRanking::Entry& Item);
 	s32						m_items_count;
 
 public:

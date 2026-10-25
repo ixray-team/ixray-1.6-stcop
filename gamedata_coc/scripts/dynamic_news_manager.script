@@ -516,7 +516,7 @@ function DynamicNewsManager:SeenDeathOfStalker(victim,who,comm)
 	local a = #sentences > 0 and sentences[math.random(#sentences)]
 	local b = dynamic_news_helper.GetCommunityDescription(who,math.random(1,2))
 	local c = dynamic_news_helper.GetWeaponDescription(who,math.random(4,8))
-	local d = dynamic_news_helper.GetCommunityDescription(sender,math.random(3,4))
+	local d = dynamic_news_helper.GetCommunityDescription(victim,math.random(3,4))
 	local e = dynamic_news_helper.GetPointDescription(victim)
 	
 	local msg = strformat("%s %s %s %s %s.",a,b,c,d,e)

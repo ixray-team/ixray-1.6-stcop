@@ -17,18 +17,94 @@
 #include "../../xrUI/Widgets/UIHint.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrEngine/string_table.h"
+#include "../alife_simulator.h"
+#include "../alife_object_registry.h"
 
 #define		STALKERS_RANKING_XML			"stalkers_ranking.xml"
 #define		STALKERS_RANKING_CHARACTER_XML	"stalkers_ranking_character.xml"
 
-struct SStatData{
-	ALife::_OBJECT_ID							id;
-	CSE_ALifeTraderAbstract*	trader;
-	bool operator == (const SStatData& d1){return (id==d1.id) ;}
+extern CSE_ALifeTraderAbstract* ch_info_get_from_id(ALife::_OBJECT_ID id);
+
+namespace StalkersRanking
+{
+struct Entry
+{
+	ALife::_OBJECT_ID Id;
+	s32 Rank;
+	xr_string Name;
 };
 
-typedef xr_vector<SStatData>	TOP_LIST;
-TOP_LIST						g_all_statistic_humans;
+static CSE_ALifeTraderAbstract* FindTrader(ALife::_OBJECT_ID Id)
+{
+	if (ai().get_alife() && ai().get_game_graph())
+	{
+		return smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(Id, true));
+	}
+
+	return ch_info_get_from_id(Id);
+}
+
+class Registry
+{
+	xrCriticalSection Lock;
+	xr_vector<ALife::_OBJECT_ID> Ids;
+
+public:
+	void Add(ALife::_OBJECT_ID Id)
+	{
+		if (Id == ALife::INVALID_OBJECT_ID)
+		{
+			return;
+		}
+
+		xrCriticalSectionGuard Guard(Lock);
+		if (std::find(Ids.begin(), Ids.end(), Id) == Ids.end())
+		{
+			Ids.push_back(Id);
+		}
+	}
+
+	void Remove(ALife::_OBJECT_ID Id)
+	{
+		xrCriticalSectionGuard Guard(Lock);
+		std::erase(Ids, Id);
+	}
+
+	xr_vector<Entry> Snapshot()
+	{
+		xr_vector<Entry> Entries;
+		{
+			xrCriticalSectionGuard Guard(Lock);
+			Entries.reserve(Ids.size());
+			for (auto Iterator = Ids.begin(); Iterator != Ids.end();)
+			{
+				const auto* Trader = FindTrader(*Iterator);
+				if (!Trader)
+				{
+					Iterator = Ids.erase(Iterator);
+					continue;
+				}
+
+				Entries.push_back({*Iterator, Trader->m_rank, Trader->m_character_name});
+				++Iterator;
+			}
+		}
+
+		std::stable_sort(Entries.begin(), Entries.end(), [](const Entry& Left, const Entry& Right)
+						 { return Left.Rank > Right.Rank; });
+		return Entries;
+	}
+};
+
+Registry g_Registry;
+
+static int ActorPlace(const xr_vector<Entry>& Entries, ALife::_OBJECT_ID ActorId)
+{
+	const auto Iterator = std::find_if(Entries.begin(), Entries.end(), [ActorId](const Entry& Item)
+									   { return Item.Id == ActorId; });
+	return Iterator != Entries.end() ? static_cast<int>(std::distance(Entries.begin(), Iterator)) : 1;
+}
+} // namespace StalkersRanking
 
 CUIStalkersRankingWnd::CUIStalkersRankingWnd()
 {
@@ -114,26 +190,15 @@ void CUIStalkersRankingWnd::Show(bool status)
 		FillList								();
 }
 
-bool GreaterRankPred(const SStatData& h1, const SStatData& h2)
-{
-	return (h1.trader->m_rank > h2.trader->m_rank);
-}
-
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id (ALife::_OBJECT_ID id);
-
 int get_actor_ranking()
 {
-	std::sort	(g_all_statistic_humans.begin(),g_all_statistic_humans.end(),GreaterRankPred);
-	CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
-	SStatData	d;
-	d.id		= Actor()->ID();
-	d.trader	= pActorAbstract;
+	const auto* ActorObject = Actor();
+	if (!ActorObject)
+	{
+		return 1;
+	}
 
-	TOP_LIST::iterator it = std::find(g_all_statistic_humans.begin(),g_all_statistic_humans.end(),d);
-	if(it!=g_all_statistic_humans.end())
-		return (int)std::distance(g_all_statistic_humans.begin(), it);
-	else
-		return		1;
+	return StalkersRanking::ActorPlace(StalkersRanking::g_Registry.Snapshot(), ActorObject->ID());
 }
 
 void CUIStalkersRankingWnd::FillList()
@@ -146,27 +211,27 @@ void CUIStalkersRankingWnd::FillList()
 
 	uiXml.SetLocalRoot						(uiXml.NavigateToNode("stalkers_list",0));
 
-	if(g_all_statistic_humans.size())
+	const auto Entries = StalkersRanking::g_Registry.Snapshot();
+	const auto* ActorObject = Actor();
+	const auto ActorId = ActorObject ? ActorObject->ID() : ALife::INVALID_OBJECT_ID;
+	if (!Entries.empty())
 	{
-		CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
-		int actor_place							= get_actor_ranking();
+		const int actor_place = StalkersRanking::ActorPlace(Entries, ActorId);
+		const auto ActorEntry = std::find_if(Entries.begin(), Entries.end(), [ActorId](const StalkersRanking::Entry& Item)
+											 { return Item.Id == ActorId; });
 
-		int sz = std::min(g_all_statistic_humans.size(),(size_t)m_items_count);
+		int sz = std::min(Entries.size(), (size_t)m_items_count);
 		for (int i = 0; i < sz; ++i)
 		{
-			CSE_ALifeTraderAbstract* pT			= (g_all_statistic_humans[i]).trader;
-			if (!pT || pT->object_id() == ALife::_OBJECT_ID(-1))
-			{
-				continue;
-			}
+			const auto& Item = Entries[i];
 
-			if(pT==pActorAbstract || (i== m_items_count-1&&actor_place>m_items_count-1)  )
+			if (ActorEntry != Entries.end() && (Item.Id == ActorId || (i == m_items_count - 1 && actor_place > m_items_count - 1)))
 			{
-				AddActorItem					(&uiXml, actor_place+1, pActorAbstract);
+				AddActorItem(&uiXml, actor_place + 1, *ActorEntry);
 			}
 			else
 			{
-				AddStalkerItem					(&uiXml, i+1, pT);
+				AddStalkerItem(&uiXml, i + 1, Item);
 			}
 		}
 
@@ -180,10 +245,16 @@ void CUIStalkersRankingWnd::FillList()
 
 void CUIStalkersRankingWnd::ShowHumanInfo(ALife::_OBJECT_ID id)
 {
+	if (!StalkersRanking::FindTrader(id))
+	{
+		UICharacterInfo->ClearInfo();
+		return;
+	}
+
 	UICharacterInfo->InitCharacter(id);
 }
 
-void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
+void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, const StalkersRanking::Entry& Item)
 {
 	string256							buff;
 	CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
@@ -192,19 +263,19 @@ void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTrader
 	itm->set_hint_delay					(0);
 
 	xr_sprintf								(buff,"%d.",num);
-	itm->m_text1->SetText				(buff);		
+	itm->m_text1->SetText(buff);
 
-	xr_sprintf								(buff,"%s",t->m_character_name.c_str());
-	itm->m_text2->SetText				(buff);		
+	xr_sprintf(buff, "%s", Item.Name.c_str());
+	itm->m_text2->SetText(buff);
 
-	xr_sprintf								(buff,"%d",t->m_rank);
-	itm->m_text3->SetText				(buff);		
-	itm->m_humanID						= t->object_id();
+	xr_sprintf(buff, "%d", Item.Rank);
+	itm->m_text3->SetText(buff);
+	itm->m_humanID = Item.Id;
 	UIList->AddWindow					(itm, true);
 
 }
 
-void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
+void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, const StalkersRanking::Entry& Item)
 {
 	string64							buff;
 	CUIStalkerRankingInfoItem*			itm;
@@ -221,16 +292,16 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
 	itm->set_hint_delay					(0);
 
 	xr_sprintf								(buff,"%d.",num);
-	itm->m_text1->SetText				(buff);		
+	itm->m_text1->SetText(buff);
 
 
-	xr_sprintf								(buff,"%s", t->m_character_name.c_str());
-	itm->m_text2->SetText				(buff);		
+	xr_sprintf(buff, "%s", Item.Name.c_str());
+	itm->m_text2->SetText(buff);
 
-	xr_sprintf								(buff,"%d",t->m_rank);
-	itm->m_text3->SetText				(buff);		
+	xr_sprintf(buff, "%d", Item.Rank);
+	itm->m_text3->SetText(buff);
 
-	itm->m_humanID						= t->object_id();
+	itm->m_humanID = Item.Id;
 	UIList->AddWindow					(itm, true);
 }
 
@@ -300,31 +371,12 @@ bool CUIStalkersRankingWnd::OnGamepadKeyHold(int id)
 
 void add_human_to_top_list(ALife::_OBJECT_ID id)
 {
-	CSE_ALifeTraderAbstract* t	= ch_info_get_from_id(id);
-	SStatData	d;
-	d.id		= id;
-	d.trader	= t;
-
-	TOP_LIST::iterator it					= std::find(g_all_statistic_humans.begin(),g_all_statistic_humans.end(),d);
-
-	if(it!=g_all_statistic_humans.end())
-		g_all_statistic_humans.erase	(it);
-
-	g_all_statistic_humans.push_back	(d);
-
-
-//	t->m_rank	=	::Random.randI(20000);
+	StalkersRanking::g_Registry.Add(id);
 }
 
 void remove_human_from_top_list(ALife::_OBJECT_ID id)
 {
-	CSE_ALifeTraderAbstract* t				= ch_info_get_from_id(id);
-	SStatData	d;
-	d.id		= id;
-	d.trader	= t;
-	TOP_LIST::iterator it					= std::find(g_all_statistic_humans.begin(),g_all_statistic_humans.end(),d);
-	if(it!=g_all_statistic_humans.end())
-		g_all_statistic_humans.erase		(it);
+	StalkersRanking::g_Registry.Remove(id);
 }
 
 
