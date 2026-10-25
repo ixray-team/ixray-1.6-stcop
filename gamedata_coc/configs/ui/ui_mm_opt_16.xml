@@ -138,7 +138,7 @@
         <cap_header_setup x="8" y="0" width="108" height="15">
             <text r="170" g="170" b="170" font="letterica16" vert_align="c"/>
         </cap_header_setup>
-        <header_setup x="3" y="7" width="450" height="15">
+        <header_setup x="3" y="7" width="408" height="15">
             <texture a="150">ui_inGame2_servers_list_button</texture>
         </header_setup>
 
