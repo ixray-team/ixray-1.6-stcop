@@ -120,7 +120,7 @@ function evaluator_radio_in_heli:evaluate()
 	end
 	
 	if (xr_conditions.surge_started()) then 
-		return 
+		return false
 	end
 	
 	local comm = character_community(npc)
