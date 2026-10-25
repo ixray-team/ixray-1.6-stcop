@@ -24,7 +24,7 @@ descr = jup_b6_scientist_tech_task_1_text
 job_descr = jup_b6_scientist_tech_task_1_about
 target_functor = jup_b6_scientist_tech_task_target
 task_complete_descr = jup_b6_scientist_tech_task_finish
-on_init = %=setup_companion_task(ecolog_companion_task_2:jup_b41) =setup_task_target_anomaly -ecolog_companion_task_2_started -ecolog_companion_task_2_force_started%
+on_init = %=setup_companion_task(ecolog_companion_task_2:jup_b41) =setup_task_target_anomaly -ecolog_companion_task_2_started -ecolog_companion_task_2_force_started -ecolog_companion_task_2_measured%
 precondition = {!squad_exist(ecolog_companion_task_1) !squad_exist(ecolog_companion_task_2)} true, false
 repeat_timeout = 86400
 on_complete = %=complete_task_inc_goodwill(50:ecolog:csky) =remove_special_task_squad(ecolog_companion_task_2) =reward_stash(true) =reset_task_target_anomaly =reward_random_item(af_fire:af_eye:af_fireball:af_blood:af_cristall:detector_elite)%

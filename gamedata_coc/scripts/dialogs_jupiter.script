@@ -47,7 +47,7 @@ end
 ------ ecolog_companion_task_2
 
 function ecolog_companion_task_2_complete(a,b)
-	return xr_conditions.has_task_target_anomaly() ~= true and xr_conditions.check_nearest_smart_dist_le(nil,nil,{40,"jup_b41"}) or false
+	return has_alife_info("ecolog_companion_task_2_measured") and xr_conditions.has_task_target_anomaly() ~= true and xr_conditions.check_nearest_smart_dist_le(nil,nil,{40,"jup_b41"}) or false
 end
 
 function ecolog_companion_task_2_not_complete(a,b)

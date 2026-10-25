@@ -141,5 +141,8 @@ on_info2 = {!has_task_target_anomaly =check_squad_name(ecolog_companion_task_1)}
 [beh@task_target_anomaly_2]:beh@general_no_companion
 target = task_target_anomaly
 wait_anim = scaner_crouch
-on_game_timer = 900 | %=play_sound(jup_b6_stalker_1_measurement_done) =reset_task_target_anomaly%
+on_game_timer = 900 | beh@task_target_anomaly_3 %=reset_task_target_anomaly =play_sound(jup_b6_stalker_1_measurement_done)%
 on_info2 = {!has_task_target_anomaly =check_squad_name(ecolog_companion_task_1)} beh@ecolog_companion_task_1, {!has_task_target_anomaly =check_squad_name(ecolog_companion_task_2)} beh@ecolog_companion_task_2
+
+[beh@task_target_anomaly_3]:beh@general_no_companion
+on_info = {=check_squad_name(ecolog_companion_task_2)} beh@ecolog_companion_task_2 %+ecolog_companion_task_2_measured%, beh@ecolog_companion_task_1 %+ecolog_companion_task_1_measured%

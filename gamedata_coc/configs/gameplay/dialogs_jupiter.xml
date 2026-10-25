@@ -53,7 +53,6 @@
 			</phrase>
 			<phrase id="1113">
 				<text>ecolog_companion_task_1_actor_reply</text>
-				<action>dialogs_jupiter.ecolog_companion_task_2_give_reward</action>
 				<action>dialogs_jupiter.ecolog_companion_task_2_complete_task</action>
 			</phrase>
         </phrase_list>

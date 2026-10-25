@@ -37,7 +37,6 @@
             </phrase>
             <phrase id="1113">
                 <text>ecolog_companion_task_1_actor_reply</text>
-                <action>dialogs_marsh.ecolog_companion_task_1_give_reward</action>
                 <action>dialogs_marsh.ecolog_companion_task_1_complete_task</action>
             </phrase>
         </phrase_list>
