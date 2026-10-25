@@ -236,9 +236,6 @@ local function is_camping(npc)
 	if not (st and st.camper) then
 		return false
 	end
-	if (st.corpse_detection and st.corpse_detection.selected_corpse_id) then
-		return true
-	end
 	return xr_logic.is_active(npc, st.camper)
 end
 

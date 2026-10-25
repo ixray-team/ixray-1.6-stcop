@@ -17,11 +17,6 @@ end
 function evaluator_end:evaluate()
 	--alun_utils.debug_write("xr_camper:eva_end")
 	
-	local st = db.storage[self.object:id()]
-	if (st) and (st.corpse_detection and st.corpse_detection.selected_corpse_id) then 
-		return false 
-	end
-	
 	if (IsWounded(self.object)) then 
 		return false 
 	end
