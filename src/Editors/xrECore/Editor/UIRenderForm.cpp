@@ -159,7 +159,9 @@ void UIRenderForm::DrawVP()
 		}
 	}
 
-	if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID)
+	auto& View = EContext.UI->Views[ViewportID];
+	const bool SameSize = View.RTFreez && EContext.UI->RT && View.RTFreez->dwWidth == EContext.UI->RT->dwWidth && View.RTFreez->dwHeight == EContext.UI->RT->dwHeight;
+	if (SameSize && ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID))
 	{
 		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
 	}

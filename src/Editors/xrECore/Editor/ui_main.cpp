@@ -531,6 +531,13 @@ void TUI::Redraw()
 	static int UpscaledViewID = -1;
 	static u32 UpscaledMode = 0;
 	bool UpscalerReset = UpscaledViewID != View.ViewGlobalIDX;
+	bool TargetsReset = UpscalerReset;
+
+	if (UpscalerReset)
+	{
+		View.m_Camera.BuildCamera();
+		m_Flags.set(flRedraw, true);
+	}
 
 	if (u32(View.RTSize.x) != EDevice->TargetWidth || u32(View.RTSize.y) != EDevice->TargetHeight || SceneSize.x != HalfTarget.x || SceneSize.y != HalfTarget.y || UpscaledMode != GEditorDraw.Upscaler || !RT->pSurface)
 	{
@@ -539,6 +546,7 @@ void TUI::Redraw()
 			// The DLSS / FSR contexts are created with the render targets
 			UpscaledMode = GEditorDraw.Upscaler;
 			UpscalerReset = true;
+			TargetsReset = true;
 
 			EDevice->TargetWidth = View.RTSize.x;
 			EDevice->TargetHeight = View.RTSize.y;
@@ -560,8 +568,9 @@ void TUI::Redraw()
 
 			m_Flags.set(flRedraw, true);
 
-			EDevice->m_fNearer = EDevice->mProject._43;
 			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
+			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
+			EDevice->m_fNearer = EDevice->mProject._43;
 
 			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
@@ -593,7 +602,7 @@ void TUI::Redraw()
 		if (m_Flags.is(flRedraw))
 		{
 			// The temporal upscalers converge over the jittered frames
-			redraw_frame = EDevice->dwRenderFrame + (IsTemporalUpscaler() ? 32 : 3);
+			redraw_frame = EDevice->dwRenderFrame + ((IsTemporalUpscaler() || TargetsReset) ? 32 : 3);
 		}
 
 		if (redraw_frame > EDevice->dwRenderFrame || IsPlayInEditor())
