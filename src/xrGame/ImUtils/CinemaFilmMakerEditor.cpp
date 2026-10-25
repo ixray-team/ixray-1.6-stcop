@@ -156,6 +156,81 @@ struct SBindBoneParam
 	Fmatrix Matrix;
 };
 
+class CCinemaActorObject final : public CObject
+{
+public:
+	CCinemaActorObject()
+	{
+		cName_set("cinema_fake_npc");
+		cNameSect_set("cinema_fake_npc");
+		SpatialComponent->type = ESPATIAL_TYPE::RENDERABLE;
+	}
+
+	~CCinemaActorObject() override
+	{
+		renderable.visual = nullptr;
+	}
+
+	void Bind(IRenderVisual* visual, const Fmatrix& transform)
+	{
+		if (visual == nullptr)
+		{
+			Unbind();
+			return;
+		}
+
+		renderable.visual = visual;
+		renderable.xform = transform;
+
+		if (InSpace)
+		{
+			spatial_move();
+			return;
+		}
+
+		InSpace = true;
+		spatial_register();
+	}
+
+	void Unbind()
+	{
+		renderable.visual = nullptr;
+
+		if (!InSpace)
+		{
+			return;
+		}
+
+		InSpace = false;
+		spatial_unregister();
+	}
+
+	void renderable_Render() override
+	{
+		if (renderable.visual == nullptr)
+		{
+			return;
+		}
+
+		::Render->set_Transform(&renderable.xform);
+		::Render->add_Visual(renderable.visual);
+		renderable.visual->getVisData().hom_frame = Device.dwFrame;
+	}
+
+	bool renderable_ShadowGenerate() override
+	{
+		return false;
+	}
+
+	bool register_schedule() const override
+	{
+		return false;
+	}
+
+private:
+	bool InSpace = false;
+};
+
 struct SCinemaActor
 {
 	xr_string Name;
@@ -166,6 +241,7 @@ struct SCinemaActor
 	IRenderVisual* Model = nullptr;
 	IKinematics* Skeleton = nullptr;
 	IKinematicsAnimated* Animated = nullptr;
+	CCinemaActorObject Object;
 	xr_vector<xr_unique_ptr<SBindBoneParam>> BindPoseBones;
 	bool BindPose = false;
 	xr_vector<SAnimationSource> Sources;
@@ -284,6 +360,27 @@ static bool CinemaSetBindPose(SCinemaActor& actor)
 	actor.Skeleton->CalculateBones_Invalidate();
 	actor.Skeleton->CalculateBones(true);
 	return true;
+}
+
+static const SAnimationClip* CinemaFindEditorClip(const SCinemaActor& actor, const SAnimationSource** source)
+{
+	for (const SAnimationSource& animationSource : actor.Sources)
+	{
+		for (const SAnimationClip& clip : animationSource.Clips)
+		{
+			if (!clip.Fx && _stricmp(clip.Name.c_str(), "$editor") == 0)
+			{
+				if (source != nullptr)
+				{
+					*source = &animationSource;
+				}
+
+				return &clip;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 static const SAnimationClip* CinemaFindDefaultIdle(const SCinemaActor& actor, const SAnimationSource** source)
@@ -554,6 +651,7 @@ static bool VisualPathExists(const char* visual)
 static void ReleaseActorModel(SCinemaActor& actor)
 {
 	CinemaClearBindPose(actor);
+	actor.Object.Unbind();
 
 	if (actor.Model && ::Render)
 	{
@@ -565,6 +663,18 @@ static void ReleaseActorModel(SCinemaActor& actor)
 	actor.Animated = nullptr;
 	actor.LocalBox.invalidate();
 	actor.Sources.clear();
+}
+
+static void UpdateActorPlacement(SCinemaActor& actor)
+{
+	if (actor.Skeleton != nullptr)
+	{
+		actor.Skeleton->CalculateBones(true);
+	}
+
+	Fmatrix transform = actor.Orientation;
+	transform.c = actor.Position;
+	actor.Object.Bind(actor.Model, transform);
 }
 
 static Fvector AxisVector(EGizmoAxis axis)
@@ -953,7 +1063,6 @@ private:
 	void BuildActorSources(SCinemaActor& actor);
 
 	bool AddActor(const Fvector& position, const char* visual, bool adjustGround);
-	bool AddActorAtAim(const char* visual);
 	bool AddActorInFront(const char* visual);
 	bool SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround);
 	void DuplicateSelectedActor();
@@ -1144,43 +1253,12 @@ void CCinemaFilmMakerManager::OnFrame()
 	for (auto& actor : Actors)
 	{
 		UpdateActorPlayback(*actor);
+		UpdateActorPlacement(*actor);
 	}
 }
 
 void CCinemaFilmMakerManager::Render()
 {
-	if (!g_CinemaFilmMaker || Actors.empty() || g_pGameLevel == nullptr)
-	{
-		return;
-	}
-
-	const bool hudMode = ::Render->get_HUD();
-	::Render->set_HUD(false);
-	::Render->set_Object(nullptr);
-
-	for (auto& actor : Actors)
-	{
-		if (actor->Model == nullptr)
-		{
-			continue;
-		}
-
-		if (actor->Skeleton)
-		{
-			actor->Skeleton->CalculateBones(true);
-		}
-
-		Fmatrix transform = actor->Orientation;
-		transform.c = actor->Position;
-
-		::Render->set_Transform(&transform);
-		::Render->add_Visual(actor->Model, true, true);
-		actor->Model->getVisData().hom_frame = Device.dwFrame;
-	}
-
-	::Render->set_Transform(&Fidentity);
-	::Render->set_HUD(hudMode);
-
 	AppendWorldGizmo();
 }
 
@@ -1481,7 +1559,12 @@ bool CCinemaFilmMakerManager::ApplyDefaultPose(SCinemaActor& actor)
 	}
 
 	const SAnimationSource* source = nullptr;
-	const SAnimationClip* clip = CinemaFindDefaultIdle(actor, &source);
+	const SAnimationClip* clip = CinemaFindEditorClip(actor, &source);
+
+	if (clip == nullptr)
+	{
+		clip = CinemaFindDefaultIdle(actor, &source);
+	}
 
 	if (source != nullptr && clip != nullptr && PlayClip(actor, *source, *clip, false))
 	{
@@ -1941,30 +2024,25 @@ bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visu
 	return true;
 }
 
-bool CCinemaFilmMakerManager::AddActorAtAim(const char* visual)
-{
-	if (g_pGameLevel == nullptr || g_hud == nullptr || visual == nullptr || visual[0] == '\0')
-	{
-		return false;
-	}
-
-	const collide::rq_result& query = HUD().GetCurrentRayQuery();
-	const float range = (query.O != nullptr && query.range > 0.1f) ? query.range : 3.0f;
-	Fvector position = {};
-	position.mad(Device.vCameraPosition, Device.vCameraDirection, range);
-	return AddActor(position, visual, true);
-}
-
 bool CCinemaFilmMakerManager::AddActorInFront(const char* visual)
 {
-	if (g_pGameLevel == nullptr || g_hud == nullptr || visual == nullptr || visual[0] == '\0')
+	if (g_pGameLevel == nullptr || visual == nullptr || visual[0] == '\0')
 	{
 		return false;
 	}
 
-	Fvector position = {};
-	position.mad(Device.vCameraPosition, Device.vCameraDirection, 3.0f);
-	return AddActor(position, visual, false);
+	Fvector position = Device.vCameraPosition;
+	Fvector direction = Device.vCameraDirection;
+
+	if (g_actor != nullptr)
+	{
+		position = g_actor->Position();
+		direction = g_actor->Direction();
+	}
+
+	direction.normalize_safe();
+	position.mad(direction, 3.0f);
+	return AddActor(position, visual, true);
 }
 
 bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround)
@@ -2008,6 +2086,7 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 	if (actor.Model != nullptr)
 	{
 		CinemaClearBindPose(actor);
+		actor.Object.Unbind();
 		::Render->model_Delete(actor.Model);
 	}
 
@@ -2142,7 +2221,7 @@ void CCinemaFilmMakerManager::DrawToolbar()
 
 	if (ImGui::Button("Add##toolbar"))
 	{
-		ImGui::OpenPopup("##cinema_add_popup");
+		AddActorInFront(SelectedVisual.c_str());
 	}
 
 	ImGui::EndDisabled();
@@ -2150,21 +2229,6 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	if (ImGui::IsItemHovered() && SelectedVisual.size() > 0)
 	{
 		ImGui::SetTooltip("Add the selected model\n%s", SelectedVisual.c_str());
-	}
-
-	if (ImGui::BeginPopup("##cinema_add_popup"))
-	{
-		if (ImGui::MenuItem("At crosshair"))
-		{
-			AddActorAtAim(SelectedVisual.c_str());
-		}
-
-		if (ImGui::MenuItem("In front of camera"))
-		{
-			AddActorInFront(SelectedVisual.c_str());
-		}
-
-		ImGui::EndPopup();
 	}
 
 	ImGui::BeginDisabled(selectedActor == nullptr);
@@ -2593,25 +2657,10 @@ void CCinemaFilmMakerManager::DrawModelTab()
 
 	if (ImGui::Button("Add##model"))
 	{
-		ImGui::OpenPopup("##cinema_model_add_popup");
+		AddActorInFront(SelectedVisual.c_str());
 	}
 
 	ImGui::EndDisabled();
-
-	if (ImGui::BeginPopup("##cinema_model_add_popup"))
-	{
-		if (ImGui::MenuItem("At crosshair"))
-		{
-			AddActorAtAim(SelectedVisual.c_str());
-		}
-
-		if (ImGui::MenuItem("In front of camera"))
-		{
-			AddActorInFront(SelectedVisual.c_str());
-		}
-
-		ImGui::EndPopup();
-	}
 }
 
 void CCinemaFilmMakerManager::DrawAnimationTab()
