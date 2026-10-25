@@ -6,6 +6,7 @@
 #include "xrMessages.h"
 
 extern int g_start_game_vertex_id;
+extern shared_str g_start_position_smart;
 
 namespace
 {
@@ -114,7 +115,7 @@ namespace
 bool LevelStartInfo::Find(const IGame_Persistent::params& Params, shared_str& LevelName)
 {
 	PROF_EVENT("LevelStartInfo::Find");
-	if (Device.IsEditorMode() || g_start_game_vertex_id != 0)
+	if (Device.IsEditorMode() || g_start_game_vertex_id != 0 || g_start_position_smart.size())
 	{
 		return false;
 	}
