@@ -245,8 +245,17 @@ void CSE_ALifeOnlineOfflineGroup::switch_offline		()
 
 	if (!m_members.empty()) {
 		MEMBER					*member = (*m_members.begin()).second;
-		
-		member->synchronize_location();
+		for (const auto& it : m_members)
+		{
+			if (it.second->m_bOnline)
+			{
+				member			= it.second;
+				break;
+			}
+		}
+
+		if (member->m_bOnline)
+			member->synchronize_location();
 
 		o_Position				= member->o_Position;
 		m_tNodeID				= member->m_tNodeID;
