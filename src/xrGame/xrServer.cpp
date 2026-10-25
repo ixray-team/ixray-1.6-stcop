@@ -3729,7 +3729,7 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 			{
 				break;
 			}
-			if (m_pending_delete_id_set.contains(elem.second))
+			if (auto Pending = m_pending_delete_id_set.find(elem.second); Pending != m_pending_delete_id_set.end() && Pending->second == elem.first)
 			{
 				// Rarely even after timeout client object still exists, so we cannot free ID yet
 				if (auto ExistingEntity = Level().Objects.net_Find(elem.second); 
@@ -3738,6 +3738,7 @@ ALife::_OBJECT_ID xrServer::PerformIDgen(ALife::_OBJECT_ID ID)
 					auto PostponedID = elem.second;
 					m_pending_delete_id_queue.pop();
 					m_pending_delete_id_queue.emplace(CurTime, PostponedID);
+					m_pending_delete_id_set[PostponedID] = CurTime;
 					continue;
 				}
 				FreeIDImpl(elem.second);
@@ -3900,7 +3901,7 @@ void xrServer::FreeID(ALife::_OBJECT_ID ID, u32 time)
 {
 	xrCriticalSectionGuard g(m_id_chunksCS);
 	//Msg("Put ID [%u] in delay free [current time: %u]", ID, time);
-	m_pending_delete_id_set.insert(ID);
+	m_pending_delete_id_set[ID] = time;
 	m_pending_delete_id_queue.emplace(time, ID);
 }
 

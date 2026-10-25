@@ -164,7 +164,7 @@ private:
 	};
 	xr_vector<xr_unique_ptr<IDChunkSet>> m_id_chunks;
 	xr_queue<xr_pair<ALife::_TIME_ID, ALife::_OBJECT_ID>> m_pending_delete_id_queue;
-	xr_set<ALife::_OBJECT_ID> m_pending_delete_id_set;
+	xr_map<ALife::_OBJECT_ID, ALife::_TIME_ID> m_pending_delete_id_set;
 	ALife::_OBJECT_ID m_TopValidID = ALife::INVALID_OBJECT_ID;
 	xrCriticalSection m_id_chunksCS;
 	secure_messaging::seed_generator m_seed_generator;
