@@ -303,6 +303,9 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 		return I;
 
 	Fvisual* V = (Fvisual*)pVisual;
+#ifdef DEBUG
+	V->check_layout();
+#endif
 	IRender_Mesh* M = V;
 
 	if (V->m_fast && RImplementation.phase == CRender::PHASE_SMAP && V->fast_usable())
