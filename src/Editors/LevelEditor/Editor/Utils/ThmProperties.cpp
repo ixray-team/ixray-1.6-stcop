@@ -13,6 +13,7 @@ void CUIThmProperties::Load(const xr_path& File)
 	xr_delete(ThmPtr);
 	FileName = File.xstring();
 	mProps.ClearProperties();
+	HasPreview = false;
 
 	IReader* F = FS.r_open(FileName.c_str());
 	R_ASSERT(F->find_chunk(THM_CHUNK_TYPE));
@@ -30,6 +31,7 @@ void CUIThmProperties::Load(const xr_path& File)
 		if constexpr (std::is_same_v<T, ETextureThumbnail>)
 		{
 			ThmPtrCasted->FillProp(Vec, &CUIThmProperties::OnPropChange);
+			HasPreview = ThmPtrCasted->IsClass(ECustomThumbnail::ETTexture);
 		}
 		else
 		{
@@ -47,6 +49,15 @@ void CUIThmProperties::Load(const xr_path& File)
 	}
 
 	mProps.AssignItems(Vec);
+
+	if (HasPreview)
+	{
+		Preview.SetTexture(CMaterialPreview::GetTextureName(FileName));
+	}
+	else
+	{
+		Preview.Clear();
+	}
 }
 
 void CUIThmProperties::Show()
@@ -67,8 +78,24 @@ void CUIThmProperties::Draw()
 		ImGui::Text(FileName.c_str());
 		ImGui::Separator();
 
-		ImVec2 WndSize = ImGui::GetWindowSize();
-		WndSize.y -= 100;
+		if (HasPreview && ThmPtr != nullptr)
+		{
+			Preview.Draw(((ETextureThumbnail*)ThmPtr)->_Format(), ImVec2(0.f, PreviewHeight));
+
+			// Splitter between the preview and the properties
+			ImGui::InvisibleButton("##PreviewSplitter", ImVec2(-1.f, 6.f));
+			if (ImGui::IsItemActive())
+			{
+				PreviewHeight = clampr(PreviewHeight + ImGui::GetIO().MouseDelta.y, 64.f, std::max(64.f, ImGui::GetWindowHeight() - 200.f));
+			}
+			if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+			}
+		}
+
+		ImVec2 WndSize = ImGui::GetContentRegionAvail();
+		WndSize.y -= ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y;
 		if (ImGui::BeginChild("#TVHelper", WndSize))
 		{
 			mProps.Draw();
