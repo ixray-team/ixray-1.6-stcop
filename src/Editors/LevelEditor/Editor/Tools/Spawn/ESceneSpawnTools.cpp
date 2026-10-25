@@ -156,7 +156,7 @@ void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 	inherited::FillProp	(pref, items);
 }
 
-ref_shader ESceneSpawnTool::CreateIcon(shared_str name)
+ref_shader ESceneSpawnTool::CreateIcon(const shared_str& name)
 {
     ref_shader S;
     if (pSettings->line_exist(name,"$ed_icon")){
@@ -169,7 +169,7 @@ ref_shader ESceneSpawnTool::CreateIcon(shared_str name)
     return S;
 }
 
-ref_shader ESceneSpawnTool::GetIcon(shared_str name)
+ref_shader ESceneSpawnTool::GetIcon(const shared_str& name)
 {
 	auto it = m_Icons.find(name);
 	if (it==m_Icons.end())	return CreateIcon(name);

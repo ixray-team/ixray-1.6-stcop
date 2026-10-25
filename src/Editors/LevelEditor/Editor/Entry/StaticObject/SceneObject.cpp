@@ -425,7 +425,8 @@ void CSceneObject::OnChangeSurface(PropValue* sender)
 
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
 {
-	return str != "materials\\occ";
+	static const shared_str OccMtlName = "materials\\occ";
+	return str != OccMtlName;
 }
 
 void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
@@ -562,7 +563,8 @@ bool CSceneObject::GetSummaryInfo(SSceneSummary* inf)
 			inf->AppendTexture(temp.c_str(),SSceneSummary::sttBase,area,pixel_area,E->m_LibName.c_str());
 		}
 		if (m_Flags.is(CEditableObject::eoUsingLOD)){
-			inf->AppendTexture(E->GetLODTextureName().c_str(),SSceneSummary::sttLOD,0,0,"$LOD$");
+			static const shared_str LodObjName = "$LOD$";
+			inf->AppendTexture(E->GetLODTextureName().c_str(),SSceneSummary::sttLOD,0,0,LodObjName);
 			inf->lod_objects.insert	(E->m_LibName.c_str());
 			inf->object_lod_ref_cnt++;
 		}

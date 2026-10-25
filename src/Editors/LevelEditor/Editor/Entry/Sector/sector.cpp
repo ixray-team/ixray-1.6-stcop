@@ -15,7 +15,7 @@ CSectorItem::CSectorItem()
 	mesh = nullptr;
 }
 
-CSectorItem::CSectorItem(CSceneObject* o, CEditableMesh* m, shared_str NewMeshName)
+CSectorItem::CSectorItem(CSceneObject* o, CEditableMesh* m, const shared_str& NewMeshName)
 {
 	object=o;
 	mesh=m;

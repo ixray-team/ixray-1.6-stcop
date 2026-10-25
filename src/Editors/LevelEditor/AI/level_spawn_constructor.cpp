@@ -44,7 +44,7 @@ IC CLevelSpawnConstructor::LEVEL_CHANGER_STORAGE& CLevelSpawnConstructor::level_
 	return (m_game_spawn_constructor->level_changers());
 }
 
-IC u32 CLevelSpawnConstructor::level_id(shared_str level_name) const
+IC u32 CLevelSpawnConstructor::level_id(const shared_str& level_name) const
 {
 	return (m_game_spawn_constructor->level_id(*level_name));
 }

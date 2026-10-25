@@ -355,7 +355,7 @@ public:
 	bool			VerifyBoneParts			();
 	void			OptimizeSMotions		();
 
-	u16				BoneIDByName			(shared_str name) const;
+	u16				BoneIDByName			(const shared_str& name) const;
 
 	bool 			LoadBoneData			(IReader& F);
 	void 			SaveBoneData			(IWriter& F);
@@ -397,7 +397,7 @@ public:
 	// pick methods
 	bool 			RayPick					(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& inv_parent, SRayPickInfo* pinf=nullptr);
 
-	bool			CreateBone				(shared_str Name);
+	bool			CreateBone				(const shared_str& Name);
 	void			AddBone					(CBone* parent_bone);
 	void			DeleteBone				(CBone* bone);
 	void			RenameBone				(CBone* bone, const char* new_name);

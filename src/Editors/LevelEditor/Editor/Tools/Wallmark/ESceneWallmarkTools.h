@@ -33,7 +33,7 @@ public:
 		shared_str		tx_name;
 		ref_shader		shader;
 		WMVec			items;
-						wm_slot	(shared_str sh, shared_str tx)		{sh_name=sh;tx_name=tx;shader.create(*sh_name,*tx_name);items.reserve(256);}
+						wm_slot	(const shared_str& sh, shared_str tx)		{sh_name=sh;tx_name=tx;shader.create(*sh_name,*tx_name);items.reserve(256);}
 	};
 
 	using WMSVec = xr_vector<wm_slot*>;
@@ -52,8 +52,8 @@ private:
 	CDB::Collector 		sml_collector;
 	xr_vector<u32>		sml_adjacency;
 
-	wm_slot*			FindSlot				(shared_str sh_name, shared_str tx_name);
-	wm_slot*			AppendSlot				(shared_str sh_name, shared_str tx_name);
+	wm_slot*			FindSlot				(const shared_str& sh_name, shared_str tx_name);
+	wm_slot*			AppendSlot				(const shared_str& sh_name, shared_str tx_name);
 
     void 				RecurseTri				(u32 t, Fmatrix &mView, wallmark &W);
 	void 				BuildMatrix				(Fmatrix &mView, float inv_w, float inv_h, float angle, const Fvector& from);
@@ -146,7 +146,7 @@ public:
     // utils
     virtual void		GetBBox 				(Fbox& bb, bool bSelOnly);
 	bool 				AddWallmark				(const Fvector& start, const Fvector& dir);
-	bool 				AddWallmark_internal	(const Fvector& S, const Fvector& D, shared_str s, shared_str t, float w, float h, float r, wallmark** out_wm = nullptr);
+	bool 				AddWallmark_internal	(const Fvector& S, const Fvector& D, const shared_str& s, shared_str t, float w, float h, float r, wallmark** out_wm = nullptr);
 	bool 				MoveSelectedWallmarkTo	(const Fvector& start, const Fvector& dir);
 };
 

@@ -31,7 +31,7 @@ void CEditableObject::ResetBones()
 class fBoneNameEQPred {
 	shared_str	name;
 public:
-    fBoneNameEQPred(shared_str N) : name(N) {};
+    fBoneNameEQPred(const shared_str& N) : name(N) {};
 	IC bool operator() (CBone* B) { return (xr_strcmp(B->Name(),name)==0); }
 };
 

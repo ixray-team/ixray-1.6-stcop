@@ -662,7 +662,7 @@ bool CEditableObject::CheckShaderCompatible()
 	return bRes;
 }
 
-bool CEditableObject::CreateBone(shared_str Name)
+bool CEditableObject::CreateBone(const shared_str& Name)
 {
 	if (!m_Bones.empty() || !m_BoneParts.empty() || m_objectFlags.test(eoDynamic))
 		return false;

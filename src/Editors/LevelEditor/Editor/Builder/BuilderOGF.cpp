@@ -46,7 +46,8 @@ bool SceneBuilder::BuildHOMModel()
 				for (SurfFacesPairIt sf_it= m_Meshe->m_SurfFaces.begin(); sf_it!= m_Meshe->m_SurfFaces.end(); ++sf_it)
 				{
 					CSurface* S = sf_it->first;
-					if(S->_GameMtlName() == shared_str("materials\\occ"))
+					const char* MtlName = S->_GameMtlName();
+					if (MtlName && 0 == xr_strcmp(MtlName, "materials\\occ"))
 					{
 						bool b2Sided 	= S->_flags().is(SSurfaceData::sf2Sided);
 						IntVec& i_lst	= sf_it->second;

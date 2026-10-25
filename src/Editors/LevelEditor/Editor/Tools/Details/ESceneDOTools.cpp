@@ -66,27 +66,25 @@ enum{
 };
 
 
-EDetailManager::EDetailManager():ESceneToolBase(OBJCLASS_DO)
+EDetailManager::EDetailManager()
+	: ESceneToolBase(OBJCLASS_DO)
 {
-	dtSlots				= 0;
-    ZeroMemory			(&dtH,sizeof(dtH));
-    m_Selected.clear	();
-    InitRender			();
-//.	EDevice->seqDevCreate.Add	(this,REG_PRIORITY_LOW);
-//.	EDevice->seqDevDestroy.Add(this,REG_PRIORITY_NORMAL);
-    m_Flags.assign		(flObjectsDraw);
+	dtSlots = 0;
+	ZeroMemory(&dtH, sizeof(dtH));
+	m_Selected.clear();
+	InitRender();
+	m_Flags.assign(flObjectsDraw);
 
-	PaintColor.set	(1.f, 1.f, 1.f, 1.f);
-	BrushSize			= 10;
-	BrushStrength		= 0.5f;
-	PaintErase		= false;
-	BrushActive		= false;
-	BaseDataDirty		= false;
+	PaintColor.set(1.f, 1.f, 1.f, 1.f);
+	BrushSize = 10;
+	BrushStrength = 0.5f;
+	PaintErase = false;
+	BrushActive = false;
+	BaseDataDirty = false;
 }
 
-EDetailManager::~EDetailManager(){
-//.	EDevice->seqDevCreate.Remove(this);
-//.	EDevice->seqDevDestroy.Remove(this);
+EDetailManager::~EDetailManager()
+{
 	Clear	();
     Unload	();
 }
@@ -97,44 +95,40 @@ void EDetailManager::ClearColorIndices()
     RemoveDOs			();
     m_ColorIndices.clear();
 }
+
 void EDetailManager::ClearSlots()
 {
-    ZeroMemory			(&dtH,sizeof(DetailHeader));
-    xr_free				(dtSlots);
-	m_Selected.clear	();
-    InvalidateCache		();
+	ZeroMemory(&dtH, sizeof(DetailHeader));
+	xr_free(dtSlots);
+	m_Selected.clear();
+	InvalidateCache();
 }
+
 void EDetailManager::ClearBase()
 {
-    m_Base.Clear		();
-    m_SnapObjects.clear	();
+	m_Base.Clear();
+	m_SnapObjects.clear();
 }
+
 void EDetailManager::Clear(bool bSpecific)
 {
-	ClearBase			();
-	ClearColorIndices	();
-    ClearSlots			();
-    m_Flags.zero		();
-    m_RTFlags.zero		();
+	ClearBase();
+	ClearColorIndices();
+	ClearSlots();
+	m_Flags.zero();
+	m_RTFlags.zero();
 }
 
 void EDetailManager::InvalidateCache()
 {
-	// detail cache is rebuilt in a parallel render task (Device.DetailsTask);
-	// wait for it to finish before touching cache structures / dtSlots
     Device.DetailsTask.wait();
-	// Initialize 'vis' and 'cache'
     cache_ReInitialize();
 }
 
 void EDetailManager::InitRender()
 {
-	// inavlidate cache
-	InvalidateCache		();
-	// Make dither matrix
-	bwdithermap		(2,dither);
-
-    //hw_Load();
+	InvalidateCache();
+	bwdithermap(2, dither);
 }
 
 bool EDetailManager::IsObjectsDrawn()
@@ -206,26 +200,32 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 
 void EDetailManager::OnDeviceCreate()
 {
-    // base texture
-    m_Base.CreateShader();
-    // detail objects
-    for (DetailIt it = objects.begin(); it != objects.end(); it++)
-        ((EDetail*)(*it))->OnDeviceCreate();
+	// base texture
+	m_Base.CreateShader();
 
-    if (!objects.empty())
-        hw_Load();
+	// detail objects
+	for (DetailIt it = objects.begin(); it != objects.end(); it++)
+	{
+		((EDetail*)(*it))->OnDeviceCreate();
+	}
+
+	if (!objects.empty())
+	{
+		hw_Load();
+	}
 }
 
 void EDetailManager::OnDeviceDestroy()
 {
 	// base texture
-    m_Base.DestroyShader();
+	m_Base.DestroyShader();
 	// detail objects
-	for (DetailIt it=objects.begin(); it!=objects.end(); it++)
-    	((EDetail*)(*it))->OnDeviceDestroy();
-	hw_Unload	();
+	for (DetailIt it = objects.begin(); it != objects.end(); it++)
+	{
+		((EDetail*)(*it))->OnDeviceDestroy();
+	}
+	hw_Unload();
 }
-
 
 void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 {
@@ -235,6 +235,7 @@ void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 		m_SnapObjects.remove(O);
     }
 }
+
 void EDetailManager::OnSynchronize()
 {
 }
@@ -244,10 +245,11 @@ void EDetailManager::OnSceneUpdate()
 
 void EDetailManager::OnFrame()
 {
-    if (m_RTFlags.is(flRTGenerateBaseMesh)&&m_Base.Valid()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,false);
-	    m_Base.CreateRMFromObjects(m_BBox,m_SnapObjects);
-    }
+	if (m_RTFlags.is(flRTGenerateBaseMesh) && m_Base.Valid())
+	{
+		m_RTFlags.set(flRTGenerateBaseMesh, false);
+		m_Base.CreateRMFromObjects(m_BBox, m_SnapObjects);
+	}
 }
 
 void EDetailManager::ExportColorIndices(const char* fname)
@@ -1155,7 +1157,9 @@ void EDetailManager::PaintAt(const Fvector& WorldPoint)
 void EDetailManager::RenderBrush()
 {
 	if (!BrushActive)
+	{
 		return;
+	}
 
 	const int Segments = 32;
 	Fvector Prev, Current;
@@ -1165,7 +1169,9 @@ void EDetailManager::RenderBrush()
 		Current.set(BrushPos.x + cosf(Angle) * BrushSize, BrushPos.y + 0.2f, BrushPos.z + sinf(Angle) * BrushSize);
 
 		if (Index > 0)
+		{
 			DU_impl.DrawLine(Prev, Current, PaintErase ? 0xFFFF4040 : 0xFF40FF40);
+		}
 
 		Prev = Current;
 	}
@@ -1173,16 +1179,22 @@ void EDetailManager::RenderBrush()
 
 bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
 {
-	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
-    	((EDetail*)(*it))->OnDeviceCreate();
-        CEditableObject* E = ((EDetail*)(*it))->m_pRefs;
+	static const shared_str DetailsObjName = "$DETAILS$";
+	for (CDetail* Obj : objects)
+	{
+		EDetail* Detail = (EDetail*)Obj;
+		Detail->OnDeviceCreate();
+
+		CEditableObject* E = Detail->m_pRefs;
 		if (!E)
 		{
 			continue;
 		}
-	    CSurface* surf = E->m_Surfaces.front(); VERIFY(surf);
-		inf->AppendTexture	(surf->_Texture(),SSceneSummary::sttDO,0,0,"$DETAILS$");
-    }
+
+		CSurface* Surf = E->m_Surfaces.front();
+		VERIFY(Surf);
+		inf->AppendTexture(Surf->_Texture(), SSceneSummary::sttDO, 0, 0, DetailsObjName);
+	}
+
     return true;
 }
-

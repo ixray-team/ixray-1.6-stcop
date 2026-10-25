@@ -19,5 +19,5 @@ struct WAVHeader
 
 namespace XRay::Importer::Audio
 {
-	ECORE_API bool ImportWav(shared_str Path, shared_str Out, float Quality, u8* Comment, size_t CommentLen);
+	ECORE_API bool ImportWav(const shared_str& Path, shared_str Out, float Quality, u8* Comment, size_t CommentLen);
 }

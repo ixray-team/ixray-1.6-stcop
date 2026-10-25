@@ -21,7 +21,7 @@ private:
 private:
     struct ItemList
     {
-        ItemList(shared_str Name) : name(Name), select(false) {}
+        ItemList(const shared_str& Name) : name(Name), select(false) {}
         ItemList() : select(false) {}
         shared_str name;
         bool       select;

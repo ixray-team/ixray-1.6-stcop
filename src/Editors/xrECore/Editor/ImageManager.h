@@ -16,7 +16,7 @@ struct SSimpleImage
     int 		LongestEdge()const 	{return (w>h)?w:h;}
     int			Area()const			{return w*h;}
 };
-IC bool operator == (const SSimpleImage& a, shared_str nm){return a.name==nm;}
+IC bool operator == (const SSimpleImage& a, const shared_str& nm){return a.name==nm;}
 IC bool operator < (const SSimpleImage& a, const SSimpleImage& b){return a.name<b.name;}
 
 using SSimpleImageVec = xr_vector<SSimpleImage>;
