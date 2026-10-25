@@ -22,7 +22,7 @@ function npc_sound:__init(snd_ini, section)
 		--' Параметры вычитывания звука
 	self.prefix = snd_ini:r_bool_ex(section,"npc_prefix",false)
 	self.path = snd_ini:r_string_ex(section,"path") or ""
-	self.shuffle = snd_ini:r_string_ex(section,"shuffle") or "rand"
+	self.shuffle = snd_ini:r_string_ex(section,"shuffle") or "rnd"
 	self.group_snd = snd_ini:r_bool_ex(section,"group_snd",false)
 	self.play_always = snd_ini:r_bool_ex(section,"play_always",false)
 	self.is_combat_sound = snd_ini:r_bool_ex(section,"is_combat_sound",false)

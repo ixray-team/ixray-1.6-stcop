@@ -23,6 +23,11 @@ end
 --' Зарегистрировать НПС.
 function sound_manager:register_npc(npc_id)
 	--printf("Register sm npc [%s]:[%s]", self.id, npc_id)
+	for k,v in pairs(self.npc) do
+		if v.npc_id == npc_id then
+			return
+		end
+	end
 	table.insert(self.npc, {npc_id = npc_id})
 	--print_table(self.npc)
 end
@@ -117,6 +122,9 @@ function sound_manager:update()
 		npc = self.storyteller
 
 	elseif next_phrase.who == "reaction" then
+		if tn == 1 then
+			return
+		end
 		--' Фраза кого угодно, кроме рассказчика
 		local teller_id = 0
 		for k,v in pairs(self.npc) do
