@@ -10,6 +10,7 @@
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
 #include "ShaderEditor/UIShaderEditorForm.h"
+#include "ShaderEditor/UI_shadertools.h"
 #include "UI/UISharedMaterialsLibrary.h"
 
 ECORE_API extern bool bIsLevelEditor;
@@ -649,11 +650,44 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 	return false;
 }
 
+static bool UndoEditorTab(bool Redo, bool& Handled)
+{
+	Handled = true;
+	bool Result = false;
+	if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+	{
+		Result = Redo ? Particles->Redo() : Particles->Undo();
+	}
+	else if (CShaderTool* Shaders = UIShaderEditorForm::GetActiveTool())
+	{
+		ISHTools* Current = Shaders->Current();
+		Result = Current != nullptr && (Redo ? Current->Redo() : Current->Undo());
+	}
+	else
+	{
+		Handled = false;
+		return false;
+	}
+
+	if (!Result)
+	{
+		ELog.Msg(mtInformation, Redo ? "Redo buffer empty" : "Undo buffer empty");
+	}
+	return Result;
+}
+
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
 	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
 	{
 		return Actor->CommandUndo(p1, p2);
+	}
+
+	bool Handled = false;
+	const bool TabResult = UndoEditorTab(false, Handled);
+	if (Handled)
+	{
+		return TabResult;
 	}
 
 	LTools->GetProperties()->ClearProperties();
@@ -681,6 +715,13 @@ CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
 	{
 		return Actor->CommandRedo(p1, p2);
+	}
+
+	bool Handled = false;
+	const bool TabResult = UndoEditorTab(true, Handled);
+	if (Handled)
+	{
+		return TabResult;
 	}
 
 	LTools->GetProperties()->ClearProperties();

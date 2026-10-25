@@ -320,6 +320,7 @@ void CSHEngineTools::ApplyChanges(bool bForced)
 void CSHEngineTools::Reload()
 {
 	ResetCurrentItem	();
+	UndoClear			();
 	ClearData			();
 	Load				();
 	FillItemList		();
@@ -773,6 +774,7 @@ void CSHEngineTools::SetCurrentItem(const char* name, bool bView)
 	IBlender* B = FindItem(name);
 	if (m_CurrentBlender!=B){
 		m_CurrentBlender = B;
+		UndoTrack();
 		UpdateStreamFromObject();
 		// apply this shader to non custom object
 		UpdateObjectShader();
@@ -788,6 +790,39 @@ void CSHEngineTools::ResetCurrentItem()
 {
 	m_CurrentBlender=nullptr;
 	UpdateStreamFromObject();
+}
+
+bool CSHEngineTools::SaveUndoItem(shared_str& Name, CMemoryWriter& Writer)
+{
+	if (m_CurrentBlender == nullptr)
+	{
+		return false;
+	}
+
+	Name = m_CurrentBlender->getName();
+	m_CurrentBlender->Save(Writer);
+	return true;
+}
+
+bool CSHEngineTools::LoadUndoItem(const shared_str& Name, IReader& Reader)
+{
+	IBlender* B = FindItem(Name.c_str());
+	if (B == nullptr)
+	{
+		return false;
+	}
+
+	B->Load(Reader, B->getDescription().version);
+	if (B == m_CurrentBlender)
+	{
+		// The properties point into the stream: rebuild them from the restored blender
+		Ext.m_ItemProps->ClearProperties();
+		UpdateStreamFromObject();
+		UpdatePreviewShader();
+	}
+	ResetShaders(false);// required 'false' for matrix
+	SetCurrentItem(Name.c_str(), true);
+	return true;
 }
 
 void CSHEngineTools::CollapseMatrix(LPSTR name)

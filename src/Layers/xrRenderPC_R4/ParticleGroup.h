@@ -61,6 +61,8 @@ namespace PS
 		bool				Equal			(const CPGDef* pe);
 		bool				Validate 			(bool bMsg);
 		int FindEffect(SEffect* effect);
+		// Reloads the group in place from a Save stream (undo)
+		bool				Restore			(IReader& F);
 #endif
 	public:
 		RENDER_API			CPGDef		  	();

@@ -47,8 +47,10 @@ void CSHGameMtlPairTools::Reload()
 {
 	// mtl
     ResetCurrentItem();
+    UndoClear();
     // mtl pair
     m_GameMtlTools->ResetCurrentItem();
+    m_GameMtlTools->UndoClear();
     // load
     Load();
     // mtl pair
@@ -153,6 +155,7 @@ void CSHGameMtlPairTools::SetCurrentItem(const char* name, bool bView)
     // set material
 	if (m_MtlPair!=S){
         m_MtlPair = S;
+        UndoTrack();
 	    STools->UpdateProperties();
 	 	if (bView) ViewSetCurrentItem(name);
    }
@@ -162,6 +165,34 @@ void CSHGameMtlPairTools::SetCurrentItem(const char* name, bool bView)
 void CSHGameMtlPairTools::ResetCurrentItem()
 {
 	m_MtlPair	= 0;
+}
+
+// A pair is keyed by its id: its name follows the names of both materials
+bool CSHGameMtlPairTools::SaveUndoItem(shared_str& Name, CMemoryWriter& Writer)
+{
+    if (m_MtlPair == nullptr)
+    {
+        return false;
+    }
+
+    string16 ID;
+    xr_sprintf(ID, "%d", m_MtlPair->GetID());
+    Name = ID;
+    m_MtlPair->Save(Writer);
+    return true;
+}
+
+bool CSHGameMtlPairTools::LoadUndoItem(const shared_str& Name, IReader& Reader)
+{
+    SGameMtlPair* S = GameMaterialLibraryEditors->GetMaterialPair(atoi(Name.c_str()));
+    if (S == nullptr)
+    {
+        return false;
+    }
+
+    S->Load(Reader);
+    SetCurrentItem(GameMaterialLibraryEditors->MtlPairToName(S->GetMtl0(), S->GetMtl1()), true);
+    return true;
 }
 //---------------------------------------------------------------------------
 

@@ -166,6 +166,8 @@ namespace PS
 		void OnMovementCollisionClicked(ButtonValue* value, bool& bModif, bool& bSafe);
 		
 		void				Copy				(const CPEDef& src);
+		// Reloads the definition in place from a Save stream (undo)
+		bool				Restore				(IReader& F);
 		bool				Equal				(const CPEDef* pe);
 		void 				Render				(const Fmatrix& parent);
 		static PFunction*	FindCommandPrototype(const char* src, const char*& dest);

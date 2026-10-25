@@ -60,6 +60,7 @@ void CSHCompilerTools::ApplyChanges(bool bForced)
 void CSHCompilerTools::Reload()
 {
     ResetCurrentItem();
+    UndoClear();
     Load();
     FillItemList();
 }
@@ -169,6 +170,7 @@ void CSHCompilerTools::SetCurrentItem(const char* name, bool bView)
     if (m_Shader != S) 
     {
         m_Shader = S;
+        UndoTrack();
         STools->UpdateProperties();
         if (bView)	
 		{
@@ -180,6 +182,31 @@ void CSHCompilerTools::SetCurrentItem(const char* name, bool bView)
 void CSHCompilerTools::ResetCurrentItem()
 {
     m_Shader = nullptr;
+}
+
+bool CSHCompilerTools::SaveUndoItem(shared_str& Name, CMemoryWriter& Writer)
+{
+    if (m_Shader == nullptr)
+    {
+        return false;
+    }
+
+    Name = m_Shader->Name;
+    Writer.w(m_Shader, sizeof(Shader_xrLC));
+    return true;
+}
+
+bool CSHCompilerTools::LoadUndoItem(const shared_str& Name, IReader& Reader)
+{
+    Shader_xrLC* S = FindItem(Name.c_str());
+    if (S == nullptr || Reader.length() != intptr_t(sizeof(Shader_xrLC)))
+    {
+        return false;
+    }
+
+    Reader.r(S, sizeof(Shader_xrLC));
+    SetCurrentItem(Name.c_str(), true);
+    return true;
 }
 
 void CSHCompilerTools::FillItemList()

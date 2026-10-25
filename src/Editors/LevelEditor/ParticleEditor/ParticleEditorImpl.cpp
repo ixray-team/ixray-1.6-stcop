@@ -53,6 +53,21 @@ void PS::CPEDef::Copy(const CPEDef& src)
 	CompileEditorActions();
 }
 
+bool PS::CPEDef::Restore(IReader& F)
+{
+	for (EParticleAction*& Action : m_EActionList)
+	{
+		xr_delete(Action);
+	}
+	m_EActionList.clear();
+	m_Actions.clear();
+	DestroyShader();
+
+	const bool Result = LoadOriginal(F);
+	CreateShader();
+	return Result;
+}
+
 void  PS::CPEDef::FindActionByName(const char* new_name, bool& res)
 {
 	res 				= false;
@@ -726,6 +741,16 @@ bool PS::CPGDef::RemoveEffect(SEffect* effect)
 	return false;
 }
 
+bool PS::CPGDef::Restore(IReader& F)
+{
+	for (SEffect*& Effect : m_Effects)
+	{
+		xr_delete(Effect);
+	}
+	m_Effects.clear();
+	return LoadOriginal(F);
+}
+
 void PS::CPGDef::OnParamsChange(PropValue* sender)
 {
 	OnParamsChangeInternal();
@@ -1047,6 +1072,16 @@ void PS::CPACDef::FillProp(const char* pref, PropItemVec& items, void* owner)
 void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
 {
     g_EditorRenderHost->EditPAC(this);
+}
+
+bool PS::CPACDef::Restore(IReader& F)
+{
+    for (st_PACKey*& Key : m_Keys)
+    {
+        xr_delete(Key);
+    }
+    m_Keys.clear();
+    return Load(F);
 }
 
 bool PS::CPACDef::Validate(bool bMsg)

@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/communicate.h"
 #include "../xrCore/memory/doug_lea_allocator.h"
+#include "../../../xrECore/Editor/UndoJournal.h"
 
 extern doug_lea_area_allocator g_render_lua_allocator_area;
 
@@ -41,13 +42,6 @@ template<class _Ty, class _Other>	inline	bool operator!=(const doug_lea_alloc<_T
 
 class PropValue;
 struct SPBItem;
-
-#pragma pack( push,1 )
-struct UndoItem 
-{
-	char m_FileName[MAX_PATH];
-};
-#pragma pack( pop )
 
 class TProperties;
 
@@ -99,8 +93,7 @@ protected:
 
 	SceneToolsMap   m_SceneTools;
 
-	xr_deque<UndoItem> m_UndoStack;
-	xr_deque<UndoItem> m_RedoStack;
+	CUndoJournal	UndoJournal;
 
 	TProperties* m_SummaryInfo;
 
@@ -160,7 +153,6 @@ public:
 	bool 			Load(const char* map_name, bool bUndo);
 	bool 			LoadLTX(const char* map_name, bool bUndo);
 
-	void 			Save(const char* map_name, bool bUndo, bool bForceSaveAll);
 	void 			SaveLTX(const char* map_name, bool bUndo, bool bForceSaveAll);
 
 	bool 			LoadSelection(const char* fname);
@@ -263,6 +255,8 @@ public:
 	void 			UndoSave();
 	bool 			Undo();
 	bool 			Redo();
+	void			CaptureUndoState(CUndoJournal::State& Parts);
+	void			RestoreUndoState(const CUndoJournal::State& Parts);
 
 	bool 			GetBox(Fbox& box, ObjClassID classfilter);
 	bool 			GetBox(Fbox& box, ObjectList& lst);
@@ -281,8 +275,8 @@ public:
 	bool 			IsUnsaved();
 	bool 			IsModified();
 
-	int 			GetUndoCount() { return m_UndoStack.size(); }
-	int 			GetRedoCount() { return m_RedoStack.size(); }
+	size_t 			GetUndoCount() const { return UndoJournal.UndoCount(); }
+	size_t 			GetRedoCount() const { return UndoJournal.RedoCount(); }
 
 	bool 			Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTestGlow, bool bTestShaderCompatible, bool bFullTest);
 	void 			OnObjectsUpdate();

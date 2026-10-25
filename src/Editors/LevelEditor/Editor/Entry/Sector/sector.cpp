@@ -249,6 +249,54 @@ EVisible CSector::Intersect(const Fbox& box)
 }
 
 
+bool CSector::UnlinkObjects(const xr_hash_set<CCustomObject*>& Objects)
+{
+	bool Unlinked = false;
+	for (CSectorItem& Item : sector_items)
+	{
+		if (Item.object != nullptr && Objects.contains(Item.object))
+		{
+			Item.ObjectName = Item.object->GetName();
+			Item.object = nullptr;
+			Item.mesh = nullptr;
+			Unlinked = true;
+		}
+	}
+	return Unlinked;
+}
+
+void CSector::RelinkObjects()
+{
+	for (auto It = sector_items.begin(); It != sector_items.end();)
+	{
+		CSectorItem& Item = *It;
+		if (Item.object != nullptr)
+		{
+			++It;
+			continue;
+		}
+
+		Item.object = smart_cast<CSceneObject*>(Scene->FindObjectByName(Item.ObjectName.c_str(), OBJCLASS_SCENEOBJECT));
+		if (Item.object != nullptr)
+		{
+			// Sectors keep mesh pointers, so their objects never stream out
+			Item.object->PinStreaming();
+			Item.mesh = Item.object->GetReference()->FindMeshByName(Item.MeshName.c_str());
+		}
+
+		if (Item.mesh == nullptr)
+		{
+			Msg("! Sector '%s': object '%s' mesh '%s' is gone, item removed", GetName(), Item.ObjectName.c_str(), Item.MeshName.c_str());
+			It = sector_items.erase(It);
+			continue;
+		}
+
+		Item.ObjectName = shared_str();
+		++It;
+	}
+	m_Flags.set(flNeedUpdateVolume, true);
+}
+
 void CSector::ReloadObjectsReferences()
 {
 	xr_vector<CSectorItem> NeedToRemove;

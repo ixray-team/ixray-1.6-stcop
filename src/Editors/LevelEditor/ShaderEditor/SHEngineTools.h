@@ -172,6 +172,10 @@ public:
 
     virtual void			OnFrame				();
 	virtual void 			OnRender			();
+protected:
+    virtual bool			SaveUndoItem		(shared_str& Name, CMemoryWriter& Writer);
+    virtual bool			LoadUndoItem		(const shared_str& Name, IReader& Reader);
+public:
 
     virtual void			OnDeviceCreate		();
     virtual void			OnDeviceDestroy		(){;}

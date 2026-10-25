@@ -2,6 +2,7 @@
 #ifndef SHToolsInterfaceH
 #define SHToolsInterfaceH
 
+#include "../../xrECore/Editor/UndoJournal.h"
 
 // refs
 
@@ -42,6 +43,20 @@ protected:
     bool					m_bLockUpdate;		// ���� ������� ������ ���������������  Update____From___()
 
     xr_string				m_LastSelection;
+
+    CUndoJournal			UndoJournal;
+    // Adds the current item to the journal when it is seen the first time
+    void					UndoTrack			();
+    void					RestoreUndoItems	(const CUndoJournal::State& Parts);
+    // Name and Save stream of the current item, false when nothing is edited
+    virtual bool			SaveUndoItem		(shared_str& Name, CMemoryWriter& Writer){return false;}
+    // Loads an item back from its stream in place and selects it, false when the item is gone
+    virtual bool			LoadUndoItem		(const shared_str& Name, IReader& Reader){return false;}
+public:
+    void					UndoClear			();
+    void					UndoSave			();
+    bool					Undo				();
+    bool					Redo				();
 public:
 	ListItem* 				m_CurrentItem;
 public:

@@ -20,6 +20,8 @@ class CSectorItem
 	CSceneObject* object;
 	CEditableMesh* mesh;
     shared_str MeshName;
+    // Undo: the object name while the object is recreated
+    shared_str ObjectName;
 
 public:
     CSectorItem		();
@@ -103,6 +105,9 @@ public:
     void 			SetColor 	(u32 clr){sector_color.set(subst_alpha(clr,0));}
 
     void            ReloadObjectsReferences();
+    // Undo: items of these objects keep only their names until RelinkObjects finds the new objects
+    bool			UnlinkObjects	(const xr_hash_set<CCustomObject*>& Objects);
+    void			RelinkObjects	();
     void			CaptureInsideVolume();
     void			CaptureAllUnusedMeshes	();
     void			GetCounts	(int* objects, int* meshes, int* faces);
