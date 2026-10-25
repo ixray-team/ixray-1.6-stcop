@@ -1159,7 +1159,7 @@ function se_smart_terrain:get_smart_props()
 end
 
 function se_smart_terrain:show()
-	if (level.map_has_object_spot(self.id,"alife_presentation_smart_default_neutral") ~= 0) then 
+	if (level.map_has_object_spot(self.id,"alife_presentation_smart_default_neutral")) then 
 		level.map_remove_object_spot(self.id, "alife_presentation_smart_default_neutral")
 	end
 end

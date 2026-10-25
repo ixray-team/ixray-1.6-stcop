@@ -24,13 +24,13 @@ local function under_faction_control_target_id(task_id)
 	if (se_target) then
 		if (smart.position:distance_to_sqr(se_target.position) > 2500) then
 			if (se_target:clsid() == clsid.online_offline_group_s) then
-				if (se_target.id and level.map_has_object_spot(se_target.id,"red_location") == 0) then
+				if (se_target.id and not level.map_has_object_spot(se_target.id,"red_location")) then
 					level.map_add_object_spot(se_target.id, "red_location", "st_ui_pda_task_unknown_enemy")
 				end
 			end
 		else
 			if (se_target:clsid() == clsid.online_offline_group_s) then
-				if (se_target.id and level.map_has_object_spot(se_target.id,"red_location") == 1) then
+				if (se_target.id and level.map_has_object_spot(se_target.id,"red_location")) then
 					level.map_remove_object_spot(se_target.id, "red_location")
 				end
 			end

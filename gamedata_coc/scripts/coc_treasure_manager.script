@@ -269,7 +269,7 @@ function create_random_stash(no_spot,hint,bonus_items)
 	
 	if (#spawned_item > 0) then
 		-- create map spot
-		if (no_spot ~= true and level.map_has_object_spot(id,"treasure") == 0) then
+		if (no_spot ~= true and not level.map_has_object_spot(id,"treasure")) then
 			level.map_add_object_spot_ser(id, "treasure", hint or "")
 			news_manager.send_treasure(0)
 		end

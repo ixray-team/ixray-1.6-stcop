@@ -436,7 +436,7 @@ function random_secret()
 		if (secret) then
 			--id = story_objects.get_story_objects_registry():get(secret)
 			id = dynamic_story_id[secret]
-			if (id and level.map_has_object_spot(id,"treasure") == 0) then
+			if (id and not level.map_has_object_spot(id,"treasure")) then
 				news_manager.send_treasure(0)
 				level.map_add_object_spot_ser(id, "treasure", "")
 				last_secret = secret
@@ -450,7 +450,7 @@ function random_secret()
 		if (secret) then
 			--id = story_objects.get_story_objects_registry():get(secret)
 			id = dynamic_story_id[secret]
-			if (id and level.map_has_object_spot(id,"treasure") == 0) then
+			if (id and not level.map_has_object_spot(id,"treasure")) then
 				news_manager.send_treasure(0)
 				level.map_add_object_spot_ser(id, "treasure", "")
 				last_secret = secret
