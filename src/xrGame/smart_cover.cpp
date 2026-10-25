@@ -293,7 +293,7 @@ bool cover::loophole_path					(shared_str const &source_raw, shared_str const &t
 
 void cover::check_loopholes_connectivity	() const
 {
-	VERIFY						(!loopholes().empty());
+	VERIFY2						(!loopholes().empty(), make_string<const char*>("smart cover [%s] with description [%s] has no available loopholes", m_id.c_str(), m_description->table_id().c_str()));
 
 	shared_str					enter = transform_vertex("", true);
 	shared_str					exit =  transform_vertex("", false);
