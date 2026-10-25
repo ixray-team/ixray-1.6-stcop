@@ -17,10 +17,6 @@ end
 function evaluator_end:evaluate()
 	--alun_utils.debug_write("xr_camper:eva_end")
 	
-	if (IsWounded(self.object)) then 
-		return false 
-	end
-	
 	return not xr_logic.is_active(self.object, self.a)
 end
 
