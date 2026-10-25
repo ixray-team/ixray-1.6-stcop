@@ -72,6 +72,7 @@ void SBullet::Init(const Fvector& position, const Fvector& direction, float star
 	hit_param.impulse = impulse * cartridge.param_s.kImpulse;
 
 	max_dist = maximum_distance * cartridge.param_s.kDist;
+	VERIFY2(max_dist > 0.f, make_string<const char*>("bullet max_dist[%f] maximum_distance[%f] k_dist[%f] sender[%u] weapon[%u]", max_dist, maximum_distance, cartridge.param_s.kDist, sender_id, sendersweapon_id));
 	fly_dist = 0;
 	parent_id = sender_id;
 	flags.allow_sendhit = SendHit;
