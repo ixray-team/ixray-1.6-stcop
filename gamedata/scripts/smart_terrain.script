@@ -1,7 +1,7 @@
 local DEATH_IDLE_TIME = 10*60 -- секунд
 SMART_TERRAIN_SECT = "smart_terrain"
 smart_terrains_by_name = {}
-local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
+local locations_ini			= get_cached_ini("misc\\smart_terrain_masks.ltx")
 surge_stats_levels = {"zaton", "jupiter", "pripyat"}
 
 nearest_to_actor_smart = {id = nil , dist = math.huge}

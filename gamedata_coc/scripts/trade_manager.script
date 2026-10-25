@@ -11,13 +11,13 @@ function trade_init(npc, cfg)
 	
 	local id = npc:id()
 	if (tm[id] and tm[id].cfg_ltx == cfg) then
-		tm[id].config = ini_file(cfg)
+		tm[id].config = get_cached_ini(cfg)
 		return 
 	end
 	
 	tm[id] = empty_table(tm[id])
 	tm[id].cfg_ltx = cfg
-	tm[id].config = ini_file(cfg)
+	tm[id].config = get_cached_ini(cfg)
 	if not (tm[id].config) then
 		tm[id] = nil
 	end
@@ -132,7 +132,7 @@ function load_state(id,m_data)
 	
 	tm[id] = tm[id] or {}
 	tm[id].cfg_ltx = m_data.trade_manager.cfg_ltx
-	tm[id].config = ini_file(tm[id].cfg_ltx)
+	tm[id].config = get_cached_ini(tm[id].cfg_ltx)
 	if not (tm[id].config) then 
 		printf("ERROR: trade_manager: Invalid pathname %s.",tm[id].cfg_ltx)
 		return
@@ -201,7 +201,7 @@ function load(obj, packet)
 		return
 	end 
 	
-	tm[id].config = ini_file(tm[id].cfg_ltx)
+	tm[id].config = get_cached_ini(tm[id].cfg_ltx)
 	--printf("TRADE LOAD [%s]: cfg_ltx = %s", obj:name(), tostring(tm[id].cfg_ltx))
 
 	a = packet:r_stringZ()

@@ -144,7 +144,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 			printf("_bp: enable_scripts: object '%s' has external configuration file '%s'", npc:name(), filename)
 			-- Рекурсивно обработать конфигурационный файл, на который ссылается поле cfg
 			actual_ini_filename = filename
-			actual_ini = ini_file(filename)
+			actual_ini = get_cached_ini(filename)
 			return configure_schemes(npc, actual_ini, actual_ini_filename, stype, section_logic, gulag_name)
 			--[[
 			if actual_ini:line_count(section_logic) == 0 then
@@ -1363,14 +1363,14 @@ function get_customdata_or_ini_file(npc, filename)
 		if ini then
 			return ini
 		else
-			return ini_file([[scripts\dummy.ltx]])
+			return get_cached_ini([[scripts\dummy.ltx]])
 		end
 	elseif string.find( filename, "*" ) == 1 then
 		-- динамический ltx
 		local p = string.find( filename, "*", 2 )
 		return gulag_tasks.loadLtx( string.sub(filename, 2, p-1), string.sub(filename, p+1) )
 	else
-		return ini_file(filename)
+		return get_cached_ini(filename)
 	end
 end
 

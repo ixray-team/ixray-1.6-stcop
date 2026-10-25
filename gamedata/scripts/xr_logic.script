@@ -143,7 +143,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
         local filename = utils.cfg_get_string(ini, section_logic, "cfg", npc, false, "")
         if filename then
             actual_ini_filename = filename
-            actual_ini = ini_file(filename)
+            actual_ini = get_cached_ini(filename)
             if not actual_ini:section_exist(section_logic) then
                 abort("object '%s' configuration file [%s] NOT FOUND or section [logic] isn't assigned ", npc:name(), filename)
             end

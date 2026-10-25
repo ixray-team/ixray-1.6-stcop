@@ -34,7 +34,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 		local filename = ini:r_string_ex(section_logic,"cfg")
 		if filename then
 			actual_ini_filename = filename
-			actual_ini = ini_file(filename)
+			actual_ini = get_cached_ini(filename)
 			if not ( actual_ini and actual_ini:section_exist(section_logic) ) then
 				abort("ERROR: object '%s' configuration file [%s] NOT FOUND or section [logic] isn't assigned ", npc:name(), filename)
 				return
@@ -1136,7 +1136,7 @@ end
 function get_customdata_or_ini_file(npc, filename)
 	local st = db.storage[npc:id()]
 	if filename == "<customdata>" then
-		return npc:spawn_ini() or ini_file([[scripts\dummy.ltx]])
+		return npc:spawn_ini() or get_cached_ini([[scripts\dummy.ltx]])
 	elseif string.find( filename, "*" ) == 1 then
 		local gname = string.sub(filename, 2)
 		return db.dynamic_ltx[gname]
@@ -1146,7 +1146,7 @@ function get_customdata_or_ini_file(npc, filename)
 			return db.dynamic_ltx[filename]
 		end
 
-		return ini_file(filename)
+		return get_cached_ini(filename)
 	end
 end
 
