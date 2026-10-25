@@ -565,8 +565,6 @@ void CScriptStorage::print_error(lua_State *L, int iErrorCode)
 	switch (iErrorCode) {
 		case LUA_ERRRUN : {
 			script_log (ScriptStorage::eLuaMessageTypeError,"SCRIPT RUNTIME ERROR");
-			if (lua_isstring(L, -1))
-				script_log (ScriptStorage::eLuaMessageTypeError,"%s",lua_tostring(L, -1));
 			break;
 		}
 		case LUA_ERRMEM : {
