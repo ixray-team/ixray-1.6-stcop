@@ -133,8 +133,10 @@ private:
 	virtual	void				ProcessOmfFiles(const char* omfPath, const char* nameOgf);
 //.	bool						LoadMotions				(const char* N, IReader *data);
 public:
+#ifdef DEBUG
 	virtual std::pair<const char*,const char*>	LL_MotionDefName_dbg	(MotionID	ID) override;
 	virtual void						LL_DumpBlends_dbg		( ) override;
+#endif
 	virtual u32							LL_PartBlendsCount			( u32 bone_part_id ) override;
 	virtual CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n ) override;
 	virtual void						LL_IterateBlends			( IterateBlendsCallback &callback ) override;
