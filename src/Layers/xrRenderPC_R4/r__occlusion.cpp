@@ -44,10 +44,10 @@ void	R_occlusion::occq_refresh()
 	PROF_EVENT("R_occlusion::occq_refresh");
 	if (!used.empty())
 	{
-		while	(!used.empty())	{
-			_RELEASE(used.back().Q);
-			used.pop_back	();
-		}
+		for (const _Q& q : used)
+			if (q.Q)
+				pool.push_back(q);
+		std::sort(pool.begin(), pool.end(), [](const _Q& a, const _Q& b) { return a.order > b.order; });
 		used.clear	();
 	}
 	if (!fids.empty())
@@ -110,6 +110,7 @@ void	R_occlusion::occq_end		(u32&	ID		)
 	PROF_EVENT("R_occlusion::occq_end");
 	//	Igor: prevent release crash if we issue too many queries
 	if (ID == iInvalidHandle) return;
+	if (ID >= used.size() || !used[ID].Q) return;
 
 	// Msg				("end  : [%2d] - %d", used[ID].order, ID);
 	//CHK_DX			(used[ID].Q->Issue	(D3DISSUE_END));
@@ -122,6 +123,11 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	PROF_EVENT("R_occlusion::occq_get");
 	//	Igor: prevent release crash if we issue too many queries
 	if (ID == iInvalidHandle) return 0xFFFFFFFF;
+	if (ID >= used.size() || !used[ID].Q)
+	{
+		ID = iInvalidHandle;
+		return 0xFFFFFFFF;
+	}
 
 	occq_result	fragments	= 0;
 	HRESULT hr;
