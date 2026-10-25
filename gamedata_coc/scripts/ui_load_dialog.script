@@ -1,5 +1,5 @@
 saved_game_extension	= save_extension()
-saved_game_extension_ex	= alife_storage_manager.saved_game_extension_ex
+saved_game_extension_ex	= save_extension() .. "_data"
 
 class "load_item" (CUIListBoxItem)
 
