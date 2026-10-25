@@ -28,7 +28,7 @@ public:
 	virtual void	SetDebugShader		(dbgShaderHandle shdHandle) override;
 	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle) override;
 
-#ifdef DEBUG_DRAW
+#ifdef DEBUG
 	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) override;
 #endif	//	DEBUG
 

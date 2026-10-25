@@ -73,7 +73,7 @@ void	CKinematicsAnimated::Bone_Motion_Stop_IM	(CBoneData* bd, CBlend* handle)
 	LL_GetBlendInstance	(bd->GetSelfID()).blend_remove	(handle);
 }
 
-
+#ifdef DEBUG
 std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(MotionID ID)
 {
 	shared_motions& s_mots	= m_Motions[ID.slot].motions;
@@ -81,6 +81,7 @@ std::pair<const char*,const char*> CKinematicsAnimated::LL_MotionDefName_dbg	(Mo
 	for (_I	= s_mots.motion_map()->begin(); _I!=_E; ++_I)	if (_I->second==ID.idx) return std::make_pair(*_I->first,*s_mots.id());
 	return std::make_pair((const char*)nullptr,(const char*)nullptr);
 }
+#endif
 
 static const char* name_bool( bool v )
 {
@@ -100,27 +101,29 @@ static const char* name_blend_type( CBlend::ECurvature blend )
 	return get_token_name( token_blend, blend );
 }
 
-static void dump_blend( CKinematicsAnimated* K, CBlend &B, u32 index )
+static void dump_blend(CKinematicsAnimated* K, CBlend& B, u32 index)
 {
-	VERIFY( K );
-	Msg( "----------------------------------------------------------" );
-	Msg( "blend index: %d, poiter: %p ", index, &B );
-	Msg( "time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower   );
-	Msg( "ammount: %f, time current: %f, frame %d ", B.blendAmount, B.timeCurrent,B.dwFrame );
-	Msg( "accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff ); 
+	VERIFY(K);
+	Msg("----------------------------------------------------------");
+	Msg("blend index: %d, poiter: %p ", index, &B);
+	Msg("time total: %f, speed: %f , power: %f ", B.timeTotal, B.speed, B.blendPower);
+	Msg("ammount: %f, time current: %f, frame %d ", B.blendAmount, B.timeCurrent, B.dwFrame);
+	Msg("accrue: %f, fallof: %f ", B.blendAccrue, B.blendFalloff);
 
-	Msg( "bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s "
-		, B.bone_or_part, B.channel, name_bool( B.stop_at_end ), name_bool( B.fall_at_end ) );
-	Msg( "state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type( B.blend_state() ), name_bool( B.playing ), name_bool( B.stop_at_end_callback ));
-	Msg( "callback: %p callback param: %p", B.Callback, B.CallbackParam );
-	
-	if( B.blend_state() != CBlend::eFREE_SLOT )
+	Msg("bonepart: %d, channel: %d, stop_at_end: %s, fall_at_end: %s ", B.bone_or_part, B.channel, name_bool(B.stop_at_end), name_bool(B.fall_at_end));
+	Msg("state: %s, playing: %s, stop_at_end_callback: %s ", name_blend_type(B.blend_state()), name_bool(B.playing), name_bool(B.stop_at_end_callback));
+	Msg("callback: %p callback param: %p", B.Callback, B.CallbackParam);
+
+#ifdef DEBUG
+	if (B.blend_state() != CBlend::eFREE_SLOT)
 	{
-		Msg( "motion : name %s, set: %s ", K->LL_MotionDefName_dbg( B.motionID ).first, K->LL_MotionDefName_dbg( B.motionID ).second );
+		Msg("motion : name %s, set: %s ", K->LL_MotionDefName_dbg(B.motionID).first, K->LL_MotionDefName_dbg(B.motionID).second);
 	}
-	Msg( "----------------------------------------------------------" );
+#endif
+	Msg("----------------------------------------------------------");
 }
 
+#ifdef DEBUG
 void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 {
 	Msg( "==================dump blends=================================================" );
@@ -128,7 +131,7 @@ void	CKinematicsAnimated::LL_DumpBlends_dbg	( )
 	for (; I!=E; I++)
 		dump_blend( this, *I, u32(I - blend_pool.begin()) );
 }
-
+#endif
 
 u32	CKinematicsAnimated::LL_PartBlendsCount	( u32 bone_part_id )
 {
