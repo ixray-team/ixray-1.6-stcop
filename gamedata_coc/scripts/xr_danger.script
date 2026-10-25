@@ -231,6 +231,17 @@ local function is_danger(npc,best_danger,script)
 	return danger_in_radius(npc,best_danger,bd_type)
 end
 
+local function is_camping(npc)
+	local st = db.storage[npc:id()]
+	if not (st and st.camper) then
+		return false
+	end
+	if (st.corpse_detection and st.corpse_detection.selected_corpse_id) then
+		return true
+	end
+	return xr_logic.is_active(npc, st.camper)
+end
+
 local function check_script_danger(id)
 	if (script_danger[id]) then
 		if (time_global() < script_danger[id].danger_time + script_danger[id].danger_inertion) then
@@ -766,6 +777,10 @@ function evaluator_check_danger:evaluate()
 	end 
 	
 	if (character_community(self.object) == "zombied") then
+		return false
+	end
+
+	if (is_camping(self.object)) then
 		return false
 	end
 
