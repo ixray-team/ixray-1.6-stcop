@@ -111,6 +111,7 @@ void CLevelTool::EditPAC(PS::CPACDef* PAC)
 
 void CLevelTool::OnDestroy()
 {
+	g_LevelAutoBackup.Cancel();
 	UIParticleEditorForm::Destroy();
 	inherited::OnDestroy();
 	xr_delete(m_Props);
@@ -142,6 +143,12 @@ bool CLevelTool::MouseStart(TShiftState Shift)
 	if(CurrentTool && CurrentTool->pCurControl)
 	{
 		if ((CurrentTool->pCurControl->Action() != etaSelect) && (!CurrentTool->IsEditable() || !CurrentTool->AllowMouseStart() || (CurrentTool->FClassID == OBJCLASS_DUMMY)))
+		{
+			return false;
+		}
+
+		// The level backup is writing this tool: selecting only
+		if ((CurrentTool->pCurControl->Action() != etaSelect) && g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 		{
 			return false;
 		}
@@ -201,7 +208,7 @@ bool CLevelTool::HiddenMode()
 
 bool CLevelTool::KeyDown(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyDown(Key, Shift);
 	}
@@ -211,7 +218,7 @@ bool CLevelTool::KeyDown(WORD Key, TShiftState Shift)
 
 bool CLevelTool::KeyUp(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyUp(Key, Shift);
 	}
@@ -221,7 +228,7 @@ bool CLevelTool::KeyUp(WORD Key, TShiftState Shift)
 
 bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyPress(Key, Shift);
 	}
@@ -231,7 +238,7 @@ bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 
 bool CLevelTool::MouseWheel(int direction, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->Wheel(direction, Shift);
 	}

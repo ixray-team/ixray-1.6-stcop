@@ -453,6 +453,8 @@ void CWorldPartition::SaveLevelState(const char* PartPath) const
 void CWorldPartition::StreamInAll()
 {
 	PROF_EVENT("CWorldPartition::StreamInAll")
+	// Loading references changes the static objects a backup may be writing
+	g_LevelAutoBackup.Cancel();
 	ESceneCustomOTool* Tool = Scene ? Scene->GetOTool(OBJCLASS_SCENEOBJECT) : nullptr;
 	if (!Tool)
 	{

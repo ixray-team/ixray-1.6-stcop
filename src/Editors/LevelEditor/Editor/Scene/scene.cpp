@@ -99,6 +99,8 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 {
 	VERIFY			  	(object);
 	VERIFY				(m_Valid);
+	// Other tools keep links to objects: a running backup could save half of the change
+	g_LevelAutoBackup.Cancel();
 	// The partition keeps object pointers per cell
 	GWorldPartition.MarkDirty();
 
@@ -136,6 +138,7 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 {
 	VERIFY(object);
 	VERIFY(m_Valid);
+	g_LevelAutoBackup.Cancel();
 	GWorldPartition.MarkDirty();
 
 	switch (object->FClassID)
@@ -187,6 +190,8 @@ void EScene::BeforeObjectChange( CCustomObject* object )
 {
 	VERIFY				(object);
 	VERIFY				(m_Valid);
+	// Other tools update their links to the object
+	g_LevelAutoBackup.Cancel();
 
 	ESceneCustomOTool* mt 	= GetOTool(object->FClassID);
 	if (mt&&mt->IsEditable()){
@@ -203,6 +208,7 @@ void EScene::BeforeObjectChange( CCustomObject* object )
 
 int EScene::MultiRenameObjects()
 {
+	g_LevelAutoBackup.Cancel();
 	int cnt						= 0;
 	
 	if (LTools->GetTarget()==OBJCLASS_DUMMY){
@@ -299,6 +305,7 @@ void EScene::Unload(bool bEditableOnly)
 ECORE_API xrGUID generate_guid();
 void EScene::Clear(bool bEditableToolsOnly)
 {
+	g_LevelAutoBackup.Cancel();
 	GWorldPartition.MarkDirty();
 	Device.DetailsTask.wait();
 
@@ -413,6 +420,7 @@ void EScene::Modified()
 		break;
 	}
 	m_RTFlags.set(flRT_Modified|flRT_Unsaved,true);
+	ModifyCount++;
 	g_scene_physics.OnSceneModified();
 	GWorldPartition.MarkDirty();
 	UIObjectList::Refresh();

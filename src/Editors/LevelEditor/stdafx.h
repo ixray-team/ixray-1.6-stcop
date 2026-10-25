@@ -80,6 +80,7 @@
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
 
+#include "Editor/Scene/LevelAutoBackup.h"
 #include "Editor/UI_LevelMain.h"
 #include "Editor/UI_LevelTools.h"
 

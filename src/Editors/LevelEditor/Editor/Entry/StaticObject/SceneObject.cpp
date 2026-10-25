@@ -319,6 +319,8 @@ CEditableObject* CSceneObject::UpdateReference()
 
 CEditableObject* CSceneObject::SetReference(const char* ref_name)
 {
+	// The reference name and the surfaces are saved
+	g_LevelAutoBackup.Cancel();
 	m_ReferenceName	= ref_name;
 	return UpdateReference();
 }
