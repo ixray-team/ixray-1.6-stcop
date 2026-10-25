@@ -651,7 +651,8 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		}
 		VERIFY(surf);
 
-		if (surf->_GameMtlName() == shared_str("materials\\occ"))
+		const char* MtlName = surf->_GameMtlName();
+		if (MtlName && 0 == xr_strcmp(MtlName, "materials\\occ"))
 		{
 			continue;
 		}

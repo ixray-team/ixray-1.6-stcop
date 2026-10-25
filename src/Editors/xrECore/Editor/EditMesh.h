@@ -246,7 +246,7 @@ public:
 	void 			UnloadRenderBuffers();
 	void 			GenerateFNormals	();
 	void 			GenerateVNormals	(const Fmatrix* parent_xform, bool force = false);
-	void			AssignMesh			(shared_str to_bone);
+	void			AssignMesh			(const shared_str& to_bone);
 	void            GenerateSVertices	(u32 influence);
 	void 			GenerateAdjacency	();
 

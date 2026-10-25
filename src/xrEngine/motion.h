@@ -185,7 +185,7 @@ public:
 
 	void CopyMotion(CSMotion* src);
 
-	st_BoneMotion* FindBoneMotion(shared_str name);
+	st_BoneMotion* FindBoneMotion(const shared_str& name);
 	IC BoneMotionVec& BoneMotions() { return bone_mots; }
 	Flags8 GetMotionFlags(int bone_idx) { return bone_mots[bone_idx].m_Flags; }
 	void add_empty_motion(shared_str const& bone_id);

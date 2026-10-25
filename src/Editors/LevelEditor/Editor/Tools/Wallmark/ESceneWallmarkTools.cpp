@@ -640,18 +640,18 @@ void		ESceneWallmarkTool::wm_destroy		(wallmark*	W	)
 struct SWMSlotFindPredicate {
 	shared_str			sh_name;
 	shared_str			tx_name;
-						SWMSlotFindPredicate(shared_str sh, shared_str tx):sh_name(sh),tx_name(tx){}
+						SWMSlotFindPredicate(const shared_str& sh, shared_str tx):sh_name(sh),tx_name(tx){}
 	bool				operator()			(const ESceneWallmarkTool::wm_slot* slot) const
 	{
 		return			(slot->tx_name==tx_name)&&(slot->sh_name==sh_name);
 	}
 };
-ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::FindSlot	(shared_str sh_name, shared_str tx_name)
+ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::FindSlot	(const shared_str& sh_name, shared_str tx_name)
 {
 	WMSVecIt it				= std::ranges::find_if(marks,SWMSlotFindPredicate(sh_name,tx_name));
 	return					(it!=marks.end())?*it:nullptr;
 }
-ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::AppendSlot(shared_str sh_name, shared_str tx_name)
+ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::AppendSlot(const shared_str& sh_name, shared_str tx_name)
 {
 	wm_slot* slot			= new wm_slot(sh_name,tx_name);
     if (!slot->shader)	xr_delete(slot);
@@ -747,7 +747,7 @@ int	ESceneWallmarkTool::ObjectCount()
 	return count;
 }
 
-bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, shared_str sh, shared_str tx, float width, float height, float rotate, wallmark** out_wm)
+bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, const shared_str& sh, shared_str tx, float width, float height, float rotate, wallmark** out_wm)
 {
     /*
 	if (ObjectCount()>=MAX_WALLMARK_COUNT){

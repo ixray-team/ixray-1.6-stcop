@@ -174,7 +174,7 @@ protected:
 	SplitVec			m_Splits;
     Fbox 				m_Box;
 //----------------------------------------------------    
-    int  FindSplit(shared_str shader, shared_str texture, u16 part_id, u16 surf_id);
+    int  FindSplit(const shared_str& shader, shared_str texture, u16 part_id, u16 surf_id);
     void ComputeBounding()
     {
         m_Box.invalidate();

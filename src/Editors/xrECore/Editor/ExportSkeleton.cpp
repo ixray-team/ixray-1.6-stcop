@@ -487,7 +487,7 @@ CExportSkeleton::CExportSkeleton(CEditableObject* object)
 //----------------------------------------------------
 #include "ComputeMinBox.h"
 //----------------------------------------------------
-int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 part_id, u16 surf_id)
+int CExportSkeletonCustom::FindSplit(const shared_str& shader, shared_str texture, u16 part_id, u16 surf_id)
 {
 	for (u32 Index = 0; Index < m_Splits.size(); ++Index)
 	{

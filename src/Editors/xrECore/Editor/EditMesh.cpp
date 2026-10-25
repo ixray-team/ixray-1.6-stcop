@@ -235,7 +235,7 @@ void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform, bool force)
 	UnloadAdjacency();
 }
 
-void CEditableMesh::AssignMesh(shared_str to_bone)
+void CEditableMesh::AssignMesh(const shared_str& to_bone)
 {
 	xr_vector<int> Remap(m_VMaps.size(), -1);
 	VMapVec NewVMaps;

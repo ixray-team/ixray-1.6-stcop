@@ -490,7 +490,7 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 
 	xr_map<CDialogNode*, xr_vector<shared_str>> NodeGraph;
 
-	auto MakeListStringFromNode = [](shared_str& Value, shared_str Text)
+	auto MakeListStringFromNode = [](shared_str& Value, const shared_str& Text)
 	{
 		if (Value.size() > 0)
 		{
@@ -636,7 +636,8 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 					{
 						for (XML_NODE* Child = Node->ParentNode->FirstChildElement(); Child != nullptr; Child = Child->NextSiblingElement())
 						{
-							if (shared_str(Child->Value()) == "next" && shared_str(Child->ToElement()->GetText()) == TryNode->NodeName.c_str())
+							const char* ChildText = Child->ToElement()->GetText();
+							if (ChildText && 0 == xr_strcmp(Child->Value(), "next") && 0 == xr_strcmp(ChildText, TryNode->NodeName.c_str()))
 							{
 								Link.NextNode = Child;
 								break;
@@ -1119,9 +1120,8 @@ void DialogEditor::DeleteNode(CDialogNode* Node)
 		XML_NODE* Child = Other->ParentNode->FirstChildElement();
 		while (Child != nullptr)
 		{
-			shared_str ChildValue = Child->Value();
-			shared_str ChildText = Child->ToElement()->GetText();
-			if (ChildValue == "next" && ChildText.size() > 0 && ChildText == Node->NodeName.c_str())
+			const char* ChildText = Child->ToElement()->GetText();
+			if (0 == xr_strcmp(Child->Value(), "next") && ChildText && ChildText[0] && 0 == xr_strcmp(ChildText, Node->NodeName.c_str()))
 			{
 				XML_NODE* Next = Child->NextSiblingElement();
 				Other->ParentNode->ToElement()->DeleteChild(Child);

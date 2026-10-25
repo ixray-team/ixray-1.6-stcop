@@ -1697,7 +1697,7 @@ void CSpawnPoint::OnFillChooseItems		(ChooseValue* val)
 	*val->m_Items				= cls_it->second;
 }
 
-shared_str CSpawnPoint::SectionToEditor(shared_str nm)
+shared_str CSpawnPoint::SectionToEditor(const shared_str& nm)
 {
 	ESceneSpawnTool* st 		= smart_cast<ESceneSpawnTool*>(FParentTools); 			VERIFY(st);
 	ESceneSpawnTool::ClassSpawnMapIt cls_it = st->m_Classes.find(m_SpawnData.m_ClassID);	VERIFY(cls_it!=st->m_Classes.end());
@@ -1706,7 +1706,7 @@ shared_str CSpawnPoint::SectionToEditor(shared_str nm)
 	return 0;
 }
 
-shared_str CSpawnPoint::EditorToSection(shared_str nm)
+shared_str CSpawnPoint::EditorToSection(const shared_str& nm)
 {
 	ESceneSpawnTool* st  	= smart_cast<ESceneSpawnTool*>(FParentTools); 			VERIFY(st);
 	ESceneSpawnTool::ClassSpawnMapIt cls_it = st->m_Classes.find(m_SpawnData.m_ClassID);	VERIFY(cls_it!=st->m_Classes.end());

@@ -72,7 +72,7 @@ bool find_fmt_and_data_chunks(FILE* f, WAVFormat& fmt_out, uint32_t& data_offset
 	return found_fmt && found_data;
 }
 
-bool XRay::Importer::Audio::ImportWav(shared_str Path, shared_str Out, float Quality, u8* Comment, size_t CommentLen)
+bool XRay::Importer::Audio::ImportWav(const shared_str& Path, shared_str Out, float Quality, u8* Comment, size_t CommentLen)
 {
 	if (Quality < 0.5f)
 	{

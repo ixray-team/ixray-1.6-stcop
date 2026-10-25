@@ -132,8 +132,8 @@ public:
 
     xrCriticalSection OnFrameLock;
 
-    shared_str		SectionToEditor			(shared_str);
-    shared_str		EditorToSection			(shared_str);
+    shared_str		SectionToEditor			(const shared_str&);
+    shared_str		EditorToSection			(const shared_str&);
 	void 	OnProfileChange			(PropValue* prop);
 	void 	OnRPointTypeChange		(PropValue* prop);
     

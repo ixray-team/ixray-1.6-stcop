@@ -49,9 +49,9 @@ struct PString
 {
 	shared_str val;
 	PString():val(""){}
-	PString(shared_str _val):val(_val){}
+	PString(const shared_str& _val):val(_val){}
 	PString(const char* _val):val(_val){}
-	void set(shared_str v){val=v;}
+	void set(const shared_str& v){val=v;}
 	void set(const char* v){val=v;}
 };
 

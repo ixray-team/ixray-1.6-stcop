@@ -31,8 +31,8 @@ public:
     using ShaderPairIt = ClassSpawnMap::iterator;
 
     ShaderMap 			m_Icons;
-    ref_shader 			CreateIcon	(shared_str name);
-    ref_shader 			GetIcon		(shared_str name);
+    ref_shader 			CreateIcon	(const shared_str& name);
+    ref_shader 			GetIcon		(const shared_str& name);
     xr_vector<CEditableObject*> m_draw_RP_visuals;
 
 public:

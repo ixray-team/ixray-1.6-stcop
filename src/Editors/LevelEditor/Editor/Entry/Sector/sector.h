@@ -23,7 +23,7 @@ class CSectorItem
 
 public:
     CSectorItem		();
-    CSectorItem		(CSceneObject* o, CEditableMesh* m, shared_str MeshName);
+    CSectorItem		(CSceneObject* o, CEditableMesh* m, const shared_str& MeshName);
     void GetTransform(Fmatrix& parent);
     bool IsItem		(const char* O, const char* M);
     IC CSceneObject* GetSceneObject() const { return object; }
