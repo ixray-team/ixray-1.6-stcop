@@ -133,9 +133,11 @@ void CDialogHolder::ClearDialogs()
 void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
 	xrCriticalSectionGuard Guard(DialogsLock);
-	R_ASSERT						( !pDialog->IsShown() );
+	if (!pDialog || pDialog->IsShown())
+	{
+		return;
+	}
 
-	AddDialogToRender				(pDialog);
 	SetMainInputReceiver			(pDialog, false);
 
 	if(UseIndicators())
@@ -152,6 +154,17 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		}
 	}
 	pDialog->SetHolder				(this);
+	AddDialogToRender(pDialog);
+
+	// Show callbacks may reject or close the dialog during initialization.
+	if (!pDialog->IsShown() || pDialog->GetHolder() != this)
+	{
+		if (pDialog->GetHolder() == this)
+		{
+			StopMenu(pDialog);
+		}
+		return;
+	}
 
 	if( pDialog->NeedCursor() )
 		GetUICursor().Show();
@@ -187,7 +200,10 @@ void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 {
 	xrCriticalSectionGuard Guard(DialogsLock);
-	R_ASSERT( pDialog->IsShown() );
+	if (!pDialog || pDialog->GetHolder() != this)
+	{
+		return;
+	}
 
 	if( TopInputReceiver()==pDialog )
 	{

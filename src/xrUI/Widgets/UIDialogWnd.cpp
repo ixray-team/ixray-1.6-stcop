@@ -119,7 +119,7 @@ UI_API CDialogHolder* CurrentDialogHolder()
 void CUIDialogWnd::ShowOrHideDialog(bool bDoHideIndicators)
 {
 	if (IsShown())
-		GetHolder()->StopDialog(this);
+		HideDialog();
 	else
 		CurrentDialogHolder()->StartDialog(this, bDoHideIndicators);
 }
@@ -135,5 +135,13 @@ void CUIDialogWnd::HideDialog()
 	if (!IsShown())
 		return;
 
-	GetHolder()->StopDialog	(this);
+	if (auto* Holder = GetHolder())
+	{
+		Holder->StopDialog(this);
+	}
+	else
+	{
+		Show(false);
+		Enable(false);
+	}
 }
