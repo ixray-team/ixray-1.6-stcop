@@ -16,6 +16,7 @@
 #include "xrServer.h"
 #include "ai_space.h"
 #include "level_graph.h"
+#include "../xrScripts/script_engine.h"
 
 #ifdef DEBUG
 #	include "Level.h"
@@ -118,6 +119,12 @@ void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject *object)
 #ifdef DEBUG
 		Msg("[LSS][%d] Going offline [%d][%s][%d] ([%f][%f][%f] : [%f][%f][%f]), on '%s'",Device.dwFrame,Device.dwTimeGlobal,object->name_replace(), object->ID,VPUSH(graph().actor()->o_Position),VPUSH(object->o_Position), "*SERVER*");
 #endif
+	CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
+	if (monster && monster->m_group_id != ALife::INVALID_OBJECT_ID)
+	{
+		g_pScriptEngine->print_stack();
+		VERIFY2(false, make_string<const char*>("[%s][%u] switches offline separately from group [%u]", object->name_replace(), object->ID, monster->m_group_id));
+	}
 	object->switch_offline			();
 }
 
