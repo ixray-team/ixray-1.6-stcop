@@ -140,7 +140,7 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)
 end
 
 function set_squad_community_goodwill(squad_id, community, new_goodwill)
-	local goodwill = tonumber(new_relation) or new_relation == "enemy" and -1000 or new_relation == "friend" and 1000 or 0
+	local goodwill = tonumber(new_goodwill) or new_goodwill == "enemy" and -1000 or new_goodwill == "friend" and 1000 or 0
 	local squad = squad_id and (get_story_squad(squad_id) or alife_object(squad_id))
 	if squad then
 		for MemberIndex = 0, squad:npc_count() - 1 do
