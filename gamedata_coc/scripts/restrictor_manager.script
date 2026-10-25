@@ -1,4 +1,13 @@
 
+local function is_on_npc_level(npc, name)
+	local se = alife():object(name)
+	if not se then
+		return true
+	end
+	local gg = game_graph()
+	return gg:vertex(se.m_game_vertex_id):level_id() == gg:vertex(npc:game_vertex_id()):level_id()
+end
+
 class "Crestrictor_manager"
 
 function Crestrictor_manager:__init(obj)
@@ -63,7 +72,7 @@ function Crestrictor_manager:reset_restrictions(st, section)
 				break
 			end
 		end
-		if exist_rest == false and v ~= "nil" then
+		if exist_rest == false and v ~= "nil" and is_on_npc_level(self.object, v) then
 			table.insert(ins_restr, v)
 		end
 	end
@@ -119,7 +128,7 @@ function Crestrictor_manager:reset_restrictions(st, section)
 				break
 			end
 		end
-		if exist_rest == false and v ~= "nil" then
+		if exist_rest == false and v ~= "nil" and is_on_npc_level(self.object, v) then
 			table.insert(ins_restr, v)
 		end
 	end
