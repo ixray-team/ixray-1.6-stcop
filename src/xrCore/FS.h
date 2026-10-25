@@ -133,13 +133,14 @@ public:
 		mem_size	= 0;
 		file_size	= 0;
 	}
-	virtual	~CMemoryWriter();
+
+	virtual ~CMemoryWriter() override;
 
 	// kernel
-	virtual void w(const void* ptr, u32 count);
+	virtual void w(const void* ptr, u32 count) override;
 
-	virtual void seek(size_t pos) {position = pos;}
-	virtual size_t tell() {return position;}
+	virtual void seek(size_t pos) override {position = pos;}
+	virtual size_t tell() override {return position;}
 
 	// specific
 	IC u8* pointer() {return data;}
@@ -150,7 +151,7 @@ public:
 	IC void free() {file_size=0; position=0; mem_size=0; xr_free(data);}
 #pragma warning(pop)
 	bool save_to(const char* fn);
-	virtual	void flush(){}
+	virtual void flush() override {}
 };
 
 /* IWriter wrapper to write some data in u8 vector like it's for file
@@ -309,7 +310,7 @@ public:
 		Pos = 0;
 	}
 
-	virtual ~IReader() {}
+	~IReader() override {}
 
 	IC IReader(void *_data, size_t _size, intptr_t _iterpos=0)
 	{
@@ -318,7 +319,8 @@ public:
 		Pos			= 0				;
 		iterpos		= _iterpos		;
 	}
-	virtual IReader* cast_reader() { return this; }
+
+	IReader* cast_reader() override { return this; }
 
 protected:
 	IC u32			correction					(u32 p)
@@ -411,7 +413,7 @@ public:
 	}
 
 	// Use separate open_chunk with IReaderBase return to not break whole engine. But should be changed...
-	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
+	IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
 
 	// iterators
 	IReader* open_chunk_iterator(u32& ID, IReader* previous= nullptr);	// NULL=first
@@ -444,7 +446,7 @@ private:
     FileHandle hSrcMap;
 public:
 			CVirtualFileRW		(const char *cFileName);
-	virtual ~CVirtualFileRW		();
+    virtual ~CVirtualFileRW		() override;
 };
 
 // in case we need to read several readers like it's a single reader

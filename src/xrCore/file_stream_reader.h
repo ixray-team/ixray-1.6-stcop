@@ -20,5 +20,5 @@ public:
 		const u32& window_size
 	);
 
-	virtual	void			destroy			();
+	virtual void			destroy			() override;
 };

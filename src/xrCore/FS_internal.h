@@ -37,7 +37,7 @@ public:
 		}
 	}
 
-	virtual ~CFileWriter()
+	virtual ~CFileWriter() override
 	{
 		if (nullptr != hf)
 		{
@@ -55,8 +55,8 @@ public:
 		}
 	}
 	// kernel
-	virtual void	w			(const void* _ptr, u32 count) 
-    { 
+	virtual void	w			(const void* _ptr, u32 count) override
+	{ 
 		if ((nullptr!=hf) && (0!=count))
 		{
 			//x64 size_t Везде важно (se7kills Fix)
@@ -82,10 +82,10 @@ public:
     };
 	// virtual void	seek		(u32 pos)	{	if (0!=hf) fseek(hf,pos,SEEK_SET);		};
 	// virtual u32		tell		()			{	return (0!=hf)?ftell(hf):0;				};
-	virtual void	seek(size_t pos) { if (nullptr != hf) xr_fseek(hf, pos, SEEK_SET); };
-	virtual size_t	tell() { return (nullptr != hf) ? xr_ftell(hf) : 0; };
-	virtual bool	valid() { return (nullptr != hf); }
-	virtual	void	flush() { if (hf)	fflush(hf); };
+	virtual void	seek(size_t pos) override { if (nullptr != hf) xr_fseek(hf, pos, SEEK_SET); };
+	virtual size_t	tell() override { return (nullptr != hf) ? xr_ftell(hf) : 0; };
+	virtual bool	valid() override { return (nullptr != hf); }
+	virtual void	flush() override { if (hf)	fflush(hf); };
 };
 
 // It automatically frees memory after destruction
@@ -93,27 +93,27 @@ class CTempReader : public IReader
 {
 public:
 				CTempReader(void *_data, intptr_t _size, intptr_t _iterpos) : IReader(_data,_size,_iterpos)	{}
-	virtual		~CTempReader();
+				virtual ~CTempReader() override;
 };
 class CPackReader : public IReader
 {
 	void*		base_address;
 public:
 				CPackReader(void* _base, void* _data, intptr_t _size) : IReader(_data,_size){base_address=_base;}
-	virtual		~CPackReader();
+	virtual ~CPackReader() override;
 };
 class XRCORE_API CFileReader : public IReader
 {
 public:
 				CFileReader(const char *name);
-	virtual		~CFileReader();
-	virtual CFileReader* cast_file_reader() { return this; }
+				virtual ~CFileReader() override;
+				virtual CFileReader* cast_file_reader() override { return this; }
 };
 class CCompressedReader : public IReader
 {
 public:
 				CCompressedReader(const char *name, const char *sign);
-	virtual		~CCompressedReader();
+				virtual ~CCompressedReader() override;
 };
 class CVirtualFileReader : public IReader
 {
@@ -122,7 +122,7 @@ private:
     FileHandle hSrcMap;
 public:
 				CVirtualFileReader(const char *cFileName);
-	virtual		~CVirtualFileReader();
+    virtual ~CVirtualFileReader() override;
 
-	virtual CVirtualFileReader* cast_virtual_file_reader() { return this; }
+    virtual CVirtualFileReader* cast_virtual_file_reader() override { return this; }
 };

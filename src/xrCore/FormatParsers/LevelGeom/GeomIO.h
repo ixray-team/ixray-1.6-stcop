@@ -63,24 +63,24 @@ namespace XRay::Geom
     public:
         ~CGeomVanillaFormat() override;
 
-        virtual bool Write(xr_string_view FileName, xr_string_view Extension) override;
-        virtual bool Read(xr_string_view FileName, xr_string_view Extension) override;
-        
-        virtual void AddVBData(const VBContainerBase& data) override;
-        virtual void AddIBData(const IBContainerBase& data) override;
-        virtual void AddSWIData(const SWIContainerBase& data) override;
-        
-        virtual void AddVBData(const xr_vector<u8>& data) override;
-        virtual void AddIBData(const xr_vector<u8>& data) override;
-        virtual void AddSWIData(const xr_vector<u8>& data) override;
+       virtual bool Write(xr_string_view FileName, xr_string_view Extension) override;
+       virtual bool Read(xr_string_view FileName, xr_string_view Extension) override;
 
-        virtual IReaderBase& GetVBData() const override;
-        virtual IReaderBase& GetIBData() const override;
-        virtual IReaderBase& GetSWIData() const override;
+       virtual void AddVBData(const VBContainerBase& data) override;
+       virtual void AddIBData(const IBContainerBase& data) override;
+       virtual void AddSWIData(const SWIContainerBase& data) override;
 
-        virtual bool HasVBData() const override;
-        virtual bool HasIBData() const override;
-        virtual bool HasSWIData() const override;
+       virtual void AddVBData(const xr_vector<u8>& data) override;
+       virtual void AddIBData(const xr_vector<u8>& data) override;
+       virtual void AddSWIData(const xr_vector<u8>& data) override;
+
+       virtual IReaderBase& GetVBData() const override;
+       virtual IReaderBase& GetIBData() const override;
+       virtual IReaderBase& GetSWIData() const override;
+
+       virtual bool HasVBData() const override;
+       virtual bool HasIBData() const override;
+       virtual bool HasSWIData() const override;
     };
 
     class XRCORE_API CGeomVanillaChunkedFormat : public IFormat
@@ -94,25 +94,25 @@ namespace XRay::Geom
     public:
         CGeomVanillaChunkedFormat(size_t ChunksNum): ChunksNum(ChunksNum) {}
         ~CGeomVanillaChunkedFormat() override;
-        
-        virtual bool Write(xr_string_view FileName, xr_string_view Extension) override;
-        virtual bool Read(xr_string_view FileName, xr_string_view Extension) override;
-        
-        virtual void AddVBData(const VBContainerBase& data) override;
-        virtual void AddIBData(const IBContainerBase& data) override;
-        virtual void AddSWIData(const SWIContainerBase& data) override;
-        
-        virtual void AddVBData(const xr_vector<u8>& data) override;
-        virtual void AddIBData(const xr_vector<u8>& data) override;
-        virtual void AddSWIData(const xr_vector<u8>& data) override;
 
-        virtual IReaderBase& GetVBData() const override;
-        virtual IReaderBase& GetIBData() const override;
-        virtual IReaderBase& GetSWIData() const override;
+       virtual bool Write(xr_string_view FileName, xr_string_view Extension) override;
+       virtual bool Read(xr_string_view FileName, xr_string_view Extension) override;
 
-        virtual bool HasVBData() const override;
-        virtual bool HasIBData() const override;
-        virtual bool HasSWIData() const override;
+       virtual void AddVBData(const VBContainerBase& data) override;
+       virtual void AddIBData(const IBContainerBase& data) override;
+       virtual void AddSWIData(const SWIContainerBase& data) override;
+
+       virtual void AddVBData(const xr_vector<u8>& data) override;
+       virtual void AddIBData(const xr_vector<u8>& data) override;
+       virtual void AddSWIData(const xr_vector<u8>& data) override;
+
+       virtual IReaderBase& GetVBData() const override;
+       virtual IReaderBase& GetIBData() const override;
+       virtual IReaderBase& GetSWIData() const override;
+
+       virtual bool HasVBData() const override;
+       virtual bool HasIBData() const override;
+       virtual bool HasSWIData() const override;
         
     };
 
