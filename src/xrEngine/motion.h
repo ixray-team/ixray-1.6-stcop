@@ -2,11 +2,6 @@
 #ifndef MotionH
 #define MotionH
 
-#ifdef _LW_EXPORT
-#include <lwrender.h>
-#include <lwhost.h>
-#endif
-
 #include "bone.h"
 
 // refs
@@ -100,10 +95,6 @@ public:
 
 	virtual void SaveMotion(const char* buf) = 0;
 	virtual bool LoadMotion(const char* buf) = 0;
-
-#ifdef _LW_EXPORT
-	CEnvelope* CreateEnvelope(LWChannelID chan, LWChannelID* chan_parent = 0);
-#endif
 };
 
 //--------------------------------------------------------------------------
@@ -124,10 +115,6 @@ public:
 
 	virtual void SaveMotion(const char* buf);
 	virtual bool LoadMotion(const char* buf);
-
-#ifdef _LW_EXPORT
-	void ParseObjectMotion(LWItemID object);
-#endif
 
 	void FindNearestKey(float t, float& min_k, float& max_k, float eps = EPS_L);
 	void CreateKey(float t, const Fvector& P, const Fvector& R);
@@ -154,7 +141,7 @@ enum ESMFlags
 	esmUseWeaponBone = 1 << 7,
 };
 
-#if defined(_EDITOR)
+#ifdef _EDITOR
 #include "SkeletonMotions.h"
 
 class ECORE_API CSMotion :
@@ -200,9 +187,6 @@ public:
 	void WorldRotate(int boneId, float h, float p, float b);
 
 	void Optimize();
-#ifdef _LW_EXPORT
-	void ParseBoneMotion(LWItemID bone);
-#endif
 };
 #endif
 
