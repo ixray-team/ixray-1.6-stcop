@@ -1051,4 +1051,10 @@
 	<string id="st_dlss_model_transformer2">
 		<text>2nd gen transformer model</text>
 	</string>
+	<string id="renderer_r4">
+		<text>Enhanced full dyn. lighting (DX11)</text>
+	</string>
+	<string id="renderer_r4_static">
+		<text>Static lighting</text>
+	</string>
 </string_table>
