@@ -67,12 +67,16 @@ bool CLocatorAPI::IsIgnoredPath(const xr_path& Path, bool IsDirectory) const
 void CLocatorAPI::FileEventAdd(const char* file)
 {
 	std::error_code ec;
-	size_t FileSize = std::filesystem::file_size(file, ec);
+	const std::filesystem::path FilePath(Platform::ANSI_TO_TCHAR_U8(file));
+	size_t FileSize = std::filesystem::file_size(FilePath, ec);
+	if (ec == std::errc::no_such_file_or_directory)
+		return;
+
 	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file size: %s", file, ec.message().c_str()))
 	{
 		return;
 	}
-	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file, ec));
+	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(FilePath, ec));
 	if (!IVERIFY_M(!ec, "[File %s] Error retrieving file modif time: %s", file, ec.message().c_str()))
 	{
 		return;
@@ -979,8 +983,8 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			WatchedPath.data(),
 			[this](const std::string& file, const filewatch::Event Event)
 			{
-				// TODO: Encoding in saves problem!
-				if (IsIgnoredPath(file.c_str()))
+				const xr_string AnsiFile = Platform::UTF8_to_CP1251(file.c_str());
+				if (IsIgnoredPath(AnsiFile.c_str()))
 				{
 					return;
 				}
@@ -988,22 +992,22 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 				{
 				case filewatch::Event::added:
 					{
-						FileEventAdd(file.c_str());
+						FileEventAdd(AnsiFile.c_str());
 						break;
 					}
 				case filewatch::Event::removed:
 					{
-						FileEventDel(file.c_str());
+						FileEventDel(AnsiFile.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_old:
 					{
-						FileEventDel(file.c_str());
+						FileEventDel(AnsiFile.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_new:
 					{
-						FileEventAdd(file.c_str());
+						FileEventAdd(AnsiFile.c_str());
 						break;
 					}
 				}
