@@ -305,7 +305,7 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 	Fvisual* V = (Fvisual*)pVisual;
 	IRender_Mesh* M = V;
 
-	if (V->m_fast && RImplementation.phase == CRender::PHASE_SMAP)
+	if (V->m_fast && RImplementation.phase == CRender::PHASE_SMAP && V->fast_usable())
 		M = V->m_fast;
 
 	I.geom		= M->rm_geom._get();

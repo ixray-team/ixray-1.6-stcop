@@ -162,9 +162,32 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	rm_geom.create(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 }
 
+bool Fvisual::fast_usable()
+{
+	if (m_fast_usable >= 0)
+		return m_fast_usable != 0;
+
+	m_fast_usable = 1;
+	ShaderElement* E = shader ? &*shader->E[SE_R2_SHADOW] : nullptr;
+	if (!E || E->passes.empty() || !E->passes[0]->vs || !E->passes[0]->vs->signature || !m_fast->rm_geom)
+		return true;
+
+	ID3DBlob* signature = E->passes[0]->vs->signature->signature;
+	const xr_vector<RHIInputElementDesc>& dcl = m_fast->rm_geom->dcl->dx10_dcl_code;
+	ID3DInputLayout* layout = nullptr;
+	if (FAILED(RDevice->CreateInputLayout((D3D11_INPUT_ELEMENT_DESC*)dcl.data(), (UINT)dcl.size(), signature->GetBufferPointer(), signature->GetBufferSize(), &layout)))
+	{
+		m_fast_usable = 0;
+		return false;
+	}
+
+	_RELEASE(layout);
+	return true;
+}
+
 void Fvisual::Render(float)
 {
-	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
+	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && fast_usable())
 	{
 		RCache.set_Geometry(m_fast->rm_geom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
