@@ -448,10 +448,13 @@ void CALifeUpdateManager::teleport_object	(ALife::_OBJECT_ID id, GameGraph::_GRA
 
 	if (object->m_bOnline)
 		switch_offline						(object);
-	graph().change							(object,object->m_tGraphID,game_vertex_id);
+	CSE_ALifeMonsterAbstract				*monster_abstract = smart_cast<CSE_ALifeMonsterAbstract*>(object);
+	if (monster_abstract && monster_abstract->m_group_id != ALife::INVALID_OBJECT_ID)
+		object->m_tGraphID					= game_vertex_id;
+	else
+		graph().change						(object,object->m_tGraphID,game_vertex_id);
 	object->m_tNodeID						= level_vertex_id;
 	object->o_Position						= position;
-	CSE_ALifeMonsterAbstract				*monster_abstract = smart_cast<CSE_ALifeMonsterAbstract*>(object);
 	if (monster_abstract)
 		monster_abstract->m_tNextGraphID	= object->m_tGraphID;
 }
