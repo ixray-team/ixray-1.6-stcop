@@ -95,6 +95,9 @@ void CAI_Trader::BoneCallback(CBoneInstance *B)
 
 void CAI_Trader::LookAtActor(CBoneInstance *B)
 {
+	if (!Level().CurrentEntity())
+		return;
+
 	Fvector dir;
 	dir.sub(Level().CurrentEntity()->Position(),Position());
 
