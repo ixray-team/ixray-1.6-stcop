@@ -112,7 +112,6 @@ void CGameObject::net_Destroy	()
 
 	xr_delete				(m_ini_file);
 
-	m_script_clsid			= -1;
 	if (Visual() && Visual()->dcast_PKinematics())
 		Visual()->dcast_PKinematics()->Callback(0,0);
 
@@ -149,6 +148,7 @@ void CGameObject::net_Destroy	()
 //.	Parent									= 0;
 
 	CScriptBinder::net_Destroy				();
+	m_script_clsid							= -1;
 
 	xr_delete								(m_lua_game_object);
 	m_spawned								= false;
