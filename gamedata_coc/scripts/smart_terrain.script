@@ -7,7 +7,7 @@
 -- How many jobs are checked per update per npc, for a job
 local STEP_SIZE 			= 10
 local STEP_SIZE_OFFLINE 	= 5
-local locations_ini	= ini_file("misc\\smart_terrain_masks.ltx")
+local locations_ini	= get_cached_ini("misc\\smart_terrain_masks.ltx")
 nearest_to_actor_smart = {id = nil , dist = math.huge}
 
 local smart_sect = "smart_terrain"
@@ -147,7 +147,7 @@ function se_smart_terrain:read_params()
 	if filename then
 		local fs = getFS()
 		if fs:exist("$game_config$",filename) then
-			self.ini = ini_file(filename)
+			self.ini = get_cached_ini(filename)
 			self.fname = filename
 		else
 			printf("ERROR: There is no configuration file [%s] in smart_terrain [%s]", filename, 	self:name())
