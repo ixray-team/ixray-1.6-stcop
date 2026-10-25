@@ -120,6 +120,19 @@ void CEditorSceneSubmit::BeginFrame()
 
 void CEditorSceneSubmit::Clear()
 {
+	DeferredTasks.wait();
+	WaitPrepared();
+
+	Deferring = false;
+	Deferred.clear();
+	DeferredCount = 0;
+	NextToApply = 0;
+
+	Prepared.clear();
+	PreparedCount = 0;
+	PreparedIndex.clear();
+	PreparedFrame = u32(-1);
+
 	Visuals.clear();
 	InstancedVisuals.clear();
 	Pending.clear();

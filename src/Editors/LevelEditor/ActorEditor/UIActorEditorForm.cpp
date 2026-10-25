@@ -21,6 +21,7 @@ static const char* ToolWindow = "Object Tool###ActorObjectTool";
 static const char* ItemsWindow = "Object Items###ActorObjectItems";
 static const char* PreviewWindow = "Preview###ActorPreview";
 static const char* LibraryWindow = "Library###ActorLibrary";
+static const char* ReferencesWindow = "Reference View###ActorReferences";
 // Same window as the Scene View properties, so it keeps the shared dock slot
 static const char* PropertiesWindow = "Properties";
 
@@ -66,6 +67,8 @@ UIActorEditorForm::~UIActorEditorForm()
 	{
 		Tools = LTools;
 	}
+
+	ReferenceTask.wait();
 
 	xr_delete(Library);
 	xr_delete(KeyForm);
@@ -335,6 +338,7 @@ static void BuildWorkspaceLayout()
 	ImGui::DockBuilderDockWindow(ToolWindow, Left);
 	ImGui::DockBuilderDockWindow(ItemsWindow, LeftBottom);
 	ImGui::DockBuilderDockWindow(LibraryWindow, LeftBottom);
+	ImGui::DockBuilderDockWindow(ReferencesWindow, LeftBottom);
 	ImGui::DockBuilderDockWindow(PreviewWindow, Center);
 	ImGui::DockBuilderFinish(ImGui::DockNodeGetRootNode(Viewport->DockNode)->ID);
 }
@@ -356,6 +360,7 @@ void UIActorEditorForm::Draw()
 
 	DrawProperties();
 	Library->Draw();
+	DrawReferences();
 
 	KeyForm->Draw();
 	UIBoneForm::Update();
@@ -630,6 +635,197 @@ void UIActorEditorForm::DrawProperties()
 	}
 	ImGui::End();
 	ImGui::PopStyleVar();
+}
+
+static xr_string GetLibraryName(const xr_string& FileName)
+{
+	if (!FileName.ends_with(".object"))
+	{
+		return {};
+	}
+
+	string_path Root = {};
+	FS.update_path(Root, _objects_, "");
+
+	xr_string Name = FileName;
+	xr_string RootName = Root;
+	xr_strlwr(Name);
+	xr_strlwr(RootName);
+	if (!Name.starts_with(RootName))
+	{
+		return {};
+	}
+
+	Name = Name.substr(RootName.size());
+	return Name.substr(0, Name.size() - xr_strlen(".object"));
+}
+
+void UIActorEditorForm::StartReferenceSearch(const xr_string& Name)
+{
+	ReferenceTask.wait();
+	ReferenceRunning = false;
+
+	ReferenceTarget = Name;
+	References.clear();
+	ReferenceMatches.clear();
+	ReferenceSnapshot.clear();
+
+	if (Name.empty() || Scene == nullptr)
+	{
+		return;
+	}
+
+	ObjectList& Objects = Scene->ListObj(OBJCLASS_SCENEOBJECT);
+	ReferenceSnapshot.reserve(Objects.size());
+	for (CCustomObject* Object : Objects)
+	{
+		CSceneObject* SceneObject = static_cast<CSceneObject*>(Object);
+		ReferenceSnapshot.push_back({ SceneObject->GetName(), SceneObject->m_ReferenceName });
+	}
+
+	ReferenceDone = false;
+	ReferenceRunning = true;
+	ReferenceTask.run([this]()
+	{
+		for (u32 Index = 0; Index < (u32)ReferenceSnapshot.size(); ++Index)
+		{
+			const char* RefName = ReferenceSnapshot[Index].RefName.c_str();
+			if (RefName != nullptr && xr_stricmp(RefName, ReferenceTarget.c_str()) == 0)
+			{
+				ReferenceMatches.push_back(Index);
+			}
+		}
+		ReferenceDone = true;
+	});
+}
+
+void UIActorEditorForm::SyncReferences()
+{
+	if (Tool->IsModified())
+	{
+		const int Result = ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo | mbCancel, "The object has unsaved changes. Save it before sync?");
+		if (Result == mrCancel)
+		{
+			return;
+		}
+		if (Result == mrYes && !Tool->Save(Tool->GetEditFileName().c_str()))
+		{
+			ELog.DlgMsg(mtError, "Can't save object '%s'.", Tool->GetEditFileName().c_str());
+			return;
+		}
+	}
+
+	Lib.ReloadObject(ReferenceTarget.c_str());
+
+	for (ObjectIt It = Scene->FirstObj(OBJCLASS_SECTOR); It != Scene->LastObj(OBJCLASS_SECTOR); ++It)
+	{
+		static_cast<CSector*>(*It)->ReloadObjectsReferences();
+	}
+
+	u32 Synced = 0;
+	for (const shared_str& Name : References)
+	{
+		CCustomObject* Object = Scene->FindObjectByName(Name.c_str(), OBJCLASS_SCENEOBJECT);
+		if (Object != nullptr)
+		{
+			static_cast<CSceneObject*>(Object)->ReloadReferences();
+			++Synced;
+		}
+	}
+
+	ELog.Msg(mtInformation, "Synced %u scene objects of '%s'.", Synced, ReferenceTarget.c_str());
+	EContext.UI->RedrawScene();
+}
+
+void UIActorEditorForm::DrawReferences()
+{
+	const xr_string Target = GetLibraryName(Tool->CurrentObject() != nullptr ? Tool->GetEditFileName() : xr_string());
+	if (Target != ReferenceTarget)
+	{
+		StartReferenceSearch(Target);
+	}
+
+	if (ReferenceRunning && ReferenceDone)
+	{
+		ReferenceTask.wait();
+		ReferenceRunning = false;
+		for (u32 Index : ReferenceMatches)
+		{
+			References.push_back(ReferenceSnapshot[Index].ObjectName);
+		}
+		ReferenceMatches.clear();
+		ReferenceSnapshot.clear();
+	}
+
+	if (ImGui::Begin(ReferencesWindow))
+	{
+		if (ReferenceTarget.empty())
+		{
+			ImGui::TextDisabled("Load a library object to find its scene objects.");
+		}
+		else
+		{
+			ImGui::BeginDisabled(ReferenceRunning);
+			if (ImGui::Button(ICON_FA_MAGNIFYING_GLASS " Find"))
+			{
+				StartReferenceSearch(ReferenceTarget);
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip("Search the scene again");
+			}
+			ImGui::SameLine();
+			ImGui::BeginDisabled(References.empty());
+			if (ImGui::Button(ICON_FA_ARROWS_ROTATE " Sync"))
+			{
+				SyncReferences();
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+			{
+				ImGui::SetTooltip("Reload the object from disk and refresh its scene objects");
+			}
+			ImGui::EndDisabled();
+			ImGui::EndDisabled();
+
+			ImGui::SameLine();
+			if (ReferenceRunning)
+			{
+				ImGui::TextDisabled("Searching...");
+			}
+			else
+			{
+				ImGui::Text("%u on the level", (u32)References.size());
+			}
+
+			ImGui::Separator();
+			if (ImGui::BeginChild("##ReferenceList"))
+			{
+				for (const shared_str& Name : References)
+				{
+					if (ImGui::Selectable(Name.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+					{
+						CCustomObject* Object = Scene->FindObjectByName(Name.c_str(), OBJCLASS_SCENEOBJECT);
+						if (Object != nullptr)
+						{
+							Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
+							Object->Select(true);
+							if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+							{
+								Scene->ZoomExtents(OBJCLASS_SCENEOBJECT, true);
+							}
+							EContext.UI->RedrawScene();
+						}
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetTooltip("Click to select, double-click to zoom in the scene");
+					}
+				}
+			}
+			ImGui::EndChild();
+		}
+	}
+	ImGui::End();
 }
 
 void UIActorEditorForm::DrawSkeletonFlag(const char* Id, const char* Icon, const char* Hint, u32 Flag, ImDrawFlags Rounding)
