@@ -221,6 +221,8 @@ bool StartLevelLoad(const shared_str& LevelName);
 
 void CGamePersistent::OnGameStart()
 {
+	UpdateGameType				();
+
 	shared_str LevelName;
 	if (g_MtLevelEarly && g_pGameLevel != nullptr && LevelStartInfo::Find(m_game_params, LevelName))
 	{
