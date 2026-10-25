@@ -157,7 +157,8 @@
             right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
             vert_interval="0" always_show_scroll="0" />
 
-        <key_binding x="0" y="85" width="424" height="240">
+        <!-- The key list scrolls itself: it is attached to the page, not nested in the page scroller. -->
+        <key_binding x="0" y="110" width="424" height="186">
             <header_1 x="0" y="0" width="216" height="15">
                 <texture a="150">ui_inGame2_servers_list_button</texture>
                 <auto_static x="2" y="0" width="176" height="15">
@@ -180,11 +181,11 @@
                 </auto_static>
             </header_3>
 
-            <frame x="0" y="16" width="423" height="191">
+            <frame x="0" y="16" width="423" height="170">
                 <texture>ui_inGame2_servers_list_frame</texture>
             </frame>
 
-            <scroll_view x="2" y="17" width="421" height="188" always_show_scroll="1" vert_interval="3">
+            <scroll_view x="2" y="17" width="421" height="167" always_show_scroll="1" vert_interval="3">
                 <item_group x="0" y="0" width="160" height="25">
                     <text r="230" g="230" b="230" font="letterica18"/>
                 </item_group>
