@@ -37,7 +37,7 @@ bool CUIDialogWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 bool CUIDialogWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 {
-	if (!IR_process()) 
+	if (!IR_process())
 		return false;
 
 	if (inherited::OnGamepadKeyAction(key, gamepad_action))
@@ -48,7 +48,7 @@ bool CUIDialogWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 
 bool CUIDialogWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
 {
-	if (!IR_process()) 
+	if (!IR_process())
 		return false;
 
 	if (inherited::OnGamepadStickAction(key, value, gamepad_action))
@@ -92,11 +92,11 @@ bool CUIDialogWnd::IR_process()
 	if (!IsEnabled() || GetHolder() == nullptr)
 		return false;
 
-	if(GetHolder() && GetHolder()->IgnorePause())		
+	if(GetHolder() && GetHolder()->IgnorePause())
 		return true;
 
 	if(Device.Paused()&&!WorkInPause())	return false;
-	
+
 	return true;
 }
 
@@ -112,7 +112,7 @@ UI_API CDialogHolder* CurrentDialogHolder()
 void CUIDialogWnd::ShowOrHideDialog(bool bDoHideIndicators)
 {
 	if (IsShown())
-		GetHolder()->StopDialog(this);
+		HideDialog();
 	else
 		CurrentDialogHolder()->StartDialog(this, bDoHideIndicators);
 }
@@ -128,5 +128,13 @@ void CUIDialogWnd::HideDialog()
 	if (!IsShown())
 		return;
 
-	GetHolder()->StopDialog	(this);
+	if (auto* Holder = GetHolder())
+	{
+		Holder->StopDialog(this);
+	}
+	else
+	{
+		Show(false);
+		Enable(false);
+	}
 }
