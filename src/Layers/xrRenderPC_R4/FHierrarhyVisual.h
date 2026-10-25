@@ -16,11 +16,11 @@ public:
 	bool							bDontDelete;
 public:
     				FHierrarhyVisual();
-	virtual 		~FHierrarhyVisual();
+	virtual ~FHierrarhyVisual() override;
 
-	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void	Copy			(dxRender_Visual *pFrom);
-	virtual void	Release			();
+	virtual void	Load			(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void	Copy			(dxRender_Visual *pFrom) override;
+	virtual void	Release			() override;
 };
 
 #endif //FHierrarhyVisualH

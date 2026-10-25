@@ -7,14 +7,14 @@
 class dxWallMarkArray : public IWallMarkArray
 {
 public:
-	virtual ~dxWallMarkArray();
-	virtual void Copy(IWallMarkArray &_in);
+	virtual ~dxWallMarkArray() override;
+	virtual void Copy(IWallMarkArray &_in) override;
 
-	virtual void AppendMark(const char* s_textures);
-	virtual void AppendMark(const char* s_shader, const char* s_textures);
-	virtual void clear();
-	virtual bool empty();
-	virtual wm_shader GenerateWallmark();
+	virtual void AppendMark(const char* s_textures) override;
+	virtual void AppendMark(const char* s_shader, const char* s_textures) override;
+	virtual void clear() override;
+	virtual bool empty() override;
+	virtual wm_shader GenerateWallmark() override;
 
 	ref_shader*	dxGenerateWallmark();
 private:

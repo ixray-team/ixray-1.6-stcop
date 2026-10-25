@@ -78,14 +78,15 @@ private:
 	Fvector smooth_avg_color;
 	Fvector smooth_avg_dir;
 public:
-	virtual	void			force_mode			(u32 mode)		{ MODE = mode;															};
-	virtual float			get_luminocity		()				{ float result_ = std::max(approximate.x, std::max(approximate.y, approximate.z)); clamp(result_, 0.f, 1.f); return (result_); };
-	virtual float			get_luminocity_hemi	()				{ return get_hemi();}
-	virtual float*			get_luminocity_hemi_cube		()				{ return hemi_cube_smooth;}
+	virtual void			force_mode			(u32 mode) override { MODE = mode;															};
+	virtual float			get_luminocity		() override
+	{ float result_ = std::max(approximate.x, std::max(approximate.y, approximate.z)); clamp(result_, 0.f, 1.f); return (result_); };
+	virtual float			get_luminocity_hemi	() override { return get_hemi();}
+	virtual float*			get_luminocity_hemi_cube		() override { return hemi_cube_smooth;}
 
 	void					add					(light*			L);
 	void					update				(IRenderable*	O);
-	virtual void			update_smooth		(IRenderable*	O=0);
+	virtual void			update_smooth		(IRenderable*	O=0) override;
 	
 	ICF	float				get_hemi			()	{
 		if (dwFrameSmooth!=Device.dwFrame)		update_smooth();
@@ -116,7 +117,7 @@ public:
 	}
 
 	CROS_impl				();
-	virtual ~CROS_impl	()	{};
+	virtual ~CROS_impl	() override {};
 
 private:
 	//static inline CubeFaces get_cube_face(Fvector3& dir);

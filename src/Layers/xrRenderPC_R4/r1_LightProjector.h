@@ -43,7 +43,7 @@ public:
 	void					finalize		()			{ receivers.clear(); taskid.clear();	}
 	void					invalidate		();
 
-	virtual		void		OnAppActivate	();
+	virtual void		OnAppActivate	() override;
 #ifdef DEBUG
 	void					render			();
 #endif

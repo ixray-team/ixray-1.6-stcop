@@ -8,12 +8,12 @@ class dxRainRender : public IRainRender
 {
 public:
 	dxRainRender();
-	virtual ~dxRainRender();
-	virtual void Copy(IRainRender &_in);
+	virtual ~dxRainRender() override;
+	virtual void Copy(IRainRender &_in) override;
 
-	virtual void Render(CEffect_Rain &owner);
+	virtual void Render(CEffect_Rain &owner) override;
 
-	virtual const Fsphere& GetDropBounds() const;
+	virtual const Fsphere& GetDropBounds() const override;
 
 private:
 	// Visualization	(rain)

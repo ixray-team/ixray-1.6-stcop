@@ -19,13 +19,13 @@ protected:
 	_5color						c_bias;
 	Fmatrix						xform;
 public:
-	virtual void Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void Copy			(dxRender_Visual *pFrom	);
-	virtual void Release		();
+	virtual void Render			(float LOD		) override;									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	virtual void Load			(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void Copy			(dxRender_Visual *pFrom	) override;
+	virtual void Release		() override;
 
 	FTreeVisual(void);
-	virtual ~FTreeVisual(void);
+	virtual ~FTreeVisual(void) override;
 };
 
 class FTreeVisual_ST :	public FTreeVisual
@@ -33,12 +33,12 @@ class FTreeVisual_ST :	public FTreeVisual
 	typedef FTreeVisual inherited;
 public:
 					FTreeVisual_ST	(void);
-	virtual			~FTreeVisual_ST	(void);
+	virtual ~FTreeVisual_ST	(void) override;
 
-	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void	Copy			(dxRender_Visual *pFrom	);
-	virtual void	Release			();
+	virtual void	Render			(float LOD		) override;									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	virtual void	Load			(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void	Copy			(dxRender_Visual *pFrom	) override;
+	virtual void	Release			() override;
 private:
 	FTreeVisual_ST				(const FTreeVisual_ST& other);
 	void	operator=			( const FTreeVisual_ST& other);
@@ -52,12 +52,12 @@ private:
 	u32					last_lod;
 public:
 					FTreeVisual_PM	(void);
-	virtual			~FTreeVisual_PM	(void);
+	virtual ~FTreeVisual_PM	(void) override;
 
-	virtual void	Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void	Copy			(dxRender_Visual *pFrom	);
-	virtual void	Release			();
+	virtual void	Render			(float LOD		) override;									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
+	virtual void	Load			(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void	Copy			(dxRender_Visual *pFrom	) override;
+	virtual void	Release			() override;
 private:
 	FTreeVisual_PM				(const FTreeVisual_PM& other);
 	void	operator=			( const FTreeVisual_PM& other);

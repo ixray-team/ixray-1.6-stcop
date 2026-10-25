@@ -42,48 +42,50 @@ namespace PS
 		};
 		Flags8				m_RT_Flags = {0u};
 
-		virtual 			~CParticleEffect	();
+		virtual ~CParticleEffect	() override;
 
-		void	 			OnFrame				(u32 dt);
-		virtual void	 	UpdateCache			();
+		virtual void	 			OnFrame				(u32 dt) override;
+		virtual void	 	UpdateCache			() override;
 
-		virtual void		Render				(float LOD);
+		virtual void		Render				(float LOD) override;
 		void				RenderEditor		();
-		virtual void		Copy				(dxRender_Visual* pFrom);
+		virtual void		Copy				(dxRender_Visual* pFrom) override;
 
 		virtual void 		GeomCreate();
 		virtual void 		GeomDestroy();
 
-		virtual void		UpdateParent		(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
+		virtual void		UpdateParent		(const Fmatrix& m, const Fvector& velocity, bool bXFORM) override;
 
 		void				Compile				(CPEDef* def);
 
 		ICF CPEDef*			GetDefinition		(){return m_Def;}
 
-		virtual void		Play				();
-		virtual void		Stop				(bool bDefferedStop=true);
-		virtual bool		IsPlaying			(){return m_RT_Flags.is(flRT_Playing);}
-		
-		virtual void		SetHudMode			(bool b){m_RT_Flags.set(flRT_HUDmode,b);}
-		virtual bool		GetHudMode			()		{return m_RT_Flags.is(flRT_HUDmode);}
+		virtual void		Play				() override;
+		virtual void		Stop				(bool bDefferedStop=true) override;
+		virtual bool		IsPlaying			() override {return m_RT_Flags.is(flRT_Playing);}
 
-		virtual void		SetLiveUpdate		(bool b){m_RT_Flags.set(flRT_LiveUpdate,b);}
-		virtual bool		GetLiveUpdate		()		{return m_RT_Flags.is(flRT_LiveUpdate);}
+		virtual void		SetHudMode			(bool b) override {m_RT_Flags.set(flRT_HUDmode,b);}
+		virtual bool		GetHudMode			() override {return m_RT_Flags.is(flRT_HUDmode);}
 
-		virtual float		GetTimeLimit		(){VERIFY(m_Def); return m_Def->m_Flags.is(CPEDef::dfTimeLimit)?m_Def->m_fTimeLimit:-1.f;}
+		virtual void		SetLiveUpdate		(bool b) override {m_RT_Flags.set(flRT_LiveUpdate,b);}
+		virtual bool		GetLiveUpdate		() override {return m_RT_Flags.is(flRT_LiveUpdate);}
 
-		virtual const shared_str	Name			(){VERIFY(m_Def); return m_Def->m_Name;}
+		virtual float		GetTimeLimit		() override
+		{VERIFY(m_Def); return m_Def->m_Flags.is(CPEDef::dfTimeLimit)?m_Def->m_fTimeLimit:-1.f;}
+
+		virtual const shared_str	Name			() override
+		{VERIFY(m_Def); return m_Def->m_Name;}
 
         void				SetDestroyCB		(DestroyCallback 	destroy_cb)		{m_DestroyCallback 	= destroy_cb;}
         void				SetCollisionCB		(CollisionCallback	collision_cb)	{m_CollisionCallback= collision_cb;}
-        void				SetBirthDeadCB		(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p);		
+        void				SetBirthDeadCB		(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p);
 
-	    virtual u32			SpriteCount		();
-		void SetScale(float Scale) override;
-		float GetScale() override;
-		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
+		virtual u32			SpriteCount		() override;
+		virtual void SetScale(float Scale) override;
+		virtual float GetScale() override;
+		virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
-		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
+		virtual IParticleCustom* dcast_ParticleCustom() override { return this; }
 	};
     void OnEffectParticleBirth	(void* owner, u32 param, PAPI::Particles& P, size_t pID, u32 idx);
     void OnEffectParticleDead	(void* owner, u32 param, PAPI::Particles& P, size_t pID, u32 idx);

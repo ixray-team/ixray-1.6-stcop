@@ -83,7 +83,7 @@ private:
 
 public:
 	R_constant_table					() = default;
-	~R_constant_table					();
+	virtual ~R_constant_table					() override;
 
 	R_constant_table& operator=(const RHIShaderConstant& Other) = delete;
 

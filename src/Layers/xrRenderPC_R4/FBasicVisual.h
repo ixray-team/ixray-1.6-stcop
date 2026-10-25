@@ -45,16 +45,16 @@ public:
     ogf_desc					desc		;
 
 	shared_str					dbg_name	;
-	virtual shared_str getDebugName() { return dbg_name; }
-	virtual shared_str getShaderName() { return shader_name; }
-	virtual shared_str getTextureName() { return texture_name; }
-	virtual shared_str getOrigShaderName() { return orig_shader_name; }
-	virtual shared_str getOrigTextureName() { return orig_texture_name; }
-	virtual void set_shader(shared_str sh_name) { shader_name = sh_name; }
-	virtual void set_texture(shared_str tex_name) { texture_name = tex_name; }
-	virtual void reload_shader();
-	virtual void restore_shader();
-	virtual void restore_texture();
+    virtual shared_str getDebugName() override { return dbg_name; }
+    virtual shared_str getShaderName() override { return shader_name; }
+    virtual shared_str getTextureName() override { return texture_name; }
+    virtual shared_str getOrigShaderName() override { return orig_shader_name; }
+    virtual shared_str getOrigTextureName() override { return orig_texture_name; }
+    virtual void set_shader(shared_str sh_name) override { shader_name = sh_name; }
+    virtual void set_texture(shared_str tex_name) override { texture_name = tex_name; }
+    virtual void reload_shader() override;
+    virtual void restore_shader() override;
+    virtual void restore_texture() override;
 
 public:
 	// Common data for rendering
@@ -71,11 +71,11 @@ public:
 	virtual void				Spawn						()				{};
 	virtual void				Depart						()				{};
 
-	virtual vis_data&	_BCL	getVisData() { return vis;}
-	virtual u32					getType()	 { return Type;}
+    virtual vis_data&	_BCL	getVisData() override { return vis;}
+    virtual u32					getType() override { return Type;}
 
 	dxRender_Visual				();
-	virtual ~dxRender_Visual		();
+    virtual ~dxRender_Visual		() override;
 };
 
 #endif // !FBasicVisualH

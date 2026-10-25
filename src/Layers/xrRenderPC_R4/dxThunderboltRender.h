@@ -8,11 +8,11 @@ class dxThunderboltRender : public IThunderboltRender
 {
 public:
 	dxThunderboltRender();
-	virtual ~dxThunderboltRender();
+	virtual ~dxThunderboltRender() override;
 
-	virtual void Copy(IThunderboltRender &_in);
+	virtual void Copy(IThunderboltRender &_in) override;
 
-	virtual void Render(CEffect_Thunderbolt &owner);
+	virtual void Render(CEffect_Thunderbolt &owner) override;
 private:
 	ref_geom			  		hGeom_model;
 	ref_geom			  		hGeom_gradient;

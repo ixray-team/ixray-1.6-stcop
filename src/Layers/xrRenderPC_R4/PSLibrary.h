@@ -47,7 +47,7 @@ public:
 	
 public:
 						CPSLibrary		(){;}
-    		 			~CPSLibrary		(){;}
+    		 			virtual ~CPSLibrary		() override {;}
 
     RENDER_API void		OnCreate		();
     RENDER_API void		OnDestroy		();
@@ -83,11 +83,11 @@ public:
     RENDER_API void		Reload			();
     bool				Save			();
 
-	RENDER_API virtual	PS::CPGDef const* const*	particles_group_begin	() const;
-	RENDER_API virtual	PS::CPGDef const* const*	particles_group_end		() const;
-	RENDER_API virtual	void						particles_group_next	(PS::CPGDef const* const*& iterator) const;
-	RENDER_API virtual	shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const;
-    virtual xr_vector<shared_str> const& vec_all_particles() const {return m_all_ps;};
+	RENDER_API virtual PS::CPGDef const* const*	particles_group_begin	() const override;
+	RENDER_API virtual PS::CPGDef const* const*	particles_group_end		() const override;
+	RENDER_API virtual void						particles_group_next	(PS::CPGDef const* const*& iterator) const override;
+	RENDER_API virtual shared_str const&			particles_group_id		(PS::CPGDef const& particles_group) const override;
+	virtual xr_vector<shared_str> const& vec_all_particles() const override {return m_all_ps;};
 };
 
 #define PS_LIB_SIGN 			"PS_LIB"

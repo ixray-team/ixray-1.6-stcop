@@ -12,16 +12,16 @@ public:
 	xrP_Integer	oAREF;
 	xrP_BOOL	oBlend;
 public:
-	virtual		const char*		getComment()	{ return "MODEL: Default"; }
-	virtual		bool		canBeLMAPped()	{ return false; }
-	
-	virtual		void		Save			(IWriter&	fs);
-	virtual		void		Load			(IReader&	fs, u16 version);
-	
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual const char*		getComment() override { return "MODEL: Default"; }
+	virtual bool		canBeLMAPped() override { return false; }
+
+	virtual void		Save			(IWriter&	fs) override;
+	virtual void		Load			(IReader&	fs, u16 version) override;
+
+	virtual void		Compile			(CBlender_Compile& C) override;
 	
 	CBlender_Model();
-	virtual ~CBlender_Model();
+	virtual ~CBlender_Model() override;
 
 private:
 	xrP_TOKEN	oTessellation;

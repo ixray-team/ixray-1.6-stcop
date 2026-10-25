@@ -185,7 +185,7 @@ public:
 	~CHOM();
 
 #ifdef DEBUG_DRAW
-	virtual void OnRender();
+	virtual void OnRender() override;
 #endif
 #ifdef DEBUG
 	void stats();
