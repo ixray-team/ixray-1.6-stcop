@@ -3576,14 +3576,18 @@ function pri_a17_hard_animation_reset(actor, npc, p)
 end
 
 function jup_b217_hard_animation_reset(actor, npc, p)
-	db.storage[npc:id()].state_mgr:set_state("jup_b217_nitro_straight")
-
-	local state_mgr = db.storage[npc:id()].state_mgr
-	if state_mgr ~= nil then
-		state_mgr.animation:set_state(nil, true)
-		state_mgr.animation:set_state("jup_b217_nitro_straight")
-		state_mgr.animation:set_control()
+	local Storage = db.storage[npc:id()]
+	local StateMgr = Storage and Storage.state_mgr
+	if StateMgr == nil then
+		return
 	end
+
+	StateMgr.animation:set_state(nil, true)
+	StateMgr.animstate:set_state(nil, true)
+	StateMgr.animation_direction_applied = nil
+	StateMgr:set_state("jup_b217_nitro_straight")
+	StateMgr.animation:set_state("jup_b217_nitro_straight")
+	StateMgr.animation:set_control()
 end
 
 
