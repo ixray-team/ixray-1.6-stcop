@@ -383,6 +383,8 @@ void XrUIManager::Draw()
 		ImGui::PopItemFlag();
 	}
 
+	Toasts.Draw();
+
 	ImGui::PopFont();
 	ImGui::PopFont();
 	//ImGui::EndFrame();

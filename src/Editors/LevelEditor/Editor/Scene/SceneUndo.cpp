@@ -256,6 +256,7 @@ void EScene::CaptureUndoState(CUndoJournal::State& Parts)
 
 void EScene::RestoreUndoState(const CUndoJournal::State& Parts)
 {
+	g_LevelAutoBackup.Cancel();
 	GWorldPartition.MarkDirty();
 	Device.DetailsTask.wait();
 

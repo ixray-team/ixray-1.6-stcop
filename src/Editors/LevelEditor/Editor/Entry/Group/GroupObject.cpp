@@ -75,6 +75,8 @@ void CGroupObject::OnFrame()
 
 bool CGroupObject::LL_AppendObject(CCustomObject* object)
 {
+	// The object moves from its tool into the group
+	g_LevelAutoBackup.Cancel();
 	if (!object->CanAttach())
 	{
 		ELog.Msg(mtError,"Can't attach object: '%s'",object->GetName());
@@ -565,6 +567,7 @@ void CGroupObject::AttachObjects(ObjectList& lst)
 
 void CGroupObject::DetachObject(CCustomObject* object)
 {
+	g_LevelAutoBackup.Cancel();
 	ObjectsInGroup::iterator it = std::find(m_ObjectsInGroup.begin(), m_ObjectsInGroup.end(), object);
 	if (it == m_ObjectsInGroup.end())
 		return;
@@ -575,6 +578,7 @@ void CGroupObject::DetachObject(CCustomObject* object)
 
 void CGroupObject::UngroupObjects()
 {
+	g_LevelAutoBackup.Cancel();
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
 		it->pObject->OnDetach		();
 

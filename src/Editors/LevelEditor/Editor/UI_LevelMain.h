@@ -80,6 +80,33 @@ enum ELECommand
     COMMAND_LE_END
 };
 
+// Background level work: loading, building, generating. The level backup waits until it is done.
+class CLevelLoaderTasks
+{
+public:
+	template<typename Func>
+	void Run(Func&& Function)
+	{
+		g_LevelAutoBackup.Cancel();
+		Active++;
+		Tasks.run
+		(
+			[this, Function = std::forward<Func>(Function)]()
+			{
+				Function();
+				Active--;
+			}
+		);
+	}
+
+	void Wait() { Tasks.wait(); }
+	bool IsBusy() const { return Active != 0; }
+
+private:
+	xr_task_group Tasks;
+	xr_atomic_u32 Active = 0;
+};
+
 class CLevelMain :
 	public TUI
 {
@@ -90,7 +117,7 @@ class CLevelMain :
 
 public:
 	C3DCursor* m_Cursor;
-	xr_task_group LoaderEvent;
+	CLevelLoaderTasks LoaderEvent;
 
 public:
 	CLevelMain();

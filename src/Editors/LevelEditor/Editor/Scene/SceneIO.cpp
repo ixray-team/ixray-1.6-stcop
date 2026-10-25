@@ -346,10 +346,74 @@ xr_string EScene::LevelPartName(const char* map_name, ObjClassID cls)
 }
 
 
+void EScene::SaveMainLTX(CInifile& ini)
+{
+	ini.w_u32			("version","value",CURRENT_FILE_VERSION);
+
+	m_LevelOp.SaveLTX	(ini);
+
+	m_GUID.SaveLTX		(ini,"guid","guid");
+
+	ini.w_string		("level_tag","owner",m_OwnerName.c_str());
+	ini.w_u32			("level_tag","create_time",m_CreateTime);
+
+	ini.w_fvector3		("camera","hpb",EContext.UI->Views[0].m_Camera.GetHPB());
+	ini.w_fvector3		("camera","pos",EContext.UI->Views[0].m_Camera.GetPosition());
+
+	for(ObjectIt SO=m_ESO_SnapObjects.begin(); SO!=m_ESO_SnapObjects.end(); ++SO)
+	{
+		ini.w_string	("snap_objects",(*SO)->GetName(),NULL);
+	}
+}
+
+bool EScene::IsSavedTool(ObjClassID clsid, ESceneToolBase* tool)
+{
+	return clsid != OBJCLASS_DUMMY && tool != nullptr && tool->IsEnabled() && tool->IsEditable();
+}
+
+xr_string EScene::ToolPartName(ESceneToolBase* tool, const xr_string& part_prefix)
+{
+	xr_string class_name = tool->ClassName();
+	if (class_name == "ai_map")
+	{
+		return part_prefix + "ai_map_ixray.part";
+	}
+
+	return part_prefix + class_name + ".part";
+}
+
+void EScene::SaveToolPart(ESceneToolBase* tool, const char* part_name, CMemoryWriter& save_cache)
+{
+	if (tool->can_use_inifile())
+	{
+		SaveToolLTX(tool, part_name);
+		return;
+	}
+
+	save_cache.clear		();
+	tool->SaveStream		(save_cache);
+
+	IWriter* FF				= FS.w_open	(part_name);
+	R_ASSERT				(FF);
+	FF->open_chunk			(CHUNK_TOOLS_GUID);
+	FF->w					(&m_GUID,sizeof(m_GUID));
+	FF->close_chunk			();
+
+	FF->open_chunk			(CHUNK_TOOLS_DATA+tool->FClassID);
+	FF->w					(save_cache.pointer(),save_cache.size());
+	FF->close_chunk			();
+
+	FS.w_close				(FF);
+	save_cache.clear		();
+}
+
 void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 {
 	VERIFY			(map_name);
 	R_ASSERT		(!bForUndo);
+
+	// A backup started before is not needed any more
+	g_LevelAutoBackup.Cancel();
 
 	CTimer 			T;
 	T.Start			();
@@ -375,22 +439,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 
 	if (bSaveMain)
 	{
-		ini.w_u32			("version","value",CURRENT_FILE_VERSION);
-
-		m_LevelOp.SaveLTX	(ini);
-
-		m_GUID.SaveLTX		(ini,"guid","guid");
-
-		ini.w_string		("level_tag","owner",m_OwnerName.c_str());
-		ini.w_u32			("level_tag","create_time",m_CreateTime);
-
-		ini.w_fvector3		("camera","hpb",EContext.UI->Views[0].m_Camera.GetHPB());
-		ini.w_fvector3		("camera","pos",EContext.UI->Views[0].m_Camera.GetPosition());
-
-		for(ObjectIt SO=m_ESO_SnapObjects.begin(); SO!=m_ESO_SnapObjects.end(); ++SO)
-		{
-			ini.w_string	("snap_objects",(*SO)->GetName(),NULL);
-		}
+		SaveMainLTX		(ini);
 	}
 
 	m_SaveCache.clear		();
@@ -400,11 +449,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 
 	for (; _I!=_E; ++_I)
 	{
-		if (		(_I->first!=OBJCLASS_DUMMY) && 
-					_I->second && 
-					_I->second->IsEnabled() && 
-					_I->second->IsEditable()
-			)
+		if (IsSavedTool(_I->first, _I->second))
 		{
 			if (bForUndo)
 			{
@@ -413,53 +458,22 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 			}else
 			{
 				// !ForUndo
-				xr_string class_name = _I->second->ClassName();
-
-				xr_string part_name;
-				if (class_name == "ai_map")
+				xr_string part_name = ToolPartName(_I->second, part_prefix);
+				if (_I->first == OBJCLASS_AIMAP)
 				{
-					part_name = part_prefix + "ai_map_ixray.part";
 					Msg("* [AI MAP] Save: %s", part_name.c_str());
 				}
 				else
 				{
-					part_name = part_prefix + class_name + ".part";
 					Msg("* [SCENE] Save: %s", part_name.c_str());
 				}
 
+				EFS.MarkFile		(part_name.c_str(),true);
+				SaveToolPart		(_I->second, part_name.c_str(), m_SaveCache);
 
-					if(_I->second->can_use_inifile())
-					{
-						EFS.MarkFile			(part_name.c_str(),true);
-						SaveToolLTX				(_I->second->FClassID, part_name.c_str());
-						
-						// Track part file with Git LFS if applicable
-						if (Git && Git->IsRepository && Git->LfsAvailable)
-							Git->ProcessFileForLFS(part_name.c_str());
-					}  //can_use_ini_file
-					else
-					{
-						_I->second->SaveStream	(m_SaveCache);
-
-						EFS.MarkFile			(part_name.c_str(),true);
-
-						IWriter* FF				= FS.w_open	(part_name.c_str());
-						R_ASSERT			(FF);
-						FF->open_chunk		(CHUNK_TOOLS_GUID);
-						FF->w				(&m_GUID,sizeof(m_GUID));
-						FF->close_chunk		();
-
-						FF->open_chunk		(CHUNK_TOOLS_DATA+_I->first);
-						FF->w				(m_SaveCache.pointer(),m_SaveCache.size());
-						FF->close_chunk		();
-
-						FS.w_close			(FF);
-						
-						// Track part file with Git LFS if applicable
-						if (Git && Git->IsRepository && Git->LfsAvailable)
-							Git->ProcessFileForLFS(part_name.c_str());
-
-					}//  ! can_use_ini_file
+				// Track part file with Git LFS if applicable
+				if (Git && Git->IsRepository && Git->LfsAvailable)
+					Git->ProcessFileForLFS(part_name.c_str());
 			}
 			m_SaveCache.clear	();
 		}
@@ -474,7 +488,11 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 
 void EScene::SaveToolLTX(ObjClassID clsid, const char* fn)
 {
-	ESceneToolBase* tool 	= GetTool(clsid);
+	SaveToolLTX(GetTool(clsid), fn);
+}
+
+void EScene::SaveToolLTX(ESceneToolBase* tool, const char* fn)
+{
 	int fc = tool->SaveFileCount();
 	if(fc==1)
 	{

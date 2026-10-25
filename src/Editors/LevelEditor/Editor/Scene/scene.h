@@ -94,6 +94,7 @@ protected:
 	SceneToolsMap   m_SceneTools;
 
 	CUndoJournal	UndoJournal;
+	u32				ModifyCount = 0;
 
 	TProperties* m_SummaryInfo;
 
@@ -159,6 +160,13 @@ public:
 	void 			SaveSelection(ObjClassID classfilter, const char* fname);
 
 	void			SaveToolLTX(ObjClassID clsid, const char* fn);
+	void			SaveToolLTX(ESceneToolBase* tool, const char* fn);
+	// Level header: options, guid, camera and snap list
+	void			SaveMainLTX(CInifile& ini);
+	// One tool into its part file; reads only the tool, so the level backup runs it on a worker thread
+	void			SaveToolPart(ESceneToolBase* tool, const char* part_name, CMemoryWriter& save_cache);
+	static bool		IsSavedTool(ObjClassID clsid, ESceneToolBase* tool);
+	static xr_string	ToolPartName(ESceneToolBase* tool, const xr_string& part_prefix);
 	bool			LoadToolLTX(ObjClassID clsid, const char* fn);
 
 	void 			Unload(bool bEditableToolsOnly);
@@ -271,6 +279,8 @@ public:
 	void 			OnCreate();
 	void 			OnDestroy();
 	void 			Modified();
+	// Grows with every Modified call
+	u32				GetModifyCount() const { return ModifyCount; }
 	bool 			IfModified();
 	bool 			IsUnsaved();
 	bool 			IsModified();

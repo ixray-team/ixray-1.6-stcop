@@ -185,7 +185,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 		return UIShaderEditorForm::ReloadCurrent();
 	}
 
-	LUI->LoaderEvent.wait();
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
@@ -226,7 +226,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			FS.r_close(R);
 			LTools->m_LastFileName = temp_fn.c_str();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[temp_fn, is_ltx]
 				{
@@ -273,7 +273,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
-	LUI->LoaderEvent.wait();
+	LUI->LoaderEvent.Wait();
 
 	string_path 	fn;
 	xr_strconcat(fn,Core.CompName,"_",Core.UserName,"_backup.level");
@@ -296,7 +296,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		return UIShaderEditorForm::SaveAll();
 	}
 
-	LUI->LoaderEvent.wait();
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
@@ -378,7 +378,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 		return true;
 	}
 
-	LUI->LoaderEvent.wait();
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
@@ -520,6 +520,7 @@ CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 {
+	g_LevelAutoBackup.Cancel();
 	Lib.ReloadObjects	();
 
 	ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
@@ -817,9 +818,9 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to build level?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -864,9 +865,9 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export game?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -889,9 +890,9 @@ CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export puddles?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -914,9 +915,9 @@ CCommandVar CommandMakePlanars(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export planars?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -939,9 +940,9 @@ CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export details?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -965,9 +966,9 @@ CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export HOM?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -991,9 +992,9 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export Sound Occlusion Model?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
@@ -1694,7 +1695,12 @@ void CLevelMain::OnDrawUI()
 {
 	PROF_EVENT("CLevelMain::OnDrawUI")
 	inherited::OnDrawUI();
-	GWorldPartition.Update();
+	g_LevelAutoBackup.Update();
+	// Streaming swaps the references of static objects the backup reads
+	if (!g_LevelAutoBackup.IsBusy())
+	{
+		GWorldPartition.Update();
+	}
 	UIObjectList::Update();
 	UIWorldPartition::Update();
 	UIGitWindow::Update();

@@ -100,7 +100,19 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"],"Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
 				IMGUI_HINT_BUTTON("I_OL", Icons["open_level"], "Open level", ImDrawFlags_RoundCornersNone, ClickOpen);
-				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersRight, ClickSave);
+				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersNone, ClickSave);
+
+				ImGui::BeginDisabled(g_LevelAutoBackup.IsBusy());
+				if (XRay::ImGui::ToolbarButton("I_BL", ICON_FA_FLOPPY_DISK " Backup", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
+				{
+					g_LevelAutoBackup.RequestNow();
+				}
+				ImGui::EndDisabled();
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+				{
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					ImGui::SetTooltip("Write a level backup into $temp$\\autobackup now");
+				}
 			}
 
 			if (ImGui::TableNextColumn())

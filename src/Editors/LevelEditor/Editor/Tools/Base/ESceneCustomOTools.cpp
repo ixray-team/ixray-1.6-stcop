@@ -39,6 +39,7 @@ bool ESceneCustomOTool::_RemoveObject(CCustomObject* object)
 
 void ESceneCustomOTool::Clear(bool bInternal)
 {
+	g_LevelAutoBackup.Cancel();
 	inherited::Clear	();
 	for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)
     {

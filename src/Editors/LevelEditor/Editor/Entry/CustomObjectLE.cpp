@@ -172,6 +172,8 @@ void CCustomObject::Scale( Fvector& amount)
 
 bool CCustomObject::OnObjectNameAfterEdit(PropValue* sender, shared_str& edit_val)
 {
+	// Other tools save this object by name
+	g_LevelAutoBackup.Cancel();
 	RTextValue* V = smart_cast<RTextValue*>(sender); VERIFY(V);
     if(0==edit_val.size())
     	return false;

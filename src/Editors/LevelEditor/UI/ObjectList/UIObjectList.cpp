@@ -1010,6 +1010,7 @@ void UIObjectList::CommitRename()
 		return;
 	}
 
+	g_LevelAutoBackup.Cancel();
 	Object->SetName(NewName.c_str());
 	Scene->UndoSave();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
