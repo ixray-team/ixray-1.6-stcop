@@ -262,7 +262,7 @@ end
 
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 	--alun_utils.debug_write(strformat("motivator_binder:hit_callback %s",obj and obj:name()))
-	if (amount <= 0) then
+	if (amount <= 0 or who == nil) then
 		return
 	end
 
