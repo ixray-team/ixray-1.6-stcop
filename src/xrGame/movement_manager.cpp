@@ -160,7 +160,7 @@ void CMovementManager::update_path				()
 {
 	PROF_EVENT("Build Path::update")
 
-	if (!enabled() || wait_for_distributed_computation())
+	if (!enabled() || wait_for_distributed_computation() || Level().IsWorldTeardown())
 		return;
 
 	if (!game_path().evaluator())
@@ -374,7 +374,6 @@ void CMovementManager::on_frame					(CPHMovementControl *movement_control, Fvect
 {
 	if	(
 			enabled() &&
-			!Level().IsWorldTeardown() &&
 			(m_path_state != ePathStatePathVerification) &&
 			(m_path_state != ePathStatePathCompleted)
 		)
