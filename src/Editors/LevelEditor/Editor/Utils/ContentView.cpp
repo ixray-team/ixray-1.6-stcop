@@ -1064,6 +1064,7 @@ void CContentView::Destroy()
 
 	MenuIcon.destroy();
 	ParticlePreviews.Clear();
+	ThmPropWnd.ClearPreview();
 	Icons.clear();
 
 	IsWndDestroyed = true;
