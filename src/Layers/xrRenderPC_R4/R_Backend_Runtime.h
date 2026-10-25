@@ -91,7 +91,12 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 
 IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 {
-	//PROF_EVENT("CBackend::set_Element")
+	if (S->passes[pass] == nullptr)
+	{
+		VERIFY(!"Empty pass!");
+		return;
+	}
+
 	SPass&	P		= *(S->passes[pass]);
 	set_States		(P.state);
 	set_PS			(P.ps);
@@ -102,6 +107,7 @@ IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 	set_CS			(P.cs);
 	set_Constants	(P.constants);
 	set_Textures	(P.T);
+
 	if (EditorMode)
 	{
 		set_Matrices	(P.M);

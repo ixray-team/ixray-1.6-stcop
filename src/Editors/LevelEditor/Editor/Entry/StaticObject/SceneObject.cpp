@@ -32,9 +32,13 @@ void CSceneObject::Construct(LPVOID data)
 
 void CSceneObject::ReloadReferences()
 {
-	if (m_Flags.test(flUseSurface))
+	if (!m_Flags.test(flUseSurface))
 	{
 		ClearSurface();
+	}
+	else
+	{
+		for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); }
 	}
 }
 
