@@ -30,6 +30,10 @@ public:
 	static void					Destroy					();
 	
 	STRING_VALUE				translate				(const STRING_ID& str_id) const;
+	// True when the id has a text in the current or the fallback language
+			bool				HasString				(const STRING_ID& Id) const;
+	// Adds or replaces a text of the current language without reloading the files
+			void				SetString				(const STRING_ID& Id, const STRING_VALUE& Value);
 			void				rescan					();
 
 	static	bool				m_bWriteErrorsToLog;

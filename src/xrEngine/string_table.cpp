@@ -433,6 +433,26 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 	return str_id;
 }
 
+bool CStringTable::HasString(const STRING_ID& Id) const
+{
+	if (pData == nullptr || Id.size() == 0)
+	{
+		return false;
+	}
+
+	return pData->m_StringTable.contains(Id) || pData->m_FallbackStringTable.contains(Id);
+}
+
+void CStringTable::SetString(const STRING_ID& Id, const STRING_VALUE& Value)
+{
+	if (pData == nullptr || Id.size() == 0)
+	{
+		return;
+	}
+
+	pData->m_StringTable[Id] = ParseLine(Value.c_str(), Id.c_str(), true);
+}
+
 // St4lker0k765: Enhanced Edition-style parsing for tasks, etc
 STRING_VALUE CStringTable::ParseStringFromScript(STRING_ID input)
 {

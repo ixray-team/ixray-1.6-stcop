@@ -5,6 +5,7 @@
 #include "../../../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "../../xrEProps/Tree/Properties/UIPropertiesForm.h"
 #include "../Editor/Utils/ContentView.h"
+#include "UIDialogLocalization.h"
 
 #include <imgui_node_editor.h>
 
@@ -30,6 +31,11 @@ public:
 
 	void Show(bool State);
 	void OpenFileInstance(const xr_path& Path);
+
+	// Opens the localization window for the phrase text
+	void OpenLocalization(CDialogNode* Node);
+	// Called by the localization window once the text is registered
+	void OnPhraseLocalized(const char* NodeName, const char* StringId);
 
 	enum class InputBoxMode
 	{
@@ -77,6 +83,11 @@ private:
 	void HandleLinkCreation();
 	void HandleDeletion();
 	void DrawMinimap();
+	void DrawDialogList();
+	void DrawCanvasToolbar();
+	void DrawContextMenu();
+	void HandleShortcuts();
+	XML_NODE* CurrentDialogNode();
 
 private:
 	bool IsOpen = false;
@@ -84,6 +95,10 @@ private:
 	bool IsAutoHide = true;
 
 	CXml File;
+	// Name of the opened dialogs file, like "dialogs_jupiter.xml"
+	xr_string DialogFileName;
+	char DialogFilter[128] = {};
+	CUIDialogLocalization Localization;
 
 	shared_str HasInfo;
 	shared_str DontHasInfo;
@@ -131,6 +146,7 @@ private:
 	int NextLinkId = 1;
 	bool NeedLayout = false;
 	bool FocusFirstNode = false;
+	bool PendingFocus = false;
 	ed::NodeId PendingSelect = ed::NodeId(0);
 	ImVec2 ContextMouseCanvas = { 0, 0 };
 
