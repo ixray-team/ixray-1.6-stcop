@@ -47,7 +47,8 @@ const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::obj
 		return			(&(*I).second);
 	}
 
-	VERIFY(ALife::INVALID_OBJECT_ID != id);
+	if (ALife::INVALID_OBJECT_ID == id)
+		return nullptr;
 
 	typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)nullptr).object(id, true);
 	return registy_container;
