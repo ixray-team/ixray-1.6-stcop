@@ -10,15 +10,15 @@ function all_modes(render_id)
 end
 
 function mode_1(id)
-	return id == "renderer_r1"
+	return id == "renderer_r1" or id == "renderer_r4_static"
 end
 
 function mode_2(id)
-	return id ~= "renderer_r1"
+	return id ~= "renderer_r1" and id ~= "renderer_r4_static"
 end
 
 function mode_4(id)
-	return id == "renderer_r4"
+	return id == "renderer_r4" or id == "renderer_r2"
 end
 
 function opt_video_adv:InitControls(x, y, xml, handler)
@@ -120,6 +120,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addTrack(self, vidScalePrec, "ui_mm_vid_scale", "vid_scale", 0.01, false, "float", true, system_depends.sdVidRestart, "scaleTrack", 100)
 
 	local typeAAPrec = function(id)
+		if mode_1(id) then return false end
 		if mode_4(id) then
 			local current_id = handler:GetComboBox("scaleMode"):CurrentID()
 			if current_id > 1 then
@@ -224,7 +225,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addComboBox(self, mode_2, "ui_mm_r2_rain_drops_mode", "r2_rain_drops_mode", 2, false, system_depends.sdNothing)
 
 	handler:addTrack(self, mode_4, "st_motion_blur_power", "r4_mblur_power", 0.1, false, "float", false, system_depends.sdNothing)
-  	handler:addComboBox(self, mode_4, "st_motion_blur_quality", "r4_mblur_quality", 6, false, system_depends.sdSystemRestart)
+	handler:addComboBox(self, mode_4, "st_motion_blur_quality", "r4_mblur_quality", 6, false, system_depends.sdSystemRestart)
 
 	ui_mm_dof_options.add(self, handler, mode_2, reloadControls)
 end

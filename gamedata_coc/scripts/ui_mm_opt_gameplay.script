@@ -24,7 +24,8 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 	handler:addComboBox(self, true, "ui_mm_difficulty", "g_game_difficulty", 4, false, system_depends.sdNothing)
 	handler:addComboBox(self, true, "ui_mm_lang", "language", 4, false, system_depends.sdNothing)
 	handler:addComboBox(self, true, "st_quicksaves_count", "g_quicksaves_count", 4, false, system_depends.sdNothing)
-	
+	handler:addTrack(self, true, "ui_mm_fov", "fov", 0.5, false, "float", true, system_depends.sdNothing)
+
 	handler:lineFrame(self, true, "st_gameplay_settings")
 
 	handler:addCheck(self, true, "st_3d_scopes", "g_3d_scopes", system_depends.sdNothing)
@@ -36,6 +37,8 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 	end	
 	handler:addCheck(self, true, "ui_mm_show_weapon", "hud_weapon", system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_crouch_toggle", "g_crouch_toggle", system_depends.sdNothing)
+	handler:addCheck(self, true, "st_autosaves_enabled", "g_autosaves_enabled", system_depends.sdNothing)
+	handler:addTrack(self, true, "st_autosaves_interval", "g_autosaves_interval", 1, false, "int", true, system_depends.sdNothing, nil)
 
 	handler:lineFrame(self, true, "st_ui_settings")
 
