@@ -463,7 +463,7 @@ function random_secret()
 end
 
 function is_on_the_same_level(actor,gvid)
-	return game_graph():vertex(actor.m_game_vertex_id):level_id() == game_graph():vertex(gvid):level_id()
+	return gg_vertex_level_id(actor.m_game_vertex_id) == gg_vertex_level_id(gvid)
 end
 
 function get_object_flag_name(fl)

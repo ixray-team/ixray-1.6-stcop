@@ -50,8 +50,7 @@ function arrived_to_smart(se_obj, smart)
 		return true
 	end 
 	
-	local gg = game_graph()
-	if (gg:vertex(se_obj.m_game_vertex_id):level_id() ~= gg:vertex(smart.m_game_vertex_id):level_id()) then
+	if (gg_vertex_level_id(se_obj.m_game_vertex_id) ~= gg_vertex_level_id(smart.m_game_vertex_id)) then
 		return false
 	end
 	
@@ -87,9 +86,8 @@ function se_smart_terrain:on_register()
 	db.add_smart_terrain(self)
 
 	local sim = alife()
-	local gg = game_graph()
-	local actor_level = sim:level_name(gg:vertex(sim:actor().m_game_vertex_id):level_id())
-	local smart_level = sim:level_name(gg:vertex(self.m_game_vertex_id):level_id())
+	local actor_level = sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id))
+	local smart_level = sim:level_name(gg_vertex_level_id(self.m_game_vertex_id))
 	
 	self.is_on_actor_level = actor_level == smart_level or nil
 	self.smart_alife_task = CALifeSmartTerrainTask(self.m_game_vertex_id, self.m_level_vertex_id)
@@ -530,7 +528,7 @@ function se_smart_terrain:load_jobs()
 
 					if (job.alife_task) then -- if a single job is failed, ignore and fill rest of job table
 						job.game_vertex_id = job.alife_task:game_vertex_id()
-						job.level_id = gg:vertex(job.game_vertex_id):level_id()
+						job.level_id = gg_vertex_level_id(job.game_vertex_id)
 						job.position = job.alife_task:position()
 					end
 				end
@@ -580,14 +578,13 @@ function se_smart_terrain:update_jobs()
 		end
 	end 	
 
-	local gg = game_graph()
-	self.level_id = self.level_id or gg:vertex(self.m_game_vertex_id):level_id()
+	self.level_id = self.level_id or gg_vertex_level_id(self.m_game_vertex_id)
 	
 	-- Update Jobs for existing NPCs
 	for id,info in pairs(self.npc_info) do
 		local se_obj = info.se_obj
 		if (se_obj) then
-			if (self.level_id == gg:vertex(se_obj.m_game_vertex_id):level_id()) then
+			if (self.level_id == gg_vertex_level_id(se_obj.m_game_vertex_id)) then
 				self:select_npc_job(info)
 			else 
 				self.arriving_npc[id] = se_obj
@@ -1411,8 +1408,7 @@ function se_smart_terrain:am_i_reached(squad)
 		return true 
 	end 
 	
-	local gg = game_graph()
-	if (gg:vertex(squad.m_game_vertex_id):level_id() ~= gg:vertex(self.m_game_vertex_id):level_id()) then
+	if (gg_vertex_level_id(squad.m_game_vertex_id) ~= gg_vertex_level_id(self.m_game_vertex_id)) then
 		return false
 	end
 	
@@ -1426,8 +1422,10 @@ end
 
 function se_smart_terrain:on_after_reach(squad)
 	local sim = alife()
-	for k in squad:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			SIMBOARD:setup_squad_and_group(se_obj)
 		end
@@ -1439,12 +1437,13 @@ function se_smart_terrain:on_reach_target(squad)
 	--alun_utils.debug_write(strformat("%s:on_reach_target %s",self:name(),squad and squad:name()))
 	squad:set_location_types(self:name())
 	SIMBOARD:assign_squad_to_smart(squad, self.id)
-	for k in squad:squad_members() do
-		if db.offline_objects[k.id] ~= nil then
-			empty_table(db.offline_objects[k.id])
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		if db.offline_objects[MemberId] ~= nil then
+			empty_table(db.offline_objects[MemberId])
 		end
-		
-		db.spawned_vertex_by_id[k.id] = nil
+
+		db.spawned_vertex_by_id[MemberId] = nil
 	end
 end
 
@@ -1638,8 +1637,9 @@ function se_smart_terrain:try_respawn()
 				if (squad) then
 					squad.respawn_point_id = self.id
 					squad.respawn_point_prop_section = sect_to_spawn
-					for m in squad:squad_members() do
-						SIMBOARD:setup_squad_and_group(m.object)
+					for MemberIndex = 0, squad:npc_count() - 1 do
+						local MemberObject = squad:getSquadMember(MemberIndex)
+						SIMBOARD:setup_squad_and_group(MemberObject)
 					end
 				else
 					printf("ERROR: call respawn failed for %s, check squad descriptions",sect_to_spawn)

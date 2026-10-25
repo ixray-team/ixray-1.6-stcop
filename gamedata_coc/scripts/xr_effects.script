@@ -40,15 +40,14 @@ function find_smart_under_faction_control_ex(actor,npc,p)
 	end 
 	
 	local sim = alife()
-	local gg = game_graph()
-	local actor_level = sim:level_name(gg:vertex(sim:actor().m_game_vertex_id):level_id())
+	local actor_level = sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id))
 		
 	local target_id
 	for name,smart in pairs(SIMBOARD.smarts_by_names) do 
 		if (smart.sim_avail == nil or xr_logic.pick_section_from_condlist(actor, smart, smart.sim_avail) == "true") then 
 			local smrt = SIMBOARD.smarts[smart.id]
 			if (smrt) then 
-				local smart_level = alife():level_name(game_graph():vertex(smart.m_game_vertex_id):level_id())
+				local smart_level = alife():level_name(gg_vertex_level_id(smart.m_game_vertex_id))
 				if (smart.online or DEACTIVATE_SIM_ON_NON_LINKED_LEVELS ~= true or string.find(simulation_objects.config:r_value(actor_level,"target_maps",0,""),smart_level)) then
 					for k,squad in pairs(smrt.squads) do
 						if (squad and squad.current_target_id and squad.current_target_id == smart.id and not squad:get_script_target()) then
@@ -77,16 +76,18 @@ function remove_task_companion(actor,npc,p)
 	squad.current_action = nil
 	axr_companions.companion_squads[squad.id] = nil
 	
-	for k in squad:squad_members() do
-		local npc = k.id and (db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id))
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local npc = MemberId and (db.storage[MemberId] and db.storage[MemberId].object or level.object_by_id(MemberId))
 		if (npc) then
 			axr_logic.restore_scheme_and_logic(npc)
 			npc:disable_info_portion("npcx_is_companion")
 			npc:disable_info_portion("npcx_beh_cannot_dismiss")
 			
-			utils.se_obj_save_var(k.id,k.object:name(),"companion",nil)
-			utils.se_obj_save_var(k.id,k.object:name(),"companion_cannot_dismiss",nil)
-			utils.se_obj_save_var(k.id,k.object:name(),"companion_cannot_teleport",nil)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion",nil)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion_cannot_dismiss",nil)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion_cannot_teleport",nil)
 		end
 	end
 end 
@@ -97,13 +98,15 @@ function add_task_companion(actor,npc,p)
 		return 
 	end
 	axr_companions.companion_squads[squad.id] = squad
-	for k in squad:squad_members() do
-		local npc = k.id and (db.storage[k.id] and db.storage[k.id].object)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local npc = MemberId and (db.storage[MemberId] and db.storage[MemberId].object)
 		if (npc) then
-			utils.se_obj_save_var(k.id,k.object:name(),"companion",true)
-			utils.se_obj_save_var(k.id,k.object:name(),"companion_cannot_dismiss",true)
-			utils.se_obj_save_var(k.id,k.object:name(),"companion_cannot_teleport",nil)
-			axr_companions.setup_companion_logic(npc,db.storage[k.id],false,true)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion",true)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion_cannot_dismiss",true)
+			utils.se_obj_save_var(MemberId,MemberObject:name(),"companion_cannot_teleport",nil)
+			axr_companions.setup_companion_logic(npc,db.storage[MemberId],false,true)
 		end
 	end
 end
@@ -266,8 +269,10 @@ function setup_companion_task(actor,npc,p)
 	squad:set_squad_relation()
 
 	axr_companions.companion_squads[squad.id] = squad
-	for k in squad:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			SIMBOARD:setup_squad_and_group(se_obj)
 			utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion",true)
@@ -2167,8 +2172,10 @@ function create_squad(actor, obj, p)
 	--board:enter_smart(squad, smart.id)
 
 	local sim = alife()
-	for k in squad:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			board:setup_squad_and_group(se_obj)
 		end
@@ -2255,8 +2262,9 @@ function kill_squad(actor, obj, p)
 		return
 	end
 	local squad_npcs = {}
-	for k in squad:squad_members() do
-		squad_npcs[k.id] = true
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		squad_npcs[MemberId] = true
 	end
 
 	for k,v in pairs(squad_npcs) do
@@ -2282,8 +2290,9 @@ function heal_squad(actor, obj, p)
 	if squad == nil then
 		return
 	end
-	for k in squad:squad_members() do
-		local cl_obj = db.storage[k.id] and db.storage[k.id].object
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local cl_obj = db.storage[MemberId] and db.storage[MemberId].object
 		if cl_obj ~= nil then
 			cl_obj.health = health_mod
 		end
@@ -2341,8 +2350,9 @@ function flush_smart_terrain(actor,obj,p)
 		squad.current_target_id = nil
 		squad.current_action = nil
 		board:assign_squad_to_smart(squad, nil)
-		for k in squad:squad_members() do
-			local se_obj = alife_object(k.id)
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			local se_obj = alife_object(MemberId)
 			if (se_obj) then
 				local smart_id = se_obj.m_smart_terrain_id
 				if (smart_id and smart_id ~= alife_const.invalid_object_id) then
@@ -2687,8 +2697,9 @@ function make_actor_visible_to_squad(actor,npc,p)
 	local story_id = p and p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then printf("There is no squad with id[%s]", story_id) end
-	for k in squad:squad_members() do
-		local obj = level.object_by_id(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local obj = level.object_by_id(MemberId)
 		if obj ~= nil then
 			obj:make_object_visible_somewhen( db.actor )
 		end
@@ -2915,11 +2926,13 @@ function set_squads_enemies(actor, npc, p)
 		return
 	end
 
- 	for k in squad_1:squad_members() do
-		local npc_obj_1 = db.storage[k.id] and db.storage[k.id].object
+	for MemberIndexNested = 0, squad_1:npc_count() - 1 do
+		local MemberIdNested = squad_1:getSquadMemberId(MemberIndexNested)
+		local npc_obj_1 = db.storage[MemberIdNested] and db.storage[MemberIdNested].object
 		if npc_obj_1 ~= nil then
-			for kk in squad_2:squad_members() do
-				local npc_obj_2 = db.storage[kk.id] and db.storage[kk.id].object
+			for MemberIndex = 0, squad_2:npc_count() - 1 do
+				local MemberId = squad_2:getSquadMemberId(MemberIndex)
+				local npc_obj_2 = db.storage[MemberId] and db.storage[MemberId].object
 				if npc_obj_2 ~= nil then
 					npc_obj_1:set_relation(game_object.enemy, npc_obj_2)
 					npc_obj_2:set_relation(game_object.enemy, npc_obj_1)

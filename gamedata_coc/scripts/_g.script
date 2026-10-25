@@ -1450,7 +1450,7 @@ function _G_on_before_level_changing(packet)
 	packet:r_vec3(angle)
 	-- crazy hack to help prevent crash on Trucks Cemetery
 	local gg = game_graph()
-	if (gg:valid_vertex_id(gvid) and alife():level_name(gg:vertex(gvid):level_id()) == "k02_trucks_cemetery") then
+	if (gg:valid_vertex_id(gvid) and alife():level_name(gg_vertex_level_id(gvid)) == "k02_trucks_cemetery") then
 		log("k02_trucks_cemetery hack r__clear_models_on_unload 1")
 		get_console():execute("r__clear_models_on_unload 1")
 	end

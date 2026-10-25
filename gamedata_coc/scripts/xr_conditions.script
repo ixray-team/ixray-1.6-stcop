@@ -1198,8 +1198,7 @@ function npc_on_level(actor, npc, p)
 		return false 
 	end
 	
-	local gg = game_graph()
-	if (sim:level_name(gg:vertex(se_obj.m_game_vertex_id):level_id()) == p[1]) then 
+	if (sim:level_name(gg_vertex_level_id(se_obj.m_game_vertex_id)) == p[1]) then
 		return true 
 	end 
 	
@@ -1256,8 +1255,9 @@ function squad_in_zone(actor, npc, p)
 	end
 
 	local sim = alife()
-	for k in squad:squad_members() do
-		local se_obj = k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local se_obj = MemberId and sim:object(MemberId)
 		if (se_obj and zone:inside(se_obj.position)) then
 			return true
 		end
@@ -1279,8 +1279,9 @@ function squad_has_enemy(actor, npc, p)
 	end
 
 	local obj_by_id = level.object_by_id
-	for k in squad:squad_members() do
-		local npc_obj = k.id and object_by_id(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local npc_obj = MemberId and object_by_id(MemberId)
 		if (npc_obj and npc_obj:best_enemy() ~= nil) then 
 			return true 
 		end
@@ -1307,8 +1308,10 @@ function squad_in_zone_all(actor, npc, p)
 		return false
 	end
 	local sim = alife()
-	for k in squad:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj and zone:inside(se_obj.position)) then
 			return true
 		end
@@ -1330,8 +1333,9 @@ function squads_in_zone_b41(actor, npc, p)
 
 	for k,v in pairs(SIMBOARD.smarts[smart.id].squads) do
 		if v ~= nil then
-			for j in v:squad_members() do
-				if not zone:inside(j.object.position) then
+			for MemberIndex = 0, v:npc_count() - 1 do
+				local MemberObject = v:getSquadMember(MemberIndex)
+				if not zone:inside(MemberObject.position) then
 					return false
 				end
 			end
@@ -1355,8 +1359,9 @@ function squads_in_zone_yan_smart_terrain_6_4(actor, npc, p)
 
 	for k,v in pairs(SIMBOARD.smarts[smart.id].squads) do
 		if v ~= nil then
-			for j in v:squad_members() do
-				if not zone:inside(j.object.position) then
+			for MemberIndex = 0, v:npc_count() - 1 do
+				local MemberObject = v:getSquadMember(MemberIndex)
+				if not zone:inside(MemberObject.position) then
 					return false
 				end
 			end
@@ -1846,8 +1851,10 @@ function pas_b400_actor_far_forward(actor, npc)
 	local squad = get_object_squad(npc)
 	if (squad) then
 		local sim = alife()
-		for k in squad:squad_members() do
-			local se_obj = k.object or k.id and sim:object(k.id)
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			local MemberObject = squad:getSquadMember(MemberIndex)
+			local se_obj = MemberObject or MemberId and sim:object(MemberId)
 			if (se_obj and se_obj.position:distance_to_sqr(actor:position()) < distance) then
 				return true
 			end
@@ -1879,8 +1886,10 @@ function pas_b400_actor_far_backward(actor, npc)
 	local squad = get_object_squad(npc)
 	if (squad) then
 		local sim = alife()
-		for k in squad:squad_members() do
-			local se_obj = k.object or k.id and sim:object(k.id)
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			local MemberObject = squad:getSquadMember(MemberIndex)
+			local se_obj = MemberObject or MemberId and sim:object(MemberId)
 			if (se_obj and se_obj.position:distance_to_sqr(actor:position()) < distance) then
 				return true
 			end
@@ -1896,8 +1905,9 @@ function pri_a28_actor_is_far(actor, npc)
 	local distance = 150 * 150
 	local squad = get_story_squad("pri_a16_military_squad")
 
-	for k in squad:squad_members() do
-		local npc_dist = k.object.position:distance_to_sqr(actor:position())
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local npc_dist = MemberObject.position:distance_to_sqr(actor:position())
 		if npc_dist < distance then
 			return false
 		end
@@ -2187,8 +2197,9 @@ function npc_squad_has_enemy(actor,npc,p)
 
 	local o
 	local object_by_id = level.object_by_id
-	for k in squad:squad_members() do
-		o = k.id and object_by_id(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		o = MemberId and object_by_id(MemberId)
 		if (o and o:best_enemy()) then
 			return true
 		end
@@ -2252,8 +2263,9 @@ function squad_hit_by_smart(actor,npc,p)
 
 	local who,smart
 	local object_by_id = level.object_by_id
-	for k in squad:squad_members() do
-		who = k.id and db.storage[k.id].hitted_by and object_by_id(db.storage[k.id].hitted_by)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		who = MemberId and db.storage[MemberId].hitted_by and object_by_id(db.storage[MemberId].hitted_by)
 		smart = who and xr_gulag.get_npc_smart(who)
 		if (smart and smart:name() == p[1]) then
 			return true
@@ -2302,8 +2314,7 @@ function squad_on_actor_map(actor,npc,p)
 	if not (squad) then
 		return false
 	end
-	local gg = game_graph()
-	return gg:vertex(alife():actor().m_game_vertex_id):level_id() == gg:vertex(squad.m_game_vertex_id):level_id()
+	return gg_vertex_level_id(alife():actor().m_game_vertex_id) == gg_vertex_level_id(squad.m_game_vertex_id)
 end
 
 -- Returns true if squad commander's active section equals param 1
@@ -2580,12 +2591,11 @@ function all_avail_smart_stayed_squad_count_ge_by_faction_ex(actor,npc,p)
 	if (#p >= 4) then
 	
 		local sim = alife()
-		local gg = game_graph()
-		local actor_level = sim:level_name(gg:vertex(sim:actor().m_game_vertex_id):level_id())
+		local actor_level = sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id))
 
 		for name,v in pairs(SIMBOARD.smarts_by_names) do
 			if (v.sim_avail == nil or v.sim_avail and xr_logic.pick_section_from_condlist(actor, v, v.sim_avail) == "true") then
-				local smart_level = alife():level_name(game_graph():vertex(v.m_game_vertex_id):level_id())
+				local smart_level = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
 				if (v.online or DEACTIVATE_SIM_ON_NON_LINKED_LEVELS ~= true or string.find(simulation_objects.config:r_value(actor_level,"target_maps",0,""),smart_level)) then
 					if (smart_stayed_squad_count_ge_by_faction(actor,npc,{name,unpack(p)}) == true) then 
 						return true 

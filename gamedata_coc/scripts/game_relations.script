@@ -125,11 +125,13 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)
 		if not (se_npc) then 
 			return 
 		end
-		for k in squad:squad_members() do
-			local se_obj = k.object or k.id and sim:object(k.id)
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			local MemberObject = squad:getSquadMember(MemberIndex)
+			local se_obj = MemberObject or MemberId and sim:object(MemberId)
 			if (se_obj) then
 				se_obj:force_set_goodwill(goodwill, npc:id())
-				se_npc:force_set_goodwill(goodwill, k.id)
+				se_npc:force_set_goodwill(goodwill, MemberId)
 			end
 		end
 	else
@@ -141,8 +143,9 @@ function set_squad_community_goodwill(squad_id, community, new_goodwill)
 	local goodwill = tonumber(new_relation) or new_relation == "enemy" and -1000 or new_relation == "friend" and 1000 or 0
 	local squad = squad_id and (get_story_squad(squad_id) or alife_object(squad_id))
 	if squad then
-		for k in squad:squad_members() do
-			local obj = db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id)
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			local obj = db.storage[MemberId] and db.storage[MemberId].object or level.object_by_id(MemberId)
 			if(obj) then
 				obj:set_community_goodwill(community, goodwill)
 			end
@@ -182,9 +185,10 @@ function check_all_squad_members(squad_name, relation)
 	if db.actor == nil then return false end
 	local goodwill = tonumber(relation) or relation == "enemy" and -1000 or relation == "friend" and 1000 or 0
 	local is_enemy
-	for k in squad:squad_members() do
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
 		is_enemy = nil
-		local obj = db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id)
+		local obj = db.storage[MemberId] and db.storage[MemberId].object or level.object_by_id(MemberId)
 		if (goodwill == -1000) then
 			is_enemy = obj and obj:general_goodwill(db.actor)<=ENEMIES
 		else
@@ -310,8 +314,9 @@ function get_squad_relation_to_actor_by_id(squad_id)
     local goodwill = 0
     local npc_count = 0
 	local object
-	for k in squad:squad_members() do
-		object = db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		object = db.storage[MemberId] and db.storage[MemberId].object or level.object_by_id(MemberId)
         if object and db.actor then
             goodwill = goodwill + object:general_goodwill(db.actor)
             npc_count = npc_count + 1

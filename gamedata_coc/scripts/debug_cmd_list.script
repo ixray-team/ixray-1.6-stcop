@@ -600,7 +600,7 @@ function cmd.waypoint(me,txt,owner,p)
 	local last_index
 
 	local sim = alife()
-	local actor_level = wrd == "checklevel" and sim:level_name(game_graph():vertex(sim:actor().m_game_vertex_id):level_id()) or "nil"
+	local actor_level = wrd == "checklevel" and sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id)) or "nil"
 
 	local checked = false
 	local gg = game_graph()

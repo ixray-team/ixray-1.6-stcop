@@ -178,8 +178,10 @@ function simulation_board:create_squad(spawn_smart, sq_id)
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
 	local sim = alife()
-	for k in squad:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		local MemberObject = squad:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			SIMBOARD:setup_squad_and_group(se_obj)
 			-- Alundaio
@@ -350,4 +352,3 @@ end
 function clear()
 	_G.SIMBOARD = nil
 end
-
