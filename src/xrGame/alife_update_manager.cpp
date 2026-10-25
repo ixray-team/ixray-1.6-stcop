@@ -481,9 +481,25 @@ void CALifeUpdateManager::teleport_object	(ALife::_OBJECT_ID id, GameGraph::_GRA
 	}
 #endif
 
+	CSE_ALifeMonsterAbstract				*monster_abstract = smart_cast<CSE_ALifeMonsterAbstract*>(object);
+	if (object->m_bOnline && monster_abstract && monster_abstract->m_group_id != ALife::INVALID_OBJECT_ID)
+	{
+		CSE_ALifeOnlineOfflineGroup			*group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(objects().object(monster_abstract->m_group_id, true));
+		if (group && group->m_bOnline)
+		{
+			xr_vector<ALife::_OBJECT_ID>	members;
+			for (const auto& it : group->squad_members())
+				members.push_back			(it.first);
+
+			teleport_object					(group->ID, game_vertex_id, level_vertex_id, position);
+			for (ALife::_OBJECT_ID member_id : members)
+				teleport_object				(member_id, game_vertex_id, level_vertex_id, position);
+			return;
+		}
+	}
+
 	if (object->m_bOnline)
 		switch_offline						(object);
-	CSE_ALifeMonsterAbstract				*monster_abstract = smart_cast<CSE_ALifeMonsterAbstract*>(object);
 	if (monster_abstract && monster_abstract->m_group_id != ALife::INVALID_OBJECT_ID)
 		object->m_tGraphID					= game_vertex_id;
 	else
