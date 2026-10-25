@@ -1104,6 +1104,40 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 		Icons.erase(icon);
 }
 
+void CContentView::Serialize(nlohmann::json& Data, bool IsSaving)
+{
+	if (IsSaving)
+	{
+		Data["CurPath"] = CurrentDir;
+		Data["ISEPath"] = VirtualPath;
+		Data["IsSpawnElement"] = IsSpawnElement;
+		Data["IsParticles"] = IsParticles;
+		Data["ViewMode"] = ViewMode;
+		return;
+	}
+
+	ReadState(Data, "CurPath", CurrentDir);
+	ReadState(Data, "ISEPath", VirtualPath);
+	ReadState(Data, "ViewMode", ViewMode);
+	ReadState(Data, "IsSpawnElement", IsSpawnElement);
+	ReadState(Data, "IsParticles", IsParticles);
+
+	if (!std::filesystem::exists(xr_path(CurrentDir)))
+	{
+		CurrentDir = RootDir;
+	}
+
+	if (IsSpawnElement)
+	{
+		RescanISEDirectory(VirtualPath);
+	}
+	else if (IsParticles)
+	{
+		// The particles folder is virtual: its listing comes from the particle library
+		RescanParticlesDirectory(VirtualPath);
+	}
+}
+
 void CContentView::Init()
 {
 	// The shared icons are loaded by the first browser

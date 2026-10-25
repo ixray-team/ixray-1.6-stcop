@@ -92,50 +92,32 @@ UIMainForm::UIMainForm()
 	TransformLocalOrWorld = DEV->_CreateTexture("ed\\icons\\Tool Local");
 	TransformLocalOrWorld2 = DEV->_CreateTexture("ed\\icons\\Tool World");
 
-	LoadWindowsStates();
+	m_LeftBar->SetStateName("left_bar");
+	m_Properties->SetStateName("properties");
+	m_WorldProperties->SetStateName("world_properties");
+	OpenSavedWindows();
 }
 
 void UIMainForm::ResetEnd()
 {
 }
 
-void UIMainForm::LoadWindowsStates()
+void UIMainForm::OpenSavedWindows()
 {
-	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
+	// These windows exist only while open: their own state is applied on creation
+	const CEditorWndStates& States = CEditorWndStates::Get();
 
-	if (LPrefs->OpenWorldPartition)
+	if (States.IsOpen("world_partition"))
 	{
 		UIWorldPartition::Show();
 	}
 
-	if (LPrefs->OpenObjectList)
+	if (States.IsOpen("object_list", true))
 	{
 		UIObjectList::Show();
 	}
-	else
-	{
-		UIObjectList::Close();
-	}
 
-	if (LPrefs->OpenProperties)
-	{
-		m_Properties->Open();
-	}
-	else
-	{
-		m_Properties->Close();
-	}
-
-	if (LPrefs->OpenWorldProperties)
-	{
-		m_WorldProperties->Open();
-	}
-	else
-	{
-		m_WorldProperties->Close();
-	}
-
-	if (LPrefs->OpenLighting)
+	if (States.IsOpen("lighting"))
 	{
 		UILightingForm::Show();
 	}
@@ -143,13 +125,7 @@ void UIMainForm::LoadWindowsStates()
 
 UIMainForm::~UIMainForm()
 {
-	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
-
-	LPrefs->OpenProperties = !m_Properties->IsClosed();
-	LPrefs->OpenWorldProperties = !m_WorldProperties->IsClosed();
-	LPrefs->OpenObjectList = UIObjectList::IsOpen();
-	LPrefs->OpenLightAnim = UIEditLightAnim::IsOpen();
-	LPrefs->OpenWorldPartition = UIWorldPartition::IsOpen();
+	CEditorWndStates::Get().Save();
 
 	ClearChooseEvents();
 	xr_delete(m_WorldProperties);

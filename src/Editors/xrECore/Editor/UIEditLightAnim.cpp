@@ -808,7 +808,12 @@ void UIEditLightAnim::Update()
 
 void UIEditLightAnim::Show()
 {
-	if (Form == nullptr)Form = new UIEditLightAnim();
+	if (Form == nullptr)
+	{
+		Form = new UIEditLightAnim();
+		Form->SetStateName("light_anim");
+		Form->bOpen = true;
+	}
 }
 
 bool UIEditLightAnim::IsOpen()

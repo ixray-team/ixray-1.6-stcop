@@ -4,13 +4,26 @@
 UILeftBarForm::UILeftBarForm()
 {
 	bUseSnapList = true;
-	bDrawSnapListObjects = static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList;
+	bDrawSnapListObjects = false;
 	m_SnapListMode = false;
 	m_SnapItem_Current = 0;
 }
 
 UILeftBarForm::~UILeftBarForm()
 {
+}
+
+void UILeftBarForm::Serialize(nlohmann::json& Data, bool IsSaving)
+{
+	// The bar is always shown: only the snap list setting is kept
+	if (IsSaving)
+	{
+		Data["snap_list"] = bDrawSnapListObjects;
+	}
+	else
+	{
+		ReadState(Data, "snap_list", bDrawSnapListObjects);
+	}
 }
 
 // Вспомогательная функция для рендеринга кнопки инструмента
@@ -200,8 +213,7 @@ void UILeftBarForm::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
 		
-		if (ImGui::Checkbox("Enable/Show Snap List", &bDrawSnapListObjects))
-			static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList = bDrawSnapListObjects;
+		ImGui::Checkbox("Enable/Show Snap List", &bDrawSnapListObjects);
 		
 		ImGui::Separator();
 		{

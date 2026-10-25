@@ -97,6 +97,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
+	GContentView->SetStateName("ContentBrowser");
 
 	splash::SetProgressStatus(26, "Initializing Git Integration");
 
@@ -334,6 +335,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			g_pGamePersistent->UpdateParticles();
 	}
 	//s.join();
+
+	// Windows are destroyed before the preferences are saved: keep their full state
+	CEditorWndStates::Get().Save();
 
 	// Gives Tools back to the level tool before COMMAND_DESTROY
 	UIActorEditorForm::Destroy();

@@ -1118,6 +1118,8 @@ void UIObjectList::Show()
 	if (Form == nullptr)
 	{
 		Form = new UIObjectList();
+		Form->SetStateName("object_list");
+		Form->bOpen = true;
 	}
 
 	if (!Form->bOpen)
@@ -1128,6 +1130,10 @@ void UIObjectList::Show()
 
 void UIObjectList::Close()
 {
+	if (Form != nullptr)
+	{
+		Form->bOpen = false;
+	}
 	xr_delete(Form);
 }
 

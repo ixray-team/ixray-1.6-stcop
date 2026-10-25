@@ -411,10 +411,16 @@ void UIWorldPartition::Show()
 	if (Form == nullptr)
 	{
 		Form = new UIWorldPartition();
+		Form->SetStateName("world_partition");
+		Form->bOpen = true;
 	}
 }
 
 void UIWorldPartition::Close()
 {
+	if (Form != nullptr)
+	{
+		Form->bOpen = false;
+	}
 	xr_delete(Form);
 }
