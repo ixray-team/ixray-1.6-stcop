@@ -50,6 +50,8 @@ namespace PS
 		void FillProp(const char* pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
 		bool Validate(bool bMsg);
+        // Reloads the curve in place from a Save stream (undo)
+        bool Restore(IReader& F);
 
         void SplitKeysForPlot(
             xr_vector<float>& R_keys_y,

@@ -35,6 +35,7 @@ CParticleTool::CParticleTool()
 	pCreateEAction		= pCreateEActionImpl;
 	BindParticleEditorActions();
 	m_LibPED = 0;
+	m_LibPGD = 0;
 	m_EditPG = 0;
 	m_EditPE = 0;
 }
@@ -133,6 +134,7 @@ bool CParticleTool::IfModified()
 void CParticleTool::Modified()
 {
 	m_bModified = true;
+	UndoSave();
 }
 //---------------------------------------------------------------------------
 
@@ -274,6 +276,11 @@ void CParticleTool::OnFrame()
 	if (m_Flags.is(flCompileEffect))
 	{
 		RealCompileEffect();
+	}
+
+	if (m_Flags.is(flUndoSave))
+	{
+		RealUndoSave();
 	}
 
 	m_EditPE->OnFrame(EDevice->dwTimeDelta);
@@ -483,6 +490,7 @@ void CParticleTool::Reload()
 {
 	VERIFY(m_bReady);
 	ResetCurrent	();
+	UndoClear		();
 	RImplementation.PSLibrary.Reload();
 	// visual part
 	m_EditPE->Compile(nullptr);
@@ -561,6 +569,7 @@ bool CParticleTool::LoadXR()
 	RImplementation.PSLibrary.OnDestroy();
 	RImplementation.PSLibrary.Load(NormalPath.c_str());
 	ResetCurrent();
+	UndoClear();
 	UpdateProperties();
 	return true;
 }
@@ -879,6 +888,9 @@ void CParticleTool::SetCurrentPE(PS::CPEDef* P, EParticleAction* CurrentPA)
 		m_EditPE->Compile	(m_LibPED);
 		if (m_LibPED)
 			m_EditMode		= emEffect;
+		CUndoJournal::State Parts;
+		CaptureUndoState	(Parts);
+		UndoJournal.Track	(std::move(Parts));
 	}
 	if (m_CurrentPA != CurrentPA)
 	{
@@ -898,6 +910,9 @@ void CParticleTool::SetCurrentPG(PS::CPGDef* P, PS::CPGDef::SEffect* Ef)
 		m_EditPG->Compile	(m_LibPGD);
 		if (m_LibPGD)
 			m_EditMode		= emGroup;
+		CUndoJournal::State Parts;
+		CaptureUndoState	(Parts);
+		UndoJournal.Track	(std::move(Parts));
 	}
 	if (m_CurrentEf != Ef)
 	{
@@ -1139,6 +1154,10 @@ void CParticleTool::SetCurrentPAC(PS::CPACDef* P)
 	m_CurrentEf = nullptr;
 	m_LibAC = P;
 	m_EditMode = emAnimCurve;
+
+	CUndoJournal::State Parts;
+	CaptureUndoState(Parts);
+	UndoJournal.Track(std::move(Parts));
 }
 
 void CParticleTool::EditPAC(PS::CPACDef* PAC)

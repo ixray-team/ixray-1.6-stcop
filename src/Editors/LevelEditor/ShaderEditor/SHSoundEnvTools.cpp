@@ -333,6 +333,7 @@ void CSHSoundEnvTools::ApplyChanges(bool bForced)
 void CSHSoundEnvTools::Reload()
 {
 	ResetCurrentItem	();
+	UndoClear			();
 	Load				();
 	FillItemList		();
 }
@@ -445,6 +446,7 @@ void CSHSoundEnvTools::SetCurrentItem(const char* name, bool bView)
 	if (m_Env!=S){
 		m_Env 			= S;
 		if (m_Env) 		m_EnvSrc = *m_Env;
+		UndoTrack		();
 		STools->UpdateProperties();
 		if (bView) ViewSetCurrentItem(name);
 	}
@@ -455,6 +457,30 @@ void CSHSoundEnvTools::ResetCurrentItem()
 {
 	m_Env=0;
 	UseEnvironment	();
+}
+
+bool CSHSoundEnvTools::SaveUndoItem(shared_str& Name, CMemoryWriter& Writer)
+{
+	if (m_Env == nullptr)
+	{
+		return false;
+	}
+
+	Name = m_Env->name;
+	m_Env->save(&Writer);
+	return true;
+}
+
+bool CSHSoundEnvTools::LoadUndoItem(const shared_str& Name, IReader& Reader)
+{
+	CSoundRender_Environment* S = FindItem(Name.c_str());
+	if (S == nullptr || !S->load(&Reader))
+	{
+		return false;
+	}
+
+	SetCurrentItem(Name.c_str(), true);
+	return true;
 }
 
 void  CSHSoundEnvTools::OnRevResetClick(ButtonValue* V, bool& bModif, bool& bSafe)

@@ -85,8 +85,10 @@ void CSHGameMtlTools::Reload()
 {
 	// mtl
     ResetCurrentItem();
+    UndoClear();
     // mtl pair
     m_GameMtlPairTools->ResetCurrentItem();
+    m_GameMtlPairTools->UndoClear();
     // load
     Load();
     FillItemList		();
@@ -217,6 +219,7 @@ void CSHGameMtlTools::SetCurrentItem(const char* name, bool bView)
     // load material
 	if (m_Mtl!=S){
         m_Mtl = S;
+        UndoTrack();
 	    STools->UpdateProperties();
 	 	if (bView) ViewSetCurrentItem(name);
    	}
@@ -225,6 +228,31 @@ void CSHGameMtlTools::SetCurrentItem(const char* name, bool bView)
 void CSHGameMtlTools::ResetCurrentItem()
 {
 	m_Mtl=0;
+}
+
+bool CSHGameMtlTools::SaveUndoItem(shared_str& Name, CMemoryWriter& Writer)
+{
+    if (m_Mtl == nullptr)
+    {
+        return false;
+    }
+
+    Name = m_Mtl->m_Name;
+    m_Mtl->Save(Writer);
+    return true;
+}
+
+bool CSHGameMtlTools::LoadUndoItem(const shared_str& Name, IReader& Reader)
+{
+    SGameMtl* S = FindItem(Name.c_str());
+    if (S == nullptr)
+    {
+        return false;
+    }
+
+    S->Load(Reader);
+    SetCurrentItem(Name.c_str(), true);
+    return true;
 }
 //---------------------------------------------------------------------------
 

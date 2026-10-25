@@ -4,6 +4,7 @@
 #include "../../../Include/xrRender/animation_motion.h"
 #include "../../xrEProps/UIBoneView.h"
 #include "UIUVView.h"
+#include "../../xrECore/Editor/UndoJournal.h"
 
 // refs
 class UIPropertiesForm;
@@ -207,13 +208,9 @@ public:
 
 // undo part
 protected:
-	#pragma pack( push,1 )
-	struct UndoItem {
-		char m_FileName[MAX_PATH];
-	};
-	#pragma pack( pop )
-	xr_deque<UndoItem> 	m_UndoStack;
-	xr_deque<UndoItem> 	m_RedoStack;
+	CUndoJournal		UndoJournal;
+	void				CaptureUndoState	(CUndoJournal::State& Parts);
+	bool				RestoreUndoState	();
 public:
 	void 				UndoClear			();
 	void 				UndoSave			();

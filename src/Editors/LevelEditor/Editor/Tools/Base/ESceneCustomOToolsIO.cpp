@@ -161,6 +161,14 @@ void ESceneCustomOTool::SaveStream(IWriter& F)
 }
 
 
+void ESceneCustomOTool::SaveToolStream(IWriter& F)
+{
+	ObjectList Objects;
+	Objects.swap(m_Objects);
+	SaveStream(F);
+	Objects.swap(m_Objects);
+}
+
 bool ESceneCustomOTool::Export(const char* path)
 {
 	return true;

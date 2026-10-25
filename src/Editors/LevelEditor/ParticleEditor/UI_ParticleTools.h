@@ -7,6 +7,7 @@
 #include "../../../Layers/xrRenderPC_R4/ParticleGroup.h"
 #include "../../../xrEngine/pure.h"
 #include "ParticleEffectActions.h"
+#include "../../xrECore/Editor/UndoJournal.h"
 
 // refs
 class CEditableObject;
@@ -72,6 +73,11 @@ class CParticleTool:
 
     void 		OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 
+    CUndoJournal		UndoJournal;
+    void				CaptureUndoState	(CUndoJournal::State& Parts);
+    void				RestoreUndoState	(const CUndoJournal::State& Parts);
+    void				RealUndoSave		();
+
 	//const char* InsertBeforeLast(LPSTR buffer, u32 buf_size, const char* path, const char* insert_str);
 	//EEditMode GetAffectedItemType(const char* path);
 	
@@ -106,6 +112,7 @@ public:
         flAnimatedPath		= (1<<5),
         flSelectEffect		= (1<<6),
         flSetXFORM			= (1<<7),
+        flUndoSave			= (1<<8),
     };
 
 	enum class PreviewTypes : u8
@@ -136,7 +143,13 @@ public:
 
     virtual bool		IfModified			();
     virtual bool		IsModified			(){return m_bModified;}
-    virtual void		Modified			(); 
+    virtual void		Modified			();
+
+    void				UndoClear			();
+    // The step is recorded on the next frame, after the deferred effect compile
+    void				UndoSave			(){m_Flags.set(flUndoSave,true);}
+    bool				Undo				();
+    bool				Redo				();
 
     virtual const char*		GetInfo				();
     

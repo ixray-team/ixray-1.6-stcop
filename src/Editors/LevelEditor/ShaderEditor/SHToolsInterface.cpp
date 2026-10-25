@@ -3,6 +3,7 @@
 
 
 #include "SHToolsInterface.h"
+#include "UI_shadertools.h"
 #include "../../xrEProps/FolderLib.h"
 #include "../../xrECore/Editor/ui_main.h"
 
@@ -29,7 +30,84 @@ void ISHTools::Modified()
 	m_bModified = true;
 
 	ApplyChanges();
+	UndoSave();
+}
 
+void ISHTools::UndoTrack()
+{
+	shared_str Name;
+	CMemoryWriter Writer;
+	if (!SaveUndoItem(Name, Writer))
+	{
+		return;
+	}
+
+	CUndoJournal::State Parts;
+	CUndoJournal::Add(Parts, 0, Name, Writer);
+	UndoJournal.Track(std::move(Parts));
+}
+
+void ISHTools::UndoClear()
+{
+	UndoJournal.Clear();
+}
+
+void ISHTools::UndoSave()
+{
+	if (0 == EPrefs->scene_undo_level)
+	{
+		return;
+	}
+
+	shared_str Name;
+	CMemoryWriter Writer;
+	if (!SaveUndoItem(Name, Writer))
+	{
+		return;
+	}
+
+	CUndoJournal::State Parts;
+	CUndoJournal::Add(Parts, 0, Name, Writer);
+	UndoJournal.Commit(std::move(Parts));
+}
+
+bool ISHTools::Undo()
+{
+	CUndoJournal::State Parts;
+	if (!UndoJournal.Undo(Parts))
+	{
+		return false;
+	}
+
+	RestoreUndoItems(Parts);
+	return true;
+}
+
+bool ISHTools::Redo()
+{
+	CUndoJournal::State Parts;
+	if (!UndoJournal.Redo(Parts))
+	{
+		return false;
+	}
+
+	RestoreUndoItems(Parts);
+	return true;
+}
+
+void ISHTools::RestoreUndoItems(const CUndoJournal::State& Parts)
+{
+	for (const CUndoJournal::SPart& Part : Parts)
+	{
+		IReader Reader = Part.Open();
+		if (!LoadUndoItem(Part.Name, Reader))
+		{
+			Msg("! %s undo: can't restore '%s'", ToolsName(), Part.Name.c_str());
+		}
+	}
+
+	m_bModified = true;
+	STools->UpdateProperties();
 }
 //---------------------------------------------------------------------------
 
