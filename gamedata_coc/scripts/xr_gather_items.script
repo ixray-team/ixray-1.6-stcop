@@ -77,7 +77,7 @@ end
 
 local function get_best_detector(npc)
 	local detectors = { "detector_simple", "detector_advanced", "detector_elite", "detector_scientific" }
-	for i=1, #detectors do
+	for i=#detectors, 1, -1 do
 		local obj = npc:object(detectors[i])
 		if obj ~= nil then
 			return obj
