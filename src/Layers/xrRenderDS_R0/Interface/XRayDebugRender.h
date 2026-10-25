@@ -22,7 +22,9 @@ public:
 	// Shaders
 	virtual void SetDebugShader(dbgShaderHandle shdHandle) override;
 	virtual void DestroyDebugShader(dbgShaderHandle shdHandle) override;
+#ifdef DEBUG
 	virtual void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) override;
+#endif
 	void add_lines(const Fvector* vertices, const u32& vertex_count, const u32* pairs, const u32& pair_count, const u32& color) override;
 };
 #endif
