@@ -503,6 +503,12 @@ void CAI_Stalker::update_best_item_info_impl()
 		if (GO)
 		{
 			CInventoryItem* bw = GO->object().cast_inventory_item();
+			if (bw && bw->m_pInventory != &inventory())
+			{
+				Msg("! [%s] OnUpdateBestWeapon returned [%s] which is not in its inventory", cName().c_str(), GO->object().cName().c_str());
+				bw = nullptr;
+			}
+
 			if (bw)
 			{
 				m_item_actuality = true;
