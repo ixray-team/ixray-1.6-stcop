@@ -89,7 +89,7 @@ void UIActorEditorForm::Create(int Tab)
 	ContentBrowser = new CContentView("Content Browser##AE");
 	ContentBrowser->Init();
 	ContentBrowser->TabIndex = Tab;
-	static_cast<CLevelPreferences*>(EPrefs)->LoadActorBrowser(ContentBrowser);
+	ContentBrowser->SetStateName("ActorContentBrowser");
 	EContext.UI->Push(ContentBrowser, false);
 }
 

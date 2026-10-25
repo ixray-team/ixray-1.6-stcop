@@ -8,7 +8,6 @@
 class CContentView:
 	public IEditorWnd
 {
-	friend class CLevelPreferences;
 
 private:
 
@@ -67,6 +66,7 @@ public:
 	// Releases the shared icons while the device is alive
 	static void ClearIcons();
 	virtual void Draw() override;
+	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 	void DrawHeader();
 	void FindFile();
 	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);

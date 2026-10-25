@@ -54,7 +54,7 @@ void UIParticleEditorForm::Create(int Tab)
 	ContentBrowser = new CContentView("Content Browser##PE");
 	ContentBrowser->Init();
 	ContentBrowser->TabIndex = Tab;
-	static_cast<CLevelPreferences*>(EPrefs)->LoadParticleBrowser(ContentBrowser);
+	ContentBrowser->SetStateName("ParticleContentBrowser");
 	EContext.UI->Push(ContentBrowser, false);
 }
 

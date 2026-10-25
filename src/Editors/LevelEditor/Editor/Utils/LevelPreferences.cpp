@@ -1,7 +1,5 @@
 ﻿#include "stdafx.h"
 #include "LevelPreferences.h"
-#include "ContentView.h"
-#include "../../ParticleEditor/UIParticleEditorForm.h"
 #include "../../ActorEditor/ActorEditor.h"
 
 #include "../xrECore/Editor/UILogForm.h"
@@ -66,68 +64,6 @@ const nlohmann::json* GetObjectSafe(const nlohmann::json& j, const char* key)
 	return &(*it);
 }
 
-void CLevelPreferences::LoadContentView(const nlohmann::json& Data, CContentView* View)
-{
-	GetSafe(Data, "CurPath", View->CurrentDir);
-
-	if (!std::filesystem::exists(xr_path(View->CurrentDir)))
-	{
-		View->CurrentDir = View->RootDir;
-	}
-
-	GetSafe(Data, "ViewMode", View->ViewMode);
-	GetSafe(Data, "ISEPath", View->VirtualPath);
-	GetSafe(Data, "IsSpawnElement", View->IsSpawnElement);
-	GetSafe(Data, "IsParticles", View->IsParticles);
-
-	if (View->IsSpawnElement)
-	{
-		View->RescanISEDirectory(View->VirtualPath);
-	}
-	else if (View->IsParticles)
-	{
-		// The particles folder is virtual: its listing comes from the particle library
-		View->RescanParticlesDirectory(View->VirtualPath);
-	}
-}
-
-void CLevelPreferences::SaveContentView(nlohmann::json& Data, const CContentView* View) const
-{
-	Data["CurPath"] = View->CurrentDir;
-	Data["ISEPath"] = View->VirtualPath;
-	Data["IsSpawnElement"] = View->IsSpawnElement;
-	Data["IsParticles"] = View->IsParticles;
-	Data["ViewMode"] = View->ViewMode;
-}
-
-void CLevelPreferences::LoadParticleBrowser(CContentView* View)
-{
-	if (ParticleBrowserSettings.empty())
-	{
-		return;
-	}
-
-	const nlohmann::json Data = nlohmann::json::parse(ParticleBrowserSettings.c_str(), nullptr, false);
-	if (Data.is_object())
-	{
-		LoadContentView(Data, View);
-	}
-}
-
-void CLevelPreferences::LoadActorBrowser(CContentView* View)
-{
-	if (ActorBrowserSettings.empty())
-	{
-		return;
-	}
-
-	const nlohmann::json Data = nlohmann::json::parse(ActorBrowserSettings.c_str(), nullptr, false);
-	if (Data.is_object())
-	{
-		LoadContentView(Data, View);
-	}
-}
-
 void CLevelPreferences::AppendActorRecentFile(const char* Name)
 {
 	const xr_string File = Platform::ANSI_TO_UTF8(Name);
@@ -156,13 +92,7 @@ void CLevelPreferences::Load()
 
 	if (const auto* windows = GetObjectSafe(JSONData, "windows"))
 	{
-		GetSafe(*windows, "object_list", OpenObjectList);
-		GetSafe(*windows, "properties", OpenProperties);
-		GetSafe(*windows, "OpenLighting", OpenLighting);
-		GetSafe(*windows, "world_properties", OpenWorldProperties);
-		GetSafe(*windows, "snap_list", OpenSnapList);
-		GetSafe(*windows, "light_anim", OpenLightAnim);
-		GetSafe(*windows, "world_partition", OpenWorldPartition);
+		CEditorWndStates::Get().Load(*windows);
 
 		GetSafe(*windows, "log_clear_in_pie", UILogForm::bClearInPIE);
 	}
@@ -195,32 +125,6 @@ void CLevelPreferences::Load()
 	{
 		GetSafe(*lod, "UseMULODs", UseMULODs);
 		GetSafe(*lod, "DisableBillboardLOD", DisableBillboardLOD);
-	}
-
-	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
-	{
-		LoadContentView(*cb, GContentView);
-	}
-
-	// The Particles tab browser is created after the preferences are loaded
-	ParticleBrowserSettings.clear();
-	if (const auto* pcb = GetObjectSafe(JSONData, "ParticleContentBrowser"))
-	{
-		ParticleBrowserSettings = pcb->dump().c_str();
-	}
-	if (CContentView* ParticleBrowser = UIParticleEditorForm::GetContentView())
-	{
-		LoadParticleBrowser(ParticleBrowser);
-	}
-
-	ActorBrowserSettings.clear();
-	if (const auto* acb = GetObjectSafe(JSONData, "ActorContentBrowser"))
-	{
-		ActorBrowserSettings = acb->dump().c_str();
-	}
-	if (CContentView* ActorBrowser = UIActorEditorForm::GetContentView())
-	{
-		LoadActorBrowser(ActorBrowser);
 	}
 
 	if (const auto* ae = GetObjectSafe(JSONData, "ActorEditor"))
@@ -288,14 +192,8 @@ void CLevelPreferences::Save()
 	inherited::Save		();
 
 	JSONData["gizmo"]["matrixmode"] = imManipulator.MatrixMode;
-	JSONData["windows"]["object_list"] = OpenObjectList;
-	JSONData["windows"]["properties"] = OpenProperties;
-	JSONData["windows"]["world_properties"] = OpenWorldProperties;
-	JSONData["windows"]["OpenLighting"] = OpenLighting;
-	JSONData["windows"]["snap_list"] = OpenSnapList;
+	JSONData["windows"] = CEditorWndStates::Get().Save();
 	JSONData["windows"]["log_clear_in_pie"] = UILogForm::bClearInPIE;
-	JSONData["windows"]["light_anim"] = OpenLightAnim;
-	JSONData["windows"]["world_partition"] = OpenWorldPartition;
 	JSONData["world_partition"]["enabled"] = GWorldPartition.IsEnabled();
 	JSONData["world_partition"]["unload_disabled"] = GWorldPartition.UnloadDisabled;
 	JSONData["world_partition"]["stream_around_camera"] = GWorldPartition.StreamAroundCamera;
@@ -325,23 +223,6 @@ void CLevelPreferences::Save()
 	JSONData["ExperimentalLOD"]["UseMULODs"] = UseMULODs;
 	JSONData["ExperimentalLOD"]["DisableBillboardLOD"] = DisableBillboardLOD;
 
-	SaveContentView(JSONData["ContentBrowser"], GContentView);
-	if (CContentView* ParticleBrowser = UIParticleEditorForm::GetContentView())
-	{
-		SaveContentView(JSONData["ParticleContentBrowser"], ParticleBrowser);
-	}
-	else if (!ParticleBrowserSettings.empty())
-	{
-		JSONData["ParticleContentBrowser"] = nlohmann::json::parse(ParticleBrowserSettings.c_str(), nullptr, false);
-	}
-	if (CContentView* ActorBrowser = UIActorEditorForm::GetContentView())
-	{
-		SaveContentView(JSONData["ActorContentBrowser"], ActorBrowser);
-	}
-	else if (!ActorBrowserSettings.empty())
-	{
-		JSONData["ActorContentBrowser"] = nlohmann::json::parse(ActorBrowserSettings.c_str(), nullptr, false);
-	}
 	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
 	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;

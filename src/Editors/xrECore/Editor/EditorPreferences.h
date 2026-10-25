@@ -61,7 +61,6 @@ public:
 	float			tools_sens_scale;
 
 	bool bMoreStats = false;
-	bool OpenLighting = false;
 
 	// box pick
 	bool			bp_lim_depth;

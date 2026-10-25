@@ -354,8 +354,6 @@ void UILightingForm::Update()
 		return;
 	}
 
-	EPrefs->OpenLighting = !Form->IsClosed();
-
 	if (!Form->IsClosed())
 	{
 		// Lighting belongs to the scene workspace only
@@ -384,5 +382,7 @@ void UILightingForm::Show()
 	if (!Form)
 	{
 		Form = new UILightingForm();
+		Form->SetStateName("lighting");
+		Form->bOpen = true;
 	}
 }
