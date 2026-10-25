@@ -18,14 +18,20 @@ function opt_controls:InitControls(x, y, xml, handler)
 	if xml:NodeExist("frame", 0) then
 		self.bk = xml:InitFrame("frame", self)
 	end
+	-- The page holds only the option rows: the key list below is a scroll view
+	-- itself, so nesting it here would give the page a second scrollbar.
 	self.scroll_v = xml:InitScrollView("tab_controls:scroll_v", self)
+	self.scroll_v:SetWndPos(vector2():set(0,20))
 
 	handler:addTrack(self, true, "ui_mm_mouse_sense", "mouse_sens", 0.01, false, "float", true, system_depends.sdNothing)
 	handler:addTrack(self, true, "ui_mm_mouse_sense_ui", "mouse_sens_ui", 0.01, false, "float", true, system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_invert_mouse", "mouse_invert", system_depends.sdNothing)
 
+	-- The list goes right below the rows and owns the page's only scrollbar.
 	self.kb = xml:InitKeyBinding	("tab_controls:key_binding",			nil)
-    handler:addControl(self, nil, nil, self.kb)
+	self:AttachChild(self.kb)
+	self.kb:SetAutoDelete(false)
+	self.kb:SetWndPos(vector2():set(0, self.scroll_v:GetWndPos().y + self.scroll_v:GetPadSize().y))
 
 	self.default_btn = xml:Init3tButton("main_dialog:btn_template", 			self)
 	self.default_btn:SetTextST("ui_mm_default")
