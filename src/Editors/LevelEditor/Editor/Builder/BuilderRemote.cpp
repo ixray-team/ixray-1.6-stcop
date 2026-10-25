@@ -439,6 +439,13 @@ void SceneBuilder::SaveBuild()
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
 		F->close_chunk	();
 
+		F->open_chunk(EB_MU_refs_debug);
+		for (auto& elem : l_mu_refs_debug)
+		{
+			F->w_stringZ(elem);
+		}
+		F->close_chunk();
+
 		FS.w_close		(F);
 	}
 }
@@ -1019,6 +1026,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 		debug_name += ":";
 	}
 	debug_name += obj->GetName();
+	l_mu_refs_debug.push_back(debug_name.c_str());
 
 	// scene statssm
 	b_mu_model& MStat = l_mu_models[model_idx];
