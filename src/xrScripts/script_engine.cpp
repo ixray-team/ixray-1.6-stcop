@@ -96,8 +96,36 @@ void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 	Debug.fatal(DEBUG_INFO,"LUA error: cannot cast lua value to %s",info->name());
 }
 
+int CScriptEngine::lua_pcall_message(lua_State* L)
+{
+	const char* message = lua_isstring(L, 1) ? lua_tostring(L, 1) : "(error object is not a string)";
+
+	if (Core.ParamsData.test(ECoreParams::use_callstack))
+		g_pScriptEngine->print_stack();
+
+	lua_getglobal(L, "debug");
+	if (lua_istable(L, -1))
+	{
+		lua_getfield(L, -1, "traceback");
+		if (lua_isfunction(L, -1))
+		{
+			lua_pushstring(L, message);
+			lua_pushinteger(L, 2);
+			if (!lua_pcall(L, 2, 1, 0) && lua_isstring(L, -1))
+				return 1;
+		}
+	}
+
+	lua_settop(L, 1);
+	if (!lua_isstring(L, 1))
+		lua_pushstring(L, message);
+	return 1;
+}
+
 void CScriptEngine::setup_callbacks()
 {
+	luabind::set_pcall_callback(CScriptEngine::lua_pcall_message);
+
 #ifdef LUABIND_NO_EXCEPTIONS
 	luabind::set_error_callback(CScriptEngine::lua_error);
 	luabind::set_cast_failed_callback(lua_cast_failed);
