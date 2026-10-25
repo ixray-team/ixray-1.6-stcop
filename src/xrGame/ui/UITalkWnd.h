@@ -40,6 +40,7 @@ public:
 	virtual void		Show					(bool status) override;
 	
 	void				Stop					();
+	void				OnPartnerDestroy		(CInventoryOwner* owner);
 	void				StopTalk				();
 
 	void				UpdateQuestions			();

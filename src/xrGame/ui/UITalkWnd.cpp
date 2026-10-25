@@ -619,7 +619,7 @@ void CUITalkWnd::PlaySnd(const char* text)
 
 void CUITalkWnd::StopSnd()
 {
-	if (m_pActor && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner)) return;
+	if (m_pActor && m_pOthersInvOwner && m_pActor->OnDialogSoundHandlerStop(m_pOthersInvOwner)) return;
 
 	if(m_sound.is_playing()) 
 		m_sound.stop	();
@@ -647,4 +647,15 @@ bool CUITalkWnd::IsActiveTalkUi()
 
 void CUITalkWnd::Stop()
 {
+}
+
+void CUITalkWnd::OnPartnerDestroy(CInventoryOwner* owner)
+{
+	if (m_pOthersInvOwner != owner)
+		return;
+
+	if (IsShown())
+		HideDialog();
+
+	m_pOthersInvOwner = nullptr;
 }
