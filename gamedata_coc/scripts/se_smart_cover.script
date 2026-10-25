@@ -60,6 +60,11 @@ function se_smart_cover:STATE_Read (packet, size)
 				self.loopholes[loophole_id] = loophole_exist
 			end
 		end
+		for loophole_id in pairs(existing_loopholes) do
+			if (self.loopholes[loophole_id] == nil) then
+				self.loopholes[loophole_id] = true
+			end
+		end
 	else
 		local smart_cover_description = self:description()
 		if smart_cover_description ~= nil then
