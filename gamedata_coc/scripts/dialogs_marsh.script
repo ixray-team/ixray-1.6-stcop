@@ -2,7 +2,7 @@
 ------ ecolog_companion_task_1
 
 function ecolog_companion_task_1_complete(a,b)
-	return xr_conditions.has_task_target_anomaly() ~= true and xr_conditions.check_nearest_smart_dist_le(nil,nil,{40,"mar_smart_terrain_base"}) or false
+	return has_alife_info("ecolog_companion_task_1_measured") and xr_conditions.has_task_target_anomaly() ~= true and xr_conditions.check_nearest_smart_dist_le(nil,nil,{40,"mar_smart_terrain_base"}) or false
 end
 
 function ecolog_companion_task_1_not_complete(a,b)

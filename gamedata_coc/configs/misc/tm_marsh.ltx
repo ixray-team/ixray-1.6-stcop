@@ -43,7 +43,7 @@ descr = mar_base_owl_stalker_trader_task_3_text
 job_descr = mar_base_owl_stalker_trader_task_3_about
 target_functor = mar_base_owl_stalker_trader_task_target
 task_complete_descr = mar_base_owl_stalker_trader_task_3_finish
-on_init = %=setup_companion_task(ecolog_companion_task_1:mar_smart_terrain_base) =setup_task_target_anomaly -ecolog_companion_task_1_started -ecolog_companion_task_1_force_started%
+on_init = %=setup_companion_task(ecolog_companion_task_1:mar_smart_terrain_base) =setup_task_target_anomaly -ecolog_companion_task_1_started -ecolog_companion_task_1_force_started -ecolog_companion_task_1_measured%
 precondition = {!squad_exist(ecolog_companion_task_1)} true, false
 repeat_timeout = 86400
 on_complete = %=complete_task_inc_goodwill(50:ecolog:csky) =remove_special_task_squad(ecolog_companion_task_1) =reward_stash(true) =reset_task_target_anomaly =reward_random_item(af_fire:af_eye:af_fireball:af_blood:af_cristall)%
