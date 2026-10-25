@@ -2,6 +2,7 @@
 #include "UIDialogsView.h"
 #include "../Editor/UI_LevelTools.h"
 #include "../../../xrEngine/string_table.h"
+#include "../../xrEUI/IconsFontAwesome6.h"
 
 DialogEditor* DialogEditor::Instance = nullptr;
 
@@ -12,6 +13,10 @@ ImColor NodeHeaderColor(CDialogNode* Node)
 	if (Node->IsFinal)
 	{
 		return ImColor(110, 200, 120);
+	}
+	if (Node->IsBranch)
+	{
+		return ImColor(150, 110, 210);
 	}
 	if (Node->HasInfo.size() || Node->DontHasInfo.size() || Node->Precondition.size())
 	{
@@ -52,12 +57,60 @@ void DrawPinArrow(bool Filled)
 }
 } // namespace
 
+static bool FindDialogTranslation(const shared_str& Id, xr_string& OutText)
+{
+	if (g_pStringTable == nullptr || !g_pStringTable->HasString(Id))
+	{
+		return false;
+	}
+
+	OutText = Platform::ANSI_TO_UTF8(g_pStringTable->translate(Id).c_str());
+	return true;
+}
+
+static void RequestDialogLocalization(CDialogNode* Node)
+{
+	if (DialogEditor::Instance != nullptr)
+	{
+		DialogEditor::Instance->OpenLocalization(Node);
+	}
+}
+
+static bool ContainsNoCase(const char* Str, const char* Sub)
+{
+	if (Sub == nullptr || Sub[0] == '\0')
+	{
+		return true;
+	}
+
+	for (; *Str != '\0'; ++Str)
+	{
+		const char* A = Str;
+		const char* B = Sub;
+		while (*A != '\0' && *B != '\0' && tolower((u8)*A) == tolower((u8)*B))
+		{
+			++A;
+			++B;
+		}
+
+		if (*B == '\0')
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 DialogEditor::DialogEditor()
 {
 	Instance = this;
 	Editor = ed::CreateEditor();
 	SelectedNode = nullptr;
 	IsOpen = false;
+
+	CDialogNode::FindTranslation = &FindDialogTranslation;
+	CDialogNode::RequestLocalization = &RequestDialogLocalization;
 
 	Properties = new UIPropertiesForm();
 	Properties->TabIndex = 1;
@@ -70,6 +123,9 @@ DialogEditor::DialogEditor()
 
 DialogEditor::~DialogEditor()
 {
+	CDialogNode::FindTranslation = nullptr;
+	CDialogNode::RequestLocalization = nullptr;
+
 	for (auto Node : Nodes)
 	{
 		xr_delete(Node);
@@ -80,6 +136,11 @@ DialogEditor::~DialogEditor()
 	{
 		ed::DestroyEditor(Editor);
 		Editor = nullptr;
+	}
+
+	if (Instance == this)
+	{
+		Instance = nullptr;
 	}
 }
 
@@ -95,20 +156,37 @@ void DialogEditor_DrawInputBox(DialogEditor::InputBoxState& Box)
 
 	if (ImGui::BeginPopupModal("DialogInputBox", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::Text("Enter name:");
-		ImGui::InputText("##input", Box.Buffer, IM_ARRAYSIZE(Box.Buffer));
+		const char* Title = "Phrase ID";
+		if (Box.Mode == DialogEditor::InputBoxMode::BranchName)
+		{
+			Title = "Branch phrase ID";
+		}
+		else if (Box.Mode == DialogEditor::InputBoxMode::DialogName)
+		{
+			Title = "Dialog ID";
+		}
 
-		if (ImGui::Button("OK", ImVec2(120, 0)))
+		ImGui::TextUnformatted(Title);
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere();
+		}
+
+		ImGui::SetNextItemWidth(260.f);
+		const bool IsEnter = ImGui::InputText("##input", Box.Buffer, IM_ARRAYSIZE(Box.Buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank);
+
+		ImGui::BeginDisabled(Box.Buffer[0] == '\0');
+		if (ImGui::Button("OK", ImVec2(127, 0)) || (IsEnter && Box.Buffer[0] != '\0'))
 		{
 			Box.IsOpen = false;
 			Box.HasResult = true;
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::EndDisabled();
 
-		ImGui::SetItemDefaultFocus();
 		ImGui::SameLine();
 
-		if (ImGui::Button("Cancel", ImVec2(120, 0)))
+		if (ImGui::Button("Cancel", ImVec2(127, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
 		{
 			Box.Buffer[0] = '\0';
 			Box.IsOpen = false;
@@ -116,6 +194,272 @@ void DialogEditor_DrawInputBox(DialogEditor::InputBoxState& Box)
 		}
 
 		ImGui::EndPopup();
+	}
+}
+
+XML_NODE* DialogEditor::CurrentDialogNode()
+{
+	auto Iter = std::find_if(Dialogs.begin(), Dialogs.end(), [this](auto& Pair)
+							 { return LastOpenDialog == Pair.first; });
+
+	return Iter != Dialogs.end() ? Iter->second : nullptr;
+}
+
+void DialogEditor::DrawDialogList()
+{
+	const float ListWidth = IsOpenList ? 300.f : ImGui::GetFrameHeight() + ImGui::GetStyle().WindowPadding.x;
+
+	if (!ImGui::BeginChild("Dialogs in file", { ListWidth, 0 }))
+	{
+		ImGui::EndChild();
+		return;
+	}
+
+	if (!IsOpenList)
+	{
+		if (ImGui::Button(ICON_FA_ANGLES_RIGHT, { ImGui::GetFrameHeight(), ImGui::GetFrameHeight() }))
+		{
+			IsOpenList = true;
+		}
+		ImGui::SetItemTooltip("Show dialogs");
+		ImGui::EndChild();
+		return;
+	}
+
+	// Sizes come from the child itself: it has a fixed width and fills the height
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	const float Width = ListWidth - Style.ScrollbarSize * 0.5f;
+	const float ButtonSize = ImGui::GetFrameHeight();
+
+	ImGui::TextDisabled("%s", DialogFileName.empty() ? "No file" : DialogFileName.c_str());
+
+	if (ImGui::Button(ICON_FA_ANGLES_LEFT, { ButtonSize, ButtonSize }))
+	{
+		IsOpenList = false;
+	}
+	ImGui::SetItemTooltip("Hide dialogs");
+
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(Width - ButtonSize - Style.ItemSpacing.x);
+	ImGui::InputTextWithHint("##DialogFilter", ICON_FA_MAGNIFYING_GLASS " Filter dialogs", DialogFilter, sizeof(DialogFilter));
+
+	const float FooterHeight = ImGui::GetFrameHeightWithSpacing();
+	const float ListHeight = std::max(ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - FooterHeight - Style.ItemSpacing.y, ButtonSize * 3.f);
+	if (ImGui::BeginListBox("##ItemsInFile", { Width, ListHeight }))
+	{
+		int Shown = 0;
+		for (const auto& [ID, Node] : Dialogs)
+		{
+			if (!ContainsNoCase(ID.c_str(), DialogFilter))
+			{
+				continue;
+			}
+
+			++Shown;
+			const bool IsCurrent = LastOpenDialog == ID;
+			if (ImGui::Selectable(ID.c_str(), IsCurrent))
+			{
+				OpenDialog(ID, Node);
+				IsOpenList = !IsAutoHide;
+				LastOpenDialog = ID;
+			}
+
+			if (IsCurrent && ImGui::IsWindowAppearing())
+			{
+				ImGui::SetScrollHereY();
+			}
+		}
+
+		if (Shown == 0)
+		{
+			ImGui::TextDisabled(Dialogs.empty() ? "Open a dialogs file from the Content Browser" : "No dialogs match the filter");
+		}
+
+		ImGui::EndListBox();
+	}
+
+	ImGui::BeginDisabled(Dialogs.empty() && DialogFileName.empty());
+	if (ImGui::Button(ICON_FA_FLOPPY_DISK " Save"))
+	{
+		SaveDialog();
+	}
+	ImGui::SetItemTooltip("Save %s (Ctrl+S)", DialogFileName.c_str());
+
+	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_PLUS " New"))
+	{
+		InputBox.Mode = InputBoxMode::DialogName;
+		InputBox.Buffer[0] = '\0';
+		InputBox.IsOpen = true;
+	}
+	ImGui::SetItemTooltip("Add a dialog to this file");
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+	ImGui::Checkbox("Auto Hide", &IsAutoHide);
+	ImGui::SetItemTooltip("Hide this list after a dialog is opened");
+
+	ImGui::EndChild();
+}
+
+void DialogEditor::DrawCanvasToolbar()
+{
+	if (LastOpenDialog.size() == 0)
+	{
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextDisabled("Select a dialog");
+		return;
+	}
+
+	ImGui::AlignTextToFramePadding();
+	ImGui::TextUnformatted(LastOpenDialog.c_str());
+	ImGui::SameLine();
+	ImGui::TextDisabled("%u phrases", (u32)Nodes.size());
+
+	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_SITEMAP " Layout"))
+	{
+		NeedLayout = true;
+	}
+	ImGui::SetItemTooltip("Arrange the phrases by their links");
+
+	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_LOCATION_CROSSHAIRS " Fit"))
+	{
+		ed::SetCurrentEditor(Editor);
+		ed::NavigateToContent();
+	}
+	ImGui::SetItemTooltip("Show all phrases");
+
+	// Phrases whose text is missing in the string table
+	xr_vector<CDialogNode*> Missing;
+	for (CDialogNode* Node : Nodes)
+	{
+		if (!Node->IsBranch && (Node->Text.size() == 0 || g_pStringTable == nullptr || !g_pStringTable->HasString(Node->Text)))
+		{
+			Missing.push_back(Node);
+		}
+	}
+
+	if (!Missing.empty())
+	{
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Text, { 0.95f, 0.72f, 0.3f, 1.f });
+		const bool IsPressed = ImGui::Button(make_string<xr_string>(ICON_FA_TRIANGLE_EXCLAMATION " %u not localized", (u32)Missing.size()).c_str());
+		ImGui::PopStyleColor();
+		ImGui::SetItemTooltip("Go to the next phrase without a text");
+
+		if (IsPressed)
+		{
+			auto Current = std::find(Missing.begin(), Missing.end(), SelectedNode);
+			CDialogNode* Next = (Current == Missing.end() || std::next(Current) == Missing.end()) ? Missing.front() : *std::next(Current);
+			PendingSelect = NodeIds[Next];
+			PendingFocus = true;
+		}
+	}
+}
+
+void DialogEditor::DrawContextMenu()
+{
+	if (!ImGui::BeginPopup("##dialogscontextmenu"))
+	{
+		return;
+	}
+
+	if (SelectedNode != nullptr)
+	{
+		ImGui::TextDisabled("Phrase %s", SelectedNode->NodeName.c_str());
+
+		const bool IsLocalized = SelectedNode->Text.size() > 0 && g_pStringTable != nullptr && g_pStringTable->HasString(SelectedNode->Text);
+		if (!SelectedNode->IsBranch && ImGui::MenuItem(ICON_FA_LANGUAGE " Localize Text...", nullptr, false, !IsLocalized))
+		{
+			OpenLocalization(SelectedNode);
+		}
+
+		if (ImGui::MenuItem(ICON_FA_TRASH " Delete Phrase", "Del"))
+		{
+			DeleteNode(SelectedNode);
+		}
+
+		ImGui::Separator();
+	}
+
+	if (ImGui::MenuItem(ICON_FA_PLUS " Create Phrase"))
+	{
+		InputBox.Mode = InputBoxMode::NodeName;
+		InputBox.Buffer[0] = '\0';
+
+		if (!Phrases.empty())
+		{
+			int NodeID = atoi(*Phrases.back().first) + 1;
+			xr_string Suggestion = xr_string::ToString(NodeID);
+			strcpy_s(InputBox.Buffer, Suggestion.c_str());
+		}
+		InputBox.IsOpen = true;
+	}
+
+	if (ImGui::MenuItem(ICON_FA_CODE_BRANCH " Create Branch Phrase"))
+	{
+		InputBox.Mode = InputBoxMode::BranchName;
+		InputBox.Buffer[0] = '\0';
+		InputBox.IsOpen = true;
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem(ICON_FA_SITEMAP " Auto Layout"))
+	{
+		NeedLayout = true;
+	}
+
+	if (ImGui::MenuItem(ICON_FA_LOCATION_CROSSHAIRS " Fit to Content"))
+	{
+		ed::NavigateToContent();
+	}
+
+	ImGui::EndPopup();
+}
+
+void DialogEditor::HandleShortcuts()
+{
+	if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || ImGui::GetIO().WantTextInput)
+	{
+		return;
+	}
+
+	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S, false))
+	{
+		SaveDialog();
+	}
+}
+
+void DialogEditor::OpenLocalization(CDialogNode* Node)
+{
+	if (Node == nullptr)
+	{
+		return;
+	}
+
+	// The game convention: <dialog>_<phrase>, stored in st_<dialogs file>
+	xr_string StringId = Node->Text.size() > 0 ? Node->Text.c_str() : make_string<xr_string>("%s_%s", LastOpenDialog.c_str(), Node->NodeName.c_str());
+	xr_string FileName = DialogFileName.empty() ? xr_string("st_dialogs_editor.xml") : "st_" + DialogFileName;
+
+	Localization.Open(StringId.c_str(), Node->NodeName.c_str(), FileName.c_str());
+}
+
+void DialogEditor::OnPhraseLocalized(const char* NodeName, const char* StringId)
+{
+	for (CDialogNode* Node : Nodes)
+	{
+		if (Node->NodeName == NodeName)
+		{
+			Node->SetText(StringId);
+			if (Node == SelectedNode)
+			{
+				SelectNodeEvent(Node);
+			}
+			break;
+		}
 	}
 }
 
@@ -128,58 +472,13 @@ void DialogEditor::Draw()
 
 	if (ImGui::Begin("Dialogs Editor", &IsOpen))
 	{
-		if (ImGui::BeginChild("Dialogs in file", {IsOpenList ? 300.f : 20.f, 0}))
-		{
-			if (IsOpenList)
-			{
-				ImGui::SetNextItemWidth(300);
-				if (ImGui::BeginListBox("##ItemsInFile", {0, ImGui::GetWindowSize().y - 30}))
-				{
-					for (const auto& [ID, Node] : Dialogs)
-					{
-						bool bSelect = false;
-						if (ImGui::Selectable(ID.c_str(), &bSelect))
-						{
-							OpenDialog(ID, Node);
-							IsOpenList = !IsAutoHide;
-							LastOpenDialog = ID;
-						}
-					}
-					ImGui::Separator();
-					ImGui::EndListBox();
-				}
+		HandleShortcuts();
 
-				if (ImGui::Button("Save"))
-				{
-					SaveDialog();
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("+"))
-				{
-					InputBox.Mode = InputBoxMode::DialogName;
-					InputBox.Buffer[0] = '\0';
-					InputBox.IsOpen = true;
-				}
-
-				ImGui::SameLine();
-				ImGui::Checkbox("Auto Hide", &IsAutoHide);
-
-				ImGui::SameLine();
-				ImGui::SetCursorPosX(282);
-
-				if (ImGui::Button("<"))
-				{
-					IsOpenList = false;
-				}
-			}
-			else if (ImGui::Button(">"))
-			{
-				IsOpenList = true;
-			}
-		}
-		ImGui::EndChild();
+		DrawDialogList();
 		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		DrawCanvasToolbar();
 
 		ed::SetCurrentEditor(Editor);
 
@@ -187,6 +486,7 @@ void DialogEditor::Draw()
 		{
 			LayoutNodes();
 			NeedLayout = false;
+			FocusFirstNode = true;
 		}
 
 		bool minimapClicked = false;
@@ -264,6 +564,7 @@ void DialogEditor::Draw()
 		{
 			if (PendingSelect)
 			{
+				ed::ClearSelection();
 				ed::SelectNode(PendingSelect);
 				PendingSelect = ed::NodeId(0);
 			}
@@ -331,6 +632,37 @@ void DialogEditor::Draw()
 
 			HandleLinkCreation();
 			HandleDeletion();
+
+			if (PendingFocus && ed::GetSelectedObjectCount() > 0)
+			{
+				ed::NavigateToSelection(true);
+				PendingFocus = false;
+			}
+
+			// Inside Begin/End the mouse is in canvas space
+			const ImVec2 CanvasMouse = ImGui::GetMousePos();
+
+			ed::Suspend();
+			ed::NodeId ContextNode = 0;
+			if (ed::ShowNodeContextMenu(&ContextNode))
+			{
+				ed::ClearSelection();
+				ed::SelectNode(ContextNode);
+				SelectNodeEvent(NodeFromId(ContextNode));
+				ContextMouseCanvas = CanvasMouse;
+				ImGui::OpenPopup("##dialogscontextmenu");
+			}
+			else if (ed::ShowBackgroundContextMenu())
+			{
+				ContextMouseCanvas = CanvasMouse;
+				ImGui::OpenPopup("##dialogscontextmenu");
+			}
+
+			if (LastOpenDialog.size() > 0)
+			{
+				DrawContextMenu();
+			}
+			ed::Resume();
 		}
 		ed::End();
 
@@ -340,43 +672,7 @@ void DialogEditor::Draw()
 		}
 
 		DrawMinimap();
-
-		if (ImGui::IsMouseReleased(1))
-		{
-			ContextMouseCanvas = ed::ScreenToCanvas(ImGui::GetMousePos());
-			ImGui::OpenPopup("##dialogscontextmenu");
-		}
-
-		if (ImGui::BeginPopup("##dialogscontextmenu"))
-		{
-			if (ImGui::MenuItem("Create Node"))
-			{
-				InputBox.Mode = InputBoxMode::NodeName;
-				InputBox.Buffer[0] = '\0';
-
-				if (!Phrases.empty())
-				{
-					int NodeID = atoi(*Phrases.back().first) + 1;
-					xr_string Suggestion = xr_string::ToString(NodeID);
-					strcpy_s(InputBox.Buffer, Suggestion.c_str());
-				}
-				InputBox.IsOpen = true;
-			}
-
-			if (ImGui::MenuItem("Create Branch Node"))
-			{
-				InputBox.Mode = InputBoxMode::BranchName;
-				InputBox.Buffer[0] = '\0';
-				InputBox.IsOpen = true;
-			}
-
-			if (SelectedNode != nullptr && ImGui::MenuItem("Delete Node"))
-			{
-				DeleteNode(SelectedNode);
-			}
-
-			ImGui::EndPopup();
-		}
+		ImGui::EndGroup();
 
 		if (InputBox.IsOpen)
 		{
@@ -387,14 +683,13 @@ void DialogEditor::Draw()
 		{
 			InputBox.HasResult = false;
 
-			auto Iter = std::find_if(Dialogs.begin(), Dialogs.end(), [this](auto& Pair)
-									 { return LastOpenDialog == Pair.first; });
+			XML_NODE* DialogNode = CurrentDialogNode();
 
 			if (InputBox.Mode == InputBoxMode::NodeName || InputBox.Mode == InputBoxMode::BranchName)
 			{
-				if (Iter != Dialogs.end())
+				if (DialogNode != nullptr)
 				{
-					if (XML_NODE* RootNode = File.NavigateToNode(Iter->second, "phrase_list"))
+					if (XML_NODE* RootNode = File.NavigateToNode(DialogNode, "phrase_list"))
 					{
 						XML_NODE* NewNode = RootNode->ToElement()->InsertNewChildElement("phrase");
 						NewNode->ToElement()->SetAttribute("id", InputBox.Buffer);
@@ -409,6 +704,7 @@ void DialogEditor::Draw()
 						}
 
 						BuildIdMaps();
+						ed::SetCurrentEditor(Editor);
 						ed::SetNodePosition(NodeIds[MacroNode], ContextMouseCanvas);
 						PendingSelect = NodeIds[MacroNode];
 
@@ -420,13 +716,17 @@ void DialogEditor::Draw()
 			{
 				XML_NODE* RootNode = nullptr;
 
-				if (Iter != Dialogs.end())
+				if (DialogNode != nullptr)
 				{
-					RootNode = Iter->second->Parent();
+					RootNode = DialogNode->Parent();
 				}
 				else if (!Dialogs.empty())
 				{
 					RootNode = Dialogs.front().second->Parent();
+				}
+				else
+				{
+					RootNode = File.GetRoot();
 				}
 
 				if (RootNode != nullptr)
@@ -435,10 +735,10 @@ void DialogEditor::Draw()
 				}
 			}
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 
+	Localization.Draw();
 
 	if (ImGui::Begin("Properties"))
 	{
@@ -464,7 +764,13 @@ void DialogEditor::NewDialog(XML_NODE* RootDialogNode)
 
 void DialogEditor::SaveDialog()
 {
+	if (DialogFileName.empty())
+	{
+		return;
+	}
+
 	File.Save();
+	Msg("* Dialog Editor: %s saved", DialogFileName.c_str());
 }
 
 void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
@@ -477,6 +783,14 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 	Links.clear();
 	Phrases.clear();
 	SelectedNode = nullptr;
+
+	// The dialog conditions belong to the previous dialog
+	HasInfo = nullptr;
+	DontHasInfo = nullptr;
+	Precondition = nullptr;
+	NodeHasInfo = nullptr;
+	NodeDontHasInfo = nullptr;
+	NodePrecondition = nullptr;
 
 	XML_NODE* RootNode = File.NavigateToNode(Node, "phrase_list");
 	if (RootNode == nullptr)
@@ -700,11 +1014,16 @@ void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 
 	static shared_str TranslateStr;
 
-	if (SelectedNode->Text.size() > 0)
+	xr_string Translation;
+	if (SelectedNode->Text.size() > 0 && FindDialogTranslation(SelectedNode->Text, Translation))
 	{
-		TranslateStr = Platform::ANSI_TO_UTF8(*g_pStringTable->translate(*SelectedNode->Text)).c_str();
-		PHelper().CreateCaption(items, "Text\\Translated", TranslateStr);
+		TranslateStr = Translation.c_str();
 	}
+	else
+	{
+		TranslateStr = "<not localized>";
+	}
+	PHelper().CreateCaption(items, "Text\\Translated", TranslateStr);
 
 	Properties->AssignItems(items);
 }
@@ -729,6 +1048,8 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 	Nodes.clear();
 	Links.clear();
 	IsOpenList = true;
+	LastOpenDialog = nullptr;
+	DialogFileName = Path.xfilename();
 
 	File.Load(CONFIG_PATH, "gameplay", Path.xstring().c_str());
 
@@ -1191,7 +1512,18 @@ void DialogEditor::DrawNode(CDialogNode* Node)
 	float Top = ImGui::GetCursorPos().y;
 	ImGui::PushID(NodeIdValue.AsPointer());
 
-	ImGui::TextUnformatted(Node->NodeName.c_str());
+	if (Node->IsBranch)
+	{
+		ImGui::Text(ICON_FA_CODE_BRANCH " %s", Node->NodeName.c_str());
+	}
+	else if (Node->IsFinal)
+	{
+		ImGui::Text(ICON_FA_FLAG_CHECKERED " %s", Node->NodeName.c_str());
+	}
+	else
+	{
+		ImGui::TextUnformatted(Node->NodeName.c_str());
+	}
 	float HeaderHeight = ImGui::GetCursorPos().y - Top;
 
 	const float MaxBodyWidth = 310.0f;

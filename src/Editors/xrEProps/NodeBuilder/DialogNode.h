@@ -16,6 +16,12 @@ public:
 
 	void ValidateNodes(shared_str& Data, const char* RawName);
 	void DrawInlineEditor(float Width);
+	void SetText(const shared_str& NewText);
+
+	// Set by the dialog editor: finds the UTF-8 text of a string id
+	static bool (*FindTranslation)(const shared_str& Id, xr_string& OutText);
+	// Set by the dialog editor: opens the localization of the phrase text
+	static void (*RequestLocalization)(CDialogNode* Node);
 
 public:
 	shared_str HasInfo;
@@ -44,4 +50,8 @@ public:
 private:
 	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, float Width);
 	void RenderItemString(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, float Width);
+	void RenderField(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, float LabelWidth, float Width);
+	void RenderField(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, float LabelWidth, float Width);
+	void RenderTranslation(float Width);
+	void SetFinal(bool Value);
 };
