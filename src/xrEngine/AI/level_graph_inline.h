@@ -204,7 +204,8 @@ IC bool ILevelGraph::inside				(const u32 vertex_id, const Fvector &position, co
 IC bool	ILevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
 {
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
-	VERIFY				(pxz < MAX_AI_NODES);
+	if (pxz < 0 || pxz >= int(MAX_AI_NODES))
+		return false;
 
 	if (!valid_vertex_id(vertex_id))
 	{
