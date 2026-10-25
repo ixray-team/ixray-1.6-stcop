@@ -146,8 +146,9 @@ void CSXML_IdToIndex::InitInternal ()
 
 	m_pItemDataVector = new T_VECTOR();
 
-	VERIFY(file_str);
 	VERIFY(tag_name);
+	if (!file_str || !file_str[0])
+		return;
 
 	string_path	xml_file;
 	int			count = _GetItemCount	(file_str);
