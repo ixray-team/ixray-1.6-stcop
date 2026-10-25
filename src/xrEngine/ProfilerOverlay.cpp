@@ -24,11 +24,15 @@ class CProfilerOverlay
 	float Peak = 1.0f;
 	u64 Selected = 0;
 	u32 Averaged = 0;
-	u32 Source = Instant;
+	u32 Source = Smooth;
 	u32 Zoom = None;
 	u32 GpuTrack = None;
+	u32 TrackOrder[CFrameProfiler::MaxTracks] = {};
+	u32 TrackOrderCount = 0;
 	bool Frozen = false;
 	bool Interactive = false;
+	bool SortRequested = false;
+	bool WasVisible = false;
 
 public:
 	void Draw();
@@ -39,6 +43,9 @@ private:
 	void DrawHistory(u64 Current);
 	void DrawFlame();
 	u32 DrawNode(u32 Node, float X, float Scale, float Top);
+	u32 CountActive(u32 Node) const;
+	void SortTrackOrder();
+	void InsertTrack(u32 TrackId);
 	void DrawBlock(u32 Node, float X, float Width, float Y, bool Ancestor);
 	ImU32 BlockColor(u32 Node, float Alpha) const;
 };
@@ -65,7 +72,14 @@ void CProfilerOverlay::Draw()
 	Profiler.SetEnabled(Visible);
 	if (!Visible)
 	{
+		WasVisible = false;
 		return;
+	}
+
+	if (!WasVisible)
+	{
+		WasVisible = true;
+		SortRequested = true;
 	}
 
 	RecordGpu();
@@ -126,11 +140,11 @@ void CProfilerOverlay::Draw()
 	ImGui::SetNextWindowPos(Viewport->WorkPos);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(Viewport->WorkSize.x, 0.0f), Viewport->WorkSize);
 	ImGui::SetNextWindowBgAlpha(0.8f);
-	// NoDecoration would also remove the scrollbar that the track list needs once it overflows the viewport
+	// Keep the window scrollbar for the zoomed view; the track list scrolls in its own child
 	constexpr ImGuiWindowFlags Flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize;
 	if (ImGui::Begin("##Profiler", nullptr, Flags))
 	{
-		static const char* const Sources[SourceCount] = { "Instant", "Smooth", "Worst" };
+		static const char* const Sources[SourceCount] = { "Instant", "Smooth", "Worst" }; 
 		for (u32 Index = 0; Index < SourceCount; Index++)
 		{
 			if (Index != 0)
@@ -151,6 +165,16 @@ void CProfilerOverlay::Draw()
 		ImGui::SameLine(0.0f, 16.0f);
 		ImGui::SetNextItemWidth(96.0f);
 		ImGui::SliderInt("rows/track", &TrackRows, 1, int(CFrameProfiler::MaxDepth));
+		ImGui::SameLine(0.0f, 8.0f);
+		if (ImGui::Button("Sort"))
+		{
+			SortRequested = true;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Re-sort tracks by the number of active labels");
+		}
 		ImGui::SameLine(0.0f, 24.0f);
 		ImGui::Text("%.2f ms avg   %.2f ms worst   %.0f fps", AverageMs, SlowestMs, 1000.0f / std::max(AverageMs, 0.001f));
 		ImGui::SameLine(0.0f, 24.0f);
@@ -311,11 +335,10 @@ void CProfilerOverlay::DrawFlame()
 		Span = std::max(Span, NodeMs[Profiler.Tracks[TrackId].Root]);
 	}
 
-	// Reserve the scrollbar width in every track so a scrollbar does not change the block scale
-	const float TrackWidth = std::max(Width - ImGui::GetStyle().ScrollbarSize, 1.0f);
-	const float Scale = TrackWidth / std::max(Span, 0.001f);
-	const int Rows = std::max(TrackRows, 1);
-	for (u32 TrackId = 0; TrackId < Tracks; TrackId++)
+	u32 Current[CFrameProfiler::MaxTracks];
+	u32 CurrentCount = 0;
+	bool HasWeight = false;
+	for (u32 TrackId = 0; TrackId < Tracks && CurrentCount < CFrameProfiler::MaxTracks; TrackId++)
 	{
 		const u32 Root = Profiler.Tracks[TrackId].Root;
 		// Hide tracks that never recorded anything, but keep every used track in a fixed slot while idle
@@ -324,30 +347,110 @@ void CProfilerOverlay::DrawFlame()
 			continue;
 		}
 
-		ImGui::PushID(int(TrackId));
-		if (ImGui::BeginChild("##Track", ImVec2(Width, float(Rows) * RowHeight), ImGuiChildFlags_None))
-		{
-			List = ImGui::GetWindowDrawList();
-			const ImVec2 TrackCorner = ImGui::GetCursorScreenPos();
-			u32 Deepest = 0;
-			if (NodeMs[Root] > 0.0f)
-			{
-				Deepest = DrawNode(Root, TrackCorner.x, Scale, TrackCorner.y);
-			}
-			else
-			{
-				// Keep idle tracks visible: stable slots are what makes a track easy to pick
-				DrawBlock(Root, TrackCorner.x, TrackWidth, TrackCorner.y, true);
-			}
+		Current[CurrentCount++] = TrackId;
+		HasWeight = HasWeight || NodeMs[Root] > 0.0f;
+	}
 
-			ImGui::Dummy(ImVec2(TrackWidth, float(Deepest + 1) * RowHeight));
+	if (CurrentCount == 0)
+	{
+		return;
+	}
+
+	// Keep the order cached like Tracy: existing tracks are not shuffled every frame
+	if (TrackOrderCount == 0)
+	{
+		for (u32 Index = 0; Index < CurrentCount; Index++)
+		{
+			TrackOrder[Index] = Current[Index];
 		}
 
-		ImGui::EndChild();
-		ImGui::PopID();
-		List = ImGui::GetWindowDrawList();
-		ImGui::Dummy(ImVec2(Width, 4.0f));
+		TrackOrderCount = CurrentCount;
+		SortRequested = true;
 	}
+	else if (CurrentCount < TrackOrderCount)
+	{
+		for (u32 Index = 0; Index < CurrentCount; Index++)
+		{
+			TrackOrder[Index] = Current[Index];
+		}
+
+		TrackOrderCount = CurrentCount;
+		SortRequested = true;
+	}
+	else
+	{
+		for (u32 Index = 0; Index < CurrentCount; Index++)
+		{
+			const u32 TrackId = Current[Index];
+			bool Found = false;
+			for (u32 Order = 0; Order < TrackOrderCount; Order++)
+			{
+				if (TrackOrder[Order] == TrackId)
+				{
+					Found = true;
+					break;
+				}
+			}
+
+			if (!Found)
+			{
+				InsertTrack(TrackId);
+			}
+		}
+	}
+
+	if (SortRequested && HasWeight)
+	{
+		SortTrackOrder();
+		SortRequested = false;
+	}
+
+	const int Rows = std::max(TrackRows, 1);
+	const float TrackHeight = float(Rows) * RowHeight;
+	const float ContentHeight = float(TrackOrderCount) * (TrackHeight + 4.0f);
+	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+	const ImGuiStyle& Style = ImGui::GetStyle();
+	const float MaxBottom = Viewport->WorkPos.y + Viewport->WorkSize.y - Style.WindowPadding.y - Style.WindowBorderSize;
+	const float MaxHeight = std::max(MaxBottom - Corner.y, 1.0f);
+	const float ListHeight = std::min(ContentHeight + 1.0f, MaxHeight);
+	const float TrackWidth = std::max(Width - Style.ScrollbarSize * 2.0f, 1.0f);
+	const float Scale = TrackWidth / std::max(Span, 0.001f);
+	if (ImGui::BeginChild("##Tracks", ImVec2(0.0f, ListHeight), ImGuiChildFlags_None))
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(Style.ItemSpacing.x, 0.0f));
+		for (u32 Index = 0; Index < TrackOrderCount; Index++)
+		{
+			const u32 TrackId = TrackOrder[Index];
+			const u32 Root = Profiler.Tracks[TrackId].Root;
+			ImGui::PushID(int(TrackId));
+			if (ImGui::BeginChild("##Track", ImVec2(0.0f, TrackHeight), ImGuiChildFlags_None))
+			{
+				List = ImGui::GetWindowDrawList();
+				const ImVec2 TrackCorner = ImGui::GetCursorScreenPos();
+				u32 Deepest = 0;
+				if (NodeMs[Root] > 0.0f)
+				{
+					Deepest = DrawNode(Root, TrackCorner.x, Scale, TrackCorner.y);
+				}
+				else
+				{
+					// Keep idle tracks visible: stable slots are what makes a track easy to pick
+					DrawBlock(Root, TrackCorner.x, TrackWidth, TrackCorner.y, true);
+				}
+
+				ImGui::Dummy(ImVec2(TrackWidth, float(Deepest + 1) * RowHeight));
+			}
+
+			ImGui::EndChild();
+			ImGui::PopID();
+			List = ImGui::GetWindowDrawList();
+			ImGui::Dummy(ImVec2(0.0f, 4.0f));
+		}
+
+		ImGui::PopStyleVar();
+	}
+
+	ImGui::EndChild();
 }
 
 u32 CProfilerOverlay::DrawNode(u32 Node, float X, float Scale, float Top)
@@ -371,6 +474,93 @@ u32 CProfilerOverlay::DrawNode(u32 Node, float X, float Scale, float Top)
 	}
 
 	return Deepest;
+}
+
+u32 CProfilerOverlay::CountActive(u32 Node) const
+{
+	u32 Count = NodeMs[Node] > 0.0f ? 1 : 0;
+	for (u32 Child = g_FrameProfiler.Nodes[Node].FirstChild; Child != None; Child = g_FrameProfiler.Nodes[Child].NextSibling)
+	{
+		Count += CountActive(Child);
+	}
+
+	return Count;
+}
+
+void CProfilerOverlay::SortTrackOrder()
+{
+	u32 Weights[CFrameProfiler::MaxTracks];
+	for (u32 Index = 0; Index < TrackOrderCount; Index++)
+	{
+		Weights[Index] = CountActive(g_FrameProfiler.Tracks[TrackOrder[Index]].Root);
+	}
+
+	for (u32 Index = 1; Index < TrackOrderCount; Index++)
+	{
+		const u32 Track = TrackOrder[Index];
+		const u32 Weight = Weights[Index];
+		u32 Insert = Index;
+		for (; Insert > 0; Insert--)
+		{
+			const u32 Prev = TrackOrder[Insert - 1];
+			const u32 PrevWeight = Weights[Insert - 1];
+			if (PrevWeight > Weight)
+			{
+				break;
+			}
+
+			const int Cmp = xr_strcmp(g_FrameProfiler.Tracks[Prev].Name, g_FrameProfiler.Tracks[Track].Name);
+			if (PrevWeight == Weight && (Cmp < 0 || (Cmp == 0 && Prev < Track)))
+			{
+				break;
+			}
+
+			TrackOrder[Insert] = Prev;
+			Weights[Insert] = PrevWeight;
+		}
+
+		TrackOrder[Insert] = Track;
+		Weights[Insert] = Weight;
+	}
+}
+
+void CProfilerOverlay::InsertTrack(u32 TrackId)
+{
+	if (TrackOrderCount >= CFrameProfiler::MaxTracks)
+	{
+		return;
+	}
+
+	const u32 Weight = CountActive(g_FrameProfiler.Tracks[TrackId].Root);
+	u32 Insert = TrackOrderCount;
+	for (u32 Index = 0; Index < TrackOrderCount; Index++)
+	{
+		const u32 Other = TrackOrder[Index];
+		const u32 OtherWeight = CountActive(g_FrameProfiler.Tracks[Other].Root);
+		if (OtherWeight < Weight)
+		{
+			Insert = Index;
+			break;
+		}
+
+		if (OtherWeight == Weight)
+		{
+			const int Cmp = xr_strcmp(g_FrameProfiler.Tracks[Other].Name, g_FrameProfiler.Tracks[TrackId].Name);
+			if (Cmp > 0 || (Cmp == 0 && Other > TrackId))
+			{
+				Insert = Index;
+				break;
+			}
+		}
+	}
+
+	for (u32 Index = TrackOrderCount; Index > Insert; Index--)
+	{
+		TrackOrder[Index] = TrackOrder[Index - 1];
+	}
+
+	TrackOrder[Insert] = TrackId;
+	TrackOrderCount++;
 }
 
 void CProfilerOverlay::DrawBlock(u32 Node, float X, float Width, float Y, bool Ancestor)
