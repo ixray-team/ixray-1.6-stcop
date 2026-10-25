@@ -748,6 +748,9 @@ void Render3rdAdjust();
 void Render3DIconAdjust();
 void RenderDemoRecordEditorWindow();
 void RenderActorAnimationManager();
+void RenderCinemaFilmMakerEditor();
+void CinemaFilmMaker_Render();
+void CinemaFilmMaker_Shutdown();
 
 /* MISCELLANEOUS */
 

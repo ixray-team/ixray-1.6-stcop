@@ -10,7 +10,9 @@
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
 #include "Nodes/UIDialogsView.h"
-#include "UI/UIEditLibrary.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
@@ -31,7 +33,6 @@ ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 
 static DialogEditor* g_DialogEditor = nullptr;
-static UIEditLibrary* g_ObjectLibrary = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -74,10 +75,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI = new CLevelMain();
 	EContext.UI->RegisterCommands();
 	EContext.UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialogs", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Animations", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_FIRE " Particles", []()->bool {return PTools != nullptr && PTools->IsModified(); }});
+	const int ParticleEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_PERSON " Actors", []()->bool {return ATools != nullptr && ATools->IsModified(); }});
+	const int ActorEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -143,9 +147,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	g_DialogEditor->Show(true);
 	EContext.UI->Push(g_DialogEditor, false);
 
-	g_ObjectLibrary = UIEditLibrary::Init();
-	g_ObjectLibrary->TabIndex = (int)EContext.UI->GeneralTabs.size() - 1;
-	EContext.UI->Push(g_ObjectLibrary, false);
+	UIParticleEditorForm::Create(ParticleEditorTab);
+	UIActorEditorForm::Create(ActorEditorTab);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -159,8 +162,31 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	GContentView->Init();
 	EContext.UI->PushBegin(GContentView);
 
+	// An .object passed on the command line opens in the Actor Editor tab
+	{
+		int ArgsCount = 0;
+		LPWSTR* Args = CommandLineToArgvW(GetCommandLineW(), &ArgsCount);
+		if (Args != nullptr)
+		{
+			if (ArgsCount > 1)
+			{
+				xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Args[1]));
+				if (FirstArg.ends_with(".object"))
+				{
+					UIActorEditorForm::Open(FirstArg.c_str());
+				}
+			}
+			LocalFree(Args);
+		}
+	}
+
 	splash::SetProgressStatus(100, "Finalizing");
 	splash::Close();
+	if (s.joinable())
+	{
+		s.join();
+	}
+	splash::FocusWindow(g_AppInfo.Window);
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -253,6 +279,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				}
 				pInput->MouseScroll(Event.wheel.y);
 			}break;
+			case SDL_EVENT_DROP_FILE:
+			{
+				xr_string File = Event.drop.data;
+				xr_strlwr(File);
+				UIActorEditorForm::DropFile(File);
+			}break;
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			{
@@ -296,7 +328,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
-	s.join();
+	//s.join();
+
+	// Gives Tools back to the level tool before COMMAND_DESTROY
+	UIActorEditorForm::Destroy();
+
+	// The shared content browser icons hold textures: release them before the device
+	CContentView::ClearIcons();
 	
 	CGitLFSConfig::Instance().Save();
 	GitIntegration.Shutdown();

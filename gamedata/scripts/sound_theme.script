@@ -872,33 +872,25 @@ end
 function load_sound()
 	local snd_ini = ini_file("misc\\script_sound.ltx")
 
-	--' Итерируемся по списку тем.
-	if not snd_ini:section_exist("list") then
-		abort("There is no section [list] in script_sound.ltx")
-	end
-	local n = snd_ini:line_count("list")
-	local id, value = "",""
-	local category = ""
-
-	--' начальная установка
 	theme = {}
 
-	for i=0,n-1 do
-		result, section, value  = snd_ini:r_line("list",i,"","")
+	local function LoadSection(section)
+		local SoundType = snd_ini:line_exist(section, "type") and snd_ini:r_string(section, "type") or ""
 
-		local type = utils.cfg_get_string(snd_ini, section, "type", db.actor, true, "")
-
-		--' Определяем тип звука.
-		if type == "npc" then
+		if SoundType == "npc" then
 			theme[section] = npc_sound(snd_ini, section)
-		elseif type == "actor" then
+		elseif SoundType == "actor" then
 			theme[section] = actor_sound(snd_ini, section)
-		elseif type == "3d" then
+		elseif SoundType == "3d" then
 			theme[section] = object_sound(snd_ini, section)
-		elseif type == "looped" then
+		elseif SoundType == "looped" then
 			theme[section] = looped_sound(snd_ini, section)
 		end
+
+		return false
 	end
+
+	snd_ini:section_for_each(LoadSection)
 end
 --' Загрузка звуков НПС
 function init_npc_sound(npc)

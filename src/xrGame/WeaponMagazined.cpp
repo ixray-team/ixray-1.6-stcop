@@ -1736,7 +1736,7 @@ void CWeaponMagazined::SelectShotSound()
 	}
 	else
 	{
-		if (GetSilencerAttached())
+		if (IsSilencerAttached())
 		{
 			if (get_elapsed == 1 && m_eSoundsShotFlags.test(ESoundsShotFlags::ssf_shoot_last_sil))
 			{

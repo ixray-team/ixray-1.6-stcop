@@ -461,17 +461,6 @@ namespace splash
 		}
 #endif
 
-		SDL_PropertiesID props = SDL_GetWindowProperties(window);
-		HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-
-		if (!hwnd)
-		{
-			SDL_Log("Failed to get HWND: %s", SDL_GetError());
-		}
-		else
-		{
-			SetForegroundWindow(hwnd);
-		}
 
 		while (running)
 		{
@@ -542,6 +531,9 @@ namespace splash
 		SDL_DestroySurface(overlaySurf);
 		SDL_DestroyRenderer(renderer);
 		renderer = nullptr;
+#ifdef IXR_WINDOWS
+		AllowSetForegroundWindow(GetCurrentProcessId());
+#endif
 		SDL_DestroyWindow(window);
 		window = nullptr;
 	}
@@ -550,6 +542,56 @@ namespace splash
     {
         running = false;
     }
+
+	SPLASH_API void FocusWindow(SDL_Window* Window)
+	{
+		if (!Window)
+		{
+			return;
+		}
+
+		SDL_RaiseWindow(Window);
+
+#ifdef IXR_WINDOWS
+		SDL_PropertiesID Props = SDL_GetWindowProperties(Window);
+		HWND Hwnd = (HWND)SDL_GetPointerProperty(Props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+		if (Hwnd)
+		{
+			if (IsIconic(Hwnd))
+			{
+				ShowWindow(Hwnd, SW_RESTORE);
+			}
+
+			HWND ForegroundWnd = GetForegroundWindow();
+			if (ForegroundWnd != Hwnd)
+			{
+				DWORD ForegroundThreadId = ForegroundWnd ? GetWindowThreadProcessId(ForegroundWnd, nullptr) : 0;
+				DWORD CurrentThreadId = GetCurrentThreadId();
+
+				if (ForegroundThreadId != 0 && ForegroundThreadId != CurrentThreadId)
+				{
+					AttachThreadInput(ForegroundThreadId, CurrentThreadId, TRUE);
+					BringWindowToTop(Hwnd);
+					SetForegroundWindow(Hwnd);
+					AttachThreadInput(ForegroundThreadId, CurrentThreadId, FALSE);
+				}
+				else
+				{
+					BringWindowToTop(Hwnd);
+					SetForegroundWindow(Hwnd);
+				}
+			}
+			else
+			{
+				BringWindowToTop(Hwnd);
+				SetForegroundWindow(Hwnd);
+			}
+
+			SetFocus(Hwnd);
+			SetActiveWindow(Hwnd);
+		}
+#endif
+	}
 }
 #else
 namespace splash
@@ -569,6 +611,13 @@ namespace splash
     void SetProgressStatus(int prog, const char* status)
     {
 
+    }
+    void FocusWindow(SDL_Window* Window)
+    {
+        if (Window)
+        {
+            SDL_RaiseWindow(Window);
+        }
     }
 }
 

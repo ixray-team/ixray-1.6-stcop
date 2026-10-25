@@ -1036,4 +1036,19 @@
 	<string id="ui_mm_dof_near"><text>Ближняя граница базового DOF</text></string>
 	<string id="ui_mm_dof_focus"><text>Дистанция базового фокуса</text></string>
 	<string id="ui_mm_dof_far"><text>Дальняя граница базового DOF</text></string>
+	<string id="ui_mm_r_dlss_model">
+		<text>Модель DLSS</text>
+	</string>
+	<string id="st_dlss_model_auto">
+		<text>Авто</text>
+	</string>
+	<string id="st_dlss_model_cnn">
+		<text>Свёрточная нейронная сеть</text>
+	</string>
+	<string id="st_dlss_model_transformer">
+		<text>Модель преобразования</text>
+	</string>
+	<string id="st_dlss_model_transformer2">
+		<text>Модель преобразования 2-го поколения</text>
+	</string>
 </string_table>

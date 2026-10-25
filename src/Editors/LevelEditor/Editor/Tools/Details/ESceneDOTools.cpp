@@ -487,7 +487,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
     }
 
     // detail density
-    ps_r__Detail_density = ini.r_float("main", "detail_density");
+    ps_current_detail_density = ini.r_float("main", "detail_density");
 
     // base texture
     const char* s = ini.r_string("main", "base_texture");
@@ -644,7 +644,7 @@ void EDetailManager::SaveLTX(CInifile& ini, int id)
     }
 
     // detail density
-    ini.w_float("main", "detail_density", ps_r__Detail_density);
+    ini.w_float("main", "detail_density", ps_current_detail_density);
 
     u32 cnt_snap_objects = m_SnapObjects.size();
     ini.w_u32("main", "snap_objects_count", cnt_snap_objects);
@@ -711,7 +711,7 @@ bool EDetailManager::LoadStream(IReader& F)
     }
 
     if (F.find_chunk(DETMGR_CHUNK_DENSITY))
-		ps_r__Detail_density= F.r_float();
+		ps_current_detail_density= F.r_float();
 
 	// base texture
 	if(F.find_chunk(DETMGR_CHUNK_BASE_TEXTURE)){
@@ -795,7 +795,7 @@ void EDetailManager::SaveStream(IWriter& F)
 		F.close_chunk();
     }
     F.open_chunk		(DETMGR_CHUNK_DENSITY);
-    F.w_float			(ps_r__Detail_density);
+    F.w_float			(ps_current_detail_density);
     F.close_chunk		();
 	// snap objects
 	F.open_chunk		(DETMGR_CHUNK_SNAP_OBJECTS);
@@ -930,7 +930,7 @@ void EDetailManager::OnBaseTextureChange(PropValue* prop)
 void EDetailManager::FillProp(const char* pref, PropItemVec& items)
 {
 	PropValue* P;
-    P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_r__Detail_density);
+    P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_current_detail_density);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnDensityChange);
     P=PHelper().CreateChoose(items, PrepareKey(pref,"Base Texture"),					&m_Base.name, smTexture);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnBaseTextureChange);

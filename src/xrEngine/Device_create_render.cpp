@@ -148,6 +148,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
 				ImGui::MenuItem("3D Icons Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3DIconAdjust)]);
 				ImGui::MenuItem("Actor Animations", nullptr, &States[static_cast<u8>(EditorUI::Game_ActorAnimations)]);
+				ImGui::MenuItem("Cinema Film Maker Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)]);
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
 				ImGui::MenuItem("Cutscene Adjust", nullptr, &States[static_cast<u8>(EditorUI::CutsceneAdjust)]);
@@ -339,10 +340,10 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		}
 	}
 
-#if defined(__APPLE__)
-	// macOS routes the first click into window activation, so it never reaches the game.
-	SDL_RaiseWindow(g_AppInfo.Window);
-#endif
+	if (!g_dedicated_server && !Autotest::Active())
+	{
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
 
 	ResizeBuffers(width, height);
 }

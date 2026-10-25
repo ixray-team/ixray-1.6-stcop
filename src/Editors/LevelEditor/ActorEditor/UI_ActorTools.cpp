@@ -1,0 +1,1354 @@
+//---------------------------------------------------------------------------
+
+#include "stdafx.h"
+#include "ActorEditor.h"
+#include "../Editor/Utils/ContentView.h"
+
+#define dSINGLE
+#include "../../../Include/xrRender/animation_blend.h"
+#include "../../../xrPhysics/Physics.h"
+#include "../../xrECore/Editor/EditMesh.h"
+#include "../../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
+#include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
+#include "../../../plugins/PCore/xr_ogf.h"
+#include "../../../plugins/PCore/xr_ogf_v4.h"
+#include "../../../plugins/PCore/xr_writer.h"
+
+CActorTools*	ATools = nullptr;
+//------------------------------------------------------------------------------
+#define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
+
+ECORE_API void ShapeRotate(CBone& Bone, const Fvector& _amount);
+ECORE_API void ShapeMove(CBone& Bone, const Fvector& _amount);
+ECORE_API void BoneRotate(CBone& Bone, const Fvector& _axis, float angle);
+
+
+void EngineModel::DeleteVisual		()
+{
+	DeletePhysicsShell	();
+	Render->model_Delete(m_pVisual);
+	m_pVisual	= 0;
+	m_pBlend	= 0;
+}
+
+void	   EngineModel::		OnRender			()
+{
+	Fmatrix temp = Fmatrix();
+	UpdateObjectXform(temp);
+}
+
+CActorTools::CActorTools()
+{
+	m_IsPhysics = false;
+	m_ChooseSkeletonBones = false;
+	m_Props = 0;
+	m_pEditObject = 0;
+	m_bObjectModified = false;
+	m_ObjectItems = 0;
+	m_Flags.zero();
+	m_EditMode = emObject;
+	fFogness = 0.9f;
+	dwFogColor = 0xffffffff;
+
+	BoneView = new CUIBoneView;
+	UVView = new CUIUVView;
+}
+
+CActorTools::~CActorTools()
+{
+	xr_delete(BoneView);
+	xr_delete(UVView);
+}
+
+#include "../../../xrEngine/IGame_Persistent.h"
+#include "../../xrECore/Editor/D3DUtils.h"
+
+const u32 color_bone_sel_color = 0xFFFFFFFF;
+const u32 color_bone_norm_color = 0xFFFFFF00;
+const u32 color_bone_link_color = 0xFFA0A000;
+const u32 color_bone_sel_cm = 0xFFFF0000;
+const u32 color_bone_norm_cm = 0xFF700000;
+const float joint_size = 0.025f;
+
+void CActorTools::Render()
+{
+	if (!m_bReady) return;
+	PrepareLighting();
+	m_PreviewObject.Render();
+
+	// Library objects are previewed while no object is edited, or captured for their LOD
+	if (UIActorLibrary::IsPreviewForced())
+	{
+		UIActorLibrary::OnRender();
+		return;
+	}
+
+	if (!m_pEditObject)
+	{
+		UIActorLibrary::OnRender();
+	}
+	if (m_pEditObject) 
+	{
+		Fmatrix World = Fidentity;
+		{
+			m_pEditObject->UpdateObjectXform(World);
+		}
+		m_RenderObject.OnRender();
+		if (m_RenderObject.IsRenderable() && UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine)
+		{
+			RImplementation.model_RenderSingle(m_RenderObject.m_pVisual, m_RenderObject.ObjectXFORM(), m_RenderObject.m_fLOD);
+			RCache.set_xform_world(World);
+			if (EPrefs->object_flags.is(epoDrawJoints))
+			{
+				CKinematics* K = dynamic_cast<CKinematics*>(m_RenderObject.m_pVisual);
+				if (K)
+				{
+					u16 bcnt = K->LL_BoneCount();
+					for (u16 bidx = 0; bidx < bcnt; ++bidx)
+					{
+						EDevice->SetShader(GEditorDraw.WireShader);
+
+						Fmatrix M = Fmatrix().mul(m_RenderObject.ObjectXFORM(), K->LL_GetTransform(bidx));
+
+						Fvector p1 = M.c;
+						u32 c_joint = color_bone_norm_color;
+						DU_impl.DrawJoint(p1, joint_size, c_joint);
+
+						if (EPrefs->object_flags.is(epoDrawBoneAxis))
+						{
+							DU_impl.DrawObjectAxis(M, 0.03f, false);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			// update transform matrix
+			if (!IsPhysics())World = m_AVTransform;
+			m_pEditObject->RenderSkeletonSingle(NULL, World);
+		}
+	}
+
+	inherited::Render();
+}
+
+void CActorTools::RenderEnvironment()
+{
+	if (psDeviceFlags.is(rsEnvironment))
+	{
+		g_pGamePersistent->Environment().RenderSky();
+		g_pGamePersistent->Environment().RenderClouds();
+	}
+}
+
+void CActorTools::OnFrame()
+{
+	if (!m_bReady) return;
+	//.    if (m_KeyBar) m_KeyBar->UpdateBar();
+	m_PreviewObject.Update();
+	if (m_pEditObject)
+	{
+		// update matrix
+		Fmatrix	mTranslate, mRotate, mScale;
+		mRotate.setHPB(m_pEditObject->a_vRotate.y, m_pEditObject->a_vRotate.x, m_pEditObject->a_vRotate.z);
+		mTranslate.translate(m_pEditObject->a_vPosition);
+		mScale.scale(m_pEditObject->t_vScale);
+		m_AVTransform.mul(mTranslate, mRotate);
+		m_AVTransform.mulB_43(mScale);
+
+		if (!UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine)
+		{
+			m_pEditObject->OnFrame();
+
+			if (m_PreviewObject.SelectedObject != nullptr)
+			{
+				m_PreviewObject.SelectedObject->OnFrame();
+			}
+		}
+
+		if (!UIActorEditorForm::GetKeyForm()->AutoChange())
+		{
+			m_pEditObject->m_SMParam.t_current = float(UIActorEditorForm::GetKeyForm()->Position()) ;
+		}
+		//CKinematicsAnimated* KA = dynamic_cast<CKinematicsAnimated*>(m_RenderObject.m_pVisual);
+		if (m_RenderObject.IsRenderable() && m_pEditObject->IsSkeleton() && m_RenderObject.m_pVisual)
+		{
+
+			CKinematicsAnimated* KA = dynamic_cast<CKinematicsAnimated*>(m_RenderObject.m_pVisual);
+			if (KA && !UIActorEditorForm::GetKeyForm()->AutoChange() && m_RenderObject.m_pBlend)
+			{
+				float tm = float(UIActorEditorForm::GetKeyForm()->Position());
+				for (int k = 0; k < MAX_PARTS; k++)
+				{
+					if (KA->LL_PartBlendsCount(k))
+					{
+						CBlend* B = KA->LL_PartBlend(k, 0);
+						B->timeCurrent = tm;
+					}
+				}
+			}
+
+			IKinematics* K = m_RenderObject.m_pVisual->dcast_PKinematics();
+			VERIFY(K);
+			// K->Bone_Calculate			(&K->LL_GetData(K->LL_GetBoneRoot()),&Fidentity);
+			if (!UIActorEditorForm::GetKeyForm()->AutoChange())
+				K->Bone_Calculate(&K->LL_GetData(K->LL_GetBoneRoot()), &Fidentity);
+			else
+				K->CalculateBones(true);
+		}
+
+	}
+	if (m_Flags.is(flRefreshShaders))
+	{
+		m_Flags.set(flRefreshShaders, false);
+		m_pEditObject->OnDeviceDestroy();
+	}
+	if (m_Flags.is(flMakeThumbnail))
+	{
+		m_Flags.set(flMakeThumbnail, false);
+
+		// The next frame shows only the object
+		ImageLib.BeginThumbnailCapture();
+		EContext.UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+		(
+			[this]()
+			{
+				RealMakeThumbnail();
+				ImageLib.EndThumbnailCapture();
+			}
+		);
+	}
+	if (m_Flags.is(flGenerateLODHQ)|| m_Flags.is(flGenerateLODLQ))
+	{
+		RealGenerateLOD(m_Flags.is(flGenerateLODHQ));
+		m_Flags.set(flGenerateLODHQ, false);
+		m_Flags.set(flGenerateLODLQ, false);
+	}
+	if (m_Flags.is(flRefreshSubProps))
+	{
+		m_Flags.set(flRefreshSubProps, false);
+
+		xr_vector<ListItem*> items;
+		m_ObjectItems->GetSelected(0, items, false);
+		OnObjectItemsFocused(items);
+	}
+
+	if (m_Flags.is(flRefreshProps))
+		RealUpdateProperties();
+
+	/*if (fraLeftBar->ebRenderEditorStyle->Down && !m_CurrentMotion.IsEmpty() && NULL == m_pEditObject->m_ActiveSMotion)
+	{
+		AnsiString	tmp = m_CurrentMotion;
+		m_CurrentMotion = "";
+
+		SetCurrentMotion(tmp.c_str(), m_CurrentSlot);
+	}*/
+}
+
+bool CActorTools::OnCreate()
+{
+	inherited::OnCreate();
+	m_ObjectItems = new UIItemListForm();
+	m_ObjectItems->m_Flags.set(UIItemListForm::fMultiSelect, true);
+	m_Props = new UIPropertiesForm();
+	m_ObjectItems->SetOnItemsFocusedEvent({this, &CActorTools::OnObjectItemsFocused});
+	m_PreviewObject.OnCreate();
+
+	// key bar
+	OnDeviceCreate();
+
+	EContext.UI->Push(BoneView, false);
+	EContext.UI->Push(UVView, false);
+
+	return true;
+}
+
+void CActorTools::OnDestroy()
+{
+	inherited::OnDestroy();
+
+	xr_delete(m_Props);
+	xr_delete(m_ObjectItems);
+	m_PreviewObject.OnDestroy();
+
+	m_PreviewObject.Clear();
+	m_RenderObject.Clear();
+	xr_delete(m_pEditObject);
+}
+
+bool CActorTools::IfModified()
+{
+	if (IsModified())
+	{
+		int mr = ELog.DlgMsg(mtConfirmation, "The '%s' has been modified.\nDo you want to save your changes?", GetEditFileName().c_str());
+		switch (mr)
+		{
+		case mrYes: if (!CommandSave(CCommandVar(), CCommandVar())) return false; else { m_bObjectModified = false; }break;
+		case mrNo: m_bObjectModified = false; break;
+		case mrCancel: return false;
+		}
+	}
+	return true;
+}
+
+void CActorTools::Modified()
+{
+	m_bObjectModified = true;
+}
+void  CActorTools::OnBoneModified(void)
+{
+	Modified();
+	RefreshSubProperties();
+	UndoSave();
+}
+void CActorTools::OnItemModified(void)
+{
+	switch (m_EditMode) {
+	case emObject:      OnObjectModified();		break;
+	case emMotion: 		OnMotionDefsModified();	break;
+	case emBone:      	OnBoneModified();		break;
+	case emSurface:     OnObjectModified();		break;
+	case emMesh:		break;
+	}
+}
+
+
+
+const char* CActorTools::GetInfo()
+{
+	return 0;
+}
+
+void CActorTools::ZoomObject(bool bSelOnly)
+{
+	VERIFY(m_bReady);
+	if (m_pEditObject) {
+		Fbox BB;
+		switch (m_EditMode) {
+		case emBone: {
+			BoneVec lst;
+			if (m_pEditObject->GetSelectedBones(lst)) {
+				BB.invalidate();
+				for (BoneIt b_it = lst.begin(); b_it != lst.end(); b_it++) {
+					Fvector 	C = { 0,0,0 };
+					float		r = 0.5f;
+					switch ((*b_it)->shape.type) {
+					case SBoneShape::stBox:
+						r = std::max(std::max((*b_it)->shape.box.m_halfsize.x, (*b_it)->shape.box.m_halfsize.y), (*b_it)->shape.box.m_halfsize.z);
+						C = (*b_it)->shape.box.m_translate;
+						break;
+					case SBoneShape::stSphere:
+						r = (*b_it)->shape.sphere.R;
+						C = (*b_it)->shape.sphere.P;
+						break;
+					case SBoneShape::stCylinder:
+						r = std::max((*b_it)->shape.cylinder.m_height, (*b_it)->shape.cylinder.m_radius);
+						C = (*b_it)->shape.cylinder.m_center;
+						break;
+					}
+					(*b_it)->_LTransform().transform_tiny(C);
+					m_AVTransform.transform_tiny(C);
+					Fbox bb; 	bb.set(C, C); bb.grow(r);
+					BB.merge(bb);
+				}
+			}
+		}break;
+		default:
+			BB = m_pEditObject->GetBox();
+		}
+		EContext.UI->CurrentView().m_Camera.ZoomExtents(BB);
+	}
+}
+
+bool CActorTools::Load(const char* obj_name)
+{
+	VERIFY(m_bReady);
+	CEditableObject* O = new CEditableObject(obj_name);
+
+	xr_string Str = obj_name;
+	xr_strlwr(Str);
+
+	UVView->SetSurface(nullptr, nullptr);
+	
+	bool loaded = false;
+	if (FS.TryLoad(Str))
+	{
+		if (0 == xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".ogf"))
+		{
+			std::unique_ptr<xray_re::xr_ogf> ogf(xray_re::xr_ogf::load_ogf(Str.c_str()));
+			if (ogf)
+			{
+				ogf->to_object();
+				xray_re::xr_memory_writer writer;
+				ogf->save_object(writer);
+				IReader reader(const_cast<u8*>(writer.data()), writer.tell());
+				loaded = O->Load(reader);
+				if (loaded)
+					O->SetLoadInfo(Str.c_str(), FS.get_file_age(Str.c_str()));
+			}
+		}
+		else
+		{
+			loaded = O->Load(Str.c_str());
+		}
+	}
+
+	if (loaded)
+	{
+		xr_delete(m_pEditObject);
+		m_pEditObject = O;
+		m_pEditObject->Optimize();
+		// delete visual
+		m_RenderObject.Clear();
+
+		UIActorEditorForm::SetRenderMode(false);
+
+		UpdateProperties();
+
+		xr_string Name = "IX-Ray Actor Editor [";
+		Name += obj_name;
+		Name += "]";
+
+		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
+
+		return true;
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Can't load object file '%s'.", obj_name);
+	}
+	xr_delete(O);
+	return false;
+}
+
+bool CActorTools::Save(const char* obj_name, bool bInternal)
+{
+	xr_string 		full_name;
+	full_name = obj_name;
+	VERIFY(m_bReady);
+	if (m_pEditObject) {
+		EFS.MarkFile(full_name.c_str(), true);
+		const bool ogf = 0 == xr_stricmp(EFS.ExtractFileExt(full_name.c_str()).c_str(), ".ogf");
+		if (ogf ? ExportOGF(full_name.c_str()) : m_pEditObject->Save(full_name.c_str()))
+		{
+			if (!bInternal)
+				m_bObjectModified = false;
+			return true;
+		}
+	}
+	return false;
+}
+
+void CActorTools::Reload()
+{
+	VERIFY(m_bReady);
+	// visual part
+}
+
+void CActorTools::OnDeviceCreate()
+{
+	if (m_pEditObject) {
+		m_pEditObject->OnDeviceCreate();
+		MakePreview();
+	}
+}
+
+void CActorTools::OnDeviceDestroy()
+{
+	if (m_pEditObject) {
+		m_pEditObject->OnDeviceDestroy();
+		m_RenderObject.DeleteVisual();
+	}
+}
+
+void CActorTools::Clear()
+{
+	PhysicsStopSimulate();
+	inherited::Clear();
+	m_CurrentMotion = "";
+	m_CurrentSlot = 0;
+	// delete visuals
+	if (m_pEditObject)
+		m_pEditObject->DeletePhysicsShell();
+	xr_delete(m_pEditObject);
+	m_RenderObject.Clear();
+	//	m_PreviewObject.Clear();
+	m_ObjectItems->ClearList();
+	m_Props->ClearProperties();
+
+	m_bObjectModified = false;
+	m_Flags.set(flUpdateGeometry | flUpdateMotionDefs | flUpdateMotionKeys | flReadOnlyMode, false);
+	m_EditMode = emObject;
+
+	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Actor Editor");
+	EContext.UI->RedrawScene();
+}
+
+void CActorTools::OnShowHint(AStringVec& SS)
+{
+}
+extern xr_string MakeFullBoneName(CBone* bone);
+bool  CActorTools::MouseStart(TShiftState Shift)
+{
+	inherited::MouseStart(Shift);
+
+	if (m_pEditObject == nullptr)
+		return false;
+
+	switch (m_Action) {
+	case etaSelect:
+		switch (UIActorEditorForm::GetPickMode())
+		{
+			case 2:
+			{
+				CBone* B = m_pEditObject->PickBone(EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, m_AVTransform);
+				bool bVal = B ? (Shift & ssAlt) ? false : ((Shift & ssCtrl) ? !B->Selected() : true) : false;
+				if(B)
+				SelectListItem(BONES_PREFIX, B ? MakeFullBoneName(B).c_str() : 0, bVal, (Shift & ssCtrl) || (Shift & ssAlt), true);
+			}
+			break;
+			case 1:
+			{
+				SRayPickInfo pinf;
+				float dis = EContext.UI->ZFar();
+				Fmatrix iTransform;
+				iTransform.invert(m_AVTransform);
+				if (m_pEditObject->RayPick(dis, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, iTransform, &pinf))
+				{
+					CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+					xr_string s_name = xr_string("Surfaces\\") + xr_string(surf->m_Name.c_str());
+					m_ObjectItems->SelectItem(s_name.c_str());
+				}
+			}
+			break;
+		}
+
+		break;
+	case etaAdd:
+		break;
+    case etaMove:
+        break;
+	case etaRotate:
+        break;
+	}
+	return m_bHiddenMode;
+}
+
+bool  CActorTools::MouseEnd(TShiftState Shift)
+{
+	inherited::MouseEnd(Shift);
+
+	if (m_pEditObject == nullptr)
+		return true;
+
+	switch (m_Action)
+	{
+	case etaSelect:
+        break;
+	case etaAdd:
+        break;
+	case etaMove:
+	{
+		switch (m_EditMode)
+		{
+		case emObject:
+			if (Shift&ssCtrl)
+				OnMotionKeysModified();
+			break;
+
+		case emBone:
+			if (Shift&ssCtrl)
+				OnBoneModified();
+
+			if (Shift&ssAlt)
+				OnBoneModified();
+			break;
+		}
+	}break;
+	case etaRotate:
+	{
+		switch (m_EditMode)
+		{
+		case emObject:
+			if (Shift&ssCtrl)
+				OnMotionKeysModified();
+			break;
+
+		case emBone:
+			if (Shift&ssCtrl)
+				OnBoneModified();
+
+			if (Shift&ssAlt)
+				OnBoneModified();
+			break;
+		}
+	}break;
+	case etaScale:
+	{
+		switch (m_EditMode)
+		{
+		case emBone:
+			if (Shift&ssCtrl)
+				OnBoneModified();
+			break;
+		}
+	}break;
+	}
+	return true;
+}
+
+void  CActorTools::MouseMove(TShiftState Shift)
+{
+	inherited::MouseMove(Shift);
+	if (!m_pEditObject) return;
+
+	switch (m_Action)
+	{
+	case etaSelect:
+        break;
+	case etaAdd:
+        break;
+	case etaMove:
+	{
+		switch (m_EditMode)
+		{
+		case emObject:
+			m_pEditObject->a_vPosition.add(m_MovedAmount);
+			break;
+
+		case emBone:
+			BoneVec lst;
+			if (m_pEditObject->GetSelectedBones(lst))
+			{
+				if (Shift & ssCtrl) {
+					for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+					   ShapeMove(*(*b_it),m_MovedAmount);
+
+				}
+				else
+					if (Shift & ssAlt)
+					{
+						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+							(*b_it)->BindMove(m_MovedAmount);
+
+						m_pEditObject->OnBindTransformChange();
+						RefreshSubProperties();
+					}
+					else {
+						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+							(*b_it)->BoneMove(m_MovedAmount);
+
+						RefreshSubProperties();
+					}
+			}
+			break;
+		}
+	}break;
+	case etaRotate:
+	{
+		switch (m_EditMode)
+		{
+		case emObject:
+			if (Shift & ssCtrl)
+				m_pEditObject->a_vRotate.mad(m_RotateVector, m_RotateAmount);
+			break;
+
+		case emBone:
+		{
+			BoneVec lst;
+			Fvector rot;
+			rot.mul(m_RotateVector, m_RotateAmount);
+			if (m_pEditObject->GetSelectedBones(lst))
+			{
+				if (Shift & ssCtrl)
+				{
+					for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+					  ShapeRotate(*(*b_it),rot);
+
+				}
+				else
+					if (Shift & ssAlt)
+					{
+						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+							(*b_it)->BindRotate(rot);
+
+						m_pEditObject->OnBindTransformChange();
+						RefreshSubProperties();
+					}
+					else
+					{
+						for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+						   BoneRotate(*(*b_it),m_RotateVector, m_RotateAmount);
+
+						RefreshSubProperties();
+					}
+			}
+		}break;
+		}
+	}break;
+	case etaScale:
+	{
+		switch (m_EditMode)
+		{
+		case emBone:
+			if (Shift & ssCtrl)
+			{
+				BoneVec lst;
+				if (m_pEditObject->GetSelectedBones(lst))
+					for (BoneIt b_it = lst.begin(); b_it != lst.end(); ++b_it)
+						(*b_it)->ShapeScale(m_ScaleAmount);
+			}
+			break;
+		}
+	}break;
+	}
+}
+
+bool CActorTools::Pick(TShiftState Shift)
+{
+	return false;
+}
+
+bool CActorTools::RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n)
+{
+	if (m_PreviewObject.SelectedObject)
+	{
+		SRayPickInfo pinf;
+		if (m_PreviewObject.SelectedObject->RayPick(dist, start, dir, Fidentity, &pinf))
+		{
+			if (pt) pt->set(pinf.pt);
+			if (n)
+			{
+				const Fvector* PT[3];
+				pinf.e_mesh->GetFacePT(pinf.inf.id, PT);
+				n->mknormal(*PT[0], *PT[1], *PT[2]);
+			}
+			return true;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		Fvector np; np.mad(start, dir, dist);
+		if ((start.y > 0) && (np.y < 0.f))
+		{
+			if (pt) pt->set(start);
+			if (n)	n->set(0.f, 1.f, 0.f);
+			return true;
+		}
+		else
+			return false;
+	}
+}
+
+void CActorTools::GetStatTime(float& a, float& b, float& c)
+{
+	if (m_RenderObject.IsRenderable() && UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine && m_RenderObject.m_pBlend)
+	{
+		a = 0;
+		b = m_RenderObject.m_pBlend->timeTotal / m_RenderObject.m_pBlend->speed;
+		c = m_RenderObject.m_pBlend->timeCurrent / m_RenderObject.m_pBlend->speed;
+		if (c > b)
+		{
+			int cnt = iFloor(c / b);
+			c -= (cnt * b);
+		}
+	}
+	else
+	{
+		if (UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Editor && m_pEditObject && m_pEditObject->m_ActiveSMotion)
+		{
+			SAnimParams& P = m_pEditObject->m_SMParam;
+			a = P.min_t;
+			b = P.max_t;
+			c = P.t_current;
+		}
+		else
+		{
+			a = 0;
+			b = 0;
+			c = 0;
+		}
+	}
+}
+
+bool CActorTools::IsEngineMode()
+{
+	return UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine;
+}
+
+void CActorTools::SelectPreviewObject(bool bClear)
+{
+	if (bClear)
+	{
+		m_PreviewObject.Clear(); return;
+	}
+	
+	m_PreviewObject.SelectObject();
+}
+
+void CActorTools::SetPreviewObjectPrefs()
+{
+	m_PreviewObject.SetPreferences();
+}
+
+void CActorTools::OnObjectModified(void)
+{
+	m_Flags.set(flUpdateGeometry, true);
+	OnGeometryModified();
+}
+
+void CActorTools::ShowClipMaker()
+{
+}
+
+bool CActorTools::Import(const char* initial, const char* obj_name)
+{
+	string_path full_name;
+
+	if (initial)
+	{
+		FS.update_path(full_name, initial, obj_name);
+	}
+	else
+	{
+		strcpy(full_name, obj_name);
+	}
+
+	VERIFY(m_bReady);
+	CEditableObject* O = new CEditableObject(obj_name);
+	if (O->Load(full_name))
+	{
+		O->m_objectFlags.set(CEditableObject::eoDynamic, true);
+		O->m_objectFlags.set(CEditableObject::eoProgressive, true);
+		O->m_objectFlags.set(CEditableObject::eoSkipOpt, false);
+		xr_delete(m_pEditObject);
+		m_pEditObject = O;
+		// delete visual
+		m_RenderObject.Clear();
+		UIActorEditorForm::SetRenderMode(false);
+
+		UpdateProperties();
+		return true;
+	}
+	else {
+		ELog.DlgMsg(mtError, "Can't load object file '%s'.", obj_name);
+	}
+	xr_delete(O);
+
+	return false;
+}
+
+bool CActorTools::ImportOMF(const char* obj_name)
+{
+	VERIFY(m_bReady);
+
+	xr_string Str = obj_name;
+	xr_strlwr(Str);
+
+	if (0 != xr_stricmp(EFS.ExtractFileExt(Str.c_str()).c_str(), ".omf"))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	std::unique_ptr<xray_re::xr_ogf_v4> omf(new xray_re::xr_ogf_v4());
+	if (!omf->load_omf(Str.c_str()))
+	{
+		ELog.DlgMsg(mtError, "Can't load OMF file '%s'.", obj_name);
+		return false;
+	}
+
+	xray_re::xr_memory_writer writer;
+	omf->save_skls(writer);
+
+	string_path temp_fn;
+	FS.update_path(temp_fn, "$temp$", "temp_import.skls");
+	IWriter* temp_w = FS.w_open(temp_fn);
+	if (!temp_w)
+	{
+		ELog.DlgMsg(mtError, "Can't create temporary file.");
+		return false;
+	}
+	temp_w->w(writer.data(), writer.tell());
+	FS.w_close(temp_w);
+
+	SMotionVec appended_motions;
+	if (m_pEditObject)
+	{
+		m_pEditObject->AppendSMotion(temp_fn, &appended_motions);
+		if (!appended_motions.empty())
+		{
+			OnMotionDefsModified();
+			UpdateProperties();
+			Msg("Imported %zu motion(s) from '%s'.", appended_motions.size(), obj_name);
+			EFS.MarkFile(temp_fn, true);
+			return true;
+		}
+		else
+		{
+			ELog.DlgMsg(mtError, "Failed to import motions from '%s'.", obj_name);
+		}
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "No object loaded. Load a skeleton first, then import OMF.");
+	}
+
+	EFS.MarkFile(temp_fn, true);
+	return false;
+}
+
+bool CActorTools::ExportOGF(const char* name)
+{
+	VERIFY(m_bReady);
+	if (m_pEditObject && m_pEditObject->ExportOGF(name, 4)) return true;
+	return false;
+}
+
+bool CActorTools::ExportOMF(const char* name)
+{
+	VERIFY(m_bReady);
+	if (m_pEditObject && m_pEditObject->ExportOMF(name)) return true;
+	return false;
+}
+
+bool CActorTools::ExportOBJ(const char* name)
+{
+	VERIFY(m_bReady);
+	if (m_pEditObject && m_pEditObject->ExportOBJ(name)) return true;
+	return false;
+}
+
+
+bool CActorTools::ExportCPP(const char* name)
+{
+	if (m_pEditObject)
+	{
+		EditMeshVec& meshes = m_pEditObject->m_Meshes;
+		string128 tmp;
+		IWriter* W = FS.w_open(name);
+
+		for (EditMeshIt m_it = meshes.begin(); m_it != meshes.end(); m_it++)
+		{
+			CEditableMesh* mesh = *m_it;
+			mesh->GenerateVNormals(0, true);
+
+			const st_Face* faces = mesh->m_Faces.data();
+			const Fvector* verts = mesh->m_Vertices.data();
+			const Fvector* vnormals = mesh->GetVNormals();
+			const Fvector* normals = mesh->GetNormals();
+
+			sprintf(tmp, "MESH %s {", mesh->m_Name.c_str());
+			W->w_string(tmp);
+			sprintf(tmp, "\tVERTEX_COUNT %d", mesh->m_Vertices.size());
+			W->w_string(tmp);
+			sprintf(tmp, "\tFACE_COUNT %d", mesh->m_Faces.size());
+			W->w_string(tmp);
+			W->w_string("\tconst Fvector vertices[VERTEX_COUNT] = {");
+			for (u32 v_id = 0; v_id < mesh->m_Vertices.size(); v_id++)
+			{
+				sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(verts[v_id]));
+				W->w_string(tmp);
+			}
+			W->w_string("\t}");
+			W->w_string("\tconst u16 faces[FACE_COUNT*3] = {");
+			for (u32 f_id = 0; f_id < mesh->m_Faces.size(); f_id++)
+			{
+				sprintf(tmp, "\t\t%-d,\t\t%-d,\t\t%-d,", faces[f_id].pv[0].pindex, faces[f_id].pv[1].pindex, faces[f_id].pv[2].pindex);
+				W->w_string(tmp);
+			}
+			W->w_string("\t}");
+
+			if (normals)
+			{
+				W->w_string("\tconst Fvector normals[FACE_COUNT*3] = {");
+				for (u32 n_id = 0; n_id < mesh->m_Faces.size() * 3; n_id++)
+				{
+					sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(normals[n_id]));
+					W->w_string(tmp);
+				}
+				W->w_string("\t}");
+			}
+
+			W->w_string("\tconst Fvector vnormals[FACE_COUNT*3] = {");
+			for (u32 vn_id = 0; vn_id < mesh->m_Faces.size() * 3; vn_id++)
+			{
+				sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(vnormals[vn_id]));
+				W->w_string(tmp);
+			}
+			W->w_string("\t}");
+			W->w_string("}");
+		}
+		FS.w_close(W);
+		return true;
+	}
+	return false;
+}
+
+#include "../../xrECore/Editor/EDetailModel.h"
+bool CActorTools::ExportDM(const char* name)
+{
+	VERIFY(m_bReady);
+
+	if (m_pEditObject)
+	{
+		EDetail DM(false);
+
+		if (!DM.Update(m_pEditObject->m_LibName.c_str()))
+			return false;
+
+		DM.Export(name);
+		return true;
+	}
+	return false;
+}
+
+void CActorTools::WorldMotionRotate(const Fvector& R)
+{
+	R_ASSERT(m_pEditObject && (!m_CurrentMotion.empty()));
+	CSMotion* M = m_pEditObject->FindSMotionByName(m_CurrentMotion.c_str());
+	int rootId = m_pEditObject->GetRootBoneID();
+	M->WorldRotate(rootId, R.y, R.x, R.z);
+	OnMotionKeysModified();
+}
+
+
+
+void CActorTools::SetCurrentMotion(const char* name, u16 slot)
+{
+	if (m_pEditObject)
+	{
+		if ((m_CurrentMotion != name) || (m_CurrentSlot != slot))
+		{
+			m_CurrentMotion = name;
+			m_CurrentSlot = slot;
+			CSMotion* M = m_pEditObject->FindSMotionByName(name);
+			if (M)
+			{
+				m_pEditObject->SetActiveSMotion(M);
+			}
+
+			if (m_PreviewObject.SelectedObject != nullptr)
+			{
+				if (CSMotion* PM = m_PreviewObject.SelectedObject->FindSMotionByName(name))
+				{
+					m_PreviewObject.SelectedObject->SetActiveSMotion(PM);
+				}
+			}
+
+			PlayMotion();
+		}
+	}
+}
+
+CSMotion* CActorTools::GetCurrentMotion()
+{
+	return m_pEditObject ? m_pEditObject->FindSMotionByName(m_CurrentMotion.c_str()) : 0;
+}
+
+CSMotion* CActorTools::FindMotion(const char* name)
+{
+	return m_pEditObject ? m_pEditObject->FindSMotionByName(name) : 0;
+}
+
+const char* CActorTools::ExtractMotionName(const char* full_name, const char* prefix)
+{
+	const char* _templ = "\\Slot ";
+	if (0 == strstr(full_name, _templ))
+		return full_name + xr_strlen(prefix) + 1;
+	else
+	{
+		const char* mot_nm = strstr(full_name, _templ);
+		mot_nm += xr_strlen(_templ);
+		while (isdigit(*mot_nm))
+		{
+			++mot_nm;
+		}
+		return mot_nm + 1;
+	}
+	//    	return full_name + xr_strlen(prefix) + 1 + xr_strlen(_templ) + 1;
+}
+
+u16 CActorTools::ExtractMotionSlot(const char* full_name, const char* prefix)
+{
+	const char* _templ = "\\Slot ";
+	u16 slot = 0;
+	const char* slot_nm = strstr(full_name, _templ);
+	if (0 != slot_nm)
+	{
+		string16 				tmp;
+		slot_nm += xr_strlen(_templ);
+		u32 ii = 0;
+		while (isdigit(*slot_nm))
+		{
+			tmp[ii] = slot_nm[0];
+			++slot_nm;
+			++ii;
+		}
+		tmp[ii] = 0;
+		slot = u16(atoi(tmp) - 1);
+	}
+	return slot;
+}
+
+xr_string CActorTools::BuildMotionPref(u16 slot, const char* prefix)
+{
+	VERIFY(slot < MAX_ANIM_SLOT);
+	string32 slot_nm; 			sprintf(slot_nm, "Slot %1d", slot + 1);
+	return PrepareKey(prefix, slot_nm).c_str();
+}
+
+
+void CActorTools::OptimizeMotions()
+{
+	if (m_pEditObject) {
+		m_pEditObject->OptimizeSMotions();
+		Modified();
+		UndoSave();
+	}
+}
+
+void CActorTools::RealMakeThumbnail()
+{
+	if (CurrentObject())
+	{
+		CEditableObject* obj = CurrentObject();
+		xr_string tex_name, obj_name;
+		tex_name = ChangeFileExt(obj->m_LibName.c_str(), ".thm");
+		obj_name = ChangeFileExt(obj->m_LibName.c_str(), ".object");
+		FS_File 	F;
+		string_path	fname;
+		//.     FS.update_path(fname,_objects_,obj_name.c_str());
+		//.     R_ASSERT	(FS.file_find(fname,F));
+		R_ASSERT(FS.file_find(obj_name.c_str(), F));
+
+		if (ImageLib.CreateOBJThumbnail(tex_name.c_str(), obj, F.time_write)) {
+			ELog.Msg(mtInformation, "Thumbnail successfully created.");
+
+			string_path ObjectFile;
+			FS.update_path(ObjectFile, _objects_, obj_name.c_str());
+			CContentView::InvalidateIcon(FS.fix_path(xr_string(ObjectFile)));
+		}
+		else {
+			ELog.Msg(mtError, "Making thumbnail failed.");
+		}
+	}
+	else {
+		ELog.DlgMsg(mtError, "Can't create thumbnail. Empty scene.");
+	}
+}
+
+void CActorTools::RealGenerateLOD(bool hq)
+{
+	if (m_pEditObject)
+	{
+		bool engine_render = UIActorEditorForm::GetRenderMode() == UIActorEditorForm::Render_Engine;
+		UIActorEditorForm::SetRenderMode(false);
+		CEditableObject* O = m_pEditObject;
+
+		if (O && O->IsMUStatic())
+		{
+			bool bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
+			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
+			xr_string tex_name;
+			tex_name = EFS.ChangeFileExt(O->m_LibName.c_str(), "");
+
+			string_path fname;
+			FS.update_path(fname, _objects_, "");
+
+			if (tex_name.find(fname) == 0)
+			{
+				tex_name.erase(0, xr_strlen(fname));
+			}
+
+			string_path				tmp;
+			strcpy(tmp, tex_name.c_str()); _ChangeSymbol(tmp, '\\', '_'); _ChangeSymbol(tmp, ':', '_');
+			tex_name = xr_string("lod_") + tmp;
+			tex_name = ImageLib.UpdateFileName(tex_name);
+			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, O->Version(), hq ? 4/*7*/ : 1);
+			O->OnDeviceDestroy();
+			O->m_objectFlags.set(CEditableObject::eoUsingLOD, bLod);
+			ELog.Msg(mtInformation, "LOD for object '%s' successfully created.", O->m_LibName.c_str());
+		}
+		else
+		{
+			ELog.Msg(mtError, "Can't create LOD texture from non 'Multiple Usage' object.", O->m_LibName.c_str());
+		}
+		UIActorEditorForm::SetRenderMode(engine_render);
+	}
+
+}
+
+bool CActorTools::BatchConvert(const char* fn)
+{
+	bool bRes = true;
+	FS.TryLoad(fn);
+	CInifile* ini = CInifile::Create(fn); VERIFY(ini);
+	if (ini->section_exist("ogf"))
+	{
+		CInifile::Sect& sect = ini->r_section("ogf");
+		Msg("Start converting %zu items...", sect.Data.size());
+		for (auto it = sect.Data.begin(); it != sect.Data.end(); it++) {
+			string_path 		src_name;
+			string_path 		tgt_name;
+			FS.update_path(src_name, _objects_, it->first.c_str());
+			FS.update_path(tgt_name, _game_meshes_, it->second.c_str());
+			strcpy(src_name, EFS.ChangeFileExt(src_name, ".object").c_str());
+			strcpy(tgt_name, EFS.ChangeFileExt(tgt_name, ".ogf").c_str());
+			if (FS.exist(src_name))
+			{
+				Msg(".Converting '%s' <-> '%s'", it->first.c_str(), it->second.c_str());
+				CEditableObject* O = new CEditableObject("convert");
+				bool res = O->Load(src_name);
+				if (res) res = O->ExportOGF(tgt_name, 4);
+				Log(res ? ".OK" : "!.FAILED");
+				xr_delete(O);
+			}
+			else {
+				Log("!Invalid source file name:", it->first.c_str());
+				bRes = false;
+			}
+			if (EContext.UI->NeedAbort()) break;
+		}
+	}
+	if (ini->section_exist("omf"))
+	{
+		CInifile::Sect& sect = ini->r_section("omf");
+		Msg("Start converting %zu items...", sect.Data.size());
+		for (auto it = sect.Data.begin(); it != sect.Data.end(); ++it)
+		{
+			string_path 		src_name;
+			string_path 		tgt_name;
+			FS.update_path(src_name, _objects_, it->first.c_str());
+			FS.update_path(tgt_name, _game_meshes_, it->second.c_str());
+			strcpy(src_name, EFS.ChangeFileExt(src_name, ".object").c_str());
+			strcpy(tgt_name, EFS.ChangeFileExt(tgt_name, ".omf").c_str());
+			if (FS.exist(src_name))
+			{
+				Msg(".Converting '%s' <-> '%s'", it->first.c_str(), it->second.c_str());
+				CEditableObject* O = new CEditableObject("convert");
+				bool res = O->Load(src_name);
+				if (res) res = O->ExportOMF(tgt_name);
+				Log(res ? ".OK" : "!.FAILED");
+				xr_delete(O);
+			}
+			else {
+				Log("!Invalid source file name:", it->first.c_str());
+				bRes = false;
+			}
+			if (EContext.UI->NeedAbort()) break;
+		}
+	}
+	return bRes;
+}
+
+void CActorTools::PhysicsSimulate()
+{
+	if (!m_pEditObject)return;
+	m_IsPhysics = true;
+	CreatePhysicsWorld();
+	if (UIActorEditorForm::GetRenderMode() != UIActorEditorForm::Render_Editor)
+		m_RenderObject.CreatePhysicsShell(&m_AVTransform);
+	else
+		m_pEditObject->CreatePhysicsShell(&m_AVTransform);
+}
+
+void CActorTools::PhysicsStopSimulate()
+{
+	if (m_IsPhysics)
+	{
+		m_IsPhysics = false;
+		m_RenderObject.DeletePhysicsShell();
+		m_pEditObject->DeletePhysicsShell();
+		DestroyPhysicsWorld();
+	}
+}
+
+CObjectSpace* os = 0;
+void CActorTools::CreatePhysicsWorld()
+{
+	VERIFY(!os);
+	VERIFY(!physics_world());
+	os = create_object_space();
+
+	create_physics_world(false, os, 0);
+}
+
+void CActorTools::DestroyPhysicsWorld()
+{
+	if (physics_world())
+		destroy_physics_world();
+	destroy_object_space(os);
+}
+
+bool CActorTools::GetSelectionPosition(Fmatrix& result)
+{
+	result = m_AVTransform;
+	return true;
+}
+
+void CActorTools::PrepareLighting()
+{
+	// add directional light
+	Flight L;
+	ZeroMemory(&L, sizeof(Flight));
+	L.type = D3DLIGHT_DIRECTIONAL;
+
+	L.diffuse.set(1, 1, 1, 1);
+	L.direction.set(1, -1, 1); L.direction.normalize();
+	EDevice->SetLight(0, L);
+	EDevice->LightEnable(0, true);
+
+	L.diffuse.set(0.2, 0.2, 0.2, 1);
+	L.direction.set(-1, -1, -1); L.direction.normalize();
+	EDevice->SetLight(1, L);
+	EDevice->LightEnable(1, true);
+
+	L.diffuse.set(0.2, 0.2, 0.2, 1);
+	L.direction.set(1, -1, -1); L.direction.normalize();
+	EDevice->SetLight(2, L);
+	EDevice->LightEnable(2, true);
+
+	L.diffuse.set(0.2, 0.2, 0.2, 1);
+	L.direction.set(-1, -1, 1); L.direction.normalize();
+	EDevice->SetLight(3, L);
+	EDevice->LightEnable(3, true);
+
+	L.diffuse.set(1.0, 0.4, 0.3, 1);
+	L.direction.set(0, 1, 0); L.direction.normalize();
+	EDevice->SetLight(4, L);
+	EDevice->LightEnable(4, true);
+
+	L.diffuse.set(0.3, 1.0, 0.4, 1);
+	L.direction.set(-1, -1, -1); L.direction.normalize();
+	EDevice->SetLight(5, L);
+	EDevice->LightEnable(5, true);
+}
+
+bool CActorTools::VerifyMotionRefs()
+{
+	bool result = true;
+
+	if (m_pEditObject == nullptr)
+		return false;
+
+	if (m_pEditObject->IsSkeleton() && !m_pEditObject->m_SMotionRefs.empty())
+	{
+		for (const shared_str& Path : m_pEditObject->m_SMotionRefs)
+		{
+			xr_string FilePath = Path.c_str();
+			FilePath += ".omf";
+
+			if (!FS.exist(_game_meshes_, FilePath.c_str()))
+			{
+				ELog.Msg(mtError, "! Can't find motion file '%s'.", Path.c_str());
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}

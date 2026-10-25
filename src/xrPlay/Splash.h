@@ -8,6 +8,8 @@
 #endif // _EDITOR
 
 
+struct SDL_Window;
+
 namespace splash
 {
 #ifdef _EDITOR
@@ -16,4 +18,5 @@ namespace splash
 	SPLASH_API void Show();
 	SPLASH_API void Close();
 	SPLASH_API void SetProgressStatus(int prog, const char* status);
+	SPLASH_API void FocusWindow(SDL_Window* Window);
 }

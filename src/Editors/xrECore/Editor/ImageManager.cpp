@@ -625,9 +625,67 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 	}
 }
 
-bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
+// Centered square of the last frame of the current viewport.
+// The editor scene goes through the deferred renderer, so the presented frame is the only finished image.
+static bool GetViewportSquare(U32Vec& Pixels, u32& Width, u32& Height)
 {
-#pragma todo("FX to Hozar: Impl")
+	ref_rt& Frame = EContext.UI->RTCopy;
+	U32Vec FramePixels;
+	if (!Frame || !EDevice->ReadbackRT(Frame, FramePixels))
+	{
+		return false;
+	}
+
+	const u32 FrameWidth = Frame->dwWidth;
+	const u32 FrameHeight = Frame->dwHeight;
+	const u32 Side = std::min(FrameWidth, FrameHeight);
+	if (Side == 0)
+	{
+		return false;
+	}
+
+	const u32 OffsetX = (FrameWidth - Side) / 2;
+	const u32 OffsetY = (FrameHeight - Side) / 2;
+
+	Pixels.resize(Side * Side);
+	for (u32 Y = 0; Y < Side; ++Y)
+	{
+		// Thumbnails are stored bottom-up
+		const u32* Src = FramePixels.data() + (OffsetY + Side - 1 - Y) * FrameWidth + OffsetX;
+		u32* Dst = Pixels.data() + Y * Side;
+		for (u32 X = 0; X < Side; ++X)
+		{
+			// B8G8R8X8: the alpha byte is undefined
+			Dst[X] = Src[X] | 0xFF000000;
+		}
+	}
+
+	// The background becomes transparent: it is the color of the frame corner
+	const u32 Background = Pixels[0];
+	auto IsBackground = [Background](u32 Color)
+	{
+		constexpr int Tolerance = 4;
+		for (u32 Shift = 0; Shift < 24; Shift += 8)
+		{
+			const int Delta = int((Color >> Shift) & 0xFF) - int((Background >> Shift) & 0xFF);
+			if (Delta > Tolerance || Delta < -Tolerance)
+			{
+				return false;
+			}
+		}
+		return true;
+	};
+
+	for (u32& Color : Pixels)
+	{
+		if (IsBackground(Color))
+		{
+			Color = 0;
+		}
+	}
+
+	Width = Side;
+	Height = Side;
 	return true;
 }
 
@@ -635,17 +693,10 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 {
 	bool bResult = true;
 
-	// save render params
-	Flags32 old_flag = psDeviceFlags;
-
-	// set render params
-	psDeviceFlags.set(rsDrawGrid, false);
-	psDeviceFlags.set(rsStatistic, false);
-
 	U32Vec pixels;
-	int w = 512, h = 512;
+	u32 w = 0, h = 0;
 
-	if (GetRTDataU32(EContext.UI->RT, pixels, w, h))
+	if (GetViewportSquare(pixels, w, h))
 	{
 		EObjectThumbnail tex(tex_name, false);
 		tex.CreateFromData(pixels.data(), w, h, obj->GetFaceCount(), obj->GetVertexCount());
@@ -657,9 +708,38 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 		ELog.DlgMsg(mtError, "Can't make screenshot.");
 	}
 
-	// restore render params
-	psDeviceFlags = old_flag;
 	return bResult;
+}
+
+static Flags32 ThumbnailDeviceFlags;
+static Flags32 ThumbnailObjectFlags;
+static int ThumbnailCaptures = 0;
+
+void CImageManager::BeginThumbnailCapture()
+{
+	if (ThumbnailCaptures++ == 0)
+	{
+		ThumbnailDeviceFlags = psDeviceFlags;
+		ThumbnailObjectFlags = EPrefs->object_flags;
+	}
+
+	psDeviceFlags.set(rsDrawGrid | rsEnvironment | rsFog | rsDrawAxis | rsDrawSafeRect | rsStatistic, false);
+	psDeviceFlags.set(rsDisableAxisCube, true);
+	EPrefs->object_flags.set(epoDrawJoints | epoDrawBoneAxis | epoDrawBoneNames | epoDrawBoneShapes, false);
+
+	EContext.UI->RedrawScene();
+}
+
+void CImageManager::EndThumbnailCapture()
+{
+	if (ThumbnailCaptures == 0 || --ThumbnailCaptures != 0)
+	{
+		return;
+	}
+
+	psDeviceFlags = ThumbnailDeviceFlags;
+	EPrefs->object_flags = ThumbnailObjectFlags;
+	EContext.UI->RedrawScene();
 }
 
 void CImageManager::RemoveTexture(UIItemListForm::Node& node)

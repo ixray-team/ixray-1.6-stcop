@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
-#include "UI/UIEditLibrary.h"
 #include "Scene/LEPhysics.h"
 #include "../Viewports/ViewportMesh.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
 
 CLevelTool*	LTools=(CLevelTool*)Tools;
 
@@ -60,8 +61,57 @@ bool CLevelTool::OnCreate()
 	return true;
 }
 
+void CLevelTool::PlayCurrent(int idx)
+{
+	if (PTools != nullptr)
+	{
+		PTools->PlayCurrent(idx);
+	}
+}
+
+void CLevelTool::StopCurrent(bool bFinishPlaying)
+{
+	if (PTools != nullptr)
+	{
+		PTools->StopCurrent(bFinishPlaying);
+	}
+}
+
+void CLevelTool::SelectEffect(const char* name)
+{
+	if (PTools != nullptr)
+	{
+		PTools->SelectEffect(name);
+	}
+}
+
+void CLevelTool::RemoveAction(u32 idx, bool bForced)
+{
+	if (PTools != nullptr)
+	{
+		PTools->RemoveAction(idx, bForced);
+	}
+}
+
+void CLevelTool::SetCurrentPG(PS::CPGDef* P)
+{
+	if (PTools != nullptr)
+	{
+		PTools->SetCurrentPG(P);
+	}
+}
+
+void CLevelTool::EditPAC(PS::CPACDef* PAC)
+{
+	if (PTools != nullptr)
+	{
+		PTools->EditPAC(PAC);
+	}
+}
+
 void CLevelTool::OnDestroy()
 {
+	UIParticleEditorForm::Destroy();
 	inherited::OnDestroy();
 	xr_delete(m_Props);
 	xr_delete(m_WorldProps);
@@ -421,6 +471,7 @@ const char* CLevelTool::GetInfo()
 void CLevelTool::OnFrame()
 {
 	Scene->OnFrame(EDevice->fTimeDelta);
+	UIParticleEditorForm::Update();
 	EEditorState est = EContext.UI->GetEState();
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
 	{
@@ -494,10 +545,6 @@ void CLevelTool::Render()
 	// draw scene
 	switch(est)
 	{
-		case esEditLibrary:
-			UIEditLibrary::OnRender(); 
-			break;
-
 		case esEditLightAnim:
 		case esEditScene:
 			Scene->Render(EContext.UI->CurrentView().m_Camera.GetTransform());
@@ -574,6 +621,13 @@ u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 		}
 
 		if (Light->m_Type != ELight::ltPoint && Light->m_Type != ELight::ltSpot)
+		{
+			continue;
+		}
+
+		// $hemi lights only emulate hemisphere lighting for the lightmap builder
+		const char* ControlName = Light->GetLControlName();
+		if (ControlName && 0 == xr_strcmp(ControlName, LCONTROL_HEMI))
 		{
 			continue;
 		}

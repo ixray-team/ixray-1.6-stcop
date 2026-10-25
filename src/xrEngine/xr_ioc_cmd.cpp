@@ -55,6 +55,19 @@ xr_token gamepad_prefix_override_token[] =
 	{ nullptr, 0 }
 };
 
+ENGINE_API u32 ps_r_dlss_model = 0;
+float ps_vram_textures_mb = 0.f;
+int ps_vram_textures_lod = 0;
+float ps_vram_other_mb = 0.f;
+xr_token dlss_model_token[] =
+{
+	{ "st_dlss_model_auto", 0 },
+	{ "st_dlss_model_cnn", 1 },
+	{ "st_dlss_model_transformer", 2 },
+	{ "st_dlss_model_transformer2", 3 },
+	{ nullptr, 0 }
+};
+
 ENGINE_API u32 ps_r_scale_mode = 1;
 ENGINE_API u32 ps_proxy_r_scale_mode = 1;
 xr_token qscale_mode_token[] = 
@@ -837,6 +850,10 @@ void CCC_Register()
 	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
 	CMD3(CCC_Token, "vid_scale_mode", &ps_proxy_r_scale_mode, qscale_mode_token);
+	CMD3(CCC_Token, "r_dlss_model", &ps_r_dlss_model, dlss_model_token);
+	CMD4(CCC_Float, "vram_textures_mb", &ps_vram_textures_mb, 0.f, 65536.f);
+	CMD4(CCC_Integer, "vram_textures_lod", &ps_vram_textures_lod, 0, 4);
+	CMD4(CCC_Float, "vram_other_mb", &ps_vram_other_mb, 0.f, 65536.f);
 
 #ifdef DEBUG
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );

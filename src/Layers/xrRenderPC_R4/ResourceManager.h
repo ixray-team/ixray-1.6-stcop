@@ -124,6 +124,7 @@ public:
 	IBlender*						_GetBlender			(const char* Name);
 	IBlender* 						_FindBlender		(const char* Name);
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
+	void							_GetVideoMemoryUsage(u64& RenderTargets, u64& ShadowMaps, u64& Textures);
 	void							_DumpMemoryUsage	();
 //.	bool							_GetDetailTexture	(const char* Name, const char*& T, RHIShaderConstant::Setup* &M);
 

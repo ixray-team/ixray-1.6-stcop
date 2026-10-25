@@ -6,10 +6,34 @@
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
 #include "IconsFontAwesome6.h"
 #include "../../UI/UITextureViewer.h"
 
 CContentView* GContentView = nullptr;
+
+xr_hash_map<xr_string, CContentView::IconData> CContentView::Icons;
+CParticlePreviewCache CContentView::ParticlePreviews;
+
+void CContentView::ClearIcons()
+{
+	ParticlePreviews.Clear();
+	Icons.clear();
+}
+
+void CContentView::InvalidateIcon(const xr_string& FullPath)
+{
+	xr_string Path = FullPath;
+	xr_strlwr(Path);
+
+	for (auto It = Icons.begin(); It != Icons.end();)
+	{
+		xr_string IconPath = It->first;
+		xr_strlwr(IconPath);
+		It = IconPath == Path ? Icons.erase(It) : std::next(It);
+	}
+}
 
 CContentView::CContentView(xr_string NewWindowName)
 	: WatcherPtr(nullptr), WindowName(NewWindowName)
@@ -278,6 +302,7 @@ void CContentView::Draw()
 	}
 
 	UpdateSoundPreview();
+	ParticlePreviews.Update();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
@@ -842,8 +867,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 			if (ParentPath == path)
 			{
 				FileOptData FileInfo;
-				FileInfo.File = Name;
-				FileInfo.File.replace_extension(ext);
+				FileInfo.File = xr_string(Name) + "." + ext;
 
 				Files.push_back(FileInfo);
 				ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
@@ -865,7 +889,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 		else if (path.empty() && !PEPath.has_parent_path())
 		{
 			FileOptData FileInfo;
-			FileInfo.File = Name;
+			FileInfo.File = xr_string(Name) + "." + ext;
 			Files.push_back(FileInfo);
 			ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
 		}
@@ -1039,6 +1063,7 @@ void CContentView::Destroy()
 	SoundPreviews.Clear();
 
 	MenuIcon.destroy();
+	ParticlePreviews.Clear();
 	Icons.clear();
 
 	IsWndDestroyed = true;
@@ -1081,6 +1106,25 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 
 void CContentView::Init()
 {
+	// The shared icons are loaded by the first browser
+	if (!Icons.contains("Folder"))
+	{
+		LoadBaseIcons();
+	}
+
+	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
+
+	LoadExtDest();
+
+	SoundPreviews.Initialize();
+
+	xr_string Files = pSettings->r_string("dialogs", "files");
+	Files.RemoveWhitespaces();
+	GameDialogs = Files.Split(',');
+}
+
+void CContentView::LoadBaseIcons()
+{
 	Icons["Folder"] = {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
 	Icons[".."]		= {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
 	Icons["thm"]	= {DEV->_CreateTexture("ed\\content_browser\\thm"),		true};
@@ -1101,16 +1145,7 @@ void CContentView::Init()
 	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
 
-	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
-
 	LoadCustomIcons();
-	LoadExtDest();
-
-	SoundPreviews.Initialize();
-
-	xr_string Files = pSettings->r_string("dialogs", "files");
-	Files.RemoveWhitespaces();
-	GameDialogs = Files.Split(',');
 }
 
 void CContentView::LoadExtDest()
@@ -1199,6 +1234,8 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
 		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
+		// Actor Editor viewport: models, motions and bone settings
+		WeCanDrag = WeCanDrag || Extension == ".ogf" || Extension == ".skl" || Extension == ".skls" || Extension == ".omf" || Extension == ".bones";
 		
 		bool IsGameLogicFile = false;
 		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
@@ -1697,6 +1734,11 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 				EContext.UI->Push(MeshView);
 			}
+
+			if (ImGui::MenuItem("Edit in Actor Editor"))
+			{
+				UIActorEditorForm::Open(Path.xstring().c_str());
+			}
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
 		{
@@ -1722,10 +1764,20 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		else if (Path.extension().string() == ".pg" || Path.extension().string() == ".pe")
 		{
-			if (ImGui::MenuItem("Open"))
+			const bool IsGroup = Path.extension().string() == ".pg";
+			auto Found = ParticlesCache.find(Path.xstring());
+			void* Ptr = Found != ParticlesCache.end() ? Found->second : nullptr;
+
+			if (Ptr == nullptr)
+			{
+				xr_path DefName = Path;
+				DefName.replace_extension();
+				Ptr = IsGroup ? (void*)RImplementation.PSLibrary.FindPGD(DefName.xstring().c_str()) : (void*)RImplementation.PSLibrary.FindPED(DefName.xstring().c_str());
+			}
+
+			if (Ptr != nullptr && ImGui::MenuItem("Open"))
 			{
 				CViewportParticle* MeshView = new CViewportParticle;
-				void* Ptr = ParticlesCache[Path.xstring()];
 
 				if (Path.extension().string() == ".pg")
 				{
@@ -1737,6 +1789,18 @@ bool CContentView::DrawContext(const xr_path& Path)
 				}
 
 				EContext.UI->Push(MeshView);
+			}
+
+			if (Ptr != nullptr && ImGui::MenuItem("Edit in Particle Editor"))
+			{
+				if (Path.extension().string() == ".pg")
+				{
+					UIParticleEditorForm::Open(((PS::CPGDef*)Ptr)->m_Name.c_str());
+				}
+				else
+				{
+					UIParticleEditorForm::Open(((PS::CPEDef*)Ptr)->m_Name.c_str());
+				}
 			}
 		}
 		else if (Path.extension().string() == ".level")
@@ -1912,6 +1976,20 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 {
 	if (Icons.contains(IconPath))
 		return Icons[IconPath];
+
+	if (IsParticles && (IconPath.ends_with(".pe") || IconPath.ends_with(".pg")))
+	{
+		auto Found = ParticlesCache.find(IconPath);
+		if (Found == ParticlesCache.end())
+			return Icons["file"];
+
+		ref_texture Preview = ParticlePreviews.Get(IconPath, Found->second, IconPath.ends_with(".pg"));
+		if (!Preview)
+			return Icons["file"];
+
+		Icons[IconPath] = { Preview, false };
+		return Icons[IconPath];
+	}
 
 	if (IconPath.Contains(".~"))
 		return Icons["backup"];

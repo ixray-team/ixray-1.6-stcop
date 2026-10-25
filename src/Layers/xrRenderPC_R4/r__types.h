@@ -6,6 +6,7 @@
 #define		r2_RT_S				"$user$surface"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT
 #define		r2_RT_velocity		"$user$velocity"			  // MRT
+#define		r2_RT_reactive		"$user$reactive"
 
 #define		r2_RT_N_temp		"$user$normal_temp"		      // MRT
 #define		r2_RT_S_temp		"$user$surface_temp"	      // MRT

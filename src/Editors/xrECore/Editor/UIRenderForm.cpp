@@ -370,7 +370,8 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
 	}
 
-	if (ViewportID != 0 || !ImGui::BeginDragDropTarget())
+	// Secondary viewports take drops only when they handle them
+	if ((ViewportID != 0 && DragFunctor == nullptr) || !ImGui::BeginDragDropTarget())
 		return;
 
 	auto ImData = ImGui::AcceptDragDropPayload("TEST");

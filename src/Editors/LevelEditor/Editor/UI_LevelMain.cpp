@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
 #include "../xrengine\GameFont.h"
-#include "UI\UIEditLibrary.h"
 #include "Editor/Utils/ContentView.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)EContext.UI;
@@ -38,7 +40,8 @@ CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 // Main commands
 CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
-	UIEditLibrary::Show();
+	// The object library lives in the Actors tab
+	UIActorEditorForm::Open();
 
 	return true;
 }
@@ -159,10 +162,23 @@ CCommandVar CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 {
+	// Open shortcut on the Actors tab loads an object; a file name is always a level
+	CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+	if (Actor != nullptr && !p1.IsString())
+	{
+		return Actor->CommandLoad(p1, p2);
+	}
+
 	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
 	{
+		// Open shortcut on the Particles tab loads a particles .xr
+		if (!p1.IsString() && UIParticleEditorForm::IsActive())
+		{
+			return PTools->LoadXR();
+		}
+
 		if (!p1.IsString())
 		{
 			xr_string temp_fn = LTools->m_LastFileName.c_str();
@@ -251,6 +267,13 @@ CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 {
+	// Save shortcut on the Actors tab saves the edited object; a file name is always a level
+	CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+	if (Actor != nullptr && !p1.IsString())
+	{
+		return Actor->CommandSave(p1, p2);
+	}
+
 	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
@@ -269,6 +292,12 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		{
 			if (p1.IsInteger())
 			{
+				// Save shortcut on the Particles tab saves the current particle
+				if (UIParticleEditorForm::IsActive())
+				{
+					return UIParticleEditorForm::SaveCurrent();
+				}
+
 				return ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()), 0);
 			}
 
@@ -297,9 +326,9 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 				EContext.UI->ResetStatus();
 				// set new name
-				if (0 != xr_strcmp(Tools->m_LastFileName.c_str(), temp_fn.c_str()))
+				if (0 != xr_strcmp(LTools->m_LastFileName.c_str(), temp_fn.c_str()))
 				{
-					Tools->m_LastFileName = temp_fn.c_str();
+					LTools->m_LastFileName = temp_fn.c_str();
 				}
 				EPrefs->AppendRecentFile(temp_fn.c_str());
 				return 			true;
@@ -315,6 +344,11 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandClear(p1, p2);
+	}
+
 	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
@@ -329,7 +363,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 		EContext.UI->CurrentView().m_Camera.Reset();
 		Scene->Reset();
 		Scene->m_LevelOp.Reset();
-		Tools->m_LastFileName = "";
+		LTools->m_LastFileName = "";
 		LTools->m_LastSelectionName = "";
 		Scene->UndoClear();
 		ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
@@ -589,6 +623,11 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandUndo(p1, p2);
+	}
+
 	LTools->GetProperties()->ClearProperties();
 
 	if (!Scene->locked())
@@ -611,6 +650,11 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 {
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandRedo(p1, p2);
+	}
+
 	LTools->GetProperties()->ClearProperties();
 
 	if (!Scene->locked()) 
@@ -1576,6 +1620,7 @@ void CLevelMain::OnDrawUI()
 	inherited::OnDrawUI();
 	UIObjectList::Update();
 	UIGitWindow::Update();
+	UIActorEditorForm::Update();
 	if (LTools->GetToolForm())
 	{
 		LTools->GetToolForm()->OnDrawUI();

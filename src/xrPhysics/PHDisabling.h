@@ -9,6 +9,7 @@ struct SDisableVector
 {
 	Fvector						sum																			;
 	Fvector						previous																	;
+	float						path																		;
 	float						UpdatePrevious				(const Fvector& new_vector)						;
 	float						Update						(const Fvector& new_vector)						;
 	void						Reset						()												;
@@ -66,10 +67,10 @@ protected:
 				void			Reinit						()												;
 	IC			void			CheckState					(SDisableUpdateState& state,	float vel	,float	accel)
 	{
-		if	(vel	<	m_params.velocity	&&	accel	<	m_params.acceleration) 
+		(void)accel;
+		if	(vel	<	m_params.velocity)
 																					state.disable=true	;
-		if	(vel	>	m_params.velocity*worldDisablingParams.reanable_factor	||	
-			accel	>	m_params.acceleration*worldDisablingParams.reanable_factor)
+		if	(vel	>	m_params.velocity*worldDisablingParams.reanable_factor)
 																					state.enable=true	;
 	}
 protected:
@@ -108,5 +109,7 @@ public:
 	virtual		void			UpdateL1					()												;
 	virtual		void			UpdateL2					()												;
 	virtual		void			set_DisableParams			(const SAllDDOParams& params)					;
+private:
+				void			CheckJointsState			(SDisableUpdateState& state, float scale)		;
 };
 #endif

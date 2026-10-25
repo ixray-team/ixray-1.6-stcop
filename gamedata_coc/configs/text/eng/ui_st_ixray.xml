@@ -1036,4 +1036,19 @@
 	<string id="ui_mm_dof_near"><text>Base DOF near distance</text></string>
 	<string id="ui_mm_dof_focus"><text>Base DOF focus distance</text></string>
 	<string id="ui_mm_dof_far"><text>Base DOF far distance</text></string>
+	<string id="ui_mm_r_dlss_model">
+		<text>DLSS model</text>
+	</string>
+	<string id="st_dlss_model_auto">
+		<text>Auto</text>
+	</string>
+	<string id="st_dlss_model_cnn">
+		<text>Convolutional neural network</text>
+	</string>
+	<string id="st_dlss_model_transformer">
+		<text>Transformer model</text>
+	</string>
+	<string id="st_dlss_model_transformer2">
+		<text>2nd gen transformer model</text>
+	</string>
 </string_table>

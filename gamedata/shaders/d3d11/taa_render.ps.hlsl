@@ -19,10 +19,12 @@
 #include "common.hlsli"
 
 Texture2D s_image_prev; //Previous rt_generic_0
+Texture2D s_reactive;
 
 //Settings...
 #define TAA_BLEND_WEIGHT 0.9 //Blend weight
 #define TAA_HISTORY_SHARPNESS 0.5 //Sharpness factor for history filtering
+#define TAA_REACTIVE_BLEND_WEIGHT 0.4
 
 //don't touch it unless you KNOW what you're doing. 
 float3 Lottes_Tonemap(float3 c)
@@ -208,13 +210,16 @@ float4 main(PSInputFullscreen I) : SV_Target
 	//Spatio-temporal bicubic filter
 	p_4 = SMAABicubicFilter(c_3x3[1], c_3x3[7], c_3x3[3], c_3x3[5], c_3x3[4], p_4, frac(reprojected_tc * scaled_screen_res.xy - 0.5));
 
+	float reactive = s_reactive[I.hpos.xy].x;
+
 	//K-DOP clipping; bigger window for static objects
 	float gamma = 1.0 - min(1.0, length(motion_vector * scaled_screen_res.xy * 0.2)) + 0.5;
+	gamma = lerp(gamma, 0.5, reactive);
 
 	p_4 = kdop_clipping(mean, p_4, c_3x3, gamma);
 
 	//because yall still using rgba16, i don't care enough to change blending logic
-	float3 reprojected_color = lerp(c_3x3[4], p_4, TAA_BLEND_WEIGHT);
+	float3 reprojected_color = lerp(c_3x3[4], p_4, lerp(TAA_BLEND_WEIGHT, TAA_REACTIVE_BLEND_WEIGHT, reactive));
 
 	reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
 	return float4(reprojected_color, 1.0);

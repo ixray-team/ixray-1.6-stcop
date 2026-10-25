@@ -570,6 +570,52 @@ void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
 	}
 }
 
+static u32 GetFormatBitsPerPixel(ERHI_FORMAT Format)
+{
+	const u32 Value = static_cast<u32>(Format);
+
+	if (Value >= 1 && Value <= 4)		return 128;
+	if (Value >= 5 && Value <= 8)		return 96;
+	if (Value >= 9 && Value <= 22)		return 64;
+	if (Value >= 23 && Value <= 47)		return 32;
+	if (Value >= 48 && Value <= 59)		return 16;
+	if (Value >= 60 && Value <= 65)		return 8;
+	if (Value == 66)					return 1;
+	if (Value >= 70 && Value <= 72)		return 4;
+	if (Value >= 73 && Value <= 78)		return 8;
+	if (Value >= 79 && Value <= 81)		return 4;
+	if (Value >= 82 && Value <= 84)		return 8;
+	if (Value >= 94 && Value <= 99)		return 8;
+	if (Value == 85 || Value == 86 || Value == 115) return 16;
+
+	return 32;
+}
+
+void CResourceManager::_GetVideoMemoryUsage(u64& RenderTargets, u64& ShadowMaps, u64& Textures)
+{
+	xrCriticalSectionGuard Guard(creationGuard);
+	RenderTargets = ShadowMaps = Textures = 0;
+
+	for (const auto& [Name, Target] : m_rtargets)
+	{
+		const u64 Size = u64(Target->dwWidth) * Target->dwHeight * GetFormatBitsPerPixel(Target->fmt) / 8;
+
+		if (strstr(Name, "smap"))
+		{
+			ShadowMaps += Size;
+		}
+		else
+		{
+			RenderTargets += Size;
+		}
+	}
+
+	for (const auto& [Name, Texture] : m_textures)
+	{
+		Textures += Texture->flags.MemoryUsage;
+	}
+}
+
 void CResourceManager::_DumpMemoryUsage		()
 {
 	xrCriticalSectionGuard Guard(creationGuard);
