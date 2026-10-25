@@ -73,14 +73,17 @@ function check_light(stalker)
     local torch = stalker:object("device_torch")
 
 	-- Stalker dead or sleep animstate; release torch
-	local anm = state_mgr.get_state(stalker)
+	local anm = state_mgr.get_state(stalker) or ""
 	if (not stalker:alive() or anm == "zat_b106_wounded_idle" or anm == "sleep" or anm == "play_guitar" or string.find(anm,"animpoint") or string.find(anm,"sneak")) then
 		if (torch) then
 			if (torch:attachable_item_enabled()) then
 				torch:enable_attachable_item(false)
 			end
 			local sim = alife()
-			sim:release(sim:object(torch:id()),true)
+			local se_torch = sim:object(torch:id())
+			if se_torch then
+				sim:release(se_torch,true)
+			end
 		end
 		return
 	end
@@ -92,7 +95,10 @@ function check_light(stalker)
 				torch:enable_attachable_item(false)
 			end
 			local sim = alife()
-			sim:release(sim:object(torch:id()),true)
+			local se_torch = sim:object(torch:id())
+			if se_torch then
+				sim:release(se_torch,true)
+			end
 		end
 		return
 	end
@@ -105,7 +111,10 @@ function check_light(stalker)
 				torch:enable_attachable_item(false)
 			end
 			local sim = alife()
-			sim:release(sim:object(torch:id()),true)
+			local se_torch = sim:object(torch:id())
+			if se_torch then
+				sim:release(se_torch,true)
+			end
 		end
 		return
 	end
@@ -117,7 +126,10 @@ function check_light(stalker)
 				torch:enable_attachable_item(false)
 			end
 			local sim = alife()
-			sim:release(sim:object(torch:id()),true)
+			local se_torch = sim:object(torch:id())
+			if se_torch then
+				sim:release(se_torch,true)
+			end
 		end
 		return
 	end
@@ -159,7 +171,10 @@ function check_light(stalker)
 				torch:enable_attachable_item(false)
 			end
 			local sim = alife()
-			sim:release(sim:object(torch:id()),true)
+			local se_torch = sim:object(torch:id())
+			if se_torch then
+				sim:release(se_torch,true)
+			end
 		end
 	end
 end
