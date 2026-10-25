@@ -122,7 +122,7 @@ public:
             }
             process_error catch (...)
             {
-                g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
+                g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", LUA_ERRRUN);
             }
         }
         catch (...)
@@ -153,7 +153,7 @@ public:
             }
             process_error catch (...)
             {
-                g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
+                g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", LUA_ERRRUN);
             }
         }
         catch (...)
@@ -187,7 +187,7 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) const
         }
         process_error catch (...)
         {
-            g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
+            g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", LUA_ERRRUN);
         }
     }
     catch (...)
@@ -219,7 +219,7 @@ void CScriptCallbackEx<void>::operator()(Args &&...args)
         }
         process_error catch (...)
         {
-            g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
+            g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", LUA_ERRRUN);
         }
     }
     catch (...)
