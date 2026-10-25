@@ -103,30 +103,34 @@ void export_ogf( xrMU_Reference& mu_reference )
 	xr_vector<u32>		generated_ids;
 	xrMU_Model *model = mu_reference.model;
 	// Export nodes
-	auto MakeRef = [](xrMU_Model& Model, xr_vector<u32>& GeneratedIds, const xrMU_Reference& Ref) -> void{
-		for (auto& m_subdiv : Model.m_subdivs)
+	auto MakeRef = [&mu_reference](xrMU_Model& Model, xr_vector<u32>& GeneratedIds, const xrMU_Reference& Ref) -> void{
+		for (xrMU_Model::v_subdivs_it it=Model.m_subdivs.begin(); it!=Model.m_subdivs.end(); it++)
 		{
 			OGF_Reference*	pOGF	= new OGF_Reference ();
 
 			// Common data
 			pOGF->Sector = Ref.sector;
-			pOGF->material = m_subdiv.material;
-			pOGF->bSharedMaterial = m_subdiv.bSharedMaterial;
+			pOGF->material = it->material;
+			pOGF->bSharedMaterial = it->bSharedMaterial;
+
+			pOGF->debug_name = mu_reference.debug_name;
+			pOGF->debug_name += ":subdiv ";
+			pOGF->debug_name += std::to_string(it-Model.m_subdivs.begin()).c_str();
 
 			// Collect textures
-			auto& Tex = CBuild::GetTexture(m_subdiv.material, m_subdiv.bSharedMaterial);
+			auto& Tex = CBuild::GetTexture(it->material, it->bSharedMaterial);
 			OGF_Texture T;
 			T.name = Tex.name;
 			T.pBuildSurface	= &Tex;
 			pOGF->textures.push_back(T);
 
 			// Special
-			pOGF->model = m_subdiv.ogf;
-			pOGF->vb_id	= m_subdiv.vb_id;
-			pOGF->vb_start = m_subdiv.vb_start;
-			pOGF->ib_id = m_subdiv.ib_id;
-			pOGF->ib_start = m_subdiv.ib_start;
-			pOGF->sw_id = m_subdiv.sw_id;
+			pOGF->model = it->ogf;
+			pOGF->vb_id	= it->vb_id;
+			pOGF->vb_start = it->vb_start;
+			pOGF->ib_id = it->ib_id;
+			pOGF->ib_start = it->ib_start;
+			pOGF->sw_id = it->sw_id;
 			pOGF->xform.set(Ref.xform);
 			pOGF->c_scale = Ref.c_scale;
 			pOGF->c_bias = Ref.c_bias;

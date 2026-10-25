@@ -196,6 +196,11 @@ void OGF::Save			(IWriter &fs)
 			F.w_stringZ(ShaderDescr);
 		}
 	});
+
+	fs.make_chunk(OGF_DEBUG_DATA, [this](IWriter& F)
+	{
+		F.w_stringZ(debug_name.c_str());
+	});
 }
 
 void OGF_Reference::Save	(IWriter &fs)
@@ -273,6 +278,11 @@ void OGF_Reference::Save	(IWriter &fs)
 			}
 			F.w_stringZ(ShaderDescr);
 		}
+	});
+
+	fs.make_chunk(OGF_DEBUG_DATA, [this](IWriter& F)
+	{
+		F.w_stringZ(debug_name.c_str());
 	});
 
 	// progressive

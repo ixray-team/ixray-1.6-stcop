@@ -451,11 +451,17 @@ void CRender::LoadVisuals(IReader *fs)
 	dxRender_Visual*		V		= 0;
 	ogf_header		H;
 
-	while ((chunk=fs->open_chunk(index))!=0)
+	while ((chunk=fs->open_chunk(index))!=nullptr)
 	{
 		chunk->r_chunk_safe			(OGF_HEADER,&H,sizeof(H));
 		V = Models->Instance_Create	(H.type);
-		V->Load(0,chunk,0);
+		xr_stack_string256 debug_name;
+		if (auto data = chunk->open_chunk(OGF_DEBUG_DATA); data)
+		{
+			data->r_stringZ(debug_name);
+			data->close();
+		}
+		V->Load(debug_name.empty() ? nullptr : debug_name.c_str(), chunk, 0);
 		Visuals.push_back(V);
 
 		chunk->close();
