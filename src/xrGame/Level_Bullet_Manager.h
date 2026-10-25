@@ -60,6 +60,7 @@ struct SBullet
 	u32 born_time;
 	float life_time;
 	u32 change_rajectory_count;
+	bool pending_remove = false;
 
 	// коэфициенты и параметры патрона
 	SBullet_Hit hit_param;
