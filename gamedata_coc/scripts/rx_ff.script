@@ -126,6 +126,10 @@ function evaluator_dont_shoot:evaluate()
 		return set_flag(npc,false)
 	end 
 
+	if (IsWounded(npc)) then
+		return set_flag(npc,false)
+	end
+
 	if (self.st.__hold_until and validate(npc,self.st.vertex_id) and time_global() < self.st.__hold_until) then 
 		return set_flag(npc,true)
 	end
