@@ -55,4 +55,12 @@
     <info_portion id="arena_fourth_battle"></info_portion>
 	
  	<info_portion id="a"></info_portion>
+	<!-- Scientist escort task state. -->
+	<info_portion id="ecolog_companion_task_1_started"/>
+	<info_portion id="ecolog_companion_task_1_force_started"/>
+	<info_portion id="ecolog_companion_task_1_measured"/>
+	<info_portion id="ecolog_companion_task_2_started"/>
+	<info_portion id="ecolog_companion_task_2_force_started"/>
+	<info_portion id="ecolog_companion_task_2_measured"/>
+
 </game_information_portions>
