@@ -3,17 +3,17 @@
 	on save game name. What this means is that you can save entire tables to disk instead of saving to object packet.
 	This script was created to alleviate issues with using packets to save dynamic data (pstor) which lead to save corruption.
 	Also it removes some restrictions on what you can save.
-	
+
 	*only store valid lua types such as numbers, strings, boolean, functions or tables that contain these valid types. Userdata needs to have a special
 	__persist function defined in it's metatable. See how it is done for CTime in _G.script
-	
+
 	*Supposedly you can save userdata if you write a proper __persist method for the metatable but I have failed to achieve proper results with serializing CTime.
-	
+
 	*You must register for 'save_state' and 'load_state' and add your own table to m_data for it to be encoded then stored in *.scoc
 	*Although marshal is pretty fast, keep in mind that encoding/decoding a ton of data, saves will start to noticeablely take longer to save/load.
 	*For testing/debugging you can uncomment the print_table calls in save_state and load_state. It will save the before and after tables to print_table.txt in your main directory.
-		
-	
+
+
 	by: Alundaio
 --]]
 local m_data = {}
@@ -26,8 +26,6 @@ m_data.game_object = {}
 
 -- PDA known contacts
 -- m_data.actor_contacts = {}
-
-saved_game_extension_ex	= save_extension() .. "_data"
 
 local function on_pstor_load_all(obj,packet)
 	local id = obj:id()
@@ -58,31 +56,38 @@ function CALifeStorageManager_before_save(fname)
 		return 
 	end
 
-	--printf("CALifeStorageManager_before_save BEFORE callback")
-	
 	m_data.GAME_VERSION = GAME_VERSION
-	
-	SendScriptCallback("save_state",m_data)
-	
-	--printf("CALifeStorageManager_before_save AFTER callback")
-	
+    if not m_data.se_object then
+        m_data.se_object = {}
+    end
+    if not m_data.game_object then
+        m_data.game_object = {}
+    end
+
+	SendScriptCallback("save_state", m_data)
+
 	-- save pstor
+	if m_data == nil then
+		m_data = {}
+	end
+
+	if m_data.game_object == nil then
+		m_data.game_object = {}
+	end
+
 	for id,t in pairs(db.storage) do
 		if (m_data.game_object[id]) then
 			if (t.pstor and not is_empty(t.pstor)) then
 				m_data.game_object[id].pstor_all = t.pstor
 			end
-			
+
 			-- serialization with game.CTime.__persist
 			if (t.pstor_ctime and not is_empty(t.pstor_ctime)) then 
 				m_data.game_object[id].pstor_ctime = t.pstor_ctime
 			end
 		end
 	end
-	
-	--ProcessEventQueueState(m_data,true)
-	
-	-- clean out game_object table of empty sub tables
+
 	for id,tbl in pairs(m_data.game_object) do 
 		for k,v in pairs(tbl) do
 			if (type(v) == "table" and is_empty(v)) then 
@@ -90,39 +95,20 @@ function CALifeStorageManager_before_save(fname)
 			end
 		end
 	end
-	
-	local data = marshal.encode(m_data)
-	if not (data) then 
-		return 
-	end
-		
-	local path = getFS():update_path('$game_saves$', '')
 
-	lfs.mkdir(path) -- incase savegame folder doesn't exist yet
-	path = path .. fname:sub(0,-6):lower() .. saved_game_extension_ex
+   SetStorageVar("pstor", m_data or {})
 
-	local savegame = io.open(path,"wb")
-	if not (io.type(savegame) == "file") then
-		printf("Error: Unable to write to %s",path)
-		return 
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
 	end
-	
-	--printf("axr_main: saving custom data %s",path)
-	savegame:write(data)
-	savegame:close()
-	
-	--printf("CALifeStorageManager_before_save FINISHED")
+
+	local _path = getFS():update_path('$game_saves$', '')
+
+	SendScriptCallback("save_file_created", _path, fname)
 end 
 
 -- called from engine!
 function CALifeStorageManager_after_save(fname)
-	if ffx_path_utils then
-		fname = ffx_path_utils.get_file_name(fname, false)
-	end
-	
-	local _path = getFS():update_path('$game_saves$', '')
-	
-	SendScriptCallback("save_file_created", _path, fname)
 end
 
 -- called from engine!
@@ -130,9 +116,9 @@ function CALifeStorageManager_new_game(fname)
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
-	
+
 	local _path = getFS():update_path('$game_saves$', '')
-	
+
 	SendScriptCallback("new_game_created", _path, fname)
 end
 
@@ -141,16 +127,7 @@ function CALifeStorageManager_save(fname)
 	--printf("CALifeStorageManager_save START FINISHED")
 end 
 
--- called from engine
-function CALifeStorageManager_load(fname)
-	if not isMarshal then 
-		return 
-	end 
-
-	local path = fname:sub(0,-6) .. saved_game_extension_ex
-
-	--alun_utils.debug_write(strformat("CALifeStorageManager_load %s",path))
-	
+function load_legacy_state(path)
 	local savegame = io.open(path,"rb")
 	if not (io.type(savegame) == "file") then
 		return
@@ -160,26 +137,30 @@ function CALifeStorageManager_load(fname)
 	savegame:close()
 
 	if not (data and data ~= "") then
-		printf("Error: Failed to read %s",path)
 		return
 	end
 
-	m_data = marshal.decode(data)
-	
-	--ProcessEventQueueState(m_data,false)
-	
-	-- For debugging save state
-	--alun_utils.print_table(m_data,"m_data_on_load ("..path..")")
+	return marshal.decode(data)
+end
 
-	SendScriptCallback("load_state",m_data)
-	
+-- called from engine
+function CALifeStorageManager_load(fname)
+	if not isMarshal then 
+		return 
+	end
+
+	local legacy_path = fname:sub(0,-6) .. save_extension() .. "_data"
+
 	if ffx_path_utils then
 		fname = ffx_path_utils.get_file_name(fname, false)
 	end
 	local _path = getFS():update_path('$game_saves$', '')
 	SendScriptCallback("save_file_loaded", _path, fname)
-	
-	--alun_utils.debug_write(strformat("CALifeStorageManager_load END"))
+
+    m_data = GetStorageVar("pstor", nil) or load_legacy_state(legacy_path) or {}
+	m_data.se_object = m_data.se_object or {}
+	m_data.game_object = m_data.game_object or {}
+	SendScriptCallback("load_state", m_data)
 end
 
 function get_state()
@@ -187,7 +168,8 @@ function get_state()
 end
 
 function decode(t)
-	return marshal.decode(t)
+	local Result = marshal.decode(t)
+	return Result
 end
 
 -- storage based on ID but verified by object name
