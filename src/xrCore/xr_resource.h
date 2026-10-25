@@ -21,7 +21,7 @@ public:
 public:
 	u32				dwFlags;
 	xr_resource_flagged()	: dwFlags(0)					{ }
-	virtual ~xr_resource_flagged() = default;
+	virtual ~xr_resource_flagged() override = default;
 };
 
 class	XRCORE_API	xr_resource_named	:	public xr_resource_flagged	{
@@ -34,7 +34,7 @@ public:
 		return		*cName;
 	}
 	xr_resource_named()	: cName(nullptr)		{ }
-	virtual ~xr_resource_named()		{ }
+	virtual ~xr_resource_named() override { }
 };
 
 class XRCORE_API xr_resource_uniq : public xr_resource_named
@@ -48,7 +48,7 @@ public:
 		m_crc2 = _crc2;
 	}
 
-	virtual ~xr_resource_uniq() {}
+	virtual ~xr_resource_uniq() override {}
 };
 
 // resptr_BASE

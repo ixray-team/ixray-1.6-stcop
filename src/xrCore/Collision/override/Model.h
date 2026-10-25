@@ -11,13 +11,13 @@ class CDB_Model : public Opcode::Model
 {
 public:
 	CDB_Model();
-	virtual ~CDB_Model();
+	virtual ~CDB_Model() override;
 
 	void Store(IWriter* pWriter);
 	bool Restore(IReader* pReader);
 
 	// Overload for using CDB_OptimizeTree into Build Model 
-	bool Build(const Opcode::OPCODECREATE& create);
+	virtual bool Build(const Opcode::OPCODECREATE& create) override;
 	virtual void Release() override;
 
 	IC  CDB_OptimizeTree* GetTree() { return pTree; }

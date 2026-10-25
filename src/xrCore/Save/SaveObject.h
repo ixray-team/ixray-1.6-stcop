@@ -169,7 +169,7 @@ public:
 	
 	CSaveObject();
 	CSaveObject(CSaveChunk* Root);
-	~CSaveObject();
+	virtual ~CSaveObject() override;
 	void EndChunk(ISaveObjectStackHandler handler) override;
 	void EndArray(ISaveObjectArrayHandler handler) override;
 	bool HasChunk(shared_str ChunkName) override;
@@ -828,7 +828,7 @@ public:
 	virtual ISaveObjectArrayHandler BeginArray() override;
 
 	virtual bool IsSave() override { return true; }
-	
+
 	virtual CSaveChunk* ExtractCurrentChunkRaw() override;
 	virtual void MergeSubchunk(CSaveChunk* Chunk) override;
 
@@ -875,7 +875,7 @@ public:
 	virtual ISaveObject& operator<<(s8& Value) override;
 	virtual ISaveObject& operator<<(bool& Value) override;
 	virtual ISaveObject& operator<<(shared_str& S) override;
-	
+
 	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) override;
 
 	void Parse(IReader* stream);
