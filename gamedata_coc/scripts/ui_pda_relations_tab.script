@@ -293,7 +293,7 @@ function pda_relations_tab:autoupdate()
 			s_dismiss = utils.se_obj_load_var(se_obj.id,se_obj:name(),"companion_cannot_dismiss") and game.translate_string("st_pda_mode_false") or game.translate_string("st_pda_mode_true")
 			s_tele = utils.se_obj_load_var(se_obj.id,se_obj:name(),"companion_cannot_teleport") and game.translate_string("st_pda_mode_disabled") or game.translate_string("st_pda_mode_enabled")
 	
-			local s_location = game.translate_string(alife():level_name(game_graph():vertex(se_obj.m_game_vertex_id):level_id()))
+			local s_location = game.translate_string(alife():level_name(gg_vertex_level_id(se_obj.m_game_vertex_id)))
 			
 			for s in string.gmatch(state_str,"(st_mm_pda_[%w%d_]*)") do
 				state_str = string.gsub(state_str,s,game.translate_string(s))

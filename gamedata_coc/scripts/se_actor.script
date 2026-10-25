@@ -80,12 +80,13 @@ end
 -- Вызывается 1 раз в момент выбора меня как цели.
 function se_actor:on_reach_target(squad)
 	squad:set_location_types()
-	for k in squad:squad_members() do
-		if db.offline_objects[k.id] ~= nil then
-			empty_table(db.offline_objects[k.id])
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		if db.offline_objects[MemberId] ~= nil then
+			empty_table(db.offline_objects[MemberId])
 			--db.offline_objects[k.id] = {}
 		end
-		db.spawned_vertex_by_id[k.id] = nil
+		db.spawned_vertex_by_id[MemberId] = nil
 	end
 	SIMBOARD:assign_squad_to_smart(squad, nil)
 end

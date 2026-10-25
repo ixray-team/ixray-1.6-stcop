@@ -37,9 +37,10 @@ function CCover_manager:calculate_covers(position)
 	local npc_table = {}
 	for k,v in pairs(self.squads) do
 		local squad = alife_object(k)
-		for kk in squad:squad_members() do
-			if db.storage[kk.id] ~= nil then
-				local npc_object = db.storage[kk.id].object
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			if db.storage[MemberId] ~= nil then
+				local npc_object = db.storage[MemberId].object
 				table.insert(npc_table, npc_object)
 			end
 		end
@@ -145,7 +146,7 @@ function has_smart_cover(se_obj, smrttrn)
 	end
 
 	local npc_obj = npc_storage.object
-	local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+	local level_id = gg_vertex_level_id(smrttrn.m_game_vertex_id)
 
 	local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
 	if smrt_cover == nil then
@@ -174,7 +175,7 @@ function has_cover(se_obj, smrttrn)
 		end
 
 		local npc_obj = npc_storage.object
-		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+		local level_id = gg_vertex_level_id(smrttrn.m_game_vertex_id)
 		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
 		if smrt_cover == nil then
 			return true

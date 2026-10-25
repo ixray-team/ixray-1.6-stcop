@@ -145,8 +145,8 @@ function sim_squad_scripted:update()
 
 			--printf("m_game_vertex_id=%s actor.m_game_vertex_id=%s",self.m_game_vertex_id,se_actor.m_game_vertex_id)
 			if (se_actor and gg:valid_vertex_id(self.m_game_vertex_id) and gg:valid_vertex_id(se_actor.m_game_vertex_id)) then
-				local level_name = sim:level_name(gg:vertex(self.m_game_vertex_id):level_id())
-				local actor_level = sim:level_name(gg:vertex(se_actor.m_game_vertex_id):level_id())
+				local level_name = sim:level_name(gg_vertex_level_id(self.m_game_vertex_id))
+				local actor_level = sim:level_name(gg_vertex_level_id(se_actor.m_game_vertex_id))
 
 				-- Disable any squad that is not on actor's level and not linked to actor's level through ai_tweaks\simulation_objects.ltx
 				if (level_name ~= actor_level) and (self:commander_id() and not sim:has_info(self:commander_id(),"npcx_is_companion")) then
@@ -216,8 +216,7 @@ local function can_help_actor(squad)
 		return false
 	end
 
-	local gg = game_graph()
-	if gg:vertex(squad.m_game_vertex_id):level_id() ~= gg:vertex(alife():actor().m_game_vertex_id):level_id() then
+	if gg_vertex_level_id(squad.m_game_vertex_id) ~= gg_vertex_level_id(alife():actor().m_game_vertex_id) then
 		return false
 	end
 
@@ -278,8 +277,10 @@ function sim_squad_scripted:specific_update(script_target_id)
 	self.current_target_id = nil
 	self.current_action = 0
 	
-	for k in self:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		local MemberObject = self:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			SIMBOARD:setup_squad_and_group(se_obj)
 		end
@@ -344,8 +345,10 @@ function sim_squad_scripted:generic_update()
 	self.current_action = 0
 	
 	local sim = alife()
-	for k in self:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		local MemberObject = self:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			SIMBOARD:setup_squad_and_group(se_obj)
 		end
@@ -364,8 +367,9 @@ function sim_squad_scripted:remove_squad()
 	SIMBOARD.squads[self.id] = nil
 	
 	local squad_npcs = {}
-	for k in self:squad_members() do
-		squad_npcs[k.id] = true
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		squad_npcs[MemberId] = true
 	end
 	
 	local sim = alife()
@@ -481,8 +485,10 @@ function sim_squad_scripted:assign_smart(smart,old_smart_id)
 	end
 	
 	local sim = alife()
-	for k in self:squad_members() do
-		local se_obj = k.object or k.id and sim:object(k.id)
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		local MemberObject = self:getSquadMember(MemberIndex)
+		local se_obj = MemberObject or MemberId and sim:object(MemberId)
 		if (se_obj) then
 			if (old_smart) then
 				if (smart == nil or smart.id ~= old_smart_id) then
@@ -503,8 +509,9 @@ function sim_squad_scripted:check_invulnerability()
 	end
 	local invulnerability = xr_logic.pick_section_from_condlist(db.actor, self, self.invulnerability) == "true"
 	if (invulnerability) then
-		for k in self:squad_members() do
-			local npc_st = db.storage[k.id]
+		for MemberIndex = 0, self:npc_count() - 1 do
+			local MemberId = self:getSquadMemberId(MemberIndex)
+			local npc_st = db.storage[MemberId]
 			local npc = npc_st and npc_st.object
 			if (npc) then
 				npc:invulnerable(invulnerability)
@@ -686,15 +693,16 @@ function sim_squad_scripted:set_squad_sympathy(sympathy)
 	local symp = sympathy or self.sympathy
 	if(symp~=nil) then
 		local npc
-		for k in self:squad_members() do
-			npc = db.storage[k.id] and db.storage[k.id].object
+		for MemberIndex = 0, self:npc_count() - 1 do
+			local MemberId = self:getSquadMemberId(MemberIndex)
+			npc = db.storage[MemberId] and db.storage[MemberId].object
 			if(npc) then
 				game_relations.set_npc_sympathy(npc, symp)
 			else
 				if(db.goodwill.sympathy==nil) then
 					db.goodwill.sympathy = {}
 				end
-				db.goodwill.sympathy[k.id] = symp
+				db.goodwill.sympathy[MemberId] = symp
 			end
 		end
 	end
@@ -717,12 +725,13 @@ function sim_squad_scripted:set_squad_relation(relation)
 	if(rel ~= nil) then
 		local npc
 		local sim = alife()
-		for k in self:squad_members() do
-			npc = db.storage[k.id] and db.storage[k.id].object
+		for MemberIndex = 0, self:npc_count() - 1 do
+			local MemberId = self:getSquadMemberId(MemberIndex)
+			npc = db.storage[MemberId] and db.storage[MemberId].object
 			if(npc) then
 				game_relations.set_npcs_relation(npc, db.actor, rel)
 			else
-				set_relation(sim:object(k.id), sim:actor(),rel)
+				set_relation(sim:object(MemberId), sim:actor(),rel)
 			end
 		end
 	end
@@ -763,25 +772,28 @@ function sim_squad_scripted:set_squad_position(position)
 	end
 
 	local cl_object
-	for k in self:squad_members() do
-		cl_object = db.storage[k.id] and db.storage[k.id].object
-		if not (db.offline_objects[k.id]) then
-			db.offline_objects[k.id] = {}
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		local MemberObject = self:getSquadMember(MemberIndex)
+		cl_object = db.storage[MemberId] and db.storage[MemberId].object
+		if not (db.offline_objects[MemberId]) then
+			db.offline_objects[MemberId] = {}
 		end
-		db.offline_objects[k.id].level_vertex_id = level.vertex_id(position)
+		db.offline_objects[MemberId].level_vertex_id = level.vertex_id(position)
 		if cl_object then
 			reset_animation(cl_object)
 			cl_object:set_npc_position(position)
 		else
-			k.object.position = position
+			MemberObject.position = position
 		end
 	end
 end
 
 function sim_squad_scripted:has_detector()
 	local sim = alife()
-	for k in self:squad_members() do
-		local se_obj = sim:object(k.id)
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		local se_obj = sim:object(MemberId)
 		if se_obj and se_obj:has_detector() then
 			return true
 		end
@@ -803,8 +815,9 @@ function sim_squad_scripted:has_items_to_sell()
 	end
 	local sim = alife()
 	local st
-	for k in self:squad_members() do
-		st = db.storage[k.id]
+	for MemberIndex = 0, self:npc_count() - 1 do
+		local MemberId = self:getSquadMemberId(MemberIndex)
+		st = db.storage[MemberId]
 		if (st and st.has_items_to_sell) then
 			return true
 		end
@@ -1156,12 +1169,13 @@ end
 function sim_squad_scripted:on_reach_target(squad)
 	--alun_utils.debug_write("sim_squad_scripted:on_reach_target")
 	squad:set_location_types()
- 	for k in squad:squad_members() do
-		db.spawned_vertex_by_id[k.id] = nil
-		if db.offline_objects[k.id] ~= nil then
-			db.offline_objects[k.id] = db.offline_objects[k.id] and empty_table(db.offline_objects[k.id])
+	for MemberIndex = 0, squad:npc_count() - 1 do
+		local MemberId = squad:getSquadMemberId(MemberIndex)
+		db.spawned_vertex_by_id[MemberId] = nil
+		if db.offline_objects[MemberId] ~= nil then
+			db.offline_objects[MemberId] = db.offline_objects[MemberId] and empty_table(db.offline_objects[MemberId])
 		end
-		db.spawned_vertex_by_id[k.id] = nil
+		db.spawned_vertex_by_id[MemberId] = nil
 	end
 	SIMBOARD:assign_squad_to_smart(squad, nil)
 end

@@ -34,7 +34,6 @@ function actor_on_before_death(whoID,flags)
 	
 	-- find victims
 	local sim = alife()
-	local gg = game_graph()
 	local avail_entities = {}
 	local squad_mates = {}
 	--local faction_mates = {}
@@ -247,7 +246,7 @@ function actor_on_before_death(whoID,flags)
 	end
 		
 	-- initiate transitition and removal of victim
-	local level_name = sim:level_name(game_graph():vertex(se_obj.m_game_vertex_id):level_id())
+	local level_name = sim:level_name(gg_vertex_level_id(se_obj.m_game_vertex_id))
 	if (level_name == level.name()) then 
 		local hud = get_hud()
 		hud:HidePdaMenu()

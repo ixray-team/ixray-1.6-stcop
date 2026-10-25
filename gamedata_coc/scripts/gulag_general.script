@@ -1119,9 +1119,8 @@ end
 local function init_heli_hide_jobs(smart,heli_jobs,gname)
 	local name, job_ltx
 	local i = 1
-	local gg = game_graph()
 	local sim = alife()
-	local level_name = sim:level_name(gg:vertex(smart.m_game_vertex_id):level_id())
+	local level_name = sim:level_name(gg_vertex_level_id(smart.m_game_vertex_id))
 
 	if (ltx) then 
 		job_ltx = [[

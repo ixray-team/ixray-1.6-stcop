@@ -1393,7 +1393,7 @@ function debug_ui_spawner:InitControls(x, y, xml, owner)
 	owner.smarts_list:SetAutoDelete(true)
 	
 	local sim = alife()
-	local actor_level = sim:level_name(game_graph():vertex(sim:actor().m_game_vertex_id):level_id())
+	local actor_level = sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id))
 	local board = SIMBOARD
 	local smrts = {}
 	for id,t in pairs(board.smarts) do

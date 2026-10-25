@@ -104,9 +104,9 @@ function CSurgeManager:initialize()
 	end
 	
 	local level_name
-	local gg,gini,sim = game_graph(),game_ini(),alife()
-	for lvl in gg:levels() do
-		level_name = sim:level_name(lvl.id)
+	local gini,sim = game_ini(),alife()
+	for LevelIndex = 0, gg_levels_count() - 1 do
+		level_name = sim:level_name(gg_level_id(LevelIndex))
 		weather = level_name and gini:r_string_ex(level_name,"weathers")
 		if (weather and weather == "indoor") then
 		elseif (m_data.artefact_respawn_levels[level_name] == nil) then
@@ -1120,8 +1120,9 @@ function get_squad_members(squad_id)
 	local npcs_tbl = {}
 	local squad = alife_object(squad_id)
 	if(squad) then
-		for k in squad:squad_members() do
-			npcs_tbl[k.id] = true
+		for MemberIndex = 0, squad:npc_count() - 1 do
+			local MemberId = squad:getSquadMemberId(MemberIndex)
+			npcs_tbl[MemberId] = true
 		end
 	end
 	return npcs_tbl
@@ -1130,7 +1131,7 @@ end
 function check_squad_level(squad_id)
 	local squad = alife_object(squad_id)
 	if(squad) then
-		local squad_level = alife():level_name(game_graph():vertex(squad.m_game_vertex_id):level_id())
+		local squad_level = alife():level_name(gg_vertex_level_id(squad.m_game_vertex_id))
 		if(squad_level==level.name()) then
 			return true
 		end
@@ -1440,7 +1441,7 @@ function CSurgeManager:kill_all_unhided()
 	end
 	
 	-- don't kill actor if he isn't on a valid level
-	local actor_level = sim:level_name(game_graph():vertex(sim:actor().m_game_vertex_id):level_id())
+	local actor_level = sim:level_name(gg_vertex_level_id(sim:actor().m_game_vertex_id))
 	if (self.indoor_levels and self.indoor_levels[actor_level] or level_weathers.valid_levels[actor_level] ~= true) then 
 		return 
 	end

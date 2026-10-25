@@ -112,10 +112,8 @@ end
 --***********************************************************************************************
 
 
-function sim_dist_to(obj1 , obj2)
-	local pos1,lv1,gv1 = obj1:get_location()
-	local pos2,lv2,gv2 = obj2:get_location()
-	return utils.graph_distance(gv1, gv2)
+function sim_dist_to(obj1, obj2)
+	return sim.dist_to(obj1, obj2)
 end
 
 local function evaluate_prior_by_dist(target, squad)
@@ -127,8 +125,7 @@ local function evaluate_prior_by_dist(target, squad)
 end
 
 function is_on_the_same_level(obj1, obj2)
-	local gg = game_graph()
-	return obj1 and obj2 and gg:vertex(obj1.m_game_vertex_id):level_id() == gg:vertex(obj2.m_game_vertex_id):level_id() or false
+	return obj1 and obj2 and gg_vertex_level_id(obj1.m_game_vertex_id) == gg_vertex_level_id(obj2.m_game_vertex_id) or false
 end
 
 function evaluate_prior(target, squad)
