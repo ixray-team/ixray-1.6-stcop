@@ -9,7 +9,8 @@ public:
 	float				scale;
 
 	cl_dt_scaler		(float s) : scale(s)	{};
-	virtual void setup	(RHIShaderConstant* C)
+
+	virtual void setup	(RHIShaderConstant* C) override
 	{
 		RCache.set_c	(C,scale,scale,scale,1/r__dtex_range);
 		FixedConstants::SetDtParamsScale(scale);

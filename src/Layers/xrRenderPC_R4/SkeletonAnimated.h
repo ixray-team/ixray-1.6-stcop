@@ -62,10 +62,10 @@ public:
 	// Calculation
 private:
 	
-	void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys );
-	void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys );
+	virtual void						LL_BuldBoneMatrixDequatize	( const CBoneData* bd, u8 channel_mask,  SKeyTable& keys ) override;
+	virtual void						LL_BoneMatrixBuild			( CBoneInstance &bi, const Fmatrix *parent, const SKeyTable& keys ) override;
 	void						LL_BlendKeys				( CKey& Result, const SKeyTable& keys );
-virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) );
+	virtual void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0) ) override;
 
 	struct SInertialBone
 	{
@@ -93,8 +93,7 @@ virtual	void					BuildBoneMatrix				( const CBoneData* bd, CBoneInstance &bi, co
 	void						InertialMarkPart		( u16 part );
 	void						InertialApply			( u16 bone, CKey& key, bool update );
 public:
-
-	virtual void				OnCalculateBones		();
+	virtual void				OnCalculateBones		() override;
 public:
 	u32											Update_LastTime;
 
@@ -121,8 +120,8 @@ public:
 	animation::channels							channels;
 protected:
 	// internal functions
-	virtual void				IBoneInstances_Create	();
-	virtual void				IBoneInstances_Destroy	();
+	virtual void				IBoneInstances_Create	() override;
+	virtual void				IBoneInstances_Destroy	() override;
 
 	void						IBlend_Startup			();
 	void						ChannelFactorsStartup	();
@@ -134,80 +133,78 @@ private:
 	virtual	void				ProcessOmfFiles(const char* omfPath, const char* nameOgf);
 //.	bool						LoadMotions				(const char* N, IReader *data);
 public:
-	std::pair<const char*,const char*>	LL_MotionDefName_dbg	(MotionID	ID);
-	void						LL_DumpBlends_dbg		( );
-	u32							LL_PartBlendsCount			( u32 bone_part_id );
-	CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n );
-	void						LL_IterateBlends			( IterateBlendsCallback &callback );
+	virtual std::pair<const char*,const char*>	LL_MotionDefName_dbg	(MotionID	ID) override;
+	virtual void						LL_DumpBlends_dbg		( ) override;
+	virtual u32							LL_PartBlendsCount			( u32 bone_part_id ) override;
+	virtual CBlend						*LL_PartBlend				( u32 bone_part_id, u32 n ) override;
+	virtual void						LL_IterateBlends			( IterateBlendsCallback &callback ) override;
 
-	void						SetUpdateTracksCalback		( IUpdateTracksCallback	*callback );
-	IUpdateTracksCallback		*GetUpdateTracksCalback		( ){ return m_update_tracks_callback; }
+	virtual void						SetUpdateTracksCalback		( IUpdateTracksCallback	*callback ) override;
+	virtual IUpdateTracksCallback		*GetUpdateTracksCalback		( ) override { return m_update_tracks_callback; }
 //	const char*						LL_MotionDefName_dbg	(LPVOID		ptr);
 
     u32							LL_CycleCount	(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.cycle()->size(); return cnt;}
     u32							LL_FXCount		(){u32 cnt=0; for (u32 k=0; k<m_Motions.size(); k++) cnt+=m_Motions[k].motions.fx()->size(); return cnt;}
 	accel_map*					LL_Motions		(u32 slot){return m_Motions[slot].motions.motion_map();}
 	MotionID					ID_Motion		(const char*  N, u16 slot);
-	u16							LL_MotionsSlotCount(){return (u16)m_Motions.size();}
-	const shared_motions&		LL_MotionsSlot	(u16 idx){return m_Motions[idx].motions;}
+	virtual u16							LL_MotionsSlotCount() override {return (u16)m_Motions.size();}
+	virtual const shared_motions&		LL_MotionsSlot	(u16 idx) override {return m_Motions[idx].motions;}
 
-	IC CMotionDef*				LL_GetMotionDef	(MotionID id){return m_Motions[id.slot].motions.motion_def(id.idx);}
-	IC CMotion*					LL_GetRootMotion(MotionID id){return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
-	IC CMotion*					LL_GetMotion	(MotionID id, u16 bone_id){return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
-	IC 
-
-	virtual IBlendDestroyCallback	*GetBlendDestroyCallback	( );
-	virtual void					SetBlendDestroyCallback		( IBlendDestroyCallback	*cb );
+	IC virtual CMotionDef*				LL_GetMotionDef	(MotionID id) override {return m_Motions[id.slot].motions.motion_def(id.idx);}
+	IC virtual CMotion*					LL_GetRootMotion(MotionID id) override {return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
+	IC virtual CMotion*					LL_GetMotion	(MotionID id, u16 bone_id) override {return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
+	IC virtual IBlendDestroyCallback	*GetBlendDestroyCallback	( ) override;
+	virtual void					SetBlendDestroyCallback		( IBlendDestroyCallback	*cb ) override;
 	// Low level interface
-	MotionID					LL_MotionID		(const char* B);
-	u16							LL_PartID		(const char* B);
+	virtual MotionID					LL_MotionID		(const char* B) override;
+	virtual u16							LL_PartID		(const char* B) override;
 
-	CBlend*						LL_PlayFX		(u16 bone,		MotionID motion, float blendAccrue,	float blendFalloff, float Speed, float Power);
-	CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool  bMixing,		float blendAccrue,	float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
-	CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
-	void						LL_FadeCycle	(u16 partition, float	falloff, u8 mask_channel = (1<<0));
-	void						LL_CloseCycle	(u16 partition, u8 mask_channel = (1<<0));
-	void						LL_SetChannelFactor (u16 channel,float factor);
+	virtual CBlend*						LL_PlayFX		(u16 bone,		MotionID motion, float blendAccrue,	float blendFalloff, float Speed, float Power) override;
+	virtual CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool  bMixing,		float blendAccrue,	float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
+	virtual CBlend*						LL_PlayCycle	(u16 partition, MotionID motion, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0) override;
+	virtual void						LL_FadeCycle	(u16 partition, float	falloff, u8 mask_channel = (1<<0)) override;
+	virtual void						LL_CloseCycle	(u16 partition, u8 mask_channel = (1<<0)) override;
+	virtual void						LL_SetChannelFactor (u16 channel,float factor) override;
 	CBlendInstance&				LL_GetBlendInstance	(u16 bone_id)	{	VERIFY(bone_id<LL_BoneCount()); return blend_instances[bone_id];	}
 	                                                                
 	// Main functionality
-	void						UpdateTracks	();								// Update motions
-	void						LL_UpdateTracks	( float dt, bool b_force, bool leave_blends );						// Update motions
+	virtual void						UpdateTracks	() override;								// Update motions
+	virtual void						LL_UpdateTracks	( float dt, bool b_force, bool leave_blends ) override;						// Update motions
 	void						LL_UpdateFxTracks( float dt );
 	void						DestroyCycle	(CBlend &B);
 
 	// cycles
-	MotionID					ID_Cycle		(const char*  N);
-	MotionID					ID_Cycle_Safe	(const char*  N);
-	MotionID					ID_Cycle		(shared_str  N);
-	MotionID					ID_Cycle_Safe	(shared_str  N);
-	CBlend*						PlayCycle		(const char*  N,  bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
-	CBlend*						PlayCycle		(MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
-	CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
+	virtual MotionID					ID_Cycle		(const char*  N) override;
+	virtual MotionID					ID_Cycle_Safe	(const char*  N) override;
+	virtual MotionID					ID_Cycle		(shared_str  N) override;
+	virtual MotionID					ID_Cycle_Safe	(shared_str  N) override;
+	virtual CBlend*						PlayCycle		(const char*  N,  bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
+	virtual CBlend*						PlayCycle		(MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
+	virtual CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0) override;
 	// fx'es
-	MotionID					ID_FX			(const char*  N);
-	MotionID					ID_FX_Safe		(const char*  N);
-	CBlend*						PlayFX			(const char*  N, float power_scale);
-	CBlend*						PlayFX			(MotionID M, float power_scale);
+	virtual MotionID					ID_FX			(const char*  N) override;
+	virtual MotionID					ID_FX_Safe		(const char*  N) override;
+	virtual CBlend*						PlayFX			(const char*  N, float power_scale) override;
+	virtual CBlend*						PlayFX			(MotionID M, float power_scale) override;
 
 	CBlend*						PlayFX_Safe		(const char*	 N, float power_scale) override;
 
-	const CPartition&			partitions		() const {return *m_Partition;};
+	virtual const CPartition&			partitions		() const override {return *m_Partition;};
 
 	// General "Visual" stuff
-	virtual void				Copy			(dxRender_Visual *pFrom);
-	virtual void				Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void				append_motion_from_path(const char* nameOgf, const char* pathOmf);
-	virtual void				Release			();
-	virtual void				Spawn			();
-	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return this;	}
-	virtual IRenderVisual*	_BCL	dcast_RenderVisual		() { return this; }
-	virtual IKinematics*	_BCL 	dcast_PKinematics		()  { return this; }
+	virtual void				Copy			(dxRender_Visual *pFrom) override;
+	virtual void				Load			(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void				append_motion_from_path(const char* nameOgf, const char* pathOmf) override;
+	virtual void				Release			() override;
+	virtual void				Spawn			() override;
+	virtual IKinematicsAnimated*dcast_PKinematicsAnimated() override { return this;	}
+	virtual IRenderVisual*	_BCL	dcast_RenderVisual		() override { return this; }
+	virtual IKinematics*	_BCL 	dcast_PKinematics		() override { return this; }
 
-	virtual						~CKinematicsAnimated	();
+	virtual ~CKinematicsAnimated	() override;
 								CKinematicsAnimated		();
 
-	virtual u32					mem_usage		(bool bInstance)
+	virtual u32					mem_usage		(bool bInstance) override
 	{
 		u32 sz					= CKinematics::mem_usage(bInstance)+sizeof(*this)+(bInstance&&blend_instances?blend_instances->mem_usage():0);
 		return sz;
@@ -219,7 +216,7 @@ public:
 		return					(blend_cycles[bone_part_id]);
 	}
 
-	virtual float				get_animation_length (MotionID motion_ID);
+	virtual float				get_animation_length (MotionID motion_ID) override;
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;

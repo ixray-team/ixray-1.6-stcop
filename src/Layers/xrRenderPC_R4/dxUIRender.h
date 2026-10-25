@@ -8,34 +8,34 @@ class dxUIRender :
 public:
 	dxUIRender() : PrimitiveType(ptNone), m_PointType(pttNone) {;}
 
-	virtual void CreateUIGeom();
-	virtual void DestroyUIGeom();
+	virtual void CreateUIGeom() override;
+	virtual void DestroyUIGeom() override;
 
-	virtual void SetShader(IUIShader &shader);
-	virtual void SetAlphaRef(int aref);
-	virtual void SetScissor(Irect* rect= nullptr);
+	virtual void SetShader(IUIShader &shader) override;
+	virtual void SetAlphaRef(int aref) override;
+	virtual void SetScissor(Irect* rect= nullptr) override;
 
-	virtual Irect GetScissor() const { return copy_scissor; };
+	virtual Irect GetScissor() const override { return copy_scissor; };
 
-	virtual void GetActiveTextureResolution(Fvector2 &res);
+	virtual void GetActiveTextureResolution(Fvector2 &res) override;
 
-	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
+	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v) override;
 
-	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
+	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) override;
 
-	virtual u32 VBuffMaxSize();
+	virtual u32 VBuffMaxSize() override;
 
-	virtual void FlushPrimitive();
+	virtual void FlushPrimitive() override;
 
-	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name);
+	virtual const char*	UpdateShaderName(const char* tex_name, const char* sh_name) override;
 
-	virtual void CacheSetXformWorld(const Fmatrix& M);
-	virtual void CacheSetProject(const Fmatrix& M);
-	virtual void CacheSetView(const Fmatrix& M);
+	virtual void CacheSetXformWorld(const Fmatrix& M) override;
+	virtual void CacheSetProject(const Fmatrix& M) override;
+	virtual void CacheSetView(const Fmatrix& M) override;
 
-	virtual void CacheSetCullMode(ERHI_CULLMODE);
+	virtual void CacheSetCullMode(ERHI_CULLMODE) override;
 
-	virtual void zb_enable(u32 val);
+	virtual void zb_enable(u32 val) override;
 
 private:
 	ref_geom		hGeom_L;

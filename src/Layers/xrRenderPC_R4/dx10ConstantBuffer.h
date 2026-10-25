@@ -5,7 +5,7 @@ class dx10ConstantBuffer :
 {
 public:
 	dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
-	~dx10ConstantBuffer();
+	virtual ~dx10ConstantBuffer() override;
 
 	bool			Similar(dx10ConstantBuffer &_in);
 	IRHIBuffer*		GetBuffer() { return m_pBuffer; }

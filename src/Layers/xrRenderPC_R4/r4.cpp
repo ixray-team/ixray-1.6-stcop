@@ -30,14 +30,14 @@ public:
 	bool				bActive;
 public:
 	CDynamicGlow() : bActive(false)		{ }
-	virtual void					set_active			(bool b)					{ bActive=b;		}
-	virtual bool					get_active			()							{ return bActive;	}
-	virtual void					set_position		(const Fvector& P)			{ }
-	virtual void					set_direction		(const Fvector& D)			{ }
-	virtual void					set_radius			(float R)					{ }
-	virtual void					set_texture			(const char* name)				{ }
-	virtual void					set_color			(const Fcolor& C)			{ }
-	virtual void					set_color			(float r, float g, float b)	{ }
+	virtual void					set_active			(bool b) override { bActive=b;		}
+	virtual bool					get_active			() override { return bActive;	}
+	virtual void					set_position		(const Fvector& P) override { }
+	virtual void					set_direction		(const Fvector& D) override { }
+	virtual void					set_radius			(float R) override { }
+	virtual void					set_texture			(const char* name) override { }
+	virtual void					set_color			(const Fcolor& C) override { }
+	virtual void					set_color			(float r, float g, float b) override { }
 };
 
 float r_dtex_range = 50.f;
@@ -115,7 +115,7 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 
 static class cl_parallax : public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float h = ps_r2_df_parallax_h;
 		RCache.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
@@ -124,7 +124,7 @@ static class cl_parallax : public RHIShaderConstant::Setup
 
 static class cl_LOD : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		RCache.LOD.set_LOD(C);
 	}
@@ -132,7 +132,7 @@ static class cl_LOD : public RHIShaderConstant::Setup
 
 static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
@@ -140,8 +140,8 @@ static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
 } binder_pos_decompress_params2;
 
 static class cl_water_intensity : public RHIShaderConstant::Setup		
-{	
-	virtual void setup	(RHIShaderConstant* C)
+{
+	virtual void setup	(RHIShaderConstant* C) override
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fWaterIntensity;
@@ -152,7 +152,7 @@ static class cl_water_intensity : public RHIShaderConstant::Setup
 
 static class RainPuddleWaterBoundsSetup : public RHIShaderConstant::Setup
 {
-	void setup(RHIShaderConstant* Constant) override
+	virtual void setup(RHIShaderConstant* Constant) override
 	{
 		RCache.set_c(Constant, RImplementation.RainPuddleWater.GetBounds());
 	}
@@ -160,7 +160,7 @@ static class RainPuddleWaterBoundsSetup : public RHIShaderConstant::Setup
 
 static class RainPuddleWaterHeightRangeSetup : public RHIShaderConstant::Setup
 {
-	void setup(RHIShaderConstant* Constant) override
+	virtual void setup(RHIShaderConstant* Constant) override
 	{
 		RCache.set_c(Constant, RImplementation.RainPuddleWater.GetHeightRange());
 	}
@@ -168,7 +168,7 @@ static class RainPuddleWaterHeightRangeSetup : public RHIShaderConstant::Setup
 
 static class RainPuddleControlSetup : public RHIShaderConstant::Setup
 {
-	void setup(RHIShaderConstant* Constant) override
+	virtual void setup(RHIShaderConstant* Constant) override
 	{
 		const bool Enabled = RImplementation.o.RainPuddles && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
 		RCache.set_c(Constant, Enabled ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
@@ -180,7 +180,7 @@ static class cl_invP : public RHIShaderConstant::Setup
 	u32 marker = 0;
 	Fmatrix result{};
 
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		if (Device.dwFrame != marker)
 		{
@@ -197,7 +197,7 @@ static class cl_invP_hud : public RHIShaderConstant::Setup
 	u32 marker = 0;
 	Fmatrix result{};
 
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		if (Device.dwFrame != marker)
 		{
@@ -210,8 +210,8 @@ static class cl_invP_hud : public RHIShaderConstant::Setup
 }	binder_invP_hud;
 
 static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
-{	
-	virtual void setup	(RHIShaderConstant* C)
+{
+	virtual void setup	(RHIShaderConstant* C) override
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
@@ -220,8 +220,8 @@ static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup
 }	binder_sun_shafts_intensity;
 
 static class cl_alpha_ref	: public RHIShaderConstant::Setup 
-{	
-	virtual void setup (RHIShaderConstant* C) 
+{
+	virtual void setup (RHIShaderConstant* C) override
 	{
 		auto Callback = [C](u32 m_uiAlphaRef)
 		{
@@ -232,8 +232,8 @@ static class cl_alpha_ref	: public RHIShaderConstant::Setup
 } binder_alpha_ref;
 
 static class cl_m_shadow_sun : public RHIShaderConstant::Setup
-{	
-	virtual void setup	(RHIShaderConstant* C)
+{
+	virtual void setup	(RHIShaderConstant* C) override
 	{
 		for(int i = 0; i < 3; i++)
 		{
@@ -251,7 +251,7 @@ public:
 	explicit SunShadowArrayConstant(bool IsWarpValue) : IsWarp(IsWarpValue) {}
 	~SunShadowArrayConstant() override = default;
 
-	void setup(RHIShaderConstant* Constant) override
+	virtual void setup(RHIShaderConstant* Constant) override
 	{
 		for (u32 Index = 0; Index < 3; ++Index)
 		{
@@ -272,7 +272,7 @@ public:
 	SunShadowCacheConstant() = default;
 	~SunShadowCacheConstant() override = default;
 
-	void setup(RHIShaderConstant* Constant) override
+	virtual void setup(RHIShaderConstant* Constant) override
 	{
 		RCache.set_c(Constant, float(RImplementation.GetSunShadowCacheMode()), 0, 0, 0);
 	}
@@ -293,7 +293,7 @@ public:
 		value = inval;
 	}
 
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		RCache.set_c(C, *value, 0.f, 0.f, 0.f);
 	}
@@ -1105,7 +1105,8 @@ void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
 
 class includer : public ID3DInclude {
 public:
-	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+	{
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open(_game_shaders_, pname);
@@ -1129,7 +1130,8 @@ public:
 		return	D3D_OK;
 	}
 
-	HRESULT __stdcall Close(LPCVOID pData) {
+	HRESULT __stdcall Close(LPCVOID pData) override
+	{
 		xr_free(pData);
 		return D3D_OK;
 	}

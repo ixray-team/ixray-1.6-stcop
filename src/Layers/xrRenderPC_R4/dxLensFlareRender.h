@@ -7,10 +7,10 @@
 class dxFlareRender : public IFlareRender
 {
 public:
-	virtual void Copy(IFlareRender &_in);
+	virtual void Copy(IFlareRender &_in) override;
 
-	virtual void CreateShader(const char* sh_name, const char* tex_name);
-	virtual void DestroyShader();
+	virtual void CreateShader(const char* sh_name, const char* tex_name) override;
+	virtual void DestroyShader() override;
 
 //private:
 public:
@@ -20,12 +20,12 @@ public:
 class dxLensFlareRender : public ILensFlareRender
 {
 public:
-	virtual void Copy(ILensFlareRender &_in);
+	virtual void Copy(ILensFlareRender &_in) override;
 
-	virtual void Render(CLensFlare &owner, bool bSun, bool bFlares, bool bGradient);
+	virtual void Render(CLensFlare &owner, bool bSun, bool bFlares, bool bGradient) override;
 
-	virtual void OnDeviceCreate();
-	virtual void OnDeviceDestroy();
+	virtual void OnDeviceCreate() override;
+	virtual void OnDeviceDestroy() override;
 private:
 	ref_geom		hGeom;
 };

@@ -498,12 +498,14 @@ public:
 		SSManager.SetMaxAnisotropy(val);
 	}
 	CCC_tf_Aniso(const char* N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
-	virtual void Execute	(const char* args)
+
+	virtual void Execute	(const char* args) override
 	{
 		CCC_Integer::Execute	(args);
 		apply					();
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	
 		CCC_Integer::Status		(S);
 		apply					();
@@ -521,12 +523,15 @@ public:
 		clamp(val, -3.0f, 3.0f);
 		SSManager.SetMipLodBias(val);
 	}
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CCC_Float::Execute(args);
 		apply();
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 		apply();
 	}
@@ -536,7 +541,8 @@ class CCC_R2GM : public CCC_Float
 {
 public:
 	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-	virtual void	Execute	(const char* args)
+
+	virtual void	Execute	(const char* args) override
 	{
 		if (0==xr_strcmp(args,"on"))	{
 			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,true);
@@ -559,7 +565,9 @@ class CCC_Screenshot : public IConsole_Command
 {
 public:
 	CCC_Screenshot(const char* N) : IConsole_Command(N)  { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (g_dedicated_server)
 			return;
 
@@ -577,7 +585,8 @@ class CCC_Preset :
 public:
 	CCC_Preset(const char* N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
 
-	virtual void	Execute	(const char* args)	{
+	virtual void	Execute	(const char* args) override
+	{
 		CCC_Token::Execute	(args);
 		string_path		_cfg;
 		string_path		cmd;
@@ -617,7 +626,7 @@ public		:
 
 	CCC_memory_stats(const char* N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		u32 m_base = 0;
 		u32 c_base = 0;
@@ -635,7 +644,7 @@ public:
 	CCC_DofFar(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -656,7 +665,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_DofNear : public CCC_Float
@@ -665,7 +674,7 @@ public:
 	CCC_DofNear(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -686,7 +695,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_DofFocus : public CCC_Float
@@ -695,7 +704,7 @@ public:
 	CCC_DofFocus(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -723,7 +732,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_Dof : public CCC_Vector3
@@ -732,7 +741,7 @@ public:
 	CCC_Dof(const char* N, Fvector* V, const Fvector _min, const Fvector _max) : 
 	  CCC_Vector3(N, V, _min, _max) {;}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		Fvector v;
 		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	
@@ -750,11 +759,13 @@ public:
 				g_pGamePersistent->SetBaseDof(ps_r2_dof);
 		}
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	
 		xr_sprintf	(S,"%f,%f,%f",value->x,value->y,value->z);
 	}
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		xr_sprintf(I,"vector3 in range [%f,%f,%f]-[%f,%f,%f]",min.x,min.y,min.z,max.x,max.y,max.z);
 	}
@@ -765,7 +776,8 @@ class CCC_DumpResources : public IConsole_Command
 {
 public:
 	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		dxRenderDeviceRender::Instance().Resources->Dump(false);
 	}
@@ -779,7 +791,8 @@ class CCC_Fog_Reload : public IConsole_Command
 {
 public:
 	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		FluidManager.UpdateProfiles();
 	}
@@ -792,8 +805,9 @@ public:
 	CCC_DetailRadius(const char* N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
 	{
 	};
-	
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CCC_Integer::Execute(args);
 
 		dm_current_size				= iFloor((float)ps_r__detail_radius/4)*2;
@@ -808,8 +822,9 @@ public:
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
-	
-	virtual void Status(TStatus& S) {
+
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Integer::Status(S);
 	}
 };
@@ -821,7 +836,8 @@ public:
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) override
+	{
 		CCC_Float::Execute(args);
 
 		if (RImplementation.b_loaded)
@@ -831,7 +847,8 @@ public:
 		}
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 	}
 };
@@ -843,12 +860,14 @@ public:
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) override
+	{
 		CCC_Float::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 	}
 };
@@ -859,7 +878,8 @@ public:
 	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
 		: CCC_Boolean(N, V) {}
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 		CCC_Boolean::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
 	}
@@ -873,7 +893,7 @@ class CCC_DetailLayersForceBake : public IConsole_Command
 public:
 	CCC_DetailLayersForceBake(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!RImplementation.Details|| !RImplementation.b_loaded)
 		{
@@ -895,7 +915,7 @@ class CCC_DetailLayersForceLoad : public IConsole_Command
 public:
 	CCC_DetailLayersForceLoad(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!RImplementation.Details|| !RImplementation.b_loaded)
 		{

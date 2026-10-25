@@ -230,169 +230,169 @@ namespace EPALegacy
 	struct EPAAvoid final : public EParticleAction
 	{
 		EPAAvoid	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
  
 	struct EPABounce final : public EParticleAction
 	{
 		EPABounce	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPACopyVertexB final : public EParticleAction
 	{
 		EPACopyVertexB();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPADamping final : public EParticleAction
 	{
 		EPADamping	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAExplosion final : public EParticleAction
 	{
 		EPAExplosion();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAFollow final : public EParticleAction
 	{
 		EPAFollow	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAGravitate final : public EParticleAction
 	{
 		EPAGravitate();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAGravity final : public EParticleAction
 	{
 		EPAGravity	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAJet final : public EParticleAction
 	{
 		EPAJet		();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAKillOld final : public EParticleAction
 	{
 		EPAKillOld	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAMatchVelocity final : public EParticleAction
 	{
 		EPAMatchVelocity();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAMove final : public EParticleAction
 	{
 		EPAMove		();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAOrbitLine final : public EParticleAction
 	{
 		EPAOrbitLine();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAOrbitPoint final : public EParticleAction
 	{
 		EPAOrbitPoint();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPARandomAccel final : public EParticleAction
 	{
 		EPARandomAccel();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPARandomDisplace final : public EParticleAction
 	{
 		EPARandomDisplace();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPARandomVelocity final : public EParticleAction
 	{
 		EPARandomVelocity();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPARestore final : public EParticleAction
 	{
 		EPARestore	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAScatter final : public EParticleAction
 	{
 		EPAScatter	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPASink final : public EParticleAction
 	{
 		EPASink		();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPASinkVelocity final : public EParticleAction
 	{
 		EPASinkVelocity();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPASpeedLimit final : public EParticleAction
 	{
 		EPASpeedLimit();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPASource final : public EParticleAction
 	{
 		EPASource	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPATargetColor final : public EParticleAction
 	{
 		EPATargetColor();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPATargetSize final : public EParticleAction
 	{
 		EPATargetSize();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPATargetRotate final : public EParticleAction
 	{
 		EPATargetRotate();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPATargetVelocity final : public EParticleAction
 	{
 		EPATargetVelocity();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPAVortex final : public EParticleAction
 	{
 		EPAVortex	();
-		virtual void	Compile		(IWriter& F);
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	struct EPATurbulence final : public EParticleAction
@@ -401,8 +401,8 @@ namespace EPALegacy
 		float 	age;
 	public:
 		EPATurbulence();
-	
-		virtual void	Compile		(IWriter& F);
+
+		virtual void	Compile		(IWriter& F) override;
 	};
 
 	// Binders
@@ -410,31 +410,31 @@ namespace EPALegacy
 	struct EPABindColorValue final: public EParticleAction
 	{
 		EPABindColorValue();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPABindColorAlpha final: public EParticleAction
 	{
 		EPABindColorAlpha();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPABindSizeValue final: public EParticleAction
 	{
 		EPABindSizeValue();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPABindRotateValue final: public EParticleAction
 	{
 		EPABindRotateValue();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPABindVelocityValue final: public EParticleAction
 	{
 		EPABindVelocityValue();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	// Animators
@@ -442,25 +442,25 @@ namespace EPALegacy
 	struct EPAColorAnimator final : public EParticleAction
 	{
 		EPAColorAnimator();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPASizeAnimator final : public EParticleAction
 	{
 		EPASizeAnimator();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPAVelocityAnimator final : public EParticleAction
 	{
 		EPAVelocityAnimator();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPAVelocityRotationAnimator final : public EParticleAction
 	{
 		EPAVelocityRotationAnimator();
-		virtual void Compile(IWriter& F);
+		virtual void Compile(IWriter& F) override;
 	};
 
 	struct EPACreator // the only reason I created this struct is to export this fucking function, because for some reason it didn't do that as normal function!

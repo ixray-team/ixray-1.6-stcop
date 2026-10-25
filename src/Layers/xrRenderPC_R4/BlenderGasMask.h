@@ -6,13 +6,13 @@ class CBlenderGasMask :
 {
 public:
 	CBlenderGasMask(VisorGlassType GlassType = VisorGlassType::Curved);
-	virtual ~CBlenderGasMask() = default;
+	virtual ~CBlenderGasMask() override = default;
 
-	virtual const char* getComment() { return "GasMask effect"; }
-	virtual bool canBeDetailed() { return false; }
-	virtual bool canBeLMAPped() { return false; }
+	virtual const char* getComment() override { return "GasMask effect"; }
+	virtual bool canBeDetailed() override { return false; }
+	virtual bool canBeLMAPped() override { return false; }
 
-	virtual void Compile(CBlender_Compile& C);
+	virtual void Compile(CBlender_Compile& C) override;
 
 private:
 	VisorGlassType GlassType;

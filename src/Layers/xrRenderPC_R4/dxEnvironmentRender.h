@@ -9,11 +9,11 @@
 class CBlender_skybox		: public IBlender  
 {
 public:
-	virtual		const char*		getComment()	{ return "INTERNAL: combiner";	}
-	virtual		bool		canBeDetailed()	{ return false;	}
-	virtual		bool		canBeLMAPped()	{ return false;	}
+	virtual const char*		getComment() override { return "INTERNAL: combiner";	}
+	virtual bool		canBeDetailed() override { return false;	}
+	virtual bool		canBeLMAPped() override { return false;	}
 
-	virtual		void		Compile			(CBlender_Compile& C)
+	virtual void		Compile			(CBlender_Compile& C) override
 	{
 		C.r_Pass("sky", "sky", false, true, false);
 
@@ -33,10 +33,10 @@ class dxEnvDescriptorRender : public IEnvDescriptorRender
 {
 	friend class dxEnvDescriptorMixerRender;
 public:
-	virtual void OnDeviceCreate(CEnvDescriptor &owner);
-	virtual void OnDeviceDestroy();
+	virtual void OnDeviceCreate(CEnvDescriptor &owner) override;
+	virtual void OnDeviceDestroy() override;
 
-	virtual void Copy(IEnvDescriptorRender &_in);
+	virtual void Copy(IEnvDescriptorRender &_in) override;
 private:
 	ref_texture			sky_texture		;
 	ref_texture			sky_texture_env	;
@@ -46,11 +46,11 @@ private:
 class dxEnvDescriptorMixerRender : public IEnvDescriptorMixerRender
 {
 public:
-	virtual void Copy(IEnvDescriptorMixerRender &_in);
+	virtual void Copy(IEnvDescriptorMixerRender &_in) override;
 
-	virtual void Destroy();
-	virtual void Clear();
-	virtual void lerp(IEnvDescriptorRender *inA, IEnvDescriptorRender *inB);
+	virtual void Destroy() override;
+	virtual void Clear() override;
+	virtual void lerp(IEnvDescriptorRender *inA, IEnvDescriptorRender *inB) override;
 //private:
 public:
 	STextureList		sky_r_textures;		
@@ -62,16 +62,16 @@ class dxEnvironmentRender : public IEnvironmentRender
 {
 public:
 	dxEnvironmentRender();
-	virtual void Copy(IEnvironmentRender &_in);
+	virtual void Copy(IEnvironmentRender &_in) override;
 
-	virtual void OnFrame(CEnvironment &env);
-	virtual void OnLoad();
-	virtual void OnUnload();
-	virtual void RenderSky(CEnvironment &env);
-	virtual void RenderClouds(CEnvironment &env);
-	virtual void OnDeviceCreate();
-	virtual void OnDeviceDestroy();
-	virtual particles_systems::library_interface const& particles_systems_library	();
+	virtual void OnFrame(CEnvironment &env) override;
+	virtual void OnLoad() override;
+	virtual void OnUnload() override;
+	virtual void RenderSky(CEnvironment &env) override;
+	virtual void RenderClouds(CEnvironment &env) override;
+	virtual void OnDeviceCreate() override;
+	virtual void OnDeviceDestroy() override;
+	virtual particles_systems::library_interface const& particles_systems_library	() override;
 
 private:
 	CBlender_skybox			m_b_skybox;

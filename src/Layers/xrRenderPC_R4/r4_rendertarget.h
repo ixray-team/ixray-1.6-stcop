@@ -406,7 +406,7 @@ private:
 public:
 								CRenderTarget			();
 								void CreateFSTriangle();
-								~CRenderTarget			();
+	virtual ~CRenderTarget			() override;
 	void						accum_point_geom_create	();
 	void						accum_point_geom_destroy();
 	void						accum_omnip_geom_create	();
@@ -523,27 +523,27 @@ public:
 	//==========================================================
 
 
-	virtual void				set_blur				(float	f)		{ param_blur=f;						}
-	virtual void				set_gray				(float	f)		{ param_gray=f;						}
-	virtual void				set_duality_h			(float	f)		{ param_duality_h=std::abs(f);			}
-	virtual void				set_duality_v			(float	f)		{ param_duality_v=std::abs(f);			}
-	virtual void				set_noise				(float	f)		{ param_noise=f;					}
-	virtual void				set_noise_scale			(float	f)		{ param_noise_scale=f;				}
-	virtual void				set_noise_fps			(float	f)		{ param_noise_fps= std::abs(f)+EPS_S;	}
-	virtual void				set_color_base			(u32	f)		{ param_color_base=f;				}
-	virtual void				set_color_gray			(u32	f)		{ param_color_gray=f;				}
-	virtual void				set_color_add			(const Fvector	&f)		{ param_color_add=f;		}
+	virtual void				set_blur				(float	f) override { param_blur=f;						}
+	virtual void				set_gray				(float	f) override { param_gray=f;						}
+	virtual void				set_duality_h			(float	f) override { param_duality_h=std::abs(f);			}
+	virtual void				set_duality_v			(float	f) override { param_duality_v=std::abs(f);			}
+	virtual void				set_noise				(float	f) override { param_noise=f;					}
+	virtual void				set_noise_scale			(float	f) override { param_noise_scale=f;				}
+	virtual void				set_noise_fps			(float	f) override { param_noise_fps= std::abs(f)+EPS_S;	}
+	virtual void				set_color_base			(u32	f) override { param_color_base=f;				}
+	virtual void				set_color_gray			(u32	f) override { param_color_gray=f;				}
+	virtual void				set_color_add			(const Fvector	&f) override { param_color_add=f;		}
 
-	virtual u32					get_width				();
-	virtual u32					get_height				();
-	virtual u32					get_target_width		();
-	virtual u32					get_target_height		();
-	virtual u32					get_core_width			();
-	virtual u32					get_core_height			();
+	virtual u32					get_width				() override;
+	virtual u32					get_height				() override;
+	virtual u32					get_target_width		() override;
+	virtual u32					get_target_height		() override;
+	virtual u32					get_core_width			() override;
+	virtual u32					get_core_height			() override;
 
-	virtual void				set_cm_imfluence	(float	f)		{ param_color_map_influence = f;							}
-	virtual void				set_cm_interpolate	(float	f)		{ param_color_map_interpolate = f;							}
-	virtual void				set_cm_textures		(const shared_str &tex0, const shared_str &tex1) {color_map_manager.SetTextures(tex0, tex1);}
+	virtual void				set_cm_imfluence	(float	f) override { param_color_map_influence = f;							}
+	virtual void				set_cm_interpolate	(float	f) override { param_color_map_interpolate = f;							}
+	virtual void				set_cm_textures		(const shared_str &tex0, const shared_str &tex1) override {color_map_manager.SetTextures(tex0, tex1);}
 
 	//	Need to reset stencil only when marker overflows.
 	//	Don't clear when render for the first time

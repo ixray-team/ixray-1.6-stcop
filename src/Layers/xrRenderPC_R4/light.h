@@ -108,46 +108,47 @@ public:
 	void get_sectors();
 	bool has_light_visible_from_sectors();
 	xrCriticalSection sectors_lc;
-	virtual void	set_type				(LT type)						{ flags.type = type;		}
-	virtual void	set_active				(bool b);
-	virtual bool	get_active				()								{ return flags.bActive;		}
-	virtual void	set_shadow				(bool b);
-	virtual void	set_volumetric			(bool b)						
+	virtual void	set_type				(LT type) override { flags.type = type;		}
+	virtual void	set_active				(bool b) override;
+	virtual bool	get_active				() override { return flags.bActive;		}
+	virtual void	set_shadow				(bool b) override;
+
+	virtual void	set_volumetric			(bool b) override
 	{ 
 		flags.bVolumetric=b;			
 	}
 
-	virtual void	set_volumetric_quality(float fValue) {m_volumetric_quality = fValue;}
-	virtual void	set_volumetric_intensity(float fValue) {m_volumetric_intensity = fValue;}
-	virtual void	set_volumetric_distance(float fValue) {m_volumetric_distance = fValue;}
-	
-	virtual void	set_position			(const Fvector& P);
-	virtual void	set_rotation			(const Fvector& D, const Fvector& R);
-	virtual void	set_cone				(float angle);
-	virtual void	set_range				(float R);
-	virtual void	set_virtual_size		(float R) { virtual_size = R; }
-	virtual void	set_color				(const Fcolor& C)				{ color.set(C);				}
-	virtual void	set_color				(float r, float g, float b)		{ color.set(r,g,b,1);		}
-	virtual void	set_texture				(const char* name);
-	virtual void	set_hud_mode			(bool b)						{flags.bHudMode=b;}
-	virtual bool	get_hud_mode			()								{return flags.bHudMode;};
+	virtual void	set_volumetric_quality(float fValue) override {m_volumetric_quality = fValue;}
+	virtual void	set_volumetric_intensity(float fValue) override {m_volumetric_intensity = fValue;}
+	virtual void	set_volumetric_distance(float fValue) override {m_volumetric_distance = fValue;}
 
-	virtual void	set_occq_mode			(bool b)						{flags.bOccq=b;}
-	virtual bool	get_occq_mode			()								{return flags.bOccq;};
+	virtual void	set_position			(const Fvector& P) override;
+	virtual void	set_rotation			(const Fvector& D, const Fvector& R) override;
+	virtual void	set_cone				(float angle) override;
+	virtual void	set_range				(float R) override;
+	virtual void	set_virtual_size		(float R) override { virtual_size = R; }
+	virtual void	set_color				(const Fcolor& C) override { color.set(C);				}
+	virtual void	set_color				(float r, float g, float b) override { color.set(r,g,b,1);		}
+	virtual void	set_texture				(const char* name) override;
+	virtual void	set_hud_mode			(bool b) override {flags.bHudMode=b;}
+	virtual bool	get_hud_mode			() override {return flags.bHudMode;};
 
-	virtual void	set_ignore_object		(CObject* O)					{ignore_object=O;};
-	virtual CObject* get_ignore_object		()								{return ignore_object;};
+	virtual void	set_occq_mode			(bool b) override {flags.bOccq=b;}
+	virtual bool	get_occq_mode			() override {return flags.bOccq;};
 
-	virtual void	set_decor_object		(CObject* O, int index = 0)					{decor_object[index] = O; };
-	virtual CObject* get_decor_object		(int index = 0)								{return decor_object[index];};
+	virtual void	set_ignore_object		(CObject* O) override {ignore_object=O;};
+	virtual CObject* get_ignore_object		() override {return ignore_object;};
 
-	virtual	void	spatial_move			();
-	virtual	Fvector	spatial_sector_point	();
+	virtual void	set_decor_object		(CObject* O, int index = 0) override {decor_object[index] = O; };
+	virtual CObject* get_decor_object		(int index = 0) override {return decor_object[index];};
+
+	virtual void	spatial_move			() override;
+	virtual Fvector	spatial_sector_point	() override;
 	virtual	void	spatial_updatesector_internal ();
 
-	virtual IRender_Light*	dcast_Light		()	{ return this; }
+	virtual IRender_Light*	dcast_Light		() override { return this; }
 
-	virtual vis_data&		get_homdata		();
+	virtual vis_data&		get_homdata		() override;
 	void			xform_calc				();
 #ifndef _EDITOR
 	void			optimize_smap_size		();
@@ -160,9 +161,9 @@ public:
 	float			get_LOD					();
 
 	light();
-	virtual ~light();
+	virtual ~light() override;
 
-	virtual void	destroy(bool deffered = true);
+	virtual void	destroy(bool deffered = true) override;
 
 };
 

@@ -3,12 +3,12 @@
 class CBlender_gtao : public IBlender  
 {
 public:
-	virtual		const char*		getComment()	{ return "INTERNAL: ground-truth based ambient occlusion";	}
-	virtual		bool		canBeDetailed()	{ return false;	}
-	virtual		bool		canBeLMAPped()	{ return false;	}
+	virtual const char*		getComment() override { return "INTERNAL: ground-truth based ambient occlusion";	}
+	virtual bool		canBeDetailed() override { return false;	}
+	virtual bool		canBeLMAPped() override { return false;	}
 
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual void		Compile			(CBlender_Compile& C) override;
 
 	CBlender_gtao();
-	virtual ~CBlender_gtao();
+	virtual ~CBlender_gtao() override;
 };

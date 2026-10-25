@@ -12,24 +12,24 @@ public:
 			void	Init				();
 			void	Shutdown			();
 
-	virtual void	Render				();
-	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color);
+	virtual void	Render				() override;
+	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color) override;
 
 	// routed to RCache
-	virtual void	NextSceneMode		();
-	virtual void	ZEnable				(bool bEnable);
-	virtual void	OnFrameEnd			();
-	virtual void	SetShader			(const debug_shader &shader);
-	virtual void	CacheSetXformWorld	(const Fmatrix& M);
-	virtual void	CacheSetCullMode	(ERHI_CULLMODE);
-	virtual void	SetAmbient			(u32 colour);
+	virtual void	NextSceneMode		() override;
+	virtual void	ZEnable				(bool bEnable) override;
+	virtual void	OnFrameEnd			() override;
+	virtual void	SetShader			(const debug_shader &shader) override;
+	virtual void	CacheSetXformWorld	(const Fmatrix& M) override;
+	virtual void	CacheSetCullMode	(ERHI_CULLMODE) override;
+	virtual void	SetAmbient			(u32 colour) override;
 
 	// Shaders
-	virtual void	SetDebugShader		(dbgShaderHandle shdHandle);
-	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle);
+	virtual void	SetDebugShader		(dbgShaderHandle shdHandle) override;
+	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle) override;
 
 #ifdef DEBUG_DRAW
-	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
+	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C) override;
 #endif	//	DEBUG
 
 private:

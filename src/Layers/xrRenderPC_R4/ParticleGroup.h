@@ -125,39 +125,41 @@ namespace PS
 		Flags8				m_RT_Flags;
 
 		CParticleGroup();
-		virtual ~CParticleGroup();
-		virtual void OnFrame(u32 dt);
+		virtual ~CParticleGroup() override;
+		virtual void OnFrame(u32 dt) override;
 
-		virtual void UpdateCache();
+		virtual void UpdateCache() override;
 
-		virtual void Copy(dxRender_Visual* pFrom) {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
+		virtual void Copy(dxRender_Visual* pFrom) override {FATAL("Can't duplicate particle system - NOT IMPLEMENTED");}
 
-		virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
+		virtual void UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM) override;
 
 		void Compile(CPGDef* def);
 
 		const CPGDef* GetDefinition(){return m_Def;}
 
-		virtual void Play();
-		virtual void Stop(bool bDefferedStop=true);
-		virtual bool IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
+		virtual void Play() override;
+		virtual void Stop(bool bDefferedStop=true) override;
+		virtual bool IsPlaying() override {return m_RT_Flags.is(flRT_Playing);}
 
-		virtual void SetHudMode(bool b);
-		virtual bool GetHudMode();
+		virtual void SetHudMode(bool b) override;
+		virtual bool GetHudMode() override;
 
-		virtual void SetLiveUpdate(bool b);
-		virtual bool GetLiveUpdate();
+		virtual void SetLiveUpdate(bool b) override;
+		virtual bool GetLiveUpdate() override;
 
-		virtual float GetTimeLimit(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
+		virtual float GetTimeLimit() override
+		{VERIFY(m_Def); return m_Def->m_fTimeLimit;}
 
-		virtual const shared_str Name(){VERIFY(m_Def); return m_Def->m_Name;}
+		virtual const shared_str Name() override
+		{VERIFY(m_Def); return m_Def->m_Name;}
 
-        virtual u32 SpriteCount();
-		void SetScale(float Scale) override;
-		float GetScale() override;
-		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
+		virtual u32 SpriteCount() override;
+		virtual void SetScale(float Scale) override;
+		virtual float GetScale() override;
+		virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 
-		virtual IParticleCustom* dcast_ParticleCustom() { return this; }
+		virtual IParticleCustom* dcast_ParticleCustom() override { return this; }
 	};
 
 	namespace PG

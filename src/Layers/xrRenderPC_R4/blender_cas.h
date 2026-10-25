@@ -4,12 +4,12 @@ class CBlender_Sharpening :
 	public IBlender
 {
 public:
-	virtual const char* getComment() { return "INTERNAL: contrast adaptive sharpening"; }
-	virtual bool canBeDetailed() { return false; }
-	virtual bool canBeLMAPped() { return false; }
+	virtual const char* getComment() override { return "INTERNAL: contrast adaptive sharpening"; }
+	virtual bool canBeDetailed() override { return false; }
+	virtual bool canBeLMAPped() override { return false; }
 
-	virtual void Compile(CBlender_Compile& C);
+	virtual void Compile(CBlender_Compile& C) override;
 
 	CBlender_Sharpening();
-	virtual ~CBlender_Sharpening();
+	virtual ~CBlender_Sharpening() override;
 };

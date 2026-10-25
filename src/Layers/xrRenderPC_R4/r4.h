@@ -211,7 +211,7 @@ public:
 	IRender_Sector*					detectSector				(const Fvector& P, Fvector& D);
 	IRender_Sector*					detectLastSector			(const Fvector& P);
 	int								translateSector				(IRender_Sector* pSector);
-	
+
 	virtual SurfaceParams getSurface(const char* nameTexture) override;
 
 	// HW-occlusion culling
@@ -314,10 +314,10 @@ public:
 
 public:
 	// feature level
-	virtual	GenerationLevel			get_generation			();
+	virtual GenerationLevel			get_generation			() override;
 
-	virtual bool					is_sun_static			()	{ return o.sunstatic;}
-	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }
+	virtual bool					is_sun_static			() override { return o.sunstatic;}
+	virtual DWORD					get_dx_level			() override { return 0x000A0001; }
 
 	virtual void					detail_trample_mark(float x, float y, float z, float radius, float weight, bool isActor = false) override
 	{
@@ -338,7 +338,7 @@ public:
 	}
 
 	// Detail Layers Editor tool (brush overlay + ImGui window)
-	void renderImGuiDebugWindow_DetailLayersEditor() override;
+	virtual void renderImGuiDebugWindow_DetailLayersEditor() override;
 	void DetailLayers_RenderBrush3D();
 	// Releases the lazily created brush render objects while the RHI/device is still
 	// alive (called from destroy()). Never leave these statics to DLL detach - the
@@ -346,13 +346,13 @@ public:
 	void DetailLayers_EditorDestroy();
 
 	// Loading / Unloading
-	virtual void create();
-	virtual void destroy();
-	virtual	void reset_begin();
-	virtual	void reset_end();
+	virtual void create() override;
+	virtual void destroy() override;
+	virtual void reset_begin() override;
+	virtual void reset_end() override;
 
-	virtual	void level_Load(IReader*);
-	virtual void level_Unload();
+	virtual void level_Load(IReader*) override;
+	virtual void level_Unload() override;
 
 	IRHISurface* load_texture(const char*	fname, u32& msize, bool bStaging = false) override;
 	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
@@ -366,7 +366,7 @@ public:
 		const char*                          pFunctionName,
 		const char*                          pTarget,
 		DWORD                           Flags,
-		void*&							result);
+		void*&							result) override;
 
 	struct PuddleBase 
 	{
@@ -395,79 +395,79 @@ public:
 	void							LoadPlanars();
 
 	// Information
-	virtual void Statistics(CGameFont* F);
-	virtual const char* getShaderPath() { return "d3d11\\";	}
+	virtual void Statistics(CGameFont* F) override;
+	virtual const char* getShaderPath() override { return "d3d11\\";	}
 	virtual ref_shader getShader(int id);
 	virtual ref_shader getShaderShared(shared_str id);
-	virtual IRender_Sector* getSector(int id);
-	virtual IRenderVisual* getVisual(int id);
-	virtual IRender_Sector* detectSector(const Fvector& P);
-	virtual IRender_Target* getTarget();
+	virtual IRender_Sector* getSector(int id) override;
+	virtual IRenderVisual* getVisual(int id) override;
+	virtual IRender_Sector* detectSector(const Fvector& P) override;
+	virtual IRender_Target* getTarget() override;
 
 	// Main 
-	virtual void					flush						();
-	virtual void					set_Object					(IRenderable*		O	);
-	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual*	V, bool Ignore, bool Force = false);			// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
+	virtual void					flush						() override;
+	virtual void					set_Object					(IRenderable*		O	) override;
+	virtual void					add_Occluder				(Fbox2&	bb_screenspace	) override;			// mask screen region as oclluded
+	virtual void					add_Visual					(IRenderVisual*	V, bool Ignore, bool Force = false) override;			// add visual leaf	(no culling performed at all)
+	virtual void					add_Geometry				(IRenderVisual*	V	) override;			// add visual(s)	(all culling performed)
 
 	// wallmarks
 	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
 	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) override;
-	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
-	virtual void					clear_static_wallmarks		();
+	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) override;
+	virtual void					clear_static_wallmarks		() override;
 	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override;
 	virtual void					add_SkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
-	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size);
+	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) override;
 
 	//
 	virtual IBlender*				blender_create				(CLASS_ID cls);
 
 	//
-	virtual IRender_ObjectSpecific*	ros_create					(IRenderable*		parent);
-	virtual void					ros_destroy					(IRender_ObjectSpecific* &);
+	virtual IRender_ObjectSpecific*	ros_create					(IRenderable*		parent) override;
+	virtual void					ros_destroy					(IRender_ObjectSpecific* &) override;
 
 	// Lighting
-	virtual IRender_Light*			light_create				();
-	virtual IRender_Glow*			glow_create					();
+	virtual IRender_Light*			light_create				() override;
+	virtual IRender_Glow*			glow_create					() override;
 
 	// Models
-	virtual IRenderVisual*			model_CreateParticles		(const char* name);
+	virtual IRenderVisual*			model_CreateParticles		(const char* name) override;
 	virtual IRender_DetailModel*	model_CreateDM				(IReader* F);
-	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0);
-	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data);
-	virtual IRenderVisual*			model_Duplicate				(IRenderVisual*	V);
-	virtual void					model_Delete				(IRenderVisual* &	V, bool bDiscard);
-	virtual void					model_Delete_Deffered		(IRenderVisual* &	V);
+	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0) override;
+	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data) override;
+	virtual IRenderVisual*			model_Duplicate				(IRenderVisual*	V) override;
+	virtual void					model_Delete				(IRenderVisual* &	V, bool bDiscard) override;
+	virtual void					model_Delete_Deffered		(IRenderVisual* &	V) override;
 	virtual void 					model_Delete				(IRender_DetailModel* & F);
-	virtual void					models_Prefetch				();
-	virtual void					models_Clear				(bool b_complete);
+	virtual void					models_Prefetch				() override;
+	virtual void					models_Clear				(bool b_complete) override;
 
 	// Occlusion culling
-	virtual bool					occ_visible					(vis_data&	V);
-	virtual bool					occ_visible					(Fbox&		B);
-	virtual bool					occ_visible					(sPoly&		P);
+	virtual bool					occ_visible					(vis_data&	V) override;
+	virtual bool					occ_visible					(Fbox&		B) override;
+	virtual bool					occ_visible					(sPoly&		P) override;
 
 	// Main
-	virtual void					Calculate					();
-	virtual void					Render						();
-	virtual void					RenderUI					(Fcolor* = nullptr);
+	virtual void					Calculate					() override;
+	virtual void					Render						() override;
+	virtual void					RenderUI					(Fcolor* = nullptr) override;
 
-	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0);
-	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer);
-	virtual void					ScreenshotAsyncBegin		();
-	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
-	virtual void		_BCL		OnFrame						();
+	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0) override;
+	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer) override;
+	virtual void					ScreenshotAsyncBegin		() override;
+	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer) override;
+	virtual void		_BCL		OnFrame						() override;
 
 	// Render mode
-	virtual void					rmNear						();
-	virtual void					rmFar						();
-	virtual void					rmNormal					();
+	virtual void					rmNear						() override;
+	virtual void					rmFar						() override;
+	virtual void					rmNormal					() override;
 
 	// Constructor/destructor/loader
 	CRender														();
-	virtual ~CRender											();
+	virtual ~CRender											() override;
 
 	xr_string						getShaderParams				();
 	xr_string						getShaderParamsDebug		();
@@ -481,8 +481,8 @@ public:
 
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
-	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };
-	virtual size_t					SectorsCount				() { return Sectors.size(); }
+	virtual bool					InIndoor					() override { return pLastSector!=pOutdoorSector; };
+	virtual size_t					SectorsCount				() override { return Sectors.size(); }
 
 public:
 	// Shaders created by this thread get the editor instancing variant. Per thread: objects load
@@ -536,7 +536,7 @@ private:
 	ShaderExternalMap				m_ShaderOptions;
 
 protected:
-	virtual	void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer);
+	virtual void					ScreenshotImpl				(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) override;
 
 private:
 	FS_FileSet						m_file_set;
