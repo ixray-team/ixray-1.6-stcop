@@ -206,17 +206,22 @@ void CActor::TryToTalk()
 
 void CActor::RunTalkDialog(CInventoryOwner* talk_partner, bool disable_break)
 {
+	CUIGameCustom* GameUi = CurrentGameUI();
+	if (!talk_partner || !GameUi)
+	{
+		return;
+	}
+
 	//предложить поговорить с нами
 	if(talk_partner->OfferTalk(this))
-	{	
-		StartTalk(talk_partner);
-
-		if (CurrentGameUI()->TopInputReceiver())
+	{
+		if (auto* Receiver = GameUi->TopInputReceiver())
 		{
-			CurrentGameUI()->TopInputReceiver()->HideDialog();
+			Receiver->HideDialog();
 		}
+		StartTalk(talk_partner);
 		bool disableBreakDialog = EngineExternal().ClearSkyMode() ? disable_break : talk_partner->bDisableBreakDialog;
- 		CurrentGameUI()->StartTalk(disableBreakDialog);
+		GameUi->StartTalk(disableBreakDialog);
 	}
 }
 
