@@ -381,6 +381,11 @@ function eva_gather_itm:evaluate()
 		return false
 	end
 	
+	local enemy = npc:motivation_action_manager():evaluator(stalker_ids.property_enemy)
+	if (enemy and enemy:evaluate()) then
+		return false
+	end
+	
 	local st = db.storage[npc:id()]
 	if (st) and (st.active_scheme == "camper" or st.help_wounded and st.help_wounded.selected_id ~= nil) then 
 		return false 
