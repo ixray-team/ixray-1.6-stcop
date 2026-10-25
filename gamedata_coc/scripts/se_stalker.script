@@ -161,7 +161,7 @@ function se_stalker:on_death(killer)
 	if (squad) then
 		squad:on_npc_death(self,killer)
 	end
-	if (level.map_has_object_spot(self.id,"red_location") == 1) then
+	if (level.map_has_object_spot(self.id,"red_location")) then
 		level.map_remove_object_spot(self.id, "red_location")
 	end
 	local m_data = alife_storage_manager.get_state()

@@ -1084,11 +1084,11 @@ function sim_squad_scripted:show()
 		return
 	end
 
-    if(level.map_has_object_spot(self:commander_id(), "ui_pda2_trader_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_mechanic_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_scout_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_quest_npc_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_medic_location")~=0) then
+    if(level.map_has_object_spot(self:commander_id(), "ui_pda2_trader_location")) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_mechanic_location")) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_scout_location")) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_quest_npc_location")) or
+	(level.map_has_object_spot(self:commander_id(), "ui_pda2_medic_location")) then
 		self.show_disabled = true
 		return
 	end

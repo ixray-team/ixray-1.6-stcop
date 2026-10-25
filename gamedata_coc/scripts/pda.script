@@ -335,7 +335,7 @@ function fill_primary_objects()
 	}
 	for i=1,#sleep_zones_tbl do
 		local obj_id = get_story_object_id(sleep_zones_tbl[i])
-		if (level.map_has_object_spot(obj_id, "ui_pda2_actor_sleep_location")==0) then
+		if (not level.map_has_object_spot(obj_id, "ui_pda2_actor_sleep_location")) then
 			level.map_add_object_spot_ser(obj_id, "ui_pda2_actor_sleep_location", "st_ui_pda_sleep_place")
 		end
 	end

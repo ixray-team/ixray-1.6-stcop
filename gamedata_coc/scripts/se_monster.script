@@ -120,7 +120,7 @@ function se_monster:on_death(killer)
 		squad:on_npc_death(self,killer)
 	end
 	
-	if (level.map_has_object_spot(self.id,"red_location") == 1) then
+	if (level.map_has_object_spot(self.id,"red_location")) then
 		level.map_remove_object_spot(self.id, "red_location")
 	end
 end

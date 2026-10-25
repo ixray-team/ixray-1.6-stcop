@@ -83,14 +83,14 @@ function se_restrictor:on_register()
 		enable = enable and xr_logic.pick_section_from_condlist(db.actor,self,xr_logic.parse_condlist(self,"enable",name,enable))
 		if (enable == "true") then
 			local spot = sr_teleport_ini:line_exist(name,"spot") and sr_teleport_ini:r_string_ex(name,"spot")
-			if (spot and level.map_has_object_spot(id,spot) == 0) then
+			if (spot and not level.map_has_object_spot(id,spot)) then
 				local str = sr_teleport_ini:line_exist(name,"hint") and sr_teleport_ini:r_string_ex(name,"hint")
 				str = str and game.translate_string(str)
 				level.map_add_object_spot_ser(id,spot,str)
 			end
 		else
 			local spot = sr_teleport_ini:line_exist(name,"spot") and sr_teleport_ini:r_string_ex(name,"spot")
-			if (spot and level.map_has_object_spot(id,spot) ~= 0) then
+			if (spot and level.map_has_object_spot(id,spot)) then
 				level.map_remove_object_spot(id,spot)
 			end
 		end
