@@ -7,9 +7,9 @@ class CDS0_FVisual :
 {
 public:
 	CDS0_FVisual();
-	virtual ~CDS0_FVisual();
-	virtual void Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void Copy(CDS0_RenderVisual* from);
+	virtual ~CDS0_FVisual() override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
+	virtual void Copy(CDS0_RenderVisual* from) override;
 
 	size_t CountIndex;
 	size_t OffsetIndex;

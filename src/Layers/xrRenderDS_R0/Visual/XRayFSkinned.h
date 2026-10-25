@@ -13,16 +13,16 @@ class CDS0_SkeletonXExt : public CDS0_SkeletonX	// shared code for SkeletonX der
 {
 protected:
 	//BearFactoryPointer<BearRHI::BearRHIUniformBuffer> m_UniformBuffer;
-	virtual void			_Load_hw(CDS0_FVisual& V, void* data);
-	virtual void			_CollectBoneFaces(CDS0_FVisual* V, size_t iBase, size_t iCount);
+	virtual void			_Load_hw(CDS0_FVisual& V, void* data) override;
+	virtual void			_CollectBoneFaces(CDS0_FVisual* V, size_t iBase, size_t iCount) override;
 	void			        _EnumBoneVertices(SEnumVerticesCallback& C, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount) const;
 
-	virtual bool			_PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual bool			_PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual bool			_PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
-	virtual bool			_PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces);
+	virtual bool			_PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces) override;
+	virtual bool			_PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces) override;
+	virtual bool			_PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces) override;
+	virtual bool			_PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces) override;
 
-	virtual bool			_PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount);
+	virtual bool			_PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16 bone_id, size_t iBase, size_t iCount) override;
 	void UpdateUniform( void* ptr);
 public:
 };
@@ -34,13 +34,13 @@ private:
 	typedef CDS0_SkeletonXExt	inherited2;
 public:
 	CDS0_SkeletonX_ST() {}
-	virtual					~CDS0_SkeletonX_ST() {}
+	virtual ~CDS0_SkeletonX_ST() override {}
 	//virtual bool		Render(float LOD, EShaderElement SEType, CDS0_ObjectRender& Item);
-	virtual void			Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void			Copy(CDS0_RenderVisual* pFrom);
-	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx);
-	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+	virtual void			Load(const char* N, IReader* data, u32 dwFlags) override;
+	virtual void			Copy(CDS0_RenderVisual* pFrom) override;
+	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx) override;
+	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
+	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id) override;
 //	virtual  void UpdateUniform(CDS0_UniformAllocator::EUniformType Type, void* ptr);;
 private:
 };
@@ -52,13 +52,13 @@ private:
 	typedef CDS0_SkeletonXExt	inherited2;
 public:
 	CDS0_SkeletonX_PM() {}
-	virtual					~CDS0_SkeletonX_PM() {}
+	virtual ~CDS0_SkeletonX_PM() override {}
 	//virtual bool Render(float LOD, EShaderElement SEType, CDS0_ObjectRender& Item);
-	virtual void			Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void			Copy(CDS0_RenderVisual* pFrom);
-	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx);
-	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
-	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+	virtual void			Load(const char* N, IReader* data, u32 dwFlags) override;
+	virtual void			Copy(CDS0_RenderVisual* pFrom) override;
+	virtual void			AfterLoad(CDS0_Kinematics* parent, u16 child_idx) override;
+	virtual void			EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id) override;
+	virtual bool			PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id) override;
 //	virtual  void UpdateUniform(CDS0_UniformAllocator::EUniformType Type, void* ptr);;
 private:
 };

@@ -10,8 +10,8 @@ protected:
 
 public:
 	CDS0_FProgressive();
-	virtual ~CDS0_FProgressive();
-	virtual void Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void Copy(CDS0_RenderVisual* from);
-	virtual void Release();
+	virtual ~CDS0_FProgressive() override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
+	virtual void Copy(CDS0_RenderVisual* from) override;
+	virtual void Release() override;
 };
