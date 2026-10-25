@@ -64,6 +64,7 @@ public:
 	virtual void		Load						( const char* section ) override;
 	virtual bool		net_Spawn					( CSE_Abstract* DC ) override;
 	virtual void		net_Destroy					() override;
+	virtual void		net_Relcase					(CObject* O) override;
 
 	virtual void		net_Export					(NET_Packet& P) override;
 	virtual void		net_Import					(NET_Packet& P) override;

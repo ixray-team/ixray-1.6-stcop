@@ -116,6 +116,13 @@ void CPhantom::net_Destroy	()
 	Particles::Details::Destroy	(m_fly_particles);
 }
 
+void CPhantom::net_Relcase(CObject* O)
+{
+	inherited::net_Relcase(O);
+	if (m_enemy == O)
+		m_enemy = nullptr;
+}
+
 //---------------------------------------------------------------------
 // Animation Callbacks
 void CPhantom::animation_end_callback(CBlend* B)
@@ -144,12 +151,15 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		case stContact:{
 			SStateData& sdata	= m_state_data[m_CurState];
 			PlayParticles		(sdata.particles.c_str(),false,xform);
-			Fvector vE,vP;
-			m_enemy->Center		(vE);
-			Center				(vP);
-			if (vP.distance_to_sqr(vE)<_sqr(Radius())){ 
-				// hit enemy
-				PsyHit			(m_enemy,fContactHit);
+			if (m_enemy)
+			{
+				Fvector vE,vP;
+				m_enemy->Center		(vE);
+				Center				(vP);
+				if (vP.distance_to_sqr(vE)<_sqr(Radius())){ 
+					// hit enemy
+					PsyHit			(m_enemy,fContactHit);
+				}
 			}
 			}break;
 		case stShoot:{
@@ -205,7 +215,7 @@ void CPhantom::OnIdleState()
 void CPhantom::OnFlyState()
 {
 	UpdateFlyMedia			();
-	if (g_Alive()){
+	if (g_Alive() && m_enemy){
 		Fvector vE,vP;
 		m_enemy->Center		(vE);
 		Center				(vP);
@@ -226,6 +236,9 @@ void CPhantom::UpdateFlyMedia()
 {
 	if (!m_enemy)
 		m_enemy = Level().CurrentEntity();
+
+	if (!m_enemy)
+		return;
 
 	UpdatePosition	(m_enemy->Position());
 	Fmatrix	xform			= XFORM_center();
