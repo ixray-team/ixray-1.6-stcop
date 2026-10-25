@@ -241,6 +241,20 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 
 void CInventoryOwner::net_Destroy()
 {
+	if (CUIGameCustom* ui = CurrentGameUI())
+	{
+		if (ui->TalkMenu)
+			ui->TalkMenu->OnPartnerDestroy(this);
+	}
+
+	if (IsTalking())
+	{
+		CInventoryOwner* partner = GetTalkPartner();
+		StopTalk();
+		if (partner && partner->IsTalking())
+			partner->StopTalk();
+	}
+
 	CAttachmentOwner::net_Destroy();
 
 	inventory().Clear();
