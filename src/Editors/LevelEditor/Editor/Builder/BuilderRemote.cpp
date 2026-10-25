@@ -524,7 +524,10 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 				break;
 			}
 		}
-		if (surf->_GameMtlName() == shared_str("materials\\occ"))
+
+		// FX: Кешируем строчки 
+		static const shared_str OCCMat = "materials\\occ";
+		if (surf->_GameMtlName() == OCCMat)
 		{
 			continue;
 		}
