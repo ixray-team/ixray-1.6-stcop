@@ -361,6 +361,11 @@ function motivator_binder:update(delta)
 	local object_alive = self.object:alive()
 	local object = self.object
 	local actor = db.actor
+
+	if object_alive then
+		xr_sound.update(object:id())
+	end
+
 	local st = db.storage[object:id()]
 	local st_combat = st.combat
 	if not self.strelok_particles_added and object:profile_name() == "stc_strelok" then
@@ -441,11 +446,6 @@ function motivator_binder:update(delta)
 		else
 			self.st.state_mgr = nil
 		end
-	end
-
-	--' Апдейт саундменеджера
-	if object_alive then
-		xr_sound.update(object:id())
 	end
 
 	-- Апдейт отряда
