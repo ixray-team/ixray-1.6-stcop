@@ -64,6 +64,7 @@ class "mob_trade"
 function mob_trade:__init(obj, storage)
 	self.object = obj
 	self.st = storage
+	self.st.all_money = self.st.all_money or 0
 end
 
 function mob_trade:reset_scheme()
