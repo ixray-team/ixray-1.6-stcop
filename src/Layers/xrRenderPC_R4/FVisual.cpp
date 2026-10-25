@@ -162,27 +162,46 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	rm_geom.create(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 }
 
-bool Fvisual::fast_usable()
+static SVS* incompatible_vertex_shader(const ref_shader& sh, u32 element, const ref_geom& geom)
 {
-	if (m_fast_usable >= 0)
-		return m_fast_usable != 0;
+	ShaderElement* E = sh ? &*sh->E[element] : nullptr;
+	if (!E || E->passes.empty() || !E->passes[0]->vs || !E->passes[0]->vs->signature || !geom)
+		return nullptr;
 
-	m_fast_usable = 1;
-	ShaderElement* E = shader ? &*shader->E[SE_R2_SHADOW] : nullptr;
-	if (!E || E->passes.empty() || !E->passes[0]->vs || !E->passes[0]->vs->signature || !m_fast->rm_geom)
-		return true;
-
-	ID3DBlob* signature = E->passes[0]->vs->signature->signature;
-	const xr_vector<RHIInputElementDesc>& dcl = m_fast->rm_geom->dcl->dx10_dcl_code;
+	SVS* vs = &*E->passes[0]->vs;
+	ID3DBlob* signature = vs->signature->signature;
+	const xr_vector<RHIInputElementDesc>& dcl = geom->dcl->dx10_dcl_code;
 	ID3DInputLayout* layout = nullptr;
 	if (FAILED(RDevice->CreateInputLayout((D3D11_INPUT_ELEMENT_DESC*)dcl.data(), (UINT)dcl.size(), signature->GetBufferPointer(), signature->GetBufferSize(), &layout)))
-	{
-		m_fast_usable = 0;
-		return false;
-	}
+		return vs;
 
 	_RELEASE(layout);
-	return true;
+	return nullptr;
+}
+
+bool Fvisual::fast_usable()
+{
+	if (m_fast_usable < 0)
+		m_fast_usable = incompatible_vertex_shader(shader, SE_R2_SHADOW, m_fast->rm_geom) ? 0 : 1;
+
+	return m_fast_usable != 0;
+}
+
+void Fvisual::check_layout()
+{
+	if (m_layout_checked)
+		return;
+
+	m_layout_checked = true;
+	for (u32 element : { u32(SE_R2_NORMAL_HQ), u32(SE_R2_NORMAL_LQ), u32(SE_R2_SHADOW) })
+	{
+		if (SVS* vs = incompatible_vertex_shader(shader, element, rm_geom))
+		{
+			Msg("! visual [%s] shader [%s] textures [%s] element [%u]: geometry is incompatible with VS [%s]", dbg_name.c_str(), shader->src_shader.c_str(), shader->src_textures.c_str(), element, vs->cName.c_str());
+			for (const RHIInputElementDesc& e : rm_geom->dcl->dx10_dcl_code)
+				Msg("!   decl %s%u fmt=%u off=%u", e.SemanticName, e.SemanticIndex, (u32)e.Format, e.AlignedByteOffset);
+		}
+	}
 }
 
 void Fvisual::Render(float)
