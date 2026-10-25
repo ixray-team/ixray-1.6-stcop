@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "movement_manager.h"
+#include "Level.h"
 #include "movement_manager_space.h"
 #include "game_location_selector.h"
 #include "level_location_selector.h"
@@ -373,6 +374,7 @@ void CMovementManager::on_frame					(CPHMovementControl *movement_control, Fvect
 {
 	if	(
 			enabled() &&
+			!Level().IsWorldTeardown() &&
 			(m_path_state != ePathStatePathVerification) &&
 			(m_path_state != ePathStatePathCompleted)
 		)
