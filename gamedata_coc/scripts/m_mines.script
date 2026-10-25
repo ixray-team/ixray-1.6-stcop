@@ -39,10 +39,10 @@ local function evaluate_actor_mines(npc,st)
 	end
 
 	local tg = time_global()
-	st.__timer_mine = not st.__timer_mine and tg+100 or st.__timer_mine
-	if (tg < st.__timer_mine) then
+	if (st.__timer_mine and tg < st.__timer_mine) then
 		return
 	end
+	st.__timer_mine = tg + 100
 
 	st.__index_mine = not st.__index_mine and 1 or st.__index_mine > #actor_placed_mines and 1 or st.__index_mine
 

@@ -302,10 +302,10 @@ function Cmeet_manager:set_start_distance()
 end
 function Cmeet_manager:update()
 	local tg = time_global()
-	self.__stimer = not self.__stimer and tg + 500 or self.__stimer
-	if (tg < self.__stimer) then 
+	if (self.__stimer and tg < self.__stimer) then 
 		return 
 	end 
+	self.__stimer = tg + 500
 	
 	-- Определение, в каком радиусе находимся
 	local distance = self.npc:position():distance_to(db.actor:position())
