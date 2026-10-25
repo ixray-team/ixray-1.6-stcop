@@ -183,15 +183,45 @@ IC void CBackend::ApplyVertexLayout()
 	{
 		ID3DInputLayout* pLayout;
 
-		CHK_DX(RDevice->CreateInputLayout
+		HRESULT hr = RDevice->CreateInputLayout
 		(
 			(D3D11_INPUT_ELEMENT_DESC*)decl->dx10_dcl_code.data(),
 			decl->dx10_dcl_code.size(),
 			m_pInputSignature->GetBufferPointer(),
 			m_pInputSignature->GetBufferSize(),
 			&pLayout
-			)
 		);
+		if (FAILED(hr))
+		{
+			Msg("! CreateInputLayout failed for VS [%s]", CurrentVS ? CurrentVS->cName.c_str() : "");
+			for (const RHIInputElementDesc& e : decl->dx10_dcl_code)
+				Msg("!   decl %s%u fmt=%u slot=%u off=%u", e.SemanticName, e.SemanticIndex, (u32)e.Format, e.InputSlot, e.AlignedByteOffset);
+			for (u32 i = 0; i < 8; ++i)
+				if (textures_ps[i])
+					Msg("!   tex%u %s", i, textures_ps[i]->cName.c_str());
+
+			ID3DBlob* code = CurrentVS ? CurrentVS->vs_code : nullptr;
+			const void* data = code ? code->GetBufferPointer() : m_pInputSignature->GetBufferPointer();
+			SIZE_T size = code ? code->GetBufferSize() : m_pInputSignature->GetBufferSize();
+			ID3DShaderReflection* refl = nullptr;
+			if (SUCCEEDED(D3DReflect(data, size, IID_ID3DShaderReflection, (void**)&refl)))
+			{
+				D3D11_SHADER_DESC sd;
+				refl->GetDesc(&sd);
+				for (u32 i = 0; i < sd.InputParameters; ++i)
+				{
+					D3D11_SIGNATURE_PARAMETER_DESC pd;
+					refl->GetInputParameterDesc(i, &pd);
+					Msg("!   input %s%u mask=%u", pd.SemanticName, pd.SemanticIndex, (u32)pd.Mask);
+				}
+				refl->Release();
+			}
+			else
+			{
+				Msg("!   input signature is not reflectable (%s)", code ? "vs bytecode" : "signature blob");
+			}
+		}
+		CHK_DX(hr);
 
 		it = decl->vs_to_layout.insert(
 			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
