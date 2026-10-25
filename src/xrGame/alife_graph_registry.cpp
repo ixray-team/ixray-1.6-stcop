@@ -105,6 +105,7 @@ void WaitLevelLoad()
 }
 
 shared_str g_StartedLevelName;
+extern shared_str g_start_position_smart;
 
 bool StartLevelLoad(const shared_str& LevelName)
 {
@@ -179,6 +180,7 @@ void CALifeGraphRegistry::setup_current_level	()
 	ai().load					(*(*I).second.name());
 
     g_start_game_vertex_id = 0;
+    g_start_position_smart = nullptr;
 }
 
 void CALifeGraphRegistry::attach	(CSE_Abstract &object, CSE_ALifeInventoryItem *item, GameGraph::_GRAPH_ID game_vertex_id, bool alife_query, bool add_children)
