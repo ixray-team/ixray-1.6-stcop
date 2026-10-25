@@ -40,7 +40,7 @@ local function on_item_drop(npc,item)
 	end
 	-- unmark npc as having valuables if they were all removed by actor
 	local parent = item:parent()
-	if not (parent and parent:id() == db.actor:id()) then 
+	if not (parent and db.actor and parent:id() == db.actor:id()) then 
 		return 
 	end
 
