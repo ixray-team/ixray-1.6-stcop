@@ -1242,7 +1242,8 @@ function se_smart_terrain:update()
 	if (self.online) then
 		local old_smart = nearest_to_actor_smart.id and sim:object(nearest_to_actor_smart.id)
 		local old_dist_to_actor = old_smart and old_smart.position:distance_to(se_actor.position)
-		if (old_dist_to_actor == nil or self.dist_to_actor < old_dist_to_actor) then
+		-- Refresh the distance even when this smart remains the nearest one.
+		if (nearest_to_actor_smart.id == self.id or old_dist_to_actor == nil or self.dist_to_actor < old_dist_to_actor) then
 			nearest_to_actor_smart.id = self.id
 			nearest_to_actor_smart.dist = self.dist_to_actor
 			if (self.dist_to_actor <= 50) then 
