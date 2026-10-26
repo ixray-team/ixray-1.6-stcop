@@ -36,9 +36,9 @@
 	</relation_caption>
 
 	<!-- BIO -->
-	<_biography_list x="0" y="143" width="273" height="268" always_show_scroll="0" left_ident="23" scroll_profile="pda">
+	<biography_list x="0" y="143" width="273" height="268" always_show_scroll="0" left_ident="23" scroll_profile="pda">
 		<font font="letterica16" r="190" g="190" b="225"/>
-	</_biography_list>
+	</biography_list>
 
 </window>
 
