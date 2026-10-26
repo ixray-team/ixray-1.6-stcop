@@ -457,8 +457,10 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 virtual ~CSE_ALifeMonsterBase	() override;
 virtual void					load					(NET_Packet &tNetPacket) override;
 virtual CSE_Abstract			*cast_abstract			() override {return this;}
+#ifdef XRGAME_EXPORTS
 virtual void					spawn_supplies			(const char*) override {}
 virtual void					spawn_supplies			() override {}
+#endif
 
 virtual void SyncRead(NET_Packet& Packet) override;
 virtual void SyncWrite(NET_Packet& Packet) override;
@@ -475,7 +477,9 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom,CSE_ALifeMonsterBase)
 									CSE_ALifePsyDogPhantom	(const char* caSection);				// constructor for variable initialization
 virtual ~CSE_ALifePsyDogPhantom	() override;
 virtual CSE_Abstract			*cast_abstract			() override {return this;}
+#ifdef XRGAME_EXPORTS
 virtual bool					bfActive				() override {return false;}
+#endif
 SERVER_ENTITY_DECLARE_END
 
 //-------------------------------
