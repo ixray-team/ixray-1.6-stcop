@@ -24,7 +24,6 @@ function opt_controls:InitControls(x, y, xml, handler)
 	self.scroll_v:SetWndPos(vector2():set(0,20))
 
 	handler:addTrack(self, true, "ui_mm_mouse_sense", "mouse_sens", 0.01, false, "float", true, system_depends.sdNothing)
-	handler:addTrack(self, true, "ui_mm_mouse_sense_ui", "mouse_sens_ui", 0.01, false, "float", true, system_depends.sdNothing)
 	handler:addCheck(self, true, "ui_mm_invert_mouse", "mouse_invert", system_depends.sdNothing)
 
 	-- The list goes right below the rows and owns the page's only scrollbar.

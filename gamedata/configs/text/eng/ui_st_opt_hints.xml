@@ -195,9 +195,6 @@
 	<string id="ui_mm_mouse_sense_hint">
 		<text>Mouse sensitivity when controlling the in-game camera.</text>
 	</string>
-	<string id="ui_mm_mouse_sense_ui_hint">
-		<text>Mouse cursor speed in menus, inventory and PDA, separate from in-game sensitivity.</text>
-	</string>
 	<string id="ui_mm_invert_mouse_hint">
 		<text>Inverts the vertical mouse axis: moving the mouse forward tilts the camera down, like in flight simulators.</text>
 	</string>
