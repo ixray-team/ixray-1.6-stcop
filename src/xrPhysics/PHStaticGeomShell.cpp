@@ -105,7 +105,7 @@ class CPHLeaderGeomShell: public CPHStaticGeomShell
 IClimableObject		*m_pClimable;
 public:
 						CPHLeaderGeomShell		(IClimableObject* climable);
-void					near_callback			(CPHObject* obj);
+virtual	void					near_callback			(CPHObject* obj) override;
 };
 
 IPHStaticGeomShell *P_BuildLeaderGeomShell( IClimableObject* obj, ObjectContactCallbackFun* callback, const Fobb &b )

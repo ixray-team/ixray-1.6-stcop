@@ -69,7 +69,7 @@ public:
 private:
 
 #ifdef		DEBUG
-	virtual		IPhysicsShellHolder	*ref_object					() { return PhysicsRefObject			() ;}
+virtual	IPhysicsShellHolder	*ref_object					() override { return PhysicsRefObject			() ;}
 #endif
 
 protected:
@@ -80,7 +80,7 @@ bool					b_actor_movable;
 bool					b_in_touch_resrtrictor		;
 float					m_current_object_radius		;
 public:
-	virtual ECastType	CastType							(){return CPHObject::tpCharacter;}
+virtual	ECastType	CastType							() override {return CPHObject::tpCharacter;}
 	virtual CPHActorCharacter	*CastActorCharacter			(){return NULL;}
 	virtual CPHAICharacter		*CastAICharacter			(){return NULL;}
 	ERestrictionType	RestrictionType						(){return m_restriction_type;}
@@ -90,13 +90,14 @@ public:
 	float				ObjectRadius						(){return m_current_object_radius;}
 	virtual	void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch)					{}
 	virtual bool		UpdateRestrictionType				(CPHCharacter* ach)															=0;
-	virtual void		FreezeContent						()															;
-	virtual void		UnFreezeContent						()															;
-	virtual	dBodyID		get_body							()															{return m_body;}
+virtual	void		FreezeContent						() override;
+virtual	void		UnFreezeContent						() override;
+virtual	dBodyID		get_body							() override {return m_body;}
 	virtual void		fix_body_rotation					()															;
 	virtual	dSpaceID	dSpace								()															=0;		
-	virtual	void		get_body_position					( Fvector &p )												;	virtual	void		Disable								()															;																		
-	virtual	void		ReEnable							()															{;}																				
+	virtual	void		get_body_position					( Fvector &p )												;
+virtual	void		Disable								() override;
+virtual	void		ReEnable							() override {;}																				
 	virtual	void		Enable								()															;											//!!
 	virtual	void		SwitchOFFInitContact				()															=0;
 	virtual	void		SwitchInInitContact					()															=0;
@@ -172,15 +173,16 @@ virtual		bool		TouchBorder							()															{return false;}
 virtual		void		getForce							(Fvector& force)											;
 virtual		void		setForce							(const	Fvector& force)										;
 virtual		float		FootRadius							()															=0 ;
-virtual		void		get_State							(		SPHNetState&	state)								;
-virtual		void		set_State							(const	SPHNetState&	state)								;
-virtual		void		cv2obj_Xfrom						(const Fquaternion& q,const Fvector& pos, Fmatrix& xform)	{;}
-virtual		void		cv2bone_Xfrom						(const Fquaternion& q,const Fvector& pos, Fmatrix& xform)	{;}
+virtual	void		get_State							(		SPHNetState&	state) override;
+virtual	void		set_State							(const	SPHNetState&	state) override;
+virtual	void		cv2obj_Xfrom						(const Fquaternion& q,const Fvector& pos, Fmatrix& xform) override {;}
+virtual	void		cv2bone_Xfrom						(const Fquaternion& q,const Fvector& pos, Fmatrix& xform) override {;}
 virtual	const Fvector&  ControlAccel						()const														=0;
 virtual		float		&FrictionFactor						()															=0;
-virtual		void		CutVelocity							(float l_limit,float a_limit)								;
-virtual		u16				get_elements_number				()															{return 1;};
-virtual		CPHSynchronize	*get_element_sync				(u16 element)												{VERIFY(element==0);return static_cast<CPHSynchronize*>(this);};		
+virtual	void		CutVelocity							(float l_limit,float a_limit) override;
+virtual	u16				get_elements_number				() override {return 1;};
+virtual	CPHSynchronize	*get_element_sync				(u16 element) override
+{VERIFY(element==0);return static_cast<CPHSynchronize*>(this);};		
 virtual		CElevatorState	*ElevatorState					()															=0;
 public:
 virtual			void		Freeze							()			=0;//{ Freeze();		}
@@ -191,12 +193,12 @@ virtual			void		collision_enable				()			=0;//{ collision_enable(); }
 virtual			void		collision_dynamic_disable() {}
 virtual			void		collision_dynamic_enable() {}
 protected:
-virtual	const	Fmatrix			&XFORM				()							const			;
-virtual			void			get_LinearVel		( Fvector& velocity )		const			;
-virtual			void			get_AngularVel		( Fvector& velocity )		const			;
-virtual			u16				numberOfGeoms		()							const			{ return 0; }
-virtual	const	IPhysicsGeometry*geometry			( u16 i )					const			{ return 0; }
-virtual	const	Fvector			&mass_Center		()							const			;
+virtual	const	Fmatrix			&XFORM				()							const override;
+virtual	void			get_LinearVel		( Fvector& velocity )		const override;
+virtual	void			get_AngularVel		( Fvector& velocity )		const override;
+virtual	u16				numberOfGeoms		()							const override { return 0; }
+virtual	const	IPhysicsGeometry*geometry			( u16 i )					const override { return 0; }
+virtual	const	Fvector			&mass_Center		()							const override;
 
 virtual			void			get_xform			( Fmatrix& form )			const			{ form.set( XFORM()); }
 virtual			bool			collide_fluids		() const									{ return true ; }
@@ -205,7 +207,7 @@ virtual			void			update_last_material()											=0;
 virtual			void			NetRelcase			( IPhysicsShellHolder* O )					{};
 public:
 			CPHCharacter									(void)														;
-virtual		~CPHCharacter									(void)														;
+virtual	~CPHCharacter									(void) override;
 };
 
 XRPHYSICS_API void			virtual_move_collide_callback( bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 );

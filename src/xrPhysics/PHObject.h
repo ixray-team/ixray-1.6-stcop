@@ -61,7 +61,7 @@ protected:
 
 	virtual		dGeomID			dSpacedGeom						()								=0;
 	virtual		void			get_spatial_params				()								=0;
-	virtual		void			spatial_register				()								;
+	virtual	void			spatial_register				() override;
 				void			SetRayMotions					()								{m_flags.set(fl_ray_motions,true);}
 				void			UnsetRayMotions					()								{m_flags.set(fl_ray_motions,false);}
 
@@ -90,7 +90,7 @@ public:
 				void			step							(float time)					;
 	virtual 	void 			PhDataUpdate					(dReal	step)					=0;
 	virtual 	void 			PhTune							(dReal	step)					=0;
-	virtual		void 			spatial_move					()								;
+	virtual	void 			spatial_move					() override;
 	virtual 	void 			InitContact						(dContact* c,bool& do_collide,u16 /*material_idx_1*/,u16 /*material_idx_2*/)	=0;
 	virtual		void			CutVelocity						(float l_limit,float a_limit)	{};						
 
@@ -134,7 +134,7 @@ IC			_flags<CLClassBits>&		collide_class_bits	()										{return m_collide_clas
 IC			const CLBits&				collide_bits		()const 								{return m_collide_bits;}
 IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_collide_class_bits;}
 			void			CollideDynamics					()										;
-			virtual CPHObject* dcast_CPHObject() override { return this; }
+	virtual	CPHObject* dcast_CPHObject() override { return this; }
 };
 
 DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)

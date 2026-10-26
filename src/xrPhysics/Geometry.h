@@ -48,8 +48,8 @@ public:
 #ifdef	DEBUG
 	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
 #endif
-	virtual		void		get_Box				( Fmatrix& form, Fvector&	sz )const									 ;
-	virtual		bool		collide_fluids		() const															 ;
+	virtual	void		get_Box				( Fmatrix& form, Fvector&	sz )const override;
+	virtual	bool		collide_fluids		() const override;
 				void		set_static_ref_form	(const Fmatrix& form)												 ;		//for built
 	virtual		void		get_max_area_dir_bt	(Fvector& dir)														=0;
 	virtual		float		radius				()																	=0;
@@ -153,21 +153,21 @@ class CBoxGeom : public CODEGeom
 public:
 							CBoxGeom			(const Fobb& box)													;
 //	virtual					~CBoxGeom			(const Fobb& box)													;
-	virtual		float		volume				()																	;
-	virtual		float		radius				()																	;
-	virtual		void		get_Extensions		(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const ;
-	virtual		void		get_max_area_dir_bt	(Fvector& dir)														;
-	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
-virtual const	Fvector&	local_center		()																	;
-	virtual		void		get_local_form		(Fmatrix& form)														;
-virtual			void		set_local_form		(const Fmatrix& form)												;
-	virtual		dGeomID		create				()																	;
-	virtual		void		set_build_position	(const Fvector& ref_point)											;
+	virtual	float		volume				() override;
+	virtual	float		radius				() override;
+	virtual	void		get_Extensions		(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const override;
+	virtual	void		get_max_area_dir_bt	(Fvector& dir) override;
+	virtual	void		get_mass			(dMass& m) override;//unit dencity mass;
+	virtual	const	Fvector&	local_center		() override;
+	virtual	void		get_local_form		(Fmatrix& form) override;
+	virtual	void		set_local_form		(const Fmatrix& form) override;
+	virtual	dGeomID		create				() override;
+	virtual	void		set_build_position	(const Fvector& ref_point) override;
 				void		set_size			(const Fvector&	half_size )											;
 				void		get_size			(Fvector&	half_size )	const											;
 private:
 #ifdef	DEBUG
-	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const						;
+	virtual	void		dbg_draw			( float scale, u32 color, Flags32 flags ) const override;
 #endif
 };
 
@@ -177,20 +177,20 @@ class CSphereGeom : public CODEGeom
 	Fsphere	m_sphere;
 public:
 							CSphereGeom			(const Fsphere& sphere)												;
-	virtual		float		volume				()																	;
-	virtual		float		radius				()																	;
-	virtual		void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const;
-	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
-	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
-virtual const	Fvector&	local_center		()																	;
-	virtual		void		get_local_form		(Fmatrix& form)														;
-	virtual		void		set_local_form		(const Fmatrix& form)												;
-	virtual		dGeomID		create				()																	;
-	virtual		void		set_build_position	(const Fvector& ref_point)											;
+	virtual	float		volume				() override;
+	virtual	float		radius				() override;
+	virtual	void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const override;
+	virtual	void		get_max_area_dir_bt	(Fvector& dir) override {};
+	virtual	void		get_mass			(dMass& m) override;//unit dencity mass;
+	virtual	const	Fvector&	local_center		() override;
+	virtual	void		get_local_form		(Fmatrix& form) override;
+	virtual	void		set_local_form		(const Fmatrix& form) override;
+	virtual	dGeomID		create				() override;
+	virtual	void		set_build_position	(const Fvector& ref_point) override;
 
 private:
 #ifdef	DEBUG
-	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
+	virtual	void		dbg_draw			( float scale, u32 color, Flags32 flags ) const override;
 #endif
 };
 class CCylinderGeom : public CODEGeom
@@ -199,20 +199,20 @@ class CCylinderGeom : public CODEGeom
 	Fcylinder m_cylinder;
 public:
 							CCylinderGeom		(const Fcylinder& cyl)												;
-	virtual		float		volume				()																	;
-	virtual		float		radius				()																	;
-	virtual		void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const;
-	virtual		void		get_max_area_dir_bt	(Fvector& dir)													  {};
-virtual const	Fvector&	local_center		()																	;
-	virtual		void		get_mass			(dMass& m)															;//unit dencity mass;
-	virtual		void		get_local_form		(Fmatrix& form)														;
-	virtual		void		set_local_form		(const Fmatrix& form)												;
-	virtual		dGeomID		create				()																	;
-	virtual		void		set_build_position	(const Fvector& ref_point)											;
+	virtual	float		volume				() override;
+	virtual	float		radius				() override;
+	virtual	void		get_Extensions	(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext)const override;
+	virtual	void		get_max_area_dir_bt	(Fvector& dir) override {};
+	virtual	const	Fvector&	local_center		() override;
+	virtual	void		get_mass			(dMass& m) override;//unit dencity mass;
+	virtual	void		get_local_form		(Fmatrix& form) override;
+	virtual	void		set_local_form		(const Fmatrix& form) override;
+	virtual	dGeomID		create				() override;
+	virtual	void		set_build_position	(const Fvector& ref_point) override;
 				void		set_radius			( float r )															;
 	private:
 #ifdef	DEBUG
-	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
+	virtual	void		dbg_draw			( float scale, u32 color, Flags32 flags ) const override;
 #endif
 };
 #endif //GEOMETRY_H
