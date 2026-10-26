@@ -1348,6 +1348,7 @@ function parse_cse_alife_object_properties_packet(ret,stpk)
 	ret.custom_data = stpk:r_stringZ()
 	ret.story_id = stpk:r_s32()
 	ret.spawn_story_id = stpk:r_s32()
+	ret.script_story_id = stpk:r_stringZ()
 	return ret
 end
 
@@ -1360,6 +1361,7 @@ function fill_cse_alife_object_properties_packet(ret,stpk)
 	stpk:w_stringZ(ret.custom_data)
 	stpk:w_s32(ret.story_id)
 	stpk:w_s32(ret.spawn_story_id)
+	stpk:w_stringZ(ret.script_story_id or "")
 end
 
 -- cse_alife_object_climable_properties
