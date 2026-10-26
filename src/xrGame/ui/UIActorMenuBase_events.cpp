@@ -1100,6 +1100,11 @@ bool CUIActorMenuBase::IsAllowTakeFromInvBox(CUICellItem* itm)
 
 bool CUIActorMenuBase::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
+	if (b_use_cursor_pos && GetBeltList() == nullptr)
+	{
+		return false;
+	}
+
 	PIItem	iitem						= (PIItem)itm->m_pData;
 	bool b_own_item						= (iitem->parent_id()==GetInventoryOwner()->object_id());
 	if (!b_own_item && !GetInventoryOwner()->inventory().CanTakeItem(iitem))
@@ -1118,18 +1123,33 @@ bool CUIActorMenuBase::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 				new_owner					= GetBeltList();
 
 		bool result							= (!b_own_item) || GetInventoryOwner()->inventory().Belt(iitem);
-		VERIFY								(result);
-		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
+		if (!result)
+		{
+			return false;
+		}
+		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
 
-		if(b_use_cursor_pos)
-			new_owner->SetItem				(i,old_owner->GetDragItemPosition());
+		if (new_owner == nullptr)
+		{
+			SetCurrentItem(nullptr);
+			InvalidateTransientCellRefsForCell(i);
+			xr_delete(i);
+		}
+		else if (b_use_cursor_pos)
+		{
+			new_owner->SetItem(i, old_owner->GetDragItemPosition());
+		}
 		else
-			new_owner->SetItem				(i);
+		{
+			new_owner->SetItem(i);
+		}
 
-		if(!b_own_item)
-			SendEvent_Item2Belt				(iitem, GetInventoryOwner()->object_id());
+		if (!b_own_item)
+		{
+			SendEvent_Item2Belt(iitem, GetInventoryOwner()->object_id());
+		}
 
-		return								true;
+		return true;
 	}
 	else
 	{ // in case belt slot is busy
