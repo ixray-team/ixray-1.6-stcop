@@ -84,7 +84,7 @@ private:
 	char						mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						KBState[COUNT_KB_BUTTONS] = {};
 	char						GPState[COUNT_GP_BUTTONS] = {};
-	int 						offs[COUNT_MOUSE_AXIS] = {};
+	float 						offs[COUNT_MOUSE_AXIS] = {};
 	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 	char						old_GPState[COUNT_GP_BUTTONS] = {};
