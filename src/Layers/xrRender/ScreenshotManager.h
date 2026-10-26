@@ -8,7 +8,13 @@
 
 class ScreenshotManager
 {
+private:
+	static bool HasPendingScreenshot;
+
 public:
-    // Save screenshot by reading pixels from current RHI render target (RTV 0)
-    static bool SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter = nullptr);
+	static void RequestScreenshot();
+	static void CapturePendingScreenshot();
+
+	// Game captures use the game target; cubemaps and level maps use RTV 0.
+	static bool SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter = nullptr);
 };

@@ -4,6 +4,14 @@
 
 void CRender::ScreenshotImpl(ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
+#ifndef _EDITOR
+	if (Mode == SM_NORMAL)
+	{
+		ScreenshotManager::RequestScreenshot();
+		return;
+	}
+#endif
+
 	ScreenshotManager::SaveScreenshot(Mode, Name, MemoryWriter);
 }
 
@@ -11,15 +19,10 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 {
 	VERIFY(!m_bMakeAsyncSS);
 
-	IRHIRenderTargetView* Rtv = GRHI->GetRenderTargetView(0);
+	IRHIRenderTargetView* Rtv = RTarget;
 	if (Rtv == nullptr)
 	{
-		Rtv = RTarget;
-
-		if (Rtv == nullptr)
-		{
-			return;
-		}
+		return;
 	}
 
 	u32 Width = 0;
@@ -51,5 +54,8 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 
 	memory_writer.w(&Width, sizeof(Width));
 	memory_writer.w(&Height, sizeof(Height));
-	memory_writer.w(Buffer.get(), (Width * Height) * 4);
+	for (u32 Y = 0; Y < Height; ++Y)
+	{
+		memory_writer.w(Buffer.get() + (size_t)Y * RowPitch, Width * 4);
+	}
 }
