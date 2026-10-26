@@ -160,7 +160,8 @@ void CRenderDevice::on_idle		()
 
 	if (s_StartupActive)
 	{
-		if (IsMainMenuActive || (g_pGameLevel && g_pGameLevel->bReady) || load_screen_renderer.IsActive())
+		const bool IsIntroActive = g_pGamePersistent && g_pGamePersistent->IsIntroActive();
+		if (IsMainMenuActive || (g_pGameLevel && g_pGameLevel->bReady) || load_screen_renderer.IsActive() || IsIntroActive)
 		{
 			s_StartupActive = false;
 		}

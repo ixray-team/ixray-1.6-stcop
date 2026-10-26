@@ -8,6 +8,7 @@
 #include "CameraManager.h"
 #include "../xrCore/FTimer.h"
 #include "Stats.h"
+#include <functional>
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -196,6 +197,9 @@ public:
 	void DrawStartupFrame(bool WithWindowButtons = false);
 	static void SetStartupStatus(int Progress, const char* Status = nullptr);
 	static void UpdateStartupFrame();
+	static void StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress = -1, const char* TargetStatus = nullptr);
+	static void PumpStartupFrames(u32 FrameCount = 1);
+	static void FinishStartup();
 
 	static int s_StartupProgress;
 	static xr_string s_StartupStatus;
