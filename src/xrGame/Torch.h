@@ -42,6 +42,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void OnH_A_Chield() override;
 	virtual void OnH_B_Independent(bool just_before_destroy) override;

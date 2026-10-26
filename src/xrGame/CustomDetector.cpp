@@ -114,3 +114,12 @@ void CCustomDetector::load(IReader& input_packet)
 	inherited::load(input_packet);
 	IPowerManager::net_load(input_packet);
 }
+
+void CCustomDetector::Serialize(ISaveObject& object)
+{
+	BEGIN_CHUNK(object, "CCustomDetector::Serialize")
+	{
+		CCustomDevice::Serialize(object);
+		IPowerManager::net_serialize(object);
+	}
+}

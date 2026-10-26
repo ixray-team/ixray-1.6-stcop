@@ -287,3 +287,11 @@ void IPowerManager::net_load(IReader& input_packet)
 	m_power_cell.max_power = input_packet.r_float();
 	await_object_id = input_packet.r_u32();
 }
+
+void IPowerManager::net_serialize(ISaveObject& object)
+{
+	BEGIN_CHUNK(object, "IPowerManager::net_serialize")
+	{
+		object << is_power_cell_installed << is_enabled << m_power_cell << await_object_id;
+	}
+}

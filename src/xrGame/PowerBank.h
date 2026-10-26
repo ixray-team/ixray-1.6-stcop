@@ -37,6 +37,7 @@ public:
 	virtual void Load(const char* section) override;
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& SaveObject) override;
 	virtual void UpdateCL() override;
 	virtual void OnFrame() override;
 

@@ -373,6 +373,15 @@ void CCar::load(IReader& input_packet)
 	load_data(m_fuel, input_packet);
 }
 
+void CCar::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CCar::Serialize")
+	{
+		inherited::Serialize(Object);
+		Object << m_fuel;
+	}
+}
+
 void CCar::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
