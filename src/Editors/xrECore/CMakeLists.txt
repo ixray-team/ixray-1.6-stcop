@@ -36,7 +36,6 @@ file(GLOB_RECURSE ECORE_SOURCE_RES_FILES
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
 	"../../xrEngine/ObjectAnimator.cpp"
 	"../../xrServerEntities/LevelGameDef.cpp"
-	"../../xrPlay/Splash.*"
 
 	"../../Layers/xrRenderPC_R4/Blender_Blur.*"
 	"../../Layers/xrRenderPC_R4/Blender_LaEmB.*"
