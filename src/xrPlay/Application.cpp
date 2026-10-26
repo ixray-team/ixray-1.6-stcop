@@ -88,11 +88,14 @@ void CApplication::InitEngine()
 	CRenderDevice::SetStartupStatus(70, "Creating render device");
 	EngineLoadStage4();
 
-	CRenderDevice::SetStartupStatus(85, "Loading custom settings");
+	CRenderDevice::SetStartupStatus(80, "Loading custom settings");
 	LoadCustomSettings();
-	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(5);
 
-	CRenderDevice::SetStartupStatus(90, "Loading persistent objects");
+	CRenderDevice::SetStartupStatus(85, "Initializing debug tools");
+	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(3);
+
 	EngineLoadStage5();
 }
 
@@ -134,6 +137,11 @@ int CApplication::BeginPlay()
 		SDL_ShowWindow(g_AppInfo.Window);
 		SDL_RaiseWindow(g_AppInfo.Window);
 		SDL_PumpEvents();
+	}
+
+	if (DevicePtr == nullptr)
+	{
+		DevicePtr = new CRenderDevice();
 	}
 
 	CRenderDevice::SetStartupStatus(20, "Initializing xrCore");
@@ -245,6 +253,7 @@ void CApplication::MigrateToGameWindow()
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
+	CRenderDevice::UpdateStartupFrame();
 
 	if (headless)
 	{

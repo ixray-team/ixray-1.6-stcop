@@ -202,8 +202,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 	}
 
-	CRenderDevice::SetStartupStatus(100, "Finalizing");
+	CRenderDevice::FinishStartup();
 	SDL_RaiseWindow(g_AppInfo.Window);
+	
 	while (!NeedExit)
 	{
 		SDL_Event Event;
