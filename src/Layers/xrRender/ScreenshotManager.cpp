@@ -1,5 +1,5 @@
-#include "ScreenshotManager.h"
 #include "stdafx.h"
+#include "ScreenshotManager.h"
 
 #ifdef IXR_WINDOWS
 #	include <wincodec.h>
@@ -16,6 +16,21 @@ extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 using namespace DirectX;
 
+bool ScreenshotManager::HasPendingScreenshot = false;
+
+void ScreenshotManager::RequestScreenshot()
+{
+	HasPendingScreenshot = true;
+}
+
+void ScreenshotManager::CapturePendingScreenshot()
+{
+	if (HasPendingScreenshot)
+	{
+		HasPendingScreenshot = false;
+		SaveScreenshot(IRender_interface::SM_NORMAL, nullptr);
+	}
+}
 
 bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
@@ -24,7 +39,8 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 		return false;
 	}
 
-	IRHIRenderTargetView* Rtv = GRHI->GetRenderTargetView(0);
+	const bool IsGameCapture = Mode == IRender_interface::SM_NORMAL || Mode == IRender_interface::SM_FOR_GAMESAVE || Mode == IRender_interface::SM_FOR_MPSENDING;
+	IRHIRenderTargetView* Rtv = IsGameCapture ? RTarget : GRHI->GetRenderTargetView(0);
 	if (Rtv == nullptr)
 	{
 		Rtv = RTarget;
