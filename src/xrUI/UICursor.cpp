@@ -10,8 +10,6 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 
 ENGINE_API extern bool ui_3d_cursor;
-extern ENGINE_API float	psMouseSens;
-extern ENGINE_API float	psMouseUISens;
 
 CUICursor::CUICursor()
     : m_static(nullptr),
@@ -45,6 +43,12 @@ void CUICursor::Show()
 	if (bVisible)
 		return;
 
+	// The UI cursor stands in for the system pointer, so relative motion has to be
+	// reported in system pointer pixels (Windows pointer speed and acceleration
+	// curve) instead of raw device counts. The camera keeps raw counts - the hint is
+	// turned off again in Hide().
+	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE, "1");
+
 	u32 screenWidth = psCurrentVidMode[0];
 	u32 screenHeight = psCurrentVidMode[1];
 
@@ -52,6 +56,13 @@ void CUICursor::Show()
 	SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
 
 	bVisible = true;
+}
+
+void CUICursor::Hide()
+{
+	// Mouse look is back in charge of the raw deltas.
+	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE, "0");
+	bVisible = false;
 }
 
 void CUICursor::InitInternal()
@@ -162,11 +173,10 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 	{
 		vPrevPos = vPos;
 
-		if (psDeviceFlags.test(rsFullscreen))
+		if (SDL_GetWindowRelativeMouseMode(g_AppInfo.Window))
 		{
-			float sens = psMouseUISens;
-			vPos.x += _dx * sens;
-			vPos.y += _dy * sens;
+			vPos.x += _dx * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+			vPos.y += _dy * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
 		}
 		else
 		{
