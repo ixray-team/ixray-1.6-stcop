@@ -90,7 +90,7 @@ void ActorLightPerception::Reset()
 	SourceFrame = u32(-1);
 	NextDebugTime = 0;
 	SourceDistance = -1.f;
-	HitObjectId = u16(-1);
+	HitObjectId = ALife::INVALID_OBJECT_ID;
 	HasLightPoint = false;
 	RayResults.r_clear();
 }
@@ -103,7 +103,7 @@ void ActorLightPerception::UpdateSource(CActor& Player)
 	}
 	SourceFrame = Device.dwFrame;
 	SourceDistance = -1.f;
-	HitObjectId = u16(-1);
+	HitObjectId = ALife::INVALID_OBJECT_ID;
 	HasLightPoint = false;
 
 	PIItem HeadItem = Player.inventory().ItemFromSlot(TORCH_SLOT);
@@ -140,7 +140,7 @@ void ActorLightPerception::UpdateSource(CActor& Player)
 	const collide::ray_defs Ray(SourcePosition, Direction, Trace.Hit.range, CDB::OPT_CULL, collide::rqtBoth);
 	RayResults.r_clear();
 	Level().ObjectSpace.RayQuery(RayResults, Ray, ActorLightTrace::AcceptHit, &Trace, ActorLightTrace::AcceptObject, &Player);
-	HitObjectId = Trace.Hit.O ? Trace.Hit.O->ID() : u16(-1);
+	HitObjectId = Trace.Hit.O ? Trace.Hit.O->ID() : ALife::INVALID_OBJECT_ID;
 	const float Distance = Trace.Hit.range * 0.99f;
 	HasLightPoint = (Trace.Hit.O || Trace.Hit.valid()) && Distance <= SourceDistance;
 	LightPoint.mad(SourcePosition, Direction, Distance);
