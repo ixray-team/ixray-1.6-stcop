@@ -12,18 +12,18 @@ class game_cl_ArtefactHunt final : public game_cl_TeamDeathmatch
 	using inherited = game_cl_TeamDeathmatch;
 
 protected:
-	virtual const shared_str			GetBaseCostSect			() {return "artefacthunt_base_cost";}
-	virtual			void				TranslateGameMessage	(u32 msg, NET_Packet& P);
-	virtual			void				shedule_Update			(u32 dt);
+	virtual const shared_str			GetBaseCostSect			() override {return "artefacthunt_base_cost";}
+	virtual void				TranslateGameMessage	(u32 msg, NET_Packet& P) override;
+	virtual void				shedule_Update			(u32 dt) override;
 
-	virtual			bool				CanCallBuyMenu			();
-	virtual			bool				CanBeReady				();
-	virtual			void				UpdateMapLocations		();
+	virtual bool				CanCallBuyMenu			() override;
+	virtual bool				CanBeReady				() override;
+	virtual void				UpdateMapLocations		() override;
 
-	virtual			bool				NeedToSendReady_Spectator		(int key, game_PlayerState* ps);
-	virtual			void				LoadSndMessages				();
+	virtual bool				NeedToSendReady_Spectator		(int key, game_PlayerState* ps) override;
+	virtual void				LoadSndMessages				() override;
 
-	virtual			void				OnBuySpawnMenu_Ok		();	
+	virtual void				OnBuySpawnMenu_Ok		() override;	
 public:
 	u8									artefactsNum;//ah
 	ALife::_OBJECT_ID					artefactBearerID;//ah,ZoneMap
@@ -39,22 +39,22 @@ public:
 
 public :
 										game_cl_ArtefactHunt	();
-	virtual								~game_cl_ArtefactHunt	();
-	virtual			void				Init					();
-	virtual			CUIGameCustom*		createGameUI			();
-	virtual			void				SetGameUI				(CUIGameCustom*);
-	virtual			void				net_import_state		(NET_Packet& P);
-	virtual			void				GetMapEntities(xr_vector<SZoneMapEntityData>& dst);
-	virtual			char*				getTeamSection			(int Team);
-	virtual			bool				PlayerCanSprint			(CActor* pActor);
+	virtual ~game_cl_ArtefactHunt	() override;
+	virtual void				Init					() override;
+	virtual CUIGameCustom*		createGameUI			() override;
+	virtual void				SetGameUI				(CUIGameCustom*) override;
+	virtual void				net_import_state		(NET_Packet& P) override;
+	virtual void				GetMapEntities(xr_vector<SZoneMapEntityData>& dst) override;
+	virtual char*				getTeamSection			(int Team) override;
+	virtual bool				PlayerCanSprint			(CActor* pActor) override;
 
-	virtual	void						SetScore				();
-	virtual			void				OnSellItemsFromRuck		();
+	virtual void						SetScore				() override;
+	virtual void				OnSellItemsFromRuck		() override;
 
-	virtual			void				OnSpawn					(CObject* pObj);
-	virtual			void				OnDestroy				(CObject* pObj);	
-	virtual			void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what);
-	virtual		void					OnConnected				();
+	virtual void				OnSpawn					(CObject* pObj) override;
+	virtual void				OnDestroy				(CObject* pObj) override;
+	virtual void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what) override;
+	virtual void					OnConnected				() override;
 
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
 	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return this; }

@@ -74,7 +74,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTraderAbstract, IPureStateUpdateObject)
 
 public:	
 									CSE_ALifeTraderAbstract		(const char* caSection);
-	virtual							~CSE_ALifeTraderAbstract	();
+virtual ~CSE_ALifeTraderAbstract	() override;
 	// we need this to prevent virtual inheritance :-(
 	virtual CSE_Abstract			*base						() { return nullptr; }
 	virtual const CSE_Abstract		*base						() const { return nullptr; }
@@ -97,26 +97,26 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_ALifeTraderAbstract)
 									CSE_ALifeTrader			(const char* caSection);
-	virtual							~CSE_ALifeTrader		();
-	virtual	bool					interactive				() const;
-	virtual CSE_Abstract			*init					();
-	virtual CSE_Abstract			*base					();
-	virtual const CSE_Abstract		*base					() const;
+virtual ~CSE_ALifeTrader		() override;
+virtual bool					interactive				() const override;
+virtual CSE_Abstract			*init					() override;
+virtual CSE_Abstract			*base					() override;
+virtual const CSE_Abstract		*base					() const override;
 	virtual bool					natural_weapon			() const {return false;}
 	virtual bool					natural_detector		() const {return false;}
 
 #ifdef XRGAME_EXPORTS
 			u32						dwfGetItemCost			(CSE_ALifeInventoryItem *tpALifeInventoryItem);
-	virtual void					spawn_supplies			();
-	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+virtual void					spawn_supplies			() override;
+virtual void					add_online				(const bool &update_registries) override;
+virtual void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
 #endif
 #ifndef MASTER_GOLD
-	virtual bool					match_configuration		() const;
+virtual bool					match_configuration		() const override;
 #endif
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
-	virtual CSE_ALifeTrader			*cast_trader			() {return this;};
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() override {return this;};
+virtual CSE_ALifeTrader			*cast_trader			() override {return this;};
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalyZone,CSE_ALifeSpaceRestrictor)
@@ -128,7 +128,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalyZone,CSE_ALifeSpaceRestrictor)
 	u32								m_start_time_shift;
 
 									CSE_ALifeAnomalyZone		(const char* caSection);
-	virtual							~CSE_ALifeAnomalyZone	();
+virtual ~CSE_ALifeAnomalyZone	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeAnomalyZone)
@@ -138,37 +138,37 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeAnomalyZone)
 	u16								m_artefact_spawn_count;
 
 									CSE_ALifeAnomalousZone	(const char* caSection);
-	virtual							~CSE_ALifeAnomalousZone	();
-	virtual CSE_Abstract			*init					();
-	virtual CSE_Abstract			*base					();
-	virtual const CSE_Abstract		*base					() const;
+virtual ~CSE_ALifeAnomalousZone	() override;
+virtual CSE_Abstract			*init					() override;
+virtual CSE_Abstract			*base					() override;
+virtual const CSE_Abstract		*base					() const override;
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeAnomalousZone	*cast_anomalous_zone	() {return this;};
+virtual CSE_ALifeAnomalousZone	*cast_anomalous_zone	() override {return this;};
 	virtual u32						ef_anomaly_type			() const;
-	virtual u32						ef_weapon_type			() const;
+virtual u32						ef_weapon_type			() const override;
 	virtual u32						ef_creature_type		() const;
 #ifdef XRGAME_EXPORTS
 			void					spawn_artefacts			();
-	virtual void					on_spawn				();
+virtual void					on_spawn				() override;
 	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType		&tHitType,				float &fHitPower);
 	virtual	ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable	*tpALifeSchedulable,	int iGroupIndex, bool bMutualDetection);
 	virtual bool					bfActive				();
 	virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		();
-	virtual bool					keep_saved_data_anyway	() const;
+virtual bool					keep_saved_data_anyway	() const override;
 #endif
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeAnomalyZone,CSE_Motion)
 									CSE_ALifeTorridZone		(const char* caSection);
-	virtual							~CSE_ALifeTorridZone	();
-	virtual CSE_Motion*		motion					();
+virtual ~CSE_ALifeTorridZone	() override;
+virtual CSE_Motion*		motion					() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual,CSE_ALifeAnomalousZone,CSE_Visual)
 shared_str attack_animation;
 CSE_ALifeZoneVisual	(const char* caSection);
-virtual							~CSE_ALifeZoneVisual	();
-virtual CSE_Visual* 	visual					();
+virtual ~CSE_ALifeZoneVisual	() override;
+virtual CSE_Visual* 	visual					() override;
 SERVER_ENTITY_DECLARE_END
 
 //---------------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ public:
 	ALife::_TIME_ID					m_game_death_time;
 									
 									CSE_ALifeCreatureAbstract(const char* caSection);
-	virtual							~CSE_ALifeCreatureAbstract();
+virtual ~CSE_ALifeCreatureAbstract() override;
 	virtual u8						g_team					();
 	virtual u8						g_squad					();
 	virtual u8						g_group					();
@@ -216,19 +216,19 @@ public:
 	void							set_killer_id			(ALife::_OBJECT_ID const killer_id);
 
 	IC		bool					g_Alive					() const								{ return (get_health() > 0.f);}
-	virtual bool					used_ai_locations		() const;
-	virtual bool					can_switch_online		() const;
-	virtual bool					can_switch_offline		() const;
+virtual bool					used_ai_locations		() const override;
+virtual bool					can_switch_online		() const override;
+virtual bool					can_switch_offline		() const override;
 	virtual u32						ef_creature_type		() const;
-	virtual u32						ef_weapon_type			() const;
-	virtual u32						ef_detector_type		() const;
-	virtual CSE_ALifeCreatureAbstract	*cast_creature_abstract		() {return this;};
+virtual u32						ef_weapon_type			() const override;
+virtual u32						ef_detector_type		() const override;
+virtual CSE_ALifeCreatureAbstract	*cast_creature_abstract		() override {return this;};
 #ifdef XRGAME_EXPORTS
 	virtual	void					on_death				(CSE_Abstract *killer);
-	virtual void					on_spawn				();
+virtual void					on_spawn				() override;
 #endif
 #ifndef MASTER_GOLD
-	virtual bool					match_configuration		() const;
+virtual bool					match_configuration		() const override;
 #endif
 SERVER_ENTITY_DECLARE_END
 
@@ -259,20 +259,20 @@ public:
 
 public:
 									CSE_ALifeMonsterAbstract(const char*					caSection);
-	virtual							~CSE_ALifeMonsterAbstract();
+virtual ~CSE_ALifeMonsterAbstract() override;
 	IC		float					g_MaxHealth				()	const									{ return m_fMaxHealthValue;	}
-	virtual CSE_Abstract			*init					();
-	virtual CSE_Abstract			*base					();
-	virtual const CSE_Abstract		*base					() const;
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeSchedulable	*cast_schedulable		() {return this;};
-	virtual CSE_ALifeMonsterAbstract*cast_monster_abstract	() {return this;};
+virtual CSE_Abstract			*init					() override;
+virtual CSE_Abstract			*base					() override;
+virtual const CSE_Abstract		*base					() const override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeSchedulable	*cast_schedulable		() override {return this;};
+virtual CSE_ALifeMonsterAbstract*cast_monster_abstract	() override {return this;};
 
 	IC		CALifeMonsterBrain		&brain					() const {VERIFY(m_brain); return(*m_brain);}
 	virtual CALifeMonsterBrain		*create_brain			();
-	virtual u32						ef_creature_type		() const;
-	virtual u32						ef_weapon_type			() const;
-	virtual u32						ef_detector_type		() const;
+virtual u32						ef_creature_type		() const override;
+virtual u32						ef_weapon_type			() const override;
+virtual u32						ef_detector_type		() const override;
 	
 	IC		int						Rank					(){return m_rank;}
 	
@@ -284,25 +284,25 @@ public:
 #ifndef XRGAME_EXPORTS
 	virtual	void					update					()	{};
 #else
-	virtual	void					update					();
-	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType		&tHitType,				float	&fHitPower);
-	virtual	ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable	*tpALifeSchedulable,	int		iGroupIndex,	bool bMutualDetection);
-	virtual bool					bfActive				();
-	virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		();
+virtual void					update					() override;
+virtual CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType		&tHitType,				float	&fHitPower) override;
+virtual ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable	*tpALifeSchedulable,	int		iGroupIndex,	bool bMutualDetection) override;
+virtual bool					bfActive				() override;
+virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		() override;
 	virtual	void					vfDetachAll				(bool					bFictitious = false) {};
 			void					vfCheckForPopulationChanges();
-	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
-	virtual void					on_register				();
-	virtual void					on_unregister			();
-	virtual Fvector					draw_level_position		() const;
-	virtual	bool					redundant				() const;
-	virtual void					on_location_change		() const;
-	virtual	CSE_ALifeDynamicObject const&	get_object		() const	{ return *this; }
-	virtual	CSE_ALifeDynamicObject&			get_object		()			{ return *this; }
+virtual void					add_online				(const bool &update_registries) override;
+virtual void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
+virtual void					on_register				() override;
+virtual void					on_unregister			() override;
+virtual Fvector					draw_level_position		() const override;
+virtual bool					redundant				() const override;
+virtual void					on_location_change		() const override;
+virtual CSE_ALifeDynamicObject const&	get_object		() const override { return *this; }
+virtual CSE_ALifeDynamicObject&			get_object		() override { return *this; }
 
 #endif
-	virtual bool					need_update				(CSE_ALifeDynamicObject *object);
+virtual bool					need_update				(CSE_ALifeDynamicObject *object) override;
 
 private:
 	CALifeMonsterBrain				*m_brain;
@@ -334,40 +334,40 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	char							m_DeadBodyData[1024];
 	///////////////////////////////////////////
 									CSE_ALifeCreatureActor	(const char* caSection);
-	virtual							~CSE_ALifeCreatureActor	();
-	virtual CSE_Abstract			*base					();
-	virtual const CSE_Abstract		*base					() const;
-	virtual CSE_Abstract			*init					();
-	virtual void					load					(NET_Packet &tNetPacket);
-	virtual bool					can_save				()const{return true;}
+virtual ~CSE_ALifeCreatureActor	() override;
+virtual CSE_Abstract			*base					() override;
+virtual const CSE_Abstract		*base					() const override;
+virtual CSE_Abstract			*init					() override;
+virtual void					load					(NET_Packet &tNetPacket) override;
+virtual bool					can_save				()const override {return true;}
 	virtual bool					natural_weapon			() const {return false;}
 	virtual bool					natural_detector		() const {return false;}
 #ifdef XRGAME_EXPORTS
-	virtual void					spawn_supplies			();
-	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+virtual void					spawn_supplies			() override;
+virtual void					add_online				(const bool &update_registries) override;
+virtual void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
 #endif
 #ifndef MASTER_GOLD
-	virtual bool					match_configuration		() const;
+virtual bool					match_configuration		() const override;
 #endif
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() override {return this;};
 public:
-	virtual bool					Net_Relevant			();
-	virtual void SyncRead(NET_Packet& Packet);
-	virtual void SyncWrite(NET_Packet& Packet);
+virtual bool					Net_Relevant			() override;
+virtual void SyncRead(NET_Packet& Packet) override;
+virtual void SyncWrite(NET_Packet& Packet) override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow,CSE_ALifeCreatureAbstract)
 									CSE_ALifeCreatureCrow	(const char* caSection);
-	virtual							~CSE_ALifeCreatureCrow	();
-	virtual bool					used_ai_locations		() const;
+virtual ~CSE_ALifeCreatureCrow	() override;
+virtual bool					used_ai_locations		() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom,CSE_ALifeCreatureAbstract)
 									CSE_ALifeCreaturePhantom	(const char* caSection);
-	virtual							~CSE_ALifeCreaturePhantom	();
-	virtual bool					used_ai_locations			() const;
+virtual ~CSE_ALifeCreaturePhantom	() override;
+virtual bool					used_ai_locations			() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_ALifeInventoryItem)
@@ -396,13 +396,13 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_AL
 	float							fAttackSuccessProbability;
 
 									CSE_ALifeMonsterRat	(const char* caSection);				// constructor for variable initialization
-	virtual							~CSE_ALifeMonsterRat();
-	virtual bool					bfUseful();
-	virtual CSE_Abstract			*init				();
-	virtual CSE_Abstract			*base				();
-	virtual const CSE_Abstract		*base				() const;
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeInventoryItem	*cast_inventory_item	() {return this;};
+virtual ~CSE_ALifeMonsterRat() override;
+virtual bool					bfUseful() override;
+virtual CSE_Abstract			*init				() override;
+virtual CSE_Abstract			*base				() override;
+virtual const CSE_Abstract		*base				() const override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeInventoryItem	*cast_inventory_item	() override {return this;};
 
 SERVER_ENTITY_DECLARE_END
 
@@ -422,7 +422,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
 	float							fAttackAngle;
 
 									CSE_ALifeMonsterZombie	(const char* caSection);				// constructor for variable initialization
-	virtual							~CSE_ALifeMonsterZombie	();
+virtual ~CSE_ALifeMonsterZombie	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
@@ -454,28 +454,28 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	u8 m_snd_sync_sound = 0;
 
 									CSE_ALifeMonsterBase	(const char* caSection);				// constructor for variable initialization
-	virtual							~CSE_ALifeMonsterBase	();
-	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
-	virtual void					spawn_supplies			(const char*){}
-	virtual void					spawn_supplies			(){}
+virtual ~CSE_ALifeMonsterBase	() override;
+virtual void					load					(NET_Packet &tNetPacket) override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
+virtual void					spawn_supplies			(const char*) override {}
+virtual void					spawn_supplies			() override {}
 
-	virtual void SyncRead(NET_Packet& Packet) override;
-	virtual void SyncWrite(NET_Packet& Packet) override;
+virtual void SyncRead(NET_Packet& Packet) override;
+virtual void SyncWrite(NET_Packet& Packet) override;
 
 #ifdef XRGAME_EXPORTS
-	virtual void					on_spawn				();
-	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+virtual void					on_spawn				() override;
+virtual void					add_online				(const bool &update_registries) override;
+virtual void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
 #endif // XRGAME_EXPORTS
-	virtual bool Net_Relevant();
+virtual bool Net_Relevant() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom,CSE_ALifeMonsterBase)
 									CSE_ALifePsyDogPhantom	(const char* caSection);				// constructor for variable initialization
-	virtual							~CSE_ALifePsyDogPhantom	();
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
-	virtual bool					bfActive				() {return false;}
+virtual ~CSE_ALifePsyDogPhantom	() override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
+virtual bool					bfActive				() override {return false;}
 SERVER_ENTITY_DECLARE_END
 
 //-------------------------------
@@ -484,33 +484,33 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract,CSE_ALifeTraderAbstract,CSE_
 
 public:
 									CSE_ALifeHumanAbstract	(const char* caSection);
-	virtual							~CSE_ALifeHumanAbstract	();
-	virtual CSE_Abstract			*init					();
-	virtual CSE_Abstract			*base					();
-	virtual const CSE_Abstract		*base					() const;
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
-	virtual CSE_ALifeHumanAbstract	*cast_human_abstract	() {return this;};
-	virtual bool					natural_weapon			() const {return false;}
-	virtual bool					natural_detector		() const {return false;}
+virtual ~CSE_ALifeHumanAbstract	() override;
+virtual CSE_Abstract			*init					() override;
+virtual CSE_Abstract			*base					() override;
+virtual const CSE_Abstract		*base					() const override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() override {return this;};
+virtual CSE_ALifeHumanAbstract	*cast_human_abstract	() override {return this;};
+virtual bool					natural_weapon			() const override {return false;}
+virtual bool					natural_detector		() const override {return false;}
 	IC		CALifeHumanBrain		&brain					() const {VERIFY(m_brain); return(*m_brain);}
-	virtual CALifeMonsterBrain		*create_brain			();
+virtual CALifeMonsterBrain		*create_brain			() override;
 
 #ifdef XRGAME_EXPORTS
-	virtual	void					update					();
-	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower);
-	virtual bool					bfPerformAttack			();
-	virtual	void					vfUpdateWeaponAmmo		();
-	virtual	void					vfProcessItems			();
-	virtual	void					vfAttachItems			(ALife::ETakeType tTakeType = ALife::eTakeTypeAll);
-	virtual	ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable *tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-	virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		();
-	virtual	void					vfDetachAll				(bool bFictitious = false);
-	virtual void					spawn_supplies			();
-	virtual void					on_register				();
-	virtual void					on_unregister			();
-	virtual	void					add_online				(const bool &update_registries);
-	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
+virtual void					update					() override;
+virtual CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower) override;
+virtual bool					bfPerformAttack			() override;
+virtual void					vfUpdateWeaponAmmo		() override;
+virtual void					vfProcessItems			() override;
+virtual void					vfAttachItems			(ALife::ETakeType tTakeType = ALife::eTakeTypeAll) override;
+virtual ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable *tpALifeSchedulable, int iGroupIndex, bool bMutualDetection) override;
+virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		() override;
+virtual void					vfDetachAll				(bool bFictitious = false) override;
+virtual void					spawn_supplies			() override;
+virtual void					on_register				() override;
+virtual void					on_unregister			() override;
+virtual void					add_online				(const bool &update_registries) override;
+virtual void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
 #endif
 
 private:
@@ -524,25 +524,25 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PH
 	aistalker_state_net				m_state_mngr;
 #endif
 									CSE_ALifeHumanStalker	(const char* caSection);
-	virtual							~CSE_ALifeHumanStalker	();
-	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual bool					Net_Relevant() override;
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
+virtual ~CSE_ALifeHumanStalker	() override;
+virtual void					load					(NET_Packet &tNetPacket) override;
+virtual bool					Net_Relevant() override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
 
-	virtual void SyncRead(NET_Packet& Packet);
-	virtual void SyncWrite(NET_Packet& Packet);
+virtual void SyncRead(NET_Packet& Packet) override;
+virtual void SyncWrite(NET_Packet& Packet) override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeOnlineOfflineGroup,CSE_ALifeDynamicObject,CSE_ALifeSchedulable,CMovementManagerHolder)
 public:
 									CSE_ALifeOnlineOfflineGroup	(const char* caSection);
-	virtual							~CSE_ALifeOnlineOfflineGroup();
-	virtual CSE_Abstract			*base						();
-	virtual const CSE_Abstract		*base						() const;
-	virtual CSE_Abstract			*init						();
-	virtual CSE_Abstract			*cast_abstract				() {return this;};
-	virtual CSE_ALifeSchedulable	*cast_schedulable			() {return this;};
-	virtual CSE_ALifeOnlineOfflineGroup	*cast_online_offline_group	() {return this;};
+virtual ~CSE_ALifeOnlineOfflineGroup() override;
+virtual CSE_Abstract			*base						() override;
+virtual const CSE_Abstract		*base						() const override;
+virtual CSE_Abstract			*init						() override;
+virtual CSE_Abstract			*cast_abstract				() override {return this;};
+virtual CSE_ALifeSchedulable	*cast_schedulable			() override {return this;};
+virtual CSE_ALifeOnlineOfflineGroup	*cast_online_offline_group	() override {return this;};
 #ifdef XRGAME_EXPORTS
 	virtual CALifeSmartTerrainTask	*get_current_task			();
 #endif // #ifdef XRGAME_EXPORTS
@@ -564,27 +564,27 @@ public:
 	IC		CALifeOnlineOfflineGroupBrain	&brain	() const {VERIFY(m_brain); return(*m_brain);}
 
 public:
-	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower);
-	virtual	ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable *tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
-	virtual bool					bfActive				();
-	virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		();
-	virtual void					update					();
-	virtual bool					need_update				(CSE_ALifeDynamicObject *object);
+virtual CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower) override;
+virtual ALife::EMeetActionType	tfGetActionType			(CSE_ALifeSchedulable *tpALifeSchedulable, int iGroupIndex, bool bMutualDetection) override;
+virtual bool					bfActive				() override;
+virtual CSE_ALifeDynamicObject	*tpfGetBestDetector		() override;
+virtual void					update					() override;
+virtual bool					need_update				(CSE_ALifeDynamicObject *object) override;
 			void					register_member			(ALife::_OBJECT_ID member_id);
 			void					unregister_member		(ALife::_OBJECT_ID member_id);
 			void					notify_on_member_death	(MEMBER *member);
 			MEMBER					*member					(ALife::_OBJECT_ID member_id, bool no_assert = false);
-	virtual void					on_before_register		();
+virtual void					on_before_register		() override;
 			void					on_after_game_load		();
-	virtual	bool					synchronize_location	();
-	virtual	void					try_switch_online		();
-	virtual	void					try_switch_offline		();
-	virtual	void					switch_online			();
-	virtual	void					switch_offline			();
-	virtual	bool					redundant				() const;
-	virtual void					on_location_change		() const;
-	virtual	CSE_ALifeDynamicObject const&	get_object		() const	{ return *this; }
-	virtual	CSE_ALifeDynamicObject&			get_object		()			{ return *this; }
+virtual bool					synchronize_location	() override;
+virtual void					try_switch_online		() override;
+virtual void					try_switch_offline		() override;
+virtual void					switch_online			() override;
+virtual void					switch_offline			() override;
+virtual bool					redundant				() const override;
+virtual void					on_location_change		() const override;
+virtual CSE_ALifeDynamicObject const&	get_object		() const override { return *this; }
+virtual CSE_ALifeDynamicObject&			get_object		() override { return *this; }
 			ALife::_OBJECT_ID		commander_id			();	
 			MEMBERS const&			squad_members			() const;
 			int						get_squad_memberId(int index) const { return m_members.get_key_at(index); }
@@ -593,7 +593,7 @@ public:
 			void					clear_location_types	();
 			void					add_location_type		(const char* mask);	
 			void					force_change_position	(Fvector position);
-	virtual void					on_failed_switch_online	();	
+virtual void					on_failed_switch_online	() override;	
 #else
 public:
 	virtual void					update					() {};

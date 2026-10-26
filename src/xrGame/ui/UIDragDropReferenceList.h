@@ -14,20 +14,20 @@ private:
 
 public:
 	CUIDragDropReferenceList();
-	virtual ~CUIDragDropReferenceList();
-	virtual void SetItem(CUICellItem* itm);
-	virtual bool SetItem(CUICellItem* itm, Fvector2 abs_pos);
-	virtual void SetItem(CUICellItem* itm, Ivector2 cell_pos);
+	virtual ~CUIDragDropReferenceList() override;
+	virtual void SetItem(CUICellItem* itm) override;
+	virtual bool SetItem(CUICellItem* itm, Fvector2 abs_pos) override;
+	virtual void SetItem(CUICellItem* itm, Ivector2 cell_pos) override;
 	bool			SetItemAtQuickSlotCell	(CUICellItem* itm, u8 slotIndex);
-	virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root);
+	virtual CUICellItem* RemoveItem(CUICellItem* itm, bool force_root) override;
 
 	void Initialize();
 	CUICellContainer* GetContainer() {return m_container;};
 	void LoadItemTexture(const char* section, Ivector2 cell_pos);
 	void ReloadReferences(CInventoryOwner* pActor);
 
-	virtual void 	OnItemDBClick		(CUIWindow* w, void* pData);
-	virtual void 	OnItemDrop			(CUIWindow* w, void* pData);
+	virtual void 	OnItemDBClick		(CUIWindow* w, void* pData) override;
+	virtual void 	OnItemDrop			(CUIWindow* w, void* pData) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

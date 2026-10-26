@@ -21,19 +21,19 @@ private:
 
 public:
 	Root() = default;
-	virtual ~Root() = default;
+	virtual ~Root() override = default;
 	void construct(const shared_str& root_id, Manager& manager_r);
 	IC const char* scheme() const { return m_upgrade_scheme.c_str(); }
 
 	void add_upgrade(Upgrade* upgr);
-	virtual	bool is_root() override { return true; }
+	virtual bool is_root() override { return true; }
 
 #ifdef DEBUG
 	virtual void log_hierarchy(const char* nest) override;
 	void test_all_upgrades(CInventoryItem& item);
 #endif // DEBUG
 
-	virtual bool contain_upgrade(const shared_str& upgrade_id);
+	virtual bool contain_upgrade(const shared_str& upgrade_id) override;
 	bool verify_scheme_index(const Ivector2& scheme_index);
 	Upgrade* get_upgrade_by_index(Ivector2 const& index);
 

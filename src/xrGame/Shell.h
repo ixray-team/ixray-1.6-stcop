@@ -26,7 +26,7 @@ class CShell : public CPhysicObject
 public:
 	virtual bool net_Spawn(CSE_Abstract* e) override;
 	virtual void UpdateCL() override;
-	
+
 	virtual void PH_A_CrPr() override;
 	virtual void PH_B_CrPr() override;
 	virtual void net_Relcase(CObject* O) override;

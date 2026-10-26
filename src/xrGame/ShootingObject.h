@@ -23,7 +23,7 @@ class CShootingObject :
 {
 protected:
 	CShootingObject();
-	virtual ~CShootingObject();
+	virtual ~CShootingObject() override;
 
 	void	reload(const char* section) {};
 	void	Load(const char* section);
@@ -197,7 +197,7 @@ protected:
 	ALife::_OBJECT_ID initiator_id;
 
 public:
-	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const;
+	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const override;
 
 	void SetInitiator(ALife::_OBJECT_ID id) override { initiator_id = id; }
 	ALife::_OBJECT_ID Initiator() override { return initiator_id; }

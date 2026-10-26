@@ -75,7 +75,7 @@ protected:
 
 public:
 									CSpaceRestriction			(CSpaceRestrictionManager *space_restriction_manager, shared_str out_restrictions, shared_str in_restrictions);
-			void					initialize					();
+	virtual void					initialize					() override;
 			void					remove_border				();
 	template <typename T1, typename T2>
 	IC		void					add_border					(T1 p1, T2 p2);
@@ -87,7 +87,7 @@ public:
 	IC		bool					applied						() const;
 	IC		bool					inside						(const Fsphere &sphere);
 	IC		bool					inside						(u32 level_vertex_id, bool partially_inside);
-	virtual shared_str				name						() const;
+	virtual shared_str				name						() const override;
 };
 
 #include "space_restriction_inline.h"

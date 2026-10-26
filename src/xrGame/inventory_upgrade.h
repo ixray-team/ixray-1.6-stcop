@@ -106,7 +106,7 @@ private:
 	using inherited = UpgradeBase;
 public:
 	Upgrade() = default;
-	virtual	~Upgrade() = default;
+	virtual ~Upgrade() override = default;
 	void construct(const shared_str& upgrade_id, Group& parental_group, Manager& manager_r);
 
 	IC const char* section() const { return m_section.c_str(); }
@@ -127,20 +127,20 @@ public:
 	IC Ivector2 const& get_scheme_index() const { return m_scheme_index; }
 
 #ifdef DEBUG
-	virtual	void log_hierarchy(const char* nest) override;
+	virtual void log_hierarchy(const char* nest) override;
 #endif // DEBUG
 
-	virtual	void fill_root_container(Root* root) override;
+	virtual void fill_root_container(Root* root) override;
 
-	virtual	UpgradeStateResult can_install(CInventoryItem& item, bool loading) override;
+	virtual UpgradeStateResult can_install(CInventoryItem& item, bool loading) override;
 	bool check_scheme_index(const Ivector2& scheme_index) const;
 	void set_highlight(bool value);
 	void run_effects(bool loading);
 
 	void RefreshTranslations();
 
-	virtual	void highlight_up() override;
-	virtual	void highlight_down() override;
+	virtual void highlight_up() override;
+	virtual void highlight_down() override;
 
 protected:
 	using BoolFunctor = functor<bool>;

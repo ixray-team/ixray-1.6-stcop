@@ -10,10 +10,10 @@ protected:
 
 public:
 					CStateMonsterHitted		(_Object *obj);
-	virtual			~CStateMonsterHitted	();
+	virtual ~CStateMonsterHitted	() override;
 
-	virtual	void	reselect_state			();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	reselect_state			() override;
+	virtual void	remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_hitted_inline.h"

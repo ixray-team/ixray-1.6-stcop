@@ -56,7 +56,7 @@ protected:
 
 public:
 	IC								CALifeScheduleRegistry	();
-	virtual							~CALifeScheduleRegistry	();
+	virtual ~CALifeScheduleRegistry	() override;
 			void					add						(CSE_ALifeDynamicObject *object);
 			void					remove					(CSE_ALifeDynamicObject *object, bool no_assert = false);
 	IC		void					update					();

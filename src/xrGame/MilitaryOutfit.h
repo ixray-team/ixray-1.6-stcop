@@ -11,5 +11,5 @@ class CMilitaryOutfit final : public CCustomOutfit
 {
 public:
 	CMilitaryOutfit() = default;
-	virtual ~CMilitaryOutfit() = default;
+	virtual ~CMilitaryOutfit() override = default;
 };

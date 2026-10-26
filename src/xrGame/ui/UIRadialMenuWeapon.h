@@ -11,18 +11,18 @@ class CUIRadialMenuWeapon : public CUIRadialMenu
 
 public:
 	CUIRadialMenuWeapon();
-	virtual ~CUIRadialMenuWeapon();
+	virtual ~CUIRadialMenuWeapon() override;
 
-	virtual void Draw();
-	virtual void Update();
-	virtual void Init();
-	virtual void TryActivateSelectedSector();
+	virtual void Draw() override;
+	virtual void Update() override;
+	virtual void Init() override;
+	virtual void TryActivateSelectedSector() override;
 
-	virtual bool OnGamepadKeyAction(int dik, EUIMessages keyboard_action);
+	virtual bool OnGamepadKeyAction(int dik, EUIMessages keyboard_action) override;
 
-	virtual bool StopAnyMove() { return false; }
-	virtual bool NeedCursor()const { return false; }
-	virtual bool NeedCenterCursor()const { return false; }
+	virtual bool StopAnyMove() override { return false; }
+	virtual bool NeedCursor()const override { return false; }
+	virtual bool NeedCenterCursor()const override { return false; }
 
 	void UpdateGamepadLegend();
 

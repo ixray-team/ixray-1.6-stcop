@@ -27,12 +27,12 @@ class disk_file_reader : public file_reader
 	IReader*		m_reader;
 public:
 	explicit		disk_file_reader	(shared_str const & file_name);
-	virtual			~disk_file_reader	();
-	virtual	bool	make_data_packet	(NET_Packet & packet, u32 chunk_size);
-	virtual bool	is_first_packet		();
-	virtual u32		size				();
-	virtual u32		tell				();
-	virtual	bool	opened				() const;
+	virtual ~disk_file_reader	() override;
+	virtual bool	make_data_packet	(NET_Packet & packet, u32 chunk_size) override;
+	virtual bool	is_first_packet		() override;
+	virtual u32		size				() override;
+	virtual u32		tell				() override;
+	virtual bool	opened				() const override;
 }; //class disk_file_reader
 
 class memory_reader : public file_reader
@@ -40,24 +40,24 @@ class memory_reader : public file_reader
 	IReader*		m_reader;
 public:
 					memory_reader		(u8* data_ptr, u32 data_size);
-	virtual			~memory_reader		();
-	virtual	bool	make_data_packet	(NET_Packet & packet, u32 chunk_size);
-	virtual bool	is_first_packet		();
-	virtual u32		size				();
-	virtual u32		tell				();
-	virtual	bool	opened				() const;
+	virtual ~memory_reader		() override;
+	virtual bool	make_data_packet	(NET_Packet & packet, u32 chunk_size) override;
+	virtual bool	is_first_packet		() override;
+	virtual u32		size				() override;
+	virtual u32		tell				() override;
+	virtual bool	opened				() const override;
 }; //class memory_reader
 
 class buffers_vector_reader : public file_reader
 {
 public:
 	explicit		buffers_vector_reader	(buffer_vector<mutable_buffer_t>* buffers);
-	virtual			~buffers_vector_reader	();
-	virtual	bool	make_data_packet		(NET_Packet & packet, u32 chunk_size);
-	virtual bool	is_first_packet			();
-	virtual u32		size					();
-	virtual u32		tell					();
-	virtual	bool	opened					() const;
+	virtual ~buffers_vector_reader	() override;
+	virtual bool	make_data_packet		(NET_Packet & packet, u32 chunk_size) override;
+	virtual bool	is_first_packet			() override;
+	virtual u32		size					() override;
+	virtual u32		tell					() override;
+	virtual bool	opened					() const override;
 private:
 			void	accumulate_size			();
 			void	read_from_current_buf	(NET_Packet & dest, u32 read_size);
@@ -77,12 +77,12 @@ class memory_writer_reader : public file_reader
 	u32		const	m_writer_max_size;
 public:
 					memory_writer_reader	(CMemoryWriter* src_writer, u32 const max_size);
-	virtual			~memory_writer_reader	();
-	virtual	bool	make_data_packet		(NET_Packet & packet, u32 chunk_size);
-	virtual bool	is_first_packet			();
-	virtual u32		size					();
-	virtual u32		tell					();
-	virtual	bool	opened					() const;
+	virtual ~memory_writer_reader	() override;
+	virtual bool	make_data_packet		(NET_Packet & packet, u32 chunk_size) override;
+	virtual bool	is_first_packet			() override;
+	virtual u32		size					() override;
+	virtual u32		tell					() override;
+	virtual bool	opened					() const override;
 }; //class memory_writer_reader
 
 

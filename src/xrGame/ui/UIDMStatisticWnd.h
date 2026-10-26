@@ -18,9 +18,9 @@ protected:
 	};
 public:
 	CUIDMStatisticWnd					();
-	~CUIDMStatisticWnd					();
+	virtual ~CUIDMStatisticWnd					() override;
 
-	virtual void Update				();
-	virtual void Draw();
+	virtual void Update				() override;
+	virtual void Draw() override;
 
 };

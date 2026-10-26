@@ -13,12 +13,12 @@ protected:
 
 public:
 	CStateGroupHearDangerousSound		(_Object *obj);
-	virtual			~CStateGroupHearDangerousSound	() = default;
+	virtual ~CStateGroupHearDangerousSound	() override = default;
 
-	virtual void	initialize						();
-	virtual void	reselect_state					();
-	virtual void	setup_substates					();
-	virtual void	remove_links					(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize						() override;
+	virtual void	reselect_state					() override;
+	virtual void	setup_substates					() override;
+	virtual void	remove_links					(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "group_state_hear_danger_sound_inline.h"

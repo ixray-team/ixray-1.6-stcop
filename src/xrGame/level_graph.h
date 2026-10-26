@@ -27,7 +27,7 @@ private:
 public:
 	void ApplyEditorNodes(const hdrNODES& Header, const xr_vector<CVertex>& Nodes, const xr_vector<u8>& Deleted = {});
 	CLevelGraph();
-	virtual			~CLevelGraph				();
+	virtual ~CLevelGraph				() override;
 
 #ifdef DEBUG
 #	ifndef AI_COMPILER

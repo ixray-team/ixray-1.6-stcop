@@ -21,8 +21,8 @@ public:
 	{
 	};
 
-	virtual void setup(CScriptGameObject *object, CPropertyStorage *storage);
+	virtual void setup(CScriptGameObject *object, CPropertyStorage *storage) override;
 	static	void setup_static(CScriptPropertyEvaluator *evaluator, CScriptGameObject *object, CPropertyStorage *storage);
-	virtual bool evaluate();
+	virtual bool evaluate() override;
 	static	bool evaluate_static(CScriptPropertyEvaluator *evaluator);
 };

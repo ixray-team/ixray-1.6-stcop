@@ -22,8 +22,8 @@ public:
 		m_max_distance			= max_enemy_distance;
 	}
 
-	virtual	void		evaluate_cover		(const CCoverPoint *cover_point, float weight);
-	virtual	void		evaluate_smart_cover(smart_cover::cover const *smart_cover, float const &weight);
+	virtual void		evaluate_cover		(const CCoverPoint *cover_point, float weight) override;
+	virtual void		evaluate_smart_cover(smart_cover::cover const *smart_cover, float const &weight) override;
 };
 
 

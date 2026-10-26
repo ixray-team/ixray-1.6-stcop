@@ -14,13 +14,13 @@ class CUIStatsPlayerInfo final : public CUIWindow
 {
 public:
 						CUIStatsPlayerInfo	(xr_vector<PI_FIELD_INFO>* info, CGameFont* pF, u32 text_col);
-	virtual				~CUIStatsPlayerInfo	();
+	virtual ~CUIStatsPlayerInfo	() override;
 
 			void		SetInfo				(game_PlayerState* pInfo);
 			void		InitPlayerInfo		(Fvector2 pos, Fvector2 size);
-	virtual void		Update				();
+	virtual void		Update				() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			void		AddField			(float len, CGameFont* pF, u32 text_col, bool icon);

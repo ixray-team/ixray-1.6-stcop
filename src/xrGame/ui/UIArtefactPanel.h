@@ -11,10 +11,10 @@ class CUIArtefactPanel : public CUIWindow
 
 public:
 	CUIArtefactPanel			();
-	~CUIArtefactPanel			();
+	virtual ~CUIArtefactPanel			() override;
 
 	virtual void InitIcons		(const xr_vector<const CArtefact*>& artefacts);
-	virtual void Draw			();
+	virtual void Draw			() override;
 			void InitFromXML	(CUIXml& xml, const char* path, int index);
 
 protected:

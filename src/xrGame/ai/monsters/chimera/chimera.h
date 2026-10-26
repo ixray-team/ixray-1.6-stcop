@@ -6,19 +6,19 @@ class CChimera final : public CBaseMonster
 {
 public:
 							CChimera					();
-	virtual					~CChimera					();	
+	virtual ~CChimera					() override;
 
-	virtual void			Load						(const char* section);
-	virtual void			reinit						();
-	virtual	void			UpdateCL					();
+	virtual void			Load						(const char* section) override;
+	virtual void			reinit						() override;
+	virtual void			UpdateCL					() override;
 
-	virtual void			CheckSpecParams				(u32 spec_params);
-	virtual void			HitEntityInJump				(const CEntity *pEntity);
-	virtual void			jump						(Fvector const &position, float factor);
+	virtual void			CheckSpecParams				(u32 spec_params) override;
+	virtual void			HitEntityInJump				(const CEntity *pEntity) override;
+	virtual void			jump						(Fvector const &position, float factor) override;
 
 private:
-	virtual	char*			get_monster_class_name		() { return (char*) "chimera"; }
-	virtual EAction			CustomVelocityIndex2Action	(u32 velocity_index);
+	virtual char*			get_monster_class_name		() override { return (char*) "chimera"; }
+	virtual EAction			CustomVelocityIndex2Action	(u32 velocity_index) override;
 
 	typedef					CBaseMonster				inherited;
 	

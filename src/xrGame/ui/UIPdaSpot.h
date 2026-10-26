@@ -30,7 +30,7 @@ class CUIPdaSpot final :
 
 public:
 	CUIPdaSpot();
-	~CUIPdaSpot();
+	virtual ~CUIPdaSpot() override;
 
 	void Init(ALife::_OBJECT_ID spot_id, const char* level_name, Fvector pos, bool main_wnd);
 	void InitControls();
@@ -42,10 +42,10 @@ public:
 	void Exit();
 
 	void ResetCursor();
-	virtual void Draw();
+	virtual void Draw() override;
 	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
-	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action);
-	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
+	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
 	Fvector2 last_cursor_pos;
 };

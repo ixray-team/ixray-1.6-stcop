@@ -26,14 +26,14 @@ public:
 		world_prims.OnRender();
 	};
 							CHUDManager			();
-	virtual					~CHUDManager		();
-	virtual		void		OnEvent				(EVENT E, u64 P1, u64 P2);
+	virtual ~CHUDManager		() override;
+	virtual void		OnEvent				(EVENT E, u64 P1, u64 P2) override;
 
-	virtual		void		Render_First		();
-	virtual		void		Render_Last			();	   
-	virtual		void		OnFrame				();
+	virtual void		Render_First		() override;
+	virtual void		Render_Last			() override;
+	virtual void		OnFrame				() override;
 
-	virtual		void		OnFrameMT			();
+	virtual void		OnFrameMT			() override;
 
 	virtual		void		RenderUI			();
 
@@ -43,7 +43,7 @@ public:
 				void		HitMarked			(int idx, float power, const Fvector& dir);
 				bool		AddGrenade_ForMark	( CGrenade* grn );
 				void		Update_GrenadeView	( Fvector& pos_actor );
-				void		net_Relcase			( CObject* obj );
+	virtual void		net_Relcase			( CObject* obj ) override;
 				void		InitializePauseStatic();
 
 	//текущий предмет на который смотрит HUD
@@ -60,13 +60,13 @@ public:
 	void					SetHitmarkType		( const char* tex_name );
 	void					SetGrenadeMarkType	( const char* tex_name );
 
-	virtual void			OnScreenResolutionChanged();
-	virtual	void			Load				();
-	virtual void			OnDisconnected		();
-	virtual void			OnConnected			();
+	virtual void			OnScreenResolutionChanged() override;
+	virtual void			Load				() override;
+	virtual void			OnDisconnected		() override;
+	virtual void			OnConnected			() override;
 
-	virtual	void			RenderActiveItemUI	();
-	virtual	bool			RenderActiveItemUIQuery();
+	virtual void			RenderActiveItemUI	() override;
+	virtual bool			RenderActiveItemUIQuery() override;
 
 	//Lain: added
 				void		SetRenderable       (bool renderable) { psHUD_Flags.set(HUD_DRAW_RT2,renderable); }

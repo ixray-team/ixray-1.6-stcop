@@ -64,23 +64,23 @@ protected:
 public:
 	CUITabControl*		m_FilterTab;
 						CUIDiaryWnd				();
-	virtual				~CUIDiaryWnd			();
+	virtual ~CUIDiaryWnd			() override;
 
-	virtual void		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData);
-	virtual	void		Draw					();
-	virtual	void		Reset					();
+	virtual void		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData) override;
+	virtual void		Draw					() override;
+	virtual void		Reset					() override;
 
 			void		Init					();
 			void		SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			void		AddNews					();
 			void		MarkNewsAsRead			(bool status);
-	virtual void		Show					(bool status);
-	virtual void		Update					();
-	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool		OnGamepadKeyHold		(int id);
+	virtual void		Show					(bool status) override;
+	virtual void		Update					() override;
+	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool		OnGamepadKeyHold		(int id) override;
 
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 

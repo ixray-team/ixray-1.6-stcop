@@ -36,9 +36,8 @@ class CControlDirection : public CControl_ComPure<SControlDirectionData> {
 	} m_heading, m_pitch;
 
 public:
-
-	virtual void	reinit				();
-	virtual void	update_frame		();
+	virtual void	reinit				() override;
+	virtual void	update_frame		() override;
 	
 	// services
 			bool	is_face_target		(const Fvector &position,	float eps_angle);

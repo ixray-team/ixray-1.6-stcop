@@ -51,21 +51,20 @@ class CControlledEntity : public CControlledEntityBase {
 	CController			*m_controller;
 
 public:
+	virtual bool			is_under_control		() override {return (m_controller != 0);}
 
-	virtual bool			is_under_control		() {return (m_controller != 0);}
+	virtual void			set_data				(const SControlledInfo &info) override {m_data = info;}
+	virtual SControlledInfo &get_data				() override {return m_data;}
 
-	virtual void			set_data				(const SControlledInfo &info) {m_data = info;}
-	virtual SControlledInfo &get_data				(){return m_data;}
+	virtual void			set_task_follow			(const CEntity *e) override;
+	virtual void			set_task_attack			(const CEntity *e) override;
 
-	virtual void			set_task_follow			(const CEntity *e);
-	virtual void			set_task_attack			(const CEntity *e);
+	virtual void			set_under_control		(CController *controller) override;
+	virtual void			free_from_control		() override;
 
-	virtual void			set_under_control		(CController *controller); 
-	virtual void			free_from_control		();
-
-	virtual void			on_reinit				();
-	virtual void			on_die					();
-	virtual void			on_destroy				();
+	virtual void			on_reinit				() override;
+	virtual void			on_die					() override;
+	virtual void			on_destroy				() override;
 
 			void			init_external			(_Object *obj) {m_object = obj;}
 			

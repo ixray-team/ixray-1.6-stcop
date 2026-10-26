@@ -150,7 +150,7 @@ private:
 
 public:
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 	friend class CFlamePoltergeist;
@@ -353,7 +353,7 @@ public:
 	float master_difficulty_object_hit_factor;
 
 	CTelekineticPoltergeist(CPoltergeist* polter);
-	~CTelekineticPoltergeist();
+	virtual ~CTelekineticPoltergeist() override;
 
 	void load(const char* section) override;
 	void update_schedule() override;

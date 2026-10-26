@@ -8,13 +8,13 @@ class CStateMonsterAttackMelee : public CState<_Object> {
 
 public:
 						CStateMonsterAttackMelee	(_Object *obj);
-	virtual				~CStateMonsterAttackMelee	();
+	virtual ~CStateMonsterAttackMelee	() override;
 
-	virtual	void		execute						();
+	virtual void		execute						() override;
 
-	virtual bool 		check_completion			();
-	virtual bool 		check_start_conditions		();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual bool 		check_completion			() override;
+	virtual bool 		check_start_conditions		() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_attack_melee_inline.h"

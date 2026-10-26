@@ -110,7 +110,7 @@ public:
 
 public:
 									game_sv_GameState		();
-	virtual							~game_sv_GameState		();
+	virtual ~game_sv_GameState		() override;
 	// Main accessors
 	virtual		game_PlayerState*	get_eid					(ALife::_OBJECT_ID id);
 	virtual		void*				get_client				(ALife::_OBJECT_ID id); //if exist
@@ -135,8 +135,8 @@ public:
 #ifdef DEBUG_DRAW
 	virtual		void				OnRender				();
 #endif
-	
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase);	
+
+	virtual void				OnSwitchPhase			(u32 old_phase, u32 new_phase) override;	
 				CSE_Abstract*		spawn_begin				(const char* N);
 				CSE_Abstract*		spawn_end				(CSE_Abstract* E, ClientID id);
 
@@ -163,7 +163,7 @@ public:
 	virtual		void				OnPlayerHitPlayer		(ALife::_OBJECT_ID id_hitter, ALife::_OBJECT_ID id_hitted, NET_Packet& P){}; //игрок получил Hit
 
 	// Main
-	virtual		void				Create					(shared_str& options);
+	virtual void				Create					(shared_str& options) override;
 	virtual		void				Update					();
 	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);				// full state
 	virtual		void				net_Export_Update		(NET_Packet& P, ClientID id_to, ClientID id);		// just incremental update for specific client

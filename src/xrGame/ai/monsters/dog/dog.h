@@ -12,25 +12,25 @@ class CAI_Dog final : public CBaseMonster,
 
 public:
 					CAI_Dog				();
-	virtual			~CAI_Dog			();	
+	virtual ~CAI_Dog			() override;
 
-	virtual void	Load				(const char* section);
-	virtual void	reinit				();
-	virtual void    reload              (const char* section);
-	virtual	void	UpdateCL			();	
+	virtual void	Load				(const char* section) override;
+	virtual void	reinit				() override;
+	virtual void    reload              (const char* section) override;
+	virtual void	UpdateCL			() override;
 
-	virtual void	CheckSpecParams		(u32 spec_params);
-	virtual void    HitEntityInJump     (const CEntity *pEntity);
+	virtual void	CheckSpecParams		(u32 spec_params) override;
+	virtual void    HitEntityInJump     (const CEntity *pEntity) override;
 
-	virtual bool	ability_can_drag		() {return true;}
-	virtual u32     get_attack_rebuild_time ();
-	virtual bool    can_use_agressive_jump (const CObject*);
-	virtual	char*	get_monster_class_name () { return (char*) "dog"; }
+	virtual bool	ability_can_drag		() override {return true;}
+	virtual u32     get_attack_rebuild_time () override;
+	virtual bool    can_use_agressive_jump (const CObject*) override;
+	virtual char*	get_monster_class_name () override { return (char*) "dog"; }
 	
 public:
 			void			set_current_animation(u32 curr_anim = -1);
 			void			start_animation();
-	virtual bool            check_start_conditions (ControlCom::EControlType type);
+	virtual bool            check_start_conditions (ControlCom::EControlType type) override;
 			void			anim_end_reinit();
 			bool			get_custom_anim_state();
 			void			set_custom_anim_state(bool b_state_animation);

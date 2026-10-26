@@ -56,7 +56,7 @@ private:
 			void				vertex					(loophole const &loophole, loophole_data &loophole_data);
 public:
 								cover					(object const &object, DescriptionPtr description, bool is_combat_cover, bool can_fire, luabind::object const &loopholes);
-								~cover					();
+	virtual ~cover					() override;
 	IC		Loopholes const		&loopholes				() const;
 	IC		object const		&object					() const;
 	IC		Fvector				fov_position			(loophole const &loophole) const;

@@ -20,25 +20,25 @@ class CBaseGraviZone : public CAnomalyZone, public CTeleWhirlwind
 
 public:
 	CBaseGraviZone();
-	virtual ~CBaseGraviZone();
+	virtual ~CBaseGraviZone() override;
 
-	virtual void Load(const char* section);
+	virtual void Load(const char* section) override;
 
-	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual void net_Destroy();
-	virtual void net_Relcase(CObject* O);
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void net_Relcase(CObject* O) override;
 
 	//воздействие зоной на объект
-	virtual void Affect(SZoneObjectInfo* O);
+	virtual void Affect(SZoneObjectInfo* O) override;
 	virtual void AffectPull(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
 	virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
 	virtual void AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
 	virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
 	virtual void ThrowInCenter(Fvector& C);
 	virtual bool CheckAffectField(CPhysicsShellHolder* GO, float dist_to_radius);
-	virtual void shedule_Update(u32 dt);
-	virtual bool BlowoutState();
-	virtual bool IdleState();
+	virtual void shedule_Update(u32 dt) override;
+	virtual bool BlowoutState() override;
+	virtual bool IdleState() override;
 
 	virtual float BlowoutRadiusPercent(CPhysicsShellHolder* /*GO*/) { return m_fBlowoutRadiusPercent; }
 
@@ -74,7 +74,7 @@ class CGraviZone final : public CBaseGraviZone
 
 public:
 	CGraviZone() = default;
-	virtual ~CGraviZone() = default;
+	virtual ~CGraviZone() override = default;
 
 	CGraviZone* cast_gravi_zone() override { return this; }
 };

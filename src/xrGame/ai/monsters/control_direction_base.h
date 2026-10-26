@@ -22,8 +22,8 @@ public:
 	} m_heading, m_pitch;
 
 public:
-	virtual void	reinit					();
-	virtual void	update_frame			();
+	virtual void	reinit					() override;
+	virtual void	update_frame			() override;
 
 			void	use_path_direction		(bool reversed = false);
 

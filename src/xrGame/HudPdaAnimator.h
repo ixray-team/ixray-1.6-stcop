@@ -9,7 +9,7 @@ class CHudPdaAnimator final : public CHudStateAnimator
 {
 public:
 	CHudPdaAnimator(CHudAnimatorManager* manager, const shared_str& pda_section);
-	virtual ~CHudPdaAnimator() = default;
+	virtual ~CHudPdaAnimator() override = default;
 
 	enum EPdaStates : u8
 	{
@@ -32,7 +32,7 @@ public:
 	virtual EHudOffsetType GetCurrentHudOffsetIdx() const;
 	virtual void UpdateHudAdditonal(Fmatrix&) override;
 
-	virtual CHudPdaAnimator* cast_pda_animator() { return this; }
+	virtual CHudPdaAnimator* cast_pda_animator() override { return this; }
 	static float GetPDAScreen_kx();
 
 protected:

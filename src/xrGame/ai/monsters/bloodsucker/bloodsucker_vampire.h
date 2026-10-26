@@ -11,19 +11,19 @@ class	CStateBloodsuckerVampire : public CState<_Object> {
 
 public:
 						CStateBloodsuckerVampire		(_Object *obj);
-	
-	virtual void		reinit							();
-	
-	virtual void		initialize						();
-	virtual	void		reselect_state					();
-	virtual	void		finalize						();
-	virtual	void		critical_finalize				();
-	virtual bool		check_start_conditions			();
-	virtual bool		check_completion				();
-	virtual void		remove_links					(CObject* object);
 
-	virtual void		setup_substates					();
-	virtual void		check_force_state				();
+	virtual void		reinit							() override;
+
+	virtual void		initialize						() override;
+	virtual void		reselect_state					() override;
+	virtual void		finalize						() override;
+	virtual void		critical_finalize				() override;
+	virtual bool		check_start_conditions			() override;
+	virtual bool		check_completion				() override;
+	virtual void		remove_links					(CObject* object) override;
+
+	virtual void		setup_substates					() override;
+	virtual void		check_force_state				() override;
 };
 
 #include "bloodsucker_vampire_inline.h"

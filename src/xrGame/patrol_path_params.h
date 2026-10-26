@@ -29,12 +29,12 @@ public:
 
 public:
 									CPatrolPathParams	(const char* caPatrolPathToGo, const PatrolPathManager::EPatrolStartType tPatrolPathStart = PatrolPathManager::ePatrolStartTypeNearest, const PatrolPathManager::EPatrolRouteType tPatrolPathStop = PatrolPathManager::ePatrolRouteTypeContinue, bool bRandom = true, u32 index = u32(-1));
-	virtual							~CPatrolPathParams	();
+	virtual ~CPatrolPathParams	() override;
 			u32						count				() const;
-	virtual	const Fvector			&point				(u32 index) const;
+	virtual const Fvector			&point				(u32 index) const override;
 			u32						level_vertex_id		(u32 index) const;
 			GameGraph::_GRAPH_ID	game_vertex_id		(u32 index) const;
-	virtual	u32						point				(const char* name) const;
+	virtual u32						point				(const char* name) const override;
 			u32						point				(const Fvector &point) const;
 			const char*					name				(u32 index) const;	
 			bool					flag				(u32 index, u8 flag_index) const;

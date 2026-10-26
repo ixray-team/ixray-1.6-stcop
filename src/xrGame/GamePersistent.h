@@ -61,53 +61,53 @@ public:
 	EVENT				eDemoStart;
 
 						CGamePersistent			();
-	virtual				~CGamePersistent		();
+	virtual ~CGamePersistent		() override;
 
-	void PreStart(const char* op) override;
-	virtual void		Start					(const char* op);
-	virtual void		Disconnect				();
+	virtual void PreStart(const char* op) override;
+	virtual void		Start					(const char* op) override;
+	virtual void		Disconnect				() override;
 
-	virtual	void		OnAppActivate			();
-	virtual void		OnAppDeactivate			();
+	virtual void		OnAppActivate			() override;
+	virtual void		OnAppDeactivate			() override;
 
-	virtual void		OnAppStart				();
-	virtual void		OnAppEnd				();
-	virtual	void		OnGameStart				();
-	virtual void		OnGameEnd				();
+	virtual void		OnAppStart				() override;
+	virtual void		OnAppEnd				() override;
+	virtual void		OnGameStart				() override;
+	virtual void		OnGameEnd				() override;
 
-	virtual void	_BCL	OnFrame					();
-	virtual void			OnEvent					(EVENT E, u64 P1, u64 P2);
+	virtual void	_BCL	OnFrame					() override;
+	virtual void			OnEvent					(EVENT E, u64 P1, u64 P2) override;
 
-	virtual void		UpdateGameType			();
+	virtual void		UpdateGameType			() override;
 
-	virtual	void		destroy_particles		(bool all_particles);
-	virtual	void		UpdatePlayDestroyParticles();
-	virtual	void		UpdateParticles			();
+	virtual void		destroy_particles		(bool all_particles) override;
+	virtual void		UpdatePlayDestroyParticles() override;
+	virtual void		UpdateParticles			() override;
 
-	virtual void		RegisterModel			(IRenderVisual* V);
-	virtual	float		MtlTransparent			(u32 mtl_idx);
-	virtual	void		Statistics				(CGameFont* F);
+	virtual void		RegisterModel			(IRenderVisual* V) override;
+	virtual float		MtlTransparent			(u32 mtl_idx) override;
+	virtual void		Statistics				(CGameFont* F) override;
 
-	virtual bool		OnRenderPPUI_query		();
-	virtual void		OnRenderPPUI_main		();
-	virtual void		OnRenderPPUI_PP			();
-	virtual	void		LoadTitle				(bool change_tip = false, shared_str map_name = "");
+	virtual bool		OnRenderPPUI_query		() override;
+	virtual void		OnRenderPPUI_main		() override;
+	virtual void		OnRenderPPUI_PP			() override;
+	virtual void		LoadTitle				(bool change_tip = false, shared_str map_name = "") override;
     void				SetLoadStageTitle		(const char* ls_title = nullptr) override;
 
-	virtual bool		CanBePaused				();
+	virtual bool		CanBePaused				() override;
 
 			void		SetPickableEffectorDOF	(bool bSet);
 			void		SetEffectorDOF			(const Fvector& needed_dof);
 			void		RestoreEffectorDOF		();
 	CDofManager& DofManager() { return Dof; }
 
-	virtual void		GetCurrentDof			(Fvector3& dof);
-	virtual void		SetBaseDof				(const Fvector3& dof);
-	virtual void		OnSectorChanged			(int sector);
-	virtual void		OnAssetsChanged			();
+	virtual void		GetCurrentDof			(Fvector3& dof) override;
+	virtual void		SetBaseDof				(const Fvector3& dof) override;
+	virtual void		OnSectorChanged			(int sector) override;
+	virtual void		OnAssetsChanged			() override;
 	void				SetDiscordStatus() const;
-	virtual void		GetTextureParams		(shared_str tex, Frect& out_rect, shared_str& file_name);
-	virtual void		ChangeCursorPosition	(Fvector2 value);
+	virtual void		GetTextureParams		(shared_str tex, Frect& out_rect, shared_str& file_name) override;
+	virtual void		ChangeCursorPosition	(Fvector2 value) override;
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

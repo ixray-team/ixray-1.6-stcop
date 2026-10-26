@@ -113,7 +113,7 @@ protected:
 	Flags16	m_flags;
 public:
 	CInventoryItem();
-	virtual	~CInventoryItem();
+	virtual ~CInventoryItem() override;
 
 public:
 	virtual void Load(const char* section);
@@ -178,9 +178,9 @@ public:
 	virtual void DiscardState() {};
 
 	virtual void OnH_B_Chield();
-	virtual void OnH_A_Chield();
+	virtual void OnH_A_Chield() override;
 	virtual void OnH_B_Independent(bool just_before_destroy);
-	virtual void OnH_A_Independent();
+	virtual void OnH_A_Independent() override;
 
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
@@ -376,7 +376,7 @@ protected:
 public:
 	virtual bool net_Spawn(CSE_Abstract* DC);
 	virtual void net_Destroy();
-	virtual void reload(const char* section);
+	virtual void reload(const char* section) override;
 	virtual void reinit();
 	virtual bool can_kill() const;
 	virtual CInventoryItem* can_kill(CInventory* inventory) const;
@@ -385,13 +385,13 @@ public:
 	virtual bool ready_to_kill() const;
 	IC bool useful_for_NPC() const;
 #ifdef DEBUG_DRAW
-	virtual void OnRender();
+	virtual void OnRender() override;
 #endif
 
-	virtual void renderable_Render();
+	virtual void renderable_Render() override;
 
 public:
-	virtual DLL_Pure* _construct();
+	virtual DLL_Pure* _construct() override;
 	IC CPhysicsShellHolder& object() const { VERIFY(m_object); return (*m_object); }
 	ALife::_OBJECT_ID object_id() const;
 	ALife::_OBJECT_ID parent_id() const;
@@ -410,8 +410,8 @@ private:
 	Irect m_inv_rect;
 
 public:
-	virtual CInventoryItem* cast_inventory_item() { return this; }
-	virtual CAttachableItem* cast_attachable_item() { return this; }
+	virtual CInventoryItem* cast_inventory_item() override { return this; }
+	virtual CAttachableItem* cast_attachable_item() override { return this; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
 	virtual CEatableItem* cast_eatable_item() { return nullptr; }
 	virtual CWeapon* cast_weapon() { return nullptr; }
@@ -431,7 +431,7 @@ public:
 	virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }
 	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return nullptr; }
 	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
-	virtual CTorch* cast_torch() { return nullptr; }
+	virtual CTorch* cast_torch() override { return nullptr; }
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
 	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
 	virtual CBolt* cast_bolt() { return nullptr; }

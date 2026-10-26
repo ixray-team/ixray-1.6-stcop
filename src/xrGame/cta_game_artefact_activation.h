@@ -15,16 +15,16 @@ class	CtaArtefactActivation :
 {
 public:
 							CtaArtefactActivation	(CArtefact* af, u32 owner_id);
-	virtual					~CtaArtefactActivation	();
+	virtual ~CtaArtefactActivation	() override;
 
-	virtual		void		UpdateActivation		();
-	virtual		void		Load					();
-	virtual		void		Start					();
-	virtual		void		Stop					();
-	virtual		void		ChangeEffects			();
-	virtual		void		UpdateEffects			();
-	virtual		void		SpawnAnomaly			();
-	virtual		void		PhDataUpdate			(float step);
+	virtual void		UpdateActivation		() override;
+	virtual void		Load					() override;
+	virtual void		Start					() override;
+	virtual void		Stop					() override;
+	virtual void		ChangeEffects			() override;
+	virtual void		UpdateEffects			() override;
+	virtual void		SpawnAnomaly			() override;
+	virtual void		PhDataUpdate			(float step) override;
 private:
 	typedef		SArtefactActivation		inherited;
 }; // class CtaArtefactActivation

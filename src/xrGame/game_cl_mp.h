@@ -144,12 +144,12 @@ protected:
 		
 	
 	virtual void			LoadTeamData			(const shared_str&	TeamName);
-	
-	virtual	void			ChatSay					(const char*	phrase, bool bAll);
 
-	virtual	void			OnChatMessage			(NET_Packet* P);
-	virtual	void			OnWarnMessage			(NET_Packet* P);
-	virtual	void			OnRadminMessage			(u16 type, NET_Packet* P);
+	virtual void			ChatSay					(const char*	phrase, bool bAll) override;
+
+	virtual void			OnChatMessage			(NET_Packet* P) override;
+	virtual void			OnWarnMessage			(NET_Packet* P) override;
+	virtual void			OnRadminMessage			(u16 type, NET_Packet* P) override;
 
 	virtual void			UpdateMapLocations		() {};
 
@@ -186,33 +186,33 @@ protected:
 	virtual		void		LoadBonuses				();
 public:
 									game_cl_mp();
-	virtual							~game_cl_mp();
+	virtual ~game_cl_mp() override;
 
 
 	void 					OnBuySpawn				(CUIWindow* pWnd, void* p);
-	virtual		void				TranslateGameMessage	(u32 msg, NET_Packet& P);
+	virtual void				TranslateGameMessage	(u32 msg, NET_Packet& P) override;
 
-	virtual		bool				OnKeyboardPress			(int key);
+	virtual bool				OnKeyboardPress			(int key) override;
 
 	virtual		bool				CanBeReady() { return true; };
-	virtual		void				shedule_Update			(u32 dt);
+	virtual void				shedule_Update			(u32 dt) override;
 				bool				IsLocalPlayerInitialized() const;
 
 	//// VOTING
-	virtual		bool				IsVotingActive			()	{ return m_bVotingActive; };
-	virtual		void				SetVotingActive			( bool Active )	{ m_bVotingActive = Active; };
-	virtual		void				SendStartVoteMessage	(const char* args);
-	virtual		void				SendVoteYesMessage		();
-	virtual		void				SendVoteNoMessage		();
+	virtual bool				IsVotingActive			() override { return m_bVotingActive; };
+	virtual void				SetVotingActive			( bool Active ) override { m_bVotingActive = Active; };
+	virtual void				SendStartVoteMessage	(const char* args) override;
+	virtual void				SendVoteYesMessage		() override;
+	virtual void				SendVoteNoMessage		() override;
 				void				VotingBegin				();
 				void				Vote					();
 				void				OnCantVoteMsg			(const char* Text);
-	virtual		void				OnVoteStart				(NET_Packet& P);
-	virtual		void				OnVoteStop				(NET_Packet& P);
+	virtual void				OnVoteStart				(NET_Packet& P) override;
+	virtual void				OnVoteStop				(NET_Packet& P) override;
 	virtual		void				OnVoteEnd				(NET_Packet& P);
 				void				GetActiveVoting			();
 	virtual		void				OnPlayerChangeName		(NET_Packet& P);
-	virtual		void				OnPlayerVoted			(game_PlayerState* ps);
+	virtual void				OnPlayerVoted			(game_PlayerState* ps) override;
 	virtual		void				OnSpectatorSelect		();
 	virtual		void				OnSkinMenuBack			() {};
 	virtual		void				OnTeamMenuBack			() {};
@@ -233,11 +233,11 @@ public:
 	virtual		void				OnGameMenuRespond_ChangeTeam	(NET_Packet& P) {};
 	virtual		void				OnGameMenuRespond_ChangeSkin	(NET_Packet& P) {};
 	virtual		void				OnGameRoundStarted				();
-	
 
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase);	
-	virtual		void				net_import_update		(NET_Packet& P);
-	virtual		void				net_import_state		(NET_Packet& P);
+
+	virtual void				OnSwitchPhase			(u32 old_phase, u32 new_phase) override;
+	virtual void				net_import_update		(NET_Packet& P) override;
+	virtual void				net_import_state		(NET_Packet& P) override;
 	virtual		void				OnRankChanged			(u8 OldRank);
 	virtual		void				OnTeamChanged			() {};
 	virtual		void				OnMoneyChanged			() {};
@@ -253,7 +253,7 @@ public:
 	virtual		bool				Is_Rewarding_Allowed			() const { return false; };
 				
 				void				SendPlayerStarted();
-	virtual		void				OnConnected				();
+	virtual void				OnConnected				() override;
 	virtual		const char*				GetGameScore			(string32&	score_dest) {return ""; };
 
 #ifdef XR_MP_BUILD

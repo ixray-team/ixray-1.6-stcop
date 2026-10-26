@@ -109,7 +109,7 @@ protected:
 
 public:
 									game_sv_mp				();
-				virtual				~game_sv_mp				();
+	virtual ~game_sv_mp				() override;
 	void				Create					(shared_str &options) override;
 	void				OnPlayerConnect			(ClientID id_who) override;
 	void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;

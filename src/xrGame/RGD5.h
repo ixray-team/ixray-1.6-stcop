@@ -8,7 +8,7 @@ class CRGD5 final : public CGrenade
 	using inherited = CGrenade;
 public:
 	CRGD5() = default;
-	virtual ~CRGD5() = default;
+	virtual ~CRGD5() override = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

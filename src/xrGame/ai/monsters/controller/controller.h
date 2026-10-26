@@ -80,35 +80,35 @@ public:
 
 public:
 					CController			();
-	virtual			~CController		();	
+	virtual ~CController		() override;
 
-	virtual void	Load				(const char* section);
-	virtual void	reload				(const char* section);
-	virtual void	reinit				();
-	virtual void	UpdateCL			();
-	virtual void	shedule_Update		(u32 dt);
-	virtual void	Die					(CObject* who);
+	virtual void	Load				(const char* section) override;
+	virtual void	reload				(const char* section) override;
+	virtual void	reinit				() override;
+	virtual void	UpdateCL			() override;
+	virtual void	shedule_Update		(u32 dt) override;
+	virtual void	Die					(CObject* who) override;
 
-	virtual void	net_Destroy			();
-	virtual bool	net_Spawn			(CSE_Abstract *DC);
-	virtual void	net_Relcase			(CObject *O);
+	virtual void	net_Destroy			() override;
+	virtual bool	net_Spawn			(CSE_Abstract *DC) override;
+	virtual void	net_Relcase			(CObject *O) override;
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
+	virtual void	OnEvent(NET_Packet& P, u16 type) override;
 
-	virtual	void	CheckSpecParams		(u32 spec_params);
-	virtual void	InitThink			();
+	virtual void	CheckSpecParams		(u32 spec_params) override;
+	virtual void	InitThink			() override;
 
-	virtual void	create_base_controls();	
-	
-	virtual const MonsterSpace::SBoneRotation &head_orientation	() const;
+	virtual void	create_base_controls() override;
 
-	virtual void	TranslateActionToPathParams	();
+	virtual const MonsterSpace::SBoneRotation &head_orientation	() const override;
 
-	virtual bool	ability_pitch_correction () {return false;}
+	virtual void	TranslateActionToPathParams	() override;
+
+	virtual bool	ability_pitch_correction () override {return false;}
 
 	//-------------------------------------------------------------------
 
-	virtual	bool	is_relation_enemy	(const CEntityAlive *tpEntityAlive) const;
+	virtual bool	is_relation_enemy	(const CEntityAlive *tpEntityAlive) const override;
 	xr_vector<shared_str>				m_friend_community_overrides;
 	void								load_friend_community_overrides	(const char* section);
 	bool								is_community_friend_overrides	(const CEntityAlive *tpEntityAlive) const;
@@ -165,21 +165,21 @@ public:
 
 	void				set_mental_state			(EMentalState state);
 	virtual void		HitEntity					(const CEntity *pEntity, float fDamage, 
-													 float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks);
+								              float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks) override;
 
 public:
-	virtual bool		use_center_to_aim			() const {return true;}
+	virtual bool		use_center_to_aim			() const override {return true;}
 
 	SAnimationTripleData anim_triple_control;
 
-	virtual	char*		get_monster_class_name		() { return (char*) "controller"; }
+	virtual char*		get_monster_class_name		() override { return (char*) "controller"; }
 
 private:
 	float				m_stamina_hit;
 
 
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 
 #endif
 
@@ -191,6 +191,6 @@ private:
 #endif
 
 public:
-	virtual bool					run_home_point_when_enemy_inaccessible () const { return false; }
+	virtual bool					run_home_point_when_enemy_inaccessible () const override { return false; }
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -32,7 +32,7 @@ public:
 	xr_vector<PowerCellData> m_power_cells;
 	
 	PowerBank();
-	virtual ~PowerBank();
+	virtual ~PowerBank() override;
 
 	virtual void Load(const char* section) override;
 	virtual void save(NET_Packet& output_packet) override;

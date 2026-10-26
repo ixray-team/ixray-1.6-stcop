@@ -35,59 +35,59 @@ private:
 
 public:
 	CAI_Trader		();
-	virtual				~CAI_Trader		();
+	virtual ~CAI_Trader		() override;
 
-	virtual CAttachmentOwner*			cast_attachment_owner	()						{return this;}
-	virtual CInventoryOwner*			cast_inventory_owner	()						{return this;}
-	virtual CEntityAlive*				cast_entity_alive		()						{return this;}
-	virtual CEntity*					cast_entity				()						{return this;}
-	virtual CGameObject*				cast_game_object		()						{return this;}
-	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()					{return this;}
-	virtual CScriptEntity*				cast_script_entity		()						{return this;}
-	virtual CAI_Trader*					cast_trader				()						{ return this; }
-	virtual CPhraseDialogManager*		cast_phrase_dialog_manager()					{ return this; }
-	virtual CAI_PhraseDialogManager*		cast_ai_phrase_dialog_manager()				{ return this; }
+	virtual CAttachmentOwner*			cast_attachment_owner	() override {return this;}
+	virtual CInventoryOwner*			cast_inventory_owner	() override {return this;}
+	virtual CEntityAlive*				cast_entity_alive		() override {return this;}
+	virtual CEntity*					cast_entity				() override {return this;}
+	virtual CGameObject*				cast_game_object		() override {return this;}
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder	() override {return this;}
+	virtual CScriptEntity*				cast_script_entity		() override {return this;}
+	virtual CAI_Trader*					cast_trader				() override { return this; }
+	virtual CPhraseDialogManager*		cast_phrase_dialog_manager() override { return this; }
+	virtual CAI_PhraseDialogManager*		cast_ai_phrase_dialog_manager() override { return this; }
 
-	virtual DLL_Pure	*_construct		();
-	virtual void		Load			( const char* section );
-	virtual bool		net_Spawn		( CSE_Abstract* DC );
-	virtual void		net_Export		(NET_Packet& P);
-	virtual void		net_Import		(NET_Packet& P);
-	virtual	void		net_Destroy		();
+	virtual DLL_Pure	*_construct		() override;
+	virtual void		Load			( const char* section ) override;
+	virtual bool		net_Spawn		( CSE_Abstract* DC ) override;
+	virtual void		net_Export		(NET_Packet& P) override;
+	virtual void		net_Import		(NET_Packet& P) override;
+	virtual void		net_Destroy		() override;
 
 	virtual void		save			(NET_Packet &output_packet) override;
 	virtual void		load			(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 	virtual bool		net_SaveRelevant()		override					{return inherited::net_SaveRelevant();}
 
-	virtual void		Die				(CObject* who);
+	virtual void		Die				(CObject* who) override;
 	virtual void		Think			();
-	virtual void		HitSignal		(float /**P/**/, Fvector &/**local_dir/**/,	CObject* /**who/**/, s16 /**element/**/){};
-	virtual void		HitImpulse		(float /**P/**/, Fvector &/**vWorldDir/**/, 	Fvector& /**vLocalDir/**/){};
-	virtual	void		Hit				(SHit* pHDS){inherited::Hit(pHDS);}
-	virtual	void		UpdateCL		();
+	virtual void		HitSignal		(float /**P/**/, Fvector &/**local_dir/**/,	CObject* /**who/**/, s16 /**element/**/) override {};
+	virtual void		HitImpulse		(float /**P/**/, Fvector &/**vWorldDir/**/, 	Fvector& /**vLocalDir/**/) override {};
+	virtual void		Hit				(SHit* pHDS) override {inherited::Hit(pHDS);}
+	virtual void		UpdateCL		() override;
 
-	virtual void		g_fireParams			(const CHudItem* pHudItem, Fvector& P, Fvector& D) final override;
-	virtual void		g_WeaponBones			(u16 &L, u16 &R1, u16 &R2) final override;
-	virtual	float		ffGetFov				()	const {return 150.f;}
-	virtual	float		ffGetRange				()	const {return 30.f;}
-	virtual	void		OnEvent					(NET_Packet& P, u16 type);
+	virtual void		g_fireParams			(const CHudItem* pHudItem, Fvector& P, Fvector& D) final;
+	virtual void		g_WeaponBones			(u16 &L, u16 &R1, u16 &R2) final;
+	virtual float		ffGetFov				()	const override {return 150.f;}
+	virtual float		ffGetRange				()	const override {return 30.f;}
+	virtual void		OnEvent					(NET_Packet& P, u16 type) override;
 	virtual	void		feel_touch_new			(CObject* O);
 	virtual	void		DropItemSendMessage		(CObject *O);
-	virtual void		shedule_Update			(u32 dt);
+	virtual void		shedule_Update			(u32 dt) override;
 
-	virtual bool		UsedAI_Locations		();
+	virtual bool		UsedAI_Locations		() override;
 
 	virtual bool			CanPutInSlot(PIItem item, u32 slot) override { return (slot == PDA_SLOT); }
 	///////////////////////////////////////////////////////////////////////
-	virtual u16					PHGetSyncItemsNumber	()			{return inherited ::PHGetSyncItemsNumber();}
-	virtual CPHSynchronize*		PHGetSyncItem			(u16 item)	{return inherited ::PHGetSyncItem(item);}
-	virtual void				PHUnFreeze				()			{return inherited ::PHUnFreeze();}
-	virtual void				PHFreeze				()			{return inherited ::PHFreeze();}
+	virtual u16					PHGetSyncItemsNumber	() override {return inherited ::PHGetSyncItemsNumber();}
+	virtual CPHSynchronize*		PHGetSyncItem			(u16 item) override {return inherited ::PHGetSyncItem(item);}
+	virtual void				PHUnFreeze				() override {return inherited ::PHUnFreeze();}
+	virtual void				PHFreeze				() override {return inherited ::PHFreeze();}
 	///////////////////////////////////////////////////////////////////////
 
-	virtual void			reinit					();
-	virtual void			reload					(const char* section);
+	virtual void			reinit					() override;
+	virtual void			reload					(const char* section) override;
 
 static	void	_BCL		BoneCallback			(CBoneInstance *B);
 
@@ -97,16 +97,16 @@ static	void	_BCL		BoneCallback			(CBoneInstance *B);
 	void			OnStopTrade				();
 
 	//игровое имя 
-	virtual const char*			Name					() const {return CInventoryOwner::Name();}
+	virtual const char*			Name					() const override {return CInventoryOwner::Name();}
 
-	virtual	bool			can_attach				(const CInventoryItem *inventory_item) const;
-	virtual bool			use_bolts				() const;
-	virtual	void			spawn_supplies			();
+	virtual bool			can_attach				(const CInventoryItem *inventory_item) const override;
+	virtual bool			use_bolts				() const override;
+	virtual void			spawn_supplies			() override;
 
 
-	virtual	bool			bfAssignSound			(CScriptEntityAction *tpEntityAction);
+	virtual bool			bfAssignSound			(CScriptEntityAction *tpEntityAction) override;
 
-	virtual	ALife::ERelationType tfGetRelationType	(const CEntityAlive *tpEntityAlive) const;
+	virtual ALife::ERelationType tfGetRelationType	(const CEntityAlive *tpEntityAlive) const override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//генерируемые задания
@@ -131,11 +131,12 @@ public:
 		VERIFY				(m_sound_player);
 		return				(*m_sound_player);
 	}
-	virtual bool			unlimited_ammo			()	{return false;};
+
+	virtual bool			unlimited_ammo			() override {return false;};
 	virtual bool			infinite_fire() override { return false; }
-	virtual bool			natural_weapon			() const {return false;}
-	virtual bool			natural_detector		() const {return false;}
-	virtual bool			AllowItemToTrade 		(CInventoryItem const * item, const SInvItemPlace& place) const;
+	virtual bool			natural_weapon			() const override {return false;}
+	virtual bool			natural_detector		() const override {return false;}
+	virtual bool			AllowItemToTrade 		(CInventoryItem const * item, const SInvItemPlace& place) const override;
 
 			void			dialog_sound_start		(const char* phrase);
 			void			dialog_sound_stop		();

@@ -30,21 +30,21 @@ private:
 public:
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 						CUIEncyclopediaWnd			();
-	virtual				~CUIEncyclopediaWnd			();
+	virtual ~CUIEncyclopediaWnd			() override;
 
 	virtual void		Init						();
-	virtual void		Show						(bool status);
-	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void* pData = nullptr);
-	virtual void		Draw						();
-	virtual bool		OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
-	virtual bool		OnGamepadKeyHold			(int id);
+	virtual void		Show						(bool status) override;
+	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void* pData = nullptr) override;
+	virtual void		Draw						() override;
+	virtual bool		OnGamepadKeyAction			(int id, EUIMessages gamepad_action) override;
+	virtual bool		OnGamepadKeyHold			(int id) override;
 
 	void				AddArticle					(shared_str, bool bReaded);
 	void				DeleteArticles				();
 	bool				HasArticle					(shared_str);
 
 	void				ReloadArticles				();
-	virtual void		Reset						();
+	virtual void		Reset						() override;
 protected:
 	u32					prevArticlesCount;
 	// Элементы графического оформления
@@ -72,5 +72,5 @@ protected:
 
 	void				OnTreeViewItemClicked(CUITreeViewItem* pTVItem);
 	void				SetCurrentArtice(CUITreeViewItem *pTVItem);
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

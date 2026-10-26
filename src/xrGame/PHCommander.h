@@ -33,16 +33,18 @@ class CPHOnesCondition:
 	bool b_called;
 public:
 							CPHOnesCondition				(){b_called=false;}
-	virtual bool 			is_true							(){b_called =true;return true;}
-	virtual bool 			obsolete						()const{return b_called;}
+	virtual bool 			is_true							() override
+	{b_called =true;return true;}
+
+	virtual bool 			obsolete						()const override {return b_called;}
 };
 
 class CPHDummiAction:
 	public CPHAction
 {
 public:
-	virtual void 			run								(){;}
-	virtual bool 			obsolete						()const	{return false;}
+	virtual void 			run								() override {;}
+	virtual bool 			obsolete						()const override {return false;}
 };
 
 class CPHCall
@@ -77,7 +79,7 @@ class CPHCommander:
 	void				flushDeferredDeletes		();
 
 public:
-						~CPHCommander				()																;
+	virtual ~CPHCommander				() override;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool				add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
@@ -94,6 +96,6 @@ public:
 	void				clear						()																;
 
 private:
-	virtual	void		update_step			()						{update();}
-	virtual	void		phys_shell_relcase	(CPhysicsShell* sh)		;
+	virtual void		update_step			() override {update();}
+	virtual void		phys_shell_relcase	(CPhysicsShell* sh) override;
 };

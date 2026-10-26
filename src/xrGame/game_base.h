@@ -173,7 +173,7 @@ protected:
 
 public:
 									game_GameState			();
-	virtual							~game_GameState			()								{}
+	virtual ~game_GameState			() override {}
 	IC			EGameIDs const&		Type					() const						{return m_type;};
 				u16					Phase					() const						{return m_phase;};
 				s32					Round					() const						{return m_round;};

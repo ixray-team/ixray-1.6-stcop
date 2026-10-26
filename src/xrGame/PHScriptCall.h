@@ -20,11 +20,11 @@ class CPHScriptCondition:
 
 public:
 							CPHScriptCondition				(const luabind::functor<bool> &func)	;
-	virtual					~CPHScriptCondition				()										;
-	virtual bool 			is_true							()										;
-	virtual bool 			obsolete						()								const	;
-	virtual bool			compare							(const	CPHReqComparerV* v)		const	{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptCondition*v)	const   { return *m_lua_function == *(v->m_lua_function); }
+	virtual ~CPHScriptCondition				() override;
+	virtual bool 			is_true							() override;
+	virtual bool 			obsolete						()								const override;
+	virtual bool			compare							(const	CPHReqComparerV* v)		const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptCondition*v)	const override { return *m_lua_function == *(v->m_lua_function); }
 
 };
 
@@ -37,11 +37,11 @@ class CPHScriptAction :
 public:
 							CPHScriptAction					(const luabind::functor<void> &func)	;
 							CPHScriptAction					(const CPHScriptAction &action)			;
-	virtual					~CPHScriptAction				()										;
-	virtual void 			run								()										;
-	virtual bool 			obsolete						()								const	;
-	virtual bool			compare							(const	CPHReqComparerV* v)		const	{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptAction* v)		const { return *m_lua_function == *(v->m_lua_function); }
+	virtual ~CPHScriptAction				() override;
+	virtual void 			run								() override;
+	virtual bool 			obsolete						()								const override;
+	virtual bool			compare							(const	CPHReqComparerV* v)		const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptAction* v)		const override { return *m_lua_function == *(v->m_lua_function); }
 };
 
 
@@ -54,12 +54,12 @@ class CPHScriptObjectCondition:
 public:
 							CPHScriptObjectCondition		(const luabind::object &lua_object, const char* method)	;
 							CPHScriptObjectCondition		(const CPHScriptObjectCondition &object)			;
-	virtual					~CPHScriptObjectCondition		()													;
-	virtual bool 			is_true							()													;
-	virtual bool 			obsolete						()										const		;
+	virtual ~CPHScriptObjectCondition		() override;
+	virtual bool 			is_true							() override;
+	virtual bool 			obsolete						()										const override;
 	virtual bool			compare							(const	luabind::object* v)				const		{return *m_lua_object==*v;}
-	virtual bool			compare							(const	CPHReqComparerV* v)				const		{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptObjectCondition* v)	const		;
+	virtual bool			compare							(const	CPHReqComparerV* v)				const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptObjectCondition* v)	const override;
 };
 
 class CPHScriptObjectAction :
@@ -72,12 +72,12 @@ class CPHScriptObjectAction :
 public:
 							CPHScriptObjectAction			(const luabind::object &lua_object, const char* method)	;
 							CPHScriptObjectAction			(const CPHScriptObjectAction &object)				;
-	virtual					~CPHScriptObjectAction			()													;
-	virtual void 			run								()													;
-	virtual bool 			obsolete						()										const		;
+	virtual ~CPHScriptObjectAction			() override;
+	virtual void 			run								() override;
+	virtual bool 			obsolete						()										const override;
 	virtual bool			compare							(const	luabind::object* v)				const		{return *m_lua_object==*v;}
-	virtual bool			compare							(const	CPHReqComparerV* v)				const		{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptObjectAction* v)		const		;
+	virtual bool			compare							(const	CPHReqComparerV* v)				const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptObjectAction* v)		const override;
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,12 +88,12 @@ class CPHScriptObjectConditionN:
 	CScriptCallbackEx<bool>			m_callback;
 public:
 	CPHScriptObjectConditionN			( const luabind::object &object,const luabind::functor<bool> &functor)	;
-	virtual					~CPHScriptObjectConditionN		()													;
-	virtual bool 			is_true							()													;
-	virtual bool 			obsolete						()										const		;
+	virtual ~CPHScriptObjectConditionN		() override;
+	virtual bool 			is_true							() override;
+	virtual bool 			obsolete						()										const override;
 	virtual bool			compare							(const	luabind::object* v)				const		{return m_callback==(*v);}
-	virtual bool			compare							(const	CPHReqComparerV* v)				const		{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptObjectConditionN* v)	const		{return m_callback==v->m_callback;}
+	virtual bool			compare							(const	CPHReqComparerV* v)				const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptObjectConditionN* v)	const override {return m_callback==v->m_callback;}
 };
 
 class CPHScriptObjectActionN :
@@ -104,12 +104,12 @@ class CPHScriptObjectActionN :
 	CScriptCallbackEx<void>			m_callback;
 public:
 	CPHScriptObjectActionN			( const luabind::object &object,const luabind::functor<void> &functor);
-	virtual					~CPHScriptObjectActionN			()													;
-	virtual void 			run								()													;
-	virtual bool 			obsolete						()									const			;
+	virtual ~CPHScriptObjectActionN			() override;
+	virtual void 			run								() override;
+	virtual bool 			obsolete						()									const override;
 	virtual bool			compare							(const	luabind::object* v)			const			{return m_callback==*v;}
-	virtual bool			compare							(const	CPHReqComparerV* v)			const			{return v->compare(this);}
-	virtual bool			compare							(const	CPHScriptObjectActionN* v)	const			{return m_callback==v->m_callback;}
+	virtual bool			compare							(const	CPHReqComparerV* v)			const override {return v->compare(this);}
+	virtual bool			compare							(const	CPHScriptObjectActionN* v)	const override {return m_callback==v->m_callback;}
 };
 
 class CPHScriptGameObjectCondition :
@@ -124,10 +124,12 @@ public:
 		m_obj=gobj;
 		b_obsolete=false;
 	}
-	virtual bool 			is_true							()											{b_obsolete=CPHScriptObjectConditionN::is_true();return b_obsolete;}
+
+	virtual bool 			is_true							() override
+	{b_obsolete=CPHScriptObjectConditionN::is_true();return b_obsolete;}
 	virtual bool			compare							(const	CObject* v)			const			{return m_obj->ID()==v->ID();}
-	virtual bool			compare							(const	CPHReqComparerV* v)	const			{return v->compare(this);}
-	virtual bool			obsolete						()							const			{return b_obsolete;}
+	virtual bool			compare							(const	CPHReqComparerV* v)	const override {return v->compare(this);}
+	virtual bool			obsolete						()							const override {return b_obsolete;}
 };
 
 class CPHScriptGameObjectAction :
@@ -140,7 +142,8 @@ public:
 	{
 		m_obj=gobj;
 	}
-	virtual bool			compare							(const	CPHReqComparerV* v)	const			{return v->compare(this);}
+
+	virtual bool			compare							(const	CPHReqComparerV* v)	const override {return v->compare(this);}
 	virtual bool			compare							(const	CObject* v)			const			{return m_obj->ID()==v->ID();}
 };
 
@@ -153,10 +156,10 @@ public:
 								CPHSriptReqObjComparer	(const luabind::object & lua_object)			{m_lua_object= new luabind::object(lua_object);}
 								CPHSriptReqObjComparer	(const CPHSriptReqObjComparer &object)			{m_lua_object= new luabind::object(*object.m_lua_object);}
 		virtual					~CPHSriptReqObjComparer	()												{xr_delete(m_lua_object);}
-		virtual		bool		compare					(const	CPHScriptObjectCondition* v)	const	{return v->compare(m_lua_object);}
-		virtual		bool		compare					(const	CPHScriptObjectAction* v)		const	{return v->compare(m_lua_object);}
-		virtual		bool		compare					(const	CPHScriptObjectConditionN* v)	const	{return v->compare(m_lua_object);}
-		virtual		bool		compare					(const	CPHScriptObjectActionN* v)		const	{return v->compare(m_lua_object);}
+	virtual bool		compare					(const	CPHScriptObjectCondition* v)	const override {return v->compare(m_lua_object);}
+	virtual bool		compare					(const	CPHScriptObjectAction* v)		const override {return v->compare(m_lua_object);}
+	virtual bool		compare					(const	CPHScriptObjectConditionN* v)	const override {return v->compare(m_lua_object);}
+	virtual bool		compare					(const	CPHScriptObjectActionN* v)		const override {return v->compare(m_lua_object);}
 };
 
 
@@ -167,6 +170,6 @@ class CPHSriptReqGObjComparer :
 
 public:
 	CPHSriptReqGObjComparer	(CObject* object)			{m_object= object;}
-	virtual		bool		compare					(const	CPHScriptGameObjectAction* v)	const	{return v->compare(m_object);}
-	virtual		bool		compare					(const	CPHScriptGameObjectCondition* v)const	{return v->compare(m_object);}
+	virtual bool		compare					(const	CPHScriptGameObjectAction* v)	const override {return v->compare(m_object);}
+	virtual bool		compare					(const	CPHScriptGameObjectCondition* v)const override {return v->compare(m_object);}
 };

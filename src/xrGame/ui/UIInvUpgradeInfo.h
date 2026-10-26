@@ -29,16 +29,16 @@ private:
 
 public:
 	UIInvUpgradeInfo();
-	virtual ~UIInvUpgradeInfo() = default;
+	virtual ~UIInvUpgradeInfo() override = default;
 
 	void init_from_xml(const char* xml_name);
 	bool init_upgrade(Upgrade_type* upgr, CInventoryItem* inv_item);
 	bool is_upgrade() { return (m_upgrade != NULL); }
 	IC Upgrade_type const* get_upgrade() const { return m_upgrade; }
 
-	virtual void Draw();
+	virtual void Draw() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	Upgrade_type* m_upgrade = nullptr;

@@ -12,8 +12,8 @@ protected:
 
 	void					SetBoneCallbacks	();
 	void					ResetBoneCallbacks	();
-	virtual	void			FireStart			();
-	virtual	void			FireEnd				();
+	virtual void			FireStart			() override;
+	virtual void			FireEnd				() override;
 	virtual	void			UpdateFire			();
 	virtual	void			OnShot				();
 	void					UpdateBarrelDir		();
@@ -24,7 +24,7 @@ protected:
 	bool					m_bActive;
 	bool					m_bAutoFire;
 	float					m_weapon_h;
-	virtual bool			IsHudModeNow		(){return false;};
+	virtual bool			IsHudModeNow		() override {return false;};
 
 public:
 	enum{
@@ -38,7 +38,7 @@ public:
 	HUD_SOUND_COLLECTION_LAYERED SoundsLayered;
 
 							CCarWeapon			(CPhysicsShellHolder* obj);
-				virtual		~CCarWeapon			();
+	virtual ~CCarWeapon			() override;
 	static void _BCL		BoneCallbackX		(CBoneInstance *B);
 	static void	_BCL		BoneCallbackY		(CBoneInstance *B);
 				void		Load				(const char* section);

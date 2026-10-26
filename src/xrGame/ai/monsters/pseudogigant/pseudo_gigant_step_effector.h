@@ -11,5 +11,5 @@ class CPseudogigantStepEffector : public CEffectorCam {
 
 public:
 					CPseudogigantStepEffector	(float time, float amp, float periods, float power);
-	virtual bool	ProcessCam					(SCamEffectorInfo& info);
+	virtual bool	ProcessCam					(SCamEffectorInfo& info) override;
 };

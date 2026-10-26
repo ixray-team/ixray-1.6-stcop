@@ -73,7 +73,7 @@ protected:
 public:
 	static CUIDragItem*		m_drag_item;
 							CUIDragDropListEx	();
-	virtual					~CUIDragDropListEx	();
+	virtual ~CUIDragDropListEx	() override;
 				void		InitDragDropList		(Fvector2 pos, Fvector2 size);
 
 	typedef					xr_delegate<bool(CUICellItem*)>			DRAG_CELL_EVENT;
@@ -162,10 +162,10 @@ public:
 
 public:
 	//UIWindow overriding
-	virtual		void		Draw				();
-	virtual		void		Update				();
-	virtual		bool		OnMouseAction		(float x, float y, EUIMessages mouse_action);
-	virtual		void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void		Draw				() override;
+	virtual void		Update				() override;
+	virtual bool		OnMouseAction		(float x, float y, EUIMessages mouse_action) override;
+	virtual void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 
 				void		OnDragEvent			(CUIDragItem* drag_item, bool b_receive);
 				
@@ -176,7 +176,7 @@ public:
 				void		SetControllerFocusIn(Irect selectorPos);
 				void		SetControllerFocusOut();
 				void		UpdateSelector		();
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 	virtual CUIOutfitDragDropList* ui_cast_outfit_dragdrop_list() { return nullptr; }
 };
 
@@ -211,7 +211,7 @@ protected:
 
 public:							
 								CUICellContainer	(CUIDragDropListEx* parent);
-	virtual						~CUICellContainer	();
+	virtual ~CUICellContainer	() override;
 	
 	// ovorontsov: beware cellcontainer could have no cells at all
 				bool			HasCells			() const { return m_cells.size() > 0; }
@@ -226,10 +226,10 @@ public:
 				Ivector2		PickCell			(const Fvector2& abs_pos);
 				bool			ValidCell			(const Ivector2& pos) const;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
-	virtual		void			Draw				();
+	virtual void			Draw				() override;
 
 				void			SetCellsCapacity	(const Ivector2& c);
 	IC const	Ivector2&		CellSize			()								{return m_cellSize;};	

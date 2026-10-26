@@ -22,15 +22,15 @@ private:
 
 public:
 					UIWarState	() = default;
-	virtual			~UIWarState	() = default;
+	virtual ~UIWarState	() override = default;
 
 			void	InitXML			( CUIXml& xml, const char* att_name, CUIWindow* parent );
 			void	ClearInfo		();
 			bool	UpdateInfo		( const char* icon, const char* hint_text );
-	virtual void	OnFocusReceive	();
-			void	ToggleHint		();		
+	virtual void	OnFocusReceive	() override;
+	virtual void	ToggleHint		();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	CUIFrameWindow* m_frame_selected = nullptr;
 

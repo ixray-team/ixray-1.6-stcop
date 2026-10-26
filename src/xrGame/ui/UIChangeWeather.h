@@ -14,13 +14,13 @@ public:
 					CUIChangeWeather	();
 			void	InitChangeWeather	(CUIXml& xml_doc);
 
-	virtual bool	OnKeyboardAction			(int dik, EUIMessages keyboard_action);
-	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = 0);
+	virtual bool	OnKeyboardAction			(int dik, EUIMessages keyboard_action) override;
+	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = 0) override;
 
 	virtual void	OnBtn				(int i);
 	void			OnBtnCancel			();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	void			ParseWeather		();
@@ -44,7 +44,7 @@ class CUIChangeGameType final :public CUIChangeWeather
 {
 public:
 	void			InitChangeGameType	(CUIXml& xml_doc);
-	virtual void	OnBtn				(int i);
+	virtual void	OnBtn				(int i) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

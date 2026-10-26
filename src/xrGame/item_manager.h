@@ -25,10 +25,10 @@ private:
 public:
 						CItemManager	(CCreature *object);
 	virtual bool		useful			(const CGameObject *object) const;
-	virtual bool		is_useful		(const CGameObject *object) const;
+	bool		is_useful		(const CGameObject *object) const override;
 	virtual	float		evaluate		(const CGameObject *object) const;
-	virtual	float		do_evaluate		(const CGameObject *object) const;
-	virtual void		update			();
+	float		do_evaluate		(const CGameObject *object) const override;
+	void		update			() override;
 			void		remove_links	(CObject *object);
 	virtual	void		on_restrictions_change	();
 };

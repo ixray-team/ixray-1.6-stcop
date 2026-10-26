@@ -46,10 +46,10 @@ class CServerList final : public CUIWindow
 {
 public:
 					CServerList			();
-	virtual			~CServerList		();
+	virtual ~CServerList		() override;
 
-	virtual void 	Update				();
-	virtual void 	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void 	Update				() override;
+	virtual void 	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 			void 	InitFromXml			(CUIXml& xml_doc, const char* path);
 			void 	InitHeader			();
 			void 	InitSeparator		();

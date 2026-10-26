@@ -39,15 +39,15 @@ class CControlPathBuilder :
 
 public:
 					CControlPathBuilder		(CCreature *monster);
-	virtual			~CControlPathBuilder	();
+	virtual ~CControlPathBuilder	() override;
 
-	virtual void	load					(const char* section);
-	virtual void	reinit					();
-	virtual void	update_schedule			();
+	virtual void	load					(const char* section) override;
+	virtual void	reinit					() override;
+	virtual void	update_schedule			() override;
 
-	virtual	void	on_travel_point_change	(const u32 &previous_travel_point_index);
-	virtual void	on_build_path			();
-	virtual	bool	can_use_distributed_computations () const override;
+	virtual void	on_travel_point_change	(const u32 &previous_travel_point_index) override;
+	virtual void	on_build_path			() override;
+	virtual bool	can_use_distributed_computations () const override;
 
 			// services
 			bool	is_path_end				(float dist_to_end);

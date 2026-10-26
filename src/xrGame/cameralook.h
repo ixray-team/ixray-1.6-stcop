@@ -12,18 +12,18 @@ protected:
 
 public:
 					CCameraLook		( CObject* p, u32 flags=0);
-	virtual			~CCameraLook	( );
-	virtual void	Load			(const char* section);
-	virtual void	Move			( int cmd, float val=0, float factor=1.0f );
+	virtual ~CCameraLook	( ) override;
+	virtual void	Load			(const char* section) override;
+	virtual void	Move			( int cmd, float val=0, float factor=1.0f ) override;
 
-	virtual	void	OnActivate		( CCameraBase* old_cam );
-	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos );
+	virtual void	OnActivate		( CCameraBase* old_cam ) override;
+	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos ) override;
 
-	virtual float	GetWorldYaw		( )	{ return -yaw;	};
-	virtual float	GetWorldPitch	( )	{ return pitch; };
+	virtual float	GetWorldYaw		( ) override { return -yaw;	};
+	virtual float	GetWorldPitch	( ) override { return pitch; };
 	virtual float	GetDist		( )	{ return prev_d;	};	
-	void save(NET_Packet& output_packet) override;
-	void load(IReader& input_packet) override;
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
 protected:
@@ -42,10 +42,10 @@ public:
 
 	CCameraLook2(CObject* p, u32 flags = 0) : CCameraLook(p, flags) {};
 
-	virtual			~CCameraLook2	(){}
-	virtual	void	OnActivate		( CCameraBase* old_cam );
-	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos );
-	virtual void	Load			(const char* section);
+	virtual ~CCameraLook2	() override {}
+	virtual void	OnActivate		( CCameraBase* old_cam ) override;
+	virtual void	Update			( Fvector& point, Fvector& noise_dangle, bool force_update_pos ) override;
+	virtual void	Load			(const char* section) override;
 protected:
 	void	UpdateDistance(Fvector& pivot, Fvector& correction);
 };
@@ -56,12 +56,12 @@ class CCameraFixedLook : public CCameraLook
 	using inherited = CCameraLook;
 public:
 					CCameraFixedLook(CObject* p, u32 flags=0) : CCameraLook(p, flags) {};
-	virtual			~CCameraFixedLook() {};
-	virtual void	Load			(const char* section);
-	virtual void	Move			(int cmd, float val=0, float factor=1.0f);
-	virtual	void	OnActivate		(CCameraBase* old_cam);
-	virtual void	Update			(Fvector& point, Fvector& noise_dangle, bool force_update_pos );
-	virtual void	Set				(float Y, float P, float R);
+	virtual ~CCameraFixedLook() override {};
+	virtual void	Load			(const char* section) override;
+	virtual void	Move			(int cmd, float val=0, float factor=1.0f) override;
+	virtual void	OnActivate		(CCameraBase* old_cam) override;
+	virtual void	Update			(Fvector& point, Fvector& noise_dangle, bool force_update_pos ) override;
+	virtual void	Set				(float Y, float P, float R) override;
 private:
 	Fquaternion		m_final_dir;
 	Fquaternion		m_current_dir;

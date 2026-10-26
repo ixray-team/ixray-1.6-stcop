@@ -7,11 +7,11 @@ class CStateChimeraThreatenSteal : public CStateMonsterMoveToPointEx<_Object> {
 
 public:
 	IC					CStateChimeraThreatenSteal	(_Object *obj) : inherited(obj){}
-	virtual	void		initialize					();	
-	virtual void		finalize					();
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual bool		check_start_conditions		();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
+	virtual void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual bool		check_start_conditions		() override;
 };
 
 #include "chimera_state_threaten_steal_inline.h"

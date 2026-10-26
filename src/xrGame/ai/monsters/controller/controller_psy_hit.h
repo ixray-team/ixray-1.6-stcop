@@ -37,14 +37,14 @@ class CControllerPsyHit : public CControl_ComCustom<>
 	u32 m_time_last_tube;
 
 public:
-	virtual void load(const char* section);
-	virtual void reinit();
-	virtual void update_frame();
-	virtual bool check_start_conditions();
-	virtual void activate();
-	virtual void deactivate();
+	virtual void load(const char* section) override;
+	virtual void reinit() override;
+	virtual void update_frame() override;
+	virtual bool check_start_conditions() override;
+	virtual void activate() override;
+	virtual void deactivate() override;
 
-	virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*);
+	virtual void on_event(ControlCom::EEventType, ControlCom::IEventData*) override;
 
 	void on_death();
 	bool tube_ready() const;

@@ -13,14 +13,14 @@ class	CBloodsuckerStateAttack : public CStateMonsterAttack<_Object> {
 
 public:
 					CBloodsuckerStateAttack		(_Object *obj);
-	virtual			~CBloodsuckerStateAttack	();
+	virtual ~CBloodsuckerStateAttack	() override;
 
-	virtual	void	initialize					();
-	virtual	void	execute						();
-	virtual	void	finalize					();
-	virtual	void	critical_finalize			();
-	
-	virtual void	setup_substates				();
+	virtual void	initialize					() override;
+	virtual void	execute						() override;
+	virtual void	finalize					() override;
+	virtual void	critical_finalize			() override;
+
+	virtual void	setup_substates				() override;
 private:
 			bool	check_hiding				();
 			bool	check_vampire				();
@@ -45,12 +45,12 @@ protected:
 
 public:
 	CStateMonsterBackstubEnemy	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateMonsterBackstubEnemy	() = default;
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual bool 		check_start_conditions	    ();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object) { inherited::remove_links(object);}
+	virtual ~CStateMonsterBackstubEnemy	() override = default;
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual bool 		check_start_conditions	    () override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object) override { inherited::remove_links(object);}
 };
 
 #include "bloodsucker_attack_state_inline.h"

@@ -93,7 +93,7 @@ protected:
 template<class T>
 class CControl_ComControlledStorage : public CControl_ComControlled {
 public:
-	virtual	ControlCom::IComData *data		()	{return &m_data;}
+	virtual ControlCom::IComData *data		() override {return &m_data;}
 protected:
 	T										m_data;
 };
@@ -106,8 +106,9 @@ class CControl_ComPure :
 	public CControl_ComControlledStorage<T>
 {
 public:
-	virtual CControl_ComControlled	*ced	() {return this;}
-	virtual	void					reinit	() 
+	virtual CControl_ComControlled	*ced	() override {return this;}
+
+	virtual void					reinit	() override
 	{
 		CControl_Com::reinit						();
 		CControl_ComControlledStorage<T>::reinit	();
@@ -121,8 +122,9 @@ class CControl_ComBase :
 	public CControl_ComControlling 
 {
 public:
-	virtual CControl_ComControlling *cing	() {return this;}
-	virtual	void					reinit	() 
+	virtual CControl_ComControlling *cing	() override {return this;}
+
+	virtual void					reinit	() override
 	{
 		CControl_Com::reinit			();
 		CControl_ComControlling::reinit	();
@@ -138,15 +140,16 @@ class CControl_ComCustom :
 	public CControl_ComControlling
 {
 public:
-	virtual CControl_ComControlled	*ced	() {return this;}
-	virtual CControl_ComControlling *cing	() {return this;}
-	virtual	void					reinit	() 
+	virtual CControl_ComControlled	*ced	() override {return this;}
+	virtual CControl_ComControlling *cing	() override {return this;}
+
+	virtual void					reinit	() override
 	{
 		CControl_Com::reinit						();
 		CControl_ComControlledStorage<T>::reinit	();
 		CControl_ComControlling::reinit				();
 	}
 
-	virtual bool check_start_conditions		() {return false;}
+	virtual bool check_start_conditions		() override {return false;}
 };
 

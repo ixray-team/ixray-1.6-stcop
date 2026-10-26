@@ -29,17 +29,17 @@ class CFlare final : public CHudItemObject
 public:
 
 	CFlare() = default;
-	virtual ~CFlare() = default;
+	virtual ~CFlare() override = default;
 
-	virtual void				UpdateCL						();
-	virtual void				Load							(const char* section);
-	virtual bool				net_Spawn						(CSE_Abstract* DC);
-	virtual void				net_Destroy						();
+	virtual void				UpdateCL						() override;
+	virtual void				Load							(const char* section) override;
+	virtual bool				net_Spawn						(CSE_Abstract* DC) override;
+	virtual void				net_Destroy						() override;
 
-	virtual void				OnStateSwitch					(u8 S);
-	virtual void				OnAnimationEnd					(u8 state);
+	virtual void				OnStateSwitch					(u8 S) override;
+	virtual void				OnAnimationEnd					(u8 state) override;
 
-	virtual	void				UpdateXForm						();
+	virtual void				UpdateXForm						() override;
 
 	void						ActivateFlare					();
 	void						DropFlare						();

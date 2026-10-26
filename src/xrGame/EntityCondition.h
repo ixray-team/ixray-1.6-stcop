@@ -111,7 +111,7 @@ private:
 
 public:
 							CEntityCondition		(CEntityAlive *object);
-	virtual					~CEntityCondition		();
+	virtual ~CEntityCondition		() override;
 
 	virtual void			LoadCondition			(const char* section);
 	virtual void			LoadTwoHitsDeathParams	(const char* section);

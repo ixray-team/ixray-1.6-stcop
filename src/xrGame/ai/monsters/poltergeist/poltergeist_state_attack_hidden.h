@@ -10,12 +10,12 @@ protected:
 
 public:
 					CStatePoltergeistAttackHidden	(_Object *obj);
-	virtual			~CStatePoltergeistAttackHidden	() = default;
+	virtual ~CStatePoltergeistAttackHidden	() override = default;
 
 
-	virtual void	initialize				();
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
 			bool	check_home_point		();
 

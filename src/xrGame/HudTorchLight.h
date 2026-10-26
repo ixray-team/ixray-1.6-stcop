@@ -97,7 +97,6 @@ struct THudLightLaser final : public THudLightTorch
 	float LaserMaxDist = 15.0f;
 	Fvector2 LightSpotAngle = { 2.0f, 5.0f };
 public:
-
 	virtual void BeginComponent(IECSOwner* O) override;
 
 	virtual void NewTorchlight(const char* section) override;

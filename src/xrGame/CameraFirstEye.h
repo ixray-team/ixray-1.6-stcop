@@ -8,22 +8,22 @@ class CCameraFirstEye : public CCameraBase
 	using inherited = CCameraBase;
 public:
 					CCameraFirstEye	( CObject* p, u32 flags=0);
-	virtual			~CCameraFirstEye( );
+	virtual ~CCameraFirstEye( ) override;
 
-	virtual void	Load			(const char* section);
-	virtual void	Move			( int cmd, float val=0, float factor=1.0f );
+	virtual void	Load			(const char* section) override;
+	virtual void	Move			( int cmd, float val=0, float factor=1.0f ) override;
 
-	virtual	void	OnActivate		( CCameraBase* old_cam );
-	virtual void	Update			( Fvector& point, Fvector& noise_angle, bool force_update_pos );
+	virtual void	OnActivate		( CCameraBase* old_cam ) override;
+	virtual void	Update			( Fvector& point, Fvector& noise_angle, bool force_update_pos ) override;
 
-	virtual float	GetWorldYaw		( )	{ return -yaw;	};
-	virtual float	GetWorldPitch	( )	{ return pitch; };
+	virtual float	GetWorldYaw		( ) override { return -yaw;	};
+	virtual float	GetWorldPitch	( ) override { return pitch; };
 
 
 
-			void save(NET_Packet& output_packet) override;
-			void load(IReader& input_packet) override;
-			virtual void Serialize(ISaveObject& Object) override;
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 };
 
 #endif // __CAMERALOOK_H__

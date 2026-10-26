@@ -124,72 +124,72 @@ protected:
 public:
 	virtual bool ScriptCallbacksEnabled() const { return true; }
 	CGameObject();
-	virtual ~CGameObject();
+	virtual ~CGameObject() override;
 public:
 	//functions used for avoiding most of the smart_cast
-	virtual CGameObject*				cast_game_object			()						{return this;}
-	virtual CAttachmentOwner*			cast_attachment_owner		()						{return nullptr;}
-	virtual CInventoryOwner*			cast_inventory_owner		()						{return nullptr;}
-	virtual CInventoryItem*				cast_inventory_item			()						{return nullptr;}
-	virtual CEntity*					cast_entity					()						{return nullptr;}
-	virtual CEntityAlive*				cast_entity_alive			()						{return nullptr;}
-	virtual CActor*						cast_actor					()						{return nullptr;}
+	virtual CGameObject*				cast_game_object			() override {return this;}
+	virtual CAttachmentOwner*			cast_attachment_owner		() override {return nullptr;}
+	virtual CInventoryOwner*			cast_inventory_owner		() override {return nullptr;}
+	virtual CInventoryItem*				cast_inventory_item			() override {return nullptr;}
+	virtual CEntity*					cast_entity					() override {return nullptr;}
+	virtual CEntityAlive*				cast_entity_alive			() override {return nullptr;}
+	virtual CActor*						cast_actor					() override {return nullptr;}
 	virtual CAI_Trader*					cast_trader					()						{return nullptr;}
-	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder	() override {return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
-	virtual CArtefact*					cast_artefact				()						{return nullptr;}
-	virtual CCreature*				cast_creature			()						{return nullptr;}
-	virtual CAI_Stalker*				cast_stalker				()						{return nullptr;}
+	virtual CArtefact*					cast_artefact				() override {return nullptr;}
+	virtual CCreature*				cast_creature			() override {return nullptr;}
+	virtual CAI_Stalker*				cast_stalker				() override {return nullptr;}
 	virtual CScriptEntity*				cast_script_entity			()						{return nullptr;}
-	virtual CWeapon*					cast_weapon					()						{return nullptr;}
-	virtual CExplosive*					cast_explosive				()						{return nullptr;}
-	virtual CSpaceRestrictor*			cast_restrictor				()						{return nullptr;}
+	virtual CWeapon*					cast_weapon					() override {return nullptr;}
+	virtual CExplosive*					cast_explosive				() override {return nullptr;}
+	virtual CSpaceRestrictor*			cast_restrictor				() override {return nullptr;}
 	virtual CAttachableItem*			cast_attachable_item		()						{return nullptr;}
-	virtual CHolderCustom*				cast_holder_custom			()						{return nullptr;}
-	virtual CBaseMonster*				cast_base_monster			()						{return nullptr;}
-	virtual CCar*						cast_car					()						{return nullptr;}
-	virtual CMissile					*cast_missile				()						{return nullptr;}
-	virtual CExplosiveRocket			*cast_explosive_rocket		()						{return nullptr;}
-	virtual CGrenade					*cast_grenade				()						{return nullptr;}
-	virtual CUsableScriptObject			*cast_usable_script_object	()						{return this;}
+	virtual CHolderCustom*				cast_holder_custom			() override {return nullptr;}
+	virtual CBaseMonster*				cast_base_monster			() override {return nullptr;}
+	virtual CCar*						cast_car					() override {return nullptr;}
+	virtual CMissile					*cast_missile				() override {return nullptr;}
+	virtual CExplosiveRocket			*cast_explosive_rocket		() override {return nullptr;}
+	virtual CGrenade					*cast_grenade				() override {return nullptr;}
+	virtual CUsableScriptObject			*cast_usable_script_object	() override {return this;}
 	virtual CBreakableObject			*cast_breakable_object		()						{return nullptr;}
-	virtual CHudItem					*cast_hud_item				()						{return nullptr;}
-	virtual CCustomOutfit				*cast_outfit				()						{return nullptr;}
-	virtual CHelmet						*cast_helmet				()						{return nullptr;}
-	virtual CCustomDetector				*cast_custom_detector		()						{return nullptr;}
-	virtual CCustomDevice				*cast_custom_device			()						{return nullptr;}
-	virtual CWeaponAmmo					*cast_weapon_ammo			()						{return nullptr;}
-	virtual CWeaponBinoculars			*cast_weapon_binoculars		()						{return nullptr;}
-	virtual CWeaponKnife				*cast_weapon_knife			()						{return nullptr;}
-	virtual CWeaponMagazined			*cast_weapon_magazined		()						{return nullptr;}
-	virtual CWeaponMagazinedWGrenade	*cast_weapon_magazined_w_grenade()					{return nullptr;}
-	virtual CWeaponBM16					*cast_weapon_bm16			()						{return nullptr;}
-	virtual CWeaponRPG7					*cast_weapon_rpg7			()						{return nullptr;}
-	virtual CWeaponRG6					*cast_weapon_rg6			()						{return nullptr;}
-	virtual CTorch						*cast_torch					()						{return nullptr;}
-	virtual CBolt* cast_bolt() { return nullptr; }
-	virtual CPda* cast_pda() { return nullptr; }
-	virtual CInventoryBox* cast_inventory_box() { return nullptr; }
-	virtual CSpectator* cast_spectator() { return nullptr; }
-	virtual CSilencer* cast_addon_silencer() { return nullptr; }
-	virtual CScope* cast_addon_scope() { return nullptr; }
-	virtual CGrenadeLauncher* cast_addon_grenade_launcher() { return nullptr; }
-	virtual CProjector* cast_projector() { return nullptr; }
-	virtual CLevelChanger* cast_level_changer() { return nullptr; }
-	virtual CPhysicItem* cast_physics_item() { return nullptr; }
-	virtual CEatableItem* cast_eatable_item() { return nullptr; }
-	virtual CScriptZone* cast_script_zone() { return nullptr; }
-	virtual CHelicopter* cast_helicopter() { return nullptr; }
-	virtual CHangingLamp* cast_hanging_lamp() { return nullptr; }
-	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
-	virtual CBackpack* cast_backpack() { return nullptr; }
-	virtual CClimableObject* cast_climable_object() { return nullptr; }
-	virtual CPhysicObject* cast_physics_object() { return nullptr; }
-	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
-	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
-	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
-	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
-	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() { return nullptr; }
+	virtual CHudItem					*cast_hud_item				() override {return nullptr;}
+	virtual CCustomOutfit				*cast_outfit				() override {return nullptr;}
+	virtual CHelmet						*cast_helmet				() override {return nullptr;}
+	virtual CCustomDetector				*cast_custom_detector		() override {return nullptr;}
+	virtual CCustomDevice				*cast_custom_device			() override {return nullptr;}
+	virtual CWeaponAmmo					*cast_weapon_ammo			() override {return nullptr;}
+	virtual CWeaponBinoculars			*cast_weapon_binoculars		() override {return nullptr;}
+	virtual CWeaponKnife				*cast_weapon_knife			() override {return nullptr;}
+	virtual CWeaponMagazined			*cast_weapon_magazined		() override {return nullptr;}
+	virtual CWeaponMagazinedWGrenade	*cast_weapon_magazined_w_grenade() override {return nullptr;}
+	virtual CWeaponBM16					*cast_weapon_bm16			() override {return nullptr;}
+	virtual CWeaponRPG7					*cast_weapon_rpg7			() override {return nullptr;}
+	virtual CWeaponRG6					*cast_weapon_rg6			() override {return nullptr;}
+	virtual CTorch						*cast_torch					() override {return nullptr;}
+	virtual CBolt* cast_bolt() override { return nullptr; }
+	virtual CPda* cast_pda() override { return nullptr; }
+	virtual CInventoryBox* cast_inventory_box() override { return nullptr; }
+	virtual CSpectator* cast_spectator() override { return nullptr; }
+	virtual CSilencer* cast_addon_silencer() override { return nullptr; }
+	virtual CScope* cast_addon_scope() override { return nullptr; }
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() override { return nullptr; }
+	virtual CProjector* cast_projector() override { return nullptr; }
+	virtual CLevelChanger* cast_level_changer() override { return nullptr; }
+	virtual CPhysicItem* cast_physics_item() override { return nullptr; }
+	virtual CEatableItem* cast_eatable_item() override { return nullptr; }
+	virtual CScriptZone* cast_script_zone() override { return nullptr; }
+	virtual CHelicopter* cast_helicopter() override { return nullptr; }
+	virtual CHangingLamp* cast_hanging_lamp() override { return nullptr; }
+	virtual CPhraseDialogManager* cast_phrase_dialog_manager() override { return nullptr; }
+	virtual CBackpack* cast_backpack() override { return nullptr; }
+	virtual CClimableObject* cast_climable_object() override { return nullptr; }
+	virtual CPhysicObject* cast_physics_object() override { return nullptr; }
+	virtual CTeamBaseZone* cast_team_base_zone() override { return nullptr; }
+	virtual CCustomRocket* cast_custom_rocket() override { return nullptr; }
+	virtual CRocketLauncher* cast_rocket_launcher() override { return nullptr; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
+	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() override { return nullptr; }
 	virtual CVisualZone* cast_visual_zone() { return nullptr; }
 	virtual CNoGravityZone* cast_no_gravity_zone() { return nullptr; }
 	virtual CMosquitoBald* cast_mosquito_bald_zone() { return nullptr; }
@@ -206,7 +206,7 @@ public:
 
 public:
 	virtual bool						feel_touch_on_contact	(CObject *)					{return true;}
-	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
+	virtual bool						use						(CGameObject* who_use) override {return CUsableScriptObject::use(who_use);};
 
 public:
 	CInifile				*m_ini_file;
@@ -216,30 +216,30 @@ public:
 	static void				u_EventSend			(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED	);
 	
 	// Methods
-	virtual void			Load				(const char* section);
+	virtual void			Load				(const char* section) override;
 	bool			net_Spawn			(CSE_Abstract* DC) override;
-	virtual void			net_Destroy			();
-	virtual	void			net_Relcase			( CObject* O );	
-	virtual void			UpdateCL			( );
-	virtual void			OnChangeVisual		( );
+	virtual void			net_Destroy			() override;
+	virtual void			net_Relcase			( CObject* O ) override;
+	virtual void			UpdateCL			( ) override;
+	virtual void			OnChangeVisual		( ) override;
 	//object serialization
 	virtual void			net_Save			(NET_Packet &net_packet);
 	virtual void			net_Load			(IReader	&ireader);
 	virtual void			net_Serialize		(ISaveObject& Object);
-	virtual bool			net_SaveRelevant	();
-	virtual void			save				(NET_Packet &output_packet);
-	virtual void			load				(IReader &input_packet);
-	virtual void			Serialize			(ISaveObject& Object);
+	virtual bool			net_SaveRelevant	() override;
+	virtual void			save				(NET_Packet &output_packet) override;
+	virtual void			load				(IReader &input_packet) override;
+	virtual void			Serialize			(ISaveObject& Object) override;
 
-	virtual bool			net_Relevant		()	{ return getLocal();	}	// send messages only if active and local
-	virtual void			spatial_move		();
-	virtual bool			Ready				()	{ return getReady();	}	// update only if active and fully initialized by/for network
+	virtual bool			net_Relevant		() override { return getLocal();	}	// send messages only if active and local
+	virtual void			spatial_move		() override;
+	virtual bool			Ready				() override { return getReady();	}	// update only if active and fully initialized by/for network
 //	virtual float			renderable_Ambient	();
 
-	virtual void			shedule_Update		(u32 dt);	
-	virtual bool			shedule_Needed		();
-	virtual float			shedule_Scale_Base	();
-	virtual void			renderable_Render	();
+	virtual void			shedule_Update		(u32 dt) override;
+	virtual bool			shedule_Needed		() override;
+	virtual float			shedule_Scale_Base	() override;
+	virtual void			renderable_Render	() override;
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 	virtual void			SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)	{};
@@ -250,8 +250,8 @@ public:
 	virtual const char*			Name                () const;
 	
 	//virtual void			OnH_A_Independent	();
-	virtual void			OnH_B_Chield		();
-	virtual void			OnH_B_Independent	(bool just_before_destroy);
+	virtual void			OnH_B_Chield		() override;
+	virtual void			OnH_B_Independent	(bool just_before_destroy) override;
 
 	virtual bool			IsVisibleForZones	() { return true; }
 ///////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ public:
 ///////////////////////////////////////////////////////////////////////
 
 	// Position stack
-	virtual	SavedPosition	ps_Element			(u32 ID) const;
+	virtual SavedPosition	ps_Element			(u32 ID) const override;
 
 			void			setup_parent_ai_locations(bool assign_position = true);
 			void			validate_ai_locations(bool decrement_reference = true);
@@ -283,8 +283,8 @@ const animation_movement_controller* animation_movement		( ) const	{ return	m_an
 #endif
 
 			void			init				();
-	virtual	void			reinit				();
-	virtual	void			reload				(const char* section);
+	virtual void			reinit				() override;
+	virtual void			reload				(const char* section) override;
 	///////////////////// network /////////////////////////////////////////
 	bool					object_removed		() const { return m_bObjectRemoved; };
 public:

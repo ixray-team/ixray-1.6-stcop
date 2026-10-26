@@ -31,16 +31,16 @@ private:
 	bool					get_reject_pos(Fvector& p, Fvector& r);
 
 public:
-	virtual				~CLevelChanger		();
-	virtual bool		net_Spawn			(CSE_Abstract* DC);
-	virtual void		net_Destroy			();
-	virtual void		Center				(Fvector& C) const;
-	virtual float		Radius				() const;
-	virtual void		shedule_Update		(u32 dt);
-	virtual void		feel_touch_new		(CObject* O);
-	virtual bool		feel_touch_contact	(CObject* O);
+	virtual ~CLevelChanger		() override;
+	virtual bool		net_Spawn			(CSE_Abstract* DC) override;
+	virtual void		net_Destroy			() override;
+	virtual void		Center				(Fvector& C) const override;
+	virtual float		Radius				() const override;
+	virtual void		shedule_Update		(u32 dt) override;
+	virtual void		feel_touch_new		(CObject* O) override;
+	virtual bool		feel_touch_contact	(CObject* O) override;
 	GameGraph::_GRAPH_ID NextVertexId() const { return m_game_vertex_id; }
-	virtual bool		IsVisibleForZones() { return false;}
+	virtual bool		IsVisibleForZones() override { return false;}
 	void				EnableLevelChanger	(bool b)				{m_b_enabled=b;}
 	bool				IsLevelChangerEnabled() const				{return m_b_enabled;}
 	void				SetLEvelChangerInvitationStr(const char* str)	{m_invite_str = str;}
@@ -50,10 +50,10 @@ public:
 	virtual void load(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CLevelChanger* cast_level_changer() { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CLevelChanger* cast_level_changer() override { return this; }
 
 #ifdef DEBUG_DRAW
-	virtual void		OnRender();
+	virtual void		OnRender() override;
 #endif
 };

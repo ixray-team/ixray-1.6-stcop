@@ -29,7 +29,7 @@ private:
 	float				blend_angular_speed;
 	static void	_BCL	RootBoneCallback				( CBoneInstance* B );
 	void				deinitialize					();
-	void				BlendDestroy					( CBlend& blend );
+	virtual void				BlendDestroy					( CBlend& blend ) override;
 public:		
 	animation_movement_controller(const animation_movement_controller& other) = delete;
 	animation_movement_controller& operator=(const animation_movement_controller& other) = delete;

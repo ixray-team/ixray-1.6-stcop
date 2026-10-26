@@ -87,7 +87,7 @@ public:
 	IC				CScriptMovementAction	(MonsterSpace::EScriptMonsterMoveAction tAct, Fvector *tPosition, float	dist_to_end,							MonsterSpace::EScriptMonsterSpeedParam speed_param);
 					CScriptMovementAction	(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams *tPatrolPathParams, float dist_to_end,			MonsterSpace::EScriptMonsterSpeedParam speed_param);
 	IC				CScriptMovementAction	(MonsterSpace::EScriptMonsterMoveAction tAct, CScriptGameObject *tpObjectToGo, float dist_to_end,				MonsterSpace::EScriptMonsterSpeedParam speed_param);
-	virtual			~CScriptMovementAction	();
+	virtual ~CScriptMovementAction	() override;
 	IC		void	SetBodyState			(const MonsterSpace::EBodyState tBodyState);
 	IC		void	SetMovementType			(const MonsterSpace::EMovementType tMovementType);
 	IC		void	SetPathType				(const DetailPathManager::EDetailPathType tPathType);

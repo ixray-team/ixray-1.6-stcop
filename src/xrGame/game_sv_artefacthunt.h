@@ -108,13 +108,13 @@ public:
 	void				OnCreate				(ALife::_OBJECT_ID id_who) override;
 
 
-	virtual		void				Update					();
+	virtual void				Update					() override;
 				
 				void				SpawnArtefact			();
 				void				RemoveArtefact			();
 				void				Assign_Artefact_RPoint	(CSE_Abstract* E);
 
-	virtual		void				net_Export_State		(NET_Packet& P, ClientID id_to);				// full state
+	virtual void				net_Export_State		(NET_Packet& P, ClientID id_to) override;				// full state
 				bool				ArtefactSpawn_Allowed	();
 	//-------------------------------------------------------------------------------
 	virtual		void				RespawnAllNotAlivePlayers	();
@@ -122,7 +122,7 @@ public:
 	virtual		void				MoveAllAlivePlayers			();
 	virtual		void				CheckForTeamElimination		();
 	virtual		void				CheckForTeamWin				();
-	virtual		bool				CanHaveFriendlyFire		()	{return true;}
+	virtual bool				CanHaveFriendlyFire		() override {return true;}
 
 	//-----------------------------------------------------------------------------
 	virtual		int					Get_ArtefactsCount			();
@@ -137,7 +137,7 @@ public:
 
 	//  [7/5/2005]
 #ifdef DEBUG_DRAW
-	virtual		void				OnRender				();
+	virtual void				OnRender				() override;
 #endif
 	//  [7/5/2005]
 
@@ -147,5 +147,5 @@ public:
 	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
+	virtual void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult) override;
 };

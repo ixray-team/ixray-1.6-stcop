@@ -55,13 +55,13 @@ private:
 
 public:
 	CSE_SmartCover			(const char* caSection);
-	virtual							~CSE_SmartCover			();
-	virtual ISE_Shape*  	shape					();
-	virtual bool					used_ai_locations		() const;
-	virtual bool					can_save				() const;
-	virtual bool					can_switch_online		() const;
-	virtual bool					can_switch_offline		() const;
-	virtual bool					interactive				() const;
+virtual ~CSE_SmartCover			() override;
+virtual ISE_Shape*  	shape					() override;
+virtual bool					used_ai_locations		() const override;
+virtual bool					can_save				() const override;
+virtual bool					can_switch_online		() const override;
+virtual bool					can_switch_offline		() const override;
+virtual bool					interactive				() const override;
 	const char*					description				() const;
 #ifndef AI_COMPILER
 	void					set_available_loopholes (luabind::object table);

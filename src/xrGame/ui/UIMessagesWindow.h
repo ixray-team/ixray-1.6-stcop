@@ -19,7 +19,7 @@ class CUIMessagesWindow final : public CUIWindow
 {
 public:
 						CUIMessagesWindow				();
-	virtual				~CUIMessagesWindow				();
+	virtual ~CUIMessagesWindow				() override;
 
 	void				AddIconedPdaMessage				(GAME_NEWS_DATA* news);
 
@@ -29,9 +29,9 @@ public:
 //.	void				SetChatOwner					(game_cl_GameState* owner);
 	void				PendingMode						(bool const is_in_pending_mode);
 	CUIChatWnd*			GetChatWnd						() {return m_pChatWnd;}
-	virtual void		Show							(bool show);
+	virtual void		Show							(bool show) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	virtual void		Init(float x, float y, float width, float height);

@@ -12,16 +12,16 @@ class CAmebaZone final : public CVisualZone, public CPHUpdateObject
 
 public:
 	CAmebaZone();
-	~CAmebaZone();
-	virtual void Affect(SZoneObjectInfo* O);
+	virtual ~CAmebaZone() override;
+	virtual void Affect(SZoneObjectInfo* O) override;
 
 	CAmebaZone* cast_ameba_zone() override { return this; }
 
 protected:
-	virtual void PhTune(float step);
-	virtual void PhDataUpdate(float step) { ; }
-	virtual bool BlowoutState();
-	virtual void SwitchZoneState(EZoneState new_state);
-	virtual void Load(const char* section);
+	virtual void PhTune(float step) override;
+	virtual void PhDataUpdate(float step) override { ; }
+	virtual bool BlowoutState() override;
+	virtual void SwitchZoneState(EZoneState new_state) override;
+	virtual void Load(const char* section) override;
 	virtual float distance_to_center(CObject* O);
 };

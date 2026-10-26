@@ -17,12 +17,12 @@ public:
 						CStateMonsterAttack		(_Object *obj);
 						CStateMonsterAttack		(_Object *obj, state_ptr state_move2home);
 						CStateMonsterAttack		(_Object *obj, state_ptr state_run, state_ptr state_melee);
-	virtual				~CStateMonsterAttack	();
-	
-	virtual void		initialize				();
-	virtual	void		execute					();
-	virtual void		setup_substates			();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual ~CStateMonsterAttack	() override;
+
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		setup_substates			() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
 protected:
 			bool		check_steal_state		();

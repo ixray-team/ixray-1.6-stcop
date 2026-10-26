@@ -32,23 +32,23 @@ private:
 public:
 	virtual CHolderCustom*	cast_holder_custom	() override		{return this;}
 	virtual CGameObject*	cast_game_object	() override		{return this;}
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
 
 //general
 public:
 							CWeaponStatMgun		();
-	virtual					~CWeaponStatMgun	();
+	virtual ~CWeaponStatMgun	() override;
 
-	virtual void			Load				(const char* section);
+	virtual void			Load				(const char* section) override;
 
-	virtual bool			net_Spawn			(CSE_Abstract* DC);
-	virtual void			net_Destroy			();
-	virtual void			net_Export			(NET_Packet& P);	// export to server
-	virtual void			net_Import			(NET_Packet& P);	// import from server
+	virtual bool			net_Spawn			(CSE_Abstract* DC) override;
+	virtual void			net_Destroy			() override;
+	virtual void			net_Export			(NET_Packet& P) override;	// export to server
+	virtual void			net_Import			(NET_Packet& P) override;	// import from server
 
-	virtual void			UpdateCL			();
+	virtual void			UpdateCL			() override;
 
-	virtual	void			Hit					(SHit* pHDS);
+	virtual void			Hit					(SHit* pHDS) override;
 
 //shooting
 private:
@@ -85,39 +85,39 @@ protected:
 	virtual const Fvector&	get_CurrentFirePoint();
 	virtual const Fmatrix&	get_ParticlesXFORM	();
 
-	virtual	void			FireStart			();
-	virtual	void			FireEnd				();
+	virtual void			FireStart			() override;
+	virtual void			FireEnd				() override;
 	virtual	void			UpdateFire			();
 	virtual	void			OnShot				();
 			void			AddShotEffector		();
 			void			RemoveShotEffector	();
 			void			SetDesiredDir		(float h, float p);
-	virtual bool			IsHudModeNow		(){return false;};
+	virtual bool			IsHudModeNow		() override {return false;};
 
 //HolderCustom
 public:
-	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) {return !Owner();};
-	virtual void			OnGamepadAxisMove	(int id, Fvector2 value);
-	virtual void			OnGyroscopeMove		(Fvector3 value);
-	virtual void			OnMouseMove			(int x, int y);
-	virtual void			OnGamepadKeyPress	(int id){};
-	virtual void			OnGamepadKeyRelease	(int id){};
-	virtual void			OnKeyboardPress		(int dik);
-	virtual void			OnKeyboardRelease	(int dik);
-	virtual void			OnKeyboardHold		(int dik);
-	virtual CInventory*		GetInventory		()						{return NULL;};
-	virtual void			cam_Update			(float dt, float fov=90.0f);
+	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) override {return !Owner();};
+	virtual void			OnGamepadAxisMove	(int id, Fvector2 value) override;
+	virtual void			OnGyroscopeMove		(Fvector3 value) override;
+	virtual void			OnMouseMove			(int x, int y) override;
+	virtual void			OnGamepadKeyPress	(int id) override {};
+	virtual void			OnGamepadKeyRelease	(int id) override {};
+	virtual void			OnKeyboardPress		(int dik) override;
+	virtual void			OnKeyboardRelease	(int dik) override;
+	virtual void			OnKeyboardHold		(int dik) override;
+	virtual CInventory*		GetInventory		() override {return NULL;};
+	virtual void			cam_Update			(float dt, float fov=90.0f) override;
 
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render	() override;
 
-	virtual bool			attach_Actor		(CGameObject* actor);
-	virtual void			detach_Actor		();
-	virtual bool			allowWeapon			()	const				{return false;};
-	virtual bool			HUDView				()	const				{return true;};
-	virtual Fvector			ExitPosition		()						{return Fvector().set(0.0f,0.0f,0.0f);};
+	virtual bool			attach_Actor		(CGameObject* actor) override;
+	virtual void			detach_Actor		() override;
+	virtual bool			allowWeapon			()	const override {return false;};
+	virtual bool			HUDView				()	const override {return true;};
+	virtual Fvector			ExitPosition		() override {return Fvector().set(0.0f,0.0f,0.0f);};
 
-	virtual CCameraBase*	Camera				()						{return camera;};
+	virtual CCameraBase*	Camera				() override {return camera;};
 
-	virtual void			Action				(u16 id, u32 flags);
-	virtual void			SetParam			(int id, Fvector2 val);
+	virtual void			Action				(u16 id, u32 flags) override;
+	virtual void			SetParam			(int id, Fvector2 val) override;
 };

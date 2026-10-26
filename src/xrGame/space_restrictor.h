@@ -50,29 +50,29 @@ private:
 
 public:
 	IC							CSpaceRestrictor	();
-	virtual						~CSpaceRestrictor	();
-	virtual	bool				net_Spawn			(CSE_Abstract* data);
-	virtual	void				net_Destroy			();
+	virtual ~CSpaceRestrictor	() override;
+	virtual bool				net_Spawn			(CSE_Abstract* data) override;
+	virtual void				net_Destroy			() override;
 			bool				inside				(const Fsphere &sphere) const;
-	virtual void				Center				(Fvector &C) const;
-	virtual float				Radius				() const;
-	virtual bool				UsedAI_Locations	();
-	virtual void				spatial_move		();
+	virtual void				Center				(Fvector &C) const override;
+	virtual float				Radius				() const override;
+	virtual bool				UsedAI_Locations	() override;
+	virtual void				spatial_move		() override;
 	IC		bool				actual				() const;
-	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
-	virtual CSpaceRestrictor* cast_restrictor() { return this; }
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CScriptZone* cast_script_zone() { return nullptr; }
-	virtual	bool				register_schedule	() const {return false;}
+	virtual CAnomalyZone* cast_anomaly_zone() override { return nullptr; }
+	virtual CSpaceRestrictor* cast_restrictor() override { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CScriptZone* cast_script_zone() override { return nullptr; }
+	virtual bool				register_schedule	() const override {return false;}
 
-	virtual		void	shedule_Update				(u32 dt);
+	virtual void	shedule_Update				(u32 dt) override;
 
 	IC RestrictionSpace::ERestrictorTypes restrictor_type() const; 
 	IC void change_restrictor_type(RestrictionSpace::ERestrictorTypes);
 
 public:
 #ifdef DEBUG
-	virtual void				OnRender			();
+	virtual void				OnRender			() override;
 #endif
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

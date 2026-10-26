@@ -23,8 +23,8 @@ protected:
 
 public:
 	CEatableItem() = default;
-	virtual ~CEatableItem() = default;
-	virtual	DLL_Pure* _construct() override;
+	virtual ~CEatableItem() override = default;
+	virtual DLL_Pure* _construct() override;
 
 	virtual CEatableItem* cast_eatable_item() override { return this; }
 	virtual CInventoryItem* cast_inventory_item() override { return this; }
@@ -42,7 +42,7 @@ public:
 	virtual	bool UseBy(CEntityAlive* npc);
 	virtual float Weight() const override;
 
-	virtual	void Hit(SHit* pHDS) override;
+	virtual void Hit(SHit* pHDS) override;
 	void EatableEffects();
 
 	bool Empty() const { return m_iRemainingUses == 0; };

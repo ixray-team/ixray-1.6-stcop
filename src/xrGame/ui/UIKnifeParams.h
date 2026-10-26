@@ -13,13 +13,13 @@ class CUIKnifeParams final : public CUIWindow
 {
 public:
 							CUIKnifeParams		();
-	virtual					~CUIKnifeParams		();
+	virtual ~CUIKnifeParams		() override;
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn);
 	bool 					Check				(CInventoryItem& cur_wpn);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIDoubleProgressBar	m_progressHandling;

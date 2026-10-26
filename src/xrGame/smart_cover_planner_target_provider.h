@@ -25,9 +25,9 @@ public:
 	target_provider(const target_provider& other) = delete;
 	target_provider& operator=(const target_provider& other) = delete;
 						target_provider					(animation_planner *object, const char* name, StalkerDecisionSpace::EWorldProperties const &world_property, u32 const &loophole_value);
-	virtual	void		setup							(animation_planner *object, CPropertyStorage *storage);
-	virtual	void		initialize						();
-	virtual void		finalize						();
+	virtual void		setup							(animation_planner *object, CPropertyStorage *storage) override;
+	virtual void		initialize						() override;
+	virtual void		finalize						() override;
 
 private:
 	StalkerDecisionSpace::EWorldProperties m_world_property;
@@ -45,7 +45,7 @@ private:
 
 public:
 						target_idle						(animation_planner *object, const char* name, StalkerDecisionSpace::EWorldProperties const &world_property, u32 const &loophole_value);
-	virtual	void		execute							();
+	virtual void		execute							() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -59,8 +59,8 @@ private:
 
 public:
 						target_fire						(animation_planner *object, const char* name, StalkerDecisionSpace::EWorldProperties const &world_property, u32 const &loophole_value);
-	virtual	void		initialize						();
-	virtual	void		execute							();
+	virtual void		initialize						() override;
+	virtual void		execute							() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ private:
 
 public:
 						target_fire_no_lookout			(animation_planner *object, const char* name, StalkerDecisionSpace::EWorldProperties const &world_property, u32 const &loophole_value);
-	virtual	void		initialize						();
+	virtual void		initialize						() override;
 
 private:
 	StalkerDecisionSpace::EWorldProperties m_world_property;

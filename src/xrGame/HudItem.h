@@ -137,8 +137,8 @@ public:
 	bool						IsHiding			()	const		{	return GetState() == eHiding;}
 	bool						IsShowing			()	const		{	return GetState() == eShowing;}
 
-	virtual void				SwitchState			(u8 S);
-	virtual void				OnStateSwitch		(u8 S);
+	virtual void				SwitchState			(u8 S) override;
+	virtual void				OnStateSwitch		(u8 S) override;
 
 	virtual void				OnAnimationEnd		(u8 state);
 	virtual void				OnMotionMark		(u8 state, const motion_marks&);

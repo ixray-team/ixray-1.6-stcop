@@ -22,56 +22,56 @@ public:
 	};
 
 	CMissile() = default;
-	virtual ~CMissile() = default;
+	virtual ~CMissile() override = default;
 
-	virtual bool			AlwaysTheCrow				()				{ return true; }
-	virtual void			render_item_ui					();
-	virtual bool			render_item_ui_query					();
+	virtual bool			AlwaysTheCrow				() override { return true; }
+	virtual void			render_item_ui					() override;
+	virtual bool			render_item_ui_query					() override;
 
-	virtual void			reinit						();
-	virtual CMissile*		cast_missile				()				{return this;}
-	virtual CBolt* cast_bolt() { return nullptr; }
-	virtual CGrenade* cast_grenade() { return nullptr; }
+	virtual void			reinit						() override;
+	virtual CMissile*		cast_missile				() override {return this;}
+	virtual CBolt* cast_bolt() override { return nullptr; }
+	virtual CGrenade* cast_grenade() override { return nullptr; }
 
-	virtual void 			Load						(const char* section);
-	virtual void 			LoadSounds					(const char* section);
-	virtual bool 			net_Spawn					(CSE_Abstract* DC);
-	virtual void 			net_Destroy					();
+	virtual void 			Load						(const char* section) override;
+	virtual void 			LoadSounds					(const char* section) override;
+	virtual bool 			net_Spawn					(CSE_Abstract* DC) override;
+	virtual void 			net_Destroy					() override;
 
-	virtual void 			UpdateCL					();
-	virtual void 			shedule_Update				(u32 dt);
+	virtual void 			UpdateCL					() override;
+	virtual void 			shedule_Update				(u32 dt) override;
 
-	virtual void 			OnH_A_Chield				();
-	virtual void 			OnH_B_Independent			(bool just_before_destroy);
+	virtual void 			OnH_A_Chield				() override;
+	virtual void 			OnH_B_Independent			(bool just_before_destroy) override;
 
-	virtual void 			OnEvent						(NET_Packet& P, u16 type);
+	virtual void 			OnEvent						(NET_Packet& P, u16 type) override;
 
-	virtual void 			OnAnimationEnd				(u8 state);
-	virtual void			OnMotionMark				(u8 state, const motion_marks&);
+	virtual void 			OnAnimationEnd				(u8 state) override;
+	virtual void			OnMotionMark				(u8 state, const motion_marks&) override;
 
 
 	virtual void 			Throw();
 	virtual void 			Destroy();
 
-	virtual bool 			Action						(u16 cmd, u32 flags);
+	virtual bool 			Action						(u16 cmd, u32 flags) override;
 
 	virtual void 			State						(u8 state);
-	virtual void 			OnStateSwitch				(u8 S);
-	virtual bool			GetBriefInfo				(II_BriefInfo& info);
+	virtual void 			OnStateSwitch				(u8 S) override;
+	virtual bool			GetBriefInfo				(II_BriefInfo& info) override;
 	bool					NeedBlockSprint				() const;
 	void spawn_fake_missile();
 
 protected:
 	virtual void			UpdateFireDependencies_internal	();
-	virtual void			UpdateXForm						();
+	virtual void			UpdateXForm						() override;
 	void					UpdatePosition					(const Fmatrix& trans);
 	bool ThrowAction(u16 cmd, u32 flags);
 
-	virtual void			OnActiveItem		();
-	virtual void			OnHiddenItem		();
+	virtual void			OnActiveItem		() override;
+	virtual void			OnHiddenItem		() override;
 
 	//для сети
-	virtual void			net_Relcase			(CObject* O );
+	virtual void			net_Relcase			(CObject* O ) override;
 protected:
 
 	//время нахождения в текущем состоянии
@@ -108,11 +108,11 @@ protected:
 			void			setup_throw_params		(bool bForce);
 public:
 	Fvector const&			throw_point_offset		() const {return m_vThrowPoint;}
-	virtual void			activate_physic_shell	();
-	virtual void			setup_physic_shell		();
-	virtual void			create_physic_shell		();
+	virtual void			activate_physic_shell	() override;
+	virtual void			setup_physic_shell		() override;
+	virtual void			create_physic_shell		() override;
 	IC		void			set_destroy_time		(u32 delta_destroy_time) {m_dwDestroyTime = delta_destroy_time + Device.dwTimeGlobal;}
-	virtual void			PH_A_CrPr				();
+	virtual void			PH_A_CrPr				() override;
 
 	bool m_constpower;
 	bool m_throw;
@@ -126,7 +126,7 @@ protected:
 	u32						m_ef_weapon_type;
 
 public:
-	virtual u32				ef_weapon_type			() const;
+	virtual u32				ef_weapon_type			() const override;
 	IC		u32				destroy_time			() const { return m_dwDestroyTime; }
 	IC		u32				destroy_time_max		() const { return m_dwDestroyTimeMax; }
 			void			set_destroy_time_max		(u32 time) { m_dwDestroyTimeMax = time; }

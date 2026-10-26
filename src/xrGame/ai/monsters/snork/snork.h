@@ -10,27 +10,27 @@ class CSnork final :	public CBaseMonster {
 
 public:
 					CSnork				();
-	virtual			~CSnork				();	
+	virtual ~CSnork				() override;
 
-	virtual void	Load				(const char* section);
-	virtual void	reinit				();				
-	virtual void	UpdateCL			();
-	virtual void	CheckSpecParams		(u32 spec_params);
-	virtual void	jump				(const Fvector &position, float factor);
-	virtual bool	ability_jump_over_physics	() {return true;}
-	virtual bool	ability_distant_feel		() {return true;}
-	virtual void	HitEntityInJump		(const CEntity *pEntity);
+	virtual void	Load				(const char* section) override;
+	virtual void	reinit				() override;
+	virtual void	UpdateCL			() override;
+	virtual void	CheckSpecParams		(u32 spec_params) override;
+	virtual void	jump				(const Fvector &position, float factor) override;
+	virtual bool	ability_jump_over_physics	() override {return true;}
+	virtual bool	ability_distant_feel		() override {return true;}
+	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
 			
 			bool	find_geometry		(Fvector &dir);
 			float	trace				(const Fvector &dir);
 
 			bool	trace_geometry		(const Fvector &d, float &range);
 
-	virtual bool	check_start_conditions	(ControlCom::EControlType type);
-	virtual void	on_activate_control		(ControlCom::EControlType);
-	virtual	char*	get_monster_class_name () { return (char*) "snork"; }
+	virtual bool	check_start_conditions	(ControlCom::EControlType type) override;
+	virtual void	on_activate_control		(ControlCom::EControlType) override;
+	virtual char*	get_monster_class_name () override { return (char*) "snork"; }
 
-	virtual bool	run_home_point_when_enemy_inaccessible () const { return false; }
+	virtual bool	run_home_point_when_enemy_inaccessible () const override { return false; }
 
 private:
 #ifdef _DEBUG	

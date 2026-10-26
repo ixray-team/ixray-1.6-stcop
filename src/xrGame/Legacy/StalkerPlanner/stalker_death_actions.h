@@ -23,7 +23,7 @@ private:
 
 public:
 						CStalkerActionDead			(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
 };
 

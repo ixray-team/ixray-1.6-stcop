@@ -12,39 +12,39 @@ class game_sv_freemp final :
 	xr_hash_map<xr_string, int> map_items;
 public:
 	game_sv_freemp();
-	virtual							~game_sv_freemp();
+	virtual ~game_sv_freemp() override;
 
-	virtual		void				Create(shared_str& options);
+	virtual void				Create(shared_str& options) override;
 
 
 	virtual		bool				UseSKin() const { return false; }
-	virtual		void				SetSkin(CSE_Abstract* E, u16 Team, u16 ID);
+	virtual void				SetSkin(CSE_Abstract* E, u16 Team, u16 ID) override;
 
-	virtual		const char*				type_name() const { return "freemp"; };
+	virtual const char*				type_name() const override { return "freemp"; };
 	void							net_Relcase(CObject* O) {};
 
 	void									AddMoneyToPlayer(game_PlayerState* ps, s32 amount);
 	void									SpawnItemToActor(ALife::_OBJECT_ID actorId, const char* name);
-	virtual		void				on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
+	virtual void				on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src) override;
 	virtual		void				OnTransferMoney(NET_Packet& P, ClientID const& clientID);
 
-	virtual		void				OnPlayerReady(ClientID id_who);
-	virtual		void				OnPlayerConnect(ClientID id_who);
-	virtual		void				OnPlayerConnectFinished(ClientID id_who);
+	virtual void				OnPlayerReady(ClientID id_who) override;
+	virtual void				OnPlayerConnect(ClientID id_who) override;
+	virtual void				OnPlayerConnectFinished(ClientID id_who) override;
 	void				OnPlayerDisconnect(ClientID id_who, LPSTR Name, ALife::_OBJECT_ID GameID) override;
-	virtual		void				OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
+	virtual void				OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA) override;
 	virtual		void				OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID);
-	virtual		void				OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
+	virtual void				OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender) override;
 
-	virtual		void				Update();
+	virtual void				Update() override;
 
-	virtual		void				RespawnPlayer(ClientID id_who, bool NoSpectator);
+	virtual void				RespawnPlayer(ClientID id_who, bool NoSpectator) override;
 	bool                OnTouch(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what, bool bForced = false) override;
 	void				OnDetach(ALife::_OBJECT_ID eid_who, ALife::_OBJECT_ID eid_what) override;
 	virtual		void				OnPlayerTrade(NET_Packet& P, ClientID const& clientID);
 
 	// drop items after death
-	virtual		void				FillDeathActorRejectItems(CSE_ActorMP* actor, xr_vector<CSE_Abstract*>& to_reject);
+	virtual void				FillDeathActorRejectItems(CSE_ActorMP* actor, xr_vector<CSE_Abstract*>& to_reject) override;
 	bool			 	            OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
 	void			             	OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
 

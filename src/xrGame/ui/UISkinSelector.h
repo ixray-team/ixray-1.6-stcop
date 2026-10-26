@@ -20,20 +20,20 @@ class CUISkinSelectorWnd final : public CUIDialogWnd
 
 public:	
 	CUISkinSelectorWnd(const char* strSectionName, s16 team);
-	~CUISkinSelectorWnd();
+	virtual ~CUISkinSelectorWnd() override;
 	
 	virtual void	Init(const char* strSectionName);
-	virtual void	SendMessage(CUIWindow *pWnd, s16 msg, void *pData = NULL);
-	virtual bool	OnMouseAction(float x, float y, EUIMessages mouse_action);
-	virtual bool	OnKeyboardAction(int dik, EUIMessages keyboard_action);
+	virtual void	SendMessage(CUIWindow *pWnd, s16 msg, void *pData = NULL) override;
+	virtual bool	OnMouseAction(float x, float y, EUIMessages mouse_action) override;
+	virtual bool	OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
 			void	SetVisibleForBtn(ESKINMENU_BTN btn, bool state);
 			void	SetCurSkin(int skin);
 
 	int				GetActiveIndex();
 	s16				GetTeam()				{return m_team;};
-	virtual void	Update			();
+	virtual void	Update			() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			void	OnBtnOK();

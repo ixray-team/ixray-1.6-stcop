@@ -226,11 +226,11 @@ public:
 		                     float   max_separate_range);
 
 	void         set_squad       (CMonsterSquad* squad);
-	virtual void first_nearest   (Fvector& v);
-	virtual bool nomore_nearest  ();
-	virtual void next_nearest    (Fvector& v);
+	virtual void first_nearest   (Fvector& v) override;
+	virtual bool nomore_nearest  () override;
+	virtual void next_nearest    (Fvector& v) override;
 
-	virtual bool update();
+	virtual bool update() override;
 
 private:
 	CMonsterSquad*                       squad;

@@ -59,7 +59,7 @@ protected:
 
 public:
 						CUICharacterInfo();
-	virtual				~CUICharacterInfo();
+	virtual ~CUICharacterInfo() override;
 
 	void				InitCharacterInfo		(Fvector2 pos, Fvector2 size, CUIXml* xml_doc);
 	void				InitCharacterInfo		(Fvector2 pos, Fvector2 size, const char* xml_name);
@@ -73,7 +73,7 @@ public:
 	void				InitCharacter			(CInventoryOwner* invOwner);
 	void				InitCharacter			(const char* player_name, const char* player_icon );
 
-	virtual void		Update					();
+	virtual void		Update					() override;
 
 	ALife::_OBJECT_ID					OwnerID					()	const	{	return m_ownerID;	}
 	CUIStatic&			UIIcon					()	const	{	VERIFY(m_icons[eIcon]);			return *m_icons[eIcon];	}
@@ -86,5 +86,5 @@ public:
 	static	bool		get_actor_community		(shared_str* our, shared_str* enemy);
 	static	bool		ignore_community		(shared_str const& check_community);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

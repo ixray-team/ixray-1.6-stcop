@@ -15,9 +15,9 @@ private:
 	typedef CInventoryItemObject inherited;
 public:
 			CScope ();
-	virtual ~CScope();
-	
-	virtual CScope* cast_addon_scope() {return this;}
+	virtual ~CScope() override;
+
+	virtual CScope* cast_addon_scope() override {return this;}
 	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

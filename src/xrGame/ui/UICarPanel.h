@@ -21,7 +21,7 @@ private:
 
 public:
     // Установить
-    ~CUICarPanel();
+    virtual ~CUICarPanel() override;
 
     void SetCarHealth(float value);
     void SetCarFuel(float value);
@@ -33,5 +33,5 @@ public:
     void SetLightLamp(bool On);
     virtual void Draw() override;
 
-    virtual CUIWindow* ui_cast_window() { return this; }
+    virtual CUIWindow* ui_cast_window() override { return this; }
 };

@@ -89,23 +89,23 @@ protected:
 
 public:
 	UIUpgrade(CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder);
-	virtual ~UIUpgrade();
+	virtual ~UIUpgrade() override;
 
 	void init_upgrade(const char* upgrade_id, CInventoryItem& item);
 
 	void load_from_xml(CUIXml& ui_xml, int i_column, int i_cell, Frect const* t_cell_border, Frect const& t_cell_item);
 	void set_texture(Layer layer, const char* texture);
-			
-	virtual	void Draw() override;
-	virtual	void Update() override;
-	virtual	void Reset() override;
+
+	virtual void Draw() override;
+	virtual void Update() override;
+	virtual void Reset() override;
 	bool CanBeApplied() const { return m_state == STATE_ENABLED || m_state == STATE_FOCUSED || m_state == STATE_TOUCHED; }
 
 	void update_upgrade_state();
 	bool OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state);
 	void update_mask();
 	void update_item(CInventoryItem* inv_item);
-				 
+
 	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
 	virtual void OnFocusReceive() override;
 	virtual void OnFocusLost() override;
@@ -126,7 +126,7 @@ public:
 	CUIInventoryUpgradeWnd* get_upgrade_window() { return m_parent_wnd; }
 	void attach_point(CUIUpgradePoint* point);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 public:			
 	CUIUpgradePoint* m_point = nullptr;
@@ -142,13 +142,13 @@ private:
 
 public:
 	CUIUpgradePoint(UIUpgrade* upgr);
-	virtual	~CUIUpgradePoint() = default;
+	virtual ~CUIUpgradePoint() override = default;
 
 	void load_from_xml(CUIXml& ui_xml, int i_cell);
 	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
 	virtual void OnFocusReceive() override;
 	virtual void OnFocusLost() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
 };

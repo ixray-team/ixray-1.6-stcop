@@ -27,7 +27,7 @@ private:
 public:
 	xr_vector<u8> marshal_save_data;
 	IC				CALifeStorageManager	(xrServer *server, const char* section);
-	virtual			~CALifeStorageManager	();
+	virtual ~CALifeStorageManager	() override;
 			bool	load					(const char*	save_name = 0);
 			void	save					(const char*	save_name = 0, bool update_name = true, bool non_async = false);
 			void	save					(NET_Packet &net_packet);

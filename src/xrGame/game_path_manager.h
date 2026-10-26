@@ -37,15 +37,15 @@ class
 		_index_type
 	> inherited;
 protected:
-	IC	virtual	void	before_search				(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id);
-	IC	virtual	void	after_search				();
+	IC virtual void	before_search				(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id) override;
+	IC virtual void	after_search				() override;
 
 public:
 	IC					CBasePathManager			(CRestrictedObject *object);
 	IC	virtual	void	reinit						(const IGameGraph *graph = 0);
 	IC			bool	actual						() const;
-	IC	virtual	void	select_intermediate_vertex	();
-	IC	virtual	bool	completed					() const;
+	IC virtual void	select_intermediate_vertex	() override;
+	IC virtual bool	completed					() const override;
 };
 
 #include "game_path_manager_inline.h"

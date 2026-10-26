@@ -18,8 +18,8 @@ public:
 	EEffectorPPType		m_tEffectorType;
 
 	IC					CScriptEffector		(int iType, float time);
-	virtual				~CScriptEffector	();
-	virtual	bool		Process				(SPPInfo &pp);
+	virtual ~CScriptEffector	() override;
+	virtual bool		Process				(SPPInfo &pp) override;
 	virtual	bool		process				(SPPInfo *pp);
 	virtual	void		Add					();
 	virtual	void		Remove				();

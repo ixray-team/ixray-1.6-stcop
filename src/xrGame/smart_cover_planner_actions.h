@@ -50,11 +50,11 @@ private:
 
 public:
 						change_loophole				(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual void		finalize					();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -68,12 +68,12 @@ private:
 
 public:
 						non_animated_change_loophole(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
-	virtual bool		is_animated_action			();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual bool		is_animated_action			() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -87,12 +87,12 @@ private:
 
 public:
 						exit						(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
-	virtual bool		is_animated_action			();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual bool		is_animated_action			() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
 };
 
 } // namespace smart_cover

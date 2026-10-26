@@ -16,21 +16,21 @@ class CMonsterStateManager :
 
 public:
 					CMonsterStateManager	(_Object *obj) : inherited(obj) {}
-	virtual void	reinit					();
-	virtual void	update					();
-	virtual void	force_script_state		(EMonsterState state);
-	virtual void	execute_script_state	();
-	virtual	void	critical_finalize		();
-	virtual	void	remove_links			(CObject* object_) { inherited::remove_links(object_); }
+	virtual void	reinit					() override;
+	virtual void	update					() override;
+	virtual void	force_script_state		(EMonsterState state) override;
+	virtual void	execute_script_state	() override;
+	virtual void	critical_finalize		() override;
+	virtual void	remove_links			(CObject* object_) override { inherited::remove_links(object_); }
 
-	virtual	EMonsterState get_state_type	();
+	virtual EMonsterState get_state_type	() override;
 
-	virtual bool	check_control_start_conditions (ControlCom::EControlType type) 
-											{ return inherited::check_control_start_conditions(type); }
+	virtual bool	check_control_start_conditions (ControlCom::EControlType type) override
+	{ return inherited::check_control_start_conditions(type); }
 
 	// Lain: added
 	#ifdef DEBUG
-	virtual void    add_debug_info          (debug::text_tree& root_s);
+	virtual void    add_debug_info          (debug::text_tree& root_s) override;
 	#endif
 
 protected:

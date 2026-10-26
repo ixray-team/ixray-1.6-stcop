@@ -39,7 +39,7 @@ class CEffectorBobbing final : public CEffectorCam
 
 public:
 	CEffectorBobbing();
-	virtual ~CEffectorBobbing() = default;
+	virtual ~CEffectorBobbing() override = default;
 	void SelectBobbingParams(bool zoom_mode, bool is_limping, float& old_phase, float& old_freq, float& old_amp, u32 mstate, float time, float& amp, float& st);
 	virtual bool ProcessCam(SCamEffectorInfo& info) override;
 	void SetState(u32 st, bool limping, bool ZoomMode);

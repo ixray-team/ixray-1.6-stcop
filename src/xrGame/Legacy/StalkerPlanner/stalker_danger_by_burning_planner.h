@@ -14,8 +14,8 @@ protected:
 
 public:
 						CStalkerDangerByBurningPlanner	(CAI_Stalker *object = nullptr, const char* action_name = "");
-	virtual	void		setup							(CAI_Stalker *object, CPropertyStorage *storage);
-	virtual void		initialize						();
-	virtual void		update							();
-	virtual void		finalize						();
+	virtual void		setup							(CAI_Stalker *object, CPropertyStorage *storage) override;
+	virtual void		initialize						() override;
+	virtual void		update							() override;
+	virtual void		finalize						() override;
 };

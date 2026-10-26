@@ -25,7 +25,7 @@ public:
 	CZoneEffector*		m_actor_effector;
 	bool m_use_rain_collide = false;
 
-	virtual void OnRainCollide(Fvector rainCollisionPosition) override;
+    virtual void OnRainCollide(Fvector rainCollisionPosition) override;
 
 protected:
 	EAuraPostEffectType GetAuraPostEffectType();
@@ -39,32 +39,32 @@ public:
 	XPROPERTY(LuaConstructor)
 	CAnomalyZone();
 
-	virtual ~CAnomalyZone();
+    virtual ~CAnomalyZone() override;
 
-	virtual bool net_Spawn(CSE_Abstract* DC) override;
-	virtual void net_Import(NET_Packet& P) override;
-	virtual void net_Export(NET_Packet& P) override;
-	virtual void Load(const char* section) override;
-	virtual void net_Destroy() override;
+    virtual bool net_Spawn(CSE_Abstract* DC) override;
+    virtual void net_Import(NET_Packet& P) override;
+    virtual void net_Export(NET_Packet& P) override;
+    virtual void Load(const char* section) override;
+    virtual void net_Destroy() override;
 
-	virtual void save(NET_Packet &output_packet) override;
-	virtual void load(IReader &input_packet) override;
-	virtual void Serialize(ISaveObject& Object) override;
-	
-	virtual		void	UpdateCL						();
+    virtual void save(NET_Packet &output_packet) override;
+    virtual void load(IReader &input_packet) override;
+    virtual void Serialize(ISaveObject& Object) override;
+
+    virtual void	UpdateCL						() override;
 	virtual		void	UpdateWorkload					(u32 dt);
-	virtual		float	shedule_Scale					() override;
-	virtual		void	shedule_Update					(u32 dt);
+    virtual float	shedule_Scale					() override;
+    virtual void	shedule_Update					(u32 dt) override;
 	virtual		void	enter_Zone						(SZoneObjectInfo& io);
 	virtual		void	exit_Zone						(SZoneObjectInfo& io);
-	virtual		void	feel_touch_new					(CObject* O);
-	virtual		void	feel_touch_delete				(CObject* O);
-	virtual		bool	feel_touch_contact				(CObject* O);
-	virtual		bool	feel_touch_on_contact			(CObject* O);
+    virtual void	feel_touch_new					(CObject* O) override;
+    virtual void	feel_touch_delete				(CObject* O) override;
+    virtual bool	feel_touch_contact				(CObject* O) override;
+    virtual bool	feel_touch_on_contact			(CObject* O) override;
 				
 				float	effective_radius				(float nearest_shape_radius);
-	virtual		void	net_Relcase						(CObject* O);
-	virtual		void	OnEvent							(NET_Packet& P, u16 type);
+    virtual void	net_Relcase						(CObject* O) override;
+    virtual void	OnEvent							(NET_Packet& P, u16 type) override;
 
 				float	GetMaxPower						()							{return m_fMaxPower;}
 				void	SetMaxPower						(float p)					{m_fMaxPower = p;}
@@ -76,7 +76,7 @@ public:
 
 	xr_vector<SZoneObjectInfo>& GetObjectInfoMap() { return m_ObjectInfoMap; }
 
-	virtual CAnomalyZone* cast_anomaly_zone() { return this; }
+    virtual CAnomalyZone* cast_anomaly_zone() override { return this; }
 
 	//различные состояния в которых может находиться зона
 	typedef enum {
@@ -294,8 +294,7 @@ public:
 															float hit_impulse, 
 															ALife::EHitType hit_type);
 protected:
-
-	virtual	void	Hit					(SHit* pHDS);
+    virtual void	Hit					(SHit* pHDS) override;
 
 
 	//для визуализации зоны
@@ -313,7 +312,7 @@ protected:
 				void		PlayObjectIdleParticles		(CGameObject* pObject);
 				void		StopObjectIdleParticles		(CGameObject* pObject);
 
-	virtual		bool		IsVisibleForZones			() { return false;}
+    virtual bool		IsVisibleForZones			() override { return false;}
 
 	//обновление, если зона передвигается
 	virtual		void		OnMove						();
@@ -331,9 +330,9 @@ protected:
 	u32						m_ef_weapon_type;
 public:
 	void					CalcDistanceTo				(const Fvector& P, float& dist, float& radius);
-	virtual u32				ef_anomaly_type				() const;
-	virtual u32				ef_weapon_type				() const;
-	virtual	bool			register_schedule			() const {return true;}
+    virtual u32				ef_anomaly_type				() const override;
+    virtual u32				ef_weapon_type				() const override;
+    virtual bool			register_schedule			() const override {return true;}
 	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
 
 	CGameObject*			ScanObjects(float distance, Fvector scanCenter, Fvector barierCenter, float barierRadius);
@@ -342,8 +341,8 @@ public:
 	xr_vector<CGameObject*> GetSortedByDistanceSpatialObjects(float distance, Fvector centerPos, u64 mask);
 	void					AffectCurveDamade(CGameObject* obj);
 	// optimization FAST/SLOW mode
-public:	
-	virtual bool			AlwaysTheCrow				();
+public:
+    virtual bool			AlwaysTheCrow				() override;
 	void					o_switch_2_fast				();
 	void					o_switch_2_slow				();
 

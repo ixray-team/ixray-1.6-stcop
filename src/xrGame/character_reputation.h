@@ -29,7 +29,7 @@ private:
 
 public:
 	CHARACTER_REPUTATION		():m_current_value(-type_max(s32)){};
-	~CHARACTER_REPUTATION		(){};
+	virtual ~CHARACTER_REPUTATION		() override {};
 
 	void						set				(s32);
 

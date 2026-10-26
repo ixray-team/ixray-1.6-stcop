@@ -65,13 +65,13 @@ class CUIMpServerAdm final :	public CUIWindow, public CUIWndCallback
 		CUICheckButton*		m_pBearerCantSprintCheck;
 public:
 							CUIMpServerAdm();
-							~CUIMpServerAdm();
+		virtual ~CUIMpServerAdm() override;
 				void		Init(CUIXml& xml_doc);
-		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 				void		ShowChangeWeatherBtns();
 				void		ShowChangeGameTypeBtns();
 				void		ShowChangeGameLimitsBtns();
 				void		OnBackBtn();
 				bool		IsBackBtnShown() {return m_pBackBtn->IsShown();};
-		virtual CUIWindow* ui_cast_window() { return this; }
+		virtual CUIWindow* ui_cast_window() override { return this; }
 };

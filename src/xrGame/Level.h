@@ -173,11 +173,11 @@ public:
 	void						SetNumCrSteps			( u32 NumSteps );
 	bool						In_NetCorrectionPrediction	() {return m_bIn_CrPr;};
 
-	virtual void				OnMessage				(void* data, u32 size);
-	virtual void				OnInvalidHost			();
-	virtual void				OnInvalidPassword		();
-	virtual void				OnSessionFull			();
-	virtual void				OnConnectRejected		();
+	virtual void				OnMessage				(void* data, u32 size) override;
+	virtual void				OnInvalidHost			() override;
+	virtual void				OnInvalidPassword		() override;
+	virtual void				OnSessionFull			() override;
+	virtual void				OnConnectRejected		() override;
 
 	CElectronicsProblemsManager* GetElectronicsProblemsManager() { return m_electronics_problems_manager; }
 
@@ -306,23 +306,23 @@ public:
 	shared_str					m_caClientOptions;
 
 	// Starting/Loading
-	virtual bool				net_Start				( const char* op_server, const char* op_client);
-	virtual void				net_Save				( const char* name );
-	virtual void				net_Stop				( );
+	virtual bool				net_Start				( const char* op_server, const char* op_client) override;
+	virtual void				net_Save				( const char* name ) override;
+	virtual void				net_Stop				( ) override;
 	virtual bool				net_Start_client		( const char* name );
-	virtual void				net_Update				( );
+	virtual void				net_Update				( ) override;
 
 
-	virtual bool				Load_GameSpecific_Before( );
-	virtual bool				Load_GameSpecific_After ( );
+	virtual bool				Load_GameSpecific_Before( ) override;
+	virtual bool				Load_GameSpecific_After ( ) override;
 
 	// Events
-	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 );
-	virtual void	_BCL		OnFrame					( void );
-	virtual void				OnRender				( );
+	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 ) override;
+	virtual void	_BCL		OnFrame					( void ) override;
+	virtual void				OnRender				( ) override;
 
-	virtual	shared_str			OpenDemoFile			(const char* demo_file_name);
-	virtual void				net_StartPlayDemo		();
+	virtual shared_str			OpenDemoFile			(const char* demo_file_name) override;
+	virtual void				net_StartPlayDemo		() override;
 
 	void						cl_Process_Event		(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
@@ -332,23 +332,23 @@ public:
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
 
 	// Input
-	virtual	void				IR_OnKeyboardPress		( int btn );
-	virtual void				IR_OnKeyboardRelease	( int btn );
-	virtual void				IR_OnKeyboardHold		( int btn );
-	virtual void				IR_OnMousePress			( int btn );
-	virtual void				IR_OnMouseRelease		( int btn );
-	virtual void				IR_OnMouseHold			( int btn );
-	virtual void				IR_OnMouseMove			( int, int);
-	virtual void				IR_OnMouseStop			( int, int);
-	virtual void				IR_OnMouseWheel			( int direction);
-	virtual void				IR_OnActivate			(void);
-	virtual void				IR_OnGyroscopeMove		( Fvector3);
-	virtual void				IR_OnTouchpadMove		( Fvector2);
+	virtual void				IR_OnKeyboardPress		( int btn ) override;
+	virtual void				IR_OnKeyboardRelease	( int btn ) override;
+	virtual void				IR_OnKeyboardHold		( int btn ) override;
+	virtual void				IR_OnMousePress			( int btn ) override;
+	virtual void				IR_OnMouseRelease		( int btn ) override;
+	virtual void				IR_OnMouseHold			( int btn ) override;
+	virtual void				IR_OnMouseMove			( int, int) override;
+	virtual void				IR_OnMouseStop			( int, int) override;
+	virtual void				IR_OnMouseWheel			( int direction) override;
+	virtual void				IR_OnActivate			(void) override;
+	virtual void				IR_OnGyroscopeMove		( Fvector3) override;
+	virtual void				IR_OnTouchpadMove		( Fvector2) override;
 
-	virtual void				IR_GamepadUpdateStick	(int id, Fvector2 value);
-	virtual void				IR_GamepadKeyPress		(int id);
-	virtual void				IR_GamepadKeyHold		(int id);
-	virtual void				IR_GamepadKeyRelease	(int id);
+	virtual void				IR_GamepadUpdateStick	(int id, Fvector2 value) override;
+	virtual void				IR_GamepadKeyPress		(int id) override;
+	virtual void				IR_GamepadKeyHold		(int id) override;
+	virtual void				IR_GamepadKeyRelease	(int id) override;
 
 			int					get_RPID				(const char* name);
 
@@ -359,7 +359,7 @@ public:
 	void						ClientSend				();
 	void						ClientSendProfileData	();
 	void						ClientSave				();
-	virtual	void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0);
+	virtual void				Send					(NET_Packet& P, u32 dwFlags=DPNSEND_GUARANTEED, u32 dwTimeout=0) override;
 	
 	void						g_cl_Spawn				(const char* name, u8 rp, u16 flags, Fvector pos);	// only ask server
 	void						g_sv_Spawn				(CSE_Abstract* E);					// server reply/command spawning
@@ -383,20 +383,20 @@ public:
 
 	// C/D
 	CLevel();
-	virtual ~CLevel();
+	virtual ~CLevel() override;
 
 	//названияе текущего уровня
 	void						set_name				(const shared_str& level_name) { map_data.m_name = level_name; }
-	virtual shared_str			name					() const;
+	virtual shared_str			name					() const override;
 			shared_str			version					() const { return map_data.m_map_version.c_str(); } //this method can be used ONLY from CCC_ChangeGameType
 
-	virtual void				GetLevelInfo		( CServerInfo* si );
+	virtual void				GetLevelInfo		( CServerInfo* si ) override;
 
 	//gets the time from the game simulation
 	
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID GetStartGameTime();
-	virtual ALife::_TIME_ID GetGameTime();
+	virtual ALife::_TIME_ID GetGameTime() override;
 	//возвращает время для энвайронмента в милисекундах относительно начала игры
     ALife::_TIME_ID GetEnvironmentGameTime() const override;
     static_assert(std::is_same_v<ALife::_TIME_ID, u64>, "Please, change return type of GetEnvironmentGameTime in IGame_Level and CGameLevel accordingly");
@@ -415,9 +415,9 @@ public:
 	float				GetGameDayTimeSec		();
     float               GetEnvironmentGameDayTimeSec() const override;
 
-    virtual float       GetEnvironmentTimeFactor() const override;
-    virtual void        SetEnvironmentTimeFactor(const float fTimeFactor) override;
-    virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
+	virtual float       GetEnvironmentTimeFactor() const override;
+	virtual void        SetEnvironmentTimeFactor(const float fTimeFactor) override;
+	virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
     //virtual u64         GetEnvironmentGameTime() const override;
 
   protected:
@@ -441,7 +441,7 @@ public:
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id, bool return_item = false);
-	virtual	void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) override;
+	virtual void			SpawnItem(const char* section, const Fvector &position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) override;
 	virtual IGame_Patrol*	CreatePatrol(const char* patrol) override;
 			
 protected:
@@ -456,7 +456,7 @@ private:
 public:
 	bool IsWorldTeardown() const { return WorldTeardown; }
 			void			remove_objects				();
-			virtual void	OnSessionTerminate		(const char* reason);
+	virtual void	OnSessionTerminate		(const char* reason) override;
 			
 			file_transfer::client_site*					m_file_transfer;
 			

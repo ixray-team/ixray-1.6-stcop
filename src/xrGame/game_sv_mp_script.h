@@ -6,11 +6,11 @@ class game_sv_mp_script : public game_sv_mp
 {
 	typedef game_sv_mp inherited;
 private:
-	virtual		void				Create					(shared_str &options);
+	virtual void				Create					(shared_str &options) override;
 
 public:
 									game_sv_mp_script		():inherited(){};
-	virtual							~game_sv_mp_script		(){};
+	virtual ~game_sv_mp_script		() override {};
 	virtual		void				Create					(const char* options){};
 	void				Update					() override {inherited::Update();};
 	void				OnPlayerConnect			(ClientID id_who) override;
@@ -30,7 +30,7 @@ protected:
 				void				SetHitParams			(NET_Packet* P, float impulse, float power);
 				float				GetHitParamsPower		(NET_Packet* P);
 				float				GetHitParamsImpulse		(NET_Packet* P);
-virtual		void				switch_Phase			(u32 new_phase);
+	virtual void				switch_Phase			(u32 new_phase) override;
 				void				SpawnPlayer				(ClientID id, const char* N, const char* SkinName, RPoint rp);
 
 

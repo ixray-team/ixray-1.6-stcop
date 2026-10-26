@@ -19,7 +19,7 @@ private:
 
 public:
 	CExplosiveItem() = default;
-	virtual ~CExplosiveItem() = default;
+	virtual ~CExplosiveItem() override = default;
 
 	virtual void Load(const char* section) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override { return CInventoryItemObject::net_Spawn(DC); }
@@ -31,10 +31,10 @@ public:
 	virtual void GetRayExplosionSourcePos(Fvector& pos) override;
 	virtual void ActivateExplosionBox(const Fvector& size, Fvector& in_out_pos) override;
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
-	virtual	void Hit(SHit* pHDS) override;
+	virtual void Hit(SHit* pHDS) override;
 	virtual void shedule_Update(u32 dt) override;
 	virtual bool shedule_Needed() override;
-	
+
 	virtual void UpdateCL() override;
 	virtual void renderable_Render() override;
 	virtual void ChangeCondition(float fDeltaCondition) override { CInventoryItem::ChangeCondition(fDeltaCondition); };

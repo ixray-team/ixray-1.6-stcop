@@ -6,13 +6,13 @@ class CStateMonsterPanicRun : public CState<_Object> {
 
 public:
 						CStateMonsterPanicRun	(_Object *obj) : inherited(obj) {}
-	virtual				~CStateMonsterPanicRun	() = default;
+	virtual ~CStateMonsterPanicRun	() override = default;
 
-	virtual void		initialize				();
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual bool		check_completion		();
+	virtual bool		check_completion		() override;
 };
 
 #include "monster_state_panic_run_inline.h"

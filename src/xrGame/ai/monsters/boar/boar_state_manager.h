@@ -8,8 +8,8 @@ class CStateManagerBoar : public CMonsterStateManager<CAI_Boar> {
 
 public:
 
-					CStateManagerBoar	(CAI_Boar *monster); 
+					CStateManagerBoar	(CAI_Boar *monster);
 
-	virtual void	execute				();
-	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	execute				() override;
+	virtual void	remove_links		(CObject* object_) override { inherited::remove_links(object_);}
 };

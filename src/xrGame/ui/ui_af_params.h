@@ -20,12 +20,12 @@ public:
 	};
 
 					CUIArtefactParams		(const CParamType& type);
-	virtual			~CUIArtefactParams		();
+	virtual ~CUIArtefactParams		() override;
 			void	InitFromXml				(CUIXml& xml);
 			bool	Check					(const shared_str& af_section);
 			void	SetInfo					(CInventoryItem& pInvItem);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
     UIArtefactParamItem* CreateItem(CUIXml& uiXml, const char* section,
