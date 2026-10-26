@@ -644,7 +644,8 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		//update heading if needed
 		if (map->Heading())
 		{
-			if (sp->Heading())
+			// Spots with a fixed heading_angle (level changers, etc.) keep their configured heading.
+			if (sp->Heading() && !sp->GetConstHeading())
 			{
 				Fvector2 dir_global = CalcDirection();
 				float h = dir_global.getH();
