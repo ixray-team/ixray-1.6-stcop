@@ -25,7 +25,7 @@ public:
 
 public:
 	IC								CSpaceRestrictionBridge		(CSpaceRestrictionBase *object);
-	virtual							~CSpaceRestrictionBridge	();
+	virtual ~CSpaceRestrictionBridge	() override;
 			void					change_implementation		(CSpaceRestrictionBase *object);
 			const xr_vector<u32>	&border						() const;
 			bool					initialized					() const;

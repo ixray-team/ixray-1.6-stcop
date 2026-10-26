@@ -17,20 +17,20 @@ class CEatableItemObject :
 {
 public:
 	CEatableItemObject() = default;
-	virtual	~CEatableItemObject() = default;
+	virtual ~CEatableItemObject() override = default;
 	virtual DLL_Pure* _construct() override;
 
 public:
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-	virtual CInventoryItem* cast_inventory_item() { return this; }
-	virtual CAttachableItem* cast_attachable_item() { return this; }
-	virtual CFoodItem* cast_food_item() { return nullptr; }
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CEatableItem* cast_eatable_item() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CInventoryItem* cast_inventory_item() override { return this; }
+	virtual CAttachableItem* cast_attachable_item() override { return this; }
+	virtual CFoodItem* cast_food_item() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CEatableItem* cast_eatable_item() override { return this; }
 
 public:
 	virtual void Load(const char* section) override;
-	virtual	void Hit(SHit* pHDS) override;
+	virtual void Hit(SHit* pHDS) override;
 
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 	virtual void OnH_A_Independent() override;
@@ -44,7 +44,7 @@ public:
 	virtual void net_Export(NET_Packet& P) override;					// export to server
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
-	virtual void Serialize(ISaveObject& Object);
+	virtual void Serialize(ISaveObject& Object) override;
 	virtual bool net_SaveRelevant() override { return true; }
 	virtual void renderable_Render() override;
 	virtual void reload(const char* section) override;
@@ -57,7 +57,7 @@ public:
 	virtual void PH_B_CrPr() override; // actions & operations before physic correction-prediction steps
 	virtual void PH_I_CrPr() override; // actions & operations after correction before prediction steps
 #ifdef DEBUG
-	virtual void PH_Ch_CrPr();
+	virtual void PH_Ch_CrPr() override;
 #endif
 	virtual void PH_A_CrPr() override; // actions & operations after phisic correction-prediction steps
 	virtual bool NeedToDestroyObject() const override;

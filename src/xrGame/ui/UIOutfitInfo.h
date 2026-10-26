@@ -15,7 +15,7 @@ class CUIOutfitImmunity final : public CUIStatic
 {
 public:
 					CUIOutfitImmunity	();
-	virtual			~CUIOutfitImmunity	();
+	virtual ~CUIOutfitImmunity	() override;
 
 	enum class InitResult
 	{
@@ -31,7 +31,7 @@ public:
 			bool	GetLegacyMode		() { return m_legacy_mode; }
 			void	SetAfValue			( float val ) { m_af_value = val;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	bool					m_legacy_mode = false;
@@ -53,7 +53,7 @@ class CUIOutfitInfo final : public CUIWindow
 {
 public:
 					CUIOutfitInfo		();
-	virtual			~CUIOutfitInfo		();
+	virtual ~CUIOutfitInfo		() override;
 
 			void 	InitFromXml			( CUIXml& xml_doc );
 			void 	UpdateInfo			( CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit = NULL );	
@@ -64,7 +64,7 @@ public:
         float magnitude, const shared_str& unit,
         shared_str translationId);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	enum				{ max_count = ALife::eHitTypeMax-2 };

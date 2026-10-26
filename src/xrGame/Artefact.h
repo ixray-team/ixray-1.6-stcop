@@ -17,29 +17,29 @@ class CArtefact : public CHudItemObject,
 	using inherited = CHudItemObject;
 public:
 	CArtefact();
-	virtual ~CArtefact() = default;
+	virtual ~CArtefact() override = default;
 
-	virtual void					Load							(const char* section);
-	virtual bool					net_Spawn						(CSE_Abstract* DC);
-	virtual void					net_Destroy						();
+	virtual void					Load							(const char* section) override;
+	virtual bool					net_Spawn						(CSE_Abstract* DC) override;
+	virtual void					net_Destroy						() override;
 
-	virtual void					OnH_A_Chield					();
-	virtual void					OnH_B_Independent				(bool just_before_destroy);
-	virtual void					OnActiveItem					();
-	virtual void					OnHiddenItem					();
-	
-	virtual void					UpdateCL						();
-	virtual void					shedule_Update					(u32 dt);	
+	virtual void					OnH_A_Chield					() override;
+	virtual void					OnH_B_Independent				(bool just_before_destroy) override;
+	virtual void					OnActiveItem					() override;
+	virtual void					OnHiddenItem					() override;
+
+	virtual void					UpdateCL						() override;
+	virtual void					shedule_Update					(u32 dt) override;	
 			void					UpdateWorkload					(u32 dt);
 
-	
-	virtual bool					CanTake							() const;
 
-	virtual bool					renderable_ShadowGenerate		()		{ return false;	}
-	virtual bool					renderable_ShadowReceive		()		{ return true;	}
-	virtual void					create_physic_shell				();
+	virtual bool					CanTake							() const override;
 
-	virtual CArtefact*				cast_artefact					()		{return this;}
+	virtual bool					renderable_ShadowGenerate		() override { return false;	}
+	virtual bool					renderable_ShadowReceive		() override { return true;	}
+	virtual void					create_physic_shell				() override;
+
+	virtual CArtefact*				cast_artefact					() override {return this;}
 
 	float	GetHealthPower() { return m_fHealthRestoreSpeed; }
 	float	GetRadiationPower() { return m_fRadiationRestoreSpeed; }
@@ -98,8 +98,8 @@ public:
 	virtual void					StartLights();
 	virtual void					StopLights();
 
-	virtual void					PhDataUpdate					(float step);
-	virtual void					PhTune							(float step)	{};
+	virtual void					PhDataUpdate					(float step) override;
+	virtual void					PhTune							(float step) override {};
 
 	float							AdditionalInventoryWeight		() const {return ArtefactDesc().m_additional_weight;}
 	
@@ -112,22 +112,23 @@ public:
 	enum EAFHudStates :u8 {
 		eActivating = eLastBaseState+1,
 	};
-	virtual void					Interpolate			();
 
-	virtual	void					PlayAnimIdle		();
-	virtual void					MoveTo(Fvector const & position);
+	virtual void					Interpolate			() override;
+
+	virtual void					PlayAnimIdle		() override;
+	virtual void					MoveTo(Fvector const & position) override;
 	virtual void					StopActivation		();
 
-	virtual void					ForceTransform		(const Fmatrix& m);
+	virtual void					ForceTransform		(const Fmatrix& m) override;
 
 	virtual void					Hide				();
 	virtual void					Show				();
-	virtual	void					UpdateXForm			();
-	virtual bool					Action				(u16 cmd, u32 flags);
-	virtual void					OnStateSwitch		(u8 S);
-	virtual void					OnAnimationEnd		(u8 state);
+	virtual void					UpdateXForm			() override;
+	virtual bool					Action				(u16 cmd, u32 flags) override;
+	virtual void					OnStateSwitch		(u8 S) override;
+	virtual void					OnAnimationEnd		(u8 state) override;
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
-	virtual u32						Cost				() const;
+	virtual u32						Cost				() const override;
 	float							DegradationRate		() {return ArtefactDesc().m_fDegradationRate;}
 
 	// optimization FAST/SLOW mode
@@ -143,7 +144,7 @@ public:
 		o_fastmode			= false	;
 		//processing_deactivate		();
 	}
-	
+
 	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); };
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

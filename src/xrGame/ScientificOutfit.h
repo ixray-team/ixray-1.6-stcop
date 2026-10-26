@@ -11,5 +11,5 @@ class CScientificOutfit final : public CCustomOutfit
 {
 public:
 	CScientificOutfit() = default;
-	virtual ~CScientificOutfit() = default;
+	virtual ~CScientificOutfit() override = default;
 };

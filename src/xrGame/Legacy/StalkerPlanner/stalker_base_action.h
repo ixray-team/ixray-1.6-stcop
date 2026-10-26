@@ -23,9 +23,9 @@ protected:
 
 public:
 						CStalkerActionBase			(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 	IC		CAI_Stalker	&object						() const
 	{
 		VERIFY			(m_object);

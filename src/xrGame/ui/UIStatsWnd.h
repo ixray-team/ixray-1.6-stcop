@@ -16,7 +16,7 @@ class CUIStatsListItem: public CUIListItem
 {
 	typedef CUIListItem inherited;
 public:
-	virtual ~CUIStatsListItem() {};
+	virtual ~CUIStatsListItem() override {};
 	void XmlInit(const char *path, CUIXml &uiXml);
 	void Highlight(bool bHighlight);
 	void SetSubItemColor(u32 uItemIndex, u32 uColor);
@@ -33,7 +33,7 @@ private:
 	string1024	XML_NAME;
 public:
 	CUIStatsWnd(const char* XML = nullptr);
-	virtual ~CUIStatsWnd();
+	virtual ~CUIStatsWnd() override;
 
 	virtual void Init(const char* XML = nullptr);
 //	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);

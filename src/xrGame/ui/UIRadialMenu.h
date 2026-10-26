@@ -26,23 +26,23 @@ public:
 
 public:
 	CUIRadialMenu();
-	virtual ~CUIRadialMenu() = default;
+	virtual ~CUIRadialMenu() override = default;
 
 	virtual void Init() {};
 	virtual void Init(CUIXml* pXml);
 	virtual void TryActivateSelectedSector() { }
-	virtual void Show(bool status);
+	virtual void Show(bool status) override;
 
-	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action) { return false;  };
+	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action) override { return false;  };
 
-	virtual bool StopAnyMove() { return false; }
-	virtual bool NeedCursor()const { return false; }
-	virtual bool ForceCursorInput() { return true; }
-	virtual bool NeedCenterCursor()const { return false; }
-	virtual bool OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
-	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
-	virtual bool OnGyroscopeAction(Fvector3 value) { return true; } // do not use gyroscope for radial menu
-	virtual bool OnTouchpadAction(Fvector2 value);
+	virtual bool StopAnyMove() override { return false; }
+	virtual bool NeedCursor()const override { return false; }
+	virtual bool ForceCursorInput() override { return true; }
+	virtual bool NeedCenterCursor()const override { return false; }
+	virtual bool OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action) override;
+	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
+	virtual bool OnGyroscopeAction(Fvector3 value) override { return true; } // do not use gyroscope for radial menu
+	virtual bool OnTouchpadAction(Fvector2 value) override;
 
 	bool isInitialized = false;
 	CUIGamepadLegend* m_pGamepadLegend = nullptr;

@@ -108,7 +108,7 @@ protected:
 
 public:
 									game_sv_Deathmatch		();
-				virtual				~game_sv_Deathmatch		();
+	virtual ~game_sv_Deathmatch		() override;
 	void				Create					(shared_str &options) override;
 
 	const char*				type_name				() const override { return "deathmatch";};
@@ -165,7 +165,7 @@ public:
 	virtual		u32					RP_2_Use				(CSE_Abstract* E);
 
 #ifdef DEBUG_DRAW
-	virtual		void				OnRender				();
+	virtual void				OnRender				() override;
 #endif
 
 	void				SetSkin					(CSE_Abstract* E, u16 Team, u16 ID) override;//	{};
@@ -193,11 +193,11 @@ public:
 				int					GetTeamScore			(u32 idx);
 				void				SetTeamScore			(u32 idx, int val);
 				game_PlayerState*	GetWinningPlayer		();
-	virtual		bool				CanHaveFriendlyFire		()	{return false;}
-	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
+	virtual bool				CanHaveFriendlyFire		() override {return false;}
+	virtual void				RespawnPlayer			(ClientID id_who, bool NoSpectator) override;
 	virtual		void				check_InvinciblePlayers	();	
 	virtual		void				check_ForceRespawn		();
-	virtual		void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src);
+	virtual void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src) override;
 	//---------------------------------------------------------------------------------------------------
 	virtual		bool				IsDamageBlockIndEnabled	();
 	virtual		s32					GetTimeLimit			();
@@ -208,7 +208,7 @@ public:
 	virtual		bool				IsAnomaliesEnabled		();
 	virtual		u32					GetAnomaliesTime		();
 
-	virtual		u32					GetNumTeams				() {return (u32)teams.size();};
+	virtual u32					GetNumTeams				() override {return (u32)teams.size();};
 
 	// adtitional methods for predicates
 	void					RespawnPlayerAsSpectator(IClient* client);
@@ -217,8 +217,8 @@ public:
 	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
 
 protected:
-	virtual		void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult);
+	virtual void				WriteGameState			(CInifile& ini, const char* sect, bool bRoundResult) override;
 	shared_str m_not_free_ammo_str;
-	virtual	bool CanChargeFreeAmmo(char const * ammo_section);
+	virtual bool CanChargeFreeAmmo(char const * ammo_section) override;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

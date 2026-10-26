@@ -13,14 +13,14 @@ class CStateMonsterAttackOnRun : public CState<_Object> {
 public:
 					CStateMonsterAttackOnRun		(_Object *obj);
 
-	virtual	void	initialize						();
-	virtual	void	execute							();
-	virtual	void	finalize						();
-	virtual	void	critical_finalize				();
-	virtual void	remove_links					(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize						() override;
+	virtual void	execute							() override;
+	virtual void	finalize						() override;
+	virtual void	critical_finalize				() override;
+	virtual void	remove_links					(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual bool 	check_completion				();
-	virtual bool 	check_start_conditions			();
+	virtual bool 	check_completion				() override;
+	virtual bool 	check_start_conditions			() override;
 
 private:
 	enum			phaze { go_close, go_far, go_prepare };
@@ -68,7 +68,7 @@ private:
 	void			set_movement_phaze				(phaze new_phaze);
 	void			choose_next_atack_animation		();
 	void			select_prepare_fallback_target	();
-	virtual bool	check_control_start_conditions	(ControlCom::EControlType type);
+	virtual bool	check_control_start_conditions	(ControlCom::EControlType type) override;
 };
 
 inline

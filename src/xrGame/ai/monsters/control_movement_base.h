@@ -15,10 +15,10 @@ class CControlMovementBase : public CControl_ComBase {
 	float				m_accel;
 
 public:
-	virtual void	load			(const char* section);
+	virtual void	load			(const char* section) override;
 
-	virtual void	reinit			();
-	virtual void	update_frame	();
+	virtual void	reinit			() override;
+	virtual void	update_frame	() override;
 
 	void			load_velocity	(const char* section, const char* line, u32 param);
 	SVelocityParam	&get_velocity	(u32 velocity_id);

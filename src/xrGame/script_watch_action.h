@@ -45,7 +45,7 @@ public:
 					CScriptWatchAction	(const Fvector &tTarget, float vel1, float vel2);
 	IC				CScriptWatchAction	(CScriptGameObject *tpObjectToWatch, float vel1, float vel2);
 	///////////////////////////////////////////////////////////////////
-	virtual			~CScriptWatchAction	();
+	virtual ~CScriptWatchAction	() override;
 			void	SetWatchObject		(CScriptGameObject *tpObjectToWatch);
 	IC		void	SetWatchType		(SightManager::ESightType tWatchType);
 	IC		void	SetWatchDirection	(const Fvector &tDirection);

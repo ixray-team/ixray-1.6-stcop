@@ -15,16 +15,16 @@ struct CTeleWhirlwindObject : STelekineticObject
 
 	CTeleWhirlwindObject(const STelekineticObjectParams& tele_object_params);
 	void set_throw_power(float throw_pow);
-	virtual void raise(float step);
-	virtual void raise_update();
-	virtual void perform_keep_object(float ph_step);
-	virtual void release();
+	virtual void raise(float step) override;
+	virtual void raise_update() override;
+	virtual void perform_keep_object(float ph_step) override;
+	virtual void release() override;
 	virtual void fire(const Fvector& target);
-	virtual void throw_object(const Fvector& target, float power);
-	virtual void switch_state(ETelekineticState new_state);
+	virtual void throw_object(const Fvector& target, float power) override;
+	virtual void switch_state(ETelekineticState new_state) override;
 	virtual bool destroy_object(const Fvector dir, float val);
 
-	virtual CTeleWhirlwindObject* cast_whirlwind_object() { return this; }
+	virtual CTeleWhirlwindObject* cast_whirlwind_object() override { return this; }
 	virtual CTeleWhirlwindObject* cast_telewhirlwind() { return this; }
 };
 

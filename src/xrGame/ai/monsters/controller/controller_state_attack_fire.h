@@ -10,15 +10,15 @@ class CStateControlFire : public CState<_Object> {
 public:
 
 					CStateControlFire	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateControlFire	() = default;
+	virtual ~CStateControlFire	() override = default;
 
-	virtual void	reinit					();
-	virtual void	initialize				();
-	virtual void	execute					();
-	virtual void	finalize				();
-	virtual void	critical_finalize		();
-	virtual bool	check_completion		();
-	virtual bool	check_start_conditions	();
+	virtual void	reinit					() override;
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	finalize				() override;
+	virtual void	critical_finalize		() override;
+	virtual bool	check_completion		() override;
+	virtual bool	check_start_conditions	() override;
 
 };
 

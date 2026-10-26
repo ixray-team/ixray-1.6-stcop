@@ -15,11 +15,11 @@ public:
 	int					m_iLifeTime = int_max;
 
 						CParticlesObject	(const char* p_name, bool bAutoRemove, bool destroy_on_game_load);
-	virtual				~CParticlesObject	();
+	virtual ~CParticlesObject	() override;
 
-	virtual void		renderable_Render	();
+	virtual void		renderable_Render	() override;
 	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
-	virtual	IRenderable* dcast_Renderable	() { return this; }
+	virtual IRenderable* dcast_Renderable	() override { return this; }
 
 	Fvector&			Position			();
 	void				SetXFORM			(const Fmatrix& m);

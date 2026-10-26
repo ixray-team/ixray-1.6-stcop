@@ -45,38 +45,38 @@ private:
 
 public:
 					CHangingLamp	();
-	virtual			~CHangingLamp	();
+	virtual ~CHangingLamp	() override;
 	void			TurnOn			();
 	void			TurnOff			();
 	bool			IsActive();
-	virtual void	Load			( const char* section);
-	virtual bool	net_Spawn		( CSE_Abstract* DC);
-	virtual void	net_Destroy		();
-	virtual void	shedule_Update	( u32 dt);							// Called by sheduler
-	virtual void	UpdateCL		( );								// Called each frame, so no need for dt
+	virtual void	Load			( const char* section) override;
+	virtual bool	net_Spawn		( CSE_Abstract* DC) override;
+	virtual void	net_Destroy		() override;
+	virtual void	shedule_Update	( u32 dt) override;							// Called by sheduler
+	virtual void	UpdateCL		( ) override;								// Called each frame, so no need for dt
 
 
 	virtual void SpawnInitPhysics(CSE_Abstract	*D) override;
 	virtual CPhysicsShellHolder* PPhysicsShellHolder() override {return PhysicsShellHolder();};
-	virtual	void CopySpawnInit() override;
+	virtual void CopySpawnInit() override;
 	virtual void net_Save(NET_Packet& P) override;
-	virtual	bool net_SaveRelevant() override;
+	virtual bool net_SaveRelevant() override;
 	virtual void save(NET_Packet &output_packet) override;
 	virtual void load(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
-	virtual bool	renderable_ShadowGenerate	( ) { return true;	}
-	virtual bool	renderable_ShadowReceive	( ) { return true;	}
-	
-	virtual	void	Hit				(SHit* pHDS);
-	virtual void	net_Export		(NET_Packet& P);
-	virtual void	net_Import		(NET_Packet& P);
-	virtual bool	UsedAI_Locations();
+	virtual bool	renderable_ShadowGenerate	( ) override { return true;	}
+	virtual bool	renderable_ShadowReceive	( ) override { return true;	}
 
-	virtual CHangingLamp* cast_hanging_lamp() { return this; }
+	virtual void	Hit				(SHit* pHDS) override;
+	virtual void	net_Export		(NET_Packet& P) override;
+	virtual void	net_Import		(NET_Packet& P) override;
+	virtual bool	UsedAI_Locations() override;
 
-	virtual void	Center			(Fvector& C)	const;
-	virtual float	Radius			()				const;
+	virtual CHangingLamp* cast_hanging_lamp() override { return this; }
+
+	virtual void	Center			(Fvector& C)	const override;
+	virtual float	Radius			()				const override;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 #endif //HangingLampH

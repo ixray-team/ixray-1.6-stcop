@@ -16,13 +16,13 @@ class CUIWpnParams final :
 {
 public:
 	CUIWpnParams();
-	virtual ~CUIWpnParams() = default;
+	virtual ~CUIWpnParams() override = default;
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn);
 	bool 					Check				(CInventoryItem& wpn_section);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIDoubleProgressBar	m_progressAccuracy; // red or green
@@ -56,12 +56,12 @@ class CUIConditionParams : public CUIWindow
 {
 public:
 							CUIConditionParams	();
-	virtual					~CUIConditionParams	();
+	virtual ~CUIConditionParams	() override;
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem const* slot_wpn, CInventoryItem const& cur_wpn);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIDoubleProgressBar	m_progress; // red or green

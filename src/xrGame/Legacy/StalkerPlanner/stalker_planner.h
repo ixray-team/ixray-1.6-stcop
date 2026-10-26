@@ -30,20 +30,20 @@ protected:
 			void			add_actions			();
 #ifdef LOG_ACTION
 public:
-	virtual const char*			action2string		(const u32 &action_id);
-	virtual const char*			property2string		(const u32 &property_id);
+	virtual const char*			action2string		(const u32 &action_id) override;
+	virtual const char*			property2string		(const u32 &property_id) override;
 #endif
 
 public:
 							CStalkerPlanner		();
-	virtual					~CStalkerPlanner	();
-	virtual	void			setup				(CAI_Stalker *object);
+	virtual ~CStalkerPlanner	() override;
+	virtual void			setup				(CAI_Stalker *object) override;
 	virtual	void			update				(u32 time_delta);
 	IC		void			affect_cover		(bool value);
 	IC		bool			affect_cover		() const;
 
 #ifdef LOG_ACTION
-	virtual	const char*			object_name			() const;
+	virtual const char*			object_name			() const override;
 #endif
 };
 

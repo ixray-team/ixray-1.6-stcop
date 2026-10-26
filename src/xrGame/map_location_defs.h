@@ -17,10 +17,10 @@ struct SLocationKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 		else
 			return  actual > key.actual;
 	} //move non-actual to tail
-	
-	virtual void save								(IWriter &stream);
-	virtual void load								(IReader &stream);
-	virtual void destroy							();
+
+	virtual void save								(IWriter &stream) override;
+	virtual void load								(IReader &stream) override;
+	virtual void destroy							() override;
 };
 
 ISaveObject& operator<<(ISaveObject& Object, SLocationKey& Data);
@@ -29,5 +29,5 @@ using Locations = xr_vector<SLocationKey>;
 using Locations_it = Locations::iterator;
 
 struct CMapLocationRegistry : public CALifeAbstractRegistry<u16, Locations> {
-	virtual void save(IWriter &stream);
+	virtual void save(IWriter &stream) override;
 };

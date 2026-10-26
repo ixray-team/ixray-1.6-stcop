@@ -18,8 +18,8 @@ private:
 
 public:
 						CStalkerALifePlanner	(CAI_Stalker *object = 0, const char* action_name = "");
-	virtual				~CStalkerALifePlanner	();
-	virtual	void		setup					(CAI_Stalker *object, CPropertyStorage *storage);
+	virtual ~CStalkerALifePlanner	() override;
+	virtual void		setup					(CAI_Stalker *object, CPropertyStorage *storage) override;
 			void		add_evaluators			();
 			void		add_actions				();
 };

@@ -15,6 +15,6 @@ class CSmartZone :
 	public CSpaceRestrictor
 {
 public:
-	virtual	bool	register_schedule	() const {return true;}
+	virtual bool	register_schedule	() const override {return true;}
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

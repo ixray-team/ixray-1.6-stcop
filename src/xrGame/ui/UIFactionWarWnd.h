@@ -94,15 +94,15 @@ private:
 
 public:
 						CUIFactionWarWnd		();
-	virtual				~CUIFactionWarWnd		();
+	virtual ~CUIFactionWarWnd		() override;
 
-	virtual void		SendMessage				( CUIWindow* pWnd, s16 msg, void* pData );
-	virtual void 		Show					( bool status );
-	virtual void		Update					();
+	virtual void		SendMessage				( CUIWindow* pWnd, s16 msg, void* pData ) override;
+	virtual void 		Show					( bool status ) override;
+	virtual void		Update					() override;
 
 			void		ShowInfo				( bool status );
 
-			void		Reset					();
+	virtual void		Reset					() override;
 			void		Init					();
 			
 			bool		InitFactions			();
@@ -111,13 +111,13 @@ public:
 			void		set_amount_our_bonus	( int value );
 			void		set_amount_enemy_bonus	( int value );
 
-	virtual bool 		OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool		OnGamepadKeyHold		(int key);
+	virtual bool 		OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool		OnGamepadKeyHold		(int key) override;
 
 			UIHint*		hint_wnd;
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			int			get_max_member_count	();

@@ -12,6 +12,6 @@ class CAntirad final : public CEatableItemObject
 {
 public:
 	CAntirad() = default;
-	virtual ~CAntirad() = default;
+	virtual ~CAntirad() override = default;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

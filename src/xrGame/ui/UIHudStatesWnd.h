@@ -167,11 +167,11 @@ public:
 	u32					m_ui_weapon_ammo_color_inactive;
 
 					CUIHudStatesWnd		();
-	virtual			~CUIHudStatesWnd	();
+	virtual ~CUIHudStatesWnd	() override;
 
 			void	InitFromXml			( CUIXml& xml, const char* path );
 			void	Load_section		();
-	virtual void	Update				();
+	virtual void	Update				() override;
 //	virtual void	Draw				();
 
 			void	on_connected		();
@@ -194,7 +194,7 @@ public:
 			void	FakeUpdateIndicatorType(u8 t, float power);
 			void	EnableFakeIndicators(bool enable);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	static	ALife::EInfluenceType	get_indik_type( ALife::EHitType hit_type );

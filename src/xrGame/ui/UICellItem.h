@@ -67,12 +67,12 @@ public:
 	CUICellItem* m_represent_parent = nullptr;
 	
 							CUICellItem				();
-	virtual					~CUICellItem			();
+	virtual ~CUICellItem			() override;
 
-	virtual		bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
-	virtual		bool		OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual		void		Draw					();
-	virtual		void		Update					();
+	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action) override;
+	virtual bool		OnMouseAction					(float x, float y, EUIMessages mouse_action) override;
+	virtual void		Draw					() override;
+	virtual void		Update					() override;
 				void		UpdateCustomMarksAndText();
 	virtual		void		OnAfterChild			(CUIDragDropListEx* parent_list)						{};
 
@@ -102,9 +102,9 @@ public:
 	virtual		bool		IsHelper				() { return false; }
 	virtual		void		SetIsHelper				(bool is_helper) { ; }
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
-	virtual CUICellItem* ui_cast_cell_item() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
+	virtual CUICellItem* ui_cast_cell_item() override { return this; }
 	CUIXml& GetXml() { return uiXml;};
 public:
 	static CUICellItem*		m_mouse_selected_item;
@@ -133,16 +133,16 @@ class CUIDragItem final: public CUIWindow, public pureRender, public pureFrame
 public:
 							CUIDragItem(CUICellItem* parent);
 	virtual		void		Init(const ui_shader& sh, const Frect& rect, const Frect& text_rect);
-	virtual					~CUIDragItem();
+	virtual ~CUIDragItem() override;
 				void		SetCustomDraw			(ICustomDrawDragItem* c);
 				void		UnregisterDeviceSequences();
 
 			CUI3dStatic*	wnd						() {return &m_static;}
-	virtual		bool		OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual		void		Draw					();
+	virtual bool		OnMouseAction					(float x, float y, EUIMessages mouse_action) override;
+	virtual void		Draw					() override;
 
-	virtual		void			OnRender				();
-	virtual		void	_BCL	OnFrame					();
+	virtual void			OnRender				() override;
+	virtual void	_BCL	OnFrame					() override;
 
 		CUICellItem*		ParentItem				()							{return m_pParent;}
 				void		SetBackList				(CUIDragDropListEx*l);

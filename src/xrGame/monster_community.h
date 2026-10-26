@@ -34,7 +34,7 @@ private:
 
 public:
 	MONSTER_COMMUNITY			();
-	~MONSTER_COMMUNITY			();
+	virtual ~MONSTER_COMMUNITY			() override;
 
 	void						set				(MONSTER_COMMUNITY_ID);
 	void						set				(MONSTER_COMMUNITY_INDEX);

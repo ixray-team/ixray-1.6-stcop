@@ -8,8 +8,8 @@ class	CStateMonsterControlled : public CState<_Object> {
 
 public:
 						CStateMonsterControlled		(_Object *obj);
-	virtual	void		execute						();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		execute						() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_controlled_inline.h"

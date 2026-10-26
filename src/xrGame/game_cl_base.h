@@ -44,25 +44,24 @@ public:
 
 	WeaponUsageStatistic				*m_WeaponUsageStatistic;
 private:
-				void				switch_Phase			(u32 new_phase)		{inherited::switch_Phase(new_phase);};
+	virtual void				switch_Phase			(u32 new_phase) override {inherited::switch_Phase(new_phase);};
 protected:
-
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase);	
+	virtual void				OnSwitchPhase			(u32 old_phase, u32 new_phase) override;	
 
 	//for scripting enhancement
 	virtual		void				TranslateGameMessage	(u32 msg, NET_Packet& P);
 
 
-	virtual		shared_str			shedule_Name			() const		{ return shared_str("game_cl_GameState"); };
-	virtual		float				shedule_Scale			()				{ return 1.0f;};
-	virtual		bool				shedule_Needed			()				{return true;};
+	virtual shared_str			shedule_Name			() const override { return shared_str("game_cl_GameState"); };
+	virtual float				shedule_Scale			() override { return 1.0f;};
+	virtual bool				shedule_Needed			() override {return true;};
 
 				void				sv_GameEventGen			(NET_Packet& P);
 				void				sv_EventSend			(NET_Packet& P);
 public:
 									game_cl_GameState		();
-	virtual							~game_cl_GameState		();
-				const char*				type_name				() const {return *m_game_type_name;};
+	virtual ~game_cl_GameState		() override;
+	virtual const char*				type_name				() const override {return *m_game_type_name;};
 				void				set_type_name			(const char* s);
 	virtual		void				Init					(){};
 	virtual		void				net_import_state		(NET_Packet& P);
@@ -86,7 +85,7 @@ public:
 	virtual		void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst)	{};
 
 
-	virtual		void				shedule_Update			(u32 dt);
+	virtual void				shedule_Update			(u32 dt) override;
 
 	void							u_EventGen				(NET_Packet& P, u16 type, ALife::_OBJECT_ID dest);
 	void							u_EventSend				(NET_Packet& P);

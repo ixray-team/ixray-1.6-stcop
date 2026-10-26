@@ -7,16 +7,16 @@ class CAdvancedDetector final : public CCustomDetector
 	using inherited = CCustomDetector;
 public:
 	CAdvancedDetector();
-	~CAdvancedDetector() override = default;
-	void on_a_hud_attach() override;
-	void on_b_hud_detach() override;
+	virtual ~CAdvancedDetector() override = default;
+	virtual void on_a_hud_attach() override;
+	virtual void on_b_hud_detach() override;
 
-	virtual CCustomDetector* cast_custom_detector() { return this; }
-	virtual CCustomDevice* cast_custom_device() { return this; }
+	virtual CCustomDetector* cast_custom_detector() override { return this; }
+	virtual CCustomDevice* cast_custom_device() override { return this; }
 	virtual void shedule_Update(u32 dt) override;
 protected:
-	void UpdateAf() override;
-	void CreateUI() override;
+	virtual void UpdateAf() override;
+	virtual void CreateUI() override;
 	CUIArtefactDetectorAdv& ui();
 
 };

@@ -29,7 +29,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangers	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate							();
+	virtual bool	evaluate							() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerUnknown	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate								();
+	virtual bool	evaluate								() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerInDirection	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate									();
+	virtual bool	evaluate									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerWithGrenade	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate									();
+	virtual bool	evaluate									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerBySound	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate								();
+	virtual bool	evaluate								() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ protected:
 	
 public:
 	CStalkerPropertyEvaluatorDangerByBurning(CAI_Stalker *object = nullptr, const char* evaluator_name = "");
-	virtual bool evaluate();
+	virtual bool evaluate() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ private:
 
 public:
 						CStalkerPropertyEvaluatorDangerUnknownCoverActual	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate											();
+	virtual bool	evaluate											() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorDangerGrenadeExploded	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate										();
+	virtual bool	evaluate										() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorGrenadeToExplode	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate									();
+	virtual bool	evaluate									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -150,5 +150,5 @@ protected:
 
 public:
 						CStalkerPropertyEvaluatorEnemyWounded	(CAI_Stalker *object = 0, const char* evaluator_name = "");
-	virtual bool	evaluate								();
+	virtual bool	evaluate								() override;
 };

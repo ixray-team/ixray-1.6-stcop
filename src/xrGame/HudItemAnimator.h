@@ -7,7 +7,7 @@ class CHudItemAnimator final : public CHudAnimatorBase
 {
 public:
 	CHudItemAnimator(CHudAnimatorManager* manager) : CHudAnimatorBase(manager) {}
-	virtual ~CHudItemAnimator() = default;
+	virtual ~CHudItemAnimator() override = default;
 
 	virtual void Load() override;
 	void Update();
@@ -29,7 +29,7 @@ class CBackpackAnimator final : public CHudStateAnimator
 {
 public:
 	CBackpackAnimator(CHudAnimatorManager* m_manager, const shared_str& section);
-	virtual ~CBackpackAnimator() = default;
+	virtual ~CBackpackAnimator() override = default;
 
 	virtual void SwitchAnimator() override;
 
@@ -47,7 +47,7 @@ class CBurnAnimator final : public CHudAnimatorBase
 public:
 	float m_burn_restore = 0.0f;
 	CBurnAnimator(CHudAnimatorManager* m_manager, const shared_str& section);
-	virtual ~CBurnAnimator() = default;
+	virtual ~CBurnAnimator() override = default;
 	virtual void Load() override;
 	void Update();
 

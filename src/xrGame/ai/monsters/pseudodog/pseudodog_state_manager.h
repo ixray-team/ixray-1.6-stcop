@@ -8,7 +8,7 @@ class CStateManagerPseudodog : public CMonsterStateManager<CAI_PseudoDog> {
 	
 public:
 
-					CStateManagerPseudodog	(CAI_PseudoDog *monster); 
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+					CStateManagerPseudodog	(CAI_PseudoDog *monster);
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };

@@ -16,7 +16,7 @@ public:
 
 public:
 	CInventoryBox() = default;
-	virtual	~CInventoryBox() = default;
+	virtual ~CInventoryBox() override = default;
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
@@ -24,7 +24,7 @@ public:
 	virtual void net_Relcase(CObject* O) override;
 	void AddAvailableItems(TIItemContainer& items_container) const;
 	IC bool IsEmpty() const { return m_items.empty(); }
-	virtual	void UpdateCL() override;
+	virtual void UpdateCL() override;
 
 	IC void	set_in_use(bool status) { m_in_use = status; }
 	IC bool	in_use() const { return m_in_use; }

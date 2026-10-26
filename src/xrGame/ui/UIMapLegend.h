@@ -24,15 +24,15 @@ private:
 
 public:
 					UIMapLegend			() = default;
-	virtual			~UIMapLegend		();
+	virtual ~UIMapLegend		() override;
 
 			void	init_from_xml		( CUIXml& xml, const char* path );
 			void	SetUiSounds			(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 
-	virtual void	Show				( bool status );
-	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
+	virtual void	Show				( bool status ) override;
+	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData ) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private: // m_
 	CUIFrameWindow*		m_background;
@@ -53,12 +53,12 @@ private:
 
 public:
 					UIMapLegendItem		();
-	virtual			~UIMapLegendItem	();
+	virtual ~UIMapLegendItem	() override;
 
 			void	init_from_xml		( CUIXml& xml, int index );
 //	virtual void	Update				();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private: // m_
 	CUIStatic*		m_image[4];

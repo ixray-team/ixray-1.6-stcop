@@ -17,17 +17,17 @@ private:
 	typedef CUIDialogWnd inherited;
 public:
 						CUIVotingCategory	();
-	virtual				~CUIVotingCategory	();
+	virtual ~CUIVotingCategory	() override;
 
-	virtual bool		OnKeyboardAction			(int dik, EUIMessages keyboard_action);
-	virtual void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = 0);
+	virtual bool		OnKeyboardAction			(int dik, EUIMessages keyboard_action) override;
+	virtual void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = 0) override;
 
 	void				OnBtn				(int i);
 	void				OnBtnCancel			();
 
-	virtual void		Update				();
+	virtual void		Update				() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	void				InitVotingCategory	();

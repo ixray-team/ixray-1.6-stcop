@@ -8,36 +8,36 @@ class CUIInventoryCellItem :public CUICellItem
 	typedef  CUICellItem	inherited;
 public:
 								CUIInventoryCellItem		(CInventoryItem* itm);
-	virtual		bool			EqualTo						(CUICellItem* itm);
-	virtual		void			UpdateItemText				();
-				CUIDragItem*	CreateDragItem				();
-	virtual		bool			IsHelper					();
-	virtual		void			SetIsHelper					(bool is_helper);
+	virtual bool			EqualTo						(CUICellItem* itm) override;
+	virtual void			UpdateItemText				() override;
+	virtual CUIDragItem*	CreateDragItem				() override;
+	virtual bool			IsHelper					() override;
+	virtual void			SetIsHelper					(bool is_helper) override;
 				bool			IsHelperOrHasHelperChild	();
-				void			Update						();
+	virtual void			Update						() override;
 				CInventoryItem* object						() {return (CInventoryItem*)m_pData;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
-	virtual CUICellItem* ui_cast_cell_item() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
+	virtual CUICellItem* ui_cast_cell_item() override { return this; }
 };
 
 class CUIAmmoCellItem final :public CUIInventoryCellItem
 {
 	typedef  CUIInventoryCellItem	inherited;
 protected:
-	virtual		void			 UpdateItemText				();
+	virtual void			 UpdateItemText				() override;
 public:
 								 CUIAmmoCellItem			(CWeaponAmmo* itm);
 
 				u32				 CalculateAmmoCount			();
-	virtual		bool			 EqualTo						(CUICellItem* itm);
-	virtual		CUIDragItem*	 CreateDragItem				();
+	virtual bool			 EqualTo						(CUICellItem* itm) override;
+	virtual CUIDragItem*	 CreateDragItem				() override;
 				CWeaponAmmo*	 object						() {return (CWeaponAmmo*)m_pData;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
-	virtual CUICellItem* ui_cast_cell_item() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
+	virtual CUICellItem* ui_cast_cell_item() override { return this; }
 };
 
 class CUIWeaponCellItem final :public CUIInventoryCellItem
@@ -60,20 +60,20 @@ protected:
 	bool						is_launcher					();
 public:
 								CUIWeaponCellItem			(CWeapon* itm);
-				virtual			~CUIWeaponCellItem			();
-	virtual		void			Update						();
-	virtual		void			Draw						();
-	virtual		void			SetTextureColor				(u32 color);
+	virtual ~CUIWeaponCellItem			() override;
+	virtual void			Update						() override;
+	virtual void			Draw						() override;
+	virtual void			SetTextureColor				(u32 color) override;
 
 				CWeapon*		object						() {return (CWeapon*)m_pData;}
-	virtual		void			OnAfterChild				(CUIDragDropListEx* parent_list);
-	virtual		CUIDragItem*	CreateDragItem				();
-	virtual		bool			EqualTo						(CUICellItem* itm);
+	virtual void			OnAfterChild				(CUIDragDropListEx* parent_list) override;
+	virtual CUIDragItem*	CreateDragItem				() override;
+	virtual bool			EqualTo						(CUICellItem* itm) override;
 	CUIStatic*					get_addon_static			(u32 idx)				{return m_addons[idx];}
 	void						DestroyIcon					(eAddonType);
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
-	virtual CUICellItem* ui_cast_cell_item() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
+	virtual CUICellItem* ui_cast_cell_item() override { return this; }
 };
 
 class CBuyItemCustomDrawCell final :public ICustomDrawCellItem
@@ -82,6 +82,6 @@ class CBuyItemCustomDrawCell final :public ICustomDrawCellItem
 	string16			m_string;
 public:
 						CBuyItemCustomDrawCell	(const char* str, CGameFont* pFont);
-	virtual void		OnDraw					(CUICellItem* cell);
+	virtual void		OnDraw					(CUICellItem* cell) override;
 
 };

@@ -56,7 +56,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeSchedulable,IPureSchedulableObject)
 	u64								m_schedule_counter;
 
 									CSE_ALifeSchedulable	(const char* caSection);
-	virtual							~CSE_ALifeSchedulable	();
+virtual ~CSE_ALifeSchedulable	() override;
 	// we need this to prevent virtual inheritance :-(
 	virtual CSE_Abstract			*base					() { return nullptr; }
 	virtual const CSE_Abstract		*base					() const { return nullptr; }
@@ -90,8 +90,8 @@ public:
 	u8								m_tLocations[GameGraph::LOCATION_TYPE_COUNT];
 
 									CSE_ALifeGraphPoint	(const char* caSection);
-	virtual							~CSE_ALifeGraphPoint();
-	virtual bool					match_configuration	() const { return false; }
+virtual ~CSE_ALifeGraphPoint() override;
+virtual bool					match_configuration	() const override { return false; }
 
 #if !defined(XRGAME_EXPORTS)
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
@@ -135,13 +135,13 @@ public:
 #endif
 
 									CSE_ALifeObject		(const char* caSection);
-	virtual							~CSE_ALifeObject	();
+virtual ~CSE_ALifeObject	() override;
 	virtual bool					used_ai_locations	() const;
 	virtual bool					can_save			() const;
 	virtual bool					can_switch_online	() const;
 	virtual bool					can_switch_offline	() const;
 	virtual bool					interactive			() const;
-	virtual CSE_ALifeObject			*cast_alife_object	() {return this;}
+virtual CSE_ALifeObject			*cast_alife_object	() override {return this;}
 			bool					move_offline		() const;
 			void					can_switch_online	(bool value);
 			void					can_switch_offline	(bool value);
@@ -188,7 +188,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeGroupAbstract, IPureStateUpdateObject)
 	ALife::_TIME_ID					m_tNextBirthTime;
 
 									CSE_ALifeGroupAbstract	(const char* caSection);
-	virtual							~CSE_ALifeGroupAbstract	();
+virtual ~CSE_ALifeGroupAbstract	() override;
 	virtual	CSE_Abstract			*init					();
 	virtual CSE_Abstract			*base					() { return nullptr; }
 	virtual const CSE_Abstract		*base					() const { return nullptr; }
@@ -211,28 +211,28 @@ public:
 									CSE_ALifeGroupTemplate(const char* caSection) : __A(pSettings->line_exist(caSection,"monster_section") ? pSettings->r_string(caSection,"monster_section") : caSection), CSE_ALifeGroupAbstract(caSection)
 	{
 	};
-	
-	virtual							~CSE_ALifeGroupTemplate() = default;
-	
-	virtual void STATE_Read			(NET_Packet	&tNetPacket, u16 size)
+
+	virtual ~CSE_ALifeGroupTemplate() override = default;
+
+	virtual void STATE_Read			(NET_Packet	&tNetPacket, u16 size) override
 	{
 		inherited1::STATE_Read		(tNetPacket,size);
 		inherited2::STATE_Read		(tNetPacket,size);
 	};
 
-	virtual void STATE_Write		(NET_Packet	&tNetPacket)
+	virtual void STATE_Write		(NET_Packet	&tNetPacket) override
 	{
 		inherited1::STATE_Write		(tNetPacket);
 		inherited2::STATE_Write		(tNetPacket);
 	};
 
-	virtual void UPDATE_Read		(NET_Packet	&tNetPacket)
+	virtual void UPDATE_Read		(NET_Packet	&tNetPacket) override
 	{
 		inherited1::UPDATE_Read		(tNetPacket);
 		inherited2::UPDATE_Read		(tNetPacket);
 	};
 
-	virtual void UPDATE_Write		(NET_Packet	&tNetPacket)
+	virtual void UPDATE_Write		(NET_Packet	&tNetPacket) override
 	{
 		inherited1::UPDATE_Write	(tNetPacket);
 		inherited2::UPDATE_Write	(tNetPacket);
@@ -250,19 +250,19 @@ public:
 		inherited2::UPDATE_Serialize(Object);
 	};
 
-	virtual CSE_Abstract *init		()
+	virtual CSE_Abstract *init		() override
 	{
 		inherited1::init			();
 		inherited2::init			();
 		return						(base());
 	}
 
-	virtual CSE_Abstract *base		()
+	virtual CSE_Abstract *base		() override
 	{
 		return						(inherited1::base());
 	}
 
-	virtual const CSE_Abstract *base() const
+	virtual const CSE_Abstract *base() const override
 	{
 		return						(inherited1::base());
 	}
@@ -275,43 +275,43 @@ public:
 	};	
 #endif // #ifndef XRGAME_EXPORTS
 
-	virtual CSE_Abstract			*cast_abstract			()
+	virtual CSE_Abstract			*cast_abstract			() override
 	{
 		return						(this);
 	}
 
-	virtual CSE_ALifeGroupAbstract	*cast_group_abstract	()
+	virtual CSE_ALifeGroupAbstract	*cast_group_abstract	() override
 	{
 		return						(this);
 	}
 
 #ifdef XRGAME_EXPORTS
-	virtual	void					switch_online			()
+	virtual void					switch_online			() override
 	{
 		inherited2::switch_online	();
 	}
 
-	virtual	void					switch_offline			()
+	virtual void					switch_offline			() override
 	{
 		inherited2::switch_offline	();
 	}
 
-	virtual	bool					synchronize_location	()
+	virtual bool					synchronize_location	() override
 	{
 		return						(inherited2::synchronize_location());
 	}
 
-	virtual	void					try_switch_online		()
+	virtual void					try_switch_online		() override
 	{
 		inherited2::try_switch_online	();
 	}
 
-	virtual	void					try_switch_offline		()
+	virtual void					try_switch_offline		() override
 	{
 		inherited2::try_switch_offline	();
 	}
 
-	virtual	bool					redundant				() const
+	virtual bool					redundant				() const override
 	{
 		return							(inherited2::redundant());
 	}
@@ -323,7 +323,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicObject,CSE_ALifeObject)
 	u64								m_switch_counter;
 	
 									CSE_ALifeDynamicObject	(const char* caSection);
-	virtual							~CSE_ALifeDynamicObject	();
+virtual ~CSE_ALifeDynamicObject	() override;
 #ifdef XRGAME_EXPORTS
 	virtual void					on_spawn				();
 	virtual void					on_before_register		();
@@ -342,22 +342,22 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicObject,CSE_ALifeObject)
 	virtual void					clear_client_data		();
 	virtual void					on_failed_switch_online	();
 #endif
-	virtual CSE_ALifeDynamicObject	*cast_alife_dynamic_object	() {return this;}
+virtual CSE_ALifeDynamicObject	*cast_alife_dynamic_object	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeDynamicObjectVisual,CSE_ALifeDynamicObject,CSE_Visual)
 									CSE_ALifeDynamicObjectVisual(const char* caSection);
-	virtual							~CSE_ALifeDynamicObjectVisual();
-	virtual CSE_Visual* 	visual					();
+virtual ~CSE_ALifeDynamicObjectVisual() override;
+virtual CSE_Visual* 	visual					() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifePHSkeletonObject,CSE_ALifeDynamicObjectVisual,CSE_PHSkeleton)
 									CSE_ALifePHSkeletonObject(const char* caSection);
-	virtual							~CSE_ALifePHSkeletonObject();
-	virtual bool					can_save				() const;
-	virtual bool					used_ai_locations		() const;
-	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
+virtual ~CSE_ALifePHSkeletonObject() override;
+virtual bool					can_save				() const override;
+virtual bool					used_ai_locations		() const override;
+virtual void					load					(NET_Packet &tNetPacket) override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
 public:
 SERVER_ENTITY_DECLARE_END
 
@@ -365,10 +365,10 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSpaceRestrictor,CSE_ALifeDynamicObject,CSE
 	u8								m_space_restrictor_type;
 
 									CSE_ALifeSpaceRestrictor	(const char* caSection);
-	virtual							~CSE_ALifeSpaceRestrictor	();
-	virtual ISE_Shape*  	shape						();
-	virtual bool					can_switch_offline			() const;
-	virtual bool					used_ai_locations			() const;
+virtual ~CSE_ALifeSpaceRestrictor	() override;
+virtual ISE_Shape*  	shape						() override;
+virtual bool					can_switch_offline			() const override;
+virtual bool					used_ai_locations			() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicWallmark,CSE_ALifeSpaceRestrictor)
@@ -378,7 +378,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicWallmark,CSE_ALifeSpaceRestrictor)
 	float h = 1.0f, w = 1.0f, r = 0.0f;
 
 	CSE_ALifeDynamicWallmark(const char* caSection);
-	virtual							~CSE_ALifeDynamicWallmark	();
+virtual ~CSE_ALifeDynamicWallmark	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
@@ -392,27 +392,27 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
 	LPSTR							destLeveName;
 
 									CSE_ALifeLevelChanger		(const char* caSection);
-	virtual							~CSE_ALifeLevelChanger		();
+virtual ~CSE_ALifeLevelChanger		() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSmartZone,CSE_ALifeSpaceRestrictor,CSE_ALifeSchedulable)
 									CSE_ALifeSmartZone			(const char* caSection);
-	virtual							~CSE_ALifeSmartZone			();
-	virtual CSE_Abstract			*base						();
-	virtual const CSE_Abstract		*base						() const;
-	virtual CSE_Abstract			*init						();
-	virtual CSE_Abstract			*cast_abstract				() {return this;};
-	virtual CSE_ALifeSchedulable	*cast_schedulable			() {return this;};
-	virtual void					update						();
+virtual ~CSE_ALifeSmartZone			() override;
+virtual CSE_Abstract			*base						() override;
+virtual const CSE_Abstract		*base						() const override;
+virtual CSE_Abstract			*init						() override;
+virtual CSE_Abstract			*cast_abstract				() override {return this;};
+virtual CSE_ALifeSchedulable	*cast_schedulable			() override {return this;};
+virtual void					update						() override;
 	virtual float					detect_probability			();
 	virtual void					smart_touch					(CSE_ALifeMonsterAbstract *monster);
-	virtual bool					used_ai_locations			() const {return true;};
-	virtual CSE_ALifeSmartZone		*cast_smart_zone			() {return this;};
+virtual bool					used_ai_locations			() const override {return true;};
+virtual CSE_ALifeSmartZone		*cast_smart_zone			() override {return this;};
 #ifdef XRGAME_EXPORTS
-	virtual bool					bfActive					();
-	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon			(ALife::EHitType		&tHitType,			float		&fHitPower);
-	virtual CSE_ALifeDynamicObject	*tpfGetBestDetector			();
-	virtual	ALife::EMeetActionType	tfGetActionType				(CSE_ALifeSchedulable	*tpALifeSchedulable,int			iGroupIndex, bool bMutualDetection);
+virtual bool					bfActive					() override;
+virtual CSE_ALifeItemWeapon		*tpfGetBestWeapon			(ALife::EHitType		&tHitType,			float		&fHitPower) override;
+virtual CSE_ALifeDynamicObject	*tpfGetBestDetector			() override;
+virtual ALife::EMeetActionType	tfGetActionType				(CSE_ALifeSchedulable	*tpALifeSchedulable,int			iGroupIndex, bool bMutualDetection) override;
 	// additional functionality
 	virtual bool					enabled						(CSE_ALifeMonsterAbstract *object) const {return false;};
 	virtual float					suitable					(CSE_ALifeMonsterAbstract *object) const {return 0.f;};
@@ -427,11 +427,11 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectPhysic,CSE_ALifeDynamicObjectVisual,
 	f32 							mass;
     shared_str 						fixed_bones;
 									CSE_ALifeObjectPhysic	(const char* caSection);
-    virtual 						~CSE_ALifeObjectPhysic	();
-	virtual bool					used_ai_locations		() const;
-	virtual bool					can_save				() const;
-	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
+virtual ~CSE_ALifeObjectPhysic	() override;
+virtual bool					used_ai_locations		() const override;
+virtual bool					can_save				() const override;
+virtual void					load					(NET_Packet &tNetPacket) override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
 //	virtual	void					load					(IReader& r){inherited::load(r);}
 //	using inherited::load(IReader&);
 private:
@@ -464,8 +464,8 @@ public:
 	bool							prev_freezed;
 	bool							freezed;
 	SPHNetState						State;
-	
-	virtual bool					Net_Relevant			();
+
+virtual bool					Net_Relevant			() override;
 
 SERVER_ENTITY_DECLARE_END
 
@@ -516,39 +516,39 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	bool IsSpawnActive = true;
 	
                                     CSE_ALifeObjectHangingLamp	(const char* caSection);
-    virtual							~CSE_ALifeObjectHangingLamp	();
-	virtual	void					load						(NET_Packet &tNetPacket);
-	virtual bool					used_ai_locations			() const;
-	virtual bool					match_configuration			() const;
-	virtual bool			validate					();
+virtual ~CSE_ALifeObjectHangingLamp	() override;
+virtual void					load						(NET_Packet &tNetPacket) override;
+virtual bool					used_ai_locations			() const override;
+virtual bool					match_configuration			() const override;
+virtual bool			validate					() override;
 #if !defined(XRGAME_EXPORTS)
 	virtual void 			on_render					(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 #endif // #ifndef XRGAME_EXPORTS
-	virtual CSE_Abstract			*cast_abstract				() {return this;}
+virtual CSE_Abstract			*cast_abstract				() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectProjector,CSE_ALifeDynamicObjectVisual)
 									CSE_ALifeObjectProjector	(const char* caSection);
-	virtual							~CSE_ALifeObjectProjector	();
-	virtual bool					used_ai_locations	() const;
+virtual ~CSE_ALifeObjectProjector	() override;
+virtual bool					used_ai_locations	() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter,CSE_ALifeDynamicObjectVisual,CSE_Motion,CSE_PHSkeleton)
 	shared_str							engine_sound;
 									CSE_ALifeHelicopter			(const char* caSection);
-	virtual							~CSE_ALifeHelicopter		();
-	virtual	void					load						(NET_Packet &tNetPacket);
-	virtual bool					can_save					() const;
-	virtual bool					used_ai_locations			() const;
-	virtual CSE_Motion*		motion						();
-	virtual CSE_Abstract			*cast_abstract			() {return this;}
-	virtual bool					Net_Relevant() override;
+virtual ~CSE_ALifeHelicopter		() override;
+virtual void					load						(NET_Packet &tNetPacket) override;
+virtual bool					can_save					() const override;
+virtual bool					used_ai_locations			() const override;
+virtual CSE_Motion*		motion						() override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;}
+virtual bool					Net_Relevant() override;
 
 	// For new sync system
 	Fvector PointPos;
 
-	virtual void SyncRead(NET_Packet& Packet);
-	virtual void SyncWrite(NET_Packet& Packet);
+virtual void SyncRead(NET_Packet& Packet) override;
+virtual void SyncWrite(NET_Packet& Packet) override;
 
 SERVER_ENTITY_DECLARE_END
 
@@ -577,25 +577,25 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar,CSE_ALifeDynamicObjectVisual,CSE_PHSke
 	xr_vector<SPHNetState> StateVec;
 
 									CSE_ALifeCar		(const char* caSection);
-	virtual							~CSE_ALifeCar		();
-	virtual bool					used_ai_locations	() const;
-	virtual	void					load				(NET_Packet &tNetPacket);
-	virtual bool					can_save			() const;
-	virtual CSE_Abstract			*cast_abstract		() {return this;}
+virtual ~CSE_ALifeCar		() override;
+virtual bool					used_ai_locations	() const override;
+virtual void					load				(NET_Packet &tNetPacket) override;
+virtual bool					can_save			() const override;
+virtual CSE_Abstract			*cast_abstract		() override {return this;}
 
 #ifdef XRGAME_EXPORTS
-	virtual void					add_offline			(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);
-	virtual void					add_online			(const bool& update_registries);
+virtual void					add_offline			(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries) override;
+virtual void					add_online			(const bool& update_registries) override;
 #endif
 
 	bool Net_Relevant() override;
-	virtual void SyncRead(NET_Packet& Packet);
-	virtual void SyncWrite(NET_Packet& Packet);
+virtual void SyncRead(NET_Packet& Packet) override;
+virtual void SyncWrite(NET_Packet& Packet) override;
 
 protected:
-	virtual void					data_load				(NET_Packet &tNetPacket);
-	virtual void					data_save				(NET_Packet &tNetPacket);
-	virtual void					data_serialize(ISaveObject& Object) override;
+virtual void					data_load				(NET_Packet &tNetPacket) override;
+virtual void					data_save				(NET_Packet &tNetPacket) override;
+virtual void					data_serialize(ISaveObject& Object) override;
 SERVER_ENTITY_DECLARE_END
 
 ISaveObject& operator<<(ISaveObject& Object, CSE_ALifeCar::SDoorState& Value);
@@ -604,18 +604,18 @@ ISaveObject& operator<<(ISaveObject& Object, CSE_ALifeCar::SWheelState& Value);
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectBreakable,CSE_ALifeDynamicObjectVisual)
     float							m_health;
 									CSE_ALifeObjectBreakable	(const char* caSection);
-	virtual							~CSE_ALifeObjectBreakable	();
-	virtual bool					used_ai_locations	() const;
-	virtual bool					can_switch_offline	() const;
+virtual ~CSE_ALifeObjectBreakable	() override;
+virtual bool					used_ai_locations	() const override;
+virtual bool					can_switch_offline	() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable,CSE_Shape,CSE_ALifeDynamicObject)
 CSE_ALifeObjectClimable	(const char* caSection);
 shared_str						material;
-virtual							~CSE_ALifeObjectClimable	();
-virtual bool					used_ai_locations	() const;
-virtual bool					can_switch_offline	() const;
-virtual ISE_Shape*  	shape				();
+virtual ~CSE_ALifeObjectClimable	() override;
+virtual bool					used_ai_locations	() const override;
+virtual bool					can_switch_offline	() const override;
+virtual ISE_Shape*  	shape				() override;
 
 #ifndef XRGAME_EXPORTS
 virtual	void			set_additional_info	(void* info);
@@ -625,7 +625,7 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMountedWeapon,CSE_ALifeDynamicObjectVisual)
 									CSE_ALifeMountedWeapon	(const char* caSection);
-	virtual							~CSE_ALifeMountedWeapon	();
+virtual ~CSE_ALifeMountedWeapon	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun,CSE_ALifeDynamicObjectVisual)
@@ -633,20 +633,20 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun,CSE_ALifeDynamicObjectVisual
 	Fvector							m_destEnemyDir;
 
 									CSE_ALifeStationaryMgun	(const char* caSection);
-	virtual							~CSE_ALifeStationaryMgun	();
+virtual ~CSE_ALifeStationaryMgun	() override;
 	
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamBaseZone,CSE_ALifeSpaceRestrictor)
 									CSE_ALifeTeamBaseZone	(const char* caSection);
-	virtual							~CSE_ALifeTeamBaseZone	();
+virtual ~CSE_ALifeTeamBaseZone	() override;
 
 	u8								m_team;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamCaptureZone, CSE_ALifeSpaceRestrictor)
 CSE_ALifeTeamCaptureZone(LPCSTR caSection);
-virtual							~CSE_ALifeTeamCaptureZone();
+virtual ~CSE_ALifeTeamCaptureZone() override;
 
 u8								m_team;
 shared_str						m_point_name;
@@ -659,7 +659,7 @@ bool				m_closed;
 shared_str			m_tip_text;
 
 CSE_ALifeInteractiveObject(const char* caSection);
-virtual				~CSE_ALifeInteractiveObject();
+virtual ~CSE_ALifeInteractiveObject() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Shell, CSE_ALifeObjectPhysic)
@@ -670,10 +670,10 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_Shell, CSE_ALifeObjectPhysic)
 	float eject_dispersion_angle;
 
 	CSE_Shell(const char* section);
-	virtual ~CSE_Shell() override;
+virtual ~CSE_Shell() override;
 
-	virtual bool Spawn_Read(NET_Packet& tNetPacket) override;
-	virtual void Spawn_Write(NET_Packet& tNetPacket, bool bLocal) override;
+virtual bool Spawn_Read(NET_Packet& tNetPacket) override;
+virtual void Spawn_Write(NET_Packet& tNetPacket, bool bLocal) override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInventoryBox,CSE_ALifeDynamicObjectVisual)
@@ -682,10 +682,10 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInventoryBox,CSE_ALifeDynamicObjectVisual)
 	shared_str			m_tip_text;
 
 						CSE_ALifeInventoryBox	(const char* caSection);
-	virtual				~CSE_ALifeInventoryBox	();
+virtual ~CSE_ALifeInventoryBox	() override;
 #ifdef XRGAME_EXPORTS
-	virtual void		add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
-	virtual void		add_online				(const bool &update_registries);
+virtual void		add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;
+virtual void		add_online				(const bool &update_registries) override;
 #endif
 SERVER_ENTITY_DECLARE_END
 

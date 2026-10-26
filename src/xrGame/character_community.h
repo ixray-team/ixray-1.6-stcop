@@ -29,7 +29,7 @@ private:
 
 public:
 	CHARACTER_COMMUNITY			();
-	~CHARACTER_COMMUNITY		();
+	virtual ~CHARACTER_COMMUNITY		() override;
 
 	void						set				(shared_str);		
 	void						set				(s32 index) {m_current_index = index;};

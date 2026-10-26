@@ -11,15 +11,15 @@ class CStateMonsterSmartTerrainTask : public CState<_Object> {
 	CALifeSmartTerrainTask *m_current_task;
 public:
 						CStateMonsterSmartTerrainTask	(_Object *obj);
-	virtual				~CStateMonsterSmartTerrainTask	();
+	virtual ~CStateMonsterSmartTerrainTask	() override;
 
-	virtual void		initialize				();
-	virtual	void		reselect_state			();
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
-	virtual void		setup_substates			();
-	virtual void		check_force_state		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize				() override;
+	virtual void		reselect_state			() override;
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
+	virtual void		setup_substates			() override;
+	virtual void		check_force_state		() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_smart_terrain_task_inline.h"

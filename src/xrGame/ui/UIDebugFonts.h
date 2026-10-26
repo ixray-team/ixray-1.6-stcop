@@ -15,13 +15,13 @@ class CUIDebugFonts final : public CUIDialogWnd
 {
 public:
 				CUIDebugFonts		();
-	virtual		~CUIDebugFonts		();
+	virtual ~CUIDebugFonts		() override;
 
 			void InitDebugFonts		(Frect r);
-	virtual bool OnKeyboardAction			(int dik, EUIMessages keyboard_action);
+	virtual bool OnKeyboardAction			(int dik, EUIMessages keyboard_action) override;
 			void FillUpList			();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIStatic  m_background;

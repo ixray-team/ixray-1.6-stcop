@@ -53,7 +53,7 @@ class CUIInventoryUpgradeWnd final : public CUIWindow
 
 public:
 	CUIInventoryUpgradeWnd() = default;
-	virtual	~CUIInventoryUpgradeWnd();
+	virtual ~CUIInventoryUpgradeWnd() override;
 
 	void Init();
 	void InitInventory(CUICellItem* item, bool can_upgrade);
@@ -78,8 +78,8 @@ public:
 	void set_info_cur_upgrade(Upgrade_type* upgrade);
 	UIUpgrade* FindUIUpgrade(Upgrade_type const* upgr);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-    virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
 	// Controller UI
 	bool SelectorMove(eUIDirection4 dir);
 	void SetActiveForController(bool status);

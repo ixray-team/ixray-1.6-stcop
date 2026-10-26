@@ -133,11 +133,11 @@ private:
 
 public:
 						CUIRankingWnd			();
-	virtual				~CUIRankingWnd			();
+	virtual ~CUIRankingWnd			() override;
 
-	virtual void 		Show					(bool status);
-	virtual void		Update					();
-	virtual void		Draw					();
+	virtual void 		Show					(bool status) override;
+	virtual void		Update					() override;
+	virtual void		Draw					() override;
 	using inherited::Draw;
 	virtual void		DrawHint				();
 	virtual void		ResetAll				();
@@ -151,7 +151,7 @@ public:
 
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			void		add_faction				(CUIXml& xml, shared_str const& faction_id);

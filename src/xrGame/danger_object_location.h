@@ -20,8 +20,8 @@ private:
 
 public:
 	IC						CDangerObjectLocation	(const CGameObject *object, u32 level_time, u32 interval, float radius, const u64 &mask = u64(-1));
-	virtual const Fvector	&position				() const;
-	virtual bool			useful					() const;
+	virtual const Fvector	&position				() const override;
+	virtual bool			useful					() const override;
 	virtual	bool			operator==				(const CObject *object) const;
 };
 

@@ -8,12 +8,12 @@ class CStateMonsterSteal : public CState<_Object> {
 public:
 						CStateMonsterSteal		(_Object *obj);
 
-	virtual void		initialize				();
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual bool 		check_completion		();
-	virtual bool 		check_start_conditions	();
+	virtual bool 		check_completion		() override;
+	virtual bool 		check_start_conditions	() override;
 
 private:
 			bool		check_conditions		();

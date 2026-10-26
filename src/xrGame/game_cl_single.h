@@ -7,13 +7,13 @@ class game_cl_Single final : public game_cl_GameState
 	using inherited = game_cl_GameState;
 public :
 										game_cl_Single			();
-	virtual		CUIGameCustom*			createGameUI			();
-	virtual		char*					getTeamSection			(int Team);
-	virtual		bool					IsServerControlHits		()	{return true;};
+	virtual CUIGameCustom*			createGameUI			() override;
+	virtual char*					getTeamSection			(int Team) override;
+	virtual bool					IsServerControlHits		() override {return true;};
 
-	virtual		void					SetGameTimeFactor		(const float fTimeFactor);
+	virtual void					SetGameTimeFactor		(const float fTimeFactor) override;
 
-	virtual		void				SetEnvironmentGameTimeFactor(const float fTimeFactor);
+	virtual void				SetEnvironmentGameTimeFactor(const float fTimeFactor) override;
 
 	virtual game_cl_Single* cast_game_cl_single() override { return this; }
 

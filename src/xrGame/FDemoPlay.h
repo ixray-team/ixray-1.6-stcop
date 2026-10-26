@@ -28,11 +28,11 @@ class CDemoPlay : public CEffectorCam, public IInputReceiver
 	void stat_Stop();
 
 public:
-	virtual bool ProcessCam(SCamEffectorInfo& info);
+	virtual bool ProcessCam(SCamEffectorInfo& info) override;
 
 	CDemoPlay(const char* name, float ms, u32 cycles, float life_time = 60 * 60 * 1000);
-	virtual ~CDemoPlay();
-	
+	virtual ~CDemoPlay() override;
+
 	virtual void IR_OnKeyboardPress(int dik) override;
 	virtual void IR_OnKeyboardHold(int dik) override;
 	virtual void IR_OnKeyboardRelease(int dik) override;

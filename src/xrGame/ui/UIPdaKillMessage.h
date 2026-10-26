@@ -11,7 +11,7 @@ public:
 
 			void Init				(KillMessageStruct& msg, CGameFont* F);
 
-			virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			float InitText(CUIStatic& refStatic, float x, PlayerInfo& info);

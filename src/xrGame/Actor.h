@@ -110,7 +110,7 @@ private:
 public:
 										CActor				();
 	~CActor				() override;
-	void OnFrame();
+	virtual void OnFrame() override;
 	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 
@@ -433,7 +433,7 @@ public:
 
 	virtual bool			can_attach				(const CInventoryItem *inventory_item) const override;
 
-	virtual void UpdatePlayerHud() final override;
+	virtual void UpdatePlayerHud() final;
 
 protected:
 	CHolderCustom*			m_holder;
@@ -636,13 +636,13 @@ public:
 	// User input/output
 	//////////////////////////////////////////////////////////////////////////
 public:
-	void			IR_OnMouseMove			(int x, int y) override;
-	void			IR_GamepadUpdateStick	(int id, Fvector2 value) override;
-	void			IR_GamepadKeyPress		(int id) override;
-	void			IR_GamepadKeyRelease    (int id) override;
-	void			IR_GamepadKeyHold		(int id) override;
-	virtual void			IR_OnGyroscopeMove		(Fvector3 value);
-	virtual void			IR_OnTouchpadMove		(Fvector2 value);
+	virtual void			IR_OnMouseMove			(int x, int y) override;
+	virtual void			IR_GamepadUpdateStick	(int id, Fvector2 value) override;
+	virtual void			IR_GamepadKeyPress		(int id) override;
+	virtual void			IR_GamepadKeyRelease    (int id) override;
+	virtual void			IR_GamepadKeyHold		(int id) override;
+	virtual void			IR_OnGyroscopeMove		(Fvector3 value) override;
+	virtual void			IR_OnTouchpadMove		(Fvector2 value) override;
 	virtual void			IR_OnKeyboardPress		(int dik) override;
 	virtual void			IR_OnKeyboardRelease	(int dik) override;
 	virtual void			IR_OnKeyboardHold		(int dik) override;
@@ -653,12 +653,12 @@ public:
 	void					ProcessKeys(CHudItem* itm = nullptr);
 
 public:
-	void						g_WeaponBones		(u16 &L, u16 &R1, u16 &R2) final override;
-	void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D) final override;
+	virtual void						g_WeaponBones		(u16 &L, u16 &R1, u16 &R2) final;
+	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D) final;
 	bool						g_stateFire			() override {return ! ((mstate_wishful & mcLookout) && !IsGameTypeSingle() );}
 
 	virtual bool						g_State				(SEntityState& state) const override;
-	virtual	float						GetWeaponAccuracy	() const override;
+	virtual float						GetWeaponAccuracy	() const override;
 	virtual	float						GetAgility() const;
 			float						GetFireDispertion	() const {return m_fdisp_controller.GetCurrentDispertion();}
 			bool						IsZoomAimingMode	() const {return m_bZoomAimingMode;}
@@ -736,7 +736,7 @@ public:
 	virtual void						load				(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 	virtual void						net_Save			(NET_Packet& P) override;
-	virtual	bool						net_SaveRelevant	() override;
+	virtual bool						net_SaveRelevant	() override;
 protected:
 	xr_deque<net_update>	NET;
 	Fvector					NET_SavedAccel;
@@ -959,7 +959,7 @@ public:
 	IC float					HitProbability					() const {return m_hit_probability;}
 	CVisualMemoryManager*visual_memory					() const override;
 
-	bool				BonePassBullet					(u16 boneID) final override;
+	virtual bool				BonePassBullet					(u16 boneID) final override;
 	void				On_B_NotCurrentEntity			() override;
 
 private:

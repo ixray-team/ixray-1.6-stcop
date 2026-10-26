@@ -9,10 +9,10 @@ class	CStateMonsterControlledAttack : public CStateMonsterAttack<_Object> {
 
 public:
 						CStateMonsterControlledAttack	(_Object *obj);
-	virtual void		initialize						();
-	virtual	void		execute							();
-	virtual void		finalize						();
-	virtual void		critical_finalize				();
+	virtual void		initialize						() override;
+	virtual void		execute							() override;
+	virtual void		finalize						() override;
+	virtual void		critical_finalize				() override;
 
 private:
 	const CEntityAlive	*get_enemy						();

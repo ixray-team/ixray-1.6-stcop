@@ -109,42 +109,42 @@ protected:
 public:
 	u32				m_deactivated_frame;
 	Fvector2		m_activatedScreenRatio;
-	virtual void	DestroyInternal					(bool bForce);
+	virtual void	DestroyInternal					(bool bForce) override;
 					CMainMenu						();
-	virtual			~CMainMenu						();
+	virtual ~CMainMenu						() override;
 
-	virtual void	Activate						(bool bActive); 
-	virtual	bool	IsActive						(); 
-	virtual	bool	CanSkipSceneRendering			(); 
+	virtual void	Activate						(bool bActive) override;
+	virtual bool	IsActive						() override;
+	virtual bool	CanSkipSceneRendering			() override;
 
-	virtual bool	IgnorePause						()	{return true;}
+	virtual bool	IgnorePause						() override {return true;}
 
 
-	virtual void	IR_OnMousePress					(int btn);
-	virtual void	IR_OnMouseRelease				(int btn);
-	virtual void	IR_OnMouseHold					(int btn);
-	virtual void	IR_OnMouseMove					(int x, int y);
-	virtual void	IR_OnMouseStop					(int x, int y);
-	virtual void	IR_OnMouseWheel					(int direction)	;
+	virtual void	IR_OnMousePress					(int btn) override;
+	virtual void	IR_OnMouseRelease				(int btn) override;
+	virtual void	IR_OnMouseHold					(int btn) override;
+	virtual void	IR_OnMouseMove					(int x, int y) override;
+	virtual void	IR_OnMouseStop					(int x, int y) override;
+	virtual void	IR_OnMouseWheel					(int direction) override;
 
-	virtual void	IR_OnKeyboardPress				(int dik);
-	virtual void	IR_OnKeyboardRelease			(int dik);
-	virtual void	IR_OnKeyboardHold				(int dik);
+	virtual void	IR_OnKeyboardPress				(int dik) override;
+	virtual void	IR_OnKeyboardRelease			(int dik) override;
+	virtual void	IR_OnKeyboardHold				(int dik) override;
 
-	virtual void	IR_GamepadKeyPress				(int id);
-	virtual void	IR_GamepadKeyHold				(int id);
-	virtual void	IR_GamepadUpdateStick			(int id, Fvector2 value);
-	virtual void	IR_OnGyroscopeMove				(Fvector3 value);
-	virtual void	IR_OnTouchpadMove				(Fvector2 value);
+	virtual void	IR_GamepadKeyPress				(int id) override;
+	virtual void	IR_GamepadKeyHold				(int id) override;
+	virtual void	IR_GamepadUpdateStick			(int id, Fvector2 value) override;
+	virtual void	IR_OnGyroscopeMove				(Fvector3 value) override;
+	virtual void	IR_OnTouchpadMove				(Fvector2 value) override;
 
 	bool			OnRenderPPUI_query				();
 	void			OnRenderPPUI_main				();
 	void			OnRenderPPUI_PP					();
 
-	virtual void			OnRender						();
-	virtual void	_BCL	OnFrame							(void);
+	virtual void			OnRender						() override;
+	virtual void	_BCL	OnFrame							(void) override;
 
-	virtual bool	UseIndicators					()						{return false;}
+	virtual bool	UseIndicators					() override {return false;}
 
 	virtual CDialogHolder* GetDialogHolder() override { return this; }
 	void			OnDeviceCreate					();
@@ -175,7 +175,7 @@ public:
 	void			Show_CTMS_Dialog				();
 	void			Hide_CTMS_Dialog				();
 	void			SetNeedVidRestart				();
-	virtual void	OnDeviceReset					();
+	virtual void	OnDeviceReset					() override;
 	const char*			GetGSVer						();
 
 			bool	IsCDKeyIsValid					();
@@ -185,7 +185,7 @@ public:
 	const char*			GetCDKeyFromRegistry			();
 	
 	demo_info const *	GetDemoInfo					(const char* file_name);
-	virtual void ReloadLegend();
+	virtual void ReloadLegend() override;
 };
 
 extern CMainMenu*	MainMenu();

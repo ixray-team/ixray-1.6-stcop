@@ -20,8 +20,8 @@ public:
 	bool			IsActionExist			(const char* action, CUIXml& xml_doc);
 #endif
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual void		Update					();
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual void		Update					() override;
 
 protected:
 	void			FillUpList				(CUIXml& xml_doc, const char* path);

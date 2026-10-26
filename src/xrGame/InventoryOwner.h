@@ -43,7 +43,7 @@ class CInventoryOwner : public CAttachmentOwner
 {
 public:
 	CInventoryOwner();
-	virtual	~CInventoryOwner();
+	virtual ~CInventoryOwner() override;
 
 public:
 	virtual CInventoryOwner* cast_inventory_owner() { return this; }
@@ -63,11 +63,11 @@ public:
 
 	virtual DLL_Pure* _construct();
 	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual void net_Destroy();
+	virtual void net_Destroy() override;
 	void Init();
 	virtual void Load(const char* section);
-	virtual void reinit();
-	virtual void reload(const char* section);
+	virtual void reinit() override;
+	virtual void reload(const char* section) override;
 	virtual void OnEvent(NET_Packet& P, u16 type);
 
 	//serialization
@@ -221,7 +221,7 @@ protected:
 	xr_string m_game_name_str;
 
 public:
-	virtual void renderable_Render();
+	virtual void renderable_Render() override;
 	virtual void OnItemTake(CInventoryItem* inventory_item);
 
 	virtual void OnItemBelt(CInventoryItem* inventory_item, const SInvItemPlace& previous_place);

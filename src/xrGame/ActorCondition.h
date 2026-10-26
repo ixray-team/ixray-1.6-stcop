@@ -34,17 +34,17 @@ private:
 			void 		UpdateThirst				();
 			void 		UpdateSleepiness			();
 			void 		UpdateIntoxication			();
-	virtual void		UpdateRadiation				();
+	virtual void		UpdateRadiation				() override;
 			float		GetMedicineEfficiencyFactor	(const shared_str& sect) const;
 public:
 						CActorCondition				(CActor *object);
-	virtual				~CActorCondition			();
+	virtual ~CActorCondition			() override;
 
-	virtual void		LoadCondition				(const char* section);
-	virtual void		reinit						();
+	virtual void		LoadCondition				(const char* section) override;
+	virtual void		reinit						() override;
 
-	virtual CWound*		ConditionHit				(SHit* pHDS);
-	virtual void		UpdateCondition				();
+	virtual CWound*		ConditionHit				(SHit* pHDS) override;
+	virtual void		UpdateCondition				() override;
 			void		UpdateBoosters				();
 
 	float				GetBoosterValueByType		(EBoostParams type) const;
@@ -54,7 +54,7 @@ public:
 	   BOOSTER_MAP&		GetCurBoosterInfluences		() {return m_booster_influences;};
 
 	// хромание при потере сил и здоровья
-	virtual	bool		IsLimping					() const;
+	virtual bool		IsLimping					() const override;
 	virtual bool		IsCantWalk					() const;
 	virtual bool		IsCantWalkWeight			();
 	virtual bool		IsCantSprint				() const;
@@ -81,8 +81,9 @@ public:
 		VERIFY			(m_object);
 		return			(*m_object);
 	}
-	virtual void			save					(NET_Packet &output_packet);
-	virtual void			load					(IReader &input_packet);
+
+	virtual void			save					(NET_Packet &output_packet) override;
+	virtual void			load					(IReader &input_packet) override;
 	
 	float	GetZoneMaxPower							(ALife::EInfluenceType type) const;
 	float	GetZoneMaxPower							(ALife::EHitType hit_type) const;
@@ -90,8 +91,8 @@ public:
 	bool	DisableSprint							(SHit* pHDS);
 	bool	PlayHitSound							(SHit* pHDS);
 	float	HitSlowmo								(SHit* pHDS);
-	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound = true);
-	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect, bool use_sound = true);
+	virtual bool			ApplyInfluence			(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound = true) override;
+	virtual bool			ApplyBooster			(const SBooster& B, const shared_str& sect, bool use_sound = true) override;
 	float	GetMaxPowerRestoreSpeed					() {return m_max_power_restore_speed;};
 	float	GetMaxWoundProtection					() {return m_max_wound_protection;};
 	float	GetMaxFireWoundProtection				() {return m_max_fire_wound_protection;};

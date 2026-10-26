@@ -43,24 +43,24 @@ private:
 
 public:
 					CPseudoGigant				();
-	virtual			~CPseudoGigant				();	
+	virtual ~CPseudoGigant				() override;
 
-	virtual void	Load				(const char* section);
-	virtual void	reinit				();
+	virtual void	Load				(const char* section) override;
+	virtual void	reinit				() override;
 
-	virtual bool	ability_earthquake	() {return true;}
-	virtual void	event_on_step		();
+	virtual bool	ability_earthquake	() override {return true;}
+	virtual void	event_on_step		() override;
 
-	virtual bool	check_start_conditions	(ControlCom::EControlType type);
-	virtual void	on_activate_control		(ControlCom::EControlType);
+	virtual bool	check_start_conditions	(ControlCom::EControlType type) override;
+	virtual void	on_activate_control		(ControlCom::EControlType) override;
 
-	virtual	void	on_threaten_execute	();
+	virtual void	on_threaten_execute	() override;
 
-	virtual void	HitEntityInJump		(const CEntity *pEntity);
-	virtual void	TranslateActionToPathParams	();
-	virtual	char*	get_monster_class_name () { return (char*) "pseudogigant"; }
+	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
+	virtual void	TranslateActionToPathParams	() override;
+	virtual char*	get_monster_class_name () override { return (char*) "pseudogigant"; }
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
+	virtual void	OnEvent(NET_Packet& P, u16 type) override;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

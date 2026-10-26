@@ -180,24 +180,24 @@ public:
 									CSE_Shape		();
 	virtual							~CSE_Shape		();
 	virtual ISE_Shape*  	shape			() = 0;
-	virtual void 			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
+virtual void 			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt) override;
 };
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Spectator,CSE_Abstract)
 									CSE_Spectator	(const char* caSection);
-	virtual							~CSE_Spectator	();
+virtual ~CSE_Spectator	() override;
 	virtual u8						g_team			();
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
 	u32								m_tNodeID;
 									CSE_Temporary	(const char* caSection);
-	virtual							~CSE_Temporary	();
+virtual ~CSE_Temporary	() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_PHSkeleton, IPureStateUpdateObject)
 								CSE_PHSkeleton(const char* caSection);
-virtual							~CSE_PHSkeleton();
+virtual ~CSE_PHSkeleton() override;
 
 enum{
 	flActive					= (1<<0),
@@ -225,8 +225,8 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
 	typedef CSE_Visual				inherited2;
 
 	CSE_AbstractVisual										(const char* caSection);
-	virtual	~CSE_AbstractVisual								();
-	virtual CSE_Visual* 	visual					();
+virtual ~CSE_AbstractVisual								() override;
+virtual CSE_Visual* 	visual					() override;
 	const char*							getStartupAnimation		();
 SERVER_ENTITY_DECLARE_END
 

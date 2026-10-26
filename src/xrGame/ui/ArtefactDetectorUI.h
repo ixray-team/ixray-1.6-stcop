@@ -29,7 +29,7 @@ public:
 	void SetVelocity(float v) { m_curr_v = v; }
 	void Update() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 class CUIArtefactDetectorSimple final : public CUIArtefactDetectorBase
@@ -83,7 +83,7 @@ public:
 	void Clear();
 	void RegisterItemToDraw(const Fvector& p, const shared_str& palette_idx);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 class CUIArtefactDetectorAdv final : public CUIArtefactDetectorBase

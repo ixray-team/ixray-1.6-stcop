@@ -218,7 +218,7 @@ public:
     CUIWindow* GetFrame();
 
     void SetActiveTarget(CMapLocation* loc);
-    void Reset();
+    virtual void Reset() override;
 
     bool GetHudVisible() const { return visible; }
     void SetHudVisible(bool status);

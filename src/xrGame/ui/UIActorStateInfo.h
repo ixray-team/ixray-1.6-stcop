@@ -64,15 +64,15 @@ private:
 
 public:
 							ui_actor_state_wnd	() = default;
-	virtual					~ui_actor_state_wnd	();
+	virtual ~ui_actor_state_wnd	() override;
 			void			init_from_xml			( CUIXml& xml, const char* path );
 			void			UpdateActorInfo			( CInventoryOwner* owner );
 			void			UpdateHitZone			();
 
-	virtual void			Draw					();
-	virtual void			Show					( bool status );
+	virtual void			Draw					() override;
+	virtual void			Show					( bool status ) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private:
 			void			init_legacy_from_xml	( CUIXml& xml );
@@ -135,7 +135,7 @@ public:
 			void	set_value(float normalized);
 			ui_actor_state_wnd::EStateType type() const { return m_type; }
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 class ui_actor_state_item final : public UIHintWindow
@@ -154,7 +154,7 @@ protected:
 public:
 	CUIProgressBar*			m_progress;
 					ui_actor_state_item		();
-	virtual			~ui_actor_state_item	();
+	virtual ~ui_actor_state_item	() override;
 			void	init_from_xml			( CUIXml& xml, const char* path );
 	
 			bool	set_text				( float value ); // 0..1
@@ -163,7 +163,7 @@ public:
 			int		set_arrow				( float value ); // 0..1
 			bool	show_static				( bool status, u8 number=1 );
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 #endif // UI_ACTOR_STATE_INFO_H_INCLUDED

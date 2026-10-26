@@ -34,7 +34,7 @@ public:
 													const CLASS_ID &clsid, 
 													const char* script_clsid
 												);
-	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object		() const;
+	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object		() const override;
 #endif
-	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(const char* section) const;
+	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(const char* section) const override;
 };

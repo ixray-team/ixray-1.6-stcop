@@ -12,7 +12,7 @@ class CStalkerOutfit final : public CCustomOutfit
 {
 public:
 	CStalkerOutfit() = default;
-	virtual ~CStalkerOutfit() = default;
+	virtual ~CStalkerOutfit() override = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

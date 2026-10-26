@@ -13,7 +13,7 @@ private:
 struct tracks_update: public IUpdateTracksCallback
 	{
 		tracks_update( ): motion( 0 ), update( false ) {}
-		virtual	bool	operator () ( float dt, IKinematicsAnimated& k );
+		virtual bool	operator () ( float dt, IKinematicsAnimated& k ) override;
 		imotion_position *motion;
 		bool update;
 	} update_callback;
@@ -25,7 +25,7 @@ public:
 	imotion_position();
 private:
 	typedef			interactive_motion inherited;
-	virtual	void	move_update	(  );
+virtual void	move_update	(  ) override;
 			float	motion_collide		( float dt, IKinematicsAnimated& k );
 			void	collide_not_move	( IKinematicsAnimated& KA );
 			void	force_calculate_bones( IKinematicsAnimated& KA );
@@ -33,9 +33,9 @@ private:
 			float	collide_animation	( float dt, IKinematicsAnimated& k );
 			float	move				( float dt, IKinematicsAnimated& k );
 			void	disable_update		(bool v);
-	virtual	void	collide		(  ){};
-	virtual	void	state_end	(  );
-	virtual	void	state_start (  );
+virtual void	collide		(  ) override {};
+virtual void	state_end	(  ) override;
+virtual void	state_start (  ) override;
 
 static	void	_BCL	rootbone_callback	( CBoneInstance *BI );
 

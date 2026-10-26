@@ -63,14 +63,18 @@ protected:
 	float          *m_pfParam;
 public:
 					CPostProcessValue               (float *pfparam) 		{m_pfParam = pfparam;}
-	virtual void    update                          (float dt)
-					{
+
+	virtual void    update                          (float dt) override
+	{
 					*m_pfParam = m_Value.Evaluate (dt);
 					}
-	virtual void    load                            (IReader &pReader);
-	virtual void    save                            (IWriter &pWriter);
-	virtual float   get_length                      ()                    	{float mn, mx; return m_Value.GetLength (&mn, &mx);}
-	virtual size_t  get_keys_count                  () 						{return m_Value.keys.size ();}
+
+	virtual void    load                            (IReader &pReader) override;
+	virtual void    save                            (IWriter &pWriter) override;
+	virtual float   get_length                      () override
+	{float mn, mx; return m_Value.GetLength (&mn, &mx);}
+
+	virtual size_t  get_keys_count                  () override {return m_Value.keys.size ();}
 #ifdef _PP_EDITOR_
 	virtual void    add_value                       (float time, float value, int index = 0);
 	virtual void    delete_value                    (float time);
@@ -92,16 +96,19 @@ protected:
 	SPPInfo::SColor *m_pColor;
 public:
 					CPostProcessColor               (SPPInfo::SColor *pcolor) { m_pColor = pcolor; }
-	virtual void    update                          (float dt)
-					{
+
+	virtual void    update                          (float dt) override
+	{
 					m_pColor->r = m_Red.Evaluate (dt);
 					m_pColor->g = m_Green.Evaluate (dt);
 					m_pColor->b = m_Blue.Evaluate (dt);
 					}
-	virtual void    load                            (IReader &pReader);
-	virtual void    save                            (IWriter &pWriter);
-	virtual float   get_length                      ()
-					{
+
+	virtual void    load                            (IReader &pReader) override;
+	virtual void    save                            (IWriter &pWriter) override;
+
+	virtual float   get_length                      () override
+	{
 					float mn, mx,
 					r = m_Red.GetLength (&mn, &mx),
 					g = m_Green.GetLength (&mn, &mx),
@@ -109,8 +116,9 @@ public:
 					mn = (r > g ? r : g);
 					return mn > b ? mn : b;
 					}
-	virtual size_t  get_keys_count                  ()
-					{
+
+	virtual size_t  get_keys_count                  () override
+	{
 					return m_Red.keys.size ();
 					}
 #ifdef _PP_EDITOR_
@@ -153,11 +161,11 @@ protected:
 public:
 					CPostprocessAnimator            (int id, bool cyclic);
 					CPostprocessAnimator            ();
-		virtual    ~CPostprocessAnimator            ();
+	virtual ~CPostprocessAnimator            () override;
 		void        Clear                           ();
 		void        Load                            (const char* name);
 	IC  const char*      Name                            (){return *m_Name;}
-  virtual void      Stop                            (float speed);
+	virtual void      Stop                            (float speed) override;
 		void		SetDesiredFactor				(float f, float sp);
 		void		SetCurrentFactor				(float f);
 		void		SetCyclic						(bool b)					{m_bCyclic=b;}
@@ -166,11 +174,11 @@ public:
 		void        Create                          ();
 
 #ifndef _PP_EDITOR_
-		virtual float		GetRealLifeTime() const override { return f_length; }
-		virtual	bool		IsCyclic	   () const override { return m_bCyclic; }
-		virtual float		GetLifeTimeRemaining() const { return f_length - (Device.fTimeGlobal - m_start_time); }
-		virtual	bool		Valid							();
-		virtual	bool		Process							(SPPInfo &PPInfo);
+	virtual float		GetRealLifeTime() const override { return f_length; }
+	virtual bool		IsCyclic	   () const override { return m_bCyclic; }
+	virtual float		GetLifeTimeRemaining() const override { return f_length - (Device.fTimeGlobal - m_start_time); }
+	virtual bool		Valid							() override;
+	virtual bool		Process							(SPPInfo &PPInfo) override;
 #else
 		virtual	bool		Process							(float dt, SPPInfo &PPInfo);
 		CPostProcessParam*  GetParam                (pp_params param);
@@ -186,7 +194,7 @@ protected:
 		xr_delegate<float()>	m_get_factor_func;
 public:
 	void			SetFactorFunc				(xr_delegate<float()> f)	{m_get_factor_func=f;}
-virtual	bool		Process						(SPPInfo &PPInfo);
+	virtual bool		Process						(SPPInfo &PPInfo) override;
 };
 
 class CPostprocessAnimatorLerpConst :public CPostprocessAnimator
@@ -196,16 +204,16 @@ protected:
 public:
 					CPostprocessAnimatorLerpConst	()					{m_power = 1.0f;}
 		void		SetPower						(float val)			{m_power=val;}
-virtual	bool		Process							(SPPInfo &PPInfo);
+	virtual bool		Process							(SPPInfo &PPInfo) override;
 };
 
 class CPostprocessAnimatorControlled :public CPostprocessAnimatorLerp
 {
 	CEffectorController*		m_controller;
 public:
-	virtual				~CPostprocessAnimatorControlled		();
+	~CPostprocessAnimatorControlled		() override;
 						CPostprocessAnimatorControlled		(CEffectorController* c);
-	virtual bool		Valid								();
+	virtual bool		Valid								() override;
 };
 
 #endif

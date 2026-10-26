@@ -171,7 +171,7 @@ public:
 	Flags32 m_eDevicesFlags;
 
 	CHudStateAnimator(CHudAnimatorManager* manager);
-	virtual ~CHudStateAnimator() = default;
+	virtual ~CHudStateAnimator() override = default;
 
 	virtual void Load() override;
 	void Update();

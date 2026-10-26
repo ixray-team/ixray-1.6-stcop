@@ -16,12 +16,12 @@ protected:
 	virtual void		switch2_Showing				();
 			void		switch2_Attacking			(u8 state);
 
-	virtual void		OnAnimationEnd				(u8 state);
-	virtual void		OnMotionMark				(u8 state, const motion_marks&);
+	virtual void		OnAnimationEnd				(u8 state) override;
+	virtual void		OnMotionMark				(u8 state, const motion_marks&) override;
 			void		OnKnifeStrike				();
-	virtual void		OnStateSwitch				(u8 S);
+	virtual void		OnStateSwitch				(u8 S) override;
 
-	virtual void		UpdateCL					();
+	virtual void		UpdateCL					() override;
 
 	virtual void		KnifeStrike					(const Fvector& pos, const Fvector& dir);
 
@@ -54,13 +54,13 @@ protected:
 	bool				UseAlt = false;
 
 protected:
-	virtual void		LoadFireParams					(const char* section);
+	virtual void		LoadFireParams					(const char* section) override;
 
 	virtual void		switch2_Suicide() override;
 	virtual void		switch2_SuicideStop() override;
 public:
-	CWeaponKnife(); 
-	virtual ~CWeaponKnife() = default; 
+	CWeaponKnife();
+	virtual ~CWeaponKnife() override = default;
 
 	virtual void		Load							(const char* section) override;
 	virtual void		LoadSounds						(const char* section) override;
@@ -68,12 +68,12 @@ public:
 	virtual bool		IsZoomEnabled					()	const	{return false;}
 
 			void		Fire2Start						();
-	virtual void		FireStart						();
+	virtual void		FireStart						() override;
 
 
-	virtual bool		Action							(u16 cmd, u32 flags);
+	virtual bool		Action							(u16 cmd, u32 flags) override;
 
-	virtual bool		GetBriefInfo					(II_BriefInfo& info);
+	virtual bool		GetBriefInfo					(II_BriefInfo& info) override;
 	IC		Fvector3	GetHit1SplashDir				()	const	{ return m_Hit1SplashDir; }
 	IC		Fvector3	GetHit2SplashDir				()	const	{ return m_Hit2SplashDir; }
 	IC		void		SetHit1SplashDir				(Fvector3 value)	{ m_Hit1SplashDir = value; }
@@ -106,14 +106,14 @@ public:
 
 	virtual bool WpnCanShoot() const override { return false; }
 
-	virtual CWeaponKnife* cast_weapon_knife() { return this; }
+	virtual CWeaponKnife* cast_weapon_knife() override { return this; }
 
-	virtual float getHitImpulse() const { return fHitImpulse_1; }
-	virtual void setHitImpulse(float value);
-	virtual const Fvector4& getHitPower() const { return fvHitPower_1; }
-	virtual void setHitPower(const Fvector4& vec);
-	virtual const Fvector4& getHitPowerCritical() const { return fvHitPowerCritical_1; }
-	virtual void setHitPowerCritical(const Fvector4& vec);
+	virtual float getHitImpulse() const override { return fHitImpulse_1; }
+	virtual void setHitImpulse(float value) override;
+	virtual const Fvector4& getHitPower() const override { return fvHitPower_1; }
+	virtual void setHitPower(const Fvector4& vec) override;
+	virtual const Fvector4& getHitPowerCritical() const override { return fvHitPowerCritical_1; }
+	virtual void setHitPowerCritical(const Fvector4& vec) override;
 
 	float getHitImpulse_2() const { return fHitImpulse_2; }
 	void setHitImpulse_2(float value);

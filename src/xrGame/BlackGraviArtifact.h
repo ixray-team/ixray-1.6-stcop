@@ -22,21 +22,21 @@ private:
 	typedef CGraviArtefact inherited;
 public:
 	CBlackGraviArtefact(void);
-	virtual ~CBlackGraviArtefact(void);
+	virtual ~CBlackGraviArtefact(void) override;
 
-	virtual bool net_Spawn			(CSE_Abstract* DC);
+	virtual bool net_Spawn			(CSE_Abstract* DC) override;
 
-	virtual void Load				(const char* section);
+	virtual void Load				(const char* section) override;
 
-	virtual	void Hit				(SHit* pHDS);
+	virtual void Hit				(SHit* pHDS) override;
 
-	virtual void feel_touch_new		(CObject* O);
-	virtual void feel_touch_delete	(CObject* O);
-	virtual bool feel_touch_contact	(CObject* O);
+	virtual void feel_touch_new		(CObject* O) override;
+	virtual void feel_touch_delete	(CObject* O) override;
+	virtual bool feel_touch_contact	(CObject* O) override;
 
 protected:
-	virtual void	net_Relcase		(CObject* O );
-	virtual void	UpdateCLChild	();
+	virtual void	net_Relcase		(CObject* O ) override;
+	virtual void	UpdateCLChild	() override;
 
 	//гравитационный удар по всем объектам в зоне дос€гаемости
 	void GraviStrike();

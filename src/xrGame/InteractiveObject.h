@@ -24,7 +24,7 @@ public:
 	bool useSpawnAtBoneIndexSections = false;
 
 	CInteractiveObject();
-	~CInteractiveObject();
+	virtual ~CInteractiveObject() override;
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual void net_Relcase(CObject* O) override;

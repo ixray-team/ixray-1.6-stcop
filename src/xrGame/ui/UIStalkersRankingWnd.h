@@ -18,10 +18,10 @@ class CUIStalkersRankingWnd: public CUIWindow
 	typedef CUIWindow inherited;
 public:
 	CUIStalkersRankingWnd();
-	virtual ~CUIStalkersRankingWnd();
+	virtual ~CUIStalkersRankingWnd() override;
 	
 			void			Init				();
-	virtual void			Show				(bool status);
+	virtual void			Show				(bool status) override;
 			void			ShowHumanDetails	();
 	virtual void			DrawHint			();
 	CUIFrameWindow*			UIInfoFrame;
@@ -43,11 +43,11 @@ protected:
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}
 	void					ShowHumanInfo		(ALife::_OBJECT_ID id);
-	virtual void			Reset				();
-	
-	virtual bool			OnGamepadKeyAction	(int id, EUIMessages gamepad_action);
-	virtual bool			OnGamepadKeyHold	(int id);
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void			Reset				() override;
+
+	virtual bool			OnGamepadKeyAction	(int id, EUIMessages gamepad_action) override;
+	virtual bool			OnGamepadKeyHold	(int id) override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
 	UIHint*						m_hint_wnd = nullptr;
 	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 };
@@ -66,11 +66,11 @@ public:
 							CUIStalkerRankingInfoItem(CUIStalkersRankingWnd*);
 	
 	void					Init			(CUIXml* xml, const char* path, int idx);
-	virtual void			SetSelected		(bool b);
-	virtual bool			OnMouseDown		(int mouse_btn);
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUISelectable* ui_cast_selectable() { return this; }
-	virtual void				OnFocusReceive			();
+	virtual void			SetSelected		(bool b) override;
+	virtual bool			OnMouseDown		(int mouse_btn) override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUISelectable* ui_cast_selectable() override { return this; }
+	virtual void				OnFocusReceive			() override;
 			void				SetHintText				();
 };
 
@@ -79,8 +79,8 @@ class CUIStalkerRankingElipsisItem :public CUIStalkerRankingInfoItem
 	typedef CUIStalkerRankingInfoItem inherited;
 public:
 					CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
-	virtual void			SetSelected		(bool b);
-	virtual bool			OnMouseDown		(int mouse_btn);
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUISelectable* ui_cast_selectable() { return this; }
+	virtual void			SetSelected		(bool b) override;
+	virtual bool			OnMouseDown		(int mouse_btn) override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUISelectable* ui_cast_selectable() override { return this; }
 };

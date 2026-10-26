@@ -52,30 +52,30 @@ private:
 	EActorCameras			m_last_camera;
 public:
 							CSpectator				( );
-	virtual					~CSpectator				( );
+	virtual ~CSpectator				( ) override;
 
-	virtual void			IR_OnMouseMove			(int x, int y);
-	virtual void			IR_OnKeyboardPress		(int dik);
-	virtual void			IR_OnKeyboardRelease	(int dik);
-	virtual void			IR_OnKeyboardHold		(int dik);
-	virtual void			shedule_Update			( u32 T ); 
-	virtual void			UpdateCL				( );
-	virtual bool			net_Spawn				( CSE_Abstract*	DC );
-	virtual void			net_Destroy			();
+	virtual void			IR_OnMouseMove			(int x, int y) override;
+	virtual void			IR_OnKeyboardPress		(int dik) override;
+	virtual void			IR_OnKeyboardRelease	(int dik) override;
+	virtual void			IR_OnKeyboardHold		(int dik) override;
+	virtual void			shedule_Update			( u32 T ) override;
+	virtual void			UpdateCL				( ) override;
+	virtual bool			net_Spawn				( CSE_Abstract*	DC ) override;
+	virtual void			net_Destroy			() override;
 
-	virtual void			Center					(Fvector& C)	const	{ C.set(Position());	}
-	virtual float			Radius					()				const	{ return EPS;}
+	virtual void			Center					(Fvector& C)	const override { C.set(Position());	}
+	virtual float			Radius					()				const override { return EPS;}
 //	virtual const Fbox&		BoundingBox				()				const	{ VERIFY2(renderable.visual,*cName()); return renderable.visual->vis.box;									}
-	virtual CGameObject*	cast_game_object		()						{return this;}
-	virtual IInputReceiver*	cast_input_receiver		()						{return this;}
-	virtual CSpectator*		cast_spectator			()						{return this;}
+	virtual CGameObject*	cast_game_object		() override {return this;}
+	virtual IInputReceiver*	cast_input_receiver		() override {return this;}
+	virtual CSpectator*		cast_spectator			() override {return this;}
 
-	virtual void			net_Relcase				(CObject *O);
+	virtual void			net_Relcase				(CObject *O) override;
 			void			GetSpectatorString		(string1024& pStr);
 
-			
-	virtual void			On_SetEntity			();
-	virtual void			On_LostEntity			();
+
+	virtual void			On_SetEntity			() override;
+	virtual void			On_LostEntity			() override;
 
 	inline	EActorCameras	GetActiveCam			() const {return cam_active;};
 };

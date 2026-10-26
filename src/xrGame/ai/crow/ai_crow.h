@@ -108,34 +108,34 @@ public:
 	u32				o_workload_rframe	;
 public:
 					CAI_Crow();
-	virtual			~CAI_Crow();
-	virtual void	Load						( const char* section );
+	virtual ~CAI_Crow() override;
+	virtual void	Load						( const char* section ) override;
 			void	init						();
-	virtual bool	net_Spawn					( CSE_Abstract* DC );
-	virtual void	net_Destroy					();
-	virtual bool	renderable_ShadowGenerate	()			{ return false;	}
-	virtual bool	renderable_ShadowReceive	()			{ return false;	}
-	virtual void	renderable_Render			();
-	virtual void	shedule_Update				(u32 DT);
-	virtual void	UpdateCL					();
+	virtual bool	net_Spawn					( CSE_Abstract* DC ) override;
+	virtual void	net_Destroy					() override;
+	virtual bool	renderable_ShadowGenerate	() override { return false;	}
+	virtual bool	renderable_ShadowReceive	() override { return false;	}
+	virtual void	renderable_Render			() override;
+	virtual void	shedule_Update				(u32 DT) override;
+	virtual void	UpdateCL					() override;
 
-	virtual CEntity*cast_entity					()			{return this;}
+	virtual CEntity*cast_entity					() override {return this;}
 
-	virtual void	net_Export					(NET_Packet& P);
-	virtual void	net_Import					(NET_Packet& P);
+	virtual void	net_Export					(NET_Packet& P) override;
+	virtual void	net_Import					(NET_Packet& P) override;
 
-	virtual void	HitSignal					(float	HitAmount,	Fvector& local_dir, CObject* who, s16 element);
-	virtual void	HitImpulse					(float	amount,		Fvector& vWorldDir, Fvector& vLocalDir);
-	virtual	void	Hit							(SHit* pHDS);
-	virtual void	Die							(CObject* who);
+	virtual void	HitSignal					(float	HitAmount,	Fvector& local_dir, CObject* who, s16 element) override;
+	virtual void	HitImpulse					(float	amount,		Fvector& vWorldDir, Fvector& vLocalDir) override;
+	virtual void	Hit							(SHit* pHDS) override;
+	virtual void	Die							(CObject* who) override;
 	virtual	float	ffGetFov					() const {return 150.f;	}
 	virtual	float	ffGetRange					() const {return 30.f;	}
 
-	virtual bool	IsVisibleForZones()			{ return false;		}
-	virtual bool	UsedAI_Locations()			;
-	virtual void	create_physic_shell	()		;
+	virtual bool	IsVisibleForZones() override { return false;		}
+	virtual bool	UsedAI_Locations() override;
+	virtual void	create_physic_shell	() override;
 
-	virtual	void	net_Relcase(CObject* O);
+	virtual void	net_Relcase(CObject* O) override;
 
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

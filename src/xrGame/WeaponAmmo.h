@@ -51,8 +51,8 @@ public:
 	shared_str	m_InvShortName;
 
 	const char* GetInventoryName() { return m_InvShortName.c_str(); };
-	virtual void				DumpActiveParams		(shared_str const & section_name, CInifile & dst_ini) const;
-	virtual shared_str const 	GetAnticheatSectionName	() const { return m_ammoSect; };
+	virtual void				DumpActiveParams		(shared_str const & section_name, CInifile & dst_ini) const override;
+	virtual shared_str const 	GetAnticheatSectionName	() const override { return m_ammoSect; };
 };
 
 class CWeaponAmmo final : 
@@ -62,23 +62,23 @@ class CWeaponAmmo final :
 	using inherited = CInventoryItemObject;
 public:
 	CWeaponAmmo() = default;
-	virtual ~CWeaponAmmo() = default;
+	virtual ~CWeaponAmmo() override = default;
 
-	virtual CWeaponAmmo				*cast_weapon_ammo	()	{return this;}
+	virtual CWeaponAmmo				*cast_weapon_ammo	() override {return this;}
 	virtual IRepackerInterface* cast_repacker_interface() override {return this;}
-	virtual void					Load				(const char* section);
-	virtual bool					net_Spawn			(CSE_Abstract* DC);
-	virtual void					net_Destroy			();
-	virtual void					net_Export			(NET_Packet& P);
-	virtual void					net_Import			(NET_Packet& P);
-	virtual void					OnH_B_Chield		();
-	virtual void					OnH_B_Independent	(bool just_before_destroy);
-	virtual void					UpdateCL			();
-	virtual void					renderable_Render	();
+	virtual void					Load				(const char* section) override;
+	virtual bool					net_Spawn			(CSE_Abstract* DC) override;
+	virtual void					net_Destroy			() override;
+	virtual void					net_Export			(NET_Packet& P) override;
+	virtual void					net_Import			(NET_Packet& P) override;
+	virtual void					OnH_B_Chield		() override;
+	virtual void					OnH_B_Independent	(bool just_before_destroy) override;
+	virtual void					UpdateCL			() override;
+	virtual void					renderable_Render	() override;
 
-	virtual bool					Useful				() const;
-	virtual float					Weight				() const;
-	virtual	u32						Cost				() const;
+	virtual bool					Useful				() const override;
+	virtual float					Weight				() const override;
+	virtual u32						Cost				() const override;
 
 	bool							Get					(CCartridge &cartridge);
 
@@ -93,6 +93,6 @@ public:
 	bool 		m_4to1_tracer;
 
 public:
-	virtual CInventoryItem *can_make_killing	(const CInventory *inventory) const;
+	virtual CInventoryItem *can_make_killing	(const CInventory *inventory) const override;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -22,11 +22,11 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CDistanceFunction(){}
+	virtual ~CDistanceFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 
-	virtual u32	dwfGetDiscreteValue(u32 dwDiscretizationValue)
+	virtual u32	dwfGetDiscreteValue(u32 dwDiscretizationValue) override
 	{
 		float fTemp = ffGetValue();
 		if (fTemp <= m_fMinResultValue)
@@ -51,7 +51,7 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalMoraleFunction : public CBaseFunction {
@@ -66,9 +66,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalMoraleFunction(){}
+	virtual ~CPersonalMoraleFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalCreatureTypeFunction : public CBaseFunction {
@@ -83,9 +83,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalCreatureTypeFunction(){}
+	virtual ~CPersonalCreatureTypeFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalWeaponTypeFunction : public CBaseFunction {
@@ -100,11 +100,11 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalWeaponTypeFunction(){}
+	virtual ~CPersonalWeaponTypeFunction() override {}
 
 			u32	  dwfGetWeaponType	();
 			float ffGetTheBestWeapon();
-	virtual float ffGetValue		();
+	virtual float ffGetValue		() override;
 };
 
 class CPersonalAccuracyFunction : public CBaseFunction {
@@ -119,9 +119,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalAccuracyFunction(){}
+	virtual ~CPersonalAccuracyFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalIntelligenceFunction : public CBaseFunction {
@@ -136,9 +136,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalIntelligenceFunction(){}
+	virtual ~CPersonalIntelligenceFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalRelationFunction : public CBaseFunction {
@@ -153,9 +153,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalRelationFunction(){}
+	virtual ~CPersonalRelationFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalGreedFunction : public CBaseFunction {
@@ -170,9 +170,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalGreedFunction(){}
+	virtual ~CPersonalGreedFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalAggressivenessFunction : public CBaseFunction {
@@ -187,9 +187,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalAggressivenessFunction(){}
+	virtual ~CPersonalAggressivenessFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CEnemyMoraleFunction : public CBaseFunction {
@@ -203,10 +203,10 @@ public:
 		xr_strcat(m_caName,"EnemyMorale");
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
-	
-	virtual ~CEnemyMoraleFunction(){}
 
-	virtual float ffGetValue();
+	virtual ~CEnemyMoraleFunction() override {}
+
+	virtual float ffGetValue() override;
 };
 
 class CEnemyEquipmentCostFunction : public CBaseFunction {
@@ -221,9 +221,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEnemyEquipmentCostFunction(){}
+	virtual ~CEnemyEquipmentCostFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CEnemyRukzakWeightFunction : public CBaseFunction {
@@ -238,9 +238,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEnemyRukzakWeightFunction(){}
+	virtual ~CEnemyRukzakWeightFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CEnemyAnomalityFunction : public CBaseFunction {
@@ -255,9 +255,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEnemyAnomalityFunction(){}
+	virtual ~CEnemyAnomalityFunction() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CGraphPointType0 : public CBaseFunction {
@@ -272,9 +272,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CGraphPointType0(){}
+	virtual ~CGraphPointType0() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalEyeRange : public CBaseFunction {
@@ -289,9 +289,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalEyeRange(){}
+	virtual ~CPersonalEyeRange() override {}
 
-	virtual float ffGetValue();
+	virtual float ffGetValue() override;
 };
 
 class CPersonalMaxHealth : public CBaseFunction {
@@ -306,10 +306,10 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CPersonalMaxHealth(){}
+	virtual ~CPersonalMaxHealth() override {}
 
-	virtual float	ffGetValue();
-	virtual u32		dwfGetDiscreteValue(u32 dwDiscretizationValue = 1);
+	virtual float	ffGetValue() override;
+	virtual u32		dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
 class CEquipmentType : public CBaseFunction {
@@ -324,9 +324,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEquipmentType(){}
+	virtual ~CEquipmentType() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CItemDeterioration : public CBaseFunction {
@@ -341,9 +341,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CItemDeterioration(){}
+	virtual ~CItemDeterioration() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CEquipmentPreference : public CBaseFunction {
@@ -358,9 +358,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEquipmentPreference(){}
+	virtual ~CEquipmentPreference() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CMainWeaponType : public CBaseFunction {
@@ -375,9 +375,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CMainWeaponType(){}
+	virtual ~CMainWeaponType() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CMainWeaponPreference : public CBaseFunction {
@@ -392,9 +392,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CMainWeaponPreference(){}
+	virtual ~CMainWeaponPreference() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CItemValue : public CBaseFunction {
@@ -409,9 +409,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CItemValue(){}
+	virtual ~CItemValue() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CWeaponAmmoCount : public CBaseFunction {
@@ -426,10 +426,10 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CWeaponAmmoCount(){}
+	virtual ~CWeaponAmmoCount() override {}
 
-	virtual float	ffGetValue();
-	virtual u32		dwfGetDiscreteValue(u32 dwDiscretizationValue = 1);
+	virtual float	ffGetValue() override;
+	virtual u32		dwfGetDiscreteValue(u32 dwDiscretizationValue = 1) override;
 };
 
 class CEnemyAnomalyType : public CBaseFunction {
@@ -444,9 +444,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEnemyAnomalyType(){}
+	virtual ~CEnemyAnomalyType() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CDetectorType : public CBaseFunction {
@@ -461,9 +461,9 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CDetectorType(){}
+	virtual ~CDetectorType() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };
 
 class CEnemyDistanceToGraphPoint : public CBaseFunction {
@@ -478,7 +478,7 @@ public:
 		OUT_MESSAGE("* Evaluation function \"%s\" is successfully initalized",m_caName);
 	};
 
-	virtual ~CEnemyDistanceToGraphPoint(){}
+	virtual ~CEnemyDistanceToGraphPoint() override {}
 
-	virtual float	ffGetValue();
+	virtual float	ffGetValue() override;
 };

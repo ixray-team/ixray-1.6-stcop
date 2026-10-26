@@ -11,7 +11,7 @@ private:
 
 public:
     CBackpack();
-    ~CBackpack() = default;
+    virtual ~CBackpack() override = default;
 
     virtual void Load(const char* section) override;
 

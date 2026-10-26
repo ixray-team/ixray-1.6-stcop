@@ -7,9 +7,9 @@ class CUIPdaMsgListItem final :
 	typedef	CUIColorAnimConrollerContainer	inherited;
 public:
 			void		InitPdaMsgListItem				(const Fvector2& size);
-	virtual void		SetFont							(CGameFont* pFont);
-	
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void		SetFont							(CGameFont* pFont) override;
+
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	CUIStatic			UIIcon;
 	CUIStatic			UITimeText;

@@ -33,9 +33,9 @@ private:
 	void			InitFieldsStatics	(CUIXml& uiXml);
 public:
 					UITeamHeader	(UITeamState const * const parent);
-	virtual			~UITeamHeader	();
+	virtual ~UITeamHeader	() override;
 			void	Init			(CUIXml& uiXml, const char* path);
-	virtual	void	Update			();
+	virtual void	Update			() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

@@ -13,12 +13,12 @@ private:
 	typedef CArtefact inherited;
 public:
 	CGraviArtefact(void);
-	virtual ~CGraviArtefact(void);
+	virtual ~CGraviArtefact(void) override;
 
-	virtual void Load				(const char* section);
+	virtual void Load				(const char* section) override;
 
 protected:
-	virtual void	UpdateCLChild	();
+	virtual void	UpdateCLChild	() override;
 	//параметры артефакта
 	float m_fJumpHeight;
 	float m_fEnergy;

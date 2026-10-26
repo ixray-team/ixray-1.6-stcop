@@ -59,30 +59,30 @@ private:
 	void				PsyHit						(const CObject *object, float value);
 public:
 						CPhantom					();
-	virtual				~CPhantom					();
-	
-	virtual void		Load						( const char* section );
-	virtual bool		net_Spawn					( CSE_Abstract* DC );
-	virtual void		net_Destroy					();
-	
+	virtual ~CPhantom					() override;
+
+	virtual void		Load						( const char* section ) override;
+	virtual bool		net_Spawn					( CSE_Abstract* DC ) override;
+	virtual void		net_Destroy					() override;
+
 	virtual void		net_Export					(NET_Packet& P) override;
 	virtual void		net_Import					(NET_Packet& P) override;
 	virtual void		save						(NET_Packet &output_packet) override;
 	virtual void		load						(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
-	virtual void		shedule_Update				(u32 DT); 
-	virtual void		UpdateCL					();
+	virtual void		shedule_Update				(u32 DT) override;
+	virtual void		UpdateCL					() override;
 
-	virtual void		HitSignal					(float	HitAmount,	Fvector& local_dir, CObject* who, s16 element){}
-	virtual void		HitImpulse					(float	amount,		Fvector& vWorldDir, Fvector& vLocalDir){}
-	virtual	void		Hit							(SHit* pHDS);
+	virtual void		HitSignal					(float	HitAmount,	Fvector& local_dir, CObject* who, s16 element) override {}
+	virtual void		HitImpulse					(float	amount,		Fvector& vWorldDir, Fvector& vLocalDir) override {}
+	virtual void		Hit							(SHit* pHDS) override;
 
-	virtual bool		IsVisibleForZones			() {return false;}
+	virtual bool		IsVisibleForZones			() override {return false;}
 
-	virtual bool		UsedAI_Locations			() {return false;}
+	virtual bool		UsedAI_Locations			() override {return false;}
 
-	virtual CEntity*	cast_entity					() {return this;}
+	virtual CEntity*	cast_entity					() override {return this;}
 
 	void				SetEnemy(CObject* enemy) { m_enemy = enemy; } //Alundaio
 };

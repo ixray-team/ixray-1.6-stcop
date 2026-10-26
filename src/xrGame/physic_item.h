@@ -21,24 +21,24 @@ public:
 
 public:
 					CPhysicItem						();
-	virtual			~CPhysicItem					();
+	virtual ~CPhysicItem					() override;
 			void	init							();
-	virtual void	reinit							();
-	virtual void	Load							(const char* section);
-	virtual void	reload							(const char* section);
-	virtual void	OnH_B_Independent				(bool just_before_destroy);
-	virtual void	OnH_B_Chield					();
-	virtual void	UpdateCL						();
-	virtual bool	net_Spawn						(CSE_Abstract* DC);
-	virtual void	net_Destroy						();
-	virtual void	activate_physic_shell			();
-	virtual void	setup_physic_shell				();
+	virtual void	reinit							() override;
+	virtual void	Load							(const char* section) override;
+	virtual void	reload							(const char* section) override;
+	virtual void	OnH_B_Independent				(bool just_before_destroy) override;
+	virtual void	OnH_B_Chield					() override;
+	virtual void	UpdateCL						() override;
+	virtual bool	net_Spawn						(CSE_Abstract* DC) override;
+	virtual void	net_Destroy						() override;
+	virtual void	activate_physic_shell			() override;
+	virtual void	setup_physic_shell				() override;
 	virtual void	create_box_physic_shell			();
 	virtual void	create_box2sphere_physic_shell	();
-	virtual void	create_physic_shell				();
-	virtual CPhysicItem* cast_physics_item() { return this; }
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+	virtual void	create_physic_shell				() override;
+	virtual CPhysicItem* cast_physics_item() override { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
 	virtual void CreatePhysicsShell() override;
-	
+
 	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); }
 };

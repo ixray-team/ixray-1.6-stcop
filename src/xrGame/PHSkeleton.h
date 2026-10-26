@@ -39,7 +39,7 @@ protected:
 	void			UnsplitSingle		(CPHSkeleton* SO)														;
 
 protected:
-	virtual CPhysicsShellHolder*		PPhysicsShellHolder	()													=0;
+	virtual CPhysicsShellHolder*		PPhysicsShellHolder	() override =0;
 	virtual CPHSkeleton	*PHSkeleton		()																		{return this;}
 	virtual void	SpawnInitPhysics	(CSE_Abstract	*D)														=0;
 	virtual void	SaveNetState		(NET_Packet& P)															;

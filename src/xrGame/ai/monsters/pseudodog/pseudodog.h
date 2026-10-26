@@ -21,25 +21,25 @@ public:
 	};
 public:
 					CAI_PseudoDog		();
-	virtual			~CAI_PseudoDog		();	
+	virtual ~CAI_PseudoDog		() override;
 
-	virtual DLL_Pure	*_construct		();
+	virtual DLL_Pure	*_construct		() override;
 
-	virtual void	Load				(const char* section);
+	virtual void	Load				(const char* section) override;
 
-	virtual void	reinit				();
-	virtual void	reload				(const char* section);
+	virtual void	reinit				() override;
+	virtual void	reload				(const char* section) override;
 
-	virtual bool	ability_can_drag	() {return true;}
-	virtual bool	ability_psi_attack	() {return true;}
+	virtual bool	ability_can_drag	() override {return true;}
+	virtual bool	ability_psi_attack	() override {return true;}
 
-	virtual void	CheckSpecParams		(u32 spec_params);
+	virtual void	CheckSpecParams		(u32 spec_params) override;
 	//virtual void	play_effect_sound	();
 
-	virtual void	HitEntityInJump		(const CEntity *pEntity);
+	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
 
 	virtual IStateManagerBase *create_state_manager	();
-	virtual	char*	get_monster_class_name () { return (char*)"pseudodog"; }
+	virtual char*	get_monster_class_name () override { return (char*)"pseudodog"; }
 
 private:
 #ifdef _DEBUG	

@@ -36,7 +36,7 @@ protected:
 
 public:
 	UIProperty() = default;
-	virtual	~UIProperty() = default;
+	virtual ~UIProperty() override = default;
 	void init_from_xml(CUIXml& ui_xml);
 	bool init_property(shared_str const& property_id);
 	Property_type* get_property();
@@ -47,7 +47,7 @@ public:
 	void FitToWidth(float Width, bool WrapText = true);
 	float GetRequiredWidth();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 }; // class UIProperty
 
@@ -75,7 +75,7 @@ protected:
 
 public:
 	UIInvUpgPropertiesWnd();
-	virtual	~UIInvUpgPropertiesWnd();
+	virtual ~UIInvUpgPropertiesWnd() override;
 	void init_from_xml(const char* xml_name);
 
 	void set_upgrade_info(Upgrade_type& upgrade);
@@ -83,7 +83,7 @@ public:
 	void SetAvailableWidth(float Width, bool AllowExpansion);
 	void UpdateStatsPos(float& h, Fvector2& pos, UIProperty* pWnd, int& counter) const;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	void set_info(ItemUpgrades_type const& item_upgrades);

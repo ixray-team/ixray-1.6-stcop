@@ -74,8 +74,8 @@ protected:
 
 public:
 										CObjectFactory					();
-	virtual								~CObjectFactory					();
-	virtual	void						init							();
+	virtual ~CObjectFactory					() override;
+	virtual void						init							() override;
 #ifndef NO_XR_GAME
 	IC		CLIENT_BASE_CLASS			*client_object					(const CLASS_ID &clsid) const;
 	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, const char* section) const;
@@ -83,14 +83,14 @@ public:
 	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, const char* section) const;
 #endif
 
-	IC virtual int						script_clsid					(const CLASS_ID &clsid) const;
-	virtual	void						register_script					() const;
+	IC virtual int						script_clsid					(const CLASS_ID &clsid) const override;
+	virtual void						register_script					() const override;
 			void						register_script_class			(const char* client_class, const char* server_class, const char* clsid, const char* script_clsid);
 			void						register_script_class			(const char* unknown_class, const char* clsid, const char* script_clsid);
 			void						register_script_classes			();
 
-	virtual	void						init_script(const char* str);
-	virtual	void						export_classes(lua_State* L);
+	virtual void						init_script(const char* str) override;
+	virtual void						export_classes(lua_State* L) override;
 
 		DECLARE_SCRIPT_REGISTER_FUNCTION
 	};

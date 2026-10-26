@@ -10,9 +10,9 @@ class CStateManagerCat : public CMonsterStateManager<CCat> {
 	u32					m_rot_jump_last_time;
 
 public:
-						CStateManagerCat	(CCat *obj);	
-	virtual				~CStateManagerCat	();
+						CStateManagerCat	(CCat *obj);
+	virtual ~CStateManagerCat	() override;
 
-	virtual	void		execute				();
-	virtual void		remove_links		(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		execute				() override;
+	virtual void		remove_links		(CObject* object_) override { inherited::remove_links(object_);}
 };

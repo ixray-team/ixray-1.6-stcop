@@ -29,23 +29,23 @@ public:
 
 #ifdef LOG_ACTION
 public:
-	virtual	void		set_use_log				(bool value);
-	virtual void		show					(const char* offset = "");
+	virtual void		set_use_log				(bool value) override;
+	virtual void		show					(const char* offset = "") override;
 #endif
 
 public:
 	IC					CActionPlannerAction	(_object_type *object = 0, const char* action_name = "");
-	virtual				~CActionPlannerAction	();
-	virtual	void		setup					(_object_type *object, CPropertyStorage *storage);
-	virtual void		initialize				();
-	virtual void		execute					();
-	virtual void		finalize				();
+	virtual ~CActionPlannerAction	() override;
+	virtual void		setup					(_object_type *object, CPropertyStorage *storage) override;
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		finalize				() override;
 	virtual bool		completed				() const;
 	IC		void		add_condition			(_world_operator *action, u32 condition_id, bool condition_value);
 	IC		void		add_effect				(_world_operator *action, u32 condition_id, bool condition_value);
 
-	virtual	void		save					(NET_Packet &packet) override {inherited_planner::save(packet); inherited_action::save(packet);}
-	virtual	void		load					(IReader &packet) override	 {inherited_planner::load(packet); inherited_action::load(packet);}
+	virtual void		save					(NET_Packet &packet) override {inherited_planner::save(packet); inherited_action::save(packet);}
+	virtual void		load					(IReader &packet) override	 {inherited_planner::load(packet); inherited_action::load(packet);}
 	virtual void Serialize(ISaveObject& Object) override { inherited_planner::Serialize(Object); inherited_action::Serialize(Object); }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

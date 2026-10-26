@@ -21,30 +21,30 @@ class CZombie final :	public CBaseMonster,
 
 public:
 					CZombie		();
-	virtual			~CZombie	();	
+	virtual ~CZombie	() override;
 
-	virtual void	Load				(const char* section);
-	virtual bool	net_Spawn			(CSE_Abstract* DC);
+	virtual void	Load				(const char* section) override;
+	virtual bool	net_Spawn			(CSE_Abstract* DC) override;
 	virtual void	net_Destroy() override;
-	virtual void	reinit				();
-	virtual	void	reload				(const char* section);
-	
-	virtual	void	Hit					(SHit* pHDS);
+	virtual void	reinit				() override;
+	virtual void	reload				(const char* section) override;
 
-	virtual bool	ability_pitch_correction () {return false;}
+	virtual void	Hit					(SHit* pHDS) override;
+
+	virtual bool	ability_pitch_correction () override {return false;}
 	virtual bool processing_enabled() override { return IsFakeDeathActive || inherited::processing_enabled(); }
 
-	virtual void	shedule_Update		(u32 dt);
+	virtual void	shedule_Update		(u32 dt) override;
 	
 	static	void 	BoneCallback		(CBoneInstance *B);
 			void	vfAssignBones		();
 
-	virtual bool	use_center_to_aim				() const {return true;}
-	virtual	char*	get_monster_class_name () { return (char*) "zombie"; }
+	virtual bool	use_center_to_aim				() const override {return true;}
+	virtual char*	get_monster_class_name () override { return (char*) "zombie"; }
 
-	void Die(CObject* who) override;
+	virtual void Die(CObject* who) override;
 	virtual bool ShouldMarkAsEnemy() override { return !IsFakeDeathActive; }
-	
+
 	virtual void save(NET_Packet &output_packet) override;
 	virtual void load(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;

@@ -11,21 +11,21 @@ private:
 	typedef CInventoryItemObject inherited;
 public:
 	CGrenadeLauncher (void);
-	virtual ~CGrenadeLauncher(void);
+	virtual ~CGrenadeLauncher(void) override;
 
-	virtual bool net_Spawn			(CSE_Abstract* DC);
-	virtual void Load				(const char* section);
-	virtual void net_Destroy		();
+	virtual bool net_Spawn			(CSE_Abstract* DC) override;
+	virtual void Load				(const char* section) override;
+	virtual void net_Destroy		() override;
 
-	virtual void OnH_A_Chield		();
-	virtual void OnH_B_Independent	(bool just_before_destroy);
+	virtual void OnH_A_Chield		() override;
+	virtual void OnH_B_Independent	(bool just_before_destroy) override;
 
-	virtual void UpdateCL			();
-	virtual void renderable_Render	();
+	virtual void UpdateCL			() override;
+	virtual void renderable_Render	() override;
 
 	float	GetGrenadeVel() {return m_fGrenadeVel;}
-	
-	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return this;}
+
+	virtual CGrenadeLauncher* cast_addon_grenade_launcher() override {return this;}
 	
 protected:
 	//стартовая скорость вылета подствольной гранаты

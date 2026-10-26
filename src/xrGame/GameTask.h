@@ -25,8 +25,8 @@ public:
 														m_s_lua_functions_on_complete.size()||
 														m_s_lua_functions_on_fail.size() ;}
 
-	virtual void			save			(IWriter &stream);
-	virtual void			load			(IReader &stream);
+	virtual void			save			(IWriter &stream) override;
+	virtual void			load			(IReader &stream) override;
 			
 			void			init_functors	(xr_vector<shared_str>& v_src, task_state_functors& v_dest);
 };

@@ -22,7 +22,7 @@ class CPda final :
 	using inherited = CInventoryItemObject;
 public:
 	CPda() = default;
-	virtual	~CPda() = default;
+	virtual ~CPda() override = default;
 
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void Load(const char* section) override;

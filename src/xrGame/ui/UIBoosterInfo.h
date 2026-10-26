@@ -11,11 +11,11 @@ class CUIBoosterInfo final : public CUIWindow
 {
 public:
 					CUIBoosterInfo		();
-	virtual			~CUIBoosterInfo		();
+	virtual ~CUIBoosterInfo		() override;
 			void	InitFromXml				(CUIXml& xml);
 			void	SetInfo					(const shared_str& section);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	UIBoosterInfoItem*	m_booster_items[eBoostExplImmunity];

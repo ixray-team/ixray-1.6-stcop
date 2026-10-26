@@ -83,14 +83,14 @@ public:
 
 public:
 				CControlAnimationBase	();
-	virtual		~CControlAnimationBase	();
+		virtual ~CControlAnimationBase	() override;
 
 	// Control_ComBase interface
-	virtual void		reinit			();
-	virtual void		on_event		(ControlCom::EEventType, ControlCom::IEventData*);	
-	virtual void		on_start_control(ControlCom::EControlType type);
-	virtual void		on_stop_control	(ControlCom::EControlType type);
-	virtual void		update_frame	();
+	virtual void		reinit			() override;
+	virtual void		on_event		(ControlCom::EEventType, ControlCom::IEventData*) override;
+	virtual void		on_start_control(ControlCom::EControlType type) override;
+	virtual void		on_stop_control	(ControlCom::EControlType type) override;
+	virtual void		update_frame	() override;
 
 			void		ScheduledInit	();
 

@@ -57,7 +57,7 @@ protected:
 	bool			TryReload();
 	
 public:
-	virtual void StopShooting() override;
+	void StopShooting() override;
 	void OnAnimationEnd(u8 state) override;
 
 protected:
@@ -79,7 +79,7 @@ public:
 	~CFlamethrower() override;
 
 	void	Load(LPCSTR section) override;
-	virtual CFlamethrower* cast_flamethrower() override { return this; }
+	CFlamethrower* cast_flamethrower() override { return this; }
 
 	bool    UseScopeTexture() override;
 
@@ -100,7 +100,7 @@ public:
 
 	bool	GetBriefInfo(II_BriefInfo& info) override;
 
-	virtual bool			IsMisfire() const override;
+	bool			IsMisfire() const override;
 
 protected:
 	float			m_fOldBulletSpeed;
@@ -147,7 +147,7 @@ public:
 	void	save(NET_Packet& output_packet) override;
 	void	load(IReader& input_packet) override;
 
-	virtual void Serialize(ISaveObject& Object) override;
+	void Serialize(ISaveObject& Object) override;
 
 	void	SpawnFuelCanister(float Condition, LPCSTR ammoSect = nullptr, ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
 

@@ -23,29 +23,29 @@ class CMincer final : public CBaseGraviZone, public CPHDestroyableNotificator
 
 public:
 	CMincer();
-	virtual ~CMincer();
+	virtual ~CMincer() override;
 
 	//	virtual void SwitchZoneState(EZoneState new_state);
-	virtual void OnStateSwitch(EZoneState new_state);
-	virtual bool feel_touch_contact(CObject* O);
-	virtual void feel_touch_new(CObject* O);
-	virtual void Load(const char* section);
-	virtual bool BlowoutState();
+	virtual void OnStateSwitch(EZoneState new_state) override;
+	virtual bool feel_touch_contact(CObject* O) override;
+	virtual void feel_touch_new(CObject* O) override;
+	virtual void Load(const char* section) override;
+	virtual bool BlowoutState() override;
 
-	virtual void AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
+	virtual void AffectPullDead(CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) override
 	{
 	}
 
-	virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist);
-	virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist);
-	virtual void ThrowInCenter(Fvector& C);
-	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual void net_Destroy();
-	virtual void Center(Fvector& C) const;
-	virtual void NotificateDestroy(CPHDestroyableNotificate* dn);
-	virtual float BlowoutRadiusPercent(CPhysicsShellHolder* GO);
-	CMincer* cast_mincer_zone() override { return this; }
+	virtual void AffectPullAlife(CEntityAlive* EA, const Fvector& throw_in_dir, float dist) override;
+	virtual void AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) override;
+	virtual void ThrowInCenter(Fvector& C) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void Center(Fvector& C) const override;
+	virtual void NotificateDestroy(CPHDestroyableNotificate* dn) override;
+	virtual float BlowoutRadiusPercent(CPhysicsShellHolder* GO) override;
+	virtual CMincer* cast_mincer_zone() override { return this; }
 
-	CTeleWhirlwind* telekinesis() override { return this; }
+	virtual CTeleWhirlwind* telekinesis() override { return this; }
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -14,11 +14,11 @@ class CBottleItem final : public CFoodItem
 	using inherited = CFoodItem;
 public:
 	CBottleItem() = default;
-	virtual	~CBottleItem();
+	virtual ~CBottleItem() override;
 
 	virtual void Load(const char* section) override;
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
-	virtual	void Hit(SHit* pHDS) override;
+	virtual void Hit(SHit* pHDS) override;
 	void BreakToPieces();
 
 	const SBottleItemDesc& BottleDesc() const { VERIFY(CurrentBottleDesc); return *CurrentBottleDesc; }

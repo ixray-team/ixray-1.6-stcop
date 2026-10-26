@@ -20,9 +20,9 @@ protected:
 
 public:
 						CStalkerActionReachWounded	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,9 +38,9 @@ private:
 
 public:
 						CStalkerActionAimWounded	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,9 +53,9 @@ protected:
 
 public:
 						CStalkerActionPrepareWounded(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -68,9 +68,9 @@ protected:
 
 public:
 						CStalkerActionKillWounded	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -83,6 +83,6 @@ protected:
 
 public:
 						CStalkerActionPauseAfterKill(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		execute						();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
 };

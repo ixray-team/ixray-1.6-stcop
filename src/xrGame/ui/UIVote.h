@@ -15,14 +15,14 @@ public:
 
 					CUIVote		();
 			void 	Init		();
-	virtual void 	Update		();
-	virtual void 	SendMessage	(CUIWindow* pWnd, s16 msg, void* pData = 0);
+	virtual void 	Update		() override;
+	virtual void 	SendMessage	(CUIWindow* pWnd, s16 msg, void* pData = 0) override;
 			void 	OnBtnYes	();
 			void 	OnBtnNo		();
 			void 	OnBtnCancel	();
 			void 	SetVoting	(const char* txt);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIStatic*		msg;

@@ -32,7 +32,7 @@ class CUIUpgradeWnd;
 struct SDrawStaticStruct :public IPureDestroyableObject
 {
 	SDrawStaticStruct	();
-	virtual	void	destroy			();
+	virtual void	destroy			() override;
 	CUIStatic*		m_static;
 	float			m_endTime;
 	shared_str		m_name;
@@ -108,14 +108,14 @@ public:
 	shared_str				m_message_str;
 
 	CChangeLevelWnd();
-	virtual				~CChangeLevelWnd() {};
-	virtual void		SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
-	virtual bool		WorkInPause()const { return true; }
-	virtual void		Show(bool status);
-	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
-	virtual bool		OnGamepadKeyAction(int id, EUIMessages gamepad_action);
+	virtual ~CChangeLevelWnd() override {};
+	virtual void		SendMessage(CUIWindow* pWnd, s16 msg, void* pData) override;
+	virtual bool		WorkInPause()const override { return true; }
+	virtual void		Show(bool status) override;
+	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
+	virtual bool		OnGamepadKeyAction(int id, EUIMessages gamepad_action) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 class CUIGameCustom :
@@ -153,14 +153,14 @@ public:
 
 	
 						CUIGameCustom			();
-	virtual				~CUIGameCustom			();
+	virtual ~CUIGameCustom			() override;
 
 	bool				HasShownDialogs			();
 
 	virtual	void		Init					(int stage)	{};
 	
 	virtual void		Render					();
-	virtual void _BCL	OnFrame					();
+	virtual void _BCL	OnFrame					() override;
 	
 	IC CUIActorMenu*	ActorMenu				() const { return m_ActorMenu; }
 	IC CUIInventoryWnd*	InventoryWnd			() const { return m_InventoryMenu; }
@@ -187,7 +187,7 @@ public:
 
 	virtual void		ShowGameIndicators		(bool b) override {m_bShowGameIndicators	= b;};
 	virtual bool		GameIndicatorsShown		() const override {return m_bShowGameIndicators;};
-	virtual CDialogHolder* GetDialogHolder		() { return this; };
+	virtual CDialogHolder* GetDialogHolder		() override { return this; };
 	void				ShowCrosshair			(bool b)			{psHUD_Flags.set			(HUD_CROSSHAIR_RT, b);}
 	bool				CrosshairShown			()					{return !!psHUD_Flags.test	(HUD_CROSSHAIR_RT);}
 
@@ -224,7 +224,7 @@ public:
 	void				UpdatePda				();
 	void				update_fake_indicators	(u8 type, float power);
 	void				enable_fake_indicators	(bool enable);
-	virtual void		ReloadGamepadLegends	();
+	virtual void		ReloadGamepadLegends	() override;
 
 
 	// Change Level

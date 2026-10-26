@@ -176,7 +176,7 @@ public:
 	CBaseMonster* get_self() override;
 
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 	void set_force_gravi_attack(bool force_gravi) { m_force_gravi_attack = force_gravi; }

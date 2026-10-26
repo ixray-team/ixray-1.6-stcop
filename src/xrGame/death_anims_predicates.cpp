@@ -104,7 +104,7 @@ void type_motion_diagnostic( const char* message, type_motion::edirection dr, co
  //1.	Инерционное движение вперед от попадания в голову 
 class	type_motion0: public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle )	const
+	virtual bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle )	const override
 	{
 		m = MotionID();
 		if( H.initiator() !=  Level().CurrentControlEntity())
@@ -153,7 +153,7 @@ class	type_motion0: public type_motion
 //2.	Изрешетить пулями
 class	type_motion1: public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const	
+	virtual bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const override
 	{
 		m = MotionID();
 //#ifdef DEBUG		
@@ -167,7 +167,7 @@ class	type_motion1: public type_motion
 //3.	Шотган 
 class	type_motion2 : public type_motion
 {
-	bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const
+	virtual bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const override
 	{
 		m = MotionID();
 		if (H.initiator() != Level().CurrentControlEntity())
@@ -205,7 +205,7 @@ class	type_motion2 : public type_motion
 //4.	Хедшот (по вероятности), кроме 5 (4) 
 class	type_motion3: public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const
+	virtual bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const override
 	{
 		m = MotionID();
 		if( H.initiator() !=  Level().CurrentControlEntity())
@@ -254,7 +254,7 @@ bool is_snipper(ALife::_OBJECT_ID weaponID)
 //5.	Снайперка в голову. 
 class	type_motion4: public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const	
+	virtual bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const override
 	{
 		if( H.initiator() !=  Level().CurrentControlEntity())
 			return false;
@@ -279,7 +279,7 @@ class	type_motion4: public type_motion
 //6.	Снайперка в тело. 
 class	type_motion5: public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const	
+	virtual bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const override
 	{
 		if( H.initiator() !=  Level().CurrentControlEntity())
 			return false;
@@ -302,7 +302,7 @@ class	type_motion5: public type_motion
 //7. Граната
 class	type_motion6 : public type_motion
 {
-	bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const
+	virtual bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const override
 	{
 
 		if (H.initiator() != Level().CurrentControlEntity())

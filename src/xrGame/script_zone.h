@@ -20,24 +20,24 @@ public:
 	typedef	CSpaceRestrictor inherited;
 
 					CScriptZone			();
-	virtual			~CScriptZone		();
-	virtual void	reinit				();
-	virtual bool	net_Spawn			(CSE_Abstract* DC);
-	virtual void	net_Destroy			();
-	virtual void	net_Relcase			(CObject* O);
-	virtual void	shedule_Update		(u32 dt);
-	virtual void	feel_touch_new		(CObject* O);
-	virtual void	feel_touch_delete	(CObject* O);
-	virtual bool	feel_touch_contact	(CObject* O);
+	virtual ~CScriptZone		() override;
+	virtual void	reinit				() override;
+	virtual bool	net_Spawn			(CSE_Abstract* DC) override;
+	virtual void	net_Destroy			() override;
+	virtual void	net_Relcase			(CObject* O) override;
+	virtual void	shedule_Update		(u32 dt) override;
+	virtual void	feel_touch_new		(CObject* O) override;
+	virtual void	feel_touch_delete	(CObject* O) override;
+	virtual bool	feel_touch_contact	(CObject* O) override;
 			bool	active_contact		(ALife::_OBJECT_ID id) const;
-	virtual bool	IsVisibleForZones	()				{return false;}
-	virtual	bool	register_schedule	() const		{return true;}
-	virtual CSpaceRestrictor* cast_restrictor() { return this; }
-	virtual CScriptZone* cast_script_zone() { return this; }
-	virtual CGameObject* cast_game_object() { return this; }
+	virtual bool	IsVisibleForZones	() override {return false;}
+	virtual bool	register_schedule	() const override {return true;}
+	virtual CSpaceRestrictor* cast_restrictor() override { return this; }
+	virtual CScriptZone* cast_script_zone() override { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
 
 #ifdef DEBUG
-	virtual	void	OnRender			();
+	virtual void	OnRender			() override;
 #endif
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

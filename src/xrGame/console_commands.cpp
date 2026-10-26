@@ -223,7 +223,9 @@ public:
 		bEmptyArgsHandled = true;
 		g_full_memory_stats_callback = &full_memory_stats;
 	};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		//full_memory_stats();
 	}
 };
@@ -232,7 +234,9 @@ public:
 class CCC_GameDifficulty : public CCC_Token {
 public:
 	CCC_GameDifficulty(const char* N) : CCC_Token(N, (u32*)&g_SingleGameDifficulty, difficulty_type_token) {};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CCC_Token::Execute(args);
 		if (g_pGameLevel && Level().game) {
 			//#ifndef	DEBUG
@@ -247,7 +251,8 @@ public:
 			game->OnDifficultyChanged();
 		}
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "game difficulty");
 	}
@@ -257,7 +262,9 @@ public:
 class CCC_ALifePath : public IConsole_Command {
 public:
 	CCC_ALifePath(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (!ai().get_level_graph())
 			Msg("! there is no graph!");
 		else {
@@ -286,7 +293,9 @@ public:
 class CCC_ALifeTimeFactor : public IConsole_Command {
 public:
 	CCC_ALifeTimeFactor(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		float id1 = 0.0f;
 		sscanf(args, "%f", &id1);
 		if (id1 < EPS_L)
@@ -299,8 +308,9 @@ public:
 		}
 	}
 
-	virtual void	Save(IWriter* F) {};
-	virtual void	Status(TStatus& S)
+	virtual void	Save(IWriter* F) override {};
+
+	virtual void	Status(TStatus& S) override
 	{
 		if (!g_pGameLevel)	return;
 
@@ -308,14 +318,16 @@ public:
 		xr_sprintf(S, sizeof(S), "%3.5f", v);
 		while (xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))	S[xr_strlen(S) - 1] = 0;
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		if (!g_pGameLevel)  return;
 		if (!OnServer())	return;
 		float v = Level().GetGameTimeFactor();
 		xr_sprintf(I, sizeof(I), " value = %3.5f", v);
 	}
-	virtual void	fill_tips(vecTips& tips, u32 mode)
+
+	virtual void	fill_tips(vecTips& tips, u32 mode) override
 	{
 		if (!OnServer())	return;
 		float v = Level().GetGameTimeFactor();
@@ -330,7 +342,9 @@ public:
 class CCC_ALifeSwitchDistance : public IConsole_Command {
 public:
 	CCC_ALifeSwitchDistance(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if ((IsGameTypeSingle()) && ai().get_alife()) {
 			float id1 = 0.0f;
 			sscanf(args, "%f", &id1);
@@ -351,7 +365,9 @@ public:
 class CCC_ALifeProcessTime : public IConsole_Command {
 public:
 	CCC_ALifeProcessTime(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if ((IsGameTypeSingle()) && ai().get_alife()) 
 		{
 			int id1 = 0;
@@ -370,7 +386,9 @@ public:
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
 	CCC_ALifeObjectsPerUpdate(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if ((IsGameTypeSingle()) && ai().get_alife()) {
 			int id1 = 0;
 			sscanf(args, "%d", &id1);
@@ -384,7 +402,9 @@ public:
 class CCC_ALifeSwitchFactor : public IConsole_Command {
 public:
 	CCC_ALifeSwitchFactor(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if ((IsGameTypeSingle()) && ai().get_alife()) {
 			float id1 = 0;
 			sscanf(args, "%f", &id1);
@@ -402,7 +422,9 @@ class CCC_DemoRecord : public IConsole_Command
 public:
 
 	CCC_DemoRecord(const char* N) : IConsole_Command(N) {};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (!g_pGameLevel) // level not loaded
 		{
 			Msg("! Demo Record is disabled when level is not loaded.");
@@ -432,12 +454,15 @@ class CCC_DemoRecordSetPos : public CCC_Vector3
 public:
 
 	CCC_DemoRecordSetPos(const char* N) : CCC_Vector3(N, &p, Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX), Fvector().set(FLT_MAX, FLT_MAX, FLT_MAX)) {};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CDemoRecord::GetGlobalPosition(p);
 		CCC_Vector3::Execute(args);
 		CDemoRecord::SetGlobalPosition(p);
 	}
-	virtual void	Save(IWriter* F) { ; }
+
+	virtual void	Save(IWriter* F) override { ; }
 
 };
 Fvector CCC_DemoRecordSetPos::p = { 0,0,0 };
@@ -450,7 +475,9 @@ public:
 	{
 		bEmptyArgsHandled = true;
 	};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (0 == g_pGameLevel)
 		{
 			Msg("! There are no level(s) started");
@@ -535,7 +562,7 @@ public:
 		LoadCallbackGlobals(m_isSaveStatus, m_onSaveStatus, "OnSaveStatus");
 	};
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 
 #if 0
@@ -625,7 +652,7 @@ public:
 		Console->Execute("cfg_save");
 	}//virtual void Execute
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 			get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
@@ -635,7 +662,8 @@ public:
 class CCC_ALifeLoadFrom : public IConsole_Command {
 public:
 	CCC_ALifeLoadFrom(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		string_path				saved_game;
 		strncpy_s(saved_game, sizeof(saved_game), args, _MAX_PATH - 1);
@@ -680,7 +708,7 @@ public:
 		Level().Send(net_packet, net_flags(true));
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 			get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
@@ -694,7 +722,7 @@ public:
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		string_path				saved_game = "";
 		if (args)
@@ -741,7 +769,7 @@ public:
 		Console->Execute(command);
 	}
 
-	virtual void	Save(IWriter* F)
+	virtual void	Save(IWriter* F) override
 	{
 		if (!*g_last_saved_game)
 			return;
@@ -753,7 +781,9 @@ public:
 class CCC_FlushLog : public IConsole_Command {
 public:
 	CCC_FlushLog(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* /**args/**/) {
+
+	virtual void Execute(const char* /**args/**/) override
+	{
 		xrLogger::FlushLog();
 	}
 };
@@ -761,7 +791,9 @@ public:
 class CCC_ClearLog : public IConsole_Command {
 public:
 	CCC_ClearLog(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char*) {
+
+	virtual void Execute(const char*) override
+	{
 		Console->ClearLog();
 		xrLogger::FlushLog();
 	}
@@ -776,7 +808,7 @@ public:
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		CUIGameCustom* ui = CurrentGameUI();
 		if (!ui || !ui->UIMainIngameWnd)
@@ -801,7 +833,7 @@ public:
 		}
 	}
 
-	virtual void Info(TInfo& I)
+	virtual void Info(TInfo& I) override
 	{
 		xr_strcpy(I, "smoke navigation/motion icon ownership (optional toggle count)");
 	}
@@ -814,7 +846,7 @@ public:
 		CCC_Float(N, V, _min, _max)
 	{};
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 #ifdef _DEBUG
 		CCC_Float::Execute(args);
@@ -838,7 +870,7 @@ public:
 		value_blin(V)
 	{};
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		CCC_Integer::Execute(args);
 		if ((*value_blin > 0) && g_pGameLevel)
@@ -857,7 +889,7 @@ public:
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()))
 			return;
@@ -873,7 +905,7 @@ public:
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
@@ -890,7 +922,7 @@ public:
 	{
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
@@ -913,13 +945,15 @@ public:
 class CCC_DumpInfos : public IConsole_Command {
 public:
 	CCC_DumpInfos(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		CActor* A = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (A)
 			A->DumpInfo();
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "dumps all infoportions that actor have");
 	}
@@ -927,13 +961,15 @@ public:
 class CCC_DumpTasks : public IConsole_Command {
 public:
 	CCC_DumpTasks(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		CActor* A = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (A)
 			A->DumpTasks();
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "dumps all tasks that actor have");
 	}
@@ -942,10 +978,13 @@ public:
 class CCC_DumpMap : public IConsole_Command {
 public:
 	CCC_DumpMap(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(const char* args) {
+
+	virtual void	Execute(const char* args) override
+	{
 		Level().MapManager().Dump();
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "dumps all currentmap locations");
 	}
@@ -956,7 +995,9 @@ public:
 class CCC_DumpCreatures : public IConsole_Command {
 public:
 	CCC_DumpCreatures(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(const char* args) {
+
+	virtual void	Execute(const char* args) override
+	{
 
 		typedef CSafeMapIterator<ALife::_OBJECT_ID, CSE_ALifeDynamicObject>::_REGISTRY::const_iterator const_iterator;
 
@@ -970,7 +1011,8 @@ public:
 		}
 
 	}
-	virtual void	Info(TInfo& I)
+
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "dumps all creature names");
 	}
@@ -980,7 +1022,8 @@ public:
 class CCC_DebugFonts : public IConsole_Command {
 public:
 	CCC_DebugFonts(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		(new CUIDebugFonts())->ShowDialog(true);
 	}
@@ -990,7 +1033,8 @@ class CCC_DebugNode : public IConsole_Command {
 public:
 	CCC_DebugNode(const char* N) : IConsole_Command(N) { };
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 
 		string128 param1, param2;
 		VERIFY(xr_strlen(args) < sizeof(string128));
@@ -1019,7 +1063,8 @@ class CCC_ShowMonsterInfo : public IConsole_Command {
 public:
 	CCC_ShowMonsterInfo(const char* N) : IConsole_Command(N) { };
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 
 		string128 param1, param2;
 		VERIFY(xr_strlen(args) < sizeof(string128));
@@ -1043,7 +1088,9 @@ extern string64 s_dbg_trace_obj_name;
 class CCC_DbgPhTrackObj : public CCC_String {
 public:
 	CCC_DbgPhTrackObj(const char* N) : CCC_String(N, s_dbg_trace_obj_name, sizeof(s_dbg_trace_obj_name)) { };
-	virtual void Execute(const char* args/**/) {
+
+	virtual void Execute(const char* args/**/) override
+	{
 		CCC_String::Execute(args);
 		if (!xr_strcmp(args, "none"))
 		{
@@ -1073,7 +1120,7 @@ struct CCC_ReloadSystemLtx : public IConsole_Command
 {
 	CCC_ReloadSystemLtx(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		if (!pSettings->Reload())
 		{
@@ -1108,7 +1155,8 @@ public:
 	CCC_PHIterations(const char* N) :
 		CCC_Integer(N, &phIterations, 15, 50)
 	{};
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		CCC_Integer::Execute(args);
 		// dWorldSetQuickStepNumIterations(nullptr,phIterations);
@@ -1123,7 +1171,8 @@ public:
 	CCC_PHGravity(const char* N) :
 		IConsole_Command(N)
 	{};
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		if (!physics_world())
 			return;
@@ -1136,7 +1185,8 @@ public:
 #endif
 		physics_world()->SetGravity(float(atof(args)));
 	}
-	virtual void	Status(TStatus& S)
+
+	virtual void	Status(TStatus& S) override
 	{
 		if (physics_world())
 			xr_sprintf(S, "%3.5f", physics_world()->Gravity());
@@ -1153,7 +1203,8 @@ public:
 	CCC_PHFps(const char* N) :
 		IConsole_Command(N)
 	{};
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		float				step_count = (float)atof(args);
 #ifndef		DEBUG
@@ -1165,7 +1216,8 @@ public:
 		if (physics_world())
 			physics_world()->SetStep(ph_console::ph_step_time);
 	}
-	virtual void	Status(TStatus& S)
+
+	virtual void	Status(TStatus& S) override
 	{
 		xr_sprintf(S, "%3.5f", 1.f / ph_console::ph_step_time);
 	}
@@ -1177,7 +1229,7 @@ public:
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(const char* N) : IConsole_Command(N) {};
 
-	virtual void Execute(const char* level)
+	virtual void Execute(const char* level) override
 	{
 		if (!ai().get_alife())
 		{
@@ -1196,8 +1248,9 @@ struct CCC_JumpToLevel : public IConsole_Command {
 		Msg("! There is no level \"%s\" in the game graph!", level);
 	}
 
-	virtual void	Save(IWriter* F) {};
-	virtual void	fill_tips(vecTips& tips, u32 mode)
+	virtual void	Save(IWriter* F) override {};
+
+	virtual void	fill_tips(vecTips& tips, u32 mode) override
 	{
 		if (!ai().get_alife())
 		{
@@ -1219,7 +1272,8 @@ struct CCC_JumpToLevel : public IConsole_Command {
 class CCC_Script : public IConsole_Command {
 public:
 	CCC_Script(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!xr_strlen(args))
 		{
@@ -1237,13 +1291,14 @@ public:
 		}
 	}
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		xr_strcpy(S, "<script_name> (Specify script name!)");
 	}
-	virtual void Save(IWriter* F) {}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void Save(IWriter* F) override {}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		get_files_list(tips, "$game_scripts$", ".script");
 	}
@@ -1254,7 +1309,7 @@ class CCC_ScriptCommand : public IConsole_Command {
 public:
 	CCC_ScriptCommand(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		if (!xr_strlen(args))
 			Log("* Specify string to run!");
@@ -1281,13 +1336,14 @@ public:
 		}
 	}//void	Execute
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		xr_strcpy(S, "<script_name.function()> (Specify script and function name!)");
 	}
-	virtual void Save(IWriter* F) {}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void Save(IWriter* F) override {}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		if (mode == 1)
 		{
@@ -1302,23 +1358,25 @@ public:
 class CCC_TimeFactor : public IConsole_Command {
 public:
 	CCC_TimeFactor(const char* N) : IConsole_Command(N) {}
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		float				time_factor = (float)atof(args);
 		clamp(time_factor, EPS, 1000.f);
 		Device.time_factor(time_factor);
 	}
-	virtual void	Status(TStatus& S)
+
+	virtual void	Status(TStatus& S) override
 	{
 		xr_sprintf(S, sizeof(S), "%f", Device.time_factor());
 	}
 
-	virtual void	Info(TInfo& I)
+	virtual void	Info(TInfo& I) override
 	{
 		xr_strcpy(I, "[0.001 - 1000.0]");
 	}
 
-	virtual void	fill_tips(vecTips& tips, u32 mode)
+	virtual void	fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus  str;
 		xr_sprintf(str, sizeof(str), "%3.3f  (current)  [0.001 - 1000.0]", Device.time_factor());
@@ -1332,6 +1390,7 @@ public:
 class CCC_UI_Reload : public IConsole_Command {
 public:
 	CCC_UI_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
 	virtual void Execute(const char* args) override
 	{
 		CXml::InvalidateCache();
@@ -1347,7 +1406,9 @@ public:
 class CCC_MainMenu : public IConsole_Command {
 public:
 	CCC_MainMenu(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 
 		bool bWhatToDo = true;
 		if (0 == xr_strlen(args)) {
@@ -1374,7 +1435,8 @@ public:
 
 struct CCC_StartTimeSingle : public IConsole_Command {
 	CCC_StartTimeSingle(const char* N) : IConsole_Command(N) {};
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		sscanf(args, "%u.%u.%u %u:%u:%u.%u", &year, &month, &day, &hours, &mins, &secs, &milisecs);
@@ -1395,7 +1457,7 @@ struct CCC_StartTimeSingle : public IConsole_Command {
 		Level().SetGameTimeFactor(g_qwStartGameTime, g_fTimeFactor);
 	}
 
-	virtual void	Status(TStatus& S)
+	virtual void	Status(TStatus& S) override
 	{
 		u32 year = 1, month = 1, day = 1, hours = 0, mins = 0, secs = 0, milisecs = 0;
 		split_time(g_qwStartGameTime, year, month, day, hours, mins, secs, milisecs);
@@ -1406,7 +1468,7 @@ struct CCC_StartTimeSingle : public IConsole_Command {
 struct CCC_TimeFactorSingle : public CCC_Float {
 	CCC_TimeFactorSingle(const char* N, float* V, float _min = 0.f, float _max = 1.f) : CCC_Float(N, V, _min, _max) {};
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		CCC_Float::Execute(args);
 
@@ -1427,7 +1489,9 @@ struct CCC_TimeFactorSingle : public CCC_Float {
 class CCC_Crash : public IConsole_Command {
 public:
 	CCC_Crash(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* /**args/**/) {
+
+	virtual void Execute(const char* /**args/**/) override
+	{
 		VERIFY3(false, "This is a test crash", "Do not post it as a bug");
 		int* pointer = 0;
 		*pointer = 0;
@@ -1449,7 +1513,8 @@ public:
 	{
 		group = G;
 	}
-	virtual	void	Execute(const char* args);
+
+	virtual void	Execute(const char* args) override;
 
 	IC		void	Set(bool V)
 	{
@@ -1501,7 +1566,7 @@ public:
 	{
 	}
 
-	virtual void Execute(const char* arguments)
+	virtual void Execute(const char* arguments) override
 	{
 		if (!arguments || !*arguments) {
 			Msg("! no arguments passed");
@@ -1543,7 +1608,8 @@ extern void show_animation_stats();
 class CCC_ShowAnimationStats : public IConsole_Command {
 public:
 	CCC_ShowAnimationStats(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char*)
+
+	virtual void Execute(const char*) override
 	{
 		show_animation_stats();
 	}
@@ -1553,7 +1619,8 @@ class CCC_InvUpgradesHierarchy : public IConsole_Command
 {
 public:
 	CCC_InvUpgradesHierarchy(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (ai().get_alife())
 		{
@@ -1567,7 +1634,8 @@ class CCC_InvUpgradesCurItem : public IConsole_Command
 {
 public:
 	CCC_InvUpgradesCurItem(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!g_pGameLevel || !CurrentGameUI())
 		{
@@ -1590,7 +1658,8 @@ class CCC_InvDropAllItems : public IConsole_Command
 {
 public:
 	CCC_InvDropAllItems(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!g_pGameLevel || !CurrentGameUI())
 		{
@@ -1621,7 +1690,8 @@ class CCC_TuneAttachableItem : public IConsole_Command
 {
 public:
 	CCC_TuneAttachableItem(const char* N) :IConsole_Command(N) {};
-	virtual void	Execute(const char* args)
+
+	virtual void	Execute(const char* args) override
 	{
 		if (CAttachableItem::m_dbgItem) {
 			CAttachableItem::m_dbgItem = nullptr;
@@ -1654,7 +1724,7 @@ public:
 			Msg("CCC_TuneAttachableItem cannot find attached item [%s]", args);
 	}
 
-	virtual void	Info(TInfo& I)
+	virtual void	Info(TInfo& I) override
 	{
 		xr_sprintf(I, "allows to change bind rotation and position offsets for attached item, <section_name> given as arguments");
 	}
@@ -1664,7 +1734,8 @@ public:
 class CCC_DumpObjects : public IConsole_Command {
 public:
 	CCC_DumpObjects(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char*)
+
+	virtual void Execute(const char*) override
 	{
 		Level().Objects.dump_all_objects();
 	}
@@ -1679,7 +1750,7 @@ public:
 		value_blin(V)
 	{};
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		CCC_Integer::Execute(args);
 	}
@@ -1690,7 +1761,7 @@ class CCC_DBGDrawCashedClear : public IConsole_Command {
 public:
 	CCC_DBGDrawCashedClear(const char* N) :IConsole_Command(N) { bEmptyArgsHandled = true; }
 private:
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 
 		DBG_CashedClear();
@@ -1702,7 +1773,8 @@ private:
 class CCC_DbgVar : public IConsole_Command {
 public:
 	CCC_DbgVar(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
-	virtual void Execute(const char* arguments)
+
+	virtual void Execute(const char* arguments) override
 	{
 		if (!arguments || !*arguments)
 		{
@@ -1729,7 +1801,8 @@ public:
 	CCC_SetWeather(const char* N) : IConsole_Command(N) {
 	}
 
-	virtual void Execute(const char* weather_name) {
+	virtual void Execute(const char* weather_name) override
+	{
 		if (!g_pGamePersistent && !OnServer()) {
 			return;
 		}
@@ -1739,7 +1812,8 @@ public:
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
 		auto& cycles = g_pGamePersistent->Environment().WeatherCycles;
 		for (auto& cycle : cycles) {
 			tips.push_back(cycle.first);
@@ -1748,7 +1822,8 @@ public:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	virtual void Info(TInfo& I) {
+	virtual void Info(TInfo& I) override
+	{
 		xr_strcpy(I, "Set new weather");
 	}
 };
@@ -1758,7 +1833,8 @@ public:
 	CCC_SetActorPosition(const char* N) : IConsole_Command(N) {
 	}
 
-	virtual void Execute(const char* pos_str) {
+	virtual void Execute(const char* pos_str) override
+	{
 		if (!g_pGamePersistent && !OnServer()) {
 			return;
 		}
@@ -1789,12 +1865,14 @@ public:
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
 		tips.push_back("0.0,0.0,0.0");
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	virtual void Info(TInfo& I) {
+	virtual void Info(TInfo& I) override
+	{
 		xr_strcpy(I, "Set position to actor");
 	}
 };
@@ -2186,7 +2264,8 @@ public:
 	CInifile* l_tpIniFile = NULL;
 	vecTips m_tips;
 	CCC_SpawnSquad(const char* N) : IConsole_Command(N){	bEmptyArgsHandled = false;};
-	~CCC_SpawnSquad() { IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
+	virtual ~CCC_SpawnSquad() override
+	{ IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
 	const char* GetNearestSmartName()
 	{
 		const auto& objects = ai().alife().smart_terrains().objects();
@@ -2218,7 +2297,7 @@ public:
 		return std::min_element(smart_names.begin(), smart_names.end())->second;
 	}
 
-	virtual void	Execute(const char* args)
+	virtual void	Execute(const char* args) override
 	{
 		if (!IsGameTypeSingleCompatible())
 		{
@@ -2259,7 +2338,7 @@ public:
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		if (m_tips.empty())
 		{
@@ -2293,7 +2372,8 @@ class CCC_SetCharComm : public IConsole_Command
 {
 public:
 	CCC_SetCharComm(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!g_pGameLevel) return;
 		if (!Level().CurrentControlEntity()) return;
@@ -2336,7 +2416,8 @@ public:
 			}
 		}
 	}
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		CHARACTER_COMMUNITY	community_human;
 		for (s32 i = 0; i < community_human.GetMaxIndex() + 1; ++i)
@@ -2348,7 +2429,8 @@ class CCC_SetMonstComm : public IConsole_Command
 {
 public:
 	CCC_SetMonstComm(const char* N) : IConsole_Command(N) { };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!g_pGameLevel) return;
 		if (!Level().CurrentControlEntity()) return;
@@ -2375,7 +2457,8 @@ public:
 			}
 		}
 	}
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		MONSTER_COMMUNITY	community_monster;
 		for (MONSTER_COMMUNITY_INDEX i = 0; i < community_monster.GetMaxIndex() + 1; ++i)
@@ -2474,7 +2557,8 @@ public:
 		: IConsole_Command(N) {
 		bEmptyArgsHandled = true;
 	};
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!g_pGameLevel)
 			return;
@@ -2503,7 +2587,8 @@ public:
 			}
 		}
 	}
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		particles_systems::library_interface const& library = GamePersistent().Environment().m_pRender->particles_systems_library();
 		for (auto pi = library.vec_all_particles().begin(); pi != library.vec_all_particles().end(); ++pi)
@@ -2516,7 +2601,8 @@ public:
 	CCC_SetGameTime(const char* N) : IConsole_Command(N) {
 	}
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 		if (!g_pGamePersistent && !OnServer())
 		{
 			return;
@@ -2542,7 +2628,7 @@ public:
 		}
 	}
 
-	virtual void Info(TInfo& I)
+	virtual void Info(TInfo& I) override
 	{
 		xr_strcpy(I, "Set new time");
 	}
@@ -2553,7 +2639,9 @@ public:
 	CCC_ChZLoggerTest(const char* N) : IConsole_Command(N) {
 		bEmptyArgsHandled = true;
 	};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 
 		Msg("======= types =======");
 		
@@ -2583,7 +2671,9 @@ public:
 	CCC_ConsoleColors(const char* N) : IConsole_Command(N) {
 		bEmptyArgsHandled = true;
 	};
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 
 		LOG_INFO << "Colors:\n";
 
@@ -2608,7 +2698,7 @@ class CCC_NoClip : public CCC_Mask32
 public:
 	CCC_NoClip(const char* N) : CCC_Mask32(N, &psActorFlags, AF_NO_CLIP) { bEmptyArgsHandled = true; }
 
-	void Execute(const char* args) override
+	virtual void Execute(const char* args) override
 	{
 		if (xr_strlen(args) > 0)
 			CCC_Mask32::Execute(args);
@@ -2640,7 +2730,7 @@ public:
 		bEmptyArgsHandled = false;
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (xr_strcmp(args, g_pStringTable->LangName().c_str()) == 0)
 		{
@@ -2692,7 +2782,7 @@ public:
 		xr_sprintf(S, sizeof(S), "%s", g_pStringTable->LangName().c_str());
 	}
 
-	virtual xr_token* GetToken()
+	virtual xr_token* GetToken() override
 	{
 		return g_pStringTable->languages_token.data();
 	}

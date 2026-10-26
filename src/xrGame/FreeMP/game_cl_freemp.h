@@ -13,24 +13,24 @@ private:
 
 public:
 	game_cl_freemp();
-	virtual	~game_cl_freemp();
+	virtual ~game_cl_freemp() override;
 
 
-	virtual CUIGameCustom* createGameUI();
-	virtual void SetGameUI(CUIGameCustom*);
+	virtual CUIGameCustom* createGameUI() override;
+	virtual void SetGameUI(CUIGameCustom*) override;
 
-	virtual	void net_import_state(NET_Packet& P);
-	virtual	void net_import_update(NET_Packet& P);
+	virtual void net_import_state(NET_Packet& P) override;
+	virtual void net_import_update(NET_Packet& P) override;
 
-	virtual void shedule_Update(u32 dt);
-	virtual void TranslateGameMessage(u32 msg, NET_Packet& P);
+	virtual void shedule_Update(u32 dt) override;
+	virtual void TranslateGameMessage(u32 msg, NET_Packet& P) override;
 
-	virtual	bool OnKeyboardPress(int key);
-	virtual void OnConnected();
+	virtual bool OnKeyboardPress(int key) override;
+	virtual void OnConnected() override;
 
 	virtual bool OnKeyboardRelease(int key) override;
 
-	virtual const char* GetGameScore(string32& score_dest);
+	virtual const char* GetGameScore(string32& score_dest) override;
 	virtual void OnRender() override;
 	virtual void OnVoiceMessage(NET_Packet* P) override;
 

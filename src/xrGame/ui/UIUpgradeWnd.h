@@ -45,13 +45,13 @@ public:
 
 	void Init();
 	void StartUpgrade(CInventoryOwner* actor, CInventoryOwner* partner);
-	virtual void Update();
-	virtual void Show(bool status);
+	virtual void Update() override;
+	virtual void Show(bool status) override;
 
-	virtual void				SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
-	virtual void				SetCurrentItem				(CUICellItem* itm);
-	virtual CInventoryOwner*	GetInventoryOwner			() { return m_actor_inv_owner; }
-	virtual CInventoryOwner*	GetPartner					() { return m_partner_inv_owner; }
-	virtual CUIDragDropListEx*	GetActorList				() { return m_dragdrop_our; }
-	virtual CUIWindow*			ui_cast_window						() { return this; }
+	virtual void				SendMessage					(CUIWindow *pWnd, s16 msg, void *pData) override;
+	virtual void				SetCurrentItem				(CUICellItem* itm) override;
+	virtual CInventoryOwner*	GetInventoryOwner			() override { return m_actor_inv_owner; }
+	virtual CInventoryOwner*	GetPartner					() override { return m_partner_inv_owner; }
+	virtual CUIDragDropListEx*	GetActorList				() override { return m_dragdrop_our; }
+	virtual CUIWindow*			ui_cast_window						() override { return this; }
 };

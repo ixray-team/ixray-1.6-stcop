@@ -11,8 +11,8 @@ public:
 	CUIStatsIcon		();
 	void SetValue		(const char* str);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
 
 protected:
 	enum DEF_TEX{

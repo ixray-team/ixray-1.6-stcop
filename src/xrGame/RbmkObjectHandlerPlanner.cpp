@@ -155,6 +155,7 @@ class FRbmkObjectActionBase : public FRbmkGoapAction
 {
 public:
 	CAI_Stalker* GetOwner() const { return reinterpret_cast<CAI_Stalker*>(Owner->Owner); }
+
 	virtual void Active() override
 	{
 		if(bAimed1)
@@ -195,7 +196,6 @@ public:
 class FRbmkObjectActionShow : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -255,7 +255,6 @@ public:
 class FRbmkObjectActionHide : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Update() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -293,7 +292,6 @@ public:
 class FRbmkObjectActionDrop : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -311,7 +309,6 @@ public:
 class FRbmkObjectActionStrapping : public FRbmkObjectActionWeaponBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionWeaponBase::Active();
@@ -368,7 +365,6 @@ public:
 class FRbmkObjectActionStrappingToIdle : public FRbmkObjectActionWeaponBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionWeaponBase::Active();
@@ -561,7 +557,6 @@ public:
 class FRbmkObjectActionFire : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
@@ -589,7 +584,7 @@ public:
 		}
 	}
 
-	virtual void End()
+	virtual void End() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
 		StalkerOwner->inventory().Action(kWPN_FIRE, CMD_STOP);
@@ -602,7 +597,6 @@ public:
 class FRbmkObjectActionFireNoReload : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
@@ -652,7 +646,6 @@ public:
 class FRbmkObjectActionReload : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -742,7 +735,6 @@ public:
 class FRbmkObjectActionThrowMissile : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -1256,6 +1248,7 @@ class FRbmkObjectPropertyCurrentObject  final : public FRbmkGoapProperty
 public:
 	
 	CAI_Stalker* GetOwner() const { return reinterpret_cast<CAI_Stalker*>(Owner->Owner); }
+
 	virtual bool GetProperty() const override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();

@@ -16,10 +16,10 @@ private:
 	typedef CPhraseDialogManager inherited;
 public:
 					CAI_PhraseDialogManager			();
-	virtual			~CAI_PhraseDialogManager		();
+	virtual ~CAI_PhraseDialogManager		() override;
 
-	virtual void	ReceivePhrase					(DIALOG_SHARED_PTR& phrase_dialog);
-	virtual void	UpdateAvailableDialogs			(CPhraseDialogManager* partner);
+	virtual void	ReceivePhrase					(DIALOG_SHARED_PTR& phrase_dialog) override;
+	virtual void	UpdateAvailableDialogs			(CPhraseDialogManager* partner) override;
 	virtual void	AnswerPhrase					(DIALOG_SHARED_PTR& phrase_dialog);
 
 
@@ -28,8 +28,8 @@ public:
 	virtual shared_str	GetStartDialog						()								{return m_sStartDialog;}
 	virtual void				RestoreDefaultStartDialog	();
 
-	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return this; }
-	virtual CAI_PhraseDialogManager* cast_ai_phrase_dialog_manager() { return this; }
+	virtual CPhraseDialogManager* cast_phrase_dialog_manager() override { return this; }
+	virtual CAI_PhraseDialogManager* cast_ai_phrase_dialog_manager() override { return this; }
 
 protected:
 	//диалог, если не NULL, то его персонаж запустит

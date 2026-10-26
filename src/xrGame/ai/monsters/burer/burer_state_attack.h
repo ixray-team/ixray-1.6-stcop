@@ -10,13 +10,13 @@ class	CStateBurerAttack : public CState<Object>
 public:
 						CStateBurerAttack			(Object *obj);
 
-	virtual	void		initialize					();
-	virtual	void		execute						();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_); }
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_); }
 
-	virtual void		finalize					();
-	virtual void		critical_finalize			();
-	virtual bool		check_control_start_conditions	(ControlCom::EControlType type);
+	virtual void		finalize					() override;
+	virtual void		critical_finalize			() override;
+	virtual bool		check_control_start_conditions	(ControlCom::EControlType type) override;
 
 private:
 	bool				m_wait_state_end;

@@ -17,7 +17,7 @@ class CScriptBinderObjectWrapper : public CScriptBinderObject, public luabind::w
 	bool* ReflectionData;
 public:
 						CScriptBinderObjectWrapper	(luabind::object object);
-	virtual				~CScriptBinderObjectWrapper	();
+	virtual ~CScriptBinderObjectWrapper	() override;
 	virtual void		FinishInitialization		() override;
 	virtual void		reinit						() override;
 	static  void		reinit_static				(CScriptBinderObject *script_binder_object);

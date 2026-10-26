@@ -9,13 +9,13 @@ class CWeaponSVD final :
 	using inherited = CWeaponMagazined;
 
 protected:
-	virtual void switch2_Fire();
-	virtual void OnAnimationEnd(u8 state);
+	virtual void switch2_Fire() override;
+	virtual void OnAnimationEnd(u8 state) override;
 
 
 public:
 	CWeaponSVD() = default;
-	virtual ~CWeaponSVD() = default;
+	virtual ~CWeaponSVD() override = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -36,12 +36,12 @@ class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData>
 	IKinematicsAnimated	*m_skeleton_animated;
 
 public:
-	virtual void	reinit					();
+	virtual void	reinit					() override;
 
-	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*);
-	virtual void	activate				();
-	virtual void	on_release				();
-	virtual bool	check_start_conditions	();
+	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*) override;
+	virtual void	activate				() override;
+	virtual void	on_release				() override;
+	virtual bool	check_start_conditions	() override;
 
 private:	
 			void	build_line_first		();

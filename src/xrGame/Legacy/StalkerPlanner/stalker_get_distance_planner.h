@@ -22,6 +22,6 @@ private:
 
 public:
 					CStalkerGetDistancePlanner	(CAI_Stalker *object = 0, const char* action_name = "");
-	virtual			~CStalkerGetDistancePlanner	();
-	virtual	void	setup						(CAI_Stalker *object, CPropertyStorage *storage);
+	virtual ~CStalkerGetDistancePlanner	() override;
+	virtual void	setup						(CAI_Stalker *object, CPropertyStorage *storage) override;
 };

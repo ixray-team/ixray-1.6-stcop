@@ -29,22 +29,22 @@ public:
 	object(const object & other) = delete;
 	object& operator=(const object & other) = delete;
 
-	virtual void		Load							(const char* section);
-	virtual bool		feel_touch_on_contact			(CObject *)				{ return false; }
-	virtual bool		use								(CGameObject* who_use)	{ return false; }
-	virtual bool		net_Spawn						(CSE_Abstract* DC);
-	virtual void		UpdateCL						();
-	virtual void		shedule_Update					(u32 dt);
-	virtual bool		IsVisibleForZones				()						{ return false; }
-	virtual bool		UsedAI_Locations				()						{ return true; }
-	virtual	bool		can_validate_position_on_spawn	()						{ return false; }
-	virtual bool		use_parent_ai_locations			() const				{ return false; }
-	virtual	bool		is_ai_obstacle					() const				{ return false; }
-	virtual bool		register_schedule				() const				{ return false; }
-	virtual void		Center							(Fvector &result) const;
-	virtual float		Radius							() const;
+	virtual void		Load							(const char* section) override;
+	virtual bool		feel_touch_on_contact			(CObject *) override { return false; }
+	virtual bool		use								(CGameObject* who_use) override { return false; }
+	virtual bool		net_Spawn						(CSE_Abstract* DC) override;
+	virtual void		UpdateCL						() override;
+	virtual void		shedule_Update					(u32 dt) override;
+	virtual bool		IsVisibleForZones				() override { return false; }
+	virtual bool		UsedAI_Locations				() override { return true; }
+	virtual bool		can_validate_position_on_spawn	() override { return false; }
+	virtual bool		use_parent_ai_locations			() const override { return false; }
+	virtual bool		is_ai_obstacle					() const override { return false; }
+	virtual bool		register_schedule				() const override { return false; }
+	virtual void		Center							(Fvector &result) const override;
+	virtual float		Radius							() const override;
 #ifdef DEBUG
-	virtual	void		OnRender						();
+	virtual void		OnRender						() override;
 #endif // DEBUG
 			bool		inside							(Fvector const &position) const;
 

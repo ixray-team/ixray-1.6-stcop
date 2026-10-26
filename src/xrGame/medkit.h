@@ -12,6 +12,6 @@ class CMedkit final : public CEatableItemObject
 {
 public:
 	CMedkit() = default;
-	virtual	~CMedkit() = default;
+	virtual ~CMedkit() override = default;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

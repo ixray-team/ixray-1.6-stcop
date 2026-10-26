@@ -25,12 +25,12 @@ private:
 	CUIXml*			m_uiXml;
 public:
 				CUITalkDialogWnd		();
-	virtual		~CUITalkDialogWnd		();
+	virtual ~CUITalkDialogWnd		() override;
 	
 
 			void InitTalkDialogWnd		();
-	
-	virtual void SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+
+	virtual void SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 
 	virtual void Show();
 	virtual void Hide();
@@ -79,7 +79,7 @@ public:
 	void				SetTradeMode		();
 	void				UpdateButtonsLayout	(bool b_disable_break, bool trade_enabled);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	void				SetFirstQuestionSelected();
 	bool				OffsetQuestionSelection(bool next, bool bLoop);
@@ -126,13 +126,13 @@ public:
 	float			m_fOffsetAfterIcon;
 					CUIQuestionItem			(CUIXml* xml_doc, const char* path);
 	void			Init					(const char* val, const char* text, bool isFinalizer);
-	virtual void Update();
+	virtual void Update() override;
 	bool			IsFinalizer() const		{ return m_is_finalizer;  }
 
-	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 	void 	OnTextClicked			(CUIWindow* w, void*);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 class CUIAnswerItem :public CUIWindow
@@ -156,7 +156,7 @@ class CUIAnswerItemIconed final :public CUIAnswerItem
 public:
 					CUIAnswerItemIconed		(CUIXml* xml_doc, const char* path);
 	void			Init					(const char* text, const char* name, const char* texture_name);
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
     void			Init					(const char* text, const char* texture_name, Frect texture_rect);
 
 };

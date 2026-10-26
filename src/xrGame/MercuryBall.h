@@ -13,11 +13,11 @@ private:
 	typedef CArtefact inherited;
 public:
 	CMercuryBall(void);
-	virtual ~CMercuryBall(void);
+	virtual ~CMercuryBall(void) override;
 
-	virtual void Load				(const char* section);
+	virtual void Load				(const char* section) override;
 protected:
-	virtual void	UpdateCLChild	();
+	virtual void	UpdateCLChild	() override;
 
 	//врем€ последнего обновлени€ поведени€ шара
 	ALife::_TIME_ID m_timeLastUpdate;

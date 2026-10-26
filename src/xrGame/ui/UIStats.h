@@ -11,9 +11,9 @@ class CUIStats final :
 {
 public:
 				CUIStats		();
-	virtual		~CUIStats		();
+	virtual ~CUIStats		() override;
 	CUIWindow* InitStats		(CUIXml& xml_doc, const char* path,int team);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIScrollView* ui_cast_scroll_view() override { return this; }
 };

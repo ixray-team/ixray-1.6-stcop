@@ -78,15 +78,15 @@ protected:
 	virtual void	switch2_Pump();
 	virtual void	switch2_Bore() override;
 	void			switch2_Safemode();
-	
-	virtual void	OnShot			();
+
+	virtual void	OnShot			() override;
 			void	OnShotJammed	();
 			void	SelectShotSound ();
 	
 	virtual void	OnEmptyClick	();
 
-	virtual void	OnAnimationEnd	(u8 state);
-	virtual void	OnStateSwitch	(u8 S);
+	virtual void	OnAnimationEnd	(u8 state) override;
+	virtual void	OnStateSwitch	(u8 S) override;
 
 	virtual void	UpdateSounds	();
 
@@ -104,47 +104,47 @@ protected:
 	virtual void	state_FireChamber(float dt);
 public:
 	CWeaponMagazined() = default;
-	virtual ~CWeaponMagazined() = default;
+	virtual ~CWeaponMagazined() override = default;
 
-	virtual void	Load(const char* section);
-	virtual void	LoadSounds(const char* section);
+	virtual void	Load(const char* section) override;
+	virtual void	LoadSounds(const char* section) override;
 	virtual void	LoadSoundsSilencer(const char* section);
 	void LoadSilencerKoeffs();
 	void ReloadConfig() override;
 	void LoadMagazineShootingParams(const char* section);
 
-	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
-	virtual CWeaponMagazined* cast_weapon_magazined() { return this; }
-	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return nullptr; }
-	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
-	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
-	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
+	virtual CWeaponBinoculars* cast_weapon_binoculars() override { return nullptr; }
+	virtual CWeaponMagazined* cast_weapon_magazined() override { return this; }
+	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() override { return nullptr; }
+	virtual CWeaponBM16* cast_weapon_bm16() override { return nullptr; }
+	virtual CWeaponRPG7* cast_weapon_rpg7() override { return nullptr; }
+	virtual CWeaponRG6* cast_weapon_rg6() override { return nullptr; }
 
-	virtual void	SetDefaults		();
-	virtual void	FireStart		();
-	virtual void	FireEnd			();
-	virtual void	Reload			();
-	
+	virtual void	SetDefaults		() override;
+	virtual void	FireStart		() override;
+	virtual void	FireEnd			() override;
+	virtual void	Reload			() override;
 
-	virtual	void	UpdateCL		();
-	virtual void	net_Destroy		();
-	virtual void	net_Export		(NET_Packet& P);
-	virtual void	net_Import		(NET_Packet& P);
-	virtual void	OnEvent			(NET_Packet& P, u16 type);
-	virtual void	OnH_A_Chield		();
 
-	virtual bool	Attach			(PIItem pIItem);
-	virtual bool	Detach			(PIItem pIItem);
-	virtual bool	CanAttach		(PIItem pIItem);
+	virtual void	UpdateCL		() override;
+	virtual void	net_Destroy		() override;
+	virtual void	net_Export		(NET_Packet& P) override;
+	virtual void	net_Import		(NET_Packet& P) override;
+	virtual void	OnEvent			(NET_Packet& P, u16 type) override;
+	virtual void	OnH_A_Chield		() override;
 
-	virtual void	InitAddons		();
+	virtual bool	Attach			(PIItem pIItem) override;
+	virtual bool	Detach			(PIItem pIItem) override;
+	virtual bool	CanAttach		(PIItem pIItem) override;
+
+	virtual void	InitAddons		() override;
 	virtual void	HudSelector		();
 
-	virtual bool	Action			(u16 cmd, u32 flags);
+	virtual bool	Action			(u16 cmd, u32 flags) override;
 	bool			IsAmmoAvailable	();
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
-	virtual bool	GetBriefInfo	(II_BriefInfo& info);
+	virtual bool	GetBriefInfo	(II_BriefInfo& info) override;
 
 	virtual void	UpdateBonePartAnimations() override;
 	void UpdateFiremodeAnimations();
@@ -159,7 +159,7 @@ public:
 	IC		s8		GetQueueSize			() const	{ return m_iQueueSize; }
 	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){ m_bStopedAfterQueueFired = value; }
-	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false);
+	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false) override;
 
 protected:
 	//максимальный размер очереди, которой можно стрельнуть
@@ -197,22 +197,22 @@ protected:
 	float m_trigger_effect_time = 1.0f;
 
 public:
-	virtual void	OnZoomIn			();
-	virtual void	OnZoomOut			();
+	virtual void	OnZoomIn			() override;
+	virtual void	OnZoomOut			() override;
 			void	ChangeFireMode		(u16 cmd);
 			void	SwitchGaussScreen();
 			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
-	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
+	virtual int		GetCurrentFireMode	() override { return m_aFireModes[m_iCurFireMode]; };
 
 	virtual void	save				(NET_Packet &output_packet) override;
 	virtual void	load				(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
-	virtual void OnMotionMark(u8 state, const motion_marks&);
-	virtual bool WpnCanShoot() const { return true; }
+	virtual void OnMotionMark(u8 state, const motion_marks&) override;
+	virtual bool WpnCanShoot() const override { return true; }
 
 protected:
-	virtual bool	install_upgrade_impl( const char* section, bool test );
+	virtual bool	install_upgrade_impl( const char* section, bool test ) override;
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
@@ -221,27 +221,27 @@ protected:
 	virtual void	PlayAnimShow		();
 	virtual void	PlayAnimHide		();
 	virtual void	PlayAnimReload		();
-	virtual void	PlayAnimIdle		();
+	virtual void	PlayAnimIdle		() override;
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
 	virtual void	PlayAnimAim			();
 	virtual void    PlaySoundAim		(bool in = true);
 	virtual shared_str SetCurrentReloadAnimation();
 	virtual shared_str SetCurrentShootAnimation();
-	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
+	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name) override;
 	virtual shared_str SetCurrentAimAnimation();
-	virtual shared_str SetCurrentIdleAnimation();
+	virtual shared_str SetCurrentIdleAnimation() override;
 	shared_str SetCurrentPumpAnimation();
 
-	virtual	int		ShotsFired			() { return m_iShotNum; }
-	virtual float	GetWeaponDeterioration() final override;
+	virtual int		ShotsFired			() override { return m_iShotNum; }
+	virtual float	GetWeaponDeterioration() final;
 
 	virtual void	FireBullet			(const Fvector& pos, 
-        								 const Fvector& dir, 
-										 float fire_disp,
-										 const CCartridge& cartridge,
-										 ALife::_OBJECT_ID parent_ids,
-										 ALife::_OBJECT_ID weapon_id,
-										 bool send_hit) final override;
+					               const Fvector& dir, 
+					               float fire_disp,
+					               const CCartridge& cartridge,
+					               ALife::_OBJECT_ID parent_ids,
+					               ALife::_OBJECT_ID weapon_id,
+					               bool send_hit) final;
 
 };

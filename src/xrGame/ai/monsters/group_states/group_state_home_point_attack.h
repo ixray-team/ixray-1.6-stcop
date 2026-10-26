@@ -16,16 +16,16 @@ protected:
 
 public:
 						CStateGroupAttackMoveToHomePoint(_Object *obj);
-	virtual	void		initialize				();
-	virtual void 		finalize				();
-	virtual void 		critical_finalize		();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual void		initialize				() override;
+	virtual void 		finalize				() override;
+	virtual void 		critical_finalize		() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
 
-	virtual	void		reselect_state			();
-	virtual	void		setup_substates			();
+	virtual void		reselect_state			() override;
+	virtual void		setup_substates			() override;
 
 			bool		enemy_inaccessible		();
 };

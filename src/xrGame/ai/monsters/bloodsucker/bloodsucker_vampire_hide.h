@@ -9,10 +9,10 @@ class CStateBloodsuckerVampireHide : public CState<_Object> {
 public:
 						CStateBloodsuckerVampireHide	(_Object *obj);
 
-	virtual	void		reselect_state					();
-	virtual void		setup_substates					();
-	virtual bool		check_completion				();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
+	virtual void		reselect_state					() override;
+	virtual void		setup_substates					() override;
+	virtual bool		check_completion				() override;
+	virtual void		remove_links					(CObject* object) override { inherited::remove_links(object);}
 };
 
 #include "bloodsucker_vampire_hide_inline.h"

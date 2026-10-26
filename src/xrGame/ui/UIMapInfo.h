@@ -9,12 +9,12 @@ class CUIMapInfo final : public CUIWindow
 {
 public:
 				CUIMapInfo			();
-				~CUIMapInfo			();
+	virtual ~CUIMapInfo			() override;
 			void InitMapInfo		(Fvector2 pos,Fvector2 size);
 			void InitMap			(const char* map_name, const char* map_ver);
 		const char*	 GetLargeDesc		();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 protected:

@@ -51,9 +51,9 @@ protected:
 
 public:
 	IC						CBaseLocationSelector	(CRestrictedObject *object, CLocationManager *location_manager);
-	IC	virtual				~CBaseLocationSelector	();
+	IC virtual ~CBaseLocationSelector	() override;
 	IC			void		init					();
-	IC	virtual void		reinit					(const _Graph *graph = 0);
+	IC virtual void		reinit					(const _Graph *graph = 0) override;
 	IC			void		set_selection_type		(const ESelectionType selection_type);
 	IC			bool		actual					(const _vertex_id_type start_vertex_id, bool path_completed);
 	IC			void		select_location			(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id);

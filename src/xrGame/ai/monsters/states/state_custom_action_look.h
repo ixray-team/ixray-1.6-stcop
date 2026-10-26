@@ -10,11 +10,11 @@ class CStateMonsterCustomActionLook : public CState<_Object> {
 
 public:
 						CStateMonsterCustomActionLook	(_Object *obj);
-	virtual				~CStateMonsterCustomActionLook	();
+	virtual ~CStateMonsterCustomActionLook	() override;
 
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "state_custom_action_look_inline.h"

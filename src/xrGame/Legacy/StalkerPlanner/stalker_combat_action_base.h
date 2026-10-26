@@ -15,8 +15,8 @@ class CCoverPoint;
 class CStalkerActionCombatBase : public CStalkerActionBase {
 public:
 						CStalkerActionCombatBase	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize					();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
 
 protected:
 	typedef CStalkerActionBase						inherited;

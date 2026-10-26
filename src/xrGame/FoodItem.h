@@ -7,7 +7,7 @@ class CFoodItem : public CEatableItemObject
 {
 public:
 	CFoodItem() = default;
-	virtual ~CFoodItem() = default;
+	virtual ~CFoodItem() override = default;
 
 	virtual CFoodItem* cast_food_item() override { return this; }
 

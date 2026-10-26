@@ -25,14 +25,14 @@ public:
 	void Load(const char* section) override;
 	void OnH_B_Independent(bool just_before_destroy) override;
 	void shedule_Update(u32 dt) override;
-	void TurnDetectorInternal(bool b) final override;
+	virtual void TurnDetectorInternal(bool b) final;
 
 	const SCustomDetectorDesc& DetectorDesc() const { VERIFY(CurrentDetectorDesc); return *CurrentDetectorDesc; }
 	float AfVisibleRadius() const { return DetectorDesc().AfVisRadius; }
 	float AfDetectRadius() const { return DetectorDesc().AfDetectRadius; }
 
-	virtual CCustomDetector* cast_custom_detector() { return this; }
-	virtual CCustomDevice* cast_custom_device() { return this; }
+	virtual CCustomDetector* cast_custom_detector() override { return this; }
+	virtual CCustomDevice* cast_custom_device() override { return this; }
 
 	void save(NET_Packet& output_packet) override;
 	void load(IReader& input_packet) override;

@@ -10,13 +10,13 @@ class CStateMonsterLookToPoint : public CState<_Object> {
 
 public:
 						CStateMonsterLookToPoint	(_Object *obj);
-	virtual				~CStateMonsterLookToPoint	();
+	virtual ~CStateMonsterLookToPoint	() override;
 
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual bool		check_completion			();
+	virtual bool		check_completion			() override;
 };
 
 #include "state_look_point_inline.h"

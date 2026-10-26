@@ -18,14 +18,14 @@ public:
 			void	InitKick		(CUIXml& xml_doc);
 			void	InitBan			(CUIXml& xml_doc);
 
-	virtual bool	OnKeyboardAction		(int dik, EUIMessages keyboard_action);
-	virtual void	SendMessage		(CUIWindow* pWnd, s16 msg, void* pData = 0);
-	virtual void	Update			();
+	virtual bool	OnKeyboardAction		(int dik, EUIMessages keyboard_action) override;
+	virtual void	SendMessage		(CUIWindow* pWnd, s16 msg, void* pData = 0) override;
+	virtual void	Update			() override;
 
 	void			OnBtnOk			();
 	void			OnBtnCancel		();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	typedef enum{MODE_KICK, MODE_BAN } E_MODE;

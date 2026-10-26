@@ -13,8 +13,8 @@ class CControlMovement : public CControl_ComPure<SControlMovementData> {
 	float		m_velocity_current;
 	
 public:
-	virtual void	reinit			();
-	virtual void	update_frame	();
+	virtual void	reinit			() override;
+	virtual void	update_frame	() override;
 
 			float	velocity_current	() {return m_velocity_current;}
 			float	velocity_target		() {return m_data.velocity_target;}
