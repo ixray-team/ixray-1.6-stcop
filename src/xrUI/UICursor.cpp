@@ -11,7 +11,8 @@
 
 ENGINE_API extern bool ui_3d_cursor;
 extern ENGINE_API float	psMouseSens;
-extern ENGINE_API float	psMouseUISens;
+
+static constexpr float MouseSensDefault = 0.12f;
 
 CUICursor::CUICursor()
     : m_static(nullptr),
@@ -165,11 +166,11 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 	{
 		vPrevPos = vPos;
 
-		if (psDeviceFlags.test(rsFullscreen))
+		if (SDL_GetWindowRelativeMouseMode(g_AppInfo.Window))
 		{
-			float sens = psMouseUISens;
-			vPos.x += _dx * sens;
-			vPos.y += _dy * sens;
+			float sens = psMouseSens / MouseSensDefault;
+			vPos.x += _dx * sens * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+			vPos.y += _dy * sens * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
 		}
 		else
 		{

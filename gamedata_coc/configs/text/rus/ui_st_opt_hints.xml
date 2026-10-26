@@ -192,9 +192,6 @@
 	<string id="ui_mm_mouse_sense_hint">
 		<text>Чувствительность мыши при управлении камерой в игре.</text>
 	</string>
-	<string id="ui_mm_mouse_sense_ui_hint">
-		<text>Скорость курсора мыши в меню, инвентаре и КПК, отдельно от чувствительности в игре.</text>
-	</string>
 	<string id="ui_mm_invert_mouse_hint">
 		<text>Инверсия вертикальной оси мыши: движение мыши вперёд опускает камеру вниз, как в авиасимуляторах.</text>
 	</string>
