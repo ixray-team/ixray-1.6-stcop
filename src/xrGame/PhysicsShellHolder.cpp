@@ -24,15 +24,37 @@
 #	include "../xrEngine/ObjectDump.h"
 #endif
 
+static xrCriticalSection AliveHoldersLock;
+static xr_set<const IPhysicsShellHolder*> AliveHolders;
+
 CPhysicsShellHolder::CPhysicsShellHolder()
 {
 	init();
+
+	xrCriticalSectionGuard Guard(&AliveHoldersLock);
+	AliveHolders.insert(static_cast<const IPhysicsShellHolder*>(this));
 }
 
 CPhysicsShellHolder::	~CPhysicsShellHolder()
 {
+	{
+		xrCriticalSectionGuard Guard(&AliveHoldersLock);
+		AliveHolders.erase(static_cast<const IPhysicsShellHolder*>(this));
+	}
+
 	VERIFY(!m_pPhysicsShell);
 	destroy_physics_shell(m_pPhysicsShell);
+}
+
+bool CPhysicsShellHolder::IsAlive(const IPhysicsShellHolder* Holder)
+{
+	if (!Holder)
+	{
+		return false;
+	}
+
+	xrCriticalSectionGuard Guard(&AliveHoldersLock);
+	return AliveHolders.find(Holder) != AliveHolders.end();
 }
 
 const IObjectPhysicsCollision* CPhysicsShellHolder::physics_collision()

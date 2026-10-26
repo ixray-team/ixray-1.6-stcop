@@ -154,7 +154,7 @@ static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dCon
 	VERIFY(c);
 
 	IPhysicsShellHolder* RefObject = data->ph_ref_object;
-	if (!RefObject || RefObject->ObjectGetDestroy())
+	if (!CPhysicsShellHolder::IsAlive(RefObject) || RefObject->ObjectGetDestroy())
 	{
 		return;
 	}

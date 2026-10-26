@@ -38,6 +38,8 @@ public:
 			CPhysicsShellHolder							();
 	virtual ~CPhysicsShellHolder						() override;
 
+	static bool IsAlive(const IPhysicsShellHolder* Holder);
+
 private:
 	Fvector					m_overriden_activation_speed;
 	bool					m_activation_speed_is_overriden;
