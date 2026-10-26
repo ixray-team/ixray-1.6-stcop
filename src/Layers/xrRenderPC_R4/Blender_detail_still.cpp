@@ -89,6 +89,14 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 	{
 		RImplementation.addShaderOption("FIX_CULL_NORMAL", "1");
 	}
+	if (C.iElement == 4 || C.iElement == 5)
+	{
+		RImplementation.addShaderOption("DETAIL_FAR_STATIC", "1");
+		if (C.iElement == 5)
+		{
+			RImplementation.addShaderOption("DETAIL_FAR_NO_TRAILS", "1");
+		}
+	}
 
 	if (C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_DETAIL_SHADOW_HQ)
 	{
@@ -105,6 +113,8 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		C.r_End();
 		break;
 	case SE_R2_NORMAL_LQ:
+	case 4:
+	case 5:
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);

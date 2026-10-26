@@ -60,6 +60,10 @@ endif()
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
 target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 
+if(MSVC)
+	set_source_files_properties(DetailLayersEditor.cpp PROPERTIES COMPILE_OPTIONS "/utf-8" SKIP_PRECOMPILE_HEADERS ON)
+endif()
+
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")

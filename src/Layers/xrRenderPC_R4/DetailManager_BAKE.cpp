@@ -22,11 +22,13 @@
 extern bool		ps_r__detail_use_alternative_tree_assets;
 extern bool		ps_r__detail_use_cluster_mix_tree_assets;
 extern float	ps_r__detail_cluster_seed;
+extern float ps_r__detail_cluster_coverage_size;
 extern float	ps_r__detail_cluster_patch_size_min;
 extern float	ps_r__detail_cluster_patch_size_max;
-extern float	ps_r__detail_cluster_sharpness;
-extern float	ps_r__detail_cluster_warp_min;
-extern float	ps_r__detail_cluster_warp_max;
+extern float	ps_r__detail_cluster_diffusion;
+extern float ps_r__detail_cluster_sharpness;
+extern float	ps_r__detail_cluster_deformation;
+extern float	ps_r__detail_cluster_elongation;
 extern bool		ps_r__detail_fmb_use_layer_1;
 extern bool		ps_r__detail_fmb_use_layer_2;
 extern bool		ps_r__detail_fmb_use_layer_3;
@@ -47,7 +49,8 @@ namespace
 {
 constexpr u32 DL_MK_FMB  = u32('D') | (u32('F') << 8) | (u32('M') << 16) | (u32('B') << 24);
 constexpr u32 DL_MK_PER  = u32('D') | (u32('P') << 8) | (u32('E') << 16) | (u32('R') << 24);
-constexpr u32 DL_VERSION = 1;
+// Species groups now resolve to baked model IDs; older fields must be regenerated.
+constexpr u32 DL_VERSION = 3;
 
 constexpr const char* DL_SETTINGS_FILE = "detail_layers\\last_detail_settings.txt";
 constexpr const char* DL_FMB_FILE      = "detail_layers\\precomputed_detail_fmb_noise.bin";
@@ -79,15 +82,18 @@ struct DL_Settings
 	s32 offs_x;
 	s32 offs_z;
 	u32 alt_models_count;
+	u32 AlternativeCatalogCRC;
 	u32 vanilla_grass_count;
 	u8  use_alternative_tree_assets;
 	u8  use_cluster_mix_tree_assets;
 	float cluster_seed;
+	float ClusterCoverageSize;
 	float cluster_patch_size_min;
 	float cluster_patch_size_max;
-	float cluster_sharpness;
-	float cluster_warp_min;
-	float cluster_warp_max;
+	float cluster_diffusion;
+	float ClusterSharpness;
+	float cluster_deformation;
+	float cluster_elongation;
 	u8  fmb_use_layer_1;
 	float fmb_layer_1_frequency;
 	float fmb_layer_1_amplitude;
@@ -121,16 +127,19 @@ u32 DetailLayers_SettingsCRC(CDetailManager* mgr)
 	st.offs_x = mgr->dtH.offs_x;
 	st.offs_z = mgr->dtH.offs_z;
 	st.alt_models_count = mgr->alt_models_count;
+	st.AlternativeCatalogCRC = mgr->AlternativeCatalogCRC;
 	st.vanilla_grass_count = mgr->vanilla_grass_count;
 
 	st.use_alternative_tree_assets = ps_r__detail_use_alternative_tree_assets ? 1 : 0;
 	st.use_cluster_mix_tree_assets = ps_r__detail_use_cluster_mix_tree_assets ? 1 : 0;
 	st.cluster_seed = ps_r__detail_cluster_seed;
+	st.ClusterCoverageSize = ps_r__detail_cluster_coverage_size;
 	st.cluster_patch_size_min = ps_r__detail_cluster_patch_size_min;
 	st.cluster_patch_size_max = ps_r__detail_cluster_patch_size_max;
-	st.cluster_sharpness = ps_r__detail_cluster_sharpness;
-	st.cluster_warp_min = ps_r__detail_cluster_warp_min;
-	st.cluster_warp_max = ps_r__detail_cluster_warp_max;
+	st.cluster_diffusion = ps_r__detail_cluster_diffusion;
+	st.ClusterSharpness = ps_r__detail_cluster_sharpness;
+	st.cluster_deformation = ps_r__detail_cluster_deformation;
+	st.cluster_elongation = ps_r__detail_cluster_elongation;
 
 	st.fmb_use_layer_1 = ps_r__detail_fmb_use_layer_1 ? 1 : 0;
 	st.fmb_layer_1_frequency = ps_r__detail_fmb_layer_1_frequency;
@@ -176,11 +185,13 @@ void DetailLayers_WriteSettingsFile(CDetailManager* mgr, u32 crc)
 	W.w_string(line("use_alternative_tree_assets = %s", ps_r__detail_use_alternative_tree_assets ? "true" : "false").c_str());
 	W.w_string(line("use_cluster_mix_tree_assets = %s", ps_r__detail_use_cluster_mix_tree_assets ? "true" : "false").c_str());
 	W.w_string(line("cluster_seed = %.9g", ps_r__detail_cluster_seed).c_str());
+	W.w_string(line("cluster_coverage_size = %.9g", ps_r__detail_cluster_coverage_size).c_str());
 	W.w_string(line("cluster_patch_size_min = %.9g", ps_r__detail_cluster_patch_size_min).c_str());
 	W.w_string(line("cluster_patch_size_max = %.9g", ps_r__detail_cluster_patch_size_max).c_str());
+	W.w_string(line("cluster_diffusion = %.9g", ps_r__detail_cluster_diffusion).c_str());
 	W.w_string(line("cluster_sharpness = %.9g", ps_r__detail_cluster_sharpness).c_str());
-	W.w_string(line("cluster_warp_min = %.9g", ps_r__detail_cluster_warp_min).c_str());
-	W.w_string(line("cluster_warp_max = %.9g", ps_r__detail_cluster_warp_max).c_str());
+	W.w_string(line("cluster_deformation = %.9g", ps_r__detail_cluster_deformation).c_str());
+	W.w_string(line("cluster_elongation = %.9g", ps_r__detail_cluster_elongation).c_str());
 	W.w_string(line("fmb_use_layer_1 = %s", ps_r__detail_fmb_use_layer_1 ? "true" : "false").c_str());
 	W.w_string(line("fmb_layer_1_frequency = %.9g", ps_r__detail_fmb_layer_1_frequency).c_str());
 	W.w_string(line("fmb_layer_1_amplitude = %.9g", ps_r__detail_fmb_layer_1_amplitude).c_str());
@@ -299,6 +310,10 @@ bool CDetailManager::DetailLayers_LoadFromBake()
 	fmb_field.swap(fmb_data);
 	cluster_field.swap(cl_data);
 	cluster_rnd_field.swap(rnd_data);
+	ClusterFieldKey = GetClusterFieldKey();
+	FMBFieldKey = GetFMBFieldKey();
+	ClusterFieldValid = true;
+	FMBFieldValid = true;
 	Msg("* detail_layers: loaded precomputed fields (%ux%u, crc 0x%08X)", sx, sz, crc);
 	return true;
 }
@@ -399,11 +414,13 @@ void CDetailManager::DetailLayers_ApplySettingsFromBake()
 		{"use_alternative_tree_assets", true, &ps_r__detail_use_alternative_tree_assets},
 		{"use_cluster_mix_tree_assets", true, &ps_r__detail_use_cluster_mix_tree_assets},
 		{"cluster_seed", false, &ps_r__detail_cluster_seed},
+		{"cluster_coverage_size", false, &ps_r__detail_cluster_coverage_size},
 		{"cluster_patch_size_min", false, &ps_r__detail_cluster_patch_size_min},
 		{"cluster_patch_size_max", false, &ps_r__detail_cluster_patch_size_max},
+		{"cluster_diffusion", false, &ps_r__detail_cluster_diffusion},
 		{"cluster_sharpness", false, &ps_r__detail_cluster_sharpness},
-		{"cluster_warp_min", false, &ps_r__detail_cluster_warp_min},
-		{"cluster_warp_max", false, &ps_r__detail_cluster_warp_max},
+		{"cluster_deformation", false, &ps_r__detail_cluster_deformation},
+		{"cluster_elongation", false, &ps_r__detail_cluster_elongation},
 		{"fmb_use_layer_1", true, &ps_r__detail_fmb_use_layer_1},
 		{"fmb_layer_1_frequency", false, &ps_r__detail_fmb_layer_1_frequency},
 		{"fmb_layer_1_amplitude", false, &ps_r__detail_fmb_layer_1_amplitude},

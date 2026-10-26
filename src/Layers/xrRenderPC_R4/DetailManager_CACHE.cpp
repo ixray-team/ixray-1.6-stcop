@@ -36,11 +36,12 @@ void bwdithermap	(int levels, int magic[16][16])
 }
 //--------------------------------------------------- Decompression
 
-void CDetailManager::cache_ReInitialize()
+void CDetailManager::cache_ReInitialize(u32 Size, float Fade, float Density)
 {
+	xrSRWLockGuard FieldsGuard(GeneratedFieldsAccess);
 	// Centroid
 	cache_Free();
-	cache_Alloc();
+	cache_Alloc(Size, Fade, Density);
 
 	bwdithermap(2, dither);
 	cache_cx = 0;
@@ -52,25 +53,20 @@ void CDetailManager::cache_ReInitialize()
 	}
 	else
 	{
-	// Reuse the baked fields when the level + settings still match; otherwise regenerate
-	// and, during an actual level Load(), persist the fresh bake for the next session.
-	// Runtime-only rebuilds (console changes) stay in memory so a momentary tweak cannot
-	// corrupt the on-disk bake; it is overwritten on the next level load instead.
-	if (DetailLayers_LoadFromBake())
-	{
-		// fields already populated from disk
-	}
-	else
-	{
-		BuildClusterField();
-		BuildFMBField();
-		if (m_detail_layers_baking)
-			DetailLayers_SaveToBake();
-	}
-	// Snapshot the generated/baked fields, then overlay the sparse user strokes
-	// (user_mask_*.bin) so painted cells overwrite the generator and untouched ones keep it.
-	DetailLayers_CommitBaseFields();
-	DetailLayers_ApplyUserMasks();
+		// Read disk once on level load; live changes reuse unchanged fields from memory.
+		if (!m_detail_layers_baking || !DetailLayers_LoadFromBake())
+		{
+			const bool Changed = !ClusterFieldValid || ClusterFieldKey != GetClusterFieldKey() || !FMBFieldValid || FMBFieldKey != GetFMBFieldKey();
+			BuildClusterField();
+			BuildFMBField();
+			if (m_detail_layers_baking || Changed)
+			{
+				// Save clean generated fields before applying user brush deltas.
+				DetailLayers_SaveToBake();
+			}
+		}
+		DetailLayers_CommitBaseFields();
+		DetailLayers_ApplyUserMasks();
 	}
 
 	// Initialize cache-grid
@@ -116,10 +112,13 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 	D->type = stPending;
 	D->DS = &DS;
 	D->has_trample = false;
+	++D->Generation;
+	D->vis.clear();
 
 	D->vis.box.min.set(sx*dm_slot_size, DS.r_ybase(), sz*dm_slot_size);
 	D->vis.box.max.set(D->vis.box.min.x+dm_slot_size, DS.r_ybase()+DS.r_yheight(), D->vis.box.min.z+dm_slot_size);
 	D->vis.box.grow(EPS_L);
+	D->vis.box.getsphere(D->vis.sphere.P, D->vis.sphere.R);
 
 	for (u32 i=0; i<dm_obj_in_slot; i++)
 	{
@@ -140,12 +139,13 @@ void CDetailManager::UnpackSlot(int gx, int gz, Slot* D)
 	}
 }
 
-void CDetailManager::cache_Update(const Fvector& view)
+void CDetailManager::cache_Update(const Fvector& view, const Fvector& Direction, u32 FrameTime)
 {
 	PROF_EVENT("cache_Update");
+	xrSRWLockGuard FieldsGuard(GeneratedFieldsAccess, true);
 
 	// Deferred brush rebuild (requested from the render thread's editor). Runs here on
-	// the DetailsTask worker so schedule_Update/UnpackSlot/UnpackSlotItems and the item
+	// the vegetation producer so schedule_Update/UnpackSlot/UnpackSlotItems and the item
 	// pool are only ever touched by this single thread - no more cross-thread pool
 	// corruption when the brush circle sits over slots the streaming pipeline is shifting.
 	if (m_brush_rebuild_around.exchange(false, std::memory_order_acquire))
@@ -154,7 +154,22 @@ void CDetailManager::cache_Update(const Fvector& view)
 	int v_x = iFloor(view.x / dm_slot_size + .5f);
 	int v_z = iFloor(view.z / dm_slot_size + .5f);
 
+	const bool ResetWindow = !StreamingInitialized || std::abs(v_x - cache_cx) >= int(dm_cache_line) || std::abs(v_z - cache_cz) >= int(dm_cache_line);
 	bool bUpdateSlideWindow = m_slide_window_dirty.exchange(false, std::memory_order_acquire);
+	if (ResetWindow)
+	{
+		// Rebase once after a cold start or teleport, rather than shifting every intervening row.
+		cache_cx = v_x;
+		cache_cz = v_z;
+		for (u32 Z = 0; Z < dm_cache_line; ++Z)
+		{
+			for (u32 X = 0; X < dm_cache_line; ++X)
+			{
+				UnpackSlot(X, Z, cache[Z][X]);
+			}
+		}
+		bUpdateSlideWindow = true;
+	}
 	bUpdateSlideWindow = bUpdateSlideWindow || (cache_cx != v_x) || (cache_cz != v_z);
 	// *****	Cache shift
 	{
@@ -219,61 +234,84 @@ void CDetailManager::cache_Update(const Fvector& view)
 		}
 	}
 
-	// Task performer
+	// Keep ready slots in the bounded grid, including those behind the camera.
+	// Only pending slots are ranked; no instance cache is read from or written to disk.
 	{
 		PROF_EVENT("cache_Decompress");
-		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
+		const bool EditorMode = Device.IsEditorMode();
+		const float Prefetch = EditorMode ? 0.f : 4.f * dm_slot_size;
+		const float PreparationRadius = dm_fade + Prefetch + dm_slot_size;
+		const float PreparationRadiusSq = PreparationRadius * PreparationRadius;
+		Fvector Prediction = view;
+		if (!ResetWindow && FrameTime > StreamingPreviousTime)
 		{
-			bool bFullUnpack = false;
-			int limit = Device.IsEditorMode() ? 14 : 7;
-			if (unpacked_slots.size() == dm_cache_size)
+			Fvector Travel;
+			Travel.sub(view, StreamingPreviousView);
+			Travel.y = 0;
+			Travel.mul(.35f * 1000.f / float(FrameTime - StreamingPreviousTime));
+			const float Length = Travel.magnitude();
+			if (Length > Prefetch && Length > EPS_L)
 			{
-				limit = dm_cache_size;
-				bFullUnpack = true;
+				Travel.mul(Prefetch / Length);
 			}
-
-			for (int iteration = 0; unpacked_slots.size() && (iteration < limit); iteration++)
+			Prediction.add(Travel);
+		}
+		for (Slot* Pending : unpacked_slots)
+		{
+			VERIFY(Pending->type == stPending);
+			Fvector Centre;
+			Pending->vis.box.getcenter(Centre);
+			const float DX = Centre.x - view.x;
+			const float DZ = Centre.z - view.z;
+			const float DistanceSq = DX * DX + DZ * DZ;
+			if (!EditorMode && DistanceSq > PreparationRadiusSq)
 			{
-				u32 best_id = 0;
-				float best_dist = flt_max;
-
-				if (bFullUnpack)
-					best_id = unpacked_slots.size() - 1;
-				else
-				{
-					for (u32 entry = 0; entry < unpacked_slots.size(); entry++)
-					{
-						// Gain access to data
-						Slot* S = unpacked_slots[entry];
-						VERIFY(stPending == S->type);
-
-						// Estimate
-						Fvector C;
-						S->vis.box.getcenter(C);
-						float D = view.distance_to_sqr(C);
-
-						// Select
-						if (D < best_dist)
-						{
-							best_dist = D;
-							best_id = entry;
-						}
-					}
-				}
-
-				// Decompress and remove task
-				UnpackSlotItems(unpacked_slots[best_id]);
-				unpacked_slots.erase(unpacked_slots.begin() + best_id);
+				Pending->StreamingPriority = flt_max;
+				continue;
+			}
+			// Stable spatial variation avoids a strict radial ordering of equally important cells.
+			u32 Hash = u32(iFloor(Centre.x / dm_slot_size)) * 0x9e3779b9u ^ u32(iFloor(Centre.z / dm_slot_size)) * 0x85ebca6bu;
+			Hash ^= Hash >> 16;
+			const float PX = Centre.x - Prediction.x;
+			const float PZ = Centre.z - Prediction.z;
+			float Priority = DistanceSq * (.85f + .3f * float(Hash & 65535) / 65535.f) + .25f * (PX * PX + PZ * PZ);
+			if (DX * Direction.x + DZ * Direction.z > 0)
+			{
+				Priority *= .8f;
+			}
+			if (DistanceSq < 24.f * 24.f)
+			{
+				Priority -= 1000000.f;
+			}
+			Pending->StreamingPriority = Priority;
+		}
+		auto LessUrgent = [](const Slot* A, const Slot* B)
+		{
+			return A->StreamingPriority > B->StreamingPriority;
+		};
+		std::make_heap(unpacked_slots.begin(), unpacked_slots.end(), LessUrgent);
+		CTimer Budget;
+		Budget.Start();
+		u32 Processed = 0;
+		while (!unpacked_slots.empty() && unpacked_slots.front()->StreamingPriority < flt_max)
+		{
+			std::pop_heap(unpacked_slots.begin(), unpacked_slots.end(), LessUrgent);
+			Slot* Next = unpacked_slots.back();
+			unpacked_slots.pop_back();
+			UnpackSlotItems(Next);
+			++Processed;
+			// Finish the initial visible area before publishing it, as in the old full unpack.
+			// Routine streaming yields after whole slots; one expensive slot may exceed the budget.
+			if (!ResetWindow && (Processed >= 128 || Budget.GetElapsed_ms_f() >= (EditorMode ? 4.f : 2.f)))
+			{
+				break;
 			}
 		}
-		else
-		{
-			for(Slot* S : unpacked_slots)
-				UnpackSlotItems(S);
-			unpacked_slots.clear();
-		}
+		bUpdateSlideWindow = bUpdateSlideWindow || Processed != 0;
+		StreamingPreviousView = view;
+		StreamingPreviousTime = FrameTime;
+		StreamingInitialized = true;
 	}
-
     if (bUpdateSlideWindow)
 	{
 		PROF_EVENT("MegaUpdate");
@@ -284,7 +322,7 @@ void CDetailManager::cache_Update(const Fvector& view)
 			u32 _mx = index % dm_slide_window_line;
 			SlideSlot& MS = slide_window[_mz][_mx];
 			MS.empty = true;
-			MS.vis = { Fsphere{ {0.f,0.f,0.f}, 0.f }, Fbox{ { 0.f,0.f,0.f }, { 0.f,0.f,0.f } }};
+			MS.vis.clear();
 			bool empty_slot = true;
             for (int _i=0; _i<dm_cache_count; _i++)
 			{
@@ -351,7 +389,7 @@ void CDetailManager::DetailLayers_RebuildSlotsAround(const Fvector& center, floa
 	RequestSlideWindowUpdate();
 }
 
-// Publish a per-stroke slot rebuild to the DetailsTask worker (see cache_Update).
+// Publish a per-stroke slot rebuild to the vegetation producer (see cache_Update).
 // Editor strokes write the mask one frame and the rebuild kicks in on the same frame
 // the worker next runs - effectively immediate, but pooled/queued on the safe thread.
 void CDetailManager::DetailLayers_RequestRebuildAround(const Fvector& center, float radius)

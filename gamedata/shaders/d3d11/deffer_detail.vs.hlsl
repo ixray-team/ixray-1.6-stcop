@@ -6,19 +6,15 @@
 cbuffer TrampleConstants
 {
     float4 trample_params;
+    float4 detail_light;
 };
 
 cbuffer WindConstants
 {
     float4 wind_global;
     float4 wind_xz1;
-    float4 wind_xz1_dir;
     float4 wind_xz2;
-    float4 wind_xz2_dir;
     float4 wind_xz3;
-    float4 wind_xz3_dir;
-    float4 wind_swirl;
-    float4 wind_swirl_dir;
 };
 
 struct InstanceData
@@ -27,9 +23,17 @@ struct InstanceData
     float  scale;
     float3 pos;
     float  hemi;
+#ifndef DETAIL_FAR_NO_TRAILS
     float  trample_strength;
     float  trample_visual;
     float2 trample_dir;
+#endif
+#ifndef DETAIL_FAR_STATIC
+    float4 wind_bend;
+    float4 wind_previous;
+    float4 wind_velocity;
+    float4 wind_previous_velocity;
+#endif
 };
 
 StructuredBuffer<InstanceData> detail_buffer : register(t0);
@@ -59,47 +63,35 @@ float3x3 QuaternionToMatrix(float4 q)
     return m;
 }
 
-float windHash(float2 p)
+struct WindDetailInput
 {
-    float px = p.x * 123.34 + p.y * 456.21;
-    px = frac(px);
-    float d = px * (px + 45.32);
-    float r = frac(d * d + p.x * p.y);
-    return r;
-}
+    float4 pos : POSITION;
+    float2 tc : TEXCOORD0;
+    float4 N : NORMAL;
+    float2 shape : TEXCOORD1;
+};
 
-float2 windGrad(float2 p)
-{
-    float n = windHash(p) * 6.2831853;
-    return float2(cos(n), sin(n));
-}
+#include "detail_wind_deform.hlsli"
+#include "detail_trample_presentation.hlsli"
 
-float windNoise(float2 p)
-{
-    float2 i = floor(p);
-    float2 f = frac(p);
-    float2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-
-    float v00 = dot(windGrad(i), f);
-    float v10 = dot(windGrad(i + float2(1, 0)), f - float2(1, 0));
-    float v01 = dot(windGrad(i + float2(0, 1)), f - float2(0, 1));
-    float v11 = dot(windGrad(i + float2(1, 1)), f - float2(1, 1));
-
-    float a = v00 + u.x * (v10 - v00);
-    float b = v01 + u.x * (v11 - v01);
-    return (a + u.y * (b - a)) * 0.5 + 0.5;
-}
-
-float windFBM(float2 p, float seed)
-{
-    float val = windNoise(p + seed * 7.31);
-    val += windNoise(p * 2.173 + seed * 3.7) * 0.5;
-    return val * 0.6667;
-}
-
-void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O)
+void main(in WindDetailInput I, in uint instance_id : SV_InstanceID, out OutStructure O)
 {
     InstanceData det = detail_buffer[instance_id];
+#ifdef DETAIL_SHADOW_PASS
+    float3 LightDelta = det.pos - detail_light.xyz;
+    if (detail_light.w >= 0 && dot(LightDelta, LightDelta) >= detail_light.w)
+    {
+        O = (OutStructure)0;
+        O.hpos = float4(0, 0, 2, 1);
+        return;
+    }
+#endif
+#ifndef DETAIL_FAR_NO_TRAILS
+    bool HasTrail = det.trample_visual > .001 || det.trample_strength > .001;
+    float2 TrailState = PresentedTrampleState(det.trample_visual, det.trample_strength,
+        float4(det.pos, det.scale), (uint)trample_params.z);
+    det.trample_visual = TrailState.x;
+#endif
 
     float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
     float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
@@ -116,126 +108,56 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     float4 pos_old = pos;
 #endif
     
-#ifdef USE_TREEWAVE
-    float H = I.pos.y * det.scale;
-    float windScale = 1.0f - 0.95f * smoothstep(0.02f, 0.15f, det.trample_visual);
-    float globalInt = wind_global.x;
-    
-    if (globalInt > 0.001f)
+#ifndef DETAIL_FAR_STATIC
+    float3 TrailEntryPosition = pos_world;
+    float3 TrailEntryNormal = N;
+    bool HasEntryPose = HasTrail && TrampleHasEntryPose(det.wind_velocity.w, det.wind_bend.w);
+    if (HasEntryPose && TrailState.y < 1)
     {
-        float t = wave.w;
-        float2 wp = pos_world.xz;
-        float hw = saturate(I.pos.y);
-        float h = max(pos.y - det.pos.y, 0.0f);
-        
-        float xzDensity = 0.0f;
-        float2 xzDisp = float2(0, 0);
-        
-        if (wind_global.y > 0.5f)
-        {
-            float c1 = windNoise(wp * wind_xz1.x + wind_xz1_dir.xy * t * wind_xz1.w);
-            c1 = saturate((c1 - 0.5f) * (1.0f + wind_xz1.z * 2.0f) + 0.5f);
-            float2 perp1 = float2(-wind_xz1_dir.y, wind_xz1_dir.x);
-            float2 dir1 = normalize(wind_xz1_dir.xy + perp1 * (c1 - 0.5f) * 2.5f);
-            float2 d1 = dir1 * c1 * wind_xz1.y * wind_xz1_dir.z;
-            
-            float c2 = windNoise(wp * wind_xz2.x + wind_xz2_dir.xy * t * wind_xz2.w + c1 * 0.3f);
-            c2 = saturate((c2 - 0.5f) * (1.0f + wind_xz2.z * 2.0f) + 0.5f);
-            float2 perp2 = float2(-wind_xz2_dir.y, wind_xz2_dir.x);
-            float2 dir2 = normalize(wind_xz2_dir.xy + perp2 * (c2 - 0.5f) * 2.5f);
-            float2 d2 = dir2 * c2 * wind_xz2.y * wind_xz2_dir.z;
-            
-            float c3 = windNoise(wp * wind_xz3.x + wind_xz3_dir.xy * t * wind_xz3.w + c2 * 0.3f);
-            c3 = saturate((c3 - 0.5f) * (1.0f + wind_xz3.z * 2.0f) + 0.5f);
-            float2 perp3 = float2(-wind_xz3_dir.y, wind_xz3_dir.x);
-            float2 dir3 = normalize(wind_xz3_dir.xy + perp3 * (c3 - 0.5f) * 2.5f);
-            float2 d3 = dir3 * c3 * wind_xz3.y * wind_xz3_dir.z;
-            
-            xzDisp = d1 + d2 + d3;
-            xzDensity = saturate((c1 * wind_xz1.y * wind_xz1_dir.z + c2 * wind_xz2.y * wind_xz2_dir.z + c3 * wind_xz3.y * wind_xz3_dir.z)
-                / max(wind_xz1.y * wind_xz1_dir.z + wind_xz2.y * wind_xz2_dir.z + wind_xz3.y * wind_xz3_dir.z, 0.01f));
-        }
-        
-        float swirlY = 0.0f;
-        if (wind_global.z > 0.5f)
-        {
-            float cs = windNoise(wp * wind_swirl.x + wind_swirl_dir.xy * t * wind_swirl.w);
-            cs = saturate((cs - 0.5f) * (1.0f + wind_swirl.z * 2.0f) + 0.5f);
-            swirlY = (cs - 0.5f) * wind_swirl.y;
-        }
-        
-        float2 leanDir = normalize(xzDisp + 0.0001f);
-        float gust = xzDensity * xzDensity;
-        float bend = hw * hw * windScale;
-        float leanAmt = bend * gust * globalInt * 1.8f;
-        pos.xz += leanDir * leanAmt * h;
-        
-        pos.y += swirlY * globalInt * hw * h * 0.5f;
-        pos.xz += leanDir * swirlY * globalInt * hw * h * 0.3f;
-        
+        float2 EntryTilt;
+        float3 EntryLocal = BendGrass(I.pos.xyz, I.shape, det.wind_bend, m_rotate,
+            det.wind_previous_velocity.z, det.wind_previous_velocity.xy, EntryTilt);
+        TrailEntryPosition = mul(m_rotate, EntryLocal * det.scale) + det.pos;
+        TrailEntryNormal = mul(m_rotate, BendGrassNormal(unpack_normal(I.N.xyz), EntryTilt));
+    }
+
+    float WindDistance = length(det.pos.xz - eye_position.xz);
+    float WindFade = 1 - smoothstep(wind_xz3.y, wind_xz3.z, WindDistance);
+    if (!HasTrail && wind_global.x > .5 && det.wind_bend.w >= .65 && WindFade > 0)
+    {
+        float Limit = wind_xz2.z * lerp(1, wind_xz2.w, smoothstep(0, 1, saturate(det.trample_visual)));
+        float4 CurrentState = BlendGrassState(det.wind_previous, det.wind_bend, det.wind_previous_velocity.xyz,
+            det.wind_velocity.xyz, wind_xz2.x, wind_xz3.x, Limit);
+        CurrentState.xyz *= WindFade;
+        float2 Tilt;
+        float3 Local = BendGrass(I.pos.xyz, I.shape, CurrentState, m_rotate, wind_global.y, wind_global.zw, Tilt);
+        pos.xyz = mul(m_rotate, Local * det.scale) + det.pos;
+        N = mul(m_rotate, BendGrassNormal(unpack_normal(I.N.xyz), Tilt));
         #ifndef DISABLE_MOTION_VECTORS
-            float t_old = wave_old.w;
-            
-            float xzDensity_o = 0.0f;
-            float2 xzDisp_o = float2(0, 0);
-            
-            if (wind_global.y > 0.5f)
-            {
-                float c1o = windNoise(wp * wind_xz1.x + wind_xz1_dir.xy * t_old * wind_xz1.w);
-                c1o = saturate((c1o - 0.5f) * (1.0f + wind_xz1.z * 2.0f) + 0.5f);
-                float2 perp1o = float2(-wind_xz1_dir.y, wind_xz1_dir.x);
-                float2 dir1o = normalize(wind_xz1_dir.xy + perp1o * (c1o - 0.5f) * 2.5f);
-                float2 d1o = dir1o * c1o * wind_xz1.y * wind_xz1_dir.z;
-                
-                float c2o = windNoise(wp * wind_xz2.x + wind_xz2_dir.xy * t_old * wind_xz2.w + c1o * 0.3f);
-                c2o = saturate((c2o - 0.5f) * (1.0f + wind_xz2.z * 2.0f) + 0.5f);
-                float2 perp2o = float2(-wind_xz2_dir.y, wind_xz2_dir.x);
-                float2 dir2o = normalize(wind_xz2_dir.xy + perp2o * (c2o - 0.5f) * 2.5f);
-                float2 d2o = dir2o * c2o * wind_xz2.y * wind_xz2_dir.z;
-                
-                float c3o = windNoise(wp * wind_xz3.x + wind_xz3_dir.xy * t_old * wind_xz3.w + c2o * 0.3f);
-                c3o = saturate((c3o - 0.5f) * (1.0f + wind_xz3.z * 2.0f) + 0.5f);
-                float2 perp3o = float2(-wind_xz3_dir.y, wind_xz3_dir.x);
-                float2 dir3o = normalize(wind_xz3_dir.xy + perp3o * (c3o - 0.5f) * 2.5f);
-                float2 d3o = dir3o * c3o * wind_xz3.y * wind_xz3_dir.z;
-                
-                xzDisp_o = d1o + d2o + d3o;
-                xzDensity_o = saturate((c1o * wind_xz1.y * wind_xz1_dir.z + c2o * wind_xz2.y * wind_xz2_dir.z + c3o * wind_xz3.y * wind_xz3_dir.z)
-                    / max(wind_xz1.y * wind_xz1_dir.z + wind_xz2.y * wind_xz2_dir.z + wind_xz3.y * wind_xz3_dir.z, 0.01f));
-            }
-            
-            float swirlYo = 0.0f;
-            if (wind_global.z > 0.5f)
-            {
-                float cso = windNoise(wp * wind_swirl.x + wind_swirl_dir.xy * t_old * wind_swirl.w);
-                cso = saturate((cso - 0.5f) * (1.0f + wind_swirl.z * 2.0f) + 0.5f);
-                swirlYo = (cso - 0.5f) * wind_swirl.y;
-            }
-            
-            float2 leanDir_o = normalize(xzDisp_o + 0.0001f);
-            float gust_o = xzDensity_o * xzDensity_o;
-            float bend_o = hw * hw * windScale;
-            float leanAmt_o = bend_o * gust_o * globalInt * 1.8f;
-            pos_old.xz += leanDir_o * leanAmt_o * h;
-            
-            pos_old.y += swirlYo * globalInt * hw * h * 0.5f;
-            pos_old.xz += leanDir_o * swirlYo * globalInt * hw * h * 0.3f;
+            float4 OldState = BlendGrassState(det.wind_previous, det.wind_bend, det.wind_previous_velocity.xyz,
+                det.wind_velocity.xyz, wind_xz2.y, wind_xz3.x, Limit);
+            OldState.xyz *= WindFade;
+            float2 OldTilt;
+            float3 OldLocal = BendGrass(I.pos.xyz, I.shape, OldState, m_rotate, wind_xz1.x, wind_xz1.yz, OldTilt);
+            pos_old.xyz = mul(m_rotate, OldLocal * det.scale) + det.pos;
         #endif
     }
-    else
+    else if (!HasTrail && wind_global.x <= .5)
     {
-        float dp = calc_cyclic(dot(pos_world, wave.xyz) + wave.w);
-        float inten = H * dp * windScale;
-        pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
-        
-        #ifndef DISABLE_MOTION_VECTORS
-            float dp_old = calc_cyclic(dot(pos_world, wave_old.xyz) + wave_old.w);
-            float inten_old = H * dp_old * windScale;
-            pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
+        #ifdef USE_TREEWAVE
+            float H = I.pos.y * det.scale;
+            float WindScale = 1 - .95 * smoothstep(.02, .15, det.trample_visual);
+            float Dp = calc_cyclic(dot(pos_world, wave.xyz) + wave.w);
+            pos.xz += calc_xz_wave(dir2D.xz * (H * Dp * WindScale), I.pos.w);
+            #ifndef DISABLE_MOTION_VECTORS
+                float OldDp = calc_cyclic(dot(pos_world, wave_old.xyz) + wave_old.w);
+                pos_old.xz += calc_xz_wave(dir2D_old.xz * (H * OldDp * WindScale), I.pos.w);
+            #endif
         #endif
     }
 #endif
 
+#ifndef DETAIL_FAR_NO_TRAILS
     if (det.trample_visual > 0.001f)
     {
         float strength = det.trample_visual;
@@ -269,7 +191,19 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
             pos_old.xz += moveDir * lean;
         #endif
     }
+#endif
     
+#ifndef DETAIL_FAR_STATIC
+    if (HasEntryPose)
+    {
+        pos.xyz = BlendTrailEntryPose(TrailEntryPosition, pos.xyz, TrailState.y);
+        N = normalize(lerp(TrailEntryNormal, N, TrailState.y));
+        #ifndef DISABLE_MOTION_VECTORS
+            pos_old.xyz = BlendTrailEntryPose(TrailEntryPosition, pos_old.xyz, TrailState.y);
+        #endif
+    }
+#endif
+
     O.hpos = mul(m_VP, pos);
 	
 #ifndef DETAIL_SHADOW_PASS

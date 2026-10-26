@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include <bit>
 #include "DetailManager.h"
+#include "xrRender_console.h"
 
 #include "../../xrEngine/GameMtlLib.h"
 #include "../../xrCore/Collision/cl_intersect.h"
@@ -53,86 +55,75 @@ static float hash01(u32 seed)
 	return (float)hash_u32(seed) / (float)0xFFFFFFFFu;
 }
 
-// Deterministic side of Perlin-noise clustering: select asset type for this position.
-// Runs the same clustering math as the previous Random-based version but replaces the
-// final Random.randF(0, sum) pick with a deterministic per-position hash, so the result
-// depends only on (world_x, world_z, seed, params). Returns index within [0, asset_count).
-static u32 select_clustered_asset(
-	float world_x, float world_z,
-	u32 seed, u32 asset_count,
-	float sharpness, float warp,
-	float patch_size_min, float patch_size_max,
-	u8* raw_out = nullptr
-)
+namespace
 {
-	if (asset_count == 0)
-		return 0;
-
-	float avg_patch = (patch_size_min + patch_size_max) * 0.5f;
-	float base_freq = 1.0f / fmaxf(avg_patch, 0.01f);
-
-	float scale_var = (patch_size_max - patch_size_min) / fmaxf(patch_size_max + patch_size_min, 0.001f);
-	float scale_noise = fastNoise2D(world_x * 0.01f + seed * 0.7f, world_z * 0.01f + seed * 0.3f);
-	float local_freq = base_freq * (1.0f + (scale_noise - 0.5f) * scale_var * 2.0f);
-
-	float warped_x = world_x;
-	float warped_z = world_z;
-
-	if (warp > 0.001f)
+bool HasClusterGrass(DetailSlot& Slot, const xr_vector<CDetail*>& Models)
+{
+	bool Grass = false;
+	for (u32 I = 0; I < dm_obj_in_slot; ++I)
 	{
-		float ws = local_freq * 1.5f;
-		float disp = warp * (1.0f / fmaxf(local_freq, 0.001f)) * 0.05f;
-		warped_x += fastNoise2D(world_x * ws + 500.0f, world_z * ws + 500.0f) * disp;
-		warped_z += fastNoise2D(world_x * ws + 1500.0f, world_z * ws + 1500.0f) * disp;
+		const u32 ID = Slot.r_id(I);
+		if (ID != DetailSlot::ID_Empty && ID < Models.size())
+		{
+			const CDetail& Model = *Models[ID];
+			if (Model.m_Flags.is(DO_NO_WAVING) || Model.number_vertices < 8)
+			{
+				return false;
+			}
+			const DetailPalette& Palette = Slot.palette[I];
+			Grass |= Palette.a0 || Palette.a1 || Palette.a2 || Palette.a3;
+		}
 	}
+	return Grass;
+}
 
-	float vals[64];
-	u32 count = asset_count < 64 ? asset_count : 64;
+// Four baked field nodes define a continuous mixture inside each native slot.
+// Adjacent slots share the same edge nodes, so their distributions meet continuously.
+struct SlotDiffusion
+{
+	u32 Assets[dm_obj_in_slot] = {};
+	u32 CornerGroups[4] = {};
+	u32 Count = 0, Seed = 0;
 
-	for (u32 t = 0; t < count; t++)
+	u32 SampleGroup(float X, float Z, u32 Key) const
 	{
-		u32 ts = seed + t * 1337u;
-		float ox = hash01(ts) * 1000.0f;
-		float oz = hash01(ts + 1) * 1000.0f;
-
-		vals[t] = fastNoise2D(warped_x * local_freq + ox, warped_z * local_freq + oz);
+		if (Count == 1)
+		{
+			return 0;
+		}
+		X = clampr(X, 0.f, 1.f);
+		Z = clampr(Z, 0.f, 1.f);
+		const bool Right = float(hash_u32(Key) >> 8) * (1.f / 16777216.f) < X;
+		const bool Bottom = float(hash_u32(Key ^ 0x9e3779b9u) >> 8) * (1.f / 16777216.f) < Z;
+		return CornerGroups[u32(Right) | (u32(Bottom) << 1)];
 	}
+};
+} // namespace
 
-	float min_val = vals[0], max_val = vals[0];
-	for (u32 t = 1; t < count; t++)
-	{
-		if (vals[t] < min_val) min_val = vals[t];
-		if (vals[t] > max_val) max_val = vals[t];
-	}
-	float range = max_val - min_val;
+u32 CDetailManager::GetClusterSpeciesCount() const
+{
+	return ps_r__detail_use_alternative_tree_assets && alt_models_count ? u32(AlternativeSpeciesGroups.size()) : vanilla_grass_count;
+}
 
-	float weights[64];
-	float sum = 0.0f;
-	for (u32 t = 0; t < count; t++)
-	{
-		float n = (range > 0.0001f) ? (vals[t] - min_val) / range : (1.0f / count);
-		weights[t] = powf(n, sharpness);
-		sum += weights[t];
-	}
+u32 CDetailManager::GetClusterSpecies(u32 Model) const
+{
+	return ps_r__detail_use_alternative_tree_assets && Model < AlternativeModels.size() ? AlternativeModels[Model].Species : Model;
+}
 
-	// Deterministic pick: hash the cell index into [0,1] instead of Random.randF.
-	u32 cell_x = (u32)iFloor(world_x / dm_slot_size);
-	u32 cell_z = (u32)iFloor(world_z / dm_slot_size);
-	u32 h = hash_u32(hash_u32(seed) ^ (cell_x * 374761393u + 668265263u));
-	h = hash_u32(h ^ (cell_z * 2246822519u + 3266489917u));
-	float rnd_raw = hash01(h);
-	if (raw_out)
-		*raw_out = (u8)(rnd_raw * 255.0f);
-	float rnd = rnd_raw * sum;
+u32 CDetailManager::GetClusterFieldKey() const
+{
+	const float Settings[] = {
+		float(dtH.size_x), float(dtH.size_z), float(dtH.offs_x), float(dtH.offs_z), float(alt_models_count), float(vanilla_grass_count), float(ps_r__detail_use_alternative_tree_assets), float(ps_r__detail_use_cluster_mix_tree_assets), ps_r__detail_cluster_seed, ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max, ps_r__detail_cluster_diffusion, ps_r__detail_cluster_sharpness, ps_r__detail_cluster_deformation, ps_r__detail_cluster_elongation, ps_r__detail_cluster_coverage_size
+	};
+	return crc32(Settings, sizeof(Settings)) ^ AlternativeCatalogCRC;
+}
 
-	float acc = 0.0f;
-	for (u32 t = 0; t < count; t++)
-	{
-		acc += weights[t];
-		if (rnd <= acc)
-			return t;
-	}
-	return count - 1;
+u32 CDetailManager::GetFMBFieldKey() const
+{
+	const float Settings[] = {
+		float(dtH.size_x), float(dtH.size_z), float(dtH.offs_x), float(dtH.offs_z), float(ps_r__detail_fmb_use_layer_1), float(ps_r__detail_fmb_use_layer_2), float(ps_r__detail_fmb_use_layer_3), ps_r__detail_fmb_layer_1_frequency, ps_r__detail_fmb_layer_1_amplitude, ps_r__detail_fmb_layer_1_seed, ps_r__detail_fmb_layer_1_power, ps_r__detail_fmb_layer_2_frequency, ps_r__detail_fmb_layer_2_amplitude, ps_r__detail_fmb_layer_2_seed, ps_r__detail_fmb_layer_2_power, ps_r__detail_fmb_layer_3_frequency, ps_r__detail_fmb_layer_3_amplitude, ps_r__detail_fmb_layer_3_seed, ps_r__detail_fmb_layer_3_power
+	};
+	return crc32(Settings, sizeof(Settings));
 }
 
 // Precompute the cluster-noise field over the whole detail DB grid.
@@ -140,73 +131,457 @@ static u32 select_clustered_asset(
 // Rebuilt on cache_ReInitialize (level load and any r__detail_* console change).
 void CDetailManager::BuildClusterField()
 {
-	extern bool ps_r__detail_use_cluster_mix_tree_assets;
-	extern float ps_r__detail_cluster_seed;
-	extern float ps_r__detail_cluster_patch_size_min;
-	extern float ps_r__detail_cluster_patch_size_max;
-	extern float ps_r__detail_cluster_sharpness;
-	extern float ps_r__detail_cluster_warp_min;
-	extern float ps_r__detail_cluster_warp_max;
-
-	u32 sx = dtH.size_x;
-	u32 sz = dtH.size_z;
-	cluster_field.resize(sx * sz);
-	cluster_rnd_field.resize(sx * sz);
-
-	if (!ps_r__detail_use_cluster_mix_tree_assets || cluster_field.size() == 0)
+	const u32 Size = dtH.size_x * dtH.size_z;
+	const u32 Key = GetClusterFieldKey();
+	if (!Device.IsEditorMode() && ClusterFieldValid && ClusterFieldKey == Key && cluster_field_base.size() == Size && cluster_rnd_field_base.size() == Size)
 	{
-		fill(cluster_field.begin(), cluster_field.end(), u8(255));
-		fill(cluster_rnd_field.begin(), cluster_rnd_field.end(), u8(255));
+		cluster_field = cluster_field_base;
+		cluster_rnd_field = cluster_rnd_field_base;
 		return;
 	}
-
-	float avg_warp = (ps_r__detail_cluster_warp_min + ps_r__detail_cluster_warp_max) * 0.5f;
-	u32 seed = (u32)ps_r__detail_cluster_seed;
-	u32 assets = alt_models_count > 0 ? alt_models_count : vanilla_grass_count;
-
-	for (u32 z = 0; z < sz; z++)
+	ClusterFieldKey = Key;
+	ClusterFieldValid = true;
+	cluster_field.assign(Size, u8(255));
+	cluster_rnd_field.assign(Size, u8(255));
+	const u32 Assets = GetClusterSpeciesCount();
+	if (!ps_r__detail_use_cluster_mix_tree_assets || !Size || !Assets)
 	{
-		for (u32 x = 0; x < sx; x++)
+		return;
+	}
+	const float Low = std::max(1.f, std::min(ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max));
+	const float High = std::max(Low, std::max(ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max));
+	const float Spacing = std::max(4.f, (Low + High) * 0.5f);
+	const float Aspect = std::max(1.f, ps_r__detail_cluster_elongation);
+	constexpr float MaxDeformation = 500.f;
+	constexpr float DeformationScale = 0.1f;
+	const float Warp = Spacing * clampr(ps_r__detail_cluster_deformation, 0.f, MaxDeformation) * DeformationScale;
+	const float OriginX = -float(dtH.offs_x) * dm_slot_size, OriginZ = -float(dtH.offs_z) * dm_slot_size;
+	const u32 CoreWidth = std::max(1u, u32(iCeil(float(dtH.size_x) * dm_slot_size / Spacing)));
+	const u32 CoreHeight = std::max(1u, u32(iCeil(float(dtH.size_z) * dm_slot_size / Spacing)));
+	// Cover the whole control range with the same seeds: changing deformation must not
+	// create exterior patches, and even the largest warp must remain inside the search grid.
+	const int Padding = iCeil(MaxDeformation * DeformationScale * 0.5f);
+	const float GridOriginX = OriginX - float(Padding) * Spacing;
+	const float GridOriginZ = OriginZ - float(Padding) * Spacing;
+	const u32 Width = CoreWidth + u32(Padding) * 2;
+	const u32 Height = CoreHeight + u32(Padding) * 2;
+	const u32 Seed = u32(ps_r__detail_cluster_seed);
+	struct Patch
+	{
+		float X, Z, InvRadius, InvAspect, Cos, Sin;
+		u32 Asset;
+	};
+	xr_vector<Patch> Patches(Width * Height);
+	for (u32 Z = 0; Z < Height; ++Z)
+	{
+		for (u32 X = 0; X < Width; ++X)
 		{
-			// Slot cell center in world space (mirrors QueryDB mapping).
-			float world_x = ((float)int(x) - (float)dtH.offs_x) * dm_slot_size + dm_slot_size * 0.5f;
-			float world_z = ((float)int(z) - (float)dtH.offs_z) * dm_slot_size + dm_slot_size * 0.5f;
-
-			u32 use_count = (alt_models_count > 0) ? alt_models_count : vanilla_grass_count;
-			u8 rnd_raw = 255;
-			u32 idx = select_clustered_asset(
-				world_x, world_z,
-				seed, use_count,
-				ps_r__detail_cluster_sharpness, avg_warp,
-				ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max,
-				&rnd_raw
-			);
-			cluster_field[z * sx + x] = (u8)idx;
-			cluster_rnd_field[z * sx + x] = rnd_raw;
+			const int PX = int(X) - Padding, PZ = int(Z) - Padding;
+			const bool CoreX = PX >= 0 && PX < int(CoreWidth), CoreZ = PZ >= 0 && PZ < int(CoreHeight);
+			// Interior patches retain their seed, radius, species and direction as the padding changes.
+			const u32 PatchKey = CoreX && CoreZ ? u32(PZ) * CoreWidth + u32(PX) : hash_u32(u32(PX) * 374761393u) ^ hash_u32(u32(PZ) * 668265263u) ^ 0x735a2d97u;
+			const u32 H = hash_u32(Seed ^ PatchKey);
+			Patch& P = Patches[Z * Width + X];
+			const float CenterX = (float(PX) + 0.15f + hash01(H) * 0.7f) * Spacing;
+			const float CenterZ = (float(PZ) + 0.15f + hash01(H + 1) * 0.7f) * Spacing;
+			P.X = OriginX + (CoreX ? std::min(float(dtH.size_x) * dm_slot_size - EPS_L, CenterX) : CenterX);
+			P.Z = OriginZ + (CoreZ ? std::min(float(dtH.size_z) * dm_slot_size - EPS_L, CenterZ) : CenterZ);
+			P.InvRadius = 2.f / (Low + (High - Low) * hash01(H + 2));
+			P.InvAspect = 1.f / (1.f + (Aspect - 1.f) * hash01(H + 3));
+			const float Angle = hash01(H + 4) * PI_MUL_2;
+			P.Cos = cosf(Angle);
+			P.Sin = sinf(Angle);
+			P.Asset = hash_u32(H + 5) % Assets;
+		}
+	}
+	const float MaxReach = High * 0.5f * Aspect;
+	for (u32 Z = 0; Z < dtH.size_z; ++Z)
+	{
+		for (u32 X = 0; X < dtH.size_x; ++X)
+		{
+			const u32 Index = Z * dtH.size_x + X;
+			cluster_rnd_field[Index] = u8(hash_u32(Index ^ Seed) >> 24);
+			if (!dtSlots || !HasClusterGrass(dtSlots[Index], objects))
+			{
+				continue;
+			}
+			const float WorldX = OriginX + float(X) * dm_slot_size;
+			const float WorldZ = OriginZ + float(Z) * dm_slot_size;
+			const float NX = WorldX / Spacing, NZ = WorldZ / Spacing;
+			const float WX = WorldX + (fastNoise2D(NX * 0.45f + Seed, NZ * 0.45f) * 0.7f + fastNoise2D(NX * 1.3f, NZ * 1.3f + Seed) * 0.3f - 0.5f) * Warp;
+			const float WZ = WorldZ + (fastNoise2D(NX * 0.45f, NZ * 0.45f + Seed + 173.f) * 0.7f + fastNoise2D(NX * 1.3f + Seed + 571.f, NZ * 1.3f) * 0.3f - 0.5f) * Warp;
+			const int CX = std::clamp(iFloor((WX - GridOriginX) / Spacing), 0, int(Width) - 1);
+			const int CZ = std::clamp(iFloor((WZ - GridOriginZ) / Spacing), 0, int(Height) - 1);
+			float Best = flt_max;
+			u32 Asset = 0;
+			const auto Visit = [&](int PX, int PZ)
+			{
+				if (PX < 0 || PZ < 0 || PX >= int(Width) || PZ >= int(Height))
+				{
+					return;
+				}
+				const Patch& P = Patches[u32(PZ) * Width + u32(PX)];
+				const float DX = WX - P.X, DZ = WZ - P.Z;
+				const float U = (DX * P.Cos + DZ * P.Sin) * P.InvAspect * P.InvRadius;
+				const float V = (-DX * P.Sin + DZ * P.Cos) * P.InvRadius;
+				const float Score = U * U + V * V;
+				if (Score < Best)
+				{
+					Best = Score;
+					Asset = P.Asset;
+				}
+			};
+			for (int Ring = 0; Ring <= int(std::max(Width, Height)); ++Ring)
+			{
+				for (int PX = std::max(0, CX - Ring); PX <= std::min(int(Width) - 1, CX + Ring); ++PX)
+				{
+					Visit(PX, CZ - Ring);
+					if (Ring)
+					{
+						Visit(PX, CZ + Ring);
+					}
+				}
+				for (int PZ = std::max(0, CZ - Ring + 1); PZ <= std::min(int(Height) - 1, CZ + Ring - 1); ++PZ)
+				{
+					Visit(CX - Ring, PZ);
+					if (Ring)
+					{
+						Visit(CX + Ring, PZ);
+					}
+				}
+				// Stop only when even the largest elongated patch outside this ring cannot win.
+				float Distance = flt_max;
+				if (CX - Ring > 0)
+				{
+					Distance = std::min(Distance, WX - GridOriginX - float(CX - Ring) * Spacing);
+				}
+				if (CZ - Ring > 0)
+				{
+					Distance = std::min(Distance, WZ - GridOriginZ - float(CZ - Ring) * Spacing);
+				}
+				if (CX + Ring + 1 < int(Width))
+				{
+					Distance = std::min(Distance, GridOriginX + float(CX + Ring + 1) * Spacing - WX);
+				}
+				if (CZ + Ring + 1 < int(Height))
+				{
+					Distance = std::min(Distance, GridOriginZ + float(CZ + Ring + 1) * Spacing - WZ);
+				}
+				if (Distance == flt_max || std::max(0.f, Distance) / MaxReach > sqrtf(Best))
+				{
+					break;
+				}
+			}
+			cluster_field[Index] = u8(Asset);
+		}
+	}
+	// Coverage belongs to the immutable base pattern, never to the strength-dependent result.
+	BuildClusterCoverage();
+	BuildClusterTransitions(Spacing);
+	if (ps_r__detail_use_alternative_tree_assets && alt_models_count)
+	{
+		// Resolve variants during baking. Unpack consumes only ready model IDs.
+		for (u32 Index = 0; Index < Size; ++Index)
+		{
+			const u32 Species = cluster_field[Index];
+			if (Species < AlternativeSpeciesGroups.size())
+			{
+				const auto& Variants = AlternativeSpeciesGroups[Species].Models;
+				// Multiply-high maps the full hash range evenly to the variant list.
+				const u32 Choice = u32((u64(hash_u32(Index ^ Seed ^ 0xa511e9b3u)) * Variants.size()) >> 32);
+				cluster_field[Index] = Variants[Choice];
+			}
 		}
 	}
 }
 
-// Look up the index stored for the DB slot containing (world_x, world_z).
-// asset_count gates the result (dynamic count may differ from build time);
-// a 255 sentinel or out-of-range slot => 0 (falls back to native/sequential).
-u32 CDetailManager::SampleClusterField(float world_x, float world_z, u32 asset_count) const
+// Resolve boundary blur and adjacent-species micro patches once, then bake ready IDs.
+void CDetailManager::BuildClusterTransitions(float Spacing)
 {
-	if (asset_count == 0 || cluster_field.empty())
-		return 0;
-
-	int db_x = iFloor(world_x / dm_slot_size) + dtH.offs_x;
-	int db_z = iFloor(world_z / dm_slot_size) + dtH.offs_z;
-
-	if (db_x < 0 || db_z < 0 || (u32)db_x >= dtH.size_x || (u32)db_z >= dtH.size_z)
-		return 0;
-
-	u8 raw = cluster_field[(u32)db_z * dtH.size_x + (u32)db_x];
-	if (raw == 255 || raw >= asset_count)
-		return 0;
-	return (u32)raw;
+	const float Diffusion = std::max(0.f, ps_r__detail_cluster_diffusion);
+	const float BlendSigma = Spacing * 0.75f * (1.f - clampr(ps_r__detail_cluster_sharpness * 0.01f, 0.f, 1.f));
+	if (Diffusion <= 0.f && BlendSigma <= 0.f)
+	{
+		return;
+	}
+	const xr_vector<u8> Owners = cluster_field;
+	const u32 Size = u32(Owners.size());
+	xr_vector<Fvector2> Foreign(Size);
+	for (Fvector2& Node : Foreign)
+	{
+		Node.set(-1.f, -1.f);
+	}
+	// Raster propagation finds a stable neighbouring boundary species. Neither strength
+	// parameter participates in this search, so increasing either never picks a new donor.
+	const auto Refine = [&](int X, int Z, bool Forward)
+	{
+		const u32 Index = u32(Z) * dtH.size_x + u32(X);
+		const u32 Main = Owners[Index];
+		if (Main == 255)
+		{
+			return;
+		}
+		Fvector2& Best = Foreign[Index];
+		float BestDistance = Best.x < 0.f ? flt_max : _sqr(float(X) - Best.x) + _sqr(float(Z) - Best.y);
+		const auto Relax = [&](int NX, int NZ)
+		{
+			if (NX < 0 || NZ < 0 || NX >= int(dtH.size_x) || NZ >= int(dtH.size_z))
+			{
+				return;
+			}
+			const u32 Neighbor = u32(NZ) * dtH.size_x + u32(NX);
+			if (Owners[Neighbor] == 255)
+			{
+				return;
+			}
+			Fvector2 Candidate = Foreign[Neighbor];
+			if (Owners[Neighbor] != Main)
+			{
+				Candidate.set(float(NX), float(NZ));
+			}
+			if (Candidate.x < 0.f)
+			{
+				return;
+			}
+			const float Distance = _sqr(float(X) - Candidate.x) + _sqr(float(Z) - Candidate.y);
+			if (Distance < BestDistance || (Distance == BestDistance && (Candidate.y < Best.y || (Candidate.y == Best.y && Candidate.x < Best.x))))
+			{
+				Best = Candidate;
+				BestDistance = Distance;
+			}
+		};
+		const int Direction = Forward ? -1 : 1;
+		Relax(X + Direction, Z);
+		Relax(X - 1, Z + Direction);
+		Relax(X, Z + Direction);
+		Relax(X + 1, Z + Direction);
+	};
+	for (u32 Pass = 0; Pass < 2; ++Pass)
+	{
+		for (int Z = 0; Z < int(dtH.size_z); ++Z)
+		{
+			for (int X = 0; X < int(dtH.size_x); ++X)
+			{
+				Refine(X, Z, true);
+			}
+		}
+		for (int Z = int(dtH.size_z) - 1; Z >= 0; --Z)
+		{
+			for (int X = int(dtH.size_x) - 1; X >= 0; --X)
+			{
+				Refine(X, Z, false);
+			}
+		}
+	}
+	const float ScatterSigma = Spacing * Diffusion;
+	const float ScatterChance = 0.25f * Diffusion / (0.25f + Diffusion);
+	const float Seed = ps_r__detail_cluster_seed;
+	for (u32 Index = 0; Index < Size; ++Index)
+	{
+		if (Owners[Index] == 255 || cluster_rnd_field[Index] == 255 || Foreign[Index].x < 0.f)
+		{
+			continue;
+		}
+		const float X = float(Index % dtH.size_x), Z = float(Index / dtH.size_x);
+		const float Distance = std::max(0.f, sqrtf(_sqr(X - Foreign[Index].x) + _sqr(Z - Foreign[Index].y)) * dm_slot_size - dm_slot_size * 0.5f);
+		const float BlendChance = BlendSigma > 0.f ? 0.5f * erfcf(Distance / (1.41421356f * BlendSigma)) : 0.f;
+		const bool Blend = (float(cluster_rnd_field[Index]) + 0.5f) / 256.f < BlendChance;
+		bool Scatter = false;
+		if (ScatterSigma > 0.f)
+		{
+			const float Chance = ScatterChance * expf(-Distance * Distance / (2.f * ScatterSigma * ScatterSigma));
+			// A fixed smooth micro mask creates little clumps rather than unrelated salt-and-pepper pixels.
+			const float Micro = fastNoise2D(X * 0.37f + Seed * 0.31f, Z * 0.37f + Seed * 0.73f + 573.f);
+			Scatter = Micro < Chance;
+		}
+		if (Blend || Scatter)
+		{
+			const u32 Source = u32(Foreign[Index].y) * dtH.size_x + u32(Foreign[Index].x);
+			cluster_field[Index] = Owners[Source];
+		}
+	}
 }
 
+// Add underrepresented species to each area without clipping or restarting the global noise.
+// Scratch arrays exist only during generation; slot and bake formats remain unchanged.
+void CDetailManager::BuildClusterCoverage()
+{
+	extern bool ps_r__detail_use_alternative_tree_assets;
+	extern float ps_r__detail_cluster_seed;
+	extern float ps_r__detail_cluster_coverage_size;
+	const u32 Assets = GetClusterSpeciesCount();
+	if (!Assets || !dtSlots || cluster_field.size() != dtH.size_x * dtH.size_z)
+	{
+		return;
+	}
+	const u32 Step = std::max(1u, u32(iCeil(std::max(50.f, ps_r__detail_cluster_coverage_size) / dm_slot_size)));
+	for (u32 Z0 = 0; Z0 < dtH.size_z; Z0 += Step)
+	{
+		for (u32 X0 = 0; X0 < dtH.size_x; X0 += Step)
+		{
+			const u32 Width = std::min(Step, dtH.size_x - X0), Height = std::min(Step, dtH.size_z - Z0);
+			xr_vector<u32> Eligible;
+			xr_vector<u8> Allowed(Width * Height, 0), Visited(Width * Height, 0);
+			u32 Counts[255] = {};
+			for (u32 Z = 0; Z < Height; ++Z)
+			{
+				for (u32 X = 0; X < Width; ++X)
+				{
+					const u32 Index = (Z0 + Z) * dtH.size_x + X0 + X;
+					if (cluster_field[Index] < Assets && HasClusterGrass(dtSlots[Index], objects))
+					{
+						Allowed[Z * Width + X] = 1;
+						Eligible.push_back(Z * Width + X);
+						++Counts[cluster_field[Index]];
+					}
+				}
+			}
+			if (Eligible.empty())
+			{
+				continue;
+			}
+			const auto ProtectCoverage = [&]()
+			{
+				u32 Anchors[255];
+				std::fill(std::begin(Anchors), std::end(Anchors), ~0u);
+				const u32 Seed = u32(ps_r__detail_cluster_seed);
+				for (u32 Local : Eligible)
+				{
+					const u32 Index = (Z0 + Local / Width) * dtH.size_x + X0 + Local % Width;
+					const u32 Asset = cluster_field[Index];
+					if (Anchors[Asset] == ~0u || hash_u32(Index ^ Seed) < hash_u32(Anchors[Asset] ^ Seed))
+					{
+						Anchors[Asset] = Index;
+					}
+				}
+				for (u32 Asset = 0; Asset < Assets; ++Asset)
+				{
+					if (Anchors[Asset] != ~0u)
+					{
+						cluster_rnd_field[Anchors[Asset]] = 255;
+					}
+				}
+			};
+			// Reserve half of an equal share per species; the remaining area keeps the noise proportions.
+			const u32 Target = std::max(1u, u32(Eligible.size()) / (Assets * 2));
+			bool NeedsCoverage = false;
+			for (u32 Asset = 0; Asset < Assets; ++Asset)
+			{
+				NeedsCoverage |= Counts[Asset] < Target;
+			}
+			if (!NeedsCoverage)
+			{
+				ProtectCoverage();
+				continue;
+			}
+			CRandom AreaRandom(s32(hash_u32(u32(ps_r__detail_cluster_seed) ^ hash_u32(X0) ^ hash_u32(Z0 + 668265263u))));
+			for (u32 I = u32(Eligible.size()); I > 1; --I)
+			{
+				std::swap(Eligible[I - 1], Eligible[AreaRandom.randI(I)]);
+			}
+			xr_vector<u32> Order(Assets);
+			for (u32 I = 0; I < Assets; ++I)
+			{
+				Order[I] = I;
+			}
+			for (u32 I = Assets; I > 1; --I)
+			{
+				std::swap(Order[I - 1], Order[AreaRandom.randI(I)]);
+			}
+			struct Candidate
+			{
+				u32 Local;
+				float Priority;
+			};
+			xr_vector<Candidate> Frontier;
+			const auto Compare = [](const Candidate& A, const Candidate& B)
+			{
+				return A.Priority == B.Priority ? A.Local > B.Local : A.Priority > B.Priority;
+			};
+			u32 Cursor = 0;
+			for (u32 Asset : Order)
+			{
+				while (Counts[Asset] < Target)
+				{
+					// Pick a donor that can lose area without breaking another species' minimum.
+					while (Cursor < Eligible.size())
+					{
+						const u32 Local = Eligible[Cursor];
+						const u32 Index = (Z0 + Local / Width) * dtH.size_x + X0 + Local % Width;
+						if (Counts[cluster_field[Index]] > Target && Visited[Local] != Asset + 1)
+						{
+							break;
+						}
+						++Cursor;
+					}
+					if (Cursor == Eligible.size())
+					{
+						break;
+					}
+					const u32 Anchor = Eligible[Cursor++];
+					const int AX = int(Anchor % Width), AZ = int(Anchor / Width);
+					const float Low = std::max(1.f, std::min(ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max));
+					const float High = std::max(Low, std::max(ps_r__detail_cluster_patch_size_min, ps_r__detail_cluster_patch_size_max));
+					const float Diameter = AreaRandom.randF(Low, High) / dm_slot_size;
+					const float Aspect = AreaRandom.randF(1.f, std::max(1.f, ps_r__detail_cluster_elongation));
+					const float Angle = AreaRandom.randF(0.f, PI_MUL_2);
+					const float Cos = cosf(Angle), Sin = sinf(Angle);
+					const u32 Budget = std::max(1u, u32(iCeil(PI * 0.25f * Diameter * Diameter * Aspect)));
+					u32 Added = 0;
+					Frontier.clear();
+					const auto Push = [&](int X, int Z)
+					{
+						if (X < 0 || Z < 0 || X >= int(Width) || Z >= int(Height))
+						{
+							return;
+						}
+						const u32 Local = u32(Z) * Width + u32(X);
+						if (!Allowed[Local] || Visited[Local] == Asset + 1)
+						{
+							return;
+						}
+						Visited[Local] = u8(Asset + 1);
+						const float DX = float(X - AX), DZ = float(Z - AZ);
+						const float Noise = fastNoise2D(float(X + int(X0)) * 0.17f + float(Asset * 17), float(Z + int(Z0)) * 0.17f + ps_r__detail_cluster_seed);
+						const float U = (DX * Cos + DZ * Sin) / Aspect, V = -DX * Sin + DZ * Cos;
+						const float Shape = expf((Noise - 0.5f) * std::max(0.f, ps_r__detail_cluster_deformation) * 0.04f);
+						Frontier.push_back({Local, (U * U + V * V) * Shape});
+						std::push_heap(Frontier.begin(), Frontier.end(), Compare);
+					};
+					Push(AX, AZ);
+					while (!Frontier.empty() && Counts[Asset] < Target && Added < Budget)
+					{
+						std::pop_heap(Frontier.begin(), Frontier.end(), Compare);
+						const u32 Local = Frontier.back().Local;
+						Frontier.pop_back();
+						const int X = int(Local % Width), Z = int(Local / Width);
+						const u32 Index = (Z0 + u32(Z)) * dtH.size_x + X0 + u32(X);
+						const u32 Old = cluster_field[Index];
+						if (Old != Asset && Counts[Old] > Target)
+						{
+							--Counts[Old];
+							++Counts[Asset];
+							cluster_field[Index] = u8(Asset);
+							++Added;
+						}
+						for (int NZ = Z - 1; NZ <= Z + 1; ++NZ)
+						{
+							for (int NX = X - 1; NX <= X + 1; ++NX)
+							{
+								Push(NX, NZ);
+							}
+						}
+					}
+					for (const Candidate& Unused : Frontier)
+					{
+						Visited[Unused.Local] = 0;
+					}
+				}
+			}
+			ProtectCoverage();
+		}
+	}
+}
 // Precompute the combined FMB height factor over the whole detail DB grid.
 // One float per DB slot CORNER (grid of (size_x+1)*(size_z+1)), bilinearly sampled
 // per instance, so decompress has zero per-instance noise calls. The factor t is
@@ -235,6 +610,14 @@ void CDetailManager::BuildFMBField()
 
 	u32 sx = dtH.size_x;
 	u32 sz = dtH.size_z;
+	const u32 Key = GetFMBFieldKey();
+	if (!Device.IsEditorMode() && FMBFieldValid && FMBFieldKey == Key && fmb_field_base.size() == (sx + 1) * (sz + 1))
+	{
+		fmb_field = fmb_field_base;
+		return;
+	}
+	FMBFieldKey = Key;
+	FMBFieldValid = true;
 	fmb_field.resize((sx + 1) * (sz + 1));
 
 	if (!(ps_r__detail_fmb_use_layer_1 || ps_r__detail_fmb_use_layer_2 || ps_r__detail_fmb_use_layer_3))
@@ -360,6 +743,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	VERIFY(S);
 	Slot& D = *S;
 	D.type = stReady;
+	D.WindSampleBounds.invalidate();
 	if (D.empty)
 	{
 		return;
@@ -429,15 +813,64 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	extern bool ps_r__detail_use_alternative_tree_assets;
 	extern bool ps_r__detail_use_cluster_mix_tree_assets;
 
-	extern float ps_r__detail_cluster_seed;
-	extern float ps_r__detail_cluster_patch_size_min;
-	extern float ps_r__detail_cluster_patch_size_max;
-	extern float ps_r__detail_cluster_sharpness;
-	extern float ps_r__detail_cluster_warp_min;
-	extern float ps_r__detail_cluster_warp_max;
-
 	float rnd_scale_min = EditorMode ? 0.5f : ps_r__detail_rnd_scale_min;
 	float rnd_scale_max = EditorMode ? 0.9f : ps_r__detail_rnd_scale_max;
+
+	SlotDiffusion Diffusion;
+	const u32 AssetCount = ps_r__detail_use_alternative_tree_assets && alt_models_count > 0 ? alt_models_count : vanilla_grass_count;
+	const int SlotX = iFloor(D.vis.box.min.x / dm_slot_size + .5f);
+	const int SlotZ = iFloor(D.vis.box.min.z / dm_slot_size + .5f);
+	const auto ReadAsset = [&](int X, int Z) -> u32
+	{
+		const int DX = X + dtH.offs_x, DZ = Z + dtH.offs_z;
+		if (DX < 0 || DZ < 0 || DX >= int(dtH.size_x) || DZ >= int(dtH.size_z))
+		{
+			return 255;
+		}
+		const u32 Cell = u32(DZ) * dtH.size_x + u32(DX);
+		if (Cell >= cluster_field.size() || cluster_field[Cell] >= AssetCount)
+		{
+			return 255;
+		}
+		return HasClusterGrass(dtSlots[Cell], objects) ? cluster_field[Cell] : 255;
+	};
+	const u32 MainAsset = ps_r__detail_use_cluster_mix_tree_assets ? ReadAsset(SlotX, SlotZ) : 255;
+	if (MainAsset != 255)
+	{
+		const u32 FieldIndex = u32(SlotZ + dtH.offs_z) * dtH.size_x + u32(SlotX + dtH.offs_x);
+		const u32 SeedByte = FieldIndex < cluster_rnd_field.size() ? cluster_rnd_field[FieldIndex] : 0;
+		Diffusion.Seed = hash_u32(u32(SlotX)) ^ hash_u32(u32(SlotZ) + 374761393u) ^ SeedByte;
+		for (u32 Corner = 0; Corner < 4; ++Corner)
+		{
+			const int NodeX = std::clamp(SlotX + int(Corner & 1u), -dtH.offs_x, int(dtH.size_x) - dtH.offs_x - 1);
+			const int NodeZ = std::clamp(SlotZ + int(Corner >> 1u), -dtH.offs_z, int(dtH.size_z) - dtH.offs_z - 1);
+			u32 Asset = ReadAsset(NodeX, NodeZ);
+			// Missing edge nodes use the same global fallback for both adjacent slots.
+			for (int NZ = NodeZ - 1; Asset == 255 && NZ <= NodeZ + 1; ++NZ)
+			{
+				for (int NX = NodeX - 1; Asset == 255 && NX <= NodeX + 1; ++NX)
+				{
+					Asset = ReadAsset(NX, NZ);
+				}
+			}
+			if (Asset == 255)
+			{
+				Asset = MainAsset;
+			}
+			u32 Group = u32(std::find(Diffusion.Assets, Diffusion.Assets + Diffusion.Count, Asset) - Diffusion.Assets);
+			if (Group == Diffusion.Count)
+			{
+				Diffusion.Assets[Diffusion.Count++] = Asset;
+			}
+			Diffusion.CornerGroups[Corner] = Group;
+		}
+		for (u32 I = 0; I < dm_obj_in_slot; ++I)
+		{
+			D.G[I].id = I < Diffusion.Count
+				? (ps_r__detail_use_alternative_tree_assets && alt_models_count > 0 ? alt_models_start + Diffusion.Assets[I] : vanilla_grass_indices[Diffusion.Assets[I]])
+				: DetailSlot::ID_Empty;
+		}
+	}
 
 	// Prepare to selection
 	float density = ps_r__Detail_density;
@@ -521,6 +954,15 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			float rz = (float(z) / float(d_size)) * dm_slot_size + D.vis.box.min.z;
 
 			Item_P.set(rx + r_jitter.randFs(jitter), D.vis.box.max.y, rz + r_jitter.randFs(jitter));
+			if (Diffusion.Count)
+			{
+				const int RootX = iFloor(Item_P.x / dm_slot_size), RootZ = iFloor(Item_P.z / dm_slot_size);
+				if ((RootX != SlotX || RootZ != SlotZ) && ReadAsset(RootX, RootZ) == 255)
+				{
+					// Jitter must not carry a cluster root onto leaf / empty terrain slots.
+					continue;
+				}
+			}
 
 			// Position (Y)
 			float y = D.vis.box.min.y - 5;
@@ -626,37 +1068,32 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 
 			if (is_grass)
 			{
-				if (ps_r__detail_use_alternative_tree_assets && alt_models_count > 0)
+				if (Diffusion.Count)
 				{
-					if (ps_r__detail_use_cluster_mix_tree_assets)
+					const u32 Key = Diffusion.Seed ^ hash_u32(z * (d_size + 1) + x);
+					index = Diffusion.SampleGroup(Item_P.x / dm_slot_size - float(SlotX), Item_P.z / dm_slot_size - float(SlotZ), Key);
+					obj_id = u8(D.G[index].id);
+				}
+				else if (!ps_r__detail_use_cluster_mix_tree_assets && ps_r__detail_use_alternative_tree_assets && alt_models_count > 0)
+				{
+					for (u32 G = 0; G < vanilla_grass_count; ++G)
 					{
-						u32 cluster_idx = SampleClusterField(Item_P.x, Item_P.z, alt_models_count);
-						obj_id = (u8)(alt_models_start + cluster_idx);
-					}
-					else
-					{
-						for (u32 g = 0; g < vanilla_grass_count; g++)
+						if (vanilla_grass_indices[G] == obj_id)
 						{
-							if (vanilla_grass_indices[g] == obj_id)
+							if (G < alt_models_count)
 							{
-								if (g < alt_models_count)
-									obj_id = (u8)(alt_models_start + g);
-								break;
+								obj_id = u8(alt_models_start + G);
 							}
+							break;
 						}
 					}
-				}
-				else if (ps_r__detail_use_cluster_mix_tree_assets && vanilla_grass_count > 1)
-				{
-					u32 cluster_idx = SampleClusterField(Item_P.x, Item_P.z, vanilla_grass_count);
-					obj_id = (u8)vanilla_grass_indices[cluster_idx];
 				}
 			}
 
 			// чтобы (только) листики травы ложились на поверхность террейна
 			//	if (vis_ID == 0)
 			ground_correction(mResult, normal);
-			float radius = scale * Dobj.bv_bb.getradius();
+			float radius = scale * objects[obj_id]->bv_bb.getradius();
 
 			ItemBB.setb(Item_P, {radius, radius, radius});
 			Bounds.merge(ItemBB);
@@ -676,6 +1113,17 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 			ItemP->trample_visual = 0.0f;
 			ItemP->trample_dirX = 0.0f;
 			ItemP->trample_dirZ = 0.0f;
+			ItemP->WindBend.set(0, 0, 0, 0);
+			ItemP->WindPrevious.set(0, 0, 0, 0);
+			ItemP->WindPreviousVelocity.set(0, 0, 0, 0);
+			ItemP->WindVelocity.set(0, 0, 0, std::bit_cast<float>(u32(-1)));
+			const CDetail& WindModel = *objects[obj_id];
+			if (!WindModel.m_Flags.is(DO_NO_WAVING))
+			{
+				Fvector SamplePosition = Item_P;
+				SamplePosition.y += .6f * ((WindModel.bv_bb.max.y - WindModel.bv_bb.min.y) * scale);
+				D.WindSampleBounds.modify(SamplePosition);
+			}
 
 			SlotPart& SP = D.G[index];
 			SP.id = obj_id;

@@ -38,13 +38,17 @@ extern RENDER_API	float		ps_r__Detail_l_aniso;
 extern RENDER_API	float		ps_r__Detail_density;
 
 extern RENDER_API bool ps_r__detail_use_alternative_tree_assets;
+extern RENDER_API float ps_r__detail_geometry_distance;
+extern RENDER_API float ps_r__detail_wind_distance;
 extern RENDER_API bool ps_r__detail_use_cluster_mix_tree_assets;
 extern RENDER_API float ps_r__detail_cluster_seed;
+extern RENDER_API float ps_r__detail_cluster_coverage_size;
 extern RENDER_API float ps_r__detail_cluster_patch_size_min;
 extern RENDER_API float ps_r__detail_cluster_patch_size_max;
+extern RENDER_API float ps_r__detail_cluster_diffusion;
 extern RENDER_API float ps_r__detail_cluster_sharpness;
-extern RENDER_API float ps_r__detail_cluster_warp_min;
-extern RENDER_API float ps_r__detail_cluster_warp_max;
+extern RENDER_API float ps_r__detail_cluster_deformation;
+extern RENDER_API float ps_r__detail_cluster_elongation;
 
 extern RENDER_API bool ps_r__detail_fmb_use_layer_1;
 extern RENDER_API float ps_r__detail_fmb_layer_1_frequency;

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "xrRender_console.h"
+#include "DetailsWind.h"
 #include "dxRenderDeviceRender.h"
 #include "../../FFxExtendedEntityesLogic/Debug/DebugCommands.h"
 
@@ -22,11 +23,13 @@ int g_TextureTargetResolution = 8192;
 bool ps_r__detail_use_alternative_tree_assets = false;
 bool ps_r__detail_use_cluster_mix_tree_assets = false;
 float ps_r__detail_cluster_seed = 2790.817f;
+float ps_r__detail_cluster_coverage_size = 500.f;
 float ps_r__detail_cluster_patch_size_min = 31.808f;
 float ps_r__detail_cluster_patch_size_max = 36.098f;
-float ps_r__detail_cluster_sharpness = 16.063f;
-float ps_r__detail_cluster_warp_min = 0.062f;
-float ps_r__detail_cluster_warp_max = 0.057f;
+float ps_r__detail_cluster_diffusion = 0.25f;
+float ps_r__detail_cluster_sharpness = 75.f;
+float ps_r__detail_cluster_deformation = 10.f;
+float ps_r__detail_cluster_elongation = 1.f;
 
 bool ps_r__detail_fmb_use_layer_1 = false;
 float ps_r__detail_fmb_layer_1_frequency = 0.076f;
@@ -313,7 +316,8 @@ float		ps_trample_draw_radius = 63.0f;
 float		ps_trample_brush_fill = 0.82f;
 float		ps_trample_press_speed = 0.8f;
 
-int			ps_wind_enabled = 0;
+bool		ps_wind_enabled = false;
+float		ps_wind_direction = 0.0f;
 int			ps_wind_mode = 0;
 float		ps_wind_blend = 0.5f;
 float		ps_wind_blend_current = 0.5f;
@@ -695,10 +699,9 @@ public:
 		dm_current_cache_size		= dm_current_cache_line*dm_current_cache_line;
 		dm_current_fade				= float(2*dm_current_size)-.5f;
 
-		if (RImplementation.b_loaded && (dm_current_size != dm_size))
+		if (RImplementation.b_loaded)
 		{
-			Device.DetailsTask.wait();
-			RImplementation.Details->cache_ReInitialize();
+			RImplementation.Details->RequestCacheRebuild();
 		}
 	}
 	
@@ -719,8 +722,7 @@ public:
 
 		if (RImplementation.b_loaded)
 		{
-			Device.DetailsTask.wait();
-			RImplementation.Details->cache_ReInitialize();
+			RImplementation.Details->RequestCacheRebuild();
 		}
 	}
 
@@ -761,6 +763,63 @@ public:
 // Manual bake: regenerate the precomputed fields from the current console settings
 // and persist them to disk immediately. Useful when tweaking r__detail_* via console
 // and wanting the files updated without waiting for the next level load.
+class CCC_DetailWindPreset : public IConsole_Command
+{
+public:
+	CCC_DetailWindPreset(const char* Name)
+		: IConsole_Command(Name) { bEmptyArgsHandled = true; }
+	void Execute(const char* Arguments) override
+	{
+		auto& Presets = CDetailWindPresets::Get();
+		if (!Presets.GetSelected()[0] && !Presets.Reload())
+		{
+			Msg("! Wind presets: %s", Presets.GetStatus());
+			return;
+		}
+		if (Arguments && Arguments[0])
+		{
+			if (!Presets.Select(Arguments))
+			{
+				Msg("! Wind preset: %s", Presets.GetStatus());
+				return;
+			}
+		}
+		Msg("~ Wind preset: %s (%s)", Presets.GetSelected(), Presets.GetStatus());
+		Msg("~ Wind simulation: plants=%u samples=%u gusts=%u step=%.2fms", CDetailWind::SimulatedPlants(), CDetailWind::FieldSamples(), CDetailWind::ActiveGustCount(), CDetailWind::StepMilliseconds());
+	}
+};
+
+class CCC_DetailWindEditor : public IConsole_Command
+{
+public:
+	CCC_DetailWindEditor(const char* Name)
+		: IConsole_Command(Name) { bEmptyArgsHandled = true; }
+	void Execute(const char*) override { CDetailWind::OpenEditor(); }
+};
+
+class CCC_DetailWindGust : public IConsole_Command
+{
+public:
+	CCC_DetailWindGust(const char* Name)
+		: IConsole_Command(Name) { bEmptyArgsHandled = true; }
+	void Execute(const char* Args) override
+	{
+		if (!Args || !Args[0])
+		{
+			CDetailWind::RequestGust();
+			return;
+		}
+		char* End = nullptr;
+		const long Index = std::strtol(Args, &End, 10);
+		if (End == Args || *End || Index < 1 || Index > CDetailWind::BehaviorCount)
+		{
+			Msg("! r__detail_wind_gust: specify behavior 1..8, or no argument for a directed front");
+			return;
+		}
+		CDetailWind::RequestBehavior(int(Index - 1));
+	}
+};
+
 class CCC_DetailLayersForceBake : public IConsole_Command
 {
 public:
@@ -773,7 +832,7 @@ public:
 			Msg("! detail_layers: no loaded level, nothing to bake");
 			return;
 		}
-		Device.DetailsTask.wait();
+		RImplementation.Details->WaitForDetails();
 		// Rebuild first so stale in-memory fields never hit the disk, then persist.
 		RImplementation.Details->cache_ReInitialize();
 		RImplementation.Details->DetailLayers_SaveToBake();
@@ -795,7 +854,7 @@ public:
 			Msg("! detail_layers: no loaded level, nothing to load");
 			return;
 		}
-		Device.DetailsTask.wait();
+		RImplementation.Details->WaitForDetails();
 		RImplementation.Details->DetailLayers_ApplySettingsFromBake();
 		// crc now matches the baked settings -> fields come back from disk.
 		RImplementation.Details->cache_ReInitialize();
@@ -995,15 +1054,19 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
 	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
 	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+	CMD4(CCC_Float, "r__detail_geometry_distance", &ps_r__detail_geometry_distance, 0.f, 2000.f);
+	CMD4(CCC_Float, "r__detail_wind_distance", &ps_r__detail_wind_distance, 0.f, 2000.f);
 
 	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_alternative_tree_assets", &ps_r__detail_use_alternative_tree_assets);
 	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_use_cluster_mix_tree_assets", &ps_r__detail_use_cluster_mix_tree_assets);
 	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_seed", &ps_r__detail_cluster_seed, 0, 9999);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_min", &ps_r__detail_cluster_patch_size_min, 1.0f, 200.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_max", &ps_r__detail_cluster_patch_size_max, 1.0f, 200.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_sharpness", &ps_r__detail_cluster_sharpness, 1.0f, 20.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_min", &ps_r__detail_cluster_warp_min, 0.0f, 3.0f);
-	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_warp_max", &ps_r__detail_cluster_warp_max, 0.0f, 3.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_coverage_size", &ps_r__detail_cluster_coverage_size, 50.f, 4000.f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_min", &ps_r__detail_cluster_patch_size_min, 1.0f, 500.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_patch_size_max", &ps_r__detail_cluster_patch_size_max, 1.0f, 500.0f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_diffusion", &ps_r__detail_cluster_diffusion, 0.f, 4.f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_sharpness", &ps_r__detail_cluster_sharpness, 0.f, 100.f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_deformation", &ps_r__detail_cluster_deformation, 0.f, 500.f);
+	CMD4(CCC_DetailReloadDetails, "r__detail_cluster_elongation", &ps_r__detail_cluster_elongation, 1.f, 64.f);
 
 
 	CMD2(CCC_DetailReloadDetails_Boolean, "r__detail_fmb_use_layer_1", &ps_r__detail_fmb_use_layer_1);
@@ -1039,8 +1102,12 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__detail_trample_brush_fill", &ps_trample_brush_fill, 0.1f, 1.0f);
 	CMD4(CCC_Float, "r__detail_trample_press_speed", &ps_trample_press_speed, 0.1f, 50.0f);
 
-	CMD2(CCC_Boolean, "r__detail_use_procedural_wind", (bool*)&ps_wind_enabled);
+	CMD2(CCC_Boolean, "r__detail_use_procedural_wind", &ps_wind_enabled);
 	CMD4(CCC_Integer, "r__detail_wind_mode", &ps_wind_mode, 0, 1);
+	CMD4(CCC_Float, "r__detail_wind_direction", &ps_wind_direction, 0.0f, 360.0f);
+	CMD1(CCC_DetailWindPreset, "r__detail_wind_preset");
+	CMD1(CCC_DetailWindEditor, "r__detail_wind_editor");
+	CMD1(CCC_DetailWindGust, "r__detail_wind_gust");
 	CMD4(CCC_Float, "r__detail_wind_blend", &ps_wind_blend, 0.0f, 1.0f);
 	CMD4(CCC_Float, "r__detail_wind_noise_scale", &ps_wind_noise_scale, 0.0f, 20.0f);
 	CMD4(CCC_Float, "r__detail_wind_noise_speed", &ps_wind_noise_speed, 0.001f, 5.0f);

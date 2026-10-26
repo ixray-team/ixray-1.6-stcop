@@ -19,30 +19,42 @@ extern float ps_trample_draw_radius;
 extern float ps_trample_brush_fill;
 extern float ps_trample_press_speed;
 
+namespace
+{
+// Device resource creation is thread-safe; the producer never touches the context.
+bool CreateDetailSnapshot(std::pair<IRHIBuffer*, IRHIShaderResourceView*>& Buffer, const void* Data, u32 Count, u32 Stride)
+{
+	_RELEASE(Buffer.second);
+	_RELEASE(Buffer.first);
+	if (!Count)
+	{
+		return true;
+	}
+	RHIBufferDesc Description{};
+	Description.Usage = ERHI_USAGE::USAGE_IMMUTABLE;
+	Description.Type = ERHI_BUFFER_TYPE::STRUCTURED;
+	Description.StructureByteStride = Stride;
+	Description.Size = Count * Stride;
+	RHIBufferSubresource Initial{};
+	Initial.pSysMem = Data;
+	Initial.SysMemSize = Description.Size;
+	Buffer.first = GRHI->CreateBuffer(Description, &Initial);
+	if (!Buffer.first)
+	{
+		return false;
+	}
+	RHIShaderResourceViewDesc View{};
+	View.Format = ERHI_FORMAT::UNKNOWN;
+	View.ElementWidth = Count;
+	Buffer.second = GRHI->CreateShaderResourceView(Buffer.first, &View);
+	return Buffer.second != nullptr;
+}
+} // namespace
+
 void CDetailManager::hw_Load()
 {
-	RHIBufferDesc bufferDesc{};
-	bufferDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-	bufferDesc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
-	bufferDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
-	bufferDesc.StructureByteStride = sizeof(CDetail::SlotItem);
-
-	RHIShaderResourceViewDesc srvDesc{};
-	srvDesc.Format = ERHI_FORMAT::UNKNOWN;
-
-	const u32 bufferSizes[] = { 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
-	for (int i = 0; i < std::size(bufferSizes); ++i)
-	{
-		u32 buff_size = bufferSizes[i];
-		bufferDesc.Size = buff_size * sizeof(CDetail::SlotItem);
-		IRHIBuffer* buffer = GRHI->CreateBuffer(bufferDesc, nullptr);
-
-		srvDesc.ElementWidth = buff_size;
-		IRHIShaderResourceView* srv = GRHI->CreateShaderResourceView(buffer, &srvDesc);
-		DetailInstanceBuffers[buff_size] = std::make_pair(buffer, srv);
-	}
+	// Instance snapshots are created by the detail producer, not mapped by Render.
 }
-
 void CDetailManager::TrampleMark(float x, float y, float z, float radius, float weight, bool isActor)
 {
 	if (!ps_trample_enabled) return;
@@ -254,13 +266,145 @@ void CDetailManager::TrampleAnimateItems()
 	TrampleActiveSlots.resize(write);
 }
 
+bool CDetailManager::PrepareDetailBuffers(bool ReuseStatic)
+{
+	PROF_EVENT("Create detail packet buffers");
+	bool Ready = true;
+	for (CDetail* Model : objects)
+	{
+		for (u32 Group = 0; Group < 3; ++Group)
+		{
+			const auto& Items = Model->ProducerItems[Group];
+			Model->PreparedInstances.Counts[Group] = u32(Items.size());
+			Ready = CreateDetailSnapshot(Model->PreparedInstances.Buffers[Group], Items.data(), u32(Items.size()), sizeof(CDetail::SlotItem)) && Ready;
+		}
+		auto& Destination = Model->PreparedInstances.Buffers[3];
+		if (ReuseStatic)
+		{
+			_RELEASE(Destination.second);
+			_RELEASE(Destination.first);
+			Destination = Model->RenderInstances.Buffers[3];
+			if (Destination.first)
+			{
+				Destination.first->AddRef();
+			}
+			if (Destination.second)
+			{
+				Destination.second->AddRef();
+			}
+			Model->PreparedInstances.Counts[3] = Model->RenderInstances.Counts[3];
+			Model->PreparedInstances.FarHasTrails = Model->RenderInstances.FarHasTrails;
+		}
+		else if (!Model->PreparedInstances.FarHasTrails)
+		{
+			const auto& Items = Model->ProducerDistantItems;
+			Model->PreparedInstances.Counts[3] = u32(Items.size());
+			Ready = CreateDetailSnapshot(Destination, Items.data(), u32(Items.size()), sizeof(CDetail::InstanceTransform)) && Ready;
+		}
+		else
+		{
+			const auto& Items = Model->ProducerStaticItems;
+			Model->PreparedInstances.Counts[3] = u32(Items.size());
+			Ready = CreateDetailSnapshot(Destination, Items.data(), u32(Items.size()), sizeof(CDetail::StaticItem)) && Ready;
+		}
+	}
+	return Ready;
+}
+void CDetailManager::ResetTramplePresentation()
+{
+	TramplePresentationStates.clear();
+	TramplePresentationSources.clear();
+	TramplePresentationTable.clear();
+	TramplePresentationFrame = u32(-1);
+	TramplePresentationCapacity = 0;
+	_RELEASE(TramplePresentationView);
+	_RELEASE(TramplePresentationBuffer);
+	_RELEASE(PreparedTrampleView);
+	_RELEASE(PreparedTrampleBuffer);
+	PreparedTrampleCapacity = 0;
+}
+
+void CDetailManager::UpdateTramplePresentation()
+{
+	// Only the producer owns presentation state. The shader interpolates the
+	// previous/current samples between publications, including the entry blend.
+	const u32 Frame = ++TramplePresentationFrame;
+	PreparedTrampleCapacity = 0;
+	_RELEASE(PreparedTrampleView);
+	_RELEASE(PreparedTrampleBuffer);
+	if (!ps_trample_enabled || TramplePresentationSources.empty())
+	{
+		TramplePresentationStates.clear();
+		return;
+	}
+	u32 Capacity = 64;
+	while (Capacity < TramplePresentationSources.size() * 4)
+	{
+		Capacity *= 2;
+	}
+	TramplePresentationTable.assign(Capacity, TramplePresentationEntry{});
+	for (const auto* Source : TramplePresentationSources)
+	{
+		const auto Identity = DetailTramplePresentation::MakeKey(Source->pos.x, Source->pos.y, Source->pos.z, Source->scale);
+		auto [Iterator, Inserted] = TramplePresentationStates.try_emplace(Identity);
+		auto& State = Iterator->second;
+		if (Inserted || Frame - State.Frame > 2)
+		{
+			State.Visual = Source->trample_visual;
+			State.Progress = std::clamp(State.Visual / std::max(Source->trample_strength, .001f), 0.f, 1.f);
+		}
+		const float PreviousVisual = State.Visual, PreviousProgress = State.Progress;
+		if (State.Frame != Frame)
+		{
+			// Native trail animation has already advanced the plant. Do not smooth it twice.
+			State.Visual = Source->trample_visual;
+			State.Frame = Frame;
+		}
+		State.Progress = std::max(State.Progress, std::clamp(State.Visual / std::max(Source->trample_strength, .001f), 0.0f, 1.0f));
+		u32 Index = DetailTramplePresentation::Hash(Identity) & (Capacity - 1);
+		while (TramplePresentationTable[Index].State.w > 0)
+		{
+			const auto& Existing = TramplePresentationTable[Index].Identity;
+			if (DetailTramplePresentation::MakeKey(Existing.x, Existing.y, Existing.z, Existing.w) == Identity)
+			{
+				break;
+			}
+			Index = (Index + 1) & (Capacity - 1);
+		}
+		auto& Entry = TramplePresentationTable[Index];
+		Entry.Identity.set(Source->pos.x, Source->pos.y, Source->pos.z, Source->scale);
+		Entry.State.set(State.Visual, State.Progress, PreviousVisual, 1 + PreviousProgress);
+	}
+	if ((Frame % 120) == 0)
+	{
+		for (auto Iterator = TramplePresentationStates.begin(); Iterator != TramplePresentationStates.end();)
+		{
+			if (Frame - Iterator->second.Frame > 120)
+			{
+				Iterator = TramplePresentationStates.erase(Iterator);
+			}
+			else
+			{
+				++Iterator;
+			}
+		}
+	}
+	std::pair<IRHIBuffer*, IRHIShaderResourceView*> Buffer{};
+	if (CreateDetailSnapshot(Buffer, TramplePresentationTable.data(), Capacity, sizeof(TramplePresentationEntry)))
+	{
+		PreparedTrampleBuffer = Buffer.first;
+		PreparedTrampleView = Buffer.second;
+		PreparedTrampleCapacity = Capacity;
+	}
+	else
+	{
+		_RELEASE(Buffer.second);
+		_RELEASE(Buffer.first);
+	}
+}
 void CDetailManager::hw_Unload()
 {
-	for (auto& [_, it] : DetailInstanceBuffers)
-	{
-		_RELEASE(it.first);
-		_RELEASE(it.second);
-	}
+	ResetTramplePresentation();
 
 	{
 		std::lock_guard<std::mutex> lock(TramplePendingLock);
@@ -271,11 +415,16 @@ void CDetailManager::hw_Unload()
 
 void CDetailManager::hw_Render(light* L)
 {
-	if (!psDeviceFlags.is(rsDetails)) return;
+	if (!psDeviceFlags.is(rsDetails))
+	{
+		return;
+	}
 	PROF_EVENT("CDetailManager::hw_Render");
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	if (!L)
+	{
 		RCache.set_xform_world(Fidentity);
+	}
 
 	Fvector4 wave, wave_old;
 
@@ -300,9 +449,14 @@ void CDetailManager::hw_Render(light* L)
 	}
 
 	// Still
-	if(RImplementation.phase != CRender::PHASE_SMAP)
+	if (RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
+		hw_Render_dump(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
+		hw_Render_dump(wave, wave_dir2, wave_old, wave_dir2_old, 3, 4, L);
+	}
+	else
+	{
 		hw_Render_dump(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
@@ -312,20 +466,31 @@ void CDetailManager::hw_Render(light* L)
 void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
 	const bool EditorMode = Device.IsEditorMode();
+	if (!EditorMode)
+	{
+		GRHI->ShaderResourceCache->SetVSResource(1, TramplePresentationCapacity ? TramplePresentationView : nullptr);
+		Fvector4 TrampleParameters;
+		TrampleParameters.set(ps_trample_bend, ps_trample_squash, float(TramplePresentationCapacity), 0);
+		RCache.set_c("trample_params", TrampleParameters);
+	}
 	if (!EditorMode && !objects.empty())
 	{
-		//Render state, shaders & so on [only 1st pass]
+		// Render state, shaders & so on [only 1st pass]
 		RCache.set_Element(objects[0]->shader->E[lod_id], 0);
 	}
 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
-	if(!phase_shmap)
-		RImplementation.apply_lmaterial(); //Material ID
+	if (!phase_shmap)
+	{
+		RImplementation.apply_lmaterial(); // Material ID
+	}
 
 	if (LightingModeIsStaticRender())
+	{
 		RCache.set_c("consts", 1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+	}
 
-	if(var_id != 0)
+	if (var_id != 0)
 	{
 		RCache.set_c("wave", wave);
 		RCache.set_c("dir2D", wind);
@@ -337,16 +502,19 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	if (!EditorMode)
 	{
 		CDetailWind::Constants wc;
-		CDetailWind::ComputeConstants(wc);
+		wc.global = PublishedWindConstants[0];
+		wc.xz1 = PublishedWindConstants[1];
+		wc.xz2 = PublishedWindConstants[2];
+		wc.xz3 = PublishedWindConstants[3];
+		// Interpolate completed worker packets on every rendered frame, including shadows.
+		const float SincePublish = float(RDEVICE.dwTimeGlobal - WindPublishTime);
+		const float Duration = std::max(1.0f, WindInterpolationMs);
+		wc.xz2.set(std::clamp(SincePublish / Duration, 0.0f, 1.0f), std::clamp((SincePublish - Device.fTimeDelta * 1000) / Duration, 0.0f, 1.0f), wc.xz2.z, wc.xz2.w);
+		wc.xz3.set(Duration * .001f, wc.xz3.y, wc.xz3.z, 0);
 		RCache.set_c("wind_global", wc.global);
 		RCache.set_c("wind_xz1", wc.xz1);
-		RCache.set_c("wind_xz1_dir", wc.xz1_dir);
 		RCache.set_c("wind_xz2", wc.xz2);
-		RCache.set_c("wind_xz2_dir", wc.xz2_dir);
 		RCache.set_c("wind_xz3", wc.xz3);
-		RCache.set_c("wind_xz3_dir", wc.xz3_dir);
-		RCache.set_c("wind_swirl", wc.swirl);
-		RCache.set_c("wind_swirl_dir", wc.swirl_dir);
 	}
 
 	RCache.FlushConstants();
@@ -355,150 +523,31 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 	{
 		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 		if (!in_outdoor)
+		{
 			return;
-	}
-
-	if (phase_shmap && L)
-	{
-		Fvector l_spatial_pos = L->SpatialComponent->sphere.P;
-		float l_range_sqr = _sqr(L->SpatialComponent->sphere.R);
-
-		for (CDetail* ObjectPtr : objects)
-		{
-			CDetail& Object = *ObjectPtr;
-			auto& items = Object.m_items[render_key][var_id];
-			u32 totalInstances = items.size();
-			if (totalInstances == 0) continue;
-
-			RCache.set_Element(Object.shader->E[lod_id], 0);
-			if (!EditorMode && ps_trample_enabled)
-			{
-				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-				RCache.set_c("trample_params", tp_val);
-				RCache.FlushConstants();
-			}
-
-			auto it = DetailInstanceBuffers.lower_bound(totalInstances);
-
-			//Use largest buffer possible [should keep HUGE buffer around in those cases]
-			if (it == DetailInstanceBuffers.end())
-			{
-				it = std::prev(DetailInstanceBuffers.end());
-			}
-
-			//Current buffer size and resources
-			u32 currentSize = it->first;
-			IRHIBuffer* currentBuffer = it->second.first;
-			IRHIShaderResourceView* currentSRV = it->second.second;
-
-			//Bind (current) buffer SRV
-			GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
-
-			//Set IB, VB and decls
-			RCache.set_Geometry(Object.hw_Geom);
-
-			u32 instanceCount = 0;
-			RHIMappedSubresource pSubRes;
-			for (CDetail::SlotItem& Instance : items)
-			{
-				if (l_spatial_pos.distance_to_sqr(Instance.pos) >= l_range_sqr)
-					continue;
-
-				if (instanceCount == 0)
-					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
-
-				static_cast<CDetail::SlotItem*>(pSubRes.pData)[instanceCount++] = Instance;
-
-				if (instanceCount == currentSize)
-				{
-					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
-					instanceCount = 0; //Reset
-				}
-			}
-
-			//Render remaining instances
-			if (instanceCount > 0)
-			{
-				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
-			}
 		}
 	}
-	else
+
+	const Fvector4 LightParameters = L ? Fvector4{L->SpatialComponent->sphere.P.x, L->SpatialComponent->sphere.P.y, L->SpatialComponent->sphere.P.z, _sqr(L->SpatialComponent->sphere.R)} : Fvector4{0, 0, 0, -1};
+	for (CDetail* Model : objects)
 	{
-		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
+		const u32 Count = Model->RenderInstances.Counts[var_id];
+		if (!Count || (phase_shmap && var_id == 0 && !Model->WindLowVertexBuffer))
 		{
-			for (CDetail* DPtr : objects)
-			{
-				CDetail& D = *DPtr;
-				RCache.set_Element(D.shader->E[lod_id], 0);
-				if (!EditorMode && ps_trample_enabled)
-				{
-					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.set_c("trample_params", tp_val);
-					RCache.FlushConstants();
-				}
-				u32 buff_size = D.m_items[render_key][var_id].size();
-				if (buff_size)
-				{
-					GRHI->ShaderResourceCache->SetVSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
-					RCache.set_Geometry(D.hw_Geom);
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0, false);
-				}
-			}
+			continue;
 		}
-		else
-		{
-			for (CDetail* ObjectPtr : objects)
-			{
-				CDetail& Object = *ObjectPtr;
-				RCache.set_Element(Object.shader->E[lod_id], 0);
-				if (!EditorMode && ps_trample_enabled)
-				{
-					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.set_c("trample_params", tp_val);
-					RCache.FlushConstants();
-				}
-				auto& items = Object.m_items[render_key][var_id];
-				u32 totalInstances = items.size();
-				if (u32(0) == totalInstances) continue;
-
-				auto it = DetailInstanceBuffers.lower_bound(totalInstances);
-
-				//Use largest buffer possible [should keep HUGE buffer around in those cases]
-				if (it == DetailInstanceBuffers.end())
-				{
-					it = std::prev(DetailInstanceBuffers.end());
-				}
-
-				//Current buffer size and resources
-				u32 currentSize = it->first;
-				IRHIBuffer* currentBuffer = it->second.first;
-				IRHIShaderResourceView* currentSRV = it->second.second;
-
-				//Bind (current) buffer SRV
-				GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
-
-				//Set IB, VB and decls
-				RCache.set_Geometry(Object.hw_Geom);
-				u32 offset = 0u, chunkSize = 0u;
-				RHIMappedSubresource pSubRes;
-				CDetail::SlotItem* items_data = items.data();
-				while (offset < totalInstances)
-				{
-					chunkSize = std::min(currentSize, totalInstances - offset);
-
-					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
-
-					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(CDetail::SlotItem));
-
-					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
-
-					offset += chunkSize;
-				}
-			}
-		}
+		const bool OriginalMesh = (var_id == 0 || var_id == 3 || PublishedWindConstants[0].x < .5f) && Model->WindLowVertexBuffer;
+		auto& Geometry = OriginalMesh ? Model->WindLowGeometry : Model->hw_Geom;
+		const u32 Vertices = OriginalMesh ? Model->WindLowVertexCount : Model->number_vertices;
+		const u32 Indices = OriginalMesh ? Model->WindLowIndexCount : Model->number_indices;
+		RCache.set_Element(Model->shader->E[var_id == 3 && !Model->RenderInstances.FarHasTrails ? 5 : lod_id], 0);
+		Fvector4 Parameters;
+		Parameters.set(ps_trample_bend, ps_trample_squash, float(TramplePresentationCapacity), 0);
+		RCache.set_c("trample_params", Parameters);
+		RCache.set_c("detail_light", LightParameters);
+		RCache.FlushConstants();
+		RCache.set_Geometry(Geometry);
+		GRHI->ShaderResourceCache->SetVSResource(0, Model->RenderInstances.Buffers[var_id].second);
+		RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Vertices, 0, Indices / 3, Count, 0, false);
 	}
 }
