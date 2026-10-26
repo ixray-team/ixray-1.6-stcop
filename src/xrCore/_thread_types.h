@@ -1,6 +1,7 @@
 #pragma once
 
 #ifdef IXR_WINDOWS
+#	include <ppl.h>
 #	include <concurrent_unordered_map.h>
 #	include <concurrent_vector.h>
 #else
