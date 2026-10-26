@@ -160,7 +160,7 @@ static void play_object(IPhysicsShellHolder* RefObject, SGameMtlPair* mtl_pair, 
 {
 	VERIFY(mtl_pair);
 
-	if (!RefObject || RefObject->ObjectGetDestroy())
+	if (!CPhysicsShellHolder::IsAlive(RefObject) || RefObject->ObjectGetDestroy())
 	{
 		return;
 	}
