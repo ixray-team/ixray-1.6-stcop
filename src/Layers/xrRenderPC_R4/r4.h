@@ -412,11 +412,11 @@ public:
 	virtual void					add_Geometry				(IRenderVisual*	V	) override;			// add visual(s)	(all culling performed)
 
 	// wallmarks
-	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
-	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) override;
-	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) override;
+	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false);
+	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false) override;
+	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V) override;
 	virtual void					clear_static_wallmarks		() override;
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override;
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, const CDB::TRI& T, Fvector* V) override;
 	virtual void					add_SkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) override;

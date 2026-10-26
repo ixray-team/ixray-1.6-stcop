@@ -672,7 +672,8 @@ u32 Snd_FindZone(const Fvector& Position)
 		return 0;
 	}
 
-	u32 ZoneIdx = EnvModel->get_tris()[Collider->r_begin()->id].dummy;
+	auto& Res = Collider->r_any();
+	u32 ZoneIdx = Res.model->get_tris()[Res.tris_id].dummy;
 	return ZoneIdx < GBuses.Zones.size() ? ZoneIdx + 1 : 0;
 }
 

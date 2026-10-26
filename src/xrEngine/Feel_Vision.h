@@ -66,6 +66,6 @@ namespace Feel
 		bool GetOwnVisionExposure(const CObject* Object, float& Milliseconds);
 		Fvector						feel_vision_get_vispoint(CObject* _O);
 		virtual		bool			feel_vision_isRelevant	(CObject* O)					= 0;
-		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;	
+		virtual		float			feel_vision_mtl_transp	(const collide::rq_result& result)		= 0;	
 	};
 };

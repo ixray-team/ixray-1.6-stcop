@@ -824,9 +824,9 @@ bool CCreature::is_special_killer(CObject *obj)
 	return (obj && (std::find(m_killer_clsids.begin(),m_killer_clsids.end(),obj->CLS_ID) != m_killer_clsids.end()));  
 }
 
-float CCreature::feel_vision_mtl_transp(CObject* O, u32 element)
+float CCreature::feel_vision_mtl_transp(const collide::rq_result& result)
 {
-	return	(memory().visual().feel_vision_mtl_transp(O,element));
+	return	(memory().visual().feel_vision_mtl_transp(result));
 }
 
 void CCreature::feel_sound_new	(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &position, float power)

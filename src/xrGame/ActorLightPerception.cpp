@@ -47,13 +47,13 @@ bool AcceptHit(collide::rq_result& Hit, void* Data)
 {
 	auto& Trace = *static_cast<Result*>(Data);
 	// Reaching the source's collision shell proves visibility of a source inside it.
-	if (Hit.O && Hit.O == Trace.Target)
+	if (!Hit.IsStatic() && Hit.GetDynamic() == Trace.Target)
 	{
 		return false;
 	}
-	if (!Hit.O)
+	if (Hit.IsStatic())
 	{
-		const CDB::TRI& Triangle = Level().ObjectSpace.GetStaticTris()[Hit.element];
+		const CDB::TRI& Triangle = Hit.GetStatic()->get_tris()[Hit.element];
 		Trace.Transparency *= GMLib.GetMaterialByIdx(Triangle.material)->fVisTransparencyFactor;
 		if (Trace.Transparency > 0.34f)
 		{
