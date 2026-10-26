@@ -83,10 +83,19 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
 
+	// Stochastic SSR resolve (Stachowiak, SIGGRAPH 2015): ray reuse.
+	// Every neighbour hit point is treated as a sample of this pixel's BRDF:
+	// weight = BRDF(V, L, N) * NdotL / pdf, result = sum(Color * weight) / sum(weight).
+	// The disk is rotated per pixel, the temporal pass averages the pattern out.
+	float Angle = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].x * 6.2831853f;
+	float2x2 Rotation = float2x2(cos(Angle), -sin(Angle), sin(Angle), cos(Angle));
+	
+	float NdotV = max(EPS, dot(O.Normal, -View));
+
 	[loop]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
-		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
+		float2 offset = mul(Rotation, Disk32_Normalized[i]) * scaled_screen_res.zw * DISK32_RADIUS;
 		offset = mirror(I.texcoord.xy + offset * SampleRadius);
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
@@ -100,17 +109,22 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		float3 Half = normalize(Light + View);
 
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
+		float NdotL = max(0.0f, dot(O.Normal, -Light));
 		
 #ifndef USE_LEGACY_LIGHT
-		//LVutner: it just works.
+		// Local BRDF for the reused direction, divided by the pdf of the ray that found it
 		float D = DistributionGGX(NdotH, O.Roughness);
-		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+		float G = GeometrySmithD(NdotL, NdotV, O.Roughness);
+		float SampleWeight = max(D * G * NdotL * SSLR.w, 1e-5);
 #else
 		float SampleWeight = rcp(NdotH + EPS);
 #endif
 		
 		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
+
+		// Inverse luminance weighting against fireflies
+		SampleWeight *= rcp(1.0f + dot(Color.xyz, LUMINANCE_VECTOR));
 
 		Color.w = Length;
 		FinalColor += Color * SampleWeight;

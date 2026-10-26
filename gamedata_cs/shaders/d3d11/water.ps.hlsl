@@ -22,6 +22,10 @@ Texture2D s_nmap;
 TextureCube s_env0;
 TextureCube s_env1;
 
+#ifdef EDITOR_MODE
+uniform float4 editor_params;
+#endif
+
 Texture2D s_leaves;
 Texture2D s_caustic;
 
@@ -35,6 +39,21 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
 	O = (IXRayForward)0;
 	float4 base = s_base.Sample(smp_base, I.tbase);
+	
+#ifdef EDITOR_MODE
+	// Unlit editor view: no environment, show the base texture
+	if (editor_params.x > 0.5f)
+	{
+		O.Color = float4(base.xyz, 0.75f);
+#ifndef DISABLE_MOTION_VECTORS
+		O.Velocity = 0.0f;
+#endif
+#ifdef ALLOW_WBOIT_TRANSPARENCY
+		WboitBufferPack(O, I.tctexgen);
+#endif
+		return;
+	}
+#endif
 	
 	float3 n0 = s_nmap.Sample(smp_base, I.tnorm0).xyz;
 	float3 n1 = s_nmap.Sample(smp_base, I.tnorm1).xyz;
@@ -153,7 +172,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 	}
 
-	if(cascade_index >= 2)
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 	{
 		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;
@@ -196,4 +215,3 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	WboitBufferPack(O, I.tctexgen);
 #endif
 }
-

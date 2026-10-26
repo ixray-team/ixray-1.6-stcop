@@ -66,7 +66,7 @@ float4 main(PSInput I) : SV_Target
     {
         if (depth > 0.3)
         {
-			res += density * s_smap_sun.SampleCmpLevelZero(smp_smap, float3(current.xy, 2), current.z).x;
+			res += density * SampleSunShaft(current.xyz);
         }
 
         depth -= deltaDepth;
@@ -220,4 +220,3 @@ float4 main(PSInput I) : SV_Target
 
 // #endif //SUN_SHAFTS_QUALITY
 // }
-

@@ -246,6 +246,104 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	return float4(ReflPoint, Fade);
 }
 
+// Stochastic Screen-Space Reflections, Tomasz Stachowiak (SIGGRAPH 2015).
+// Hierarchical trace over the min-Z pyramid: the ray walks cell by cell in screen space
+// (uv, device z), goes one level coarser after an empty cell and one level finer
+// when it dips below the cell minimum. A hit is reported once it is below level 0.
+Texture2D<float> s_hiz;
+
+#define HIZ_MAX_ITERATIONS 64
+#define HIZ_RAY_EPS 0.005f
+#define HIZ_THICKNESS 0.5f
+#define HIZ_THICKNESS_SCALE 0.05f
+
+float HiZViewDepth(float Depth)
+{
+	return m_P._34 / (Depth - m_P._33);
+}
+
+float4 HiZTraceSSR(float3 Point, float3 Reflect)
+{
+	// Keep the end point in front of the near plane
+	float Near = -m_P._34 / m_P._33;
+	float RayLength = Reflect.z < 0.0f ? min(fog_params.z, (Point.z - Near) * 0.99f / -Reflect.z) : fog_params.z;
+
+	float4 StartProj = mul(m_P, float4(Point, 1.0f));
+	float4 EndProj = mul(m_P, float4(Point + Reflect * RayLength, 1.0f));
+
+	float3 Origin = StartProj.xyz * rcp(StartProj.w);
+	float3 End = EndProj.xyz * rcp(EndProj.w);
+
+	Origin.xy = Origin.xy * float2(0.5f, -0.5f) + 0.5f;
+	End.xy = End.xy * float2(0.5f, -0.5f) + 0.5f;
+
+	// Keep the sign of tiny components, the cell boundary choice depends on it
+	float3 Dir = End - Origin;
+	Dir = abs(Dir) > 1e-7f ? Dir : (Dir >= 0.0f ? 1e-7f : -1e-7f);
+
+	float3 InvDir = rcp(Dir);
+
+	// Ray leaves the screen or the depth range
+	float3 TExit = ((Dir > 0.0f ? 1.0f : 0.0f) - Origin) * InvDir;
+	float TMax = min(1.0f, min(TExit.x, min(TExit.y, TExit.z)));
+
+	uint2 HizSize;
+	uint HizLevels;
+	s_hiz.GetDimensions(0, HizSize.x, HizSize.y, HizLevels);
+
+	int MaxLevel = int(HizLevels) - 1;
+
+	float2 CrossStep = Dir.xy >= 0.0f ? 1.0f : 0.0f;
+	float2 CrossOffset = (Dir.xy >= 0.0f ? 1.0f : -1.0f) * HIZ_RAY_EPS / float2(HizSize);
+
+	// Leave the origin pixel first, so the ray does not hit its own surface
+	float2 Plane = (floor(Origin.xy * float2(HizSize)) + CrossStep) / float2(HizSize) + CrossOffset;
+	float2 TPlane = (Plane - Origin.xy) * InvDir.xy;
+
+	float T = min(TPlane.x, TPlane.y);
+	float3 Ray = Origin + Dir * T;
+
+	int Level = 0;
+	uint Iteration = 0;
+
+	[loop]
+	while (Level >= 0 && Iteration < HIZ_MAX_ITERATIONS && T < TMax)
+	{
+		float2 CellCount = float2(max(HizSize >> uint(Level), 1u));
+		float2 Cell = floor(Ray.xy * CellCount);
+
+		float SurfaceZ = s_hiz.Load(int3(Cell, Level)).x;
+
+		Plane = (Cell + CrossStep) / CellCount + CrossOffset;
+		TPlane = (Plane - Origin.xy) * InvDir.xy;
+
+		float TCell = min(TPlane.x, TPlane.y);
+		float TSurface = Dir.z > 0.0f ? (SurfaceZ - Origin.z) * InvDir.z : 1e20f;
+
+		bool Above = Ray.z < SurfaceZ;
+		bool Skip = Above && TCell < TSurface;
+
+		T = Above ? min(TCell, TSurface) : T;
+		Ray = Origin + Dir * T;
+
+		Level = min(Level + (Skip ? 1 : -1), MaxLevel);
+		++Iteration;
+	}
+
+	bool Hit = Level < 0 && T < TMax && GetBorderAtten(Ray.xy);
+
+	float HitDepth = s_position.Load(int3(Ray.xy * pos_decompression_params2.xy, 0)).x;
+	Hit = Hit && HitDepth > 0.02f && HitDepth < 1.0f;
+
+	// Depth buffer has no thickness: reject rays which went too far behind the surface
+	float SurfaceViewZ = HiZViewDepth(HitDepth);
+	float Thickness = max(HIZ_THICKNESS, SurfaceViewZ * HIZ_THICKNESS_SCALE);
+	Hit = Hit && HiZViewDepth(Ray.z) - SurfaceViewZ < Thickness;
+
+	float3 HitPoint = GbufferGetPointRealUnjitter(Ray.xy, HitDepth);
+	return float4(HitPoint, Hit ? 1.0f : 0.0f);
+}
+
 float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 {
 #if 1 //ndef USE_OFFSCREEN_REFLECTIONS

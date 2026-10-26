@@ -111,6 +111,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	IXRayMaterial M = (IXRayMaterial)NULL;
 	M.Depth = s_position[DTid].x;
 	
+	
 	if(M.Depth > 0.9999f)
 	{
 		return;
@@ -223,39 +224,39 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	if (RainFeatures.y > 0.0f)
 	{
 		float mask = 0.0f;
-#ifdef USE_RAIN_PUDDLES
-		float3 PuddleNormal = N;
-#endif
-#ifdef USE_RAIN_MASK
-		if (!object_mask)
-		{
-			WorldP = mul(m_invV, P).xyz;
-			float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
-			mask = s_mask.SampleLevel(smp_linear, tc + Jitter.xy * 0.01f, 0).x;
-			mask = lerp(0.0f, smoothstep(RainDensity.z, max(RainDensity.z - 0.1f, 0.0f), mask), saturate(RainDensity.z * 10.0f));
-			float3 RainNormal = GetFlatNormal(TexCoord);
-			fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
-			mask *= smoothstep(0.6f, 0.8f, fIsUp) * Shadow;
-		}
-#elif defined(USE_RAIN_PUDDLES)
-		// Procedural PBR puddles are restricted to terrain materials.
-		if (M.MaterialID == TERRAIN_ID && M.Depth > 0.02f)
-		{
-			WorldP = mul(m_invV, P).xyz;
-			float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
-			float2 Refraction;
-			mask = GetRainPuddle(tc, GetRainPuddleFlatNormal(TexCoord, M.Point.z), M.Point, PuddleNormal, Refraction) * Shadow;
-		}
-#endif
+	#ifdef USE_RAIN_PUDDLES
+			float3 PuddleNormal = N;
+	#endif
+	#ifdef USE_RAIN_MASK
+			if (!object_mask)
+			{
+				WorldP = mul(m_invV, P).xyz;
+				float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
+				mask = s_mask.SampleLevel(smp_linear, tc + Jitter.xy * 0.01f, 0).x;
+				mask = lerp(0.0f, smoothstep(RainDensity.z, max(RainDensity.z - 0.1f, 0.0f), mask), saturate(RainDensity.z * 10.0f));
+				float3 RainNormal = GetFlatNormal(TexCoord);
+				fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
+				mask *= smoothstep(0.6f, 0.8f, fIsUp) * Shadow;
+			}
+	#elif defined(USE_RAIN_PUDDLES)
+			// Procedural PBR puddles are restricted to terrain materials.
+			if (M.MaterialID == TERRAIN_ID && M.Depth > 0.02f)
+			{
+				WorldP = mul(m_invV, P).xyz;
+				float2 tc = WorldP.xz * m_level_scale.zw - m_level_scale.xy;
+				float2 Refraction;
+				mask = GetRainPuddle(tc, GetRainPuddleFlatNormal(TexCoord, M.Point.z), M.Point, M.TerrainHeight, M.HasTerrainHeight, PuddleNormal, Refraction) * Shadow;
+			}
+	#endif
 		M.Roughness = lerp(M.Roughness, 0.03f, mask);
 		M.Specular = lerp(M.Specular, 0.5f, mask);
 		M.Color.xyz *= lerp(1.0f, 0.3f * M.AO, mask);
 		M.AO = lerp(M.AO, 1.0f, mask);
-#if defined(USE_RAIN_PUDDLES) && !defined(USE_RAIN_MASK)
-		N = lerp(N, PuddleNormal, mask);
-#else
-		N -= Ldynamic_dir.xyz * mask * 60.0f;
-#endif
+	#if defined(USE_RAIN_PUDDLES) && !defined(USE_RAIN_MASK)
+			N = lerp(N, PuddleNormal, mask);
+	#else
+			N -= Ldynamic_dir.xyz * mask * 60.0f;
+	#endif
 		s *= 1.0f - mask;
 	}
 #endif

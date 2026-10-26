@@ -1,4 +1,4 @@
-<shader version="2">
+<shader version="2" r1_static="1">
 	<normal>
 		<pass vs="model_scope_lense" ps="model_scope_lense_lerp"/>
 		<fog value="1"/>
@@ -25,4 +25,18 @@
 		<texture name="s_base" value="{base}"/>
 		<sampler name="smp_base"/>
 	</l_special>
+	<static>
+		<normal>
+			<pass vs="model_env_lq" ps="model_env_lq"/>
+			<fog value="1"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<aref enable="1" value="0"/>
+			<sorting priority="2" strict="1"/>
+			<texture name="s_base" value="{base}"/>
+			<texture name="s_env" value="sky\sky_5_cube"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+	</static>
 </shader>

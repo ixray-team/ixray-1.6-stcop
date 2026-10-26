@@ -1,4 +1,4 @@
-<shader version="2">
+<shader version="2" r1_static="1">
 	<normal option="ALLOW_WBOIT_TRANSPARENCY">
 		<pass vs="water" ps="water"/>
 		<sorting priority="2" strict="0"/>
@@ -72,4 +72,34 @@
 		<sampler name="smp_base"/>
 		<sampler name="smp_nofilter"/>
 	</l_special>
+	<static>
+		<normal>
+			<pass vs="r1_water" ps="r1_water"/>
+			<sorting priority="2" strict="1"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<aref enable="1" value="0"/>
+			<zb test="1" write="0"/>
+			<distort value="1"/>
+			<fog value="0"/>
+			<texture name="s_base" value="water\water_ryaska1"/>
+			<texture name="s_nmap" value="water\water_normal"/>
+			<texture name="s_env0" value="$user$sky0"/>
+			<texture name="s_env1" value="$user$sky1"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+		<l_special>
+			<pass vs="r1_waterd" ps="r1_waterd"/>
+			<sorting priority="2" strict="1"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<zb test="1" write="0"/>
+			<fog value="0"/>
+			<distort value="1"/>
+			<texture name="s_base" value="water\water_ryaska1"/>
+			<texture name="s_distort0" value="water\water_dudv"/>
+			<texture name="s_distort1" value="water\water_dudv"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_special>
+	</static>
 </shader>

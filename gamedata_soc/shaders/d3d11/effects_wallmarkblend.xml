@@ -1,4 +1,4 @@
-<shader version="2">
+<shader version="2" r1_static="1">
 	<normal>
 		<pass vs="wmark" ps="simple"/>
 		<sorting priority="1" strict="0"/>
@@ -11,4 +11,42 @@
 		<sampler name="smp_rtlinear"/>
 		<color_write r="1" g="1" b="1" a="0"/>
 	</normal>
+	<static>
+		<normal>
+			<pass vs="r1_wmark" ps="r1_wmark"/>
+			<sorting priority="2" strict="0"/>
+			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+			<aref enable="1" value="0"/>
+			<zb test="1" write="0"/>
+			<fog value="0"/>
+			<wmark value="1"/>
+			<texture name="s_base" value="{base}"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</normal>
+		<l_point>
+			<pass vs="r1_wmark_point" ps="add_point"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="one" dest="one"/>
+			<aref enable="1" value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<texture name="s_lmap" value="internal\internal_light_attpoint"/>
+			<texture name="s_att" value="internal\internal_light_attpoint"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_point>
+		<l_spot>
+			<pass vs="r1_wmark_spot" ps="add_spot"/>
+			<fog value="0"/>
+			<zb test="1" write="0"/>
+			<blend enable="1" src="one" dest="one"/>
+			<aref enable="1" value="0"/>
+			<texture name="s_base" value="{base}"/>
+			<texture name="s_lmap" value="internal\internal_light_att"/>
+			<texture name="s_att" value="internal\internal_light_attclip"/>
+			<sampler name="smp_base"/>
+			<sampler name="smp_rtlinear"/>
+		</l_spot>
+	</static>
 </shader>
