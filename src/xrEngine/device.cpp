@@ -158,11 +158,19 @@ void CRenderDevice::on_idle		()
 
 	const bool IsMainMenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
 
+	if (s_StartupActive)
+	{
+		if (IsMainMenuActive || (g_pGameLevel && g_pGameLevel->bReady) || load_screen_renderer.IsActive())
+		{
+			s_StartupActive = false;
+		}
+	}
+
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !CImGuiManager::Instance().IsCapturingInputs());
+	const bool Focus = !s_StartupActive && (psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !CImGuiManager::Instance().IsCapturingInputs()));
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
@@ -244,7 +252,11 @@ void CRenderDevice::on_idle		()
 		Statistic->RenderTOTAL_Real.Begin();
 		if (b_is_Active)
 		{
-			if (Begin())
+			if (s_StartupActive)
+			{
+				DrawStartupFrame(Device.IsEditorMode());
+			}
+			else if (Begin())
 			{
 				{
 					PROF_EVENT("------ [OnRender phase] ------")
@@ -387,7 +399,6 @@ void CRenderDevice::Run()
 	// Message cycle
 	seqAppStart.Process<&pureAppStart::OnAppStart>();
 
-	m_pRender->ClearTarget();
 	message_loop();
 
 	seqAppEnd.Process<&pureAppEnd::OnAppEnd>();

@@ -232,10 +232,12 @@ ENGINE_API void EngineLoadStage4()
 	g_FontManager = new CFontManager();
 	bool ValidRenderDeviceInit = Device.InitRenderDevice(Engine.External.GetAPI());
 	R_ASSERT(ValidRenderDeviceInit);
+	CRenderDevice::SetStartupStatus(72, "Creating render device");
 
 	Device.Create();
 	g_FontManager->InitializeFonts();
 	pFPSCounter = new XRay::Hardware::FPSCounter();
+	CRenderDevice::SetStartupStatus(78, "Render device created");
 }
 
 ENGINE_API void EngineLoadStage5()

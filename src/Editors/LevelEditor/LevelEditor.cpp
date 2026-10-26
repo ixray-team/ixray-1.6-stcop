@@ -22,7 +22,7 @@
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
-#include "../../xrPlay/Splash.h"
+
 
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -51,14 +51,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::SetBackground(IDB_LE);
-	std::jthread s(splash::Show);
 
-	splash::SetProgressStatus(5, "Initializing Debugger");
+
+	CRenderDevice::SetStartupStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
 	
-	splash::SetProgressStatus(10, "Initializing Core System");
+	CRenderDevice::SetStartupStatus(10, "Initializing Core System");
 
 	const char* FSName = "fs.ltx";
 	const char* fsgame_ltx_name = "-fsltx ";
@@ -72,12 +71,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
-	splash::SetProgressStatus(20, "Initializing Level Tools");
+	CRenderDevice::SetStartupStatus(20, "Initializing Level Tools");
 
 	Tools = new CLevelTool();
 	LTools = static_cast<CLevelTool*>(Tools);
 
-	splash::SetProgressStatus(25, "Registering UI Commands");
+	CRenderDevice::SetStartupStatus(25, "Registering UI Commands");
 
 	EContext.UI = new CLevelMain();
 	EContext.UI->RegisterCommands();
@@ -100,23 +99,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
-	splash::SetProgressStatus(30, "Creating Editor Scene");
+	CRenderDevice::SetStartupStatus(30, "Creating Editor Scene");
 
 	Scene = new EScene();
 	EditorScene = Scene;
 
-	splash::SetProgressStatus(25, "Initializing Content View");
+	CRenderDevice::SetStartupStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
 	GContentView->SetStateName("ContentBrowser");
 
-	splash::SetProgressStatus(26, "Initializing Git Integration");
+	CRenderDevice::SetStartupStatus(26, "Initializing Git Integration");
 
 	static CGitIntegration GitIntegration;
 	GitIntegration.Initialize();
 	CGitLFSConfig::Instance().Load();
 
-	splash::SetProgressStatus(30, "Creating Main UI Form");
+	CRenderDevice::SetStartupStatus(30, "Creating Main UI Form");
 
 	UIMainForm* MainForm = new UIMainForm();
 
@@ -124,18 +123,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	g_XrGameManager = new XrGameManager();
 	g_SEFactoryManager = new XrSEFactoryManager();
 
-	splash::SetProgressStatus(40, "Loading Game Materials");
+	CRenderDevice::SetStartupStatus(40, "Loading Game Materials");
 
 	// Initialize APP
 	GameMaterialLibraryEditors->Load();
 
-	splash::SetProgressStatus(55, "Initializing Game Persistent Objects");
+	CRenderDevice::SetStartupStatus(55, "Initializing Game Persistent Objects");
 
 	g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));
 	EDevice->seqAppStart.Process<&pureAppStart::OnAppStart>();
 	g_pGamePersistent->Environment().EnsureMixer();
 
-	splash::SetProgressStatus(65, "Setting Up Console");
+	CRenderDevice::SetStartupStatus(65, "Setting Up Console");
 
 	Console->Execute("default_controls");
 
@@ -152,7 +151,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	Console->Hide();
 	g_lighting_mode = ELightingMode::Dynamic;
 
-	splash::SetProgressStatus(75, "Performing Final UI Setup");
+	CRenderDevice::SetStartupStatus(75, "Performing Final UI Setup");
 
 	::MainForm = MainForm;
 	MainForm->TabIndex = -1;
@@ -177,11 +176,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIMinimapEditorForm::Show();
 
 	bool NeedExit = false;
-	splash::SetProgressStatus(85, "Performing Final Checks");
+	CRenderDevice::SetStartupStatus(85, "Performing Final Checks");
 	MainForm->GetRenderForm()->DragFunctor = DragDrop;
 	MainForm->GetRenderForm()->DragPreviewFunctor = DragPreview;
 	
-	splash::SetProgressStatus(90, "Finalizing UI Setup");
+	CRenderDevice::SetStartupStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	EContext.UI->PushBegin(GContentView);
 
@@ -203,13 +202,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 	}
 
-	splash::SetProgressStatus(100, "Finalizing");
-	splash::Close();
-	if (s.joinable())
-	{
-		s.join();
-	}
-	splash::FocusWindow(g_AppInfo.Window);
+	CRenderDevice::SetStartupStatus(100, "Finalizing");
+	SDL_RaiseWindow(g_AppInfo.Window);
 	while (!NeedExit)
 	{
 		SDL_Event Event;

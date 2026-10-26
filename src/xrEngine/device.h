@@ -192,6 +192,16 @@ public:
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
 	void BeginRender() override;
+
+	void DrawStartupFrame(bool WithWindowButtons = false);
+	static void SetStartupStatus(int Progress, const char* Status = nullptr);
+	static void UpdateStartupFrame();
+
+	static int s_StartupProgress;
+	static xr_string s_StartupStatus;
+	static float s_StartupAnimationTime;
+	static u64 s_StartupLastTick;
+	static bool s_StartupActive;
 	void EndRender() override;
 
 public:
