@@ -29,6 +29,21 @@ void CNVG::load(IReader& input_packet)
     SetNvgEnabled(input_packet.r_u8() == 1 ? true : false);
 }
 
+void CNVG::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CNVG::Serialize")
+	{
+		CInventoryItemObject::Serialize(Object);
+		IPowerManager::net_serialize(Object);
+		bool NVGEnabled = IsNvgEnabled();
+		Object << NVGEnabled;
+		if (!Object.IsSave())
+		{
+			SetNvgEnabled(NVGEnabled);
+		}
+	}
+}
+
 void CNVG::OnFrame()
 {
     IPowerManager::OnFrame();

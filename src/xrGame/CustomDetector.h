@@ -34,8 +34,9 @@ public:
 	virtual CCustomDetector* cast_custom_detector() override { return this; }
 	virtual CCustomDevice* cast_custom_device() override { return this; }
 
-	void save(NET_Packet& output_packet) override;
-	void load(IReader& input_packet) override;
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& object) override;
 
 protected:
 	void UpdateWork() override;

@@ -488,3 +488,12 @@ void CTorch::load(IReader& input_packet)
 	inherited::load(input_packet);
 	IPowerManager::net_load(input_packet);
 }
+
+void CTorch::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CTorch::Serialize")
+	{
+		CInventoryItemObject::Serialize(Object);
+		IPowerManager::net_serialize(Object);
+	}
+}

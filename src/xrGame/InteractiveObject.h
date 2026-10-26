@@ -35,6 +35,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual bool net_SaveRelevant() override  { return true; }
 

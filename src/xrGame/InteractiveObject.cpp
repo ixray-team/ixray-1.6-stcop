@@ -147,6 +147,28 @@ void CInteractiveObject::load(IReader& input_packet)
 	}
 }
 
+void CInteractiveObject::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CInteractiveObject::Serialize")
+	{
+		inherited::Serialize(Object);
+		Object << left_uses;
+		
+		if (!Object.IsSave() && !m_bone_names.empty())
+		{
+			u8 total_bones = m_bone_names.size();
+			if (left_uses < total_bones)
+			{
+				for (u8 i = left_uses; i < total_bones; i++)
+				{
+					SetVisible(m_bone_names[i].c_str(), false);
+				}
+			}
+			SetText();
+		}
+	}
+}
+
 void CInteractiveObject::OnUse()
 {
 	if (left_uses > 0)

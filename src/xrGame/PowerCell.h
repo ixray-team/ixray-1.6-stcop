@@ -9,6 +9,15 @@ struct PowerCellData {
 	float current_power = 0.0f;
 };
 
+inline ISaveObject& operator<<(ISaveObject& Object, PowerCellData& PowerCellData)
+{
+	BEGIN_CHUNK(Object, "PowerCellData")
+	{
+		Object << PowerCellData.section << PowerCellData.max_power << PowerCellData.current_power;
+	}
+	return Object;
+}
+
 XREFLECT(LuaExport, Bases="CGameObject")
 class PowerCell final : public CInventoryItemObject
 {
@@ -22,6 +31,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& SaveObject) override;
 
 	virtual void Load(const char* section) override;
 	PowerCellData GetPowerCellData() { return m_power_cell_data; };
