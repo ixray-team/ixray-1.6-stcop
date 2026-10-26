@@ -17,6 +17,9 @@ private:
 	
 	bool					m_mark_focused;
 
+	// World heading configured via the heading_angle XML attribute (radians).
+	float					m_const_heading;
+
 public:
 		bool				m_bScale;
 		Fvector2			m_scale_bounds;
@@ -29,6 +32,8 @@ public:
 	virtual		void		Load							(CUIXml* xml, const char* path, float kx);
 	CMapLocation*			MapLocation						()							{return m_map_location;}
 				int			get_location_level				()							{return m_location_level;}
+				float		GetConstHeadingAngle			() const					{return m_const_heading;}
+				void		SetConstHeadingAngle			(float angle)				{m_const_heading = angle;}
 	virtual const char*			GetHint							();
 	virtual void		SetWndPos						(const Fvector2& pos) override;
 	virtual void		Update							() override;

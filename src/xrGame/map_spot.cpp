@@ -22,6 +22,7 @@ CMapSpot::CMapSpot(CMapLocation* ml)
 	m_location_level    = 0;
 	m_border_static		= nullptr;
 	m_scale_bounds.set	(-1.0f, -1.0f);
+	m_const_heading		= 0.0f;
 }
 
 CMapSpot::~CMapSpot()
@@ -31,6 +32,7 @@ CMapSpot::~CMapSpot()
 void CMapSpot::Load(CUIXml* xml, const char* path, float kx)
 {
 	CUIXmlInit::InitStatic(*xml,path,0,this);
+	m_const_heading		= deg2rad(xml->ReadAttribFlt(path, 0, "heading_angle", 0.0f));
 	if(!Heading())
 	{
 		SetWidth			(GetWidth()*kx);
