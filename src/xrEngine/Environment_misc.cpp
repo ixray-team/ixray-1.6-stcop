@@ -894,6 +894,15 @@ CEnvDescriptor* CEnvironment::create_descriptor	(shared_str const& identifier, C
 	return			result;
 }
 
+static bool IsWeatherTimeSection(const char* Section)
+{
+	int Hours, Minutes, Seconds;
+	char Trailing;
+	return sscanf(Section, "%d:%d:%d%c", &Hours, &Minutes, &Seconds, &Trailing) == 3 &&
+		   Hours >= 0 && Hours <= 24 && Minutes >= 0 && Minutes < 60 && Seconds >= 0 && Seconds < 60 &&
+		   (Hours < 24 || (Minutes == 0 && Seconds == 0));
+}
+
 void CEnvironment::load_weathers		()
 {
     if (!WeatherCycles.empty())
@@ -909,19 +918,21 @@ void CEnvironment::load_weathers		()
         const char* fileName = file.name.c_str();
         const size_t length = xr_strlen(fileName);
         id.assign(fileName, length - 4);
-        EnvVec& env = WeatherCycles[id.c_str()];
-
         string_path file_path;
         FS.update_path(file_path, "$game_weathers$", fileName);
         CInifile* config = CInifile::Create(file_path);
 
         auto& sections = config->sections();
-        env.reserve(sections.size());
+		for (const auto& section : sections)
+		{
+			// Included inheritance sections are not weather keyframes.
+			if (IsWeatherTimeSection(section.Name.c_str()))
+			{
+				WeatherCycles[id.c_str()].emplace_back(create_descriptor(section.Name, config));
+			}
+		}
 
-        for (const auto& section : sections)
-            env.emplace_back(create_descriptor(section.Name, config));
-
-        CInifile::Destroy(config);
+		CInifile::Destroy(config);
     }
 
     // SoC style weather config
@@ -977,24 +988,33 @@ void CEnvironment::load_weather_effects()
         const char* fileName = file.name.c_str();
         const size_t length = xr_strlen(fileName);
         id.assign(fileName, length - 4);
-        EnvVec& env = WeatherFXs[id.c_str()];
-
         string_path file_name;
         FS.update_path(file_name, "$game_weather_effects$", fileName);
         CInifile* config = CInifile::Create(file_name);
 
 		CInifile::Root& sections = config->sections();
-        env.reserve(sections.size() + 2);
+		for (CInifile::Sect& sect : sections)
+		{
+			if (IsWeatherTimeSection(sect.Name.c_str()))
+			{
+				EnvVec& Env = WeatherFXs[id.c_str()];
+				if (Env.empty())
+				{
+					Env.emplace_back(create_descriptor("00:00:00", nullptr));
+				}
+				Env.emplace_back(create_descriptor(sect.Name, config));
+			}
+		}
 
-        env.emplace_back(create_descriptor("00:00:00", nullptr));
+		CInifile::Destroy(config);
 
-        for (CInifile::Sect& sect : sections)
-            env.emplace_back(create_descriptor(sect.Name, config));
-
-        CInifile::Destroy(config);
-
-        env.emplace_back(create_descriptor("24:00:00", nullptr));
-        env.back()->exec_time_loaded = DAY_LENGTH;
+		const auto Effect = WeatherFXs.find(id.c_str());
+		if (Effect != WeatherFXs.end())
+		{
+			EnvVec& Env = Effect->second;
+			Env.emplace_back(create_descriptor("24:00:00", nullptr));
+			Env.back()->exec_time_loaded = DAY_LENGTH;
+		}
     }
 
     // SoC style weather effects config
