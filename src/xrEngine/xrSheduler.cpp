@@ -346,7 +346,7 @@ void CSheduler::ProcessStep			()
 		if (Device.dwPrecacheFrame==0 && CPU::QPC() > cycles_limit)		
 		{
 			// we have maxed out the load - increase heap
-			psShedulerTarget		+= psShedulerReaction * 1.5f;
+			psShedulerTarget		+= (psShedulerReaction * 3);
 			break;
 		}
 	}
@@ -413,9 +413,8 @@ void CSheduler::Update()
 	ProcessStep();
 	m_processing_now = false;
 
-	clamp(psShedulerTarget, 1.f, 5.f);
-	psShedulerCurrent = _inertion(psShedulerCurrent, psShedulerTarget, .9f);
-
+	clamp(psShedulerTarget, 3.f, 66.f);
+	psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;
 	Device.Statistic->fShedulerLoad = psShedulerCurrent;
 
 	// Finalize
