@@ -104,7 +104,7 @@ public:
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader> ShadersLevel;
-	xr_hash_map<shared_str, ref_shader> ShadersShared;
+	xr_hash_map<shared_str, ref_shader> ShadersShared;	
 	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
 	xr_vector<VertexDeclarator>									nDC,xDC;
 	xr_vector<IRHIBuffer*>							nVB,xVB;
@@ -178,7 +178,7 @@ private:
 	void							CollectMainRenderable		(ISpatial* spatial, bool deffered);
 	void							RenderMainDynamic			();
 
-public:
+public:	
 	void							render_main					(bool deffered, bool zfill = false);
 	void render_static();
 	void							render_forward				();
@@ -412,11 +412,11 @@ public:
 	virtual void					add_Geometry				(IRenderVisual*	V	) override;			// add visual(s)	(all culling performed)
 
 	// wallmarks
-	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
-	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) override;
-	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) override;
+	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false);
+	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false) override;
+	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V) override;
 	virtual void					clear_static_wallmarks		() override;
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override;
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, const CDB::TRI& T, Fvector* V) override;
 	virtual void					add_SkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) override;
@@ -530,8 +530,6 @@ private:
 	ref_shader						EditorUnlitShader;
 	IBlender*						EditorDepthUpscaleBlender	= nullptr;
 	ref_shader						EditorDepthUpscaleShader;
-
-public:
 
 private:
 	ShaderExternalMap				m_ShaderOptions;

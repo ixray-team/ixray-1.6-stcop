@@ -50,8 +50,8 @@ else()
     set(XPH_BACKEND_DIR "ODE")
 endif()
 
-# Remove unused files
-list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*")
+# Remove unused files (well... Actually used)
+#list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*")
 
 # xrPhysics project
 add_library(xrPhysics SHARED ${XPH_SRC_FILES})

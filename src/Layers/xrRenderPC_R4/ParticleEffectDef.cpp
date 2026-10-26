@@ -79,13 +79,6 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 	Fvector pt,n;
 	// The editor picks against its scene through the host; the game picks the level.
 	const bool EditorPick = Device.IsEditorMode();
-	xr_vector<CDB::TRI>* tris = nullptr;
-	xr_vector<Fvector>* verts = nullptr;
-	if (!EditorPick)
-	{
-		tris = &g_pGameLevel->ObjectSpace.GetStaticTris();
-		verts = &g_pGameLevel->ObjectSpace.GetStaticVerts();
-	}
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		auto& pos = particles.pos_arr[i];
@@ -114,12 +107,18 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 					if (g_pGameLevel->ObjectSpace.RayPick(posB,dir,dist,RT,RQ,nullptr))
 					{
 						pt.mad(posB,dir,RQ.range);
-						if (RQ.O)
+						if (!RQ.IsStatic())
+						{
 							n.set(0.f,1.f,0.f);
+						}
 						else
 						{
-							auto& Tidxs = (*tris)[RQ.element].verts;
-							n.mknormal((*verts)[Tidxs[0]],(*verts)[Tidxs[1]],(*verts)[Tidxs[2]]);
+							auto& Tidxs = RQ.GetStatic()->get_tris()[RQ.element].verts;
+							Fvector Verts[3];
+							RQ.xform.transform_tiny(Verts[0], RQ.GetStatic()->get_verts()[Tidxs[0]]);
+							RQ.xform.transform_tiny(Verts[1], RQ.GetStatic()->get_verts()[Tidxs[1]]);
+							RQ.xform.transform_tiny(Verts[2], RQ.GetStatic()->get_verts()[Tidxs[2]]);
+							n.mknormal(Verts[0],Verts[1],Verts[2]);
 						}
 						Picked = true;
 					}

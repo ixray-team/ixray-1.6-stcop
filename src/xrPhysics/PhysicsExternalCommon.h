@@ -24,7 +24,7 @@ struct SPHShotMarkContact
 	bool InvertNormal = false;
 };
 
-typedef void 	ContactCallbackFun(CDB::TRI* T,const SPHShotMarkContact& c);
+typedef void 	ContactCallbackFun(const CDB::TRI& T, Fvector* verts,const SPHShotMarkContact& c);
 typedef	void	ObjectContactCallbackFun(bool& do_colide,bool bo1,CPHContact& c,SGameMtl* material_1,SGameMtl* material_2);
 
 

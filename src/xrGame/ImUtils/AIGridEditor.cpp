@@ -43,10 +43,11 @@ struct PickContext
 	bool IgnoreActorObstacles = true;
 };
 
-static bool PickCallback(collide::rq_result& Result, LPVOID Data)
+static bool PickCallback(const collide::rq_result& Result, LPVOID Data)
 {
+	R_ASSERT(Result.valid() && Result.IsStatic());
 	auto& Context = *static_cast<PickContext*>(Data);
-	const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
+	const auto& Triangle = Result.GetStatic()->get_tris()[Result.element];
 	const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
 	if (Material && (Material->Flags.is(SGameMtl::flPassable) || (Context.IgnoreActorObstacles && Material->Flags.is(SGameMtl::flActorObstacle))))
 	{
@@ -61,7 +62,7 @@ static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fv
 	PickContext Context;
 	Context.IgnoreActorObstacles = IgnoreActorObstacles;
 	auto& Result = Context.Result;
-	Result.set(nullptr, Range, -1);
+	Result.reset();
 	collide::rq_results Results;
 	collide::ray_defs Definition(Origin, Direction, Range, CDB::OPT_FULL_TEST, collide::rqtStatic);
 	g_pGameLevel->ObjectSpace.RayQuery(Results, Definition, PickCallback, &Context, nullptr, nullptr);
@@ -72,13 +73,17 @@ static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fv
 	Hit.mad(Origin, Direction, Result.range);
 	if (MaterialIndex)
 	{
-		*MaterialIndex = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element].material;
+		*MaterialIndex = Result.GetStatic()->get_tris()[Result.element].material;
 	}
 	if (Normal)
 	{
-		const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
-		const auto& Vertices = g_pGameLevel->ObjectSpace.GetStaticVerts();
-		Normal->mknormal(Vertices[Triangle.verts[0]], Vertices[Triangle.verts[1]], Vertices[Triangle.verts[2]]);
+		const auto& Triangle = Result.GetStatic()->get_tris()[Result.element];
+		const auto& Vertices = Result.GetStatic()->get_verts();
+		Fvector p0, p1, p2;
+		Result.xform.transform_tiny(p0, Vertices[Triangle.verts[0]]);
+		Result.xform.transform_tiny(p1, Vertices[Triangle.verts[1]]);
+		Result.xform.transform_tiny(p2, Vertices[Triangle.verts[2]]);
+		Normal->mknormal(p0, p1, p2);
 	}
 	return true;
 }

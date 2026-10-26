@@ -223,9 +223,11 @@ bool CEditableMesh::IsResultHidden(const Fmatrix& Parent, const CDB::RESULT& R) 
 		return false;
 	}
 
+	auto& Tris = R.model->get_tris()[R.tris_id];
+	auto& Verts = R.model->get_verts();
 	Fvector Center;
-	Center.add(R.verts[0], R.verts[1]);
-	Center.add(R.verts[2]);
+	Center.add(Verts[Tris.verts[0]], Verts[Tris.verts[1]]);
+	Center.add(Verts[Tris.verts[2]]);
 	Center.div(3.0f);
 	return IsPointHidden(Parent, SnapToChunkCenter(Center));
 }

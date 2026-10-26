@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "player_hud.h"
 #include "PlayerHudUtils.h"
+#include <algorithm>
 #include "WatchDevice/WatchDevice.h"
 #include "HudItem.h"
 #include "Actor.h"
@@ -495,27 +496,29 @@ void attachable_hud_item::update_hud_additional(Fmatrix& trans)
 
 	CDB::COLLIDER xrc;
 	xrc.obb_options(CDB::OPT_FULL_TEST);
-	xrc.obb_query(Level().ObjectSpace.GetStaticModel(), m_collision_box);
+	xrc.obb_query(*Level().ObjectSpace.GetStaticModel(), m_collision_box);
 
 	float nearest_obb_dist = 1000.0f;
 
 	for (CDB::RESULT& result : xrc.r_vec())
 	{
-		SGameMtl* pMtl = GMLib.GetMaterialByIdx(result.material);
+		auto& Tris = result.model->get_tris()[result.tris_id];
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(Tris.material);
 		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
 			continue;
 		}
+		
+		Fvector verts[3];
+		result.ModelWorldTransform.transform_tiny(verts[0], result.model->get_verts()[Tris.verts[0]]);
+		result.ModelWorldTransform.transform_tiny(verts[1], result.model->get_verts()[Tris.verts[1]]);
+		result.ModelWorldTransform.transform_tiny(verts[2], result.model->get_verts()[Tris.verts[2]]);
 
-		m_collision_box.FindContactsClipping(result.verts, [](const Fvector& contact, void* user_data)
+		m_collision_box.FindContactsClipping(verts, [](const Fvector& contact, void* user_data)
 		{
 			float& nearest_obb_dist = *(float*)user_data;
 			float to_cam_dist = Device.vCameraPosition.distance_to(contact);
-			if (to_cam_dist < nearest_obb_dist)
-			{
-				nearest_obb_dist = to_cam_dist;
-			}
-
+			nearest_obb_dist = std::min(to_cam_dist, nearest_obb_dist);
 		}, &nearest_obb_dist);
 	}
 	clamp(nearest_obb_dist, 0.0f, 1.0f);
@@ -699,7 +702,7 @@ bool attachable_hud_item::need_renderable()
 
 void attachable_hud_item::render()
 {
-	::Render->set_Transform		(&m_item_transform);
+	::Render->set_Transform		(m_item_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
 	debug_draw_firedeps			();
 
@@ -2086,13 +2089,13 @@ void player_hud::render_hud()
 	{
 		if (m_model || animatorPlaying)
 		{
-			::Render->set_Transform(&m_transform);
+			::Render->set_Transform(m_transform);
 			::Render->add_Visual(m_model->dcast_RenderVisual(), true);
 		}
 
 		if (m_watches_model)
 		{
-			::Render->set_Transform(&m_watches_transform);
+			::Render->set_Transform(m_watches_transform);
 			::Render->add_Visual(m_watches_model->dcast_RenderVisual(), true);
 		}
 	}
@@ -2156,7 +2159,7 @@ void player_hud::render_hud()
 			auto bHud = ::Render->get_HUD();
 			::Render->set_HUD(false);
 
-			::Render->set_Transform(&Actor()->XFORM());
+			::Render->set_Transform(Actor()->XFORM());
 			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
 
 			::Render->set_HUD(bHud);
@@ -3567,7 +3570,7 @@ void animator_item::render()
 		return;
 	}
 
-	::Render->set_Transform(&m_item_transform);
+	::Render->set_Transform(m_item_transform);
 	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
 }
 

@@ -113,7 +113,6 @@ target_link_libraries(xrCore PUBLIC SDL3-shared)
 target_link_libraries(xrCore PUBLIC TBB::tbb)
 target_link_libraries(xrCore PUBLIC LZO::lzo2)
 target_link_libraries(xrCore PRIVATE yaml-cpp)
-target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
 if(APPLE)
 
@@ -145,4 +144,17 @@ if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		BUILD_RPATH "$ORIGIN"
 	)
+endif()
+
+target_include_directories(xrCore PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
+target_link_libraries(xrCore PUBLIC embree)
+
+if(WIN32)
+    add_custom_command(TARGET xrCore POST_BUILD
+    	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
+    )
+else ()
+    add_custom_command(TARGET xrCore POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/libembree4.so ${IXRAY_OUTPUT}
+    )
 endif()

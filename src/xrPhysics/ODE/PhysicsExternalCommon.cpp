@@ -3,7 +3,7 @@
 #include "ExtendedGeom.h"
 #include "MathUtilsOde.h"
 
-void PHCallContactCallback(ContactCallbackFun* Callback, CDB::TRI* T, const dContactGeom* c)
+void PHCallContactCallback(ContactCallbackFun* Callback, const TriabgleCDBData& T, const dContactGeom* c)
 {
 	if (Callback == nullptr)
 	{
@@ -44,6 +44,7 @@ void PHCallContactCallback(ContactCallbackFun* Callback, CDB::TRI* T, const dCon
 		Contact.Material = data->material;
 		Contact.IsCharacter = data->ph_object && data->ph_object->CastType() == CPHObject::tpCharacter;
 	}
-
-	Callback(T, Contact);
+	Fvector Verts[3];
+	T.GetVerts(Verts);
+	Callback(T.GetTri(), Verts, Contact);
 }

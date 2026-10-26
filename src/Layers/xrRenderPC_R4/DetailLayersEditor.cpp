@@ -463,18 +463,30 @@ CTexture* dv_create_texture(u32 size)
 static bool dv_static_normal(const collide::rq_result& RQ, Fvector& normal)
 {
 	if (!g_pGameLevel || RQ.element < 0)
+	{
 		return false;
-	const xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	const xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
+	}
+	const xr_vector<CDB::TRI>& tris = RQ.GetStatic()->get_tris();
+	const xr_vector<Fvector>& verts = RQ.GetStatic()->get_verts();
 	if ((u32)RQ.element >= tris.size())
+	{
 		return false;
+	}
 	const CDB::TRI& t = tris[RQ.element];
 	if (t.verts[0] >= (int)verts.size() || t.verts[1] >= (int)verts.size() || t.verts[2] >= (int)verts.size())
+	{
 		return false;
-	normal.mknormal(verts[t.verts[0]], verts[t.verts[1]], verts[t.verts[2]]);
+	}
+	Fvector Vertices[3];
+	RQ.xform.transform_tiny(Vertices[0], verts[t.verts[0]]);
+	RQ.xform.transform_tiny(Vertices[1], verts[t.verts[1]]);
+	RQ.xform.transform_tiny(Vertices[2], verts[t.verts[2]]);
+	normal.mknormal(Vertices[0], Vertices[1], Vertices[2]);
 	const float l = normal.magnitude();
 	if (l < 1e-5f)
+	{
 		return false;
+	}
 	normal.div(l);
 	return true;
 }
@@ -517,11 +529,11 @@ void MouseRayFromPoint(Fvector& direction)
 	direction.normalize();
 }
 
-ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+ICF static bool GetPickDist_Callback(const collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
 
-	CDB::TRI& T = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+	auto& T = RQ->GetStatic()->get_tris()[result.element];
 	SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 	if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 	{
@@ -535,7 +547,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
 {
 	collide::rq_result RQ;
-	RQ.set(nullptr, range, -1);
+	RQ.reset();
 	static collide::rq_results RQR;
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtStatic);
 	g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);

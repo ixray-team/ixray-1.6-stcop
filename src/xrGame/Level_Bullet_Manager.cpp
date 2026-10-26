@@ -951,7 +951,7 @@ IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const
 }
 }
 
-bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID params)
+bool CBulletManager::firetrace_callback(const collide::rq_result& result, LPVOID params)
 {
 	bullet_test_callback_data& data = *(bullet_test_callback_data*)params;
 	SBullet& bullet = *data.pBullet;
@@ -961,12 +961,12 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 
 	float const air_resistance = IsGameTypeSingle() ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
-	if (result.O && (result.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+	if (result.valid() && !result.IsStatic() && (result.GetDynamic()->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
-		auto Obj = result.O;
+		auto Obj = result.GetDynamic();
 		if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
-			CGameObject* go = Obj->cast_game_object();
+			CGameObject* go = const_cast<CObject*>(Obj)->cast_game_object();
 
 			if (go != nullptr)
 			{
@@ -1041,16 +1041,16 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 	}
 
 	// статический объект
-	if (!result.O)
+	if (result.valid() && result.IsStatic())
 	{
-		CDB::TRI& triangle = Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& triangle = result.GetStatic()->get_tris()[result.element];
 		bullet_manager.RegisterEvent(EVENT_HIT, false, &bullet, collide_position, result, triangle.material);
 		return false;
 	}
 
 	// динамический объект
-	VERIFY(!(result.O->ID() == bullet.parent_id && bullet.fly_dist < parent_ignore_distance));
-	IKinematics* const kinematics = PKinematics(result.O->Visual());
+	VERIFY(!(result.GetDynamic()->ID() == bullet.parent_id && bullet.fly_dist < parent_ignore_distance));
+	IKinematics* const kinematics = PKinematics(result.GetDynamic()->Visual());
 	if (!kinematics)
 	{
 		return false;
@@ -1685,7 +1685,7 @@ void CBulletManager::CommitEvents()
 	m_Events.clear();
 }
 
-void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
+void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, const collide::rq_result& R, u16 tgt_material)
 {
 	m_Events.emplace_back();
 	_event& E = m_Events.back();
@@ -1705,20 +1705,20 @@ void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bulle
 
 			if (_dynamic)
 			{
-				E.Repeated = R.O->ID() == E.bullet.targetID;
+				E.Repeated = R.GetDynamic()->ID() == E.bullet.targetID;
 				
 				if (IsGameTypeSingle())
 				{
-					bullet->targetID = R.O->ID();
+					bullet->targetID = R.GetDynamic()->ID();
 				}
 				else
 				{
-					if (bullet->targetID != R.O->ID())
+					if (bullet->targetID != R.GetDynamic()->ID())
 					{
-						CGameObject* pGO = R.O->cast_game_object();
+						CGameObject* pGO = const_cast<CObject*>(R.GetDynamic())->cast_game_object();
 						if (pGO == nullptr || !pGO->BonePassBullet((u16)R.element))
 						{
-							bullet->targetID = R.O->ID();
+							bullet->targetID = R.GetDynamic()->ID();
 						}
 					}
 				}

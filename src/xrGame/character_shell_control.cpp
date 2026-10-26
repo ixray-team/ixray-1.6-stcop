@@ -106,7 +106,7 @@ void character_shell_control::TestForWounded(const Fmatrix& xform,  IKinematics*
 	
 	CDB::COLLIDER				xrc;
 	xrc.ray_options				(0);
-	xrc.ray_query(Level().ObjectSpace.GetStaticModel(),position_matrix.c,Fvector().set(0.0f,-1.0f,0.0f),pelvis_factor_low_pose_detect);
+	xrc.ray_query(*Level().ObjectSpace.GetStaticModel(),position_matrix.c,Fvector().set(0.0f,-1.0f,0.0f),pelvis_factor_low_pose_detect);
 		
 	if (xrc.r_count())
 	{

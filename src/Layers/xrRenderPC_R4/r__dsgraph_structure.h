@@ -114,11 +114,11 @@ public:
 	u32															counter_D	;
 	bool														b_loaded	;
 public:
-	virtual void					set_Transform			(Fmatrix*	M	) override
-	{ VERIFY(M);	val_pTransform = M;	}
+	virtual void					set_Transform			(Fmatrix&	M	) override
+	{ val_pTransform = &M;	}
 
-	virtual void					set_LocalTransform		(Fmatrix*	M	) override
-	{ VERIFY(M);	val_pLocalTransform = M;	}
+	virtual void					set_LocalTransform		(Fmatrix&	M	) override
+	{ val_pLocalTransform = &M;	}
 
 	virtual void					set_UI					(bool 		V	) override { val_bUI		= V;				}
 	virtual void					set_HUD					(bool 		V	) override { val_bHUD		= V;				}
@@ -134,7 +134,6 @@ public:
 	R_dsgraph_structure	()
 	{
 		val_pObject			= NULL	;
-		val_pTransform		= NULL	;
 		val_bHUD			= false	;
 		val_bUI				= false	;
 		val_bInvisible		= false	;

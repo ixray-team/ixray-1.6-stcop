@@ -35,19 +35,19 @@ void CCameraLook::Serialize(ISaveObject& Object)
 	}
 }
 
-ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
+ICF static bool GetPickDist_Callback(const collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;
 
-	if (result.O)
+	if (result.valid() && !result.IsStatic())
 	{
-		if (CCustomRocket* pRocket = result.O != nullptr ? result.O->cast_custom_rocket() : nullptr)
+		if (CCustomRocket* pRocket = const_cast<CObject*>(result.GetDynamic())->cast_custom_rocket())
 		{
 			if (!pRocket->Useful())
 				return true;
 		}
 
-		if (CMissile* pMissile = result.O != nullptr ? result.O->cast_missile() : nullptr)
+		if (CMissile* pMissile = const_cast<CObject*>(result.GetDynamic())->cast_missile())
 		{
 			if (!pMissile->Useful())
 				return true;
@@ -55,7 +55,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 		CObject* current_entity = Level().CurrentEntity();
 		if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 		{
-			if (result.O == pActor)
+			if (result.GetDynamic() == pActor)
 			{
 				return true;
 			}
@@ -63,7 +63,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 			if (CHolderCustom* get_holder = pActor->Holder())
 			{
 				CCar* car = get_holder != nullptr ? get_holder->cast_car() : nullptr;
-				if (car && result.O == car)
+				if (car && result.GetDynamic() == car)
 				{
 					return true;
 				}
@@ -72,7 +72,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 	}
 	else
 	{
-		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& T = result.GetStatic()->get_tris()[result.element];
 		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
@@ -87,7 +87,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
 {
 	collide::rq_result RQ;
-	RQ.set(nullptr, range, -1);
+	RQ.reset();
 	static collide::rq_results RQR;
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
 	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);

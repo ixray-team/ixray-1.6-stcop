@@ -162,7 +162,7 @@ void EDetailManager::PickSnapTriangles(const Fbox& Box, xr_vector<Fvector>& Vert
 		VERIFY(Info.s_obj);
 		for (const auto& Inf : Info.inf)
 		{
-			Info.e_obj->GetFaceWorld(Info.s_obj->_Transform(), Info.e_mesh, Inf.id, Face);
+			Info.e_obj->GetFaceWorld(Info.s_obj->_Transform(), Info.e_mesh, Inf.tris_id, Face);
 			Verts.insert(Verts.end(), Face, Face + 3);
 		}
 	}
@@ -196,7 +196,7 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
         	for (int k=0; k<(int)it->inf.size(); k++){
                 float range;
                 Fvector verts[3];
-                it->e_obj->GetFaceWorld(it->s_obj->_Transform(),it->e_mesh,it->inf[k].id,verts);
+                it->e_obj->GetFaceWorld(it->s_obj->_Transform(),it->e_mesh,it->inf[k].tris_id,verts);
                 sPoly sSrc	(verts,3);
                 sPoly sDest;
                 sPoly* sRes = frustum.ClipPoly(sSrc, sDest);

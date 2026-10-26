@@ -161,7 +161,7 @@ void CEditorSceneSubmit::AddSingle(CCustomObject* Parent, CEditableMesh* Mesh, C
 	Box.getsphere(Visual->vis.sphere.P, Visual->vis.sphere.R);
 
 	Fmatrix SubmitTransform = Transform;
-	::Render->set_Transform(&SubmitTransform);
+	::Render->set_Transform(SubmitTransform);
 	::Render->add_Visual(Visual, true);
 }
 
@@ -266,7 +266,7 @@ void CEditorSceneSubmit::Flush()
 		WorldBox.getsphere(Visual->vis.sphere.P, Visual->vis.sphere.R);
 
 		Fmatrix SubmitTransform = Fidentity;
-		::Render->set_Transform(&SubmitTransform);
+		::Render->set_Transform(SubmitTransform);
 		::Render->add_Visual(Visual, true);
 
 		RunStart = RunEnd;

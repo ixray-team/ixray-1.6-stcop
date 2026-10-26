@@ -46,10 +46,10 @@ public:
 		};
     	struct
 		{
-    		Tvector i;	T	_14_;
-    		Tvector j;	T	_24_;
-    		Tvector k;	T	_34_;
-    		Tvector c;	T	_44_;
+    		Tvector i;	T	_14_; // right
+    		Tvector j;	T	_24_; // up
+    		Tvector k;	T	_34_; // forward
+    		Tvector c;	T	_44_; // location
         };
 		T m[4][4];					// Array
 		T mm[16];
@@ -59,11 +59,24 @@ public:
 		_vector4<T> row[4];
 	};
 
+	enum class EIdentity
+	{
+		Identity
+	};
+
 	ICF _matrix()
 	{
 		for (int row = 0; row < 4; ++row)
 			for (int col = 0; col < 4; ++col)
 				m[row][col] = static_cast<T>(0);
+	}
+
+	IC _matrix(EIdentity)
+	{
+		_11=1; _12=0; _13=0; _14=0;
+		_21=0; _22=1; _23=0; _24=0;
+		_31=0; _32=0; _33=1; _34=0;
+		_41=0; _42=0; _43=0; _44=1;
 	}
 	
 	ICF _matrix(const std::initializer_list<T>& list)
@@ -712,6 +725,17 @@ public:
 		dest.y = v.x*_12 + v.y*_22 + v.z*_32;
 		dest.z = v.x*_13 + v.y*_23 + v.z*_33;
 	}
+	// w = A^T * f, где A - матрица "локальные <- глобальные".
+	// В терминах _matrix: A^T * f означает
+	//   w.x = A._11*f.x + A._12*f.y + A._13*f.z
+	//   w.y = A._21*f.x + A._22*f.y + A._23*f.z
+	//   w.z = A._31*f.x + A._32*f.y + A._33*f.z
+	ICF void transform_dirT(_vector3<T>& w, const _vector3<T>& f)
+	{
+		w.x = _11*f.x + _12*f.y + _13*f.z;
+		w.y = _21*f.x + _22*f.y + _23*f.z;
+		w.z = _31*f.x + _32*f.y + _33*f.z;
+	}
 	ICF	void	transform			(Fvector4 &dest, const Tvector &v)	const 	// preferred to use
 	{
 		dest.w = v.x*_14 + v.y*_24 + v.z*_34 + _44;
@@ -955,6 +979,9 @@ public:
 
 typedef		_matrix<float>	Fmatrix;
 typedef		_matrix<double>	Dmatrix;
+
+static_assert(sizeof(Fmatrix) == 64);
+static_assert(sizeof(Dmatrix) == 128);
 
 template <class T>
 ICF bool	_valid			(const _matrix<T>& m)

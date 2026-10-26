@@ -456,7 +456,7 @@ static float Snd_HemiIndoorFactor(const Fvector& Pos)
 
 		Fvector dir = {std::cos(a) * r, h, std::sin(a) * r};
 		Collider->ray_options(CDB::OPT_ONLYNEAREST);
-		Collider->ray_query(EnvModel, Pos, dir, kMaxRange);
+		Collider->ray_query(*EnvModel, Pos, dir, kMaxRange);
 		if (Collider->r_count())
 		{
 			blocked += 1.0f;

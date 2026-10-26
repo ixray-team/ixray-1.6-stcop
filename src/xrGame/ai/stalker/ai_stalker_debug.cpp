@@ -1011,7 +1011,7 @@ public:
 	}
 };
 
-bool _ray_query_callback	(collide::rq_result& result, LPVOID params)
+bool _ray_query_callback	(const collide::rq_result& result, LPVOID params)
 {
 	ray_query_param						*param = (ray_query_param*)params;
 	param->m_points->push_back			(
@@ -1022,10 +1022,12 @@ bool _ray_query_callback	(collide::rq_result& result, LPVOID params)
 		)
 	);
 	
-	float								power = param->m_holder->feel_vision_mtl_transp(result.O,result.element);
+	float								power = param->m_holder->feel_vision_mtl_transp(result);
 	param->m_power						*= power;
 	if (param->m_power > param->m_power_threshold)
+	{
 		return							(true);
+	}
 
 	param->m_pick_distance				= result.range;
 	return								(false);

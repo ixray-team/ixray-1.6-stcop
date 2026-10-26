@@ -659,15 +659,16 @@ const char* lightmap_resolution[] = {"1024", "2048", "4096", "8192", "16384"};
 
 const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
-	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
+	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Instanced).data()
 };
-constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
+constexpr int cform_types_num = std::size(cform_types);
 
 const char* geom_types[] = {
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Chunked).data()
 };
-constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
+constexpr int geom_types_num = std::size(geom_types);
 
 // Jitters
 const char* itemsJitter[] = {"1", "4", "9"};

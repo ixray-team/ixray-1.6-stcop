@@ -708,13 +708,13 @@ public:
 	}
 };
 
-IC bool ray_query_callback	(collide::rq_result& result, LPVOID params)
+IC bool ray_query_callback	(const collide::rq_result& result, LPVOID params)
 {
 	ray_query_param_stalker*param = (ray_query_param_stalker*)params;
-	float power = param->m_holder->feel_vision_mtl_transp(result.O,result.element);
+	float power = param->m_holder->feel_vision_mtl_transp(result);
 	param->m_power *= power;
 
-	if (!result.O) {
+	if (!result.valid() || result.IsStatic()) {
 		if (param->m_power > param->m_power_threshold)
 			return						(true);
 
@@ -722,19 +722,25 @@ IC bool ray_query_callback	(collide::rq_result& result, LPVOID params)
 		return							(false);
 	}
 
-	CEntityAlive						*entity_alive = result.O ? result.O->cast_entity_alive() : NULL;
+	CEntityAlive						*entity_alive = const_cast<CObject*>(result.GetDynamic())->cast_entity_alive();
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
+		{
 			return						(true);
+		}
 
 		param->m_pick_distance			= result.range;
 		return							(false);
 	}
 
 	if (param->m_holder->is_relation_enemy(entity_alive))
+	{
 		param->m_can_kill_enemy			= true;
+	}
 	else
+	{
 		param->m_can_kill_member		= true;
+	}
 
 	param->m_pick_distance				= result.range;
 	return								(false);

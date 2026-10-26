@@ -1051,7 +1051,7 @@ void CSHEngineTools::OnShowHint(AStringVec& ss)
 		if (m_PreviewObject->RayPick(dist, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, Fidentity, &pinf))
 		{
 			R_ASSERT(pinf.e_mesh);
-			CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+			CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 			ss.emplace_back(xr_string("Surface: ") + xr_string(surf->_Name()));
 			ss.emplace_back(xr_string("Texture: ") + xr_string(surf->_Texture()));
 			ss.emplace_back(xr_string("Shader: ") + xr_string(surf->_ShaderName()));

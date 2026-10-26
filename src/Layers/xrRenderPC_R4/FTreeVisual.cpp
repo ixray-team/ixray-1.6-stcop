@@ -5,8 +5,9 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/Environment.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 
+#include "../xrRender/IRender_Mesh.h"
 #include "FTreeVisual.h"
 
 shared_str					m_xform		;
