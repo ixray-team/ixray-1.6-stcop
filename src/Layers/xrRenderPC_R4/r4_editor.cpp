@@ -301,6 +301,11 @@ void CRender::EditorRenderUnlit()
 		r_dsgraph_render_sorted(false);
 	}
 
+	mapEmissive.clear();
+	mapWmark.clear();
+	mapHUDEmissive.clear();
+	mapHUDSorted.clear();
+
 	r_pmask(true, false);
 
 	Target->PhaseEditorScale();
