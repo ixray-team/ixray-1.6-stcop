@@ -33,7 +33,9 @@ namespace smart_cover
 
 		virtual void setup(animation_planner* object, CPropertyStorage* storage) override;
 		virtual void update() override;
+#ifdef LOG_ACTION
 		virtual const char* object_name() const override;
+#endif
 
 		void callback(callback_type const& callback);
 
