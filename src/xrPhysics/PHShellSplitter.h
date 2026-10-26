@@ -43,8 +43,8 @@ bool							m_unbreakable																																;
 CPHShell*						m_pShell																																	;			//purpose: to extract elements and joints corresponded splitters
 SPLITTER_STORAGE				m_splitters																																	;			//
 GEOM_MAP						m_geom_root_map																																;			//to find geom pointer by bone id
-virtual	void					PhTune						(dReal step)																									;						//call fractures PhTune for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhTune()
-virtual void					PhDataUpdate				(dReal step)																									;				//call fractures PhDataUpdate for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhDataUpdate()
+virtual	void					PhTune						(dReal step) override;						//call fractures PhTune for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhTune()
+virtual	void					PhDataUpdate				(dReal step) override;				//call fractures PhDataUpdate for element splitters m_pShell->m_elements[m_splitters[i]->m_element]->m_pFracturesHolder->PhDataUpdate()
 		bool					CheckSplitter				(u16 aspl)																										;		//
 		shell_root				SplitJoint					(u16 aspl)																										;		//create new shell moving into it departed elements and joints 
 		shell_root				ElementSingleSplit			(const element_fracture &split_elem,const CPHElement* source_element)											;
@@ -53,7 +53,7 @@ virtual void					PhDataUpdate				(dReal step)																									;				//cal
 		void					InitNewShell				(CPHShell* shell)																								;			//inits new active shell
 public:
 								CPHShellSplitterHolder		(CPHShell* shell)																								;
-virtual							~CPHShellSplitterHolder		()																												;
+virtual	~CPHShellSplitterHolder		() override;
 		void					Activate					()																												;
 		void					Deactivate					()																												;
 		void					AddSplitter					(CPHShellSplitter::EType type,u16 element,u16 joint)															;

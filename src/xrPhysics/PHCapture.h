@@ -20,12 +20,12 @@ class CPHCapture :
 public:
 					CPHCapture	(CPHCharacter     *a_character,IPhysicsShellHolder	  *a_taget_object, NearestToPointCallback* cb /*=0*/);
 					CPHCapture	(CPHCharacter     *a_character,IPhysicsShellHolder	  *a_taget_object,u16 a_taget_elemrnt);
-virtual				~CPHCapture	();
+virtual	~CPHCapture	() override;
 
-bool				Failed		(){return e_state == cstFree;}
+virtual	bool				Failed		() override {return e_state == cstFree;}
 
-void				Release		();
-void				RemoveConnection(IPhysicsShellHolder* O);
+virtual	void				Release		() override;
+virtual	void				RemoveConnection(IPhysicsShellHolder* O) override;
 
 protected:
 CPHCharacter		*m_character;
@@ -72,9 +72,9 @@ private:
 static void object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl* /*material_1*/,SGameMtl* /*material_2*/);
 
 ///////////CPHObject/////////////////////////////
-	virtual void PhDataUpdate(dReal step);
-	virtual void PhTune(dReal step);
-	virtual void NetRelcase		(CPhysicsShell *s);
+	virtual	void PhDataUpdate(dReal step) override;
+	virtual	void PhTune(dReal step) override;
+	virtual	void NetRelcase		(CPhysicsShell *s) override;
 
 };
 #endif

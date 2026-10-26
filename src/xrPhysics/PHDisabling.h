@@ -60,7 +60,7 @@ class CPHDisablingBase :
 public:
 
 				void			UpdateValues				(const Fvector &new_pos,const Fvector &new_vel)	;
-	virtual		void			UpdateL2					()												;
+	virtual	void			UpdateL2					() override;
 	virtual		void			set_DisableParams			(const SOneDDOParams& params)					;
 
 protected:
@@ -86,7 +86,7 @@ class CPHDisablingRotational :
 public:
 								CPHDisablingRotational		()												;
 				void			Reinit						()												;
-	virtual		void			UpdateL1					()												;
+	virtual	void			UpdateL1					() override;
 	virtual		void			set_DisableParams			(const SAllDDOParams& params)					;
 };
 
@@ -96,7 +96,7 @@ class CPHDisablingTranslational :
 public:
 								CPHDisablingTranslational	()												;
 				void			Reinit						()												;
-	virtual		void			UpdateL1					()												;
+	virtual	void			UpdateL1					() override;
 	virtual		void			set_DisableParams			(const SAllDDOParams& params)					;
 };
 
@@ -106,9 +106,9 @@ class CPHDisablingFull	:
 {
 public:
 				void			Reinit						()												;
-	virtual		void			UpdateL1					()												;
-	virtual		void			UpdateL2					()												;
-	virtual		void			set_DisableParams			(const SAllDDOParams& params)					;
+	virtual	void			UpdateL1					() override;
+	virtual	void			UpdateL2					() override;
+	virtual	void			set_DisableParams			(const SAllDDOParams& params) override;
 private:
 				void			CheckJointsState			(SDisableUpdateState& state, float scale)		;
 };

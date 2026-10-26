@@ -57,77 +57,77 @@ class CPHJoint:
 				void					SetLimitsActive				(int axis_num)																																																			;
 				void 					CalcAxis					(int ax_num,Fvector& axis,float& lo,float& hi,const Fmatrix& first_matrix,const Fmatrix& second_matrix)																													;
 				void 					CalcAxis					(int ax_num,Fvector& axis,float& lo,float& hi,const Fmatrix& first_matrix,const Fmatrix& second_matrix,const Fmatrix& rotate)																							;
-	virtual		u16						GetAxesNumber				()																																																						;
-	virtual		void 					SetAxisSDfactors			(float spring_factor,float damping_factor,int axis_num)																																									;
-	virtual		void 					SetJointSDfactors			(float spring_factor,float damping_factor)																																												;
+	virtual	u16						GetAxesNumber				() override;
+	virtual	void 					SetAxisSDfactors			(float spring_factor,float damping_factor,int axis_num) override;
+	virtual	void 					SetJointSDfactors			(float spring_factor,float damping_factor) override;
 	virtual		void					SetJointSDfactorsActive		()																																																						;
 	virtual		void					SetLimitsSDfactorsActive	()																																																						;
 	virtual		void					SetAxisSDfactorsActive		(int axis_num)																																																			;
-	virtual		void					SetJointFudgefactorActive	( float factor )																																																		;
+	virtual	void					SetJointFudgefactorActive	( float factor ) override;
 
 	virtual		void 					SetAxis						(const SPHAxis& axis,const int axis_num)																																												;
-	virtual		void 					SetAnchor					(const Fvector& position)																																					{SetAnchor(position.x,position.y,position.z);}	
-	virtual		void 					SetAnchorVsFirstElement		(const Fvector& position)																																	{SetAnchorVsFirstElement(position.x,position.y,position.z)	;}
-	virtual		void 					SetAnchorVsSecondElement	(const Fvector& position)																																	{SetAnchorVsSecondElement(position.x,position.y,position.z)	;}
+	virtual	void 					SetAnchor					(const Fvector& position) override {SetAnchor(position.x,position.y,position.z);}
+	virtual	void 					SetAnchorVsFirstElement		(const Fvector& position) override {SetAnchorVsFirstElement(position.x,position.y,position.z)	;}
+	virtual	void 					SetAnchorVsSecondElement	(const Fvector& position) override {SetAnchorVsSecondElement(position.x,position.y,position.z)	;}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		void 					SetAxisDir					(const Fvector& orientation,const int axis_num)																											{SetAxisDir(orientation.x,orientation.y,orientation.z,axis_num)	;}	
-	virtual		void 					SetAxisDirVsFirstElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsFirstElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
-	virtual		void 					SetAxisDirVsSecondElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsSecondElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
+	virtual	void 					SetAxisDir					(const Fvector& orientation,const int axis_num) override {SetAxisDir(orientation.x,orientation.y,orientation.z,axis_num)	;}
+	virtual	void 					SetAxisDirVsFirstElement	(const Fvector& orientation,const int axis_num) override {SetAxisDirVsFirstElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
+	virtual	void 					SetAxisDirVsSecondElement	(const Fvector& orientation,const int axis_num) override {SetAxisDirVsSecondElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
 	virtual		void					SetAxisDirDynamic			(const Fvector& orientation,const int axis_num)																							;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		void 					SetLimits					(const float low,const float high,const int axis_num)																																									;
-	virtual		void 					SetLimitsVsFirstElement		(const float low,const float high,const int axis_num)																																									;
-	virtual		void 					SetLimitsVsSecondElement	(const float low,const float high,const int axis_num)																																									;
-	virtual		void					SetHiLimitDynamic			(int axis_num, float limit )																											;
-	virtual		void					SetLoLimitDynamic			(int axis_num, float limit )																											;
+	virtual	void 					SetLimits					(const float low,const float high,const int axis_num) override;
+	virtual	void 					SetLimitsVsFirstElement		(const float low,const float high,const int axis_num) override;
+	virtual	void 					SetLimitsVsSecondElement	(const float low,const float high,const int axis_num) override;
+	virtual	void					SetHiLimitDynamic			(int axis_num, float limit ) override;
+	virtual	void					SetLoLimitDynamic			(int axis_num, float limit ) override;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		void 					SetAnchor					(const float x,const float y,const float z)																																												;
-	virtual		void 					SetAnchorVsFirstElement		(const float x,const float y,const float z)																																												;
-	virtual		void 					SetAnchorVsSecondElement	(const float x,const float y,const float z)																																												;
+	virtual	void 					SetAnchor					(const float x,const float y,const float z) override;
+	virtual	void 					SetAnchorVsFirstElement		(const float x,const float y,const float z) override;
+	virtual	void 					SetAnchorVsSecondElement	(const float x,const float y,const float z) override;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		void 					SetAxisDir					(const float x,const float y,const float z,const int axis_num)																																							;
-	virtual		void 					SetAxisDirVsFirstElement	(const float x,const float y,const float z,const int axis_num)																																							;
-	virtual		void 					SetAxisDirVsSecondElement	(const float x,const float y,const float z,const int axis_num)																																							;
+	virtual	void 					SetAxisDir					(const float x,const float y,const float z,const int axis_num) override;
+	virtual	void 					SetAxisDirVsFirstElement	(const float x,const float y,const float z,const int axis_num) override;
+	virtual	void 					SetAxisDirVsSecondElement	(const float x,const float y,const float z,const int axis_num) override;
 public:
-	virtual		CPhysicsElement			*PFirst_element 			()																																																						;
-	virtual		CPhysicsElement			*PSecond_element			()																																																						;
-	virtual		u16					 	BoneID						()																																																	{return m_bone_id	;}
-	virtual		void					SetBoneID					(u16 bone_id)																																														{m_bone_id=bone_id	;}
+	virtual	CPhysicsElement			*PFirst_element 			() override;
+	virtual	CPhysicsElement			*PSecond_element			() override;
+	virtual	u16					 	BoneID						() override {return m_bone_id	;}
+	virtual	void					SetBoneID					(u16 bone_id) override {m_bone_id=bone_id	;}
 IC				CPHElement				*PFirstElement  			()																																																{return pFirst_element	;}
 IC				CPHElement				*PSecondElement 			()																																																{return pSecond_element	;}
-	virtual		void 					Activate					()																																																						;
-	virtual		void 					Create						()																																																						;
-	virtual		void 					RunSimulation				()																																																						;
-	virtual		void 					SetBackRef					(CPhysicsJoint	**j)																																																	;
-	virtual		void 					SetForceAndVelocity			(const float force,const float velocity=0.f,const int axis_num=-1)																																						;
-	virtual		void 					SetForce					(const float force,const int axis_num=-1)																																												;
-	virtual		void 					SetVelocity					(const float velocity=0.f,const int axis_num=-1)																																										;
-	virtual		void 					SetBreakable				(float force, float torque)																																																;
-	virtual		bool					isBreakable					()																																																{return !!m_destroy_info;}
+	virtual	void 					Activate					() override;
+	virtual	void 					Create						() override;
+	virtual	void 					RunSimulation				() override;
+	virtual	void 					SetBackRef					(CPhysicsJoint	**j) override;
+	virtual	void 					SetForceAndVelocity			(const float force,const float velocity=0.f,const int axis_num=-1) override;
+	virtual	void 					SetForce					(const float force,const int axis_num=-1) override;
+	virtual	void 					SetVelocity					(const float velocity=0.f,const int axis_num=-1) override;
+	virtual	void 					SetBreakable				(float force, float torque) override;
+	virtual	bool					isBreakable					() override {return !!m_destroy_info;}
 	virtual		dJointID 				GetDJoint					()																																																{return m_joint			;}
 	virtual		dJointID 				GetDJoint1					()																																																{return m_joint1		;}
-	virtual		void 					GetLimits					(float& lo_limit,float& hi_limit,int axis_num)																																											;
-	virtual		void 					GetAxisDir					(int num,Fvector& axis,eVs& vs)																																															;
-	virtual		void 					GetAxisDirDynamic			(int num,Fvector& axis)																																																	;
-	virtual		void 					GetAnchorDynamic			(Fvector& anchor)																																																		;
-	virtual		bool					IsWheelJoint				();
-	virtual		bool					IsHingeJoint				();
-	virtual		void 					GetAxisSDfactors			(float& spring_factor,float& damping_factor,int axis_num)																																								;
-	virtual		void 					GetJointSDfactors			(float& spring_factor,float& damping_factor)																																											;
-	virtual		void					GetMaxForceAndVelocity		(float &force,float &velocity,int axis_num)																																												;
-	virtual		float					GetAxisAngle				(int axis_num)																																																			;
-	virtual		float					GetAxisAngleRate			(int axis_num)																																																			;
-	virtual		void 					Deactivate					()																																																						;
+	virtual	void 					GetLimits					(float& lo_limit,float& hi_limit,int axis_num) override;
+	virtual	void 					GetAxisDir					(int num,Fvector& axis,eVs& vs) override;
+	virtual	void 					GetAxisDirDynamic			(int num,Fvector& axis) override;
+	virtual	void 					GetAnchorDynamic			(Fvector& anchor) override;
+	virtual	bool					IsWheelJoint				() override;
+	virtual	bool					IsHingeJoint				() override;
+	virtual	void 					GetAxisSDfactors			(float& spring_factor,float& damping_factor,int axis_num) override;
+	virtual	void 					GetJointSDfactors			(float& spring_factor,float& damping_factor) override;
+	virtual	void					GetMaxForceAndVelocity		(float &force,float &velocity,int axis_num) override;
+	virtual	float					GetAxisAngle				(int axis_num) override;
+	virtual	float					GetAxisAngleRate			(int axis_num) override;
+	virtual	void 					Deactivate					() override;
 				void 					ReattachFirstElement		(CPHElement* new_element)																																																;
 				CODEGeom				*&RootGeom					()																																																	{return pFirstGeom	;}
-	virtual		CPHJointDestroyInfo		*JointDestroyInfo			()																																																{return m_destroy_info	;}
+	virtual	CPHJointDestroyInfo		*JointDestroyInfo			() override {return m_destroy_info	;}
 										CPHJoint					(CPhysicsJoint::enumType type ,CPhysicsElement* first,CPhysicsElement* second)																																			;
-	virtual								~CPHJoint					()																																																						;
+	virtual	~CPHJoint					() override;
 				void					SetShell					(CPHShell* p)																																																			;			
 
 				void					ClearDestroyInfo			();
 private:
-	virtual	iphysics_scripted			&get_scripted				() { return *this ;}
+	virtual	iphysics_scripted			&get_scripted				() override { return *this ;}
 public:
 };
 

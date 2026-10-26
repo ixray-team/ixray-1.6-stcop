@@ -103,25 +103,25 @@ public:
 	typedef TPHCharacterRestrictor<rtStalkerSmall>	stalker_small_restrictor;
 	typedef TPHCharacterRestrictor<rtMonsterMedium>	medium_monster_restrictor;
 public:
-	virtual CPHActorCharacter	*CastActorCharacter			(){return this;}
-	virtual	void		SetObjectContactCallback			(ObjectContactCallbackFun* callback);
-	virtual void		SetMaterial							(u16 material);
-	virtual void		Create								(dVector3 sizes);
-	virtual void		Destroy								(void);
-	virtual void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
-	virtual void		SetAcceleration						(Fvector accel);
-	virtual	void		Disable								();
-	virtual	void		Jump								(const Fvector& jump_velocity);
-	virtual void		InitContact							(dContact* c,bool &do_collide,u16	material_idx_1 ,u16 material_idx_2);
-	virtual	void		SetRestrictorRadius					(ERestrictionType rtype,float r);
-virtual		void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch);
+	virtual	CPHActorCharacter	*CastActorCharacter			() override {return this;}
+	virtual	void		SetObjectContactCallback			(ObjectContactCallbackFun* callback) override;
+	virtual	void		SetMaterial							(u16 material) override;
+	virtual	void		Create								(dVector3 sizes) override;
+	virtual	void		Destroy								(void) override;
+	virtual	void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object) override;
+	virtual	void		SetAcceleration						(Fvector accel) override;
+	virtual	void		Disable								() override;
+	virtual	void		Jump								(const Fvector& jump_velocity) override;
+	virtual	void		InitContact							(dContact* c,bool &do_collide,u16	material_idx_1 ,u16 material_idx_2) override;
+	virtual	void		SetRestrictorRadius					(ERestrictionType rtype,float r) override;
+	virtual	void		ChooseRestrictionType				(ERestrictionType my_type,float my_depth,CPHCharacter *ch) override;
 						CPHActorCharacter					( bool single_game );
-	virtual				~CPHActorCharacter					(void);
+	virtual	~CPHActorCharacter					(void) override;
 private:
-	virtual	void		ValidateWalkOn						();
+	virtual	void		ValidateWalkOn						() override;
 			bool		CanJump								();
-	virtual	void		update_last_material				();
-	virtual	void		PhTune								( dReal step );
+	virtual	void		update_last_material				() override;
+	virtual	void		PhTune								( dReal step ) override;
 private:
 		void			ClearRestrictors					();
 		RESTRICTOR_I	Restrictor							(ERestrictionType rtype);

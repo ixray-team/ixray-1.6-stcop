@@ -128,101 +128,107 @@ protected:
 	bool	b_non_interactive;
 public:
 							CPHSimpleCharacter					()									;
-	virtual					~CPHSimpleCharacter					()						{Destroy();}
+	virtual	~CPHSimpleCharacter					() override {Destroy();}
 
 	/////////////////CPHObject//////////////////////////////////////////////
-	virtual		void		PhDataUpdate						(dReal step)						;
-	virtual		void		PhTune								(dReal step)						;
-	virtual		void		InitContact							(dContact* c,bool &do_collide,u16 /*material_idx_1*/,u16 /*material_idx_2*/)		;
-	virtual		dSpaceID	dSpace								()									{return m_space;}
-	virtual		dGeomID		dSpacedGeom							()									{return (dGeomID)m_space;}
-	virtual		void		get_spatial_params					()									;
+	virtual	void		PhDataUpdate						(dReal step) override;
+	virtual	void		PhTune								(dReal step) override;
+	virtual	void		InitContact							(dContact* c,bool &do_collide,u16 /*material_idx_1*/,u16 /*material_idx_2*/) override;
+	virtual	dSpaceID	dSpace								() override {return m_space;}
+	virtual	dGeomID		dSpacedGeom							() override {return (dGeomID)m_space;}
+	virtual	void		get_spatial_params					() override;
 	/////////////////CPHCharacter////////////////////////////////////////////
 public:
 	//Check state
-	virtual		bool			 		ContactWas						()					{if(b_meet_control) {b_meet_control=false;return true;} else return false;}
-	virtual		EEnvironment	 		CheckInvironment				()			;
-	virtual		void			 		GroundNormal					(Fvector &norm)		;
-	virtual		const ICollisionDamageInfo	*CollisionDamageInfo ()const {return this;}
-	virtual			  ICollisionDamageInfo	*CollisionDamageInfo (){return this;}
+	virtual	bool			 		ContactWas						() override {if(b_meet_control) {b_meet_control=false;return true;} else return false;}
+	virtual	EEnvironment	 		CheckInvironment				() override;
+	virtual	void			 		GroundNormal					(Fvector &norm) override;
+	virtual	const ICollisionDamageInfo	*CollisionDamageInfo ()const override {return this;}
+	virtual	ICollisionDamageInfo	*CollisionDamageInfo () override {return this;}
 private:
-	virtual		float			 	ContactVelocity				()const				{return m_collision_damage_info.ContactVelocity();}
-	virtual		void			 	HitDir							(Fvector& dir)const	{return m_collision_damage_info.HitDir(dir);}
-	virtual		const Fvector&	 	HitPos							()const				{return m_collision_damage_info.HitPos();}
+	virtual	float			 	ContactVelocity				()const override {return m_collision_damage_info.ContactVelocity();}
+	virtual	void			 	HitDir							(Fvector& dir)const override {return m_collision_damage_info.HitDir(dir);}
+	virtual	const Fvector&	 	HitPos							()const override {return m_collision_damage_info.HitPos();}
 	ALife::_OBJECT_ID				 	DamageInitiatorID				()const override;
-	virtual		CObject			 	*DamageInitiator				()const				;
-	virtual		ALife::EHitType	 	HitType							()const				{return m_collision_damage_info.m_hit_type; };
-	virtual		void				SetInitiated					();
-	virtual		bool				IsInitiated						()const				;
-	virtual		bool				GetAndResetInitiated			()					;
-	virtual		void				SetHitType						(ALife::EHitType type){ m_collision_damage_info.m_hit_type = type; };
-	virtual ICollisionHitCallback	*HitCallback					()const				;
-	virtual		void				Reinit							()					{m_collision_damage_info.Reinit();};
+	virtual	CObject			 	*DamageInitiator				()const override;
+	virtual	ALife::EHitType	 	HitType							()const override {return m_collision_damage_info.m_hit_type; };
+	virtual	void				SetInitiated					() override;
+	virtual	bool				IsInitiated						()const override;
+	virtual	bool				GetAndResetInitiated			() override;
+	virtual	void				SetHitType						(ALife::EHitType type) override { m_collision_damage_info.m_hit_type = type; };
+	virtual	ICollisionHitCallback	*HitCallback					()const override;
+	virtual	void				Reinit							() override {m_collision_damage_info.Reinit();};
 public:
 	//Creating
-	virtual		void		Create								(dVector3 sizes)	;
-	virtual		void		Destroy								(void)				;
-	virtual		void		Disable								()					;
-	virtual		void 		EnableObject						(CPHObject* obj)	;
-	virtual		void		Enable								()					;
-	virtual		void		SetBox								(const dVector3 &sizes);
-	virtual		bool		UpdateRestrictionType				(CPHCharacter* ach);
+	virtual	void		Create								(dVector3 sizes) override;
+	virtual	void		Destroy								(void) override;
+	virtual	void		Disable								() override;
+	virtual	void 		EnableObject						(CPHObject* obj) override;
+	virtual	void		Enable								() override;
+	virtual	void		SetBox								(const dVector3 &sizes) override;
+	virtual	bool		UpdateRestrictionType				(CPHCharacter* ach) override;
 	//get-set
-	virtual		void		SetObjectContactCallback			(ObjectContactCallbackFun* callback);
-	virtual		void		SetObjectContactCallbackData		( void* data );
-	virtual		void		SetWheelContactCallback				(ObjectContactCallbackFun* callback);
+	virtual	void		SetObjectContactCallback			(ObjectContactCallbackFun* callback) override;
+	virtual	void		SetObjectContactCallbackData		( void* data ) override;
+	virtual	void		SetWheelContactCallback				(ObjectContactCallbackFun* callback) override;
 private:
 				void		RemoveObjectContactCallback			(ObjectContactCallbackFun* callback);
 				void		AddObjectContactCallback			(ObjectContactCallbackFun* callback);
 static			void		TestRestrictorContactCallbackFun	(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 public:
-	virtual		ObjectContactCallbackFun* ObjectContactCallBack	();
-	virtual		void		SetStaticContactCallBack			(ContactCallbackFun* calback);
-	virtual		void		SwitchOFFInitContact				()					;
-	virtual		void		SwitchInInitContact					()					;
-	virtual		void		SetAcceleration						(Fvector accel)		;
-	virtual		Fvector		GetAcceleration						()					{ return m_acceleration; };
-	virtual     void		SetCamDir							(const Fvector& cam_dir);
-	virtual	const Fvector&	CamDir								()const				{return m_cam_dir;}
-	virtual		void		SetMaterial							(u16 material)		;
-	virtual		void		SetPosition							(const Fvector &pos);
-	virtual		void		GetVelocity							(Fvector& vvel)const;
-	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
-	virtual		void		SetVelocity							(Fvector vel)		;
-	virtual		void		SetAirControlFactor					(float factor)		{m_air_control_factor=factor;}
-	virtual		void		SetElevator							(IClimableObject* climable){m_elevator_state.SetElevator(climable);};
-	virtual	CElevatorState	*ElevatorState						()					;
-	virtual		void		SetCollisionDamageFactor			(float f)			{m_collision_damage_factor=f;}
-	virtual		void		GetPosition							(Fvector& vpos)	;
+	virtual	ObjectContactCallbackFun* ObjectContactCallBack	() override;
+	virtual	void		SetStaticContactCallBack			(ContactCallbackFun* calback) override;
+	virtual	void		SwitchOFFInitContact				() override;
+	virtual	void		SwitchInInitContact					() override;
+	virtual	void		SetAcceleration						(Fvector accel) override;
+	virtual	Fvector		GetAcceleration						() override { return m_acceleration; };
+	virtual	void		SetCamDir							(const Fvector& cam_dir) override;
+	virtual	const Fvector&	CamDir								()const override {return m_cam_dir;}
+	virtual	void		SetMaterial							(u16 material) override;
+	virtual	void		SetPosition							(const Fvector &pos) override;
+	virtual	void		GetVelocity							(Fvector& vvel)const override;
+	virtual	void		GetSmothedVelocity					(Fvector& vvel) override;
+	virtual	void		SetVelocity							(Fvector vel) override;
+	virtual	void		SetAirControlFactor					(float factor) override {m_air_control_factor=factor;}
+	virtual	void		SetElevator							(IClimableObject* climable) override {m_elevator_state.SetElevator(climable);};
+	virtual	CElevatorState	*ElevatorState						() override;
+	virtual	void		SetCollisionDamageFactor			(float f) override {m_collision_damage_factor=f;}
+	virtual	void		GetPosition							(Fvector& vpos) override;
 	virtual		void		GetPreviousPosition					(Fvector& pos)		;
-	virtual		float		FootRadius							()					;
-	virtual		void		DeathPosition						(Fvector& deathPos)	;
-	virtual		void		IPosition							(Fvector& pos)		;
-	virtual		u16			ContactBone							();
-	virtual		void		ApplyImpulse						(const Fvector& dir, const dReal P);
-	virtual		void		ApplyForce							(const Fvector& force);
-	virtual		void		ApplyForce							(const Fvector& dir,float force);
-	virtual		void		ApplyForce							(float x,float y, float z);
-	virtual		void		AddControlVel						(const Fvector& vel);
-	virtual		void		SetMaximumVelocity					(dReal vel)			{m_max_velocity=vel;}
-	virtual		dReal		GetMaximumVelocity					()					{ return m_max_velocity;}
-	virtual		void		SetJupmUpVelocity					(dReal velocity)	{jump_up_velocity=velocity;}
-	virtual		bool		JumpState							()					{
+	virtual	float		FootRadius							() override;
+	virtual	void		DeathPosition						(Fvector& deathPos) override;
+	virtual	void		IPosition							(Fvector& pos) override;
+	virtual	u16			ContactBone							() override;
+	virtual	void		ApplyImpulse						(const Fvector& dir, const dReal P) override;
+	virtual	void		ApplyForce							(const Fvector& force) override;
+	virtual	void		ApplyForce							(const Fvector& dir,float force) override;
+	virtual	void		ApplyForce							(float x,float y, float z) override;
+	virtual	void		AddControlVel						(const Fvector& vel) override;
+	virtual	void		SetMaximumVelocity					(dReal vel) override {m_max_velocity=vel;}
+	virtual	dReal		GetMaximumVelocity					() override { return m_max_velocity;}
+	virtual	void		SetJupmUpVelocity					(dReal velocity) override {jump_up_velocity=velocity;}
+
+	virtual	bool		JumpState							() override
+	{
 																				return b_jumping||b_jump;
 																					};
-	virtual	const Fvector&  ControlAccel						()const				{return m_acceleration;}
-	virtual		bool		TouchRestrictor						(ERestrictionType rttype);
-	virtual		float		&FrictionFactor						()					{return m_friction_factor;}
-	virtual		void		SetMas								(dReal mass)		;
-	virtual		float		Mass								()					{return m_mass;};
-	virtual		void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
-	virtual		void		SetNonInteractive					(bool v);	
-	virtual		bool		IsEnabled							()					{ if(!b_exist)return false; return !!dBodyIsEnabled(m_body);}
-	virtual		void		GetBodyPosition						(Fvector& vpos)		{ VERIFY(b_exist); vpos = cast_fv(dBodyGetPosition(m_body));  }
-		const Fvector		&BodyPosition						()const				{VERIFY(b_exist && m_body); return cast_fv(dBodyGetPosition(m_body)); } 
+	virtual	const Fvector&  ControlAccel						()const override {return m_acceleration;}
+	virtual	bool		TouchRestrictor						(ERestrictionType rttype) override;
+	virtual	float		&FrictionFactor						() override {return m_friction_factor;}
+	virtual	void		SetMas								(dReal mass) override;
+	virtual	float		Mass								() override {return m_mass;};
+	virtual	void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object) override;
+	virtual	void		SetNonInteractive					(bool v) override;
+	virtual	bool		IsEnabled							() override
+	{ if(!b_exist)return false; return !!dBodyIsEnabled(m_body);}
 
-	virtual		void		get_State							(		SPHNetState&	state)								;
-	virtual		void		set_State							(const	SPHNetState&	state)								;
+	virtual	void		GetBodyPosition						(Fvector& vpos) override
+	{ VERIFY(b_exist); vpos = cast_fv(dBodyGetPosition(m_body));  }
+	virtual	const Fvector		&BodyPosition						()const override
+		{VERIFY(b_exist && m_body); return cast_fv(dBodyGetPosition(m_body)); }
+
+	virtual	void		get_State							(		SPHNetState&	state) override;
+	virtual	void		set_State							(const	SPHNetState&	state) override;
 	virtual		void		ValidateWalkOn						();
 	bool		ValidateWalkOnMesh					()			;
 	bool		ValidateWalkOnObject				()			;
@@ -236,21 +242,21 @@ virtual		void		UpdateStaticDamage					(dContact* c,SGameMtl* tri_material,bool b
 IC			void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
 IC			void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
 			static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
-virtual		void		Collide								();
+	virtual	void		Collide								() override;
 			void		OnStartCollidePhase					();
 private:
-	virtual	void		Freeze							()			{ CPHObject::Freeze();		}
-	virtual	void		UnFreeze						()			{ CPHObject::UnFreeze();	}
-	virtual	void		step							(float dt)	{ CPHObject::step( dt ); }
-	virtual	void		collision_disable				()			{ CPHObject::collision_disable(); }
-	virtual	void		collision_enable				()			{ CPHObject::collision_enable(); }
-	void		collision_dynamic_enable() override { CPHObject::collision_dynamic_enable(); }
-	void		collision_dynamic_disable() override { CPHObject::collision_dynamic_disable(); }
-	virtual	void		NetRelcase						( IPhysicsShellHolder* O );
+	virtual	void		Freeze							() override { CPHObject::Freeze();		}
+	virtual	void		UnFreeze						() override { CPHObject::UnFreeze();	}
+	virtual	void		step							(float dt) override { CPHObject::step( dt ); }
+	virtual	void		collision_disable				() override { CPHObject::collision_disable(); }
+	virtual	void		collision_enable				() override { CPHObject::collision_enable(); }
+	virtual	void		collision_dynamic_enable() override { CPHObject::collision_dynamic_enable(); }
+	virtual	void		collision_dynamic_disable() override { CPHObject::collision_dynamic_disable(); }
+	virtual	void		NetRelcase						( IPhysicsShellHolder* O ) override;
 protected:
-virtual	void	get_Box								( Fvector&	sz, Fvector& c )const;
+	virtual	void	get_Box								( Fvector&	sz, Fvector& c )const override;
 	protected:
-virtual	void	update_last_material						();
+	virtual	void	update_last_material						() override;
 public:	
 #ifdef DEBUG_DRAW
 	virtual		void		OnRender						();

@@ -75,12 +75,12 @@ private:
 
 public:
 								CPHWorld						( )							;
-	virtual						~CPHWorld						(){}						;
+	virtual	~CPHWorld						() override {}						;
 
 IC	bool						Exist							()			{return b_exist ;}
 	void						Create							(bool mt, CObjectSpace * os, CObjectList *lo);
-	void						SetGravity						(float	g)					;
-IC  float						Gravity							()							{return m_gravity;}
+	virtual	void						SetGravity						(float	g) override;
+IC  virtual	float						Gravity							() override {return m_gravity;}
 	void						AddObject						(CPHObject* object)			;
 	void						AddUpdateObject					(CPHUpdateObject* object)	;
 	void						AddRecentlyDisabled				(CPHObject* object)			;
@@ -89,43 +89,46 @@ IC  float						Gravity							()							{return m_gravity;}
 	void						RemoveUpdateObject				(CPHUpdateObject* i)		;
 	dGeomID						GetMeshGeom						()							{return Mesh.GetGeom();}
 IC	dGeomID						GetMotionRayGeom				()							{return m_motion_ray;}
-	void						SetStep							( float s )					;
+	virtual	void						SetStep							( float s ) override;
 	void						Destroy							()							;
 IC	float						FrameTime						(bool frame_mark){return b_frame_mark==frame_mark ? m_frame_time :m_previous_frame_time;}
 	
 	void						FrameStep						(dReal step=0.025f)			;
-	void						Step							()							;
+	virtual	void						Step							() override;
 	void						StepTouch						()							;
 	void						CutVelocity						(float l_limit, float a_limit);
 	void						GetState						(V_PH_WORLD_STATE& state)		;
-	void 						Freeze							()							;
-	void 						UnFreeze						()							;
+	virtual	void 						Freeze							() override;
+	virtual	void 						UnFreeze						() override;
 	void						AddFreezedObject				(CPHObject* obj)			;
 	void						RemoveFreezedObject				(CPHObject* i)				;
 	bool 						IsFreezed						()							;
-IC	bool						Processing						()							{return b_processing;}
-	u32							CalcNumSteps					(u32 dTime)					;
-	u16							ObjectsNumber					(bool UpdateOnly = false)	;
+IC	virtual	bool						Processing						() override {return b_processing;}
+	virtual	u32							CalcNumSteps					(u32 dTime) override;
+#ifdef DEBUG
+	virtual	u16							ObjectsNumber					(bool UpdateOnly = false) override;
+#endif
 IC	u16							StepsShortCnt					()							{return m_steps_short_num;}
-	u64							&StepsNum						()							{return m_steps_num;}
-	float						FrameTime						()							{return	m_frame_time;}
+	virtual	u64							&StepsNum						() override {return m_steps_num;}
+	virtual	float						FrameTime						() override {return	m_frame_time;}
 ContactCallbackFun				*default_contact_shotmark		()							{ return m_default_contact_shotmark; }
 ContactCallbackFun				*default_character_contact_shotmark()						{ return m_default_character_contact_shotmark; }
 	
-	void						set_default_contact_shotmark	(ContactCallbackFun	*f)		{  m_default_contact_shotmark = f; }
-	void						set_default_character_contact_shotmark(ContactCallbackFun	*f){  m_default_character_contact_shotmark = f; }
+	virtual	void						set_default_contact_shotmark	(ContactCallbackFun	*f) override {  m_default_contact_shotmark = f; }
+	virtual	void						set_default_character_contact_shotmark(ContactCallbackFun	*f) override {  m_default_character_contact_shotmark = f; }
 	void						NetRelcase						(CPhysicsShell* s)			;
 	CObjectSpace				&ObjectSpace					()							{ VERIFY( m_object_space ); return *m_object_space; }
 	CObjectList					&LevelObjects					()							{ VERIFY( m_level_objects ); return *m_level_objects; }
 	
 #ifdef DEBUG_DRAW
-	virtual void 				OnRender						()							;
+	virtual	void 				OnRender						() override;
 #endif
-	virtual void	_BCL		OnFrame							()							;
+	virtual	void	_BCL		OnFrame							() override;
 private:
-	void						StepNumIterations				( int num_it )				;
-	iphysics_scripted			&get_scripted					()							{ return *this; }
-	void						set_update_callback				( IPHWorldUpdateCallbck* cb ){ VERIFY( cb ); m_update_callback	= cb; }
+	virtual	void						StepNumIterations				( int num_it ) override;
+	virtual	iphysics_scripted			&get_scripted					() override { return *this; }
+	virtual	void						set_update_callback				( IPHWorldUpdateCallbck* cb ) override
+	{ VERIFY( cb ); m_update_callback	= cb; }
 };
 
 extern CPHWorld	*ph_world					;

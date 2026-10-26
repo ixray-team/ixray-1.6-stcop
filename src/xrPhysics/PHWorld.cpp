@@ -93,8 +93,8 @@ void CPHWorld::OnRender()
 static struct sempty_update_callback:
 public IPHWorldUpdateCallbck
 {
-	void		update_step			(){};
-	void		phys_shell_relcase	(CPhysicsShell* sh){};
+	virtual	void		update_step			() override {};
+	virtual	void		phys_shell_relcase	(CPhysicsShell* sh) override {};
 } empty_update_callback;
 
 CPHWorld::CPHWorld() :
@@ -557,11 +557,12 @@ void CPHWorld::NetRelcase(CPhysicsShell* s)
 		Obj->NetRelcase(s);
 	}
 }
-
+#ifdef DEBUG
 u16 CPHWorld::ObjectsNumber(bool UpdateOnly)
 {
 	return UpdateOnly ? m_update_objects.Count() : m_objects.Count();
 }
+#endif
 
 void CPHWorld::GetState(V_PH_WORLD_STATE& state)
 {
