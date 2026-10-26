@@ -282,6 +282,11 @@ void CRender::EditorRenderUnlit(GfxCmdList& Cmd)
 		GraphMain.r_dsgraph_render_sorted(false);
 	}
 
+	GraphMain.mapEmissive.clear();
+	GraphMain.mapWmark.clear();
+	GraphMain.mapHUDEmissive.clear();
+	GraphMain.mapHUDSorted.clear();
+
 	GraphMain.r_pmask(true, false);
 
 	Target->PhaseEditorScale(Cmd);
