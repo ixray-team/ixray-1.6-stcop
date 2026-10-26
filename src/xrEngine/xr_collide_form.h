@@ -158,14 +158,14 @@ public:
 		CCF_bone_callback = callback;
 		CCF_bone_callback_param = param;
 	};
-	virtual bool		_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool		_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R) override;
 	bool				_ElementCenter	(u16 elem_id, Fvector& e_center);
 	const ElementVec&	_GetElements	() {return elements;}
 #ifdef DEBUG
 	void				_dbg_refresh	(){BuildTopLevel();BuildState();}
 #endif
 
-	virtual	CCF_Skeleton* cast_cff_skeleton() { return this; };
+	virtual CCF_Skeleton* cast_cff_skeleton() override { return this; };
 };
 
 class ENGINE_API CCF_Shape :
@@ -194,7 +194,7 @@ public:
 public:
 					CCF_Shape		( CObject* _owner );
 
-	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
+	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R) override;
 	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
 
 	void			add_sphere		( Fsphere& S	);
@@ -203,7 +203,7 @@ public:
 	bool			Contact			( CObject* O	);
 	xr_vector<shape_def>& Shapes	(){return shapes;}
 
-	virtual	CCF_Shape* cast_shape() { return this; };
+	virtual CCF_Shape* cast_shape() override { return this; };
 };
 
 #endif //__XR_COLLIDE_FORM_H__

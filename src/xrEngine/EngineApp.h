@@ -45,13 +45,13 @@ public:
 	virtual void LoadForceFinish();
 	virtual void SetLoadStageTitle(const char* _ls_title);
 
-	virtual void OnEvent(EVENT E, u64 P1, u64 P2);
+	virtual void OnEvent(EVENT E, u64 P1, u64 P2) override;
 
 	// Other
 	CEngineApp();
 	virtual ~CEngineApp();
 
-	virtual void OnFrame();
+	virtual void OnFrame() override;
 	virtual void load_draw_internal();
 	void SetLoadingScreen(ILoadingScreen* newScreen);
 	virtual void DestroyLoadingScreen();

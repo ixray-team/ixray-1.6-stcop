@@ -111,8 +111,8 @@ public:
 	virtual bool				Load_GameSpecific_After	( )										{ return true; };		// after object loading
 	void						Load_GameSpecific_CFORM	( CDB::TRI* T, size_t count );
 
-	virtual void	_BCL		OnFrame					( void );
-	virtual void				OnRender				( void );
+	void	_BCL		OnFrame					( void ) override;
+	void				OnRender				( void ) override;
 
 	virtual	shared_str			OpenDemoFile			(const char* demo_file_name) = 0;
 	virtual void				net_StartPlayDemo		() = 0;

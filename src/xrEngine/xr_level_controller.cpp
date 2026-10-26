@@ -1109,7 +1109,8 @@ class CCC_Bind : public IConsole_Command
 	int m_work_idx;
 public:
 	CCC_Bind(const char* N, int idx) : IConsole_Command(N),m_work_idx(idx) {};
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		string256							action;
 		string256							key;
@@ -1163,7 +1164,8 @@ public:
 
 		CStringTable::ReparseKeyBindings();
 	}
-	virtual void Save(IWriter* F) 
+
+	virtual void Save(IWriter* F) override
 	{
 		// Don't write "default_controls" section header - it causes conflicts when loading user.ltx
 		// The default_controls command would reload default_controls.ltx and overwrite user bindings
@@ -1180,8 +1182,8 @@ public:
 		}
 	}
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         for (int idx = 0; idx < bindings_count; ++idx) {
             if (idx > bindings_count)
                 continue;
@@ -1203,7 +1205,8 @@ class CCC_BindGamepad : public IConsole_Command
 	int m_work_idx;
 public:
 	CCC_BindGamepad(const char* N, int idx) : IConsole_Command(N), m_work_idx(idx) {};
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		string256							action;
 		string256							key;
@@ -1256,7 +1259,8 @@ public:
 
 		CStringTable::ReparseKeyBindings();
 	}
-	virtual void Save(IWriter* F) 
+
+	virtual void Save(IWriter* F) override
 	{
 		for(int idx=0; idx<bindings_count;++idx)
 		{
@@ -1271,8 +1275,8 @@ public:
 		}
 	}
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         for (int idx = 0; idx < bindings_count; ++idx) {
             if (idx > bindings_count)
                 continue;
@@ -1295,7 +1299,8 @@ class CCC_UnBind : public IConsole_Command
 public:
 	CCC_UnBind(const char* N, int idx) : IConsole_Command(N),m_work_idx(idx) 
 	{ bEmptyArgsHandled=true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		int action_id						= action_name_to_id			(args);
 		_binding*	pbinding				= &g_key_bindings[action_id];
@@ -1304,8 +1309,8 @@ public:
 		CStringTable::ReparseKeyBindings();
 	}
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         for (int idx = 0; idx < bindings_count; ++idx) {
             if (idx > bindings_count)
                 continue;
@@ -1328,7 +1333,8 @@ class CCC_UnBindGamepad : public IConsole_Command
 public:
 	CCC_UnBindGamepad(const char* N, int idx) : IConsole_Command(N), m_work_idx(idx)
 	{ bEmptyArgsHandled=true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		int action_id						= action_name_to_id			(args);
 		_binding*	pbinding				= &g_key_bindings[action_id];
@@ -1337,8 +1343,8 @@ public:
 		CStringTable::ReparseKeyBindings();
 	}
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         for (int idx = 0; idx < bindings_count; ++idx) {
             if (idx > bindings_count)
                 continue;
@@ -1361,7 +1367,8 @@ public:
 	CCC_ListActions(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=true; };
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 		Log("- --- Action list start ---");
 		for(int idx=0; idx<bindings_count;++idx)
 		{
@@ -1378,7 +1385,7 @@ public:
 	CCC_UnBindAll(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=true; };
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		for(int idx=0; idx<bindings_count;++idx)
 		{
@@ -1397,7 +1404,7 @@ class CCC_DefControls : public CCC_UnBindAll
 public:
 	CCC_DefControls(const char* N) : CCC_UnBindAll(N){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		CCC_UnBindAll::Execute(args);
 		string_path				_cfg;
@@ -1428,7 +1435,8 @@ public:
 	CCC_BindList(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=true; };
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 		Log				("- --- Bind list start ---");
 		string512		buff;			
 		
@@ -1451,7 +1459,8 @@ class CCC_BindConsoleCmd : public IConsole_Command
 {
 public:
 	CCC_BindConsoleCmd(const char* N) : IConsole_Command(N) {};
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		string512				console_command;
 		string256				key;
@@ -1464,13 +1473,13 @@ public:
 			bindConsoleCmds.bind	(dik, console_command);
 	}
 
-	virtual void Save(IWriter* F) 
+	virtual void Save(IWriter* F) override
 	{
 		bindConsoleCmds.save(F);
 	}
 
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         CConsole::vecCMD_IT it;
         for (it = Console->Commands.begin(); it != Console->Commands.end(); it++) {
             IConsole_Command& C = *(it->second);
@@ -1487,7 +1496,7 @@ public:
 	CCC_UnBindConsoleCmd(const char* N) : IConsole_Command(N)
 	{ bEmptyArgsHandled=false; };
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
         if (bindConsoleCmds.m_bindConsoleCmds.empty())
             return;
@@ -1495,8 +1504,9 @@ public:
 		if(_dik)
 			bindConsoleCmds.unbind		(_dik);
 	}
-    virtual void fill_tips(vecTips& tips, u32 mode)
-    {
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
         xr_map<int, _conCmd>::iterator it = bindConsoleCmds.m_bindConsoleCmds.begin();
         for (; it != bindConsoleCmds.m_bindConsoleCmds.end(); ++it) 
 		{

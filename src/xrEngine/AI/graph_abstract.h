@@ -82,8 +82,8 @@ template <
 >
 class CGraphAbstractSerialize : public CGraphAbstract<_data_type,_edge_weight_type,_vertex_id_type>, public IPureSerializeObject<IReader,IWriter> {
 public:
-	virtual void						save			(IWriter &stream);
-	virtual void						load			(IReader &stream);
+	virtual void						save			(IWriter &stream) override;
+	virtual void						load			(IReader &stream) override;
 };
 
 template <typename _data_type, typename _edge_weight_type, typename _vertex_id_type, typename _edge_data_type>

@@ -18,7 +18,7 @@ public:
 public:
 						CEffectorPP		(EEffectorPPType type, f32 lifeTime, bool free_on_remove=true);
 						CEffectorPP		():bFreeOnRemove(true),fLifeTime(0.0f),bOverlap(true){};
-	virtual				~CEffectorPP	();
+	virtual ~CEffectorPP	() override;
 
 	virtual	bool		Process			(SPPInfo &PPInfo);
 	virtual	bool		Valid			()							{return fLifeTime>0.0f;}

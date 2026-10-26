@@ -112,7 +112,8 @@ class CCC_Quit : public IConsole_Command
 {
 public:
 	CCC_Quit(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		if (Device.IsEditorMode())
 		{
@@ -129,7 +130,9 @@ class CCC_MotionsStat : public IConsole_Command
 {
 public:
 	CCC_MotionsStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		//g_pMotionsContainer->dump();
 		//	TODO: move this console commant into renderer
 		VERIFY(0);
@@ -140,7 +143,8 @@ class CCC_TexturesStat : public IConsole_Command
 {
 public:
 	CCC_TexturesStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		Device.DumpResourcesMemoryUsage();
 	}
@@ -150,7 +154,9 @@ class CCC_E_Dump : public IConsole_Command
 {
 public:
 	CCC_E_Dump(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		g_pEventManager->Event.Dump();
 	}
 };
@@ -159,7 +165,9 @@ class CCC_E_Signal : public IConsole_Command
 {
 public:
 	CCC_E_Signal(const char* N) : IConsole_Command(N)  { }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		char	Event[128],Param[128];
 		Event[0]=0; Param[0]=0;
 		sscanf	(args,"%127[^,],%127s",Event,Param);
@@ -174,8 +182,8 @@ public:
 	{
 		bEmptyArgsHandled = true;
 	}
-	
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 	    Log("--- Command listing begin ---");
 	    {
@@ -400,7 +408,8 @@ class CCC_Start : public IConsole_Command
 	}
 public:
 	CCC_Start(const char* N) : IConsole_Command(N)	{ 	  bLowerCaseArgs = false; }
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		string4096	op_server,op_client,op_demo;
 		op_server[0] = 0;
@@ -438,7 +447,9 @@ class CCC_Disconnect : public IConsole_Command
 {
 public:
 	CCC_Disconnect(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		g_pEventManager->Event.Defer("KERNEL:disconnect");
 	}
 };
@@ -447,7 +458,9 @@ class CCC_VID_Reset : public IConsole_Command
 {
 public:
 	CCC_VID_Reset(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (Device.b_is_Ready) {
 			Device.Reset	();
 		}
@@ -459,7 +472,9 @@ class CCC_VidMode : public CCC_Token
 	u32		_dummy;
 public :
 					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; }
-	virtual void	Execute(const char* args){
+
+	virtual void	Execute(const char* args) override
+	{
 		u32 _w, _h;
 		int cnt = sscanf		(args,"%ux%u",&_w,&_h);
 		if(cnt==2){
@@ -469,17 +484,21 @@ public :
 			Msg("! Wrong video mode [%s]", args);
 		}
 	}
-	virtual void	Status	(TStatus& S)	
+
+	virtual void	Status	(TStatus& S) override
 	{ 
 		xr_sprintf(S,sizeof(S),"%dx%d",psCurrentVidMode[0],psCurrentVidMode[1]); 
 	}
-	virtual xr_token* GetToken()				{return vid_mode_token;}
-	virtual void	Info	(TInfo& I)
+
+	virtual xr_token* GetToken() override {return vid_mode_token;}
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		xr_strcpy(I,sizeof(I),"change screen resolution WxH");
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) {
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
 		TStatus  str, cur;
 		Status( cur );
 
@@ -509,7 +528,9 @@ class CCC_SND_Restart : public IConsole_Command
 {
 public:
 	CCC_SND_Restart(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		Sound->_restart();
 	}
 };
@@ -518,7 +539,9 @@ class CCC_SND_ExportConfig : public IConsole_Command
 {
 public:
 	CCC_SND_ExportConfig(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		XRay::Sound::Mixer::ExportConfig();
 	}
 };
@@ -529,7 +552,7 @@ class CCC_Gamma : public CCC_Float
 public:
 	CCC_Gamma	(const char* N, float* V) : CCC_Float(N,V,0.5f,1.5f)	{}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (Device.IsEditorMode())
 		{
@@ -552,11 +575,13 @@ class CCC_r2 : public CCC_Token
 	typedef CCC_Token inherited;
 public:
 	CCC_r2(const char* N) :inherited(N, &renderer_value, vid_quality_token){renderer_value=0; }
-	virtual			~CCC_r2	()
+
+	virtual ~CCC_r2	() override
 	{
 		
 	}
-	virtual void	Execute	(const char* args)
+
+	virtual void	Execute	(const char* args) override
 	{
 		tokens					= vid_quality_token;
 		if (g_dedicated_server)
@@ -576,7 +601,7 @@ public:
 		LightingModeApply		(mode, !g_lighting_mode_locked);
 	}
 
-	virtual void	Status	(TStatus& S)
+	virtual void	Status	(TStatus& S) override
 	{
 		if (g_dedicated_server)
 		{
@@ -586,13 +611,13 @@ public:
 		xr_strcpy(S, LightingModeCanonicalToken(g_lighting_mode_cfg));
 	}
 
-	virtual void	Save	(IWriter *F)	
+	virtual void	Save	(IWriter *F) override
 	{
 		tokens = vid_quality_token;
 		inherited::Save(F);
 	}
 
-	virtual xr_token* GetToken()
+	virtual xr_token* GetToken() override
 	{
 		tokens = vid_quality_token;
 		return inherited::GetToken();
@@ -605,8 +630,9 @@ class CCC_GamepadPrefixOverride : public CCC_Token
 	typedef CCC_Token inherited;
 public:
 	CCC_GamepadPrefixOverride(const char* N) : inherited(N, &ps_gamepad_prefix_override, gamepad_prefix_override_token) { ps_gamepad_prefix_override = 0; }
-	virtual ~CCC_GamepadPrefixOverride() {}
-	virtual void	Execute	(const char* args)
+	virtual ~CCC_GamepadPrefixOverride() override {}
+
+	virtual void	Execute	(const char* args) override
 	{
 		tokens = gamepad_prefix_override_token;
 
@@ -615,13 +641,13 @@ public:
 		CStringTable::ReparseKeyBindings();
 	}
 
-	virtual void	Save	(IWriter *F)	
+	virtual void	Save	(IWriter *F) override
 	{
 		tokens = gamepad_prefix_override_token;
 		inherited::Save(F);
 	}
 
-	virtual xr_token* GetToken()
+	virtual xr_token* GetToken() override
 	{
 		tokens = gamepad_prefix_override_token;
 		return inherited::GetToken();
@@ -634,10 +660,11 @@ class CCC_soundDevice : public CCC_Token
 	typedef CCC_Token inherited;
 public:
 	CCC_soundDevice(const char* N) :inherited(N, &snd_device_id, nullptr){}
-	virtual			~CCC_soundDevice	()
+
+	virtual ~CCC_soundDevice	() override
 	{}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		GetToken				();
 		if(!tokens)				return;
@@ -646,20 +673,20 @@ public:
 		::Sound->SwitchAudioDevice(args);
 	}
 
-	virtual void	Status	(TStatus& S)
+	virtual void	Status	(TStatus& S) override
 	{
 		GetToken				();
 		if(!tokens)				return;
 		inherited::Status		(S);
 	}
 
-	virtual xr_token* GetToken()
+	virtual xr_token* GetToken() override
 	{
 		tokens					= snd_devices_token;
 		return inherited::GetToken();
 	}
 
-	virtual void Save(IWriter *F)	
+	virtual void Save(IWriter *F) override
 	{
 		GetToken				();
 		if(!tokens)				return;
@@ -675,15 +702,17 @@ public		:
 		bEmptyArgsHandled	= true;
 	}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		Console->Hide	();
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{
 		S[0]			= 0;
 	}
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		xr_sprintf		(I,sizeof(I),"hide console");
 	}
@@ -722,7 +751,8 @@ class CCC_Profiler : public IConsole_Command
 	bool start_profile = false;
 public:
 	CCC_Profiler(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args)
+
+	virtual void Execute(const char* args) override
 	{
 		if (!start_profile)
 		{

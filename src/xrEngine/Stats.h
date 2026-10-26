@@ -106,14 +106,14 @@ public:
 	shared_str	eval_line_3;
 
 	virtual void	Show			(void);
-	virtual void 	OnRender		();
+	virtual void 	OnRender		() override;
 	void			OnDeviceCreate	(void);
 	void			OnDeviceDestroy	(void);
 public:
 	xr_vector		<shared_str>	errors;
 public:
 			CStats();
-	virtual ~CStats();
+	virtual ~CStats() override;
 
 	IC CGameFont*	Font			(){return pFont;}
 

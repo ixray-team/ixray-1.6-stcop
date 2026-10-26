@@ -21,7 +21,7 @@ public:
 	void InitializeFonts();
 
 	void Render();
-	virtual void OnDeviceReset();
+	virtual void OnDeviceReset() override;
 
 	CGameFont* GetFont(const shared_str& name, u32 flags = 0);
 	CGameFont* CloneFont(const shared_str& name);
