@@ -263,21 +263,20 @@ void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
 
 void CActor::UpdateDefferedMessages()
 {
-	while (true)
+	xr_vector<GAME_NEWS_DATA*> DueMessages;
 	{
-		GAME_NEWS_DATA* newsData = nullptr;
+		xrCriticalSectionGuard guard(DefferedMessagesLock);
+		while (!m_defferedMessages.empty() && m_defferedMessages.back().time <= Device.dwTimeGlobal)
 		{
-			xrCriticalSectionGuard guard(DefferedMessagesLock);
-			if (m_defferedMessages.empty() || m_defferedMessages.back().time > Device.dwTimeGlobal)
-			{
-				break;
-			}
-			newsData = m_defferedMessages.back().news_data;
+			DueMessages.push_back(m_defferedMessages.back().news_data);
 			m_defferedMessages.pop_back();
 		}
+	}
 
-		AddGameNews(*newsData);
-		xr_delete(newsData);
+	for (GAME_NEWS_DATA* NewsData : DueMessages)
+	{
+		AddGameNews(*NewsData);
+		xr_delete(NewsData);
 	}
 }
 

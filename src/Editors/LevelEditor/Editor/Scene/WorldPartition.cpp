@@ -2,6 +2,16 @@
 
 CWorldPartition GWorldPartition;
 
+static Fvector StreamCameraPosition()
+{
+	// In PIE the game camera drives the device camera, the editor view stays where it was
+	if (Scene->IsPlayInEditor())
+	{
+		return EDevice->vCameraPosition;
+	}
+	return EContext.UI->CurrentView().m_Camera.GetPosition();
+}
+
 static bool ObjectCenter(CCustomObject* Object, Fvector& Center)
 {
 	Fbox Box;
@@ -32,7 +42,7 @@ bool CWorldPartition::IsPointHidden(const Fvector& Position) const
 		return false;
 	}
 
-	const Fvector& Camera = EContext.UI->CurrentView().m_Camera.GetPosition();
+	const Fvector Camera = StreamCameraPosition();
 	return _sqr(Position.x - Camera.x) + _sqr(Position.z - Camera.z) > _sqr(StreamRadius);
 }
 
@@ -152,7 +162,7 @@ bool CWorldPartition::IsPositionActive(const Fvector& Position, float RadiusScal
 
 	if (StreamAroundCamera)
 	{
-		const Fvector& Camera = EContext.UI->CurrentView().m_Camera.GetPosition();
+		const Fvector Camera = StreamCameraPosition();
 		const float DX = Position.x - Camera.x;
 		const float DZ = Position.z - Camera.z;
 		const float Radius = StreamRadius * RadiusScale;
@@ -291,7 +301,7 @@ void CWorldPartition::UpdateStreaming()
 	}
 
 	// Settings changes are picked up by the periodic pass
-	const Fvector& CameraNow = EContext.UI->CurrentView().m_Camera.GetPosition();
+	const Fvector CameraNow = StreamCameraPosition();
 	const bool CameraMoved = _sqr(CameraNow.x - LastScanCamera.x) + _sqr(CameraNow.z - LastScanCamera.z) > _sqr(StreamRadius * 0.02f);
 	if (!ScanNeeded && !(StreamAroundCamera && CameraMoved) && ++FramesSinceScan < 60)
 	{
@@ -310,7 +320,7 @@ void CWorldPartition::UpdateStreaming()
 	static xr_vector<SCandidate> ToLoad;
 	ToLoad.clear();
 
-	const Fvector& Camera = EContext.UI->CurrentView().m_Camera.GetPosition();
+	const Fvector Camera = StreamCameraPosition();
 	PendingCount = 0;
 	StaticCount = 0;
 
@@ -498,7 +508,7 @@ bool CWorldPartition::CollectActive(xr_vector<CCustomObject*>& Out) const
 
 	Out.insert(Out.end(), Spanning.begin(), Spanning.end());
 
-	const Fvector& Camera = EContext.UI->CurrentView().m_Camera.GetPosition();
+	const Fvector Camera = StreamCameraPosition();
 	// Objects are binned by their center: a cell farther than the radius by half a cell
 	// diagonal can still hold objects reaching into the circle
 	const float Reach = StreamRadius + CellSize * 0.75f;

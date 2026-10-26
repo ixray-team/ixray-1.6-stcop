@@ -678,7 +678,8 @@ CRenderTarget::CRenderTarget()
 
 	//SSLR
 	{
-		if(RImplementation.o.deffered_reflecitons) 
+		// The editor toggles SSLR at runtime without a reset
+		if(RImplementation.o.deffered_reflecitons || (Device.IsEditorMode() && !RImplementation.o.dx11_use_legacy_light))
 		{
 			rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 			rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);

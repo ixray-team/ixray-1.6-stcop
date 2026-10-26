@@ -168,6 +168,11 @@ void CImGuiManager::Unsubscribe(shared_str Name)
 	}
 }
 
+void CImGuiManager::UnsubscribeAll()
+{
+	RenderFrameData.clear();
+}
+
 void CImGuiManager::BeginRender()
 {
 	RHIUtils::ImGui::NewFrame();
