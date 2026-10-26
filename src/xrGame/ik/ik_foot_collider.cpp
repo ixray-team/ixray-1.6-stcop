@@ -68,7 +68,7 @@ struct ik_pick_result
 	u16		bone;
 };
 
-bool ignore_tri( CDB::TRI &tri )
+bool ignore_tri(const CDB::TRI& tri )
 {
 	SGameMtl* material=GMLib.GetMaterialByIdx( tri.material );
 
@@ -79,10 +79,10 @@ bool ignore_tri( CDB::TRI &tri )
 			//material->Flags.test( SGameMtl::flActorObstacle );
 }
 
-bool ignore_static_tri( int tri )
+bool ignore_static_tri(const collide::rq_result& tri )
 {
-	VERIFY(Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > tri );
-	CDB::TRI& triangle	= Level( ).ObjectSpace.GetStaticTris( )[tri];
+	VERIFY(tri.GetStatic()->tris.size() > tri.element );
+	auto& triangle	= tri.GetStatic()->tris[tri.element];
 	return ignore_tri( triangle );
 }
 
@@ -94,14 +94,13 @@ IC bool ignore_object( CObject	*O )
 	return false;
 }
 
-
-
-IC bool ignore_result( collide::rq_result	&R )
+IC bool ignore_result(const collide::rq_result& R)
 {
-	if(R.O)
-		return ignore_object( R.O );
-	else
-		return ignore_static_tri( R.element );
+	if(!R.IsStatic())
+	{
+		return ignore_object( const_cast<CObject*>(R.GetDynamic()));
+	}
+	return ignore_static_tri( R );
 }
 
 IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplane &p )
@@ -112,23 +111,15 @@ IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplan
 	p.d = -p.n.dotproduct( v0 );
 }
 
-IC void tri_plane(const CDB::TRI &tri, Fplane &p )
-{
-	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
-	tri_plane( pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]] , p );
-}
-
 IC bool	get_plane_static(  ik_pick_result &r, Fvector &next_pos, float &next_range, const collide::rq_result	&R, float pick_dist, const Fvector &pos, const Fvector &pick_v )
 {
+	auto Obj = R.GetStatic();
+	VERIFY( Obj->tris.size() > R.element );
+	auto& tri = Obj->tris[R.element];
 	
-	
-	VERIFY( Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > R.element );
-	CDB::TRI& tri	= Level( ).ObjectSpace.GetStaticTris( )[R.element];
-	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
-
-	r.triangle[0] = pVerts[tri.verts[0]];
-	r.triangle[1] = pVerts[tri.verts[1]];
-	r.triangle[2] = pVerts[tri.verts[2]];
+	R.xform.transform_tiny(r.triangle[0], Obj->verts[tri.verts[0]]);
+	R.xform.transform_tiny(r.triangle[1], Obj->verts[tri.verts[1]]);
+	R.xform.transform_tiny(r.triangle[2], Obj->verts[tri.verts[2]]);
 
 	tri_plane( r.triangle[0], r.triangle[1], r.triangle[2], r.p );
 
@@ -161,10 +152,13 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 	next_pos.add( pos, Fvector( ).mul( pick_v, R.range + EPS_L ) );
 	next_range = pick_dist - R.range - EPS_L;
 
-	if(ignore_object(R.O))
+	auto Obj = const_cast<CObject*>(R.GetDynamic());
+	if(ignore_object(Obj))
+	{
 		return false;
+	}
 
-	IRenderVisual* V =R.O->Visual();
+	IRenderVisual* V = Obj->Visual();
 	if( V )
 	{
 		IKinematics *K = V->dcast_PKinematics();
@@ -173,7 +167,7 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 			float dist = pick_dist;
 			IKinematics::pick_result res;
 		
-			if( K->PickBone(R.O->XFORM(), res , dist,  pos, pick_v, (u16) R.element ) )
+			if( K->PickBone(Obj->XFORM(), res , dist,  pos, pick_v, (u16) R.element ) )
 			{
 				//cld.collided = true;
 				r.position.add( pos, Fvector( ).mul( pick_v, res.dist ) );
@@ -185,7 +179,7 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 				next_pos.set ( r.position );
 				next_range	  = pick_dist - res.dist;
 				r.range		  = res.dist; 
-				r.object	  = R.O;
+				r.object	  = Obj;
 				r.bone		  = (u16)R.element;
 				return true;
 			}
@@ -197,10 +191,11 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 static const float		reach_dist		=1.5f	;
 IC bool get_plane( ik_pick_result &r,  Fvector &next_pos, float &next_range, const collide::rq_result	R, float pick_dist,const Fvector &pos, const Fvector &pick_v )
 {
-	if( !R.O )
+	if(R.IsStatic())
+	{
 		return get_plane_static(  r, next_pos, next_range, R, pick_dist, pos,  pick_v  );
-	else 
-		return get_plane_dynamic( r, next_pos, next_range, R, pick_dist, pos, pick_v );
+	}
+	return get_plane_dynamic( r, next_pos, next_range, R, pick_dist, pos, pick_v );
 }
 
 bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
@@ -213,33 +208,30 @@ bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
 	g_pGameLevel->ObjectSpace.RayQuery( results, ray, nullptr, nullptr, nullptr, ignore_object );
 
 	bool collided = false;
-	collide::rq_result*	_begin = results.r_begin();
-	collide::rq_result*	_end = results.r_end();
 #ifdef DEBUG
 	collide::rq_result*	accepted = nullptr;
 #endif
-
-	for( collide::rq_result* _I = _begin; _I != _end; ++_I )
+	Fvector next_pos	= q.pos();
+	float	next_range	= q.range();
+	
+	for (auto& elem : results.results)
 	{
-		Fvector next_pos	= q.pos();
-		float	next_range	= q.range();
-
-		collided = get_plane( r, next_pos, next_range, *_I, q.range(), q.pos(), q.dir() );
+		collided = get_plane( r, next_pos, next_range,elem, q.range(), q.pos(), q.dir() );
 		if( collided )
 		{
 #ifdef DEBUG
-			accepted = _I;
+			accepted = &elem;
 #endif
 			break;
 		}
 	}
 
 #ifdef DEBUG
-	if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) && collided && accepted != nullptr && !accepted->O )
+	if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) && collided && accepted != nullptr && accepted->IsStatic() )
 	{
-		CDB::TRI& tri = Level( ).ObjectSpace.GetStaticTris()[accepted->element];
+		auto& tri = accepted->GetStatic()->get_tris()[accepted->element];
 		DBG_DrawLine(q.pos(), r.position, color_xrgb(255, 0, 0));
-		DBG_DrawTri(&tri, Level().ObjectSpace.GetStaticVerts().data(), color_xrgb(255, 0, 0));
+		DBG_DrawTri(TriabgleCDBData{accepted->xform, accepted->GetStatic(), (size_t)(accepted->element)}, color_xrgb(255, 0, 0));
 	}
 #endif
 	return collided;

@@ -44,7 +44,7 @@ static void drag_float3_reset(const char* label, Fvector& v, float step, const F
 	}
 }
 
-static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* rec, CObject* obj, const Fmatrix* obj_xform, CDemoRecord::e_bone_holder_type holder_type)
+static void render_bone_tree(IKinematics* kinematics, u16 bone_id, CDemoRecord* rec, const CObject* obj, const Fmatrix* obj_xform, CDemoRecord::e_bone_holder_type holder_type)
 {
 	if (!kinematics || bone_id >= kinematics->LL_BoneCount())
 	{
@@ -374,7 +374,7 @@ void RenderDemoRecordEditorWindow()
 					demo_record->clear_bone_attachment();
 					demo_record->camera_mode.zero();
 
-					CObject* hit = demo_record->rq_result.O;
+					auto hit = demo_record->rq_result.IsStatic() ? nullptr : demo_record->rq_result.GetDynamic();
 					if (hit != nullptr && !hit->getDestroy() && hit->Visual() != nullptr)
 					{
 						if (IKinematics* k = hit->Visual()->dcast_PKinematics())
@@ -560,7 +560,7 @@ void RenderDemoRecordEditorWindow()
 		tip("Bone hierarchy of the object under the crosshair, or of the object the camera is currently attached to.\n"
 					"Click any bone to attach the camera to it (switches to LookFromBone mode).");
 
-		CObject* target_obj = nullptr;
+		const CObject* target_obj = nullptr;
 		IKinematics* kin = nullptr;
 
 		if (attached)
@@ -568,13 +568,13 @@ void RenderDemoRecordEditorWindow()
 			target_obj = demo_record->bone_holder;
 			kin = demo_record->bone_holder_kinematics;
 		}
-		else if (demo_record->rq_result.O != nullptr && !demo_record->rq_result.O->getDestroy())
+		else if (demo_record->rq_result.valid() && !demo_record->rq_result.IsStatic() && !demo_record->rq_result.GetDynamic()->getDestroy())
 		{
-			if (IRenderVisual* v = demo_record->rq_result.O->Visual())
+			if (IRenderVisual* v = demo_record->rq_result.GetDynamic()->Visual())
 			{
 				kin = v->dcast_PKinematics();
 			}
-			target_obj = demo_record->rq_result.O;
+			target_obj = demo_record->rq_result.GetDynamic();
 		}
 		
 		if (target_obj == nullptr || kin == nullptr)

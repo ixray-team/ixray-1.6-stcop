@@ -738,16 +738,11 @@ bool CCar::TryTrunk()
 	RQR.r_clear();
 	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
 
-	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+	if (IsGameTypeSingle() && g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-
-		collide::rq_results& R = RQR;
-		int y = R.r_count();
-
-		for (int k = 0; k < y; ++k)
+		for (auto& elem : RQR.results)
 		{
-			collide::rq_result* I = R.r_begin() + k;
-			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
+			if (elem.element == m_bone_trunk)
 			{
 				return true;
 			}
@@ -767,17 +762,13 @@ bool CCar::TryUsableBones()
 	RQR.r_clear();
 	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
 
-	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+	if (IsGameTypeSingle() && g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-		collide::rq_results& R = RQR;
-		int y = R.r_count();
-
-		for (int k = 0; k < y; ++k)
+		for (auto& elem : RQR.results)
 		{
-			collide::rq_result* I = R.r_begin() + k;
-			if (IsGameTypeSingle() && UsableBones.contains(I->element))
+			if (UsableBones.contains(elem.element))
 			{
-				UsableBonesActive = I->element;
+				UsableBonesActive = elem.element;
 				return true;
 			}
 		}
@@ -789,8 +780,14 @@ bool CCar::TryUsableBones()
 
 void CCar::PHHit(SHit& H)
 {
-	if (!m_pPhysicsShell)	return;
-	if (m_bone_steer == H.bone()) return;
+	if (!m_pPhysicsShell)
+	{
+		return;
+	}
+	if (m_bone_steer == H.bone())
+	{
+		return;
+	}
 	if (CPHUpdateObject::IsActive())
 	{
 		Fvector vimpulse; vimpulse.set(H.direction());
@@ -1786,15 +1783,12 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 	VERIFY(!fis_zero(Q.dir.square_magnitude()));
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-		collide::rq_results& R = RQR;
-		for (int k = 0; k < R.r_count(); ++k)
+		for (auto& elem : RQR.results)
 		{
-			collide::rq_result* I = R.r_begin() + k;
-
-			if (IsGameTypeSingleCompatible() && m_bone_trunk == (u16)I->element)
+			if (IsGameTypeSingleCompatible() && m_bone_trunk == (u16)elem.element)
 			{
-				bool IsDoorBone = is_Door((u16)I->element, i);
-				if (I->range < 1.f)
+				bool IsDoorBone = is_Door((u16)elem.element, i);
+				if (elem.range < 1.f)
 				{
 					if (IsDoorBone)
 					{
@@ -1813,7 +1807,7 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 				return false;
 			}
 
-			if (is_Door((u16)I->element, i))
+			if (is_Door((u16)elem.element, i))
 			{
 				bool front = i->second.IsFront(pos, dir);
 				if ((Owner()) || (!Owner() && front))i->second.Use();

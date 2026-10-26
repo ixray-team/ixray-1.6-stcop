@@ -1,7 +1,7 @@
 project(xrLevelBuilder)
 
 set(XLB_PACKAGES "${CMAKE_BINARY_DIR}/packages")
-set(XLB_EMBREE "${XLB_PACKAGES}/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3")
+#set(XLB_EMBREE "${XLB_PACKAGES}/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3")
 
 # Files import: UI front-end
 file(GLOB UTILS_FORMS_SOURCE_ROOT_FILES CONFIGURE_DEPENDS "*.cpp" "*.h")
@@ -129,7 +129,7 @@ target_include_directories(xrLevelBuilder PRIVATE
     "${IXRAY_SDK_INC}"
     "${XLB_PACKAGES}/directxmesh_desktop_2019.2024.6.5.1/include/"
     "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/include/"
-    "${XLB_EMBREE}/build/native/include/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../3rd-party/embree/include/"
 )
 target_link_directories(xrLevelBuilder PRIVATE "${IXRAY_SDK_LIB}/")
 target_compile_definitions(xrLevelBuilder PRIVATE AI_COMPILER)
@@ -243,9 +243,10 @@ target_link_libraries(xrLevelBuilder PRIVATE
     MagicFM
     NvMender2003
     NvTriStrip
+    embree
     "rpcrt4.lib"
     "${XLB_PACKAGES}/ImeSense.Packages.Zlib.1.2.13.1/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.lib"
-    "${XLB_EMBREE}/runtimes/win-x64/native/Release/embree4.lib"
+    #"${XLB_EMBREE}/runtimes/win-x64/native/Release/embree4.lib"
 )
 
 if (WIN32)
@@ -253,6 +254,6 @@ if (WIN32)
     target_link_libraries(xrLevelBuilder PRIVATE WindowsSDK::WinMM)
 endif()
 
-add_custom_command(TARGET xrLevelBuilder POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XLB_EMBREE}/runtimes/win-x64/native/Release/embree4.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
-)
+#add_custom_command(TARGET xrLevelBuilder POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${XLB_EMBREE}/runtimes/win-x64/native/Release/embree4.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+#)

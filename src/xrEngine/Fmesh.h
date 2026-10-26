@@ -26,7 +26,7 @@ enum MT {
 	MT_LOD3					=16,
 	MT_LOD4					=17,
 	MT_LOD0					=19,
-	MT_MESH_LODS			=20
+	MT_MESH_LODS			=20,
 };
 
 enum OGF_Chuncks {
@@ -101,7 +101,7 @@ struct ogf_bsphere	{
 };
 
 // OGF_HEADER
-constexpr u8	xrOGF_FormatVersion		= 4;
+constexpr u8 xrOGF_FormatVersion = 4;
 struct ogf_header {
 	u8			format_version;			// = xrOGF_FormatVersion
 	u8			type;					// MT

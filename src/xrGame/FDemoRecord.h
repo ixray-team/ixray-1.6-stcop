@@ -97,7 +97,7 @@ public:
 	Fvector hpb_view_from_bone_offset;
 	Fvector p_cam_pos_view_from_bone_offset;
 
-	CObject* bone_holder = nullptr;
+	const CObject* bone_holder = nullptr;
 	IKinematics* bone_holder_kinematics = nullptr;
 	const Fmatrix* bone_holder_xform = nullptr;
 	u16 bone_id = BI_NONE;

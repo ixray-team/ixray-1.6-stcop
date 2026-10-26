@@ -100,14 +100,18 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 	{
 		range = RQ.range;
 		rangeFirstTrace = RQ.range;
-		if (HitNormal && !RQ.O && RQ.element >= 0)
+		if (HitNormal && RQ.IsStatic() && RQ.element >= 0)
 		{
-			const auto& Triangles = g_pGameLevel->ObjectSpace.GetStaticTris();
-			const auto& Vertices = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			const auto& Triangles = RQ.GetStatic()->get_tris();
+			const auto& Vertices = RQ.GetStatic()->get_verts();
 			if (size_t(RQ.element) < Triangles.size())
 			{
 				const auto& Triangle = Triangles[RQ.element];
-				HitNormal->mknormal(Vertices[Triangle.verts[0]], Vertices[Triangle.verts[1]], Vertices[Triangle.verts[2]]);
+				Fvector Verts[3];
+				RQ.xform.transform_tiny(Verts[0], Vertices[Triangle.verts[0]]);
+				RQ.xform.transform_tiny(Verts[1], Vertices[Triangle.verts[1]]);
+				RQ.xform.transform_tiny(Verts[2], Vertices[Triangle.verts[2]]);
+				HitNormal->mknormal(Verts[0], Verts[1], Verts[2]);
 				if (HitNormal->square_magnitude() < EPS_S)
 				{
 					HitNormal->set(0.f, 1.f, 0.f);

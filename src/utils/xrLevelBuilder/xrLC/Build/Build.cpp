@@ -358,10 +358,16 @@ void CBuild::Run(const char* P)
   	PreOptimize();
 	CorrectTJunctions();
  	xrPhase_AdaptiveHT_tessalte();
-
-
-	Phase("Building (Level, Build).cform ...");
-	BuildCForm();
+	
+	if (gCompilerMode.LC_CformType >= CFormVersions::Instanced)
+	{
+		Phase("Building level.cform ...");
+		BuildCTree();
+	} else
+	{
+		Phase("Building (Level, Build).cform ...");
+		BuildCForm();
+	}
  
 	// All lighting + lmaps building and saving
 	Light();

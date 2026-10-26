@@ -228,7 +228,7 @@ void CUI3dStatic::Draw()
 
 		pCurrentVisual->getVisData().marker = u32(-1);
 
-		::Render->set_Transform(&matrix);
+		::Render->set_Transform(matrix);
 		::Render->add_Visual(pCurrentVisual, true);
 
 		Fcolor static_color { };

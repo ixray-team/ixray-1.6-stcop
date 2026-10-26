@@ -1,7 +1,7 @@
 #ifndef _CYLINDER_H
 #define _CYLINDER_H
 
-template <class T>
+template <XRay::Concepts::Arithmetic T>
 class _cylinder
 {
 public:
@@ -240,6 +240,13 @@ public:
 
 		return obb.intersectAABB(aabbCenter, aabbExtents);
 	}
+	
+	ICF bool intersectAABB(const _box3<T>& aabb) const
+    {
+    	_vector3<T> aabbCenter, aabbExtents;
+    	aabb.get_CD(aabbCenter, aabbExtents);
+    	return intersectAABB(aabbCenter, aabbExtents);
+    }
 
 	//Thirteen separating axes, the same scheme as _obb::intersectTri: the cylinder
 	//basis, the triangle normal and the cross products of the basis axes with the

@@ -28,7 +28,7 @@ struct LummelData
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
  	// Thread Local Update
-	thread_local xr_vector<JiterPixel> EmbreePacket;
+	//thread_local xr_vector<JiterPixel> EmbreePacket;
  
 	// Start threads
 	ThreadTaskID_Implication = 0;
@@ -38,6 +38,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
  
 	xr_std_parallel_for([&cl_globs_cpu, &defl]()
 	{
+		xr_vector<JiterPixel> EmbreePacket;
  		Fvector2* Jitter2D; u32 Jcount;
 		Jitter_Select(Jitter2D, Jcount);
 

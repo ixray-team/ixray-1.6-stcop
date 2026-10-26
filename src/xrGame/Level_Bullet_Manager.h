@@ -204,10 +204,10 @@ protected:
 	void PlayExplodePS(const Fmatrix& xf);
 	// функция обработки хитов объектов
 	static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
-	static bool firetrace_callback(collide::rq_result& result, LPVOID params);
+	static bool firetrace_callback(const collide::rq_result& result, LPVOID params);
 
 	// Deffer event
-	void RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 target_material);
+	void RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, const collide::rq_result& R, u16 target_material);
 
 	// попадание по динамическому объекту
 	void DynamicObjectHit(_event& E);
@@ -216,7 +216,7 @@ protected:
 	void StaticObjectHit(_event& E);
 
 	// попадание по любому объекту, на выходе - импульс и сила переданные пулей объекту
-	bool ObjectHit(SBullet_Hit* hit_res, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 target_material, Fvector& hit_normal);
+	bool ObjectHit(SBullet_Hit* hit_res, SBullet* bullet, const Fvector& end_point, const collide::rq_result& R, u16 target_material, Fvector& hit_normal);
 	// отметка на пораженном объекте
 	void FireShotmark(SBullet* bullet, const Fvector& vDir, const Fvector& vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark = true);
 	// просчет полета пули за некоторый промежуток времени

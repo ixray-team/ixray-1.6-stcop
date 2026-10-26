@@ -35,7 +35,7 @@ void CRender::level_Load(IReader* fs)
 		Target->InvalidateSpotShadowCache();
 		Target->ClearSpotShadowCache();
 	}
-	R_ASSERT						(0!=g_pGameLevel);
+	R_ASSERT						(nullptr!=g_pGameLevel);
 	R_ASSERT						(!b_loaded);
 
 	// Begin
@@ -312,7 +312,7 @@ void CRender::LoadPlanars()
 void CRender::level_Unload()
 {
 	ResetSunShadowCache();
-	if (0==g_pGameLevel)		return;
+	if (nullptr==g_pGameLevel)		return;
 	if (!b_loaded)				return;
 	if (Target)
 	{
@@ -335,8 +335,8 @@ void CRender::level_Unload()
 	//*** Sectors
 	// 1.
 	xr_delete				(rmPortals);
-	pLastSector				= 0;
-	pOutdoorSector			= 0;
+	pLastSector				= nullptr;
+	pOutdoorSector			= nullptr;
 	vLastCameraPos.set		(0,0,0);
 	// 2.
 	for (I=0; I<Sectors.size(); I++)	xr_delete(Sectors[I]);
@@ -446,9 +446,9 @@ void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 
 void CRender::LoadVisuals(IReader *fs)
 {
-	IReader*		chunk	= 0;
+	IReader*		chunk	= nullptr;
 	u32			index	= 0;
-	dxRender_Visual*		V		= 0;
+	dxRender_Visual*		V		= nullptr;
 	ogf_header		H;
 
 	while ((chunk=fs->open_chunk(index))!=nullptr)
@@ -501,7 +501,7 @@ void CRender::LoadSectors(IReader* fs)
 	for (u32 i = 0; ; i++)
 	{
 		IReader* P = S->open_chunk(i);
-		if (0 == P) break;
+		if (nullptr == P) break;
 
 		CSector* __S = new CSector();
 		__S->load(*P);
@@ -546,36 +546,22 @@ void CRender::LoadSectors(IReader* fs)
 			CL.add_face_packed_D(v1, v2, v3, 0);
 		}
 
-		// Make cache
-		string_path LevelName;
-		xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "Portals.cache");
-		IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
-
 		// build portal model
 		rmPortals = new CDB::MODEL();
-
-		if (pReaderCache != nullptr)
-		{
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
-		}
-		else
-		{
-			IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
-			pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
-			pWriterCache->w_u32(crc);
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
-		}
+		rmPortals->verts = CL.verts;
+		rmPortals->tris = CL.faces;
+		rmPortals->build_simple();
 	}
 	else
 	{
-		rmPortals = 0;
+		rmPortals = nullptr;
 	}
 
-	pLastSector = 0;
+	pLastSector = nullptr;
 
 	// Search for default sector - assume "default" or "outdoor" sector is the largest one
 	//. hack: need to know real outdoor sector
-	CSector* largest_sector = 0;
+	CSector* largest_sector = nullptr;
 	float largest_sector_vol = 0;
 	for (u32 s = 0; s < Sectors.size(); s++)
 	{

@@ -148,7 +148,7 @@ public:
 		return T( PI_MUL_4 / 3 ) * (R*R*R);
 	}
 
-	ICF bool intersectAABB(const _vector3<T>& aabb_center, const _vector3<T>& aabb_extents)
+	ICF bool intersectAABB(const _vector3<T>& aabb_center, const _vector3<T>& aabb_extents) const
 	{
 		_vector3<T> diff;
 		diff.sub(P, aabb_center);
@@ -166,6 +166,13 @@ public:
 
 		T distance_sqr = diff.distance_to_sqr(closest);
 		return distance_sqr <= (R * R);
+	}
+	
+	ICF bool intersectAABB(const _box3<T>& aabb) const
+	{
+		_vector3<T> aabbCenter, aabbExtents;
+		aabb.get_CD(aabbCenter, aabbExtents);
+		return intersectAABB(aabbCenter, aabbExtents);
 	}
 
 	ICF bool intersectTri(const _vector3<T> (&p)[3], bool bClass3 = true)

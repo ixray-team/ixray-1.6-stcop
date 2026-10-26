@@ -82,7 +82,7 @@ static float trajectory_select_pick_time			(
 	return					(low);
 }
 
-IC bool trajectory_query_callback				(collide::rq_result& result, LPVOID params)
+IC bool trajectory_query_callback				(const collide::rq_result& result, LPVOID params)
 {
 	*(float*)params					= result.range;
 	return							(false);
@@ -181,16 +181,17 @@ bool trajectory_check_collision (float 							low,
 
 		obb.m_halfsize.set(box_size.x * 0.5f, box_size.y * 0.5f, box_size.z * 0.5f);
 		obb_collider.obb_options(CDB::OPT_FULL_TEST);
-		obb_collider.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
+		obb_collider.obb_query(*Level().ObjectSpace.GetStaticModel(), obb);
 		box_result = obb_collider.r_vec().empty();
 
 		if (out_collide_tris)
 		{
 			for (CDB::RESULT& R : obb_collider.r_vec())
 			{
-				out_collide_tris->push_back(R.verts[0]);
-				out_collide_tris->push_back(R.verts[1]);
-				out_collide_tris->push_back(R.verts[2]);
+				auto& Tris = R.model->tris[R.tris_id];
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[2]]);
 			}
 		}
 	}

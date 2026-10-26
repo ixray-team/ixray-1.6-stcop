@@ -209,7 +209,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, CPHContact&
 			{
 				Fvector neg_norm;
 				float neg_dist;
-				if (c.GetPushingNegTriangle(has_ud1, Level().ObjectSpace.GetStaticVerts().data(), neg_norm, neg_dist))
+				if (c.GetPushingNegTriangle(has_ud1, neg_norm, neg_dist))
 				{
 					Fvector velocity;
 					l_this->PHGetLinearVell(velocity);
@@ -590,4 +590,4 @@ void CCustomRocket::deactivate_physics_shell()
 	R_ASSERT(!CPHUpdateObject::IsActive());
 	inherited::deactivate_physics_shell();
 }
-#endif
+#endif

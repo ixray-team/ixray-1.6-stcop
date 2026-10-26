@@ -1,5 +1,6 @@
 // Do NOT build this file seperately. It is included in dTriList.cpp automatically.
 
+#include "stdafx.h"
 #include "../../../xrCore/Collision/cl_intersect.h"
 #include "dTriCollideK.h"
 #include "dSortTriPrimitive.h"
@@ -101,27 +102,21 @@ int dcTriListCollider::CollideCylinder(dxGeom* Cylinder, int Flags, dContactGeom
 					 ////////////////////////////////////////////////////////////////////////////
 	
 					 ///////////////////////////////////////////////////////////////////////////
- int dcTriListCollider::CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Contacts, int Stride){
-
-						 const float SphereRadius = dGeomSphereGetRadius(Sphere);
-						 Fvector AABB;
-
-
-						 // Make AABB 
-						 AABB.x=SphereRadius;
-						 AABB.y=SphereRadius;
-						 AABB.z=SphereRadius;
-
-						 const dReal*velocity=dBodyGetLinearVel(dGeomGetBody(Sphere));
-						 AABB.x+=dFabs(velocity[0])*0.04f;
-						 AABB.y+=dFabs(velocity[1])*0.04f;
-						 AABB.z+=dFabs(velocity[2])*0.04f;
-						 SphereTri	st(*this);
-						 return dSortTriPrimitiveCollide(st,Sphere,Geometry,Flags,Contacts,Stride,
-							 AABB);
-
-					 }
-
+int dcTriListCollider::CollideSphere(dxGeom* Sphere, int Flags, dContactGeom* Contacts, int Stride){
+	const float SphereRadius = dGeomSphereGetRadius(Sphere);						 
+	Fvector AABB;
+	// Make AABB 						 
+	AABB.x=SphereRadius;						 
+	AABB.y=SphereRadius;						 
+	AABB.z=SphereRadius;
+	
+	const dReal*velocity=dBodyGetLinearVel(dGeomGetBody(Sphere));
+	AABB.x+=dFabs(velocity[0])*0.04f;
+	AABB.y+=dFabs(velocity[1])*0.04f;
+	AABB.z+=dFabs(velocity[2])*0.04f;
+	SphereTri	st(*this);
+	return dSortTriPrimitiveCollide(st,Sphere,Geometry,Flags,Contacts,Stride, AABB);
+}
 
 	
 

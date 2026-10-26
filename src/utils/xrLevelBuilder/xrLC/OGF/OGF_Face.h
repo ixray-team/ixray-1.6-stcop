@@ -102,9 +102,6 @@ struct OGF_Base
 	virtual void		GetGeometry	(xr_vector<Fvector> &RES)	= 0;
 	void				CalcBounds	(bool useProgressBar=false); 
 
-	void				SaveForCompile(IWriter* W);
-	void				LoadForCompile(IReader* R);
-
 	virtual size_t				SizeOF() { return sizeof(OGF_Base); };
 };
 extern xr_vector<OGF_Base *>		g_tree;
@@ -187,9 +184,6 @@ struct OGF : public OGF_Base
 			R.push_back(I->P);
 	}
 
-	void				SaveForCompile(IWriter* W);
-	void				LoadForCompile(IReader* R);
-
 	virtual size_t SizeOF() override
 	{
 		u32 SizeV  = data.vertices.size()				* sizeof(OGF_Vertex);
@@ -215,6 +209,9 @@ struct OGF_Reference : public OGF_Base
 	u32					material;
 	vecOGF_T			textures;
 
+	shared_str external_path;
+	u32 SplitID;
+	
 	u32					vb_id	;
 	u32					vb_start;
 	u32					ib_id	;
@@ -255,8 +252,6 @@ struct OGF_Reference : public OGF_Base
 		}
 		return sizeof(*this) + tex + model->SizeOF();
 	};
-	void SaveForCompile(IWriter* W);
-	void LoadForCompile(IReader* R);
 };
 
 struct OGF_Node :  public OGF_Base

@@ -22,17 +22,9 @@ void FlamethrowerTrace::CPoint::UpdateAir(float delta_time)
 		if (Level().ObjectSpace.RayQuery(storage, RD, hit_callback, &data, test_callback, nullptr) && !data.Penetrate)
 		{
 			PointPosition = OldPos + PointDirection * data.HitDist;
-			//State = ETraceState::AirToGround;
-			//TimeOnCollide = CurrentTime;
 			Collided = true;
-			//return;
 		}
 	}
-	/*if(CurrentTime >= LifeTime)
-	{
-		TimeOnCollide = CurrentTime;
-		State = ETraceState::End;
-	}*/
 }
 
 void FlamethrowerTrace::CPoint::UpdateAirToGround(float delta_time)
@@ -60,12 +52,12 @@ void FlamethrowerTrace::CPoint::UpdateEnd(float delta_time)
 	}*/
 }
 
-bool FlamethrowerTrace::CPoint::hit_callback(collide::rq_result& result, LPVOID params)
+bool FlamethrowerTrace::CPoint::hit_callback(const collide::rq_result& result, LPVOID params)
 {
 	TraceData* pData = static_cast<TraceData*>(params);
-	if (!result.O)
+	if (result.IsStatic())
 	{
-		CDB::TRI const& triangle = Level().ObjectSpace.GetStaticTris()[result.element];
+		CDB::TRI const& triangle = result.GetStatic()->get_tris()[result.element];
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(triangle.material);
 		if (!fsimilar(mtl->fShootFactor, 0.0f)) // if not penetrate
 		{
@@ -112,40 +104,6 @@ void FlamethrowerTrace::CPoint::Activate()
 	//LastUpdatedPos = PointPosition;
 	Collided = false;
 }
-
-/*void FlamethrowerTrace::CPoint::Update(float DeltaTime)
-{
-	VERIFY(State != ETraceState::MAX);
-	switch (State)
-	{
-	case ETraceState::Idle:
-		{
-			return;
-		}
-	case ETraceState::Air:
-		{
-		UpdateAir(DeltaTime);
-			break;
-		}
-	case ETraceState::AirToGround:
-		{
-		UpdateAirToGround(DeltaTime);
-		break;
-		}
-	case ETraceState::Ground:
-		{
-		UpdateGround(DeltaTime);
-			break;
-		}
-	case ETraceState::End:
-		{
-		UpdateEnd(DeltaTime);
-			break;
-		}
-	}
-	LastUpdateTime = CurrentTime;
-	CurrentTime += DeltaTime;
-}*/
 
 bool FlamethrowerTrace::CPoint::VerifySpawnPos(const Fvector& Position, const Fvector& Direction, Fvector& HitPos)
 {

@@ -438,6 +438,18 @@ void SceneBuilder::SaveBuild()
 		F->open_chunk	(EB_MU_refs);
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
 		F->close_chunk	();
+		
+		F->make_chunk(EB_MU_collisions, [this](IWriter& F)
+		{
+			F.w_u32(l_mu_collsions.size());
+			for (auto& data : l_mu_collsions)
+			{
+				F.w_u32(data.verts.size());
+				F.w(data.verts.data(),sizeof(Fvector)*data.verts.size());
+				F.w_u32(data.faces.size());
+				F.w(data.faces.data(),sizeof(CDB::TRI)*data.faces.size());
+			}
+		});
 
 		F->open_chunk(EB_MU_refs_debug);
 		for (auto& elem : l_mu_refs_debug)
@@ -1101,6 +1113,34 @@ u32 SceneBuilder::BuildMUObjectTemplate(CSceneObject* obj, bool BuildBillboard, 
 		{
 			return u32(-1);
 		}
+	}
+
+	b_mu_collision& Slot = l_mu_collsions.emplace_back();
+	auto& CollisionVerts = Slot.verts;
+	auto& CollisionTris = Slot.faces;
+	{
+		CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
+		for (auto& face : M.faces)
+		{
+			str_c cshader_name = nullptr;
+			bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
+			if (IsShared)
+			{
+				auto MatName = l_materials_shared[face.dwMaterial].Name;
+				cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
+			} else
+			{
+				cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
+			}
+			Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
+			if (!c_sh->flags.bCollision)
+			{
+				continue;
+			}
+			CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterialGame, -1, 0);
+		}
+		CollisionVerts = CL.getV_Vec();
+		CollisionTris = CL.getT_Vec();
 	}
 
 	return model_idx;

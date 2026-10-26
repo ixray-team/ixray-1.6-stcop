@@ -60,6 +60,13 @@ public:
 
 		return obb.intersectAABB(aabbCenter, aabbExtents);
 	}
+	
+	ICF bool intersectAABB(const _box3<T>& aabb) const
+	{
+		_vector3<T> aabbCenter, aabbExtents;
+		aabb.get_CD(aabbCenter, aabbExtents);
+		return intersectAABB(aabbCenter, aabbExtents);
+	}
 
 	ICF bool	intersectTri	(const _vector3<T>* verts, bool bClass3 = true) const
 	{

@@ -3,7 +3,7 @@
 
 #include "ModelPool.h"
 
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #	include "FLOD.h"
 #	include "FTreeVisual.h"

@@ -152,8 +152,11 @@ void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector<RayTask>& rays)
 		}
 	};
 
-	bool usePackedRays8x = CPU::ID().hasFeature(CPUFeature::AVX2) && gCompilerMode.EmbreeRays8;
-	if (usePackedRays8x)
+	// Avoid Embree's unsafe non-native rtcOccluded8 fallback and preserve callback lane indices.
+	const bool UsePackedRays8 = gCompilerMode.EmbreeRays8
+		&& CPU::ID().hasFeature(CPUFeature::AVX2)
+		&& rtcGetDeviceProperty(EmbreeDevice, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED) != 0;
+	if (UsePackedRays8)
 	{
 		thread_local RTCOccludedArguments args;
 		rtcInitOccludedArguments(&args);
@@ -416,4 +419,3 @@ void EmbreeRayTraceModel::UpdateSceneFlags()
 		scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
 	}
 }
- 

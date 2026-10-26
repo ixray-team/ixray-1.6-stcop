@@ -1,6 +1,7 @@
 #pragma once
 #include <RedImage/RedImage.hpp>
 #include "../../xrEngine/xrLevel.h"
+#include "xrCore/Collision/xrCDB.h"
 #pragma pack(push,4)
 
 constexpr u32 XR_MAX_PORTAL_VERTS	= 6;
@@ -164,6 +165,12 @@ struct b_mu_mesh_lods
 	bool UseMeshLods = false;
 };
 
+struct b_mu_collision
+{
+	xr_vector<Fvector> verts;
+	xr_vector<CDB::TRI> faces;
+};
+
 struct b_params
 {
 	// Normals & optimization
@@ -269,6 +276,7 @@ enum EBUILD_CHUNKS
     EB_MU_Mesh_LODs,
 	EB_MaterialsShared,
 	EB_MU_refs_debug,
+    EB_MU_collisions,
 
 	EB_FORCE_DWORD = u32(-1)
 };

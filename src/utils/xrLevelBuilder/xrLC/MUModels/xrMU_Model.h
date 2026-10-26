@@ -25,12 +25,44 @@ public:
 
 		u32		vb_id;
 		u32		vb_start;
-
 		u32		ib_id;
 		u32		ib_start;
-
 		u32		sw_id;
+		
 		bool bSharedMaterial;
+		
+		_subdiv() = default;
+		~_subdiv() = default;
+		
+		_subdiv(const _subdiv& other)
+		{
+			if (this != &other)
+			{
+				std::memcpy(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv& operator=(const _subdiv& other)
+		{
+			if (this != &other)
+			{
+				std::memcpy(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv(_subdiv&& other) noexcept
+		{
+			if (this != &other)
+			{
+				std::memmove(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv& operator=(_subdiv&& other) noexcept
+		{
+			if (this != &other)
+			{
+				std::memmove(this, &other, sizeof(*this));
+			}
+			return *this;
+		}
 	};
 
 	//** 
@@ -56,8 +88,9 @@ public:
 	v_faces					m_faces;
 	v_subdivs				m_subdivs;
 
-	CDB::CollectorPacked	CL;
+	CDB::MODEL CollisionModel;
 	xr_vector<base_color>	color;
+	Fvector CollisionBias;
 private:
 	_face*					create_face			( _vertex* v0, _vertex* v1, _vertex* v2, b_face& F );
 	_vertex*				create_vertex		( Fvector& P );

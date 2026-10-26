@@ -155,6 +155,13 @@ public:
 				std::abs(center.y - aabbCenter.y) <= extents.y + aabbExtents.y &&
 				std::abs(center.z - aabbCenter.z) <= extents.z + aabbExtents.z;
 	}
+	
+	ICF bool intersectAABB(const _box3<T>& aabb) const
+	{
+		_vector3<T> aabbCenter, aabbExtents;
+		aabb.get_CD(aabbCenter, aabbExtents);
+		return intersectAABB(aabbCenter, aabbExtents);
+	}
 
 	ICF bool intersectTri(const Tvector(&p)[3], const Tvector& center, const Tvector& extents, bool bClass3 = true)
 	{

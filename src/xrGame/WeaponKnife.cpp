@@ -263,7 +263,7 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 		return;
 	}
 
-	CObject* real_victim = TryPick(pos, dir, m_hit_dist);
+	auto real_victim = TryPick(pos, dir, m_hit_dist);
 	if (real_victim)
 	{
 		float new_khit = m_eHitType == m_eHitType_1 ? 
@@ -1121,18 +1121,18 @@ bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
 	return !m_spartial_query_res.empty();
 }
 
-bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
+bool CWeaponKnife::RayQueryCallback(const collide::rq_result& result, LPVOID this_ptr)
 {
 	CWeaponKnife*	me = static_cast<CWeaponKnife*>(this_ptr);
-	if (result.O && (result.O->ID() != me->m_except_id))
+	if (result.valid() && !result.IsStatic() && (result.GetDynamic()->ID() != me->m_except_id))
 	{
-		me->m_last_picked_obj = result.O;
+		me->m_last_picked_obj = result.GetDynamic();
 		return false;	//first hit
 	}
 	return true;
 }
 
-CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & dir, float const dist)
+const CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & dir, float const dist)
 {
 	collide::ray_defs		tmp_rdefs(start_pos, dir, dist, CDB::OPT_FULL_TEST, collide::rqtObject);
 	m_ray_query_results.r_clear();

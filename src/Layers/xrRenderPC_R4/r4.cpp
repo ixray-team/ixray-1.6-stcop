@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "r4.h"
+
 #include "r1_GlowManager.h"
 #include "FBasicVisual.h"
 #include "../../xrEngine/xr_object.h"
@@ -640,29 +641,26 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 		*Count = xDC[id].size();
 		return xDC[id].begin();
 	}
-	else
-	{
-		*Count = nDC[id].size();
-		return nDC[id].begin();
-	}
+	*Count = nDC[id].size();
+	return nDC[id].begin();
 }
 
 IRHIBuffer* CRender::getVB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xVB.size()));	return xVB[id];
+		VERIFY(id<int(xVB.size()));	
+		return xVB[id];
 	}
-	else {
-		VERIFY(id<int(nVB.size()));	return nVB[id];
-	}
+	VERIFY(id<int(nVB.size()));	
+	return nVB[id];
 }
 
 IRHIBuffer* CRender::getIB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xIB.size()));	return xIB[id];
+		VERIFY(id<int(xIB.size()));	
+		return xIB[id];
 	}
-	else {
-		VERIFY(id<int(nIB.size()));	return nIB[id];
-	}
+	VERIFY(id<int(nIB.size()));	
+	return nIB[id];
 }
 
 FSlideWindowItem* CRender::getSWI(int id)

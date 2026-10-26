@@ -485,7 +485,7 @@ void CBurer::UpdateGraviObject()
 	{
 		CEntityAlive* casted_enemy = const_cast<CEntityAlive*>(gravi_object.enemy);
 		const CObject* enemy = casted_enemy->dcast_CObject();
-		if ((l_rq.O == enemy) && (l_rq.range < trace_dist))
+		if ((!l_rq.IsStatic() && l_rq.GetDynamic() == enemy) && (l_rq.range < trace_dist))
 		{
 			// check for visibility
 			bool b_enemy_visible = false;
@@ -493,9 +493,9 @@ void CBurer::UpdateGraviObject()
 			feel_vision_get(visible_objects);
 
 			// find object
-			for (u32 i = 0; i < visible_objects.size(); i++)
+			for (auto& visible_object : visible_objects)
 			{
-				if (visible_objects[i] == enemy)
+				if (visible_object == enemy)
 				{
 					b_enemy_visible = true;
 					break;

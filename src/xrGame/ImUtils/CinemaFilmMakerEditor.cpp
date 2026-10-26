@@ -1173,12 +1173,12 @@ void CCinemaFilmMakerManager::Render()
 		Fmatrix transform = actor->Orientation;
 		transform.c = actor->Position;
 
-		::Render->set_Transform(&transform);
+		::Render->set_Transform(transform);
 		::Render->add_Visual(actor->Model, true, true);
 		actor->Model->getVisData().hom_frame = Device.dwFrame;
 	}
 
-	::Render->set_Transform(&Fidentity);
+	::Render->set_Transform(Fidentity);
 	::Render->set_HUD(hudMode);
 
 	AppendWorldGizmo();
@@ -1949,7 +1949,7 @@ bool CCinemaFilmMakerManager::AddActorAtAim(const char* visual)
 	}
 
 	const collide::rq_result& query = HUD().GetCurrentRayQuery();
-	const float range = (query.O != nullptr && query.range > 0.1f) ? query.range : 3.0f;
+	const float range = (query.valid() && !query.IsStatic() && query.range > 0.1f) ? query.range : 3.0f;
 	Fvector position = {};
 	position.mad(Device.vCameraPosition, Device.vCameraDirection, range);
 	return AddActor(position, visual, true);

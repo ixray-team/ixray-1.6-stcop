@@ -34,7 +34,7 @@ private:
         CDynamicWallmarkZone* self;
     };
 
-    static bool trace_callback(collide::rq_result& result, LPVOID params);
+    static bool trace_callback(const collide::rq_result& result, LPVOID params);
     static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
 
 protected:

@@ -1,4 +1,6 @@
-#pragma		once
+#pragma once
+#include "xrPhysics/PhysicsCommon.h"
+
 struct Triangle 
 {
 	//dReal* v0;
@@ -10,10 +12,9 @@ struct Triangle
 	dReal dist;
 	dReal pos;
 	dReal depth;
-	CDB::TRI* T ;
+	TriabgleCDBData T ;
 	Triangle()
 	{
-		T		=NULL;
 #ifdef DEBUG
 		depth	=-dInfinity;
 		dist	=-dInfinity;
