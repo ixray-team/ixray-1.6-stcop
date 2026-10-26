@@ -37,8 +37,8 @@ private:
 
 public:
 					callback_base	( Callback const& callback, key_state state );
-	virtual			~callback_base	();
-	virtual	void	on_key_press	( line_edit_control* const control );
+	virtual ~callback_base	() override;
+	virtual void	on_key_press	( line_edit_control* const control ) override;
 
 protected:
 	key_state	m_run_state;
@@ -52,9 +52,9 @@ class type_pair : public base
 {
 public:
 	type_pair(u32 dik, char c, char c_shift, bool b_translate);
-	virtual			~type_pair();
+	virtual ~type_pair() override;
 	void	init(u32 dik, char c, char c_shift, bool b_translate);
-	virtual	void	on_key_press(line_edit_control* const control);
+	virtual void	on_key_press(line_edit_control* const control) override;
 
 private:
 	u32		m_dik;
@@ -70,8 +70,8 @@ class key_state_base : public base
 {
 public:
 					key_state_base	( key_state state, base* type_pair );
-	virtual			~key_state_base	();
-	virtual	void	on_key_press	( line_edit_control* const control );
+	virtual ~key_state_base	() override;
+	virtual void	on_key_press	( line_edit_control* const control ) override;
 
 private:
 	key_state		m_state;

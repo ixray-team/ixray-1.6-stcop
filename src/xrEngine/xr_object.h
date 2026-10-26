@@ -169,9 +169,9 @@ public:
 	virtual bool						Ready				()					{ return Props.net_Ready;	}
 	bool								GetTmpPreDestroy		()		const	{ return Props.bPreDestroy;	}
 	void								SetTmpPreDestroy	(bool b)			{ Props.bPreDestroy = b;}
-	virtual float						shedule_Scale();
+	virtual float						shedule_Scale() override;
 	virtual float shedule_Scale_Base();
-	virtual bool						shedule_Needed		()					{return processing_enabled();};
+	virtual bool						shedule_Needed		() override {return processing_enabled();};
 
 	// Parentness
 	IC CObject*							H_Parent			()					{ return Parent;						}
@@ -185,9 +185,9 @@ public:
 	ICF  Fvector						Center				() 			 const  { Fvector C; Center(C); return C; }
 	IC const Fmatrix&					XFORM				()			 const	{ VERIFY(_valid(renderable.xform));	return renderable.xform;	}
 	ICF Fmatrix&						XFORM				()					{ return renderable.xform;			}
-	virtual void						spatial_register	();
-	virtual void						spatial_unregister	();
-	virtual void						spatial_move		();
+	virtual void						spatial_register	() override;
+	virtual void						spatial_unregister	() override;
+	virtual void						spatial_move		() override;
 	void								spatial_update		(float eps_P, float eps_R);
 
 	ICF Fvector&						Direction			() 					{ return renderable.xform.k;		}
@@ -199,15 +199,15 @@ public:
 	
 	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
-	virtual bool						renderable_ShadowGenerate	()			{ return true;						}
-	virtual bool						renderable_ShadowReceive	()			{ return true;						}
+	virtual bool						renderable_ShadowGenerate	() override { return true;						}
+	virtual bool						renderable_ShadowReceive	() override { return true;						}
 
 	// Accessors and converters
 	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
 	ICF ICollisionForm*					CFORM				() const			{ return collidable.model;			}
-	virtual		CObject*				dcast_CObject		() override			{ return this;						}
-	virtual		IRenderable*			dcast_Renderable	() override			{ return this;						}
-	virtual		Feel::Sound*			dcast_FeelSound		() override			{ return nullptr;					}
+	virtual CObject*				dcast_CObject		() override			{ return this;						}
+	virtual IRenderable*			dcast_Renderable	() override			{ return this;						}
+	virtual Feel::Sound*			dcast_FeelSound		() override			{ return nullptr;					}
 
 	virtual	CGameObject*				cast_game_object	()					{return nullptr;}
 	virtual	CActor*						cast_actor			()					{return nullptr;}
@@ -284,7 +284,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	void								cNameSect_set		(shared_str N);
 	ICF shared_str						cNameVisual			()			const	{ return NameVisual;				}
 	void								cNameVisual_set		(shared_str N);
-	virtual	shared_str					shedule_Name		() const			{ return cName(); };
+	virtual shared_str					shedule_Name		() const override { return cName(); };
 	
 	// Properties
 	void								processing_activate		();				// request	to enable	UpdateCL
@@ -306,13 +306,13 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 
 	//---------------------------------------------------------------------
 										CObject				();
-	virtual								~CObject			();
+	virtual ~CObject			() override;
 
 	virtual void						Load				(const char* section);
 	
 	// Update
-	virtual void						shedule_Update		(u32 dt);							// Called by sheduler
-	virtual void						renderable_Render	();
+	virtual void						shedule_Update		(u32 dt) override;							// Called by sheduler
+	virtual void						renderable_Render	() override;
 
 	virtual void						UpdateCL			();									// Called each frame, so no need for dt
 	virtual bool						net_Spawn			(CSE_Abstract* data);

@@ -23,7 +23,7 @@ namespace Feel
 		void 			feel_touch_relcase			(CObject* O);
 		
 								Touch						();
-		virtual					~Touch						();
+		virtual ~Touch						() override;
 
 		virtual bool			feel_touch_contact			(CObject* O);
 		virtual void			feel_touch_update			(Fvector& P, float	R);

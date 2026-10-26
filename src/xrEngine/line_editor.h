@@ -17,16 +17,16 @@ class line_editor :	public IInputReceiver
 {
 public:
 					line_editor		( u32 str_buffer_size );
-	virtual			~line_editor	();
+	virtual ~line_editor	() override;
 
 	IC line_edit_control&	control	()				{ return m_control; }
 
 			void	on_frame		();
 
 protected:
-	virtual void	IR_OnKeyboardPress	( int dik );
-	virtual void	IR_OnKeyboardHold	( int dik );
-	virtual void	IR_OnKeyboardRelease( int dik );
+	virtual void	IR_OnKeyboardPress	( int dik ) override;
+	virtual void	IR_OnKeyboardHold	( int dik ) override;
+	virtual void	IR_OnKeyboardRelease( int dik ) override;
 
 private:
 	line_edit_control		m_control;

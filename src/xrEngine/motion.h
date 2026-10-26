@@ -105,16 +105,16 @@ class ENGINE_API COMotion : public CCustomMotion
 public:
 	COMotion();
 	COMotion(COMotion* src);
-	virtual ~COMotion();
+	virtual ~COMotion() override;
 
 	void Clear();
 
 	void _Evaluate(float t, Fvector& T, Fvector& R);
-	virtual void Save(IWriter& F);
-	virtual bool Load(IReader& F);
+	virtual void Save(IWriter& F) override;
+	virtual bool Load(IReader& F) override;
 
-	virtual void SaveMotion(const char* buf);
-	virtual bool LoadMotion(const char* buf);
+	virtual void SaveMotion(const char* buf) override;
+	virtual bool LoadMotion(const char* buf) override;
 
 	void FindNearestKey(float t, float& min_k, float& max_k, float eps = EPS_L);
 	void CreateKey(float t, const Fvector& P, const Fvector& R);

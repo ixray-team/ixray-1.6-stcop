@@ -187,7 +187,7 @@ public:
 	u32	GetSwapchainHeight() override;
 
 	void ResizeBuffers(u32 Width, u32 Height);
-	void ResizeWindow(u32 width, u32 height);
+	virtual void ResizeWindow(u32 width, u32 height) override;
 
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
@@ -234,7 +234,7 @@ public:
 	CStats*									Statistic;
 	
 	CRenderDevice();
-	virtual ~CRenderDevice() noexcept = default;
+	virtual ~CRenderDevice() noexcept override = default;
 
 	virtual void	Pause							(bool bOn, bool bTimer, bool bSound, const char* reason);
 	bool	Paused							();
@@ -341,9 +341,9 @@ public:
 
 private:
 			void					message_loop		();
-virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
-virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
-virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
+	virtual void			_BCL	AddSeqFrame			( pureFrame* f, bool mt ) override;
+	virtual void			_BCL	RemoveSeqFrame		( pureFrame* f ) override;
+	virtual CStatsPhysics*	_BCL	StatPhysics			() override { return  Statistic ;}
 };
 
 extern ENGINE_API CRenderDevice* DevicePtr;
@@ -363,7 +363,7 @@ public:
 					CLoadScreenRenderer	();
 	void			start				(bool b_user_input);
 	void			stop				();
-	virtual void	OnRender			();
+	virtual void	OnRender			() override;
 
 	bool IsActive() const {
 		return b_registered;
