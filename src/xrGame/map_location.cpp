@@ -255,6 +255,14 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 				m_minimap_spot = new CMiniMapSpot(this);
 			}
 			m_minimap_spot->Load(g_uiSpotXml,str, UI().get_current_kx());
+
+			// A minimap spot with a fixed heading inherits the world heading of its
+			// level-map counterpart: level changers encode the transition direction
+			// only in the level spot, while the minimap icon is shared by all of them.
+			if (m_minimap_spot->GetConstHeading() && m_level_spot && m_level_spot->GetConstHeading())
+			{
+				m_minimap_spot->SetConstHeadingAngle(m_level_spot->GetConstHeadingAngle());
+			}
 		}else{
 			VERIFY( !(bReload && m_minimap_spot) );
 		}
@@ -644,13 +652,12 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		//update heading if needed
 		if (map->Heading())
 		{
-			// Spots with a fixed heading_angle (level changers, etc.) keep their configured heading.
-			if (sp->Heading() && !sp->GetConstHeading())
+			// Fixed-heading spots (level changers, etc.) must rotate with the map so that
+			// their world direction stays stable; dynamic spots follow their object.
+			if (sp->Heading())
 			{
-				Fvector2 dir_global = CalcDirection();
-				float h = dir_global.getH();
-				float h_ = map->GetHeading() + h;
-				sp->SetHeading(h_);
+				const float h = sp->GetConstHeading() ? sp->GetConstHeadingAngle() : CalcDirection().getH(); 
+				sp->SetHeading(map->GetHeading() + h);
 			}
 			Fvector2 tmp = m_position_on_map;
 			m_position_on_map = map->ConvertRealToLocal(position, true);
