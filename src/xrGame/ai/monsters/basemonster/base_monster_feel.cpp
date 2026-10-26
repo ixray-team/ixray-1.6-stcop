@@ -616,11 +616,11 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 }
 
 
-float CBaseMonster::feel_vision_mtl_transp(CObject* Object, u32 Element)
+float CBaseMonster::feel_vision_mtl_transp(const collide::rq_result& result)
 {
-	if (!Object && VisionIgnoreFoliage && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterVisionIgnoreFoliage])
+	if (result.valid() && result.IsStatic() && VisionIgnoreFoliage && EngineExternal()[EEngineExternalMonstersLogic::EnableMonsterVisionIgnoreFoliage])
 	{
-		const CDB::TRI& Triangle = Level().ObjectSpace.GetStaticTris()[Element];
+		const CDB::TRI& Triangle = result.GetStatic()->get_tris()[result.element];
 		const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
 		if (Material && (Material->Flags.is(SGameMtl::flPassable) || Material->Flags.is(SGameMtl::flActorObstacle)))
 		{
@@ -633,7 +633,7 @@ float CBaseMonster::feel_vision_mtl_transp(CObject* Object, u32 Element)
 			}
 		}
 	}
-	return inherited::feel_vision_mtl_transp(Object, Element);
+	return inherited::feel_vision_mtl_transp(result);
 }
 
 bool  CBaseMonster::feel_vision_isRelevant(CObject* O)

@@ -43,7 +43,7 @@ bool AcceptObject(const collide::ray_defs&, CObject* Object, void* Data)
 	return true;
 }
 
-bool AcceptHit(collide::rq_result& Hit, void* Data)
+bool AcceptHit(const collide::rq_result& Hit, void* Data)
 {
 	auto& Trace = *static_cast<Result*>(Data);
 	// Reaching the source's collision shell proves visibility of a source inside it.
@@ -51,7 +51,7 @@ bool AcceptHit(collide::rq_result& Hit, void* Data)
 	{
 		return false;
 	}
-	if (Hit.IsStatic())
+	if (Hit.valid() && Hit.IsStatic())
 	{
 		const CDB::TRI& Triangle = Hit.GetStatic()->get_tris()[Hit.element];
 		Trace.Transparency *= GMLib.GetMaterialByIdx(Triangle.material)->fVisTransparencyFactor;
@@ -140,9 +140,9 @@ void ActorLightPerception::UpdateSource(CActor& Player)
 	const collide::ray_defs Ray(SourcePosition, Direction, Trace.Hit.range, CDB::OPT_CULL, collide::rqtBoth);
 	RayResults.r_clear();
 	Level().ObjectSpace.RayQuery(RayResults, Ray, ActorLightTrace::AcceptHit, &Trace, ActorLightTrace::AcceptObject, &Player);
-	HitObjectId = Trace.Hit.O ? Trace.Hit.O->ID() : ALife::INVALID_OBJECT_ID;
+	HitObjectId = !Trace.Hit.IsStatic() ? Trace.Hit.GetDynamic()->ID() : ALife::INVALID_OBJECT_ID;
 	const float Distance = Trace.Hit.range * 0.99f;
-	HasLightPoint = (Trace.Hit.O || Trace.Hit.valid()) && Distance <= SourceDistance;
+	HasLightPoint = (!Trace.Hit.IsStatic() || Trace.Hit.valid()) && Distance <= SourceDistance;
 	LightPoint.mad(SourcePosition, Direction, Distance);
 	RayResults.r_clear();
 }
@@ -185,7 +185,7 @@ ActorLightPerception::Visibility ActorLightPerception::SeePoint(CCreature& Obser
 void ActorLightPerception::Report(CActor& Player, CCreature& Observer, const char* Stage, Visibility Seen)
 {
 	if (!g_MonsterLogicTelemetry.DrawEnabled.load(std::memory_order_relaxed) ||
-		HUD().GetCurrentRayQuery().O != &Observer || s32(Device.dwTimeGlobal - NextDebugTime) < 0)
+		HUD().GetCurrentRayQuery().IsStatic() || HUD().GetCurrentRayQuery().GetDynamic() != &Observer || s32(Device.dwTimeGlobal - NextDebugTime) < 0)
 	{
 		return;
 	}

@@ -155,7 +155,7 @@ public:
 	void NoticeActorLight(CActor& Player, const Fvector& Point, bool Revealed);
 	float GetDistanceSoundRange(int Type, CObject* Source = nullptr) const override;
 	virtual void			feel_sound_new					(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power) override;
-	float feel_vision_mtl_transp(CObject* Object, u32 Element) override;
+	float feel_vision_mtl_transp(const collide::rq_result& result) override;
 	virtual bool			feel_vision_isRelevant			(CObject* O) override;
 	virtual bool			feel_touch_on_contact			(CObject* O) override;
 	virtual bool			feel_touch_contact				(CObject *) override;

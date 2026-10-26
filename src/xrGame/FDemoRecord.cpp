@@ -750,18 +750,18 @@ void CDemoRecord::parse_actor_cam()
 
 bool CDemoRecord::try_attach_bone()
 {
-	if (rq_result.O == nullptr || rq_result.O->getDestroy())
+	if (!rq_result.valid() || rq_result.IsStatic() || rq_result.GetDynamic()->getDestroy())
 	{
 		return false;
 	}
 
-	if (IRenderVisual* v = rq_result.O->Visual())
+	if (IRenderVisual* v = rq_result.GetDynamic()->Visual())
 	{
 		if (IKinematics* k = v->dcast_PKinematics())
 		{
-			bone_holder = rq_result.O;
+			bone_holder = rq_result.GetDynamic();
 			bone_holder_kinematics = k;
-			bone_holder_xform = &rq_result.O->XFORM();
+			bone_holder_xform = &bone_holder->XFORM();
 			bone_holder_type = e_bone_holder_type::world_object;
 			bone_id = (u16)rq_result.element;
 			camera_mode.assign(eViewFromBone);
@@ -958,8 +958,8 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 
 						clear_bone_attachment();
 
-						CObject* hit = rq_result.O;
-						if (hit != nullptr && !hit->getDestroy())
+						auto hit = rq_result.valid() && !rq_result.IsStatic() ? rq_result.GetDynamic() : nullptr;
+						if (hit && !hit->getDestroy())
 						{
 							if (IRenderVisual* v = hit->Visual())
 							{

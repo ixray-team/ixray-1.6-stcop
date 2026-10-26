@@ -1969,12 +1969,12 @@ void CActor::UpdateCL()
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && RQ.range < CHUDTarget::PICKUP_DISTANCE && 
+	if (!input_external_handler_installed() && RQ.valid() && !RQ.IsStatic() && RQ.GetDynamic()->getVisible() && RQ.range < CHUDTarget::PICKUP_DISTANCE && 
 		!(HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 	{
-		m_pObjectWeLookingAt = RQ.O->cast_game_object();
+		m_pObjectWeLookingAt = const_cast<CObject*>(RQ.GetDynamic())->cast_game_object();
 
-		CGameObject* game_object = RQ.O->cast_game_object();
+		CGameObject* game_object = m_pObjectWeLookingAt;
 		m_pUsableObject = game_object ? game_object->cast_usable_script_object() : nullptr;
 		m_pInvBoxWeLookingAt = game_object ? game_object->cast_inventory_box() : nullptr;
 		m_pPersonWeLookingAt = game_object ? game_object->cast_inventory_owner() : nullptr;

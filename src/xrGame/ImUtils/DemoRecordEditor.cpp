@@ -374,7 +374,7 @@ void RenderDemoRecordEditorWindow()
 					demo_record->clear_bone_attachment();
 					demo_record->camera_mode.zero();
 
-					CObject* hit = demo_record->rq_result.O;
+					auto hit = demo_record->rq_result.IsStatic() ? nullptr : demo_record->rq_result.GetDynamic();
 					if (hit != nullptr && !hit->getDestroy() && hit->Visual() != nullptr)
 					{
 						if (IKinematics* k = hit->Visual()->dcast_PKinematics())

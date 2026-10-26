@@ -53,7 +53,7 @@ CHUDTarget::CHUDTarget	()
 	accumulatedTime		= 0.f;
 	PP.RQ.range			= 0.f;
 
-	PP.RQ.set				(nullptr, 0.f, -1);
+	PP.RQ.set.reset();
 
 	Load				();
 	m_bShowCrosshair	= false;
@@ -94,20 +94,20 @@ void CHUDTarget::ShowCrosshair(bool b)
 }
 //. fVisTransparencyFactor
 float fCurrentPickPower;
-ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool pick_trace_callback(const collide::rq_result& result, LPVOID params)
 {
 	SPickParam*	pp			= (SPickParam*)params;
 //	collide::rq_result* RQ	= pp->RQ;
 	++pp->pass;
 
-	if(result.O)
+	if(!result.IsStatic())
 	{	
 		pp->RQ				= result;
 		return false;
 	}else
 	{
 		//получить треугольник и узнать его материал
-		CDB::TRI& T		= Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& T		= result.GetStatic()->get_tris()[result.element];
 		
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 		pp->power		*= mtl->fVisTransparencyFactor;
@@ -133,9 +133,8 @@ void CHUDTarget::CursorOnFrame ()
 	{
 		CActor* actor		= Level().CurrentEntity()->cast_actor();
 
-		PP.RQ.O			= 0; 
-		PP.RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
-		PP.RQ.element		= -1;
+		PP.RQ.reset();
+		PP.RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
 
 		float pick_range = PP.RQ.range;
 
@@ -242,14 +241,14 @@ void CHUDTarget::Render()
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
-		bool const is_poltergeist	= PP.RQ.O && !!smart_cast<CPoltergeist*> (PP.RQ.O);
+		bool const is_poltergeist	= !PP.RQ.IsStatic() && !!smart_cast<CPoltergeist*>(PP.RQ.GetDynamic());
 
-		if ((PP.RQ.O && PP.RQ.O->getVisible()) || is_poltergeist)
+		if ((!PP.RQ.IsStatic() && PP.RQ.GetDynamic()->getVisible()) || is_poltergeist)
 		{
-			CEntityAlive* E_ = PP.RQ.O->cast_entity_alive();
+			CEntityAlive* E_ = const_cast<CObject*>(PP.RQ.GetDynamic())->cast_entity_alive();
 			CEntityAlive* pCurEnt = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity_alive() : nullptr;
-			PIItem l_pI = PP.RQ.O->cast_inventory_item();
-			CActor* pActor = PP.RQ.O->cast_actor();
+			PIItem l_pI = const_cast<CObject*>(PP.RQ.GetDynamic())->cast_inventory_item();
+			CActor* pActor = const_cast<CObject*>(PP.RQ.GetDynamic())->cast_actor();
 			CInventoryOwner* our_inv_owner = pCurEnt != nullptr ? pCurEnt->cast_inventory_owner() : nullptr;
 
 			if (E_ && E_->g_Alive())
@@ -374,8 +373,10 @@ void CHUDTarget::Render()
 
 void CHUDTarget::net_Relcase(CObject* O)
 {
-	if(PP.RQ.O == O)
-		PP.RQ.O = nullptr;
+	if(!PP.RQ.IsStatic() && (PP.RQ.GetDynamic() == O))
+	{
+		PP.RQ.reset();
+	}
 
 	RQR.r_clear	();
 }
