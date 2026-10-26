@@ -118,6 +118,16 @@ namespace
 		Ivector2 GridSize{1, 1};
 	};
 
+	struct S3dIconSettingsBuffer
+	{
+		bool valid = false;
+		Fvector rotate_deg{};
+		float scale = 1.0f;
+		Fvector2 offset{};
+		Ivector2 grid{1, 1};
+		shared_str source_section;
+	};
+
 	class CImGui3dIconAdjust
 	{
 	public:
@@ -477,6 +487,44 @@ namespace
 			record.GridSize = GridSize;
 		}
 
+		void copy_settings()
+		{
+			if (!m_target_item)
+			{
+				return;
+			}
+
+			m_copied.valid = true;
+			m_copied.rotate_deg = m_rotate_deg;
+			m_copied.scale = m_scale;
+			m_copied.offset = Offset;
+			m_copied.grid = GridSize;
+			m_copied.source_section = m_target_item->m_section_id;
+			m_status = "Settings copied";
+			m_status_error = false;
+		}
+
+		void apply_copied_settings()
+		{
+			if (!m_target_item || !m_copied.valid)
+			{
+				return;
+			}
+
+			m_rotate_deg = m_copied.rotate_deg;
+			m_scale = m_copied.scale;
+			Offset = m_copied.offset;
+			GridSize = m_copied.grid;
+
+			const bool grid_applied = ApplyGridSize();
+			apply_rotation_scale();
+
+			m_status = grid_applied
+				? "Copied settings applied"
+				: "Copied settings applied, inventory size was not changed";
+			m_status_error = !grid_applied;
+		}
+
 		const char* get_place_text(const CInventory& inventory, const CInventoryItem* item)
 		{
 			for (u16 slot = 0; slot < static_cast<u16>(inventory.m_slots.size()); ++slot)
@@ -528,6 +576,9 @@ namespace
 		shared_str m_visual_applied;
 
 		xr_map<xr_string, S3dIconAdjustRecord> m_adjusted;
+		S3dIconSettingsBuffer m_copied;
+		xr_string m_status;
+		bool m_status_error = false;
 		mutable xr_string m_last_saved_path;
 	};
 
@@ -757,6 +808,7 @@ namespace
 			ImGuiEditorUI_HelpBullet("3d_static_scale - icon size in the inventory.");
 			ImGuiEditorUI_HelpBullet("3d_static_offset - X/Y displacement relative to icon width/height. Positive X moves right, positive Y moves down.");
 			ImGuiEditorUI_HelpBullet("inv_grid_width / inv_grid_height - occupied inventory cells. inv_grid_x / inv_grid_y remain atlas coordinates.");
+			ImGuiEditorUI_HelpBullet("Copy settings / Paste settings - transfer rotation, scale, offset and inventory cell size between items. The visual is not copied.");
 		}
 
 		if (ImGui::CollapsingHeader("Keyboard (Adjust mode)"))
@@ -913,9 +965,32 @@ namespace
 
 		if (ImGui::Button("Log values")) { log_values(); }
 		ImGui::SameLine();
-		if (ImGui::Button("Copy config")) { copy_to_clipboard(); }
+		if (ImGui::Button("Copy settings")) { copy_settings(); }
+		ImGui::SetItemTooltip("Copy rotation, scale, offset and inventory cell size of the current item. The visual is not copied.");
+		ImGui::SameLine();
+		ImGui::BeginDisabled(!m_copied.valid);
+		if (ImGui::Button("Paste settings")) { apply_copied_settings(); }
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("Apply the copied settings to the selected item.");
+		ImGui::SameLine();
+		if (ImGui::Button("Copy config text")) { copy_to_clipboard(); }
+		ImGui::SetItemTooltip("Copy the ready-made config section, including the visual, to the clipboard.");
 		ImGui::SameLine();
 		if (ImGui::Button("Save to file")) { save(); }
+
+		if (m_copied.valid)
+		{
+			ImGui::TextWrapped("Copied from %s: rot %.1f, %.1f, %.1f | scale %.3f | offset %.3f, %.3f | %dx%d cells",
+				safe_c_str(m_copied.source_section),
+				m_copied.rotate_deg.x, m_copied.rotate_deg.y, m_copied.rotate_deg.z,
+				m_copied.scale, m_copied.offset.x, m_copied.offset.y,
+				m_copied.grid.x, m_copied.grid.y);
+		}
+
+		if (!m_status.empty())
+		{
+			ImGui::TextColored(m_status_error ? ImVec4(1.0f, 0.6f, 0.1f, 1.0f) : ImVec4(0.5f, 0.9f, 0.5f, 1.0f), "%s", m_status.c_str());
+		}
 
 		if (!m_last_saved_path.empty())
 		{
