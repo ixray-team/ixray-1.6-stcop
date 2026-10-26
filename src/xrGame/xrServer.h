@@ -7,7 +7,7 @@
 #include "FreeMP/ScriptEvents.h"
 
 class CSE_Abstract;
-const u32 NET_Latency = 50; // time in (ms)
+constexpr u32 NET_Latency = 50; // time in (ms)
 
 // t-defs
 using xrS_entities = xr_hash_map<ALife::_OBJECT_ID, CSE_Abstract*>;
@@ -53,7 +53,7 @@ public:
 struct svs_respawn
 {
 	u32 timestamp;
-	u16 phantom;
+	u32 phantom;
 };
 IC bool operator < (const svs_respawn& A, const svs_respawn& B)	{ return A.timestamp<B.timestamp; }
 
