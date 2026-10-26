@@ -180,11 +180,6 @@ void CBulletManager::Step()
 
 	for (auto& it = begin; it < end; ++it)
 	{
-		if (it->pending_remove)
-		{
-			continue;
-		}
-
 		if (process_bullet(rq_storage, *it, fixed_step))
 		{
 			continue;
@@ -195,7 +190,6 @@ void CBulletManager::Step()
 			continue;
 		}
 
-		it->pending_remove = true;
 		RegisterEvent(
 			EVENT_REMOVE,
 			false,
