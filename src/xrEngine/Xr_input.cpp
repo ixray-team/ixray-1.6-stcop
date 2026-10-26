@@ -68,14 +68,16 @@ CInput::~CInput()
 void CInput::MouseMotion(float dx, float dy)
 {
 	mouseMoved = true;
-	offs[0] += (int)dx;
-	offs[1] += (int)dy;
+	// Keep the fractional part: with the system pointer scale enabled a single event
+	// carries a fraction of a pixel, and truncating it here would stall slow motion.
+	offs[0] += dx;
+	offs[1] += dy;
 }
 
 void CInput::MouseScroll(float d)
 {
 	mouseScrolled = true;
-	offs[2] += (int)d;
+	offs[2] += d;
 }
 
 void CInput::MousePressed(int button)
@@ -464,7 +466,7 @@ void CInput::NoInputUpdate()
 		}
 	}
 
-	offs[0] = offs[1] = offs[2] = 0;
+	offs[0] = offs[1] = offs[2] = 0.f;
 
 	mouseMoved = false;
 	mouseScrolled = false;
@@ -472,8 +474,12 @@ void CInput::NoInputUpdate()
 
 void CInput::MouseUpdate( )
 {
-	if (Device.dwPrecacheFrame)
+	if (Device.dwPrecacheFrame) {
+		offs[0] = offs[1] = offs[2] = 0.f;
+		mouseMoved = false;
+		mouseScrolled = false;
 		return;
+	}
 
 	for (size_t i = 0; i < COUNT_MOUSE_BUTTONS; i++) {
 		bool Pressed = !!mouseState[i];
@@ -493,17 +499,30 @@ void CInput::MouseUpdate( )
 	}
 
 	if (mouseMoved) {
-		cbStack.back()->IR_OnMouseMove(offs[0], offs[1]);
+		// Dispatch the whole part and carry the remainder over to the next frame, so
+		// sub-pixel motion is not lost.
+		const int dx = (int)offs[0];
+		const int dy = (int)offs[1];
+		offs[0] -= (float)dx;
+		offs[1] -= (float)dy;
 		mouseMoved = false;
+
+		if (dx != 0 || dy != 0) {
+			cbStack.back()->IR_OnMouseMove(dx, dy);
+		}
 	}
 
 	if (mouseScrolled) {
-		cbStack.back()->IR_OnMouseWheel(offs[2]);
+		const int wheel = (int)offs[2];
+		offs[2] -= (float)wheel;
 		mouseScrolled = false;
+
+		if (wheel != 0) {
+			cbStack.back()->IR_OnMouseWheel(wheel);
+		}
 	}
 
 	std::memcpy(old_mouseState, mouseState, sizeof(mouseState));
-	offs[0] = offs[1] = offs[2] = 0;
 }
 
 void CInput::GyroscopeUpdate()
