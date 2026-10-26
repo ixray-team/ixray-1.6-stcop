@@ -161,11 +161,11 @@ protected:
 public:
 					CPostprocessAnimator            (int id, bool cyclic);
 					CPostprocessAnimator            ();
-	virtual ~CPostprocessAnimator            () override;
+	virtual ~CPostprocessAnimator            ();
 		void        Clear                           ();
 		void        Load                            (const char* name);
 	IC  const char*      Name                            (){return *m_Name;}
-	virtual void      Stop                            (float speed) override;
+	virtual void      Stop                            (float speed);
 		void		SetDesiredFactor				(float f, float sp);
 		void		SetCurrentFactor				(float f);
 		void		SetCyclic						(bool b)					{m_bCyclic=b;}
