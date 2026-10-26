@@ -974,7 +974,7 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 		const static bool isDeadBodyRagdoll = EngineExternal()[EEngineExternalPhysical::DeadBodyRagdoll];
 		if (!isDeadBodyRagdoll)
 		{
-			m_pPhysicsShell->SetRemoveCharacterCollLADisable();
+			m_pPhysicsShell->DisableCharacterCollision();
 		}
 	}
 	else
