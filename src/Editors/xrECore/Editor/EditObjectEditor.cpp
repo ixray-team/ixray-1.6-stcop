@@ -166,29 +166,22 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 	{
 		RCache.set_xform_world(parent);
 
-		if (m_objectFlags.is(eoHOM))
+		// HOM and sound occluders are drawn as untextured half-transparent volumes with edges
+		if (m_objectFlags.is(eoHOM) || m_objectFlags.is(eoSoundOccluder))
 		{
+			const bool IsHOM = m_objectFlags.is(eoHOM);
+
 			if ((1 == priority) && (false == strictB2F))
 			{
-				RenderEdge(pParent, 0, 0x40B64646);
+				RenderEdge(pParent, 0, IsHOM ? 0x40B64646 : 0xFF000000);
 			}
 
-			if ((2 == priority) && (true == strictB2F))
+			if ((2 == priority) && (true == strictB2F) && !SubmitPass)
 			{
-				RenderSelection(pParent, 0, 0xA0FFFFFF);
+				RenderSelection(pParent, 0, IsHOM ? 0x80FFFFFF : 0x800000FF);
 			}
-
 		}
-	//	else 
-		if (m_objectFlags.is(eoSoundOccluder))
-		{
-			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(pParent, 0, 0xFF000000);
-
-			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(pParent, 0, 0xA00000FF);
-		}
-	//	else 
+		else
 		{
 			if (psDeviceFlags.is(rsEdgedFaces) && (1 == priority) && (false == strictB2F))
 			{
