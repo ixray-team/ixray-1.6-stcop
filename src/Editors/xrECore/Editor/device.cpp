@@ -707,6 +707,7 @@ void CEditorRenderDevice::CreateWindow()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
+	g_AppInfo.MainThread = Platform::GetCurrentThread();
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 #if _WINDOWS
 	SetForegroundWindow(EDevice->GetHWND());

@@ -6,6 +6,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/Environment.h"
 #include "IconsFontAwesome7.h"
+#include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
 
 extern ENGINE_API bool bIsSndOnRoof;
 extern ENGINE_API bool bIsRaindropCollision;
@@ -198,6 +199,7 @@ void UILightingForm::Draw()
 	ImGui::BeginDisabled(!IsLit());
 	DrawEnvironment();
 	DrawAmbient();
+	DrawReflections();
 	DrawLights();
 	DrawRain();
 	ImGui::EndDisabled();
@@ -298,6 +300,33 @@ void UILightingForm::DrawAmbient()
 	{
 		ps_r_ssao_mode = (u32)Mode;
 		EContext.UI->RedrawScene();
+	}
+
+	EndSection();
+}
+
+void UILightingForm::DrawReflections()
+{
+	if (!BeginSection(ICON_FA_WATER " Reflections"))
+	{
+		return;
+	}
+
+	// Both are shader defines: a change recompiles the shaders
+	bool World = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	Row("SSLR", "Screen space reflections on the scene surfaces");
+	if (Switch("SSLRWorld", &World))
+	{
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, World);
+		RImplementation.SyncReflections();
+	}
+
+	bool Water = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+	Row("SSLR Water", "Screen space reflections on the water");
+	if (Switch("SSLRWater", &Water))
+	{
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WATER, Water);
+		RImplementation.SyncReflections();
 	}
 
 	EndSection();

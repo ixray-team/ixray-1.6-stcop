@@ -428,6 +428,12 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "dynamic_lights", DynamicLights);
 		GetSafe(*render, "light_shadows", LightShadows);
 		GetSafe(*render, "ssao_mode", ps_r_ssao_mode);
+		bool SSLRWorld = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+		bool SSLRWater = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+		GetSafe(*render, "sslr", SSLRWorld);
+		GetSafe(*render, "sslr_water", SSLRWater);
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, SSLRWorld);
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WATER, SSLRWater);
 		Hemi = std::clamp(Hemi, 0.f, 1.f);
 		ps_r_ssao_mode = std::min(ps_r_ssao_mode, 2u);
 		GetSafe(*render, "w", start_w);
@@ -584,6 +590,8 @@ void CCustomPreferences::Save()
 	JSONData["render"]["dynamic_lights"]=DynamicLights;
 	JSONData["render"]["light_shadows"]=LightShadows;
 	JSONData["render"]["ssao_mode"]=ps_r_ssao_mode;
+	JSONData["render"]["sslr"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	JSONData["render"]["sslr_water"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts

@@ -863,6 +863,20 @@ void CRender::SyncMotionVectors()
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 }
 
+void CRender::SyncReflections()
+{
+	if (o.dx11_use_legacy_light || LightingModeIsStaticRender())
+	{
+		return;
+	}
+
+	// USE_SSLR_REFLECTIONS and USE_SSLR_ON_WATER are shader defines
+	o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	clearAllShaderOptions();
+	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
+	SyncMotionVectors();
+}
+
 void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)

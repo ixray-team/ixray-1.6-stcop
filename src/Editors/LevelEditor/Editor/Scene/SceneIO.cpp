@@ -765,9 +765,9 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
 	}
 
-	xr_string LevelPath = xr_string(ICON_FA_MOUNTAIN) + " " + xr_path(map_name).stem().string().c_str();
+	xr_string LevelPath = xr_string(ICON_FA_MOUNTAIN) + " " + xr_path(map_name).stem().string().c_str() + "##scene_view";
 	EContext.UI->GeneralTabs[0] = { LevelPath.c_str(), []()->bool {return Scene->IsUnsaved(); } };
-	EContext.UI->ActiveTabIndex = 0;
+	EContext.UI->RequestedTabIndex = 0;
 	
 	full_name = map_name;
 

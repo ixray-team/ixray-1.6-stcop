@@ -228,6 +228,8 @@ void UIObjectList::DrawTree()
 			Clipper.IncludeItemByIndex(ScrollRow);
 		}
 
+		// Header cells use PushID(column), keep row IDs in their own scope
+		ImGui::PushID("Rows");
 		while (Clipper.Step())
 		{
 			for (int i = Clipper.DisplayStart; i < Clipper.DisplayEnd; i++)
@@ -249,6 +251,7 @@ void UIObjectList::DrawTree()
 				ImGui::PopID();
 			}
 		}
+		ImGui::PopID();
 
 		// Dropping on empty space takes the objects out of their groups
 		DrawEmptySpaceDropTarget();

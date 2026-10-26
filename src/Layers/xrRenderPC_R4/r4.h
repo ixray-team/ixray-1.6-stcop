@@ -478,6 +478,7 @@ public:
 	bool							NeedMotionVectors			() const;
 	bool							MotionVectorsDisabled		() const;
 	void							SyncMotionVectors			();
+	void							SyncReflections				();
 
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
