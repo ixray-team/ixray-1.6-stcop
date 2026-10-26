@@ -2,8 +2,9 @@
 
 class CPHContact;
 #ifdef DEBUG_DRAW
+#include "PhysicsCommon.h"
 
-	enum
+enum
 {
 	phDbgDrawContacts			=		1<<0,
 	phDbgDrawEnabledAABBS		=		1<<1,
@@ -82,10 +83,11 @@ virtual	void DBG_ClosedCashedDraw( u32 remove_time )							=0;
 //virtual	void DBG_DrawPHAbstruct( SPHDBGDrawAbsract*	a )							=0;
 virtual	void DBG_DrawPHObject( const CPHObject *obj )							=0;
 virtual	void DBG_DrawContact ( const CPHContact &c )								=0;
-virtual	void DBG_DrawTri( CDB::RESULT *T, u32 c )								=0;
-virtual	void DBG_DrawTri(CDB::TRI *T, const Fvector *V_verts, u32 c )			=0;
+virtual	void DBG_DrawTri(const CDB::RESULT& T, u32 c )								=0;
+virtual	void DBG_DrawTri(const TriabgleCDBData& T, u32 c )			=0;
 virtual	void DBG_DrawLine( const Fvector &p0, const Fvector &p1, u32 c )		=0;
 virtual	void DBG_DrawAABB( const Fvector &center, const Fvector& AABB, u32 c )	=0;
+virtual	void DBG_DrawAABB( const Fbox& AABB, u32 c )	=0;
 virtual	void DBG_DrawOBB( const Fmatrix &m, const Fvector h, u32 c )			=0;
 virtual	void DBG_DrawPoint( const Fvector& p, float size, u32 c )				=0;
 virtual	void DBG_DrawMatrix( const Fmatrix &m, float size, u8 a=255 )			=0;
@@ -140,4 +142,4 @@ IC	IDebugOutput	&debug_output()
 	return *ph_debug_output;
 }
  
-#endif
+#endif
