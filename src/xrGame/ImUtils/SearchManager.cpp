@@ -615,6 +615,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_soc);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_smetr);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_custom);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.ItemFlashlight);
 
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_dstr_s);
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.o_physic_s);
