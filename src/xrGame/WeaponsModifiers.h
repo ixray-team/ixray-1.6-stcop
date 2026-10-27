@@ -33,26 +33,6 @@ inline const WpnModifierType DefaultCoefficients = []
 	return Coefficients;
 }();
 
-ICF float ApplyHitPower(const WpnModifierType& Modifiers, float HitPower, bool IsSilenced = false)
-{
-	return HitPower * Modifiers[WeaponModifier::eHitPowerCoeff] * (IsSilenced ? Modifiers[WeaponModifier::eSilencerHitPowerCoeff] : Modifiers[WeaponModifier::eUnsilencedHitPowerCoeff]);
-}
-
-ICF float ApplyHitImpulse(const WpnModifierType& Modifiers, float HitImpulse)
-{
-	return HitImpulse * Modifiers[WeaponModifier::eHitImpulseCoeff];
-}
-
-ICF float ApplyFireDispersionBase(const WpnModifierType& Modifiers, float Dispersion)
-{
-	return Dispersion * Modifiers[WeaponModifier::eFireDispersionBaseCoeff];
-}
-
-ICF float ApplyCrosshairInertion(const WpnModifierType& Modifiers, float Inertion)
-{
-	return Inertion * Modifiers[WeaponModifier::eCrosshairInertionCoeff];
-}
-
 ICF float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle, float ShotAngle, float MaxAngle)
 {
 	if (Modifiers[WeaponModifier::eRecoilCoeff] == 1.0f)
@@ -70,11 +50,6 @@ ICF float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle,
 		return MaxAngle;
 	}
 	return Result;
-}
-
-ICF float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpeed)
-{
-	return BulletSpeed * Modifiers[WeaponModifier::eBulletSpeedCoeff];
 }
 
 } // namespace WeaponModifiers

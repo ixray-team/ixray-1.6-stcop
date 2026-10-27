@@ -545,12 +545,10 @@ void CShootingObject::FireBullet(const Fvector& pos,
 		UseSinglePlayerHitPower ? g_SingleGameDifficulty : egdMaster;
 	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	float BulletSpeed = m_fStartBulletSpeed * cur_silencer_koef.bullet_speed;
-	float HitImpulse = fHitImpulse * cur_silencer_koef.hit_impulse;
 	const WeaponModifiers::WpnModifierType& Modifiers = *OwnerWeaponModifiers;
-	l_fHitPower = WeaponModifiers::ApplyHitPower(Modifiers, l_fHitPower, fire_mode == eSilencerFire);
-	BulletSpeed = WeaponModifiers::ApplyBulletSpeed(Modifiers, BulletSpeed);
-	HitImpulse = WeaponModifiers::ApplyHitImpulse(Modifiers, HitImpulse);
+	l_fHitPower = l_fHitPower * Modifiers[WeaponModifiers::eHitPowerCoeff] * Modifiers[fire_mode == eSilencerFire ? WeaponModifiers::eSilencerHitPowerCoeff : WeaponModifiers::eUnsilencedHitPowerCoeff];
+	const float BulletSpeed = m_fStartBulletSpeed * cur_silencer_koef.bullet_speed * Modifiers[WeaponModifiers::eBulletSpeedCoeff];
+	const float HitImpulse = fHitImpulse * cur_silencer_koef.hit_impulse * Modifiers[WeaponModifiers::eHitImpulseCoeff];
 
 	Level().BulletManager().AddBullet(pos, dir, BulletSpeed, l_fHitPower * cur_silencer_koef.hit_power, HitImpulse, parent_id, weapon_id, ALife::eHitTypeFireWound, fireDistance, cartridge, m_air_resistance_factor, send_hit, aim_bullet);
 }
