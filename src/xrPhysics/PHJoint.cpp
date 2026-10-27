@@ -120,7 +120,7 @@ default:NODEFAULT;
 
 void CPHJoint::CreateHinge2()
 {
-
+	pShell->SetPrefereExactIntegration();
 	m_joint=dJointCreateHinge2(0,0);
 
 	Fvector pos;

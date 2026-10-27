@@ -69,20 +69,6 @@ CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_stat
 	//m_pPhysicsShell->SmoothElementsInertia(0.3f);
 	pPhysicsShell->SetAirResistance();//0.0014f,1.5f
 
-	u16 joints_size = pPhysicsShell->get_JointsNumber();
-	if (joints_size > 0)
-	{
-		for (u16 j_idx = 0; j_idx < joints_size; j_idx++)
-		{
-			CPhysicsJoint* J = pPhysicsShell->get_JointByStoreOrder(j_idx);
-			if (J->IsWheelJoint())
-			{
-				pPhysicsShell->SetPrefereExactIntegration();
-				break;
-			}
-		}
-	}
-
 	return pPhysicsShell;
 }
 
