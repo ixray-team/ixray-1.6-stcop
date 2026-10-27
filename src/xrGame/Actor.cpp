@@ -119,7 +119,7 @@ void CActor::OnFrame()
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
-	WeaponModifierCoefficients.resize(WeaponModifier::Count);
+	WeaponModifierCoefficients.resize(WeaponModifier::eWpnModifierTypeMax);
 	for (float& Coefficient : WeaponModifierCoefficients)
 	{
 		Coefficient = 1.0f;

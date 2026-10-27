@@ -1491,7 +1491,7 @@ void CActor::save(NET_Packet& output_packet)
 	output_packet.w_u32(m_statDeaths);
 	output_packet.w_u32(m_statHelpWounded);
 
-	for (u32 Index = 0; Index < WeaponModifier::Count; ++Index)
+	for (u32 Index = 0; Index < WeaponModifier::eWpnModifierTypeMax; ++Index)
 	{
 		output_packet.w_float(WeaponModifierCoefficients[Index]);
 	}
@@ -1553,7 +1553,7 @@ void CActor::load(IReader& input_packet)
 	}
 	m_isMoneyStatInitialized = true;
 
-	for (u32 Index = 0; Index < WeaponModifier::Count; ++Index)
+	for (u32 Index = 0; Index < WeaponModifier::eWpnModifierTypeMax; ++Index)
 	{
 		WeaponModifierCoefficients[Index] = input_packet.r_float();
 	}

@@ -478,7 +478,7 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 {
-	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count)
+	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::eWpnModifierTypeMax)
 	{
 		return Owner->GetActorWeaponModifier((WeaponModifier)Type);
 	}
@@ -488,7 +488,7 @@ float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 
 bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
 {
-	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count && Owner->SetActorWeaponModifier((WeaponModifier)Type, Value))
+	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::eWpnModifierTypeMax && Owner->SetActorWeaponModifier((WeaponModifier)Type, Value))
 	{
 		return true;
 	}
