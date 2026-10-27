@@ -17,12 +17,12 @@ CCustomPreferences::CCustomPreferences()
 {
 	bOpen = false;
 	// view
-	view_np = 0.1f;
-	view_fp = 1500.f;
-	view_fov = 60.f;
-	// fog
-	fog_color = 0x00555555;
-	fog_fogness = 0.9;
+	view_np				= 0.1f;
+	view_fp				= 1500.f;
+	view_fov			= 60.f;
+	// fog    
+	fog_color			= 0x00555555;
+	fog_fogness			= 0.9;
 	// camera
 	cam_fly_speed = 5.0f;
 	cam_fly_alt = 1.8f;
@@ -42,12 +42,12 @@ CCustomPreferences::CCustomPreferences()
 	snap_moveto = 0.5f;
 	scale_fixed = 0.1f;
 	// grid
-	grid_cell_size = 1.f;
-	grid_cell_count = 100;
+	grid_cell_size		= 1.f;
+	grid_cell_count		= 100;
 	// scene
-	scene_undo_level = 125;
-	scene_recent_count = 10;
-	scene_clear_color = DEFAULT_CLEARCOLOR;
+	scene_undo_level	= 125;
+	scene_recent_count	= 10;
+	scene_clear_color	= DEFAULT_CLEARCOLOR;
 	// objects
 	object_flags.zero();
 	// Weather
@@ -58,10 +58,7 @@ CCustomPreferences::CCustomPreferences()
 	// sound
 	sound_volume = 1.f;
 
-	// Compilers: путь к xrLevelBuilder.exe (единый бинарник xrLC / xrAI / xrDO).
-	CompilerPath = "xrLevelBuilder.exe";
-
-	// other
+	//other
 	custom_icons.clear();
 
 	string_path AppDataPath = {};
@@ -86,7 +83,10 @@ void CCustomPreferences::ApplyValues()
 	Tools->m_ScaleFixed = scale_fixed;
 
 	EContext.UI->CurrentView().m_Camera.SetViewport(view_np, view_fp, view_fov);
-	Tools->SetFog(fog_color, fog_fogness);
+
+	// Цвет берётся из темы (SetFog его игнорирует для рендера), здесь важен
+	// только fogness. Параметр цвета оставлен для совместимости с переопределениями.
+	Tools->SetFog(CUIThemeManager::Get().FogColor, fog_fogness);
 
 	EContext.UI->m_MouseSM = 0.2f * tools_sens_move * tools_sens_move;
 	EContext.UI->m_MouseSR = 0.02f * tools_sens_rot * tools_sens_rot;
@@ -171,17 +171,6 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	}
 }
 
-void CCustomPreferences::OnChooseCompilerPath(ButtonValue* V, bool& bModif, bool&)
-{
-	xr_string fn = CompilerPath.c_str();
-	// Передаём "$import$" как стартовую папку, иначе движок упадёт с P!=pathes.end()
-	if (EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.exe"))
-	{
-		CompilerPath = fn.c_str();
-		bModif = true;
-	}
-}
-
 void CCustomPreferences::FillProp(PropItemVec& props)
 {
 	PHelper().CreateU32(props, "Common\\Recent Count", &scene_recent_count, 0, 25);
@@ -199,18 +188,18 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat(props, "Viewport\\Camera\\Fly Speed", &cam_fly_speed, 0.01f, 100.f);
 	PHelper().CreateFloat(props, "Viewport\\Camera\\Fly Altitude", &cam_fly_alt, 0.f, 1000.f);
 
-	PHelper().CreateColor(props, "Viewport\\Fog\\Color", &fog_color);
-	PHelper().CreateFloat(props, "Viewport\\Fog\\Fogness", &fog_fogness, 0.f, 100.f);
+	PHelper().CreateColor	(props,"Viewport\\Fog\\Color", 						&fog_color);
+	PHelper().CreateFloat	(props,"Viewport\\Fog\\Fogness", 					&fog_fogness, 			0.f, 	100.f);
 
-	PHelper().CreateFloat(props, "Viewport\\Near Plane", &view_np, 0.01f, 10.f);
-	PHelper().CreateFloat(props, "Viewport\\Far Plane", &view_fp, 10.f, 10000.f);
-	PHelper().CreateFloat(props, "Viewport\\FOV", &view_fov, 0.1f, 170.f);
-	PHelper().CreateFloat(props, "Viewport\\Render Radius", &EDevice->RenderRadius, 10.f, 100000.f);
-	PHelper().CreateColor(props, "Viewport\\Clear Color", &scene_clear_color);
-	PHelper().CreateFloat(props, "Viewport\\Light Distance", &LightDistance, 1.f, 10000.f);
-	PHelper().CreateBool(props, "Viewport\\Occlusion Culling", &OcclusionCulling);
-	PHelper().CreateBool(props, "Viewport\\Instancing", &Instancing);
-	PHelper().CreateBool(props, "Viewport\Instancing in Shadows", &ShadowInstancing);
+	PHelper().CreateFloat	(props,"Viewport\\Near Plane", 						&view_np, 				0.01f, 	10.f);
+	PHelper().CreateFloat	(props,"Viewport\\Far Plane", 						&view_fp, 				10.f, 	10000.f);
+	PHelper().CreateFloat	(props,"Viewport\\FOV", 							&view_fov, 				0.1f, 	170.f);
+	PHelper().CreateFloat	(props,"Viewport\\Render Radius", 					&EDevice->RenderRadius, 10.f, 	100000.f);
+	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
+	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
+	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
+	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
+	PHelper().CreateBool	(props,"Viewport\Instancing in Shadows",		&ShadowInstancing);
 
 	PHelper().CreateFlag32(props, "Objects\\Show\\Hint", &object_flags, epoShowHint);
 	PHelper().CreateFlag32(props, "Objects\\Show\\Pivot", &object_flags, epoDrawPivot);
@@ -248,12 +237,11 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
 	PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
 
-	// Compilers: путь к xrLevelBuilder.exe (единый бинарник xrLC / xrAI / xrDO).
-	// Кнопка отображает текущий путь. При клике открывается проводник.
-	ButtonValue* BrowseBtn = PHelper().CreateButton(props, "Compilers\\Path", CompilerPath.c_str(), 0);
-	BrowseBtn->OnBtnClickEvent.bind(this, &CCustomPreferences::OnChooseCompilerPath);
-
-	PHelper().CreateBool(props, "Compilers\\Duplicate Object Position Is Error", &DuplicateObjectPositionAsError);
+	PHelper().CreateSText	(props, "Compilers\\xrLC",						&Compiler_xrLC);
+	PHelper().CreateSText	(props,	"Compilers\\xrAI",						&Compiler_xrAI);
+	PHelper().CreateSText	(props, "Compilers\\xrDO",						&Compiler_xrDO);
+	PHelper().CreateBool	(props, "Compilers\\Duplicate Object Position Is Error",						&DuplicateObjectPositionAsError);
+	
 	PHelper().CreateBool(props, "Compilers\\LODs For All MU", &LODsForAllMU);
 
 
@@ -387,6 +375,12 @@ void CCustomPreferences::Load()
 		CUIThemeManager::Get().ThemeID = themeID;
 	}
 
+	// Цвета вьюпорта принадлежат теме (CUIThemeManager).
+	// Читаем те же ключи, что были раньше — обратная совместимость.
+	CUIThemeManager& Theme = CUIThemeManager::Get();
+	GetSafe(*prefs, "fog_color", Theme.FogColor);
+	GetSafe(*prefs, "scene_clear_color", Theme.ClearColor);
+
 	// sound
 	GetSafe(*prefs, "sound_volume", sound_volume);
 
@@ -398,8 +392,7 @@ void CCustomPreferences::Load()
 	GetSafe(*prefs, "view_fp", view_fp);
 	GetSafe(*prefs, "view_fov", view_fov);
 
-	// fog
-	GetSafe(*prefs, "fog_color", fog_color);
+	// fog (только fogness — цвет уже прочитан выше)
 	GetSafe(*prefs, "fog_fogness", fog_fogness);
 
 	// camera
@@ -433,7 +426,6 @@ void CCustomPreferences::Load()
 	GetSafe(*prefs, "grid_cell_count", grid_cell_count);
 	GetSafe(*prefs, "scene_undo_level", scene_undo_level);
 	GetSafe(*prefs, "scene_recent_count", scene_recent_count);
-	GetSafe(*prefs, "scene_clear_color", scene_clear_color);
 
 	// object flags
 	GetSafe(*prefs, "object_flags", object_flags.flags);
@@ -536,8 +528,8 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["view_fp"] = view_fp;
 	JSONData["editor_prefs"]["view_fov"] = view_fov;
 
-	JSONData["editor_prefs"]["fog_color"] = fog_color;
-	JSONData["editor_prefs"]["fog_fogness"] = fog_fogness;
+	JSONData["editor_prefs"]["fog_color"]=fog_color;
+	JSONData["editor_prefs"]["fog_fogness"]=fog_fogness;
 
 	JSONData["editor_prefs"]["cam_fly_speed"] = cam_fly_speed;
 	JSONData["editor_prefs"]["cam_fly_alt"] = cam_fly_alt;
@@ -564,9 +556,9 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["grid_cell_size"] = grid_cell_size;
 	JSONData["editor_prefs"]["grid_cell_count"] = grid_cell_count;
 
-	JSONData["editor_prefs"]["scene_undo_level"] = scene_undo_level;
-	JSONData["editor_prefs"]["scene_recent_count"] = scene_recent_list.size();
-	JSONData["editor_prefs"]["scene_clear_color"] = scene_clear_color;
+	JSONData["editor_prefs"]["scene_undo_level"]=scene_undo_level;
+	JSONData["editor_prefs"]["scene_recent_count"]= scene_recent_list.size();
+	JSONData["editor_prefs"]["scene_clear_color"]=scene_clear_color;
 
 	JSONData["editor_prefs"]["object_flags"] = object_flags.flags;
 
@@ -728,10 +720,22 @@ void CCustomPreferences::OnCreate()
 {
 	LoadConfig();
 	m_ItemProps = new UIPropertiesForm();
+
+	// Цвета вьюпорта принадлежат CUIThemeManager и читаются рендером напрямую:
+	//   - ClearColor: CEditorRenderDevice::Clear() / RenderSceneFrame()
+	//   - FogColor:   CToolCustom::GetCurrentFog()
+	// Здесь только просим перерисовать сцену, чтобы изменения были видны сразу.
+	CUIThemeManager::Get().SetOnViewportColorChanged([]()
+													 {
+		if (EContext.UI)
+		{
+			EContext.UI->RedrawScene();
+		} });
 }
 
 void CCustomPreferences::OnDestroy()
 {
+  
 	xr_delete(m_ItemProps);
 	SaveConfig();
 }

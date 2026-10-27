@@ -278,15 +278,16 @@ void CEditorRenderDevice::InitTimer()
 
 void CEditorRenderDevice::Clear()
 {
-	float ClearColor[4] = {};
+	// ClearColor принадлежит CUIThemeManager (theme data).
+	// CUIThemeManager::Get() всегда возвращает валидный синглтон — проверка
+	// EPrefs больше не нужна.
+	const u32 ClearColorU32 = CUIThemeManager::Get().ClearColor;
 
-	if (EPrefs)
-	{
-		ClearColor[0] = color_get_R(EPrefs->scene_clear_color) / 255.f;
-		ClearColor[1] = color_get_G(EPrefs->scene_clear_color) / 255.f;
-		ClearColor[2] = color_get_B(EPrefs->scene_clear_color) / 255.f;
-		ClearColor[3] = color_get_A(EPrefs->scene_clear_color) / 255.f;
-	}
+	float ClearColor[4] = {};
+	ClearColor[0] = color_get_R(ClearColorU32) / 255.f;
+	ClearColor[1] = color_get_G(ClearColorU32) / 255.f;
+	ClearColor[2] = color_get_B(ClearColorU32) / 255.f;
+	ClearColor[3] = color_get_A(ClearColorU32) / 255.f;
 
 	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1, 0);
 	GRHI->ClearTarget(GRHI->GetRenderTargetView(0), ClearColor);

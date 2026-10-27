@@ -91,23 +91,27 @@ const u32 lod_ss_quality  = 8;
 
 void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 {
-	U32Vec 	PixelsVec;
-    Fmatrix save_projection		= EDevice->mProject;
-    Fmatrix save_view			= EDevice->mView;
+	U32Vec PixelsVec;
+	Fmatrix save_projection = EDevice->mProject;
+	Fmatrix save_view = EDevice->mView;
 
-    // save render params
-    Flags32 old_flag			= psDeviceFlags;
-	u32 old_dwFillMode			= GEditorDraw.FillMode;
-    u32 old_dwShadeMode			= GEditorDraw.ShadeMode;
-    // set render params
+	// save render params
+	Flags32 old_flag = psDeviceFlags;
+	u32 old_dwFillMode = GEditorDraw.FillMode;
+	u32 old_dwShadeMode = GEditorDraw.ShadeMode;
+	// set render params
 
-    u32 cc						= 	EPrefs->scene_clear_color;
-    // Key color of the background: no LOD texture uses pure magenta
-    EPrefs->scene_clear_color 	= 	0x00FF00FF;
-    psDeviceFlags.zero			();
-	psDeviceFlags.set			(rsFilterLinear,true);
-	GEditorDraw.FillMode			= D3DFILL_SOLID;
-    GEditorDraw.ShadeMode			= D3DSHADE_GOURAUD;
+	// ClearColor принадлежит теме (CUIThemeManager). Сохраняем текущее значение
+	// и подменяем на key-цвет на время рендера LOD-семплов, чтобы фон можно
+	// было вырезать по цвету.
+	CUIThemeManager& Theme = CUIThemeManager::Get();
+	u32 cc = Theme.ClearColor;
+	// Key color of the background: no LOD texture uses pure magenta
+	Theme.ClearColor = 0x00FF00FF;
+	psDeviceFlags.zero();
+	psDeviceFlags.set(rsFilterLinear, true);
+	GEditorDraw.FillMode = D3DFILL_SOLID;
+	GEditorDraw.ShadeMode = D3DSHADE_GOURAUD;
 
 	Fvector Pos, Dir, Normals, VecR;
 	Fmatrix MatrixV, MatrixP;
@@ -200,13 +204,13 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 	}
 
     // restore render params
-	GEditorDraw.FillMode			= old_dwFillMode;
-    GEditorDraw.ShadeMode			= old_dwShadeMode;
-    psDeviceFlags 				= old_flag;
-    EPrefs->scene_clear_color 	= cc;
+	GEditorDraw.FillMode = old_dwFillMode;
+	GEditorDraw.ShadeMode = old_dwShadeMode;
+	psDeviceFlags = old_flag;
+	Theme.ClearColor = cc;
 
-    RCache.set_xform_view		(save_view);
-    RCache.set_xform_project	(save_projection);
+	RCache.set_xform_view(save_view);
+	RCache.set_xform_project(save_projection);
 }
 
 void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int _samples, int quality)

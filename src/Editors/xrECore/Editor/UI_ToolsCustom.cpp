@@ -205,7 +205,8 @@ void CToolCustom::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 {
 	s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * EContext.UI->ZFar() : 0.99f * EContext.UI->ZFar();
 	e_fog = psDeviceFlags.is(rsFog) ? 0.91f * EContext.UI->ZFar() : EContext.UI->ZFar();
-	fog_color = dwFogColor;
+	// Цвет тумана принадлежит теме; читаем каждый кадр — без кэша и без колбэков.
+	fog_color = CUIThemeManager::Get().FogColor;
 }
 
 void CToolCustom::RenderEnvironment()

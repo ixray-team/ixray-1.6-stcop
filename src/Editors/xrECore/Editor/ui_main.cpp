@@ -664,7 +664,7 @@ void TUI::Redraw()
 			GEditorSceneSubmit.BeginFrame();
 			if (EPrefs)
 			{
-				RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
+				RImplementation.EditorClearColor.set(CUIThemeManager::Get().ClearColor);
 				RImplementation.EditorOcclusionCulling = EPrefs->OcclusionCulling;
 				GEditorSceneSubmit.InstancingEnabled = EPrefs->Instancing;
 				GEditorSceneSubmit.ShadowInstancingEnabled = EPrefs->ShadowInstancing;

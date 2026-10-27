@@ -461,6 +461,7 @@ void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 	}
 	else
 	{
+		// В ручном режиме цвет берётся из темы (CUIThemeManager), без кэша
 		s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * EContext.UI->ZFar() : 0.99f * EContext.UI->ZFar();
 		e_fog = psDeviceFlags.is(rsFog) ? 0.91f * EContext.UI->ZFar() : EContext.UI->ZFar();
 		fog_color = dwFogColor;
@@ -865,7 +866,6 @@ void CLevelTool::RunLevelBuilder()
 	}
 
 	STARTUPINFOA si = {};
-
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 	ZeroMemory(&m_CompilerProcess, sizeof(m_CompilerProcess));

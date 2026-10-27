@@ -23,7 +23,9 @@ CUIThemeManager& CUIThemeManager::Get()
 void CUIThemeManager::Draw()
 {
 	if (!bOpen)
+	{
 		return;
+	}
 
 	if (ImGui::Begin("Theme Editor", &bOpen))
 	{
@@ -177,6 +179,57 @@ void CUIThemeManager::Draw()
 			ImGui::ColorEdit4("Debug", (float*)&log_color_debug);
 			ImGui::ColorEdit4("Default", (float*)&log_color_default);
 
+			// Viewport — colors are theme data now, edited right here.
+			ImGui::SeparatorText("Viewport");
+			{
+				// Fog Color (ARGB; edit RGB only, preserve alpha)
+				{
+					const u32 A = (FogColor >> 24) & 0xFF;
+					ImVec4 C(
+						((FogColor >> 16) & 0xFF) / 255.f,
+						((FogColor >> 8) & 0xFF) / 255.f,
+						(FogColor & 0xFF) / 255.f,
+						A / 255.f
+					);
+					if (ImGui::ColorEdit3("Fog Color", (float*)&C))
+					{
+						FogColor =
+							(A << 24) |
+							((u32)(C.x * 255.f) << 16) |
+							((u32)(C.y * 255.f) << 8) |
+							(u32)(C.z * 255.f);
+
+						if (OnViewportColorChanged)
+						{
+							OnViewportColorChanged();
+						}
+					}
+				}
+
+				// Clear Color (full ARGB)
+				{
+					ImVec4 C(
+						((ClearColor >> 16) & 0xFF) / 255.f,
+						((ClearColor >> 8) & 0xFF) / 255.f,
+						(ClearColor & 0xFF) / 255.f,
+						((ClearColor >> 24) & 0xFF) / 255.f
+					);
+					if (ImGui::ColorEdit4("Clear Color", (float*)&C))
+					{
+						ClearColor =
+							((u32)(C.w * 255.f) << 24) |
+							((u32)(C.x * 255.f) << 16) |
+							((u32)(C.y * 255.f) << 8) |
+							(u32)(C.z * 255.f);
+
+						if (OnViewportColorChanged)
+						{
+							OnViewportColorChanged();
+						}
+					}
+				}
+			}
+
 			ImGui::SeparatorText("Fonts");
 			FS_FileSet Files;
 			string_path Fonts = {};
@@ -195,7 +248,9 @@ void CUIThemeManager::Draw()
 					}
 
 					if (is_selected)
+					{
 						ImGui::SetItemDefaultFocus();
+					}
 				}
 				ImGui::EndCombo();
 			}
@@ -217,9 +272,13 @@ void CUIThemeManager::Draw()
 
 
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 		ImGui::Spacing();
@@ -241,77 +300,77 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	XRay::ImGui::InitSizes();
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	//style.ScaleAllSizes(ScreenDPI);
+	// style.ScaleAllSizes(ScreenDPI);
 	ImVec4* colors = style.Colors;
-	colors[ImGuiCol_MenuBarBg]				= GetEditorColor(EEditorColors::BackgroundTint);
-	colors[ImGuiCol_FrameBg]				= GetEditorColor(EEditorColors::TableTint);
-	colors[ImGuiCol_WindowBg]				= GetEditorColor(EEditorColors::PanelTint);
-	colors[ImGuiCol_Border]					= GetEditorColor(EEditorColors::PanelBorderTint);
-	colors[ImGuiCol_ChildBg]				= GetEditorColor(EEditorColors::PanelTint);
-	colors[ImGuiCol_TableRowBg]				= GetEditorColor(EEditorColors::PanelTint);
-	colors[ImGuiCol_TableRowBgAlt]			= GetEditorColor(EEditorColors::PanelTint);
-	colors[ImGuiCol_TableBorderLight]		= GetEditorColor(EEditorColors::BackgroundTint);
-	colors[ImGuiCol_TableBorderStrong]		= GetEditorColor(EEditorColors::BackgroundTint);
-	colors[ImGuiCol_TableHeaderBg]			= GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_MenuBarBg] = GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_FrameBg] = GetEditorColor(EEditorColors::TableTint);
+	colors[ImGuiCol_WindowBg] = GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_Border] = GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_ChildBg] = GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBg] = GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_TableRowBgAlt] = GetEditorColor(EEditorColors::PanelTint);
+	colors[ImGuiCol_TableBorderLight] = GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_TableBorderStrong] = GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_TableHeaderBg] = GetEditorColor(EEditorColors::ButtonTint);
 
-	colors[ImGuiCol_Tab]					= GetEditorColor(EEditorColors::TabBarTint);
-	colors[ImGuiCol_TabSelected]			= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_Tab] = GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabSelected] = GetEditorColor(EEditorColors::PanelBorderTint);
 
-	colors[ImGuiCol_TabActive]				= GetEditorColor(EEditorColors::PanelBorderTint);
-	colors[ImGuiCol_TabHovered]				= GetEditorColor(EEditorColors::TabHover);
+	colors[ImGuiCol_TabActive] = GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_TabHovered] = GetEditorColor(EEditorColors::TabHover);
 
-	colors[ImGuiCol_TabDimmed]				= GetEditorColor(EEditorColors::TabBarTint);
-	colors[ImGuiCol_TabDimmedSelected]		= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_TabDimmed] = GetEditorColor(EEditorColors::TabBarTint);
+	colors[ImGuiCol_TabDimmedSelected] = GetEditorColor(EEditorColors::PanelBorderTint);
 
-	colors[ImGuiCol_TitleBg]				= GetEditorColor(EEditorColors::BackgroundTint);
-	colors[ImGuiCol_TitleBgActive]			= GetEditorColor(EEditorColors::BackgroundTint);
-	colors[ImGuiCol_BorderShadow]			= ImVec4(0.f, 0.f, 0.f, 0.f);
+	colors[ImGuiCol_TitleBg] = GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_TitleBgActive] = GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.f, 0.f, 0.f, 0.f);
 
-	colors[ImGuiCol_Button]					= GetEditorColor(EEditorColors::ButtonTint);
-	colors[ImGuiCol_ButtonHovered]			= GetEditorColor(EEditorColors::ButtonHover);
-	colors[ImGuiCol_ButtonActive]			= GetEditorColor(EEditorColors::ButtonActive);
+	colors[ImGuiCol_Button] = GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_ButtonHovered] = GetEditorColor(EEditorColors::ButtonHover);
+	colors[ImGuiCol_ButtonActive] = GetEditorColor(EEditorColors::ButtonActive);
 
-	colors[ImGuiCol_Header]					= GetEditorColor(EEditorColors::PanelBorderTint);
-	colors[ImGuiCol_HeaderHovered]			= GetEditorColor(EEditorColors::TabHover);
-	colors[ImGuiCol_HeaderActive]			= GetEditorColor(EEditorColors::TabActive);
-	colors[ImGuiCol_DockingEmptyBg]			= GetEditorColor(EEditorColors::BackgroundTint);
+	colors[ImGuiCol_Header] = GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_HeaderHovered] = GetEditorColor(EEditorColors::TabHover);
+	colors[ImGuiCol_HeaderActive] = GetEditorColor(EEditorColors::TabActive);
+	colors[ImGuiCol_DockingEmptyBg] = GetEditorColor(EEditorColors::BackgroundTint);
 
-	colors[ImGuiCol_Separator]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_Separator] = GetEditorColor(EEditorColors::PanelBorderTint);
 
-	colors[ImGuiCol_ScrollbarBg]			= GetEditorColor(EEditorColors::TableTint);
-	colors[ImGuiCol_ScrollbarGrab]			= GetEditorColor(EEditorColors::ButtonTint);
-	colors[ImGuiCol_ScrollbarGrabHovered]	= GetEditorColor(EEditorColors::ButtonHover);
-	colors[ImGuiCol_ScrollbarGrabActive]	= GetEditorColor(EEditorColors::ButtonActive);
-	//colors[ImGuiCol_SeparatorHovered]		= GetEditorColor(EEditorColors::Accent);
-	//colors[ImGuiCol_SeparatorActive]		= GetEditorColor(EEditorColors::Accent);
+	colors[ImGuiCol_ScrollbarBg] = GetEditorColor(EEditorColors::TableTint);
+	colors[ImGuiCol_ScrollbarGrab] = GetEditorColor(EEditorColors::ButtonTint);
+	colors[ImGuiCol_ScrollbarGrabHovered] = GetEditorColor(EEditorColors::ButtonHover);
+	colors[ImGuiCol_ScrollbarGrabActive] = GetEditorColor(EEditorColors::ButtonActive);
+	// colors[ImGuiCol_SeparatorHovered]		= GetEditorColor(EEditorColors::Accent);
+	// colors[ImGuiCol_SeparatorActive]		= GetEditorColor(EEditorColors::Accent);
 
 
-	//style.ChildBorderSize = 0.0f;
-	//style.PopupBorderSize = 0.0f;
+	// style.ChildBorderSize = 0.0f;
+	// style.PopupBorderSize = 0.0f;
 	style.TabBorderSize = 0.0f;
-	//style.WindowBorderSize					= 1.0f;
-	style.WindowBorderSize					= 1.0f;
-	style.ChildBorderSize					= 0.0f;
+	// style.WindowBorderSize					= 1.0f;
+	style.WindowBorderSize = 1.0f;
+	style.ChildBorderSize = 0.0f;
 
-	style.WindowPadding						= { GetEditorSize(EEditorSizes::WindowPadding),  GetEditorSize(EEditorSizes::WindowPadding) };
-	style.FrameBorderSize					= 0.0f;
-	style.FramePadding						= { GetEditorSize(EEditorSizes::ButtonPaddingW), (GetEditorSize(EEditorSizes::ButtonSize) - GetEditorSize(EEditorSizes::FontSize)) / 2 };
-	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
-	style.TabRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
-	style.ChildRounding						= 0.0f;
-	style.ItemSpacing						= ImVec2(4.f, 2.f);
-	style.ItemInnerSpacing					= ImVec2(2.f, 2.f);
-	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);
-	style.ScrollbarSize						= GetEditorSize(EEditorSizes::ButtonSize) / 2;
-	style.ScrollbarRounding					= GetEditorSize(EEditorSizes::ButtonSize) / 4;
-	style.GrabRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
-	style.GrabMinSize						= style.GrabRounding * 2;
-	style.IndentSpacing						= 8.0f;
-	style.SeparatorTextBorderSize			= 2.0f;
-	style.SeparatorTextBorderSize			= 2.0f;
-	style.WindowMenuButtonPosition			= ImGuiDir_Right;
+	style.WindowPadding = {GetEditorSize(EEditorSizes::WindowPadding), GetEditorSize(EEditorSizes::WindowPadding)};
+	style.FrameBorderSize = 0.0f;
+	style.FramePadding = {GetEditorSize(EEditorSizes::ButtonPaddingW), (GetEditorSize(EEditorSizes::ButtonSize) - GetEditorSize(EEditorSizes::FontSize)) / 2};
+	style.FrameRounding = GetEditorSize(EEditorSizes::ButtonRadius);
+	style.TabRounding = GetEditorSize(EEditorSizes::ButtonRadius);
+	style.ChildRounding = 0.0f;
+	style.ItemSpacing = ImVec2(4.f, 2.f);
+	style.ItemInnerSpacing = ImVec2(2.f, 2.f);
+	style.DockingSeparatorSize = GetEditorSize(EEditorSizes::DockingGap);
+	style.ScrollbarSize = GetEditorSize(EEditorSizes::ButtonSize) / 2;
+	style.ScrollbarRounding = GetEditorSize(EEditorSizes::ButtonSize) / 4;
+	style.GrabRounding = GetEditorSize(EEditorSizes::ButtonRadius);
+	style.GrabMinSize = style.GrabRounding * 2;
+	style.IndentSpacing = 8.0f;
+	style.SeparatorTextBorderSize = 2.0f;
+	style.SeparatorTextBorderSize = 2.0f;
+	style.WindowMenuButtonPosition = ImGuiDir_Right;
 
-	style.CellPadding						= { GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY) };
+	style.CellPadding = {GetEditorSize(ButtonTextPaddingY), GetEditorSize(TableTextPaddingY)};
 
 	log_color_default = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	log_color_error = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
