@@ -92,10 +92,15 @@ void CControllerAura::activate()
 	CActorAuraPostEffectsBalancer::RegisterEffect	(
 		EAuraPostEffectType::Psi, 1.f, m_object->ID(), aura_radius, m_pp_section);
 
+#ifdef IXR_HYPESOUND
 	aura_sound.left.play	(Actor(), sm_2D);
 	aura_sound.left.set_panning	(1.0, 0.0);
 	aura_sound.right.play	(Actor(), sm_2D);
 	aura_sound.right.set_panning	(0.0, 1.0);
+#else
+	aura_sound.left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+	aura_sound.right.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+#endif
 }
 
 void CControllerAura::deactivate()
