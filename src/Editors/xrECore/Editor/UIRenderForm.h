@@ -8,6 +8,10 @@ public:
 	using DragCallback = void(const xr_string&, int);
 	DragCallback* DragFunctor = nullptr;
 
+	// Called every frame a payload hovers the viewport; nullptr path ends the preview
+	using DragPreviewCallback = void(const xr_string*, int);
+	DragPreviewCallback* DragPreviewFunctor = nullptr;
+
 public:
 	UIRenderForm();
 	virtual ~UIRenderForm();
@@ -31,6 +35,7 @@ public:
 private:
 	void DrawStatistics();
 	void HandleDragDrop(const ImVec2&);
+	static int GetDropType(const xr_string& FileName);
 
 	Ivector2	m_mouse_position;
 	Frect		m_render_pos;
@@ -40,4 +45,5 @@ private:
 	bool m_mouse_down;
 	bool m_mouse_move;
 	bool m_shiftstate_down;
+	bool DragPreviewActive = false;
 };

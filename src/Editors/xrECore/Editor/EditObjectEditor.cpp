@@ -311,6 +311,14 @@ void CEditableObject::SubmitSurfaces(CCustomObject* pParent, const Fmatrix& pare
 	GEditorSceneSubmit.ApplyDeferred(Job);
 }
 
+void CEditableObject::PrepareSubmitShaders() const
+{
+	for (CSurface* Surface : m_Surfaces)
+	{
+		Surface->EnsureShader();
+	}
+}
+
 void CEditableObject::CollectSubmitPairs(SDeferredSubmit& Job) const
 {
 	Job.Selected.clear();
@@ -326,8 +334,9 @@ void CEditableObject::CollectSubmitPairs(SDeferredSubmit& Job) const
 			continue;
 		}
 
-		const int Priority = Surface->_Priority();
-		const bool StrictB2F = Surface->_StrictB2F();
+		// Runs on a submit worker: PrepareSubmitShaders created the shaders on the primary thread
+		const int Priority = Surface->_PriorityNoRef();
+		const bool StrictB2F = Surface->_StrictB2FNoRef();
 		if (Job.Priority != SDeferredSubmit::AllPriorities && (Priority != Job.Priority || StrictB2F != Job.StrictB2F))
 		{
 			continue;

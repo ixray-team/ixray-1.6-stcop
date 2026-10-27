@@ -439,14 +439,17 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 
 void CMaterialPreview::DrawToolbar()
 {
-	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 7.f);
-	int ShapeIdx = int(Shape);
-	if (ImGui::Combo("##PreviewShape", &ShapeIdx, ShapeNames, int(std::size(ShapeNames))))
+	if (ShowShapeSelector)
 	{
-		Shape = EShape(ShapeIdx);
+		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 7.f);
+		int ShapeIdx = int(Shape);
+		if (ImGui::Combo("##PreviewShape", &ShapeIdx, ShapeNames, int(std::size(ShapeNames))))
+		{
+			Shape = EShape(ShapeIdx);
+		}
+		ImGui::SameLine();
 	}
 
-	ImGui::SameLine();
 	ImGui::Checkbox("Rotate", &AutoRotate);
 	ImGui::SameLine();
 	ImGui::Checkbox("Alpha test", &AlphaTest);

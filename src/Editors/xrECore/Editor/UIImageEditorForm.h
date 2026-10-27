@@ -1,4 +1,6 @@
 #pragma once
+#include "MaterialPreview.h"
+
 class ETextureThumbnail;
 
 class UIImageEditorForm :
@@ -31,7 +33,19 @@ private:
 	static UIImageEditorForm* Form;
 	ref_texture m_Texture;
 	ref_texture TextureRemove;
+
+	// Flat thumbnail or the texture on a shape in the 3D preview
+	enum class EPreviewMode : u8
+	{
+		Image,
+		Sphere,
+		Box,
+		Plane
+	};
+	EPreviewMode PreviewMode = EPreviewMode::Image;
+	CMaterialPreview Preview;
 private:
+	void DrawPreview();
 	ETextureThumbnail* FindUsedTHM(const shared_str& name);
 	void RegisterModifiedTHM();
 	void OnCubeMapBtnClick(ButtonValue* value, bool& bModif, bool& bSafe);
