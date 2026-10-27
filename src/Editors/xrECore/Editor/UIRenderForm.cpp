@@ -373,38 +373,55 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 	}
 
 	// Secondary viewports take drops only when they handle them
-	if ((ViewportID != 0 && DragFunctor == nullptr) || !ImGui::BeginDragDropTarget())
-		return;
-
-	auto ImData = ImGui::AcceptDragDropPayload("TEST");
-
-	if (ImData == nullptr)
+	bool Previewing = false;
+	if ((ViewportID == 0 || DragFunctor != nullptr) && ImGui::BeginDragDropTarget())
 	{
+		// Accepted while hovering too, so the dragged object can be shown before the drop
+		const ImGuiPayload* ImData = ImGui::AcceptDragDropPayload("TEST", ImGuiDragDropFlags_AcceptBeforeDelivery);
+		if (ImData != nullptr)
+		{
+			struct DragDropData
+			{
+				xr_string FileName;
+			};
+			const xr_string& FileName = ((const DragDropData*)ImData->Data)->FileName;
+			const int Type = GetDropType(FileName);
+
+			if (ImData->IsDelivery())
+			{
+				DragFunctor(FileName, Type);
+			}
+			else if (DragPreviewFunctor != nullptr)
+			{
+				DragPreviewFunctor(&FileName, Type);
+				Previewing = true;
+			}
+		}
+
 		ImGui::EndDragDropTarget();
-		return;
 	}
 
-	struct DragDropData
+	// The payload left the viewport, was dropped or the drag was cancelled
+	if (DragPreviewActive && !Previewing && DragPreviewFunctor != nullptr)
 	{
-		xr_string FileName;
-	} Data = *(DragDropData*)ImData->Data;
+		DragPreviewFunctor(nullptr, 0);
+	}
+	DragPreviewActive = Previewing;
+}
 
-
-	if (Data.FileName.ends_with(".object"))
+int UIRenderForm::GetDropType(const xr_string& FileName)
+{
+	if (FileName.ends_with(".object"))
 	{
-		DragFunctor(Data.FileName, 2);
+		return 2;
 	}
-	else if (Data.FileName.ends_with(".group"))
+	if (FileName.ends_with(".group"))
 	{
-		DragFunctor(Data.FileName, 0);
+		return 0;
 	}
-	else if (Data.FileName.ends_with(".r16"))
+	if (FileName.ends_with(".r16"))
 	{
-		DragFunctor(Data.FileName, 17);
+		return 17;
 	}
-	else {
-		DragFunctor(Data.FileName, 6);
-	}
-
-	ImGui::EndDragDropTarget();
+	return 6;
 }

@@ -1,9 +1,9 @@
 #pragma once
 
-// Mini viewport of the Thumbnail View: a sphere, box, cylinder or plane covered with the texture.
-// Reads the edited STextureParams every frame, so bump, detail, parallax and material changes
-// show up before the thm is saved. Rendered to its own target on the primary thread.
-class CMaterialPreview
+// Mini viewport of the Thumbnail View and the Image Editor: a sphere, box, cylinder or plane covered
+// with the texture. Reads the edited STextureParams every frame, so bump, detail, parallax and material
+// changes show up before the thm is saved. Rendered to its own target on the primary thread.
+class ECORE_API CMaterialPreview
 {
 public:
 	enum class EShape : u8
@@ -37,6 +37,11 @@ public:
 	static xr_string GetTextureName(const xr_string& ThmFile);
 	void Draw(const STextureParams& Params, const ImVec2& Size);
 	void Clear();
+
+	EShape GetShape() const { return Shape; }
+	void SetShape(EShape Value) { Shape = Value; }
+	// Off when the owner draws its own shape switcher
+	bool ShowShapeSelector = true;
 
 private:
 	void BuildMesh();

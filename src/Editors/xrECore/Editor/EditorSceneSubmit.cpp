@@ -294,6 +294,7 @@ SDeferredSubmit& CEditorSceneSubmit::AddDeferred()
 void CEditorSceneSubmit::LaunchDeferred(SDeferredSubmit& Job)
 {
 	Job.Done.store(false, std::memory_order_relaxed);
+	Job.Object->PrepareSubmitShaders();
 
 	SDeferredSubmit* JobPtr = &Job;
 	DeferredTasks.run([JobPtr]()
@@ -374,6 +375,12 @@ void CEditorSceneSubmit::LaunchPrepared()
 	if (PreparedCount == 0)
 	{
 		return;
+	}
+
+	// Shaders of new objects are created here, not on the workers
+	for (size_t Index = 0; Index < PreparedCount; ++Index)
+	{
+		Prepared[Index]->Object->PrepareSubmitShaders();
 	}
 
 	// One task per worker, each over a contiguous slice of the list

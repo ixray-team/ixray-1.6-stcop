@@ -33,6 +33,7 @@
 
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
+void DragPreview(const xr_string*, int);
 
 static DialogEditor* g_DialogEditor = nullptr;
 
@@ -163,6 +164,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	bool NeedExit = false;
 	splash::SetProgressStatus(85, "Performing Final Checks");
 	MainForm->GetRenderForm()->DragFunctor = DragDrop;
+	MainForm->GetRenderForm()->DragPreviewFunctor = DragPreview;
 	
 	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
