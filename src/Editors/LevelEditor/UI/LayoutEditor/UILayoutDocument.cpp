@@ -69,32 +69,49 @@ namespace LayoutWidget
 		}
 	}
 
-	const char* GetEvent(ELayoutWidget Type)
+	std::span<const SLayoutEventInfo> GetEvents(ELayoutWidget Type)
 	{
+		static constexpr SLayoutEventInfo ButtonEvents[] = { { "BUTTON_CLICKED", "Clicked" }, { "BUTTON_DOWN", "Down" } };
+		static constexpr SLayoutEventInfo CheckEvents[] = { { "BUTTON_CLICKED", "Clicked" }, { "CHECK_BUTTON_SET", "Set" }, { "CHECK_BUTTON_RESET", "Reset" } };
+		static constexpr SLayoutEventInfo EditEvents[] = { { "EDIT_TEXT_COMMIT", "Commit" } };
+		static constexpr SLayoutEventInfo TrackEvents[] = { { "TRACK_VALUE_CHANGED", "Changed" } };
+		static constexpr SLayoutEventInfo ListEvents[] = { { "LIST_ITEM_SELECT", "Select" }, { "LIST_ITEM_CLICKED", "ItemClicked" } };
+
 		switch (Type)
 		{
-		case ELayoutWidget::Button:
-		case ELayoutWidget::Check:			return "BUTTON_CLICKED";
-		case ELayoutWidget::EditBox:		return "EDIT_TEXT_COMMIT";
-		case ELayoutWidget::TrackBar:		return "TRACK_VALUE_CHANGED";
+		case ELayoutWidget::Button:			return ButtonEvents;
+		case ELayoutWidget::Check:			return CheckEvents;
+		case ELayoutWidget::EditBox:		return EditEvents;
+		case ELayoutWidget::TrackBar:		return TrackEvents;
 		case ELayoutWidget::ListBox:
-		case ELayoutWidget::ComboBox:		return "LIST_ITEM_SELECT";
-		default:							return nullptr;
+		case ELayoutWidget::ComboBox:		return ListEvents;
+		default:							return {};
 		}
 	}
 
-	const char* GetEventSuffix(ELayoutWidget Type)
+	int FindEvent(ELayoutWidget Type, const char* Event)
 	{
-		switch (Type)
+		const std::span<const SLayoutEventInfo> Events = GetEvents(Type);
+		for (u32 Index = 0; Index < Events.size(); ++Index)
 		{
-		case ELayoutWidget::Button:
-		case ELayoutWidget::Check:			return "Clicked";
-		case ELayoutWidget::EditBox:		return "Commit";
-		case ELayoutWidget::TrackBar:		return "Changed";
-		case ELayoutWidget::ListBox:
-		case ELayoutWidget::ComboBox:		return "Select";
-		default:							return "";
+			if (xr_strcmp(Events[Index].Event, Event) == 0)
+			{
+				return (int)Index;
+			}
 		}
+		return -1;
+	}
+
+	bool HasEnabledEvents(const SLayoutWidget& Widget)
+	{
+		for (u32 Index = 0; Index < GetEvents(Widget.Type).size(); ++Index)
+		{
+			if (Widget.Events[Index].Enabled)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	bool HasTexture(ELayoutWidget Type)
@@ -142,7 +159,8 @@ namespace LayoutWidget
 	{
 		SLayoutWidget Widget;
 		Widget.Type = Type;
-		Widget.Callback = GetEvent(Type) != nullptr;
+		// The main event of the type is subscribed right away
+		Widget.Events[0].Enabled = !GetEvents(Type).empty();
 
 		switch (Type)
 		{
@@ -570,9 +588,16 @@ xr_string CUILayoutDocument::GetClassName() const
 	return Result;
 }
 
-xr_string CUILayoutDocument::GetHandlerName(const SLayoutWidget& Widget) const
+xr_string CUILayoutDocument::GetDefaultHandlerName(const SLayoutWidget& Widget, u32 EventIndex) const
 {
-	return "On" + ToPascalCase(Widget.Name) + LayoutWidget::GetEventSuffix(Widget.Type);
+	const std::span<const SLayoutEventInfo> Events = LayoutWidget::GetEvents(Widget.Type);
+	return "On" + ToPascalCase(Widget.Name) + (EventIndex < Events.size() ? Events[EventIndex].Suffix : "");
+}
+
+xr_string CUILayoutDocument::GetHandlerName(const SLayoutWidget& Widget, u32 EventIndex) const
+{
+	const xr_string& Handler = Widget.Events[EventIndex].Handler;
+	return Handler.empty() ? GetDefaultHandlerName(Widget, EventIndex) : Handler;
 }
 
 xr_string CUILayoutDocument::GetVarName(u32 Id) const
@@ -713,11 +738,18 @@ static xr_string BuildGeneratedRegion(const CUILayoutDocument& Doc)
 			Out += "\t" + Var + " = xml:" + LayoutWidget::GetInitFunction(Widget.Type) + "(\"" + Widget.Name + "\", " + Parent + ")\n";
 		}
 
-		const char* Event = LayoutWidget::GetEvent(Widget.Type);
-		if (Widget.Callback && Event != nullptr)
+		if (LayoutWidget::HasEnabledEvents(Widget))
 		{
 			Out += "\tself:Register(" + Var + ", \"" + Widget.Name + "\")\n";
-			Callbacks += "\tself:AddCallback(\"" + Widget.Name + "\", ui_events." + Event + ", self." + Doc.GetHandlerName(Widget) + ", self)\n";
+		}
+
+		const std::span<const SLayoutEventInfo> Events = LayoutWidget::GetEvents(Widget.Type);
+		for (u32 Index = 0; Index < Events.size(); ++Index)
+		{
+			if (Widget.Events[Index].Enabled)
+			{
+				Callbacks += "\tself:AddCallback(\"" + Widget.Name + "\", ui_events." + Events[Index].Event + ", self." + Doc.GetHandlerName(Widget, Index) + ", self)\n";
+			}
 		}
 	}
 	Out += "end\n\n";
@@ -729,9 +761,28 @@ static xr_string BuildGeneratedRegion(const CUILayoutDocument& Doc)
 	return Out;
 }
 
-static xr_string BuildHandler(const CUILayoutDocument& Doc, const SLayoutWidget& Widget)
+static xr_string BuildHandler(const CUILayoutDocument& Doc, const xr_string& Handler)
 {
-	return "function " + Doc.GetClassName() + ":" + Doc.GetHandlerName(Widget) + "()\nend\n\n";
+	return "function " + Doc.GetClassName() + ":" + Handler + "()\nend\n\n";
+}
+
+// Handlers of every enabled event, each name once: several events may share one handler
+static xr_vector<xr_string> GetHandlers(const CUILayoutDocument& Doc)
+{
+	xr_vector<xr_string> Handlers;
+	for (u32 Id : Doc.GetOrdered())
+	{
+		const SLayoutWidget& Widget = *Doc.Find(Id);
+		for (u32 Index = 0; Index < LayoutWidget::GetEvents(Widget.Type).size(); ++Index)
+		{
+			const xr_string Handler = Doc.GetHandlerName(Widget, Index);
+			if (Widget.Events[Index].Enabled && std::find(Handlers.begin(), Handlers.end(), Handler) == Handlers.end())
+			{
+				Handlers.push_back(Handler);
+			}
+		}
+	}
+	return Handlers;
 }
 
 xr_string CUILayoutDocument::BuildScript() const
@@ -741,7 +792,7 @@ xr_string CUILayoutDocument::BuildScript() const
 
 	Out += "-- " + Name + ".script\n";
 	Out += "-- Layout: configs\\ui\\" + Name + ".xml (" + Name + "_16.xml on widescreen)\n";
-	Out += "-- Show it with " + Name + ".show()\n\n";
+	Out += "-- Show it with " + Name + ".Show()\n\n";
 
 	Out += "local dialog = nil\n\n";
 
@@ -758,13 +809,9 @@ xr_string CUILayoutDocument::BuildScript() const
 
 	Out += BuildGeneratedRegion(*this) + "\n";
 
-	for (u32 Id : GetOrdered())
+	for (const xr_string& Handler : GetHandlers(*this))
 	{
-		const SLayoutWidget& Widget = *Find(Id);
-		if (Widget.Callback && LayoutWidget::GetEvent(Widget.Type) != nullptr)
-		{
-			Out += BuildHandler(*this, Widget);
-		}
+		Out += BuildHandler(*this, Handler);
 	}
 
 	Out += "function " + Class + ":OnKeyboard(dik, keyboard_action)\n";
@@ -778,7 +825,8 @@ xr_string CUILayoutDocument::BuildScript() const
 	Out += "\treturn res\n";
 	Out += "end\n\n";
 
-	Out += "function show()\n";
+	// Entry point: the Level Editor calls it when the widget is dropped on the scene in PIE
+	Out += "function Show()\n";
 	Out += "\tif dialog == nil then\n";
 	Out += "\t\tdialog = " + Class + "()\n";
 	Out += "\tend\n";
@@ -806,17 +854,11 @@ bool CUILayoutDocument::MergeScript(const xr_string& Existing, xr_string& Out) c
 	// User code keeps its handlers, new callbacks get empty ones at the end
 	const xr_string Class = GetClassName();
 	xr_string Missing;
-	for (u32 Id : GetOrdered())
+	for (const xr_string& Handler : GetHandlers(*this))
 	{
-		const SLayoutWidget& Widget = *Find(Id);
-		if (!Widget.Callback || LayoutWidget::GetEvent(Widget.Type) == nullptr)
+		if (Out.find("function " + Class + ":" + Handler + "(") == xr_string::npos)
 		{
-			continue;
-		}
-
-		if (Out.find("function " + Class + ":" + GetHandlerName(Widget) + "(") == xr_string::npos)
-		{
-			Missing += BuildHandler(*this, Widget);
+			Missing += BuildHandler(*this, Handler);
 		}
 	}
 
@@ -932,6 +974,64 @@ static ELayoutWidget GuessType(tinyxml2::XMLElement* Node)
 	return ELayoutWidget::Window;
 }
 
+// Geometry, texture, text and options of a widget node. The type must be set: it picks the range defaults
+static void ReadWidgetNode(tinyxml2::XMLElement* Node, SLayoutWidget& Widget)
+{
+	Widget.Pos = { Node->FloatAttribute("x"), Node->FloatAttribute("y") };
+	Widget.Size = { Node->FloatAttribute("width"), Node->FloatAttribute("height") };
+	Widget.Stretch = Node->IntAttribute("stretch") != 0;
+	Widget.IsInteger = Node->IntAttribute("is_integer") != 0;
+	Widget.Min = Node->FloatAttribute("min", 0.0f);
+	Widget.Max = Node->FloatAttribute("max", Widget.Type == ELayoutWidget::ProgressBar ? 1.0f : 100.0f);
+	Widget.Step = Node->FloatAttribute("step", 1.0f);
+	Widget.Value = Node->FloatAttribute("pos", 0.0f);
+	Widget.Horizontal = Node->IntAttribute("horz", 1) != 0;
+	Widget.ItemHeight = Node->FloatAttribute("item_height", 20.0f);
+
+	tinyxml2::XMLElement* TextureNode = Node->FirstChildElement("texture");
+	if (tinyxml2::XMLElement* Progress = Node->FirstChildElement("progress"))
+	{
+		TextureNode = Progress->FirstChildElement("texture");
+		Widget.Stretch |= Progress->IntAttribute("stretch") != 0;
+	}
+	if (TextureNode != nullptr && TextureNode->GetText() != nullptr)
+	{
+		Widget.Texture = TextureNode->GetText();
+	}
+
+	tinyxml2::XMLElement* TextNode = Node->FirstChildElement("text");
+	if (TextNode == nullptr)
+	{
+		TextNode = Node->FirstChildElement("font");
+	}
+	if (TextNode == nullptr)
+	{
+		TextNode = Node->FirstChildElement("list_font");
+	}
+	if (TextNode != nullptr)
+	{
+		Widget.Text = FromGameText(TextNode->GetText());
+		if (const char* Font = TextNode->Attribute("font"))
+		{
+			Widget.Font = Font;
+		}
+		Widget.TextColor = color_rgba(TextNode->IntAttribute("r", 255), TextNode->IntAttribute("g", 255), TextNode->IntAttribute("b", 255), TextNode->IntAttribute("a", 255));
+
+		const char* Align = TextNode->Attribute("align", nullptr);
+		Widget.Align = Align == nullptr ? ELayoutAlign::Left : Align[0] == 'c' ? ELayoutAlign::Center : Align[0] == 'r' ? ELayoutAlign::Right : ELayoutAlign::Left;
+		const char* VertAlign = TextNode->Attribute("vert_align", nullptr);
+		Widget.VertAlign = VertAlign == nullptr ? ELayoutVertAlign::Top : VertAlign[0] == 'c' ? ELayoutVertAlign::Center : VertAlign[0] == 'b' ? ELayoutVertAlign::Bottom : ELayoutVertAlign::Top;
+	}
+
+	if (tinyxml2::XMLElement* Options = Node->FirstChildElement("options_item"))
+	{
+		const char* Entry = Options->Attribute("entry");
+		const char* Group = Options->Attribute("group");
+		Widget.OptionsEntry = Entry != nullptr ? Entry : "";
+		Widget.OptionsGroup = Group != nullptr ? Group : "";
+	}
+}
+
 bool CUILayoutDocument::ReadScript(const char* LayoutName, xr_string& Out)
 {
 	xr_string Script;
@@ -987,14 +1087,19 @@ bool CUILayoutDocument::ApplyXml(const xr_string& XmlText, const xr_string& Scri
 		xr_string Parent;
 	};
 	xr_hash_map<xr_string, SScriptInfo> ScriptInfo;
-	xr_hash_set<xr_string> Registered;
+	struct SScriptCallback
+	{
+		xr_string Event;
+		xr_string Handler;
+	};
+	xr_hash_map<xr_string, xr_vector<SScriptCallback>> Registered;
 
 	if (!Script.empty())
 	{
 		// Variable names may differ from the xml names: self.back = xml:InitStatic("background", self)
 		static const std::regex InitCall(R"((?:self\.(\w+)\s*=\s*)?xml:(Init\w+)\s*\(\s*\"([\w:]+)\"\s*,\s*(?:0\s*,\s*)?self(?:\.(\w+))?\s*\))");
 		static const std::regex AttachCall(R"(self(?:\.(\w+))?:AttachChild\s*\(\s*self\.(\w+)\s*\))");
-		static const std::regex Callback(R"(AddCallback\s*\(\s*\"(\w+)\")");
+		static const std::regex Callback(R"(AddCallback\s*\(\s*\"(\w+)\"\s*,\s*ui_events\.(\w+)\s*,\s*self\.(\w+))");
 
 		xr_hash_map<xr_string, xr_string> VarToName;
 		const std::string Source(Script.c_str());
@@ -1039,7 +1144,7 @@ bool CUILayoutDocument::ApplyXml(const xr_string& XmlText, const xr_string& Scri
 
 		for (std::sregex_iterator It(Source.begin(), Source.end(), Callback), End; It != End; ++It)
 		{
-			Registered.insert((*It)[1].str().c_str());
+			Registered[(*It)[1].str().c_str()].push_back({ (*It)[2].str().c_str(), (*It)[3].str().c_str() });
 		}
 	}
 
@@ -1064,17 +1169,25 @@ bool CUILayoutDocument::ApplyXml(const xr_string& XmlText, const xr_string& Scri
 		Widget.Name = Node->Name();
 		auto Info = ScriptInfo.find(Widget.Name);
 		Widget.Type = Info != ScriptInfo.end() ? Info->second.Type : GuessType(Node);
-		Widget.Pos = { Node->FloatAttribute("x"), Node->FloatAttribute("y") };
-		Widget.Size = { Node->FloatAttribute("width"), Node->FloatAttribute("height") };
-		Widget.Stretch = Node->IntAttribute("stretch") != 0;
-		Widget.IsInteger = Node->IntAttribute("is_integer") != 0;
-		Widget.Min = Node->FloatAttribute("min", 0.0f);
-		Widget.Max = Node->FloatAttribute("max", Widget.Type == ELayoutWidget::ProgressBar ? 1.0f : 100.0f);
-		Widget.Step = Node->FloatAttribute("step", 1.0f);
-		Widget.Value = Node->FloatAttribute("pos", 0.0f);
-		Widget.Horizontal = Node->IntAttribute("horz", 1) != 0;
-		Widget.ItemHeight = Node->FloatAttribute("item_height", 20.0f);
-		Widget.Callback = Registered.contains(Widget.Name);
+
+		auto Callbacks = Registered.find(Widget.Name);
+		if (Callbacks != Registered.end())
+		{
+			for (const SScriptCallback& Callback : Callbacks->second)
+			{
+				const int Index = LayoutWidget::FindEvent(Widget.Type, Callback.Event.c_str());
+				if (Index < 0)
+				{
+					continue;
+				}
+
+				Widget.Events[Index].Enabled = true;
+				if (Callback.Handler != GetDefaultHandlerName(Widget, Index))
+				{
+					Widget.Events[Index].Handler = Callback.Handler;
+				}
+			}
+		}
 
 		auto Flags = EditorFlags.find(Widget.Name);
 		if (Flags != EditorFlags.end())
@@ -1083,48 +1196,7 @@ bool CUILayoutDocument::ApplyXml(const xr_string& XmlText, const xr_string& Scri
 			Widget.Locked = Flags->second.second;
 		}
 
-		tinyxml2::XMLElement* TextureNode = Node->FirstChildElement("texture");
-		if (tinyxml2::XMLElement* Progress = Node->FirstChildElement("progress"))
-		{
-			TextureNode = Progress->FirstChildElement("texture");
-			Widget.Stretch |= Progress->IntAttribute("stretch") != 0;
-		}
-		if (TextureNode != nullptr && TextureNode->GetText() != nullptr)
-		{
-			Widget.Texture = TextureNode->GetText();
-		}
-
-		tinyxml2::XMLElement* TextNode = Node->FirstChildElement("text");
-		if (TextNode == nullptr)
-		{
-			TextNode = Node->FirstChildElement("font");
-		}
-		if (TextNode == nullptr)
-		{
-			TextNode = Node->FirstChildElement("list_font");
-		}
-		if (TextNode != nullptr)
-		{
-			Widget.Text = FromGameText(TextNode->GetText());
-			if (const char* Font = TextNode->Attribute("font"))
-			{
-				Widget.Font = Font;
-			}
-			Widget.TextColor = color_rgba(TextNode->IntAttribute("r", 255), TextNode->IntAttribute("g", 255), TextNode->IntAttribute("b", 255), TextNode->IntAttribute("a", 255));
-
-			const char* Align = TextNode->Attribute("align", nullptr);
-			Widget.Align = Align == nullptr ? ELayoutAlign::Left : Align[0] == 'c' ? ELayoutAlign::Center : Align[0] == 'r' ? ELayoutAlign::Right : ELayoutAlign::Left;
-			const char* VertAlign = TextNode->Attribute("vert_align", nullptr);
-			Widget.VertAlign = VertAlign == nullptr ? ELayoutVertAlign::Top : VertAlign[0] == 'c' ? ELayoutVertAlign::Center : VertAlign[0] == 'b' ? ELayoutVertAlign::Bottom : ELayoutVertAlign::Top;
-		}
-
-		if (tinyxml2::XMLElement* Options = Node->FirstChildElement("options_item"))
-		{
-			const char* Entry = Options->Attribute("entry");
-			const char* Group = Options->Attribute("group");
-			Widget.OptionsEntry = Entry != nullptr ? Entry : "";
-			Widget.OptionsGroup = Group != nullptr ? Group : "";
-		}
+		ReadWidgetNode(Node, Widget);
 
 		// Names of the stock files are unique, Add keeps them
 		const u32 Id = Add(Widget, 0).Id;
@@ -1144,4 +1216,332 @@ bool CUILayoutDocument::ApplyXml(const xr_string& XmlText, const xr_string& Scri
 	}
 
 	return true;
+}
+
+static const char* WidgetsAlias = "$server_data_root$";
+
+static xr_string GetWidgetFile(const char* LayoutName)
+{
+	return xr_string("widgets\\") + LayoutName + CUILayoutDocument::WidgetExt;
+}
+
+bool CUILayoutDocument::WidgetExists(const char* LayoutName)
+{
+	return FS.path_exist(WidgetsAlias) && FS.exist(WidgetsAlias, GetWidgetFile(LayoutName).c_str());
+}
+
+void CUILayoutDocument::ListWidgets(xr_vector<xr_string>& Out)
+{
+	if (!FS.path_exist(WidgetsAlias))
+	{
+		return;
+	}
+
+	string_path Dir;
+	FS.update_path(Dir, WidgetsAlias, "widgets\\");
+
+	std::error_code Code;
+	for (const auto& Entry : std::filesystem::directory_iterator(Dir, Code))
+	{
+		if (Entry.is_regular_file() && Entry.path().extension() == WidgetExt)
+		{
+			Out.push_back(Entry.path().stem().string().c_str());
+		}
+	}
+}
+
+bool CUILayoutDocument::SaveWidget(xr_string& Error) const
+{
+	if (!FS.path_exist(WidgetsAlias))
+	{
+		Error = "No $server_data_root$ path for rawdata\widgets";
+		return false;
+	}
+
+	nlohmann::json Data;
+	Data["name"] = Name.c_str();
+	Data["next_id"] = NextId;
+
+	nlohmann::json& List = Data["widgets"];
+	List = nlohmann::json::array();
+	for (const SLayoutWidget& Widget : Widgets)
+	{
+		nlohmann::json Item;
+		Item["id"] = Widget.Id;
+		Item["parent"] = Widget.ParentId;
+		Item["type"] = LayoutWidget::GetTypeName(Widget.Type);
+		Item["name"] = Widget.Name.c_str();
+		Item["pos"] = { Widget.Pos.x, Widget.Pos.y };
+		Item["size"] = { Widget.Size.x, Widget.Size.y };
+		Item["texture"] = Widget.Texture.c_str();
+		Item["stretch"] = Widget.Stretch;
+		Item["text"] = Widget.Text.c_str();
+		Item["font"] = Widget.Font.c_str();
+		Item["text_color"] = Widget.TextColor;
+		Item["align"] = (int)Widget.Align;
+		Item["vert_align"] = (int)Widget.VertAlign;
+		Item["min"] = Widget.Min;
+		Item["max"] = Widget.Max;
+		Item["value"] = Widget.Value;
+		Item["step"] = Widget.Step;
+		Item["is_integer"] = Widget.IsInteger;
+		Item["horizontal"] = Widget.Horizontal;
+		Item["item_height"] = Widget.ItemHeight;
+		Item["options_entry"] = Widget.OptionsEntry.c_str();
+		Item["options_group"] = Widget.OptionsGroup.c_str();
+		Item["hidden"] = Widget.Hidden;
+		Item["locked"] = Widget.Locked;
+
+		nlohmann::json& Events = Item["events"];
+		Events = nlohmann::json::array();
+		const std::span<const SLayoutEventInfo> Infos = LayoutWidget::GetEvents(Widget.Type);
+		for (u32 Index = 0; Index < Infos.size(); ++Index)
+		{
+			if (Widget.Events[Index].Enabled)
+			{
+				Events.push_back({ { "event", Infos[Index].Event }, { "handler", Widget.Events[Index].Handler.c_str() } });
+			}
+		}
+
+		List.push_back(Item);
+	}
+
+	if (!WriteTextFile(WidgetsAlias, GetWidgetFile(Name.c_str()).c_str(), ToCRLF(Data.dump(1, '\t').c_str())))
+	{
+		Error = "Can't write rawdata\\" + GetWidgetFile(Name.c_str());
+		return false;
+	}
+	return true;
+}
+
+template <typename T>
+static T ReadJson(const nlohmann::json& Data, const char* Key, const T& Default)
+{
+	auto It = Data.find(Key);
+	if (It == Data.end())
+	{
+		return Default;
+	}
+
+	try
+	{
+		return It->get<T>();
+	}
+	catch (...)
+	{
+		return Default;
+	}
+}
+
+static xr_string ReadJsonString(const nlohmann::json& Data, const char* Key, const char* Default = "")
+{
+	return ReadJson<std::string>(Data, Key, Default).c_str();
+}
+
+static Fvector2 ReadJsonVector(const nlohmann::json& Data, const char* Key, const Fvector2& Default)
+{
+	auto It = Data.find(Key);
+	if (It == Data.end() || !It->is_array() || It->size() != 2 || !(*It)[0].is_number() || !(*It)[1].is_number())
+	{
+		return Default;
+	}
+	return { (*It)[0].get<float>(), (*It)[1].get<float>() };
+}
+
+bool CUILayoutDocument::LoadWidget(const char* LayoutName, xr_string& Error)
+{
+	const xr_string File = GetWidgetFile(LayoutName);
+	xr_string Text;
+	if (!FS.path_exist(WidgetsAlias) || !ReadTextFile(WidgetsAlias, File.c_str(), Text))
+	{
+		Error = "Can't read rawdata\\" + File;
+		return false;
+	}
+
+	const nlohmann::json Data = nlohmann::json::parse(Text.c_str(), nullptr, false);
+	if (Data.is_discarded() || !Data.is_object() || !Data.contains("widgets") || !Data["widgets"].is_array())
+	{
+		Error = "rawdata\\" + File + ": invalid widget file";
+		return false;
+	}
+
+	CUILayoutDocument Loaded;
+	Loaded.Name = LayoutName;
+	const SLayoutWidget Defaults;
+	for (const nlohmann::json& Item : Data["widgets"])
+	{
+		if (!Item.is_object())
+		{
+			continue;
+		}
+
+		SLayoutWidget Widget;
+		Widget.Id = ReadJson<u32>(Item, "id", 0);
+		Widget.ParentId = ReadJson<u32>(Item, "parent", 0);
+		Widget.Name = ReadJsonString(Item, "name");
+
+		const xr_string TypeName = ReadJsonString(Item, "type");
+		for (int Type = 0; Type < (int)ELayoutWidget::Count; ++Type)
+		{
+			if (TypeName == LayoutWidget::GetTypeName((ELayoutWidget)Type))
+			{
+				Widget.Type = (ELayoutWidget)Type;
+				break;
+			}
+		}
+
+		if (Widget.Id == 0 || Loaded.Find(Widget.Id) != nullptr || !IsValidName(Widget.Name.c_str()))
+		{
+			Error = "rawdata\\" + File + ": invalid widget " + Widget.Name;
+			return false;
+		}
+
+		Widget.Pos = ReadJsonVector(Item, "pos", Defaults.Pos);
+		Widget.Size = ReadJsonVector(Item, "size", Defaults.Size);
+		Widget.Texture = ReadJsonString(Item, "texture");
+		Widget.Stretch = ReadJson(Item, "stretch", Defaults.Stretch);
+		Widget.Text = ReadJsonString(Item, "text");
+		Widget.Font = ReadJsonString(Item, "font", Defaults.Font.c_str());
+		Widget.TextColor = ReadJson(Item, "text_color", Defaults.TextColor);
+		Widget.Align = (ELayoutAlign)std::clamp(ReadJson(Item, "align", (int)Defaults.Align), 0, (int)ELayoutAlign::Right);
+		Widget.VertAlign = (ELayoutVertAlign)std::clamp(ReadJson(Item, "vert_align", (int)Defaults.VertAlign), 0, (int)ELayoutVertAlign::Bottom);
+		Widget.Min = ReadJson(Item, "min", Defaults.Min);
+		Widget.Max = ReadJson(Item, "max", Defaults.Max);
+		Widget.Value = ReadJson(Item, "value", Defaults.Value);
+		Widget.Step = ReadJson(Item, "step", Defaults.Step);
+		Widget.IsInteger = ReadJson(Item, "is_integer", Defaults.IsInteger);
+		Widget.Horizontal = ReadJson(Item, "horizontal", Defaults.Horizontal);
+		Widget.ItemHeight = ReadJson(Item, "item_height", Defaults.ItemHeight);
+		Widget.OptionsEntry = ReadJsonString(Item, "options_entry");
+		Widget.OptionsGroup = ReadJsonString(Item, "options_group");
+		Widget.Hidden = ReadJson(Item, "hidden", false);
+		Widget.Locked = ReadJson(Item, "locked", false);
+
+		auto Events = Item.find("events");
+		if (Events != Item.end() && Events->is_array())
+		{
+			for (const nlohmann::json& Event : *Events)
+			{
+				const int Index = LayoutWidget::FindEvent(Widget.Type, ReadJsonString(Event, "event").c_str());
+				if (Index >= 0)
+				{
+					Widget.Events[Index].Enabled = true;
+					Widget.Events[Index].Handler = ReadJsonString(Event, "handler");
+				}
+			}
+		}
+
+		Loaded.Widgets.push_back(Widget);
+		Loaded.NextId = std::max(Loaded.NextId, Widget.Id + 1);
+	}
+
+	// A missing or looped parent puts the widget on the dialog
+	for (SLayoutWidget& Widget : Loaded.Widgets)
+	{
+		const SLayoutWidget* Parent = Loaded.Find(Widget.ParentId);
+		for (size_t Depth = 0; Parent != nullptr && Parent->ParentId != 0; ++Depth)
+		{
+			if (Parent->ParentId == Widget.Id || Depth > Loaded.Widgets.size())
+			{
+				Parent = nullptr;
+				break;
+			}
+			Parent = Loaded.Find(Parent->ParentId);
+		}
+
+		if (Widget.ParentId != 0 && (Parent == nullptr || Widget.ParentId == Widget.Id))
+		{
+			Widget.ParentId = 0;
+		}
+	}
+	Loaded.NextId = std::max(Loaded.NextId, ReadJson<u32>(Data, "next_id", 1));
+
+	*this = Loaded;
+	return true;
+}
+
+// A node is a widget when it has a rect, its other children are its properties
+static bool IsWidgetNode(tinyxml2::XMLElement* Node)
+{
+	return Node->Attribute("x") != nullptr || Node->Attribute("width") != nullptr;
+}
+
+static xr_string ToWidgetName(const char* NodeName)
+{
+	xr_string Result;
+	for (const char* Char = NodeName; *Char != 0; ++Char)
+	{
+		Result += isalnum((u8)*Char) ? (char)tolower((u8)*Char) : '_';
+	}
+	if (Result.empty() || isdigit((u8)Result[0]))
+	{
+		Result = "w_" + Result;
+	}
+	return Result;
+}
+
+static void ImportNode(CUILayoutDocument& Doc, tinyxml2::XMLElement* Parent, u32 ParentId)
+{
+	for (tinyxml2::XMLElement* Node = Parent->FirstChildElement(); Node != nullptr; Node = Node->NextSiblingElement())
+	{
+		if (!IsWidgetNode(Node))
+		{
+			continue;
+		}
+
+		SLayoutWidget Widget;
+		Widget.Type = GuessType(Node);
+		// Stock files reuse names in different branches, the script needs unique ones
+		Widget.Name = Doc.MakeUniqueName(ToWidgetName(Node->Name()).c_str());
+		ReadWidgetNode(Node, Widget);
+
+		const u32 Id = Doc.Add(Widget, ParentId).Id;
+		ImportNode(Doc, Node, Id);
+	}
+}
+
+bool CUILayoutDocument::Import(const char* FileName, xr_string& Error)
+{
+	xr_string XmlText;
+	if (!ReadTextFile(_game_config_, FileName, XmlText))
+	{
+		Error = xr_string("Can't read configs\\") + FileName;
+		return false;
+	}
+
+	tinyxml2::XMLDocument Xml;
+	if (Xml.Parse(XmlText.data(), XmlText.size()) != tinyxml2::XML_SUCCESS || Xml.RootElement() == nullptr)
+	{
+		Error = xr_string(FileName) + ": " + (Xml.ErrorStr() != nullptr ? Xml.ErrorStr() : "invalid xml");
+		return false;
+	}
+
+	CUILayoutDocument Imported;
+	// ui\inventory\ui_inventory.xml -> ui_inventory_import: a new name keeps the stock files intact
+	xr_string Stem = xr_path(FileName).stem().string().c_str();
+	Imported.Name = "ui_" + ToWidgetName(Stem.starts_with("ui_") ? Stem.c_str() + 3 : Stem.c_str()) + "_import";
+	ImportNode(Imported, Xml.RootElement(), 0);
+
+	if (Imported.Widgets.empty())
+	{
+		Error = xr_string(FileName) + " has no widgets";
+		return false;
+	}
+
+	*this = Imported;
+	return true;
+}
+
+void CUILayoutDocument::ListImportable(xr_vector<xr_string>& Out)
+{
+	FS_FileSet Files;
+	FS.file_list(Files, _game_config_, FS_ListFiles, "*.xml");
+	for (const FS_File& File : Files)
+	{
+		// Widescreen copies and texture descriptions are not windows
+		if (File.name.starts_with("ui\\") && !File.name.ends_with("_16.xml") && !File.name.starts_with("ui\\textures_descr\\"))
+		{
+			Out.push_back(File.name.c_str());
+		}
+	}
 }

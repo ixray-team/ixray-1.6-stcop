@@ -906,6 +906,24 @@ void TextEditor::Render()
 			Coordinates lineStartCoord(lineNo, 0);
 			Coordinates lineEndCoord(lineNo, GetLineMaxColumn(lineNo));
 
+			// Every match of the highlighted text, under the selection
+			if (!mHighlight.empty())
+			{
+				const ImU32 selection = mPalette[(int)PaletteIndex::Selection];
+				const ImU32 highlight = (selection & ~IM_COL32_A_MASK) | ((((selection >> IM_COL32_A_SHIFT) & 0xFF) / 2) << IM_COL32_A_SHIFT);
+				const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
+				for (int i = 0; i <= last; ++i)
+				{
+					if (!MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive))
+						continue;
+
+					const float hstart = TextDistanceToLineStart(Coordinates(lineNo, GetCharacterColumn(lineNo, i)));
+					const float hend = TextDistanceToLineStart(Coordinates(lineNo, GetCharacterColumn(lineNo, i + (int)mHighlight.size())));
+					drawList->AddRectFilled(ImVec2(textScreenPos.x + hstart, lineStartScreenPos.y), ImVec2(textScreenPos.x + hend, lineStartScreenPos.y + mCharAdvance.y), highlight);
+					i += (int)mHighlight.size() - 1;
+				}
+			}
+
 			// Draw selection for the current line
 			float sstart = -1.0f;
 			float ssend = -1.0f;
@@ -2098,6 +2116,106 @@ void TextEditor::VisitText(void (*aVisitor)(const char* aText, size_t aSize, voi
 {
 	const std::string text = GetText();
 	aVisitor(text.data(), text.size(), aUserData);
+}
+
+bool TextEditor::MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive) const
+{
+	const Line& line = mLines[aLine];
+	if (aIndex < 0 || aIndex + (int)aText.size() > (int)line.size())
+		return false;
+
+	for (size_t i = 0; i < aText.size(); ++i)
+	{
+		const char a = (char)line[aIndex + i].mChar;
+		const char b = aText[i];
+		if (aCaseSensitive ? a != b : std::tolower((unsigned char)a) != std::tolower((unsigned char)b))
+			return false;
+	}
+	return true;
+}
+
+void TextEditor::SetHighlight(const char* aText, bool aCaseSensitive)
+{
+	// Copied here: the text is owned by this module
+	mHighlight = aText != nullptr && std::strchr(aText, '\n') == nullptr ? aText : "";
+	mHighlightCaseSensitive = aCaseSensitive;
+}
+
+int TextEditor::CountHighlights() const
+{
+	if (mHighlight.empty())
+		return 0;
+
+	int count = 0;
+	for (int lineNo = 0; lineNo < (int)mLines.size(); ++lineNo)
+	{
+		const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
+		for (int i = 0; i <= last; ++i)
+		{
+			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive))
+			{
+				++count;
+				i += (int)mHighlight.size() - 1;
+			}
+		}
+	}
+	return count;
+}
+
+bool TextEditor::Find(const std::string& aText, bool aForward, bool aCaseSensitive)
+{
+	if (aText.empty() || aText.find('\n') != std::string::npos || mLines.empty())
+		return false;
+
+	auto matchesAt = [&](int aLine, int aIndex)
+	{
+		return MatchesAt(aLine, aIndex, aText, aCaseSensitive);
+	};
+
+	// Glyphs are UTF-8 bytes: indices are byte offsets in the line
+	const Coordinates from = aForward ? (HasSelection() ? mState.mSelectionEnd : GetActualCursorCoordinates())
+		: (HasSelection() ? mState.mSelectionStart : GetActualCursorCoordinates());
+	const int lineCount = (int)mLines.size();
+	const int startLine = std::min(from.mLine, lineCount - 1);
+	const int startIndex = GetCharacterIndex(Coordinates(startLine, from.mColumn));
+
+	// Every line is visited once, the start line twice: after and before the cursor
+	for (int step = 0; step <= lineCount; ++step)
+	{
+		const int lineIndex = aForward ? (startLine + step) % lineCount : ((startLine - step) % lineCount + lineCount) % lineCount;
+		const int lineSize = (int)mLines[lineIndex].size();
+
+		int first = 0;
+		int last = lineSize - (int)aText.size();
+		if (step == 0)
+		{
+			if (aForward)
+				first = startIndex;
+			else
+				last = std::min(last, startIndex - 1);
+		}
+		else if (step == lineCount)
+		{
+			if (aForward)
+				last = std::min(last, startIndex - 1);
+			else
+				first = startIndex;
+		}
+
+		for (int i = aForward ? first : last; aForward ? i <= last : i >= first; i += aForward ? 1 : -1)
+		{
+			if (!matchesAt(lineIndex, i))
+				continue;
+
+			const Coordinates start(lineIndex, GetCharacterColumn(lineIndex, i));
+			const Coordinates end(lineIndex, GetCharacterColumn(lineIndex, i + (int)aText.size()));
+			SetCursorPosition(end);
+			SetSelection(start, end);
+			EnsureCursorVisible();
+			return true;
+		}
+	}
+	return false;
 }
 
 std::vector<std::string> TextEditor::GetTextLines() const

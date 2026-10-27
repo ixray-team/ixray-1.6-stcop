@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Terrain/ESceneTerrainTools.h"
+#include "../../../UI/LayoutEditor/UILayoutEditorForm.h"
 
 TUI_CustomControl::TUI_CustomControl(int st, int act, ESceneToolBase* parent)
 {
@@ -88,6 +89,12 @@ bool TUI_CustomControl::HiddenMode()
 static bool IsActorEditorFile(const xr_string& Path)
 {
 	return Path.ends_with(".ogf") || Path.ends_with(".skl") || Path.ends_with(".skls") || Path.ends_with(".omf") || Path.ends_with(".bones");
+}
+
+// UI Layout working widgets are shown in the game, not placed on the level
+static bool IsLayoutWidgetFile(const xr_string& Path)
+{
+	return Path.ends_with(CUILayoutDocument::WidgetExt);
 }
 
 // Creates the dropped object without placing or appending it; nullptr when it is invalid
@@ -183,7 +190,7 @@ void DragPreview(const xr_string* Path, int Type)
 		DestroyDragPreview();
 	}
 
-	if (Path == nullptr || IsActorEditorFile(*Path))
+	if (Path == nullptr || IsActorEditorFile(*Path) || IsLayoutWidgetFile(*Path))
 	{
 		return;
 	}
@@ -228,6 +235,22 @@ void DragDrop(const xr_string& Path, int Type)
 	if (IsActorEditorFile(Path))
 	{
 		DestroyDragPreview();
+		return;
+	}
+
+	// The widget entry point runs in the next frame, while the game thread is idle
+	if (IsLayoutWidgetFile(Path))
+	{
+		DestroyDragPreview();
+		const xr_string LayoutName = xr_path(Path).stem().string().c_str();
+		if (Scene->IsPlayInEditor())
+		{
+			UILayoutEditorForm::ShowInGame(LayoutName.c_str());
+		}
+		else
+		{
+			ELog.Msg(mtInformation, "UI Layout: start Play In Editor to show %s", LayoutName.c_str());
+		}
 		return;
 	}
 

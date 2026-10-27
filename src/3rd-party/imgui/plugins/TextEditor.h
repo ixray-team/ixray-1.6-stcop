@@ -200,6 +200,13 @@ public:
 	// The text stays in this module: callers with their own allocator must not free a returned std::string
 	void VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const;
 
+	// Selects the next (or previous) match of a single line text after the cursor, wrapping around the end.
+	// Returns false when the text has no match
+	bool Find(const std::string& aText, bool aForward = true, bool aCaseSensitive = false);
+	// Marks every match of a single line text while rendering, nullptr or "" clears it
+	void SetHighlight(const char* aText, bool aCaseSensitive = false);
+	int CountHighlights() const;
+
 	void SetTextLines(const std::vector<std::string>& aLines);
 	std::vector<std::string> GetTextLines() const;
 
@@ -333,6 +340,8 @@ private:
 	Coordinates FindNextWord(const Coordinates& aFrom) const;
 	int GetCharacterIndex(const Coordinates& aCoordinates) const;
 	int GetCharacterColumn(int aLine, int aIndex) const;
+	// aIndex is a glyph (UTF-8 byte) index in the line
+	bool MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive) const;
 	int GetLineCharacterCount(int aLine) const;
 	int GetLineMaxColumn(int aLine) const;
 	bool IsOnWordBoundary(const Coordinates& aAt) const;
@@ -361,6 +370,8 @@ private:
 	bool mReadOnly;
 	bool mWithinRender;
 	bool mScrollToCursor;
+	std::string mHighlight;
+	bool mHighlightCaseSensitive = false;
 	bool mScrollToTop;
 	bool mTextChanged;
 	bool mColorizerEnabled;
