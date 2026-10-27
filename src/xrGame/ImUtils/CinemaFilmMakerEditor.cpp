@@ -15,8 +15,6 @@ CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMix
 
 namespace CinemaFilmMaker
 {
-constexpr ImVec4 kCinemaError = ImVec4(0.90f, 0.30f, 0.30f, 1.0f);
-constexpr ImVec4 kCinemaWarning = ImVec4(0.95f, 0.75f, 0.30f, 1.0f);
 constexpr const char* kCinemaClipPayload = "CINEMA_ANIMATION";
 constexpr const char* kCinemaClipIndexPayload = "CINEMA_ANIMATION_INDEX";
 
@@ -53,12 +51,6 @@ struct SPlaylistEntry
 	shared_str Source;
 	shared_str Name;
 	bool Fx = false;
-};
-
-struct SModelSection
-{
-	shared_str Name;
-	shared_str Visual;
 };
 
 struct SClipDragPayload
@@ -1057,7 +1049,6 @@ private:
 	void ResetSelection();
 	void SelectActor(s32 index);
 
-	void BuildModelSections();
 	void BuildModelFiles();
 	void BuildLibrary();
 	void BuildActorSources(SCinemaActor& actor);
@@ -1065,7 +1056,7 @@ private:
 	bool AddActor(const Fvector& position, const char* visual, bool adjustGround);
 	bool AddActorInFront(const char* visual);
 	bool SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround);
-	void DuplicateSelectedActor();
+	void DuplicateSelectedActor(bool withPlaylist, bool startPlayback);
 	void DeleteSelectedActor();
 
 	void DrawToolbar();
@@ -1111,11 +1102,9 @@ private:
 
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
 	xr_vector<SAnimationSource> Library;
-	xr_vector<SModelSection> ModelSections;
 	xr_vector<shared_str> ModelFiles;
 	IGame_Level* Level = nullptr;
 	s32 Selected = -1;
-	s32 SelectedSection = -1;
 	s32 SelectedOgf = -1;
 	s32 SelectedSource = -1;
 	s32 SelectedClip = -1;
@@ -1123,16 +1112,12 @@ private:
 	shared_str SelectedVisual;
 	u32 NextNameIndex = 1;
 	bool LibraryBuilt = false;
-	bool ModelSectionsBuilt = false;
 	bool ModelFilesBuilt = false;
-	bool ManualVisualValid = false;
 	bool Snap = false;
 	float TranslateStep = 0.1f;
 	float RotateStepDeg = 5.0f;
-	char ModelFilter[128] = {};
 	char ModelFileFilter[128] = {};
 	char ClipFilter[128] = {};
-	char ManualVisual[256] = {};
 	char NameEdit[128] = {};
 	EGizmoMode GizmoMode = EGizmoMode::Translate;
 	EGizmoAxis HoveredAxis = EGizmoAxis::None;
@@ -1147,8 +1132,6 @@ void CCinemaFilmMakerManager::Shutdown()
 	ClearActors();
 	Library.clear();
 	LibraryBuilt = false;
-	ModelSections.clear();
-	ModelSectionsBuilt = false;
 	ModelFiles.clear();
 	ModelFilesBuilt = false;
 	Level = nullptr;
@@ -1262,58 +1245,6 @@ void CCinemaFilmMakerManager::Render()
 	AppendWorldGizmo();
 }
 
-void CCinemaFilmMakerManager::BuildModelSections()
-{
-	if (ModelSectionsBuilt)
-	{
-		return;
-	}
-
-	ModelSections.clear();
-
-	if (pSettings == nullptr || g_pClsidManager == nullptr)
-	{
-		return;
-	}
-
-	ModelSectionsBuilt = true;
-
-	for (CInifile::Sect& section : pSettings->sections())
-	{
-		if (!section.line_exist("class") || !section.line_exist("visual"))
-		{
-			continue;
-		}
-
-		const CLASS_ID classId = pSettings->r_clsid(section.Name.c_str(), "class");
-
-		if (!g_pClsidManager->is_npc(classId) && !g_pClsidManager->is_monster(classId))
-		{
-			continue;
-		}
-
-		const shared_str visual = pSettings->r_string(section.Name.c_str(), "visual");
-
-		if (!VisualPathExists(visual.c_str()))
-		{
-			continue;
-		}
-
-		ModelSections.push_back({ .Name = section.Name, .Visual = visual });
-	}
-
-	std::sort(ModelSections.begin(), ModelSections.end(), [](const SModelSection& left, const SModelSection& right)
-	{
-		return xr_strcmp(left.Name.c_str(), right.Name.c_str()) < 0;
-	});
-
-	if (SelectedVisual.size() == 0 && !ModelSections.empty())
-	{
-		SelectedSection = 0;
-		SelectedVisual = ModelSections.front().Visual;
-	}
-}
-
 void CCinemaFilmMakerManager::BuildModelFiles()
 {
 	if (ModelFilesBuilt)
@@ -1338,6 +1269,12 @@ void CCinemaFilmMakerManager::BuildModelFiles()
 	{
 		return xr_strcmp(left.c_str(), right.c_str()) < 0;
 	});
+
+	if (SelectedVisual.size() == 0 && !ModelFiles.empty())
+	{
+		SelectedOgf = 0;
+		SelectedVisual = ModelFiles.front();
+	}
 }
 
 void CCinemaFilmMakerManager::BuildLibrary()
@@ -2095,10 +2032,13 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 	actor.Animated = animated;
 	actor.Visual = visual;
 	actor.LocalBox = model->getVisData().box;
-	actor.Playlist.clear();
 	actor.PlaylistIndex = -1;
-	actor.PlaylistSelected = -1;
 	actor.Paused = false;
+
+	if (actor.PlaylistSelected >= static_cast<s32>(actor.Playlist.size()))
+	{
+		actor.PlaylistSelected = static_cast<s32>(actor.Playlist.size()) - 1;
+	}
 	actor.Motion.invalidate();
 	actor.MotionName = "";
 	actor.MotionSource = "";
@@ -2117,7 +2057,7 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 	return true;
 }
 
-void CCinemaFilmMakerManager::DuplicateSelectedActor()
+void CCinemaFilmMakerManager::DuplicateSelectedActor(bool withPlaylist, bool startPlayback)
 {
 	const SCinemaActor* source = GetSelectedActor();
 
@@ -2133,19 +2073,33 @@ void CCinemaFilmMakerManager::DuplicateSelectedActor()
 	actor->Position = source->Position;
 	actor->Position.mad(Device.vCameraRight, 1.0f);
 	actor->Orientation = source->Orientation;
-	actor->Loop = source->Loop;
-	actor->Speed = source->Speed;
+
+	if (withPlaylist)
+	{
+		actor->Loop = source->Loop;
+		actor->Speed = source->Speed;
+	}
 
 	if (!SetActorVisual(*actor, source->Visual.c_str(), false))
 	{
 		return;
 	}
 
-	actor->Playlist = source->Playlist;
-	actor->PlaylistSelected = source->PlaylistSelected;
+	if (withPlaylist)
+	{
+		actor->Playlist = source->Playlist;
+		actor->PlaylistSelected = source->PlaylistSelected;
+	}
+
+	SCinemaActor* created = actor.get();
 	Actors.push_back(std::move(actor));
 	Selected = static_cast<s32>(Actors.size()) - 1;
 	ResetSelection();
+
+	if (startPlayback)
+	{
+		StartPlaylist(*created, 0);
+	}
 }
 
 void CCinemaFilmMakerManager::DeleteSelectedActor()
@@ -2236,7 +2190,7 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	layout.Item(CinemaButtonWidth("Duplicate"));
 	if (ImGui::Button("Duplicate##toolbar"))
 	{
-		DuplicateSelectedActor();
+		ImGui::OpenPopup("##cinema_duplicate_popup");
 	}
 
 	layout.Item(CinemaButtonWidth("Delete"));
@@ -2246,6 +2200,26 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	}
 
 	ImGui::EndDisabled();
+
+	if (ImGui::BeginPopup("##cinema_duplicate_popup"))
+	{
+		if (ImGui::MenuItem("Model only"))
+		{
+			DuplicateSelectedActor(false, false);
+		}
+
+		if (ImGui::MenuItem("Model + playlist"))
+		{
+			DuplicateSelectedActor(true, false);
+		}
+
+		if (ImGui::MenuItem("Model + playlist + play"))
+		{
+			DuplicateSelectedActor(true, true);
+		}
+
+		ImGui::EndPopup();
+	}
 
 	ImGui::BeginDisabled(Actors.empty());
 
@@ -2467,8 +2441,6 @@ void CCinemaFilmMakerManager::DrawActorTimeline(SCinemaActor& actor)
 
 void CCinemaFilmMakerManager::DrawModelTab()
 {
-	BuildModelSections();
-
 	if (!ModelFilesBuilt)
 	{
 		BuildModelFiles();
@@ -2478,154 +2450,60 @@ void CCinemaFilmMakerManager::DrawModelTab()
 	const float listHeight = std::max(150.0f, availableHeight - 105.0f);
 	const bool hasModel = SelectedVisual.size() > 0 && VisualPathExists(SelectedVisual.c_str());
 
-	if (ImGui::BeginTabBar("##cinema_model_tabs"))
+	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::InputTextWithHint("##cinema_ogf_filter", "Search .ogf", ModelFileFilter, sizeof(ModelFileFilter));
+
+	xr_vector<s32> filteredFiles;
+	filteredFiles.reserve(ModelFiles.size());
+
+	for (s32 i = 0; i < static_cast<s32>(ModelFiles.size()); ++i)
 	{
-		if (ImGui::BeginTabItem("Sections"))
+		if (CinemaContainsFilter(ModelFiles[i].c_str(), ModelFileFilter))
 		{
-			ImGui::SetNextItemWidth(-1.0f);
-			ImGui::InputTextWithHint("##cinema_section_filter", "Search sections", ModelFilter, sizeof(ModelFilter));
-
-			xr_vector<s32> filtered;
-			filtered.reserve(ModelSections.size());
-
-			for (s32 i = 0; i < static_cast<s32>(ModelSections.size()); ++i)
-			{
-				const SModelSection& section = ModelSections[i];
-
-				if (CinemaContainsFilter(section.Name.c_str(), ModelFilter) || CinemaContainsFilter(section.Visual.c_str(), ModelFilter))
-				{
-					filtered.push_back(i);
-				}
-			}
-
-			ImGui::BeginChild("##cinema_sections_list", ImVec2(0.0f, listHeight), true);
-
-			ImGuiListClipper clipper;
-			clipper.Begin(static_cast<int>(filtered.size()));
-
-			while (clipper.Step())
-			{
-				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
-				{
-					const s32 index = filtered[row];
-					const SModelSection& section = ModelSections[index];
-
-					ImGui::PushID(index);
-
-					if (ImGui::Selectable(section.Name.c_str(), SelectedSection == index))
-					{
-						SelectedSection = index;
-						SelectedOgf = -1;
-						SelectedVisual = section.Visual;
-					}
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::SetTooltip("%s\n%s", section.Name.c_str(), section.Visual.c_str());
-					}
-
-					ImGui::PopID();
-				}
-			}
-
-			if (filtered.empty())
-			{
-				ImGui::TextDisabled("Nothing found");
-			}
-
-			ImGui::EndChild();
-			ImGui::EndTabItem();
+			filteredFiles.push_back(i);
 		}
-
-		if (ImGui::BeginTabItem(".ogf"))
-		{
-			ImGui::SetNextItemWidth(-1.0f);
-			ImGui::InputTextWithHint("##cinema_ogf_filter", "Search .ogf", ModelFileFilter, sizeof(ModelFileFilter));
-
-			xr_vector<s32> filteredFiles;
-			filteredFiles.reserve(ModelFiles.size());
-
-			for (s32 i = 0; i < static_cast<s32>(ModelFiles.size()); ++i)
-			{
-				if (CinemaContainsFilter(ModelFiles[i].c_str(), ModelFileFilter))
-				{
-					filteredFiles.push_back(i);
-				}
-			}
-
-			ImGui::BeginChild("##cinema_ogf_list", ImVec2(0.0f, listHeight), true);
-
-			ImGuiListClipper fileClipper;
-			fileClipper.Begin(static_cast<int>(filteredFiles.size()));
-
-			while (fileClipper.Step())
-			{
-				for (int row = fileClipper.DisplayStart; row < fileClipper.DisplayEnd; ++row)
-				{
-					const s32 index = filteredFiles[row];
-					const shared_str& file = ModelFiles[index];
-
-					ImGui::PushID(index);
-
-					if (ImGui::Selectable(file.c_str(), SelectedOgf == index))
-					{
-						SelectedOgf = index;
-						SelectedSection = -1;
-						SelectedVisual = file;
-					}
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::SetTooltip("%s", file.c_str());
-					}
-
-					ImGui::PopID();
-				}
-			}
-
-			if (filteredFiles.empty())
-			{
-				ImGui::TextDisabled("Nothing found");
-			}
-
-			ImGui::EndChild();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Manual"))
-		{
-			ImGui::TextDisabled("Path relative to meshes, with or without .ogf");
-			ImGui::SetNextItemWidth(-1.0f);
-
-			if (ImGui::InputTextWithHint("##cinema_manual_visual", "actors\\stalker_hero\\stalker_hero_1.ogf", ManualVisual, sizeof(ManualVisual)))
-			{
-				ManualVisualValid = VisualPathExists(ManualVisual);
-			}
-
-			if (ManualVisual[0] != '\0' && !ManualVisualValid)
-			{
-				ImGui::TextColored(kCinemaError, "Visual not found");
-			}
-			else if (ManualVisual[0] != '\0')
-			{
-				ImGui::TextColored(kCinemaWarning, "Visual is valid");
-			}
-
-			ImGui::BeginDisabled(!ManualVisualValid);
-
-			if (ImGui::Button("Use this model", ImVec2(-1.0f, 0.0f)))
-			{
-				SelectedVisual = ManualVisual;
-				SelectedSection = -1;
-				SelectedOgf = -1;
-			}
-
-			ImGui::EndDisabled();
-			ImGui::EndTabItem();
-		}
-
-		ImGui::EndTabBar();
 	}
+
+	ImGui::BeginChild("##cinema_ogf_list", ImVec2(0.0f, listHeight), true);
+
+	ImGuiListClipper fileClipper;
+	fileClipper.Begin(static_cast<int>(filteredFiles.size()));
+
+	while (fileClipper.Step())
+	{
+		for (int row = fileClipper.DisplayStart; row < fileClipper.DisplayEnd; ++row)
+		{
+			const s32 index = filteredFiles[row];
+			const shared_str& file = ModelFiles[index];
+
+			ImGui::PushID(index);
+
+			if (ImGui::Selectable(file.c_str(), SelectedOgf == index))
+			{
+				SelectedOgf = index;
+				SelectedVisual = file;
+
+				if (SCinemaActor* actor = GetSelectedActor())
+				{
+					SetActorVisual(*actor, SelectedVisual.c_str(), false);
+				}
+			}
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("%s", file.c_str());
+			}
+
+			ImGui::PopID();
+		}
+	}
+
+	if (filteredFiles.empty())
+	{
+		ImGui::TextDisabled("Nothing found");
+	}
+
+	ImGui::EndChild();
 
 	ImGui::Separator();
 	ImGui::TextDisabled("Model");
@@ -2795,6 +2673,13 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 					SelectedSource = sourceIndex;
 					SelectedClip = clipIndex;
 					PreviewClip(*actor, source, clip);
+				}
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					SelectedSource = sourceIndex;
+					SelectedClip = clipIndex;
+					AddClipToPlaylist(*actor, source.Id, clip.Name, clip.Fx);
 				}
 
 				if (ImGui::IsItemHovered())
@@ -3001,7 +2886,11 @@ void CCinemaFilmMakerManager::DrawPanel()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.0f, 4.0f));
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f, 3.0f));
 
-	BuildModelSections();
+	if (!ModelFilesBuilt)
+	{
+		BuildModelFiles();
+	}
+
 	DrawToolbar();
 	ImGui::Separator();
 
@@ -3406,11 +3295,22 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 
 void CCinemaFilmMakerManager::DrawGizmo()
 {
+	const bool capturing = CImGuiManager::Instance().IsCapturingInputs();
+	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
+	const bool canInteract = capturing && !mouseOverUi && !ImGui::IsAnyItemActive();
+
 	SCinemaActor* actor = GetSelectedActor();
 
 	if (actor == nullptr || actor->Model == nullptr || g_pGameLevel == nullptr)
 	{
 		ClearGizmo();
+		HoveredAxis = EGizmoAxis::None;
+
+		if (canInteract && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			PickActorAtMouse();
+		}
+
 		return;
 	}
 
@@ -3419,15 +3319,13 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		ClearGizmo();
 	}
 
-	const bool capturing = CImGuiManager::Instance().IsCapturingInputs();
-	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 	const ImVec2 mouse = ImGui::GetIO().MousePos;
 	const float distance = Device.vCameraPosition.distance_to(actor->Position);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 
 	EGizmoAxis hoveredAxis = EGizmoAxis::None;
 
-	if (!Gizmo.Active && capturing && !mouseOverUi)
+	if (!Gizmo.Active && canInteract)
 	{
 		hoveredAxis = GizmoMode == EGizmoMode::Translate ? HitTranslateAxis(actor->Position, size, mouse) : HitRotateAxis(actor->Position, size, mouse);
 	}
@@ -3459,7 +3357,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		return;
 	}
 
-	if (!capturing || mouseOverUi || ImGui::IsAnyItemActive())
+	if (!canInteract)
 	{
 		return;
 	}
