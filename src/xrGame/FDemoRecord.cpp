@@ -11,12 +11,17 @@
 #include "../xrEngine/xr_collide_form.h"
 #include "../xrEngine/xr_input.h"
 #include "../xrEngine/xr_ioc_cmd.h"
+#include "PhysicsShellHolder.h"
+#include "../xrPhysics/IPHCapture.h"
+#include "../xrPhysics/IPHWorld.h"
+#include "../xrPhysics/PhysicsShell.h"
 
 extern ENGINE_API bool g_bDisableRedText;
 static Flags32 s_hud_flag = {0};
 static Flags32 s_dev_flags = {0};
 
 CDemoRecord* demo_record = nullptr;
+bool demo_record_grab = false;
 CDemoRecord::force_position CDemoRecord::g_position = {false, {0, 0, 0}};
 
 float dr_cam_inert = 0.f;
@@ -190,6 +195,8 @@ CDemoRecord::~CDemoRecord()
 {
 	demo_record = nullptr;
 	Device.seqRender.Remove(this);
+
+	ReleaseGrab();
 
 	if (file)
 	{
@@ -396,6 +403,13 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext(" ");
 				SystemFont->OutNext("K");
 				SystemFont->OutNext("U");
+				SystemFont->OutNext("G");
+				SystemFont->OutNext("H");
+				SystemFont->OutNext("LMB");
+				SystemFont->OutNext("RMB");
+				SystemFont->OutNext("MW (grab)");
+				SystemFont->OutNext("TAB + mouse");
+				SystemFont->OutNext("ENTER");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Forward, Backward, Left, Right");
@@ -414,6 +428,13 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("  the camera is always forced to face the selected target.");
 				SystemFont->OutNext("= Toggle model skeleton rendering");
 				SystemFont->OutNext("= Attach camera to a model bone");
+				SystemFont->OutNext("= Toggle physics grab tool");
+				SystemFont->OutNext("= Toggle free chain for grabbed object");
+				SystemFont->OutNext("= Hold to grab, release to drop");
+				SystemFont->OutNext("= Throw grabbed object");
+				SystemFont->OutNext("= Push / pull grabbed object");
+				SystemFont->OutNext("= Rotate grabbed object (camera look locked)");
+				SystemFont->OutNext("= Fix / release element (SHIFT all, CTRL release all)");
 			}
 		}
 		else
@@ -441,6 +462,13 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext(" ");
 				SystemFont->OutNext("K");
 				SystemFont->OutNext("U");
+				SystemFont->OutNext("G");
+				SystemFont->OutNext("H");
+				SystemFont->OutNext("LMB");
+				SystemFont->OutNext("RMB");
+				SystemFont->OutNext("MW (grab)");
+				SystemFont->OutNext("TAB + mouse");
+				SystemFont->OutNext("ENTER");
 				SystemFont->SetAligment(CGameFont::alLeft);
 				SystemFont->OutSetI(0, +.05f);
 				SystemFont->OutNext("= Append keyframe");
@@ -453,6 +481,13 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 				SystemFont->OutNext("  the camera is always forced to face the selected target.");
 				SystemFont->OutNext("= Toggle model skeleton rendering");
 				SystemFont->OutNext("= Attach camera to a model bone");
+				SystemFont->OutNext("= Toggle physics grab tool");
+				SystemFont->OutNext("= Toggle free chain for grabbed object");
+				SystemFont->OutNext("= Hold to grab, release to drop");
+				SystemFont->OutNext("= Throw grabbed object");
+				SystemFont->OutNext("= Push / pull grabbed object");
+				SystemFont->OutNext("= Rotate grabbed object (camera look locked)");
+				SystemFont->OutNext("= Fix / release element (SHIFT all, CTRL release all)");
 			}
 		}
 
@@ -501,6 +536,8 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 		info.n.set(camera.j);
 		info.d.set(camera.k);
 		info.p.set(camera.c);
+
+		UpdateGrab();
 
 		fLifeTime -= Device.fTimeDelta;
 
@@ -963,6 +1000,22 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 			redirect_input_to_level = !redirect_input_to_level;
 			break;
 
+		case K_TOGGLE_GRAB:
+			GrabActive = !GrabActive;
+			if (!GrabActive)
+			{
+				ReleaseGrab();
+			}
+			break;
+
+		case K_TOGGLE_GRAB_CHAIN:
+			GrabFreeChain = !GrabFreeChain;
+			if (GrabCapture != nullptr)
+			{
+				GrabCapture->SetFreeChain(GrabFreeChain);
+			}
+			break;
+
 		case K_SHOW_CONSOLE:
 			Console->Show();
 			break;
@@ -1008,10 +1061,43 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
 
 #ifndef MASTER_GOLD
 		case K_FORCE_TRANSFORM:
-			if (g_pGameLevel->CurrentEntity())
+			if (GrabCapture != nullptr)
+			{
+				if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
+				{
+					FixGrabElements(true, false);
+				}
+				else if (IR_GetKeyState(SDL_SCANCODE_LCTRL) || IR_GetKeyState(SDL_SCANCODE_RCTRL))
+				{
+					FixGrabElements(false, true);
+				}
+				else
+				{
+					FixGrabElements(false, false);
+				}
+			}
+			else if (g_pGameLevel->CurrentEntity())
 			{
 				g_pGameLevel->CurrentEntity()->ForceTransform(camera);
 				fLifeTime = -1;
+			}
+			break;
+#else
+		case K_FORCE_TRANSFORM:
+			if (GrabCapture != nullptr)
+			{
+				if (IR_GetKeyState(SDL_SCANCODE_LSHIFT) || IR_GetKeyState(SDL_SCANCODE_RSHIFT))
+				{
+					FixGrabElements(true, false);
+				}
+				else if (IR_GetKeyState(SDL_SCANCODE_LCTRL) || IR_GetKeyState(SDL_SCANCODE_RCTRL))
+				{
+					FixGrabElements(false, true);
+				}
+				else
+				{
+					FixGrabElements(false, false);
+				}
 			}
 			break;
 #endif
@@ -1182,6 +1268,23 @@ void CDemoRecord::IR_OnMousePress(int btn)
 		g_pGameLevel->IR_OnMousePress(btn);
 		return;
 	}
+
+	if (!demo_record_grab || !GrabActive || !new_input_schema)
+	{
+		return;
+	}
+
+	if (btn == 0)
+	{
+		if (GrabCapture == nullptr)
+		{
+			TryGrab();
+		}
+	}
+	else if (btn == 1)
+	{
+		ThrowGrab();
+	}
 }
 
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
@@ -1192,6 +1295,14 @@ void CDemoRecord::IR_OnMouseMove(int dx, int dy)
 		{
 			ControlEntityIR->IR_OnMouseMove(dx, dy);
 		}
+		return;
+	}
+
+	if (GrabCapture != nullptr && IR_GetKeyState(SDL_SCANCODE_TAB))
+	{
+		GrabRotateActive = true;
+		GrabRotateDelta.x += static_cast<float>(dy) * 0.1f;
+		GrabRotateDelta.y += static_cast<float>(dx) * 0.1f;
 		return;
 	}
 
@@ -1250,6 +1361,16 @@ void CDemoRecord::IR_OnMouseRelease(int btn)
 		g_pGameLevel->IR_OnMouseRelease(btn);
 		return;
 	}
+
+	if (!demo_record_grab || !GrabActive || !new_input_schema)
+	{
+		return;
+	}
+
+	if (btn == 0 && GrabCapture != nullptr)
+	{
+		ReleaseGrab();
+	}
 }
 
 void CDemoRecord::IR_OnMouseWheel(int direction)
@@ -1264,6 +1385,14 @@ void CDemoRecord::IR_OnMouseWheel(int direction)
 	}
 
 	bool ModifierIncluded = pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT) || pInput->iGetAsyncKeyState(SDL_SCANCODE_RSHIFT);
+
+	if (GrabCapture != nullptr && !ModifierIncluded)
+	{
+		float pull_step = direction > 0 ? 0.5f : -0.5f;
+		GrabDistance += pull_step;
+		clamp(GrabDistance, 0.5f, 300.f);
+		return;
+	}
 
 	float step = ModifierIncluded ? 15.f : 5.f;
 	constexpr float fine_step = 0.05f;
@@ -1312,6 +1441,245 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 			if (btn == M_MOVE_FORWARD)  frame_pos_delta.z += 1.f;
 			if (btn == M_MOVE_BACKWARD) frame_pos_delta.z -= 1.f;
 		}
+	}
+}
+void CDemoRecord::TryGrab()
+{
+	if (GrabCapture != nullptr)
+	{
+		return;
+	}
+
+	GrabHasPrevCameraRotation = false;
+
+	collide::rq_result rq{};
+	Level().ObjectSpace.RayPick(camera.c, camera.k, 1000.f, collide::rq_target::rqtBoth, rq, nullptr);
+
+	if (!rq.valid() || rq.range <= EPS_S || rq.O == nullptr)
+	{
+		return;
+	}
+
+	IPhysicsShellHolder* holder = rq.O->cast_physics_shell_holder();
+
+	if (holder == nullptr)
+	{
+		return;
+	}
+
+	CPhysicsShell* shell = holder->ObjectPPhysicsShell();
+
+	if (shell == nullptr || !shell->isActive())
+	{
+		return;
+	}
+
+	GrabShell = shell;
+	GrabElement = nullptr;
+
+	if (rq.element >= 0 && rq.element != BI_NONE)
+	{
+		GrabElement = shell->get_Element(u16(rq.element));
+	}
+
+	GrabDistance = rq.range;
+
+	Fvector anchor;
+	anchor.set(camera.c).mad(camera.k, GrabDistance);
+
+	GrabCapture = phcapture_create(nullptr, holder, u16(rq.element), anchor, GrabFreeChain);
+
+	if (GrabCapture == nullptr || GrabCapture->Failed())
+	{
+		ReleaseGrab();
+	}
+}
+
+void CDemoRecord::ReleaseGrab()
+{
+	if (GrabCapture != nullptr)
+	{
+		if (physics_world() != nullptr)
+		{
+			phcapture_destroy(GrabCapture);
+		}
+
+		GrabCapture = nullptr;
+	}
+
+	GrabShell = nullptr;
+	GrabElement = nullptr;
+	GrabRotateActive = false;
+	GrabRotateDelta.set(zero_vel);
+	GrabHasPrevCameraRotation = false;
+}
+
+void CDemoRecord::ThrowGrab()
+{
+	if (GrabCapture == nullptr)
+	{
+		return;
+	}
+
+	GrabCapture->ApplyForce(Fvector().set(camera.k), 100.f);
+
+	ReleaseGrab();
+
+	GrabThrowCooldown = 0.5f;
+}
+
+void CDemoRecord::UpdateGrab()
+{
+	if (!demo_record_grab || !GrabActive || !new_input_schema || redirect_input_to_level)
+	{
+		ReleaseGrab();
+		return;
+	}
+
+	if (GrabThrowCooldown > 0.f)
+	{
+		GrabThrowCooldown -= Device.fTimeDelta;
+
+		if (GrabThrowCooldown < 0.f)
+		{
+			GrabThrowCooldown = 0.f;
+		}
+	}
+
+	if (GrabCapture == nullptr)
+	{
+		if (IR_GetBtnState(0) && GrabThrowCooldown <= 0.f)
+		{
+			TryGrab();
+		}
+
+		return;
+	}
+
+	if (!IR_GetBtnState(0))
+	{
+		ReleaseGrab();
+		return;
+	}
+
+	if (GrabCapture->Failed())
+	{
+		ReleaseGrab();
+		return;
+	}
+
+	Fvector anchor;
+	anchor.set(camera.c).mad(camera.k, GrabDistance);
+	GrabCapture->capture_pos().set(anchor);
+
+	Fmatrix camera_world;
+	camera_world.set(camera.i, camera.j, camera.k, camera.c);
+
+	GrabCapture->SetTargetRotation(camera_world);
+
+	if (GrabHasPrevCameraRotation)
+	{
+		float delta_time = static_cast<float>(Device.dwTimeGlobal - GrabPrevCameraTime) / 1000.f;
+
+		if (delta_time > EPS_S)
+		{
+			Fmatrix prev_basis;
+			prev_basis.set(GrabPrevCameraRotation.i, GrabPrevCameraRotation.j, GrabPrevCameraRotation.k, Fvector().set(0.f, 0.f, 0.f));
+
+			Fmatrix cur_basis;
+			cur_basis.set(camera_world.i, camera_world.j, camera_world.k, Fvector().set(0.f, 0.f, 0.f));
+
+			Fmatrix inverse_prev;
+			inverse_prev.transpose(prev_basis);
+
+			//World rotation between frames: prev^T * cur (Fmatrix::mul(A, B) computes B * A).
+			Fmatrix delta;
+			delta.mul(cur_basis, inverse_prev);
+
+			Fvector angular;
+			angular.set(
+				(delta._23 - delta._32) / (2.f * delta_time),
+				(delta._31 - delta._13) / (2.f * delta_time),
+				(delta._12 - delta._21) / (2.f * delta_time));
+
+			clamp(angular.x, -30.f, 30.f);
+			clamp(angular.y, -30.f, 30.f);
+			clamp(angular.z, -30.f, 30.f);
+
+			GrabCapture->SetTargetAngularVelocity(angular);
+		}
+	}
+
+	GrabPrevCameraRotation.set(camera_world);
+	GrabPrevCameraTime = Device.dwTimeGlobal;
+	GrabHasPrevCameraRotation = true;
+
+	GrabRotateActive = IR_GetKeyState(SDL_SCANCODE_TAB);
+
+	if (GrabRotateActive && !GrabFreeChain && (GrabRotateDelta.x != 0.f || GrabRotateDelta.y != 0.f))
+	{
+		Fmatrix pitch;
+		pitch.rotateX(GrabRotateDelta.x);
+
+		Fmatrix yaw;
+		yaw.rotateY(-GrabRotateDelta.y);
+
+		Fmatrix delta;
+		delta.mul(pitch, yaw);
+
+		GrabCapture->RotateTarget(delta);
+		GrabRotateDelta.set(zero_vel);
+	}
+}
+
+void CDemoRecord::FixGrabElements(bool all_elements, bool release_all)
+{
+	if (GrabShell == nullptr || GrabCapture == nullptr || GrabCapture->Failed())
+	{
+		return;
+	}
+
+	if (release_all)
+	{
+		for (u16 i = 0; i < GrabShell->get_ElementsNumber(); ++i)
+		{
+			GrabShell->get_ElementByStoreOrder(i)->ReleaseFixed();
+		}
+
+		return;
+	}
+
+	if (all_elements)
+	{
+		for (u16 i = 0; i < GrabShell->get_ElementsNumber(); ++i)
+		{
+			CPhysicsElement* element = GrabShell->get_ElementByStoreOrder(i);
+
+			if (element->isFixed())
+			{
+				element->ReleaseFixed();
+			}
+			else
+			{
+				element->Fix();
+			}
+		}
+
+		return;
+	}
+
+	if (GrabElement == nullptr)
+	{
+		return;
+	}
+
+	if (GrabElement->isFixed())
+	{
+		GrabElement->ReleaseFixed();
+	}
+	else
+	{
+		GrabElement->Fix();
 	}
 }
 

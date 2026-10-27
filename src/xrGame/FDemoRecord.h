@@ -4,6 +4,10 @@
 #include "../xrEngine/IInputReceiver.h"
 #include "../xrEngine/Effector.h"
 
+class IPHCapture;
+class CPhysicsShell;
+class CPhysicsElement;
+
 class CDemoRecord :
 	public CEffectorCam,
 	public IInputReceiver,
@@ -29,6 +33,8 @@ public:
 		K_MAKE_SCREENSHOT		= SDL_SCANCODE_F12,
 		K_QUIT					= SDL_SCANCODE_ESCAPE,
 		K_FORCE_TRANSFORM		= SDL_SCANCODE_RETURN,
+		K_TOGGLE_GRAB			= SDL_SCANCODE_G,
+		K_TOGGLE_GRAB_CHAIN		= SDL_SCANCODE_H,
 
 		// IR_OnKeyHold
 		K_MOVE_FORWARD			= SDL_SCANCODE_W,
@@ -110,11 +116,33 @@ public:
 
 	Fvector look_at_point{};
 
+	IPHCapture* GrabCapture = nullptr;
+	CPhysicsShell* GrabShell = nullptr;
+	CPhysicsElement* GrabElement = nullptr;
+
+	bool GrabActive = true;
+	bool GrabFreeChain = false;
+	bool GrabRotateActive = false;
+
+	float GrabDistance = 0.f;
+	Fvector GrabRotateDelta{};
+
+	Fmatrix GrabPrevCameraRotation{};
+	bool GrabHasPrevCameraRotation = false;
+	u32 GrabPrevCameraTime = 0;
+	float GrabThrowCooldown = 0.f;
+
 	bool try_attach_bone();
 	void detach_bone();
 	void clear_bone_attachment();
 	bool refresh_bone_attachment();
 	float current_move_speed();
+
+	void TryGrab();
+	void ReleaseGrab();
+	void ThrowGrab();
+	void UpdateGrab();
+	void FixGrabElements(bool all_elements, bool release_all);
 
 	void get_camera_hpb(Fvector& out) { camera.getHPB(out); }
 	void set_camera_hpb(float h, float p, float b) { camera.setHPB(h, p, b); }
@@ -179,5 +207,5 @@ public:
 	static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 	void OnRender() override;
 };
-
+extern bool demo_record_grab;
 extern CDemoRecord* demo_record;
