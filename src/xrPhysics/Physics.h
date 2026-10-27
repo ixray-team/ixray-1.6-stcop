@@ -19,7 +19,6 @@
 		void	ApplyGravityAccel			(dBodyID body,const dReal* accel);
 const	dReal	fix_ext_param				=10000.f;
 const	dReal	fix_mass_param				=100000000.f;
-		void	FixBody						(dBodyID body)												;
 		void	dMassSub					(dMass *a,const dMass *b)									;
 		void	SaveContacts				(dGeomID o1, dGeomID o2,dJointGroupID jointGroup)			;
 const	dReal	*dJointGetPositionContact	(dJointID joint);

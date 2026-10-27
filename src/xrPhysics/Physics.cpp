@@ -279,24 +279,6 @@ void dBodyAngAccelFromTorqu(const dBodyID body, dReal* ang_accel, const dReal* t
 	dMULTIPLY1_333(ang_accel,invI, torque);
 }
 
-void FixBody(dBodyID body,float ext_param,float mass_param)
-{
-	dMass m;
-	dMassSetSphere(&m,1.f,ext_param);
-	dMassAdjust(&m,mass_param);
-	dBodySetMass(body,&m);
-	dBodySetGravityMode(body,0);
-	dBodySetLinearVel(body,0,0,0);
-	dBodySetAngularVel(body,0,0,0);
-	dBodySetForce(body,0,0,0);
-	dBodySetTorque(body,0,0,0);
-}
-
-void FixBody(dBodyID body)
-{
-	FixBody(body,fix_ext_param,fix_mass_param);
-}
-
 void BodyCutForce(dBodyID body,float l_limit,float w_limit)
 {
 	const dReal wa_limit=w_limit/fixed_step;
