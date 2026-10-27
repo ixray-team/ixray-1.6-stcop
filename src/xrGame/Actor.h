@@ -114,7 +114,7 @@ public:
 	virtual								~CActor				();
 	void OnFrame();
 	const WeaponModifiers::WpnModifierType& GetActorWeaponModifiers() const { return WeaponModifierCoefficients; }
-	float GetActorWeaponModifier(WeaponModifier Type) const { return WeaponModifierCoefficients[static_cast<u32>(Type)]; }
+	float GetActorWeaponModifier(WeaponModifier Type) const { return WeaponModifierCoefficients[Type]; }
 	bool SetActorWeaponModifier(WeaponModifier Type, float Value);
 	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();

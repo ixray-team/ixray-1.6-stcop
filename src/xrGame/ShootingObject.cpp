@@ -556,7 +556,7 @@ const WeaponModifiers::WpnModifierType& CShootingObject::GetActorWeaponModifiers
 	static const WeaponModifiers::WpnModifierType DefaultModifiers = []
 	{
 		WeaponModifiers::WpnModifierType Modifiers;
-		Modifiers.resize(static_cast<int>(WeaponModifier::Count));
+		Modifiers.resize(WeaponModifier::Count);
 		for (float& Coefficient : Modifiers)
 		{
 			Coefficient = 1.0f;

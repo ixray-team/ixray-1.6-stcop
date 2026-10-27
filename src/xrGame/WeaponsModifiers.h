@@ -4,7 +4,9 @@
 #include "../xrCore/Containers/FixedVector.h"
 
 // IDs define Lua constants and the fixed order of coefficients in actor saves.
-enum class WeaponModifier
+namespace WeaponModifiers
+{
+enum WeaponModifier : u32
 {
 	HitPowerCoeff,
 	RpmCoeff,
@@ -18,38 +20,36 @@ enum class WeaponModifier
 	Count
 };
 
-namespace WeaponModifiers
-{
-using WpnModifierType = FixedVector<float, static_cast<int>(WeaponModifier::Count)>;
+using WpnModifierType = FixedVector<float, WeaponModifier::Count>;
 
 inline float ApplyHitPower(const WpnModifierType& Modifiers, float HitPower, bool IsSilenced = false)
 {
-	return HitPower * Modifiers[static_cast<u32>(WeaponModifier::HitPowerCoeff)] * (IsSilenced ? Modifiers[static_cast<u32>(WeaponModifier::SilencerHitPowerCoeff)] : Modifiers[static_cast<u32>(WeaponModifier::UnsilencedHitPowerCoeff)]);
+	return HitPower * Modifiers[WeaponModifier::HitPowerCoeff] * (IsSilenced ? Modifiers[WeaponModifier::SilencerHitPowerCoeff] : Modifiers[WeaponModifier::UnsilencedHitPowerCoeff]);
 }
 
 inline float ApplyHitImpulse(const WpnModifierType& Modifiers, float HitImpulse)
 {
-	return HitImpulse * Modifiers[static_cast<u32>(WeaponModifier::HitImpulseCoeff)];
+	return HitImpulse * Modifiers[WeaponModifier::HitImpulseCoeff];
 }
 
 inline float ApplyFireDispersionBase(const WpnModifierType& Modifiers, float Dispersion)
 {
-	return Dispersion * Modifiers[static_cast<u32>(WeaponModifier::FireDispersionBaseCoeff)];
+	return Dispersion * Modifiers[WeaponModifier::FireDispersionBaseCoeff];
 }
 
 inline float ApplyCrosshairInertion(const WpnModifierType& Modifiers, float Inertion)
 {
-	return Inertion * Modifiers[static_cast<u32>(WeaponModifier::CrosshairInertionCoeff)];
+	return Inertion * Modifiers[WeaponModifier::CrosshairInertionCoeff];
 }
 
 inline float ApplyRecoil(const WpnModifierType& Modifiers, float Offset)
 {
-	return Offset * Modifiers[static_cast<u32>(WeaponModifier::RecoilCoeff)];
+	return Offset * Modifiers[WeaponModifier::RecoilCoeff];
 }
 
 inline float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle, float ShotAngle, float MaxAngle)
 {
-	if (Modifiers[static_cast<u32>(WeaponModifier::RecoilCoeff)] == 1.0f)
+	if (Modifiers[WeaponModifier::RecoilCoeff] == 1.0f)
 	{
 		return ShotAngle;
 	}
@@ -68,12 +68,12 @@ inline float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAng
 
 inline float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpeed)
 {
-	return BulletSpeed * Modifiers[static_cast<u32>(WeaponModifier::BulletSpeedCoeff)];
+	return BulletSpeed * Modifiers[WeaponModifier::BulletSpeedCoeff];
 }
 
 inline float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
 {
-	const float RpmCoeff = Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)];
+	const float RpmCoeff = Modifiers[WeaponModifier::RpmCoeff];
 	if (RpmCoeff == 1.0f)
 	{
 		return Interval;
@@ -85,3 +85,5 @@ inline float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
 	return Result < MinimumShotInterval ? MinimumShotInterval : Result;
 }
 } // namespace WeaponModifiers
+
+using WeaponModifier = WeaponModifiers::WeaponModifier;

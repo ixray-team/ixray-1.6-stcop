@@ -119,7 +119,7 @@ void CActor::OnFrame()
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
-	WeaponModifierCoefficients.resize(static_cast<int>(WeaponModifier::Count));
+	WeaponModifierCoefficients.resize(WeaponModifier::Count);
 	for (float& Coefficient : WeaponModifierCoefficients)
 	{
 		Coefficient = 1.0f;
@@ -311,7 +311,7 @@ THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
 {
 	clamp(Value, 0.001f, FLT_MAX);
-	WeaponModifierCoefficients[static_cast<u32>(Type)] = Value;
+	WeaponModifierCoefficients[Type] = Value;
 	return true;
 }
 

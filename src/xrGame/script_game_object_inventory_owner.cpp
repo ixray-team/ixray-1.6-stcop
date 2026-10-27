@@ -480,7 +480,7 @@ float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 {
 	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count)
 	{
-		return Owner->GetActorWeaponModifier(static_cast<WeaponModifier>(Type));
+		return Owner->GetActorWeaponModifier((WeaponModifier)Type);
 	}
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: expected an actor and a valid modifier type");
 	return 1.0f;
