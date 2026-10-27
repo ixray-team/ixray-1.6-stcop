@@ -2,6 +2,7 @@
 
 #include <cfloat>
 
+// IDs are exposed to Lua and stored in actor saves. Append new values before Count.
 enum class WeaponModifier
 {
 	HitPowerCoeff,

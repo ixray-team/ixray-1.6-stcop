@@ -16,10 +16,10 @@ if not actor or not actor.weapons_modifiers then
     return
 end
 
-local damage = actor:weapons_modifiers("hit_power_coeff")
+local damage = actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF)
 local recoil = actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF)
 
-assert(actor:weapons_modifiers("hit_power_coeff", 1.20))
+assert(actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 1.20))
 assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.75))
 ```
 
@@ -27,26 +27,26 @@ The method has two forms:
 
 | Call | Result |
 | --- | --- |
-| `actor:weapons_modifiers(name_or_enum)` | Current coefficient as a number. |
-| `actor:weapons_modifiers(name_or_enum, value)` | Assigns an absolute coefficient; returns `true` on success, `false` on rejection. |
+| `actor:weapons_modifiers(modifier)` | Current coefficient as a number. |
+| `actor:weapons_modifiers(modifier, value)` | Assigns an absolute coefficient; returns `true` on success, `false` on rejection. |
 
-Names are case-sensitive. Enum names are uppercase and live in `weaponsModifiers`; prefer symbolic names over numeric enum IDs. Repeating the same assignment does not stack bonuses.
+Pass a constant from `weaponsModifiers` as the modifier. String names are not supported; prefer symbolic constants over numeric enum IDs. Repeating the same assignment does not stack bonuses.
 
 ## Coefficient reference
 
-| Lua name | Enum in `weaponsModifiers` | Effect |
-| --- | --- | --- |
-| `hit_power_coeff` | `HIT_POWER_COEFF` | Common bullet damage multiplier. |
-| `rpm_coeff` | `RPM_COEFF` | Rate of fire multiplier; higher values shorten shot intervals. |
-| `silencer_hit_power_coeff` | `SILENCER_HIT_POWER_COEFF` | Additional damage multiplier for shots with a silencer. |
-| `unsilenced_hit_power_coeff` | `UNSILENCED_HIT_POWER_COEFF` | Additional damage multiplier for shots without a silencer. |
-| `hit_impulse_coeff` | `HIT_IMPULSE_COEFF` | Impact impulse transferred to the target, including body knockback. |
-| `fire_dispersion_base_coeff` | `FIRE_DISPERSION_BASE_COEFF` | Base weapon dispersion; lower values improve accuracy. |
-| `crosshair_inertion_coeff` | `CROSSHAIR_INERTION_COEFF` | Crosshair settling inertia; lower values shorten settling time. |
-| `bullet_speed_coeff` | `BULLET_SPEED_COEFF` | Initial bullet speed, which affects trajectory flatness. |
-| `recoil_coeff` | `RECOIL_COEFF` | Vertical and horizontal shot recoil strength; lower values reduce the kick. |
+| Enum in `weaponsModifiers` | Effect |
+| --- | --- |
+| `HIT_POWER_COEFF` | Common bullet damage multiplier. |
+| `RPM_COEFF` | Rate of fire multiplier; higher values shorten shot intervals. |
+| `SILENCER_HIT_POWER_COEFF` | Additional damage multiplier for shots with a silencer. |
+| `UNSILENCED_HIT_POWER_COEFF` | Additional damage multiplier for shots without a silencer. |
+| `HIT_IMPULSE_COEFF` | Impact impulse transferred to the target, including body knockback. |
+| `FIRE_DISPERSION_BASE_COEFF` | Base weapon dispersion; lower values improve accuracy. |
+| `CROSSHAIR_INERTION_COEFF` | Crosshair settling inertia; lower values shorten settling time. |
+| `BULLET_SPEED_COEFF` | Initial bullet speed, which affects trajectory flatness. |
+| `RECOIL_COEFF` | Vertical and horizontal shot recoil strength; lower values reduce the kick. |
 
-All values must be finite. RPM and bullet speed require **`> 0`**; every other coefficient accepts **`>= 0`**. Negative values, NaN, infinity, unknown names/enum values and calls on non-actor objects are rejected and logged. Rejected setters preserve the old value; invalid getters return `1.0`. That return value is not a feature-detection mechanism: use the method-presence check shown above.
+All values must be finite. RPM and bullet speed require **`> 0`**; every other coefficient accepts **`>= 0`**. Negative values, NaN, infinity, invalid enum values and calls on non-actor objects are rejected and logged. Rejected setters preserve the old value; invalid getters return `1.0`. That return value is not a feature-detection mechanism: use the method-presence check shown above.
 
 Zero damage disables that damage contribution. Zero impact impulse removes the bullet's impact impulse. Zero base dispersion removes the weapon's spread contribution, while the actor's extra spread remains. Zero inertion removes crosshair settling delay. Zero recoil suppresses new shot kicks; an existing recoil effect can continue settling.
 
@@ -58,12 +58,12 @@ The following snippets are independent recipes. Run them when `db.actor` and the
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("hit_power_coeff", 1.20)
-actor:weapons_modifiers("silencer_hit_power_coeff", 1.10)
-actor:weapons_modifiers("unsilenced_hit_power_coeff", 1.05)
+actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 1.20)
+actor:weapons_modifiers(weaponsModifiers.SILENCER_HIT_POWER_COEFF, 1.10)
+actor:weapons_modifiers(weaponsModifiers.UNSILENCED_HIT_POWER_COEFF, 1.05)
 ```
 
-The effective actor damage factor is `hit_power_coeff × selected_damage_coeff`. Exactly one additional factor is selected by the firing mode, including built-in silencers. With the values above, the actor factors are `1.32` with a silencer and `1.26` without one. Attachment changes are handled by the engine.
+The effective actor damage factor is `HIT_POWER_COEFF × selected_damage_coeff`. Exactly one additional factor is selected by the firing mode, including built-in silencers. With the values above, the actor factors are `1.32` with a silencer and `1.26` without one. Attachment changes are handled by the engine.
 
 For current upgraded hit power `0.70`, the results before existing silencer/cartridge factors are `0.924` and `0.882`. The coefficient scales current difficulty-specific damage, not an old copy of the base damage. Display scripts should use the same composition.
 
@@ -71,10 +71,10 @@ For current upgraded hit power `0.70`, the results before existing silencer/cart
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("fire_dispersion_base_coeff", 0.80)
-actor:weapons_modifiers("crosshair_inertion_coeff", 0.75)
-actor:weapons_modifiers("bullet_speed_coeff", 1.20)
-actor:weapons_modifiers("recoil_coeff", 0.50)
+actor:weapons_modifiers(weaponsModifiers.FIRE_DISPERSION_BASE_COEFF, 0.80)
+actor:weapons_modifiers(weaponsModifiers.CROSSHAIR_INERTION_COEFF, 0.75)
+actor:weapons_modifiers(weaponsModifiers.BULLET_SPEED_COEFF, 1.20)
+actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.50)
 ```
 
 This reduces base weapon spread by 20%, shortens crosshair settling, increases initial speed by 20% and reduces shot recoil. The actor's additional movement spread is separate. In single player, crosshair settling controls the indicator; it does not delay the bullet-spread calculation.
@@ -83,21 +83,21 @@ This reduces base weapon spread by 20%, shortens crosshair settling, increases i
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("rpm_coeff", 1.25)
-actor:weapons_modifiers("hit_power_coeff", 0.90)
+actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, 1.25)
+actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 0.90)
 ```
 
 A configured `600 RPM` becomes `750 RPM`: `0.10 / 1.25 = 0.08` seconds per shot. Magazine/chamber firing and alternate single-shot/initial-burst intervals use this factor. Reload and pump animation durations are not accelerated.
 
-When `rpm_coeff` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms** (1000 shots per second). This prevents extreme coefficients from stalling the floating-point shot timer or producing an excessive number of catch-up shots in one frame. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
+When `RPM_COEFF` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms** (1000 shots per second). This prevents extreme coefficients from stalling the floating-point shot timer or producing an excessive number of catch-up shots in one frame. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
 
 ### Target impact impulse
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("hit_impulse_coeff", 1.50)
+actor:weapons_modifiers(weaponsModifiers.HIT_IMPULSE_COEFF, 1.50)
 -- Set to 0.0 to remove the bullet's impact impulse.
--- This does not change recoil_coeff or hit_power_coeff.
+-- This does not change RECOIL_COEFF or HIT_POWER_COEFF.
 ```
 
 This is the impulse delivered on impact, not weapon recoil. Existing silencer and cartridge impulse factors still apply. Actual body movement also depends on physics, hit location and the target.
@@ -106,13 +106,12 @@ This is the impulse delivered on impact, not weapon recoil. Existing silencer an
 
 ```lua
 local actor = db.actor
-local previous = actor:weapons_modifiers("rpm_coeff")
-local accepted = actor:weapons_modifiers("rpm_coeff", 0.0)
+local previous = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF)
+local accepted = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, 0.0)
 assert(accepted == false)
-assert(actor:weapons_modifiers("rpm_coeff") == previous)
+assert(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF) == previous)
 
-assert(actor:weapons_modifiers("recoil_coeff", -1.0) == false)
-assert(actor:weapons_modifiers("unknown_coeff", 2.0) == false)
+assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, -1.0) == false)
 ```
 
 These deliberate invalid calls write error messages to the script log. In production, validate your mod's input and check the setter result. The setter does not clamp invalid coefficients into the accepted range. An unrepresentable shot interval or bullet speed falls back to its original value.
@@ -121,21 +120,21 @@ These deliberate invalid calls write error messages to the script log. In produc
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("recoil_coeff", 1.0)
+actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 1.0)
 
 -- Full reset: use only when this script owns the entire profile.
-local names = {
-    "hit_power_coeff", "rpm_coeff",
-    "silencer_hit_power_coeff", "unsilenced_hit_power_coeff",
-    "hit_impulse_coeff", "fire_dispersion_base_coeff",
-    "crosshair_inertion_coeff", "bullet_speed_coeff", "recoil_coeff",
+local modifiers = {
+    weaponsModifiers.HIT_POWER_COEFF, weaponsModifiers.RPM_COEFF,
+    weaponsModifiers.SILENCER_HIT_POWER_COEFF, weaponsModifiers.UNSILENCED_HIT_POWER_COEFF,
+    weaponsModifiers.HIT_IMPULSE_COEFF, weaponsModifiers.FIRE_DISPERSION_BASE_COEFF,
+    weaponsModifiers.CROSSHAIR_INERTION_COEFF, weaponsModifiers.BULLET_SPEED_COEFF, weaponsModifiers.RECOIL_COEFF,
 }
-for _, name in ipairs(names) do
-    actor:weapons_modifiers(name, 1.0)
+for _, modifier in ipairs(modifiers) do
+    actor:weapons_modifiers(modifier, 1.0)
 end
 ```
 
-The API has no reset-all method. A full reset can overwrite another system's effects; a script that owns only recoil should reset only `recoil_coeff`.
+The API has no reset-all method. A full reset can overwrite another system's effects; a script that owns only recoil should reset only `RECOIL_COEFF`.
 
 ### Combine several bonus sources without stacking twice
 
@@ -153,7 +152,7 @@ function set_damage_source(id, coefficient)
 
     local actor = db.actor
     if actor and actor.weapons_modifiers then
-        actor:weapons_modifiers("hit_power_coeff", combined)
+        actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, combined)
     end
 end
 
@@ -170,7 +169,7 @@ The table above is Lua runtime state, not persistent save data. Rebuild it from 
 
 ## Apply a persistent bonus through events
 
-Coefficients reset to `1.0` on actor initialization and are **not serialized**. Restore them from persistent gameplay state on the first update, then change them only when that state changes. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
+Coefficients start at `1.0` and are **saved and restored with the actor**. Saves without the modifier block use neutral values of `1.0`. The first-update handler below reconciles the restored coefficients with the training infoportion; afterward, update them only when that state changes. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
 The complete example below owns only common damage and recoil: training grants `1.20` damage and `0.80` recoil; otherwise those two values are reset to `1.0`.
 
@@ -199,8 +198,8 @@ function refresh()
     end
 
     -- Assign an absolute coefficient: repeated events must not compound the bonus.
-    actor:weapons_modifiers("hit_power_coeff", damage)
-    actor:weapons_modifiers("recoil_coeff", recoil)
+    actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, damage)
+    actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, recoil)
 end
 
 local function on_actor_info(npc, info_id)
@@ -220,7 +219,7 @@ function on_game_start(data)
 end
 ```
 
-`on_game_start` registers handlers and does not read actor state. The first-update handler restores saved state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
+`on_game_start` registers handlers and does not read actor state. The first-update handler reconciles coefficients with the saved training state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
 
 The stock info callback reports receipt, not removal. Revoke the flag and refresh explicitly:
 

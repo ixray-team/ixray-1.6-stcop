@@ -476,50 +476,6 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 }
 
-static WeaponModifier GetWeaponModifierTypeByName(const char* Name)
-{
-	if (Name)
-	{
-		if (xr_strcmp(Name, "hit_power_coeff") == 0)
-		{
-			return WeaponModifier::HitPowerCoeff;
-		}
-		if (xr_strcmp(Name, "rpm_coeff") == 0)
-		{
-			return WeaponModifier::RpmCoeff;
-		}
-		if (xr_strcmp(Name, "silencer_hit_power_coeff") == 0)
-		{
-			return WeaponModifier::SilencerHitPowerCoeff;
-		}
-		if (xr_strcmp(Name, "unsilenced_hit_power_coeff") == 0)
-		{
-			return WeaponModifier::UnsilencedHitPowerCoeff;
-		}
-		if (xr_strcmp(Name, "hit_impulse_coeff") == 0)
-		{
-			return WeaponModifier::HitImpulseCoeff;
-		}
-		if (xr_strcmp(Name, "fire_dispersion_base_coeff") == 0)
-		{
-			return WeaponModifier::FireDispersionBaseCoeff;
-		}
-		if (xr_strcmp(Name, "crosshair_inertion_coeff") == 0)
-		{
-			return WeaponModifier::CrosshairInertionCoeff;
-		}
-		if (xr_strcmp(Name, "bullet_speed_coeff") == 0)
-		{
-			return WeaponModifier::BulletSpeedCoeff;
-		}
-		if (xr_strcmp(Name, "recoil_coeff") == 0)
-		{
-			return WeaponModifier::RecoilCoeff;
-		}
-	}
-	return WeaponModifier::Count;
-}
-
 float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 {
 	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count)
@@ -530,11 +486,6 @@ float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 	return 1.0f;
 }
 
-float CScriptGameObject::GetActorWeaponModifier(const char* Name) const
-{
-	return GetActorWeaponModifier((u32)GetWeaponModifierTypeByName(Name));
-}
-
 bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
 {
 	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count && Owner->SetActorWeaponModifier((WeaponModifier)Type, Value))
@@ -543,11 +494,6 @@ bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
 	}
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: invalid actor, modifier type or coefficient (finite values >= 0; RPM and bullet speed > 0)");
 	return false;
-}
-
-bool CScriptGameObject::SetActorWeaponModifier(const char* Name, float Value)
-{
-	return SetActorWeaponModifier((u32)GetWeaponModifierTypeByName(Name), Value);
 }
 
 float CScriptGameObject::GetActorMaxWeight() const

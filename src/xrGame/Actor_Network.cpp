@@ -1454,7 +1454,55 @@ ACTOR_DEFS::SMemoryPos*				CActor::FindMemoryPos (u32 Time)
 };
 */
 
-void CActor::save(NET_Packet &output_packet)
+namespace ActorWeaponModifierSerialization
+{
+// Coefficients follow WeaponModifier IDs; append new IDs to preserve saved data.
+constexpr u32 Signature = 0x444F4D57; // "WMOD"
+constexpr u32 HeaderSize = sizeof(u32) * 2;
+
+static void Save(NET_Packet& Packet, const WeaponsModifiers& Modifiers)
+{
+	constexpr u32 Count = static_cast<u32>(WeaponModifier::Count);
+
+	Packet.w_u32(Signature);
+	Packet.w_u32(Count);
+	for (u32 Index = 0; Index < Count; ++Index)
+	{
+		Packet.w_float(Modifiers.GetCoefficient(static_cast<WeaponModifier>(Index)));
+	}
+}
+
+static void Load(IReader& Reader, WeaponsModifiers& Modifiers)
+{
+	Modifiers = {};
+	if (Reader.elapsed() < HeaderSize)
+	{
+		return;
+	}
+
+	const auto Position = Reader.tell();
+	if (Reader.r_u32() != Signature)
+	{
+		// Older saves continue directly with script binder data.
+		Reader.seek(Position);
+		return;
+	}
+
+	const u32 Count = Reader.r_u32();
+	CHECK_OR_EXIT(Count <= Reader.elapsed() / sizeof(float), "Actor weapon modifiers: incomplete save block");
+
+	for (u32 Index = 0; Index < Count; ++Index)
+	{
+		const float Value = Reader.r_float();
+		if (Index < static_cast<u32>(WeaponModifier::Count) && !Modifiers.SetCoefficient(static_cast<WeaponModifier>(Index), Value))
+		{
+			Msg("! Actor weapon modifiers: invalid coefficient %u, using 1.0", Index);
+		}
+	}
+}
+} // namespace ActorWeaponModifierSerialization
+
+void CActor::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
 	CInventoryOwner::save(output_packet);
@@ -1491,12 +1539,14 @@ void CActor::save(NET_Packet &output_packet)
 	output_packet.w_u32(m_statDeaths);
 	output_packet.w_u32(m_statHelpWounded);
 
+	ActorWeaponModifierSerialization::Save(output_packet, WeaponModifiers);
+
 	//output_packet.w_u8(u8(m_inventory_disabled));
 	//output_packet.w_u8(u8(m_pda_disabled));
 	//output_packet.w_u8(u8(m_use_disabled));
 }
 
-void CActor::load(IReader &input_packet)
+void CActor::load(IReader& input_packet)
 {
 	ResetCameraFocus();
 	inherited::load(input_packet);
@@ -1547,6 +1597,8 @@ void CActor::load(IReader &input_packet)
 		m_statHelpWounded = 0;
 	}
 	m_isMoneyStatInitialized = true;
+
+	ActorWeaponModifierSerialization::Load(input_packet, WeaponModifiers);
 
 	//set_inventory_disabled(!!input_packet.r_u8());
 	//set_pda_disabled(!!input_packet.r_u8());

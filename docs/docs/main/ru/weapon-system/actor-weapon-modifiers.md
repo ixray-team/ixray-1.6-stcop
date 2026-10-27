@@ -16,10 +16,10 @@ if not actor or not actor.weapons_modifiers then
     return
 end
 
-local damage = actor:weapons_modifiers("hit_power_coeff")
+local damage = actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF)
 local recoil = actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF)
 
-assert(actor:weapons_modifiers("hit_power_coeff", 1.20))
+assert(actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 1.20))
 assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.75))
 ```
 
@@ -27,26 +27,26 @@ assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.75))
 
 | Вызов | Результат |
 | --- | --- |
-| `actor:weapons_modifiers(name_or_enum)` | Текущий коэффициент в виде числа. |
-| `actor:weapons_modifiers(name_or_enum, value)` | Устанавливает абсолютное значение; возвращает `true` при успехе и `false` при отказе. |
+| `actor:weapons_modifiers(modifier)` | Текущий коэффициент в виде числа. |
+| `actor:weapons_modifiers(modifier, value)` | Устанавливает абсолютное значение; возвращает `true` при успехе и `false` при отказе. |
 
-Строковые имена чувствительны к регистру. Имена enum записаны в верхнем регистре и находятся в `weaponsModifiers`; используйте их вместо числовых ID. Повторная установка одного значения не накапливает бонус.
+Передавайте модификатор константой из `weaponsModifiers`. Строковые имена не поддерживаются; используйте символические константы вместо числовых ID. Повторная установка одного значения не накапливает бонус.
 
 ## Справочник коэффициентов
 
-| Имя в Lua | Enum в `weaponsModifiers` | Действие |
-| --- | --- | --- |
-| `hit_power_coeff` | `HIT_POWER_COEFF` | Общий множитель урона пули. |
-| `rpm_coeff` | `RPM_COEFF` | Скорострельность: увеличение сокращает интервал между выстрелами. |
-| `silencer_hit_power_coeff` | `SILENCER_HIT_POWER_COEFF` | Дополнительный множитель урона при стрельбе с глушителем. |
-| `unsilenced_hit_power_coeff` | `UNSILENCED_HIT_POWER_COEFF` | Дополнительный множитель урона при стрельбе без глушителя. |
-| `hit_impulse_coeff` | `HIT_IMPULSE_COEFF` | Импульс попадания, передаваемый цели и влияющий на отлёт тела. |
-| `fire_dispersion_base_coeff` | `FIRE_DISPERSION_BASE_COEFF` | Базовый разброс оружия: уменьшение повышает меткость. |
-| `crosshair_inertion_coeff` | `CROSSHAIR_INERTION_COEFF` | Инерция сведения прицела: уменьшение ускоряет сведение. |
-| `bullet_speed_coeff` | `BULLET_SPEED_COEFF` | Начальная скорость пули, влияющая на настильность траектории. |
-| `recoil_coeff` | `RECOIL_COEFF` | Сила вертикального и горизонтального толчка отдачи: уменьшение ослабляет подброс. |
+| Enum в `weaponsModifiers` | Действие |
+| --- | --- |
+| `HIT_POWER_COEFF` | Общий множитель урона пули. |
+| `RPM_COEFF` | Скорострельность: увеличение сокращает интервал между выстрелами. |
+| `SILENCER_HIT_POWER_COEFF` | Дополнительный множитель урона при стрельбе с глушителем. |
+| `UNSILENCED_HIT_POWER_COEFF` | Дополнительный множитель урона при стрельбе без глушителя. |
+| `HIT_IMPULSE_COEFF` | Импульс попадания, передаваемый цели и влияющий на отлёт тела. |
+| `FIRE_DISPERSION_BASE_COEFF` | Базовый разброс оружия: уменьшение повышает меткость. |
+| `CROSSHAIR_INERTION_COEFF` | Инерция сведения прицела: уменьшение ускоряет сведение. |
+| `BULLET_SPEED_COEFF` | Начальная скорость пули, влияющая на настильность траектории. |
+| `RECOIL_COEFF` | Сила вертикального и горизонтального толчка отдачи: уменьшение ослабляет подброс. |
 
-Все значения должны быть конечными. Скорострельность и скорость пули требуют **`> 0`**; остальные коэффициенты допускают **`>= 0`**. Отрицательные значения, NaN, бесконечность, неизвестные имена/enum и вызовы на объектах, не являющихся актором, отклоняются с записью в лог. Неудачный сеттер сохраняет старое значение; ошибочный геттер возвращает `1.0`. По этому результату нельзя определять поддержку API — проверяйте наличие метода, как в быстром старте.
+Все значения должны быть конечными. Скорострельность и скорость пули требуют **`> 0`**; остальные коэффициенты допускают **`>= 0`**. Отрицательные значения, NaN, бесконечность, неверные значения enum и вызовы на объектах, не являющихся актором, отклоняются с записью в лог. Неудачный сеттер сохраняет старое значение; ошибочный геттер возвращает `1.0`. По этому результату нельзя определять поддержку API — проверяйте наличие метода, как в быстром старте.
 
 Нулевой урон отключает соответствующую составляющую урона. Нулевой импульс убирает импульс попадания пули. Нулевой базовый разброс убирает разброс самого оружия, но оставляет дополнительный разброс актора. Нулевая инерция убирает задержку сведения прицела. Нулевая отдача отключает новые толчки; уже начавшийся эффект может продолжить движение и возврат.
 
@@ -58,12 +58,12 @@ assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.75))
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("hit_power_coeff", 1.20)
-actor:weapons_modifiers("silencer_hit_power_coeff", 1.10)
-actor:weapons_modifiers("unsilenced_hit_power_coeff", 1.05)
+actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 1.20)
+actor:weapons_modifiers(weaponsModifiers.SILENCER_HIT_POWER_COEFF, 1.10)
+actor:weapons_modifiers(weaponsModifiers.UNSILENCED_HIT_POWER_COEFF, 1.05)
 ```
 
-Итоговый множитель актора: `hit_power_coeff × выбранный_коэффициент_урона`. По режиму стрельбы выбирается ровно один дополнительный коэффициент; встроенный глушитель тоже учитывается. В этом примере множитель актора равен `1.32` с глушителем и `1.26` без него. Установку и снятие глушителя обрабатывает движок.
+Итоговый множитель актора: `HIT_POWER_COEFF × выбранный_коэффициент_урона`. По режиму стрельбы выбирается ровно один дополнительный коэффициент; встроенный глушитель тоже учитывается. В этом примере множитель актора равен `1.32` с глушителем и `1.26` без него. Установку и снятие глушителя обрабатывает движок.
 
 При текущем уроне после улучшений `0.70` результат до штатных множителей глушителя и патрона составит `0.924` и `0.882`. Коэффициент применяется к текущему урону выбранного уровня сложности, а не к сохранённой копии исходного урона. Скрипты отображения характеристик должны использовать ту же формулу.
 
@@ -71,10 +71,10 @@ actor:weapons_modifiers("unsilenced_hit_power_coeff", 1.05)
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("fire_dispersion_base_coeff", 0.80)
-actor:weapons_modifiers("crosshair_inertion_coeff", 0.75)
-actor:weapons_modifiers("bullet_speed_coeff", 1.20)
-actor:weapons_modifiers("recoil_coeff", 0.50)
+actor:weapons_modifiers(weaponsModifiers.FIRE_DISPERSION_BASE_COEFF, 0.80)
+actor:weapons_modifiers(weaponsModifiers.CROSSHAIR_INERTION_COEFF, 0.75)
+actor:weapons_modifiers(weaponsModifiers.BULLET_SPEED_COEFF, 1.20)
+actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.50)
 ```
 
 Пример уменьшает базовый разброс оружия на 20%, ускоряет сведение прицела, увеличивает начальную скорость пули на 20% и ослабляет отдачу. Дополнительный разброс актора от движения считается отдельно. В одиночной игре сведение управляет индикатором прицела и не задерживает расчёт разброса пули.
@@ -83,21 +83,21 @@ actor:weapons_modifiers("recoil_coeff", 0.50)
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("rpm_coeff", 1.25)
-actor:weapons_modifiers("hit_power_coeff", 0.90)
+actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, 1.25)
+actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 0.90)
 ```
 
 Исходные `600 выстр./мин` превращаются в `750 выстр./мин`: интервал `0.10 / 1.25 = 0.08` секунды. Коэффициент действует в путях стрельбы из магазина и патронника, а также на отдельные интервалы одиночного выстрела и первых выстрелов очереди. Длительность перезарядки и анимации помпы не сокращается.
 
-При `rpm_coeff`, отличном от `1.0`, корректный рассчитанный интервал ограничивается снизу значением **1 мс** (1000 выстрелов в секунду). Это защищает таймер с плавающей точкой от потери продвижения при экстремальном коэффициенте и ограничивает число выстрелов, обрабатываемых за один кадр. Нейтральный коэффициент точно сохраняет исходный интервал, включая необычно короткие интервалы из конфигурации.
+При `RPM_COEFF`, отличном от `1.0`, корректный рассчитанный интервал ограничивается снизу значением **1 мс** (1000 выстрелов в секунду). Это защищает таймер с плавающей точкой от потери продвижения при экстремальном коэффициенте и ограничивает число выстрелов, обрабатываемых за один кадр. Нейтральный коэффициент точно сохраняет исходный интервал, включая необычно короткие интервалы из конфигурации.
 
 ### Импульс, передаваемый цели
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("hit_impulse_coeff", 1.50)
+actor:weapons_modifiers(weaponsModifiers.HIT_IMPULSE_COEFF, 1.50)
 -- Set to 0.0 to remove the bullet's impact impulse.
--- This does not change recoil_coeff or hit_power_coeff.
+-- This does not change RECOIL_COEFF or HIT_POWER_COEFF.
 ```
 
 Это импульс попадания, а не отдача оружия. Сохраняются штатные множители импульса глушителя и патрона. Фактическое перемещение тела зависит также от физики, места попадания и самой цели.
@@ -106,13 +106,12 @@ actor:weapons_modifiers("hit_impulse_coeff", 1.50)
 
 ```lua
 local actor = db.actor
-local previous = actor:weapons_modifiers("rpm_coeff")
-local accepted = actor:weapons_modifiers("rpm_coeff", 0.0)
+local previous = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF)
+local accepted = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, 0.0)
 assert(accepted == false)
-assert(actor:weapons_modifiers("rpm_coeff") == previous)
+assert(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF) == previous)
 
-assert(actor:weapons_modifiers("recoil_coeff", -1.0) == false)
-assert(actor:weapons_modifiers("unknown_coeff", 2.0) == false)
+assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, -1.0) == false)
 ```
 
 Эти намеренно ошибочные вызовы создают сообщения в логе скриптов. В рабочем коде проверяйте входные данные своего мода и результат сеттера. Сеттер не ограничивает неверный коэффициент допустимым диапазоном автоматически. Если вычисленный интервал выстрелов или скорость пули не представимы допустимым числом, используется исходное значение.
@@ -121,21 +120,21 @@ assert(actor:weapons_modifiers("unknown_coeff", 2.0) == false)
 
 ```lua
 local actor = db.actor
-actor:weapons_modifiers("recoil_coeff", 1.0)
+actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 1.0)
 
 -- Full reset: use only when this script owns the entire profile.
-local names = {
-    "hit_power_coeff", "rpm_coeff",
-    "silencer_hit_power_coeff", "unsilenced_hit_power_coeff",
-    "hit_impulse_coeff", "fire_dispersion_base_coeff",
-    "crosshair_inertion_coeff", "bullet_speed_coeff", "recoil_coeff",
+local modifiers = {
+    weaponsModifiers.HIT_POWER_COEFF, weaponsModifiers.RPM_COEFF,
+    weaponsModifiers.SILENCER_HIT_POWER_COEFF, weaponsModifiers.UNSILENCED_HIT_POWER_COEFF,
+    weaponsModifiers.HIT_IMPULSE_COEFF, weaponsModifiers.FIRE_DISPERSION_BASE_COEFF,
+    weaponsModifiers.CROSSHAIR_INERTION_COEFF, weaponsModifiers.BULLET_SPEED_COEFF, weaponsModifiers.RECOIL_COEFF,
 }
-for _, name in ipairs(names) do
-    actor:weapons_modifiers(name, 1.0)
+for _, modifier in ipairs(modifiers) do
+    actor:weapons_modifiers(modifier, 1.0)
 end
 ```
 
-Отдельного метода сброса всех значений нет. Полный сброс может затереть эффекты другой системы; скрипт, управляющий только отдачей, должен сбрасывать только `recoil_coeff`.
+Отдельного метода сброса всех значений нет. Полный сброс может затереть эффекты другой системы; скрипт, управляющий только отдачей, должен сбрасывать только `RECOIL_COEFF`.
 
 ### Сочетание нескольких источников бонуса без повторного накопления
 
@@ -153,7 +152,7 @@ function set_damage_source(id, coefficient)
 
     local actor = db.actor
     if actor and actor.weapons_modifiers then
-        actor:weapons_modifiers("hit_power_coeff", combined)
+        actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, combined)
     end
 end
 
@@ -170,7 +169,7 @@ set_damage_source("temporary", nil) -- Back to 1.32
 
 ## Постоянный бонус через события
 
-При инициализации актора коэффициенты сбрасываются в `1.0` и **не сериализуются**. Восстанавливайте их из сохранённого игрового состояния на первом обновлении, затем меняйте только при изменении этого состояния. Обход инвентаря, опрос каждый кадр и проверка инфопорции на каждом выстреле не требуются.
+Коэффициенты изначально равны `1.0` и **сохраняются и загружаются вместе с актором**. В сохранениях без блока модификаторов используются нейтральные значения `1.0`. Обработчик первого обновления в примере ниже согласует загруженные коэффициенты с инфопорцией обучения; затем меняйте их только при изменении этого состояния. Обход инвентаря, опрос каждый кадр и проверка инфопорции на каждом выстреле не требуются.
 
 Полный пример ниже управляет только общим уроном и отдачей: обучение даёт `1.20` к урону и `0.80` к отдаче; без обучения эти два коэффициента равны `1.0`.
 
@@ -199,8 +198,8 @@ function refresh()
     end
 
     -- Assign an absolute coefficient: repeated events must not compound the bonus.
-    actor:weapons_modifiers("hit_power_coeff", damage)
-    actor:weapons_modifiers("recoil_coeff", recoil)
+    actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, damage)
+    actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, recoil)
 end
 
 local function on_actor_info(npc, info_id)
@@ -220,7 +219,7 @@ function on_game_start(data)
 end
 ```
 
-`on_game_start` регистрирует обработчики и не читает состояние актора. Первое обновление восстанавливает сохранённое состояние. Обработчик инфопорций отбрасывает посторонние события; повторная выдача устанавливает те же абсолютные значения. Регистрация защищена от повторного вызова старта.
+`on_game_start` регистрирует обработчики и не читает состояние актора. Первое обновление согласует коэффициенты с сохранённым состоянием обучения. Обработчик инфопорций отбрасывает посторонние события; повторная выдача устанавливает те же абсолютные значения. Регистрация защищена от повторного вызова старта.
 
 Штатный callback сообщает о получении инфопорции, но не о её удалении. После удаления явно обновите коэффициенты:
 
