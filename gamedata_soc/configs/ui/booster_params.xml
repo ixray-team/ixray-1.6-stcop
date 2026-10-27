@@ -18,7 +18,7 @@
 			<text font="letterica16" vert_align="c" x="22" y="0" r="170" g="170" b="170"/>
 		</caption>
 <!--		<texture_minus>ui_am_prop_radio_restore</texture_minus> -->
-		<value x="140" y="0" width="30" height="18" magnitude="1000" colorize="1">
+		<value x="140" y="0" width="30" height="18" magnitude="1000" sign_inverse="1" colorize="1">
 			<text font="letterica16" vert_align="c"/>
 		</value>
 	</boost_radiation_restore>

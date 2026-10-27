@@ -14,6 +14,7 @@ Stock artefact and consumable panels currently keep standalone row definitions. 
 - `magnitude` and `unit_str` keep their existing meanings. Artefact values are scaled in the row; consumable values are scaled by the panel before they reach the row.
 - With automatic coloring enabled, icons use `hud\font`, which takes coverage from the texture alpha channel and RGB from the UI color. Colored and white DDS icons work when their alpha channel encodes the icon silhouette. Caption text keeps its XML color. The legacy SoC artefact icons have opaque alpha and store their shapes in RGB, so their stock rows use `colorize="0" text_colorize="1"` to preserve the original icons while coloring values.
 - `texture_minus` remains an optional alternate icon for harmful effects. Automatic coloring works without it.
+- Consumable `boost_radiation_restore` rows use `sign_inverse="1"`: the panel negates radiation removal for display, so a negative displayed radiation change is beneficial. Positive radiation immunity/protection bonuses retain the normal sign rule.
 - Negative consumable effects use the same rows and colors as positive effects rather than being filtered out.
 
 `value:text_colorize` defaults to `colorize` but can independently disable value coloring. Stock `additional_weight` and `boost_max_weight` rows set it to zero, preserving gray positive carrying-weight values while tinting the icon. Legacy rows use the same attribute on the row element.
