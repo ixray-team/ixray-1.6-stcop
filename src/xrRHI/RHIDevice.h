@@ -2,6 +2,23 @@
 #include "RHITypes.h"
 #include "RHIEnums.h"
 
+enum class ERHIReadbackStatus
+{
+	Pending,
+	Ready,
+	Failed
+};
+
+class IRHIReadback
+{
+public:
+	u32 Width = 0;
+	u32 Height = 0;
+	ERHI_FORMAT Format = {};
+	virtual ~IRHIReadback() = default;
+	virtual ERHIReadbackStatus ReadPixels(xr_vector<u8>& Pixels, bool Wait) = 0;
+};
+
 class IRHIDevice
 {
 public:
@@ -64,4 +81,5 @@ public:
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;
 
 	virtual void EvictManagedResources() {};
+	virtual xr_unique_ptr<IRHIReadback> BeginRenderTargetReadback(IRHIRenderTargetView* Target) { return nullptr; }
 };

@@ -6,6 +6,7 @@ int SM_FOR_SEND_HEIGHT = 480;
 void CRender::Screenshot(ScreenshotMode mode, const char* name) {
     ScreenshotImpl(mode, name, nullptr);
 
+#ifdef _EDITOR
     if (mode == SM_FOR_GAMESAVE && name && name[0])
     {
         xr_string fixName = xr_string(name).Split('\\').back();
@@ -16,6 +17,7 @@ void CRender::Screenshot(ScreenshotMode mode, const char* name) {
         pTexture->Unload();
         pTexture->Load();
     }
+#endif
 }
 
 void CRender::Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer) {
