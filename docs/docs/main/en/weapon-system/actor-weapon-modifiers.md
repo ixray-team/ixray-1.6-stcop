@@ -46,9 +46,9 @@ Pass a constant from `weaponsModifiers` as the modifier. String names are not su
 | `BULLET_SPEED_COEFF` | Initial bullet speed, which affects trajectory flatness. |
 | `RECOIL_COEFF` | Vertical and horizontal shot recoil strength; lower values reduce the kick. |
 
-The setter applies `clamp(Value, 0.0f, FLT_MAX)` once before storing the coefficient. Negative values become `0.0`; values above `FLT_MAX`, including positive infinity, become `FLT_MAX`. Zero is allowed for every modifier. The standard clamp does not normalize NaN; callers must not supply NaN. Invalid enum IDs and calls on non-actor objects are rejected and logged; invalid getters return `1.0`.
+The setter applies `clamp(Value, 0.001f, FLT_MAX)` once before storing the coefficient. Values below `0.001`, including zero and negative values, become `0.001`; values above `FLT_MAX`, including positive infinity, become `FLT_MAX`. The standard clamp does not normalize NaN; callers must not supply NaN. Invalid enum IDs and calls on non-actor objects are rejected and logged; invalid getters return `1.0`.
 
-Zero damage disables that damage contribution. Zero impact impulse removes the bullet's impact impulse. Zero base dispersion removes the weapon's spread contribution. The actor's extra spread remains in the normal firing path; the configured initial-burst base-dispersion path omits it. Zero inertion removes crosshair settling delay. Zero recoil suppresses new shot kicks; an existing recoil effect can continue settling.
+The minimum coefficient is `0.001`: it reduces the corresponding contribution to one thousandth rather than disabling it. Base dispersion still excludes the actor's extra spread only in the configured initial-burst path; the normal firing path adds actor spread separately.
 
 ## Usage examples
 
@@ -96,7 +96,7 @@ When `RPM_COEFF` differs from `1.0`, a valid calculated shot interval is limited
 ```lua
 local actor = db.actor
 actor:weapons_modifiers(weaponsModifiers.HIT_IMPULSE_COEFF, 1.50)
--- Set to 0.0 to remove the bullet's impact impulse.
+-- Use 0.001 for the minimum impact impulse coefficient.
 -- This does not change RECOIL_COEFF or HIT_POWER_COEFF.
 ```
 
@@ -107,13 +107,13 @@ This is the impulse delivered on impact, not weapon recoil. Existing silencer an
 ```lua
 local actor = db.actor
 assert(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, -1.0))
-assert(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF) == 0.0)
+assert(math.abs(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF) - 0.001) < 1e-8)
 
 assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, -1.0))
-assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF) == 0.0)
+assert(math.abs(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF) - 0.001) < 1e-8)
 ```
 
-Assignments outside the numeric range are clamped rather than rejected. An unrepresentable shot interval or bullet speed falls back to its original value. Zero RPM and bullet-speed coefficients are accepted and saved; calculations use the original shot interval or bullet speed in this case. Zero RPM is handled before division.
+Assignments outside the numeric range are clamped rather than rejected. An unrepresentable shot interval or bullet speed falls back to its original value.
 
 ### Reset one coefficient or the complete profile
 

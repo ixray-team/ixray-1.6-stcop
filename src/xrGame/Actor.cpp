@@ -310,7 +310,7 @@ THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 
 bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
 {
-	clamp(Value, 0.0f, FLT_MAX);
+	clamp(Value, 0.001f, FLT_MAX);
 	WeaponModifierCoefficients[static_cast<u32>(Type)] = Value;
 	return true;
 }
