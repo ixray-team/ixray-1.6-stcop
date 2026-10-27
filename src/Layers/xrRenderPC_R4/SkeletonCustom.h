@@ -94,6 +94,7 @@ public:
 	
 public:
 	dxRender_Visual*			m_lod;
+	CKinematics*				m_reference;
 
 public:
 	Fmatrix						mOldWorldMartrix;
