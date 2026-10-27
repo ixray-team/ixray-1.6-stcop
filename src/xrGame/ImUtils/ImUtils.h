@@ -179,6 +179,7 @@ struct clsid_manager
 	CLASS_ID item_d_soc = CLSID_DETECTOR_SOC;
 	CLASS_ID item_d_smetr = TEXT2CLSID("D_DSMETR");
 	CLASS_ID item_d_custom = TEXT2CLSID("D_CUSTOM");
+	CLASS_ID ItemFlashlight = CLSID_DEVICE_FLASHLIGHT;
 
 	CLASS_ID mp_out_scientific = CLSID_EQUIPMENT_SCIENTIFIC;
 	CLASS_ID mp_out_stalker = CLSID_EQUIPMENT_STALKER;
