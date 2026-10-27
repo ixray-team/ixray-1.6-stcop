@@ -2,6 +2,7 @@
 #include "Utils/Cursor3D.h"
 #include "../xrengine\GameFont.h"
 #include "Editor/Utils/ContentView.h"
+#include "Editor/Utils/EFDEditor.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
@@ -655,7 +656,11 @@ static bool UndoEditorTab(bool Redo, bool& Handled)
 {
 	Handled = true;
 	bool Result = false;
-	if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+	if (CEFDEditor* Evaluation = CEFDEditor::GetFocused())
+	{
+		Result = Redo ? Evaluation->Redo() : Evaluation->Undo();
+	}
+	else if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
 	{
 		Result = Redo ? Particles->Redo() : Particles->Undo();
 	}
@@ -679,16 +684,16 @@ static bool UndoEditorTab(bool Redo, bool& Handled)
 
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
-	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
-	{
-		return Actor->CommandUndo(p1, p2);
-	}
-
 	bool Handled = false;
 	const bool TabResult = UndoEditorTab(false, Handled);
 	if (Handled)
 	{
 		return TabResult;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandUndo(p1, p2);
 	}
 
 	LTools->GetProperties()->ClearProperties();
@@ -713,16 +718,16 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 {
-	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
-	{
-		return Actor->CommandRedo(p1, p2);
-	}
-
 	bool Handled = false;
 	const bool TabResult = UndoEditorTab(true, Handled);
 	if (Handled)
 	{
 		return TabResult;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandRedo(p1, p2);
 	}
 
 	LTools->GetProperties()->ClearProperties();
