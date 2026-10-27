@@ -1362,30 +1362,30 @@ void CWeaponMagazined::state_Fire(float dt)
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter = GetShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter = GetModifiedShotInterval(m_fSingleShootsTimeDelta);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter = GetShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter = GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
 				}
 				else
 				{
-					fShotTimeCounter = GetShotInterval(fOneShotTime);
+					fShotTimeCounter = GetModifiedShotInterval(fOneShotTime);
 				}
 			}
 			else
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter += GetShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter += GetModifiedShotInterval(m_fSingleShootsTimeDelta);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter += GetShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter += GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
 				}
 				else
 				{
-					fShotTimeCounter += GetShotInterval(fOneShotTime);
+					fShotTimeCounter += GetModifiedShotInterval(fOneShotTime);
 				}
 			}
 			
@@ -1545,30 +1545,30 @@ void CWeaponMagazined::state_FireChamber(float dt)
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter = GetShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter = GetModifiedShotInterval(m_fSingleShootsTimeDelta);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter = GetShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter = GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
 				}
 				else
 				{
-					fShotTimeCounter = GetShotInterval(fOneShotTime);
+					fShotTimeCounter = GetModifiedShotInterval(fOneShotTime);
 				}
 			}
 			else
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter += GetShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter += GetModifiedShotInterval(m_fSingleShootsTimeDelta);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter += GetShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter += GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
 				}
 				else
 				{
-					fShotTimeCounter += GetShotInterval(fOneShotTime);
+					fShotTimeCounter += GetModifiedShotInterval(fOneShotTime);
 				}
 			}
 

@@ -830,7 +830,7 @@ public:
 	void Set_PDM_Crouch(float value);
 	virtual	float			Get_PDM_Crouch_NA	()	const	{ return m_pdm.m_fPDM_disp_crouch_no_acc	; };
 	void Set_PDM_Crouch_NA(float value);
-	virtual float GetCrosshairInertion() const { return GetWeaponsModifiers().ApplyCrosshairInertion(m_crosshair_inertion); }
+	virtual float GetCrosshairInertion() const { return GetActorWeaponModifiers().ApplyCrosshairInertion(m_crosshair_inertion); }
 	void setCrosshairInertion(float value);
 			float			GetFirstBulletDisp	()	const	{ return m_first_bullet_controller.get_fire_dispertion(); };
 
@@ -941,7 +941,7 @@ public:
 			bool			show_indicators				();
 	virtual bool			ParentMayHaveAimBullet		();
 	virtual bool			ParentIsActor				();
-	const WeaponsModifiers& GetWeaponsModifiers() const override;
+	const WeaponsModifiers& GetActorWeaponModifiers() const override;
 	
 private:
 	virtual	bool			install_upgrade_ammo_class	( const char* section, bool test );

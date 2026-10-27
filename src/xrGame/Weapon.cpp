@@ -3838,17 +3838,17 @@ bool CWeapon::ParentIsActor	()
 	return H_Parent() && H_Parent()->cast_actor();
 }
 
-const WeaponsModifiers& CWeapon::GetWeaponsModifiers() const
+const WeaponsModifiers& CWeapon::GetActorWeaponModifiers() const
 {
 	if (IsGameTypeSingle() && H_Parent())
 	{
 		if (const CActor* Owner = smart_cast<const CActor*>(H_Parent()))
 		{
-			return Owner->GetWeaponsModifiers();
+			return Owner->GetActorWeaponModifiers();
 		}
 	}
 
-	return CShootingObject::GetWeaponsModifiers();
+	return CShootingObject::GetActorWeaponModifiers();
 }
 
 void CWeapon::debug_draw_firedeps()

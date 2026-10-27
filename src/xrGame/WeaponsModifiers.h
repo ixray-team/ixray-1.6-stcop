@@ -28,7 +28,7 @@ struct WeaponsModifiers
 	float BulletSpeedCoeff = 1.0f;
 	float RecoilCoeff = 1.0f;
 
-	float Get(WeaponModifier Type) const
+	float GetCoefficient(WeaponModifier Type) const
 	{
 		switch (Type)
 		{
@@ -55,7 +55,7 @@ struct WeaponsModifiers
 		}
 	}
 
-	bool Set(WeaponModifier Type, float Value)
+	bool SetCoefficient(WeaponModifier Type, float Value)
 	{
 		// This also rejects NaN and infinity without changing the current value.
 		if (!(Value >= 0.0f && Value <= FLT_MAX))

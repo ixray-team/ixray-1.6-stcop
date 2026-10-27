@@ -68,7 +68,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
-	const WeaponsModifiers& Modifiers = weapon->GetWeaponsModifiers();
+	const WeaponsModifiers& Modifiers = weapon->GetActorWeaponModifiers();
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;

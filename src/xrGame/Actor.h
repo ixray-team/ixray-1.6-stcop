@@ -113,8 +113,8 @@ public:
 										CActor				();
 	virtual								~CActor				();
 	void OnFrame();
-	const WeaponsModifiers& GetWeaponsModifiers() const { return WeaponModifiers; }
-	bool SetWeaponModifier(WeaponModifier Type, float Value) { return WeaponModifiers.Set(Type, Value); }
+	const WeaponsModifiers& GetActorWeaponModifiers() const { return WeaponModifiers; }
+	bool SetActorWeaponModifier(WeaponModifier Type, float Value) { return WeaponModifiers.SetCoefficient(Type, Value); }
 	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 

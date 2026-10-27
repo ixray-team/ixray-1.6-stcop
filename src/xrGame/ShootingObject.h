@@ -36,8 +36,8 @@ private:
 //////////////////////////////////////////////////////////////////////////
 protected:
 
-	virtual const WeaponsModifiers& GetWeaponsModifiers() const;
-	float GetShotInterval(float Interval) const;
+	virtual const WeaponsModifiers& GetActorWeaponModifiers() const;
+	float GetModifiedShotInterval(float Interval) const;
 
 	enum
 	{

@@ -476,7 +476,7 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 }
 
-static WeaponModifier WeaponModifierFromName(const char* Name)
+static WeaponModifier GetWeaponModifierTypeByName(const char* Name)
 {
 	if (Name)
 	{
@@ -520,24 +520,24 @@ static WeaponModifier WeaponModifierFromName(const char* Name)
 	return WeaponModifier::Count;
 }
 
-float CScriptGameObject::GetWeaponModifier(u32 Type) const
+float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
 {
 	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count)
 	{
-		return Owner->GetWeaponsModifiers().Get((WeaponModifier)Type);
+		return Owner->GetActorWeaponModifiers().GetCoefficient((WeaponModifier)Type);
 	}
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: expected an actor and a valid modifier type");
 	return 1.0f;
 }
 
-float CScriptGameObject::GetWeaponModifier(const char* Name) const
+float CScriptGameObject::GetActorWeaponModifier(const char* Name) const
 {
-	return GetWeaponModifier((u32)WeaponModifierFromName(Name));
+	return GetActorWeaponModifier((u32)GetWeaponModifierTypeByName(Name));
 }
 
-bool CScriptGameObject::SetWeaponModifier(u32 Type, float Value)
+bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
 {
-	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count && Owner->SetWeaponModifier((WeaponModifier)Type, Value))
+	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::Count && Owner->SetActorWeaponModifier((WeaponModifier)Type, Value))
 	{
 		return true;
 	}
@@ -545,9 +545,9 @@ bool CScriptGameObject::SetWeaponModifier(u32 Type, float Value)
 	return false;
 }
 
-bool CScriptGameObject::SetWeaponModifier(const char* Name, float Value)
+bool CScriptGameObject::SetActorWeaponModifier(const char* Name, float Value)
 {
-	return SetWeaponModifier((u32)WeaponModifierFromName(Name), Value);
+	return SetActorWeaponModifier((u32)GetWeaponModifierTypeByName(Name), Value);
 }
 
 float CScriptGameObject::GetActorMaxWeight() const

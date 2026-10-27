@@ -546,7 +546,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 		is_actor_singleplayer ? g_SingleGameDifficulty : egdMaster;
 	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	const WeaponsModifiers& Modifiers = GetWeaponsModifiers();
+	const WeaponsModifiers& Modifiers = GetActorWeaponModifiers();
 	l_fHitPower = Modifiers.ApplyHitPower(l_fHitPower, fire_mode == eSilencerFire);
 
 	Level().BulletManager().AddBullet( pos, 
@@ -563,15 +563,15 @@ void CShootingObject::FireBullet(const Fvector& pos,
 										send_hit, 
 										aim_bullet);
 }
-const WeaponsModifiers& CShootingObject::GetWeaponsModifiers() const
+const WeaponsModifiers& CShootingObject::GetActorWeaponModifiers() const
 {
 	static const WeaponsModifiers DefaultModifiers;
 	return DefaultModifiers;
 }
 
-float CShootingObject::GetShotInterval(float Interval) const
+float CShootingObject::GetModifiedShotInterval(float Interval) const
 {
-	return GetWeaponsModifiers().ApplyShotInterval(Interval);
+	return GetActorWeaponModifiers().ApplyShotInterval(Interval);
 }
 
 void CShootingObject::FireStart	()
