@@ -18,6 +18,7 @@
 #include "Weapon.h"
 #include "Grenade.h"
 #include "CustomDetector.h"
+#include "LegacyDetector.h"
 #include "ef_storage.h"
 #include "ef_primary.h"
 #include "ef_pattern.h"
@@ -242,15 +243,15 @@ void CAI_Stalker::choose_detector()
 	float best_value = -1.f;
 	ai().ef_storage().non_alife().member() = this;
 
-	for (CTradeItem trade_item : m_temp_items)
+	for (CTradeItem& trade_item : m_temp_items)
 	{
-		if (trade_item.m_item && m_total_money < trade_item.m_item->Cost())
+		if (!trade_item.m_item || m_total_money < trade_item.m_item->Cost())
 		{
 			continue;
 		}
 
-		CCustomDetector* detector = trade_item.m_item ? trade_item.m_item->cast_custom_detector() : nullptr;
-		if (!detector)
+		CGameObject* detector = &trade_item.m_item->object();
+		if (!trade_item.m_item->cast_custom_detector() && !smart_cast<CLegacyDetector*>(detector))
 		{
 			continue;
 		}

@@ -176,6 +176,7 @@ struct clsid_manager
 	CLASS_ID item_d_advanc = CLSID_DETECTOR_ADVANCED;
 	CLASS_ID item_d_flare = TEXT2CLSID("D_FLARE");
 	CLASS_ID item_d_simple = CLSID_DETECTOR_SIMPLE;
+	CLASS_ID item_d_soc = CLSID_DETECTOR_SOC;
 	CLASS_ID item_d_smetr = TEXT2CLSID("D_DSMETR");
 	CLASS_ID item_d_custom = TEXT2CLSID("D_CUSTOM");
 

@@ -884,6 +884,7 @@ function object_type(obj)
         otype == clsid.device_pda or
         otype == clsid.device_torch or
         otype == clsid.device_detector_simple or
+        otype == clsid.device_detector_soc or
         otype == clsid.obj_bolt or
         otype == clsid.obj_medkit or
         otype == clsid.obj_food or
