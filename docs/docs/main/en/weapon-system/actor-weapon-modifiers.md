@@ -8,7 +8,7 @@ A value of `1.20` means a multiplier of 1.2, not an additive bonus of 1.2. Lower
 
 ## Quick start
 
-Run this after the actor exists, for example from `actor_on_first_update`. The guard also supports older binaries that do not expose this API.
+Run this when granting or changing a bonus, after the actor exists. The guard also supports older binaries that do not expose this API.
 
 ```lua
 local actor = db.actor
@@ -165,7 +165,7 @@ set_damage_source("temporary", nil) -- Back to 1.32
 
 Do not repeatedly read the current coefficient and multiply it by the same bonus from update callbacks. That compounds it on every call. A single coordinator should own each final coefficient; the setter replaces the existing value and does not track its sources.
 
-The final damage coefficient is saved by the engine, but the `damage_sources` table above is Lua runtime state and is not saved automatically. Rebuild that table from saved quest, equipment and effect state before changing individual sources after a load; otherwise, the first update can replace the restored product with an incomplete set of bonuses. Call the same source-removal function when a temporary effect expires.
+The final damage coefficient is saved by the engine, but the `damage_sources` table above is Lua runtime state and is not saved automatically. Rebuild that table from saved quest, equipment and effect state before changing individual sources after a load; otherwise, the next source change can replace the restored product with an incomplete set of bonuses. Call the same source-removal function when a temporary effect expires.
 
 ## Saving and loading
 
@@ -184,18 +184,16 @@ A method-presence check detects the Lua API, not persistence support: earlier bu
 
 The engine stores the resulting coefficients, not the sources of bonuses, timers or effect ownership. A temporary coefficient remains in a save until a script changes it. Persist the effect's expiry state separately and remove or recompute its contribution when the effect ends.
 
-The event example below recalculates two coefficients from a saved infoportion. This is a gameplay policy for that example, not a requirement for restoring the serialized coefficients. Do not unconditionally reset all coefficients on the first update if their saved values should remain in effect.
-
 ## Apply a persistent bonus through events
 
-Coefficients start at `1.0` and are **saved and restored with the actor**. Saves without the modifier block use neutral values of `1.0`. The first-update handler below reconciles the restored coefficients with the training infoportion; afterward, update them only when that state changes. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
+Coefficients start at `1.0` and are **saved and restored with the actor**. Saves without the modifier block use neutral values of `1.0`. The handler below changes coefficients when the training infoportion is granted. Loading a save restores them from the actor packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
 The complete example below owns only common damage and recoil: training grants `1.20` damage and `0.80` recoil; otherwise those two values are reset to `1.0`.
 
 1. Save the code below as `actor_weapon_modifiers.script` in your mod's `scripts/` directory.
 2. Replace `example_weapon_training` with an infoportion declared by your mod, or declare that ID in an XML file registered under `[info_portions]` in `configs/system.ltx`.
-3. Use an IX-Ray Framework setup providing `RegisterScriptCallback`, `actor_on_first_update` and `actor_on_info_callback`, then fully restart to refresh script discovery.
-4. Grant the infoportion through your quest logic. Existing saves restore the effect on their first update.
+3. Use an IX-Ray Framework setup providing `RegisterScriptCallback` and `actor_on_info_callback`, then fully restart to refresh script discovery.
+4. Grant the infoportion through your quest logic to apply the bonus. Subsequent game saves retain the assigned coefficients.
 
 ```lua
 -- Install in your mod's scripts directory; IX-Ray Framework loads on_game_start.
@@ -232,13 +230,12 @@ function on_game_start(data)
         return
     end
 
-    RegisterScriptCallback("actor_on_first_update", refresh)
     RegisterScriptCallback("actor_on_info_callback", on_actor_info)
     registered = true
 end
 ```
 
-`on_game_start` registers handlers and does not read actor state. The first-update handler reconciles coefficients with the saved training state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
+`on_game_start` registers handlers and does not read actor state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
 
 The stock info callback reports receipt, not removal. Revoke the flag and refresh explicitly:
 
