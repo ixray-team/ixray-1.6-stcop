@@ -271,13 +271,14 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 
 	for (u32 Index = 0; Index < VisibleProperties.size(); Index += 2)
 	{
+		const bool HasRight = Index + 1 < VisibleProperties.size();
 		UIProperty* Left = VisibleProperties[Index];
-		Left->FitToWidth(ColumnWidth, !CanExpand);
+		Left->FitToWidth(HasRight ? ColumnWidth : GetWidth(), !CanExpand);
 		Left->SetWndPos(Fvector2().set(0.0f, Height));
 		Left->Show(true);
 		float RowHeight = Left->GetHeight();
 
-		if (Index + 1 < VisibleProperties.size())
+		if (HasRight)
 		{
 			UIProperty* Right = VisibleProperties[Index + 1];
 			Right->FitToWidth(ColumnWidth, !CanExpand);
