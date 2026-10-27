@@ -2,7 +2,9 @@
 
 #include "Rain.h"
 #include "IGame_Persistent.h"
+#include "IGame_Menu.h"
 #include "Environment.h"
+#include "GameFont.h"
 #include "Editor/XrEditorSceneInterface.h"
 
 #include "Render.h"
@@ -51,11 +53,13 @@ CEffect_Rain::~CEffect_Rain()
 
 void CEffect_Rain::AddRainCollidableObject(CObject* obj)
 {
+	xrCriticalSectionGuard Guard(rainCS);
 	rainCollideObjects.push_back(obj);
 }
 
 void CEffect_Rain::RemoveRainCollidableObject(CObject* obj)
 {
+	xrCriticalSectionGuard Guard(rainCS);
 	auto iter = std::find(rainCollideObjects.begin(), rainCollideObjects.end(), obj);
 	if (iter != rainCollideObjects.end())
 	{
@@ -63,8 +67,12 @@ void CEffect_Rain::RemoveRainCollidableObject(CObject* obj)
 	}
 }
 
-ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
+ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt, Fvector* HitNormal = nullptr)
 {
+	if (HitNormal)
+	{
+		HitNormal->set(0.f, 1.f, 0.f);
+	}
 	if (Device.IsEditorMode())
 	{
 		if (bIsRaindropCollision)
@@ -92,6 +100,25 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 	{
 		range = RQ.range;
 		rangeFirstTrace = RQ.range;
+		if (HitNormal && !RQ.O && RQ.element >= 0)
+		{
+			const auto& Triangles = g_pGameLevel->ObjectSpace.GetStaticTris();
+			const auto& Vertices = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			if (size_t(RQ.element) < Triangles.size())
+			{
+				const auto& Triangle = Triangles[RQ.element];
+				HitNormal->mknormal(Vertices[Triangle.verts[0]], Vertices[Triangle.verts[1]], Vertices[Triangle.verts[2]]);
+				if (HitNormal->square_magnitude() < EPS_S)
+				{
+					HitNormal->set(0.f, 1.f, 0.f);
+				}
+				if (HitNormal->dotproduct(d) > 0.f)
+				{
+					HitNormal->invert();
+				}
+			}
+		}
+		// Dynamic/editor queries provide no surface normal; use the explicit up fallback.
 
 		if (g_pGamePersistent->Environment().eff_Rain->rainCollideObjects.empty())
 		{
@@ -117,22 +144,12 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 	return bRes;
 }
 
-ICF void RenewItem(CEffect_Rain::Item& dest, float height, bool bHit, u32 time_global, u32 dt)
+ICF void RenewItem(CEffect_Rain::Item& dest, float height, bool bHit)
 {
-	dest.uv_set = Random.randI(2);
 	dest.bHit = bHit;
-	if (bHit)
-	{
-		dest.dwTime_Life= time_global + iFloor(1000.f*height/dest.fSpeed) - dt;
-		dest.dwTime_Hit	= time_global + iFloor(1000.f*height/dest.fSpeed) - dt;
-		dest.Phit.mad	(dest.P,dest.D,height);
-	}
-	else
-	{
-		dest.dwTime_Life= time_global + iFloor(1000.f*height/dest.fSpeed) - dt;
-		dest.dwTime_Hit	= time_global + iFloor(2*1000.f*height/dest.fSpeed)-dt;
-		dest.Phit.set	(dest.P);
-	}
+	dest.RemainingDistance = std::max(height, 0.f);
+	// A miss still has a finite endpoint at the local rain range, without an impact event.
+	dest.Phit.mad(dest.P, dest.D, dest.RemainingDistance);
 }
 
 // Born
@@ -140,7 +157,7 @@ ICF void computeDirection(CEffect_Rain::Item& item, float variation, CEnvironmen
 {
 	Fvector axis = {};
 	axis.set(0.f, -1.f, 0.f);
-	float k = env.CurrentEnv->rain_angle / env.drop_max_wind_vel;
+	float k = env.CurrentEnv->rain_angle / std::max(env.drop_max_wind_vel, EPS_L);
 	float pitch = env.drop_max_angle * k - PI_DIV_2;
 
 	axis.setHP(env.CurrentEnv->rain_angle_rotation, pitch);
@@ -148,15 +165,15 @@ ICF void computeDirection(CEffect_Rain::Item& item, float variation, CEnvironmen
 	item.D.random_dir(axis, deg2rad(::Random.randF(0.f, variation)));
 }
 
-ICF void Born(CEffect_Rain::Item& dest)
+ICF void Born(CEffect_Rain::Item& dest, float NearDistance)
 {
 	static shared_str st_drizzle = "drizzle";
 	static shared_str st_dense = "dense";
 	static shared_str st_spherical = "spherical";
 	CEnvironment& env = g_pGamePersistent->Environment();
 
-	const Fvector& view = Device.vCameraPosition_saved;
-	float radius = env.source_rain_radius_render + env.add_const_dist_coefficient_render;
+	const Fvector& view = Device.vCameraPosition;
+	float radius = std::max(env.source_rain_radius_render + env.add_const_dist_coefficient_render, EPS_L);
 	shared_str& rainType = env.CurrentEnv->rain_type;
 	float source_offset = env.source_offset;
 	float rain_speed_max = env.CurrentEnv->rain_speed_max;
@@ -218,17 +235,39 @@ ICF void Born(CEffect_Rain::Item& dest)
 		dest.fSpeed = ::Random.randF(env.CurrentEnv->rain_speed_min, rain_speed_max);
 	}
 
-	float height = env.max_distance + env.add_const_dist_coefficient;
+	// Place new trajectories outside the camera volume before predicting their contact.
+	if (NearDistance > 0.f)
+	{
+		Fvector Offset;
+		Offset.sub(dest.P, view);
+		const float DistanceSquared = Offset.square_magnitude();
+		if (DistanceSquared < _sqr(NearDistance))
+		{
+			if (DistanceSquared > EPS_S)
+			{
+				Offset.mul(1.f / _sqrt(DistanceSquared));
+			}
+			else
+			{
+				Offset.set(std::cos(angle), 0.f, std::sin(angle));
+			}
+			dest.P.mad(view, Offset, NearDistance + EPS_L);
+		}
+	}
+	float height = std::max(env.max_distance + env.add_const_dist_coefficient, EPS_L);
 
 	// RayPick shortens height to the distance of the hit, so the two calls must be sequenced:
 	// inside one expression the read of height and its update are unsequenced, and MSVC and clang
 	// pick different orders. With clang the drop kept its full length and fell through roofs.
-	const bool bHit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
-	RenewItem(dest, height, bHit, Device.dwTimeGlobal, Device.dwTimeDelta);
+	dest.fSpeed = std::max(dest.fSpeed, EPS_L);
+	dest.Seed = u32(Random.randI(0x7fffffff));
+	const bool bHit = RayPick(dest.P, dest.D, height, collide::rqtBoth, &dest.HitNormal);
+	RenewItem(dest, height, bHit);
 }
 
 void CEffect_Rain::Enable(bool status)
 {
+	xrCriticalSectionGuard Guard(rainCS);
 	IsEnabled = status;
 }
 
@@ -365,161 +404,202 @@ void CEffect_Rain::OnFrame()
 			CurDropSnd.set_volume(0.f);
 		}
 	}
-	
-	if (Device.IsEditorMode())
-		UpdateItems();
-}
-
-CEffect_Rain::Item::Item()
-{
-	Born(*this);
 }
 
 void CEffect_Rain::UpdateItems()
 {
 	PROF_EVENT("CEffect_Rain::UpdateItems");
-	if (g_dedicated_server)
+	// Simulation, instance preparation and rendering share the same containers.
+	xrCriticalSectionGuard Guard(rainCS);
+	if (g_dedicated_server || (!g_pGameLevel && !Device.IsEditorMode()))
+	{
+		return;
+	}
+	if (!Device.IsEditorMode() && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
 	{
 		return;
 	}
 
-	CEnvironment& env = g_pGamePersistent->Environment();
-	float factor = env.CurrentEnv->rain_density;
-	if (factor < EPS_L) return;
-
-	float dt = Device.fTimeDelta;
-	u32 udt = Device.dwTimeDelta;
-	u32 time_global = Device.dwTimeGlobal;
-	const Fvector& vEye = Device.vCameraPosition_saved;
-
-	float radius = env.source_rain_radius_render + env.add_const_dist_coefficient_render;
-	float b_radius_wrap_sqr = _sqr(((radius)+0.5f));
-	float sink_offset = env.sink_offset;
-	float max_distance = env.max_distance;
-	float rain_length = env.CurrentEnv->rain_length;
-	float rain_width = env.CurrentEnv->rain_width;
-	float factor_visual = factor / 2.f + .5f;
-	Fvector& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
-	u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
-	shared_str& rain_type = env.CurrentEnv->rain_type;
-
-	if (LightingModeIsDynamicRender())
+	const float Dt = std::max(Device.fTimeDelta, 0.f);
+	for (Particle* Impact = particle_active; Impact;)
 	{
-		f_rain_color.mul(0.9f);
-		factor_visual *= 0.8f;
+		Particle* Next = Impact->next;
+		Impact->Instance.Age += Dt;
+		if (!IsEnabled || Impact->Instance.Age >= Impact->Instance.Lifetime)
+		{
+			p_free(Impact);
+		}
+		Impact = Next;
 	}
 
-	Fvector2 Sprite_UV[2][4]
+	CEnvironment& Env = g_pGamePersistent->Environment();
+	const float Density = clampr(Env.CurrentEnv->rain_density, 0.f, 1.f);
+	RainColor = Env.CurrentEnv->rain_color;
+	RainOpacity = 0.5f + 0.5f * Density;
+	float VisualFactor = RainOpacity;
+	if (LightingModeIsDynamicRender())
 	{
-		{{0.f,1.f},{0.f,0.f},{1.f,1.f},{1.f,0.f}},
-		{{1.f,0.f},{1.f,1.f},{0.f,0.f},{0.f,1.f}}
-	};
+		RainColor.mul(0.9f);
+		VisualFactor *= 0.8f;
+	}
+	RainLength = std::max(Env.CurrentEnv->rain_length * VisualFactor, 0.f);
+	RainWidth = std::max(Env.CurrentEnv->rain_width, 0.f);
 
-	u32 desired_items = iFloor(0.5f * (1.f + factor) * float(env.max_desired_items));
-	items.resize(desired_items);
-	m_sprites.clear(); m_sprites.reserve(items.size());
-
-	// build source plane
-	Fplane src_plane;
-	Fvector norm = { 0.f,-1.f,0.f };
-	Fvector upper; 	upper.set(vEye.x, vEye.y + env.source_offset, vEye.z);
-	src_plane.build(upper, norm);
-
-	for (CEffect_Rain::Item& one : items)
+	if (IsEnabled && Density >= EPS_L)
 	{
-		Fvector& pos_head = one.P;
-		if (one.bHit && one.dwTime_Hit < time_global)
+		const Fvector& Eye = Device.vCameraPosition;
+		const float Radius = std::max(Env.source_rain_radius_render + Env.add_const_dist_coefficient_render, EPS_L);
+		const float WrapRadiusSquared = _sqr(Radius + 0.5f);
+		// The quad is built in the plane through its head, perpendicular to the camera ray.
+		const float NearDistance = std::max(RainNearDistance, 0.f);
+		const float NearDistanceSquared = _sqr(NearDistance);
+		const u32 Desired = iFloor(0.5f * (1.f + Density) * float(Env.max_desired_items));
+		items.resize(Desired);
+
+		Fplane SourcePlane;
+		SourcePlane.build(Fvector().set(Eye.x, Eye.y , Eye.z), Fvector().set(0.f, -1.f, 0.f)); // + Env.source_offset
+		for (Item& Drop : items)
 		{
-			if (0 == ::Random.randI(2))
+			if (Drop.RemainingDistance <= 0.f)
 			{
-				xrCriticalSectionGuard guard(&rainCS);
-				if(CEffect_Rain::Particle* P = p_allocate())
+				Born(Drop, NearDistance);
+			}
+			Fvector ToEnd;
+			ToEnd.sub(Drop.Phit, Drop.P);
+			const float Remaining = std::max(ToEnd.dotproduct(Drop.D), 0.f);
+			const float Step = std::min(Drop.fSpeed * Dt, Remaining);
+			if (NearDistance > 0.f)
+			{
+				// Test the whole movement segment, including a camera move into an existing trajectory.
+				Fvector ToCamera, ClosestPoint;
+				ToCamera.sub(Eye, Drop.P);
+				const float ClosestStep = clampr(ToCamera.dotproduct(Drop.D), 0.f, Step);
+				ClosestPoint.mad(Drop.P, Drop.D, ClosestStep);
+				if (ClosestPoint.distance_to_sqr(Eye) < NearDistanceSquared)
 				{
-					const Fsphere& bv_sphere = m_pRender->GetDropBounds();
-
-					P->time = g_pGamePersistent->Environment().particles_time;
-					P->mXForm.rotateY(::Random.randF(PI_MUL_2));
-					P->mXForm.translate_over(one.Phit);
-					P->mXForm.transform_tiny(P->bounds.P, bv_sphere.P);
-					P->bounds.R = bv_sphere.R;
+					Born(Drop, NearDistance);
+					continue;
 				}
 			}
-		}
-
-		if (one.dwTime_Life < time_global)
-			Born(one);
-
-		pos_head.mad(one.D, one.fSpeed * dt);
-
-		Fvector	wdir; wdir.set(pos_head.x - vEye.x, 0, pos_head.z - vEye.z);
-		float wlen = wdir.square_magnitude();
-		if (wlen > b_radius_wrap_sqr)
-		{
-			wlen = _sqrt(wlen);
-			if ((pos_head.y - vEye.y) < sink_offset)
-				one.dwTime_Life = 0;
-			else
+			Drop.P.mad(Drop.D, Step);
+			Drop.RemainingDistance = std::max(Remaining - Step, 0.f);
+			if (Drop.RemainingDistance == 0.f)
 			{
-				Fvector inv_dir, src_p;
-				inv_dir.invert(one.D);
-				wdir.div(wlen);
-
-				pos_head.mad(pos_head, wdir, -(wlen + radius));
-
-				if (src_plane.intersectRayPoint(pos_head, inv_dir, src_p))
+				// Keep the actual endpoint as the current pose; respawn on the next update.
+				Drop.P.set(Drop.Phit);
+				if (Drop.bHit && Random.randI(2) == 0 && Env.particles_time > EPS_L)
 				{
-					float dist_sqr = pos_head.distance_to_sqr(src_p);
-					if (RayPick(src_p, one.D, max_distance, collide::rqtBoth))
+					if (Particle* Impact = p_allocate())
 					{
-						if (_sqr(max_distance) <= dist_sqr)
-							one.dwTime_Life = 0;
-						else
-							RenewItem(one, max_distance - _sqrt(dist_sqr), true, time_global, udt);
+						Impact->Instance = {Drop.Phit, 0.f, Drop.HitNormal, Env.particles_time, Drop.Seed, 1.f, {0.f, 0.f}};
 					}
-					else
-						RenewItem(one, max_distance - _sqrt(dist_sqr), false, time_global, udt);
 				}
-				else
-					one.dwTime_Life = 0;
+				Drop.bHit = false;
+				continue;
+			}
+
+			Fvector WrapDirection;
+			WrapDirection.set(Drop.P.x - Eye.x, 0.f, Drop.P.z - Eye.z);
+			const float DistanceSquared = WrapDirection.square_magnitude();
+			if (DistanceSquared > WrapRadiusSquared)
+			{
+				if (Drop.P.y - Eye.y < Env.sink_offset)
+				{
+					Drop.bHit = false;
+					Drop.RemainingDistance = -1.f;
+					continue;
+				}
+				const float Distance = _sqrt(DistanceSquared);
+				WrapDirection.div(Distance);
+				Drop.P.mad(WrapDirection, -(Distance + Radius));
+				if (NearDistance > 0.f && Drop.P.distance_to_sqr(Eye) < NearDistanceSquared)
+				{
+					Born(Drop, NearDistance);
+					continue;
+				}
+				Fvector Reverse, Source;
+				Reverse.invert(Drop.D);
+				float Range = Env.max_distance;
+				if (!SourcePlane.intersectRayPoint(Drop.P, Reverse, Source))
+				{
+					Drop.bHit = false;
+					Drop.RemainingDistance = -1.f;
+					continue;
+				}
+				const float Travelled = Drop.P.distance_to(Source);
+				const bool Hit = RayPick(Source, Drop.D, Range, collide::rqtBoth, &Drop.HitNormal);
+				if (Range <= Travelled)
+				{
+					Drop.bHit = false;
+					Drop.RemainingDistance = -1.f;
+					continue;
+				}
+				RenewItem(Drop, Range - Travelled, Hit);
 			}
 		}
-		
-		Fvector pos_trail; pos_trail.mad(pos_head, one.D, -rain_length * factor_visual);
+	}
+	else
+	{
+		// Restart trajectories on re-enable; old contacts must not emit bursts.
+		items.clear();
+	}
+}
 
-		// Culling
-		Fvector sC, lineD;
-		float sR;
-		sC.sub(pos_head, pos_trail);
-		lineD.normalize(sC);
-		sC.mul(.5f);
-		sR = sC.magnitude();
-		sC.add(pos_trail);
-
-		if (!::Render->ViewBase.testSphere_dirty(sC, sR))
+void CEffect_Rain::BuildInstances()
+{
+	// ViewBase is set by the current render; simulation runs separately on PreRenderThread.
+	RainInstances.clear();
+	ImpactInstances.clear();
+	RainInstances.reserve(items.size());
+	// The quad extends backward from its head by at most twice its configured full length.
+	const float BoundsRadius = 2.f * _sqrt(_sqr(RainLength) + _sqr(RainWidth));
+	for (const Item& Drop : items)
+	{
+		if (Drop.RemainingDistance < 0.f)
+		{
 			continue;
-
-		Fvector	P, lineTop, camDir;
-		camDir.sub(sC, vEye);
-		camDir.normalize();
-		lineTop.crossproduct(camDir, lineD);
-		u32 s = one.uv_set;
-		xrCriticalSectionGuard guard(&rainCS);
-		m_sprites.push_back(
-			{
-				Fvector().mad(pos_trail,lineTop,-rain_width),u_rain_color,Sprite_UV[s][0].x,Sprite_UV[s][0].y,
-				Fvector().mad(pos_trail,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][1].x,Sprite_UV[s][1].y,
-				Fvector().mad(pos_head,lineTop,-rain_width)	,u_rain_color,Sprite_UV[s][2].x,Sprite_UV[s][2].y,
-				Fvector().mad(pos_head,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][3].x,Sprite_UV[s][3].y
-			});
+		}
+		if (::Render->ViewBase.testSphere_dirty(Drop.P, BoundsRadius))
+		{
+			RainInstances.push_back({Drop.P, Drop.Seed, Drop.D, Drop.fSpeed});
+		}
+	}
+	for (Particle* Impact = particle_active; Impact; Impact = Impact->next)
+	{
+		// Includes the 0.3 s ballistic flight at radius scale two, even for downward normals.
+		if (::Render->ViewBase.testSphere_dirty(Impact->Instance.Position, 2.f))
+		{
+			ImpactInstances.push_back(Impact->Instance);
+		}
 	}
 }
 
 void CEffect_Rain::InvalidateState()
 {
+	xrCriticalSectionGuard Guard(rainCS);
+	items.clear();
+	RainInstances.clear();
+	ImpactInstances.clear();
+	while (particle_active)
+	{
+		p_free(particle_active);
+	}
 	state = stIdle;
 	m_rainVolume = 0.0f;
 }
 
+
+void CEffect_Rain::Statistics(CGameFont& Font)
+{
+	xrCriticalSectionGuard Guard(rainCS);
+	const auto IsActive = [](const Item& Drop)
+	{
+		return Drop.RemainingDistance >= 0.f;
+	};
+	const u32 ActiveDrops = IsEnabled ? u32(std::count_if(items.begin(), items.end(), IsActive)) : 0;
+	Font.OutNext("Rain air: %u active / %u in view", ActiveDrops, IsEnabled ? u32(RainInstances.size()) : 0);
+	Font.OutNext("Rain impacts: %d active / %u in view", IsEnabled ? p_size(particle_active) : 0, IsEnabled ? u32(ImpactInstances.size()) : 0);
+}
 
 void CEffect_Rain::Render()
 {
@@ -527,9 +607,10 @@ void CEffect_Rain::Render()
 	if (!g_pGameLevel && !Device.IsEditorMode())
 		return;
 
+	xrCriticalSectionGuard Guard(rainCS);
 	if (IsEnabled)
 	{
-		xrCriticalSectionGuard guard(&rainCS);
+		BuildInstances();
 		m_pRender->Render(*this);
 	}
 }
@@ -548,7 +629,7 @@ void CEffect_Rain::p_create()
 	
 	// active and idle lists
 	particle_active	= 0;
-	particle_idle	= &particle_pool.front();
+	particle_idle = particle_pool.empty() ? nullptr : &particle_pool.front();
 }
 
 // destroy particles pool

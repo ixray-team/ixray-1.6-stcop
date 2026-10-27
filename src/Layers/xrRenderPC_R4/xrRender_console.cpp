@@ -4,11 +4,27 @@
 
 bool UseWeaponRainDrops = true;
 
+u32 g_RainShading = 2;
+float g_RainOpacity = 1.f;
+float g_RainColorBlend = 0.01f;
+float g_RainRadius = 0.1f;
+float g_RainImpactRadius = 1.f;
+float g_RainNear = 1.f;
+float g_RainRefraction = 12.f;
+float g_RainTransmission = 0.8f;
+float g_RainFeather = 0.15f;
+static xr_token RainShadingTokens[] =
+{
+	{"auto", 0},
+	{"simplified", 1},
+	{"pbr", 2},
+	{nullptr, 0}
+};
 int g_SpotShadowCacheMode = 0;
 int g_SunShadowCacheMode = 0;
 int g_SpotShadowCacheBudgetMb = 64;
 
-u32 g_RainDropsMode = 0;
+u32 g_RainDropsMode = 1;
 static xr_token RainDropsModeTokens[] =
 	{
 		{"texture", 0},
@@ -1266,6 +1282,15 @@ RENDER_API void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
 	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
+	CMD3(CCC_Token, "r_rain_shading", &g_RainShading, RainShadingTokens);
+	CMD4(CCC_Float, "r_rain_opacity", &g_RainOpacity, 0.f, 8.f);
+	CMD4(CCC_Float, "r_rain_color_blend", &g_RainColorBlend, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_radius", &g_RainRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_impact_radius", &g_RainImpactRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_near", &g_RainNear, 0.f, 10.f);
+	CMD4(CCC_Float, "r_rain_refraction", &g_RainRefraction, 0.f, 32.f);
+	CMD4(CCC_Float, "r_rain_transmission", &g_RainTransmission, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_feather", &g_RainFeather, 0.f, 1.f);
 	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05
