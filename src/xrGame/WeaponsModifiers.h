@@ -12,6 +12,7 @@ enum class WeaponModifier
 	FireDispersionBaseCoeff,
 	CrosshairInertionCoeff,
 	BulletSpeedCoeff,
+	RecoilCoeff,
 	Count
 };
 
@@ -25,6 +26,7 @@ struct WeaponsModifiers
 	float FireDispersionBaseCoeff = 1.0f;
 	float CrosshairInertionCoeff = 1.0f;
 	float BulletSpeedCoeff = 1.0f;
+	float RecoilCoeff = 1.0f;
 
 	float Get(WeaponModifier Type) const
 	{
@@ -46,6 +48,8 @@ struct WeaponsModifiers
 				return CrosshairInertionCoeff;
 			case WeaponModifier::BulletSpeedCoeff:
 				return BulletSpeedCoeff;
+			case WeaponModifier::RecoilCoeff:
+				return RecoilCoeff;
 			default:
 				return 1.0f;
 		}
@@ -109,6 +113,11 @@ struct WeaponsModifiers
 				BulletSpeedCoeff = Value;
 				return true;
 			}
+			case WeaponModifier::RecoilCoeff:
+			{
+				RecoilCoeff = Value;
+				return true;
+			}
 			default:
 				return false;
 		}
@@ -122,6 +131,31 @@ struct WeaponsModifiers
 	float ApplyHitImpulse(float HitImpulse) const { return HitImpulse * HitImpulseCoeff; }
 	float ApplyFireDispersionBase(float Dispersion) const { return Dispersion * FireDispersionBaseCoeff; }
 	float ApplyCrosshairInertion(float Inertion) const { return Inertion * CrosshairInertionCoeff; }
+	float ApplyRecoil(float Offset) const { return Offset * RecoilCoeff; }
+
+	float ApplyRecoilKick(float PreviousAngle, float ShotAngle, float MaxAngle) const
+	{
+		if (RecoilCoeff == 1.0f)
+		{
+			return ShotAngle;
+		}
+		if (RecoilCoeff == 0.0f)
+		{
+			return PreviousAngle;
+		}
+
+		// Scale only this shot's contribution, keeping the accumulated angle intact.
+		const float Result = PreviousAngle + ApplyRecoil(ShotAngle - PreviousAngle);
+		if (Result < -MaxAngle)
+		{
+			return -MaxAngle;
+		}
+		if (Result > MaxAngle)
+		{
+			return MaxAngle;
+		}
+		return Result;
+	}
 
 	float ApplyBulletSpeed(float BulletSpeed) const
 	{

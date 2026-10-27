@@ -50,7 +50,7 @@ void CActor::script_register(lua_State* L)
 				def("is_god_mode", isGodMode),
 				def("is_actor_shadow", isActorShadow),
 				def("set_actor_shadow", setActorShadow),
-			class_<enum_exporter<WeaponModifier>>("weaponsModifiers").enum_("type")[value("HIT_POWER_COEFF", (int)WeaponModifier::HitPowerCoeff), value("RPM_COEFF", (int)WeaponModifier::RpmCoeff), value("SILENCER_HIT_POWER_COEFF", (int)WeaponModifier::SilencerHitPowerCoeff), value("UNSILENCED_HIT_POWER_COEFF", (int)WeaponModifier::UnsilencedHitPowerCoeff), value("HIT_IMPULSE_COEFF", (int)WeaponModifier::HitImpulseCoeff), value("FIRE_DISPERSION_BASE_COEFF", (int)WeaponModifier::FireDispersionBaseCoeff), value("CROSSHAIR_INERTION_COEFF", (int)WeaponModifier::CrosshairInertionCoeff), value("BULLET_SPEED_COEFF", (int)WeaponModifier::BulletSpeedCoeff)],
+			class_<enum_exporter<WeaponModifier>>("weaponsModifiers").enum_("type")[value("HIT_POWER_COEFF", (int)WeaponModifier::HitPowerCoeff), value("RPM_COEFF", (int)WeaponModifier::RpmCoeff), value("SILENCER_HIT_POWER_COEFF", (int)WeaponModifier::SilencerHitPowerCoeff), value("UNSILENCED_HIT_POWER_COEFF", (int)WeaponModifier::UnsilencedHitPowerCoeff), value("HIT_IMPULSE_COEFF", (int)WeaponModifier::HitImpulseCoeff), value("FIRE_DISPERSION_BASE_COEFF", (int)WeaponModifier::FireDispersionBaseCoeff), value("CROSSHAIR_INERTION_COEFF", (int)WeaponModifier::CrosshairInertionCoeff), value("BULLET_SPEED_COEFF", (int)WeaponModifier::BulletSpeedCoeff), value("RECOIL_COEFF", (int)WeaponModifier::RecoilCoeff)],
 
 				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
 					value("eBoostHpRestore", eBoostHpRestore),

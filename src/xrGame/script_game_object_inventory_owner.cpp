@@ -512,6 +512,10 @@ static WeaponModifier WeaponModifierFromName(const char* Name)
 		{
 			return WeaponModifier::BulletSpeedCoeff;
 		}
+		if (xr_strcmp(Name, "recoil_coeff") == 0)
+		{
+			return WeaponModifier::RecoilCoeff;
+		}
 	}
 	return WeaponModifier::Count;
 }

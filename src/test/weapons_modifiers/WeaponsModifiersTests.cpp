@@ -31,6 +31,8 @@ int main()
 	Check(Modifiers.ApplyHitPower(0.7f) == 0.7f && Modifiers.ApplyShotInterval(0.1f) == 0.1f, "Neutral coefficients must preserve the original values exactly");
 	Check(Modifiers.ApplyHitPower(0.7f, true) == 0.7f && Modifiers.ApplyHitImpulse(120.0f) == 120.0f, "Neutral silenced damage and impact impulse must be unchanged");
 	Check(Modifiers.ApplyFireDispersionBase(0.03f) == 0.03f && Modifiers.ApplyCrosshairInertion(5.91f) == 5.91f && Modifiers.ApplyBulletSpeed(900.0f) == 900.0f, "Neutral dispersion, inertion and speed must be unchanged");
+	Check(Modifiers.ApplyRecoil(-0.03f) == -0.03f, "Neutral recoil must preserve pattern offsets exactly");
+	Check(Modifiers.ApplyRecoilKick(0.02f, 0.052f, 0.05f) == 0.052f, "Neutral recoil must preserve the legacy result including its limit jitter exactly");
 	Check(Modifiers.Set(WeaponModifier::HitPowerCoeff, 1.2f), "Valid damage coefficient rejected");
 	Check(IsNear(Modifiers.ApplyHitPower(0.7f), 0.84f), "The multiplier must apply to upgraded damage, not the original base");
 	Modifiers.Set(WeaponModifier::HitPowerCoeff, 1.2f);
@@ -53,6 +55,17 @@ int main()
 	Check(IsNear(Modifiers.ApplyBulletSpeed(800.0f * 0.75f), 900.0f), "Bullet speed must include the silencer factor");
 	Check(IsNear(Modifiers.ApplyBulletSpeed(400.0f), 600.0f), "Initial burst speed must scale from the current value");
 	Check(!Modifiers.Set(WeaponModifier::BulletSpeedCoeff, 0.0f) && Modifiers.Get(WeaponModifier::BulletSpeedCoeff) == 1.5f, "Zero bullet speed must be rejected without changing state");
+	Check(Modifiers.Set(WeaponModifier::RecoilCoeff, 0.5f), "Recoil coefficient rejected");
+	Check(IsNear(Modifiers.ApplyRecoil(0.04f), 0.02f) && IsNear(Modifiers.ApplyRecoil(-0.06f), -0.03f), "Pattern recoil must scale both axes while preserving direction");
+	Check(IsNear(Modifiers.ApplyRecoilKick(0.02f, 0.06f, 0.1f), 0.04f), "Legacy recoil must scale the new kick, not accumulated recoil");
+	Check(IsNear(Modifiers.ApplyRecoilKick(0.02f, -0.04f, 0.1f), -0.01f), "Legacy horizontal recoil must scale once across a direction change");
+	Modifiers.Set(WeaponModifier::RecoilCoeff, 2.0f);
+	Check(IsNear(Modifiers.ApplyRecoilKick(0.02f, 0.04f, 0.1f), 0.06f), "Changing recoil during a burst must affect only new shots");
+	Check(Modifiers.ApplyRecoilKick(0.02f, 0.08f, 0.1f) == 0.1f && Modifiers.ApplyRecoilKick(-0.02f, -0.08f, 0.1f) == -0.1f, "Stronger legacy recoil must respect both angle limits");
+	Modifiers.Set(WeaponModifier::RecoilCoeff, 0.0f);
+	Check(Modifiers.ApplyRecoil(0.04f) == 0.0f && Modifiers.ApplyRecoil(-0.06f) == 0.0f, "Zero recoil must suppress new pattern offsets in both axes");
+	Check(Modifiers.ApplyRecoilKick(0.052f, 0.06f, 0.05f) == 0.052f, "Zero recoil must preserve the old angle even after legacy limit jitter");
+	Check(IsNear(Modifiers.ApplyHitImpulse(120.0f), 240.0f) && IsNear(Modifiers.ApplyBulletSpeed(800.0f), 1200.0f), "Recoil must not change impact impulse or bullet speed");
 	Check(Modifiers.Set(WeaponModifier::RpmCoeff, 2.0f), "Valid RPM coefficient rejected");
 	Check(IsNear(Modifiers.ApplyShotInterval(0.1f), 0.05f), "Higher RPM must shorten the shot interval");
 	Check(IsNear(Modifiers.ApplyShotInterval(0.3f), 0.15f), "Alternative single-shot intervals must scale too");
@@ -84,9 +97,9 @@ int main()
 	Check(Modifiers.ApplyBulletSpeed(900.0f) == 900.0f, "Overflowed bullet speed must fall back safely");
 	Modifiers.Set(WeaponModifier::BulletSpeedCoeff, std::numeric_limits<float>::min());
 	Check(Modifiers.ApplyBulletSpeed(std::numeric_limits<float>::min()) == std::numeric_limits<float>::min(), "Underflowed bullet speed must fall back safely");
-	for (WeaponModifier Type : {WeaponModifier::SilencerHitPowerCoeff, WeaponModifier::UnsilencedHitPowerCoeff, WeaponModifier::HitImpulseCoeff, WeaponModifier::FireDispersionBaseCoeff, WeaponModifier::CrosshairInertionCoeff})
+	for (WeaponModifier Type : {WeaponModifier::SilencerHitPowerCoeff, WeaponModifier::UnsilencedHitPowerCoeff, WeaponModifier::HitImpulseCoeff, WeaponModifier::FireDispersionBaseCoeff, WeaponModifier::CrosshairInertionCoeff, WeaponModifier::RecoilCoeff})
 	{
-		Check(Modifiers.Set(Type, 0.0f) && Modifiers.Get(Type) == 0.0f, "Zero must be supported for damage, impact impulse, base dispersion and crosshair inertion");
+		Check(Modifiers.Set(Type, 0.0f) && Modifiers.Get(Type) == 0.0f, "Zero must be supported for damage, impact impulse, base dispersion, crosshair inertion and recoil");
 	}
 	Check(Modifiers.ApplyHitImpulse(120.0f) == 0.0f && Modifiers.ApplyFireDispersionBase(0.03f) == 0.0f && Modifiers.ApplyCrosshairInertion(5.91f) == 0.0f, "Zero coefficients must disable their corresponding contribution");
 	Modifiers = {};

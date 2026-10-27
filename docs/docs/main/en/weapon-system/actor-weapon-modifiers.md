@@ -15,6 +15,7 @@ transferring a weapon does not carry the previous owner's modifiers with it.
 | `fire_dispersion_base_coeff` | `FIRE_DISPERSION_BASE_COEFF` | Base weapon dispersion multiplier. Lower values improve accuracy. |
 | `crosshair_inertion_coeff` | `CROSSHAIR_INERTION_COEFF` | Crosshair settling inertia multiplier (handling). Lower values shorten settling time. |
 | `bullet_speed_coeff` | `BULLET_SPEED_COEFF` | Initial bullet speed multiplier (trajectory flatness). Higher values increase speed. |
+| `recoil_coeff` | `RECOIL_COEFF` | Shot recoil strength in both axes. Lower values reduce the kick; zero suppresses new kicks. |
 
 Damage is the current difficulty-specific hit power (including upgrades), times
 `hit_power_coeff`, times exactly one of the silenced/unsilenced coefficients,
@@ -34,6 +35,15 @@ crosshair settling does not add a separate delay to shot accuracy.
 Bullet speed is scaled after the existing silencer factor, including alternate
 initial-burst speeds. Gravity, air resistance and maximum travel distance retain
 their configured values; flatness is changed through speed, not a range bonus.
+
+Recoil scales new shot offsets in both the pattern and legacy recoil systems,
+using the current hip-fire or aiming configuration. Pattern offsets include
+the existing addon/agility factors before scaling and retain the step/velocity
+limits. Legacy recoil scales only the new vertical/horizontal kick, preserving
+accumulated recoil and the angle limits. `1.0` preserves the original result
+exactly, including legacy limit jitter. `0.0` suppresses new kicks; recoil already
+in progress can still settle. Return-speed, spring and damping settings, weapon
+animations and target impact impulse are independent of this coefficient.
 
 `rpm_coeff` divides the shot interval in both magazine and chamber firing paths,
 including single-shot and initial-burst RPM settings. It does not accelerate
@@ -58,6 +68,7 @@ db.actor:weapons_modifiers(weaponsModifiers.HIT_IMPULSE_COEFF, 1.50)
 db.actor:weapons_modifiers("fire_dispersion_base_coeff", 0.80)
 db.actor:weapons_modifiers("crosshair_inertion_coeff", 0.80)
 db.actor:weapons_modifiers("bullet_speed_coeff", 1.20)
+db.actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.50)
 
 -- Reset these two coefficients; reset any other changed coefficients separately.
 db.actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 1.0)
@@ -65,7 +76,7 @@ db.actor:weapons_modifiers("rpm_coeff", 1.0)
 ```
 
 All coefficients accept finite values >= 0, except RPM and bullet speed, which
-require values > 0. The original enum values for hit power and RPM are unchanged.
+require values > 0. All previously exported enum values are unchanged.
 Invalid names, enum values, coefficients or non-actor objects
 are logged; setters return `false` without changing state, and getters return
 `1.0`. An unrepresentable shot interval or bullet speed falls back to its original
@@ -116,5 +127,6 @@ Also build `xrGame` to validate the actor, weapon and Lua binding integration.
 In-game acceptance requires a full restart and checks with/without the achievement,
 save/load, upgraded weapons, NPC ownership, both firing paths, silencer attachment
 and removal, built-in silencers, target impact impulse, dispersion, crosshair
-settling and bullet trajectories. Source checks,
+settling, bullet trajectories, pattern/legacy recoil, hip-fire/aiming, and changing
+recoil during a burst. Source checks,
 the native value tests and mocked Lua callbacks do not replace those game checks.

@@ -68,6 +68,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
+	const WeaponsModifiers& Modifiers = weapon->GetWeaponsModifiers();
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
@@ -90,8 +91,8 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		float final_factor = pattern_factor * addon_factor * agility_factor;
 		clamp(final_factor, 0.001f, final_factor);
 
-		float final_x = pattern_x * final_factor;
-		float final_y = pattern_y * final_factor;
+		float final_x = Modifiers.ApplyRecoil(pattern_x * final_factor);
+		float final_y = Modifiers.ApplyRecoil(pattern_y * final_factor);
 
 		// Ограничиваем максимальное смещение за один выстрел
 		clamp(final_x, -PATTERN_MAX_STEP_X, PATTERN_MAX_STEP_X);
@@ -111,7 +112,12 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		float angle = current_recoil.Dispersion * weapon->cur_silencer_koef.cam_dispersion;
 		angle += current_recoil.DispersionInc * weapon->cur_silencer_koef.cam_disper_inc * (float)m_shot_numer;
 
+		const float PreviousVertical = m_angle_vert;
+		const float PreviousHorizontal = m_angle_horz;
 		Shot2Legacy(angle);
+
+		m_angle_vert = Modifiers.ApplyRecoilKick(PreviousVertical, m_angle_vert, current_recoil.MaxAngleVert);
+		m_angle_horz = Modifiers.ApplyRecoilKick(PreviousHorizontal, m_angle_horz, current_recoil.MaxAngleHorz);
 	}
 }
 
