@@ -1362,30 +1362,30 @@ void CWeaponMagazined::state_Fire(float dt)
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter = GetModifiedShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter = _max(0.001f, m_fSingleShootsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter = GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter = _max(0.001f, m_fBaseDispersionedBulletsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else
 				{
-					fShotTimeCounter = GetModifiedShotInterval(fOneShotTime);
+					fShotTimeCounter = _max(0.001f, fOneShotTime / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 			}
 			else
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter += GetModifiedShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter += _max(0.001f, m_fSingleShootsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter += GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter += _max(0.001f, m_fBaseDispersionedBulletsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else
 				{
-					fShotTimeCounter += GetModifiedShotInterval(fOneShotTime);
+					fShotTimeCounter += _max(0.001f, fOneShotTime / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 			}
 			
@@ -1545,30 +1545,30 @@ void CWeaponMagazined::state_FireChamber(float dt)
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter = GetModifiedShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter = _max(0.001f, m_fSingleShootsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter = GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter = _max(0.001f, m_fBaseDispersionedBulletsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else
 				{
-					fShotTimeCounter = GetModifiedShotInterval(fOneShotTime);
+					fShotTimeCounter = _max(0.001f, fOneShotTime / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 			}
 			else
 			{
 				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
 				{
-					fShotTimeCounter += GetModifiedShotInterval(m_fSingleShootsTimeDelta);
+					fShotTimeCounter += _max(0.001f, m_fSingleShootsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
 				{
-					fShotTimeCounter += GetModifiedShotInterval(m_fBaseDispersionedBulletsTimeDelta);
+					fShotTimeCounter += _max(0.001f, m_fBaseDispersionedBulletsTimeDelta / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 				else
 				{
-					fShotTimeCounter += GetModifiedShotInterval(fOneShotTime);
+					fShotTimeCounter += _max(0.001f, fOneShotTime / (*OwnerWeaponModifiers)[WeaponModifiers::eRpmCoeff]);
 				}
 			}
 

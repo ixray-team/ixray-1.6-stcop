@@ -99,7 +99,7 @@ actor:set_weapon_modifier(wpn_modifiers.hit_power, 0.90)
 
 A configured `600 RPM` becomes `750 RPM`: `0.10 / 1.25 = 0.08` seconds per shot. Magazine/chamber firing and alternate single-shot/initial-burst intervals use this factor. Reload and pump animation durations are not accelerated.
 
-When `rpm` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms**. This bounds the interval used by the shot timer; it is not a global limit of 1000 bullets per second, because a shot can emit multiple pellets and the double-barrel path can discharge two rounds in one firing iteration. Actual rate also depends on the firing path, frame timing and weapon state. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
+The shot timer uses the configured interval divided directly by the owner's `rpm` coefficient, limited to at least **1 ms**. This bounds the interval used by the shot timer; it is not a global limit of 1000 bullets per second, because a shot can emit multiple pellets and the double-barrel path can discharge two rounds in one firing iteration. Actual rate also depends on the firing path, frame timing and weapon state. The minimum also applies to unusually short configured intervals with a neutral coefficient.
 
 ### Target impact impulse
 

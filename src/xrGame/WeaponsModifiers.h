@@ -82,19 +82,6 @@ ICF float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpeed)
 	return BulletSpeed * Modifiers[WeaponModifier::eBulletSpeedCoeff];
 }
 
-ICF float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
-{
-	const float RpmCoeff = Modifiers[WeaponModifier::eRpmCoeff];
-	if (RpmCoeff == 1.0f)
-	{
-		return Interval;
-	}
-
-	const float Result = Interval / RpmCoeff;
-	// Keep the float shot timer advancing and bound catch-up shots per frame.
-	constexpr float MinimumShotInterval = 0.001f;
-	return Result < MinimumShotInterval ? MinimumShotInterval : Result;
-}
 } // namespace WeaponModifiers
 
 using WeaponModifier = WeaponModifiers::WeaponModifier;

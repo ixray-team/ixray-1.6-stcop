@@ -37,10 +37,6 @@ private:
 protected:
 	const WeaponModifiers::WpnModifierType* OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
 	bool UseSinglePlayerHitPower = false;
-	ICF float GetModifiedShotInterval(float Interval) const
-	{
-		return WeaponModifiers::ApplyShotInterval(*OwnerWeaponModifiers, Interval);
-	}
 
 	enum
 	{
