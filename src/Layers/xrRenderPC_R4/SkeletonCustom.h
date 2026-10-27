@@ -329,6 +329,7 @@ public:
 	// General "Visual" stuff
 	virtual void					Copy				(dxRender_Visual *pFrom) override;
 	virtual void					Load				(const char* N, IReader *data, u32 dwFlags) override;
+	virtual void 					ReloadUserData		() override;
 	virtual void 					Spawn				() override;
 	virtual void					Depart				() override;
 	virtual void 					Release				() override;
