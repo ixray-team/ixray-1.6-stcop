@@ -26,6 +26,12 @@ float4 main(PSInputFullscreen I) : SV_Target
 #endif
 
     float Occ = s_occ.Load(int3(I.hpos.xy, 0)).x;
+
+	if (O.MaterialID == FOLIAGE_ID)
+	{
+		float WorldNormalY = mul((float3x3)m_invV, O.Normal.xyz).y;
+		O.Hemi = min(O.Hemi, WorldNormalY * 0.25f + 0.5f);
+	}
 	
 #ifndef USE_LEGACY_LIGHT
 	Occ *= O.AO;
