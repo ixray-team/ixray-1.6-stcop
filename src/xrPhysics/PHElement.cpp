@@ -1484,8 +1484,6 @@ void CPHElement::Fix()
 
 	dBodySetNoUpdatePosMode(m_body, 1);
 	m_flags.set(flFixed, true);
-
-	FixBody(m_body);
 }
 
 void CPHElement::SetAnimated( bool v )
