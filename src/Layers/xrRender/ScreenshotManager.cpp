@@ -111,7 +111,15 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 
 	for (u32 Y = 0; Y < Height; ++Y)
 	{
-		memcpy(DstPixels + (size_t)Y * DstRow, Buffer.get() + (size_t)Y * RowPitch, DstRow);
+		u8* Row = DstPixels + (size_t)Y * DstRow;
+		memcpy(Row, Buffer.get() + (size_t)Y * RowPitch, DstRow);
+		if (IsGameCapture)
+		{
+			for (u32 X = 0; X < Width; ++X)
+			{
+				Row[size_t(X) * 4 + 3] = 0xff;
+			}
+		}
 	}
 
 #ifdef IXR_LINUX
