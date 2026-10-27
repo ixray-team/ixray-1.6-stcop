@@ -77,6 +77,7 @@ public:
 
 	virtual	void				on_error					(lua_State* state);
 			void				collect_all_garbage			();
+			bool				BakeApi						(const char* FilePath);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

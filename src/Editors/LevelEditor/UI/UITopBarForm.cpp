@@ -6,6 +6,7 @@
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../ShaderEditor/UIShaderEditorForm.h"
+#include "Coder/UICoderForm.h"
 #include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Scene/LEPhysics.h"
 
@@ -75,6 +76,24 @@ void UITopBarForm::Draw()
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
 		ImGui::PopStyleVar(); // WindowMinSize
+		if (UICoderForm::IsActive())
+		{
+			if (ImGui::BeginTable("##CoderToolbar", 2, ImGuiTableFlags_SizingFixedFit))
+			{
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("CoderUndo", Icons["undo"], "Undo the last edit of the file", ImDrawFlags_RoundCornersLeft, ClickUndo);
+					IMGUI_HINT_BUTTON("CoderRedo", Icons["redo"], "Repeat the last edit of the file", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					UICoderForm::DrawTopBar(ButtonSize);
+				}
+				ImGui::EndTable();
+			}
+		}
+		else
+		{
 		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
@@ -254,6 +273,7 @@ void UITopBarForm::Draw()
 			}
         }
 		ImGui::EndTable();
+		}
 	}
 	ImGui::End();
 	ImGui::PopStyleColor(2);

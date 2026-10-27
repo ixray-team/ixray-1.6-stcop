@@ -12,6 +12,7 @@
 #include "../../UI/UITextureViewer.h"
 #include "EFDEditor.h"
 #include "../../UI/LayoutEditor/UILayoutEditorForm.h"
+#include "../../UI/Coder/UICoderForm.h"
 
 CContentView* GContentView = nullptr;
 
@@ -962,11 +963,20 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					xr_string FileName = FilePath.File.xfilename();
 					FileName = FileName.substr(0, FileName.size() - 4);
 
+					// Game dialogs go to the Dialog Editor, the other xml files are text
 					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
 					if (Iter != GameDialogs.end())
 					{
 						DialogEditor::OpenFile(FilePath.File.xfilename());
 					}
+					else
+					{
+						UICoderForm::OpenFile(FilePath.File.xstring());
+					}
+				}
+				else if (UICoderForm::CanOpen(FilePath.File.xstring()))
+				{
+					UICoderForm::OpenFile(FilePath.File.xstring());
 				}
 				if (FilePath.File.extension() == ".thm")
 				{

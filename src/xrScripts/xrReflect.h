@@ -38,6 +38,31 @@ namespace XReflect
 		static void Read(T& Object, const CInifile& Ini, const char* Section, const char* Prefix);
 	};
 
+	// The ltx schema of the editor, generated from the IniRead classes of a module
+	struct SIniField
+	{
+		const char* Key;
+		const char* Type;
+		bool Required;
+		// Key of the bool field that enables this one, empty when always read
+		const char* If;
+		// Key is the prefix of a nested schema of the class Type
+		bool Nested;
+	};
+
+	struct SIniSchema
+	{
+		const char* Name;
+		// Object class that reads the section, empty for the nested schemas
+		const char* Owner;
+		// Comma separated
+		const char* Bases;
+		const SIniField* Fields;
+		u32 FieldCount;
+	};
+
+	const SIniSchema* GetIniSchemas(u32& Count);
+
 	namespace Detail
 	{
 		inline const char* IniKey(string256& Buffer, const char* Prefix, const char* Key)

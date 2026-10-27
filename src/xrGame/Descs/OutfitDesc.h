@@ -1,7 +1,7 @@
 #pragma once
 #include "DescRegistry.h"
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CCustomOutfit")
 struct SCustomOutfitDesc final
 {
 	using Registry = TDescRegistry<SCustomOutfitDesc>;

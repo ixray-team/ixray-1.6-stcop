@@ -368,7 +368,7 @@ namespace XReflectTool
 			"int", "char", "float", "double", "long", "short", "unsigned", "signed", "bool", "void", "const", "volatile", "wchar_t", "auto"
 		};
 
-		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
+		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Owner", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
 		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Name", "Prefix", "Exclude" };
 		const std::set<std::string> FunctionSpecifiers = { "LuaExport", "Name", "Condition", "Self", "Policies" };
 		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Policies", "Prefix", "Exclude", "IniRead", "IniReadExist", "If" };
@@ -820,6 +820,11 @@ namespace XReflectTool
 						Class.QualifiedName = ScopePrefix(true) + Name;
 						Class.LuaExport = PendingSpecs.Has("LuaExport");
 						Class.IniRead = PendingSpecs.Has("IniRead");
+						Class.IniOwner = PendingSpecs.Get("Owner");
+						if (!Class.IniOwner.empty() && !Class.IniRead)
+						{
+							Error(PendingSpecs.Line, "Owner applies to XREFLECT(IniRead) classes only");
+						}
 						Class.LuaName = PendingSpecs.Get("Name", Name);
 						Class.Condition = PendingSpecs.Condition;
 						Class.RuntimeCondition = PendingSpecs.Get("Condition");
@@ -1056,6 +1061,15 @@ namespace XReflectTool
 					return Next;
 				}
 				Member.IniIf = Specs.Get("If");
+				for (size_t Part = 0; Part + 1 < Decl.size(); ++Part)
+				{
+					const bool Word = IsWordToken(Decl[Part]);
+					if (Word && !Member.IniType.empty() && IsWordToken(Decl[Part - 1]))
+					{
+						Member.IniType += " ";
+					}
+					Member.IniType += Decl[Part].Text;
+				}
 				if (Specs.Has("If"))
 				{
 					auto Condition = std::find_if(Class.Members.begin(), Class.Members.end(), [&](const MemberInfo& Other)

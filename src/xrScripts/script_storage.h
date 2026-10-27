@@ -25,6 +25,10 @@ private:
 
 protected:
 	CMemoryWriter				m_output;
+	// The editor's API bake loads broken scripts too
+	bool						m_quiet_errors		= false;
+
+	bool						quiet_error					(lua_State* L, const char* caScriptName);
 
 protected:
 	static	int					vscript_log					(ScriptStorage::ELuaMessageType tLuaMessageType, const char* caFormat, va_list marker);

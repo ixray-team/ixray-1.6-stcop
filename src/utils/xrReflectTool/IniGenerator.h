@@ -21,7 +21,8 @@
 
 namespace XReflectTool
 {
-	// Writes <Module>.ini.gen.cpp into OutputDir. IniRead classes must be declared in headers.
+	// Writes <Module>.ini.gen.cpp and IniOwners.gen.h into OutputDir. IniRead classes must be declared in headers.
+	// Paths are the module sources: the headers of the Owner classes are found there
 	void GenerateIni(const std::string& Module, const std::string& Pch, const std::string& OutputDir, const std::vector<FileInfo>& Files,
-		const std::vector<ClassInfo*>& Classes, std::vector<ParseError>& Errors);
+		const std::vector<ClassInfo*>& Classes, const std::vector<std::string>& Paths, std::vector<ParseError>& Errors);
 }

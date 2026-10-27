@@ -150,4 +150,57 @@ extern "C"
 	{
 		xr_delete(O);
 	}
+
+	// Level Editor: the ltx schema of the IniRead classes and the class ids of their sections
+	DLL_API bool		__cdecl	xrBakeIniSchema(const char* Path)
+	{
+		IWriter* Writer = FS.w_open(Path);
+		if (Writer == nullptr)
+		{
+			return false;
+		}
+
+		Writer->w_string("# IX-Ray ltx schema: S schema, F field, O schemas of a class id");
+
+		u32 Count = 0;
+		const XReflect::SIniSchema* Schemas = XReflect::GetIniSchemas(Count);
+		for (u32 Index = 0; Index < Count; ++Index)
+		{
+			const XReflect::SIniSchema& Schema = Schemas[Index];
+			Writer->w_string((xr_string("S\t") + Schema.Name + "\t" + Schema.Owner + "\t" + Schema.Bases).c_str());
+			for (u32 Field = 0; Field < Schema.FieldCount; ++Field)
+			{
+				const XReflect::SIniField& Info = Schema.Fields[Field];
+				Writer->w_string((xr_string("F\t") + Schema.Name + "\t" + Info.Key + "\t" + Info.Type + "\t" + (Info.Required ? "1" : "0") + "\t" + Info.If + "\t" + (Info.Nested ? "1" : "0")).c_str());
+			}
+		}
+
+		// No object is created: the factory items know which schemas their client class reads
+		for (const CObjectItemAbstract* Item : object_factory().items())
+		{
+			if (Item->ini_schemas == nullptr)
+			{
+				continue;
+			}
+
+			xr_vector<const char*> Names;
+			Item->ini_schemas(Names);
+
+			string16 ClassId;
+			CLSID2TEXT(Item->clsid(), ClassId);
+			xr_string Text = ClassId;
+			while (!Text.empty() && Text.back() == ' ')
+			{
+				Text.pop_back();
+			}
+
+			for (const char* Name : Names)
+			{
+				Writer->w_string(("O\t" + Text + "\t" + Name).c_str());
+			}
+		}
+
+		FS.w_close(Writer);
+		return true;
+	}
 }

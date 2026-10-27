@@ -157,7 +157,7 @@ int main(int Argc, char** Argv)
 	if (Errors.empty())
 	{
 		GenerateLua(Module, Pch, OutputDir, Files, Classes, Errors);
-		GenerateIni(Module, Pch, OutputDir, Files, Classes, Errors);
+		GenerateIni(Module, Pch, OutputDir, Files, Classes, Paths, Errors);
 	}
 
 	if (!Errors.empty())
