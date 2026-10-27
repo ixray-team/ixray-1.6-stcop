@@ -546,13 +546,14 @@ void CShootingObject::FireBullet(const Fvector& pos,
 		is_actor_singleplayer ? g_SingleGameDifficulty : egdMaster;
 	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	l_fHitPower = GetWeaponsModifiers().ApplyHitPower(l_fHitPower);
+	const WeaponsModifiers& Modifiers = GetWeaponsModifiers();
+	l_fHitPower = Modifiers.ApplyHitPower(l_fHitPower, fire_mode == eSilencerFire);
 
 	Level().BulletManager().AddBullet( pos, 
 										dir,
-										m_fStartBulletSpeed * cur_silencer_koef.bullet_speed,
+										Modifiers.ApplyBulletSpeed(m_fStartBulletSpeed * cur_silencer_koef.bullet_speed),
 										l_fHitPower * cur_silencer_koef.hit_power,
-										fHitImpulse * cur_silencer_koef.hit_impulse,
+										Modifiers.ApplyHitImpulse(fHitImpulse * cur_silencer_koef.hit_impulse),
 										parent_id, 
 										weapon_id,
 										ALife::eHitTypeFireWound, 

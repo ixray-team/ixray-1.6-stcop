@@ -488,6 +488,30 @@ static WeaponModifier WeaponModifierFromName(const char* Name)
 		{
 			return WeaponModifier::RpmCoeff;
 		}
+		if (xr_strcmp(Name, "silencer_hit_power_coeff") == 0)
+		{
+			return WeaponModifier::SilencerHitPowerCoeff;
+		}
+		if (xr_strcmp(Name, "unsilenced_hit_power_coeff") == 0)
+		{
+			return WeaponModifier::UnsilencedHitPowerCoeff;
+		}
+		if (xr_strcmp(Name, "hit_impulse_coeff") == 0)
+		{
+			return WeaponModifier::HitImpulseCoeff;
+		}
+		if (xr_strcmp(Name, "fire_dispersion_base_coeff") == 0)
+		{
+			return WeaponModifier::FireDispersionBaseCoeff;
+		}
+		if (xr_strcmp(Name, "crosshair_inertion_coeff") == 0)
+		{
+			return WeaponModifier::CrosshairInertionCoeff;
+		}
+		if (xr_strcmp(Name, "bullet_speed_coeff") == 0)
+		{
+			return WeaponModifier::BulletSpeedCoeff;
+		}
 	}
 	return WeaponModifier::Count;
 }
@@ -513,7 +537,7 @@ bool CScriptGameObject::SetWeaponModifier(u32 Type, float Value)
 	{
 		return true;
 	}
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: invalid actor, modifier type or coefficient (hit power >= 0, RPM > 0; finite values only)");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: invalid actor, modifier type or coefficient (finite values >= 0; RPM and bullet speed > 0)");
 	return false;
 }
 
