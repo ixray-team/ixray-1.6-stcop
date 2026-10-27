@@ -113,7 +113,7 @@ assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, -1.0))
 assert(math.abs(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF) - 0.001) < 1e-8)
 ```
 
-Assignments outside the numeric range are clamped rather than rejected. An unrepresentable shot interval or bullet speed falls back to its original value.
+Assignments outside the numeric range are clamped rather than rejected.
 
 ### Reset one coefficient or the complete profile
 
