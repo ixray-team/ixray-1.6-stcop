@@ -12,9 +12,28 @@ The configuration file allows you to configure various aspects of the game and e
 
 | Parameter | Values | Description |
 |----------|----------|----------|
-| **Platform** | `cop`, `cs` | Platform mode. cop - Call of Pripyat, cs - Clear Sky |
+| **Platform** | `cop`, `cs`, `soc` | Platform mode: cop - Call of Pripyat, cs - Clear Sky, soc - Shadow of Chernobyl |
 | **title** | text | Name of the modification |
 | **SaveImageSize** | 128,128 | Size of save screenshots |
+
+
+### [gameplay]: balance formulas
+
+| Parameter | Values | Description |
+|----------|----------|----------|
+| **BalanceMode** | `auto`, `soc`, `cs`, `cop` | Select damage, protection, artifact and condition formulas. `auto` preserves the platform defaults and existing armor/material compatibility rules. |
+
+For example, to use Call of Pripyat calculations with the Clear Sky platform:
+
+```ini
+[general]
+Platform = cs
+
+[gameplay]
+BalanceMode = cop
+```
+
+The setting is read on startup; restart the game after changing it. Explicit `soc`, `cs` and `cop` also select the corresponding actor and NPC armor formulas. In `auto`, actor armor still follows its configuration and NPC armor follows its bone protection settings and `game_materials` version. The engine does not convert item, ammunition, immunity or armor values: using a different formula can require rebalancing those configurations. Test existing saves after changing modes. An unknown value is logged and falls back to `auto`.
 
 ### [shaders_options]
 

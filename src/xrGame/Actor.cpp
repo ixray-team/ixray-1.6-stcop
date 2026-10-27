@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Actor.h"
+#include "LegacyHitBalance.h"
 #include "HUDManager.h"
 #include "Car.h"
 #include "cameralook.h"
@@ -946,7 +947,7 @@ void	CActor::Hit(SHit* pHDS)
 		}
 		else
 		{
-			float hit_power = EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			float hit_power = EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ShadowOfChernobyl ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 			HDS.power = hit_power;
 			HDS.add_wound = true;
 
@@ -1027,7 +1028,7 @@ void	CActor::Hit(SHit* pHDS)
 		if (m_bWasBackStabbed) 
 			hit_power				= (HDS.damage() == 0) ? 0 : 100000.0f;
 		else 
-			hit_power				= EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			hit_power				= EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ShadowOfChernobyl ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 
 		HDS.power					= hit_power;
 		HDS.add_wound				= true;
@@ -1046,14 +1047,22 @@ float CActor::CalcHitDamage(SHit* pHDS)
 {
 	CEntityCondition &actorCondition = conditions();
 	bool bAddWound = pHDS->add_wound;
+	const EEngineExternalBalance Balance = EngineExternal().GetEffectiveBalanceMode();
+	const bool IsShadowOfChernobylBalance = Balance == EEngineExternalBalance::ShadowOfChernobyl;
+	const bool IsLegacyBalance = Balance != EEngineExternalBalance::CallOfPripyat;
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
-	hit_power = actorCondition.HitOutfitEffect(hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, pHDS->add_wound);
+	bool& AddWound = IsLegacyBalance ? bAddWound : pHDS->add_wound;
+	hit_power = actorCondition.HitOutfitEffect(hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, AddWound, !IsLegacyBalance);
 	float m_fHealthLost = 0.f;
 
 	switch (pHDS->hit_type)
 	{
 		case ALife::eHitTypeTelepatic:
+			if (IsShadowOfChernobylBalance)
+			{
+				break;
+			}
 			hit_power -= actorCondition.m_fBoostTelepaticProtection;
 			if (hit_power < 0.f)
 			{
@@ -1068,6 +1077,10 @@ float CActor::CalcHitDamage(SHit* pHDS)
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart * actorCondition.m_fHitBoneScale;
 			break;
 		case ALife::eHitTypeChemicalBurn:
+			if (IsShadowOfChernobylBalance)
+			{
+				break;
+			}
 			hit_power -= actorCondition.m_fBoostChemicalBurnProtection;
 			if (hit_power < 0.f)
 			{
@@ -1081,6 +1094,11 @@ float CActor::CalcHitDamage(SHit* pHDS)
 			m_fHealthLost = hit_power * actorCondition.m_fHealthHitPart;
 			break;
 		case ALife::eHitTypeRadiation:
+			if (IsLegacyBalance)
+			{
+				m_fHealthLost = hit_power;
+				break;
+			}
 			hit_power -= actorCondition.m_fBoostRadiationProtection;
 			if (hit_power < 0.f)
 			{
@@ -3377,6 +3395,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 {
 	static float update_time = 0;
 	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	const bool IsLegacyBalance = EngineExternal().GetEffectiveBalanceMode() != EEngineExternalBalance::CallOfPripyat;
 
 	float f_update_time = 0;
 
@@ -3395,7 +3414,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			float art_cond = artefact->GetCondition();
+			float art_cond = IsLegacyBalance ? 1.0f : artefact->GetCondition();
 			conditions().ChangeBleeding((artefact->m_fBleedingRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangeHealth((artefact->m_fHealthRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangePower((artefact->m_fPowerRestoreSpeed * art_cond) * f_update_time);
@@ -3406,7 +3425,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 				conditions().ChangeSleepiness((artefact->m_fSleepinessRestoreSpeed * art_cond) * f_update_time);
 			}
 
-			if ((artefact->m_fRadiationRestoreSpeed * art_cond) > 0.0f)
+			if (!IsLegacyBalance && (artefact->m_fRadiationRestoreSpeed * art_cond) > 0.0f)
 			{
 				float val = (artefact->m_fRadiationRestoreSpeed * art_cond) - conditions().GetBoostRadiationImmunity();
 				clamp(val, 0.0f, val);
@@ -3443,13 +3462,20 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
+	const bool IsClearSkyBalance = EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ClearSky;
 
 	for (const PIItem item : inventory().m_belt)
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
+			const float protection = artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			sum += IsClearSkyBalance ? protection : protection * artefact->GetCondition();
 		}
+	}
+
+	if (IsClearSkyBalance)
+	{
+		return LegacyHitBalance::ClearSkyArtefactDamage(hit_power, sum);
 	}
 
 	if (sum == 0.0f)
@@ -3491,16 +3517,18 @@ float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type
 
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 {
-	if (EngineExternal().ShadowOfChernobylMode())
+	if (EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ShadowOfChernobyl)
 		return 1.0f - HitArtefactsOnBeltLegacy(1.0f, hit_type);
 
 	float sum = 0.0f;
+	const bool IsClearSkyBalance = EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ClearSky;
 
 	for (const PIItem item : inventory().m_belt)
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
+			const float protection = artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			sum += IsClearSkyBalance ? protection : protection * artefact->GetCondition();
 		}
 	}
 

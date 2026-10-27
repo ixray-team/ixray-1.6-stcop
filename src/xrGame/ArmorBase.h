@@ -6,6 +6,7 @@
 #include "../Include/xrRender/VisorGlassType.h"
 
 struct SBoneProtections;
+enum class EEngineExternalBalance;
 
 class CArmorBase : public CInventoryItemObject, public IAntigas, public IRestoresOwner
 {
@@ -27,7 +28,8 @@ public:
 	virtual bool			install_upgrade_impl	(const char* section, bool test);
 	virtual void			save(NET_Packet& packet) override;
 	virtual void			load(IReader& packet) override;
-	virtual float			HitThroughArmor			(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
+	virtual float			HitThroughArmor			(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type, bool ApplyCondition = true);
+	EEngineExternalBalance GetArmorBalance() const;
 	virtual float			GetDefHitTypeProtection	(ALife::EHitType hit_type);
 	virtual float			GetHitTypeProtection	(ALife::EHitType hit_type, u16 element);
 	virtual float			GetBoneArmor			(u16 element);

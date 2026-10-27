@@ -329,7 +329,7 @@ void CActorCondition::UpdateCondition()
 				RemoveEffector(m_object, effPsyHealth);
 			}
 		}
-		if (EngineExternal().ShadowOfChernobylMode() && fis_zero(GetPsyHealth()))
+		if (EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ShadowOfChernobyl && fis_zero(GetPsyHealth()))
 		{
 			SetHealth(0.0f);
 		}

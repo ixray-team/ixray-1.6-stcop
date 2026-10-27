@@ -199,10 +199,11 @@ u32	CCustomOutfit::ef_equipment_type() const
 
 float CCustomOutfit::GetPowerLoss()
 {
-	// Hit fraction and power loss are unrelated,
-	// but it's the only way we can distinguish between SOC/CS and COP.
-	// Sorry.
-	if (m_boneProtection->m_hitFracType != SBoneProtections::HitFractionActorCOP)
+	const EEngineExternalBalance Balance = EngineExternal().GetBalanceMode();
+	const bool IsLegacyBalance = Balance == EEngineExternalBalance::Auto ?
+		m_boneProtection->m_hitFracType != SBoneProtections::HitFractionActorCOP :
+		Balance != EEngineExternalBalance::CallOfPripyat;
+	if (IsLegacyBalance)
 	{
 		if (m_fPowerLoss < 1 && GetCondition() <= 0)
 		{

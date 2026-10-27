@@ -189,7 +189,7 @@ public:
 
 	//изменение силы хита в зависимости от надетого костюма
 	//(только для InventoryOwner)
-	float					HitOutfitEffect(float hit_power, ALife::EHitType hit_type, u16 element, float ap, bool& add_wound);
+	float					HitOutfitEffect(float hit_power, ALife::EHitType hit_type, u16 element, float ap, bool& add_wound, bool ApplyCondition = true);
 
 protected:
 	void					UpdateHealth			();
