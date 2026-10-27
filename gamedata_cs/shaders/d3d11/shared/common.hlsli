@@ -57,6 +57,7 @@ cbuffer static_globals
     uniform float3 L_sun_dir_w;
     uniform float4 L_sky_color;
     uniform float4 L_hemi_color;
+    uniform float4 L_lumscale; // x = sun, y = hemi, z = amb, w = sky
 
     uniform float3 eye_position;
 

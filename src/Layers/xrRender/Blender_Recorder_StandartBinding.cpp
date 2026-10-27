@@ -510,6 +510,22 @@ class cl_sky_color : public RHIShaderConstant::Setup {
 	}
 }; static cl_sky_color binder_sky_color;
 
+// Console lumscales: x = r2_sun_lumscale, y = r2_sun_lumscale_hemi, z = r2_sun_lumscale_amb, w = r2_sun_lumscale_sky
+class LumScaleBinding final : public RHIShaderConstant::Setup
+{
+public:
+	void setup(RHIShaderConstant* Constant) override
+	{
+#if defined(_EDITOR) || RENDER != R_R1
+		RCache.set_c(Constant, ps_r2_sun_lumscale, ps_r2_sun_lumscale_hemi, ps_r2_sun_lumscale_amb, ps_r2_sun_lumscale_sky);
+#else
+		RCache.set_c(Constant, 1.0f, 1.0f, 1.0f, 1.0f);
+#endif
+	}
+};
+
+static LumScaleBinding g_LumScaleBinding;
+
 static class cl_screen_res : public RHIShaderConstant::Setup		
 {	
 	virtual void setup	(RHIShaderConstant* C)
@@ -855,6 +871,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("L_sky_color", &binder_sky_color);
 
 	r_Constant("L_hemi_color", &binder_hemi_color);
+	r_Constant("L_lumscale", &g_LumScaleBinding);
 	r_Constant("L_ambient", &binder_amb_color);
 	r_Constant("ui_icon_light", &g_UIIconLightBinding);
 	r_Constant("ui_icon_direction", &g_UIIconDirectionBinding);
