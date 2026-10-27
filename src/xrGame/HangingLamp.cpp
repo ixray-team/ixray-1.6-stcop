@@ -418,6 +418,7 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp	*lamp)
 	disable_params.Load(PKinematics(Visual())->LL_UserData());
 	m_pPhysicsShell->set_DisableParams(disable_params);
 	ApplySpawnIniToPhysicShell(&lamp->spawn_ini(),m_pPhysicsShell,fixed_bones && fixed_bones[0]!='\0');
+	ApplySpawnIniToPhysicShell(pKinematics->LL_UserData(), m_pPhysicsShell, fixed_bones && fixed_bones[0] != '\0');
 }
 
 void CHangingLamp::net_Export(NET_Packet& P)
