@@ -444,7 +444,11 @@ void DialogEditor::OpenLocalization(CDialogNode* Node)
 	xr_string StringId = Node->Text.size() > 0 ? Node->Text.c_str() : make_string<xr_string>("%s_%s", LastOpenDialog.c_str(), Node->NodeName.c_str());
 	xr_string FileName = DialogFileName.empty() ? xr_string("st_dialogs_editor.xml") : "st_" + DialogFileName;
 
-	Localization.Open(StringId.c_str(), Node->NodeName.c_str(), FileName.c_str());
+	const xr_string NodeName = Node->NodeName.c_str();
+	Localization.Open(StringId.c_str(), ("Phrase " + NodeName).c_str(), FileName.c_str(), [this, NodeName](const char* Id)
+	{
+		OnPhraseLocalized(NodeName.c_str(), Id);
+	});
 }
 
 void DialogEditor::OnPhraseLocalized(const char* NodeName, const char* StringId)

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "UIDialogLocalization.h"
-#include "UIDialogsView.h"
 #include "../../../xrEngine/string_table.h"
 #include "../../xrEUI/IconsFontAwesome6.h"
 
@@ -13,8 +12,9 @@ CUIDialogLocalization::CUIDialogLocalization()
 	bOpen = false;
 }
 
-void CUIDialogLocalization::Open(const char* NewStringId, const char* NewNodeName, const char* NewFileName)
+void CUIDialogLocalization::Open(const char* NewStringId, const char* NewNodeName, const char* NewFileName, RegisteredCallback NewOnRegistered)
 {
+	OnRegistered = std::move(NewOnRegistered);
 	xr_strcpy(StringId, NewStringId);
 	xr_strcpy(FileName, NewFileName);
 	NodeName = NewNodeName;
@@ -180,9 +180,9 @@ bool CUIDialogLocalization::Register()
 
 	g_pStringTable->SetString(StringId, Platform::UTF8_to_CP1251(EscapeText(Texts.front().Text)).c_str());
 
-	if (DialogEditor::Instance != nullptr)
+	if (OnRegistered)
 	{
-		DialogEditor::Instance->OnPhraseLocalized(NodeName.c_str(), StringId);
+		OnRegistered(StringId);
 	}
 
 	return true;
@@ -197,7 +197,7 @@ void CUIDialogLocalization::Draw()
 
 	ImGui::SetNextWindowSize({ 560.f, 0.f }, ImGuiCond_Appearing);
 	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5f, 0.5f });
-	if (!ImGui::Begin(ICON_FA_LANGUAGE " Localize Phrase###DialogLocalization", &bOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+	if (!ImGui::Begin(ICON_FA_LANGUAGE " Localize Text###DialogLocalization", &bOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::End();
 		return;
@@ -205,7 +205,7 @@ void CUIDialogLocalization::Draw()
 
 	if (!NodeName.empty())
 	{
-		ImGui::TextDisabled("Phrase %s", NodeName.c_str());
+		ImGui::TextDisabled("%s", NodeName.c_str());
 	}
 
 	const float LabelWidth = ImGui::CalcTextSize("String ID").x + ImGui::GetStyle().ItemSpacing.x * 2.f;

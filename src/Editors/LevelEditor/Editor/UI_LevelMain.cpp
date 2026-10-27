@@ -12,6 +12,7 @@
 #include "ActorEditor/ActorEditor.h"
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "ShaderEditor/UI_shadertools.h"
+#include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/UISharedMaterialsLibrary.h"
 
 ECORE_API extern bool bIsLevelEditor;
@@ -186,6 +187,12 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 		return UIShaderEditorForm::ReloadCurrent();
 	}
 
+	// Open shortcut on the UI Layout tab opens a layout
+	if (!p1.IsString() && UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::Open();
+	}
+
 	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
@@ -295,6 +302,12 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 	if (!p1.IsString() && UIShaderEditorForm::IsActive())
 	{
 		return UIShaderEditorForm::SaveAll();
+	}
+
+	// Save shortcut on the UI Layout tab saves the layout files
+	if (!p1.IsString() && UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::Save();
 	}
 
 	LUI->LoaderEvent.Wait();
@@ -668,6 +681,10 @@ static bool UndoEditorTab(bool Redo, bool& Handled)
 	{
 		ISHTools* Current = Shaders->Current();
 		Result = Current != nullptr && (Redo ? Current->Redo() : Current->Undo());
+	}
+	else if (UILayoutEditorForm::IsActive())
+	{
+		Result = UILayoutEditorForm::Undo(Redo);
 	}
 	else
 	{
@@ -1051,6 +1068,12 @@ CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 {
+	// The UI Layout tab deletes its own selection, never the scene objects
+	if (UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::DeleteSelection();
+	}
+
 	if( !Scene->locked() ){
 		Scene->RemoveSelection	( LTools->CurrentClassID() );
 		Scene->UndoSave			();
