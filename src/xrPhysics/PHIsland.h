@@ -36,7 +36,7 @@ public:
 	IC void set_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,true);}
 	IC void uset_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,false);}
 
-	IC bool is_exact_integration_prefeared	()	{return flags.test(flPrefereExactIntegration<<shift_to_variable);}
+	IC bool is_exact_integration_prefeared	()	const	{return flags.test(flPrefereExactIntegration<<shift_to_variable);}
 
 	IC void merge							(CPHIslandFlags& aflags) 
 	{
@@ -249,6 +249,7 @@ IC void			RemoveJoint(dxJoint* joint)
 }
 void			SetPrefereExactIntegration(){m_flags.set_prefere_exact_integration();}
 void			UnSetPrefereExactIntegration(){m_flags.uset_prefere_exact_integration();}
+IC bool			IsPrefereExactIntegration()const{return m_flags.is_exact_integration_prefeared();}
 void			Step(dReal step);
 void			Enable();
 void			Repair();

@@ -322,6 +322,9 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						SetIgnoreDynamic							()																							= 0;
 	virtual			void						SetRagDoll									()																							= 0;
 	virtual			void						SetIgnoreRagDoll							()																							= 0;
+	virtual			void						SetSelfCollision							(bool Enabled)																				= 0;
+	virtual			bool						IsSelfCollision								() const																					= 0;
+	virtual			u32							LastSelfCollisionContacts					() const																					= 0;
 	virtual		const CLBits&					collide_bits								()const 																					= 0;
 	virtual		const _flags<CLClassBits>&		collide_class_bits 							()const 																					= 0;
 	virtual			void						CreateShellAnimator							( CInifile const * ini, const char* section )															= 0;
@@ -375,6 +378,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						Disable										()																							= 0;
 	virtual			void						DisableCollision							()																							= 0;
 	virtual			void						EnableCollision								()																							= 0;
+	virtual			bool						IsCollisionDisabled							() const																					= 0;
 	virtual			void						SetRemoveCharacterCollLADisable				()																							= 0;
 	virtual			void						DisableCharacterCollision					()																							= 0;
 	virtual			void						PureStep									(float step = fixed_step)																	= 0;
@@ -407,6 +411,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						ObjectToRootForm							(const Fmatrix& form)							    										= 0;
 	virtual			void						SetPrefereExactIntegration					()																							= 0;
 	virtual			void						UnSetPrefereExactIntegration				()																							= 0;
+	virtual			bool						IsPrefereExactIntegration					() const																						= 0;
 	virtual	~CPhysicsShell								() override;
 	//build_FromKinematics		in returns elements  & joint pointers according bone IDs;
 //	DECLARE_SCRIPT_REGISTER_FUNCTION

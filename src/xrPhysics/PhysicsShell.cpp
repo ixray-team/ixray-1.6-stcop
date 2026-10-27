@@ -198,7 +198,7 @@ void ApplySpawnIniToPhysicShell( CInifile const * ini, CPhysicsShell* physics_sh
 		if(ini->section_exist("physics_common"))
 		{
 			fixed = fixed || (ini->line_exist("physics_common","fixed_bones")) ;
-#pragma todo("not ignore static if non realy fixed! ")
+
 			fix_bones(ini->r_string("physics_common","fixed_bones"),physics_shell);
 		}
 		if(ini->section_exist("collide"))
@@ -228,6 +228,10 @@ void ApplySpawnIniToPhysicShell( CInifile const * ini, CPhysicsShell* physics_sh
 				physics_shell->SetIgnoreAnimated();
 			}
 
+			if (ini->line_exist("collide", "self_collision"))
+			{
+				physics_shell->SetSelfCollision(true);
+			}
 		}
 		//If next section is available then given "PhysicShell" is classified
 		//as animated and we read options for his animation

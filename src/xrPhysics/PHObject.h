@@ -67,6 +67,7 @@ protected:
 
 				void			SetPrefereExactIntegration		()								{m_island.SetPrefereExactIntegration();}
 				void			UnSetPrefereExactIntegration	()								{m_island.UnSetPrefereExactIntegration();}
+	IC			bool			IsPrefereExactIntegration		() const						{return m_island.IsPrefereExactIntegration();}
 			
 
 				CPHObject*		SelfPointer						()								{return this;}
@@ -97,6 +98,7 @@ public:
 				void 			Freeze							()								;
 				void 			UnFreeze						()								;
 	IC			bool			IsFreezed			()											{return !!(m_flags.test(st_freezed));}
+	IC			bool			IsCollisionDisabled()	const									{return !!(m_flags.test(fl_collision_disable));}
 				void			NetInterpolationON				()								{m_flags.set(st_net_interpolation,true);}
 				void			NetInterpolationOFF				()								{m_flags.set(st_net_interpolation,false);}
 				bool			NetInterpolation				()								{return !!(m_flags.test(st_net_interpolation));}
@@ -118,6 +120,7 @@ public:
 			void			collision_dynamic_disable();
 virtual		void			ClearRecentlyDeactivated		()										{;}		
 virtual		void			Collide							()										;
+virtual		void			CollideSelf						()										{;}
 virtual		void			near_callback					(CPHObject* obj)						{;}
 virtual		void			RMotionsQuery					(qResultVec	&res)						{;}
 virtual		CPHMoveStorage*	MoveStorage						()										{return NULL;}
