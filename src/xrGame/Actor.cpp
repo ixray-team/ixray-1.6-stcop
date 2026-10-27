@@ -317,10 +317,6 @@ bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
 
 void CActor::reinit	()
 {
-	for (float& Coefficient : WeaponModifierCoefficients)
-	{
-		Coefficient = 1.0f;
-	}
 	LightPerception.Reset();
 	character_physics_support()->movement()->CreateCharacter		();
 	character_physics_support()->movement()->SetPhysicsRefObject	(this);
