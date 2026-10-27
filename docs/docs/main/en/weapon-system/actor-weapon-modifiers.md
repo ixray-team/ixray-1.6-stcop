@@ -48,7 +48,7 @@ Pass a constant from `weaponsModifiers` as the modifier. String names are not su
 
 All values must be finite. RPM and bullet speed require **`> 0`**; every other coefficient accepts **`>= 0`**. Negative values, NaN, infinity, invalid enum values and calls on non-actor objects are rejected and logged. Rejected setters preserve the old value; invalid getters return `1.0`. That return value is not a feature-detection mechanism: use the method-presence check shown above.
 
-Zero damage disables that damage contribution. Zero impact impulse removes the bullet's impact impulse. Zero base dispersion removes the weapon's spread contribution, while the actor's extra spread remains. Zero inertion removes crosshair settling delay. Zero recoil suppresses new shot kicks; an existing recoil effect can continue settling.
+Zero damage disables that damage contribution. Zero impact impulse removes the bullet's impact impulse. Zero base dispersion removes the weapon's spread contribution. The actor's extra spread remains in the normal firing path; the configured initial-burst base-dispersion path omits it. Zero inertion removes crosshair settling delay. Zero recoil suppresses new shot kicks; an existing recoil effect can continue settling.
 
 ## Usage examples
 
@@ -77,7 +77,7 @@ actor:weapons_modifiers(weaponsModifiers.BULLET_SPEED_COEFF, 1.20)
 actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, 0.50)
 ```
 
-This reduces base weapon spread by 20%, shortens crosshair settling, increases initial speed by 20% and reduces shot recoil. The actor's additional movement spread is separate. In single player, crosshair settling controls the indicator; it does not delay the bullet-spread calculation.
+This reduces base weapon spread by 20%, shortens crosshair settling, increases initial speed by 20% and reduces shot recoil. The actor's additional movement spread is separate in the normal firing path; the configured initial-burst base-dispersion path uses only the modified weapon dispersion. In single player, crosshair settling controls the indicator; it does not delay the bullet-spread calculation.
 
 ### Faster fire with a damage tradeoff
 
@@ -89,7 +89,7 @@ actor:weapons_modifiers(weaponsModifiers.HIT_POWER_COEFF, 0.90)
 
 A configured `600 RPM` becomes `750 RPM`: `0.10 / 1.25 = 0.08` seconds per shot. Magazine/chamber firing and alternate single-shot/initial-burst intervals use this factor. Reload and pump animation durations are not accelerated.
 
-When `RPM_COEFF` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms** (1000 shots per second). This prevents extreme coefficients from stalling the floating-point shot timer or producing an excessive number of catch-up shots in one frame. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
+When `RPM_COEFF` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms**. This bounds the interval used by the shot timer; it is not a global limit of 1000 bullets per second, because a shot can emit multiple pellets and the double-barrel path can discharge two rounds in one firing iteration. Actual rate also depends on the firing path, frame timing and weapon state. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
 
 ### Target impact impulse
 
@@ -188,7 +188,7 @@ The engine stores the resulting coefficients, not the sources of bonuses, timers
 
 Coefficients start at `1.0` and are **saved and restored with the actor**. Saves without the modifier block use neutral values of `1.0`. The handler below changes coefficients when the training infoportion is granted. Loading a save restores them from the actor packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
-The complete example below owns only common damage and recoil: training grants `1.20` damage and `0.80` recoil; otherwise those two values are reset to `1.0`.
+The complete example below owns only common damage and recoil. When `refresh()` runs, it assigns `1.20` damage and `0.80` recoil if the training infoportion is present, or `1.0` for both if it is absent. An absent infoportion alone does not invoke the handler or reset restored coefficients.
 
 1. Save the code below as `actor_weapon_modifiers.script` in your mod's `scripts/` directory.
 2. Replace `example_weapon_training` with an infoportion declared by your mod, or declare that ID in an XML file registered under `[info_portions]` in `configs/system.ltx`.
@@ -235,7 +235,9 @@ function on_game_start(data)
 end
 ```
 
-`on_game_start` registers handlers and does not read actor state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
+`on_game_start` registers handlers and does not read actor state. The info handler filters unrelated events. Granting an infoportion already held by the actor does not invoke this callback: the engine rejects duplicate grants. Repeated explicit calls to `refresh()` assign the same absolute values. Registration is guarded against duplicate startup calls.
+
+An infoportion already present in a loaded save does not itself apply the bonus. Saves with a modifier block restore the recorded coefficients; when deliberately migrating a save without that block, call `actor_weapon_modifiers.refresh()` once from the migration logic if the training profile should be applied.
 
 The stock info callback reports receipt, not removal. Revoke the flag and refresh explicitly:
 
@@ -251,7 +253,7 @@ If another script also owns damage or recoil, integrate this event handler with 
 
 - Weapons read their current owner's coefficients. Switching weapons needs no reapplication; dropping or transferring a weapon does not transfer the actor's bonus. NPC weapons, multiplayer and other shooting objects use neutral coefficients.
 - Damage and impact impulse keep existing upgrade, silencer and cartridge factors. These bullet modifiers do not change explosive projectile damage or melee hits.
-- Accuracy scales base dispersion with condition, silencer and cartridge factors, including the initial-burst base-dispersion path. The actor's additional spread is calculated separately.
+- Accuracy scales base dispersion with condition, silencer and cartridge factors, including the initial-burst base-dispersion path. The normal firing path adds the actor's spread afterward. During the configured initial-burst base-dispersion shots, the weapon uses only modified base dispersion; the crosshair calculation still includes actor spread.
 - Bullet speed includes the current silencer factor and alternate initial-burst speed. Gravity, air resistance and maximum travel distance retain their configured values; there is no separate flatness coefficient.
 - Handling changes crosshair interpolation, not mouse sensitivity, recoil or animation speed.
 - Recoil covers pattern and legacy systems, hip-fire and aiming, in both axes. It scales the new shot's kick while retaining existing angle/step/velocity limits. The neutral coefficient preserves the original result, including legacy limit jitter. Return speed, spring/damping settings and weapon animations are independent.
