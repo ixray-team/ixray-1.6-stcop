@@ -273,6 +273,11 @@ CLevel::~CLevel()
 	g_pEventManager->Event.Handler_Detach	(eDemoPlay,		this);
 	g_pEventManager->Event.Handler_Detach	(eChangeRP,		this);
 
+	if (demo_record)
+	{
+		demo_record->ReleaseGrab();
+	}
+
 	if (physics_world())
 	{
 		destroy_physics_world();

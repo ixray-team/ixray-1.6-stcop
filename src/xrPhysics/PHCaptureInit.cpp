@@ -4,12 +4,19 @@
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "PHCapture.h"
+#include "PHElement.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "IPhysicsShellHolder.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/device.h"
 
 extern class CPHWorld *ph_world;
+
+XRPHYSICS_API float g_CameraCaptureMotorForce = 50000.f;
+XRPHYSICS_API bool g_CameraCaptureNoCollision = false;
+XRPHYSICS_API bool g_CameraCaptureSelfCollision = false;
+XRPHYSICS_API bool g_CameraCaptureExactIntegration = false;
+XRPHYSICS_API SCameraCaptureShellInfo g_CameraCaptureShellInfo = {0, 0, false};
 
 ///////////////////////////////////////////////////////////////////////////////////
 bool can_capture( CPHCharacter   *a_character, IPhysicsShellHolder	*a_taget_object  )
@@ -68,6 +75,8 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_o
 	m_joint(nullptr),
 	m_ajoint(nullptr),
 	m_body(nullptr),
+	m_free_chain(false),
+	m_global_pos(Fvector().set(0, 0, 0)),
 	m_taget_object(a_taget_object),
 	m_character(a_character),
 	b_disabled(false),
@@ -83,7 +92,18 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_o
 	m_capture_time(0),
 	m_time_start(0),
 	m_capture_bone(0),
-	b_collide(false)
+	b_collide(false),
+	m_rel_rotation_valid(false),
+	m_camera_velocity_valid(false),
+	m_gravity_disabled(false),
+	m_saved_gravity_mode(1),
+	m_shell_collision_taken(false),
+	m_shell_collision_was_disabled(false),
+	m_self_collision_taken(false),
+	m_self_collision_was(false),
+	m_exact_integration_taken(false),
+	m_exact_integration_was(false),
+	m_camera_angular_velocity(Fvector().set(0, 0, 0))
 {
 	if (!can_capture(a_character, a_taget_object))
 		return;
@@ -120,7 +140,18 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_o
 	m_capture_time(0),
 	m_time_start(0),
 	m_capture_bone(0),
-	b_collide(false)
+	b_collide(false),
+	m_rel_rotation_valid(false),
+	m_camera_velocity_valid(false),
+	m_gravity_disabled(false),
+	m_saved_gravity_mode(1),
+	m_shell_collision_taken(false),
+	m_shell_collision_was_disabled(false),
+	m_self_collision_taken(false),
+	m_self_collision_was(false),
+	m_exact_integration_taken(false),
+	m_exact_integration_was(false),
+	m_camera_angular_velocity(Fvector().set(0, 0, 0))
 {
 
 	if (!can_capture(a_character, a_taget_object, a_taget_element))
@@ -141,54 +172,159 @@ CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_o
 	Init();
 }
 
+CPHCapture::CPHCapture(CPHCharacter* a_character, IPhysicsShellHolder* a_taget_object, u16 a_taget_element, const Fvector& global_position, bool free_chain) :
+	m_joint(nullptr),
+	m_ajoint(nullptr),
+	m_body(nullptr),
+	m_free_chain(free_chain),
+	m_global_pos(global_position),
+	m_taget_object(a_taget_object),
+	m_character(a_character),
+	b_disabled(false),
+	b_character_feedback(false),
+	e_state(cstFree),
+	m_taget_element(0),
+	m_capture_pos(Fvector().set(0, 0, 0)),
+	m_back_force(0),
+	m_pull_force(0),
+	m_capture_force(0),
+	m_capture_distance(0),
+	m_capture_time(0),
+	m_time_start(0),
+	m_capture_bone(0),
+	b_collide(false),
+	m_rel_rotation_valid(false),
+	m_camera_velocity_valid(false),
+	m_gravity_disabled(false),
+	m_saved_gravity_mode(1),
+	m_shell_collision_taken(false),
+	m_shell_collision_was_disabled(false),
+	m_self_collision_taken(false),
+	m_self_collision_was(false),
+	m_exact_integration_taken(false),
+	m_exact_integration_was(false),
+	m_camera_angular_velocity(Fvector().set(0, 0, 0))
+{
+	if (!a_taget_object)
+		return;
+
+	CPhysicsShell* shell = a_taget_object->ObjectPPhysicsShell();
+
+	if (!shell || !shell->isActive())
+		return;
+
+	if (a_character)
+	{
+		if (!can_capture(a_character, a_taget_object, a_taget_element))
+			return;
+
+		m_capture_bone = get_capture_bone(a_character);
+	}
+
+	IKinematics* K = a_taget_object->ObjectKinematics();
+
+	if (K && a_taget_element != BI_NONE && a_taget_element < K->LL_BoneCount())
+	{
+		CBoneInstance& tag_bone = K->LL_GetBoneInstance(a_taget_element);
+
+		if (tag_bone.callback_type() == bctPhysics && tag_bone.callback_param())
+			m_taget_element = static_cast<CPhysicsElement*>(tag_bone.callback_param());
+	}
+
+	if (!m_taget_element)
+		m_taget_element = shell->NearestToPoint(m_global_pos);
+
+	if (!m_taget_element)
+		return;
+
+	Init();
+}
+
 void CPHCapture::Init()
 {
 	VERIFY(m_taget_element);
-	VERIFY(m_character);
-	VERIFY(m_character->PhysicsRefObject());
-	VERIFY(m_character->PhysicsRefObject()->ObjectKinematics());
-	VERIFY(m_capture_bone);
-
-	IKinematics* p_kinematics = m_character->PhysicsRefObject()->ObjectKinematics();
-	VERIFY(p_kinematics);
-	CInifile* ini = p_kinematics->LL_UserData();
-	VERIFY(ini);
 
 	Fvector dir;
-	Fvector capture_bone_position;
-	capture_bone_position.set(m_capture_bone->mTransform.c);
-	b_character_feedback = true;
-	(m_character->PhysicsRefObject())->ObjectXFORM().transform_tiny(capture_bone_position);
 
-	m_taget_element->GetGlobalPositionDynamic(&dir);
-	dir.sub(capture_bone_position, dir);
+	if (m_character)
+	{
+		VERIFY(m_character->PhysicsRefObject());
+		VERIFY(m_character->PhysicsRefObject()->ObjectKinematics());
+		VERIFY(m_capture_bone);
 
-	m_pull_distance = ini->r_float("capture", "pull_distance");
-	if (dir.magnitude() > m_pull_distance)
-		return;
+		IKinematics* p_kinematics = m_character->PhysicsRefObject()->ObjectKinematics();
+		VERIFY(p_kinematics);
+		CInifile* ini = p_kinematics->LL_UserData();
+		VERIFY(ini);
 
-	float 					pool_force_factor = 4.f;
-	m_capture_distance = ini->r_float("capture", "distance");				//distance
-	m_capture_force = ini->r_float("capture", "capture_force");				//capture force
-	m_capture_time = ini->r_u32("capture", "time_limit") * 1000;			//time;		
-	m_time_start = Device.dwTimeGlobal;
+		Fvector capture_bone_position;
+		capture_bone_position.set(m_capture_bone->mTransform.c);
+		b_character_feedback = true;
+		(m_character->PhysicsRefObject())->ObjectXFORM().transform_tiny(capture_bone_position);
 
-	float max_pull_force = ini->r_float("capture", "pull_force");			//pull force
-	m_pull_force = pool_force_factor * ph_world->Gravity() * m_taget_element->PhysicsShell()->getMass();
+		m_taget_element->GetGlobalPositionDynamic(&dir);
+		dir.sub(capture_bone_position, dir);
 
-	if (m_pull_force > max_pull_force)
-		m_pull_force = max_pull_force;
+		m_pull_distance = ini->r_float("capture", "pull_distance");
+		if (dir.magnitude() > m_pull_distance)
+			return;
 
-	float pulling_vel_scale = ini->r_float("capture", "velocity_scale");
+		float 					pool_force_factor = 4.f;
+		m_capture_distance = ini->r_float("capture", "distance");				//distance
+		m_capture_force = ini->r_float("capture", "capture_force");				//capture force
+		m_capture_time = ini->r_u32("capture", "time_limit") * 1000;			//time;		
+		m_time_start = Device.dwTimeGlobal;
 
-	m_taget_element->set_DynamicLimits(default_l_limit * pulling_vel_scale, default_w_limit * pulling_vel_scale);
-	m_character->SetObjectContactCallback(object_contactCallbackFun);
+		float max_pull_force = ini->r_float("capture", "pull_force");			//pull force
+		m_pull_force = pool_force_factor * ph_world->Gravity() * m_taget_element->PhysicsShell()->getMass();
+
+		if (m_pull_force > max_pull_force)
+			m_pull_force = max_pull_force;
+
+		float pulling_vel_scale = ini->r_float("capture", "velocity_scale");
+
+		m_taget_element->set_DynamicLimits(default_l_limit * pulling_vel_scale, default_w_limit * pulling_vel_scale);
+		m_character->SetObjectContactCallback(object_contactCallbackFun);
+	}
+	else
+	{
+		b_character_feedback = false;
+
+		if (!m_taget_element || !m_taget_element->isFullActive())
+			return;
+
+		m_taget_element->GetGlobalPositionDynamic(&dir);
+		dir.sub(m_global_pos, dir);
+
+		m_pull_distance = 20.f;
+		if (dir.magnitude() > m_pull_distance)
+			return;
+
+		float 					pool_force_factor = 4.f;
+		m_time_start = Device.dwTimeGlobal;
+		m_capture_distance = 10.f;											//distance
+		m_capture_force = 20500.f;											//capture force
+		m_capture_time = 3 * 1000;											//time;		
+		float max_pull_force = 8000.f;										//pull force
+		m_pull_force = pool_force_factor * ph_world->Gravity() * m_taget_element->PhysicsShell()->getMass();
+
+		if (m_pull_force > max_pull_force)
+			m_pull_force = max_pull_force;
+
+		float pulling_vel_scale = 0.022f;
+
+		m_taget_element->set_DynamicLimits(default_l_limit * pulling_vel_scale, default_w_limit * pulling_vel_scale);
+	}
+
 	m_island.Init();
 
-	IPhysicsShellHolder* A = (m_character->PhysicsRefObject());
-	if (A->IsActor())
+	if (m_character)
 	{
-		A->HideAllWeapons(true);
+		IPhysicsShellHolder* A = (m_character->PhysicsRefObject());
+		if (A->IsActor())
+		{
+			A->HideAllWeapons(true);
+		}
 	}
 
 	CPHUpdateObject::Activate();
@@ -199,6 +335,11 @@ void CPHCapture::Release()
 {
 	if (e_state == cstReleased || e_state == cstFree)
 		return;
+
+	RestoreGravity();
+	RestoreShellCollisions();
+	RestoreShellSelfCollision();
+	RestoreShellExactIntegration();
 
 	VERIFY(m_island.DActiveIsland() == &m_island);
 
@@ -226,17 +367,20 @@ void CPHCapture::Release()
 
 	m_body = nullptr;
 
-	if (e_state == cstPulling && m_taget_element && !m_taget_object->ObjectGetDestroy() && m_taget_object->ObjectPPhysicsShell() && m_taget_object->ObjectPPhysicsShell()->isActive())
+	CPHElement* elem = static_cast<CPHElement*>(m_taget_element);
+
+	if (elem && elem->get_body() && m_taget_object && !m_taget_object->ObjectGetDestroy() &&
+		m_taget_object->ObjectPPhysicsShell() && m_taget_object->ObjectPPhysicsShell()->isActive())
 	{
-		m_taget_element->set_DynamicLimits();
+		elem->set_DynamicLimits();
 	}
 
 	b_collide = true;
 
-	IPhysicsShellHolder* A = (m_character->PhysicsRefObject());
-	if (A)
+	if (m_character)
 	{
-		A->HideAllWeapons(false);
+		if (IPhysicsShellHolder* A = (m_character->PhysicsRefObject()))
+			A->HideAllWeapons(false);
 	}
 
 	e_state = cstReleased;
