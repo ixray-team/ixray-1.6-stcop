@@ -77,7 +77,7 @@ void dxRainRender::Copy(IRainRender& Source)
 void dxRainRender::Render(CEffect_Rain& Owner)
 {
 	// Render holds rainCS; publish the console setting for the next worker update.
-	Owner.RainNearDistance = g_RainNear;
+	Owner.RainDropsNearDistance = g_RainDropsNear;
 	if (Owner.RainInstances.empty() && Owner.ImpactInstances.empty())
 	{
 		return;
@@ -129,17 +129,17 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 			return;
 		}
 		RCache.set_Geometry(Geometry);
-		RCache.set_c("RainShape", Owner.RainWidth * (2.f / 3.f), Owner.RainLength * 0.5f, Radius, g_RainFeather);
-		RCache.set_c("RainColor", Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainOpacity * g_RainOpacity);
-		RCache.set_c("RainShading", Pbr ? 1.f : 0.f, g_RainColorBlend, g_RainTransmission, g_RainRefraction);
+		RCache.set_c("RainShape", Owner.RainWidth * (2.f / 3.f), Owner.RainLength * 0.5f, Radius, g_RainDropsFeather);
+		RCache.set_c("RainColor", Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainDropsOpacity * g_RainDropsOpacity);
+		RCache.set_c("RainShading", Pbr ? 1.f : 0.f, g_RainDropsColorBlend, g_RainDropsTransmission, g_RainDropsRefraction);
 		GRHI->ShaderResourceCache->SetVSResource(Slot, Stream.View);
 		RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, VertexOffset, 0, 4, 0, 2, Count * Children, 0, true);
 		GRHI->ShaderResourceCache->SetVSResource(Slot, nullptr);
 		RCache.InvalidateVSTexture(Slot);
 		GRHI->ShaderResourceCache->Apply();
 	};
-	Draw(AirShader, AirStream, Owner.RainInstances.data(), u32(Owner.RainInstances.size()), sizeof(CEffect_Rain::RainInstance), 1, g_RainRadius);
-	Draw(ImpactShader, ImpactStream, Owner.ImpactInstances.data(), u32(Owner.ImpactInstances.size()), sizeof(CEffect_Rain::ImpactInstance), 4, g_RainImpactRadius);
+	Draw(AirShader, AirStream, Owner.RainInstances.data(), u32(Owner.RainInstances.size()), sizeof(CEffect_Rain::RainInstance), 1, g_RainDropsRadius);
+	Draw(ImpactShader, ImpactStream, Owner.ImpactInstances.data(), u32(Owner.ImpactInstances.size()), sizeof(CEffect_Rain::ImpactInstance), 4, g_RainDropsImpactRadius);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	if (Dynamic && !RImplementation.o.dx11_disable_motion_vectors)

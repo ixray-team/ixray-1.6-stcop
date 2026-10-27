@@ -6,14 +6,14 @@
 
 // Common
 extern RENDER_API u32 g_RainShading;
-extern RENDER_API float g_RainOpacity;
-extern RENDER_API float g_RainColorBlend;
-extern RENDER_API float g_RainRadius;
-extern RENDER_API float g_RainImpactRadius;
-extern RENDER_API float g_RainNear;
-extern RENDER_API float g_RainRefraction;
-extern RENDER_API float g_RainTransmission;
-extern RENDER_API float g_RainFeather;
+extern RENDER_API float g_RainDropsOpacity;
+extern RENDER_API float g_RainDropsColorBlend;
+extern RENDER_API float g_RainDropsRadius;
+extern RENDER_API float g_RainDropsImpactRadius;
+extern RENDER_API float g_RainDropsNear;
+extern RENDER_API float g_RainDropsRefraction;
+extern RENDER_API float g_RainDropsTransmission;
+extern RENDER_API float g_RainDropsFeather;
 extern RENDER_API int g_SpotShadowCacheMode;
 extern RENDER_API int g_SunShadowCacheMode;
 extern RENDER_API int g_SpotShadowCacheBudgetMb;

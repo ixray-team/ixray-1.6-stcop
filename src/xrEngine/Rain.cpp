@@ -435,8 +435,8 @@ void CEffect_Rain::UpdateItems()
 	CEnvironment& Env = g_pGamePersistent->Environment();
 	const float Density = clampr(Env.CurrentEnv->rain_density, 0.f, 1.f);
 	RainColor = Env.CurrentEnv->rain_color;
-	RainOpacity = 0.5f + 0.5f * Density;
-	float VisualFactor = RainOpacity;
+	RainDropsOpacity = 0.5f + 0.5f * Density;
+	float VisualFactor = RainDropsOpacity;
 	if (LightingModeIsDynamicRender())
 	{
 		RainColor.mul(0.9f);
@@ -451,7 +451,7 @@ void CEffect_Rain::UpdateItems()
 		const float Radius = std::max(Env.source_rain_radius_render + Env.add_const_dist_coefficient_render, EPS_L);
 		const float WrapRadiusSquared = _sqr(Radius + 0.5f);
 		// The quad is built in the plane through its head, perpendicular to the camera ray.
-		const float NearDistance = std::max(RainNearDistance, 0.f);
+		const float NearDistance = std::max(RainDropsNearDistance, 0.f);
 		const float NearDistanceSquared = _sqr(NearDistance);
 		const u32 Desired = iFloor(0.5f * (1.f + Density) * float(Env.max_desired_items));
 		items.resize(Desired);
