@@ -172,14 +172,53 @@ The table above is Lua runtime state, not persistent save data. Rebuild it from 
 
 Coefficients reset to `1.0` on actor initialization and are **not serialized**. Restore them from persistent gameplay state on the first update, then change them only when that state changes. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
-The complete example below is stored as `docs/examples/actor_weapon_modifiers.script`. It owns only common damage and recoil: training grants `1.20` damage and `0.80` recoil; otherwise those two values are reset to `1.0`.
+The complete example below owns only common damage and recoil: training grants `1.20` damage and `0.80` recoil; otherwise those two values are reset to `1.0`.
 
-1. Copy it as `actor_weapon_modifiers.script` into your mod's `scripts/` directory.
+1. Save the code below as `actor_weapon_modifiers.script` in your mod's `scripts/` directory.
 2. Replace `example_weapon_training` with an infoportion declared by your mod, or declare that ID in an XML file registered under `[info_portions]` in `configs/system.ltx`.
 3. Use an IX-Ray Framework setup providing `RegisterScriptCallback`, `actor_on_first_update` and `actor_on_info_callback`, then fully restart to refresh script discovery.
 4. Grant the infoportion through your quest logic. Existing saves restore the effect on their first update.
 
-<<< ../../../../examples/actor_weapon_modifiers.script{lua}
+```lua
+-- Install in your mod's scripts directory; IX-Ray Framework loads on_game_start.
+-- Replace this ID with an infoportion declared by your mod.
+local TRAINING_INFO = "example_weapon_training"
+local registered = false
+
+function refresh()
+    local actor = db.actor
+    if not actor or not actor.weapons_modifiers then
+        return
+    end
+
+    local damage = 1.0
+    local recoil = 1.0
+    if actor:has_info(TRAINING_INFO) then
+        damage = 1.20
+        recoil = 0.80
+    end
+
+    -- Assign an absolute coefficient: repeated events must not compound the bonus.
+    actor:weapons_modifiers("hit_power_coeff", damage)
+    actor:weapons_modifiers("recoil_coeff", recoil)
+end
+
+local function on_actor_info(npc, info_id)
+    if info_id == TRAINING_INFO then
+        refresh()
+    end
+end
+
+function on_game_start(data)
+    if registered then
+        return
+    end
+
+    RegisterScriptCallback("actor_on_first_update", refresh)
+    RegisterScriptCallback("actor_on_info_callback", on_actor_info)
+    registered = true
+end
+```
 
 `on_game_start` registers handlers and does not read actor state. The first-update handler restores saved state. The info handler filters unrelated events; repeated receipt assigns the same absolute values. Registration is guarded against duplicate startup calls.
 
@@ -204,13 +243,7 @@ If another script also owns damage or recoil, integrate this event handler with 
 
 ## Verification
 
-The example can be tested with LuaJIT without starting the game:
-
-~~~powershell
-luajit src/test/weapons_modifiers/ActorWeaponModifiersTests.lua docs/examples/actor_weapon_modifiers.script
-~~~
-
-Native coefficient tests are also standalone:
+Native coefficient tests can run without starting the game:
 
 ~~~powershell
 cmake -S src/test/weapons_modifiers -B build/weapons-modifiers-tests -A x64
@@ -218,4 +251,4 @@ cmake --build build/weapons-modifiers-tests --config Release
 ctest --test-dir build/weapons-modifiers-tests -C Release --output-on-failure
 ~~~
 
-Build `xrGame` after C++ or binding changes. Runtime acceptance still requires checks in game: save/load, repeated events, bonus removal, upgraded weapons, silencer attachment/removal, NPC ownership, both firing paths, and pattern/legacy recoil. Value tests and mocked callbacks do not replace those checks.
+Build `xrGame` after C++ or binding changes. Runtime acceptance still requires checks in game: save/load, repeated events, bonus removal, upgraded weapons, silencer attachment/removal, NPC ownership, both firing paths, and pattern/legacy recoil. Native coefficient tests do not replace those checks.

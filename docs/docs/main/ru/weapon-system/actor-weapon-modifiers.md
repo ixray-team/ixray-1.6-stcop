@@ -172,14 +172,53 @@ set_damage_source("temporary", nil) -- Back to 1.32
 
 При инициализации актора коэффициенты сбрасываются в `1.0` и **не сериализуются**. Восстанавливайте их из сохранённого игрового состояния на первом обновлении, затем меняйте только при изменении этого состояния. Обход инвентаря, опрос каждый кадр и проверка инфопорции на каждом выстреле не требуются.
 
-Полный пример ниже хранится в `docs/examples/actor_weapon_modifiers.script`. Он управляет только общим уроном и отдачей: обучение даёт `1.20` к урону и `0.80` к отдаче; без обучения эти два коэффициента равны `1.0`.
+Полный пример ниже управляет только общим уроном и отдачей: обучение даёт `1.20` к урону и `0.80` к отдаче; без обучения эти два коэффициента равны `1.0`.
 
-1. Скопируйте файл под именем `actor_weapon_modifiers.script` в каталог `scripts/` своего мода.
+1. Сохраните код ниже под именем `actor_weapon_modifiers.script` в каталоге `scripts/` своего мода.
 2. Замените `example_weapon_training` на объявленную в моде инфопорцию или объявите этот ID в XML-файле, зарегистрированном в секции `[info_portions]` файла `configs/system.ltx`.
 3. Используйте IX-Ray Framework с `RegisterScriptCallback`, `actor_on_first_update` и `actor_on_info_callback`, затем полностью перезапустите игру для повторного поиска скриптов.
 4. Выдайте инфопорцию из логики задания. В существующем сохранении эффект восстановится на первом обновлении.
 
-<<< ../../../../examples/actor_weapon_modifiers.script{lua}
+```lua
+-- Install in your mod's scripts directory; IX-Ray Framework loads on_game_start.
+-- Replace this ID with an infoportion declared by your mod.
+local TRAINING_INFO = "example_weapon_training"
+local registered = false
+
+function refresh()
+    local actor = db.actor
+    if not actor or not actor.weapons_modifiers then
+        return
+    end
+
+    local damage = 1.0
+    local recoil = 1.0
+    if actor:has_info(TRAINING_INFO) then
+        damage = 1.20
+        recoil = 0.80
+    end
+
+    -- Assign an absolute coefficient: repeated events must not compound the bonus.
+    actor:weapons_modifiers("hit_power_coeff", damage)
+    actor:weapons_modifiers("recoil_coeff", recoil)
+end
+
+local function on_actor_info(npc, info_id)
+    if info_id == TRAINING_INFO then
+        refresh()
+    end
+end
+
+function on_game_start(data)
+    if registered then
+        return
+    end
+
+    RegisterScriptCallback("actor_on_first_update", refresh)
+    RegisterScriptCallback("actor_on_info_callback", on_actor_info)
+    registered = true
+end
+```
 
 `on_game_start` регистрирует обработчики и не читает состояние актора. Первое обновление восстанавливает сохранённое состояние. Обработчик инфопорций отбрасывает посторонние события; повторная выдача устанавливает те же абсолютные значения. Регистрация защищена от повторного вызова старта.
 
@@ -204,13 +243,7 @@ actor_weapon_modifiers.refresh()
 
 ## Проверка
 
-Пример можно проверить через LuaJIT без запуска игры:
-
-~~~powershell
-luajit src/test/weapons_modifiers/ActorWeaponModifiersTests.lua docs/examples/actor_weapon_modifiers.script
-~~~
-
-Нативные тесты коэффициентов тоже запускаются отдельно:
+Нативные тесты коэффициентов запускаются без игры:
 
 ~~~powershell
 cmake -S src/test/weapons_modifiers -B build/weapons-modifiers-tests -A x64
@@ -218,4 +251,4 @@ cmake --build build/weapons-modifiers-tests --config Release
 ctest --test-dir build/weapons-modifiers-tests -C Release --output-on-failure
 ~~~
 
-После правок C++ или привязок Lua соберите `xrGame`. Приёмка поведения требует отдельной проверки в игре: сохранение/загрузка, повторные события, снятие бонуса, улучшенное оружие, установка/снятие глушителя, владение NPC, оба пути стрельбы и обычная/паттернная отдача. Тесты значений и имитация callback не заменяют такую проверку.
+После правок C++ или привязок Lua соберите `xrGame`. Приёмка поведения требует отдельной проверки в игре: сохранение/загрузка, повторные события, снятие бонуса, улучшенное оружие, установка/снятие глушителя, владение NPC, оба пути стрельбы и обычная/паттернная отдача. Нативные тесты коэффициентов не заменяют такую проверку.

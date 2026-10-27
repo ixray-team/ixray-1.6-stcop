@@ -65,8 +65,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'Общие данные', link: '/weapon-system/weapon-classes' },
       { text: 'Взрывчатка', link: '/weapon-system/explosive-classes' },
-      { text: 'Паттерная отдача', link: '/weapon-system/shot-pattern-system' },
-      { text: 'Модификаторы оружия актора', link: '/weapon-system/actor-weapon-modifiers' }
+      { text: 'Паттерная отдача', link: '/weapon-system/shot-pattern-system' }
     ],
   },
   {
