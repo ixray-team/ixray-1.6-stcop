@@ -2094,6 +2094,12 @@ std::string TextEditor::GetText() const
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
 }
 
+void TextEditor::VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const
+{
+	const std::string text = GetText();
+	aVisitor(text.data(), text.size(), aUserData);
+}
+
 std::vector<std::string> TextEditor::GetTextLines() const
 {
 	std::vector<std::string> result;
