@@ -125,7 +125,8 @@ bool CEditorRenderDevice::RenderSceneFrame(const Fmatrix& View, const Fmatrix& P
 	ResetMaterial();
 
 	GEditorSceneSubmit.BeginFrame();
-	RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
+	// ClearColor принадлежит теме (CUIThemeManager)
+	RImplementation.EditorClearColor.set(CUIThemeManager::Get().ClearColor);
 	RImplementation.EditorOcclusionCulling = false;
 	::Render->Calculate();
 	::Render->Render();

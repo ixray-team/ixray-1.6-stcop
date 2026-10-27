@@ -10,57 +10,53 @@
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/IGame_Persistent.h"
 //---------------------------------------------------------------------------
-CCustomPreferences* EPrefs=nullptr;
+CCustomPreferences* EPrefs = nullptr;
 //---------------------------------------------------------------------------
-// extern ENGINE_API bool bIsRaindropCollision;
-// extern ENGINE_API bool bIsSndOnRoof;
 
 CCustomPreferences::CCustomPreferences()
 {
 	bOpen = false;
 	// view
-	view_np				= 0.1f;
-	view_fp				= 1500.f;
-	view_fov			= 60.f;
-	// fog    
-	fog_color			= 0x00555555;
-	fog_fogness			= 0.9;
+	view_np = 0.1f;
+	view_fp = 1500.f;
+	view_fov = 60.f;
+	// fog: fog_color владеет CUIThemeManager, здесь только fogness
+	fog_fogness = 0.9;
 	// camera
-	cam_fly_speed		= 5.0f;
-	cam_fly_alt			= 1.8f;
-	cam_sens_rot		= 0.6f;
-	cam_sens_move		= 0.6f;
+	cam_fly_speed = 5.0f;
+	cam_fly_alt = 1.8f;
+	cam_sens_rot = 0.6f;
+	cam_sens_move = 0.6f;
 	// tools mouse
-	tools_sens_move		= 0.3f;
-	tools_sens_rot		= 0.3f;
-	tools_sens_scale	= 0.3f;
+	tools_sens_move = 0.3f;
+	tools_sens_rot = 0.3f;
+	tools_sens_scale = 0.3f;
 	// box pick
-	bp_lim_depth		= true;
-	bp_cull				= true;
-	bp_depth_tolerance	= 0.1f;
+	bp_lim_depth = true;
+	bp_cull = true;
+	bp_depth_tolerance = 0.1f;
 	// snap
-	snap_angle			= deg2rad(5.f);
-	snap_move			= 0.1f;
-	snap_moveto			= 0.5f;
-	scale_fixed         = 0.1f;
+	snap_angle = deg2rad(5.f);
+	snap_move = 0.1f;
+	snap_moveto = 0.5f;
+	scale_fixed = 0.1f;
 	// grid
-	grid_cell_size		= 1.f;
-	grid_cell_count		= 100;
-	// scene
-	scene_undo_level	= 125;
-	scene_recent_count	= 10;
-	scene_clear_color	= DEFAULT_CLEARCOLOR;
+	grid_cell_size = 1.f;
+	grid_cell_count = 100;
+	// scene: scene_clear_color владеет CUIThemeManager
+	scene_undo_level = 125;
+	scene_recent_count = 10;
 	// objects
-	object_flags.zero	();
+	object_flags.zero();
 	// Weather
-	env_speed           = 12.f;
-	env_from_time       = 0.f;
-	env_to_time         = 24.f * 60.f * 60.f;
+	env_speed = 12.f;
+	env_from_time = 0.f;
+	env_to_time = 24.f * 60.f * 60.f;
 	// sWeather         = "";
-	//sound
-	sound_volume		= 1.f;
+	// sound
+	sound_volume = 1.f;
 
-	//other
+	// other
 	custom_icons.clear();
 
 	string_path AppDataPath = {};
@@ -70,7 +66,6 @@ CCustomPreferences::CCustomPreferences()
 	{
 		std::filesystem::create_directory(AppDataPath);
 	}
-
 }
 //---------------------------------------------------------------------------
 
@@ -86,7 +81,10 @@ void CCustomPreferences::ApplyValues()
 	Tools->m_ScaleFixed = scale_fixed;
 
 	EContext.UI->CurrentView().m_Camera.SetViewport(view_np, view_fp, view_fov);
-	Tools->SetFog(fog_color, fog_fogness);
+
+	// Цвет берётся из темы (SetFog его игнорирует для рендера), здесь важен
+	// только fogness. Параметр цвета оставлен для совместимости с переопределениями.
+	Tools->SetFog(CUIThemeManager::Get().FogColor, fog_fogness);
 
 	EContext.UI->m_MouseSM = 0.2f * tools_sens_move * tools_sens_move;
 	EContext.UI->m_MouseSR = 0.02f * tools_sens_rot * tools_sens_rot;
@@ -98,9 +96,9 @@ void CCustomPreferences::ApplyValues()
 	ExecCommand(COMMAND_UPDATE_GRID);
 }
 
-void  CCustomPreferences::OnClose	()
+void CCustomPreferences::OnClose()
 {
-	ApplyValues	();	
+	ApplyValues();
 }
 //---------------------------------------------------------------------------
 
@@ -109,17 +107,27 @@ void CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
 {
 	{
 		xr_shortcut null;
-		if (null.similar(new_val)) { return; }
+		if (null.similar(new_val))
+		{
+			return;
+		}
 	}
-	result 					= true; 
-	ECommandVec& cmds		= GetEditorCommands();
-	for (u32 cmd_idx=0; cmd_idx<cmds.size(); cmd_idx++){
-		SECommand*& CMD		= cmds[cmd_idx];
-		if (CMD&&CMD->editable){
+	result = true;
+	ECommandVec& cmds = GetEditorCommands();
+	for (u32 cmd_idx = 0; cmd_idx < cmds.size(); cmd_idx++)
+	{
+		SECommand*& CMD = cmds[cmd_idx];
+		if (CMD && CMD->editable)
+		{
 			VERIFY(!CMD->sub_commands.empty());
-			for (u32 sub_cmd_idx=0; sub_cmd_idx<CMD->sub_commands.size(); sub_cmd_idx++){
+			for (u32 sub_cmd_idx = 0; sub_cmd_idx < CMD->sub_commands.size(); sub_cmd_idx++)
+			{
 				SESubCommand*& SUB_CMD = CMD->sub_commands[sub_cmd_idx];
-				if (SUB_CMD->shortcut.similar(new_val)){ result = false; return;}
+				if (SUB_CMD->shortcut.similar(new_val))
+				{
+					result = false;
+					return;
+				}
 			}
 		}
 	}
@@ -129,97 +137,109 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 {
 	bModif = false;
 	xr_string fn;
-	switch(B->btn_num)
+	switch (B->btn_num)
 	{
-	case 0:
-		if(EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.json"))
-		{
-			json File;
-			if (std::filesystem::exists(xr_path(fn)))
+		case 0:
+			if (EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.json"))
 			{
-				std::ifstream f(fn.data());
-				f >> File;
-				LoadShortcuts(File);
+				json File;
+				if (std::filesystem::exists(xr_path(fn)))
+				{
+					std::ifstream f(fn.data());
+					f >> File;
+					LoadShortcuts(File);
+				}
 			}
-		}
-	break;
-	case 1:
-		if(EFS.GetSaveName("$import$", fn, nullptr, 6, "*.json"))
-		{
-			json File;
-			SaveShortcuts(File);
-
-			if (!fn.ends_with(".json"))
+			break;
+		case 1:
+			if (EFS.GetSaveName("$import$", fn, nullptr, 6, "*.json"))
 			{
-				fn += ".json";
-			}
+				json File;
+				SaveShortcuts(File);
 
-			std::ofstream o(fn.data());
-			o << File;
-		}
-	break;
+				if (!fn.ends_with(".json"))
+				{
+					fn += ".json";
+				}
+
+				std::ofstream o(fn.data());
+				o << File;
+			}
+			break;
+	}
+}
+
+void CCustomPreferences::OnChooseCompilerPath(ButtonValue* V, bool& bModif, bool&)
+{
+	xr_string fn = CompilerPath.c_str();
+
+	// Передаём "$import$" как стартовую папку, иначе движок упадёт с P!=pathes.end()
+	if (EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.exe"))
+	{
+		CompilerPath = fn.c_str();
+		bModif = true;
 	}
 }
 
 void CCustomPreferences::FillProp(PropItemVec& props)
 {
-	PHelper().CreateU32		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
-	PHelper().CreateU32		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
-	PHelper().CreateBool	(props,"Common\\More Stats Info", 					&bMoreStats);
+	PHelper().CreateU32(props, "Common\\Recent Count", &scene_recent_count, 0, 25);
+	PHelper().CreateU32(props, "Common\\Undo Level", &scene_undo_level, 0, 125);
+	PHelper().CreateBool(props, "Common\\More Stats Info", &bMoreStats);
 
-	PHelper().CreateBool	(props,"Viewport\\Buttons\\Axis", 					&ShowAxisButtons);
-	PHelper().CreateBool	(props,"Viewport\\Buttons\\Old Camera Controls", 	&ShowOldCameraButtons);
+	PHelper().CreateBool(props, "Viewport\\Buttons\\Axis", &ShowAxisButtons);
+	PHelper().CreateBool(props, "Viewport\\Buttons\\Old Camera Controls", &ShowOldCameraButtons);
 
-	PHelper().CreateFloat	(props,"Viewport\\Grid\\Cell Size", 				&grid_cell_size, 		0.1f, 	10.f);
-	PHelper().CreateU32		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
+	PHelper().CreateFloat(props, "Viewport\\Grid\\Cell Size", &grid_cell_size, 0.1f, 10.f);
+	PHelper().CreateU32(props, "Viewport\\Grid\\Cell Count", &grid_cell_count, 10, 1000);
 
-	PHelper().CreateFloat	(props,"Viewport\\Camera\\Move Sens", 				&cam_sens_move);
-	PHelper().CreateFloat	(props,"Viewport\\Camera\\Rotate Sens", 			&cam_sens_rot);
-	PHelper().CreateFloat	(props,"Viewport\\Camera\\Fly Speed", 				&cam_fly_speed, 		0.01f, 	100.f);
-	PHelper().CreateFloat	(props,"Viewport\\Camera\\Fly Altitude", 			&cam_fly_alt, 			0.f, 	1000.f);
+	PHelper().CreateFloat(props, "Viewport\\Camera\\Move Sens", &cam_sens_move);
+	PHelper().CreateFloat(props, "Viewport\\Camera\\Rotate Sens", &cam_sens_rot);
+	PHelper().CreateFloat(props, "Viewport\\Camera\\Fly Speed", &cam_fly_speed, 0.01f, 100.f);
+	PHelper().CreateFloat(props, "Viewport\\Camera\\Fly Altitude", &cam_fly_alt, 0.f, 1000.f);
 
-	PHelper().CreateColor	(props,"Viewport\\Fog\\Color", 						&fog_color);
-	PHelper().CreateFloat	(props,"Viewport\\Fog\\Fogness", 					&fog_fogness, 			0.f, 	100.f);
+	// Fog Color и Clear Color переехали в Theme Editor (CUIThemeManager).
+	// Здесь остаётся только Fogness — комбинируется с цветом темы при рендере.
+	PHelper().CreateFloat(props, "Viewport\\Fog\\Fogness", &fog_fogness, 0.f, 100.f);
 
-	PHelper().CreateFloat	(props,"Viewport\\Near Plane", 						&view_np, 				0.01f, 	10.f);
-	PHelper().CreateFloat	(props,"Viewport\\Far Plane", 						&view_fp, 				10.f, 	10000.f);
-	PHelper().CreateFloat	(props,"Viewport\\FOV", 							&view_fov, 				0.1f, 	170.f);
-	PHelper().CreateFloat	(props,"Viewport\\Render Radius", 					&EDevice->RenderRadius, 10.f, 	100000.f);
-	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
-	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
-	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
-	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
-	PHelper().CreateBool	(props,"Viewport\Instancing in Shadows",		&ShadowInstancing);
+	PHelper().CreateFloat(props, "Viewport\\Near Plane", &view_np, 0.01f, 10.f);
+	PHelper().CreateFloat(props, "Viewport\\Far Plane", &view_fp, 10.f, 10000.f);
+	PHelper().CreateFloat(props, "Viewport\\FOV", &view_fov, 0.1f, 170.f);
+	PHelper().CreateFloat(props, "Viewport\\Render Radius", &EDevice->RenderRadius, 10.f, 100000.f);
+	PHelper().CreateFloat(props, "Viewport\\Light Distance", &LightDistance, 1.f, 10000.f);
+	PHelper().CreateBool(props, "Viewport\\Occlusion Culling", &OcclusionCulling);
+	PHelper().CreateBool(props, "Viewport\\Instancing", &Instancing);
+	PHelper().CreateBool(props, "Viewport\Instancing in Shadows", &ShadowInstancing);
 
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Animation Path", 			&object_flags, 			epoDrawAnimPath);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\LOD's", 						&object_flags, 			epoDrawLOD);
+	PHelper().CreateFlag32(props, "Objects\\Show\\Hint", &object_flags, epoShowHint);
+	PHelper().CreateFlag32(props, "Objects\\Show\\Pivot", &object_flags, epoDrawPivot);
+	PHelper().CreateFlag32(props, "Objects\\Show\\Animation Path", &object_flags, epoDrawAnimPath);
+	PHelper().CreateFlag32(props, "Objects\\Show\\LOD's", &object_flags, epoDrawLOD);
 
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Joints", 			&object_flags, 			epoDrawJoints);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Axis", 		&object_flags, 			epoDrawBoneAxis);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Names", 		&object_flags, 			epoDrawBoneNames);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Shapes", 		&object_flags, 			epoDrawBoneShapes);
+	PHelper().CreateFlag32(props, "Objects\\Skeleton\\Draw Joints", &object_flags, epoDrawJoints);
+	PHelper().CreateFlag32(props, "Objects\\Skeleton\\Draw Bone Axis", &object_flags, epoDrawBoneAxis);
+	PHelper().CreateFlag32(props, "Objects\\Skeleton\\Draw Bone Names", &object_flags, epoDrawBoneNames);
+	PHelper().CreateFlag32(props, "Objects\\Skeleton\\Draw Bone Shapes", &object_flags, epoDrawBoneShapes);
 
-	PHelper().CreateFlag32	(props,"Objects\\Group Object\\Select ingroup", 	&object_flags, 			epoSelectInGroup);
+	PHelper().CreateFlag32(props, "Objects\\Group Object\\Select ingroup", &object_flags, epoSelectInGroup);
 
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading RB", 	&object_flags, 			epoDeffLoadRB);
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading CF", 	&object_flags, 			epoDeffLoadCF);
+	PHelper().CreateFlag32(props, "Objects\\Loading\\Deffered Loading RB", &object_flags, epoDeffLoadRB);
+	PHelper().CreateFlag32(props, "Objects\\Loading\\Deffered Loading CF", &object_flags, epoDeffLoadCF);
 
-	PHelper().CreateFlag32	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
+	PHelper().CreateFlag32(props, "Objects\\Library\\Discard Instance", &object_flags, epoDiscardInstance);
 
-	PHelper().CreateBool	(props,"Tools\\Box Pick\\Limited Depth", 			&bp_lim_depth);
-	PHelper().CreateBool	(props,"Tools\\Box Pick\\Back Face Culling", 		&bp_cull);
-	PHelper().CreateFloat	(props,"Tools\\Box Pick\\Depth Tolerance", 			&bp_depth_tolerance, 	0.f, 	10000.f);
+	PHelper().CreateBool(props, "Tools\\Box Pick\\Limited Depth", &bp_lim_depth);
+	PHelper().CreateBool(props, "Tools\\Box Pick\\Back Face Culling", &bp_cull);
+	PHelper().CreateFloat(props, "Tools\\Box Pick\\Depth Tolerance", &bp_depth_tolerance, 0.f, 10000.f);
 
-	PHelper().CreateFloat	(props,"Tools\\Sens\\Move", 						&tools_sens_move);
-	PHelper().CreateFloat	(props,"Tools\\Sens\\Rotate", 						&tools_sens_rot);
-	PHelper().CreateFloat	(props,"Tools\\Sens\\Scale", 						&tools_sens_scale);
+	PHelper().CreateFloat(props, "Tools\\Sens\\Move", &tools_sens_move);
+	PHelper().CreateFloat(props, "Tools\\Sens\\Rotate", &tools_sens_rot);
+	PHelper().CreateFloat(props, "Tools\\Sens\\Scale", &tools_sens_scale);
 
-	PHelper().CreateAngle	(props,"Tools\\Snap\\Angle", 						&snap_angle, 			0, 		PI_MUL_2);
-	PHelper().CreateFloat	(props,"Tools\\Snap\\Move", 						&snap_move, 			0.01f, 	500.f);
-	PHelper().CreateFloat	(props,"Tools\\Snap\\Move To", 						&snap_moveto, 			0.01f, 	1000.f);
-	PHelper().CreateFloat	(props,"Tools\\Snap\\Scale Fixed", 					&scale_fixed, 			0.01f, 	1000.f);
+	PHelper().CreateAngle(props, "Tools\\Snap\\Angle", &snap_angle, 0, PI_MUL_2);
+	PHelper().CreateFloat(props, "Tools\\Snap\\Move", &snap_move, 0.01f, 500.f);
+	PHelper().CreateFloat(props, "Tools\\Snap\\Move To", &snap_moveto, 0.01f, 1000.f);
+	PHelper().CreateFloat(props, "Tools\\Snap\\Scale Fixed", &scale_fixed, 0.01f, 1000.f);
 
 	/*/ Weather
 	PHelper().CreateFloat(props, "Weather\\Weather from Time", &env_from_time, 0.f, 86400.f);
@@ -227,13 +247,14 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
 	PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
 
-	PHelper().CreateSText	(props, "Compilers\\xrLC",						&Compiler_xrLC);
-	PHelper().CreateSText	(props,	"Compilers\\xrAI",						&Compiler_xrAI);
-	PHelper().CreateSText	(props, "Compilers\\xrDO",						&Compiler_xrDO);
-	PHelper().CreateBool	(props, "Compilers\\Duplicate Object Position Is Error",						&DuplicateObjectPositionAsError);
-	
+	// Compilers: путь к xrLevelBuilder.exe (единый бинарник xrLC / xrAI / xrDO).
+	// Кнопка отображает текущий путь. При клике открывается проводник.
+	ButtonValue* BrowseBtn = PHelper().CreateButton(props, "Compilers\\Path", CompilerPath.c_str(), 0);
+	BrowseBtn->OnBtnClickEvent.bind(this, &CCustomPreferences::OnChooseCompilerPath);
+	PHelper().CreateBool(props, "Compilers\\Duplicate Object Position Is Error", &DuplicateObjectPositionAsError);
+
 	PHelper().CreateBool(props, "Compilers\\LODs For All MU", &LODsForAllMU);
-	
+
 
 	ButtonValue* B = PHelper().CreateButton(props, "Keyboard\\Common\\File", "Load,Save", 0);
 	B->OnBtnClickEvent.bind(this, &CCustomPreferences::OnKeyboardCommonFileClick);
@@ -275,7 +296,7 @@ void CCustomPreferences::Edit()
 //---------------------------------------------------------------------------
 extern bool bAllowLogCommands;
 
-template<typename T>
+template <typename T>
 T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 {
 	if (!j.is_object())
@@ -299,7 +320,7 @@ T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 		{
 			Out = it->get<std::string>().c_str();
 		}
-		else if constexpr(std::is_same_v<std::remove_cvref_t<T>, char*>)
+		else if constexpr (std::is_same_v<std::remove_cvref_t<T>, char*>)
 		{
 			auto OutTemp = it->get<std::string>();
 			xr_strcpy(Out, OutTemp.c_str());
@@ -312,7 +333,7 @@ T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 				{
 					Out = !!it->get<int>();
 				}
-				else 
+				else
 				{
 					Out = it->get<T>();
 				}
@@ -365,6 +386,12 @@ void CCustomPreferences::Load()
 		CUIThemeManager::Get().ThemeID = themeID;
 	}
 
+	// Цвета вьюпорта принадлежат теме (CUIThemeManager).
+	// Читаем те же ключи, что были раньше — обратная совместимость.
+	CUIThemeManager& Theme = CUIThemeManager::Get();
+	GetSafe(*prefs, "fog_color", Theme.FogColor);
+	GetSafe(*prefs, "scene_clear_color", Theme.ClearColor);
+
 	// sound
 	GetSafe(*prefs, "sound_volume", sound_volume);
 
@@ -376,8 +403,7 @@ void CCustomPreferences::Load()
 	GetSafe(*prefs, "view_fp", view_fp);
 	GetSafe(*prefs, "view_fov", view_fov);
 
-	// fog
-	GetSafe(*prefs, "fog_color", fog_color);
+	// fog (только fogness — цвет уже прочитан выше)
 	GetSafe(*prefs, "fog_fogness", fog_fogness);
 
 	// camera
@@ -411,7 +437,6 @@ void CCustomPreferences::Load()
 	GetSafe(*prefs, "grid_cell_count", grid_cell_count);
 	GetSafe(*prefs, "scene_undo_level", scene_undo_level);
 	GetSafe(*prefs, "scene_recent_count", scene_recent_count);
-	GetSafe(*prefs, "scene_clear_color", scene_clear_color);
 
 	// object flags
 	GetSafe(*prefs, "object_flags", object_flags.flags);
@@ -508,45 +533,46 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["sound_flags"] = psSoundFlags.flags;
 	JSONData["editor_prefs"]["sound_volume"] = sound_volume;
 
-	JSONData["editor_prefs"]["tools_settings"]=Tools->m_Settings.flags;
+	JSONData["editor_prefs"]["tools_settings"] = Tools->m_Settings.flags;
 
-	JSONData["editor_prefs"]["view_np"]=view_np;
-	JSONData["editor_prefs"]["view_fp"]=view_fp;
-	JSONData["editor_prefs"]["view_fov"]=view_fov;
+	JSONData["editor_prefs"]["view_np"] = view_np;
+	JSONData["editor_prefs"]["view_fp"] = view_fp;
+	JSONData["editor_prefs"]["view_fov"] = view_fov;
 
-	JSONData["editor_prefs"]["fog_color"]=fog_color;
-	JSONData["editor_prefs"]["fog_fogness"]=fog_fogness;
+	// Цвета вьюпорта принадлежат теме — сохраняем их оттуда
+	JSONData["editor_prefs"]["fog_color"] = ThemeInstance.FogColor;
+	JSONData["editor_prefs"]["scene_clear_color"] = ThemeInstance.ClearColor;
+	JSONData["editor_prefs"]["fog_fogness"] = fog_fogness;
 
-	JSONData["editor_prefs"]["cam_fly_speed"]=cam_fly_speed;
-	JSONData["editor_prefs"]["cam_fly_alt"]=cam_fly_alt;
-	JSONData["editor_prefs"]["cam_sens_rot"]=cam_sens_rot;
-	JSONData["editor_prefs"]["cam_sens_move"]=cam_sens_move;
+	JSONData["editor_prefs"]["cam_fly_speed"] = cam_fly_speed;
+	JSONData["editor_prefs"]["cam_fly_alt"] = cam_fly_alt;
+	JSONData["editor_prefs"]["cam_sens_rot"] = cam_sens_rot;
+	JSONData["editor_prefs"]["cam_sens_move"] = cam_sens_move;
 
 	JSONData["editor_prefs"]["ShowAxisButtons"] = ShowAxisButtons;
 	JSONData["editor_prefs"]["ShowOldCameraButtons"] = ShowOldCameraButtons;
 
-	JSONData["editor_prefs"]["tools_sens_rot"]=tools_sens_rot;
-	JSONData["editor_prefs"]["tools_sens_move"]=tools_sens_move;
-	JSONData["editor_prefs"]["tools_sens_scale"]=tools_sens_scale;
-	JSONData["editor_prefs"]["bMoreStats"]=bMoreStats;
+	JSONData["editor_prefs"]["tools_sens_rot"] = tools_sens_rot;
+	JSONData["editor_prefs"]["tools_sens_move"] = tools_sens_move;
+	JSONData["editor_prefs"]["tools_sens_scale"] = tools_sens_scale;
+	JSONData["editor_prefs"]["bMoreStats"] = bMoreStats;
 
-	JSONData["editor_prefs"]["bp_lim_depth"]=bp_lim_depth;
-	JSONData["editor_prefs"]["bp_cull"]=bp_cull;
-	JSONData["editor_prefs"]["bp_depth_tolerance"]=bp_depth_tolerance;
+	JSONData["editor_prefs"]["bp_lim_depth"] = bp_lim_depth;
+	JSONData["editor_prefs"]["bp_cull"] = bp_cull;
+	JSONData["editor_prefs"]["bp_depth_tolerance"] = bp_depth_tolerance;
 
-	JSONData["editor_prefs"]["snap_angle"]=snap_angle;
-	JSONData["editor_prefs"]["snap_move"]=snap_move;
-	JSONData["editor_prefs"]["snap_moveto"]=snap_moveto;
-	JSONData["editor_prefs"]["scale_fixed"]=scale_fixed;
+	JSONData["editor_prefs"]["snap_angle"] = snap_angle;
+	JSONData["editor_prefs"]["snap_move"] = snap_move;
+	JSONData["editor_prefs"]["snap_moveto"] = snap_moveto;
+	JSONData["editor_prefs"]["scale_fixed"] = scale_fixed;
 
-	JSONData["editor_prefs"]["grid_cell_size"]=grid_cell_size;
-	JSONData["editor_prefs"]["grid_cell_count"]=grid_cell_count;
+	JSONData["editor_prefs"]["grid_cell_size"] = grid_cell_size;
+	JSONData["editor_prefs"]["grid_cell_count"] = grid_cell_count;
 
-	JSONData["editor_prefs"]["scene_undo_level"]=scene_undo_level;
-	JSONData["editor_prefs"]["scene_recent_count"]= scene_recent_list.size();
-	JSONData["editor_prefs"]["scene_clear_color"]=scene_clear_color;
+	JSONData["editor_prefs"]["scene_undo_level"] = scene_undo_level;
+	JSONData["editor_prefs"]["scene_recent_count"] = scene_recent_list.size();
 
-	JSONData["editor_prefs"]["object_flags"]=object_flags.flags;
+	JSONData["editor_prefs"]["object_flags"] = object_flags.flags;
 
 	for (AStringIt it = scene_recent_list.begin(); it != scene_recent_list.end(); it++)
 	{
@@ -577,22 +603,22 @@ void CCustomPreferences::Save()
 
 	int X, Y;
 	SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);
-	JSONData["render"]["x"]=X;
-	JSONData["render"]["y"]=Y;
+	JSONData["render"]["x"] = X;
+	JSONData["render"]["y"] = Y;
 
-	JSONData["windows"]["log"]=bAllowLogCommands;
-	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
-	JSONData["render"]["light_distance"]=LightDistance;
-	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
-	JSONData["render"]["instancing"]=Instancing;
-	JSONData["render"]["shadow_instancing"]=ShadowInstancing;
-	JSONData["render"]["hemi"]=Hemi;
-	JSONData["render"]["dynamic_lights"]=DynamicLights;
-	JSONData["render"]["light_shadows"]=LightShadows;
-	JSONData["render"]["ssao_mode"]=ps_r_ssao_mode;
-	JSONData["render"]["sslr"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-	JSONData["render"]["sslr_water"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
-	
+	JSONData["windows"]["log"] = bAllowLogCommands;
+	JSONData["render"]["render_radius"] = EDevice->RenderRadius;
+	JSONData["render"]["light_distance"] = LightDistance;
+	JSONData["render"]["occlusion_culling"] = OcclusionCulling;
+	JSONData["render"]["instancing"] = Instancing;
+	JSONData["render"]["shadow_instancing"] = ShadowInstancing;
+	JSONData["render"]["hemi"] = Hemi;
+	JSONData["render"]["dynamic_lights"] = DynamicLights;
+	JSONData["render"]["light_shadows"] = LightShadows;
+	JSONData["render"]["ssao_mode"] = ps_r_ssao_mode;
+	JSONData["render"]["sslr"] = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	JSONData["render"]["sslr_water"] = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts
 	SaveShortcuts(JSONData);
@@ -602,7 +628,9 @@ void CCustomPreferences::Save()
 void CCustomPreferences::Draw()
 {
 	if (!bOpen)
+	{
 		return;
+	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 400));
 	if (!ImGui::Begin("Editor Preferences", &bOpen))
@@ -661,12 +689,12 @@ void CCustomPreferences::LoadConfig()
 			f >> File;
 			LoadShortcuts(File);
 		}
-		
+
 		Save();
 	}
 
-	Load				();
-	ApplyValues			();
+	Load();
+	ApplyValues();
 
 	EContext.UI->m_Size.set((int)start_w, (int)start_h);
 }
@@ -680,7 +708,6 @@ void CCustomPreferences::SaveConfig()
 
 	std::ofstream o(jfn);
 	o << JSONData;
-
 }
 
 void CCustomPreferences::AppendRecentFile(const char* name)
@@ -705,11 +732,23 @@ void CCustomPreferences::OnCreate()
 {
 	LoadConfig();
 	m_ItemProps = new UIPropertiesForm();
+
+	// Цвета вьюпорта принадлежат CUIThemeManager и читаются рендером напрямую:
+	//   - ClearColor: CEditorRenderDevice::Clear() / RenderSceneFrame()
+	//   - FogColor:   CToolCustom::GetCurrentFog()
+	// Здесь только просим перерисовать сцену, чтобы изменения были видны сразу.
+	CUIThemeManager::Get().SetOnViewportColorChanged([]()
+													 {
+		if (EContext.UI)
+		{
+			EContext.UI->RedrawScene();
+		} });
 }
 
 void CCustomPreferences::OnDestroy()
 {
-  
+	CUIThemeManager::Get().SetOnViewportColorChanged(nullptr);
+
 	xr_delete(m_ItemProps);
 	SaveConfig();
 }

@@ -7,44 +7,57 @@ class IViewport;
 struct EditorLightDescriptor;
 
 #define estDefault 0
-#define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
+#define CHECK_SNAP(R, A, C)   \
+	{                         \
+		R += A;               \
+		if (fabsf(R) >= C)    \
+		{                     \
+			A = snapto(R, C); \
+			R = 0;            \
+		}                     \
+		else                  \
+		{                     \
+			A = 0;            \
+		}                     \
+	}
 
-class CLevelTool: public CToolCustom
+class CLevelTool : public CToolCustom
 {
 	typedef CToolCustom inherited;
 
 	PROCESS_INFORMATION m_CompilerProcess = {};
 	PROCESS_INFORMATION m_GameProcess = {};
-	UIToolCustom*           m_ToolForm;
-	int             sub_target;
-	ObjClassID		target;
+	UIToolCustom* m_ToolForm;
+	int sub_target;
+	ObjClassID target;
 
-	Flags32			m_Flags;
+	Flags32 m_Flags;
 
-	enum{
-		flChangeAction		= (1<<0),
-		flChangeTarget		= (1<<1),
-		flUpdateProperties	= (1<<2),
-		flUpdateObjectList	= (1<<3)
-	  //  flSimulating		= (1<<4)
+	enum
+	{
+		flChangeAction = (1 << 0),
+		flChangeTarget = (1 << 1),
+		flUpdateProperties = (1 << 2),
+		flUpdateObjectList = (1 << 3)
+		//  flSimulating		= (1<<4)
 	};
 
-	int					iNeedAction;
-	ObjClassID			iNeedTarget;
-	int					iNeedSubTarget;
+	int iNeedAction;
+	ObjClassID iNeedTarget;
+	int iNeedSubTarget;
 
-	ESceneToolBase*		CurrentTool;
-	
-	TfrmObjectList*		pObjectListForm;
+	ESceneToolBase* CurrentTool;
 
-	void  	SetTargetAction		();
+	TfrmObjectList* pObjectListForm;
 
-	void  	RealSetAction   	(ETAction act);
-	void  	RealSetTarget   	(ObjClassID tgt,int sub_tgt, bool bForced);//=false);
-	
+	void SetTargetAction();
+
+	void RealSetAction(ETAction act);
+	void RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced); //=false);
+
 	UIPropertiesForm* m_Props;
 	UIPropertiesForm* m_WorldProps;
-	void   	OnPropsModified		();
+	void OnPropsModified();
 
 	void UpdateProperties();
 	void UpdateObjectList();
@@ -54,107 +67,121 @@ class CLevelTool: public CToolCustom
 	xr_vector<IViewport*> Viewlist;
 
 public:
-	float 				fFogness;
-	u32					dwFogColor;
-	xr_string			m_LastSelectionName;
+	float fFogness;
+	u32 dwFogColor;
+	xr_string m_LastSelectionName;
 
 	int AddViewport(IViewport*);
 	void RemoveViewport(IViewport* VP);
 
 public:
-						CLevelTool			();
-	virtual         	~CLevelTool		();
+	CLevelTool();
+	virtual ~CLevelTool();
 
-	IC UIToolCustom*            GetToolForm         ()const{ return m_ToolForm; }
-	IC UIPropertiesForm*GetProperties       ()const { return m_Props; }
-	IC UIPropertiesForm*GetWorldProperties  ()const { return m_WorldProps; }
-	IC ObjClassID		GetTarget   		(){return target;}
-	IC int          	GetSubTarget   		(){return sub_target;}
-	virtual void		SetAction			(ETAction act);
-	void 			 	SetTarget			(ObjClassID tgt, int sub_tgt);
-	
-	virtual void		SetFog				(u32 fog_color, float fogness){dwFogColor=fog_color;fFogness=fogness;}
-	virtual void		GetCurrentFog		(u32& fog_color, float& s_fog, float& e_fog);
+	IC UIToolCustom* GetToolForm() const { return m_ToolForm; }
+	IC UIPropertiesForm* GetProperties() const { return m_Props; }
+	IC UIPropertiesForm* GetWorldProperties() const { return m_WorldProps; }
+	IC ObjClassID GetTarget() { return target; }
+	IC int GetSubTarget() { return sub_target; }
+	virtual void SetAction(ETAction act);
+	void SetTarget(ObjClassID tgt, int sub_tgt);
 
-	virtual void		Render				();
-	virtual void		RenderEnvironment	();
-	virtual void		OnFrame				();
+	virtual void SetFog(u32 fog_color, float fogness)
+	{
+		dwFogColor = fog_color;
+		fFogness = fogness;
+	}
+	virtual void GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog);
 
-	virtual bool		OnCreate			();
-	virtual void		OnDestroy			();
+	virtual void Render();
+	virtual void RenderEnvironment();
+	virtual void OnFrame();
 
-	virtual bool		IfModified			();
-	virtual bool		IsModified			();
-	virtual void		Modified			(){;}
+	virtual bool OnCreate();
+	virtual void OnDestroy();
 
-	virtual const char*		GetInfo				();
-	
-	virtual void		ZoomObject			(bool bSelOnly);
+	virtual bool IfModified();
+	virtual bool IsModified();
+	virtual void Modified() { ; }
 
-	virtual bool		Load				(const char* name){return true;}
-	virtual bool		Save				(const char* name, bool bInternal=false){return true;}
-	virtual void		Reload				(){;}
-	
-	virtual void		OnDeviceCreate		(){;}
-	virtual void		OnDeviceDestroy		(){;}
+	virtual const char* GetInfo();
 
-	virtual void		Clear				(){inherited::Clear();}
+	virtual void ZoomObject(bool bSelOnly);
 
-	virtual void		OnShowHint			(AStringVec& SS);
+	virtual bool Load(const char* name) { return true; }
+	virtual bool Save(const char* name, bool bInternal = false) { return true; }
+	virtual void Reload() { ; }
 
-	virtual bool  	MouseStart	(TShiftState Shift);
-	virtual bool  	MouseEnd  	(TShiftState Shift);
-	virtual void  	MouseMove 	(TShiftState Shift);
-	virtual bool  	HiddenMode	();
-	virtual bool  	KeyDown    	(WORD Key, TShiftState Shift);
-	virtual bool  	KeyUp       (WORD Key, TShiftState Shift);
-	virtual bool  	KeyPress    (WORD Key, TShiftState Shift);
-	virtual bool  	MouseWheel  (int direction, TShiftState Shift);
+	virtual void OnDeviceCreate() { ; }
+	virtual void OnDeviceDestroy() { ; }
 
-	virtual bool		Pick				(TShiftState Shift);
-	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
+	virtual void Clear() { inherited::Clear(); }
 
-	virtual u32			CollectEditorLights	(EditorLightDescriptor* Out, u32 Capacity);
-	virtual void		SubmitShadowCasters	();
-	virtual void		PrepareScene		();
-	virtual CDetailManager*	GetSceneDetails		();
+	virtual void OnShowHint(AStringVec& SS);
 
-	virtual void		ShowProperties		(const char* focused_item);
+	virtual bool MouseStart(TShiftState Shift);
+	virtual bool MouseEnd(TShiftState Shift);
+	virtual void MouseMove(TShiftState Shift);
+	virtual bool HiddenMode();
+	virtual bool KeyDown(WORD Key, TShiftState Shift);
+	virtual bool KeyUp(WORD Key, TShiftState Shift);
+	virtual bool KeyPress(WORD Key, TShiftState Shift);
+	virtual bool MouseWheel(int direction, TShiftState Shift);
+
+	virtual bool Pick(TShiftState Shift);
+	virtual bool RayPick(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
+
+	virtual u32 CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity);
+	virtual void SubmitShadowCasters();
+	virtual void PrepareScene();
+	virtual CDetailManager* GetSceneDetails();
+
+	virtual void ShowProperties(const char* focused_item);
 
 	// Particle Editor hooks from the renderer
-	virtual void		PlayCurrent			(int idx = -1) override;
-	virtual void		StopCurrent			(bool bFinishPlaying) override;
-	virtual void		SelectEffect		(const char* name) override;
-	virtual void		RemoveAction		(u32 idx, bool bForced = false) override;
-	virtual void		SetCurrentPG		(PS::CPGDef* P) override;
-	virtual void		EditPAC				(PS::CPACDef* PAC) override;
-	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,true); if (bForced) OnFrame();}
+	virtual void PlayCurrent(int idx = -1) override;
+	virtual void StopCurrent(bool bFinishPlaying) override;
+	virtual void SelectEffect(const char* name) override;
+	virtual void RemoveAction(u32 idx, bool bForced = false) override;
+	virtual void SetCurrentPG(PS::CPGDef* P) override;
+	virtual void EditPAC(PS::CPACDef* PAC) override;
+	virtual void UpdateProperties(bool bForced)
+	{
+		m_Flags.set(flUpdateProperties | flUpdateObjectList, true);
+		if (bForced)
+		{
+			OnFrame();
+		}
+	}
 	virtual bool UpdateCamera();
+
 private:
-	virtual void		Simulate			();
-	virtual void		UseSimulatePositions();
+	virtual void Simulate();
+	virtual void UseSimulatePositions();
+
 public:
 	// specified functions
-	void            	Reset       		();
+	void Reset();
 
 
-	void  	ResetSubTarget		();
+	void ResetSubTarget();
 
-	void  	OnObjectsUpdate		();
+	void OnObjectsUpdate();
 
-	ObjClassID 			CurrentClassID		();
+	ObjClassID CurrentClassID();
 
-	virtual bool		GetSelectionPosition(Fmatrix& result);
+	virtual bool GetSelectionPosition(Fmatrix& result);
 
 	// commands
-	CCommandVar			CommandChangeTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandEnableTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandShowTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandReadonlyTarget	(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandMultiRenameObjects(CCommandVar p1,CCommandVar p2);
+	CCommandVar CommandChangeTarget(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandEnableTarget(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandShowTarget(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandReadonlyTarget(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2);
 
 public:
 	void RunGame(const char* Params = "");
+	void RunLevelBuilder(); // запускает xrLevelBuilder.exe (единый бинарник xrLC/xrAI/xrDO)
 	void RunXrLC();
 	void RunXrDO();
 	void RunXrAI_Spawn(bool current_level);
@@ -163,9 +190,8 @@ public:
 	bool IsCompilerRunning();
 	bool IsGameRunning();
 	void Terminated();
-
 };
-extern CLevelTool*		LTools;
+extern CLevelTool* LTools;
 
 extern void ResetActionToSelect();
 extern TShiftState ssRBOnly;

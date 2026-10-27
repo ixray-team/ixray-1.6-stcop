@@ -7,7 +7,7 @@
 extern ECORE_API bool g_force16BitTransformQuant;
 extern ECORE_API bool g_force32BitTransformQuant;
 
-template<typename T>
+template <typename T>
 T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 {
 	if (!j.is_object())
@@ -31,7 +31,7 @@ T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 		{
 			Out = it->get<std::string>().c_str();
 		}
-		else if constexpr (std::is_same_v<std::remove_cvref_t<T>, char*>)
+		else if constexpr (std::is_same_v<T, std::remove_cvref_t<char*>>)
 		{
 			auto OutTemp = it->get<std::string>();
 			xr_strcpy(Out, OutTemp.c_str());
@@ -110,9 +110,14 @@ void CLevelPreferences::Load()
 
 	if (const auto* comp = GetObjectSafe(JSONData, "Compilers Path"))
 	{
-		GetSafe(*comp, "xrLC", Compiler_xrLC);
-		GetSafe(*comp, "xrAI", Compiler_xrAI);
-		GetSafe(*comp, "xrDO", Compiler_xrDO);
+		// Новый формат: путь к xrLevelBuilder.exe.
+		GetSafe(*comp, "Path", CompilerPath);
+	}
+
+	// Если в конфиге пусто или ключа нет — используем стандартное имя.
+	if (CompilerPath.empty())
+	{
+		CompilerPath = "xrLevelBuilder.exe";
 	}
 
 	if (const auto* comp = GetObjectSafe(JSONData, "Compilers"))
@@ -189,7 +194,7 @@ void CLevelPreferences::Load()
 
 void CLevelPreferences::Save()
 {
-	inherited::Save		();
+	inherited::Save();
 
 	JSONData["gizmo"]["matrixmode"] = imManipulator.MatrixMode;
 	JSONData["windows"] = CEditorWndStates::Get().Save();
@@ -199,7 +204,7 @@ void CLevelPreferences::Save()
 	JSONData["world_partition"]["stream_around_camera"] = GWorldPartition.StreamAroundCamera;
 	JSONData["world_partition"]["stream_radius"] = GWorldPartition.StreamRadius;
 	JSONData["world_partition"]["stream_budget"] = GWorldPartition.StreamBudget;
-	
+
 	JSONData["LibaryEditor"]["Preview"] = PreviewRenderLibrary;
 	JSONData["PIE"]["ArtPos"] = PIEArtSpawnPos;
 
@@ -214,9 +219,8 @@ void CLevelPreferences::Save()
 		JSONData["ActorEditor"]["RecentFiles"].push_back(File.c_str());
 	}
 
-	JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
-	JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
-	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
+	// Compilers: единый путь к xrLevelBuilder.exe.
+	JSONData["Compilers Path"]["Path"] = CompilerPath.c_str();
 	JSONData["Compilers"]["LODsForAllMU"] = LODsForAllMU;
 	JSONData["Compilers"]["DuplicateObjectPositionAsError"] = DuplicateObjectPositionAsError;
 
@@ -228,28 +232,34 @@ void CLevelPreferences::Save()
 	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;
 	JSONData["Scene"]["AIMapDefaultLegacy"] = Scene->IsAIMapDefaultLegacy;
 
-	SceneToolsMapPairIt _I 	= Scene->FirstTool();
-	SceneToolsMapPairIt _E 	= Scene->LastTool();
+	SceneToolsMapPairIt _I = Scene->FirstTool();
+	SceneToolsMapPairIt _E = Scene->LastTool();
 	for (; _I != _E; _I++)
+	{
 		if (_I->second && (_I->first != OBJCLASS_DUMMY))
+		{
 			JSONData["targets"][_I->second->ClassName()] = _I->second->m_EditFlags.flags;
+		}
+	}
 }
 
 void CLevelPreferences::OnEnabledChange(PropValue* prop)
 {
-	ESceneToolBase* M		= Scene->GetTool(prop->tag); VERIFY(M);
-	ExecCommand				(COMMAND_ENABLE_TARGET,prop->tag,M->IsEnabled());
+	ESceneToolBase* M = Scene->GetTool(prop->tag);
+	VERIFY(M);
+	ExecCommand(COMMAND_ENABLE_TARGET, prop->tag, M->IsEnabled());
 }
 
 void CLevelPreferences::OnReadonlyChange(PropValue* prop)
 {
-	ESceneToolBase* M		= Scene->GetTool(prop->tag); VERIFY(M);
-	ExecCommand				(COMMAND_READONLY_TARGET,prop->tag,M->IsForceReadonly());
+	ESceneToolBase* M = Scene->GetTool(prop->tag);
+	VERIFY(M);
+	ExecCommand(COMMAND_READONLY_TARGET, prop->tag, M->IsForceReadonly());
 }
 
 void CLevelPreferences::FillProp(PropItemVec& items)
 {
-	inherited::FillProp	(items);
+	inherited::FillProp(items);
 
 	PHelper().CreateBool(items, "Experimental\\LOD\\Use MU LODs (4-level)", &UseMULODs);
 	PHelper().CreateBool(items, "Experimental\\LOD\\Disable Billboard LOD", &DisableBillboardLOD);
@@ -257,20 +267,21 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 12", &ActorAlwaysShowKeyBar12);
 	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 34", &ActorAlwaysShowKeyBar34);
 
-	SceneToolsMapPairIt _I 	= Scene->FirstTool();
-	SceneToolsMapPairIt _E 	= Scene->LastTool();
-	for (; _I!=_E; _I++)
-		if (_I->second&&(_I->first!=OBJCLASS_DUMMY))
+	SceneToolsMapPairIt _I = Scene->FirstTool();
+	SceneToolsMapPairIt _E = Scene->LastTool();
+	for (; _I != _E; _I++)
+	{
+		if (_I->second && (_I->first != OBJCLASS_DUMMY))
 		{
 			if (_I->second->AllowEnabling())
 			{
-				PropValue* V 	= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
-				V->tag			= _I->second->FClassID;
+				PropValue* V = PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
+				V->tag = _I->second->FClassID;
 				V->OnChangeEvent.bind(this, &CLevelPreferences::OnEnabledChange);
 			}
-			PropValue* V		= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
-			V->tag				= _I->second->FClassID;
+			PropValue* V = PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
+			V->tag = _I->second->FClassID;
 			V->OnChangeEvent.bind(this, &CLevelPreferences::OnReadonlyChange);
 		}
+	}
 }
-
