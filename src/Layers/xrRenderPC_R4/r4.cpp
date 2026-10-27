@@ -1054,6 +1054,12 @@ static HRESULT create_shader(
 				svs_result->editor_instance_slot = BindDesc.BindPoint;
 			}
 
+			// Rain owns its instance stream independently of detail/editor instancing.
+			if (SUCCEEDED(pReflection->GetResourceBindingDescByName("RainInstances", &BindDesc)) && BindDesc.Type == D3D_SIT_STRUCTURED)
+			{
+				svs_result->RainInstanceSlot = BindDesc.BindPoint;
+			}
+
 			// The Shader Editor reflects VS inputs from the full bytecode
 			if (Device.IsEditorMode())
 			{

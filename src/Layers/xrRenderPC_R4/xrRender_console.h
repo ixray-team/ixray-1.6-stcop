@@ -5,6 +5,15 @@
 #include "RenderAPI.h"
 
 // Common
+extern RENDER_API u32 g_RainShading;
+extern RENDER_API float g_RainOpacity;
+extern RENDER_API float g_RainColorBlend;
+extern RENDER_API float g_RainRadius;
+extern RENDER_API float g_RainImpactRadius;
+extern RENDER_API float g_RainNear;
+extern RENDER_API float g_RainRefraction;
+extern RENDER_API float g_RainTransmission;
+extern RENDER_API float g_RainFeather;
 extern RENDER_API int g_SpotShadowCacheMode;
 extern RENDER_API int g_SunShadowCacheMode;
 extern RENDER_API int g_SpotShadowCacheBudgetMb;
