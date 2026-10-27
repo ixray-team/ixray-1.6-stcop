@@ -87,9 +87,9 @@ Both `save`/`load` and `Serialize` persist the section, comparison rank, fallbac
 
 `CActor::save(NET_Packet&)` writes all nine coefficients directly with `w_float` after actor statistics. `CActor::load(IReader&)` reads them directly with `r_float` at the same position. The fixed layout is nine consecutive floats (36 bytes) in `WeaponModifier` order, with no signature, count or legacy-format detection. Changing the enum order or count changes the save format. Saves without these values or with the earlier signature/count header are incompatible; start a new game.
 
-`CGameObject::net_Save` calls actor serialization before `CScriptBinder::save`; `net_Load` restores actor data before `CScriptBinder::load`. The loader assigns stored values directly. `CActor::SetActorWeaponModifier` validates values assigned through the Lua API and indexes the same coefficient vector.
+`CGameObject::net_Save` calls actor serialization before `CScriptBinder::save`; `net_Load` restores actor data before `CScriptBinder::load`. The loader assigns stored values directly. `CActor::SetActorWeaponModifier` clamps the incoming value once with `clamp(Value, 0.0f, FLT_MAX)` and assigns it by enum index. The standard clamp does not normalize NaN.
 
-Sources: [actor save/load](../../src/xrGame/Actor_Network.cpp), [coefficient definitions](../../src/xrGame/WeaponsModifiers.h), [coefficient initialization and validation](../../src/xrGame/Actor.cpp), [Lua bindings](../../src/xrGame/script_game_object_script3.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
+Sources: [actor save/load](../../src/xrGame/Actor_Network.cpp), [coefficient definitions](../../src/xrGame/WeaponsModifiers.h), [coefficient initialization and clamping](../../src/xrGame/Actor.cpp), [Lua bindings](../../src/xrGame/script_game_object_script3.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
 
 ## Files
 

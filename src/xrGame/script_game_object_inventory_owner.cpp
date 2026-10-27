@@ -492,7 +492,7 @@ bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
 	{
 		return true;
 	}
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: invalid actor, modifier type or coefficient (finite values >= 0)");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: expected an actor and a valid modifier type");
 	return false;
 }
 
