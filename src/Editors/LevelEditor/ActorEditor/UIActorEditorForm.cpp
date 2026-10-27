@@ -906,21 +906,6 @@ void UIActorEditorForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	}
 	Gap();
 
-	// Physics
-	if (Button(ICON_FA_PERSON_FALLING " Simulate", "Activates physics simulation", Simulate, ImDrawFlags_RoundCornersAll))
-	{
-		Simulate = !Simulate;
-		if (Tool->IsPhysics())
-		{
-			Tool->PhysicsSimulate();
-		}
-		else
-		{
-			Tool->PhysicsStopSimulate();
-		}
-	}
-	Gap();
-
 	// Skeleton
 	DrawSkeletonFlag("DrawJoints", ICON_FA_CIRCLE_DOT, "Draw Joints", epoDrawJoints, ImDrawFlags_RoundCornersLeft);
 	DrawSkeletonFlag("DrawBoneAxis", ICON_FA_CROSSHAIRS, "Draw Bone Axis", epoDrawBoneAxis, ImDrawFlags_RoundCornersNone);

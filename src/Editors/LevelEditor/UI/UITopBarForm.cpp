@@ -7,6 +7,7 @@
 #include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../ShaderEditor/UIShaderEditorForm.h"
 #include "../ActorEditor/ActorEditor.h"
+#include "../Editor/Scene/LEPhysics.h"
 
 UITopBarForm::UITopBarForm()
 {
@@ -23,7 +24,6 @@ UITopBarForm::UITopBarForm()
 	InitIcons();
 
 	m_VerifySpaceRestrictors = false;
-    m_Simulate               = false;
 }
 
 UITopBarForm::~UITopBarForm() 
@@ -208,9 +208,23 @@ void UITopBarForm::Draw()
 			{
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
 				
-				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
+				// Actors tab: the button simulates the edited actor instead of the level
+				CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+				bool IsSimulating = Actor != nullptr ? Actor->IsPhysics() : g_scene_physics.Simulating();
+				if (XRay::ImGui::ToolbarButton("PhysSimulation228", ICON_FA_PERSON_FALLING, &IsSimulating, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersLeft))
 				{
-					ExecCommand(COMMAND_SIMULATE, true);
+					if (Actor == nullptr)
+					{
+						ExecCommand(COMMAND_SIMULATE, true);
+					}
+					else if (Actor->IsPhysics())
+					{
+						Actor->PhysicsStopSimulate();
+					}
+					else
+					{
+						Actor->PhysicsSimulate();
+					}
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -219,10 +233,12 @@ void UITopBarForm::Draw()
 				}
 				ImGui::SameLine(0, 0);
 
-				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
+				ImGui::BeginDisabled(Actor != nullptr);
+				if (XRay::ImGui::ToolbarButton("UsePos228", ICON_FA_THUMBTACK, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
+				ImGui::EndDisabled();
 
 				if (ImGui::IsItemHovered())
 				{

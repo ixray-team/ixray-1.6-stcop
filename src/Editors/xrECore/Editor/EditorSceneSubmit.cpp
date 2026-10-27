@@ -282,7 +282,13 @@ SDeferredSubmit& CEditorSceneSubmit::AddDeferred()
 		Deferred.emplace_back(xr_make_unique<SDeferredSubmit>());
 	}
 
-	return *Deferred[DeferredCount++];
+	SDeferredSubmit& Job = *Deferred[DeferredCount++];
+	for (SDeferredSubmit::SSelected& Sel : Job.Selected)
+	{
+		Sel.Shader = nullptr;
+		Sel.InstancedShader = nullptr;
+	}
+	return Job;
 }
 
 void CEditorSceneSubmit::LaunchDeferred(SDeferredSubmit& Job)

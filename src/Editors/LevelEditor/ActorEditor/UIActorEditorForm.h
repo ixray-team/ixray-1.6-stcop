@@ -74,7 +74,6 @@ private:
 	int PickMode = 2;
 	RenderMode Mode = Render_Editor;
 	EAnimMode AnimMode = e8bit;
-	bool Simulate = false;
 
 	// Reference View: the scene is copied on the primary thread, a task matches the references
 	struct SReferenceEntry
