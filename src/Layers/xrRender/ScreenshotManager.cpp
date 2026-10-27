@@ -18,6 +18,7 @@ extern int SM_FOR_SEND_HEIGHT;
 using namespace DirectX;
 
 static xr_unique_ptr<AsyncScreenshotService> g_AsyncScreenshots;
+static xr_unique_ptr<xr_vector<xr_string>> g_PendingGameSaveScreenshots;
 
 void ScreenshotManager::Flush()
 {
@@ -32,6 +33,7 @@ void ScreenshotManager::Shutdown()
 {
 	Flush();
 	g_AsyncScreenshots.reset();
+	g_PendingGameSaveScreenshots.reset();
 }
 
 bool ScreenshotManager::HasPendingScreenshot = false;
@@ -41,12 +43,33 @@ void ScreenshotManager::RequestScreenshot()
 	HasPendingScreenshot = true;
 }
 
+void ScreenshotManager::RequestGameSaveScreenshot(const char* Name)
+{
+	if (!Name || !Name[0])
+	{
+		return;
+	}
+	if (!g_PendingGameSaveScreenshots)
+	{
+		g_PendingGameSaveScreenshots = xr_make_unique<xr_vector<xr_string>>();
+	}
+	g_PendingGameSaveScreenshots->emplace_back(Name);
+}
+
 void ScreenshotManager::CapturePendingScreenshot()
 {
 	if (HasPendingScreenshot)
 	{
 		HasPendingScreenshot = false;
 		SaveScreenshot(IRender_interface::SM_NORMAL, nullptr);
+	}
+	if (g_PendingGameSaveScreenshots)
+	{
+		for (const auto& Name : *g_PendingGameSaveScreenshots)
+		{
+			SaveScreenshot(IRender_interface::SM_FOR_GAMESAVE, Name.c_str());
+		}
+		g_PendingGameSaveScreenshots->clear();
 	}
 	if (g_AsyncScreenshots)
 	{
