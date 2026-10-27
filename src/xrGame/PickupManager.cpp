@@ -204,24 +204,24 @@ bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 		CObject* item = nullptr;
 		bool bOverlaped = false;
 	} tmp_s{item, false};
-	Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, void* params) -> bool
+	Level().ObjectSpace.RayQuery(RQR, RD, [](const collide::rq_result& result, void* params) -> bool
 	{
 		SOverlaped& tmp_s = *(SOverlaped*)params;
 
-		if (result.O)
+		if (result.valid() && !result.IsStatic())
 		{
-			if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
+			if ((result.GetDynamic()->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
 			{
 				tmp_s.bOverlaped = true;
 				return true;
 			}
 
-			if (result.O == tmp_s.item)
+			if (result.GetDynamic() == tmp_s.item)
 			{
 				return true;
 			}
 
-			CGameObject* GO = result.O != nullptr ? result.O->cast_game_object() : nullptr;
+			CGameObject* GO = const_cast<CObject*>(result.GetDynamic())->cast_game_object();
 			if (GO == nullptr)
 			{
 				return true;
@@ -255,7 +255,7 @@ bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 			}
 		}
 		
-		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& T = result.GetStatic()->get_tris()[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
 			return true;

@@ -114,20 +114,20 @@ bool Visible(CBaseMonster& Monster, CObject& Object, float Angle, float Radius)
 		} Query{&Monster, &Object};
 		collide::rq_results Results;
 		collide::ray_defs Ray(From, Direction, Distance, CDB::OPT_FULL_TEST, collide::rqtBoth);
-		Level().ObjectSpace.RayQuery(Results, Ray, [](collide::rq_result& Hit, LPVOID Context) -> bool
+		Level().ObjectSpace.RayQuery(Results, Ray, [](const collide::rq_result& Hit, LPVOID Context) -> bool
 		{
 			auto& Query = *static_cast<SVisibilityQuery*>(Context);
-			if (!Hit.O && Query.Monster->feel_vision_mtl_transp(nullptr, Hit.element) >= 1.f)
+			if (Hit.IsStatic() && Query.Monster->feel_vision_mtl_transp(Hit) >= 1.f)
 			{
 				return true;
 			}
-			Query.Visible = Hit.O == Query.Target;
+			Query.Visible = Hit.GetDynamic() == Query.Target;
 			return false;
 		}, &Query, nullptr, &Monster);
 		return Query.Visible;
 	}
 	collide::rq_result Hit;
-	return !Level().ObjectSpace.RayPick(From, Direction, Distance, collide::rqtBoth, Hit, &Monster) || Hit.O == &Object;
+	return !Level().ObjectSpace.RayPick(From, Direction, Distance, collide::rqtBoth, Hit, &Monster) || Hit.GetDynamic() == &Object;
 }
 void AddArea(u32 Group, const Fvector& Position, float Radius, u32 Evidence, u32 Duration)
 {

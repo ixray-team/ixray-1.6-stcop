@@ -396,7 +396,7 @@ bool CTelekineticPoltergeist::trace_object(CObject* obj, const Fvector& target)
 
 	if (Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, rq_result, obj))
 	{
-		CObject* raypicked_object = rq_result.O;
+		auto raypicked_object = !rq_result.IsStatic() ? rq_result.GetDynamic() : nullptr;
 		const CEntityAlive* our_enemy = this->poltergeist->EnemyMan.get_enemy();
 
 		if (raypicked_object == our_enemy)

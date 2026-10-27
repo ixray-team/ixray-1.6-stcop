@@ -167,14 +167,14 @@ private:
 	void			GetVictimPos			(CEntityAlive* victim, Fvector & pos_dest);
 	u32				SelectHitsToShot		(shot_targets_t & dst_dirs, Fvector const & f_pos);
 	bool			SelectBestHitVictim		(Fvector const & f_pos, Fmatrix & parent_xform_dest, Fvector & fendpos_dest, Fsphere & query_sphere);
-	CObject*		TryPick					(Fvector const & start_pos,
+	const CObject*		TryPick					(Fvector const & start_pos,
 											 Fvector const & dir,
 											 float const dist);
 
-	static bool		RayQueryCallback		(collide::rq_result& result, LPVOID this_ptr);
+	static bool		RayQueryCallback		(const collide::rq_result& result, LPVOID this_ptr);
 	collide::rq_results				m_ray_query_results;
 	ALife::_OBJECT_ID								m_except_id;
-	CObject*						m_last_picked_obj;
+	const CObject*						m_last_picked_obj;
 
 	typedef xr_vector<ISpatialShared>			spartial_base_t;
 	typedef buffer_vector<CEntityAlive*>		victims_list_t;

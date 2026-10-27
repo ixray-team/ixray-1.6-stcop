@@ -30,33 +30,42 @@ struct SFlyingRayContext
     bool support_query;
 };
 
-bool flying_solid_hit(collide::rq_result& hit, LPVOID data)
+bool flying_solid_hit(const collide::rq_result& hit, LPVOID data)
 {
     auto& context = *static_cast<SFlyingRayContext*>(data);
     // Airborne birds ignore one another. Grounded birds and final approaches
     // retain collision so occupied perches are not treated as free.
-    if (hit.O)
+    if (!hit.IsStatic())
     {
-        const auto* flyer = smart_cast<CFlyingMonster*>(hit.O);
+        const auto* flyer = smart_cast<CFlyingMonster*>(hit.GetDynamic());
         if (flyer && flyer->g_Alive() && !flyer->flight().NeedsGroundCollision(flyer->Position()))
-            return true;
+        {
+	        return true;
+        }
         // A test spawn at the player's feet starts inside their collision
         // volume. Let it leave that overlap; outside it the actor blocks rays
         // normally. World geometry is never ignored.
-        if (hit.O == Level().CurrentEntity() &&
-            context.mover.Position().distance_to_sqr(hit.O->Position()) <
-                _sqr(context.mover.Radius() + hit.O->Radius() + .1f))
-            return true;
+        if (hit.GetDynamic() == Level().CurrentEntity() &&
+            context.mover.Position().distance_to_sqr(hit.GetDynamic()->Position()) <
+                _sqr(context.mover.Radius() + hit.GetDynamic()->Radius() + .1f))
+        {
+	        return true;
+        }
     }
-    if (!hit.O)
+    if (!hit.IsStatic())
     {
-        const auto* material=GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[hit.element].material);
+        const auto* material=GMLib.GetMaterialByIdx(hit.GetStatic()->get_tris()[hit.element].material);
         if (material->Flags.is(SGameMtl::flPassable) &&
-            !(context.support_query && material->Flags.is(SGameMtl::flLiquid))) return true;
+            !(context.support_query && material->Flags.is(SGameMtl::flLiquid)))
+        {
+	        return true;
+        }
     }
     auto& nearest = context.nearest;
     if (nearest.element < 0 || hit.range < nearest.range)
-        nearest = hit;
+    {
+	    nearest = hit;
+    }
     return true;
 }
 
@@ -69,7 +78,7 @@ bool FlyingCollisionCandidate(const collide::ray_defs&, CObject* Object, LPVOID)
 bool flying_pick(CGameObject& object, const Fvector& from, const Fvector& direction,
     float range, collide::rq_result& hit, collide::rq_target target = collide::rqtBoth, bool support_query = false, const xr_vector<CObject*>* Candidates = nullptr)
 {
-    hit.set(nullptr, range, -1);
+    hit.reset();
     collide::rq_results results;
     collide::ray_defs ray(from, direction, range, CDB::OPT_FULL_TEST, target);
     SFlyingRayContext context{hit, object, support_query};
@@ -125,7 +134,7 @@ struct CFlyingMovementController::SSearch
             return;
         }
         auto& Searches = Registry();
-        Searches.erase(std::remove(Searches.begin(), Searches.end(), this), Searches.end());
+        std::erase(Searches, this);
     }
     u32 Granted = 0, GrantedFrame = u32(-1);
     u32 Budget(u32 GlobalLimit)
@@ -505,16 +514,27 @@ bool CFlyingMovementController::support(CGameObject& object, const Fvector& from
 {
     collide::rq_result hit;
     if (!flying_pick(object, from, Fvector().set(0,-1,0), range, hit, collide::rqtStatic, true))
-        return false;
-    const auto& triangle = Level().ObjectSpace.GetStaticTris()[hit.element];
-    if (GMLib.GetMaterialByIdx(triangle.material)->Flags.is(SGameMtl::flLiquid)) return false;
-    const auto& vertices = Level().ObjectSpace.GetStaticVerts();
+    {
+	    return false;
+    }
+    const auto& triangle = hit.GetStatic()->get_tris()[hit.element];
+    if (GMLib.GetMaterialByIdx(triangle.material)->Flags.is(SGameMtl::flLiquid))
+    {
+	    return false;
+    }
+    const auto& vertices = hit.GetStatic()->get_verts();
+	Fvector verts_global[3];
+	hit.xform.transform_tiny(verts_global[0], vertices[triangle.verts[0]]);
+	hit.xform.transform_tiny(verts_global[1], vertices[triangle.verts[1]]);
+	hit.xform.transform_tiny(verts_global[2], vertices[triangle.verts[2]]);
     Fvector a, b;
-    a.sub(vertices[triangle.verts[1]], vertices[triangle.verts[0]]);
-    b.sub(vertices[triangle.verts[2]], vertices[triangle.verts[0]]);
+    a.sub(verts_global[1], verts_global[0]);
+    b.sub(verts_global[2], verts_global[0]);
     normal.crossproduct(a, b).normalize_safe();
     if (normal.y < cosf(65.f * PI / 180.f))
-        return false;
+    {
+	    return false;
+    }
     point.mad(from, Fvector().set(0,-1,0), hit.range);
     return true;
 }
@@ -523,7 +543,9 @@ bool CFlyingMovementController::landing_footprint(CGameObject& object,
     const Fvector& contact, const Fvector& normal) const
 {
     if (normal.y < LandingMinNormalY)
-        return false;
+    {
+	    return false;
+    }
     // The circular foot disk lies in the triangle's tangent plane. Probe
     // along its normal, so steep slopes do not stretch it into an ellipse.
     Fvector tangent, bitangent;
@@ -536,13 +558,23 @@ bool CFlyingMovementController::landing_footprint(CGameObject& object,
     Fvector centre_probe; centre_probe.mad(contact,normal,tolerance*2.f);
     collide::rq_result centre_hit;
     if (!flying_pick(object,centre_probe,ray_direction,tolerance*4.f,centre_hit,collide::rqtStatic,true) ||
-        std::abs(centre_hit.range-tolerance*2.f)>tolerance) return false;
-    const auto& tri=Level().ObjectSpace.GetStaticTris()[centre_hit.element];
-    if (GMLib.GetMaterialByIdx(tri.material)->Flags.is(SGameMtl::flLiquid)) return false;
-    const auto& verts=Level().ObjectSpace.GetStaticVerts();
+        std::abs(centre_hit.range-tolerance*2.f)>tolerance)
+    {
+	    return false;
+    }
+    const auto& tri=centre_hit.GetStatic()->get_tris()[centre_hit.element];
+    if (GMLib.GetMaterialByIdx(tri.material)->Flags.is(SGameMtl::flLiquid))
+    {
+	    return false;
+    }
+    const auto& verts=centre_hit.GetStatic()->get_verts();
+	Fvector verts_global[3];
+	centre_hit.xform.transform_tiny(verts_global[0], verts[tri.verts[0]]);
+	centre_hit.xform.transform_tiny(verts_global[1], verts[tri.verts[1]]);
+	centre_hit.xform.transform_tiny(verts_global[2], verts[tri.verts[2]]);
     Fvector ab, ac, triangle_normal;
-    ab.sub(verts[tri.verts[1]],verts[tri.verts[0]]);
-    ac.sub(verts[tri.verts[2]],verts[tri.verts[0]]);
+    ab.sub(verts_global[1],verts_global[0]);
+    ac.sub(verts_global[2],verts_global[0]);
     triangle_normal.crossproduct(ab,ac).normalize_safe();
     bool inside=triangle_normal.dotproduct(normal)>.9999f;
     for (u32 edge=0; edge<3; ++edge)
@@ -569,8 +601,13 @@ bool CFlyingMovementController::landing_footprint(CGameObject& object,
             collide::rq_result hit;
             if (!flying_pick(object, probe, ray_direction, tolerance * 4.f, hit, collide::rqtStatic, true) ||
                 std::abs(hit.range - tolerance * 2.f) > tolerance)
-                return false;
-            if (GMLib.GetMaterialByIdx(Level().ObjectSpace.GetStaticTris()[hit.element].material)->Flags.is(SGameMtl::flLiquid)) return false;
+            {
+	            return false;
+            }
+            if (GMLib.GetMaterialByIdx(hit.GetStatic()->get_tris()[hit.element].material)->Flags.is(SGameMtl::flLiquid))
+            {
+	            return false;
+            }
         }
     }
     return true;

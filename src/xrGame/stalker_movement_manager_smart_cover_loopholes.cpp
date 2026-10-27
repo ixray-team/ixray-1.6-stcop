@@ -144,10 +144,10 @@ bool stalker_movement_manager_smart_cover::test_pick	(Fvector source, Fvector de
 	}; // struct parameters
 
 	struct test_pick {
-		static bool callback	(collide::rq_result& result, LPVOID user_data)
+		static bool callback	(const collide::rq_result& result, LPVOID user_data)
 		{
 			parameters* const	param = (parameters*)user_data;
-			if (param->m_object->feel_vision_mtl_transp(result.O,result.element) < 1.f) {
+			if (param->m_object->feel_vision_mtl_transp(result) < 1.f) {
 				*param->m_range	= result.range;
 				return			(false);
 			}

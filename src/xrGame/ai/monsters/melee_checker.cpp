@@ -24,8 +24,10 @@ float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 	r_res.r_clear			();
 
 	if (m_object->CFORM()->_RayQuery(r_query, r_res)) {
-		if (r_res.r_begin()->O == enemy)
-			dist			= r_res.r_begin()->range;
+		if (!r_res.r_any().IsStatic() && r_res.r_any().GetDynamic() == enemy)
+		{
+			dist			= r_res.r_any().range;
+		}
 	}
 
 	return					(dist);

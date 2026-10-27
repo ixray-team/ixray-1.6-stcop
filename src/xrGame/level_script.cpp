@@ -139,7 +139,7 @@ void UnLockActor_script() {
 
 const char* command_line	()
 {
-	return		(Core.Params);
+	return		Core.Params;
 }
 bool IsDynamicMusic()
 {
@@ -212,7 +212,7 @@ CScriptGameObject* tpfGetActor()
 	CObject* current_entity = Level().CurrentEntity();
 	if (CActor* l_tpActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 	{
-		return (smart_cast<CGameObject*>(l_tpActor)->lua_game_object());
+		return smart_cast<CGameObject*>(l_tpActor)->lua_game_object();
 	}
 	else
 	{
@@ -257,27 +257,27 @@ CScriptGameObject *get_object_by_id(ALife::_OBJECT_ID id)
 
 const char* get_past_wdesc()
 {
-	return			(g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->m_identifier.c_str() : "null");
+	return			g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->m_identifier.c_str() : "null";
 }
 
 const char* get_next_wdesc()
 {
-	return			(g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->m_identifier.c_str() : "null");
+	return			g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->m_identifier.c_str() : "null";
 }
 
 float get_past_wdesc_execution_time()
 {
-	return			(g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->exec_time : -1.f);
+	return			g_pGamePersistent->Environment().Current[0] ? g_pGamePersistent->Environment().Current[0]->exec_time : -1.f;
 }
 
 float get_next_wdesc_execution_time()
 {
-	return			(g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->exec_time : -1.f);
+	return			g_pGamePersistent->Environment().Current[1] ? g_pGamePersistent->Environment().Current[1]->exec_time : -1.f;
 }
 
 float get_weather_game_time()
 {
-	return (g_pGamePersistent->Environment().GetGameTime());
+	return g_pGamePersistent->Environment().GetGameTime();
 }
 
 void set_past_wdesc(const char* WeatherSection)
@@ -292,7 +292,7 @@ void set_next_wdesc(const char* WeatherSection)
 
 const char* get_weather	()
 {
-	return			(*g_pGamePersistent->Environment().GetWeather());
+	return			*g_pGamePersistent->Environment().GetWeather();
 }
 
 void set_weather	(const char* weather_name, bool forced)
@@ -302,22 +302,22 @@ void set_weather	(const char* weather_name, bool forced)
 
 bool set_weather_fx	(const char* weather_name)
 {
-		return		(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
+		return		g_pGamePersistent->Environment().SetWeatherFX(weather_name);
 }
 
 bool start_weather_fx_from_time	(const char* weather_name, float time)
 {
-	return		(g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time));
+	return		g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time);
 }
 
 bool is_wfx_playing	()
 {
-	return			(g_pGamePersistent->Environment().IsWFXPlaying());
+	return			g_pGamePersistent->Environment().IsWFXPlaying();
 }
 
 float get_wfx_time	()
 {
-	return			(g_pGamePersistent->Environment().wfx_time);
+	return			g_pGamePersistent->Environment().wfx_time;
 }
 
 void stop_weather_fx()
@@ -335,7 +335,7 @@ void set_time_factor(float time_factor)
 
 float get_time_factor()
 {
-	return			(Level().GetGameTimeFactor());
+	return			Level().GetGameTimeFactor();
 }
 
 void set_global_time_factor(float tf) {
@@ -345,7 +345,7 @@ void set_global_time_factor(float tf) {
 	Device.time_factor(tf);
 }
 
-float get_global_time_factor() { return (Device.time_factor()); }
+float get_global_time_factor() { return Device.time_factor(); }
 
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
@@ -365,21 +365,21 @@ ESingleGameDifficulty get_game_difficulty()
 u32 get_time_days()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
+	split_time(g_pGameLevel && Level().game ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			day;
 }
 
 u32 get_time_hours()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
+	split_time(g_pGameLevel && Level().game ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			hours;
 }
 
 u32 get_time_minutes()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
+	split_time(g_pGameLevel && Level().game ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
 }
 
@@ -419,7 +419,7 @@ float high_cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 	float			y,p;
 	direction.getHP	(y,p);
-	return			(ai().level_graph().high_cover_in_direction(y,level_vertex_id));
+	return			ai().level_graph().high_cover_in_direction(y,level_vertex_id);
 }
 
 float low_cover_in_direction(u32 level_vertex_id, const Fvector &direction)
@@ -430,12 +430,12 @@ float low_cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 	float			y,p;
 	direction.getHP	(y,p);
-	return			(ai().level_graph().low_cover_in_direction(y,level_vertex_id));
+	return			ai().level_graph().low_cover_in_direction(y,level_vertex_id);
 }
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv->rain_density);
+	return			g_pGamePersistent->Environment().CurrentEnv->rain_density;
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -450,7 +450,7 @@ u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distan
 	Fvector			finish_position = Fvector(start_position).add(direction);
 	u32				result_ = u32(-1);
 	ai().level_graph().farthest_vertex_in_direction(level_vertex_id,start_position,finish_position,result_,0);
-	return			(ai().level_graph().valid_vertex_id(result_) ? result_ : level_vertex_id);
+	return			ai().level_graph().valid_vertex_id(result_) ? result_ : level_vertex_id;
 }
 
 Fvector vertex_position(u32 level_vertex_id)
@@ -458,7 +458,7 @@ Fvector vertex_position(u32 level_vertex_id)
     if (!ai().level_graph().valid_vertex_id(level_vertex_id)) {
         return Fvector{};
     }
-	return			(ai().level_graph().vertex_position(level_vertex_id));
+	return			ai().level_graph().vertex_position(level_vertex_id);
 }
 
 void map_add_object_spot(ALife::_OBJECT_ID id, const char* spot_type, const char* text)
@@ -504,12 +504,12 @@ CMapManager* get_map_manager()
 
 bool patrol_path_exists(const char* patrol_path)
 {
-	return		(!!ai().patrol_paths().path(patrol_path,true));
+	return		!!ai().patrol_paths().path(patrol_path,true);
 }
 
 const char* get_name()
 {
-	return		(*Level().name());
+	return		*Level().name();
 }
 
 void prefetch_sound	(const char* name)
@@ -520,7 +520,7 @@ void prefetch_sound	(const char* name)
 
 CClientSpawnManager	&get_client_spawn_manager()
 {
-	return		(Level().client_spawn_manager());
+	return		Level().client_spawn_manager();
 }
 
 void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
@@ -587,7 +587,7 @@ void show_weapon(bool b)
 
 bool is_level_present()
 {
-	return (!!g_pGameLevel);
+	return !!g_pGameLevel;
 }
 
 void add_call(const luabind::functor<bool> &condition,const luabind::functor<void> &action)
@@ -657,12 +657,12 @@ cphysics_world_scripted* physics_world_scripted()
 }
 CEnvironment *environment()
 {
-	return		(g_pGamePersistent->pEnvironment);
+	return		g_pGamePersistent->pEnvironment;
 }
 
 CEnvDescriptor *current_environment(CEnvironment *self_)
 {
-	return		(self_->CurrentEnv);
+	return		self_->CurrentEnv;
 }
 
 extern bool g_bDisableAllInput;
@@ -954,7 +954,7 @@ int g_get_general_goodwill_between ( ALife::_OBJECT_ID from, ALife::_OBJECT_ID t
 
 	if (!from_obj||!to_obj){
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"RELATION_REGISTRY::get_general_goodwill_between  : cannot convert obj to CSE_ALifeTraderAbstract!");
-		return (0);
+		return 0;
 	}	
 	s32 community_to_obj_goodwill		= RELATION_REGISTRY().GetCommunityGoodwill	(from_obj->Community(), to					);
 	s32 community_to_community_goodwill	= RELATION_REGISTRY().GetCommunityRelation	(from_obj->Community(), to_obj->Community()	);
@@ -964,7 +964,7 @@ int g_get_general_goodwill_between ( ALife::_OBJECT_ID from, ALife::_OBJECT_ID t
 
 u32 vertex_id	(Fvector position)
 {
-	return	(ai().level_graph().vertex_id(position));
+	return	ai().level_graph().vertex_id(position);
 }
 
 u32 render_get_dx_level()
@@ -1018,7 +1018,7 @@ const char* current_language()
 
 bool has_active_tutotial()
 {
-	return (g_tutorial!=nullptr);
+	return g_tutorial!=nullptr;
 }
 
 bool valid_vertex_id(u32 level_vertex_id) {
@@ -1075,21 +1075,25 @@ void spawn_section(const char* sSection, Fvector3 vPosition, u32 LevelVertexID, 
 CScriptGameObject* g_get_target_obj()
 {
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-	if (RQ.O)
+	if (!RQ.IsStatic())
 	{
-		CGameObject* game_object = static_cast<CGameObject*>(RQ.O);
+		CGameObject* game_object = const_cast<CObject*>(RQ.GetDynamic())->cast_game_object();
 		if (game_object)
+		{
 			return game_object->lua_game_object();
+		}
 	}
-	return (0);
+	return nullptr;
 }
 
 float g_get_target_dist()
 {
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	if (RQ.range)
+	{
 		return RQ.range;
-	return (0);
+	}
+	return 0;
 }
 
 u32 g_get_target_element()
@@ -1099,7 +1103,7 @@ u32 g_get_target_element()
 	{
 		return RQ.element;
 	}
-	return (0);
+	return 0;
 }
 
 u8 get_active_cam()
@@ -1120,7 +1124,7 @@ bool valid_vertex(u32 level_vertex_id)
 
 xrTime get_start_time()
 {
-	return (xrTime(Level().GetStartGameTime()));
+	return xrTime(Level().GetStartGameTime());
 }
 
 CScriptGameObject* get_view_entity_script()
@@ -1623,7 +1627,7 @@ const char* GetActorMaterialPairName()
 	if (mtl_idx != GAMEMTL_NONE_IDX)
 	{
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
-		return (mtl) ? mtl->m_Name.c_str() : "";
+		return mtl ? mtl->m_Name.c_str() : "";
 	}
 	else
 	{
@@ -2030,12 +2034,12 @@ void CLevel::script_register(lua_State *L)
 
 		def("show_indicators",					show_indicators),
 		def("show_weapon",						show_weapon),
-		def("add_call",							((void (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
-		def("add_call",							((void (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
-		def("add_call",							((void (*) (const luabind::object &, const char*, const char*)) &add_call)),
-		def("remove_call",						((void (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call)),
-		def("remove_call",						((void (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call)),
-		def("remove_call",						((void (*) (const luabind::object &, const char*, const char*)) &remove_call)),
+		def("add_call",							(void (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call),
+		def("add_call",							(void (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call),
+		def("add_call",							(void (*) (const luabind::object &, const char*, const char*)) &add_call),
+		def("remove_call",						(void (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call),
+		def("remove_call",						(void (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call),
+		def("remove_call",						(void (*) (const luabind::object &, const char*, const char*)) &remove_call),
 		def("remove_calls_for_object",			remove_calls_for_object),
 		def("present",							is_level_present),
 		def("disable_input",					disable_input),

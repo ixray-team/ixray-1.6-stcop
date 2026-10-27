@@ -32,7 +32,7 @@ bool CCrowSharedMemory::FoodContact(CGameObject& Bird, CEntityAlive& Corpse, con
 		if (Range < EPS_L) continue;
 		Direction.div(Range);
 		collide::rq_result Hit;
-		if (!Level().ObjectSpace.RayPick(From, Direction, Range + .1f, collide::rqtBoth, Hit, &Bird) || Hit.O != &Corpse) continue;
+		if (!Level().ObjectSpace.RayPick(From, Direction, Range + .1f, collide::rqtBoth, Hit, &Bird) || (Hit.valid() && !Hit.IsStatic() && Hit.GetDynamic() != &Corpse)) continue;
 		if (Hit.range < Best)
 		{
 			Best = Hit.range;

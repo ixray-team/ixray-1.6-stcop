@@ -53,7 +53,7 @@ CHUDTarget::CHUDTarget	()
 	accumulatedTime		= 0.f;
 	PP.RQ.range			= 0.f;
 
-	PP.RQ.set.reset();
+	PP.RQ.reset();
 
 	Load				();
 	m_bShowCrosshair	= false;

@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "player_hud.h"
+
+#include <algorithm>
 #include "WatchDevice/WatchDevice.h"
 #include "HudItem.h"
 #include "Actor.h"
@@ -499,21 +501,23 @@ void attachable_hud_item::update_hud_additional(Fmatrix& trans)
 
 	for (CDB::RESULT& result : xrc.r_vec())
 	{
-		SGameMtl* pMtl = GMLib.GetMaterialByIdx(result.material);
+		auto& Tris = result.model->get_tris()[result.tris_id];
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(Tris.material);
 		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
 			continue;
 		}
+		
+		Fvector verts[3];
+		result.ModelWorldTransform.transform_tiny(verts[0], result.model->get_verts()[Tris.verts[0]]);
+		result.ModelWorldTransform.transform_tiny(verts[1], result.model->get_verts()[Tris.verts[1]]);
+		result.ModelWorldTransform.transform_tiny(verts[2], result.model->get_verts()[Tris.verts[2]]);
 
-		m_collision_box.FindContactsClipping(result.verts, [](const Fvector& contact, void* user_data)
+		m_collision_box.FindContactsClipping(verts, [](const Fvector& contact, void* user_data)
 		{
 			float& nearest_obb_dist = *(float*)user_data;
 			float to_cam_dist = Device.vCameraPosition.distance_to(contact);
-			if (to_cam_dist < nearest_obb_dist)
-			{
-				nearest_obb_dist = to_cam_dist;
-			}
-
+			nearest_obb_dist = std::min(to_cam_dist, nearest_obb_dist);
 		}, &nearest_obb_dist);
 	}
 	clamp(nearest_obb_dist, 0.0f, 1.0f);
