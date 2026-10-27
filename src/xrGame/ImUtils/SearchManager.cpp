@@ -612,6 +612,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_advanc);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_flare);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_simple);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_soc);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_smetr);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_custom);
 

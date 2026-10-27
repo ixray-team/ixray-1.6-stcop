@@ -1,5 +1,7 @@
 # Gameplay: Inventory Items
 
+See [Shadow of Chernobyl anomaly detectors](soc-detectors.md) for the required class ID and migration notes.
+
 See [Night vision](night-vision.md) for shader generations, equipment profiles, the UI edge mask and electronics interference.
 
 See [AI reaction to the actor's torch](actor-light-perception.md) for headlamp, hand torch and weapon torch detection distances.

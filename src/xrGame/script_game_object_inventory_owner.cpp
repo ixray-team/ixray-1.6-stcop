@@ -43,6 +43,7 @@
 #include "smart_cover_object.h"
 #include "smart_cover.h"
 #include "CustomDevice.h"
+#include "LegacyDetector.h"
 #include "doors_manager.h"
 #include "doors_door.h"
 #include "Torch.h"
@@ -1500,10 +1501,14 @@ CScriptGameObject* CScriptGameObject::active_detector() const
 
 	if (CInventoryItem* result = inventory_owner->inventory().ItemFromSlot(DEVICE_SLOT))
 	{
-		CCustomDevice* device = result->cast_custom_device();
-		VERIFY(device);
-
-		return device->IsWorking() ? result->object().lua_game_object() : 0;
+		if (CCustomDevice* device = result->cast_custom_device())
+		{
+			return device->IsWorking() ? result->object().lua_game_object() : nullptr;
+		}
+		if (CLegacyDetector* detector = smart_cast<CLegacyDetector*>(&result->object()))
+		{
+			return detector->IsWorking() ? result->object().lua_game_object() : nullptr;
+		}
 	}
 
 	return 0;

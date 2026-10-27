@@ -997,8 +997,10 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 
 		if (b_own_item && result && slot_id == DEVICE_SLOT)
 		{
-			CCustomDevice* dev = iitem->cast_custom_device();
-			dev->switch_device();
+			if (CCustomDevice* dev = iitem->cast_custom_device())
+			{
+				dev->switch_device();
+			}
 		}
 
 		return result;
