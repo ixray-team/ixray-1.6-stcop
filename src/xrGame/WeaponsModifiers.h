@@ -79,12 +79,13 @@ inline float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpee
 
 inline float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
 {
-	if (Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)] == 1.0f)
+	const float RpmCoeff = Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)];
+	if (RpmCoeff == 0.0f || RpmCoeff == 1.0f)
 	{
 		return Interval;
 	}
 
-	const float Result = Interval / Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)];
+	const float Result = Interval / RpmCoeff;
 	if (!(Result > 0.0f && Result <= FLT_MAX))
 	{
 		return Interval;

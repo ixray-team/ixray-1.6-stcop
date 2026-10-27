@@ -46,7 +46,7 @@ Pass a constant from `weaponsModifiers` as the modifier. String names are not su
 | `BULLET_SPEED_COEFF` | Initial bullet speed, which affects trajectory flatness. |
 | `RECOIL_COEFF` | Vertical and horizontal shot recoil strength; lower values reduce the kick. |
 
-All values must be finite. RPM and bullet speed require **`> 0`**; every other coefficient accepts **`>= 0`**. Negative values, NaN, infinity, invalid enum values and calls on non-actor objects are rejected and logged. Rejected setters preserve the old value; invalid getters return `1.0`. That return value is not a feature-detection mechanism: use the method-presence check shown above.
+All coefficients accept finite values **`>= 0`**, including RPM and bullet speed. Negative values, NaN, infinity, invalid enum values and calls on non-actor objects are rejected and logged. Rejected setters preserve the old value; invalid getters return `1.0`. That return value is not a feature-detection mechanism: use the method-presence check shown above.
 
 Zero damage disables that damage contribution. Zero impact impulse removes the bullet's impact impulse. Zero base dispersion removes the weapon's spread contribution. The actor's extra spread remains in the normal firing path; the configured initial-burst base-dispersion path omits it. Zero inertion removes crosshair settling delay. Zero recoil suppresses new shot kicks; an existing recoil effect can continue settling.
 
@@ -107,14 +107,14 @@ This is the impulse delivered on impact, not weapon recoil. Existing silencer an
 ```lua
 local actor = db.actor
 local previous = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF)
-local accepted = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, 0.0)
+local accepted = actor:weapons_modifiers(weaponsModifiers.RPM_COEFF, -1.0)
 assert(accepted == false)
 assert(actor:weapons_modifiers(weaponsModifiers.RPM_COEFF) == previous)
 
 assert(actor:weapons_modifiers(weaponsModifiers.RECOIL_COEFF, -1.0) == false)
 ```
 
-These deliberate invalid calls write error messages to the script log. In production, validate your mod's input and check the setter result. The setter does not clamp invalid coefficients into the accepted range. An unrepresentable shot interval or bullet speed falls back to its original value.
+These deliberate invalid calls write error messages to the script log. In production, validate your mod's input and check the setter result. The setter does not clamp invalid coefficients into the accepted range. An unrepresentable shot interval or bullet speed falls back to its original value. Zero RPM and bullet-speed coefficients are accepted and saved; calculations use the original shot interval or bullet speed in this case. Zero RPM is handled before division.
 
 ### Reset one coefficient or the complete profile
 

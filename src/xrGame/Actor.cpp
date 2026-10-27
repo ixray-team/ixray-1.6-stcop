@@ -315,10 +315,6 @@ bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
 	{
 		return false;
 	}
-	if (Value == 0.0f && (Type == WeaponModifier::RpmCoeff || Type == WeaponModifier::BulletSpeedCoeff))
-	{
-		return false;
-	}
 
 	WeaponModifierCoefficients[static_cast<u32>(Type)] = Value;
 	return true;
