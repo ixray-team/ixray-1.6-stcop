@@ -64,6 +64,7 @@ class CMainMenu :
 	demo_info_loader*					m_demo_info_loader;
 
 	CGameFont* pCGameFont;
+	CGameFont* commiter_font;
 public:
 	enum	EErrorDlg 
 	{
