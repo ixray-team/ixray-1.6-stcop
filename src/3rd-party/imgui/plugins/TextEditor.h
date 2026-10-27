@@ -192,6 +192,9 @@ public:
 	void SetPalette(const Palette& aValue);
 
 	void SetErrorMarkers(const ErrorMarkers& aMarkers) { mErrorMarkers = aMarkers; }
+	// Out of line: the markers are allocated by this module. aLine starts at 1
+	void AddErrorMarker(int aLine, const char* aMessage);
+	void ClearErrorMarkers();
 	void SetBreakpoints(const Breakpoints& aMarkers) { mBreakpoints = aMarkers; }
 
 	void Render(const char* aTitle, const ImVec2& aSize = ImVec2(), bool aBorder = false);
@@ -200,12 +203,11 @@ public:
 	// The text stays in this module: callers with their own allocator must not free a returned std::string
 	void VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const;
 
-	// Selects the next (or previous) match of a single line text after the cursor, wrapping around the end.
-	// Returns false when the text has no match
 	bool Find(const std::string& aText, bool aForward = true, bool aCaseSensitive = false);
-	// Marks every match of a single line text while rendering, nullptr or "" clears it
 	void SetHighlight(const char* aText, bool aCaseSensitive = false);
 	int CountHighlights() const;
+	int CopyTextBeforeCursor(char* aOut, int aSize) const;
+	ImVec2 GetCursorScreenPos() const { return mCursorScreenPos; }
 
 	void SetTextLines(const std::vector<std::string>& aLines);
 	std::vector<std::string> GetTextLines() const;
@@ -372,6 +374,7 @@ private:
 	bool mScrollToCursor;
 	std::string mHighlight;
 	bool mHighlightCaseSensitive = false;
+	ImVec2 mCursorScreenPos = ImVec2(0.0f, 0.0f);
 	bool mScrollToTop;
 	bool mTextChanged;
 	bool mColorizerEnabled;

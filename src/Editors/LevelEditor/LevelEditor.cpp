@@ -16,6 +16,7 @@
 #include "ShaderEditor/UI_shadertools.h"
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
+#include "UI/Coder/UICoderForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
@@ -90,6 +91,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const int ShaderEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 	EContext.UI->GeneralTabs.push_back({ICON_FA_OBJECT_GROUP " UI Layout", []()->bool {return UILayoutEditorForm::IsModified(); }});
 	const int LayoutEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_CODE " Coder", []()->bool {return UICoderForm::IsModified(); }});
+	const int CoderTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -160,6 +163,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIActorEditorForm::Create(ActorEditorTab);
 	UIShaderEditorForm::Create(ShaderEditorTab);
 	UILayoutEditorForm::Create(LayoutEditorTab);
+	UICoderForm::Create(CoderTab);
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -349,6 +353,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIActorEditorForm::Destroy();
 	UIShaderEditorForm::Destroy();
 	UILayoutEditorForm::Destroy();
+	UICoderForm::Destroy();
 
 	// The shared content browser icons hold textures: release them before the device
 	CContentView::ClearIcons();

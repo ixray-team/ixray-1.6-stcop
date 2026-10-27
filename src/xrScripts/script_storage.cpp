@@ -367,12 +367,26 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 	}
 
 	if (l_iErrorCode) {
-		print_output(L, caScriptName, l_iErrorCode);
-
-		on_error(L);
+		if (!quiet_error(L, caScriptName))
+		{
+			print_output(L, caScriptName, l_iErrorCode);
+			on_error(L);
+		}
 		return (false);
 	}
 	return (true);
+}
+
+bool CScriptStorage::quiet_error(lua_State* L, const char* caScriptName)
+{
+	if (!m_quiet_errors)
+	{
+		return false;
+	}
+
+	const char* Message = lua_isstring(L, -1) ? lua_tostring(L, -1) : nullptr;
+	Msg("! [LUA] %s: %s", caScriptName, Message != nullptr ? Message : "unknown error");
+	return true;
 }
 
 bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceName)
@@ -398,10 +412,13 @@ bool CScriptStorage::do_file(const char* caScriptName, const char* caNameSpaceNa
 	// because that's the first and the only call of the main chunk - there is no point to compile it
 	int	l_iErrorCode = lua_pcall(lua(), 0, 0, (-1 == errFuncId) ? 0 : errFuncId);
 
-	if (l_iErrorCode) 
+	if (l_iErrorCode)
 	{
-		print_output(lua(), caScriptName, l_iErrorCode);
-		on_error(lua());
+		if (!quiet_error(lua(), caScriptName))
+		{
+			print_output(lua(), caScriptName, l_iErrorCode);
+			on_error(lua());
+		}
 		lua_settop(lua(), start);
 		return (false);
 	}

@@ -92,6 +92,8 @@ namespace XReflectTool
 		std::string IniKey;
 		// Read only when this earlier IniRead field of the class is true.
 		std::string IniIf;
+		// C++ type as declared, for the ltx schema of the editor
+		std::string IniType;
 	};
 
 	struct ClassInfo
@@ -104,6 +106,8 @@ namespace XReflectTool
 		std::string RuntimeCondition;
 		bool LuaExport = false;
 		bool IniRead = false;
+		// Object class that reads the section: the editor maps it to the CLSIDs of the sections
+		std::string IniOwner;
 		bool Constructible = false;
 		bool ToString = false;
 		std::vector<std::string> PublicBases;

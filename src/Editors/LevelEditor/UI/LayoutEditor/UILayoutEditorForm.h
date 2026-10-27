@@ -1,5 +1,7 @@
 #pragma once
 #include "UILayoutDocument.h"
+#include "LuaCompletion.h"
+#include "../Coder/CodeEditorUtils.h"
 // xr_unique_ptr checks the type when declared, so it can't be a forward declaration
 #include "plugins/TextEditor.h"
 #include "../../Nodes/UIDialogLocalization.h"
@@ -80,8 +82,7 @@ private:
 	void OnTextureClick(ButtonValue* Value, bool& IsModified, bool& Safe);
 	void OnLocalizeClick(ButtonValue* Value, bool& IsModified, bool& Safe);
 	void DrawCodePreview();
-	// Find bar over the shown code: Enter goes to the next match, Shift+Enter to the previous one
-	void DrawCodeSearch(TextEditor& View);
+	xr_string GetFieldClass(const xr_string& Field);
 	// Puts the generated region of the layout into the script text
 	void SyncScript();
 	// Takes the hand edited xml into the layout. False on xml errors
@@ -189,12 +190,12 @@ private:
 
 	int PreviewTab = 0;
 
-	// Shown by Ctrl+F, hidden by Escape
-	bool CodeSearchVisible = false;
-	char CodeSearch[128] = {};
-	bool CodeSearchCase = false;
-	bool CodeSearchMissed = false;
-	bool CodeSearchFocus = false;
+	CLuaCompletion Completion;
+	u32 ScriptLanguageGeneration = 0;
+	// Runs in OnFrame: baking loads the scripts into the game state
+	bool BakeRequest = false;
+
+	CCodeSearch Search;
 	xr_string StatusText;
 
 	// Layout whose Show() runs in the next frame

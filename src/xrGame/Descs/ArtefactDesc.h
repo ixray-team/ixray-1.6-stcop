@@ -2,7 +2,7 @@
 #include "DescRegistry.h"
 #include "../hit_immunity.h"
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CArtefact")
 struct SArtefactDesc final
 {
 	using Registry = TDescRegistry<SArtefactDesc>;

@@ -899,6 +899,10 @@ void TextEditor::Render()
 		{
 			ImVec2 lineStartScreenPos = ImVec2(cursorScreenPos.x, cursorScreenPos.y + lineNo * mCharAdvance.y);
 			ImVec2 textScreenPos = ImVec2(lineStartScreenPos.x + mTextStart, lineStartScreenPos.y);
+			if (lineNo == mState.mCursorPosition.mLine)
+			{
+				mCursorScreenPos = ImVec2(textScreenPos.x + TextDistanceToLineStart(mState.mCursorPosition), lineStartScreenPos.y + mCharAdvance.y);
+			}
 
 			auto& line = mLines[lineNo];
 			longest = std::max(mTextStart + TextDistanceToLineStart(Coordinates(lineNo, GetLineMaxColumn(lineNo))), longest);
@@ -2134,6 +2138,36 @@ bool TextEditor::MatchesAt(int aLine, int aIndex, const std::string& aText, bool
 	return true;
 }
 
+void TextEditor::AddErrorMarker(int aLine, const char* aMessage)
+{
+	mErrorMarkers[aLine] = aMessage != nullptr ? aMessage : "";
+}
+
+void TextEditor::ClearErrorMarkers()
+{
+	mErrorMarkers.clear();
+}
+
+int TextEditor::CopyTextBeforeCursor(char* aOut, int aSize) const
+{
+	if (aOut == nullptr || aSize <= 0)
+		return 0;
+
+	const Coordinates cursor = GetActualCursorCoordinates();
+	int count = 0;
+	if (cursor.mLine < (int)mLines.size())
+	{
+		const Line& line = mLines[cursor.mLine];
+		const int end = std::min(GetCharacterIndex(cursor), (int)line.size());
+		// The tail is kept when the buffer is short: completion needs the text right before the cursor
+		const int begin = std::max(0, end - (aSize - 1));
+		for (int i = begin; i < end; ++i)
+			aOut[count++] = (char)line[i].mChar;
+	}
+	aOut[count] = 0;
+	return count;
+}
+
 void TextEditor::SetHighlight(const char* aText, bool aCaseSensitive)
 {
 	// Copied here: the text is owned by this module
@@ -2460,7 +2494,8 @@ void TextEditor::ColorizeInternal()
 						{
 							withinSingleLineComment = true;
 						}
-						else if (!withinSingleLineComment && currentIndex + startStr.size() <= line.size() &&
+						// An empty start means the language has no multi line comments
+						else if (!withinSingleLineComment && !startStr.empty() && currentIndex + startStr.size() <= line.size() &&
 							equals(startStr.begin(), startStr.end(), from, from + startStr.size(), pred))
 						{
 							commentStartLine = currentLine;

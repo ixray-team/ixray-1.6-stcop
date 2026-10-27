@@ -27,6 +27,10 @@ public:
 	IC		shared_str							script_clsid		() const;
 #ifndef NO_XR_GAME
 	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object		() const = 0;
+
+	// The ltx schemas the client class reads its section with, for the editor
+	using IniSchemaCollector = void (*)(xr_vector<const char*>& Out);
+	IniSchemaCollector							ini_schemas			= nullptr;
 #endif
 	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(const char* section) const = 0;
 };

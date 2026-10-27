@@ -70,35 +70,6 @@ static xr_token VertAlignTokens[] =
 static constexpr size_t MaxUndo = 64;
 
 // TextEditor has no XML highlighting: tags, attributes, values and comments
-static const TextEditor::LanguageDefinition& GetXmlLanguage()
-{
-	static TextEditor::LanguageDefinition Language;
-	static bool Initialized = false;
-	if (Initialized)
-	{
-		return Language;
-	}
-	Initialized = true;
-
-	Language.mName = "XML";
-	Language.mCommentStart = "<!--";
-	Language.mCommentEnd = "-->";
-	Language.mSingleLineComment = "";
-	Language.mPreprocChar = 0;
-	Language.mAutoIndentation = true;
-	Language.mCaseSensitive = true;
-
-	using EIndex = TextEditor::PaletteIndex;
-	Language.mTokenRegexStrings.emplace_back("<[?!]?/?[A-Za-z_][-A-Za-z0-9_:.]*", EIndex::Keyword);
-	Language.mTokenRegexStrings.emplace_back("/?[?]?>", EIndex::Keyword);
-	Language.mTokenRegexStrings.emplace_back("\"[^\"]*\"", EIndex::String);
-	Language.mTokenRegexStrings.emplace_back("'[^']*'", EIndex::String);
-	Language.mTokenRegexStrings.emplace_back("[A-Za-z_][-A-Za-z0-9_:.]*(?=[ \\t]*=)", EIndex::KnownIdentifier);
-	Language.mTokenRegexStrings.emplace_back("[+-]?[0-9]+([.][0-9]*)?", EIndex::Number);
-	Language.mTokenRegexStrings.emplace_back("[A-Za-z_][A-Za-z0-9_]*", EIndex::Identifier);
-	Language.mTokenRegexStrings.emplace_back("[=&;]", EIndex::Punctuation);
-	return Language;
-}
 static constexpr float HandleRadius = 4.0f;
 
 static const char* GetWidgetIcon(ELayoutWidget Type)
@@ -174,12 +145,12 @@ UILayoutEditorForm::UILayoutEditorForm()
 {
 	XmlView = xr_make_unique<TextEditor>();
 	XmlView->SetShowWhitespaces(false);
-	XmlView->SetPalette(TextEditor::GetDarkPalette());
-	XmlView->SetLanguageDefinition(GetXmlLanguage());
+	XmlView->SetPalette(CodeEditor::GetPalette());
+	XmlView->SetLanguageDefinition(CodeEditor::GetXmlLanguage());
 
 	ScriptView = xr_make_unique<TextEditor>();
 	ScriptView->SetShowWhitespaces(false);
-	ScriptView->SetPalette(TextEditor::GetDarkPalette());
+	ScriptView->SetPalette(CodeEditor::GetPalette());
 	ScriptView->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
 
 	Props = xr_make_unique<UIPropertiesForm>();
@@ -238,6 +209,22 @@ void UILayoutEditorForm::ShowInGame(const char* LayoutName)
 
 void UILayoutEditorForm::OnFrame()
 {
+	if (BakeRequest)
+	{
+		BakeRequest = false;
+		xr_string Error;
+		if (Completion.Bake(Error))
+		{
+			StatusText = "Lua API baked: " + xr_string::ToString(Completion.GetClassCount()) + " classes";
+			ELog.Msg(mtInformation, "UI Layout: %s", StatusText.c_str());
+		}
+		else
+		{
+			StatusText = "Lua API: " + Error;
+			ELog.Msg(mtError, "UI Layout: %s", Error.c_str());
+		}
+	}
+
 	if (PendingShow.empty())
 	{
 		return;
@@ -509,6 +496,23 @@ bool UILayoutEditorForm::SaveLayout()
 
 	Modified = false;
 	StatusText = "Saved " + Doc.Name + ".xml, " + Doc.Name + "_16.xml, " + Doc.Name + ".script";
+
+	// The script is saved anyway: a half written handler must not lose the layout
+	xr_string CompileError;
+	int ErrorLine = 0;
+	ScriptView->ClearErrorMarkers();
+	if (!CLuaCompletion::Compile((Doc.Name + ".script").c_str(), ScriptSource, CompileError, ErrorLine))
+	{
+		if (ErrorLine > 0)
+		{
+			ScriptView->AddErrorMarker(ErrorLine, CompileError.c_str());
+			ScriptJumpLine = ErrorLine - 1;
+			PreviewTab = 2;
+			PreviewTabRequest = true;
+		}
+		StatusText += ". Script error: " + CompileError;
+		ELog.Msg(mtError, "UI Layout: %s", CompileError.c_str());
+	}
 
 	// The game files are written, a failed working copy only costs the quick load
 	if (Doc.SaveWidget(Error))
@@ -791,6 +795,11 @@ void UILayoutEditorForm::Draw()
 
 	if (ImGui::Begin(CodeWindow))
 	{
+		// The global shortcuts are off while the code editor takes the text input
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_None))
+		{
+			SaveLayout();
+		}
 		DrawCodePreview();
 	}
 	ImGui::End();
@@ -1992,26 +2001,6 @@ void UILayoutEditorForm::DrawProperties()
 }
 
 // The editors work with "\n" only
-static xr_string GetEditorText(const TextEditor& Editor)
-{
-	// imgui.dll allocates GetText() with its own heap: the copy is taken inside the dll
-	xr_string Text;
-	Editor.VisitText([](const char* Data, size_t Size, void* Out)
-	{
-		static_cast<xr_string*>(Out)->assign(Data, Size);
-	}, &Text);
-	std::erase(Text, '\r');
-	return Text;
-}
-
-static void SetEditorText(TextEditor& Editor, const xr_string& Text)
-{
-	// Keeps the cursor where it was, the text around it rarely moves
-	const TextEditor::Coordinates Cursor = Editor.GetCursorPosition();
-	Editor.SetText(Text.c_str());
-	Editor.SetCursorPosition(Cursor);
-}
-
 void UILayoutEditorForm::SyncScript()
 {
 	// The generated region follows the layout, the rest is the user's code
@@ -2039,7 +2028,7 @@ bool UILayoutEditorForm::ApplyXmlEdit()
 
 	CUILayoutDocument Edited = Doc;
 	xr_string Error;
-	if (!Edited.ApplyXml(GetEditorText(*XmlView), ScriptSource, Error))
+	if (!Edited.ApplyXml(CodeEditor::GetText(*XmlView), ScriptSource, Error))
 	{
 		ELog.DlgMsg(mtError, "UI Layout: the xml has errors: %s", Error.c_str());
 		return false;
@@ -2106,108 +2095,14 @@ void UILayoutEditorForm::GoToHandler(u32 Id)
 	ImGui::SetWindowFocus(CodeWindow);
 }
 
-void UILayoutEditorForm::DrawCodeSearch(TextEditor& View)
+xr_string UILayoutEditorForm::GetFieldClass(const xr_string& Field)
 {
-	// Ctrl+F anywhere in the code window opens the bar
-	if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_F))
+	const SLayoutWidget* Widget = Doc.FindByName(Field.c_str());
+	if (Widget == nullptr)
 	{
-		CodeSearchVisible = true;
-		CodeSearchFocus = true;
-		CodeSearchMissed = false;
+		return "";
 	}
-
-	// Matches are marked while typing, in both views so a tab switch keeps them
-	const char* Highlight = CodeSearchVisible ? CodeSearch : nullptr;
-	XmlView->SetHighlight(Highlight, CodeSearchCase);
-	ScriptView->SetHighlight(Highlight, CodeSearchCase);
-
-	if (!CodeSearchVisible)
-	{
-		return;
-	}
-
-	if (CodeSearchFocus)
-	{
-		ImGui::SetKeyboardFocusHere();
-		CodeSearchFocus = false;
-	}
-
-	const int Matches = View.CountHighlights();
-	CodeSearchMissed = CodeSearch[0] != 0 && Matches == 0;
-
-	string32 MatchesText;
-	xr_sprintf(MatchesText, CodeSearch[0] != 0 ? "%d" : "", Matches);
-	const float MatchesWidth = ImGui::CalcTextSize("0000").x;
-	const float ButtonsWidth = MatchesWidth + ImGui::GetFrameHeight() * 4.0f + ImGui::GetStyle().ItemSpacing.x * 5.0f;
-	ImGui::SetNextItemWidth(-ButtonsWidth);
-	if (CodeSearchMissed)
-	{
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.45f, 0.15f, 0.12f, 1.0f));
-	}
-	const bool Submitted = ImGui::InputTextWithHint("##code_search", ICON_FA_MAGNIFYING_GLASS " Find (Ctrl+F)", CodeSearch, sizeof(CodeSearch), ImGuiInputTextFlags_EnterReturnsTrue);
-	if (CodeSearchMissed)
-	{
-		ImGui::PopStyleColor();
-	}
-	bool Close = ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape);
-
-	ImGui::SameLine();
-	ImGui::AlignTextToFramePadding();
-	ImGui::TextDisabled("%s", MatchesText);
-	ImGui::SameLine(0.0f, 0.0f);
-	ImGui::Dummy({ std::max(0.0f, MatchesWidth - ImGui::CalcTextSize(MatchesText).x), 0.0f });
-	ImGui::SetItemTooltip("Matches");
-
-	bool Forward = true;
-	bool Search = false;
-	if (Submitted)
-	{
-		Search = true;
-		Forward = !ImGui::GetIO().KeyShift;
-		// Enter takes the focus away: keep typing in the field
-		CodeSearchFocus = true;
-	}
-
-	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_ARROW_UP "##search_prev", { ImGui::GetFrameHeight(), 0.0f }))
-	{
-		Search = true;
-		Forward = false;
-	}
-	ImGui::SetItemTooltip("Previous match (Shift+Enter)");
-
-	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_ARROW_DOWN "##search_next", { ImGui::GetFrameHeight(), 0.0f }))
-	{
-		Search = true;
-	}
-	ImGui::SetItemTooltip("Next match (Enter)");
-
-	ImGui::SameLine();
-	ImGui::PushStyleColor(ImGuiCol_Button, CodeSearchCase ? ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive) : ImGui::GetStyleColorVec4(ImGuiCol_Button));
-	if (ImGui::Button("Aa##search_case", { ImGui::GetFrameHeight(), 0.0f }))
-	{
-		CodeSearchCase = !CodeSearchCase;
-	}
-	ImGui::PopStyleColor();
-	ImGui::SetItemTooltip("Match case");
-
-	ImGui::SameLine();
-	Close |= ImGui::Button(ICON_FA_XMARK "##search_close", { ImGui::GetFrameHeight(), 0.0f });
-	ImGui::SetItemTooltip("Close (Escape)");
-
-	if (Close)
-	{
-		CodeSearchVisible = false;
-		CodeSearchFocus = false;
-		CodeSearchMissed = false;
-		return;
-	}
-
-	if (Search && CodeSearch[0] != 0)
-	{
-		View.Find(CodeSearch, Forward, CodeSearchCase);
-	}
+	return Widget->Type == ELayoutWidget::Window ? xr_string("CUIWindow") : Completion.GetInitClass(LayoutWidget::GetInitFunction(Widget->Type));
 }
 
 void UILayoutEditorForm::DrawCodePreview()
@@ -2246,6 +2141,15 @@ void UILayoutEditorForm::DrawCodePreview()
 			ImGui::SetClipboardText(ScriptSource.c_str());
 		}
 		ImGui::SameLine();
+		ImGui::BeginDisabled(BakeRequest);
+		if (ImGui::Button(ICON_FA_DATABASE " Bake Lua API"))
+		{
+			BakeRequest = true;
+			StatusText = "Baking the Lua API...";
+		}
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
+		ImGui::SameLine();
 		if (ScriptRegionLost)
 		{
 			ImGui::TextColored({ 1.0f, 0.4f, 0.3f, 1.0f }, "The ui_layout markers are gone: the layout can't update this script");
@@ -2258,7 +2162,7 @@ void UILayoutEditorForm::DrawCodePreview()
 		if (ScriptViewText != ScriptSource)
 		{
 			ScriptViewText = ScriptSource;
-			SetEditorText(*ScriptView, ScriptSource);
+			CodeEditor::SetText(*ScriptView, ScriptSource);
 		}
 
 		if (ScriptJumpLine >= 0)
@@ -2268,11 +2172,22 @@ void UILayoutEditorForm::DrawCodePreview()
 			ScriptJumpLine = -1;
 		}
 
-		DrawCodeSearch(*ScriptView);
+
+		Search.Draw(*ScriptView, { XmlView.get(), ScriptView.get() });
+		Completion.Load();
+		if (ScriptLanguageGeneration != Completion.GetGeneration())
+		{
+			ScriptLanguageGeneration = Completion.GetGeneration();
+			TextEditor::LanguageDefinition Language;
+			Completion.BuildLanguage(Language);
+			ScriptView->SetLanguageDefinition(Language);
+		}
+		Completion.BeforeRender(*ScriptView);
 		ScriptView->Render("##script", ImGui::GetContentRegionAvail());
+		Completion.AfterRender(*ScriptView, ScriptSource, xr_make_delegate(this, &UILayoutEditorForm::GetFieldClass));
 		if (ScriptView->IsTextChanged())
 		{
-			ScriptSource = GetEditorText(*ScriptView);
+			ScriptSource = CodeEditor::GetText(*ScriptView);
 			ScriptViewText = ScriptSource;
 			Modified = true;
 		}
@@ -2319,11 +2234,11 @@ void UILayoutEditorForm::DrawCodePreview()
 		if (XmlViewText != Code)
 		{
 			XmlViewText = Code;
-			SetEditorText(*XmlView, Code);
+			CodeEditor::SetText(*XmlView, Code);
 		}
 	}
 
-	DrawCodeSearch(*XmlView);
+	Search.Draw(*XmlView, { XmlView.get(), ScriptView.get() });
 	XmlView->Render("##xml", ImGui::GetContentRegionAvail());
 	if (!Wide && XmlView->IsTextChanged())
 	{
