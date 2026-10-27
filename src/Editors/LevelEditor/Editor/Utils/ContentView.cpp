@@ -10,6 +10,7 @@
 #include "ActorEditor/ActorEditor.h"
 #include "IconsFontAwesome6.h"
 #include "../../UI/UITextureViewer.h"
+#include "EFDEditor.h"
 
 CContentView* GContentView = nullptr;
 
@@ -971,6 +972,10 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					ThmPropWnd.Load(FilePath.File);
 					ThmPropWnd.Show();
 				}
+				else if (FilePath.File.extension() == ".efd")
+				{
+					CEFDEditor::Open(FilePath.File);
+				}
 				else if (FilePath.File.extension() == ".tga")
 				{
 					string_path fn = {};
@@ -1170,6 +1175,7 @@ void CContentView::LoadBaseIcons()
 	Icons["env_mod"]= {DEV->_CreateTexture("ed\\content_browser\\env_mod"),	true};
 	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
+	Icons["efd"]	= {DEV->_CreateTexture("ed\\content_browser\\efd"),		true};
 
 	LoadCustomIcons();
 }
@@ -1194,6 +1200,7 @@ void CContentView::LoadExtDest()
 	ExtDesc[".ltx"] = "Config";
 	ExtDesc[".script"] = "Lua Script";
 	ExtDesc["dialogs"] = "Dialog Description";
+	ExtDesc[".efd"] = "Evaluation Function";
 }
 
 bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
@@ -1999,6 +2006,9 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];
+
+	if (IconPath.ends_with(".efd"))
+		return Icons["efd"];
 	
 	if (IconPath.ends_with(".xml"))
 	{
