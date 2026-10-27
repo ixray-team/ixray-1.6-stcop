@@ -1,5 +1,5 @@
 #pragma once
-#include "MaterialPreview.h"
+#include "../../../xrECore/Editor/MaterialPreview.h"
 
 class CUIThmProperties:
 	public IEditorWnd

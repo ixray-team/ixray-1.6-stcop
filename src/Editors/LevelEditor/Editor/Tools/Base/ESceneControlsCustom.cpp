@@ -85,116 +85,188 @@ bool TUI_CustomControl::HiddenMode()
 	return false;
 }
 
-void DragDrop(const xr_string& Path, int Type)
+static bool IsActorEditorFile(const xr_string& Path)
 {
-	// Actor Editor files are not placed on the level
-	if (Path.ends_with(".ogf") || Path.ends_with(".skl") || Path.ends_with(".skls") || Path.ends_with(".omf") || Path.ends_with(".bones"))
+	return Path.ends_with(".ogf") || Path.ends_with(".skl") || Path.ends_with(".skls") || Path.ends_with(".omf") || Path.ends_with(".bones");
+}
+
+// Creates the dropped object without placing or appending it; nullptr when it is invalid
+static CCustomObject* CreateDropObject(const xr_string& Path, int Type)
+{
+	string_path fn = {};
+	CCustomObject* Object = nullptr;
+
+	if (OBJCLASS_TERRAIN == Type)
+	{
+		FS.update_path(fn, "$server_data_root$", fn);
+		xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+		NewPath = NewPath.substr(0, NewPath.length() - 4);
+
+		string256 namebuffer;
+		Scene->GenObjectName(OBJCLASS_TERRAIN, namebuffer, NewPath.data());
+		Object = new CTerrain(nullptr, namebuffer);
+	}
+	else if (OBJCLASS_SCENEOBJECT == Type)
+	{
+		FS.update_path(fn, "$objects$", fn);
+		xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+		NewPath = NewPath.substr(0, NewPath.length() - 7);
+
+		string256 namebuffer;
+		Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
+		CSceneObject* SceneObject = new CSceneObject(nullptr, namebuffer);
+		SceneObject->SetReference(NewPath.data());
+		Object = SceneObject;
+	}
+	else if (Type == OBJCLASS_SPAWNPOINT)
+	{
+		xr_stack_string256 NameBuilder;
+		if (Scene->LevelPrefix().c_str())
+		{
+			NameBuilder = Scene->LevelPrefix().c_str();
+			NameBuilder += "_";
+			NameBuilder += Path.c_str();
+		}
+		else
+		{
+			NameBuilder = Path;
+		}
+		string256 namebuffer;
+		IVERIFY(NameBuilder.size() + 10 < sizeof(namebuffer));
+		Scene->GenObjectName(OBJCLASS_SPAWNPOINT, namebuffer, NameBuilder.data());
+		Object = Scene->GetOTool(OBJCLASS_SPAWNPOINT)->CreateObject((void*)Path.data(), namebuffer);
+	}
+	else if (Type == OBJCLASS_GROUP)
+	{
+		FS.update_path(fn, "$groups$", fn);
+		xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+		NewPath = NewPath.substr(0, NewPath.length() - 6);
+
+		string256 namebuffer;
+		Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
+		CGroupObject* Group = new CGroupObject(nullptr, namebuffer);
+		if (Group->SetReference(NewPath.data()))
+		{
+			Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
+			Group->SetName(namebuffer);
+		}
+		Object = Group;
+	}
+
+	if (Object != nullptr && !Object->Valid())
+	{
+		xr_delete(Object);
+	}
+	return Object;
+}
+
+// The object shown under the cursor while an asset is dragged over the viewport
+static CCustomObject* g_DragPreview = nullptr;
+static xr_string g_DragPreviewPath;
+static bool g_DragPreviewStarted = false;
+
+static void DestroyDragPreview()
+{
+	if (g_DragPreview != nullptr)
+	{
+		Scene->RemoveObject(g_DragPreview, false, true);
+		xr_delete(g_DragPreview);
+	}
+	g_DragPreviewPath.clear();
+	g_DragPreviewStarted = false;
+}
+
+void DragPreview(const xr_string* Path, int Type)
+{
+	if (Path == nullptr || (g_DragPreviewStarted && *Path != g_DragPreviewPath))
+	{
+		DestroyDragPreview();
+	}
+
+	if (Path == nullptr || IsActorEditorFile(*Path))
 	{
 		return;
 	}
 
-	Fvector p, n;
-	if (LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
+	// Created once per drag: a failed asset is not retried every frame
+	if (!g_DragPreviewStarted)
 	{
-		// before callback
-		SBeforeAppendCallbackParams P;
+		g_DragPreviewStarted = true;
+		g_DragPreviewPath = *Path;
 
-		string_path fn = {};
-
-		if (OBJCLASS_TERRAIN == Type)
+		// A terrain is not placed under the cursor
+		if (Type != OBJCLASS_TERRAIN)
 		{
-			FS.update_path(fn, "$server_data_root$", fn);
-			xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
-			NewPath = NewPath.substr(0, NewPath.length() - 4);
-
-			string256 namebuffer;
-			Scene->GenObjectName(OBJCLASS_TERRAIN, namebuffer, NewPath.data());
-			CTerrain* obj = new CTerrain(nullptr, namebuffer);
-			if (!obj->Valid()) {
-				xr_delete(obj);
+			g_DragPreview = CreateDropObject(*Path, Type);
+			if (g_DragPreview != nullptr)
+			{
+				Scene->AppendObject(g_DragPreview, false);
 			}
-
-			obj->SetLoadedState();
-			Scene->SelectObjects(false, Type);
-			Scene->AppendObject(obj);
 		}
-		else if (OBJCLASS_SCENEOBJECT == Type)
-		{
-			FS.update_path(fn, "$objects$", fn);
-			xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
-			NewPath = NewPath.substr(0, NewPath.length() - 7);
-
-			string256 namebuffer;
-			Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
-			CSceneObject* obj = new CSceneObject(nullptr, namebuffer);
-			CEditableObject* ref = obj->SetReference(NewPath.data());
-			if (!obj->Valid()) {
-				xr_delete(obj);
-			}
-
-			obj->MoveTo(p, n);
-			obj->SetLoadedState();
-			Scene->SelectObjects(false, Type);
-			Scene->AppendObject(obj);
-		}
-		else if (Type == OBJCLASS_SPAWNPOINT)
-		{
-			xr_stack_string256 NameBuilder;
-			if(Scene->LevelPrefix().c_str())
-			{
-				NameBuilder = Scene->LevelPrefix().c_str();
-				NameBuilder += "_";
-				NameBuilder += Path.c_str();
-			} else
-			{
-				NameBuilder = Path;
-			}
-			string256 namebuffer;
-			IVERIFY(NameBuilder.size()+10 < sizeof(namebuffer));
-			Scene->GenObjectName(OBJCLASS_SPAWNPOINT, namebuffer, NameBuilder.data());
-			auto obj = Scene->GetOTool(OBJCLASS_SPAWNPOINT)->CreateObject((void*)Path.data(), namebuffer);
-			if (!obj->Valid())
-			{
-				xr_delete(obj);
-				return;
-			}
-
-			obj->MoveTo(p, n);
-			obj->SetLoadedState();
-			Scene->SelectObjects(false, OBJCLASS_SPAWNPOINT);
-			Scene->AppendObject(obj);
-		}
-		else if (Type == OBJCLASS_GROUP)
-		{
-			FS.update_path(fn, "$groups$", fn);
-			xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
-			NewPath = NewPath.substr(0, NewPath.length() - 6);
-
-			string256 namebuffer;
-			Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
-			CGroupObject* obj = new CGroupObject(nullptr, namebuffer);
-
-			if (obj->SetReference(NewPath.data()))
-			{
-				string256 namebuffer;
-				Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
-				obj->SetName(namebuffer);
-			}
-
-			if (!obj->Valid())
-			{
-				xr_delete(obj);
-			}
-
-			obj->MoveTo(p, n);
-			obj->SetLoadedState();
-			Scene->SelectObjects(false, Type);
-			Scene->AppendObject(obj);
-		}
-		else return;
-
-		ExecCommand(COMMAND_CHANGE_TARGET, Type);
 	}
+
+	if (g_DragPreview == nullptr)
+	{
+		return;
+	}
+
+	// Hidden while picking, so the object does not land on itself
+	Fvector p, n;
+	g_DragPreview->Show(false);
+	const bool Hit = LUI->PickGround(p, EContext.UI->m_CurrentRStart, EContext.UI->m_CurrentRDir, 1, &n);
+	g_DragPreview->Show(true);
+
+	if (Hit)
+	{
+		g_DragPreview->MoveTo(p, n);
+	}
+}
+
+void DragDrop(const xr_string& Path, int Type)
+{
+	// Actor Editor files are not placed on the level
+	if (IsActorEditorFile(Path))
+	{
+		DestroyDragPreview();
+		return;
+	}
+
+	// The preview is already in the scene and under the cursor: keep it
+	if (g_DragPreview != nullptr && g_DragPreviewPath == Path)
+	{
+		CCustomObject* Object = g_DragPreview;
+		g_DragPreview = nullptr;
+		DestroyDragPreview();
+
+		Scene->SelectObjects(false, Type);
+		Object->Select(true);
+		Scene->UndoSave();
+		ExecCommand(COMMAND_CHANGE_TARGET, Type);
+		return;
+	}
+	DestroyDragPreview();
+
+	Fvector p, n;
+	if (!LUI->PickGround(p, EContext.UI->m_ContextRStart, EContext.UI->m_ContextRDir, 1, &n))
+	{
+		return;
+	}
+
+	CCustomObject* Object = CreateDropObject(Path, Type);
+	if (Object == nullptr)
+	{
+		return;
+	}
+
+	if (Type != OBJCLASS_TERRAIN)
+	{
+		Object->MoveTo(p, n);
+	}
+	Object->SetLoadedState();
+	Scene->SelectObjects(false, Type);
+	Scene->AppendObject(Object);
+
+	ExecCommand(COMMAND_CHANGE_TARGET, Type);
 }
 
 // add

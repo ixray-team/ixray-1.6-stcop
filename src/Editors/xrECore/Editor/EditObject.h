@@ -77,6 +77,12 @@ public:
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
+
+	// Submit workers must neither create shaders nor touch their reference counts:
+	// EnsureShader runs on the primary thread first, the getters below only read
+	IC void			EnsureShader	()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate();}
+	IC int			_PriorityNoRef	() const {const Shader* S = m_Shader._get(); return (S && S->E[0]) ? S->E[0]->flags.iPriority : 1;}
+	IC bool			_StrictB2FNoRef	() const {const Shader* S = m_Shader._get(); return (S && S->E[0]) ? S->E[0]->flags.bStrictB2F : false;}
 	ref_shader		_ShaderInstanced();
 	
 	IC const char* _Name() const {if(!IVERIFY(m_pData.second)) {return nullptr;} return *m_pData.second->m_Name;}
@@ -377,6 +383,7 @@ public:
 	// Scene submit pass of a static object: adds every mesh surface of the pass to the scene graph
 	void			SubmitSurfaces			(CCustomObject*, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces);
 	// Thread-safe part of the submit: the surfaces of the pass and the visible mesh/surface pairs
+	void			PrepareSubmitShaders	() const;
 	void			CollectSubmitPairs		(struct SDeferredSubmit& Job) const;
 	u32				RenderPriorityMask() const;
 	

@@ -112,19 +112,7 @@ void UIImageEditorForm::Draw()
 	{
 		ImGui::BeginChild("Right", ImVec2(0, 0));
 		{
-			if (m_Texture == nullptr)
-			{
-				u32 mem = 0;
-
-				auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
-				if (baseTexture)
-				{
-					m_Texture = new CTexture;
-					m_Texture->surface_set(baseTexture);
-					baseTexture->Release();
-				}
-			}
-			ImGui::Image(m_Texture->get_SRView() ? m_Texture->get_SRView()->GetRawSRV() : nullptr, ImVec2(128, 128));
+			DrawPreview();
 			m_ItemProps->Draw();
 
 			if (!IsDocked)
@@ -134,6 +122,62 @@ void UIImageEditorForm::Draw()
 		}
 		ImGui::EndChild();
 	}
+}
+
+void UIImageEditorForm::DrawPreview()
+{
+	static const char* ModeNames[] = {"Image", "Sphere", "Box", "Plane"};
+	static constexpr float PreviewHeight = 220.f;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.f, ImGui::GetStyle().ItemSpacing.y));
+	for (int Index = 0; Index < int(std::size(ModeNames)); ++Index)
+	{
+		const ImDrawFlags Rounding = Index == 0 ? ImDrawFlags_RoundCornersLeft : Index == int(std::size(ModeNames)) - 1 ? ImDrawFlags_RoundCornersRight : ImDrawFlags_RoundCornersNone;
+		bool Active = int(PreviewMode) == Index;
+
+		ImGui::PushID(Index);
+		if (XRay::ImGui::ToolbarButton("##PreviewMode", ModeNames[Index], &Active, { 0.f, 0.f }, Rounding))
+		{
+			PreviewMode = EPreviewMode(Index);
+		}
+		ImGui::PopID();
+
+		if (Index + 1 < int(std::size(ModeNames)))
+		{
+			ImGui::SameLine();
+		}
+	}
+	ImGui::PopStyleVar();
+
+	// The 3D preview shows the last focused texture with its edited, unsaved parameters
+	ETextureThumbnail* Thm = m_THM_Current.empty() ? nullptr : m_THM_Current.back();
+	if (PreviewMode != EPreviewMode::Image && Thm != nullptr)
+	{
+		switch (PreviewMode)
+		{
+		case EPreviewMode::Sphere:	Preview.SetShape(CMaterialPreview::EShape::Sphere); break;
+		case EPreviewMode::Box:		Preview.SetShape(CMaterialPreview::EShape::Box); break;
+		default:					Preview.SetShape(CMaterialPreview::EShape::Plane); break;
+		}
+
+		Preview.ShowShapeSelector = false;
+		Preview.Draw(Thm->_Format(), ImVec2(0.f, PreviewHeight));
+		return;
+	}
+
+	if (m_Texture == nullptr)
+	{
+		u32 mem = 0;
+
+		auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
+		if (baseTexture)
+		{
+			m_Texture = new CTexture;
+			m_Texture->surface_set(baseTexture);
+			baseTexture->Release();
+		}
+	}
+	ImGui::Image(m_Texture && m_Texture->get_SRView() ? m_Texture->get_SRView()->GetRawSRV() : nullptr, ImVec2(128, 128));
 }
 
 void UIImageEditorForm::Update()
@@ -436,6 +480,13 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 		m_Texture = new CTexture;
 		m_Texture->surface_set(Surf);
 		Surf->Release();
+
+		Preview.SetTexture(prop->Key());
+	}
+
+	if (item.empty())
+	{
+		Preview.SetTexture("");
 	}
 
 	m_ItemProps->AssignItems(props);
