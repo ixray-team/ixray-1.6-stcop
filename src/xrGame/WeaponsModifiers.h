@@ -8,15 +8,15 @@ namespace WeaponModifiers
 {
 enum WeaponModifier : u32
 {
-	eBulletSpeedCoeff,
-	eCrosshairInertionCoeff,
-	eFireDispersionBaseCoeff,
-	eHitImpulseCoeff,
-	eHitPowerCoeff,
-	eRecoilCoeff,
-	eRpmCoeff,
-	eSilencerHitPowerCoeff,
-	eUnsilencedHitPowerCoeff,
+	eBulletSpeed,
+	eCrosshairInertion,
+	eFireDispersionBase,
+	eHitImpulse,
+	eHitPower,
+	eRecoil,
+	eRpm,
+	eSilencerHitPower,
+	eUnsilencedHitPower,
 	eWpnModifierTypeMax
 };
 
@@ -24,32 +24,32 @@ using WpnModifierType = FixedVector<float, WeaponModifier::eWpnModifierTypeMax>;
 
 inline float ApplyHitPower(const WpnModifierType& Modifiers, float HitPower, bool IsSilenced = false)
 {
-	return HitPower * Modifiers[WeaponModifier::eHitPowerCoeff] * (IsSilenced ? Modifiers[WeaponModifier::eSilencerHitPowerCoeff] : Modifiers[WeaponModifier::eUnsilencedHitPowerCoeff]);
+	return HitPower * Modifiers[WeaponModifier::eHitPower] * (IsSilenced ? Modifiers[WeaponModifier::eSilencerHitPower] : Modifiers[WeaponModifier::eUnsilencedHitPower]);
 }
 
 inline float ApplyHitImpulse(const WpnModifierType& Modifiers, float HitImpulse)
 {
-	return HitImpulse * Modifiers[WeaponModifier::eHitImpulseCoeff];
+	return HitImpulse * Modifiers[WeaponModifier::eHitImpulse];
 }
 
 inline float ApplyFireDispersionBase(const WpnModifierType& Modifiers, float Dispersion)
 {
-	return Dispersion * Modifiers[WeaponModifier::eFireDispersionBaseCoeff];
+	return Dispersion * Modifiers[WeaponModifier::eFireDispersionBase];
 }
 
 inline float ApplyCrosshairInertion(const WpnModifierType& Modifiers, float Inertion)
 {
-	return Inertion * Modifiers[WeaponModifier::eCrosshairInertionCoeff];
+	return Inertion * Modifiers[WeaponModifier::eCrosshairInertion];
 }
 
 inline float ApplyRecoil(const WpnModifierType& Modifiers, float Offset)
 {
-	return Offset * Modifiers[WeaponModifier::eRecoilCoeff];
+	return Offset * Modifiers[WeaponModifier::eRecoil];
 }
 
 inline float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle, float ShotAngle, float MaxAngle)
 {
-	if (Modifiers[WeaponModifier::eRecoilCoeff] == 1.0f)
+	if (Modifiers[WeaponModifier::eRecoil] == 1.0f)
 	{
 		return ShotAngle;
 	}
@@ -68,12 +68,12 @@ inline float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAng
 
 inline float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpeed)
 {
-	return BulletSpeed * Modifiers[WeaponModifier::eBulletSpeedCoeff];
+	return BulletSpeed * Modifiers[WeaponModifier::eBulletSpeed];
 }
 
 inline float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
 {
-	const float RpmCoeff = Modifiers[WeaponModifier::eRpmCoeff];
+	const float RpmCoeff = Modifiers[WeaponModifier::eRpm];
 	if (RpmCoeff == 1.0f)
 	{
 		return Interval;
