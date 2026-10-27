@@ -8,15 +8,15 @@ namespace WeaponModifiers
 {
 enum WeaponModifier : u32
 {
+	eBulletSpeedCoeff,
+	eCrosshairInertionCoeff,
+	eFireDispersionBaseCoeff,
+	eHitImpulseCoeff,
 	eHitPowerCoeff,
+	eRecoilCoeff,
 	eRpmCoeff,
 	eSilencerHitPowerCoeff,
 	eUnsilencedHitPowerCoeff,
-	eHitImpulseCoeff,
-	eFireDispersionBaseCoeff,
-	eCrosshairInertionCoeff,
-	eBulletSpeedCoeff,
-	eRecoilCoeff,
 	eWpnModifierTypeMax
 };
 
