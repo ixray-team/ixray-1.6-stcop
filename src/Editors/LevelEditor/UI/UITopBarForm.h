@@ -25,7 +25,6 @@ private:
 	ref_texture m_tPlayCleanGame;
 
 	bool m_VerifySpaceRestrictors;
-	bool m_Simulate;
 
 	void ClickUndo();
 	void ClickRedo();
