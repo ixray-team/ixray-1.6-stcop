@@ -60,6 +60,8 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 	Fvector lin_vel;
 	lin_vel.sub(m2.c, m0.c);
 	set_LinearVel(lin_vel);
+
+	BuildSelfCollisionPairs();
 }
 
 void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable) {
@@ -87,6 +89,8 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
 
 	m_flags.set(flActivating, true);
 	m_flags.set(flActive, true);
+
+	BuildSelfCollisionPairs();
 }
 
 void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
@@ -117,6 +121,7 @@ void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
 	m_flags.set(flActivating, true);
 	m_flags.set(flActive, true);
 
+	BuildSelfCollisionPairs();
 }
 
 void CPHShell::Build(bool disable)
@@ -140,6 +145,7 @@ void CPHShell::Build(bool disable)
 		for (; i != e; ++i) (*i)->Create();
 	}
 
+	BuildSelfCollisionPairs();
 }
 
 void CPHShell::RunSimulation(bool place_current_forms/*true*/)
@@ -162,6 +168,8 @@ void CPHShell::RunSimulation(bool place_current_forms/*true*/)
 	}	
 
 	spatial_register();
+
+	BuildSelfCollisionPairs();
 }
 
 void CPHShell::AfterSetActive()

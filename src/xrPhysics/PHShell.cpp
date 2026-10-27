@@ -27,6 +27,8 @@ IC bool PhOutOfBoundaries(const Fvector& v)
 	return v.y < phBoundaries.y1;
 }
 
+static const dReal SelfCollisionOverlap = 0.01f;
+
 CPHShell::~CPHShell()
 {
 	m_pKinematics = 0;
@@ -56,6 +58,10 @@ CPHShell::CPHShell()
 	m_object_in_root.identity();
 	m_active_count=0;
 	m_pPhysicsShellAnimatorC=nullptr;
+	SelfCollision=false;
+	SelfCollisionElements=u16(-1);
+	SelfCollisionPairsBuilt=false;
+	m_last_self_contacts=0;
 }
 
 void CPHShell::EnableObject(CPHObject* obj)
@@ -464,6 +470,9 @@ void CPHShell::set_PhysicsRefObject	 (IPhysicsShellHolder* ref_object)
 	{
 		(*i)->set_PhysicsRefObject(ref_object);
 	}
+
+	if (ref_object && pSettings->line_exist(ref_object->ObjectNameSect(), "self_collision"))
+		SetSelfCollision(true);
 }
 
 void CPHShell::set_ContactCallback(ContactCallbackFun* callback)
@@ -1184,7 +1193,8 @@ void CPHShell::PassEndElements(u16 from,u16 to,CPHShell *dest)
 	}
 	dest->elements.insert(dest->elements.end(),i_from,e);
 	elements.erase(i_from,e);		
-
+	InvalidateSelfCollisionPairs();
+	dest->InvalidateSelfCollisionPairs();
 }
 
 void CPHShell::PassEndJoints(u16 from,u16 to,CPHShell *dest)
@@ -1204,6 +1214,7 @@ void CPHShell::DeleteElement(u16 element)
 	elements[element]->Deactivate();
 	xr_delete(elements[element]);
 	elements.erase(elements.begin()+element);
+	InvalidateSelfCollisionPairs();
 }
 
 void CPHShell::DeleteJoint(u16 joint)
@@ -1211,6 +1222,7 @@ void CPHShell::DeleteJoint(u16 joint)
 	joints[joint]->Deactivate();
 	xr_delete(joints[joint]);
 	joints.erase(joints.begin()+joint);
+	InvalidateSelfCollisionPairs();
 }
 
 void CPHShell::setEndElementSplitter()
@@ -1430,13 +1442,14 @@ void CPHShell::add_Element					(CPhysicsElement* E)		  {
 	CPHElement* ph_element=cast_PHElement(E);
 	ph_element->SetShell(this);
 	elements.push_back(ph_element);
-
+	InvalidateSelfCollisionPairs();
 }
 
 void CPHShell::add_Joint					(CPhysicsJoint* J)					{
 	if(!J)return;
 	joints.push_back(static_cast<CPHJoint*>(J));
 	joints.back()->SetShell(this);
+	InvalidateSelfCollisionPairs();
 }
 
 CODEGeom* CPHShell::get_GeomByID(u16 bone_id)
@@ -1460,6 +1473,142 @@ void CPHShell::CollideAll()
 {
 	CPHObject::Collide();
 	CPHObject::reinit_single();
+}
+
+void CPHShell::CollideSelf()
+{
+	m_last_self_contacts=0;
+
+	if(!SelfCollision || elements.size()<2)
+	{
+		return;
+	}
+
+	if(m_pPhysicsShellAnimatorC)
+	{
+		return;
+	}
+
+	if(!SelfCollisionPairsBuilt || SelfCollisionElements!=u16(elements.size()))
+	{
+		BuildSelfCollisionPairs();
+	}
+
+	const u16 ElementCount=u16(elements.size());
+	for(u16 i=0;i<ElementCount;++i)
+	{
+		CPHElement* Element1=elements[i];
+		dGeomID Geom1=Element1->dSpacedGeometry();
+		if(!Geom1)
+		{
+			continue;
+		}
+
+		for(u16 j=u16(i+1);j<ElementCount;++j)
+		{
+			CPHElement* Element2=elements[j];
+			if(Element1->get_body()==Element2->get_body())
+			{
+				continue;
+			}
+			if(IsSelfCollisionPairExcluded(i,j))
+			{
+				continue;
+			}
+			if(!CanSelfCollide(*Element1,*Element2))
+			{
+				continue;
+			}
+
+			dGeomID Geom2=Element2->dSpacedGeometry();
+			if(!Geom2)
+			{
+				continue;
+			}
+
+			m_last_self_contacts+=u32(CollideSelfGeoms(Geom1,Geom2,this));
+		}
+	}
+}
+
+void CPHShell::BuildSelfCollisionPairs()
+{
+	SelfCollisionPairs.clear();
+	SelfCollisionPairsBuilt=true;
+	SelfCollisionElements=u16(elements.size());
+
+	if(!SelfCollision || elements.size()<2)
+	{
+		return;
+	}
+
+	SelfCollisionPairs.reserve(elements.size()*(elements.size()-1)/2);
+
+	const u16 ElementCount=u16(elements.size());
+	for(u16 i=0;i<ElementCount;++i)
+	{
+		CPHElement* Element1=elements[i];
+		dGeomID Geom1=Element1->dSpacedGeometry();
+		if(!Geom1)
+		{
+			continue;
+		}
+
+		for(u16 j=u16(i+1);j<ElementCount;++j)
+		{
+			CPHElement* Element2=elements[j];
+			if(Element1->get_body()==Element2->get_body())
+			{
+				continue;
+			}
+			if(!CanSelfCollide(*Element1,*Element2))
+			{
+				continue;
+			}
+
+			dGeomID Geom2=Element2->dSpacedGeometry();
+			if(!Geom2)
+			{
+				continue;
+			}
+
+			dContactGeom Contacts[8];
+			const int ContactCount=dCollide(Geom1,Geom2,8,Contacts,sizeof(dContactGeom));
+			for(int k=0;k<ContactCount;++k)
+			{
+				if(Contacts[k].depth>SelfCollisionOverlap)
+				{
+					SelfCollisionPairs.push_back((u32(i)<<16)|u32(j));
+					break;
+				}
+			}
+		}
+	}
+}
+
+bool CPHShell::IsSelfCollisionPairExcluded(u16 Element1,u16 Element2) const
+{
+	if(Element1>Element2)
+	{
+		std::swap(Element1,Element2);
+	}
+	const u32 Pair=(u32(Element1)<<16)|u32(Element2);
+	return std::find(SelfCollisionPairs.begin(),SelfCollisionPairs.end(),Pair)!=SelfCollisionPairs.end();
+}
+
+bool CPHShell::CanSelfCollide(const CPHElement& Element1,const CPHElement& Element2) const
+{
+	JOINT_STORAGE::const_iterator i,JointsEnd=joints.end();
+	for(i=joints.begin();i!=JointsEnd;++i)
+	{
+		const CPHElement* First=(*i)->PFirstElement();
+		const CPHElement* Second=(*i)->PSecondElement();
+		if((First==&Element1&&Second==&Element2)||(First==&Element2&&Second==&Element1))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void CPHShell::RegisterToCLGroup(CGID g)	

@@ -118,6 +118,10 @@ void CPHObject::Collide()
 	}
 
 	CollideDynamics					();
+	if (!m_flags.test(fl_collision_disable) && !m_flags.test(fl_collision_disable_dynamic))
+	{
+		CollideSelf();
+	}
 ///////////////////////////////
 	if(CPHCollideValidator::DoCollideStatic(*this) && !m_flags.test(fl_collision_disable)) CollideStatic(dSpacedGeom(),this);
 	m_flags.set(st_dirty,false);

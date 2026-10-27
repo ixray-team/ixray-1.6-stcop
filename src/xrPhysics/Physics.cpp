@@ -72,8 +72,10 @@ IC void add_contact_body_effector(dBodyID body,const dContact& c,SGameMtl* mater
 	}
 }
 
-IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,CPHIsland* world,const int &MAX_CONTACTS)
+IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,CPHIsland* world,const int &MAX_CONTACTS, bool SelfCollide = false)
 {
+	constexpr dReal SelfContactErp = 0.2f;
+	constexpr dReal SelfContactCfm = 0.0001f;
 	const int RS= 800+10;
 	const int N = RS;
 	
@@ -134,6 +136,12 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		surface.soft_cfm = Cfm(spring, damping);
 		surface.mu=material_2->fPHFriction*material_1->fPHFriction;
 
+		if(SelfCollide)
+		{
+			surface.soft_erp = std::min(surface.soft_erp, SelfContactErp);
+			surface.soft_cfm = std::max(surface.soft_cfm, SelfContactCfm);
+		}
+
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 		Flags32	&flags_1=material_1->Flags;
 		Flags32	&flags_2=material_2->Flags;
@@ -191,19 +199,22 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 
 		}
 	
-		if(flags_1.test(SGameMtl::flBounceable)&&flags_2.test(SGameMtl::flBounceable))
+		if(flags_1.test(SGameMtl::flBounceable)&&flags_2.test(SGameMtl::flBounceable)&&!SelfCollide)
 		{
 			surface.mode		|=	dContactBounce;
 			surface.bounce_vel	= std::max(material_1->fPHBounceStartVelocity,material_2->fPHBounceStartVelocity);
 			surface.bounce		= std::min(material_1->fPHBouncing,material_2->fPHBouncing);
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////
-		if(usr_data_2&&usr_data_2->object_callbacks){
-			usr_data_2->object_callbacks->Call(do_collide,false,c,material_1,material_2);
-		}
+		if(!SelfCollide)
+		{
+			if(usr_data_2&&usr_data_2->object_callbacks){
+				usr_data_2->object_callbacks->Call(do_collide,false,c,material_1,material_2);
+			}
 
-		if(usr_data_1&&usr_data_1->object_callbacks){
-			usr_data_1->object_callbacks->Call(do_collide,true,c,material_1,material_2);
+			if(usr_data_1&&usr_data_1->object_callbacks){
+				usr_data_1->object_callbacks->Call(do_collide,true,c,material_1,material_2);
+			}
 		}
 
 		if(usr_data_2){
@@ -268,6 +279,18 @@ void CollideStatic(dGeomID o2,CPHObject* obj2)
 	
 	CPHIsland* island2=obj2->DActiveIsland();
 	CollideIntoGroup(ph_world->GetMeshGeom(),o2,ContactGroup,island2,island2->MaxJoints());
+}
+
+int CollideSelfGeoms(dGeomID o1,dGeomID o2,CPHObject* obj)
+{
+	CPHIsland* Island=obj->DActiveIsland();
+	const int MaxContacts=Island->MaxJoints();
+	if(MaxContacts<=0)
+	{
+		return 0;
+	}
+
+	return CollideIntoGroup(o1,o2,ContactGroup,Island,MaxContacts,true);
 }
 
 //limit for angular accel

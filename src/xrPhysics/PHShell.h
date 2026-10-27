@@ -31,6 +31,13 @@ class CPHShell:
 	};
 	s16						m_active_count;
 	Flags8					m_flags;					
+	bool					SelfCollision;
+
+	xr_vector<u32>			SelfCollisionPairs;
+	u16						SelfCollisionElements;
+	bool					SelfCollisionPairsBuilt;
+	u32						m_last_self_contacts;
+
 	ELEMENT_STORAGE			elements;
 	JOINT_STORAGE			joints;
 	CPHShellSplitterHolder	*m_spliter_holder;
@@ -113,6 +120,10 @@ public:
 	virtual	void	SetIgnoreDynamic		() override;
 	virtual	void	SetRagDoll				() override;
 	virtual	void	SetIgnoreRagDoll		() override;
+	virtual	void	SetSelfCollision		(bool Enabled) override { SelfCollision = Enabled; SelfCollisionPairsBuilt = false; }
+	virtual	bool	IsSelfCollision			() const override { return SelfCollision; }
+	virtual	u32		LastSelfCollisionContacts	() const override { return m_last_self_contacts; }
+			void	BuildSelfCollisionPairs	()	;
 
 	virtual	void	CreateShellAnimator		( CInifile const * ini, const char* section ) override;
 	virtual	void	SetIgnoreAnimated		() override;
@@ -208,6 +219,7 @@ public:
 	virtual	void				Disable							() override;
 	virtual	void				DisableCollision				() override;
 	virtual	void				EnableCollision					() override;
+	virtual	bool				IsCollisionDisabled				()const override {return CPHObject::IsCollisionDisabled();}
 	virtual	void				DisableCharacterCollision		() override;
 	virtual	void				SetRemoveCharacterCollLADisable	() override {m_flags.set(flRemoveCharacterCollisionAfterDisable,true);}
 	virtual	bool				isEnabled						()const override {return CPHObject::is_active();}
@@ -220,6 +232,7 @@ public:
 	virtual	void				vis_update_deactivate	  		() override;
 	virtual	void				PureStep						(float step) override;
 	virtual	void				CollideAll						() override;
+	virtual	void				CollideSelf						() override;
 	virtual	void				PhDataUpdate					(dReal step) override;
 	virtual	void				PhTune							(dReal step) override;
 	virtual	void				InitContact						(dContact* c,bool &do_collide,u16 /*material_idx_1*/,u16 /*material_idx_2*/) override {};
@@ -262,6 +275,7 @@ public:
 
 	virtual	void				SetPrefereExactIntegration		() override;
 	virtual	void				UnSetPrefereExactIntegration	() override;
+	virtual	bool				IsPrefereExactIntegration		() const override { return CPHObject::IsPrefereExactIntegration(); }
 	virtual	void				CutVelocity						(float l_limit,float a_limit) override;
 ///////////	//////////////////////////////////////////////////////////////////////////////////////////
 				void				CreateSpace						()																				;
@@ -277,6 +291,9 @@ protected:
 
 	virtual	void				ClearRecentlyDeactivated		() override;
 				void				ClearCashedTries				()																				;
+				bool				CanSelfCollide					(const CPHElement& Element1,const CPHElement& Element2) const;
+				bool				IsSelfCollisionPairExcluded		(u16 Element1,u16 Element2) const;
+				void				InvalidateSelfCollisionPairs	() { SelfCollisionPairsBuilt = false; }
 private:
 				//breakable
 				void				setEndElementSplitter	  		()																				;
