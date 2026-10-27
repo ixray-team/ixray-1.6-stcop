@@ -53,7 +53,12 @@ class AsyncScreenshotService::State
 		}
 		for (u32 Y = 0; Y < Capture.Height; ++Y)
 		{
-			memcpy(Image.GetPixels() + size_t(Y) * Image.GetImage(0, 0, 0)->rowPitch, Capture.Pixels.data() + size_t(Y) * Capture.Width * 4, size_t(Capture.Width) * 4);
+			u8* Row = Image.GetPixels() + size_t(Y) * Image.GetImage(0, 0, 0)->rowPitch;
+			memcpy(Row, Capture.Pixels.data() + size_t(Y) * Capture.Width * 4, size_t(Capture.Width) * 4);
+			for (u32 X = 0; X < Capture.Width; ++X)
+			{
+				Row[size_t(X) * 4 + 3] = 0xff;
+			}
 		}
 		ScratchImage Small;
 		const auto* Pixels = Image.GetImage(0, 0, 0);
