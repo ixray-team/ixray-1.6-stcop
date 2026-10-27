@@ -87,31 +87,17 @@ void UIPropertiesItem::Draw()
 					else
 						ImGui::Dummy({ TexSize, TexSize });
 
-					if (Prop->DropCallback != nullptr && GUIManager->DnDType == EDragDropType::File)
+					if (Prop->DropCallback != nullptr)
 					{
-						if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-						{
-							ImDrawList* DrawList = ImGui::GetWindowDrawList();
-							ImVec2 RectMin = ImGui::GetItemRectMin();
-							ImVec2 RectMax = ImGui::GetItemRectMax();
-
-							DrawList->AddRect(RectMin, RectMax, IM_COL32(100, 150, 255, 180), 4.0f, 0, 2.0f);
-							DrawList->AddRectFilled(RectMin, RectMax, IM_COL32(100, 150, 255, 30), 4.0f);
-						}
+						EditorDragDrop::HighlightTarget(EDragDropType::File);
 
 						if (ImGui::BeginDragDropTarget())
 						{
-							struct DragDropData
+							if (const char* FileName = EditorDragDrop::Accept(EDragDropType::File))
 							{
-								xr_string FileName;
-							};
-
-							if (auto ImData = ImGui::AcceptDragDropPayload("OTHR"))
-							{
-								DragDropData Data = *(DragDropData*)ImData->Data;
-								Prop->DropCallback(Data.FileName.c_str());
-								ImGui::EndDragDropTarget();
+								Prop->DropCallback(FileName);
 							}
+							ImGui::EndDragDropTarget();
 						}
 					}
 				}

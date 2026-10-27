@@ -45,36 +45,17 @@ UIObjectTool::~UIObjectTool()
 
 void UIObjectTool::HandleDragDrop()
 {
-	const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-	if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::RandomAppend)
-	{
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImVec2 p_min = ImGui::GetItemRectMin();
-		ImVec2 p_max = ImGui::GetItemRectMax();
-		draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-	}
+	EditorDragDrop::HighlightTarget(EDragDropType::RandomAppend);
 
 	if (!ImGui::BeginDragDropTarget())
-		return;
-
-	auto ImData = ImGui::AcceptDragDropPayload("TEST#rai");
-
-	if (ImData == nullptr)
 	{
-		ImGui::EndDragDropTarget();
 		return;
 	}
-	struct DragDropData
-	{
-		xr_string FileName;
-	} Data = *(DragDropData*)ImData->Data;
 
-
-	if (Data.FileName.ends_with(".rai"))
+	if (const char* Dropped = EditorDragDrop::Accept(EDragDropType::RandomAppend))
 	{
-		LoadFromFile(Data.FileName);
+		xr_string FileName = Dropped;
+		LoadFromFile(FileName);
 	}
 
 	ImGui::EndDragDropTarget();

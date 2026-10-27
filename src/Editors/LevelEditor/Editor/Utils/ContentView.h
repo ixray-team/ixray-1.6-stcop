@@ -11,12 +11,7 @@ class CContentView:
 
 private:
 
-	struct DragDropData 
-	{
-		xr_string FileName;
-	};
-
-	struct IconData 
+	struct IconData
 	{
 		ref_texture Icon;
 		bool UseButtonColor = false;
@@ -134,7 +129,6 @@ private:
 
 	HintItem CurrentItemHint;
 
-	DragDropData Data;
 	xr_vector<FileOptData> Files;
 	filewatch::FileWatch<std::string>* WatcherPtr;
 
