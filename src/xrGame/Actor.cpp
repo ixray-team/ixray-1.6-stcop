@@ -310,8 +310,8 @@ THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 
 bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
 {
-	// Reject invalid script input without changing the active coefficient.
-	if (static_cast<u32>(Type) >= static_cast<u32>(WeaponModifier::Count) || !(Value >= 0.0f && Value <= FLT_MAX))
+	// Reject invalid coefficients without changing the active value.
+	if (!(Value >= 0.0f && Value <= FLT_MAX))
 	{
 		return false;
 	}
