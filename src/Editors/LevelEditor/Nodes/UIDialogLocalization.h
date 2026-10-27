@@ -2,14 +2,18 @@
 
 #include "../../xrEUI/EditorWnd.h"
 
-// Registers a dialog phrase text in the string tables of all languages
+#include <functional>
+
+// Registers a text in the string tables of all languages
 class CUIDialogLocalization final : public IEditorWnd
 {
 public:
+	using RegisteredCallback = std::function<void(const char* StringId)>;
+
 	CUIDialogLocalization();
 
-	// NodeName is the phrase that receives StringId once the text is registered
-	void Open(const char* StringId, const char* NodeName, const char* FileName);
+	// NodeName is the phrase or widget shown in the window; OnRegistered receives StringId once the text is registered
+	void Open(const char* StringId, const char* NodeName, const char* FileName, RegisteredCallback OnRegistered);
 	void Draw() override;
 
 private:
@@ -30,6 +34,7 @@ private:
 	char StringId[256] = {};
 	char FileName[256] = {};
 	xr_string NodeName;
+	RegisteredCallback OnRegistered;
 	xr_vector<LanguageText> Texts;
 	xr_string Error;
 	bool FocusText = false;
