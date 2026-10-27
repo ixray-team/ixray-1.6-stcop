@@ -38,12 +38,14 @@ class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
 	using inherited = CHudItemObject;
+	CEntityAlive* WeaponOwner = nullptr;
 
 protected:
 	friend struct TAmmoBones;
 
 public:
-							CWeapon				();
+	ICF CEntityAlive* Owner() const { return WeaponOwner; }
+	CWeapon();
 	virtual					~CWeapon			();
 
 	// Generic

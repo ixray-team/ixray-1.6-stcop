@@ -53,11 +53,6 @@ ICF float ApplyCrosshairInertion(const WpnModifierType& Modifiers, float Inertio
 	return Inertion * Modifiers[WeaponModifier::eCrosshairInertionCoeff];
 }
 
-ICF float ApplyRecoil(const WpnModifierType& Modifiers, float Offset)
-{
-	return Offset * Modifiers[WeaponModifier::eRecoilCoeff];
-}
-
 ICF float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle, float ShotAngle, float MaxAngle)
 {
 	if (Modifiers[WeaponModifier::eRecoilCoeff] == 1.0f)
@@ -65,7 +60,7 @@ ICF float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle,
 		return ShotAngle;
 	}
 	// Scale only this shot's contribution, keeping the accumulated angle intact.
-	const float Result = PreviousAngle + ApplyRecoil(Modifiers, ShotAngle - PreviousAngle);
+	const float Result = PreviousAngle + (ShotAngle - PreviousAngle) * Modifiers[WeaponModifier::eRecoilCoeff];
 	if (Result < -MaxAngle)
 	{
 		return -MaxAngle;

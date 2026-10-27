@@ -1087,6 +1087,7 @@ bool CWeapon::net_Spawn(CSE_Abstract* DC)
 
 void CWeapon::net_Destroy()
 {
+	WeaponOwner = nullptr;
 	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
 	UseSinglePlayerHitPower = false;
 	inherited::net_Destroy();
@@ -1299,6 +1300,7 @@ void CWeapon::shedule_Update	(u32 dT)
 
 void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 {
+	WeaponOwner = nullptr;
 	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
 	UseSinglePlayerHitPower = false;
 	RemoveShotEffector			();
@@ -1350,9 +1352,10 @@ void CWeapon::OnH_A_Independent	()
 void CWeapon::OnH_A_Chield		()
 {
 	inherited::OnH_A_Chield		();
-	if (CEntityAlive* Owner = H_Parent()->cast_entity_alive())
+	WeaponOwner = H_Parent()->cast_entity_alive();
+	if (WeaponOwner)
 	{
-		OwnerWeaponModifiers = &Owner->WeaponModifierCoefficients;
+		OwnerWeaponModifiers = &WeaponOwner->WeaponModifierCoefficients;
 	}
 	else
 	{
@@ -5057,6 +5060,7 @@ void CWeapon::net_Relcase(CObject* object)
 {
 	if (object == H_Parent())
 	{
+		WeaponOwner = nullptr;
 		OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
 		UseSinglePlayerHitPower = false;
 	}

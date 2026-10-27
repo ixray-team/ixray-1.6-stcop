@@ -2,7 +2,7 @@
 
 [Русская версия](/weapon-system/actor-weapon-modifiers)
 
-Weapon modifiers let Lua change damage, rate of fire, accuracy and other weapon characteristics without rewriting weapon configuration or upgrade values. Every `CEntityAlive`, including actors and NPCs, owns a separate set of coefficients initialized to **`1.0`**. Bullet damage, speed, impulse, base dispersion and shot intervals use the weapon owner's coefficients. Camera recoil and crosshair inertion use the actor's inherited coefficients.
+Weapon modifiers let Lua change damage, rate of fire, accuracy and other weapon characteristics without rewriting weapon configuration or upgrade values. Every `CEntityAlive`, including actors and NPCs, owns a separate set of coefficients initialized to **`1.0`**. Bullet damage, speed, impulse, base dispersion, shot intervals and camera recoil use the weapon owner's coefficients. The camera shot effector reads the live storage of the cached owner, so later coefficient changes remain visible. Crosshair inertion uses the actor's inherited coefficients.
 
 A value of `1.20` means a multiplier of 1.2, not an additive bonus of 1.2. Lower dispersion, inertion and recoil values improve those characteristics. These coefficients are runtime values, not weapon LTX keys.
 
