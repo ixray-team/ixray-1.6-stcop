@@ -29,7 +29,7 @@ void hmodel(out float3 hdiffuse, out float3 hspecular,
     float4 light = tex3D(s_material, float3(hscale, hspec, m)).xxxy;
 
 #ifdef USE_DIFFUSE_SKY_COLOR
-	float4 weather_color = L_sky_color;
+	float4 weather_color = float4(L_sky_color.xyz * L_lumscale.y, L_hemi_color.w);
 #else
 	float4 weather_color = L_hemi_color;
 #endif

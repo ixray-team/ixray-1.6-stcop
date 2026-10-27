@@ -99,9 +99,9 @@ float3 CompureDiffuseIrradanceSimple(float3 LightDirection, float3 Hemi)
 
 #ifdef USE_DIFFUSE_SKY_COLOR
 	#ifdef USE_BGRA_SKYCOLOR
-		Irradance *= L_sky_color.zyx;
+		Irradance *= L_sky_color.zyx * L_lumscale.y;
 	#else
-		Irradance *= L_sky_color.xyz;
+		Irradance *= L_sky_color.xyz * L_lumscale.y;
 	#endif
 #else
 	Irradance *= L_hemi_color.xyz;
