@@ -22,6 +22,7 @@
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
 #include "nvg.h"
+#include "WeaponsModifiers.h"
 #include "CameraFocus.h"
 #include "ActorLightPerception.h"
 
@@ -104,6 +105,7 @@ private:
 
 	CPickUpManager* pPickup = nullptr;
 	CAutoAim* pAutoaim = nullptr;
+	WeaponsModifiers WeaponModifiers;
 
 	const char* m_onBeforeHitCallback = {};
 	bool m_isBeforeHitCallback = false;
@@ -111,6 +113,8 @@ public:
 										CActor				();
 	virtual								~CActor				();
 	void OnFrame();
+	const WeaponsModifiers& GetWeaponsModifiers() const { return WeaponModifiers; }
+	bool SetWeaponModifier(WeaponModifier Type, float Value) { return WeaponModifiers.Set(Type, Value); }
 	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 

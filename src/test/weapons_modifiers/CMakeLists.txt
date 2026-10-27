@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.26)
+project(WeaponsModifiersTests LANGUAGES CXX)
+
+enable_testing()
+add_executable(WeaponsModifiersTests WeaponsModifiersTests.cpp)
+target_compile_features(WeaponsModifiersTests PRIVATE cxx_std_23)
+if(MSVC)
+    target_compile_options(WeaponsModifiersTests PRIVATE /fp:fast)
+endif()
+add_test(NAME WeaponsModifiers COMMAND WeaponsModifiersTests)

@@ -50,6 +50,7 @@ void CActor::script_register(lua_State* L)
 				def("is_god_mode", isGodMode),
 				def("is_actor_shadow", isActorShadow),
 				def("set_actor_shadow", setActorShadow),
+			class_<enum_exporter<WeaponModifier>>("weaponsModifiers").enum_("type")[value("HIT_POWER_COEFF", (int)WeaponModifier::HitPowerCoeff), value("RPM_COEFF", (int)WeaponModifier::RpmCoeff)],
 
 				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
 					value("eBoostHpRestore", eBoostHpRestore),

@@ -941,6 +941,7 @@ public:
 			bool			show_indicators				();
 	virtual bool			ParentMayHaveAimBullet		();
 	virtual bool			ParentIsActor				();
+	const WeaponsModifiers& GetWeaponsModifiers() const override;
 	
 private:
 	virtual	bool			install_upgrade_ammo_class	( const char* section, bool test );
