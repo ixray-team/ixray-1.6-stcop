@@ -10,6 +10,11 @@ void CRender::ScreenshotImpl(ScreenshotMode Mode, const char* Name, CMemoryWrite
 		ScreenshotManager::RequestScreenshot();
 		return;
 	}
+	if (Mode == SM_FOR_GAMESAVE)
+	{
+		ScreenshotManager::RequestGameSaveScreenshot(Name);
+		return;
+	}
 #endif
 
 	ScreenshotManager::SaveScreenshot(Mode, Name, MemoryWriter);

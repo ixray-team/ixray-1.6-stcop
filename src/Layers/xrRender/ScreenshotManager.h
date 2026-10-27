@@ -13,6 +13,7 @@ private:
 
 public:
 	static void RequestScreenshot();
+	static void RequestGameSaveScreenshot(const char* Name);
 	static void CapturePendingScreenshot();
 	static void Flush();
 	static void Shutdown();
