@@ -366,16 +366,7 @@ void CContentView::Draw()
 				ImGui::PopStyleColor();
 			}
 
-			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-			if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				ImVec2 p_min = ImGui::GetItemRectMin();
-				ImVec2 p_max = ImGui::GetItemRectMax();
-				draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-				draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-			}
+			EditorDragDrop::HighlightTarget();
 			ImGui::EndTable();
 		}
 		ImGui::PopStyleVar();
@@ -1224,112 +1215,82 @@ void CContentView::AcceptDragDropAction(const CContentView::FileOptData& InitFil
 		return;
 	}
 
-	auto ImData = ImGui::AcceptDragDropPayload("TEST");
-
-	if (ImData == nullptr)
-		ImData = ImGui::AcceptDragDropPayload("FLDR");
-
-	if (ImData == nullptr)
-		ImData = ImGui::AcceptDragDropPayload("OTHR");
-
-	if (ImData != nullptr)
+	static constexpr EDragDropType MovableTypes[] =
 	{
-		if (ImData != nullptr)
-			Data = *(DragDropData*)ImData->Data;
+		EDragDropType::Folder, EDragDropType::File, EDragDropType::Viewport,
+		EDragDropType::RandomAppend, EDragDropType::Details, EDragDropType::Logic
+	};
 
-		if (Data.FileName != InitFileName.File.xstring()) //На всякий случай
+	for (EDragDropType Type : MovableTypes)
+	{
+		const char* Dropped = EditorDragDrop::Accept(Type);
+		if (Dropped == nullptr)
 		{
-			CutAction(/*Data.FileName*/);
+			continue;
+		}
+
+		if (InitFileName.File.xstring() != Dropped)
+		{
+			CutAction();
 			PasteAction(InitFileName.File);
 		}
+		break;
 	}
 
 	ImGui::EndDragDropTarget();
 }
 
+static EDragDropType GetFileDragType(const xr_path& FilePath)
+{
+	const xr_string Extension = FilePath.extension().string().c_str();
+
+	if (Extension == ".dti")
+	{
+		return EDragDropType::Details;
+	}
+
+	if (Extension == ".rai")
+	{
+		return EDragDropType::RandomAppend;
+	}
+
+	if (Extension == ".ltx" && FilePath.xstring().Contains("scripts\\"))
+	{
+		return EDragDropType::Logic;
+	}
+
+	// Level Editor and Actor Editor viewports
+	static const char* ViewportExtensions[] = {".object", ".group", ".r16", ".ise", ".ogf", ".skl", ".skls", ".omf", ".bones"};
+	for (const char* ViewportExtension : ViewportExtensions)
+	{
+		if (Extension == ViewportExtension)
+		{
+			return EDragDropType::Viewport;
+		}
+	}
+
+	return EDragDropType::File;
+}
+
 bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
 {
-	/*
-		Разделение на 3 типа dnd:
-
-			TEST - ".object", ".group", ".ise"
-					Объекты, которые принимает вьюпорт
-
-			FLDR - Только папки.
-					Для работы только в Content View
-
-			OTHR - Все иные объекты.
-					В дальнейшем можно как-нибудь использовать.
-					Или просто удалить совместив с FLDR.
-	*/
-
-	bool WeCanDrag = false;
-
-	if (FilePath.has_extension()) //File DnD
+	if (FilePath.has_extension())
 	{
-		xr_string Extension = FilePath.extension().string().c_str();
-		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
-		// Actor Editor viewport: models, motions and bone settings
-		WeCanDrag = WeCanDrag || Extension == ".ogf" || Extension == ".skl" || Extension == ".skls" || Extension == ".omf" || Extension == ".bones";
-		
-		bool IsGameLogicFile = false;
-		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
-		{
-			WeCanDrag = true;
-			IsGameLogicFile = true;
-		}
-
 		if (!ImGui::BeginDragDropSource())
 		{
 			return false;
 		}
 
-		if (WeCanDrag)
+		const EDragDropType Type = SelectedObjects.size() == 1 ? GetFileDragType(FilePath) : EDragDropType::File;
+
+		// Spawn elements are dropped by section
+		xr_string Value = FilePath.xstring();
+		if (Type == EDragDropType::Viewport && (IsSpawnElement || Value.ends_with(".ise")) && InitFileName.ISESect.size() > 0)
 		{
-			if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
-			{
-				if (InitFileName.ISESect.size() > 0)
-				{
-					Data.FileName = InitFileName.ISESect.c_str();
-				}
-			}
-			else
-			{
-				Data.FileName = FilePath;
-			}
-
-			xr_string PayloadName = "TEST";
-			GUIManager->DnDType = EDragDropType::Viewport;
-
-			if (SelectedObjects.size() != 1)
-			{
-				PayloadName = "OTHR";
-				GUIManager->DnDType = EDragDropType::File;
-			}
-			else if (FilePath.xstring().ends_with(".dti"))
-			{
-				PayloadName += "#dti";
-				GUIManager->DnDType = EDragDropType::Details;
-			}
-			else if (FilePath.xstring().ends_with(".rai"))
-			{
-				PayloadName += "#rai";
-				GUIManager->DnDType = EDragDropType::RandomAppend;
-			}
-			else if (IsGameLogicFile)
-			{
-				PayloadName += "#cd";
-				GUIManager->DnDType = EDragDropType::Logic;
-			}
-
-			ImGui::SetDragDropPayload(PayloadName.c_str(), &Data, sizeof(DragDropData));
+			Value = InitFileName.ISESect.c_str();
 		}
-		else 
-		{
-			Data.FileName = FilePath;
-			ImGui::SetDragDropPayload("OTHR", &Data, sizeof(DragDropData));
-			GUIManager->DnDType = EDragDropType::File;
-		}
+
+		EditorDragDrop::SetPayload(Type, Value);
 	}
 	else
 	{
@@ -1338,9 +1299,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 			return false;
 		}
 
-		Data.FileName = FilePath;
-		GUIManager->DnDType = EDragDropType::Folder;
-		ImGui::SetDragDropPayload("FLDR", &Data, sizeof(DragDropData));
+		EditorDragDrop::SetPayload(EDragDropType::Folder, FilePath.xstring());
 	}
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
