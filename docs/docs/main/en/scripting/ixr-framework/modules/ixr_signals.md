@@ -71,6 +71,19 @@ args:
 retval: (mixed) - result of the callback execution.
 ```
 
+### Actor infoportion removal
+
+`actor_on_info_disabled(actor, info_id)` is emitted by `CActor::OnDisableInfo` through `SendScriptCallback` after an existing infoportion is removed. `actor` is the actor's game object and `info_id` is a string. Removing an absent infoportion emits nothing; loading a save does not replay removals. This requires an engine build containing the event; adding a Lua interceptor alone does not provide it on older binaries.
+
+Register the interceptor before subscribing, either in the addon interceptor configuration or in `on_game_start`:
+
+```lua
+AddIntercept("actor_on_info_disabled", {"actor_game_object", "info_id_string"})
+RegisterScriptCallback("actor_on_info_disabled", on_actor_info_disabled)
+```
+
+The engine calls the Framework dispatcher directly; no binder callback or `set_callback` registration is needed. At the start of dispatch, the infoportion is absent. Subscribers run without a defined order and may grant it again, so handlers should read the current state when recalculating bonuses. This event complements `actor_on_info_callback`, which reports grants.
+
 ### Examples:
 ```lua
 --// Add a callback interceptor

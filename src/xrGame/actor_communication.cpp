@@ -13,6 +13,8 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "game_cl_single.h"
 #include "ui/UIPdaAux.h"
+#include "ai_space.h"
+#include "../xrScripts/script_engine.h"
 
 void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
 {
@@ -142,14 +144,23 @@ bool CActor::OnReceiveInfo(shared_str info_id) const
 
 void CActor::OnDisableInfo(shared_str info_id) const
 {
+	const bool HadInfo = HasInfo(info_id);
 	CInventoryOwner::OnDisableInfo(info_id);
 
-	if (!CurrentGameUI()->TalkMenu)
-		return;
+	if (HadInfo)
+	{
+		// Notify after removal, once per state change rather than per transfer packet.
+		luabind::functor<void> SendCallback;
+		if (ai().script_engine().functor("SendScriptCallback", SendCallback))
+		{
+			SendCallback("actor_on_info_disabled", lua_game_object(), *info_id);
+		}
+	}
 
-	//только если находимся в режиме single
-	if(CurrentGameUI()->TalkMenu->IsShown())
+	if (CurrentGameUI() && CurrentGameUI()->TalkMenu && CurrentGameUI()->TalkMenu->IsShown())
+	{
 		CurrentGameUI()->TalkMenu->NeedUpdateQuestions();
+	}
 }
 
 void  CActor::ReceivePhrase		(DIALOG_SHARED_PTR& phrase_dialog)
