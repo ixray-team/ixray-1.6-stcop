@@ -165,7 +165,19 @@ struct WeaponsModifiers
 
 	float ApplyShotInterval(float Interval) const
 	{
+		if (RpmCoeff == 1.0f)
+		{
+			return Interval;
+		}
+
 		const float Result = Interval / RpmCoeff;
-		return Result > 0.0f && Result <= FLT_MAX ? Result : Interval;
+		if (!(Result > 0.0f && Result <= FLT_MAX))
+		{
+			return Interval;
+		}
+
+		// Keep the float shot timer advancing and bound catch-up shots per frame.
+		constexpr float MinimumShotInterval = 0.001f;
+		return Result < MinimumShotInterval ? MinimumShotInterval : Result;
 	}
 };

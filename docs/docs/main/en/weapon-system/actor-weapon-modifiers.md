@@ -89,6 +89,8 @@ actor:weapons_modifiers("hit_power_coeff", 0.90)
 
 A configured `600 RPM` becomes `750 RPM`: `0.10 / 1.25 = 0.08` seconds per shot. Magazine/chamber firing and alternate single-shot/initial-burst intervals use this factor. Reload and pump animation durations are not accelerated.
 
+When `rpm_coeff` differs from `1.0`, a valid calculated shot interval is limited to at least **1 ms** (1000 shots per second). This prevents extreme coefficients from stalling the floating-point shot timer or producing an excessive number of catch-up shots in one frame. The neutral coefficient preserves the original interval exactly, including unusually short configured intervals.
+
 ### Target impact impulse
 
 ```lua

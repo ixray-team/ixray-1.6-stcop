@@ -21,6 +21,26 @@ static bool IsNear(float Actual, float Expected)
 	return std::fabs(Actual - Expected) < 0.00001f;
 }
 
+static void CheckShotTimerProgress(const WeaponsModifiers& Modifiers, float Interval)
+{
+	// Cover a typical frame and the engine's maximum frame delta with unlimited ammo.
+	for (float Counter : {-0.016f, -0.1f})
+	{
+		int Shots = 0;
+		while (Counter < 0.0f && Shots < 128)
+		{
+			const float NextCounter = Counter + Modifiers.ApplyShotInterval(Interval);
+			if (!(NextCounter > Counter))
+			{
+				break;
+			}
+			Counter = NextCounter;
+			++Shots;
+		}
+		Check(Counter >= 0.0f && Shots <= 101, "Extreme RPM must advance a negative shot timer and finish within a bounded number of shots");
+	}
+}
+
 int main()
 {
 	WeaponsModifiers Modifiers;
@@ -73,6 +93,20 @@ int main()
 	Check(IsNear(Modifiers.ApplyShotInterval(0.1f), 0.2f), "Lower RPM must lengthen the shot interval");
 	Check(!Modifiers.Set(WeaponModifier::RpmCoeff, 0.0f), "Zero RPM must be rejected");
 	Check(Modifiers.Get(WeaponModifier::RpmCoeff) == 0.5f, "A rejected setter must preserve the previous value");
+	for (float Coefficient : {1000000000.0f, FLT_MAX})
+	{
+		Modifiers.Set(WeaponModifier::RpmCoeff, Coefficient);
+		for (float Interval : {0.1f, 0.3f, 0.005f})
+		{
+			Check(Modifiers.ApplyShotInterval(Interval) >= 0.001f, "Extreme RPM must not produce a sub-millisecond shot interval");
+			CheckShotTimerProgress(Modifiers, Interval);
+		}
+	}
+	Modifiers.Set(WeaponModifier::RpmCoeff, 2.0f);
+	Check(Modifiers.ApplyShotInterval(0.002f) == 0.001f, "The minimum shot interval boundary must remain usable");
+	Check(Modifiers.ApplyShotInterval(0.001f) == 0.001f, "An active RPM modifier must respect the minimum shot interval");
+	Modifiers.Set(WeaponModifier::RpmCoeff, 1.0f);
+	Check(Modifiers.ApplyShotInterval(0.0001f) == 0.0001f, "Neutral RPM must preserve even an unusually short original interval");
 	Check(Modifiers.Set(WeaponModifier::HitPowerCoeff, 0.0f) && Modifiers.ApplyHitPower(0.7f) == 0.0f, "Zero damage is a valid multiplier");
 
 	for (int Index = 0; Index < (int)WeaponModifier::Count; ++Index)
