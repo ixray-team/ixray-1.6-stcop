@@ -30,7 +30,7 @@ The method has two forms:
 | `actor:weapons_modifiers(modifier)` | Current coefficient as a number. |
 | `actor:weapons_modifiers(modifier, value)` | Assigns an absolute coefficient; returns `true` on success, `false` on rejection. |
 
-Pass a constant from `weaponsModifiers` as the modifier. String names are not supported; prefer symbolic constants over numeric enum IDs. Repeating the same assignment does not stack bonuses.
+Pass a constant from `weaponsModifiers` as the modifier. String names are not supported; prefer symbolic constants over numeric enum IDs. Repeating the same assignment does not stack bonuses. String-based calls no longer have a matching Lua overload; they are not rejected setters returning `false`.
 
 ## Coefficient reference
 
@@ -165,7 +165,26 @@ set_damage_source("temporary", nil) -- Back to 1.32
 
 Do not repeatedly read the current coefficient and multiply it by the same bonus from update callbacks. That compounds it on every call. A single coordinator should own each final coefficient; the setter replaces the existing value and does not track its sources.
 
-The table above is Lua runtime state, not persistent save data. Rebuild it from saved quest, equipment and effect state after each load. Call the same source-removal function when a temporary effect expires.
+The final damage coefficient is saved by the engine, but the `damage_sources` table above is Lua runtime state and is not saved automatically. Rebuild that table from saved quest, equipment and effect state before changing individual sources after a load; otherwise, the first update can replace the restored product with an incomplete set of bonuses. Call the same source-removal function when a temporary effect expires.
+
+## Saving and loading
+
+The engine saves the final values of all nine coefficients with the actor. A successful setter changes the current session; the next game save records that value. Loading that save restores the coefficients before the actor's Lua binder is loaded. No separate Lua save/load handler is needed just to retain these values.
+
+| Situation | Coefficients |
+| --- | --- |
+| New actor without saved modifier data | All values start at `1.0`. |
+| Load a save containing the modifier block | Stored values are restored. |
+| Load an otherwise compatible save created before the modifier block was added | All values remain `1.0`; scripts may assign a profile afterward. |
+| Load a stored coefficient outside its allowed range | That coefficient remains `1.0`, with a message in the engine log. |
+
+Compatibility here concerns only the added modifier block; it does not make unrelated save-format changes compatible. Saves written with this block are not supported by older engines that do not recognize it. Keep a separate older save when switching back to such a build.
+
+A method-presence check detects the Lua API, not persistence support: earlier builds exposed `weapons_modifiers` without saving its values. For scripts using the former string syntax, replace the first argument with its `weaponsModifiers.*` constant.
+
+The engine stores the resulting coefficients, not the sources of bonuses, timers or effect ownership. A temporary coefficient remains in a save until a script changes it. Persist the effect's expiry state separately and remove or recompute its contribution when the effect ends.
+
+The event example below recalculates two coefficients from a saved infoportion. This is a gameplay policy for that example, not a requirement for restoring the serialized coefficients. Do not unconditionally reset all coefficients on the first update if their saved values should remain in effect.
 
 ## Apply a persistent bonus through events
 

@@ -81,6 +81,26 @@ Modder reference: [PDA statistics](../docs/main/ru/gameplay/general/pda-statisti
 
 Both `save`/`load` and `Serialize` persist the section, comparison rank, fallback profile and weapon counters. The legacy weapon count uses `u16`. Earlier statistics save layouts are unsupported; start a new game.
 
+## Actor weapon modifiers
+
+`CActor::WeaponModifiers` owns nine coefficients from `WeaponsModifiers.h`, initialized to `1.0`. Lua reads them through `actor:weapons_modifiers(modifier)` and assigns them through `actor:weapons_modifiers(modifier, value)`, with a `weaponsModifiers.*` constant as `modifier`; the getter and setter bind `CScriptGameObject::GetActorWeaponModifier` and `SetActorWeaponModifier`. String lookup is not exposed. See the [modder guide](../docs/main/en/weapon-system/actor-weapon-modifiers.md) for all constants and examples.
+
+`CActor::save(NET_Packet&)` writes an `ActorWeaponModifierSerialization` block after actor statistics. `CActor::load(IReader&)` reads it at the same position. `CGameObject::net_Save` calls actor serialization before `CScriptBinder::save`; `net_Load` restores actor data before `CScriptBinder::load`.
+
+| Field | Encoding |
+| --- | --- |
+| Signature | `u32`, `0x444F4D57` (`WMOD`) |
+| Coefficient count | `u32`, currently `9` |
+| Coefficients | One `float` per ID, in `WeaponModifier` order |
+
+The current block is 44 bytes. It uses the packet's scalar writers, not a raw copy of the C++ struct. Enum IDs are part of both the Lua API and the save format: append new values before `Count`; do not reorder or reuse existing IDs.
+
+The loader resets coefficients to neutral values before reading. With less than a complete header it reads nothing; when the signature is absent it restores the reader position so the script binder can read its own data. This supports an otherwise compatible actor save without the modifier block. Older engines without this reader cannot consume the new block.
+
+Stored coefficients pass through `SetCoefficient`; invalid values remain `1.0` and are logged. Missing entries retain defaults; additional entries are consumed but ignored. A declared count requiring more bytes than remain in the reader triggers `CHECK_OR_EXIT`, including in Shipping. The count does not make arbitrary changes to the block encoding compatible.
+
+Sources: [actor save/load](../../src/xrGame/Actor_Network.cpp), [coefficient definitions and validation](../../src/xrGame/WeaponsModifiers.h), [Lua bindings](../../src/xrGame/script_game_object_script3.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
+
 ## Files
 
 | Area | Path under `src/xrGame` |
