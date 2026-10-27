@@ -69,6 +69,7 @@ CMainMenu*	MainMenu()	{return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
 CMainMenu::CMainMenu	()
 {
 	pCGameFont = g_FontManager->GetFont("ui_font_console");
+	commiter_font = g_FontManager->CloneFont("ui_font_console");
 
 	m_Flags.zero					();
 	m_startDialog					= nullptr;
@@ -474,12 +475,15 @@ void CMainMenu::OnRenderPPUI_main	()
 
 	UI().pp_stop();
 
-	pCGameFont->SetAligment(CGameFont::alRight);
-	pCGameFont->SetHeight(0.022f);
-	pCGameFont->SetColor(0xFFF5F5DC);
-
-	pCGameFont->Out(Device.TargetWidth - pCGameFont->GetHeight(), (Device.TargetHeight - pCGameFont->GetHeight()), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().GetCurrentPlatformFullName());
+	commiter_font->SetAligment(CGameFont::alRight);
+	commiter_font->SetHeight(0.022f);
+	commiter_font->SetColor(color_rgba(245, 245, 220, 255));
+	commiter_font->SetOutline(true);
+	commiter_font->SetOutlineColor(color_rgba(0, 0, 0, 255 / 2));
+	commiter_font->Out(Device.TargetWidth - pCGameFont->GetHeight(), (Device.TargetHeight - pCGameFont->GetHeight()), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().GetCurrentPlatformFullName());
+	
 	pCGameFont->OnRender();
+	commiter_font->OnRender();
 }
 
 void CMainMenu::OnRenderPPUI_PP	()
