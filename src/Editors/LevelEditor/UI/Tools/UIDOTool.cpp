@@ -173,39 +173,19 @@ void UIDOTool::Draw()
 
 void UIDOTool::HandleDragDrop()
 {
-	const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-	if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Details)
-	{
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImVec2 p_min = ImGui::GetItemRectMin();
-		ImVec2 p_max = ImGui::GetItemRectMax();
-		draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-	}
+	EditorDragDrop::HighlightTarget(EDragDropType::Details);
 
 	if (!ImGui::BeginDragDropTarget())
-		return;
-
-	auto ImData = ImGui::AcceptDragDropPayload("TEST#dti");
-
-	if (ImData == nullptr)
 	{
-		ImGui::EndDragDropTarget();
 		return;
 	}
 
-	struct DragDropData
+	if (const char* Dropped = EditorDragDrop::Accept(EDragDropType::Details))
 	{
-		xr_string FileName;
-	} Data = *(DragDropData*)ImData->Data;
-
-
-	if (Data.FileName.ends_with(".dti"))
-	{
-		m_DOShuffle = true; 
+		xr_string FileName = Dropped;
+		m_DOShuffle = true;
 		UIDOShuffle::Show(DM);
-		UIDOShuffle::LoadFromStream(Data.FileName);
+		UIDOShuffle::LoadFromStream(FileName);
 	}
 
 	ImGui::EndDragDropTarget();

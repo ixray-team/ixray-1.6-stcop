@@ -361,33 +361,20 @@ void UIRenderForm::DrawVP()
 
 void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 {
-	const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-	if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Viewport)
-	{
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImVec2 p_min = ImGui::GetItemRectMin();
-		ImVec2 p_max = ImGui::GetItemRectMax();
-		draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-	}
+	EditorDragDrop::HighlightTarget(EDragDropType::Viewport);
 
 	// Secondary viewports take drops only when they handle them
 	bool Previewing = false;
 	if ((ViewportID == 0 || DragFunctor != nullptr) && ImGui::BeginDragDropTarget())
 	{
 		// Accepted while hovering too, so the dragged object can be shown before the drop
-		const ImGuiPayload* ImData = ImGui::AcceptDragDropPayload("TEST", ImGuiDragDropFlags_AcceptBeforeDelivery);
-		if (ImData != nullptr)
+		bool IsDelivery = false;
+		if (const char* Dropped = EditorDragDrop::Accept(EDragDropType::Viewport, ImGuiDragDropFlags_AcceptBeforeDelivery, &IsDelivery))
 		{
-			struct DragDropData
-			{
-				xr_string FileName;
-			};
-			const xr_string& FileName = ((const DragDropData*)ImData->Data)->FileName;
+			const xr_string FileName = Dropped;
 			const int Type = GetDropType(FileName);
 
-			if (ImData->IsDelivery())
+			if (IsDelivery)
 			{
 				DragFunctor(FileName, Type);
 			}
