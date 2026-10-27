@@ -517,11 +517,13 @@ void CMainMenu::OnFrame()
 
 
 	//screenshot stuff
+	if (m_Flags.test(flGameSaveScreenshot) && Device.dwFrame == m_screenshotFrame)
+	{
+		::Render->Screenshot(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
+	}
 	if(m_Flags.test(flGameSaveScreenshot) && Device.dwFrame > m_screenshotFrame  )
 	{
 		m_Flags.set					(flGameSaveScreenshot,false);
-		::Render->Screenshot		(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
-		
 		if(g_pGameLevel && m_Flags.test(flActive))
 		{
 			Device.seqFrame.Remove	(g_pGameLevel);
