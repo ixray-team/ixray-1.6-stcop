@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "EntityCondition.h"
+#include "LegacyHitBalance.h"
 #include "InventoryOwner.h"
 #include "CustomOutfit.h"
 #include "Inventory.h"
@@ -382,7 +383,7 @@ void CEntityCondition::UpdateCondition()
 	clamp						(m_fPsyHealth,		0.0f,		m_fPsyHealthMax);
 }
 
-float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, u16 element, float ap, bool& add_wound)
+float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, u16 element, float ap, bool& add_wound, bool ApplyCondition)
 {
 	CInventoryOwner* pInvOwner = m_object->cast_inventory_owner();
 	if (pInvOwner == nullptr)
@@ -400,12 +401,12 @@ float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_typ
 	float new_hit_power = hit_power;
 	if (pOutfit)
 	{
-		new_hit_power = pOutfit->HitThroughArmor(hit_power, element, ap, add_wound, hit_type);
+		new_hit_power = pOutfit->HitThroughArmor(hit_power, element, ap, add_wound, hit_type, ApplyCondition);
 	}
 
 	if (pHelmet)
 	{
-		new_hit_power = pHelmet->HitThroughArmor(new_hit_power, element, ap, add_wound, hit_type);
+		new_hit_power = pHelmet->HitThroughArmor(new_hit_power, element, ap, add_wound, hit_type, ApplyCondition);
 	}
 
 	if (bDebug)
@@ -427,7 +428,7 @@ float CEntityCondition::HitPowerEffect(float power_loss)
 	CCustomOutfit* pOutfit = pInvOwner->GetOutfit();
 	if (pOutfit == nullptr)
 	{
-		return power_loss * 0.5f;
+		return EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::CallOfPripyat ? power_loss * 0.5f : power_loss;
 	}
 
     float new_power_loss = power_loss * pOutfit->GetPowerLoss();
@@ -573,7 +574,10 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
 	bool const is_special_hit_2_self		=	(pHDS->who == m_object) && (pHDS->boneID == BI_NONE);
 
-	bool bAddWound = pHDS->add_wound;
+	const EEngineExternalBalance Balance = EngineExternal().GetEffectiveBalanceMode();
+	const bool IsShadowOfChernobylBalance = Balance == EEngineExternalBalance::ShadowOfChernobyl;
+	const bool IsLegacyBalance = Balance != EEngineExternalBalance::CallOfPripyat;
+	bool bAddWound = IsShadowOfChernobylBalance || pHDS->add_wound;
 	
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
@@ -584,6 +588,14 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	switch(pHDS->hit_type)
 	{
 	case ALife::eHitTypeTelepatic:
+		if (IsShadowOfChernobylBalance)
+		{
+			hit_power = LegacyHitBalance::ShadowPsyDamage(hit_power, GetHitImmunity(pHDS->hit_type));
+			ChangePsyHealth(-hit_power);
+			m_fHealthLost = 0.0f;
+			bAddWound = false;
+			break;
+		}
 		hit_power -= m_fBoostTelepaticProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
@@ -600,9 +612,15 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-		bAddWound = pActor && pActor->HudAnimator()->BurnAnimator();
+		bAddWound = !IsLegacyBalance && pActor && pActor->HudAnimator()->BurnAnimator();
 		break;
 	case ALife::eHitTypeChemicalBurn:
+		if (IsShadowOfChernobylBalance)
+		{
+			hit_power *= GetHitImmunity(pHDS->hit_type);
+			m_fHealthLost = 0.0f;
+			break;
+		}
 		hit_power -= m_fBoostChemicalBurnProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
@@ -610,7 +628,10 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-		bAddWound		=  false;
+		if (!IsLegacyBalance)
+		{
+			bAddWound = false;
+		}
 		break;
 	case ALife::eHitTypeShock:
 		hit_power		*= GetHitImmunity(pHDS->hit_type)-m_fBoostShockImmunity;
@@ -620,6 +641,12 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		bAddWound		=  false;
 		break;
 	case ALife::eHitTypeRadiation:
+		if (IsLegacyBalance)
+		{
+			m_fDeltaRadiation += hit_power;
+			m_fHealthLost = 0.0f;
+			return nullptr;
+		}
 		hit_power			-= m_fBoostRadiationProtection;
 		if(hit_power < 0.f)
 			hit_power = 0.f;
@@ -640,7 +667,10 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-		bAddWound		=  false;
+		if (!IsLegacyBalance)
+		{
+			bAddWound = false;
+		}
 		break;
 	case ALife::eHitTypeFireWound:
 		hit_power *= GetHitImmunity(pHDS->hit_type)-m_fBoostFireWoundImmunity;

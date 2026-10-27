@@ -92,14 +92,15 @@ void CArmorBase::Load(const char* section)
 	{
 		m_boneProtection->m_fHitFrac = pSettings->r_float(section, "hit_fraction_actor");
 
-		// Since hit_fraction_actor exists both in CS and COP, but fire_wound_protection was removed in COP,
-		// We can use this hacky solution to determine which damage formula to use.
-		// It not robust for mods, because they can have fire_wound_protection in configs, despite that
-		// original COP engine doesn't read it.
-		if (pSettings->line_exist(section, "fire_wound_protection"))
+		// In automatic mode, retain the existing configuration-based compatibility.
+		if (EngineExternal().GetEffectiveBalanceMode() == EEngineExternalBalance::ClearSky || pSettings->line_exist(section, "fire_wound_protection"))
+		{
 			m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCS;
+		}
 		else
+		{
 			m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCOP;
+		}
 	}
 
 	if (pSettings->line_exist(section, "nightvision_sect"))
@@ -278,14 +279,33 @@ void CArmorBase::load(IReader& packet)
 	IAntigas::UpdateState();
 }
 
-float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
+EEngineExternalBalance CArmorBase::GetArmorBalance() const
 {
-	float NewHitPower = hit_power;
+	const EEngineExternalBalance Balance = EngineExternal().GetBalanceMode();
+	if (Balance != EEngineExternalBalance::Auto)
+	{
+		return Balance;
+	}
 
 	switch (m_boneProtection->m_hitFracType)
 	{
+	case SBoneProtections::HitFraction:
+		return EEngineExternalBalance::ShadowOfChernobyl;
+	case SBoneProtections::HitFractionActorCS:
+		return EEngineExternalBalance::ClearSky;
 	default:
-	case SBoneProtections::HitFractionActorCOP:
+		return EEngineExternalBalance::CallOfPripyat;
+	}
+}
+
+float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type, bool ApplyCondition)
+{
+	float NewHitPower = hit_power;
+
+	switch (GetArmorBalance())
+	{
+	default:
+	case EEngineExternalBalance::CallOfPripyat:
 	{
 		if (hit_type == ALife::eHitTypeFireWound)
 		{
@@ -334,10 +354,13 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 		}
 
 		//увеличить изношенность костюма
-		Hit(hit_power, hit_type);
+		if (ApplyCondition)
+		{
+			Hit(hit_power, hit_type);
+		}
 		break;
 	}
-	case SBoneProtections::HitFractionActorCS:
+	case EEngineExternalBalance::ClearSky:
 	{
 		if (hit_type == ALife::eHitTypeFireWound)
 		{
@@ -384,10 +407,13 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 		}
 
 		//увеличить изношенность костюма
-		Hit(NewHitPower, hit_type);
+		if (ApplyCondition)
+		{
+			Hit(NewHitPower, hit_type);
+		}
 		break;
 	}
-	case SBoneProtections::HitFraction:
+	case EEngineExternalBalance::ShadowOfChernobyl:
 	{
 		if (hit_type == ALife::eHitTypeFireWound)
 		{
@@ -402,10 +428,13 @@ float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& 
 		}
 
 		//увеличить изношенность костюма
-		Hit(hit_power, hit_type);
+		if (ApplyCondition)
+		{
+			Hit(hit_power, hit_type);
+		}
 		break;
 	}
-	} // switch (m_boneProtection->m_hitFracType)
+	}
 
 	return NewHitPower;
 }
@@ -420,7 +449,7 @@ float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, u16 element)
 	float base = m_HitTypeProtection[hit_type] * GetCondition();
 	float bone = element == u16(-1) ? 1.0f : m_boneProtection->getBoneProtection(element);
 
-	if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+	if (GetArmorBalance() == EEngineExternalBalance::ShadowOfChernobyl)
 		return 1.0f - base * bone; // SOC
 
 	return base * bone; // CS/COP

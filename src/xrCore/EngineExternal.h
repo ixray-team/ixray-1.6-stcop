@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EngineBalance.h"
+
 enum class EEngineExternalUI
 {
 	//HQIcons,
@@ -151,6 +153,8 @@ public:
 	bool ClearSkyMode() const;
 	bool CallOfPripyatMode() const;
 	bool ShadowOfChernobylMode() const;
+	EEngineExternalBalance GetBalanceMode() const;
+	EEngineExternalBalance GetEffectiveBalanceMode() const;
 	Fvector4 GetTalkDof() const;
 	float GetTalkFovScale() const;
 	u32 GetFontAltasSize() const;
@@ -224,6 +228,7 @@ private:
 
 private:
 	EEngineExternalPlatform m_platform_type;
+	EEngineExternalBalance BalanceMode = EEngineExternalBalance::Auto;
 	CInifile* pOptions;
 };
 

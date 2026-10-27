@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "../../LegacyHitBalance.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_impl.h"
@@ -277,12 +278,14 @@ void CAI_Stalker::Hit(SHit* pHDS)
     if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
     {
         const float BoneArmor = m_boneHitProtection->getBoneArmor(HDS.bone());
+		const EEngineExternalBalance Balance = EngineExternal().GetBalanceMode();
 
         if (wounded()) // уже лежит => добивание
         {
             hit_power = 1000.f;
         }
-        else if (m_boneHitProtection->m_hitFracType == SBoneProtections::HitFractionNPC) // COP
+        else if (Balance == EEngineExternalBalance::CallOfPripyat ||
+			(Balance == EEngineExternalBalance::Auto && m_boneHitProtection->m_hitFracType == SBoneProtections::HitFractionNPC))
         {
             if (!fis_zero(BoneArmor, EPS))
             {
@@ -304,7 +307,8 @@ void CAI_Stalker::Hit(SHit* pHDS)
                 }
             }
         }
-        else if (GMLib.GetLibraryVersion() >= GAMEMTL_VERSION_CS)
+        else if (Balance == EEngineExternalBalance::ClearSky ||
+			(Balance == EEngineExternalBalance::Auto && GMLib.GetLibraryVersion() >= GAMEMTL_VERSION_CS))
         {
             const float ap = HDS.armor_piercing;
 
@@ -325,14 +329,10 @@ void CAI_Stalker::Hit(SHit* pHDS)
                 HDS.add_wound = false;
             }
         }
-        else if (GMLib.GetLibraryVersion() == GAMEMTL_VERSION_SOC)
+        else if (Balance == EEngineExternalBalance::ShadowOfChernobyl ||
+			(Balance == EEngineExternalBalance::Auto && GMLib.GetLibraryVersion() == GAMEMTL_VERSION_SOC))
         {
-            const float NewHitPower = HDS.damage() - BoneArmor;
-
-            if (NewHitPower < HDS.power * m_boneHitProtection->m_fHitFrac)
-                hit_power = HDS.power * m_boneHitProtection->m_fHitFrac;
-            else
-                hit_power = NewHitPower;
+            hit_power = LegacyHitBalance::ShadowStalkerBulletDamage(hit_power, BoneArmor, m_boneHitProtection->m_fHitFrac);
         }
     }
 	HDS.power = hit_power;

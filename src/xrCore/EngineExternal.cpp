@@ -38,6 +38,14 @@ CEngineExternal::CEngineExternal() :
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
 
+	const char* BalanceName = READ_IF_EXISTS(pOptions, r_string, "gameplay", "BalanceMode", "auto");
+	BalanceMode = EngineBalance::Parse(BalanceName);
+	if (BalanceMode == EEngineExternalBalance::Unknown)
+	{
+		Msg("! Unknown gameplay BalanceMode '%s'; using auto", BalanceName ? BalanceName : "<empty>");
+		BalanceMode = EEngineExternalBalance::Auto;
+	}
+
 	gamesaveSize = READ_IF_EXISTS(pOptions, r_ivector2, "general", "SaveImageSize", Ivector2().set(128, 128));
 }
 
@@ -180,6 +188,28 @@ bool CEngineExternal::CallOfPripyatMode() const
 bool CEngineExternal::ShadowOfChernobylMode() const
 {
 	return m_platform_type == EEngineExternalPlatform::ShadowOfChernobyl;
+}
+
+EEngineExternalBalance CEngineExternal::GetBalanceMode() const
+{
+	return BalanceMode;
+}
+
+EEngineExternalBalance CEngineExternal::GetEffectiveBalanceMode() const
+{
+	EEngineExternalBalance PlatformBalance = EEngineExternalBalance::CallOfPripyat;
+	switch (m_platform_type)
+	{
+	case EEngineExternalPlatform::ShadowOfChernobyl:
+		PlatformBalance = EEngineExternalBalance::ShadowOfChernobyl;
+		break;
+	case EEngineExternalPlatform::ClearSky:
+		PlatformBalance = EEngineExternalBalance::ClearSky;
+		break;
+	default:
+		break;
+	}
+	return EngineBalance::Resolve(BalanceMode, PlatformBalance);
 }
 
 Fvector4 CEngineExternal::GetTalkDof() const

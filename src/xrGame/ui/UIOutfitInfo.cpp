@@ -13,6 +13,20 @@
 #include "../../xrEngine/string_table.h"
 #include "../BoneProtections.h"
 
+namespace
+{
+	float GetOutfitInfoArtefactProtection(CActor& Actor, ALife::EHitType HitType)
+	{
+		const CEngineExternal& External = EngineExternal();
+		if (External.GetBalanceMode() == EEngineExternalBalance::Auto &&
+			External.GetEffectiveBalanceMode() == EEngineExternalBalance::CallOfPripyat)
+		{
+			return 1.0f - Actor.HitArtefactsOnBeltLegacy(1.0f, HitType);
+		}
+		return Actor.GetProtection_ArtefactsOnBelt(HitType);
+	}
+}
+
 constexpr std::tuple<ALife::EHitType, const char*, const char*, float, const char*> outfit_immunity[] =
 {
 	{ ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      "%" },
@@ -236,8 +250,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		{
 			if (m_items[i] && m_items[i]->GetLegacyMode())
 			{
-				float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, (ALife::EHitType)i);
-				_val_af = 1.0f - _val_af;
+				float _val_af = GetOutfitInfoArtefactProtection(*Actor(), (ALife::EHitType)i);
 
 				m_items[i]->SetAfValue(_val_af);
 				m_items[i]->SetProgressValue(0.0f, 0.0f);
@@ -272,8 +285,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 			slot /= max_power; //  = 0..1
 		}
 
-		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
-		_val_af = 1.0f - _val_af;
+		float _val_af = GetOutfitInfoArtefactProtection(*Actor(), hit_type);
 
 		m_items[i]->SetAfValue(_val_af);
 		m_items[i]->SetProgressValue( cur, slot );
@@ -305,8 +317,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		cur /= max_power;
 		slot /= max_power;
 
-		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, ALife::eHitTypeFireWound);
-		_val_af = 1.0f - _val_af;
+		float _val_af = GetOutfitInfoArtefactProtection(*Actor(), ALife::eHitTypeFireWound);
 
 		m_items[ALife::eHitTypeFireWound]->SetAfValue(_val_af);
 		m_items[ALife::eHitTypeFireWound]->SetProgressValue( cur, slot );

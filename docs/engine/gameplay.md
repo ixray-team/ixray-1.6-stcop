@@ -59,6 +59,14 @@ Gunslinger actor-light detection supplements visual recognition through native m
 
 ALife: offline = `CSE_*` only, online = client entity. `CALifeUpdateManager` spends a per-frame budget. Switch distance is on the simulator, not `CLevel::OnFrame`.
 
+## Damage compatibility
+
+`[gameplay] BalanceMode` in `engine_external.ltx` selects `auto`, `soc`, `cs`, or `cop` at startup. In `auto`, condition and artifact formulas follow `Platform`, actor armor retains configuration-based detection, and NPC armor retains the `hit_fraction_npc` / `game_materials` selection. An explicit mode selects the corresponding actor and NPC armor formula as well. The mode does not convert config values; changing it can require rebalancing item, weapon and immunity settings.
+
+SoC belt artifact hit immunities are summed as multipliers. CS subtracts configured artifact absorption and clamps the result to zero without condition scaling. In both modes the original continuous artifact effects are independent of condition. For direct radiation hits, SoC and CS add the post-equipment hit to radiation without applying the actor's radiation immunity. SoC psychic hits apply the immunity twice to psy health without directly reducing health or power; chemical hits create wounds without direct health loss. CS chemical and both games' strike hits can create wounds. Damage preview for the Lua hit callback does not wear equipment in these modes; the actual hit applies wear once. Without an outfit, movement power loss is not halved.
+
+Numerical regression examples and balance mode parsing are in `src/test/LegacyHitBalanceTests.cpp` (`IXRAY_TESTS`). Modder reference: [English](../docs/main/en/main/engine-extension-configuration.md) / [Russian](../docs/main/ru/main/engine-extension-configuration.md).
+
 ## Lua
 
 `CScriptEngine` (`src/xrScripts/script_engine.h`): one LuaJIT state, `CScriptProcess` list. `CLevel::OnFrame` queues `CLevel::script_gc`; it updates the level process on `GameThread`.
