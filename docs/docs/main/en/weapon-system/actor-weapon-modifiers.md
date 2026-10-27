@@ -190,13 +190,13 @@ The engine stores the resulting coefficients, not the sources of bonuses, timers
 
 ## Apply a persistent bonus through events
 
-Coefficients start at `1.0` and are **saved and restored with the actor**. The handler below changes coefficients when the training infoportion is granted or removed. Loading a save restores them from the entity packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
+Coefficients start at `1.0` and are **saved and restored with the actor**. The handler below changes coefficients when the training infoportion is granted. Loading a save restores them from the entity packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
-The complete example below owns only common damage and recoil. When `refresh()` runs, it assigns `1.20` damage and `0.80` recoil if the training infoportion is present, or `1.0` for both if it is absent. An infoportion absent in a loaded save does not emit a removal event or reset restored coefficients.
+The complete example below owns only common damage and recoil. When `refresh()` runs, it assigns `1.20` damage and `0.80` recoil if the training infoportion is present, or `1.0` for both if it is absent. An absent infoportion alone does not invoke the handler or reset restored coefficients.
 
 1. Save the code below as `actor_weapon_modifiers.script` in your mod's `scripts/` directory.
 2. Replace `example_weapon_training` with an infoportion declared by your mod, or declare that ID in an XML file registered under `[info_portions]` in `configs/system.ltx`.
-3. Use an engine build with `actor_on_info_disabled` and an IX-Ray Framework setup providing `AddIntercept`, `RegisterScriptCallback` and `actor_on_info_callback`, then fully restart to refresh script discovery.
+3. Use an IX-Ray Framework setup providing `RegisterScriptCallback` and `actor_on_info_callback`, then fully restart to refresh script discovery.
 4. Grant the infoportion through your quest logic to apply the bonus. Subsequent game saves retain the assigned coefficients.
 
 ```lua
@@ -234,9 +234,7 @@ function on_game_start(data)
         return
     end
 
-    AddIntercept("actor_on_info_disabled", {"actor_game_object", "info_id_string"})
     RegisterScriptCallback("actor_on_info_callback", on_actor_info)
-    RegisterScriptCallback("actor_on_info_disabled", on_actor_info)
     registered = true
 end
 ```
@@ -245,14 +243,15 @@ end
 
 An infoportion already present in a loaded save does not itself apply the bonus. Loading a compatible save restores the recorded coefficients; it does not recompute them from infoportions.
 
-`actor_on_info_callback` reports receipt. The engine sends `actor_on_info_disabled(actor, info_id)` after removing an existing infoportion, so `actor:has_info(info_id)` is already false when dispatch begins. Removing an absent infoportion does not emit the event. With the subscription above, revoking the flag automatically recalculates the coefficients:
+The stock info callback reports receipt, not removal. Revoke the flag and refresh explicitly:
 
 ```lua
 local actor = db.actor
 actor:disable_info_portion("example_weapon_training")
+actor_weapon_modifiers.refresh()
 ```
 
-If another script also owns damage or recoil, integrate this event handler with the source-composition approach instead of letting both overwrite the same coefficient. The engine emits the removal event; the script decides how to change the coefficients.
+If another script also owns damage or recoil, integrate this event handler with the source-composition approach instead of letting both overwrite the same coefficient. Framework callback wiring is a script-layer facility; the engine API itself only stores and applies coefficients.
 
 ## Scope and calculation details
 
