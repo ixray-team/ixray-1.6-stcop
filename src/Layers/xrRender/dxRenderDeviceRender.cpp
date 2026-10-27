@@ -81,6 +81,7 @@ void dxRenderDeviceRender::updateGamma()
 void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
 #ifndef _EDITOR
+	ScreenshotManager::Shutdown();
 #ifdef USE_DX11
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
@@ -112,6 +113,7 @@ xr_task_group thm_reload_task;
 void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight)
 {
 #ifndef _EDITOR
+	ScreenshotManager::Flush();
 	Resources->reset_begin	();
 	Memory.mem_compact		();
 

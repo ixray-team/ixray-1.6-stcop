@@ -14,6 +14,8 @@ private:
 public:
 	static void RequestScreenshot();
 	static void CapturePendingScreenshot();
+	static void Flush();
+	static void Shutdown();
 
 	// Game captures use the game target; cubemaps and level maps use RTV 0.
 	static bool SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter = nullptr);
