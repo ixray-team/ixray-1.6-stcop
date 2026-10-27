@@ -5,14 +5,14 @@
 bool UseWeaponRainDrops = true;
 
 u32 g_RainShading = 2;
-float g_RainOpacity = 1.f;
-float g_RainColorBlend = 0.01f;
-float g_RainRadius = 0.1f;
-float g_RainImpactRadius = 1.f;
-float g_RainNear = 1.f;
-float g_RainRefraction = 12.f;
-float g_RainTransmission = 0.8f;
-float g_RainFeather = 0.15f;
+float g_RainDropsOpacity = 1.f;
+float g_RainDropsColorBlend = 0.01f;
+float g_RainDropsRadius = 0.1f;
+float g_RainDropsImpactRadius = 1.f;
+float g_RainDropsNear = 1.f;
+float g_RainDropsRefraction = 12.f;
+float g_RainDropsTransmission = 0.8f;
+float g_RainDropsFeather = 0.15f;
 static xr_token RainShadingTokens[] =
 {
 	{"auto", 0},
@@ -1309,14 +1309,14 @@ RENDER_API void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
 	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
 	CMD3(CCC_Token, "r_rain_shading", &g_RainShading, RainShadingTokens);
-	CMD4(CCC_Float, "r_rain_opacity", &g_RainOpacity, 0.f, 8.f);
-	CMD4(CCC_Float, "r_rain_color_blend", &g_RainColorBlend, 0.f, 1.f);
-	CMD4(CCC_Float, "r_rain_radius", &g_RainRadius, 0.01f, 2.f);
-	CMD4(CCC_Float, "r_rain_impact_radius", &g_RainImpactRadius, 0.01f, 2.f);
-	CMD4(CCC_Float, "r_rain_near", &g_RainNear, 0.f, 10.f);
-	CMD4(CCC_Float, "r_rain_refraction", &g_RainRefraction, 0.f, 32.f);
-	CMD4(CCC_Float, "r_rain_transmission", &g_RainTransmission, 0.f, 1.f);
-	CMD4(CCC_Float, "r_rain_feather", &g_RainFeather, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_drops_opacity", &g_RainDropsOpacity, 0.f, 8.f);
+	CMD4(CCC_Float, "r_rain_drops_color_blend", &g_RainDropsColorBlend, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_drops_radius", &g_RainDropsRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_drops_impact_radius", &g_RainDropsImpactRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_drops_near", &g_RainDropsNear, 0.f, 10.f);
+	CMD4(CCC_Float, "r_rain_drops_refraction", &g_RainDropsRefraction, 0.f, 32.f);
+	CMD4(CCC_Float, "r_rain_drops_transmission", &g_RainDropsTransmission, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_drops_feather", &g_RainDropsFeather, 0.f, 1.f);
 	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05

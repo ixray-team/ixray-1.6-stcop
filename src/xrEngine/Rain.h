@@ -75,8 +75,8 @@ private:
 	Fvector RainColor = {1.f, 1.f, 1.f};
 	float RainLength = 0.f;
 	float RainWidth = 0.f;
-	float RainOpacity = 0.f;
-	float RainNearDistance = 0.5f;
+	float RainDropsOpacity = 0.f;
+	float RainDropsNearDistance = 0.5f;
 	States							state;
 
 	// Particles

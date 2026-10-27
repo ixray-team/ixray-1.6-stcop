@@ -1,0 +1,16 @@
+<shader version="2" r1_static="1">
+	<normal>
+		<pass vs="effects_rain_impact" ps="effects_rain_instanced"/>
+		<zb test="1" write="0"/>
+		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
+		<texture name="env_s0" value="$user$env_s0"/>
+		<texture name="env_s1" value="$user$env_s1"/>
+		<texture name="sky_s0" value="$user$sky0"/>
+		<texture name="sky_s1" value="$user$sky1"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_base" value="{base}"/>
+		<sampler name="smp_linear"/>
+		<sampler name="smp_rtlinear"/>
+		<sampler name="smp_base"/>
+	</normal>
+</shader>
