@@ -95,15 +95,24 @@ void CControlAnimation::play()
 
 void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 {
-	VERIFY				(part.get_motion().valid());
-	
-	u16 bone_or_part	= m_skeleton_animated->LL_GetMotionDef(part.get_motion())->bone_or_part;
-	if (bone_or_part == u16(-1)) bone_or_part = m_skeleton_animated->LL_PartID("default");
-	
+	VERIFY(part.get_motion().valid());
+
+	CMotionDef* p_motion_def = m_skeleton_animated->LL_GetMotionDef(part.get_motion());
+	VERIFY(p_motion_def);
+
+	u16 bone_or_part = p_motion_def ? p_motion_def->bone_or_part : u16(-1);
+
+	if (bone_or_part == u16(-1))
+	{
+		bone_or_part = m_skeleton_animated->LL_PartID("default");
+	}
+
 	// initialize synchronization of prev and current animation
-	float pos		= -1.f;
-	if (part.blend && !part.blend->stop_at_end) 
-		pos			= fmod(part.blend->timeCurrent,part.blend->timeTotal)/part.blend->timeTotal;
+	float pos = -1.f;
+	if (part.blend && !part.blend->stop_at_end)
+	{
+		pos = fmod(part.blend->timeCurrent, part.blend->timeTotal) / part.blend->timeTotal;
+	}
 #ifdef DEBUG
 	//IKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
 	//Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second, *(m_object->cName()));
