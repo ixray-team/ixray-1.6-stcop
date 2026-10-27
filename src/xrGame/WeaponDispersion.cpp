@@ -54,9 +54,15 @@ void CWeapon::setFireDispersionConditionFactor(float value)
 	fireDispersionConditionFactor = value;
 }
 
+float CWeapon::GetCrosshairInertion() const
+{
+	return WeaponModifiers::ApplyCrosshairInertion(Actor()->WeaponModifierCoefficients, m_crosshair_inertion);
+}
+
 float CWeapon::GetBaseDispersion(float cartridge_k)
 {
-	return WeaponModifiers::ApplyFireDispersionBase(GetActorWeaponModifiers(), fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor());
+	const float Dispersion = fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor();
+	return WeaponModifiers::ApplyFireDispersionBase(*OwnerWeaponModifiers, Dispersion);
 }
 
 //текущая дисперсия (в радианах) оружия с учетом используемого патрона

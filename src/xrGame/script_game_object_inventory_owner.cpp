@@ -476,23 +476,24 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 }
 
-float CScriptGameObject::GetActorWeaponModifier(u32 Type) const
+float CScriptGameObject::GetWeaponModifier(u32 Type) const
 {
-	if (const CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::eWpnModifierTypeMax)
+	if (const CEntityAlive* Owner = object().cast_entity_alive(); Owner && Type < WeaponModifier::eWpnModifierTypeMax)
 	{
-		return Owner->GetActorWeaponModifier((WeaponModifier)Type);
+		return Owner->GetWeaponModifier((WeaponModifier)Type);
 	}
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: expected an actor and a valid modifier type");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "get_weapon_modifier: expected a living entity and a valid modifier type");
 	return 1.0f;
 }
 
-bool CScriptGameObject::SetActorWeaponModifier(u32 Type, float Value)
+bool CScriptGameObject::SetWeaponModifier(u32 Type, float Value)
 {
-	if (CActor* Owner = object().cast_actor(); Owner && Type < (u32)WeaponModifier::eWpnModifierTypeMax && Owner->SetActorWeaponModifier((WeaponModifier)Type, Value))
+	if (CEntityAlive* Owner = object().cast_entity_alive(); Owner && Type < WeaponModifier::eWpnModifierTypeMax)
 	{
+		Owner->SetWeaponModifier((WeaponModifier)Type, Value);
 		return true;
 	}
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "weapons_modifiers: expected an actor and a valid modifier type");
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "set_weapon_modifier: expected a living entity and a valid modifier type");
 	return false;
 }
 

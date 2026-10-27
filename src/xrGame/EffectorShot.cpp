@@ -5,6 +5,7 @@
 #include "StdAfx.h"
 #include "EffectorShot.h"
 #include "Weapon.h"
+#include "Actor.h"
 
 //-----------------------------------------------------------------------------
 // Weapon shot effector
@@ -68,7 +69,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
-	const WeaponModifiers::WpnModifierType& Modifiers = weapon->GetActorWeaponModifiers();
+	const WeaponModifiers::WpnModifierType& Modifiers = Actor()->WeaponModifierCoefficients;
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;

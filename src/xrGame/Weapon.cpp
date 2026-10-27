@@ -1087,6 +1087,8 @@ bool CWeapon::net_Spawn(CSE_Abstract* DC)
 
 void CWeapon::net_Destroy()
 {
+	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	UseSinglePlayerHitPower = false;
 	inherited::net_Destroy();
 
 	//удалить эффекты вспышки от выстрела
@@ -1297,6 +1299,8 @@ void CWeapon::shedule_Update	(u32 dT)
 
 void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 {
+	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	UseSinglePlayerHitPower = false;
 	RemoveShotEffector			();
 
 	inherited::OnH_B_Independent(just_before_destroy);
@@ -1346,6 +1350,15 @@ void CWeapon::OnH_A_Independent	()
 void CWeapon::OnH_A_Chield		()
 {
 	inherited::OnH_A_Chield		();
+	if (CEntityAlive* Owner = H_Parent()->cast_entity_alive())
+	{
+		OwnerWeaponModifiers = &Owner->WeaponModifierCoefficients;
+	}
+	else
+	{
+		OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	}
+	UseSinglePlayerHitPower = IsGameTypeSingle() && ParentIsActor();
 	UpdateAddonsVisibility		();
 	ProcessScope();
 };
@@ -3838,19 +3851,6 @@ bool CWeapon::ParentIsActor	()
 	return H_Parent() && H_Parent()->cast_actor();
 }
 
-const WeaponModifiers::WpnModifierType& CWeapon::GetActorWeaponModifiers() const
-{
-	if (IsGameTypeSingle() && H_Parent())
-	{
-		if (const CActor* Owner = smart_cast<const CActor*>(H_Parent()))
-		{
-			return Owner->GetActorWeaponModifiers();
-		}
-	}
-
-	return CShootingObject::GetActorWeaponModifiers();
-}
-
 void CWeapon::debug_draw_firedeps()
 {
 #ifdef DEBUG_DRAW
@@ -5055,6 +5055,11 @@ void CWeapon::MakeWeaponKick(Fvector& pos, Fvector& dir)
 
 void CWeapon::net_Relcase(CObject* object)
 {
+	if (object == H_Parent())
+	{
+		OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+		UseSinglePlayerHitPower = false;
+	}
 	inherited::net_Relcase(object);
 
 	if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())

@@ -541,34 +541,18 @@ void CShootingObject::FireBullet(const Fvector& pos,
 	}
 	m_fPredBulletTime = Device.fTimeGlobal;
 
-	const bool is_actor_singleplayer = ParentIsActor() && IsGameTypeSingle();
 	const ESingleGameDifficulty hit_power_difficulty =
-		is_actor_singleplayer ? g_SingleGameDifficulty : egdMaster;
+		UseSinglePlayerHitPower ? g_SingleGameDifficulty : egdMaster;
 	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	const WeaponModifiers::WpnModifierType& Modifiers = GetActorWeaponModifiers();
+	float BulletSpeed = m_fStartBulletSpeed * cur_silencer_koef.bullet_speed;
+	float HitImpulse = fHitImpulse * cur_silencer_koef.hit_impulse;
+	const WeaponModifiers::WpnModifierType& Modifiers = *OwnerWeaponModifiers;
 	l_fHitPower = WeaponModifiers::ApplyHitPower(Modifiers, l_fHitPower, fire_mode == eSilencerFire);
+	BulletSpeed = WeaponModifiers::ApplyBulletSpeed(Modifiers, BulletSpeed);
+	HitImpulse = WeaponModifiers::ApplyHitImpulse(Modifiers, HitImpulse);
 
-	Level().BulletManager().AddBullet(pos, dir, WeaponModifiers::ApplyBulletSpeed(Modifiers, m_fStartBulletSpeed * cur_silencer_koef.bullet_speed), l_fHitPower * cur_silencer_koef.hit_power, WeaponModifiers::ApplyHitImpulse(Modifiers, fHitImpulse * cur_silencer_koef.hit_impulse), parent_id, weapon_id, ALife::eHitTypeFireWound, fireDistance, cartridge, m_air_resistance_factor, send_hit, aim_bullet);
-}
-const WeaponModifiers::WpnModifierType& CShootingObject::GetActorWeaponModifiers() const
-{
-	static const WeaponModifiers::WpnModifierType DefaultModifiers = []
-	{
-		WeaponModifiers::WpnModifierType Modifiers;
-		Modifiers.resize(WeaponModifier::eWpnModifierTypeMax);
-		for (float& Coefficient : Modifiers)
-		{
-			Coefficient = 1.0f;
-		}
-		return Modifiers;
-	}();
-	return DefaultModifiers;
-}
-
-float CShootingObject::GetModifiedShotInterval(float Interval) const
-{
-	return WeaponModifiers::ApplyShotInterval(GetActorWeaponModifiers(), Interval);
+	Level().BulletManager().AddBullet(pos, dir, BulletSpeed, l_fHitPower * cur_silencer_koef.hit_power, HitImpulse, parent_id, weapon_id, ALife::eHitTypeFireWound, fireDistance, cartridge, m_air_resistance_factor, send_hit, aim_bullet);
 }
 
 void CShootingObject::FireStart	()

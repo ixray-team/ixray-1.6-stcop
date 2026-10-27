@@ -119,12 +119,6 @@ void CActor::OnFrame()
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
-	WeaponModifierCoefficients.resize(WeaponModifier::eWpnModifierTypeMax);
-	for (float& Coefficient : WeaponModifierCoefficients)
-	{
-		Coefficient = 1.0f;
-	}
-
 	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
 
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
@@ -306,13 +300,6 @@ CActor::~CActor()
 THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 {
 	return GetComponent<THudVertexAssignedPatricles>();
-}
-
-bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
-{
-	clamp(Value, 0.001f, FLT_MAX);
-	WeaponModifierCoefficients[Type] = Value;
-	return true;
 }
 
 void CActor::reinit	()

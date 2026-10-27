@@ -35,8 +35,12 @@ private:
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
 protected:
-	virtual const WeaponModifiers::WpnModifierType& GetActorWeaponModifiers() const;
-	float GetModifiedShotInterval(float Interval) const;
+	const WeaponModifiers::WpnModifierType* OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	bool UseSinglePlayerHitPower = false;
+	ICF float GetModifiedShotInterval(float Interval) const
+	{
+		return WeaponModifiers::ApplyShotInterval(*OwnerWeaponModifiers, Interval);
+	}
 
 	enum
 	{
