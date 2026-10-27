@@ -297,6 +297,31 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
     LL_Validate		();
 }
 
+void CKinematics::ReloadUserData()
+{
+	xr_string fn; fn.reserve(300);
+
+	fn = FS.get_path(_game_meshes_)->m_Path;
+	fn += *dbg_name;
+	if (nullptr == strext(*dbg_name))
+		fn += ".ogf";
+
+	if (!FS.exist(fn.c_str()))
+	{
+		fn = FS.get_path("$level$")->m_Path;
+		fn += *dbg_name;
+		if (nullptr == strext(*dbg_name))
+			fn += ".ogf";
+	}
+
+	IReader* data = FS.r_open(fn.c_str());
+	if (!data) return;
+	IReader* UD = data->open_chunk(OGF_S_USERDATA);
+	pUserData = UD ? new CInifile(UD, FS.get_path(_game_config_)->m_Path) : nullptr;
+	UD->close();
+	data->close();
+}
+
 void iBuildGroups(CBoneData* B, buffer_vector<u16>& tgt, u16 id, u16& last_id)
 {
     if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))
