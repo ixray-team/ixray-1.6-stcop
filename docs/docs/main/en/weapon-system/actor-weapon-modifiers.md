@@ -243,12 +243,4 @@ If another script also owns damage or recoil, integrate this event handler with 
 
 ## Verification
 
-Native coefficient tests can run without starting the game:
-
-~~~powershell
-cmake -S src/test/weapons_modifiers -B build/weapons-modifiers-tests -A x64
-cmake --build build/weapons-modifiers-tests --config Release
-ctest --test-dir build/weapons-modifiers-tests -C Release --output-on-failure
-~~~
-
-Build `xrGame` after C++ or binding changes. Runtime acceptance still requires checks in game: save/load, repeated events, bonus removal, upgraded weapons, silencer attachment/removal, NPC ownership, both firing paths, and pattern/legacy recoil. Native coefficient tests do not replace those checks.
+Build `xrGame` after C++ or binding changes. Runtime acceptance still requires checks in game: save/load, repeated events, bonus removal, upgraded weapons, silencer attachment/removal, NPC ownership, both firing paths, and pattern/legacy recoil.
