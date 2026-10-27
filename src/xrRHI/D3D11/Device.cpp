@@ -11,6 +11,83 @@
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
+class DX11Readback final : public IRHIReadback
+{
+public:
+	ID3D11Texture2D* Staging = nullptr;
+	ID3D11DeviceContext* Context = nullptr;
+
+	~DX11Readback() override
+	{
+		if (Staging)
+		{
+			Staging->Release();
+		}
+		if (Context)
+		{
+			Context->Release();
+		}
+	}
+
+	ERHIReadbackStatus ReadPixels(xr_vector<u8>& Pixels, bool Wait) override
+	{
+		D3D11_MAPPED_SUBRESOURCE Mapped = {};
+		const HRESULT Result = Context->Map(Staging, 0, D3D11_MAP_READ, Wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT, &Mapped);
+		if (Result == DXGI_ERROR_WAS_STILL_DRAWING)
+		{
+			return ERHIReadbackStatus::Pending;
+		}
+		if (FAILED(Result))
+		{
+			return ERHIReadbackStatus::Failed;
+		}
+		Pixels.resize(size_t(Width) * Height * 4);
+		for (u32 Y = 0; Y < Height; ++Y)
+		{
+			memcpy(Pixels.data() + size_t(Y) * Width * 4, static_cast<const u8*>(Mapped.pData) + size_t(Y) * Mapped.RowPitch, size_t(Width) * 4);
+		}
+		Context->Unmap(Staging, 0);
+		return ERHIReadbackStatus::Ready;
+	}
+};
+
+xr_unique_ptr<IRHIReadback> InternalDevice11::BeginRenderTargetReadback(IRHIRenderTargetView* Target)
+{
+	if (!Target)
+	{
+		return nullptr;
+	}
+	auto Readback = xr_make_unique<DX11Readback>();
+	auto* Source = static_cast<ID3D11Resource*>(Target->GetSurface()->GetRawTexture());
+	ID3D11Texture2D* Texture = nullptr;
+	if (FAILED(Source->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&Texture))))
+	{
+		return nullptr;
+	}
+	D3D11_TEXTURE2D_DESC Description = {};
+	Texture->GetDesc(&Description);
+	Texture->Release();
+	if (Description.SampleDesc.Count != 1 || (Description.Format != DXGI_FORMAT_B8G8R8A8_UNORM && Description.Format != DXGI_FORMAT_B8G8R8X8_UNORM && Description.Format != DXGI_FORMAT_R8G8B8A8_UNORM))
+	{
+		return nullptr;
+	}
+	Readback->Width = Description.Width;
+	Readback->Height = Description.Height;
+	Readback->Format = static_cast<ERHI_FORMAT>(Description.Format);
+	Description.Usage = D3D11_USAGE_STAGING;
+	Description.BindFlags = 0;
+	Description.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	Description.MiscFlags = 0;
+	if (FAILED(DX11Device->CreateTexture2D(&Description, nullptr, &Readback->Staging)))
+	{
+		return nullptr;
+	}
+	Readback->Context = HWRenderContext;
+	Readback->Context->AddRef();
+	HWRenderContext->CopyResource(Readback->Staging, Source);
+	return xr_unique_ptr<IRHIReadback>(Readback.release());
+}
+
 InternalDevice11::InternalDevice11()
 {
 	CreateD3D11();

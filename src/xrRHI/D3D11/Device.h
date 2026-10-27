@@ -37,6 +37,7 @@ public:
 
 	// Readback helper
 	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) override;
+	xr_unique_ptr<IRHIReadback> BeginRenderTargetReadback(IRHIRenderTargetView* Target) override;
 
     // Drawing methods
     virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
