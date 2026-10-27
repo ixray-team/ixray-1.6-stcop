@@ -83,23 +83,13 @@ Both `save`/`load` and `Serialize` persist the section, comparison rank, fallbac
 
 ## Actor weapon modifiers
 
-`CActor::WeaponModifiers` owns nine coefficients from `WeaponsModifiers.h`, initialized to `1.0`. Lua reads them through `actor:weapons_modifiers(modifier)` and assigns them through `actor:weapons_modifiers(modifier, value)`, with a `weaponsModifiers.*` constant as `modifier`; the getter and setter bind `CScriptGameObject::GetActorWeaponModifier` and `SetActorWeaponModifier`. String lookup is not exposed. See the [modder guide](../docs/main/en/weapon-system/actor-weapon-modifiers.md) for all constants and examples.
+`CActor::WeaponModifierCoefficients` stores nine coefficients in `WeaponModifiers::WpnModifierType`, a `FixedVector<float, static_cast<int>(WeaponModifier::Count)>`. The constructor sets its size and initializes every coefficient to `1.0`; `reinit` resets the values to `1.0`. Access uses enum indices, with no switch-based lookup. Lua reads them through `actor:weapons_modifiers(modifier)` and assigns them through `actor:weapons_modifiers(modifier, value)`, with a `weaponsModifiers.*` constant as `modifier`; the getter and setter bind `CScriptGameObject::GetActorWeaponModifier` and `SetActorWeaponModifier`. String lookup is not exposed. See the [modder guide](../docs/main/en/weapon-system/actor-weapon-modifiers.md) for all constants and examples.
 
-`CActor::save(NET_Packet&)` writes an `ActorWeaponModifierSerialization` block after actor statistics. `CActor::load(IReader&)` reads it at the same position. `CGameObject::net_Save` calls actor serialization before `CScriptBinder::save`; `net_Load` restores actor data before `CScriptBinder::load`.
+`CActor::save(NET_Packet&)` writes all nine coefficients directly with `w_float` after actor statistics. `CActor::load(IReader&)` reads them directly with `r_float` at the same position. The fixed layout is nine consecutive floats (36 bytes) in `WeaponModifier` order, with no signature, count or legacy-format detection. Changing the enum order or count changes the save format. Saves without these values or with the earlier signature/count header are incompatible; start a new game.
 
-| Field | Encoding |
-| --- | --- |
-| Signature | `u32`, `0x444F4D57` (`WMOD`) |
-| Coefficient count | `u32`, currently `9` |
-| Coefficients | One `float` per ID, in `WeaponModifier` order |
+`CGameObject::net_Save` calls actor serialization before `CScriptBinder::save`; `net_Load` restores actor data before `CScriptBinder::load`. The loader assigns stored values directly. `CActor::SetActorWeaponModifier` validates values assigned through the Lua API and indexes the same coefficient vector.
 
-The current block is 44 bytes. It uses the packet's scalar writers, not a raw copy of the C++ struct. Enum IDs are part of both the Lua API and the save format: append new values before `Count`; do not reorder or reuse existing IDs.
-
-The loader resets coefficients to neutral values before reading. With less than a complete header it reads nothing; when the signature is absent it restores the reader position so the script binder can read its own data. This supports an otherwise compatible actor save without the modifier block. Older engines without this reader cannot consume the new block.
-
-Stored coefficients pass through `SetCoefficient`; invalid values remain `1.0` and are logged. Missing entries retain defaults; additional entries are consumed but ignored. A declared count requiring more bytes than remain in the reader triggers `CHECK_OR_EXIT`, including in Shipping. The count does not make arbitrary changes to the block encoding compatible.
-
-Sources: [actor save/load](../../src/xrGame/Actor_Network.cpp), [coefficient definitions and validation](../../src/xrGame/WeaponsModifiers.h), [Lua bindings](../../src/xrGame/script_game_object_script3.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
+Sources: [actor save/load](../../src/xrGame/Actor_Network.cpp), [coefficient definitions](../../src/xrGame/WeaponsModifiers.h), [coefficient initialization and validation](../../src/xrGame/Actor.cpp), [Lua bindings](../../src/xrGame/script_game_object_script3.cpp), [binder serialization order](../../src/xrGame/GameObject.cpp).
 
 ## Files
 

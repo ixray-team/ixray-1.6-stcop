@@ -3838,7 +3838,7 @@ bool CWeapon::ParentIsActor	()
 	return H_Parent() && H_Parent()->cast_actor();
 }
 
-const WeaponsModifiers& CWeapon::GetActorWeaponModifiers() const
+const WeaponModifiers::WpnModifierType& CWeapon::GetActorWeaponModifiers() const
 {
 	if (IsGameTypeSingle() && H_Parent())
 	{

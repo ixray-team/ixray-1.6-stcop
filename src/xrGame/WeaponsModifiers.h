@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cfloat>
+#include "../xrCore/Containers/FixedVector.h"
 
-// IDs are exposed to Lua and stored in actor saves. Append new values before Count.
+// IDs define Lua constants and the fixed order of coefficients in actor saves.
 enum class WeaponModifier
 {
 	HitPowerCoeff,
@@ -17,168 +18,80 @@ enum class WeaponModifier
 	Count
 };
 
-struct WeaponsModifiers
+namespace WeaponModifiers
 {
-	float HitPowerCoeff = 1.0f;
-	float RpmCoeff = 1.0f;
-	float SilencerHitPowerCoeff = 1.0f;
-	float UnsilencedHitPowerCoeff = 1.0f;
-	float HitImpulseCoeff = 1.0f;
-	float FireDispersionBaseCoeff = 1.0f;
-	float CrosshairInertionCoeff = 1.0f;
-	float BulletSpeedCoeff = 1.0f;
-	float RecoilCoeff = 1.0f;
+using WpnModifierType = FixedVector<float, static_cast<int>(WeaponModifier::Count)>;
 
-	float GetCoefficient(WeaponModifier Type) const
+inline float ApplyHitPower(const WpnModifierType& Modifiers, float HitPower, bool IsSilenced = false)
+{
+	return HitPower * Modifiers[static_cast<u32>(WeaponModifier::HitPowerCoeff)] * (IsSilenced ? Modifiers[static_cast<u32>(WeaponModifier::SilencerHitPowerCoeff)] : Modifiers[static_cast<u32>(WeaponModifier::UnsilencedHitPowerCoeff)]);
+}
+
+inline float ApplyHitImpulse(const WpnModifierType& Modifiers, float HitImpulse)
+{
+	return HitImpulse * Modifiers[static_cast<u32>(WeaponModifier::HitImpulseCoeff)];
+}
+
+inline float ApplyFireDispersionBase(const WpnModifierType& Modifiers, float Dispersion)
+{
+	return Dispersion * Modifiers[static_cast<u32>(WeaponModifier::FireDispersionBaseCoeff)];
+}
+
+inline float ApplyCrosshairInertion(const WpnModifierType& Modifiers, float Inertion)
+{
+	return Inertion * Modifiers[static_cast<u32>(WeaponModifier::CrosshairInertionCoeff)];
+}
+
+inline float ApplyRecoil(const WpnModifierType& Modifiers, float Offset)
+{
+	return Offset * Modifiers[static_cast<u32>(WeaponModifier::RecoilCoeff)];
+}
+
+inline float ApplyRecoilKick(const WpnModifierType& Modifiers, float PreviousAngle, float ShotAngle, float MaxAngle)
+{
+	if (Modifiers[static_cast<u32>(WeaponModifier::RecoilCoeff)] == 1.0f)
 	{
-		switch (Type)
-		{
-			case WeaponModifier::HitPowerCoeff:
-				return HitPowerCoeff;
-			case WeaponModifier::RpmCoeff:
-				return RpmCoeff;
-			case WeaponModifier::SilencerHitPowerCoeff:
-				return SilencerHitPowerCoeff;
-			case WeaponModifier::UnsilencedHitPowerCoeff:
-				return UnsilencedHitPowerCoeff;
-			case WeaponModifier::HitImpulseCoeff:
-				return HitImpulseCoeff;
-			case WeaponModifier::FireDispersionBaseCoeff:
-				return FireDispersionBaseCoeff;
-			case WeaponModifier::CrosshairInertionCoeff:
-				return CrosshairInertionCoeff;
-			case WeaponModifier::BulletSpeedCoeff:
-				return BulletSpeedCoeff;
-			case WeaponModifier::RecoilCoeff:
-				return RecoilCoeff;
-			default:
-				return 1.0f;
-		}
+		return ShotAngle;
+	}
+	if (Modifiers[static_cast<u32>(WeaponModifier::RecoilCoeff)] == 0.0f)
+	{
+		return PreviousAngle;
 	}
 
-	bool SetCoefficient(WeaponModifier Type, float Value)
+	// Scale only this shot's contribution, keeping the accumulated angle intact.
+	const float Result = PreviousAngle + ApplyRecoil(Modifiers, ShotAngle - PreviousAngle);
+	if (Result < -MaxAngle)
 	{
-		// This also rejects NaN and infinity without changing the current value.
-		if (!(Value >= 0.0f && Value <= FLT_MAX))
-		{
-			return false;
-		}
+		return -MaxAngle;
+	}
+	if (Result > MaxAngle)
+	{
+		return MaxAngle;
+	}
+	return Result;
+}
 
-		switch (Type)
-		{
-			case WeaponModifier::HitPowerCoeff:
-			{
-				HitPowerCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::RpmCoeff:
-			{
-				if (Value == 0.0f)
-				{
-					return false;
-				}
-				RpmCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::SilencerHitPowerCoeff:
-			{
-				SilencerHitPowerCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::UnsilencedHitPowerCoeff:
-			{
-				UnsilencedHitPowerCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::HitImpulseCoeff:
-			{
-				HitImpulseCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::FireDispersionBaseCoeff:
-			{
-				FireDispersionBaseCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::CrosshairInertionCoeff:
-			{
-				CrosshairInertionCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::BulletSpeedCoeff:
-			{
-				if (Value == 0.0f)
-				{
-					return false;
-				}
-				BulletSpeedCoeff = Value;
-				return true;
-			}
-			case WeaponModifier::RecoilCoeff:
-			{
-				RecoilCoeff = Value;
-				return true;
-			}
-			default:
-				return false;
-		}
+inline float ApplyBulletSpeed(const WpnModifierType& Modifiers, float BulletSpeed)
+{
+	const float Result = BulletSpeed * Modifiers[static_cast<u32>(WeaponModifier::BulletSpeedCoeff)];
+	return Result > 0.0f && Result <= FLT_MAX ? Result : BulletSpeed;
+}
+
+inline float ApplyShotInterval(const WpnModifierType& Modifiers, float Interval)
+{
+	if (Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)] == 1.0f)
+	{
+		return Interval;
 	}
 
-	float ApplyHitPower(float HitPower, bool IsSilenced = false) const
+	const float Result = Interval / Modifiers[static_cast<u32>(WeaponModifier::RpmCoeff)];
+	if (!(Result > 0.0f && Result <= FLT_MAX))
 	{
-		return HitPower * HitPowerCoeff * (IsSilenced ? SilencerHitPowerCoeff : UnsilencedHitPowerCoeff);
+		return Interval;
 	}
 
-	float ApplyHitImpulse(float HitImpulse) const { return HitImpulse * HitImpulseCoeff; }
-	float ApplyFireDispersionBase(float Dispersion) const { return Dispersion * FireDispersionBaseCoeff; }
-	float ApplyCrosshairInertion(float Inertion) const { return Inertion * CrosshairInertionCoeff; }
-	float ApplyRecoil(float Offset) const { return Offset * RecoilCoeff; }
-
-	float ApplyRecoilKick(float PreviousAngle, float ShotAngle, float MaxAngle) const
-	{
-		if (RecoilCoeff == 1.0f)
-		{
-			return ShotAngle;
-		}
-		if (RecoilCoeff == 0.0f)
-		{
-			return PreviousAngle;
-		}
-
-		// Scale only this shot's contribution, keeping the accumulated angle intact.
-		const float Result = PreviousAngle + ApplyRecoil(ShotAngle - PreviousAngle);
-		if (Result < -MaxAngle)
-		{
-			return -MaxAngle;
-		}
-		if (Result > MaxAngle)
-		{
-			return MaxAngle;
-		}
-		return Result;
-	}
-
-	float ApplyBulletSpeed(float BulletSpeed) const
-	{
-		const float Result = BulletSpeed * BulletSpeedCoeff;
-		return Result > 0.0f && Result <= FLT_MAX ? Result : BulletSpeed;
-	}
-
-	float ApplyShotInterval(float Interval) const
-	{
-		if (RpmCoeff == 1.0f)
-		{
-			return Interval;
-		}
-
-		const float Result = Interval / RpmCoeff;
-		if (!(Result > 0.0f && Result <= FLT_MAX))
-		{
-			return Interval;
-		}
-
-		// Keep the float shot timer advancing and bound catch-up shots per frame.
-		constexpr float MinimumShotInterval = 0.001f;
-		return Result < MinimumShotInterval ? MinimumShotInterval : Result;
-	}
-};
+	// Keep the float shot timer advancing and bound catch-up shots per frame.
+	constexpr float MinimumShotInterval = 0.001f;
+	return Result < MinimumShotInterval ? MinimumShotInterval : Result;
+}
+} // namespace WeaponModifiers

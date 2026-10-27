@@ -546,32 +546,29 @@ void CShootingObject::FireBullet(const Fvector& pos,
 		is_actor_singleplayer ? g_SingleGameDifficulty : egdMaster;
 	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	const WeaponsModifiers& Modifiers = GetActorWeaponModifiers();
-	l_fHitPower = Modifiers.ApplyHitPower(l_fHitPower, fire_mode == eSilencerFire);
+	const WeaponModifiers::WpnModifierType& Modifiers = GetActorWeaponModifiers();
+	l_fHitPower = WeaponModifiers::ApplyHitPower(Modifiers, l_fHitPower, fire_mode == eSilencerFire);
 
-	Level().BulletManager().AddBullet( pos, 
-										dir,
-										Modifiers.ApplyBulletSpeed(m_fStartBulletSpeed * cur_silencer_koef.bullet_speed),
-										l_fHitPower * cur_silencer_koef.hit_power,
-										Modifiers.ApplyHitImpulse(fHitImpulse * cur_silencer_koef.hit_impulse),
-										parent_id, 
-										weapon_id,
-										ALife::eHitTypeFireWound, 
-										fireDistance, 
-										cartridge, 
-										m_air_resistance_factor,
-										send_hit, 
-										aim_bullet);
+	Level().BulletManager().AddBullet(pos, dir, WeaponModifiers::ApplyBulletSpeed(Modifiers, m_fStartBulletSpeed * cur_silencer_koef.bullet_speed), l_fHitPower * cur_silencer_koef.hit_power, WeaponModifiers::ApplyHitImpulse(Modifiers, fHitImpulse * cur_silencer_koef.hit_impulse), parent_id, weapon_id, ALife::eHitTypeFireWound, fireDistance, cartridge, m_air_resistance_factor, send_hit, aim_bullet);
 }
-const WeaponsModifiers& CShootingObject::GetActorWeaponModifiers() const
+const WeaponModifiers::WpnModifierType& CShootingObject::GetActorWeaponModifiers() const
 {
-	static const WeaponsModifiers DefaultModifiers;
+	static const WeaponModifiers::WpnModifierType DefaultModifiers = []
+	{
+		WeaponModifiers::WpnModifierType Modifiers;
+		Modifiers.resize(static_cast<int>(WeaponModifier::Count));
+		for (float& Coefficient : Modifiers)
+		{
+			Coefficient = 1.0f;
+		}
+		return Modifiers;
+	}();
 	return DefaultModifiers;
 }
 
 float CShootingObject::GetModifiedShotInterval(float Interval) const
 {
-	return GetActorWeaponModifiers().ApplyShotInterval(Interval);
+	return WeaponModifiers::ApplyShotInterval(GetActorWeaponModifiers(), Interval);
 }
 
 void CShootingObject::FireStart	()

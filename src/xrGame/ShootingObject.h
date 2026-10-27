@@ -10,11 +10,11 @@
 #include "../xrEngine/Render.h"
 #include "anticheat_dumpable_object.h"
 #include "../xrPhysics/DamageSource.h"
+#include "WeaponsModifiers.h"
 
 class CCartridge;
 class CParticlesObject;
 class IRender_Sector;
-struct WeaponsModifiers;
 
 #define WEAPON_MATERIAL_NAME "objects\\bullet"
 
@@ -35,8 +35,7 @@ private:
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
 protected:
-
-	virtual const WeaponsModifiers& GetActorWeaponModifiers() const;
+	virtual const WeaponModifiers::WpnModifierType& GetActorWeaponModifiers() const;
 	float GetModifiedShotInterval(float Interval) const;
 
 	enum

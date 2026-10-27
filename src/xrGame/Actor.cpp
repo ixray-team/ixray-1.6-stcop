@@ -119,6 +119,12 @@ void CActor::OnFrame()
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
+	WeaponModifierCoefficients.resize(static_cast<int>(WeaponModifier::Count));
+	for (float& Coefficient : WeaponModifierCoefficients)
+	{
+		Coefficient = 1.0f;
+	}
+
 	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 5000);
 
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
@@ -302,9 +308,28 @@ THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 	return GetComponent<THudVertexAssignedPatricles>();
 }
 
+bool CActor::SetActorWeaponModifier(WeaponModifier Type, float Value)
+{
+	// Reject invalid script input without changing the active coefficient.
+	if (static_cast<u32>(Type) >= static_cast<u32>(WeaponModifier::Count) || !(Value >= 0.0f && Value <= FLT_MAX))
+	{
+		return false;
+	}
+	if (Value == 0.0f && (Type == WeaponModifier::RpmCoeff || Type == WeaponModifier::BulletSpeedCoeff))
+	{
+		return false;
+	}
+
+	WeaponModifierCoefficients[static_cast<u32>(Type)] = Value;
+	return true;
+}
+
 void CActor::reinit	()
 {
-	WeaponModifiers = {};
+	for (float& Coefficient : WeaponModifierCoefficients)
+	{
+		Coefficient = 1.0f;
+	}
 	LightPerception.Reset();
 	character_physics_support()->movement()->CreateCharacter		();
 	character_physics_support()->movement()->SetPhysicsRefObject	(this);

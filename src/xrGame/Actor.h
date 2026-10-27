@@ -105,7 +105,7 @@ private:
 
 	CPickUpManager* pPickup = nullptr;
 	CAutoAim* pAutoaim = nullptr;
-	WeaponsModifiers WeaponModifiers;
+	WeaponModifiers::WpnModifierType WeaponModifierCoefficients = {};
 
 	const char* m_onBeforeHitCallback = {};
 	bool m_isBeforeHitCallback = false;
@@ -113,8 +113,9 @@ public:
 										CActor				();
 	virtual								~CActor				();
 	void OnFrame();
-	const WeaponsModifiers& GetActorWeaponModifiers() const { return WeaponModifiers; }
-	bool SetActorWeaponModifier(WeaponModifier Type, float Value) { return WeaponModifiers.SetCoefficient(Type, Value); }
+	const WeaponModifiers::WpnModifierType& GetActorWeaponModifiers() const { return WeaponModifierCoefficients; }
+	float GetActorWeaponModifier(WeaponModifier Type) const { return WeaponModifierCoefficients[static_cast<u32>(Type)]; }
+	bool SetActorWeaponModifier(WeaponModifier Type, float Value);
 	void UpdateLightAwareness(CCreature& Observer) { LightPerception.Update(*this, Observer); }
 	THudVertexAssignedPatricles* GetHudVertexAssignedPatriclesComponent();
 

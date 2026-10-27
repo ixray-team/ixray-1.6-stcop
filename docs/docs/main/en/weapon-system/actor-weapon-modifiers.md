@@ -171,14 +171,9 @@ The final damage coefficient is saved by the engine, but the `damage_sources` ta
 
 The engine saves the final values of all nine coefficients with the actor. A successful setter changes the current session; the next game save records that value. Loading that save restores the coefficients before the actor's Lua binder is loaded. No separate Lua save/load handler is needed just to retain these values.
 
-| Situation | Coefficients |
-| --- | --- |
-| New actor without saved modifier data | All values start at `1.0`. |
-| Load a save containing the modifier block | Stored values are restored. |
-| Load an otherwise compatible save created before the modifier block was added | All values remain `1.0`; scripts may assign a profile afterward. |
-| Load a stored coefficient outside its allowed range | That coefficient remains `1.0`, with a message in the engine log. |
+The save format contains exactly nine consecutive `float` values (36 bytes), in `WeaponModifier` enum order, written and read directly by `CActor::save` and `CActor::load`. It has no signature or coefficient count. New actors start with all coefficients at `1.0`; loading assigns the stored values directly.
 
-Compatibility here concerns only the added modifier block; it does not make unrelated save-format changes compatible. Saves written with this block are not supported by older engines that do not recognize it. Keep a separate older save when switching back to such a build.
+Saves without these nine values and saves from the earlier signature/count format are incompatible. Legacy save migration is not supported; start a new game with this format. Changing the number or order of coefficients changes the save format.
 
 A method-presence check detects the Lua API, not persistence support: earlier builds exposed `weapons_modifiers` without saving its values. For scripts using the former string syntax, replace the first argument with its `weaponsModifiers.*` constant.
 
@@ -186,7 +181,7 @@ The engine stores the resulting coefficients, not the sources of bonuses, timers
 
 ## Apply a persistent bonus through events
 
-Coefficients start at `1.0` and are **saved and restored with the actor**. Saves without the modifier block use neutral values of `1.0`. The handler below changes coefficients when the training infoportion is granted. Loading a save restores them from the actor packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
+Coefficients start at `1.0` and are **saved and restored with the actor**. The handler below changes coefficients when the training infoportion is granted. Loading a save restores them from the actor packet without calling this handler. No inventory scan, per-frame polling or per-shot infoportion lookup is required.
 
 The complete example below owns only common damage and recoil. When `refresh()` runs, it assigns `1.20` damage and `0.80` recoil if the training infoportion is present, or `1.0` for both if it is absent. An absent infoportion alone does not invoke the handler or reset restored coefficients.
 
@@ -237,7 +232,7 @@ end
 
 `on_game_start` registers handlers and does not read actor state. The info handler filters unrelated events. Granting an infoportion already held by the actor does not invoke this callback: the engine rejects duplicate grants. Repeated explicit calls to `refresh()` assign the same absolute values. Registration is guarded against duplicate startup calls.
 
-An infoportion already present in a loaded save does not itself apply the bonus. Saves with a modifier block restore the recorded coefficients; when deliberately migrating a save without that block, call `actor_weapon_modifiers.refresh()` once from the migration logic if the training profile should be applied.
+An infoportion already present in a loaded save does not itself apply the bonus. Loading a compatible save restores the recorded coefficients; it does not recompute them from infoportions.
 
 The stock info callback reports receipt, not removal. Revoke the flag and refresh explicitly:
 

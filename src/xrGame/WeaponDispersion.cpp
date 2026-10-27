@@ -56,7 +56,7 @@ void CWeapon::setFireDispersionConditionFactor(float value)
 
 float CWeapon::GetBaseDispersion(float cartridge_k)
 {
-	return GetActorWeaponModifiers().ApplyFireDispersionBase(fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor());
+	return WeaponModifiers::ApplyFireDispersionBase(GetActorWeaponModifiers(), fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor());
 }
 
 //текущая дисперсия (в радианах) оружия с учетом используемого патрона
