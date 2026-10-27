@@ -46,6 +46,13 @@ ISE_Abstract* XrGameManager::CreateFromSection(const char* Name)
 	return m_pCreateFromSection(Name);
 }
 
+bool XrGameManager::BakeIniSchema(const char* Path)
+{
+	using BakeFunction = bool(__cdecl*)(const char*);
+	BakeFunction Bake = (BakeFunction)GetProcAddress(m_hGame, "xrBakeIniSchema");
+	return Bake != nullptr && Bake(Path);
+}
+
 void XrGameManager::Destroy(ISE_Abstract* p)
 {
 	//m_pDestroy(static_cast<DLL_Pure*>(p));

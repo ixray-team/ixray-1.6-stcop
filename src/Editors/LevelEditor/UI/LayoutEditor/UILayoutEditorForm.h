@@ -1,20 +1,26 @@
 #pragma once
 #include "UILayoutDocument.h"
+#include "LuaCompletion.h"
+#include "../Coder/CodeEditorUtils.h"
 // xr_unique_ptr checks the type when declared, so it can't be a forward declaration
 #include "plugins/TextEditor.h"
 #include "../../Nodes/UIDialogLocalization.h"
 #include "../../../xrEProps/Tree/Properties/UIPropertiesForm.h"
 
 // UI Layout workspace: a top bar tab with a WYSIWYG editor for scripted dialogs.
-// Saves configs\ui\<name>.xml, configs\ui\<name>_16.xml and scripts\<name>.script
+// Saves configs\ui\<name>.xml, configs\ui\<name>_16.xml and scripts\<name>.script,
+// the working copy goes to rawdata\widgets\<name>.uiw
 class UILayoutEditorForm :
-	public IEditorWnd
+	public IEditorWnd,
+	public pureFrame
 {
 public:
 	UILayoutEditorForm();
 	virtual ~UILayoutEditorForm();
 
 	virtual void Draw() override;
+	// Runs the queued Show() on the primary thread, while the game thread is idle
+	virtual void OnFrame() override;
 
 	static void Create(int Tab);
 	static void Destroy();
@@ -26,6 +32,11 @@ public:
 	static bool Open();
 	static bool Undo(bool Redo);
 	static bool DeleteSelection();
+
+	// Opens a saved working widget in the tab and switches to it
+	static bool OpenWidget(const char* LayoutName);
+	// Calls <LayoutName>.Show() in the next frame of Play In Editor
+	static void ShowInGame(const char* LayoutName);
 
 private:
 	struct STextureRegion
@@ -65,11 +76,13 @@ private:
 	void OnNameChange(PropValue* Value);
 	void OnLayoutNameChange(PropValue* Value);
 	void OnTypeChange(PropValue* Value);
+	void OnHandlerChange(PropValue* Value);
 	void OnFontChange(PropValue* Value);
 	void OnCenterClick(ButtonValue* Value, bool& IsModified, bool& Safe);
 	void OnTextureClick(ButtonValue* Value, bool& IsModified, bool& Safe);
 	void OnLocalizeClick(ButtonValue* Value, bool& IsModified, bool& Safe);
 	void DrawCodePreview();
+	xr_string GetFieldClass(const xr_string& Field);
 	// Puts the generated region of the layout into the script text
 	void SyncScript();
 	// Takes the hand edited xml into the layout. False on xml errors
@@ -103,6 +116,8 @@ private:
 	void DeleteSelected();
 	void NewLayout();
 	bool OpenLayout(const char* LayoutName);
+	// FileName is relative to configs: ui\ui_mm_main.xml
+	bool ImportLayout(const char* FileName);
 	bool SaveLayout();
 
 	static UILayoutEditorForm* Form;
@@ -144,7 +159,10 @@ private:
 	// Open / Save As name input
 	bool NameDialogOpen = false;
 	bool NameDialogSave = false;
-	char NameBuffer[64] = {};
+	// Lists the stock configs\ui windows instead of the layouts
+	bool NameDialogImport = false;
+	// Long enough for the configs\ui paths of the import
+	char NameBuffer[256] = {};
 	xr_vector<xr_string> ExistingLayouts;
 
 	// Properties: the undo snapshot is the state before an edit starts
@@ -171,5 +189,14 @@ private:
 	CUIDialogLocalization Localization;
 
 	int PreviewTab = 0;
+
+	CLuaCompletion Completion;
+	u32 ScriptLanguageGeneration = 0;
+	// Runs in OnFrame: baking loads the scripts into the game state
+	bool BakeRequest = false;
+
+	CCodeSearch Search;
 	xr_string StatusText;
-};
+
+	// Layout whose Show() runs in the next frame
+	xr_string PendingShow;};

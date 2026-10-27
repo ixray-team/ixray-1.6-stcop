@@ -11,6 +11,8 @@
 #include "IconsFontAwesome6.h"
 #include "../../UI/UITextureViewer.h"
 #include "EFDEditor.h"
+#include "../../UI/LayoutEditor/UILayoutEditorForm.h"
+#include "../../UI/Coder/UICoderForm.h"
 
 CContentView* GContentView = nullptr;
 
@@ -961,11 +963,20 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					xr_string FileName = FilePath.File.xfilename();
 					FileName = FileName.substr(0, FileName.size() - 4);
 
+					// Game dialogs go to the Dialog Editor, the other xml files are text
 					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
 					if (Iter != GameDialogs.end())
 					{
 						DialogEditor::OpenFile(FilePath.File.xfilename());
 					}
+					else
+					{
+						UICoderForm::OpenFile(FilePath.File.xstring());
+					}
+				}
+				else if (UICoderForm::CanOpen(FilePath.File.xstring()))
+				{
+					UICoderForm::OpenFile(FilePath.File.xstring());
 				}
 				if (FilePath.File.extension() == ".thm")
 				{
@@ -975,6 +986,10 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 				else if (FilePath.File.extension() == ".efd")
 				{
 					CEFDEditor::Open(FilePath.File);
+				}
+				else if (FilePath.File.extension() == CUILayoutDocument::WidgetExt)
+				{
+					UILayoutEditorForm::OpenWidget(FilePath.File.stem().string().c_str());
 				}
 				else if (FilePath.File.extension() == ".tga")
 				{
@@ -1176,6 +1191,7 @@ void CContentView::LoadBaseIcons()
 	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
 	Icons["efd"]	= {DEV->_CreateTexture("ed\\content_browser\\efd"),		true};
+	Icons["widget"]	= {DEV->_CreateTexture("ed\\content_browser\\widget"),	true};
 
 	LoadCustomIcons();
 }
@@ -1201,6 +1217,7 @@ void CContentView::LoadExtDest()
 	ExtDesc[".script"] = "Lua Script";
 	ExtDesc["dialogs"] = "Dialog Description";
 	ExtDesc[".efd"] = "Evaluation Function";
+	ExtDesc[CUILayoutDocument::WidgetExt] = "UI Widget";
 }
 
 bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
@@ -1267,7 +1284,8 @@ static EDragDropType GetFileDragType(const xr_path& FilePath)
 	}
 
 	// Level Editor and Actor Editor viewports
-	static const char* ViewportExtensions[] = {".object", ".group", ".r16", ".ise", ".ogf", ".skl", ".skls", ".omf", ".bones"};
+	// .uiw: UI Layout widgets, shown in Play In Editor
+	static const char* ViewportExtensions[] = {".object", ".group", ".r16", ".ise", ".ogf", ".skl", ".skls", ".omf", ".bones", CUILayoutDocument::WidgetExt};
 	for (const char* ViewportExtension : ViewportExtensions)
 	{
 		if (Extension == ViewportExtension)
@@ -2009,6 +2027,9 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 	if (IconPath.ends_with(".efd"))
 		return Icons["efd"];
+
+	if (IconPath.ends_with(CUILayoutDocument::WidgetExt))
+		return Icons["widget"];
 	
 	if (IconPath.ends_with(".xml"))
 	{

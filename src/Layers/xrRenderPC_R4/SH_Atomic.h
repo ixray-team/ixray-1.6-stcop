@@ -30,6 +30,7 @@ struct RENDER_API SVS : public xr_resource_uniq
 	ID3DBlob*							vs_code;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
+	u32 RainInstanceSlot = u32(-1);
 	SVS				();
 	virtual ~SVS			() override;
 };

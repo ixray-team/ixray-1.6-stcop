@@ -25,6 +25,7 @@ function(ixray_reflect_lua TARGET MODULE)
 	set(LIST_FILE "${GEN_DIR}/${MODULE}.reflect.sources")
 	set(OUTPUT_FILE "${GEN_DIR}/${MODULE}.reflect.gen.cpp")
 	set(INI_OUTPUT_FILE "${GEN_DIR}/${MODULE}.ini.gen.cpp")
+	set(INI_OWNERS_FILE "${GEN_DIR}/IniOwners.gen.h")
 	set(STAMP_FILE "${GEN_DIR}/${MODULE}.reflect.stamp")
 
 	list(JOIN ARG_SOURCES "\n" SOURCE_LINES)
@@ -38,7 +39,7 @@ function(ixray_reflect_lua TARGET MODULE)
 	# The tool rewrites its outputs only when their content changes; the stamp tracks the run.
 	add_custom_command(
 		OUTPUT "${STAMP_FILE}"
-		BYPRODUCTS "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}"
+		BYPRODUCTS "${OUTPUT_FILE}" "${INI_OUTPUT_FILE}" "${INI_OWNERS_FILE}"
 		COMMAND xrReflectTool --module "${MODULE}" --sources "${LIST_FILE}" --output-dir "${GEN_DIR}" ${PCH_ARGS} --stamp "${STAMP_FILE}"
 		DEPENDS xrReflectTool ${ARG_SOURCES} "${LIST_FILE}"
 		COMMENT "xrReflectTool: ${MODULE}"

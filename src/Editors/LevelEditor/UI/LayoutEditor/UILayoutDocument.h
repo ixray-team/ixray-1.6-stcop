@@ -1,4 +1,5 @@
 #pragma once
+#include <span>
 
 // Widget kinds the layout editor can place. Each one maps to a CScriptXmlInit::Init* call
 enum class ELayoutWidget : u8
@@ -30,6 +31,24 @@ enum class ELayoutVertAlign : u8
 	Top,
 	Center,
 	Bottom
+};
+
+// A ui_events message a widget type can send to the dialog
+struct SLayoutEventInfo
+{
+	const char* Event;
+	// Default handler suffix: OnBtnOkClicked
+	const char* Suffix;
+};
+
+static constexpr u32 MaxLayoutEvents = 3;
+
+// Subscription of the widget to one event of its type, see LayoutWidget::GetEvents
+struct SLayoutEventBinding
+{
+	bool Enabled = false;
+	// Empty: On<Name><Suffix>
+	xr_string Handler;
 };
 
 struct SLayoutWidget
@@ -69,8 +88,9 @@ struct SLayoutWidget
 	xr_string OptionsEntry;
 	xr_string OptionsGroup;
 
-	// Registers the control and generates an event handler in the script
-	bool Callback = false;
+	// Indexed like LayoutWidget::GetEvents(Type). Every enabled one gets
+	// an AddCallback and a handler in the script
+	SLayoutEventBinding Events[MaxLayoutEvents];
 
 	// Editor only
 	bool Hidden = false;
@@ -82,10 +102,11 @@ namespace LayoutWidget
 	const char* GetTypeName(ELayoutWidget Type);
 	const char* GetInitFunction(ELayoutWidget Type);
 	const char* GetDefaultName(ELayoutWidget Type);
-	// Script event of the generated handler, nullptr when the widget sends none
-	const char* GetEvent(ELayoutWidget Type);
-	// Handler suffix: OnBtnOkClicked
-	const char* GetEventSuffix(ELayoutWidget Type);
+	// Events the widget type sends, empty when none
+	std::span<const SLayoutEventInfo> GetEvents(ELayoutWidget Type);
+	// Index in GetEvents(Type), -1 when the type doesn't send the event
+	int FindEvent(ELayoutWidget Type, const char* Event);
+	bool HasEnabledEvents(const SLayoutWidget& Widget);
 	bool HasTexture(ELayoutWidget Type);
 	bool HasText(ELayoutWidget Type);
 	bool HasOptions(ELayoutWidget Type);
@@ -97,6 +118,7 @@ namespace LayoutWidget
 class CUILayoutDocument
 {
 public:
+	static constexpr const char* WidgetExt = ".uiw";
 	static constexpr float ScreenWidth = 1024.0f;
 	static constexpr float ScreenHeight = 768.0f;
 	// Widescreen files are squeezed horizontally, like the stock *_16.xml
@@ -134,6 +156,18 @@ public:
 	// Script is the whole script text: its generated region is updated before writing
 	bool Save(const xr_string& Script, xr_string& Error) const;
 	bool Load(const char* LayoutName, xr_string& Error);
+	// Working copy for the editor: rawdata\widgets\<Name>.uiw keeps the widgets with
+	// their types, parents, events and editor flags, so they load without parsing the xml
+	bool SaveWidget(xr_string& Error) const;
+	bool LoadWidget(const char* LayoutName, xr_string& Error);
+	static bool WidgetExists(const char* LayoutName);
+	// Names of the saved working widgets
+	static void ListWidgets(xr_vector<xr_string>& Out);
+	// Takes a stock window: nested nodes become child widgets, the types are guessed from the
+	// nodes and the names made unique. FileName is relative to configs, the layout gets a new name
+	bool Import(const char* FileName, xr_string& Error);
+	// configs\ui xml files that can be imported
+	static void ListImportable(xr_vector<xr_string>& Out);
 	// Replaces the widgets with the ones of the xml. Types, parents and callbacks come from the script
 	bool ApplyXml(const xr_string& XmlText, const xr_string& Script, xr_string& Error);
 	// The layout script as UTF-8 with "\n" line breaks
@@ -141,7 +175,8 @@ public:
 
 	// Lua class name from the layout name: ui_my_dialog -> my_dialog
 	xr_string GetClassName() const;
-	xr_string GetHandlerName(const SLayoutWidget& Widget) const;
+	xr_string GetHandlerName(const SLayoutWidget& Widget, u32 EventIndex) const;
+	xr_string GetDefaultHandlerName(const SLayoutWidget& Widget, u32 EventIndex) const;
 	xr_string GetVarName(u32 Id) const;
 
 public:

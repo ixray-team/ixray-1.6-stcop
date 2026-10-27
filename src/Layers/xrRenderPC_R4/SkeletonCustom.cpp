@@ -149,6 +149,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 
     pUserData		= nullptr;
     m_lod			= nullptr;
+	m_reference		= nullptr;
     // loading lods
 
 	IReader* LD 	= data->open_chunk(OGF_S_LODS);
@@ -316,6 +317,10 @@ void CKinematics::ReloadUserData()
 
 	IReader* data = FS.r_open(fn.c_str());
 	if (!data) return;
+
+	if (m_reference && m_reference->pUserData != pUserData)
+		xr_delete(pUserData);
+
 	IReader* UD = data->open_chunk(OGF_S_USERDATA);
 	pUserData = UD ? new CInifile(UD, FS.get_path(_game_config_)->m_Path) : nullptr;
 	UD->close();
@@ -396,7 +401,7 @@ void CKinematics::Copy(dxRender_Visual *P)
 
 	CKinematics* pFrom = smart_cast<CKinematics*>(P);
 	VERIFY(pFrom);
-
+	m_reference = pFrom;
 	pUserData = pFrom->pUserData;
 	bones = pFrom->bones;
 	iRoot = pFrom->iRoot;
@@ -458,6 +463,11 @@ void CKinematics::Depart		()
 	children.insert				(children.end(),children_invisible.begin(),children_invisible.end());
 	children_invisible.clear	();
 	SetParentObjectId(ALife::_OBJECT_ID(-1));
+	if (m_reference && m_reference->pUserData != pUserData)
+	{
+		xr_delete(pUserData);
+		pUserData = m_reference->pUserData;
+	}
 }
 
 void CKinematics::Release		()

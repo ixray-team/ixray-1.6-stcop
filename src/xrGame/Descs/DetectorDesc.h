@@ -14,7 +14,7 @@ struct SDetectListDesc
 	void Load(const shared_str& Section, const char* Prefix);
 };
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CCustomDetector")
 struct SCustomDetectorDesc
 {
 	using Registry = TDescRegistry<SCustomDetectorDesc>;
@@ -28,7 +28,7 @@ struct SCustomDetectorDesc
 	void Load(const shared_str& Section);
 };
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CEliteDetector")
 struct SEliteDetectorDesc : SCustomDetectorDesc
 {
 	using Registry = TDescRegistry<SEliteDetectorDesc>;

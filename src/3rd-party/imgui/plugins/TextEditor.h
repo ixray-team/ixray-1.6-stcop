@@ -192,6 +192,9 @@ public:
 	void SetPalette(const Palette& aValue);
 
 	void SetErrorMarkers(const ErrorMarkers& aMarkers) { mErrorMarkers = aMarkers; }
+	// Out of line: the markers are allocated by this module. aLine starts at 1
+	void AddErrorMarker(int aLine, const char* aMessage);
+	void ClearErrorMarkers();
 	void SetBreakpoints(const Breakpoints& aMarkers) { mBreakpoints = aMarkers; }
 
 	void Render(const char* aTitle, const ImVec2& aSize = ImVec2(), bool aBorder = false);
@@ -199,6 +202,12 @@ public:
 	std::string GetText() const;
 	// The text stays in this module: callers with their own allocator must not free a returned std::string
 	void VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const;
+
+	bool Find(const std::string& aText, bool aForward = true, bool aCaseSensitive = false);
+	void SetHighlight(const char* aText, bool aCaseSensitive = false);
+	int CountHighlights() const;
+	int CopyTextBeforeCursor(char* aOut, int aSize) const;
+	ImVec2 GetCursorScreenPos() const { return mCursorScreenPos; }
 
 	void SetTextLines(const std::vector<std::string>& aLines);
 	std::vector<std::string> GetTextLines() const;
@@ -333,6 +342,8 @@ private:
 	Coordinates FindNextWord(const Coordinates& aFrom) const;
 	int GetCharacterIndex(const Coordinates& aCoordinates) const;
 	int GetCharacterColumn(int aLine, int aIndex) const;
+	// aIndex is a glyph (UTF-8 byte) index in the line
+	bool MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive) const;
 	int GetLineCharacterCount(int aLine) const;
 	int GetLineMaxColumn(int aLine) const;
 	bool IsOnWordBoundary(const Coordinates& aAt) const;
@@ -361,6 +372,9 @@ private:
 	bool mReadOnly;
 	bool mWithinRender;
 	bool mScrollToCursor;
+	std::string mHighlight;
+	bool mHighlightCaseSensitive = false;
+	ImVec2 mCursorScreenPos = ImVec2(0.0f, 0.0f);
 	bool mScrollToTop;
 	bool mTextChanged;
 	bool mColorizerEnabled;

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UILayoutEditorForm.h"
 #include "../../../../xrEngine/string_table.h"
+#include "../../../../xrScripts/linker.h"
+#include "../../../../xrScripts/script_engine.h"
 #include "IconsFontAwesome6.h"
 #include "imgui_internal.h"
 
@@ -68,35 +70,6 @@ static xr_token VertAlignTokens[] =
 static constexpr size_t MaxUndo = 64;
 
 // TextEditor has no XML highlighting: tags, attributes, values and comments
-static const TextEditor::LanguageDefinition& GetXmlLanguage()
-{
-	static TextEditor::LanguageDefinition Language;
-	static bool Initialized = false;
-	if (Initialized)
-	{
-		return Language;
-	}
-	Initialized = true;
-
-	Language.mName = "XML";
-	Language.mCommentStart = "<!--";
-	Language.mCommentEnd = "-->";
-	Language.mSingleLineComment = "";
-	Language.mPreprocChar = 0;
-	Language.mAutoIndentation = true;
-	Language.mCaseSensitive = true;
-
-	using EIndex = TextEditor::PaletteIndex;
-	Language.mTokenRegexStrings.emplace_back("<[?!]?/?[A-Za-z_][-A-Za-z0-9_:.]*", EIndex::Keyword);
-	Language.mTokenRegexStrings.emplace_back("/?[?]?>", EIndex::Keyword);
-	Language.mTokenRegexStrings.emplace_back("\"[^\"]*\"", EIndex::String);
-	Language.mTokenRegexStrings.emplace_back("'[^']*'", EIndex::String);
-	Language.mTokenRegexStrings.emplace_back("[A-Za-z_][-A-Za-z0-9_:.]*(?=[ \\t]*=)", EIndex::KnownIdentifier);
-	Language.mTokenRegexStrings.emplace_back("[+-]?[0-9]+([.][0-9]*)?", EIndex::Number);
-	Language.mTokenRegexStrings.emplace_back("[A-Za-z_][A-Za-z0-9_]*", EIndex::Identifier);
-	Language.mTokenRegexStrings.emplace_back("[=&;]", EIndex::Punctuation);
-	return Language;
-}
 static constexpr float HandleRadius = 4.0f;
 
 static const char* GetWidgetIcon(ELayoutWidget Type)
@@ -172,12 +145,12 @@ UILayoutEditorForm::UILayoutEditorForm()
 {
 	XmlView = xr_make_unique<TextEditor>();
 	XmlView->SetShowWhitespaces(false);
-	XmlView->SetPalette(TextEditor::GetDarkPalette());
-	XmlView->SetLanguageDefinition(GetXmlLanguage());
+	XmlView->SetPalette(CodeEditor::GetPalette());
+	XmlView->SetLanguageDefinition(CodeEditor::GetXmlLanguage());
 
 	ScriptView = xr_make_unique<TextEditor>();
 	ScriptView->SetShowWhitespaces(false);
-	ScriptView->SetPalette(TextEditor::GetDarkPalette());
+	ScriptView->SetPalette(CodeEditor::GetPalette());
 	ScriptView->SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
 
 	Props = xr_make_unique<UIPropertiesForm>();
@@ -197,11 +170,101 @@ void UILayoutEditorForm::Create(int Tab)
 	Form = new UILayoutEditorForm();
 	Form->TabIndex = Tab;
 	EContext.UI->Push(Form, false);
+	Device.seqFrame.Add(Form);
 }
 
 void UILayoutEditorForm::Destroy()
 {
+	if (Form != nullptr)
+	{
+		Device.seqFrame.Remove(Form);
+	}
 	xr_delete(Form);
+}
+
+bool UILayoutEditorForm::OpenWidget(const char* LayoutName)
+{
+	if (Form == nullptr)
+	{
+		return false;
+	}
+
+	// The top bar selects the tab in its next frame
+	EContext.UI->RequestedTabIndex = Form->TabIndex;
+	EContext.UI->ActiveTabIndex = Form->TabIndex;
+	if (Form->Modified && Form->Doc.Name != LayoutName && ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "The layout has unsaved changes. Discard them?") != mrYes)
+	{
+		return false;
+	}
+	return Form->OpenLayout(LayoutName);
+}
+
+void UILayoutEditorForm::ShowInGame(const char* LayoutName)
+{
+	if (Form != nullptr)
+	{
+		Form->PendingShow = LayoutName;
+	}
+}
+
+void UILayoutEditorForm::OnFrame()
+{
+	if (BakeRequest)
+	{
+		BakeRequest = false;
+		xr_string Error;
+		if (Completion.Bake(Error))
+		{
+			StatusText = "Lua API baked: " + xr_string::ToString(Completion.GetClassCount()) + " classes";
+			ELog.Msg(mtInformation, "UI Layout: %s", StatusText.c_str());
+		}
+		else
+		{
+			StatusText = "Lua API: " + Error;
+			ELog.Msg(mtError, "UI Layout: %s", Error.c_str());
+		}
+	}
+
+	if (PendingShow.empty())
+	{
+		return;
+	}
+
+	const xr_string LayoutName = PendingShow;
+	PendingShow.clear();
+
+	if (g_pGameLevel == nullptr || g_pScriptEngine == nullptr)
+	{
+		ELog.Msg(mtError, "UI Layout: start Play In Editor to show %s", LayoutName.c_str());
+		return;
+	}
+
+	if (!FS.exist("$game_scripts$", (LayoutName + ".script").c_str()))
+	{
+		ELog.Msg(mtError, "UI Layout: scripts\\%s.script is not saved", LayoutName.c_str());
+		return;
+	}
+
+	// The script may have been saved after the namespace was loaded
+	g_pScriptEngine->process_file(LayoutName.c_str(), true);
+
+	// Show() is the entry point, show() comes from the older layout scripts
+	luabind::functor<void> Function;
+	if (!g_pScriptEngine->functor((LayoutName + ".Show").c_str(), Function) && !g_pScriptEngine->functor((LayoutName + ".show").c_str(), Function))
+	{
+		ELog.Msg(mtError, "UI Layout: %s.script has no Show() function", LayoutName.c_str());
+		return;
+	}
+
+	try
+	{
+		Function();
+		ELog.Msg(mtInformation, "UI Layout: %s.Show()", LayoutName.c_str());
+	}
+	catch (...)
+	{
+		ELog.Msg(mtError, "UI Layout: %s.Show() failed", LayoutName.c_str());
+	}
 }
 
 bool UILayoutEditorForm::IsActive()
@@ -228,6 +291,7 @@ bool UILayoutEditorForm::Open()
 
 	Form->NameDialogOpen = true;
 	Form->NameDialogSave = false;
+	Form->NameDialogImport = false;
 	return true;
 }
 
@@ -366,7 +430,9 @@ bool UILayoutEditorForm::OpenLayout(const char* LayoutName)
 {
 	CUILayoutDocument Loaded;
 	xr_string Error;
-	if (!Loaded.Load(LayoutName, Error))
+	// The working copy loads as it was saved, the xml is parsed only without it
+	const bool IsLoaded = CUILayoutDocument::WidgetExists(LayoutName) ? Loaded.LoadWidget(LayoutName, Error) : Loaded.Load(LayoutName, Error);
+	if (!IsLoaded)
 	{
 		ELog.DlgMsg(mtError, "UI Layout: %s", Error.c_str());
 		return false;
@@ -388,6 +454,31 @@ bool UILayoutEditorForm::OpenLayout(const char* LayoutName)
 	return true;
 }
 
+bool UILayoutEditorForm::ImportLayout(const char* FileName)
+{
+	CUILayoutDocument Imported;
+	xr_string Error;
+	if (!Imported.Import(FileName, Error))
+	{
+		ELog.DlgMsg(mtError, "UI Layout: %s", Error.c_str());
+		return false;
+	}
+
+	Doc = Imported;
+	// The stock scripts are not generated ones: the import starts a script of its own
+	ScriptSource = Doc.BuildScript();
+	XmlEdited = false;
+	UndoStack.clear();
+	RedoStack.clear();
+	Selected = 0;
+	// Nothing is written yet: the layout is saved under its new name
+	Modified = true;
+	NeedFit = true;
+	PropsDirty = true;
+	StatusText = "Imported " + xr_string(FileName) + " as " + Doc.Name + ", " + xr_string::ToString((u32)Doc.Widgets.size()) + " widgets";
+	return true;
+}
+
 bool UILayoutEditorForm::SaveLayout()
 {
 	if (!ApplyXmlEdit())
@@ -405,6 +496,33 @@ bool UILayoutEditorForm::SaveLayout()
 
 	Modified = false;
 	StatusText = "Saved " + Doc.Name + ".xml, " + Doc.Name + "_16.xml, " + Doc.Name + ".script";
+
+	// The script is saved anyway: a half written handler must not lose the layout
+	xr_string CompileError;
+	int ErrorLine = 0;
+	ScriptView->ClearErrorMarkers();
+	if (!CLuaCompletion::Compile((Doc.Name + ".script").c_str(), ScriptSource, CompileError, ErrorLine))
+	{
+		if (ErrorLine > 0)
+		{
+			ScriptView->AddErrorMarker(ErrorLine, CompileError.c_str());
+			ScriptJumpLine = ErrorLine - 1;
+			PreviewTab = 2;
+			PreviewTabRequest = true;
+		}
+		StatusText += ". Script error: " + CompileError;
+		ELog.Msg(mtError, "UI Layout: %s", CompileError.c_str());
+	}
+
+	// The game files are written, a failed working copy only costs the quick load
+	if (Doc.SaveWidget(Error))
+	{
+		StatusText += ", widgets\\" + Doc.Name + CUILayoutDocument::WidgetExt;
+	}
+	else
+	{
+		ELog.Msg(mtError, "UI Layout: %s", Error.c_str());
+	}
 	ELog.Msg(mtInformation, "UI Layout: %s", StatusText.c_str());
 	return true;
 }
@@ -677,6 +795,11 @@ void UILayoutEditorForm::Draw()
 
 	if (ImGui::Begin(CodeWindow))
 	{
+		// The global shortcuts are off while the code editor takes the text input
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_None))
+		{
+			SaveLayout();
+		}
 		DrawCodePreview();
 	}
 	ImGui::End();
@@ -729,6 +852,14 @@ void UILayoutEditorForm::DrawToolbar()
 		Open();
 	}
 	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_FILE_IMPORT " Import"))
+	{
+		NameDialogOpen = true;
+		NameDialogSave = false;
+		NameDialogImport = true;
+	}
+	ImGui::SetItemTooltip("Import a stock window from configs\\ui as a new layout");
+	ImGui::SameLine();
 	if (ImGui::Button(ICON_FA_FLOPPY_DISK " Save"))
 	{
 		SaveLayout();
@@ -738,6 +869,7 @@ void UILayoutEditorForm::DrawToolbar()
 	{
 		NameDialogOpen = true;
 		NameDialogSave = true;
+		NameDialogImport = false;
 	}
 
 	ImGui::SameLine(0.0f, 16.0f);
@@ -1676,11 +1808,17 @@ void UILayoutEditorForm::RebuildProperties()
 		PHelper().CreateSText(Items, "Options Item\\Group", &Widget->OptionsGroup);
 	}
 
-	if (LayoutWidget::GetEvent(Type) != nullptr)
+	// One folder per event: subscribe it and name the handler, empty takes the default one
+	const std::span<const SLayoutEventInfo> Events = LayoutWidget::GetEvents(Type);
+	for (u32 Index = 0; Index < Events.size(); ++Index)
 	{
-		PHelper().CreateBool(Items, "Script\\Register Callback", &Widget->Callback);
-		PHelper().CreateCaption(Items, "Script\\Event", (xr_string("ui_events.") + LayoutWidget::GetEvent(Type)).c_str());
-		PHelper().CreateCaption(Items, "Script\\Handler", (Doc.GetClassName() + ":" + Doc.GetHandlerName(*Widget) + "()").c_str());
+		const xr_string Folder = xr_string("Events\\") + Events[Index].Event + "\\";
+		PHelper().CreateBool(Items, (Folder + "Subscribe").c_str(), &Widget->Events[Index].Enabled)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnHandlerChange);
+		if (Widget->Events[Index].Enabled)
+		{
+			PHelper().CreateSText(Items, (Folder + "Handler").c_str(), &Widget->Events[Index].Handler)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnHandlerChange);
+			PHelper().CreateCaption(Items, (Folder + "Function").c_str(), (Doc.GetClassName() + ":" + Doc.GetHandlerName(*Widget, Index) + "()").c_str());
+		}
 	}
 
 	PHelper().CreateBool(Items, "Editor\\Hidden", &Widget->Hidden);
@@ -1745,11 +1883,36 @@ void UILayoutEditorForm::OnLayoutNameChange(PropValue* Value)
 
 void UILayoutEditorForm::OnTypeChange(PropValue* Value)
 {
+	// Event indices belong to the type, the new one starts with its main event
 	if (SLayoutWidget* Widget = Doc.Find(Selected))
 	{
-		Widget->Callback = LayoutWidget::GetEvent(Widget->Type) != nullptr;
+		for (SLayoutEventBinding& Binding : Widget->Events)
+		{
+			Binding = SLayoutEventBinding();
+		}
+		Widget->Events[0].Enabled = !LayoutWidget::GetEvents(Widget->Type).empty();
 	}
 	// Each type has its own set of properties
+	PropsDirty = true;
+}
+
+void UILayoutEditorForm::OnHandlerChange(PropValue* Value)
+{
+	SLayoutWidget* Widget = Doc.Find(Selected);
+	const SLayoutWidget* Before = PropsSnapshot.Find(Selected);
+	if (Widget != nullptr && Before != nullptr)
+	{
+		for (u32 Index = 0; Index < MaxLayoutEvents; ++Index)
+		{
+			xr_string& Handler = Widget->Events[Index].Handler;
+			if (!Handler.empty() && !Doc.IsValidName(Handler.c_str()))
+			{
+				ELog.DlgMsg(mtError, "Handler name must contain only latin letters, digits and '_'");
+				Handler = Before->Events[Index].Handler;
+			}
+		}
+	}
+	// The handler fields follow the subscription and the function caption follows the name
 	PropsDirty = true;
 }
 
@@ -1838,26 +2001,6 @@ void UILayoutEditorForm::DrawProperties()
 }
 
 // The editors work with "\n" only
-static xr_string GetEditorText(const TextEditor& Editor)
-{
-	// imgui.dll allocates GetText() with its own heap: the copy is taken inside the dll
-	xr_string Text;
-	Editor.VisitText([](const char* Data, size_t Size, void* Out)
-	{
-		static_cast<xr_string*>(Out)->assign(Data, Size);
-	}, &Text);
-	std::erase(Text, '\r');
-	return Text;
-}
-
-static void SetEditorText(TextEditor& Editor, const xr_string& Text)
-{
-	// Keeps the cursor where it was, the text around it rarely moves
-	const TextEditor::Coordinates Cursor = Editor.GetCursorPosition();
-	Editor.SetText(Text.c_str());
-	Editor.SetCursorPosition(Cursor);
-}
-
 void UILayoutEditorForm::SyncScript()
 {
 	// The generated region follows the layout, the rest is the user's code
@@ -1885,7 +2028,7 @@ bool UILayoutEditorForm::ApplyXmlEdit()
 
 	CUILayoutDocument Edited = Doc;
 	xr_string Error;
-	if (!Edited.ApplyXml(GetEditorText(*XmlView), ScriptSource, Error))
+	if (!Edited.ApplyXml(CodeEditor::GetText(*XmlView), ScriptSource, Error))
 	{
 		ELog.DlgMsg(mtError, "UI Layout: the xml has errors: %s", Error.c_str());
 		return false;
@@ -1913,16 +2056,23 @@ void UILayoutEditorForm::GoToHandler(u32 Id)
 	}
 
 	Select(Id);
-	if (LayoutWidget::GetEvent(Widget->Type) == nullptr)
+	if (LayoutWidget::GetEvents(Widget->Type).empty())
 	{
 		StatusText = Widget->Name + " sends no events";
 		return;
 	}
 
-	if (!Widget->Callback)
+	// The first subscribed event, or the main one gets subscribed
+	u32 EventIndex = 0;
+	while (EventIndex < LayoutWidget::GetEvents(Widget->Type).size() && !Widget->Events[EventIndex].Enabled)
 	{
+		++EventIndex;
+	}
+	if (EventIndex == LayoutWidget::GetEvents(Widget->Type).size())
+	{
+		EventIndex = 0;
 		PushUndo();
-		Doc.Find(Id)->Callback = true;
+		Doc.Find(Id)->Events[0].Enabled = true;
 		MarkModified();
 		Widget = Doc.Find(Id);
 	}
@@ -1930,11 +2080,12 @@ void UILayoutEditorForm::GoToHandler(u32 Id)
 	// The merge adds the handler when the script has none
 	SyncScript();
 
-	const xr_string Signature = "function " + Doc.GetClassName() + ":" + Doc.GetHandlerName(*Widget) + "(";
+	const xr_string Handler = Doc.GetHandlerName(*Widget, EventIndex);
+	const xr_string Signature = "function " + Doc.GetClassName() + ":" + Handler + "(";
 	const size_t Offset = ScriptSource.find(Signature);
 	if (Offset == xr_string::npos)
 	{
-		StatusText = "Handler not found: " + Doc.GetHandlerName(*Widget);
+		StatusText = "Handler not found: " + Handler;
 		return;
 	}
 
@@ -1942,6 +2093,16 @@ void UILayoutEditorForm::GoToHandler(u32 Id)
 	PreviewTab = 2;
 	PreviewTabRequest = true;
 	ImGui::SetWindowFocus(CodeWindow);
+}
+
+xr_string UILayoutEditorForm::GetFieldClass(const xr_string& Field)
+{
+	const SLayoutWidget* Widget = Doc.FindByName(Field.c_str());
+	if (Widget == nullptr)
+	{
+		return "";
+	}
+	return Widget->Type == ELayoutWidget::Window ? xr_string("CUIWindow") : Completion.GetInitClass(LayoutWidget::GetInitFunction(Widget->Type));
 }
 
 void UILayoutEditorForm::DrawCodePreview()
@@ -1980,6 +2141,15 @@ void UILayoutEditorForm::DrawCodePreview()
 			ImGui::SetClipboardText(ScriptSource.c_str());
 		}
 		ImGui::SameLine();
+		ImGui::BeginDisabled(BakeRequest);
+		if (ImGui::Button(ICON_FA_DATABASE " Bake Lua API"))
+		{
+			BakeRequest = true;
+			StatusText = "Baking the Lua API...";
+		}
+		ImGui::EndDisabled();
+		ImGui::SetItemTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
+		ImGui::SameLine();
 		if (ScriptRegionLost)
 		{
 			ImGui::TextColored({ 1.0f, 0.4f, 0.3f, 1.0f }, "The ui_layout markers are gone: the layout can't update this script");
@@ -1992,7 +2162,7 @@ void UILayoutEditorForm::DrawCodePreview()
 		if (ScriptViewText != ScriptSource)
 		{
 			ScriptViewText = ScriptSource;
-			SetEditorText(*ScriptView, ScriptSource);
+			CodeEditor::SetText(*ScriptView, ScriptSource);
 		}
 
 		if (ScriptJumpLine >= 0)
@@ -2002,10 +2172,22 @@ void UILayoutEditorForm::DrawCodePreview()
 			ScriptJumpLine = -1;
 		}
 
+
+		Search.Draw(*ScriptView, { XmlView.get(), ScriptView.get() });
+		Completion.Load();
+		if (ScriptLanguageGeneration != Completion.GetGeneration())
+		{
+			ScriptLanguageGeneration = Completion.GetGeneration();
+			TextEditor::LanguageDefinition Language;
+			Completion.BuildLanguage(Language);
+			ScriptView->SetLanguageDefinition(Language);
+		}
+		Completion.BeforeRender(*ScriptView);
 		ScriptView->Render("##script", ImGui::GetContentRegionAvail());
+		Completion.AfterRender(*ScriptView, ScriptSource, xr_make_delegate(this, &UILayoutEditorForm::GetFieldClass));
 		if (ScriptView->IsTextChanged())
 		{
-			ScriptSource = GetEditorText(*ScriptView);
+			ScriptSource = CodeEditor::GetText(*ScriptView);
 			ScriptViewText = ScriptSource;
 			Modified = true;
 		}
@@ -2052,10 +2234,11 @@ void UILayoutEditorForm::DrawCodePreview()
 		if (XmlViewText != Code)
 		{
 			XmlViewText = Code;
-			SetEditorText(*XmlView, Code);
+			CodeEditor::SetText(*XmlView, Code);
 		}
 	}
 
+	Search.Draw(*XmlView, { XmlView.get(), ScriptView.get() });
 	XmlView->Render("##xml", ImGui::GetContentRegionAvail());
 	if (!Wide && XmlView->IsTextChanged())
 	{
@@ -2069,18 +2252,37 @@ void UILayoutEditorForm::DrawNameDialog()
 	if (NameDialogOpen)
 	{
 		NameDialogOpen = false;
-		xr_strcpy(NameBuffer, Doc.Name.c_str());
+		xr_strcpy(NameBuffer, NameDialogImport ? "" : Doc.Name.c_str());
 
 		ExistingLayouts.clear();
-		FS_FileSet Files;
-		FS.file_list(Files, _game_config_, FS_ListFiles, "*.xml");
-		for (const FS_File& File : Files)
+		if (NameDialogImport)
 		{
-			if (!File.name.starts_with("ui\\") || File.name.find('\\', 3) != xr_string::npos || File.name.ends_with("_16.xml"))
+			CUILayoutDocument::ListImportable(ExistingLayouts);
+			std::sort(ExistingLayouts.begin(), ExistingLayouts.end());
+		}
+
+		else
+		{
+			FS_FileSet Files;
+			FS.file_list(Files, _game_config_, FS_ListFiles, "*.xml");
+			for (const FS_File& File : Files)
 			{
-				continue;
+				if (!File.name.starts_with("ui\\") || File.name.find('\\', 3) != xr_string::npos || File.name.ends_with("_16.xml"))
+				{
+					continue;
+				}
+				ExistingLayouts.push_back(File.name.substr(3, File.name.size() - 3 - 4));
 			}
-			ExistingLayouts.push_back(File.name.substr(3, File.name.size() - 3 - 4));
+
+			// Working widgets come first: they open without parsing the xml
+			xr_vector<xr_string> SavedWidgets;
+			CUILayoutDocument::ListWidgets(SavedWidgets);
+			for (const xr_string& Widget : SavedWidgets)
+			{
+				std::erase(ExistingLayouts, Widget);
+			}
+			std::sort(SavedWidgets.begin(), SavedWidgets.end());
+			ExistingLayouts.insert(ExistingLayouts.begin(), SavedWidgets.begin(), SavedWidgets.end());
 		}
 
 		ImGui::OpenPopup("UI Layout##name_dialog");
@@ -2092,7 +2294,7 @@ void UILayoutEditorForm::DrawNameDialog()
 		return;
 	}
 
-	ImGui::TextUnformatted(NameDialogSave ? "Save the layout as" : "Open the layout");
+	ImGui::TextUnformatted(NameDialogSave ? "Save the layout as" : NameDialogImport ? "Import a stock window" : "Open the layout");
 	ImGui::SetNextItemWidth(-1.0f);
 	if (ImGui::IsWindowAppearing())
 	{
@@ -2118,7 +2320,7 @@ void UILayoutEditorForm::DrawNameDialog()
 		ImGui::EndListBox();
 	}
 
-	Accept |= ImGui::Button(NameDialogSave ? "Save" : "Open", { 120.0f, 0.0f });
+	Accept |= ImGui::Button(NameDialogSave ? "Save" : NameDialogImport ? "Import" : "Open", { 120.0f, 0.0f });
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel", { 120.0f, 0.0f }))
 	{
@@ -2161,7 +2363,7 @@ void UILayoutEditorForm::DrawNameDialog()
 		}
 		else if (!Modified || ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "The layout has unsaved changes. Discard them?") == mrYes)
 		{
-			if (OpenLayout(NameBuffer))
+			if (NameDialogImport ? ImportLayout(NameBuffer) : OpenLayout(NameBuffer))
 			{
 				ImGui::CloseCurrentPopup();
 			}

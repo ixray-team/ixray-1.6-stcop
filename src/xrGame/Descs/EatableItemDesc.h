@@ -1,7 +1,7 @@
 #pragma once
 #include "DescRegistry.h"
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CEatableItem")
 struct SEatableItemDesc final
 {
 	using Registry = TDescRegistry<SEatableItemDesc>;
