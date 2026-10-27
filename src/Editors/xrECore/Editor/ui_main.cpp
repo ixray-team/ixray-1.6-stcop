@@ -587,6 +587,16 @@ void TUI::Redraw()
 
 	if (!IsPlayInEditor())
 	{
+		// The aspect is shared by the views: take the current one, its size may have changed while another view was drawn
+		if (View.RTSize.x > 0 && View.RTSize.y > 0)
+		{
+			const float Aspect = float(View.RTSize.y) / float(View.RTSize.x);
+			if (!fsimilar(Aspect, EDevice->fASPECT))
+			{
+				EDevice->fASPECT = Aspect;
+				m_Flags.set(flRedraw, true);
+			}
+		}
 		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
 	}
 
