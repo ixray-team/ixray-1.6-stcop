@@ -198,9 +198,11 @@ void CLtxCompletion::ParseText(const xr_string& Text, SectionMap& Out, xr_vector
 		Line = Trim(Line);
 
 		// DLTX: ![section] and @[section] override, !key deletes
+		bool Override = false;
 		if (!Line.empty() && (Line[0] == '!' || Line[0] == '@') && Line.size() > 1 && Line[1] == '[')
 		{
 			Line.erase(0, 1);
+			Override = true;
 		}
 
 		if (!Line.empty() && Line[0] == '[')
@@ -211,6 +213,7 @@ void CLtxCompletion::ParseText(const xr_string& Text, SectionMap& Out, xr_vector
 				Current = Trim(Line.substr(1, Close - 1).c_str());
 				SSection& Section = Out[Current];
 				Section.Line = LineIndex;
+				Section.Override = Override;
 				const size_t Colon = Line.find(':', Close);
 				if (Colon != xr_string::npos)
 				{
@@ -279,6 +282,11 @@ void CLtxCompletion::BuildIndex()
 		{
 			// DLTX overrides merge into the section
 			SSection& Merged = Sections[Name];
+			if (!Section.Override && Merged.Path.empty())
+			{
+				Merged.Path = Entry.path().string().c_str();
+				Merged.Line = Section.Line;
+			}
 			if (Merged.Parents.empty())
 			{
 				Merged.Parents = Section.Parents;
@@ -290,6 +298,31 @@ void CLtxCompletion::BuildIndex()
 		}
 	}
 	Msg("* ltx index: %u sections from %s", (u32)Sections.size(), Root);
+}
+
+bool CLtxCompletion::FindDefinition(const xr_string& Name, xr_string& Path, int& Line)
+{
+	if (!Indexed)
+	{
+		BuildIndex();
+	}
+
+	auto Own = Local.find(Name);
+	if (Own != Local.end() && !Own->second.Override)
+	{
+		Path = LocalPath;
+		Line = Own->second.Line;
+		return true;
+	}
+
+	auto It = Sections.find(Name);
+	if (It == Sections.end() || It->second.Path.empty())
+	{
+		return false;
+	}
+	Path = It->second.Path;
+	Line = It->second.Line;
+	return true;
 }
 
 const CLtxCompletion::SSection* CLtxCompletion::FindSection(const xr_string& Name) const

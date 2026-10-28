@@ -26,6 +26,7 @@ public:
 	IC											CObjectItemClientServer		(const CLASS_ID &clsid, const char* script_clsid);
 #ifndef NO_XR_GAME
 	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object				() const override;
+	virtual const std::type_info*				client_type					() const override { return &typeid(CLIENT_TYPE); }
 #endif
 	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object				(const char* section) const override;
 };

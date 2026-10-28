@@ -35,6 +35,111 @@ static bool IsUtf8(const xr_string& Raw)
 	return HasMultiByte;
 }
 
+static bool IsLuaNameChar(char Char)
+{
+	return isalnum((u8)Char) || Char == '_';
+}
+
+static bool IsLtxNameChar(char Char)
+{
+	return !isspace((u8)Char) && Char != '[' && Char != ']' && Char != ':' && Char != ',' && Char != '=' && Char != ';' && Char != '"';
+}
+
+static xr_string TrimLine(const xr_string& Text)
+{
+	size_t Begin = 0;
+	size_t End = Text.size();
+	while (Begin < End && isspace((u8)Text[Begin]))
+	{
+		++Begin;
+	}
+	while (End > Begin && isspace((u8)Text[End - 1]))
+	{
+		--End;
+	}
+	return Text.substr(Begin, End - Begin).c_str();
+}
+
+static bool SkipWord(const xr_string& Text, size_t& At, const char* Word)
+{
+	const size_t Length = xr_strlen(Word);
+	if (Text.compare(At, Length, Word) != 0 || (At + Length < Text.size() && IsLuaNameChar(Text[At + Length])))
+	{
+		return false;
+	}
+	At += Length;
+	while (At < Text.size() && isspace((u8)Text[At]))
+	{
+		++At;
+	}
+	return true;
+}
+
+static int FindLuaFunction(const xr_string& Text, const xr_string& Name, bool AnyOwner)
+{
+	int LineIndex = 0;
+	for (size_t Start = 0; Start <= Text.size(); ++LineIndex)
+	{
+		size_t End = Text.find('\n', Start);
+		if (End == xr_string::npos)
+		{
+			End = Text.size();
+		}
+		const xr_string Line = TrimLine(Text.substr(Start, End - Start).c_str());
+		Start = End + 1;
+
+		size_t At = 0;
+		SkipWord(Line, At, "local");
+		if (SkipWord(Line, At, "function"))
+		{
+			size_t NameEnd = At;
+			while (NameEnd < Line.size() && (IsLuaNameChar(Line[NameEnd]) || Line[NameEnd] == '.' || Line[NameEnd] == ':'))
+			{
+				++NameEnd;
+			}
+			const xr_string Declared = Line.substr(At, NameEnd - At).c_str();
+			const size_t Owner = Declared.find_last_of(".:");
+			if (Declared == Name || (AnyOwner && Owner != xr_string::npos && Declared.substr(Owner + 1) == Name))
+			{
+				return LineIndex;
+			}
+		}
+		else if (Line.compare(At, Name.size(), Name) == 0)
+		{
+			size_t Assign = At + Name.size();
+			while (Assign < Line.size() && isspace((u8)Line[Assign]))
+			{
+				++Assign;
+			}
+			if (Assign < Line.size() && Line[Assign] == '=' && (Assign + 1 >= Line.size() || Line[Assign + 1] != '='))
+			{
+				++Assign;
+				while (Assign < Line.size() && isspace((u8)Line[Assign]))
+				{
+					++Assign;
+				}
+				if (SkipWord(Line, Assign, "function"))
+				{
+					return LineIndex;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
+static bool ReadScript(const xr_string& Path, xr_string& Text)
+{
+	IReader* Reader = FS.r_open(Path.c_str());
+	if (Reader == nullptr)
+	{
+		return false;
+	}
+	Text.assign((const char*)Reader->pointer(), Reader->length());
+	FS.r_close(Reader);
+	return true;
+}
+
 static void BuildWorkspaceLayout()
 {
 	static bool Checked = false;
@@ -440,6 +545,29 @@ void UICoderForm::DrawDocument(SDocument& Document)
 		Document.Modified = true;
 	}
 
+	const bool Ctrl = ImGui::GetIO().ConfigMacOSXBehaviors ? ImGui::GetIO().KeySuper : ImGui::GetIO().KeyCtrl;
+	if (Ctrl && (IsLua || IsIni) && UpdateLink(Document))
+	{
+		const bool Clicked = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+		if (Link.Found)
+		{
+			ImDrawList* DrawList = ImGui::GetWindowDrawList();
+			DrawList->PushClipRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), true);
+			DrawList->AddLine({ Link.From.x, Link.To.y - 1.0f }, { Link.To.x, Link.To.y - 1.0f }, ImGui::GetColorU32(ImGuiCol_Text));
+			DrawList->PopClipRect();
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			if (Clicked)
+			{
+				StatusText.clear();
+				OpenAt(Link.Path, Link.Target);
+			}
+		}
+		else if (Clicked)
+		{
+			StatusText = "No definition of " + Link.Name;
+		}
+	}
+
 	if (IsLua)
 	{
 		Completion.AfterRender(View, Document.Text, CLuaCompletion::FieldResolver());
@@ -448,6 +576,144 @@ void UICoderForm::DrawDocument(SDocument& Document)
 	{
 		LtxCompletion.AfterRender(View, Document.Path, Document.Text);
 	}
+}
+
+bool UICoderForm::UpdateLink(SDocument& Document)
+{
+	TextEditor& View = *Document.View;
+	TextEditor::Coordinates Hovered;
+	if (!View.GetHoveredCoordinates(Hovered))
+	{
+		return false;
+	}
+
+	size_t LineStart = 0;
+	for (int LineIndex = Hovered.mLine; LineIndex > 0 && LineStart != xr_string::npos; --LineIndex)
+	{
+		LineStart = Document.Text.find('\n', LineStart);
+		LineStart = LineStart != xr_string::npos ? LineStart + 1 : LineStart;
+	}
+	if (LineStart == xr_string::npos)
+	{
+		return false;
+	}
+	const size_t LineEnd = Document.Text.find('\n', LineStart);
+	const xr_string Line = Document.Text.substr(LineStart, LineEnd == xr_string::npos ? xr_string::npos : LineEnd - LineStart).c_str();
+	const size_t Index = std::min((size_t)std::max(View.GetLineCharacterIndex(Hovered), 0), Line.size());
+	const bool IsLua = Document.Kind == EFileKind::Lua;
+
+	size_t Begin = Index;
+	while (Begin > 0 && (IsLua ? IsLuaNameChar(Line[Begin - 1]) || Line[Begin - 1] == '.' || Line[Begin - 1] == ':' : IsLtxNameChar(Line[Begin - 1])))
+	{
+		--Begin;
+	}
+	size_t End = Index;
+	while (End < Line.size() && (IsLua ? IsLuaNameChar(Line[End]) : IsLtxNameChar(Line[End])))
+	{
+		++End;
+	}
+	while (IsLua && Begin < End && (Line[Begin] == '.' || Line[Begin] == ':'))
+	{
+		++Begin;
+	}
+	if (Begin >= End)
+	{
+		return false;
+	}
+
+	const ImVec2 From = View.GetCoordinatesScreenPos({ Hovered.mLine, View.GetLineCharacterColumn(Hovered.mLine, (int)Begin) });
+	const ImVec2 To = View.GetCoordinatesScreenPos({ Hovered.mLine, View.GetLineCharacterColumn(Hovered.mLine, (int)End) });
+	const float MouseX = ImGui::GetMousePos().x;
+	if (MouseX < From.x || MouseX >= To.x)
+	{
+		return false;
+	}
+
+	const xr_string Name = Line.substr(Begin, End - Begin).c_str();
+	if (Link.Document != Document.Path || Link.Line != Hovered.mLine || Link.Begin != Begin || Link.Name != Name)
+	{
+		Link.Document = Document.Path;
+		Link.Line = Hovered.mLine;
+		Link.Begin = Begin;
+		Link.Name = Name;
+		Link.Found = IsLua ? FindLuaDefinition(Document, Name, Link.Path, Link.Target) : LtxCompletion.FindDefinition(Name, Link.Path, Link.Target);
+	}
+	Link.From = From;
+	Link.To = { To.x, To.y + View.GetLineHeight() };
+	return true;
+}
+
+bool UICoderForm::FindLuaDefinition(const SDocument& Document, const xr_string& Name, xr_string& Path, int& Line) const
+{
+	Line = FindLuaFunction(Document.Text, Name, false);
+	if (Line >= 0)
+	{
+		Path = Document.Path;
+		return true;
+	}
+
+	string_path Scripts;
+	FS.update_path(Scripts, "$game_scripts$", "");
+
+	const size_t Separator = Name.find_first_of(".:");
+	const xr_string Head = Name.substr(0, Separator).c_str();
+	xr_string Text;
+
+	if (Name.find(':') == xr_string::npos)
+	{
+		const xr_string Module = xr_string(Scripts) + Head + ".script";
+		if (ReadScript(Module, Text))
+		{
+			Path = Module;
+			Line = Separator == xr_string::npos ? 0 : std::max(FindLuaFunction(Text, Name.substr(Separator + 1).c_str(), false), 0);
+			return true;
+		}
+	}
+
+	const xr_string Last = Name.substr(Name.find_last_of(".:") + 1).c_str();
+	if (Separator != xr_string::npos)
+	{
+		Line = FindLuaFunction(Document.Text, Last, true);
+		if (Line >= 0)
+		{
+			Path = Document.Path;
+			return true;
+		}
+	}
+
+	std::error_code Code;
+	for (const auto& Entry : std::filesystem::recursive_directory_iterator(Scripts, Code))
+	{
+		if (!Entry.is_regular_file() || Entry.path().extension() != ".script")
+		{
+			continue;
+		}
+		const xr_string File = Entry.path().string().c_str();
+		if (!ReadScript(File, Text))
+		{
+			continue;
+		}
+		Line = FindLuaFunction(Text, Separator == xr_string::npos ? Name : Last, Separator != xr_string::npos);
+		if (Line >= 0)
+		{
+			Path = File;
+			return true;
+		}
+	}
+	return false;
+}
+
+void UICoderForm::OpenAt(const xr_string& Path, int Line)
+{
+	if (!OpenFile(Path) || Form == nullptr || Form->SelectRequest < 0)
+	{
+		return;
+	}
+
+	TextEditor& View = *Form->Documents[Form->SelectRequest]->View;
+	const TextEditor::Coordinates Position(Line, 0);
+	View.SetSelection(Position, Position);
+	View.SetCursorPosition(Position);
 }
 
 void UICoderForm::UpdateLanguage()

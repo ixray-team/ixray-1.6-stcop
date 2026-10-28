@@ -323,7 +323,27 @@ void TextEditor::AddUndo(UndoRecord& aValue)
 
 TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPosition) const
 {
-	ImVec2 origin = ImGui::GetCursorScreenPos();
+	return ScreenPosToCoordinates(aPosition, ImGui::GetCursorScreenPos());
+}
+
+bool TextEditor::GetHoveredCoordinates(Coordinates& aOut) const
+{
+	if (!mTextHovered)
+		return false;
+	const ImVec2 mouse = ImGui::GetMousePos();
+	if (mouse.y < mTextOrigin.y || mouse.y >= mTextOrigin.y + mCharAdvance.y * (float)mLines.size())
+		return false;
+	aOut = ScreenPosToCoordinates(mouse, mTextOrigin);
+	return true;
+}
+
+ImVec2 TextEditor::GetCoordinatesScreenPos(const Coordinates& aPosition) const
+{
+	return ImVec2(mTextOrigin.x + mTextStart + TextDistanceToLineStart(aPosition), mTextOrigin.y + aPosition.mLine * mCharAdvance.y);
+}
+
+TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPosition, const ImVec2& origin) const
+{
 	ImVec2 local(aPosition.x - origin.x, aPosition.y - origin.y);
 
 	int lineNo = std::max(0, (int)floor(local.y / mCharAdvance.y));
@@ -1157,6 +1177,9 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 		HandleKeyboardInputs();
 		ImGui::PushItemFlag(ImGuiItemFlags_NoTabStop, false);
 	}
+
+	mTextOrigin = ImGui::GetCursorScreenPos();
+	mTextHovered = ImGui::IsWindowHovered();
 
 	if (mHandleMouseInputs)
 		HandleMouseInputs();

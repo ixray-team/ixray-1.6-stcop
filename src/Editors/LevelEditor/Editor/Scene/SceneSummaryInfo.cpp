@@ -370,12 +370,12 @@ void SSceneSummary::FillProp(PropItemVec& items)
 
 SSceneSummary::SSceneSummary()
 {
-	Clear	();
-    pm_colors.emplace_back(0,0x80FF0000);
-    pm_colors.emplace_back(100,0x80FFFF00);
-    pm_colors.emplace_back(200,0x8000FF00);
-    pm_colors.emplace_back(500,0x8000FFFF);
-    pm_colors.emplace_back(1000,0x800000FF);
+	Clear();
+	pm_colors.emplace_back(0.f, 0x80FF0000);
+	pm_colors.emplace_back(100.f, 0x80FFFF00);
+	pm_colors.emplace_back(200.f, 0x8000FF00);
+	pm_colors.emplace_back(500.f, 0x8000FFFF);
+	pm_colors.emplace_back(1000.f, 0x800000FF);
 }
 
 void SSceneSummary::Save()
