@@ -180,6 +180,9 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			if (!Scene->IfModified())
 				return false;
 
+			// Level loading creates D3D9 state blocks and Lua shaders. Keep it on the
+			// render thread so neither can be changed concurrently with a frame.
+			Device.secondary_tasks.wait();
 			UI->SetStatus("Level loading...");
 			ExecCommand(COMMAND_CLEAR);
 			FS.TryLoad(temp_fn.c_str());
@@ -191,39 +194,33 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			FS.r_close(R);
 			LTools->m_LastFileName = temp_fn.c_str();
 
-			LUI->LoaderEvent.run
-			(
-				[temp_fn, is_ltx]
-				{
-					bool Result = (is_ltx) ? Scene->LoadLTX(temp_fn.c_str(), false) : Scene->Load(temp_fn.c_str(), false);
+			bool Result = is_ltx ? Scene->LoadLTX(temp_fn.c_str(), false) : Scene->Load(temp_fn.c_str(), false);
 
-					if (Result)
-					{
-						UI->ResetStatus();
-						Scene->UndoClear();
+			if (Result)
+			{
+				UI->ResetStatus();
+				Scene->UndoClear();
 
-						bool bk1 = Scene->m_RTFlags.test(EScene::flRT_Unsaved);
-						bool bk2 = Scene->m_RTFlags.test(EScene::flRT_Modified);
+				bool bk1 = Scene->m_RTFlags.test(EScene::flRT_Unsaved);
+				bool bk2 = Scene->m_RTFlags.test(EScene::flRT_Modified);
 
-						Scene->UndoSave();
+				Scene->UndoSave();
 
-						Scene->m_RTFlags.set(EScene::flRT_Unsaved, bk1);
-						Scene->m_RTFlags.set(EScene::flRT_Modified, bk2);
+				Scene->m_RTFlags.set(EScene::flRT_Unsaved, bk1);
+				Scene->m_RTFlags.set(EScene::flRT_Modified, bk2);
 
-						ExecCommand(COMMAND_CLEAN_LIBRARY);
-						ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
-						EPrefs->AppendRecentFile(temp_fn.c_str());
-					}
-					else
-					{
-						ELog.DlgMsg(mtError, "Can't load map '%s'", temp_fn.c_str());
-						LTools->m_LastFileName = "";
-					}
-					// update props
-					ExecCommand(COMMAND_UPDATE_PROPERTIES);
-					UI->RedrawScene();
-				}
-			);
+				ExecCommand(COMMAND_CLEAN_LIBRARY);
+				ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
+				EPrefs->AppendRecentFile(temp_fn.c_str());
+			}
+			else
+			{
+				ELog.DlgMsg(mtError, "Can't load map '%s'", temp_fn.c_str());
+				LTools->m_LastFileName = "";
+			}
+			// update props
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			UI->RedrawScene();
 		}
 
 		return true;

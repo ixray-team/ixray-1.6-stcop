@@ -12,8 +12,20 @@ void CBackend::OnFrameEnd	()
 		Invalidate			();
 #else //USE_DX11
 
-		for (u32 stage=0; stage<Caps.raster.dwStages; stage++)
-			CHK_DX(RDevice->SetTexture(0,nullptr));
+		for (u32 Stage = 0; Stage < mtMaxPixelShaderTextures; ++Stage)
+		{
+			if (Stage < Caps.raster.dwStages || textures_ps[Stage])
+			{
+				CHK_DX(RDevice->SetTexture(Stage, nullptr));
+			}
+		}
+		for (u32 Stage = 0; Stage < mtMaxVertexShaderTextures; ++Stage)
+		{
+			if (textures_vs[Stage])
+			{
+				CHK_DX(RDevice->SetTexture(RHI_VERTEX_TEXTURESAMPLER + Stage, nullptr));
+			}
+		}
 		CHK_DX				(RDevice->SetStreamSource	(0,nullptr,0,0));
 		CHK_DX				(RDevice->SetIndices			(nullptr));
 		CHK_DX				(RDevice->SetVertexShader	(nullptr));
