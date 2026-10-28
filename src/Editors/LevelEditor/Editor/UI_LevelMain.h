@@ -85,9 +85,11 @@ class CLevelLoaderTasks
 {
 public:
 	template<typename Func>
-	void Run(Func&& Function)
+	void Run(Func&& Function, const char* Text = nullptr)
 	{
 		g_LevelAutoBackup.Cancel();
+		TaskbarText = Text;
+		EContext.UI->ProgressStatus = 0.f;
 		Active++;
 		Tasks.run
 		(
@@ -101,10 +103,12 @@ public:
 
 	void Wait() { Tasks.wait(); }
 	bool IsBusy() const { return Active != 0; }
+	const char* GetTaskbarText() const { return TaskbarText; }
 
 private:
 	xr_task_group Tasks;
 	xr_atomic_u32 Active = 0;
+	const char* TaskbarText = nullptr;
 };
 
 class CLevelMain :
@@ -145,9 +149,14 @@ public:
 	virtual Ivector2 GetRenderMousePosition() const override;
 	virtual void OnDrawUI() override;
 
+	void UpdateTaskbar();
+
 	virtual bool IsPlayInEditor();
 
 private:
+	bool TaskbarActive = false;
+	bool TaskbarIndeterminate = false;
+	int TaskbarProgress = -1;
 };
 
 extern CLevelMain*	LUI;

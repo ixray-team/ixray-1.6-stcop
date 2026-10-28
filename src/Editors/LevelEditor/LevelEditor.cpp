@@ -21,6 +21,7 @@
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
 #include "../../xrPlay/Splash.h"
+#include "../../xrCore/Kernel/TaskbarProgress.h"
 
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -203,6 +204,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		s.join();
 	}
 	splash::FocusWindow(g_AppInfo.Window);
+	CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -340,11 +342,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 
 		MainForm->Frame();
+		LUI->UpdateTaskbar();
 
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
 	//s.join();
+
+	CTaskbarProgress::Instance().Release();
 
 	// Windows are destroyed before the preferences are saved: keep their full state
 	CEditorWndStates::Get().Save();
