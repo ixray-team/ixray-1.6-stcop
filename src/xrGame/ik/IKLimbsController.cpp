@@ -17,6 +17,14 @@
 
 #include "Actor.h"
 
+void TIKLimbsController::OnVisualScaleChanged(float Ratio)
+{
+	for (CIKLimb& Limb : _bone_chains)
+	{
+		Limb.OnVisualScaleChanged(Ratio);
+	}
+}
+
 void TIKLimbsController::EndComponent()
 {
 #ifdef _DEBUG

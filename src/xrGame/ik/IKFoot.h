@@ -19,6 +19,14 @@ class	CGameObject;
 class	CIKFoot
 {
 public:
+	void ScaleGeometry(float Ratio)
+	{
+		m_toe_position.v.mul(Ratio);
+		m_heel_position.v.mul(Ratio);
+		m_bind_b2_to_b3.c.mul(Ratio);
+		m_foot_width *= Ratio;
+	}
+
 						CIKFoot						( );
 	void				Create						( IKinematics	*K, const char* section, u16 bones[4] );
 IC	void				set_ref_bone				( u16 ref_bone ) { m_ref_bone =  ref_bone; }

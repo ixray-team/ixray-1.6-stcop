@@ -991,6 +991,7 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
 	LL_BlendKeys(Result, keys);
 
 	Fmatrix RES;
+	Result.T.mul(GetVisualScale());
 	RES.mk_xform(Result.Q, Result.T);
 	bi.mTransform.mul_43(*parent, RES);
 }
@@ -1036,6 +1037,7 @@ void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi
 	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID]);
 
 	Fmatrix RES;
+	Result.T.mul(GetVisualScale());
 	RES.mk_xform(Result.Q, Result.T);
 	bi.mTransform.mul_43(*parent, RES);
 }

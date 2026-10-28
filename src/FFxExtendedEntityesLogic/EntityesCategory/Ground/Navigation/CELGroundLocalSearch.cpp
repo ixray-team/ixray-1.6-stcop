@@ -13,6 +13,7 @@
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
 #include "xrGame/Level.h"
+#include "xrGame/monster_scale.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 
 void CELGroundLocalSearch::Reset()
@@ -41,12 +42,13 @@ bool CELGroundLocalSearch::Move(IELAdapter& Adapter, CELGroundMovement& Movement
 {
 	const Fvector& Origin = Adapter.Monster().Position();
 	const u32 Now = Device.dwTimeGlobal;
-	if (HasPoint && Origin.distance_to_sqr(ProgressPosition) > .04f)
+	const float PathScale = MonsterScale::Navigation(Adapter.Monster().GetVisualScale());
+	if (HasPoint && Origin.distance_to_sqr(ProgressPosition) > .04f * _sqr(std::min(1.f, MonsterScale::Movement(Adapter.Monster().GetVisualScale()))))
 	{
 		ProgressPosition = Origin;
 		ProgressAt = Now;
 	}
-	if (HasPoint && Now - ProgressAt < Profile.GroundStallTime && s32(PointUntil - Now) > 0 && Origin.distance_to_sqr(Point) > .5625f)
+	if (HasPoint && Now - ProgressAt < Profile.GroundStallTime && s32(PointUntil - Now) > 0 && Origin.distance_to_sqr(Point) > .5625f * _sqr(Adapter.Monster().GetVisualScale()))
 	{
 		return Movement.MoveTo(Point, PointVertex, Runs);
 	}
@@ -69,8 +71,8 @@ bool CELGroundLocalSearch::Move(IELAdapter& Adapter, CELGroundMovement& Movement
 		const u32 Choice = Phase++ % 8;
 		const float Angle = Heading + Side * float(Choice) * (PI * .25f);
 		Fvector Candidate = Origin;
-		Candidate.x += std::sin(Angle) * 3.f;
-		Candidate.z += std::cos(Angle) * 3.f;
+		Candidate.x += std::sin(Angle) * 3.f * PathScale;
+		Candidate.z += std::cos(Angle) * 3.f * PathScale;
 		if (!Resolve(Adapter, Candidate, Point, PointVertex) ||
 			!ai().level_graph().valid_vertex_id(ai().level_graph().check_position_in_direction(StartVertex, Origin, Point)) ||
 			CELSharedAnomalies::Crosses(Adapter.Monster().ID(), Origin, Point) || CELSharedDeaths::Crosses(Adapter.Monster().ID(), Origin, Point))
@@ -91,7 +93,7 @@ bool CELGroundLocalSearch::Move(IELAdapter& Adapter, CELGroundMovement& Movement
 		Fvector Lateral = {-Direction.z, 0.f, Direction.x};
 		Fvector BodyCenter;
 		Adapter.Monster().Center(BodyCenter);
-		const float Width = std::clamp(Adapter.Monster().Radius() * .5f, .2f, .8f);
+		const float Width = std::clamp(Adapter.Monster().Radius() * .5f, .2f * PathScale, .8f * PathScale);
 		bool Blocked = false;
 		for (s32 Ray = -1; Ray <= 1; ++Ray)
 		{
@@ -105,7 +107,7 @@ bool CELGroundLocalSearch::Move(IELAdapter& Adapter, CELGroundMovement& Movement
 		if (!Blocked && Movement.MoveTo(Point, PointVertex, Runs))
 		{
 			HasPoint = true;
-			PointUntil = Now + Profile.SearchPointTime;
+			PointUntil = Now + MonsterScale::LocalMoveTime(Profile.SearchPointTime, Adapter.Monster().GetVisualScale());
 			ProgressPosition = Origin;
 			ProgressAt = Now;
 			return true;

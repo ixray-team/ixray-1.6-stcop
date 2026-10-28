@@ -53,6 +53,7 @@ CControlAnimationBase::~CControlAnimationBase()
 void CControlAnimationBase::reinit()
 {
 	inherited::reinit		();
+	ScaledTurning = false;
 
 	m_tAction				= ACT_STAND_IDLE;
 	spec_params				= 0;
@@ -119,7 +120,7 @@ void CControlAnimationBase::on_stop_control	(ControlCom::EControlType type)
 void CControlAnimationBase::on_event(ControlCom::EEventType type, ControlCom::IEventData *data)
 {
 	switch (type) {
-	case ControlCom::eventAnimationEnd:		select_animation(true);	m_state_attack = false; break;
+	case ControlCom::eventAnimationEnd:		OnAnimationEnd(); break;
 	case ControlCom::eventAnimationSignal:	
 		{
 			SAnimationSignalEventData *event_data = (SAnimationSignalEventData *)data;
@@ -695,7 +696,7 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 	// определить дистанцию до врага
 	Fvector d;
 	d.sub(enemy->Position(),m_object->Position());
-	if (d.magnitude() > params.dist) 
+	if (m_object->MeleeChecker.TargetDistance(enemy) > params.dist * m_object->GetVisualScale())
 		should_hit = false;
 	
 	// проверка на  Field-Of-Hit
@@ -727,7 +728,8 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 		dir.sub(enemy_center, C);
 		dir.normalize();
 		collide::rq_results RQR;
-		collide::ray_defs RD(C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth);
+		const float HitRange = m_object->GetVisualScale() == 1.f && enemy->GetVisualScale() == 1.f ? params.dist : C.distance_to(enemy_center) + EPS_L;
+		collide::ray_defs RD(C, dir, HitRange, CDB::OPT_CULL, collide::rqtBoth);
 		ray_query_param params(m_object, enemy);
 		Level().ObjectSpace.RayQuery(RQR, RD, check_hit_trace_callback, &params, nullptr, m_object);
 		should_hit = params.m_can_hit_enemy;

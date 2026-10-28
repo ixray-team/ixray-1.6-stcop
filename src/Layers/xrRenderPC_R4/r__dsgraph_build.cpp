@@ -716,7 +716,7 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 			// Add all children, doesn't perform any tests
 			CKinematics * pV = (CKinematics*)pVisual;
 			bool _use_lod = false;
-			if (pV->m_lod)				
+			if (pV->m_lod && (pV->GetVisualScale() == 1.f || PKinematics(pV->m_lod)))
 			{
 				Fvector Tpos; float D;
 				val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);

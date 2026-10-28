@@ -11,6 +11,27 @@
 #include "ai_space.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
+#include "monster_scale.h"
+
+void CDetailPathManager::SetVisualScale(float Scale, bool PreservePath)
+{
+	const float NavigationScale = MonsterScale::Navigation(Scale);
+	const float MovementScale = MonsterScale::Movement(Scale);
+	const float LinearRatio = MovementScale / AppliedMovementScale;
+	const float AngularRatio = LinearRatio * AppliedNavigationScale / NavigationScale;
+	for (auto& Entry : m_movement_params)
+	{
+		Entry.second.linear_velocity *= LinearRatio;
+		Entry.second.angular_velocity *= AngularRatio;
+	}
+	AppliedNavigationScale = NavigationScale;
+	AppliedMovementScale = MovementScale;
+	if (!PreservePath || MonsterScale::NeedsPathUpdate(PlannedVisualScale, Scale))
+	{
+		PlannedVisualScale = Scale;
+		m_actuality = false;
+	}
+}
 
 #include "Creature.h"
 

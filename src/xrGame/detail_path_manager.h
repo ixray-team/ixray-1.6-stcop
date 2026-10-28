@@ -75,6 +75,14 @@ public:
 			STravelParams
 		>										VELOCITIES;
 
+private:
+	float PlannedVisualScale = 1.f;
+	float AppliedNavigationScale = 1.f;
+	float AppliedMovementScale = 1.f;
+
+public:
+	void SetVisualScale(float Scale, bool PreservePath = false);
+
 protected:
 	VELOCITIES									m_movement_params;
 	u32											m_current_travel_point;

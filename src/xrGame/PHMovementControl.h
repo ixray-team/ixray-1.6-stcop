@@ -112,6 +112,7 @@ private:
 	EEnvironment		eEnvironment;
 	Fbox				aabb;
 	Fbox				boxes	[4];
+	float AppliedVisualScale = 1.f;
 
 	u32					trying_times[4];
 	Fvector				trying_poses[4];
@@ -199,13 +200,15 @@ public:
 	void				InterpolateBox				(DWORD id,float k);
 	EEnvironment		Environment					( )			{ return eEnvironment; }
 	EEnvironment		OldEnvironment				( )			{ return eOldEnvironment; }
+	void SetVisualScale(float Scale);
+	float GetVisualScale() const { return AppliedVisualScale; }
 	const Fbox&			Box							( )			{ return aabb; }
 	DWORD				BoxID						( )const	{ return m_dwCurBox;}
 	const Fbox*			Boxes						( )			{return boxes;}
 	float				FootRadius					( )			;
 	void				CollisionEnable 			(bool enable);
 	void				CollisionDynamicEnable(bool enable);
-	void				SetBox						(DWORD id, const Fbox &BB)	{ boxes[id].set(BB); aabb.set(BB); }
+	void				SetBox						(DWORD id, const Fbox &BB)	{ boxes[id].set(BB); boxes[id].min.mul(AppliedVisualScale); boxes[id].max.mul(AppliedVisualScale); aabb.set(boxes[id]); }
 	void				SetMass						(float M);	
 
 	float				GetMass					()						{ return fMass;	}

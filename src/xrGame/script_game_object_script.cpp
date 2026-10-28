@@ -481,6 +481,8 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def("get_smart_cover_description",	&CScriptGameObject::get_smart_cover_description)
 			.def("set_visual_name",				&CScriptGameObject::set_visual_name)
 			.def("set_visual_name",				&CScriptGameObject::set_visual_name_notForce)
+			.def("get_visual_scale", &CScriptGameObject::GetVisualScale)
+			.def("set_visual_scale", &CScriptGameObject::SetVisualScale)
 			.def("get_visual_name",				&CScriptGameObject::get_visual_name)
 
 			.def("can_throw_grenades",			(bool (CScriptGameObject::*)	() const)&CScriptGameObject::can_throw_grenades)

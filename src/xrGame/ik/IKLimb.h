@@ -29,6 +29,7 @@ public:
 				CIKLimb&	operator =			( const CIKLimb& l );
 public:
 				void		Create				( u16 id, IKinematicsAnimated	*K, bool collide_ );	
+	void OnVisualScaleChanged(float Ratio);
 				void		Destroy				( );
 public:
 				void		SolveBones			( SCalculateData& cd );
@@ -53,6 +54,7 @@ IC				u16			ref_bone			( )									const { return m_foot.ref_bone();	}
 		const	CIKFoot		&dbg_ik_foot		() const { return m_foot; }
 #endif
 private:
+	void UpdateSolverGeometry();
 				float		get_time_to_step_begin( const CBlend& B )const ;
 				void		Invalidate			( );
 private:

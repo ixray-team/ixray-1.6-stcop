@@ -122,6 +122,10 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 #endif
 
 	virtual shared_str					getDebugName		() = 0;
+
+	// Per-instance scale. Shared meshes and motion resources remain unchanged.
+	virtual void SetVisualScale(float Scale) {}
+	virtual float GetVisualScale() const { return 1.f; }
 };
 
 IC IKinematics* PKinematics (IRenderVisual* V) { return V?V->dcast_PKinematics():0;}

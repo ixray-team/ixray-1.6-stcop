@@ -121,6 +121,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObject,CSE_Abstract,CRandom)
 public:
 	typedef CSE_Abstract inherited;
 	GameGraph::_GRAPH_ID			m_tGraphID;
+	float VisualScale = 1.f;
 	float							m_fDistance;
 	bool							m_bOnline;
 	bool							m_bDirectControl;
@@ -136,6 +137,9 @@ public:
 
 									CSE_ALifeObject		(const char* caSection);
 	virtual							~CSE_ALifeObject	();
+	float GetVisualScale() const { return VisualScale; }
+	bool SetVisualScale(float Scale);
+	void SetVisualScaleProperty(float Scale) { SetVisualScale(Scale); }
 	virtual bool					used_ai_locations	() const;
 	virtual bool					can_save			() const;
 	virtual bool					can_switch_online	() const;

@@ -51,7 +51,20 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
 	for (u32 i = 0; i < se_shape->shapes.size(); ++i)
 	{
-		CShapeData::shape_def& S = se_shape->shapes[i];
+		CShapeData::shape_def S = se_shape->shapes[i];
+		const float Scale = se_shape->VisualScale;
+		if (S.type == CShapeData::cfSphere)
+		{
+			S.data.sphere.P.mul(Scale);
+			S.data.sphere.R *= Scale;
+		}
+		else if (S.type == CShapeData::cfBox)
+		{
+			S.data.box.i.mul(Scale);
+			S.data.box.j.mul(Scale);
+			S.data.box.k.mul(Scale);
+			S.data.box.c.mul(Scale);
+		}
 		switch (S.type)
 		{
 			case 0:

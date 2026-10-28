@@ -135,6 +135,7 @@ void CCharacterPhysicsSupport::in_Load(const char* section)
 
 void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 {
+	movement()->SetVisualScale(m_EntityAlife.GetVisualScale());
 	m_sv_hit = SHit();
 
 	CPHDestroyable::Init();//this zerows colbacks !!;
@@ -1046,6 +1047,26 @@ void CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector&
 	IKinematics* K = PKinematics(m_EntityAlife.Visual());
 	K->CalculateBones_Invalidate();
 	K->CalculateBones(true);
+}
+
+bool CCharacterPhysicsSupport::CanSetVisualScale() const
+{
+	return !m_pPhysicsShell && !m_physics_shell_animated;
+}
+
+void CCharacterPhysicsSupport::OnVisualScaleChanged(float Scale)
+{
+	const float PreviousScale = m_PhysicMovementControl->GetVisualScale();
+	m_PhysicMovementControl->SetVisualScale(Scale);
+	if (TIKLimbsController* Limbs = m_EntityAlife.GetComponent<TIKLimbsController>())
+	{
+		Limbs->OnVisualScaleChanged(Scale / PreviousScale);
+	}
+	if (m_physics_skeleton)
+	{
+		m_physics_skeleton->Deactivate();
+		xr_delete(m_physics_skeleton);
+	}
 }
 
 void CCharacterPhysicsSupport::in_ChangeVisual()

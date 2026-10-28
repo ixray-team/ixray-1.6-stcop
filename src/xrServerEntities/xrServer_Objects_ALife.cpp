@@ -12,6 +12,10 @@
 #include "game_base_space.h"
 #include "object_broker.h"
 #include "restriction_space.h"
+#ifdef XRGAME_EXPORTS
+#include "../xrGame/GameObject.h"
+#include "../xrGame/Level.h"
+#endif
 
 
 #ifndef AI_COMPILER
@@ -405,6 +409,11 @@ void CSE_ALifeGraphPoint::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeObject::CSE_ALifeObject			(const char* caSection) : CSE_Abstract(caSection)
 {
+	VisualScale = pSettings->read_if_exists<float>(caSection, "visual_scale", 1.f);
+	if (!_valid(VisualScale) || VisualScale < 0.01f || VisualScale > 100.f)
+	{
+		VisualScale = 1.f;
+	}
 	m_bOnline					= false;
 	m_fDistance					= 0.0f;
 	ID							= ALife::INVALID_OBJECT_ID;
@@ -438,6 +447,27 @@ Fvector CSE_ALifeObject::draw_level_position	() const
 	return						(Position());
 }
 #endif
+
+bool CSE_ALifeObject::SetVisualScale(float Scale)
+{
+	if (!_valid(Scale) || Scale < 0.01f || Scale > 100.f)
+	{
+		return false;
+	}
+#ifdef XRGAME_EXPORTS
+	if (m_bOnline)
+	{
+		if (!g_pGameLevel)
+		{
+			return false;
+		}
+		CGameObject* Client = smart_cast<CGameObject*>(Level().Objects.net_Find(ID));
+		return Client && Client->SetVisualScale(Scale);
+	}
+#endif
+	VisualScale = Scale;
+	return true;
+}
 
 CSE_ALifeObject::~CSE_ALifeObject			()
 {
@@ -476,6 +506,7 @@ void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ		(m_ini_string);
 	tNetPacket.w_u32			(m_story_id);
 	tNetPacket.w_u32			(m_spawn_story_id);
+	tNetPacket.w_float(VisualScale);
 }
 
 void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
@@ -536,6 +567,12 @@ void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
 
 	if (m_wVersion > 111)
 		tNetPacket.r_u32		(m_spawn_story_id);
+
+	if (m_wVersion >= 135)
+	{
+		const float Scale = tNetPacket.r_float();
+		VisualScale = _valid(Scale) && Scale >= 0.01f && Scale <= 100.f ? Scale : 1.f;
+	}
 }
 
 void CSE_ALifeObject::UPDATE_Write			(NET_Packet &tNetPacket)
@@ -554,6 +591,14 @@ void CSE_ALifeObject::STATE_Serialize(ISaveObject& Object)
 		BEGIN_CHUNK(Object, "CSE_Abstract::script_story_id")
 		{
 			Object << m_script_story_ID;
+		}
+		BEGIN_CHUNK(Object, "CSE_ALifeObject::VisualScale")
+		{
+			Object << VisualScale;
+			if (!_valid(VisualScale) || VisualScale < 0.01f || VisualScale > 100.f)
+			{
+				VisualScale = 1.f;
+			}
 		}
 		Object << m_tGraphID << m_fDistance << m_bDirectControl << m_tNodeID << m_flags
 			<< m_ini_string << m_story_id << m_spawn_story_id;

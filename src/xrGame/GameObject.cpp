@@ -35,6 +35,10 @@
 
 #include "UIWorldSpace.h"
 #include "PHSoundPlayer.h"
+#include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
+#include "movement_manager.h"
+#include "detail_path_manager.h"
 
 extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
 
@@ -77,6 +81,65 @@ void CGameObject::init			()
 	m_script_clsid				= -1;
 	m_ini_file					= 0;
 	m_spawned					= false;
+}
+
+bool CGameObject::SetVisualScale(float Scale)
+{
+	if (!_valid(Scale) || Scale < 0.01f || Scale > 100.f || !g_pGameLevel || !Level().Server || getDestroy())
+	{
+		return false;
+	}
+	CSE_Abstract* ServerEntity = Level().Server->ID_to_entity(ID());
+	CSE_ALifeObject* AlifeObject = ServerEntity ? ServerEntity->cast_alife_object() : nullptr;
+	IKinematics* Kinematics = PKinematics(Visual());
+	if (!AlifeObject || !Kinematics)
+	{
+		return false;
+	}
+	if (Scale == VisualScale)
+	{
+		AlifeObject->VisualScale = Scale;
+		return true;
+	}
+	CPhysicsShellHolder* Holder = cast_physics_shell_holder();
+	CCharacterPhysicsSupport* Support = Holder ? Holder->character_physics_support() : nullptr;
+	if ((Holder && Holder->PPhysicsShell()) || (Support && !Support->CanSetVisualScale()))
+	{
+		return false;
+	}
+	const float Ratio = Scale / VisualScale;
+	Kinematics->SetVisualScale(Scale);
+	if (Kinematics->GetVisualScale() != Scale)
+	{
+		return false;
+	}
+	VisualScale = Scale;
+	if (m_anim_mov_ctrl)
+	{
+		m_anim_mov_ctrl->OnVisualScaleChanged(Ratio);
+	}
+	if (Support)
+	{
+		Support->OnVisualScaleChanged(Scale);
+	}
+	if (CCreature* Creature = cast_creature())
+	{
+		Creature->movement().detail().SetVisualScale(Scale, true);
+	}
+	if (CFORM())
+	{
+		if (CCF_Skeleton* Skeleton = CFORM()->cast_cff_skeleton())
+		{
+			Skeleton->InvalidateScale();
+		}
+	}
+	if (m_ai_obstacle)
+	{
+		m_ai_obstacle->on_move();
+	}
+	CObject::spatial_move();
+	AlifeObject->VisualScale = Scale;
+	return true;
 }
 
 void CGameObject::Load(const char* section)
@@ -259,6 +322,8 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
 	VERIFY							(E);
 
+	const CSE_ALifeObject* AlifeObject = E->cast_alife_object();
+	VisualScale = AlifeObject && _valid(AlifeObject->VisualScale) && AlifeObject->VisualScale >= 0.01f && AlifeObject->VisualScale <= 100.f ? AlifeObject->VisualScale : 1.f;
 	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
 	if (visual) {
 		cNameVisual_set				(visual_name(E));
@@ -266,6 +331,11 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		{
 			SpatialComponent->type |= ESPATIAL_TYPE::OBSTACLE;
 		}
+	}
+
+	if (IKinematics* Kinematics = PKinematics(Visual()))
+	{
+		Kinematics->SetVisualScale(VisualScale);
 	}
 
 	// Naming
@@ -1028,6 +1098,10 @@ bool CGameObject::is_ai_obstacle	() const
 void	CGameObject::OnChangeVisual	( )
 {
 	inherited::OnChangeVisual( );
+	if (IKinematics* Kinematics = PKinematics(Visual()))
+	{
+		Kinematics->SetVisualScale(VisualScale);
+	}
 	if ( m_anim_mov_ctrl )
 		destroy_anim_mov_ctrl( );
 }

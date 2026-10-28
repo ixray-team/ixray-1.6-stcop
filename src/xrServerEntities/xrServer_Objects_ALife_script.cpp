@@ -46,6 +46,9 @@ void CSE_ALifeObject::script_register(lua_State *L)
 			"cse_alife_object",
 			CSE_Abstract
 		)
+		.property("visual_scale", &CSE_ALifeObject::GetVisualScale, &CSE_ALifeObject::SetVisualScaleProperty)
+		.def("get_visual_scale", &CSE_ALifeObject::GetVisualScale)
+		.def("set_visual_scale", &CSE_ALifeObject::SetVisualScale)
 		.def_readwrite	("online",				&CSE_ALifeObject::m_bOnline)
 		.def			("move_offline",		(bool (CSE_ALifeObject::*)() const)(&CSE_ALifeObject::move_offline))
 		.def			("move_offline",		(void (CSE_ALifeObject::*)(bool))(&CSE_ALifeObject::move_offline))

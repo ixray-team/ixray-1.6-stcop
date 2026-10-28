@@ -109,6 +109,7 @@ class CGameObject :
 	typedef CObject inherited;
 protected:
 
+	float VisualScale = 1.f;
 	CAI_ObjectLocation				*m_ai_location;
 	animation_movement_controller	*m_anim_mov_ctrl;
 	CPHSoundPlayer					*m_ph_sound_player;
@@ -209,6 +210,9 @@ public:
 
 public:
 	CInifile				*m_ini_file;
+
+	float GetVisualScale() const { return VisualScale; }
+	bool SetVisualScale(float Scale);
 
 	// Utilities
 	static void				u_EventGen			(NET_Packet& P, u32 type, ALife::_OBJECT_ID dest	);

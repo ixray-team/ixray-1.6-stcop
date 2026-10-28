@@ -1,0 +1,326 @@
+#include "../src/xrEngine/stdafx.h"
+#include "../src/xrEngine/vis_common.h"
+#include "../src/Include/xrRender/Kinematics.h"
+#include "../src/xrCore/net_utils.h"
+#include "../src/xrCore/Save/SaveObject.h"
+#include <cassert>
+#include <limits>
+#include "../src/xrGame/monster_scale.h"
+#undef PROF_EVENT
+#define PROF_EVENT(...)
+namespace ScaleTests {
+class CKinematics {
+public:
+ CBoneInstance* bone_instances=nullptr;int HistoryInvalidations=0;float VisualScale=1.f; vecBones* SharedBones=nullptr;
+ xr_vector<xr_unique_ptr<CBoneData>> ScaledBones; vecBones InstanceBones;
+ vecBones* bones=nullptr; u16 iRoot=0; vis_data vis; IRenderVisual* m_lod=nullptr;
+ xrCriticalSection UCalc_Mutex;
+ void CalculateBones_Invalidate() {} void BonesHistory_Invalidate() {++HistoryInvalidations;}
+ void ResetVisualScale(); void SetVisualScale(float);
+ bool LL_GetBoneVisible(u16) { return true; }
+ void BuildBoneMatrix(const CBoneData*, CBoneInstance&, const Fmatrix*, u8=1);
+ void CLBone(const CBoneData*, CBoneInstance&,const Fmatrix*,u8=1);
+ ~CKinematics(){ResetVisualScale();}
+};
+@METHOD_0@
+@METHOD_1@
+@METHOD_2@
+@METHOD_3@
+
+void Check(bool Value){ if(!Value){puts("FAIL"); exit(1);} }
+void Near(float A,float B){Check(std::abs(A-B)<0.001f);}
+void Near(const Fvector&A,const Fvector&B){Near(A.x,B.x);Near(A.y,B.y);Near(A.z,B.z);}
+void TestSkeleton(){
+ CBoneData Root(0),Child(1),Tip(2);
+ Root.bind_transform.setXYZ(0.1f,0.3f,0.2f);Root.bind_transform.c.set(1,2,3);
+ Child.bind_transform.setXYZ(0.2f,0.1f,0.4f);Child.bind_transform.c.set(2,1,0);
+ Tip.bind_transform.identity();Tip.bind_transform.c.set(0,3,0);
+ Root.children.push_back(&Child);Child.children.push_back(&Tip);
+ Root.obb.identity();Child.obb.identity();Tip.obb.identity();
+ for(auto* B:{&Root,&Child,&Tip}){B->center_of_mass.set(1,2,3);B->obb.m_halfsize.set(1,2,3);}
+ Root.shape.type=SBoneShape::stBox;Root.shape.box.identity();Root.shape.box.m_halfsize.set(1,2,3);Root.shape.box.m_translate.set(2,3,4);
+ Child.shape.type=SBoneShape::stSphere;Child.shape.sphere.P.set(1,2,3);Child.shape.sphere.R=2;
+ Tip.shape.type=SBoneShape::stCylinder;Tip.shape.cylinder.m_center.set(2,3,4);Tip.shape.cylinder.m_height=3;Tip.shape.cylinder.m_radius=2;
+ Root.CalculateM2B(Fidentity);vecBones Source={&Root,&Child,&Tip};
+ CKinematics A,B; A.bones=B.bones=&Source;
+ for(auto* K:{&A,&B}){K->vis.box.set(-1,-2,-3,1,2,3);K->vis.sphere.P.set(0,0,0);K->vis.sphere.R=3;}
+ for(float Scale:{0.5f,2.f,0.25f,3.f,1.f}){
+  A.SetVisualScale(Scale);Near(A.VisualScale,Scale);Near(B.bones->at(1)->shape.sphere.R,2);Near(Root.bind_transform.c,Fvector().set(1,2,3));
+  Near(A.bones->at(0)->shape.box.m_halfsize,Fvector().set(Scale,2*Scale,3*Scale));
+  Near(A.bones->at(0)->shape.box.m_translate,Fvector().set(2*Scale,3*Scale,4*Scale));
+  Near(A.bones->at(1)->shape.sphere.R,2*Scale);Near(A.bones->at(1)->shape.sphere.P,Fvector().set(Scale,2*Scale,3*Scale));
+  Near(A.bones->at(2)->shape.cylinder.m_height,3*Scale);Near(A.bones->at(2)->shape.cylinder.m_radius,2*Scale);
+  Check(A.bones->at(0)->children[0]==A.bones->at(1));
+  CBoneInstance R,C;R.construct();C.construct();
+  A.CLBone(A.bones->at(0),R,&Fidentity);A.CLBone(A.bones->at(1),C,&R.mTransform);
+  Fvector V={3,4,5},P;C.mRenderTransform.transform_tiny(P,V);Near(P,Fvector().mul(V,Scale));
+  Near(C.mTransform.i.magnitude(),1); // ODE receives a rigid transform, no scaled rotations.
+ }
+ A.SetVisualScale(2);A.ResetVisualScale();Check(A.bones==&Source);Near(A.VisualScale,1);Near(A.vis.sphere.R,3);
+ A.SetVisualScale(-1);A.SetVisualScale(std::numeric_limits<float>::quiet_NaN());Near(A.VisualScale,1);
+ puts("PASS: independent instances, every shape, rigid transforms, skinning, rescale and pool reset");
+}
+class CSE_ALifeObject {
+public:
+ u16 m_wVersion=135,m_tGraphID=7;float m_fDistance=2.f,VisualScale=1.f;bool m_bDirectControl=true;
+ u16 m_tSpawnID=0;u32 m_tNodeID=11,m_story_id=15,m_spawn_story_id=18;flags32 m_flags;
+ shared_str m_ini_string,m_script_story_ID;CInifile*m_ini_file=nullptr;
+ bool SetVisualScale(float);void STATE_Write(NET_Packet&);void STATE_Read(NET_Packet&,u16);void STATE_Serialize(ISaveObject&);
+};
+@METHOD_4@
+@METHOD_5@
+@METHOD_6@
+
+class SaveAccess:public CSaveObjectSave{public:CSaveChunk* Root(){return _rootChunk;}};
+void TestPersistence(){
+ for(float Scale:{0.5f,1.f,2.75f}){
+  CSE_ALifeObject Source;Source.VisualScale=Scale;Source.m_flags.zero();Source.m_ini_string="";
+  NET_Packet P;Source.STATE_Write(P);P.r_seek(0);CSE_ALifeObject Dest;Dest.STATE_Read(P,0);Near(Dest.VisualScale,Scale);Check(Dest.m_tNodeID==11);Check(P.r_eof());
+  SaveAccess Save;Source.STATE_Serialize(Save);CSaveObjectLoad Load(Save.Root());CSE_ALifeObject Restored;Restored.STATE_Serialize(Load);Near(Restored.VisualScale,Scale);
+ }
+ // Old spawn packets have no scale field, so retain the section default.
+ CSE_ALifeObject Source;Source.m_flags.zero();Source.m_ini_string="";NET_Packet P;Source.STATE_Write(P);P.r_seek(0);
+ CSE_ALifeObject Old;Old.m_wVersion=134;Old.VisualScale=1.25f;Old.STATE_Read(P,0);Near(Old.VisualScale,1.25f);Check(P.r_tell()+sizeof(float)==P.w_tell());
+ for(float Invalid:{0.f,-1.f,101.f,std::numeric_limits<float>::infinity()}){
+  CSE_ALifeObject Bad;Bad.VisualScale=Invalid;Bad.m_flags.zero();Bad.m_ini_string="";NET_Packet Packet;Bad.STATE_Write(Packet);Packet.r_seek(0);CSE_ALifeObject Loaded;Loaded.STATE_Read(Packet,0);Near(Loaded.VisualScale,1);
+ }
+ puts("PASS: NET_Packet roundtrip, unique object scales, advanced save roundtrip, legacy packet compatibility");
+}
+struct CKey {Fquaternion Q;Fvector T;};struct SKeyTable {CKey Key;};
+class CKinematicsAnimated:public CKinematics {
+public:
+ void LL_BlendKeys(CKey& Result,const SKeyTable& Keys){Result=Keys.Key;}
+ float GetVisualScale() const{return VisualScale;}
+ void LL_BoneMatrixBuild(CBoneInstance&,const Fmatrix*,const SKeyTable&);
+};
+@METHOD_7@
+
+class CPHMovementControl {
+public:
+ using dVector3=float[4];struct Body {bool b_exist=false;void SetBox(const dVector3&) {}};Body*m_character=nullptr;
+ float AppliedVisualScale=1;Fbox boxes[4],aabb;
+ void SetVisualScale(float);
+};
+@METHOD_8@
+
+struct Monster {float Scale;Fvector P={0,0,0};const Fvector&Position()const{return P;}float GetVisualScale()const{return Scale;}};
+class CControlJump {public:Monster*m_object;float m_min_distance=2,m_max_distance=10;float get_max_distance()const;float get_min_distance()const;};
+@METHOD_9@
+@METHOD_10@
+
+void TestAnimationAndMovement(){
+ CKinematicsAnimated K;CPHMovementControl M;for(auto&Box:M.boxes){Box.set(-1,0,-2,1,4,2);}M.aabb=M.boxes[0];
+ SKeyTable Keys;Keys.Key.Q.identity();Keys.Key.T.set(1,2,3);Fmatrix Parent;Parent.setXYZ(0.3f,0.5f,0.1f);Parent.c.set(3,4,5);
+ CBoneInstance Base;Base.construct();K.LL_BoneMatrixBuild(Base,&Parent,Keys);
+ Monster Obj;CControlJump Jump;Jump.m_object=&Obj;
+ for(float Scale:{0.5f,2.f,3.f,1.f}){
+  K.VisualScale=Scale;CBoneInstance Bone;Bone.construct();K.LL_BoneMatrixBuild(Bone,&Parent,Keys);
+  Fvector Delta;Delta.sub(Base.mTransform.c,Parent.c).mul(Scale).add(Parent.c);Near(Bone.mTransform.c,Delta);Near(Bone.mTransform.i,Base.mTransform.i);
+  M.SetVisualScale(Scale);M.SetVisualScale(Scale);Near(M.aabb.max,Fvector().set(Scale,4*Scale,2*Scale));Near(M.boxes[3].min,Fvector().set(-Scale,0,-2*Scale));
+  Obj.Scale=Scale;Near(Jump.get_max_distance(),10);Near(Jump.get_min_distance(),2);
+ }
+ K.VisualScale=1; // Test fixture has no owned model.
+ puts("PASS: animation and root-motion translation, every stance box, size-independent jump reach, no accumulated scale");
+}
+
+void TestContinuousGrowth(){
+ CBoneData Root(0);Root.bind_transform.identity();Root.bind_transform.c.set(0,1,0);Root.CalculateM2B(Fidentity);
+ Root.obb.identity();Root.shape.type=SBoneShape::stSphere;Root.shape.sphere.P.set(0,1,0);Root.shape.sphere.R=.35f;Root.center_of_mass.set(0,1,0);
+ vecBones Source={&Root};CBoneInstance Pose;Pose.construct();Pose.mTransform.c.set(0,1,0);Pose.mRenderTransform_old.c.set(7,8,9);
+ Pose.param[0]=.37f;CKinematics K;K.bones=&Source;K.bone_instances=&Pose;K.vis.box.set(-1,0,-1,1,2,1);K.vis.sphere.P.set(0,1,0);K.vis.sphere.R=1;
+ K.SetVisualScale(1.0001f);CBoneData*Stable=K.bones->front();auto*StableArray=K.InstanceBones.data();
+ for(int Frame=1;Frame<=10000;++Frame){
+  const float Scale=1.f+Frame*.0001f;K.SetVisualScale(Scale);
+  Check(K.bones->front()==Stable && K.InstanceBones.data()==StableArray);Near(K.bones->front()->shape.sphere.R,.35f*Scale);
+  Near(Pose.param[0],.37f);Near(Pose.mRenderTransform_old.c,Fvector().set(7,8,9));
+ }
+ Near(Pose.mTransform.c.y,2);Near(Root.bind_transform.c.y,1);Check(K.HistoryInvalidations==0);
+ puts("PASS: 10,000 small growth steps, stable bone allocations, unchanged animation state and render history");
+}
+namespace FootPivot {
+using dReal=float;using dVector3=float[4];
+struct Geometry {float Radius=0,Height=0;Fvector Position={};};
+struct Body {float Position[4]={3,2.35f,5,0};Fvector Velocity={2,3,4};};
+void dGeomCylinderSetParams(Geometry&G,float R,float H){G.Radius=R;G.Height=H;}
+void dGeomSphereSetRadius(Geometry&G,float R){G.Radius=R;}
+void dGeomSetPosition(Geometry&G,float X,float Y,float Z){G.Position.set(X,Y,Z);}
+const float*dBodyGetPosition(Body&B){return B.Position;}
+void dBodySetPosition(Body&B,float X,float Y,float Z){B.Position[0]=X;B.Position[1]=Y;B.Position[2]=Z;}
+struct CPHInterpolation {static constexpr u16 PH_INTERPOLATION_POINTS=2;Fvector Samples[2]={{2,2.15f,4},{3,2.35f,5}};
+ void GetPosition(Fvector&P,u16 I){P=Samples[I];}void SetPosition(const Fvector&P,u16 I){Samples[I]=P;}};
+struct CPHObject {void spatial_move(){}};
+class CPHSimpleCharacter:public CPHObject {
+public:
+ float m_radius=.35f,m_cyl_hight=0,m_current_object_radius=.35f;
+ Geometry m_geom_shell,m_wheel,m_hat,m_cap;Body m_body;CPHInterpolation m_body_interpolation;
+ float m_safe_position[4]={3,2.35f,5,0},m_death_position[4]={3,2.35f,5,0};
+ void SetBox(const dVector3&);
+};
+@METHOD_11@
+
+void Test(){
+ CPHSimpleCharacter C;
+ for(float Scale:{10.f,.1f,4.f,1.f}){
+  dVector3 Size={.7f*Scale,1.f*Scale,.7f*Scale,0};C.SetBox(Size);
+  Near(C.m_body.Position[1]-C.m_radius,2);Near(C.m_safe_position[1]-C.m_radius,2);Near(C.m_death_position[1]-C.m_radius,2);
+  Near(C.m_body_interpolation.Samples[0].y-C.m_radius,1.8f);Near(C.m_body_interpolation.Samples[1].y-C.m_radius,2);
+  Near(C.m_body.Position[0],3);Near(C.m_body.Position[2],5);Near(C.m_body.Velocity,Fvector().set(2,3,4));
+ }
+ puts("PASS: abrupt x10 to x0.1 resizing keeps feet, velocity and interpolation samples anchored");
+}
+}
+#include "../src/xrGame/poses_blending.h"
+@METHOD_12@
+@METHOD_13@
+@METHOD_14@
+@METHOD_15@
+
+class animation_movement_controller {
+public:
+ Fmatrix m_pObjXForm,m_startObjXForm,CurrentRoot;poses_blending m_poses_blending;float blend_linear_speed=1,Phase=.37f;
+ animation_movement_controller():m_poses_blending(Fidentity,Fidentity,-1){}
+ bool IsActive()const{return true;}void animation_root_position(Fmatrix&Root){Root=CurrentRoot;}
+ void OnVisualScaleChanged(float Ratio);
+};
+@METHOD_16@
+
+void TestRootMotionGrowth(){
+ animation_movement_controller C;C.CurrentRoot.identity();C.CurrentRoot.c.set(1,2,3);C.m_startObjXForm.setXYZ(0,.3f,0);C.m_startObjXForm.c.set(10,20,30);
+ C.m_pObjXForm.mul_43(C.m_startObjXForm,C.CurrentRoot);Fmatrix Initial=C.m_pObjXForm;
+ Fmatrix A=Initial,B=Initial;A.c.x-=.37f;B.c.x+=.63f;C.m_poses_blending=poses_blending(A,B,1);
+ float Previous=1;
+ for(float Scale:{4.f,.1f,1.f,1.001f}){
+  C.CurrentRoot.c.set(Scale,2*Scale,3*Scale);C.OnVisualScaleChanged(Scale/Previous);
+  Fmatrix Actual;Actual.mul_43(C.m_startObjXForm,C.CurrentRoot);Near(Actual.c,Initial.c);Near(C.Phase,.37f);
+  C.m_poses_blending.pose(Actual,.37f);Near(Actual.c,Initial.c);Previous=Scale;
+ }
+ puts("PASS: root-motion pivot and blend phase stay continuous across abrupt and gradual scale changes");
+}
+
+@METHOD_17@
+
+class CDetailPathManager {
+public:
+ struct Params {float angular_velocity=2,linear_velocity=4;};xr_map<u32,Params> m_movement_params;
+ float PlannedVisualScale=1.f,AppliedNavigationScale=1.f,AppliedMovementScale=1.f;bool m_actuality=true;
+ void SetVisualScale(float,bool PreservePath=false);
+};
+@METHOD_18@
+void TestPathGrowth(){
+ CDetailPathManager P;
+ for(float Scale:{.5f,.1f,1.f,1.001f,1.002f}){P.SetVisualScale(Scale,true);Check(P.m_actuality);}
+ P.SetVisualScale(1.03f,true);Check(!P.m_actuality);P.m_actuality=true;
+ P.SetVisualScale(1.031f,true);Check(P.m_actuality);P.SetVisualScale(.1f,true);Check(!P.m_actuality);P.m_actuality=true;
+ P.SetVisualScale(.11f,true);Check(P.m_actuality);
+ CSE_ALifeObject O;Check(O.SetVisualScale(.1f));Check(!O.SetVisualScale(0));Near(O.VisualScale,.1f);
+ puts("PASS: small growth is coalesced; shrinking below x1 retains the default navigation footprint");
+}
+
+namespace AttackCompletion {
+class CControlAnimationBase {
+public:
+ bool m_state_attack=true;int Current=1,Desired=2,prev_motion=1,Played=-1,Selections=0;
+ struct Info {int Value;int get_motion(){return Value;}};
+ Info cur_anim_info(){return {Current};}
+ void SelectAnimation(){Check(!m_state_attack);Current=Desired;}
+ void SelectVelocities(){}
+ void select_animation(bool End){Check(End);Played=Current;++Selections;m_state_attack=(Current==1);}
+ void OnAnimationEnd();
+};
+@METHOD_19@
+void Test(){
+ CControlAnimationBase C;C.OnAnimationEnd();Check(C.Played==2 && C.prev_motion==2 && C.Selections==1 && !C.m_state_attack);
+ C.Desired=1;C.OnAnimationEnd();Check(C.Played==1 && C.m_state_attack && C.Selections==2);
+ puts("PASS: attack completion selects the latest movement command once instead of replaying the stale attack");
+}
+}
+namespace PathCircles {
+struct Restriction {float Scale=1;float GetPathScale(){return MonsterScale::Navigation(Scale);}};
+class CDetailPathManager {
+public:
+ struct STrajectoryPoint {float linear_velocity=4,angular_velocity=2,radius=0;Fvector2 direction={1,0},position={0,0};};
+ struct SCirclePoint {float radius=0;Fvector2 center={0,0};};
+ struct Params {float angular_velocity=2,linear_velocity=4;};xr_map<u32,Params> m_movement_params;
+ float PlannedVisualScale=1,AppliedNavigationScale=1,AppliedMovementScale=1;bool m_actuality=true;
+ void SetVisualScale(float,bool=false);
+ bool compute_circles(STrajectoryPoint&,SCirclePoint*);
+};
+@METHOD_18@
+@METHOD_20@
+void Test(){
+ CDetailPathManager P;CDetailPathManager::STrajectoryPoint Point;CDetailPathManager::SCirclePoint Circles[2];
+ P.m_movement_params[1]={2};
+ for(float Scale:{.1f,.5f,1.f,2.f,4.f}){P.SetVisualScale(Scale);Point.angular_velocity=P.m_movement_params[1].angular_velocity;Point.linear_velocity=P.m_movement_params[1].linear_velocity;Check(P.compute_circles(Point,Circles));Near(Point.radius,2*std::max(1.f,Scale));Near(Point.linear_velocity,4*_sqrt(Scale));}
+ puts("PASS: square-root world speed, enlarged turn radii, default turn radius below x1");
+}
+}
+namespace TargetStability {
+struct Monster {float Scale=4;float GetVisualScale(){return Scale;}};
+class CControlPathBuilderBase {
+public:
+ enum {eMoveToTarget,eOther};int m_target_type=eMoveToTarget;bool m_target_actual=true,m_failed=false;
+ struct Target {Fvector P={0,0,0};u32 Node=1;const Fvector&position(){return P;}u32 node(){return Node;}void set(const Fvector&V,u32 N){P=V;Node=N;}}m_target_set;
+ Monster M;Monster*m_object=&M;void set_level_path_type(){}
+ void set_target_point(const Fvector&,u32);
+};
+@METHOD_21@
+void Test(){
+ CControlPathBuilderBase P;P.set_target_point(Fvector().set(.5f,0,0),2);Check(P.m_target_actual);Near(P.m_target_set.P.x,0);Check(P.m_target_set.Node==1);
+ P.set_target_point(Fvector().set(2,0,0),3);Check(!P.m_target_actual);Near(P.m_target_set.P.x,2);
+ P.m_target_actual=true;P.M.Scale=1;P.set_target_point(Fvector().set(2.1f,0,0),4);Check(!P.m_target_actual);Near(P.m_target_set.P.x,2.1f);
+ puts("PASS: enlarged target jitter preserves both path and target; real movement and x1 retarget normally");
+}
+}
+class CEntityAlive {
+public:float Scale=1;Fvector P={0,0,4};Fbox Bounds;Fmatrix Transform;
+ CEntityAlive(){Bounds.set(-.5f,0,-.5f,.5f,2,.5f);Transform.identity();}
+ float GetVisualScale()const{return Scale;}const Fvector&Position()const{return P;}const Fbox&BoundingBox()const{return Bounds;}const Fmatrix&XFORM()const{return Transform;}
+};
+class CMeleeChecker {
+public:Monster*m_object;float m_current_min_distance=1,m_min_attack_distance=1,m_max_attack_distance=2;
+ float TargetDistance(const CEntityAlive*)const;float get_min_distance();float get_max_distance();
+};
+@METHOD_22@
+@METHOD_23@
+void TestMeleeAndGait(){
+ Monster M;CMeleeChecker C;C.m_object=&M;
+ for(float Scale:{.1f,.5f,1.f,2.f,4.f}){M.Scale=Scale;Near(C.get_min_distance(),Scale);Near(C.get_max_distance(),2*Scale);Near(MonsterScale::Movement(Scale),_sqrt(Scale));}
+ bool Turning=false;for(float Angle:{31.f,29.f,45.f}){Turning=MonsterScale::TurningInPlace(Turning,deg2rad(Angle));Check(!Turning);}
+ Turning=MonsterScale::TurningInPlace(Turning,deg2rad(65.f));Check(Turning);Turning=MonsterScale::TurningInPlace(Turning,deg2rad(29.f));Check(Turning);Turning=MonsterScale::TurningInPlace(Turning,deg2rad(9.f));Check(!Turning);
+ puts("PASS: melee reach and square-root movement scale; turn hysteresis avoids start-stop switching on curves");
+}
+
+
+namespace GroundSupport {
+struct CBaseMonster {float Scale=4;struct Model {vis_data vis;vis_data&getVisData(){return vis;}}VisualData;float GetVisualScale(){return Scale;}Model*Visual(){return &VisualData;}Fvector P={0,0,0};const Fvector&Position(){return P;}Fvector Direction(){return Fvector().set(0,0,1);}};
+struct Graph {mutable int Queries=0;bool Missing=false;float FrontHeight=0,BackHeight=0;bool valid_vertex_position(const Fvector&P)const{return std::abs(P.z)<100;}u32 vertex_id(const Fvector&P)const{++Queries;return P.z>0?1:0;}bool valid_vertex_id(u32 I)const{return I<2 && !Missing;}bool inside(u32,const Fvector&)const{return true;}float vertex_plane_y(u32 I,float,float)const{return I?FrontHeight:BackHeight;}};
+struct AI {Graph G;Graph*get_level_graph(){return &G;}const Graph&level_graph(){return G;}} Space;
+AI&ai(){return Space;}
+@METHOD_24@
+void Test(){
+ CBaseMonster O;O.VisualData.vis.box.set(-2,0,-4,2,3,4);float Pitch=1;
+ Check(GroundPitch(O,Pitch));Near(Pitch,0);Check(Space.G.Queries==2);
+ Space.G.FrontHeight=2;Check(GroundPitch(O,Pitch));Near(Pitch,-atan2f(2.f,8.f));
+ Space.G.Queries=0;O.Scale=1;Check(!GroundPitch(O,Pitch));Check(Space.G.Queries==0);
+ O.Scale=4;Space.G.Missing=true;Check(!GroundPitch(O,Pitch));Check(Space.G.Queries==2);
+ Space.G.Queries=0;O.P.z=200;Check(!GroundPitch(O,Pitch));Check(Space.G.Queries==0);
+ puts("PASS: ground pitch spans the scaled body; x1 and missing terrain avoid broad graph searches");
+}
+}
+
+
+@METHOD_25@
+void TestTargetSizedMelee(){
+ Near(MonsterScale::Arrival(.2f),.2f);Near(MonsterScale::Arrival(4.f),1);Check(MonsterScale::LocalMoveTime(2000,.25f)==4000);Check(MonsterScale::LocalMoveTime(2000,4.f)==2000);
+ Monster M;M.Scale=4;CMeleeChecker C;C.m_object=&M;CEntityAlive Target;
+ Near(C.TargetDistance(&Target),5.5f);
+ M.Scale=.2f;Target.P.z=.6f;Near(C.TargetDistance(&Target),.2f);
+ M.Scale=1;Target.Scale=4;Target.Bounds.set(-2,0,-2,2,8,2);Target.P.z=2.5f;Near(C.TargetDistance(&Target),1);
+ M.Scale=4;Near(C.TargetDistance(&Target),2.5f);
+ M.Scale=1;Target.Scale=1;Target.P.z=1;Near(C.TargetDistance(&Target),1);
+ M.Scale=2;Target.P.z=4;Target.Bounds.set(-.25f,0,-1,.25f,2,1);Target.Transform.setXYZ(0,PI_DIV_2,0);Near(C.TargetDistance(&Target),4.25f);
+ puts("PASS: melee accounts for both body sizes and the target's rotated horizontal extent");
+}
+
+}
+int main(){Core._initialize("VisualScaleTests",nullptr,false);{ScaleTests::TestSkeleton();ScaleTests::TestPersistence();ScaleTests::TestAnimationAndMovement();ScaleTests::TestContinuousGrowth();ScaleTests::FootPivot::Test();ScaleTests::TestRootMotionGrowth();ScaleTests::TestPathGrowth();ScaleTests::AttackCompletion::Test();ScaleTests::PathCircles::Test();ScaleTests::TargetStability::Test();ScaleTests::TestMeleeAndGait();ScaleTests::GroundSupport::Test();ScaleTests::TestTargetSizedMelee();}Core._destroy();return 0;}

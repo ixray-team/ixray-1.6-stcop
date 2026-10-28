@@ -263,8 +263,14 @@ void CRenderDevice::on_idle		()
 		}
 	}
 
-	PreRenderThread.Wait();
-	GameThread.Wait();
+	{
+		PROF_EVENT("Wait/PreRender Thread");
+		PreRenderThread.Wait();
+	}
+	{
+		PROF_EVENT("Wait/Game Thread");
+		GameThread.Wait();
+	}
 
 	Device.EndRender();
 	

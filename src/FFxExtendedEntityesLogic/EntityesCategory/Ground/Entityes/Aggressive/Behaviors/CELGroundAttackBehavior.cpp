@@ -7,6 +7,7 @@
 #include "xrGame/ai_object_location.h"
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
+#include "xrGame/monster_scale.h"
 
 // Подготавливает схему к запуску и сбрасывает состояние предыдущего выполнения.
 void CELGroundAttackBehavior::Enter()
@@ -70,7 +71,7 @@ void CELGroundAttackBehavior::UpdateDeadline()
 	{
 		RouteLength += Route.Points[PointIndex - 1].distance_to(Route.Points[PointIndex]);
 	}
-	float Duration = RouteLength / Profile.ApproachSpeed * 2000.f;
+	float Duration = RouteLength / (Profile.ApproachSpeed * MonsterScale::Movement(Adapter.Monster().GetVisualScale())) * 2000.f;
 	clamp(Duration, float(Profile.ApproachMin), float(Profile.ApproachMax));
 	const u32 Remaining = Profile.ApproachMax - std::min(Profile.ApproachMax, Device.dwTimeGlobal - StartedAt);
 	ApproachDeadline = Device.dwTimeGlobal + std::min(Remaining, u32(Duration));

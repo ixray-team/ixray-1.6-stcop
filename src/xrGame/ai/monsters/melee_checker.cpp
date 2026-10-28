@@ -1,15 +1,52 @@
 #include "StdAfx.h"
 #include "melee_checker.h"
+#include "../../monster_scale.h"
 #include "basemonster/base_monster.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../xrEngine/xr_collide_form.h"
 
 #define MAX_TRACE_ENEMY_RANGE	6.f
 
+float CMeleeChecker::get_min_distance()
+{
+	return m_current_min_distance * m_object->GetVisualScale();
+}
+
+float CMeleeChecker::get_max_distance()
+{
+	return (m_max_attack_distance - (m_min_attack_distance - m_current_min_distance)) * m_object->GetVisualScale();
+}
+
+float CMeleeChecker::TargetDistance(const CEntityAlive* Enemy) const
+{
+	Fvector Direction;
+	Direction.sub(Enemy->Position(), m_object->Position());
+	const float Distance = Direction.magnitude();
+	const float OwnerScale = m_object->GetVisualScale();
+	const float TargetScale = Enemy->GetVisualScale();
+	if (OwnerScale == TargetScale)
+	{
+		return Distance;
+	}
+	Direction.y = 0.f;
+	Direction.normalize_safe();
+	Fvector HalfSize;
+	Enemy->BoundingBox().getradius(HalfSize);
+	const Fmatrix& TargetTransform = Enemy->XFORM();
+	const float TargetRadius = std::abs(Direction.dotproduct(TargetTransform.i)) * HalfSize.x +
+		std::abs(Direction.dotproduct(TargetTransform.k)) * HalfSize.z;
+	return MonsterScale::MeleeDistance(Distance, OwnerScale, TargetScale, TargetRadius);
+}
+
 float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 {
+	if (m_object->GetVisualScale() != 1.f || enemy->GetVisualScale() != 1.f)
+	{
+		return TargetDistance(enemy);
+	}
 	float dist = enemy->Position().distance_to	(m_object->Position());
-	if (dist > MAX_TRACE_ENEMY_RANGE)			return dist;
+	const float TraceRange = MAX_TRACE_ENEMY_RANGE * m_object->GetVisualScale();
+	if (dist > TraceRange)			return dist;
 
 	Fvector					enemy_center;
 	enemy->Center			(enemy_center);
@@ -20,7 +57,7 @@ float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 	dir.sub					(enemy_center, my_head_pos);
 	dir.normalize_safe		();
 
-	collide::ray_defs		r_query	(my_head_pos, dir, MAX_TRACE_ENEMY_RANGE, CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, collide::rqtObject);
+	collide::ray_defs		r_query	(my_head_pos, dir, TraceRange, CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, collide::rqtObject);
 	r_res.r_clear			();
 
 	if (m_object->CFORM()->_RayQuery(r_query, r_res)) {

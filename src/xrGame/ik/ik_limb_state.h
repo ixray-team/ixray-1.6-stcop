@@ -17,6 +17,12 @@ const	CIKLimb					   *limb;
 #endif
 
 public:
+	void ScaleLocalGeometry(float Ratio)
+	{
+		state.b2tob3.c.mul(Ratio);
+		state.pick.mul(Ratio);
+	}
+
 						ik_limb_state		( ): state( ), limb( 0 )	{ }
 						ik_limb_state		( const CIKLimb *l, const ik_limb_state& s ): state( s.state ), limb( l )	{ }
 				void	set_limb			( CIKLimb *l )				;

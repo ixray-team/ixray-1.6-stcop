@@ -3,6 +3,7 @@
 #include "basemonster/base_monster.h"
 #include "../../level_graph.h"
 #include "../../ai_space.h"
+#include "basemonster/base_monster.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Method: prepare_builder
@@ -36,6 +37,12 @@ void CControlPathBuilderBase::prepare_builder()
 //////////////////////////////////////////////////////////////////////////
 void CControlPathBuilderBase::set_target_point(const Fvector &position, u32 node)
 {
+	const float Scale = m_object->GetVisualScale();
+	if (Scale > 1.f && m_target_actual && !m_failed && m_target_type == eMoveToTarget &&
+		m_target_set.position().distance_to_sqr(position) < _sqr(0.25f * Scale))
+	{
+		return;
+	}
 	// обновить актуальность
 	m_target_actual = m_target_actual && (m_target_set.position().similar(position) && (m_target_set.node() == node));
 

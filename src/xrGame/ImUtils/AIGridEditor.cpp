@@ -1500,7 +1500,7 @@ void RenderAIGridEditorWindow()
 		{
 			Editor.Single = false;
 		}
-		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 10.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 500.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 		if (ImGui::Checkbox("Edit individual node", &Editor.Single) && Editor.Single)
 		{
 			Editor.Brush = false;

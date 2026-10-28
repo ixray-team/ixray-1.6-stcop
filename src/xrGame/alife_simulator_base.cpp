@@ -88,7 +88,7 @@ void CALifeSimulatorBase::reload			(const char* section)
 	m_initialized				= true;
 }
 
-CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration)
+CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID parent_id, bool registration, float VisualScale)
 {
 	CSE_Abstract				*abstract = F_entity_Create(section);
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
@@ -144,6 +144,11 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 		}
 	}
 	dynamic_object->m_tSpawnID	= ALife::INVALID_OBJECT_ID;
+
+	if (_valid(VisualScale) && VisualScale > 0.f)
+	{
+		dynamic_object->VisualScale = VisualScale;
+	}
 
 	if (registration)
 		register_object				(dynamic_object,true);

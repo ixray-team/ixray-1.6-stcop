@@ -135,6 +135,8 @@ IC	const	CPHMovementControl			*movement						( ) const{ return m_PhysicMovementC
 		void							in_ChangeVisual					( );
 		void							in_Die							( );
 
+	bool CanSetVisualScale() const;
+	void OnVisualScaleChanged(float Scale);
 	void ActivateRagdoll();
 	void DeactivateRagdoll();
 	

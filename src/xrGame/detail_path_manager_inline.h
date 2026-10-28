@@ -260,7 +260,10 @@ IC	const CDetailPathManager::STravelParams &CDetailPathManager::velocity	(const 
 
 IC	void CDetailPathManager::add_velocity				(const u32 &velocity_id, const STravelParams &params)
 {
-	m_movement_params.insert(std::make_pair(velocity_id,params));
+	STravelParams Scaled = params;
+	Scaled.linear_velocity *= AppliedMovementScale;
+	Scaled.angular_velocity *= AppliedMovementScale / AppliedNavigationScale;
+	m_movement_params.insert(std::make_pair(velocity_id, Scaled));
 }
 
 IC	void CDetailPathManager::extrapolate_length			(float extrapolate_length)

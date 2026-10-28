@@ -607,6 +607,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 	if (!movement().net_Spawn(DC) || !inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
 		return					(false);
 
+	movement().detail().SetVisualScale(GetVisualScale());
 	SpatialComponent->type |= ESPATIAL_TYPE::VISIBLEFORAI;
 		// enable react to sound only if alive
 	if (g_Alive())

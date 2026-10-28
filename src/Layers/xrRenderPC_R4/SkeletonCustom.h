@@ -111,6 +111,12 @@ protected:
 	// Globals
     CInifile*					pUserData;
 	CBoneInstance*				bone_instances;	// bone instances
+	float VisualScale = 1.f;
+	vecBones* SharedBones = nullptr;
+	xr_vector<xr_unique_ptr<CBoneData>> ScaledBones;
+	vecBones InstanceBones;
+	void ResetVisualScale();
+
 	vecBones*					bones;			// all bones	(shared)
 	u16							iRoot;			// Root bone index
 
@@ -156,6 +162,9 @@ public:
 	virtual		void			EnumBoneVertices	(buffer_vector<Fvector>& m_vec, u16 bone_id = u16(-1));
 	virtual		u32				GetFacesCount		(u16 bone_id = u16(-1));
 public:
+	void SetVisualScale(float Scale) override;
+	float GetVisualScale() const override { return VisualScale; }
+
 								CKinematics			();
 	virtual						~CKinematics		();
 

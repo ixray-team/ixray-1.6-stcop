@@ -194,6 +194,24 @@ void animation_movement_controller::animation_root_position	( Fmatrix &pos  )
 	get_animation_root_position( pos, m_pKinematicsC, m_pKinematicsA, m_control_blend );
 }
 
+void animation_movement_controller::OnVisualScaleChanged(float Ratio)
+{
+	if (!IsActive())
+	{
+		return;
+	}
+	Fmatrix Root;
+	animation_root_position(Root);
+	Fvector OldRoot = Root.c;
+	OldRoot.div(Ratio);
+	Fvector OldWorld, NewWorld;
+	m_startObjXForm.transform_tiny(OldWorld, OldRoot);
+	m_startObjXForm.transform_tiny(NewWorld, Root.c);
+	m_startObjXForm.c.add(OldWorld).sub(NewWorld);
+	m_poses_blending.ScaleTranslations(m_pObjXForm.c, Ratio);
+	blend_linear_speed *= Ratio;
+}
+
 void animation_movement_controller::OnFrame()
 {
 	VERIFY(IsActive());

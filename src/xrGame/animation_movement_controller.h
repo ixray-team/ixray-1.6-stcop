@@ -40,6 +40,7 @@ virtual		~animation_movement_controller		( );
 			CBlend*	ControlBlend				( ) const { return m_control_blend; }
 			void	NewBlend					( CBlend* B, const Fmatrix &new_matrix, bool local_animation );
 			bool	IsActive					( ) const ;
+			void OnVisualScaleChanged(float Ratio);
 			void	OnFrame						( );
 private:
 			void	GetInitalPositionBlenSpeed	( );

@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "stalker_movement_manager_base.h"
+#include "monster_scale.h"
 #include "stalker_movement_manager_space.h"
 #include "script_entity_action.h"
 #include "ai/stalker/ai_stalker.h"
@@ -609,7 +610,7 @@ float stalker_movement_manager_base::speed					(const EMovementDirection &moveme
 
 void stalker_movement_manager_base::setup_speed_from_animation(const float &speed)
 {
-	set_desirable_speed					(object().m_fCurSpeed = speed);
+	set_desirable_speed					(object().m_fCurSpeed = speed * MonsterScale::Movement(object().GetVisualScale()));
 }
 
 void stalker_movement_manager_base::on_build_path				()

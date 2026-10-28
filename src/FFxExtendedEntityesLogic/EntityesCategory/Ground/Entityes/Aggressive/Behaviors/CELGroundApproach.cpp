@@ -7,6 +7,7 @@
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
+#include "xrGame/monster_scale.h"
 
 // Сбрасывает временное состояние перед новым действием.
 void CELGroundApproach::Reset()
@@ -56,13 +57,14 @@ void CELGroundApproach::ChooseStrategy(IELAdapter& Adapter, const SELPerceptionP
 void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& Profile, const Fvector& KnownPosition, bool HasVision)
 {
 	CBaseMonster& OwnerMonster = Adapter.Monster();
-	if (s32(Device.dwTimeGlobal - ReconsiderAt) < 0 && LastKnownPosition.distance_to_sqr(KnownPosition) < 16.f &&
-		OwnerMonster.Position().distance_to_sqr(GoalPosition) > 2.25f)
+	const float PathScale = MonsterScale::Navigation(OwnerMonster.GetVisualScale());
+	if (s32(Device.dwTimeGlobal - ReconsiderAt) < 0 && LastKnownPosition.distance_to_sqr(KnownPosition) < 16.f * _sqr(PathScale) &&
+		OwnerMonster.Position().distance_to_sqr(GoalPosition) > 2.25f * _sqr(PathScale))
 	{
 		return;
 	}
 	Fvector Separation;
-	const u32 NearbyCount = GatherPeers(Adapter, KnownPosition, Separation, Profile.TargetCrowdDistance);
+	const u32 NearbyCount = GatherPeers(Adapter, KnownPosition, Separation, Profile.TargetCrowdDistance * PathScale);
 	const float Distance = OwnerMonster.Position().distance_to(KnownPosition);
 	ChooseStrategy(Adapter, Profile, Distance, HasVision, NearbyCount, KnownPosition);
 	Fvector Forward;
@@ -71,7 +73,7 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 	Forward.normalize_safe();
 	Fvector Lateral = {Forward.z, 0.f, -Forward.x};
 	Lateral.mul(OwnerMonster.ID() % 2 ? 1.f : -1.f);
-	const float Width = std::min(Profile.ApproachWidth, Distance * .45f);
+	const float Width = std::min(Profile.ApproachWidth * PathScale, Distance * .45f);
 	GoalPosition = KnownPosition;
 	if (HasVision || Profile.CanTrackLive)
 	{
@@ -80,21 +82,21 @@ void CELGroundApproach::Select(IELAdapter& Adapter, const SELPerceptionProfile& 
 			GoalPosition.mad(Lateral, Width * (Strategy == EELApproachStrategy::Wide ? 1.6f : 1.f));
 			if (NearbyCount >= 3)
 			{
-				GoalPosition.mad(Forward, 3.f + float(OwnerMonster.ID() % 4));
+				GoalPosition.mad(Forward, (3.f + float(OwnerMonster.ID() % 4)) * PathScale);
 			}
 		}
 		else if (Strategy == EELApproachStrategy::Lunge && Distance < 7.f && Phase % 3 == 0)
 		{
-			GoalPosition.mad(Forward, 3.f);
-			GoalPosition.mad(Lateral, 2.f);
+			GoalPosition.mad(Forward, 3.f * PathScale);
+			GoalPosition.mad(Lateral, 2.f * PathScale);
 		}
 		else if (Strategy == EELApproachStrategy::Retreat && !NearbyCount && OwnerMonster.GetfHealth() < .35f)
 		{
-			GoalPosition.mad(Forward, 8.f);
+			GoalPosition.mad(Forward, 8.f * PathScale);
 		}
 		else if (Strategy == EELApproachStrategy::Direct && NearbyCount)
 		{
-			GoalPosition.mad(Lateral, std::min(Width, 1.5f));
+			GoalPosition.mad(Lateral, std::min(Width, 1.5f * PathScale));
 		}
 		GoalPosition.add(Separation);
 	}

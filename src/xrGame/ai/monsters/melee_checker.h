@@ -31,10 +31,11 @@ public:
 
 			// ѕолучить рассто€ние от fire_bone до врага
 			// ¬ыполнить RayQuery от fire_bone в enemy.center
+	float TargetDistance(const CEntityAlive* Enemy) const;
 			float	distance_to_enemy		(const CEntityAlive *enemy);
 
-	IC		float	get_min_distance		();
-	IC		float	get_max_distance		();
+			float	get_min_distance		();
+			float	get_max_distance		();
 
 			bool	can_start_melee			(const CEntityAlive *enemy);
 			bool	should_stop_melee		(const CEntityAlive *enemy);

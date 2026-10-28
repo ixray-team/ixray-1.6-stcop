@@ -14,6 +14,7 @@ private:
 public:
 	void BeginComponent(IECSOwner* O);
 	void EndComponent();
+	void OnVisualScaleChanged(float Ratio);
 
 public:
 			void	PlayLegs					( CBlend *b );

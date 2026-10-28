@@ -24,10 +24,12 @@ void CStateMonsterAttackRunAbstract::execute()
 	this->object->anim().accel_set_braking		(false);
 	
 	u32 const level_vertex				=	this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
-	Fvector const level_pos				=	ai().level_graph().vertex_position(level_vertex);
+	const bool ScaledPair = this->object->GetVisualScale() != 1.f || this->object->EnemyMan.get_enemy()->GetVisualScale() != 1.f;
+	Fvector const level_pos = ScaledPair ? this->object->EnemyMan.get_enemy()->Position() : ai().level_graph().vertex_position(level_vertex);
 	this->object->path().set_target_point			(level_pos, level_vertex);
 
-	if ( level_vertex == this->object->ai_location().level_vertex_id() )
+	if ((!ScaledPair && level_vertex == this->object->ai_location().level_vertex_id()) ||
+		(ScaledPair && this->object->MeleeChecker.distance_to_enemy(this->object->EnemyMan.get_enemy()) <= this->object->MeleeChecker.get_min_distance()))
 		this->object->set_action					(ACT_STAND_IDLE);
 	else
 		this->object->set_action					(ACT_RUN);

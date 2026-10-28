@@ -111,8 +111,8 @@ public:
 	// stop/break jump and all of jumping states
 	virtual void	stop					();
 
-	float			get_max_distance		() const { return m_max_distance; }
-	float			get_min_distance		() const { return m_min_distance; }
+	float			get_max_distance		() const;
+	float			get_min_distance		() const;
 
 SControlJumpData	&setup_data				() {return m_data;}
 

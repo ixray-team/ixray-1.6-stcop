@@ -783,6 +783,8 @@ public:
 			const char*				get_smart_cover_description			() const;
 			void				set_visual_name_notForce			(const char* visual);
 			void				set_visual_name						(const char* visual,bool bForce = false);
+			float GetVisualScale() const;
+			bool SetVisualScale(float Scale);
 			const char*				get_visual_name						() const;
 
 			bool				can_throw_grenades					() const;

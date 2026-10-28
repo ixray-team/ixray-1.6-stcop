@@ -7,6 +7,7 @@
 #include "../../PHMovementControl.h"
 #include "../../detail_path_manager.h"
 #include "monster_velocity_space.h"
+#include "../../monster_scale.h"
 #include "control_path_builder_base.h"
 
 // DEBUG purpose only
@@ -102,6 +103,15 @@ const char *dbg_anim_name_table[] = {
 //////////////////////////////////////////////////////////////////////////
 // m_tAction processing
 //////////////////////////////////////////////////////////////////////////
+
+void CControlAnimationBase::OnAnimationEnd()
+{
+	m_state_attack = false;
+	SelectAnimation();
+	SelectVelocities();
+	prev_motion = cur_anim_info().get_motion();
+	select_animation(true);
+}
 
 void CControlAnimationBase::update_frame()
 {
@@ -219,6 +229,17 @@ void CControlAnimationBase::SetTurnAnimation()
 	bool turn_left = true;
 	if (from_right(yaw_target, yaw_current)) turn_left = false; 
 
+	if (m_object->GetVisualScale() > 1.f && m_object->control().path_builder().is_moving_on_path() && m_object->path().enabled())
+	{
+		ScaledTurning = MonsterScale::TurningInPlace(ScaledTurning, delta_yaw);
+		if (ScaledTurning)
+		{
+			m_object->SetTurnAnimation(turn_left);
+		}
+		return;
+	}
+	ScaledTurning = false;
+
 	EPState	anim_state = GetState(cur_anim_info().get_motion());
 	if (IsStandCurAnim() && (anim_state == PS_STAND) && (!fis_zero(delta_yaw))) {
 		m_object->SetTurnAnimation(turn_left);
@@ -268,6 +289,8 @@ void CControlAnimationBase::SelectVelocities()
 	
 	// получить скорости движения по анимации
 	anim_vel.set(item_it->velocity.velocity.linear, item_it->velocity.velocity.angular_real);
+	const float MovementScale = MonsterScale::Movement(m_object->GetVisualScale());
+	anim_vel.linear *= MovementScale;
 
 	//	// проверить на совпадение
 	//	R_ASSERT(fsimilar(path_vel.linear,	anim_vel.linear));
@@ -300,10 +323,13 @@ void CControlAnimationBase::SelectVelocities()
 		EMotionAnim new_anim;
 		float		a_speed;
 
-		if (accel_chain_get(m_man->movement().real_velocity(), cur_anim_info().get_motion(), new_anim, a_speed)) {
+		if (accel_chain_get(m_man->movement().real_velocity() / MovementScale, cur_anim_info().get_motion(), new_anim, a_speed)) {
 			cur_anim_info().set_motion(new_anim);
 			
-			if (a_speed < 0.5f) a_speed		+= 0.5f;
+			if (a_speed < 0.5f)
+			{
+				a_speed += 0.5f;
+			}
 
 			cur_anim_info().speed._set_target	(a_speed);
 		} else 

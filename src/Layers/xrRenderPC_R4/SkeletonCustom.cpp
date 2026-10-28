@@ -93,6 +93,7 @@ CKinematics::CKinematics()
 
 CKinematics::~CKinematics	()
 {
+	ResetVisualScale();
 	IBoneInstances_Destroy	();
 	// wallmarks
 	ClearWallmarks			();
@@ -365,6 +366,107 @@ void CKinematics::LL_Validate()
     }
 }
 
+void CKinematics::ResetVisualScale()
+{
+	if (!SharedBones)
+	{
+		return;
+	}
+	const float InverseScale = 1.f / VisualScale;
+	vis.box.min.mul(InverseScale);
+	vis.box.max.mul(InverseScale);
+	vis.sphere.P.mul(InverseScale);
+	vis.sphere.R *= InverseScale;
+	if (IKinematics* Lod = PKinematics(m_lod))
+	{
+		Lod->SetVisualScale(1.f);
+	}
+	bones = SharedBones;
+	SharedBones = nullptr;
+	InstanceBones.clear();
+	ScaledBones.clear();
+	VisualScale = 1.f;
+}
+
+void CKinematics::SetVisualScale(float Scale)
+{
+	if (!_valid(Scale) || Scale <= 0.f || Scale == VisualScale)
+	{
+		return;
+	}
+	xrCriticalSectionGuard Guard(&UCalc_Mutex);
+	const float Ratio = Scale / VisualScale;
+	if (!SharedBones)
+	{
+		SharedBones = bones;
+		ScaledBones.reserve(SharedBones->size());
+		InstanceBones.reserve(SharedBones->size());
+		for (const CBoneData* Source : *SharedBones)
+		{
+			auto Bone = xr_make_unique<CBoneData>(*Source);
+			InstanceBones.push_back(Bone.get());
+			ScaledBones.push_back(std::move(Bone));
+		}
+		for (CBoneData* Bone : InstanceBones)
+		{
+			for (CBoneData*& Child : Bone->children)
+			{
+				Child = InstanceBones[Child->GetSelfID()];
+			}
+		}
+		bones = &InstanceBones;
+	}
+	for (size_t Index = 0; Index < SharedBones->size(); ++Index)
+	{
+		const CBoneData& Source = *(*SharedBones)[Index];
+		CBoneData& Bone = *InstanceBones[Index];
+		Bone.bind_transform = Source.bind_transform;
+		Bone.bind_transform.c.mul(Scale);
+		Bone.m2b_transform = Source.m2b_transform;
+		Bone.m2b_transform.c.mul(Scale);
+		Bone.obb = Source.obb;
+		Bone.obb.m_translate.mul(Scale);
+		Bone.obb.m_halfsize.mul(Scale);
+		Bone.center_of_mass.mul(Source.center_of_mass, Scale);
+		Bone.shape = Source.shape;
+		switch (Bone.shape.type)
+		{
+		case SBoneShape::stBox:
+			Bone.shape.box.m_translate.mul(Scale);
+			Bone.shape.box.m_halfsize.mul(Scale);
+			break;
+		case SBoneShape::stSphere:
+			Bone.shape.sphere.P.mul(Scale);
+			Bone.shape.sphere.R *= Scale;
+			break;
+		case SBoneShape::stCylinder:
+			Bone.shape.cylinder.m_center.mul(Scale);
+			Bone.shape.cylinder.m_height *= Scale;
+			Bone.shape.cylinder.m_radius *= Scale;
+			break;
+		}
+		if (bone_instances)
+		{
+			CBoneInstance& Instance = bone_instances[Index];
+			Instance.mTransform.c.mul(Ratio);
+			Instance.mRenderTransform.mul_43(Instance.mTransform, Bone.m2b_transform);
+			Instance.mRenderTransform.i.mul(Scale);
+			Instance.mRenderTransform.j.mul(Scale);
+			Instance.mRenderTransform.k.mul(Scale);
+		}
+	}
+	VisualScale = Scale;
+	vis.box.min.mul(Ratio);
+	vis.box.max.mul(Ratio);
+	vis.sphere.P.mul(Ratio);
+	vis.sphere.R *= Ratio;
+	if (IKinematics* Lod = PKinematics(m_lod))
+	{
+		Lod->SetVisualScale(Scale);
+	}
+	CalculateBones_Invalidate();
+}
+
 void CKinematics::Copy(dxRender_Visual *P) 
 {
 	inherited::Copy	(P);
@@ -373,7 +475,7 @@ void CKinematics::Copy(dxRender_Visual *P)
 	VERIFY(pFrom);
 
 	pUserData = pFrom->pUserData;
-	bones = pFrom->bones;
+	bones = pFrom->SharedBones ? pFrom->SharedBones : pFrom->bones;
 	iRoot = pFrom->iRoot;
 	bone_map_N = pFrom->bone_map_N;
 	bone_map_P = pFrom->bone_map_P;
@@ -389,6 +491,14 @@ void CKinematics::Copy(dxRender_Visual *P)
 	CalculateBones_Invalidate();
 
 	m_lod = (pFrom->m_lod) ? (dxRender_Visual*)::Render->model_Duplicate(pFrom->m_lod) : nullptr;
+	if (pFrom->VisualScale != 1.f)
+	{
+		vis.box.min.div(pFrom->VisualScale);
+		vis.box.max.div(pFrom->VisualScale);
+		vis.sphere.P.div(pFrom->VisualScale);
+		vis.sphere.R /= pFrom->VisualScale;
+		SetVisualScale(pFrom->VisualScale);
+	}
 	dwFirstRenderFrame = 0;
 }
 
@@ -414,6 +524,7 @@ void CKinematics::Spawn			()
 
 void CKinematics::Depart		()
 {
+	ResetVisualScale();
 	inherited::Depart			();
 	// wallmarks
 	ClearWallmarks				();
@@ -479,6 +590,9 @@ void CKinematics::LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive)
 	}
 
 	bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform,(*bones)[bone_id]->m2b_transform);
+		bone_instances[bone_id].mRenderTransform.i.mul(VisualScale);
+		bone_instances[bone_id].mRenderTransform.j.mul(VisualScale);
+		bone_instances[bone_id].mRenderTransform.k.mul(VisualScale);
 	if(bRecursive)
 	{
 		for(CBoneData* BD : (*bones)[bone_id]->children)

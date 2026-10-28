@@ -244,6 +244,13 @@ void CCF_Skeleton::BuildTopLevel()
 	VERIFY(_valid(bv_sphere));
 }
 
+void CCF_Skeleton::InvalidateScale()
+{
+	xrSRWLockGuard Guard(&build_lock);
+	dwFrame = u32(-1);
+	dwFrameTL = u32(-1);
+}
+
 bool CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
 	PROF_EVENT("CCF_Skeleton::_RayQuery");

@@ -717,6 +717,16 @@ void CScriptGameObject::set_visual_name_notForce(const char* visual)
 	set_visual_name(visual, false);
 }
 
+float CScriptGameObject::GetVisualScale() const
+{
+	return object().GetVisualScale();
+}
+
+bool CScriptGameObject::SetVisualScale(float Scale)
+{
+	return object().SetVisualScale(Scale);
+}
+
 const char* CScriptGameObject::get_visual_name() const
 {
 	return object().cNameVisual().c_str();

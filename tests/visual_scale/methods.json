@@ -1,0 +1,106 @@
+[
+  [
+    "src/Layers/xrRenderPC_R4/SkeletonCustom.cpp",
+    "void CKinematics::ResetVisualScale"
+  ],
+  [
+    "src/Layers/xrRenderPC_R4/SkeletonCustom.cpp",
+    "void CKinematics::SetVisualScale"
+  ],
+  [
+    "src/Layers/xrRenderPC_R4/SkeletonRigid.cpp",
+    "void CKinematics::BuildBoneMatrix"
+  ],
+  [
+    "src/Layers/xrRenderPC_R4/SkeletonRigid.cpp",
+    "void CKinematics::CLBone"
+  ],
+  [
+    "src/xrServerEntities/xrServer_Objects_ALife.cpp",
+    "void CSE_ALifeObject::STATE_Write"
+  ],
+  [
+    "src/xrServerEntities/xrServer_Objects_ALife.cpp",
+    "void CSE_ALifeObject::STATE_Read"
+  ],
+  [
+    "src/xrServerEntities/xrServer_Objects_ALife.cpp",
+    "void CSE_ALifeObject::STATE_Serialize"
+  ],
+  [
+    "src/Layers/xrRenderPC_R4/SkeletonAnimated.cpp",
+    "void CKinematicsAnimated::LL_BoneMatrixBuild"
+  ],
+  [
+    "src/xrGame/PHMovementControl.cpp",
+    "void CPHMovementControl::SetVisualScale"
+  ],
+  [
+    "src/xrGame/ai/monsters/control_jump.cpp",
+    "float CControlJump::get_max_distance"
+  ],
+  [
+    "src/xrGame/ai/monsters/control_jump.cpp",
+    "float CControlJump::get_min_distance"
+  ],
+  [
+    "src/xrPhysics/PHSimpleCharacter.cpp",
+    "void CPHSimpleCharacter::SetBox("
+  ],
+  [
+    "src/xrGame/poses_blending.cpp",
+    "poses_interpolation::poses_interpolation"
+  ],
+  [
+    "src/xrGame/poses_blending.cpp",
+    "poses_interpolation::pose\t"
+  ],
+  [
+    "src/xrGame/poses_blending.cpp",
+    "poses_blending::poses_blending"
+  ],
+  [
+    "src/xrGame/poses_blending.cpp",
+    "poses_blending::pose\t"
+  ],
+  [
+    "src/xrGame/animation_movement_controller.cpp",
+    "void animation_movement_controller::OnVisualScaleChanged"
+  ],
+  [
+    "src/xrServerEntities/xrServer_Objects_ALife.cpp",
+    "bool CSE_ALifeObject::SetVisualScale"
+  ],
+  [
+    "src/xrGame/detail_path_manager.cpp",
+    "void CDetailPathManager::SetVisualScale"
+  ],
+  [
+    "src/xrGame/ai/monsters/control_animation_base_update.cpp",
+    "void CControlAnimationBase::OnAnimationEnd"
+  ],
+  [
+    "src/xrGame/detail_path_manager_inline.h",
+    "IC\tbool CDetailPathManager::compute_circles"
+  ],
+  [
+    "src/xrGame/ai/monsters/control_path_builder_base_set.cpp",
+    "void CControlPathBuilderBase::set_target_point(const Fvector"
+  ],
+  [
+    "src/xrGame/ai/monsters/melee_checker.cpp",
+    "float CMeleeChecker::get_min_distance"
+  ],
+  [
+    "src/xrGame/ai/monsters/melee_checker.cpp",
+    "float CMeleeChecker::get_max_distance"
+  ],
+  [
+    "src/xrGame/ai/monsters/control_direction.cpp",
+    "bool GroundPitch"
+  ],
+  [
+    "src/xrGame/ai/monsters/melee_checker.cpp",
+    "float CMeleeChecker::TargetDistance"
+  ]
+]

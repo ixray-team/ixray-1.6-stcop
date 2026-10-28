@@ -376,6 +376,12 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	sv_state.set_limb	( this );
 	m_collide =collide_;
 //////////////////////////////////////////////////////////////////////
+	UpdateSolverGeometry();
+}
+
+void CIKLimb::UpdateSolverGeometry()
+{
+	IKinematics* CK = Kinematics();
 	u16 bones_count = CK->LL_BoneCount();
 	buffer_vector<Fmatrix> binds(_alloca(bones_count * sizeof(Fmatrix)), bones_count);
 	CK->LL_GetBindTransform( binds );
@@ -416,6 +422,15 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	//swap(lmin[5],lmax[5]);
 	//swap(lmin[6],lmax[6]);
 	m_limb.init( T, S, ZXY, ZXY, gproj_vector, gpos_vector, lmin, lmax );
+}
+
+void CIKLimb::OnVisualScaleChanged(float Ratio)
+{
+	// Reinitialize cached link lengths as well as their matrices; keep planted world goals.
+	UpdateSolverGeometry();
+	m_foot.ScaleGeometry(Ratio);
+	sv_state.ScaleLocalGeometry(Ratio);
+	state_predict.footstep_shift *= Ratio;
 }
 
 void CIKLimb::Destroy()

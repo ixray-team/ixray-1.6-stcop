@@ -62,6 +62,7 @@ protected:
 
 
 		bool					m_state_attack;
+		bool ScaledTurning = false;
 
 protected:
 
@@ -170,6 +171,7 @@ protected:
 
 protected:
 	void		SelectAnimation			();
+	void OnAnimationEnd();
 	void		SelectVelocities		();
 
 	EAction		GetActionFromPath		();

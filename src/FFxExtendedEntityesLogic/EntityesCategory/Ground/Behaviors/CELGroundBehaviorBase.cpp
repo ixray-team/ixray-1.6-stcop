@@ -9,6 +9,7 @@
 #include "xrGame/ai_object_location.h"
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
+#include "xrGame/monster_scale.h"
 
 // Связывает базовую наземную схему и контроль продвижения с необходимыми службами и состоянием владельца.
 CELGroundBehaviorBase::CELGroundBehaviorBase(IELAdapter& OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : Adapter(OwnerAdapter), Profile(OwnerProfile), Movement(OwnerAdapter), Navigation(OwnerAdapter) {}
@@ -57,7 +58,7 @@ void CELGroundBehaviorBase::Exit()
 // Обновляет контроль продвижения по позиции владельца.
 void CELGroundBehaviorBase::TrackProgress()
 {
-	if (ProgressPosition.distance_to_sqr(Adapter.Monster().Position()) >= .5625f)
+	if (ProgressPosition.distance_to_sqr(Adapter.Monster().Position()) >= .5625f * _sqr(std::min(1.f, MonsterScale::Movement(Adapter.Monster().GetVisualScale()))))
 	{
 		ProgressPosition = Adapter.Monster().Position();
 		ProgressTime = WaitingSince = Device.dwTimeGlobal;
@@ -122,7 +123,7 @@ void CELGroundBehaviorBase::AdvanceRoute()
 	{
 		++RouteCursor;
 	}
-	if (RouteCursor + 1 == Route.Points.size() && Position.distance_to_sqr(Route.Points.back()) < 1.f)
+	if (RouteCursor + 1 == Route.Points.size() && Position.distance_to_sqr(Route.Points.back()) < _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
 	{
 		Route.HasPath = false;
 		return;
@@ -145,7 +146,7 @@ void CELGroundBehaviorBase::AdvanceRoute()
 // Запрашивает изменившееся назначение, пока прежний проверенный путь ещё ведёт монстра вперёд.
 void CELGroundBehaviorBase::PrepareContinuation(const Fvector& GoalPosition, u32 GoalVertex)
 {
-	if (Navigation.IsPending() || s32(Device.dwTimeGlobal - RetryAfter) < 0 || Adapter.Monster().Position().distance_to_sqr(GoalPosition) < 1.f)
+	if (Navigation.IsPending() || s32(Device.dwTimeGlobal - RetryAfter) < 0 || Adapter.Monster().Position().distance_to_sqr(GoalPosition) < _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
 	{
 		return;
 	}
@@ -203,13 +204,13 @@ bool CELGroundBehaviorBase::Move(const Fvector& GoalPosition, u32 GoalVertex, bo
 		LocalSearch.Reset();
 		return FollowRoute(IsRunning);
 	}
-	if (Adapter.Monster().Position().distance_to_sqr(GoalPosition) >= 1.f && LocalSearch.Move(Adapter, Movement, Profile, GoalPosition, IsRunning))
+	if (Adapter.Monster().Position().distance_to_sqr(GoalPosition) >= _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())) && LocalSearch.Move(Adapter, Movement, Profile, GoalPosition, IsRunning))
 	{
 		HasMoveCommand = true;
 		Validation = {EELBehaviorState::Running, "Локальный обход: основной поиск продолжается"};
 		return true;
 	}
-	if (Adapter.Monster().Position().distance_to_sqr(GoalPosition) < 1.f)
+	if (Adapter.Monster().Position().distance_to_sqr(GoalPosition) < _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
 	{
 		Validation = {EELBehaviorState::Running, "Точка достигнута"};
 		ProgressTime = Device.dwTimeGlobal;

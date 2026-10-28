@@ -51,6 +51,16 @@ void CControlJump::load(const char* section)
 		m_auto_aim_factor			= pSettings->r_float(section,"jump_auto_aim_factor");
 }
 
+float CControlJump::get_max_distance() const
+{
+	return m_max_distance;
+}
+
+float CControlJump::get_min_distance() const
+{
+	return m_min_distance;
+}
+
 bool CControlJump::check_start_conditions()
 {
 	if (is_active())				return false;	
@@ -346,8 +356,8 @@ bool CControlJump::is_on_the_ground()
 	collide::rq_result		l_rq;
 
 	bool on_the_ground = false;
-	if (Level().ObjectSpace.RayPick(trace_from, direction, m_trace_ground_range, collide::rqtStatic, l_rq, m_object)) {
-		if (l_rq.range < m_trace_ground_range) on_the_ground = true;
+	if (Level().ObjectSpace.RayPick(trace_from, direction, m_trace_ground_range * m_object->GetVisualScale(), collide::rqtStatic, l_rq, m_object)) {
+		if (l_rq.range < m_trace_ground_range * m_object->GetVisualScale()) on_the_ground = true;
 	}
 	return (on_the_ground);
 }
@@ -491,8 +501,8 @@ void CControlJump::hit_test()
 
 	collide::rq_result	l_rq;
 
-	if (Level().ObjectSpace.RayPick(trace_from, m_object->Direction(), m_hit_trace_range, collide::rqtObject, l_rq, m_object)) {
-		if ((l_rq.O == m_data.target_object) && (l_rq.range < m_hit_trace_range)) {
+	if (Level().ObjectSpace.RayPick(trace_from, m_object->Direction(), m_hit_trace_range * m_object->GetVisualScale(), collide::rqtObject, l_rq, m_object)) {
+		if ((l_rq.O == m_data.target_object) && (l_rq.range < m_hit_trace_range * m_object->GetVisualScale())) {
 			m_object_hitted = true;
 		}
 	}
@@ -503,7 +513,7 @@ void CControlJump::hit_test()
 		// определить дистанцию до врага
 		Fvector d;
 		d.sub(m_data.target_object->Position(),m_object->Position());
-		if (d.magnitude() > m_hit_trace_range) 
+		if (d.magnitude() > m_hit_trace_range * m_object->GetVisualScale())
 			m_object_hitted = false;
 
 		// проверка на  Field-Of-Hit
@@ -558,14 +568,19 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 	pass_collide_tris	=	&collide_tris;
 #endif // #ifdef DEBUG		
 
-	Fvector const sizes	=	{ 0.8f, 1.4f, 0.8f };
+	const float Scale = m_object->GetVisualScale();
+	Fvector Sizes = {0.8f, 1.4f, 0.8f};
+	if (Scale != 1.f)
+	{
+		m_object->character_physics_support()->movement()->Box().getsize(Sizes);
+	}
 
 	Fvector const start_to_target	=	target - m_object->Position();
-	if ( magnitude(start_to_target) < 1.f )
+	if ( magnitude(start_to_target) < Scale )
 		return false;
 
- 	Fvector const traj_start	=	m_object->Position() + Fvector().set(0, 1.2f, 0);
- 	Fvector const traj_target	=	target + Fvector().set(0, 1.2f, 0) - (normalize(start_to_target) * 1);
+	Fvector const traj_start	=	m_object->Position() + Fvector().set(0, 1.2f * Scale, 0);
+	Fvector const traj_target	=	target + Fvector().set(0, 1.2f * Scale, 0) - (normalize(start_to_target) * Scale);
 
 	if ( trajectory_intersects_geometry	(m_jump_time, 
 										 traj_start,
@@ -577,7 +592,7 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 								 		 temp_rq_results,
 								 		 pass_jump_picks,
 										 pass_collide_tris,
-										 sizes) )
+										 Sizes) )
 	{
 #ifdef DEBUG		
 		m_object->m_jump_picks			=	jump_picks;
@@ -616,8 +631,8 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 	float dist = source_position.distance_to(target_position);
 
 	// in aggressive mode we can jump from distance >= 1
-	const float test_min_distance = aggressive_jump ? std::min(1.f, m_min_distance) : m_min_distance;
-	if ( (dist < test_min_distance) || (dist > m_max_distance) ) 
+	const float test_min_distance = aggressive_jump ? std::min(1.f, get_min_distance()) : get_min_distance();
+	if ( (dist < test_min_distance) || (dist > get_max_distance()) )
 		return						false;
 
 	// получить вектор направлени€ и его мир угол

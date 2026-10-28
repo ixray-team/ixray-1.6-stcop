@@ -33,6 +33,8 @@ void XRay::Engine::PreRenderThread()
 
 void XRay::Engine::GameThread()
 {
+	PROF_REGISTER_THREAD("X-Ray Game Thread");
+	PROF_EVENT("Game Thread/Update");
 	// Device.GCThread.Wait();
 
 	{

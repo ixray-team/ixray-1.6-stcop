@@ -56,6 +56,11 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	eEnvironment = peInAir;
 	aabb.set(-def_X_SIZE_2, 0, -def_Z_SIZE_2, def_X_SIZE_2, def_Y_SIZE_2 * 2, def_Z_SIZE_2);
 
+	for (Fbox& Box : boxes)
+	{
+		Box.set(aabb);
+	}
+
 	fMass = 100;
 	fMinCrashSpeed = 12.0f;
 	fMaxCrashSpeed = 25.0f;
@@ -1124,8 +1129,34 @@ void CPHMovementControl::SetMaterial(u16 material)
 		m_character->SetMaterial(material);
 	}
 }
+void CPHMovementControl::SetVisualScale(float Scale)
+{
+	if (!_valid(Scale) || Scale <= 0.f || Scale == AppliedVisualScale)
+	{
+		return;
+	}
+	const float Ratio = Scale / AppliedVisualScale;
+	for (Fbox& Box : boxes)
+	{
+		Box.min.mul(Ratio);
+		Box.max.mul(Ratio);
+	}
+	aabb.min.mul(Ratio);
+	aabb.max.mul(Ratio);
+	AppliedVisualScale = Scale;
+	if (m_character && m_character->b_exist)
+	{
+		dVector3 Size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
+		m_character->SetBox(Size);
+	}
+}
+
 void CPHMovementControl::CreateCharacter()
-{	
+{
+	if (IKinematics* Kinematics = PKinematics(pObject->Visual()))
+	{
+		SetVisualScale(Kinematics->GetVisualScale());
+	}
 	dVector3 size={aabb.x2-aabb.x1,aabb.y2-aabb.y1,aabb.z2-aabb.z1};
 	m_character->Create(size);
 	m_character->SetMaterial(m_material);

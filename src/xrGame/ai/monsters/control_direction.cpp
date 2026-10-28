@@ -95,8 +95,55 @@ void CControlDirection::update_frame() {
 	if(event_data.angle)		m_man->notify(ControlCom::eventRotationEnd, &event_data);
 }
 
+namespace MonsterScale
+{
+	bool GroundPitch(CBaseMonster& Object, float& Pitch)
+	{
+		if (Object.GetVisualScale() <= 1.f || !Object.Visual() || !ai().get_level_graph())
+		{
+			return false;
+		}
+		Fvector Size;
+		Object.Visual()->getVisData().box.getsize(Size);
+		const float Span = std::max(1.f, Size.z);
+		Fvector Direction = Object.Direction();
+		Direction.y = 0.f;
+		if (Direction.square_magnitude() < EPS_L)
+		{
+			return false;
+		}
+		Direction.normalize();
+		Fvector Front, Back;
+		Front.mad(Object.Position(), Direction, Span * 0.5f);
+		Back.mad(Object.Position(), Direction, -Span * 0.5f);
+		const auto& Graph = ai().level_graph();
+		if (!Graph.valid_vertex_position(Front) || !Graph.valid_vertex_position(Back))
+		{
+			return false;
+		}
+		// Only indexed point lookups: never fall back to a graph-wide nearest-node scan.
+		const u32 FrontVertex = Graph.vertex_id(Front);
+		const u32 BackVertex = Graph.vertex_id(Back);
+		if (!Graph.valid_vertex_id(FrontVertex) || !Graph.valid_vertex_id(BackVertex) ||
+			!Graph.inside(FrontVertex, Front) || !Graph.inside(BackVertex, Back))
+		{
+			return false;
+		}
+		const float FrontY = Graph.vertex_plane_y(FrontVertex, Front.x, Front.z);
+		const float BackY = Graph.vertex_plane_y(BackVertex, Back.x, Back.z);
+		Pitch = -atan2f(FrontY - BackY, Span);
+		return _valid(Pitch) && std::abs(Pitch) <= PI_DIV_4;
+	}
+}
+
 void CControlDirection::pitch_correction() {
 	if(!m_object->ability_pitch_correction()) return;
+	float GroundPitch;
+	if (MonsterScale::GroundPitch(*m_object, GroundPitch))
+	{
+		m_data.pitch.target_angle = GroundPitch;
+		return;
+	}
 
 	// extended feature to pitch by path (wall climbing)
 	// distance between two travel point must be more than 1.f

@@ -196,6 +196,7 @@ void CPHSimpleCharacter::TestPathCallback(bool& do_colide,bool bo1,dContact& c,S
 
 void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 {
+	const float OldRadius = m_radius;
 	m_radius = std::min(sizes[0], sizes[2]) / 2.f;
 	m_cyl_hight = sizes[1] - 2.f * m_radius;
 	if (m_cyl_hight < 0.f) m_cyl_hight = 0.01f;
@@ -213,6 +214,23 @@ void CPHSimpleCharacter::SetBox(const dVector3& sizes)
 
 	dGeomSphereSetRadius(m_cap, test_radius);
 	dGeomSetPosition(m_cap, 0.f, test_height, 0.f);
+	const float HeightShift = m_radius - OldRadius;
+	if (HeightShift != 0.f)
+	{
+		const dReal* Position = dBodyGetPosition(m_body);
+		dBodySetPosition(m_body, Position[0], Position[1] + HeightShift, Position[2]);
+		m_safe_position[1] += HeightShift;
+		m_death_position[1] += HeightShift;
+		for (u16 Index = 0; Index < CPHInterpolation::PH_INTERPOLATION_POINTS; ++Index)
+		{
+			Fvector Sample;
+			m_body_interpolation.GetPosition(Sample, Index);
+			Sample.y += HeightShift;
+			m_body_interpolation.SetPosition(Sample, Index);
+		}
+		m_current_object_radius *= m_radius / OldRadius;
+		CPHObject::spatial_move();
+	}
 }
 
 void CPHSimpleCharacter::get_Box(Fvector& sz, Fvector& c)const

@@ -1966,7 +1966,7 @@ public:
 		}
 	}
 
-private:
+protected:
 	// Разбирает аргументы и проверяет существование допустимой секции спавна.
 	static bool ReadArguments(const char* Arguments, xr_string& Section, int& Count, float& Distance)
 	{
@@ -2043,12 +2043,12 @@ private:
 	}
 
 	// Создаёт один ALife-объект и применяет штатную настройку зоны либо оружия.
-	static bool SpawnObject(const xr_string& Section, const Fvector& Position, u32 Vertex, u32 GameVertex)
+	static bool SpawnObject(const xr_string& Section, const Fvector& Position, u32 Vertex, u32 GameVertex, float Scale = -1.f)
 	{
 		CSE_Abstract* SpawnedObject;
 		CSE_ALifeAnomalousZone* Anomaly;
 		CSE_ALifeItemWeapon* Weapon;
-		SpawnedObject = Level().Server->game->alife().spawn_item(Section.c_str(), Position, Vertex, GameVertex, ALife::INVALID_OBJECT_ID);
+		SpawnedObject = Level().Server->game->alife().spawn_item(Section.c_str(), Position, Vertex, GameVertex, ALife::INVALID_OBJECT_ID, true, Scale);
 		if (!SpawnedObject || !SpawnedObject->cast_alife_object())
 		{
 			return false;
@@ -2085,6 +2085,52 @@ private:
 	}
 };
 
+
+class CCC_GSpawnScaled : public CCC_GSpawn
+{
+public:
+	CCC_GSpawnScaled(const char* Name) : CCC_GSpawn(Name) {}
+
+	void Execute(const char* Arguments) override
+	{
+		string128 SectionToken;
+		string64 ScaleToken;
+		char Extra;
+		float Scale = 1.f;
+		if (!Arguments || sscanf(Arguments, "%127s %63s %c", SectionToken, ScaleToken, &Extra) != 2 ||
+			!SpawnCommand::ParseNumber(xr_string(ScaleToken), Scale) || !_valid(Scale) || Scale < 0.01f || Scale > 100.f)
+		{
+			Msg("! Format: g_spawn_scaled <section> <scale: 0.01..100>");
+			return;
+		}
+		if (!g_pGameLevel || !IsGameTypeSingle())
+		{
+			return;
+		}
+		xr_string Section;
+		int Count = 1;
+		float Distance = -1.f;
+		if (!ReadArguments(SectionToken, Section, Count, Distance))
+		{
+			return;
+		}
+		CActor* ActorOwner = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr;
+		if (!ActorOwner || !ai().get_alife() || !Level().Server || !Level().Server->game)
+		{
+			return;
+		}
+		Fvector Position;
+		const u32 Vertex = ActorOwner->ai_location().level_vertex_id();
+		if (!ai().level_graph().valid_vertex_id(Vertex) || !SelectPosition(ActorOwner, Distance, Position))
+		{
+			return;
+		}
+		if (SpawnObject(Section, Position, Vertex, ActorOwner->ai_location().game_vertex_id(), Scale))
+		{
+			Msg("* Spawned [%s], visual scale %.3f", Section.c_str(), Scale);
+		}
+	}
+};
 
 #include "alife_smart_terrain_registry.h"
 class CCC_SpawnSquad : public IConsole_Command {
@@ -2634,6 +2680,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
+	CMD1(CCC_GSpawnScaled, "g_spawn_scaled");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
 	CMD1(CCC_SpawnSquad, "g_spawn_squad");
 	CMD1(CCC_SetCharComm, "g_character_community");

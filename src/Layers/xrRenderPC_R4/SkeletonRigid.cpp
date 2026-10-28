@@ -236,6 +236,9 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 			}
 		}
 		bi.mRenderTransform.mul_43(bi.mTransform,bd->m2b_transform);
+		bi.mRenderTransform.i.mul(VisualScale);
+		bi.mRenderTransform.j.mul(VisualScale);
+		bi.mRenderTransform.k.mul(VisualScale);
 	}
 }
 
