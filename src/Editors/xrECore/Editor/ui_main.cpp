@@ -353,7 +353,11 @@ void TUI::ShowHint()
 void TUI::PrepareRedraw()
 {
 	VERIFY(m_bReady);
-	if (m_Flags.is(flResize)) 			RealResize();
+	if (m_Flags.is(flResize))
+	{
+		Device.secondary_tasks.wait();
+		RealResize();
+	}
 // set render state
 	EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
 	// fog
@@ -410,6 +414,7 @@ void TUI::Redraw()
 	{
 		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
+			Device.secondary_tasks.wait();
 			EDevice->TargetWidth = View.RTSize.x * EDevice->m_ScreenQuality;
 			EDevice->TargetHeight = View.RTSize.y * EDevice->m_ScreenQuality;
 

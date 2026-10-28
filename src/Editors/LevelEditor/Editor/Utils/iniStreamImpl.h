@@ -8,6 +8,7 @@ struct SIniFileStream :public IIniFileStream
 	shared_str		sect;
 	string128		tmp_buff;
 	u32				counter;
+	bool SkipExtendedIds = false;
 	const char*			gen_name	();
 
 	virtual void	  	move_begin		()		{counter=0;};

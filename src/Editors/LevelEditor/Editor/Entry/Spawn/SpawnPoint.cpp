@@ -313,6 +313,17 @@ bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, const char* sect_name)
 	SIniFileStream 			ini_stream;
 	ini_stream.ini 			= &ini;
 	ini_stream.sect 		= sect_name;
+	// Version 134 also exists in develop with three extra high words for 32-bit IDs.
+	// The all-ones ID sentinel identifies that layout without truncating valid IDs.
+	ini_stream.SkipExtendedIds = ini.line_exist(sect_name, "000019") &&
+		ini.r_u16(sect_name, "000013") == 134 &&
+		ini.r_u16(sect_name, "000009") == u16(-1) &&
+		ini.r_u16(sect_name, "000010") == u16(-1) &&
+		ini.r_u16(sect_name, "000011") == u16(-1) &&
+		ini.r_u16(sect_name, "000014") == u16(-1) &&
+		ini.r_u16(sect_name, "000015") == u16(-1) &&
+		ini.r_u16(sect_name, "000016") == u16(-1) &&
+		ini.r_u16(sect_name, "000019") == 0;
 	ini_stream.move_begin	();
 	Packet.inistream 		= &ini_stream;
 	

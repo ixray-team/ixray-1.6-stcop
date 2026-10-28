@@ -60,7 +60,7 @@ protected:
 public:
 	// ref-counting
 	void				_inc	()									{	if (nullptr==p_) return;	p_->dwReference++;														}
-	void				_dec	()									{	if (nullptr==p_) return;	p_->dwReference--; if (0==p_->dwReference) xr_delete(p_);				}
+	void				_dec	()									{	if (nullptr==p_) return;	if (1==p_->dwReference.fetch_sub(1)) xr_delete(p_);				}
 public:
 	ICF		void		_set	(T * rhs) 							{	if (nullptr!=rhs) rhs->dwReference++;	_dec(); p_ = rhs;											}
 	ICF		void		_set	(resptr_base<T> const & rhs)		{	T* prhs = rhs._get(); _set(prhs);															}
