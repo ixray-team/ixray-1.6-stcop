@@ -315,17 +315,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 		S.UIElement = C._lua_Compile(s_shader, "normal_ui");
 	}
 
-	// Search equal in shaders array
-	for (u32 it=0; it<v_shaders.size(); it++)
-		if (S.equal(v_shaders[it]))	return v_shaders[it];
-
-	// Create _new_ entry
-	Shader*		N			=	new Shader();
-	N->_copy(S);
-
-	N->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-	v_shaders.push_back		(N);
-	return N;
+	return _CreateShader(&S);
 }
 
 ShaderElement*		CBlender_Compile::_lua_Compile	(const char* namesp, const char* name)
