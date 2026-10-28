@@ -184,12 +184,58 @@ void UICoderForm::Create(int Tab)
 	Form->TabIndex = Tab;
 	EContext.UI->Push(Form, false);
 	Device.seqFrame.Add(Form);
+	Form->SetStateName("CoderForm");
 
 	CContentView* Browser = new CContentView(ContentWindow);
 	Browser->Init();
 	Browser->TabIndex = Tab;
 	Browser->SetStateName("CoderContentBrowser");
 	EContext.UI->Push(Browser, false);
+}
+
+void UICoderForm::Serialize(nlohmann::json& Data, bool IsSaving)
+{
+	IEditorWnd::Serialize(Data, IsSaving);
+	if (IsSaving)
+	{
+		nlohmann::json Files = nlohmann::json::array();
+		for (const xr_unique_ptr<SDocument>& Document : Documents)
+		{
+			Files.push_back(Document->Path.c_str());
+		}
+		Data["files"] = Files;
+		Data["active"] = Active;
+		return;
+	}
+
+	auto Iter = Data.find("files");
+	if (Iter == Data.end() || !Iter->is_array())
+	{
+		return;
+	}
+
+	// Reopening the files must not switch the editor to this tab
+	const int RequestedTab = EContext.UI->RequestedTabIndex;
+	const int ActiveTab = EContext.UI->ActiveTabIndex;
+	for (const nlohmann::json& File : *Iter)
+	{
+		if (File.is_string())
+		{
+			const xr_string Path = File.get_ref<const nlohmann::json::string_t&>().c_str();
+			if (std::filesystem::exists(xr_path(Path)))
+			{
+				OpenFile(Path);
+			}
+		}
+	}
+	EContext.UI->RequestedTabIndex = RequestedTab;
+	EContext.UI->ActiveTabIndex = ActiveTab;
+
+	size_t Selected = 0;
+	if (ReadState(Data, "active", Selected) && Selected < Documents.size())
+	{
+		SelectRequest = (int)Selected;
+	}
 }
 
 void UICoderForm::Destroy()

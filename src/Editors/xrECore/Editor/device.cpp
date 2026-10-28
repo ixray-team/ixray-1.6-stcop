@@ -591,9 +591,20 @@ void CEditorRenderDevice::FrameMove()
     dwTimeDelta		= iFloor(fTimeDelta*1000.f+0.5f);
     dwTimeContinual	= dwTimeGlobal;
 
+	// The paused game timers stop the game, not the camera of the editor
+	static CTimer CameraTimer;
+	static bool CameraTimerStarted = false;
+	float CameraDelta = fTimeDelta;
+	if (CameraTimerStarted)
+	{
+		CameraDelta = std::min(CameraTimer.GetElapsed_sec(), 0.1f);
+	}
+	CameraTimer.Start();
+	CameraTimerStarted = true;
+
 	if (!Tools->UpdateCamera())
 	{
-		EContext.UI->CurrentView().m_Camera.Update(fTimeDelta);
+		EContext.UI->CurrentView().m_Camera.Update(g_pauseMngr.Paused() ? CameraDelta : fTimeDelta);
 	}
 
     // process objects
