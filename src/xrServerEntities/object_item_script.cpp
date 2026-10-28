@@ -27,6 +27,34 @@ ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 	return		(object->_construct());
 }
 
+const std::type_info* CObjectItemScript::client_type() const
+{
+	lua_State* L = m_client_creator.lua_state();
+	if (L == nullptr)
+	{
+		return nullptr;
+	}
+
+	m_client_creator.pushvalue();
+	const luabind::detail::class_rep* Class = nullptr;
+	if (lua_getmetatable(L, -1) != 0)
+	{
+		lua_getfield(L, -1, "__luabind_classrep");
+		if (lua_toboolean(L, -1))
+		{
+			Class = static_cast<luabind::detail::class_rep*>(lua_touserdata(L, -3));
+		}
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+
+	while (Class != nullptr && Class->get_class_type() != luabind::detail::class_rep::cpp_class)
+	{
+		Class = Class->bases().empty() ? nullptr : Class->bases().front().base;
+	}
+	return Class != nullptr ? Class->type() : nullptr;
+}
+
 #endif
 
 ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(const char* section) const

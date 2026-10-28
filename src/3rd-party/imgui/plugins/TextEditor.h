@@ -227,6 +227,12 @@ public:
 	void SetColorizerEnable(bool aValue);
 
 	Coordinates GetCursorPosition() const { return GetActualCursorCoordinates(); }
+	int GetCursorCharacterIndex() const { return GetCharacterIndex(GetActualCursorCoordinates()); }
+	bool GetHoveredCoordinates(Coordinates& aOut) const;
+	ImVec2 GetCoordinatesScreenPos(const Coordinates& aPosition) const;
+	float GetLineHeight() const { return mCharAdvance.y; }
+	int GetLineCharacterIndex(const Coordinates& aPosition) const { return GetCharacterIndex(aPosition); }
+	int GetLineCharacterColumn(int aLine, int aIndex) const { return GetCharacterColumn(aLine, aIndex); }
 	void SetCursorPosition(const Coordinates& aPosition);
 
 	inline void SetHandleMouseInputs    (bool aValue){ mHandleMouseInputs    = aValue;}
@@ -337,6 +343,7 @@ private:
 	int InsertTextAt(Coordinates& aWhere, const char* aValue);
 	void AddUndo(UndoRecord& aValue);
 	Coordinates ScreenPosToCoordinates(const ImVec2& aPosition) const;
+	Coordinates ScreenPosToCoordinates(const ImVec2& aPosition, const ImVec2& origin) const;
 	Coordinates FindWordStart(const Coordinates& aFrom) const;
 	Coordinates FindWordEnd(const Coordinates& aFrom) const;
 	Coordinates FindNextWord(const Coordinates& aFrom) const;
@@ -379,6 +386,8 @@ private:
 	bool mTextChanged;
 	bool mColorizerEnabled;
 	float mTextStart;                   // position (in pixels) where a code line starts relative to the left of the TextEditor.
+	ImVec2 mTextOrigin;
+	bool mTextHovered = false;
 	int  mLeftMargin;
 	bool mCursorPositionChanged;
 	int mColorRangeMin, mColorRangeMax;
