@@ -21,6 +21,7 @@ public:
 	void AfterRender(TextEditor& View, const xr_string& Path, const xr_string& Text);
 	// Marks the sections without their required keys
 	void UpdateMarkers(TextEditor& View, const xr_string& Path, const xr_string& Text);
+	bool FindDefinition(const xr_string& Name, xr_string& Path, int& Line);
 
 private:
 	struct SField
@@ -43,6 +44,8 @@ private:
 		xr_vector<xr_string> Parents;
 		xr_hash_map<xr_string, xr_string> Keys;
 		int Line = 0;
+		xr_string Path;
+		bool Override = false;
 	};
 
 	using SectionMap = xr_hash_map<xr_string, SSection>;

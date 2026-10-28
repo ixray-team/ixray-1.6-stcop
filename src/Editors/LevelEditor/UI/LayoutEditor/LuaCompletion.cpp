@@ -89,6 +89,129 @@ static void AddUnique(xr_vector<xr_string>& List, const xr_string& Value)
 	}
 }
 
+static bool IsLuaKeyword(const xr_string& Word)
+{
+	static const char* Keywords[] = { "and", "break", "do", "else", "elseif", "end", "false", "for", "function", "goto", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while" };
+	return std::any_of(std::begin(Keywords), std::end(Keywords), [&Word](const char* Keyword) { return Word == Keyword; });
+}
+
+static void CollectScriptNames(const xr_string& Script, xr_hash_map<xr_string, xr_string>& Functions, xr_hash_set<xr_string>& Variables)
+{
+	size_t At = 0;
+	auto SkipSpaces = [&Script, &At]()
+	{
+		while (At < Script.size() && isspace((u8)Script[At]))
+		{
+			++At;
+		}
+	};
+	auto ReadWord = [&Script, &At]()
+	{
+		const size_t Start = At;
+		while (At < Script.size() && IsWordChar(Script[At]))
+		{
+			++At;
+		}
+		return xr_string(Script.substr(Start, At - Start).c_str());
+	};
+	auto ReadNames = [&]()
+	{
+		for (;;)
+		{
+			SkipSpaces();
+			const xr_string Name = ReadWord();
+			if (Name.empty() || IsLuaKeyword(Name))
+			{
+				return;
+			}
+			Variables.insert(Name);
+			SkipSpaces();
+			if (At >= Script.size() || Script[At] != ',')
+			{
+				return;
+			}
+			++At;
+		}
+	};
+
+	while (At < Script.size())
+	{
+		const char Char = Script[At];
+		if (Char == '-' && At + 1 < Script.size() && Script[At + 1] == '-')
+		{
+			const size_t End = Script.find('\n', At);
+			At = End == xr_string::npos ? Script.size() : End;
+			continue;
+		}
+		if (Char == '"' || Char == '\'')
+		{
+			for (++At; At < Script.size() && Script[At] != Char && Script[At] != '\n'; ++At)
+			{
+				if (Script[At] == '\\')
+				{
+					++At;
+				}
+			}
+			++At;
+			continue;
+		}
+		if (!IsWordChar(Char) || (At > 0 && (IsWordChar(Script[At - 1]) || Script[At - 1] == '.' || Script[At - 1] == ':')))
+		{
+			++At;
+			continue;
+		}
+
+		const xr_string Word = ReadWord();
+		if (Word == "local")
+		{
+			SkipSpaces();
+			const size_t Mark = At;
+			if (ReadWord() != "function")
+			{
+				At = Mark;
+				ReadNames();
+			}
+			else
+			{
+				At = Mark;
+			}
+		}
+		else if (Word == "for")
+		{
+			ReadNames();
+		}
+		else if (Word == "function")
+		{
+			SkipSpaces();
+			const size_t NameStart = At;
+			while (At < Script.size() && (IsWordChar(Script[At]) || Script[At] == '.' || Script[At] == ':'))
+			{
+				++At;
+			}
+			const xr_string Name = Script.substr(NameStart, At - NameStart).c_str();
+			SkipSpaces();
+			if (At >= Script.size() || Script[At] != '(')
+			{
+				continue;
+			}
+			const size_t Close = Script.find(')', At);
+			const xr_string Params = Script.substr(At + 1, Close == xr_string::npos ? xr_string::npos : Close - At - 1).c_str();
+			if (!Name.empty() && Name.find_first_of(".:") == xr_string::npos)
+			{
+				Functions[Name] = Params;
+			}
+			++At;
+			ReadNames();
+		}
+	}
+
+	for (const auto& [Name, Params] : Functions)
+	{
+		Variables.erase(Name);
+	}
+	Variables.erase("self");
+}
+
 u32 CLuaCompletion::BakeGeneration = 1;
 
 xr_string CLuaCompletion::GetApiPath()
@@ -848,17 +971,34 @@ void CLuaCompletion::AfterRender(TextEditor& View, const xr_string& Script, cons
 		}
 		else
 		{
+			xr_hash_map<xr_string, xr_string> ScriptFunctions;
+			xr_hash_set<xr_string> ScriptVariables;
+			CollectScriptNames(Script, ScriptFunctions, ScriptVariables);
+			for (const auto& [Name, Params] : ScriptFunctions)
+			{
+				Seen.insert(Name);
+				All.push_back({ Name, "function " + Name + "(" + Params + ")", EItemKind::Function });
+			}
+			for (const xr_string& Name : ScriptVariables)
+			{
+				Seen.insert(Name);
+				All.push_back({ Name, "local " + Name, EItemKind::Field });
+			}
+
 			auto Globals = Namespaces.find("");
 			if (Globals != Namespaces.end())
 			{
 				for (const auto& [Name, Function] : Globals->second)
 				{
-					All.push_back({ Name, Name + "(" + Function.Overloads.front() + ")", EItemKind::Function });
+					if (!Seen.contains(Name))
+					{
+						All.push_back({ Name, Name + "(" + Function.Overloads.front() + ")", EItemKind::Function });
+					}
 				}
 			}
 			for (const auto& [Name, Functions] : Namespaces)
 			{
-				if (!Name.empty() && !(Globals != Namespaces.end() && Globals->second.contains(Name)))
+				if (!Name.empty() && !Seen.contains(Name) && !(Globals != Namespaces.end() && Globals->second.contains(Name)))
 				{
 					All.push_back({ Name, "namespace " + Name + ", " + xr_string::ToString((u32)Functions.size()) + " functions", EItemKind::Namespace });
 				}
@@ -873,7 +1013,7 @@ void CLuaCompletion::AfterRender(TextEditor& View, const xr_string& Script, cons
 			{
 				for (const auto& [Name, Type] : GlobalFields->second)
 				{
-					if (!Namespaces.contains(Name) && !Classes.contains(Name) && !(Globals != Namespaces.end() && Globals->second.contains(Name)))
+					if (!Seen.contains(Name) && !Namespaces.contains(Name) && !Classes.contains(Name) && !(Globals != Namespaces.end() && Globals->second.contains(Name)))
 					{
 						All.push_back({ Name, Name + ": " + Type, EItemKind::Field });
 					}

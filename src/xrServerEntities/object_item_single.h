@@ -38,6 +38,7 @@ protected:
 public:
 	IC											CObjectItemSingle	(const CLASS_ID &clsid, const char* script_clsid);
 	virtual ObjectFactory::CLIENT_BASE_CLASS	*client_object		() const override;
+	virtual const std::type_info*				client_type			() const override { return &typeid(CLIENT_TYPE); }
 	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(const char* section) const override;
 };
 #endif

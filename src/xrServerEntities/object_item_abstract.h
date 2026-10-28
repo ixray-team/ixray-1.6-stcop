@@ -31,6 +31,7 @@ public:
 	// The ltx schemas the client class reads its section with, for the editor
 	using IniSchemaCollector = void (*)(xr_vector<const char*>& Out);
 	IniSchemaCollector							ini_schemas			= nullptr;
+	virtual const std::type_info*				client_type			() const { return nullptr; }
 #endif
 	virtual ObjectFactory::SERVER_BASE_CLASS	*server_object		(const char* section) const = 0;
 };

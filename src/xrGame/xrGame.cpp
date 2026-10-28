@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "DynamicWallmarkZone.h"
 #include "object_factory.h"
+#include <typeindex>
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
 
@@ -176,15 +177,32 @@ extern "C"
 		}
 
 		// No object is created: the factory items know which schemas their client class reads
+		xr_hash_map<std::type_index, CObjectItemAbstract::IniSchemaCollector> NativeSchemas;
 		for (const CObjectItemAbstract* Item : object_factory().items())
 		{
-			if (Item->ini_schemas == nullptr)
+			const std::type_info* Type = Item->client_type();
+			if (Item->ini_schemas != nullptr && Type != nullptr)
+			{
+				NativeSchemas.emplace(*Type, Item->ini_schemas);
+			}
+		}
+
+		for (const CObjectItemAbstract* Item : object_factory().items())
+		{
+			CObjectItemAbstract::IniSchemaCollector Collector = Item->ini_schemas;
+			if (Collector == nullptr)
+			{
+				const std::type_info* Type = Item->client_type();
+				auto Native = Type != nullptr ? NativeSchemas.find(*Type) : NativeSchemas.end();
+				Collector = Native != NativeSchemas.end() ? Native->second : nullptr;
+			}
+			if (Collector == nullptr)
 			{
 				continue;
 			}
 
 			xr_vector<const char*> Names;
-			Item->ini_schemas(Names);
+			Collector(Names);
 
 			string16 ClassId;
 			CLSID2TEXT(Item->clsid(), ClassId);

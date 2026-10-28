@@ -60,6 +60,23 @@ private:
 	void DrawStatus(float ButtonSize);
 	void DrawDocument(SDocument& Document);
 
+	struct SLink
+	{
+		xr_string Document;
+		int Line = -1;
+		size_t Begin = 0;
+		xr_string Name;
+		bool Found = false;
+		xr_string Path;
+		int Target = 0;
+		ImVec2 From;
+		ImVec2 To;
+	};
+
+	bool UpdateLink(SDocument& Document);
+	bool FindLuaDefinition(const SDocument& Document, const xr_string& Name, xr_string& Path, int& Line) const;
+	static void OpenAt(const xr_string& Path, int Line);
+
 	static UICoderForm* Form;
 
 	xr_vector<xr_unique_ptr<SDocument>> Documents;
@@ -72,6 +89,7 @@ private:
 	TextEditor::LanguageDefinition IniLanguage;
 	u32 LanguageGeneration = 0;
 
+	SLink Link;
 	CCodeSearch Search;
 	CLuaCompletion Completion;
 	CLtxCompletion LtxCompletion;
