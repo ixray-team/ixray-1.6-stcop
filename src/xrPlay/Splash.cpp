@@ -370,7 +370,7 @@ namespace splash
         {
 			window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
         }
-		if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, window_flags, &window, &renderer))
+		if (!SDL_CreateWindowAndRenderer("IX-Ray Engine", WINDOW_WIDTH, WINDOW_HEIGHT, window_flags, &window, &renderer))
 		{
 			SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
 			return;
