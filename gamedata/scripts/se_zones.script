@@ -83,6 +83,11 @@ function se_zone_anom:STATE_Read( packet, size )
 		return
 	end
 
+	-- Legacy spawn records may contain no script state.
+	if packet:r_eof() then
+		return
+	end
+
 	local flag = packet:r_u8()
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
@@ -203,6 +208,11 @@ function se_zone_torrid:STATE_Read( packet, size )
 		return
 	end
 
+	-- Legacy spawn records may contain no script state.
+	if packet:r_eof() then
+		return
+	end
+
 	local flag = packet:r_u8()
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
@@ -312,6 +322,11 @@ function se_zone_visual:STATE_Read( packet, size )
 	end
 
 	if (is_single_player_game() == false) then
+		return
+	end
+
+	-- Legacy spawn records may contain no script state.
+	if packet:r_eof() then
 		return
 	end
 
