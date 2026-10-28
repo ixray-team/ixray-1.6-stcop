@@ -13,7 +13,9 @@
 #include "UI/CompilerIcons.h"
 
 // >>> UX-PROGRESS
-#include "UI/TaskbarProgress.h"
+#include "../../xrCore/Kernel/TaskbarProgress.h"
+#include "Resources/resource.h"
+#include "UI/CompilerTaskbar.h"
 #include "UI/ToastNotify.h"
 // <<< UX-PROGRESS
 
@@ -542,33 +544,21 @@ static xr_string GetBuildingLevelName()
 }
 
 // =========================================================================
-// ������� ���� �������� � �������-������ � ������ �����.
+// Taskbar: maps compiler iterations onto the shared taskbar service.
 // =========================================================================
-static TaskbarOverlay GetOverlayForIteration(LCBuildingType type)
+static ECompilerStage GetStageForIteration(LCBuildingType Type)
 {
-	switch (type)
+	switch (Type)
 	{
 		case LCBuildingType::eLC:
-			return TaskbarOverlay::XrLC;
+			return ECompilerStage::XrLC;
 		case LCBuildingType::eAI:
-			return TaskbarOverlay::XrAI;
+			return ECompilerStage::XrAI;
 		case LCBuildingType::eDO:
-			return TaskbarOverlay::XrDO;
+			return ECompilerStage::XrDO;
 		default:
-			return TaskbarOverlay::None;
+			return ECompilerStage::Count;
 	}
-}
-
-// ������: ������� wide-string �� ���� (LPCSTR).
-static std::wstring WidenPhase(LPCSTR phase)
-{
-	if (!phase)
-	{
-		return std::wstring();
-	}
-
-	int len = (int)xr_strlen(phase);
-	return std::wstring(phase, phase + len);
 }
 // <<< UX-PROGRESS
 
@@ -594,36 +584,15 @@ void Startup(LPSTR lpCmdLine)
 
 	CToastNotify::Instance().Initialize();
 
-	// Tooltip ��� ������� � ������ ����� (�� ������ ������ ������).
-	{
-		std::wstring tooltip = L"IX-Ray Level Builder - building: ";
-		tooltip += wLevel;
-		CTaskbarProgress::Instance().SetTooltip(tooltip);
-	}
+	// Taskbar: level name in the tooltip, indeterminate until the first stage
+	// reports progress.
+	CompilerTaskbar::BeginBuild(levelName.c_str(), gCompilerMode.LC, gCompilerMode.AI, gCompilerMode.DO);
 
-	// ��������� ���� � ������ ������.
+	// Notify the user that the build has started.
 	CToastNotify::Instance().ShowInfo(
 		L"IX-Ray Level Builder",
 		std::wstring(L"Compilation started: ") + wLevel
 	);
-	// <<< UX-PROGRESS
-
-	// >>> UX-PROGRESS
-	int totalActive = 0;
-	if (gCompilerMode.LC)
-	{
-		++totalActive;
-	}
-	if (gCompilerMode.AI)
-	{
-		++totalActive;
-	}
-	if (gCompilerMode.DO)
-	{
-		++totalActive;
-	}
-	int completed = 0;
-	clMsg("* Startup: totalActive = %d", totalActive);
 	// <<< UX-PROGRESS
 
 	auto InitilizeIteration = [&](LCBuildingType Type, bool active, LPCSTR phase)
@@ -635,24 +604,8 @@ void Startup(LPSTR lpCmdLine)
 		{
 			clMsg("* Startup: iteration %d (%s) - starting", (int)Type, phase);
 
-			// >>> UX-PROGRESS: indeterminate + ����������� ������ ������
-			CTaskbarProgress::Instance().SetState(TBPF_INDETERMINATE);
-
-			{
-				const TaskbarOverlay overlay = GetOverlayForIteration(Type);
-				const std::wstring wPhase = WidenPhase(phase);
-
-				std::wstring desc = L"IX-Ray Level Builder - ";
-				desc += wPhase;
-				CTaskbarProgress::Instance().SetOverlayIcon(overlay, desc);
-
-				std::wstring tip = L"IX-Ray Level Builder - ";
-				tip += wLevel;
-				tip += L" (";
-				tip += wPhase;
-				tip += L")";
-				CTaskbarProgress::Instance().SetTooltip(tip);
-			}
+			// >>> UX-PROGRESS: stage overlay, tooltip and stage progress
+			CompilerTaskbar::BeginStage(GetStageForIteration(Type));
 			// <<< UX-PROGRESS
 
 			GetActiveIteration()->status = InProgress;
@@ -687,12 +640,10 @@ void Startup(LPSTR lpCmdLine)
 
 		PhaseEnd();
 
-		// >>> UX-PROGRESS: �������� �� ������ ����� �� �������
-		++completed;
-		if (totalActive > 0)
+		// >>> UX-PROGRESS: advance the overall build progress
+		if (active)
 		{
-			CTaskbarProgress::Instance().SetState(TBPF_NORMAL);
-			CTaskbarProgress::Instance().SetProgress((ULONGLONG)completed, (ULONGLONG)totalActive);
+			CompilerTaskbar::EndStage(GetStageForIteration(Type));
 		}
 		// <<< UX-PROGRESS
 	};
@@ -711,9 +662,18 @@ void Startup(LPSTR lpCmdLine)
 	// Close log
 	xrLogger::FlushLog();
 
-	// >>> UX-PROGRESS: ��������� ������� + ����� ���������
-	CTaskbarProgress::Instance().Reset();
-	CTaskbarProgress::Instance().SetTooltip(L"IX-Ray Level Builder");
+	// >>> UX-PROGRESS: final taskbar state, attention request and completion toast
+	bool anyFailed = false;
+	for (auto& I : GetIterationData())
+	{
+		if (I.status != Complete && I.status != Skip)
+		{
+			anyFailed = true;
+			break;
+		}
+	}
+
+	CompilerTaskbar::EndBuild(anyFailed);
 
 	{
 		xr_string summary;
@@ -728,28 +688,6 @@ void Startup(LPSTR lpCmdLine)
 			}
 		}
 
-		// ���������, ���� �� ������� (�� Complete � �� Skip).
-		bool anyFailed = false;
-		for (auto& I : GetIterationData())
-		{
-			if (I.status != Complete && I.status != Skip)
-			{
-				anyFailed = true;
-				break;
-			}
-		}
-
-		const TaskbarOverlay finalOverlay = anyFailed
-												? TaskbarOverlay::Error
-												: TaskbarOverlay::Success;
-
-		const wchar_t* finalDesc = anyFailed
-									   ? L"Compilation failed"
-									   : L"Compilation complete";
-
-		CTaskbarProgress::Instance().SetOverlayIcon(finalOverlay, finalDesc);
-
-		// ��������� ����� � ������ ������.
 		std::wstring title = anyFailed
 								 ? L"Compilation failed: "
 								 : L"Compilation complete: ";
@@ -802,35 +740,15 @@ void SDL_Application()
 	SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	SDL_ShowWindow(g_AppInfo.Window);
 
-	// >>> UX-PROGRESS: �������� HWND �� SDL3 � ���������������� taskbar/toast
+	// >>> UX-PROGRESS: initialize the taskbar and toast services
 	{
-		HWND hwnd = nullptr;
-		SDL_PropertiesID props = SDL_GetWindowProperties(g_AppInfo.Window);
-		clMsg("* SDL_Application: SDL_GetWindowProperties returned props = %u", (unsigned)props);
-
-		if (props != 0)
+		if (CTaskbarProgress::Instance().Initialize(g_AppInfo.Window))
 		{
-			hwnd = static_cast<HWND>(
-				SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr)
-			);
-		}
-
-		clMsg("* SDL_Application: extracted HWND = 0x%p", hwnd);
-
-		if (hwnd)
-		{
-			if (!CTaskbarProgress::Instance().Initialize(hwnd))
-			{
-				clMsg("! SDL_Application: TaskbarProgress initialization FAILED");
-			}
-			else
-			{
-				clMsg("* SDL_Application: TaskbarProgress initialization OK");
-			}
+			clMsg("* SDL_Application: TaskbarProgress initialization OK");
 		}
 		else
 		{
-			clMsg("! SDL_Application: HWND not found - taskbar progress unavailable");
+			clMsg("! SDL_Application: TaskbarProgress initialization FAILED");
 		}
 
 		CToastNotify::Instance().Initialize();
@@ -896,12 +814,15 @@ void SDL_Application()
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData());
 		SDL_RenderPresent(renderer);
 
+		CTaskbarProgress::Instance().Update();
+
 		Sleep(41);
 	}
 
-	// >>> UX-PROGRESS: ���������� ����������
+	// >>> UX-PROGRESS: shutdown the taskbar and toast services
 	clMsg("=== SDL_Application: shutting down UX-PROGRESS ===");
 	CToastNotify::Instance().Shutdown();
+	CompilerTaskbar::Shutdown();
 	CTaskbarProgress::Instance().Release();
 	// <<< UX-PROGRESS
 

@@ -22,7 +22,7 @@
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
-
+#include "../../xrCore/Kernel/TaskbarProgress.h"
 
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -343,11 +343,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 
 		MainForm->Frame();
+		LUI->UpdateTaskbar();
 
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
 	//s.join();
+
+	CTaskbarProgress::Instance().Release();
 
 	// Windows are destroyed before the preferences are saved: keep their full state
 	CEditorWndStates::Get().Save();
