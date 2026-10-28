@@ -1,5 +1,6 @@
 #include "../Resources/resource.h"
 #include "../../../xrCore/xrCore.h"
+#include "../UI/CompilerTaskbar.h"
 #include <time.h>
 #include <mmsystem.h>
 #include <CommCtrl.h>
@@ -85,6 +86,10 @@ void Progress(const float F)
 
 	if (ActiveIteration->phases.size() > 0)
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].PhasePersent = F;
+
+	// >>> UX-PROGRESS: mirror the phase progress to the taskbar
+	CompilerTaskbar::SetPhaseProgress(F);
+	// <<< UX-PROGRESS
 }
 float GetProgress()
 {
@@ -136,6 +141,10 @@ void Phase(const char* phase_name)
 
 	Msg("\n* New phase started: %s", phase_name);
 	csLog.Leave();
+
+	// >>> UX-PROGRESS: show the phase name in the taskbar tooltip
+	CompilerTaskbar::BeginPhase(phase_name);
+	// <<< UX-PROGRESS
 }
 
 void PhaseEnd()

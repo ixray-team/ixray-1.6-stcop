@@ -1,0 +1,15 @@
+# Vendored third-party code: not part of the engine's own architecture, and
+# the bulk of the parser errors come from these headers.
+src/3rd-party/
+
+# Game Sources
+rawdata/
+
+# Build trees. Also covered by .gitignore; listed explicitly so graphify
+# stays cheap even when a build directory is not ignored by git.
+build*/
+cmake-build*/
+
+# Graphify output and local runtime data.
+graphify-out/
+_appdata_ixray_/

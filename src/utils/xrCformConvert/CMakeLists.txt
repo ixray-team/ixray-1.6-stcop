@@ -16,6 +16,8 @@ file(GLOB_RECURSE UTILS_LVLFCONV_RES_FILES
 file(GLOB_RECURSE UTILS_LVLFCONV_SOURCE_LOG_FILES CONFIGURE_DEPENDS
     "../xrLevelBuilder/Common/cl_log.cpp"
     "../xrLevelBuilder/Common/cl_log.h"
+    "../xrLevelBuilder/UI/CompilerTaskbar.cpp"
+    "../xrLevelBuilder/UI/CompilerTaskbar.h"
     "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.cpp"
     "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.h"
     "../../xrServerEntities/server_entity_wrapper.h"

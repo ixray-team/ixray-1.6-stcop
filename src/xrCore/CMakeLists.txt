@@ -124,6 +124,7 @@ if(WIN32)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::WinMM)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::DBGHELP)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::FAULTREP)
+	target_link_libraries(xrCore PRIVATE ole32 uuid)
 endif()
 
 # Git Info

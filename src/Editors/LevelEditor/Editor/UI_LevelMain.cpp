@@ -16,6 +16,7 @@
 #include "UI/Coder/UICoderForm.h"
 #include "Nodes/UINodesEditorForm.h"
 #include "UI/UISharedMaterialsLibrary.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)EContext.UI;
@@ -267,7 +268,8 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 					// update props
 					ExecCommand(COMMAND_UPDATE_PROPERTIES);
 					EContext.UI->RedrawScene();
-				}
+				},
+				"Loading level..."
 			);
 		}
 
@@ -862,12 +864,16 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 		{
 			LUI->LoaderEvent.Wait();
 
+			EContext.UI->SetStatus("Building level...");
+
 			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.Compile(false);
-				}
+					EContext.UI->ResetStatus();
+				},
+				"Building level..."
 			);
 
 			return true;
@@ -914,7 +920,8 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakeGame();
-				}
+				},
+				"Making game..."
 			);
 
 			return true;
@@ -939,7 +946,8 @@ CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakePuddles();
-				}
+				},
+				"Making puddles..."
 			);
 
 			return true;
@@ -964,7 +972,8 @@ CCommandVar CommandMakePlanars(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakePlanars();
-				}
+				},
+				"Making planars..."
 			);
 
 			return true;
@@ -989,7 +998,8 @@ CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakeDetails();
-				}
+				},
+				"Making details..."
 			);
 
 			return true;
@@ -1015,7 +1025,8 @@ CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakeHOM();
-				}
+				},
+				"Making HOM..."
 			);
 
 			return true;
@@ -1041,7 +1052,8 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 				[]()
 				{
 					Builder.MakeSOM();
-				}
+				},
+				"Making SOM..."
 			);
 
 			return true;
@@ -1719,6 +1731,57 @@ void CLevelMain::RealQuit()
 void CLevelMain::ProgressDraw()
 {
 	inherited::ProgressDraw();
+}
+
+void CLevelMain::UpdateTaskbar()
+{
+	if (!CTaskbarProgress::Instance().IsInitialized())
+	{
+		return;
+	}
+
+	if (LoaderEvent.IsBusy())
+	{
+		if (!TaskbarActive)
+		{
+			TaskbarActive = true;
+			TaskbarIndeterminate = true;
+			TaskbarProgress = -1;
+
+			const char* Text = LoaderEvent.GetTaskbarText();
+			CTaskbarProgress::Instance().SetTooltip(Text != nullptr ? Text : "IX-Ray Level Editor");
+			CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
+		}
+
+		// The builder reports a percentage only while a progress item exists.
+		if (EContext.UI->IsLoading)
+		{
+			const int Progress = std::clamp((int)EContext.UI->ProgressStatus, 0, 100);
+			if (Progress != TaskbarProgress || TaskbarIndeterminate)
+			{
+				TaskbarIndeterminate = false;
+				TaskbarProgress = Progress;
+				CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Normal);
+				CTaskbarProgress::Instance().SetProgress((u64)Progress, 100);
+			}
+		}
+		else if (!TaskbarIndeterminate)
+		{
+			TaskbarIndeterminate = true;
+			TaskbarProgress = -1;
+			CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
+		}
+	}
+	else if (TaskbarActive)
+	{
+		TaskbarActive = false;
+		TaskbarIndeterminate = false;
+		TaskbarProgress = -1;
+		CTaskbarProgress::Instance().SetState(ETaskbarProgressState::NoProgress);
+		CTaskbarProgress::Instance().SetTooltip("IX-Ray Level Editor");
+	}
+
+	CTaskbarProgress::Instance().Update();
 }
 
 void CLevelMain::SaveSettings(nlohmann::json& js)
