@@ -168,6 +168,7 @@ ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
 	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
+	xrCriticalSectionGuard guard(creationGuard);
 	if (reclaim(v_elements,S))						return;
 	Msg	("! ERROR: Failed to find compiled 'shader-element'");
 }

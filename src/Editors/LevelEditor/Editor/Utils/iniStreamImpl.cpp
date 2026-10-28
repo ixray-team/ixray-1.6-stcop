@@ -78,6 +78,10 @@ void SIniFileStream::r_u8(u8& A)
 }
 void SIniFileStream::r_u16(u16& A)
 {
+	if (SkipExtendedIds && counter == 13)
+	{
+		counter += 3;
+	}
 	A = ini->r_u16(sect.c_str(),gen_name());
 }
 void SIniFileStream::r_u32(u32& A)

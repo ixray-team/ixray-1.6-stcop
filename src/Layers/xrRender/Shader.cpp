@@ -12,7 +12,11 @@
 
 static bool ResourcesAlive()
 {
+#ifdef _EDITOR
+	return EDevice != nullptr && EDevice->Resources != nullptr;
+#else
 	return DevicePtr != nullptr && Device.m_pRender != nullptr && DEV != nullptr;
+#endif
 }
 
 //
@@ -157,9 +161,7 @@ bool ShaderElement::equal	(ShaderElement& S)
 
 bool ShaderElement::equal	(ShaderElement* S)
 {	
-	if (nullptr==S && nullptr==this)	return true;
-	if (nullptr==S || nullptr==this)	return false;
-	return	equal	(*S);	
+	return S != nullptr && equal(*S);
 }
 
 //
@@ -169,12 +171,18 @@ bool Shader::equal	(Shader& S)
 	{
 		return false;
 	}
-	return
-		E[0] && E[0]->equal(&*S.E[0]) &&
-		E[1] && E[1]->equal(&*S.E[1]) &&
-		E[2] && E[2]->equal(&*S.E[2]) &&
-		E[3] && E[3]->equal(&*S.E[3]) &&
-		E[4] && E[4]->equal(&*S.E[4]);
+	for (u32 Index = 0; Index < SHADER_ELEMENTS_MAX; ++Index)
+	{
+		if (E[Index] == S.E[Index])
+		{
+			continue;
+		}
+		if (!E[Index] || !S.E[Index] || !E[Index]->equal(*S.E[Index]))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 bool Shader::equal	(Shader* S)
 {	return	equal(*S);	}

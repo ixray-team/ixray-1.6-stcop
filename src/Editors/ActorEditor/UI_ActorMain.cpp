@@ -249,17 +249,51 @@ extern ECORE_API bool g_force32BitTransformQuant;
 
 constexpr size_t ConfigVer = 2;
 
+namespace ActorPreferences
+{
+bool ReadBoolean(const json& Object, const char* Key, bool Default)
+{
+	if (!Object.is_object())
+	{
+		return Default;
+	}
+
+	const auto It = Object.find(Key);
+	if (It == Object.end())
+	{
+		return Default;
+	}
+	if (It->is_boolean())
+	{
+		return It->get<bool>();
+	}
+	if (It->is_number_integer())
+	{
+		return It->get<s64>() != 0;
+	}
+	return Default;
+}
+}
+
 void CAEPreferences::Load()
 {
-	PrefConfigVer = JSONData["ae_prefs"]["version"];
+	const json& Prefs = JSONData["ae_prefs"];
+	if (Prefs.is_object() && Prefs.contains("version") && Prefs["version"].is_number_unsigned())
+	{
+		PrefConfigVer = Prefs["version"].get<size_t>();
+	}
 
 	inherited::Load();
 
-	bAlwaysShowKeyBar12 = JSONData["ae_prefs"]["always_show_keybar12"];
-	bAlwaysShowKeyBar34 = JSONData["ae_prefs"]["always_show_keybar34"];
+	bAlwaysShowKeyBar12 = ActorPreferences::ReadBoolean(Prefs, "always_show_keybar12", bAlwaysShowKeyBar12);
+	bAlwaysShowKeyBar34 = ActorPreferences::ReadBoolean(Prefs, "always_show_keybar34", bAlwaysShowKeyBar34);
 
-	g_force16BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["16"];
-	g_force32BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["32"];
+	if (Prefs.is_object() && Prefs.contains("anims_bit"))
+	{
+		const json& AnimBits = Prefs["anims_bit"];
+		g_force16BitTransformQuant = ActorPreferences::ReadBoolean(AnimBits, "16", g_force16BitTransformQuant);
+		g_force32BitTransformQuant = ActorPreferences::ReadBoolean(AnimBits, "32", g_force32BitTransformQuant);
+	}
 }
 
 void CAEPreferences::Save()
