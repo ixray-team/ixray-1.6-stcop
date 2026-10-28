@@ -14,6 +14,8 @@ public:
 
 	virtual void Draw() override;
 	virtual void OnFrame() override;
+	// Keeps the opened files between the runs
+	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 
 	static void Create(int Tab);
 	static void Destroy();

@@ -7,6 +7,7 @@
 #include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../ShaderEditor/UIShaderEditorForm.h"
 #include "Coder/UICoderForm.h"
+#include "../Nodes/Logic/UILogicEditorForm.h"
 #include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Scene/LEPhysics.h"
 
@@ -88,6 +89,22 @@ void UITopBarForm::Draw()
 				if (ImGui::TableNextColumn())
 				{
 					UICoderForm::DrawTopBar(ButtonSize);
+				}
+				ImGui::EndTable();
+			}
+		}
+		else if (UILogicEditorForm::IsActive())
+		{
+			if (ImGui::BeginTable("##LogicToolbar", 2, ImGuiTableFlags_SizingFixedFit))
+			{
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("LogicUndo", Icons["undo"], "Undo the last edit of the logic", ImDrawFlags_RoundCornersLeft, ClickUndo);
+					IMGUI_HINT_BUTTON("LogicRedo", Icons["redo"], "Repeat the last edit of the logic", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					UILogicEditorForm::DrawTopBar(ButtonSize);
 				}
 				ImGui::EndTable();
 			}
@@ -334,6 +351,12 @@ void UITopBarForm::ClickOpen()
 }
 void UITopBarForm::ClickSave()
 {
+	if (UILogicEditorForm::IsActive())
+	{
+		UILogicEditorForm::Save();
+		return;
+	}
+
 	if (UIParticleEditorForm::IsActive())
 	{
 		UIParticleEditorForm::SaveCurrent();

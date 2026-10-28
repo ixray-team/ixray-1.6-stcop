@@ -58,7 +58,8 @@ public:
 	virtual ~CEditorRenderDevice();
 
 
-	virtual bool Paused() const { return false; };
+	// Play In Editor: the paused timers of the game are stopped
+	virtual bool Paused() const { return g_pauseMngr.Paused(); };
 	void time_factor(float);
 	bool Create();
 	void Destroy();
@@ -148,8 +149,10 @@ public:
 	void InitTimer();
 
 	// Mode control
+	// The game stops, the editor keeps running: its camera uses a timer that is not paused
 	virtual void Pause(bool bOn, bool bTimer, bool bSound, const char* reason) override
 	{
+		CRenderDevice::Pause(bOn, bTimer, bSound, reason);
 	}
 
 	virtual void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input) override

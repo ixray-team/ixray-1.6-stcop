@@ -17,6 +17,8 @@
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/Coder/UICoderForm.h"
+#include "Nodes/Logic/UILogicEditorForm.h"
+#include "../xrECore/Editor/UILogForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
@@ -93,6 +95,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const int LayoutEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 	EContext.UI->GeneralTabs.push_back({ICON_FA_CODE " Coder", []()->bool {return UICoderForm::IsModified(); }});
 	const int CoderTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_DIAGRAM_PROJECT " Logic", []()->bool {return UILogicEditorForm::IsModified(); }});
+	const int LogicTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -164,6 +168,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIShaderEditorForm::Create(ShaderEditorTab);
 	UILayoutEditorForm::Create(LayoutEditorTab);
 	UICoderForm::Create(CoderTab);
+	UILogicEditorForm::Create(LogicTab);
+	// The Logic tab shows its own Message Log
+	UILogForm::HideFunctor = &UILogicEditorForm::IsActive;
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -354,6 +361,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIShaderEditorForm::Destroy();
 	UILayoutEditorForm::Destroy();
 	UICoderForm::Destroy();
+	UILogicEditorForm::Destroy();
 
 	// The shared content browser icons hold textures: release them before the device
 	CContentView::ClearIcons();

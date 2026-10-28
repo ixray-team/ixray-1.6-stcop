@@ -13,6 +13,7 @@
 #include "EFDEditor.h"
 #include "../../UI/LayoutEditor/UILayoutEditorForm.h"
 #include "../../UI/Coder/UICoderForm.h"
+#include "../../Nodes/Logic/UILogicEditorForm.h"
 
 CContentView* GContentView = nullptr;
 
@@ -973,6 +974,10 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					{
 						UICoderForm::OpenFile(FilePath.File.xstring());
 					}
+				}
+				else if (UILogicEditorForm::CanOpen(FilePath.File.xstring()))
+				{
+					UILogicEditorForm::OpenFile(FilePath.File.xstring());
 				}
 				else if (UICoderForm::CanOpen(FilePath.File.xstring()))
 				{
