@@ -182,6 +182,30 @@ void CDialogNode::SetText(const shared_str& NewText)
 	TextNode->ToElement()->SetText(Text.c_str());
 }
 
+void CDialogNode::SetElement(const char* RawName, const shared_str& Value, XML_NODE*& Node)
+{
+	if (ParentNode == nullptr)
+	{
+		return;
+	}
+
+	if (Value.size() == 0)
+	{
+		if (Node != nullptr)
+		{
+			ParentNode->ToElement()->DeleteChild(Node);
+			Node = nullptr;
+		}
+		return;
+	}
+
+	if (Node == nullptr)
+	{
+		Node = ParentNode->ToElement()->InsertNewChildElement(RawName);
+	}
+	Node->ToElement()->SetText(Value.c_str());
+}
+
 void CDialogNode::SetFinal(bool Value)
 {
 	IsFinal = Value;

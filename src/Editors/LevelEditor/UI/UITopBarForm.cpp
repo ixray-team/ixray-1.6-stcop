@@ -7,7 +7,7 @@
 #include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../ShaderEditor/UIShaderEditorForm.h"
 #include "Coder/UICoderForm.h"
-#include "../Nodes/Logic/UILogicEditorForm.h"
+#include "../Nodes/UINodesEditorForm.h"
 #include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Scene/LEPhysics.h"
 
@@ -108,22 +108,27 @@ void UITopBarForm::Draw()
 				ImGui::EndTable();
 			}
 		}
-		else if (UILogicEditorForm::IsActive())
+		else if (UINodesEditorForm::IsActive())
 		{
-			if (ImGui::BeginTable("##LogicToolbar", 3, ImGuiTableFlags_SizingFixedFit))
+			if (ImGui::BeginTable("##NodesToolbar", 4, ImGuiTableFlags_SizingFixedFit))
 			{
 				if (ImGui::TableNextColumn())
 				{
-					IMGUI_HINT_BUTTON("LogicUndo", Icons["undo"], "Undo the last edit of the logic", ImDrawFlags_RoundCornersLeft, ClickUndo);
-					IMGUI_HINT_BUTTON("LogicRedo", Icons["redo"], "Repeat the last edit of the logic", ImDrawFlags_RoundCornersRight, ClickRedo);
+					UINodesEditorForm::DrawModeSwitch(ButtonSize);
+					ImGui::SameLine();
 				}
 				if (ImGui::TableNextColumn())
 				{
-					IMGUI_HINT_BUTTON("LogicReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
-					IMGUI_HINT_BUTTON("LogicSave", Icons["save_level"], "Save the logic file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
-					if (XRay::ImGui::ToolbarButton("##LogicReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
+					IMGUI_HINT_BUTTON("NodesUndo", Icons["undo"], "Undo the last edit of the graph", ImDrawFlags_RoundCornersLeft, ClickUndo);
+					IMGUI_HINT_BUTTON("NodesRedo", Icons["redo"], "Repeat the last edit of the graph", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("NodesReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
+					IMGUI_HINT_BUTTON("NodesSave", Icons["save_level"], "Save the file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
+					if (XRay::ImGui::ToolbarButton("##NodesReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
 					{
-						UILogicEditorForm::RevealInBrowser();
+						UINodesEditorForm::RevealInBrowser();
 					}
 					if (ImGui::IsItemHovered())
 					{
@@ -134,7 +139,7 @@ void UITopBarForm::Draw()
 				}
 				if (ImGui::TableNextColumn())
 				{
-					UILogicEditorForm::DrawTopBar(ButtonSize);
+					UINodesEditorForm::DrawTopBar(ButtonSize);
 				}
 				ImGui::EndTable();
 			}
@@ -359,9 +364,9 @@ void UITopBarForm::ClickOpen()
 		return;
 	}
 
-	if (UILogicEditorForm::IsActive())
+	if (UINodesEditorForm::IsActive())
 	{
-		UILogicEditorForm::Reload();
+		UINodesEditorForm::Reload();
 		return;
 	}
 
@@ -387,9 +392,9 @@ void UITopBarForm::ClickSave()
 		return;
 	}
 
-	if (UILogicEditorForm::IsActive())
+	if (UINodesEditorForm::IsActive())
 	{
-		UILogicEditorForm::Save();
+		UINodesEditorForm::Save();
 		return;
 	}
 

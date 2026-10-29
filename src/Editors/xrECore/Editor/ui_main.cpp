@@ -522,6 +522,12 @@ void TUI::Redraw()
 
 	Viewport& View = CurrentView();
 
+	// The viewport window is 0x0 until ImGui lays it out: there is nothing to draw and no target size yet
+	if (View.RTSize.x <= 0 || View.RTSize.y <= 0)
+	{
+		return;
+	}
+
 	// Render quality scales the scene resolution only; the renderer upscales it to the viewport
 	// with the selected upscaler
 	ps_r_scale_mode = ps_proxy_r_scale_mode = GEditorDraw.Upscaler;

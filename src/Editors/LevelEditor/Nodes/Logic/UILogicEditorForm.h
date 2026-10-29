@@ -2,24 +2,35 @@
 class CContentView;
 #include "LogicDocument.h"
 #include "LogicDebugger.h"
+#include "../NodesMode.h"
+#include "../NodesCommon.h"
 
 #include <imgui_node_editor.h>
 #include "plugins/TextEditor.h"
 
+// The Logic mode of the Nodes tab
 class UILogicEditorForm :
-	public IEditorWnd,
+	public INodesMode,
 	public pureFrame
 {
 public:
 	UILogicEditorForm();
 	virtual ~UILogicEditorForm();
 
-	virtual void Draw() override;
-	virtual void OnFrame() override;
-	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
+	virtual const char* GetName() const override;
+	virtual const char* GetIcon() const override;
+	virtual void GetWindows(xr_vector<SNodesWindow>& Windows) const override;
+	virtual void DrawMode() override;
+	virtual void DrawModeTopBar(float ButtonSize) override;
+	virtual bool IsModeModified() const override;
+	virtual bool SaveMode() override;
+	virtual bool ReloadMode() override;
+	virtual bool UndoMode(bool Redo) override;
+	virtual xr_string GetModePath() const override;
+	virtual void SerializeMode(nlohmann::json& Data, bool IsSaving) override;
 
-	static void Create(int Tab);
-	static void Destroy();
+	virtual void OnFrame() override;
+
 	static bool IsActive();
 	static bool IsModified();
 
@@ -29,7 +40,6 @@ public:
 	static bool Reload();
 	static void RevealInBrowser();
 	static bool Undo(bool Redo);
-	static void DrawTopBar(float ButtonSize);
 
 private:
 	enum class ESchemeKind : u8
@@ -64,6 +74,9 @@ private:
 
 		xr_vector<xr_string> UndoStack;
 		xr_vector<xr_string> RedoStack;
+		// The text on the disk: an undo back to it is not a change
+		xr_string SavedText;
+		NodesUI::CMinimap Minimap;
 
 		// Frames to wait for the node sizes before the layout
 		int LayoutDelay = 2;
@@ -131,6 +144,7 @@ private:
 	static const char* KindIcon(ESchemeKind Kind);
 
 	SDocument* Current();
+	const SDocument* Current() const;
 	bool Load(SDocument& Document);
 	bool SaveDocument(SDocument& Document);
 	bool CloseDocument(size_t Index);
@@ -243,12 +257,8 @@ private:
 	SDebugState Debug;
 	char DebugFilter[64] = {};
 
-	// The windows of the tab are not drawn on the other tabs: the dock tab bars are made again
-	// in the order of the windows, so the selected tab of each dock is put back
 	bool BeginDocked(const char* Name);
-	xr_hash_map<u32, u32> DockSelection;
-	int LastDrawFrame = -10;
-	int RestoreFrames = 0;
+	CNodesDock Dock;
 
 	// Node to create where a dragged link was dropped
 	SPin PendingLink;
@@ -257,10 +267,12 @@ private:
 	int ContextSection = 0;
 
 	char OutlinerFilter[64] = {};
+	// configs\scripts\*.ltx, listed when the Outliner has no file to show
+	xr_vector<xr_string> LogicFiles;
+	bool LogicFilesListed = false;
 	char PickerFilter[64] = {};
 	char NewKey[64] = {};
 	bool ShowKeyList = false;
-	CContentView* Browser = nullptr;
 	xr_unique_ptr<TextEditor> TokensEditor;
 	bool ShowProperties = true;
 	xr_string StatusText;

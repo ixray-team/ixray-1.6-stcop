@@ -17,6 +17,9 @@ public:
 	void ValidateNodes(shared_str& Data, const char* RawName);
 	void DrawInlineEditor(float Width);
 	void SetText(const shared_str& NewText);
+	void SetFinal(bool Value);
+	// Writes a single child element, an empty value removes it
+	void SetElement(const char* RawName, const shared_str& Value, XML_NODE*& Node);
 
 	// Set by the dialog editor: finds the UTF-8 text of a string id
 	static bool (*FindTranslation)(const shared_str& Id, xr_string& OutText);
@@ -53,5 +56,4 @@ private:
 	void RenderField(const char* RawName, const char* Name, shared_str& Data, XML_NODE*& Node, float LabelWidth, float Width);
 	void RenderField(const char* RawName, const char* Name, shared_str& Data, xr_vector<XML_NODE*>& Node, float LabelWidth, float Width);
 	void RenderTranslation(float Width);
-	void SetFinal(bool Value);
 };

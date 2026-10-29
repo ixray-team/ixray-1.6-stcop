@@ -2,7 +2,7 @@
 #include "Coder/UICoderForm.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 
-#include "../Nodes/UIMacroView.h"
+#include "../Nodes/UINodesEditorForm.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"
 #include "../ShaderEditor/UIShaderEditorForm.h"
@@ -629,14 +629,7 @@ void UIMainMenuForm::Draw()
 		{
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
 			{
-				static CUIMacroView* View = nullptr;
-				if (View == nullptr)
-				{
-					View = new CUIMacroView;
-					EContext.UI->Push(View);
-				}
-
-				View->Show(true);
+				UINodesEditorForm::Activate(ENodesMode::Macros);
 			}
 
 			if (ImGui::MenuItemI("Particle Editor", ICON_FA_FIRE, ""))
