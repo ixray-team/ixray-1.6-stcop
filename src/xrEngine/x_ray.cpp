@@ -103,7 +103,10 @@ ENGINE_API	string_path		g_sLaunchWorkingFolder;
 void InitEngine		()
 {
 	PROF_EVENT("InitEngine");
-	DevicePtr = new CRenderDevice();
+	if (DevicePtr == nullptr)
+	{
+		DevicePtr = new CRenderDevice();
+	}
 
 	Engine.Initialize			( );
 	while (!g_bIntroFinished)	Sleep	(100);
@@ -232,10 +235,13 @@ ENGINE_API void EngineLoadStage4()
 	g_FontManager = new CFontManager();
 	bool ValidRenderDeviceInit = Device.InitRenderDevice(Engine.External.GetAPI());
 	R_ASSERT(ValidRenderDeviceInit);
+	CRenderDevice::SetStartupStatus(72, "Creating render device");
 
 	Device.Create();
 	g_FontManager->InitializeFonts();
 	pFPSCounter = new XRay::Hardware::FPSCounter();
+	CRenderDevice::SetStartupStatus(78, "Render device created");
+	CRenderDevice::PumpStartupFrames(4);
 }
 
 ENGINE_API void EngineLoadStage5()
@@ -243,7 +249,9 @@ ENGINE_API void EngineLoadStage5()
 	PROF_EVENT("EngineLoadStage5");
 	LALib.OnCreate();
 	pApp = new CEngineApp();
-	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	CRenderDevice::StartupFrameWaitTask([]() {
+		g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
+	}, 90, "Loading persistent objects");
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
 
@@ -251,6 +259,9 @@ ENGINE_API void EngineLoadStage5()
 	{
 		Device.m_pRender->PostCreate();
 	}
+
+	CRenderDevice::SetStartupStatus(91, "Initializing spatial database");
+	CRenderDevice::PumpStartupFrames(4);
 }
 
 ENGINE_API void EngineLoopAndDestroy()

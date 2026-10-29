@@ -203,10 +203,16 @@ public:
 	// The text stays in this module: callers with their own allocator must not free a returned std::string
 	void VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const;
 
-	bool Find(const std::string& aText, bool aForward = true, bool aCaseSensitive = false);
-	void SetHighlight(const char* aText, bool aCaseSensitive = false);
+	bool Find(const std::string& aText, bool aForward = true, bool aCaseSensitive = false, bool aWholeWord = false);
+	void SetHighlight(const char* aText, bool aCaseSensitive = false, bool aWholeWord = false);
 	int CountHighlights() const;
+	// 1-based number of the highlight under the selection, 0 when the selection is not a highlight
+	int GetSelectedHighlight() const;
+	// One undo step; inserts at the cursor without a selection
+	void ReplaceSelection(const char* aValue);
 	int CopyTextBeforeCursor(char* aOut, int aSize) const;
+	// A selection within one line only, 0 otherwise
+	int CopySelectedLineText(char* aOut, int aSize) const;
 	ImVec2 GetCursorScreenPos() const { return mCursorScreenPos; }
 
 	void SetTextLines(const std::vector<std::string>& aLines);
@@ -268,6 +274,7 @@ public:
 	void SelectWordUnderCursor();
 	void SelectAll();
 	bool HasSelection() const;
+	Coordinates GetSelectionStart() const { return mState.mSelectionStart; }
 
 	void Copy();
 	void Cut();
@@ -350,7 +357,7 @@ private:
 	int GetCharacterIndex(const Coordinates& aCoordinates) const;
 	int GetCharacterColumn(int aLine, int aIndex) const;
 	// aIndex is a glyph (UTF-8 byte) index in the line
-	bool MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive) const;
+	bool MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive, bool aWholeWord = false) const;
 	int GetLineCharacterCount(int aLine) const;
 	int GetLineMaxColumn(int aLine) const;
 	bool IsOnWordBoundary(const Coordinates& aAt) const;
@@ -381,6 +388,9 @@ private:
 	bool mScrollToCursor;
 	std::string mHighlight;
 	bool mHighlightCaseSensitive = false;
+	bool mHighlightWholeWord = false;
+	// Find scrolls to the match: the focus stays in the search field
+	bool mScrollKeepsFocus = false;
 	ImVec2 mCursorScreenPos = ImVec2(0.0f, 0.0f);
 	bool mScrollToTop;
 	bool mTextChanged;

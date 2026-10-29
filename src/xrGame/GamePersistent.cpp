@@ -168,13 +168,25 @@ extern void init_game_globals	();
 
 void CGamePersistent::OnAppStart()
 {
-	// load game materials
-	GMLib.Load					();
-	init_game_globals			();
-	inherited::OnAppStart			();
-	m_pUI_core					= new ui_core();
-	m_pMainMenu					= new CMainMenu();
+	CRenderDevice::StartupFrameWaitTask([]() {
+		GMLib.Load();
+	}, 93, "Loading game materials");
+
+	CRenderDevice::SetStartupStatus(95, "Configuring game globals");
+	init_game_globals();
+	CRenderDevice::PumpStartupFrames(4);
+
+	CRenderDevice::SetStartupStatus(97, "Loading weather and environment");
+	inherited::OnAppStart();
+	CRenderDevice::PumpStartupFrames(4);
+
+	CRenderDevice::SetStartupStatus(99, "Starting user interface");
+	m_pUI_core = new ui_core();
+	m_pMainMenu = new CMainMenu();
 	ai().script_engine().functor("___ixr_engine_callbacks.on_frame", ixr_framework_onframe);
+	CRenderDevice::PumpStartupFrames(4);
+
+	CRenderDevice::FinishStartup();
 }
 
 

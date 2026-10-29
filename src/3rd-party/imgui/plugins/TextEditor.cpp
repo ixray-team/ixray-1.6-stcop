@@ -938,7 +938,7 @@ void TextEditor::Render()
 				const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
 				for (int i = 0; i <= last; ++i)
 				{
-					if (!MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive))
+					if (!MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
 						continue;
 
 					const float hstart = TextDistanceToLineStart(Coordinates(lineNo, GetCharacterColumn(lineNo, i)));
@@ -1156,8 +1156,10 @@ void TextEditor::Render()
 	if (mScrollToCursor)
 	{
 		EnsureCursorVisible();
-		ImGui::SetWindowFocus();
+		if (!mScrollKeepsFocus)
+			ImGui::SetWindowFocus();
 		mScrollToCursor = false;
+		mScrollKeepsFocus = false;
 	}
 }
 
@@ -2145,11 +2147,21 @@ void TextEditor::VisitText(void (*aVisitor)(const char* aText, size_t aSize, voi
 	aVisitor(text.data(), text.size(), aUserData);
 }
 
-bool TextEditor::MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive) const
+bool TextEditor::MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive, bool aWholeWord) const
 {
 	const Line& line = mLines[aLine];
 	if (aIndex < 0 || aIndex + (int)aText.size() > (int)line.size())
 		return false;
+
+	if (aWholeWord)
+	{
+		auto isWord = [](char c) { return std::isalnum((unsigned char)c) || c == '_' || (unsigned char)c >= 0x80; };
+		const int end = aIndex + (int)aText.size();
+		if (aIndex > 0 && isWord((char)line[aIndex - 1].mChar) && isWord(aText.front()))
+			return false;
+		if (end < (int)line.size() && isWord((char)line[end].mChar) && isWord(aText.back()))
+			return false;
+	}
 
 	for (size_t i = 0; i < aText.size(); ++i)
 	{
@@ -2191,11 +2203,89 @@ int TextEditor::CopyTextBeforeCursor(char* aOut, int aSize) const
 	return count;
 }
 
-void TextEditor::SetHighlight(const char* aText, bool aCaseSensitive)
+int TextEditor::CopySelectedLineText(char* aOut, int aSize) const
+{
+	if (aOut == nullptr || aSize <= 0)
+		return 0;
+
+	aOut[0] = 0;
+	const Coordinates start = mState.mSelectionStart;
+	const Coordinates end = mState.mSelectionEnd;
+	if (!HasSelection() || start.mLine != end.mLine || start.mLine >= (int)mLines.size())
+		return 0;
+
+	const Line& line = mLines[start.mLine];
+	const int first = GetCharacterIndex(start);
+	const int last = std::min(GetCharacterIndex(end), (int)line.size());
+	int count = 0;
+	for (int i = first; i < last && count < aSize - 1; ++i)
+		aOut[count++] = (char)line[i].mChar;
+	aOut[count] = 0;
+	return count;
+}
+
+void TextEditor::SetHighlight(const char* aText, bool aCaseSensitive, bool aWholeWord)
 {
 	// Copied here: the text is owned by this module
 	mHighlight = aText != nullptr && std::strchr(aText, '\n') == nullptr ? aText : "";
 	mHighlightCaseSensitive = aCaseSensitive;
+	mHighlightWholeWord = aWholeWord;
+}
+
+int TextEditor::GetSelectedHighlight() const
+{
+	if (mHighlight.empty() || !HasSelection())
+		return 0;
+
+	const Coordinates start = mState.mSelectionStart;
+	const Coordinates end = mState.mSelectionEnd;
+	if (start.mLine != end.mLine || start.mLine >= (int)mLines.size())
+		return 0;
+
+	const int index = GetCharacterIndex(start);
+	if (GetCharacterIndex(end) - index != (int)mHighlight.size() || !MatchesAt(start.mLine, index, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+		return 0;
+
+	int count = 0;
+	for (int lineNo = 0; lineNo <= start.mLine; ++lineNo)
+	{
+		const int last = lineNo == start.mLine ? index : (int)mLines[lineNo].size() - (int)mHighlight.size();
+		for (int i = 0; i <= last; ++i)
+		{
+			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+			{
+				++count;
+				i += (int)mHighlight.size() - 1;
+			}
+		}
+	}
+	return count;
+}
+
+void TextEditor::ReplaceSelection(const char* aValue)
+{
+	if (IsReadOnly() || aValue == nullptr)
+		return;
+
+	UndoRecord u;
+	u.mBefore = mState;
+
+	if (HasSelection())
+	{
+		u.mRemoved = GetSelectedText();
+		u.mRemovedStart = mState.mSelectionStart;
+		u.mRemovedEnd = mState.mSelectionEnd;
+		DeleteSelection();
+	}
+
+	u.mAdded = aValue;
+	u.mAddedStart = GetActualCursorCoordinates();
+
+	InsertText(aValue);
+
+	u.mAddedEnd = GetActualCursorCoordinates();
+	u.mAfter = mState;
+	AddUndo(u);
 }
 
 int TextEditor::CountHighlights() const
@@ -2209,7 +2299,7 @@ int TextEditor::CountHighlights() const
 		const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
 		for (int i = 0; i <= last; ++i)
 		{
-			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive))
+			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
 			{
 				++count;
 				i += (int)mHighlight.size() - 1;
@@ -2219,14 +2309,15 @@ int TextEditor::CountHighlights() const
 	return count;
 }
 
-bool TextEditor::Find(const std::string& aText, bool aForward, bool aCaseSensitive)
+bool TextEditor::Find(const std::string& aText, bool aForward, bool aCaseSensitive, bool aWholeWord)
 {
+	mScrollKeepsFocus = true;
 	if (aText.empty() || aText.find('\n') != std::string::npos || mLines.empty())
 		return false;
 
 	auto matchesAt = [&](int aLine, int aIndex)
 	{
-		return MatchesAt(aLine, aIndex, aText, aCaseSensitive);
+		return MatchesAt(aLine, aIndex, aText, aCaseSensitive, aWholeWord);
 	};
 
 	// Glyphs are UTF-8 bytes: indices are byte offsets in the line
@@ -2511,18 +2602,20 @@ void TextEditor::ColorizeInternal()
 						auto& startStr = mLanguageDefinition.mCommentStart;
 						auto& singleStartStr = mLanguageDefinition.mSingleLineComment;
 
-						if (singleStartStr.size() > 0 &&
-							currentIndex + singleStartStr.size() <= line.size() &&
-							equals(singleStartStr.begin(), singleStartStr.end(), from, from + singleStartStr.size(), pred))
-						{
-							withinSingleLineComment = true;
-						}
+						const bool inMultiLine = commentStartLine < currentLine || (commentStartLine == currentLine && commentStartIndex <= currentIndex);
+						// The multi line start goes first: Lua "--[[" starts with the single line "--".
 						// An empty start means the language has no multi line comments
-						else if (!withinSingleLineComment && !startStr.empty() && currentIndex + startStr.size() <= line.size() &&
+						if (!withinSingleLineComment && !inMultiLine && !startStr.empty() && currentIndex + startStr.size() <= line.size() &&
 							equals(startStr.begin(), startStr.end(), from, from + startStr.size(), pred))
 						{
 							commentStartLine = currentLine;
 							commentStartIndex = currentIndex;
+						}
+						else if (!inMultiLine && singleStartStr.size() > 0 &&
+							currentIndex + singleStartStr.size() <= line.size() &&
+							equals(singleStartStr.begin(), singleStartStr.end(), from, from + singleStartStr.size(), pred))
+						{
+							withinSingleLineComment = true;
 						}
 
 						inComment = inComment = (commentStartLine < currentLine || (commentStartLine == currentLine && commentStartIndex <= currentIndex));

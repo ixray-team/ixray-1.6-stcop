@@ -66,6 +66,7 @@ public:
 	virtual void PreStart(const char* op) override;
 	virtual void		Start					(const char* op) override;
 	virtual void		Disconnect				() override;
+	virtual bool		IsIntroActive			() const override { return m_intro != nullptr; }
 
 	virtual void		OnAppActivate			() override;
 	virtual void		OnAppDeactivate			() override;

@@ -376,7 +376,8 @@ void CRenderDevice::EndRender()
 							g_pGamePersistent->m_pMainMenu			   &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
 
-	if (int target_fps = main_menu_active ? main_menu_fps_limit : fps_limit; target_fps > 0)
+	const int target_fps = s_StartupActive ? 60 : (main_menu_active ? main_menu_fps_limit : fps_limit);
+	if (target_fps > 0)
 	{
 		static tick prev_ticks = clock::now().time_since_epoch().count();
 		tick curr_ticks = clock::now().time_since_epoch().count();

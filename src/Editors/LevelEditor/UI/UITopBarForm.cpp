@@ -79,12 +79,27 @@ void UITopBarForm::Draw()
 		ImGui::PopStyleVar(); // WindowMinSize
 		if (UICoderForm::IsActive())
 		{
-			if (ImGui::BeginTable("##CoderToolbar", 2, ImGuiTableFlags_SizingFixedFit))
+			if (ImGui::BeginTable("##CoderToolbar", 3, ImGuiTableFlags_SizingFixedFit))
 			{
 				if (ImGui::TableNextColumn())
 				{
 					IMGUI_HINT_BUTTON("CoderUndo", Icons["undo"], "Undo the last edit of the file", ImDrawFlags_RoundCornersLeft, ClickUndo);
 					IMGUI_HINT_BUTTON("CoderRedo", Icons["redo"], "Repeat the last edit of the file", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("CoderReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
+					IMGUI_HINT_BUTTON("CoderSave", Icons["save_level"], "Save the file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
+					if (XRay::ImGui::ToolbarButton("##CoderReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
+					{
+						UICoderForm::RevealInBrowser();
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						ImGui::SetTooltip("Show the file in the Content Browser");
+					}
+					ImGui::SameLine();
 				}
 				if (ImGui::TableNextColumn())
 				{
@@ -95,12 +110,27 @@ void UITopBarForm::Draw()
 		}
 		else if (UILogicEditorForm::IsActive())
 		{
-			if (ImGui::BeginTable("##LogicToolbar", 2, ImGuiTableFlags_SizingFixedFit))
+			if (ImGui::BeginTable("##LogicToolbar", 3, ImGuiTableFlags_SizingFixedFit))
 			{
 				if (ImGui::TableNextColumn())
 				{
 					IMGUI_HINT_BUTTON("LogicUndo", Icons["undo"], "Undo the last edit of the logic", ImDrawFlags_RoundCornersLeft, ClickUndo);
 					IMGUI_HINT_BUTTON("LogicRedo", Icons["redo"], "Repeat the last edit of the logic", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("LogicReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
+					IMGUI_HINT_BUTTON("LogicSave", Icons["save_level"], "Save the logic file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
+					if (XRay::ImGui::ToolbarButton("##LogicReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
+					{
+						UILogicEditorForm::RevealInBrowser();
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						ImGui::SetTooltip("Show the file in the Content Browser");
+					}
+					ImGui::SameLine();
 				}
 				if (ImGui::TableNextColumn())
 				{
@@ -136,19 +166,7 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"],"Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
 				IMGUI_HINT_BUTTON("I_OL", Icons["open_level"], "Open level", ImDrawFlags_RoundCornersNone, ClickOpen);
-				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersNone, ClickSave);
-
-				ImGui::BeginDisabled(g_LevelAutoBackup.IsBusy());
-				if (XRay::ImGui::ToolbarButton("I_BL", ICON_FA_FLOPPY_DISK " Backup", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
-				{
-					g_LevelAutoBackup.RequestNow();
-				}
-				ImGui::EndDisabled();
-				if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-				{
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Write a level backup into $temp$\\autobackup now");
-				}
+				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersRight, ClickSave);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -335,6 +353,18 @@ void UITopBarForm::ClickNew()
 }
 void UITopBarForm::ClickOpen()
 {
+	if (UICoderForm::IsActive())
+	{
+		UICoderForm::Reload();
+		return;
+	}
+
+	if (UILogicEditorForm::IsActive())
+	{
+		UILogicEditorForm::Reload();
+		return;
+	}
+
 	if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
 	{
 		Particles->LoadXR();
@@ -351,6 +381,12 @@ void UITopBarForm::ClickOpen()
 }
 void UITopBarForm::ClickSave()
 {
+	if (UICoderForm::IsActive())
+	{
+		UICoderForm::Save();
+		return;
+	}
+
 	if (UILogicEditorForm::IsActive())
 	{
 		UILogicEditorForm::Save();

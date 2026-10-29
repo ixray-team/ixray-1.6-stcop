@@ -115,6 +115,7 @@ public:
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
 	virtual void					SetLoadStageTitle	(const char* /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
+	virtual bool					IsIntroActive		() const { return false; }
 	virtual void					GetTextureParams	(shared_str tex, Frect& out_rect, shared_str& file_name) {}
 	virtual void					ChangeCursorPosition(Fvector2 value) {}
 };

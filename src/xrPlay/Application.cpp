@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "Splash.h"
 #include "UIEditorMain.h"
 
 #include "../xrEngine/x_ray.h"
@@ -7,6 +6,7 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
+#include "../xrEngine/device.h"
 
 #include "../xrCore/git_version.h"
 #include "../xrCore/CrashDumpHelper.h"
@@ -15,30 +15,6 @@
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
 #endif
-
-namespace
-{
-// Mirrors the startup splash progress to the taskbar. The main loop is not running yet,
-// so the pending state is flushed explicitly.
-void SetStartupProgress(int Progress, const char* Status)
-{
-	splash::SetProgressStatus(Progress, Status);
-
-	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
-	if (!Taskbar.IsInitialized())
-	{
-		return;
-	}
-
-	xr_string Tooltip = "IX-Ray Engine - ";
-	Tooltip += Status;
-
-	Taskbar.SetState(ETaskbarProgressState::Normal);
-	Taskbar.SetProgress((u64)Progress, 100);
-	Taskbar.SetTooltip(Tooltip.c_str());
-	Taskbar.Update();
-}
-} // namespace
 
 int CApplication::Run(){
 	// Check for another instance
@@ -56,23 +32,9 @@ int CApplication::Run(){
 		return -1;
 	}
 
-	// plat
-	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
-
-	std::thread s;
-	if (!headless)
-		s = std::thread(splash::Show);
-
 	SteamWorks.BeginPlay();
 	InitEngine();
 	CrashDumpHelper::Start();
-
-	if (!headless)
-	{
-		splash::Close();
-		if (s.joinable())
-			s.join();
-	}
 
 	MigrateToGameWindow();
 	EngineLoopAndDestroy();
@@ -89,20 +51,20 @@ void CApplication::InitEngine()
 	xrLogger::EnableFastDebugLog();
 #endif
 
-	SetStartupProgress(30, "Initializing engine");
+	CRenderDevice::SetStartupStatus(30, "Initializing engine core");
 	EngineLoadStage2();
 
-	SetStartupProgress(40, "Calculating renderer list");
+	CRenderDevice::SetStartupStatus(40, "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
 	Console = new CConsole();
 
-	SetStartupProgress(50, "Reading user settings");
+	CRenderDevice::SetStartupStatus(50, "Reading user settings");
 	EngineLoadStage3();
 
 	ConfigureRenderer();
 
-	SetStartupProgress(60, "Initializing engine external");
+	CRenderDevice::SetStartupStatus(60, "Initializing renderer external");
 	Engine.External.Initialize();
 
 	Msg
@@ -112,14 +74,17 @@ void CApplication::InitEngine()
 		_VER, _HASH, _BRANCH, _AUTHOR
 	);
 
-	SetStartupProgress(70, "Creating device");
+	CRenderDevice::SetStartupStatus(70, "Creating render device");
 	EngineLoadStage4();
 
-	SetStartupProgress(80, "Loading custom settings");
+	CRenderDevice::SetStartupStatus(80, "Loading custom settings");
 	LoadCustomSettings();
-	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(5);
 
-	SetStartupProgress(90, "Loading menu");
+	CRenderDevice::SetStartupStatus(85, "Initializing debug tools");
+	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(3);
+
 	EngineLoadStage5();
 }
 
@@ -139,13 +104,14 @@ int CApplication::BeginPlay()
 		return -1;
 	}
 
-	SetStartupProgress(5, "Initializing debugger");
+	CRenderDevice::SetStartupStatus(5, "Initializing debugger");
 	Debug._initialize(false);
 	
-	SetStartupProgress(10, "Calculating display modes");
+	CRenderDevice::SetStartupStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
-	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
+	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
+	SDL_WindowFlags WndFlags = headless ? SDL_WINDOW_HIDDEN : 0;
 #if defined(IXR_APPLE_SERIES)
 	// DXMT presents through its own CAMetalLayer (see MacMetalBridge.mm), no Vulkan surface.
 	WndFlags |= SDL_WINDOW_METAL;
@@ -153,14 +119,26 @@ int CApplication::BeginPlay()
 	WndFlags = SDL_WINDOW_VULKAN;
 #endif
 
-	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], WndFlags);
+	if (!headless && g_AppInfo.Window)
+	{
+		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+		SDL_ShowWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
+		SDL_PumpEvents();
+	}
 
-	if (!Autotest::Active())
+	if (!headless)
 	{
 		CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
 	}
 
-	SetStartupProgress(20, "Initializing xrCore");
+	if (DevicePtr == nullptr)
+	{
+		DevicePtr = new CRenderDevice();
+	}
+
+	CRenderDevice::SetStartupStatus(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
 
 	return 1;
@@ -253,7 +231,7 @@ void CApplication::MigrateToGameWindow()
 	else
 	{
 		SDL_ShowWindow(g_AppInfo.Window);
-		splash::FocusWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 
 #if defined(IXR_APPLE_SERIES)
@@ -270,6 +248,7 @@ void CApplication::MigrateToGameWindow()
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
+	CRenderDevice::UpdateStartupFrame();
 
 	if (headless)
 	{
@@ -281,7 +260,7 @@ void CApplication::MigrateToGameWindow()
 	}
 	else
 	{
-		splash::FocusWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 }
 

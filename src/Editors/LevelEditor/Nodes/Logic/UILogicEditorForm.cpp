@@ -331,6 +331,7 @@ void UILogicEditorForm::Create(int Tab)
 	Browser->TabIndex = Tab;
 	Browser->SetStateName("LogicContentBrowser");
 	EContext.UI->Push(Browser, false);
+	Form->Browser = Browser;
 }
 
 void UILogicEditorForm::Serialize(nlohmann::json& Data, bool IsSaving)
@@ -457,6 +458,31 @@ bool UILogicEditorForm::Save()
 {
 	SDocument* Document = Form != nullptr ? Form->Current() : nullptr;
 	return Document != nullptr && Form->SaveDocument(*Document);
+}
+
+bool UILogicEditorForm::Reload()
+{
+	SDocument* Document = Form != nullptr ? Form->Current() : nullptr;
+	if (Document == nullptr)
+	{
+		return false;
+	}
+	if (!Document->Modified || ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "Discard the changes of %s?", Document->Name.c_str()) == mrYes)
+	{
+		return Form->Load(*Document);
+	}
+	return false;
+}
+
+void UILogicEditorForm::RevealInBrowser()
+{
+	SDocument* Document = Form != nullptr ? Form->Current() : nullptr;
+	if (Document == nullptr || Form->Browser == nullptr)
+	{
+		return;
+	}
+	Form->Browser->Reveal(Document->Path);
+	ImGui::SetWindowFocus(ContentWindow);
 }
 
 bool UILogicEditorForm::Undo(bool Redo)
@@ -1094,24 +1120,7 @@ void UILogicEditorForm::DrawToolbar(SDocument* Document, float ButtonSize)
 	};
 
 	ImGui::BeginDisabled(Document == nullptr);
-	if (XRay::ImGui::ToolbarButton("##logic_save", ICON_FA_FLOPPY_DISK " Save", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersLeft) && Document != nullptr)
-	{
-		SaveDocument(*Document);
-	}
-	Hint("Save the logic file (Ctrl+S)");
-
-	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarButton("##logic_reload", ICON_FA_ROTATE_RIGHT " Reload", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersNone) && Document != nullptr)
-	{
-		if (!Document->Modified || ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "Discard the changes of %s?", Document->Name.c_str()) == mrYes)
-		{
-			Load(*Document);
-		}
-	}
-	Hint("Read the file from the disk again");
-
-	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarButton("##logic_layout", ICON_FA_SITEMAP " Auto Layout", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersNone) && Document != nullptr)
+	if (XRay::ImGui::ToolbarButton("##logic_layout", ICON_FA_SITEMAP " Auto Layout", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersLeft) && Document != nullptr)
 	{
 		Document->LayoutDelay = 1;
 	}
@@ -2568,7 +2577,8 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 	bool Changed = false;
 
 	xr_string Text = LogicCondlist::BuildTokens(Tokens);
-	ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
+	const float Button = ImGui::GetFrameHeight();
+	ImGui::SetNextItemWidth(-(Button + ImGui::GetStyle().ItemSpacing.x) * 2.0f);
 	ImGui::PushStyleColor(ImGuiCol_Text, (IsEffect ? ColorEffect : ColorFunction).Value);
 	const bool Edited = InputString(IsEffect ? "##effects" : "##conditions", Text);
 	ImGui::PopStyleColor();
@@ -2584,11 +2594,61 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 	}
 
 	ImGui::SameLine();
-	if (ImGui::Button(ICON_FA_PLUS, { ImGui::GetFrameHeight(), 0.0f }))
+	if (ImGui::Button(ICON_FA_PEN_TO_SQUARE, { Button, Button }))
+	{
+		xr_string Text;
+		for (const LogicCondlist::SToken& Token : Tokens)
+		{
+			Text += LogicCondlist::BuildTokens({ Token }) + "\n";
+		}
+		if (TokensEditor == nullptr)
+		{
+			TokensEditor = xr_make_unique<TextEditor>();
+			TokensEditor->SetPalette(CodeEditor::GetPalette());
+			TokensEditor->SetLanguageDefinition(CodeEditor::GetLogicLanguage());
+			TokensEditor->SetShowWhitespaces(false);
+		}
+		TokensEditor->SetText(Text.c_str());
+		ImGui::OpenPopup("###multiline");
+	}
+	ImGui::SetItemTooltip("Edit in a multiline editor: one token per line");
+
+	ImGui::SameLine();
+	if (ImGui::Button(ICON_FA_PLUS, { Button, Button }))
 	{
 		ImGui::OpenPopup("##picker");
 	}
 	ImGui::SetItemTooltip(IsEffect ? "Add an effect" : "Add a condition");
+
+	ImGui::SetNextWindowSize({ 560.0f, 340.0f }, ImGuiCond_Appearing);
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 8.0f, 6.0f });
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 8.0f, 4.0f });
+	const bool Open = ImGui::BeginPopupModal(IsEffect ? "Effects###multiline" : "Conditions###multiline", nullptr, ImGuiWindowFlags_NoSavedSettings);
+	ImGui::PopStyleVar(2);
+	if (Open)
+	{
+		ImGui::TextDisabled(IsEffect ? "One effect per line: =function(a:b) +give_info -disable_info" : "One condition per line: +has_info -has_no_info =function(a:b) !negated ~50");
+		const float Footer = ImGui::GetFrameHeightWithSpacing();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGui::GetStyle().FramePadding);
+		TokensEditor->Render("##tokens", { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - Footer }, true);
+		ImGui::PopStyleVar();
+		if (ImGui::Button("OK", { 100.0f, 0.0f }) || ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Enter))
+		{
+			xr_string Text = CodeEditor::GetText(*TokensEditor);
+			std::replace(Text.begin(), Text.end(), '\n', ' ');
+			PushUndo(Document);
+			LogicCondlist::ParseTokens(Text, Tokens);
+			Changed = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SetItemTooltip("Ctrl+Enter");
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", { 100.0f, 0.0f }) || ImGui::IsKeyPressed(ImGuiKey_Escape))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 	LogicCondlist::SToken Token;
 	if (DrawFunctionPicker("##picker", IsEffect, Token))
@@ -2647,7 +2707,8 @@ void UILogicEditorForm::DrawKeySuggestions(SDocument& Document, SLogicSection& S
 	bool ListHovered = false;
 	if (ImGui::BeginChild("##key_list", { 0.0f, Height }, ImGuiChildFlags_Borders))
 	{
-		ListHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows);
+		// The key field is still active on the frame of the click: the hover must not be blocked by it
+		ListHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
 		for (int Pass = 0; Pass < 2; ++Pass)
 		{
 			// The keys of the scheme first, then the common ones
@@ -2685,6 +2746,51 @@ void UILogicEditorForm::DrawKeySuggestions(SDocument& Document, SLogicSection& S
 	}
 }
 
+static void PropRow(const char* Name)
+{
+	const float RowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	ImGui::TableNextRow(ImGuiTableRowFlags_None, RowHeight + 1.0f);
+	ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_ChildBg));
+	ImGui::TableNextColumn();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
+	ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value));
+	XRay::ImGui::TextFramed(Name, { -1, -1 }, { 0.0f, 0.5f }, false);
+
+	ImGui::TableNextColumn();
+	ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value));
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+}
+
+// TreePop when it returns true
+static bool PropFolder(const char* Label, bool DefaultOpen, const char* RemoveIcon, const char* RemoveTooltip, bool& Remove)
+{
+	const float RowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	const ImColor Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint);
+	ImGui::TableNextRow(ImGuiTableRowFlags_None, RowHeight + 1.0f);
+	ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, Color);
+	ImGui::TableNextColumn();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonTextPaddingY), XRay::ImGui::GetEditorSize(XRay::ImGui::TableTextPaddingY) });
+	ImGui::PushStyleColor(ImGuiCol_Header, Color.Value);
+	ImGui::SetNextItemAllowOverlap();
+	const bool Open = XRay::ImGui::CollapsingHeader(Label, DefaultOpen ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None);
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
+
+	if (RemoveIcon != nullptr)
+	{
+		ImGui::TableSetColumnIndex(1);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - RowHeight);
+		ImGui::PushStyleColor(ImGuiCol_Button, 0);
+		Remove = ImGui::Button(RemoveIcon, { RowHeight, RowHeight });
+		ImGui::PopStyleColor();
+		ImGui::SetItemTooltip("%s", RemoveTooltip);
+	}
+	return Open;
+}
+
 void UILogicEditorForm::DrawDetails(SDocument* Document)
 {
 	if (BeginDocked(DetailsWindow))
@@ -2709,239 +2815,272 @@ void UILogicEditorForm::DrawDetails(SDocument* Document)
 		{
 			bool Changed = false;
 			const ESchemeKind Kind = GetKind(*Section);
-			const float LabelWidth = 90.0f;
 
 			ImGui::PushStyleColor(ImGuiCol_Text, KindColor(Kind).Value);
 			ImGui::TextUnformatted(KindIcon(Kind));
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
 			ImGui::TextUnformatted(KindName((int)Kind));
-			ImGui::Separator();
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted("Section");
-			ImGui::SameLine(LabelWidth);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			xr_string Name = Section->Name;
-			if (InputString("##name", Name, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank) && !Name.empty() && Name != Section->Name)
+			const float BorderSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { BorderSize, BorderSize });
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+			ImGui::BeginChild("##details_scroll");
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, ImGui::GetStyle().CellPadding.y });
+			if (ImGui::BeginTable("##details", 2, ImGuiTableFlags_BordersInner | ImGuiTableFlags_Resizable))
 			{
-				if (Document->Logic.Find(Name) != nullptr)
+				ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 90.0f);
+				ImGui::TableSetupColumn(" Prop", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableHeadersRow();
+
+				const float FramePaddingY = std::max(0.0f, (XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight) - ImGui::GetFontSize()) * 0.5f);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH), FramePaddingY });
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
+
+				bool Unused = false;
+				if (PropFolder("Section", true, nullptr, nullptr, Unused))
 				{
-					StatusText = "Section [" + Name + "] already exists";
-				}
-				else
-				{
-					PushUndo(*Document);
-					Document->Logic.RenameSection(Section->Name, Name);
-					Changed = true;
-				}
-			}
-			ImGui::SetItemTooltip("Press Enter to rename. The switches to the section are renamed as well");
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted("Parents");
-			ImGui::SameLine(LabelWidth);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (InputString("##parents", Section->Parents))
-			{
-				Section->LoadedName.clear();
-				Document->Modified = true;
-			}
-			if (ImGui::IsItemActivated())
-			{
-				PushUndo(*Document);
-			}
-
-			ImGui::Spacing();
-			ImGui::SeparatorText("Keys");
-
-			int RemoveLine = -1;
-			for (size_t LineIndex = 0; LineIndex < Section->Lines.size(); ++LineIndex)
-			{
-				SLogicLine& Line = Section->Lines[LineIndex];
-				if (!Line.IsKey)
-				{
-					continue;
-				}
-				SLogicKey& Key = Line.Key;
-				ImGui::PushID((int)LineIndex);
-
-				const xr_string Header = (Key.IsCondlist ? xr_string(ICON_FA_DIAGRAM_PROJECT "  ") : xr_string("     ")) + Key.Name + "###key";
-				ImGui::SetNextItemAllowOverlap();
-				const bool Open = ImGui::CollapsingHeader(Header.c_str(), Key.IsCondlist ? ImGuiTreeNodeFlags_DefaultOpen : 0);
-				ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() + ImGui::GetCursorPosX() - ImGui::GetStyle().ItemSpacing.x);
-				if (ImGui::SmallButton(ICON_FA_XMARK))
-				{
-					RemoveLine = (int)LineIndex;
-				}
-				ImGui::SetItemTooltip("Remove the key");
-
-				if (Open)
-				{
-					ImGui::Indent(8.0f);
-
-					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted("Key");
-					ImGui::SameLine(LabelWidth);
-					ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-					if (InputString("##key", Key.Name, ImGuiInputTextFlags_CharsNoBlank))
+					PropRow("Name");
+					xr_string Name = Section->Name;
+					if (InputString("##name", Name, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank) && !Name.empty() && Name != Section->Name)
 					{
-						Changed = true;
-					}
-					if (ImGui::IsItemActivated())
-					{
-						PushUndo(*Document);
-					}
-
-					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted("Value");
-					ImGui::SameLine(LabelWidth);
-					ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-					if (InputString("##value", Key.Value))
-					{
-						Key.IsCondlist = Key.IsCondlist || CLogicDocument::IsCondlistKey(Key.Name, Key.Value);
-						if (Key.IsCondlist)
+						if (Document->Logic.Find(Name) != nullptr)
 						{
-							Key.Parse();
+							StatusText = "Section [" + Name + "] already exists";
 						}
-						Changed = true;
-					}
-					if (ImGui::IsItemActivated())
-					{
-						PushUndo(*Document);
-					}
-
-					if (Key.IsCondlist)
-					{
-						ImGui::AlignTextToFramePadding();
-						ImGui::TextUnformatted("Parameter");
-						ImGui::SameLine(LabelWidth);
-						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-						if (InputString("##prefix", Key.Prefix))
-						{
-							Key.Rebuild();
-							Changed = true;
-						}
-						if (ImGui::IsItemActivated())
+						else
 						{
 							PushUndo(*Document);
+							Document->Logic.RenameSection(Section->Name, Name);
+							Changed = true;
 						}
-						ImGui::SetItemTooltip("Time of on_timer, signal of on_signal, distance of on_actor_dist_le: the text before '|'");
+					}
+					ImGui::SetItemTooltip("Press Enter to rename. The switches to the section are renamed as well");
 
-						int RemoveBranch = -1;
-						for (size_t BranchIndex = 0; BranchIndex < Key.Branches.size(); ++BranchIndex)
+					PropRow("Parents");
+					if (InputString("##parents", Section->Parents))
+					{
+						Section->LoadedName.clear();
+						Document->Modified = true;
+					}
+					if (ImGui::IsItemActivated())
+					{
+						PushUndo(*Document);
+					}
+					ImGui::TreePop();
+				}
+
+				int RemoveLine = -1;
+				if (PropFolder("Keys", true, nullptr, nullptr, Unused))
+				{
+					for (size_t LineIndex = 0; LineIndex < Section->Lines.size(); ++LineIndex)
+					{
+						SLogicLine& Line = Section->Lines[LineIndex];
+						if (!Line.IsKey)
 						{
-							LogicCondlist::SBranch& Branch = Key.Branches[BranchIndex];
-							ImGui::PushID((int)BranchIndex);
+							continue;
+						}
+						SLogicKey& Key = Line.Key;
+						ImGui::PushID((int)LineIndex);
 
-							const ImVec2 BoxMin = ImGui::GetCursorScreenPos();
-							ImGui::BeginGroup();
-							ImGui::TextColored(ColorDim, BranchIndex == 0 ? "If" : "Else if");
-							ImGui::SameLine(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() + ImGui::GetCursorPosX() - ImGui::GetStyle().ItemSpacing.x);
-							if (ImGui::SmallButton(ICON_FA_TRASH))
+						if (!Key.IsCondlist)
+						{
+							PropRow(Key.Name.c_str());
+							const float RowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+							const float ValueWidth = ImGui::GetContentRegionAvail().x - RowHeight - ImGui::GetStyle().ItemSpacing.x;
+							const xr_vector<SKeyInfo>& KeyInfos = GetKeys(*Section);
+							auto Info = std::find_if(KeyInfos.begin(), KeyInfos.end(), [&Key](const SKeyInfo& Item) { return Item.Name == Key.Name; });
+							const bool IsBool = Key.Value == "true" || Key.Value == "false" || (Info != KeyInfos.end() && Info->Type == "bool" && Key.Value.empty());
+							if (IsBool)
 							{
-								RemoveBranch = (int)BranchIndex;
+								bool Value = Key.Value == "true";
+								if (XRay::ImGui::ToggleButton(Value ? "Enable##value" : "Disable##value", Value, { ValueWidth, RowHeight }))
+								{
+									PushUndo(*Document);
+									Key.Value = Value ? "true" : "false";
+									Changed = true;
+								}
 							}
-							ImGui::SetItemTooltip("Remove the branch");
-
-							ImGui::AlignTextToFramePadding();
-							ImGui::TextUnformatted("Conditions");
-							ImGui::SameLine(LabelWidth);
-							if (DrawTokens(*Document, "conditions", Branch.Conditions, false))
+							else if (ImGui::SetNextItemWidth(ValueWidth), InputString("##value", Key.Value))
 							{
-								Key.Rebuild();
+								Key.IsCondlist = CLogicDocument::IsCondlistKey(Key.Name, Key.Value);
+								if (Key.IsCondlist)
+								{
+									Key.Parse();
+								}
 								Changed = true;
 							}
-
-							ImGui::AlignTextToFramePadding();
-							ImGui::TextUnformatted("Switch to");
-							ImGui::SameLine(LabelWidth);
-							ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
-							if (InputString("##target", Branch.Target, ImGuiInputTextFlags_CharsNoBlank))
+							if (!IsBool && ImGui::IsItemActivated())
 							{
-								Key.Rebuild();
+								PushUndo(*Document);
+							}
+							ImGui::SameLine();
+							ImGui::PushStyleColor(ImGuiCol_Button, 0);
+							if (ImGui::Button(ICON_FA_XMARK "##remove_key", { RowHeight, RowHeight }))
+							{
+								RemoveLine = (int)LineIndex;
+							}
+							ImGui::PopStyleColor();
+							ImGui::SetItemTooltip("Remove the key");
+							ImGui::PopID();
+							continue;
+						}
+
+						const xr_string Header = xr_string(ICON_FA_DIAGRAM_PROJECT " ") + Key.Name + "###key";
+						bool Remove = false;
+						const bool Open = PropFolder(Header.c_str(), true, ICON_FA_XMARK "##remove_key", "Remove the key", Remove);
+						if (Remove)
+						{
+							RemoveLine = (int)LineIndex;
+						}
+
+						if (Open)
+						{
+							PropRow("Value");
+							if (InputString("##value", Key.Value))
+							{
+								Key.IsCondlist = Key.IsCondlist || CLogicDocument::IsCondlistKey(Key.Name, Key.Value);
+								if (Key.IsCondlist)
+								{
+									Key.Parse();
+								}
 								Changed = true;
 							}
 							if (ImGui::IsItemActivated())
 							{
 								PushUndo(*Document);
 							}
-							ImGui::SameLine();
-							if (ImGui::BeginCombo("##targets", nullptr, ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft))
+
+							if (Key.IsCondlist)
 							{
-								auto Choose = [&](const xr_string& Target)
+								PropRow("Parameter");
+								if (InputString("##prefix", Key.Prefix))
 								{
-									PushUndo(*Document);
-									Branch.Target = Target;
 									Key.Rebuild();
 									Changed = true;
-								};
-								if (ImGui::Selectable("(none)"))
-								{
-									Choose("");
 								}
-								if (ImGui::Selectable("nil"))
+								if (ImGui::IsItemActivated())
 								{
-									Choose("nil");
+									PushUndo(*Document);
 								}
-								ImGui::Separator();
-								for (xr_unique_ptr<SLogicSection>& Item : Document->Logic.Sections)
+								ImGui::SetItemTooltip("Time of on_timer, signal of on_signal, distance of on_actor_dist_le: the text before '|'");
+
+								int RemoveBranch = -1;
+								for (size_t BranchIndex = 0; BranchIndex < Key.Branches.size(); ++BranchIndex)
 								{
-									if (ImGui::Selectable(Item->Name.c_str(), Item->Name == Branch.Target))
+									LogicCondlist::SBranch& Branch = Key.Branches[BranchIndex];
+									ImGui::PushID((int)BranchIndex);
+
+									bool RemoveThis = false;
+									const bool BranchOpen = PropFolder(BranchIndex == 0 ? "If###branch" : "Else if###branch", true, ICON_FA_TRASH "##remove_branch", "Remove the branch", RemoveThis);
+									if (RemoveThis)
 									{
-										Choose(Item->Name);
+										RemoveBranch = (int)BranchIndex;
 									}
+
+									if (BranchOpen)
+									{
+										PropRow("Conditions");
+										if (DrawTokens(*Document, "conditions", Branch.Conditions, false))
+										{
+											Key.Rebuild();
+											Changed = true;
+										}
+
+										PropRow("Switch to");
+										ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.x);
+										if (InputString("##target", Branch.Target, ImGuiInputTextFlags_CharsNoBlank))
+										{
+											Key.Rebuild();
+											Changed = true;
+										}
+										if (ImGui::IsItemActivated())
+										{
+											PushUndo(*Document);
+										}
+										ImGui::SameLine();
+										if (ImGui::BeginCombo("##targets", nullptr, ImGuiComboFlags_NoPreview | ImGuiComboFlags_PopupAlignLeft))
+										{
+											auto Choose = [&](const xr_string& Target)
+											{
+												PushUndo(*Document);
+												Branch.Target = Target;
+												Key.Rebuild();
+												Changed = true;
+											};
+											if (ImGui::Selectable("(none)"))
+											{
+												Choose("");
+											}
+											if (ImGui::Selectable("nil"))
+											{
+												Choose("nil");
+											}
+											ImGui::Separator();
+											for (xr_unique_ptr<SLogicSection>& Item : Document->Logic.Sections)
+											{
+												if (ImGui::Selectable(Item->Name.c_str(), Item->Name == Branch.Target))
+												{
+													Choose(Item->Name);
+												}
+											}
+											ImGui::EndCombo();
+										}
+
+										PropRow("Effects");
+										if (DrawTokens(*Document, "effects", Branch.Effects, true))
+										{
+											Key.Rebuild();
+											Changed = true;
+										}
+										ImGui::TreePop();
+									}
+									ImGui::PopID();
 								}
-								ImGui::EndCombo();
+
+								if (RemoveBranch >= 0)
+								{
+									PushUndo(*Document);
+									Key.Branches.erase(Key.Branches.begin() + RemoveBranch);
+									Key.Rebuild();
+									Changed = true;
+								}
+
+								PropRow("");
+								if (ImGui::Button(ICON_FA_PLUS " Branch", { ImGui::GetContentRegionAvail().x, 0.0f }))
+								{
+									PushUndo(*Document);
+									Key.Branches.emplace_back();
+									Changed = true;
+								}
+								ImGui::SetItemTooltip("Add a condition branch: the first branch whose conditions pass is taken");
 							}
-
-							ImGui::AlignTextToFramePadding();
-							ImGui::TextUnformatted("Effects");
-							ImGui::SameLine(LabelWidth);
-							if (DrawTokens(*Document, "effects", Branch.Effects, true))
-							{
-								Key.Rebuild();
-								Changed = true;
-							}
-							ImGui::EndGroup();
-
-							const ImVec2 BoxMax = { BoxMin.x + ImGui::GetContentRegionAvail().x, ImGui::GetItemRectMax().y };
-							ImGui::GetWindowDrawList()->AddRect({ BoxMin.x - 4.0f, BoxMin.y - 2.0f }, { BoxMax.x, BoxMax.y + 3.0f }, ImColor(255, 255, 255, 25), 4.0f);
-							ImGui::Spacing();
-							ImGui::PopID();
+							ImGui::TreePop();
 						}
-
-						if (RemoveBranch >= 0)
-						{
-							PushUndo(*Document);
-							Key.Branches.erase(Key.Branches.begin() + RemoveBranch);
-							Key.Rebuild();
-							Changed = true;
-						}
-
-						if (ImGui::Button(ICON_FA_PLUS " Branch"))
-						{
-							PushUndo(*Document);
-							Key.Branches.emplace_back();
-							Changed = true;
-						}
-						ImGui::SetItemTooltip("Add a condition branch: the first branch whose conditions pass is taken");
+						ImGui::PopID();
 					}
-
-					ImGui::Unindent(8.0f);
+					ImGui::TreePop();
 				}
-				ImGui::PopID();
-			}
 
-			if (RemoveLine >= 0)
-			{
-				PushUndo(*Document);
-				Section->RemoveKey((size_t)RemoveLine);
-				Changed = true;
+				ImGui::PopStyleVar(3);
+				ImGui::EndTable();
+
+				if (RemoveLine >= 0)
+				{
+					PushUndo(*Document);
+					Section->RemoveKey((size_t)RemoveLine);
+					Changed = true;
+				}
 			}
+			ImGui::PopStyleVar();
 
 			ImGui::Spacing();
 			DrawKeySuggestions(*Document, *Section, Changed);
+
+			ImGui::EndChild();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();
 
 			if (Changed)
 			{
@@ -3037,6 +3176,7 @@ void UILogicEditorForm::ToggleBreakpoint(SDocument& Document, const xr_string& S
 void UILogicEditorForm::EvaluateActive()
 {
 	Debug.Results.clear();
+	Debug.Conditions.clear();
 
 	SDocument* Document = nullptr;
 	for (xr_unique_ptr<SDocument>& Item : Documents)
@@ -3068,6 +3208,25 @@ void UILogicEditorForm::EvaluateActive()
 			if (Result == CLogicDebugger::EResult::Error)
 			{
 				StatusText = "Logic debugger: " + Debugger.GetLastError();
+			}
+
+			// Each condition alone: which one blocks the branch
+			for (size_t TokenIndex = 0; TokenIndex < Branch.Conditions.size(); ++TokenIndex)
+			{
+				const LogicCondlist::SToken& Token = Branch.Conditions[TokenIndex];
+				SDebugCondition& Condition = Debug.Conditions.emplace_back();
+				Condition.Key = Key.Name;
+				Condition.Branch = (int)BranchIndex;
+				Condition.Target = Branch.Target;
+				Condition.Token = Token.Build();
+				Condition.BranchResult = (s8)Result;
+				Condition.FirstOfBranch = TokenIndex == 0;
+				if (Token.Kind == '~')
+				{
+					Condition.Result = ResultAlways;
+					continue;
+				}
+				Condition.Result = (s8)Debugger.Check(Debug.ObjectId, LogicCondlist::BuildTokens({ Token }), Debug.UseCpp);
 			}
 		}
 	};
@@ -3318,6 +3477,57 @@ void UILogicEditorForm::DrawDebugger(SDocument* Document)
 	}
 	ImGui::EndDisabled();
 	ImGui::SetItemTooltip("xr_logic.switch_to_section of the object to the section selected on the graph");
+
+	if (!Debug.Conditions.empty())
+	{
+		ImGui::SeparatorText(ICON_FA_LIST_CHECK " Conditions");
+		const ImGuiTableFlags Flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit;
+		if (ImGui::BeginTable("##debug_conditions", 4, Flags))
+		{
+			ImGui::TableSetupColumn("Key");
+			ImGui::TableSetupColumn("Branch");
+			ImGui::TableSetupColumn("Condition", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("Result");
+			ImGui::TableHeadersRow();
+
+			auto ResultText = [&](s8 Result, ImColor& Color) -> const char*
+			{
+				switch (Result)
+				{
+				case (s8)CLogicDebugger::EResult::Passed:	Color = ColorInfoHas;		return ICON_FA_CHECK " true";
+				case (s8)CLogicDebugger::EResult::Failed:	Color = ColorInfoHasNot;	return ICON_FA_XMARK " false";
+				case ResultAlways:							Color = ColorDim;			return "random";
+				case (s8)CLogicDebugger::EResult::NoObject:	Color = ColorDim;			return "no object";
+				default:									Color = ColorMissing;		return "error";
+				}
+			};
+
+			for (const SDebugCondition& Condition : Debug.Conditions)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				if (Condition.FirstOfBranch)
+				{
+					ImGui::TextUnformatted(Condition.Key.c_str());
+					ImGui::TableNextColumn();
+					ImColor BranchColor;
+					ResultText(Condition.BranchResult, BranchColor);
+					ImGui::TextColored(BranchColor.Value, "#%d %s %s", Condition.Branch, ICON_FA_CHEVRON_RIGHT, Condition.Target.empty() ? "(effects)" : Condition.Target.c_str());
+				}
+				else
+				{
+					ImGui::TableNextColumn();
+				}
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted(Condition.Token.c_str());
+				ImGui::TableNextColumn();
+				ImColor Color;
+				const char* Text = ResultText(Condition.Result, Color);
+				ImGui::TextColored(Color.Value, "%s", Text);
+			}
+			ImGui::EndTable();
+		}
+	}
 
 	if (Document != nullptr && IsDebugged(*Document) && !Document->Breakpoints.empty())
 	{
