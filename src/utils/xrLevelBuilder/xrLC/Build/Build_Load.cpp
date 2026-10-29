@@ -347,7 +347,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		bool is_thm_missing = false;
 		bool is_tga_missing = false;
 		
-		auto TextureProcess = [&](b_BuildTexture BT)
+		auto TextureProcess = [&](b_BuildTexture& BT)
 		{
 			BT.pSurface.Clear();
 
