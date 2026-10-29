@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "ActorEditor.h"
 #include "../Editor/Utils/ContentView.h"
+#include "../../xrECore/Editor/TaskbarScope.h"
 
 #define dSINGLE
 #include "../../../Include/xrRender/animation_blend.h"
@@ -364,6 +365,11 @@ void CActorTools::ZoomObject(bool bSelOnly)
 bool CActorTools::Load(const char* obj_name)
 {
 	VERIFY(m_bReady);
+
+	xr_string TaskbarText = "IX-Ray Level Editor - loading ";
+	TaskbarText += obj_name;
+	CTaskbarScope TaskbarScope(TaskbarText.c_str());
+
 	CEditableObject* O = new CEditableObject(obj_name);
 
 	xr_string Str = obj_name;
