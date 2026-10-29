@@ -1105,9 +1105,7 @@ void UIObjectList::Update()
 				return;
 			}
 
-			Form->BeginDraw();
 			Form->Draw();
-			Form->EndDraw();
 		}
 		else
 		{

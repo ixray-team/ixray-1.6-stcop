@@ -371,9 +371,7 @@ void XrUIManager::Draw()
 	{
 		if (ui->TabIndex < 0 || ui->TabIndex == ActiveTabIndex)
 		{
-			ui->BeginDraw();
 			ui->Draw();
-			ui->EndDraw();
 		}
 	}
 	Rendering = false;

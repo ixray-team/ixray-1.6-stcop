@@ -60,6 +60,61 @@ std::array<ImColor, DarkBlueTheme.size()> DarkOrangeTheme =
 	ImColor(1.f, 1.f, 1.f, 0.08f)  // ActiveTint
 };
 
+// Nord palette: Polar Night base, Frost accent, tints blend towards nord0 instead of black
+std::array<ImColor, DarkBlueTheme.size()> NordicTheme =
+{
+	ImColor(67, 76, 94, 255),			// Base Color
+	ImColor(94, 129, 172, 255),			// Accent Color
+	ImColor(0.18f, 0.2f, 0.25f, 0.0f),	// ToolbarButtonTint
+	ImColor(0.12f, 0.14f, 0.17f, 0.85f),// BackgroundTint
+	ImColor(0.18f, 0.2f, 0.25f, 0.75f),	// TableTint
+	ImColor(0.18f, 0.2f, 0.25f, 0.6f),	// TabBarTint
+	ImColor(0.18f, 0.2f, 0.25f, 0.5f),	// PanelTint
+	ImColor(0.53f, 0.75f, 0.82f, 0.08f),// PanelBorderTint
+	ImColor(1.f, 1.f, 1.f, 0.f),		// ButtonTint
+	ImColor(0.93f, 0.94f, 0.96f, 0.1f),	// ButtonBorderTint
+	ImColor(0.93f, 0.94f, 0.96f, 0.6f),	// ContentIconTint
+	ImColor(0.18f, 0.2f, 0.25f, 0.8f),	// PanelBackgroundTint
+	ImColor(0.53f, 0.75f, 0.82f, 0.14f),// HoverTint
+	ImColor(0.53f, 0.75f, 0.82f, 0.07f)	// ActiveTint
+};
+
+// Palette themes: tints blend towards the darkest color of the palette, hover follows the accent
+static std::array<ImColor, DarkBlueTheme.size()> MakePaletteTheme(ImColor Base, ImColor Accent, ImVec4 Shade, ImVec4 Light)
+{
+	auto Tint = [](ImVec4 Color, float Alpha)
+	{
+		return ImColor(Color.x, Color.y, Color.z, Alpha);
+	};
+
+	return {
+		Base,
+		Accent,
+		Tint(Shade, 0.0f),	// ToolbarButtonTint
+		Tint(Shade, 0.85f),	// BackgroundTint
+		Tint(Shade, 0.75f),	// TableTint
+		Tint(Shade, 0.6f),	// TabBarTint
+		Tint(Shade, 0.5f),	// PanelTint
+		Tint(Light, 0.08f),	// PanelBorderTint
+		ImColor(1.f, 1.f, 1.f, 0.f),	// ButtonTint
+		Tint(Light, 0.1f),	// ButtonBorderTint
+		Tint(Light, 0.6f),	// ContentIconTint
+		Tint(Shade, 0.8f),	// PanelBackgroundTint
+		Tint(Light, 0.14f),	// HoverTint
+		Tint(Light, 0.07f)	// ActiveTint
+	};
+}
+
+static ImVec4 Rgb(int R, int G, int B)
+{
+	return { R / 255.0f, G / 255.0f, B / 255.0f, 1.0f };
+}
+
+std::array<ImColor, DarkBlueTheme.size()> EverforestTheme = MakePaletteTheme(ImColor(61, 72, 77), ImColor(131, 165, 98), Rgb(35, 42, 46), Rgb(167, 192, 128));
+std::array<ImColor, DarkBlueTheme.size()> CatppuccinMochaTheme = MakePaletteTheme(ImColor(49, 50, 68), ImColor(136, 102, 196), Rgb(17, 17, 27), Rgb(203, 166, 247));
+std::array<ImColor, DarkBlueTheme.size()> GruvboxTheme = MakePaletteTheme(ImColor(80, 73, 69), ImColor(184, 120, 20), Rgb(29, 32, 33), Rgb(215, 153, 33));
+std::array<ImColor, DarkBlueTheme.size()> TokyoNightTheme = MakePaletteTheme(ImColor(41, 46, 66), ImColor(61, 89, 161), Rgb(22, 22, 30), Rgb(122, 162, 247));
+
 ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint)
 {
 	const float Alpha = Tint.Value.w;
@@ -80,6 +135,11 @@ XREUI_API void XRay::ImGui::SetupColorsList(int ID)
 		case 0: CurrentTheme = &DarkBlueTheme; break;
 		case 1: CurrentTheme = &VSTheme; break;
 		case 2: CurrentTheme = &DarkOrangeTheme; break;
+		case 3: CurrentTheme = &NordicTheme; break;
+		case 4: CurrentTheme = &EverforestTheme; break;
+		case 5: CurrentTheme = &CatppuccinMochaTheme; break;
+		case 6: CurrentTheme = &GruvboxTheme; break;
+		case 7: CurrentTheme = &TokyoNightTheme; break;
 	}
 
 	EditorColors.clear();

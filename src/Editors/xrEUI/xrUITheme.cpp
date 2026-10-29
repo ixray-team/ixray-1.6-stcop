@@ -2,9 +2,7 @@
 #include "xrUITheme.h"
 #include "imgui_user.h"
 #include "../xrEUI/ModernUI.h"
-
-void LoadImGuiFont(const char* Font);
-extern xr_string ImCurrentFont;
+#include "IconsFontAwesome7.h"
 
 using namespace XRay::ImGui;
 
@@ -25,206 +23,115 @@ void CUIThemeManager::Draw()
 	if (!bOpen)
 		return;
 
-	if (ImGui::Begin("Theme Editor", &bOpen))
+	ImGui::SetNextWindowSize(ImVec2(ImGui::GetFontSize() * 52.0f, 0.0f), ImGuiCond_Appearing);
+	if (ImGui::Begin("Theme Editor", &bOpen, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		IsDocked = ImGui::IsWindowDocked();
 		IsFocused = ImGui::IsWindowFocused();
 
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		ImVec2 button_size = ImVec2(100.0f, 20.0f);
-
-		if (ImGui::Button("Dark Blue"))
+		static const char* PresetNames[] = { "Dark Blue", "Visual Studio", "Dark Orange", "Nordic", "Everforest", "Catppuccin Mocha", "Gruvbox", "Tokyo Night" };
+		for (int PresetID = 0; PresetID < (int)std::size(PresetNames); ++PresetID)
 		{
-			InitDefault(0);
-		}
-		ImGui::SameLine();
-
-		if (ImGui::Button("Visual Studio"))
-		{
-			InitDefault(1);
-		}
-		ImGui::SameLine();
-
-		if (ImGui::Button("Dark Orange"))
-		{
-			InitDefault(2);
-		}
-
-		ImGui::BeginChild("Theme", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
-		{
-			// Main Colors
-			ImGui::SeparatorText("Main Colors");
-			ImGui::ColorEdit4("Window Background", (float*)&colors[ImGuiCol_WindowBg]);
-			ImGui::ColorEdit4("Child Background", (float*)&colors[ImGuiCol_ChildBg]);
-			ImGui::ColorEdit4("Popup Background", (float*)&colors[ImGuiCol_PopupBg]);
-			ImGui::ColorEdit4("Menu Bar Background", (float*)&colors[ImGuiCol_MenuBarBg]);
-
-			// Text
-			ImGui::SeparatorText("Text Colors");
-			ImGui::ColorEdit4("Text", (float*)&colors[ImGuiCol_Text]);
-			ImGui::ColorEdit4("Text Disabled", (float*)&colors[ImGuiCol_TextDisabled]);
-			ImGui::ColorEdit4("Text Selected BG", (float*)&colors[ImGuiCol_TextSelectedBg]);
-			ImGui::ColorEdit4("Text Link", (float*)&colors[ImGuiCol_TextLink]);
-
-			// Frames & Borders
-			ImGui::SeparatorText("Frames & Borders");
-			ImGui::ColorEdit4("Frame Background", (float*)&colors[ImGuiCol_FrameBg]);
-			ImGui::ColorEdit4("Frame Hovered", (float*)&colors[ImGuiCol_FrameBgHovered]);
-			ImGui::ColorEdit4("Frame Active", (float*)&colors[ImGuiCol_FrameBgActive]);
-			ImGui::ColorEdit4("Border", (float*)&colors[ImGuiCol_Border]);
-			ImGui::ColorEdit4("Border Shadow", (float*)&colors[ImGuiCol_BorderShadow]);
-
-			// Buttons
-			ImGui::SeparatorText("Buttons");
-			ImGui::ColorEdit4("Button", (float*)&colors[ImGuiCol_Button]);
-			ImGui::ColorEdit4("Button Hovered", (float*)&colors[ImGuiCol_ButtonHovered]);
-			ImGui::ColorEdit4("Button Active", (float*)&colors[ImGuiCol_ButtonActive]);
-
-			// Headers
-			ImGui::SeparatorText("Headers");
-			ImGui::ColorEdit4("Header", (float*)&colors[ImGuiCol_Header]);
-			ImGui::ColorEdit4("Header Hovered", (float*)&colors[ImGuiCol_HeaderHovered]);
-			ImGui::ColorEdit4("Header Active", (float*)&colors[ImGuiCol_HeaderActive]);
-
-			// Titles
-			ImGui::SeparatorText("Window Titles");
-			ImGui::ColorEdit4("Title Background", (float*)&colors[ImGuiCol_TitleBg]);
-			ImGui::ColorEdit4("Title Active", (float*)&colors[ImGuiCol_TitleBgActive]);
-			ImGui::ColorEdit4("Title Collapsed", (float*)&colors[ImGuiCol_TitleBgCollapsed]);
-
-			// Scrollbars
-			ImGui::SeparatorText("Scrollbars");
-			ImGui::ColorEdit4("Scrollbar Background", (float*)&colors[ImGuiCol_ScrollbarBg]);
-			ImGui::ColorEdit4("Scrollbar Grab", (float*)&colors[ImGuiCol_ScrollbarGrab]);
-			ImGui::ColorEdit4("Scrollbar Grab Hovered", (float*)&colors[ImGuiCol_ScrollbarGrabHovered]);
-			ImGui::ColorEdit4("Scrollbar Grab Active", (float*)&colors[ImGuiCol_ScrollbarGrabActive]);
-
-			// Sliders
-			ImGui::SeparatorText("Sliders");
-			ImGui::ColorEdit4("Slider Grab", (float*)&colors[ImGuiCol_SliderGrab]);
-			ImGui::ColorEdit4("Slider Grab Active", (float*)&colors[ImGuiCol_SliderGrabActive]);
-
-			// Checkboxes & Radio Buttons
-			ImGui::SeparatorText("Checkboxes & Radio");
-			ImGui::ColorEdit4("Check Mark", (float*)&colors[ImGuiCol_CheckMark]);
-
-			// Separators
-			ImGui::SeparatorText("Separators");
-			ImGui::ColorEdit4("Separator", (float*)&colors[ImGuiCol_Separator]);
-			ImGui::ColorEdit4("Separator Hovered", (float*)&colors[ImGuiCol_SeparatorHovered]);
-			ImGui::ColorEdit4("Separator Active", (float*)&colors[ImGuiCol_SeparatorActive]);
-
-			// Resize Grips
-			ImGui::SeparatorText("Resize Grips");
-			ImGui::ColorEdit4("Resize Grip", (float*)&colors[ImGuiCol_ResizeGrip]);
-			ImGui::ColorEdit4("Resize Grip Hovered", (float*)&colors[ImGuiCol_ResizeGripHovered]);
-			ImGui::ColorEdit4("Resize Grip Active", (float*)&colors[ImGuiCol_ResizeGripActive]);
-
-			// Tables
-			ImGui::SeparatorText("Tables");
-			ImGui::ColorEdit4("Table Header", (float*)&colors[ImGuiCol_TableHeaderBg]);
-			ImGui::ColorEdit4("Table Border Strong", (float*)&colors[ImGuiCol_TableBorderStrong]);
-			ImGui::ColorEdit4("Table Border Light", (float*)&colors[ImGuiCol_TableBorderLight]);
-			ImGui::ColorEdit4("Table Row BG", (float*)&colors[ImGuiCol_TableRowBg]);
-			ImGui::ColorEdit4("Table Row BG Alt", (float*)&colors[ImGuiCol_TableRowBgAlt]);
-
-			// Tabs
-			ImGui::SeparatorText("Tabs");
-			ImGui::ColorEdit4("Tab", (float*)&colors[ImGuiCol_Tab]);
-			ImGui::ColorEdit4("Tab Hovered", (float*)&colors[ImGuiCol_TabHovered]);
-			ImGui::ColorEdit4("Tab Selected", (float*)&colors[ImGuiCol_TabSelected]);
-			ImGui::ColorEdit4("Tab Unfocused", (float*)&colors[ImGuiCol_TabUnfocused]);
-			ImGui::ColorEdit4("Tab Selected Unfocused", (float*)&colors[ImGuiCol_TabUnfocusedActive]);
-
-			// Plots
-			ImGui::SeparatorText("Plots");
-			ImGui::ColorEdit4("Plot Lines", (float*)&colors[ImGuiCol_PlotLines]);
-			ImGui::ColorEdit4("Plot Lines Hovered", (float*)&colors[ImGuiCol_PlotLinesHovered]);
-			ImGui::ColorEdit4("Plot Histogram", (float*)&colors[ImGuiCol_PlotHistogram]);
-			ImGui::ColorEdit4("Plot Histogram Hovered", (float*)&colors[ImGuiCol_PlotHistogramHovered]);
-
-			// Navigation
-			ImGui::SeparatorText("Navigation");
-			ImGui::ColorEdit4("Nav Cursor", (float*)&colors[ImGuiCol_NavCursor]);
-			ImGui::ColorEdit4("Nav Highlight", (float*)&colors[ImGuiCol_NavWindowingHighlight]);
-			ImGui::ColorEdit4("Nav Dim Background", (float*)&colors[ImGuiCol_NavWindowingDimBg]);
-
-			// Docking
-			ImGui::SeparatorText("Docking");
-			ImGui::ColorEdit4("Docking Preview", (float*)&colors[ImGuiCol_DockingPreview]);
-			ImGui::ColorEdit4("Docking Empty BG", (float*)&colors[ImGuiCol_DockingEmptyBg]);
-
-			// Tree Nodes
-			ImGui::SeparatorText("Tree Nodes");
-			ImGui::ColorEdit4("Tree Lines", (float*)&colors[ImGuiCol_TreeLines]);
-
-			// Drag & Drop
-			ImGui::SeparatorText("Drag & Drop");
-			ImGui::ColorEdit4("Drag Drop Target", (float*)&colors[ImGuiCol_DragDropTarget]);
-
-			// Modal
-			ImGui::SeparatorText("Modal Windows");
-			ImGui::ColorEdit4("Modal Dim Background", (float*)&colors[ImGuiCol_ModalWindowDimBg]);
-
-			// Input Text
-			ImGui::SeparatorText("Input Text");
-			ImGui::ColorEdit4("Text Cursor", (float*)&colors[ImGuiCol_InputTextCursor]);
-
-			// Log Messages
-			ImGui::SeparatorText("Log Messages");
-			ImGui::ColorEdit4("Error", (float*)&log_color_error);
-			ImGui::ColorEdit4("Warning", (float*)&log_color_warning);
-			ImGui::ColorEdit4("Debug", (float*)&log_color_debug);
-			ImGui::ColorEdit4("Default", (float*)&log_color_default);
-
-			ImGui::SeparatorText("Fonts");
-			FS_FileSet Files;
-			string_path Fonts = {};
-			FS.update_path(Fonts, _game_fonts_, "editors\\");
-			FS.file_list(Files, Fonts, 1, "*.ttf");
-
-			if (ImGui::BeginCombo("Main font", ImCurrentFont.data()))
+			if (PresetID % 4 != 0)
 			{
-				for (auto& File : Files)
-				{
-					xr_string FileName = xr_path(File.name).xfilename();
-					bool is_selected = (ImCurrentFont == FileName);
-					if (ImGui::Selectable(FileName.c_str(), is_selected))
-					{
-						LoadImGuiFont(FileName.c_str());
-					}
-
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
+				ImGui::SameLine();
 			}
-
-			ImGui::SeparatorText("Other");
-			ImGui::PushItemWidth(150);
-			ImGui::SliderFloat("Active window transparent", &TransparentDefault, 0.1f, 1.f, "%.1f");
-			ImGui::SliderFloat("Inactive window transparent", &TransparentUnfocused, 0.1f, 1.f, "%.1f");
-			ImGui::PopItemWidth();
-
-			ImGui::SeparatorText("Paddings");
-			ImGui::PushItemWidth(150);
-
-			ImGuiStyle& style = ImGui::GetStyle();
-			ImGui::SliderFloat("Cell Padding X", &style.CellPadding.x, 0.f, 10.f, "%.1f");
-			ImGui::SliderFloat("Cell Padding Y", &style.CellPadding.y, 0.f, 10.f, "%.1f");
-
-			ImGui::SliderFloat("DockingSeparatorSize", &style.DockingSeparatorSize, 0.f, 10.f, "%.1f");
-
-
-			if (!IsDocked)
-				IsDocked = ImGui::IsWindowDocked();
-			if (!IsFocused)
-				IsFocused = ImGui::IsWindowFocused();
+			DrawPreview(PresetID, PresetNames[PresetID]);
 		}
-		ImGui::EndChild();
-		ImGui::Spacing();
 	}
 	ImGui::End();
+}
+
+void CUIThemeManager::DrawPreview(int PresetID, const char* Name)
+{
+	// Colors of the preset, the current theme is restored right after
+	SetupColorsList(PresetID);
+	const ImU32 Background = GetEditorColor(EEditorColors::BackgroundTint);
+	const ImU32 Panel = GetEditorColor(EEditorColors::PanelTint);
+	const ImU32 PanelBorder = GetEditorColor(EEditorColors::PanelBorderTint);
+	const ImU32 Tab = GetEditorColor(EEditorColors::TabBarTint);
+	const ImU32 Table = GetEditorColor(EEditorColors::TableTint);
+	const ImU32 Button = GetEditorColor(EEditorColors::ButtonTint);
+	const ImU32 Accent = GetEditorColor(EEditorColors::Accent);
+	SetupColorsList(ThemeID);
+
+	const float Unit = ImGui::GetFontSize();
+	const ImVec2 Size = { Unit * 16.0f, Unit * 10.0f };
+
+	ImGui::BeginGroup();
+	ImGui::PushID(PresetID);
+	const bool Clicked = ImGui::InvisibleButton("##preview", Size);
+	const bool Hovered = ImGui::IsItemHovered();
+	ImGui::PopID();
+
+	const ImVec2 Min = ImGui::GetItemRectMin();
+	const ImVec2 Max = ImGui::GetItemRectMax();
+	const float Gap = Unit * 0.2f;
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+
+	auto Rect = [&](float X0, float Y0, float X1, float Y1, ImU32 Color)
+	{
+		DrawList->AddRectFilled({ Min.x + X0 * Size.x, Min.y + Y0 * Size.y }, { Min.x + X1 * Size.x, Min.y + Y1 * Size.y }, Color);
+	};
+
+	DrawList->AddRectFilled(Min, Max, Background);
+
+	// Workspace tabs and toolbar
+	Rect(0.02f, 0.03f, 0.14f, 0.09f, PanelBorder);
+	Rect(0.15f, 0.03f, 0.25f, 0.09f, Tab);
+	Rect(0.26f, 0.03f, 0.36f, 0.09f, Tab);
+	for (int Index = 0; Index < 6; ++Index)
+	{
+		const float X = 0.02f + Index * 0.045f;
+		Rect(X, 0.12f, X + 0.035f, 0.18f, Index == 3 ? Accent : Button);
+	}
+
+	// Left panel with the selected edit mode
+	Rect(0.02f, 0.21f, 0.24f, 0.97f, Panel);
+	for (int Index = 0; Index < 7; ++Index)
+	{
+		const float Y = 0.25f + Index * 0.07f;
+		Rect(0.04f, Y, 0.22f, Y + 0.05f, Index == 0 ? Accent : Button);
+	}
+
+	// Viewport
+	Rect(0.26f, 0.21f, 0.74f, 0.7f, IM_COL32(18, 18, 22, 255));
+	Rect(0.26f, 0.21f, 0.74f, 0.27f, PanelBorder);
+
+	// Content browser
+	Rect(0.26f, 0.72f, 0.74f, 0.97f, Panel);
+	Rect(0.28f, 0.76f, 0.4f, 0.93f, Table);
+
+	// Properties with toggles
+	Rect(0.76f, 0.21f, 0.98f, 0.97f, Panel);
+	for (int Index = 0; Index < 6; ++Index)
+	{
+		const float Y = 0.25f + Index * 0.08f;
+		Rect(0.78f, Y, 0.86f, Y + 0.06f, Table);
+		Rect(0.87f, Y, 0.96f, Y + 0.06f, Index % 2 == 0 ? Accent : Button);
+	}
+
+	const bool Selected = PresetID == ThemeID;
+	if (Selected || Hovered)
+	{
+		const ImU32 Frame = Selected ? (ImU32)GetEditorColor(EEditorColors::Accent) : ImGui::GetColorU32(ImGuiCol_TextDisabled);
+		DrawList->AddRect({ Min.x - Gap, Min.y - Gap }, { Max.x + Gap, Max.y + Gap }, Frame, 0.0f, 0, 2.0f);
+	}
+
+	if (Selected)
+	{
+		ImGui::Text(ICON_FA_CHECK " %s", Name);
+	}
+	else
+	{
+		ImGui::TextUnformatted(Name);
+	}
+	ImGui::EndGroup();
+
+	if (Clicked && !Selected)
+	{
+		InitDefault(PresetID);
+	}
 }
 
 void CUIThemeManager::InitDefault(int InThemeID)
@@ -277,6 +184,7 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	colors[ImGuiCol_DockingEmptyBg]			= GetEditorColor(EEditorColors::BackgroundTint);
 
 	colors[ImGuiCol_Separator]				= GetEditorColor(EEditorColors::PanelBorderTint);
+	colors[ImGuiCol_PopupBg]				= GetEditorColor(EEditorColors::PanelTint);
 
 	colors[ImGuiCol_ScrollbarBg]			= GetEditorColor(EEditorColors::TableTint);
 	colors[ImGuiCol_ScrollbarGrab]			= GetEditorColor(EEditorColors::ButtonTint);
@@ -299,6 +207,8 @@ void CUIThemeManager::InitDefault(int InThemeID)
 	style.FrameRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.TabRounding						= GetEditorSize(EEditorSizes::ButtonRadius);
 	style.ChildRounding						= 0.0f;
+	style.PopupRounding						= 0.0f;
+	style.PopupBorderSize					= 1.0f;
 	style.ItemSpacing						= ImVec2(4.f, 2.f);
 	style.ItemInnerSpacing					= ImVec2(2.f, 2.f);
 	style.DockingSeparatorSize				= GetEditorSize(EEditorSizes::DockingGap);

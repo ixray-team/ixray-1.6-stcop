@@ -26,9 +26,7 @@ public:
 	const char* GetStateName() const { return StateName; }
 
 public:
-	void BeginDraw() const;
 	virtual void Draw() = 0;
-	void EndDraw() const;
 
 	int TabIndex = 0;
 

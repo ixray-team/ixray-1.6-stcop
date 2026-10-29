@@ -784,7 +784,6 @@ void UIEditLightAnim::Update()
 			if (EContext.UI->ActiveTabIndex != Form->TabIndex)
 				return;
 
-			Form->BeginDraw();
 			// The top bar tab already names the workspace: no tab bar of its own in the dock node
 			ImGuiWindowClass WindowClass;
 			WindowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
@@ -797,7 +796,6 @@ void UIEditLightAnim::Update()
 			}
 			ImGui::PopStyleVar(1);
 			ImGui::End();
-			Form->EndDraw();
 		}
 		else
 		{

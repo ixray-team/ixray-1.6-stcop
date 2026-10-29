@@ -2157,6 +2157,7 @@ void UILayoutEditorForm::DrawCodePreview()
 			ScriptView->SetLanguageDefinition(Language);
 		}
 		Completion.BeforeRender(*ScriptView);
+		CodeEditor::SyncPalette(*ScriptView);
 		ScriptView->Render("##script", ImGui::GetContentRegionAvail());
 		const ImVec2 ScriptMin = ImGui::GetItemRectMin();
 		const ImVec2 ScriptMax = ImGui::GetItemRectMax();
@@ -2215,6 +2216,7 @@ void UILayoutEditorForm::DrawCodePreview()
 		}
 	}
 
+	CodeEditor::SyncPalette(*XmlView);
 	XmlView->Render("##xml", ImGui::GetContentRegionAvail());
 	const bool Replaced = Search.Draw(*XmlView, { XmlView.get(), ScriptView.get() }, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	if (!Wide && (XmlView->IsTextChanged() || Replaced))

@@ -71,8 +71,6 @@ void CUIThmProperties::Draw()
 	if (!bOpen)
 		return;
 
-	BeginDraw();
-
 	if (ImGui::Begin("Thumbnail View", &bOpen))
 	{
 		ImGui::Text(FileName.c_str());
@@ -111,7 +109,6 @@ void CUIThmProperties::Draw()
 	}
 	ImGui::End();
 
-	EndDraw();
 }
 
 void CUIThmProperties::OnPropChange(PropValue* prop)
