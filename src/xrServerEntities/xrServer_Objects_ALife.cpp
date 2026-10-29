@@ -255,8 +255,8 @@ SFillPropData			fp_data;
 void CSE_ALifeTraderAbstract::FillProps	(const char* pref, PropItemVec& items)
 {
 #	ifdef XRSE_FACTORY_EXPORTS
-	PHelper().CreateU32			(items, PrepareKey(pref,*base()->s_name,"Money"), 	&m_dwMoney,	0, u32(-1));
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*base()->s_name,"Trader\\Infinite ammo"),&m_trader_flags, eTraderFlagInfiniteAmmo);
+	PHelper().CreateNumeric			(items, PrepareKey(pref,*base()->s_name,"Money"), 	&m_dwMoney,	0, u32(-1));
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*base()->s_name,"Trader\\Infinite ammo"),&m_trader_flags, eTraderFlagInfiniteAmmo);
 	RListValue *value		= PHelper().CreateRList	(items,	PrepareKey(pref,*base()->s_name,"npc profile"),	 
 		&m_sCharacterProfile, 
 		&*fp_data.character_profiles.begin(), fp_data.character_profiles.size());
@@ -342,10 +342,10 @@ void CSE_ALifeGraphPoint::UPDATE_Serialize(ISaveObject& Object)
 void CSE_ALifeGraphPoint::FillProps			(const char* pref, PropItemVec& items)
 {
 #ifdef XRSE_FACTORY_EXPORTS
-	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\1"), &m_tLocations[0], &*fp_data.locations[0].begin(), (u32)fp_data.locations[0].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
-	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\2"), &m_tLocations[1], &*fp_data.locations[1].begin(), (u32)fp_data.locations[1].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
-	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\3"), &m_tLocations[2], &*fp_data.locations[2].begin(), (u32)fp_data.locations[2].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
-	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\4"), &m_tLocations[3], &*fp_data.locations[3].begin(), (u32)fp_data.locations[3].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
+	PHelper().CreateRToken(items, PrepareKey(pref,*s_name,"Location\\1"), &m_tLocations[0], &*fp_data.locations[0].begin(), (u32)fp_data.locations[0].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
+	PHelper().CreateRToken(items, PrepareKey(pref,*s_name,"Location\\2"), &m_tLocations[1], &*fp_data.locations[1].begin(), (u32)fp_data.locations[1].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
+	PHelper().CreateRToken(items, PrepareKey(pref,*s_name,"Location\\3"), &m_tLocations[2], &*fp_data.locations[2].begin(), (u32)fp_data.locations[2].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
+	PHelper().CreateRToken(items, PrepareKey(pref,*s_name,"Location\\4"), &m_tLocations[3], &*fp_data.locations[3].begin(), (u32)fp_data.locations[3].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
 
 	PHelper().CreateRList	 	(items,	PrepareKey(pref,*s_name,"Connection\\Level Name"),	&m_caConnectionLevelName,	&*fp_data.level_ids.begin(),	(u32)fp_data.level_ids.size());
 	PHelper().CreateRText	 	(items,	PrepareKey(pref,*s_name,"Connection\\Point Name"),	&m_caConnectionPointName);
@@ -580,13 +580,13 @@ void CSE_ALifeObject::FillProps				(const char* pref, PropItemVec& items)
 	inherited::FillProps		(pref, 	items);
 	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"Custom data"),&m_ini_string);
 	if (m_flags.is(flUseSwitches)) {
-		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch online"),	&m_flags,			flSwitchOnline);
-		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch offline"),	&m_flags,			flSwitchOffline);
+		PHelper().CreateFlag	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch online"),	&m_flags,			flSwitchOnline);
+		PHelper().CreateFlag	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch offline"),	&m_flags,			flSwitchOffline);
 	}                            
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Interactive"),			&m_flags,			flInteractive);
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Used AI locations"),	&m_flags,			flUsedAI_Locations);
-	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Story ID"),				&m_story_id,		&*fp_data.story_names.begin(), fp_data.story_names.size());
-	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Spawn Story ID"),		&m_spawn_story_id,	&*fp_data.spawn_story_names.begin(), fp_data.spawn_story_names.size());
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"ALife\\Interactive"),			&m_flags,			flInteractive);
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"ALife\\Used AI locations"),	&m_flags,			flUsedAI_Locations);
+	PHelper().CreateRToken	(items,	PrepareKey(pref,*s_name,"ALife\\Story ID"),				&m_story_id,		&*fp_data.story_names.begin(), fp_data.story_names.size());
+	PHelper().CreateRToken	(items,	PrepareKey(pref,*s_name,"ALife\\Spawn Story ID"),		&m_spawn_story_id,	&*fp_data.spawn_story_names.begin(), fp_data.spawn_story_names.size());
 	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"ALife\\Script Story ID"),&m_script_story_ID);
 #	endif // #ifdef XRSE_FACTORY_EXPORTS
 }
@@ -751,7 +751,7 @@ void CSE_ALifeGroupAbstract::UPDATE_Serialize(ISaveObject& Object)
 #ifndef XRGAME_EXPORTS
 void CSE_ALifeGroupAbstract::FillProps		(const char* pref, PropItemVec& items)
 {
-	PHelper().CreateU16			(items,	PrepareKey(pref, "ALife\\Count"),			&m_wCount,			0,0xff);
+	PHelper().CreateNumeric			(items,	PrepareKey(pref, "ALife\\Count"),			&m_wCount,			0,0xff);
 };	
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -1047,8 +1047,8 @@ xr_token defaul_retrictor_types[]={
 void CSE_ALifeSpaceRestrictor::FillProps		(const char* pref, PropItemVec& items)
 {
 	inherited1::FillProps		(pref,items);
-	PHelper().CreateToken8		(items, PrepareKey(pref,*s_name,"restrictor type"),		&m_space_restrictor_type,	defaul_retrictor_types);
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"check for separator"),	&m_flags,					flCheckForSeparator);
+	PHelper().CreateToken		(items, PrepareKey(pref,*s_name,"restrictor type"),		&m_space_restrictor_type,	defaul_retrictor_types);
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"check for separator"),	&m_flags,					flCheckForSeparator);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -1632,9 +1632,9 @@ void CSE_ALifeObjectPhysic::FillProps		(const char* pref, PropItemVec& values)
 	inherited1::FillProps		(pref,	 values);
 	inherited2::FillProps		(pref,	 values);
 
-	PHelper().CreateToken32		(values, PrepareKey(pref,*s_name,"Type"), &type,	po_types);
+	PHelper().CreateToken		(values, PrepareKey(pref,*s_name,"Type"), &type,	po_types);
 	PHelper().CreateFloat		(values, PrepareKey(pref,*s_name,"Mass"), &mass, 0.1f, 10000.f);
-	PHelper().CreateFlag8		(values, PrepareKey(pref,*s_name,"Active"), &_flags, flActive);
+	PHelper().CreateFlag		(values, PrepareKey(pref,*s_name,"Active"), &_flags, flActive);
 
 	// motions & bones
 	PHelper().CreateChoose		(values, 	PrepareKey(pref,*s_name,"Model\\Fixed bones"),	&fixed_bones,		smSkeletonBones,0,(void*)visual()->get_visual(),8);
@@ -1852,14 +1852,14 @@ void CSE_ALifeObjectHangingLamp::FillProps	(const char* pref, PropItemVec& value
 	inherited2::FillProps		(pref,values);
 
 	PropValue* P				= 0;
-	PHelper().CreateFlag16		(values, PrepareKey(pref,*s_name,"Flags\\Physic"),		&flags,			flPhysic);
-	PHelper().CreateFlag16		(values, PrepareKey(pref,*s_name,"Flags\\Cast Shadow"),	&flags,			flCastShadow);
-	PHelper().CreateFlag16		(values, PrepareKey(pref,*s_name,"Flags\\Allow R1"),	&flags,			flR1);
-	PHelper().CreateFlag16		(values, PrepareKey(pref,*s_name,"Flags\\Allow R2"),	&flags,			flR2);
-	P=PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Flags\\Allow Ambient"),&flags,			flPointAmbient);
+	PHelper().CreateFlag		(values, PrepareKey(pref,*s_name,"Flags\\Physic"),		&flags,			flPhysic);
+	PHelper().CreateFlag		(values, PrepareKey(pref,*s_name,"Flags\\Cast Shadow"),	&flags,			flCastShadow);
+	PHelper().CreateFlag		(values, PrepareKey(pref,*s_name,"Flags\\Allow R1"),	&flags,			flR1);
+	PHelper().CreateFlag		(values, PrepareKey(pref,*s_name,"Flags\\Allow R2"),	&flags,			flR2);
+	P=PHelper().CreateFlag	(values, PrepareKey(pref,*s_name,"Flags\\Allow Ambient"),&flags,			flPointAmbient);
 	P->OnChangeEvent.bind		(this,&CSE_ALifeObjectHangingLamp::OnChangeFlag);
 	// 
-	P=PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Light\\Is Spot Light"),		&flags,				flTypeSpot, "Point", "Spot");
+	P=PHelper().CreateFlag	(values, PrepareKey(pref,*s_name,"Light\\Is Spot Light"),		&flags,				flTypeSpot, "Point", "Spot");
 	P->OnChangeEvent.bind		(this,&CSE_ALifeObjectHangingLamp::OnChangeFlag);
 	PHelper().CreateBool		(values, PrepareKey(pref,*s_name,"Light\\Active"), &IsSpawnActive);
 	PHelper().CreateColor		(values, PrepareKey(pref,*s_name,"Light\\Main\\Color"),			&color);
@@ -1872,8 +1872,8 @@ void CSE_ALifeObjectHangingLamp::FillProps	(const char* pref, PropItemVec& value
 	if (flags.is(flTypeSpot))
 	{
 		PHelper().CreateAngle	(values, PrepareKey(pref,*s_name,"Light\\Main\\Cone Angle"),	&spot_cone_angle,	deg2rad(1.f), deg2rad(120.f));
-//		PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Light\\Main\\Volumetric"),	&flags,			flVolumetric);
-		P=PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Flags\\Volumetric"),	&flags,			flVolumetric);
+//		PHelper().CreateFlag	(values, PrepareKey(pref,*s_name,"Light\\Main\\Volumetric"),	&flags,			flVolumetric);
+		P=PHelper().CreateFlag	(values, PrepareKey(pref,*s_name,"Flags\\Volumetric"),	&flags,			flVolumetric);
 		P->OnChangeEvent.bind	(this,&CSE_ALifeObjectHangingLamp::OnChangeFlag);
 	}
 
@@ -2775,7 +2775,7 @@ void CSE_ALifeTeamBaseZone::UPDATE_Serialize(ISaveObject& Object)
 void CSE_ALifeTeamBaseZone::FillProps		(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps		(pref,items);
-	PHelper().CreateU8			(items, PrepareKey(pref,*s_name,"team"),			&m_team,			0, 16);
+	PHelper().CreateNumeric			(items, PrepareKey(pref,*s_name,"team"),			&m_team,			0, 16);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -2942,7 +2942,7 @@ void CSE_ALifeInventoryBox::FillProps( const char* pref, PropItemVec& values )
 void CSE_ALifeTeamCaptureZone::FillProps(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps(pref, items);
-	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "team"), &m_team, 0, 16);
+	PHelper().CreateNumeric(items, PrepareKey(pref, *s_name, "team"), &m_team, 0, 16);
 	PHelper().CreateRText(items, PrepareKey(pref, *s_name, "point_name"), &m_point_name);
 }
 #endif // #ifndef XRGAME_EXPORTS

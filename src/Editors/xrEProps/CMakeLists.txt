@@ -6,7 +6,6 @@ file(GLOB_RECURSE EPROPS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 )
 file(GLOB_RECURSE EPROPS_SOURCE_PUBLIC_FILES CONFIGURE_DEPENDS
     "../Public/PropertiesListTypes.h"
-    "../Public/PropertiesListHelper.h"
     "../Public/xrEProps.h"
     "../Public/ItemListTypes.h"
 )
@@ -32,7 +31,6 @@ target_precompile_headers(xrEProps PRIVATE "stdafx.h")
 target_compile_definitions(xrEProps PRIVATE XREPROPS_EXPORTS)
 target_compile_definitions(xrEProps PRIVATE _WINDOWS)
 target_compile_definitions(xrEProps PRIVATE _EDITOR)
-target_compile_definitions(xrEProps PUBLIC XR_EDITOR_NEW)
 
 target_compile_definitions(xrEProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 

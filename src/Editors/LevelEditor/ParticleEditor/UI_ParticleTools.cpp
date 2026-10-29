@@ -1537,13 +1537,13 @@ void CParticleTool::FillObjectPrefs()
 		{0, 0}
 	};
 	
-	PHelper().CreateToken8(items, "Preview Type", (u8*)&m_PreviewType, PreviewTypesArr)
+	PHelper().CreateToken(items, "Preview Type", (u8*)&m_PreviewType, PreviewTypesArr)
 		->OnChangeEvent.bind(this, &CParticleTool::OnChangeObject);
 	PHelper().CreateChoose(items, "Object\\Mesh", &m_ObjectName, smObject)
 		->OnChangeEvent.bind(this, &CParticleTool::OnChangeObject);
-	PHelper().CreateFlag32(items, "Object\\Parent\\Allow Animated", &m_Flags, flAnimatedParent)
+	PHelper().CreateFlag(items, "Object\\Parent\\Allow Animated", &m_Flags, flAnimatedParent)
 		->OnChangeEvent.bind(this,&CParticleTool::OnChangeMotion);
-	PHelper().CreateFlag32(items, "Object\\Parent\\Draw Path", &m_Flags, flAnimatedPath);
+	PHelper().CreateFlag(items, "Object\\Parent\\Draw Path", &m_Flags, flAnimatedPath);
 	PHelper().CreateChoose(items, "Object\\Parent\\Motion", &m_MotionName, smGameAnim)
 		->OnChangeEvent.bind(this,&CParticleTool::OnChangeMotion);
 	PHelper().CreateFloat(items, "Object\\Parent\\Motion Speed", &m_ParentAnimator->Speed(), 0.f, 10000.f);
@@ -1845,7 +1845,7 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
 	B->OnBtnClickEvent = ButtonValue::TOnBtnClick(this, &CParticleTool::OnControlClick);
 
 	// TODO: Is the difference is whether to apply full transform (if set) or only position (if not)?
-	PHelper().CreateFlag32(props, "Transform\\Type", &m_Flags, flSetXFORM, "Update", "Set");
+	PHelper().CreateFlag(props, "Transform\\Type", &m_Flags, flSetXFORM, "Update", "Set");
 
 	// reset to default
 	ResetCurrent();

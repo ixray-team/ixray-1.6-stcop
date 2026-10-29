@@ -391,8 +391,8 @@ void CSE_ALifeInventoryItem::FillProps		(const char* pref, PropItemVec& values)
 	PHelper().CreateFloat			(values, PrepareKey(pref, *base()->s_name, "Item condition"), 		&m_fCondition, 			0.f, 1.f);
 	CSE_ALifeObject					*alife_object = smart_cast<CSE_ALifeObject*>(base());
 	R_ASSERT						(alife_object);
-	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Useful for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flUsefulForAI);
-	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);
+	PHelper().CreateFlag			(values, PrepareKey(pref, *base()->s_name,"ALife\\Useful for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flUsefulForAI);
+	PHelper().CreateFlag			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -898,18 +898,18 @@ bool CSE_ALifeItemWeapon::Net_Relevant()
 void CSE_ALifeItemWeapon::FillProps			(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref, items);
-	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "Ammo type:"), &a_ammo_type.data, 0, 30, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineTypeChanged);
-	PHelper().CreateU16(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.data, 0, 255, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged);
+	PHelper().CreateNumeric(items, PrepareKey(pref, *s_name, "Ammo type:"), &a_ammo_type.data, 0, 30, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineTypeChanged);
+	PHelper().CreateNumeric(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.data, 0, 255, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged);
 	
 
 	if (m_scope_status == ALife::eAddonAttachable)
-	       PHelper().CreateFlag8(items,PrepareKey(pref,*s_name,"Addons\\Scope"), 	&m_addon_flags, eWeaponAddonScope);
+	       PHelper().CreateFlag(items,PrepareKey(pref,*s_name,"Addons\\Scope"), 	&m_addon_flags, eWeaponAddonScope);
 
 	if (m_silencer_status == ALife::eAddonAttachable)
-        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Silencer"), 	&m_addon_flags, eWeaponAddonSilencer);
+        PHelper().CreateFlag	(items,PrepareKey(pref,*s_name,"Addons\\Silencer"), 	&m_addon_flags, eWeaponAddonSilencer);
 
 	if (m_grenade_launcher_status == ALife::eAddonAttachable)
-        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);
+        PHelper().CreateFlag	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);
 }
 
 // This might be not necessary, but made to ensure everyting set right
@@ -1272,7 +1272,7 @@ void CSE_ALifeItemAmmo::UPDATE_Serialize(ISaveObject& Object)
 #ifndef XRGAME_EXPORTS
 void CSE_ALifeItemAmmo::FillProps			(const char* pref, PropItemVec& values) {
   	inherited::FillProps			(pref,values);
-	PHelper().CreateU16			(values, PrepareKey(pref, *s_name, "Ammo: left"), &a_elapsed, 0, m_boxSize, m_boxSize);
+	PHelper().CreateNumeric			(values, PrepareKey(pref, *s_name, "Ammo: left"), &a_elapsed, 0, m_boxSize, m_boxSize);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -1643,7 +1643,7 @@ void CSE_ALifeItemDocument::UPDATE_Serialize(ISaveObject& Object)
 void CSE_ALifeItemDocument::FillProps		(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
-//	PHelper().CreateU16			(items, PrepareKey(pref, *s_name, "Document index :"), &m_wDocIndex, 0, 65535);
+//	PHelper().CreateNumeric			(items, PrepareKey(pref, *s_name, "Document index :"), &m_wDocIndex, 0, 65535);
 	PHelper().CreateRText		(items, PrepareKey(pref, *s_name, "Info portion :"), &m_wDoc);
 }
 #endif // #ifndef XRGAME_EXPORTS

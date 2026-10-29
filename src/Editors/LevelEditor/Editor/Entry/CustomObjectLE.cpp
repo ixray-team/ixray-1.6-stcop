@@ -226,7 +226,7 @@ void CCustomObject::FillProp(const char* pref, PropItemVec& items)
 
     if(m_CO_Flags.test(flObjectInGroup))
     {
-		V = PHelper().CreateFlag32	(items, PrepareKey(pref,"In group editable"),	&m_CO_Flags, flObjectInGroupUnique);
+		V = PHelper().CreateFlag	(items, PrepareKey(pref,"In group editable"),	&m_CO_Flags, flObjectInGroupUnique);
     	V->OnChangeEvent.bind		(this,&CCustomObject::OnChangeIngroupUnique);
     }
 }

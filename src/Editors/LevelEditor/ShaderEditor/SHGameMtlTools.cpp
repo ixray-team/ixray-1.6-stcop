@@ -2,7 +2,6 @@
 #include "stdafx.h"
 
 #include "SHGameMtlTools.h"
-#include "../../Public/PropertiesListHelper.h"
 #include "FolderLib.h"
 #include "UI_shadertools.h"
 //------------------------------------------------------------------------------

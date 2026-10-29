@@ -593,7 +593,7 @@ void CSpawnPoint::SSpawnData::FillProp(const char* pref, PropItemVec& items)
 	m_Data->FillProp			(pref,items);
 
 	if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDeathmatch|eGameIDTeamDeathmatch|eGameIDArtefactHunt|eGameIDCaptureTheArtefact))
-		PHelper().CreateFlag8		(items, PrepareKey(pref,"MP respawn"), &m_flags, eSDTypeRespawn);
+		PHelper().CreateFlag		(items, PrepareKey(pref,"MP respawn"), &m_flags, eSDTypeRespawn);
 
 	if(m_Visual)
 	{
@@ -1764,9 +1764,9 @@ void CSpawnPoint::FillProp(const char* pref, PropItemVec& items)
 				C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillRespawnItemProfile);
 			 }else
 			{
-				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,32);
+				PHelper().CreateNumeric		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,32);
 			}
-			Token8Value* TV = PHelper().CreateToken8	(items, PrepareKey(pref,"Respawn Point\\Spawn Type"),	&m_RP_Type, 	rpoint_type);
+			Token8Value* TV = PHelper().CreateToken	(items, PrepareKey(pref,"Respawn Point\\Spawn Type"),	&m_RP_Type, 	rpoint_type);
 			TV->OnChangeEvent.bind		(this,&CSpawnPoint::OnRPointTypeChange);
 
 		m_GameType.FillProp			(pref, items);
@@ -1778,38 +1778,38 @@ void CSpawnPoint::FillProp(const char* pref, PropItemVec& items)
 				{0, 0}
 			};
 
-			PHelper().CreateToken8	(items, PrepareKey(pref,"Environment Modificator\\Shape Type"),		&m_EM_ShapeType,	shape_type);
+			PHelper().CreateToken	(items, PrepareKey(pref,"Environment Modificator\\Shape Type"),		&m_EM_ShapeType,	shape_type);
 			PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Radius"),			&m_EM_Radius, 	EPS_L,10000.f);
 			PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Power"), 			&m_EM_Power, 	EPS,1000.f);
 
 			Flag16Value* FV 		= NULL;
 			
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\View Distance"), &m_EM_Flags, eViewDist);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\View Distance"), &m_EM_Flags, eViewDist);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eViewDist))
 				PHelper().CreateFloat(items, PrepareKey(pref,"Environment Modificator\\View Distance\\ "),	&m_EM_ViewDist, EPS_L,10000.f);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Fog Color"), &m_EM_Flags, eFogColor);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\Fog Color"), &m_EM_Flags, eFogColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eFogColor))
 				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Fog Color\\ "), 		&m_EM_FogColor);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Fog Density"), &m_EM_Flags, eFogDensity);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\Fog Density"), &m_EM_Flags, eFogDensity);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eFogDensity))
 				PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Fog Density\\ "), 	&m_EM_FogDensity, 0.f,10000.f);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Ambient Color"), &m_EM_Flags, eAmbientColor);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\Ambient Color"), &m_EM_Flags, eAmbientColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eAmbientColor))
 				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Ambient Color\\ "), 	&m_EM_AmbientColor);
 
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Sky Color"), &m_EM_Flags, eSkyColor);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\Sky Color"), &m_EM_Flags, eSkyColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eSkyColor))
 				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Sky Color\\ "), 		&m_EM_SkyColor);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Hemi Color"), &m_EM_Flags, eHemiColor);
+			FV = PHelper().CreateFlag(items, PrepareKey(pref,"Environment Modificator\\Hemi Color"), &m_EM_Flags, eHemiColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eHemiColor))
 				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Hemi Color\\ "), 	&m_EM_HemiColor);

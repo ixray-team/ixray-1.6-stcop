@@ -264,11 +264,11 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 		{
 			if (_I->second->AllowEnabling())
 			{
-				PropValue* V 	= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
+				PropValue* V 	= PHelper().CreateFlag(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
 				V->tag			= _I->second->FClassID;
 				V->OnChangeEvent.bind(this, &CLevelPreferences::OnEnabledChange);
 			}
-			PropValue* V		= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
+			PropValue* V		= PHelper().CreateFlag(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
 			V->tag				= _I->second->FClassID;
 			V->OnChangeEvent.bind(this, &CLevelPreferences::OnReadonlyChange);
 		}

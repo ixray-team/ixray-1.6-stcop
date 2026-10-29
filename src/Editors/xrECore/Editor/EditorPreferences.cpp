@@ -163,15 +163,15 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 
 void CCustomPreferences::FillProp(PropItemVec& props)
 {
-	PHelper().CreateU32		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
-	PHelper().CreateU32		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
+	PHelper().CreateNumeric		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
+	PHelper().CreateNumeric		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
 	PHelper().CreateBool	(props,"Common\\More Stats Info", 					&bMoreStats);
 
 	PHelper().CreateBool	(props,"Viewport\\Buttons\\Axis", 					&ShowAxisButtons);
 	PHelper().CreateBool	(props,"Viewport\\Buttons\\Old Camera Controls", 	&ShowOldCameraButtons);
 
 	PHelper().CreateFloat	(props,"Viewport\\Grid\\Cell Size", 				&grid_cell_size, 		0.1f, 	10.f);
-	PHelper().CreateU32		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
+	PHelper().CreateNumeric		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
 
 	PHelper().CreateFloat	(props,"Viewport\\Camera\\Move Sens", 				&cam_sens_move);
 	PHelper().CreateFloat	(props,"Viewport\\Camera\\Rotate Sens", 			&cam_sens_rot);
@@ -191,22 +191,22 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
 	PHelper().CreateBool	(props,"Viewport\Instancing in Shadows",		&ShadowInstancing);
 
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Animation Path", 			&object_flags, 			epoDrawAnimPath);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\LOD's", 						&object_flags, 			epoDrawLOD);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Animation Path", 			&object_flags, 			epoDrawAnimPath);
+	PHelper().CreateFlag	(props,"Objects\\Show\\LOD's", 						&object_flags, 			epoDrawLOD);
 
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Joints", 			&object_flags, 			epoDrawJoints);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Axis", 		&object_flags, 			epoDrawBoneAxis);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Names", 		&object_flags, 			epoDrawBoneNames);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Shapes", 		&object_flags, 			epoDrawBoneShapes);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Joints", 			&object_flags, 			epoDrawJoints);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Axis", 		&object_flags, 			epoDrawBoneAxis);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Names", 		&object_flags, 			epoDrawBoneNames);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Shapes", 		&object_flags, 			epoDrawBoneShapes);
 
-	PHelper().CreateFlag32	(props,"Objects\\Group Object\\Select ingroup", 	&object_flags, 			epoSelectInGroup);
+	PHelper().CreateFlag	(props,"Objects\\Group Object\\Select ingroup", 	&object_flags, 			epoSelectInGroup);
 
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading RB", 	&object_flags, 			epoDeffLoadRB);
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading CF", 	&object_flags, 			epoDeffLoadCF);
+	PHelper().CreateFlag	(props,"Objects\\Loading\\Deffered Loading RB", 	&object_flags, 			epoDeffLoadRB);
+	PHelper().CreateFlag	(props,"Objects\\Loading\\Deffered Loading CF", 	&object_flags, 			epoDeffLoadCF);
 
-	PHelper().CreateFlag32	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
+	PHelper().CreateFlag	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
 
 	PHelper().CreateBool	(props,"Tools\\Box Pick\\Limited Depth", 			&bp_lim_depth);
 	PHelper().CreateBool	(props,"Tools\\Box Pick\\Back Face Culling", 		&bp_cull);

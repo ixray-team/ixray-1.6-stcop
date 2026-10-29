@@ -16,8 +16,8 @@ void ESceneGlowTool::RemoveControls()
 
 void ESceneGlowTool::FillProp(const char* pref, PropItemVec& items)
 {
-    PHelper().CreateFlag32(items, PrepareKey(pref,"Test Visibility"),	&m_Flags,	flTestVisibility);
-    PHelper().CreateFlag32(items, PrepareKey(pref,"Draw Cross"),		&m_Flags,	flDrawCross);
+    PHelper().CreateFlag(items, PrepareKey(pref,"Test Visibility"),	&m_Flags,	flTestVisibility);
+    PHelper().CreateFlag(items, PrepareKey(pref,"Draw Cross"),		&m_Flags,	flDrawCross);
 	inherited::FillProp(pref, items);
 }
 

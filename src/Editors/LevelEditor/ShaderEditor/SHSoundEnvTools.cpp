@@ -598,7 +598,7 @@ void CSHSoundEnvTools::RealUpdateProperties()
 		B=PHelper().CreateButton(items, "Environment\\Set",	"Identity,Reset", 	ButtonValue::flFirstOnly);
 		B->OnBtnClickEvent.bind	(this,&CSHSoundEnvTools::OnRevResetClick);
 		PropValue* V=0;
-		V=PHelper().CreateToken32(items,"Environment\\Preset",					&S.Environment	       ,eax_environment);
+		V=PHelper().CreateToken(items,"Environment\\Preset",					&S.Environment	       ,eax_environment);
 		V->OnChangeEvent.bind	(this,&CSHSoundEnvTools::OnEnvChange);
 		V=PHelper().CreateFloat	(items, "Environment\\Size",					&S.EnvironmentSize     ,EAXLISTENER_MINENVIRONMENTSIZE, 	EAXLISTENER_MAXENVIRONMENTSIZE			,0.01f,	3);
 		V->OnChangeEvent.bind	(this,&CSHSoundEnvTools::OnEnvSizeChange);

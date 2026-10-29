@@ -208,10 +208,10 @@ void PS::CPEDef::FillProp(const char* pref, ::PropItemVec& items, void* owner)
 
 
     // max particles
-    PHelper().CreateS32		(items,PrepareKey				(pref,"Max Particles"),					&m_MaxParticles,  0, 100000);
+    PHelper().CreateNumeric		(items,PrepareKey				(pref,"Max Particles"),					&m_MaxParticles,  0, 100000);
 //    P->OnChangeEvent		= OnFlagChange;
 	// time limit
-    P=PHelper().CreateFlag32(items,PrepareKey				(pref,"Time Limit"),		  			&m_Flags, dfTimeLimit);
+    P=PHelper().CreateFlag(items,PrepareKey				(pref,"Time Limit"),		  			&m_Flags, dfTimeLimit);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfTimeLimit))
     {
@@ -220,7 +220,7 @@ void PS::CPEDef::FillProp(const char* pref, ::PropItemVec& items, void* owner)
     	PHelper().CreateFloat	(items,PrepareKey			(pref,"Time Limit\\Value (sec)"),		&m_fTimeLimit,  0, 10000.f);
     }
 	// sprite
-    P=PHelper().CreateFlag32(items,PrepareKey				(pref,"Sprite"),		 	   			&m_Flags, dfSprite);
+    P=PHelper().CreateFlag(items,PrepareKey				(pref,"Sprite"),		 	   			&m_Flags, dfSprite);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfSprite)){
 	    P=PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteClicked));
@@ -230,47 +230,47 @@ void PS::CPEDef::FillProp(const char* pref, ::PropItemVec& items, void* owner)
 	    P=PHelper().CreateChoose(items,PrepareKey			(pref,"Sprite\\Shader"), 	   			&m_ShaderName,	smEShader);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnShaderChange);
     	// frame
-        P=PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Culling"),			 	&m_Flags, dfCulling);
+        P=PHelper().CreateFlag(items,PrepareKey			(pref,"Sprite\\Culling"),			 	&m_Flags, dfCulling);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
         if (m_Flags.is(CPEDef::dfCulling))
         {
 	        P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Culling\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteCullingClicked));
         	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
-        	PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Culling\\CCW"),			&m_Flags, dfCullCCW);
+        	PHelper().CreateFlag(items,PrepareKey			(pref,"Sprite\\Culling\\CCW"),			&m_Flags, dfCullCCW);
         }
-        P=PHelper().CreateFlag32(items,PrepareKey			(pref,"Sprite\\Frame"),		 		 	&m_Flags, dfFramed);
+        P=PHelper().CreateFlag(items,PrepareKey			(pref,"Sprite\\Frame"),		 		 	&m_Flags, dfFramed);
         P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
         if (m_Flags.is(dfFramed)){
         	P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Frame\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteFrameClicked));
         	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
-        	PHelper().CreateFlag32(items,PrepareKey		(pref,"Sprite\\Frame\\Random Init"), 	&m_Flags, dfRandomFrame);
-            PHelper().CreateS32	(items,PrepareKey			(pref,"Sprite\\Frame\\Count"),			&m_Frame.m_iFrameCount, 1,256);
+        	PHelper().CreateFlag(items,PrepareKey		(pref,"Sprite\\Frame\\Random Init"), 	&m_Flags, dfRandomFrame);
+            PHelper().CreateNumeric	(items,PrepareKey			(pref,"Sprite\\Frame\\Count"),			&m_Frame.m_iFrameCount, 1,256);
             P=PHelper().CreateFloat(items,PrepareKey		(pref,"Sprite\\Frame\\Size U (0..1)"),	&m_Frame.m_fTexSize.x, EPS_S,1.f,0.001f,8);
             P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFrameResize);
             PHelper().CreateFloat	(items,PrepareKey	   	(pref,"Sprite\\Frame\\Size V (0..1)"),	&m_Frame.m_fTexSize.y, EPS_S,1.f,0.001f,8);
 	        // animate
-            P=PHelper().CreateFlag32(items,PrepareKey		(pref,"Sprite\\Animated"),				&m_Flags, dfAnimated);
+            P=PHelper().CreateFlag(items,PrepareKey		(pref,"Sprite\\Animated"),				&m_Flags, dfAnimated);
             P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
             if (m_Flags.is(dfAnimated)){
                 P = PHelper().CreateButton(items, PrepareKey(pref,"Sprite\\Animated\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnSpriteAnimatedClicked));
             	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
-            	PHelper().CreateFlag32(items,PrepareKey	(pref,"Sprite\\Animated\\Random Playback"),	&m_Flags, dfRandomPlayback);
+            	PHelper().CreateFlag(items,PrepareKey	(pref,"Sprite\\Animated\\Random Playback"),	&m_Flags, dfRandomPlayback);
 		    	PHelper().CreateFloat(items,PrepareKey		(pref,"Sprite\\Animated\\Speed"),		&m_Frame.m_fSpeed, 0.f,1000.f);
             }
         }
     }
 	// align to path
-    P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path"), 					&m_Flags, dfAlignToPath);
+    P=PHelper().CreateFlag(items,PrepareKey	(pref,"Movement\\Align To Path"), 					&m_Flags, dfAlignToPath);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfAlignToPath)){
 	    P = PHelper().CreateButton(items, PrepareKey(pref,"Movement\\Align To Path\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnMovementAlignClicked));
     	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
-    	PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path\\Face Align"), 		&m_Flags, dfFaceAlign);
-	    PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Align To Path\\Default World Align"), &m_Flags, dfWorldAlign);
+    	PHelper().CreateFlag(items,PrepareKey	(pref,"Movement\\Align To Path\\Face Align"), 		&m_Flags, dfFaceAlign);
+	    PHelper().CreateFlag(items,PrepareKey	(pref,"Movement\\Align To Path\\Default World Align"), &m_Flags, dfWorldAlign);
     	PHelper().CreateAngle3(items,PrepareKey	(pref,"Movement\\Align To Path\\Default Rotate"),	&m_APDefaultRotation);
     }
 	// velocity scale                                                           
-    P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Velocity Scale"),					&m_Flags, dfVelocityScale);
+    P=PHelper().CreateFlag(items,PrepareKey	(pref,"Movement\\Velocity Scale"),					&m_Flags, dfVelocityScale);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     if (m_Flags.is(dfVelocityScale))
     {
@@ -279,14 +279,14 @@ void PS::CPEDef::FillProp(const char* pref, ::PropItemVec& items, void* owner)
     	PHelper().CreateVector(items,PrepareKey	(pref,"Movement\\Velocity Scale\\Value"),			&m_VelocityScale, -1000.f, 1000.f);
     }
 	// collision
-    P=PHelper().CreateFlag32(items,PrepareKey	(pref,"Movement\\Collision"),						&m_Flags, dfCollision);
+    P=PHelper().CreateFlag(items,PrepareKey	(pref,"Movement\\Collision"),						&m_Flags, dfCollision);
     P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
     FloatValue*	V 			= nullptr;
     if (m_Flags.is(dfCollision)){
     	P = PHelper().CreateButton(items, PrepareKey(pref,"Movement\\Collision\\Control"), "Disable", 0, xr_make_delegate(this, &PS::CPEDef::OnMovementCollisionClicked));
     	P->OnChangeEvent.bind	(this,&PS::CPEDef::OnFlagChange);
-    	PHelper().CreateFlag32(items,PrepareKey(pref,"Movement\\Collision\\Collide With Dynamic"),	&m_Flags, dfCollisionDyn);
-    	PHelper().CreateFlag32(items,PrepareKey(pref,"Movement\\Collision\\Destroy On Contact"),	&m_Flags, dfCollisionDel);
+    	PHelper().CreateFlag(items,PrepareKey(pref,"Movement\\Collision\\Collide With Dynamic"),	&m_Flags, dfCollisionDyn);
+    	PHelper().CreateFlag(items,PrepareKey(pref,"Movement\\Collision\\Destroy On Contact"),	&m_Flags, dfCollisionDel);
 	    V=PHelper().CreateFloat	(items,PrepareKey	(pref,"Movement\\Collision\\Friction"),			&m_fCollideOneMinusFriction,0.f, 1.f);
         V->OnBeforeEditEvent.bind	(this,&PS::CPEDef::CollisionFrictionOnBeforeEdit);
         V->OnAfterEditEvent.bind	(this,&PS::CPEDef::CollisionFrictionOnAfterEdit);
@@ -550,13 +550,13 @@ void PS::CPGDef::SEffect::FillProp(const char* pref, PropItemVec& items, u32 clr
     V=PHelper().CreateFloat	(items,PrepareKey(pref,"End Time (s)"),	&m_Time1,		0.f,1000.f);
     V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color	= clr;
-    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Deferred Stop"),&m_Flags,	SEffect::flDefferedStop);
+    V=PHelper().CreateFlag(items,PrepareKey(pref,"Deferred Stop"),&m_Flags,	SEffect::flDefferedStop);
     V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color	= clr;
-    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Enabled"),									&m_Flags, 	SEffect::flEnabled);
+    V=PHelper().CreateFlag(items,PrepareKey(pref,"Enabled"),									&m_Flags, 	SEffect::flEnabled);
     V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color	= clr;
-    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Birth"),						&m_Flags,	SEffect::flOnBirthChild);
+    V=PHelper().CreateFlag(items,PrepareKey(pref,"Children\\On Birth"),						&m_Flags,	SEffect::flOnBirthChild);
     V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color	= clr;
     if (m_Flags.is(SEffect::flOnBirthChild)){
@@ -564,18 +564,18 @@ void PS::CPGDef::SEffect::FillProp(const char* pref, PropItemVec& items, u32 clr
         V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
 	    V->Owner()->prop_color	= clr;
     }
-    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Play"),						&m_Flags,	SEffect::flOnPlayChild);
+    V=PHelper().CreateFlag(items,PrepareKey(pref,"Children\\On Play"),						&m_Flags,	SEffect::flOnPlayChild);
     V->OnChangeEvent.bind		(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color		= clr;
     if (m_Flags.is(SEffect::flOnPlayChild)){
 	    V=PHelper().CreateChoose	(items,PrepareKey(pref,"Children\\On Play\\Effect Name"),			&m_OnPlayChildName,smPE);
         V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
 	    V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Play\\Play After Stop"),		&m_Flags,	SEffect::flOnPlayChildRewind);
+        V=PHelper().CreateFlag(items,PrepareKey(pref,"Children\\On Play\\Play After Stop"),		&m_Flags,	SEffect::flOnPlayChildRewind);
         V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
         V->Owner()->prop_color	= clr;
     }
-    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Dead"),						&m_Flags,	SEffect::flOnDeadChild);
+    V=PHelper().CreateFlag(items,PrepareKey(pref,"Children\\On Dead"),						&m_Flags,	SEffect::flOnDeadChild);
     V->OnChangeEvent.bind		(parent,&PS::CPGDef::OnParamsChange);
     V->Owner()->prop_color	= clr;
     if (m_Flags.is(SEffect::flOnDeadChild)){

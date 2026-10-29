@@ -169,7 +169,7 @@ void ESoundThumbnail::FillProp(PropItemVec& items)
     V = PHelper().CreateFloat	(items, "Max AI Dist",	&m_fMaxAIDist, 	0.1f,1000.f);
     V->OnAfterEditEvent.bind	(this,&ESoundThumbnail::OnMaxAIDistAfterEdit);
     PHelper().CreateFloat		(items, "Base Volume",	&m_fBaseVolume, 0.f,2.f);
-    PHelper().CreateToken32		(items, "Game Type",	&m_uGameType, 	anomaly_type_token);
+    PHelper().CreateToken		(items, "Game Type",	&m_uGameType, 	anomaly_type_token);
 }
 //------------------------------------------------------------------------------
 

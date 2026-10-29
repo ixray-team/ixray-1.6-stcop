@@ -145,7 +145,7 @@ void CSHEngineTools::OnPreviewObjectRefChange(const char* fn)
 void CSHEngineTools::OnActivate()
 {
 	PropItemVec items;
-	TokenValue<u32>* V					= PHelper().CreateToken32	(items,PrepareKey("Object","Reference"), &m_PreviewObjectType, preview_obj_token); 
+	TokenValue<u32>* V					= PHelper().CreateToken	(items,PrepareKey("Object","Reference"), &m_PreviewObjectType, preview_obj_token); 
 	V->OnAfterEditEvent.bind			(this,&CSHEngineTools::OnPreviewObjectRefChange);
 	Ext.m_PreviewProps->AssignItems		(items);
 	// fill items*/
@@ -1166,15 +1166,15 @@ void  CSHEngineTools::FillMatrixProps(PropItemVec& items, const char* pref, LPST
 		return;
 	}
 
-	PHelper().CreateToken32(items, PrepareKey(pref, "Mode"), &M->dwMode, mode_token);
+	PHelper().CreateToken(items, PrepareKey(pref, "Mode"), &M->dwMode, mode_token);
 
 	if (M->dwMode == CMatrix::modeTCM) {
-		PHelper().CreateFlag32(items, PrepareKey(pref, "Scale enabled"), &M->tcm_flags, CMatrix::tcmScale);
+		PHelper().CreateFlag(items, PrepareKey(pref, "Scale enabled"), &M->tcm_flags, CMatrix::tcmScale);
 		PHelper().CreateWave(items, PrepareKey(pref, "Scale U"), &M->scaleU);
 		PHelper().CreateWave(items, PrepareKey(pref, "Scale V"), &M->scaleV);
-		PHelper().CreateFlag32(items, PrepareKey(pref, "Rotate enabled"), &M->tcm_flags, CMatrix::tcmRotate);
+		PHelper().CreateFlag(items, PrepareKey(pref, "Rotate enabled"), &M->tcm_flags, CMatrix::tcmRotate);
 		PHelper().CreateWave(items, PrepareKey(pref, "Rotate"), &M->rotate);
-		PHelper().CreateFlag32(items, PrepareKey(pref, "Scroll enabled"), &M->tcm_flags, CMatrix::tcmScroll);
+		PHelper().CreateFlag(items, PrepareKey(pref, "Scroll enabled"), &M->tcm_flags, CMatrix::tcmScroll);
 		PHelper().CreateWave(items, PrepareKey(pref, "Scroll U"), &M->scrollU);
 		PHelper().CreateWave(items, PrepareKey(pref, "Scroll V"), &M->scrollV);
 	}
@@ -1343,7 +1343,7 @@ void CSHEngineTools::RealUpdateProperties()
 			{
 				sz = sizeof(xrP_Integer);
 				xrP_Integer* V = (xrP_Integer*)data.pointer();
-				PHelper().CreateS32(items, PrepareKey(marker_text.c_str(), key), &V->value, V->min, V->max, 1);
+				PHelper().CreateNumeric(items, PrepareKey(marker_text.c_str(), key), &V->value, V->min, V->max, 1);
 			}break;
 			case xrPID_FLOAT:
 			{

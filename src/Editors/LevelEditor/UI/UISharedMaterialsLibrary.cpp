@@ -209,7 +209,7 @@ void UISharedMaterialsLibrary::OnItemFocused(ListItem* item)
             PHelper().CreateChoose(Info, "Game Shader", &Data->m_ShaderName, smEShader);
             PHelper().CreateChoose(Info, "Compile Shader", &Data->m_ShaderXRLCName, smCShader);
             PHelper().CreateChoose(Info, "Game Material", &Data->m_GameMtlName, smGameMaterial);
-            PHelper().CreateFlag32(Info, "2 Sided", &Data->m_Flags, SSurfaceData::sf2Sided);
+            PHelper().CreateFlag(Info, "2 Sided", &Data->m_Flags, SSurfaceData::sf2Sided);
             
             PreviewProps->AssignItems(Info);
 

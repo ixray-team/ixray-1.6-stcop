@@ -307,19 +307,19 @@ void SGameMtlEditor::FillProp(PropItemVec& items, ListItem* owner)
     PropValue* V = nullptr;
     PHelper().CreateRText(items, "Desc", &m_Desc);
     // flags                                                      	
-    V = PHelper().CreateFlag32(items, "Flags\\Dynamic", &Flags, flDynamic);	V->Owner()->Enable(false);
-    PHelper().CreateFlag32(items, "Flags\\Passable", &Flags, flPassable);
+    V = PHelper().CreateFlag(items, "Flags\\Dynamic", &Flags, flDynamic);	V->Owner()->Enable(false);
+    PHelper().CreateFlag(items, "Flags\\Passable", &Flags, flPassable);
     if (Flags.is(flDynamic))
-        PHelper().CreateFlag32(items, "Flags\\Breakable", &Flags, flBreakable);
-    PHelper().CreateFlag32(items, "Flags\\Bounceable", &Flags, flBounceable);
-    PHelper().CreateFlag32(items, "Flags\\Skidmark", &Flags, flSkidmark);
-    PHelper().CreateFlag32(items, "Flags\\Bloodmark", &Flags, flBloodmark);
-    PHelper().CreateFlag32(items, "Flags\\Climable", &Flags, flClimable);
-    PHelper().CreateFlag32(items, "Flags\\Liquid", &Flags, flLiquid);
-    PHelper().CreateFlag32(items, "Flags\\Suppress Shadows", &Flags, flSuppressShadows);
-    PHelper().CreateFlag32(items, "Flags\\Suppress Wallmarks", &Flags, flSuppressWallmarks);
-    PHelper().CreateFlag32(items, "Flags\\Actor Obstacle", &Flags, flActorObstacle);
-    PHelper().CreateFlag32(items, "Flags\\Bullet No Ricoshet", &Flags, flNoRicoshet);
+        PHelper().CreateFlag(items, "Flags\\Breakable", &Flags, flBreakable);
+    PHelper().CreateFlag(items, "Flags\\Bounceable", &Flags, flBounceable);
+    PHelper().CreateFlag(items, "Flags\\Skidmark", &Flags, flSkidmark);
+    PHelper().CreateFlag(items, "Flags\\Bloodmark", &Flags, flBloodmark);
+    PHelper().CreateFlag(items, "Flags\\Climable", &Flags, flClimable);
+    PHelper().CreateFlag(items, "Flags\\Liquid", &Flags, flLiquid);
+    PHelper().CreateFlag(items, "Flags\\Suppress Shadows", &Flags, flSuppressShadows);
+    PHelper().CreateFlag(items, "Flags\\Suppress Wallmarks", &Flags, flSuppressWallmarks);
+    PHelper().CreateFlag(items, "Flags\\Actor Obstacle", &Flags, flActorObstacle);
+    PHelper().CreateFlag(items, "Flags\\Bullet No Ricoshet", &Flags, flNoRicoshet);
     // physics part
     PHelper().CreateFloat(items, "Physics\\Friction", &fPHFriction, 0.f, 100.f, 0.001f, 3);
     PHelper().CreateFloat(items, "Physics\\Damping", &fPHDamping, 0.001f, 100.f, 0.001f, 3);

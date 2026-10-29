@@ -95,7 +95,6 @@ target_compile_definitions(xrECore PRIVATE XRECORE_EXPORTS)
 target_compile_definitions(xrECore PRIVATE XREUI_EXPORTS)
 target_compile_definitions(xrECore PRIVATE _WINDOWS)
 target_compile_definitions(xrECore PRIVATE _USRDLL)
-target_compile_definitions(xrECore PUBLIC XR_EDITOR_NEW)
 target_compile_definitions(xrECore PUBLIC _EDITOR)
 
 target_compile_options(xrECore PRIVATE /W0)

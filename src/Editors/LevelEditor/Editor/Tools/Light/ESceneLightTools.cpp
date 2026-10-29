@@ -150,21 +150,21 @@ void ESceneLightTool::FillProp(const char* pref, PropItemVec& items)
     ButtonValue *B = 0;
     PropValue* V = 0;
     // hemisphere
-    PHelper().CreateRToken32(items, PrepareKey(pref, "Hemisphere\\Light Control"), &m_HemiControl, &*lcontrols.begin(), lcontrols.size());
+    PHelper().CreateRToken(items, PrepareKey(pref, "Hemisphere\\Light Control"), &m_HemiControl, &*lcontrols.begin(), lcontrols.size());
 	
 	// sun
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Visible"), &m_Flags, flShowSun);
+    V = PHelper().CreateFlag(items, PrepareKey(pref, "Sun Shadow\\Visible"), &m_Flags, flShowSun);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 
     PHelper().CreateAngle(items, PrepareKey(pref, "Sun Shadow\\Altitude"), &m_SunShadowDir.x, -PI_DIV_2, 0);
     PHelper().CreateAngle(items, PrepareKey(pref, "Sun Shadow\\Longitude"), &m_SunShadowDir.y, 0, PI_MUL_2);
     // weather simulation
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Sun Dir"), &m_Flags, flWthrSunDir);
+    V = PHelper().CreateFlag(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Sun Dir"), &m_Flags, flWthrSunDir);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Hemi"), &m_Flags, flWthrHemi);
+    V = PHelper().CreateFlag(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Hemi"), &m_Flags, flWthrHemi);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 	// light controls
-	PHelper().CreateFlag32	(items, PrepareKey(pref,"Controls\\Draw Name"),			&m_Flags,			flShowControlName);
+	PHelper().CreateFlag	(items, PrepareKey(pref,"Controls\\Draw Name"),			&m_Flags,			flShowControlName);
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Controls\\Count"),				shared_str().printf("%zu",lcontrols.size()));
 //	B=PHelper().CreateButton(items,PHelper().PrepareKey(pref,"Controls\\Edit"),	"Append",	ButtonValue::flFirstOnly);
 //	B->OnBtnClickEvent	= OnControlAppendClick;
@@ -341,18 +341,18 @@ void CLight:xr_token sun_quality[]={
 	PropValue* prop			= 0;
 	PHelper().CreateToken		(items, PHelper().PrepareKey(pref,"Sun\\Quality"),				&m_SunQuality,			sun_quality);
 	
-	PHelper().CreateFlag32	(items, PHelper().PrepareKey(pref,"Sun\\Source\\Enabled"),		&F.m_Flags,				CEditFlare::flSource);
+	PHelper().CreateFlag	(items, PHelper().PrepareKey(pref,"Sun\\Source\\Enabled"),		&F.m_Flags,				CEditFlare::flSource);
 	PHelper().CreateFloat		(items, PHelper().PrepareKey(pref,"Sun\\Source\\Radius"),			&F.m_Source.fRadius,	0.f,10.f);
 	prop 					= PHelper().CreateTexture	(items, PHelper().PrepareKey(pref,"Sun\\Source\\Texture"),		F.m_Source.texture,		sizeof(F.m_Source.texture));
 	prop->OnChangeEvent		= OnNeedUpdate;
 
-	PHelper().CreateFlag32	(items, PHelper().PrepareKey(pref,"Sun\\Gradient\\Enabled"),		&F.m_Flags,				CEditFlare::flGradient);
+	PHelper().CreateFlag	(items, PHelper().PrepareKey(pref,"Sun\\Gradient\\Enabled"),		&F.m_Flags,				CEditFlare::flGradient);
 	PHelper().CreateFloat		(items, PHelper().PrepareKey(pref,"Sun\\Gradient\\Radius"),		&F.m_Gradient.fRadius,	0.f,100.f);
 	PHelper().CreateFloat		(items, PHelper().PrepareKey(pref,"Sun\\Gradient\\Opacity"),		&F.m_Gradient.fOpacity,	0.f,1.f);
 	prop					= PHelper().CreateTexture	(items, PHelper().PrepareKey(pref,"Sun\\Gradient\\Texture"),	F.m_Gradient.texture,	sizeof(F.m_Gradient.texture));
 	prop->OnChangeEvent		= OnNeedUpdate;
 
-	PHelper().CreateFlag32	(items, PHelper().PrepareKey(pref,"Sun\\Flares\\Enabled"),		&F.m_Flags,				CEditFlare::flFlare);
+	PHelper().CreateFlag	(items, PHelper().PrepareKey(pref,"Sun\\Flares\\Enabled"),		&F.m_Flags,				CEditFlare::flFlare);
 	for (CEditFlare::FlareIt it=F.m_Flares.begin(); it!=F.m_Flares.end(); it++){
 		xr_string nm; nm.sprintf("%s\\Sun\\Flares\\Flare %d",pref,it-F.m_Flares.begin());
 		PHelper().CreateFloat	(items, PHelper().PrepareKey(nm.c_str(),"Radius"), 	&it->fRadius,  	0.f,10.f);

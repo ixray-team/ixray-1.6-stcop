@@ -185,122 +185,122 @@ ChooseValue*	CScriptPropertiesListHelper::CreateChoose	(PropItemVec* items, cons
 
 //S8Value* CScriptPropertiesListHelper::CreateS8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  s8 mn,  s8 mx,  s8 inc)
 //{
-//	return		(PHelper().CreateS8(*items,key,wrap_value<s8>(object,name),mn,mx,inc));
+//	return		(PHelper().CreateNumeric(*items,key,wrap_value<s8>(object,name),mn,mx,inc));
 //}
 //
 //S8Value* CScriptPropertiesListHelper::CreateS8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  s8 mn,  s8 mx)
 //{
-//	return		(PHelper().CreateS8(*items,key,wrap_value<s8>(object,name),mn,mx));
+//	return		(PHelper().CreateNumeric(*items,key,wrap_value<s8>(object,name),mn,mx));
 //}
 //
 //S8Value* CScriptPropertiesListHelper::CreateS8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  s8 mn)
 //{
-//	return		(PHelper().CreateS8(*items,key,wrap_value<s8>(object,name),mn));
+//	return		(PHelper().CreateNumeric(*items,key,wrap_value<s8>(object,name),mn));
 //}
 //
 //S8Value* CScriptPropertiesListHelper::CreateS8		(PropItemVec* items, const char* key, luabind::object object, const char* name)
 //{
-//	return		(PHelper().CreateS8(*items,key,wrap_value<s8>(object,name)));
+//	return		(PHelper().CreateNumeric(*items,key,wrap_value<s8>(object,name)));
 //}
 //
 S16Value* CScriptPropertiesListHelper::CreateS16	(PropItemVec* items, const char* key, luabind::object object, const char* name, s16 mn, s16 mx, s16 inc)
 {
-	return		(PHelper().CreateS16(*items,key,wrap_value<s16>(object,name),mn,mx,inc));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s16>(object,name),mn,mx,inc));
 }
 
 S16Value* CScriptPropertiesListHelper::CreateS16	(PropItemVec* items, const char* key, luabind::object object, const char* name, s16 mn, s16 mx)
 {
-	return		(PHelper().CreateS16(*items,key,wrap_value<s16>(object,name),mn,mx));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s16>(object,name),mn,mx));
 }
 
 S16Value* CScriptPropertiesListHelper::CreateS16	(PropItemVec* items, const char* key, luabind::object object, const char* name, s16 mn)
 {
-	return		(PHelper().CreateS16(*items,key,wrap_value<s16>(object,name),mn));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s16>(object,name),mn));
 }
 
 S16Value* CScriptPropertiesListHelper::CreateS16	(PropItemVec* items, const char* key, luabind::object object, const char* name)
 {
-	return		(PHelper().CreateS16(*items,key,wrap_value<s16>(object,name)));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s16>(object,name)));
 }
 
 S32Value* CScriptPropertiesListHelper::CreateS32	(PropItemVec* items, const char* key, luabind::object object, const char* name, s32 mn, s32 mx, s32 inc)
 {
-	return		(PHelper().CreateS32(*items,key,wrap_value<s32>(object,name),mn,mx,inc));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s32>(object,name),mn,mx,inc));
 }
 
 S32Value* CScriptPropertiesListHelper::CreateS32	(PropItemVec* items, const char* key, luabind::object object, const char* name, s32 mn, s32 mx)
 {
-	return		(PHelper().CreateS32(*items,key,wrap_value<s32>(object,name),mn,mx));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s32>(object,name),mn,mx));
 }
 
 S32Value* CScriptPropertiesListHelper::CreateS32	(PropItemVec* items, const char* key, luabind::object object, const char* name, s32 mn)
 {
-	return		(PHelper().CreateS32(*items,key,wrap_value<s32>(object,name),mn));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s32>(object,name),mn));
 }
 
 S32Value* CScriptPropertiesListHelper::CreateS32	(PropItemVec* items, const char* key, luabind::object object, const char* name)
 {
-	return		(PHelper().CreateS32(*items,key,wrap_value<s32>(object,name)));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<s32>(object,name)));
 }
 
 U8Value* CScriptPropertiesListHelper::CreateU8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  u8 mn,  u8 mx,  u8 inc)
 {																											   
-	return		(PHelper().CreateU8(*items,key,wrap_value<u8>(object,name),mn,mx,inc));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u8>(object,name),mn,mx,inc));												   
 }																											   
 
 U8Value* CScriptPropertiesListHelper::CreateU8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  u8 mn,  u8 mx)
 {																											   
-	return		(PHelper().CreateU8(*items,key,wrap_value<u8>(object,name),mn,mx));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u8>(object,name),mn,mx));												   
 }																											   
 
 U8Value* CScriptPropertiesListHelper::CreateU8		(PropItemVec* items, const char* key, luabind::object object, const char* name,  u8 mn)
 {																											   
-	return		(PHelper().CreateU8(*items,key,wrap_value<u8>(object,name),mn));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u8>(object,name),mn));												   
 }																											   
 
 U8Value* CScriptPropertiesListHelper::CreateU8		(PropItemVec* items, const char* key, luabind::object object, const char* name)
 {																											   
-	return		(PHelper().CreateU8(*items,key,wrap_value<u8>(object,name)));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u8>(object,name)));
 }																											   
 
 U16Value* CScriptPropertiesListHelper::CreateU16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mn, u16 mx, u16 inc)
 {																											   
-	return		(PHelper().CreateU16(*items,key,wrap_value<u16>(object,name),mn,mx,inc));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u16>(object,name),mn,mx,inc));												   
 }																											   
 
 U16Value* CScriptPropertiesListHelper::CreateU16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mn, u16 mx)
 {																											   
-	return		(PHelper().CreateU16(*items,key,wrap_value<u16>(object,name),mn,mx));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u16>(object,name),mn,mx));												   
 }																											   
 
 U16Value* CScriptPropertiesListHelper::CreateU16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mn)
 {																											   
-	return		(PHelper().CreateU16(*items,key,wrap_value<u16>(object,name),mn));												   
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u16>(object,name),mn));												   
 }																											   
 
 U16Value* CScriptPropertiesListHelper::CreateU16	(PropItemVec* items, const char* key, luabind::object object, const char* name)
 {																											   
-	return		(PHelper().CreateU16(*items,key,wrap_value<u16>(object,name)));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u16>(object,name)));
 }																											   
 
 U32Value* CScriptPropertiesListHelper::CreateU32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mn, u32 mx, u32 inc)
 {
-	return		(PHelper().CreateU32(*items,key,wrap_value<u32>(object,name),mn,mx,inc));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u32>(object,name),mn,mx,inc));
 }
 
 U32Value* CScriptPropertiesListHelper::CreateU32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mn, u32 mx)
 {
-	return		(PHelper().CreateU32(*items,key,wrap_value<u32>(object,name),mn,mx));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u32>(object,name),mn,mx));
 }
 
 U32Value* CScriptPropertiesListHelper::CreateU32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mn)
 {
-	return		(PHelper().CreateU32(*items,key,wrap_value<u32>(object,name),mn));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u32>(object,name),mn));
 }
 
 U32Value* CScriptPropertiesListHelper::CreateU32	(PropItemVec* items, const char* key, luabind::object object, const char* name)
 {
-	return		(PHelper().CreateU32(*items,key,wrap_value<u32>(object,name)));
+	return		(PHelper().CreateNumeric(*items,key,wrap_value<u32>(object,name)));
 }
 
 FloatValue* CScriptPropertiesListHelper::CreateFloat(PropItemVec* items, const char* key, luabind::object object, const char* name, float mn, float mx, float inc, int decim)
@@ -363,93 +363,93 @@ VectorValue* CScriptPropertiesListHelper::CreateVector(PropItemVec* items, const
 
 Flag8Value*		CScriptPropertiesListHelper::CreateFlag8	(PropItemVec* items, const char* key, luabind::object object, const char* name, u8 mask, const char* c0, const char* c1, u32 flags)
 {
-	return		(PHelper().CreateFlag8(*items,key,wrap_value<Flags8>(object,name),mask,c0,c1,flags));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags8>(object,name),mask,c0,c1,flags));
 }
 
 Flag8Value*		CScriptPropertiesListHelper::CreateFlag8	(PropItemVec* items, const char* key, luabind::object object, const char* name, u8 mask, const char* c0, const char* c1)
 {
-	return		(PHelper().CreateFlag8(*items,key,wrap_value<Flags8>(object,name),mask,c0,c1));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags8>(object,name),mask,c0,c1));
 }
 
 Flag8Value*		CScriptPropertiesListHelper::CreateFlag8	(PropItemVec* items, const char* key, luabind::object object, const char* name, u8 mask, const char* c0)
 {
-	return		(PHelper().CreateFlag8(*items,key,wrap_value<Flags8>(object,name),mask,c0));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags8>(object,name),mask,c0));
 }
 
 Flag8Value*		CScriptPropertiesListHelper::CreateFlag8	(PropItemVec* items, const char* key, luabind::object object, const char* name, u8 mask)
 {
-	return		(PHelper().CreateFlag8(*items,key,wrap_value<Flags8>(object,name),mask));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags8>(object,name),mask));
 }
 
 Flag16Value*	CScriptPropertiesListHelper::CreateFlag16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mask, const char* c0, const char* c1, u32 flags)
 {
-	return		(PHelper().CreateFlag16(*items,key,wrap_value<Flags16>(object,name),mask,c0,c1,flags));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags16>(object,name),mask,c0,c1,flags));
 }
 
 Flag16Value*	CScriptPropertiesListHelper::CreateFlag16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mask, const char* c0, const char* c1)
 {
-	return		(PHelper().CreateFlag16(*items,key,wrap_value<Flags16>(object,name),mask,c0,c1));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags16>(object,name),mask,c0,c1));
 }
 
 Flag16Value*	CScriptPropertiesListHelper::CreateFlag16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mask, const char* c0)
 {
-	return		(PHelper().CreateFlag16(*items,key,wrap_value<Flags16>(object,name),mask,c0));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags16>(object,name),mask,c0));
 }
 
 Flag16Value*	CScriptPropertiesListHelper::CreateFlag16	(PropItemVec* items, const char* key, luabind::object object, const char* name, u16 mask)
 {
-	return		(PHelper().CreateFlag16(*items,key,wrap_value<Flags16>(object,name),mask));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags16>(object,name),mask));
 }
 
 Flag32Value*	CScriptPropertiesListHelper::CreateFlag32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mask, const char* c0, const char* c1, u32 flags)
 {
-	return		(PHelper().CreateFlag32(*items,key,wrap_value<Flags32>(object,name),mask,c0,c1,flags));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags32>(object,name),mask,c0,c1,flags));
 }
 
 Flag32Value*	CScriptPropertiesListHelper::CreateFlag32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mask, const char* c0, const char* c1)
 {
-	return		(PHelper().CreateFlag32(*items,key,wrap_value<Flags32>(object,name),mask,c0,c1));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags32>(object,name),mask,c0,c1));
 }
 
 Flag32Value*	CScriptPropertiesListHelper::CreateFlag32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mask, const char* c0)
 {
-	return		(PHelper().CreateFlag32(*items,key,wrap_value<Flags32>(object,name),mask,c0));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags32>(object,name),mask,c0));
 }
 
 Flag32Value*	CScriptPropertiesListHelper::CreateFlag32	(PropItemVec* items, const char* key, luabind::object object, const char* name, u32 mask)
 {
-	return		(PHelper().CreateFlag32(*items,key,wrap_value<Flags32>(object,name),mask));
+	return		(PHelper().CreateFlag(*items,key,wrap_value<Flags32>(object,name),mask));
 }
 
 Token8Value*	CScriptPropertiesListHelper::CreateToken8	(PropItemVec* items, const char* key, luabind::object object, const char* name, CScriptTokenList* token)
 {
-	return		(PHelper().CreateToken8(*items,key,wrap_value<u8>(object,name),&*token->tokens().begin()));
+	return		(PHelper().CreateToken(*items,key,wrap_value<u8>(object,name),&*token->tokens().begin()));
 }
 
 Token16Value*	CScriptPropertiesListHelper::CreateToken16	(PropItemVec* items, const char* key, luabind::object object, const char* name, CScriptTokenList* token)
 {
-	return		(PHelper().CreateToken16(*items,key,wrap_value<u16>(object,name),&*token->tokens().begin()));
+	return		(PHelper().CreateToken(*items,key,wrap_value<u16>(object,name),&*token->tokens().begin()));
 }
 
 Token32Value*	CScriptPropertiesListHelper::CreateToken32	(PropItemVec* items, const char* key, luabind::object object, const char* name, CScriptTokenList* token)
 {
-	return		(PHelper().CreateToken32(*items,key,wrap_value<u32>(object,name),&*token->tokens().begin()));
+	return		(PHelper().CreateToken(*items,key,wrap_value<u32>(object,name),&*token->tokens().begin()));
 }
 
 /*
 RToken8Value*	CScriptPropertiesListHelper::CreateRToken8	(PropItemVec* items, const char* key, luabind::object object, const char* name, xr_rtoken* token, u32 t_cnt)
 {
-	return		(PHelper().CreateRToken8(*items,key,wrap_value<shared_str>(object,name),token));
+	return		(PHelper().CreateRToken(*items,key,wrap_value<shared_str>(object,name),token));
 }
 
 RToken16Value*	CScriptPropertiesListHelper::CreateRToken16	(PropItemVec* items, const char* key, luabind::object object, const char* name, RTokenVec* token)
 {
-	return		(PHelper().CreateRToken16(*items,key,wrap_value<shared_str>(object,name),token));
+	return		(PHelper().CreateRToken(*items,key,wrap_value<shared_str>(object,name),token));
 }
 
 RToken32Value*	CScriptPropertiesListHelper::CreateRToken32	(PropItemVec* items, const char* key, luabind::object object, const char* name, RTokenVec* token)
 {
-	return		(PHelper().CreateRToken32(*items,key,wrap_value<shared_str>(object,name),token));
+	return		(PHelper().CreateRToken(*items,key,wrap_value<shared_str>(object,name),token));
 }
 */
 

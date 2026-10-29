@@ -372,7 +372,7 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	PHelper().CreateFloat(items, "Density", &dd->m_fDensityFactor, 0.1f, 1.0f);
 	PHelper().CreateFloat(items, "Min Scale", &dd->m_fMinScale, 0.1f, 100.0f);
 	PHelper().CreateFloat(items, "Max Scale", &dd->m_fMaxScale, 0.1f, 100.f);
-	PHelper().CreateFlag32(items, "No Waving", &dd->m_Flags, DO_NO_WAVING);
+	PHelper().CreateFlag(items, "No Waving", &dd->m_Flags, DO_NO_WAVING);
 
 	m_Props->AssignItems(items);
 }

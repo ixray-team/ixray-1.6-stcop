@@ -903,8 +903,8 @@ bool ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
 
 void ESceneWallmarkTool::FillPropObjects(const char* pref, PropItemVec& items)
 {
-    PHelper().CreateFlag32		(items, PrepareKey(pref,"Common\\Draw Wallmarks"),	&m_Flags, 		flDrawWallmark);
-    PHelper().CreateFlag32		(items,	PrepareKey(pref,"Common\\Alignment"),		&m_Flags, 		flAxisAlign, "By Camera", "By World Axis");
+    PHelper().CreateFlag		(items, PrepareKey(pref,"Common\\Draw Wallmarks"),	&m_Flags, 		flDrawWallmark);
+    PHelper().CreateFlag		(items,	PrepareKey(pref,"Common\\Alignment"),		&m_Flags, 		flAxisAlign, "By Camera", "By World Axis");
     PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Width"),			&m_MarkWidth, 	0.01f, 10.f);
     PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Height"),			&m_MarkHeight, 	0.01f, 10.f);
     PHelper().CreateAngle	 	(items, PrepareKey(pref,"Common\\Rotate"),			&m_MarkRotate);

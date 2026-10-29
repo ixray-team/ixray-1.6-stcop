@@ -4,7 +4,6 @@
 
 #include "ParticleEffectActions.h"
 #include "FolderLib.h"
-#include "../../Public/PropertiesListHelper.h"
 #include "../../../Layers/xrRenderPC_R4/particle_core/noise.h"
 
 using namespace PAPI; 
@@ -778,7 +777,7 @@ void 	EParticleAction::FillProp	(PropItemVec& items, const char* pref, u32 clr)
 		case tpInt:
 			{
 				PInt& el	= ints[order.name];
-				V=PHelper().CreateS32			(items,	PrepareKey(pref,name).c_str(), &el.val, el.mn, el.mx);
+				V=PHelper().CreateNumeric			(items,	PrepareKey(pref,name).c_str(), &el.val, el.mn, el.mx);
 				break;
 			}
 		case tpBool:
@@ -803,14 +802,14 @@ void 	EParticleAction::FillProp	(PropItemVec& items, const char* pref, u32 clr)
 			{
 				auto& elem = enums[order.name];
 				VERIFY(elem.tokens);
-				V=PHelper().CreateToken32(items, PrepareKey(pref, name).c_str(), &elem.value, elem.tokens);
+				V=PHelper().CreateToken(items, PrepareKey(pref, name).c_str(), &elem.value, elem.tokens);
 			}
 		}
 		if (V) V->Owner()->prop_color	= clr;
 	}
-	V=PHelper().CreateFlag32			(items,	PrepareKey(pref,"Draw").c_str(), 			&flags, flDraw);
+	V=PHelper().CreateFlag			(items,	PrepareKey(pref,"Draw").c_str(), 			&flags, flDraw);
 	V->Owner()->prop_color				= clr;
-	V=PHelper().CreateFlag32			(items,	PrepareKey(pref,"Enabled").c_str(), 		&flags, flEnabled);
+	V=PHelper().CreateFlag			(items,	PrepareKey(pref,"Enabled").c_str(), 		&flags, flEnabled);
 	V->Owner()->prop_color				= clr;
 }
 

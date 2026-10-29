@@ -151,8 +151,8 @@ void ESceneSpawnTool::RemoveControls()
 
 void ESceneSpawnTool::FillProp(const char* pref, PropItemVec& items)
 {            
-//.	PHelper().CreateFlag32(items, PrepareKey(pref,"Common\\Show Spawn Type"),	&m_Flags,		flShowSpawnType);
-//.	PHelper().CreateFlag32(items, PrepareKey(pref,"Common\\Trace Visibility"),	&m_Flags,		flPickSpawnType);
+//.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Show Spawn Type"),	&m_Flags,		flShowSpawnType);
+//.	PHelper().CreateFlag(items, PrepareKey(pref,"Common\\Trace Visibility"),	&m_Flags,		flPickSpawnType);
 	inherited::FillProp	(pref, items);
 }
 
