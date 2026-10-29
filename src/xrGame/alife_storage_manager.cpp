@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "alife_storage_manager.h"
+#include "../../xrCore/Kernel/TaskbarProgress.h"
 
 #include "Actor.h"
 #include "alife_simulator_header.h"
@@ -213,8 +214,29 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 	Level().autosave_manager().on_game_loaded();
 }
 
-bool CALifeStorageManager::load(const char* save_name_no_check)
+namespace
 {
+// Loading a save in game does not reload the level, so the load scope is opened here.
+// During a level load the engine reference counter already keeps the scope open.
+class CSaveLoadScope
+{
+public:
+	CSaveLoadScope()
+	{
+		pApp->LoadBegin();
+	}
+
+	~CSaveLoadScope()
+	{
+		pApp->LoadEnd();
+	}
+
+	CSaveLoadScope(const CSaveLoadScope&) = delete;
+	CSaveLoadScope& operator=(const CSaveLoadScope&) = delete;
+};
+} // namespace
+
+bool CALifeStorageManager::load(const char* save_name_no_check){
 	const char* game_saves_path		= FS.get_path("$game_saves$")->m_Path;
 
 	string_path					save_name;
@@ -222,6 +244,8 @@ bool CALifeStorageManager::load(const char* save_name_no_check)
 
 	CTimer timer;
 	timer.Start();
+
+	CSaveLoadScope LoadScope;
 
 	string_path					saveBackup;
 	xr_strcpy					(saveBackup,m_save_name);
@@ -270,6 +294,18 @@ bool CALifeStorageManager::load(const char* save_name_no_check)
 	xr_strconcat(temp, g_pStringTable->translate("st_loading_saved_game").c_str(), " \"", save_name, IXRAY_DEF_SAVE_EXTENSION, "\"");
 	g_pGamePersistent->SetLoadStageTitle(temp);
 	g_pGamePersistent->LoadTitle();
+
+	// >>> UX-PROGRESS: a save load has no stage sequence of its own, so keep the taskbar busy.
+	// A level load in progress keeps its own determinate progress and is not affected.
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (Taskbar.IsInitialized())
+	{
+		xr_string Tooltip = "IX-Ray Engine - ";
+		Tooltip += temp;
+		Taskbar.SetTooltip(Tooltip.c_str());
+		Taskbar.SetState(ETaskbarProgressState::Indeterminate);
+		Taskbar.Update();
+	}
 
 	unload();
 	reload(m_section);

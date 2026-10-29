@@ -7,6 +7,7 @@
 #include "ui_main.h"
 #include "D3DUtils.h"
 #include "SoundManager.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
 #include "../Layers/xrRenderPC_R4/PSLibrary.h"
 #include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
 
@@ -1000,6 +1001,18 @@ void TUI::ProgressDraw()
 		pbi->GetInfo(txt, p, m);
 		// progress
 		ProgressStatus = fis_zero(m) ? 0 : (int)((p / m) * 100);
+	}
+
+	// >>> UX-PROGRESS: mirror the editor progress to the taskbar.
+	// Operations that block the UI thread (AI map generation, exports) report their progress here,
+	// so the taskbar is refreshed from this thread instead of waiting for the next frame.
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (pbi != nullptr && Taskbar.IsInitialized())
+	{
+		const int Progress = std::clamp((int)ProgressStatus, 0, 100);
+		Taskbar.SetState(ETaskbarProgressState::Normal);
+		Taskbar.SetProgress((u64)Progress, 100);
+		Taskbar.Update();
 	}
 }
 

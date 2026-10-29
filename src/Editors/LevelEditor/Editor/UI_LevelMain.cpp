@@ -1740,7 +1740,9 @@ void CLevelMain::UpdateTaskbar()
 		return;
 	}
 
-	if (LoaderEvent.IsBusy())
+	const bool Busy = LoaderEvent.IsBusy() || EContext.UI->IsLoading;
+
+	if (Busy)
 	{
 		if (!TaskbarActive)
 		{
@@ -1749,7 +1751,10 @@ void CLevelMain::UpdateTaskbar()
 			TaskbarProgress = -1;
 
 			const char* Text = LoaderEvent.GetTaskbarText();
-			CTaskbarProgress::Instance().SetTooltip(Text != nullptr ? Text : "IX-Ray Level Editor");
+			if (Text != nullptr)
+			{
+				CTaskbarProgress::Instance().SetTooltip(Text);
+			}
 			CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
 		}
 

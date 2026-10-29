@@ -10,13 +10,37 @@
 
 #include "../xrCore/git_version.h"
 #include "../xrCore/CrashDumpHelper.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
 #endif
 
-int CApplication::Run()
+namespace
 {
+// Mirrors the startup splash progress to the taskbar. The main loop is not running yet,
+// so the pending state is flushed explicitly.
+void SetStartupProgress(int Progress, const char* Status)
+{
+	splash::SetProgressStatus(Progress, Status);
+
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (!Taskbar.IsInitialized())
+	{
+		return;
+	}
+
+	xr_string Tooltip = "IX-Ray Engine - ";
+	Tooltip += Status;
+
+	Taskbar.SetState(ETaskbarProgressState::Normal);
+	Taskbar.SetProgress((u64)Progress, 100);
+	Taskbar.SetTooltip(Tooltip.c_str());
+	Taskbar.Update();
+}
+} // namespace
+
+int CApplication::Run(){
 	// Check for another instance
 #if defined(NO_MULTI_INSTANCES) && defined(IXR_WINDOWS)
 	Platform::CMutexHandle CheckPresenceMutex = CheckSingleInstance();
@@ -65,20 +89,20 @@ void CApplication::InitEngine()
 	xrLogger::EnableFastDebugLog();
 #endif
 
-	splash::SetProgressStatus(30, "Initializing engine");
+	SetStartupProgress(30, "Initializing engine");
 	EngineLoadStage2();
 
-	splash::SetProgressStatus(40, "Calculating renderer list");
+	SetStartupProgress(40, "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
 	Console = new CConsole();
 
-	splash::SetProgressStatus(50, "Reading user settings");
+	SetStartupProgress(50, "Reading user settings");
 	EngineLoadStage3();
 
 	ConfigureRenderer();
 
-	splash::SetProgressStatus(60, "Initializing engine external");
+	SetStartupProgress(60, "Initializing engine external");
 	Engine.External.Initialize();
 
 	Msg
@@ -88,14 +112,14 @@ void CApplication::InitEngine()
 		_VER, _HASH, _BRANCH, _AUTHOR
 	);
 
-	splash::SetProgressStatus(70, "Creating device");
+	SetStartupProgress(70, "Creating device");
 	EngineLoadStage4();
 
-	splash::SetProgressStatus(80, "Loading custom settings");
+	SetStartupProgress(80, "Loading custom settings");
 	LoadCustomSettings();
 	InitDebugTools();
 
-	splash::SetProgressStatus(90, "Loading menu");
+	SetStartupProgress(90, "Loading menu");
 	EngineLoadStage5();
 }
 
@@ -115,10 +139,10 @@ int CApplication::BeginPlay()
 		return -1;
 	}
 
-	splash::SetProgressStatus(5, "Initializing debugger");
+	SetStartupProgress(5, "Initializing debugger");
 	Debug._initialize(false);
 	
-	splash::SetProgressStatus(10, "Calculating display modes");
+	SetStartupProgress(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
 	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
@@ -131,7 +155,12 @@ int CApplication::BeginPlay()
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
 
-	splash::SetProgressStatus(20, "Initializing xrCore");
+	if (!Autotest::Active())
+	{
+		CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
+	}
+
+	SetStartupProgress(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
 
 	return 1;
@@ -141,6 +170,7 @@ void CApplication::EndPlay()
 {
 	PROF_EVENT("END_PLAY");
 	SteamWorks.EndPlay();
+	CTaskbarProgress::Instance().Release();
 	xr_delete(g_pStringTable);
 	if (g_AppInfo.Window)
 	{
