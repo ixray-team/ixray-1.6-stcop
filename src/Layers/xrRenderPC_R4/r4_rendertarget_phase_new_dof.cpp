@@ -13,6 +13,8 @@ static D3D_VIEWPORT VP_DOF = {
 
 void CRenderTarget::phase_new_dof()
 {
+	GPU_EVENT(phase_new_dof);
+
     // -------------------------------
     // 0) Focus (1x1)
     // -------------------------------

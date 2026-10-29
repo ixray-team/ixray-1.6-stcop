@@ -264,6 +264,7 @@ void CRenderTarget::phase_combine()
 	phase_bloom_downsample();
 	phase_bloom_upsample();
 	phase_new_luminance();
+	phase_new_dof();
 
 	u_setrt(rt_Back_Buffer, 0, 0, 0);
 	RImplementation.rmNormal();
