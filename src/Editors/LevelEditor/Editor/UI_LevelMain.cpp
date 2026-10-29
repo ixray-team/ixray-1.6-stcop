@@ -14,7 +14,7 @@
 #include "ShaderEditor/UI_shadertools.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/Coder/UICoderForm.h"
-#include "Nodes/Logic/UILogicEditorForm.h"
+#include "Nodes/UINodesEditorForm.h"
 #include "UI/UISharedMaterialsLibrary.h"
 
 ECORE_API extern bool bIsLevelEditor;
@@ -317,9 +317,9 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		return UICoderForm::Save();
 	}
 
-	if (!p1.IsString() && UILogicEditorForm::IsActive())
+	if (!p1.IsString() && UINodesEditorForm::IsActive())
 	{
-		return UILogicEditorForm::Save();
+		return UINodesEditorForm::Save();
 	}
 
 	LUI->LoaderEvent.Wait();
@@ -702,9 +702,9 @@ static bool UndoEditorTab(bool Redo, bool& Handled)
 	{
 		Result = UICoderForm::Undo(Redo);
 	}
-	else if (UILogicEditorForm::IsActive())
+	else if (UINodesEditorForm::IsActive())
 	{
-		Result = UILogicEditorForm::Undo(Redo);
+		Result = UINodesEditorForm::Undo(Redo);
 	}
 	else
 	{

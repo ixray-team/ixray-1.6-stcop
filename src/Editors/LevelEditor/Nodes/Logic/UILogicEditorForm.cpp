@@ -4,10 +4,13 @@
 #include "imgui_internal.h"
 #include "../../Editor/Utils/ContentView.h"
 #include "../../UI/Coder/UICoderForm.h"
+#include "../NodesCommon.h"
+#include "../UINodesEditorForm.h"
 
 #include <regex>
 
 namespace ed = ax::NodeEditor;
+using namespace NodesUI;
 
 UILogicEditorForm* UILogicEditorForm::Form = nullptr;
 
@@ -16,10 +19,8 @@ static const char* DetailsWindow = "Details###LogicDetails";
 static const char* OutlinerWindow = "Outliner###LogicOutliner";
 static const char* MessagesWindow = "Message Log###LogicMessages";
 static const char* DebuggerWindow = "Logic Debugger###LogicDebugger";
-static const char* ContentWindow = "Content Browser##LG";
 static const char* Utf8BomText = "\xEF\xBB\xBF";
 
-static constexpr float PinSize = 14.0f;
 static constexpr size_t UndoLimit = 128;
 
 static const ImColor ColorInfoHas = ImColor(110, 200, 90);
@@ -28,8 +29,6 @@ static const ImColor ColorFunction = ImColor(90, 170, 240);
 static const ImColor ColorFunctionNot = ImColor(240, 150, 60);
 static const ImColor ColorProbability = ImColor(230, 210, 80);
 static const ImColor ColorEffect = ImColor(190, 120, 240);
-static const ImColor ColorMissing = ImColor(240, 70, 70);
-static const ImColor ColorDim = ImColor(150, 150, 150);
 static const ImColor ColorFunctionHeader = ImColor(150, 95, 230);
 
 // Mods keep their files in UTF-8 without a BOM: CP1251 text with letters is almost never valid UTF-8
@@ -57,52 +56,6 @@ static bool IsUtf8(const xr_string& Raw)
 	return HasMultiByte;
 }
 
-static bool InputString(const char* Label, xr_string& Value, ImGuiInputTextFlags Flags = 0)
-{
-	char Buffer[2048] = {};
-	const size_t Size = std::min(Value.size(), sizeof(Buffer) - 1);
-	memcpy(Buffer, Value.data(), Size);
-	if (ImGui::InputText(Label, Buffer, sizeof(Buffer), Flags))
-	{
-		Value = Buffer;
-		return true;
-	}
-	return false;
-}
-
-static bool PassFilter(const char* Filter, const xr_string& Name)
-{
-	if (Filter[0] == 0)
-	{
-		return true;
-	}
-	xr_string Lower = Name;
-	xr_string Key = Filter;
-	xr_strlwr(Lower);
-	xr_strlwr(Key);
-	return Lower.find(Key) != xr_string::npos;
-}
-
-// Execution pin of UE: a pentagon pointing right
-static void DrawExecPin(ImDrawList* DrawList, ImVec2 Min, float Size, ImColor Color, bool Filled)
-{
-	const float Inset = Size * 0.15f;
-	const ImVec2 A = { Min.x + Inset, Min.y + Inset };
-	const ImVec2 B = { Min.x + Size * 0.55f, Min.y + Inset };
-	const ImVec2 C = { Min.x + Size - Inset, Min.y + Size * 0.5f };
-	const ImVec2 D = { Min.x + Size * 0.55f, Min.y + Size - Inset };
-	const ImVec2 E = { Min.x + Inset, Min.y + Size - Inset };
-	const ImVec2 Points[] = { A, B, C, D, E };
-	if (Filled)
-	{
-		DrawList->AddConvexPolyFilled(Points, 5, Color);
-	}
-	else
-	{
-		DrawList->AddPolyline(Points, 5, Color, ImDrawFlags_Closed, 1.5f);
-	}
-}
-
 static ImColor TokenColor(const LogicCondlist::SToken& Token, bool Effect)
 {
 	if (Effect)
@@ -122,40 +75,12 @@ static ImColor TokenColor(const LogicCondlist::SToken& Token, bool Effect)
 // Rounded chips, wrapped in the width
 static void DrawTokenChips(const xr_vector<LogicCondlist::SToken>& Tokens, bool Effect, float Width)
 {
-	ImDrawList* DrawList = ImGui::GetWindowDrawList();
-	const float StartX = ImGui::GetCursorScreenPos().x;
-	float LineX = 0.0f;
-	bool First = true;
+	xr_vector<SChip> Chips;
 	for (const LogicCondlist::SToken& Token : Tokens)
 	{
-		const xr_string Text = Token.Kind == '~' ? Token.Build() + "%" : Token.Build();
-		const ImVec2 TextSize = ImGui::CalcTextSize(Text.c_str());
-		const ImVec2 ChipSize = { TextSize.x + 10.0f, TextSize.y + 2.0f };
-		if (!First && LineX + ChipSize.x <= Width)
-		{
-			ImGui::SameLine(0.0f, 4.0f);
-		}
-		else
-		{
-			LineX = 0.0f;
-			if (!First)
-			{
-				ImGui::SetCursorScreenPos({ StartX, ImGui::GetCursorScreenPos().y });
-			}
-		}
-		First = false;
-		LineX += ChipSize.x + 4.0f;
-
-		ImGui::Dummy(ChipSize);
-		const ImVec2 Min = ImGui::GetItemRectMin();
-		const ImVec2 Max = ImGui::GetItemRectMax();
-		ImColor Color = TokenColor(Token, Effect);
-		ImColor Fill = Color;
-		Fill.Value.w = 0.18f;
-		DrawList->AddRectFilled(Min, Max, Fill, 4.0f);
-		DrawList->AddRect(Min, Max, Color, 4.0f);
-		DrawList->AddText({ Min.x + 5.0f, Min.y + 1.0f }, Color, Text.c_str());
+		Chips.push_back({ Token.Kind == '~' ? Token.Build() + "%" : Token.Build(), TokenColor(Token, Effect), "" });
 	}
+	DrawChips(Chips, Width);
 }
 
 ed::PinId UILogicEditorForm::InputPin(int Section)
@@ -273,70 +198,71 @@ UILogicEditorForm::SDocument::~SDocument()
 	}
 }
 
-static void BuildWorkspaceLayout()
-{
-	static bool Checked = false;
-	if (Checked)
-	{
-		return;
-	}
-
-	ImGuiWindow* Viewport = ImGui::FindWindowByName("Render##0");
-	ImGuiWindow* Graph = ImGui::FindWindowByName(GraphWindow);
-	ImGuiWindow* Browser = ImGui::FindWindowByName(ContentWindow);
-	if (Viewport == nullptr || Viewport->DockNode == nullptr || Graph == nullptr || Browser == nullptr)
-	{
-		return;
-	}
-	Checked = true;
-
-	if (Graph->DockId != 0 && Browser->DockId != 0)
-	{
-		return;
-	}
-
-	ImGuiID Center = Viewport->DockId;
-	ImGuiID Left = ImGui::DockBuilderSplitNode(Center, ImGuiDir_Left, 0.2f, nullptr, &Center);
-	const ImGuiID Right = ImGui::DockBuilderSplitNode(Center, ImGuiDir_Right, 0.27f, nullptr, &Center);
-	const ImGuiID Bottom = ImGui::DockBuilderSplitNode(Center, ImGuiDir_Down, 0.2f, nullptr, &Center);
-	const ImGuiID LeftBottom = ImGui::DockBuilderSplitNode(Left, ImGuiDir_Down, 0.45f, nullptr, &Left);
-	ImGui::DockBuilderDockWindow(ContentWindow, Left);
-	ImGui::DockBuilderDockWindow(OutlinerWindow, LeftBottom);
-	ImGui::DockBuilderDockWindow(DetailsWindow, Right);
-	ImGui::DockBuilderDockWindow(MessagesWindow, Bottom);
-	ImGui::DockBuilderDockWindow(DebuggerWindow, Bottom);
-	ImGui::DockBuilderDockWindow(GraphWindow, Center);
-	ImGui::DockBuilderFinish(ImGui::DockNodeGetRootNode(Viewport->DockNode)->ID);
-}
-
 UILogicEditorForm::UILogicEditorForm()
 {
+	R_ASSERT(Form == nullptr);
+	Form = this;
+	Device.seqFrame.Add(this);
 }
 
 UILogicEditorForm::~UILogicEditorForm()
 {
+	Device.seqFrame.Remove(this);
+	Form = nullptr;
 }
 
-void UILogicEditorForm::Create(int Tab)
+const char* UILogicEditorForm::GetName() const
 {
-	R_ASSERT(Form == nullptr);
-	Form = new UILogicEditorForm();
-	Form->TabIndex = Tab;
-	EContext.UI->Push(Form, false);
-	Device.seqFrame.Add(Form);
-	Form->SetStateName("LogicEditorForm");
-
-	CContentView* Browser = new CContentView(ContentWindow);
-	Browser->Init();
-	Browser->TabIndex = Tab;
-	Browser->SetStateName("LogicContentBrowser");
-	EContext.UI->Push(Browser, false);
-	Form->Browser = Browser;
+	return "Logic";
 }
 
-void UILogicEditorForm::Serialize(nlohmann::json& Data, bool IsSaving)
+const char* UILogicEditorForm::GetIcon() const
 {
-	IEditorWnd::Serialize(Data, IsSaving);
+	return ICON_FA_DIAGRAM_PROJECT;
+}
+
+void UILogicEditorForm::GetWindows(xr_vector<SNodesWindow>& Windows) const
+{
+	Windows.push_back({ GraphWindow, ENodesDock::Graph });
+	Windows.push_back({ OutlinerWindow, ENodesDock::Outliner });
+	Windows.push_back({ DetailsWindow, ENodesDock::Details });
+	Windows.push_back({ MessagesWindow, ENodesDock::Bottom });
+	Windows.push_back({ DebuggerWindow, ENodesDock::Bottom });
+}
+
+void UILogicEditorForm::DrawModeTopBar(float ButtonSize)
+{
+	DrawToolbar(Current(), ButtonSize);
+}
+
+bool UILogicEditorForm::IsModeModified() const
+{
+	return std::any_of(Documents.begin(), Documents.end(), [](const xr_unique_ptr<SDocument>& Document) { return Document->Modified; });
+}
+
+bool UILogicEditorForm::SaveMode()
+{
+	return Save();
+}
+
+bool UILogicEditorForm::ReloadMode()
+{
+	return Reload();
+}
+
+bool UILogicEditorForm::UndoMode(bool Redo)
+{
+	return Undo(Redo);
+}
+
+xr_string UILogicEditorForm::GetModePath() const
+{
+	const SDocument* Document = Current();
+	return Document != nullptr ? Document->Path : xr_string();
+}
+
+void UILogicEditorForm::SerializeMode(nlohmann::json& Data, bool IsSaving)
+{
 	if (IsSaving)
 	{
 		nlohmann::json Files = nlohmann::json::array();
@@ -372,34 +298,21 @@ void UILogicEditorForm::Serialize(nlohmann::json& Data, bool IsSaving)
 	EContext.UI->RequestedTabIndex = RequestedTab;
 	EContext.UI->ActiveTabIndex = ActiveTab;
 
-	size_t Selected = 0;
-	if (ReadState(Data, "active", Selected) && Selected < Documents.size())
+	auto Selected = Data.find("active");
+	if (Selected != Data.end() && Selected->is_number_unsigned() && Selected->get<size_t>() < Documents.size())
 	{
-		SelectRequest = (int)Selected;
+		SelectRequest = (int)Selected->get<size_t>();
 	}
-}
-
-void UILogicEditorForm::Destroy()
-{
-	if (Form != nullptr)
-	{
-		Device.seqFrame.Remove(Form);
-	}
-	xr_delete(Form);
 }
 
 bool UILogicEditorForm::IsActive()
 {
-	return Form != nullptr && EContext.UI->ActiveTabIndex == Form->TabIndex;
+	return Form != nullptr && UINodesEditorForm::IsActive(ENodesMode::Logic);
 }
 
 bool UILogicEditorForm::IsModified()
 {
-	if (Form == nullptr)
-	{
-		return false;
-	}
-	return std::any_of(Form->Documents.begin(), Form->Documents.end(), [](const xr_unique_ptr<SDocument>& Document) { return Document->Modified; });
+	return Form != nullptr && Form->IsModeModified();
 }
 
 bool UILogicEditorForm::CanOpen(const xr_string& FullPath)
@@ -417,8 +330,7 @@ bool UILogicEditorForm::OpenFile(const xr_string& FullPath)
 		return false;
 	}
 
-	EContext.UI->RequestedTabIndex = Form->TabIndex;
-	EContext.UI->ActiveTabIndex = Form->TabIndex;
+	UINodesEditorForm::Activate(ENodesMode::Logic);
 
 	xr_string Key = FullPath;
 	xr_strlwr(Key);
@@ -476,13 +388,7 @@ bool UILogicEditorForm::Reload()
 
 void UILogicEditorForm::RevealInBrowser()
 {
-	SDocument* Document = Form != nullptr ? Form->Current() : nullptr;
-	if (Document == nullptr || Form->Browser == nullptr)
-	{
-		return;
-	}
-	Form->Browser->Reveal(Document->Path);
-	ImGui::SetWindowFocus(ContentWindow);
+	UINodesEditorForm::RevealInBrowser();
 }
 
 bool UILogicEditorForm::Undo(bool Redo)
@@ -492,6 +398,11 @@ bool UILogicEditorForm::Undo(bool Redo)
 }
 
 UILogicEditorForm::SDocument* UILogicEditorForm::Current()
+{
+	return Active < Documents.size() ? Documents[Active].get() : nullptr;
+}
+
+const UILogicEditorForm::SDocument* UILogicEditorForm::Current() const
 {
 	return Active < Documents.size() ? Documents[Active].get() : nullptr;
 }
@@ -515,6 +426,7 @@ bool UILogicEditorForm::Load(SDocument& Document)
 	std::erase(Text, '\r');
 
 	Document.Logic.Load(Text);
+	Document.SavedText = Document.Logic.Save();
 	Document.Modified = false;
 	Document.LayoutDelay = 2;
 	Document.UndoStack.clear();
@@ -551,6 +463,7 @@ bool UILogicEditorForm::SaveDocument(SDocument& Document)
 	Writer->w(Data.data(), Data.size());
 	FS.w_close(Writer);
 
+	Document.SavedText = Text;
 	Document.Modified = false;
 	StatusText = "Saved " + Document.Path;
 	ELog.Msg(mtInformation, "Logic: saved %s", Document.Path.c_str());
@@ -633,7 +546,7 @@ bool UILogicEditorForm::UndoDocument(SDocument& Document, bool Redo)
 	const xr_string Text = From.back();
 	From.pop_back();
 	Reload(Document, Text);
-	Document.Modified = true;
+	Document.Modified = Document.Logic.Save() != Document.SavedText;
 	return true;
 }
 
@@ -1100,14 +1013,6 @@ void UILogicEditorForm::Layout(SDocument& Document)
 	Document.NeedFit = true;
 }
 
-void UILogicEditorForm::DrawTopBar(float ButtonSize)
-{
-	if (Form != nullptr)
-	{
-		Form->DrawToolbar(Form->Current(), ButtonSize);
-	}
-}
-
 void UILogicEditorForm::DrawToolbar(SDocument* Document, float ButtonSize)
 {
 	auto Hint = [](const char* Text)
@@ -1159,46 +1064,12 @@ void UILogicEditorForm::DrawToolbar(SDocument* Document, float ButtonSize)
 
 bool UILogicEditorForm::BeginDocked(const char* Name)
 {
-	const bool Visible = ImGui::Begin(Name);
-	ImGuiWindow* Window = ImGui::GetCurrentWindow();
-	ImGuiDockNode* Node = Window->DockNode;
-	if (Node == nullptr || Node->TabBar == nullptr)
-	{
-		return Visible;
-	}
-
-	if (RestoreFrames > 0)
-	{
-		auto Iter = DockSelection.find(Node->ID);
-		if (Iter != DockSelection.end() && Iter->second == Window->TabId && Node->TabBar->SelectedTabId != Window->TabId)
-		{
-			if (ImGuiTabItem* Tab = ImGui::TabBarFindTabByID(Node->TabBar, Window->TabId))
-			{
-				ImGui::TabBarQueueFocus(Node->TabBar, Tab);
-			}
-		}
-	}
-	else if (Window->DockTabIsVisible)
-	{
-		DockSelection[Node->ID] = Window->TabId;
-	}
-	return Visible;
+	return Dock.Begin(Name);
 }
 
-void UILogicEditorForm::Draw()
+void UILogicEditorForm::DrawMode()
 {
-	BuildWorkspaceLayout();
-
-	// The tab was hidden: the selection of the docks is restored for a few frames
-	if (ImGui::GetFrameCount() > LastDrawFrame + 1)
-	{
-		RestoreFrames = 3;
-	}
-	else if (RestoreFrames > 0)
-	{
-		--RestoreFrames;
-	}
-	LastDrawFrame = ImGui::GetFrameCount();
+	Dock.BeginFrame();
 
 	SDocument* Document = nullptr;
 	if (BeginDocked(GraphWindow))
@@ -1254,11 +1125,7 @@ void UILogicEditorForm::Draw()
 		}
 		else
 		{
-			const ImVec2 Avail = ImGui::GetContentRegionAvail();
-			const char* Text = ICON_FA_DIAGRAM_PROJECT "  Drop a logic .ltx from configs\\scripts here or double click it in the Content Browser";
-			const ImVec2 TextSize = ImGui::CalcTextSize(Text);
-			ImGui::SetCursorPos({ ImGui::GetCursorPosX() + std::max(0.0f, (Avail.x - TextSize.x) * 0.5f), ImGui::GetCursorPosY() + Avail.y * 0.45f });
-			ImGui::TextDisabled("%s", Text);
+			DrawCenteredHint(ICON_FA_DIAGRAM_PROJECT "  Drop a logic .ltx from configs\\scripts here or double click it in the Content Browser");
 		}
 
 		// Files from the Content Browser
@@ -1496,28 +1363,9 @@ void UILogicEditorForm::DrawGraph(SDocument& Document)
 	const bool FunctionView = !Document.Function.empty();
 	ed::SetCurrentEditor(FunctionView ? Document.FunctionEditor : Document.Editor);
 
-	ed::Style& Style = ed::GetStyle();
-	Style.NodeRounding = 7.0f;
-	Style.NodePadding = ImVec4(10, 6, 10, 8);
-	Style.NodeBorderWidth = 1.0f;
-	Style.HoveredNodeBorderWidth = 2.0f;
-	Style.SelectedNodeBorderWidth = 2.5f;
-	Style.LinkStrength = 120.0f;
-	Style.PinRounding = 0.0f;
-	Style.FlowDuration = 1.2f;
-	Style.Colors[ed::StyleColor_Bg] = FunctionView ? ImColor(30, 28, 36) : ImColor(32, 32, 32);
-	Style.Colors[ed::StyleColor_Grid] = ImColor(70, 70, 70, 90);
-	Style.Colors[ed::StyleColor_NodeBg] = ImColor(18, 18, 18, 240);
-	Style.Colors[ed::StyleColor_NodeBorder] = ImColor(0, 0, 0, 220);
-	Style.Colors[ed::StyleColor_HovNodeBorder] = ImColor(200, 200, 200, 160);
-	Style.Colors[ed::StyleColor_SelNodeBorder] = ImColor(255, 170, 40);
-	Style.Colors[ed::StyleColor_SelLinkBorder] = ImColor(255, 170, 40);
-	Style.Colors[ed::StyleColor_HovLinkBorder] = ImColor(200, 200, 200, 160);
-	Style.Colors[ed::StyleColor_Flow] = ImColor(255, 170, 40);
-	Style.Colors[ed::StyleColor_FlowMarker] = ImColor(255, 210, 120);
-	Style.Colors[ed::StyleColor_PinRect] = ImColor(0, 0, 0, 0);
-	Style.Colors[ed::StyleColor_PinRectBorder] = ImColor(0, 0, 0, 0);
+	ApplyGraphStyle(FunctionView);
 
+	Document.Minimap.TakeClick();
 	ed::Begin(FunctionView ? "##logic_function" : "##logic_graph");
 
 	if (!FunctionView && Document.LayoutDelay > 0 && --Document.LayoutDelay == 0)
@@ -1648,6 +1496,8 @@ void UILogicEditorForm::DrawGraph(SDocument& Document)
 	DrawContextMenus(Document);
 
 	ed::End();
+	// After End: the minimap is an overlay in screen space
+	Document.Minimap.Draw(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	ed::SetCurrentEditor(nullptr);
 }
 
@@ -1656,6 +1506,7 @@ void UILogicEditorForm::DrawNode(SDocument& Document, SLogicSection& Section)
 	const bool Function = IsFunction(Document.Logic, Section);
 	const ESchemeKind Kind = GetKind(Section);
 	const ImColor HeaderColor = Function ? ColorFunctionHeader : KindColor(Kind);
+	Document.Minimap.AddNode(Section.Id, HeaderColor);
 	// Play In Editor: the section the debugged object runs
 	const bool DebugActive = IsDebugged(Document) && Section.Name == Debug.Active;
 	const bool Breakpoint = Document.Breakpoints.contains(Section.Name);
@@ -1944,14 +1795,7 @@ void UILogicEditorForm::DrawNode(SDocument& Document, SLogicSection& Section)
 		const float HeaderHeight = HeaderBottom - Origin.y + ed::GetStyle().NodePadding.y;
 		const ImVec2 Min = Position;
 		const ImVec2 Max = { Position.x + Size.x, Position.y + HeaderHeight };
-		ImColor Dark = HeaderColor;
-		Dark.Value.x *= 0.25f;
-		Dark.Value.y *= 0.25f;
-		Dark.Value.z *= 0.25f;
-		DrawList->AddRectFilled(Min, Max, Dark, Rounding, ImDrawFlags_RoundCornersTop);
-		DrawList->AddRectFilled(Min, { Min.x + Rounding * 2.0f, Max.y }, HeaderColor, Rounding, ImDrawFlags_RoundCornersTopLeft);
-		DrawList->AddRectFilledMultiColor({ Min.x + Rounding, Min.y }, { Max.x - Rounding, Max.y }, HeaderColor, Dark, Dark, HeaderColor);
-		DrawList->AddLine({ Min.x, Max.y }, { Max.x, Max.y }, ImColor(0, 0, 0, 200), 1.0f);
+		DrawNodeHeader(DrawList, Position, Size.x, HeaderHeight, HeaderColor);
 		// A function keeps the colour of its scheme as a stripe
 		if (Function)
 		{
@@ -2012,6 +1856,7 @@ void UILogicEditorForm::DrawLinks(SDocument& Document)
 			}
 
 			ed::Link(Id, From, InputPin(Target->Id), Color, IsInherited ? 1.5f : 2.5f);
+			Document.Minimap.AddLink(Section.Id, Target->Id);
 			if ((Flow && (Section.Id == Document.Selected || Target->Id == Document.Selected)) || (Passing && Debug.Flow))
 			{
 				ed::Flow(Id);
@@ -2448,7 +2293,46 @@ void UILogicEditorForm::DrawOutliner(SDocument* Document)
 	{
 		if (Document == nullptr)
 		{
-			ImGui::TextDisabled("No logic file");
+			// No file is opened: offer the logic files
+			if (!LogicFilesListed)
+			{
+				LogicFilesListed = true;
+				FS_FileSet Files;
+				string_path Scripts = {};
+				FS.update_path(Scripts, _game_config_, "scripts\\");
+				FS.file_list(Files, Scripts, FS_ListFiles, "*.ltx");
+				for (const FS_File& File : Files)
+				{
+					LogicFiles.push_back(File.name.c_str());
+				}
+			}
+
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::InputTextWithHint("##outliner_filter", ICON_FA_MAGNIFYING_GLASS " Search files", OutlinerFilter, sizeof(OutlinerFilter));
+			if (ImGui::BeginChild("##outliner_files"))
+			{
+				int Shown = 0;
+				for (const xr_string& Name : LogicFiles)
+				{
+					if (!PassFilter(OutlinerFilter, Name))
+					{
+						continue;
+					}
+					++Shown;
+					if (ImGui::Selectable((xr_string(ICON_FA_FILE " ") + Name).c_str()))
+					{
+						string_path Path = {};
+						FS.update_path(Path, _game_config_, ("scripts\\" + Name).c_str());
+						OutlinerFilter[0] = '\0';
+						OpenFile(Path);
+					}
+				}
+				if (Shown == 0)
+				{
+					ImGui::TextDisabled(LogicFiles.empty() ? "No logic files in configs\scripts" : "No files match the filter");
+				}
+			}
+			ImGui::EndChild();
 		}
 		else
 		{
@@ -2744,51 +2628,6 @@ void UILogicEditorForm::DrawKeySuggestions(SDocument& Document, SLogicSection& S
 	{
 		ShowKeyList = false;
 	}
-}
-
-static void PropRow(const char* Name)
-{
-	const float RowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
-	ImGui::TableNextRow(ImGuiTableRowFlags_None, RowHeight + 1.0f);
-	ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImGuiCol_ChildBg));
-	ImGui::TableNextColumn();
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
-	ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value));
-	XRay::ImGui::TextFramed(Name, { -1, -1 }, { 0.0f, 0.5f }, false);
-
-	ImGui::TableNextColumn();
-	ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::TableTint).Value));
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-}
-
-// TreePop when it returns true
-static bool PropFolder(const char* Label, bool DefaultOpen, const char* RemoveIcon, const char* RemoveTooltip, bool& Remove)
-{
-	const float RowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
-	const ImColor Color = XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint);
-	ImGui::TableNextRow(ImGuiTableRowFlags_None, RowHeight + 1.0f);
-	ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, Color);
-	ImGui::TableNextColumn();
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
-
-	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { XRay::ImGui::GetEditorSize(XRay::ImGui::ButtonTextPaddingY), XRay::ImGui::GetEditorSize(XRay::ImGui::TableTextPaddingY) });
-	ImGui::PushStyleColor(ImGuiCol_Header, Color.Value);
-	ImGui::SetNextItemAllowOverlap();
-	const bool Open = XRay::ImGui::CollapsingHeader(Label, DefaultOpen ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None);
-	ImGui::PopStyleColor();
-	ImGui::PopStyleVar();
-
-	if (RemoveIcon != nullptr)
-	{
-		ImGui::TableSetColumnIndex(1);
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - RowHeight);
-		ImGui::PushStyleColor(ImGuiCol_Button, 0);
-		Remove = ImGui::Button(RemoveIcon, { RowHeight, RowHeight });
-		ImGui::PopStyleColor();
-		ImGui::SetItemTooltip("%s", RemoveTooltip);
-	}
-	return Open;
 }
 
 void UILogicEditorForm::DrawDetails(SDocument* Document)
@@ -3334,7 +3173,7 @@ void UILogicEditorForm::OnFrame()
 			{
 				SetPaused(true);
 				StatusText = "Breakpoint: " + Debug.ObjectName + " switched to [" + Active + "]";
-				EContext.UI->RequestedTabIndex = TabIndex;
+				UINodesEditorForm::Activate(ENodesMode::Logic);
 			}
 		}
 	}

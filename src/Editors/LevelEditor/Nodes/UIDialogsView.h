@@ -6,6 +6,8 @@
 #include "../../xrEProps/Tree/Properties/UIPropertiesForm.h"
 #include "../Editor/Utils/ContentView.h"
 #include "UIDialogLocalization.h"
+#include "NodesMode.h"
+#include "NodesCommon.h"
 
 #include <imgui_node_editor.h>
 
@@ -18,18 +20,28 @@ namespace ax { namespace NodeEditor {
 	}
 } }
 
-class DialogEditor : public IEditorWnd
+// The Dialogs mode of the Nodes tab: gameplay\\dialogs*.xml
+class DialogEditor : public INodesMode
 {
 public:
 	DialogEditor();
 	~DialogEditor() override;
 
-	void Draw() override;
+	const char* GetName() const override;
+	const char* GetIcon() const override;
+	void GetWindows(xr_vector<SNodesWindow>& Windows) const override;
+	void DrawMode() override;
+	void DrawModeTopBar(float ButtonSize) override;
+	bool IsModeModified() const override;
+	bool SaveMode() override;
+	bool ReloadMode() override;
+	bool UndoMode(bool Redo) override;
+	xr_string GetModePath() const override;
+	void SerializeMode(nlohmann::json& Data, bool IsSaving) override;
 
 	static DialogEditor* Instance;
 	static void OpenFile(const xr_path& Path);
 
-	void Show(bool State);
 	void OpenFileInstance(const xr_path& Path);
 
 	// Opens the localization window for the phrase text
@@ -61,6 +73,7 @@ private:
 	void OpenDialog(const shared_str& Str, XML_NODE* Node);
 
 	void SelectNodeEvent(CDialogNode* Node);
+	void OnPropertiesModified();
 
 	void ChangeHasInfo(PropValue*);
 	void ChangeDontHasInfo(PropValue*);
@@ -68,11 +81,20 @@ private:
 	void ChangeNodeHasInfo(PropValue*);
 	void ChangeNodeDontHasInfo(PropValue*);
 	void ChangeNodeGiveInfo(PropValue*);
+	void ChangeNodePrecondition(PropValue*);
+	void ChangeNodeAction(PropValue*);
+	void ChangeNodeText(PropValue*);
+	void ChangeNodeFinal(PropValue*);
+
+	// The value of the Final property of the selected phrase
+	bool SelectedFinal = false;
+	bool RefreshProperties = false;
 
 	void BuildIdMaps();
 	CDialogNode* NodeFromId(ed::NodeId Id);
 	CDialogNode* NodeOwningPin(ed::PinId Id);
-	void LayoutNodes();
+	// False when the sizes of the nodes are not known yet
+	bool LayoutNodes();
 	void DeleteNode(CDialogNode* Node);
 
 	void UpdateSelection();
@@ -82,22 +104,27 @@ private:
 	void DrawNodeHeaderBackground(ed::NodeId Id, float HeaderHeight, ImColor Color);
 	void HandleLinkCreation();
 	void HandleDeletion();
-	void DrawMinimap();
-	void DrawDialogList();
+	void DrawGraph();
+	void DrawOutliner();
+	void DrawDetails();
+	void DrawMessages();
 	void DrawCanvasToolbar();
+	void SelectPhrase(CDialogNode* Node);
 	void DrawContextMenu();
 	void HandleShortcuts();
 	XML_NODE* CurrentDialogNode();
 
 private:
-	bool IsOpen = false;
-	bool IsOpenList = true;
-	bool IsAutoHide = true;
+	CNodesDock Dock;
+	bool Modified = false;
 
 	CXml File;
 	// Name of the opened dialogs file, like "dialogs_jupiter.xml"
 	xr_string DialogFileName;
+	NodesUI::CMinimap Minimap;
 	char DialogFilter[128] = {};
+	// The game dialogs files from [dialogs] files, without the extension
+	xr_vector<xr_string> GameDialogs;
 	CUIDialogLocalization Localization;
 
 	shared_str HasInfo;
@@ -141,19 +168,21 @@ private:
 	xr_map<ed::PinId, XML_NODE*> OutputPinXml;
 	xr_set<ed::PinId> ConnectedPins;
 
-	int NextPinId = 1000000;
-	int NextNodeId = 1;
-	int NextLinkId = 1;
+	// The nodes, the pins and the links share the ImGui ids of the canvas: the ranges are apart
+	u64 NextPinId = 1ull << 32;
+	u64 NextNodeId = 1;
+	u64 NextLinkId = 1ull << 48;
 	bool NeedLayout = false;
 	bool FocusFirstNode = false;
 	bool PendingFocus = false;
 	ed::NodeId PendingSelect = ed::NodeId(0);
 	ImVec2 ContextMouseCanvas = { 0, 0 };
 
+	// The minimap of the last frame, in screen space
+
 	InputBoxState InputBox;
 
 	UIPropertiesForm* Properties = nullptr;
-	CContentView* ContentBrowser = nullptr;
 
 	void AddBranchOutput(CDialogNode* Node);
 };
