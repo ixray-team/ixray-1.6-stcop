@@ -300,7 +300,7 @@ void CDS0_RenderInterface::ScreenshotImpl(ScreenshotMode mode, str_c name, CMemo
 {
 }
 
-GeomData& CDS0_RenderInterface::GetMUSlot(shared_str Name)
+/*GeomData& CDS0_RenderInterface::GetMUSlot(shared_str Name)
 {
 	static GeomData dummy;
 	return dummy;
@@ -316,4 +316,4 @@ void CDS0_RenderInterface::ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReade
 
 void CDS0_RenderInterface::ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs)
 {
-}
+}*/

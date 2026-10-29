@@ -237,7 +237,7 @@ void CScenePhysics::GenerateCForm(CObjectSpace* To, CDB::build_callback cb)
 	VERIFY(!m_object_space);
 	XRay::CForm::CFormatVanilla CForm;
 	CForm.AddStaticGeom({build_data.l_verts, (size_t)build_data.l_vert_it}, {build_data.l_faces, (size_t)build_data.l_face_it});
-	To->Create(CForm, cb, nullptr, false);
+	To->Create(CForm, cb);
 
 	xr_free(build_data.l_faces);
 	xr_free(build_data.l_verts);

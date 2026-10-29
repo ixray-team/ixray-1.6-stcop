@@ -37,37 +37,58 @@ void RainPuddleWaterMap::Build(CObjectSpace* Space)
 	HeightRange.set(0.0f, 0.0f, 0.0f, 0.0f);
 	u32 Size = 1;
 	xr_vector<float> Heights(1, RainPuddleWater::NoWater);
-	xr_vector<const CDB::TRI*> WaterTriangles;
+	xr_vector<xr_array<Fvector, 3>> WaterTriangles;
 	Fbox WaterBounds;
 	WaterBounds.invalidate();
+	
+	auto QueryData = xr_pair{&WaterTriangles, &WaterBounds};
 
 	if (Space)
 	{
-		const auto& Vertices = Space->GetStaticVerts();
-		for (const CDB::TRI& Triangle : Space->GetStaticTris())
+		static CDB::COLLIDER xrc;
+		xrc.custom_query(Space->GetStaticModel(), [](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
 		{
-			if (Triangle.material >= GMLib.CountMaterial())
+			return true;
+		}, nullptr,
+		[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, CDB::ElementID InPrim, void* ptr)
+		{
+			VERIFY(InPrim.IsNotPointer);
+			if (InPrim.IsInstance)
 			{
-				continue;
+				return;
 			}
-			const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
+			
+			auto& StaticTris = Model.tris;
+			auto& verts = Model.verts;
+			auto& Tri = StaticTris[InPrim.Index];
+			
+			if (Tri.material >= GMLib.CountMaterial())
+			{
+				return;
+			}
+			const SGameMtl* Material = GMLib.GetMaterialByIdx(Tri.material);
 			// Passable liquid triangles describe water surfaces, rather than wet solid ground.
 			if (!Material->Flags.test(SGameMtl::flLiquid) || !Material->Flags.test(SGameMtl::flPassable))
 			{
-				continue;
+				return;
 			}
-			const Fvector& A = Vertices[Triangle.verts[0]];
-			const Fvector& B = Vertices[Triangle.verts[1]];
-			const Fvector& C = Vertices[Triangle.verts[2]];
-			if (abs(RainPuddleWater::Edge(A, B, C.x, C.z)) < EPS)
+			
+			auto& TriVerts = Tri.verts;
+			xr_array<Fvector, 3> tri_verts;
+			ToWorldTransform.transform_tiny(tri_verts[0], verts[TriVerts[0]]);
+			ToWorldTransform.transform_tiny(tri_verts[1], verts[TriVerts[1]]);
+			ToWorldTransform.transform_tiny(tri_verts[2], verts[TriVerts[2]]);
+			
+			if (abs(RainPuddleWater::Edge(tri_verts[0], tri_verts[1], tri_verts[2].x, tri_verts[2].z)) < EPS)
 			{
-				continue;
+				return;
 			}
-			WaterTriangles.push_back(&Triangle);
-			WaterBounds.modify(A);
-			WaterBounds.modify(B);
-			WaterBounds.modify(C);
-		}
+			((decltype(QueryData)*)ptr)->first->push_back(tri_verts);
+			((decltype(QueryData)*)ptr)->second->modify(tri_verts[0]);
+			((decltype(QueryData)*)ptr)->second->modify(tri_verts[1]);
+			((decltype(QueryData)*)ptr)->second->modify(tri_verts[2]);
+			
+		}, &QueryData);
 
 		if (!WaterTriangles.empty())
 		{
@@ -85,11 +106,11 @@ void RainPuddleWaterMap::Build(CObjectSpace* Space)
 			const float StepZ = (WaterBounds.max.z - WaterBounds.min.z) / float(Size);
 			Bounds.set(WaterBounds.min.x, WaterBounds.min.z, 1.0f / (StepX * Size), 1.0f / (StepZ * Size));
 
-			for (const CDB::TRI* Triangle : WaterTriangles)
+			for (auto& Triangle : WaterTriangles)
 			{
-				const Fvector& A = Vertices[Triangle->verts[0]];
-				const Fvector& B = Vertices[Triangle->verts[1]];
-				const Fvector& C = Vertices[Triangle->verts[2]];
+				const Fvector& A = Triangle[0];
+				const Fvector& B = Triangle[1];
+				const Fvector& C = Triangle[2];
 				const float Area = RainPuddleWater::Edge(A, B, C.x, C.z);
 				// Cover boundary texels conservatively so shallow shoreline water has no gaps.
 				const float RadiusA = 0.5f * (abs(C.x - B.x) * StepZ + abs(C.z - B.z) * StepX) / abs(Area);

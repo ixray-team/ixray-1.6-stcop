@@ -1173,12 +1173,12 @@ void CCinemaFilmMakerManager::Render()
 		Fmatrix transform = actor->Orientation;
 		transform.c = actor->Position;
 
-		::Render->set_Transform(&transform);
+		::Render->set_Transform(transform);
 		::Render->add_Visual(actor->Model, true, true);
 		actor->Model->getVisData().hom_frame = Device.dwFrame;
 	}
 
-	::Render->set_Transform(&Fidentity);
+	::Render->set_Transform(Fidentity);
 	::Render->set_HUD(hudMode);
 
 	AppendWorldGizmo();

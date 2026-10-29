@@ -372,7 +372,7 @@ void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, flo
 		}
 
 		Fmatrix SubmitTransform = Transform;
-		set_Transform(&SubmitTransform);
+		set_Transform(SubmitTransform);
 		add_Visual(V, true);
 		return;
 	}

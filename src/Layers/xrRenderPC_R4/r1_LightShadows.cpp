@@ -390,8 +390,6 @@ void CLightShadows::render	()
 {
 	
 	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
-	xr_vector<CDB::TRI>& TRIS	= DB->get_tris();
-	xr_vector<Fvector>& VERTS	= DB->get_verts();
 
 	int			slot_line	= S_rt_size/S_size;
 
@@ -433,7 +431,7 @@ void CLightShadows::render	()
 
 		cache_item*						CI		= nullptr; bool	bValid = false;
 		cache_item						CI_what; CI_what.O	= S.O; CI_what.L = S.L; CI_what.tris=nullptr;
-		xr_vector<cache_item>::iterator	CI_ptr	= std::lower_bound(cache.begin(),cache.end(),CI_what,cache_search);
+		xr_vector<cache_item>::iterator	CI_ptr	= std::ranges::lower_bound(cache,CI_what,cache_search);
 		if (CI_ptr==cache.end())		
 		{	
 			CI_ptr	= cache.insert		(CI_ptr,CI_what);
@@ -462,19 +460,27 @@ void CLightShadows::render	()
 
 			xrc.frustum_options		(0);
 			xrc.frustum_query		(DB,F);
-			if (0==xrc.r_count())	continue;
+			if (0==xrc.r_count())
+			{
+				continue;
+			}
 
 			tess.clear				();
-			for (CDB::RESULT* p = xrc.r_begin(); p!=xrc.r_end(); p++)
+			for (auto& p : xrc.r_vec())
 			{
-				VERIFY((p->id>=0)&&(p->id<DB->get_tris().size()));
-				
-				CDB::TRI&	t		= TRIS[p->id];
-				if (t.suppress_shadows) continue;
+				auto& t = p.model->get_tris()[p.tris_id];
+				if (t.suppress_shadows)
+				{
+					continue;
+				}
 				sPoly		A,B;
-				A.push_back			(VERTS[t.verts[0]]);
-				A.push_back			(VERTS[t.verts[1]]);
-				A.push_back			(VERTS[t.verts[2]]);
+				Fvector Verts[3];
+				p.ModelWorldTransform.transform_tiny(Verts[0], p.model->get_verts()[t.verts[0]]);
+				p.ModelWorldTransform.transform_tiny(Verts[1], p.model->get_verts()[t.verts[1]]);
+				p.ModelWorldTransform.transform_tiny(Verts[2], p.model->get_verts()[t.verts[2]]);
+				A.push_back			(Verts[0]);
+				A.push_back			(Verts[1]);
+				A.push_back			(Verts[2]);
 
 				Fplane				P;	float mag = 0;
 				Fvector				t1,t2,n;

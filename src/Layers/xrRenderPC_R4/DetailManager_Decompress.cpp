@@ -370,7 +370,6 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	// Select polygons: the editor picks its snap objects, the game queries the level collision
 	const bool EditorMode = Device.IsEditorMode();
 	xr_vector<Fvector> pick_verts;
-	xr_vector<CDB::TRI>* tris = nullptr;
 	xr_vector<CDB::RESULT>* results = nullptr;
 	u32 triCount = 0;
 
@@ -384,7 +383,6 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 		xrc.box_options(CDB::OPT_FULL_TEST);
 		xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), D.vis.box);
 		triCount = xrc.r_count();
-		tris = &g_pGameLevel->ObjectSpace.GetStaticTris();
 		results = &xrc.r_vec();
 	}
 
@@ -547,7 +545,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				}
 
 				CDB::RESULT& R = (*results)[tid];
-				CDB::TRI& T = (*tris)[R.id];
+				auto& T = R.model->get_tris()[R.tris_id];
 				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if (mtl->Flags.test(SGameMtl::flPassable))
@@ -556,16 +554,20 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				}
 
 				// Detect sector
-				if (RImplementation.pOutdoorSector && T.sector < RImplementation.Sectors.size())
+				if (RImplementation.pOutdoorSector && R.Sector < RImplementation.Sectors.size())
 				{
-					CSector* sector = (CSector*)RImplementation.Sectors[T.sector];
+					CSector* sector = (CSector*)RImplementation.Sectors[R.Sector];
 					if (sector != RImplementation.pOutdoorSector)
 					{
 						no_push = true;
 						break;
 					}
 				}
-				if (CDB::TestRayTri(Item_P, dir, R.verts, r_u, r_v, r_range, true))
+				Fvector Vertices[3];
+				R.ModelWorldTransform.transform_tiny(Vertices[0], R.model->get_verts()[T.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(Vertices[1], R.model->get_verts()[T.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(Vertices[2], R.model->get_verts()[T.verts[2]]);
+				if (CDB::TestRayTri(Item_P, dir, Vertices, r_u, r_v, r_range, true))
 				{
 					if (r_range >= 0)
 					{
@@ -575,7 +577,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 							y = y_test;
 						}
 					}
-					normal.mknormal(R.verts[0], R.verts[1], R.verts[2]);
+					normal.mknormal(Vertices[0], Vertices[1], Vertices[2]);
 					break;
 				}
 			}

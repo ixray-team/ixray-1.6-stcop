@@ -222,7 +222,7 @@ void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* p
 		place.mTransform.mul_43(parent_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
 		place.mTransform.mulA_43(xform);
 
-		::Render->set_Transform(&place.mTransform);
+		::Render->set_Transform(place.mTransform);
 		::Render->add_Visual(place.m_model->dcast_RenderVisual());
 	}
 }

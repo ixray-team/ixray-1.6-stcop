@@ -29,7 +29,7 @@ public:
 	virtual IRender_Sector* detectSector(const Fvector& P) override;
 	virtual IRender_Target* getTarget() override;
 
-	virtual void set_Transform(Fmatrix* M) override;
+	virtual void set_Transform(Fmatrix& M) override;
 	virtual void set_HUD(bool V) override;
 	virtual void set_UI(bool V) override;
 	virtual bool get_HUD() override;
@@ -97,9 +97,9 @@ public:
 	bool get_texture_metadata(str_c absolute_path, RHITextureMetadata* p_data) override { return false; }
 	virtual void ScreenshotImpl(ScreenshotMode mode, str_c name, CMemoryWriter* memory_writer) override;
 	
-	GeomData& GetMUSlot(shared_str Name) override;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) override;
-	void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) override;
-	void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override;
+	//GeomData& GetMUSlot(shared_str Name) override;
+	//void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) override;
+	//void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) override;
+	//void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override;
 };
  extern CDS0_RenderInterface GRenderInterface;

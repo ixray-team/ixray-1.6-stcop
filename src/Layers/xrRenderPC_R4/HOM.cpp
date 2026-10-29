@@ -126,25 +126,11 @@ void CHOM::Load()
 		rT.center.set(v0 + v1 + v2).div(3.f);
 	}
 
-	// Make cache
-	string_path LevelName;
-	xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "HOM.cache");
-	IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
-
 	// Create AABB-tree
 	m_pModel = new CDB::MODEL();
-
-	if (pReaderCache != nullptr)
-	{
-		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
-	}
-	else
-	{
-		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
-		pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
-		pWriterCache->w_u32(crc);
-		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
-	}
+	m_pModel->verts = CL.verts;
+	m_pModel->tris = CL.faces;
+	m_pModel->build_simple();
 
 	bEnabled = true;
 
@@ -184,12 +170,14 @@ public:
 	pred_fb(xr_vector<occTri>& _t) : m_pTris(_t) {}
 	pred_fb(xr_vector<occTri>& _t, Fvector& _c) : m_pTris(_t), camera(_c) {}
 	ICF bool	operator()		(const CDB::RESULT& _1, const CDB::RESULT& _2) const {
-		occTri&	t0	= m_pTris	[_1.id];
-		occTri&	t1	= m_pTris	[_2.id];
+		VERIFY(_1.tris_id < m_pTris.size());
+		VERIFY(_2.tris_id < m_pTris.size());
+		occTri&	t0	= m_pTris	[_1.tris_id];
+		occTri&	t1	= m_pTris	[_2.tris_id];
 		return	camera.distance_to_sqr(t0.center) < camera.distance_to_sqr(t1.center);
 	}
 	ICF bool	operator()		(const CDB::RESULT& _1)	const {
-		occTri&	T	= m_pTris	[_1.id];
+		occTri&	T	= m_pTris	[_1.tris_id];
 		return	T.skip>Device.dwFrame;
 	}
 };
@@ -219,12 +207,9 @@ void CHOM::Render_DB			(CFrustum& base)
 	if (0==xrc.r_count())		return;
 
 	// Prepare
-	CDB::RESULT*	it			= xrc.r_begin	();
-	CDB::RESULT*	end			= xrc.r_end		();
-	
-	Fvector			COP			= Device.vCameraPosition;
-	end				= std::remove_if	(it,end,pred_fb(m_pTris));
-	std::sort		(it,end,pred_fb(m_pTris,COP));
+	Fvector COP = Device.vCameraPosition;
+	std::erase_if(xrc.r_vec(), pred_fb(m_pTris));
+	std::ranges::sort(xrc.r_vec(), pred_fb(m_pTris,COP));
 
 	// Build frustum with near plane only
 	CFrustum					clip;
@@ -237,10 +222,10 @@ void CHOM::Render_DB			(CFrustum& base)
 #endif
 
 	// Perfrom selection, sorting, culling
-	for (; it!=end; it++)
+	for (auto& elem : xrc.r_vec())
 	{
 		// Control skipping
-		occTri& T			= m_pTris	[it->id];
+		occTri& T			= m_pTris	[elem.tris_id];
 		u32	next			= _frame + ::Random.randI(3,10);
 
 		// Test for good occluder - should be improved :)
@@ -248,14 +233,21 @@ void CHOM::Render_DB			(CFrustum& base)
 		{ T.skip=next; continue; }
 
 		// Access to triangle vertices
-		CDB::TRI& t		= m_pModel->get_tris()[it->id];
-		xr_vector<Fvector>& v = m_pModel->get_verts();
+		auto& t		= elem.model->tris[elem.tris_id];
+		auto& v = elem.model->verts;
 		src.clear		();	dst.clear	();
 		src.push_back	(v[t.verts[0]]);
 		src.push_back	(v[t.verts[1]]);
 		src.push_back	(v[t.verts[2]]);
-		sPoly* P =		clip.ClipPoly	(src,dst);
-		if (0==P)		{ T.skip=next; continue; }
+		elem.ModelWorldTransform.transform_tiny(src[0]);
+		elem.ModelWorldTransform.transform_tiny(src[1]);
+		elem.ModelWorldTransform.transform_tiny(src[2]);
+		sPoly* P = clip.ClipPoly(src,dst);
+		if (!P)
+		{
+			T.skip=next; 
+			continue;
+		}
 
 		// XForm and Rasterize
 #ifdef DEBUG

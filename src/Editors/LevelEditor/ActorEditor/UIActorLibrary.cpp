@@ -756,7 +756,7 @@ void UIActorLibrary::PickCallback()
 		Info.IsForcePickup = true;
 		if (Edited->RayPick(Dist, StartPos, StartDir, Fidentity, &Info) && Info.e_mesh != nullptr)
 		{
-			CSurface* Surf = Info.e_mesh->GetSurfaceByFaceID(Info.inf.id);
+			CSurface* Surf = Info.e_mesh->GetSurfaceByFaceID(Info.inf.tris_id);
 			if (Surf != nullptr)
 			{
 				ATools->SelectListItem(SURFACES_PREFIX, Surf->_Name(), true, false, true);
@@ -777,7 +777,7 @@ void UIActorLibrary::PickCallback()
 		if (pinf.e_mesh == nullptr)
 			continue;
 
-		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
 
 		Itm = Props->FindPropItem(PrevClick.c_str());

@@ -87,7 +87,7 @@ void SCutsceneObjectElement::Update(Fvector Deviation)
     //    m_transform = trans;
     //}
     HudModelKinematics->CalculateBones(true);
-    ::Render->set_Transform(&m_transform);
+    ::Render->set_Transform(m_transform);
     ::Render->add_Visual(HudModel, false, true);
 }
 

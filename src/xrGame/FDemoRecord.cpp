@@ -1455,12 +1455,12 @@ void CDemoRecord::TryGrab()
 	collide::rq_result rq{};
 	Level().ObjectSpace.RayPick(camera.c, camera.k, 1000.f, collide::rq_target::rqtBoth, rq, nullptr);
 
-	if (!rq.valid() || rq.range <= EPS_S || rq.O == nullptr)
+	if (!rq.valid() || rq.range <= EPS_S || rq.IsStatic())
 	{
 		return;
 	}
 
-	IPhysicsShellHolder* holder = rq.O->cast_physics_shell_holder();
+	IPhysicsShellHolder* holder = const_cast<CObject*>(rq.GetDynamic())->cast_physics_shell_holder();
 
 	if (holder == nullptr)
 	{

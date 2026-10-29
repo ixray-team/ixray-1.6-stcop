@@ -666,7 +666,9 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 			EContext.UI->SetStatus("Building collision model...");
 
 			m_CFModel = new CDB::MODEL();
-			m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
+			m_CFModel->verts = CL.verts;
+			m_CFModel->tris = CL.faces;
+			m_CFModel->build_simple();
 		}
 
 		// building
