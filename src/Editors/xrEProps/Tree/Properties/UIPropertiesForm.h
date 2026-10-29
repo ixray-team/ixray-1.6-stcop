@@ -1,4 +1,5 @@
 #pragma once
+#include "../../HintTextEditor.h"
 class XREPROPS_API UIPropertiesForm :
 	public IEditorWnd
 {
@@ -62,6 +63,7 @@ private:
 	PropItem* m_EditGameTypeValue;
 	char* m_EditTextValueData;
 	int m_EditTextValueDataSize;
+	CHintTextEditor m_EditTextEditor;
 	GameTypeChooser m_EditGameTypeChooser;
 	bool m_bModified;
 	bool IsFitMode = false;

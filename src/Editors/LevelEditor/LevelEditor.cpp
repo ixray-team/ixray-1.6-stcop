@@ -9,7 +9,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
-#include "Nodes/UIDialogsView.h"
+#include "Nodes/UINodesEditorForm.h"
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
@@ -17,7 +17,7 @@
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/Coder/UICoderForm.h"
-#include "Nodes/Logic/UILogicEditorForm.h"
+#include "Editor/XVisor/XVisor.h"
 #include "../xrECore/Editor/UILogForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
@@ -41,7 +41,6 @@ ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 void DragPreview(const xr_string*, int);
 
-static DialogEditor* g_DialogEditor = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -83,7 +82,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	EContext.UI = new CLevelMain();
 	EContext.UI->RegisterCommands();
 	EContext.UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialogs", nullptr});
+	// Light Animations and Minimap keep the tabs 2 and 3
+	EContext.UI->GeneralTabs.push_back({ICON_FA_DIAGRAM_PROJECT " Nodes", []()->bool {return UINodesEditorForm::IsModified(); }});
+	const int NodesTab = (int)EContext.UI->GeneralTabs.size() - 1;
 	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Animations", nullptr});
 	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap", nullptr});
 	EContext.UI->GeneralTabs.push_back({ICON_FA_FIRE " Particles", []()->bool {return PTools != nullptr && PTools->IsModified(); }});
@@ -96,8 +97,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	const int LayoutEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
 	EContext.UI->GeneralTabs.push_back({ICON_FA_CODE " Coder", []()->bool {return UICoderForm::IsModified(); }});
 	const int CoderTab = (int)EContext.UI->GeneralTabs.size() - 1;
-	EContext.UI->GeneralTabs.push_back({ICON_FA_DIAGRAM_PROJECT " Logic", []()->bool {return UILogicEditorForm::IsModified(); }});
-	const int LogicTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
@@ -119,6 +118,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	CRenderDevice::SetStartupStatus(30, "Creating Main UI Form");
 
+	EContext.Visor = new CXVisor();
 	UIMainForm* MainForm = new UIMainForm();
 
 	pApp = new XRayEditor();
@@ -159,19 +159,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	MainForm->TabIndex = -1;
 	EContext.UI->Push(MainForm, false);
 
-	g_DialogEditor = new DialogEditor();
-	g_DialogEditor->TabIndex = 1;
-	g_DialogEditor->Show(true);
-	EContext.UI->Push(g_DialogEditor, false);
-
 	UIParticleEditorForm::Create(ParticleEditorTab);
 	UIActorEditorForm::Create(ActorEditorTab);
 	UIShaderEditorForm::Create(ShaderEditorTab);
 	UILayoutEditorForm::Create(LayoutEditorTab);
 	UICoderForm::Create(CoderTab);
-	UILogicEditorForm::Create(LogicTab);
-	// The Logic tab shows its own Message Log
-	UILogForm::HideFunctor = &UILogicEditorForm::IsActive;
+	UINodesEditorForm::Create(NodesTab);
+	// The Nodes tab shows its own Message Log
+	UILogForm::HideFunctor = []() { return UINodesEditorForm::IsActive(); };
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
@@ -367,7 +362,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UIShaderEditorForm::Destroy();
 	UILayoutEditorForm::Destroy();
 	UICoderForm::Destroy();
-	UILogicEditorForm::Destroy();
+	UINodesEditorForm::Destroy();
+	xr_delete(EContext.Visor);
 
 	// The shared content browser icons hold textures: release them before the device
 	CContentView::ClearIcons();

@@ -59,6 +59,8 @@ class ChooseItemVec;
 //------------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate<void(PropValue*, xr_string&)> 	TOnDrawTextEvent; 
 typedef fastdelegate::FastDelegate<void(PropItem*)> 					TOnClick;
+// Before is the text before the cursor, Out gets the hints: the input keeps those that start with the word at the cursor
+typedef fastdelegate::FastDelegate<void(const xr_string& Before, xr_vector<xr_string>& Out)> TOnHintEvent;
 //------------------------------------------------------------------------------
 
 class PropValue
@@ -72,8 +74,10 @@ public:
 	// base events
 	typedef fastdelegate::FastDelegate<void(PropValue*)> TOnChange;
     TOnChange			OnChangeEvent;
+    // Hints of the text editor of the value
+    TOnHintEvent		OnHintEvent;
 public:
-						PropValue		():tag(0),m_Owner(nullptr),OnChangeEvent(nullptr){;}
+						PropValue		():tag(0),m_Owner(nullptr),OnChangeEvent(nullptr),OnHintEvent(nullptr){;}
 	virtual				~PropValue		(){}
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText)=0;
     virtual void		ResetValue		()=0;

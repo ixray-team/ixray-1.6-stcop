@@ -78,6 +78,8 @@ public:
 	bool EqualWithCaseInsensitive(const xr_string& SubStr) const;
 
 	xr_string RemoveWhitespaces() const;
+	// Without the white space at the begin and at the end
+	xr_string Trim() const;
 
 	static xr_string ToString(int Value);
 	static xr_string ToString(unsigned int Value);

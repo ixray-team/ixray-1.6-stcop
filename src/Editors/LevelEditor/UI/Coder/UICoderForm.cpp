@@ -394,7 +394,7 @@ bool UICoderForm::SaveDocument(SDocument& Document)
 	{
 		xr_string Error;
 		int Line = 0;
-		if (!CLuaCompletion::Compile(Document.Name.c_str(), Document.Text, Error, Line))
+		if (!CXVisor::Compile(Document.Name.c_str(), Document.Text, Error, Line))
 		{
 			if (Line > 0)
 			{
@@ -451,6 +451,11 @@ bool UICoderForm::SaveDocument(SDocument& Document)
 	}
 
 	Document.Modified = false;
+	// The hints of the Logic and Dialog editors read the functions of the scripts
+	if (Document.Kind == EFileKind::Lua)
+	{
+		EContext.Visor->InvalidateScripts();
+	}
 	if (StatusText.empty())
 	{
 		StatusText = "Saved " + Document.Path;
@@ -490,7 +495,7 @@ void UICoderForm::OnFrame()
 
 void UICoderForm::BakeIfMissing()
 {
-	if (Form != nullptr && !Scene->IsPlayInEditor() && !std::filesystem::exists(xr_path(CLuaCompletion::GetApiPath())))
+	if (Form != nullptr && !Scene->IsPlayInEditor() && !std::filesystem::exists(xr_path(CXVisor::GetApiPath())))
 	{
 		Form->Bake();
 	}
@@ -504,9 +509,9 @@ void UICoderForm::Bake()
 		return;
 	}
 	xr_string Error;
-	if (Completion.Bake(Error))
+	if (EContext.Visor->Bake(Error))
 	{
-		StatusText = "Lua API baked: " + xr_string::ToString(Completion.GetClassCount()) + " classes";
+		StatusText = "Lua API baked: " + xr_string::ToString(EContext.Visor->GetClassCount()) + " classes";
 		ELog.Msg(mtInformation, "Coder: %s", StatusText.c_str());
 	}
 	else
@@ -566,7 +571,7 @@ void UICoderForm::DrawStatus(float ButtonSize)
 	xr_string Fallback;
 	if (Document != nullptr && Document->Kind == EFileKind::Ini)
 	{
-		Fallback += LtxCompletion.GetStatus();
+		Fallback += EContext.Visor->GetLtxStatus();
 	}
 	const char* Text = !StatusText.empty() ? StatusText.c_str() : Fallback.c_str();
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ButtonSize - ImGui::GetTextLineHeight()) * 0.5f);
@@ -818,16 +823,16 @@ void UICoderForm::OpenAt(const xr_string& Path, int Line)
 
 void UICoderForm::UpdateLanguage()
 {
-	Completion.Load();
-	if (LanguageGeneration == Completion.GetGeneration())
+	CXVisor& Visor = *EContext.Visor;
+	Visor.Load();
+	if (LanguageGeneration == Visor.GetGeneration())
 	{
 		return;
 	}
 
-	LanguageGeneration = Completion.GetGeneration();
-	Completion.BuildLanguage(LuaLanguage);
-	LtxCompletion.Load();
-	LtxCompletion.BuildLanguage(IniLanguage);
+	LanguageGeneration = Visor.GetGeneration();
+	Visor.BuildLuaLanguage(LuaLanguage);
+	Visor.BuildIniLanguage(IniLanguage);
 	for (const xr_unique_ptr<SDocument>& Document : Documents)
 	{
 		if (Document->Kind == EFileKind::Lua)
