@@ -53,6 +53,16 @@ Coordinate system: left-handed (LH), with +Y pointing up.
 | Physics | `PHWorld.*`, `PHShell.*` |
 | Files, ltx, DLTX, addons | `LocatorAPI.*`, `xr_ini.*`, `xrAddons.*` |
 
+## ImGui editors and utilities
+
+In-game ImGui tools live in `src/xrGame/ImUtils` (editors, panels, picking, gizmo) plus `src/xrGame/LevelInspector.*`; shell-level tools are in `src/xrPlay/UI*.cpp`. They are opened from **Game → Editors** and require `DEBUG_DRAW`; `Alt` toggles mouse capture.
+
+Documentation is part of the change:
+
+- Before changing an in-game ImGui editor or utility, read its document in `docs/engine/` (index: [docs/engine/README.md](docs/engine/README.md)) and start the research there instead of re-deriving behavior from the sources. Existing examples: [docs/engine/ai-grid-editor.md](docs/engine/ai-grid-editor.md), [docs/engine/cinema-film-maker-editor.md](docs/engine/cinema-film-maker-editor.md).
+- Every change to such an editor must update its document in the same change: what the tool does, its controls, data sources (ltx/configs), limitations, and the post-build check list. The document is written for people who use the tool (modders), so keep it behaviour-level: no class names, function names or engine internals — those stay in the sources.
+- If the document does not exist yet, create `docs/engine/<tool>.md` and add it to the [docs/engine/README.md](docs/engine/README.md) table, so later work on that tree, on new features, or on new ImGui utilities starts from the written contract.
+
 ## Autotest
 
 `xrEngine.exe -autotest … -autotest_cmd <cmds>`. `-autotest_cmd` must be last. Flags, exit code, and the renderer selection and motion-vector shader option: [docs/engine/lifecycle.md](docs/engine/lifecycle.md).
