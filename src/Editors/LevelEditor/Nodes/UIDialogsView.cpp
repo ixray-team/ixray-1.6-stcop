@@ -4,12 +4,15 @@
 #include "../../../xrEngine/string_table.h"
 #include "../../xrEUI/IconsFontAwesome6.h"
 #include "NodesCommon.h"
+#include "../Editor/XVisor/XVisor.h"
 #include "UINodesEditorForm.h"
 
 static const char* GraphWindow = "Dialog Graph###LogicGraph";
 static const char* OutlinerWindow = "Outliner###LogicOutliner";
 static const char* DetailsWindow = "Details###LogicDetails";
 static const char* MessagesWindow = "Message Log###LogicMessages";
+
+static constexpr size_t UndoLimit = 128;
 
 DialogEditor* DialogEditor::Instance = nullptr;
 
@@ -168,10 +171,138 @@ bool DialogEditor::ReloadMode()
 	return true;
 }
 
-bool DialogEditor::UndoMode(bool)
+bool DialogEditor::UndoMode(bool Redo)
 {
-	// The XML tree is edited in place: there is no history yet
-	return false;
+	if (ChangePending)
+	{
+		CommitChange();
+	}
+
+	xr_vector<xr_string>& From = Redo ? RedoStack : UndoStack;
+	xr_vector<xr_string>& To = Redo ? UndoStack : RedoStack;
+	if (From.empty() || File.GetRoot() == nullptr)
+	{
+		return false;
+	}
+
+	To.push_back(LastState);
+	LastState = From.back();
+	From.pop_back();
+	RestoreState(LastState);
+	Modified = LastState != SavedState;
+	return true;
+}
+
+void DialogEditor::MarkChanged()
+{
+	Modified = true;
+	ChangePending = true;
+}
+
+xr_string DialogEditor::CaptureState()
+{
+	XML_NODE* Root = File.GetRoot();
+	if (Root == nullptr)
+	{
+		return xr_string();
+	}
+	tinyxml2::XMLPrinter Printer;
+	Root->GetDocument()->Print(&Printer);
+	return Printer.CStr();
+}
+
+void DialogEditor::CommitChange()
+{
+	ChangePending = false;
+	const xr_string State = CaptureState();
+	if (State == LastState)
+	{
+		return;
+	}
+	UndoStack.push_back(LastState);
+	if (UndoStack.size() > UndoLimit)
+	{
+		UndoStack.erase(UndoStack.begin());
+	}
+	RedoStack.clear();
+	LastState = State;
+	Modified = State != SavedState;
+}
+
+void DialogEditor::RestoreState(const xr_string& State)
+{
+	XML_NODE* Root = File.GetRoot();
+	tinyxml2::XMLDocument Source;
+	if (Root == nullptr || Source.Parse(State.c_str()) != tinyxml2::XML_SUCCESS || Source.FirstChildElement() == nullptr)
+	{
+		return;
+	}
+
+	// The graph keeps its places and selection by the phrase names
+	ed::SetCurrentEditor(Editor);
+	xr_map<xr_string, ImVec2> Positions;
+	for (CDialogNode* Node : Nodes)
+	{
+		auto Iter = NodeIds.find(Node);
+		if (Iter != NodeIds.end())
+		{
+			Positions[Node->NodeName.c_str()] = ed::GetNodePosition(Iter->second);
+		}
+	}
+	const xr_string Selected = SelectedNode != nullptr ? SelectedNode->NodeName.c_str() : "";
+	const shared_str Dialog = LastOpenDialog;
+
+	// The root element stays: the file keeps a pointer to it
+	Root->DeleteChildren();
+	for (const XML_NODE* Child = Source.FirstChildElement()->FirstChild(); Child != nullptr; Child = Child->NextSibling())
+	{
+		Root->InsertEndChild(Child->DeepClone(Root->GetDocument()));
+	}
+
+	RebuildDialogList();
+	for (const DialogPair& Pair : Dialogs)
+	{
+		if (Pair.first == Dialog)
+		{
+			OpenDialog(Pair.first, Pair.second);
+			break;
+		}
+	}
+	if (LastOpenDialog != Dialog)
+	{
+		// The dialog is gone
+		for (auto Node : Nodes)
+		{
+			xr_delete(Node);
+		}
+		Nodes.clear();
+		Links.clear();
+		LastOpenDialog = nullptr;
+		SelectedNode = nullptr;
+		Properties->ClearProperties();
+		return;
+	}
+
+	bool AllPlaced = true;
+	for (CDialogNode* Node : Nodes)
+	{
+		auto Iter = Positions.find(Node->NodeName.c_str());
+		if (Iter != Positions.end())
+		{
+			ed::SetNodePosition(NodeIds[Node], Iter->second);
+		}
+		else
+		{
+			AllPlaced = false;
+		}
+		if (Node->NodeName == Selected.c_str())
+		{
+			PendingSelect = NodeIds[Node];
+			SelectNodeEvent(Node);
+		}
+	}
+	NeedLayout = !AllPlaced && Positions.empty();
+	FocusFirstNode = false;
 }
 
 xr_string DialogEditor::GetModePath() const
@@ -643,6 +774,7 @@ void DialogEditor::OnPhraseLocalized(const char* NodeName, const char* StringId)
 		if (Node->NodeName == NodeName)
 		{
 			Node->SetText(StringId);
+			MarkChanged();
 			if (Node == SelectedNode)
 			{
 				SelectNodeEvent(Node);
@@ -660,6 +792,12 @@ void DialogEditor::DrawMode()
 	DrawDetails();
 	DrawMessages();
 	Localization.Draw();
+
+	// The changes of a frame are one step of the history
+	if (ChangePending)
+	{
+		CommitChange();
+	}
 }
 
 void DialogEditor::DrawGraph()
@@ -813,7 +951,7 @@ void DialogEditor::DrawGraph()
 						PendingSelect = NodeIds[MacroNode];
 
 						SelectNodeEvent(MacroNode);
-						Modified = true;
+						MarkChanged();
 					}
 				}
 			}
@@ -853,7 +991,7 @@ void DialogEditor::NewDialog(XML_NODE* RootDialogNode)
 	Dialogs.emplace_back(InputBox.Buffer, NewDialog);
 	OpenDialog(InputBox.Buffer, NewDialog);
 	LastOpenDialog = InputBox.Buffer;
-	Modified = true;
+	MarkChanged();
 }
 
 void DialogEditor::SaveDialog()
@@ -864,6 +1002,7 @@ void DialogEditor::SaveDialog()
 	}
 
 	File.Save();
+	SavedState = CaptureState();
 	Modified = false;
 	Msg("* Dialog Editor: %s saved", DialogFileName.c_str());
 }
@@ -1075,7 +1214,7 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 
 void DialogEditor::OnPropertiesModified()
 {
-	Modified = true;
+	MarkChanged();
 }
 
 void DialogEditor::SelectNodeEvent(CDialogNode* Node)
@@ -1087,7 +1226,11 @@ void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 	{
 		PHelper().CreateRText(items, "Preconditions\\Has Info", &HasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeHasInfo);
 		PHelper().CreateRText(items, "Preconditions\\Don't Has Info", &DontHasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeDontHasInfo);
-		PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &Precondition)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangePrecondition);
+		{
+			RTextValue* Value = PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &Precondition);
+			Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangePrecondition);
+			Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+		}
 
 		for (const auto& [ID, String] : Phrases)
 		{
@@ -1105,10 +1248,18 @@ void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 
 	PHelper().CreateRText(items, "Preconditions\\Has Info", &SelectedNode->HasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeHasInfo);
 	PHelper().CreateRText(items, "Preconditions\\Don't Has Info", &SelectedNode->DontHasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeDontHasInfo);
-	PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &SelectedNode->Precondition)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodePrecondition);
+	{
+		RTextValue* Value = PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &SelectedNode->Precondition);
+		Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodePrecondition);
+		Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+	}
 
 	PHelper().CreateRText(items, "Actions\\Give Info", &SelectedNode->GiveInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeGiveInfo);
-	PHelper().CreateRText(items, "Actions\\Lua Action", &SelectedNode->Action)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeAction);
+	{
+		RTextValue* Value = PHelper().CreateRText(items, "Actions\\Lua Action", &SelectedNode->Action);
+		Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeAction);
+		Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+	}
 
 	PHelper().CreateRText(items, "Text\\String ID", &SelectedNode->Text)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeText);
 
@@ -1167,6 +1318,25 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 		return;
 	}
 
+	RebuildDialogList();
+
+	UndoStack.clear();
+	RedoStack.clear();
+	ChangePending = false;
+	LastState = SavedState = CaptureState();
+
+	UINodesEditorForm::Activate(ENodesMode::Dialogs);
+}
+
+void DialogEditor::RebuildDialogList()
+{
+	Dialogs.clear();
+	XML_NODE* Node = File.GetRoot();
+	if (Node == nullptr)
+	{
+		return;
+	}
+
 	XML_NODE* ChildNode = Node->FirstChildElement();
 
 	while (ChildNode != nullptr)
@@ -1193,8 +1363,6 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 		xr_string NameA = *L.first;
 		xr_string NameB = *R.first;
 		return NameA < NameB; });
-
-	UINodesEditorForm::Activate(ENodesMode::Dialogs);
 }
 
 void DialogEditor::ChangeHasInfo(PropValue*)
@@ -1281,6 +1449,11 @@ void DialogEditor::ChangeNodePrecondition(PropValue*)
 	{
 		SelectedNode->SetElement("precondition", SelectedNode->Precondition, SelectedNode->PreconditionNode);
 	}
+}
+
+void DialogEditor::HintScriptFunction(const xr_string& Before, xr_vector<xr_string>& Out)
+{
+	EContext.Visor->GetFunctionHints(Before, Out);
 }
 
 void DialogEditor::ChangeNodeAction(PropValue*)
@@ -1736,7 +1909,7 @@ void DialogEditor::DrawNode(CDialogNode* Node)
 		if (ImGui::SmallButton(ICON_FA_PLUS " Output"))
 		{
 			AddBranchOutput(Node);
-			Modified = true;
+			MarkChanged();
 		}
 	}
 	ImGui::Dummy({ Width, 1.0f });
@@ -1933,7 +2106,7 @@ void DialogEditor::HandleLinkCreation()
 						Link.Target = Target;
 						Link.NextNode = NextNode;
 						Links.push_back(Link);
-						Modified = true;
+						MarkChanged();
 					}
 				}
 				else
@@ -1967,7 +2140,7 @@ void DialogEditor::HandleDeletion()
 			if (Node != nullptr && ed::AcceptDeletedItem())
 			{
 				DeleteNode(Node);
-				Modified = true;
+				MarkChanged();
 			}
 		}
 
@@ -1993,7 +2166,7 @@ void DialogEditor::HandleDeletion()
 				}
 
 				Links.erase(Iter);
-				Modified = true;
+				MarkChanged();
 			}
 		}
 	}

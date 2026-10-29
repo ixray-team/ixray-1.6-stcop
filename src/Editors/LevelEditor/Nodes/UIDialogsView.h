@@ -70,6 +70,13 @@ private:
 
 	void NewDialog(XML_NODE* RootNode);
 	void SaveDialog();
+	void RebuildDialogList();
+
+	// The history: snapshots of the whole file, one per frame with changes
+	void MarkChanged();
+	xr_string CaptureState();
+	void CommitChange();
+	void RestoreState(const xr_string& State);
 	void OpenDialog(const shared_str& Str, XML_NODE* Node);
 
 	void SelectNodeEvent(CDialogNode* Node);
@@ -83,6 +90,8 @@ private:
 	void ChangeNodeGiveInfo(PropValue*);
 	void ChangeNodePrecondition(PropValue*);
 	void ChangeNodeAction(PropValue*);
+	// "namespace.function" of the script fields, from EContext.Visor
+	void HintScriptFunction(const xr_string& Before, xr_vector<xr_string>& Out);
 	void ChangeNodeText(PropValue*);
 	void ChangeNodeFinal(PropValue*);
 
@@ -117,6 +126,12 @@ private:
 private:
 	CNodesDock Dock;
 	bool Modified = false;
+	bool ChangePending = false;
+	xr_vector<xr_string> UndoStack;
+	xr_vector<xr_string> RedoStack;
+	// The file now and on the disk
+	xr_string LastState;
+	xr_string SavedState;
 
 	CXml File;
 	// Name of the opened dialogs file, like "dialogs_jupiter.xml"

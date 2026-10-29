@@ -17,6 +17,7 @@
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/Coder/UICoderForm.h"
+#include "Editor/XVisor/XVisor.h"
 #include "../xrECore/Editor/UILogForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
@@ -115,6 +116,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	CRenderDevice::SetStartupStatus(30, "Creating Main UI Form");
 
+	EContext.Visor = new CXVisor();
 	UIMainForm* MainForm = new UIMainForm();
 
 	pApp = new XRayEditor();
@@ -356,6 +358,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	UILayoutEditorForm::Destroy();
 	UICoderForm::Destroy();
 	UINodesEditorForm::Destroy();
+	xr_delete(EContext.Visor);
 
 	// The shared content browser icons hold textures: release them before the device
 	CContentView::ClearIcons();

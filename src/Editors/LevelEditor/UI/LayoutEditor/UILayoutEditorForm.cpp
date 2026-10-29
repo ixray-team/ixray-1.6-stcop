@@ -485,7 +485,7 @@ bool UILayoutEditorForm::SaveLayout()
 	xr_string CompileError;
 	int ErrorLine = 0;
 	ScriptView->ClearErrorMarkers();
-	if (!CLuaCompletion::Compile((Doc.Name + ".script").c_str(), ScriptSource, CompileError, ErrorLine))
+	if (!CXVisor::Compile((Doc.Name + ".script").c_str(), ScriptSource, CompileError, ErrorLine))
 	{
 		if (ErrorLine > 0)
 		{
@@ -2086,7 +2086,7 @@ xr_string UILayoutEditorForm::GetFieldClass(const xr_string& Field)
 	{
 		return "";
 	}
-	return Widget->Type == ELayoutWidget::Window ? xr_string("CUIWindow") : Completion.GetInitClass(LayoutWidget::GetInitFunction(Widget->Type));
+	return Widget->Type == ELayoutWidget::Window ? xr_string("CUIWindow") : EContext.Visor->GetInitClass(LayoutWidget::GetInitFunction(Widget->Type));
 }
 
 void UILayoutEditorForm::DrawCodePreview()
@@ -2148,12 +2148,12 @@ void UILayoutEditorForm::DrawCodePreview()
 		}
 
 
-		Completion.Load();
-		if (ScriptLanguageGeneration != Completion.GetGeneration())
+		EContext.Visor->Load();
+		if (ScriptLanguageGeneration != EContext.Visor->GetGeneration())
 		{
-			ScriptLanguageGeneration = Completion.GetGeneration();
+			ScriptLanguageGeneration = EContext.Visor->GetGeneration();
 			TextEditor::LanguageDefinition Language;
-			Completion.BuildLanguage(Language);
+			EContext.Visor->BuildLuaLanguage(Language);
 			ScriptView->SetLanguageDefinition(Language);
 		}
 		Completion.BeforeRender(*ScriptView);
