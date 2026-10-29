@@ -191,6 +191,7 @@ void UICoderForm::Create(int Tab)
 	Browser->TabIndex = Tab;
 	Browser->SetStateName("CoderContentBrowser");
 	EContext.UI->Push(Browser, false);
+	Form->Browser = Browser;
 }
 
 void UICoderForm::Serialize(nlohmann::json& Data, bool IsSaving)
@@ -344,6 +345,20 @@ bool UICoderForm::Save()
 	return Form->SaveDocument(*Form->Documents[Form->Active]);
 }
 
+bool UICoderForm::Reload()
+{
+	if (Form == nullptr || Form->Active >= Form->Documents.size())
+	{
+		return false;
+	}
+	SDocument* Document = Form->Documents[Form->Active].get();
+	if (!Document->Modified || ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "Discard the changes of %s?", Document->Name.c_str()) == mrYes)
+	{
+		return Form->Load(*Document);
+	}
+	return false;
+}
+
 bool UICoderForm::Load(SDocument& Document)
 {
 	IReader* Reader = FS.r_open(Document.Path.c_str());
@@ -466,12 +481,28 @@ bool UICoderForm::CloseDocument(size_t Index)
 
 void UICoderForm::OnFrame()
 {
-	if (!BakeRequest)
+	if (BakeRequest)
 	{
+		BakeRequest = false;
+		Bake();
+	}
+}
+
+void UICoderForm::BakeIfMissing()
+{
+	if (Form != nullptr && !Scene->IsPlayInEditor() && !std::filesystem::exists(xr_path(CLuaCompletion::GetApiPath())))
+	{
+		Form->Bake();
+	}
+}
+
+void UICoderForm::Bake()
+{
+	if (Scene->IsPlayInEditor())
+	{
+		StatusText = "Stop Play In Editor to bake the Lua API";
 		return;
 	}
-
-	BakeRequest = false;
 	xr_string Error;
 	if (Completion.Bake(Error))
 	{
@@ -483,6 +514,16 @@ void UICoderForm::OnFrame()
 		StatusText = "Lua API: " + Error;
 		ELog.Msg(mtError, "Coder: %s", Error.c_str());
 	}
+}
+
+void UICoderForm::RevealInBrowser()
+{
+	if (Form == nullptr || Form->Browser == nullptr || Form->Active >= Form->Documents.size())
+	{
+		return;
+	}
+	Form->Browser->Reveal(Form->Documents[Form->Active]->Path);
+	ImGui::SetWindowFocus(ContentWindow);
 }
 
 bool UICoderForm::Undo(bool Redo)
@@ -502,68 +543,32 @@ bool UICoderForm::Undo(bool Redo)
 	return true;
 }
 
+void UICoderForm::RequestBake()
+{
+	if (Form != nullptr)
+	{
+		Form->BakeRequest = true;
+		Form->StatusText = "Baking the Lua API...";
+	}
+}
+
 void UICoderForm::DrawTopBar(float ButtonSize)
 {
 	if (Form != nullptr)
 	{
-		Form->DrawToolbar(Form->Active < Form->Documents.size() ? Form->Documents[Form->Active].get() : nullptr, ButtonSize);
-		ImGui::SameLine(0.0f, 8.0f);
 		Form->DrawStatus(ButtonSize);
 	}
 }
 
-void UICoderForm::DrawToolbar(SDocument* Document, float ButtonSize)
-{
-	auto Hint = [](const char* Text)
-	{
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("%s", Text);
-		}
-	};
-
-	ImGui::BeginDisabled(Document == nullptr);
-	if (XRay::ImGui::ToolbarButton("##coder_save", ICON_FA_FLOPPY_DISK " Save", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersLeft) && Document != nullptr)
-	{
-		SaveDocument(*Document);
-	}
-	Hint("Save the file (Ctrl+S)");
-
-	ImGui::SameLine();
-	if (XRay::ImGui::ToolbarButton("##coder_reload", ICON_FA_ROTATE_RIGHT " Reload", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersRight) && Document != nullptr)
-	{
-		if (!Document->Modified || ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "Discard the changes of %s?", Document->Name.c_str()) == mrYes)
-		{
-			Load(*Document);
-		}
-	}
-	Hint("Read the file from the disk again");
-	ImGui::EndDisabled();
-}
-
 void UICoderForm::DrawStatus(float ButtonSize)
 {
-	ImGui::BeginDisabled(BakeRequest);
-	if (XRay::ImGui::ToolbarButton("##coder_bake", ICON_FA_DATABASE " Bake Lua API", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersAll))
-	{
-		BakeRequest = true;
-		StatusText = "Baking the Lua API...";
-	}
-	ImGui::EndDisabled();
-	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-	{
-		ImGui::SetTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
-	}
-
 	const SDocument* Document = Active < Documents.size() ? Documents[Active].get() : nullptr;
-	xr_string Fallback = Document != nullptr ? Document->Path : xr_string();
+	xr_string Fallback;
 	if (Document != nullptr && Document->Kind == EFileKind::Ini)
 	{
-		Fallback += "  |  " + LtxCompletion.GetStatus();
+		Fallback += LtxCompletion.GetStatus();
 	}
 	const char* Text = !StatusText.empty() ? StatusText.c_str() : Fallback.c_str();
-	ImGui::SameLine(0.0f, 8.0f);
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ButtonSize - ImGui::GetTextLineHeight()) * 0.5f);
 	ImGui::TextDisabled("%s", Text);
 }
@@ -571,7 +576,6 @@ void UICoderForm::DrawStatus(float ButtonSize)
 void UICoderForm::DrawDocument(SDocument& Document)
 {
 	TextEditor& View = *Document.View;
-	Search.Draw(View, { &View });
 
 	const bool IsLua = Document.Kind == EFileKind::Lua;
 	const bool IsIni = Document.Kind == EFileKind::Ini;
@@ -585,6 +589,8 @@ void UICoderForm::DrawDocument(SDocument& Document)
 	}
 
 	View.Render("##coder_text", ImGui::GetContentRegionAvail());
+	const ImVec2 ViewMin = ImGui::GetItemRectMin();
+	const ImVec2 ViewMax = ImGui::GetItemRectMax();
 	if (View.IsTextChanged())
 	{
 		Document.Text = CodeEditor::GetText(View);
@@ -621,6 +627,26 @@ void UICoderForm::DrawDocument(SDocument& Document)
 	else if (IsIni)
 	{
 		LtxCompletion.AfterRender(View, Document.Path, Document.Text);
+	}
+
+	xr_vector<TextEditor*> Views;
+	Views.reserve(Documents.size());
+	for (const xr_unique_ptr<SDocument>& Other : Documents)
+	{
+		Views.push_back(Other->View.get());
+	}
+
+	if (Search.Draw(View, Views, ViewMin, ViewMax))
+	{
+		for (const xr_unique_ptr<SDocument>& Other : Documents)
+		{
+			xr_string Text = CodeEditor::GetText(*Other->View);
+			if (Text != Other->Text)
+			{
+				Other->Text = std::move(Text);
+				Other->Modified = true;
+			}
+		}
 	}
 }
 
@@ -727,10 +753,30 @@ bool UICoderForm::FindLuaDefinition(const SDocument& Document, const xr_string& 
 		}
 	}
 
+	// ixray_system is loaded into the global namespace, not as modules: a plain name is looked up there first
+	const xr_path SystemDir = xr_path(Scripts) / "ixray_system";
 	std::error_code Code;
+	if (Separator == xr_string::npos)
+	{
+		for (const auto& Entry : std::filesystem::recursive_directory_iterator(SystemDir, Code))
+		{
+			const xr_string File = Entry.path().string().c_str();
+			if (!Entry.is_regular_file() || GetKind(File) != EFileKind::Lua || !ReadScript(File, Text))
+			{
+				continue;
+			}
+			Line = FindLuaFunction(Text, Name, false);
+			if (Line >= 0)
+			{
+				Path = File;
+				return true;
+			}
+		}
+	}
+
 	for (const auto& Entry : std::filesystem::recursive_directory_iterator(Scripts, Code))
 	{
-		if (!Entry.is_regular_file() || Entry.path().extension() != ".script")
+		if (!Entry.is_regular_file() || GetKind(Entry.path().string().c_str()) != EFileKind::Lua)
 		{
 			continue;
 		}
@@ -738,6 +784,14 @@ bool UICoderForm::FindLuaDefinition(const SDocument& Document, const xr_string& 
 		if (!ReadScript(File, Text))
 		{
 			continue;
+		}
+		const bool IsSystem = File.find("ixray_system") != xr_string::npos;
+		// module.function of a module in a subfolder
+		if (!IsSystem && Separator != xr_string::npos && Name.find(':') == xr_string::npos && Entry.path().stem().string() == Head.c_str())
+		{
+			Path = File;
+			Line = std::max(FindLuaFunction(Text, Name.substr(Separator + 1).c_str(), false), 0);
+			return true;
 		}
 		Line = FindLuaFunction(Text, Separator == xr_string::npos ? Name : Last, Separator != xr_string::npos);
 		if (Line >= 0)
@@ -792,6 +846,10 @@ void UICoderForm::Draw()
 	BuildWorkspaceLayout();
 	UpdateLanguage();
 
+	// The file tabs are the tabs here: the window tab is hidden while it is alone in its dock node
+	ImGuiWindowClass WindowClass;
+	WindowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar;
+	ImGui::SetNextWindowClass(&WindowClass);
 	if (ImGui::Begin(CoderWindow))
 	{
 		// The global shortcuts are off while the code editor takes the text input

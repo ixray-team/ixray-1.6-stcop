@@ -3,28 +3,38 @@
 
 namespace CodeEditor
 {
-	// Visual Studio Code Dark+ colors
 	const TextEditor::Palette& GetPalette();
 	const TextEditor::LanguageDefinition& GetXmlLanguage();
-	// ltx and ini: [sections], key = value, ; comments
 	const TextEditor::LanguageDefinition& GetIniLanguage();
 
-	// imgui.dll allocates GetText() with its own heap: the copy is taken inside the dll
+	// Condlists of the logic: {+info -info =function(a:b) !function ~50} %=effect +info -info%
+	const TextEditor::LanguageDefinition& GetLogicLanguage();
+
 	xr_string GetText(const TextEditor& Editor);
 	void SetText(TextEditor& Editor, const xr_string& Text);
 }
 
-// Ctrl+F opens it, Enter and Shift+Enter go to the next and previous match, Escape closes it
 class CCodeSearch
 {
 public:
-	// Views keep the marks of the matches over a tab switch
-	void Draw(TextEditor& View, std::initializer_list<TextEditor*> Views);
+	enum class EScope
+	{
+		Current,
+		AllOpen
+	};
+
+	bool Draw(TextEditor& View, const xr_vector<TextEditor*>& Views, const ImVec2& Min, const ImVec2& Max);
 
 private:
+	int ReplaceAll(TextEditor& View) const;
+
 	bool Visible = false;
+	bool ReplaceVisible = false;
 	char Text[128] = {};
+	char ReplaceText[128] = {};
 	bool CaseSensitive = false;
-	bool Missed = false;
+	bool WholeWord = false;
+	EScope Scope = EScope::Current;
 	bool Focus = false;
+	bool FocusReplace = false;
 };

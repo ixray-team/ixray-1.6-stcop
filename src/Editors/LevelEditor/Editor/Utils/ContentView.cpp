@@ -1031,6 +1031,28 @@ void CContentView::ClearFileList()
 	Files.clear();
 }
 
+void CContentView::Reveal(const xr_string& FullPath)
+{
+	xr_path File = FullPath;
+	if (!std::filesystem::exists(File))
+	{
+		return;
+	}
+
+	IsSpawnElement = false;
+	IsParticles = false;
+	IsFindResult = false;
+	FindStr[0] = 0;
+	CurrentDir = xr_path(File.parent_path()).xstring();
+	xr_strlwr(CurrentDir);
+	RescanDirectory();
+
+	SelectedObjects.clear();
+	SelectedObjects.push_back(File);
+	RevealPath = File.xstring();
+	xr_strlwr(RevealPath);
+}
+
 void CContentView::RescanDirectory()
 {
 	IsDelWatcher = true;
@@ -1357,6 +1379,17 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos() + ImVec2{ ImGui::GetScrollX(), ImGui::GetScrollY() };
 			DrawHintPos.y -= 15;
 			CurrentItemHint = { Platform::ANSI_TO_UTF8(FileName) ,DrawHintPos, true };
+		}
+	}
+
+	if (!RevealPath.empty())
+	{
+		xr_string Path = FilePath.xstring();
+		xr_strlwr(Path);
+		if (Path == RevealPath)
+		{
+			ImGui::SetScrollHereY(0.5f);
+			RevealPath.clear();
 		}
 	}
 
@@ -1766,6 +1799,21 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
 		{
+			if (UILogicEditorForm::CanOpen(Path.xstring()))
+			{
+				if (ImGui::MenuItem("Open in Node Editor"))
+				{
+					UILogicEditorForm::OpenFile(Path.xstring());
+				}
+			}
+
+			if (ImGui::MenuItem("Open in Coder"))
+			{
+				UICoderForm::OpenFile(Path.xstring());
+			}
+
+			ImGui::Separator();
+
 			if (ImGui::MenuItem("Open in VSCode"))
 			{
 #ifdef IXR_WINDOWS

@@ -15,7 +15,7 @@ public:
 	// Main thread: stops a running backup, waits for the tool being written and removes the
 	// incomplete copy
 	void Cancel();
-	// Backup as soon as the scene can be read, even without changes
+	// Backup as soon as the scene can be read, when it has unsaved changes
 	void RequestNow() { Requested = true; }
 
 	bool IsBusy() const { return Busy; }

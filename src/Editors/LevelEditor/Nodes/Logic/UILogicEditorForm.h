@@ -1,10 +1,11 @@
 #pragma once
+class CContentView;
 #include "LogicDocument.h"
 #include "LogicDebugger.h"
 
 #include <imgui_node_editor.h>
+#include "plugins/TextEditor.h"
 
-// Node graph of the scripted logic: a section is a node, a condlist branch is a link to the section it switches to
 class UILogicEditorForm :
 	public IEditorWnd,
 	public pureFrame
@@ -14,9 +15,7 @@ public:
 	virtual ~UILogicEditorForm();
 
 	virtual void Draw() override;
-	// The debugger talks to the scripts here: Lua is not running in the game thread then
 	virtual void OnFrame() override;
-	// Keeps the opened files between the runs
 	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 
 	static void Create(int Tab);
@@ -27,6 +26,8 @@ public:
 	static bool CanOpen(const xr_string& FullPath);
 	static bool OpenFile(const xr_string& FullPath);
 	static bool Save();
+	static bool Reload();
+	static void RevealInBrowser();
 	static bool Undo(bool Redo);
 	static void DrawTopBar(float ButtonSize);
 
@@ -191,26 +192,41 @@ private:
 		xr_string To;
 	};
 
+	// One condition of a branch of the active section, checked alone
+	struct SDebugCondition
+	{
+		xr_string Key;
+		int Branch = 0;
+		xr_string Target;
+		xr_string Token;
+		// CLogicDebugger::EResult, Always for '~' (random each check)
+		s8 Result = 0;
+		s8 BranchResult = 0;
+		bool FirstOfBranch = false;
+	};
+
 	struct SDebugState
 	{
-		int ObjectId = -1;
 		xr_string ObjectName;
 		xr_string IniFile;
 		xr_string LogicSection;
-		// The document of the object
+
 		xr_string Path;
 		xr_string Active;
+
 		// Pin of a branch of the active section: CLogicDebugger::EResult, Always for no conditions
 		xr_hash_map<u64, s8> Results;
+		xr_vector<SDebugCondition> Conditions;
 		xr_vector<SDebugHistory> History;
 		xr_vector<CLogicDebugger::SObject> Objects;
 		xr_string PendingSwitch;
 		bool UseCpp = true;
 		bool Paused = false;
+		bool Flow = false;
 		double NextPoll = 0.0;
 		double NextObjects = 0.0;
 		int Polls = 0;
-		bool Flow = false;
+		int ObjectId = -1;
 	};
 
 	static constexpr s8 ResultAlways = 2;
@@ -244,6 +260,8 @@ private:
 	char PickerFilter[64] = {};
 	char NewKey[64] = {};
 	bool ShowKeyList = false;
+	CContentView* Browser = nullptr;
+	xr_unique_ptr<TextEditor> TokensEditor;
 	bool ShowProperties = true;
 	xr_string StatusText;
 };

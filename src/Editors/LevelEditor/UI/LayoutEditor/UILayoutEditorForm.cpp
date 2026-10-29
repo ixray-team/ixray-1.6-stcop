@@ -209,22 +209,6 @@ void UILayoutEditorForm::ShowInGame(const char* LayoutName)
 
 void UILayoutEditorForm::OnFrame()
 {
-	if (BakeRequest)
-	{
-		BakeRequest = false;
-		xr_string Error;
-		if (Completion.Bake(Error))
-		{
-			StatusText = "Lua API baked: " + xr_string::ToString(Completion.GetClassCount()) + " classes";
-			ELog.Msg(mtInformation, "UI Layout: %s", StatusText.c_str());
-		}
-		else
-		{
-			StatusText = "Lua API: " + Error;
-			ELog.Msg(mtError, "UI Layout: %s", Error.c_str());
-		}
-	}
-
 	if (PendingShow.empty())
 	{
 		return;
@@ -2141,15 +2125,6 @@ void UILayoutEditorForm::DrawCodePreview()
 			ImGui::SetClipboardText(ScriptSource.c_str());
 		}
 		ImGui::SameLine();
-		ImGui::BeginDisabled(BakeRequest);
-		if (ImGui::Button(ICON_FA_DATABASE " Bake Lua API"))
-		{
-			BakeRequest = true;
-			StatusText = "Baking the Lua API...";
-		}
-		ImGui::EndDisabled();
-		ImGui::SetItemTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
-		ImGui::SameLine();
 		if (ScriptRegionLost)
 		{
 			ImGui::TextColored({ 1.0f, 0.4f, 0.3f, 1.0f }, "The ui_layout markers are gone: the layout can't update this script");
@@ -2173,7 +2148,6 @@ void UILayoutEditorForm::DrawCodePreview()
 		}
 
 
-		Search.Draw(*ScriptView, { XmlView.get(), ScriptView.get() });
 		Completion.Load();
 		if (ScriptLanguageGeneration != Completion.GetGeneration())
 		{
@@ -2184,8 +2158,11 @@ void UILayoutEditorForm::DrawCodePreview()
 		}
 		Completion.BeforeRender(*ScriptView);
 		ScriptView->Render("##script", ImGui::GetContentRegionAvail());
+		const ImVec2 ScriptMin = ImGui::GetItemRectMin();
+		const ImVec2 ScriptMax = ImGui::GetItemRectMax();
 		Completion.AfterRender(*ScriptView, ScriptSource, xr_make_delegate(this, &UILayoutEditorForm::GetFieldClass));
-		if (ScriptView->IsTextChanged())
+		const bool Replaced = Search.Draw(*ScriptView, { XmlView.get(), ScriptView.get() }, ScriptMin, ScriptMax);
+		if (ScriptView->IsTextChanged() || Replaced)
 		{
 			ScriptSource = CodeEditor::GetText(*ScriptView);
 			ScriptViewText = ScriptSource;
@@ -2238,9 +2215,9 @@ void UILayoutEditorForm::DrawCodePreview()
 		}
 	}
 
-	Search.Draw(*XmlView, { XmlView.get(), ScriptView.get() });
 	XmlView->Render("##xml", ImGui::GetContentRegionAvail());
-	if (!Wide && XmlView->IsTextChanged())
+	const bool Replaced = Search.Draw(*XmlView, { XmlView.get(), ScriptView.get() }, ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+	if (!Wide && (XmlView->IsTextChanged() || Replaced))
 	{
 		XmlEdited = true;
 		Modified = true;

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Coder/UICoderForm.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 
 #include "../Nodes/UIMacroView.h"
@@ -485,6 +486,23 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Options"))
 		{
+			// The scripts of Play In Editor own the Lua state
+			const bool BakeLocked = Scene->IsPlayInEditor();
+			ImGui::BeginDisabled(BakeLocked);
+			if (ImGui::MenuItemI("Bake Lua API", ICON_FA_DATABASE, ""))
+			{
+				UICoderForm::RequestBake();
+			}
+			ImGui::EndDisabled();
+			if (BakeLocked)
+			{
+				ImGui::SetItemTooltip("Stop Play In Editor to bake the Lua API");
+			}
+			else
+			{
+				ImGui::SetItemTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
+			}
+			ImGui::Separator();
 			if (ImGui::BeginMenu("Render"))
 			{
 				EditorRenderMenu::DrawItems();

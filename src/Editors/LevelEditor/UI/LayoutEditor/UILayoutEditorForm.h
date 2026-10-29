@@ -192,8 +192,6 @@ private:
 
 	CLuaCompletion Completion;
 	u32 ScriptLanguageGeneration = 0;
-	// Runs in OnFrame: baking loads the scripts into the game state
-	bool BakeRequest = false;
 
 	CCodeSearch Search;
 	xr_string StatusText;

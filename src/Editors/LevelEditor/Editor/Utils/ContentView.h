@@ -74,6 +74,8 @@ public:
 	void RescanISEDirectory(const xr_string& path);
 	void RescanParticlesDirectory(const xr_string& path);
 	void RescanDirectory();
+	// Opens the folder of the file, selects it and scrolls to it
+	void Reveal(const xr_string& FullPath);
 
 	virtual void Init();
 	virtual void Destroy();
@@ -158,6 +160,7 @@ private:
 	bool IsSpawnElement = false;
 	bool IsParticles = false;
 	bool IsFindResult = false;
+	xr_string RevealPath;
 
 	bool IsThmMode = false;
 	bool IsTempMode = false;

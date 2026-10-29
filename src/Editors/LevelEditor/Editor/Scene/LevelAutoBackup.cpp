@@ -37,6 +37,15 @@ void CLevelAutoBackup::EndToolWidgets() const
 void CLevelAutoBackup::Update()
 {
 	const u64 Now = SDL_GetTicks();
+	// The game of Play In Editor changes the objects the backup reads
+	if (Scene->IsPlayInEditor())
+	{
+		Cancel();
+		Requested = false;
+		NextTicks = 0;
+		return;
+	}
+
 	if (Busy)
 	{
 		if (!ToolSaved)
@@ -59,7 +68,11 @@ void CLevelAutoBackup::Update()
 
 	if (Requested)
 	{
-		if (CanStart())
+		if (!IsNeeded())
+		{
+			Requested = false;
+		}
+		else if (CanStart())
 		{
 			Requested = false;
 			Start(Now);

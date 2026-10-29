@@ -9,6 +9,7 @@ public:
 
 	// Loads every script namespace into the game state: call it while the game thread is idle
 	bool Bake(xr_string& Error);
+	static xr_string GetApiPath();
 
 	// Syntax check of a script in a state of its own, nothing runs. Line is 0 when the error has none
 	static bool Compile(const char* ChunkName, const xr_string& Source, xr_string& Error, int& Line);
@@ -74,7 +75,6 @@ private:
 	bool DrawFilters(const u32 (&Counts)[(int)EFilter::Count]);
 	float GetFiltersWidth(const u32 (&Counts)[(int)EFilter::Count]) const;
 
-	static xr_string GetApiPath();
 	void LoadFile(const xr_string& Path);
 
 	void CollectMembers(const xr_string& Class, xr_vector<SItem>& Out, xr_hash_set<xr_string>& Seen, int Depth = 0) const;
