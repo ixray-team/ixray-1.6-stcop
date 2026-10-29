@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIMacroView.h"
-#include "../../xrEUI/IconsFontAwesome6.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
 #include "NodesCommon.h"
 #include "UINodesEditorForm.h"
 

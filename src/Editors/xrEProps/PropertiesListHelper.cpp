@@ -119,7 +119,6 @@ GameTypeValue* CPropHelper::CreateGameType(PropItemVec& items, shared_str key, G
 ChooseValue* CPropHelper::CreateChoose(PropItemVec& items, shared_str key, shared_str* val, u32 mode, const char* path, void* fill_param, u32 sub_item_count, u32 choose_flags)
 {	
 	ChooseValue* cv = (ChooseValue*)AppendValue	(items,key,new ChooseValue(val,mode,path,fill_param,sub_item_count,choose_flags),PROP_CHOOSE);
-	SChooseEvents* E= UIChooseForm::GetEvents(mode); 
 	return	   	cv;	
 }
 MultiChooseValue* CPropHelper::CreateChooseTexture(PropItemVec& items, shared_str key)

@@ -19,6 +19,15 @@ file(GLOB_RECURSE ECORE_SOURCE_EDITOR_PUBLIC_FILES CONFIGURE_DEPENDS
 	"../Public/object_sliding.*"
 )
 
+file(GLOB_RECURSE ECORE_SOURCE_PROPS_FILES CONFIGURE_DEPENDS
+	"Props/*.*"
+)
+
+file(GLOB_RECURSE ECORE_SOURCE_UI_FILES CONFIGURE_DEPENDS
+	"../xrEUI/*.h"
+	"../xrEUI/*.cpp"
+)
+
 file(GLOB_RECURSE ECORE_SOURCE_WM_FILES CONFIGURE_DEPENDS
 	"WildMagic/*.*"
 )
@@ -48,6 +57,8 @@ set(ECORE_SRC_FILES)
 source_group("Engine" FILES ${ECORE_SOURCE_ENGINE_FILES})
 source_group("Editor" FILES ${ECORE_SOURCE_EDITOR_FILES})
 source_group("MeshTools" FILES ${ECORE_SOURCE_EDITOR_PUBLIC_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/Props" PREFIX "Props" FILES ${ECORE_SOURCE_PROPS_FILES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/../xrEUI" PREFIX "UI" FILES ${ECORE_SOURCE_UI_FILES})
 source_group("WildMagic" FILES ${ECORE_SOURCE_WM_FILES})
 source_group("Other"  FILES ${ECORE_SOURCE_EXT_FILES})
 source_group("dxerr"  FILES ${ECORE_SOURCE_ERR_FILES})
@@ -58,6 +69,7 @@ list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_ALL_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_EXT_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_RES_FILES})
 list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_EDITOR_PUBLIC_FILES})
+list(APPEND ECORE_SRC_FILES ${ECORE_SOURCE_UI_FILES})
 
 # Remove unused files
 list(FILTER ECORE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
@@ -67,12 +79,20 @@ add_library(xrECore SHARED ${ECORE_SRC_FILES})
 target_include_directories(xrECore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Public")
+target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Props")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../")
 target_include_directories(xrECore PUBLIC "${IXRAY_SDK_INC}/lua/")
 target_precompile_headers(xrECore PRIVATE "stdafx.h")
 
+target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../xrEUI")
+
+if (IXRAY_UNITYBUILD)
+	set_target_properties(xrECore PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 16)
+endif()
+
 # Project defines
 target_compile_definitions(xrECore PRIVATE XRECORE_EXPORTS)
+target_compile_definitions(xrECore PRIVATE XREUI_EXPORTS)
 target_compile_definitions(xrECore PRIVATE _WINDOWS)
 target_compile_definitions(xrECore PRIVATE _USRDLL)
 target_compile_definitions(xrECore PUBLIC XR_EDITOR_NEW)
@@ -82,7 +102,7 @@ target_compile_options(xrECore PRIVATE /W0)
 target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrECore PUBLIC xrEUI)
+target_link_libraries(xrECore PUBLIC xrRHI)
 target_link_libraries(xrECore PUBLIC xrEProps)
 target_link_libraries(xrECore PUBLIC xrRender_R4)
 target_link_libraries(xrECore PUBLIC NvTriStrip)
@@ -107,7 +127,6 @@ if (WIN32)
 	target_link_libraries(xrECore PUBLIC NVIDIA::DLSS)
 endif()
 
-target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## lunaSVG
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

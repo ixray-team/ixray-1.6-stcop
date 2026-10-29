@@ -1,7 +1,7 @@
 #pragma once
 #include "NodeBuilder/Builder.h"
 
-class XREPROPS_API CUIBoneView:
+class ECORE_API CUIBoneView:
 	public CNodeViewport
 {
 	xr_hash_map<CBone*, CNodeBone*> BonesData;

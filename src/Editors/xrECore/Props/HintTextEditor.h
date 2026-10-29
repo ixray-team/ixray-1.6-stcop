@@ -4,7 +4,7 @@
 // A multiline text view with the highlight of script calls and condlists, and the hints of TOnHintEvent
 // for the word at the cursor. Up and Down select a hint, Tab or Enter accepts it, Escape closes the list,
 // Ctrl+Space shows the list with no word typed
-class XREPROPS_API CHintTextEditor
+class ECORE_API CHintTextEditor
 {
 public:
 	CHintTextEditor();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UITerrainTool.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../../Editor/Tools/Terrain/ESceneTerrainTools.h"
 
 static const u32 g_TerrainRes[] = { 129, 257, 513 };

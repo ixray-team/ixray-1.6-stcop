@@ -33,7 +33,7 @@ bool CListHelper::NameAfterEdit(ListItem* sender, const char* value, shared_str&
     int cnt = _GetItemCount(N.c_str(), '\\');
     if (cnt > 1) { N =value; return false; }
 
-        for (ListItem* item : sender->Parent->GetItems())
+        for (ListItem* item : *sender->Siblings)
         {
             const char* name = strrchr(item->Key(), '\\');
             if (!name)name = item->Key();

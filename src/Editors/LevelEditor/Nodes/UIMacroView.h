@@ -1,8 +1,8 @@
 #pragma once
-#include "../../xrEProps/NodeBuilder/MacroNodes.h"
+#include "NodeBuilder/MacroNodes.h"
 #include "NodesMode.h"
 #include "NodesCommon.h"
-#include "../../xrEProps/Tree/Properties/UIPropertiesForm.h"
+#include "Tree/Properties/UIPropertiesForm.h"
 
 #include <imgui_node_editor.h>
 

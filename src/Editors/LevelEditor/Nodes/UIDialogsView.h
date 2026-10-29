@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../xrEProps/NodeBuilder/DialogNode.h"
+#include "NodeBuilder/DialogNode.h"
 #include "../../xrEUI/EditorWnd.h"
 #include "../../../xrCore/FormatParsers/XML/xrXMLParser.h"
-#include "../../xrEProps/Tree/Properties/UIPropertiesForm.h"
+#include "Tree/Properties/UIPropertiesForm.h"
 #include "../Editor/Utils/ContentView.h"
 #include "UIDialogLocalization.h"
 #include "NodesMode.h"

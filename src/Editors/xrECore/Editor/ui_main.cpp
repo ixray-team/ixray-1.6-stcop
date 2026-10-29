@@ -95,13 +95,6 @@ namespace
 	}
 }
 
-namespace ImGui
-{
-XREUI_API ImFont* LightFont;
-XREUI_API ImFont* RegularFont;
-XREUI_API ImFont* MediumFont;
-XREUI_API ImFont* BoldFont;
-} // namespace ImGui
 
 TUI::TUI()
 {

@@ -2,7 +2,7 @@
 #include "LtxCompletion.h"
 #include "CodeEditorUtils.h"
 #include "../../../xrECore/Editor/EditorContext.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 
 static constexpr int MaxDepth = 32;

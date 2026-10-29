@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UIPropertiesItem :
+class ECORE_API UIPropertiesItem :
 	public UITreeItem
 {
 public:

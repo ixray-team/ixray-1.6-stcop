@@ -20,7 +20,7 @@ struct LinkData
 	bool IsIn = false;
 };
 
-class XREPROPS_API INodeUnknown
+class ECORE_API INodeUnknown
 {
 protected:
 	/// <summary>

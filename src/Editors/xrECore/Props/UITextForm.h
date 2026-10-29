@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UITextForm :public IEditorWnd
+class ECORE_API UITextForm :public IEditorWnd
 {
 public:
 	UITextForm(const char*str);

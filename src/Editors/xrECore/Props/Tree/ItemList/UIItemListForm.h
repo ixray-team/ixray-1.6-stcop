@@ -1,7 +1,7 @@
 #pragma once
 #include "FolderLib.h"
 
-class XREPROPS_API UIItemListForm : 
+class ECORE_API UIItemListForm : 
 	public IEditorWnd, 
 	protected FolderHelper<ListItem, true>
 {

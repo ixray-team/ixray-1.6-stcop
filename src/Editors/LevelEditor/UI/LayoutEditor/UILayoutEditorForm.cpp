@@ -3,7 +3,7 @@
 #include "../../../../xrEngine/string_table.h"
 #include "../../../../xrScripts/linker.h"
 #include "../../../../xrScripts/script_engine.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 
 #include <regex>
@@ -79,7 +79,7 @@ static const char* GetWidgetIcon(ELayoutWidget Type)
 	case ELayoutWidget::Window:			return ICON_FA_WINDOW_RESTORE;
 	case ELayoutWidget::Static:			return ICON_FA_IMAGE;
 	case ELayoutWidget::TextWnd:		return ICON_FA_FONT;
-	case ELayoutWidget::Frame:			return ICON_FA_VECTOR_SQUARE;
+	case ELayoutWidget::Frame:			return ICON_FA_DRAW_POLYGON;
 	case ELayoutWidget::Button:			return ICON_FA_HAND_POINTER;
 	case ELayoutWidget::Check:			return ICON_FA_SQUARE_CHECK;
 	case ELayoutWidget::EditBox:		return ICON_FA_I_CURSOR;

@@ -2,7 +2,7 @@
 #include "UIShaderEditorForm.h"
 #include "UI_shadertools.h"
 #include "SHEngineTools.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 
 UIShaderEditorForm* UIShaderEditorForm::Form = nullptr;

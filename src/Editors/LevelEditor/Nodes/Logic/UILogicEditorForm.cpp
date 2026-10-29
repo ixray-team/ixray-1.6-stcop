@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UILogicEditorForm.h"
-#include "../../../xrEUI/IconsFontAwesome6.h"
+#include "../../../xrEUI/IconsFontAwesome7.h"
 #include "imgui_internal.h"
 #include "../../Editor/Utils/ContentView.h"
 #include "../../UI/Coder/UICoderForm.h"
@@ -177,7 +177,7 @@ const char* UILogicEditorForm::KindIcon(ESchemeKind Kind)
 	case ESchemeKind::Monster:		return ICON_FA_PAW;
 	case ESchemeKind::Item:			return ICON_FA_CUBE;
 	case ESchemeKind::Heli:			return ICON_FA_HELICOPTER;
-	case ESchemeKind::Restrictor:	return ICON_FA_VECTOR_SQUARE;
+	case ESchemeKind::Restrictor:	return ICON_FA_DRAW_POLYGON;
 	default:						return ICON_FA_LIST;
 	}
 }

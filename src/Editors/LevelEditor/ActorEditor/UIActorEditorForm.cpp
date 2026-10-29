@@ -7,7 +7,7 @@
 #include "../../xrECore/Editor/EditMesh.h"
 #include "../../xrEUI/ImGuizmo.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../Editor/Utils/ContentView.h"
 #include "imgui_internal.h"
 

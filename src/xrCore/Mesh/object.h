@@ -13,7 +13,7 @@
 // Incremented by the draw routs. Display + zero whenever you want.
 extern int g_iMaxNumTrisDrawn;
 
-#define INVALID_INDEX u32(-1)
+constexpr u32 INVALID_INDEX = u32(-1);
 
 // The data that gets stored inside mesh.h's tris, pts and edges.
 class MeshPt;

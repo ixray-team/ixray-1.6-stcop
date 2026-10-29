@@ -3,7 +3,7 @@
 
 
 #include "ParticleEffectActions.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 #include "../../Public/PropertiesListHelper.h"
 #include "../../../Layers/xrRenderPC_R4/particle_core/noise.h"
 

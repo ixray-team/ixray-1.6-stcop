@@ -4,7 +4,7 @@
 
 #include "SHGameMtlPairTools.h"
 #include "UI_shadertools.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LuaCompletion.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 #include "../../../xrECore/Editor/EditorContext.h"
 

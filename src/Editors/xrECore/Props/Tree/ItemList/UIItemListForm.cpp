@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIItemListForm::UIItemListForm()
 {
@@ -297,7 +297,7 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 
 	for (ListItem* item : m_Items)
 	{
-		item->Parent = this;
+		item->Siblings = &m_Items;
 		Node* N = AppendObject(&m_GeneralNode, item->Key());
 		VERIFY(N);
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "NodeBuilder/BoneNodes.h"
 
-class XREPROPS_API CNodeViewport:
+class ECORE_API CNodeViewport:
 	public IEditorWnd
 {
 	friend void RegNode(size_t NodeID, ELinkType Type);

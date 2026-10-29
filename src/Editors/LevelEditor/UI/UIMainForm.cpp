@@ -10,7 +10,7 @@
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../xrECore/Editor/UILightingForm.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 

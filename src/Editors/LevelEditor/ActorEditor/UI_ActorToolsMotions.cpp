@@ -11,7 +11,7 @@
 #include "../../../xrEngine/bone.h"
 #include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"
 #include "../../../xrEngine/Fmesh.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 #include "../../../xrPhysics/PhysicsShell.h"
 //---------------------------------------------------------------------------
 MotionID EngineModel::FindMotionID(const char* name, u16 slot)

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 
 UIObjectList* UIObjectList::Form = nullptr;
@@ -18,7 +18,7 @@ static const char* ClassIcon(ObjClassID ClassID)
 	case OBJCLASS_SOUND_SRC:	return ICON_FA_VOLUME_HIGH;
 	case OBJCLASS_SPAWNPOINT:	return ICON_FA_LOCATION_DOT;
 	case OBJCLASS_WAY:			return ICON_FA_ROUTE;
-	case OBJCLASS_SECTOR:		return ICON_FA_VECTOR_SQUARE;
+	case OBJCLASS_SECTOR:		return ICON_FA_DRAW_POLYGON;
 	case OBJCLASS_PORTAL:		return ICON_FA_DOOR_OPEN;
 	case OBJCLASS_SOUND_ENV:	return ICON_FA_WAVE_SQUARE;
 	case OBJCLASS_PS:			return ICON_FA_FIRE;

@@ -47,9 +47,6 @@ using PropItemIt = PropItemVec::iterator;
 
 //------------------------------------------------------------------------------
 #ifdef _EDITOR
-#ifndef ImTextureID
-#include "../xrEUI/stdafx.h"
-#endif
 #include "../xrEProps/ChooseTypes.H"
 #else
 #include "../xrEProps/ChooseTypesHelper.H"

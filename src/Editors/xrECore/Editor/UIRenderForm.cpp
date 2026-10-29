@@ -6,13 +6,6 @@
 
 static int GlobalViewportIndex = 0;
 
-namespace ImGui
-{
-	XREUI_API ImFont* LightFont;
-	XREUI_API ImFont* RegularFont;
-	XREUI_API ImFont* MediumFont;
-	XREUI_API ImFont* BoldFont;
-}
 
 UIRenderForm::UIRenderForm()
 {

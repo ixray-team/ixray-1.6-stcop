@@ -12,6 +12,7 @@ file(GLOB_RECURSE UTILS_FORMS_SOURCE_FILES CONFIGURE_DEPENDS
     "Resources/*.h" "Resources/*.ico" "Resources/*.rc" "Resources/*.bmp"
 )
 list(APPEND UTILS_FORMS_SOURCE_FILES ${UTILS_FORMS_SOURCE_ROOT_FILES})
+set(XLB_IMGUI_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/xrEUI/imgui_impl_sdl3.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../../Editors/xrEUI/imgui_impl_sdl3.h")
 
 # Files import: xrLC (geometry and light compiler)
 file(GLOB_RECURSE XLC_SOURCE_FILES CONFIGURE_DEPENDS "xrLC/*.cpp" "xrLC/*.h")
@@ -112,6 +113,8 @@ endif()
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${UTILS_FORMS_SOURCE_FILES} ${XLC_SOURCE_FILES} ${XAI_SOURCE_FILES})
 source_group("xrLC/Editor" FILES ${XLC_SOURCE_EDITOR_PUBLIC_FILES})
 source_group("xrAI/Entities" FILES ${XAI_SOURCE_ENTT_FILES})
+source_group("UI/imgui" FILES ${XLB_IMGUI_FILES})
+list(APPEND UTILS_FORMS_SOURCE_FILES ${XLB_IMGUI_FILES})
 
 list(APPEND XLC_SOURCE_FILES ${XLC_SOURCE_EDITOR_PUBLIC_FILES})
 list(APPEND XAI_SOURCE_FILES ${XAI_SOURCE_ENTT_FILES})

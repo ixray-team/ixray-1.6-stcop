@@ -3,7 +3,7 @@
 #include "UIActorLibrary.h"
 #include "imgui_internal.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 #include "../../xrECore/Editor/Library.h"
 #include "../../xrECore/Editor/ExportObjectOGF.h"

@@ -4,7 +4,7 @@
 
 #include "SHToolsInterface.h"
 #include "UI_shadertools.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 #include "../../xrECore/Editor/ui_main.h"
 
 ISHTools::ISHTools(const ISHInit& init)

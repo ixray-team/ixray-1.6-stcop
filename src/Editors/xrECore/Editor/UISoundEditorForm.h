@@ -1,8 +1,8 @@
 //---------------------------------------------------------------------------
 #pragma once
 #include "../xrEProps/stdafx.h"
-#include "../xrEProps/Tree/Properties/UIPropertiesForm.h"
-#include "../xrEProps/Tree/Properties/UIPropertiesItem.h"
+#include "Tree/Properties/UIPropertiesForm.h"
+#include "Tree/Properties/UIPropertiesItem.h"
 #include "Editor/EThumbnail.h"
 
 class UISoundEditorForm :public IEditorWnd

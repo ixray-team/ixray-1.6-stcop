@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UICoderForm.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 #include "../../Editor/Utils/ContentView.h"
 

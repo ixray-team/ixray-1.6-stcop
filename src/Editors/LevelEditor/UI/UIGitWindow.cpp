@@ -3,7 +3,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIGitWindow::UIGitWindow()
 	: IEditorWnd()

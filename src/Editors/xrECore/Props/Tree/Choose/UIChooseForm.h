@@ -1,6 +1,6 @@
 #pragma once
 
-class XREPROPS_API UIChooseForm :
+class ECORE_API UIChooseForm :
     public IEditorWnd
 {
     friend class UIChooseFormItem;

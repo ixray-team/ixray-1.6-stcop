@@ -24,7 +24,7 @@
 #include "UIWidgetsTest.h"
 
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {

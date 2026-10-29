@@ -3,7 +3,7 @@
 
 #include "SHGameMtlTools.h"
 #include "../../Public/PropertiesListHelper.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 #include "UI_shadertools.h"
 //------------------------------------------------------------------------------
 

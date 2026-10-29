@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UITopBarForm.h"
 #include <shellapi.h>
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 #include "../ParticleEditor/UI_ParticleTools.h"
 #include "../ParticleEditor/UIParticleEditorForm.h"

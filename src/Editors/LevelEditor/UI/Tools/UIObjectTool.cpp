@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../../Editor/Utils/TerrainGarbageGenerator.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 static xr_atomic_bool RefreshInProgress;
 

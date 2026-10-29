@@ -1,29 +1,7 @@
 #include "stdafx.h"
 #include "HintTextEditor.h"
+#include "HintInput.h"
 
-static constexpr u32 MaxHints = 64;
-static constexpr int MaxVisible = 12;
-
-static bool IsHintChar(char Char)
-{
-	return isalnum((u8)Char) || Char == '_' || Char == '.';
-}
-
-static bool StartsWithNoCase(const xr_string& Text, const xr_string& Prefix)
-{
-	if (Prefix.size() > Text.size())
-	{
-		return false;
-	}
-	for (size_t Index = 0; Index < Prefix.size(); ++Index)
-	{
-		if (tolower((u8)Text[Index]) != tolower((u8)Prefix[Index]))
-		{
-			return false;
-		}
-	}
-	return true;
-}
 
 // The script calls of the properties: module.function, +info -info =function !function, (args), ~50, %effects%
 static const TextEditor::LanguageDefinition& GetScriptLanguage()
@@ -170,7 +148,7 @@ bool CHintTextEditor::Render(const char* Label, const ImVec2& Size, const TOnHin
 	View.CopyTextBeforeCursor(Buffer, sizeof(Buffer));
 	const xr_string Before = Buffer;
 	size_t WordStart = Before.size();
-	while (WordStart > 0 && IsHintChar(Before[WordStart - 1]))
+	while (WordStart > 0 && HintInput::IsHintChar(Before[WordStart - 1]))
 	{
 		--WordStart;
 	}
@@ -187,16 +165,16 @@ bool CHintTextEditor::Render(const char* Label, const ImVec2& Size, const TOnHin
 		Items.clear();
 		for (xr_string& Item : All)
 		{
-			if (StartsWithNoCase(Item, Word) && Item != Word)
+			if (HintInput::StartsWithNoCase(Item, Word) && Item != Word)
 			{
 				Items.push_back(std::move(Item));
 			}
 		}
 		std::sort(Items.begin(), Items.end());
 		Items.erase(std::unique(Items.begin(), Items.end()), Items.end());
-		if (Items.size() > MaxHints)
+		if (Items.size() > HintInput::MaxHints)
 		{
-			Items.resize(MaxHints);
+			Items.resize(HintInput::MaxHints);
 		}
 		if (Changed || Forced)
 		{
@@ -212,7 +190,7 @@ bool CHintTextEditor::Render(const char* Label, const ImVec2& Size, const TOnHin
 
 	// A tooltip window does not take the focus: the popup of the editor stays open
 	const ImGuiStyle& Style = ImGui::GetStyle();
-	const int Rows = std::min((int)Items.size(), MaxVisible);
+	const int Rows = std::min((int)Items.size(), HintInput::MaxVisible);
 	float Width = 220.0f;
 	for (const xr_string& Item : Items)
 	{

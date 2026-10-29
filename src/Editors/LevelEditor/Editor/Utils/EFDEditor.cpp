@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "EFDEditor.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 
 // Limits against broken files

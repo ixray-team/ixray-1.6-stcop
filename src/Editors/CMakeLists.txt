@@ -4,7 +4,6 @@ set(IXRAY_FOLDER_EDITOR_EXCORE FOLDER "Editors/External")
 
 # Core libs 
 if (IXRAY_EDITORS OR IXRAY_UTILS)
-    add_subdirectory("xrEUI")
     add_subdirectory("xrEProps")
 endif()
 
@@ -17,7 +16,6 @@ endif()
 
 # Groups
 if (IXRAY_EDITORS OR IXRAY_UTILS)
-    set_target_properties(xrEUI PROPERTIES ${IXRAY_FOLDER_EDITOR_CORE})
     set_target_properties(xrEProps PROPERTIES ${IXRAY_FOLDER_EDITOR_CORE})
 endif()
 

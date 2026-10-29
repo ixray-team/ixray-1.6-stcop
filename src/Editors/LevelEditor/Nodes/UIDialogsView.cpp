@@ -2,7 +2,7 @@
 #include "UIDialogsView.h"
 #include "../Editor/UI_LevelTools.h"
 #include "../../../xrEngine/string_table.h"
-#include "../../xrEUI/IconsFontAwesome6.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
 #include "NodesCommon.h"
 #include "../Editor/XVisor/XVisor.h"
 #include "UINodesEditorForm.h"
