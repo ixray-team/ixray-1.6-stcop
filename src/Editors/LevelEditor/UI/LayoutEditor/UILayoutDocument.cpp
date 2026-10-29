@@ -25,6 +25,15 @@ namespace LayoutWidget
 		case ELayoutWidget::ScrollView:		return "Scroll View";
 		case ELayoutWidget::ListBox:		return "List Box";
 		case ELayoutWidget::ComboBox:		return "Combo Box";
+		case ELayoutWidget::FrameLine:		return "Frame Line";
+		case ELayoutWidget::AnimStatic:		return "Anim Static";
+		case ELayoutWidget::StackPanel:		return "Stack Panel";
+		case ELayoutWidget::TabControl:		return "Tab Control";
+		case ELayoutWidget::SpinNum:		return "Spin Integer";
+		case ELayoutWidget::SpinFloat:		return "Spin Float";
+		case ELayoutWidget::SpinText:		return "Spin Text";
+		case ELayoutWidget::ArrowStepper:	return "Arrow Stepper";
+		case ELayoutWidget::ListWnd:		return "List";
 		default:							return "?";
 		}
 	}
@@ -45,6 +54,15 @@ namespace LayoutWidget
 		case ELayoutWidget::ScrollView:		return "InitScrollView";
 		case ELayoutWidget::ListBox:		return "InitListBox";
 		case ELayoutWidget::ComboBox:		return "InitComboBox";
+		case ELayoutWidget::FrameLine:		return "InitFrameLine";
+		case ELayoutWidget::AnimStatic:		return "InitAnimStatic";
+		case ELayoutWidget::StackPanel:		return "InitStackPanel";
+		case ELayoutWidget::TabControl:		return "InitTab";
+		case ELayoutWidget::SpinNum:		return "InitSpinNum";
+		case ELayoutWidget::SpinFloat:		return "InitSpinFlt";
+		case ELayoutWidget::SpinText:		return "InitSpinText";
+		case ELayoutWidget::ArrowStepper:	return "InitArrowStepper";
+		case ELayoutWidget::ListWnd:		return "InitList";
 		default:							return "InitStatic";
 		}
 	}
@@ -65,6 +83,15 @@ namespace LayoutWidget
 		case ELayoutWidget::ScrollView:		return "scroll";
 		case ELayoutWidget::ListBox:		return "list";
 		case ELayoutWidget::ComboBox:		return "combo";
+		case ELayoutWidget::FrameLine:		return "frame_line";
+		case ELayoutWidget::AnimStatic:		return "anim";
+		case ELayoutWidget::StackPanel:		return "stack";
+		case ELayoutWidget::TabControl:		return "tab";
+		case ELayoutWidget::SpinNum:
+		case ELayoutWidget::SpinFloat:
+		case ELayoutWidget::SpinText:		return "spin";
+		case ELayoutWidget::ArrowStepper:	return "stepper";
+		case ELayoutWidget::ListWnd:		return "list";
 		default:							return "item";
 		}
 	}
@@ -76,6 +103,7 @@ namespace LayoutWidget
 		static constexpr SLayoutEventInfo EditEvents[] = { { "EDIT_TEXT_COMMIT", "Commit" } };
 		static constexpr SLayoutEventInfo TrackEvents[] = { { "TRACK_VALUE_CHANGED", "Changed" } };
 		static constexpr SLayoutEventInfo ListEvents[] = { { "LIST_ITEM_SELECT", "Select" }, { "LIST_ITEM_CLICKED", "ItemClicked" } };
+		static constexpr SLayoutEventInfo TabEvents[] = { { "TAB_CHANGED", "Changed" } };
 
 		switch (Type)
 		{
@@ -84,7 +112,9 @@ namespace LayoutWidget
 		case ELayoutWidget::EditBox:		return EditEvents;
 		case ELayoutWidget::TrackBar:		return TrackEvents;
 		case ELayoutWidget::ListBox:
-		case ELayoutWidget::ComboBox:		return ListEvents;
+		case ELayoutWidget::ComboBox:
+		case ELayoutWidget::ListWnd:		return ListEvents;
+		case ELayoutWidget::TabControl:		return TabEvents;
 		default:							return {};
 		}
 	}
@@ -123,7 +153,14 @@ namespace LayoutWidget
 		case ELayoutWidget::TrackBar:
 		case ELayoutWidget::ScrollView:
 		case ELayoutWidget::ListBox:
-		case ELayoutWidget::ComboBox:		return false;
+		case ELayoutWidget::ComboBox:
+		case ELayoutWidget::StackPanel:
+		case ELayoutWidget::TabControl:
+		case ELayoutWidget::SpinNum:
+		case ELayoutWidget::SpinFloat:
+		case ELayoutWidget::SpinText:
+		case ELayoutWidget::ArrowStepper:
+		case ELayoutWidget::ListWnd:		return false;
 		default:							return true;
 		}
 	}
@@ -138,7 +175,9 @@ namespace LayoutWidget
 		case ELayoutWidget::Check:
 		case ELayoutWidget::EditBox:
 		case ELayoutWidget::ListBox:
-		case ELayoutWidget::ComboBox:		return true;
+		case ELayoutWidget::ComboBox:
+		case ELayoutWidget::AnimStatic:
+		case ELayoutWidget::ListWnd:		return true;
 		default:							return false;
 		}
 	}
@@ -150,7 +189,12 @@ namespace LayoutWidget
 		case ELayoutWidget::Check:
 		case ELayoutWidget::EditBox:
 		case ELayoutWidget::TrackBar:
-		case ELayoutWidget::ComboBox:		return true;
+		case ELayoutWidget::ComboBox:
+		case ELayoutWidget::TabControl:
+		case ELayoutWidget::SpinNum:
+		case ELayoutWidget::SpinFloat:
+		case ELayoutWidget::SpinText:
+		case ELayoutWidget::ArrowStepper:	return true;
 		default:							return false;
 		}
 	}
@@ -211,6 +255,34 @@ namespace LayoutWidget
 			break;
 		case ELayoutWidget::ComboBox:
 			Widget.Size = { 200.0f, 20.0f };
+			break;
+		case ELayoutWidget::FrameLine:
+			Widget.Size = { 210.0f, 30.0f };
+			Widget.Texture = "ui_icons_PDA_tooltips";
+			break;
+		case ELayoutWidget::AnimStatic:
+			Widget.Size = { 64.0f, 64.0f };
+			Widget.Texture = "ui_inGame2_message_box";
+			break;
+		case ELayoutWidget::StackPanel:
+			Widget.Size = { 300.0f, 30.0f };
+			break;
+		case ELayoutWidget::TabControl:
+			Widget.Size = { 400.0f, 27.0f };
+			break;
+		case ELayoutWidget::SpinNum:
+		case ELayoutWidget::SpinFloat:
+		case ELayoutWidget::SpinText:
+			Widget.Size = { 64.0f, 20.0f };
+			Widget.Horizontal = false;
+			break;
+		case ELayoutWidget::ArrowStepper:
+			Widget.Size = { 150.0f, 20.0f };
+			Widget.Step = 0.1f;
+			Widget.IsInteger = false;
+			break;
+		case ELayoutWidget::ListWnd:
+			Widget.Size = { 250.0f, 200.0f };
 			break;
 		default:
 			break;
@@ -653,7 +725,19 @@ xr_string CUILayoutDocument::BuildXml(bool Wide) const
 			Out += " min=\"" + FormatNumber(Widget.Min) + "\" max=\"" + FormatNumber(Widget.Max) + "\" pos=\"" + FormatNumber(Widget.Value) + "\"";
 			break;
 		case ELayoutWidget::ListBox:
+		case ELayoutWidget::ListWnd:
 			Out += " item_height=\"" + FormatNumber(Widget.ItemHeight) + "\"";
+			break;
+		case ELayoutWidget::FrameLine:
+			Out += xr_string(" vertical=\"") + (Widget.Horizontal ? "0" : "1") + "\"";
+			break;
+		case ELayoutWidget::SpinNum:
+		case ELayoutWidget::SpinFloat:
+		case ELayoutWidget::SpinText:
+			Out += xr_string(" horz=\"") + (Widget.Horizontal ? "1" : "0") + "\"";
+			break;
+		case ELayoutWidget::ArrowStepper:
+			Out += xr_string(" mode=\"") + (Widget.IsInteger ? "integer" : "float") + "\" step=\"" + FormatNumber(Widget.Step) + "\"";
 			break;
 		case ELayoutWidget::ScrollView:
 			Out += " always_show_scroll=\"0\"";
@@ -676,12 +760,12 @@ xr_string CUILayoutDocument::BuildXml(bool Wide) const
 
 		if (LayoutWidget::HasText(Widget.Type) && (!Widget.Text.empty() || Widget.Type == ELayoutWidget::TextWnd || Widget.Type == ELayoutWidget::EditBox))
 		{
-			const char* Tag = Widget.Type == ELayoutWidget::ListBox ? "font" : Widget.Type == ELayoutWidget::ComboBox ? "list_font" : "text";
+			const char* Tag = Widget.Type == ELayoutWidget::ListBox || Widget.Type == ELayoutWidget::ListWnd ? "font" : Widget.Type == ELayoutWidget::ComboBox ? "list_font" : "text";
 			static constexpr const char* AlignNames[] = { "l", "c", "r" };
 			static constexpr const char* VertAlignNames[] = { "t", "c", "b" };
 
 			Body += xr_string("\t\t<") + Tag;
-			if (Widget.Type != ELayoutWidget::ListBox && Widget.Type != ELayoutWidget::ComboBox)
+			if (Widget.Type != ELayoutWidget::ListBox && Widget.Type != ELayoutWidget::ListWnd && Widget.Type != ELayoutWidget::ComboBox)
 			{
 				Body += xr_string(" align=\"") + AlignNames[(int)Widget.Align] + "\" vert_align=\"" + VertAlignNames[(int)Widget.VertAlign] + "\"";
 			}
@@ -985,7 +1069,11 @@ static void ReadWidgetNode(tinyxml2::XMLElement* Node, SLayoutWidget& Widget)
 	Widget.Max = Node->FloatAttribute("max", Widget.Type == ELayoutWidget::ProgressBar ? 1.0f : 100.0f);
 	Widget.Step = Node->FloatAttribute("step", 1.0f);
 	Widget.Value = Node->FloatAttribute("pos", 0.0f);
-	Widget.Horizontal = Node->IntAttribute("horz", 1) != 0;
+	Widget.Horizontal = Node->IntAttribute("horz", 1) != 0 && Node->IntAttribute("vertical", 0) == 0;
+	if (const char* Mode = Node->Attribute("mode"))
+	{
+		Widget.IsInteger = xr_strcmp(Mode, "integer") == 0;
+	}
 	Widget.ItemHeight = Node->FloatAttribute("item_height", 20.0f);
 
 	tinyxml2::XMLElement* TextureNode = Node->FirstChildElement("texture");

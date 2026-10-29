@@ -77,6 +77,7 @@ void UITopBarForm::Draw()
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
 		ImGui::PopStyleVar(); // WindowMinSize
+		const float ToolbarStartY = ImGui::GetCursorPosY();
 		if (UICoderForm::IsActive())
 		{
 			if (ImGui::BeginTable("##CoderToolbar", 3, ImGuiTableFlags_SizingFixedFit))
@@ -146,7 +147,7 @@ void UITopBarForm::Draw()
 		}
 		else
 		{
-		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		if (ImGui::BeginTable("##ToolbarTable", 9, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("File");
@@ -157,7 +158,6 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Directory Actions");
 			ImGui::TableSetupColumn("Sound Preferences");
 			ImGui::TableSetupColumn("Physics");
-			ImGui::TableSetupColumn("Preferences");
 
 			auto yMaxSize = ImGui::GetContentRegionAvail().y;
 			if (ImGui::TableNextColumn())
@@ -306,14 +306,13 @@ void UITopBarForm::Draw()
 				}
 				ImGui::PopStyleColor();
 			}
-
-			if (ImGui::TableNextColumn())
-			{
-				IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
-			}
         }
 		ImGui::EndTable();
 		}
+
+		// Pinned to the right edge in every editor mode
+		ImGui::SetCursorPos({ ImGui::GetWindowContentRegionMax().x - ButtonSize, ToolbarStartY + ToolbarPadding });
+		IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
 	}
 	ImGui::End();
 	ImGui::PopStyleColor(2);

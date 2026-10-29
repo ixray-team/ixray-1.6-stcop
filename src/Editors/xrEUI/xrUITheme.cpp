@@ -9,6 +9,8 @@ using namespace XRay::ImGui;
 CUIThemeManager::CUIThemeManager()
 {
 	bOpen = false;
+	// Visible in every editor tab
+	TabIndex = -1;
 }
 
 CUIThemeManager& CUIThemeManager::Get()
