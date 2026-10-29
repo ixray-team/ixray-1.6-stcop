@@ -593,6 +593,7 @@ void UICoderForm::DrawDocument(SDocument& Document)
 		LtxCompletion.BeforeRender(View);
 	}
 
+	CodeEditor::SyncPalette(View);
 	View.Render("##coder_text", ImGui::GetContentRegionAvail());
 	const ImVec2 ViewMin = ImGui::GetItemRectMin();
 	const ImVec2 ViewMax = ImGui::GetItemRectMax();

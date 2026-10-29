@@ -16,10 +16,10 @@ protected:
 	virtual void Draw();
 	bool IsLoaded = false;
 
-public:
-	float TransparentDefault = 1.f;
-	float TransparentUnfocused = 0.33f;
+private:
+	void DrawPreview(int PresetID, const char* Name);
 
+public:
 	int ThemeID = 0;
 
 	// St4lker0k765: customizable log message colors

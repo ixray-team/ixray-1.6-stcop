@@ -3,7 +3,10 @@
 
 namespace CodeEditor
 {
+	// Palette of the current editor theme
 	const TextEditor::Palette& GetPalette();
+	// Applies the palette again after the theme changed
+	void SyncPalette(TextEditor& View);
 	const TextEditor::LanguageDefinition& GetXmlLanguage();
 	const TextEditor::LanguageDefinition& GetIniLanguage();
 

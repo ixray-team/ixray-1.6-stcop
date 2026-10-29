@@ -87,6 +87,38 @@ static xr_string MacroFilePath()
 	return Path;
 }
 
+static const char* CommandGroupNames[] = { "File", "Edit", "Selection", "Snap", "View", "Build", "Resources", "Windows", "Other" };
+
+static u32 CommandGroup(std::string_view Name)
+{
+	auto Is = [Name](std::initializer_list<std::string_view> Names)
+	{
+		return std::find(Names.begin(), Names.end(), Name) != Names.end();
+	};
+	auto Has = [Name](std::string_view Part)
+	{
+		return Name.find(Part) != std::string_view::npos;
+	};
+
+	if (Has("SNAP_OBJECTS"))
+		return 3;
+	if (Name.starts_with("LOAD") || Name.starts_with("SAVE") || Name.starts_with("UNLOAD_LEVEL") || Is({ "CLEAR", "EXIT", "QUIT", "DESTROY", "CHECK_MODIFIED" }))
+		return 0;
+	if (Name.starts_with("CREATE_SHAPE") || Is({ "COPY", "PASTE", "CUT", "UNDO", "REDO", "DUPLICATE", "DELETE_SELECTION", "BREAK_LAST_OPERATION", "MULTI_RENAME_OBJECTS" }))
+		return 1;
+	if ((Has("SELECT") && !Has("EDITOR")) || Name.starts_with("HIDE") || Name.starts_with("LOCK"))
+		return 2;
+	if (Name.starts_with("TOGGLE") || Has("GRID") || Has("SIMULATE") || Is({ "ZOOM_EXTENTS", "MOVE_CAMERA_TO", "SCENE_HIGHLIGHT_TEXTURE", "CLEAR_DEBUG_DRAW", "MUTE_SOUND" }))
+		return 4;
+	if (Name.starts_with("MAKE") || Has("COMPILER_ERROR") || Is({ "BUILD", "VALIDATE_SCENE" }))
+		return 5;
+	if (Has("EDITOR") || Name.starts_with("SHOW") || Has("PROPERTIES") || Is({ "OPTIONS", "SET_SETTINGS" }))
+		return 7;
+	if (Has("TEXTURE") || Has("SOUND") || Has("SCENE_SUMMARY") || Name.starts_with("ICON") || Is({ "CLEAN_LIBRARY", "EVICT_OBJECTS", "RELOAD_OBJECTS" }))
+		return 6;
+	return 8;
+}
+
 CUIMacroView::CUIMacroView()
 {
 	// "COMMAND_LOAD_LEVEL_PART" is shown as "Load level part"
@@ -109,6 +141,7 @@ CUIMacroView::CUIMacroView()
 		const bool OneArg = Contains(CommandsOneArgsInt, Command) || Contains(CommandsOneArgsString, Command);
 		Item.Type = OneArg ? MacroType::eOneArg : Contains(CommandsTwoArgs, Command) ? MacroType::eTwoArg : MacroType::eVoid;
 		Item.IntArg = Contains(CommandsOneArgsInt, Command);
+		Item.Group = CommandGroup(EnumName.substr(xr_strlen("COMMAND_")));
 		Commands.push_back(std::move(Item));
 	};
 
@@ -123,7 +156,7 @@ CUIMacroView::CUIMacroView()
 
 	std::sort(Commands.begin(), Commands.end(), [](const SCommand& Left, const SCommand& Right)
 	{
-		return Left.Name < Right.Name;
+		return Left.Group != Right.Group ? Left.Group < Right.Group : Left.Name < Right.Name;
 	});
 
 	ed::Config Config;
@@ -821,12 +854,21 @@ bool CUIMacroView::DrawCommandList(const char* Id, char* Filter, size_t FilterSi
 	ImGui::InputTextWithHint(Id, ICON_FA_MAGNIFYING_GLASS " Search commands", Filter, FilterSize);
 
 	bool Result = false;
+	u32 CurrentGroup = u32(-1);
 	for (size_t Index = 0; Index < Commands.size(); ++Index)
 	{
 		const SCommand& Command = Commands[Index];
 		if (!PassFilter(Filter, Command.Name))
 		{
 			continue;
+		}
+
+		if (Command.Group != CurrentGroup)
+		{
+			CurrentGroup = Command.Group;
+			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+			ImGui::SeparatorText(CommandGroupNames[CurrentGroup]);
+			ImGui::PopStyleColor();
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Text, TypeColor(Command.Type).Value);

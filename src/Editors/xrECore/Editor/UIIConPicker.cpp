@@ -89,7 +89,6 @@ void UIIconPicker::Update()
 	{
 		if (!Form->IsClosed())
 		{
-			Form->BeginDraw();
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
 			if (ImGui::Begin("Icon Picker", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 			{
@@ -97,7 +96,6 @@ void UIIconPicker::Update()
 			}
 			ImGui::PopStyleVar(1);
 			ImGui::End();
-			Form->EndDraw();
 		}
 		else
 		{

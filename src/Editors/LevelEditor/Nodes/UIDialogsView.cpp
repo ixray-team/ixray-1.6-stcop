@@ -677,22 +677,28 @@ void DialogEditor::DrawCanvasToolbar()
 
 void DialogEditor::DrawContextMenu()
 {
-	if (!ImGui::BeginPopup("##dialogscontextmenu"))
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+	const bool Opened = ImGui::BeginPopup("##dialogscontextmenu");
+	ImGui::PopStyleVar(2);
+	if (!Opened)
 	{
 		return;
 	}
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
 
 	if (SelectedNode != nullptr)
 	{
 		ImGui::TextDisabled("Phrase %s", SelectedNode->NodeName.c_str());
 
 		const bool IsLocalized = SelectedNode->Text.size() > 0 && g_pStringTable != nullptr && g_pStringTable->HasString(SelectedNode->Text);
-		if (!SelectedNode->IsBranch && ImGui::MenuItem(ICON_FA_LANGUAGE " Localize Text...", nullptr, false, !IsLocalized))
+		if (!SelectedNode->IsBranch && ImGui::MenuItemI("Localize Text...", ICON_FA_LANGUAGE, nullptr, false, !IsLocalized))
 		{
 			OpenLocalization(SelectedNode);
 		}
 
-		if (ImGui::MenuItem(ICON_FA_TRASH " Delete Phrase", "Del"))
+		if (ImGui::MenuItemI("Delete Phrase", ICON_FA_TRASH, "Del"))
 		{
 			DeleteNode(SelectedNode);
 		}
@@ -700,7 +706,7 @@ void DialogEditor::DrawContextMenu()
 		ImGui::Separator();
 	}
 
-	if (ImGui::MenuItem(ICON_FA_PLUS " Create Phrase"))
+	if (ImGui::MenuItemI("Create Phrase", ICON_FA_PLUS))
 	{
 		InputBox.Mode = InputBoxMode::NodeName;
 		InputBox.Buffer[0] = '\0';
@@ -714,7 +720,7 @@ void DialogEditor::DrawContextMenu()
 		InputBox.IsOpen = true;
 	}
 
-	if (ImGui::MenuItem(ICON_FA_CODE_BRANCH " Create Branch Phrase"))
+	if (ImGui::MenuItemI("Create Branch Phrase", ICON_FA_CODE_BRANCH))
 	{
 		InputBox.Mode = InputBoxMode::BranchName;
 		InputBox.Buffer[0] = '\0';
@@ -723,16 +729,17 @@ void DialogEditor::DrawContextMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem(ICON_FA_SITEMAP " Auto Layout"))
+	if (ImGui::MenuItemI("Auto Layout", ICON_FA_SITEMAP))
 	{
 		NeedLayout = true;
 	}
 
-	if (ImGui::MenuItem(ICON_FA_LOCATION_CROSSHAIRS " Fit to Content"))
+	if (ImGui::MenuItemI("Fit to Content", ICON_FA_LOCATION_CROSSHAIRS))
 	{
 		ed::NavigateToContent();
 	}
 
+	ImGui::PopStyleVar();
 	ImGui::EndPopup();
 }
 

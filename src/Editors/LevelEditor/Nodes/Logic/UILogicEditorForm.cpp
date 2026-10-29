@@ -2098,7 +2098,7 @@ SLogicSection& UILogicEditorForm::CreateSection(SDocument& Document, const xr_st
 
 void UILogicEditorForm::DrawCreateMenu(SDocument& Document)
 {
-	ImGui::TextDisabled(HasPendingLink ? "Switch to a new section" : "Add a section");
+	//ImGui::TextDisabled(HasPendingLink ? "Switch to a new section" : "Add a section");
 	if (ImGui::IsWindowAppearing())
 	{
 		PickerFilter[0] = 0;
@@ -2109,7 +2109,7 @@ void UILogicEditorForm::DrawCreateMenu(SDocument& Document)
 	ImGui::Separator();
 
 	xr_string Chosen;
-	if (PassFilter(PickerFilter, "logic") && ImGui::MenuItem(ICON_FA_BOLT " logic"))
+	if (PassFilter(PickerFilter, "logic") && ImGui::MenuItemI("logic", ICON_FA_BOLT))
 	{
 		Chosen = "logic";
 	}
@@ -2126,8 +2126,7 @@ void UILogicEditorForm::DrawCreateMenu(SDocument& Document)
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Text, KindColor((ESchemeKind)Kind).Value);
-		const xr_string Title = xr_string(KindIcon((ESchemeKind)Kind)) + " " + KindName(Kind);
-		const bool Open = PickerFilter[0] != 0 || ImGui::BeginMenu(Title.c_str());
+		const bool Open = PickerFilter[0] != 0 || ImGui::BeginMenuI(KindName(Kind), KindIcon((ESchemeKind)Kind));
 		ImGui::PopStyleColor();
 		if (!Open)
 		{
@@ -2178,12 +2177,17 @@ void UILogicEditorForm::DrawContextMenus(SDocument& Document)
 		ImGui::OpenPopup("##logic_create");
 	}
 
-	if (ImGui::BeginPopup("##logic_create"))
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+	const bool CreateOpened = ImGui::BeginPopup("##logic_create");
+	if (CreateOpened)
 	{
 		DrawCreateMenu(Document);
 		ImGui::EndPopup();
 	}
-	else
+	ImGui::PopStyleVar(2);
+
+	if (!CreateOpened)
 	{
 		HasPendingLink = false;
 	}
@@ -2520,6 +2524,7 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 		TokensCompletion.SetText(IsEffect ? CLtxCompletion::EText::Effects : CLtxCompletion::EText::Conditions);
 		const bool HintsOpen = TokensCompletion.IsOpen();
 		TokensCompletion.BeforeRender(*TokensEditor);
+		CodeEditor::SyncPalette(*TokensEditor);
 		TokensEditor->Render("##tokens", { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - Footer }, true);
 		TokensCompletion.AfterRender(*TokensEditor, xr_string(), xr_string());
 		ImGui::PopStyleVar();

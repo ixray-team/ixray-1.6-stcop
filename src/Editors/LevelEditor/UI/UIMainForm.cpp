@@ -265,12 +265,12 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
-	if (ImGui::BeginMenu("Create"))
+	if (ImGui::BeginMenuI("Create", ICON_FA_PLUS))
 	{
-		if (ImGui::BeginMenu("Shape"))
+		if (ImGui::BeginMenuI("Shape", ICON_FA_SHAPES))
 		{
-			DrawMenuItem("Box", COMMAND_CREATE_SHAPE_BOX);
-			DrawMenuItem("Sphere", COMMAND_CREATE_SHAPE_SPHERE);
+			DrawMenuItemI("Box", ICON_FA_CUBE, COMMAND_CREATE_SHAPE_BOX);
+			DrawMenuItemI("Sphere", ICON_FA_CIRCLE, COMMAND_CREATE_SHAPE_SPHERE);
 
 			ImGui::EndMenu();
 		}
@@ -332,7 +332,7 @@ void UIMainForm::DrawContextMenu()
 
 	DrawMenuItemI("Properties", ICON_FA_GEAR, COMMAND_SHOW_PROPERTIES);
 
-	if (ImGui::MenuItem("Make Heightmap"))
+	if (ImGui::MenuItemI("Make Heightmap", ICON_FA_MOUNTAIN))
 	{
 		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
 		if (CSceneObject* Obj = (CSceneObject*)mt->LastSelected())

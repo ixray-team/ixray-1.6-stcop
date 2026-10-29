@@ -334,12 +334,17 @@ void UIRenderForm::DrawVP()
 
 		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !EContext.UI->IsPlayInEditor())
 		{
-			if (ImGui::BeginPopupContextItem("Menu"))
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+			const bool MenuOpened = ImGui::BeginPopupContextItem("Menu");
+			if (MenuOpened)
 			{
 				m_OnContextMenu();
 				ImGui::EndPopup();
 			}
-			else
+			ImGui::PopStyleVar(2);
+
+			if (!MenuOpened)
 			{
 				EContext.UI->m_ContextRDir = EContext.UI->m_CurrentRDir;
 				EContext.UI->m_ContextRStart = EContext.UI->m_CurrentRStart;

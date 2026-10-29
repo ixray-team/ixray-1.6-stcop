@@ -1,13 +1,25 @@
 #include "stdafx.h"
 #include "CodeEditorUtils.h"
 #include "IconsFontAwesome6.h"
+#include "../../../xrEUI/xrUITheme.h"
+#include "../../../xrEUI/ModernUI.h"
 
 namespace CodeEditor
 {
-	const TextEditor::Palette& GetPalette()
+	static ImU32 WithAlpha(ImColor Color, float Alpha)
 	{
+		Color.Value.w = Alpha;
+		return Color;
+	}
+
+	static TextEditor::Palette MakePalette(int ThemeID)
+	{
+		using XRay::ImGui::EEditorColors;
+		using XRay::ImGui::GetEditorColor;
+		using EIndex = TextEditor::PaletteIndex;
+
 		// ABGR
-		static const TextEditor::Palette Palette = { {
+		TextEditor::Palette Palette = { {
 			0xffd4d4d4,	// Default
 			0xffd69c56,	// Keyword
 			0xffa8ceb5,	// Number
@@ -30,7 +42,75 @@ namespace CodeEditor
 			0x40202020,	// Current line fill, inactive
 			0x40464646,	// Current line edge
 		} };
+
+		auto SetSyntax = [&Palette](std::initializer_list<ImU32> Colors)
+		{
+			std::copy(Colors.begin(), Colors.end(), Palette.begin());
+		};
+
+		switch (ThemeID)
+		{
+		case 4: // Everforest
+			SetSyntax({ IM_COL32(211, 198, 170, 255), IM_COL32(230, 126, 128, 255), IM_COL32(214, 153, 182, 255), IM_COL32(167, 192, 128, 255),
+				IM_COL32(167, 192, 128, 255), IM_COL32(157, 169, 160, 255), IM_COL32(230, 152, 117, 255), IM_COL32(211, 198, 170, 255),
+				IM_COL32(219, 188, 127, 255), IM_COL32(131, 192, 146, 255), IM_COL32(133, 146, 137, 255), IM_COL32(133, 146, 137, 255) });
+			break;
+		case 5: // Catppuccin Mocha
+			SetSyntax({ IM_COL32(205, 214, 244, 255), IM_COL32(203, 166, 247, 255), IM_COL32(250, 179, 135, 255), IM_COL32(166, 227, 161, 255),
+				IM_COL32(166, 227, 161, 255), IM_COL32(147, 153, 178, 255), IM_COL32(245, 194, 231, 255), IM_COL32(205, 214, 244, 255),
+				IM_COL32(249, 226, 175, 255), IM_COL32(137, 180, 250, 255), IM_COL32(108, 112, 134, 255), IM_COL32(108, 112, 134, 255) });
+			break;
+		case 7: // Tokyo Night
+			SetSyntax({ IM_COL32(192, 202, 245, 255), IM_COL32(187, 154, 247, 255), IM_COL32(255, 158, 100, 255), IM_COL32(158, 206, 106, 255),
+				IM_COL32(158, 206, 106, 255), IM_COL32(137, 221, 255, 255), IM_COL32(125, 207, 255, 255), IM_COL32(192, 202, 245, 255),
+				IM_COL32(42, 195, 222, 255), IM_COL32(122, 162, 247, 255), IM_COL32(86, 95, 137, 255), IM_COL32(86, 95, 137, 255) });
+			break;
+		case 2: // Dark Orange: warm gruvbox-like syntax
+		case 6: // Gruvbox
+			SetSyntax({ IM_COL32(235, 219, 178, 255), IM_COL32(251, 73, 52, 255), IM_COL32(211, 134, 155, 255), IM_COL32(184, 187, 38, 255),
+				IM_COL32(184, 187, 38, 255), IM_COL32(168, 153, 132, 255), IM_COL32(142, 192, 124, 255), IM_COL32(235, 219, 178, 255),
+				IM_COL32(250, 189, 47, 255), IM_COL32(131, 165, 152, 255), IM_COL32(146, 131, 116, 255), IM_COL32(146, 131, 116, 255) });
+			break;
+		case 3: // Nordic: Nord syntax colors
+			SetSyntax({ IM_COL32(216, 222, 233, 255), IM_COL32(129, 161, 193, 255), IM_COL32(180, 142, 173, 255), IM_COL32(163, 190, 140, 255),
+				IM_COL32(163, 190, 140, 255), IM_COL32(236, 239, 244, 255), IM_COL32(94, 129, 172, 255), IM_COL32(216, 222, 233, 255),
+				IM_COL32(143, 188, 187, 255), IM_COL32(136, 192, 208, 255), IM_COL32(97, 110, 136, 255), IM_COL32(97, 110, 136, 255) });
+			break;
+		}
+
+		// Editor surface follows the theme
+		const ImColor Accent = GetEditorColor(EEditorColors::Accent);
+		Palette[(int)EIndex::Background] = GetEditorColor(EEditorColors::TableTint);
+		Palette[(int)EIndex::Cursor] = Palette[(int)EIndex::Default];
+		Palette[(int)EIndex::Selection] = WithAlpha(Accent, 0.4f);
+		Palette[(int)EIndex::Breakpoint] = WithAlpha(Accent, 0.25f);
+		Palette[(int)EIndex::LineNumber] = ImGui::GetColorU32(ImGuiCol_TextDisabled);
+		Palette[(int)EIndex::CurrentLineFill] = WithAlpha(GetEditorColor(EEditorColors::PanelTint), 0.6f);
+		Palette[(int)EIndex::CurrentLineFillInactive] = WithAlpha(GetEditorColor(EEditorColors::PanelTint), 0.3f);
+		Palette[(int)EIndex::CurrentLineEdge] = WithAlpha(GetEditorColor(EEditorColors::PanelBorderTint), 0.8f);
 		return Palette;
+	}
+
+	const TextEditor::Palette& GetPalette()
+	{
+		static TextEditor::Palette Palette;
+		static int PaletteTheme = -1;
+
+		const int ThemeID = CUIThemeManager::Get().ThemeID;
+		if (PaletteTheme != ThemeID)
+		{
+			PaletteTheme = ThemeID;
+			Palette = MakePalette(ThemeID);
+		}
+		return Palette;
+	}
+
+	void SyncPalette(TextEditor& View)
+	{
+		if (View.GetPalette() != GetPalette())
+		{
+			View.SetPalette(GetPalette());
+		}
 	}
 
 	const TextEditor::LanguageDefinition& GetXmlLanguage()

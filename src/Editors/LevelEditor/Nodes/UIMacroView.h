@@ -35,6 +35,7 @@ private:
 		u32 Command = 0;
 		MacroType Type = MacroType::eVoid;
 		bool IntArg = false;
+		u32 Group = 0;
 	};
 
 	struct SNode

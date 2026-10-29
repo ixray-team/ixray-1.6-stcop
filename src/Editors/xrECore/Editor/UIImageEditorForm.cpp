@@ -187,7 +187,6 @@ void UIImageEditorForm::Update()
 		if (!Form->IsClosed())
 		{
 			bool NeedShow = true;
-			Form->BeginDraw();
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
 			if (ImGui::Begin("Image Editor", &NeedShow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 			{
@@ -195,7 +194,6 @@ void UIImageEditorForm::Update()
 			}
 			ImGui::PopStyleVar(1);
 			ImGui::End();
-			Form->EndDraw();
 
 			if (!NeedShow)
 			{

@@ -23,9 +23,7 @@ void UIGitWindow::Update()
 	{
 		if (!Form->IsClosed())
 		{
-			Form->BeginDraw();
 			Form->Draw();
-			Form->EndDraw();
 		}
 		else
 		{

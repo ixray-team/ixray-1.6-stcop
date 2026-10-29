@@ -38,19 +38,6 @@ void IEditorWnd::SetStateName(const char* Name)
 	CEditorWndStates::Get().Register(this);
 }
 
-void IEditorWnd::BeginDraw() const
-{
-	if (!IsFocused && !IsDocked && !IsContextMenu)
-	{
-		ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentUnfocused);
-	}
-}
-
-void IEditorWnd::EndDraw() const
-{
-	ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentDefault);
-}
-
 CEditorWndStates& CEditorWndStates::Get()
 {
 	static CEditorWndStates Instance;
