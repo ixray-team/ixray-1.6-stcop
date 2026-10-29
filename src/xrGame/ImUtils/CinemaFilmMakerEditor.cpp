@@ -9,7 +9,9 @@
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/pure.h"
 #include "../../xrEngine/ImGuiManager.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 #include "imgui_internal.h"
+#include <filesystem>
 
 CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam);
 
@@ -17,6 +19,11 @@ namespace CinemaFilmMaker
 {
 constexpr const char* kCinemaClipPayload = "CINEMA_ANIMATION";
 constexpr const char* kCinemaClipIndexPayload = "CINEMA_ANIMATION_INDEX";
+constexpr const char* kCinemaSceneFolder = "cinema_scenes\\";
+constexpr const char* kCinemaSceneExt = ".ltx";
+constexpr s32 kCinemaSceneVersion = 1;
+constexpr u32 kCinemaSceneMaxActors = 1024;
+constexpr u32 kCinemaSceneMaxPlaylist = 256;
 
 enum class EGizmoMode : u8
 {
@@ -57,6 +64,23 @@ struct SHandItem
 {
 	shared_str Section;
 	shared_str Visual;
+};
+
+struct SSceneActorData
+{
+	xr_string Name;
+	shared_str Visual;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	bool Loop = false;
+	float Speed = 1.0f;
+	shared_str Item;
+	xr_vector<SPlaylistEntry> Playlist;
+	shared_str PoseSource;
+	shared_str PoseClip;
+	bool PoseFx = false;
+	float PoseTime = 0.0f;
+	bool PosePaused = false;
 };
 
 struct SClipDragPayload
@@ -1166,6 +1190,15 @@ class CCinemaFilmMakerManager final : public pureFrame
 public:
 	virtual ~CCinemaFilmMakerManager() = default;
 
+	enum class ESceneDialog : u8
+	{
+		None,
+		Info,
+		Save,
+		Load,
+		Confirm
+	};
+
 	void OnFrame() override;
 	void Render();
 
@@ -1192,6 +1225,16 @@ private:
 	void RefreshActorItemBones(SCinemaActor& actor);
 	void DuplicateSelectedActor(bool withPlaylist, bool startPlayback);
 	void DeleteSelectedActor();
+
+	void RequestSaveScene();
+	void SaveSceneFile(const char* name);
+	void RequestLoadScene();
+	void BuildSceneList();
+	void LoadSceneFile(const char* name);
+	void ApplyLoadedScene();
+	void ShowSceneDialog(ESceneDialog mode, const char* title, const xr_vector<xr_string>& lines);
+	void DrawSceneDialog();
+	bool RestoreActorPose(SCinemaActor& actor, const SSceneActorData& data);
 
 	void DrawToolbar();
 	void DrawSelectedActor();
@@ -1260,6 +1303,16 @@ private:
 	EGizmoMode GizmoMode = EGizmoMode::Translate;
 	EGizmoAxis HoveredAxis = EGizmoAxis::None;
 	SGizmoDrag Gizmo;
+	xr_vector<SSceneActorData> SceneData;
+	xr_vector<xr_string> SceneDialogLines;
+	xr_vector<xr_string> SceneList;
+	xr_string SceneDialogTitle;
+	xr_string SceneListSelected;
+	xr_string SceneNameLast;
+	char SceneNameEdit[128] = {};
+	ESceneDialog SceneDialogMode = ESceneDialog::None;
+	bool SceneDialogRequested = false;
+	bool SceneLoadRequested = false;
 };
 
 CCinemaFilmMakerManager* g_CinemaFilmMaker = nullptr;
@@ -1274,6 +1327,14 @@ void CCinemaFilmMakerManager::Shutdown()
 	ModelFilesBuilt = false;
 	HandItems.clear();
 	HandItemsBuilt = false;
+	SceneData.clear();
+	SceneDialogLines.clear();
+	SceneList.clear();
+	SceneListSelected.clear();
+	SceneNameLast.clear();
+	SceneDialogMode = ESceneDialog::None;
+	SceneDialogRequested = false;
+	SceneLoadRequested = false;
 	Level = nullptr;
 	Selected = -1;
 }
@@ -1357,6 +1418,10 @@ void CCinemaFilmMakerManager::OnFrame()
 		ClearActors();
 		Library.clear();
 		LibraryBuilt = false;
+		SceneData.clear();
+		SceneList.clear();
+		SceneListSelected.clear();
+		SceneLoadRequested = false;
 		Level = g_pGameLevel;
 		Selected = -1;
 		SelectedSource = -1;
@@ -2421,6 +2486,813 @@ void CCinemaFilmMakerManager::DeleteSelectedActor()
 	ResetSelection();
 }
 
+
+static void CinemaSceneFolder(string_path& path, const shared_str& levelName)
+{
+	string_path relative = {};
+	xr_sprintf(relative, "%s%s\\", kCinemaSceneFolder, levelName.c_str());
+	FS.update_path(path, "$app_data_root$", relative);
+}
+
+static void CinemaScenePath(string_path& path, const shared_str& levelName, const char* sceneName)
+{
+	CinemaSceneFolder(path, levelName);
+	xr_strcat(path, sceneName);
+	xr_strcat(path, kCinemaSceneExt);
+}
+
+static void CinemaSceneCleanName(const char* source, xr_string& result)
+{
+	result.clear();
+
+	if (source == nullptr)
+	{
+		return;
+	}
+
+	for (const char* symbol = source; *symbol != '\0'; ++symbol)
+	{
+		const char value = *symbol;
+
+		if (value < 32 || value == '\\' || value == '/' || value == ':' || value == '*' || value == '?' || value == '"' || value == '<' || value == '>' || value == '|')
+		{
+			continue;
+		}
+
+		result.push_back(value);
+	}
+
+	while (!result.empty() && (result.back() == ' ' || result.back() == '.'))
+	{
+		result.pop_back();
+	}
+
+	while (!result.empty() && result.front() == ' ')
+	{
+		result.erase(result.begin());
+	}
+}
+
+static shared_str CinemaReadString(CInifile& ini, const char* section, const char* line)
+{
+	if (!ini.line_exist(section, line))
+	{
+		return shared_str();
+	}
+
+	const char* value = ini.r_string(section, line);
+
+	return value != nullptr ? shared_str(value) : shared_str();
+}
+
+bool CCinemaFilmMakerManager::RestoreActorPose(SCinemaActor& actor, const SSceneActorData& data)
+{
+	if (data.PoseClip.size() == 0)
+	{
+		return false;
+	}
+
+	const SAnimationSource* source = FindSource(actor, data.PoseSource);
+
+	if (source == nullptr)
+	{
+		return false;
+	}
+
+	const SAnimationClip* clip = FindClip(*source, data.PoseClip, data.PoseFx);
+
+	if (clip == nullptr)
+	{
+		return false;
+	}
+
+	if (!PlayClip(actor, *source, *clip, false))
+	{
+		return false;
+	}
+
+	CinemaSetBlendLoop(actor.Animated, actor.Motion, !data.PosePaused);
+
+	if (!data.PoseFx && data.PoseTime > 0.0f)
+	{
+		CinemaSetBlendTime(actor.Animated, actor.Motion, data.PoseTime);
+	}
+
+	if (data.PosePaused)
+	{
+		actor.Paused = true;
+		CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
+	}
+
+	return true;
+}
+
+void CCinemaFilmMakerManager::ShowSceneDialog(ESceneDialog mode, const char* title, const xr_vector<xr_string>& lines)
+{
+	SceneDialogMode = mode;
+	SceneDialogTitle = title != nullptr ? title : "";
+	SceneDialogLines = lines;
+	SceneDialogRequested = true;
+}
+
+void CCinemaFilmMakerManager::DrawSceneDialog()
+{
+	if (SceneDialogRequested)
+	{
+		SceneDialogRequested = false;
+		ImGui::OpenPopup("Scene##cinema_scene_dialog");
+	}
+
+	if (!ImGui::BeginPopupModal("Scene##cinema_scene_dialog", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		return;
+	}
+
+	ImGui::TextUnformatted(SceneDialogTitle.c_str());
+	ImGui::Separator();
+
+	const auto drawLines = [this]()
+	{
+		for (const xr_string& line : SceneDialogLines)
+		{
+			ImGui::Bullet();
+			ImGui::TextWrapped("%s", line.c_str());
+		}
+	};
+
+	switch (SceneDialogMode)
+	{
+	case ESceneDialog::Save:
+	{
+		drawLines();
+
+		ImGui::SetNextItemWidth(420.0f);
+
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere();
+		}
+
+		ImGui::InputTextWithHint("##cinema_scene_name", "Scene name", SceneNameEdit, sizeof(SceneNameEdit));
+
+		xr_string cleanName;
+		CinemaSceneCleanName(SceneNameEdit, cleanName);
+
+		bool exists = false;
+		string_path path = {};
+
+		if (!cleanName.empty() && Level != nullptr)
+		{
+			CinemaScenePath(path, Level->name(), cleanName.c_str());
+
+			std::error_code error;
+			exists = std::filesystem::exists(path, error);
+
+			ImGui::TextDisabled("%s", path);
+		}
+
+		if (exists)
+		{
+			ImGui::TextDisabled("This scene already exists and will be overwritten.");
+		}
+
+		ImGui::Separator();
+
+		ImGui::BeginDisabled(cleanName.empty());
+
+		if (ImGui::Button("Save", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+			SaveSceneFile(cleanName.c_str());
+		}
+
+		ImGui::EndDisabled();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		break;
+	}
+
+	case ESceneDialog::Load:
+	{
+		ImGui::TextDisabled("Saved scenes for level \"%s\":", Level != nullptr ? Level->name().c_str() : "");
+
+		if (SceneList.empty())
+		{
+			ImGui::TextDisabled("Nothing saved yet.");
+		}
+		else
+		{
+			ImGui::BeginChild("##cinema_scene_list", ImVec2(420.0f, 260.0f), true);
+
+			for (const xr_string& sceneName : SceneList)
+			{
+				if (ImGui::Selectable(sceneName.c_str(), SceneListSelected == sceneName))
+				{
+					SceneListSelected = sceneName;
+				}
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					SceneListSelected = sceneName;
+					SceneLoadRequested = true;
+				}
+			}
+
+			ImGui::EndChild();
+		}
+
+		ImGui::TextDisabled("Loading replaces the current scene (%u NPC).", static_cast<u32>(Actors.size()));
+		ImGui::Separator();
+
+		ImGui::BeginDisabled(SceneListSelected.empty());
+
+		if (ImGui::Button("Load", ImVec2(120.0f, 0.0f)))
+		{
+			SceneLoadRequested = true;
+		}
+
+		ImGui::EndDisabled();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
+		{
+			SceneListSelected.clear();
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (SceneLoadRequested)
+		{
+			SceneLoadRequested = false;
+
+			const xr_string sceneName = SceneListSelected;
+			ImGui::CloseCurrentPopup();
+			LoadSceneFile(sceneName.c_str());
+		}
+
+		break;
+	}
+
+	case ESceneDialog::Confirm:
+	{
+		drawLines();
+		ImGui::Separator();
+
+		if (ImGui::Button("Load", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+			ApplyLoadedScene();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
+		{
+			SceneData.clear();
+			ImGui::CloseCurrentPopup();
+		}
+
+		break;
+	}
+
+	case ESceneDialog::Info:
+	{
+		drawLines();
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		break;
+	}
+
+	case ESceneDialog::None:
+	default:
+		break;
+	}
+
+	ImGui::EndPopup();
+}
+
+void CCinemaFilmMakerManager::RequestSaveScene()
+{
+	if (Level == nullptr)
+	{
+		return;
+	}
+
+	xr_vector<xr_string> lines;
+
+	if (Actors.empty())
+	{
+		lines.push_back("The scene is empty: there is nothing to save.");
+	}
+
+	xr_string defaultName = SceneNameLast;
+
+	if (defaultName.empty())
+	{
+		defaultName = "scene";
+
+		std::error_code error;
+
+		for (s32 index = 2; index < 1000; ++index)
+		{
+			string_path path = {};
+			CinemaScenePath(path, Level->name(), defaultName.c_str());
+
+			if (!std::filesystem::exists(path, error))
+			{
+				break;
+			}
+
+			string64 candidate = {};
+			xr_sprintf(candidate, "scene_%d", index);
+			defaultName = candidate;
+		}
+	}
+
+	xr_strcpy(SceneNameEdit, defaultName.c_str());
+
+	ShowSceneDialog(ESceneDialog::Save, "Save scene", lines);
+}
+
+void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
+{
+	if (Level == nullptr)
+	{
+		return;
+	}
+
+	xr_vector<xr_string> dialog;
+
+	xr_string cleanName;
+	CinemaSceneCleanName(name, cleanName);
+
+	if (cleanName.empty())
+	{
+		dialog.push_back("Enter a scene name.");
+		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
+		return;
+	}
+
+	if (Actors.empty())
+	{
+		dialog.push_back("The scene is empty: there is nothing to save.");
+		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
+		return;
+	}
+
+	string_path path = {};
+	CinemaScenePath(path, Level->name(), cleanName.c_str());
+
+	CInifile ini(nullptr, FALSE, FALSE, FALSE);
+
+	ini.w_s32("scene", "version", kCinemaSceneVersion);
+	ini.w_string("scene", "name", cleanName.c_str());
+	ini.w_string("scene", "level", Level->name().c_str());
+	ini.w_string("scene", "platform", EngineExternal().GetCurrentPlatformName());
+	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
+
+	for (u32 i = 0; i < static_cast<u32>(Actors.size()); ++i)
+	{
+		const SCinemaActor& actor = *Actors[i];
+
+		string32 section = {};
+		xr_sprintf(section, "actor_%03u", i);
+
+		Fvector rotation = {};
+		actor.Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+
+		ini.w_string(section, "name", actor.Name.c_str());
+		ini.w_string(section, "visual", actor.Visual.c_str());
+		ini.w_fvector3(section, "position", actor.Position);
+		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_bool(section, "loop", actor.Loop);
+		ini.w_float(section, "speed", actor.Speed);
+
+		if (actor.ItemSection.size() > 0)
+		{
+			ini.w_string(section, "item", actor.ItemSection.c_str());
+		}
+
+		if (actor.Motion.valid())
+		{
+			ini.w_string(section, "pose_source", actor.MotionSource.c_str());
+			ini.w_string(section, "pose_clip", actor.MotionName.c_str());
+			ini.w_bool(section, "pose_fx", actor.MotionFx);
+			ini.w_bool(section, "pose_paused", actor.Paused);
+
+			if (actor.Animated != nullptr && !actor.MotionFx)
+			{
+				if (CBlend* blend = CinemaFindBlend(actor.Animated, actor.Motion))
+				{
+					ini.w_float(section, "pose_time", blend->timeCurrent);
+				}
+			}
+		}
+
+		ini.w_u32(section, "playlist", static_cast<u32>(actor.Playlist.size()));
+
+		for (u32 j = 0; j < static_cast<u32>(actor.Playlist.size()); ++j)
+		{
+			const SPlaylistEntry& entry = actor.Playlist[j];
+
+			string32 line = {};
+			xr_sprintf(line, "playlist_%03u", j);
+
+			string1024 value = {};
+			xr_sprintf(value, "%s|%s|%u", entry.Source.c_str(), entry.Name.c_str(), entry.Fx ? 1u : 0u);
+			ini.w_string(section, line, value);
+		}
+	}
+
+	if (!ini.save_as(path))
+	{
+		dialog.push_back("Could not write the scene file:");
+		dialog.push_back(path);
+		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
+		return;
+	}
+
+	FS.file_update(path);
+
+	SceneNameLast = cleanName;
+
+	string256 summary = {};
+	xr_sprintf(summary, "Saved %u NPC to \"%s\".", static_cast<u32>(Actors.size()), cleanName.c_str());
+
+	dialog.push_back(summary);
+	dialog.push_back(path);
+	ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
+}
+
+void CCinemaFilmMakerManager::BuildSceneList()
+{
+	SceneList.clear();
+
+	if (Level == nullptr)
+	{
+		return;
+	}
+
+	string_path folder = {};
+	CinemaSceneFolder(folder, Level->name());
+
+	std::error_code error;
+	std::filesystem::directory_iterator iterator(folder, error);
+
+	if (error)
+	{
+		return;
+	}
+
+	const size_t extLength = xr_strlen(kCinemaSceneExt);
+
+	for (const std::filesystem::directory_entry& entry : iterator)
+	{
+		if (!entry.is_regular_file(error))
+		{
+			continue;
+		}
+
+		xr_string fileName = entry.path().filename().string().c_str();
+
+		if (fileName.size() <= extLength)
+		{
+			continue;
+		}
+
+		if (_stricmp(fileName.c_str() + fileName.size() - extLength, kCinemaSceneExt) != 0)
+		{
+			continue;
+		}
+
+		fileName.erase(fileName.size() - extLength);
+		SceneList.push_back(fileName);
+	}
+
+	std::sort(SceneList.begin(), SceneList.end(), [](const xr_string& left, const xr_string& right)
+	{
+		return xr_strcmp(left.c_str(), right.c_str()) < 0;
+	});
+}
+
+void CCinemaFilmMakerManager::RequestLoadScene()
+{
+	if (Level == nullptr)
+	{
+		return;
+	}
+
+	BuildSceneList();
+
+	SceneListSelected.clear();
+	SceneData.clear();
+
+	ShowSceneDialog(ESceneDialog::Load, "Load scene", {});
+}
+
+void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
+{
+	if (Level == nullptr)
+	{
+		return;
+	}
+
+	xr_vector<xr_string> dialog;
+	xr_vector<xr_string> warnings;
+
+	SceneData.clear();
+
+	string_path path = {};
+	CinemaScenePath(path, Level->name(), name);
+
+	std::error_code error;
+
+	if (!std::filesystem::exists(path, error))
+	{
+		dialog.push_back("Scene file not found:");
+		dialog.push_back(path);
+		ShowSceneDialog(ESceneDialog::Info, "Load scene", dialog);
+		return;
+	}
+
+	CInifile ini(path, TRUE, TRUE, FALSE);
+
+	if (!ini.section_exist("scene"))
+	{
+		dialog.push_back("The file is not a Cinema Film Maker scene:");
+		dialog.push_back(path);
+		ShowSceneDialog(ESceneDialog::Info, "Load scene", dialog);
+		return;
+	}
+
+	const s32 version = ini.line_exist("scene", "version") ? ini.r_s32("scene", "version") : 0;
+
+	if (version <= 0 || version > kCinemaSceneVersion)
+	{
+		dialog.push_back("Unsupported scene version: the file was saved by another editor build.");
+		dialog.push_back(path);
+		ShowSceneDialog(ESceneDialog::Info, "Load scene", dialog);
+		return;
+	}
+
+	const shared_str fileLevel = CinemaReadString(ini, "scene", "level");
+	const shared_str filePlatform = CinemaReadString(ini, "scene", "platform");
+	const shared_str currentLevel = Level->name();
+	const shared_str currentPlatform = EngineExternal().GetCurrentPlatformName();
+
+	if (fileLevel.size() > 0 && xr_strcmp(fileLevel.c_str(), currentLevel.c_str()) != 0)
+	{
+		warnings.push_back(xr_string("Scene was saved on level \"") + fileLevel.c_str() + "\", current level is \"" + currentLevel.c_str() + "\": NPC positions may not match this level.");
+	}
+
+	if (filePlatform.size() > 0 && xr_strcmp(filePlatform.c_str(), currentPlatform.c_str()) != 0)
+	{
+		warnings.push_back(xr_string("Scene was saved for platform \"") + filePlatform.c_str() + "\", current platform is \"" + currentPlatform.c_str() + "\": models, animations and items may be missing.");
+	}
+
+	for (CInifile::Sect& section : ini.sections())
+	{
+		if (section.Name.size() == 0 || _strnicmp(section.Name.c_str(), "actor_", 6) != 0)
+		{
+			continue;
+		}
+
+		if (SceneData.size() >= kCinemaSceneMaxActors)
+		{
+			warnings.push_back("The scene contains too many NPC: the rest was ignored.");
+			break;
+		}
+
+		const char* sect = section.Name.c_str();
+
+		SSceneActorData data;
+
+		const shared_str actorName = CinemaReadString(ini, sect, "name");
+
+		if (actorName.size() > 0)
+		{
+			data.Name = actorName.c_str();
+		}
+
+		if (data.Name.empty())
+		{
+			string32 generated = {};
+			xr_sprintf(generated, "FakeNPC_%02u", static_cast<u32>(SceneData.size()) + 1);
+			data.Name = generated;
+		}
+
+		data.Visual = CinemaReadString(ini, sect, "visual");
+
+		if (data.Visual.size() == 0 || !VisualPathExists(data.Visual.c_str()))
+		{
+			warnings.push_back(xr_string("Model not found for \"") + data.Name + "\": " + (data.Visual.size() > 0 ? data.Visual.c_str() : "<empty>") + " - NPC skipped.");
+			continue;
+		}
+
+		if (ini.line_exist(sect, "position"))
+		{
+			data.Position = ini.r_fvector3(sect, "position");
+		}
+
+		if (ini.line_exist(sect, "rotation"))
+		{
+			data.Rotation = ini.r_fvector3(sect, "rotation");
+		}
+
+		if (!_valid(data.Position) || !_valid(data.Rotation))
+		{
+			warnings.push_back(xr_string("Broken coordinates for \"") + data.Name + "\" - NPC skipped.");
+			continue;
+		}
+
+		data.Loop = ini.line_exist(sect, "loop") && ini.r_bool(sect, "loop");
+		data.Speed = ini.line_exist(sect, "speed") ? ini.r_float(sect, "speed") : 1.0f;
+
+		if (data.Speed != data.Speed || data.Speed < -4.0f || data.Speed > 4.0f)
+		{
+			data.Speed = std::clamp(data.Speed, -4.0f, 4.0f);
+		}
+
+		if (ini.line_exist(sect, "item"))
+		{
+			const shared_str item = CinemaReadString(ini, sect, "item");
+
+			if (item.size() > 0)
+			{
+				const bool available = pSettings != nullptr && pSettings->section_exist(item.c_str()) && pSettings->line_exist(item.c_str(), "visual");
+
+				if (available)
+				{
+					data.Item = item;
+				}
+				else
+				{
+					warnings.push_back(xr_string("Item \"") + item.c_str() + "\" is not available in this build - removed from \"" + data.Name + "\".");
+				}
+			}
+		}
+
+		if (ini.line_exist(sect, "pose_clip"))
+		{
+			data.PoseClip = CinemaReadString(ini, sect, "pose_clip");
+			data.PoseSource = CinemaReadString(ini, sect, "pose_source");
+			data.PoseFx = ini.line_exist(sect, "pose_fx") && ini.r_bool(sect, "pose_fx");
+			data.PoseTime = ini.line_exist(sect, "pose_time") ? ini.r_float(sect, "pose_time") : 0.0f;
+			data.PosePaused = ini.line_exist(sect, "pose_paused") && ini.r_bool(sect, "pose_paused");
+		}
+
+		const u32 playlistCount = ini.line_exist(sect, "playlist") ? ini.r_u32(sect, "playlist") : 0;
+		const u32 playlistLimit = std::min(playlistCount, kCinemaSceneMaxPlaylist);
+
+		for (u32 j = 0; j < playlistLimit; ++j)
+		{
+			string32 line = {};
+			xr_sprintf(line, "playlist_%03u", j);
+
+			if (!ini.line_exist(sect, line))
+			{
+				continue;
+			}
+
+			const shared_str value = CinemaReadString(ini, sect, line);
+
+			if (value.size() == 0)
+			{
+				continue;
+			}
+
+			const xr_string text = value.c_str();
+			const size_t first = text.find('|');
+
+			if (first == xr_string::npos)
+			{
+				continue;
+			}
+
+			const size_t second = text.find('|', first + 1);
+
+			if (second == xr_string::npos)
+			{
+				continue;
+			}
+
+			SPlaylistEntry entry;
+			entry.Source = text.substr(0, first).c_str();
+			entry.Name = text.substr(first + 1, second - first - 1).c_str();
+			entry.Fx = text.compare(second + 1, xr_string::npos, "1") == 0;
+			data.Playlist.push_back(entry);
+		}
+
+		SceneData.push_back(std::move(data));
+	}
+
+	if (SceneData.empty())
+	{
+		dialog = warnings;
+		dialog.push_back("There is nothing to load.");
+		ShowSceneDialog(ESceneDialog::Info, "Load scene", dialog);
+		return;
+	}
+
+	string256 summary = {};
+	xr_sprintf(summary, "Load scene \"%s\"? The current scene (%u NPC) will be replaced by the saved one (%u NPC).", name, static_cast<u32>(Actors.size()), static_cast<u32>(SceneData.size()));
+
+	dialog.push_back(summary);
+	dialog.insert(dialog.end(), warnings.begin(), warnings.end());
+
+	ShowSceneDialog(ESceneDialog::Confirm, "Load scene", dialog);
+}
+
+
+void CCinemaFilmMakerManager::ApplyLoadedScene()
+{
+	if (SceneData.empty())
+	{
+		return;
+	}
+
+	ClearGizmo();
+	ClearActors();
+
+	xr_vector<xr_string> issues;
+	u32 droppedAnimations = 0;
+
+	for (const SSceneActorData& data : SceneData)
+	{
+		auto actor = xr_make_unique<SCinemaActor>();
+		actor->Name = data.Name;
+		actor->Position = data.Position;
+		actor->Orientation.setHPB(deg2rad(data.Rotation.x), deg2rad(data.Rotation.y), deg2rad(data.Rotation.z));
+		actor->Loop = data.Loop;
+		actor->Speed = data.Speed;
+
+		if (!SetActorVisual(*actor, data.Visual.c_str(), false))
+		{
+			issues.push_back(xr_string("Skipped \"") + data.Name + "\": the model could not be loaded.");
+			continue;
+		}
+
+		for (const SPlaylistEntry& entry : data.Playlist)
+		{
+			const SAnimationSource* source = FindSource(*actor, entry.Source);
+
+			if (source == nullptr || FindClip(*source, entry.Name, entry.Fx) == nullptr)
+			{
+				++droppedAnimations;
+				continue;
+			}
+
+			actor->Playlist.push_back(entry);
+		}
+
+		actor->PlaylistSelected = actor->Playlist.empty() ? -1 : 0;
+
+		if (data.Item.size() > 0)
+		{
+			SetActorItem(*actor, data.Item);
+
+			if (actor->ItemModel == nullptr)
+			{
+				issues.push_back(xr_string("Item \"") + data.Item.c_str() + "\" was not applied to \"" + data.Name + "\".");
+			}
+		}
+
+		RestoreActorPose(*actor, data);
+
+		Actors.push_back(std::move(actor));
+	}
+
+	SceneData.clear();
+
+	Selected = Actors.empty() ? -1 : 0;
+	ResetSelection();
+
+	if (droppedAnimations > 0)
+	{
+		string256 line = {};
+		xr_sprintf(line, "%u playlist entries were dropped: not available for these models in this build.", droppedAnimations);
+		issues.push_back(line);
+	}
+
+	string256 summary = {};
+	xr_sprintf(summary, "Loaded %u NPC.", static_cast<u32>(Actors.size()));
+	issues.insert(issues.begin(), summary);
+
+	ShowSceneDialog(ESceneDialog::Info, "Load scene", issues);
+}
+
 void CCinemaFilmMakerManager::DrawToolbar()
 {
 	const bool hasModel = SelectedVisual.size() > 0 && VisualPathExists(SelectedVisual.c_str());
@@ -2546,6 +3418,27 @@ void CCinemaFilmMakerManager::DrawToolbar()
 		if (ImGui::MenuItem("Reload library"))
 		{
 			BuildLibrary();
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::MenuItem("Save scene"))
+		{
+			RequestSaveScene();
+		}
+
+		if (ImGui::MenuItem("Load scene"))
+		{
+			RequestLoadScene();
+		}
+
+		ImGui::Separator();
+
+		if (Level != nullptr)
+		{
+			string_path sceneFolder = {};
+			CinemaSceneFolder(sceneFolder, Level->name());
+			ImGui::TextDisabled("%s", sceneFolder);
 		}
 
 		ImGui::EndPopup();
@@ -3320,6 +4213,8 @@ void CCinemaFilmMakerManager::DrawPanel()
 	ImGui::EndChild();
 
 	ImGui::PopStyleVar(2);
+
+	DrawSceneDialog();
 }
 
 EGizmoAxis CCinemaFilmMakerManager::HitTranslateAxis(const Fvector& pivot, float size, const ImVec2& mouse) const

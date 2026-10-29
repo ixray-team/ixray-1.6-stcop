@@ -15,7 +15,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
-| [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs, held items, animation playlists |
+| [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs, held items, animation playlists, scene save/load |
 | [build.md](build.md) | Targets and CMake options |
 | [style.md](style.md) | RAII, types, platform split |
 
