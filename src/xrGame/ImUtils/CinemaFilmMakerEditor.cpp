@@ -53,6 +53,12 @@ struct SPlaylistEntry
 	bool Fx = false;
 };
 
+struct SHandItem
+{
+	shared_str Section;
+	shared_str Visual;
+};
+
 struct SClipDragPayload
 {
 	string_path Source = {};
@@ -151,6 +157,9 @@ struct SBindBoneParam
 class CCinemaActorObject final : public CObject
 {
 public:
+	IRenderVisual* ItemVisual = nullptr;
+	Fmatrix ItemTransform;
+
 	CCinemaActorObject()
 	{
 		cName_set("cinema_fake_npc");
@@ -207,6 +216,13 @@ public:
 		::Render->set_Transform(&renderable.xform);
 		::Render->add_Visual(renderable.visual);
 		renderable.visual->getVisData().hom_frame = Device.dwFrame;
+
+		if (ItemVisual != nullptr)
+		{
+			::Render->set_Transform(&ItemTransform);
+			::Render->add_Visual(ItemVisual);
+			ItemVisual->getVisData().hom_frame = Device.dwFrame;
+		}
 	}
 
 	bool renderable_ShadowGenerate() override
@@ -248,6 +264,17 @@ struct SCinemaActor
 	shared_str MotionSource;
 	bool MotionFx = false;
 	float FxDeadline = 0.0f;
+	shared_str ItemSection;
+	IRenderVisual* ItemModel = nullptr;
+	bool ItemWeaponStyle = false;
+	s32 ItemHandDependence = 2;
+	u16 ItemBoneR = u16(-1);
+	u16 ItemBoneL = u16(-1);
+	u16 ItemBoneR2 = u16(-1);
+	u16 ItemBoneAttach = u16(-1);
+	shared_str ItemBoneName;
+	Fvector ItemPosition = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector ItemRotation = Fvector().set(0.0f, 0.0f, 0.0f);
 
 	SCinemaActor()
 	{
@@ -657,6 +684,108 @@ static void ReleaseActorModel(SCinemaActor& actor)
 	actor.Sources.clear();
 }
 
+static void ReleaseActorItem(SCinemaActor& actor)
+{
+	actor.Object.ItemVisual = nullptr;
+	actor.ItemSection = "";
+	actor.ItemBoneName = "";
+	actor.ItemWeaponStyle = false;
+	actor.ItemHandDependence = 2;
+	actor.ItemBoneR = u16(-1);
+	actor.ItemBoneL = u16(-1);
+	actor.ItemBoneR2 = u16(-1);
+	actor.ItemBoneAttach = u16(-1);
+	actor.ItemPosition.set(0.0f, 0.0f, 0.0f);
+	actor.ItemRotation.set(0.0f, 0.0f, 0.0f);
+
+	if (actor.ItemModel != nullptr && ::Render != nullptr)
+	{
+		::Render->model_Delete(actor.ItemModel);
+	}
+
+	actor.ItemModel = nullptr;
+}
+
+static void UpdateActorItemPlacement(SCinemaActor& actor)
+{
+	actor.Object.ItemVisual = nullptr;
+
+	if (actor.ItemModel == nullptr || actor.Skeleton == nullptr)
+	{
+		return;
+	}
+
+	const Fmatrix& placement = actor.Object.renderable.xform;
+	Fmatrix transform;
+
+	if (actor.ItemWeaponStyle)
+	{
+		const u16 boneR = actor.ItemBoneR;
+		const u16 boneL = actor.ItemHandDependence == 1 ? actor.ItemBoneR2 : actor.ItemBoneL;
+
+		if (boneR == u16(-1) || boneL == u16(-1))
+		{
+			return;
+		}
+
+		const Fmatrix& mL = actor.Skeleton->LL_GetTransform(boneL);
+		const Fmatrix& mR = actor.Skeleton->LL_GetTransform(boneR);
+
+		Fvector direction = {};
+		direction.sub(mL.c, mR.c);
+
+		if (fis_zero(direction.magnitude()))
+		{
+			transform = placement;
+			placement.transform_tiny(transform.c, mR.c);
+		}
+		else
+		{
+			direction.normalize();
+
+			Fvector right = {};
+			right.crossproduct(mR.j, direction);
+			right.normalize();
+
+			Fvector normal = {};
+			normal.crossproduct(direction, right);
+			normal.normalize();
+
+			transform.set(right, normal, direction, mR.c);
+			transform.mulA_43(placement);
+		}
+
+		Fmatrix offset;
+		offset.setHPB(
+			actor.ItemRotation.x * PI / 180.0f,
+			actor.ItemRotation.y * PI / 180.0f,
+			actor.ItemRotation.z * PI / 180.0f);
+		offset.translate_over(actor.ItemPosition);
+
+		actor.Object.ItemTransform.mul(transform, offset);
+	}
+	else
+	{
+		if (actor.ItemBoneAttach == u16(-1))
+		{
+			return;
+		}
+
+		Fmatrix boneMatrix;
+		actor.Skeleton->Bone_GetAnimPos(boneMatrix, actor.ItemBoneAttach, u8(-1), false);
+
+		Fmatrix offset;
+		offset.setHPB(actor.ItemRotation.x, actor.ItemRotation.y, actor.ItemRotation.z);
+		offset.translate_over(actor.ItemPosition);
+
+		transform.mul_43(boneMatrix, offset);
+		transform.mulA_43(placement);
+		actor.Object.ItemTransform = transform;
+	}
+
+	actor.Object.ItemVisual = actor.ItemModel;
+}
+
 static void UpdateActorPlacement(SCinemaActor& actor)
 {
 	if (actor.Skeleton != nullptr)
@@ -667,6 +796,8 @@ static void UpdateActorPlacement(SCinemaActor& actor)
 	Fmatrix transform = actor.Orientation;
 	transform.c = actor.Position;
 	actor.Object.Bind(actor.Model, transform);
+
+	UpdateActorItemPlacement(actor);
 }
 
 static Fvector AxisVector(EGizmoAxis axis)
@@ -1050,18 +1181,22 @@ private:
 	void SelectActor(s32 index);
 
 	void BuildModelFiles();
+	void BuildHandItems();
 	void BuildLibrary();
 	void BuildActorSources(SCinemaActor& actor);
 
 	bool AddActor(const Fvector& position, const char* visual, bool adjustGround);
 	bool AddActorInFront(const char* visual);
 	bool SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround);
+	void SetActorItem(SCinemaActor& actor, const shared_str& section);
+	void RefreshActorItemBones(SCinemaActor& actor);
 	void DuplicateSelectedActor(bool withPlaylist, bool startPlayback);
 	void DeleteSelectedActor();
 
 	void DrawToolbar();
 	void DrawSelectedActor();
 	void DrawModelTab();
+	void DrawItemTab();
 	void DrawAnimationTab();
 	void DrawPlaylist(SCinemaActor& actor);
 	void DrawActorTimeline(SCinemaActor& actor);
@@ -1103,6 +1238,7 @@ private:
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
 	xr_vector<SAnimationSource> Library;
 	xr_vector<shared_str> ModelFiles;
+	xr_vector<SHandItem> HandItems;
 	IGame_Level* Level = nullptr;
 	s32 Selected = -1;
 	s32 SelectedOgf = -1;
@@ -1113,10 +1249,12 @@ private:
 	u32 NextNameIndex = 1;
 	bool LibraryBuilt = false;
 	bool ModelFilesBuilt = false;
+	bool HandItemsBuilt = false;
 	bool Snap = false;
 	float TranslateStep = 0.1f;
 	float RotateStepDeg = 5.0f;
 	char ModelFileFilter[128] = {};
+	char ItemFilter[128] = {};
 	char ClipFilter[128] = {};
 	char NameEdit[128] = {};
 	EGizmoMode GizmoMode = EGizmoMode::Translate;
@@ -1134,6 +1272,8 @@ void CCinemaFilmMakerManager::Shutdown()
 	LibraryBuilt = false;
 	ModelFiles.clear();
 	ModelFilesBuilt = false;
+	HandItems.clear();
+	HandItemsBuilt = false;
 	Level = nullptr;
 	Selected = -1;
 }
@@ -1149,6 +1289,7 @@ void CCinemaFilmMakerManager::ClearActors()
 	{
 		actor->PlaylistIndex = -1;
 		actor->Paused = false;
+		ReleaseActorItem(*actor);
 		ReleaseActorModel(*actor);
 	}
 
@@ -1275,6 +1416,58 @@ void CCinemaFilmMakerManager::BuildModelFiles()
 		SelectedOgf = 0;
 		SelectedVisual = ModelFiles.front();
 	}
+}
+
+void CCinemaFilmMakerManager::BuildHandItems()
+{
+	if (HandItemsBuilt)
+	{
+		return;
+	}
+
+	HandItemsBuilt = true;
+	HandItems.clear();
+
+	if (pSettings == nullptr)
+	{
+		return;
+	}
+
+	for (CInifile::Sect& section : pSettings->sections())
+	{
+		if (!section.line_exist("visual"))
+		{
+			continue;
+		}
+
+		const bool weaponStyle = section.line_exist("position") && section.line_exist("orientation");
+		bool attachStyle = section.line_exist("attach_bone_name") && section.line_exist("attach_angle_offset") && section.line_exist("attach_position_offset");
+
+		if (attachStyle)
+		{
+			const shared_str boneName = pSettings->r_string(section.Name.c_str(), "attach_bone_name");
+			attachStyle = boneName.size() > 0;
+		}
+
+		if (!weaponStyle && !attachStyle)
+		{
+			continue;
+		}
+
+		const shared_str visual = pSettings->r_string(section.Name.c_str(), "visual");
+
+		if (!VisualPathExists(visual.c_str()))
+		{
+			continue;
+		}
+
+		HandItems.push_back({ .Section = section.Name, .Visual = visual });
+	}
+
+	std::sort(HandItems.begin(), HandItems.end(), [](const SHandItem& left, const SHandItem& right)
+	{
+		return xr_strcmp(left.Section.c_str(), right.Section.c_str()) < 0;
+	});
 }
 
 void CCinemaFilmMakerManager::BuildLibrary()
@@ -2052,9 +2245,108 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 
 	BuildActorSources(actor);
 	ApplyDefaultPose(actor);
+	RefreshActorItemBones(actor);
 	SelectedSource = -1;
 	SelectedClip = -1;
 	return true;
+}
+
+static u16 CinemaFindBone(IKinematics* skeleton, const char* name)
+{
+	if (skeleton == nullptr || name == nullptr || name[0] == '\0')
+	{
+		return u16(-1);
+	}
+
+	return skeleton->LL_BoneID(name);
+}
+
+void CCinemaFilmMakerManager::RefreshActorItemBones(SCinemaActor& actor)
+{
+	actor.ItemBoneR = u16(-1);
+	actor.ItemBoneL = u16(-1);
+	actor.ItemBoneR2 = u16(-1);
+	actor.ItemBoneAttach = u16(-1);
+
+	if (actor.Skeleton == nullptr)
+	{
+		return;
+	}
+
+	if (!actor.ItemWeaponStyle)
+	{
+		actor.ItemBoneAttach = CinemaFindBone(actor.Skeleton, actor.ItemBoneName.c_str());
+		return;
+	}
+
+	actor.ItemBoneR = CinemaFindBone(actor.Skeleton, "bip01_r_finger1");
+
+	if (actor.ItemBoneR == u16(-1))
+	{
+		actor.ItemBoneR = CinemaFindBone(actor.Skeleton, "bip01_r_hand");
+	}
+
+	actor.ItemBoneL = CinemaFindBone(actor.Skeleton, "bip01_l_finger1");
+
+	if (actor.ItemBoneL == u16(-1))
+	{
+		actor.ItemBoneL = CinemaFindBone(actor.Skeleton, "bip01_l_hand");
+	}
+
+	actor.ItemBoneR2 = CinemaFindBone(actor.Skeleton, "bip01_r_finger11");
+
+	if (actor.ItemBoneR2 == u16(-1))
+	{
+		actor.ItemBoneR2 = actor.ItemBoneR;
+	}
+}
+
+void CCinemaFilmMakerManager::SetActorItem(SCinemaActor& actor, const shared_str& section)
+{
+	ReleaseActorItem(actor);
+
+	if (section.size() == 0 || pSettings == nullptr || ::Render == nullptr)
+	{
+		return;
+	}
+
+	if (!pSettings->section_exist(section.c_str()) || !pSettings->line_exist(section.c_str(), "visual"))
+	{
+		return;
+	}
+
+	const shared_str visual = pSettings->r_string(section.c_str(), "visual");
+	IRenderVisual* model = ::Render->model_Create(visual.c_str());
+
+	if (model == nullptr)
+	{
+		return;
+	}
+
+	vis_data& visData = model->getVisData();
+	visData.marker = 0;
+	visData.accept_frame = 0;
+	visData.hom_frame = 0;
+
+	actor.ItemSection = section;
+	actor.ItemModel = model;
+	actor.ItemWeaponStyle = pSettings->line_exist(section.c_str(), "position") && pSettings->line_exist(section.c_str(), "orientation");
+
+	if (actor.ItemWeaponStyle)
+	{
+		actor.ItemHandDependence = pSettings->line_exist(section.c_str(), "hand_dependence") ? pSettings->r_s32(section.c_str(), "hand_dependence") : 2;
+		actor.ItemPosition = pSettings->r_fvector3(section.c_str(), "position");
+		actor.ItemRotation = pSettings->r_fvector3(section.c_str(), "orientation");
+	}
+	else
+	{
+		actor.ItemHandDependence = 2;
+		actor.ItemBoneName = pSettings->r_string(section.c_str(), "attach_bone_name");
+		actor.ItemPosition = pSettings->line_exist(section.c_str(), "attach_position_offset") ? pSettings->r_fvector3(section.c_str(), "attach_position_offset") : Fvector().set(0.0f, 0.0f, 0.0f);
+		actor.ItemRotation = pSettings->line_exist(section.c_str(), "attach_angle_offset") ? pSettings->r_fvector3(section.c_str(), "attach_angle_offset") : Fvector().set(0.0f, 0.0f, 0.0f);
+	}
+
+	RefreshActorItemBones(actor);
 }
 
 void CCinemaFilmMakerManager::DuplicateSelectedActor(bool withPlaylist, bool startPlayback)
@@ -2085,6 +2377,11 @@ void CCinemaFilmMakerManager::DuplicateSelectedActor(bool withPlaylist, bool sta
 		return;
 	}
 
+	if (source->ItemSection.size() > 0)
+	{
+		SetActorItem(*actor, source->ItemSection);
+	}
+
 	if (withPlaylist)
 	{
 		actor->Playlist = source->Playlist;
@@ -2112,6 +2409,7 @@ void CCinemaFilmMakerManager::DeleteSelectedActor()
 	ClearGizmo();
 	Actors[Selected]->PlaylistIndex = -1;
 	Actors[Selected]->Paused = false;
+	ReleaseActorItem(*Actors[Selected]);
 	ReleaseActorModel(*Actors[Selected]);
 	Actors.erase(Actors.begin() + Selected);
 
@@ -2541,6 +2839,100 @@ void CCinemaFilmMakerManager::DrawModelTab()
 	ImGui::EndDisabled();
 }
 
+void CCinemaFilmMakerManager::DrawItemTab()
+{
+	SCinemaActor* actor = GetSelectedActor();
+
+	if (actor == nullptr)
+	{
+		ImGui::TextDisabled("Select a fake NPC to give it a held item");
+		return;
+	}
+
+	BuildHandItems();
+
+	const float availableHeight = ImGui::GetContentRegionAvail().y;
+	const float listHeight = std::max(150.0f, availableHeight - 105.0f);
+
+	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::InputTextWithHint("##cinema_item_filter", "Search items", ItemFilter, sizeof(ItemFilter));
+
+	xr_vector<s32> filteredItems;
+	filteredItems.reserve(HandItems.size());
+
+	for (s32 i = 0; i < static_cast<s32>(HandItems.size()); ++i)
+	{
+		if (CinemaContainsFilter(HandItems[i].Section.c_str(), ItemFilter) || CinemaContainsFilter(HandItems[i].Visual.c_str(), ItemFilter))
+		{
+			filteredItems.push_back(i);
+		}
+	}
+
+	ImGui::BeginChild("##cinema_items_list", ImVec2(0.0f, listHeight), true);
+
+	ImGuiListClipper itemClipper;
+	itemClipper.Begin(static_cast<int>(filteredItems.size()));
+
+	while (itemClipper.Step())
+	{
+		for (int row = itemClipper.DisplayStart; row < itemClipper.DisplayEnd; ++row)
+		{
+			const s32 index = filteredItems[row];
+			const SHandItem& item = HandItems[index];
+			const bool selected = actor->ItemSection.size() > 0 && xr_strcmp(actor->ItemSection.c_str(), item.Section.c_str()) == 0;
+
+			ImGui::PushID(index);
+
+			if (ImGui::Selectable(item.Section.c_str(), selected))
+			{
+				SetActorItem(*actor, item.Section);
+			}
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("%s\n%s", item.Section.c_str(), item.Visual.c_str());
+			}
+
+			ImGui::PopID();
+		}
+	}
+
+	if (filteredItems.empty())
+	{
+		ImGui::TextDisabled("Nothing found");
+	}
+
+	ImGui::EndChild();
+
+	ImGui::Separator();
+	ImGui::TextDisabled("Item");
+	ImGui::SameLine();
+	ImGui::TextUnformatted(actor->ItemSection.size() > 0 ? actor->ItemSection.c_str() : "<none>");
+
+	if (actor->ItemSection.size() > 0 && actor->Skeleton != nullptr)
+	{
+		const u16 boneL = actor->ItemHandDependence == 1 ? actor->ItemBoneR2 : actor->ItemBoneL;
+		const bool resolvable = actor->ItemWeaponStyle ? (actor->ItemBoneR != u16(-1) && boneL != u16(-1)) : (actor->ItemBoneAttach != u16(-1));
+
+		if (!resolvable)
+		{
+			ImGui::TextDisabled("This model has no bones for this item");
+		}
+	}
+
+	SToolbarLayout actions(ImGui::GetContentRegionAvail().x);
+
+	actions.Item(CinemaButtonWidth("Remove"));
+	ImGui::BeginDisabled(actor->ItemSection.size() == 0);
+
+	if (ImGui::Button("Remove##item"))
+	{
+		SetActorItem(*actor, shared_str());
+	}
+
+	ImGui::EndDisabled();
+}
+
 void CCinemaFilmMakerManager::DrawAnimationTab()
 {
 	SCinemaActor* actor = GetSelectedActor();
@@ -2907,6 +3299,12 @@ void CCinemaFilmMakerManager::DrawPanel()
 		if (ImGui::BeginTabItem("Model"))
 		{
 			DrawModelTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Item"))
+		{
+			DrawItemTab();
 			ImGui::EndTabItem();
 		}
 
