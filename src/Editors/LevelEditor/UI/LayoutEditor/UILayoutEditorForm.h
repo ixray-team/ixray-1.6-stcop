@@ -5,7 +5,7 @@
 // xr_unique_ptr checks the type when declared, so it can't be a forward declaration
 #include "plugins/TextEditor.h"
 #include "../../Nodes/UIDialogLocalization.h"
-#include "../../../xrEProps/Tree/Properties/UIPropertiesForm.h"
+#include "Tree/Properties/UIPropertiesForm.h"
 
 // UI Layout workspace: a top bar tab with a WYSIWYG editor for scripted dialogs.
 // Saves configs\ui\<name>.xml, configs\ui\<name>_16.xml and scripts\<name>.script,

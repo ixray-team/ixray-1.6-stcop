@@ -1,7 +1,7 @@
 #pragma once
 #include "../Public/WaveForm.h"
 
-class XREPROPS_API CWaveForm:
+class ECORE_API CWaveForm:
     public IEditorWnd
 {
 public:

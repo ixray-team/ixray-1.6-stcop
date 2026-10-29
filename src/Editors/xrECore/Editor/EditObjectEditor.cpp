@@ -563,7 +563,7 @@ void CEditableObject::OnDeviceDestroy()
 	DefferedUnloadRP();
 }
 
-static RHIInputElementDesc dwDecl_4W[] =
+static RHIInputElementDesc SkeletonGeomDecl[] =
 {
 	{ "POSITION",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0,  ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 	{ "NORMAL",    0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
@@ -578,7 +578,7 @@ void CEditableObject::DefferedLoadRP()
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
-	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	vs_SkeletonGeom.create(SkeletonGeomDecl, std::size(SkeletonGeomDecl), RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();

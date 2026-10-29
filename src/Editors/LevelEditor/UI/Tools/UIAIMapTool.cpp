@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIAIMapTool::UIAIMapTool()
 {

@@ -8,7 +8,7 @@ enum class MacroType
 	eTwoArg
 };
 
-class XREPROPS_API CNodeMacro :
+class ECORE_API CNodeMacro :
 	public INodeUnknown
 {
 	MacroType Type = MacroType::eVoid;

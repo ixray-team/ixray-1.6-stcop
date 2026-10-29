@@ -2,7 +2,7 @@
 #include "UIParticleEditorForm.h"
 #include "UI_ParticleTools.h"
 #include "../Editor/Utils/ContentView.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "imgui_internal.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 

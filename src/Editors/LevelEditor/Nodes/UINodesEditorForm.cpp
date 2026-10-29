@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UINodesEditorForm.h"
-#include "../../xrEUI/IconsFontAwesome6.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
 #include "imgui_internal.h"
 #include "../Editor/Utils/ContentView.h"
 #include "Logic/UILogicEditorForm.h"

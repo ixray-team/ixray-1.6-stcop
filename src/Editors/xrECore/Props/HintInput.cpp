@@ -2,8 +2,6 @@
 #include "HintInput.h"
 #include "imgui_internal.h"
 
-static constexpr u32 MaxHints = 64;
-static constexpr int MaxVisible = 12;
 
 // One input has the focus: the state of its list
 struct SHintState
@@ -22,27 +20,6 @@ struct SHintState
 };
 
 static SHintState HintState;
-
-static bool IsHintChar(char Char)
-{
-	return isalnum((u8)Char) || Char == '_' || Char == '.';
-}
-
-static bool StartsWithNoCase(const xr_string& Text, const xr_string& Prefix)
-{
-	if (Prefix.size() > Text.size())
-	{
-		return false;
-	}
-	for (size_t Index = 0; Index < Prefix.size(); ++Index)
-	{
-		if (tolower((u8)Text[Index]) != tolower((u8)Prefix[Index]))
-		{
-			return false;
-		}
-	}
-	return true;
-}
 
 static void ReplaceWord(ImGuiInputTextCallbackData* Data, const xr_string& Text)
 {
@@ -81,7 +58,7 @@ static int HintCallback(ImGuiInputTextCallbackData* Data)
 	HintState.Cursor = Data->CursorPos;
 	HintState.Before.assign(Data->Buf, Data->CursorPos);
 	int Start = Data->CursorPos;
-	while (Start > 0 && IsHintChar(Data->Buf[Start - 1]))
+	while (Start > 0 && HintInput::IsHintChar(Data->Buf[Start - 1]))
 	{
 		--Start;
 	}
@@ -146,16 +123,16 @@ namespace HintInput
 			HintState.Items.clear();
 			for (xr_string& Item : All)
 			{
-				if (StartsWithNoCase(Item, Word) && Item != Word)
+				if (HintInput::StartsWithNoCase(Item, Word) && Item != Word)
 				{
 					HintState.Items.push_back(std::move(Item));
 				}
 			}
 			std::sort(HintState.Items.begin(), HintState.Items.end());
 			HintState.Items.erase(std::unique(HintState.Items.begin(), HintState.Items.end()), HintState.Items.end());
-			if (HintState.Items.size() > MaxHints)
+			if (HintState.Items.size() > HintInput::MaxHints)
 			{
-				HintState.Items.resize(MaxHints);
+				HintState.Items.resize(HintInput::MaxHints);
 			}
 			HintState.Current = std::clamp(HintState.Current + HintState.Move, 0, std::max(0, (int)HintState.Items.size() - 1));
 		}
@@ -169,7 +146,7 @@ namespace HintInput
 		}
 
 		const float Row = ImGui::GetTextLineHeightWithSpacing();
-		const int Rows = std::min((int)HintState.Items.size(), MaxVisible);
+		const int Rows = std::min((int)HintState.Items.size(), HintInput::MaxVisible);
 		const ImGuiStyle& Style = ImGui::GetStyle();
 		float Width = 200.0f;
 		for (const xr_string& Item : HintState.Items)

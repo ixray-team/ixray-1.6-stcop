@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIDialogLocalization.h"
 #include "../../../xrEngine/string_table.h"
-#include "../../xrEUI/IconsFontAwesome6.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
 
 #include <fstream>
 

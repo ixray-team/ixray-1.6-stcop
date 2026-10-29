@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UITreeItem
+class ECORE_API UITreeItem
 {
 public:
 	UITreeItem(shared_str Name);

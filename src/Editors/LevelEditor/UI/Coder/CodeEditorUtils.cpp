@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CodeEditorUtils.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../../../xrEUI/xrUITheme.h"
 #include "../../../xrEUI/ModernUI.h"
 

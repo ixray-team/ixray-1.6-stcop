@@ -19,7 +19,7 @@ public:
     TOnListItemFocused	OnItemFocused;
   //  TOnDrawThumbnail	OnDrawThumbnail;
 public:
-    UIItemListForm* Parent;
+    const xr_vector<ListItem*>* Siblings = nullptr;
     int 				tag;
     LPVOID				m_Object;
     int					icon_index;

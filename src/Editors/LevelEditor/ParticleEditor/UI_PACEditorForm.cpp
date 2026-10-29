@@ -67,20 +67,6 @@ void UIPACEditorForm::Update()
 
 void UIPACEditorForm::DrawCurves()
 {
-	static bool ShowTest = false;
-	constexpr bool ShowDemo = false;
-	if constexpr (ShowDemo)
-	{
-		if (ImGui::Button("demo_test"))
-		{
-			ShowTest = !ShowTest;
-		}
-		if (ShowTest)
-		{
-			ImPlot::ShowDemoWindow();
-		}
-		ImGui::SameLine();
-	}
 	ImGui::Text("Ctrl + click on time bar to add key");
 	static ImPlotSubplotFlags flags = ImPlotSubplotFlags_ShareItems|ImPlotSubplotFlags_NoLegend;
 	static float rratios[] = {5,1};

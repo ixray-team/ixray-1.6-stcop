@@ -33,7 +33,7 @@
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/FPSCounter.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);

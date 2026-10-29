@@ -2,7 +2,7 @@
 #ifndef UI_ActorToolsH
 #define UI_ActorToolsH
 #include "../../../Include/xrRender/animation_motion.h"
-#include "../../xrEProps/UIBoneView.h"
+#include "UIBoneView.h"
 #include "UIUVView.h"
 #include "../../xrECore/Editor/UndoJournal.h"
 

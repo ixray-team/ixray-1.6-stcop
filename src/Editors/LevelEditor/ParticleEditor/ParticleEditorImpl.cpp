@@ -8,7 +8,7 @@
 #include "../../../Layers/xrRenderPC_R4/ParticleAnimCurve.h"
 
 #include "ParticleEffectActions.h"
-#include "../../xrEProps/FolderLib.h"
+#include "FolderLib.h"
 
 xr_token2* actions_token = nullptr;
 

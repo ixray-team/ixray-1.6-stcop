@@ -1,6 +1,6 @@
 #pragma once
 #include "../../HintTextEditor.h"
-class XREPROPS_API UIPropertiesForm :
+class ECORE_API UIPropertiesForm :
 	public IEditorWnd
 {
 	friend class UIPropertiesItem;

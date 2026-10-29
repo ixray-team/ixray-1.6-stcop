@@ -66,7 +66,6 @@ target_compile_definitions(LevelEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(LevelEditor PUBLIC xrCore)
-target_link_libraries(LevelEditor PUBLIC xrEUI)
 target_link_libraries(LevelEditor PUBLIC xrEProps)
 target_link_libraries(LevelEditor PUBLIC xrECore)
 target_link_libraries(LevelEditor PUBLIC xrSound)

@@ -3,7 +3,7 @@
 
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
-class XREPROPS_API CDialogNode final:
+class ECORE_API CDialogNode final:
 	public INodeUnknown
 {
 public:

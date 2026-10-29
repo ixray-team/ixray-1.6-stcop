@@ -1,5 +1,5 @@
 #pragma once 
-class XREPROPS_API UIKeyPressForm :public IEditorWnd
+class ECORE_API UIKeyPressForm :public IEditorWnd
 {
 public:
 	UIKeyPressForm();

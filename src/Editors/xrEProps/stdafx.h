@@ -1,6 +1,5 @@
 #pragma once
 #ifdef XREPROPS_EXPORTS
-#	define smart_cast dynamic_cast
 #define XREPROPS_API __declspec(dllexport)
 #else
 #define XREPROPS_API __declspec(dllimport)
@@ -8,28 +7,7 @@
 
 #include <limits>
 #include "../../xrCore/xrCore.h"
-#ifdef XREPROPS_EXPORTS
-inline void not_implemented()
-{
-	if (IsDebuggerPresent())
-		DebugBreak();
-	else R_ASSERT(0);
-}
-#endif
-
-#include "../xrEUI/stdafx.h"
-#include "../xrEUI/ModernUI.h"
 #include "../../xrEngine/stdafx.h"
 #include "../Public/xrEProps.h"
 #include "ChooseTypes.H"
-#include "FolderLib.h"
-#include "Tree/Base/UITreeItem.h"
 #include "ItemListHelper.h"
-#include "UITextForm.h"
-#include "UINumericVectorForm.h"
-#include "Tree/Properties/UIPropertiesItem.h"
-#include "Tree/Properties/UIPropertiesForm.h"
-#include "Tree/ItemList/UIItemListForm.h"
-#include "Tree/Choose/UIChooseFormItem.h"
-#include "Tree/Choose/UIChooseForm.h"
-#include "UIKeyPressForm.h"

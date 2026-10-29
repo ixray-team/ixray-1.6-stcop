@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DialogNode.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 CDialogNode::CDialogNode(const xr_string Name) :
 	INodeUnknown(Name.data())

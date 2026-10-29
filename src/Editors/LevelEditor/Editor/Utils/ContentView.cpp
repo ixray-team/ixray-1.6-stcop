@@ -8,7 +8,7 @@
 #include "Viewports/ViewportParticle.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../../UI/UITextureViewer.h"
 #include "EFDEditor.h"
 #include "../../UI/LayoutEditor/UILayoutEditorForm.h"

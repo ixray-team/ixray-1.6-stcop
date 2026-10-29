@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UITextureViewer.h"
-#include "../../xrEUI/IconsFontAwesome6.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
 
 static constexpr float MinZoom = 0.05f;
 static constexpr float MaxZoom = 32.f;
