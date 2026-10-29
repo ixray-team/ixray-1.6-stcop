@@ -48,6 +48,15 @@ static xr_token TypeTokens[] =
 	{ "Scroll View", (int)ELayoutWidget::ScrollView },
 	{ "List Box", (int)ELayoutWidget::ListBox },
 	{ "Combo Box", (int)ELayoutWidget::ComboBox },
+	{ "Frame Line", (int)ELayoutWidget::FrameLine },
+	{ "Anim Static", (int)ELayoutWidget::AnimStatic },
+	{ "Stack Panel", (int)ELayoutWidget::StackPanel },
+	{ "Tab Control", (int)ELayoutWidget::TabControl },
+	{ "Spin Integer", (int)ELayoutWidget::SpinNum },
+	{ "Spin Float", (int)ELayoutWidget::SpinFloat },
+	{ "Spin Text", (int)ELayoutWidget::SpinText },
+	{ "Arrow Stepper", (int)ELayoutWidget::ArrowStepper },
+	{ "List", (int)ELayoutWidget::ListWnd },
 	{ nullptr, 0 }
 };
 
@@ -88,6 +97,15 @@ static const char* GetWidgetIcon(ELayoutWidget Type)
 	case ELayoutWidget::ScrollView:		return ICON_FA_SCROLL;
 	case ELayoutWidget::ListBox:		return ICON_FA_LIST;
 	case ELayoutWidget::ComboBox:		return ICON_FA_CARET_DOWN;
+	case ELayoutWidget::FrameLine:		return ICON_FA_RULER_HORIZONTAL;
+	case ELayoutWidget::AnimStatic:		return ICON_FA_FILM;
+	case ELayoutWidget::StackPanel:		return ICON_FA_LAYER_GROUP;
+	case ELayoutWidget::TabControl:		return ICON_FA_FOLDER_OPEN;
+	case ELayoutWidget::SpinNum:		return ICON_FA_ARROW_DOWN_1_9;
+	case ELayoutWidget::SpinFloat:		return ICON_FA_PERCENT;
+	case ELayoutWidget::SpinText:		return ICON_FA_TEXT_HEIGHT;
+	case ELayoutWidget::ArrowStepper:	return ICON_FA_ARROWS_LEFT_RIGHT;
+	case ELayoutWidget::ListWnd:		return ICON_FA_LIST_UL;
 	default:							return ICON_FA_SQUARE;
 	}
 }
@@ -97,14 +115,21 @@ static ImU32 GetWidgetColor(ELayoutWidget Type, u8 Alpha)
 	switch (Type)
 	{
 	case ELayoutWidget::Window:			return IM_COL32(160, 160, 160, Alpha);
+	case ELayoutWidget::StackPanel:
+	case ELayoutWidget::TabControl:		return IM_COL32(160, 160, 160, Alpha);
 	case ELayoutWidget::Button:
 	case ELayoutWidget::Check:			return IM_COL32(90, 170, 255, Alpha);
 	case ELayoutWidget::EditBox:
-	case ELayoutWidget::ComboBox:		return IM_COL32(120, 220, 140, Alpha);
+	case ELayoutWidget::ComboBox:
+	case ELayoutWidget::SpinNum:
+	case ELayoutWidget::SpinFloat:
+	case ELayoutWidget::SpinText:		return IM_COL32(120, 220, 140, Alpha);
 	case ELayoutWidget::TrackBar:
-	case ELayoutWidget::ProgressBar:	return IM_COL32(255, 190, 80, Alpha);
+	case ELayoutWidget::ProgressBar:
+	case ELayoutWidget::ArrowStepper:	return IM_COL32(255, 190, 80, Alpha);
 	case ELayoutWidget::ScrollView:
-	case ELayoutWidget::ListBox:		return IM_COL32(200, 130, 255, Alpha);
+	case ELayoutWidget::ListBox:
+	case ELayoutWidget::ListWnd:		return IM_COL32(200, 130, 255, Alpha);
 	default:							return IM_COL32(230, 230, 230, Alpha);
 	}
 }
@@ -1235,8 +1260,30 @@ void UILayoutEditorForm::DrawWidget(ImDrawList* DrawList, const SLayoutWidget& W
 		}
 		ContentMin.x += 4.0f * Zoom;
 		break;
+	case ELayoutWidget::SpinNum:
+	case ELayoutWidget::SpinFloat:
+	case ELayoutWidget::SpinText:
+	{
+		DrawList->AddRectFilled(Min, Max, IM_COL32(15, 15, 15, 200));
+		DrawList->AddRect(Min, Max, IM_COL32(110, 110, 110, 255));
+		const float Arrow = Height * 0.2f;
+		const ImVec2 Center = { Max.x - Height * 0.5f, (Min.y + Max.y) * 0.5f };
+		DrawList->AddTriangleFilled({ Center.x - Arrow, Center.y - Arrow * 0.5f }, { Center.x + Arrow, Center.y - Arrow * 0.5f }, { Center.x, Center.y - Arrow * 1.5f }, IM_COL32(200, 200, 200, 255));
+		DrawList->AddTriangleFilled({ Center.x - Arrow, Center.y + Arrow * 0.5f }, { Center.x + Arrow, Center.y + Arrow * 0.5f }, { Center.x, Center.y + Arrow * 1.5f }, IM_COL32(200, 200, 200, 255));
+		break;
+	}
+	case ELayoutWidget::ArrowStepper:
+	{
+		const float Arrow = Height * 0.3f;
+		const float CenterY = (Min.y + Max.y) * 0.5f;
+		DrawList->AddRectFilled(Min, Max, IM_COL32(15, 15, 15, 120));
+		DrawList->AddTriangleFilled({ Min.x + Arrow * 0.5f, CenterY }, { Min.x + Arrow * 1.5f, CenterY - Arrow }, { Min.x + Arrow * 1.5f, CenterY + Arrow }, IM_COL32(200, 200, 200, 255));
+		DrawList->AddTriangleFilled({ Max.x - Arrow * 0.5f, CenterY }, { Max.x - Arrow * 1.5f, CenterY - Arrow }, { Max.x - Arrow * 1.5f, CenterY + Arrow }, IM_COL32(200, 200, 200, 255));
+		break;
+	}
 	case ELayoutWidget::ScrollView:
 	case ELayoutWidget::ListBox:
+	case ELayoutWidget::ListWnd:
 		DrawList->AddRectFilled(Min, Max, IM_COL32(10, 10, 10, 120));
 		DrawList->AddRectFilled({ Max.x - 6.0f * Zoom, Min.y }, Max, IM_COL32(90, 90, 90, 200));
 		break;
@@ -1259,7 +1306,7 @@ void UILayoutEditorForm::DrawWidget(ImDrawList* DrawList, const SLayoutWidget& W
 	}
 
 	// Text, translated like the game does
-	if (LayoutWidget::HasText(Widget.Type) && Widget.Type != ELayoutWidget::ListBox && !Widget.Text.empty())
+	if (LayoutWidget::HasText(Widget.Type) && Widget.Type != ELayoutWidget::ListBox && Widget.Type != ELayoutWidget::ListWnd && !Widget.Text.empty())
 	{
 		xr_string Text = Widget.Text;
 		if (g_pStringTable != nullptr)
@@ -1740,7 +1787,7 @@ void UILayoutEditorForm::RebuildProperties()
 
 	if (LayoutWidget::HasText(Type))
 	{
-		const bool IsList = Type == ELayoutWidget::ListBox || Type == ELayoutWidget::ComboBox;
+		const bool IsList = Type == ELayoutWidget::ListBox || Type == ELayoutWidget::ListWnd || Type == ELayoutWidget::ComboBox;
 		if (!IsList)
 		{
 			PHelper().CreateSText(Items, "Text\\Text Or String ID", &Widget->Text);
@@ -1781,7 +1828,18 @@ void UILayoutEditorForm::RebuildProperties()
 		}
 	}
 
-	if (Type == ELayoutWidget::ListBox)
+	if (Type == ELayoutWidget::FrameLine || Type == ELayoutWidget::SpinNum || Type == ELayoutWidget::SpinFloat || Type == ELayoutWidget::SpinText)
+	{
+		PHelper().CreateBool(Items, "Layout\\Horizontal", &Widget->Horizontal);
+	}
+
+	if (Type == ELayoutWidget::ArrowStepper)
+	{
+		PHelper().CreateFloat(Items, "Range\\Step", &Widget->Step, 0.0f, 1000.0f, 0.01f, 2);
+		PHelper().CreateBool(Items, "Range\\Integer", &Widget->IsInteger);
+	}
+
+	if (Type == ELayoutWidget::ListBox || Type == ELayoutWidget::ListWnd)
 	{
 		PHelper().CreateFloat(Items, "List\\Item Height", &Widget->ItemHeight, 1.0f, 512.0f, 1.0f, 0);
 	}

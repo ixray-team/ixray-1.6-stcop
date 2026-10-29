@@ -18,6 +18,8 @@ CCustomPreferences* EPrefs=nullptr;
 CCustomPreferences::CCustomPreferences()
 {
 	bOpen = false;
+	// Visible in every editor tab
+	TabIndex = -1;
 	// view
 	view_np				= 0.1f;
 	view_fp				= 1500.f;
@@ -189,7 +191,7 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
 	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
 	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
-	PHelper().CreateBool	(props,"Viewport\Instancing in Shadows",		&ShadowInstancing);
+	PHelper().CreateBool	(props,"Viewport\\Instancing in Shadows",		&ShadowInstancing);
 
 	PHelper().CreateFlag	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
 	PHelper().CreateFlag	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
@@ -265,11 +267,86 @@ void CCustomPreferences::Edit()
 
 	bOpen = true;
 
-	PropItemVec props;
-	FillProp(props);
-
-	m_ItemProps->AssignItems(props);
+	RebuildProps();
 	EContext.UI->Push(this, false);
+}
+
+void CCustomPreferences::RebuildProps()
+{
+	PropItemVec AllProps;
+	FillProp(AllProps);
+
+	NavCategories.clear();
+	for (PropItem* Item : AllProps)
+	{
+		const xr_string Key = Item->Key();
+		for (size_t Pos = Key.find('\\'); Pos != xr_string::npos; Pos = Key.find('\\', Pos + 1))
+		{
+			xr_string Category = Key.substr(0, Pos);
+			if (std::ranges::find(NavCategories, Category) == NavCategories.end())
+			{
+				NavCategories.push_back(Category);
+			}
+		}
+	}
+
+	// Show only the selected category, everything when none is selected
+	PropItemVec Props;
+	const xr_string Prefix = SelectedCategory.empty() ? xr_string() : SelectedCategory + "\\";
+	for (PropItem* Item : AllProps)
+	{
+		if (Prefix.empty() || xr_string(Item->Key()).starts_with(Prefix))
+		{
+			Props.push_back(Item);
+		}
+		else
+		{
+			xr_delete(Item);
+		}
+	}
+
+	m_ItemProps->ClearProperties();
+	m_ItemProps->AssignItems(Props);
+}
+
+void CCustomPreferences::DrawNavNode(const xr_string& Parent)
+{
+	for (const xr_string& Category : NavCategories)
+	{
+		const size_t Split = Category.rfind('\\');
+		const xr_string CategoryParent = Split == xr_string::npos ? xr_string() : Category.substr(0, Split);
+		if (CategoryParent != Parent)
+		{
+			continue;
+		}
+
+		const char* Name = Split == xr_string::npos ? Category.c_str() : Category.c_str() + Split + 1;
+		const xr_string ChildPrefix = Category + "\\";
+		const bool HasChildren = std::ranges::any_of(NavCategories, [&ChildPrefix](const xr_string& Other) { return Other.starts_with(ChildPrefix); });
+
+		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (!HasChildren)
+		{
+			Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		}
+		if (Category == SelectedCategory)
+		{
+			Flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		const bool Opened = ImGui::TreeNodeEx(Category.c_str(), Flags, "%s", Name);
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+		{
+			SelectedCategory = Category;
+			RebuildProps();
+		}
+
+		if (Opened && HasChildren)
+		{
+			DrawNavNode(Category);
+			ImGui::TreePop();
+		}
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -618,9 +695,24 @@ void CCustomPreferences::Draw()
 	IsFocused = ImGui::IsWindowFocused();
 
 	ImGui::PopStyleVar();
+
+	if (ImGui::BeginChild("##PrefsNav", ImVec2(ImGui::GetFontSize() * 11.0f, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX))
+	{
+		if (ImGui::Selectable("All", SelectedCategory.empty()))
+		{
+			SelectedCategory.clear();
+			RebuildProps();
+		}
+		DrawNavNode(xr_string());
+	}
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+	if (ImGui::BeginChild("##PrefsProps"))
 	{
 		m_ItemProps->Draw();
 	}
+	ImGui::EndChild();
 	ImGui::End();
 }
 

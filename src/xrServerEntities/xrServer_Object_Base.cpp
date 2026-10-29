@@ -14,12 +14,6 @@
 #include "clsid_game.h"
 #include "../xrCore/Save/SaveManager.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-
-#pragma warning(pop)
-
 #ifndef AI_COMPILER
 #	include "object_factory.h"
 #endif

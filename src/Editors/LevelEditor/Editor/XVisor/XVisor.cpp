@@ -340,6 +340,8 @@ xr_string CXVisor::GetInitClass(const xr_string& Function) const
 		{ "InitTab", "CUITabControl" },
 		{ "InitMMShniaga", "CUIMMShniaga" },
 		{ "InitTextWnd", "CUIStatic" },
+		{ "InitAnimStatic", "CUIAnimatedStatic" },
+		{ "InitList", "CUIListWnd" },
 	};
 
 	for (const auto& [Init, Class] : Aliases)

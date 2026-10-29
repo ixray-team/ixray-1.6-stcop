@@ -16,6 +16,15 @@ enum class ELayoutWidget : u8
 	ScrollView,
 	ListBox,
 	ComboBox,
+	FrameLine,
+	AnimStatic,
+	StackPanel,
+	TabControl,
+	SpinNum,
+	SpinFloat,
+	SpinText,
+	ArrowStepper,
+	ListWnd,
 	Count
 };
 

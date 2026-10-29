@@ -32,6 +32,9 @@ class ECORE_API CCustomPreferences:
 {
 protected:	// User declarations
 	UIPropertiesForm*	m_ItemProps;
+	// Folder paths of the property keys, in FillProp order
+	xr_vector<xr_string> NavCategories;
+	xr_string		SelectedCategory;
 	json            JSONData;
 public:
 	u32             start_w;
@@ -116,6 +119,8 @@ protected:
 	virtual void 	Load				();
 	virtual void 	Save				();
 	virtual void    Draw();
+	void			RebuildProps		();
+	void			DrawNavNode			(const xr_string& Parent);
 public:				// User declarations
 					CCustomPreferences	();
 	virtual 		~CCustomPreferences	();
