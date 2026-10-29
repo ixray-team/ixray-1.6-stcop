@@ -48,7 +48,8 @@ void CUICustomMap::Initialize(shared_str name, const char* sh_name)
 	else
 	{
 		Msg("! Not found minimap texture in %s level", *name);
-//		m_UIStaticItem.CreateShader("");
+		// The map is drawn every frame (e.g. PIE levels have no map config), so it still needs a shader: Init_internal falls back to the default map
+		Init_internal(name, *levelIni, "level_map", sh_name);
 	}
 
 	if (levelIni != g_pGameLevel->pLevel)

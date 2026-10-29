@@ -7,6 +7,7 @@ class CContentView;
 
 #include <imgui_node_editor.h>
 #include "plugins/TextEditor.h"
+#include "../../UI/Coder/LtxCompletion.h"
 
 // The Logic mode of the Nodes tab
 class UILogicEditorForm :
@@ -176,6 +177,9 @@ private:
 	void DrawMessages(SDocument* Document);
 	bool DrawTokens(SDocument& Document, const char* Id, xr_vector<LogicCondlist::SToken>& Tokens, bool Effects);
 	bool DrawFunctionPicker(const char* Id, bool Effects, LogicCondlist::SToken& Token);
+	// The functions after '=' and '!' of a condlist input
+	void HintConditions(const xr_string& Before, xr_vector<xr_string>& Out);
+	void HintEffects(const xr_string& Before, xr_vector<xr_string>& Out);
 
 	SLogicSection& CreateSection(SDocument& Document, const xr_string& Scheme, ImVec2 Position);
 	void Link(SDocument& Document, const SPin& From, const xr_string& Target);
@@ -186,11 +190,9 @@ private:
 	size_t Active = 0;
 	int SelectRequest = -1;
 
-	// From modules.script, xr_conditions.script, xr_effects.script
+	// From modules.script, the functions of xr_conditions.script and xr_effects.script are in EContext.Visor
 	bool CatalogsLoaded = false;
 	xr_vector<std::pair<xr_string, ESchemeKind>> Schemes;
-	xr_vector<xr_string> Conditions;
-	xr_vector<xr_string> Effects;
 	xr_hash_map<xr_string, xr_string> SchemeFiles;
 	xr_vector<SKeyInfo> CommonKeys;
 	xr_vector<SKeyInfo> LogicKeys;
@@ -274,6 +276,7 @@ private:
 	char NewKey[64] = {};
 	bool ShowKeyList = false;
 	xr_unique_ptr<TextEditor> TokensEditor;
+	CLtxCompletion TokensCompletion;
 	bool ShowProperties = true;
 	xr_string StatusText;
 };

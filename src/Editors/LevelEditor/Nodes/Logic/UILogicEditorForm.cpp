@@ -6,6 +6,8 @@
 #include "../../UI/Coder/UICoderForm.h"
 #include "../NodesCommon.h"
 #include "../UINodesEditorForm.h"
+#include "../../Editor/XVisor/XVisor.h"
+#include "HintInput.h"
 
 #include <regex>
 
@@ -585,37 +587,6 @@ void UILogicEditorForm::LoadCatalogs()
 		}
 	};
 
-	auto ReadFunctions = [&ReadScript](const char* FileName, xr_vector<xr_string>& Into)
-	{
-		ReadScript(FileName, [&Into](const xr_string& Line)
-		{
-			if (!Line.starts_with("function "))
-			{
-				return;
-			}
-			size_t Index = 9;
-			xr_string Name;
-			while (Index < Line.size() && (isalnum((u8)Line[Index]) || Line[Index] == '_'))
-			{
-				Name += Line[Index++];
-			}
-			// "function check_npc_name (actor, npc, p)"
-			while (Index < Line.size() && (Line[Index] == ' ' || Line[Index] == '\t'))
-			{
-				++Index;
-			}
-			if (!Name.empty() && Index < Line.size() && Line[Index] == '(')
-			{
-				Into.push_back(Name);
-			}
-		});
-		std::sort(Into.begin(), Into.end());
-		Into.erase(std::unique(Into.begin(), Into.end()), Into.end());
-	};
-
-	ReadFunctions("xr_conditions.script", Conditions);
-	ReadFunctions("xr_effects.script", Effects);
-
 	// The switches and the overrides of xr_logic, the common stalker settings
 	ReadScriptKeys("xr_logic.script", true, CommonKeys);
 	ReadScriptKeys("stalker_generic.script", true, CommonKeys);
@@ -870,8 +841,8 @@ void UILogicEditorForm::Validate(SDocument& Document)
 						}
 					}
 				};
-				CheckFunctions(Branch.Conditions, Conditions, "condition");
-				CheckFunctions(Branch.Effects, Effects, "effect");
+				CheckFunctions(Branch.Conditions, EContext.Visor->GetConditions(), "condition");
+				CheckFunctions(Branch.Effects, EContext.Visor->GetEffects(), "effect");
 			}
 		}
 	}
@@ -2414,7 +2385,7 @@ bool UILogicEditorForm::DrawFunctionPicker(const char* Id, bool IsEffect, LogicC
 
 		if (ImGui::BeginChild("##functions", { 260.0f, 280.0f }))
 		{
-			const xr_vector<xr_string>& Names = IsEffect ? Effects : Conditions;
+			const xr_vector<xr_string>& Names = IsEffect ? EContext.Visor->GetEffects() : EContext.Visor->GetConditions();
 			for (const xr_string& Name : Names)
 			{
 				if (!PassFilter(PickerFilter, Name))
@@ -2455,6 +2426,30 @@ bool UILogicEditorForm::DrawFunctionPicker(const char* Id, bool IsEffect, LogicC
 	return Picked;
 }
 
+static void HintFunctions(const xr_string& Before, const xr_vector<xr_string>& Names, xr_vector<xr_string>& Out)
+{
+	size_t Start = Before.size();
+	while (Start > 0 && (isalnum((u8)Before[Start - 1]) || Before[Start - 1] == '_'))
+	{
+		--Start;
+	}
+	// +info and -info are info portions
+	if (Start > 0 && (Before[Start - 1] == '=' || Before[Start - 1] == '!'))
+	{
+		Out.insert(Out.end(), Names.begin(), Names.end());
+	}
+}
+
+void UILogicEditorForm::HintConditions(const xr_string& Before, xr_vector<xr_string>& Out)
+{
+	HintFunctions(Before, EContext.Visor->GetConditions(), Out);
+}
+
+void UILogicEditorForm::HintEffects(const xr_string& Before, xr_vector<xr_string>& Out)
+{
+	HintFunctions(Before, EContext.Visor->GetEffects(), Out);
+}
+
 bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vector<LogicCondlist::SToken>& Tokens, bool IsEffect)
 {
 	ImGui::PushID(Id);
@@ -2464,7 +2459,14 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 	const float Button = ImGui::GetFrameHeight();
 	ImGui::SetNextItemWidth(-(Button + ImGui::GetStyle().ItemSpacing.x) * 2.0f);
 	ImGui::PushStyleColor(ImGuiCol_Text, (IsEffect ? ColorEffect : ColorFunction).Value);
-	const bool Edited = InputString(IsEffect ? "##effects" : "##conditions", Text);
+	char Buffer[2048] = {};
+	memcpy(Buffer, Text.data(), std::min(Text.size(), sizeof(Buffer) - 1));
+	const TOnHintEvent Hints = IsEffect ? xr_make_delegate(this, &UILogicEditorForm::HintEffects) : xr_make_delegate(this, &UILogicEditorForm::HintConditions);
+	const bool Edited = HintInput::InputText(IsEffect ? "##effects" : "##conditions", Buffer, sizeof(Buffer), Hints);
+	if (Edited)
+	{
+		Text = Buffer;
+	}
 	ImGui::PopStyleColor();
 	if (ImGui::IsItemActivated())
 	{
@@ -2514,7 +2516,12 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 		ImGui::TextDisabled(IsEffect ? "One effect per line: =function(a:b) +give_info -disable_info" : "One condition per line: +has_info -has_no_info =function(a:b) !negated ~50");
 		const float Footer = ImGui::GetFrameHeightWithSpacing();
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGui::GetStyle().FramePadding);
+		// The hints of the Coder: the functions after = and !
+		TokensCompletion.SetText(IsEffect ? CLtxCompletion::EText::Effects : CLtxCompletion::EText::Conditions);
+		const bool HintsOpen = TokensCompletion.IsOpen();
+		TokensCompletion.BeforeRender(*TokensEditor);
 		TokensEditor->Render("##tokens", { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y - Footer }, true);
+		TokensCompletion.AfterRender(*TokensEditor, xr_string(), xr_string());
 		ImGui::PopStyleVar();
 		if (ImGui::Button("OK", { 100.0f, 0.0f }) || ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Enter))
 		{
@@ -2527,7 +2534,8 @@ bool UILogicEditorForm::DrawTokens(SDocument& Document, const char* Id, xr_vecto
 		}
 		ImGui::SetItemTooltip("Ctrl+Enter");
 		ImGui::SameLine();
-		if (ImGui::Button("Cancel", { 100.0f, 0.0f }) || ImGui::IsKeyPressed(ImGuiKey_Escape))
+		// Escape closes the hints first
+		if (ImGui::Button("Cancel", { 100.0f, 0.0f }) || (!HintsOpen && ImGui::IsKeyPressed(ImGuiKey_Escape)))
 		{
 			ImGui::CloseCurrentPopup();
 		}

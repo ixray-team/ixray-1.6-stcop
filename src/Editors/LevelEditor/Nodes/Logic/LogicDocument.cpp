@@ -1,21 +1,6 @@
 #include "stdafx.h"
 #include "LogicDocument.h"
 
-static xr_string Trim(const xr_string& Text)
-{
-	size_t Begin = 0;
-	size_t End = Text.size();
-	while (Begin < End && isspace((u8)Text[Begin]))
-	{
-		++Begin;
-	}
-	while (End > Begin && isspace((u8)Text[End - 1]))
-	{
-		--End;
-	}
-	return Text.substr(Begin, End - Begin);
-}
-
 // ';' starts a comment outside of quotes
 static size_t FindComment(const xr_string& Line)
 {
@@ -139,7 +124,7 @@ void LogicCondlist::Parse(const xr_string& Value, xr_string& Prefix, xr_vector<S
 			else if (Char == '|' && Depth == 0 && !Effect)
 			{
 				// "actor|MST_step|10000|0| mob_home": the condlist is after the last one
-				Prefix = Trim(Value.substr(0, Index));
+				Prefix = xr_string(Value.substr(0, Index)).Trim();
 				Body = Value.substr(Index + 1);
 			}
 		}
@@ -150,7 +135,7 @@ void LogicCondlist::Parse(const xr_string& Value, xr_string& Prefix, xr_vector<S
 	size_t Index = 0;
 	auto Flush = [&]()
 	{
-		Branch.Target = Trim(Branch.Target);
+		Branch.Target = Branch.Target.Trim();
 		if (HasData || !Branch.Target.empty())
 		{
 			Branches.push_back(Branch);
@@ -265,7 +250,7 @@ SLogicKey& SLogicSection::AddKey(const char* KeyName, const char* Value)
 {
 	// Before the empty lines that separate the sections
 	size_t Insert = Lines.size();
-	while (Insert > 0 && !Lines[Insert - 1].IsKey && Trim(Lines[Insert - 1].Raw).empty())
+	while (Insert > 0 && !Lines[Insert - 1].IsKey && Lines[Insert - 1].Raw.Trim().empty())
 	{
 		--Insert;
 	}
@@ -329,7 +314,7 @@ bool CLogicDocument::Load(const xr_string& Text)
 			break;
 		}
 
-		const xr_string Trimmed = Trim(Line);
+		const xr_string Trimmed = Line.Trim();
 		if (Trimmed.starts_with("["))
 		{
 			const size_t Close = Trimmed.find(']');
@@ -337,7 +322,7 @@ bool CLogicDocument::Load(const xr_string& Text)
 			{
 				xr_unique_ptr<SLogicSection> Section = xr_make_unique<SLogicSection>();
 				Section->Id = NextId++;
-				Section->Name = Trim(Trimmed.substr(1, Close - 1));
+				Section->Name = xr_string(Trimmed.substr(1, Close - 1)).Trim();
 				Section->LoadedName = Section->Name;
 				Section->HeaderRaw = Line;
 
@@ -348,10 +333,10 @@ bool CLogicDocument::Load(const xr_string& Text)
 					Section->HeaderComment = Rest.substr(Comment);
 					Rest = Rest.substr(0, Comment);
 				}
-				Rest = Trim(Rest);
+				Rest = Rest.Trim();
 				if (Rest.starts_with(":"))
 				{
-					Section->Parents = Trim(Rest.substr(1));
+					Section->Parents = xr_string(Rest.substr(1)).Trim();
 				}
 
 				Current = Section.get();
@@ -369,13 +354,13 @@ bool CLogicDocument::Load(const xr_string& Text)
 		SLogicLine Entry;
 		Entry.Raw = Line;
 		const size_t Comment = FindComment(Line);
-		const xr_string Content = Trim(Comment == xr_string::npos ? Line : xr_string(Line.substr(0, Comment)));
+		const xr_string Content = xr_string(Comment == xr_string::npos ? Line : xr_string(Line.substr(0, Comment))).Trim();
 		if (!Content.empty() && !Content.starts_with("#"))
 		{
 			Entry.IsKey = true;
 			const size_t Equal = Content.find('=');
-			Entry.Key.Name = Trim(Equal == xr_string::npos ? Content : xr_string(Content.substr(0, Equal)));
-			Entry.Key.Value = Equal == xr_string::npos ? "" : Trim(Content.substr(Equal + 1));
+			Entry.Key.Name = xr_string(Equal == xr_string::npos ? Content : xr_string(Content.substr(0, Equal))).Trim();
+			Entry.Key.Value = Equal == xr_string::npos ? "" : xr_string(Content.substr(Equal + 1)).Trim();
 			if (Comment != xr_string::npos)
 			{
 				Entry.Key.Comment = Line.substr(Comment);
@@ -488,7 +473,7 @@ SLogicSection& CLogicDocument::AddSection(const xr_string& SectionName)
 	if (!Sections.empty())
 	{
 		SLogicSection& Previous = *Sections.back();
-		if (Previous.Lines.empty() || !Trim(Previous.Lines.back().Raw).empty() || Previous.Lines.back().IsKey)
+		if (Previous.Lines.empty() || !Previous.Lines.back().Raw.Trim().empty() || Previous.Lines.back().IsKey)
 		{
 			Previous.Lines.push_back(SLogicLine());
 		}

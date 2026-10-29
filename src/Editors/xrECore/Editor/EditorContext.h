@@ -10,6 +10,7 @@ class CCustomPreferences;
 class CLog;
 class CSoundManager;
 class XrGameMaterialLibraryEditors;
+class CXVisor;
 
 struct ECORE_API EditorContext
 {
@@ -22,6 +23,8 @@ struct ECORE_API EditorContext
 	CLog* Log = nullptr;
 	CSoundManager* SndLib = nullptr;
 	XrGameMaterialLibraryEditors* Materials = nullptr;
+	// The script and config analyzer, owned by the Level Editor
+	CXVisor* Visor = nullptr;
 };
 
 extern ECORE_API EditorContext EContext;

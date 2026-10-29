@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIPropertiesForm.h"
+#include "../../HintInput.h"
 #include "../xrEUI/IconsFontAwesome7.h"
 
 UIPropertiesForm::UIPropertiesForm() :
@@ -314,8 +315,13 @@ void UIPropertiesForm::DrawEditText()
 {
 	if (ImGui::BeginPopupContextItem("EditText", 0))
 	{
+		if (m_EditTextValueData && ImGui::IsWindowAppearing())
+		{
+			m_EditTextEditor.SetText(IsUTF8(m_EditTextValueData) ? xr_string(m_EditTextValueData) : xr_string(Platform::ANSI_TO_UTF8(m_EditTextValueData).c_str()));
+		}
+
 		ImGui::BeginGroup();
-		if (ImGui::Button("Ok"))
+		if (ImGui::Button(ICON_FA_CHECK " OK") || (!m_EditTextEditor.IsHintsOpen() && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Enter)))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
 			if (V1)
@@ -376,14 +382,14 @@ void UIPropertiesForm::DrawEditText()
 		}
 		ImGui::SameLine(0);
 
-		if (ImGui::Button("Cancel"))
+		if (ImGui::Button(ICON_FA_XMARK " Cancel"))
 		{
 			xr_free(m_EditTextValueData);
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine(0);
 
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button(ICON_FA_FLOPPY_DISK " Apply"))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
 			if (V1)
@@ -431,9 +437,12 @@ void UIPropertiesForm::DrawEditText()
 					}
 				}
 			}
-		}ImGui::SameLine(150);
+		}
+		ImGui::SameLine();
+		ImGui::TextDisabled("|");
+		ImGui::SameLine();
 
-		if (ImGui::Button("Load"))
+		if (ImGui::Button(ICON_FA_FOLDER_OPEN))
 		{
 			xr_string fn;
 			if (EFS.GetOpenName("$import$", fn, false, NULL, 2)) 
@@ -447,11 +456,13 @@ void UIPropertiesForm::DrawEditText()
 				m_EditTextValueData = xr_strdup(buf.c_str());
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData)+1;
 				FS.r_close(F);
+				m_EditTextEditor.SetText(IsUTF8(m_EditTextValueData) ? xr_string(m_EditTextValueData) : xr_string(Platform::ANSI_TO_UTF8(m_EditTextValueData).c_str()));
 			}
 		}
 		
+		ImGui::SetItemTooltip("Load the text from a file");
 		ImGui::SameLine(0);
-		if (ImGui::Button("Save"))
+		if (ImGui::Button(ICON_FA_FILE_EXPORT))
 		{
 			xr_string fn;
 			if (EFS.GetSaveName("$import$", fn, NULL, 2))
@@ -463,35 +474,30 @@ void UIPropertiesForm::DrawEditText()
 			}
 		}
 		
+		ImGui::SetItemTooltip("Save the text to a file");
 		ImGui::SameLine(0);
-		if (ImGui::Button("Clear")) { m_EditTextValueData[0] = 0; }
+		if (ImGui::Button(ICON_FA_ERASER) && m_EditTextValueData)
+		{
+			m_EditTextValueData[0] = 0;
+			m_EditTextEditor.SetText(xr_string());
+		}
+		ImGui::SetItemTooltip("Clear");
 		ImGui::EndGroup();
 
 		if (m_EditTextValueData)
 		{
-			if (!IsUTF8(m_EditTextValueData))
+			PropValue* Front = m_EditTextValue->GetFrontValue();
+			const TOnHintEvent Hints = Front != nullptr ? Front->OnHintEvent : TOnHintEvent();
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGui::GetStyle().FramePadding);
+			if (m_EditTextEditor.Render("##text", { 560.0f, 260.0f }, Hints))
 			{
-				xr_string CopyStr = m_EditTextValueData;
+				// The values keep the text in the code page of the game
 				xr_free(m_EditTextValueData);
-				m_EditTextValueData = xr_strdup(Platform::ANSI_TO_UTF8(CopyStr).c_str());
+				m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(m_EditTextEditor.GetText().c_str()).c_str());
+				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData) + 1;
 			}
-
-			string512 OutStr = {};
-			xr_strcpy(OutStr, m_EditTextValueData);
-			if (ImGui::InputTextMultiline("##text", OutStr, std::size(OutStr), ImVec2(500, 200)))
-			{
-				bool IsUTF8String = IsUTF8(m_EditTextValueData);
-				xr_free(m_EditTextValueData);
-
-				if (IsUTF8String)
-				{
-					m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(OutStr).c_str());
-				}
-				else
-				{
-					m_EditTextValueData = xr_strdup(OutStr);
-				}
-			}
+			ImGui::PopStyleVar();
+			ImGui::TextDisabled(Hints.empty() ? "Ctrl+Enter: OK" : "Ctrl+Space: hints, Tab or Enter: accept, Ctrl+Enter: OK");
 		}
 		
 		ImGui::EndPopup();

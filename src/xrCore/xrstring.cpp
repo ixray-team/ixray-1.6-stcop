@@ -130,6 +130,21 @@ xr_string xr_string::RemoveWhitespaces() const
 	return Result;
 }
 
+xr_string xr_string::Trim() const
+{
+	size_t Begin = 0;
+	size_t End = size();
+	while (Begin < End && isspace((u8)at(Begin)))
+	{
+		++Begin;
+	}
+	while (End > Begin && isspace((u8)at(End - 1)))
+	{
+		--End;
+	}
+	return xr_string(data() + Begin, (u32)(End - Begin));
+}
+
 bool xr_string::StartWith(const xr_string& Other) const
 {
 	return StartWith(Other.data(), Other.size());

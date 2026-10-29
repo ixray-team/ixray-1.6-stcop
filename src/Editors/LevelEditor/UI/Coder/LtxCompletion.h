@@ -1,20 +1,21 @@
 #pragma once
 #include "plugins/TextEditor.h"
+#include "../../Editor/XVisor/XVisor.h"
 
-// ltx completion from the schema of the XREFLECT(IniRead) classes, baked into $app_data_root$\ltx_schema.txt.
+// ltx completion of a text view: the schema and the sections of configs come from EContext.Visor.
 // The class of a section comes from its "class" key, through its parents in every configs file
 class CLtxCompletion
 {
 public:
-	static xr_string GetSchemaPath();
-
-	bool Load();
-	bool IsLoaded() const { return !Schemas.empty(); }
-	u32 GetGeneration() const { return LoadedGeneration; }
-	// Counts of the schema and the index, shown in the Coder status
-	xr_string GetStatus() const;
-	// Ini with the hover declarations of the schema keys
-	void BuildLanguage(TextEditor::LanguageDefinition& Out) const;
+	// What the text is: a whole ltx file, or a list of condlist tokens without keys
+	enum class EText
+	{
+		Ltx,
+		Conditions,
+		Effects
+	};
+	void SetText(EText Value) { TextKind = Value; }
+	bool IsOpen() const { return Open; }
 
 	// Text is the whole file: its sections override the indexed ones of the same file
 	void BeforeRender(TextEditor& View);
@@ -24,42 +25,6 @@ public:
 	bool FindDefinition(const xr_string& Name, xr_string& Path, int& Line);
 
 private:
-	struct SField
-	{
-		xr_string Key;
-		xr_string Type;
-		bool Required = false;
-		xr_string If;
-		bool Nested = false;
-	};
-
-	struct SSchema
-	{
-		xr_vector<xr_string> Bases;
-		xr_vector<SField> Fields;
-	};
-
-	struct SSection
-	{
-		xr_vector<xr_string> Parents;
-		xr_hash_map<xr_string, xr_string> Keys;
-		int Line = 0;
-		xr_string Path;
-		bool Override = false;
-	};
-
-	using SectionMap = xr_hash_map<xr_string, SSection>;
-
-	// A key of the schemas of a section, the prefix of the nested schemas included
-	struct SKey
-	{
-		xr_string Key;
-		xr_string Type;
-		bool Required = false;
-		xr_string If;
-		xr_string Schema;
-	};
-
 	struct SItem
 	{
 		xr_string Name;
@@ -67,28 +32,14 @@ private:
 		bool IsKey = true;
 	};
 
-	// Lines, when set, gets the section of every line
-	static void ParseText(const xr_string& Text, SectionMap& Out, xr_vector<xr_string>* Lines = nullptr);
-	void BuildIndex();
-
-	const SSection* FindSection(const xr_string& Name) const;
-	xr_string GetClassId(const xr_string& Section, int Depth = 0) const;
-	bool HasKey(const xr_string& Section, const xr_string& Key, int Depth = 0) const;
-	void ExpandSchema(const xr_string& Name, const xr_string& Prefix, xr_vector<SKey>& Out, int Depth = 0) const;
-	xr_vector<SKey> GetKeys(const xr_string& Section) const;
 	void Accept(TextEditor& View);
 
-	u32 LoadedGeneration = 0;
-	xr_hash_map<xr_string, SSchema> Schemas;
-	// Class id of a section -> its schemas
-	xr_hash_map<xr_string, xr_vector<xr_string>> ClassIds;
-
-	// Every section of configs, the sections of the edited file come first
-	bool Indexed = false;
-	SectionMap Sections;
-	SectionMap Local;
+	// The sections of the edited file
+	CXVisor::LtxSectionMap Local;
 	xr_vector<xr_string> LocalLines;
 	xr_string LocalPath;
+
+	EText TextKind = EText::Ltx;
 
 	bool Open = false;
 	bool ForceOpen = false;

@@ -331,6 +331,10 @@ void CEditorRenderDevice::_Create(IReader* F)
 	DEV->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
 
+	// The editor device skips dxRenderDeviceRender::OnDeviceCreate, but DU draws (PIE debug draw) use these shaders
+	dxRenderDeviceRender::Instance().m_WireShader.create("editor\\wire");
+	dxRenderDeviceRender::Instance().m_SelectionShader.create("editor\\selection");
+
 	GEditorDraw.OnDeviceCreate();
 
 	texture_null.create("ed\\ed_nodata");
@@ -352,6 +356,8 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
     EContext.UI->OnDeviceDestroy			();
 
 	GEditorDraw.OnDeviceDestroy();
+	dxRenderDeviceRender::Instance().m_WireShader.destroy();
+	dxRenderDeviceRender::Instance().m_SelectionShader.destroy();
 	texture_null.destroy		();
 
 	GEditorInstancing.OnDeviceDestroy();
