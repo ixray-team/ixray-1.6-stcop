@@ -3,6 +3,8 @@
 #include "../LayoutEditor/LuaCompletion.h"
 #include "LtxCompletion.h"
 
+class CContentView;
+
 // Text files of the game: CP1251 on disk, UTF-8 in the editor
 class UICoderForm :
 	public IEditorWnd,
@@ -25,7 +27,11 @@ public:
 	static bool CanOpen(const xr_string& FullPath);
 	static bool OpenFile(const xr_string& FullPath);
 	static bool Save();
+	static bool Reload();
+	static void RevealInBrowser();
 	static bool Undo(bool Redo);
+	static void RequestBake();
+	static void BakeIfMissing();
 	static void DrawTopBar(float ButtonSize);
 
 private:
@@ -58,7 +64,6 @@ private:
 	bool SaveDocument(SDocument& Document);
 	bool CloseDocument(size_t Index);
 
-	void DrawToolbar(SDocument* Document, float ButtonSize);
 	void DrawStatus(float ButtonSize);
 	void DrawDocument(SDocument& Document);
 
@@ -96,5 +101,7 @@ private:
 	CLuaCompletion Completion;
 	CLtxCompletion LtxCompletion;
 	bool BakeRequest = false;
+	CContentView* Browser = nullptr;
+	void Bake();
 	xr_string StatusText;
 };

@@ -202,8 +202,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 	}
 
+	CRenderDevice::SetStartupStatus(95, "Baking Lua API");
+	UICoderForm::BakeIfMissing();
+
 	CRenderDevice::FinishStartup();
 	SDL_RaiseWindow(g_AppInfo.Window);
+	// The startup screen polls the events: SDL_EVENT_WINDOW_SHOWN never reaches the loop below
+	Device.b_is_Active = true;
 	
 	while (!NeedExit)
 	{
@@ -237,6 +242,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				break;
 			}
 			case SDL_EVENT_WINDOW_SHOWN:
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
 			case SDL_EVENT_WINDOW_MOUSE_ENTER:
 				Device.b_is_Active = true;
 				//if (UI) UI->OnAppActivate();
