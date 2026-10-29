@@ -1721,7 +1721,7 @@ void UILayoutEditorForm::RebuildProperties()
 
 	const ELayoutWidget Type = Widget->Type;
 	PHelper().CreateSText(Items, "Widget\\Name", &Widget->Name)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnNameChange);
-	PHelper().CreateToken8(Items, "Widget\\Type", (u8*)&Widget->Type, TypeTokens)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnTypeChange);
+	PHelper().CreateToken(Items, "Widget\\Type", (u8*)&Widget->Type, TypeTokens)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnTypeChange);
 	const SLayoutWidget* Parent = Doc.Find(Widget->ParentId);
 	PHelper().CreateCaption(Items, "Widget\\Parent", Parent != nullptr ? Parent->Name.c_str() : "self");
 
@@ -1755,13 +1755,13 @@ void UILayoutEditorForm::RebuildProperties()
 				PropsFont = Index;
 			}
 		}
-		PHelper().CreateToken32(Items, "Text\\Font", &PropsFont, FontTokens)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnFontChange);
+		PHelper().CreateToken(Items, "Text\\Font", &PropsFont, FontTokens)->OnChangeEvent = xr_make_delegate(this, &UILayoutEditorForm::OnFontChange);
 		PHelper().CreateColor(Items, "Text\\Color", &Widget->TextColor);
 
 		if (!IsList)
 		{
-			PHelper().CreateToken8(Items, "Text\\Align", (u8*)&Widget->Align, AlignTokens);
-			PHelper().CreateToken8(Items, "Text\\Vertical Align", (u8*)&Widget->VertAlign, VertAlignTokens);
+			PHelper().CreateToken(Items, "Text\\Align", (u8*)&Widget->Align, AlignTokens);
+			PHelper().CreateToken(Items, "Text\\Vertical Align", (u8*)&Widget->VertAlign, VertAlignTokens);
 		}
 	}
 

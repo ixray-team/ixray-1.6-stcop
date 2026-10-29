@@ -52,78 +52,90 @@ IC shared_str PrepareKey (const char* pref0,	const char* pref1, 	const char* pre
 //------------------------------------------------------------------------------
 // Properties
 //------------------------------------------------------------------------------
-class XREPROPS_API IPropHelper
+class XREPROPS_API CPropHelper
 {
-public:
-    virtual PropItem* 				FindItem			(PropItemVec& items, shared_str key, EPropType type=PROP_UNDEF)=0;
-public:
-//------------------------------------------------------------------------------
-// predefind event routines
-    virtual bool 				 	FvectorRDOnAfterEdit(PropValue* sender, Fvector& edit_val)=0;
-    virtual void 				 	FvectorRDOnBeforeEdit(PropValue* sender,Fvector& edit_val)=0;
-    virtual void 				 	FvectorRDOnDraw		(PropValue* sender, xr_string& draw_val)=0;
-    virtual bool 				 	floatRDOnAfterEdit	(PropValue* sender,	float& edit_val)=0;
-    virtual void 				 	floatRDOnBeforeEdit	(PropValue* sender,	float& edit_val)=0;
-    virtual void 				 	floatRDOnDraw		(PropValue* sender, xr_string& draw_val)=0;    
-// R-name edit
-    virtual void				  	NameBeforeEdit		(PropValue* sender, shared_str& edit_val)=0;
-    virtual bool 				  	NameAfterEdit		(PropValue* sender, shared_str& edit_val)=0;
-    virtual void 				  	NameDraw			(PropValue* sender, xr_string& draw_val)=0;
-// C-name edit
-    virtual void				  	CNameBeforeEdit		(PropValue* sender, xr_string& edit_val)=0;
-    virtual bool 				  	CNameAfterEdit		(PropValue* sender, xr_string& edit_val)=0;
-    virtual void 				  	CNameDraw			(PropValue* sender, xr_string& draw_val)=0;
-public:
-    virtual CaptionValue*  			CreateCaption	    (PropItemVec& items, shared_str key, shared_str val)=0;
-    virtual CanvasValue*			CreateCanvas	    (PropItemVec& items, shared_str key, shared_str val, int height)=0;
-    virtual ButtonValue*			CreateButton	    (PropItemVec& items, shared_str key, shared_str val, u32 flags, ButtonValue::TOnBtnClick onclick=0)=0;
-    virtual ChooseValue*			CreateChoose	    (PropItemVec& items, shared_str key, shared_str* val, u32 mode, const char* path=0, void* fill_param=0, u32 sub_item_count=1, u32 choose_flags=cfAllowNone)=0;
-    virtual MultiChooseValue*		CreateChooseTexture (PropItemVec& items, shared_str key) = 0;
-    virtual S8Value* 				CreateS8		    (PropItemVec& items, shared_str key, s8* val, s8 mn=0, s8 mx=100, s8 inc=1)=0;
-    virtual S16Value* 				CreateS16		    (PropItemVec& items, shared_str key, s16* val, s16 mn=0, s16 mx=100, s16 inc=1)=0;
-    virtual S32Value* 	 			CreateS32		    (PropItemVec& items, shared_str key, s32* val, s32 mn=0, s32 mx=100, s32 inc=1)=0;
-    virtual U8Value* 				CreateU8		    (PropItemVec& items, shared_str key, u8* val, u8 mn=0, u8 mx=100, u8 inc=1)=0;
-    virtual U16Value* 				CreateU16		    (PropItemVec& items, shared_str key, u16* val, u16 mn=0, u16 mx=100, u16 inc=1)=0;
-    virtual U32Value* 	  			CreateU32		    (PropItemVec& items, shared_str key, u32* val, u32 mn=0, u32 mx=100, u32 inc=1)=0;
-    virtual FloatValue* 			CreateFloat		    (PropItemVec& items, shared_str key, float* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2)=0;
-    virtual BOOLValue* 	  			CreateBOOL		    (PropItemVec& items, shared_str key, int* val)=0;
-    virtual BoolValue* 	  			CreateBool		    (PropItemVec& items, shared_str key, bool* val)=0;
-    virtual VectorValue*  	 		CreateVector	    (PropItemVec& items, shared_str key, Fvector* val, float mn=0.f, float mx=1.f, float inc=0.01f, int decim=2)=0;
-    virtual Flag8Value*				CreateFlag8		    (PropItemVec& items, shared_str key, Flags8* val, u8 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
-    virtual Flag16Value*			CreateFlag16	    (PropItemVec& items, shared_str key, Flags16* val, u16 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
-    virtual Flag32Value*			CreateFlag32	    (PropItemVec& items, shared_str key, Flags32* val, u32 mask, const char* c0=0, const char* c1=0, u32 flags=0)=0;
-	virtual Token8Value*			CreateToken8	    (PropItemVec& items, shared_str key, u8* val, xr_token* token)=0;
-	virtual Token16Value*			CreateToken16	    (PropItemVec& items, shared_str key, u16* val, xr_token* token)=0;
-	virtual Token32Value*			CreateToken32	    (PropItemVec& items, shared_str key, u32* val, xr_token* token)=0;
-	virtual RToken8Value* 			CreateRToken8	    (PropItemVec& items, shared_str key, u8* val, xr_rtoken* token, u32 t_cnt)=0;
-	virtual RToken16Value* 			CreateRToken16	    (PropItemVec& items, shared_str key, u16* val, xr_rtoken* token, u32 t_cnt)=0;
-	virtual RToken32Value* 			CreateRToken32	    (PropItemVec& items, shared_str key, u32* val, xr_rtoken* token, u32 t_cnt)=0;
-	virtual RListValue* 	 		CreateRList		    (PropItemVec& items, shared_str key, shared_str* val, shared_str* lst, u32 cnt)=0;
-    virtual U32Value*  				CreateColor		    (PropItemVec& items, shared_str key, u32* val)=0;
-    virtual ColorValue*				CreateFColor	    (PropItemVec& items, shared_str key, Fcolor* val)=0;
-    virtual VectorValue*			CreateVColor	    (PropItemVec& items, shared_str key, Fvector* val)=0;
-	virtual RTextValue* 			CreateRText		    (PropItemVec& items, shared_str key, shared_str* val)=0;
-	virtual STextValue* 			CreateSText		    (PropItemVec& items, shared_str key, xr_string* val)=0;      
-	virtual WaveValue* 				CreateWave		    (PropItemVec& items, shared_str key, WaveForm* val)=0;
-    virtual FloatValue* 			CreateTime		    (PropItemVec& items, shared_str key, float* val, float mn=0.f, float mx=86400.f)=0;
-    virtual ShortcutValue*			CreateShortcut		(PropItemVec& items, shared_str key, xr_shortcut* val)=0;
+	PropItem*				CreateItem			(PropItemVec& items, const shared_str& key, EPropType type, u32 item_flags = 0);
+	PropValue*				AppendValue			(PropItemVec& items, const shared_str& key, PropValue* val, EPropType type, u32 item_flags = 0);
 
-    virtual FloatValue* 			CreateAngle		    (PropItemVec& items, shared_str key, float* val, float mn=flt_min, float mx=flt_max, float inc=0.01f, int decim=2)=0;
-    virtual VectorValue* 			CreateAngle3	    (PropItemVec& items, shared_str key, Fvector* val, float mn=flt_min, float mx=flt_max, float inc=0.01f, int decim=2)=0;
-    virtual RTextValue* 			CreateName		    (PropItemVec& items, shared_str key, shared_str* val, ListItem* owner)=0;  
-	virtual RTextValue* 			CreateNameCB		(PropItemVec& items, shared_str key, shared_str* val, TOnDrawTextEvent=0, RTextValue::TOnBeforeEditEvent=0, RTextValue::TOnAfterEditEvent=0)=0;
+	template <class T>
+	T*						Append				(PropItemVec& items, const shared_str& key, T* val, EPropType type)
+	{
+		return static_cast<T*>(AppendValue(items, key, val, type));
+	}
 
-	virtual GameTypeValue*			CreateGameType		(PropItemVec& items, shared_str key, GameTypeChooser* val)=0;
-	// obsolette    
-    virtual CTextValue* 			CreateCText			(PropItemVec& items, shared_str key, LPSTR val, u32 sz)=0;
-	virtual CListValue* 	 		CreateCList		    (PropItemVec& items, shared_str key, LPSTR val, u32 sz, xr_string* lst, u32 cnt)=0;
-    virtual CTextValue* 			CreateCName		    (PropItemVec& items, shared_str key, LPSTR val, u32 sz, ListItem* owner)=0;
-	virtual TokenValueSH*   		CreateTokenSH	    (PropItemVec& items, shared_str key, u32* val, const TokenValueSH::Item* lst, u32 cnt)=0;
-    virtual CTextValue* 			CreateTexture		(PropItemVec& items, shared_str key, LPSTR val, u32 sz)=0;
+	void					NameDraw			(PropValue* sender, xr_string& draw_val);
+
+public:
+	PropItem*				FindItem			(PropItemVec& items, shared_str key, EPropType type = PROP_UNDEF);
+
+	// Angle edit: the value is stored in radians and shown in degrees. Also used by the script properties helper
+	bool					FvectorRDOnAfterEdit(PropValue* sender, Fvector& edit_val);
+	void					FvectorRDOnBeforeEdit(PropValue* sender, Fvector& edit_val);
+	void					FvectorRDOnDraw		(PropValue* sender, xr_string& draw_val);
+	bool					floatRDOnAfterEdit	(PropValue* sender, float& edit_val);
+	void					floatRDOnBeforeEdit	(PropValue* sender, float& edit_val);
+	void					floatRDOnDraw		(PropValue* sender, xr_string& draw_val);
+	// Name edit: the last part of the path, checked against the list items
+	void					NameBeforeEdit		(PropValue* sender, shared_str& edit_val);
+	bool					NameAfterEdit		(PropValue* sender, shared_str& edit_val);
+
+	// s8, s16, s32, u8, u16, u32
+	template <class T>
+	NumericValue<T>*		CreateNumeric		(PropItemVec& items, shared_str key, T* val, std::type_identity_t<T> mn = 0, std::type_identity_t<T> mx = 100, std::type_identity_t<T> inc = 1)
+	{
+		static_assert(std::is_same_v<T, s8> || std::is_same_v<T, s16> || std::is_same_v<T, s32> || std::is_same_v<T, u8> || std::is_same_v<T, u16> || std::is_same_v<T, u32>, "CreateNumeric takes s8, s16, s32, u8, u16, u32; CreateFloat for float");
+		return Append(items, key, new NumericValue<T>(val, mn, mx, inc, 0), PROP_NUMERIC);
+	}
+	// Flags8, Flags16, Flags32
+	template <class T>
+	FlagValue<T>*			CreateFlag			(PropItemVec& items, shared_str key, T* val, typename T::TYPE mask, const char* c0 = 0, const char* c1 = 0, u32 flags = 0)
+	{
+		return Append(items, key, new FlagValue<T>(val, mask, c0, c1, flags), PROP_FLAG);
+	}
+	// u8, u16, u32
+	template <class T>
+	TokenValue<T>*			CreateToken			(PropItemVec& items, shared_str key, T* val, xr_token* token)
+	{
+		return Append(items, key, new TokenValue<T>(val, token), PROP_TOKEN);
+	}
+	// u8, u16, u32
+	template <class T>
+	RTokenValue<T>*			CreateRToken		(PropItemVec& items, shared_str key, T* val, xr_rtoken* token, u32 t_cnt)
+	{
+		return Append(items, key, new RTokenValue<T>(val, token, t_cnt), PROP_RTOKEN);
+	}
+
+	CaptionValue*			CreateCaption		(PropItemVec& items, shared_str key, shared_str val);
+	CanvasValue*			CreateCanvas		(PropItemVec& items, shared_str key, shared_str val, int height);
+	ButtonValue*			CreateButton		(PropItemVec& items, shared_str key, shared_str val, u32 flags, ButtonValue::TOnBtnClick onclick = 0);
+	ChooseValue*			CreateChoose		(PropItemVec& items, shared_str key, shared_str* val, u32 mode, const char* path = 0, void* fill_param = 0, u32 sub_item_count = 1, u32 choose_flags = cfAllowNone);
+	MultiChooseValue*		CreateChooseTexture	(PropItemVec& items, shared_str key);
+	FloatValue*				CreateFloat			(PropItemVec& items, shared_str key, float* val, float mn = 0.f, float mx = 1.f, float inc = 0.01f, int decim = 2);
+	BOOLValue*				CreateBOOL			(PropItemVec& items, shared_str key, int* val);
+	BoolValue*				CreateBool			(PropItemVec& items, shared_str key, bool* val);
+	VectorValue*			CreateVector		(PropItemVec& items, shared_str key, Fvector* val, float mn = 0.f, float mx = 1.f, float inc = 0.01f, int decim = 2);
+	RListValue*				CreateRList			(PropItemVec& items, shared_str key, shared_str* val, shared_str* lst, u32 cnt);
+	U32Value*				CreateColor			(PropItemVec& items, shared_str key, u32* val);
+	ColorValue*				CreateFColor		(PropItemVec& items, shared_str key, Fcolor* val);
+	VectorValue*			CreateVColor		(PropItemVec& items, shared_str key, Fvector* val);
+	RTextValue*				CreateRText			(PropItemVec& items, shared_str key, shared_str* val);
+	STextValue*				CreateSText			(PropItemVec& items, shared_str key, xr_string* val);
+	WaveValue*				CreateWave			(PropItemVec& items, shared_str key, WaveForm* val);
+	FloatValue*				CreateTime			(PropItemVec& items, shared_str key, float* val, float mn = 0.f, float mx = 86400.f);
+	ShortcutValue*			CreateShortcut		(PropItemVec& items, shared_str key, xr_shortcut* val);
+	FloatValue*				CreateAngle			(PropItemVec& items, shared_str key, float* val, float mn = flt_min, float mx = flt_max, float inc = 0.01f, int decim = 2);
+	VectorValue*			CreateAngle3		(PropItemVec& items, shared_str key, Fvector* val, float mn = flt_min, float mx = flt_max, float inc = 0.01f, int decim = 2);
+	RTextValue*				CreateName			(PropItemVec& items, shared_str key, shared_str* val, ListItem* owner);
+	RTextValue*				CreateNameCB		(PropItemVec& items, shared_str key, shared_str* val, TOnDrawTextEvent = 0, RTextValue::TOnBeforeEditEvent = 0, RTextValue::TOnAfterEditEvent = 0);
+	GameTypeValue*			CreateGameType		(PropItemVec& items, shared_str key, GameTypeChooser* val);
+	TokenValueSH*			CreateTokenSH		(PropItemVec& items, shared_str key, u32* val, const TokenValueSH::Item* lst, u32 cnt);
+	// C string values
+	CListValue*				CreateCList			(PropItemVec& items, shared_str key, char* val, u32 sz, xr_string* lst, u32 cnt);
+	CTextValue*				CreateTexture		(PropItemVec& items, shared_str key, char* val, u32 sz);
 };
 //---------------------------------------------------------------------------
 
-extern XREPROPS_API IPropHelper &PHelper();
+extern XREPROPS_API CPropHelper& PHelper();
 //---------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

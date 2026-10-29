@@ -265,7 +265,7 @@ void EFogVolume::FillProp(const char* pref, PropItemVec& values)
 	inherited::FillProp(pref, values);
 
 	PropValue* P;
-	P = PHelper().CreateToken8(values, PrepareKey(pref, "VolumeType"), &m_volumeType, fog_vol_type);
+	P = PHelper().CreateToken(values, PrepareKey(pref, "VolumeType"), &m_volumeType, fog_vol_type);
 	P->OnChangeEvent.bind(this, &EFogVolume::OnChangeEnvs);
 
 	if (m_volumeType == fvEmitter)

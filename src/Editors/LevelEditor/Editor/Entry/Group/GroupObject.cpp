@@ -428,7 +428,7 @@ void CGroupObject::FillProp(const char* pref, PropItemVec& items)
 	{
 		string_path					pk;
 		sprintf						(pk,"%s (%s)",PrepareKey(pref, it->pObject->GetName()).c_str(),it->pObject->FParentTools->ClassDesc());
-		V = PHelper().CreateFlag32	(items, pk, &it->pObject->m_CO_Flags, flObjectInGroupUnique);
+		V = PHelper().CreateFlag	(items, pk, &it->pObject->m_CO_Flags, flObjectInGroupUnique);
 		V->OnChangeEvent.bind		(this,&CCustomObject::OnChangeIngroupUnique);
 	}
 }

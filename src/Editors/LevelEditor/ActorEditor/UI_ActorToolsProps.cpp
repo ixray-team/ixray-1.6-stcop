@@ -422,29 +422,29 @@ void CActorTools::FillMotionProperties(PropItemVec& items, const char* pref, Lis
 		PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\Falloff"), 	&SM->fFalloff,0.f,10.f,0.01f,2);
 
 		PropValue /**C=0,*/*TV=0;
-		TV = PHelper().CreateFlag8	(items,PrepareKey(pref,"Motion\\Type FX"),	&SM->m_Flags, esmFX);
+		TV = PHelper().CreateFlag	(items,PrepareKey(pref,"Motion\\Type FX"),	&SM->m_Flags, esmFX);
 		TV->OnChangeEvent.bind	(this,&CActorTools::OnMotionTypeChange);
 		m_BoneParts.clear		();
 		if (SM->m_Flags.is(esmFX))
 		{
 			for (BoneIt it=m_pEditObject->m_Bones.begin(); it!=m_pEditObject->m_Bones.end(); it++)
 				m_BoneParts.push_back	(xr_rtoken((*it)->Name().c_str(),(*it)->SelfID));
-			PHelper().CreateRToken16 	(items,PrepareKey(pref,"Motion\\FX\\Start bone"),	(u16*)&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
+			PHelper().CreateRToken 	(items,PrepareKey(pref,"Motion\\FX\\Start bone"),	(u16*)&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
 
 			PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\FX\\Power"),	 	&SM->fPower,   	0.f,10.f,0.01f,2);
 		}else{
 			m_BoneParts.push_back(xr_rtoken("--all bones--",BI_NONE));
 			for (BPIt it=m_pEditObject->m_BoneParts.begin(); it!=m_pEditObject->m_BoneParts.end(); it++)
 				m_BoneParts.push_back	(xr_rtoken(it->alias.c_str(),it-m_pEditObject->m_BoneParts.begin()));
-			PHelper().CreateRToken16  	(items,PrepareKey(pref,"Motion\\Cycle\\Bone part"),		&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Stop at end"),	&SM->m_Flags,		esmStopAtEnd);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\No mix"),	  	&SM->m_Flags,		esmNoMix);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Sync part"),		&SM->m_Flags,		esmSyncPart);
+			PHelper().CreateRToken  	(items,PrepareKey(pref,"Motion\\Cycle\\Bone part"),		&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\Stop at end"),	&SM->m_Flags,		esmStopAtEnd);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\No mix"),	  	&SM->m_Flags,		esmNoMix);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\Sync part"),		&SM->m_Flags,		esmSyncPart);
 
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseFootSteps"),	&SM->m_Flags,		esmUseFootSteps);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Move XForm"),	&SM->m_Flags,		esmRootMover);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Idle"),			&SM->m_Flags,		esmIdle);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseWeaponBone"),	&SM->m_Flags,	esmUseWeaponBone);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseFootSteps"),	&SM->m_Flags,		esmUseFootSteps);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\Move XForm"),	&SM->m_Flags,		esmRootMover);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\Idle"),			&SM->m_Flags,		esmIdle);
+			PHelper().CreateFlag	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseWeaponBone"),	&SM->m_Flags,	esmUseWeaponBone);
 		}
 
 		B=PHelper().CreateButton	(items, PrepareKey(pref,"Marks\\Control-12"),	"Add,Remove",ButtonValue::flFirstOnly);
@@ -818,12 +818,12 @@ void CActorTools::FillBoneProperties(PropItemVec& items, const char* pref, ListI
 		PHelper().CreateVector		(items, PrepareKey(pref,"Bone\\Center Of Mass"),			&BONE->center_of_mass, 	-10000.f, 10000.f);
 		V=PHelper().CreateVector 	(items, PrepareKey(pref,"Bone\\Bind Position"),				&BONE->_RestOffset(),	-10000.f, 10000.f);	V->OnChangeEvent.bind	(this,&CActorTools::OnBindTransformChange);
 		V=PHelper().CreateAngle3 	(items, PrepareKey(pref,"Bone\\Bind Rotation"),				&BONE->_RestRotate());						V->OnChangeEvent.bind	(this,&CActorTools::OnBindTransformChange);
-		PHelper().CreateFlag16		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Pickable"),	&BONE->shape.flags, SBoneShape::sfNoPickable);
-		PHelper().CreateFlag16		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Physics"),	&BONE->shape.flags, SBoneShape::sfNoPhysics);
-		PHelper().CreateFlag16		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\Remove After Break"),	&BONE->shape.flags,SBoneShape::sfRemoveAfterBreak);
-		PHelper().CreateFlag16		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Fog Collider"),	&BONE->shape.flags,SBoneShape::sfNoFogCollider);
+		PHelper().CreateFlag		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Pickable"),	&BONE->shape.flags, SBoneShape::sfNoPickable);
+		PHelper().CreateFlag		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Physics"),	&BONE->shape.flags, SBoneShape::sfNoPhysics);
+		PHelper().CreateFlag		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\Remove After Break"),	&BONE->shape.flags,SBoneShape::sfRemoveAfterBreak);
+		PHelper().CreateFlag		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Fog Collider"),	&BONE->shape.flags,SBoneShape::sfNoFogCollider);
 		
-		V=PHelper().CreateToken16	(items,	PrepareKey(pref,"Bone\\Shape\\Type"),				&BONE->shape.type, shape_types);			V->OnChangeEvent.bind	(this,&CActorTools::OnShapeTypeChange);
+		V=PHelper().CreateToken	(items,	PrepareKey(pref,"Bone\\Shape\\Type"),				&BONE->shape.type, shape_types);			V->OnChangeEvent.bind	(this,&CActorTools::OnShapeTypeChange);
 		switch (BONE->shape.type){
 		case SBoneShape::stBox:
 			PHelper().CreateVector	(items, PrepareKey(pref,"Bone\\Shape\\Box\\Center"),		&BONE->shape.box.m_translate, -10000.f, 10000.f);
@@ -859,13 +859,13 @@ void CActorTools::FillBoneProperties(PropItemVec& items, const char* pref, ListI
 		
 		PHelper().CreateCaption		(items, PrepareKey(pref,"Bone\\Joint\\Current Rotation"),	shared_str().printf("{%3.2f, %3.2f, %3.2f}",VPUSH(lim_rot)));
 		SJointIKData& data			= BONE->IK_data;
-		V=PHelper().CreateFlag32 	(items, PrepareKey(pref,"Bone\\Joint\\Breakable"),		&data.ik_flags, SJointIKData::flBreakable);
+		V=PHelper().CreateFlag 	(items, PrepareKey(pref,"Bone\\Joint\\Breakable"),		&data.ik_flags, SJointIKData::flBreakable);
 		V->OnChangeEvent.bind		(this,&CActorTools::OnJointTypeChange);
 		if (data.ik_flags.is(SJointIKData::flBreakable)){
 			PHelper().CreateFloat 	(items, PrepareKey(pref,"Bone\\Joint\\Break Force"),		&data.break_force, 	0.f, 1000000000.f);
 			PHelper().CreateFloat 	(items, PrepareKey(pref,"Bone\\Joint\\Break Torque"),		&data.break_torque, 0.f, 1000000000.f);
 		}
-		V=PHelper().CreateToken32	(items,	PrepareKey(pref,"Bone\\Joint\\Type"),				(u32*)&data.type,	joint_types);  	V->OnChangeEvent.bind	(this,&CActorTools::OnJointTypeChange);
+		V=PHelper().CreateToken	(items,	PrepareKey(pref,"Bone\\Joint\\Type"),				(u32*)&data.type,	joint_types);  	V->OnChangeEvent.bind	(this,&CActorTools::OnJointTypeChange);
 		switch (data.type){
 		case jtRigid: 
 		break; 
@@ -958,17 +958,17 @@ void CActorTools::FillObjectProperties(PropItemVec& items, const char* pref, Lis
 	R_ASSERT(m_pEditObject);
 	PropValue* V = 0;
 	m_pEditObjectType = m_pEditObject->m_objectFlags.flags & (CEditableObject::eoDynamic | CEditableObject::eoHOM | CEditableObject::eoSoundOccluder | CEditableObject::eoMultipleUsage);
-	PHelper().CreateToken32(items, "Object\\Object Type", &m_pEditObjectType, eo_type_token)->OnChangeEvent.bind(this, &CActorTools::OnTypeChange);
+	PHelper().CreateToken(items, "Object\\Object Type", &m_pEditObjectType, eo_type_token)->OnChangeEvent.bind(this, &CActorTools::OnTypeChange);
 
 	if (m_pEditObjectType & CEditableObject::eoDynamic)
 	{
-		PHelper().CreateFlag32(items, "Object\\Flags\\Make Progressive", &m_pEditObject->m_objectFlags, CEditableObject::eoProgressive);
-		PHelper().CreateFlag32(items, "Object\\Flags\\Disable Mesh Optimization", &m_pEditObject->m_objectFlags, CEditableObject::eoSkipOpt);
-		PHelper().CreateFlag32(items, "Object\\Flags\\HQ Geometry", &m_pEditObject->m_objectFlags, CEditableObject::eoHQExport);
+		PHelper().CreateFlag(items, "Object\\Flags\\Make Progressive", &m_pEditObject->m_objectFlags, CEditableObject::eoProgressive);
+		PHelper().CreateFlag(items, "Object\\Flags\\Disable Mesh Optimization", &m_pEditObject->m_objectFlags, CEditableObject::eoSkipOpt);
+		PHelper().CreateFlag(items, "Object\\Flags\\HQ Geometry", &m_pEditObject->m_objectFlags, CEditableObject::eoHQExport);
 	}
 	else if (m_pEditObjectType & CEditableObject::eoMultipleUsage)
 	{
-		PHelper().CreateFlag32(items, "Object\\Flags\\Using LOD", &m_pEditObject->m_objectFlags, CEditableObject::eoUsingLOD)->OnChangeEvent.bind(this, &CActorTools::OnUsingLodFlagChange);
+		PHelper().CreateFlag(items, "Object\\Flags\\Using LOD", &m_pEditObject->m_objectFlags, CEditableObject::eoUsingLOD)->OnChangeEvent.bind(this, &CActorTools::OnUsingLodFlagChange);
 	}
 
 	V = PHelper().CreateVector(items, "Object\\Transform\\Position", &m_pEditObject->a_vPosition, -100000, 100000, 0.01, 2);

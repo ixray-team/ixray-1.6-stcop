@@ -244,7 +244,7 @@ void CTerrain::FillProp(const char* pref, PropItemVec& items)
 	PropValue* PreviewVal = PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
 	PreviewVal->OnChangeEvent.bind(this, &CTerrain::OnChangePreview);
 
-	S32Value* ScaleEdit = PHelper().CreateS32(items, "Height Map\\Multiply Y", &ScaleY);
+	S32Value* ScaleEdit = PHelper().CreateNumeric(items, "Height Map\\Multiply Y", &ScaleY);
 	ScaleEdit->OnAfterEditEvent.bind(this, &CTerrain::OnChangeHMData);
 
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();

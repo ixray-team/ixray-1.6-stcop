@@ -853,7 +853,7 @@ void CWayObject::FillProp(const char* pref, PropItemVec& items)
 					PHelper().CreateFloat	(items,	PrepareKey(pref,"Way Point\\Links",*(*l_it)->way_point->m_Name),&(*l_it)->probability);
 					
 				for (int k=0; k<32; k++)
-					PHelper().CreateFlag32(items,	PrepareKey(pref,"Way Point\\Flags",xr_string::ToString(k).c_str()),	&W->m_Flags,	1<<k);
+					PHelper().CreateFlag(items,	PrepareKey(pref,"Way Point\\Flags",xr_string::ToString(k).c_str()),	&W->m_Flags,	1<<k);
 			}
 		}
 	}

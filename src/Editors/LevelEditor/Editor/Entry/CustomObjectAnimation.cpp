@@ -320,7 +320,7 @@ void 	CCustomObject::OnTransformChange(PropValue* value)
 
 void CCustomObject::AnimationFillProp(const char* pref, PropItemVec& items)
 {
-	PropValue* V		= PHelper().CreateFlag32(items,PrepareKey(pref,"Flags\\Motionable"),&m_CO_Flags, flMotion);
+	PropValue* V		= PHelper().CreateFlag(items,PrepareKey(pref,"Flags\\Motionable"),&m_CO_Flags, flMotion);
 	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionableChange);
 	if (Motionable()){
 						  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Hint"),		"Make KEY only on Parent CS");
@@ -332,8 +332,8 @@ void CCustomObject::AnimationFillProp(const char* pref, PropItemVec& items)
 		B->OnBtnClickEvent.bind(this,&CCustomObject::OnMotionControlPlayClick);
 		B				= PHelper().CreateButton		(items,PrepareKey(pref,"Motion\\Controls"),	" |<<, +<<, <<, >>, >>+, >>|", 0); 
 		B->OnBtnClickEvent.bind(this,&CCustomObject::OnMotionControlClick);
-						  PHelper().CreateFlag32		(items,PrepareKey(pref,"Motion\\Flags\\Auto Key"), 		&m_CO_Flags, flAutoKey);
-		V				= PHelper().CreateFlag32		(items,PrepareKey(pref,"Motion\\Flags\\Camera View"), 	&m_CO_Flags, flCameraView);
+						  PHelper().CreateFlag		(items,PrepareKey(pref,"Motion\\Flags\\Auto Key"), 		&m_CO_Flags, flAutoKey);
+		V				= PHelper().CreateFlag		(items,PrepareKey(pref,"Motion\\Flags\\Camera View"), 	&m_CO_Flags, flCameraView);
 		V->OnChangeEvent.bind(this,&CCustomObject::OnMotionCameraViewChange);
 		V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\Start Frame (sec)"),		&m_MotionParams->min_t, -10000.f, m_MotionParams->max_t, 	1.f/30.f, 3);
 		V->OnChangeEvent.bind(this,&CCustomObject::OnMotionFrameChange);

@@ -1126,7 +1126,7 @@ void CUIMacroView::FillProperties()
 		if (Command->Type != MacroType::eVoid && Command->IntArg)
 		{
 			PropFirstInt = Node->First.empty() ? 0 : (u32)atoi(Node->First.c_str());
-			PHelper().CreateU32(Items, FirstName, &PropFirstInt, 0, u32(-1))->OnChangeEvent = xr_make_delegate(this, &CUIMacroView::OnPropertyChanged);
+			PHelper().CreateNumeric(Items, FirstName, &PropFirstInt, 0, u32(-1))->OnChangeEvent = xr_make_delegate(this, &CUIMacroView::OnPropertyChanged);
 		}
 		else if (Command->Type != MacroType::eVoid)
 		{

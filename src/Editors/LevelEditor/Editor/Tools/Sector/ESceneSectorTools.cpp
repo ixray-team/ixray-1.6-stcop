@@ -83,7 +83,7 @@ void ESceneSectorTool::OnBeforeObjectChange(CCustomObject* O)
 
 void ESceneSectorTool::FillProp(const char* pref, PropItemVec& items)
 {
-    PHelper().CreateFlag32(items, PrepareKey(pref, "Draw Solid"), &m_Flags, flDrawSolid);
+    PHelper().CreateFlag(items, PrepareKey(pref, "Draw Solid"), &m_Flags, flDrawSolid);
     inherited::FillProp(pref, items);
 }
 

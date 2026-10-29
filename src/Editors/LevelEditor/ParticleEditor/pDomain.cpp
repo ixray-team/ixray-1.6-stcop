@@ -2,7 +2,6 @@
 
 
 #include "../../../Include/xrRender/DrawUtils.h"
-#include "../../../Editors/Public/PropertiesListHelper.h"
 #include "ParticleEffectActions.h"
 
 using namespace PAPI;
@@ -168,7 +167,7 @@ void PDomain::OnTypeChange(PropValue* sender)
 void 	PDomain::FillProp	(PropItemVec& items, const char* pref, u32 clr)
 {
     PropValue* V;
-    V=PHelper().CreateToken32(items,PrepareKey(pref, "Type"),(u32*)&type,domain_token);
+    V=PHelper().CreateToken(items,PrepareKey(pref, "Type"),(u32*)&type,domain_token);
     V->OnChangeEvent.bind	(this,&PDomain::OnTypeChange);
 	V->Owner()->prop_color	= TColor(clr);
     

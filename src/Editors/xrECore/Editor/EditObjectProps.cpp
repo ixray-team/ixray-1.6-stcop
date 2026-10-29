@@ -4,7 +4,6 @@
 #include "EditObject.h"
 #include "EditMesh.h"
 #include "ui_main.h"
-#include "../Public/PropertiesListHelper.h"
 #include "../xrEngine/motion.h"
 #include "../xrEngine/bone.h"
 
@@ -113,7 +112,7 @@ void CEditableObject::FillSurfaceProps(CSurface* SURF, const char* pref, PropIte
 		V = MultiValue->CreateValue(PrepareKey(pref, "Compile"), &SURF->m_pData.second->m_ShaderXRLCName, smCShader);
 		V = MultiValue->CreateValue(PrepareKey(pref, "Game Mtl"), &SURF->m_pData.second->m_GameMtlName, smGameMaterial);
 
-		V = PHelper().CreateFlag32(items, PrepareKey(pref, "2 Sided"), &SURF->m_pData.second->m_Flags, SSurfaceData::sf2Sided);
+		V = PHelper().CreateFlag(items, PrepareKey(pref, "2 Sided"), &SURF->m_pData.second->m_Flags, SSurfaceData::sf2Sided);
 		V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 	}
 		
@@ -139,7 +138,7 @@ void CEditableObject::FillBasicProps(const char* pref, PropItemVec& items)
     _Trim(mt);
 	PropValue* V=nullptr;
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Reference Name"),		m_LibName.c_str());
-    PHelper().CreateToken32		(items, PrepareKey(pref,"Object Type"),   		&m_objectFlags.flags,		eo_type_token);
+    PHelper().CreateToken		(items, PrepareKey(pref,"Object Type"),   		&m_objectFlags.flags,		eo_type_token);
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Owner Name"),	m_CreateName.c_str());
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Modif Name"),	m_ModifName.c_str());
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Creation Time"), ct.c_str());

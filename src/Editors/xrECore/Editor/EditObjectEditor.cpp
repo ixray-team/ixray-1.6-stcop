@@ -10,7 +10,6 @@
 #include "D3DUtils.h"
 #include "ui_main.h"
 #include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
-#include "../Public/PropertiesListHelper.h"
 #include "../../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "ImageManager.h"
 #include "EditorInstancing.h"

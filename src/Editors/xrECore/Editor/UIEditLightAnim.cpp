@@ -827,7 +827,7 @@ void UIEditLightAnim::UpdateProperties()
 	  // PHelper().CreateName(items, "Name", &m_CurrentItem->cName, m_CurrentOwner);
 		PHelper().CreateFloat(items, "FPS", &m_CurrentItem->fFPS, 0.1f, 1000, 1.f, 1);
 		S32Value* V;
-		V = PHelper().CreateS32(items, "Frame Count", &m_CurrentItem->iFrameCount, 1, 100000, 1);
+		V = PHelper().CreateNumeric(items, "Frame Count", &m_CurrentItem->iFrameCount, 1, 100000, 1);
 		V->OnAfterEditEvent.bind(this, &UIEditLightAnim::OnFrameCountAfterEdit);
 
 		u32 frame = m_PointerValue;
@@ -836,7 +836,7 @@ void UIEditLightAnim::UpdateProperties()
 		if (val) 
 		{
 			PHelper().CreateColor(items, "Current\\Color", val);
-			PHelper().CreateU8(items, "Current\\Alpha", ((u8*)val) + 3, 0x00, 0xFF);
+			PHelper().CreateNumeric(items, "Current\\Alpha", ((u8*)val) + 3, 0x00, 0xFF);
 		}
 	}
 	m_Props->AssignItems(items);

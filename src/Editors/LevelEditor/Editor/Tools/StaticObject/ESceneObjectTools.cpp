@@ -185,7 +185,7 @@ void ESceneObjectTool::FillAppendRandomPropertiesBegin(UIPropertiesForm& Prop)
     V = PHelper().CreateCaption(items, "Scale", "");
     V->OnChangeEvent.bind(this, &ESceneObjectTool::OnChangeAppendRandomFlags);
 
-    V = PHelper().CreateFlag32(items, "Scale\\Proportional", &m_Flags, flAppendRandomScaleProportional);
+    V = PHelper().CreateFlag(items, "Scale\\Proportional", &m_Flags, flAppendRandomScaleProportional);
     V->OnChangeEvent.bind(this, &ESceneObjectTool::OnChangeAppendRandomFlags);
     if (m_Flags.is(flAppendRandomScaleProportional)) {
         PHelper().CreateFloat(items, "Scale\\Minimum", &m_AppendRandomMinScale.x, 0.001f, 1000.f, 0.001f, 3);
