@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "IconsFontAwesome7.h"
+#include "../../../xrECore/Editor/TaskbarScope.h"
 
 UIAIMapTool::UIAIMapTool()
 {
@@ -28,24 +29,46 @@ void UIAIMapTool::Draw()
 		if (XRay::ImGui::BeginExpand("Commands"))
 		{
 			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
-			if (XRay::ImGui::Button("Generate Full", { SizeX, 0 })) tool->GenerateMap(false);
+			if (XRay::ImGui::Button("Generate Full", { SizeX, 0 }))
+			{
+				CTaskbarScope Taskbar("IX-Ray Level Editor - generating AI map");
+				tool->GenerateMap(false);
+			}
 			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Generate Selected", { SizeX, 0 })) tool->GenerateMap(true);
-			if (XRay::ImGui::Button("Clear AI Map", { SizeX, 0 })) 
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes) 
+			if (XRay::ImGui::Button("Generate Selected", { SizeX, 0 }))
+			{
+				CTaskbarScope Taskbar("IX-Ray Level Editor - generating AI map (selected)");
+				tool->GenerateMap(true);
+			}
+			if (XRay::ImGui::Button("Clear AI Map", { SizeX, 0 }))
+			{
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes)
 				{
+					CTaskbarScope Taskbar("IX-Ray Level Editor - clearing AI map");
 					tool->Clear();
 					Scene->UndoSave();
 				}
+			}
 			ImGui::SameLine(0, ItemSpacingX);
 			if (XRay::ImGui::Button("Remove invalid nodes", { SizeX, 0 }))
+			{
+				CTaskbarScope Taskbar("IX-Ray Level Editor - removing invalid AI nodes");
 				tool->CleanupInvalidNodes();
+			}
 
 			XRay::ImGui::Separator();
 
-			if (XRay::ImGui::Button("Smooth Selected", { SizeX, 0 }))	tool->SmoothNodes();
+			if (XRay::ImGui::Button("Smooth Selected", { SizeX, 0 }))
+			{
+				CTaskbarScope Taskbar("IX-Ray Level Editor - smoothing AI nodes");
+				tool->SmoothNodes();
+			}
 			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Reset Selected", { SizeX, 0 }))	tool->ResetNodes();
+			if (XRay::ImGui::Button("Reset Selected", { SizeX, 0 }))
+			{
+				CTaskbarScope Taskbar("IX-Ray Level Editor - resetting AI nodes");
+				tool->ResetNodes();
+			}
 
 			XRay::ImGui::EndExpand();
 		}

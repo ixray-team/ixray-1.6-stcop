@@ -11,6 +11,7 @@
 #include "Autotest.h"
 
 #include "../xrCore/FS_impl.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 #include "IGame_Persistent.h"
 #include "IGame_Actor.h"
 
@@ -180,6 +181,8 @@ void CRenderDevice::on_idle		()
 
 	if (Autotest::Active())
 		Autotest::FrameBegin();
+
+	CTaskbarProgress::Instance().Update();
 
 	if (!g_loading_events.empty())
 	{

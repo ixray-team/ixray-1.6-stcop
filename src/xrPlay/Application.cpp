@@ -10,6 +10,7 @@
 
 #include "../xrCore/git_version.h"
 #include "../xrCore/CrashDumpHelper.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
@@ -128,6 +129,11 @@ int CApplication::BeginPlay()
 		SDL_PumpEvents();
 	}
 
+	if (!headless)
+	{
+		CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
+	}
+
 	if (DevicePtr == nullptr)
 	{
 		DevicePtr = new CRenderDevice();
@@ -143,6 +149,7 @@ void CApplication::EndPlay()
 {
 	PROF_EVENT("END_PLAY");
 	SteamWorks.EndPlay();
+	CTaskbarProgress::Instance().Release();
 	xr_delete(g_pStringTable);
 	if (g_AppInfo.Window)
 	{
