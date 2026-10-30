@@ -22,7 +22,7 @@
 
 #include "../../trajectories.h"
 #include "../../../xrPhysics/IPHWorld.h"
-#include "../../../xrPhysics/PHCharacter.h"
+#include "../../../xrPhysics/IPHCharacter.h"
 #include "../../../xrCore/math/_vector3d_ext.h"
 
 void CControlJump::reinit()

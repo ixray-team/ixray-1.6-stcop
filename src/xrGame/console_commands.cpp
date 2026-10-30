@@ -1159,7 +1159,6 @@ public:
 	virtual void	Execute(const char* args) override
 	{
 		CCC_Integer::Execute(args);
-		// dWorldSetQuickStepNumIterations(nullptr,phIterations);
 		if (physics_world())
 			physics_world()->StepNumIterations(phIterations);
 	}

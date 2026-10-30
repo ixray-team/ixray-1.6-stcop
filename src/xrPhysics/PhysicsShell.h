@@ -2,6 +2,8 @@
 #define PhysicsShellH
 #pragma once
 
+class CPHContact;
+
 #include "PHDefs.h"
 #include "PhysicsCommon.h"
 #include "ICollideValidator.h"
@@ -28,7 +30,6 @@ class IKinematics;
 typedef u32	CLClassBits;
 typedef u32	CLBits;
 
-struct dMass;
 
 
 enum motion_history_state
@@ -160,8 +161,6 @@ public:
 	virtual		void							set_ParentElement						(CPhysicsElement* p)																								= 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void							set_BoxMass								(const Fobb& box, float mass)																						= 0;	
-	virtual		void							setInertia								(const dMass& M)																									= 0;																
-	virtual		void							addInertia								(const dMass& M)																									= 0;
 	virtual		void							setMassMC								(float M,const Fvector& mass_center)																				= 0;
 	virtual		void							applyImpulseVsMC						(const Fvector& pos,const Fvector& dir, float val)																	= 0;
 	virtual		void							applyImpulseVsGF						(const Fvector& pos,const Fvector& dir, float val)																	= 0;
@@ -179,7 +178,6 @@ public:
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
 	virtual		float							getRadius								()																													= 0;
 	virtual		void							GetGlobalTransformDynamic				(Fmatrix* m) const																									= 0;
-	virtual		dMass							*getMassTensor							()																													= 0;
 	virtual		void							get_MaxAreaDir							(Fvector& dir)																										= 0;
 	virtual		ObjectContactCallbackFun		*get_ObjectContactCallback				()																													= 0;
 	virtual		void							Fix										()																													= 0;
@@ -353,8 +351,6 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual			void						setMass1									(float M)																					= 0;
 	virtual			void						SmoothElementsInertia						(float k)																					= 0;
-	virtual			void						setEquelInertiaForEls						(const dMass& M)																			= 0;
-	virtual			void						addEquelInertiaToEls						(const dMass& M)																			= 0;
 	virtual			void						MassAddBox									( float mass, const Fvector &full_size )													= 0;
 	virtual			ELEMENT_STORAGE				&Elements									()																							= 0;
 	virtual			CPhysicsElement				*get_Element								(u16 bone_id)																				= 0;
@@ -412,15 +408,25 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						SetPrefereExactIntegration					()																							= 0;
 	virtual			void						UnSetPrefereExactIntegration				()																							= 0;
 	virtual			bool						IsPrefereExactIntegration					() const																						= 0;
+	virtual			void						vis_update_activate							()																							= 0;
 	virtual	~CPhysicsShell								() override;
 	//build_FromKinematics		in returns elements  & joint pointers according bone IDs;
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 	};
 
 
-struct dContact;
+class CPHContact;
 struct SGameMtl;
-XRPHYSICS_API void	StaticEnvironmentCB ( bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 );
+XRPHYSICS_API void	StaticEnvironmentCB ( bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2 );
+
+// Operations on an opaque geom handle (CPhysicsElement::geometry, CPhysicsShell::get_GeomByID).
+XRPHYSICS_API void	PHGeomGetXform					(const CODEGeom* Geom, Fmatrix& Form);
+XRPHYSICS_API void	PHGeomSetBoneId					(CODEGeom* Geom, u16 BoneId);
+XRPHYSICS_API void	PHGeomDestroy					(CODEGeom*& Geom);
+XRPHYSICS_API void	PHGeomAddObjectContactCallback	(CODEGeom* Geom, ObjectContactCallbackFun* Callback);
+#ifdef DEBUG
+XRPHYSICS_API void	PHGeomDbgDraw					(const CODEGeom* Geom, float Scale, u32 Color);
+#endif
 
 // Implementation creator
 XRPHYSICS_API	CPhysicsJoint*				P_create_Joint				(CPhysicsJoint::enumType type ,CPhysicsElement* first,CPhysicsElement* second)								;
@@ -452,4 +458,4 @@ XRPHYSICS_API		void				phys_shell_verify_object_model	( IPhysicsShellHolder& O )
 
 
 					void				phys_shell_verify_model			( IKinematics& K );
-#endif // PhysicsShellH
+#endif // PhysicsShellH

@@ -124,10 +124,10 @@ void CHelicopter::reload(const char* section)
 	inherited::reload	(section);
 }
 
-void CollisionCallbackAlife(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
+void CollisionCallbackAlife(bool& do_colide,bool bo1,CPHContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	do_colide=false; }
 
-void ContactCallbackAlife(CDB::TRI* T,dContactGeom* c)
+void ContactCallbackAlife(CDB::TRI* T,const SPHShotMarkContact& c)
 {
 }
 bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
@@ -543,4 +543,4 @@ void CHelicopter::SyncRead(NET_Packet& Packet)
 void CHelicopter::SyncWrite(NET_Packet& Packet)
 {
 	Packet.w_vec3(m_movement.currP);
-}
+}

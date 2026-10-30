@@ -3,7 +3,6 @@
 #include "../xrPhysics/IPhysicsShellHolder.h"
 #include "../xrCore/xr_ini.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrPhysics/Geometry.h"
 #include "../xrPhysics/PhysicsShell.h"
 //#include "../xrEngine/gamemtllib.h"
 //#include "Physics.h"
@@ -32,7 +31,7 @@ void CPHCollisionDamageReceiver::Init()
 			CODEGeom* og = sh->PPhysicsShell()->get_GeomByID(index);
 			//R_ASSERT3(og, "collision damage bone has no physics collision", *item.first);
 			if (og)
-				og->add_obj_contact_cb(DamageReceiverCollisionCallback);
+				PHGeomAddObjectContactCallback(og, DamageReceiverCollisionCallback);
 		}
 
 	}
@@ -75,4 +74,4 @@ void CPHCollisionDamageReceiver::Clear()
 	//	if(og)og->set_obj_contact_cb(nullptr);
 	//}
 		m_controled_bones.clear();
-}
+}

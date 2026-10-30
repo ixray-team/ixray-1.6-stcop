@@ -10,7 +10,7 @@
 #include "entity_alive.h"
 
 struct SGameMtl;
-struct	dContact;
+class	CPHContact;
 
 using ALIVE_LIST = xr_vector<CEntityAlive*>;
 using ALIVE_LIST_it = ALIVE_LIST::iterator;
@@ -44,7 +44,7 @@ public:
 protected:
 	virtual void	UpdateCLChild	() override;
 
-	static	void	ObjectContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+	static	void	ObjectContactCallback(bool& do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 	//столкновение мочалки с сущностью
 	void BastCollision(CEntityAlive* pEntityAlive);
 
@@ -77,4 +77,4 @@ protected:
 
 public:
 	virtual void setup_physic_shell	() override;
-};
+};

@@ -292,7 +292,6 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		//dBodyID own_body=own_shell->get_Element(ref_bone)->get_body()			;
 		CPhysicsElement * own_element = own_shell->get_Element(ref_bone);
 		u16 new_el_number = new_shell->get_ElementsNumber()									;
 
@@ -314,14 +313,12 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 			Fvector mc; mc.set(e->mass_Center());
 
 			//dVector3 res_lvell;
-			//dBodyGetPointVel(own_body,mc.x,mc.y,mc.z,res_lvell);
 			Fvector res_lvell;
 			own_element->GetPointVel( res_lvell, mc );
 
 			res_lvell.mul(lv_transition_factor);
 			e->set_LinearVel(res_lvell);
 			
-			//Fvector res_avell;res_avell.set(cast_fv(dBodyGetAngularVel(own_body)));
 			Fvector res_avell;
 			own_element->get_AngularVel(res_avell);
 			res_avell.mul(av_transition_factor);

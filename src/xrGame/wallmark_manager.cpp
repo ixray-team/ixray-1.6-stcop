@@ -2,7 +2,6 @@
 #include "wallmark_manager.h"
 #include "Level.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "../xrPhysics/CalculateTriangle.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #endif
@@ -410,4 +409,4 @@ float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam,
 	dir.sub				(closest, rkPoint);
 	dir.normalize_safe	();
     return _sqrt		(std::abs(fSqrDist));
-}
+}

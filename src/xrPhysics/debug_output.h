@@ -1,4 +1,6 @@
 #pragma once
+
+class CPHContact;
 #ifdef DEBUG_DRAW
 
 	enum
@@ -64,7 +66,6 @@ enum
 	dbg_track_obj_blends_state			= 1<< 9,
 	dbg_track_obj_blends_dump			= 1<< 10
 };
-struct dContact;
 class CPHObject;
 class	IDebugOutput
 {
@@ -80,7 +81,7 @@ virtual	void DBG_OpenCashedDraw( )												=0;
 virtual	void DBG_ClosedCashedDraw( u32 remove_time )							=0;
 //virtual	void DBG_DrawPHAbstruct( SPHDBGDrawAbsract*	a )							=0;
 virtual	void DBG_DrawPHObject( const CPHObject *obj )							=0;
-virtual	void DBG_DrawContact ( const dContact &c )								=0;
+virtual	void DBG_DrawContact ( const CPHContact &c )								=0;
 virtual	void DBG_DrawTri( CDB::RESULT *T, u32 c )								=0;
 virtual	void DBG_DrawTri(CDB::TRI *T, const Fvector *V_verts, u32 c )			=0;
 virtual	void DBG_DrawLine( const Fvector &p0, const Fvector &p1, u32 c )		=0;
@@ -129,10 +130,14 @@ virtual		void DBG_ObjBeforeCollision		( CPHObject *obj )=0;
 
 extern XRPHYSICS_API	IDebugOutput	*ph_debug_output; 
 
+class IPhysicsShellHolder;
+XRPHYSICS_API IPhysicsShellHolder* PHObjectRefObject(CPHObject* Object);
+XRPHYSICS_API void PHObjectGetBounds(const CPHObject* Object, Fvector& AABB, Fvector& Center);
+
 IC	IDebugOutput	&debug_output()
 {
 	VERIFY(ph_debug_output);
 	return *ph_debug_output;
 }
  
-#endif
+#endif

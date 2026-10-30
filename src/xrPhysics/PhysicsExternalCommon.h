@@ -1,15 +1,31 @@
 #pragma once
 
+class CPHContact;
+
 #include "MathUtils.h"
 
-struct dContactGeom;
-struct dContact;
 struct SGameMtl;
 namespace	CDB{	class TRI;	}
 class		CBoneInstance;
 
-typedef void 	ContactCallbackFun(CDB::TRI* T,dContactGeom* c);
-typedef	void	ObjectContactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
+class IPhysicsShellHolder;
+
+// Contact of a dynamic geom with a static level triangle, as seen by shot-mark callbacks.
+struct SPHShotMarkContact
+{
+	Fvector Position;
+	Fvector Normal;
+	IPhysicsShellHolder* Object = nullptr;
+	u16 Material = 0;
+	float VelCret = 0.f;
+	bool HasEffect = false; // a dynamic body takes part, VelCret is valid
+	bool HasUserData = false;
+	bool IsCharacter = false;
+	bool InvertNormal = false;
+};
+
+typedef void 	ContactCallbackFun(CDB::TRI* T,const SPHShotMarkContact& c);
+typedef	void	ObjectContactCallbackFun(bool& do_colide,bool bo1,CPHContact& c,SGameMtl* material_1,SGameMtl* material_2);
 
 
 typedef void	_BCL	BoneCallbackFun(CBoneInstance* B);
@@ -20,9 +36,6 @@ typedef void	_BCL	BoneCallbackFun(CBoneInstance* B);
 
 typedef			void	PhysicsStepTimeCallback		(u32	step_start,u32	step_end);
 //extern			PhysicsStepTimeCallback		*physics_step_time_callback;
-struct dxGeomUserData;
-struct dContactGeom;
-XRPHYSICS_API	bool ContactShotMarkGetEffectPars(dContactGeom *c, dxGeomUserData* &data, float &vel_cret, bool &b_invert_normal );
 
 template <typename geom_type>
 void	t_get_box( const geom_type*	shell, const	Fmatrix& form,	Fvector&	sz, Fvector&	c )

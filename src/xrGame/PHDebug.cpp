@@ -2,7 +2,6 @@
 
 #ifdef DEBUG_DRAW
 #include "PHDebug.h"
-#include "../xrPhysics/PHWorld.h"
 
 #include "../../xrUI/ui_base.h"
 float	dbg_text_height_scale = 1.f;
@@ -145,7 +144,6 @@ void _cdecl DBG_OutText(const char* s, ...)
 //#include "physics.h"
 #include "../xrPhysics/MathUtils.h"
 //#include "PHObject.h"
-#include "../xrPhysics/ExtendedGeom.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/PhysicsShell.h"
 
@@ -186,8 +184,7 @@ struct SPHObjDBGDraw:public SPHDBGDrawAbsract
 	
 	SPHObjDBGDraw(const CPHObject* obj)
 	{
-		AABB.set(obj->AABB);
-		AABB_center.set(obj->SpatialComponent->sphere.P);
+		PHObjectGetBounds(obj, AABB, AABB_center);
 	}
 	virtual void render		( ) override
 	{
@@ -208,12 +205,12 @@ struct SPHContactDBGDraw : public SPHDBGDrawAbsract
 	Fvector pos;
 	float depth;
 
-	SPHContactDBGDraw(const dContact& c)
+	SPHContactDBGDraw(const CPHContact& c)
 	{
-		is_cyl = IsCyliderContact(c);
-		norm.set(cast_fv(c.geom.normal));
-		pos.set(cast_fv(c.geom.pos));
-		depth = c.geom.depth;
+		is_cyl = c.IsCylinder();
+		norm.set(c.GetNormal());
+		pos.set(c.GetPosition());
+		depth = c.GetDepth();
 	}
 
 	virtual void render() override
@@ -227,7 +224,7 @@ struct SPHContactDBGDraw : public SPHDBGDrawAbsract
 	}
 };
 
-void DBG_DrawContact(const dContact& c)
+void DBG_DrawContact(const CPHContact& c)
 {
 	DBG_DrawPHAbstruct(new SPHContactDBGDraw( c ));
 }
@@ -956,7 +953,7 @@ void DBG_PH_NetRelcase( CObject* obj )
 
 bool is_trace_obj( CPHObject *obj )
 {
-	return trace_object && smart_cast<CObject*>(obj->ref_object()) == trace_object;
+	return trace_object && smart_cast<CObject*>(PHObjectRefObject(obj)) == trace_object;
 }
 
 void DBG_ObjBeforeCollision		( CPHObject *obj )
@@ -988,11 +985,11 @@ void DBG_ObjBeforeStep			( CPHObject *obj )
 	{
 		DBG_OpenCashedDraw();
 		//dbg_draw_velocity	( 0.1f, color_xrgb( 255, 0, 0 ) ); 
-		if(obj->ref_object()->ObjectPPhysicsShell())
+		if(PHObjectRefObject(obj)->ObjectPPhysicsShell())
 		{
-			obj->ref_object()->ObjectPPhysicsShell()->dbg_draw_force(0.1f, color_xrgb(0, 0, 255));
+			PHObjectRefObject(obj)->ObjectPPhysicsShell()->dbg_draw_force(0.1f, color_xrgb(0, 0, 255));
 			Fmatrix form = Fidentity;
-			obj->ref_object()->ObjectPPhysicsShell()->GetGlobalTransformDynamic( &form );
+			PHObjectRefObject(obj)->ObjectPPhysicsShell()->GetGlobalTransformDynamic( &form );
 			dbg_trace_prev_pos.set( form.c );
 		}
 		
@@ -1003,9 +1000,9 @@ void DBG_ObjAfterStep( CPHObject *obj )
 {
 	if( is_trace_obj(obj) )
 	{
-		if(obj->ref_object()->ObjectPPhysicsShell())
+		if(PHObjectRefObject(obj)->ObjectPPhysicsShell())
 		{
-			obj->ref_object()->ObjectPPhysicsShell()->dbg_draw_velocity(0.1f, color_xrgb(255, 0, 0));
+			PHObjectRefObject(obj)->ObjectPPhysicsShell()->dbg_draw_velocity(0.1f, color_xrgb(255, 0, 0));
 		}
 	}
 }
@@ -1019,10 +1016,10 @@ void DBG_ObjAfterPhDataUpdate( CPHObject *obj )
 {
 		if(!is_trace_obj(obj))
 			return;
-			if( obj->ref_object()->ObjectPPhysicsShell())
+			if( PHObjectRefObject(obj)->ObjectPPhysicsShell())
 		{
 			Fmatrix form = Fidentity;
-			obj->ref_object()->ObjectPPhysicsShell()->GetGlobalTransformDynamic( &form );
+			PHObjectRefObject(obj)->ObjectPPhysicsShell()->GetGlobalTransformDynamic( &form );
 			DBG_DrawLine(dbg_trace_prev_pos, form.c, color_xrgb(255, 0, 0));
 		}
 		DBG_ClosedCashedDraw( 50000 );
@@ -1068,7 +1065,7 @@ class CPHDebugOutput :
 		::DBG_DrawPHObject(obj);
 	}
 
-	virtual void DBG_DrawContact(const dContact& c) override
+	virtual void DBG_DrawContact(const CPHContact& c) override
 	{
 		::DBG_DrawContact(c);
 	}

@@ -2,8 +2,7 @@
 #include "PhysicsShellHolder.h"
 #include "../xrPhysics/iclimableobject.h"
 class IPHStaticGeomShell;
-class CPHCharacter;
-struct dContact;
+class IPHCharacter;
 struct SGameMtl;
 
 class CClimableObject: 
@@ -57,29 +56,29 @@ public:
 
 	virtual const Fvector&	Norm				()const override {return m_norm;}
 	virtual float			DDNorm				(Fvector &dir)const override;
-	virtual bool			BeforeLadder		(CPHCharacter *actor,float tolerance=0.f)const override;
-	virtual float			DDLowerP			(CPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to lover point
-	virtual float			DDUpperP			(CPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to upper point
+	virtual bool			BeforeLadder		(IPHCharacter *actor,float tolerance=0.f)const override;
+	virtual float			DDLowerP			(IPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to lover point
+	virtual float			DDUpperP			(IPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to upper point
 
-			void			DToAxis				(CPHCharacter	*actor,Fvector &dir)const;
-	virtual float			DDToAxis			(CPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to ladder axis
-			void			POnAxis				(CPHCharacter	*actor,Fvector	&P)const;
+			void			DToAxis				(IPHCharacter	*actor,Fvector &dir)const;
+	virtual float			DDToAxis			(IPHCharacter	*actor,Fvector &out_dir)const override;//returns distance and dir to ladder axis
+			void			POnAxis				(IPHCharacter	*actor,Fvector	&P)const;
 
-	virtual float			AxDistToUpperP		(CPHCharacter	*actor)const override;
-	virtual float			AxDistToLowerP		(CPHCharacter	*actor)const override;
+	virtual float			AxDistToUpperP		(IPHCharacter	*actor)const override;
+	virtual float			AxDistToLowerP		(IPHCharacter	*actor)const override;
 
-			void			DSideToAxis			(CPHCharacter	*actor,Fvector	&dir)const;
-			float			DDSideToAxis		(CPHCharacter	*actor,Fvector	&dir)const;
+			void			DSideToAxis			(IPHCharacter	*actor,Fvector	&dir)const;
+			float			DDSideToAxis		(IPHCharacter	*actor,Fvector	&dir)const;
 
-	virtual void			DToPlain			(CPHCharacter	*actor,Fvector	&dist)const override;
-	virtual float			DDToPlain			(CPHCharacter	*actor,Fvector	&dir)const override;
-			bool			InRange				(CPHCharacter	*actor)const;
-	virtual bool			InTouch				(CPHCharacter	*actor)const override;
+	virtual void			DToPlain			(IPHCharacter	*actor,Fvector	&dist)const override;
+	virtual float			DDToPlain			(IPHCharacter	*actor,Fvector	&dir)const override;
+			bool			InRange				(IPHCharacter	*actor)const;
+	virtual bool			InTouch				(IPHCharacter	*actor)const override;
 	virtual u16				Material			()const override {return m_material; }
 			void			LowerPoint			(Fvector	&P)const;
 			void			UpperPoint			(Fvector	&P)const;
-			void			DefineClimbState	(CPHCharacter	*actor)const;
-	static 	void			ObjectContactCallback(bool& /**do_colide/**/,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+			void			DefineClimbState	(IPHCharacter	*actor)const;
+	static 	void			ObjectContactCallback(bool& /**do_colide/**/,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 
 public:
 	virtual bool	register_schedule	() const override {return false;}

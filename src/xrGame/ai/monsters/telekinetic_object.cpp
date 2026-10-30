@@ -99,24 +99,24 @@ void STelekineticObject::update_state()
 	}
 }
 
-void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void STelekineticObject::collision_callback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
-	dxGeomUserData* self = bo1 ? PHRetrieveGeomUserData(c.geom.g1) : PHRetrieveGeomUserData(c.geom.g2);
-	dxGeomUserData* damage_receiver = bo1 ? PHRetrieveGeomUserData(c.geom.g2) : PHRetrieveGeomUserData(c.geom.g1);
+	IPhysicsShellHolder* self = c.GetObject(bo1);
+	IPhysicsShellHolder* damage_receiver = c.GetObject(!bo1);
 
-	if (self == nullptr || self->ph_ref_object == nullptr)
+	if (self == nullptr)
 	{
 		return;
 	}
 
-	auto tele = static_cast<STelekineticObject*>(self->callback_data);
+	auto tele = static_cast<STelekineticObject*>(c.GetCallbackData(bo1));
 
 	if (tele == nullptr)
 	{
 		return;
 	}
 
-	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self->ph_ref_object);
+	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self);
 	if (ph_self_object == nullptr || ph_self_object->m_pPhysicsShell == nullptr)
 	{
 		return;
@@ -124,7 +124,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 
 	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
 
-	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver->ph_ref_object) : nullptr;
+	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver) : nullptr;
 	if (ph_damage_receiver == nullptr)
 	{
 		return;
@@ -221,8 +221,10 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
 				};
 
-				Fvector object_pos = Fvector().set(self->last_pos);
-				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
+				Fvector object_pos = ph_self_object->Position();
+				Fvector damage_receiver_pos = ph_damage_receiver->Position();
+				c.GetLastPosition(bo1, object_pos);
+				c.GetLastPosition(!bo1, damage_receiver_pos);
 
 				Fvector hit_dir;
 				hit_dir.sub(damage_receiver_pos, object_pos);

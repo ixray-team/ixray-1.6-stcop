@@ -27,7 +27,7 @@
 
 #include "../monster_aura.h"
 #include "../../../InventoryOwner.h"
-#include "../../../../xrPhysics/PHCharacter.h"
+#include "../../../../xrPhysics/IPHCharacter.h"
 
 #include "../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 
@@ -49,7 +49,7 @@ class CControlDirectionBase;
 class CMonsterCoverManager;
 
 class CMonsterHome;
-class CPHCharacter;
+class IPHCharacter;
 
 // Lain: added
 class CMonsterSquad;

@@ -186,7 +186,7 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 	return (CScriptEntity::net_Spawn(DC) && R);
 }
 
-void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 	if (!do_colide)
 	{
@@ -2336,4 +2336,4 @@ bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
 	}
 
 	return false;
-}
+}

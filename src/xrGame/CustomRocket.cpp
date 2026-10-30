@@ -7,9 +7,7 @@
 #include "CustomRocket.h"
 #include "ParticlesObject.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "../xrPhysics/ExtendedGeom.h"
-#include "../xrPhysics/CalculateTriangle.h"
-#include "../xrPhysics/tri-colliderknoopc/dcTriangle.h"
+#include "../xrPhysics/PHContact.h"
 
 #include "Level.h"
 #include "xrMessages.h"
@@ -156,28 +154,26 @@ void CCustomRocket::create_physic_shell()
 //////////////////////////////////////////////////////////////////////////
 
 
-void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 	do_colide = false;
 
-	dxGeomUserData* l_pUD1 = nullptr;
-	dxGeomUserData* l_pUD2 = nullptr;
-	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
-	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
+	const bool has_ud1 = c.HasUserData(true);
+	const bool has_ud2 = c.HasUserData(false);
 
 	SGameMtl* material = 0;
-	CCustomRocket* l_this = l_pUD1 != nullptr ? smart_cast<CCustomRocket*>(l_pUD1->ph_ref_object) : nullptr;
+	CCustomRocket* l_this = smart_cast<CCustomRocket*>(c.GetObject(true));
 	Fvector vUp;
 	if (!l_this)
 	{
-		l_this = l_pUD2 ? smart_cast<CCustomRocket*>(l_pUD2->ph_ref_object) : nullptr;
-		vUp.invert(*(Fvector*)&c.geom.normal);
+		l_this = smart_cast<CCustomRocket*>(c.GetObject(false));
+		vUp.invert(c.GetNormal());
 		material = material_1;
 
 	}
 	else
 	{
-		vUp.set(*(Fvector*)&c.geom.normal);
+		vUp.set(c.GetNormal());
 		material = material_2;
 
 	}
@@ -193,10 +189,10 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 		return;
 	}
 
-	CGameObject* l_pOwner = l_pUD1 ? smart_cast<CGameObject*>(l_pUD1->ph_ref_object) : nullptr;
+	CGameObject* l_pOwner = smart_cast<CGameObject*>(c.GetObject(true));
 	if (!l_pOwner || l_pOwner == (CGameObject*)l_this)
 	{
-		l_pOwner = l_pUD2 ? smart_cast<CGameObject*>(l_pUD2->ph_ref_object) : nullptr;
+		l_pOwner = smart_cast<CGameObject*>(c.GetObject(false));
 	}
 
 	if (!l_pOwner || l_pOwner != l_this->m_pOwner)
@@ -204,40 +200,25 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 		if (l_this->m_pOwner)
 		{
 			Fvector l_pos; l_pos.set(l_this->Position());
-			dxGeomUserData* l_pMYU = bo1 ? l_pUD1 : l_pUD2;
-			VERIFY(l_pMYU);
-			if (l_pMYU->last_pos[0] != -dInfinity)
-			{
-				l_pos = cast_fv(l_pMYU->last_pos);
-			}
+			VERIFY(c.HasUserData(bo1));
+			c.GetLastPosition(bo1, l_pos);
 #ifdef DEBUG
 			bool corrected_pos = false;
 #endif
-			if (!l_pUD1 || !l_pUD2)
+			if (!has_ud1 || !has_ud2)
 			{
-				dGeomID g = nullptr;
-				dxGeomUserData*& l_pUD = l_pUD1 ? l_pUD1 : l_pUD2;
-				if (l_pUD1)
-				{
-					g = c.geom.g1;
-				}
-				else
-				{
-					g = c.geom.g2;
-				}
-
-				if (l_pUD->pushing_neg)
+				Fvector neg_norm;
+				float neg_dist;
+				if (c.GetPushingNegTriangle(has_ud1, Level().ObjectSpace.GetStaticVerts().data(), neg_norm, neg_dist))
 				{
 					Fvector velocity;
 					l_this->PHGetLinearVell(velocity);
 					if (velocity.square_magnitude() > EPS)
 					{	//. desync?
 						velocity.normalize();
-						Triangle neg_tri;
-						CalculateTriangle(l_pUD->neg_tri, g, neg_tri, Level().ObjectSpace.GetStaticVerts().data());
-						float cosinus = velocity.dotproduct(*((Fvector*)neg_tri.norm));
-						VERIFY(_valid(neg_tri.dist));
-						float dist = neg_tri.dist / cosinus;
+						float cosinus = velocity.dotproduct(neg_norm);
+						VERIFY(_valid(neg_dist));
+						float dist = neg_dist / cosinus;
 						velocity.mul(dist * 1.1f);
 						l_pos.sub(velocity);
 #ifdef DEBUG
@@ -609,4 +590,4 @@ void CCustomRocket::deactivate_physics_shell()
 	R_ASSERT(!CPHUpdateObject::IsActive());
 	inherited::deactivate_physics_shell();
 }
-#endif
+#endif

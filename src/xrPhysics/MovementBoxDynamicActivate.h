@@ -1,10 +1,10 @@
 #pragma once
-class CPHCharacter;
+class IPHCharacter;
 class IPHMovementControl
 {
 public:
 	virtual ~IPHMovementControl() = default;
-	virtual	CPHCharacter	*character				()					= 0;
+	virtual	IPHCharacter	*character				()					= 0;
 	virtual	void			actor_calculate			(Fvector& vAccel,const Fvector& camDir, float ang_speed, float jump, float dt, bool bLight) =0;
 	virtual	const	Fbox	*Boxes					( )					= 0;
 	virtual	const	Fbox	&Box					( )					= 0;
