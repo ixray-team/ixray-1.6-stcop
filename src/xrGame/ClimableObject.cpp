@@ -6,7 +6,7 @@
 #include "../xrPhysics/MathUtils.h"
 #include "../xrPhysics/PHContact.h"
 #include "../xrEngine/GameMtlLib.h"
-
+#include "../xrPhysics/PHContact.h"
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "Level.h"

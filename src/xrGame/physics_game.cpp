@@ -9,7 +9,8 @@
 #include "PHCommander.h"
 #include "../xrPhysics/MathUtils.h"
 #include "../xrPhysics/IPHWorld.h"
-
+#include "../xrPhysics/PHContact.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "PHReqComparer.h"
 
 #include "../Include/xrRender/FactoryPtr.h"
