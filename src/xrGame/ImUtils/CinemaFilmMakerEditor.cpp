@@ -26,6 +26,7 @@ constexpr const char* kCinemaSettingsFile = "cinema_editor\\settings.ltx";
 constexpr const char* kCinemaPresetsFile = "cinema_editor\\presets.ltx";
 constexpr s32 kCinemaPresetVersion = 1;
 constexpr u32 kCinemaMaxPresets = 128;
+constexpr float kCinemaMinGroundNormalY = 0.5f;
 constexpr u32 kCinemaSceneMaxActors = 1024;
 constexpr u32 kCinemaSceneMaxPlaylist = 256;
 
@@ -1573,7 +1574,8 @@ private:
 
 	bool AddActor(const Fvector& position, const char* visual, bool adjustGround);
 	bool AddActorInFront(const char* visual);
-	bool SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround);
+	bool SetActorVisual(SCinemaActor& actor, const char* visual);
+	bool SnapActorToGround(SCinemaActor& actor); 
 	void SetActorItem(SCinemaActor& actor, const shared_str& section);
 	void RefreshActorItemBones(SCinemaActor& actor);
 	void DuplicateSelectedActor(bool withPlaylist, bool startPlayback);
@@ -1679,6 +1681,8 @@ private:
 	bool SceneLoadRequested = false;
 	s32 ThemeIndex = 0;
 	bool SettingsLoaded = false;
+	bool SpawnFromCamera = false;
+	bool SnapToGround = true;
 	xr_vector<SNpcPreset> Presets;
 	s32 PresetSelected = -1;
 	bool PresetsLoaded = false;
@@ -1760,12 +1764,15 @@ void CCinemaFilmMakerManager::LoadSettings()
 
 	CInifile ini(path, TRUE, TRUE, FALSE);
 
-	if (!ini.section_exist("editor") || !ini.line_exist("editor", "theme"))
+	if (!ini.section_exist("editor"))
 	{
 		return;
 	}
 
-	const char* themeId = ini.r_string("editor", "theme");
+	SpawnFromCamera = ini.read_if_exists<bool>("editor", "spawn_from_camera", SpawnFromCamera);
+	SnapToGround = ini.read_if_exists<bool>("editor", "snap_to_ground", SnapToGround);
+
+	const char* themeId = ini.line_exist("editor", "theme") ? ini.r_string("editor", "theme") : nullptr;
 
 	if (themeId == nullptr)
 	{
@@ -1789,6 +1796,8 @@ void CCinemaFilmMakerManager::SaveSettings()
 
 	CInifile ini(nullptr, FALSE, FALSE, FALSE);
 	ini.w_string("editor", "theme", GetTheme().Id);
+	ini.w_bool("editor", "spawn_from_camera", SpawnFromCamera);
+	ini.w_bool("editor", "snap_to_ground", SnapToGround);
 
 	if (ini.save_as(path))
 	{
@@ -2688,9 +2697,14 @@ bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visu
 	const float yaw = direction.square_magnitude() > EPS ? -atan2f(direction.x, direction.z) : 0.0f;
 	actor->Orientation.setHPB(yaw, 0.0f, 0.0f);
 
-	if (!SetActorVisual(*actor, visual, adjustGround))
+	if (!SetActorVisual(*actor, visual))
 	{
 		return false;
+	}
+
+	if (adjustGround)
+	{
+		SnapActorToGround(*actor);
 	}
 
 	Actors.push_back(std::move(actor));
@@ -2709,7 +2723,7 @@ bool CCinemaFilmMakerManager::AddActorInFront(const char* visual)
 	Fvector position = Device.vCameraPosition;
 	Fvector direction = Device.vCameraDirection;
 
-	if (g_actor != nullptr)
+	if (!SpawnFromCamera && g_actor != nullptr)
 	{
 		position = g_actor->Position();
 		direction = g_actor->Direction();
@@ -2717,10 +2731,10 @@ bool CCinemaFilmMakerManager::AddActorInFront(const char* visual)
 
 	direction.normalize_safe();
 	position.mad(direction, 3.0f);
-	return AddActor(position, visual, true);
+	return AddActor(position, visual, SnapToGround);
 }
 
-bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* visual, bool adjustGround)
+bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* visual)
 {
 	if (visual == nullptr || visual[0] == '\0')
 	{
@@ -2783,16 +2797,102 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 	actor.MotionFx = false;
 	actor.FxDeadline = 0.0f;
 
-	if (adjustGround && actor.LocalBox.is_valid())
-	{
-		actor.Position.y -= actor.LocalBox.min.y;
-	}
-
 	BuildActorSources(actor);
 	ApplyDefaultPose(actor);
 	RefreshActorItemBones(actor);
 	SelectedSource = -1;
 	SelectedClip = -1;
+	return true;
+}
+
+bool CCinemaFilmMakerManager::SnapActorToGround(SCinemaActor& actor)
+{
+	if (actor.Model == nullptr || g_pGameLevel == nullptr)
+	{
+		return false;
+	}
+
+	float bottom = 0.0f;
+	float top = 2.0f;
+
+	if (actor.LocalBox.is_valid())
+	{
+		bottom = actor.LocalBox.min.y;
+		top = actor.LocalBox.max.y;
+	}
+
+	Fvector traceStart = actor.Position;
+	traceStart.y += top + 0.5f;
+
+	collide::rq_result result = {};
+
+	if (!g_pGameLevel->ObjectSpace.RayPick(traceStart, Fvector().set(0.0f, -1.0f, 0.0f), top + 200.0f, collide::rqtStatic, result, nullptr))
+	{
+		return false;
+	}
+
+	Fvector up = {};
+	up.set(0.0f, 1.0f, 0.0f);
+
+	if (result.element >= 0)
+	{
+		xr_vector<CDB::TRI>& triangles = g_pGameLevel->ObjectSpace.GetStaticTris();
+		xr_vector<Fvector>& vertices = g_pGameLevel->ObjectSpace.GetStaticVerts();
+
+		if (static_cast<size_t>(result.element) < triangles.size())
+		{
+			const CDB::TRI& triangle = triangles[result.element];
+			const size_t vertexCount = vertices.size();
+
+			if (triangle.verts[0] < vertexCount && triangle.verts[1] < vertexCount && triangle.verts[2] < vertexCount)
+			{
+				Fvector edge1 = {};
+				Fvector edge2 = {};
+
+				edge1.sub(vertices[triangle.verts[1]], vertices[triangle.verts[0]]);
+				edge2.sub(vertices[triangle.verts[2]], vertices[triangle.verts[0]]);
+
+				up.crossproduct(edge1, edge2);
+				up.normalize_safe();
+
+				if (up.y < 0.0f)
+				{
+					up.invert();
+				}
+			}
+		}
+	}
+
+	if (up.y < kCinemaMinGroundNormalY)
+	{
+		up.set(0.0f, 1.0f, 0.0f);
+	}
+
+	Fvector hit = {};
+	hit.set(actor.Position.x, traceStart.y - result.range, actor.Position.z);
+
+	const Fvector forward = actor.Orientation.k;
+	const float yaw = -atan2f(forward.x, forward.z);
+
+	Fvector flat = {};
+	flat.set(-sinf(yaw), 0.0f, cosf(yaw));
+
+	Fvector slopeDir = {};
+	slopeDir.mad(flat, up, -flat.dotproduct(up));
+
+	if (slopeDir.square_magnitude() > EPS)
+	{
+		slopeDir.normalize();
+
+		Fvector slopeRight = {};
+		slopeRight.crossproduct(up, slopeDir);
+
+		actor.Orientation.i.set(slopeRight);
+		actor.Orientation.j.set(up);
+		actor.Orientation.k.set(slopeDir);
+	}
+
+	actor.Position.mad(hit, up, -bottom);
 	return true;
 }
 
@@ -2917,7 +3017,7 @@ void CCinemaFilmMakerManager::DuplicateSelectedActor(bool withPlaylist, bool sta
 		actor->Speed = source->Speed;
 	}
 
-	if (!SetActorVisual(*actor, source->Visual.c_str(), false))
+	if (!SetActorVisual(*actor, source->Visual.c_str()))
 	{
 		return;
 	}
@@ -3778,7 +3878,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 		actor->Loop = data.Loop;
 		actor->Speed = data.Speed;
 
-		if (!SetActorVisual(*actor, data.Visual.c_str(), false))
+		if (!SetActorVisual(*actor, data.Visual.c_str()))
 		{
 			issues.push_back(xr_string("Skipped \"") + data.Name + "\": the model could not be loaded.");
 			continue;
@@ -4156,7 +4256,7 @@ void CCinemaFilmMakerManager::ApplyPresetToActor(s32 index)
 
 	StopActor(*actor);
 
-	if (!SetActorVisual(*actor, preset.Visual.c_str(), false))
+	if (!SetActorVisual(*actor, preset.Visual.c_str()))
 	{
 		xr_vector<xr_string> lines;
 		lines.push_back(xr_string("Could not apply preset \"") + preset.Name + "\": model is missing.");
@@ -4370,6 +4470,30 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	if (ImGui::IsItemHovered() && SelectedVisual.size() > 0)
 	{
 		ImGui::SetTooltip("Add the selected model\n%s", SelectedVisual.c_str());
+	}
+
+	layout.Item(CinemaButtonWidth("Camera spawn") + 26.0f);
+
+	if (ImGui::Checkbox("Camera spawn##spawn", &SpawnFromCamera))
+	{
+		SaveSettings();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("New NPC appears where the camera looks instead of in front of the player");
+	}
+
+	layout.Item(CinemaButtonWidth("Snap to ground") + 26.0f);
+
+	if (ImGui::Checkbox("Snap to ground##spawn", &SnapToGround))
+	{
+		SaveSettings();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Place the NPC on the ground on spawn, tilt it to the slope and keep it on surfaces when dragging the X and Z axes");
 	}
 
 	ImGui::BeginDisabled(selectedActor == nullptr);
@@ -4709,7 +4833,7 @@ void CCinemaFilmMakerManager::DrawModelTab()
 
 				if (SCinemaActor* actor = GetSelectedActor())
 				{
-					SetActorVisual(*actor, SelectedVisual.c_str(), false);
+					SetActorVisual(*actor, SelectedVisual.c_str());
 				}
 			}
 
@@ -4748,7 +4872,7 @@ void CCinemaFilmMakerManager::DrawModelTab()
 	{
 		if (SCinemaActor* actor = GetSelectedActor())
 		{
-			SetActorVisual(*actor, SelectedVisual.c_str(), false);
+			SetActorVisual(*actor, SelectedVisual.c_str());
 		}
 	}
 
@@ -5505,6 +5629,12 @@ void CCinemaFilmMakerManager::UpdateGizmo(SCinemaActor& actor)
 		}
 
 		actor.Position.mad(Gizmo.StartPosition, Gizmo.AxisDir, delta);
+
+		if (SnapToGround && Gizmo.Axis != EGizmoAxis::Y)
+		{
+			SnapActorToGround(actor);
+		}
+
 		return;
 	}
 
