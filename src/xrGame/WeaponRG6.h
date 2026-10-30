@@ -4,6 +4,7 @@
 #include "WeaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Constructible)
 class CWeaponRG6 final : public CRocketLauncher,
 	public CWeaponShotgun
 {
@@ -31,5 +32,4 @@ protected:
 	virtual void	ReloadMagazine			() override;
 	virtual void	FireTrace				(const Fvector& P, const Fvector& D) override;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

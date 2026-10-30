@@ -7,6 +7,7 @@
 
 #define FAKE_DEATH_TYPES_COUNT	4
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CZombie final :	public CBaseMonster,
 				public CControlledEntity<CZombie> {
 	
@@ -79,5 +80,5 @@ public:
 #endif
 
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

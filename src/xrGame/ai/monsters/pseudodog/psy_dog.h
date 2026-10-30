@@ -5,6 +5,7 @@
 class CPsyDogPhantom;
 class CPsyDogAura;
 
+XREFLECT(LuaExport, Constructible)
 class CPsyDog final : 
 	public CAI_PseudoDog 
 {
@@ -59,7 +60,7 @@ private:
 private:
 	xr_vector<CPsyDogPhantom*> m_storage;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };
 
 
@@ -67,6 +68,7 @@ private:
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
 
+XREFLECT(LuaExport, Constructible)
 class CPsyDogPhantom final : public CAI_PseudoDog {
 	typedef CAI_PseudoDog inherited;
 	
@@ -102,5 +104,5 @@ private:
 			void	try_to_register_to_parent	();
 			bool	is_wait_to_destroy_object	() {return (m_parent_id == ALife::INVALID_OBJECT_ID);}
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

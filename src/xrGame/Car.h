@@ -33,6 +33,7 @@ struct						dSurfaceParameters;
 
 class CScriptEntityAction;
 
+XREFLECT(LuaExport, Bases = "CGameObject,CHolderCustom")
 class CCar final : 
 	public CEntity, 
 	public CScriptEntity,
@@ -47,6 +48,7 @@ class CCar final :
 	public CDelayedActionFuse,
 	public CInventoryOwner
 {
+	XGENERATED_BODY()
 	friend struct SWheel;
 	friend class CCarDoor;
 private:
@@ -149,7 +151,9 @@ public:
 	bool b_transmission_switching;
 
 	u32	 m_dwStartTime;
+	XPROPERTY(LuaReadWrite, Name = "fuel")
 	float m_fuel;
+	XPROPERTY(LuaReadWrite, Name = "fuel_tank")
 	float m_fuel_tank;
 	float m_fuel_consumption;
 
@@ -422,7 +426,9 @@ IC	size_t				CurrentTransmission					() const {return m_current_transmission_num
 	void UpdateExhausts									();
 	void ClearExhausts									();
 	void UpdateFuel										(float time_delta);
+	XPROPERTY(LuaCallable, Name = "add_fuel")
 	float AddFuel										(float ammount); //ammount - fuel to load, ret - fuel loaded
+	XPROPERTY(LuaCallable)
 	void CarExplode										();
 	////////////////////////////////////////////		////////
 
@@ -510,15 +516,31 @@ public:
 	virtual void			ActivateExplosionBox		(const Fvector &size,Fvector &in_out_pos) override {};
 	virtual void			ResetScriptData				(void *P=0) override;
 
+	XPROPERTY(LuaCallable, Name = "Action")
 	virtual void			Action						(u16 id, u32 flags) override;
+	
 	virtual void			SetParam					(int id, Fvector2 val) override;
+
+	XPROPERTY(LuaCallable, Name = "SetParam")
 	virtual void			SetParam					(int id, Fvector val) override;
-			bool			HasWeapon					();
-			bool			WpnCanHit					();
-			float			FireDirDiff					();
-			bool			isObjectVisible				(CScriptGameObject* O);
-			Fvector			CurrentVel					();
+
+	XPROPERTY(LuaCallable, Name = "HasWeapon")
+	bool					HasWeapon					();
+
+	XPROPERTY(LuaCallable, Name = "CanHit")
+	bool					WpnCanHit					();
+	
+	XPROPERTY(LuaCallable, Name = "FireDirDiff")
+	float					FireDirDiff					();
+
+	XPROPERTY(LuaCallable, Name = "IsObjectVisible")
+	bool					isObjectVisible				(CScriptGameObject* O);
+
+	XPROPERTY(LuaCallable)
+	Fvector					CurrentVel					();
+	XPROPERTY(LuaCallable)
 	virtual float			GetfHealth					() const		{return CEntity::GetfHealth();};
+	XPROPERTY(LuaCallable)
 	virtual float			SetfHealth					(float value)	{return CEntity::SetfHealth(value);};
 
 	// Hits
@@ -529,7 +551,9 @@ public:
 	virtual void			OnHUDDraw					(CCustomHUD* hud) override;
 	
 	virtual CCameraBase*			Camera						() override {return active_camera;}
+	XPROPERTY(LuaCallable)
 	void					SetExplodeTime				(u32 et)	;
+	XPROPERTY(LuaCallable)
 			u32				ExplodeTime					()			;
 
 		  void						VisualUpdate						(float fov=90.0f);
@@ -546,6 +570,7 @@ protected:
 	virtual bool					IsHudModeNow		(){return false;};
 	
 public:
+	XPROPERTY(LuaConstructor)
 	CCar(void);
 	virtual ~CCar(void) override;
 	virtual bool					AlwaysTheCrow						() override;
@@ -591,7 +616,4 @@ public:
 private:
 	xr_hash_map<u16, shared_str> UsableBones;
 	u16 UsableBonesActive = BI_NONE;
-
-public:
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -10,6 +10,7 @@ class SndShockEffector;
 class CControllerPsyHit;
 class CControllerAura;
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CController final : public CBaseMonster,
 					public CControlledActor 
 {
@@ -79,7 +80,8 @@ public:
 	xr_vector<CEntity*> m_controlled_objects;
 
 public:
-					CController			();
+	XPROPERTY(LuaConstructor)
+	CController			();
 	virtual ~CController		() override;
 
 	virtual void	Load				(const char* section) override;
@@ -192,5 +194,4 @@ private:
 
 public:
 	virtual bool					run_home_point_when_enemy_inaccessible () const override { return false; }
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

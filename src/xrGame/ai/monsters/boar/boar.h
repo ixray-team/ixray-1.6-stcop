@@ -4,6 +4,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Boar final : public CBaseMonster,
 				 public CControlledEntity<CAI_Boar> {
 
@@ -34,6 +35,6 @@ public:
 
 	virtual char*	get_monster_class_name () override { return (char*) "boar"; }
 	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 
 };

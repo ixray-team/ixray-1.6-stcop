@@ -14,6 +14,7 @@ class CTelekineticPoltergeist;
 class CWeaponMagazined;
 class CGrenade;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEnergyHolder, public ITelekineticEnemy
 {
 	using inherited = CBaseMonster;
@@ -154,7 +155,6 @@ public:
 #endif
 
 	friend class CFlamePoltergeist;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 class IPolter

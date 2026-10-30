@@ -14,6 +14,7 @@
 
 class CScriptZone;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CSpaceRestrictor : public CGameObject {
 private:
 	typedef CGameObject			inherited;
@@ -74,7 +75,6 @@ public:
 #ifdef DEBUG
 	virtual void				OnRender			() override;
 #endif
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "space_restrictor_inline.h"

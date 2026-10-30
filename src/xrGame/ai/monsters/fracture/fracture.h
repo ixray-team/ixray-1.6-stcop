@@ -4,6 +4,7 @@
 
 class CStateManagerFracture;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CFracture final : public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 	
@@ -17,5 +18,5 @@ public:
 	virtual char*	get_monster_class_name () override { return (char*)"fracture"; }
 
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

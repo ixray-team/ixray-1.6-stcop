@@ -258,14 +258,3 @@ void CInteractiveObject::SetVisible(shared_str bone_name, bool bVisibility)
 	KI->CalculateBones(true);
 	SetText();
 }
-
-using namespace luabind;
-#pragma optimize("s",on)
-void CInteractiveObject::script_register(lua_State* L)
-{
-    module(L)
-        [
-            class_<CInteractiveObject, CGameObject>("CInteractiveObject")
-                .def(constructor<>())
-        ];
-}

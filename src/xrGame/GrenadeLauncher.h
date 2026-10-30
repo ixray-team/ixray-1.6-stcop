@@ -6,6 +6,7 @@
 #pragma once
 #include "inventory_item_object.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CGrenadeLauncher final : public CInventoryItemObject {
 private:
 	typedef CInventoryItemObject inherited;

@@ -2,10 +2,12 @@
 #include "../basemonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CCat final : public CBaseMonster{
 	typedef		CBaseMonster	inherited;
 public:
-					CCat				();
+	XPROPERTY(LuaConstructor)
+	CCat				();
 	virtual ~CCat				() override;
 
 	virtual void	Load				(const char* section) override;
@@ -20,7 +22,4 @@ public:
 	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
 
 	virtual char*	get_monster_class_name () override { return (char*) "cat"; }
-
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

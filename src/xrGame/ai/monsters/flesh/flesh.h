@@ -3,6 +3,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Flesh final : public CBaseMonster,
 				  public CControlledEntity<CAI_Flesh> {
 
@@ -27,5 +28,5 @@ private:
 	bool	ConeSphereIntersection	(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, 
 									Fvector SphereCenter, float SphereRadius);
 	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

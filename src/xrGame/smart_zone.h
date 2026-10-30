@@ -11,10 +11,10 @@
 #include "space_restrictor.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Name="ce_smart_zone", Constructible)
 class CSmartZone : 
 	public CSpaceRestrictor
 {
 public:
 	virtual bool	register_schedule	() const override {return true;}
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

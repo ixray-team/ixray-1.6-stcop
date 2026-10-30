@@ -15,6 +15,7 @@
 
 class CScriptGameObject;
 
+XREFLECT(LuaExport, Name="ce_script_zone", Constructible)
 class CScriptZone : public CSpaceRestrictor, public Feel::Touch {
 public:
 	typedef	CSpaceRestrictor inherited;
@@ -39,5 +40,4 @@ public:
 #ifdef DEBUG
 	virtual void	OnRender			() override;
 #endif
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

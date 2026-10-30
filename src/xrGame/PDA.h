@@ -14,6 +14,7 @@ class CPda;
 using PDA_LIST = xr_vector<CPda*>;
 using PDA_LIST_it = PDA_LIST::iterator;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPda final :
 	public CInventoryItemObject,
 	public Feel::Touch,

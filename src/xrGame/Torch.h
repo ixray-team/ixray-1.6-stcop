@@ -7,6 +7,7 @@
 
 class CLAItem;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CTorch final : public CInventoryItemObject, public IPowerManager
 {
 	using inherited = CInventoryItemObject;
@@ -85,5 +86,4 @@ public:
 
 	virtual CTorch* cast_torch() override { return this; }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

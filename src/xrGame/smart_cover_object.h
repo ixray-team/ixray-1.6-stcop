@@ -13,6 +13,7 @@
 namespace smart_cover {
 	class cover;
 
+XREFLECT(LuaExport, Bases="CGameObject", Name="smart_cover_object", Constructible)
 class object : 
 	public CGameObject
 {
@@ -51,9 +52,6 @@ public:
 	IC		float const&enter_min_enemy_distance		() const;
 	IC		float const&exit_min_enemy_distance			() const;
 	IC		cover const&cover							() const;
-
-public:
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 } // namespace smart_cover

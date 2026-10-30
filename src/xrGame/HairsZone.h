@@ -7,6 +7,7 @@
 
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CHairsZone final : public CVisualZone
 {
 	using inherited = CVisualZone;
@@ -21,6 +22,4 @@ protected:
 	float m_min_speed_to_react;
 	virtual bool BlowoutState() override;
 	virtual void CheckForAwaking() override;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

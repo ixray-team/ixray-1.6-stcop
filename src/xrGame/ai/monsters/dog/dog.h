@@ -4,6 +4,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Dog final : public CBaseMonster, 
 				public CControlledEntity<CAI_Dog> {
 	
@@ -63,5 +64,5 @@ private:
 	virtual void	debug_on_key		(int key);
 #endif
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

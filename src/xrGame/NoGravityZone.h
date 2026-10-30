@@ -1,6 +1,7 @@
 #pragma once
 #include "AnomalyZone.h"
 
+XREFLECT(LuaExport, Constructible)
 class CNoGravityZone final : public CAnomalyZone
 {
 	using inherited = CAnomalyZone;

@@ -11,6 +11,7 @@
 #include "graph_engine_space.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Name="property_storage", Constructible)
 class CPropertyStorage
 {
 public:
@@ -22,8 +23,9 @@ public:
 
 public:
 	IC		void				clear			();
+	XPROPERTY(LuaCallable)
 	IC		void				set_property	(const u32 &condition_id, const bool &value);
+	XPROPERTY(LuaCallable)
 	IC		const bool	&property		(const u32 &condition_id) const;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 #include "property_storage_inline.h"

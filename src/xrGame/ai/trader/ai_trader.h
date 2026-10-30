@@ -22,6 +22,7 @@ class CBlend;
 class CSoundPlayer;
 class CTraderAnimation;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Trader : public CEntityAlive, 
 	public CInventoryOwner, 
 	public CScriptEntity,
@@ -144,6 +145,5 @@ public:
 private:
 	CTraderAnimation	*AnimMan;
 public:
-	CTraderAnimation	&animation					() {return (*AnimMan);}
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+	CTraderAnimation	&animation			() {return (*AnimMan);}
 };

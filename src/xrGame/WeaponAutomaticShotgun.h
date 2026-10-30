@@ -3,6 +3,7 @@
 #include "WeaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponAutomaticShotgun :	public CWeaponMagazined
 {
 	typedef CWeaponMagazined inherited;
@@ -46,5 +47,4 @@ protected:
 
 	bool bReloadEmptyByScheme = false;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

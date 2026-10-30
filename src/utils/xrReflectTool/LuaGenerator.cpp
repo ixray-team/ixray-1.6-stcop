@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include <set>
 #include <sstream>
 
 namespace XReflectTool
@@ -144,8 +145,16 @@ namespace XReflectTool
 				switch (Member.Kind)
 				{
 				case EMemberKind::Constructor:
-					Def = ".def(luabind::constructor<" + JoinList(Function.ParamTypes) + ">())";
+				{
+					const int Full = (int)Function.ParamTypes.size();
+					const int Min = Function.FirstDefault >= 0 ? Function.FirstDefault : Full;
+					for (int Count = Min; Count <= Full; ++Count)
+					{
+						std::vector<std::string> Params(Function.ParamTypes.begin(), Function.ParamTypes.begin() + Count);
+						Def += (Def.empty() ? "" : "\n" + Indent + "\t") + ".def(luabind::constructor<" + JoinList(Params) + ">())";
+					}
 					break;
+				}
 				case EMemberKind::Operator:
 				{
 					std::string Self = Function.Qualifiers.find("const") != std::string::npos ? "luabind::const_self" : "luabind::self";
@@ -176,6 +185,14 @@ namespace XReflectTool
 					Def = std::string(Member.ReadOnly ? ".def_readonly" : ".def_readwrite") + "(\"" + Member.LuaName + "\", &" +
 						Class.QualifiedName + "::" + Function.CppName + ")";
 					break;
+				case EMemberKind::Property:
+					Def = ".property(\"" + Member.LuaName + "\", &" + Class.QualifiedName + "::" + Function.CppName;
+					if (!Member.Setter.empty())
+					{
+						Def += ", &" + Class.QualifiedName + "::" + Member.Setter;
+					}
+					Def += ")";
+					break;
 				}
 				Defs += Guard(Member.Condition, Class.Condition, Indent + "\t" + Def + "\n");
 			}
@@ -191,17 +208,32 @@ namespace XReflectTool
 			return Guard(Class.Condition, {}, Out) + "\n";
 		}
 
-		std::string GenerateRegistration(const FileInfo& File, const std::vector<ClassInfo*>& SortedClasses)
+		// Emits class registrations in the global topological order. OnlyFile limits the output
+		// to the classes of one source file; otherwise header classes are emitted and the
+		// classes declared in .cpp files are left to their generated source functions.
+		std::string GenerateClassCalls(const std::vector<ClassInfo*>& SortedClasses, const std::string& OnlyFile, const std::set<std::string>& SourceFiles)
 		{
 			std::string Out;
 			for (const ClassInfo* Class : SortedClasses)
 			{
-				if (Class->File == File.Path && Class->LuaExport)
+				if (!Class->LuaExport)
 				{
-					std::string Call = "\tXReflect::Exporter<" + Class->QualifiedName + ">::Register(L);\n";
-					Out += Guard(Class->Condition, {}, RuntimeGuard(Class->RuntimeCondition, "\t", Call));
+					continue;
 				}
+				if (OnlyFile.empty() ? SourceFiles.contains(Class->File) : Class->File != OnlyFile)
+				{
+					continue;
+				}
+
+				std::string Call = "\tXReflect::Exporter<" + Class->QualifiedName + ">::Register(L);\n";
+				Out += Guard(Class->Condition, {}, RuntimeGuard(Class->RuntimeCondition, "\t", Call));
 			}
+			return Out;
+		}
+
+		std::string GenerateRegistration(const FileInfo& File, const std::vector<ClassInfo*>& SortedClasses)
+		{
+			std::string Out;
 
 			// Consecutive functions with the same Lua namespace and conditions share one module statement.
 			const std::vector<FreeFunctionInfo>& Functions = File.Functions;
@@ -283,7 +315,17 @@ namespace XReflectTool
 			}
 		}
 
+		std::set<std::string> SourceFiles;
+		for (const FileInfo& File : Files)
+		{
+			if (File.IsSource)
+			{
+				SourceFiles.insert(File.Path);
+			}
+		}
+
 		Out += "\nvoid XReflectRegister(lua_State* L)\n{\n";
+		Out += GenerateClassCalls(Classes, "", SourceFiles);
 		for (const FileInfo& File : Files)
 		{
 			if (!File.IsSource)
@@ -320,7 +362,8 @@ namespace XReflectTool
 						Inl += GenerateClass(*Class);
 					}
 				}
-				Inl += "void " + SourceFunctionName(Module, File) + "(lua_State* L)\n{\n" + GenerateRegistration(File, Classes) + "}\n";
+				Inl += "void " + SourceFunctionName(Module, File) + "(lua_State* L)\n{\n" + GenerateClassCalls(Classes, File.Path, std::set<std::string>{}) +
+					GenerateRegistration(File, Classes) + "}\n";
 				WriteIfChanged(OutputDir + "/" + File.Stem + ".reflect.inl", ToCrlf(Inl), Errors);
 			}
 		}

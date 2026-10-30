@@ -5,6 +5,7 @@
 #include "ZoneVisual.h"
 #include "../../../xrPhysics/PHUpdateObject.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAmebaZone final : public CVisualZone, public CPHUpdateObject
 {
 	using inherited = CVisualZone;

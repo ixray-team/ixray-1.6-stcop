@@ -310,15 +310,3 @@ bool PowerBank::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBo
 
 	return false;
 }
-
-
-using namespace luabind;
-#pragma optimize("s",on)
-void PowerBank::script_register(lua_State* L)
-{
-	module(L)
-		[
-			class_<PowerBank, CGameObject>("PowerBank")
-				.def(constructor<>())
-		];
-}

@@ -9,6 +9,7 @@
 #include "bloodsucker_alien.h"
 
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Bloodsucker final : public CBaseMonster, 
 						public CControlledActor {
 
@@ -243,6 +244,7 @@ public:
 	virtual bool	can_be_seen				() const override { return get_visibility_state() == full_visibility; }
 	visibility_t	get_visibility_state	() const;
 	void			set_visibility_state	(visibility_t new_state);
+	XPROPERTY(LuaCallable)
 	void			force_visibility_state	(int state);
 	void			update_invisibility		();
 
@@ -261,5 +263,4 @@ public:
 	void			sendToStartVampire(CActor* pA);
 	void			sendToStopVampire();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

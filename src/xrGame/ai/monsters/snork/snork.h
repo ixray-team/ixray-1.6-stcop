@@ -2,6 +2,7 @@
 #include "../basemonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CSnork final :	public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 
@@ -42,5 +43,5 @@ public:
 		u32		m_target_node;
 		bool	start_threaten;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

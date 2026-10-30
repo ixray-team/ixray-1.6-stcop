@@ -369,9 +369,9 @@ namespace XReflectTool
 		};
 
 		const std::set<std::string> ClassSpecifiers = { "LuaExport", "IniRead", "Owner", "Name", "Constructible", "Bases", "LuaToString", "Condition" };
-		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Name", "Prefix", "Exclude" };
+		const std::set<std::string> EnumSpecifiers = { "LuaEnum", "Self", "Name", "Prefix", "Exclude", "Names", "Scope" };
 		const std::set<std::string> FunctionSpecifiers = { "LuaExport", "Name", "Condition", "Self", "Policies" };
-		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Policies", "Prefix", "Exclude", "IniRead", "IniReadExist", "If" };
+		const std::set<std::string> MemberSpecifiers = { "LuaCallable", "LuaProperty", "LuaReadOnly", "LuaReadWrite", "LuaConstructor", "LuaOperator", "LuaEnum", "Name", "Setter", "Policies", "Prefix", "Exclude", "Names", "IniRead", "IniReadExist", "If" };
 
 		// Lua-bindable operators and the luabind expression operator for each.
 		const std::set<std::string> SupportedOperators = { "+", "-", "*", "/", "==", "<", "<=", ">", ">=" };
@@ -736,6 +736,10 @@ namespace XReflectTool
 						std::string Param = JoinTokens(Decl, ParamBegin, ParamEnd);
 						if (!Param.empty() && Param != "void")
 						{
+							if (DefaultAt != std::string::npos && Out.FirstDefault < 0)
+							{
+								Out.FirstDefault = (int)Out.ParamTypes.size();
+							}
 							Out.ParamTypes.push_back(ParamType(Decl, ParamBegin, ParamEnd));
 						}
 						ParamBegin = Index + 1;
@@ -981,9 +985,14 @@ namespace XReflectTool
 						Error(Specs.Line, OperatorAt != std::string::npos ? "XPROPERTY on an operator requires LuaOperator" : "LuaOperator applies to operators only");
 						return Next;
 					}
-					if (!IsConstructor && OperatorAt == std::string::npos && !Specs.Has("LuaCallable"))
+					if (!IsConstructor && OperatorAt == std::string::npos && !Specs.Has("LuaCallable") && !Specs.Has("LuaProperty"))
 					{
-						Error(Specs.Line, "XPROPERTY on a method requires LuaCallable");
+						Error(Specs.Line, "XPROPERTY on a method requires LuaCallable or LuaProperty");
+						return Next;
+					}
+					if (Specs.Has("LuaProperty") && Specs.Has("LuaCallable"))
+					{
+						Error(Specs.Line, "use either LuaCallable or LuaProperty");
 						return Next;
 					}
 
@@ -1002,6 +1011,21 @@ namespace XReflectTool
 
 					if (!BuildFunction(Decl, Paren, OperatorAt, Line, Member.Function))
 					{
+						return Next;
+					}
+
+					if (Specs.Has("LuaProperty"))
+					{
+						if (OperatorAt != std::string::npos)
+						{
+							Error(Specs.Line, "LuaProperty applies to methods only");
+							return Next;
+						}
+						Member.Kind = EMemberKind::Property;
+						Member.LuaName = Specs.Get("Name", Member.Function.CppName);
+						Member.Setter = Specs.Get("Setter");
+						Member.Policies = Specs.Get("Policies");
+						Class.Members.push_back(std::move(Member));
 						return Next;
 					}
 
@@ -1109,6 +1133,30 @@ namespace XReflectTool
 
 				std::string Prefix = Specs.Get("Prefix");
 				std::vector<std::string> Exclude = SplitList(Specs.Get("Exclude"), ',');
+				std::map<std::string, std::string> Names;
+				for (const std::string& Pair : SplitList(Specs.Get("Names"), ','))
+				{
+					size_t Equals = Pair.find('=');
+					if (Equals == std::string::npos)
+					{
+						Error(Specs.Line, "Names entries look like LuaName=CppName");
+						continue;
+					}
+					std::string LuaName = Trim(Pair.substr(0, Equals));
+					std::string CppName = Trim(Pair.substr(Equals + 1));
+					if (LuaName.empty() || CppName.empty())
+					{
+						Error(Specs.Line, "Names entries look like LuaName=CppName");
+						continue;
+					}
+					Names[CppName] = LuaName;
+				}
+				if (!Names.empty() && !Prefix.empty())
+				{
+					Error(Specs.Line, "use either Prefix or Names");
+				}
+				std::set<std::string> Named;
+				bool ByName = !Names.empty();
 
 				while (Pos < Next && Text(Pos) != "{")
 				{
@@ -1139,12 +1187,30 @@ namespace XReflectTool
 						{
 							continue;
 						}
+						if (ByName)
+						{
+							auto It = Names.find(Tok);
+							if (It == Names.end())
+							{
+								continue;
+							}
+							Named.insert(Tok);
+							Out.Enumerators.push_back({ It->second, Tok });
+							continue;
+						}
 						if (!Prefix.empty() && !Tok.starts_with(Prefix))
 						{
 							Error(LineAt(Pos), "enumerator '" + Tok + "' does not start with Prefix '" + Prefix + "'");
 							continue;
 						}
 						Out.Enumerators.push_back({ Tok.substr(Prefix.size()), Tok });
+					}
+				}
+				for (const auto& [CppName, LuaName] : Names)
+				{
+					if (!Named.contains(CppName))
+					{
+						Error(Specs.Line, "enumerator '" + CppName + "' from Names is not in the enum");
 					}
 				}
 				return true;
@@ -1175,7 +1241,12 @@ namespace XReflectTool
 				Info.File = File.Path;
 				Info.Line = Specs.Line;
 				Info.SelfClass = Specs.Get("Self");
-				if (ReadEnum(Index, Next, Specs, ScopePrefix(false), Info.Member))
+				std::string Scope = Specs.Get("Scope");
+				if (!Scope.empty() && !Scope.ends_with("::"))
+				{
+					Scope += "::";
+				}
+				if (ReadEnum(Index, Next, Specs, Scope.empty() ? ScopePrefix(false) : Scope, Info.Member))
 				{
 					File.Enums.push_back(std::move(Info));
 				}

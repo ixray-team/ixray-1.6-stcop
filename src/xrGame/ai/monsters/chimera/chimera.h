@@ -2,10 +2,12 @@
 #include "../basemonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CChimera final : public CBaseMonster 
 {
 public:
-							CChimera					();
+	XPROPERTY(LuaConstructor)
+	CChimera					();
 	virtual ~CChimera					() override;
 
 	virtual void			Load						(const char* section) override;
@@ -40,8 +42,4 @@ private:
 
 public:
 	attack_params const&	get_attack_params			() const { return m_attack_params; }
-
-
-	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

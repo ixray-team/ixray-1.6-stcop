@@ -3,6 +3,7 @@
 
 class CUIArtefactDetectorElite;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CEliteDetector : 
 	public CCustomDetector
 {
@@ -26,6 +27,7 @@ protected:
 	virtual bool NeedDetectSounds() const override { return false; }
 };
 
+XREFLECT(LuaExport, Constructible)
 class CScientificDetector final : 
 	public CEliteDetector
 {
