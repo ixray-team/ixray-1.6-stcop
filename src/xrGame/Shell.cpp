@@ -7,8 +7,7 @@
 #include "HUDManager.h"
 #include "PhysicsShellHolder.h"
 #include "../xrEngine/xr_ioc_cmd.h"
-#include "../xrPhysics/PHShell.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 #include "../xrPhysics/PhysicsExternalCommon.h"
 #include "../xrEngine/GameMtlLib.h"
 
@@ -67,25 +66,23 @@ void CShell::net_Relcase(CObject* O)
 	Level().ShellManager().net_Relcase(O);
 }
 
-void CShell::ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void CShell::ContactCallback(bool& do_collide, bool bo1, CPHContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
-	dxGeomUserData* data = retrieveGeomUserData(bo1 ? c.geom.g1 : c.geom.g2);
+	IPhysicsShellHolder* object = c.GetObject(bo1);
 
-	if (data == nullptr || data->ph_ref_object == nullptr)
+	if (object == nullptr)
 	{
 		return;
 	}
 
-	CShell* shell = smart_cast<CShell*>(data->ph_ref_object);
+	CShell* shell = smart_cast<CShell*>(object);
 
 	if (shell == nullptr)
 	{
 		return;
 	}
 
-	c.surface.bounce = shell->bounce;
-	c.surface.bounce_vel = shell->bounce_vel;
-	c.surface.mode |= dContactBounce;
+	c.SetBounce(shell->bounce, shell->bounce_vel);
 }
 
 void CShell::Eject()

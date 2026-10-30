@@ -11,7 +11,6 @@
 #include "../xrPhysics/icollisiondamagereceiver.h"
 
 class	IPHStaticGeomShell;
-//struct	dContact;
 //struct	SGameMtl;
 
 class CBreakableObject: 
@@ -67,7 +66,6 @@ private:
 	void			ProcessDamage		();
 	void			SendDestroy			();
 	virtual void	_BCL		enable_notificate	() override;
-//	static 	void	ObjectContactCallback(bool& /**do_colide/**/,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 private:
 	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	() override {return (this);}
 	virtual void					CollisionHit				( ALife::_OBJECT_ID source_id, u16 bone_id, float power, const Fvector &dir, Fvector &pos ) override;

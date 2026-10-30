@@ -11,7 +11,6 @@
 
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrPhysics/IActivationShape.h"
-#include "../xrPhysics/Geometry.h"
 #include "../xrPhysics/IPHCapture.h"
 #include "../xrPhysics/IPHWorld.h"
 
@@ -25,7 +24,6 @@
 #include "InventoryOwner.h"
 #include "Inventory.h"
 #include "stalker_movement_manager_smart_cover.h"
-#include "src/xrPhysics/PHShell.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -504,7 +502,7 @@ void dbg_draw_geoms(xr_vector<CODEGeom*>& m_weapon_geoms)
 	{
 		CODEGeom *g  =(*ii);
 
-		g->dbg_draw(0.01f, color_xrgb(0, 255, 100), Flags32());
+		PHGeomDbgDraw(g, 0.01f, color_xrgb(0, 255, 100));
 	}
 }
 #endif
@@ -731,12 +729,12 @@ void CCharacterPhysicsSupport::RemoveActiveWeaponCollision()
 	VERIFY(!m_weapon_geoms.empty());
 	xr_vector<CODEGeom*>::iterator ii = m_weapon_geoms.begin(), ee = m_weapon_geoms.end();
 	Fmatrix m0;
-	(*ii)->get_xform(m0);
+	PHGeomGetXform(*ii, m0);
 	CPhysicsElement* root = m_active_item_obj->PPhysicsShell()->get_ElementByStoreOrder(0);
 	CODEGeom* rg = root->geometry(0);
 	VERIFY(rg);
 	Fmatrix m1;
-	rg->get_xform(m1);
+	PHGeomGetXform(rg, m1);
 
 	Fmatrix me;
 	root->GetGlobalTransformDynamic(&me);
@@ -750,8 +748,7 @@ void CCharacterPhysicsSupport::RemoveActiveWeaponCollision()
 	{
 		CODEGeom* g = (*ii);
 		m_weapon_attach_bone->remove_geom(g);
-		g->destroy();
-		xr_delete(g);
+		PHGeomDestroy(g);
 	}
 
 	Fvector a_vel, l_vel;
@@ -853,7 +850,7 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	{
 		CODEGeom* g = (*ii);
 		weapon_element->remove_geom(g);
-		g->set_bone_id(weapon_attach_bone->m_SelfID);
+		PHGeomSetBoneId(g, weapon_attach_bone->m_SelfID);
 		weapon_attach_bone->add_geom(g);
 	}
 	m_weapon_attach_bone = weapon_attach_bone;
@@ -1209,9 +1206,7 @@ void CCharacterPhysicsSupport::ActivateRagdoll()
 	if (!is_actor_holder)
 	{
 		ActivateShell(nullptr);
-		auto CastedShell = smart_cast<CPHShell*>(m_pPhysicsShell);
-		VERIFY(CastedShell);
-		CastedShell->vis_update_activate();
+		m_pPhysicsShell->vis_update_activate();
 	}
 }
 
@@ -1289,4 +1284,4 @@ CPHSynchronize*	CCharacterPhysicsSupport::PHGetSyncItem	(u16 item)
 		return movement()->GetSyncItem();
 	else	
 		return m_EntityAlife.CPhysicsShellHolder::PHGetSyncItem(item);
-}
+}

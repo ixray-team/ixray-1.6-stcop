@@ -2,7 +2,7 @@
 #ifndef CPHMOVEMENT_CONTROL_H
 #define CPHMOVEMENT_CONTROL_H
 
-//#include "../xrPhysics/PHCharacter.h"
+//#include "../xrPhysics/IPHCharacter.h"
 //#include "../xrPhysics/MathUtils.h"
 #include "../xrPhysics/PhysicsExternalCommon.h"
 #include "../xrPhysics/MathUtils.h"
@@ -26,7 +26,7 @@ class CPhysicsShellHolder;
 class IPhysicsShellHolder;
 class CPHCapture;
 class IPHCapture;
-class CPHCharacter;
+class IPHCharacter;
 class IPhysicsElement;
 
 
@@ -45,8 +45,8 @@ void 					in_shedule_Update	( u32 DT );
 void					PHCaptureObject 	( CPhysicsShellHolder* object, CPHCaptureBoneCallback* cb =0 );
 void					PHCaptureObject 	( CPhysicsShellHolder* object, u16 element );
 IPHCapture*				PHCapture			( );
-CPHCharacter*			PHCharacter			( ){ return m_character; }
-const CPHCharacter*		PHCharacter			( )const{ return m_character; }
+IPHCharacter*			PHCharacter			( ){ return m_character; }
+const IPHCharacter*		PHCharacter			( )const{ return m_character; }
 const IPhysicsElement*	IElement			( )const;
 void					PHReleaseObject		( );
 Fvector					PHCaptureGetNearestElemPos( const CPhysicsShellHolder* object );
@@ -58,7 +58,7 @@ void					SetRestrictionType( ERestrictionType rt);
 void					SetActorMovable( bool v );
 void					SetForcedPhysicsControl( bool v );
 bool					ForcedPhysicsControl( );
-void					UpdateObjectBox( CPHCharacter *ach );
+void					UpdateObjectBox( IPHCharacter *ach );
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 void					BlockDamageSet		( u64 steps_num );
 enum					JumpType 
@@ -101,7 +101,7 @@ private:
 	void				CheckEnvironment	( const Fvector& V );
 
 	CharacterType		eCharacterType;
-	CPHCharacter*		m_character;
+	IPHCharacter*		m_character;
 	IPHCapture  *		m_capture;
 
 	float				m_fGroundDelayFactor;
@@ -164,7 +164,6 @@ public:
 #endif
 
 	void				SetPLastMaterialIDX			(u16* p);
-//	dBodyID				GetBody						( )		;
 	const Fvector&		GetVelocity					( )		{ return vVelocity;	}
 	const Fvector&		GetPathDir					( )		{ return _vPathDir;	}
 	void				SetPathDir					( const Fvector& v);
@@ -284,7 +283,7 @@ public:
 	CPHMovementControl(CObject* parent);
 	virtual ~CPHMovementControl(void) override;
 
-	virtual CPHCharacter		*character				() override {		return m_character; };
+	virtual IPHCharacter		*character				() override {		return m_character; };
 	void				NetRelcase				( CObject* O );
 private:
 	virtual void				actor_calculate			(Fvector& vAccel,const Fvector& camDir, float ang_speed, float jump, float dt, bool bLight) override;
@@ -294,4 +293,4 @@ private:
 												 Fvector & dist_to_enemy);
 };
 
-#endif
+#endif

@@ -1,9 +1,8 @@
 #pragma once
 #include "hud_item_object.h"
 #include "HudSound.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 
-struct dContact;
 struct SGameMtl;
 class CBolt;
 class CGrenade;
@@ -133,6 +132,6 @@ public:
 	void PrepareGrenadeForSuicideThrow(float force);
 	IC		int				time_from_begin_throw	() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); }
 	IC		void			set_destroy_time_now	(u32 time) { m_dwDestroyTime = time; }
-	static	void			ExitContactCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
-	static	void			ExitContactCallback_Patch(dGeomID dxGeom);
-};
+	static	void			ExitContactCallback		(bool& do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
+	static	void			ExitContactCallback_Patch(IPhysicsShellHolder* object);
+};

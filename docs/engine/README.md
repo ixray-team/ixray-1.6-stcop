@@ -18,6 +18,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [ai-grid-editor.md](ai-grid-editor.md) | In-game AI grid editor |
 | [level-inspector.md](level-inspector.md) | In-game Level Inspector: modder guide and checks |
 | [cinema-film-maker-editor.md](cinema-film-maker-editor.md) | In-game Cinema Film Maker Editor: fake NPCs and particles, held items, animation playlists, scene save/load |
+| [physics-abstraction.md](physics-abstraction.md) | Plan to hide ODE behind xrPhysics interfaces for Box3D |
 | [build.md](build.md) | Targets and CMake options |
 | [style.md](style.md) | RAII, types, platform split |
 

@@ -2,9 +2,9 @@
 #include "ClimableObject.h"
 #include "../xrPhysics/IPHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
-#include "../xrPhysics/PHCharacter.h"
+#include "../xrPhysics/IPHCharacter.h"
 #include "../xrPhysics/MathUtils.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 #include "../xrEngine/GameMtlLib.h"
 
 #ifdef DEBUG_DRAW
@@ -129,7 +129,7 @@ float	CClimableObject::Radius				() const
 		return							m_radius;
 }
 
-float		CClimableObject::	DDLowerP		(CPHCharacter	*actor,Fvector	&out_dir)const
+float		CClimableObject::	DDLowerP		(IPHCharacter	*actor,Fvector	&out_dir)const
 {
 	VERIFY(actor);
 	Fvector pos;
@@ -138,7 +138,7 @@ float		CClimableObject::	DDLowerP		(CPHCharacter	*actor,Fvector	&out_dir)const
 	out_dir.sub(pos);
 	return to_mag_and_dir(out_dir);
 }
-float		CClimableObject::	DDUpperP		(CPHCharacter	*actor,Fvector	&out_dir)const
+float		CClimableObject::	DDUpperP		(IPHCharacter	*actor,Fvector	&out_dir)const
 {
 	VERIFY(actor);
 	Fvector pos;
@@ -149,7 +149,7 @@ float		CClimableObject::	DDUpperP		(CPHCharacter	*actor,Fvector	&out_dir)const
 }
 
 
-void		CClimableObject::	DefineClimbState	(CPHCharacter	*actor)const
+void		CClimableObject::	DefineClimbState	(IPHCharacter	*actor)const
 {
 
 
@@ -170,14 +170,14 @@ float	CClimableObject::DDNorm(Fvector &dir)const
 	dir.set(m_norm);
 	return to_mag_and_dir(dir);
 }
-float		CClimableObject::	DDToAxis			(CPHCharacter	*actor,Fvector &out_dir)const
+float		CClimableObject::	DDToAxis			(IPHCharacter	*actor,Fvector &out_dir)const
 {
 	VERIFY(actor);
 	DToAxis(actor,out_dir);
 	return to_mag_and_dir(out_dir);
 }
 
-void	CClimableObject::	POnAxis	(CPHCharacter	*actor,Fvector	&P)const
+void	CClimableObject::	POnAxis	(IPHCharacter	*actor,Fvector	&P)const
 {
 	VERIFY(actor);
 	actor->GetFootCenter(P);
@@ -195,14 +195,14 @@ void		CClimableObject::	UpperPoint			(Fvector &P)const
 	P.add(m_norm);
 }
 
-void		CClimableObject::DToAxis(CPHCharacter *actor,Fvector &dir)const
+void		CClimableObject::DToAxis(IPHCharacter *actor,Fvector &dir)const
 {
 	VERIFY(actor);
 	POnAxis(actor,dir);
 	Fvector pos;actor->GetFootCenter(pos);
 	dir.sub(pos);
 }
-void CClimableObject::DSideToAxis		(CPHCharacter	*actor,Fvector	&dir)const
+void CClimableObject::DSideToAxis		(IPHCharacter	*actor,Fvector	&dir)const
 {
 	VERIFY(actor);
 	DToAxis(actor,dir);
@@ -212,7 +212,7 @@ void CClimableObject::DSideToAxis		(CPHCharacter	*actor,Fvector	&dir)const
 	dir.set(side);
 }
 
-float CClimableObject::DDSideToAxis(CPHCharacter *actor,Fvector &dir)const
+float CClimableObject::DDSideToAxis(IPHCharacter *actor,Fvector &dir)const
 {
 	VERIFY(actor);
 	DToAxis(actor,dir);
@@ -232,7 +232,7 @@ float CClimableObject::DDSideToAxis(CPHCharacter *actor,Fvector &dir)const
 	
 }
 
-void CClimableObject::DToPlain(CPHCharacter *actor,Fvector &dist)const
+void CClimableObject::DToPlain(IPHCharacter *actor,Fvector &dist)const
 {
  VERIFY(actor);
  DToAxis(actor,dist);
@@ -243,14 +243,14 @@ void CClimableObject::DToPlain(CPHCharacter *actor,Fvector &dist)const
  dist.set(norm);
 }
 
-float CClimableObject::DDToPlain(CPHCharacter *actor,Fvector &dir)const
+float CClimableObject::DDToPlain(IPHCharacter *actor,Fvector &dir)const
 {
 	VERIFY(actor);
 	DToPlain(actor,dir);
 	return to_mag_and_dir(dir);
 }
 
-bool CClimableObject::InTouch(CPHCharacter *actor)const
+bool CClimableObject::InTouch(IPHCharacter *actor)const
 {
 	VERIFY(actor);
 	Fvector dir;
@@ -261,7 +261,7 @@ bool CClimableObject::InTouch(CPHCharacter *actor)const
 	
 }
 
-float CClimableObject::AxDistToUpperP(CPHCharacter *actor)const
+float CClimableObject::AxDistToUpperP(IPHCharacter *actor)const
 {
 	VERIFY(actor);
 	Fvector v1,v2;
@@ -272,7 +272,7 @@ float CClimableObject::AxDistToUpperP(CPHCharacter *actor)const
 	return v1.dotproduct(v2);
 }
 
-float CClimableObject::AxDistToLowerP(CPHCharacter *actor)const
+float CClimableObject::AxDistToLowerP(IPHCharacter *actor)const
 {
 	VERIFY(actor);
 	Fvector v1,v2;
@@ -282,14 +282,14 @@ float CClimableObject::AxDistToLowerP(CPHCharacter *actor)const
 	v1.set(m_axis);to_mag_and_dir(v1);
 	return -v1.dotproduct(v2);
 }
-bool CClimableObject::InRange(CPHCharacter *actor)const
+bool CClimableObject::InRange(IPHCharacter *actor)const
 {
 	VERIFY(actor);
 	return AxDistToLowerP(actor)>-down_leader_extension_tolerance && AxDistToUpperP(actor)+actor->FootRadius()>-up_leader_extension_tolerance;
 }
 
 
-bool CClimableObject::BeforeLadder(CPHCharacter *actor,float tolerance/*=0.f*/)const
+bool CClimableObject::BeforeLadder(IPHCharacter *actor,float tolerance/*=0.f*/)const
 {
 	VERIFY(actor);
 	Fvector d;
@@ -305,36 +305,16 @@ bool CClimableObject::UsedAI_Locations()
 }
 
 
-void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData* usr_data_1= PHRetrieveGeomUserData(c.geom.g1);
-	dxGeomUserData* usr_data_2=PHRetrieveGeomUserData(c.geom.g2);
-	dxGeomUserData* usr_data_ch=nullptr;
-	dxGeomUserData* usr_data_lad=nullptr;
-	CClimableObject* this_object=nullptr;
-	CPHCharacter* ch=nullptr;
-	float norm_sign=0.f;
-	if(bo1) {
-			usr_data_ch=usr_data_2;
-			usr_data_lad=usr_data_1;
-			norm_sign=-1.f;
-		}
-	else {
-			norm_sign=1.f;
-			usr_data_ch=usr_data_1;
-			usr_data_lad=usr_data_2;
-	}
-
-	if(usr_data_ch&&usr_data_ch->ph_object&&usr_data_ch->ph_object->CastType()==CPHObject::tpCharacter)
-		ch=static_cast<CPHCharacter*>(usr_data_ch->ph_object);
-	else
+	IPHCharacter* ch=c.GetCharacter(!bo1);
+	if(!ch)
 	{
 		do_colide=false;
 		return;
 	}
-	VERIFY(ch);
-	VERIFY(usr_data_lad);
-	this_object=static_cast<CClimableObject*>(usr_data_lad->ph_ref_object);
+	VERIFY(c.HasUserData(bo1));
+	CClimableObject* this_object=static_cast<CClimableObject*>(c.GetObject(bo1));
 	VERIFY(this_object);
 	if(!this_object->BeforeLadder(ch,-0.1f)) do_colide=false;
 	
@@ -369,4 +349,4 @@ void CClimableObject ::OnRender()
 	p2.set(XFORM().c);
 	Level().debug_renderer().draw_line(Fidentity, p1, p2, color_xrgb(0, 255, 0));
 }
-#endif
+#endif

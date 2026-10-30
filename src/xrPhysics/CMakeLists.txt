@@ -34,6 +34,8 @@ source_group("components" FILES ${XPH_SOURCE_COMP_FILES})
 source_group("core" FILES ${XPH_SOURCE_CORE_FILES})
 source_group("net" FILES ${XPH_SOURCE_NET_FILES})
 source_group("dTri" FILES ${XPH_SOURCE_DTRI_FILES})
+file(GLOB_RECURSE XPH_SOURCE_ODE_FILES "ODE/*.cpp" "ODE/*.h")
+source_group("ODE" FILES ${XPH_SOURCE_ODE_FILES})
 
 # Apply list
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_ALL_FILES})
@@ -47,6 +49,7 @@ add_library(xrPhysics SHARED ${XPH_SRC_FILES})
 
 # Include directories
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ODE")
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_include_directories(xrPhysics PUBLIC "${IXRAY_SDK_INC}")
 

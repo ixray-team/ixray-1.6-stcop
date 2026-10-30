@@ -23,11 +23,11 @@ public:
 protected:
 	virtual						~IPHCapture() {}
 };
-class	CPHCharacter;
+class	IPHCharacter;
 struct	NearestToPointCallback;
-XRPHYSICS_API IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ );
-XRPHYSICS_API IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element);
-XRPHYSICS_API IPHCapture	*phcapture_create(CPHCharacter *ch, IPhysicsShellHolder* object,u16 element, const Fvector& global_pos, bool free_chain);
+XRPHYSICS_API IPHCapture	*phcapture_create(IPHCharacter *ch, IPhysicsShellHolder* object, NearestToPointCallback* cb /*=0*/ );
+XRPHYSICS_API IPHCapture	*phcapture_create(IPHCharacter *ch, IPhysicsShellHolder* object,u16 element);
+XRPHYSICS_API IPHCapture	*phcapture_create(IPHCharacter *ch, IPhysicsShellHolder* object,u16 element, const Fvector& global_pos, bool free_chain);
 XRPHYSICS_API void			phcapture_destroy(IPHCapture* &c);
 
 XRPHYSICS_API extern float g_CameraCaptureMotorForce;

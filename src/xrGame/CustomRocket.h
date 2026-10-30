@@ -9,7 +9,7 @@
 #include "../xrPhysics/PHUpdateObject.h"
 
 class CRocketLauncher;
-struct dContact;
+class CPHContact;
 struct SGameMtl;
 struct SRoketContact
 {
@@ -118,7 +118,7 @@ protected:
 
 	//обработка столкновения
 	void PlayContact();
-	static void	ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
+	static void	ObjectContactCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
@@ -165,4 +165,4 @@ protected:
 #ifdef DEBUG
 	virtual void deactivate_physics_shell() override;
 #endif
-};
+};

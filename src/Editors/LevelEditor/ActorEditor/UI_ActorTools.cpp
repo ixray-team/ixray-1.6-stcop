@@ -6,7 +6,7 @@
 
 #define dSINGLE
 #include "../../../Include/xrRender/animation_blend.h"
-#include "../../../xrPhysics/Physics.h"
+#include "../../../xrPhysics/ODE/Physics.h"
 #include "../../xrECore/Editor/EditMesh.h"
 #include "../../../Layers/xrRenderPC_R4/KinematicAnimatedDefs.h"
 #include "../../../Layers/xrRenderPC_R4/SkeletonAnimated.h"

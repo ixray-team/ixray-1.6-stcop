@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "PhysicObject.h"
-#include "ode/contact.h"
+#include "../xrPhysics/PHContact.h"
 
 struct SGameMtl;
 
@@ -34,5 +34,5 @@ public:
 private:
 	void Eject();
 
-	static void ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
+	static void ContactCallback(bool& do_collide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2);
 };

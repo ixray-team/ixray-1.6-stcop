@@ -16,7 +16,7 @@ void DBG_TextOutSet(float x, float y);
 void DBG_TextSetColor(u32 color);
 #endif
 #ifdef DEBUG
-struct dContact;
+class CPHContact;
 #include "../xrEngine/StatGraph.h"
 #include "../xrPhysics/debug_output.h"
 #define DRAW_CONTACTS
@@ -68,7 +68,7 @@ void DBG_OpenCashedDraw( );
 void DBG_ClosedCashedDraw( u32 remove_time );
 void DBG_DrawPHAbstruct( SPHDBGDrawAbsract* a );
 void DBG_DrawPHObject( const CPHObject *obj );
-void DBG_DrawContact ( const dContact &c );
+void DBG_DrawContact ( const CPHContact &c );
 void DBG_DrawTri( CDB::RESULT *T, u32 c );
 void DBG_DrawTri(CDB::TRI *T, const Fvector *V_verts, u32 c );
 void DBG_DrawLine( const Fvector &p0, const Fvector &p1, u32 c );
@@ -118,4 +118,4 @@ IC	float	ScaleX						( float x )  { VERIFY( IsActive( ) ); return( x-x_min )/s; 
 	void	ScaleMarkerPos				( CStatGraph::EStyle Style, float &p )																															;
 IC	float	ResolutionX					( ){ VERIFY( IsActive( ) ); return s; } 
 };
-#endif
+#endif
