@@ -4,7 +4,7 @@
 class IPHStaticGeomShell;
 class IPHCharacter;
 struct SGameMtl;
-
+class CPHContact;
 class CClimableObject: 
 public CPhysicsShellHolder,
 public IClimableObject
