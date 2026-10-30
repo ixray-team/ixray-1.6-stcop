@@ -27,7 +27,7 @@ else()
         GIT_TAG        ${DXMT_TAG}
         PATCH_COMMAND  ${CMAKE_COMMAND} -P
                        "${CMAKE_CURRENT_LIST_DIR}/../patches/dxmt-tessellation.cmake"
-        GIT_SHALLOW    TRUE
+        GIT_SHALLOW    FALSE
     )
 
     FetchContent_GetProperties(dxmt)
