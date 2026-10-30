@@ -4,6 +4,7 @@
 #include "RocketLauncher.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponRPG7 final : public CWeaponMagazined,
 	public CRocketLauncher
 {
@@ -64,5 +65,4 @@ protected:
 
 	shared_str	m_sRocketSection;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

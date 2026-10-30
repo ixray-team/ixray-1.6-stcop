@@ -5,6 +5,17 @@
 class CPhysicsShellHolder;
 class CBoneInstance;
 
+XREFLECT(LuaEnum, Self="CCar", Name="wpn_action")
+enum ECarWeaponAction
+{
+	eWpnDesiredDir = 1,
+	eWpnDesiredPos,
+	eWpnActivate,
+	eWpnFire,
+	eWpnAutoFire,
+	eWpnToDefaultDir,
+};
+
 class CCarWeapon :public CShootingObject
 {
 protected:
@@ -27,14 +38,6 @@ protected:
 	virtual bool			IsHudModeNow		() override {return false;};
 
 public:
-	enum{
-			eWpnDesiredDir		=1,
-			eWpnDesiredPos,
-			eWpnActivate,
-			eWpnFire,
-			eWpnAutoFire,
-			eWpnToDefaultDir,
-	};
 	HUD_SOUND_COLLECTION_LAYERED SoundsLayered;
 
 							CCarWeapon			(CPhysicsShellHolder* obj);

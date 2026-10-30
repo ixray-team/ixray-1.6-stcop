@@ -8,6 +8,7 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CBurer final : public CBaseMonster, public CTelekinesis, public ITelekineticEnemy
 {
 public:
@@ -186,7 +187,7 @@ public:
 
 	void StaminaHit();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 
 	void face_enemy();
 };

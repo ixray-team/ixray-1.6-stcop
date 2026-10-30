@@ -4,6 +4,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "../xrEngine/xr_collide_form.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponKnife final : public CWeapon
 {
 	using inherited = CWeapon;
@@ -242,5 +243,4 @@ private:
 	void		fill_shots_list			(victims_shapes_list_t & victims_shapres,
 										 Fsphere const & query,
 										 shot_targets_t & dest_shots);
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

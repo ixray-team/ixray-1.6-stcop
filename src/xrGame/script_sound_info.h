@@ -4,12 +4,18 @@
 
 class CScriptGameObject;
 
+XREFLECT(LuaExport, Name="SoundInfo")
 class CScriptSoundInfo {
 public:
+	XPROPERTY(LuaReadWrite)
 	CScriptGameObject			*who;
+	XPROPERTY(LuaReadWrite)
 	Fvector					position;
+	XPROPERTY(LuaReadWrite)
 	float					power;
+	XPROPERTY(LuaReadWrite)
 	int						time;		
+	XPROPERTY(LuaReadWrite, Name="danger")
 	int						dangerous;
 
 
@@ -29,5 +35,4 @@ public:
 		time		= p_time;
 		dangerous	= int(p_danger);
 	}
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

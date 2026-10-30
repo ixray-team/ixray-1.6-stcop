@@ -13,6 +13,7 @@ class CMotionDef;
 class CBlend;
 class IKinematicsAnimated;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Crow final : public CEntity
 {
 	using inherited = CEntity;
@@ -137,8 +138,6 @@ public:
 
 	virtual void	net_Relcase(CObject* O) override;
 
-public:
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #endif

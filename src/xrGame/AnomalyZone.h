@@ -13,7 +13,7 @@ class CZoneEffector;
 struct SZoneObjectInfo;
 #define SMALL_OBJECT_RADIUS 0.6f
 
-XREFLECT(LuaExport, Bases="CGameObject")
+XREFLECT(LuaExport)
 class CAnomalyZone :		public CSpaceRestrictor,
 						public Feel::Touch
 {

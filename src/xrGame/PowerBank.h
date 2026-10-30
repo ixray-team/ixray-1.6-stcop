@@ -19,6 +19,7 @@ struct AwaitAlifeObject {
 	bool used = false;
 };
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class PowerBank final :
 	public CInventoryItemObject,
 	public pureFrame
@@ -51,6 +52,4 @@ public:
 	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 	void EjectPowerCells();
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

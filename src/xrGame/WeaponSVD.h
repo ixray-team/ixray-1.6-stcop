@@ -3,6 +3,7 @@
 #include "WeaponMagazined.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CWeaponSVD final : 
 	public CWeaponMagazined
 {
@@ -14,8 +15,7 @@ protected:
 
 
 public:
+	XPROPERTY(LuaConstructor)
 	CWeaponSVD() = default;
 	virtual ~CWeaponSVD() override = default;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

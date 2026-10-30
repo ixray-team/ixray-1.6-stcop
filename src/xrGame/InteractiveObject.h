@@ -6,6 +6,7 @@
 // ADD(CInteractiveObject	,CSE_ALifeInteractiveObject	,CLSID_OBJECT_INTERACT	,"obj_interact");
 // CLSID_OBJECT_INTERACT	MK_CLSID('I','N','T','E','R','A','C','T')
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CInteractiveObject :
 	public CGameObject
 {
@@ -48,5 +49,4 @@ public:
 	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
 	void OnUse();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -2107,7 +2107,7 @@ void CCar::CarExplode()
 
 	CPHSkeleton::SetNotNeedSave();
 	if (m_car_weapon)
-		m_car_weapon->Action(CCarWeapon::eWpnActivate, 0);
+		m_car_weapon->Action(ECarWeaponAction::eWpnActivate, 0);
 
 	m_lights.TurnOffHeadLights();
 	m_damage_particles.Stop1(this);

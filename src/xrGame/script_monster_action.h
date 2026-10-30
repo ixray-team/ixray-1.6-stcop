@@ -14,6 +14,7 @@
 
 class CScriptGameObject;
 
+XREFLECT(LuaExport, Name="act")
 class CScriptMonsterAction :
 	public CScriptAbstractAction 
 {
@@ -22,13 +23,15 @@ public:
 	CObject										*m_tObject;
 
 public:
+	XPROPERTY(LuaConstructor)
 	IC				CScriptMonsterAction	();
+	XPROPERTY(LuaConstructor)
 	IC				CScriptMonsterAction	(MonsterSpace::EScriptMonsterGlobalAction action);
+	XPROPERTY(LuaConstructor)
 	IC				CScriptMonsterAction	(MonsterSpace::EScriptMonsterGlobalAction action, CScriptGameObject *tObj);
 	virtual ~CScriptMonsterAction	() override;
 			void	SetObject				(CScriptGameObject *tObj);
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "script_monster_action_inline.h"

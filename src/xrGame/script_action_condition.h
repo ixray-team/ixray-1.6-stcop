@@ -11,8 +11,10 @@
 #include "../xrScripts/script_export_space.h"
 #include "alife_space.h"
 
+XREFLECT(LuaExport, Name="cond")
 class CScriptActionCondition {
 public:
+	XPROPERTY(LuaEnum, Name="cond", Names="move_end=MOVEMENT_FLAG,look_end=WATCH_FLAG,anim_end=ANIMATION_FLAG,sound_end=SOUND_FLAG,object_end=OBJECT_FLAG,time_end=TIME_FLAG,act_end=ACT_FLAG")
 	enum EActionFlags {
 		MOVEMENT_FLAG	= u32(1 << 0),
 		WATCH_FLAG		= u32(1 << 1),
@@ -30,12 +32,13 @@ public:
 	ALife::_TIME_ID		m_tStartTime;
 
 public:
+	XPROPERTY(LuaConstructor)
 	IC					CScriptActionCondition	();
+	XPROPERTY(LuaConstructor)
 	IC					CScriptActionCondition	(u32 dwFlags, double dTime = -1);
 	virtual				~CScriptActionCondition	();
 	IC		void		initialize				();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "script_action_condition_inline.h"

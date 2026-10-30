@@ -14,6 +14,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "PHDestroyable.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CMincer final : public CBaseGraviZone, public CPHDestroyableNotificator
 {
 	typedef CBaseGraviZone inherited;
@@ -47,5 +48,4 @@ public:
 	virtual CMincer* cast_mincer_zone() override { return this; }
 
 	virtual CTeleWhirlwind* telekinesis() override { return this; }
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

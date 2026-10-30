@@ -6,10 +6,12 @@
 
 #pragma once
 
+XREFLECT(LuaExport, Name="script_event", Constructible)
 class ScriptEvent
 {
 public:
+	XPROPERTY(LuaReadWrite)
 	int SenderID;
+	XPROPERTY(LuaReadWrite)
 	NET_Packet Packet;
-	static void script_register(lua_State* L);
 };

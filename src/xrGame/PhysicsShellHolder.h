@@ -16,6 +16,7 @@ class CCharacterPhysicsSupport;
 class ICollisionDamageInfo;
 class TIKLimbsController;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPhysicsShellHolder:
 	public CGameObject,
 	public IObjectPhysicsCollision,
@@ -145,7 +146,6 @@ private://IPhysicsShellHolder
 #ifdef	DEBUG
 	virtual xr_string				_BCL					dump								(EDumpType type) const override;
 #endif
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #endif

@@ -6,6 +6,7 @@
 class CUIFrameWindow;
 class CUIStatic;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponBinoculars final : public CWeaponMagazined
 {
 	using inherited = CWeaponMagazined;
@@ -44,5 +45,4 @@ public:
 
 protected:
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -8,6 +8,7 @@
 #include "inventory_item_object.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CScope final : 
 	public CInventoryItemObject 
 {
@@ -19,5 +20,4 @@ public:
 
 	virtual CScope* cast_addon_scope() override {return this;}
 	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -3,6 +3,7 @@
 
 class CUIArtefactDetectorSimple;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CSimpleDetector final : public CCustomDetector
 {
 	using inherited = CCustomDetector;

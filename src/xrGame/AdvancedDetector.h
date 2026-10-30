@@ -2,6 +2,7 @@
 #include "CustomDetector.h"
 class CUIArtefactDetectorAdv;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAdvancedDetector final : public CCustomDetector
 {
 	using inherited = CCustomDetector;

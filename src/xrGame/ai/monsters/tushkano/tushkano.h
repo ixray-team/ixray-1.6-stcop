@@ -3,6 +3,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject")
 class CTushkano final :	public CBaseMonster,
 					public CControlledEntity<CTushkano> {
 
@@ -11,13 +12,11 @@ class CTushkano final :	public CBaseMonster,
 	typedef		CControlledEntity<CTushkano>	CControlled;
 
 public:
-					CTushkano 			();
+	XPROPERTY(LuaConstructor)
+	CTushkano 			();
 	virtual ~CTushkano 			() override;
 
 	virtual void	Load				(const char* section) override;
 	virtual void	CheckSpecParams		(u32 spec_params) override;
 	virtual char*	get_monster_class_name () override { return (char*) "tushkano"; }
-
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

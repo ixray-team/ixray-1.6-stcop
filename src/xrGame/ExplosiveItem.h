@@ -9,6 +9,7 @@
 #include "Explosive.h"
 #include "inventory_item_object.h"
 #include "DelayedActionFuse.h"
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CExplosiveItem final :
 	public CInventoryItemObject,
 	public CDelayedActionFuse,

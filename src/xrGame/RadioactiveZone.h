@@ -2,6 +2,7 @@
 #include "AnomalyZone.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Constructible)
 class CRadioactiveZone final : public CAnomalyZone
 {
 	using inherited = CAnomalyZone;
@@ -24,5 +25,4 @@ public:
 protected:
 	bool legacyHit = false;
 	virtual bool BlowoutState() override;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

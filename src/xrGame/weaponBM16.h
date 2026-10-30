@@ -3,6 +3,7 @@
 #include "WeaponAutomaticShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Constructible)
 class CWeaponBM16 final : public CWeaponAutomaticShotgun
 {
 	using inherited = CWeaponAutomaticShotgun;
@@ -32,5 +33,4 @@ protected:
 	bool m_bUseAltReloadSystem = false;
 	int m_iAmmoCountToReload = 2;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

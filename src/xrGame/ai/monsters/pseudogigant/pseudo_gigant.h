@@ -4,6 +4,7 @@
 #include "../../../../xrScripts/script_export_space.h"
 
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPseudoGigant final : public CBaseMonster,
 					  public CControlledEntity<CPseudoGigant> {
 	
@@ -62,5 +63,5 @@ public:
 
 	virtual void	OnEvent(NET_Packet& P, u16 type) override;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

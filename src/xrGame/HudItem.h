@@ -75,6 +75,7 @@ public:
 	virtual void			OnStateSwitch		(u8 S)				= 0;
 };
 
+XREFLECT(LuaExport)
 class CHudItem : public CHUDState
 {
 public:
@@ -175,6 +176,7 @@ public:
 
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
+	XPROPERTY(LuaCallable)
 	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
 	virtual void				on_b_hud_detach			();
 	virtual void				render_hud_mode			()					{};
@@ -387,6 +389,7 @@ public:
 	void						SetHudSection			(const shared_str& Section);
 	IC CPhysicItem&				object					() const		{ VERIFY(m_object); return(*m_object);}
 	IC CInventoryItem&			item					() const		{ VERIFY(m_item); return(*m_item);}
+	XPROPERTY(LuaCallable)
 	IC		u32					animation_slot			()				{ return m_animation_slot;}
 	InertionData&				CurrentInertionData		()				{ return m_current_inertion;}
 
@@ -412,8 +415,5 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 	virtual float GetAimFactor() const { return 0.0f; }
-
-protected:
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
