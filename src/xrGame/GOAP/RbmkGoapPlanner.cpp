@@ -697,8 +697,8 @@ bool FRbmkGoapPlanner::Search()
 	TempCameFrom.insert({StartParameters, StartParameters});
 	TempCostSoFar.insert( {StartParameters, 0});
 
-	int32 IteratorsCount  = 0;
-	static int32 IteratorsMaxCount  = 0;
+	int32_t IteratorsCount = 0;
+	static int32_t IteratorsMaxCount = 0;
 	while (!TempPriorityNode.empty())
 	{
 		FRbmkGoapParameters* CurrentNode = TempPriorityNode.back().second;
