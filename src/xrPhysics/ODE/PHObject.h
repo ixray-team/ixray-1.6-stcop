@@ -16,14 +16,14 @@ class CPHMoveStorage;
 class CPHSynchronize;
 
 typedef void CollideCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
-#ifdef		DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 class IPhysicsShellHolder;
 #endif
 
 class CPHObject:
 	public ISpatialOwner
 {
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 	friend XRPHYSICS_API void PHObjectGetBounds(const CPHObject* Object, Fvector& AABB, Fvector& Center);
 #endif
 			Flags8	m_flags;
@@ -55,7 +55,7 @@ public:
 					tpCharacter,
 					tpStaticShell
 			};
-protected:
+
 				Fvector		AABB;
 protected:
 
@@ -128,7 +128,7 @@ virtual		ECastType		CastType						(){return tpNotDefinite;}
 virtual		void			vis_update_activate				()										{}
 virtual		void			vis_update_deactivate			()										{}
 
-#ifdef		DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 virtual		IPhysicsShellHolder	*ref_object					()										=0;
 #endif
 
@@ -140,4 +140,4 @@ IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_co
 	virtual	CPHObject* dcast_CPHObject() override { return this; }
 };
 
-DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)
+DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)

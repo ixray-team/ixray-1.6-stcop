@@ -66,7 +66,7 @@ public:
 
 private:
 
-#ifdef		DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 virtual	IPhysicsShellHolder	*ref_object					() override { return PhysicsRefObject			() ;}
 #endif
 

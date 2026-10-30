@@ -12,7 +12,7 @@ dGeomID					m_geom																																							;
 Flags16					m_flags																																							;
 CSafeFixedRotationState m_safe_state																																					;			
 
-#ifdef		DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 virtual	IPhysicsShellHolder	*ref_object					() override;
 #endif
 

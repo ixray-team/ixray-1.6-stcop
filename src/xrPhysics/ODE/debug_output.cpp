@@ -197,4 +197,4 @@ void PHObjectGetBounds(const CPHObject* Object, Fvector& AABB, Fvector& Center)
 	Center.set(Object->SpatialComponent->sphere.P);
 }
 
-#endif
+#endif
