@@ -23,6 +23,9 @@ constexpr const char* kCinemaSceneFolder = "cinema_scenes\\";
 constexpr const char* kCinemaSceneExt = ".ltx";
 constexpr s32 kCinemaSceneVersion = 1;
 constexpr const char* kCinemaSettingsFile = "cinema_editor\\settings.ltx";
+constexpr const char* kCinemaPresetsFile = "cinema_editor\\presets.ltx";
+constexpr s32 kCinemaPresetVersion = 1;
+constexpr u32 kCinemaMaxPresets = 128;
 constexpr u32 kCinemaSceneMaxActors = 1024;
 constexpr u32 kCinemaSceneMaxPlaylist = 256;
 
@@ -65,6 +68,16 @@ struct SHandItem
 {
 	shared_str Section;
 	shared_str Visual;
+};
+
+struct SNpcPreset
+{
+	xr_string Name;
+	shared_str Visual;
+	shared_str Item;
+	bool Loop = false;
+	float Speed = 1.0f;
+	xr_vector<SPlaylistEntry> Playlist;
 };
 
 struct SSceneActorData
@@ -1529,7 +1542,8 @@ public:
 		Info,
 		Save,
 		Load,
-		Confirm
+		Confirm,
+		Preset
 	};
 
 	void OnFrame() override;
@@ -1574,6 +1588,16 @@ private:
 	void ShowSceneDialog(ESceneDialog mode, const char* title, const xr_vector<xr_string>& lines);
 	void DrawSceneDialog();
 	bool RestoreActorPose(SCinemaActor& actor, const SSceneActorData& data);
+
+	void LoadPresets();
+	void SavePresets();
+	void RequestSavePreset();
+	void SavePresetFromActor(const char* name);
+	void SpawnFromPreset(s32 index);
+	void ApplyPresetToActor(s32 index);
+	void DeletePreset(s32 index);
+	s32 FindPreset(const char* name) const;
+	void DrawPresetTab();
 
 	void DrawToolbar();
 	void DrawSelectedActor();
@@ -1655,6 +1679,10 @@ private:
 	bool SceneLoadRequested = false;
 	s32 ThemeIndex = 0;
 	bool SettingsLoaded = false;
+	xr_vector<SNpcPreset> Presets;
+	s32 PresetSelected = -1;
+	bool PresetsLoaded = false;
+	char PresetNameEdit[128] = {};
 };
 
 CCinemaFilmMakerManager* g_CinemaFilmMaker = nullptr;
@@ -1674,6 +1702,9 @@ void CCinemaFilmMakerManager::Shutdown()
 	SceneList.clear();
 	SceneListSelected.clear();
 	SceneNameLast.clear();
+	Presets.clear();
+	PresetsLoaded = false;
+	PresetSelected = -1;
 	SceneDialogMode = ESceneDialog::None;
 	SceneDialogRequested = false;
 	SceneLoadRequested = false;
@@ -2943,6 +2974,11 @@ static void CinemaSceneFolder(string_path& path, const shared_str& levelName)
 	FS.update_path(path, "$app_data_root$", relative);
 }
 
+static void CinemaPresetsPath(string_path& path)
+{
+	FS.update_path(path, "$app_data_root$", kCinemaPresetsFile);
+}
+
 static void CinemaScenePath(string_path& path, const shared_str& levelName, const char* sceneName)
 {
 	CinemaSceneFolder(path, levelName);
@@ -3113,6 +3149,61 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 		{
 			ImGui::CloseCurrentPopup();
 			SaveSceneFile(cleanName.c_str());
+		}
+
+		ImGui::EndDisabled();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		break;
+	}
+
+	case ESceneDialog::Preset:
+	{
+		drawLines();
+
+		ImGui::SetNextItemWidth(420.0f);
+
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere();
+		}
+
+		ImGui::InputTextWithHint("##cinema_preset_name", "Preset name", PresetNameEdit, sizeof(PresetNameEdit));
+
+		xr_string cleanName;
+		CinemaSceneCleanName(PresetNameEdit, cleanName);
+
+		bool exists = false;
+		string_path path = {};
+
+		if (!cleanName.empty())
+		{
+			CinemaPresetsPath(path);
+
+			exists = FindPreset(cleanName.c_str()) >= 0;
+
+			ImGui::TextDisabled("%s", path);
+		}
+
+		if (exists)
+		{
+			ImGui::TextDisabled("This preset already exists and will be replaced.");
+		}
+
+		ImGui::Separator();
+
+		ImGui::BeginDisabled(cleanName.empty());
+
+		if (ImGui::Button("Save", ImVec2(120.0f, 0.0f)))
+		{
+			ImGui::CloseCurrentPopup();
+			SavePresetFromActor(cleanName.c_str());
 		}
 
 		ImGui::EndDisabled();
@@ -3740,6 +3831,483 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	issues.insert(issues.begin(), summary);
 
 	ShowSceneDialog(ESceneDialog::Info, "Load scene", issues);
+}
+
+s32 CCinemaFilmMakerManager::FindPreset(const char* name) const
+{
+	if (name == nullptr || name[0] == '\0')
+	{
+		return -1;
+	}
+
+	for (s32 index = 0; index < static_cast<s32>(Presets.size()); ++index)
+	{
+		if (xr_strcmp(Presets[index].Name.c_str(), name) == 0)
+		{
+			return index;
+		}
+	}
+
+	return -1;
+}
+
+void CCinemaFilmMakerManager::LoadPresets()
+{
+	if (PresetsLoaded)
+	{
+		return;
+	}
+
+	PresetsLoaded = true;
+	Presets.clear();
+
+	string_path path = {};
+	CinemaPresetsPath(path);
+
+	std::error_code error;
+
+	if (!std::filesystem::exists(path, error))
+	{
+		return;
+	}
+
+	CInifile ini(path, TRUE, TRUE, FALSE);
+
+	for (CInifile::Sect& section : ini.sections())
+	{
+		if (section.Name.size() == 0 || _strnicmp(section.Name.c_str(), "preset_", 7) != 0)
+		{
+			continue;
+		}
+
+		if (Presets.size() >= kCinemaMaxPresets)
+		{
+			break;
+		}
+
+		const char* sect = section.Name.c_str();
+		const shared_str presetName = CinemaReadString(ini, sect, "name");
+		const shared_str visual = CinemaReadString(ini, sect, "visual");
+
+		if (presetName.size() == 0 || visual.size() == 0)
+		{
+			continue;
+		}
+
+		SNpcPreset preset;
+		preset.Name = presetName.c_str();
+		preset.Visual = visual;
+		preset.Item = CinemaReadString(ini, sect, "item");
+		preset.Loop = ini.line_exist(sect, "loop") && ini.r_bool(sect, "loop");
+		preset.Speed = ini.line_exist(sect, "speed") ? ini.r_float(sect, "speed") : 1.0f;
+
+		if (preset.Speed != preset.Speed || preset.Speed < -4.0f || preset.Speed > 4.0f)
+		{
+			preset.Speed = std::clamp(preset.Speed, -4.0f, 4.0f);
+		}
+
+		const u32 playlistCount = ini.line_exist(sect, "playlist") ? ini.r_u32(sect, "playlist") : 0;
+		const u32 playlistLimit = std::min(playlistCount, kCinemaSceneMaxPlaylist);
+
+		for (u32 index = 0; index < playlistLimit; ++index)
+		{
+			string32 line = {};
+			xr_sprintf(line, "playlist_%03u", index);
+
+			if (!ini.line_exist(sect, line))
+			{
+				continue;
+			}
+
+			const shared_str value = CinemaReadString(ini, sect, line);
+
+			if (value.size() == 0)
+			{
+				continue;
+			}
+
+			const xr_string text = value.c_str();
+			const size_t first = text.find('|');
+
+			if (first == xr_string::npos)
+			{
+				continue;
+			}
+
+			const size_t second = text.find('|', first + 1);
+
+			if (second == xr_string::npos)
+			{
+				continue;
+			}
+
+			SPlaylistEntry entry;
+			entry.Source = text.substr(0, first).c_str();
+			entry.Name = text.substr(first + 1, second - first - 1).c_str();
+			entry.Fx = text.compare(second + 1, xr_string::npos, "1") == 0;
+			preset.Playlist.push_back(entry);
+		}
+
+		Presets.push_back(std::move(preset));
+	}
+
+	if (PresetSelected >= static_cast<s32>(Presets.size()))
+	{
+		PresetSelected = static_cast<s32>(Presets.size()) - 1;
+	}
+}
+
+void CCinemaFilmMakerManager::SavePresets()
+{
+	string_path path = {};
+	CinemaPresetsPath(path);
+
+	CInifile ini(nullptr, FALSE, FALSE, FALSE);
+
+	ini.w_s32("preset", "version", kCinemaPresetVersion);
+
+	for (u32 index = 0; index < static_cast<u32>(Presets.size()); ++index)
+	{
+		const SNpcPreset& preset = Presets[index];
+
+		string32 section = {};
+		xr_sprintf(section, "preset_%03u", index);
+
+		ini.w_string(section, "name", preset.Name.c_str());
+		ini.w_string(section, "visual", preset.Visual.c_str());
+
+		if (preset.Item.size() > 0)
+		{
+			ini.w_string(section, "item", preset.Item.c_str());
+		}
+
+		ini.w_bool(section, "loop", preset.Loop);
+		ini.w_float(section, "speed", preset.Speed);
+		ini.w_u32(section, "playlist", static_cast<u32>(preset.Playlist.size()));
+
+		for (u32 entryIndex = 0; entryIndex < static_cast<u32>(preset.Playlist.size()); ++entryIndex)
+		{
+			const SPlaylistEntry& entry = preset.Playlist[entryIndex];
+
+			string32 line = {};
+			xr_sprintf(line, "playlist_%03u", entryIndex);
+
+			string1024 value = {};
+			xr_sprintf(value, "%s|%s|%u", entry.Source.c_str(), entry.Name.c_str(), entry.Fx ? 1u : 0u);
+			ini.w_string(section, line, value);
+		}
+	}
+
+	if (ini.save_as(path))
+	{
+		FS.file_update(path);
+	}
+}
+
+void CCinemaFilmMakerManager::RequestSavePreset()
+{
+	xr_vector<xr_string> lines;
+
+	const SCinemaActor* actor = GetSelectedActor();
+
+	if (actor == nullptr)
+	{
+		lines.push_back("Select an NPC first: a preset is taken from the configured NPC.");
+		ShowSceneDialog(ESceneDialog::Info, "Save preset", lines);
+		return;
+	}
+
+	LoadPresets();
+
+	xr_string defaultName = CinemaFileName(actor->Visual.c_str());
+	const size_t dot = defaultName.rfind('.');
+
+	if (dot != xr_string::npos)
+	{
+		defaultName.erase(dot);
+	}
+
+	if (defaultName.empty())
+	{
+		defaultName = "preset";
+	}
+
+	xr_strcpy(PresetNameEdit, defaultName.c_str());
+
+	ShowSceneDialog(ESceneDialog::Preset, "Save preset", lines);
+}
+
+void CCinemaFilmMakerManager::SavePresetFromActor(const char* name)
+{
+	xr_vector<xr_string> lines;
+
+	const SCinemaActor* actor = GetSelectedActor();
+
+	if (actor == nullptr)
+	{
+		lines.push_back("Select an NPC first: a preset is taken from the configured NPC.");
+		ShowSceneDialog(ESceneDialog::Info, "Save preset", lines);
+		return;
+	}
+
+	xr_string cleanName;
+	CinemaSceneCleanName(name, cleanName);
+
+	if (cleanName.empty())
+	{
+		lines.push_back("Enter a preset name.");
+		ShowSceneDialog(ESceneDialog::Info, "Save preset", lines);
+		return;
+	}
+
+	const s32 existing = FindPreset(cleanName.c_str());
+
+	if (existing < 0 && Presets.size() >= kCinemaMaxPresets)
+	{
+		lines.push_back("There are too many presets: delete one first.");
+		ShowSceneDialog(ESceneDialog::Info, "Save preset", lines);
+		return;
+	}
+
+	SNpcPreset preset;
+	preset.Name = cleanName;
+	preset.Visual = actor->Visual;
+	preset.Item = actor->ItemSection;
+	preset.Loop = actor->Loop;
+	preset.Speed = actor->Speed;
+	preset.Playlist = actor->Playlist;
+
+	if (existing >= 0)
+	{
+		Presets[existing] = preset;
+		PresetSelected = existing;
+	}
+	else
+	{
+		Presets.push_back(preset);
+		PresetSelected = static_cast<s32>(Presets.size()) - 1;
+	}
+
+	SavePresets();
+
+	string256 summary = {};
+	xr_sprintf(summary, "Preset \"%s\" saved (%u animations).", cleanName.c_str(), static_cast<u32>(preset.Playlist.size()));
+	lines.push_back(summary);
+	ShowSceneDialog(ESceneDialog::Info, "Save preset", lines);
+}
+
+void CCinemaFilmMakerManager::SpawnFromPreset(s32 index)
+{
+	if (index < 0 || index >= static_cast<s32>(Presets.size()))
+	{
+		return;
+	}
+
+	const SNpcPreset& preset = Presets[index];
+	xr_vector<xr_string> lines;
+
+	if (!AddActorInFront(preset.Visual.c_str()))
+	{
+		lines.push_back(xr_string("Could not create an NPC from preset \"") + preset.Name + "\": model is missing.");
+		ShowSceneDialog(ESceneDialog::Info, "Presets", lines);
+		return;
+	}
+
+	SCinemaActor* actor = GetSelectedActor();
+
+	if (actor == nullptr)
+	{
+		return;
+	}
+
+	actor->Loop = preset.Loop;
+	actor->Speed = preset.Speed;
+
+	if (preset.Item.size() > 0)
+	{
+		SetActorItem(*actor, preset.Item);
+	}
+
+	for (const SPlaylistEntry& entry : preset.Playlist)
+	{
+		const SAnimationSource* source = FindSource(*actor, entry.Source);
+
+		if (source == nullptr || FindClip(*source, entry.Name, entry.Fx) == nullptr)
+		{
+			continue;
+		}
+
+		actor->Playlist.push_back(entry);
+	}
+
+	actor->PlaylistSelected = actor->Playlist.empty() ? -1 : 0;
+}
+
+void CCinemaFilmMakerManager::ApplyPresetToActor(s32 index)
+{
+	SCinemaActor* actor = GetSelectedActor();
+
+	if (actor == nullptr || index < 0 || index >= static_cast<s32>(Presets.size()))
+	{
+		return;
+	}
+
+	const SNpcPreset& preset = Presets[index];
+
+	StopActor(*actor);
+
+	if (!SetActorVisual(*actor, preset.Visual.c_str(), false))
+	{
+		xr_vector<xr_string> lines;
+		lines.push_back(xr_string("Could not apply preset \"") + preset.Name + "\": model is missing.");
+		ShowSceneDialog(ESceneDialog::Info, "Presets", lines);
+		return;
+	}
+
+	actor->Loop = preset.Loop;
+	actor->Speed = preset.Speed;
+	actor->Playlist.clear();
+
+	for (const SPlaylistEntry& entry : preset.Playlist)
+	{
+		const SAnimationSource* source = FindSource(*actor, entry.Source);
+
+		if (source == nullptr || FindClip(*source, entry.Name, entry.Fx) == nullptr)
+		{
+			continue;
+		}
+
+		actor->Playlist.push_back(entry);
+	}
+
+	actor->PlaylistSelected = actor->Playlist.empty() ? -1 : 0;
+
+	ReleaseActorItem(*actor);
+
+	if (preset.Item.size() > 0)
+	{
+		SetActorItem(*actor, preset.Item);
+	}
+}
+
+void CCinemaFilmMakerManager::DeletePreset(s32 index)
+{
+	if (index < 0 || index >= static_cast<s32>(Presets.size()))
+	{
+		return;
+	}
+
+	Presets.erase(Presets.begin() + index);
+
+	if (PresetSelected >= static_cast<s32>(Presets.size()))
+	{
+		PresetSelected = static_cast<s32>(Presets.size()) - 1;
+	}
+
+	SavePresets();
+}
+
+void CCinemaFilmMakerManager::DrawPresetTab()
+{
+	LoadPresets();
+
+	SCinemaActor* actor = GetSelectedActor();
+
+	ImGui::TextDisabled("A preset stores the model, held item, loop and speed, and the animation playlist.");
+
+	ImGui::BeginDisabled(actor == nullptr);
+
+	if (ImGui::Button("Save selected NPC as preset"))
+	{
+		RequestSavePreset();
+	}
+
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
+
+	if (Presets.empty())
+	{
+		ImGui::TextDisabled("No presets yet.");
+		return;
+	}
+
+	const float listHeight = std::clamp(ImGui::GetContentRegionAvail().y - 90.0f, 120.0f, 420.0f);
+
+	ImGui::BeginChild("##cinema_preset_list", ImVec2(0.0f, listHeight), true);
+
+	s32 spawnRequest = -1;
+
+	for (s32 index = 0; index < static_cast<s32>(Presets.size()); ++index)
+	{
+		const SNpcPreset& preset = Presets[index];
+
+		ImGui::PushID(index);
+
+		string256 label = {};
+		xr_sprintf(label, "%s   (%u animations)", preset.Name.c_str(), static_cast<u32>(preset.Playlist.size()));
+
+		if (ImGui::Selectable(label, PresetSelected == index))
+		{
+			PresetSelected = index;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("%s\nitem: %s", preset.Visual.c_str(), preset.Item.size() > 0 ? preset.Item.c_str() : "<none>");
+
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				PresetSelected = index;
+				spawnRequest = index;
+			}
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::EndChild();
+
+	if (spawnRequest >= 0)
+	{
+		SpawnFromPreset(spawnRequest);
+	}
+
+	SToolbarLayout actions(ImGui::GetContentRegionAvail().x);
+
+	ImGui::BeginDisabled(PresetSelected < 0);
+
+	actions.Item(CinemaButtonWidth("Spawn") + 10.0f);
+
+	if (ImGui::Button("Spawn##preset"))
+	{
+		SpawnFromPreset(PresetSelected);
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Create a new NPC in front of you from this preset");
+	}
+
+	ImGui::BeginDisabled(actor == nullptr);
+
+	actions.Item(CinemaButtonWidth("Apply to selected") + 10.0f);
+
+	if (ImGui::Button("Apply to selected##preset"))
+	{
+		ApplyPresetToActor(PresetSelected);
+	}
+
+	ImGui::EndDisabled();
+
+	actions.Item(CinemaButtonWidth("Delete") + 10.0f);
+
+	if (ImGui::Button("Delete##preset"))
+	{
+		DeletePreset(PresetSelected);
+	}
+
+	ImGui::EndDisabled();
 }
 
 void CCinemaFilmMakerManager::DrawToolbar()
@@ -4657,6 +5225,12 @@ void CCinemaFilmMakerManager::DrawPanel()
 		if (ImGui::BeginTabItem("Model"))
 		{
 			DrawModelTab();
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Presets"))
+		{
+			DrawPresetTab();
 			ImGui::EndTabItem();
 		}
 
