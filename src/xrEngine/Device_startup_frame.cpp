@@ -3,6 +3,7 @@
 #include "Autotest.h"
 #include "EngineIcons.h"
 #include "EngineStartupFont.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 #include <lunasvg.h>
 #include <algorithm>
 #include <cmath>
@@ -23,6 +24,22 @@ void CRenderDevice::SetStartupStatus(int Progress, const char* Status)
 	{
 		s_StartupStatus = Status;
 	}
+
+	// >>> UX-PROGRESS: mirror the startup screen to the taskbar.
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (Taskbar.IsInitialized())
+	{
+		const bool Editor = DevicePtr != nullptr && DevicePtr->IsEditorMode();
+
+		xr_string Tooltip = Editor ? "IX-Ray Editor - " : "IX-Ray Engine - ";
+		Tooltip += s_StartupStatus;
+
+		Taskbar.SetState(ETaskbarProgressState::Normal);
+		Taskbar.SetProgress((u64)Progress, 100);
+		Taskbar.SetTooltip(Tooltip.c_str());
+		Taskbar.Update();
+	}
+	// <<< UX-PROGRESS
 
 	if (DevicePtr != nullptr && GRHI != nullptr && GRHI->DevicePtr != nullptr)
 	{
@@ -99,6 +116,17 @@ void CRenderDevice::FinishStartup()
 		PumpStartupFrames(1);
 	}
 	s_StartupActive = false;
+
+	// >>> UX-PROGRESS: the startup is over, flash the taskbar button.
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (Taskbar.IsInitialized())
+	{
+		Taskbar.Reset();
+		Taskbar.SetTooltip(DevicePtr != nullptr && DevicePtr->IsEditorMode() ? "IX-Ray Editor" : "IX-Ray Engine");
+		Taskbar.RequestAttention();
+		Taskbar.Update();
+	}
+	// <<< UX-PROGRESS
 }
 
 void CRenderDevice::StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress, const char* TargetStatus)

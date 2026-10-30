@@ -16,6 +16,7 @@
 #include "device_win_custom.h"
 #include "../../../Include/xrRender/UIRender.h"
 #include "../../../Include/xrRender/RenderFactory.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
 #include <lunasvg.h>
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
@@ -142,6 +143,10 @@ void CEditorRenderDevice::Initialize()
 
 	// The window has no background brush: show a black frame with the logo until the first editor frame
 	DrawStartupFrame(true);
+
+	// >>> UX-PROGRESS: the window exists now, so the startup progress can reach the taskbar.
+	CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
+	// <<< UX-PROGRESS
 	
 
 	if (psDeviceFlags.test(mtSound))
