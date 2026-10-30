@@ -350,26 +350,47 @@ void CRender::level_Unload()
 	Lights.Unload			();
 
 	//*** Visuals
-	for (I=0; I<Visuals.size(); I++)
+	for (auto& elem : Visuals)
 	{
-		Visuals[I]->Release();
-		xr_delete(Visuals[I]);
+		elem->Release();
+		xr_delete(elem);
 	}
 	Visuals.clear			();
 
 	//*** SWI
-	for (I=0; I<SWIs.size();I++)xr_free	(SWIs[I].sw);
-	SWIs.clear				();
+	for (auto& elem : nGlobalData.SWIs)
+	{
+		xr_free(elem.sw);
+	}
+	nGlobalData.SWIs.clear();
 
 	//*** VB/IB
-	for (I=0; I<nVB.size(); I++)	_RELEASE(nVB[I]);
-	for (I=0; I<xVB.size(); I++)	_RELEASE(xVB[I]);
-	nVB.clear(); xVB.clear();
-	for (I=0; I<nIB.size(); I++)	_RELEASE(nIB[I]);
-	for (I=0; I<xIB.size(); I++)	_RELEASE(xIB[I]);
-	nIB.clear(); xIB.clear();
-	nDC.clear(); xDC.clear();
-	nVBBase.clear(); xVBBase.clear(); nIBBase.clear(); xIBBase.clear();
+	for (auto& elem : nGlobalData.VB)
+	{
+		_RELEASE(elem);
+	}
+	for (auto& elem : xGlobalData.VB)
+	{
+		_RELEASE(elem);
+	}
+	nGlobalData.VB.clear();
+	xGlobalData.VB.clear();
+	for (auto& elem : nGlobalData.IB)
+	{
+		_RELEASE(elem);
+	}
+	for (auto& elem : xGlobalData.IB)
+	{
+		_RELEASE(elem);
+	}
+	nGlobalData.IB.clear();
+	xGlobalData.IB.clear();
+	nGlobalData.DCL.clear();
+	xGlobalData.DCL.clear();
+	nGlobalData.VBBase.clear(); 
+	xGlobalData.VBBase.clear(); 
+	nGlobalData.IBBase.clear(); 
+	xGlobalData.IBBase.clear();
 
 	//*** Components
 	xr_delete(L_Projector);
@@ -390,21 +411,22 @@ void CRender::level_Unload()
 
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<VertexDeclarator> &_DC	= _alternative?xDC:nDC;
-	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xVB:nVB;
+	xr_vector<VertexDeclarator> &_DC	= _alternative?xGlobalData.DCL:nGlobalData.DCL;
+	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xGlobalData.VB:nGlobalData.VB;
 	
 	// Vertex buffers
 	u32 count = fs.r_u32();
 	_DC.resize(count);
 	_VB.resize(count);
 
-	ReadVBChunk(_VB, _DC, count, fs, _alternative ? &xVBBase : &nVBBase);
+	ReadVBChunk(_VB, _DC, count, fs, _alternative ? xGlobalData.VBBase : nGlobalData.VBBase);
 }
 
 void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<IRHIBuffer*>& _IB	= _alternative?xIB:nIB;
-	xr_vector<u32>& _Base		= _alternative?xIBBase:nIBBase;
+	xr_vector<IRHIBuffer*>& _IB	= _alternative?xGlobalData.IB:nGlobalData.IB;
+	xr_vector<u32>& _Base		= _alternative?xGlobalData.IBBase:nGlobalData.IBBase;
+	ReadIBChunk(_IB, fs, _Base);
 
 	// Index buffers
 	u32 count = fs.r_u32();
@@ -579,24 +601,7 @@ void CRender::LoadSectors(IReader* fs)
 
 void CRender::LoadSWIs(IReaderBase& fs)
 {
-	// allocate memory for portals
-	u32 item_count = fs.r_u32();
-	for (auto& elem : SWIs)
-	{
-		xr_free(elem.sw);
-	}
-	SWIs.clear();
-	SWIs.resize(item_count);
-	for (auto& swi : SWIs){
-		swi.reserved[0]	= fs.r_u32();	
-		swi.reserved[1]	= fs.r_u32();	
-		swi.reserved[2]	= fs.r_u32();	
-		swi.reserved[3]	= fs.r_u32();	
-		swi.count = fs.r_u32();
-		VERIFY(nullptr==swi.sw);
-		swi.sw = xr_alloc<FSlideWindow> (swi.count);
-		fs.r(swi.sw,sizeof(FSlideWindow)*swi.count);
-	}
+	ReadSWIsChunk(nGlobalData.SWIs, fs);
 }
 
 void CRender::Load3DFluid()

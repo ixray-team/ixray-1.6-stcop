@@ -204,11 +204,11 @@ public:
 		PHASE_REFLECT = 2,
 	};
 public:
-	//virtual GeomData& GetMUSlot(shared_str Name) = 0;
+	virtual GeomData& GetMUSlot(shared_str Name) = 0;
 	
-	//virtual void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) = 0;
-	//virtual void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) = 0;
-	//virtual void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) = 0;
+	virtual void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>& OutBase) = 0;
+	virtual void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs, xr_vector<u32>& OutBase) = 0;
+	virtual void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) = 0;
 
 	// data
 	CFrustum						ViewBase;

@@ -238,7 +238,7 @@ void CRender::rmNormal()
 	GRHI->SetViewport(VP);
 }
 
-void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase)
+void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>& OutBase)
 {
 	xr_vector<FixedVector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
 	LegacyDeclBuffer.resize(Count);
@@ -320,12 +320,14 @@ void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDec
 		OutBuffer[i]->AddRef();
 	}
 
-	if (OutBase)
-	{
-		OutBase->resize(Count);
+	//if (OutBase)
+	//{
+		OutBase.resize(Count);
 		for (u32 i = 0; i < Count; i++)
-			(*OutBase)[i] = Offset[i] / VertSize[i];
-	}
+		{
+			OutBase[i] = Offset[i] / VertSize[i];
+		}
+	//}
 
 	for (u32 i = 0; i < Count; i++)
 	{
@@ -347,5 +349,69 @@ void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDec
 
 			DeclBuffer[i].push_back(rhiElem);
 		}
+	}
+}
+	
+void CRender::ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs, xr_vector<u32>& OutBase)
+{
+	// Index buffers
+	u32 count = fs.r_u32();
+	OutBuffer.resize(count);
+	OutBase.resize(count);
+
+	const intptr_t Start = fs.tell();
+	xr_vector<u32> PoolIndices, PoolOf(count);
+	for (u32 i=0; i<count; i++)
+	{
+		u32 iCount = fs.r_u32();
+		fs.advance(intptr_t(iCount)*2);
+		if (PoolIndices.empty() || u64(PoolIndices.back()) + iCount > (64ull << 20))
+			PoolIndices.push_back(0);
+		PoolOf[i] = u32(PoolIndices.size()) - 1;
+		OutBase[i] = PoolIndices.back();
+		PoolIndices.back() += iCount;
+	}
+	fs.advance(Start - fs.tell());
+
+	u32 i = 0;
+	for (u32 p = 0; p < PoolIndices.size(); p++)
+	{
+		xr_vector<u16> Data(PoolIndices[p]);
+		const u32 First = i;
+		for (; i<count && PoolOf[i]==p; i++)
+		{
+			u32 iCount = fs.r_u32();
+			fs.r(Data.data() + OutBase[i], iCount*2);
+		}
+		RHIUtils::CreateIndexBuffer(&OutBuffer[First], Data.data(), PoolIndices[p]*2);
+		for (u32 j=First+1; j<i; j++)
+		{
+			OutBuffer[j] = OutBuffer[First];
+			OutBuffer[j]->AddRef();
+		}
+	}
+}
+
+void CRender::ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs)
+{
+	// allocate memory for portals
+	u32 item_count		= fs.r_u32();	
+
+	for (auto& elem : SWIs)
+	{
+		xr_free(elem.sw);
+	}
+
+	SWIs.resize(item_count);
+
+	for (auto& swi : SWIs){
+		swi.reserved[0]	= fs.r_u32();	
+		swi.reserved[1]	= fs.r_u32();	
+		swi.reserved[2]	= fs.r_u32();	
+		swi.reserved[3]	= fs.r_u32();	
+		swi.count = fs.r_u32();	
+		VERIFY(!swi.sw);
+		swi.sw = xr_alloc<FSlideWindow>(swi.count);
+		fs.r(swi.sw,sizeof(FSlideWindow)*swi.count);
 	}
 }

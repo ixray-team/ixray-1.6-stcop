@@ -102,14 +102,16 @@ public:
 	R_occlusion													HWOCC;
 
 	// Global vertex-buffer container
-	xr_vector<FSlideWindowItem>									SWIs;
+	//xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader> ShadersLevel;
-	xr_hash_map<shared_str, ref_shader> ShadersShared;
-	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
-	xr_vector<VertexDeclarator>									nDC,xDC;
-	xr_vector<IRHIBuffer*>							nVB,xVB;
-	xr_vector<IRHIBuffer*>							nIB,xIB;
-	xr_vector<u32>									nVBBase,xVBBase,nIBBase,xIBBase;
+	xr_hash_map<shared_str, ref_shader> ShadersShared;	
+	GeomData nGlobalData, xGlobalData;
+	xr_hash_map<shared_str, GeomData> MUData;
+	//using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
+	//xr_vector<VertexDeclarator>									nDC,xDC;
+	//xr_vector<IRHIBuffer*>							nVB,xVB;
+	//xr_vector<IRHIBuffer*>							nIB,xIB;
+	//xr_vector<u32>									nVBBase,xVBBase,nIBBase,xIBBase;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -179,6 +181,8 @@ private:
 	void							RenderMainDynamic			();
 
 public:
+	virtual GeomData& GetMUSlot(shared_str Name) override {return MUData[Name];}
+	
 	void							render_main					(bool deffered, bool zfill = false);
 	void render_static();
 	void							render_forward				();
@@ -202,8 +206,8 @@ public:
 	RHIInputElementDesc*			getVB_Format				(int id, size_t* Count, bool	_alt=false);
 	IRHIBuffer*			getVB						(int id, bool	_alt=false);
 	IRHIBuffer*			getIB						(int id, bool	_alt=false);
-	u32					getVB_Base					(int id, bool	_alt=false)	{ return (_alt?xVBBase:nVBBase)[id]; }
-	u32					getIB_Base					(int id, bool	_alt=false)	{ return (_alt?xIBBase:nIBBase)[id]; }
+	u32					getVB_Base					(int id, bool	_alt=false)	{ return (_alt?xGlobalData.VBBase:nGlobalData.VBBase)[id]; }
+	u32					getIB_Base					(int id, bool	_alt=false)	{ return (_alt?xGlobalData.IBBase:nGlobalData.IBBase)[id]; }
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();
@@ -437,6 +441,8 @@ public:
 	virtual IRender_DetailModel*	model_CreateDM				(IReader* F);
 	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0) override;
 	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data) override;
+	virtual IRenderVisual*			model_GetPrototype			(str_c name) override;
+	virtual CDB::MODEL*				model_GetPrototypeCollision(str_c name) override;
 	virtual IRenderVisual*			model_Duplicate				(IRenderVisual*	V) override;
 	virtual void					model_Delete				(IRenderVisual* &	V, bool bDiscard) override;
 	virtual void					model_Delete_Deffered		(IRenderVisual* &	V) override;
@@ -532,6 +538,10 @@ private:
 	ref_shader						EditorDepthUpscaleShader;
 
 public:
+	virtual void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>& OutBase) override;
+	virtual void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs, xr_vector<u32>& OutBase) override;
+	virtual void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override;
+
 
 private:
 	ShaderExternalMap				m_ShaderOptions;
@@ -541,7 +551,7 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
+	//void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
 extern RENDER_API CRender			RImplementation;
