@@ -378,7 +378,7 @@ void	CPHActivationShape::		set_rotation						(const	Fmatrix	&sof)
 
 
 
-#ifdef		DEBUG
+#if defined(DEBUG) || defined(DEBUG_DRAW)
 IPhysicsShellHolder* CPHActivationShape::ref_object	()
 {
 	VERIFY(m_geom);
