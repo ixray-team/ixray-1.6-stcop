@@ -76,6 +76,7 @@ struct SNpcPreset
 	xr_string Name;
 	shared_str Visual;
 	shared_str Item;
+	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f); 
 	bool Loop = false;
 	float Speed = 1.0f;
 	xr_vector<SPlaylistEntry> Playlist;
@@ -87,6 +88,7 @@ struct SSceneActorData
 	shared_str Visual;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fvector Rotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f);
 	bool Loop = false;
 	float Speed = 1.0f;
 	shared_str Item;
@@ -284,6 +286,7 @@ struct SCinemaActor
 	shared_str Visual;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fmatrix Orientation;
+	Fvector Scale = Fvector().set(1.0f, 1.0f, 1.0f);
 	Fbox LocalBox;
 	IRenderVisual* Model = nullptr;
 	IKinematics* Skeleton = nullptr;
@@ -1182,6 +1185,9 @@ static void UpdateActorPlacement(SCinemaActor& actor)
 
 	Fmatrix transform = actor.Orientation;
 	transform.c = actor.Position;
+	transform.i.mul(actor.Scale.x);
+	transform.j.mul(actor.Scale.y);
+	transform.k.mul(actor.Scale.z);
 	actor.Object.Bind(actor.Model, transform);
 
 	UpdateActorItemPlacement(actor);
@@ -2817,8 +2823,8 @@ bool CCinemaFilmMakerManager::SnapActorToGround(SCinemaActor& actor)
 
 	if (actor.LocalBox.is_valid())
 	{
-		bottom = actor.LocalBox.min.y;
-		top = actor.LocalBox.max.y;
+		bottom = actor.LocalBox.min.y * actor.Scale.y;
+		top = actor.LocalBox.max.y * actor.Scale.y;
 	}
 
 	Fvector traceStart = actor.Position;
@@ -3010,6 +3016,7 @@ void CCinemaFilmMakerManager::DuplicateSelectedActor(bool withPlaylist, bool sta
 	actor->Position = source->Position;
 	actor->Position.mad(Device.vCameraRight, 1.0f);
 	actor->Orientation = source->Orientation;
+	actor->Scale = source->Scale;
 
 	if (withPlaylist)
 	{
@@ -3517,6 +3524,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		ini.w_string(section, "visual", actor.Visual.c_str());
 		ini.w_fvector3(section, "position", actor.Position);
 		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_fvector3(section, "scale", actor.Scale);
 		ini.w_bool(section, "loop", actor.Loop);
 		ini.w_float(section, "speed", actor.Speed);
 
@@ -3751,11 +3759,20 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			data.Rotation = ini.r_fvector3(sect, "rotation");
 		}
 
-		if (!_valid(data.Position) || !_valid(data.Rotation))
+		if (ini.line_exist(sect, "scale"))
+		{
+			data.Scale = ini.r_fvector3(sect, "scale");
+		}
+
+		if (!_valid(data.Position) || !_valid(data.Rotation) || !_valid(data.Scale))
 		{
 			warnings.push_back(xr_string("Broken coordinates for \"") + data.Name + "\" - NPC skipped.");
 			continue;
 		}
+
+		data.Scale.x = std::clamp(data.Scale.x, 0.1f, 5.0f);
+		data.Scale.y = std::clamp(data.Scale.y, 0.1f, 5.0f);
+		data.Scale.z = std::clamp(data.Scale.z, 0.1f, 5.0f);
 
 		data.Loop = ini.line_exist(sect, "loop") && ini.r_bool(sect, "loop");
 		data.Speed = ini.line_exist(sect, "speed") ? ini.r_float(sect, "speed") : 1.0f;
@@ -3875,6 +3892,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 		actor->Name = data.Name;
 		actor->Position = data.Position;
 		actor->Orientation.setHPB(deg2rad(data.Rotation.x), deg2rad(data.Rotation.y), deg2rad(data.Rotation.z));
+		actor->Scale = data.Scale;
 		actor->Loop = data.Loop;
 		actor->Speed = data.Speed;
 
@@ -3998,6 +4016,15 @@ void CCinemaFilmMakerManager::LoadPresets()
 		preset.Name = presetName.c_str();
 		preset.Visual = visual;
 		preset.Item = CinemaReadString(ini, sect, "item");
+
+		if (ini.line_exist(sect, "scale"))
+		{
+			preset.Scale = ini.r_fvector3(sect, "scale");
+		}
+
+		preset.Scale.x = std::clamp(preset.Scale.x, 0.1f, 5.0f);
+		preset.Scale.y = std::clamp(preset.Scale.y, 0.1f, 5.0f);
+		preset.Scale.z = std::clamp(preset.Scale.z, 0.1f, 5.0f);
 		preset.Loop = ini.line_exist(sect, "loop") && ini.r_bool(sect, "loop");
 		preset.Speed = ini.line_exist(sect, "speed") ? ini.r_float(sect, "speed") : 1.0f;
 
@@ -4081,6 +4108,7 @@ void CCinemaFilmMakerManager::SavePresets()
 			ini.w_string(section, "item", preset.Item.c_str());
 		}
 
+		ini.w_fvector3(section, "scale", preset.Scale);
 		ini.w_bool(section, "loop", preset.Loop);
 		ini.w_float(section, "speed", preset.Speed);
 		ini.w_u32(section, "playlist", static_cast<u32>(preset.Playlist.size()));
@@ -4173,6 +4201,7 @@ void CCinemaFilmMakerManager::SavePresetFromActor(const char* name)
 	preset.Name = cleanName;
 	preset.Visual = actor->Visual;
 	preset.Item = actor->ItemSection;
+	preset.Scale = actor->Scale;
 	preset.Loop = actor->Loop;
 	preset.Speed = actor->Speed;
 	preset.Playlist = actor->Playlist;
@@ -4220,6 +4249,7 @@ void CCinemaFilmMakerManager::SpawnFromPreset(s32 index)
 		return;
 	}
 
+	actor->Scale = preset.Scale;
 	actor->Loop = preset.Loop;
 	actor->Speed = preset.Speed;
 
@@ -4264,6 +4294,7 @@ void CCinemaFilmMakerManager::ApplyPresetToActor(s32 index)
 		return;
 	}
 
+	actor->Scale = preset.Scale;
 	actor->Loop = preset.Loop;
 	actor->Speed = preset.Speed;
 	actor->Playlist.clear();
@@ -4749,6 +4780,34 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		}
 
 		ImGui::TextDisabled("H / P / B, degrees");
+
+		if (ImGui::Button("Reset tilt##actor"))
+		{
+			const Fvector forward = actor->Orientation.k;
+			const float heading = -atan2f(forward.x, forward.z);
+			actor->Orientation.setHPB(heading, 0.0f, 0.0f);
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Straighten the NPC: keep the heading and drop the slope tilt");
+		}
+
+		Fvector scale = actor->Scale;
+
+		if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.1f, 5.0f, "%.2f"))
+		{
+			actor->Scale = scale;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::SmallButton("Reset##scale"))
+		{
+			actor->Scale.set(1.0f, 1.0f, 1.0f);
+		}
+
+		ImGui::TextDisabled("XYZ scale of the model");
 	}
 }
 
@@ -5704,6 +5763,8 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 		{
 			radius = 0.5f;
 		}
+
+		radius *= std::max(actor.Scale.x, std::max(actor.Scale.y, actor.Scale.z));
 
 		float distance = 0.0f;
 
