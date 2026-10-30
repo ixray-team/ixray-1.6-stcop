@@ -26,6 +26,9 @@ option(IXRAY_DISCORD_RPC "Enable Discord activity" ${WIN32})
 option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
 
+set(IXRAY_PHYSICS_BACKEND "ODE" CACHE STRING "Physics backend for xrPhysics: ODE or Box3D")
+set_property(CACHE IXRAY_PHYSICS_BACKEND PROPERTY STRINGS ODE Box3D)
+
 set(IXRAY_BUILD_BATCH_SIZE "32" CACHE STRING "UNITY_BUILD_BATCH_SIZE")
 
 # CI trash
