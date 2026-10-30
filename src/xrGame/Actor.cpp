@@ -1786,6 +1786,11 @@ void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
 
+	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
+	{
+		PKinematics(Visual())->CalculateBones();
+	}
+
 	if (g_dedicated_server && g_Alive())
 	{
 		CheckFlyhack();
@@ -2717,11 +2722,6 @@ void CActor::shedule_Update	(u32 DT)
 	setSVU							(OnServer());
 
 	CActorAuraPostEffectsBalancer::update	();
-
-	if (cam_active == eacFirstEye && !psGameFlags.test(rsActorShadow))
-	{
-		PKinematics(Visual())->CalculateBones();
-	}
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
