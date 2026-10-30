@@ -19,7 +19,7 @@ public:
 	IPHCharacter* GetCharacter(bool First) const;
 	bool HasObjectCallback(bool First, ObjectContactCallbackFun* Callback) const;
 	bool GetLastPosition(bool First, Fvector& Position) const;
-	bool GetPushingNegTriangle(bool First, const Fvector* Verts, Fvector& Normal, float& Dist) const;
+	bool GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist) const;
 
 	const Fvector& GetPosition() const;
 	const Fvector& GetNormal() const;

@@ -233,9 +233,7 @@ int dcTriListCollider::dSortedTriCyl(
 	}
 	if (ret && dGeomGetUserData(o1)->callback)
 	{
-		Fvector verts[3];
-		T.GetVerts(verts);
-		PHCallContactCallback(dGeomGetUserData(o1)->callback(Tri, verts, contact));
+		PHCallContactCallback(dGeomGetUserData(o1)->callback, T, contact);
 	}
 	return ret;
 }
@@ -857,9 +855,7 @@ depth##ox=sidePr-dFabs(dist##ox);\
 	}
 	if (ret && dGeomGetUserData(o1)->callback)
 	{
-		Fvector Verts[3];
-		T->T.GetVerts(Verts);
-		PHCallContactCallback(dGeomGetUserData(o1)->callback(Tri, Verts, contact));
+		PHCallContactCallback(dGeomGetUserData(o1)->callback, T->T, contact);
 	}
 	return ret;
 }

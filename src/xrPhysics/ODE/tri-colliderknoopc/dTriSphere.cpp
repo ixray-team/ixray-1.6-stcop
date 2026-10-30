@@ -188,9 +188,7 @@ int dcTriListCollider::dSortedTriSphere(const dReal* /**v1/**/,
 		((dxGeomUserData*)dGeomGetData(Sphere))->tri_material = Tri.material;
 		if (dGeomGetUserData(Sphere)->callback)
 		{
-			Fvector Verts[3];
-			T.GetVerts(Verts);
-			PHCallContactCallback(dGeomGetUserData(Sphere)->callback(Tri, Verts, Contacts));
+			PHCallContactCallback(dGeomGetUserData(Sphere)->callback, T, Contacts);
 		}
 		SURFACE(Contacts, 0)->mode = Tri.material;
 		//////////////////////////////////
@@ -291,9 +289,7 @@ int dcTriListCollider::dTriSphere(const dReal* v0,
 	((dxGeomUserData*)dGeomGetData(Sphere))->tri_material = Tri.material;
 	if (dGeomGetUserData(Sphere)->callback)
 	{
-		Fvector Verts[3];
-		T->T.GetVerts(Verts);
-		PHCallContactCallback(dGeomGetUserData(Sphere)->callback(Tri, Verts, Contacts));
+		PHCallContactCallback(dGeomGetUserData(Sphere)->callback, T->T, Contacts);
 	}
 	SURFACE(Contacts, 0)->mode = Tri.material;
 	//////////////////////////////////

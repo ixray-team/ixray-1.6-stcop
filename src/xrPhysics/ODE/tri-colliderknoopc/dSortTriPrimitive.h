@@ -48,7 +48,7 @@ IC bool negative_tri_set_ignored_by_positive_tri(const Triangle& neg_tri, const 
 	       !common2 && !(dDOT(neg_tri.norm, (dReal*)&PosVertsArr[2]) > neg_tri.pos);
 }
 
-int SetBackTrajectoryCnt(const dReal* p, const dReal* last_pos, Triangle& neg_tri, dxGeom* o1, dxGeom* o2, dContactGeom* Contacts)
+IC int SetBackTrajectoryCnt(const dReal* p, const dReal* last_pos, Triangle& neg_tri, dxGeom* o1, dxGeom* o2, dContactGeom* Contacts)
 {
 	Contacts->g1 = const_cast<dxGeom*>(o2);
 	Contacts->g2 = const_cast<dxGeom*>(o1);
@@ -81,9 +81,7 @@ int SetBackTrajectoryCnt(const dReal* p, const dReal* last_pos, Triangle& neg_tr
 
 	if (dGeomGetUserData(o1)->callback)
 	{
-		Fvector verts[3];
-		neg_tri.T.GetVerts(verts);
-		PHCallContactCallback(dGeomGetUserData(o1)->callback,neg_tri.T.GetTri(), verts, Contacts);
+		PHCallContactCallback(dGeomGetUserData(o1)->callback, neg_tri.T, Contacts);
 	}
 	return 1;
 }

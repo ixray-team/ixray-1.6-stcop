@@ -60,7 +60,7 @@ bool CPHContact::GetLastPosition(bool First, Fvector& Position) const
 	return true;
 }
 
-bool CPHContact::GetPushingNegTriangle(bool First, const Fvector* Verts, Fvector& Normal, float& Dist) const
+bool CPHContact::GetPushingNegTriangle(bool First, Fvector& Normal, float& Dist) const
 {
 	dGeomID Geom = First ? Contact.geom.g1 : Contact.geom.g2;
 	dxGeomUserData* Data = retrieveGeomUserData(Geom);
@@ -70,7 +70,7 @@ bool CPHContact::GetPushingNegTriangle(bool First, const Fvector* Verts, Fvector
 	}
 
 	Triangle NegTri;
-	CalculateTriangle(Data->neg_tri, Geom, NegTri, Verts);
+	CalculateTriangle(Data->neg_tri, Geom, NegTri);
 	Normal.set(cast_fv(NegTri.norm));
 	Dist = NegTri.dist;
 	return true;

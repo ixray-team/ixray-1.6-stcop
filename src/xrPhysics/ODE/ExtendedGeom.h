@@ -144,7 +144,7 @@ IC dGeomID retrieveGeom(dGeomID geom)
 		return geom;
 }
 
-void PHCallContactCallback(ContactCallbackFun* Callback, CDB::TRI* T, const dContactGeom* c);
+void PHCallContactCallback(ContactCallbackFun* Callback, const TriabgleCDBData& T, const dContactGeom* c);
 XRPHYSICS_API dxGeomUserData* PHRetrieveGeomUserData(dGeomID geom);
 IC dxGeomUserData* retrieveGeomUserData(dGeomID geom)
 {

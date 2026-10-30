@@ -209,8 +209,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, CPHContact&
 			{
 				Fvector neg_norm;
 				float neg_dist;
-				huinya.fix();
-				if (c.GetPushingNegTriangle(has_ud1, Level().ObjectSpace.GetStaticVerts().data(), neg_norm, neg_dist))
+				if (c.GetPushingNegTriangle(has_ud1, neg_norm, neg_dist))
 				{
 					Fvector velocity;
 					l_this->PHGetLinearVell(velocity);

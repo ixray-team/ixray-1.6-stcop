@@ -127,7 +127,7 @@ void CHelicopter::reload(const char* section)
 void CollisionCallbackAlife(bool& do_colide,bool bo1,CPHContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	do_colide=false; }
 
-void ContactCallbackAlife(const CDB::TRI& T,const SPHShotMarkContact& c)
+void ContactCallbackAlife(const CDB::TRI& T, Fvector* verts,const SPHShotMarkContact& c)
 {
 }
 bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
