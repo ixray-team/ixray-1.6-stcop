@@ -33,4 +33,4 @@ int CollideSelfGeoms(dGeomID o1, dGeomID o2, CPHObject* obj);
 class CPHElement;
 class CPHShell;
 extern dJointGroupID ContactGroup;
-extern Fbox			 phBoundaries;
+extern Fbox			 phBoundaries;
