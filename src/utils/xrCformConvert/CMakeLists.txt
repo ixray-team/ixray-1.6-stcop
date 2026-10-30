@@ -20,6 +20,8 @@ file(GLOB_RECURSE UTILS_LVLFCONV_SOURCE_LOG_FILES CONFIGURE_DEPENDS
     "../xrLevelBuilder/UI/CompilerTaskbar.h"
     "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.cpp"
     "../xrLevelBuilder/UI/imgui_impl_sdlrenderer3.h"
+    "../../Editors/xrEUI/imgui_impl_sdl3.cpp"
+    "../../Editors/xrEUI/imgui_impl_sdl3.h"
     "../../xrServerEntities/server_entity_wrapper.h"
     "../../xrServerEntities/server_entity_wrapper.cpp"
     "../../xrServerEntities/server_entity_wrapper_inline.h"
