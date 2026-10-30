@@ -295,6 +295,7 @@ struct SCinemaActor
 	xr_vector<xr_unique_ptr<SBindBoneParam>> BindPoseBones;
 	bool BindPose = false;
 	xr_vector<SAnimationSource> Sources;
+	xr_vector<shared_str> AppliedExtraPaths;
 	xr_vector<SPlaylistEntry> Playlist;
 	s32 PlaylistIndex = -1;
 	s32 PlaylistSelected = -1;
@@ -1072,6 +1073,7 @@ static void ReleaseActorModel(SCinemaActor& actor)
 	actor.Animated = nullptr;
 	actor.LocalBox.invalidate();
 	actor.Sources.clear();
+	actor.AppliedExtraPaths.clear();
 }
 
 static void ReleaseActorItem(SCinemaActor& actor)
@@ -1597,6 +1599,11 @@ private:
 	void DrawSceneDialog();
 	bool RestoreActorPose(SCinemaActor& actor, const SSceneActorData& data);
 
+	void ApplyExtraSources(SCinemaActor& actor);
+	void AddExtraAnimationPath(const char* path);
+	void RemoveExtraAnimationPath(s32 index);
+	void DrawExtraSources();
+
 	void LoadPresets();
 	void SavePresets();
 	void RequestSavePreset();
@@ -1690,6 +1697,9 @@ private:
 	bool SpawnFromCamera = false;
 	bool SnapToGround = true;
 	xr_vector<SNpcPreset> Presets;
+	xr_vector<xr_string> ExtraAnimationPaths;
+	xr_string ExtraPathStatus;
+	char ExtraPathEdit[260] = {};
 	s32 PresetSelected = -1;
 	bool PresetsLoaded = false;
 	char PresetNameEdit[128] = {};
@@ -1778,6 +1788,24 @@ void CCinemaFilmMakerManager::LoadSettings()
 	SpawnFromCamera = ini.read_if_exists<bool>("editor", "spawn_from_camera", SpawnFromCamera);
 	SnapToGround = ini.read_if_exists<bool>("editor", "snap_to_ground", SnapToGround);
 
+	for (s32 index = 0; index < 64; ++index)
+	{
+		string32 key = {};
+		xr_sprintf(key, "extra_%d", index);
+
+		if (!ini.line_exist("editor", key))
+		{
+			break;
+		}
+
+		const char* value = ini.r_string("editor", key);
+
+		if (value != nullptr && value[0] != '\0')
+		{
+			ExtraAnimationPaths.emplace_back(value);
+		}
+	}
+
 	const char* themeId = ini.line_exist("editor", "theme") ? ini.r_string("editor", "theme") : nullptr;
 
 	if (themeId == nullptr)
@@ -1804,6 +1832,13 @@ void CCinemaFilmMakerManager::SaveSettings()
 	ini.w_string("editor", "theme", GetTheme().Id);
 	ini.w_bool("editor", "spawn_from_camera", SpawnFromCamera);
 	ini.w_bool("editor", "snap_to_ground", SnapToGround);
+
+	for (u32 index = 0; index < static_cast<u32>(ExtraAnimationPaths.size()); ++index)
+	{
+		string32 key = {};
+		xr_sprintf(key, "extra_%u", index);
+		ini.w_string("editor", key, ExtraAnimationPaths[index].c_str());
+	}
 
 	if (ini.save_as(path))
 	{
@@ -2128,6 +2163,8 @@ void CCinemaFilmMakerManager::BuildActorSources(SCinemaActor& actor)
 	{
 		return;
 	}
+
+	ApplyExtraSources(actor);
 
 	xr_set<shared_str> added;
 
@@ -3969,6 +4006,224 @@ s32 CCinemaFilmMakerManager::FindPreset(const char* name) const
 	return -1;
 }
 
+static void CinemaNormalizeOmfPath(const char* path, xr_string& result)
+{
+	result.clear();
+
+	if (path == nullptr)
+	{
+		return;
+	}
+
+	xr_string text = path;
+
+	while (!text.empty() && (text.front() == ' ' || text.front() == '\t'))
+	{
+		text.erase(text.begin());
+	}
+
+	while (!text.empty() && (text.back() == ' ' || text.back() == '\t'))
+	{
+		text.pop_back();
+	}
+
+	for (char& symbol : text)
+	{
+		if (symbol == '/')
+		{
+			symbol = '\\';
+		}
+	}
+
+	while (!text.empty() && text.front() == '\\')
+	{
+		text.erase(text.begin());
+	}
+
+	const xr_string_view meshPrefix = "gamedata\\meshes\\";
+
+	if (text.size() > meshPrefix.size() && _strnicmp(text.c_str(), meshPrefix.data(), static_cast<size_t>(meshPrefix.size())) == 0)
+	{
+		text.erase(0, meshPrefix.size());
+	}
+
+	const size_t length = text.size();
+
+	if (length > 6 && _stricmp(text.c_str() + length - 6, "\\*.omf") == 0)
+	{
+		result = text;
+		return;
+	}
+
+	if (length > 4 && _stricmp(text.c_str() + length - 4, ".omf") == 0)
+	{
+		text.erase(length - 4);
+	}
+
+	result = text;
+}
+
+static bool CinemaExtraPathHasOmf(const char* path)
+{
+	if (strstr(path, "\\*.omf") != nullptr)
+	{
+		FS_FileSet files;
+		FS.file_list(files, _game_meshes_, FS_ListFiles, path);
+		FS.file_list(files, "$level$", FS_ListFiles, path);
+		return !files.empty();
+	}
+
+	string_path name = {};
+	xr_strconcat(name, path, ".omf");
+
+	return FS.exist(_game_meshes_, name) != nullptr || FS.exist("$level$", name) != nullptr;
+}
+
+void CCinemaFilmMakerManager::ApplyExtraSources(SCinemaActor& actor)
+{
+	if (actor.Animated == nullptr || ExtraAnimationPaths.empty())
+	{
+		return;
+	}
+
+	for (const xr_string& path : ExtraAnimationPaths)
+	{
+		bool applied = false;
+
+		for (const shared_str& done : actor.AppliedExtraPaths)
+		{
+			if (xr_strcmp(done.c_str(), path.c_str()) == 0)
+			{
+				applied = true;
+				break;
+			}
+		}
+
+		if (applied)
+		{
+			continue;
+		}
+
+		actor.Animated->append_motion_from_path(actor.Visual.c_str(), path.c_str());
+		actor.AppliedExtraPaths.emplace_back(path.c_str());
+	}
+}
+
+void CCinemaFilmMakerManager::AddExtraAnimationPath(const char* path)
+{
+	xr_string clean;
+	CinemaNormalizeOmfPath(path, clean);
+
+	if (clean.empty())
+	{
+		return;
+	}
+
+	for (const xr_string& existing : ExtraAnimationPaths)
+	{
+		if (_stricmp(existing.c_str(), clean.c_str()) == 0)
+		{
+			SCinemaActor* actor = GetSelectedActor();
+
+			if (actor != nullptr)
+			{
+				BuildActorSources(*actor);
+			}
+
+			return;
+		}
+	}
+
+	ExtraAnimationPaths.push_back(clean);
+	SaveSettings();
+
+	for (auto& actor : Actors)
+	{
+		BuildActorSources(*actor);
+	}
+
+	SelectedSource = -1;
+	SelectedClip = -1;
+}
+
+void CCinemaFilmMakerManager::RemoveExtraAnimationPath(s32 index)
+{
+	if (index < 0 || index >= static_cast<s32>(ExtraAnimationPaths.size()))
+	{
+		return;
+	}
+
+	ExtraAnimationPaths.erase(ExtraAnimationPaths.begin() + index);
+	SaveSettings();
+}
+
+void CCinemaFilmMakerManager::DrawExtraSources()
+{
+	if (!ImGui::CollapsingHeader("Extra animation sources"))
+	{
+		return;
+	}
+
+	ImGui::TextDisabled("Path to .omf files relative to meshes or the level folder: animations\\mod\\*.omf or animations\\mod\\walk");
+
+	const float addWidth = CinemaButtonWidth("Add");
+	ImGui::SetNextItemWidth(std::max(120.0f, ImGui::GetContentRegionAvail().x - addWidth - ImGui::GetStyle().ItemSpacing.x));
+	ImGui::InputTextWithHint("##cinema_extra_path", "animations\\mod\\*.omf", ExtraPathEdit, sizeof(ExtraPathEdit));
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Add##extra_path"))
+	{
+		xr_string clean;
+		CinemaNormalizeOmfPath(ExtraPathEdit, clean);
+
+		if (clean.empty())
+		{
+			ExtraPathStatus = "Enter a path first";
+		}
+		else if (!CinemaExtraPathHasOmf(clean.c_str()))
+		{
+			ExtraPathStatus = xr_string("No .omf files found: ") + clean;
+		}
+		else
+		{
+			AddExtraAnimationPath(clean.c_str());
+			ExtraPathStatus.clear();
+			ExtraPathEdit[0] = '\0';
+		}
+	}
+
+	if (!ExtraPathStatus.empty())
+	{
+		ImGui::TextDisabled("%s", ExtraPathStatus.c_str());
+	}
+
+	if (ExtraAnimationPaths.empty())
+	{
+		ImGui::TextDisabled("No extra sources added");
+		return;
+	}
+
+	for (s32 index = 0; index < static_cast<s32>(ExtraAnimationPaths.size()); ++index)
+	{
+		ImGui::PushID(index);
+
+		ImGui::TextUnformatted(ExtraAnimationPaths[index].c_str());
+		ImGui::SameLine();
+
+		if (ImGui::SmallButton("Remove##extra_path"))
+		{
+			RemoveExtraAnimationPath(index);
+			ImGui::PopID();
+			break;
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::TextDisabled("Animations already loaded stay on NPC that were created before removal");
+}
+
 void CCinemaFilmMakerManager::LoadPresets()
 {
 	if (PresetsLoaded)
@@ -5044,6 +5299,8 @@ void CCinemaFilmMakerManager::DrawItemTab()
 
 void CCinemaFilmMakerManager::DrawAnimationTab()
 {
+	DrawExtraSources();
+
 	SCinemaActor* actor = GetSelectedActor();
 
 	if (actor == nullptr)
