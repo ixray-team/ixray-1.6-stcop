@@ -22,6 +22,7 @@ constexpr const char* kCinemaClipIndexPayload = "CINEMA_ANIMATION_INDEX";
 constexpr const char* kCinemaSceneFolder = "cinema_scenes\\";
 constexpr const char* kCinemaSceneExt = ".ltx";
 constexpr s32 kCinemaSceneVersion = 1;
+constexpr const char* kCinemaSettingsFile = "cinema_editor\\settings.ltx";
 constexpr u32 kCinemaSceneMaxActors = 1024;
 constexpr u32 kCinemaSceneMaxPlaylist = 256;
 
@@ -306,6 +307,354 @@ struct SCinemaActor
 		LocalBox.invalidate();
 	}
 };
+
+struct SEditorTheme
+{
+	const char* Id;
+	const char* Name;
+
+	ImVec4 WindowBg;
+	ImVec4 ChildBg;
+	ImVec4 PopupBg;
+	ImVec4 Text;
+	ImVec4 TextDisabled;
+	ImVec4 FrameBg;
+	ImVec4 FrameBgHovered;
+	ImVec4 FrameBgActive;
+	ImVec4 Button;
+	ImVec4 ButtonHovered;
+	ImVec4 ButtonActive;
+	ImVec4 Header;
+	ImVec4 HeaderHovered;
+	ImVec4 HeaderActive;
+	ImVec4 Tab;
+	ImVec4 TabHovered;
+	ImVec4 TabSelected;
+	ImVec4 TitleBg;
+	ImVec4 MenuBarBg;
+	ImVec4 Separator;
+	ImVec4 Border;
+	ImVec4 CheckMark;
+	ImVec4 SliderGrab;
+	ImVec4 SliderGrabActive;
+	ImVec4 ScrollbarBg;
+	ImVec4 ScrollbarGrab;
+
+	ImU32 TimelineBackground;
+	ImU32 TimelineElapsed;
+	ImU32 TimelineMark;
+	ImU32 TimelineTickMinor;
+	ImU32 TimelineTickMajor;
+	ImU32 TimelineText;
+	ImU32 TimelinePlayhead;
+	ImU32 TimelineBorder;
+
+	u32 AxisX;
+	u32 AxisY;
+	u32 AxisZ;
+	u32 AxisHighlighted;
+	u32 AxisPivot;
+};
+
+struct SThemeColorLink
+{
+	ImGuiCol Color;
+	ImVec4 SEditorTheme::* Value;
+};
+
+static const SThemeColorLink kCinemaThemeColors[] =
+{
+	{ ImGuiCol_WindowBg, &SEditorTheme::WindowBg },
+	{ ImGuiCol_ChildBg, &SEditorTheme::ChildBg },
+	{ ImGuiCol_PopupBg, &SEditorTheme::PopupBg },
+	{ ImGuiCol_Text, &SEditorTheme::Text },
+	{ ImGuiCol_TextDisabled, &SEditorTheme::TextDisabled },
+	{ ImGuiCol_FrameBg, &SEditorTheme::FrameBg },
+	{ ImGuiCol_FrameBgHovered, &SEditorTheme::FrameBgHovered },
+	{ ImGuiCol_FrameBgActive, &SEditorTheme::FrameBgActive },
+	{ ImGuiCol_Button, &SEditorTheme::Button },
+	{ ImGuiCol_ButtonHovered, &SEditorTheme::ButtonHovered },
+	{ ImGuiCol_ButtonActive, &SEditorTheme::ButtonActive },
+	{ ImGuiCol_Header, &SEditorTheme::Header },
+	{ ImGuiCol_HeaderHovered, &SEditorTheme::HeaderHovered },
+	{ ImGuiCol_HeaderActive, &SEditorTheme::HeaderActive },
+	{ ImGuiCol_Tab, &SEditorTheme::Tab },
+	{ ImGuiCol_TabHovered, &SEditorTheme::TabHovered },
+	{ ImGuiCol_TabSelected, &SEditorTheme::TabSelected },
+	{ ImGuiCol_TitleBg, &SEditorTheme::TitleBg },
+	{ ImGuiCol_MenuBarBg, &SEditorTheme::MenuBarBg },
+	{ ImGuiCol_Separator, &SEditorTheme::Separator },
+	{ ImGuiCol_Border, &SEditorTheme::Border },
+	{ ImGuiCol_CheckMark, &SEditorTheme::CheckMark },
+	{ ImGuiCol_SliderGrab, &SEditorTheme::SliderGrab },
+	{ ImGuiCol_SliderGrabActive, &SEditorTheme::SliderGrabActive },
+	{ ImGuiCol_ScrollbarBg, &SEditorTheme::ScrollbarBg },
+	{ ImGuiCol_ScrollbarGrab, &SEditorTheme::ScrollbarGrab },
+};
+
+static const SEditorTheme kCinemaThemes[] =
+{
+	{
+		.Id = "default",
+		.Name = "Default",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, kGeneralAlphaLevelForImGuiWindows),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.06f, 0.06f, 0.07f, 0.94f),
+		.Text = ImVec4(0.90f, 0.90f, 0.92f, 1.00f),
+		.TextDisabled = ImVec4(0.55f, 0.55f, 0.58f, 1.00f),
+		.FrameBg = ImVec4(0.16f, 0.16f, 0.18f, 1.00f),
+		.FrameBgHovered = ImVec4(0.22f, 0.22f, 0.25f, 1.00f),
+		.FrameBgActive = ImVec4(0.28f, 0.28f, 0.32f, 1.00f),
+		.Button = ImVec4(0.18f, 0.18f, 0.21f, 1.00f),
+		.ButtonHovered = ImVec4(0.25f, 0.25f, 0.29f, 1.00f),
+		.ButtonActive = ImVec4(0.32f, 0.32f, 0.37f, 1.00f),
+		.Header = ImVec4(0.25f, 0.35f, 0.45f, 1.00f),
+		.HeaderHovered = ImVec4(0.30f, 0.42f, 0.54f, 1.00f),
+		.HeaderActive = ImVec4(0.36f, 0.50f, 0.64f, 1.00f),
+		.Tab = ImVec4(0.12f, 0.12f, 0.14f, 1.00f),
+		.TabHovered = ImVec4(0.20f, 0.28f, 0.34f, 1.00f),
+		.TabSelected = ImVec4(0.22f, 0.32f, 0.42f, 1.00f),
+		.TitleBg = ImVec4(0.05f, 0.05f, 0.06f, 1.00f),
+		.MenuBarBg = ImVec4(0.07f, 0.07f, 0.08f, 1.00f),
+		.Separator = ImVec4(0.35f, 0.35f, 0.38f, 1.00f),
+		.Border = ImVec4(0.45f, 0.45f, 0.50f, 1.00f),
+		.CheckMark = ImVec4(0.60f, 0.80f, 0.95f, 1.00f),
+		.SliderGrab = ImVec4(0.35f, 0.55f, 0.70f, 1.00f),
+		.SliderGrabActive = ImVec4(0.50f, 0.70f, 0.90f, 1.00f),
+		.ScrollbarBg = ImVec4(0.08f, 0.08f, 0.09f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.28f, 0.28f, 0.32f, 1.00f),
+		.TimelineBackground = IM_COL32(22, 22, 24, 255),
+		.TimelineElapsed = IM_COL32(52, 78, 52, 140),
+		.TimelineMark = IM_COL32(78, 121, 176, 110),
+		.TimelineTickMinor = IM_COL32(58, 58, 62, 255),
+		.TimelineTickMajor = IM_COL32(105, 105, 112, 255),
+		.TimelineText = IM_COL32(180, 180, 186, 255),
+		.TimelinePlayhead = IM_COL32(222, 170, 64, 255),
+		.TimelineBorder = IM_COL32(80, 80, 86, 255),
+		.AxisX = color_rgba(220, 70, 70, 255),
+		.AxisY = color_rgba(80, 210, 90, 255),
+		.AxisZ = color_rgba(70, 130, 235, 255),
+		.AxisHighlighted = color_rgba(255, 220, 70, 255),
+		.AxisPivot = color_rgba(240, 240, 240, 220),
+	},
+	{
+		.Id = "oled_black",
+		.Name = "OLED Black",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, 0.94f),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.03f, 0.03f, 0.04f, 0.98f),
+		.Text = ImVec4(0.94f, 0.95f, 0.96f, 1.00f),
+		.TextDisabled = ImVec4(0.60f, 0.62f, 0.66f, 1.00f),
+		.FrameBg = ImVec4(0.10f, 0.10f, 0.12f, 1.00f),
+		.FrameBgHovered = ImVec4(0.16f, 0.17f, 0.20f, 1.00f),
+		.FrameBgActive = ImVec4(0.23f, 0.24f, 0.28f, 1.00f),
+		.Button = ImVec4(0.12f, 0.13f, 0.16f, 1.00f),
+		.ButtonHovered = ImVec4(0.19f, 0.21f, 0.25f, 1.00f),
+		.ButtonActive = ImVec4(0.27f, 0.30f, 0.35f, 1.00f),
+		.Header = ImVec4(0.10f, 0.27f, 0.35f, 1.00f),
+		.HeaderHovered = ImVec4(0.13f, 0.36f, 0.47f, 1.00f),
+		.HeaderActive = ImVec4(0.17f, 0.46f, 0.60f, 1.00f),
+		.Tab = ImVec4(0.06f, 0.06f, 0.08f, 1.00f),
+		.TabHovered = ImVec4(0.14f, 0.21f, 0.26f, 1.00f),
+		.TabSelected = ImVec4(0.10f, 0.27f, 0.35f, 1.00f),
+		.TitleBg = ImVec4(0.02f, 0.02f, 0.03f, 1.00f),
+		.MenuBarBg = ImVec4(0.03f, 0.03f, 0.04f, 1.00f),
+		.Separator = ImVec4(0.24f, 0.26f, 0.30f, 1.00f),
+		.Border = ImVec4(0.32f, 0.35f, 0.40f, 1.00f),
+		.CheckMark = ImVec4(0.35f, 0.90f, 1.00f, 1.00f),
+		.SliderGrab = ImVec4(0.30f, 0.72f, 0.88f, 1.00f),
+		.SliderGrabActive = ImVec4(0.45f, 0.90f, 1.00f, 1.00f),
+		.ScrollbarBg = ImVec4(0.02f, 0.02f, 0.03f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.22f, 0.25f, 0.30f, 1.00f),
+		.TimelineBackground = IM_COL32(4, 4, 6, 255),
+		.TimelineElapsed = IM_COL32(26, 72, 92, 190),
+		.TimelineMark = IM_COL32(40, 116, 150, 120),
+		.TimelineTickMinor = IM_COL32(40, 42, 48, 255),
+		.TimelineTickMajor = IM_COL32(112, 122, 134, 255),
+		.TimelineText = IM_COL32(205, 214, 224, 255),
+		.TimelinePlayhead = IM_COL32(255, 190, 70, 255),
+		.TimelineBorder = IM_COL32(58, 64, 72, 255),
+		.AxisX = color_rgba(255, 120, 60, 255),
+		.AxisY = color_rgba(130, 235, 130, 255),
+		.AxisZ = color_rgba(90, 170, 255, 255),
+		.AxisHighlighted = color_rgba(255, 240, 150, 255),
+		.AxisPivot = color_rgba(240, 240, 240, 220),
+	},
+	{
+		.Id = "oled_dim",
+		.Name = "OLED Dim",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, 0.97f),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.02f, 0.02f, 0.03f, 0.98f),
+		.Text = ImVec4(0.74f, 0.75f, 0.78f, 1.00f),
+		.TextDisabled = ImVec4(0.44f, 0.45f, 0.48f, 1.00f),
+		.FrameBg = ImVec4(0.07f, 0.07f, 0.08f, 1.00f),
+		.FrameBgHovered = ImVec4(0.11f, 0.12f, 0.14f, 1.00f),
+		.FrameBgActive = ImVec4(0.16f, 0.17f, 0.20f, 1.00f),
+		.Button = ImVec4(0.09f, 0.09f, 0.11f, 1.00f),
+		.ButtonHovered = ImVec4(0.14f, 0.15f, 0.18f, 1.00f),
+		.ButtonActive = ImVec4(0.20f, 0.22f, 0.26f, 1.00f),
+		.Header = ImVec4(0.08f, 0.14f, 0.20f, 1.00f),
+		.HeaderHovered = ImVec4(0.11f, 0.20f, 0.28f, 1.00f),
+		.HeaderActive = ImVec4(0.15f, 0.27f, 0.38f, 1.00f),
+		.Tab = ImVec4(0.05f, 0.05f, 0.06f, 1.00f),
+		.TabHovered = ImVec4(0.11f, 0.16f, 0.20f, 1.00f),
+		.TabSelected = ImVec4(0.09f, 0.17f, 0.24f, 1.00f),
+		.TitleBg = ImVec4(0.01f, 0.01f, 0.02f, 1.00f),
+		.MenuBarBg = ImVec4(0.02f, 0.02f, 0.03f, 1.00f),
+		.Separator = ImVec4(0.17f, 0.18f, 0.21f, 1.00f),
+		.Border = ImVec4(0.24f, 0.26f, 0.30f, 1.00f),
+		.CheckMark = ImVec4(0.55f, 0.72f, 0.88f, 1.00f),
+		.SliderGrab = ImVec4(0.45f, 0.60f, 0.75f, 1.00f),
+		.SliderGrabActive = ImVec4(0.62f, 0.78f, 0.95f, 1.00f),
+		.ScrollbarBg = ImVec4(0.02f, 0.02f, 0.02f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.16f, 0.17f, 0.20f, 1.00f),
+		.TimelineBackground = IM_COL32(2, 2, 3, 255),
+		.TimelineElapsed = IM_COL32(20, 44, 58, 190),
+		.TimelineMark = IM_COL32(28, 74, 96, 110),
+		.TimelineTickMinor = IM_COL32(32, 34, 38, 255),
+		.TimelineTickMajor = IM_COL32(84, 92, 102, 255),
+		.TimelineText = IM_COL32(168, 174, 184, 255),
+		.TimelinePlayhead = IM_COL32(210, 158, 66, 255),
+		.TimelineBorder = IM_COL32(44, 48, 54, 255),
+		.AxisX = color_rgba(230, 110, 60, 255),
+		.AxisY = color_rgba(110, 200, 120, 255),
+		.AxisZ = color_rgba(80, 150, 230, 255),
+		.AxisHighlighted = color_rgba(240, 220, 120, 255),
+		.AxisPivot = color_rgba(220, 220, 220, 220),
+	},
+	{
+		.Id = "oled_amber",
+		.Name = "OLED Amber",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, 0.95f),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.04f, 0.03f, 0.01f, 0.98f),
+		.Text = ImVec4(0.98f, 0.80f, 0.38f, 1.00f),
+		.TextDisabled = ImVec4(0.62f, 0.48f, 0.20f, 1.00f),
+		.FrameBg = ImVec4(0.12f, 0.09f, 0.03f, 1.00f),
+		.FrameBgHovered = ImVec4(0.19f, 0.14f, 0.05f, 1.00f),
+		.FrameBgActive = ImVec4(0.27f, 0.20f, 0.07f, 1.00f),
+		.Button = ImVec4(0.14f, 0.11f, 0.04f, 1.00f),
+		.ButtonHovered = ImVec4(0.22f, 0.16f, 0.06f, 1.00f),
+		.ButtonActive = ImVec4(0.31f, 0.23f, 0.08f, 1.00f),
+		.Header = ImVec4(0.27f, 0.20f, 0.06f, 1.00f),
+		.HeaderHovered = ImVec4(0.37f, 0.27f, 0.09f, 1.00f),
+		.HeaderActive = ImVec4(0.47f, 0.35f, 0.12f, 1.00f),
+		.Tab = ImVec4(0.09f, 0.07f, 0.02f, 1.00f),
+		.TabHovered = ImVec4(0.19f, 0.14f, 0.05f, 1.00f),
+		.TabSelected = ImVec4(0.27f, 0.20f, 0.06f, 1.00f),
+		.TitleBg = ImVec4(0.03f, 0.02f, 0.01f, 1.00f),
+		.MenuBarBg = ImVec4(0.04f, 0.03f, 0.01f, 1.00f),
+		.Separator = ImVec4(0.38f, 0.29f, 0.11f, 1.00f),
+		.Border = ImVec4(0.50f, 0.38f, 0.14f, 1.00f),
+		.CheckMark = ImVec4(1.00f, 0.86f, 0.40f, 1.00f),
+		.SliderGrab = ImVec4(0.78f, 0.60f, 0.22f, 1.00f),
+		.SliderGrabActive = ImVec4(0.98f, 0.78f, 0.34f, 1.00f),
+		.ScrollbarBg = ImVec4(0.02f, 0.02f, 0.01f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.24f, 0.18f, 0.06f, 1.00f),
+		.TimelineBackground = IM_COL32(6, 4, 1, 255),
+		.TimelineElapsed = IM_COL32(96, 66, 12, 190),
+		.TimelineMark = IM_COL32(128, 88, 20, 120),
+		.TimelineTickMinor = IM_COL32(46, 35, 10, 255),
+		.TimelineTickMajor = IM_COL32(132, 100, 32, 255),
+		.TimelineText = IM_COL32(246, 206, 116, 255),
+		.TimelinePlayhead = IM_COL32(255, 236, 150, 255),
+		.TimelineBorder = IM_COL32(96, 72, 22, 255),
+		.AxisX = color_rgba(255, 140, 50, 255),
+		.AxisY = color_rgba(200, 220, 90, 255),
+		.AxisZ = color_rgba(90, 180, 240, 255),
+		.AxisHighlighted = color_rgba(255, 240, 170, 255),
+		.AxisPivot = color_rgba(250, 220, 150, 220),
+	},
+	{
+		.Id = "oled_mint",
+		.Name = "OLED Mint",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, 0.95f),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.01f, 0.03f, 0.02f, 0.98f),
+		.Text = ImVec4(0.82f, 0.98f, 0.90f, 1.00f),
+		.TextDisabled = ImVec4(0.48f, 0.62f, 0.54f, 1.00f),
+		.FrameBg = ImVec4(0.05f, 0.09f, 0.08f, 1.00f),
+		.FrameBgHovered = ImVec4(0.08f, 0.15f, 0.12f, 1.00f),
+		.FrameBgActive = ImVec4(0.12f, 0.22f, 0.18f, 1.00f),
+		.Button = ImVec4(0.06f, 0.11f, 0.09f, 1.00f),
+		.ButtonHovered = ImVec4(0.10f, 0.18f, 0.15f, 1.00f),
+		.ButtonActive = ImVec4(0.14f, 0.26f, 0.21f, 1.00f),
+		.Header = ImVec4(0.06f, 0.24f, 0.18f, 1.00f),
+		.HeaderHovered = ImVec4(0.09f, 0.33f, 0.25f, 1.00f),
+		.HeaderActive = ImVec4(0.13f, 0.42f, 0.32f, 1.00f),
+		.Tab = ImVec4(0.03f, 0.06f, 0.05f, 1.00f),
+		.TabHovered = ImVec4(0.07f, 0.16f, 0.13f, 1.00f),
+		.TabSelected = ImVec4(0.06f, 0.24f, 0.18f, 1.00f),
+		.TitleBg = ImVec4(0.01f, 0.02f, 0.02f, 1.00f),
+		.MenuBarBg = ImVec4(0.02f, 0.03f, 0.03f, 1.00f),
+		.Separator = ImVec4(0.16f, 0.30f, 0.26f, 1.00f),
+		.Border = ImVec4(0.22f, 0.40f, 0.34f, 1.00f),
+		.CheckMark = ImVec4(0.40f, 1.00f, 0.78f, 1.00f),
+		.SliderGrab = ImVec4(0.30f, 0.80f, 0.62f, 1.00f),
+		.SliderGrabActive = ImVec4(0.45f, 0.98f, 0.78f, 1.00f),
+		.ScrollbarBg = ImVec4(0.01f, 0.02f, 0.02f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.12f, 0.22f, 0.19f, 1.00f),
+		.TimelineBackground = IM_COL32(2, 5, 4, 255),
+		.TimelineElapsed = IM_COL32(18, 70, 56, 190),
+		.TimelineMark = IM_COL32(28, 110, 88, 120),
+		.TimelineTickMinor = IM_COL32(30, 40, 36, 255),
+		.TimelineTickMajor = IM_COL32(90, 112, 104, 255),
+		.TimelineText = IM_COL32(190, 230, 215, 255),
+		.TimelinePlayhead = IM_COL32(190, 255, 225, 255),
+		.TimelineBorder = IM_COL32(44, 58, 54, 255),
+		.AxisX = color_rgba(255, 130, 70, 255),
+		.AxisY = color_rgba(120, 240, 140, 255),
+		.AxisZ = color_rgba(90, 175, 255, 255),
+		.AxisHighlighted = color_rgba(255, 245, 160, 255),
+		.AxisPivot = color_rgba(235, 245, 240, 220),
+	},
+	{
+		.Id = "oled_magenta",
+		.Name = "OLED Magenta",
+		.WindowBg = ImVec4(0.00f, 0.00f, 0.00f, 0.95f),
+		.ChildBg = ImVec4(0.00f, 0.00f, 0.00f, 0.00f),
+		.PopupBg = ImVec4(0.03f, 0.01f, 0.03f, 0.98f),
+		.Text = ImVec4(0.97f, 0.88f, 0.95f, 1.00f),
+		.TextDisabled = ImVec4(0.62f, 0.50f, 0.58f, 1.00f),
+		.FrameBg = ImVec4(0.10f, 0.05f, 0.09f, 1.00f),
+		.FrameBgHovered = ImVec4(0.17f, 0.08f, 0.15f, 1.00f),
+		.FrameBgActive = ImVec4(0.24f, 0.12f, 0.21f, 1.00f),
+		.Button = ImVec4(0.12f, 0.06f, 0.11f, 1.00f),
+		.ButtonHovered = ImVec4(0.20f, 0.10f, 0.18f, 1.00f),
+		.ButtonActive = ImVec4(0.29f, 0.14f, 0.26f, 1.00f),
+		.Header = ImVec4(0.30f, 0.08f, 0.24f, 1.00f),
+		.HeaderHovered = ImVec4(0.42f, 0.11f, 0.34f, 1.00f),
+		.HeaderActive = ImVec4(0.55f, 0.15f, 0.44f, 1.00f),
+		.Tab = ImVec4(0.08f, 0.04f, 0.07f, 1.00f),
+		.TabHovered = ImVec4(0.18f, 0.09f, 0.16f, 1.00f),
+		.TabSelected = ImVec4(0.28f, 0.10f, 0.23f, 1.00f),
+		.TitleBg = ImVec4(0.02f, 0.01f, 0.02f, 1.00f),
+		.MenuBarBg = ImVec4(0.03f, 0.01f, 0.03f, 1.00f),
+		.Separator = ImVec4(0.38f, 0.18f, 0.32f, 1.00f),
+		.Border = ImVec4(0.50f, 0.24f, 0.42f, 1.00f),
+		.CheckMark = ImVec4(1.00f, 0.55f, 0.92f, 1.00f),
+		.SliderGrab = ImVec4(0.82f, 0.35f, 0.72f, 1.00f),
+		.SliderGrabActive = ImVec4(1.00f, 0.55f, 0.92f, 1.00f),
+		.ScrollbarBg = ImVec4(0.02f, 0.01f, 0.02f, 1.00f),
+		.ScrollbarGrab = ImVec4(0.24f, 0.12f, 0.20f, 1.00f),
+		.TimelineBackground = IM_COL32(5, 2, 5, 255),
+		.TimelineElapsed = IM_COL32(80, 20, 66, 190),
+		.TimelineMark = IM_COL32(110, 30, 90, 120),
+		.TimelineTickMinor = IM_COL32(42, 30, 40, 255),
+		.TimelineTickMajor = IM_COL32(120, 90, 110, 255),
+		.TimelineText = IM_COL32(230, 205, 225, 255),
+		.TimelinePlayhead = IM_COL32(255, 180, 120, 255),
+		.TimelineBorder = IM_COL32(80, 50, 74, 255),
+		.AxisX = color_rgba(255, 120, 90, 255),
+		.AxisY = color_rgba(150, 230, 180, 255),
+		.AxisZ = color_rgba(130, 150, 255, 255),
+		.AxisHighlighted = color_rgba(255, 235, 180, 255),
+		.AxisPivot = color_rgba(240, 235, 241, 220),
+	},
+};
+
+constexpr s32 kCinemaThemeCount = static_cast<s32>(std::size(kCinemaThemes));
 
 static bool CinemaContainsFilter(const char* text, const char* filter)
 {
@@ -866,22 +1215,6 @@ static void RotationBasis(EGizmoAxis axis, Fvector& u, Fvector& v)
 	}
 }
 
-static u32 AxisColor(EGizmoAxis axis, bool highlighted)
-{
-	if (highlighted)
-	{
-		return color_rgba(255, 220, 70, 255);
-	}
-
-	switch (axis)
-	{
-	case EGizmoAxis::X: return color_rgba(220, 70, 70, 255);
-	case EGizmoAxis::Y: return color_rgba(80, 210, 90, 255);
-	case EGizmoAxis::Z: return color_rgba(70, 130, 235, 255);
-	default: return color_rgba(220, 220, 220, 255);
-	}
-}
-
 static SProjectedPoint ProjectWorld(const Fvector& world)
 {
 	SProjectedPoint result;
@@ -1072,7 +1405,7 @@ static bool ComputeMouseAngle(const Fvector& pivot, EGizmoAxis axis, float& angl
 	return true;
 }
 
-static bool DrawAnimationTimeline(const char* id, float& time, float total, const CMotionDef* motionDef)
+static bool DrawAnimationTimeline(const char* id, float& time, float total, const CMotionDef* motionDef, const SEditorTheme& theme)
 {
 	const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
 	constexpr float height = 64.0f;
@@ -1092,14 +1425,14 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 	}
 
 	ImDrawList* draw = ImGui::GetWindowDrawList();
-	const ImU32 colorBackground = IM_COL32(22, 22, 24, 255);
-	const ImU32 colorElapsed = IM_COL32(52, 78, 52, 140);
-	const ImU32 colorMark = IM_COL32(78, 121, 176, 110);
-	const ImU32 colorTickMinor = IM_COL32(58, 58, 62, 255);
-	const ImU32 colorTickMajor = IM_COL32(105, 105, 112, 255);
-	const ImU32 colorText = IM_COL32(180, 180, 186, 255);
-	const ImU32 colorPlayhead = IM_COL32(222, 170, 64, 255);
-	const ImU32 colorBorder = IM_COL32(80, 80, 86, 255);
+	const ImU32 colorBackground = theme.TimelineBackground;
+	const ImU32 colorElapsed = theme.TimelineElapsed;
+	const ImU32 colorMark = theme.TimelineMark;
+	const ImU32 colorTickMinor = theme.TimelineTickMinor;
+	const ImU32 colorTickMajor = theme.TimelineTickMajor;
+	const ImU32 colorText = theme.TimelineText;
+	const ImU32 colorPlayhead = theme.TimelinePlayhead;
+	const ImU32 colorBorder = theme.TimelineBorder;
 
 	draw->AddRectFilled(origin, end, colorBackground);
 
@@ -1205,6 +1538,9 @@ public:
 	void DrawPanel();
 	void DrawGizmo();
 
+	void PushThemeStyle();
+	void PopThemeStyle();
+
 	void Shutdown();
 
 private:
@@ -1212,6 +1548,9 @@ private:
 	void ClearGizmo();
 	void ResetSelection();
 	void SelectActor(s32 index);
+	void LoadSettings();
+	void SaveSettings();
+	const SEditorTheme& GetTheme() const;
 
 	void BuildModelFiles();
 	void BuildHandItems();
@@ -1244,6 +1583,7 @@ private:
 	void DrawPlaylist(SCinemaActor& actor);
 	void DrawActorTimeline(SCinemaActor& actor);
 
+	u32 AxisColor(EGizmoAxis axis, bool highlighted) const;
 	void AppendTranslateGizmo(LevelInspector& inspector, const Fvector& pivot, float size, EGizmoAxis hoveredAxis);
 	void AppendRotateGizmo(LevelInspector& inspector, const Fvector& pivot, float size, EGizmoAxis hoveredAxis);
 	void AppendWorldGizmo();
@@ -1313,6 +1653,8 @@ private:
 	ESceneDialog SceneDialogMode = ESceneDialog::None;
 	bool SceneDialogRequested = false;
 	bool SceneLoadRequested = false;
+	s32 ThemeIndex = 0;
+	bool SettingsLoaded = false;
 };
 
 CCinemaFilmMakerManager* g_CinemaFilmMaker = nullptr;
@@ -1338,6 +1680,113 @@ void CCinemaFilmMakerManager::Shutdown()
 	Level = nullptr;
 	Selected = -1;
 }
+
+const SEditorTheme& CCinemaFilmMakerManager::GetTheme() const
+{
+	if (ThemeIndex < 0 || ThemeIndex >= kCinemaThemeCount)
+	{
+		return kCinemaThemes[0];
+	}
+
+	return kCinemaThemes[ThemeIndex];
+}
+
+void CCinemaFilmMakerManager::PushThemeStyle()
+{
+	LoadSettings();
+
+	const SEditorTheme& theme = GetTheme();
+
+	for (const SThemeColorLink& link : kCinemaThemeColors)
+	{
+		ImGui::PushStyleColor(link.Color, theme.*link.Value);
+	}
+}
+
+void CCinemaFilmMakerManager::PopThemeStyle()
+{
+	ImGui::PopStyleColor(static_cast<int>(std::size(kCinemaThemeColors)));
+}
+
+void CCinemaFilmMakerManager::LoadSettings()
+{
+	if (SettingsLoaded)
+	{
+		return;
+	}
+
+	SettingsLoaded = true;
+
+	string_path path = {};
+	FS.update_path(path, "$app_data_root$", kCinemaSettingsFile);
+
+	std::error_code error;
+
+	if (!std::filesystem::exists(path, error))
+	{
+		return;
+	}
+
+	CInifile ini(path, TRUE, TRUE, FALSE);
+
+	if (!ini.section_exist("editor") || !ini.line_exist("editor", "theme"))
+	{
+		return;
+	}
+
+	const char* themeId = ini.r_string("editor", "theme");
+
+	if (themeId == nullptr)
+	{
+		return;
+	}
+
+	for (s32 index = 0; index < kCinemaThemeCount; ++index)
+	{
+		if (xr_strcmp(kCinemaThemes[index].Id, themeId) == 0)
+		{
+			ThemeIndex = index;
+			return;
+		}
+	}
+}
+
+void CCinemaFilmMakerManager::SaveSettings()
+{
+	string_path path = {};
+	FS.update_path(path, "$app_data_root$", kCinemaSettingsFile);
+
+	CInifile ini(nullptr, FALSE, FALSE, FALSE);
+	ini.w_string("editor", "theme", GetTheme().Id);
+
+	if (ini.save_as(path))
+	{
+		FS.file_update(path);
+	}
+}
+
+u32 CCinemaFilmMakerManager::AxisColor(EGizmoAxis axis, bool highlighted) const
+{
+	const SEditorTheme& theme = GetTheme();
+
+	if (highlighted)
+	{
+		return theme.AxisHighlighted;
+	}
+
+	switch (axis)
+	{
+	case EGizmoAxis::X:
+		return theme.AxisX;
+	case EGizmoAxis::Y:
+		return theme.AxisY;
+	case EGizmoAxis::Z:
+		return theme.AxisZ;
+	default:
+		return theme.AxisPivot;
+	}
+}
+
 
 void CCinemaFilmMakerManager::ClearGizmo()
 {
@@ -3434,6 +3883,22 @@ void CCinemaFilmMakerManager::DrawToolbar()
 
 		ImGui::Separator();
 
+		if (ImGui::BeginMenu("Theme"))
+		{
+			for (s32 index = 0; index < kCinemaThemeCount; ++index)
+			{
+				if (ImGui::MenuItem(kCinemaThemes[index].Name, nullptr, ThemeIndex == index))
+				{
+					ThemeIndex = index;
+					SaveSettings();
+				}
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::Separator();
+
 		if (Level != nullptr)
 		{
 			string_path sceneFolder = {};
@@ -3606,7 +4071,7 @@ void CCinemaFilmMakerManager::DrawActorTimeline(SCinemaActor& actor)
 	const float total = blend ? blend->timeTotal : actor.Animated->get_animation_length(actor.Motion);
 	float time = blend ? blend->timeCurrent : 0.0f;
 
-	if (DrawAnimationTimeline("##cinema_timeline", time, total, actor.Animated->LL_GetMotionDef(actor.Motion)))
+	if (DrawAnimationTimeline("##cinema_timeline", time, total, actor.Animated->LL_GetMotionDef(actor.Motion), GetTheme()))
 	{
 		actor.Paused = true;
 		CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
@@ -4314,7 +4779,7 @@ void CCinemaFilmMakerManager::AppendTranslateGizmo(LevelInspector& inspector, co
 		inspector.append_text3d(end, label, color);
 	}
 
-	inspector.append_sphere(pivot, size * 0.05f, color_rgba(240, 240, 240, 220));
+	inspector.append_sphere(pivot, size * 0.05f, GetTheme().AxisPivot);
 }
 
 void CCinemaFilmMakerManager::AppendRotateGizmo(LevelInspector& inspector, const Fvector& pivot, float size, EGizmoAxis hoveredAxis)
@@ -4347,7 +4812,7 @@ void CCinemaFilmMakerManager::AppendRotateGizmo(LevelInspector& inspector, const
 		}
 	}
 
-	inspector.append_sphere(pivot, size * 0.035f, color_rgba(240, 240, 240, 220));
+	inspector.append_sphere(pivot, size * 0.035f, GetTheme().AxisPivot);
 }
 
 void CCinemaFilmMakerManager::AppendWorldGizmo()
@@ -4715,7 +5180,7 @@ void RenderCinemaFilmMakerEditor()
 
 	ImGui::SetNextWindowSize(ImVec2(760.0f, 560.0f), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, 220.0f), ImVec2(FLT_MAX, FLT_MAX));
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
+	CinemaFilmMaker::g_CinemaFilmMaker->PushThemeStyle();
 
 	if (ImGui::Begin("Cinema Film Maker Editor", &state))
 	{
@@ -4723,5 +5188,5 @@ void RenderCinemaFilmMakerEditor()
 	}
 
 	ImGui::End();
-	ImGui::PopStyleColor();
+	CinemaFilmMaker::g_CinemaFilmMaker->PopThemeStyle();
 }
