@@ -17,6 +17,7 @@ struct SControlJumpData : public ControlCom::IComData {
 		eUseTargetPosition			= u32(1) << 6,
 		eDontUseVelocityBounce		= u32(1) << 7,
 		eUseAutoAim					= u32(1) << 8,
+		eEvasiveJump = u32(1) << 9,
 	};
 	
 	flags32					flags;
@@ -53,6 +54,16 @@ class CControlJump : public CControl_ComCustom<SControlJumpData> {
 	};
 
 
+	bool AttackJumpEnabled = true;
+	float FlightDuration = 0.f;
+	u32 FlightStartedAt = 0;
+	bool FlightStarted = false;
+	float EvasiveAnimationSpeedMax = 1.35f;
+	u32 EvasionRecoveryUntil = 0;
+	u32 EvasionRecoveryTime = 600;
+	float EvasiveDistanceMin = .5f;
+	float EvasiveDistanceMax = 5.f;
+	bool IsEvasiveDistanceValid(const Fvector& Target) const;
 	// loadable parameters
 	u32				m_delay_after_jump;
 	float			m_jump_factor;
@@ -105,12 +116,17 @@ public:
 	// check for distance and angle difference
 	virtual	bool	can_jump				(CObject *target);
 
-	bool			can_jump				(Fvector const& target, bool const aggressive_jump);
-	bool			jump_intersect_geometry (Fvector const & target, CObject * ignored_object);
+	bool			can_jump				(Fvector const& target, bool const aggressive_jump, float MaxHeadingAngle = -1.f);
+	bool			jump_intersect_geometry (Fvector const & target, CObject * ignored_object, bool Evasive = false);
 
 	// stop/break jump and all of jumping states
 	virtual void	stop					();
 
+	float GetFlightTime() const { return FlightDuration; }
+	float GetFlightElapsed() const;
+	const char* GetPhaseName();
+	bool HasFlightStarted() const { return FlightStarted; }
+	bool IsEvasiveFlight() { return is_active() && FlightStarted && m_time_started != 0 && m_data.flags.test(SControlJumpData::eEvasiveJump); }
 	float			get_max_distance		() const;
 	float			get_min_distance		() const;
 
@@ -119,7 +135,7 @@ SControlJumpData	&setup_data				() {return m_data;}
 	void			remove_links			(CObject* object);
 
 private:	
-			void	calculate_jump_time (Fvector const & target, bool check_force_factor);
+			float	calculate_jump_time (Fvector const & target, bool check_force_factor, bool Evasive = false);
 			// service routines		
 			// build path after jump 
 			void	grounding			();

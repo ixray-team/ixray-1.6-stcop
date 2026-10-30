@@ -40,11 +40,14 @@ bool ClipEdges(const Fbox& Source, const Fmatrix& SourceToBox, Fbox Box, Fvector
 }
 
 // Проверяет оба набора рёбер с заданным допуском габарита цели, включая вложение.
-bool FindBodyContact(CBaseMonster& Owner, CEntityAlive& Target, const Fbox& TargetBox, Fvector& Contact)
+bool FindBodyContact(CBaseMonster& Owner, CEntityAlive& Target, const Fbox& TargetBox, float Reach, Fvector& Contact)
 {
+	Fbox OwnerBox = Owner.BoundingBox();
+	OwnerBox.min.sub(Reach);
+	OwnerBox.max.add(Reach);
 	Fbox OwnerWorld;
 	Fbox TargetWorld;
-	OwnerWorld.xform(Owner.BoundingBox(), Owner.XFORM());
+	OwnerWorld.xform(OwnerBox, Owner.XFORM());
 	TargetWorld.xform(TargetBox, Target.XFORM());
 	if (!OwnerWorld.intersect(TargetWorld))
 	{
@@ -54,14 +57,14 @@ bool FindBodyContact(CBaseMonster& Owner, CEntityAlive& Target, const Fbox& Targ
 	Fmatrix Relative;
 	Inverse.invert(Target.XFORM());
 	Relative.mul_43(Inverse, Owner.XFORM());
-	if (ClipEdges(Owner.BoundingBox(), Relative, TargetBox, Contact))
+	if (ClipEdges(OwnerBox, Relative, TargetBox, Contact))
 	{
 		Target.XFORM().transform_tiny(Contact);
 		return true;
 	}
 	Inverse.invert(Owner.XFORM());
 	Relative.mul_43(Inverse, Target.XFORM());
-	if (ClipEdges(TargetBox, Relative, Owner.BoundingBox(), Contact))
+	if (ClipEdges(TargetBox, Relative, OwnerBox, Contact))
 	{
 		Owner.XFORM().transform_tiny(Contact);
 		return true;
@@ -91,7 +94,7 @@ Fvector CELFlyingAttack::RootAtContact(const CBaseMonster& OwnerMonster, const F
 }
 
 // Проверяет фактический контакт атаки и наносит допустимый урон цели.
-bool CELFlyingAttack::TryHit(IELAdapter& Adapter, const SELFlyingSettings& Settings, u16 TargetIdentifier, const Fvector& PreviousContact, const Fmatrix& PreviousTargetTransform)
+bool CELFlyingAttack::TryHit(IELAdapter& Adapter, const SELFlyingSettings& Settings, u16 TargetIdentifier, const Fvector& PreviousContact, const Fmatrix& PreviousTargetTransform, bool ContactOnly)
 {
 	if (s32(Device.dwTimeGlobal - NextAttack) < 0)
 	{
@@ -105,6 +108,17 @@ bool CELFlyingAttack::TryHit(IELAdapter& Adapter, const SELFlyingSettings& Setti
 		return false;
 	}
 	CBaseMonster& OwnerMonster = Adapter.Monster();
+	const float Reach = Settings.AttackDistance * OwnerMonster.GetVisualScale();
+	Fvector OwnerHalfSize;
+	Fvector TargetHalfSize;
+	OwnerMonster.BoundingBox().getradius(OwnerHalfSize);
+	TargetEntity->BoundingBox().getradius(TargetHalfSize);
+	const bool SmallerTarget = TargetHalfSize.square_magnitude() < OwnerHalfSize.square_magnitude();
+	if (ContactOnly && !SmallerTarget)
+	{
+		ContactResult = "Вне налёта: цель не меньше летуна";
+		return false;
+	}
 	Fvector AttackPoint = OwnerMonster.Position();
 	OwnerMonster.XFORM().transform_tiny(AttackPoint, LocalContactPoint(OwnerMonster));
 	Fmatrix TargetInverse;
@@ -149,14 +163,16 @@ bool CELFlyingAttack::TryHit(IELAdapter& Adapter, const SELFlyingSettings& Setti
 	clamp(TargetPoint.z, ContactBox.min.z, ContactBox.max.z);
 	TargetEntity->XFORM().transform_tiny(TargetPoint);
 	Fvector SweepStart = PreviousContact;
-	if (AttackPoint.distance_to_sqr(TargetPoint) > _sqr(Settings.AttackDistance))
+	if (ContactOnly || AttackPoint.distance_to_sqr(TargetPoint) > _sqr(Reach))
 	{
-		if (!ExtendedEntityesAttackContact::FindBodyContact(OwnerMonster, *TargetEntity, ContactBox, TargetPoint))
+		if (!ExtendedEntityesAttackContact::FindBodyContact(OwnerMonster, *TargetEntity, TargetEntity->BoundingBox(), SmallerTarget ? Reach : 0.f, TargetPoint))
 		{
 			ContactResult = "Габариты не пересеклись";
 			return false;
 		}
 		OwnerMonster.Center(AttackPoint);
+		// Use a point on the real target, rather than the inflated reach volume.
+		TargetInverse.transform_tiny(LocalContact, TargetPoint);
 		SweepStart = AttackPoint;
 	}
 	Fvector Direction;
@@ -184,7 +200,7 @@ bool CELFlyingAttack::TryHit(IELAdapter& Adapter, const SELFlyingSettings& Setti
 	TargetEntity->XFORM().transform_tiny(ActualTarget);
 	Fvector ToActual = Fvector().sub(ActualTarget, AttackPoint);
 	const float ActualDistance = ToActual.magnitude();
-	if (ActualDistance > EPS_L && Level().ObjectSpace.RayPick(AttackPoint, ToActual.div(ActualDistance), ActualDistance, collide::rqtStatic, Hit, &OwnerMonster))
+	if (!ActualTarget.similar(TargetPoint, EPS_L) && ActualDistance > EPS_L && Level().ObjectSpace.RayPick(AttackPoint, ToActual.div(ActualDistance), ActualDistance, collide::rqtStatic, Hit, &OwnerMonster))
 	{
 		ContactResult = "Статика перед фактическим боксом цели";
 		return false;

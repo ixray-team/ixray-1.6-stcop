@@ -5,6 +5,8 @@
 #include "../../PHMovementControl.h"
 #include "../../CharacterPhysicsSupport.h"
 #include "../../monster_scale.h"
+#include "../../movement_manager.h"
+#include "../../detail_path_manager.h"
 void CControlMovement::reinit()
 {
 	inherited::reinit		();
@@ -36,7 +38,7 @@ float CControlMovement::real_velocity()
 			Log				("! GetPathDir",movement_control->GetPathDir());
 		}
 #endif // DEBUG
-		clamp				(tmp, 0.0f, 15.0f * MonsterScale::Movement(m_object->GetVisualScale()));
+		clamp				(tmp, 0.0f, 15.0f * MonsterScale::Movement(m_object->GetVisualScale()) * m_object->movement().detail().GetMovementFactor());
 		VERIFY2				(std::abs(tmp)<1000,"movement_control->GetXZActVelInGoingDir() returns too big speed");
 		return				tmp;
 	}

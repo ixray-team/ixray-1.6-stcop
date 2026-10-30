@@ -2,10 +2,11 @@
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/CELFlyingAttackBase.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedTargets.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 
 // Связывает общую логику атакующих летунов с необходимыми службами и состоянием владельца.
-CELFlyingAttackBase::CELFlyingAttackBase(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELFlying(std::move(OwnerAdapter), OwnerProfile), Animation(*Adapter, FlightSettings), AttackBehavior(*Adapter, FlightSettings, Movement, Animation), RecoveryBehavior(*Adapter, FlightSettings, Movement), RestBehavior(*Adapter, FlightSettings, Movement, Animation) {}
+CELFlyingAttackBase::CELFlyingAttackBase(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELFlying(std::move(OwnerAdapter), OwnerProfile), Animation(*Adapter, FlightSettings), AttackBehavior(*Adapter, FlightSettings, Movement, Animation), RecoveryBehavior(*Adapter, FlightSettings, Movement), RestBehavior(*Adapter, FlightSettings, Movement, Animation), SearchBehavior(*Adapter, FlightSettings, Movement, Profile) {}
 // Завершает общую логику атакующих летунов и освобождает связанные ресурсы.
 CELFlyingAttackBase::~CELFlyingAttackBase()
 {
@@ -16,7 +17,13 @@ const SELObservation* CELFlyingAttackBase::SelectTarget()
 {
 	const SELObservation* Observation = BehaviorManager.IsActive(AttackBehavior) && AttackBehavior.HasCommittedTarget() ? Memory.Find(AttackBehavior.CommittedTargetIdentifier()) : nullptr;
 	CEntityAlive* CommittedTarget = Observation ? ExtendedEntityes::FindEntity(Observation->TargetIdentifier) : nullptr;
-	return CommittedTarget && Adapter->IsEnemy(*CommittedTarget) && Adapter->CanSee(*CommittedTarget) ? Observation : CELComponentBase::SelectTarget();
+	const SELObservation* Selected = CELComponentBase::SelectTarget();
+	if (Observation && CommittedTarget && Adapter->IsEnemy(*CommittedTarget) && Adapter->CanSee(*CommittedTarget) &&
+		(!Selected || CELSharedTargets::ThreatPriority(*Selected, *Adapter) <= CELSharedTargets::ThreatPriority(*Observation, *Adapter)))
+	{
+		return Observation;
+	}
+	return Selected;
 }
 
 // Обновляет общую логику атакующих летунов и обрабатывает текущий результат выполнения.
@@ -63,7 +70,34 @@ CELFlyingBehaviorBase* CELFlyingAttackBase::ChooseBehavior(const SELObservation*
 	}
 	if (Observation && s32(Device.dwTimeGlobal - RetryAfter) >= 0)
 	{
-		return &AttackBehavior;
+		CEntityAlive* Target = ExtendedEntityes::FindEntity(Observation->TargetIdentifier);
+		if (Target && Adapter->CanSee(*Target))
+		{
+			return &AttackBehavior;
+		}
+		if (BehaviorManager.IsActive(SearchBehavior) && BehaviorManager.GetValidation().State == EELBehaviorState::Completed)
+		{
+			Memory.Remove(Observation->TargetIdentifier);
+			TargetIdentifier = u16(-1);
+			return nullptr;
+		}
+		SearchBehavior.SetEvidence(*Observation);
+		return &SearchBehavior;
+	}
+	if (!Observation && s32(Hearing.InvestigateUntil - Device.dwTimeGlobal) > 0 && s32(Hearing.PanicUntil - Device.dwTimeGlobal) <= 0)
+	{
+		if (BehaviorManager.IsActive(SearchBehavior) && BehaviorManager.GetValidation().State == EELBehaviorState::Completed)
+		{
+			Hearing.CompleteAttention();
+			return nullptr;
+		}
+		CELSharedMemory::Records Interests;
+		Hearing.ExportInterests(Interests);
+		if (!Interests.empty())
+		{
+			SearchBehavior.SetEvidence(Interests.front());
+			return &SearchBehavior;
+		}
 	}
 	if (!HasStimulus && FlightSettings.RestInterval > 0.f && AirborneTime >= FlightSettings.RestInterval && s32(Device.dwTimeGlobal - NextRestAttempt) >= 0)
 	{

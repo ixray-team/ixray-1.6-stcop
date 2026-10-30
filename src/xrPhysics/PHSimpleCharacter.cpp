@@ -157,6 +157,8 @@ CPHSimpleCharacter::CPHSimpleCharacter() :
 	b_was_side_contact = false;
 	b_clamb_jump = false;
 	b_any_contacts = false;
+	b_on_ground = false;
+	dVectorSetZero(m_ground_contact_normal);
 	b_valide_ground_contact = false;
 	b_valide_wall_contact = false;
 	b_jump = false;
@@ -1560,6 +1562,12 @@ void CPHSimpleCharacter::FootProcess(dContact* c, bool& do_collide, bool bo)
 			c->geom.depth = c_pos + m_radius;
 		}
 	}
+}
+
+bool CPHSimpleCharacter::HasGroundSupport() const
+{
+	// Match the support slope accepted by normal control recovery, without consuming contact events.
+	return b_exist && b_on_ground && m_ground_contact_normal[1] > M_SQRT1_2 / 2.f;
 }
 
 void CPHSimpleCharacter::GroundNormal(Fvector& norm)

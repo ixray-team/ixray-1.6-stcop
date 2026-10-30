@@ -8,12 +8,14 @@
 struct SAnimationPart {
 	CBlend			*blend;
 	bool			actual;
+	bool SynchronizePhase = true;
 	u32				time_started;
 	
 	void	init	() {
 		motion.invalidate	();
 		blend				= 0;
 		actual				= true;
+		SynchronizePhase = true;
 		time_started		= 0;
 	}
 

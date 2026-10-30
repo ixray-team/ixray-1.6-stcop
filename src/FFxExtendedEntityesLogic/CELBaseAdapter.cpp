@@ -1,5 +1,6 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
 #include "FFxExtendedEntityesLogic/CELBaseAdapter.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
@@ -13,6 +14,8 @@
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "xrGame/level_graph.h"
 #include "xrGame/ai/monsters/control_path_builder.h"
+#include "xrGame/movement_manager.h"
+#include "xrGame/detail_path_manager.h"
 
 // Связывает доступ расширения к штатным операциям монстра с необходимыми службами и состоянием владельца.
 CELBaseAdapter::CELBaseAdapter(CBaseMonster& Monster) : OwnerMonster(Monster) {}
@@ -40,7 +43,7 @@ bool CELBaseAdapter::IsEnemy(const CEntityAlive& Candidate) const
 // Проверяет подтверждённую штатным зрением видимость цели.
 bool CELBaseAdapter::CanSee(const CEntityAlive& Candidate) const
 {
-	return OwnerMonster.EnemyMan.see_enemy_now(&Candidate);
+	return OwnerMonster.EnemyMan.see_enemy_now(&Candidate) || CELSharedSight::HasEvasionTarget(OwnerMonster, Candidate);
 }
 
 // Проверяет допустимость назначения с учётом ограничений категории.
@@ -64,6 +67,7 @@ bool CELBaseAdapter::CanPursue(CEntityAlive& Candidate, const Fvector& KnownPosi
 // Снимает команды расширения и возвращает штатное управление.
 void CELBaseAdapter::ReleaseControl()
 {
+	OwnerMonster.movement().detail().SetMovementFactor(1.f);
 	OwnerMonster.path().enable_path();
 	OwnerMonster.path().set_generic_parameters();
 	if (OwnerMonster.StateMan)

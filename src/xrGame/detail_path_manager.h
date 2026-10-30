@@ -79,9 +79,12 @@ private:
 	float PlannedVisualScale = 1.f;
 	float AppliedNavigationScale = 1.f;
 	float AppliedMovementScale = 1.f;
+	float TacticalMovementFactor = 1.f;
 
 public:
 	void SetVisualScale(float Scale, bool PreservePath = false);
+	void SetMovementFactor(float Factor);
+	float GetMovementFactor() const { return TacticalMovementFactor; }
 
 protected:
 	VELOCITIES									m_movement_params;

@@ -1,0 +1,102 @@
+#include <algorithm>
+#include <cfloat>
+#include <cstdint>
+#include <iostream>
+#include <map>
+#include <vector>
+#include <stdexcept>
+using u16=uint16_t; using u32=uint32_t; using s32=int32_t;
+template<class K,class V> using xr_map=std::map<K,V>;
+struct Fvector { float x=0; float distance_to_sqr(const Fvector& P) const {return (x-P.x)*(x-P.x);} float distance_to(const Fvector& P) const {return std::abs(x-P.x);} };
+struct CObject { virtual ~CObject()=default; virtual struct CEntityAlive* cast_entity_alive(){return nullptr;} };
+struct CEntityAlive:CObject { u16 Identifier=0; Fvector Pos; bool Enemy=true,Visible=false,Reachable=true,Alive=true,Destroyed=false,m_bEntityIgnoredByMonsters=false;
+ u16 ID() const{return Identifier;} const Fvector& Position() const{return Pos;} float Radius()const{return .5f;}
+ bool g_Alive()const{return Alive;} bool getDestroy()const{return Destroyed;}
+ CEntityAlive* cast_entity_alive()override{return this;}
+};
+struct CActor:CEntityAlive {};
+template<class T,class U> T smart_cast(U* P){return dynamic_cast<T>(P);}
+constexpr u32 aiIgnoreActor=1;
+struct {bool Ignore=false; bool test(u32)const{return Ignore;}} psAI_Flags;
+struct {u32 dwTimeGlobal=10000,dwFrame=1;} Device;
+struct {u32 randI(u32 A,u32){return A;}} Random;
+struct HitMemory {CObject* Attacker=nullptr;u32 Time=0; CObject* get_last_hit_object(){return Attacker;}u32 get_last_hit_time(){return Time;}Fvector get_last_hit_position(){return {};}};
+struct CBaseMonster:CEntityAlive {struct HitMemory HitMemory;struct {float get_max_distance(){return 2.f;}} MeleeChecker;const char* Section="test";const char** cNameSect(){return &Section;}};
+namespace ExtendedEntityes {std::map<u16,CEntityAlive*> Entities; CEntityAlive* FindEntity(u16 Id){auto It=Entities.find(Id);return It==Entities.end()?nullptr:It->second;}u32 OwnerGeneration(u16){return 1;}bool IsIgnored(const CEntityAlive&);}
+@IGNORED@
+struct IELAdapter {CBaseMonster& Owner; CBaseMonster& Monster(){return Owner;}bool IsEnemy(CEntityAlive& T){return !ExtendedEntityes::IsIgnored(T)&&T.Alive&&!T.Destroyed&&T.Enemy;}bool CanPursue(CEntityAlive& T,const Fvector&){return T.Reachable;}bool CanSee(CEntityAlive& T){return T.Visible;}bool CanControl(){return true;}};
+struct SELPerceptionProfile {float TargetCrowdDistance=30,CloseDetectionRadius=3,AutoFocusRadius=30;bool IsPassive=false,CanUseBehaviors=true,CanAutoFocus=false,CanPanicOnDamage=true;};
+struct CELSharedSettings {static inline SELPerceptionProfile Settings;static inline bool Distribute=true;struct WorkSettings{u32 TargetAssignments=1;};static WorkSettings& Work(){static WorkSettings W;return W;}static const SELPerceptionProfile& Profile(const char*){return Settings;}static bool CanDistributeTargets(){return Distribute;}};
+struct CELSharedEnemySharing {static bool AreFriends(CBaseMonster&,CBaseMonster&){return true;}};
+enum class EELObservationSource{Vision,Damage,CloseContact,Sound,Sharing};
+struct SELObservation {u16 TargetIdentifier=u16(-1);Fvector Position;u32 ObservedAt=0;EELObservationSource Source=EELObservationSource::Vision;};
+struct CELSharedMemory {using Records=std::vector<SELObservation>;Records Observations;const Records& GetRecords()const{return Observations;}const SELObservation* Find(u16 Id)const{for(auto& O:Observations)if(O.TargetIdentifier==Id)return &O;return nullptr;}};
+struct CELSharedTargets {static u32 ThreatPriority(const SELObservation&,IELAdapter&);static const SELObservation* Select(const CELSharedMemory&,IELAdapter&,u16);static void Clear();static void RemoveOwner(u16);};
+@TARGETS@
+struct CELSharedEnvironment {static float CloseFactor(){return 1.f;}};
+struct HearingState {u32 PanicUntil=0,InvestigateUntil=0;Fvector AttentionPosition;bool DamagePanic=false;void SetSource(u16){}void ResumeInterest(const Fvector&){} };
+struct CELComponentBase {IELAdapter* Adapter;SELPerceptionProfile Profile;CELSharedMemory Memory;HearingState Hearing;u16 TargetIdentifier=u16(-1),ProvokedTarget=u16(-1);u32 ProvokedUntil=0;
+ const SELObservation* SelectTarget();void ObserveDamage(CBaseMonster&,u32);
+ void RememberEntity(CEntityAlive& T,EELObservationSource S,u32 At){for(auto& O:Memory.Observations)if(O.TargetIdentifier==T.ID()){O={T.ID(),T.Position(),At,S};return;}Memory.Observations.push_back({T.ID(),T.Position(),At,S});}
+};
+@SELECT@
+@DAMAGE@
+enum class EELControl{Native,Extended};
+struct CELGround:CELComponentBase {bool HasAttached=true;u16 Updated=u16(-1);EELControl UpdateTarget(const SELObservation& O,float){Updated=O.TargetIdentifier;return EELControl::Extended;}};
+struct Reaction {void Configure(const Fvector&,u32,bool){}};
+struct CELGroundBehaviorManager {CELGround& Owner;IELAdapter& Adapter;SELPerceptionProfile Profile;Reaction ReactionBehavior;bool Reacted=false,Cleared=false;EELControl UpdateGround(float);void Clear(){Cleared=true;}void Select(Reaction*){Reacted=true;}void Update(float){}bool UpdateEscape(float){return false;}bool UpdateInvestigation(float){return false;}};
+@GROUND@
+struct CELFlying:CELComponentBase {bool HasAttached=true;struct {bool CanWander=true;} FlightSettings;};
+struct CELFlyingBehaviorBase {};
+struct Cruise:CELFlyingBehaviorBase {bool HasAttention=false;void SetAttention(const Fvector&,bool){HasAttention=true;}void ClearAttention(){HasAttention=false;}};
+struct CELFlyingBehaviorManager {CELFlying& Owner;struct {void Stop(){}} Movement;Cruise CruiseBehavior;CELFlyingBehaviorBase* Selected=nullptr;
+ EELControl UpdateFlight(float,CELFlyingBehaviorBase*);void Clear(){Selected=nullptr;}void SelectFlight(CELFlyingBehaviorBase& B){Selected=&B;}void Update(float){}
+};
+@FLIGHT@
+struct CELFlyingAttackBase:CELComponentBase {
+ struct {bool HasCommittedTarget(){return true;}u16 CommittedTargetIdentifier(){return 2;}} AttackBehavior;
+ struct {template<class T>bool IsActive(T&){return true;}} BehaviorManager;
+ const SELObservation* SelectTarget();
+};
+@COMMITTED@
+void Check(bool Result,const char* Message){if(!Result)throw std::runtime_error(Message);}
+int main(){
+ CBaseMonster Owner;Owner.Identifier=1;IELAdapter Adapter{Owner};
+ CEntityAlive Track,Threat;Track.Identifier=2;Track.Pos.x=10;Threat.Identifier=3;Threat.Pos.x=2;
+ ExtendedEntityes::Entities={{1,&Owner},{2,&Track},{3,&Threat}};
+ CELSharedMemory Memory;Memory.Observations={{2,Track.Pos,9000},{3,Threat.Pos,10000}};
+ CELSharedTargets::Clear();
+ auto* Selected=CELSharedTargets::Select(Memory,Adapter,u16(-1));Check(Selected&&Selected->TargetIdentifier==3,"baseline nearest");
+ // Hold a distant track and exhaust the assignment quota.
+ ExtendedEntityesAssignments::Assignments[1]={2,1,20000};ExtendedEntityesAssignments::RemainingPlans=0;
+ Threat.Visible=true;
+ Selected=CELSharedTargets::Select(Memory,Adapter,2);Check(Selected&&Selected->TargetIdentifier==3,"visible enemy must preempt held track without distribution quota");
+ Track.Visible=true;Owner.HitMemory={&Threat,10000};
+ Selected=CELSharedTargets::Select(Memory,Adapter,2);Check(Selected&&Selected->TargetIdentifier==3,"attacker must preempt a held visible enemy");
+ Threat.Visible=false;Selected=CELSharedTargets::Select(Memory,Adapter,2);Check(Selected&&Selected->TargetIdentifier==3,"known rear attacker remains threat without vision");
+ Owner.HitMemory.Time=6000;Selected=CELSharedTargets::Select(Memory,Adapter,2);Check(Selected&&Selected->TargetIdentifier==2,"old hit cannot pin the attacker forever");
+ CELSharedTargets::Clear();CELSharedSettings::Work().TargetAssignments=0;
+ Selected=CELSharedTargets::Select(Memory,Adapter,u16(-1));Check(Selected&&Selected->TargetIdentifier==2,"zero assignment budget must not suppress combat");
+ Threat.Alive=false;Check(CELSharedTargets::ThreatPriority(Memory.Observations[1],Adapter)==0,"dead target");Threat.Alive=true;
+ CELComponentBase Logic{&Adapter};Logic.Memory=Memory;Logic.ProvokedTarget=3;Logic.ProvokedUntil=20000;Logic.Hearing={20000,20000};
+ Selected=Logic.SelectTarget();Check(Selected&&Selected->TargetIdentifier==2,"visible target must override witnessed death provocation");Check(Logic.Hearing.PanicUntil==20000&&Logic.Hearing.InvestigateUntil==20000,"combat preserves unfinished interest deadlines");
+ Track.Visible=false;Owner.HitMemory={&Threat,10000};Logic.Memory.Observations.clear();Logic.Hearing.PanicUntil=0;Logic.ObserveDamage(Owner,10000);
+ Check(Logic.Memory.Find(3)!=nullptr,"nearby attacker must be known with autofocus disabled");Check(Logic.Hearing.PanicUntil==0,"contact damage must not initiate noise panic");
+ Logic.Memory.Observations.clear();Threat.Pos.x=100;Logic.ObserveDamage(Owner,10000);Check(!Logic.Memory.Find(3),"far invisible attacker must not reveal live position");Check(Logic.Hearing.PanicUntil==20000,"configured unknown-hit panic retained");Threat.Pos.x=2;
+ CELGround Ground;Ground.Adapter=&Adapter;Ground.Memory=Memory;Ground.TargetIdentifier=2;Ground.Hearing={20000,20000};Track.Visible=true;
+ CELGroundBehaviorManager Manager{Ground,Adapter};Manager.UpdateGround(.1f);Check(!Manager.Reacted&&Ground.Updated==2,"ground panic must not override visible combat even if queued after perception");
+ Ground.TargetIdentifier=u16(-1);Manager.UpdateGround(.1f);Check(Manager.Reacted,"noise response remains with no combat target");
+ CActor Player;Player.Identifier=4;ExtendedEntityes::Entities[4]=&Player;psAI_Flags.Ignore=true;
+ Check(ExtendedEntityes::IsIgnored(Player)&&!ExtendedEntityes::IsIgnored(Threat),"ignore actor must not exclude mutants");
+ Logic.Memory.Observations={{4,{},10000},{3,Threat.Pos,10000}};Threat.Visible=true;Player.Visible=true;Selected=Logic.SelectTarget();Check(Selected&&Selected->TargetIdentifier==3,"ignore actor must preserve another enemy");
+ CELFlying Flyer;Flyer.Adapter=&Adapter;Flyer.Memory=Logic.Memory;Flyer.TargetIdentifier=3;Flyer.Hearing={20000,20000};
+ CELFlyingBehaviorManager FlightManager{Flyer};CELFlyingBehaviorBase Attack;
+ FlightManager.UpdateFlight(.1f,&Attack);Check(FlightManager.Selected==&Attack&&!FlightManager.CruiseBehavior.HasAttention,"flight panic cannot override combat");
+ FlightManager.UpdateFlight(.1f,nullptr);Check(Flyer.TargetIdentifier==3&&!FlightManager.CruiseBehavior.HasAttention,"flight retry must not investigate noise and erase target");
+ Flyer.TargetIdentifier=u16(-1);FlightManager.UpdateFlight(.1f,nullptr);Check(FlightManager.CruiseBehavior.HasAttention,"flight still reacts without a threat");
+ CELFlyingAttackBase AttackLogic;AttackLogic.Adapter=&Adapter;AttackLogic.Memory=Memory;Owner.HitMemory={&Threat,10000};Track.Visible=true;
+ Selected=AttackLogic.SelectTarget();Check(Selected&&Selected->TargetIdentifier==3,"new attacker preempts committed flight target");
+ Owner.HitMemory.Attacker=nullptr;Selected=AttackLogic.SelectTarget();Check(Selected&&Selected->TargetIdentifier==2,"equal visible threats preserve committed flight target");
+ std::cout<<"PASS: flight dispatch, retry and committed target preemption\n";
+ std::cout<<"PASS: combat preempts noise, held tracks, death provocation and exhausted assignment quotas\nPASS: near damage without autofocus; distant hidden attacker stays hidden; expired damage releases priority\nPASS: ground dispatch and actor-ignore isolation\n";
+}

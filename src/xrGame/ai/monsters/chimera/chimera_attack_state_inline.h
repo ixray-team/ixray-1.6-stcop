@@ -88,7 +88,7 @@ bool   ChimeraAttackState<Object>::check_control_start_conditions (ControlCom::E
 {
    	if ( type == ControlCom::eControlJump )
    	{
-   		return									m_allow_jump;
+		return m_allow_jump || this->object->com_man().IsTacticalJumpRequested();
 	}
 
 	return										true;
@@ -310,6 +310,12 @@ void   ChimeraAttackState<Object>::set_turn_animation ()
 template <class Object>
 void   ChimeraAttackState<Object>::execute ()
 {
+	// A tactical jump owns the native controllers until touchdown; do not advance an old attack maneuver.
+	if (this->object->is_jumping() && this->object->com_man().get_jump_control()->setup_data().flags.test(SControlJumpData::eEvasiveJump))
+	{
+		return;
+	}
+
 #ifdef DEBUG_STATE
 	DBG().get_text_tree().clear					();
 	debug::text_tree& text_tree				=	DBG().get_text_tree().find_or_add("ActorView");

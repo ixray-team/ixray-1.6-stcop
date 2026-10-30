@@ -6,6 +6,10 @@
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "xrGame/monster_scale.h"
 
 // Связывает поиск противника у последней известной позиции с необходимыми службами и состоянием владельца.
 CELGroundSearchBehavior::CELGroundSearchBehavior(IELAdapter& OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELGroundBehaviorBase(OwnerAdapter, OwnerProfile), Inspection(OwnerAdapter.Monster()) {}
@@ -21,8 +25,11 @@ void CELGroundSearchBehavior::Exit()
 void CELGroundSearchBehavior::Enter()
 {
 	CELGroundBehaviorBase::Enter();
-	SearchUntil = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
-	ActionUntil = SearchUntil;
+	SearchUntil = 0;
+	TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
+	HasReachedAnchor = false;
+	SearchAnchor = Observation.Position;
+	ActionUntil = TravelUntil;
 	NextPoint = 0;
 	SearchPhase = 0;
 }
@@ -30,6 +37,39 @@ void CELGroundSearchBehavior::Enter()
 // Обновляет поиск противника у последней известной позиции и обрабатывает текущий результат выполнения.
 void CELGroundSearchBehavior::Update(float DeltaTime)
 {
+	if (SearchAnchor.distance_to_sqr(Observation.Position) >= _sqr(CELSharedSettings::Work().GroundRouteReplanDistance))
+	{
+		SearchAnchor = Observation.Position;
+		HasReachedAnchor = false;
+		SearchUntil = 0;
+		TravelUntil = Device.dwTimeGlobal + Profile.ApproachMax;
+		ActionUntil = TravelUntil;
+		NextPoint = SearchPhase = 0;
+		Inspection.Clear();
+		InvalidateRoute();
+	}
+	if (!HasReachedAnchor)
+	{
+		if (Adapter.Monster().Position().distance_to_sqr(SearchAnchor) >= _sqr(2.f * MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
+		{
+			if (s32(Device.dwTimeGlobal - TravelUntil) >= 0)
+			{
+				Movement.Stop();
+				Validation = {EELBehaviorState::Completed, "Поиск: не достиг последней точки за отведённое время"};
+				return;
+			}
+			Move(SearchAnchor, Observation.VertexIdentifier, true);
+			if (HasMoveCommand)
+			{
+				Validation = {EELBehaviorState::Running, "Поиск: бег к последней известной точке"};
+			}
+			return;
+		}
+		HasReachedAnchor = true;
+		SearchUntil = Device.dwTimeGlobal + Random.randI(Profile.SearchMin, Profile.SearchMax + 1);
+		ActionUntil = SearchUntil;
+		InvalidateRoute();
+	}
 	if (s32(Device.dwTimeGlobal - SearchUntil) >= 0)
 	{
 		Movement.Stop();
@@ -54,10 +94,15 @@ void CELGroundSearchBehavior::Update(float DeltaTime)
 		float TrailHeading;
 		float TrailPitch;
 		TrailDirection.getHP(TrailHeading, TrailPitch);
-		const float Angle = -TrailHeading + (float(SearchPhase % 5) / 4.f - .5f) * deg2rad(Profile.SearchAngle);
+		const SELHuntGroup Group = CELSharedHuntGroups::Observe(Adapter.Monster(), Observation.TargetIdentifier, Profile.SharingRadius);
+		const float Lane = Group.Count > 1 ? float(Group.Rank) / float(Group.Count - 1) - .5f : 0.f;
+		const float Spread = std::min(PI, deg2rad(Profile.SearchAngle) * (1.f + float(SearchPhase / 5) * .5f));
+		const float Angle = -TrailHeading + Lane * Spread + (float(SearchPhase % 5) / 4.f - .5f) * Spread;
+		const float SearchLimit = Group.Count > 1 ? Profile.SharingRadius * Profile.CallSharingRatio * .8f : Profile.SearchRadius;
+		const float Radius = std::min(Profile.SearchRadius * (.35f + float(SearchPhase / 5) * .3f), SearchLimit);
 		SearchPosition = Observation.Position;
-		SearchPosition.x += std::sin(Angle) * Profile.SearchRadius;
-		SearchPosition.z += std::cos(Angle) * Profile.SearchRadius;
+		SearchPosition.x += std::sin(Angle) * Radius;
+		SearchPosition.z += std::cos(Angle) * Radius;
 		SearchVertex = ai().level_graph().vertex_id(SearchPosition);
 		NextPoint = Device.dwTimeGlobal + Profile.SearchPointTime;
 		++SearchPhase;
@@ -74,7 +119,8 @@ void CELGroundSearchBehavior::Update(float DeltaTime)
 		CELSharedDebug::Instance().PublishEvent(std::move(Event));
 	}
 	Validation = {EELBehaviorState::Running, "Поиск вокруг точки"};
-	if (!Move(SearchPosition, SearchVertex, false))
+	const bool Runs = Adapter.Monster().Position().distance_to_sqr(SearchPosition) > _sqr(Profile.SearchRunDistance);
+	if (!Move(SearchPosition, SearchVertex, Runs))
 	{
 		Validation = {EELBehaviorState::Blocked, "Точка поиска недоступна"};
 	}

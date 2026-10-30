@@ -40,6 +40,7 @@
 #include "ai/monsters/burer/burer.h"
 #include "GamePersistent.h"
 #include "Actor.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
@@ -518,8 +519,15 @@ void CCreature::update_range_fov	(float &new_range, float &new_fov, float start_
 	// 300=standart, 50=super-fog
 
 	new_fov = start_fov;
-	new_range = start_range * (std::min(m_far_plane_factor * current_far_plane, standard_far_plane) / standard_far_plane) * (1.f / (1.f + m_fog_density_factor * current_fog_density));
+	CBaseMonster* Monster = smart_cast<CBaseMonster*>(this);
+	// Extended profiles already apply fog loss; do not attenuate it a second time.
+	const float FogFactor = Monster && ExtendedEntityes::IsEnabled() ? 1.f : 1.f / (1.f + m_fog_density_factor * current_fog_density);
+	new_range = start_range * (std::min(m_far_plane_factor * current_far_plane, standard_far_plane) / standard_far_plane) * FogFactor;
 
+	if (Monster)
+	{
+		new_range *= ExtendedEntityes::VisionRangeFactor(*Monster);
+	}
 	clamp(new_range, 0.f, current_far_plane);
 }
 

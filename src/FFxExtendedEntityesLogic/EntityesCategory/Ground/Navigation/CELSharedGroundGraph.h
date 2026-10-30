@@ -12,6 +12,7 @@ class CELSharedGroundGraph final
 {
 public:
 	static bool Submit(SELNavigationRequest Request, u32 GoalVertex);
+	static bool Retarget(const SELNavigationIdentity& Identity, const Fvector& GoalPosition, u32 GoalVertex);
 	static EELGraphCaptureState TakeState(const SELNavigationIdentity& Identity);
 	static void Cancel(const SELNavigationIdentity& Identity);
 	static void BeginFrame();

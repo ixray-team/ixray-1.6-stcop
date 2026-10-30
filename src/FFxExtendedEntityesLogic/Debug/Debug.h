@@ -34,6 +34,8 @@ struct SELDebugRecord
 	u32 KnownTargets = 0;
 	EELBehaviorState Validation = EELBehaviorState::Running;
 	bool IsAttacking = false;
+	bool IsEvading = false;
+	Fobb Bounds = {};
 	bool IgnoresFoliage = false;
 	shared_str State;
 	shared_str Mode;

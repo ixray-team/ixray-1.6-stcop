@@ -1,5 +1,6 @@
 #pragma once
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGround.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Behaviors/CELGroundCombatTactics.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/Behaviors/CELGroundAttackBehavior.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Entityes/Aggressive/Behaviors/CELGroundSearchBehavior.h"
 class CELGroundAttackBase : public CELGround
@@ -10,7 +11,9 @@ public:
 	void Detach() override;
 
 protected:
+	void FillGroundDebug(SELDebugRecord& Record) const override;
 	EELControl UpdateTarget(const SELObservation& Observation, float DeltaTime) override;
+	CELGroundCombatTactics Tactics;
 	CELGroundAttackBehavior AttackBehavior;
 	CELGroundSearchBehavior SearchBehavior;
 	u32 SuppressedUntil = 0;

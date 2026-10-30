@@ -13,6 +13,9 @@ public:
 private:
 	CELGroundInspection Inspection;
 	u32 SearchUntil = 0;
+	u32 TravelUntil = 0;
+	bool HasReachedAnchor = false;
+	Fvector SearchAnchor = {0.f, 0.f, 0.f};
 	u32 NextPoint = 0;
 	u32 SearchPhase = 0;
 	Fvector SearchPosition = {0.f, 0.f, 0.f};

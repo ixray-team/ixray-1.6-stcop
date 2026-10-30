@@ -2,6 +2,7 @@
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Behaviors/CELGroundCloseScent.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedMemory.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
@@ -10,7 +11,7 @@
 
 void CELGroundCloseScent::See(IELAdapter& Adapter, CEntityAlive& Target, u32 Time, const SELPerceptionProfile& Profile)
 {
-	if (!Profile.CanUseCloseScent || !Profile.CloseScentTime || Profile.CloseScentRadius <= 0.f ||
+	if (!Profile.CanUseCloseScent || !CELSharedEnvironment::CanSmell() || !Profile.CloseScentTime || Profile.CloseScentRadius <= 0.f ||
 		Adapter.Monster().Position().distance_to_sqr(Target.Position()) > Profile.CloseScentRadius * Profile.CloseScentRadius)
 	{
 		return;
@@ -26,7 +27,7 @@ void CELGroundCloseScent::Update(IELAdapter& Adapter, CELSharedMemory& Memory, c
 	for (auto It = Contacts.begin(); It != Contacts.end();)
 	{
 		CEntityAlive* Target = ExtendedEntityes::FindEntity(It->first);
-		if (!Profile.CanUseCloseScent || !Target || !Adapter.IsEnemy(*Target) ||
+		if (!Profile.CanUseCloseScent || !CELSharedEnvironment::CanSmell() || !Target || !Adapter.IsEnemy(*Target) ||
 			ExtendedEntityes::OwnerGeneration(It->first) != It->second.Generation ||
 			Device.dwTimeGlobal - It->second.SeenAt >= Profile.CloseScentTime ||
 			Adapter.Monster().Position().distance_to_sqr(Target->Position()) > Profile.CloseScentRadius * Profile.CloseScentRadius)

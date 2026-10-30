@@ -1,5 +1,6 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/CELFlying.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Behaviors/CELFlyingBehaviorBase.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
@@ -55,7 +56,7 @@ void CELFlying::ObserveVision(CBaseMonster& OwnerMonster, u32 CurrentTime)
 	xr_vector<ISpatialShared> Candidates;
 	Fvector ViewOrigin;
 	OwnerMonster.Center(ViewOrigin);
-	g_SpatialSpace->q_sphere(Candidates, 0, ESPATIAL_TYPE::COLLIDEABLE, ViewOrigin, OwnerMonster.eye_range);
+	g_SpatialSpace->q_sphere(Candidates, 0, ESPATIAL_TYPE::COLLIDEABLE, ViewOrigin, OwnerMonster.eye_range * CELSharedEnvironment::Vision(Profile));
 	u32 Visited = 0;
 	u32 Checked = 0;
 	CObject* Object;
@@ -110,7 +111,7 @@ void CELFlying::FrameUpdate(float DeltaTime)
 	}
 	SELDebugRecord Record;
 	Record.OwnerIdentifier = Adapter->Monster().ID();
-	Record.IgnoresFoliage = CELSharedSettings::IsEnabled() && Profile.CanIgnoreFoliage;
+	Record.IgnoresFoliage = CELSharedSettings::IsEnabled() && Profile.CanIgnoreFoliage && CELSharedEnvironment::CanSmell();
 	Adapter->Monster().Center(Record.Position);
 	Record.GoalPosition = DebugGoal();
 	Record.Speed = Movement.GetSpeed();

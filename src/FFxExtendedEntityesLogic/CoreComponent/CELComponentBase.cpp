@@ -1,10 +1,14 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
 #include <algorithm>
 #include "FFxExtendedEntityesLogic/CoreComponent/CELComponentBase.h"
+#include "xrGame/movement_manager.h"
+#include "xrGame/ai_monster_space.h"
+#include "xrGame/ai/monsters/control_animation_base.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedTargets.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
 #include "xrGame/ai/monsters/control_direction_base.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
@@ -69,7 +73,7 @@ bool CELComponentBase::HasVisualAcquired(CEntityAlive& Candidate, u32 CurrentTim
 	}
 	Acquisition.VisibleTime += Acquisition.SampleTime ? std::min(100u, CurrentTime - Acquisition.SampleTime) : 0;
 	Acquisition.SampleTime = CurrentTime;
-	return Acquisition.VisibleTime >= Profile.VisualAcquireTime;
+	return float(Acquisition.VisibleTime) >= float(Profile.VisualAcquireTime) / CELSharedEnvironment::Acquisition(Profile);
 }
 
 // Записывает подтверждённые сведения о сущности в личную память.
@@ -86,6 +90,10 @@ void CELComponentBase::RememberEntity(CEntityAlive& TargetEntity, EELObservation
 	}
 	if (Source == EELObservationSource::Vision)
 	{
+		if (!Memory.Find(TargetEntity.ID()))
+		{
+			Sharing.NotifyOwnContact(ObservedAt);
+		}
 		OnVisualContact(TargetEntity, ObservedAt);
 	}
 	SELObservation Observation;
@@ -110,6 +118,12 @@ void CELComponentBase::Observe()
 	{
 		ForgetTarget(Actor()->ID());
 	}
+	CELSharedSight::UpdateEvasionTarget(OwnerMonster);
+	CEntityAlive* Tracked = ExtendedEntityes::FindEntity(TargetIdentifier);
+	if (Tracked && Adapter->IsEnemy(*Tracked) && CELSharedSight::HasEvasionTarget(OwnerMonster, *Tracked))
+	{
+		RememberEntity(*Tracked, EELObservationSource::Vision, CurrentTime);
+	}
 	Hearing.PublishDebug(OwnerMonster.Position(), Profile, OwnerMonster.ID());
 	ObserveVision(OwnerMonster, CurrentTime);
 	ObserveCloseScent();
@@ -131,10 +145,10 @@ void CELComponentBase::Observe()
 	ObserveCloseContact();
 	ObservePeriphery();
 	Memory.Expire(CurrentTime);
-	Sharing.Update(OwnerMonster, Memory, Profile);
 	const SELObservation* SelectedObservation = SelectTarget();
 	TargetIdentifier = SelectedObservation ? SelectedObservation->TargetIdentifier : u16(-1);
 	PublishNativeMemory();
+	Sharing.Update(OwnerMonster, Memory, Profile, Hearing, TargetIdentifier);
 	if (SelectedObservation && CELSharedDebug::Instance().IsDrawEnabled())
 	{
 		SELDebugEvent Event;
@@ -157,6 +171,7 @@ void CELComponentBase::RefreshDecision()
 	{
 		return;
 	}
+	ObserveCloseContact();
 	ObserveVision(Adapter->Monster(), Device.dwTimeGlobal);
 	ObserveCloseScent();
 	ObserveDamage(Adapter->Monster(), Device.dwTimeGlobal);
@@ -169,6 +184,11 @@ void CELComponentBase::RefreshDecision()
 // Выбирает назначение до синхронизации штатной памяти и запуска схемы поведения.
 const SELObservation* CELComponentBase::SelectTarget()
 {
+	const SELObservation* Selected = Profile.IsPassive ? nullptr : CELSharedTargets::Select(Memory, *Adapter, TargetIdentifier);
+	if (Selected && CELSharedTargets::ThreatPriority(*Selected, *Adapter))
+	{
+		return Selected;
+	}
 	if (!Profile.IsPassive && s32(ProvokedUntil - Device.dwTimeGlobal) > 0)
 	{
 		CEntityAlive* Target = ExtendedEntityes::FindEntity(ProvokedTarget);
@@ -178,7 +198,8 @@ const SELObservation* CELComponentBase::SelectTarget()
 			return Known;
 		}
 	}
-	return Profile.IsPassive ? nullptr : CELSharedTargets::Select(Memory, *Adapter, TargetIdentifier);
+	Hearing.ResumeInterest(Adapter->Monster().Position());
+	return Selected;
 }
 
 // Передаёт актуальные подтверждённые знания в штатную память монстра.
@@ -237,7 +258,8 @@ bool CELComponentBase::Accept(const SELObservation& Observation, CBaseMonster& S
 	}
 	if (Observation.Kind != EELObservationKind::Enemy)
 	{
-		if (!ExtendedEntityes::PerceptionBudget().TryTransfer() || !CELSharedDeaths::Remember(OwnerMonster, Observation, Profile))
+		const bool IsInterest = Observation.Kind == EELObservationKind::Interest;
+		if (!ExtendedEntityes::PerceptionBudget().TryTransfer() || !(IsInterest ? Hearing.RememberInterest(Observation, Profile) : CELSharedDeaths::Remember(OwnerMonster, Observation, Profile)))
 		{
 			return false;
 		}
@@ -302,6 +324,31 @@ void CELComponentBase::Hear(const SELSoundEvent& SoundEvent)
 	}
 }
 
+// Rotate an idle ground observer toward a heard point; do not identify its unseen source as an enemy.
+void CELComponentBase::UpdateAuditoryAttention()
+{
+	CBaseMonster& Owner = Adapter->Monster();
+	if (!HasAttached || !Adapter->CanControl() || !Profile.CanUseBehaviors || s32(Device.dwTimeGlobal - NextSoundLook) < 0 ||
+		Owner.movement().speed() > .1f || Owner.anim().m_tAction == ACT_ATTACK || s32(Hearing.PanicUntil - Device.dwTimeGlobal) > 0)
+	{
+		return;
+	}
+	const SELObservation* Current = Memory.Find(TargetIdentifier);
+	if (Current && CELSharedTargets::ThreatPriority(*Current, *Adapter))
+	{
+		return;
+	}
+	Fvector Point;
+	if (!Hearing.GetLookPoint(Point) || Owner.Position().distance_to_sqr(Point) <= EPS_L)
+	{
+		return;
+	}
+	Owner.dir().face_target(Point, 0);
+	Owner.dir().set_heading_speed(std::max(Owner.dir().heading().speed_target, Profile.SoundLookTurnSpeed));
+	NextSoundLook = Device.dwTimeGlobal + Profile.SoundLookInterval;
+	SoundLookAppliedUntil = NextSoundLook + 50u;
+}
+
 // Удаляет знания и ссылки, связанные с исчезнувшим объектом.
 void CELComponentBase::RemoveObject(u16 ObjectIdentifier)
 {
@@ -329,7 +376,20 @@ void CELComponentBase::ForgetTarget(u16 ObjectIdentifier)
 // Use existing perception snapshots: debug drawing must not consume vision rays.
 void CELComponentBase::FillDebugRecord(SELDebugRecord& Record) const
 {
+	CELSharedTargets::FillDebug(Record, Adapter->Monster().ID());
+	CEntityAlive* EvasiveTarget = ExtendedEntityes::FindEntity(TargetIdentifier);
+	if (EvasiveTarget && CELSharedSight::HasEvasionTarget(Adapter->Monster(), *EvasiveTarget))
+	{
+		Record.Senses.push_back("ЗРЕНИЕ: удержание подтвержденной цели при увороте");
+	}
 	Hearing.FillDebug(Record);
+	if (s32(SoundLookAppliedUntil - Device.dwTimeGlobal) > 0)
+	{
+		Record.Senses.push_back("ВНИМАНИЕ: разворот к услышанной точке");
+	}
+	string256 EnvironmentLabel;
+	xr_sprintf(EnvironmentLabel, "ВОСПРИЯТИЕ: зрение ×%.2f | дождь %.2f | туман %.2f | нюх %s", CELSharedEnvironment::Vision(Profile), CELSharedEnvironment::Rain(), CELSharedEnvironment::Fog(), CELSharedEnvironment::CanSmell() ? "разрешён" : "отключён дождём");
+	Record.Senses.push_back(EnvironmentLabel);
 	const SELObservation* Guided = Memory.Find(TargetIdentifier);
 	if (Guided && Guided->Source == EELObservationSource::Sharing && Guided->IsPsiShared && s32(Guided->ExpiresAt - Device.dwTimeGlobal) > 0 &&
 		Guided->SenderGeneration == ExtendedEntityes::OwnerGeneration(Guided->SenderIdentifier))
@@ -392,14 +452,19 @@ void CELComponentBase::ObserveCloseContact()
 	{
 		return;
 	}
-	NextCloseProbe = Device.dwTimeGlobal + Random.randI(200u, 501u);
-	if (!ExtendedEntityes::PerceptionBudget().TrySpatial())
+	CBaseMonster& OwnerMonster = Adapter->Monster();
+	CEntityAlive* CurrentEnemy = const_cast<CEntityAlive*>(OwnerMonster.EnemyMan.get_enemy());
+	if (CurrentEnemy && Adapter->IsEnemy(*CurrentEnemy) && CELSharedSight::CheckClose(OwnerMonster, *CurrentEnemy) == EELSightResult::Visible)
+	{
+		RememberEntity(*CurrentEnemy, EELObservationSource::CloseContact, Device.dwTimeGlobal);
+	}
+	if (!ExtendedEntityes::PerceptionBudget().TrySpatial(OwnerMonster.ID()))
 	{
 		return;
 	}
-	CBaseMonster& OwnerMonster = Adapter->Monster();
+	NextCloseProbe = Device.dwTimeGlobal + 100;
 	xr_vector<ISpatialShared> Candidates;
-	g_SpatialSpace->q_sphere(Candidates, 0, ESPATIAL_TYPE::COLLIDEABLE, OwnerMonster.Position(), Profile.CloseDetectionRadius);
+	g_SpatialSpace->q_sphere(Candidates, 0, ESPATIAL_TYPE::COLLIDEABLE, OwnerMonster.Position(), Profile.CloseDetectionRadius * CELSharedEnvironment::CloseFactor());
 	xr_vector<ISpatialShared>::const_iterator CandidateIterator;
 	CObject* CandidateObject;
 	CEntityAlive* Candidate;
@@ -411,7 +476,7 @@ void CELComponentBase::ObserveCloseContact()
 		{
 			continue;
 		}
-		if (CELSharedSight::Visible(OwnerMonster, *Candidate, 360.f, Profile.CloseDetectionRadius))
+		if (CELSharedSight::CheckClose(OwnerMonster, *Candidate) == EELSightResult::Visible)
 		{
 			RememberEntity(*Candidate, EELObservationSource::CloseContact, Device.dwTimeGlobal);
 		}
@@ -441,15 +506,20 @@ void CELComponentBase::ObserveDamage(CBaseMonster& OwnerMonster, u32 CurrentTime
 	CEntityAlive* Candidate = Attacker ? Attacker->cast_entity_alive() : nullptr;
 	if (Candidate && Adapter->IsEnemy(*Candidate) && CurrentTime - OwnerMonster.HitMemory.get_last_hit_time() < 1000)
 	{
-		if (Profile.CanAutoFocus && OwnerMonster.Position().distance_to(Candidate->Position()) <= Profile.AutoFocusRadius)
+		const bool HasVision = Adapter->CanSee(*Candidate);
+		const float Distance = OwnerMonster.Position().distance_to(Candidate->Position());
+		const float ContactRadius = std::max(Profile.CloseDetectionRadius * CELSharedEnvironment::CloseFactor(), OwnerMonster.MeleeChecker.get_max_distance() + Candidate->Radius());
+		const bool CanLocate = HasVision || Distance <= ContactRadius || (Profile.CanAutoFocus && Distance <= Profile.AutoFocusRadius);
+		if (CanLocate)
 		{
 			RememberEntity(*Candidate, EELObservationSource::Damage, OwnerMonster.HitMemory.get_last_hit_time());
 		}
-		if (Profile.CanPanicOnDamage && !Adapter->CanSee(*Candidate))
+		if (!CanLocate && Profile.CanPanicOnDamage)
 		{
 			Hearing.SetSource(Candidate->ID());
 			Hearing.AttentionPosition = OwnerMonster.HitMemory.get_last_hit_position();
 			Hearing.PanicUntil = OwnerMonster.HitMemory.get_last_hit_time() + 10000;
+			Hearing.DamagePanic = true;
 		}
 	}
 }

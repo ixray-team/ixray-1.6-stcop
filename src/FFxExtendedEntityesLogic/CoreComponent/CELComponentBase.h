@@ -35,6 +35,7 @@ protected:
 	virtual void OnVisualContact(CEntityAlive& Target, u32 ObservedAt) {}
 	virtual void ObserveCloseScent() {}
 	void ObservePeriphery();
+	void UpdateAuditoryAttention();
 	virtual void ObserveVision(CBaseMonster& OwnerMonster, u32 CurrentTime);
 	void ObserveDamage(CBaseMonster& OwnerMonster, u32 CurrentTime);
 	bool HasVisualAcquired(CEntityAlive& Candidate, u32 CurrentTime);
@@ -48,6 +49,8 @@ protected:
 	u32 ReceiveAfter = 0;
 	u32 NextCloseProbe = 0;
 	u32 NextPeripheralProbe = 0;
+	u32 NextSoundLook = 0;
+	u32 SoundLookAppliedUntil = 0;
 	u32 PeripheralCursor = 0;
 	u32 LastReceivedAt = 0;
 	u16 LastSender = u16(-1);

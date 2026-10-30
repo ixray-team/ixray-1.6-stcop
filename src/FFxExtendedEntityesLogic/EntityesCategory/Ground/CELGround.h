@@ -18,6 +18,7 @@ protected:
 	void OnVisualContact(CEntityAlive& Target, u32 ObservedAt) override;
 	void ObserveCloseScent() override;
 	CELGroundCloseScent CloseScent;
+	virtual void FillGroundDebug(SELDebugRecord& Record) const {}
 	virtual EELControl UpdateTarget(const SELObservation& Observation, float DeltaTime);
 	friend class CELGroundBehaviorManager;
 	CELGroundBehaviorManager BehaviorManager;

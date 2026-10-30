@@ -49,6 +49,8 @@ const xr_vector<u16>& Owners();
 u32 OwnerGeneration(u16 OwnerIdentifier);
 CELSharedPerceptionBudget& PerceptionBudget();
 CELSharedNavigationScheduler& Navigation();
+bool HasCloseContact(CBaseMonster& OwnerMonster, const CEntityAlive* Candidate);
+float VisionRangeFactor(CBaseMonster& OwnerMonster);
 float VisionTransparency(CBaseMonster& OwnerMonster, CObject* Obstacle, u32 ElementIdentifier);
 void BeginFrame();
 void Clear();

@@ -443,13 +443,18 @@ bool CControlManagerCustom::jump_if_possible (Fvector const&		target,
 											  CEntityAlive* const	target_object,
 											  bool const			use_direction_to_target,
 											  bool const			use_velocity_bounce,
-											  bool const			check_possibility)
+											  bool const			check_possibility,
+											  float MaxHeadingAngle, bool TacticalRequest)
 {
+	const bool PreviousRequest = TacticalJumpRequest;
+	TacticalJumpRequest = TacticalRequest;
+	xr_scope_exit RestoreRequest([&]() { TacticalJumpRequest = PreviousRequest; });
+
 	if ( !m_object->check_start_conditions(ControlCom::eControlJump) ) 
 		return	false;
 	
 	bool const	aggressive_jump	= target_object ? m_object->can_use_agressive_jump(target_object) : false;
-	if ( check_possibility && !m_jump->can_jump(target, aggressive_jump) )
+	if ( check_possibility && !m_jump->can_jump(target, aggressive_jump, MaxHeadingAngle) )
 		return	false;
 
 	if ( !m_man->check_start_conditions(ControlCom::eControlJump) )
@@ -458,6 +463,7 @@ bool CControlManagerCustom::jump_if_possible (Fvector const&		target,
 	m_jump->setup_data().flags.set	(SControlJumpData::eUseAutoAim, use_direction_to_target);
 	m_jump->setup_data().flags.set	(SControlJumpData::eUseTargetPosition, true);
 	m_jump->setup_data().flags.set	(SControlJumpData::eDontUseVelocityBounce, !use_velocity_bounce);
+	m_jump->setup_data().flags.set(SControlJumpData::eEvasiveJump, MaxHeadingAngle >= 0.f);
 	m_jump->setup_data().flags.set	(SControlJumpData::ePrepareSkip, true);
 	m_jump->setup_data().target_object		= target_object;
 	m_jump->setup_data().target_position	= target;

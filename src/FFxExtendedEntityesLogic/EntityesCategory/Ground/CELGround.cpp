@@ -1,8 +1,10 @@
 #include "FFxExtendedEntityesLogic/stdafx.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
 #include "xrGame/ai/monsters/control_animation_base.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGround.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Behaviors/CELGroundFlyingGrab.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_monster_space.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGroundMovement.h"
@@ -40,14 +42,19 @@ EELControl CELGround::UpdateTarget(const SELObservation& Observation, float Delt
 // Выполняет покадровую часть активной схемы без повторного выбора поведения.
 void CELGround::FrameUpdate(float DeltaTime)
 {
+	UpdateAuditoryAttention();
 	if (!HasAttached || !CELSharedDebug::Instance().IsDrawEnabled())
 	{
 		return;
 	}
 	SELDebugRecord Record;
 	Record.OwnerIdentifier = Adapter->Monster().ID();
-	Record.IgnoresFoliage = CELSharedSettings::IsEnabled() && Profile.CanIgnoreFoliage;
+	Record.IgnoresFoliage = CELSharedSettings::IsEnabled() && Profile.CanIgnoreFoliage && CELSharedEnvironment::CanSmell();
 	Record.Position = Adapter->Monster().Position();
+	Fobb LocalBounds;
+	LocalBounds.m_rotate.identity();
+	Adapter->Monster().BoundingBox().get_CD(LocalBounds.m_translate, LocalBounds.m_halfsize);
+	Record.Bounds.transform(LocalBounds, Adapter->Monster().XFORM());
 	Record.Speed = Adapter->Monster().movement().speed();
 	Record.GoalPosition = Record.Position;
 	const SELObservation* Target = Memory.Find(TargetIdentifier);
@@ -78,6 +85,8 @@ void CELGround::FrameUpdate(float DeltaTime)
 		}
 	}
 	CloseScent.FillDebug(Record, Profile);
+	CELGroundFlyingGrab::FillDebug(Adapter->Monster().ID(), Record);
+	FillGroundDebug(Record);
 	FillDebugRecord(Record);
 	CELSharedDebug::Instance().Publish(std::move(Record));
 }

@@ -2,6 +2,7 @@
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Behaviors/CELFlyingBehaviorManager.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/CELFlying.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedTargets.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 
 // Связывает выбор воздушных схем и реакцию на испуг с необходимыми службами и состоянием владельца.
@@ -33,8 +34,10 @@ EELControl CELFlyingBehaviorManager::UpdateFlight(float DeltaTime, CELFlyingBeha
 		Movement.Stop();
 		return EELControl::Native;
 	}
-	const bool IsPanicking = s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
-	const bool IsInvestigating = !DesiredBehavior && s32(Device.dwTimeGlobal - Owner.Hearing.InvestigateUntil) < 0;
+	const SELObservation* Target = Owner.Memory.Find(Owner.TargetIdentifier);
+	const bool HasThreat = Target && CELSharedTargets::ThreatPriority(*Target, *Owner.Adapter);
+	const bool IsPanicking = !HasThreat && (!Target || Owner.Hearing.DamagePanic) && s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
+	const bool IsInvestigating = !HasThreat && !DesiredBehavior && s32(Device.dwTimeGlobal - Owner.Hearing.InvestigateUntil) < 0;
 	if (IsPanicking || IsInvestigating)
 	{
 		Owner.TargetIdentifier = u16(-1);

@@ -54,11 +54,6 @@ void CControlDirectionBase::use_path_direction(bool reversed)
 	m_heading.target = angle_normalize((reversed) ? (-yaw + PI) : (-yaw));
 }
 
-void CControlDirectionBase::set_heading_speed(float value, bool force) 
-{
-	m_heading.speed_target = value;
-}
-
 void CControlDirectionBase::set_heading(float value, bool force) 
 {
 	m_heading.target = value;

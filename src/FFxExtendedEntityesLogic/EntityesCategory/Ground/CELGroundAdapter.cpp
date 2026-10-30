@@ -4,6 +4,7 @@
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
+#include "FFxExtendedEntityesLogic/CELSharedSettings.h"
 
 // Читает штатный предел высоты только у вида с настоящим контроллером прыжка.
 CELGroundAdapter::CELGroundAdapter(CBaseMonster& OwnerMonster) : CELBaseAdapter(OwnerMonster)
@@ -22,6 +23,11 @@ CELGroundAdapter::CELGroundAdapter(CBaseMonster& OwnerMonster) : CELBaseAdapter(
 // Не назначает бесконечную погоню за телом летуна выше ближней атаки и штатного прыжка.
 bool CELGroundAdapter::CanPursue(CEntityAlive& Candidate, const Fvector& KnownPosition) const
 {
+	if (!Candidate.UsedAI_Locations() && CELSharedSettings::Profile(*OwnerMonster.cNameSect()).CanInterceptFlying && CanSee(Candidate))
+	{
+		// Keep a visible aerial threat available to the ground tactical executor.
+		return true;
+	}
 	if (Candidate.UsedAI_Locations())
 	{
 		return true;

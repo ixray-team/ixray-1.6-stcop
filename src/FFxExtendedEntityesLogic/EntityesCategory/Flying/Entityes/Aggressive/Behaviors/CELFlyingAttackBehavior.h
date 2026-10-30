@@ -25,7 +25,7 @@ public:
 	void Update(float DeltaTime) override;
 	SELBehaviorValidation Validate() const override;
 	const char* ModeDescription() const override { return "АТАКА"; }
-	bool IsAttacking() const { return HasTarget && HasVisibleTarget && ActivePhase == EELAttackPhase::Dive && Movement.HasRoute() && !Movement.IsContinuityFlight() && !HasHitPass; }
+	bool IsAttacking() const { return Attack.IsAttacking() || (HasTarget && HasVisibleTarget && ActivePhase == EELAttackPhase::Dive && Movement.HasRoute() && !Movement.IsContinuityFlight() && !HasHitPass); }
 	bool HasCommittedTarget() const { return HasTarget && (Movement.HasRoute() || Navigation.IsPending() || HasPreparedRoute); }
 	u16 CommittedTargetIdentifier() const { return Observation.TargetIdentifier; }
 

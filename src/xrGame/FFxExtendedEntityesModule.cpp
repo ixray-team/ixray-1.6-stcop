@@ -187,6 +187,16 @@ CELSharedNavigationScheduler& ExtendedEntityes::Navigation()
 	return Module().Get().Navigation();
 }
 
+bool ExtendedEntityes::HasCloseContact(CBaseMonster& OwnerMonster, const CEntityAlive* Candidate)
+{
+	return Module().Get().HasCloseContact(OwnerMonster, Candidate);
+}
+
+float ExtendedEntityes::VisionRangeFactor(CBaseMonster& OwnerMonster)
+{
+	return Module().Get().VisionRangeFactor(OwnerMonster);
+}
+
 float ExtendedEntityes::VisionTransparency(CBaseMonster& OwnerMonster, CObject* Obstacle, u32 ElementIdentifier)
 {
 	return Module().Get().VisionTransparency(OwnerMonster, Obstacle, ElementIdentifier);

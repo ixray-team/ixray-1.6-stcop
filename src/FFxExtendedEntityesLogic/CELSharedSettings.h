@@ -28,6 +28,7 @@ class CELSharedSettings final
 {
 public:
 	static void Initialize();
+	static const char* SectionName();
 	static const SELPerceptionProfile& Profile(const char* Section);
 	static bool IsEnabled();
 	static const SELSharedWorkSettings& Work();

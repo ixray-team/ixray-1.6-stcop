@@ -3,7 +3,7 @@
 #include "EntryPoint.h"
 class CObjectItemAbstract;
 
-inline constexpr u32 FFX_EXTENDED_ENTITYES_API_VERSION = 1;
+inline constexpr u32 FFX_EXTENDED_ENTITYES_API_VERSION = 3;
 
 struct SFFxExtendedEntityesAPI
 {
@@ -37,6 +37,8 @@ struct SFFxExtendedEntityesAPI
 	u32 (*OwnerGeneration)(u16 OwnerIdentifier);
 	CELSharedPerceptionBudget& (*PerceptionBudget)();
 	CELSharedNavigationScheduler& (*Navigation)();
+	bool (*HasCloseContact)(CBaseMonster& OwnerMonster, const CEntityAlive* Candidate);
+	float (*VisionRangeFactor)(CBaseMonster& OwnerMonster);
 	float (*VisionTransparency)(CBaseMonster& OwnerMonster, CObject* Obstacle, u32 ElementIdentifier);
 	void (*BeginFrame)();
 	void (*Clear)();

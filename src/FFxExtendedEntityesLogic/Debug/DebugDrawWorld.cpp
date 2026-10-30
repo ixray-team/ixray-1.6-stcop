@@ -81,10 +81,14 @@ void CELSharedDebugDrawWorld::Draw(const xr_vector<SELDebugRecord>& Records, con
 				HUD().world_prims.append_sphere(RecordIterator->Position, RecordIterator->ScentRadius, color_rgba(255, 255, 255, 180));
 			}
 		}
-		Color = RecordIterator->IsAttacking ? color_rgba(255, 30, 30, 180) : color_rgba(255, 220, 40, 160);
+		Color = RecordIterator->IsEvading ? color_rgba(190, 80, 255, 255) : RecordIterator->IsAttacking ? color_rgba(255, 30, 30, 180) : color_rgba(255, 220, 40, 160);
 		if (DrawGeometry)
 		{
-			HUD().world_prims.append_sphere(RecordIterator->Position, RecordIterator->Radius, color_rgba(255, 220, 40, 160));
+			HUD().world_prims.append_sphere(RecordIterator->Position, RecordIterator->Radius, RecordIterator->IsEvading ? Color : color_rgba(255, 220, 40, 160));
+			if (RecordIterator->IsEvading)
+			{
+				HUD().world_prims.append_obb(RecordIterator->Bounds, Color);
+			}
 		}
 		if (DrawGeometry)
 		{

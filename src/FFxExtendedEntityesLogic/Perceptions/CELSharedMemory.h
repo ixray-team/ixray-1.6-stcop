@@ -16,7 +16,8 @@ enum class EELObservationKind : u8
 {
 	Enemy,
 	Body,
-	Hazard
+	Hazard,
+	Interest
 };
 
 struct SELObservation
@@ -38,6 +39,7 @@ struct SELObservation
 	bool IsPsiShared = false;
 	bool HasCall = false;
 	bool HasParentalChannel = false;
+	u8 InterestType = 0;
 	xr_vector<Fvector> Trail;
 };
 

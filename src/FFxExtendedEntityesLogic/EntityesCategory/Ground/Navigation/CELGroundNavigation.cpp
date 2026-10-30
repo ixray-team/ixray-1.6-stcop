@@ -48,6 +48,13 @@ bool CELGroundNavigation::Prepare(const Fvector& GoalPosition, u32 GoalVertex, u
 	return HasCapture;
 }
 
+// Submitted worker snapshots stay immutable; only an active main-thread capture can retarget.
+bool CELGroundNavigation::Retarget(const Fvector& GoalPosition, u32 GoalVertex)
+{
+	return HasCapture && Adapter.CanReach(GoalPosition, GoalVertex) &&
+		CELSharedGroundGraph::Retarget(PendingIdentity, GoalPosition, GoalVertex);
+}
+
 // Забирает готовый результат либо продолжает подготовку маршрута.
 bool CELGroundNavigation::Poll(SELNavigationResult& Result)
 {

@@ -4,6 +4,7 @@
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingAttackBehavior.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingRecoveryBehavior.h"
 #include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingRestBehavior.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Flying/Entityes/Aggressive/Behaviors/CELFlyingSearchBehavior.h"
 
 class CELFlyingAttackBase : public CELFlying
 {
@@ -21,6 +22,7 @@ protected:
 	CELFlyingAttackBehavior AttackBehavior;
 	CELFlyingRecoveryBehavior RecoveryBehavior;
 	CELFlyingRestBehavior RestBehavior;
+	CELFlyingSearchBehavior SearchBehavior;
 	float AirborneTime = 0.f;
 	u32 NextRestAttempt = 0;
 	u32 RetryAfter = 0;

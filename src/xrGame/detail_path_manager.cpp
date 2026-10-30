@@ -13,6 +13,26 @@
 #include "level_graph.h"
 #include "monster_scale.h"
 
+void CDetailPathManager::SetMovementFactor(float Factor)
+{
+	if (!_valid(Factor))
+	{
+		return;
+	}
+	Factor = clampr(Factor, .5f, 2.f);
+	if (std::abs(Factor - TacticalMovementFactor) < .001f)
+	{
+		return;
+	}
+	const float Ratio = Factor / TacticalMovementFactor;
+	for (auto& Entry : m_movement_params)
+	{
+		Entry.second.linear_velocity *= Ratio;
+	}
+	TacticalMovementFactor = Factor;
+	m_actuality = false;
+}
+
 void CDetailPathManager::SetVisualScale(float Scale, bool PreservePath)
 {
 	const float NavigationScale = MonsterScale::Navigation(Scale);

@@ -16,6 +16,7 @@ CELFlyingAttackBehavior::CELFlyingAttackBehavior(IELAdapter& OwnerAdapter, const
 // Снимает разрешение на контакт с целью и освобождает заявки схемы.
 void CELFlyingAttackBehavior::Exit()
 {
+	HasContactSample = false;
 	Movement.SetContactTarget(u16(-1));
 	Animation.Fly();
 	CELFlyingBehaviorBase::Exit();
@@ -25,6 +26,8 @@ void CELFlyingAttackBehavior::Exit()
 void CELFlyingAttackBehavior::Enter()
 {
 	CELFlyingBehaviorBase::Enter();
+	HasContactSample = false;
+	HasHitPass = false;
 	Animation.Fly();
 	Phase = PlannedPhase = ActivePhase = EELAttackPhase::Climb;
 	RefreshTarget();
@@ -44,6 +47,8 @@ void CELFlyingAttackBehavior::SetObservation(const SELObservation* TargetObserva
 	const bool HasNewTarget = TargetObservation && (!HasTarget || Observation.TargetIdentifier != TargetObservation->TargetIdentifier);
 	if (HasNewTarget)
 	{
+		HasContactSample = false;
+		HasHitPass = false;
 		Movement.SetContactTarget(u16(-1));
 		CancelRouteRequest();
 		HasPreparedRoute = false;
@@ -215,15 +220,20 @@ void CELFlyingAttackBehavior::FrameUpdate(float DeltaTime)
 {
 	RefreshTarget();
 	CorrectDive();
-	if (Movement.IsContinuityFlight())
+	if (Attack.IsAttacking())
+	{
+		Animation.Attack();
+	}
+	else if (Movement.IsContinuityFlight() || ActivePhase != EELAttackPhase::Dive || HasHitPass)
 	{
 		Animation.Fly();
 	}
-	HasContactSample = IsAttacking() && !HasHitPass;
+	CEntityAlive* ContactTarget = HasTarget ? ExtendedEntityes::FindEntity(Observation.TargetIdentifier) : nullptr;
+	HasContactSample = HasVisibleTarget && ContactTarget;
 	if (HasContactSample)
 	{
 		Adapter.Monster().XFORM().transform_tiny(PreviousContact, CELFlyingAttack::LocalContactPoint(Adapter.Monster()));
-		PreviousTargetTransform = ExtendedEntityes::FindEntity(Observation.TargetIdentifier)->XFORM();
+		PreviousTargetTransform = ContactTarget->XFORM();
 	}
 	if (HasVisibleTarget && CELSharedDebug::Instance().IsDrawEnabled())
 	{
@@ -233,8 +243,8 @@ void CELFlyingAttackBehavior::FrameUpdate(float DeltaTime)
 		Event.TargetIdentifier = Observation.TargetIdentifier;
 		Adapter.Monster().XFORM().transform_tiny(Event.Start, CELFlyingAttack::LocalContactPoint(Adapter.Monster()));
 		Event.Finish = AimPosition;
-		Event.Radius = Settings.AttackDistance;
-		Event.Label = "Центр видимой цели налёта";
+		Event.Radius = Settings.AttackDistance * Adapter.Monster().GetVisualScale();
+		Event.Label = Attack.LastContactResult();
 		CELSharedDebug::Instance().PublishEvent(std::move(Event));
 	}
 	CELFlyingBehaviorBase::FrameUpdate(DeltaTime);
@@ -464,7 +474,7 @@ void CELFlyingAttackBehavior::OnRouteActivated()
 			PreviousTargetTransform = Target->XFORM();
 		}
 	}
-	else
+	else if (!Attack.IsAttacking())
 	{
 		Animation.Fly();
 	}
@@ -494,9 +504,14 @@ EELRecovery CELFlyingAttackBehavior::Recover(const SELBehaviorValidation& Failur
 // Проверяет пройденный контакт до переключения фазы, затем принимает готовый следующий участок.
 void CELFlyingAttackBehavior::AfterMovement()
 {
-	if (HasContactSample && !HasHitPass && HasVisibleTarget && ActivePhase == EELAttackPhase::Dive && !Movement.IsContinuityFlight())
+	if (HasContactSample && HasVisibleTarget)
 	{
-		HasHitPass = Attack.TryHit(Adapter, Settings, Observation.TargetIdentifier, PreviousContact, PreviousTargetTransform);
+		const bool IsDive = ActivePhase == EELAttackPhase::Dive && !Movement.IsContinuityFlight();
+		if ((!IsDive || !HasHitPass) && Attack.TryHit(Adapter, Settings, Observation.TargetIdentifier, PreviousContact, PreviousTargetTransform, !IsDive))
+		{
+			HasHitPass = true;
+			Animation.Attack();
+		}
 		Adapter.Monster().XFORM().transform_tiny(PreviousContact, CELFlyingAttack::LocalContactPoint(Adapter.Monster()));
 		CEntityAlive* Target = ExtendedEntityes::FindEntity(Observation.TargetIdentifier);
 		HasContactSample = Target != nullptr;
@@ -505,7 +520,7 @@ void CELFlyingAttackBehavior::AfterMovement()
 			PreviousTargetTransform = Target->XFORM();
 		}
 	}
-	if (ActivePhase == EELAttackPhase::Dive && !Movement.IsAwaitingTail() && !Movement.CanSpliceAt(ActiveContact))
+	if (!Attack.IsAttacking() && ActivePhase == EELAttackPhase::Dive && !Movement.IsAwaitingTail() && !Movement.CanSpliceAt(ActiveContact))
 	{
 		Animation.Fly();
 	}

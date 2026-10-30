@@ -2,6 +2,7 @@
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedMemory.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedHearing.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedPerceptionProfiles.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
@@ -45,11 +46,11 @@ bool CELSharedEnemySharing::CanReceive(CBaseMonster& Receiver, CBaseMonster& Sou
 }
 
 // Обновляет согласованный обмен сведениями о врагах и обрабатывает текущий результат выполнения.
-void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedMemory& Memory, const SELPerceptionProfile& Profile)
+void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedMemory& Memory, const SELPerceptionProfile& Profile, const CELSharedHearing& Hearing, u16 PriorityTarget)
 {
 	const u32 CurrentTime = Device.dwTimeGlobal;
 	const CELSharedMemory::Records& Bodies = CELSharedDeaths::KnownEvidence(SourceMonster.ID());
-	if (Profile.IsPassive || !Profile.CanShare || (Memory.GetRecords().empty() && Bodies.empty()))
+	if (Profile.IsPassive || !Profile.CanShare)
 	{
 		return;
 	}
@@ -68,6 +69,12 @@ void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedM
 		return;
 	}
 	NextSession = CurrentTime + Random.randI(Profile.SharingIntervalMin, Profile.SharingIntervalMax + 1);
+	CELSharedMemory::Records Interests;
+	Hearing.ExportInterests(Interests);
+	if (Memory.GetRecords().empty() && Bodies.empty() && Interests.empty())
+	{
+		return;
+	}
 	const bool HasCall = Profile.CanCall && CELSharedSettings::CanPlayCalls() && s32(CurrentTime - NextCall) >= 0;
 	if (HasCall)
 	{
@@ -115,10 +122,28 @@ void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedM
 			continue;
 		}
 		RecordCount = 0;
-		while (RecordCount < Memory.GetRecords().size() + Bodies.size() && RecordCount < 8)
+		while (RecordCount < Memory.GetRecords().size() + Bodies.size() + Interests.size() && RecordCount < 8)
 		{
-			ObservationCursor %= u32(Memory.GetRecords().size() + Bodies.size());
-			Message = ObservationCursor < Memory.GetRecords().size() ? Memory.GetRecords()[ObservationCursor] : Bodies[ObservationCursor - Memory.GetRecords().size()];
+			ObservationCursor %= u32(Memory.GetRecords().size() + Bodies.size() + Interests.size());
+			if (ObservationCursor < Memory.GetRecords().size())
+			{
+				Message = Memory.GetRecords()[ObservationCursor];
+			}
+			else if (ObservationCursor < Memory.GetRecords().size() + Bodies.size())
+			{
+				Message = Bodies[ObservationCursor - Memory.GetRecords().size()];
+			}
+			else
+			{
+				Message = Interests[ObservationCursor - Memory.GetRecords().size() - Bodies.size()];
+			}
+			if (RecordCount == 0)
+			{
+				if (const SELObservation* Priority = Memory.Find(PriorityTarget))
+				{
+					Message = *Priority;
+				}
+			}
 			++ObservationCursor;
 			++RecordCount;
 			TrackedEntity = ExtendedEntityes::FindEntity(Message.TargetIdentifier);
@@ -157,11 +182,21 @@ void CELSharedEnemySharing::Update(CBaseMonster& SourceMonster, const CELSharedM
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
 void CELSharedEnemySharing::Clear()
 {
-	NextSession = NextCall = ReceiverCursor = ObservationCursor = 0;
+	NextSession = NextCall = ReceiverCursor = ObservationCursor = LastUrgentAt = LastOwnContactAt = 0;
 }
 
 // Запоминает получение звукового клича для согласованных правил обмена.
 void CELSharedEnemySharing::OnReceivedCall(u32 Cooldown)
 {
 	NextCall = Device.dwTimeGlobal + Cooldown;
+}
+
+void CELSharedEnemySharing::NotifyOwnContact(u32 ObservedAt)
+{
+	if (ObservedAt - LastOwnContactAt > 1000u && (!LastUrgentAt || Device.dwTimeGlobal - LastUrgentAt >= 1000u))
+	{
+		NextSession = Device.dwTimeGlobal;
+		LastUrgentAt = Device.dwTimeGlobal;
+	}
+	LastOwnContactAt = ObservedAt;
 }

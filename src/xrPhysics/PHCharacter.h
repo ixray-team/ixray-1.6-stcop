@@ -128,6 +128,7 @@ virtual		void		AddControlVel						(const Fvector& vel)										=0 ;
 virtual		void		Jump								(const Fvector& jump_velocity)								=0 ;
 virtual		bool		JumpState							()															=0 ;
 virtual		EEnvironment CheckInvironment					()															=0 ;
+// Consumes a one-shot control-contact event; not a persistent ground-support query.
 virtual		bool		ContactWas							()															=0 ;
 virtual		void		GroundNormal						(Fvector &norm)												=0 ;
 virtual		void		Create								(dVector3 /**sizes/**/)										=0 ;
@@ -206,6 +207,8 @@ virtual			void			NetRelcase			( IPhysicsShellHolder* O )					{};
 public:
 			CPHCharacter									(void)														;
 virtual		~CPHCharacter									(void)														;
+	// Read-only support state, safe for repeated gameplay and diagnostic queries.
+	virtual bool HasGroundSupport() const = 0;
 };
 
 XRPHYSICS_API void			virtual_move_collide_callback( bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 );

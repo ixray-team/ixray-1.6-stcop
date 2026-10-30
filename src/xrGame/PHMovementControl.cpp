@@ -358,6 +358,23 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
 	Fvector new_position;
 	m_character->IPosition(new_position);
 
+	CBaseMonster* Monster = pObject ? pObject->cast_base_monster() : nullptr;
+	CControlJump* Jump = Monster ? Monster->com_man().get_jump_control() : nullptr;
+	if (Jump && Jump->IsEvasiveFlight())
+	{
+		// Point-directed ballistic flight must not steer back towards the old ground path.
+		vPosition = new_position;
+		m_character->SetAcceleration(Fvector().set(0.f, 0.f, 0.f));
+		m_character->GetSmothedVelocity(vVelocity);
+		fActualVelocity = vVelocity.magnitude();
+		gcontact_Was = m_character->ContactWas();
+		UpdateCollisionDamage();
+		CheckEnvironment(vPosition);
+		bSleep = false;
+		b_exect_position = false;
+		return;
+	}
+
 	int index = 0;//nearest point
 
 	bool  near_line;

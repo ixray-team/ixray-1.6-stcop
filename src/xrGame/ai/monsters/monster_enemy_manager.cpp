@@ -193,12 +193,12 @@ void CMonsterEnemyManager::add_enemy(const CEntityAlive *enemy_)
 
 bool CMonsterEnemyManager::see_enemy_now()
 {
-	return monster->memory().visual().visible_right_now(enemy); 
+	return monster->memory().visual().visible_right_now(enemy) || ExtendedEntityes::HasCloseContact(*monster, enemy);
 }
 
 bool CMonsterEnemyManager::see_enemy_now(const CEntityAlive* enemy_)
 {
-	return monster->memory().visual().visible_right_now(enemy_); 
+	return monster->memory().visual().visible_right_now(enemy_) || ExtendedEntityes::HasCloseContact(*monster, enemy_);
 }
 
 bool CMonsterEnemyManager::see_enemy_recently()

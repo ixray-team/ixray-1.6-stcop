@@ -19,6 +19,7 @@ public:
 
 protected:
 	bool Move(const Fvector& GoalPosition, u32 GoalVertex, bool IsRunning);
+	void InvalidateRoute();
 	void TrackProgress();
 	void TakePreparedRoute();
 	void AdvanceRoute();
@@ -43,6 +44,7 @@ protected:
 	u32 PlanGeneration = 0;
 	u32 RecoveryCount = 0;
 	u32 RetryAfter = 0;
+	u32 DirectCheckAfter = 0;
 	bool HasMoveCommand = false;
 	SELBehaviorValidation Validation;
 };

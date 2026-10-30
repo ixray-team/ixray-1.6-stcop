@@ -6,7 +6,8 @@
 
 namespace ExtendedEntityesSettings
 {
-xr_unique_ptr<CInifile> SystemSettings;
+const CInifile* SystemSettings = nullptr;
+shared_str GlobalSectionName;
 xr_map<shared_str, SELPerceptionProfile> Profiles;
 std::atomic<int> OverrideValue{-1};
 std::atomic<u32> ControlRevision{1};
@@ -29,33 +30,39 @@ void CELSharedSettings::Initialize()
 		return;
 	}
 	CELSharedDebugCommands::Synchronize();
-	string_path FileName;
-	FS.update_path(FileName, _game_config_, "new_monsters_logic.ltx");
-	if (FS.exist(FileName))
+	const CInifile* External = EngineExternal().GetIniFile();
+	const char* ConfiguredSection = External->read_if_exists<str_c>("gameplay", "DeathOrDieMonstersLogicSectionName", "monsters_logic");
+	GlobalSectionName = ConfiguredSection && *ConfiguredSection ? ConfiguredSection : "";
+	const bool HasSection = GlobalSectionName.size() && pSettings && pSettings->section_exist(GlobalSectionName.c_str());
+	SystemSettings = HasSection ? pSettings : nullptr;
+	IsConfiguredEnabled = External->read_if_exists<bool>("gameplay", "UseDeathOrDieMonstersLogic", false) && HasSection;
+	if (!HasSection)
 	{
-		SystemSettings = xr_make_unique<CInifile>(FileName, true);
-		IsConfiguredEnabled = (EngineExternal().GetIniFile())->read_if_exists<bool>("gameplay", "UseDeathOrDieMonstersLogic", false);
-		CanShareFriends = (SystemSettings.get())->read_if_exists<bool>("monsters_logic", "EnableMonsterFriendlyEnemySharing", true);
-		CanDistribute = (SystemSettings.get())->read_if_exists<bool>("monsters_logic", "EnableMonsterDistributedTargeting", true);
-		WorkSettings.PerceptionOperations = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedPerceptionOperationsPerFrame", 384u);
-		WorkSettings.PerceptionRays = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "MonsterBehaviorRaysPerFrame", 16u);
-		WorkSettings.SpatialQueries = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "MonsterBehaviorQueriesPerFrame", 2u);
-		WorkSettings.SharingSessions = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedSharingSessionsPerFrame", 12u);
-		WorkSettings.TargetAssignments = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedTargetAssignmentsPerFrame", 64u);
-		WorkSettings.SharingTransfers = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedSharingTransfersPerFrame", 32u);
-		WorkSettings.NavigationCaptureNodes = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "MonsterBehaviorNodesPerFrame", 72u);
-		WorkSettings.NavigationSteps = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedNavigationStepsPerFrame", 256u);
-		WorkSettings.NavigationSliceMicroseconds = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedNavigationSliceMicroseconds", 1500u);
-		WorkSettings.FlightDynamicChecks = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedFlightDynamicChecksPerFrame", 4u);
-		WorkSettings.FlightGeometryRays = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedFlightGeometryRaysPerFrame", 350u);
-		WorkSettings.NavigationTaskLimit = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedNavigationTaskLimit", 256u);
-		WorkSettings.NavigationGraphNodeLimit = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedNavigationGraphNodeLimit", 16384u);
-		WorkSettings.GroundCaptureTaskLimit = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedGroundCaptureTaskLimit", 128u);
-		WorkSettings.GroundCaptureNodeLimit = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedGroundCaptureNodeLimit", 4096u);
-		WorkSettings.GroundCaptureTimeout = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedGroundCaptureTimeoutMs", 20000u);
-		WorkSettings.GroundRouteReplanDistance = (SystemSettings.get())->read_if_exists<float>("monsters_logic", "ExtendedGroundRouteReplanDistance", 2.f);
-		WorkSettings.GroundWaypointLookahead = (SystemSettings.get())->read_if_exists<float>("monsters_logic", "ExtendedGroundWaypointLookahead", 4.f);
-		WorkSettings.GroundRouteRetryDelay = (SystemSettings.get())->read_if_exists<u32>("monsters_logic", "ExtendedGroundRouteRetryDelayMs", 250u);
+		Msg("! [ExtendedEntityesLogic] Missing system.ltx section selected by DeathOrDieMonstersLogicSectionName: [%s]", GlobalSectionName.size() ? GlobalSectionName.c_str() : "<empty>");
+	}
+	if (SystemSettings)
+	{
+		CanShareFriends = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterFriendlyEnemySharing", true);
+		CanDistribute = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterDistributedTargeting", true);
+		WorkSettings.PerceptionOperations = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedPerceptionOperationsPerFrame", 384u);
+		WorkSettings.PerceptionRays = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorRaysPerFrame", 16u);
+		WorkSettings.SpatialQueries = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorQueriesPerFrame", 2u);
+		WorkSettings.SharingSessions = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedSharingSessionsPerFrame", 12u);
+		WorkSettings.TargetAssignments = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedTargetAssignmentsPerFrame", 64u);
+		WorkSettings.SharingTransfers = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedSharingTransfersPerFrame", 32u);
+		WorkSettings.NavigationCaptureNodes = (SystemSettings)->read_if_exists<u32>(SectionName(), "MonsterBehaviorNodesPerFrame", 72u);
+		WorkSettings.NavigationSteps = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationStepsPerFrame", 256u);
+		WorkSettings.NavigationSliceMicroseconds = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationSliceMicroseconds", 1500u);
+		WorkSettings.FlightDynamicChecks = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedFlightDynamicChecksPerFrame", 4u);
+		WorkSettings.FlightGeometryRays = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedFlightGeometryRaysPerFrame", 350u);
+		WorkSettings.NavigationTaskLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationTaskLimit", 256u);
+		WorkSettings.NavigationGraphNodeLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedNavigationGraphNodeLimit", 16384u);
+		WorkSettings.GroundCaptureTaskLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureTaskLimit", 128u);
+		WorkSettings.GroundCaptureNodeLimit = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureNodeLimit", 4096u);
+		WorkSettings.GroundCaptureTimeout = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundCaptureTimeoutMs", 20000u);
+		WorkSettings.GroundRouteReplanDistance = (SystemSettings)->read_if_exists<float>(SectionName(), "ExtendedGroundRouteReplanDistance", 2.f);
+		WorkSettings.GroundWaypointLookahead = (SystemSettings)->read_if_exists<float>(SectionName(), "ExtendedGroundWaypointLookahead", 4.f);
+		WorkSettings.GroundRouteRetryDelay = (SystemSettings)->read_if_exists<u32>(SectionName(), "ExtendedGroundRouteRetryDelayMs", 250u);
 		if (!_valid(WorkSettings.GroundRouteReplanDistance))
 		{
 			WorkSettings.GroundRouteReplanDistance = 2.f;
@@ -83,9 +90,15 @@ void CELSharedSettings::Initialize()
 		clamp(WorkSettings.NavigationSliceMicroseconds, 100u, 5000u);
 		clamp(WorkSettings.FlightGeometryRays, 16u, 512u);
 		clamp(WorkSettings.FlightDynamicChecks, 1u, std::max(1u, WorkSettings.FlightGeometryRays / 18u));
-		CanCall = (SystemSettings.get())->read_if_exists<bool>("monsters_logic", "EnableMonsterEnemySharingCallSounds", true);
+		CanCall = (SystemSettings)->read_if_exists<bool>(SectionName(), "EnableMonsterEnemySharingCallSounds", true);
 	}
 	IsInitialized = true;
+}
+
+// Accessor is intentionally non-initializing: profile reads already hold the settings lock.
+const char* CELSharedSettings::SectionName()
+{
+	return ExtendedEntityesSettings::GlobalSectionName.size() ? ExtendedEntityesSettings::GlobalSectionName.c_str() : "monsters_logic";
 }
 
 // Возвращает общий кэш профиля, прочитанного из секции сущности.
@@ -96,7 +109,7 @@ const SELPerceptionProfile& CELSharedSettings::Profile(const char* Section)
 	xr_map<shared_str, SELPerceptionProfile>::iterator ProfileIterator = ExtendedEntityesSettings::Profiles.find(Section);
 	if (ProfileIterator == ExtendedEntityesSettings::Profiles.end())
 	{
-		ProfileIterator = ExtendedEntityesSettings::Profiles.emplace(shared_str(Section), CELSharedPerceptionProfiles::Read(Section, ExtendedEntityesSettings::SystemSettings.get())).first;
+		ProfileIterator = ExtendedEntityesSettings::Profiles.emplace(shared_str(Section), CELSharedPerceptionProfiles::Read(Section, ExtendedEntityesSettings::SystemSettings)).first;
 	}
 	return ProfileIterator->second;
 }
@@ -153,8 +166,12 @@ bool CELSharedSettings::CanPlayCalls()
 void CELSharedSettings::Clear()
 {
 	ExtendedEntityesSettings::Profiles.clear();
-	ExtendedEntityesSettings::SystemSettings.reset();
+	ExtendedEntityesSettings::SystemSettings = nullptr;
+	ExtendedEntityesSettings::GlobalSectionName = nullptr;
 	ExtendedEntityesSettings::WorkSettings = SELSharedWorkSettings();
+	ExtendedEntityesSettings::CanShareFriends = true;
+	ExtendedEntityesSettings::CanDistribute = true;
+	ExtendedEntityesSettings::CanCall = true;
 	ExtendedEntityesSettings::IsInitialized = false;
 	ExtendedEntityesSettings::IsConfiguredEnabled = false;
 }

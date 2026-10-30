@@ -26,6 +26,8 @@ void CControlAnimation::reinit()
 
 void CControlAnimation::reset_data()
 {
+	// A new controller must not consume completion flags from the previous animation owner.
+	m_global_animation_end = m_legs_animation_end = m_torso_animation_end = false;
 	m_data.global.init	();		
 	m_data.legs.init	();		
 	m_data.torso.init	();
@@ -51,7 +53,11 @@ void CControlAnimation::update_frame()
 static void  global_animation_end_callback(CBlend* B)
 {
 	CControlAnimation *controller = (CControlAnimation *)B->CallbackParam;
-	controller->m_global_animation_end = true;
+	// Fading blends retain callbacks; only the current global motion owns this event.
+	if (controller->current_blend() == B)
+	{
+		controller->m_global_animation_end = true;
+	}
 }
 static void  legs_animation_end_callback(CBlend* B)
 {
@@ -101,8 +107,10 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	if (bone_or_part == u16(-1)) bone_or_part = m_skeleton_animated->LL_PartID("default");
 	
 	// initialize synchronization of prev and current animation
+	const bool SynchronizePhase = part.SynchronizePhase;
+	part.SynchronizePhase = true;
 	float pos		= -1.f;
-	if (part.blend && !part.blend->stop_at_end) 
+	if (SynchronizePhase && part.blend && !part.blend->stop_at_end)
 		pos			= fmod(part.blend->timeCurrent,part.blend->timeTotal)/part.blend->timeTotal;
 #ifdef DEBUG
 	//IKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
@@ -122,6 +130,11 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	if ((pos > 0) && part.blend && !part.blend->stop_at_end)
 	{ 
 		part.blend->timeCurrent = part.blend->timeTotal*pos;
+	}
+
+	if (!SynchronizePhase && part.blend)
+	{
+		part.blend->timeCurrent = 0.f;
 	}
 
 	part.time_started	= Device.dwTimeGlobal;

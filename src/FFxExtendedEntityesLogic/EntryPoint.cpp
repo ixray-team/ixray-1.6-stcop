@@ -17,6 +17,10 @@
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/Debug/CELDebugOnlinePopulation.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedHearing.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnvironment.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedSight.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedHuntGroups.h"
+#include "FFxExtendedEntityesLogic/EntityesCategory/Ground/Behaviors/CELGroundFlyingGrab.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedEnemySharing.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedSoundEvents.h"
 #include "xrSound/ai_sounds.h"
@@ -122,6 +126,8 @@ void ExtendedEntityes::RecordDeath(CBaseMonster& Victim, CObject* Killer)
 // Снимает управление расширения и освобождает регистрации владельца.
 void ExtendedEntityes::Detach(CBaseMonster& OwnerMonster)
 {
+	CELGroundFlyingGrab::ReleaseOwner(OwnerMonster.ID());
+	CELSharedSight::Remove(OwnerMonster.ID());
 	CELSharedTargets::RemoveOwner(OwnerMonster.ID());
 	CELSharedAnomalies::Remove(OwnerMonster.ID());
 	CELSharedDeaths::RemoveOwner(OwnerMonster.ID());
@@ -188,6 +194,7 @@ void ExtendedEntityes::RemoveObject(CBaseMonster& OwnerMonster, CObject* Removed
 		return;
 	}
 	CELSharedDeaths::RemoveObject(RemovedObject->ID());
+	CELGroundFlyingGrab::Remove(RemovedObject->ID());
 	if (TExtendedEntityesLogic* Component = OwnerMonster.GetComponent<TExtendedEntityesLogic>())
 	{
 		Component->RemoveObject(RemovedObject->ID());
@@ -296,11 +303,13 @@ void ExtendedEntityes::BeginFrame()
 	CELSharedDebugCommands::Synchronize();
 	CELSharedSettings::Initialize();
 	State.Perception.BeginFrame(Device.dwFrame);
+	CELGroundFlyingGrab::Update();
 	CELSharedDebug::Instance().UpdateHits();
 	ExtendedEntityesRuntime::SynchronizeIgnoredActor();
 	if (State.ControlRevision != CELSharedSettings::Revision())
 	{
 		State.ControlRevision = CELSharedSettings::Revision();
+		CELSharedSight::Clear();
 		State.Navigation.Clear();
 		CELSharedGroundGraph::Clear();
 		CELSharedFlyingObstacles::Clear();
@@ -367,6 +376,9 @@ void ExtendedEntityes::BeginFrame()
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
 void ExtendedEntityes::Clear()
 {
+	CELSharedSight::Clear();
+	CELSharedHuntGroups::Clear();
+	CELGroundFlyingGrab::Clear();
 	// Called after level objects are destroyed and the existing game task has joined.
 	ExtendedEntityesRuntime::World().Navigation.Clear();
 	CELSharedFlyingObstacles::Clear();
@@ -439,9 +451,19 @@ bool ExtendedEntityes::Transfer(CBaseMonster& ReceiverMonster, CBaseMonster* Sou
 }
 
 // Применяет разрешённое игнорирование листвы либо вызывает штатный фильтр материала.
+bool ExtendedEntityes::HasCloseContact(CBaseMonster& OwnerMonster, const CEntityAlive* Candidate)
+{
+	return Candidate && CELSharedSettings::IsEnabled() && CELSharedSight::HasCloseContact(OwnerMonster, *Candidate);
+}
+
+float ExtendedEntityes::VisionRangeFactor(CBaseMonster& OwnerMonster)
+{
+	return CELSharedSettings::IsEnabled() ? CELSharedEnvironment::Vision(CELSharedSettings::Profile(*OwnerMonster.cNameSect())) : 1.f;
+}
+
 float ExtendedEntityes::VisionTransparency(CBaseMonster& OwnerMonster, CObject* Obstacle, u32 ElementIdentifier)
 {
-	if (Obstacle || !CELSharedSettings::IsEnabled() || !CELSharedSettings::Profile(*OwnerMonster.cNameSect()).CanIgnoreFoliage)
+	if (Obstacle || !CELSharedSettings::IsEnabled() || !CELSharedEnvironment::CanSmell() || !CELSharedSettings::Profile(*OwnerMonster.cNameSect()).CanIgnoreFoliage)
 	{
 		return OwnerMonster.CCreature::feel_vision_mtl_transp(Obstacle, ElementIdentifier);
 	}
@@ -513,10 +535,12 @@ void ExtendedEntityes::PublishMelee(const CObject* SourceObject, const Fvector& 
 	CELSharedSoundEvents::Publish(SourceObject, SOUND_TYPE_ATTACKING, SoundPosition, 0.f, EELSoundKind::Melee);
 }
 
-// Передаёт подтверждённый штатной обработкой результат попадания только в общую отладку.
+// Dispatch a confirmed hit to diagnostics and the optional post-hit capture.
 void ExtendedEntityes::RecordHit(CEntityAlive& Target, u16 AttackerIdentifier, float PreviousHealth)
 {
 	CELSharedDebug::Instance().RecordHit(Target, AttackerIdentifier, PreviousHealth);
+	CELSharedTargets::RecordHit(Target, AttackerIdentifier, PreviousHealth);
+	CELGroundFlyingGrab::ConfirmHit(Target, AttackerIdentifier, PreviousHealth);
 }
 
 bool ExtendedEntityes::IsEnabled()

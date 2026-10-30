@@ -18,6 +18,7 @@ class CControlManagerCustom : public CControl_ComBase {
 	typedef					CControl_ComBase	inherited;
 
 	xr_vector<ISpatialShared> m_nearest;
+	bool TacticalJumpRequest = false;
 
 	CAnimationSequencer		*m_sequencer;
 	CAnimationTriple		*m_triple_anim;
@@ -40,6 +41,7 @@ class CControlManagerCustom : public CControl_ComBase {
 	float					m_threaten_time;
 
 public:
+	bool IsTacticalJumpRequested() const { return TacticalJumpRequest; }
 					CControlManagerCustom	();
 					~CControlManagerCustom	();
 
@@ -81,7 +83,8 @@ public:
 										 CEntityAlive*		target_object,
 										 bool 				use_target_direction,
 										 bool				use_velocity_bounce	=	true,
-										 bool				check_possibility	=	true);
+										 bool				check_possibility	=	true,
+										 float MaxHeadingAngle = -1.f, bool TacticalRequest = false);
 
 	
 	void		script_jump				(const Fvector &position, float factor);

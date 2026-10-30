@@ -378,46 +378,41 @@ bool CELSharedCrowMemory::NearestTree(const Fvector& Point, float Radius, Fvecto
 void CELSharedCrowMemory::LoadSettings()
 {
 	HasSettings = true;
-	string_path Path;
-	FS.update_path(Path, "$game_config$", "creatures\\crow_shared_memory.ltx");
-	if (!FS.exist(Path))
+	const char* Section = EngineExternal().GetIniFile()->read_if_exists<str_c>("gameplay", "DeathOrDieCrowSharedMemorySectionName", "crow_shared_memory");
+	if (!Section || !*Section || !pSettings || !pSettings->section_exist(Section))
 	{
+		Msg("! [ExtendedEntityesLogic] Missing crow shared memory section in system.ltx: [%s]", Section && *Section ? Section : "<empty>");
 		return;
 	}
-	CInifile Configuration(Path, TRUE, TRUE, FALSE);
-	if (!Configuration.section_exist("crow_shared_memory"))
-	{
-		return;
-	}
-	Settings.CorpseLimit = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "corpse_limit", Settings.CorpseLimit);
+	Settings.CorpseLimit = pSettings->read_if_exists<u32>(Section, "corpse_limit", Settings.CorpseLimit);
 	clamp(Settings.CorpseLimit, 0u, 65535u);
-	Settings.ObservationLimit = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "observation_limit", Settings.ObservationLimit);
+	Settings.ObservationLimit = pSettings->read_if_exists<u32>(Section, "observation_limit", Settings.ObservationLimit);
 	clamp(Settings.ObservationLimit, 0u, 65535u);
-	Settings.PerchCount = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "perches_per_corpse", Settings.PerchCount);
+	Settings.PerchCount = pSettings->read_if_exists<u32>(Section, "perches_per_corpse", Settings.PerchCount);
 	clamp(Settings.PerchCount, 0u, 128u);
-	Settings.CorpseRefresh = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "corpse_refresh_ms", Settings.CorpseRefresh);
+	Settings.CorpseRefresh = pSettings->read_if_exists<u32>(Section, "corpse_refresh_ms", Settings.CorpseRefresh);
 	clamp(Settings.CorpseRefresh, 0u, 3600000u);
-	Settings.ObservationRefresh = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "observation_refresh_ms", Settings.ObservationRefresh);
+	Settings.ObservationRefresh = pSettings->read_if_exists<u32>(Section, "observation_refresh_ms", Settings.ObservationRefresh);
 	clamp(Settings.ObservationRefresh, 16u, 60000u);
-	Settings.PerchAttempts = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "perch_search_attempts", Settings.PerchAttempts);
+	Settings.PerchAttempts = pSettings->read_if_exists<u32>(Section, "perch_search_attempts", Settings.PerchAttempts);
 	clamp(Settings.PerchAttempts, 1u, 1024u);
-	Settings.PerchRetry = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "perch_retry_ms", Settings.PerchRetry);
+	Settings.PerchRetry = pSettings->read_if_exists<u32>(Section, "perch_retry_ms", Settings.PerchRetry);
 	clamp(Settings.PerchRetry, 250u, 60000u);
-	Settings.CorpseIdle = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "corpse_idle_ms", Settings.CorpseIdle);
+	Settings.CorpseIdle = pSettings->read_if_exists<u32>(Section, "corpse_idle_ms", Settings.CorpseIdle);
 	clamp(Settings.CorpseIdle, 250u, 3600000u);
-	Settings.ObservationIdle = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "observation_idle_ms", Settings.ObservationIdle);
+	Settings.ObservationIdle = pSettings->read_if_exists<u32>(Section, "observation_idle_ms", Settings.ObservationIdle);
 	clamp(Settings.ObservationIdle, 250u, 3600000u);
-	Settings.MaintenanceInterval = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "maintenance_ms", Settings.MaintenanceInterval);
+	Settings.MaintenanceInterval = pSettings->read_if_exists<u32>(Section, "maintenance_ms", Settings.MaintenanceInterval);
 	clamp(Settings.MaintenanceInterval, 16u, 10000u);
-	Settings.PerchProbes = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "perch_probes_per_frame", Settings.PerchProbes);
+	Settings.PerchProbes = pSettings->read_if_exists<u32>(Section, "perch_probes_per_frame", Settings.PerchProbes);
 	clamp(Settings.PerchProbes, 1u, 64u);
-	Settings.ObservationQueries = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "observation_queries_per_frame", Settings.ObservationQueries);
+	Settings.ObservationQueries = pSettings->read_if_exists<u32>(Section, "observation_queries_per_frame", Settings.ObservationQueries);
 	clamp(Settings.ObservationQueries, 1u, 64u);
 
-	Settings.ScanEntries = (&Configuration)->read_if_exists<u32>("crow_shared_memory", "cache_scan_entries_per_frame", Settings.ScanEntries);
+	Settings.ScanEntries = pSettings->read_if_exists<u32>(Section, "cache_scan_entries_per_frame", Settings.ScanEntries);
 	clamp(Settings.ScanEntries, 1u, 4096u);
-	Settings.CellSize = (&Configuration)->read_if_exists<float>("crow_shared_memory", "observation_cell_size", 16.f);
-	Settings.CorpseMoveDistance = (&Configuration)->read_if_exists<float>("crow_shared_memory", "corpse_move_distance", .05f);
+	Settings.CellSize = pSettings->read_if_exists<float>(Section, "observation_cell_size", 16.f);
+	Settings.CorpseMoveDistance = pSettings->read_if_exists<float>(Section, "corpse_move_distance", .05f);
 	if (!_valid(Settings.CellSize))
 	{
 		Settings.CellSize = 16.f;

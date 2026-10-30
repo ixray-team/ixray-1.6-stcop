@@ -8,6 +8,7 @@ public:
 	explicit CELGroundNavigation(IELAdapter& OwnerAdapter);
 	~CELGroundNavigation() override;
 	bool Prepare(const Fvector& GoalPosition, u32 GoalVertex, u32 PlanGeneration);
+	bool Retarget(const Fvector& GoalPosition, u32 GoalVertex);
 	bool Poll(SELNavigationResult& Result) override;
 	void Cancel() override;
 	void Reset();

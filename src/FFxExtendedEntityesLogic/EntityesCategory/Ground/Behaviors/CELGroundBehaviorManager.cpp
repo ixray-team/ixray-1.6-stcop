@@ -3,6 +3,7 @@
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGround.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedDeaths.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedTargets.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Interfaces/IELAdapter.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
@@ -32,7 +33,12 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		SelectedObservation = nullptr;
 		Owner.TargetIdentifier = u16(-1);
 	}
-	const bool IsPanicking = s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
+	const bool HasThreat = SelectedObservation && CELSharedTargets::ThreatPriority(*SelectedObservation, Adapter);
+	if (UpdateEscape(DeltaTime))
+	{
+		return EELControl::Extended;
+	}
+	const bool IsPanicking = !HasThreat && (!SelectedObservation || Owner.Hearing.DamagePanic) && s32(Device.dwTimeGlobal - Owner.Hearing.PanicUntil) < 0;
 	const bool IsInvestigating = !SelectedObservation && s32(Device.dwTimeGlobal - Owner.Hearing.InvestigateUntil) < 0;
 	if (IsPanicking || IsInvestigating)
 	{
@@ -40,10 +46,6 @@ EELControl CELGroundBehaviorManager::UpdateGround(float DeltaTime)
 		ReactionBehavior.Configure(Owner.Hearing.AttentionPosition, IsPanicking ? Owner.Hearing.PanicUntil : Owner.Hearing.InvestigateUntil, IsPanicking);
 		Select(&ReactionBehavior);
 		Update(DeltaTime);
-		return EELControl::Extended;
-	}
-	if (UpdateEscape(DeltaTime))
-	{
 		return EELControl::Extended;
 	}
 	if (!SelectedObservation)

@@ -9,12 +9,17 @@ class CELGroundLocalSearch final
 public:
 	void Reset();
 	bool Move(IELAdapter& Adapter, CELGroundMovement& Movement, const SELPerceptionProfile& Profile, const Fvector& Center, bool Runs);
+	static bool MoveDirect(IELAdapter& Adapter, CELGroundMovement& Movement, const Fvector& Goal, bool Runs, const char** Failure = nullptr);
 	static bool Resolve(IELAdapter& Adapter, const Fvector& Position, Fvector& Result, u32& Vertex);
 
 private:
 	Fvector Point = {0.f, 0.f, 0.f};
+	Fvector GoalCenter = {0.f, 0.f, 0.f};
+	bool HasCenter = false;
 	u32 PointVertex = u32(-1);
 	u32 NextAttempt = 0;
+	u32 DirectCheckAfter = 0;
+	bool IsDirect = false;
 	u32 Phase = 0;
 	u32 PointUntil = 0;
 	u32 ProgressAt = 0;

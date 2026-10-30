@@ -141,6 +141,7 @@ public:
 public:
 	//Check state
 	virtual		bool			 		ContactWas						()					{if(b_meet_control) {b_meet_control=false;return true;} else return false;}
+	bool HasGroundSupport() const override;
 	virtual		EEnvironment	 		CheckInvironment				()			;
 	virtual		void			 		GroundNormal					(Fvector &norm)		;
 	virtual		const ICollisionDamageInfo	*CollisionDamageInfo ()const {return this;}

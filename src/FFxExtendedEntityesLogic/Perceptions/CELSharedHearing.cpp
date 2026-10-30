@@ -3,6 +3,9 @@
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/Perceptions/CELSharedHearing.h"
 #include "xrSound/ai_sounds.h"
+#include "FFxExtendedEntityesLogic/EntryPoint.h"
+#include "xrGame/entity_alive.h"
+#include <cmath>
 
 // Определяет тип звукового события по игровым флагам.
 EELNoiseType CELSharedHearing::Classify(const SELSoundEvent& Event)
@@ -107,8 +110,132 @@ u32 CELSharedHearing::Priority(EELNoiseType Type, const SELPerceptionProfile& Pr
 	return Profile.NoiseOtherPriority;
 }
 
+// Derive bounded fear duration from the sound category and current equivalent body mass.
+u32 CELSharedHearing::PanicDuration(EELNoiseType Type, const SELPerceptionProfile& Profile, float Scale)
+{
+	const float Minimum = Type == EELNoiseType::Shot ? 10000.f : Type == EELNoiseType::Explosion ? 20000.f : 15000.f;
+	const float Maximum = Type == EELNoiseType::Shot ? 30000.f : Type == EELNoiseType::Explosion ? 60000.f : 40000.f;
+	const u32 Base = Type == EELNoiseType::Shot ? Profile.ShotPanicDuration : Type == EELNoiseType::Explosion ? Profile.ExplosionPanicDuration : Profile.NoisePanicDuration;
+	// Scale changes equivalent body mass cubically; limits remain independent of size.
+	const float Fearfulness = clampr((float(Base) - Minimum) / (Maximum - Minimum) - 3.f * logf(std::max(.01f, Scale)) / logf(40.f), 0.f, 1.f);
+	return u32(Minimum + (Maximum - Minimum) * Fearfulness);
+}
+
+void CELSharedHearing::QueueInterest(const Fvector& Position, u16 Source, EELNoiseType Type, u32 Until, u32 Importance, bool IsActorSound, u32 ObservedAt)
+{
+	if (s32(Until - Device.dwTimeGlobal) <= 0 || !_valid(Position))
+	{
+		return;
+	}
+	Finished.erase(std::remove_if(Finished.begin(), Finished.end(), [](const SPendingInterest& Task) { return s32(Device.dwTimeGlobal - Task.Until) >= 0; }), Finished.end());
+	for (const auto& Task : Finished)
+	{
+		if (Task.Source == Source && Task.Type == Type && Task.Position.distance_to_sqr(Position) < 1.f && s32(Task.Until - Until) >= 0)
+		{
+			return;
+		}
+	}
+	for (auto& Task : Pending)
+	{
+		if (Task.Source == Source && Task.Type == Type && Task.Position.distance_to_sqr(Position) < 1.f)
+		{
+			// A shared replay does not refresh the original deadline.
+			return;
+		}
+	}
+	if (Pending.size() >= 8)
+	{
+		Pending.erase(std::min_element(Pending.begin(), Pending.end(), [](const SPendingInterest& A, const SPendingInterest& B) { return A.Until < B.Until; }));
+	}
+	Pending.push_back({Position, Source, Until, Importance, Type, IsActorSound, ObservedAt ? ObservedAt : Device.dwTimeGlobal});
+}
+
+void CELSharedHearing::ArchiveAttention()
+{
+	QueueInterest(AttentionPosition, AttentionSource, AttentionNoiseType, InvestigateUntil, AttentionPriority, AttentionIsActorSound, AttentionStartedAt);
+}
+
+bool CELSharedHearing::RememberInterest(const SELObservation& Observation, const SELPerceptionProfile& Profile)
+{
+	if (Observation.Kind != EELObservationKind::Interest || Observation.InterestType >= u32(EELNoiseType::Count) || s32(Observation.ExpiresAt - Device.dwTimeGlobal) <= 0)
+	{
+		return false;
+	}
+	const EELNoiseType Type = EELNoiseType(Observation.InterestType);
+	if (Type != EELNoiseType::Light && !(Profile.InterestNoiseTypes & ELNoiseTypeMask(Type)))
+	{
+		return false;
+	}
+	if (s32(InvestigateUntil - Device.dwTimeGlobal) > 0 && AttentionSource == Observation.TargetIdentifier && AttentionNoiseType == Type && AttentionPosition.distance_to_sqr(Observation.Position) < 1.f)
+	{
+		return false;
+	}
+	QueueInterest(Observation.Position, Observation.TargetIdentifier, Type, Observation.ExpiresAt, Priority(Type, Profile), false, Observation.ObservedAt);
+	return true;
+}
+
+void CELSharedHearing::ExportInterests(CELSharedMemory::Records& Records) const
+{
+	const auto Append = [&Records](const Fvector& Position, u16 Source, EELNoiseType Type, u32 Until, u32 ObservedAt)
+	{
+		if (s32(Until - Device.dwTimeGlobal) <= 0)
+		{
+			return;
+		}
+		SELObservation Observation;
+		Observation.Kind = EELObservationKind::Interest;
+		Observation.Position = Position;
+		Observation.TargetIdentifier = Source;
+		Observation.InterestType = u8(Type);
+		Observation.ExpiresAt = Until;
+		Observation.ObservedAt = ObservedAt;
+		Records.push_back(Observation);
+	};
+	Append(AttentionPosition, AttentionSource, AttentionNoiseType, InvestigateUntil, AttentionStartedAt);
+	for (const auto& Task : Pending)
+	{
+		Append(Task.Position, Task.Source, Task.Type, Task.Until, Task.ObservedAt);
+	}
+}
+
+void CELSharedHearing::ResumeInterest(const Fvector& Position)
+{
+	Pending.erase(std::remove_if(Pending.begin(), Pending.end(), [](const SPendingInterest& Task) { return s32(Device.dwTimeGlobal - Task.Until) >= 0; }), Pending.end());
+	if (s32(PanicUntil - Device.dwTimeGlobal) > 0 || s32(InvestigateUntil - Device.dwTimeGlobal) > 0 || Pending.empty())
+	{
+		return;
+	}
+	const auto Best = std::max_element(Pending.begin(), Pending.end(), [&Position](const SPendingInterest& A, const SPendingInterest& B)
+	{
+		return float(A.Priority) / (1.f + Position.distance_to(A.Position)) < float(B.Priority) / (1.f + Position.distance_to(B.Position));
+	});
+	AttentionPosition = Best->Position;
+	AttentionSource = Best->Source;
+	AttentionPriority = Best->Priority;
+	AttentionNoiseType = Best->Type;
+	AttentionIsActorSound = Best->IsActorSound;
+	AttentionStartedAt = LastAttentionEventAt = Best->ObservedAt;
+	InvestigateUntil = Best->Until;
+	Pending.erase(Best);
+}
+
+void CELSharedHearing::CompleteAttention()
+{
+	if (s32(InvestigateUntil - Device.dwTimeGlobal) > 0)
+	{
+		if (Finished.size() >= 8)
+		{
+			Finished.erase(Finished.begin());
+		}
+		Finished.push_back({AttentionPosition, AttentionSource, InvestigateUntil, AttentionPriority, AttentionNoiseType, AttentionIsActorSound, AttentionStartedAt});
+	}
+	InvestigateUntil = PanicUntil = Device.dwTimeGlobal;
+	DamagePanic = false;
+}
+
 void CELSharedHearing::Investigate(const Fvector& Position, u16 Source, u32 Duration, u32 Importance)
 {
+	ArchiveAttention();
 	AttentionPosition = Position;
 	AttentionSource = Source;
 	AttentionStartedAt = Device.dwTimeGlobal;
@@ -117,12 +244,43 @@ void CELSharedHearing::Investigate(const Fvector& Position, u16 Source, u32 Dura
 	AttentionIsActorSound = false;
 	AttentionPriority = Importance;
 	PanicUntil = 0;
+	DamagePanic = false;
 	InvestigateUntil = AttentionStartedAt + Duration;
+}
+
+bool CELSharedHearing::GetCounterOpportunity(u16 Source, u32& OccurredAt) const
+{
+	if (Source != OpportunitySource || s32(OpportunityUntil - Device.dwTimeGlobal) <= 0)
+	{
+		return false;
+	}
+	OccurredAt = OpportunityAt;
+	return true;
+}
+
+bool CELSharedHearing::GetLookPoint(Fvector& Position) const
+{
+	if (s32(LookUntil - Device.dwTimeGlobal) <= 0)
+	{
+		return false;
+	}
+	Position = LookPosition;
+	return true;
 }
 
 void CELSharedHearing::FillDebug(SELDebugRecord& Record) const
 {
 	const u32 Now = Device.dwTimeGlobal;
+	if (s32(LookUntil - Now) > 0)
+	{
+		Record.Senses.push_back("СЛУХ: свежий источник для осмотра");
+	}
+	if (!Pending.empty())
+	{
+		string64 PendingLabel;
+		xr_sprintf(PendingLabel, "ПАМЯТЬ: незавершённых интересов %u", u32(Pending.size()));
+		Record.Senses.push_back(PendingLabel);
+	}
 	const u32 Until = s32(PanicUntil - Now) > 0 ? PanicUntil : InvestigateUntil;
 	if (s32(Until - Now) <= 0)
 	{
@@ -152,7 +310,11 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	const bool IsLight = Type == EELNoiseType::Light;
 	const bool CanFrighten = !IsLight && (Profile.FearNoiseTypes & TypeMask) != 0;
 	const bool CanAttract = IsLight || (!CanFrighten && (Profile.InterestNoiseTypes & TypeMask) != 0);
-	if (!CanAttract && !CanFrighten)
+	const bool CounterEvent = Profile.CanCounterAttack &&
+		((Type == EELNoiseType::Reload && Profile.CounterOnReload && Profile.CanHearWorld) ||
+		 (Type == EELNoiseType::EmptyClick && Profile.CounterOnEmptyClick && Profile.CanHearWorld) ||
+		 (Type == EELNoiseType::BulletHit && Profile.CounterOnNearMiss && Profile.CanHearCombat && ListenerPosition.distance_to_sqr(Event.Position) <= _sqr(Profile.CounterNearMissRadius)));
+	if (!CanAttract && !CanFrighten && !CounterEvent)
 	{
 		return false;
 	}
@@ -168,6 +330,33 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	if (!IsLight && (Radius <= 0.f || ListenerPosition.distance_to_sqr(Event.Position) > Radius * Radius))
 	{
 		return false;
+	}
+	if (CounterEvent && Event.SourceIdentifier != u16(-1) && s32(Device.dwTimeGlobal - Event.OccurredAt) >= 0 &&
+		Device.dwTimeGlobal - Event.OccurredAt < Profile.CounterOpportunityTime && s32(Event.OccurredAt - OpportunityAt) >= 0)
+	{
+		OpportunitySource = Event.SourceIdentifier;
+		OpportunityAt = Event.OccurredAt;
+		OpportunityUntil = Event.OccurredAt + Profile.CounterOpportunityTime;
+	}
+	if (!CanAttract && !CanFrighten)
+	{
+		return true;
+	}
+	// An orienting reflex must not wait for the threshold that starts a full investigation or panic.
+	if (!IsLight)
+	{
+		const u32 ReflexPriority = Type == EELNoiseType::Shot || Type == EELNoiseType::Explosion ? 3u : Type == EELNoiseType::Attack || Type == EELNoiseType::BulletHit || Type == EELNoiseType::Melee ? 2u : 1u;
+		const u32 Duration = ReflexPriority == 3u ? Profile.SoundDangerLookTime : Profile.SoundLookTime;
+		const s32 Age = s32(Device.dwTimeGlobal - Event.OccurredAt);
+		if (Age >= 0 && u32(Age) < Duration && s32(Event.OccurredAt - LookEventAt) >= 0 &&
+			(s32(LookUntil - Device.dwTimeGlobal) <= 0 || ReflexPriority >= LookPriority))
+		{
+			LookPosition = Event.Position;
+			LookUntil = Event.OccurredAt + Duration;
+			LookEventAt = Event.OccurredAt;
+			LookPriority = ReflexPriority;
+			LookSource = Event.SourceIdentifier;
+		}
 	}
 	const s32 DebugAge = s32(Device.dwTimeGlobal - Event.OccurredAt);
 	if (Event.IsActorSound && DebugAge >= 0 && DebugAge < 250 && CELSharedDebug::Instance().IsDrawEnabled())
@@ -243,6 +432,10 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	// Other equal and weaker sources accumulate without stealing the current investigation.
 	if (HasActiveAttention && IncomingPriority <= AttentionPriority)
 	{
+		if (CanAttract && SourceAttention->Interest >= InterestThreshold)
+		{
+			QueueInterest(Event.Position, Event.SourceIdentifier, Type, Event.OccurredAt + Profile.NoiseSearchTime, IncomingPriority, Event.IsActorSound, Event.OccurredAt);
+		}
 		PublishDebug(ListenerPosition, Profile, ListenerIdentifier);
 		return true;
 	}
@@ -253,6 +446,7 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 	}
 	if (CanFrighten && (SourceAttention->Fear >= FearThreshold || Random.randF() < PanicChance))
 	{
+		ArchiveAttention();
 		AttentionPosition = Event.Position;
 		AttentionSource = Event.SourceIdentifier;
 		AttentionNoiseType = Type;
@@ -260,13 +454,16 @@ bool CELSharedHearing::Hear(const SELSoundEvent& Event, const Fvector& ListenerP
 		AttentionPriority = IncomingPriority;
 		AttentionStartedAt = Event.OccurredAt;
 		LastAttentionEventAt = Event.OccurredAt;
-		PanicUntil = Event.OccurredAt + Profile.NoisePanicDuration;
+		CEntityAlive* Listener = ExtendedEntityes::FindEntity(ListenerIdentifier);
+		PanicUntil = Event.OccurredAt + PanicDuration(Type, Profile, Listener ? Listener->GetVisualScale() : 1.f);
+		DamagePanic = false;
 		InvestigateUntil = 0;
 		NextReaction = Event.OccurredAt + Profile.NoiseCooldown;
 		SourceAttention->Fear = 0.f;
 	}
 	else if (CanAttract && s32(Event.OccurredAt - PanicUntil) >= 0 && (SourceAttention->Interest >= InterestThreshold || Random.randF() < Profile.NoiseImmediateChance))
 	{
+		ArchiveAttention();
 		AttentionPosition = Event.Position;
 		AttentionSource = Event.SourceIdentifier;
 		AttentionNoiseType = Type;
@@ -345,6 +542,12 @@ void CELSharedHearing::PublishDebug(const Fvector& ListenerPosition, const SELPe
 // Сбрасывает накопленные данные и незавершённую работу подсистемы.
 void CELSharedHearing::Clear()
 {
+	DamagePanic = false;
+	LookUntil = LookEventAt = LookPriority = OpportunityUntil = OpportunityAt = 0;
+	OpportunitySource = u16(-1);
+	LookSource = u16(-1);
+	Pending.clear();
+	Finished.clear();
 	Attention.clear();
 	AttentionIsActorSound = false;
 	AttentionSource = u16(-1);
@@ -354,6 +557,17 @@ void CELSharedHearing::Clear()
 // Удаляет накопленный шум и активную реакцию исчезнувшего источника.
 void CELSharedHearing::RemoveObject(u16 SourceIdentifier)
 {
+	if (OpportunitySource == SourceIdentifier)
+	{
+		OpportunityUntil = 0;
+		OpportunitySource = u16(-1);
+	}
+	if (LookSource == SourceIdentifier)
+	{
+		LookUntil = 0;
+		LookSource = u16(-1);
+	}
+	Pending.erase(std::remove_if(Pending.begin(), Pending.end(), [SourceIdentifier](const SPendingInterest& Task) { return Task.Source == SourceIdentifier; }), Pending.end());
 	Attention.erase(std::remove_if(Attention.begin(), Attention.end(), [SourceIdentifier](const SELNoiseAttention& Record)
 								   { return Record.SourceIdentifier == SourceIdentifier; }),
 					Attention.end());

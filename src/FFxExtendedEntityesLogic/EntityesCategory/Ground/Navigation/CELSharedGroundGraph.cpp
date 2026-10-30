@@ -3,6 +3,7 @@
 #include "FFxExtendedEntityesLogic/EntityesCategory/Ground/CELGroundAdapter.h"
 #include "FFxExtendedEntityesLogic/EntryPoint.h"
 #include "FFxExtendedEntityesLogic/CELSharedSettings.h"
+#include "FFxExtendedEntityesLogic/Perceptions/CELSharedAnomalies.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 #include "FFxExtendedEntityesLogic/Navigation/CELSharedNavigationScheduler.h"
 #include "xrGame/ai/monsters/basemonster/base_monster.h"
@@ -56,6 +57,12 @@ void Expand(SCapture& Capture, CELGroundAdapter& Adapter)
 		{
 			continue;
 		}
+		// Capture the reachable safe component, not a shortcut that the worker will later reject.
+		const Fvector NeighborPosition = Graph.vertex_position(NeighborVertex);
+		if (CELSharedAnomalies::Crosses(Capture.Request.Obstacles, Capture.Request.Graph[Capture.Cursor].Position, NeighborPosition))
+		{
+			continue;
+		}
 		ExistingNode = Capture.NodeIndices.find(NeighborVertex);
 		if (ExistingNode == Capture.NodeIndices.end())
 		{
@@ -64,7 +71,7 @@ void Expand(SCapture& Capture, CELGroundAdapter& Adapter)
 				continue;
 			}
 			NewNode = SELNavigationNode();
-			NewNode.Position = Graph.vertex_position(NeighborVertex);
+			NewNode.Position = NeighborPosition;
 			NewNode.VertexIdentifier = NeighborVertex;
 			if (!Adapter.CanReach(NewNode.Position, NeighborVertex))
 			{
@@ -130,6 +137,30 @@ bool CELSharedGroundGraph::Submit(SELNavigationRequest Request, u32 GoalVertex)
 	Capture.Request = std::move(Request);
 	Captures.push_back(std::move(Capture));
 	return true;
+}
+
+// Update the destination while keeping the already captured safe component and identity.
+bool CELSharedGroundGraph::Retarget(const SELNavigationIdentity& Identity, const Fvector& GoalPosition, u32 GoalVertex)
+{
+	using namespace ExtendedEntityesGroundGraph;
+	xrCriticalSectionGuard Guard(CaptureLock);
+	for (SCapture& Capture : Captures)
+	{
+		if (Capture.Identity != Identity || Capture.State != EELGraphCaptureState::Capturing)
+		{
+			continue;
+		}
+		Capture.GoalVertex = GoalVertex;
+		Capture.Request.GoalPosition = GoalPosition;
+		// The frontier is bounded by GroundCaptureNodeLimit; no graph nodes or rays are added here.
+		for (SFrontier& Entry : Capture.Frontier)
+		{
+			Entry.Distance = Capture.Request.Graph[Entry.NodeIndex].Position.distance_to_sqr(GoalPosition);
+		}
+		std::make_heap(Capture.Frontier.begin(), Capture.Frontier.end());
+		return true;
+	}
+	return false;
 }
 
 // Забирает состояние и готовый снимок наземного графа.

@@ -289,7 +289,8 @@ void CControlAnimationBase::SelectVelocities()
 	
 	// получить скорости движения по анимации
 	anim_vel.set(item_it->velocity.velocity.linear, item_it->velocity.velocity.angular_real);
-	const float MovementScale = MonsterScale::Movement(m_object->GetVisualScale());
+	const float TacticalFactor = m_object->movement().detail().GetMovementFactor();
+	const float MovementScale = MonsterScale::Movement(m_object->GetVisualScale()) * TacticalFactor;
 	anim_vel.linear *= MovementScale;
 
 	//	// проверить на совпадение
@@ -323,7 +324,7 @@ void CControlAnimationBase::SelectVelocities()
 		EMotionAnim new_anim;
 		float		a_speed;
 
-		if (accel_chain_get(m_man->movement().real_velocity() / MovementScale, cur_anim_info().get_motion(), new_anim, a_speed)) {
+		if (accel_chain_get(m_man->movement().real_velocity() / MonsterScale::Movement(m_object->GetVisualScale()), cur_anim_info().get_motion(), new_anim, a_speed)) {
 			cur_anim_info().set_motion(new_anim);
 			
 			if (a_speed < 0.5f)
@@ -332,8 +333,8 @@ void CControlAnimationBase::SelectVelocities()
 			}
 
 			cur_anim_info().speed._set_target	(a_speed);
-		} else 
-			cur_anim_info().speed._set_target	(-1.f);
+		} else
+			cur_anim_info().speed._set_target(TacticalFactor != 1.f ? TacticalFactor : -1.f);
 	} else 
 		cur_anim_info().speed._set_target		(-1.f);
 

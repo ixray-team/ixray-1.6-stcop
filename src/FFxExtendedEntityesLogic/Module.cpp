@@ -53,6 +53,8 @@ extern "C" __declspec(dllexport) const SFFxExtendedEntityesAPI* FFxGetAPI(u32 Ve
 		&ExtendedEntityes::OwnerGeneration,
 		&ExtendedEntityes::PerceptionBudget,
 		&ExtendedEntityes::Navigation,
+		&ExtendedEntityes::HasCloseContact,
+		&ExtendedEntityes::VisionRangeFactor,
 		&ExtendedEntityes::VisionTransparency,
 		&ExtendedEntityes::BeginFrame,
 		&ExtendedEntityes::Clear,

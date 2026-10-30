@@ -10,6 +10,8 @@
 #include "xrGame/ai_space.h"
 #include "xrGame/level_graph.h"
 #include "xrGame/monster_scale.h"
+#include "xrGame/movement_manager.h"
+#include "xrGame/detail_path_manager.h"
 
 // Связывает базовую наземную схему и контроль продвижения с необходимыми службами и состоянием владельца.
 CELGroundBehaviorBase::CELGroundBehaviorBase(IELAdapter& OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : Adapter(OwnerAdapter), Profile(OwnerProfile), Movement(OwnerAdapter), Navigation(OwnerAdapter) {}
@@ -21,11 +23,8 @@ void CELGroundBehaviorBase::SetObservation(const SELObservation& NewObservation)
 	{
 		StartedAt = ProgressTime = WaitingSince = Device.dwTimeGlobal;
 		RecoveryCount = 0;
-		// Новая цель отменяет старый запрос, но не безопасное движение по уже принятому пути.
-		Navigation.Reset();
-		HasRequestedGoal = false;
-		RetryAfter = 0;
-		++PlanGeneration;
+		// A different enemy must not inherit the old enemy's route or local detour.
+		InvalidateRoute();
 	}
 	Observation = NewObservation;
 }
@@ -37,7 +36,7 @@ void CELGroundBehaviorBase::Enter()
 	ProgressPosition = Adapter.Monster().Position();
 	RecoveryCount = 0;
 	HasMoveCommand = false;
-	RetryAfter = 0;
+	RetryAfter = DirectCheckAfter = 0;
 	HasRequestedGoal = false;
 	Validation = SELBehaviorValidation();
 	LocalSearch.Reset();
@@ -47,12 +46,27 @@ void CELGroundBehaviorBase::Enter()
 // Завершает активную схему и освобождает временные заявки.
 void CELGroundBehaviorBase::Exit()
 {
+	Adapter.Monster().movement().detail().SetMovementFactor(1.f);
 	Navigation.Reset();
 	Route = SELNavigationResult();
 	RouteCursor = 0;
 	++PlanGeneration;
 	HasMoveCommand = false;
 	HasRequestedGoal = false;
+}
+
+// Discard obsolete movement plans without restarting animation or the behavior itself.
+void CELGroundBehaviorBase::InvalidateRoute()
+{
+	Navigation.Reset();
+	Route = SELNavigationResult();
+	RouteCursor = 0;
+	LocalSearch.Reset();
+	HasRequestedGoal = HasMoveCommand = false;
+	RetryAfter = 0;
+	WaitingSince = ProgressTime = Device.dwTimeGlobal;
+	ProgressPosition = Adapter.Monster().Position();
+	++PlanGeneration;
 }
 
 // Обновляет контроль продвижения по позиции владельца.
@@ -146,11 +160,24 @@ void CELGroundBehaviorBase::AdvanceRoute()
 // Запрашивает изменившееся назначение, пока прежний проверенный путь ещё ведёт монстра вперёд.
 void CELGroundBehaviorBase::PrepareContinuation(const Fvector& GoalPosition, u32 GoalVertex)
 {
-	if (Navigation.IsPending() || s32(Device.dwTimeGlobal - RetryAfter) < 0 || Adapter.Monster().Position().distance_to_sqr(GoalPosition) < _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
+	if (s32(Device.dwTimeGlobal - RetryAfter) < 0 || Adapter.Monster().Position().distance_to_sqr(GoalPosition) < _sqr(MonsterScale::Arrival(Adapter.Monster().GetVisualScale())))
 	{
 		return;
 	}
 	const float GoalShiftSquared = RequestedGoal.distance_to_sqr(GoalPosition);
+	if (Navigation.IsPending())
+	{
+		if (HasRequestedGoal && GoalShiftSquared >= _sqr(CELSharedSettings::Work().GroundRouteReplanDistance))
+		{
+			if (Navigation.Retarget(GoalPosition, GoalVertex))
+			{
+				RequestedGoal = GoalPosition;
+				Validation = {EELBehaviorState::Running, "Цель сместилась: обновляю огибающую"};
+			}
+			RetryAfter = Device.dwTimeGlobal + CELSharedSettings::Work().GroundRouteRetryDelay;
+		}
+		return;
+	}
 	const bool IsNearEnd = Route.HasPath && Adapter.Monster().Position().distance_to_sqr(Route.Points.back()) < _sqr(CELSharedSettings::Work().GroundWaypointLookahead);
 	if (Route.HasPath && HasRequestedGoal && GoalShiftSquared < _sqr(CELSharedSettings::Work().GroundRouteReplanDistance) && !(IsNearEnd && GoalShiftSquared >= 1.f))
 	{
@@ -170,8 +197,10 @@ bool CELGroundBehaviorBase::FollowRoute(bool IsRunning)
 	if (CELSharedAnomalies::Crosses(Adapter.Monster().ID(), Adapter.Monster().Position(), Route.Points[RouteCursor]) || CELSharedDeaths::Crosses(Adapter.Monster().ID(), Adapter.Monster().Position(), Route.Points[RouteCursor]))
 	{
 		Movement.Stop();
-		Route = SELNavigationResult();
-		Validation = {EELBehaviorState::Blocked, "Маршрут пересекает известную опасность"};
+		// The next attempt needs a fresh hazard snapshot rather than the same rejected cached goal.
+		InvalidateRoute();
+		RetryAfter = Device.dwTimeGlobal + CELSharedSettings::Work().GroundRouteRetryDelay;
+		Validation = {EELBehaviorState::Blocked, "Опасная зона на пути: перепланирование обхода"};
 		return false;
 	}
 	if (CELSharedDebug::Instance().IsDrawEnabled())
@@ -198,6 +227,28 @@ bool CELGroundBehaviorBase::Move(const Fvector& GoalPosition, u32 GoalVertex, bo
 	TrackProgress();
 	TakePreparedRoute();
 	AdvanceRoute();
+	if (Route.HasPath && s32(Device.dwTimeGlobal - DirectCheckAfter) >= 0)
+	{
+		DirectCheckAfter = Device.dwTimeGlobal + CELSharedSettings::Work().GroundRouteRetryDelay;
+		Fvector DirectPoint;
+		u32 DirectVertex;
+		if (CELGroundLocalSearch::Resolve(Adapter, GoalPosition, DirectPoint, DirectVertex) &&
+			CELGroundLocalSearch::MoveDirect(Adapter, Movement, DirectPoint, IsRunning))
+		{
+			// Replace the obsolete detour only after the current destination has a safe direct corridor.
+			Navigation.Reset();
+			Route = SELNavigationResult();
+			Route.HasPath = true;
+			Route.Points.push_back(DirectPoint);
+			Route.Vertices.push_back(DirectVertex);
+			RouteCursor = 0;
+			RequestedGoal = DirectPoint;
+			HasRequestedGoal = HasMoveCommand = true;
+			LocalSearch.Reset();
+			Validation = {EELBehaviorState::Running, "Прямой проход освободился: сокращаю обход"};
+			return true;
+		}
+	}
 	PrepareContinuation(GoalPosition, GoalVertex);
 	if (Route.HasPath && RouteCursor < Route.Points.size() && Device.dwTimeGlobal - ProgressTime < Profile.GroundStallTime)
 	{

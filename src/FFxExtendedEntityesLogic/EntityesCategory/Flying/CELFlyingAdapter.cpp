@@ -12,6 +12,10 @@ bool CELFlyingAdapter::CanSee(const CEntityAlive& Candidate) const
 	{
 		return false;
 	}
+	if (CELSharedSight::CheckClose(OwnerMonster, const_cast<CEntityAlive&>(Candidate)) == EELSightResult::Visible)
+	{
+		return true;
+	}
 	const u32 Now = Device.dwTimeGlobal;
 	const u32 Generation = ExtendedEntityes::OwnerGeneration(Candidate.ID());
 	constexpr u32 SightInterval = 50;
@@ -28,7 +32,7 @@ bool CELFlyingAdapter::CanSee(const CEntityAlive& Candidate) const
 	const EELSightResult Result = CELSharedSight::CheckFrom(OwnerMonster, const_cast<CEntityAlive&>(Candidate), 360.f, OwnerMonster.eye_range, ViewOrigin);
 	if (Result == EELSightResult::WaitingForBudget)
 	{
-		return false;
+		return Found != SightResults.end() && Found->second.TargetGeneration == Generation && Found->second.Visible && Now - Found->second.CheckedAt < 150;
 	}
 	if (SightResults.size() >= 128)
 	{

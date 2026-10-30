@@ -30,11 +30,22 @@ void CControlJump::reinit()
 
 	m_time_started			= 0;
 	m_time_next_allowed		= 0;
+	EvasionRecoveryUntil = 0;
 }
 
 
 void CControlJump::load(const char* section)
 {
+	AttackJumpEnabled = pSettings->read_if_exists<bool>(section, "monster_attack_jump_enabled", true);
+	float Recovery = pSettings->read_if_exists<float>(section, "monster_dodge_attack_jump_delay", .6f);
+	clamp(Recovery, 0.f, 5.f);
+	EvasionRecoveryTime = u32(Recovery * 1000.f);
+	EvasiveAnimationSpeedMax = pSettings->read_if_exists<float>(section, "monster_dodge_jump_animation_speed_max", 1.35f);
+	clamp(EvasiveAnimationSpeedMax, 1.f, 2.f);
+	EvasiveDistanceMax = pSettings->read_if_exists<float>(section, "monster_dodge_jump_distance_max", 5.f);
+	clamp(EvasiveDistanceMax, .5f, 12.f);
+	EvasiveDistanceMin = pSettings->read_if_exists<float>(section, "monster_dodge_jump_distance_min", .5f);
+	clamp(EvasiveDistanceMin, .1f, EvasiveDistanceMax);
 	m_delay_after_jump				= pSettings->r_u32	(section,"jump_delay");
 	m_jump_factor					= pSettings->r_float(section,"jump_factor");
 	m_trace_ground_range			= pSettings->r_float(section,"jump_ground_trace_range");
@@ -51,6 +62,14 @@ void CControlJump::load(const char* section)
 		m_auto_aim_factor			= pSettings->r_float(section,"jump_auto_aim_factor");
 }
 
+bool CControlJump::IsEvasiveDistanceValid(const Fvector& Target) const
+{
+	Fvector Offset = Fvector().sub(Target, m_object->Position());
+	Offset.y = 0.f;
+	const float Scale = m_object->GetVisualScale();
+	return Offset.square_magnitude() + EPS_L >= _sqr(EvasiveDistanceMin * Scale) && Offset.square_magnitude() <= _sqr(EvasiveDistanceMax * Scale) + EPS_L;
+}
+
 float CControlJump::get_max_distance() const
 {
 	return m_max_distance;
@@ -63,8 +82,18 @@ float CControlJump::get_min_distance() const
 
 bool CControlJump::check_start_conditions()
 {
+	if (s32(Device.dwTimeGlobal - EvasionRecoveryUntil) < 0)
+	{
+		return false;
+	}
 	if (is_active())				return false;	
 	if (m_man->is_captured_pure())	return false;
+	CPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
+	// Controller release is not proof of physical touchdown.
+	if (Character->JumpState() || !Character->HasGroundSupport())
+	{
+		return false;
+	}
 
 
 	return true;
@@ -102,16 +131,21 @@ void CControlJump::activate()
 
 void CControlJump::on_release()
 {
+	if (FlightStarted && is_flag(SControlJumpData::eEvasiveJump))
+	{
+		// Native attacking jumps share the post-evasion touchdown recovery window.
+		EvasionRecoveryUntil = Device.dwTimeGlobal + EvasionRecoveryTime;
+	}
 	m_man->unlock						(this, ControlCom::eControlPath);
 
 	SControlDirectionData				*ctrl_data_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 	VERIFY								(ctrl_data_dir);
 	ctrl_data_dir->linear_dependency	= true;
 
-	m_man->release_pure 				(this);
 	m_man->unsubscribe					(this, ControlCom::eventVelocityBounce);
 	m_man->unsubscribe					(this, ControlCom::eventAnimationEnd);
 	m_man->unsubscribe					(this, ControlCom::eventAnimationStart);
+	m_man->release_pure(this);
 
 	if ( m_data.target_object && m_data.flags.test(SControlJumpData::eUseAutoAim) )
 	{
@@ -122,6 +156,11 @@ void CControlJump::on_release()
 
 	m_object->path().prepare_builder	();
 	m_object->set_ignore_collision_hit	(false);
+	m_data.flags.set(SControlJumpData::eEvasiveJump, false);
+	FlightStarted = false;
+	m_time_started = 0;
+	m_jump_time = 0.f;
+	m_anim_state_current = m_anim_state_prev = eStateNone;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -138,6 +177,9 @@ void CControlJump::start_jump(const Fvector &point)
 	m_blend_speed						= -1.f;
 
 	m_jump_start_pos					= m_object->Position();
+	FlightStarted = false;
+	FlightDuration = 0.f;
+	FlightStartedAt = 0;
 	m_time_started						= 0;
 	m_jump_time							= 0;
 	m_last_saved_pos_time				= 0;
@@ -241,6 +283,7 @@ void CControlJump::select_next_anim_state()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_data);
 	ctrl_data->global.actual	= false;
+	ctrl_data->global.SynchronizePhase = false;
 
 	switch (m_anim_state_current) {
 	case eStatePrepare:			ctrl_data->global.set_motion (m_data.state_prepare.motion);			break;
@@ -263,6 +306,24 @@ void CControlJump::select_next_anim_state()
 
 	if ( in_auto_aim() )
 		m_object->character_physics_support()->movement()->PHCharacter()->SetAirControlFactor(100.f * m_auto_aim_factor);
+}
+
+float CControlJump::GetFlightElapsed() const
+{
+	return FlightStartedAt ? float(Device.dwTimeGlobal - FlightStartedAt) * .001f : 0.f;
+}
+
+const char* CControlJump::GetPhaseName()
+{
+	if (!is_active())
+	{
+		return "завершен";
+	}
+	if (!FlightStarted)
+	{
+		return "подготовка";
+	}
+	return m_time_started ? "полет" : "наземный этап";
 }
 
 float CControlJump::relative_time ()
@@ -296,6 +357,16 @@ bool CControlJump::in_auto_aim ()
 //////////////////////////////////////////////////////////////////////////
 void CControlJump::update_frame()
 {
+	if (IsEvasiveFlight())
+	{
+		CPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
+		if (!Character->IsEnabled())
+		{
+			// Ballistic flight cannot remain asleep while its visual animation keeps running.
+			Character->Enable();
+		}
+	}
+
 	// check if all jump stages are ended
 	if ( m_velocity_bounced && m_man->path_builder().is_path_end(0.1f) ) 
 	{
@@ -348,6 +419,20 @@ bool CControlJump::is_on_the_ground()
 	if (m_time_started == 0) return false;
 	if (m_time_started + (m_jump_time*1000) > time()) return false;
 
+	if (is_flag(SControlJumpData::eEvasiveJump))
+	{
+		// The animated center/ray proximity is not a physical landing contact.
+		CPHMovementControl* Movement = m_object->character_physics_support()->movement();
+		CPHCharacter* Character = Movement->PHCharacter();
+		return !Character->JumpState() && Character->HasGroundSupport();
+	}
+
+	// Physical support remains reliable when the visual center is above the ground ray range.
+	if (m_object->character_physics_support()->movement()->Environment() == CPHMovementControl::peOnGround)
+	{
+		return true;
+	}
+
 	Fvector direction;
 	direction.set(0.f, -1.f, 0.f);
 	Fvector trace_from;
@@ -368,6 +453,15 @@ bool CControlJump::is_on_the_ground()
 
 void CControlJump::grounding()
 {
+
+	if (is_flag(SControlJumpData::eEvasiveJump))
+	{
+		// The native ground motion expects a running follow-through, not a stationary landing.
+		// Hand locomotion back at physical touchdown instead of holding that motion in place.
+		stop();
+		return;
+	}
+
 	if ((m_data.state_ground.velocity_mask == u32(-1)) || is_flag(SControlJumpData::eGroundSkip) || !m_data.state_ground.motion.valid()) {
 		stop();
 		return;
@@ -418,14 +512,21 @@ Fvector CControlJump::get_target(CObject *obj)
 		return	(global_transform.c);
 }
 
-void CControlJump::calculate_jump_time (Fvector const & target, bool const check_force_factor)
+float CControlJump::calculate_jump_time (Fvector const & target, bool const check_force_factor, bool Evasive)
 {			
 	float ph_time = m_object->character_physics_support()->movement()->JumpMinVelTime(target);
 	// выполнить прыжок в соответствии с делителем времени
 	float cur_factor	= (check_force_factor && m_data.force_factor > 0) ? 
 						   m_data.force_factor : m_jump_factor;
 
-	m_jump_time			= ph_time/cur_factor;
+	float JumpTime = ph_time/cur_factor;
+	if (Evasive || is_flag(SControlJumpData::eEvasiveJump))
+	{
+		// Short evasions keep a readable animation instead of compressing it into a few frames.
+		const float MotionTime = m_man->animation().motion_time(m_data.state_glide.motion, m_object->Visual());
+		JumpTime = std::max(JumpTime, MotionTime / EvasiveAnimationSpeedMax);
+	}
+	return JumpTime;
 }
 
 void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData *data)
@@ -447,6 +548,12 @@ void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData 
 			}
 		}
 	} else if (type == ControlCom::eventAnimationEnd) {
+		const auto* Animation = static_cast<SControlAnimationData*>(m_man->data(this, ControlCom::eControlAnimation));
+		// A queued callback from the preceding motion cannot finish a newly selected stage.
+		if (!Animation->global.actual || (m_anim_state_prev == eStateGlide && !FlightStarted))
+		{
+			return;
+		}
 		select_next_anim_state();
 	} else if (type == ControlCom::eventAnimationStart) {
 		
@@ -454,15 +561,39 @@ void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData 
 		SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 		VERIFY						(ctrl_data);
 		
+		if (!ctrl_data->global.actual)
+		{
+			return;
+		}
 		if ((m_anim_state_current == eStateGlide) && (m_anim_state_prev == eStateGlide)) {
+			// Start events from other skeleton parts must not reapply the impulse or change its speed.
+			if (FlightStarted || ctrl_data->global.get_motion() != m_data.state_glide.motion)
+			{
+				return;
+			}
+			// Revalidate at the actual impulse, after animation startup and any preceding movement.
+			if (is_flag(SControlJumpData::eEvasiveJump) && !IsEvasiveDistanceValid(m_target_position))
+			{
+				stop();
+				return;
+			}
+			FlightStarted = true;
 
 			//---------------------------------------------------------------------------------
 			// start jump here
 			//---------------------------------------------------------------------------------
 			// получить врем€ физ.прыжка
-			calculate_jump_time	(m_target_position, true);
+			m_jump_time = calculate_jump_time(m_target_position, true);
+			FlightDuration = m_jump_time;
+			FlightStartedAt = Device.dwTimeGlobal;
 
-			m_object->character_physics_support()->movement()->Jump(m_target_position,m_jump_time);
+			CPHMovementControl* Movement = m_object->character_physics_support()->movement();
+			if (is_flag(SControlJumpData::eEvasiveJump))
+			{
+				// Remove the last grounded steering command before the first physics step of flight.
+				Movement->PHCharacter()->SetAcceleration(Fvector().set(0.f, 0.f, 0.f));
+			}
+			Movement->Jump(m_target_position, m_jump_time);
 			m_time_started		= time();
 			m_time_next_allowed	= m_time_started + m_delay_after_jump;
 			//---------------------------------------------------------------------------------
@@ -482,7 +613,8 @@ void CControlJump::on_event(ControlCom::EEventType type, ControlCom::IEventData 
 			ctrl_data_dir->linear_dependency		= false;
 			//---------------------------------------------------------------------------------
 
-			ctrl_data->set_speed	(m_man->animation().current_blend()->timeTotal/ m_man->animation().current_blend()->speed / m_jump_time);
+			CBlend* Blend = m_man->animation().current_blend();
+			ctrl_data->set_speed(is_flag(SControlJumpData::eEvasiveJump) ? Blend->timeTotal / m_jump_time : Blend->timeTotal / Blend->speed / m_jump_time);
 
 		} else 
 			ctrl_data->set_speed	(-1.f);
@@ -535,12 +667,34 @@ void CControlJump::hit_test()
 
 	} 
 
-	if (m_object_hitted) 
+	if (m_object_hitted)
+	{
+		Fvector TargetCenter;
+		m_data.target_object->Center(TargetCenter);
+		Fvector Direction;
+		Direction.sub(TargetCenter, trace_from);
+		const float Range = Direction.magnitude();
+		if (Range > EPS_L)
+		{
+			Direction.div(Range);
+			collide::rq_result Obstacle;
+			if (Level().ObjectSpace.RayPick(trace_from, Direction, Range, collide::rqtStatic, Obstacle, m_object))
+			{
+				m_object_hitted = false;
+				return;
+			}
+		}
+	}
+	if (m_object_hitted)
 		m_object->HitEntityInJump(m_data.target_object != nullptr ? m_data.target_object->cast_entity() : nullptr);
 }
 
 bool CControlJump::can_jump(CObject *target)
 {
+	if (!AttackJumpEnabled || !target)
+	{
+		return false;
+	}
 	const bool	aggressive_jump	=	m_object->can_use_agressive_jump(target);
 	Fvector		target_position;
 	target->Center					(target_position);
@@ -548,14 +702,14 @@ bool CControlJump::can_jump(CObject *target)
 	return							can_jump(target_position, aggressive_jump);
 }
 
-bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * const ignored_object)
+bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * const ignored_object, bool Evasive)
 {
-	calculate_jump_time				(target, false);
+	const float JumpTime = calculate_jump_time(target, false, Evasive);
 
 	Fvector velocity;
 	velocity.sub					(target, m_object->Position());
 
-	TransferenceToThrowVel			(velocity,m_jump_time,physics_world()->Gravity());
+	TransferenceToThrowVel			(velocity,JumpTime,physics_world()->Gravity());
 
 	Fvector collide_position;
 	collide::rq_results	temp_rq_results;
@@ -582,7 +736,7 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 	Fvector const traj_start	=	m_object->Position() + Fvector().set(0, 1.2f * Scale, 0);
 	Fvector const traj_target	=	target + Fvector().set(0, 1.2f * Scale, 0) - (normalize(start_to_target) * Scale);
 
-	if ( trajectory_intersects_geometry	(m_jump_time, 
+	if ( trajectory_intersects_geometry	(JumpTime,
 										 traj_start,
 										 traj_target,
 								 		 velocity,
@@ -610,8 +764,16 @@ bool CControlJump::jump_intersect_geometry (Fvector const & target, CObject * co
 	return							false;
 }
 
-bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
+bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump, float MaxHeadingAngle)
 {
+	if (s32(Device.dwTimeGlobal - EvasionRecoveryUntil) < 0)
+	{
+		return false;
+	}
+	if (MaxHeadingAngle >= 0.f && !IsEvasiveDistanceValid(target))
+	{
+		return false;
+	}
 	if ( m_time_next_allowed != 0 )
 	{
 		// in aggressive mode we can jump after 1/3 of m_delay_after_jump
@@ -643,7 +805,9 @@ bool CControlJump::can_jump(Fvector const& target, bool const aggressive_jump)
 	float yaw_current, yaw_target;
 	m_object->control().direction().get_heading(yaw_current, yaw_target);
 
-	if (angle_difference(yaw_current, dir_yaw) > m_max_angle) 
+	// Evasive point jumps may use a separate heading limit; ordinary attacks keep their species limit.
+	const float HeadingLimit = MaxHeadingAngle >= 0.f ? clampr(MaxHeadingAngle, 0.f, PI) : m_max_angle;
+	if (angle_difference(yaw_current, dir_yaw) > HeadingLimit)
 		return						false;
 	
 	// check if target on the same floor etc
