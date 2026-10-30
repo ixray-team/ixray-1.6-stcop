@@ -10,14 +10,14 @@ EngineLoopAndDestroy → Device.Run
 EndPlay → Core._destroy
 ```
 
-After `BeginPlay`, `Run` starts the splash thread, then calls `SteamWorks.BeginPlay()`. `-autotest` does not skip that thread in this branch. Non-`DEBUG_DRAW` Windows builds take a single-instance mutex.
+After `BeginPlay`, `Run` calls `SteamWorks.BeginPlay()`. There is no splash thread: the startup screen is drawn in the main window by `CRenderDevice::SetStartupStatus` / `DrawStartupFrame` (`src/xrEngine/Device_startup_frame.cpp`). Non-`DEBUG_DRAW` Windows builds take a single-instance mutex.
 
 ## BeginPlay
 
 1. `SDL_Init` (audio, video, gamepad, events)
 2. `Debug._initialize`
 3. `EnumerateDisplayModes` (fallback 1024×768)
-4. `g_AppInfo.Window`: `SDL_WINDOW_HIDDEN` on Windows; the flag is replaced by `SDL_WINDOW_VULKAN` off Windows
+4. `g_AppInfo.Window`: created with the video mode size and shown immediately, except `-autotest`, where it is `SDL_WINDOW_HIDDEN`; the flag is replaced by `SDL_WINDOW_VULKAN` off Windows
 5. `EngineLoadStage1(CommandLine)`
 
 ## InitEngine

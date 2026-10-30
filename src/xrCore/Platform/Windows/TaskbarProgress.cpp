@@ -3,8 +3,6 @@
 
 #include <ShObjIdl.h>
 
-namespace
-{
 constexpr int OverlayIconSize = 16;
 constexpr size_t MaxTextLength = 1024;
 
@@ -39,9 +37,9 @@ struct STaskbarState
 	xr_hash_map<int, HICON> Icons;
 };
 
-STaskbarState State;
+static STaskbarState g_TaskbarState;
 
-TBPFLAG ToTbpflag(ETaskbarProgressState Value)
+static TBPFLAG ToTbpflag(ETaskbarProgressState Value)
 {
 	switch (Value)
 	{
@@ -59,7 +57,7 @@ TBPFLAG ToTbpflag(ETaskbarProgressState Value)
 	}
 }
 
-xr_string GetPendingText(const xr_string& Text)
+static xr_string GetPendingText(const xr_string& Text)
 {
 	xr_string Result = Text;
 	if (Result.size() > MaxTextLength)
@@ -70,10 +68,10 @@ xr_string GetPendingText(const xr_string& Text)
 	return Result;
 }
 
-HICON GetOverlayIcon(int ResourceId)
+static HICON GetOverlayIcon(int ResourceId)
 {
-	auto It = State.Icons.find(ResourceId);
-	if (It != State.Icons.end())
+	auto It = g_TaskbarState.Icons.find(ResourceId);
+	if (It != g_TaskbarState.Icons.end())
 	{
 		return It->second;
 	}
@@ -87,10 +85,9 @@ HICON GetOverlayIcon(int ResourceId)
 		LR_DEFAULTCOLOR
 	));
 
-	State.Icons.emplace(ResourceId, Icon);
+	g_TaskbarState.Icons.emplace(ResourceId, Icon);
 	return Icon;
 }
-} // namespace
 
 bool CTaskbarProgress::Initialize(SDL_Window* Window)
 {
@@ -122,17 +119,17 @@ bool CTaskbarProgress::Initialize(SDL_Window* Window)
 		return false;
 	}
 
-	State.NeedCoUninit = SUCCEEDED(CoResult);
+	g_TaskbarState.NeedCoUninit = SUCCEEDED(CoResult);
 
 	ITaskbarList3* Taskbar = nullptr;
 	HRESULT Result = CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&Taskbar));
 	if (FAILED(Result) || Taskbar == nullptr)
 	{
 		Msg("! TaskbarProgress: CoCreateInstance failed (0x%08X)", static_cast<unsigned>(Result));
-		if (State.NeedCoUninit)
+		if (g_TaskbarState.NeedCoUninit)
 		{
 			CoUninitialize();
-			State.NeedCoUninit = false;
+			g_TaskbarState.NeedCoUninit = false;
 		}
 
 		return false;
@@ -143,72 +140,72 @@ bool CTaskbarProgress::Initialize(SDL_Window* Window)
 	{
 		Msg("! TaskbarProgress: HrInit failed (0x%08X)", static_cast<unsigned>(Result));
 		Taskbar->Release();
-		if (State.NeedCoUninit)
+		if (g_TaskbarState.NeedCoUninit)
 		{
 			CoUninitialize();
-			State.NeedCoUninit = false;
+			g_TaskbarState.NeedCoUninit = false;
 		}
 
 		return false;
 	}
 
-	State.Taskbar = Taskbar;
-	State.Hwnd = static_cast<HWND>(NativeHandle);
-	State.OwnerThread = Platform::GetCurrentThread();
+	g_TaskbarState.Taskbar = Taskbar;
+	g_TaskbarState.Hwnd = static_cast<HWND>(NativeHandle);
+	g_TaskbarState.OwnerThread = Platform::GetCurrentThread();
 
-	State.PendingState.store((s32)ETaskbarProgressState::NoProgress);
-	State.PendingAttention.store(false);
-	State.PendingCompleted.store(0);
-	State.PendingTotal.store(0);
-	State.PendingOverlayId.store(0);
+	g_TaskbarState.PendingState.store((s32)ETaskbarProgressState::NoProgress);
+	g_TaskbarState.PendingAttention.store(false);
+	g_TaskbarState.PendingCompleted.store(0);
+	g_TaskbarState.PendingTotal.store(0);
+	g_TaskbarState.PendingOverlayId.store(0);
 	{
-		xrCriticalSectionGuard Guard(State.TextLock);
-		State.PendingTooltip.clear();
-		State.PendingOverlayDescription.clear();
+		xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+		g_TaskbarState.PendingTooltip.clear();
+		g_TaskbarState.PendingOverlayDescription.clear();
 	}
 
-	State.AppliedState = ETaskbarProgressState::NoProgress;
-	State.AppliedCompleted = 0;
-	State.AppliedTotal = 0;
-	State.AppliedOverlayId = 0;
-	State.AppliedTooltip.clear();
-	State.AppliedOverlayDescription.clear();
-	State.AppliedTooltipValid = false;
-	State.AppliedOverlayValid = false;
+	g_TaskbarState.AppliedState = ETaskbarProgressState::NoProgress;
+	g_TaskbarState.AppliedCompleted = 0;
+	g_TaskbarState.AppliedTotal = 0;
+	g_TaskbarState.AppliedOverlayId = 0;
+	g_TaskbarState.AppliedTooltip.clear();
+	g_TaskbarState.AppliedOverlayDescription.clear();
+	g_TaskbarState.AppliedTooltipValid = false;
+	g_TaskbarState.AppliedOverlayValid = false;
 
-	State.Initialized.store(true);
+	g_TaskbarState.Initialized.store(true);
 	return true;
 }
 
 void CTaskbarProgress::Release()
 {
-	if (!State.Initialized.load())
+	if (!g_TaskbarState.Initialized.load())
 	{
 		return;
 	}
 
-	if (State.OwnerThread != Platform::GetCurrentThread())
+	if (g_TaskbarState.OwnerThread != Platform::GetCurrentThread())
 	{
 		Msg("! TaskbarProgress: Release called from a non-owner thread");
 		return;
 	}
 
-	State.Initialized.store(false);
-	State.PendingAttention.store(false);
+	g_TaskbarState.Initialized.store(false);
+	g_TaskbarState.PendingAttention.store(false);
 
-	if (State.Taskbar != nullptr)
+	if (g_TaskbarState.Taskbar != nullptr)
 	{
-		if (State.Hwnd != nullptr)
+		if (g_TaskbarState.Hwnd != nullptr)
 		{
-			State.Taskbar->SetProgressState(State.Hwnd, TBPF_NOPROGRESS);
-			State.Taskbar->SetOverlayIcon(State.Hwnd, nullptr, L"");
+			g_TaskbarState.Taskbar->SetProgressState(g_TaskbarState.Hwnd, TBPF_NOPROGRESS);
+			g_TaskbarState.Taskbar->SetOverlayIcon(g_TaskbarState.Hwnd, nullptr, L"");
 		}
 
-		State.Taskbar->Release();
-		State.Taskbar = nullptr;
+		g_TaskbarState.Taskbar->Release();
+		g_TaskbarState.Taskbar = nullptr;
 	}
 
-	for (const auto& [Id, Icon] : State.Icons)
+	for (const auto& [Id, Icon] : g_TaskbarState.Icons)
 	{
 		if (Icon != nullptr)
 		{
@@ -216,57 +213,57 @@ void CTaskbarProgress::Release()
 		}
 	}
 
-	State.Icons.clear();
-	State.Hwnd = nullptr;
-	State.OwnerThread = nullptr;
+	g_TaskbarState.Icons.clear();
+	g_TaskbarState.Hwnd = nullptr;
+	g_TaskbarState.OwnerThread = nullptr;
 
-	if (State.NeedCoUninit)
+	if (g_TaskbarState.NeedCoUninit)
 	{
 		CoUninitialize();
-		State.NeedCoUninit = false;
+		g_TaskbarState.NeedCoUninit = false;
 	}
 }
 
 bool CTaskbarProgress::IsInitialized() const
 {
-	return State.Initialized.load();
+	return g_TaskbarState.Initialized.load();
 }
 
 void CTaskbarProgress::SetState(ETaskbarProgressState Value)
 {
-	State.PendingState.store((s32)Value);
+	g_TaskbarState.PendingState.store((s32)Value);
 }
 
 void CTaskbarProgress::SetProgress(u64 Completed, u64 Total)
 {
-	State.PendingCompleted.store(Completed);
-	State.PendingTotal.store(Total);
+	g_TaskbarState.PendingCompleted.store(Completed);
+	g_TaskbarState.PendingTotal.store(Total);
 }
 
 void CTaskbarProgress::SetTooltip(const char* Text)
 {
-	xrCriticalSectionGuard Guard(State.TextLock);
-	State.PendingTooltip = Text != nullptr ? Text : "";
+	xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+	g_TaskbarState.PendingTooltip = Text != nullptr ? Text : "";
 }
 
 void CTaskbarProgress::SetOverlayIcon(int ResourceId, const char* Description)
 {
 	{
-		xrCriticalSectionGuard Guard(State.TextLock);
-		State.PendingOverlayDescription = Description != nullptr ? Description : "";
+		xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+		g_TaskbarState.PendingOverlayDescription = Description != nullptr ? Description : "";
 	}
 
-	State.PendingOverlayId.store(ResourceId);
+	g_TaskbarState.PendingOverlayId.store(ResourceId);
 }
 
 void CTaskbarProgress::ClearOverlayIcon()
 {
 	{
-		xrCriticalSectionGuard Guard(State.TextLock);
-		State.PendingOverlayDescription.clear();
+		xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+		g_TaskbarState.PendingOverlayDescription.clear();
 	}
 
-	State.PendingOverlayId.store(0);
+	g_TaskbarState.PendingOverlayId.store(0);
 }
 
 void CTaskbarProgress::Reset()
@@ -276,75 +273,75 @@ void CTaskbarProgress::Reset()
 
 void CTaskbarProgress::RequestAttention()
 {
-	State.PendingAttention.store(true);
+	g_TaskbarState.PendingAttention.store(true);
 }
 
 void CTaskbarProgress::Update()
 {
-	if (!State.Initialized.load() || State.Taskbar == nullptr || State.Hwnd == nullptr)
+	if (!g_TaskbarState.Initialized.load() || g_TaskbarState.Taskbar == nullptr || g_TaskbarState.Hwnd == nullptr)
 	{
 		return;
 	}
 
-	if (State.OwnerThread != Platform::GetCurrentThread())
+	if (g_TaskbarState.OwnerThread != Platform::GetCurrentThread())
 	{
 		return;
 	}
 
-	const ETaskbarProgressState PendingState = (ETaskbarProgressState)State.PendingState.load();
-	if (PendingState != State.AppliedState)
+	const ETaskbarProgressState PendingState = (ETaskbarProgressState)g_TaskbarState.PendingState.load();
+	if (PendingState != g_TaskbarState.AppliedState)
 	{
-		State.AppliedState = PendingState;
-		State.Taskbar->SetProgressState(State.Hwnd, ToTbpflag(PendingState));
+		g_TaskbarState.AppliedState = PendingState;
+		g_TaskbarState.Taskbar->SetProgressState(g_TaskbarState.Hwnd, ToTbpflag(PendingState));
 	}
 
-	const u64 Completed = State.PendingCompleted.load();
-	const u64 Total = State.PendingTotal.load();
-	if (Total != 0 && (Completed != State.AppliedCompleted || Total != State.AppliedTotal))
+	const u64 Completed = g_TaskbarState.PendingCompleted.load();
+	const u64 Total = g_TaskbarState.PendingTotal.load();
+	if (Total != 0 && (Completed != g_TaskbarState.AppliedCompleted || Total != g_TaskbarState.AppliedTotal))
 	{
-		State.AppliedCompleted = Completed;
-		State.AppliedTotal = Total;
-		State.Taskbar->SetProgressValue(State.Hwnd, Completed, Total);
+		g_TaskbarState.AppliedCompleted = Completed;
+		g_TaskbarState.AppliedTotal = Total;
+		g_TaskbarState.Taskbar->SetProgressValue(g_TaskbarState.Hwnd, Completed, Total);
 	}
 
 	xr_string Tooltip;
 	{
-		xrCriticalSectionGuard Guard(State.TextLock);
-		Tooltip = GetPendingText(State.PendingTooltip);
+		xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+		Tooltip = GetPendingText(g_TaskbarState.PendingTooltip);
 	}
 
-	if (!State.AppliedTooltipValid || Tooltip != State.AppliedTooltip)
+	if (!g_TaskbarState.AppliedTooltipValid || Tooltip != g_TaskbarState.AppliedTooltip)
 	{
-		State.AppliedTooltip = Tooltip;
-		State.AppliedTooltipValid = true;
-		State.Taskbar->SetThumbnailTooltip(State.Hwnd, Platform::ANSI_TO_TCHAR_U8(Tooltip.c_str()));
+		g_TaskbarState.AppliedTooltip = Tooltip;
+		g_TaskbarState.AppliedTooltipValid = true;
+		g_TaskbarState.Taskbar->SetThumbnailTooltip(g_TaskbarState.Hwnd, Platform::ANSI_TO_TCHAR_U8(Tooltip.c_str()));
 	}
 
 	int OverlayId = 0;
 	xr_string OverlayDescription;
 	{
-		xrCriticalSectionGuard Guard(State.TextLock);
-		OverlayId = State.PendingOverlayId.load();
-		OverlayDescription = GetPendingText(State.PendingOverlayDescription);
+		xrCriticalSectionGuard Guard(g_TaskbarState.TextLock);
+		OverlayId = g_TaskbarState.PendingOverlayId.load();
+		OverlayDescription = GetPendingText(g_TaskbarState.PendingOverlayDescription);
 	}
 
-	if (!State.AppliedOverlayValid || OverlayId != State.AppliedOverlayId || OverlayDescription != State.AppliedOverlayDescription)
+	if (!g_TaskbarState.AppliedOverlayValid || OverlayId != g_TaskbarState.AppliedOverlayId || OverlayDescription != g_TaskbarState.AppliedOverlayDescription)
 	{
-		State.AppliedOverlayId = OverlayId;
-		State.AppliedOverlayDescription = OverlayDescription;
-		State.AppliedOverlayValid = true;
+		g_TaskbarState.AppliedOverlayId = OverlayId;
+		g_TaskbarState.AppliedOverlayDescription = OverlayDescription;
+		g_TaskbarState.AppliedOverlayValid = true;
 
 		HICON Icon = OverlayId != 0 ? GetOverlayIcon(OverlayId) : nullptr;
-		State.Taskbar->SetOverlayIcon(State.Hwnd, Icon, Platform::ANSI_TO_TCHAR_U8(OverlayDescription.c_str()));
+		g_TaskbarState.Taskbar->SetOverlayIcon(g_TaskbarState.Hwnd, Icon, Platform::ANSI_TO_TCHAR_U8(OverlayDescription.c_str()));
 	}
 
-	if (State.PendingAttention.load())
+	if (g_TaskbarState.PendingAttention.load())
 	{
-		State.PendingAttention.store(false);
+		g_TaskbarState.PendingAttention.store(false);
 
 		FLASHWINFO Info = {};
 		Info.cbSize = sizeof(Info);
-		Info.hwnd = State.Hwnd;
+		Info.hwnd = g_TaskbarState.Hwnd;
 		Info.dwFlags = FLASHW_TRAY;
 		Info.uCount = 3;
 		FlashWindowEx(&Info);

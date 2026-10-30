@@ -256,8 +256,6 @@ void CALifeStorageManager::load(IReader* stream, const char* file_name)
 	Level().autosave_manager().on_game_loaded();
 }
 
-namespace
-{
 // Loading a save in game does not reload the level, so the load scope is opened here.
 // During a level load the engine reference counter already keeps the scope open.
 class CSaveLoadScope
@@ -276,7 +274,6 @@ public:
 	CSaveLoadScope(const CSaveLoadScope&) = delete;
 	CSaveLoadScope& operator=(const CSaveLoadScope&) = delete;
 };
-} // namespace
 
 bool CALifeStorageManager::load(const char* save_name_no_check)
 {
