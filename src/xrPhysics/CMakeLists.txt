@@ -41,6 +41,15 @@ source_group("ODE" FILES ${XPH_SOURCE_ODE_FILES})
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_ALL_FILES})
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_NET_FILES})
 
+# One backend per build: ODE/ or Box3D/
+if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
+    list(FILTER XPH_SRC_FILES EXCLUDE REGEX "/ODE/")
+    set(XPH_BACKEND_DIR "Box3D")
+else()
+    list(FILTER XPH_SRC_FILES EXCLUDE REGEX "/Box3D/")
+    set(XPH_BACKEND_DIR "ODE")
+endif()
+
 # Remove unused files
 list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*")
 
@@ -49,7 +58,7 @@ add_library(xrPhysics SHARED ${XPH_SRC_FILES})
 
 # Include directories
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ODE")
+target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/${XPH_BACKEND_DIR}")
 target_include_directories(xrPhysics PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../xrCore/")
 target_include_directories(xrPhysics PUBLIC "${IXRAY_SDK_INC}")
 
@@ -60,7 +69,12 @@ target_compile_definitions(xrPhysics PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrPhysics PUBLIC xrCore)
-target_link_libraries(xrPhysics PUBLIC ODE)
+if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
+    target_link_libraries(xrPhysics PRIVATE box3d::box3d)
+    target_compile_definitions(xrPhysics PRIVATE IXRAY_PHYSICS_BOX3D)
+else()
+    target_link_libraries(xrPhysics PUBLIC ODE)
+endif()
 target_link_libraries(xrPhysics PUBLIC xrEngineCore)
 
 # Move precompiled header

@@ -32,6 +32,10 @@ endif()
 include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
 include("${CMAKE_MODULE_PATHEX}/pffft.cmake")
 
+if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
+    include("${CMAKE_MODULE_PATHEX}/Box3D.cmake")
+endif()
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATHEX}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATHEX}/Opus.cmake")

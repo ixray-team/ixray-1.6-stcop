@@ -440,14 +440,31 @@ void CCustomRocket::UpdateEnginePh()
 	l_dir.normalize();
 
 	R_ASSERT(m_pPhysicsShell);
+	Fvector DbgV0, DbgV1, DbgV2, DbgV3;
+	m_pPhysicsShell->get_LinearVel(DbgV0);
 	m_pPhysicsShell->applyImpulse(l_dir, (1.0f + k_back) * force);
 	m_pPhysicsShell->get_LinearVel(l_dir);
+	DbgV1 = l_dir;
 	l_dir.normalize_safe();
 	l_dir.invert();
 	m_pPhysicsShell->applyImpulseTrace(l_pos, l_dir, force);
+	m_pPhysicsShell->get_LinearVel(DbgV2);
+	Msg("* [rocket] dv forward (%.3f %.3f %.3f) dv trace (%.3f %.3f %.3f) force %.3f step %.4f",
+		DbgV1.x - DbgV0.x, DbgV1.y - DbgV0.y, DbgV1.z - DbgV0.z, DbgV2.x - DbgV1.x, DbgV2.y - DbgV1.y, DbgV2.z - DbgV1.z, force, fixed_step);
+	{
+		// HACK: temporary Box3D rocket trace, remove after the fix.
+		Fvector Vel, Ang, ShellK = m_pPhysicsShell->mXFORM.k;
+		m_pPhysicsShell->get_LinearVel(Vel);
+		m_pPhysicsShell->get_AngularVel(Ang);
+		Msg("* [rocket] xform.k (%.2f %.2f %.2f) shell.k (%.2f %.2f %.2f) vel (%.2f %.2f %.2f) ang (%.2f %.2f %.2f) mass %.2f",
+			XFORM().k.x, XFORM().k.y, XFORM().k.z, ShellK.x, ShellK.y, ShellK.z, Vel.x, Vel.y, Vel.z, Ang.x, Ang.y, Ang.z, m_pPhysicsShell->getMass());
+	}
 	l_dir.set(0.0f, 1.0f, 0.0f);
 	force = m_fEngineImpulseUp * fixed_step;
 	m_pPhysicsShell->applyImpulse(l_dir, force);
+	m_pPhysicsShell->get_LinearVel(DbgV3);
+	DbgV3.sub(DbgV2);
+	Msg("* [rocket] dv up (%.3f %.3f %.3f)", DbgV3.x, DbgV3.y, DbgV3.z);
 }
 
 
