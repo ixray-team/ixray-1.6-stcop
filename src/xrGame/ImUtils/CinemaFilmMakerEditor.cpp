@@ -1960,11 +1960,13 @@ void CCinemaFilmMakerManager::PushThemeStyle()
 	{
 		ImGui::PushStyleColor(link.Color, theme.*link.Value);
 	}
+
+	ImGui::PushStyleColor(ImGuiCol_TreeLines, ImVec4(theme.Text.x, theme.Text.y, theme.Text.z, 0.3f));
 }
 
 void CCinemaFilmMakerManager::PopThemeStyle()
 {
-	ImGui::PopStyleColor(static_cast<int>(std::size(kCinemaThemeColors)));
+	ImGui::PopStyleColor(static_cast<int>(std::size(kCinemaThemeColors)) + 1);
 }
 
 void CCinemaFilmMakerManager::LoadSettings()
@@ -5852,9 +5854,10 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		ImGui::TextDisabled("Not playing");
 	}
 
-	if (ImGui::CollapsingHeader("Timeline", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Timeline", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_DrawLinesToNodes | ImGuiTreeNodeFlags_SpanAvailWidth))
 	{
 		DrawClipTimelines(*actor);
+		ImGui::TreePop();
 	}
 
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
@@ -5985,7 +5988,12 @@ void CCinemaFilmMakerManager::DrawClipTimelines(SCinemaActor& actor)
 		return;
 	}
 
-	const ImGuiTreeNodeFlags headerFlags = TimelinesOpenByDefault ? ImGuiTreeNodeFlags_DefaultOpen : 0;
+	ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DrawLinesToNodes | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+	if (TimelinesOpenByDefault)
+	{
+		headerFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+	}
 
 	for (s32 index = 0; index < static_cast<s32>(clips.size()); ++index)
 	{
@@ -6001,9 +6009,10 @@ void CCinemaFilmMakerManager::DrawClipTimelines(SCinemaActor& actor)
 		string256 label = {};
 		xr_sprintf(label, "%s — %s", reference.Clip->Name.c_str(), CinemaFileName(reference.Source->Id.c_str()));
 
-		if (ImGui::CollapsingHeader(label, headerFlags))
+		if (ImGui::TreeNodeEx(label, headerFlags))
 		{
 			DrawClipTimeline(actor, *reference.Source, *reference.Clip);
+			ImGui::TreePop();
 		}
 
 		ImGui::PopID();
@@ -6075,73 +6084,78 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		ImGui::TextDisabled("Clip length: %.3f s", total);
 	}
 
-	const s32 segmentCount = trim != nullptr ? static_cast<s32>(trim->Segments.size()) : 0;
-
-	if (segmentCount > 0)
+	if (ImGui::TreeNodeEx("Segments###clip_segments", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
-		ImGui::TextDisabled("%d segment(s) of the clip are played in order:", segmentCount);
+		const s32 segmentCount = trim != nullptr ? static_cast<s32>(trim->Segments.size()) : 0;
 
-		for (s32 index = 0; index < segmentCount; ++index)
+		if (segmentCount > 0)
 		{
-			const STrimSegment& segment = trim->Segments[index];
-
-			ImGui::PushID(index);
-			ImGui::Text("#%d  %.3f - %.3f s  (%.3f s)", index + 1, segment.Start, segment.End, segment.End - segment.Start);
-			ImGui::SameLine();
-
-			if (ImGui::SmallButton("Remove##segment"))
+			for (s32 index = 0; index < segmentCount; ++index)
 			{
-				trim->Segments.erase(trim->Segments.begin() + index);
+				const STrimSegment& segment = trim->Segments[index];
+
+				ImGui::PushID(index);
+				ImGui::Text("#%d  %.3f - %.3f s  (%.3f s)", index + 1, segment.Start, segment.End, segment.End - segment.Start);
+				ImGui::SameLine();
+
+				if (ImGui::SmallButton("Remove##segment"))
+				{
+					trim->Segments.erase(trim->Segments.begin() + index);
+					ImGui::PopID();
+					ImGui::TreePop();
+					return;
+				}
+
 				ImGui::PopID();
-				break;
 			}
 
-			ImGui::PopID();
+			if (ImGui::SmallButton("Clear segments##clip"))
+			{
+				trim->Segments.clear();
+			}
+		}
+		else
+		{
+			ImGui::TextDisabled("Whole clip is played. Ctrl+drag on the timeline to add an IN/OUT segment chain.");
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNodeEx("Playback###clip_playback", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+	{
+		float speed = trim != nullptr ? trim->Speed : actor.Speed;
+
+		ImGui::SetNextItemWidth(90.0f);
+
+		if (trim != nullptr && ImGui::DragFloat("Speed##clip", &speed, 0.01f, -4.0f, 4.0f, "%.2f"))
+		{
+			trim->Speed = speed;
+			ApplySpeed(actor);
 		}
 
 		ImGui::SameLine();
+		ImGui::TextDisabled("base: %.2f", actor.Speed);
 
-		if (ImGui::SmallButton("Clear segments##clip"))
+		float blendTime = trim != nullptr ? trim->Blend : 0.0f;
+
+		ImGui::SetNextItemWidth(90.0f);
+
+		if (trim != nullptr && ImGui::DragFloat("Blend##clip", &blendTime, 0.005f, 0.0f, 1.0f, "%.2f s"))
 		{
-			trim->Segments.clear();
+			trim->Blend = blendTime;
 		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Smooth transition between segments, in seconds (0 - hard cut)");
+		}
+
+		ImGui::SameLine();
+		ImGui::TextDisabled("0 - hard cut");
+
+		ImGui::TreePop();
 	}
-	else
-	{
-		ImGui::TextDisabled("Whole clip is played. Ctrl+drag on the timeline to add an IN/OUT segment chain.");
-	}
-
-	ImGui::Separator();
-
-	float speed = trim != nullptr ? trim->Speed : actor.Speed;
-
-	ImGui::SetNextItemWidth(90.0f);
-
-	if (trim != nullptr && ImGui::DragFloat("Speed##clip", &speed, 0.01f, -4.0f, 4.0f, "%.2f"))
-	{
-		trim->Speed = speed;
-		ApplySpeed(actor);
-	}
-
-	ImGui::SameLine();
-	ImGui::TextDisabled("base: %.2f", actor.Speed);
-
-	float blendTime = trim != nullptr ? trim->Blend : 0.0f;
-
-	ImGui::SetNextItemWidth(90.0f);
-
-	if (trim != nullptr && ImGui::DragFloat("Blend##clip", &blendTime, 0.005f, 0.0f, 1.0f, "%.2f s"))
-	{
-		trim->Blend = blendTime;
-	}
-
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::SetTooltip("Smooth transition between segments, in seconds (0 - hard cut)");
-	}
-
-	ImGui::SameLine();
-	ImGui::TextDisabled("0 - hard cut");
 
 	if (trim != nullptr && trim->Segments.empty() && fabsf(trim->Speed - actor.Speed) <= 0.001f && trim->Blend <= 0.0f)
 	{
