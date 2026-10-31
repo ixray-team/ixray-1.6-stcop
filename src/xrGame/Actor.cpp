@@ -244,11 +244,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_SprintFovFactor = fovFactor;
 
 	string_path	ce_path = {};
-	if (FS.exist(ce_path, "$game_anims$", "camera_effects\\actor_move\\idle.anm"))
-	{
-		m_pCameraIdle = new CAnimatorCamLerpEffectorConst();
-		m_pCameraIdle->SetCyclic(false);
-	}
+	HasIdleCameraAnim = FS.exist(ce_path, "$game_anims$", "camera_effects\\actor_move\\idle.anm");
 
 	CreateComponent<THudVertexAssignedPatricles>();
 
@@ -2340,9 +2336,11 @@ void CActor::UpdatePlayerHud()
 	}
 }
 
+bool g_camera_anims = true;
+
 void CActor::UpdateCameraIdleAnimation()
 {
-	if (m_pCameraIdle == nullptr)
+	if (!HasIdleCameraAnim)
 	{
 		return;
 	}
@@ -2355,7 +2353,7 @@ void CActor::UpdateCameraIdleAnimation()
 
 	static float idle_camera_factor = 1.0f;
 
-	if ((mstate_real & ACTOR_DEFS::EMoveCommand::mcAnyMove) != 0 || IsZoomAimingMode())
+	if ((mstate_real & ACTOR_DEFS::EMoveCommand::mcAnyMove) != 0 || IsZoomAimingMode() || !g_camera_anims)
 	{
 		idle_camera_factor -= Device.fTimeDelta / 0.6f;
 	}
@@ -2366,17 +2364,19 @@ void CActor::UpdateCameraIdleAnimation()
 	
 	clamp(idle_camera_factor, 0.0f, 1.0f);
 	
-	if (!m_pCameraIdle->Valid())
+	// The camera manager owns and deletes its effectors, so look the idle one up every frame.
+	if (CEffectorCam* Idle = Cameras().GetCamEffector((ECamEffectorType)42069))
 	{
-		m_pCameraIdle->SetType((ECamEffectorType)42069);
-		m_pCameraIdle->SetCyclic(true);
-		m_pCameraIdle->SetHudAffect(false);
-		m_pCameraIdle->Start("camera_effects\\actor_move\\idle.anm");
-		Cameras().AddCamEffector(m_pCameraIdle);
+		static_cast<CAnimatorCamLerpEffectorConst*>(Idle)->SetFactor(idle_camera_factor);
 	}
 	else
 	{
-		m_pCameraIdle->SetFactor(idle_camera_factor);
+		CAnimatorCamLerpEffectorConst* NewIdle = new CAnimatorCamLerpEffectorConst();
+		NewIdle->SetType((ECamEffectorType)42069);
+		NewIdle->SetCyclic(true);
+		NewIdle->SetHudAffect(false);
+		NewIdle->Start("camera_effects\\actor_move\\idle.anm");
+		Cameras().AddCamEffector(NewIdle);
 	}
 }
 

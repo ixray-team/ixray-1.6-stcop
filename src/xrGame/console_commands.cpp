@@ -101,6 +101,8 @@ int				g_keypress_on_start = 1;
 extern	bool	g_fight_fast_respawn;
 
 extern float g_bobbing_factor;
+extern int g_camera_rig;
+extern bool g_camera_anims;
 
 extern ENGINE_API int m_look_cam_fp_zoom;
 
@@ -3097,6 +3099,8 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "g_fight_fast_respawn", &g_fight_fast_respawn);
 
 	CMD4(CCC_Float, "g_bobbing_factor", &g_bobbing_factor, 0.f, 1.0f);
+	CMD4(CCC_Integer, "g_camera_rig", &g_camera_rig, -1, 1);
+	CMD2(CCC_Boolean, "g_camera_anims", &g_camera_anims);
 
 #ifdef DEBUG
 	CMD4(CCC_Float, "ai_smart_cover_animation_speed_factor", &g_smart_cover_animation_speed_factor, .1f, 10.f);

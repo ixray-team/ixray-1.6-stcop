@@ -22,6 +22,7 @@ namespace HudGripMarks
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 extern float AnimatorHideSpeedFactor;
+extern bool g_camera_anims;
 
 float CalcMotionSpeed(const shared_str& anim_name)
 {
@@ -1076,7 +1077,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 		CActor* current_actor = static_cast<CActor*>(Level().CurrentControlEntity());
 		VERIFY(current_actor);
 
-		if (m_attach_place_idx == 1 && g_player_hud->attached_item(0) == nullptr || m_attach_place_idx == 0)
+		if (g_camera_anims && (m_attach_place_idx == 1 && g_player_hud->attached_item(0) == nullptr || m_attach_place_idx == 0))
 		{
 			string_path ce_path;
 			string_path anm_name;
@@ -3931,7 +3932,7 @@ u32 animator_item::anim_play(const shared_str& anm_name_b, bool bMixIn, const CM
 		string_path ce_path;
 		string_path anm_name;
 		xr_strconcat(anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
-		if (FS.exist(ce_path, "$game_anims$", anm_name)) {
+		if (g_camera_anims && FS.exist(ce_path, "$game_anims$", anm_name)) {
 			CEffectorCam* ec = current_actor->Cameras().GetCamEffector(eCEWeaponAction);
 			if (ec)
 				current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);

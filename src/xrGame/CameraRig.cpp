@@ -37,19 +37,16 @@ struct SCameraRigParams
 
 static SCameraRigParams	g_rig;
 static int				g_rig_enabled = -1;
+int						g_camera_rig = -1;
 
 bool CCameraRig::Enabled()
 {
 	if (g_rig_enabled >= 0)
 	{
-		return !!g_rig_enabled;
+		return g_camera_rig < 0 ? !!g_rig_enabled : !!g_camera_rig;
 	}
 
 	g_rig_enabled = pSettings->section_exist("camera_rig") && READ_IF_EXISTS(pSettings, r_bool, "camera_rig", "enabled", true);
-	if (!g_rig_enabled)
-	{
-		return false;
-	}
 
 	SCameraRigParams& p = g_rig;
 	const struct { const char* key; float* value; u32 count; bool deg; } params[] =
@@ -101,7 +98,7 @@ bool CCameraRig::Enabled()
 		}
 	}
 
-	return true;
+	return Enabled();
 }
 
 CCameraRig::~CCameraRig()
