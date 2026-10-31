@@ -94,6 +94,7 @@ UIItemParam::InitResult UIItemParam::Init(CUIXml& Xml, const char* Section)
 		return InitResult::Failed;
 	}
 	const bool IsAbsolute = !xr_strcmp(Section, "condition") || !xr_strcmp(Section, "af_slots") || !xr_strcmp(Section, "boost_time");
+	PositiveColor = CUIXmlInit::GetColor(Xml, "positive_color", 0, color_argb(255, 44, 172, 246));
 	ShowSign = !IsAbsolute;
 	ColorizeValue = false;
 	if (!CUIXmlInit::InitStatic(Xml, Section, 0, this, false))
@@ -201,13 +202,12 @@ void UIItemParam::SetValue(float Value, bool ApplyMagnitude)
 	ValueText->SetText(Text);
 
 	constexpr u32 Red = color_argb(255, 210, 50, 50);
-	constexpr u32 Blue = color_argb(255, 44, 172, 246);
 	constexpr u32 Neutral = color_argb(255, 170, 170, 170);
 	const bool IsPositive = IsSignInverse ? Value < 0.0f : Value >= 0.0f;
 	// Consumable panels historically keep both signs gray; artefacts mark harmful values red.
 	const u32 LegacyColor = !ApplyMagnitude || IsPositive ? Neutral : Red;
-	const u32 Color = ColorizeValue ? (IsPositive ? Blue : Red) : LegacyColor;
-	const u32 TextColor = ColorizeText ? (IsPositive ? Blue : Red) : LegacyColor;
+	const u32 Color = ColorizeValue ? (IsPositive ? PositiveColor : Red) : LegacyColor;
+	const u32 TextColor = ColorizeText ? (IsPositive ? PositiveColor : Red) : LegacyColor;
 	ValueText->SetTextColor(TextColor);
 
 	if (Caption && PositiveTexture.size() && (ColorizeValue || NegativeTexture.size()))

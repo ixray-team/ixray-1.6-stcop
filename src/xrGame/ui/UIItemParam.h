@@ -41,6 +41,7 @@ private:
 	bool ShowSign = true;
 	bool ColorizeValue = false;
 	bool ColorizeText = false;
+	u32 PositiveColor = color_argb(255, 44, 172, 246);
 	shared_str Unit;
 	shared_str NegativeTexture;
 	shared_str PositiveTexture;

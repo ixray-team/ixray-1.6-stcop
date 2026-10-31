@@ -1,5 +1,6 @@
 
 	<af_params x="0" y="0" width="257" height="1">
+		<positive_color color="green"/>
 		<static_health_restore_speed x="0" y="0" width="257" height="20" complex_mode="1" colorize="0" text_colorize="1">
 			<texture>ui_inv_icon_health_restore_speed</texture>
 			<text font="letterica16" x="20" y="0"/>
