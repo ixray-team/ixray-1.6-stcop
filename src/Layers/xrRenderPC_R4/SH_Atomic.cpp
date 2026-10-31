@@ -24,13 +24,11 @@ void SShaderCompileState::WaitCompiled()
 ///////////////////////////////////////////////////////////////////////
 //	SVS
 SVS::SVS() : vs(nullptr)
-	, vs_code(nullptr)
 {
 }
 
 SVS::~SVS()
 {
-	_RELEASE(vs_code);
 	DEV->_DeleteVS(this);
 	_RELEASE(vs);
 }

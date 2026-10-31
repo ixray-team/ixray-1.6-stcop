@@ -9,22 +9,6 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-#ifdef EDITOR_MODE
-vf main(v_static v)
-{
-    vf o;
-
-    float3 N = unpack_normal(v.Nh.xyz);
-    float4 P = wmark_shift(v.P.xyz, N);
-    o.hpos = mul(m_VP, P);
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w);
-    o.c0 = 0;
-    o.fog = 1.0f - calc_fogging(v.P.xyz);
-    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
-
-    return o;
-}
-#else
 vf main(PULL_INPUT)
 {
     vf o;
@@ -39,5 +23,4 @@ vf main(PULL_INPUT)
 
     return o;
 }
-#endif
 

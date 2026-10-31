@@ -193,12 +193,11 @@ struct SDeclaration;
 
 #if 1
 	struct ECORE_API st_RenderBuffer{
-		u32			dwStartVertex;
-		u32			dwNumVertex;
-		ref_geom 	pGeom;
+		GeometryAlloc	Alloc{};
+		ref_geom 		pGeom;
 		// Local bounds of a spatial chunk; invalid for an unchunked surface
-		Fbox		ChunkBox;
-		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(nullptr){ChunkBox.invalidate();}
+		Fbox			ChunkBox;
+		st_RenderBuffer	() { ChunkBox.invalidate(); }
 	};
 	using RBVector = xr_vector<st_RenderBuffer>;
 	using RBVecIt = RBVector::iterator;
@@ -242,7 +241,7 @@ public:
 	static bool		IsPointHidden			(const Fmatrix& Parent, const Fvector& LocalPoint);
 	static Fvector	SnapToChunkCenter		(const Fvector& LocalPoint);
 
-	void 			GenerateRenderBuffers();
+	void 			GenerateRenderBuffers(bool Quiet = false);
 	void 			UnloadRenderBuffers();
 	void 			GenerateFNormals	();
 	void 			GenerateVNormals	(const Fmatrix* parent_xform, bool force = false);
@@ -304,7 +303,7 @@ public:
 
 	EditColorMesh m_color_map;
 
-	void 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& data);
+	u32 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, PackedVertex* Vertices, Fvector2* UV, bool Quiet);
 
 	void 			RecurseTri				(int id);
 

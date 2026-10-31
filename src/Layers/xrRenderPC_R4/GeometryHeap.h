@@ -12,6 +12,7 @@ struct GeometryAlloc
 	u32 VertexCount;
 	u32 IndexBase;
 	u32 IndexCount;
+	u32 Ref;
 };
 
 class RENDER_API GeometryHeap
@@ -24,7 +25,8 @@ public:
 	void Reserve(u32 Vertices, u32 Indices);
 	GeometryAlloc Alloc(u32 Vertices, u32 Indices);
 	GeometryAlloc AllocPositions(const Fvector* Positions, u32 Count, const u16* Indices, u32 IndexCount);
-	void Free(const GeometryAlloc& Block);
+	void Retain(const GeometryAlloc& Block);
+	void Free(GeometryAlloc& Block);
 	void Upload(const GeometryAlloc& Block, u32 FirstVertex, const PackedVertex* Vertices, u32 Count);
 	void UploadIndices(const GeometryAlloc& Block, u32 FirstIndex, const u16* Indices, u32 Count);
 	void Flush();
@@ -72,6 +74,8 @@ private:
 	std::atomic<bool> Pending{ false };
 	u32 ReservedVertices = 0;
 	u32 ReservedIndices = 0;
+	xr_vector<u32> Refs;
+	xr_vector<u32> FreeRefs;
 	xr_vector<PendingCopy> Copies;
 	xr_vector<u8> Arena;
 	xr_vector<u8> Staging;

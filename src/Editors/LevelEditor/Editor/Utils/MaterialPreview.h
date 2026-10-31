@@ -54,8 +54,7 @@ private:
 
 	EShape Shape = EShape::Sphere;
 	EShape MeshShape = EShape::Count;
-	IRHIBuffer* VertexBuffer = nullptr;
-	IRHIBuffer* IndexBuffer = nullptr;
+	GeometryAlloc Alloc = {};
 	ref_geom Geometry;
 	u32 VertexCount = 0;
 	u32 IndexCount = 0;

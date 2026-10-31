@@ -81,15 +81,16 @@ float windFBM(float2 p, float seed)
     return val * 0.6667;
 }
 
-void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O)
+void main(PULL_INPUT, out OutStructure O)
 {
-    InstanceData det = detail_buffer[instance_id];
+    PulledVertex V = PullVertex(VertexId);
+    InstanceData det = detail_buffer[DrawId];
 
     float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
     float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
 
-    float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
-    float3 N = mul(m_rotate, unpack_normal(I.N.xyz));
+    float3 pos_world = mul(m_rotate, V.P * det.scale) + det.pos;
+    float3 N = mul(m_rotate, V.N);
     
     float hemi = abs(det.hemi);
     float sun = sign(det.hemi) * 0.25f + 0.25f;
@@ -101,7 +102,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 #endif
     
 #ifdef USE_TREEWAVE
-    float H = I.pos.y * det.scale;
+    float H = V.P.y * det.scale;
     float windScale = 1.0f - 0.95f * smoothstep(0.02f, 0.15f, det.trample_visual);
     float globalInt = wind_global.x;
     
@@ -109,7 +110,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     {
         float t = wave.w;
         float2 wp = pos_world.xz;
-        float hw = saturate(I.pos.y);
+        float hw = saturate(V.P.y);
         float h = max(pos.y - det.pos.y, 0.0f);
         
         float xzDensity = 0.0f;
@@ -208,14 +209,15 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     }
     else
     {
+        float Frac = DecodeS16x2(V.X).x / 2048.0f;
         float dp = calc_cyclic(dot(pos_world, wave.xyz) + wave.w);
         float inten = H * dp * windScale;
-        pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
+        pos.xz += calc_xz_wave(dir2D.xz * inten, Frac);
         
         #ifndef DISABLE_MOTION_VECTORS
             float dp_old = calc_cyclic(dot(pos_world, wave_old.xyz) + wave_old.w);
             float inten_old = H * dp_old * windScale;
-            pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
+            pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, Frac);
         #endif
     }
 #endif
@@ -228,7 +230,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
         float baseY = det.pos.y;
         float hAbove = max(pos.y - baseY, 0.0f);
 
-        float hw = saturate(I.pos.y);
+        float hw = saturate(V.P.y);
         float bendT = saturate((hw - 0.15f) / 0.85f);
 
         float noise = frac(sin(dot(det.pos.xz, float2(12.9898, 78.233))) * 43758.5453);
@@ -259,7 +261,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 #ifndef DETAIL_SHADOW_PASS
     float3 Pe = mul(m_WV, pos);
     
-    O.tcdh = float4(I.tc.xy, hemi, sun);
+    O.tcdh = float4(V.UV, hemi, sun);
     O.position = float4(Pe, 1.0f);
     
     float3 N_world = mul((float3x3)m_WV, N);
@@ -274,6 +276,6 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 
 	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 #else
-    O.tc0 = I.tc.xy;
+    O.tc0 = V.UV;
 #endif
 }

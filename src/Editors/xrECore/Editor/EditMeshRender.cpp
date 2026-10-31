@@ -38,21 +38,11 @@ struct svertRender
 	uint32_t ind = 0;
 };
 
-static RHIInputElementDesc dwDecl_4W[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 32, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 64, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 1, ERHI_FORMAT::B8G8R8A8_UNORM, 0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-};
-
 //----------------------------------------------------
 #define F_LIM (10000)
 #define V_LIM (F_LIM*3)
 //----------------------------------------------------
-void CEditableMesh::GenerateRenderBuffers()
+void CEditableMesh::GenerateRenderBuffers(bool Quiet)
 {
 	if (m_RenderBuffers)
 	{
@@ -67,21 +57,18 @@ void CEditableMesh::GenerateRenderBuffers()
 	// Big meshes (terrain) are split into XZ chunks so editor regions can hide parts of them
 	m_Chunked = (m_Box.max.x - m_Box.min.x) > RegionChunkSize * 2.0f || (m_Box.max.z - m_Box.min.z) > RegionChunkSize * 2.0f;
 
-	// Big meshes (terrain) are split into XZ chunks so editor regions can hide parts of them
-	m_Chunked = (m_Box.max.x - m_Box.min.x) > RegionChunkSize * 2.0f || (m_Box.max.z - m_Box.min.z) > RegionChunkSize * 2.0f;
-
-	for (auto& m_SurfFace : m_SurfFaces)
+	xr_vector<PackedVertex> Vertices;
+	xr_vector<Fvector2> UV;
+	for (auto& [S, face_lst] : m_SurfFaces)
 	{
-		IntVec& face_lst = m_SurfFace.second;
-		CSurface* S = m_SurfFace.first;
-
 		VERIFY3(!face_lst.empty(), "Empty surface arrive.", S->_Name());
 
-		const u32 verts_per_face = S->_flags().is(SSurfaceData::sf2Sided) ? 6 : 3;
+		const u32 FaceVertices = S->_flags().is(SSurfaceData::sf2Sided) ? 6 : 3;
+		const u32 ChunkFaces = (1u << 20) / FaceVertices;
 
-		// Faces sorted by chunk; each chunk becomes a vertex range of the same buffer
+		// Faces sorted by chunk; each chunk starts at a face of the sorted list
 		IntVec sorted_faces;
-		RBVector rb_vec;
+		xr_vector<std::pair<u32, Fbox>> Chunks;
 		if (m_Chunked)
 		{
 			xr_vector<std::pair<u64, int>> keyed;
@@ -111,56 +98,46 @@ void CEditableMesh::GenerateRenderBuffers()
 			{
 				if (i == 0 || keyed[i].first != keyed[i - 1].first)
 				{
-					rb_vec.emplace_back(u32(sorted_faces.size()) * verts_per_face, 0);
+					Chunks.emplace_back(u32(sorted_faces.size()), Fbox().invalidate());
 				}
 
-				st_RenderBuffer& chunk = rb_vec.back();
 				const st_Face& face = m_Faces[keyed[i].second];
 				for (int k = 0; k < 3; ++k)
 				{
-					chunk.ChunkBox.modify(m_Vertices[face.pv[k].pindex]);
+					Chunks.back().second.modify(m_Vertices[face.pv[k].pindex]);
 				}
 
-				chunk.dwNumVertex += verts_per_face;
 				sorted_faces.push_back(keyed[i].second);
 			}
 		}
 		else
 		{
 			sorted_faces = face_lst;
-			rb_vec.emplace_back(0, u32(face_lst.size()) * verts_per_face);
+			Chunks.emplace_back(0, Fbox().invalidate());
 		}
 
-		if (rb_vec.empty())
+		RBVector& Buffers = (*m_RenderBuffers)[S];
+		for (size_t Chunk = 0; Chunk < Chunks.size(); ++Chunk)
 		{
-			continue;
+			const u32 End = Chunk + 1 < Chunks.size() ? Chunks[Chunk + 1].first : u32(sorted_faces.size());
+			for (u32 First = Chunks[Chunk].first; First < End; First += ChunkFaces)
+			{
+				const u32 Faces = std::min(ChunkFaces, End - First);
+				Vertices.resize(Faces * FaceVertices);
+				UV.resize(Faces * FaceVertices);
+				const u32 Count = FillRenderBuffer(sorted_faces, First, Faces, S, Vertices.data(), UV.data(), Quiet);
+				if (!Count)
+				{
+					continue;
+				}
+
+				st_RenderBuffer& RB = Buffers.emplace_back();
+				RB.ChunkBox = Chunks[Chunk].second;
+				RB.Alloc = RImplementation.Geometry.Alloc(Count, 0);
+				RImplementation.Geometry.Upload(RB.Alloc, 0, Vertices.data(), Count);
+				RB.pGeom.create(EGeomSource::Static, RB.Alloc.Page);
+			}
 		}
-
-		const u32 vertex_count = u32(sorted_faces.size()) * verts_per_face;
-		const u32 buffer_size = sizeof(svertRender) * vertex_count;
-
-		VERIFY2(buffer_size, "Empty buffer size");
-
-		IRHIBuffer* pVB = nullptr;
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buffer_size, false));
-
-		// All chunks share one geometry, so the buffer is released once
-		ref_geom geom;
-		geom.create(dwDecl_4W, std::size(dwDecl_4W), pVB, 0);
-		for (st_RenderBuffer& rb : rb_vec)
-		{
-			rb.pGeom = geom;
-		}
-
-		RHIMappedSubresource mapped{};
-		if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
-		{
-			u8* bytes = static_cast<u8*>(mapped.pData);
-			FillRenderBuffer(sorted_faces, 0, int(sorted_faces.size()), S, bytes);
-			pVB->Unmap();
-		}
-
-		m_RenderBuffers->insert(std::make_pair(S, rb_vec));
 	}
 
 	UnloadVNormals();
@@ -232,53 +209,45 @@ bool CEditableMesh::IsResultHidden(const Fmatrix& Parent, const CDB::RESULT& R) 
 
 void CEditableMesh::UnloadRenderBuffers()
 {
-	if (m_RenderBuffers){
-		for (RBMapPairIt rbmp_it=m_RenderBuffers->begin(); rbmp_it!=m_RenderBuffers->end(); rbmp_it++){
-			RBVector& rb_vec = rbmp_it->second;
-
-			// Chunks of a surface share one geometry
-			if (!rb_vec.empty() && rb_vec.front().pGeom){
-				_RELEASE		(rb_vec.front().pGeom->vb);
-				_RELEASE		(rb_vec.front().pGeom->ib);
-			}
-
-			for(RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-				rb_it->pGeom.destroy();
-		}
-		m_Chunked = false;
-		m_RenderBuffers.reset();
+	if (!m_RenderBuffers)
+	{
+		return;
 	}
+
+	for (auto& [S, Buffers] : *m_RenderBuffers)
+	{
+		for (st_RenderBuffer& RB : Buffers)
+		{
+			RImplementation.Geometry.Free(RB.Alloc);
+			RB.pGeom.destroy();
+		}
+	}
+	m_Chunked = false;
+	m_RenderBuffers.reset();
 }
 
-void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, u8*& src_data)
+u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, PackedVertex* Vertices, Fvector2* UV, bool Quiet)
 {
 	VERIFY(surf);
 
 	const u32 dwFVF = surf->m_dwFVF;
 	const u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
-	auto* vtx = reinterpret_cast<svertRender*>(src_data);
-
+	u32 Count = 0;
 	auto ProcessVertex = [&](const st_FaceVert& fv, u32 norm_id, bool invert_normal)
 	{
 		VERIFY2(fv.pindex < (int)m_Vertices.size(), "- Face index out of range");
-		vtx->P.x = m_Vertices[fv.pindex].x;
-		vtx->P.y = m_Vertices[fv.pindex].y;
-		vtx->P.z = m_Vertices[fv.pindex].z;
 
-		vtx->weight0 = 1.0f;
-		vtx->weight1 = 0.0f;
-		vtx->weight2 = 0.0f;
-		vtx->weight3 = 0.0f;
+		// HACK: white C for COLOR-reading shaders (wire, selection, Shader Editor preview); X = 1.0f is the stub_notransform w
+		PackedVertex& V = Vertices[Count];
+		V = { m_Vertices[fv.pindex], 0, 0, 0, 0xFFFFFFFF, std::bit_cast<u32>(1.0f) };
 
-		// HACK: white vertex color for COLOR-reading shaders (Shader Editor preview)
-		vtx->ind = 0xFFFFFFFF;
-
+		Fvector N;
 		if (dwFVF & D3DFVF_NORMAL)
 		{
 			if (EPrefs->SmoothGroup == ESmoothGroup::Normals && !m_Normals.empty())
 			{
-				vtx->N = m_Normals[norm_id];
+				N = m_Normals[norm_id];
 			}
 			else
 			{
@@ -287,20 +256,21 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 					GenerateVNormals(nullptr, true);
 				}
 
-				vtx->N = !m_VertexNormals.empty() ? m_VertexNormals[norm_id] : m_Normals[norm_id];
+				N = !m_VertexNormals.empty() ? m_VertexNormals[norm_id] : m_Normals[norm_id];
 			}
 
 			if (invert_normal)
 			{
-				vtx->N.invert();
+				N.invert();
 			}
 		}
 		else
 		{
-			vtx->N.set(0, 1, 0);
+			N.set(0, 1, 0);
 		}
 
-		vtx->uv.set(0, 0);
+		Fvector2& uv = UV[Count];
+		uv.set(0, 0);
 		if (dwTexCnt > 0 && fv.vmref >= 0)
 		{
 			const auto& vmref = m_VMRefs[fv.vmref];
@@ -321,36 +291,24 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 					continue;
 				}
 
-				vtx->uv = vmap->getUV(vm_pt.index);
+				uv = vmap->getUV(vm_pt.index);
 			}
 		}
 
 		if (m_TexGen)
 		{
-			m_TexGen(vtx->uv, fv.pindex, vtx->N);
+			m_TexGen(uv, fv.pindex, N);
 		}
 
-		// Tangent/Binormal are consumed by model shaders (normal mapping) but
-		// were never written, leaving them zero. normalize(zero) -> NaN and the
-		// geometry collapses for any such shader. Build a stable orthonormal
-		// frame from the normal so they are always valid.
-		Fvector tref(0, 1, 0);
-		if (fabsf(vtx->N.y) > 0.99f)
-		{
-			tref.set(0, 0, 1);
-		}
-		vtx->T.crossproduct(vtx->N, tref);
-		if (vtx->T.square_magnitude() < EPS_S)
-		{
-			vtx->T.set(1, 0, 0);
-		}
-		else
-		{
-			vtx->T.normalize_safe();
-		}
-		vtx->B.crossproduct(vtx->N, vtx->T);
+		Fvector T, B, tref(0, 1, 0);
+		if (fabsf(N.y) > 0.99f) tref.set(0, 0, 1);
+		T.crossproduct(N, tref);
+		if (T.square_magnitude() < EPS_S) T.set(1, 0, 0);
+		else T.normalize_safe();
+		B.crossproduct(N, T);
+		VertexPacking::EncodeFrame(V, N, T, B);
 
-		++vtx;
+		++Count;
 	};
 
 	for (int fl_i = start_face; fl_i < start_face + num_face; ++fl_i)
@@ -362,7 +320,6 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			continue;
 		}
 
-		VERIFY(f_index < m_Faces.size());
 		const st_Face& face = m_Faces[f_index];
 
 		// Front
@@ -380,6 +337,13 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			}
 		}
 	}
+
+	const Fvector2 Offset = VertexPacking::FitUV(UV, Count, Quiet ? nullptr : m_Name.c_str());
+	for (u32 Index = 0; Index < Count; ++Index)
+	{
+		VertexPacking::EncodeFitUV(Vertices[Index], UV[Index], Offset);
+	}
+	return Count;
 }
 
 struct SelectionColorRaii
@@ -476,7 +440,7 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 		for (auto& rb_it : rb_pair->second)
 		{
 			if (!IsRenderBufferHidden(rb_it, &parent))
-				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.pGeom, rb_it.dwStartVertex, rb_it.dwNumVertex / 3);
+				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.pGeom, rb_it.Alloc.VertexBase, rb_it.Alloc.VertexCount / 3);
 		}
 	}
 }
@@ -534,7 +498,7 @@ void CEditableMesh::RenderGeometry(GfxCmdList& Cmd, CCustomObject* pParent, CSur
 			}
 
 			Cmd.SetGeometry(rb_it.pGeom);
-			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwNumVertex, rb_it.dwStartVertex);
+			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.Alloc.VertexCount, rb_it.Alloc.VertexBase);
 		}
 	}
 }
@@ -551,7 +515,7 @@ void CEditableMesh::RenderGeometryInstanced(GfxCmdList& Cmd, CSurface* S, u32 In
 		for (auto& rb_it : rb_pair->second)
 		{
 			Cmd.SetGeometry(rb_it.pGeom);
-			Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwNumVertex, InstanceCount, rb_it.dwStartVertex);
+			Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.Alloc.VertexCount, InstanceCount, rb_it.Alloc.VertexBase);
 		}
 	}
 }
@@ -610,7 +574,7 @@ bool CEditableMesh::SubmitInstance(CCustomObject* pParent, const Fmatrix& parent
 	{
 		for (auto& rb_it : rb_pair->second)
 		{
-			GEditorInstancing.Add(InstancedShader, rb_it.pGeom, rb_it.dwNumVertex, parent);
+			GEditorInstancing.Add(InstancedShader, rb_it.pGeom, rb_it.Alloc.VertexBase, rb_it.Alloc.VertexCount, parent);
 		}
 	}
 

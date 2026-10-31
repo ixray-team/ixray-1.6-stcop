@@ -12,7 +12,7 @@ public:
 	bool IsActive() const { return Active; }
 	static bool IsShaderSupported(Shader* S);
 
-	void Add(ref_shader& S, ref_geom& Geom, u32 VertexCount, const Fmatrix& World);
+	void Add(ref_shader& S, ref_geom& Geom, u32 VertexBase, u32 VertexCount, const Fmatrix& World);
 
 private:
 	struct SInstance
@@ -24,6 +24,7 @@ private:
 	{
 		Shader* ShaderPtr;
 		SGeometry* GeomPtr;
+		u32 VertexBase;
 		u32 VertexCount;
 		u32 InstanceID;
 	};

@@ -262,12 +262,7 @@ public:
 		CBoneData& BD = Parent->LL_GetData(bone_id);
 		CBoneData::FacesVec& faces = BD.child_faces[ChildIDX];
 
-		u16* indices{ nullptr };
-
-		if (progressive_mesh)
-			indices = *m_Indices + iBase + nSWI.sw[0].offset;
-		else
-			indices = *m_Indices + iBase;
+		u16* indices = *m_Indices + (progressive_mesh ? nSWI.sw[0].offset : 0);
 
 		if (*Vertices1W)
 			return pick_bone(r, dist, start, dir, indices, faces, Vertices1W, Parent->bone_instances);
@@ -287,12 +282,7 @@ public:
 		CBoneData& BD = Parent->LL_GetData(bone_id);
 		CBoneData::FacesVec& faces = BD.child_faces[ChildIDX];
 
-		u16* indices{ nullptr };
-
-		if (progressive_mesh)
-			indices = *m_Indices + iBase + nSWI.sw[0].offset;
-		else
-			indices = *m_Indices + iBase;
+		u16* indices = *m_Indices + (progressive_mesh ? nSWI.sw[0].offset : 0);
 
 		if (*Vertices1W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices1W, Parent->bone_instances);
 		else if (*Vertices2W) fill_wm_verts(view, wm, normal, size, indices, faces, Vertices2W, Parent->bone_instances);
@@ -307,11 +297,7 @@ public:
 		CBoneData& BD = Parent->LL_GetData(bone_id);
 		CBoneData::FacesVec& faces = BD.child_faces[ChildIDX];
 
-		u16* indices = nullptr;
-		if (progressive_mesh)
-			indices = *m_Indices + iBase + nSWI.sw[0].offset;
-		else
-			indices = *m_Indices + iBase;
+		u16* indices = *m_Indices + (progressive_mesh ? nSWI.sw[0].offset : 0);
 
 		if (*Vertices1W) enum_verts(m_verts, indices, faces, Vertices1W, Parent->bone_instances);
 		else if (*Vertices2W) enum_verts(m_verts, indices, faces, Vertices2W, Parent->bone_instances);

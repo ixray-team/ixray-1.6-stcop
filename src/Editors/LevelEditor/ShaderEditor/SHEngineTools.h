@@ -115,7 +115,6 @@ friend class TfrmShaderProperties;
 
     void 					RealResetShaders	();
 
-    RHIBlob*				GetCurrentVSSignature();
     void					UpdatePreviewShader	();
 
 

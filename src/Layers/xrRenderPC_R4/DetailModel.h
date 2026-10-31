@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
+#include "GeometryHeap.h"
 
 #include "IRenderDetailModel.h"
 
@@ -20,8 +21,7 @@ public:
 	};
 	
 	ref_geom			hw_Geom;
-	IRHIBuffer*			hw_VB;
-	IRHIBuffer*			hw_IB;
+	GeometryAlloc		Alloc = {};
 
 	std::pair<IRHIBuffer*, IRHIShaderResourceView*> DetailGPUBoundBuffers[2][3];
 	virtual void	LoadGeom();

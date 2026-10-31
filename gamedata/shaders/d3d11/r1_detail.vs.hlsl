@@ -25,20 +25,21 @@ float3x3 QuaternionToMatrix(float4 q)
         2.0f * (q.x*q.y - q.z*q.w), 1.0f - 2.0f * (q.x*q.x + q.z*q.z), 2.0f * (q.y*q.z + q.x*q.w),
         2.0f * (q.x*q.z + q.y*q.w), 2.0f * (q.y*q.z - q.x*q.w), 1.0f - 2.0f * (q.x*q.x + q.y*q.y));
 }
-void main(in v_detail I, in uint instance_id : SV_InstanceID, out vf O)
+void main(PULL_INPUT, out vf O)
 {
-    InstanceData det = detail_buffer[instance_id];
+    PulledVertex V = PullVertex(VertexId);
+    InstanceData det = detail_buffer[DrawId];
     float3x3 rotate = QuaternionToMatrix(float4(det.quat, sqrt(max(0.0f, 1.0f - dot(det.quat, det.quat)))));
-    float4 pos = float4(mul(rotate, I.pos.xyz * det.scale) + det.pos, 1.0f);
+    float4 pos = float4(mul(rotate, V.P * det.scale) + det.pos, 1.0f);
     float3 color = L_ambient.rgb + L_hemi_color.rgb * abs(det.hemi) + L_sun_color.rgb * (sign(det.hemi) * .25f + .25f);
 #ifdef USE_TREEWAVE
     float dp = calc_cyclic(dot(pos, wave));
-    float rigidity = I.pos.w;
-    pos.xz += calc_xz_wave(wind.xz * (I.pos.y * det.scale * dp), rigidity);
+    float rigidity = DecodeS16x2(V.X).x / 2048.0f;
+    pos.xz += calc_xz_wave(wind.xz * (V.P.y * det.scale * dp), rigidity);
     color *= consts.w + consts.z * max(0.0f, dp) * rigidity;
 #endif
     O.hpos = mul(m_VP, pos);
-    O.tc0 = I.tc;
+    O.tc0 = V.UV;
     O.c0 = saturate(color);
     O.fog = r1_fog(pos.xyz);
 }

@@ -104,6 +104,7 @@ void CDetailManager::Load()
 		IReader* S = m_fs->open_chunk(m_id);
 		CDetail& dt	= *objects.emplace_back(new CDetail());
 		dt.Load(S);
+		dt.LoadGeom();
 		S->close();
 	}
 	m_fs->close();

@@ -1,11 +1,6 @@
 #include "skin.hlsli"
 
-#if defined(SKIN_0)
-R1_SKIN_OUTPUT main(v_model_skinned_0 v)
-{
-    return _main(skinning_0(v));
-}
-#elif defined(SKIN_1)
+#if defined(SKIN_1)
 R1_SKIN_OUTPUT main(v_model_skinned_1 v)
 {
     return _main(skinning_1(v));
@@ -26,8 +21,8 @@ R1_SKIN_OUTPUT main(v_model_skinned_4 v)
     return _main(skinning_4(v));
 }
 #else
-R1_SKIN_OUTPUT main(v_model v)
+R1_SKIN_OUTPUT main(PULL_INPUT)
 {
-    return _main(v);
+    return _main(PullModel(VertexId));
 }
 #endif

@@ -181,11 +181,8 @@ IC void GfxCmdList::ApplyVertexLayout()
 				if (textures_ps[i])
 					Msg("!   tex%u %s", i, textures_ps[i]->cName.c_str());
 
-			RHIBlob* code = CurrentVS ? CurrentVS->vs_code : nullptr;
-			const void* data = code ? code->GetBufferPointer() : m_pInputSignature->GetBufferPointer();
-			size_t size = code ? code->GetBufferSize() : m_pInputSignature->GetBufferSize();
 			RHIShaderReflection refl;
-			if (SUCCEEDED(GRHI->ReflectShader(data, size, refl)))
+			if (SUCCEEDED(GRHI->ReflectShader(m_pInputSignature->GetBufferPointer(), m_pInputSignature->GetBufferSize(), refl)))
 			{
 				for (const RHIShaderInputDesc& pd : refl.Inputs)
 				{
@@ -194,7 +191,7 @@ IC void GfxCmdList::ApplyVertexLayout()
 			}
 			else
 			{
-				Msg("!   input signature is not reflectable (%s)", code ? "vs bytecode" : "signature blob");
+				Msg("!   input signature is not reflectable");
 			}
 		}
 		CHK_DX(hr);

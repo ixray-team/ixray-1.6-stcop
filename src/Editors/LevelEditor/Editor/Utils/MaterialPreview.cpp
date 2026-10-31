@@ -1,15 +1,6 @@
 #include "stdafx.h"
 #include "MaterialPreview.h"
 
-static RHIInputElementDesc PreviewVertexDecl[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-};
-
 static const char* ShapeNames[] = {"Sphere", "Box", "Cylinder", "Plane"};
 static_assert(std::size(ShapeNames) == size_t(CMaterialPreview::EShape::Count));
 
@@ -215,19 +206,8 @@ void CMaterialPreview::Clear()
 	PreviewShader.destroy();
 	ShaderKey.clear();
 	Geometry.destroy();
+	RImplementation.Geometry.Free(Alloc);
 	MeshShape = EShape::Count;
-
-	if (VertexBuffer != nullptr)
-	{
-		VertexBuffer->Release();
-		VertexBuffer = nullptr;
-	}
-
-	if (IndexBuffer != nullptr)
-	{
-		IndexBuffer->Release();
-		IndexBuffer = nullptr;
-	}
 
 	TargetColor.destroy();
 	TargetDepth.destroy();
@@ -248,17 +228,7 @@ void CMaterialPreview::BuildMesh()
 	}
 
 	Geometry.destroy();
-	if (VertexBuffer != nullptr)
-	{
-		VertexBuffer->Release();
-		VertexBuffer = nullptr;
-	}
-
-	if (IndexBuffer != nullptr)
-	{
-		IndexBuffer->Release();
-		IndexBuffer = nullptr;
-	}
+	RImplementation.Geometry.Free(Alloc);
 
 	xr_vector<Vertex> Vertices;
 	xr_vector<u16> Indices;
@@ -274,14 +244,19 @@ void CMaterialPreview::BuildMesh()
 	VertexCount = u32(Vertices.size());
 	IndexCount = u32(Indices.size());
 
-	if (!RHIUtils::CreateVertexBuffer(&VertexBuffer, Vertices.data(), u32(Vertices.size() * sizeof(Vertex))) ||
-		!RHIUtils::CreateIndexBuffer(&IndexBuffer, Indices.data(), u32(Indices.size() * sizeof(u16))))
+	xr_vector<PackedVertex> Records(VertexCount);
+	for (u32 Index = 0; Index < VertexCount; ++Index)
 	{
-		Msg("! Can't create the material preview mesh");
-		return;
+		const Vertex& Source = Vertices[Index];
+		Records[Index] = { Source.P, 0, 0, 0, 0xFFFFFFFF, 0 };
+		VertexPacking::EncodeFrame(Records[Index], Source.N, Source.T, Source.B);
+		VertexPacking::EncodeUV(Records[Index], Source.UV.x, Source.UV.y);
 	}
 
-	Geometry.create(PreviewVertexDecl, std::size(PreviewVertexDecl), VertexBuffer, IndexBuffer);
+	Alloc = RImplementation.Geometry.Alloc(VertexCount, IndexCount);
+	RImplementation.Geometry.Upload(Alloc, 0, Records.data(), VertexCount);
+	RImplementation.Geometry.UploadIndices(Alloc, 0, Indices.data(), IndexCount);
+	Geometry.create(EGeomSource::Static, Alloc.Page);
 	MeshShape = Shape;
 }
 
@@ -421,7 +396,7 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 	Cmd.Constants.Write<CBEditor>().preview_light.set(LightDir.x, LightDir.y, LightDir.z, Ambient);
 	Cmd.Constants.Write<CBEditor>().preview_eye.set(Position.x, Position.y, Position.z, UVTiling);
 	Cmd.SetGeometry(Geometry);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, IndexCount, 0, 0);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, IndexCount, Alloc.IndexBase, Alloc.VertexBase);
 
 	Cmd.SetView(Device.mView, Device.mProject);
 

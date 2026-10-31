@@ -600,7 +600,6 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ Dynamic && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS), "USE_SUNMASK", "1" },
 		{ Dynamic && o.sunstatic, "USE_R2_STATIC_SUN", "1" },
 		{ Skinning < 0, "SKIN_NONE", "1" },
-		{ Skinning == 0, "SKIN_0", "1" },
 		{ Skinning == 1, "SKIN_1", "1" },
 		{ Skinning == 2, "SKIN_2", "1" },
 		{ Skinning == 3, "SKIN_3", "1" },
@@ -811,16 +810,6 @@ static HRESULT create_shader(
 				{
 					svs_result->editor_instance_slot = Resource.BindPoint;
 				}
-			}
-		}
-
-		if (Device.IsEditorMode())
-		{
-			RHIBlob* pCodeBlob = nullptr;
-			if (SUCCEEDED(GRHI->CreateBlob(buffer_size, &pCodeBlob)))
-			{
-				CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
-				svs_result->vs_code = pCodeBlob;
 			}
 		}
 		_result = S_OK;

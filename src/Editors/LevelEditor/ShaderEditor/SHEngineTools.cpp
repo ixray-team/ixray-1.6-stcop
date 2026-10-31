@@ -1001,45 +1001,23 @@ void CSHEngineTools::UpdateObjectShader()
 	}
 }
 
-RHIBlob* CSHEngineTools::GetCurrentVSSignature()
-{
-	if (!m_PreviewObject)
-	{
-		return nullptr;
-	}
-	CEditableObject* E = m_PreviewObject;
-	CSurface* surf = E->m_Surfaces.front(); R_ASSERT(surf);
-	ref_shader sh = surf->_Shader();
-	if (!sh)
-	{
-		return nullptr;
-	}
-	for (const auto& e : sh->E)
-	{
-		if (!e)
-		{
-			continue;
-		}
-		for (u32 p = 0; p < e->passes.size(); p++)
-		{
-			auto& S = e->passes[p];
-			if (S && S->vs)
-			{
-				return (RHIBlob*)S->vs->vs_code;
-			}
-		}
-	}
-	return nullptr;
-}
-
 void CSHEngineTools::UpdatePreviewShader()
 {
 	if (!m_PreviewObject)
 	{
 		return;
 	}
-	m_Preview.SetVSSignature(GetCurrentVSSignature());
-	m_Preview.Apply(m_PreviewObject);
+	CSurface* surf = m_PreviewObject->m_Surfaces.front(); R_ASSERT(surf);
+	ref_shader sh = surf->_Shader();
+	SVS* VS = nullptr;
+	for (u32 e = 0; sh && e < 6 && !VS; e++)
+	{
+		if (sh->E[e] && !sh->E[e]->passes.empty())
+		{
+			VS = sh->E[e]->passes[0]->vs._get();
+		}
+	}
+	m_Preview.SetNotransform(VS && !strncmp(VS->cName.c_str(), "stub_notransform", 16));
 }
 
 void CSHEngineTools::OnShowHint(AStringVec& ss)
