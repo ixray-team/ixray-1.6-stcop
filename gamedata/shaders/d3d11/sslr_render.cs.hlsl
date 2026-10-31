@@ -8,17 +8,28 @@
 RWTexture2D<float4> u_sslr : register(u0);
 RWTexture2D<float4> u_sslr_data : register(u1);
 
+Texture2D s_occ : register(t26);
+
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
+#ifdef USE_SSLR_HQ
+	uint2 Pixel = DTid;
+#else
+	// Half resolution traces one pixel of every 2x2 quad, the pick rotates each frame (Stachowiak, SIGGRAPH 2015).
+	// The results stay packed in the top-left quarter, sslr_filter reuses them as rays of the full resolution pixels.
+	static const uint2 QuadPick[4] = { uint2(0, 0), uint2(1, 1), uint2(1, 0), uint2(0, 1) };
+	uint2 Pixel = DTid * 2 + QuadPick[uint(m_taa_jitter.w) % 4];
+#endif
+
     IXRayGbuffer O = (IXRayGbuffer)NULL;
-    GbufferUnpack(DTid, O);
+    GbufferUnpack(Pixel, O);
 
 	//LVutner: Init
 	float4 Final = (0.0).xxxx;
 	float4 Point = (0.0).xxxx;
 	
-	float2 TexCoord = float2(DTid.xy + 0.5) * pos_decompression_params2.zw;
+	float2 TexCoord = float2(Pixel + 0.5) * pos_decompression_params2.zw;
 	
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(TexCoord, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
@@ -40,13 +51,22 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		return;
 	}
 	
-	float2 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xy;
+	[branch]
+	if (SslrWeight(O.Normal, O.View, O.Specular, O.Roughness) <= 0.0f)
+	{
+		// Zero ray data: sslr_filter gives it the floor weight
+		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth < 0.02f);
+		u_sslr_data[DTid.xy] = 0.0f;
+		return;
+	}
+
+	float3 Jitter = s_blue_noise[uint3(Pixel % 128, uint(m_taa_jitter.w) % 32)].xyz;
 
 	//LVutner: VNDF is biased, cause I don't want random fireflies
 	float4 H;
 	
 #ifndef USE_LEGACY_LIGHT
-	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
+	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter.xy * float2(1.0, 0.7), O.Roughness * O.Roughness);
 	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
 #else
 	H.xyz = O.Normal;
@@ -68,6 +88,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	StartPoint += !isHUDRender ? O.Normal * 0.025f : 0.0f;
 	float4 SSLR;
+	float VslrStart = 0.0f;
 
 	[branch]
 	if (isHUDRender)
@@ -76,7 +97,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	else
 	{
-		SSLR = HiZTraceSSR(StartPoint, Reflection);
+		SSLR = HiZTraceSSR(StartPoint, Reflection, uint(lerp(HIZ_MAX_ITERATIONS, HIZ_ROUGH_ITERATIONS, SslrRoughTrace(O.Roughness))), VslrStart);
 	}
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
@@ -90,11 +111,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	if(!isHUDRender)
 	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
-		if(SSLR.w < 1.0f)
+		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
+		if(SSLR.w < 1.0f && VslrStart >= 0.0f && SslrRoughTrace(O.Roughness) < 1.0f)
 		{
 			// The cube is coarser than the depth buffer: only the cube march starts at its surface
 			float VslrScale = min(1.0f, s_env_dist.SampleLevel(smp_linear, StartPoint, 0.0f).x / max(EPS, length(StartPoint)));
-			float4 VSLR = FastViewReflections(StartPoint * VslrScale, Reflection.xyz);
+			float4 VSLR = FastViewReflections(StartPoint * VslrScale, Reflection.xyz, VslrStart, Jitter.z);
 			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
 		}
 	} 
@@ -108,27 +130,47 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	O.Hemi = 1.0f; // isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
 #endif
 	
-	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
-	
+	float3 HitPoint = lerp(Point.xyz, SSLR.xyz, SSLR.w);
+
+	// Traced hits come from the previous final image, which is already fogged: only the fallback of missed rays gets fog here
+	float Fog = max(length(HitPoint), length(StartPoint.xyz) + length(HitPoint - StartPoint.xyz));
+	Fog = saturate(Fog * fog_params.w + fog_params.x) * (1.0f - SSLR.w);
+
+	// The sky irradiance costs four cube taps, only fogged reflections and missed rays without the cube use it
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	bool UseHemi = Fog > 0.0f;
+#else
+	bool UseHemi = Fog > 0.0f || SSLR.w < 1.0f;
+#endif
+
+	float3 Hemi = 0.0f;
+
+	[branch]
+	if (UseHemi)
+	{
+		Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f);
+	}
+
 	if(SSLR.w < 1.0f)
 	{
+		float3 Color = Hemi;
+
 #ifdef USE_OFFSCREEN_REFLECTIONS
-		float3 Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
-#else
-		float3 Color = Hemi.xyz;
+		[branch]
+		if (VslrStart >= 0.0f)
+		{
+			Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
+		}
 #endif
+
+		// Screen-space AO occludes only the fallback of missed rays, traced hits come from the lit image
+		Color *= LinearToGamma(SpecularOcclusion(saturate(dot(O.Normal, -ViewVec)), s_occ.Load(int3(Pixel, 0)).x, O.Roughness));
 
 		Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	}
-	
-	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
-	
-	
-	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
-	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
-	
-	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
-	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
+
+	Final.xyz = lerp(Final.xyz, Hemi, Fog);
+	Point.xyz = length(HitPoint - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
 	Point.w = rcp(max(EPS_S, H.w));
 	

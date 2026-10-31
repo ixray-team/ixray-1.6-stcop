@@ -2,6 +2,14 @@
 #define IXR_COMPUTE
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
+#include "metalic_roughness_ambient.hlsli"
+
+// Half resolution sslr_render results are packed in the top-left quarter of its targets
+#ifdef USE_SSLR_HQ
+	#define SSLR_TRACE_UV 1.0f
+#else
+	#define SSLR_TRACE_UV 0.5f
+#endif
 
 
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
@@ -51,7 +59,43 @@ static const float2 Disk32_Normalized[32] = {
 	float2(0.895505f, -0.323214f),
 };
 
-RWTexture2D<float4> u_sslr_temp : register(u0);
+float IntersectAABB(float3 Dir, float3 Org, float3 Box)
+{
+	float3 RcpDir = rcp(Dir);
+
+	float3 TNeg = (Box - Org) * RcpDir;
+	float3 TPos = -RcpDir * (Box + Org);
+
+	return max(min(TNeg.x, TPos.x), max(min(TNeg.y, TPos.y), min(TNeg.z, TPos.z)));
+}
+
+float HistoryClamp(float3 History, float3 Filtered, float3 aabb_min, float3 aabb_max)
+{
+	float3 Min = min(Filtered, min(aabb_min, aabb_max));
+	float3 Max = max(Filtered, max(aabb_min, aabb_max));
+
+	float3 Avg2 = Max + Min;
+	float3 Dir = Filtered - History;
+
+	float3 Org = History - Avg2 * 0.5f;
+	float3 Scale = Max - Avg2 * 0.5f;
+
+	return saturate(IntersectAABB(Dir, Org, Scale));
+}
+
+RWTexture2D<float4> u_sslr : register(u0);
+
+// Output of this pass last frame: phase_sslr swaps the two history targets every frame and binds the previous one here
+Texture2D s_sslr_history : register(t26);
+
+// History is clipped to mean +- gamma * sigma of the reused ray colors, unweighted: the BRDF weights of a smooth surface keep
+// only its own ray and the box would collapse. Half resolution moves the traced pixel of every 2x2 quad each frame,
+// so its result changes more between frames and keeps a wider box
+#ifdef USE_SSLR_HQ
+	#define SSLR_HISTORY_GAMMA 1.25f
+#else
+	#define SSLR_HISTORY_GAMMA 1.75f
+#endif
 
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
@@ -69,10 +113,15 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	if(O.Depth >= 1.0f)
 	{
-		float4 FinalColor = s_image.SampleLevel(smp_nofilter, I.texcoord, 0.0f);
-		FinalColor.w = O.ViewDist;
-		
-		u_sslr_temp[DTid.xy] = FinalColor;
+		u_sslr[DTid.xy] = float4(s_image.SampleLevel(smp_nofilter, I.texcoord * SSLR_TRACE_UV, 0.0f).xyz, O.Depth);
+		return;
+	}
+
+	// Combine uses the environment here, the depth keeps the history test valid when the pixel returns to SSLR
+	[branch]
+	if (SslrWeight(O.Normal, O.View, O.Specular, O.Roughness) <= 0.0f)
+	{
+		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth);
 		return;
 	}
 
@@ -81,13 +130,16 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
+
+	float3 Moment1 = 0.0f;
+	float3 Moment2 = 0.0f;
 	
 	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
 
 	// Stochastic SSR resolve (Stachowiak, SIGGRAPH 2015): ray reuse.
 	// Every neighbour hit point is treated as a sample of this pixel's BRDF:
 	// weight = BRDF(V, L, N) * NdotL / pdf, result = sum(Color * weight) / sum(weight).
-	// The disk is rotated per pixel, the temporal pass averages the pattern out.
+	// The disk is rotated per pixel, the history below averages the pattern out.
 	float Angle = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].x * 6.2831853f;
 	float2x2 Rotation = float2x2(cos(Angle), -sin(Angle), sin(Angle), cos(Angle));
 	
@@ -97,7 +149,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = mul(Rotation, Disk32_Normalized[i]) * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * SampleRadius);
+		offset = mirror(I.texcoord.xy + offset * SampleRadius) * SSLR_TRACE_UV;
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
@@ -127,6 +179,9 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		// Inverse luminance weighting against fireflies
 		SampleWeight *= rcp(1.0f + dot(Color.xyz, LUMINANCE_VECTOR));
 
+		Moment1 += Color.xyz;
+		Moment2 += Color.xyz * Color.xyz;
+
 		Color.w = Length;
 		FinalColor += Color * SampleWeight;
 		
@@ -134,9 +189,38 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 
 	FinalColor *= rcp(FinalWeight);
-	FinalColor.xyz = saturate(FinalColor.xyz);
 
-	FinalColor.w += O.ViewDist;
+	Moment1 *= 1.0f / NUM_SAMPLES;
+	Moment2 *= 1.0f / NUM_SAMPLES;
 
-	u_sslr_temp[DTid.xy] = FinalColor;
+	float3 Sigma = sqrt(max(Moment2 - Moment1 * Moment1, 0.0f)) * SSLR_HISTORY_GAMMA;
+	float3 BoxMin = Moment1 - Sigma;
+	float3 BoxMax = Moment1 + Sigma;
+
+	float4 Current = float4(saturate(FinalColor.xyz), O.Depth);
+
+	// Reflected point along the view ray at the mean hit distance, for the reprojection of mirror-like reflections
+	ReflectPoint = View * (FinalColor.w + O.ViewDist);
+
+	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_nofilter, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);
+
+	float4 History = s_sslr_history.SampleLevel(smp_rtlinear, PrevDiffuseUV.xy, 0.0f);
+	History = lerp(Current, History, GetBorderAtten(PrevDiffuseUV));
+
+#ifndef USE_LEGACY_LIGHT
+	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
+
+	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;
+	PrevSpecularUV.xy = (O.Roughness > 0.1f || O.Depth < 0.02f) ? PrevDiffuseUV.xy : PrevSpecularUV.xy;
+
+	float3 HistorySpecular = s_sslr_history.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0f).xyz;
+	History.xyz = lerp(History.xyz, HistorySpecular, GetBorderAtten(PrevSpecularUV.xy));
+#endif
+
+	History.xyz = lerp(History.xyz, Current.xyz, HistoryClamp(History.xyz, Current.xyz, BoxMin, BoxMax));
+
+	float DepthClamp = 1.0f - saturate(50.0f * abs(History.w - O.Depth));
+	Current.xyz = lerp(Current.xyz, History.xyz, DepthClamp * 0.98f);
+
+	u_sslr[DTid.xy] = Current;
 }

@@ -1179,6 +1179,8 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
+	CMD3(CCC_Mask32, "r4_sslr_hq", &ps_r2_ls_flags_ext, R4FLAG_SSLR_HQ);	//Need restart
+	CMD3(CCC_Mask32, "r4_gtao_hq", &ps_r2_ls_flags_ext, R4FLAG_GTAO_HQ);	//Need restart
 	CMD3(CCC_Mask32, "r4_translucent_shadows", &ps_r2_ls_flags_ext, R4FLAG_TSHDOWS);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 

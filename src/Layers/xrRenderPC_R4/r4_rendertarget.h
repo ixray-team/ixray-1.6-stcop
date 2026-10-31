@@ -54,6 +54,7 @@ public:
 	ref_rt						rt_sslr;
 	ref_rt						rt_sslr_temp;
 	ref_rt						rt_sslr_old;
+	bool						SslrFlip = false;
 	ref_rt						rt_sslr_data;
 	ref_rt						rt_sslr_hiz;
 
@@ -139,6 +140,7 @@ public:
 
 	//GTAO
 	ref_rt						rt_gtao_0;
+	ref_rt						rt_ao_depth;
 
 	//TAA
 	ref_rt					rt_Generic_0_prev; //previous frame for taa
@@ -185,7 +187,6 @@ private:
 
 	// SSAO
 	ref_rt						rt_ssao_temp;
-	ref_rt						rt_half_depth;
 	ref_shader					s_ssao;
 	ref_shader					s_hdao_cs;
 
@@ -333,8 +334,12 @@ public:
 	void						phase_ui_postprocess	(GfxCmdList& Cmd, Fcolor*, bool HasBackground);
 	void						phase_ui_postprocess_copy(GfxCmdList& Cmd);
 
+	void						PhaseDepthPyramid		(GfxCmdList& Cmd);
 	void						phase_gtao				(GfxCmdList& Cmd);
 	void						phase_sslr				(GfxCmdList& Cmd);
+
+	// phase_sslr writes rt_sslr and rt_sslr_old in turn, the other one is its history
+	const ref_rt&				SslrOutput				() const { return SslrFlip ? rt_sslr_old : rt_sslr; }
 	void						pharse_velocity			(GfxCmdList& Cmd);
 
 
@@ -351,7 +356,6 @@ public:
 	void						phase_scene_end			();
 	void						phase_occq				(GfxCmdList& Cmd);
 	void						phase_ssao				(GfxCmdList& Cmd);
-	void						phase_downsamp			(GfxCmdList& Cmd);
 	void						phase_wallmarks			(GfxCmdList& Cmd);
 	void						phase_smap_direct		(GfxCmdList& Cmd, light* L,	u32 sub_phase);
 	void						phase_smap_direct_tsh	(GfxCmdList& Cmd, light* L,	u32 sub_phase);

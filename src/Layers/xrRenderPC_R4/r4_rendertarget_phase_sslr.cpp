@@ -1,5 +1,46 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
+#include "ShaderBindings.h"
+
+// Level 0 of the SSLR min-Z pyramid and the GTAO view-z pyramid, from one depth read before both
+void CRenderTarget::PhaseDepthPyramid(GfxCmdList& Cmd)
+{
+	const bool Sslr = !RImplementation.o.dx11_use_legacy_light && RImplementation.o.deffered_reflecitons;
+	const bool Gtao = ps_r_ssao_mode == 2;
+
+	if (!Sslr && !Gtao)
+	{
+		return;
+	}
+
+	GPU_EVENT(depth_pyramid);
+
+	// Writes to unbound UAVs are dropped
+	IRHIUnorderedAccessView* UAVs[6] = {};
+
+	if (Sslr)
+	{
+		UAVs[0] = rt_sslr_hiz->pMippedUAV[0];
+	}
+
+	for (u32 MipLevel = 0; Gtao && MipLevel < 5; ++MipLevel)
+	{
+		UAVs[MipLevel + 1] = rt_ao_depth->pMippedUAV[MipLevel];
+	}
+
+	SPass& P = *(s_sslr->E[3]->passes[0]);
+	Cmd.SetStates(P.state);
+	Cmd.SetConstantTable(P.constants);
+	Cmd.SetTextures(P.T);
+	Cmd.SetCS(P.cs);
+
+	Cmd.SetComputeUAVs(0, 6, UAVs);
+	Cmd.Dispatch(((u32)Cmd.GetWidth() + 15u) / 16u, ((u32)Cmd.GetHeight() + 15u) / 16u, 1);
+
+	IRHIUnorderedAccessView* Unbind[6] = {};
+	Cmd.SetComputeUAVs(0, 6, Unbind);
+	Cmd.UnbindComputeTextures();
+}
 
 void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 {
@@ -8,11 +49,14 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 	GPU_EVENT(phase_sslr);
 
+	// sslr_render reads the AO target, SSAO leaves it bound as a render target
+	u_setrt(Cmd, (u32)Cmd.GetWidth(), (u32)Cmd.GetHeight(), nullptr, nullptr, nullptr, nullptr);
+
 	//groups
 	const UINT tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
 	const UINT tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
 
-	// Min-Z pyramid for the hierarchical trace (Stachowiak, Stochastic SSR)
+	// Min-Z pyramid for the hierarchical trace (Stachowiak, Stochastic SSR), level 0 comes from PhaseDepthPyramid
 	{
 		GPU_EVENT(sslr_hiz);
 
@@ -20,22 +64,7 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 		const xr_vector<IRHIUnorderedAccessView*>& MipUAVs = rt_sslr_hiz->pMippedUAV;
 
-		{
-			ShaderElement* S = &*(s_sslr->E[4]);
-			SPass& P = *(S->passes[0]);
-			Cmd.SetStates(P.state);
-			Cmd.SetConstantTable(P.constants);
-			Cmd.SetTextures(P.T);
-			Cmd.SetCS(P.cs);
-
-			Cmd.SetComputeUAVs(0, 1, &MipUAVs[0]);
-
-			Cmd.Dispatch(tgroupsX, tgroupsY, 1);
-
-			Cmd.SetComputeUAVs(0, 1, uav_dummy);
-		}
-
-		ShaderElement* S = &*(s_sslr->E[5]);
+		ShaderElement* S = &*(s_sslr->E[4]);
 		SPass& P = *(S->passes[0]);
 		Cmd.SetStates(P.state);
 		Cmd.SetConstantTable(P.constants);
@@ -77,14 +106,15 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 		//Bind UAVs
 		IRHIUnorderedAccessView* our_uav[2] = {
-            rt_sslr->pUAView,
+            rt_sslr_temp->pUAView,
             rt_sslr_data->pUAView
 		};
 
 		Cmd.SetComputeUAVs(0, 2, our_uav);
 
-		//Dispatch
-		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
+		//Dispatch, half resolution traces one pixel of every 2x2 quad
+		const u32 TraceShift = RImplementation.o.SslrHq ? 0 : 1;
+		Cmd.Dispatch((((u32)Cmd.GetWidth() >> TraceShift) + 7u) / 8u, (((u32)Cmd.GetHeight() >> TraceShift) + 7u) / 8u, 1);
 
 		//Unbind
 		Cmd.SetComputeUAVs(0, 2, uav_dummy);
@@ -92,8 +122,12 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 	}
 
 
+	// Ray reuse and history in one pass: last frame's output is the history, the two targets swap instead of a copy
 	{
 		GPU_EVENT(sslr_filter);
+
+		SslrFlip = !SslrFlip;
+		const ref_rt& History = SslrFlip ? rt_sslr : rt_sslr_old;
 
 		IRHIUnorderedAccessView* uav_dummy = nullptr;
 
@@ -104,31 +138,12 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
         Cmd.SetConstantTable(P.constants);
         Cmd.SetTextures(P.T);
         Cmd.SetCS(P.cs);
+		Cmd.SetResource(ERHI_SHADER_TYPE::CS, ShaderBindings::Texture("s_sslr_history"), History->pTexture->get_SRView());
 
-		IRHIUnorderedAccessView* our_uav = rt_sslr_temp->pUAView;
+		// The output may still be combine's s_refl from two frames ago: D3D11 unbinds it for the UAV behind the resource cache
+		Cmd.SetResource(ERHI_SHADER_TYPE::PS, ShaderBindings::Texture("s_refl"), nullptr);
 
-		Cmd.SetComputeUAVs(0, 1, &our_uav);
-
-		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
-
-		Cmd.SetComputeUAVs(0, 1, &uav_dummy);
-		Cmd.UnbindComputeTextures();
-	}
-
-	{
-		GPU_EVENT(sslr_temporal);
-
-		IRHIUnorderedAccessView* uav_dummy = nullptr;
-
-	    ShaderElement* S;
-        S = (&*(s_sslr->E[2]));
-        SPass& P = *(S->passes[0]);
-        Cmd.SetStates(P.state);
-        Cmd.SetConstantTable(P.constants);
-        Cmd.SetTextures(P.T);
-        Cmd.SetCS(P.cs);
-
-		IRHIUnorderedAccessView* our_uav = rt_sslr->pUAView;
+		IRHIUnorderedAccessView* our_uav = SslrOutput()->pUAView;
 
 		Cmd.SetComputeUAVs(0, 1, &our_uav);
 
@@ -136,9 +151,6 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 		Cmd.SetComputeUAVs(0, 1, &uav_dummy);
 		Cmd.UnbindComputeTextures();
-
-		//LVutner: Meh.
-		ResolveSurface(rt_sslr_old, rt_sslr);
 	}
 }
 
@@ -331,7 +343,7 @@ void CRender::render_reflections(GfxCmdList& Cmd)
 	is_render_cubemap = false;
 	phase = PHASE_NORMAL;
 
-	Target->DrawSQ(Cmd, Target->s_sslr, Target->rt_Reflection_forward, 3, [&]
+	Target->DrawSQ(Cmd, Target->s_sslr, Target->rt_Reflection_forward, 2, [&]
 	{
 		RImplementation.rmNormal();
 		Cmd.SetCullMode(ERHI_CULLMODE::NONE); 

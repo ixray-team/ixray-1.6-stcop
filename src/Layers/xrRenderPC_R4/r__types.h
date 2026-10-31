@@ -48,7 +48,7 @@
 #define		r2_RT_sslr_hiz		"$user$sslr_hiz"		// min-Z pyramid for the hierarchical trace
 
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
-#define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for hbao calculation
+#define		r2_RT_ao_depth		"$user$ao_depth"		// GTAO view-z with prefiltered MIPs
 
 	#define r2_RT_generic "$user$generic"
 	#define r2_RT_backbuffer_final "$user$backbuffer"

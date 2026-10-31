@@ -616,7 +616,9 @@ CRenderTarget::CRenderTarget()
 	{
 		CreateEffectSQ<CBlender_gtao>(s_gtao);
 
-		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_UINT); //AO.view-z
+		const u32 GtaoShift = RImplementation.o.GtaoHq ? 0 : 1;
+		rt_gtao_0.create("$user$gtao_0", (s_dwWidth + GtaoShift) >> GtaoShift, (s_dwHeight + GtaoShift) >> GtaoShift, ERHI_FORMAT::R32_UINT); //AO.view-z
+		rt_ao_depth.create(r2_RT_ao_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_FLOAT, 1, CRT::CRTCreationFlags(CRT::USE_UAV_FLAG | CRT::MIPPED_RT_FLAG));
 	}
 
 	//Puddles
@@ -844,15 +846,8 @@ CRenderTarget::CRenderTarget()
 		CreateEffectSQ<CBlender_new_dof>(s_dof_coc);
 	}
 
-	// HBAO
-	{
-		u32 w = s_dwWidth / 2;
-		u32 h = s_dwHeight / 2;
-		rt_half_depth.create(r2_RT_half_depth, w, h, ERHI_FORMAT::R16_FLOAT);
-	}
-
 	s_ssao.create(b_ssao, "r2\\ssao");
-	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM, 1);
+	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM, 1, CRT::USE_UAV_FLAG);
 
 	// COMBINE
 	{

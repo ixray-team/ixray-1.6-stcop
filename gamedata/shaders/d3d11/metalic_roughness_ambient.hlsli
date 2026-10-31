@@ -169,6 +169,23 @@ float3 AmbientLightingImpl(float3 DiffuseIrradance, float3 SpecularIrradance, fl
 	return lerp(DiffuseIrradance, SpecularIrradance, F);
 }
 
+// Share of the SSLR result in the image: none where the specular reflectance is near zero (a rough dielectric still has
+// about 1.6%, and the environment would light its occluded parts). The SSLR passes skip pixels at 0, combine blends with the
+// prefiltered environment.
+float SslrWeight(float3 Normal, float3 View, float3 Specular, float Roughness)
+{
+	float2 BRDF = EpicGamesEnvBRDFApprox(saturate(dot(Normal, -View)), Roughness);
+	float3 F = Specular * BRDF.x + min(1.0f, dot(Specular, 16.66667f)) * BRDF.y;
+	return saturate((dot(F, LUMINANCE_VECTOR) - 0.005f) * 200.0f);
+}
+
+// Rough reflections are blurred by the filter and the history: from roughness 0.5 to 0.7 the trace gets shorter,
+// and above it misses fall back to the environment without the cube march
+float SslrRoughTrace(float Roughness)
+{
+	return saturate((Roughness - 0.5f) * 5.0f);
+}
+
 float SpecularOcclusion(float NdotV, float Occlusion, float Roughness)
 {
 	return saturate(pow(NdotV + Occlusion, exp2(-16.0f * Roughness - 1.0f)) - 1.0f + Occlusion);

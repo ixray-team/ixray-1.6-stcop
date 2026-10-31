@@ -21,6 +21,22 @@
 
 #include "shared\post_cb.hlsli"
 
+#ifdef USE_GTAO_HQ
+	#define GTAO_SCALE 1
+#else
+	#define GTAO_SCALE 2
+#endif
+
+//View-z pyramid with prefiltered MIPs (depth_pyramid.cs.hlsl), HUD view-z is negative
+Texture2D<float> s_ao_depth : register(t25);
+
+//GbufferGetPointRealUnjitter from view-z, see GbufferGetViewZ
+float3 TapPoint(float2 TexCoord, float ViewZ, bool Hud)
+{
+	float2 Scale = Hud ? m_invP_hud._11_22 : m_invP._11_22;
+	return float3((TexCoord * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f)) * Scale * ViewZ, ViewZ);
+}
+
 float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
 {
 	//Few constants
@@ -90,17 +106,18 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 			if(dot(s_texcoord.zw - saturate(s_texcoord.zw), 1.0) != 0.0)
 				break;
 
-			//Fetch z-buffer
+			//Fetch prefiltered view-z, coarser MIPs for farther taps keep them in cache (XeGTAO)
+			float2 s_mip = clamp(log2(screen_radius * increment) - 3.3, 0.0, 4.0);
 			float2 s_depth = {
-				s_position.SampleLevel(smp_nofilter, s_texcoord.xy, 0.0f).x,
-				s_position.SampleLevel(smp_nofilter, s_texcoord.zw, 0.0f).x
+				s_ao_depth.SampleLevel(smp_nofilter, s_texcoord.xy, s_mip.x).x,
+				s_ao_depth.SampleLevel(smp_nofilter, s_texcoord.zw, s_mip.y).x
 			};
 
 			//1st tap
 			//Manual unrolling, process 2 steps at the time
 			{
 				// Sample the view space position
-				float3 s_vector = GbufferGetPointRealUnjitter(s_texcoord.xy, s_depth.x);
+				float3 s_vector = TapPoint(s_texcoord.xy, abs(s_depth.x), s_depth.x < 0.0);
 				s_vector -= view_position; //Occlusion vector
 
 				float s_vec_length = dot(s_vector, s_vector);
@@ -115,7 +132,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 
 			//2nd tap
 			{
-				float3 s_vector = GbufferGetPointRealUnjitter(s_texcoord.zw, s_depth.y);
+				float3 s_vector = TapPoint(s_texcoord.zw, abs(s_depth.y), s_depth.y < 0.0);
 				s_vector -= view_position;
 
 				float s_vec_length = dot(s_vector, s_vector);
@@ -147,28 +164,33 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 
 uint main(PSInputFullscreen I) : SV_Target
 {
+	//Half resolution renders the top-left pixel of every 2x2 quad, gtao_filter upsamples
+	uint2 pixel = uint2(I.hpos.xy) * GTAO_SCALE;
+	float2 texcoord = (pixel + 0.5) * pos_decompression_params2.zw;
+
 	//Sample depth buffer
-	float zbuffer = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
+	float zbuffer = s_position.Load(int3(pixel, 0)).x;
 
 	//Early exit
 	if(zbuffer == 1.0)
 		return asuint(f32tof16(1000.0)) | (asuint(f32tof16(1.0)) << 16);
 
-	//Sample blue noise texture
-	//You can replace 0 with m_taa_jitter.w % 32 to animate it (texture contains 32 frames)
-	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, 0)].xyz;
+	//Sample blue noise texture, animated only when TAA or an upscaler accumulates it (texture contains 32 frames)
+	//Offset by 16 frames so the pattern is not the one SSLR uses this frame
+	uint noise_frame = m_taa_jitter.z < 0.0f ? 0 : (uint(m_taa_jitter.w) + 16) % 32;
+	float3 jitter_tex = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, noise_frame)].xyz;
 
 	//Unpack G-Buffer data...
 	float3 Normal, Point;
 	{
-		Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
+		Normal = s_normal.Load(int3(pixel, 0)).xyz;
 		Normal = NormalDecode(Normal.xy * 2.0f - 1.0f);
-		Point = GbufferGetPointRealUnjitter(I.texcoord.xy, zbuffer);
+		Point = TapPoint(texcoord, GbufferGetViewZ(zbuffer), zbuffer < 0.02f);
     }
 
-	//Init. Don't render GTAO past 60 units. It will become a noisy mess...
+	//Init. Don't render GTAO past 60 units, fade it out from 50. It will become a noisy mess...
 	//View-pos is shifted towards view normal; this eliminates self-occlusion
-	float occlusion = Point.z > 60.0 ? 1.0 : example_how_to_not_implement_gtao(Point + Normal * 0.0035, Normal, I.texcoord.xy, jitter_tex.xy);
+	float occlusion = Point.z > 60.0 ? 1.0 : lerp(example_how_to_not_implement_gtao(Point + Normal * 0.0035, Normal, texcoord, jitter_tex.xy), 1.0, saturate(Point.z * 0.1 - 5.0));
 
 	//Pack the data into R32_UINT (16 bits for depth, and 16 for occlusion)
 	return asuint(f32tof16(Point.z)) | (asuint(f32tof16(occlusion)) << 16);

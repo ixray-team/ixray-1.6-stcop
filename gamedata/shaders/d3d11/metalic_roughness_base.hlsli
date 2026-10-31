@@ -313,6 +313,13 @@ inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord, in float Depth)
     return Point.xyz / Point.w;
 }
 
+// View-space z of GbufferGetPointRealUnjitter: the inverse of a perspective projection maps depth to z = 1, w = 1 / view-z.
+// m_P is the projection of the current view, the depth buffer was written with the one m_invP inverts.
+inline float GbufferGetViewZ(in float Depth)
+{
+	return Depth < 0.02f ? rcp(m_invP_hud._43 * Depth * 50.0f + m_invP_hud._44) : rcp(m_invP._43 * Depth + m_invP._44);
+}
+
 inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord)
 {
 	float Depth = s_position[uint2(TexCoord * pos_decompression_params2.xy)].x;

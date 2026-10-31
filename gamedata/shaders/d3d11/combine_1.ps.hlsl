@@ -29,29 +29,44 @@ float4 main(PSInputFullscreen I) : SV_Target
 	
 #ifndef USE_LEGACY_LIGHT
 	Occ *= O.AO;
-#endif
 
-#ifndef USE_LEGACY_LIGHT
-	#ifdef USE_SSLR_REFLECTIONS
-		float3 SpecularIrradance = saturate(s_refl.Load(int3(I.hpos.xy, 0)).xyz);
-		//SpecularIrradance *= SpecularIrradance < 1.0f ? rcp(1.0f - SpecularIrradance) : 1.0f;
+	float NdotV = max(0.0, dot(O.Normal, -O.View.xyz));
+
+	#ifdef USE_VIEW_REFLECTIONS
+		float SkyHemi = O.Depth > 0.02 ? O.Hemi : 1.0f;
 	#else
-		float NdotV = max(0.0, dot(O.Normal, -O.View.xyz));
-		#ifdef USE_VIEW_REFLECTIONS
-			float SkyHemi = O.Depth > 0.02 ? O.Hemi : 1.0f;
-		#else
-			float SkyHemi = O.Hemi;
-		#endif
-		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), SpecularOcclusion(NdotV, SkyHemi, O.Roughness), O.Roughness);
+		float SkyHemi = O.Hemi;
 	#endif
 
-	float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz;
-    float3 Ambient = AmbientLightingImpl(DiffuseIrradance, SpecularIrradance, max(0.0, dot(O.Normal, -O.View.xyz)), O.Color, O.Specular, O.Roughness);
+	#ifdef USE_SSLR_REFLECTIONS
+		float SslrBlend = SslrWeight(O.Normal, O.View, O.Specular, O.Roughness);
+	#else
+		float SslrBlend = 0.0f;
+	#endif
+
+	// Irradiance is gamma space here: x * LinearToGamma(o) is x * o after AmbientLightingImpl
+	float3 SpecularIrradance = 0.0f;
+
+	// Prefiltered environment where the SSLR passes skip the pixel or blend out
+	[branch]
+	if (SslrBlend < 1.0f)
+	{
+		SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), SpecularOcclusion(NdotV, SkyHemi, O.Roughness), O.Roughness) * LinearToGamma(Occ);
+	}
+
+	#ifdef USE_SSLR_REFLECTIONS
+		// sslr_render applies screen-space AO to missed rays only, traced hits keep just the material AO
+		float3 Sslr = saturate(s_refl.Load(int3(I.hpos.xy, 0)).xyz) * LinearToGamma(SpecularOcclusion(NdotV, O.AO, O.Roughness));
+		SpecularIrradance = lerp(SpecularIrradance, Sslr, SslrBlend);
+	#endif
+
+	float3 DiffuseIrradance = (CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz) * LinearToGamma(Occ);
+    float3 Ambient = AmbientLightingImpl(DiffuseIrradance, SpecularIrradance, NdotV, O.Color, O.Specular, O.Roughness);
 #else
-    float3 Ambient = AmbientLightingLegcay(O.View, O.Normal, O.Color, O.Material, O.Gloss, O.Hemi);
+    float3 Ambient = Occ * AmbientLightingLegcay(O.View, O.Normal, O.Color, O.Material, O.Gloss, O.Hemi);
 #endif
 
-	float3 Color = Occ * Ambient + Light;
+	float3 Color = Ambient + Light;
 	
     float Fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
 	Fog = GammaToLinear(Fog);

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "dxDebugRender.h"
+#include "ShaderBindings.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 
@@ -44,6 +45,8 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
+
+		PhaseDepthPyramid(Cmd);
 
 		switch(ps_r_ssao_mode)
 		{
@@ -133,6 +136,11 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 	
 		DrawPassSQ(Cmd, s_combine, 0, [&]
 		{
+			if (RImplementation.o.deffered_reflecitons && !RImplementation.o.dx11_use_legacy_light)
+			{
+				Cmd.SetResource(ERHI_SHADER_TYPE::PS, ShaderBindings::Texture("s_refl"), SslrOutput()->pTexture->get_SRView());
+			}
+
 			Cmd.Constants.Write<CBLight>().Ldynamic_color = sunclr;
 			Cmd.Constants.Write<CBLight>().Ldynamic_dir = sundir;
 			Cmd.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;

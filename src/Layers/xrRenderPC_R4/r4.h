@@ -75,6 +75,8 @@ public:
 
 		u32 dx11_use_legacy_light : 1;
 		u32 RainPuddles : 1;
+		u32 GtaoHq : 1;
+		u32 SslrHq : 1;
 		u32 dx11_enable_tessellation : 1;
 		u32 dx11_disable_motion_vectors : 1;
 		u32 dx11_allow_wboit_transparency : 1;

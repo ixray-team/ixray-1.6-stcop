@@ -136,7 +136,8 @@ void CRenderTarget::phase_planar(GfxCmdList& Cmd)
 			RImplementation.phase = CRender::PHASE_NORMAL;
 		}
 
-		u_setrt(Cmd, rt_sslr, 0, 0, 0);
+		// HACK: nothing reads this target after combine, rt_sslr and rt_sslr_old hold the SSLR history
+		u_setrt(Cmd, rt_sslr_temp, 0, 0, 0);
 		RImplementation.rmNormal();
 
 		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
