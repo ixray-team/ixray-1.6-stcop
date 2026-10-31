@@ -280,7 +280,7 @@ bool CAviPlayerCustom::DecompressFrame( DWORD dwFrameNum )
 
 	if (alpha)	{
 		// update
-		BYTE*	alpha_buf;
+		BYTE*	alpha_buf = {};
 		alpha->GetFrame(&alpha_buf);
 		u32*	dst		= (u32*)m_pDecompressedBuf;
 		u32*	src		= (u32*)alpha_buf;
