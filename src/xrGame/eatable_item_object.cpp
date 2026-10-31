@@ -101,6 +101,11 @@ void CEatableItemObject::load(IReader& packet)
 
 void CEatableItemObject::renderable_Render()
 {
+	if (m_ready_to_destroy)
+	{
+		return;
+	}
+
 	CPhysicItem::renderable_Render();
 	CEatableItem::renderable_Render();
 }
