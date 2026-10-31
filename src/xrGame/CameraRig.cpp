@@ -20,6 +20,7 @@
 
 static SCameraRigParams	g_rig;
 static int				g_rig_enabled = -1;
+int						g_camera_rig = -1;
 
 static const SCameraRigParam g_rig_params[] =
 {
@@ -242,7 +243,7 @@ bool CCameraRig::Enabled()
 		Reload();
 	}
 
-	return !!g_rig_enabled;
+	return g_camera_rig < 0 ? !!g_rig_enabled : !!g_camera_rig;
 }
 
 const SCameraRigParams& CCameraRig::Params()
