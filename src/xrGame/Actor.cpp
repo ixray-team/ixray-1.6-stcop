@@ -305,7 +305,6 @@ THudVertexAssignedPatricles* CActor::GetHudVertexAssignedPatriclesComponent()
 
 void CActor::reinit	()
 {
-	LightPerception.Reset();
 	character_physics_support()->movement()->CreateCharacter		();
 	character_physics_support()->movement()->SetPhysicsRefObject	(this);
 	CEntityAlive::reinit						();
@@ -521,7 +520,6 @@ void CActor::Load	(const char* section )
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
 	pAutoaim->load				();
-	LightPerception.Load();
 
 	if (IsGameTypeSingle())
 		OnDifficultyChanged		();

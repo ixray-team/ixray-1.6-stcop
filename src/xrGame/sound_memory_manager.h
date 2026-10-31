@@ -21,7 +21,6 @@ namespace MemorySpace {
 
 class CCreature;
 class CAI_Stalker;
-class CActor;
 
 class CSoundMemoryManager {
 public:
@@ -85,7 +84,6 @@ public:
 	virtual	void				reinit					();
 	virtual	void				reload					(const char* section);
 	virtual void				feel_sound_new			(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
-	void NoticeActorLight(CActor& Player);
 	virtual	void				update					();
 			void				remove_links			(CObject *object);
 			void				remove					(const MemorySpace::CSoundObject *sound_object);

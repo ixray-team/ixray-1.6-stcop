@@ -52,7 +52,6 @@ export const mainSidebar: DefaultTheme.Sidebar = [
           { text: 'General information', link: '/en/gameplay/equipment/general-information' },
             { text: 'Visor glass and rain drops', link: '/en/gameplay/equipment/visor-glass' },
           { text: 'Night vision', link: '/en/gameplay/equipment/night-vision' },
-          { text: 'AI reaction to the actor\'s torch', link: '/en/gameplay/equipment/actor-light-perception' },
           { text: 'Item upgrades', link: '/en/gameplay/equipment/item-upgrades' },
         ]
       }

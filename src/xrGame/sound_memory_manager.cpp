@@ -24,9 +24,9 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "Actor.h"
 
 #ifndef MASTER_GOLD
+#	include "Actor.h"
 #	include "ai_debug.h"
 #endif // MASTER_GOLD
 
@@ -128,11 +128,6 @@ void CSoundMemoryManager::enable		(const CObject *object, bool enable)
 IC	bool is_sound_type(int s, const ESoundTypes &t)
 {
 	return	((s & t) == t);
-}
-
-void CSoundMemoryManager::NoticeActorLight(CActor& Player)
-{
-	add(&Player, SOUND_TYPE_WEAPON | SOUND_TYPE_AMBIENT, Player.Position(), 100.f);
 }
 
 void CSoundMemoryManager::feel_sound_new(CObject* object, int sound_type, CSound_UserDataPtr user_data, const Fvector& position, float sound_power)
