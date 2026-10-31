@@ -186,30 +186,39 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     if (m_flags.test(eMultipleTasks))
         type = t->GetTaskType();
 	
+	auto releaseMapLocation = [this, t, state](SGameTaskObjective& o)
+	{
+		if ((state != eTaskStateFail) && (state != eTaskStateCompleted))
+			return;
+
+		CMapLocation* ml = o.SGameTaskObjective::LinkedMapLocation();
+		if (!ml)
+			return;
+
+		// A spot is shared by every objective with the same type and object, so keep it for the task that still uses it
+		if (CGameTask* user = FindMapLocationUser(ml, t))
+		{
+			ml->m_owner_task_id = user->m_ID;
+			if (o.m_linked_map_location == ml)
+				o.m_linked_map_location = nullptr;
+		}
+		else
+		{
+			Level().MapManager().RemoveMapLocation(o.m_map_location, o.m_map_object_id);
+		}
+
+		o.m_map_location = nullptr;
+		o.m_map_object_id = u16(-1);
+	};
+
 	if (objective_id == ROOT_TASK_OBJECTIVE)
 	{
-		for (int i = 0; i < t->GetObjectivesCount(); ++i)
-		{
-			SGameTaskObjective* o = &t->Objective(i);
-			CMapLocation* ml = o->LinkedMapLocation();
-			if (((state == eTaskStateFail) || (state == eTaskStateCompleted)) && ml)
-			{
-				Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
-				o->m_map_location = nullptr;
-				o->m_map_object_id = u16(-1);
-			}
-		}
+		for (u16 i = 0; i < t->GetObjectivesCount(); ++i)
+			releaseMapLocation(t->Objective(i));
 	}
 	else
 	{
-		SGameTaskObjective* o = &t->Objective(objective_id);
-		CMapLocation* ml = o->LinkedMapLocation();
-		if (((state == eTaskStateFail) || (state == eTaskStateCompleted)) && ml)
-		{
-			Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
-			o->m_map_location = nullptr;
-			o->m_map_object_id = u16(-1);
-		}
+		releaseMapLocation(t->Objective(objective_id));
 	}
     t->SetTaskState(state, objective_id);
 
@@ -493,6 +502,30 @@ CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inpro
 				continue;
 
 			return gt;
+		}
+	}
+	return nullptr;
+}
+
+CGameTask* CGameTaskManager::FindMapLocationUser(const CMapLocation* ml, const CGameTask* excluded)
+{
+	if (!ml)
+		return nullptr;
+
+	for (SGameTaskKey& key : GetGameTasks())
+	{
+		CGameTask* gt = key.getGameTask();
+		if (!gt || gt == excluded || gt->GetTaskState() != eTaskStateInProgress)
+			continue;
+
+		for (u16 i = 0; i < gt->GetObjectivesCount(); ++i)
+		{
+			const SGameTaskObjective& obj = gt->Objective(i);
+			if (obj.GetTaskState() != eTaskStateInProgress || obj.m_map_object_id != ml->ObjectID() || obj.m_map_location.size() == 0)
+				continue;
+
+			if (Level().MapManager().GetMapLocation(obj.m_map_location, obj.m_map_object_id) == ml)
+				return gt;
 		}
 	}
 	return nullptr;
