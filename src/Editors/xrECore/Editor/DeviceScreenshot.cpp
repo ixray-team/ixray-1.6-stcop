@@ -173,7 +173,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 			}
 			return false;
 		}
-		GRHI->ShaderResourceCache->SetCSResource(Idx, Srvs[Idx]);
+		RCache.set_CSResource(Idx, Srvs[Idx]);
 	}
 
 	IRHIUnorderedAccessView* Uav = AtlasRT->pUAView;
@@ -194,7 +194,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 
 	for (u32 Idx = 0; Idx < Srvs.size(); ++Idx)
 	{
-		GRHI->ShaderResourceCache->SetCSResource(Idx, nullptr);
+		RCache.set_CSResource(Idx, nullptr);
 		Srvs[Idx]->Release();
 	}
 	IRHIUnorderedAccessView* NullUAV = nullptr;

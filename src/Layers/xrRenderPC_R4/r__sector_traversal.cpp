@@ -149,9 +149,9 @@ void CPortalTraverser::fade_render	()
 	RCache.set_Shader(f_shader);
 	RCache.set_Geometry(f_geom);
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,_offset, poly_per_portal);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 
 	// cleanup
 	f_portals.clear();

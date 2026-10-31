@@ -8,10 +8,7 @@ Which in turn is based on research by
 Jorge Jimenez http://www.iryoku.com/publications
 */
 #include "common.hlsli"
-cbuffer cb_bloom_down : register(b6)
-{
-    float4 downsample_params;
-};
+#include "shared\post_cb.hlsli"
 
 void main(in PSInputFullscreen I, out float3 downsample : SV_Target)
 {

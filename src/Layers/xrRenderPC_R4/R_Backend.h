@@ -2,17 +2,13 @@
 #include "RenderAPI.h"
 
 #include "R_DStreams.h"
-#include "r_constants_cache.h"
+#include "r_constants.h"
 #include "R_Backend_xform.h"
-#include "R_Backend_hemi.h"
-#include "R_Backend_tree.h"
+#include "ShaderConstants.h"
 #include "../../xrRHI/RHIEnums.h"
 #include "../../xrRHI/RHITopologyUtils.h"
 
-#	include "..\xrRenderPC_R4\r_backend_lod.h"
-
 #include "FVF.h"
-#include "dx10FixedConstants.h"
 
 /// detailed statistic
 struct R_statistics_element
@@ -55,10 +51,6 @@ public:
 		mtMaxDomainShaderTextures = 16,
 		mtMaxComputeShaderTextures = 16,
 	};
-	enum
-	{
-		MaxCBuffers	= 22
-	};
 
 public:            
 	// Dynamic geometry streams
@@ -70,16 +62,8 @@ public:
 	IRHIBuffer* CuboidIB;
 
 	R_xforms						xforms;
-	R_hemi							hemi;
-	R_tree							tree;
-	R_LOD							LOD;
+	CShaderConstants				Constants;
 
-	ref_cbuffer						m_aVertexConstants[MaxCBuffers];
-	ref_cbuffer						m_aPixelConstants[MaxCBuffers];
-	ref_cbuffer						m_aGeometryConstants[MaxCBuffers];
-	ref_cbuffer						m_aHullConstants[MaxCBuffers];
-	ref_cbuffer						m_aDomainConstants[MaxCBuffers];
-	ref_cbuffer						m_aComputeConstants[MaxCBuffers];
 	ERHI_PRIMITIVE_TOPOLOGY			m_PrimitiveTopology;
 	RHIObject*				m_pInputLayout;
 	DWORD							dummy0;	//	Padding to avoid warning	
@@ -93,7 +77,6 @@ private:
 	u32								vb_stride;
 
 	// Pixel/Vertex constants
-	ALIGN(16)	R_constants			constants;
 	R_constant_table*				ctable;
 
 	// Shaders/State
@@ -144,8 +127,6 @@ public:
 			return 0;
 		}
 	}
-
-	IC	void						get_ConstantDirect	(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData);
 
 	IC  float							get_width();
 	IC  float							get_height();	
@@ -203,8 +184,9 @@ public:
 	ICF void						set_VS				(SVS* _vs);
 	// Vertex shader of the current pass (resources a visual binds itself, e.g. instance buffers)
 	ICF SVS*						get_VS				() const								{ return CurrentVS; }
-	// A resource was bound to a vertex shader slot outside set_Textures: rebind that slot next time
-	ICF void						InvalidateVSTexture	(u32 Slot)								{ if (Slot < mtMaxVertexShaderTextures) textures_vs[Slot] = nullptr; }
+	// Raw views bypass set_Textures, so the slot is forgotten and rebound by the next texture list
+	ICF void						set_VSResource		(u32 Slot, IRHIShaderResourceView* View)	{ if (Slot < mtMaxVertexShaderTextures) textures_vs[Slot] = nullptr; GRHI->ShaderResourceCache->SetVSResource(Slot, View); }
+	ICF void						set_CSResource		(u32 Slot, IRHIShaderResourceView* View)	{ if (Slot < mtMaxComputeShaderTextures) textures_cs[Slot] = nullptr; GRHI->ShaderResourceCache->SetCSResource(Slot, View); }
 protected:	//	In DX10 we need input shader signature which is stored in ref_vs
 
 public:
@@ -219,65 +201,25 @@ public:
 	IC  void						set_AlphaRef		(u32 _value);
 	IC  void						set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
 	IC	void						set_Scissor			(Irect*	rect= nullptr);
+	ICF	void						set_ScissorOverride	(bool Override)							{ GRHI->StateManager->OverrideScissoring(Override, true); }
+	ICF	void						set_FillModeOverride(bool Override, u32 Mode)				{ GRHI->StateManager->OverrideFillMode(Override, Mode); }
+	ICF	void						set_CullMode		(ERHI_CULLMODE Mode)					{ GRHI->StateManager->SetCullMode(Mode); }
+	ICF	ERHI_CULLMODE				get_CullMode		() const								{ return GRHI->StateManager->GetCullMode(); }
+	ICF	void						set_StencilRef		(u32 Ref)								{ GRHI->StateManager->SetStencilRef(Ref); }
+	ICF	void						set_RenderState		(u32 State, u32 Value)					{ GRHI->StateManager->SetRenderState(State, Value); }
 
 	// constants
 	ICF	ref_constant				get_c				(const char*			n)													{ if (ctable) return ctable->get(n); return nullptr;}
 	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return nullptr;}
-
-	// constants - direct (fast)
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) { constants.set(C_,A); 
-		FixedConstants::OnSet(C_,A);
-	} }
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_) { constants.set(C_,A);
-		FixedConstants::OnSet(C_,A);
-	} }
-	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.set(C_,x,y,z,w);
-		FixedConstants::OnSet(C_,v);
-	} }
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_) { constants.seta(C_,e,A);
-		FixedConstants::OnSetA(C_,e,A);
-	} }
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_) { constants.seta(C_,e,A);
-		FixedConstants::OnSetA(C_,e,A);
-	} }
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_) { Fvector4 v; v.set(x,y,z,w); constants.seta(C_,e,x,y,z,w);
-		FixedConstants::OnSetA(C_,e,v);
-	} }
-	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_) { constants.set(C_,A);
-		FixedConstants::OnSet(C_,A);
-	} }
-	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_) { constants.set(C_,A);
-		FixedConstants::OnSet(C_,A);
-	} }
-
-
-	// constants - const char* (slow)
-	ICF	void						set_c				(const char* n, const Fmatrix& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-	ICF	void						set_c				(const char* n, const Fvector4& A)										{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-	ICF	void						set_c				(const char* n, float x, float y, float z, float w)						{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSet(FixedConstants::NameHash(n),v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,x,y,z,w);	}
-	ICF	void						set_ca				(const char* n, u32 e, const Fmatrix& A)								{ FixedConstants::OnSetA(FixedConstants::NameHash(n),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
-	ICF	void						set_ca				(const char* n, u32 e, const Fvector4& A)								{ FixedConstants::OnSetA(FixedConstants::NameHash(n),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
-	ICF	void						set_ca				(const char* n, u32 e, float x, float y, float z, float w)				{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSetA(FixedConstants::NameHash(n),e,v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,x,y,z,w);}
-	ICF	void						set_c				(const char* n, float A)												{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-	ICF	void						set_c				(const char* n, int A)													{ FixedConstants::OnSet(FixedConstants::NameHash(n),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-
-	ICF	void						set_c				(shared_str& n, const Fmatrix& A)									{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);			}
-	ICF	void						set_c				(shared_str& n, const Fvector4& A)									{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);			}
-	ICF	void						set_c				(shared_str& n, float x, float y, float z, float w)					{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,x,y,z,w);	}
-	ICF	void						set_ca				(shared_str& n, u32 e, const Fmatrix& A)							{ FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
-	ICF	void						set_ca				(shared_str& n, u32 e, const Fvector4& A)							{ FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,A);		}
-	ICF	void						set_ca				(shared_str& n, u32 e, float x, float y, float z, float w)			{ Fvector4 v; v.set(x,y,z,w); FixedConstants::OnSetA(FixedConstants::NameHash(n.c_str()),e,v); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.seta(&*c,e,x,y,z,w);}
-	ICF	void						set_c				(shared_str& n, float A)											{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
-	ICF	void						set_c				(shared_str& n, int A)												{ FixedConstants::OnSet(FixedConstants::NameHash(n.c_str()),A); if(!ctable) return; ref_constant c = ctable->get(n); if(c) constants.set(&*c,A);		}
 
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC);
 
 	ICF	void						Compute				(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 	ICF void						Render_noIA			(u32 iVertexCount);
-	ICF	void						RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation, bool flush_constants = true);
+	ICF	void						RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation);
 	ICF	void						RenderInstanced		(ERHI_PRIMITIVE_TOPOLOGY T, u32 startV, u32 PC, u32 instanceCount);
-	ICF void						FlushConstants() { constants.flush(); }
+	ICF void						FlushConstants() { Constants.Flush(); }
 
 	// Device create / destroy / frame signaling
 	void							CreateQuadIB		();

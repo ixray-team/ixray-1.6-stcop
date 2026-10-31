@@ -245,7 +245,7 @@ void dxRenderDeviceRender::Begin()
 {
 
 	RCache.OnFrameBegin();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Z(true);
 
 	if (Resources)

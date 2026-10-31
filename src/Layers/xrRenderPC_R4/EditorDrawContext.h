@@ -74,7 +74,7 @@ public:
 	{
 		if (Active)
 		{
-			GRHI->StateManager->OverrideFillMode(true, GEditorDraw.FillMode);
+			RCache.set_FillModeOverride(true, GEditorDraw.FillMode);
 		}
 	}
 
@@ -82,7 +82,7 @@ public:
 	{
 		if (Active)
 		{
-			GRHI->StateManager->OverrideFillMode(false, D3DFILL_SOLID);
+			RCache.set_FillModeOverride(false, D3DFILL_SOLID);
 		}
 	}
 

@@ -3,7 +3,7 @@
 
 #ifdef SCOPE_POSTPROCESS
 Texture2D s_scope_tonemap;
-float4 bloom_params; // x - ps_r2_bloom_amount
+#include "shared\post_cb.hlsli"
 
 // Matches combine_2 without the bloom term: the legacy pipeline squares the color only to mix bloom.
 float GetScopeExposure()

@@ -38,7 +38,6 @@ private:
 	xr_vector<SInstance> Instances;
 	IRHIBuffer* Buffer = nullptr;
 	IRHIShaderResourceView* SRV = nullptr;
-	shared_str ParamsName;
 	bool Active = false;
 };
 

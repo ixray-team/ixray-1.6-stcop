@@ -1,11 +1,6 @@
 #include "common.hlsli"
 
-float4 brush_worldpos; // xy = brush center (world XZ)
-float4 brush_params;   // x = radius, y = soft (0..1), z = press/alpha, w = mode:
-                       //   0 hover, 1 erase (red), 2 paint warning, 3 mask overlay
-float4 brush_noise;    // x = seed, y = pattern freq, z = threshold, w = sharp/0=off
-float4 brush_color;    // rgb = tint, a = edge hardness (falloff at rim, 0..0.9)
-float4 brush_extra;    // x = cursor circle alpha, y = pattern preview alpha
+#include "shared\extra_cb.hlsli"
 
 struct v2p
 {

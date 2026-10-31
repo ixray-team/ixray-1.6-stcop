@@ -109,7 +109,6 @@ void CStats::Show()
 		{
 			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
 			fTPS = fInv*fTPS + fOne*float(rendered_polies)/(RenderTOTAL.result*1000.f);
-			//fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
 			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
 		}
 	}
@@ -253,14 +252,10 @@ void CStats::Show()
 		F_.SetColor						(color_rgba(255,16,16,255));
 		F_.OutSet						(300,360);
 		if (fFPS<30)					F_.OutNext	("FPS       < 30:   %3.1f",	fFPS);
-		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
 		m_pRender->GuardVerts(F_);
-		////if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
 		if (psDeviceFlags.test(rsStatistic))
 		{
 			m_pRender->GuardDrawCalls(F_);
-			//if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
-			////if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
 			if (RenderDUMP_DT_Count>1000)	F_.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
 			F_.OutSkip						();
 			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
@@ -394,9 +389,6 @@ void CStats::OnRender()
 			if (item._3D)
 			{
 				m_pRender->SetDrawParams(&*Device.m_pRender);
-				//RCache.set_xform_world(Fidentity);
-				//RCache.set_Shader		(Device.m_SelectionShader);
-				//RCache.set_c			("tfactor",1,1,1,1);
 				DU->DrawCross			(item.params.position, 0.5f, 0xFF0000FF, true );
 				if (g_stats_flags.is(st_sound_min_dist))
 					DU->DrawSphere		(Fidentity, item.params.position, item.params.min_distance, 0x400000FF,	0xFF0000FF, true, true);

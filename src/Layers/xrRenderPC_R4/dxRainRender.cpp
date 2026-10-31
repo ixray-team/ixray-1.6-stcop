@@ -40,7 +40,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	// perform update
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Shader(SH_Rain);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Geometry(hGeom_Rain);
 
 	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(CEffect_Rain::rain_sprite));
@@ -72,7 +72,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		factor_visual *= 0.8f;
 		_IndexStream& _IS = RCache.Index;
 		RCache.set_Shader(DM_Drop->shader);
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		Fmatrix mXform,mScale;
 		int pcount = 0;
 		u32 v_offset,i_offset;
@@ -138,7 +138,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,v_offset,0,vCount_Lock,i_offset,dwNumPrimitives);
 		}
 	}
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 }
 
 const Fsphere& dxRainRender::GetDropBounds() const

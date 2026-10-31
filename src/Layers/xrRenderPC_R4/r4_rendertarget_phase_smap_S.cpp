@@ -15,7 +15,7 @@ void CRenderTarget::phase_smap_spot(light* L)
 	GRHI->SetViewport(VP);
 
 	// Misc - draw only front-faces //back-faces
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(false);
 
 	// no transparency

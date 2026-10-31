@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
-#include "dx10FixedConstants.h"
 // eye-params
 float					r__dtex_range	= 50;
 class cl_dt_scaler		: public RHIShaderConstant::Setup {
@@ -9,10 +8,9 @@ public:
 	float				scale;
 
 	cl_dt_scaler		(float s) : scale(s)	{};
-	virtual void setup	(RHIShaderConstant* C)
+	void setup() override
 	{
-		RCache.set_c	(C,scale,scale,scale,1/r__dtex_range);
-		FixedConstants::SetDtParamsScale(scale);
+		RCache.Constants.Write<CBMaterial>().dt_params.set(scale, scale, scale, 1 / r__dtex_range);
 	}
 };
 

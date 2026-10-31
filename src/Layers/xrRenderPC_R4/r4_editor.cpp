@@ -160,9 +160,9 @@ namespace
 	class CEditorParamsBinder final : public RHIShaderConstant::Setup
 	{
 	public:
-		void setup(RHIShaderConstant* C) override
+		void setup() override
 		{
-			RCache.set_c(C, RImplementation.EditorIsLit() ? 0.f : 1.f, 0.f, 0.f, 0.f);
+			RCache.Constants.Write<CBEditor>().editor_params.set(RImplementation.EditorIsLit() ? 0.f : 1.f, 0.f, 0.f, 0.f);
 		}
 	};
 
@@ -261,7 +261,7 @@ void CRender::EditorRenderUnlit()
 	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, nullptr);
 	rmNormal();
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 	RCache.set_ColorWriteEnable();
 	RCache.set_Element(EditorUnlitShader->E[0]);
@@ -278,7 +278,7 @@ void CRender::EditorRenderUnlit()
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 
 	// Helpers under the blended geometry
 	if (g_EditorRenderHost)
@@ -587,7 +587,7 @@ IRHIDepthStencilView* CRender::EditorOverlayDepth()
 	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), nullptr, nullptr, nullptr, nullptr, Depth);
 	rmNormal();
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 	RCache.set_Element(EditorDepthUpscaleShader->E[0]);
 	RCache.set_Geometry(Target->FSTriangleGeom);
@@ -612,7 +612,7 @@ void CRender::EditorBeginOverlay()
 
 	RCache.set_Stencil(FALSE);
 	RCache.set_ColorWriteEnable();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 }
 
 void CRender::EditorPresent(IRHIRenderTargetView* Destination)

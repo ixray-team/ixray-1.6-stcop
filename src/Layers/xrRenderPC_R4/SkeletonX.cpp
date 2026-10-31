@@ -206,10 +206,6 @@ ICF void xrSkin4W(vertRender* D,vertBoned4W* S, u32 vCount, CBoneInstance* BI)
 	}
 }
 
-shared_str s_bones_array_const;
-
-shared_str s_bones_array_const_old;
-
 void CSkeletonX::Copy(dxRender_Visual* V)
 {
 	if (progressive_mesh)
@@ -271,18 +267,16 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 {
 	struct arraybuff{Fvector4 buff[3];};
 
-	arraybuff* array = 0;
-	RCache.get_ConstantDirect(s_bones_array_const, bonecount * sizeof(arraybuff), (void**)&array, 0, 0);
-
-	if (!array)
+	if (bonecount > MAX_BONES_COUNT)
 	{
 		return;
 	}
 
-	arraybuff* array_old = 0;
-	RCache.get_ConstantDirect(s_bones_array_const_old, bonecount * sizeof(arraybuff), (void**)&array_old, 0, 0);
+	CBSkin& Skin = RCache.Constants.Write<CBSkin>();
+	arraybuff* array = reinterpret_cast<arraybuff*>(Skin.sbones_array);
+	arraybuff* array_old = reinterpret_cast<arraybuff*>(Skin.sbones_array_old);
 
-	if (phase_normal && array_old)
+	if (phase_normal)
 	{
 		for (u16 bid = 0; bid < bonecount; bid++)
 		{
@@ -332,12 +326,10 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			RCache.set_xform_world_old(Parent->mOldWorldMartrix);
 	}
 
-	//RCache.stat.r.s_dynamic.add		(vCount);
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
 		_Render_soft(hGeom,vCount,iOffset,pCount);
-		//RCache.stat.r.s_dynamic_sw.add	(vCount);
 		break;
 	case RM_SINGLE:	
 		{
@@ -356,7 +348,6 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 
 			RCache.set_Geometry(hGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, vCount, iOffset, pCount);
-			//RCache.stat.r.s_dynamic_inst.add(vCount);
 		}
 		break;
 	case RM_SKINNING_1B:
@@ -368,17 +359,6 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			transfer_matrices(Parent->bone_instances, u16(RMS_bonecount), phase_normal);
 			RCache.set_Geometry(hGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,vCount,iOffset,pCount);
-			//if (RM_SKINNING_1B==RenderMode)	
-			//	RCache.stat.r.s_dynamic_1B.add	(vCount);
-			//else
-			//if (RM_SKINNING_2B==RenderMode)	
-			//	RCache.stat.r.s_dynamic_2B.add	(vCount);
-			//else
-			//if (RM_SKINNING_3B==RenderMode)	
-			//	RCache.stat.r.s_dynamic_3B.add	(vCount);
-			//else
-			//if (RM_SKINNING_4B==RenderMode)	
-			//	RCache.stat.r.s_dynamic_4B.add	(vCount);
 		}
 		break;
 	}
@@ -433,9 +413,6 @@ void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 
 void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount) 
 {	
-	s_bones_array_const = "sbones_array";
-	s_bones_array_const_old = "sbones_array_old";
-
 	// Load vertices
 	bool FoundedChunk = !!data->find_chunk(OGF_VERTICES);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");

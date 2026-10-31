@@ -52,17 +52,15 @@ void CRenderTarget::accum_spot(light* L)
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-		//	Done in blender!
-		//RCache.set_ColorWriteEnable		(false);
 		RCache.set_Element(s_accum_mask->E[SE_MASK_SPOT]);		// masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 
 		// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		RCache.set_CullMode(ERHI_CULLMODE::BACK);
 		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 	}
@@ -73,11 +71,10 @@ void CRenderTarget::accum_spot(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
 	Fmatrix			m_Texgen;			u_compute_texgen_screen(m_Texgen);
-	Fmatrix			m_Texgen_J;			u_compute_texgen_jitter(m_Texgen_J);
 
 	// Shadow xform (+texture adjustment matrix)
 	Fmatrix			m_Shadow, m_Lmap;
@@ -148,20 +145,19 @@ void CRenderTarget::accum_spot(light* L)
 		}
 
 		RCache.set_Element(shader->E[_id]);
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 
 		// Constants
 		//float	att_R = L->range * .95f;
 		float	att_R = L->range;
 		float	att_factor = 1.f / (att_R * att_R);
-		RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
-		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.set_c("m_texgen", m_Texgen);
-		RCache.set_c("m_texgen_J", m_Texgen_J);
-		RCache.set_c("m_shadow", m_Shadow);
-		RCache.set_c("Ldynamic_hud", (int)L->flags.bHudMode);
-		RCache.set_ca("m_lmap", 0, m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
-		RCache.set_ca("m_lmap", 1, m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
+		RCache.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
+		RCache.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
+		RCache.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
 
 		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
 		draw_volume(L);
@@ -208,11 +204,10 @@ void CRenderTarget::accum_volumetric(light* L)
 	}
 
 	RCache.set_ColorWriteEnable();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);		// back
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);		// back
 
 	// 2D texgens 
 	Fmatrix			m_Texgen;			u_compute_texgen_screen(m_Texgen);
-	Fmatrix			m_Texgen_J;			u_compute_texgen_jitter(m_Texgen_J);
 
 	// Shadow xform (+texture adjustment matrix)
 	Fmatrix			m_Shadow, m_Lmap;
@@ -304,20 +299,18 @@ void CRenderTarget::accum_volumetric(light* L)
 		// Constants
 		float	att_R = L->m_volumetric_distance * L->range;// *.95f;
 		float	att_factor = 1.f / (att_R * att_R);
-		RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
-		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.set_c("m_texgen", m_Texgen);
-		RCache.set_c("m_texgen_J", m_Texgen_J);
-		RCache.set_c("m_shadow", m_Shadow);
-		RCache.set_ca("m_lmap", 0, m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
-		RCache.set_ca("m_lmap", 1, m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
-		RCache.set_c("vMinBounds", aabb.x1, aabb.y1, aabb.z1, 0);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
+		RCache.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
+		RCache.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
+		RCache.Constants.Write<CBLight>().vMinBounds.set(aabb.x1, aabb.y1, aabb.z1);
 		//	Increase camera-space aabb z size to compensate decrease of slices number
-		RCache.set_c("vMaxBounds", aabb.x2, aabb.y2, aabb.z1 + (aabb.z2 - aabb.z1) / fQuality, 0);
+		RCache.Constants.Write<CBLight>().vMaxBounds.set(aabb.x2, aabb.y2, aabb.z1 + (aabb.z2 - aabb.z1) / fQuality);
 
 		//	Set up user clip planes
 		{
-			static shared_str	strFrustumClipPlane("FrustumClipPlane");
 			//	TODO: DX10: Check if it's equivalent to the previouse code.
 
 			//	Transform frustum to clip space
@@ -329,7 +322,7 @@ void CRenderTarget::accum_volumetric(light* L)
 				Fvector4	TransformedPlane;
 				PlaneTransform.transform(TransformedPlane, ClipPlane);
 				TransformedPlane.mul(-1.0f);
-				RCache.set_ca(strFrustumClipPlane, i, TransformedPlane);
+				RCache.Constants.Write<CBLight>().FrustumClipPlane[i] = TransformedPlane;
 			}
 		}
 
@@ -410,16 +403,16 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 
 	//Set the shader
 	RCache.set_Element(s_combine->E[3]);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 	RCache.set_Stencil(false);
 
 	RCache.set_ColorWriteEnable();
 	//Set constants
-	RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
-	RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, -cos(L->cone * 0.5));
-	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L->get_LOD());
+	RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+	RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, -cos(L->cone * 0.5));
+	RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L->get_LOD());
 
-	RCache.set_c("m_shadow", m_Shadow);
+	RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
 
 	//Render, no IB/VB - geometry in VS
 	draw_volume(L);

@@ -140,7 +140,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 										for (_NormalItem& Ni : items)
 										{
 											float LOD = calcLOD(Ni.ssa, Ni.R);
-											RCache.LOD.set_LOD(LOD);
+											RCache.Constants.SetLOD(LOD);
 											if (Ni.geom)
 											{
 												RCache.set_Geometry(Ni.geom);
@@ -218,7 +218,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 											RImplementation.apply_lmaterial();
 	
 											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-											RCache.LOD.set_LOD(LOD);
+											RCache.Constants.SetLOD(LOD);
 											Ni.pVisual->Render(LOD);
 										}if (_clear)items.visuals.clear();
 										continue;
@@ -246,30 +246,31 @@ ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
 
-	if (auto* Constant = RCache.get_c("ui_emissive_tint")._get())
+	if (RCache.get_c("ui_emissive_tint")._get())
 	{
 		const auto* Settings = RImplementation.GraphMain.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
+		Hlsl::float4& Tint = RCache.Constants.Write<CBUIIcon>().ui_emissive_tint;
 		if (Settings)
 		{
-			RCache.set_c(Constant, Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, 1.0f);
+			Tint.set(Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, 1.0f);
 		}
 		else
 		{
-			RCache.set_c(Constant, 1.0f, 1.0f, 1.0f, 1.0f);
+			Tint.set(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
 
 	if (emissive)
 	{
-		GRHI->StateManager->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		GRHI->StateManager->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-		GRHI->StateManager->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		RCache.set_RenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		RCache.set_RenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		RCache.set_RenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 	}
 	else if (RImplementation.GraphMain.val_bUI && N.val.se->flags.bEmissive)
 	{
 		RCache.set_ColorWriteEnable();
-		GRHI->StateManager->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		RCache.set_RenderState(D3DRS_ZWRITEENABLE, TRUE);
 	}
 
 	if (V->dcast_ParticleCustom())

@@ -252,7 +252,7 @@ struct SelectionColorRaii
 	{
 		if (!Parent)
 		{
-			RCache.hemi.set_selection(0);
+			RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 			return;
 		}
 
@@ -262,7 +262,7 @@ struct SelectionColorRaii
 		auto It = m_color_map.find(Parent);
 		if (It == m_color_map.end())
 		{
-			RCache.hemi.set_selection(sum_color);
+			RCache.Constants.Write<CBEditor>().editor_selection = sum_color;
 			return;
 		}
 
@@ -277,12 +277,12 @@ struct SelectionColorRaii
 			sum_color.add(color.mul(pColor.second.a));
 		}
 
-		RCache.hemi.set_selection(sum_color);
+		RCache.Constants.Write<CBEditor>().editor_selection = sum_color;
 	};
 
 	~SelectionColorRaii()
 	{
-		RCache.hemi.set_selection(0);
+		RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 	};
 };
 
@@ -493,7 +493,7 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 	const u32 stride = m_Parent->vs_SkeletonGeom->vb_stride;
 	VERIFY(stride == sizeof(svertRender));
 
-	ERHI_CULLMODE OldCullMode = GRHI->StateManager->GetCullMode();
+	ERHI_CULLMODE OldCullMode = RCache.get_CullMode();
 	// Without a shader the caller (the scene graph) has set the pass already
 	const u32 dwRequired = PassShader ? (u32)(*PassShader)->E[0]->passes.size() : 1;
 
@@ -541,29 +541,23 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 				RCache.set_Shader(*PassShader, dwPass);
 			}
 
-			// transfer matrices
-			ref_constant array = RCache.get_c("sbones_array");
-
-			if (array)
+			const BoneVec& boneVec = m_Parent->m_Bones;
+			Hlsl::float4* Bones = RCache.Constants.Write<CBSkin>().sbones_array;
+			for (u16 mid = 0, count = (u16)std::min<size_t>(boneVec.size(), MAX_BONES_COUNT); mid < count; mid++)
 			{
-				const BoneVec& boneVec = m_Parent->m_Bones;
-				for (u16 mid = 0, count = (u16)boneVec.size(); mid < count; mid++)
-				{
-					u32 id = u32(mid * 3);
-					const Fmatrix& M = boneVec[mid]->_RenderTransform();
-					RCache.set_ca(&*array, id + 0, M._11, M._21, M._31, M._41);
-					RCache.set_ca(&*array, id + 1, M._12, M._22, M._32, M._42);
-					RCache.set_ca(&*array, id + 2, M._13, M._23, M._33, M._43);
-				}
+				const Fmatrix& M = boneVec[mid]->_RenderTransform();
+				Bones[mid * 3 + 0].set(M._11, M._21, M._31, M._41);
+				Bones[mid * 3 + 1].set(M._12, M._22, M._32, M._42);
+				Bones[mid * 3 + 2].set(M._13, M._23, M._33, M._43);
 			}
 
 			if (S->m_Flags.is(CSurface::sf2Sided))
 			{
-				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+				RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			}
 			else
 			{
-				GRHI->StateManager->SetCullMode(OldCullMode);
+				RCache.set_CullMode(OldCullMode);
 			}
 			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 			RCache.set_Geometry(m_Parent->vs_SkeletonGeom);
@@ -571,5 +565,5 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 		}
 	}
 
-	GRHI->StateManager->SetCullMode(OldCullMode);
+	RCache.set_CullMode(OldCullMode);
 }

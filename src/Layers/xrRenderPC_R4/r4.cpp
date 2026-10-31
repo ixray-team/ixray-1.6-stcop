@@ -117,49 +117,29 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 	return pVisual->shader->E[id]._get();
 }
 
-static class cl_parallax : public RHIShaderConstant::Setup 
+static class cl_parallax : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
+	void setup() override
 	{
 		float h = ps_r2_df_parallax_h;
-		RCache.set_c(C, h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
+		RCache.Constants.Write<CBMaterial>().parallax.set(h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
 	}
 } binder_parallax;
 
-static class cl_LOD : public RHIShaderConstant::Setup
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		RCache.LOD.set_LOD(C);
-	}
-} binder_LOD;
-
 static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
+	void setup() override
 	{
-		RCache.set_c(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
-
+		RCache.Constants.Write<CBView>().pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 	}
 } binder_pos_decompress_params2;
-
-static class cl_water_intensity : public RHIShaderConstant::Setup		
-{	
-	virtual void setup	(RHIShaderConstant* C)
-	{
-		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fWaterIntensity;
-
-		RCache.set_c(C, fValue, fValue, fValue, 0);
-	}
-}	binder_water_intensity;
 
 static class cl_invP : public RHIShaderConstant::Setup
 {
 	u32 marker = 0;
 	Fmatrix result{};
 
-	virtual void setup(RHIShaderConstant* C)
+	void setup() override
 	{
 		if (Device.dwFrame != marker)
 		{
@@ -167,52 +147,24 @@ static class cl_invP : public RHIShaderConstant::Setup
 			marker = Device.dwFrame;
 		}
 
-		RCache.set_c(C, result);
+		RCache.Constants.Write<CBView>().m_invP = result;
 	}
 }	binder_invP;
 
-static class cl_invP_hud : public RHIShaderConstant::Setup
-{
-	u32 marker = 0;
-	Fmatrix result{};
-
-	virtual void setup(RHIShaderConstant* C)
-	{
-		if (Device.dwFrame != marker)
-		{
-			result.invert44(Device.mProject_hud);	// result.row[2].mul(50.0f);
-			marker = Device.dwFrame;
-		}
-
-		RCache.set_c(C, result);
-	}
-}	binder_invP_hud;
-
-static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
-{	
-	virtual void setup	(RHIShaderConstant* C)
-	{
-		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-		float fValue = E.m_fSunShaftsIntensity;
-		RCache.set_c(C, fValue, fValue, fValue, 0);
-	}
-}	binder_sun_shafts_intensity;
-
 static class cl_alpha_ref	: public RHIShaderConstant::Setup 
 {	
-	virtual void setup (RHIShaderConstant* C) 
+	void setup() override
 	{
-		auto Callback = [C](u32 m_uiAlphaRef)
+		GRHI->StateManager->BindAlphaRefCallback([](u32 m_uiAlphaRef)
 		{
-			RCache.set_c(C, (float)m_uiAlphaRef / 255.0f);
-		};
-		GRHI->StateManager->BindAlphaRefCallback(Callback);
+			RCache.Constants.Write<CBMaterial>().m_AlphaRef = (float)m_uiAlphaRef / 255.0f;
+		});
 	}
 } binder_alpha_ref;
 
 static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 {	
-	virtual void setup	(RHIShaderConstant* C)
+	void setup() override
 	{
 		for(int i = 0; i < 3; i++)
 		{
@@ -225,27 +177,10 @@ static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 			};
 
 			Fmatrix xf_project; xf_project.mul(m_TexelAdjust, RImplementation.m_sun_cascades[i].xform);
-			RCache.set_ca(C, i, xf_project);
+			RCache.Constants.Write<CBLight>().m_shadow_sun[i] = xf_project;
 		}
 	}
 }	binder_m_shadow_sun;
-
-template <typename T>
-class cl_m_dev_cal : public RHIShaderConstant::Setup
-{
-	T* value{};
-
-public:
-	cl_m_dev_cal(T* inval)
-	{
-		value = inval;
-	}
-
-	virtual void setup(RHIShaderConstant* C)
-	{
-		RCache.set_c(C, *value, 0.f, 0.f, 0.f);
-	}
-};
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
@@ -310,25 +245,11 @@ void CRender::create()
 
 	// constants
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("sun_shafts_intensity", &binder_sun_shafts_intensity);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("water_intensity", &binder_water_intensity);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
 
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP_hud", &binder_invP_hud);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP", &binder_invP);
-
-	static cl_m_dev_cal m_dev_cal1(&ps_r__test_exp_to_shaders_1);
-	static cl_m_dev_cal m_dev_cal2(&ps_r__test_exp_to_shaders_2);
-	static cl_m_dev_cal m_dev_cal3(&ps_r__test_exp_to_shaders_3);
-	static cl_m_dev_cal m_dev_cal4(&ps_r__test_exp_to_shaders_4);
-
-	DEV->RegisterConstantSetup("test_exp_to_shaders_1", &m_dev_cal1);
-	DEV->RegisterConstantSetup("test_exp_to_shaders_2", &m_dev_cal2);
-	DEV->RegisterConstantSetup("test_exp_to_shaders_3", &m_dev_cal3);
-	DEV->RegisterConstantSetup("test_exp_to_shaders_4", &m_dev_cal4);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";

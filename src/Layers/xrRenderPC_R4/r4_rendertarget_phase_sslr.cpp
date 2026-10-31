@@ -338,7 +338,7 @@ void CRender::render_reflections()
 	Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
 	{
 		RImplementation.rmNormal();
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE); 
+		RCache.set_CullMode(ERHI_CULLMODE::NONE); 
 	});
 
 	Target->u_setrt(DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);

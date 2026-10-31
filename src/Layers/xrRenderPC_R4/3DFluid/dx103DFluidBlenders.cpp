@@ -6,111 +6,30 @@
 
 namespace
 {
-// Volume texture width
-class cl_textureWidth		: public RHIShaderConstant::Setup 
+class cl_gridDim : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
+	void setup() override
 	{
-		float tW = (float)FluidManager.GetTextureWidth();
-		RCache.set_c( C, tW );
-	}
-};
-static cl_textureWidth		binder_textureWidth;
-
-// Volume texture height
-class cl_textureHeight		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float tH = (float)FluidManager.GetTextureHeight();
-		RCache.set_c( C, tH );
-	}
-};
-static cl_textureHeight		binder_textureHeight;
-
-// Volume texture depth
-class cl_textureDepth		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float tD = (float)FluidManager.GetTextureDepth();
-		RCache.set_c( C, tD );
-	}
-};
-static cl_textureDepth		binder_textureDepth;
-
-class cl_gridDim		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float tW = (float)FluidManager.GetTextureWidth();
-		float tH = (float)FluidManager.GetTextureHeight();
-		float tD = (float)FluidManager.GetTextureDepth();
-		RCache.set_c( C, tW, tH, tD, 0.0f );
+		const int tW = FluidManager.GetTextureWidth();
+		const int tH = FluidManager.GetTextureHeight();
+		const int tD = FluidManager.GetTextureDepth();
+		CBFluid& Fluid = RCache.Constants.Write<CBFluid>();
+		Fluid.textureWidth = (float)tW;
+		Fluid.textureHeight = (float)tH;
+		Fluid.textureDepth = (float)tD;
+		Fluid.gridDim.set((float)tW, (float)tH, (float)tD, 0.0f);
+		Fluid.recGridDim.set(1.0f / tW, 1.0f / tH, 1.0f / tD, 0.0f);
+		Fluid.maxGridDim = (float)std::max(tW, std::max(tH, tD));
 	}
 };
 static cl_gridDim		binder_gridDim;
 
-class cl_recGridDim		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float tW = (float)FluidManager.GetTextureWidth();
-		float tH = (float)FluidManager.GetTextureHeight();
-		float tD = (float)FluidManager.GetTextureDepth();
-		RCache.set_c( C, 1.0f/tW, 1.0f/tH, 1.0f/tD, 0.0f );
-	}
-};
-static cl_recGridDim		binder_recGridDim;
-
-class cl_maxDim		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		int tW = FluidManager.GetTextureWidth();
-		int tH = FluidManager.GetTextureHeight();
-		int tD = FluidManager.GetTextureDepth();
-		float tMax = (float)std::max(tW, std::max(tH, tD));
-		RCache.set_c( C, (float)tMax);
-	}
-};
-static cl_maxDim		binder_maxDim;
-
-/*
-//  decay simulation option
-class cl_decay		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float fDecay = FluidManager.GetDecay();
-		RCache.set_c( C, fDecay );
-	}
-};
-static cl_decay		binder_decay;
-
-//  decay simulation ImpulseSize
-class cl_impulseSize		: public RHIShaderConstant::Setup 
-{
-	virtual void setup(RHIShaderConstant* C)
-	{
-		float fIS = FluidManager.GetImpulseSize();
-		RCache.set_c( C, fIS );
-	}
-};
-static cl_impulseSize		binder_impulseSize;
-*/
-
 void BindConstants(CBlender_Compile& C)
 {
-	//	Bind constants here
-	C.r_Constant( "textureWidth",	&binder_textureWidth);
-	C.r_Constant( "textureHeight",	&binder_textureHeight);
-	C.r_Constant( "textureDepth",	&binder_textureDepth);
-
-	//	Renderer constants
-	C.r_Constant( "gridDim",	&binder_gridDim);
-	C.r_Constant( "recGridDim",	&binder_recGridDim);
-	C.r_Constant( "maxGridDim",	&binder_maxDim);
+	for (const char* Name : { "textureWidth", "textureHeight", "textureDepth", "gridDim", "recGridDim", "maxGridDim" })
+	{
+		C.r_Setup(Name, &binder_gridDim);
+	}
 }
 void SetupSamplers(CBlender_Compile& C)
 {

@@ -134,34 +134,35 @@ void FTreeVisual::Render	(float LOD)
 	// setup constants
 	Fmatrix xform_v;
 	xform_v.mul_43(RCache.get_xform_view(), xform);
-	RCache.tree.set_m_xform_v (xform_v);
+	CBPass& Pass = RCache.Constants.Write<CBPass>();
+	Pass.m_xform_v = xform_v;
 
 	float s = ps_r__Tree_SBC;
 	float h = s;
-	RCache.tree.set_m_xform	(xform);
+	Pass.m_xform = xform;
 
-	RCache.tree.set_consts	(tvs.scale, tvs.scale, 0, 0);
-	RCache.tree.set_wave	(tvs.wave);
-	RCache.tree.set_wind	(tvs.wind);
+	Pass.consts.set(tvs.scale, tvs.scale, 0, 0);
+	Pass.wave = tvs.wave;
+	Pass.wind = tvs.wind;
 
-	RCache.tree.set_consts_old(tvs_old.scale, tvs_old.scale, 0, 0);
-	RCache.tree.set_wave_old(tvs_old.wave);
-	RCache.tree.set_wind_old(tvs_old.wind);
+	Pass.consts_old.set(tvs_old.scale, tvs_old.scale, 0, 0);
+	Pass.wave_old = tvs_old.wave;
+	Pass.wind_old = tvs_old.wind;
 
 	if (LightingModeIsStaticRender())
 	{
 		CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
-		RCache.tree.set_c_bias(s * c_bias.rgb.x + desc.ambient.x, s * c_bias.rgb.y + desc.ambient.y, s * c_bias.rgb.z + desc.ambient.z, s * c_bias.hemi);
+		Pass.c_scale.set(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
+		Pass.c_bias.set(s * c_bias.rgb.x + desc.ambient.x, s * c_bias.rgb.y + desc.ambient.y, s * c_bias.rgb.z + desc.ambient.z, s * c_bias.hemi);
 	}
 	else
 	{
 		s *= 1.3333f;
-		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, h * c_scale.hemi);
-		RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, h * c_bias.hemi);
+		Pass.c_scale.set(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, h * c_scale.hemi);
+		Pass.c_bias.set(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, h * c_bias.hemi);
 	}
 
-	RCache.tree.set_c_sun(h * c_scale.sun, h * c_bias.sun, 0, 0);
+	Pass.c_sun.set(h * c_scale.sun, h * c_bias.sun, 0, 0);
 }
 
 #define PCOPY(a)	a = pFrom->a

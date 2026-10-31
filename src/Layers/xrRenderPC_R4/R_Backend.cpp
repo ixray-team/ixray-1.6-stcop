@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "R_Backend.h"
-#include "dx10FixedConstants.h"
 
 CBackend RCache;
 
@@ -40,14 +39,16 @@ void CBackend::OnDeviceCreate	()
 	// streams
 	Vertex.Create		();
 	Index.Create		();
-	FixedConstants::Create();
+	Constants.Create();
+	Constants.UpdateObject(xforms);
+	Constants.UpdateView(xforms);
 	// invalidate caching
 	Invalidate			();
 }
 
 void CBackend::OnDeviceDestroy()
 {
-	FixedConstants::Destroy();
+	Constants.Destroy();
 	// streams
 	Index.Destroy		();
 	Vertex.Destroy		();

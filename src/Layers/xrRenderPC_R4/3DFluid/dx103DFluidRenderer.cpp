@@ -17,21 +17,6 @@ struct VsInput
 	XMFLOAT3 pos;
 };
 
-namespace
-{
-	// For render call
-	shared_str&	strZNear() { static shared_str Name("ZNear"); return Name; }
-	shared_str&	strZFar() { static shared_str Name("ZFar"); return Name; }
-	shared_str&	strGridScaleFactor() { static shared_str Name("gridScaleFactor"); return Name; }
-	shared_str&	strEyeOnGrid() { static shared_str Name("eyeOnGrid"); return Name; }
-	shared_str&	strInvWorldViewProjection() { static shared_str Name("InvWorldViewProjection"); return Name; }
-	shared_str&	strRTWidth() { static shared_str Name("RTWidth"); return Name; }
-	shared_str&	strRTHeight() { static shared_str Name("RTHeight"); return Name; }
-	shared_str&	strWorldViewProjection() { static shared_str Name("WorldViewProjection"); return Name; }
-
-	shared_str&	strDiffuseLight() { static shared_str Name("DiffuseLight"); return Name; }
-}
-
 const char* dx103DFluidRenderer::m_pRTNames[ RRT_NumRT ] = 
 {
 	"$user$rayDataTex",
@@ -407,7 +392,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	RImplementation.rmNormal();
 	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
 
-	RCache.set_c(strDiffuseLight(), LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
+	RCache.Constants.Write<CBFluid>().DiffuseLight.set(LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
 	DrawScreenQuad();
 }
@@ -536,8 +521,8 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 
 void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly)
 {
-	RCache.set_c(strRTWidth(), (float)RTWidth);
-	RCache.set_c(strRTHeight(), (float)RTHeight);
+	RCache.Constants.Write<CBFluid>().RTWidth = (float)RTWidth;
+	RCache.Constants.Write<CBFluid>().RTHeight = (float)RTHeight;
 
 
 	//if (SizeOnly)
@@ -547,8 +532,8 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	RCache.set_xform_world(transform);
 
 	// The near and far planes are used to unproject the scene's z-buffer values
-	RCache.set_c(strZNear(), Device.fViewportNear);
-	RCache.set_c(strZFar(), g_pGamePersistent->Environment().CurrentEnv->far_plane);
+	RCache.Constants.Write<CBFluid>().ZNear = Device.fViewportNear;
+	RCache.Constants.Write<CBFluid>().ZFar = g_pGamePersistent->Environment().CurrentEnv->far_plane;
 
 	auto gridWorld = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&transform));
 	auto View = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&RCache.xforms.m_v));
@@ -557,7 +542,7 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	// The length of one of the axis of the worldView matrix is the length of longest side of the box
 	//  in view space. This is used to convert the length of a ray from view space to grid space.
 	float worldScale = XMVectorGetX(XMVector3Length(WorldView.r[0]));
-	RCache.set_c(strGridScaleFactor(), worldScale);
+	RCache.Constants.Write<CBFluid>().gridScaleFactor = worldScale;
 
 	// We prepend the current world matrix with this other matrix which adds an offset (-0.5, -0.5, -0.5)
 	//  and scale factors to account for unequal number of voxels on different sides of the volume box. 
@@ -572,13 +557,13 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	// worldViewProjection is used to transform the volume box to screen space
 	auto Projection = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&temp));
 	auto WorldViewProjection = WorldView * Projection;
-	RCache.set_c(strWorldViewProjection(), *(Fmatrix*)&WorldViewProjection);
+	RCache.Constants.Write<CBFluid>().WorldViewProjection = *(Fmatrix*)&WorldViewProjection;
 
 	// invWorldViewProjection is used to transform positions in the "near" plane into grid space
 	Fmatrix tempMatrix1{};
 	auto InvWorldViewProjection = XMMatrixInverse(nullptr, WorldViewProjection);
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&tempMatrix1), InvWorldViewProjection);
-	RCache.set_c(strInvWorldViewProjection(), tempMatrix1);
+	RCache.Constants.Write<CBFluid>().InvWorldViewProjection = tempMatrix1;
 
 	// Compute the inverse of the worldView matrix 
 	auto WorldViewInv = XMMatrixInverse(nullptr, WorldView);
@@ -587,7 +572,7 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	auto EyeInGridSpace = XMVector3Transform(XMVectorSet(0, 0, 0, 0), WorldViewInv);
 	Fvector4 tempVector{};
 	XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&tempVector), EyeInGridSpace);
-	RCache.set_c(strEyeOnGrid(), tempVector);
+	RCache.Constants.Write<CBFluid>().eyeOnGrid = tempVector;
 
-	RCache.set_c("DepthUnpack", RCache.xforms.m_p._43, RCache.xforms.m_p._33, 0.0f, 0.0f);
+	RCache.Constants.Write<CBFluid>().DepthUnpack.set(RCache.xforms.m_p._43, RCache.xforms.m_p._33, 0.0f, 0.0f);
 }

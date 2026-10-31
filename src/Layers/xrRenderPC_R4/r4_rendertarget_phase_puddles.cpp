@@ -10,7 +10,7 @@ bool CRenderTarget::phase_puddles()
 		return false;
 	}
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Shader(s_puddles);
 
 	auto puddles = 0;
@@ -24,7 +24,7 @@ bool CRenderTarget::phase_puddles()
 
 		RCache.set_xform_world(puddle.m_world);
 
-		RCache.set_c("puddle_constants", g_pGamePersistent->Environment().wetness_factor * puddle.m_height);
+		RCache.Constants.Write<CBPost>().puddle_constants = g_pGamePersistent->Environment().wetness_factor * puddle.m_height;
 		RCache.Render_noIA(6);
 
 		++puddles;
@@ -141,7 +141,7 @@ void CRenderTarget::phase_planar()
 		u_setrt(rt_sslr, 0, 0, 0);
 		RImplementation.rmNormal();
 
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		RCache.set_Shader(s_puddles);
 
 		RCache.set_xform_world(planar.m_world);

@@ -83,31 +83,23 @@ void CRenderTarget::draw_rain(light& RainSetup)
 		RCache.set_Textures(P.T);
 		RCache.set_CS(P.cs);
 
-		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
+		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
 
-		RCache.set_c("WorldX", W_dirX.x, W_dirX.y, W_dirX.z, 0);
-		RCache.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
+		RCache.Constants.Write<CBPost>().WorldX.set(W_dirX.x, W_dirX.y, W_dirX.z, 0);
+		RCache.Constants.Write<CBPost>().WorldZ.set(W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
 
-		RCache.set_c("m_shadow", m_shadow);
-		RCache.set_c("m_sunmask", m_clouds_shadow);
+		RCache.Constants.Write<CBLight>().m_shadow = m_shadow;
+		RCache.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
 
 		static float AngleFactor = 0.0f;
 		AngleFactor += Device.fTimeDelta * (0.15f + fRainFactor * 0.15f);
 
 		AngleFactor = AngleFactor - std::floor(AngleFactor);
 
-		RCache.set_c("RainDensity", fRainFactor, AngleFactor, fWetnessFactor, 0);
-		RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
+		RCache.Constants.Write<CBPost>().RainDensity.set(fRainFactor, AngleFactor, fWetnessFactor, 0);
+		RCache.Constants.Write<CBPost>().RainFallof.set(ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 
-		RCache.set_c
-		(
-			"m_level_scale", 
-
-			RImplementation.m_puddles_level_bound.lt.x,
-			RImplementation.m_puddles_level_bound.lt.y,
-			RImplementation.m_puddles_level_bound.rb.x,
-			RImplementation.m_puddles_level_bound.rb.y
-		);
+		RCache.Constants.Write<CBPost>().m_level_scale.set(RImplementation.m_puddles_level_bound.lt.x, RImplementation.m_puddles_level_bound.lt.y, RImplementation.m_puddles_level_bound.rb.x, RImplementation.m_puddles_level_bound.rb.y);
 
 
 		IRHIUnorderedAccessView* our_uav[3] =

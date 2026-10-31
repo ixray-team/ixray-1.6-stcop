@@ -32,9 +32,6 @@ private:
 	ref_rt					RT			;
 	ref_rt depth;
 	ref_shader clear;
-	shared_str				c_xform		;
-	shared_str				c_clamp		;
-	shared_str				c_factor	;
 public:
 	void					set_object		(IRenderable*	O);
 	bool					shadowing		()			{ return current!=nullptr;	}

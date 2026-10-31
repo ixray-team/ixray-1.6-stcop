@@ -12,11 +12,7 @@ float3 dof(float2 center)
 #else //	USE_DOF
 
 // x - near y - focus z - far w - sky distance
-cbuffer cb_dof : register(b7)
-{
-    float4 dof_params;
-    float3 dof_kernel; // x,y - resolution pre-scaled z - just kernel size
-};
+#include "shared\post_cb.hlsli"
 
 float DOFFactor(float depth)
 {

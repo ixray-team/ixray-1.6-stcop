@@ -6,7 +6,7 @@ bool UseRainDrops = false;
 
 static void BindScreenPass()
 {
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 }
 
@@ -31,9 +31,9 @@ void CRenderTarget::PhaseEffectSQ(EffectSQ Effect)
 		const u32 Element = ps_r4_sharpening_mode == 0 ? 1 : 0;
 		DrawSQ(s_cas, rt_Back_Buffer_AA, Element, []
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			RCache.set_Stencil(false);
-			RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
+			RCache.Constants.Write<CBPost>().sharpening_intensity = ps_r4_cas_sharpening;
 		});
 		ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
 		break;
@@ -91,7 +91,7 @@ void CRenderTarget::PhaseEffectSQ(EffectSQ Effect)
 			DrawSQ(FlatGasMaskShader, rt_Back_Buffer_AA, 0, [&]
 			{
 				BindScreenPass();
-				RCache.set_c("mask_control", float(DamagePhase), RainMode, 1.f, 0.f);
+				RCache.Constants.Write<CBVisor>().mask_control.set(float(DamagePhase), RainMode, 1.f, 0.f);
 			});
 			ResolveSurface(rt_Back_Buffer, rt_Back_Buffer_AA);
 		}
@@ -118,12 +118,12 @@ void CRenderTarget::phase_ui_postprocess(Fcolor* color, bool HasBackground)
 {
 	DrawPassSQ(s_cas, 3, [&]
 	{
-		RCache.set_c("ui_has_background", HasBackground ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+		RCache.Constants.Write<CBPost>().ui_has_background.set(HasBackground ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
 
 		if (color)
-			RCache.set_c("static_color", color->r, color->g, color->b, color->a);
+			RCache.Constants.Write<CBPost>().static_color.set(color->r, color->g, color->b, color->a);
 		else
-			RCache.set_c("static_color", 1, 1, 1, 1);
+			RCache.Constants.Write<CBPost>().static_color.set(1, 1, 1, 1);
 	});
 }
 

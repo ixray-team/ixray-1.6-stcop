@@ -1,12 +1,5 @@
 #include "common.hlsli"
 
-cbuffer VolumetricLights : register(b6)
-{
-    float3 vMinBounds;
-    float3 vMaxBounds;
-    float4 FrustumClipPlane[6];
-}
-
 struct v2p
 {
     float3 lightToPos : TEXCOORD0; // light center to plane vector

@@ -1,10 +1,6 @@
 #include "common.hlsli"
 
-cbuffer cb_static_color : register(b6)
-{
-    float4 static_color;
-    float4 ui_has_background;
-};
+#include "shared\post_cb.hlsli"
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

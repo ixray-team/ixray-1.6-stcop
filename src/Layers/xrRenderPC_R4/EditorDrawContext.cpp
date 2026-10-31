@@ -34,10 +34,14 @@ void CEditorDrawContext::SetRS(D3DRENDERSTATETYPE State, u32 Value)
 	switch (State)
 	{
 		case D3DRS_TEXTUREFACTOR:
-			RCache.hemi.set_tfactor(Value);
+		{
+			Fcolor Color;
+			Color.set(Value);
+			RCache.Constants.Write<CBMaterial>().tfactor.set(Color.r, Color.g, Color.b, Color.a);
+		}
 		break;
 		default:
-			GRHI->StateManager->SetRenderState(State, Value);
+			RCache.set_RenderState(State, Value);
 		break;
 	}
 }
@@ -86,7 +90,7 @@ void CEditorDrawContext::BindDetailInstance(ref_shader& Shader, u32 Pass)
 		DetailInstanceSRV = GRHI->CreateShaderResourceView(DetailInstanceBuffer, &SrvDesc);
 	}
 
-	GRHI->ShaderResourceCache->SetVSResource(P.vs->instance_buffer_slot, DetailInstanceSRV);
+	RCache.set_VSResource(P.vs->instance_buffer_slot, DetailInstanceSRV);
 }
 
 void CEditorDrawContext::DP(ERHI_PRIMITIVE_TOPOLOGY Topology, ref_geom Geom, u32 BaseVertex, u32 PrimitiveCount)

@@ -44,7 +44,7 @@ void dxUIRender::SetScissor(Irect* rect)
 	}
 
 	RCache.set_Scissor(rect);
-	GRHI->StateManager->OverrideScissoring(rect != nullptr, true);
+	RCache.set_ScissorOverride(rect != nullptr);
 }
 
 void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
@@ -192,7 +192,7 @@ void dxUIRender::CacheSetView(const Fmatrix& M)
 
 void dxUIRender::CacheSetCullMode(ERHI_CULLMODE m)
 {
-	GRHI->StateManager->SetCullMode(m);
+	RCache.set_CullMode(m);
 }
 
 void dxUIRender::zb_enable(u32 val)

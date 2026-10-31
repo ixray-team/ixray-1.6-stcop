@@ -2,7 +2,7 @@
 #define R1_COMMON_HLSLI
 #define COMMON_H
 
-#include "r1_decl.hlsli"
+#include "common_decl.hlsli"
 #include "common_iostructs.hlsli"
 #include "common_samplers.hlsli"
 

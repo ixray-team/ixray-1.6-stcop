@@ -6,9 +6,6 @@
 class RENDER_API	R_xforms
 {
 public:
-	Fmatrix			m_invw;		// derived	- world2local, cached
-	Fmatrix			m_invv;
-
 	Fmatrix			m_w;		// Basic	- world
 	Fmatrix			m_v;		// Basic	- view
 	Fmatrix			m_p;		// Basic	- projection
@@ -22,28 +19,8 @@ public:
 	Fmatrix			m_wv_old;	// Derived	- world2view old frame
 	Fmatrix			m_vp_old;	// Derived	- view2projection old frame
 	Fmatrix			m_wvp_old;	// Derived	- world2view2projection old frame
-	
-	RHIShaderConstant*		c_invw;
-	RHIShaderConstant*		c_invv;
 
-	RHIShaderConstant*		c_w;
-	RHIShaderConstant*		c_v;
-	RHIShaderConstant*		c_p;
-	RHIShaderConstant*		c_wv;
-	RHIShaderConstant*		c_vp;
-	RHIShaderConstant*		c_wvp;
-
-	RHIShaderConstant*		c_w_old;
-	RHIShaderConstant*		c_v_old;
-	RHIShaderConstant*		c_p_old;
-	RHIShaderConstant*		c_wv_old;
-	RHIShaderConstant*		c_vp_old;
-	RHIShaderConstant*		c_wvp_old;
-private:
-	bool			m_bInvWValid;
-public:
 	R_xforms		();
-	void			unmap		();
 
 	void			set_W		(const Fmatrix& m);
 	void			set_V		(const Fmatrix& m);
@@ -61,25 +38,5 @@ public:
 	IC const Fmatrix&	get_V_old () { return m_v_old; }
 	IC const Fmatrix&	get_P_old () { return m_p_old; }
 
-	IC void			set_c_invw	(RHIShaderConstant* C);
-	IC void			set_c_invv	(RHIShaderConstant* C);
-
-	IC void			set_c_w		(RHIShaderConstant* C);
-	IC void			set_c_v		(RHIShaderConstant* C);
-	IC void			set_c_p		(RHIShaderConstant* C);
-	IC void			set_c_wv	(RHIShaderConstant* C);
-	IC void			set_c_vp	(RHIShaderConstant* C);
-	IC void			set_c_wvp	(RHIShaderConstant* C);
-
-	IC void			set_c_w_old (RHIShaderConstant* C);
-	IC void			set_c_v_old (RHIShaderConstant* C);
-	IC void			set_c_p_old (RHIShaderConstant* C);
-	IC void			set_c_wv_old(RHIShaderConstant* C);
-	IC void			set_c_vp_old(RHIShaderConstant* C);
-	IC void			set_c_wvp_old(RHIShaderConstant* C);
-
-private:
-	void			apply_invw	();
-	void			apply_invv	();
 };
 #endif

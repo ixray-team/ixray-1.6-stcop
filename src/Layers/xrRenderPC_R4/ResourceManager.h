@@ -15,7 +15,6 @@
 
 // refs
 struct		lua_State;
-class dx10ConstantBuffer;
 class CSVGStorage;
 
 // defs
@@ -92,7 +91,6 @@ private:
 	xr_vector<SGeometry*>								v_geoms;
 	xr_vector<R_constant_table*>						v_constant_tables;
 
-	xr_vector<dx10ConstantBuffer*>						v_constant_buffer;
 	xr_vector<SInputSignature*>							v_input_signature;
 
 	// lists
@@ -147,8 +145,6 @@ public:
 	R_constant_table*				_CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-	dx10ConstantBuffer*				_CreateConstantBuffer(const RHIShaderBufferDesc* pTable);
-	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
 	SInputSignature*				_CreateInputSignature(RHIBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);

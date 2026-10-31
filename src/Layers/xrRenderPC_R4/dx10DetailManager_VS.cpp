@@ -272,7 +272,7 @@ void CDetailManager::hw_Unload()
 void CDetailManager::hw_Render(light* L)
 {
 	PROF_EVENT("CDetailManager::hw_Render");
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_xform_world(Fidentity);
 
 	Fvector4 wave, wave_old;
@@ -304,7 +304,7 @@ void CDetailManager::hw_Render(light* L)
 		hw_Render_dump<CDetail::SlotItem>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 }
 
 template<typename T>
@@ -322,30 +322,30 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		RImplementation.apply_lmaterial(); //Material ID
 
 	if (LightingModeIsStaticRender())
-		RCache.set_c("consts", 1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+		RCache.Constants.Write<CBPass>().consts.set(1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
 
 	if(var_id != 0)
 	{
-		RCache.set_c("wave", wave);
-		RCache.set_c("dir2D", wind);
+		RCache.Constants.Write<CBPass>().wave = wave;
+		RCache.Constants.Write<CBPass>().wind = wind;
 
-		RCache.set_c("wave_old", wave_old);
-		RCache.set_c("dir2D_old", wind_old);
+		RCache.Constants.Write<CBPass>().wave_old = wave_old;
+		RCache.Constants.Write<CBPass>().wind_old = wind_old;
 	}
 
 	if (!EditorMode)
 	{
 		CDetailWind::Constants wc;
 		CDetailWind::ComputeConstants(wc);
-		RCache.set_c("wind_global", wc.global);
-		RCache.set_c("wind_xz1", wc.xz1);
-		RCache.set_c("wind_xz1_dir", wc.xz1_dir);
-		RCache.set_c("wind_xz2", wc.xz2);
-		RCache.set_c("wind_xz2_dir", wc.xz2_dir);
-		RCache.set_c("wind_xz3", wc.xz3);
-		RCache.set_c("wind_xz3_dir", wc.xz3_dir);
-		RCache.set_c("wind_swirl", wc.swirl);
-		RCache.set_c("wind_swirl_dir", wc.swirl_dir);
+		RCache.Constants.Write<CBDetail>().wind_global = wc.global;
+		RCache.Constants.Write<CBDetail>().wind_xz1 = wc.xz1;
+		RCache.Constants.Write<CBDetail>().wind_xz1_dir = wc.xz1_dir;
+		RCache.Constants.Write<CBDetail>().wind_xz2 = wc.xz2;
+		RCache.Constants.Write<CBDetail>().wind_xz2_dir = wc.xz2_dir;
+		RCache.Constants.Write<CBDetail>().wind_xz3 = wc.xz3;
+		RCache.Constants.Write<CBDetail>().wind_xz3_dir = wc.xz3_dir;
+		RCache.Constants.Write<CBDetail>().wind_swirl = wc.swirl;
+		RCache.Constants.Write<CBDetail>().wind_swirl_dir = wc.swirl_dir;
 	}
 
 	RCache.FlushConstants();
@@ -369,7 +369,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			if (!EditorMode && ps_trample_enabled)
 			{
 				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-				RCache.set_c("trample_params", tp_val);
+				RCache.Constants.Write<CBDetail>().trample_params = tp_val;
 				RCache.FlushConstants();
 			}
 			auto& items = Object.m_items[render_key][var_id];
@@ -390,7 +390,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			IRHIShaderResourceView* currentSRV = it->second.second;
 
 			//Bind (current) buffer SRV
-			GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
+			RCache.set_VSResource(0, currentSRV);
 
 			//Set IB, VB and decls
 			RCache.set_Geometry(Object.hw_Geom);
@@ -410,7 +410,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 					instanceCount = 0; //Reset
 
 				}
@@ -420,7 +420,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			if (instanceCount > 0)
 			{
 				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0, false);
+				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 			}
 		}
 	}
@@ -435,15 +435,15 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.set_c("trample_params", tp_val);
+					RCache.Constants.Write<CBDetail>().trample_params = tp_val;
 					RCache.FlushConstants();
 				}
 				u32 buff_size = D.m_items[render_key][var_id].size();
 				if (buff_size)
 				{
-					GRHI->ShaderResourceCache->SetVSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
+					RCache.set_VSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
 					RCache.set_Geometry(D.hw_Geom);
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0);
 				}
 			}
 		}
@@ -456,7 +456,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.set_c("trample_params", tp_val);
+					RCache.Constants.Write<CBDetail>().trample_params = tp_val;
 					RCache.FlushConstants();
 				}
 				auto& items = Object.m_items[render_key][var_id];
@@ -477,7 +477,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				IRHIShaderResourceView* currentSRV = it->second.second;
 
 				//Bind (current) buffer SRV
-				GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
+				RCache.set_VSResource(0, currentSRV);
 
 				//Set IB, VB and decls
 				RCache.set_Geometry(Object.hw_Geom);
@@ -493,7 +493,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
 
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
+					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0);
 
 					offset += chunkSize;
 				}

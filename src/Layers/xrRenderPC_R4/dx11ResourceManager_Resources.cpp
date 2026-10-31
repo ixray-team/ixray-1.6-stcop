@@ -11,7 +11,6 @@
 #include "blenders/Blender_Recorder.h"
 
 #include "dx10BufferUtils.h"
-#include "dx10ConstantBuffer.h"
 
 #include "ShaderResourceTraits.h"
 
@@ -1114,38 +1113,6 @@ void			CResourceManager::_DeleteConstantList(const SConstantList* L )
 	if (reclaim(lst_constants,L))					return;
 	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
 }
-//--------------------------------------------------------------------------------------------------------------
-dx10ConstantBuffer* CResourceManager::_CreateConstantBuffer(const RHIShaderBufferDesc* pTable)
-{
-	VERIFY(pTable);
-	xrCriticalSectionGuard guard(creationGuard);
-	dx10ConstantBuffer	*pTempBuffer = new dx10ConstantBuffer(pTable);
-
-	for (u32 it=0; it<v_constant_buffer.size(); it++)
-	{
-		dx10ConstantBuffer*	buf		= v_constant_buffer[it];
-		if (pTempBuffer->Similar(*buf))			
-		{
-			xr_delete(pTempBuffer);
-			return buf;
-		}
-	}
-
-	pTempBuffer->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-	v_constant_buffer.push_back	(pTempBuffer);
-	return pTempBuffer;
-}
-//--------------------------------------------------------------------------------------------------------------
-void CResourceManager::_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer)
-{
-	if (0==(pBuffer->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-
-	xrCriticalSectionGuard guard(creationGuard);
-
-	if (reclaim(v_constant_buffer,pBuffer))						return;
-	Msg	("! ERROR: Failed to find compiled constant buffer");
-}
-
 //--------------------------------------------------------------------------------------------------------------
 SInputSignature* CResourceManager::_CreateInputSignature(RHIBlob* pBlob)
 {

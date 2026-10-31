@@ -223,7 +223,7 @@ bool CEditorSceneSubmit::CreateBuffer()
 
 void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 {
-	RCache.hemi.set_selection(0);
+	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
 	SVS* VS = RCache.get_VS();
 	const bool CanInstance = VS != nullptr && VS->editor_instance_slot != u32(-1) && CreateBuffer();
@@ -257,9 +257,8 @@ void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 		CopyMemory(Mapped.pData, Rows, ChunkCount * sizeof(Fvector4) * 3);
 		Buffer->Unmap();
 
-		GRHI->ShaderResourceCache->SetVSResource(VS->editor_instance_slot, SRV);
-		RCache.InvalidateVSTexture(VS->editor_instance_slot);
-		RCache.set_c("editor_instance_params", 0.f, 0.f, 0.f, 0.f);
+		RCache.set_VSResource(VS->editor_instance_slot, SRV);
+		RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
 		Visual.Mesh->RenderGeometryInstanced(Visual.Surface, ChunkCount);
 	}
 }

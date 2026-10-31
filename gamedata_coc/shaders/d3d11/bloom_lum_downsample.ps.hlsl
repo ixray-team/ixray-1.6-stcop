@@ -11,10 +11,7 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 */
 
 #include "common.hlsli"
-cbuffer cb_bloom_adapt : register(b6)
-{
-    float4 adapt_params;
-};
+#include "shared\post_cb.hlsli"
 
 static const float2 offsets2[16] =
 {

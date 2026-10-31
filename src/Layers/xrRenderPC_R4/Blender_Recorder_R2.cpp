@@ -6,7 +6,6 @@
 #include "blenders/Blender.h"
 #include "dxRenderDeviceRender.h"
 #include "ShaderBind.h"
-#include "dx10FixedConstants.h"
 #include "SH_Texture.h"
 
 #include "tss.h"
@@ -243,10 +242,7 @@ void CBlender_Compile::r_dx10Texture(const char* ResourceName, const char* textu
     {
         ref_constant C = ctable.get(ResourceName);
         RHIShaderConstant* sampler = C ? &*C : AddConstant(ResourceName);
-        sampler->destination = RC_dest_sampler;
-        sampler->type = RC_dx10texture;
-        sampler->samp.index = u16(stage);
-        sampler->samp.cls = RC_dx10texture;
+        sampler->samp = u16(stage);
     }
     passTextures.erase(std::remove_if(passTextures.begin(), passTextures.end(), [stage](const auto& it) { return it.first == stage; }), passTextures.end());
     passTextures.push_back(std::make_pair(stage, ref_texture(DEV->_CreateTexture(TexName))));
@@ -280,14 +276,13 @@ void CBlender_Compile::r_dx10Unbind(const char* ResourceName)
     const PassBind* sbase = FindBind("s_base", 't');
     ref_constant C = sbase ? ctable.get("s_base") : nullptr;
     if (C)
-        C->samp.index = u16(base + sbase->slot);
+        C->samp = u16(base + sbase->slot);
 }
 
 RHIShaderConstant* CBlender_Compile::AddConstant(const char* name)
 {
     ref_constant C = new RHIShaderConstant();
     C->name = name;
-    C->name_hash = FixedConstants::NameHash(name);
     ctable.table.push_back(C);
     std::sort(ctable.table.begin(), ctable.table.end(), [](const ref_constant& a, const ref_constant& b) { return xr_strcmp(a->name, b->name) < 0; });
     ctable.handlers_valid = false;
@@ -297,13 +292,6 @@ RHIShaderConstant* CBlender_Compile::AddConstant(const char* name)
 void CBlender_Compile::r_Setup(const char* name, RHIShaderConstant::Setup* s)
 {
     AddConstant(name)->handler = s;
-}
-
-void CBlender_Compile::r_Constant(const char* name, RHIShaderConstant::Setup* s)
-{
-    R_ASSERT(s);
-    ref_constant C = ctable.get(name);
-    if (C) C->handler = s;
 }
 
 void CBlender_Compile::r_ColorWriteEnable(bool cR, bool cG, bool cB, bool cA)

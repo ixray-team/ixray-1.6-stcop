@@ -61,7 +61,7 @@ void CRenderTarget::phase_combine()
 
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	// draw skybox
@@ -99,7 +99,7 @@ void CRenderTarget::phase_combine()
 			m_xform.transform_dir(localnormal, normal);
 			localnormal.normalize();
 
-			m_clouds_shadow.mul(m_xform, RCache.xforms.m_invv);
+			m_clouds_shadow.set(m_xform);
 			m_xform.scale(0.002f, 0.002f, 1.f);
 			m_clouds_shadow.mulA_44(m_xform);
 			m_xform.translate(localnormal.mul(w_shift));
@@ -132,9 +132,9 @@ void CRenderTarget::phase_combine()
 	
 		DrawPassSQ(s_combine, 0, [&]
 		{
-			RCache.set_c("Ldynamic_color", sunclr);
-			RCache.set_c("Ldynamic_dir", sundir);
-			RCache.set_c("m_sunmask", m_clouds_shadow);
+			RCache.Constants.Write<CBLight>().Ldynamic_color = sunclr;
+			RCache.Constants.Write<CBLight>().Ldynamic_dir = sundir;
+			RCache.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
 		});
 	}
 
@@ -159,7 +159,7 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(Forward_rendering);
 		phase_scene_forward();
 
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		RCache.set_CullMode(ERHI_CULLMODE::BACK);
 
 		RCache.set_Stencil(FALSE);
 		RCache.set_ColorWriteEnable();
@@ -265,7 +265,7 @@ void CRenderTarget::phase_combine()
 	u_setrt(rt_Back_Buffer, 0, 0, 0);
 	RImplementation.rmNormal();
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	{
@@ -281,16 +281,13 @@ void CRenderTarget::phase_combine()
 
 		DrawPassSQ(s_combine, 2, [&]
 		{
-			RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
-			RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
-			RCache.set_c("autoexposure_params", ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
-			RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
-			RCache.set_c("tonemap_params", ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
-			RCache.set_c("bloom_tint", ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
-			RCache.set_c("spp_params",
-				ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f,
-				ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f,
-				0.0f, 0.0f);
+			RCache.Constants.Write<CBPost>().dof_params.set(dof.x, dof.y, dof.z, ps_r2_dof_sky);
+			RCache.Constants.Write<CBPost>().dof_kernel.set(vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size);
+			RCache.Constants.Write<CBPost>().autoexposure_params.set(ps_r2_autoexposure_key, ps_r2_autoexposure_min, ps_r2_autoexposure_max, ps_r2_autoexposure_bias);
+			RCache.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.f);
+			RCache.Constants.Write<CBPost>().tonemap_params.set(ps_r2_tonemap_compression, ps_r2_tonemap_desaturation, ps_r2_tonemap_crossfeed, ps_r2_tonemap_vibrance);
+			RCache.Constants.Write<CBPost>().bloom_tint.set(ps_r2_bloom_tint_color.x, ps_r2_bloom_tint_color.y, ps_r2_bloom_tint_color.z, 1.f);
+			RCache.Constants.Write<CBPost>().spp_params.set(ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION) ? 1.0f : 0.0f, ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE) ? 1.0f : 0.0f, 0.0f, 0.0f);
 		});
 	}
 
@@ -334,7 +331,7 @@ void CRenderTarget::phase_combine()
 	RCache.set_Stencil(FALSE);
 
 #ifdef DEBUG
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	static	xr_vector<Fplane>		saved_dbg_planes;
 	if (bDebug)		saved_dbg_planes= dbg_planes;
 	else			dbg_planes		= saved_dbg_planes;
@@ -385,7 +382,7 @@ void CRenderTarget::phase_wallmarks()
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }
 

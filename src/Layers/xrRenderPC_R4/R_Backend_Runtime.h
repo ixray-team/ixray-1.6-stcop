@@ -10,22 +10,6 @@
 #include "dx10R_Backend_Runtime.h"
 #include "StateManager/dx10State.h"
 
-IC void		R_xforms::set_c_w			(RHIShaderConstant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
-IC void		R_xforms::set_c_invw		(RHIShaderConstant* C)		{	c_invw	= C;	apply_invw();			};
-IC void		R_xforms::set_c_invv		(RHIShaderConstant* C)		{	c_invv	= C;	apply_invv();			};
-IC void		R_xforms::set_c_v			(RHIShaderConstant* C)		{	c_v		= C;	RCache.set_c(C,m_v);	};
-IC void		R_xforms::set_c_p			(RHIShaderConstant* C)		{	c_p		= C;	RCache.set_c(C,m_p);	};
-IC void		R_xforms::set_c_wv			(RHIShaderConstant* C)		{	c_wv	= C;	RCache.set_c(C,m_wv);	};
-IC void		R_xforms::set_c_vp			(RHIShaderConstant* C)		{	c_vp	= C;	RCache.set_c(C,m_vp);	};
-IC void		R_xforms::set_c_wvp			(RHIShaderConstant* C)		{	c_wvp	= C;	RCache.set_c(C,m_wvp);	};
-
-IC void		R_xforms::set_c_w_old		(RHIShaderConstant* C)		{	c_w_old = C;	RCache.set_c(C,m_w_old);	};
-IC void		R_xforms::set_c_v_old		(RHIShaderConstant* C)		{	c_v_old = C;	RCache.set_c(C,m_v_old);	};
-IC void		R_xforms::set_c_p_old		(RHIShaderConstant* C)		{	c_p_old = C;	RCache.set_c(C,m_p_old);	};
-IC void		R_xforms::set_c_wv_old		(RHIShaderConstant* C)		{	c_wv_old = C;	RCache.set_c(C,m_wv_old);	};
-IC void		R_xforms::set_c_vp_old		(RHIShaderConstant* C)		{	c_vp_old = C;	RCache.set_c(C,m_vp_old);	};
-IC void		R_xforms::set_c_wvp_old		(RHIShaderConstant* C)		{	c_wvp_old = C;	RCache.set_c(C,m_wvp_old);	};
-
 IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
 { 
 	xforms.set_W(M_);	
@@ -81,11 +65,11 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 	if (mat && mat->dwMode == CMatrix::modeTCM)
 	{
 		mat->Calculate();
-		set_c("m_tc_xform", mat->xform);
+		Constants.Write<CBVisor>().m_tc_xform = mat->xform;
 	}
 	else
 	{
-		set_c("m_tc_xform", Fidentity);
+		Constants.Write<CBVisor>().m_tc_xform = Fidentity;
 	}
 }
 

@@ -237,15 +237,15 @@ public:
 
 		if (LightingModeIsStaticRender())
 		{
-			RCache.set_c("L_dynamic_props", 0, 0, 0, 0);
-			RCache.set_ca("m_plmap_clamp", 0, 0, 0, 0, 1);
-			RCache.set_c("m_plmap_xform", Fidentity);
+			RCache.Constants.Write<CBObject>().L_dynamic_props.set(0, 0, 0, 0);
+			RCache.Constants.Write<CBObject>().m_plmap_clamp[0].set(0, 0, 0, 1);
+			RCache.Constants.Write<CBObject>().m_plmap_xform = Fidentity;
 			if (!O || !O->renderable_ROS())
 				return;
 			CROS_impl& light_state = *static_cast<CROS_impl*>(O->renderable_ROS());
 			light_state.update_smooth(O);
 			const float sun = 0.5f * light_state.get_sun();
-			RCache.set_c("L_dynamic_props", sun, sun, sun, 0.5f * light_state.get_hemi());
+			RCache.Constants.Write<CBObject>().L_dynamic_props.set(sun, sun, sun, 0.5f * light_state.get_hemi());
 			if (L_Projector && light_state.shadow_recv_frame == Device.dwFrame && O->renderable_ShadowReceive())
 				L_Projector->setup(light_state.shadow_recv_slot);
 			return;
@@ -277,14 +277,15 @@ public:
 	{
 		ref_constant constant = RCache.get_c(c_sbase);		
 		
-		RCache.hemi.set_lit_color(avg_lit_color, avg_lit_dir);
+		CBMaterial& Material = RCache.Constants.Write<CBMaterial>();
+		RCache.xforms.m_v.transform_tiny(avg_lit_dir);
+		Material.L_model_light_color.set(avg_lit_color.x, avg_lit_color.y, avg_lit_color.z, 0);
+		Material.L_model_light_dir.set(avg_lit_dir.x, avg_lit_dir.y, avg_lit_dir.z, 0);
 		avg_lit_color = avg_lit_dir = { 0,0,0 };
 
 		RHIShaderConstant* C = constant ? &*constant : nullptr;		// get sampler
 		if (0 == C) return;
-		VERIFY(RC_dest_sampler == C->destination);
-		VERIFY(RC_dx10texture == C->type);
-		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
+		CTexture* T = RCache.get_ActiveTexture(u32(C->samp));
 		VERIFY(T);
 
 		float mtl = T->m_material;
@@ -309,13 +310,13 @@ public:
 			mtl = mtl * mtl * (3.0f - 2.0f * mtl);
 		}
 
-		RCache.hemi.set_material (o_hemi,o_sun,0, mtl);
-		RCache.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
+		Material.L_material.set(o_hemi, o_sun, 0, mtl);
+		Material.hemi_cube_pos_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y],
-			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-		RCache.hemi.set_neg_faces	(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
+			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z], 0);
+		Material.hemi_cube_neg_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y],
-			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
+			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z], 0);
 	}
 
 public:

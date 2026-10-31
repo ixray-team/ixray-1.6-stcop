@@ -1,13 +1,5 @@
 #include "fluid_common.hlsli"
 
-cbuffer BoxBounds : register(b10)
-{
-    //	float3	boxLBDcorner;
-    //	float3	boxRTUcorner;
-    float4 boxLBDcorner;
-    float4 boxRTUcorner;
-}
-
 struct PSDrawBoxOut
 {
     float4 obstacle : SV_TARGET0;

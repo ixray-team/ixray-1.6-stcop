@@ -36,38 +36,7 @@ sampler samLinear;
 // Variables
 //--------------------------------------------------------------------------------------
 
-cbuffer FluidSimConfig : register(b6)
-{
-    float textureHeight;
-    float textureWidth;
-    float textureDepth;
-
-    float modulate = 1.0;
-    float epsilon;
-    float timestep;
-    float forward = 1.0;
-    float4 floatVolumeDim; //	Actually float3. We don't support float3 and float2
-}
-
-cbuffer AABBBounds : register(b7)
-{
-    float4 boxLBDcorner; //	float3
-    float4 boxRTUcorner; //	float3
-}
-
-cbuffer EmitterParams : register(b8)
-{
-    float size;
-    float4 center; //	Actually float3. We don't support float3 and float2
-    float4 splatColor;
-}
-
-cbuffer OOBBClipPlanes : register(b9)
-{
-    float4 OOBBClipPlane[6];
-    //	0 - Top
-    //	1 - Bottom
-}
+#include "shared\fluid_cb.hlsli"
 
 //	For fire simulation. Fuel extinction speed.
 static const float k = 0.006;

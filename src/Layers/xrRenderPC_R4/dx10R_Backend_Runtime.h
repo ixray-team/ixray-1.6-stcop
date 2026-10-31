@@ -1,5 +1,4 @@
 #pragma once
-#include "dx10FixedConstants.h"
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -26,12 +25,11 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 
 	GRHI->ShaderResourceCache->Apply();
 	GRHI->StateManager->Apply();
-	//	State manager may alter constants
-	constants.flush();
+	Constants.Flush();
 	GRHI->Dispatch(ThreadGroupCountX,ThreadGroupCountY,ThreadGroupCountZ);
 }
 
-IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation, bool flush_constants)
+IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation)
 {
 	u32	iIndexCount = RHITopologyUtils::GetIndexCount(PC, topology);
 
@@ -53,11 +51,7 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 	ApplyVertexLayout();
 	GRHI->StateManager->Apply();
 	
-	//	State manager may alter constants
-	if(flush_constants)
-		constants.flush();
-	else
-		FixedConstants::Flush();
+	Constants.Flush();
 
 	GRHI->DrawIndexedInstanced(baseV, startV, countV, startI, PC, instanceCount, startInstanceLocation);
 }
@@ -81,7 +75,7 @@ IC void CBackend::RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, 
 	ApplyVertexLayout();
 	GRHI->StateManager->Apply();
 
-	constants.flush();
+	Constants.Flush();
 	GRHI->DrawInstanced(startV, PC, instanceCount, 0);
 }
 
@@ -111,8 +105,7 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV
     ApplyVertexLayout();
     GRHI->StateManager->Apply();
 
-    // State manager may alter constants
-    constants.flush();
+    Constants.Flush();
 
     GRHI->DrawIndexed(baseV, startV, countV, startI, PC);
 }
@@ -137,8 +130,7 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC)
     ApplyVertexLayout();
     GRHI->StateManager->Apply();
     
-    // State manager may alter constants
-    constants.flush();
+    Constants.Flush();
     GRHI->Draw(startV, PC);
 }
 
@@ -155,8 +147,7 @@ IC void CBackend::Render_noIA(u32 iVertexCount)
 
     GRHI->StateManager->Apply();
 
-    // State manager may alter constants
-    constants.flush();
+    Constants.Flush();
     
     GRHI->DrawNoInputAssembly(iVertexCount);
 }
@@ -220,93 +211,11 @@ ICF void CBackend::set_VS(SVS* _vs)
 
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
-	if (ctable==C_)
-	{
-		if (C_)
-		{
-			FixedConstants::OnShaderBind();
-			for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
-		}
-		return;
-	}
 	ctable = C_;
-	xforms.unmap();
-	hemi.unmap();
-	tree.unmap();
-	LOD.unmap();
-	GRHI->StateManager->UnmapConstants();
 	if (!C_)
 		return;
-	FixedConstants::OnShaderBind();
-	FixedConstants::BindAll();
-	{
-		ref_cbuffer* const dst[] = { m_aPixelConstants, m_aVertexConstants, m_aGeometryConstants, m_aHullConstants, m_aDomainConstants, m_aComputeConstants };
-		static const ERHI_SHADER_TYPE stage[] = { ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::GS, ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS };
-		dx10ConstantBuffer* next[std::size(dst)][MaxCBuffers] = {};
-		for (const auto& rec : C_->m_CBTable)
-		{
-			const u32 slot = rec.first & CB_BufferIndexMask;
-			VERIFY(slot < MaxCBuffers);
-
-			switch (rec.first & CB_BufferTypeMask)
-			{
-			case CB_BufferPixelShader: next[0][slot]=rec.second._get(); break;
-			case CB_BufferVertexShader: next[1][slot]=rec.second._get(); break;
-			case CB_BufferGeometryShader: next[2][slot]=rec.second._get(); break;
-			case CB_BufferHullShader: next[3][slot]=rec.second._get(); break;
-			case CB_BufferDomainShader: next[4][slot]=rec.second._get(); break;
-			case CB_BufferComputeShader: next[5][slot]=rec.second._get(); break;
-			default: VERIFY("Invalid enumeration");
-			}
-		}
-		bool written = false;
-		for (u32 s=0; s<std::size(dst); ++s)
-		{
-			for (u32 i=0; i<MaxCBuffers; ++i)
-			{
-				if (dst[s][i]._get() != next[s][i])
-				{
-					dst[s][i] = next[s][i];
-					IRHIBuffer* bind = next[s][i] ? next[s][i]->GetBuffer() : nullptr;
-					if (next[s][i])
-						constants.MarkDirty(*next[s][i]);
-
-					if (i < FixedConstants::kSlots)
-					{
-						if (!next[s][i])
-							continue;
-						written = true;
-					}
-					GRHI->SetConstantBuffers(i, 1, &bind, stage[s]);
-				}
-			}
-		}
-		if (written)
-			FixedConstants::InvalidateBindings();
-	}
-	for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup(Cs);
-}
-
-IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)
-{
-	void* bone = nullptr;
-	if (FixedConstants::MapBone(n.c_str(), DataSize, &bone))
-	{
-		if (pVData) *pVData = bone;
-		if (pGData) *pGData = bone;
-		if (pPData) *pPData = bone;
-		return;
-	}
-	ref_constant C_ = get_c(n);
-
-	if (C_)
-		constants.access_direct(&*C_, DataSize, pVData, pGData, pPData);
-	else
-	{
-		if (pVData)	*pVData = 0;
-		if (pGData)	*pGData = 0;
-		if (pPData)	*pPData = 0;
-	}
+	Constants.OnShaderBind(xforms);
+	for (RHIShaderConstant* Cs : C_->get_handlers()) Cs->handler->setup();
 }
 
 IC float CBackend::get_width()

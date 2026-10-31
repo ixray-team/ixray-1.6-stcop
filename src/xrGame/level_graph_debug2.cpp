@@ -80,7 +80,6 @@ void CLevelGraph::draw_nodes	()
 
 	Fvector	DUP;		DUP.set(0,1,0);
 
-	//RCache.set_Shader	(sh_debug);
 	DRender->SetShader(sh_debug);
 
 	F->SetColor			(color_rgba(255,255,255,255));
@@ -148,8 +147,6 @@ void CLevelGraph::draw_nodes	()
 			// render quad
 			DRender->dbg_DrawTRI(Fidentity,v3,v2,v1,CT);
 			DRender->dbg_DrawTRI(Fidentity,v1,v4,v3,CT);
-			//RCache.dbg_DrawTRI	(Fidentity,v3,v2,v1,CT);
-			//RCache.dbg_DrawTRI	(Fidentity,v1,v4,v3,CT);
 
 			// render center
 			Level().debug_renderer().draw_aabb	(PC,sc,sc,sc,CC);

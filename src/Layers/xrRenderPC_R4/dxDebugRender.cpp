@@ -115,7 +115,7 @@ void dxDebugRender::CacheSetXformWorld(const Fmatrix& M)
 
 void dxDebugRender::CacheSetCullMode(ERHI_CULLMODE m)
 {
-	GRHI->StateManager->SetCullMode(m);
+	RCache.set_CullMode(m);
 }
 
 void dxDebugRender::SetAmbient(u32 colour)

@@ -60,7 +60,6 @@ bool CEditorInstanceBatcher::CreateBuffer()
 		return false;
 	}
 
-	ParamsName = "editor_instance_params";
 	return true;
 }
 
@@ -122,7 +121,7 @@ void CEditorInstanceBatcher::Flush()
 		return A.VertexCount < B.VertexCount;
 	});
 
-	RCache.hemi.set_selection(0);
+	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
 	const u32 ItemCount = (u32)Items.size();
 	for (u32 ChunkStart = 0; ChunkStart < ItemCount; ChunkStart += BufferCapacity)
@@ -171,9 +170,9 @@ void CEditorInstanceBatcher::DrawRun(const SItem& First, u32 Offset, u32 Count)
 	for (u32 PassID = 0; PassID < PassCount; ++PassID)
 	{
 		RCache.set_Shader(S, PassID);
-		RCache.set_c(ParamsName, float(Offset), 0.0f, 0.0f, 0.0f);
+		RCache.Constants.Write<CBEditor>().editor_instance_params.set(float(Offset), 0.0f, 0.0f, 0.0f);
 
-		GRHI->ShaderResourceCache->SetVSResource(S->E[0]->passes[PassID]->vs->editor_instance_slot, SRV);
+		RCache.set_VSResource(S->E[0]->passes[PassID]->vs->editor_instance_slot, SRV);
 		EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 
 		RCache.set_Geometry(First.GeomPtr);

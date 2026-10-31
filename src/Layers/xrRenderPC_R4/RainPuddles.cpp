@@ -10,7 +10,7 @@ void CRenderTarget::PhaseRainPuddles()
 
 	GPU_EVENT(RainPuddlesReflections);
 	u_setrt(rt_Generic_0, nullptr, nullptr, RDepth);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 	RCache.set_Element(RainPuddlesShader->E[0]);
 	RCache.set_Geometry(FSTriangleGeom);

@@ -45,16 +45,14 @@ void CRenderTarget::accum_point		(light* L)
 	// *** thus can cope without stencil clear with 127 lights
 	// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
 	RCache.set_Element				(s_accum_mask->E[SE_MASK_POINT]);			// masker
-	//	Done in blender!
-	//RCache.set_ColorWriteEnable		(false);
 
 	// backfaces: if (1<=stencil && zfail)	stencil = light_id
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
    	RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// frontfaces: if (1<=stencil && zfail)	stencil = 0x1
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
@@ -64,7 +62,7 @@ void CRenderTarget::accum_point		(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable				();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
 	Fmatrix			m_Texgen;			u_compute_texgen_screen	(m_Texgen	);
@@ -86,12 +84,12 @@ void CRenderTarget::accum_point		(light* L)
 		RCache.set_Element				(shader->E[ _id ]	);
 
 		// Constants
-		RCache.set_c					("Ldynamic_pos",	L_pos.x,L_pos.y,L_pos.z,1/(L_R*L_R));
-		RCache.set_c					("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
-		RCache.set_c					("Ldynamic_hud",	(int)L->flags.bHudMode);
-		RCache.set_c					("m_texgen",		m_Texgen);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L_R*L_R));
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
+		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
 
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
+		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
 		// Render if (light_id <= stencil && z-pass)
 		RCache.set_Stencil(true, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
 		draw_volume(L);
