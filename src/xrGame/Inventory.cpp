@@ -303,6 +303,8 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 		pIItem->m_ItemCurrPlace.type = eItemPlaceUndefined;
 	}
 
+	const bool SavedInRuck = pIItem->m_ItemCurrPlace.type == eItemPlaceRuck;
+
 	bool result = false;
 	switch (pIItem->m_ItemCurrPlace.type)
 	{
@@ -386,7 +388,10 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 	}
 
 	ReconcileItemPlacement(pIItem);
-	TryRestorePersistentSlotItem(pIItem);
+	if (!SavedInRuck)
+	{
+		TryRestorePersistentSlotItem(pIItem);
+	}
 
 	m_pOwner->OnItemTake(pIItem);
 
