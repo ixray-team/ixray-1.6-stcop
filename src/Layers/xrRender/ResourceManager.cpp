@@ -432,7 +432,7 @@ void CResourceManager::DeferredUnload()
 	if (!RDEVICE.b_is_Ready)
 		return;
 
-#ifndef _EDITOR
+#if !defined(_EDITOR) && defined(USE_DX11)
 	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
 		return;
 #endif
