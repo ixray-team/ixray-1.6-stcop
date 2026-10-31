@@ -20,6 +20,7 @@
 #include "../../xrCore/git_version.h"
 #include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "../xrRender/ShaderCache.h"
 #include "../xrRender/dxUIRender.h"
 using namespace R_dsgraph;
 
@@ -86,6 +87,7 @@ void CRender::create()
 	o.color_mapping = true;
 
 	Engine.External.SetSkinningMode();
+	clearAllShaderOptions();
 
 	// disasm
 	o.disasm					= Core.ParamsData.test(ECoreParams::disasm);
@@ -809,7 +811,7 @@ HRESULT	CRender::shader_compile			(
 	char	sh_name[MAX_PATH] = "";
 	u32 len	= 0;
 
-	for (auto& [Name, Value] : EngineExternal().ShadersOptions) {
+	for (auto& [Name, Value] : m_ShaderOptions) {
 		defines[def_it++] = {
 			Name.c_str(),
 			Value.c_str()
@@ -894,14 +896,15 @@ HRESULT	CRender::shader_compile			(
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
-	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
-	if (FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+	u32 RealCodeCRC = 0;
+	const bool CanUseCache = ps_r__common_flags.test(RFLAG_USE_CACHE) && ShaderCache::CalculateShaderCRC(pSrcData, SrcDataLen, RealCodeCRC);
+	if (CanUseCache && FS.exist(file_name)) {
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 
 		IReader* file = FS.r_open(file_name);
-		if (file->length()>4)
+		if (file->length() >= 8)
 		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
@@ -926,7 +929,7 @@ HRESULT	CRender::shader_compile			(
 
 		if (SUCCEEDED(_result))
 		{
-			if (ps_r__common_flags.test(RFLAG_USE_CACHE))
+			if (CanUseCache)
 			{
 				IWriter* file = FS.w_open(file_name);
 				u32 const crc = crc32(pShaderBuf.data(), pShaderBuf.size());

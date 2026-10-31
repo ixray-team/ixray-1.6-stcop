@@ -16,6 +16,7 @@
 #include "../xrRender/ShaderResourceTraits.h"
 
 #include "../xrRender/RenderInterfaceShared.h"
+#include "../xrRender/ShaderCache.h"
 #include "OverlayAPI/DLSSWrapper.h"
 
 CRender RImplementation;
@@ -795,46 +796,6 @@ static HRESULT create_shader(
 }
 
 
-void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
-{
-	string_path pFileName = {};
-	string_path pFilePath = {};
-
-	xr_string string;
-
-	while (!F->eof())
-	{
-		F->r_string(string);
-		_Trim(string);
-
-		if (string[0] == '#' && strstr(string.data(), "#include"))
-		{
-			if (_GetItem(string.c_str(), 1, pFileName, '"'))
-			{
-				if(std::find(files.begin(), files.end(), pFileName) == files.end())
-				{
-					xr_strconcat(pFilePath, ::Render->getShaderPath(), pFileName);
-
-					IReader* R = FS.r_open(_game_shaders_, pFilePath);
-					VERIFY3(R, "include file not found", pFilePath);
-
-					files.push_back(pFileName);
-
-					if (!R)
-					{
-						continue;
-					}
-
-					GetShaderCRC(R, final_crc, files);
-					FS.r_close(R);
-				}
-			}
-		}
-
-		final_crc = crc32(string.data(), string.size(), final_crc);
-	}
-}
-
 class includer : public ID3DInclude {
 public:
 	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, const char* pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
@@ -1188,24 +1149,22 @@ HRESULT	CRender::shader_compile(
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
-	u32 RealCodeCRC = u32(-1);
-	SStringVec crc_file_list;
-
-	IReader R = IReader((char*)pSrcData, SrcDataLen);
-	GetShaderCRC(&R, RealCodeCRC, crc_file_list);
+	u32 RealCodeCRC = 0;
+	const bool HasAllIncludes = ShaderCache::CalculateShaderCRC(pSrcData, SrcDataLen, RealCodeCRC);
+	const bool CanUseCache = HasAllIncludes && ps_r__common_flags.test(RFLAG_USE_CACHE);
 
 	Flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
 
-	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) 
+	if (CanUseCache && FS.exist(file_name))
 	{
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 		IReader* file = FS.r_open(file_name);
 
-		if(file->length() > 4) 
+		if (file->length() >= 8)
 		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
@@ -1247,14 +1206,15 @@ HRESULT	CRender::shader_compile(
 
 		if(SUCCEEDED(_result))
 		{
-			IWriter* file = FS.w_open(file_name);
 			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
-
-			file->w_u32(crc);
-			file->w_u32(RealCodeCRC);
-			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-
-			FS.w_close(file);
+			if (CanUseCache)
+			{
+				IWriter* file = FS.w_open(file_name);
+				file->w_u32(crc);
+				file->w_u32(RealCodeCRC);
+				file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+				FS.w_close(file);
+			}
 
 			inShader->m_crc1 = crc;
 			inShader->m_crc2 = RealCodeCRC;
