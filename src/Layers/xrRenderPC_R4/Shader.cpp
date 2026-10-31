@@ -45,9 +45,9 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer
 	_set(DEV->CreateGeom(decl, vb, ib));
 }
 
-void resptrcode_geom::create(EGeomSource Source, u32 Page)
+void resptrcode_geom::create(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
 {
-	_set(DEV->CreatePulledGeom(Source, Page));
+	_set(DEV->CreatePulledGeom(Source, Page, RingIndices));
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -1,11 +1,5 @@
 #include "common.hlsli"
 
-struct v_vert
-{
-    float4 pos : POSITION;
-    float4 color : COLOR0;
-};
-
 struct v2p
 {
 	float4 hpos : SV_POSITION;
@@ -13,11 +7,12 @@ struct v2p
 	float4 wp : TEXCOORD0;
 };
 
-v2p main(v_vert I)
+v2p main(PULL_INPUT)
 {
     v2p O;
-    O.hpos = mul(m_WVP, I.pos);
-    O.wp = I.pos;
-    O.color = I.color;
+    RingVertex V = PullRing(VertexId);
+    O.wp = float4(V.P, 1.0f);
+    O.hpos = mul(m_WVP, O.wp);
+    O.color = V.C.zyxw;
     return O;
 }

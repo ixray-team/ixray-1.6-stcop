@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "FLOD.h"
+#include "PackedVertex.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
@@ -16,42 +17,33 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 
 	// *** Fill VB and generate groups
 	u32 shid = _setup_zb?ShaderVariant::ModelLighting:ShaderVariant::NormalLQ;
-	FLOD* firstV = (FLOD*)mapLOD[0].val.pVisual;
 	ref_selement cur_S;
 	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
 	if (ssaRange<EPS_S)
 		ssaRange = EPS_S;
 
-	const u32 uiVertexPerImposter = 4;
-	const u32 uiImpostersFit = Cmd.Vertex.GetSize() / (firstV->geom->vb_stride*uiVertexPerImposter);
-
-	//Msg						("dbg_lods: shid[%d],firstV[%X]",shid,u32((void*)firstV));
-	//Msg						("dbg_lods: shader[%X]",u32((void*)firstV->shader._get()));
-	//Msg						("dbg_lods: shader_E[%X]",u32((void*)cur_S._get()));
-
 	for (u32 i = 0; i < mapLOD.size();)
 	{
-		const u32 iBatchSize = (u32)std::min(mapLOD.size() - i, uiImpostersFit);
+		const u32 iBatchSize = std::min(u32(mapLOD.size()) - i, Cmd.Vertex.GetCapacity());
 		const u32 BatchStart = i;
 		cur_S = mapLOD[i].val.pVisual->shader->E[shid];
+		SGeometry* cur_G = ((FLOD*)mapLOD[i].val.pVisual)->geom._get();
 		int cur_count = 0;
 		u32 vOffset;
-		struct _hw4
-		{
-			FLOD::_hw buff[4];
-		};
-		_hw4* V = (_hw4*)Cmd.Vertex.Lock(iBatchSize*uiVertexPerImposter,firstV->geom->vb_stride, vOffset);
+		PackedVertex* V = (PackedVertex*)Cmd.Vertex.Lock(iBatchSize, EVertexFormat::Packed, vOffset);
 
 		for ( u32 j=0; j<iBatchSize; ++j, ++i )
 		{
 			// sort out redundancy
 			R_dsgraph::_LodItem	&P = mapLOD[i].val;
-			if (P.pVisual->shader->E[shid]==cur_S)
+			FLOD* lodV = (FLOD*)P.pVisual;
+			if (P.pVisual->shader->E[shid]==cur_S && lodV->geom._get()==cur_G)
 				cur_count++;
 			else
 			{
 				lstLODgroups.push_back(cur_count);
 				cur_S = P.pVisual->shader->E[shid];
+				cur_G = lodV->geom._get();
 				cur_count = 1;
 			}
 
@@ -62,7 +54,6 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 			u32 uA = u32(clampr(iA,0,255));
 
 			// calculate direction and shift
-			FLOD* lodV = (FLOD*)P.pVisual;
 			Fvector Ldir,shift;
 			Ldir.sub(lodV->vis.sphere.P,Device.vCameraPosition).normalize();
 			shift.mul(Ldir,-.5f * lodV->vis.sphere.R);
@@ -86,63 +77,11 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 			int iF = iFloor(alpha*255.5f);
 			u32 uF = u32(clampr(iF,0,255));
 
-			// Fill VB
-			FLOD::_face& FA = facets[id_best];
-			FLOD::_face& FB = facets[id_next];
-			*V =
-			{
-				FLOD::_hw{
-					FB.v[3].v + shift,
-					FA.v[3].v + shift,
-					FB.N,
-					FA.N,
-					color_rgba(FB.v[3].c_sun,FA.v[3].c_sun,uA,uF),
-					FB.v[3].t,
-					FA.v[3].t,
-					FB.v[3].c_rgb_hemi,
-					FA.v[3].c_rgb_hemi
-				},
-
-				FLOD::_hw{
-					FB.v[0].v + shift,
-					FA.v[0].v + shift,
-					FB.N,
-					FA.N,
-					color_rgba(FB.v[0].c_sun,FA.v[0].c_sun,uA,uF),
-					FB.v[0].t,
-					FA.v[0].t,
-					FB.v[0].c_rgb_hemi,
-					FA.v[0].c_rgb_hemi
-				},
-
-				FLOD::_hw{
-					FB.v[2].v + shift,
-					FA.v[2].v + shift,
-					FB.N,
-					FA.N,
-					color_rgba(FB.v[2].c_sun,FA.v[2].c_sun,uA,uF),
-					FB.v[2].t,
-					FA.v[2].t,
-					FB.v[2].c_rgb_hemi,
-					FA.v[2].c_rgb_hemi
-				},
-
-				FLOD::_hw{
-					FB.v[1].v + shift,
-					FA.v[1].v + shift,
-					FB.N,
-					FA.N,
-					color_rgba(FB.v[1].c_sun,FA.v[1].c_sun,uA,uF),
-					FB.v[1].t,
-					FA.v[1].t,
-					FB.v[1].c_rgb_hemi,
-					FA.v[1].c_rgb_hemi
-				}
-			};
-			V++;
+			// P = shift, N = facet base, TF = best | next << 3 | alpha << 8 | blend << 16
+			*V++ = { shift, lodV->Facets.VertexBase, id_best | id_next << 3 | uA << 8 | uF << 16, 0, 0, 0 };
 		}
 		lstLODgroups.push_back(cur_count);
-		Cmd.Vertex.Unlock(iBatchSize*uiVertexPerImposter, firstV->geom->vb_stride);
+		Cmd.Vertex.Unlock(iBatchSize);
 
 		// *** Render
 		Cmd.SetObjectTransform(Fidentity);
@@ -157,11 +96,11 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 				if (uiPass<uiNumPasses)
 				{
 					Cmd.SetPass(mapLOD[current].val.pVisual->shader->E[shid], uiPass);
-					Cmd.SetGeometry(firstV->geom);
-					Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2*p_count) * 3, 0, vCurOffset);
+					Cmd.SetGeometry(((FLOD*)mapLOD[current].val.pVisual)->geom);
+					Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6 * p_count, vCurOffset);
 				}
 				current	+= p_count;
-				vCurOffset += 4*p_count;
+				vCurOffset += p_count;
 			}
 
 		}

@@ -38,9 +38,7 @@ public:
 	virtual void zb_enable(u32 val);
 
 private:
-	ref_geom		hGeom_L;
-	ref_geom		hGeom_TL;
-	ref_geom		hGeom_LIT;
+	ref_geom		hGeom;
 
 	ePrimitiveType	PrimitiveType;
 	ePointType		m_PointType;

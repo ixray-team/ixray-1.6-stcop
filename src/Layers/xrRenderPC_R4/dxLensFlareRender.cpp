@@ -47,7 +47,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 			Fvector p; u32 color; Fvector2 t;
 		} buff[4];
 	};
-	LITF* pv = (LITF*)Cmd.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+	LITF* pv = (LITF*)Cmd.Vertex.Lock(MAX_Flares * 4, EVertexFormat::LIT, VS_Offset);
 	Fvector& vecLight = owner.vecLight;
 	if (bSun)
 	{
@@ -128,7 +128,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 			}
 		}
 	}
-	Cmd.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
+	Cmd.Vertex.Unlock(_2render.size() * 4);
 
 	Cmd.SetObjectTransform(Fidentity);
 	Cmd.SetGeometry(hGeom);
@@ -139,15 +139,14 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 		{
 			u32 vBase = i * 4 + VS_Offset;
 			Cmd.SetPass(_2render[i]);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, vBase);
+			Cmd.DrawQuads(1, vBase);
 		}
 	}
 }
 
 void dxLensFlareRender::OnDeviceCreate()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
-	hGeom.create(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.QuadIB);
+	hGeom.create(EGeomSource::Ring);
 }
 
 void dxLensFlareRender::OnDeviceDestroy()

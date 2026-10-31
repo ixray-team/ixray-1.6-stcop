@@ -34,11 +34,6 @@
 #include "OverlayAPI/DLSSWrapper.h"
 #include "OverlayAPI/XESSWrapper.h"
 
-static RHIInputElementDesc InputDecl[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT,	0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
-
 void CRenderTarget::u_setrt(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
@@ -126,12 +121,12 @@ void	CRenderTarget::u_stencil_optimize	(GfxCmdList& Cmd, eStencilOptimizeMode eS
 	float	eps					= 0;
 	float	_dw					= 0.5f;
 	float	_dh					= 0.5f;
-	FVF::TL* pv					= (FVF::TL*) Cmd.Vertex.Lock	(4,g_combine->vb_stride,Offset);
+	FVF::TL* pv					= (FVF::TL*) Cmd.Vertex.Lock	(4,EVertexFormat::TL,Offset);
 	pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
-	Cmd.Vertex.Unlock		(4,g_combine->vb_stride);
+	Cmd.Vertex.Unlock		(4);
 	Cmd.SetPass			(s_occq->E[1]	);
 
 	switch(eSOM)
@@ -147,7 +142,7 @@ void	CRenderTarget::u_stencil_optimize	(GfxCmdList& Cmd, eStencilOptimizeMode eS
 	}	
 
 	Cmd.SetGeometry			(g_combine		);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
+	Cmd.DrawQuads(1, Offset);
 	
 }
 
@@ -495,8 +490,7 @@ CRenderTarget::CRenderTarget()
         s_postprocess.create("postprocess");
         s_r1_distort.create("r1_distort");
         s_menu.create("distort");
-        g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, Cmd.Vertex.Buffer(), Cmd.QuadIB);
-        g_menu.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+        g_menu.create(EGeomSource::Ring);
         t_envmap_0.create(r2_T_envs0);
         t_envmap_1.create(r2_T_envs1);
         CreateFSTriangle();
@@ -865,15 +859,7 @@ CRenderTarget::CRenderTarget()
 
 		s_combine.create(b_combine, "r2\\combine");
 		s_combine_volumetric.create("combine_volumetric");
-
-		g_combine_VP.create(InputDecl, std::size(InputDecl), Cmd.Vertex.Buffer(), Cmd.QuadIB);
-		g_combine_cuboid.create(InputDecl, std::size(InputDecl), Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
-
-		g_combine.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
-		g_combine_2UV.create(FVF::F_TL2uv, Cmd.Vertex.Buffer(), Cmd.QuadIB);
-
-		u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) | D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
-		g_aa_AA.create(fvf_aa_AA, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+		g_combine.create(EGeomSource::Ring);
 
 		t_envmap_0.create(r2_T_envs0);
 		t_envmap_1.create(r2_T_envs1);
@@ -1024,11 +1010,10 @@ CRenderTarget::CRenderTarget()
 	// PP
 	s_postprocess.create("postprocess");
 	ScopePostprocessShader.create("scope_postprocess");
-	g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 	// Menu
 	s_menu.create("distort");
-	g_menu.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+	g_menu.create(EGeomSource::Ring);
 
 	u_setrt(Cmd, Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 
@@ -1171,17 +1156,17 @@ void CRenderTarget::reset_light_marker(GfxCmdList& Cmd, bool bResetStencil)
 		float _dw = 0.5f;
 		float _dh = 0.5f;
 
-		FVF::TL* pv = (FVF::TL*)Cmd.Vertex.Lock(4, g_combine->vb_stride, Offset);
+		FVF::TL* pv = (FVF::TL*)Cmd.Vertex.Lock(4, EVertexFormat::TL, Offset);
 		pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);	pv++;
 
-		Cmd.Vertex.Unlock(4, g_combine->vb_stride);
+		Cmd.Vertex.Unlock(4);
 		Cmd.SetPass(s_occq->E[2]);
 		Cmd.SetGeometry(g_combine);
 
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
+		Cmd.DrawQuads(1, Offset);
 	}
 }
 

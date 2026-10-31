@@ -1,32 +1,34 @@
 #include "stdafx.h"
 #include "../../xrEngine/Fmesh.h"
 #include "FLOD.h"
+#include "PackedVertex.h"
 
-struct _hw 
+FLOD::~FLOD()
 {
-	Fvector		p0		;
-	Fvector		p1		;
-	Fvector		n0		;
-	Fvector		n1		;
-	u32			sun_af	;
-	Fvector2	t0		;
-	Fvector2	t1		;
-	u32			rgbh0	;
-	u32			rgbh1	;
-};
+	if (Facets.VertexCount)
+	{
+		RImplementation.Geometry.Free(Facets);
+	}
+}
 
-static RHIInputElementDesc dwDecl[] =
+void FLOD::UploadFacets()
 {
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "POSITION", 1, ERHI_FORMAT::R32G32B32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },	
-	{ "NORMAL", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 1, ERHI_FORMAT::R32G32B32_FLOAT, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "COLOR", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 52, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 1, ERHI_FORMAT::R32G32_FLOAT, 0, 60, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 2, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 68, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 3, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
+	PackedVertex Vertices[32];
+	for (u32 Face = 0; Face < 8; ++Face)
+	{
+		const u32 Normal = VertexPacking::EncodeOct(facets[Face].N);
+		for (u32 Corner = 0; Corner < 4; ++Corner)
+		{
+			const _vertex& Source = facets[Face].v[Corner];
+			PackedVertex& Target = Vertices[Face * 4 + Corner];
+			Target = { Source.v, Normal, 0, 0, Source.c_rgb_hemi, Source.c_sun };
+			VertexPacking::EncodeUV(Target, Source.t.x, Source.t.y);
+		}
+	}
+	Facets = RImplementation.Geometry.Alloc(32, 0);
+	RImplementation.Geometry.Upload(Facets, 0, Vertices, 32);
+	geom.create(EGeomSource::Static, Facets.Page);
+}
 
 void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 {
@@ -54,8 +56,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 	}
 #endif
 
-	// VS
-	geom.create(dwDecl, std::size(dwDecl), RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
+	UploadFacets();
 
 	// lod correction
 	Fvector3			S;
@@ -72,11 +73,11 @@ void FLOD::Copy			(dxRender_Visual *pFrom	)
 	inherited::Copy		(pFrom);
 
 	FLOD* F				= (FLOD*)pFrom;
-	geom				= F->geom		;
 	lod_factor			= F->lod_factor	;
 #ifndef MU_LODS_OFF_BILLBOARD
 	CopyMemory		(facets,F->facets,sizeof(facets));
 #endif
+	UploadFacets();
 }
 
 void FMUMeshLODs::Load(const char* N, IReader* data, u32 dwFlags)

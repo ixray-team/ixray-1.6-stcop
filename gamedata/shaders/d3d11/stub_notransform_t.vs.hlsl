@@ -7,27 +7,21 @@
 #endif
 
 // Vertex
-v2p_TL main(v_TL_positiont I)
+v2p_TL main(PULL_INPUT)
 {
     v2p_TL O;
+    RingVertex V = PullRing(VertexId);
 
-    //	O.HPos = P;
-
-    {
-        I.P.xy += 0.5f;
-        //		O.HPos.x = I.P.x/1024 * 2 - 1;
-        //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
-        O.HPos.x = I.P.x * screen_res.z * 2 - 1;
-        O.HPos.y = (I.P.y * screen_res.w * 2 - 1) * -1;
-        O.HPos.zw = I.P.zw;
-    }
+    O.HPos.x = (V.P.x + 0.5f) * screen_res.z * 2 - 1;
+    O.HPos.y = ((V.P.y + 0.5f) * screen_res.w * 2 - 1) * -1;
+    O.HPos.zw = float2(V.P.z, asfloat(V.X));
 
 #ifdef EDITOR_MODE
-    O.Tex0 = mul(m_tc_xform, float4(I.Tex0, 1.0f, 0.0f)).xy;
+    O.Tex0 = mul(m_tc_xform, float4(V.UV, 1.0f, 0.0f)).xy;
 #else
-    O.Tex0 = I.Tex0;
+    O.Tex0 = V.UV;
 #endif
-    O.Color = I.Color.bgra; //	swizzle vertex colour
+    O.Color = V.C;
 
     return O;
 }

@@ -353,7 +353,6 @@ BrushState& s_state()
 ref_shader s_brush_shader;   // live brush cursor: rings + pattern preview (always visible)
 ref_shader s_trail_shader;   // painted imprint: fading stroke stamps (separate layer)
 ref_geom s_brush_geom;
-IRHIBuffer* s_brush_vb = nullptr;
 CTexture* s_preview_tex = nullptr;
 CTexture* s_minimap_tex = nullptr;
 CTexture* s_minimap_base_fmb = nullptr; // clean base FMB field (Detail options tab)
@@ -373,8 +372,6 @@ struct TrailStamp
 	u64 time_ms = 0;
 };
 xr_vector<TrailStamp> s_trail;
-IRHIBuffer* s_trail_vb = nullptr;
-ref_geom s_trail_geom;
 
 void dv_write_texture_px(CTexture* tex, const u8* rgba, u32 size)
 {
@@ -992,13 +989,6 @@ void CRender::DetailLayers_EditorDestroy()
 	s_brush_shader.destroy();
 	s_trail_shader.destroy();
 	s_brush_geom.destroy();
-	s_trail_geom.destroy();
-
-	// Raw RHI buffers this tool allocated with RHIUtils::CreateVertexBuffer. The
-	// editor owns them (CreateBuffer starts ownership at ref 1); SGeometry only
-	// stores the raw pointer, so release the ownership ref explicitly.
-	if (s_brush_vb) { s_brush_vb->Release(); s_brush_vb = nullptr; }
-	if (s_trail_vb) { s_trail_vb->Release(); s_trail_vb = nullptr; }
 
 	// Preview/minimap textures are plain `new CTexture` (never registered with the
 	// resource manager), so delete them directly. ~CTexture calls Unload() (releases
@@ -1105,26 +1095,14 @@ if (!s_brush_shader)
 			Msg("!! detail layers editor: imprint shader 'detail_brush_trail' failed to load");
 		}
 	}
-	if (!s_brush_vb)
-	{
-		const u32 capBytes = DV_DISK_VERTS * sizeof(FVF::L);
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&s_brush_vb, nullptr, capBytes, false));
-	}
 	if (!s_brush_geom)
-		s_brush_geom.create(FVF::F_L, s_brush_vb, nullptr);
-	if (!s_trail_vb)
-	{
-		const u32 capBytes = DV_TRAIL_MAX * DV_DISK_VERTS * sizeof(FVF::L);
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&s_trail_vb, nullptr, capBytes, false));
-	}
-	if (!s_trail_geom)
-		s_trail_geom.create(FVF::F_L, s_trail_vb, nullptr);
+		s_brush_geom.create(EGeomSource::Ring);
 	if (!s_preview_tex)
 		s_preview_tex = dv_create_texture(DV_PREVIEW_SIZE);
 	if (!s_minimap_tex)
 		s_minimap_tex = dv_create_texture(DV_MINIMAP_SIZE);
 
-	if (!s_brush_vb || !s_trail_vb || !s_brush_shader || !s_trail_shader || !s_brush_geom || !s_trail_geom || !s_brush_shader->E[ShaderVariant::Special] || !s_trail_shader->E[ShaderVariant::Special])
+	if (!s_brush_shader || !s_trail_shader || !s_brush_geom || !s_brush_shader->E[ShaderVariant::Special] || !s_trail_shader->E[ShaderVariant::Special])
 	{
 		if (s_brush_shader && !s_brush_shader->E[ShaderVariant::Special])
 		{
@@ -1198,7 +1176,6 @@ if (!s_brush_shader)
 			vi += 6;
 		}
 	}
-	s_brush_vb->UpdateSubresource(verts, sizeof(verts));
 
 	Cmd.SetObjectTransform(Fidentity);
 	Cmd.SetView(Device.mView, Device.mProject);
@@ -1221,8 +1198,8 @@ if (!s_brush_shader)
 	if (st.trail_enabled && !s_trail.empty())
 	{
 		const u32 active = (u32)s_trail.size();
-		xr_vector<FVF::L> tverts;
-		tverts.resize(active * DV_DISK_VERTS);
+		u32 TrailBase;
+		FVF::L* tverts = (FVF::L*)Cmd.Vertex.Lock(active * DV_DISK_VERTS, EVertexFormat::L, TrailBase);
 
 		u32 tv = 0;
 		for (u32 i = 0; i < active; i++)
@@ -1267,10 +1244,10 @@ if (!s_brush_shader)
 				tv += 6;
 			}
 		}
-		s_trail_vb->UpdateSubresource(tverts.data(), (u32)tverts.size() * sizeof(FVF::L));
+		Cmd.Vertex.Unlock(active * DV_DISK_VERTS);
 
 Cmd.SetPass(s_trail_shader->E[ShaderVariant::Special]);
-		Cmd.SetGeometry(s_trail_geom);
+		Cmd.SetGeometry(s_brush_geom);
 		for (u32 i = 0; i < active; i++)
 		{
 			const TrailStamp& s = s_trail[i];
@@ -1292,7 +1269,7 @@ Cmd.SetPass(s_trail_shader->E[ShaderVariant::Special]);
 			Cmd.Constants.Write<CBEditor>().brush_color.set(1.f, 0.35f, 0.25f, st.edge_hardness);
 		else
 			Cmd.Constants.Write<CBEditor>().brush_color.set(st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2], st.edge_hardness);
-			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2 * DV_DISK_SEGMENTS) * 3, i * DV_DISK_VERTS);
+			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2 * DV_DISK_SEGMENTS) * 3, TrailBase + i * DV_DISK_VERTS);
 		}
 	}
 
@@ -1334,8 +1311,11 @@ Cmd.SetPass(s_trail_shader->E[ShaderVariant::Special]);
 	Cmd.Constants.Write<CBEditor>().brush_color.set(dColor.x, dColor.y, dColor.z, st.edge_hardness);
 	Cmd.Constants.Write<CBEditor>().brush_extra.set(cursorA, patternA, Device.vCameraPosition.distance_to(hit), 0.f);
 
+	u32 BrushBase;
+	memcpy(Cmd.Vertex.Lock(DV_DISK_VERTS, EVertexFormat::L, BrushBase), verts, sizeof(verts));
+	Cmd.Vertex.Unlock(DV_DISK_VERTS);
 	Cmd.SetGeometry(s_brush_geom);
-	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2 * DV_DISK_SEGMENTS) * 3, 0);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2 * DV_DISK_SEGMENTS) * 3, BrushBase);
 }
 
 // ---------------------------------------------------------------------------

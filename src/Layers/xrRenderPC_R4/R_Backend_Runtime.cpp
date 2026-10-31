@@ -35,6 +35,7 @@ void GfxCmdList::OnFrameBegin	()
 		SetView(ViewState);
 		Stats = {};
 		Vertex.Flush();
+		LegacyVertex.Flush();
 		Index.Flush();
 		SetStencil(false);
 	}
@@ -95,6 +96,7 @@ void GfxCmdList::Invalidate	()
 		{
 			Heap->Bind(*this);
 		}
+		Vertex.Bind();
 	}
 
 	std::memset(Textures, 0, sizeof(Textures));

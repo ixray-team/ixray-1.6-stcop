@@ -118,9 +118,6 @@ void CGlowManager::Load		(IReader* fs)
 		Glows.push_back		(G);
 	}
 	dwTestID		= 0;
-
-	GfxCmdList& Cmd	= RImplementation.Imm();
-	hGeom.create	(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.QuadIB);
 }
 
 void CGlowManager::Unload	()
@@ -262,7 +259,7 @@ void CGlowManager::render_selected(GfxCmdList& Cmd)
 
 		u32		vOffset;
 		u32		end		= pos+count;
-		FVF::LIT* pvs	= pv = (FVF::LIT*) Cmd.Vertex.Lock(count*4,hGeom->vb_stride,vOffset);
+		FVF::LIT* pvs	= pv = (FVF::LIT*) Cmd.Vertex.Lock(count*4, EVertexFormat::LIT, vOffset);
 		for (; pos<end; pos++)
 		{
 			
@@ -291,11 +288,11 @@ void CGlowManager::render_selected(GfxCmdList& Cmd)
 			FillSprite		(pv,G.position,G.radius,clr);
 		}
 		int vCount				= int(pv-pvs);
-		Cmd.Vertex.Unlock	(vCount,hGeom->vb_stride);
+		Cmd.Vertex.Unlock	(vCount);
 		if (vCount) {
 			Cmd.SetPass		(T);
 			Cmd.SetGeometry		(hGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vCount/2) * 3, 0, vOffset);
+			Cmd.DrawQuads(vCount / 4, vOffset);
 		}
 	}
 	Selected.resize(0);
@@ -303,6 +300,5 @@ void CGlowManager::render_selected(GfxCmdList& Cmd)
 
 void CGlowManager::reset_geometry()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
-	hGeom.create(FVF::F_LIT, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+	hGeom.create(EGeomSource::Ring);
 }

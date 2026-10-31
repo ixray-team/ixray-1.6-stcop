@@ -6,6 +6,14 @@
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
 
+struct TLF
+{
+	struct
+	{
+		Fvector4 p; u32 color; Fvector2 uv;
+	} buff[4];
+};
+
 dxFontRender::dxFontRender() {}
 
 dxFontRender::~dxFontRender() {
@@ -19,9 +27,8 @@ void dxFontRender::Initialize(const char* cShader, const char* cTexture) {
 		pTexture.create(cTexture);
 	}
 
-	GfxCmdList& Cmd = RImplementation.Imm();
 	pShader.create(cShader, cTexture);
-	pGeom.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+	pGeom.create(EGeomSource::Ring);
 }
 
 void dxFontRender::OnRender(CGameFont& owner)
@@ -90,14 +97,7 @@ void dxFontRender::RenderBase(GfxCmdList& Cmd, CGameFont& owner)
 	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
 	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
-	struct TLF
-	{
-		struct
-		{
-			Fvector4 p; u32 color; Fvector2 uv;
-		} buff[4];
-	};
-	const u32 maxGlyphs = std::min(Cmd.Vertex.GetSize() / pGeom.stride() / 4, 16384u);
+	const u32 maxGlyphs = Cmd.Vertex.GetCapacity() / 4;
 	auto stringIt = owner.strings.begin();
 	while (stringIt != owner.strings.end())
 	{
@@ -119,7 +119,7 @@ void dxFontRender::RenderBase(GfxCmdList& Cmd, CGameFont& owner)
 			continue;
 		}
 		u32 vOffset;
-		TLF* vertexes = (TLF*)Cmd.Vertex.Lock(glyphCount * 4, pGeom.stride(), vOffset);
+		TLF* vertexes = (TLF*)Cmd.Vertex.Lock(glyphCount * 4, EVertexFormat::TL, vOffset);
 		TLF* start = vertexes;
 
 		for (; stringIt != batchEnd; ++stringIt)
@@ -305,12 +305,12 @@ void dxFontRender::RenderBase(GfxCmdList& Cmd, CGameFont& owner)
 		}
 
 		// Unlock and draw
-		u32 vertexesCount = (u32)(vertexes - start) * 4;
-		Cmd.Vertex.Unlock(vertexesCount, pGeom.stride());
-		if (vertexesCount)
+		const u32 Quads = u32(vertexes - start);
+		Cmd.Vertex.Unlock(Quads * 4);
+		if (Quads)
 		{
 			Cmd.SetGeometry(pGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertexesCount / 2) * 3, 0, vOffset);
+			Cmd.DrawQuads(Quads, vOffset);
 		}
 	}
 }
@@ -326,17 +326,8 @@ void dxFontRender::RenderIcon(GfxCmdList& Cmd, GamepadIcon icon)
 	float fWidth = Cmd.GetTexture(0)->get_Width();
 	float fHeight = Cmd.GetTexture(0)->get_Height();
 
-	// lock AGP memory
 	u32	vOffset;
-	struct TLF
-	{
-		struct
-		{
-			Fvector4 p; u32 color; Fvector2	uv;
-		} buff[4];
-	};
-	TLF* vertexes = (TLF*)Cmd.Vertex.Lock(4, pGeom.stride(), vOffset);
-	TLF* start = vertexes;
+	TLF* vertexes = (TLF*)Cmd.Vertex.Lock(4, EVertexFormat::TL, vOffset);
 
 	float Y2 = icon.pos.y + icon.sz.y;
 
@@ -357,12 +348,8 @@ void dxFontRender::RenderIcon(GfxCmdList& Cmd, GamepadIcon icon)
 		Fvector4{X2, Y2,.0001f,.9999f}, clr, Fvector2{u2, v2},
 		Fvector4{X2, icon.pos.y,.0001f,.9999f}, clr, Fvector2{u2, v1}
 	};
-	++vertexes;
 
-	// Unlock and draw
-	u32 vertexesCount = (u32)(vertexes - start) * 4;
-	Cmd.Vertex.Unlock(vertexesCount, pGeom.stride());
-
+	Cmd.Vertex.Unlock(4);
 	Cmd.SetGeometry(pGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertexesCount / 2) * 3, 0, vOffset);
+	Cmd.DrawQuads(1, vOffset);
 }

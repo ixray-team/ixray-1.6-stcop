@@ -13,20 +13,20 @@
 
 //////////////////////////////////////////////////////////////////////////
 // half box def
-static	Fvector3	hbox_verts[24] =
+static	Fvector3	hbox_verts[12] =
 {
-	{-1.f,	-1.f,	-1.f}, {-1.f,	-1.01f,	-1.f},	// down
-	{ 1.f,	-1.f,	-1.f}, { 1.f,	-1.01f,	-1.f},	// down
-	{-1.f,	-1.f,	 1.f}, {-1.f,	-1.01f,	 1.f},	// down
-	{ 1.f,	-1.f,	 1.f}, { 1.f,	-1.01f,	 1.f},	// down
-	{-1.f,	 1.f,	-1.f}, {-1.f,	 1.f,	-1.f},
-	{ 1.f,	 1.f,	-1.f}, { 1.f,	 1.f,	-1.f},
-	{-1.f,	 1.f,	 1.f}, {-1.f,	 1.f,	 1.f},
-	{ 1.f,	 1.f,	 1.f}, { 1.f,	 1.f,	 1.f},
-	{-1.f,	 0.f,	-1.f}, {-1.f,	-1.f,	-1.f},	// half
-	{ 1.f,	 0.f,	-1.f}, { 1.f,	-1.f,	-1.f},	// half
-	{ 1.f,	 0.f,	 1.f}, { 1.f,	-1.f,	 1.f},	// half
-	{-1.f,	 0.f,	 1.f}, {-1.f,	-1.f,	 1.f}	// half
+	{-1.f,	-1.f,	-1.f},	// down
+	{ 1.f,	-1.f,	-1.f},	// down
+	{-1.f,	-1.f,	 1.f},	// down
+	{ 1.f,	-1.f,	 1.f},	// down
+	{-1.f,	 1.f,	-1.f},
+	{ 1.f,	 1.f,	-1.f},
+	{-1.f,	 1.f,	 1.f},
+	{ 1.f,	 1.f,	 1.f},
+	{-1.f,	 0.f,	-1.f},	// half
+	{ 1.f,	 0.f,	-1.f},	// half
+	{ 1.f,	 0.f,	 1.f},	// half
+	{-1.f,	 0.f,	 1.f}	// half
 };
 static	u16			hbox_faces[20 * 3] =
 {
@@ -51,33 +51,6 @@ static	u16			hbox_faces[20 * 3] =
 	11,	 8,	 4,
 	4,	 6,	11
 };
-
-#pragma pack(push,1)
-struct v_skybox {
-	Fvector3	p;
-	u32			color;
-	Fvector3	uv[2];
-
-	void		set(Fvector3& _p, u32 _c, Fvector3& _tc) {
-		p = _p;
-		color = _c;
-		uv[0] = _tc;
-		uv[1] = _tc;
-	}
-};
-const	u32 v_skybox_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXCOORDSIZE3(0) | D3DFVF_TEXCOORDSIZE3(1);
-struct v_clouds {
-	Fvector3	p;
-	u32			color;
-	u32			intensity;
-	void		set(Fvector3& _p, u32 _c, u32 _i) {
-		p = _p;
-		color = _c;
-		intensity = _i;
-	}
-};
-const	u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
-#pragma pack(pop)
 
 void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in) {
 	*this = *(dxEnvDescriptorRender*)&_in;
@@ -235,14 +208,14 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 	Cmd.Index.Unlock(20 * 3);
 
 	// Fill vertex buffer
-	v_skybox* pv = (v_skybox*)Cmd.Vertex.Lock(12, sh_2geom->vb_stride, v_offset);
+	PackedVertex* pv = (PackedVertex*)Cmd.Vertex.Lock(12, EVertexFormat::Packed, v_offset);
 
 	for(u32 v = 0; v < 12; v++) 
 	{
-		pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
+		pv[v] = { hbox_verts[v], 0, 0, 0, C, 0 };
 	}
 
-	Cmd.Vertex.Unlock(12, sh_2geom->vb_stride);
+	Cmd.Vertex.Unlock(12);
 
 	// Render
 	Cmd.SetObjectTransform(mSky, mSkyOld);
@@ -286,11 +259,11 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 	Cmd.Index.Unlock((u32)env.CloudsIndices.size());
 
 	// Fill vertex buffer
-	v_clouds* pv = (v_clouds*)Cmd.Vertex.Lock((u32)env.CloudsVerts.size(), clouds_geom.stride(), v_offset);
+	PackedVertex* pv = (PackedVertex*)Cmd.Vertex.Lock((u32)env.CloudsVerts.size(), EVertexFormat::Packed, v_offset);
 	for(FvectorIt it = env.CloudsVerts.begin(); it != env.CloudsVerts.end(); it++, pv++) {
-		pv->set(*it, C0, C1);
+		*pv = { *it, 0, 0, 0, C0, C1 };
 	}
-	Cmd.Vertex.Unlock((u32)env.CloudsVerts.size(), clouds_geom.stride());
+	Cmd.Vertex.Unlock((u32)env.CloudsVerts.size());
 
 	// Render
 	Cmd.SetObjectTransform(mXFORM);
@@ -307,10 +280,10 @@ void dxEnvironmentRender::RenderClouds(CEnvironment& env)
 void dxEnvironmentRender::OnDeviceCreate() {
 	GfxCmdList& Cmd = RImplementation.Imm();
 	sh_2sky.create(&m_b_skybox, "skybox_2t");
-	sh_2geom.create(v_skybox_fvf, Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
+	sh_2geom.create(EGeomSource::Ring, 0, Cmd.Index.Buffer());
 
 	clouds_sh.create("clouds", "null");
-	clouds_geom.create(v_clouds_fvf, Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
+	clouds_geom.create(EGeomSource::Ring, 0, Cmd.Index.Buffer());
 }
 
 void dxEnvironmentRender::OnDeviceDestroy() {

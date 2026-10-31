@@ -803,13 +803,13 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IRHIBuffer* vb, IRHIBuffer* i
 	return	g;
 }
 
-SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page)
+SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
 {
 	VERIFY(Source != EGeomSource::Legacy);
-	VERIFY(Source == EGeomSource::Ring || Page < RImplementation.Geometry.PageCount());
+	VERIFY(Source == EGeomSource::Ring ? Page == 0 : Page < RImplementation.Geometry.PageCount() && RingIndices == nullptr);
 	xrCriticalSectionGuard guard(creationGuard);
 	GfxCmdList& Cmd = RImplementation.Imm();
-	IRHIBuffer* Indices = Source == EGeomSource::Ring ? nullptr : RImplementation.Geometry.IndexBuffer(Page);
+	IRHIBuffer* Indices = Source == EGeomSource::Ring ? RingIndices : RImplementation.Geometry.IndexBuffer(Page);
 	for (SGeometry* G : v_geoms)
 	{
 		if (G->Source == Source && G->Page == Page && G->vb == Cmd.IotaVB && G->ib == Indices)

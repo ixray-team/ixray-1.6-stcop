@@ -90,21 +90,6 @@ bool CRenderTarget::u_need_CM()
 	return (param_color_map_influence>0.001f);
 }
 
-struct TL_2c3uv		{
-	Fvector4	p		;
-	u32			color0	;
-	u32			color1	;
-	Fvector2	uv	[3]	;
-	IC void	set	(float x, float y, u32 c0, u32 c1, float u0, float v0, float u1, float v1, float u2, float v2)	{	
-		p.set	(x,y,EPS_S,1.f); 
-		color0 = c0; 
-		color1 = c1;
-		uv[0].set(u0,v0); 
-		uv[1].set(u1,v1); 
-		uv[2].set(u2,v2); 
-	}
-};
-
 void CRenderTarget::phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo)
 {
 	// combination/postprocess
@@ -140,9 +125,6 @@ void CRenderTarget::phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo)
 	u32					p_gray			= subst_alpha(GrayColor,gblend);
 	Fvector				p_brightness = Brightness	;
 
-	// Draw full-screen quad textured with our scene image
-	u32		Offset;
-	
 	Fvector2			n0,n1,r0,r1,l0,l1;
 	u_calc_tc_duality_ss	(r0,r1,l0,l1);
 	if (ScopeInfo)
@@ -155,23 +137,22 @@ void CRenderTarget::phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo)
 	}
 	u_calc_tc_noise(Cmd, n0, n1, ScopeInfo ? ScopeInfo->noise.grain : param_noise_scale, ScopeInfo ? ScopeInfo->noise.fps : param_noise_fps, ScopeInfo != nullptr);
 
-	// Fill vertex buffer
-	float				du	= ps_r1_pps_u, dv = ps_r1_pps_v;
-	TL_2c3uv* pv			= (TL_2c3uv*) Cmd.Vertex.Lock	(4,g_postprocess.stride(),Offset);
-	pv->set(du+0,			dv+float(_h),	p_color, p_gray, r0.x, r1.y, l0.x, l1.y, n0.x, n1.y);	pv++;
-	pv->set(du+0,			dv+0,			p_color, p_gray, r0.x, r0.y, l0.x, l0.y, n0.x, n0.y);	pv++;
-	pv->set(du+float(_w),	dv+float(_h),	p_color, p_gray, r1.x, r1.y, l1.x, l1.y, n1.x, n1.y);	pv++;
-	pv->set(du+float(_w),	dv+0,			p_color, p_gray, r1.x, r0.y, l1.x, l0.y, n1.x, n0.y);	pv++;
-	Cmd.Vertex.Unlock										(4,g_postprocess.stride());
+	CBPost& Post = Cmd.Constants.Write<CBPost>();
+	const Fcolor PostBase = Fcolor().set(p_color);
+	const Fcolor PostGray = Fcolor().set(p_gray);
+	Post.PostRect.set(ps_r1_pps_u, ps_r1_pps_v, float(_w), float(_h));
+	Post.PostUV[0].set(r0.x, r0.y, r1.x, r1.y);
+	Post.PostUV[1].set(l0.x, l0.y, l1.x, l1.y);
+	Post.PostUV[2].set(n0.x, n0.y, n1.x, n1.y);
+	Post.PostColor[0].set(PostBase.r, PostBase.g, PostBase.b, PostBase.a);
+	Post.PostColor[1].set(PostGray.r, PostGray.g, PostGray.b, PostGray.a);
 
-	// Actual rendering
 	Cmd.Constants.Write<CBFrame>().c_brightness.set(p_brightness.x, p_brightness.y, p_brightness.z, 0);
 	Cmd.Constants.Write<CBFrame>().c_colormap.set(MapInfluence, MapInterpolate, 0, 0);
 	if (ScopeInfo)
 	{
 		// The scope shader converts HDR to display colors the same way as combine_2
-		Cmd.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
+		Post.bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
 	}
-	Cmd.SetGeometry	(g_postprocess);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
+	Cmd.DrawNoInput(6);
 }

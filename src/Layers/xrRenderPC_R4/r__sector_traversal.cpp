@@ -78,7 +78,7 @@ void CPortalTraverser::fade_portal	(CPortal* _p, float ssa)
 void CPortalTraverser::initialize	()
 {
 	f_shader.create					("portal");
-	f_geom.create					(FVF::F_L, RImplementation.Imm().Vertex.Buffer(), 0);
+	f_geom.create					(EGeomSource::Ring);
 }
 void CPortalTraverser::destroy		()
 {
@@ -116,7 +116,7 @@ void CPortalTraverser::fade_render	(GfxCmdList& Cmd)
 		FVF::L buff[3];
 	};
 	
-	LF* _v = (LF*)Cmd.Vertex.Lock(poly_per_portal*3,f_geom.stride(),_offset);
+	LF* _v = (LF*)Cmd.Vertex.Lock(poly_per_portal*3, EVertexFormat::L, _offset);
 	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
 	Fvector _ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
 	u32 _ambient = psGameFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
@@ -142,7 +142,7 @@ void CPortalTraverser::fade_render	(GfxCmdList& Cmd)
 			_v++;
 		}
 	}
-	Cmd.Vertex.Unlock(poly_per_portal*3,f_geom.stride());
+	Cmd.Vertex.Unlock(poly_per_portal*3);
 
 	// render
 	Cmd.SetObjectTransform(Fidentity);

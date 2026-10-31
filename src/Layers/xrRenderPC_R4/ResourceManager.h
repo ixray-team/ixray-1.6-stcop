@@ -207,7 +207,7 @@ public:
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
-	SGeometry*		CreatePulledGeom		(EGeomSource Source, u32 Page);
+	SGeometry*		CreatePulledGeom		(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices);
 	void			DeleteGeom				(const SGeometry* VS		);
 	void			DeferredLoad			(bool E)					{ bDeferredLoad=E;	}
 

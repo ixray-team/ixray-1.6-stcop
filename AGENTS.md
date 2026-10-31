@@ -27,7 +27,7 @@ Keep dependencies downward. Do not add game or renderer implementation dependenc
 
 ## Renderer
 
-Console fonts share the R4 batching path; preserve draw order and the 16-bit quad-index limit. Console performance and D3D12 stream uploads: [docs/engine/rendering.md](docs/engine/rendering.md).
+Dynamic geometry (UI, fonts, particles, debug draws) goes through `GfxCmdList::Vertex`, a ring of 32 B records the VS reads at t57; quads draw with `DrawQuads` (no index buffer, no 16-bit limit). Console fonts share the R4 batching path; preserve draw order. Console performance and D3D12 stream uploads: [docs/engine/rendering.md](docs/engine/rendering.md).
 
 Terrain is an editor heightmap converted to ordinary static level meshes. Implicit lighting follows the base texture's `flImplicitLighted` metadata: base alpha stores hemi; `_lm.dds` stores RGB light + sun alpha; `_mask` blends four detail materials. Editor chunks are not runtime terrain tiles. Authoring, xrLC bake, R4 shading and current export/persistence defects: [docs/engine/terrain.md](docs/engine/terrain.md).
 

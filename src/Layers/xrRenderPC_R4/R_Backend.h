@@ -31,12 +31,10 @@ public:
 
 public:            
 	// Dynamic geometry streams
-	_VertexStream Vertex;
+	VertexRing Vertex;
+	_VertexStream LegacyVertex{ 256 };
 	_IndexStream Index;
 
-	IRHIBuffer* QuadIB;
-	IRHIBuffer* old_QuadIB;
-	IRHIBuffer* CuboidIB;
 	IRHIBuffer* IotaVB = nullptr;
 	ref_declaration PulledDecl;
 	GeometryHeap* Heap = nullptr;
@@ -216,7 +214,6 @@ public:
 	ICF	void						Dispatch			(u32 GroupsX, u32 GroupsY, u32 GroupsZ);
 
 	// Device create / destroy / frame signaling
-	void							CreateQuadIB		();
 	void							OnFrameBegin		();
 	void							OnFrameEnd			();
 	void							OnDeviceCreate		();

@@ -2,6 +2,7 @@
 
 #include "RenderAPI.h"
 #include "EditorDrawContext.h"
+#include "GeometryHeap.h"
 #include "../../Include/xrRender/DrawUtils.h"
 
 // Editor implementation of CDUInterface. Unlike the game CDrawUtilities it draws through
@@ -10,28 +11,15 @@
 struct RENDER_API SEditorPrimitiveBuffer
 {
 	ref_geom pGeom;
-	u32 v_cnt = 0;
-	u32 i_cnt = 0;
+	GeometryAlloc Alloc = {};
 	ERHI_PRIMITIVE_TOPOLOGY p_type = ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST;
 	u32 p_cnt = 0;
-	using TOnRender = xr_delegate<void()>;
-	TOnRender OnRender;
 
-	void RenderDIP()
-	{
-		GEditorDraw.DIP(p_type, pGeom, 0, 0, v_cnt, 0, p_cnt);
-	}
-
-	void RenderDP()
-	{
-		GEditorDraw.DP(p_type, pGeom, 0, p_cnt);
-	}
-
-	void CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices = 0, u32 _i_cnt = 0);
+	void CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, const Fvector* vertices, u32 v_cnt, const u16* indices, u32 i_cnt);
 	void Destroy();
 	void Render()
 	{
-		OnRender();
+		GEditorDraw.DIP(p_type, pGeom, Alloc.VertexBase, 0, Alloc.VertexCount, Alloc.IndexBase, p_cnt);
 	}
 };
 
@@ -52,9 +40,7 @@ class RENDER_API CEditorDrawUtilities :
 	CGameFont* m_Font = nullptr;
 
 public:
-	ref_geom vs_L;
-	ref_geom vs_TL;
-	ref_geom vs_LIT;
+	ref_geom RingGeom;
 
 protected:
 	FVF::L* m_DD_pv = nullptr;

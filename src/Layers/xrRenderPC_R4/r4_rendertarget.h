@@ -241,10 +241,6 @@ private:
 
 	// Combine
 	ref_geom					g_combine;
-	ref_geom					g_combine_VP;		// xy=p,zw=tc
-	ref_geom					g_combine_2UV;
-	ref_geom					g_combine_cuboid;
-	ref_geom					g_aa_AA;
 	ref_shader				s_combine_volumetric;
 public:
 	ref_shader				s_combine;
@@ -253,7 +249,6 @@ public:
 	ref_shader				s_postprocess;
 	ref_shader ScopePostprocessShader;
 	ColorMapManager ScopeColorMaps{"$user$scope_cmap0", "$user$scope_cmap1"};
-	ref_geom					g_postprocess;
 	ref_shader				s_menu;
 	ref_geom					g_menu;
 private:

@@ -366,7 +366,7 @@ void CSkeletonX::_Render_soft(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount_, u32
 	//PROF_EVENT("CSkeletonX::_Render_soft")
 	u32 vOffset = cache_vOffset;
 
-	_VertexStream& _VS = Cmd.Vertex;
+	_VertexStream& _VS = Cmd.LegacyVertex;
 	if (cache_DiscardID!=_VS.DiscardID() || vCount_ !=cache_vCount )
 	{
 		vertRender*	Dest = (vertRender*)_VS.Lock(vCount_,hGeom->vb_stride,vOffset);
@@ -798,7 +798,7 @@ void CSkeletonX::_Load_hw(void* _verts_)
 	{
 	case RM_SKINNING_SOFT:
 	{
-		rm_geom.create(vertRenderFVF, RImplementation.Imm().Vertex.Buffer(), p_rm_Indices);
+		rm_geom.create(vertRenderFVF, RImplementation.Imm().LegacyVertex.Buffer(), p_rm_Indices);
 		break;
 	}
 	case RM_SINGLE:

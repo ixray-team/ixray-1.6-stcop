@@ -491,7 +491,7 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 	IntVec& face_lst = sp_it->second;
 	size_t FaceCount = face_lst.size();
 
-	_VertexStream* Stream = &Cmd.Vertex;
+	_VertexStream* Stream = &Cmd.LegacyVertex;
 	const u32 stride = m_Parent->vs_SkeletonGeom->vb_stride;
 	VERIFY(stride == sizeof(svertRender));
 

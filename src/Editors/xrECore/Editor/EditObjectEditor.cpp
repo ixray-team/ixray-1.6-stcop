@@ -456,7 +456,7 @@ void CEditableObject::DefferedLoadRP()
 
 	// skeleton
 	GfxCmdList& Cmd = RImplementation.Imm();
-	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
+	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), Cmd.LegacyVertex.Buffer(), Cmd.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();

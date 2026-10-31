@@ -24,6 +24,9 @@ CBUFFER(CBPost, 7)
 	float4 WorldX;
 	float4 WorldZ;
 	float4 m_level_scale;
+	float4 PostRect;
+	float4 PostUV[3];
+	float4 PostColor[2];
 	float gtao_parameters;
 	float puddle_constants;
 	float sharpening_intensity;

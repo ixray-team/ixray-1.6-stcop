@@ -244,7 +244,7 @@ void CParticleEffect::GeomCreate()
 	xrCriticalSectionGuard guard(&onframe_lock);
 	if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 	{
-		geom.create(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
+		geom.create(EGeomSource::Ring);
 		shader = m_Def->m_CachedShader;
 	}
 }
@@ -310,24 +310,29 @@ PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEn
 // Render
 //------------------------------------------------------------------------------
 //----------------------------------------------------
+static PAPI::Particle::LITBUFF PackSprite(const Fvector& Pos, const Fvector& A, const Fvector& B, const Fvector4& UV, u32 Color)
+{
+	return
+	{
+		VertexPacking::FromLIT({ Pos - B, Color, { UV.x, UV.w } }),
+		VertexPacking::FromLIT({ Pos + A, Color, { UV.x, UV.y } }),
+		VertexPacking::FromLIT({ Pos - A, Color, { UV.z, UV.w } }),
+		VertexPacking::FromLIT({ Pos + B, Color, { UV.z, UV.y } })
+	};
+}
+
 ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr)
 {
 	float angle = m.rotI.x;
-	float sa = std::sin(angle);  
-	float ca = std::cos(angle);  
+	float sa = std::sin(angle);
+	float ca = std::cos(angle);
 
 	Fvector Vr = T*vs.x*sa + R*vs.x*ca;
 	Fvector Vt = T*vs.y*ca - R*vs.y*sa;
-	Fvector a = Vt-Vr, b = Vt+Vr;
+	const PAPI::Particle::LITBUFF Sprite = PackSprite(pos, Vt - Vr, Vt + Vr, uv, clr);
 
 	xrCriticalSectionGuard guard(&cache_lock);
-	m.buff =
-	{
-		-b+pos, clr, uv.x,uv.w,
-		a+pos, clr, uv.x,uv.y,
-		-a+pos, clr, uv.z,uv.w,
-		b+pos, clr, uv.z,uv.y
-	};
+	m.buff = Sprite;
 }
 
 void CParticleEffect::UpdateCache()
@@ -510,18 +515,18 @@ void CParticleEffect::Render(GfxCmdList& Cmd, float)
 
 	Cmd.SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 
-	u32 MAX_SPRITES = Cmd.Vertex.GetSize() / u32(sizeof(PAPI::Particle::LITBUFF));
+	u32 MAX_SPRITES = Cmd.Vertex.GetCapacity() / 4u;
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
 
-		PAPI::Particle::LITBUFF* buff = (PAPI::Particle::LITBUFF*)Cmd.Vertex.Lock(vertices_in_batch, geom->vb_stride, vOffset);
+		PAPI::Particle::LITBUFF* buff = (PAPI::Particle::LITBUFF*)Cmd.Vertex.Lock(vertices_in_batch, EVertexFormat::Packed, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
 			buff[i] = particles[start_idx + i].buff;
-		Cmd.Vertex.Unlock(vertices_in_batch, geom->vb_stride);
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertices_in_batch / 2u) * 3, 0u, vOffset);
+		Cmd.Vertex.Unlock(vertices_in_batch);
+		Cmd.DrawQuads(batch_size, vOffset);
 	}
 
 	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
@@ -539,19 +544,10 @@ ICF void FillSpriteEditor(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const 
 	Vt.y = T.y * r2 * ca - R.y * r2 * sa;
 	Vt.z = T.z * r2 * ca - R.z * r2 * sa;
 
-	Fvector a, b, c, d;
+	Fvector a, b;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
-	c.invert(a);
-	d.invert(b);
-	*pv =
-	{
-		d + pos, clr, lt.x,rb.y,
-		a + pos, clr, lt.x,lt.y,
-		c + pos, clr, rb.x,rb.y,
-		b + pos, clr, rb.x,lt.y
-	};
-	pv++;
+	*pv++ = PackSprite(pos, a, b, { lt.x, lt.y, rb.x, rb.y }, clr);
 }
 
 ICF void FillSpriteEditor(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
@@ -568,19 +564,10 @@ ICF void FillSpriteEditor(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, cons
 	Vt.y = T.y * r2 * ca - R.y * r2 * sa;
 	Vt.z = T.z * r2 * ca - R.z * r2 * sa;
 
-	Fvector a, b, c, d;
+	Fvector a, b;
 	a.sub(Vt, Vr);
 	b.add(Vt, Vr);
-	c.invert(a);
-	d.invert(b);
-	*pv =
-	{
-		d + pos, clr, lt.x,rb.y,
-		a + pos, clr, lt.x,lt.y,
-		c + pos, clr, rb.x,rb.y,
-		b + pos, clr, rb.x,lt.y
-	};
-	pv++;
+	*pv++ = PackSprite(pos, a, b, { lt.x, lt.y, rb.x, rb.y }, clr);
 }
 
 // Editor path: immediate sprite fill without the per-frame cache.
@@ -599,7 +586,7 @@ void CParticleEffect::RenderEditor(GfxCmdList& Cmd)
 	{
 		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
-			PAPI::Particle::LITBUFF* pv_start = (PAPI::Particle::LITBUFF*)Cmd.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+			PAPI::Particle::LITBUFF* pv_start = (PAPI::Particle::LITBUFF*)Cmd.Vertex.Lock(p_cnt * 4, EVertexFormat::Packed, dwOffset);
 			PAPI::Particle::LITBUFF* pv = pv_start;
 
 			for (u32 i = 0; i < p_cnt; i++)
@@ -729,7 +716,7 @@ void CParticleEffect::RenderEditor(GfxCmdList& Cmd)
 				}
 			}
 			dwCount = u32(pv - pv_start) * 4;
-			Cmd.Vertex.Unlock(dwCount, geom->vb_stride);
+			Cmd.Vertex.Unlock(dwCount);
 
 			CHudInitializer initalizer(Cmd, false, true);
 
@@ -745,7 +732,7 @@ void CParticleEffect::RenderEditor(GfxCmdList& Cmd)
 			Cmd.SetGeometry(geom);
 
 			Cmd.SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (dwCount / 2) * 3, 0, dwOffset);
+			Cmd.DrawQuads(dwCount / 4, dwOffset);
 			Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 
 			if (GetHudMode())

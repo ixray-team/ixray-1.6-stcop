@@ -1,24 +1,16 @@
 #include "common.hlsli"
 
-
 // Vertex
-v2p_TL main(v_TL_positiont I)
+v2p_TL main(PULL_INPUT)
 {
     v2p_TL O;
+    RingVertex V = PullRing(VertexId);
 
-    //	O.HPos = P;
-
-    {
-        I.P.xy += 0.5f;
-        //		O.HPos.x = I.P.x/1024 * 2 - 1;
-        //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
-        O.HPos.x = I.P.x * screen_res.z * 2 - 1;
-        O.HPos.y = (I.P.y * screen_res.w * 2 - 1) * -1;
-        O.HPos.zw = I.P.zw;
-    }
-
-    O.Tex0 = I.Tex0;
-    O.Color = float4(I.Color.bgr * 2, 1.0f); //	swizzle vertex colour
+    O.HPos.x = (V.P.x + 0.5f) * screen_res.z * 2 - 1;
+    O.HPos.y = ((V.P.y + 0.5f) * screen_res.w * 2 - 1) * -1;
+    O.HPos.zw = float2(V.P.z, asfloat(V.X));
+    O.Tex0 = V.UV;
+    O.Color = float4(V.C.xyz * 2, 1.0f);
 
     return O;
 }

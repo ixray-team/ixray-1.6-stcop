@@ -22,8 +22,7 @@ private:
 	void RenderLines(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements );
 	void RenderMarkers(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::MarkersDeq* pmarkers );
 private:
-	ref_geom 		hGeomTri;
-	ref_geom 		hGeomLine;
+	ref_geom 		hGeom;
 };
 
 #endif	//	dxStatGraphRender_included

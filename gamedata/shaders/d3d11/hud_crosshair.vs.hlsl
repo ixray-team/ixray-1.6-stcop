@@ -1,23 +1,16 @@
 #include "common.hlsli"
 #include "common_iostructs.hlsli"
-// #include "common.hlsli"
-
 
 // Vertex
-v2p_TL0uv main(v_TL0uv_positiont I)
+v2p_TL0uv main(PULL_INPUT)
 {
     v2p_TL0uv O;
+    RingVertex V = PullRing(VertexId);
 
-    {
-        I.P.xy += 0.5f;
-        //		O.HPos.x = I.P.x/1024 * 2 - 1;
-        //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
-        O.HPos.x = I.P.x * screen_res.z * 2 - 1;
-        O.HPos.y = (I.P.y * screen_res.w * 2 - 1) * -1;
-        O.HPos.zw = I.P.zw;
-    }
-
-    O.Color = I.Color.bgra; //	swizzle vertex colour
+    O.HPos.x = (V.P.x + 0.5f) * screen_res.z * 2 - 1;
+    O.HPos.y = ((V.P.y + 0.5f) * screen_res.w * 2 - 1) * -1;
+    O.HPos.zw = float2(V.P.z, asfloat(V.X));
+    O.Color = V.C;
 
     return O;
 }

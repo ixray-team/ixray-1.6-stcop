@@ -22,9 +22,6 @@ void dx103DFluidVolume::Load( const char* N, IReader *data, u32 dwFlags )
 	//	shader name can't start from a digit
 	shader.create("fluid3d_stub","water\\water_ryaska1");
 
-	//	Create debug geom
-	m_Geom.create			(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
-
 	Type = MT_3DFLUIDVOLUME;
 
 	//	Version 3>
@@ -97,80 +94,6 @@ void dx103DFluidVolume::Render( GfxCmdList& Cmd, float LOD )		// LOD - Level Of 
 {
 	if (LightingModeIsStaticRender())
 		return;
-	//	Render debug box
-	//	Do it BEFORE update since update resets shaders and other pipeline settings
-
-//	FluidManager.RenderFluid( m_FluidData );
-
-	u32 dwOffset,dwCount;
-
-	FVF::LIT* pv_start	= (FVF::LIT*)Cmd.Vertex.Lock(6*3*2,m_Geom->vb_stride,dwOffset);
-	FVF::LIT* pv		= pv_start;
-
-	u32 clr = 0xFFFFFFFF;
-
-	Fbox	box;
-	box.min = Fvector3().set(-0.5f, -0.5f, -0.5f);
-	box.max = Fvector3().set( 0.5f,  0.5f,  0.5f);
-	//box.min = Fvector3().set( 0.0f,  0.0f,  0.0f);
-	//box.max = Fvector3().set( 1.0f,  1.0f,  1.0f);
-
-	//	Prepare box here
-	{
-		//	Face 0
-		pv->set( box.x1, box.y1, box.z1, clr, 0, 0);	pv++;
-		pv->set( box.x1, box.y1, box.z2, clr, 0, 1);	pv++;
-		pv->set( box.x1, box.y2, box.z1, clr, 1, 0);	pv++;
-		pv->set( box.x1, box.y2, box.z2, clr, 1, 1);	pv++;
-
-		//	Face 1
-		pv->set( box.x2, box.y1, box.z2, clr, 0, 1);	pv++;		
-		pv->set( box.x2, box.y1, box.z1, clr, 0, 0);	pv++;				
-		pv->set( box.x2, box.y2, box.z2, clr, 1, 1);	pv++;
-		pv->set( box.x2, box.y2, box.z1, clr, 1, 0);	pv++;
-
-		//	Face 2
-		pv->set( box.x1, box.y1, box.z2, clr, 0, 1);	pv++;
-		pv->set( box.x1, box.y1, box.z1, clr, 0, 0);	pv++;		
-		pv->set( box.x2, box.y1, box.z2, clr, 1, 1);	pv++;
-		pv->set( box.x2, box.y1, box.z1, clr, 1, 0);	pv++;
-
-		//	Face 3
-		pv->set( box.x1, box.y2, box.z1, clr, 0, 0);	pv++;				
-		pv->set( box.x1, box.y2, box.z2, clr, 0, 1);	pv++;				
-		pv->set( box.x2, box.y2, box.z1, clr, 1, 0);	pv++;
-		pv->set( box.x2, box.y2, box.z2, clr, 1, 1);	pv++;
-
-		//	Face 4
-		pv->set( box.x1, box.y1, box.z1, clr, 0, 1);	pv++;
-		pv->set( box.x1, box.y2, box.z1, clr, 0, 0);	pv++;		
-		pv->set( box.x2, box.y1, box.z1, clr, 1, 1);	pv++;
-		pv->set( box.x2, box.y2, box.z1, clr, 1, 0);	pv++;
-
-		//	Face 5
-		pv->set( box.x1, box.y2, box.z2, clr, 0, 0);	pv++;				
-		pv->set( box.x1, box.y1, box.z2, clr, 0, 1);	pv++;				
-		pv->set( box.x2, box.y2, box.z2, clr, 1, 0);	pv++;
-		pv->set( box.x2, box.y1, box.z2, clr, 1, 1);	pv++;
-
-	}
-
-	Cmd.SetObjectTransform(m_FluidData.GetTransform());
-
-	dwCount = u32( pv - pv_start );
-	Cmd.Vertex.Unlock( dwCount, m_Geom->vb_stride );
-	Cmd.SetGeometry( m_Geom );
-
-	//	Render obstacles
-	const xr_vector<Fmatrix> &Obstacles = m_FluidData.GetObstaclesList();
-	int iObstNum = (int)Obstacles.size();
-	for (int i=0; i<iObstNum; ++i)
-	{
-		Cmd.SetObjectTransform(Obstacles[i]);
-	}
-	
-//	FluidManager.Update( m_FluidData, 1.0f/30.0f);
-
 	//float fTimeStep = Device.fTimeDelta*30*2.0f;
 	const float fTimeStep = 2.0f;
 

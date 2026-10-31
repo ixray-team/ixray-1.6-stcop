@@ -8,15 +8,12 @@ void dxStatGraphRender::Copy(IStatGraphRender&_in)
 
 void dxStatGraphRender::OnDeviceCreate()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
-	hGeomLine.create(FVF::F_TL0uv,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
-	hGeomTri.create(FVF::F_TL0uv,Cmd.Vertex.Buffer(),Cmd.QuadIB);
+	hGeom.create(EGeomSource::Ring);
 }
 
 void dxStatGraphRender::OnDeviceDestroy()
 {
-	hGeomLine.destroy();
-	hGeomTri.destroy();
+	hGeom.destroy();
 }
 
 void dxStatGraphRender::OnRender(CStatGraph &owner)
@@ -59,7 +56,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 
 	if (TriElem)
 	{
-		pv_Tri_start = (FVF::TL0uv*)Cmd.Vertex.Lock(TriElem,hGeomTri->vb_stride,dwOffsetTri);
+		pv_Tri_start = (FVF::TL0uv*)Cmd.Vertex.Lock(TriElem,EVertexFormat::TL0uv,dwOffsetTri);
 		pv_Tri = pv_Tri_start;
 
 		for (CStatGraph::SubGraphVecIt it=owner.subgraphs.begin(); it!=owner.subgraphs.end(); it++)
@@ -70,14 +67,13 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 			};
 		};
 		dwCount 				= u32(pv_Tri-pv_Tri_start);
-		Cmd.Vertex.Unlock	(dwCount,hGeomTri->vb_stride);
-		Cmd.SetGeometry		(hGeomTri);
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (dwCount/2) * 3, 0, dwOffsetTri);
+		Cmd.Vertex.Unlock	(dwCount);
+		Cmd.DrawQuads		(dwCount/4, dwOffsetTri);
 	};
 
 	if (LineElem)
 	{
-		pv_Line_start = (FVF::TL0uv*)Cmd.Vertex.Lock(LineElem,hGeomLine->vb_stride,dwOffsetLine);
+		pv_Line_start = (FVF::TL0uv*)Cmd.Vertex.Lock(LineElem,EVertexFormat::TL0uv,dwOffsetLine);
 		pv_Line = pv_Line_start;
 
 		for (CStatGraph::SubGraphVecIt it=owner.subgraphs.begin(); it!=owner.subgraphs.end(); it++)
@@ -90,8 +86,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		};
 
 		dwCount 				= u32(pv_Line-pv_Line_start);
-		Cmd.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
-		Cmd.SetGeometry		(hGeomLine);
+		Cmd.Vertex.Unlock	(dwCount);
 		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, (dwCount/2) * 2, dwOffsetLine);
 	};
 
@@ -100,14 +95,13 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		dwOffsetLine = 0;
 		LineElem = (u32)owner.m_Markers.size()*2;
 
-		pv_Line_start = (FVF::TL0uv*)Cmd.Vertex.Lock(LineElem,hGeomLine->vb_stride,dwOffsetLine);
+		pv_Line_start = (FVF::TL0uv*)Cmd.Vertex.Lock(LineElem,EVertexFormat::TL0uv,dwOffsetLine);
 		pv_Line = pv_Line_start;
 
 		RenderMarkers		(owner, &pv_Line, &(owner.m_Markers));
 
 		dwCount 				= u32(pv_Line-pv_Line_start);
-		Cmd.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
-		Cmd.SetGeometry		(hGeomLine);
+		Cmd.Vertex.Unlock	(dwCount);
 		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, (dwCount/2) * 2, dwOffsetLine);
 	}
 }
@@ -116,7 +110,7 @@ void dxStatGraphRender::RenderBack(GfxCmdList& Cmd, CStatGraph& owner)
 {
 	// draw back
 	u32			dwOffset, dwCount;
-	FVF::TL0uv* pv_start = (FVF::TL0uv*)Cmd.Vertex.Lock(4, hGeomTri->vb_stride, dwOffset);
+	FVF::TL0uv* pv_start = (FVF::TL0uv*)Cmd.Vertex.Lock(4, EVertexFormat::TL0uv, dwOffset);
 	FVF::TL0uv* pv = pv_start;
 	// base rect
 	pv->set(owner.lt.x, owner.rb.y, owner.back_color); pv++;	// 0
@@ -125,12 +119,12 @@ void dxStatGraphRender::RenderBack(GfxCmdList& Cmd, CStatGraph& owner)
 	pv->set(owner.rb.x, owner.lt.y, owner.back_color); pv++;	// 3
 	// render	
 	dwCount = u32(pv - pv_start);
-	Cmd.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
-	Cmd.SetGeometry(hGeomTri);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (dwCount / 2) * 3, 0, dwOffset);
+	Cmd.Vertex.Unlock(dwCount);
+	Cmd.SetGeometry(hGeom);
+	Cmd.DrawQuads(dwCount / 4, dwOffset);
 
 	//draw rect
-	pv_start = (FVF::TL0uv*)Cmd.Vertex.Lock(5, hGeomLine->vb_stride, dwOffset);
+	pv_start = (FVF::TL0uv*)Cmd.Vertex.Lock(5, EVertexFormat::TL0uv, dwOffset);
 	pv = pv_start;
 	// base rect
 	pv->set(owner.lt.x, owner.lt.y, owner.rect_color); pv++;	// 0
@@ -140,8 +134,7 @@ void dxStatGraphRender::RenderBack(GfxCmdList& Cmd, CStatGraph& owner)
 	pv->set(owner.lt.x, owner.lt.y, owner.rect_color); pv++;	// 0
 	// render	
 	dwCount = u32(pv - pv_start);
-	Cmd.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-	Cmd.SetGeometry(hGeomLine);
+	Cmd.Vertex.Unlock(dwCount);
 	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, 5, dwOffset);
 
 	// draw owner.grid
@@ -154,7 +147,7 @@ void dxStatGraphRender::RenderBack(GfxCmdList& Cmd, CStatGraph& owner)
 	int Num_H_LinesDwn = (owner.grid.y < PNum_H_LinesUp) ? owner.grid.y : PNum_H_LinesDwn;
 
 	pv_start = (FVF::TL0uv*)Cmd.Vertex.Lock(2 + 2 * owner.grid.x + Num_H_LinesUp * 2 + Num_H_LinesDwn * 2,
-		hGeomLine->vb_stride, dwOffset);
+		EVertexFormat::TL0uv, dwOffset);
 	pv = pv_start;
 
 	// base Coordinate Line
@@ -179,8 +172,7 @@ void dxStatGraphRender::RenderBack(GfxCmdList& Cmd, CStatGraph& owner)
 	}
 
 	dwCount = u32(pv - pv_start);
-	Cmd.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
-	Cmd.SetGeometry(hGeomLine);
+	Cmd.Vertex.Unlock(dwCount);
 	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, (dwCount / 2) * 2, dwOffset);
 }
 

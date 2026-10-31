@@ -21,26 +21,8 @@ const	float		S_tess			= .5f;
 const	int 		S_ambient		= 32;
 const	int 		S_clip			= 256-8;
 const	ERHI_FORMAT	S_rtf = ERHI_FORMAT::B8G8R8A8_UNORM;
-const	float		S_blur_kernel	= 0.75f;
 
 const	u32			cache_old		= 30*1000;	
-
-static void ApplyBlur4		(FVF::TL4uv* pv, u32 w, u32 h, float k)
-{
-	float	_w					= float(w);
-	float	_h					= float(h);
-	float	kw					= (1.f/_w)*k;
-	float	kh					= (1.f/_h)*k;
-	Fvector2					p0,p1;
-	p0.set						(.5f/_w, .5f/_h);
-	p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-	u32		_c					= 0xffffffff;
-
-	pv->p.set(EPS,			float(_h+EPS),	EPS,1.f); pv->color=_c; pv->uv[0].set(p0.x-kw,p1.y-kh);pv->uv[1].set(p0.x+kw,p1.y+kh);pv->uv[2].set(p0.x+kw,p1.y-kh);pv->uv[3].set(p0.x-kw,p1.y+kh);pv++;
-	pv->p.set(EPS,			EPS,			EPS,1.f); pv->color=_c; pv->uv[0].set(p0.x-kw,p0.y-kh);pv->uv[1].set(p0.x+kw,p0.y+kh);pv->uv[2].set(p0.x+kw,p0.y-kh);pv->uv[3].set(p0.x-kw,p0.y+kh);pv++;
-	pv->p.set(float(_w+EPS),float(_h+EPS),	EPS,1.f); pv->color=_c; pv->uv[0].set(p1.x-kw,p1.y-kh);pv->uv[1].set(p1.x+kw,p1.y+kh);pv->uv[2].set(p1.x+kw,p1.y-kh);pv->uv[3].set(p1.x-kw,p1.y+kh);pv++;
-	pv->p.set(float(_w+EPS),EPS,			EPS,1.f); pv->color=_c; pv->uv[0].set(p1.x-kw,p0.y-kh);pv->uv[1].set(p1.x+kw,p0.y+kh);pv->uv[2].set(p1.x+kw,p0.y-kh);pv->uv[3].set(p1.x-kw,p0.y+kh);pv++;
-}
 
 CLightShadows::CLightShadows()
 {
@@ -54,14 +36,12 @@ CLightShadows::CLightShadows()
 
 	RT.create				(RTname,S_rt_size,S_rt_size,S_rtf);
 	RT_temp.create			(RTtemp,S_rt_size,S_rt_size,S_rtf);
-	GfxCmdList& Cmd			= RImplementation.Imm();
 	CBlender_ShWorld world_blender;
 	sh_World.create(&world_blender, "effects\\shadow_world", RTname);
-	geom_World.create		(FVF::F_LIT,	Cmd.Vertex.Buffer(), nullptr);
+	geom_World.create		(EGeomSource::Ring);
 	CBlender_Blur blur_blender;
 	sh_BlurTR.create(&blur_blender, "blur4", RTtemp2);
 	sh_BlurRT.create(&blur_blender, "blur4", RTname2);
-	geom_Blur.create		(FVF::F_TL4uv,	Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 }
 
@@ -71,7 +51,6 @@ CLightShadows::~CLightShadows()
 	sh_Screen.destroy		();
 	geom_Screen.destroy		();
 
-	geom_Blur.destroy		();
 	geom_World.destroy		();
 
 	sh_BlurRT.destroy		();
@@ -267,18 +246,11 @@ void CLightShadows::calculate	(GfxCmdList& Cmd)
 
 	if (bRTS)
 	{
-		
-		u32							Offset;
-		FVF::TL4uv* pv				= (FVF::TL4uv*) Cmd.Vertex.Lock	(4,geom_Blur.stride(),Offset);
-		ApplyBlur4	(pv,S_rt_size,S_rt_size,S_blur_kernel);
-		Cmd.Vertex.Unlock		(4,geom_Blur.stride());
-
 		RImplementation.Target->u_setrt(Cmd, RT, nullptr, nullptr);
 		RHIViewport blur_viewport = {0, 0, float(S_rt_size), float(S_rt_size), 0, 1};
 		Cmd.SetViewport(blur_viewport);
 		Cmd.SetPass			(sh_BlurTR	);
-		Cmd.SetGeometry			(geom_Blur	);
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
+		Cmd.DrawNoInput(3);
 	}
 
 
@@ -416,7 +388,7 @@ void CLightShadows::render	(GfxCmdList& Cmd)
 	Cmd.SetGeometry			(geom_World);
 	int batch					= 0;
 	u32 Offset					= 0;
-	FVF::LIT* pv				= (FVF::LIT*) Cmd.Vertex.Lock	(batch_size*3,geom_World->vb_stride,Offset);
+	FVF::LIT* pv				= (FVF::LIT*) Cmd.Vertex.Lock	(batch_size*3,EVertexFormat::LIT,Offset);
 	for (u32 s_it=0; s_it<shadows.size(); s_it++)
 	{
 		Device.Statistic->RenderDUMP_Srender.Begin	();
@@ -539,17 +511,17 @@ void CLightShadows::render	(GfxCmdList& Cmd)
 			batch++;
 			if (batch==batch_size)	{
 				
-				Cmd.Vertex.Unlock	(batch*3,geom_World->vb_stride);
+				Cmd.Vertex.Unlock	(batch*3);
 				Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batch * 3, Offset);
 
-				pv						= (FVF::LIT*) Cmd.Vertex.Lock(batch_size*3,geom_World->vb_stride,Offset);
+				pv						= (FVF::LIT*) Cmd.Vertex.Lock(batch_size*3,EVertexFormat::LIT,Offset);
 				batch					= 0;
 			}
 		}
 		Device.Statistic->RenderDUMP_Srender.End	();
 	}
 
-	Cmd.Vertex.Unlock	(batch*3,geom_World->vb_stride);
+	Cmd.Vertex.Unlock	(batch*3);
 	if (batch)				{
 		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batch * 3, Offset);
 	}
