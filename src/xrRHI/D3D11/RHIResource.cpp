@@ -241,13 +241,6 @@ void InternalDevice11::ClearIndexBuffer()
     GetImmediateContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
 }
 
-void InternalDevice11::ClearVertexBuffer(u32 vb_stride)
-{
-    u32 offset = 0;
-    ID3D11Buffer* buffer = nullptr;
-    GetImmediateContext()->IASetVertexBuffers(0, 1, &buffer, &vb_stride, &offset);
-}
-
 void InternalDevice11::SetConstants(const RHIConstantWrite* Writes, u32 Count)
 {
 	ID3D11Device* Device = static_cast<ID3D11Device*>(RawDevice);

@@ -27,8 +27,7 @@ void CRenderTarget::PhaseRainStreaksBegin(GfxCmdList& Cmd)
 	Cmd.SetStencil(FALSE);
 
 	Cmd.SetPass(RainRefractionBlur->E[0]);
-	Cmd.SetGeometry(FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 
 	if (LightingModeIsStaticRender())
 	{
@@ -61,10 +60,9 @@ void CRenderTarget::PhaseRainLayers(GfxCmdList& Cmd, float SkyVisibility)
 
 	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	Cmd.SetPass(RainLayers->E[0]);
-	Cmd.SetGeometry(FSTriangleGeom);
 	Cmd.Constants.Write<CBPost>().rain_layers_params.set(Desc.rain_density, SkyVisibility, Speed, g_RainRefraction);
 	Cmd.Constants.Write<CBPost>().rain_layers_direction.set(Direction.x, Direction.y, Direction.z, 0.0f);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 }
 
 void CRenderTarget::PhaseRainStreaksEnd(GfxCmdList& Cmd)

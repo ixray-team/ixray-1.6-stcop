@@ -244,16 +244,18 @@ struct PSInputFullscreen
 	float2 texcoord : TEXCOORD0;
 };
 
-struct VSInputFullscreen
-{
-    float2 texcoord : TEXCOORD0;
-    float4 hpos : POSITIONT;
-};
-
 struct VSOutputFullscreen
 {
     float4 hpos : SV_POSITION;
     float2 texcoord : TEXCOORD0;
 };
+
+VSOutputFullscreen FullscreenTriangle(uint VertexId)
+{
+    VSOutputFullscreen O;
+    O.texcoord = float2((VertexId << 1u) & 2u, VertexId & 2u);
+    O.hpos = float4(O.texcoord * float2(2, -2) + float2(-1, 1), 1, 1);
+    return O;
+}
 
 #endif //	common_iostructs_h_included

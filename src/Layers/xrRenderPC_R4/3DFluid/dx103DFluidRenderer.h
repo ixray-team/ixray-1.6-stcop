@@ -56,8 +56,6 @@ private:
 	void	InitShaders();
 	void	DestroyShaders();
 
-	void	CreateGridBox();
-	void	CreateScreenQuad();
 	void	CreateJitterTexture();
 	void	CreateHHGGTexture();
 
@@ -96,15 +94,6 @@ private:
 	ref_texture		m_JitterTexture;
 	ref_texture		m_HHGGTexture;
 
-	ref_geom					m_GeomGridBox;
-	IRHIBuffer* m_pGridBoxVertexBuffer;
-	IRHIBuffer* m_pGridBoxIndexBuffer;
-	IRHIBuffer *m_pQuadVertexBuffer;
-
-	int							m_iGridBoxVertNum;
-	int							m_iGridBoxFaceNum;
-
-	ref_geom					m_GeomQuadVertex;
 	//	Cache vectors to avoid memory reallocations
 	//	TODO: DX10: Reserve memory on object creation
 	xr_vector<ISpatialShared>		m_lstRenderables;

@@ -1,5 +1,5 @@
 <shader>
 	<normal>
-		<pass vs="editor_terrain" ps="simple_color" cull="none"/>
+		<pass vs="editor" ps="simple_color" cull="none"/>
 	</normal>
 </shader>

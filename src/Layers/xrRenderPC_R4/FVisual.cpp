@@ -131,18 +131,11 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 static SVS* incompatible_vertex_shader(const ref_shader& sh, u32 element, const ref_geom& geom)
 {
 	ShaderElement* E = sh ? &*sh->E[element] : nullptr;
-	if (!E || E->passes.empty() || !E->passes[0]->vs || !E->passes[0]->vs->signature || !geom)
+	if (!E || E->passes.empty() || !E->passes[0]->vs || !geom)
 		return nullptr;
 
 	SVS* vs = &*E->passes[0]->vs;
-	RHIBlob* signature = vs->signature->signature;
-	const xr_vector<RHIInputElementDesc>& dcl = geom->dcl->dx10_dcl_code;
-	RHIObject* layout = nullptr;
-	if (FAILED(GRHI->CreateInputLayout(dcl.data(), dcl.size(), signature->GetBufferPointer(), signature->GetBufferSize(), &layout)))
-		return vs;
-
-	_RELEASE(layout);
-	return nullptr;
+	return vs->Input == EVertexInput::Legacy ? vs : nullptr;
 }
 
 bool Fvisual::fast_usable()
@@ -164,8 +157,6 @@ void Fvisual::check_layout()
 		if (SVS* vs = incompatible_vertex_shader(shader, element, rm_geom))
 		{
 			Msg("! visual [%s] shader [%s] textures [%s] element [%u]: geometry is incompatible with VS [%s]", dbg_name.c_str(), shader->src_shader.c_str(), shader->src_textures.c_str(), element, vs->cName.c_str());
-			for (const RHIInputElementDesc& e : rm_geom->dcl->dx10_dcl_code)
-				Msg("!   decl %s%u fmt=%u off=%u", e.SemanticName, e.SemanticIndex, (u32)e.Format, e.AlignedByteOffset);
 		}
 	}
 }

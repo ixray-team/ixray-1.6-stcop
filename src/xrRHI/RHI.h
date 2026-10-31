@@ -27,11 +27,11 @@
 #include "RHITypes.h"
 #include "RHIStateTypes.h"
 #include "RHIResource.h"
-#include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
 #include "RHIStateManager.h"
 class CAMDAntiLag;
+class GfxCmdList;
 
 enum
 {
@@ -82,7 +82,6 @@ public:
 	void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance);
 	void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex);
 	void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance);
-	void DrawNoInputAssembly(u32 vertexCount);
 	IRHIDevice* CreateDevice(ERHI_API_LAYER APILevel);
 	void ResizeBuffers(u32 Width, u32 Height);
 
@@ -160,13 +159,10 @@ public:
 	const RHI_GPU_EVENT& GPUStats() const;
 	void GPUStatsEnd() const;
 
-	void ClearVertexBuffer(u32 vb_stride);
 	void ClearIndexBuffer();
 
 	bool IsTessPass() const;
 	bool SupportsNoOverwriteSRV() const;
-
-	u32 GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize);
 
 	void EvictManagedResources();
 

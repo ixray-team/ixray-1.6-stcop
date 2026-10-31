@@ -4,18 +4,12 @@
 
 #include "dx103DFluidRenderer.h"
 #include "dx103DFluidBlenders.h"
-#include "../dx10BufferUtils.h"
 #include "../dxRenderDeviceRender.h"
 
 #include "dx103DFluidData.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
-
-struct VsInput
-{
-	XMFLOAT3 pos;
-};
 
 const char* dx103DFluidRenderer::m_pRTNames[ RRT_NumRT ] = 
 {
@@ -73,8 +67,6 @@ void dx103DFluidRenderer::Initialize(int gridWidth, int gridHeight, int gridDept
 	}
 
 	InitShaders();
-	CreateGridBox();
-	CreateScreenQuad();
 	CreateJitterTexture();
 	CreateHHGGTexture();
 
@@ -88,15 +80,6 @@ void dx103DFluidRenderer::Destroy()
 	//createJitterTexture();
 	m_JitterTexture = 0;
 	m_HHGGTexture = 0;
-
-	//createScreenQuad();
-	m_GeomQuadVertex = 0;
-	_RELEASE(m_pQuadVertexBuffer);
-
-	//createGridBox();
-	m_GeomGridBox = 0;
-	_RELEASE(m_pGridBoxVertexBuffer);
-	_RELEASE(m_pGridBoxIndexBuffer);
 
 	DestroyShaders();
 }
@@ -128,69 +111,6 @@ void dx103DFluidRenderer::DestroyShaders()
 		//	Release shader's element.
 		m_RendererTechnique[i] = 0;
 	}
-}
-
-void dx103DFluidRenderer::CreateGridBox () 
-{
-	VsInput vertices[] =
-	{
-		{ XMFLOAT3(0, 0, 0) },
-		{ XMFLOAT3(0, 0, 1) },
-		{ XMFLOAT3(0, 1, 0) },
-		{ XMFLOAT3(0, 1, 1) },
-		{ XMFLOAT3(1, 0, 0) },
-		{ XMFLOAT3(1, 0, 1) },
-		{ XMFLOAT3(1, 1, 0) },
-		{ XMFLOAT3(1, 1, 1) },
-	};
-	m_iGridBoxVertNum = sizeof(vertices)/sizeof(vertices[0]);
-
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
-
-
-	// Create index buffer
-	//DWORD indices[] =
-	//DWORD indices[] =
-	u16 indices[] =
-	{
-		0, 4, 1, 1, 4, 5,
-		0, 1, 2, 2, 1, 3,
-		4, 6, 5, 6, 7, 5,
-		2, 3, 6, 3, 7, 6,
-		1, 5, 3, 3, 5, 7,
-		0, 2, 4, 2, 6, 4
-	};
-	m_iGridBoxFaceNum = (sizeof(indices)/sizeof(indices[0]))/3;
-
-	R_ASSERT(RHIUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
-
-	// Define the input layout
-	static RHIInputElementDesc layout[] =
-	{
-		{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-	};
-
-	// Create the input layout
-	m_GeomGridBox.create(layout, std::size(layout), m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
-}
-
-void dx103DFluidRenderer::CreateScreenQuad() 
-{
-	// Create our quad input layout
-	static RHIInputElementDesc quadlayout[] =
-	{
-		{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-	};
-
-	// Create a screen quad for all render to texture operations
-	VsInput svQuad[4];
-	svQuad[0].pos = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	svQuad[1].pos = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	svQuad[2].pos = XMFLOAT3(-1.0f, -1.0f, 0.0f);
-	svQuad[3].pos = XMFLOAT3(1.0f, -1.0f, 0.0f);
-
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
-	m_GeomQuadVertex.create(quadlayout, std::size(quadlayout), m_pQuadVertexBuffer, 0);
 }
 
 void dx103DFluidRenderer::CreateJitterTexture()
@@ -442,14 +362,12 @@ void dx103DFluidRenderer::ComputeEdgeTexture(GfxCmdList& Cmd, const dx103DFluidD
 
 void dx103DFluidRenderer::DrawScreenQuad(GfxCmdList& Cmd)
 {
-	Cmd.SetGeometry(m_GeomQuadVertex);
-	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 4, 0);
+	Cmd.DrawNoInput(6);
 }
 
 void dx103DFluidRenderer::DrawBox(GfxCmdList& Cmd)
 {
-	Cmd.SetGeometry(m_GeomGridBox);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iGridBoxFaceNum * 3, 0, 0);
+	Cmd.DrawNoInput(36);
 }
 
 void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData)

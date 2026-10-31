@@ -10,8 +10,6 @@
 #include "Drivers/AMDAntiLag.h"
 #include "D3D11/RHIProfiler.h"
 
-#include <DirectXMesh.h>
-
 #ifdef IXR_WINDOWS
 #	include "Drivers/AMDGPUTransferee.h"
 #	include "Drivers/NvGPUTransferee.h"
@@ -409,11 +407,6 @@ void CRHI::GPUStatsEnd() const
 	}
 }
 
-void CRHI::ClearVertexBuffer(u32 vb_stride)
-{
-    DevicePtr->ClearVertexBuffer(vb_stride);
-}
-
 void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 {
 	DevicePtr->SetPrimitiveTopology(topology);
@@ -439,11 +432,6 @@ void CRHI::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartInde
 	DevicePtr->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
 }
 
-void CRHI::DrawNoInputAssembly(u32 vertexCount)
-{
-	DevicePtr->DrawNoInputAssembly(vertexCount);
-}
-
 void CRHI::ClearIndexBuffer()
 {
     DevicePtr->ClearIndexBuffer();
@@ -457,69 +445,6 @@ bool CRHI::IsTessPass() const
 bool CRHI::SupportsNoOverwriteSRV() const
 {
 	return DevicePtr->NoOverwriteSRV;
-}
-
-#ifndef D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT
-#	define D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT 32
-#endif
-
-u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
-{
-#ifdef IXR_WINDOWS
-	if (DevicePtr)
-	{
-		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
-		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
-
-		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)Desc, DescSize, Offsets, Strides);
-		return Strides[0];
-	}
-	else
-#elif defined(IXR_APPLE_SERIES)
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		const D3D11_INPUT_ELEMENT_DESC* Decl = (const D3D11_INPUT_ELEMENT_DESC*)Desc;
-
-		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
-		u32 PrevABO[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
-
-		for (u32 j = 0; j < DescSize; ++j)
-		{
-			const u32 Slot = Decl[j].InputSlot;
-			if (Slot >= D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
-			{
-				// ignore bad input slots
-				continue;
-			}
-
-			const size_t Bpe = DirectX::BytesPerElement(Decl[j].Format);
-			if (!Bpe)
-			{
-				// ignore invalid format
-				continue;
-			}
-
-			const u32 Alignment = (Bpe == 1) ? 1 : (Bpe == 2) ? 2 : 4;
-
-			u32 AlignedByteOffset = Decl[j].AlignedByteOffset;
-			if (AlignedByteOffset == D3D11_APPEND_ALIGNED_ELEMENT)
-			{
-				AlignedByteOffset = PrevABO[Slot];
-			}
-
-			Strides[Slot] = std::max<u32>(Strides[Slot], u32(AlignedByteOffset + Bpe));
-			PrevABO[Slot] = u32(AlignedByteOffset + Bpe + (Bpe % Alignment));
-		}
-
-		return Strides[0];
-	}
-	else
-#endif
-	{
-		VERIFY(!"Implement me!");
-	}
-
-	return u32(-1);
 }
 
 HRESULT CRHI::ReplaceShader(RHIObject* shader, const void* code, size_t size)

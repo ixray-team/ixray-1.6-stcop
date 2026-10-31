@@ -13,20 +13,6 @@
 #include "EditorInstancing.h"
 
 #include "../../../xrCore/FVFLegacy.h"
-//
-//struct VEditorVertex
-//{
-//	Fvector3 P;
-//	Fvector2 tc;
-//	Fvector  N;
-//};
-//
-//RHIInputElementDesc VEditorVertexDecl[] =
-//{
-//	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0,							ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-//	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-//	{ "NORMAL", 0,   ERHI_FORMAT::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-//};
 
 static void NormalBasis(const Fvector& N, Fvector& T, Fvector& B)
 {

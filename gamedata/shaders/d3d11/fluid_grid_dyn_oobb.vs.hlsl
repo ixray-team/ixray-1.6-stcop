@@ -1,8 +1,9 @@
 #include "fluid_common.hlsli"
 
 //	Vertex
-v2g_fluidsim_dyn_aabb main(v_fluidsim input)
+v2g_fluidsim_dyn_aabb main(uint VertexId : SV_VertexID)
 {
+    v_fluidsim input = FluidSliceVertex(VertexId);
     v2g_fluidsim_dyn_aabb output = (v2g_fluidsim_dyn_aabb)0;
 
     output.pos = float4(input.position.x, input.position.y, input.position.z, 1.0);

@@ -99,7 +99,6 @@ void CResourceManager::Dump(bool bBrief)
 	Msg		("* RM_Dump: rtargetsc : %d",		m_rtargets_c.size());	if(!bBrief) mdump(m_rtargets_c);
 	Msg		("* RM_Dump: vs        : %d",		m_vs.size());			if(!bBrief) mdump(m_vs);
 	Msg		("* RM_Dump: ps        : %d",		m_ps.size());			if(!bBrief) mdump(m_ps);
-	Msg		("* RM_Dump: dcl       : %d",		v_declarations.size());
 	Msg		("* RM_Dump: states    : %d",		v_states.size());
 	Msg		("* RM_Dump: tex_list  : %d",		lst_textures.size());
 	Msg		("* RM_Dump: matrices  : %d",		lst_matrices.size());

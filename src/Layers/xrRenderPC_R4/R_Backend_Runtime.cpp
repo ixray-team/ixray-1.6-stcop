@@ -65,11 +65,8 @@ void GfxCmdList::Invalidate	()
 		GRHI->SetDepthStencilView(nullptr, true);
 	}
 
-	decl						= nullptr;
-	vb							= nullptr;
 	ib							= nullptr;
-	vb_stride					= 0;
-	GeomSource					= EGeomSource::Legacy;
+	GeomSource					= EGeomSource::Static;
 	GeomPage					= 0;
 
 	state						= nullptr;
@@ -82,7 +79,6 @@ void GfxCmdList::Invalidate	()
 	m_pInputLayout				= nullptr;
 	m_PrimitiveTopology			= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	m_bChangedRTorZB			= false;
-	m_pInputSignature			= nullptr;
 	StatesDirty = true;
 	if (GRHI != nullptr)
 	{

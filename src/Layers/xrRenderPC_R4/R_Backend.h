@@ -36,7 +36,6 @@ public:
 
 	static constexpr u32 IotaSize = 65536;
 	IRHIBuffer* IotaVB = nullptr;
-	ref_declaration PulledDecl;
 	GeometryHeap* Heap = nullptr;
 
 	CShaderConstants				Constants;
@@ -47,13 +46,9 @@ public:
 	DWORD							dummy1;	//	Padding to avoid warning	
 	DWORD							dummy2;	//	Padding to avoid warning	
 private:
-	// Vertices/Indices/etc
-	SDeclaration*					decl;
-	IRHIBuffer* vb;
 	IRHIBuffer* ib;
-	u32								vb_stride;
 	RHIObject* PulledLayout = nullptr;
-	EGeomSource GeomSource = EGeomSource::Legacy;
+	EGeomSource GeomSource = EGeomSource::Static;
 	u32 GeomPage = 0;
 	u32 SourceBase = 0;
 
@@ -151,8 +146,6 @@ public:
 	ICF	void						SetStates			(GfxPipelineState* _state);
 	ICF	void						SetStates			(ref_state& _state)					{ SetStates(_state->state);	}
 
-	ICF  void						SetFormat			(SDeclaration* _decl);
-
 	ICF void						SetShader			(RHIObject* Shader, ERHI_SHADER_TYPE Type)	{ GRHI->SetShader(Shader, Type); }
 	ICF void						SetPS				(const ref_ps& _ps)					{ GRHI->SetShader(_ps->ps, ERHI_SHADER_TYPE::PS); }
 	ICF void						SetGS				(const ref_gs& _gs)					{ GRHI->SetShader(_gs->gs, ERHI_SHADER_TYPE::GS); }
@@ -166,11 +159,6 @@ public:
 	ICF SVS*						GetVS				() const								{ return CurrentVS; }
 	// Raw views bypass set_Textures, so the slot is forgotten and rebound by the next texture list
 		void						SetResource			(ERHI_SHADER_TYPE Stage, u32 Slot, IRHIShaderResourceView* View);
-protected:	//	In DX10 we need input shader signature which is stored in ref_vs
-
-public:
-
-		void						SetVertices		(IRHIBuffer* _vb, u32 _vb_stride);
 		void						SetIndices			(IRHIBuffer* _ib);
 	ICF void						SetGeometry		(SGeometry* _geom);
 	ICF void						SetGeometry		(ref_geom& _geom)					{	SetGeometry(_geom ? &*_geom : nullptr);		}
@@ -229,7 +217,7 @@ private:
 	void	FlushStates();
 	ICF bool PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32 Instances, bool Indexed);
 	ICF void SetDrawBase(u32 VertexBase, u32 Flags);
-	ICF bool SetPulledBase(u32 VertexBase);
+	ICF void SetPulledBase(u32 VertexBase);
 	void	UpdateObject();
 
 	GfxView					ViewState;
@@ -238,7 +226,6 @@ private:
 	Fmatrix					WorldViewProject = Fidentity;
 
 private:
-	RHIBlob*				m_pInputSignature;
 	SVS*					CurrentVS = nullptr;
 
 	bool					m_bChangedRTorZB;

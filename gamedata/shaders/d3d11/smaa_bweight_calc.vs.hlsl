@@ -17,8 +17,9 @@ struct p_smaa
 };
 
 // Vertex
-p_smaa main(VSInputFullscreen I)
+p_smaa main(uint VertexId : SV_VertexID)
 {
+    VSOutputFullscreen I = FullscreenTriangle(VertexId);
     p_smaa O;
 
     O.hpos = I.hpos;

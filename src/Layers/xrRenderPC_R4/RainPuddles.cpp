@@ -54,6 +54,5 @@ void CRenderTarget::PhaseRainPuddles(GfxCmdList& Cmd)
 	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	Cmd.SetStencil(false);
 	Cmd.SetPass(RainPuddlesShader->E[0]);
-	Cmd.SetGeometry(FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 }

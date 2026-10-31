@@ -31,6 +31,7 @@ SVS::~SVS()
 {
 	DEV->_DeleteVS(this);
 	_RELEASE(vs);
+	_RELEASE(Signature);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -45,27 +46,5 @@ SDS::~SDS								()			{	_RELEASE(sh);		DEV->_DeleteDS			(this);	}
 SCS::~SCS								()			{	_RELEASE(sh);		DEV->_DeleteCS			(this);	}
 
 ///////////////////////////////////////////////////////////////////////
-//	SInputSignature
-SInputSignature::SInputSignature(RHIBlob* pBlob)	{ VERIFY(pBlob); signature=pBlob; signature->AddRef();};
-SInputSignature::~SInputSignature()
-{
-	DEV->_DeleteInputSignature(this);
-	_RELEASE(signature);
-}
-
-///////////////////////////////////////////////////////////////////////
 //	SState
 SState::~SState							()			{	_RELEASE(state);	DEV->_DeleteState		(this);	}
-
-//	SDeclaration
-SDeclaration::~SDeclaration()
-{	
-	DEV->_DeleteDecl(this);	
-	xr_map<RHIBlob*, RHIObject*>::iterator iLayout;
-	iLayout = vs_to_layout.begin();
-	for( ; iLayout != vs_to_layout.end(); ++iLayout)
-	{
-		//	Release vertex layout
-		_RELEASE(iLayout->second);
-	}
-}

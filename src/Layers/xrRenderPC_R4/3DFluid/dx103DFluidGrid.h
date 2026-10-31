@@ -2,53 +2,15 @@
 #define	dx103DFluidGrid_included
 #pragma once
 
-struct VS_INPUT_FLUIDSIM_STRUCT;
-
 class dx103DFluidGrid
 {
 public:
-	dx103DFluidGrid();
-	~dx103DFluidGrid();
-
-	void	Initialize( int gridWidth, int gridHeight, int gridDepth);
+	void	Initialize(int gridDepth);
 
 	void	DrawSlices(GfxCmdList& Cmd);
-	void	DrawSlicesToScreen(GfxCmdList& Cmd);
-	void	DrawBoundaryQuads(GfxCmdList& Cmd);
-	void	DrawBoundaryLines(GfxCmdList& Cmd);
-	
-private:
-	void	CreateVertexBuffers();
-	void	DestroyVertexBuffers();
-
-	void	InitScreenSlice( VS_INPUT_FLUIDSIM_STRUCT** vertices, int z, int& index );
-	void	InitSlice( int z, VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index );
-	void	InitLine(float x1, float y1, float x2, float y2, int z,
-					VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index);
-	void	InitBoundaryQuads( VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index );
-	void	InitBoundaryLines( VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index );
 
 private:
-
-	Ivector3	m_vDim;
-	int			m_iMaxDim;
-	int			m_iCols;
-	int			m_iRows;
-
-	ref_geom		m_GeomRenderQuad;
-	ref_geom		m_GeomSlices;
-	ref_geom		m_GeomBoundarySlices;
-	ref_geom		m_GeomBoundaryLines;
-
-	IRHIBuffer* m_pRenderQuadBuffer;
-	IRHIBuffer* m_pSlicesBuffer;
-	IRHIBuffer* m_pBoundarySlicesBuffer;
-	IRHIBuffer* m_pBoundaryLinesBuffer;
-
-	int			m_iNumVerticesRenderQuad;
-	int			m_iNumVerticesSlices;
-	int			m_iNumVerticesBoundarySlices;
-	int			m_iNumVerticesBoundaryLines;
+	u32		m_iNumVerticesSlices;
 };
 
 #endif	//	dx103DFluidGrid_included

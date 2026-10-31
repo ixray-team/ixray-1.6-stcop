@@ -1,11 +1,6 @@
 #include "common_iostructs.hlsli"
 
-VSOutputFullscreen main(VSInputFullscreen I)
+VSOutputFullscreen main(uint VertexId : SV_VertexID)
 {
-    VSOutputFullscreen O;
-
-    O.hpos = I.hpos;
-    O.texcoord = I.texcoord;
-
-    return O;
+    return FullscreenTriangle(VertexId);
 }

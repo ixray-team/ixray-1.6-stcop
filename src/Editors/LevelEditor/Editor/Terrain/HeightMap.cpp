@@ -4,56 +4,48 @@
 using XRay::Editor::HeightmapUtils::SHeightMap;
 using XRay::Editor::HeightmapUtils::SHeightMapRenderData;
 
-namespace XRay::Editor::HeightmapUtils
-{
-	struct SGpuCache
-	{
-		ref_geom Geom;
-	};
-}
-
 void SHeightMapRenderData::InvalidateGpu()
 {
-	if (Gpu)
+	for (SHeightMapBlock& Block : Blocks)
 	{
-		_RELEASE(Gpu->Geom->vb);
-		_RELEASE(Gpu->Geom->ib);
-		Gpu->Geom.destroy();
-		delete Gpu;
+		RImplementation.Geometry.Free(Block.Alloc);
 	}
+	Blocks.clear();
 }
 
 void SHeightMap::BuildGpu()
 {
 	RenderData.InvalidateGpu();
 
-	u32 total = 0;
-	for (const auto& c : RenderData.Chunks)
-		total += u32(c.Gpu.size());
-	if (total == 0)
-		return;
-
-	xr_vector<SHeightMapVertex> all;
-	all.reserve(total);
-
-	u32 base = 0;
-	RenderData.ChunkBase.resize(RenderData.Chunks.size());
-	RenderData.ChunkCount.resize(RenderData.Chunks.size());
-	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
+	constexpr u32 BlockVertices = 1u << 20;
+	xr_vector<SHeightMapChunk>& Chunks = RenderData.Chunks;
+	xr_vector<PackedVertex> Records;
+	for (size_t First = 0, Last = 0; First < Chunks.size(); First = Last)
 	{
-		const auto& c = RenderData.Chunks[ci];
-		RenderData.ChunkBase[ci] = base;
-		RenderData.ChunkCount[ci] = u32(c.Gpu.size());
-		all.insert(all.end(), c.Gpu.begin(), c.Gpu.end());
-		base += u32(c.Gpu.size());
+		u32 Count = 0;
+		for (; Last < Chunks.size() && Count + Chunks[Last].Vertices.size() <= BlockVertices; ++Last)
+		{
+			Count += u32(Chunks[Last].Vertices.size());
+		}
+
+		SHeightMapBlock& Block = RenderData.Blocks.emplace_back();
+		Block.Alloc = RImplementation.Geometry.Alloc(Count, 0);
+		Block.Geom.create(EGeomSource::Static, Block.Alloc.Page);
+		for (u32 Offset = 0; First < Last; ++First)
+		{
+			SHeightMapChunk& Chunk = Chunks[First];
+			const u32 Size = u32(Chunk.Vertices.size());
+			Records.resize(Size);
+			for (u32 Index = 0; Index < Size; ++Index)
+			{
+				Records[Index] = { Chunk.Vertices[Index], 0, 0, 0, Chunk.Colors[Index], std::bit_cast<u32>(1.0f) };
+			}
+			RImplementation.Geometry.Upload(Block.Alloc, Offset, Records.data(), Size);
+			Chunk.Block = u32(RenderData.Blocks.size() - 1);
+			Chunk.Base = Block.Alloc.VertexBase + Offset;
+			Offset += Size;
+		}
 	}
-
-	IRHIBuffer* pVB = nullptr;
-	if (!RHIUtils::CreateVertexBuffer(&pVB, all.data(), total * sizeof(SHeightMapVertex), false))
-		return;
-
-	RenderData.Gpu = new SGpuCache();
-	RenderData.Gpu->Geom.create(FVF::F_L, pVB, nullptr);
 }
 
 void SHeightMap::Create(u32 w, u32 h, float fill)
@@ -274,7 +266,6 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 					float hAvg = (h0 + h1 + h2 + h3) * 0.25f;
 					u32 col = Height2Color(hAvg, globalMinH, globalMaxH);
 					chunk.Colors.insert(chunk.Colors.end(), 6, col);
-					chunk.Gpu.insert(chunk.Gpu.end(), { {v0,col},{v1,col},{v2,col},{v0,col},{v2,col},{v3,col} });
 					}
 				}
 
@@ -287,6 +278,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 	else
 	{
 		// Обновление существующих данных
+		bool Changed = RenderData.Blocks.empty();
 		float globalMinH = FLT_MAX;
 		float globalMaxH = -FLT_MAX;
 		for (u32 z = 0; z < Height; ++z)
@@ -319,11 +311,19 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 				u32 iz = u32((oz - Pos.z) / Size.z);
 
 				float h = GetHeight(ix, iz) * scaleY * Size.y;
-				v.y = h - CenterY + Pos.y;
+				const float Y = h - CenterY + Pos.y;
+				const u32 Color = Height2Color(h, globalMinH, globalMaxH);
+				Changed |= v.y != Y || chunk.Colors[i] != Color;
+				v.y = Y;
 				chunk.BBox.modify(v);
-				chunk.Colors[i] = Height2Color(h, globalMinH, globalMaxH);
-				chunk.Gpu[i] = { v, chunk.Colors[i] };
+				chunk.Colors[i] = Color;
 			}
+		}
+
+		if (!Changed)
+		{
+			RenderData.IsDirty = false;
+			return;
 		}
 	}
 
@@ -335,7 +335,7 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 {
 	PrecacheRenderData(scaleY, cellSize, 0xffffff, false);
 
-	if (RenderData.Chunks.empty() || !RenderData.Gpu || !RenderData.Gpu->Geom)
+	if (RenderData.Blocks.empty())
 		return;
 
 	EDevice->SetShader(GEditorDraw.TerrainShader);
@@ -343,15 +343,8 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 
 	CFrustum& frustum = ::Render->ViewBase;
 
-	// Геометрия хранится в персистентном GPU-буфере (строится в PrecacheRenderData
-	// только при IsDirty). Здесь — только отсечение по фрустуму и один DP на чанк,
-	// без пересборки/заливки вершин каждый кадр.
-	for (size_t ci = 0; ci < RenderData.Chunks.size(); ++ci)
+	for (const SHeightMapChunk& chunk : RenderData.Chunks)
 	{
-		const auto& chunk = RenderData.Chunks[ci];
-		if (RenderData.ChunkCount[ci] == 0)
-			continue;
-
 		float aabb[6] =
 		{
 			chunk.BBox.min.x, chunk.BBox.min.y, chunk.BBox.min.z,
@@ -362,10 +355,7 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 		if (frustum.testAABB(aabb, mask) == fcvNone)
 			continue;
 
-		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
-			RenderData.Gpu->Geom,
-			RenderData.ChunkBase[ci],
-			RenderData.ChunkCount[ci] / 3);
+		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, RenderData.Blocks[chunk.Block].Geom, chunk.Base, u32(chunk.Vertices.size()) / 3);
 	}
 }
 
