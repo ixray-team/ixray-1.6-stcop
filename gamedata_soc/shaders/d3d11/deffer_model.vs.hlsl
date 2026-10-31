@@ -1,9 +1,10 @@
 #include "common.hlsli"
 #include "skin.hlsli"
+#include "editor_instancing.hlsli"
 
-void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
+void skinned_main(in v_model I, in float3 basis, out p_bumped_new O, in object_xforms X)
 {
-    float3 Nw = mul((float3x3)m_W, (float3)I.N);
+    float3 Nw = mul((float3x3)X.W, (float3)I.N);
 
 #ifdef USE_HUD_RAINDROPS
     O.drops_basis = float4(basis, Nw.y);
@@ -23,7 +24,7 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
 #endif
 #endif
 
-    float3 Pe = mul(m_WV, I.P);
+    float3 Pe = mul(X.WV, I.P);
 
     O.position = float4(Pe, 1.0f);
 
@@ -33,7 +34,7 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
     float3 T = I.T * 2.0f;
     float3 B = I.B * 2.0f;
 
-    float3x3 xform = mul((float3x3)m_WV, float3x3(
+    float3x3 xform = mul((float3x3)X.WV, float3x3(
         T.x, B.x, N.x,
         T.y, B.y, N.y,
         T.z, B.z, N.z));
@@ -42,18 +43,25 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
     O.M2 = xform[1];
     O.M3 = xform[2];
 #else
-	N = mul((float3x3)m_WV, N);
+	N = mul((float3x3)X.WV, N);
 
     O.M1 = N.xxx;
     O.M2 = N.yyy;
     O.M3 = N.zzz;
 #endif
 
-    O.hpos = mul(m_WVP, I.P);
+    O.hpos = mul(X.WVP, I.P);
 
 #ifndef DISABLE_MOTION_VECTORS
     O.hpos_curr = O.hpos;
+#ifdef USE_EDITOR_INSTANCING
+    // Placed copies do not move: the previous position is the same world point seen by the
+    // previous camera. Copying hpos would give a zero velocity while the camera moves, and the
+    // temporal upscaler would blend in whatever covered this pixel a frame ago.
+    O.hpos_old = mul(m_VP_old, float4(mul(X.W, I.P), 1.0f));
+#else
     O.hpos_old = mul(m_WVP_old, I.P_old);
+#endif
 #endif
 
 #ifdef USE_LENGTH_BUFFER
@@ -66,32 +74,32 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O)
 #if defined(SKIN_0)
 void main(in v_model_skinned_0 I, out p_bumped_new O)
 {
-    skinned_main(skinning_0(I), I.P.xyz, O);
+    skinned_main(skinning_0(I), I.P.xyz, O, object_default_xforms());
 }
 #elif defined(SKIN_1)
 void main(in v_model_skinned_1 I, out p_bumped_new O)
 {
-    skinned_main(skinning_1(I), I.P.xyz, O);
+    skinned_main(skinning_1(I), I.P.xyz, O, object_default_xforms());
 }
 #elif defined(SKIN_2)
 void main(in v_model_skinned_2 I, out p_bumped_new O)
 {
-    skinned_main(skinning_2(I), I.P.xyz, O);
+    skinned_main(skinning_2(I), I.P.xyz, O, object_default_xforms());
 }
 #elif defined(SKIN_3)
 void main(in v_model_skinned_3 I, out p_bumped_new O)
 {
-    skinned_main(skinning_3(I), I.P.xyz, O);
+    skinned_main(skinning_3(I), I.P.xyz, O, object_default_xforms());
 }
 #elif defined(SKIN_4)
 void main(in v_model_skinned_4 I, out p_bumped_new O)
 {
-    skinned_main(skinning_4(I), I.P.xyz, O);
+    skinned_main(skinning_4(I), I.P.xyz, O, object_default_xforms());
 }
 #else
-void main(in v_model I, out p_bumped_new O)
+void main(in v_model I, out p_bumped_new O, uint InstanceID : SV_InstanceID)
 {
-    skinned_main(I, I.P.xyz, O);
+    skinned_main(I, I.P.xyz, O, object_get_xforms(InstanceID));
 }
 #endif
 

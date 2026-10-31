@@ -2,6 +2,10 @@
 #include "sload.hlsli"
 #include "hud_raindrops.hlsli"
 
+#ifdef EDITOR_MODE
+uniform float4 editor_selection;
+#endif
+
 void cotangent_frame(inout p_bumped_new O)
 {
     // Get edge vectors of the pixel triangle
@@ -88,14 +92,15 @@ void main(p_bumped_new I,
 
 #ifdef USE_HUD_RAINDROPS
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true), M.Point);
 #else
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false), M.Point);
 #endif
     HudRain_Wet(M, hudRain);
 #endif
 
-#ifdef USE_LM_HEMI
+#if defined(USE_LM_HEMI) && !defined(EDITOR_MODE)
+    // The editors have no baked lightmaps: sun and hemi come from the vertex shader
     float4 lm = s_hemi.Sample(smp_rtlinear, I.tcdh.zw);
 
     M.Sun = get_sun(lm);
@@ -124,6 +129,16 @@ void main(p_bumped_new I,
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 #endif
 
+#ifdef EDITOR_MODE
+    // Selection and highlight tint of the editors
+    M.Color.xyz += editor_selection.xyz;
+#endif
+
     GbufferPack(O, M);
+
+#ifdef FORWARD_ONLY
+    // Editor blended surfaces: alpha blending uses the base texture alpha, not the packed AO/gloss
+    O.Color.w = M.Color.w;
+#endif
 }
 

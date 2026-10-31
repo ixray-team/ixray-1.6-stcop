@@ -1,3 +1,7 @@
+#ifdef EDITOR_MODE
+// Editable meshes of the editors use the model vertex format (float position, normal, basis, uv)
+#include "shadow_model.vs.hlsl"
+#else
 #include "common.hlsli"
 
 struct a2v
@@ -16,3 +20,4 @@ void main(in a2v I, out p_shadow O)
 #endif
     O.hpos = mul(m_WVP, I.P);
 }
+#endif

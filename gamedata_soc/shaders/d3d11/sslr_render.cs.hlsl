@@ -75,7 +75,17 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	bool isHUDRender = O.Depth < 0.02f;
 
 	StartPoint += !isHUDRender ? O.Normal * 0.025f : 0.0f;
-	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, isHUDRender);
+	float4 SSLR;
+
+	[branch]
+	if (isHUDRender)
+	{
+		SSLR = FastViewReflectionsSSR(StartPoint, Reflection, true);
+	}
+	else
+	{
+		SSLR = HiZTraceSSR(StartPoint, Reflection);
+	}
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;

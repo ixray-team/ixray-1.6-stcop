@@ -12,3 +12,13 @@ function normal   (shader, t_base, t_second, t_detail)
 	shader:dx10sampler	("smp_base")	
 	shader:dx10sampler("smp_rtlinear")
 end
+
+if GetShaderOption("USE_R1_STATIC_LIGHTING") then
+    r1_static = true
+
+    l_special = nil
+
+    function normal(shader, t_base, t_second, t_detail)
+        r1.env(shader, t_base, false, 2)
+    end
+end

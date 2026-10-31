@@ -2,7 +2,7 @@ function normal(shader, t_base, t_second, t_detail)
     shader:begin("clouds", "clouds")
 	
 	:fog(false)
-	:zb(false, false)
+	:zb(GetShaderOption("USE_R1_STATIC_LIGHTING"), false)
 	:blend(true, blend.srcalpha, blend.invsrcalpha)
 
     shader:dx10texture("s_clouds0", "null")

@@ -1,9 +1,25 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 
+#ifndef TERRAIN_HEIGHT_VALID
+	#define TERRAIN_HEIGHT_VALID 1
+#endif
+
+#ifndef TERRAIN_HEIGHT_SCALE
+	#define TERRAIN_HEIGHT_SCALE float4(1.0f, 1.0f, 1.0f, 1.0f)
+#endif
+
+#ifndef TERRAIN_HEIGHT_OFFSET
+	#define TERRAIN_HEIGHT_OFFSET float4(0.0f, 0.0f, 0.0f, 0.0f)
+#endif
+
 #if defined(USE_LEGACY_LIGHT) && defined(USE_RAIN_PUDDLES)
 #include "shared\RainPuddles.hlsli"
 #define USE_TERRAIN_RAIN_PUDDLES
+#endif
+
+#ifdef EDITOR_MODE
+uniform float4 editor_selection;
 #endif
 #include "shadow.hlsli"
 
@@ -87,6 +103,13 @@ void main(p_bumped_new I, out OutStructure O)
 		float4 b_bump = s_dn_b.Sample(smp_base, tcdbump) * Mask.z;
 		float4 a_bump = s_dn_a.Sample(smp_base, tcdbump) * Mask.w;
 
+		#if !defined(USE_LEGACY_LIGHT) && TERRAIN_HEIGHT_VALID
+			// Bump samples already include terrain layer weights.
+			float4 Heights = float4(r_bump.x, g_bump.x, b_bump.x, a_bump.x);
+			M.TerrainHeight = saturate(dot(Heights, TERRAIN_HEIGHT_SCALE) + dot(Mask, TERRAIN_HEIGHT_OFFSET));
+			M.HasTerrainHeight = true;
+		#endif
+
 		float4 r_bumpX = s_dn_rX.Sample(smp_base, tcdbump) * Mask.x;
 		float4 g_bumpX = s_dn_gX.Sample(smp_base, tcdbump) * Mask.y;
 		float4 b_bumpX = s_dn_bX.Sample(smp_base, tcdbump) * Mask.z;
@@ -138,6 +161,13 @@ void main(p_bumped_new I, out OutStructure O)
 		float4 Detail = s_detail.Sample(smp_base, RAIN_PUDDLE_DETAIL_TC);
 		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
 		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
+
+		#if !defined(USE_LEGACY_LIGHT) && TERRAIN_HEIGHT_VALID
+			float4 HeightScale = TERRAIN_HEIGHT_SCALE;
+			float4 HeightOffset = TERRAIN_HEIGHT_OFFSET;
+			M.TerrainHeight = saturate(DetailBump.x * HeightScale.x + HeightOffset.x);
+			M.HasTerrainHeight = true;
+		#endif
 
 		#ifndef USE_LEGACY_LIGHT
 			M.Roughness = DetailBumpX.y;
@@ -206,7 +236,12 @@ void main(p_bumped_new I, out OutStructure O)
 	M.Gloss = max(M.Gloss, PuddleAmount * 0.4f + saturate(rain_params.y * 2.0f) * 0.15f * RainPuddleControl.x);
 #endif
 
+#ifdef EDITOR_MODE
+    // The editors have no baked lightmaps: full sun
+    M.Sun = 1.0f;
+#else
     M.Sun = Lmap.w;
+#endif
     M.Hemi = M.Color.w;
 
 #ifdef USE_LEGACY_LIGHT
@@ -226,6 +261,11 @@ void main(p_bumped_new I, out OutStructure O)
 		O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 	#endif
 	
+#ifdef EDITOR_MODE
+    // Selection and highlight tint of the editors
+    M.Color.xyz += editor_selection.xyz;
+#endif
+
     GbufferPack(O, M);
 #ifdef USE_TERRAIN_RAIN_PUDDLES
 	// The legacy surface buffer's third channel carries coverage to water SSR.
@@ -256,7 +296,7 @@ void main(p_bumped_new I, out OutStructure O)
 			Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 		}
 
-		if(cascade_index >= 2)
+		if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 		{
 			float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
 			float Fade = Factor.x * Factor.y * Factor.z;

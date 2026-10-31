@@ -7,6 +7,24 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
+#ifdef EDITOR_MODE
+// Editable meshes of the editors use the model vertex format (float position, normal, uv)
+vf main(v_model v)
+{
+    vf o;
+
+    o.hpos = mul(m_WVP, v.P);
+    o.tc0 = v.tc;
+
+    // calculate fade
+    float3 dir_v = normalize(mul(m_WV, v.P));
+    float3 norm_v = normalize(mul((float3x3)m_WV, (float3)v.N));
+    float fade = abs(dot(dir_v, norm_v));
+    o.c0 = fade;
+
+    return o;
+}
+#else
 vf main(v_static v)
 {
     vf o;
@@ -21,7 +39,7 @@ vf main(v_static v)
     o.c0 = fade;
 
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
-    
+
     return o;
 }
-
+#endif

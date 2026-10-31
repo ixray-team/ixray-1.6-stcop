@@ -79,7 +79,7 @@ void main(PSInput _I)
 	M.Normal = mul(xform, M.Normal);
 	M.Normal = normalize(M.Normal);
 	
-	M = _M.Lerp(M, snow_mask);
+	M = IXRayMaterial_Lerp(_M, M, snow_mask);
 
     GbufferPack(O, M);
 	
