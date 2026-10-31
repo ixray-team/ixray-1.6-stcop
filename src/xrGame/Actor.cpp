@@ -3166,7 +3166,12 @@ void CActor::ForceTransform(const Fmatrix& m)
 	//character_physics_support()->set_movement_position( m.c );
 	//character_physics_support()->movement()->SetVelocity( 0, 0, 0 );
 
+	// The position correction steps physics with an activation box at the target.
+	// The actor body is still at the old position and must not collide with it,
+	// otherwise it is thrown up, lands with a fall sound and shifts the target.
+	character_physics_support()->movement()->CollisionEnable(false);
 	character_physics_support()->ForceTransform( m );
+	character_physics_support()->movement()->CollisionEnable(true);
 	const float block_damage_time_seconds = 2.f;
 	if(!IsGameTypeSingle())
 		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
