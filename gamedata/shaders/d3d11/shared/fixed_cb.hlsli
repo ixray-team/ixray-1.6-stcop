@@ -5,8 +5,6 @@
 #include "shared\cbuffer.hlsli"
 #endif
 
-#define MAX_BONES_COUNT 256
-
 CBUFFER(CBFrame, 0)
 	float4 timers;
 	float4 fog_plane;
@@ -107,8 +105,7 @@ CBUFFER(CBPass, 5)
 CBUFFER_END
 
 CBUFFER(CBSkin, 6)
-	float4 sbones_array[MAX_BONES_COUNT * 3];
-	float4 sbones_array_old[MAX_BONES_COUNT * 3];
+	float4 skin_reserved;
 CBUFFER_END
 
 #define DRAW_SOURCE_STATIC 0u

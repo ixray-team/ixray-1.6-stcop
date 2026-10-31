@@ -594,7 +594,9 @@ void CRender::Render()
 			Device.Statistic->RenderCALC.Begin();
 			GraphMain.r_pmask(true, false); // enable priority "0"
 			phase = PHASE_SMAP;
+			ZPrefill = true;
 			render_main(Cmd, false, true);
+			ZPrefill = false;
 			GraphMain.r_pmask(true, false); // disable priority "1"
 			Device.Statistic->RenderCALC.End();
 

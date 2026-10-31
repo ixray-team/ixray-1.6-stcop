@@ -16,7 +16,6 @@ void GfxCmdList::OnDeviceCreate	()
 
 	// streams
 	Vertex.Create		(*this);
-	LegacyVertex.Create	();
 	Index.Create		();
 	Constants.Create();
 	SetView(ViewState);
@@ -28,8 +27,8 @@ void GfxCmdList::OnDeviceDestroy()
 {
 	// streams
 	Index.Destroy		();
-	LegacyVertex.Destroy();
 	Vertex.Destroy		();
+	RImplementation.Skinning.Destroy();
 
 	_RELEASE(IotaVB);
 	_RELEASE(PulledLayout);

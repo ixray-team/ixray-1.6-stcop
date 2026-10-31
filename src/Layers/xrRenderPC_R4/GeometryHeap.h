@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderAPI.h"
+#include "../../xrRHI/RHIEnums.h"
 #include <atomic>
 
 struct PackedVertex;
@@ -30,7 +31,7 @@ public:
 	void Upload(const GeometryAlloc& Block, u32 FirstVertex, const PackedVertex* Vertices, u32 Count);
 	void UploadIndices(const GeometryAlloc& Block, u32 FirstIndex, const u16* Indices, u32 Count);
 	void Flush();
-	void Bind(GfxCmdList& Cmd);
+	void Bind(GfxCmdList& Cmd, ERHI_SHADER_TYPE Stage = ERHI_SHADER_TYPE::VS);
 
 	bool HasPending() const { return Pending; }
 	u32 PageCount() const { return Opened; }

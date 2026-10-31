@@ -96,7 +96,6 @@ CEditableObject::CEditableObject(const char* name) :
 	m_objectFlags.zero();
 	m_ObjectVersion = 0;
 
-	vs_SkeletonGeom = nullptr;
 	m_BBox.invalidate();
 
 	m_LoadState.zero();

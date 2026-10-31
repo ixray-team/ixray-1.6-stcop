@@ -2,6 +2,7 @@
 
 #include "FHierrarhyVisual.h"
 #include "SkeletonCustom.h"
+#include "SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/IRenderable.h"
 
@@ -223,9 +224,31 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	return	R / distSQ;
 }
 
+ICF bool IsSkeletonChild(const dxRender_Visual* pVisual)
+{
+	return pVisual->Type == MT_SKELETON_GEOMDEF_PM || pVisual->Type == MT_SKELETON_GEOMDEF_ST;
+}
+
+ICF void RequestSkin(dxRender_Visual* pVisual, const Fmatrix& World)
+{
+	if (IsSkeletonChild(pVisual))
+	{
+		CSkeletonX& Mesh = *static_cast<CSkeletonX*>(pVisual);
+		if (Mesh.IsSkinned() && Mesh.visible && Mesh.Parent)
+		{
+			RImplementation.Skinning.Request(Mesh, World);
+		}
+	}
+}
+
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
 {
 	CRender& RI = RImplementation;
+
+	if (RI.ZPrefill && IsSkeletonChild(pVisual))
+	{
+		return;
+	}
 
 	if (private_marker)
 	{
@@ -279,11 +302,13 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		N->val.pVisual = pVisual;
 		N->val.Matrix = *val_pTransform;
 		N->val.se = sh_d;		// 4=L_special
+		RequestSkin(pVisual, *val_pTransform);
 	}
 
 	if (sh_d && sh_d->flags.bScopeMask && pmask[0]) 
 	{
 		mapHUDScopeMask.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
+		RequestSkin(pVisual, *val_pTransform);
 	}
 
 	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ, bHUD);
@@ -292,6 +317,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	{
 		return;
 	}
+	RequestSkin(pVisual, *val_pTransform);
 
 	// UI rendering
 	if (val_bUI)

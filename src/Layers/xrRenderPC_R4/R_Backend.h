@@ -32,7 +32,6 @@ public:
 public:            
 	// Dynamic geometry streams
 	VertexRing Vertex;
-	_VertexStream LegacyVertex{ 256 };
 	_IndexStream Index;
 
 	static constexpr u32 IotaSize = 65536;
@@ -56,6 +55,7 @@ private:
 	RHIObject* PulledLayout = nullptr;
 	EGeomSource GeomSource = EGeomSource::Legacy;
 	u32 GeomPage = 0;
+	u32 SourceBase = 0;
 
 	// Pixel/Vertex constants
 	R_constant_table*				ctable;
@@ -174,6 +174,7 @@ public:
 		void						SetIndices			(IRHIBuffer* _ib);
 	ICF void						SetGeometry		(SGeometry* _geom);
 	ICF void						SetGeometry		(ref_geom& _geom)					{	SetGeometry(_geom ? &*_geom : nullptr);		}
+	ICF void						SetSourceBase		(u32 Base)								{ SourceBase = Base; }
 	ICF	RHIRasterizerDesc&			EditRaster			()										{ StatesDirty = true; States[0] = nullptr; return Raster; }
 	ICF	RHIDepthStencilDesc&		EditDepth			()										{ StatesDirty = true; States[1] = nullptr; return Depth; }
 	ICF	RHIBlendDesc&				EditBlend			()										{ StatesDirty = true; States[2] = nullptr; return Blend; }

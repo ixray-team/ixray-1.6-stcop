@@ -187,11 +187,6 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 				return;
 			}
 
-			if (IsSkeleton())
-			{
-				Engine.External.SetSkinningMode(4);
-			}
-
 			size_t s_id = 0;
 			for (auto s_it : m_Surfaces)
 			{
@@ -253,8 +248,6 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 				}
 				s_id++;
 			}
-
-			Engine.External.SetSkinningMode();
 		}
 	}
 }
@@ -437,23 +430,9 @@ void CEditableObject::OnDeviceDestroy()
 	DefferedUnloadRP();
 }
 
-static RHIInputElementDesc dwDecl_4W[] =
-{
-	{ "POSITION",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0,  ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL",    0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT",   0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 32, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD",  0, ERHI_FORMAT::R32G32_FLOAT,       0, 64, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD",  1, ERHI_FORMAT::B8G8R8A8_UNORM,     0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-};
-
 void CEditableObject::DefferedLoadRP()
 {
 	if (m_LoadState.is(LS_RBUFFERS)) return;
-
-	// skeleton
-	GfxCmdList& Cmd = RImplementation.Imm();
-	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), Cmd.LegacyVertex.Buffer(), Cmd.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();
@@ -479,8 +458,6 @@ void CEditableObject::DefferedUnloadRP()
 	{
 		return;
 	}
-	// skeleton
-	vs_SkeletonGeom.destroy();
 	// удалить shaders
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{

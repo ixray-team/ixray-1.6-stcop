@@ -26,6 +26,7 @@ class CGlowManager;
 #include "../../xrEngine/Fmesh.h"
 #include "r4_editor_hiz.h"
 #include "PackedVertex.h"
+#include "SkinningPass.h"
 #include <atomic>
 
 class dxRender_Visual;
@@ -104,6 +105,8 @@ public:
 	R_occlusion													HWOCC;
 
 	GeometryHeap Geometry;
+	SkinningPass Skinning;
+	bool ZPrefill = false;
 	GfxCmdList Backend;
 	GfxCmdList& Imm() { return Backend; }
 

@@ -112,8 +112,6 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 // Just two static storage
 void CRender::create()
 {
-	Engine.External.SetSkinningMode();
-
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 	Device.BeginReflectionCollect = xr_make_delegate(this, &CRender::begin_reflection_collect);
 	Device.CollectReflections = xr_make_delegate(this, &CRender::collect_reflections);
@@ -557,7 +555,6 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 {
 	const bool Dynamic = LightingModeIsDynamicRender();
 	const bool Static = LightingModeIsStaticRender();
-	const int Skinning = Engine.External.GetSkinningMode();
 	string16 SmapSize, SunShafts, SunQuality;
 	xr_sprintf(SmapSize, "%04u", u32(o.smapsize));
 	xr_sprintf(SunShafts, "%d", ps_r_sun_shafts);
@@ -573,11 +570,6 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ true, "SMAP_size", SmapSize },
 		{ Dynamic && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS), "USE_SUNMASK", "1" },
 		{ Dynamic && o.sunstatic, "USE_R2_STATIC_SUN", "1" },
-		{ Skinning < 0, "SKIN_NONE", "1" },
-		{ Skinning == 1, "SKIN_1", "1" },
-		{ Skinning == 2, "SKIN_2", "1" },
-		{ Skinning == 3, "SKIN_3", "1" },
-		{ Skinning == 4, "SKIN_4", "1" },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER), "USE_SOFT_WATER", "1" },
 		{ !o.dx11_use_legacy_light && o.offscreen_reflecitons, "USE_OFFSCREEN_REFLECTIONS", "1" },
 		{ !o.dx11_use_legacy_light && o.deffered_reflecitons, "USE_SSLR_REFLECTIONS", "1" },
@@ -616,10 +608,8 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 
 xr_string CRender::getShaderParams(const ShaderExternalMap& Defines) const
 {
-	ShaderExternalMap Key = GetShaderDefines(Defines);
-	std::erase_if(Key, [](const auto& Define) { return Define.first.starts_with("SKIN_"); });
 	string32 Text;
-	xr_sprintf(Text, "_%08x", DefinesCRC(Key));
+	xr_sprintf(Text, "_%08x", DefinesCRC(GetShaderDefines(Defines)));
 	return Text;
 }
 

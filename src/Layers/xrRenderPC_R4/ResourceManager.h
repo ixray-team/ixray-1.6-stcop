@@ -258,11 +258,10 @@ private:
 	struct StageCompileInfo
 	{
 		shared_str source;
-		int skinning = -1;
 		ShaderExternalMap options;
 	};
 	xr_hash_map<xr_resource_uniq*, StageCompileInfo> m_stage_info;
-	void RememberStage(xr_resource_uniq* stage, const char* source, int skinning, const ShaderExternalMap& Defines);
+	void RememberStage(xr_resource_uniq* stage, const char* source, const ShaderExternalMap& Defines);
 	void ForgetStage(const xr_resource_uniq* stage);
 };
 

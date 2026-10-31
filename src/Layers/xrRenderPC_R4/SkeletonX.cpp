@@ -6,203 +6,64 @@
 
 #include "SkeletonX.h"
 
-struct vertRender// T&B are not skinned, because in R2 skinning occurs always in hardware
+static void FailSkinned(const char* Name, const char* Reason)
 {
-	Fvector	P;
-	Fvector	N;
-	float u, v;
-};
-
-ICF void xrSkin1W(vertRender* D, vertBoned1W* S, u32 vCount, CBoneInstance* BI)
-{
-	// Prepare
-	int U_Count = vCount/8;
-	vertBoned1W* V = S;
-	vertBoned1W* E = V+U_Count*8;
-
-	// Unrolled loop
-	while(S!=E)
-	{
-		Fmatrix& M0 = BI[S->m].mRenderTransform;
-		M0.transform_tiny(D->P,S->P);
-		M0.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M1 = BI[S->m].mRenderTransform;
-		M1.transform_tiny(D->P,S->P);
-		M1.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M2 = BI[S->m].mRenderTransform;
-		M2.transform_tiny(D->P,S->P);
-		M2.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M3 = BI[S->m].mRenderTransform;
-		M3.transform_tiny(D->P,S->P);
-		M3.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++; 
-		
-		Fmatrix& M4 = BI[S->m].mRenderTransform;
-		M4.transform_tiny(D->P,S->P);
-		M4.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M5 = BI[S->m].mRenderTransform;
-		M5.transform_tiny(D->P,S->P);
-		M5.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M6 = BI[S->m].mRenderTransform;
-		M6.transform_tiny(D->P,S->P);
-		M6.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-		
-		Fmatrix& M7 = BI[S->m].mRenderTransform;
-		M7.transform_tiny(D->P,S->P);
-		M7.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++; 
-	}
-	
-	// The end part
-	vertBoned1W* E2 = V+vCount;
-	while(S!=E2)
-	{
-		Fmatrix& M = BI[S->m].mRenderTransform;
-		M.transform_tiny(D->P,S->P);
-		M.transform_dir(D->N,S->N);
-		D->u = S->u;
-		D->v = S->v;
-		S++; D++;
-	}
+	Msg("! Skinned model '%s': %s", Name, Reason);
+	Debug.do_exit(std::string("Skinned model '") + Name + "': " + Reason);
 }
- 
-ICF void xrSkin2W(vertRender* D, vertBoned2W* S, u32 vCount, CBoneInstance* BI) 
+
+static u32 MaxBoneId(ref_smem<u16>& Bones, u32 Id)
 {
-	// Prepare
-	int U_Count = vCount;
-	vertBoned2W* V = S;
-	vertBoned2W* E = V+U_Count;
-	Fvector P0,N0,P1,N1;
-
-	// NON-Unrolled loop
-	while(S!=E)
+	for (u32 Slot = 0; Slot < Bones.size(); ++Slot)
 	{
-    	if (S->m[1]!=S->m[0])
-		{
-            Fmatrix& M0 = BI[S->m[0]].mRenderTransform;
-            Fmatrix& M1 = BI[S->m[1]].mRenderTransform;
-            M0.transform_tiny(P0,S->P);
-            M0.transform_dir(N0,S->N);
+		Id = std::max<u32>(Id, Bones[Slot]);
+	}
+	return Id;
+}
 
-            M1.transform_tiny(P1,S->P);
-            M1.transform_dir(N1,S->N);
-            D->P.lerp(P0,P1,S->w);
-            D->N.lerp(N0,N1,S->w);
-            D->u = S->u;
-            D->v = S->v;
-        }
-		else
-		{
-            Fmatrix& M0 = BI[S->m[0]].mRenderTransform;
-            M0.transform_tiny(D->P,S->P);
-            M0.transform_dir (D->N,S->N);
-            D->u = S->u;
-            D->v = S->v;
-        }
-		S++; D++;
+template <typename T>
+constexpr u32 BoneLinks = std::max<u32>(1, std::extent_v<decltype(T::m)>);
+
+template <typename T>
+u16 BoneLink(const T& Vertex, u32 Link)
+{
+	if constexpr (std::is_same_v<T, vertBoned1W>)
+	{
+		return u16(Vertex.m);
+	}
+	else
+	{
+		return Vertex.m[Link];
 	}
 }
 
-ICF void xrSkin3W(vertRender* D, vertBoned3W* S, u32 vCount, CBoneInstance* BI)
+template <typename T>
+void EncodeLinks(PackedVertex& Record, const T& Vertex, const u8* Remap)
 {
-	// Prepare
-	int U_Count = vCount;
-	vertBoned3W* V = S;
-	vertBoned3W* E = V+U_Count;
-	Fvector P0,N0,P1,N1,P2,N2;
-
-	// NON-Unrolled loop
-	while(S!=E)
+	const auto Weight = [](float W) { return u32(clampr(iFloor(W * 255.0f + 0.5f), 0, 255)); };
+	const auto Pack = [&](u32 S0, u32 S1, u32 S2, u32 S3, float W0, float W1, float W2)
 	{
-		Fmatrix& M0 = BI[S->m[0]].mRenderTransform;
-        Fmatrix& M1 = BI[S->m[1]].mRenderTransform;
-        Fmatrix& M2 = BI[S->m[2]].mRenderTransform;
-
-		M0.transform_tiny(P0,S->P);
-        M0.transform_dir(N0,S->N);
-
-        M1.transform_tiny(P1,S->P);
-        M1.transform_dir(N1,S->N);
-
-        M2.transform_tiny(P2,S->P);
-        M2.transform_dir(N2,S->N);
-
-		float PN2M = 1.0f-S->w[0]-S->w[1];
-		D->P = (P0*S->w[0])+(P1*S->w[1])+(P2*PN2M);
-		D->N = (N0*S->w[0])+(N1*S->w[1])+(N2*PN2M);
-		
-		D->u = S->u;
-        D->v = S->v;
-
-		S++; 
-		D++;
+		Record.C = Weight(W0) | Weight(W1) << 8 | Weight(W2) << 16;
+		Record.X = S0 | S1 << 8 | S2 << 16 | S3 << 24;
+	};
+	if constexpr (std::is_same_v<T, vertBoned1W>)
+	{
+		const u32 S = Remap[u16(Vertex.m)];
+		Pack(S, S, S, S, 0.0f, 0.0f, 0.0f);
 	}
-}
-
-ICF void xrSkin4W(vertRender* D,vertBoned4W* S, u32 vCount, CBoneInstance* BI)
-{
-	// Prepare
-	int U_Count = vCount;
-	vertBoned4W* V = S;
-	vertBoned4W* E = V+U_Count;
-	Fvector P0,N0,P1,N1,P2,N2,P3,N3;
-
-	// NON-Unrolled loop
-	while(S!=E)
+	else if constexpr (std::is_same_v<T, vertBoned2W>)
 	{
-		Fmatrix& M0 = BI[S->m[0]].mRenderTransform;
-        Fmatrix& M1 = BI[S->m[1]].mRenderTransform;
-        Fmatrix& M2 = BI[S->m[2]].mRenderTransform;
-        Fmatrix& M3 = BI[S->m[3]].mRenderTransform;
-
-		M0.transform_tiny(P0,S->P);
-        M0.transform_dir(N0,S->N);
-
-        M1.transform_tiny(P1,S->P);
-        M1.transform_dir(N1,S->N);
-
-        M2.transform_tiny(P2,S->P);
-        M2.transform_dir(N2,S->N);
-
-		M3.transform_tiny(P3,S->P);
-        M3.transform_dir(N3,S->N);
-
-		float PN3M = 1.0f - S->w[0] - S->w[1] - S->w[2];
-		D->P = (P0*S->w[0])+(P1*S->w[1])+(P2*S->w[2])+(P3*PN3M);
-		D->N = (N0*S->w[0])+(N1*S->w[1])+(N2*S->w[2])+(N3*PN3M);
-		
-		D->u = S->u;
-        D->v = S->v;
-
-		S++; 
-		D++;
+		const u32 S = Remap[Vertex.m[0]];
+		Pack(Remap[Vertex.m[1]], S, S, S, Vertex.w, 0.0f, 0.0f);
+	}
+	else if constexpr (std::is_same_v<T, vertBoned3W>)
+	{
+		const u32 S = Remap[Vertex.m[2]];
+		Pack(Remap[Vertex.m[0]], Remap[Vertex.m[1]], S, S, Vertex.w[0], Vertex.w[1], 0.0f);
+	}
+	else
+	{
+		Pack(Remap[Vertex.m[0]], Remap[Vertex.m[1]], Remap[Vertex.m[2]], Remap[Vertex.m[3]], Vertex.w[0], Vertex.w[1], Vertex.w[2]);
 	}
 }
 
@@ -222,15 +83,8 @@ void CSkeletonX::Copy(dxRender_Visual* V)
 	Vertices3W = B->Vertices3W;
 	Vertices4W = B->Vertices4W;
 	BonesUsed = B->BonesUsed;
-
-	// caution - overlapped (union)
-	cache_DiscardID = B->cache_DiscardID;
-	cache_vCount = B->cache_vCount;
-	cache_vOffset = B->cache_vOffset;
 	RenderMode = B->RenderMode;
 	RMS_boneid = B->RMS_boneid;
-	RMS_bonecount = B->RMS_bonecount;
-
 	m_Indices = B->m_Indices;
 }
 
@@ -257,322 +111,124 @@ void CSkeletonX::Render(GfxCmdList& Cmd, float LOD)
 		}
 		VERIFY(lod_id >= 0 && lod_id<int(nSWI.count));
 		FSlideWindow& SW = nSWI.sw[lod_id];
-		_Render(Cmd, rm_geom, SW.num_verts, SW.offset, SW.num_tris);
+		_Render(Cmd, rm_geom, SW.offset, SW.num_tris);
 	}
 	else
-		_Render(Cmd, rm_geom, vCount, 0, dwPrimitives);
+		_Render(Cmd, rm_geom, 0, dwPrimitives);
 }
 
-ICF void transfer_matrices(GfxCmdList& Cmd, CBoneInstance* BI, u16 bonecount, bool phase_normal)
+void CSkeletonX::_Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 iOffset, u32 pCount)
 {
-	struct arraybuff{Fvector4 buff[3];};
-
-	if (bonecount > MAX_BONES_COUNT)
+	if (Parent == nullptr)
 	{
 		return;
 	}
-
-	CBSkin& Skin = Cmd.Constants.WriteSkin(bonecount);
-	arraybuff* array = reinterpret_cast<arraybuff*>(Skin.sbones_array);
-	arraybuff* array_old = reinterpret_cast<arraybuff*>(Skin.sbones_array_old);
-
-	if (phase_normal)
+	const Fmatrix World = Cmd.GetObjectTransform();
+	Fmatrix W = World;
+	Fmatrix O;
+	u32 Source = 0;
+	u32 Base = vBase;
+	if (IsSkinned())
 	{
-		for (u16 bid = 0; bid < bonecount; bid++)
-		{
-			Fmatrix& M = BI[bid].mRenderTransform_tmp;
-			array[bid] =
-			{
-				M.i.x, M.j.x, M.k.x, M.c.x,
-				M.i.y, M.j.y, M.k.y, M.c.y,
-				M.i.z, M.j.z, M.k.z, M.c.z
-			};
-
-			Fmatrix& O = BI[bid].mRenderTransform_old;
-			array_old[bid] =
-			{
-				O.i.x, O.j.x, O.k.x, O.c.x,
-				O.i.y, O.j.y, O.k.y, O.c.y,
-				O.i.z, O.j.z, O.k.z, O.c.z
-			};
-		}
+		RImplementation.Skinning.Request(*this, World);
+		RImplementation.Skinning.Flush(Cmd);
+		O = Parent->mOldWorldMartrix;
+		Source = vBase;
+		Base = SkinOutBase;
 	}
 	else
 	{
-		for (u16 bid = 0; bid < bonecount; bid++)
-		{
-			Fmatrix& M = BI[bid].mRenderTransform;
-
-			array[bid] =
-			{
-				M.i.x, M.j.x, M.k.x, M.c.x,
-				M.i.y, M.j.y, M.k.y, M.c.y,
-				M.i.z, M.j.z, M.k.z, M.c.z
-			};
-		}
+		RImplementation.Skinning.Snapshot(*Parent, World);
+		const CBoneInstance& B = Parent->bone_instances[u16(RMS_boneid)];
+		W.mul_43(World, B.mRenderTransform_tmp);
+		O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
 	}
-}
-
-void CSkeletonX::_Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
-{
-	//PROF_EVENT("CSkeletonX::_Render");
-	bool phase_normal = RImplementation.phase == RImplementation.PHASE_NORMAL;
-
-	if(phase_normal)
-	{
-		Parent->StoreVisualMatrix(Cmd.GetObjectTransform());
-
-		if(RenderMode != RM_SINGLE)
-			Cmd.SetObjectTransform(Cmd.GetObjectTransform(), Parent->mOldWorldMartrix);
-	}
-
-	switch (RenderMode)
-	{
-	case RM_SKINNING_SOFT:
-		_Render_soft(Cmd, hGeom,vCount,iOffset,pCount);
-		break;
-	case RM_SINGLE:	
-		{
-			//PROF_EVENT("RM_SINGLE")
-			CBoneInstance& B = Parent->bone_instances[u16(RMS_boneid)];
-			const Fmatrix& R = phase_normal ? B.mRenderTransform_tmp : B.mRenderTransform;
-			Fmatrix	W;	W.mul_43(Cmd.GetObjectTransform(), R);
-			Fmatrix	O = Fidentity;
-			if(phase_normal)
-			{
-				O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
-			}
-			Cmd.SetObjectTransform(W, O);
-
-			Cmd.SetGeometry(hGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, vBase);
-		}
-		break;
-	case RM_SKINNING_1B:
-	case RM_SKINNING_2B:
-	case RM_SKINNING_3B:
-	case RM_SKINNING_4B:
-		{
-			//PROF_EVENT("RM_SKINNING")
-			transfer_matrices(Cmd, Parent->bone_instances, u16(RMS_bonecount), phase_normal);
-			Cmd.SetGeometry(hGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, 0);
-		}
-		break;
-	}
-}
-void CSkeletonX::_Render_soft(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount_, u32 iOffset, u32 pCount)
-{
-	//PROF_EVENT("CSkeletonX::_Render_soft")
-	u32 vOffset = cache_vOffset;
-
-	_VertexStream& _VS = Cmd.LegacyVertex;
-	if (cache_DiscardID!=_VS.DiscardID() || vCount_ !=cache_vCount )
-	{
-		vertRender*	Dest = (vertRender*)_VS.Lock(vCount_,hGeom->vb_stride,vOffset);
-		cache_DiscardID = _VS.DiscardID();
-		cache_vCount = vCount_;
-		cache_vOffset = vOffset;
-		
-		//RDEVICE.Statistic->RenderDUMP_SKIN.Begin();
-		if (*Vertices1W)
-			xrSkin1W(Dest,*Vertices1W,vCount_,Parent->bone_instances);
-		else if(*Vertices2W)
-			xrSkin2W(Dest,*Vertices2W,vCount_,Parent->bone_instances);
-		else if(*Vertices3W)
-			xrSkin3W(Dest,*Vertices3W,vCount_,Parent->bone_instances);
-		else if(*Vertices4W)
-			xrSkin4W(Dest,*Vertices4W,vCount_,Parent->bone_instances);
-		else
-			R_ASSERT2(0,"unsupported soft rendering");
-
-		//RDEVICE.Statistic->RenderDUMP_SKIN.End();
-		_VS.Unlock(vCount_,hGeom->vb_stride);
-	}
-
+	Cmd.SetObjectTransform(W, O);
 	Cmd.SetGeometry(hGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, vOffset);
+	Cmd.SetSourceBase(Source);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, Base);
 }
 
 void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 {
 	_Load(N, data, vCount);
-	void* _verts_ = data->pointer();
 	if (progressive_mesh)
 		FProgressive::Load(N, data, dwFlags | VLOAD_NOVERTICES);
 	else
 		Fvisual::Load(N, data, dwFlags | VLOAD_NOVERTICES);
-	Engine.External.SetSkinningMode();
 	_DuplicateIndices(data);
-	_Load_hw(_verts_);
+	_Load_hw();
 }
 
-void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount) 
-{	
-	// Load vertices
-	bool FoundedChunk = !!data->find_chunk(OGF_VERTICES);
-	R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
-
-	// HW vertices pack bone ids into u8
-	constexpr u16 hw_bones_cnt = MAX_BONES_COUNT - 1;
-	u16 sw_bones_cnt = 0;
-
-	buffer_vector<u16> bids(_alloca(MAX_BONES_COUNT * sizeof(u16)), MAX_BONES_COUNT);
-	//если поймаете исключение замените на xr_vector
-
-	u32 dwVertType,size,it,crc;
-	dwVertType = data->r_u32(); 
+void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
+{
+	const u64 Bytes = u64(data->find_chunk(OGF_VERTICES));
+	if (Bytes < 8)
+	{
+		FailSkinned(N, "OGF_VERTICES chunk is missing");
+	}
+	const u32 Type = data->r_u32();
 	dwVertCount = data->r_u32();
 
-	Engine.External.SetSkinningMode();
-	
-	switch(dwVertType)
+	u16 Ids[256];
+	u32 IdCount = 0;
+	const auto Collect = [&]<typename T>(ref_smem<T>& Vertices, u16 Mode)
 	{
-	case OGF_VERTEXFORMAT_FVF_1L: // 1-Link
-	case 1:
+		if (8 + u64(dwVertCount) * sizeof(T) > Bytes)
 		{
-			size = dwVertCount*sizeof(vertBoned1W);
-			vertBoned1W* pVO = (vertBoned1W*)data->pointer();
-
-			for (it=0; it<dwVertCount; ++it)
+			FailSkinned(N, "OGF_VERTICES chunk is shorter than its vertex count");
+		}
+		T* Source = (T*)data->pointer();
+		u64 Seen[65536 / 64] = {};
+		for (u32 Index = 0; Index < dwVertCount; ++Index)
+		{
+			for (u32 Link = 0; Link < BoneLinks<T>; ++Link)
 			{
-				const vertBoned1W& VB = pVO[it];
-				u16 mid = (u16)VB.m;
-				
-				if(bids.end() == std::find(bids.begin(),bids.end(),mid))	
-					bids.push_back	(mid);
-
-				sw_bones_cnt = std::max(sw_bones_cnt, mid);
-			}
-			if (1 == bids.size())
-			{
-				// HW- single bone
-				RenderMode = RM_SINGLE;
-				RMS_boneid = *bids.begin();
-				Engine.External.SetSkinningMode();
-			}
-			else if (sw_bones_cnt <= hw_bones_cnt)
-			{
-				// HW- one weight
-				RenderMode = RM_SKINNING_1B;
-				RMS_bonecount = sw_bones_cnt + 1;
-				Engine.External.SetSkinningMode(1);
-			}
-			else
-			{
-				// software
-				crc = crc32(data->pointer(), size);
-				Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
-				Engine.External.SetSkinningMode();
+				const u16 Id = BoneLink(Source[Index], Link);
+				const u64 Bit = 1ull << (Id & 63);
+				if (Seen[Id >> 6] & Bit)
+				{
+					continue;
+				}
+				if (IdCount == std::size(Ids))
+				{
+					FailSkinned(N, "more than 256 distinct bones");
+				}
+				Seen[Id >> 6] |= Bit;
+				Ids[IdCount++] = Id;
 			}
 		}
+		Vertices.create(crc32(Source, u32(dwVertCount * sizeof(T))), dwVertCount, Source);
+		RenderMode = Mode == RM_SKINNING_1B && IdCount == 1 ? u16(RM_SINGLE) : Mode;
+	};
+
+	switch (Type)
+	{
+	case OGF_VERTEXFORMAT_FVF_1L:
+	case 1:
+		Collect(Vertices1W, RM_SKINNING_1B);
 		break;
-	case OGF_VERTEXFORMAT_FVF_2L: // 2-Link
+	case OGF_VERTEXFORMAT_FVF_2L:
 	case 2:
-		{
-			size = dwVertCount*sizeof(vertBoned2W);
-			vertBoned2W* pVO = (vertBoned2W*)data->pointer();
-
-			for(it=0; it<dwVertCount; ++it)
-			{
-				const vertBoned2W& VB = pVO[it];
-				sw_bones_cnt = std::max(sw_bones_cnt, VB.m[0]);
-				sw_bones_cnt = std::max(sw_bones_cnt, VB.m[1]);
-
-				if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[0]))
-					bids.push_back(VB.m[0]);
-
-				if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[1]))
-					bids.push_back(VB.m[1]);
-			}
-//.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
-			if (sw_bones_cnt <= hw_bones_cnt)
-			{
-				// HW- two weights
-				RenderMode = RM_SKINNING_2B;
-				RMS_bonecount = sw_bones_cnt + 1;
-				Engine.External.SetSkinningMode(2);
-			}
-			else
-			{
-				// software
-				crc = crc32(data->pointer(), size);
-				Vertices2W.create(crc, dwVertCount, (vertBoned2W*)data->pointer());
-				Engine.External.SetSkinningMode();
-			}
-		}break;
-	case OGF_VERTEXFORMAT_FVF_3L: // 3-Link
+		Collect(Vertices2W, RM_SKINNING_2B);
+		break;
+	case OGF_VERTEXFORMAT_FVF_3L:
 	case 3:
-		{
-			size = dwVertCount*sizeof(vertBoned3W);
-			vertBoned3W* pVO = (vertBoned3W*)data->pointer();
-
-			for(it=0; it<dwVertCount; ++it)
-			{
-				const vertBoned3W& VB = pVO[it];
-				for(int i=0; i<3; ++i)
-				{
-					sw_bones_cnt = std::max(sw_bones_cnt, VB.m[i]);
-
-					if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[i]))	
-						bids.push_back(VB.m[i]);
-				}
-			}
-
-			if ((sw_bones_cnt <= hw_bones_cnt))
-			{
-				RenderMode = RM_SKINNING_3B;
-				RMS_bonecount = sw_bones_cnt + 1;
-				Engine.External.SetSkinningMode(3);
-			}
-			else
-			{
-				crc = crc32(data->pointer(), size);
-				Vertices3W.create(crc, dwVertCount, (vertBoned3W*)data->pointer());
-				Engine.External.SetSkinningMode();
-			}
-		}break;
-	case OGF_VERTEXFORMAT_FVF_4L: // 4-Link
+		Collect(Vertices3W, RM_SKINNING_3B);
+		break;
+	case OGF_VERTEXFORMAT_FVF_4L:
 	case 4:
-		{
-			size = dwVertCount*sizeof(vertBoned4W);
-			vertBoned4W* pVO = (vertBoned4W*)data->pointer();
-
-			for(it=0; it<dwVertCount; ++it)
-			{
-				const vertBoned4W& VB = pVO[it];
-
-				for(int i=0; i<4; ++i)
-				{
-					sw_bones_cnt = std::max(sw_bones_cnt, VB.m[i]);
-
-					if(bids.end() == std::find(bids.begin(),bids.end(),VB.m[i]))	
-						bids.push_back(VB.m[i]);
-				}
-			}
-
-			if(sw_bones_cnt<=hw_bones_cnt)
-			{
-				RenderMode = RM_SKINNING_4B;
-				RMS_bonecount = sw_bones_cnt+1;
-				Engine.External.SetSkinningMode(4);
-			}
-			else
-			{
-				crc = crc32	(data->pointer(),size);
-				Vertices4W.create(crc,dwVertCount,(vertBoned4W*)data->pointer());
-				Engine.External.SetSkinningMode();
-			}
-		}break;
+		Collect(Vertices4W, RM_SKINNING_4B);
+		break;
 	default:
-		Debug.fatal	(DEBUG_INFO,"Invalid vertex type in skinned model '%s'",N);
+		FailSkinned(N, "invalid vertex type");
 		break;
 	}
+	RMS_boneid = IsSkinned() ? 0 : Ids[0];
 	// The editor keeps the bone list even for single-bone parts.
-	if (bids.size() > (Device.IsEditorMode() ? 0u : 1u))
-    {
-		crc = crc32(&*bids.begin(),bids.size()*sizeof(u16)); 
-		BonesUsed.create(crc,(u32)bids.size(),&*bids.begin());
+	if (IdCount != 0 && (IsSkinned() || Device.IsEditorMode()))
+	{
+		BonesUsed.create(crc32(Ids, IdCount * sizeof(u16)), IdCount, Ids);
 	}
 }
 
@@ -599,253 +255,59 @@ void CSkeletonX::_DuplicateIndices(IReader *data)
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_INDICES");
 
 	u32 iCount_ = data->r_u32();
-
-	u32 size = iCount_*2;
-	u32 crc = crc32( data->pointer(), size);
-	m_Indices.create(crc, iCount_, (u16*)data->pointer());
+	u16* Indices = (u16*)data->pointer();
+	if (std::any_of(Indices, Indices + iCount_, [this](u16 Index) { return Index >= vCount; }))
+	{
+		FailSkinned(dbg_name.c_str(), "index exceeds the vertex count");
+	}
+	m_Indices.create(crc32(Indices, iCount_ * 2), iCount_, Indices);
 }
 
-static RHIInputElementDesc dwDecl_1W[] =
+void CSkeletonX::_Load_hw()
 {
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
-
-static RHIInputElementDesc dwDecl_2W[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
-
-static RHIInputElementDesc dwDecl_3W[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
-
-static RHIInputElementDesc dwDecl_4W[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 1, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
-};
-
-constexpr u8 q_N(float v)
-{
-	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
-	return	u8(_v);
-}
-
-struct vertHW_1W
-{
-	Fvector _P;
-	float dim;
-	u32 _N_I;
-	u32 _T;
-	u32 _B;
-	float _tc_i[2];
-
-	ICF void quantize(vertBoned1W* src, u16 Multiplier)
+	u8* Remap = (u8*)_alloca(MaxBoneId(BonesUsed, 0) + 1);
+	for (u32 Slot = 0; Slot < BonesUsed.size(); ++Slot)
 	{
-		Fvector N = src->N, T = src->T, B = src->B;
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
-		_P = src->P;
-		_N_I = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(src->m * Multiplier));
-		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
-		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc_i[0] = src->u;
-		_tc_i[1] = src->v;
+		Remap[BonesUsed[Slot]] = u8(Slot);
 	}
-};
-
-struct vertHW_2W
-{
-	Fvector _P;
-	float dim;
-	u32 _N_w;
-	u32 _T;
-	u32 _B;
-	float _tc_i[4];
-
-	ICF void quantize(vertBoned2W* src, u16 Multiplier)
+	xr_vector<PackedVertex> Records(vCount, PackedVertex{});
+	const auto Encode = [&]<typename T>(const T* Source)
 	{
-		Fvector N = src->N, T = src->T, B = src->B;
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
-		_P = src->P;
-		_N_w = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(src->w * 255.f + .5f), 0, 255)));
-		_T = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), 0);
-		_B = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
-		_tc_i[0] = src->u;
-		_tc_i[1] = src->v;
-		_tc_i[2] = (float)src->m[0] * Multiplier;
-		_tc_i[3] = (float)src->m[1] * Multiplier;
-	}
-};
-
-struct vertHW_3W
-{
-	Fvector _P;
-	float dim;
-	u32 _N_w;
-	u32 _T_w;
-	u32 _B_i;
-	float _tc_i[4];
-
-	ICF void quantize(vertBoned3W* src, u16 Multiplier)
-	{
-		Fvector N = src->N, T = src->T, B = src->B;
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
-		_P = src->P;
-		_N_w = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(src->w[0] * 255.f + .5f), 0, 255)));
-		_T_w = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), u8(clampr(iFloor(src->w[1] * 255.f + .5f), 0, 255)));
-		_B_i = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), u8(src->m[2] * Multiplier));
-		_tc_i[0] = src->u;
-		_tc_i[1] = src->v;
-		_tc_i[2] = (float)src->m[0] * Multiplier;
-		_tc_i[3] = (float)src->m[1] * Multiplier;
-	}
-};
-
-struct vertHW_4W
-{
-	Fvector _P;
-	float dim;
-	u32 _N_w;
-	u32 _T_w;
-	u32 _B_w;
-	float _tc[2];
-	u32 _i;
-	ICF void quantize(vertBoned4W* src, u16 Multiplier)
-	{
-		Fvector N = src->N, T = src->T, B = src->B;
-		N.normalize_safe();
-		T.normalize_safe();
-		B.normalize_safe();
-
-		_P = src->P;
-		_N_w = color_rgba(q_N(N.x), q_N(N.y), q_N(N.z), u8(clampr(iFloor(src->w[0] * 255.f + .5f), 0, 255)));
-		_T_w = color_rgba(q_N(T.x), q_N(T.y), q_N(T.z), u8(clampr(iFloor(src->w[1] * 255.f + .5f), 0, 255)));
-		_B_w = color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), u8(clampr(iFloor(src->w[2] * 255.f + .5f), 0, 255)));
-		_tc[0] = src->u;
-		_tc[1] = src->v;
-		_i = color_rgba(u8(src->m[0] * Multiplier), u8(src->m[1] * Multiplier), u8(src->m[2] * Multiplier), u8(src->m[3] * Multiplier));
-	}
-};
-
-template<typename VertSrc, typename VertHW, typename DeclT, size_t Size, typename VerticesContainer>
-ICF void _Load_hw_generic(CSkeletonX& V, void* _verts_, DeclT(&decl)[Size], VerticesContainer& container)
-{
-	u16 Multiplier = 1;
-	// Back up vertex data
-	u32 size = V.vCount * sizeof(VertSrc);
-	u32 crc = crc32(_verts_, size);
-	container.create(crc, V.vCount, (VertSrc*)_verts_);
-
-	u32 vStride = 0;
-
-	for (size_t i = 0; i < Size; ++i)
-	{
-		switch (decl[i].Format)
-		{
-		case ERHI_FORMAT::R32G32B32A32_FLOAT: vStride += 16; break;
-		case ERHI_FORMAT::R32G32B32_FLOAT:    vStride += 12; break;
-		case ERHI_FORMAT::R32G32_FLOAT:       vStride += 8;  break;
-		case ERHI_FORMAT::R32_FLOAT:          vStride += 4;  break;
-		case ERHI_FORMAT::R8G8B8A8_UNORM:     vStride += 4;  break;
-		case ERHI_FORMAT::R8G8B8A8_UINT:      vStride += 4;  break;
-		default:
-			VERIFY2(false, "Unknown RHI format!");
-		}
-	}
-
-	VERIFY(vStride == sizeof(VertHW));
-	VERIFY(nullptr == V.p_rm_Vertices);
-
-	VertHW* dstOriginal = xr_alloc<VertHW>(V.vCount);
-	VertHW* dst = dstOriginal;
-	VertSrc* src = (VertSrc*)_verts_;
-	for (u32 it = 0; it < V.vCount; it++, dst++, src++)
-		dst->quantize(src, Multiplier);
-
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-	xr_free(dstOriginal);
-	V.rm_geom.create(decl, Size, V.p_rm_Vertices, RImplementation.Geometry.IndexBuffer(V.Alloc.Page));
-}
-
-void CSkeletonX::_Load_hw(void* _verts_)
-{
-	GeometryHeap& Heap = RImplementation.Geometry;
-	GeometryAlloc Block = Heap.Alloc(RenderMode == RM_SINGLE ? vCount : 0, iCount);
-	Heap.UploadIndices(Block, 0, *m_Indices, iCount);
-	if (RenderMode == RM_SINGLE)
-	{
-		vertBoned1W* Source = (vertBoned1W*)_verts_;
-		Vertices1W.create(crc32(Source, vCount * sizeof(vertBoned1W)), vCount, Source);
 		xr_vector<Fvector2> UV(vCount);
 		for (u32 Index = 0; Index < vCount; ++Index)
 		{
 			UV[Index] = { Source[Index].u, Source[Index].v };
 		}
 		const Fvector2 Offset = VertexPacking::FitUV(UV.data(), vCount, dbg_name.c_str());
-		xr_vector<PackedVertex> Records(vCount, PackedVertex{});
 		for (u32 Index = 0; Index < vCount; ++Index)
 		{
-			Records[Index].P = Source[Index].P;
-			VertexPacking::EncodeFrame(Records[Index], Source[Index].N, Source[Index].T, Source[Index].B);
-			VertexPacking::EncodeFitUV(Records[Index], UV[Index], Offset);
+			PackedVertex& Record = Records[Index];
+			Record.P = Source[Index].P;
+			VertexPacking::EncodeFrame(Record, Source[Index].N, Source[Index].T, Source[Index].B);
+			VertexPacking::EncodeFitUV(Record, UV[Index], Offset);
+			if (IsSkinned())
+			{
+				EncodeLinks(Record, Source[Index], Remap);
+			}
 		}
-		Heap.Upload(Block, 0, Records.data(), vCount);
-		SetPulled(Block);
-		return;
-	}
-	Alloc = Block;
-	vBase = 0;
-	iBase = Block.IndexBase;
-	switch (RenderMode)
+	};
+	if (*Vertices1W)
+		Encode(*Vertices1W);
+	else if (*Vertices2W)
+		Encode(*Vertices2W);
+	else if (*Vertices3W)
+		Encode(*Vertices3W);
+	else if (*Vertices4W)
+		Encode(*Vertices4W);
+
+	GeometryHeap& Heap = RImplementation.Geometry;
+	GeometryAlloc Block = Heap.Alloc(vCount, iCount);
+	Heap.Upload(Block, 0, Records.data(), vCount);
+	Heap.UploadIndices(Block, 0, *m_Indices, iCount);
+	SetPulled(Block);
+	if (IsSkinned())
 	{
-	case RM_SKINNING_SOFT:
-	{
-		rm_geom.create(vertRenderFVF, RImplementation.Imm().LegacyVertex.Buffer(), Heap.IndexBuffer(Block.Page));
-		break;
-	}
-	case RM_SKINNING_1B:
-	{
-		_Load_hw_generic<vertBoned1W, vertHW_1W>(*this, _verts_, dwDecl_1W, Vertices1W);
-		break;
-	}
-	case RM_SKINNING_2B:
-	{
-		_Load_hw_generic<vertBoned2W, vertHW_2W>(*this, _verts_, dwDecl_2W, Vertices2W);
-		break;
-	}
-	case RM_SKINNING_3B:
-	{
-		_Load_hw_generic<vertBoned3W, vertHW_3W>(*this, _verts_, dwDecl_3W, Vertices3W);
-		break;
-	}
-	case RM_SKINNING_4B:
-	{
-		_Load_hw_generic<vertBoned4W, vertHW_4W>(*this, _verts_, dwDecl_4W, Vertices4W);
-		break;
-	}
+		rm_geom.create(EGeomSource::Skinned, Block.Page);
 	}
 }
 
@@ -853,6 +315,10 @@ void CSkeletonX::AfterLoad(CKinematics* parent, u16 child_idx)
 {
 	SetParent(parent);
 	ChildIDX = child_idx;
+	if (MaxBoneId(BonesUsed, RMS_boneid) >= parent->LL_BoneCount())
+	{
+		FailSkinned(dbg_name.c_str(), "bone id exceeds the skeleton bone count");
+	}
 	_CollectBoneFaces();
 }
 

@@ -927,6 +927,7 @@ void CKinematics::StoreVisualMatrix(const Fmatrix& world_matrix)
 
 	if (dwFirstRenderFrame != RDEVICE.dwFrame)
 	{
+		xrCriticalSectionGuard Guard(&UCalc_Mutex);
 		if(dwFirstRenderFrame != 0)
 		{
 			mOldWorldMartrix.set(mOldWorldMartrixTmp);

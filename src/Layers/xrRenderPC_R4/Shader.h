@@ -154,7 +154,6 @@ public:
 	ref_selement		E		[SHADER_ELEMENTS_MAX];	// material shaders: indexed by ShaderVariant, internal blenders: pass index
 
 	shared_str			src_shader, src_textures, src_constants, src_matrices;
-	int					src_skinning = -1;
 
 	Shader();
 	Shader& operator=(const Shader& Other) = delete;

@@ -28,11 +28,6 @@ vf _main(v_model v)
     o.c1 = float4(calc_model_lq_lighting(norm_w), m_plmap_clamp[0].w);
     o.fog = calc_fogging(pos_w4);
 
-#ifdef SKIN_COLOR
-    o.c1.rgb *= v.rgb_tint;
-    o.c1.w = 1;
-#endif
-
     return o;
 }
 

@@ -94,20 +94,8 @@ uint VertexIndex(uint VertexId)
 	return draw_vertex_base + Local;
 }
 
-PackedVertex LoadPacked(uint Index)
+PackedVertex LoadPage(uint Page, uint Index)
 {
-	uint Source = draw_flags & DRAW_SOURCE_MASK;
-	[branch]
-	if (Source == DRAW_SOURCE_RING)
-	{
-		return g_RingVertices[Index];
-	}
-	[branch]
-	if (Source == DRAW_SOURCE_SKINNED)
-	{
-		return g_SkinnedVertices[Index];
-	}
-	uint Page = (draw_flags >> DRAW_PAGE_SHIFT) & DRAW_PAGE_MASK;
 	[branch]
 	if (Page == 1u)
 	{
@@ -129,6 +117,32 @@ PackedVertex LoadPacked(uint Index)
 		return g_Vertices4[Index];
 	}
 	return g_Vertices0[Index];
+}
+
+PackedVertex LoadPacked(uint Index)
+{
+	uint Source = draw_flags & DRAW_SOURCE_MASK;
+	[branch]
+	if (Source == DRAW_SOURCE_RING)
+	{
+		return g_RingVertices[Index];
+	}
+	[branch]
+	if (Source == DRAW_SOURCE_SKINNED)
+	{
+		return g_SkinnedVertices[Index];
+	}
+	return LoadPage((draw_flags >> DRAW_PAGE_SHIFT) & DRAW_PAGE_MASK, Index);
+}
+
+PackedVertex LoadSource(uint VertexId)
+{
+	[branch]
+	if ((draw_flags & DRAW_SOURCE_MASK) == DRAW_SOURCE_SKINNED)
+	{
+		return LoadPage((draw_flags >> DRAW_PAGE_SHIFT) & DRAW_PAGE_MASK, draw_source_base + VertexId);
+	}
+	return LoadPacked(VertexIndex(VertexId));
 }
 
 PulledVertex PullVertex(uint VertexId)

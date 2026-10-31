@@ -28,19 +28,16 @@
 //	{ "NORMAL", 0,   ERHI_FORMAT::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 //};
 
-struct svertRender
+static void NormalBasis(const Fvector& N, Fvector& T, Fvector& B)
 {
-	Fvector3 P{}; float weight0 = 1.0f;
-	Fvector3 N{}; float weight1 = 0.0f;
-	Fvector3 T{}; float weight2 = 0.0f;
-	Fvector3 B{}; float weight3 = 0.0f;
-	Fvector2 uv { };
-	uint32_t ind = 0;
-};
+	Fvector tref(0, 1, 0);
+	if (fabsf(N.y) > 0.99f) tref.set(0, 0, 1);
+	T.crossproduct(N, tref);
+	if (T.square_magnitude() < EPS_S) T.set(1, 0, 0);
+	else T.normalize_safe();
+	B.crossproduct(N, T);
+}
 
-//----------------------------------------------------
-#define F_LIM (10000)
-#define V_LIM (F_LIM*3)
 //----------------------------------------------------
 void CEditableMesh::GenerateRenderBuffers(bool Quiet)
 {
@@ -179,12 +176,8 @@ u32 CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_fa
 			m_TexGen(uv, fv.pindex, N);
 		}
 
-		Fvector T, B, tref(0, 1, 0);
-		if (fabsf(N.y) > 0.99f) tref.set(0, 0, 1);
-		T.crossproduct(N, tref);
-		if (T.square_magnitude() < EPS_S) T.set(1, 0, 0);
-		else T.normalize_safe();
-		B.crossproduct(N, T);
+		Fvector T, B;
+		NormalBasis(N, T, B);
 		VertexPacking::EncodeFrame(V, N, T, B);
 
 		++Count;
@@ -467,69 +460,56 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 		return;
 	}
 
-	IntVec& face_lst = sp_it->second;
-	size_t FaceCount = face_lst.size();
-
-	_VertexStream* Stream = &Cmd.LegacyVertex;
-	const u32 stride = m_Parent->vs_SkeletonGeom->vb_stride;
-	VERIFY(stride == sizeof(svertRender));
+	const IntVec& face_lst = sp_it->second;
+	const u32 FaceCount = (u32)face_lst.size();
+	const u32 ChunkFaces = Cmd.Vertex.GetCapacity() / 3;
+	const BoneVec& Bones = m_Parent->m_Bones;
 
 	ERHI_CULLMODE OldCullMode = Cmd.GetCullMode();
 	// Without a shader the caller (the scene graph) has set the pass already
 	const u32 dwRequired = PassShader ? (u32)(*PassShader)->E[0]->passes.size() : 1;
 
-	// Draw in batches: a single lock of the whole surface can exceed the dynamic VB size
-	for (size_t f_start = 0; f_start < FaceCount; f_start += F_LIM)
+	for (u32 First = 0; First < FaceCount; First += ChunkFaces)
 	{
-		const u32 batchFaces = (u32)std::min<size_t>(F_LIM, FaceCount - f_start);
-
+		const u32 Last = std::min(First + ChunkFaces, FaceCount);
+		const u32 Count = (Last - First) * 3;
 		u32 vBase = 0;
-		svertRender* pv = (svertRender*)Stream->Lock(batchFaces * 3, stride, vBase);
-
-		for (u32 f = 0; f < batchFaces; ++f)
+		PackedVertex* V = (PackedVertex*)Cmd.Vertex.Lock(Count, EVertexFormat::Packed, vBase);
+		for (u32 Face = First; Face < Last; ++Face)
 		{
-			const int i_it = face_lst[f_start + f];
-			for (int k = 0; k < 3; k++, pv++)
+			const st_SVert* SV = &m_SVertices[face_lst[Face] * 3];
+			const Fvector2 UV[3] = { SV[0].uv, SV[1].uv, SV[2].uv };
+			const Fvector2 Offset = VertexPacking::FitUV(UV, 3, nullptr);
+			for (u32 k = 0; k < 3; ++k, ++V)
 			{
-				st_SVert& SV = m_SVertices[i_it * 3 + k];
-				pv->uv = SV.uv;
-				pv->P = SV.offs;
-				pv->N = SV.norm;
+				Fvector P{}, N{}, T{}, B{}, BindT, BindB, X;
+				NormalBasis(SV[k].norm, BindT, BindB);
+				for (const st_SVert::bone& Bone : SV[k].bones)
+				{
+					const Fmatrix& M = Bones[Bone.id]->_RenderTransform();
+					M.transform_tiny(X, SV[k].offs);
+					P.mad(X, Bone.w);
+					M.transform_dir(X, SV[k].norm);
+					N.mad(X, Bone.w);
+					M.transform_dir(X, BindT);
+					T.mad(X, Bone.w);
+					M.transform_dir(X, BindB);
+					B.mad(X, Bone.w);
+				}
 
-				u8 bone_count = (u8)SV.bones.size();
-				float total = SV.bones[0].w;
-				float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
-			
-				pv->weight3 = SV.bones[0].w / max_weight;
-				pv->weight2 = SV.bones[1 % bone_count].w / max_weight;
-				pv->weight1 = SV.bones[2 % bone_count].w / max_weight;
-				pv->weight0 = SV.bones[3 % bone_count].w / max_weight;
-
-				pv->ind = color_rgba(
-					SV.bones[0].id, 
-					SV.bones[1 % bone_count].id,
-					SV.bones[2 % bone_count].id,
-					SV.bones[3 % bone_count].id);
+				PackedVertex Out = { P, 0, 0, 0, 0xFFFFFFFF, std::bit_cast<u32>(1.0f) };
+				VertexPacking::EncodeFrame(Out, N, T, B);
+				VertexPacking::EncodeFitUV(Out, SV[k].uv, Offset);
+				*V = Out;
 			}
 		}
-
-		Stream->Unlock(batchFaces * 3, stride);
+		Cmd.Vertex.Unlock(Count);
 
 		for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 		{
 			if (PassShader)
 			{
 				Cmd.SetPass(*PassShader, dwPass);
-			}
-
-			const BoneVec& boneVec = m_Parent->m_Bones;
-			Hlsl::float4* Bones = Cmd.Constants.Write<CBSkin>().sbones_array;
-			for (u16 mid = 0, count = (u16)std::min<size_t>(boneVec.size(), MAX_BONES_COUNT); mid < count; mid++)
-			{
-				const Fmatrix& M = boneVec[mid]->_RenderTransform();
-				Bones[mid * 3 + 0].set(M._11, M._21, M._31, M._41);
-				Bones[mid * 3 + 1].set(M._12, M._22, M._32, M._42);
-				Bones[mid * 3 + 2].set(M._13, M._23, M._33, M._43);
 			}
 
 			if (S->m_Flags.is(CSurface::sf2Sided))
@@ -541,8 +521,8 @@ void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurfa
 				Cmd.SetCullMode(OldCullMode);
 			}
 			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
-			Cmd.SetGeometry(m_Parent->vs_SkeletonGeom);
-			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batchFaces * 3, vBase);
+			Cmd.SetGeometry(DU_impl.RingGeom);
+			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Count, vBase);
 		}
 	}
 

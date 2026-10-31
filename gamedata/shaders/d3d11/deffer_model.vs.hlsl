@@ -68,31 +68,8 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O, in object_x
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
 
-#if defined(SKIN_1)
-void main(in v_model_skinned_1 I, out p_bumped_new O)
-{
-    skinned_main(skinning_1(I), I.P.xyz, O, object_default_xforms());
-}
-#elif defined(SKIN_2)
-void main(in v_model_skinned_2 I, out p_bumped_new O)
-{
-    skinned_main(skinning_2(I), I.P.xyz, O, object_default_xforms());
-}
-#elif defined(SKIN_3)
-void main(in v_model_skinned_3 I, out p_bumped_new O)
-{
-    skinned_main(skinning_3(I), I.P.xyz, O, object_default_xforms());
-}
-#elif defined(SKIN_4)
-void main(in v_model_skinned_4 I, out p_bumped_new O)
-{
-    skinned_main(skinning_4(I), I.P.xyz, O, object_default_xforms());
-}
-#else
 void main(PULL_INPUT, out p_bumped_new O)
 {
     v_model I = PullModel(VertexId);
-    skinned_main(I, I.P.xyz, O, object_get_xforms(DrawId));
+    skinned_main(I, LoadSource(VertexId).P, O, object_get_xforms(DrawId));
 }
-#endif
-

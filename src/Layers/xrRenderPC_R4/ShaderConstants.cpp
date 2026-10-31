@@ -56,24 +56,13 @@ void CShaderConstants::Collect(const T& Block, u32 Force, RHIConstantWrite* Writ
 {
 	constexpr u32 Bit = 1u << T::Slot;
 	T& Last = std::get<T>(Uploaded);
-	u32 Size = sizeof(T);
-	u32 Pushed = sizeof(T);
-	if constexpr (std::is_same_v<T, CBSkin>)
-	{
-		Size = SkinSize;
-		Pushed = PushedSkinSize;
-	}
-	if (!(Force & Bit) && (!(Dirty & Bit) || (Size <= Pushed && !std::memcmp(&Last, &Block, Size))))
+	if (!(Force & Bit) && (!(Dirty & Bit) || !std::memcmp(&Last, &Block, sizeof(T))))
 	{
 		return;
 	}
 
-	std::memcpy(&Last, &Block, Size);
-	Writes[Num++] = { T::Slot, Size, &Last };
-	if constexpr (std::is_same_v<T, CBSkin>)
-	{
-		PushedSkinSize = Size;
-	}
+	std::memcpy(&Last, &Block, sizeof(T));
+	Writes[Num++] = { T::Slot, sizeof(T), &Last };
 }
 
 void CShaderConstants::Flush()

@@ -25,14 +25,12 @@ void CResourceManager::reset_begin()
 
 	// destroy DStreams
 	Cmd.Index.reset_begin	();
-	Cmd.LegacyVertex.reset_begin	();
 }
 
 void CResourceManager::reset_end()
 {
 	GfxCmdList& Cmd = RImplementation.Imm();
 	// create RDStreams
-	Cmd.LegacyVertex.reset_end		();
 	Cmd.Index.reset_end		();
 	Evict(); 
 
@@ -41,9 +39,6 @@ void CResourceManager::reset_end()
 		for (u32 _it=0; _it<v_geoms.size(); _it++)
 		{
 			SGeometry*	_G = v_geoms[_it];
-			if	(_G->vb == Cmd.LegacyVertex.old_pVB) 
-				_G->vb = Cmd.LegacyVertex.Buffer	();
-
 			if	(_G->ib == Cmd.Index.old_pIB) 
 			{
 				_G->ib = Cmd.Index.Buffer	();

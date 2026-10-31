@@ -129,13 +129,13 @@ Slots `b6`–`b10` are explicit pass buffers, reused only by shaders that do not
 
 | Slot | Buffers |
 | --- | --- |
-| b6 | skin, trample, volumetric lights, fluid sim, fluid render, bloom, tonemap |
+| b6 | trample, volumetric lights, fluid sim, fluid render, bloom, tonemap (CBSkin is an empty placeholder) |
 | b7 | detail wind, fluid AABB |
 | b8 | fluid emitter |
 | b9 | fluid OOBB clip planes |
 | b10 | dynamic OOBB, static box bounds |
 
-Bone and grass values are written by name into their explicit buffers. `DISABLE_MOTION_VECTORS` still drops `sbones_array_old`. Fluid and editor-brush globals have no upload path yet. UI icon lighting, visor/gas-mask, `m_tc_xform` and editor constants live in `shared/extra_cb.hlsli` (`b11`-`b13`); those buffers stay bound, so a shader reading one that was never written sees zeros. No frame-time measurement is recorded here.
+Grass values are written by name into their explicit buffers. Skinned meshes no longer upload bones per draw: `SkinningPass` skins every requested skeleton child once per frame in `skin.cs.hlsl` into `g_SkinnedVertices` (VS t58), with the previous position as a half delta for motion vectors. Fluid and editor-brush globals have no upload path yet. UI icon lighting, visor/gas-mask, `m_tc_xform` and editor constants live in `shared/extra_cb.hlsli` (`b11`-`b13`); those buffers stay bound, so a shader reading one that was never written sees zeros. No frame-time measurement is recorded here.
 
 ## Visibility and shader options
 

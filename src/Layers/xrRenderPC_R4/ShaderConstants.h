@@ -57,7 +57,6 @@ namespace Hlsl
 using Hlsl::CBFrame, Hlsl::CBView, Hlsl::CBObject, Hlsl::CBMaterial, Hlsl::CBLight, Hlsl::CBPass, Hlsl::CBSkin;
 using Hlsl::CBPost, Hlsl::CBDetail, Hlsl::CBFluid, Hlsl::CBUIIcon, Hlsl::CBVisor, Hlsl::CBEditor, Hlsl::CBDraw;
 static_assert(sizeof(CBDraw) == 96);
-static_assert(sizeof(CBSkin) <= 65536);
 
 class RENDER_API CShaderConstants
 {
@@ -68,18 +67,7 @@ public:
 	T& Write()
 	{
 		Dirty |= 1u << T::Slot;
-		if constexpr (std::is_same_v<T, CBSkin>)
-		{
-			SkinSize = sizeof(CBSkin);
-		}
 		return std::get<T>(Shadow);
-	}
-
-	CBSkin& WriteSkin(u32 Bones)
-	{
-		CBSkin& Skin = Write<CBSkin>();
-		SkinSize = offsetof(CBSkin, sbones_array_old) + Bones * sizeof(Hlsl::float3x4);
-		return Skin;
 	}
 
 	template<class T>
@@ -108,6 +96,4 @@ private:
 	Blocks Uploaded{};
 	u32 Dirty = 0;
 	u32 PushedEpoch = ~0u;
-	u32 SkinSize = sizeof(CBSkin);
-	u32 PushedSkinSize = 0;
 };

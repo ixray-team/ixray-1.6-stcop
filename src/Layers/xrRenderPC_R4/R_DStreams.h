@@ -48,39 +48,6 @@ private:
 	void* Map();
 };
 
-class  RENDER_API _VertexStream
-{
-private :
-	IRHIBuffer*		pVB;
-	u32							rsDVB_Size;
-	u32							mSize;			// size in bytes
-	u32							mPosition;		// position in bytes
-	u32							mDiscardID;		// ID of discard - usually for caching
-public:
-	IRHIBuffer*		old_pVB;
-#ifdef DEBUG
-	u32							dbg_lock;
-#endif
-private:
-	void						_clear			();
-public:
-	void						Create			();
-	void						Destroy			();
-	void						reset_begin		();
-	void						reset_end		();
-
-	IC IRHIBuffer*	Buffer()		{ return pVB;			}
-	IC u32						DiscardID()		{ return mDiscardID;	}
-	IC void						Flush()			{ mPosition=mSize;		}
-
-	void*						Lock			( u32 vl_Count, u32 Stride, u32& vOffset );
-	void						Unlock			( u32 Count, u32 Stride);
-	u32							GetSize()		{ return mSize;}
-
-	explicit _VertexStream(u32 SizeKB);
-	~_VertexStream()			{ Destroy();	};
-};
-
 class  RENDER_API _IndexStream
 {
 private :
