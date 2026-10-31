@@ -65,15 +65,20 @@ struct SPlaylistEntry
 	bool Fx = false;
 };
 
+struct STrimSegment
+{
+	float Start = 0.0f;
+	float End = 0.0f;
+};
+
 struct STrimRange
 {
 	shared_str Source;
 	shared_str Name;
-	float Start = 0.0f;
-	float End = 0.0f;
+	xr_vector<STrimSegment> Segments;
 	float Speed = 1.0f;
+	float Blend = 0.0f;
 };
-
 struct SHandItem
 {
 	shared_str Section;
@@ -1443,7 +1448,16 @@ static bool ComputeMouseAngle(const Fvector& pivot, EGizmoAxis axis, float& angl
 	return true;
 }
 
-static bool DrawAnimationTimeline(const char* id, float& time, float total, const CMotionDef* motionDef, const SEditorTheme& theme, STrimRange* trim, s32& dragMarker, xr_string& dragKey, const char* trimKey)
+static void SortSegmentList(xr_vector<STrimSegment>& segments)
+{
+	std::sort(segments.begin(), segments.end(), [](const STrimSegment& left, const STrimSegment& right)
+	{
+		return left.Start < right.Start;
+	});
+}
+
+static bool DrawAnimationTimeline(const char* id, float& time, float total, const CMotionDef* motionDef, const SEditorTheme& theme,
+	STrimRange* trim, s32& dragMarker, s32& dragIndex, xr_string& dragKey, const char* trimKey)
 {
 	const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
 	constexpr float height = 64.0f;
@@ -1455,74 +1469,136 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 
 	bool changed = false;
 
-	float trimStart = 0.0f;
-	float trimEnd = total;
-	float pixelsPerSecond = 0.0f;
-	float inX = origin.x;
-	float outX = end.x;
+	const float pixelsPerSecond = total > 0.0f ? width / total : 0.0f;
+	const ImVec2 mouse = ImGui::GetIO().MousePos;
+	const bool ctrlHeld = ImGui::GetIO().KeyCtrl;
 
-	if (total > 0.0f)
+	const auto timeToX = [&](float value)
 	{
-		pixelsPerSecond = width / total;
+		return origin.x + std::clamp(value, 0.0f, total) * pixelsPerSecond;
+	};
 
-		if (trim != nullptr)
+	const auto xToTime = [&](float x)
+	{
+		return std::clamp((x - origin.x) / width * total, 0.0f, total);
+	};
+
+	if (total > 0.0f && trim != nullptr)
+	{
+		s32 hoverSegment = -1;
+		s32 hoverFlag = 0;
+		float hoverDistance = 8.0f;
+
+		for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
 		{
-			trimStart = std::clamp(trim->Start, 0.0f, total);
-			trimEnd = std::clamp(trim->End, trimStart, total);
+			const STrimSegment& segment = trim->Segments[index];
+			const float distanceIn = fabsf(mouse.x - timeToX(segment.Start));
+			const float distanceOut = fabsf(mouse.x - timeToX(segment.End));
+
+			if (distanceIn < hoverDistance)
+			{
+				hoverDistance = distanceIn;
+				hoverSegment = index;
+				hoverFlag = 1;
+			}
+
+			if (distanceOut < hoverDistance)
+			{
+				hoverDistance = distanceOut;
+				hoverSegment = index;
+				hoverFlag = 2;
+			}
 		}
 
-		inX = origin.x + trimStart * pixelsPerSecond;
-		outX = origin.x + trimEnd * pixelsPerSecond;
-
-		const ImVec2 mouse = ImGui::GetIO().MousePos;
-
-		if (dragMarker == 0 && ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		if (ImGui::IsItemHovered())
 		{
-			const float distanceIn = fabsf(mouse.x - inX);
-			const float distanceOut = fabsf(mouse.x - outX);
+			if (dragMarker == 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				if (ctrlHeld)
+				{
+					STrimSegment segment;
+					segment.Start = xToTime(mouse.x);
+					segment.End = std::min(segment.Start + 0.2f, total);
 
-			if (distanceIn <= 7.0f && distanceIn <= distanceOut)
-			{
-				dragMarker = 1;
-				dragKey = trimKey;
+					for (const STrimSegment& existing : trim->Segments)
+					{
+						if (segment.End > existing.Start && segment.Start < existing.End)
+						{
+							segment.End = existing.Start - 0.01f;
+						}
+					}
+
+					if (segment.End - segment.Start >= 0.02f)
+					{
+						trim->Segments.push_back(segment);
+						SortSegmentList(trim->Segments);
+
+						for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
+						{
+							if (trim->Segments[index].Start == segment.Start && trim->Segments[index].End == segment.End)
+							{
+								dragIndex = index;
+								break;
+							}
+						}
+
+						dragMarker = 3;
+						dragKey = trimKey;
+					}
+				}
+				else if (hoverFlag != 0)
+				{
+					dragMarker = hoverFlag;
+					dragIndex = hoverSegment;
+					dragKey = trimKey;
+				}
 			}
-			else if (distanceOut <= 7.0f)
+
+			if (dragMarker == 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 			{
-				dragMarker = 2;
-				dragKey = trimKey;
+				const float value = xToTime(mouse.x);
+
+				for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
+				{
+					const STrimSegment& segment = trim->Segments[index];
+
+					if (value >= segment.Start && value <= segment.End)
+					{
+						trim->Segments.erase(trim->Segments.begin() + index);
+						break;
+					}
+				}
 			}
 		}
 
-		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && dragMarker != 0)
 		{
 			dragMarker = 0;
+			dragIndex = -1;
 			dragKey.clear();
 		}
 
-		if (dragMarker != 0 && trim != nullptr && dragKey == trimKey)
+		if (dragMarker != 0 && dragKey == trimKey && dragIndex >= 0 && dragIndex < static_cast<s32>(trim->Segments.size()))
 		{
-			const float value = std::clamp((mouse.x - origin.x) / width * total, 0.0f, total);
+			STrimSegment& segment = trim->Segments[dragIndex];
+			const float value = xToTime(mouse.x);
+			const float lowerBound = dragIndex > 0 ? trim->Segments[dragIndex - 1].End : 0.0f;
+			const float upperBound = dragIndex + 1 < static_cast<s32>(trim->Segments.size()) ? trim->Segments[dragIndex + 1].Start : total;
 
 			if (dragMarker == 1)
 			{
-				trim->Start = std::clamp(value, 0.0f, std::max(0.0f, trim->End - 0.02f));
-				trimStart = trim->Start;
+				segment.Start = std::clamp(value, lowerBound, std::max(lowerBound, segment.End - 0.02f));
 			}
 			else
 			{
-				trim->End = std::clamp(value, trim->Start + 0.02f, total);
-				trimEnd = trim->End;
+				segment.End = std::clamp(value, segment.Start + 0.02f, std::max(segment.Start + 0.02f, upperBound));
 			}
-
-			inX = origin.x + trimStart * pixelsPerSecond;
-			outX = origin.x + trimEnd * pixelsPerSecond;
 		}
 
 		if (dragMarker == 0 && ImGui::IsItemActive())
 		{
-			const float normalized = std::clamp((mouse.x - origin.x) / width, 0.0f, 1.0f);
-			time = normalized * total;
-			changed = true; 
+			time = xToTime(mouse.x);
+			changed = true;
 		}
 	}
 
@@ -1601,27 +1677,49 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 			}
 		}
 
-		if (trim != nullptr && (trimStart > 0.001f || trimEnd < total - 0.001f))
+		if (trim != nullptr && !trim->Segments.empty())
 		{
-			draw->AddRectFilled(ImVec2(origin.x + 1.0f, origin.y + 1.0f), ImVec2(std::max(inX, origin.x + 1.0f), origin.y + height - 1.0f), IM_COL32(0, 0, 0, 110));
-			draw->AddRectFilled(ImVec2(std::min(outX, end.x - 1.0f), origin.y + 1.0f), ImVec2(end.x - 1.0f, origin.y + height - 1.0f), IM_COL32(0, 0, 0, 110));
+			float cursor = 0.0f;
+
+			for (const STrimSegment& segment : trim->Segments)
+			{
+				if (segment.Start > cursor)
+				{
+					draw->AddRectFilled(ImVec2(timeToX(cursor), origin.y + 1.0f), ImVec2(timeToX(segment.Start), origin.y + height - 1.0f), IM_COL32(0, 0, 0, 120));
+				}
+
+				draw->AddRectFilled(ImVec2(timeToX(segment.Start), origin.y + 1.0f), ImVec2(timeToX(segment.End), origin.y + height - 1.0f), IM_COL32(255, 255, 255, 14));
+				cursor = std::max(cursor, segment.End);
+			}
+
+			if (cursor < total)
+			{
+				draw->AddRectFilled(ImVec2(timeToX(cursor), origin.y + 1.0f), ImVec2(end.x - 1.0f, origin.y + height - 1.0f), IM_COL32(0, 0, 0, 120));
+			}
 		}
 
 		draw->AddLine(ImVec2(playedX, origin.y), ImVec2(playedX, origin.y + height), colorPlayhead, 2.0f);
 		draw->AddTriangleFilled(ImVec2(playedX - 5.0f, origin.y), ImVec2(playedX + 5.0f, origin.y), ImVec2(playedX, origin.y + 7.0f), colorPlayhead);
 
-		draw->AddLine(ImVec2(inX, origin.y), ImVec2(inX, origin.y + height), colorTrimIn, 2.0f);
-		draw->AddTriangleFilled(ImVec2(inX, origin.y), ImVec2(inX + 8.0f, origin.y), ImVec2(inX, origin.y + 8.0f), colorTrimIn);
-		draw->AddText(ImVec2(inX + 4.0f, origin.y + height - 15.0f), colorTrimIn, "IN");
+		if (trim != nullptr)
+		{
+			for (const STrimSegment& segment : trim->Segments)
+			{
+				const float inX = timeToX(segment.Start);
+				const float outX = timeToX(segment.End);
 
-		draw->AddLine(ImVec2(outX, origin.y), ImVec2(outX, origin.y + height), colorTrimOut, 2.0f);
-		draw->AddTriangleFilled(ImVec2(outX, origin.y + height), ImVec2(outX, origin.y + height - 8.0f), ImVec2(outX - 8.0f, origin.y + height), colorTrimOut);
-		draw->AddText(ImVec2(outX - 22.0f, origin.y + height - 15.0f), colorTrimOut, "OUT");
+				draw->AddLine(ImVec2(inX, origin.y), ImVec2(inX, origin.y + height), colorTrimIn, 2.0f);
+				draw->AddTriangleFilled(ImVec2(inX, origin.y), ImVec2(inX + 7.0f, origin.y), ImVec2(inX, origin.y + 7.0f), colorTrimIn);
+
+				draw->AddLine(ImVec2(outX, origin.y), ImVec2(outX, origin.y + height), colorTrimOut, 2.0f);
+				draw->AddTriangleFilled(ImVec2(outX, origin.y + height), ImVec2(outX, origin.y + height - 7.0f), ImVec2(outX - 7.0f, origin.y + height), colorTrimOut);
+			}
+		}
 
 		if (ImGui::IsItemHovered())
 		{
-			const float hoverTime = std::clamp((ImGui::GetIO().MousePos.x - origin.x) / width * total, 0.0f, total);
-			ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nDrag the IN / OUT flags to trim playback", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f));
+			const float hoverTime = xToTime(mouse.x);
+			ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nCtrl+drag - add segment, drag a flag - move it, right click on a segment - delete", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f));
 		}
 	}
 	else
@@ -1634,6 +1732,7 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 	draw->AddRect(origin, end, colorBorder);
 	return changed;
 }
+
 
 class CCinemaFilmMakerManager final : public pureFrame
 {
@@ -1699,6 +1798,7 @@ private:
 	const STrimRange* FindTrim(const SCinemaActor& actor, const shared_str& source, const shared_str& name) const;
 	STrimRange* FindTrimEdit(SCinemaActor& actor, const shared_str& source, const shared_str& name);
 	void UpdateActorTrim(SCinemaActor& actor);
+	void StartBlendJump(SCinemaActor& actor, float targetTime, float blendTime);
 	bool DrawTimelineWidget(float& time, float total, const CMotionDef* motionDef, SCinemaActor& actor);
 	void AddExtraAnimationPath(const char* path);
 	void RemoveExtraAnimationPath(s32 index);
@@ -1800,6 +1900,7 @@ private:
 	bool SpawnFromCamera = false;
 	bool SnapToGround = true;
 	s32 TrimDragMarker = 0;
+	s32 TrimDragIndex = -1;
 	xr_string TrimDragKey;
 	bool TimelinesOpenByDefault = true;
 	bool TimelinesOpenDirty = true;
@@ -2023,6 +2124,7 @@ void CCinemaFilmMakerManager::SelectActor(s32 index)
 	Selected = index;
 	TimelinesOpenDirty = true;
 	TrimDragMarker = 0;
+	TrimDragIndex = -1;
 	TrimDragKey.clear();
 	ResetSelection();
 }
@@ -2065,6 +2167,7 @@ void CCinemaFilmMakerManager::OnFrame()
 		SceneListSelected.clear();
 		SceneLoadRequested = false;
 		TrimDragMarker = 0;
+		TrimDragIndex = -1;
 		TrimDragKey.clear();
 		Level = g_pGameLevel;
 		Selected = -1;
@@ -2464,9 +2567,12 @@ bool CCinemaFilmMakerManager::PlayClip(SCinemaActor& actor, const SAnimationSour
 
 	if (const STrimRange* trim = FindTrim(actor, actor.MotionSource, actor.MotionName))
 	{
-		const float total = actor.Animated->get_animation_length(actor.Motion);
-		const float start = std::clamp(trim->Start, 0.0f, std::max(0.0f, total - 0.02f));
-		CinemaSetBlendTime(actor.Animated, actor.Motion, start);
+		if (!trim->Segments.empty())
+		{
+			const float total = actor.Animated->get_animation_length(actor.Motion);
+			const float start = std::clamp(trim->Segments.front().Start, 0.0f, std::max(0.0f, total - 0.02f));
+			CinemaSetBlendTime(actor.Animated, actor.Motion, start);
+		}
 	}
 
 	return true;
@@ -2635,6 +2741,40 @@ void CCinemaFilmMakerManager::RemoveTrim(SCinemaActor& actor, const shared_str& 
 	}
 }
 
+void CCinemaFilmMakerManager::StartBlendJump(SCinemaActor& actor, float targetTime, float blendTime)
+{
+	if (actor.Animated == nullptr || !actor.Motion.valid())
+	{
+		return;
+	}
+
+	const float total = actor.Animated->get_animation_length(actor.Motion);
+	const float time = std::clamp(targetTime, 0.0f, std::max(0.0f, total - END_EPS));
+
+	if (blendTime <= 0.0f)
+	{
+		CinemaSetBlendTime(actor.Animated, actor.Motion, time);
+		return;
+	}
+
+	CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
+
+	if (PlayMotionByParts(actor.Animated, actor.Motion, true, nullptr, nullptr) == nullptr)
+	{
+		CinemaSetBlendTime(actor.Animated, actor.Motion, time);
+		return;
+	}
+
+	CinemaSetBlendLoop(actor.Animated, actor.Motion, false);
+	CinemaSetBlendSpeed(actor.Animated, actor.Motion, 0.0f);
+	CinemaSetBlendTime(actor.Animated, actor.Motion, time);
+
+	if (CBlend* fresh = CinemaFindBlend(actor.Animated, actor.Motion))
+	{
+		fresh->blendAccrue = 1.0f / blendTime;
+	}
+}
+
 void CCinemaFilmMakerManager::UpdateActorTrim(SCinemaActor& actor)
 {
 	if (actor.Animated == nullptr || !actor.Motion.valid() || actor.MotionFx || actor.Paused)
@@ -2651,28 +2791,12 @@ void CCinemaFilmMakerManager::UpdateActorTrim(SCinemaActor& actor)
 
 	const float total = blend->timeTotal;
 	const STrimRange* trim = FindTrim(actor, actor.MotionSource, actor.MotionName);
-
-	float rangeStart = 0.0f;
-	float rangeEnd = total;
-
-	if (trim != nullptr)
-	{
-		rangeStart = std::clamp(trim->Start, 0.0f, std::max(0.0f, total - 0.02f));
-		rangeEnd = std::clamp(trim->End, rangeStart + 0.02f, total);
-	}
-
-	rangeEnd = std::min(rangeEnd, total - END_EPS);
-
-	if (rangeEnd <= rangeStart)
-	{
-		rangeEnd = total - END_EPS;
-	}
-
 	const bool pingPong = actor.PingPong;
 	const float speed = GetClipSpeed(actor, trim);
-	const bool trimmed = rangeStart > 0.001f || rangeEnd < total - 0.002f;
+	const bool hasSegments = trim != nullptr && !trim->Segments.empty();
+	const float blendTime = trim != nullptr ? trim->Blend : 0.0f;
 
-	if (!trimmed && !pingPong)
+	if (!hasSegments && !pingPong)
 	{
 		blend->speed = speed;
 		actor.PlayDirection = speed >= 0.0f ? 1.0f : -1.0f;
@@ -2697,11 +2821,86 @@ void CCinemaFilmMakerManager::UpdateActorTrim(SCinemaActor& actor)
 		return;
 	}
 
-	blend->timeCurrent += actor.PlayDirection * delta;
+	STrimSegment chain;
+	chain.Start = 0.0f;
+	chain.End = total - END_EPS;
 
-	if (blend->timeCurrent > rangeEnd)
+	if (hasSegments)
 	{
-		blend->timeCurrent = rangeEnd;
+		chain.Start = trim->Segments.front().Start;
+		chain.End = trim->Segments.back().End;
+	}
+
+	const bool forward = actor.PlayDirection > 0.0f;
+	float time = blend->timeCurrent + actor.PlayDirection * delta;
+
+	if (hasSegments)
+	{
+		s32 currentIndex = -1;
+
+		for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
+		{
+			const STrimSegment& segment = trim->Segments[index];
+
+			if (blend->timeCurrent >= segment.Start && blend->timeCurrent <= segment.End)
+			{
+				currentIndex = index;
+				break;
+			}
+		}
+
+		s32 targetIndex = -1;
+
+		for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
+		{
+			const STrimSegment& segment = trim->Segments[index];
+
+			if (time >= segment.Start && time <= segment.End)
+			{
+				targetIndex = index;
+				break;
+			}
+		}
+
+		if (targetIndex < 0)
+		{
+			for (s32 index = 0; index < static_cast<s32>(trim->Segments.size()); ++index)
+			{
+				const STrimSegment& segment = trim->Segments[index];
+
+				if (forward && segment.Start > time)
+				{
+					targetIndex = index;
+					break;
+				}
+
+				if (!forward && segment.End < time)
+				{
+					targetIndex = index;
+				}
+			}
+		}
+
+		if (targetIndex >= 0)
+		{
+			const STrimSegment& target = trim->Segments[targetIndex];
+			const bool jumped = currentIndex != targetIndex;
+			const float targetTime = jumped ? (forward ? target.Start : target.End) : time;
+
+			if (jumped && blendTime > 0.0f)
+			{
+				StartBlendJump(actor, targetTime, blendTime);
+				return;
+			}
+
+			blend->timeCurrent = std::clamp(targetTime, target.Start, target.End);
+			return;
+		}
+	}
+
+	if (forward)
+	{
+		blend->timeCurrent = chain.End;
 
 		if (pingPong)
 		{
@@ -2713,31 +2912,46 @@ void CCinemaFilmMakerManager::UpdateActorTrim(SCinemaActor& actor)
 		}
 		else if (actor.Loop)
 		{
-			blend->timeCurrent = rangeStart;
+			if (blendTime > 0.0f)
+			{
+				StartBlendJump(actor, chain.Start, blendTime);
+			}
+			else
+			{
+				blend->timeCurrent = chain.Start;
+			}
 		}
 		else
 		{
 			CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
+		}
+
+		return;
+	}
+
+	blend->timeCurrent = chain.Start;
+
+	if (pingPong)
+	{
+		actor.PlayDirection = 1.0f;
+	}
+	else if (actor.Loop)
+	{
+		if (blendTime > 0.0f)
+		{
+			StartBlendJump(actor, chain.End, blendTime);
+		}
+		else
+		{
+			blend->timeCurrent = chain.End;
 		}
 	}
-	else if (blend->timeCurrent < rangeStart)
+	else
 	{
-		blend->timeCurrent = rangeStart;
-
-		if (pingPong)
-		{
-			actor.PlayDirection = 1.0f;
-		}
-		else if (actor.Loop)
-		{
-			blend->timeCurrent = rangeEnd;
-		}
-		else
-		{
-			CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
-		}
+		CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
 	}
 }
+
 
 void CCinemaFilmMakerManager::UpdateActorPlayback(SCinemaActor& actor)
 {
@@ -3453,6 +3667,124 @@ static void CinemaSceneCleanName(const char* source, xr_string& result)
 	}
 }
 
+static void SplitTrimValue(const xr_string& text, xr_vector<xr_string>& parts)
+{
+	parts.clear();
+	size_t cursor = 0;
+
+	while (true)
+	{
+		const size_t found = text.find('|', cursor);
+
+		if (found == xr_string::npos)
+		{
+			parts.push_back(text.substr(cursor));
+			return;
+		}
+
+		parts.push_back(text.substr(cursor, found - cursor));
+		cursor = found + 1;
+	}
+}
+
+static bool CinemaParseTrim(const shared_str& value, STrimRange& trim)
+{
+	if (value.size() == 0)
+	{
+		return false;
+	}
+
+	const xr_string text = value.c_str();
+	xr_vector<xr_string> parts;
+	SplitTrimValue(text, parts);
+
+	if (parts.empty())
+	{
+		return false;
+	}
+
+	if (parts[0] == "v2")
+	{
+		if (parts.size() < 4)
+		{
+			return false;
+		}
+
+		trim.Source = parts[1].c_str();
+		trim.Name = parts[2].c_str();
+		trim.Speed = static_cast<float>(atof(parts[3].c_str()));
+
+		size_t firstSegment = 4;
+
+		if (parts.size() > 4 && parts[4].find(',') == xr_string::npos)
+		{
+			trim.Blend = static_cast<float>(atof(parts[4].c_str()));
+			firstSegment = 5;
+		}
+
+		for (size_t index = firstSegment; index < parts.size(); ++index)
+		{
+			const size_t comma = parts[index].find(',');
+
+			if (comma == xr_string::npos)
+			{
+				continue;
+			}
+
+			STrimSegment segment;
+			segment.Start = static_cast<float>(atof(parts[index].substr(0, comma).c_str()));
+			segment.End = static_cast<float>(atof(parts[index].c_str() + comma + 1));
+
+			if (segment.Start != segment.Start || segment.End != segment.End || segment.End <= segment.Start)
+			{
+				continue;
+			}
+
+			trim.Segments.push_back(segment);
+		}
+	}
+	else
+	{
+		if (parts.size() < 4)
+		{
+			return false;
+		}
+
+		trim.Source = parts[0].c_str();
+		trim.Name = parts[1].c_str();
+
+		STrimSegment segment;
+		segment.Start = static_cast<float>(atof(parts[2].c_str()));
+		segment.End = static_cast<float>(atof(parts[3].c_str()));
+
+		if (parts.size() > 4)
+		{
+			trim.Speed = static_cast<float>(atof(parts[parts.size() - 1].c_str()));
+		}
+
+		if (segment.Start == segment.Start && segment.End == segment.End && segment.End > segment.Start)
+		{
+			trim.Segments.push_back(segment);
+		}
+	}
+
+	if (trim.Source.size() == 0 || trim.Name.size() == 0 || trim.Segments.empty())
+	{
+		return false;
+	}
+
+	SortSegmentList(trim.Segments);
+	trim.Speed = std::clamp(trim.Speed, -4.0f, 4.0f);
+	trim.Blend = std::clamp(trim.Blend, 0.0f, 2.0f);
+
+	for (STrimSegment& segment : trim.Segments)
+	{
+		segment.Start = std::max(0.0f, segment.Start);
+	}
+
+	return true;
+}
+
 static shared_str CinemaReadString(CInifile& ini, const char* section, const char* line)
 {
 	if (!ini.line_exist(section, line))
@@ -3903,12 +4235,36 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 				continue;
 			}
 
+			if (trim.Segments.empty())
+			{
+				continue;
+			}
+
 			string32 line = {};
 			xr_sprintf(line, "trim_%03u", j);
 
-			string1024 value = {};
-			xr_sprintf(value, "%s|%s|%.4f|%.4f|%.4f", trim.Source.c_str(), trim.Name.c_str(), trim.Start, trim.End, trim.Speed);
-			ini.w_string(section, line, value);
+			xr_string value = "v2|";
+			value += trim.Source.c_str();
+			value += "|";
+			value += trim.Name.c_str();
+
+			string64 speedText = {};
+			xr_sprintf(speedText, "|%.4f|%.4f|", trim.Speed, trim.Blend);
+			value += speedText;
+
+			for (size_t segmentIndex = 0; segmentIndex < trim.Segments.size(); ++segmentIndex)
+			{
+				string64 segmentText = {};
+				xr_sprintf(segmentText, segmentIndex > 0 ? "%.4f,%.4f" : "%.4f,%.4f", trim.Segments[segmentIndex].Start, trim.Segments[segmentIndex].End);
+				value += segmentText;
+
+				if (segmentIndex + 1 < trim.Segments.size())
+				{
+					value += "|";
+				}
+			}
+
+			ini.w_string(section, line, value.c_str());
 		}
 	}
 
@@ -4245,41 +4601,12 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			}
 
 			STrimRange trim;
-			trim.Source = text.substr(0, first).c_str();
-			trim.Name = text.substr(first + 1, second - first - 1).c_str();
-			trim.Start = static_cast<float>(atof(text.substr(second + 1, third - second - 1).c_str()));
 
-			xr_vector<xr_string> tail;
-			size_t cursor = third + 1;
-
-			while (true)
-			{
-				const size_t found = text.find('|', cursor);
-
-				if (found == xr_string::npos)
-				{
-					tail.push_back(text.substr(cursor));
-					break;
-				}
-
-				tail.push_back(text.substr(cursor, found - cursor));
-				cursor = found + 1;
-			}
-
-			trim.End = static_cast<float>(atof(tail[0].c_str()));
-
-			if (tail.size() > 1)
-			{
-				trim.Speed = static_cast<float>(atof(tail[tail.size() - 1].c_str()));
-			}
-
-			if (trim.Source.size() == 0 || trim.Name.size() == 0 || trim.Start != trim.Start || trim.End != trim.End || trim.Start < 0.0f || trim.End <= trim.Start)
+			if (!CinemaParseTrim(value, trim))
 			{
 				continue;
 			}
 
-			trim.Speed = std::clamp(trim.Speed, -4.0f, 4.0f);
-			trim.Start = std::clamp(trim.Start, 0.0f, trim.End);
 			data.Trims.push_back(trim);
 		}
 
@@ -4771,40 +5098,12 @@ void CCinemaFilmMakerManager::LoadPresets()
 			}
 
 			STrimRange trim;
-			trim.Source = text.substr(0, first).c_str();
-			trim.Name = text.substr(first + 1, second - first - 1).c_str();
-			trim.Start = static_cast<float>(atof(text.substr(second + 1, third - second - 1).c_str()));
 
-			xr_vector<xr_string> tail;
-			size_t cursor = third + 1;
-
-			while (true)
-			{
-				const size_t found = text.find('|', cursor);
-
-				if (found == xr_string::npos)
-				{
-					tail.push_back(text.substr(cursor));
-					break;
-				}
-
-				tail.push_back(text.substr(cursor, found - cursor));
-				cursor = found + 1;
-			}
-
-			trim.End = static_cast<float>(atof(tail[0].c_str()));
-
-			if (tail.size() > 1)
-			{
-				trim.Speed = static_cast<float>(atof(tail[tail.size() - 1].c_str()));
-			}
-
-			if (trim.Source.size() == 0 || trim.Name.size() == 0 || trim.Start != trim.Start || trim.End != trim.End || trim.Start < 0.0f || trim.End <= trim.Start)
+			if (!CinemaParseTrim(value, trim))
 			{
 				continue;
 			}
 
-			trim.Speed = std::clamp(trim.Speed, -4.0f, 4.0f);
 			preset.Trims.push_back(trim);
 		}
 
@@ -4870,12 +5169,36 @@ void CCinemaFilmMakerManager::SavePresets()
 				continue;
 			}
 
+			if (trim.Segments.empty())
+			{
+				continue;
+			}
+
 			string32 line = {};
 			xr_sprintf(line, "trim_%03u", trimIndex);
 
-			string1024 value = {};
-			xr_sprintf(value, "%s|%s|%.4f|%.4f|%.4f", trim.Source.c_str(), trim.Name.c_str(), trim.Start, trim.End, trim.Speed);
-			ini.w_string(section, line, value);
+			xr_string value = "v2|";
+			value += trim.Source.c_str();
+			value += "|";
+			value += trim.Name.c_str();
+
+			string64 speedText = {};
+			xr_sprintf(speedText, "|%.4f|%.4f|", trim.Speed, trim.Blend);
+			value += speedText;
+
+			for (size_t segmentIndex = 0; segmentIndex < trim.Segments.size(); ++segmentIndex)
+			{
+				string64 segmentText = {};
+				xr_sprintf(segmentText, "%.4f,%.4f", trim.Segments[segmentIndex].Start, trim.Segments[segmentIndex].End);
+				value += segmentText;
+
+				if (segmentIndex + 1 < trim.Segments.size())
+				{
+					value += "|";
+				}
+			}
+
+			ini.w_string(section, line, value.c_str());
 		}
 	}
 
@@ -5711,8 +6034,6 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		STrimRange entry;
 		entry.Source = source.Id;
 		entry.Name = clip.Name;
-		entry.Start = 0.0f;
-		entry.End = total;
 		entry.Speed = actor.Speed != 0.0f ? actor.Speed : 1.0f;
 		actor.Trims.push_back(entry);
 		trim = &actor.Trims.back();
@@ -5720,13 +6041,13 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 
 	if (!playing)
 	{
-		time = trim != nullptr ? trim->Start : 0.0f;
+		time = trim != nullptr && !trim->Segments.empty() ? trim->Segments.front().Start : 0.0f;
 	}
 
 	string512 trimKey = {};
 	xr_sprintf(trimKey, "%s|%s", source.Id.c_str(), clip.Name.c_str());
 
-	if (DrawAnimationTimeline("##cinema_clip_timeline", time, total, actor.Animated->LL_GetMotionDef(motion), GetTheme(), trim, TrimDragMarker, TrimDragKey, trimKey))
+	if (DrawAnimationTimeline("##cinema_clip_timeline", time, total, actor.Animated->LL_GetMotionDef(motion), GetTheme(), trim, TrimDragMarker, TrimDragIndex, TrimDragKey, trimKey))
 	{
 		if (!playing)
 		{
@@ -5754,20 +6075,40 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		ImGui::TextDisabled("Clip length: %.3f s", total);
 	}
 
-	if (trim != nullptr)
+	const s32 segmentCount = trim != nullptr ? static_cast<s32>(trim->Segments.size()) : 0;
+
+	if (segmentCount > 0)
 	{
-		ImGui::Text("Trim: %.3f - %.3f s (%.3f s)", trim->Start, trim->End, trim->End - trim->Start);
+		ImGui::TextDisabled("%d segment(s) of the clip are played in order:", segmentCount);
+
+		for (s32 index = 0; index < segmentCount; ++index)
+		{
+			const STrimSegment& segment = trim->Segments[index];
+
+			ImGui::PushID(index);
+			ImGui::Text("#%d  %.3f - %.3f s  (%.3f s)", index + 1, segment.Start, segment.End, segment.End - segment.Start);
+			ImGui::SameLine();
+
+			if (ImGui::SmallButton("Remove##segment"))
+			{
+				trim->Segments.erase(trim->Segments.begin() + index);
+				ImGui::PopID();
+				break;
+			}
+
+			ImGui::PopID();
+		}
+
 		ImGui::SameLine();
 
-		if (ImGui::SmallButton("Reset trim##clip"))
+		if (ImGui::SmallButton("Clear segments##clip"))
 		{
-			trim->Start = 0.0f;
-			trim->End = total;
+			trim->Segments.clear();
 		}
 	}
 	else
 	{
-		ImGui::TextDisabled("Trim: full clip (drag the IN / OUT flags to trim)");
+		ImGui::TextDisabled("Whole clip is played. Ctrl+drag on the timeline to add an IN/OUT segment chain.");
 	}
 
 	ImGui::Separator();
@@ -5785,14 +6126,26 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 	ImGui::SameLine();
 	ImGui::TextDisabled("base: %.2f", actor.Speed);
 
-	if (trim != nullptr)
-	{
-		const bool trivial = trim->Start <= 0.002f && trim->End >= total - 0.002f && fabsf(trim->Speed - actor.Speed) <= 0.001f;
+	float blendTime = trim != nullptr ? trim->Blend : 0.0f;
 
-		if (trivial)
-		{
-			RemoveTrim(actor, source.Id, clip.Name);
-		}
+	ImGui::SetNextItemWidth(90.0f);
+
+	if (trim != nullptr && ImGui::DragFloat("Blend##clip", &blendTime, 0.005f, 0.0f, 1.0f, "%.2f s"))
+	{
+		trim->Blend = blendTime;
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip("Smooth transition between segments, in seconds (0 - hard cut)");
+	}
+
+	ImGui::SameLine();
+	ImGui::TextDisabled("0 - hard cut");
+
+	if (trim != nullptr && trim->Segments.empty() && fabsf(trim->Speed - actor.Speed) <= 0.001f && trim->Blend <= 0.0f)
+	{
+		RemoveTrim(actor, source.Id, clip.Name);
 	}
 }
 
