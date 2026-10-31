@@ -41,7 +41,6 @@ void CRenderTarget::u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& 
 	// Calculate ordinaty TCs from blur and SS
 	float	tw			= float(dwWidth);
 	float	th			= float(dwHeight);
-//	if (dwHeight!= (u32)RCache.get_height())	param_blur = 1.f;
 	Fvector2			shift,p0,p1;
 	shift.set			(.5f/tw, .5f/th);
 	shift.mul			(param_blur);
@@ -166,14 +165,12 @@ void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 	RCache.Vertex.Unlock										(4,g_postprocess.stride());
 
 	// Actual rendering
-	static	shared_str	s_brightness	= "c_brightness";
-	static	shared_str	s_colormap		= "c_colormap";
-	RCache.set_c		( s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0 );
-	RCache.set_c		(s_colormap, MapInfluence, MapInterpolate,0,0);
+	RCache.Constants.Write<CBFrame>().c_brightness.set(p_brightness.x, p_brightness.y, p_brightness.z, 0);
+	RCache.Constants.Write<CBFrame>().c_colormap.set(MapInfluence, MapInterpolate, 0, 0);
 	if (ScopeInfo)
 	{
 		// The scope shader converts HDR to display colors the same way as combine_2
-		RCache.set_c("bloom_params", ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
+		RCache.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
 	}
 	RCache.set_Geometry	(g_postprocess);
 	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);

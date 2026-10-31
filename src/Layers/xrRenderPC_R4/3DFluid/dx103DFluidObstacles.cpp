@@ -38,18 +38,6 @@ static void draw_obb		( const Fmatrix &matrix, const u32 &color )
 
 namespace
 {
-	//	For OOBB
-//	shared_str	strBoxLBDcorner("boxLBDcorner");
-//	shared_str	strBoxRTUcorner("boxRTUcorner");
-	shared_str&	strOOBBClipPlane() { static shared_str Name("OOBBClipPlane"); return Name; }
-
-	//	For velocity calculation
-	shared_str&	strWorldToLocal() { static shared_str Name("WorldToLocal"); return Name; }
-	shared_str&	strLocalToWorld() { static shared_str Name("LocalToWorld"); return Name; }
-	shared_str&	strMassCenter() { static shared_str Name("MassCenter"); return Name; }
-	shared_str&	strOOBBWorldAngularVelocity() { static shared_str Name("OOBBWorldAngularVelocity"); return Name; }
-	shared_str&	strOOBBWorldTranslationVelocity() { static shared_str Name("OOBBWorldTranslationVelocity"); return Name; }
-
 	Fvector4	UnitClipPlanes[] = 
 	{
 		{-1.f,	0.0f,	0.0f,	0.5f},	//	
@@ -148,7 +136,7 @@ void dx103DFluidObstacles::RenderStaticOOBB( const Fmatrix &Transform)
 		Fvector4	TransformedPlane;
 		ClipTransform.transform(TransformedPlane, UnitClipPlanes[i]);
 		TransformedPlane.normalize_as_plane();
-		RCache.set_ca(strOOBBClipPlane(), i, TransformedPlane);
+		RCache.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
 	}
 
 	m_pGrid->DrawSlices();
@@ -234,8 +222,8 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 	Fmatrix	FluidToWorld;
 	FluidToWorld.invert(WorldToFluid);
 
-	RCache.set_c(strWorldToLocal(), WorldToFluid);	
-	RCache.set_c(strLocalToWorld(), FluidToWorld);
+	RCache.Constants.Write<CBFluid>().WorldToLocal = WorldToFluid;	
+	RCache.Constants.Write<CBFluid>().LocalToWorld = FluidToWorld;
 
 	int iShellsNum = (int)m_lstShells.size();
 	for (int i=0; i<iShellsNum; ++i)
@@ -302,9 +290,9 @@ void dx103DFluidObstacles::RenderPhysicsElement( const IPhysicsElement &Element,
 	//	Emphasize velocity influence on the fog
 	//TranslationVelocity.mul( 2.0f );
 
-	RCache.set_c(strMassCenter(), MassCenter);
-	RCache.set_c(strOOBBWorldAngularVelocity(), AngularVelocity);
-	RCache.set_c(strOOBBWorldTranslationVelocity(), TranslationVelocity);
+	RCache.Constants.Write<CBFluid>().MassCenter = MassCenter;
+	RCache.Constants.Write<CBFluid>().OOBBWorldAngularVelocity = AngularVelocity;
+	RCache.Constants.Write<CBFluid>().OOBBWorldTranslationVelocity = TranslationVelocity;
 
 	int iShapeNum = Element.numberOfGeoms();
 
@@ -350,7 +338,7 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, co
 		Fvector4	TransformedPlane;
 		ClipTransform.transform(TransformedPlane, UpdatedPlane);
 		TransformedPlane.normalize_as_plane();
-		RCache.set_ca(strOOBBClipPlane(), i, TransformedPlane);
+		RCache.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
 	}
 
 	const Fvector3	&MassCenter3 = Element.mass_Center();
@@ -377,9 +365,9 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, co
 	AngularVelocity.mul( fVelocityScale );
 	TranslationVelocity.mul( fVelocityScale );
 
-	RCache.set_c(strMassCenter(), MassCenter);
-	RCache.set_c(strOOBBWorldAngularVelocity(), AngularVelocity);
-	RCache.set_c(strOOBBWorldTranslationVelocity(), TranslationVelocity);	
+	RCache.Constants.Write<CBFluid>().MassCenter = MassCenter;
+	RCache.Constants.Write<CBFluid>().OOBBWorldAngularVelocity = AngularVelocity;
+	RCache.Constants.Write<CBFluid>().OOBBWorldTranslationVelocity = TranslationVelocity;	
 
 	m_pGrid->DrawSlices();
 }
@@ -415,7 +403,7 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsGeometry &Geometry, 
 		Fvector4	TransformedPlane;
 		ClipTransform.transform(TransformedPlane, UpdatedPlane);
 		TransformedPlane.normalize_as_plane();
-		RCache.set_ca(strOOBBClipPlane(), i, TransformedPlane);
+		RCache.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
 	}
 
 	m_pGrid->DrawSlices();

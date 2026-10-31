@@ -3,7 +3,6 @@
 using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
-#include "dx10FixedConstants.h"
 
 void CBackend::OnFrameEnd	()
 {
@@ -28,8 +27,8 @@ void CBackend::OnFrameBegin	()
 		{
 			set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
 		}
-		FixedConstants::UpdateFrame();
-		FixedConstants::UpdateView();
+		Constants.UpdateFrame();
+		Constants.UpdateView(xforms);
 		Memory.mem_fill(&stat,0,sizeof(stat));
 		Vertex.Flush();
 		Index.Flush();
@@ -70,27 +69,10 @@ void CBackend::Invalidate	()
 	M							= nullptr;
 	C							= nullptr;
 
-	//	Since constant buffers are unmapped (for DirecX 10)
-	//	transform setting handlers should be unmapped too.
-	xforms.unmap	();
-	hemi.unmap	();
-
-	constants.clear_dirty();
-
 	m_pInputLayout				= nullptr;
 	m_PrimitiveTopology			= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	m_bChangedRTorZB			= false;
 	m_pInputSignature			= nullptr;
-	for (int i=0; i<MaxCBuffers; ++i)
-	{
-		m_aPixelConstants[i] = 0;
-		m_aVertexConstants[i] = 0;
-		m_aGeometryConstants[i] = 0;
-		m_aHullConstants[i] = 0;
-		m_aDomainConstants[i] = 0;
-		m_aComputeConstants[i] = 0;
-	}
-
 	if (GRHI != nullptr)
 	{
 		GRHI->StateManager->Reset();

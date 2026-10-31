@@ -130,7 +130,7 @@ void CRender::BeginSunShadowFrame()
 		}
 	}
 	// Reflections can sample the captures before this frame's sun pass.
-	FixedConstants::UpdateSunShadows();
+	RCache.Constants.UpdateSunShadows();
 }
 
 void CRender::GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const
@@ -583,7 +583,7 @@ void CRender::render_sun_cascades()
 
 	GraphMain.r_pmask(true, false);
 
-	FixedConstants::UpdateSunShadows();
+	RCache.Constants.UpdateSunShadows();
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);

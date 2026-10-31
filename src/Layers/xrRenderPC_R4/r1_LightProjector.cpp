@@ -24,9 +24,6 @@ CLightProjector::CLightProjector()
 	depth.create("$user$r1_projector_depth", P_rt_size, P_rt_size, ERHI_FORMAT::D24_UNORM_S8_UINT);
 	clear.create("r1_projector_clear");
 
-	c_xform				= "m_plmap_xform";
-	c_clamp				= "m_plmap_clamp";
-	c_factor			= "m_plmap_factor";
 
 	cache.resize		(P_o_count);
 	Device.seqAppActivate.Add		(this);
@@ -96,11 +93,12 @@ void CLightProjector::setup		(int id)
 	float			Rd			= R.O->renderable.visual->getVisData().sphere.R;
 	float			dist		= R.C.distance_to	(Device.vCameraPosition)+Rd;
 	float			factor		= _sqr(dist/clipD(Rd))*(1-ps_r1_lmodel_lerp) + ps_r1_lmodel_lerp;
-	RCache.set_c	(c_xform,	R.UVgen);
+	CBObject& Object = RCache.Constants.Write<CBObject>();
+	Object.m_plmap_xform = R.UVgen;
 	Fvector&	m	= R.UVclamp_min;
-	RCache.set_ca	(c_clamp,	0,m.x,m.y,m.z,factor);
+	Object.m_plmap_clamp[0].set(m.x, m.y, m.z, factor);
 	Fvector&	M	= R.UVclamp_max;
-	RCache.set_ca	(c_clamp,	1,M.x,M.y,M.z,0);
+	Object.m_plmap_clamp[1].set(M.x, M.y, M.z, 0);
 }
 
 void CLightProjector::invalidate()
@@ -241,7 +239,7 @@ void CLightProjector::calculate	()
 
 		Fvector&	cap			=	LT->get_approximate();
 		RCache.set_Element(clear->E[0]);
-		RCache.set_c("tfactor", cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f);
+		RCache.Constants.Write<CBMaterial>().tfactor.set(cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f);
 		RCache.set_Geometry(RImplementation.Target->FSTriangleGeom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 

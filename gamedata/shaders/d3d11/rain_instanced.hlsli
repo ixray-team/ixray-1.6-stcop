@@ -2,12 +2,7 @@
 #define RAIN_INSTANCED_INCLUDED
 #include "common.hlsli"
 
-cbuffer RainConstants : register(b6)
-{
-	float4 RainShape; // Half width, half length, radius multiplier, feather in drop-radius units.
-	float4 RainColor; // Weather tint and density opacity multiplied by opacity gain.
-	float4 RainShading; // PBR, weather color blend, transmission, refraction in output pixels.
-};
+#include "shared\post_cb.hlsli"
 
 struct RainVertex
 {

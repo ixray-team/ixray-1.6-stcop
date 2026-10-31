@@ -5,13 +5,6 @@
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 
-namespace
-{
-	shared_str&	strImpulseSize() { static shared_str Name("size"); return Name; }
-	shared_str&	strImpulseCenter() { static shared_str Name("center"); return Name; }
-	shared_str&	strSplatColor() { static shared_str Name("splatColor"); return Name; }
-}
-
 dx103DFluidEmitters::dx103DFluidEmitters(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid *pGrid)
 	:	m_pGrid(pGrid)
 {
@@ -110,9 +103,9 @@ void dx103DFluidEmitters::ApplyDensity( const CEmitter &Emitter)
 		Emitter.m_vPosition.z, 
 		0);
 
-	RCache.set_c(strImpulseSize(), fRadius);
-	RCache.set_c(strSplatColor(), color);
-	RCache.set_c(strImpulseCenter(), center);
+	RCache.Constants.Write<CBFluid>().size = fRadius;
+	RCache.Constants.Write<CBFluid>().splatColor = color;
+	RCache.Constants.Write<CBFluid>().center = center;
 
 	m_pGrid->DrawSlices();
 }
@@ -152,7 +145,7 @@ void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 		break;
 	}
 
-	RCache.set_c(strImpulseSize(), fRadius);
+	RCache.Constants.Write<CBFluid>().size = fRadius;
 
 	// Color in this case is the initial velocity given to the emitted smoke
 	Fvector4 color;
@@ -161,7 +154,7 @@ void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 		FlowVelocity.y, 
 		FlowVelocity.z, 
 		0);
-	RCache.set_c(strSplatColor(), color);
+	RCache.Constants.Write<CBFluid>().splatColor = color;
 
 	Fvector4 center;
 	center.set(
@@ -169,7 +162,7 @@ void dx103DFluidEmitters::ApplyVelocity( const CEmitter &Emitter)
 		Emitter.m_vPosition.y+lilrand(), 
 		Emitter.m_vPosition.z+lilrand(), 
 		0);
-	RCache.set_c(strImpulseCenter(), center);
+	RCache.Constants.Write<CBFluid>().center = center;
 
 	m_pGrid->DrawSlices();
 }

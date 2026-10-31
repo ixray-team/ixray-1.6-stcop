@@ -511,24 +511,10 @@ void CEditorSceneSubmit::ApplyDeferred(SDeferredSubmit& Job)
 
 void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 {
-	RCache.hemi.set_selection(0);
+	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
 	SVS* VS = RCache.get_VS();
-
-	// The shader indexes rows by SV_InstanceID + editor_instance_params.x: without the constant
-	// a stale offset would draw each copy with the transform of another copy
-	ref_constant Params = RCache.get_c("editor_instance_params");
-	if (VS != nullptr && VS->editor_instance_slot != u32(-1) && !Params)
-	{
-		static bool Reported = false;
-		if (!Reported)
-		{
-			Msg("! [EditorSceneSubmit] instanced pass has no editor_instance_params: drawing copies one by one");
-			Reported = true;
-		}
-	}
-
-	const bool CanInstance = VS != nullptr && VS->editor_instance_slot != u32(-1) && Params && Visual.Uploaded;
+	const bool CanInstance = VS != nullptr && VS->editor_instance_slot != u32(-1) && Visual.Uploaded;
 	if (!CanInstance)
 	{
 		// The pass has no instanced vertex shader: one draw per copy
@@ -549,9 +535,8 @@ void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 		return;
 	}
 
-	GRHI->ShaderResourceCache->SetVSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
-	RCache.InvalidateVSTexture(VS->editor_instance_slot);
-	RCache.set_c(&*Params, 0.f, 0.f, 0.f, 0.f);
+	RCache.set_VSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
+	RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
 	Visual.Mesh->RenderGeometryInstanced(Visual.Surface, Visual.InstanceCount());
 }
 
@@ -582,14 +567,12 @@ void CEditorSceneSubmit::DrawSingleInstanced(CEditableSurfaceVisual& Visual)
 	};
 
 	SVS* VS = RCache.get_VS();
-	ref_constant Params = RCache.get_c("editor_instance_params");
-	if (!Params || !Visual.InstanceBuffer.Upload(Rows, 1))
+	if (!Visual.InstanceBuffer.Upload(Rows, 1))
 	{
 		return;
 	}
 
-	GRHI->ShaderResourceCache->SetVSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
-	RCache.InvalidateVSTexture(VS->editor_instance_slot);
-	RCache.set_c(&*Params, 0.f, 0.f, 0.f, 0.f);
+	RCache.set_VSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
+	RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
 	Visual.Mesh->RenderGeometryInstanced(Visual.Surface, 1);
 }

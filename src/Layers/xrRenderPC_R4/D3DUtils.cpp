@@ -28,8 +28,8 @@ static const int boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
 
 #define DU_DRAW_RS	RCache.dbg_SetRS
-#define DU_DRAW_SH_C(sh,c){RCache.set_Shader(sh);	RCache.set_c	("tfactor",float(color_get_R(c))/255.f,float(color_get_G(c))/255.f,float(color_get_B(c))/255.f,float(color_get_A(c))/255.f);}
-#define DU_DRAW_SH(sh){RCache.set_Shader(sh);		RCache.set_c	("tfactor",1,1,1,1);}
+#define DU_DRAW_SH_C(sh,c){RCache.set_Shader(sh);	RCache.Constants.Write<CBMaterial>().tfactor.set(float(color_get_R(c))/255.f, float(color_get_G(c))/255.f, float(color_get_B(c))/255.f, float(color_get_A(c))/255.f);}
+#define DU_DRAW_SH(sh){RCache.set_Shader(sh);		RCache.Constants.Write<CBMaterial>().tfactor.set(1, 1, 1, 1);}
 
 #define FILL_MODE D3DFILL_SOLID
 #define SHADE_MODE D3DSHADE_GOURAUD

@@ -14,12 +14,8 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 
 uniform Texture2D p_image;
 
-cbuffer cb_bloom_adapt : register(b6)
-{
-    float4 adapt_params; // x - ps_r2_autoexposure_min_weight, y - ps_r2_autoexposure_gaussian, z - ps_r2_autoexposure_speed
-    float4 adapt_params2; // x - ps_r2_autoexposure_soft_log_k, y - ps_r2_autoexposure_soft_limiter, z- ps_r2_autoexposure_sensitivity
-    float4 MiddleGray;
-};
+#include "shared\post_cb.hlsli"
+
 /*
 constants buffer descr:
     autoexposure_min_weight - minimum weight for farthest pixels, can be tweaked, higher value means more even weight distribution, lower value means more center weighted distribution

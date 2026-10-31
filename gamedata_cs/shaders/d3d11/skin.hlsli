@@ -49,17 +49,6 @@ struct v_model_skinned_4
     float4 ind : TEXCOORD1;
 };
 
-#define MAX_BONES_COUNT 128
-
-cbuffer SkinConstants : register(b6)
-{
-	float4 sbones_array[MAX_BONES_COUNT * 3];
-	
-#ifndef DISABLE_MOTION_VECTORS
-	float4 sbones_array_old[MAX_BONES_COUNT * 3];
-#endif
-}
-
 float3 skinning_dir(float3 dir, float3 m0, float3 m1, float3 m2)
 {
     float3 U = unpack_normal(dir);

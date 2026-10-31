@@ -104,7 +104,7 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Stencil(FALSE);
 	RCache.set_ColorWriteEnable();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	u32 VertexOffset = 0;
 	auto* Vertices = static_cast<FVF::LIT*>(RCache.Vertex.Lock(4, sizeof(FVF::LIT), VertexOffset));
 	Vertices[0].set(-1.f, -1.f, 0.f, 0xffffffff, 0.f, 1.f);
@@ -122,26 +122,26 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 		RCache.set_Shader(Shader);
 		RCache.set_Stencil(FALSE);
 		RCache.set_ColorWriteEnable();
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		const u32 Slot = Shader->E[0]->passes[0]->vs->RainInstanceSlot;
 		if (Slot == u32(-1))
 		{
 			return;
 		}
 		RCache.set_Geometry(Geometry);
-		RCache.set_c("RainShape", Owner.RainWidth * (2.f / 3.f), Owner.RainLength * 0.5f, Radius, g_RainDropsFeather);
-		RCache.set_c("RainColor", Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainDropsOpacity * g_RainDropsOpacity);
-		RCache.set_c("RainShading", Pbr ? 1.f : 0.f, g_RainDropsColorBlend, g_RainDropsTransmission, g_RainDropsRefraction);
-		GRHI->ShaderResourceCache->SetVSResource(Slot, Stream.View);
-		RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, VertexOffset, 0, 4, 0, 2, Count * Children, 0, true);
-		GRHI->ShaderResourceCache->SetVSResource(Slot, nullptr);
-		RCache.InvalidateVSTexture(Slot);
+		CBPost& Post = RCache.Constants.Write<CBPost>();
+		Post.RainShape.set(Owner.RainWidth * (2.f / 3.f), Owner.RainLength * 0.5f, Radius, g_RainDropsFeather);
+		Post.RainColor.set(Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainDropsOpacity * g_RainDropsOpacity);
+		Post.RainShading.set(Pbr ? 1.f : 0.f, g_RainDropsColorBlend, g_RainDropsTransmission, g_RainDropsRefraction);
+		RCache.set_VSResource(Slot, Stream.View);
+		RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, VertexOffset, 0, 4, 0, 2, Count * Children, 0);
+		RCache.set_VSResource(Slot, nullptr);
 		GRHI->ShaderResourceCache->Apply();
 	};
 	Draw(AirShader, AirStream, Owner.RainInstances.data(), u32(Owner.RainInstances.size()), sizeof(CEffect_Rain::RainInstance), 1, g_RainDropsRadius);
 	Draw(ImpactShader, ImpactStream, Owner.ImpactInstances.data(), u32(Owner.ImpactInstances.size()), sizeof(CEffect_Rain::ImpactInstance), 4, g_RainDropsImpactRadius);
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	if (Dynamic && !RImplementation.o.dx11_disable_motion_vectors)
 	{
 		Target.u_setrt(Target.rt_Generic_0, Target.rt_Velocity, RDepth);

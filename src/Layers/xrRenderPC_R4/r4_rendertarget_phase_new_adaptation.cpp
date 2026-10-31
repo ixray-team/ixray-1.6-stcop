@@ -21,20 +21,20 @@ void CRenderTarget::phase_new_luminance()
 		DrawSQ(s_lum_copy, *targets[i], i, [&]
 		{
 			RImplementation.rmNormal();
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			RCache.set_Stencil(false);
-			RCache.set_c("adapt_params", float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
+			RCache.Constants.Write<CBPost>().adapt_params.set(float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
 		});
 	}
 
 	DrawSQ(s_lum_copy, rt_LUM_D, 3, [&]
 	{
 		RImplementation.rmNormal();
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		RCache.set_Stencil(false);
 
-		RCache.set_c("adapt_params", ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed), 0.f);
-		RCache.set_c("adapt_params2", ps_r2_autoexposure_soft_log_k, ps_r2_autoexposure_soft_limiter, ps_r2_autoexposure_sensitivity, 0.f);
+		RCache.Constants.Write<CBPost>().adapt_params.set(ps_r2_autoexposure_min_weight, ps_r2_autoexposure_gaussian, 1.0f - exp(-Device.fTimeDeltaSmoothing / ps_r2_autoexposure_speed), 0.f);
+		RCache.Constants.Write<CBPost>().adapt_params2.set(ps_r2_autoexposure_soft_log_k, ps_r2_autoexposure_soft_limiter, ps_r2_autoexposure_sensitivity, 0.f);
 
 		f_luminance_adapt = 0.9f * f_luminance_adapt + 0.1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
 
@@ -43,6 +43,6 @@ void CRenderTarget::phase_new_luminance()
 		Current.set(ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum);
 		Result.lerp(Result, Current, ps_r2_tonemap_amount);
 
-		RCache.set_c("MiddleGray", Result.x, Result.y, Result.z, f_luminance_adapt);
+		RCache.Constants.Write<CBPost>().MiddleGray.set(Result.x, Result.y, Result.z, f_luminance_adapt);
 	});
 }

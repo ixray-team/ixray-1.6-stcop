@@ -40,27 +40,6 @@ sampler samRepeat;
 //--------------------------------------------------------------------------------------
 //	Set once per volume
 //	Use for all rendering passes
-cbuffer FluidRenderConfig : register(b6)
-{
-    float RTWidth;
-    float RTHeight;
-
-    float4 DiffuseLight;
-	float4 DepthUnpack;
-
-    float4x4 WorldViewProjection;
-    float4x4 InvWorldViewProjection;
-
-    float ZNear;
-    float ZFar;
-
-    float4 gridDim; //	float3
-    float4 recGridDim; //	float3
-    float maxGridDim;
-    float gridScaleFactor = 1.0;
-    float4 eyeOnGrid; //	float3
-}
-
 // static	float		edgeThreshold = 0.2;
 // static	float		edgeThreshold = 0.1;
 static float edgeThreshold = 0.01;
@@ -68,6 +47,7 @@ static float edgeThreshold = 0.01;
 static const bool g_bRaycastFilterTricubic = false; // true: tricubic; false: trilinear
 // static const bool	g_bRaycastFilterTricubic = true; // true: tricubic; false: trilinear
 
+#include "shared\fluid_cb.hlsli"
 #include "fluid_common_tricubic.hlsli"
 
 //	Fire setup

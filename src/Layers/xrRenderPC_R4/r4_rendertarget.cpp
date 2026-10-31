@@ -147,7 +147,6 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 {
 	//	TODO: DX10: remove half pixel offset?
 	VERIFY	(RImplementation.o.nvstencil);
-	//RCache.set_ColorWriteEnable	(false);
 	u32		Offset;
 	float	_w					= RCache.get_width();
 	float	_h					= RCache.get_height();
@@ -166,10 +165,10 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	switch(eSOM)
 	{
 	case SO_Light:
-		GRHI->StateManager->SetStencilRef(dwLightMarkerID);
+		RCache.set_StencilRef(dwLightMarkerID);
 		break;
 	case SO_Combine:
-		GRHI->StateManager->SetStencilRef(0x01);
+		RCache.set_StencilRef(0x01);
 		break;
 	default:
 		VERIFY(!"CRenderTarget::u_stencil_optimize. switch no default!");

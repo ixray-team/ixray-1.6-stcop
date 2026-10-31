@@ -1,14 +1,5 @@
 #include "fluid_common.hlsli"
 
-cbuffer DynOOBBData : register(b10)
-{
-    float3x4 WorldToLocal; //	World to local of fog volume
-    float3x4 LocalToWorld; //	Local of fog volume to world
-    float4 MassCenter; //	Center for angular velocity
-    float4 OOBBWorldAngularVelocity;
-    float4 OOBBWorldTranslationVelocity;
-}
-
 //	Vertex
 v2g_fluidsim_dyn_aabb main(v_fluidsim input)
 {

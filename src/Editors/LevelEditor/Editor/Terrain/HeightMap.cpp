@@ -339,7 +339,7 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 		return;
 
 	EDevice->SetShader(GEditorDraw.WireShader);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 
 	CFrustum& frustum = ::Render->ViewBase;
 

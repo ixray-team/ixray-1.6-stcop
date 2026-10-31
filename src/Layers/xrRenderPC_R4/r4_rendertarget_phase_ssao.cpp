@@ -22,9 +22,6 @@ void CRenderTarget::phase_downsamp()
 	RImplementation.rmNormal();
 	RCache.set_Stencil(false);
 
-	Fmatrix m_v2w;
-	m_v2w.invert(Device.mView);
-
 	u32 Offset = 0;
 
 	float scale_X = float(w) / float(TEX_jitter);
@@ -39,7 +36,6 @@ void CRenderTarget::phase_downsamp()
 
 	RCache.set_Element(s_ssao->E[1]);
 	RCache.set_Geometry(g_combine);
-	RCache.set_c("m_v2w", m_v2w);
 
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }

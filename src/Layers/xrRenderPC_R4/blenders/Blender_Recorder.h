@@ -65,7 +65,6 @@ private:
 	const PassBind*		FindBind(const char* name, char space) const;
 	void				AddBind(const char* name, u32 slot, char space);
 	RHIShaderConstant*	AddConstant(const char* name);
-	void				r_Setup(const char* name, RHIShaderConstant::Setup* s);
 	void				CreatePassShaders();
 
 	u32					BC					(bool v)	{ return v?0x01:0; }
@@ -126,7 +125,6 @@ public:
 	// R1/R2-compiler	[programmable]		- templates
 	void				r_Pass				(const char* vs,		const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
 	void				r_Pass				(const char* vs,		const char* gs, const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
-	void				r_Constant			(const char* name, RHIShaderConstant::Setup* s);
 	void				r_TessPass			(const char* vs,	const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest=true, bool bZwrite=true, bool bABlend=false,	D3DBLEND abSRC=D3DBLEND_ONE, D3DBLEND abDST=D3DBLEND_ZERO, bool aTest=false, u32 aRef=0);
 	void				r_ComputePass		(const char* cs );
 	void				r_Stencil(bool Enable, u32 Func=D3DCMP_ALWAYS, u32 Mask=0x00, u32 WriteMask=0x00, u32 Fail=D3DSTENCILOP_KEEP, u32 Pass=D3DSTENCILOP_KEEP, u32 ZFail=D3DSTENCILOP_KEEP);
@@ -136,6 +134,7 @@ public:
 	void				r_dx10Texture(const char* ResourceName, const char* texture, u32 slot = u32(-1));
 	void				r_dx10Texture(const char* ResourceName, shared_str texture) { r_dx10Texture(ResourceName, texture.c_str()); }
 	u32					r_dx10Sampler(const char* ResourceName);
+	void				r_Setup(const char* name, RHIShaderConstant::Setup* s);
 	void				r_Matrix(const char* name);
 	void				r_dx10Unbind(const char* ResourceName);
 	void				r_End(bool clear = true);

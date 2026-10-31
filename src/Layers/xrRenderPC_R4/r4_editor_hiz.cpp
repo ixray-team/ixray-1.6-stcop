@@ -199,7 +199,7 @@ void CEditorHiZ::Build()
 	RCache.set_Constants(P.constants);
 	RCache.set_Textures(P.T);
 	RCache.set_CS(P.cs);
-	RCache.set_c("editor_hiz_params", float(Width), float(Height), 0.f, 0.f);
+	RCache.Constants.Write<CBEditor>().editor_hiz_params.set(float(Width), float(Height), 0.f, 0.f);
 
 	UINT InitialCount = 0;
 	HWContext()->CSSetUnorderedAccessViews(0, 1, &GridUAV, &InitialCount);

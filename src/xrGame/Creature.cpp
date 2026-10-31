@@ -1012,7 +1012,6 @@ void draw_visiblity_rays	(CCreature *self, const CObject *object, collide::rq_re
 void CCreature::OnRender()
 {
 	DRender->OnFrameEnd();
-	//RCache.OnFrameEnd				();
 
 	{
 		float const radius						= .075f;

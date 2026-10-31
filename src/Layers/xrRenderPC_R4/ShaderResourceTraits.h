@@ -23,8 +23,6 @@
 			}
 			return hs;
 		}
-
-		static inline u32 GetShaderDest() {return RC_dest_hull;}
 	};
 
 	template<>
@@ -44,8 +42,6 @@
 			}
 			return hs;
 		}
-
-		static inline u32 GetShaderDest() {return RC_dest_domain;}
 	};
 
 	template<>
@@ -65,8 +61,6 @@
 			}
 			return cs;
 		}
-
-		static inline u32 GetShaderDest() {return RC_dest_compute;}
 	};
 
 	template<>

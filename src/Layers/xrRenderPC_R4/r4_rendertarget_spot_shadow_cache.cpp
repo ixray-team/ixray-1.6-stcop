@@ -428,10 +428,10 @@ void CRenderTarget::RestoreSpotShadowCache(const light& Source, SpotShadowCacheE
 	Tile.set(Source.X.S.posX, Source.X.S.posY, Source.X.S.posX + Source.X.S.size, Source.X.S.posY + Source.X.S.size);
 	const auto BindLambda = [&]
 	{
-		RCache.set_c("shadow_cache_destination", float(Source.X.S.posX), float(Source.X.S.posY), 0.f, 0.f);
+		RCache.Constants.Write<CBPost>().shadow_cache_destination.set(float(Source.X.S.posX), float(Source.X.S.posY), 0.f, 0.f);
 		RCache.set_Scissor(&Tile);
-		GRHI->StateManager->SetDepthEnable(TRUE);
-		GRHI->StateManager->SetDepthFunc(D3DCMP_ALWAYS);
+		RCache.set_Z(TRUE);
+		RCache.set_ZFunc(D3DCMP_ALWAYS);
 	};
 	DrawPassSQ(Entry.CopyShader, 0, BindLambda);
 	RCache.set_Textures(&SpotShadowEmptyTextures);

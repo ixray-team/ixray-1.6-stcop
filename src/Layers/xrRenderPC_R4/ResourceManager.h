@@ -15,7 +15,6 @@
 #include "ShaderBind.h"
 
 // refs
-class dx10ConstantBuffer;
 class CSVGStorage;
 
 // defs
@@ -92,7 +91,6 @@ private:
 	xr_vector<SGeometry*>								v_geoms;
 	xr_vector<R_constant_table*>						v_constant_tables;
 
-	xr_vector<dx10ConstantBuffer*>						v_constant_buffer;
 	xr_vector<SInputSignature*>							v_input_signature;
 
 	// lists
@@ -147,8 +145,6 @@ public:
 	ref_ctable _CreateConstantTable(R_constant_table& C);
 	void							_DeleteConstantTable(const R_constant_table* C);
 
-	ref_cbuffer _CreateConstantBuffer(const RHIShaderBufferDesc* pTable);
-	void							_DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
 
 	ref_input_sign _CreateInputSignature(RHIBlob* pBlob);
 	void							_DeleteInputSignature(const SInputSignature* pSignature);

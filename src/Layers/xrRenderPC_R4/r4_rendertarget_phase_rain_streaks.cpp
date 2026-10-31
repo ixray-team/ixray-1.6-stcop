@@ -23,7 +23,7 @@ void CRenderTarget::PhaseRainStreaksBegin()
 
 	u_setrt(RainRefraction, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	RCache.set_Element(RainRefractionBlur->E[0]);
@@ -59,11 +59,11 @@ void CRenderTarget::PhaseRainLayers(float SkyVisibility)
 
 	const float Speed = 0.5f * (Desc.rain_speed_min + Desc.rain_speed_max);
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Element(RainLayers->E[0]);
 	RCache.set_Geometry(FSTriangleGeom);
-	RCache.set_c("rain_layers_params", Desc.rain_density, SkyVisibility, Speed, g_RainRefraction);
-	RCache.set_c("rain_layers_direction", Direction.x, Direction.y, Direction.z, 0.0f);
+	RCache.Constants.Write<CBPost>().rain_layers_params.set(Desc.rain_density, SkyVisibility, Speed, g_RainRefraction);
+	RCache.Constants.Write<CBPost>().rain_layers_direction.set(Direction.x, Direction.y, Direction.z, 0.0f);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 }
 

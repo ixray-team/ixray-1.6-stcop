@@ -27,10 +27,7 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-cbuffer cb_puddles : register(b6)
-{
-    float puddle_constants;
-};
+#include "shared\post_cb.hlsli"
 
 void main(in uint vertex_id : SV_VertexID, out vf O)
 {

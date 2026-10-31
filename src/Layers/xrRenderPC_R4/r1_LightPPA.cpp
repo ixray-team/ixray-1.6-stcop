@@ -61,9 +61,9 @@ void CLightR_Manager::render_point	(u32 _priority)
 		Fmatrix L_texgen;
 		L_texgen.mul(m_TexelAdjust, L_combine);
 
-		RCache.set_c("L_dynamic_pos", L->position.x, L->position.y, L->position.z, 0.5f / L->range);
-		RCache.set_c("L_dynamic_color", L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
-		RCache.set_c("L_dynamic_xform", L_texgen);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 0.5f / L->range);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
+		RCache.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
 		if (_priority == 1)
@@ -143,9 +143,9 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		};
 		Fmatrix		L_texgen;		L_texgen.mul(m_TexelAdjust, L_combine);
 
-		RCache.set_c("L_dynamic_pos", L->position.x, L->position.y, L->position.z, 1.f / L->range);
-		RCache.set_c("L_dynamic_color", L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
-		RCache.set_c("L_dynamic_xform", L_texgen);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 1.f / L->range);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
+		RCache.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
 		

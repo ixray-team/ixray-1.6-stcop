@@ -415,12 +415,11 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 	const bool IsPBR = Params.material == STextureParams::tmPBR_Material;
 	const bool UseParallax = UseBump && Params.bump_mode == STextureParams::tbmUseParallax;
 
-	// Bind the element before set_c: the constants resolve against its table
 	RCache.set_Element(PreviewShader->E[4]);
-	RCache.set_c("preview_flags", UseBump ? 1.f : 0.f, UseParallax ? 1.f : 0.f, UseDetail ? 1.f : 0.f, UseDetailBump ? 1.f : 0.f);
-	RCache.set_c("preview_material", Params.detail_scale, float(Params.material) + Params.material_weight, IsPBR ? 1.f : 0.f, AlphaTest ? 1.f : 0.f);
-	RCache.set_c("preview_light", LightDir.x, LightDir.y, LightDir.z, Ambient);
-	RCache.set_c("preview_eye", Position.x, Position.y, Position.z, UVTiling);
+	RCache.Constants.Write<CBEditor>().preview_flags.set(UseBump ? 1.f : 0.f, UseParallax ? 1.f : 0.f, UseDetail ? 1.f : 0.f, UseDetailBump ? 1.f : 0.f);
+	RCache.Constants.Write<CBEditor>().preview_material.set(Params.detail_scale, float(Params.material) + Params.material_weight, IsPBR ? 1.f : 0.f, AlphaTest ? 1.f : 0.f);
+	RCache.Constants.Write<CBEditor>().preview_light.set(LightDir.x, LightDir.y, LightDir.z, Ambient);
+	RCache.Constants.Write<CBEditor>().preview_eye.set(Position.x, Position.y, Position.z, UVTiling);
 	RCache.set_Geometry(Geometry);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, VertexCount, 0, IndexCount / 3);
 

@@ -458,8 +458,6 @@ shared_str CLensFlare::AppendDef(CEnvironment& environment, CInifile* pIni, cons
 
 void CLensFlare::OnDeviceCreate()
 {
-	// VS
-	//hGeom.create		(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
 	m_pRender->OnDeviceCreate();
 
 	// palette

@@ -17,10 +17,10 @@ void CRenderTarget::SetupSpotShadowTarget(IRHIDepthStencilView* Depth, u32 Width
 	u_setrt(Width, Height, Color, nullptr, nullptr, Depth);
 	GRHI->SetViewport(Viewport);
 	RCache.set_Scissor(nullptr);
-	GRHI->StateManager->SetDepthEnable(TRUE);
-	GRHI->StateManager->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	GRHI->StateManager->SetDepthFunc(D3DCMP_LESSEQUAL);
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_Z(TRUE);
+	RCache.set_RenderState(D3DRS_ZWRITEENABLE, TRUE);
+	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(false);
 	RCache.set_ColorWriteEnable(false);
 }

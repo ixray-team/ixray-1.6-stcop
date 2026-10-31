@@ -590,15 +590,6 @@ void CEditorDrawUtilities::dbgDrawFace(const Fvector& p0,	const Fvector& p1, con
 //----------------------------------------------------
 
 void CEditorDrawUtilities::DrawLine(const Fvector& p0, const Fvector& p1, u32 c){
-	//// fill VB
-	//_VertexStream*	Stream	= &RCache.Vertex;
-	//u32			vBase;
-	//FVF::L*	pv	 	= (FVF::L*)Stream->Lock(2,vs_L->vb_stride,vBase);
- //   pv->set			(p0,c); pv++;
- //   pv->set			(p1,c); pv++;
-	//Stream->Unlock	(2,vs_L->vb_stride);
-	//// and Render it as triangle list
- //   DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,1);
 	AddLine(p0, p1, c);
 }
 
@@ -974,7 +965,6 @@ void CEditorDrawUtilities::DrawAxis(const Fmatrix& T)
 void CEditorDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 {
 	VERIFY( Device.b_is_Ready );
-   // RCache.set_xform_world	(Fidentity);
 	_VertexStream*	Stream	= &RCache.Vertex;
 	Fvector c,r,n,d;
 	float w	= T.c.x*Device.mFullTransform._14 + T.c.y*Device.mFullTransform._24 + T.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
@@ -1297,7 +1287,6 @@ void CEditorDrawUtilities::DrawLink(const Fvector& p0, const Fvector& p1, float 
 
 void CEditorDrawUtilities::DrawJoint(const Fvector& p, float radius, u32 clr)
 {
-  //	RCache.set_xform_world	(Fidentity);
 	DrawLineSphere(p,radius,clr,false);
 }
 

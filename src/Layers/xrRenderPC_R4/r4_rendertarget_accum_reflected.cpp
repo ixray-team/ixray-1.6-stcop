@@ -19,7 +19,7 @@ void CRenderTarget::accum_reflected		(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable				();
-	GRHI->StateManager->SetCullMode(bIntersect ? ERHI_CULLMODE::FRONT : ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(bIntersect ? ERHI_CULLMODE::FRONT : ERHI_CULLMODE::BACK);
 
 	// 2D texgen (texture adjustment matrix)
 	Fmatrix			m_Texgen;
@@ -39,22 +39,19 @@ void CRenderTarget::accum_reflected		(light* L)
 	}
 
 	// Common constants
-	Fvector		L_dir,L_clr,L_pos;	float L_spec;
+	Fvector		L_clr,L_pos;	float L_spec;
 	L_clr.set					(L->color.r,L->color.g,L->color.b);
 	L_spec						= u_diffuse2s	(L_clr);
 	Device.mView.transform_tiny	(L_pos,L->position);
-	Device.mView.transform_dir	(L_dir,L->direction);
-	L_dir.normalize				();
 
 	{
 		// Lighting
 		RCache.set_Shader			(shader);
 
 		// Constants
-		RCache.set_c				("Ldynamic_pos",	L_pos.x,L_pos.y,L_pos.z,1/(L->range*L->range));
-		RCache.set_c				("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
-		RCache.set_c				("direction",		L_dir.x,L_dir.y,L_dir.z,0);
-		RCache.set_c				("m_texgen",		m_Texgen);
+		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L->range*L->range));
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
 		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		draw_volume(L);
 	}

@@ -74,9 +74,9 @@ void CRenderTarget::accum_direct_cascade()
 
 	DrawPassSQ(s_accum_direct, 0, [&]
 	{
-		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.0);
-		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.set_c("m_sunmask", m_clouds_shadow);
+		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0.0);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		RCache.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
 	});
 
 	if (ps_r_sun_shafts > 0)
@@ -108,7 +108,7 @@ void CRenderTarget::accum_direct_volumetric()
 
 	DrawPassSQ(s_accum_direct_volumetric, 0, [&]
 	{
-		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
-		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
+		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
+		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, 0);
 	});
 }

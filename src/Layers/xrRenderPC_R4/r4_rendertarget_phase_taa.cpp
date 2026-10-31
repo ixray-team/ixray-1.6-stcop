@@ -5,7 +5,7 @@ void CRenderTarget::phase_taa()
 {
 	DrawSQ(s_taa, rt_Generic_2, 0, []
 	{
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	});
 
 	ResolveSurface(rt_Generic_0_prev, rt_Generic_2);
@@ -23,8 +23,8 @@ void CRenderTarget::phase_mblur()
 	{
 		DrawSQ(s_taa, rt_Generic_2, 1, [&]
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-			RCache.set_c("mblur_params", ps_r4_mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
+			RCache.Constants.Write<CBPass>().mblur_params.set(ps_r4_mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
 		});
 		ResolveSurface(rt_Generic_0, rt_Generic_2);
 	}
@@ -37,7 +37,7 @@ void CRenderTarget::phase_depth_upscale()
 
 	DrawSQ(s_taa, rt_upscaled_depth, 2, [&]
 	{
-		RCache.set_c("m_invVP_old", invVP_old);
+		RCache.Constants.Write<CBView>().m_invVP_old = invVP_old;
 	});
 
 	ResolveSurface(rt_upscaled_depth_old, rt_upscaled_depth);

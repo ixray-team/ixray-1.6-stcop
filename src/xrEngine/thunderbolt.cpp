@@ -105,10 +105,6 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
     next_lightning_time = 0.f;
     bEnabled	= false;
 
-    // geom
-	//hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-	//hGeom_gradient.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
-
     // params
 //	p_var_alt		= pSettings->r_fvector2							( "environment","altitude" );  
 //	p_var_alt.x		= deg2rad(p_var_alt.x); p_var_alt.y	= deg2rad(p_var_alt.y);

@@ -1,10 +1,7 @@
 #include "common_iostructs.hlsli"
 
 Texture2D<float> s_static_shadow;
-cbuffer cb_shadow_cache : register(b6)
-{
-	float4 shadow_cache_destination;
-};
+#include "shared\post_cb.hlsli"
 
 float main(PSInputFullscreen Input) : SV_Depth
 {

@@ -1283,16 +1283,16 @@ RCache.set_Element(s_trail_shader->E[4]);
 			const float alpha = s.intensity * f * f * st.imprint_opacity;
 			if (alpha <= 0.002f)
 				continue;
-			RCache.set_c("brush_worldpos", s.center.x, s.center.z, 0.f, 0.f);
+			RCache.Constants.Write<CBEditor>().brush_worldpos.set(s.center.x, s.center.z, 0.f, 0.f);
 		// The imprint layer (detail_brush_trail): painted strokes only - full-disk
 		// pattern, no guide circles. Build stamps carry the overlay tint, erode stamps
 		// the red wipe (red is pushed through brush_color instead of a special mode).
-		RCache.set_c("brush_params", s.radius, s.soft, alpha, 4.f);
-		RCache.set_c("brush_noise", st.seed, dv_pattern_freq(st.frequency, s.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
+		RCache.Constants.Write<CBEditor>().brush_params.set(s.radius, s.soft, alpha, 4.f);
+		RCache.Constants.Write<CBEditor>().brush_noise.set(st.seed, dv_pattern_freq(st.frequency, s.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
 		if (s.mode != 0)
-			RCache.set_c("brush_color", 1.f, 0.35f, 0.25f, st.edge_hardness);
+			RCache.Constants.Write<CBEditor>().brush_color.set(1.f, 0.35f, 0.25f, st.edge_hardness);
 		else
-			RCache.set_c("brush_color", st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2], st.edge_hardness);
+			RCache.Constants.Write<CBEditor>().brush_color.set(st.overlay_hue[0], st.overlay_hue[1], st.overlay_hue[2], st.edge_hardness);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, i * DV_DISK_VERTS, 2 * DV_DISK_SEGMENTS);
 		}
 	}
@@ -1328,16 +1328,12 @@ RCache.set_Element(s_trail_shader->E[4]);
 		cursorA = st.show_cursor ? 0.9f : 0.f;
 		patternA = st.show_pattern_preview ? st.pattern_opacity : 0.f;
 	}
-	// Bind the cursor element BEFORE any set_c: in this backend set_c resolves
-	// constants against the CURRENT element, so shouting them while the trail element
-	// was still bound would drop brush_extra (missing from the trail shader) and the
-	// whole cursor would discard away.
 	RCache.set_Element(s_brush_shader->E[4]);
-	RCache.set_c("brush_worldpos", hit.x, hit.z, 0.f, 0.f);
-	RCache.set_c("brush_params", st.radius, st.soft, dAlpha, dMode);
-	RCache.set_c("brush_noise", st.seed, dv_pattern_freq(st.frequency, st.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
-	RCache.set_c("brush_color", dColor.x, dColor.y, dColor.z, st.edge_hardness);
-	RCache.set_c("brush_extra", cursorA, patternA, Device.vCameraPosition.distance_to(hit), 0.f);
+	RCache.Constants.Write<CBEditor>().brush_worldpos.set(hit.x, hit.z, 0.f, 0.f);
+	RCache.Constants.Write<CBEditor>().brush_params.set(st.radius, st.soft, dAlpha, dMode);
+	RCache.Constants.Write<CBEditor>().brush_noise.set(st.seed, dv_pattern_freq(st.frequency, st.radius), st.threshold, st.use_pattern ? st.sharpness : 0.f);
+	RCache.Constants.Write<CBEditor>().brush_color.set(dColor.x, dColor.y, dColor.z, st.edge_hardness);
+	RCache.Constants.Write<CBEditor>().brush_extra.set(cursorA, patternA, Device.vCameraPosition.distance_to(hit), 0.f);
 
 	RCache.set_Geometry(s_brush_geom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 2 * DV_DISK_SEGMENTS);

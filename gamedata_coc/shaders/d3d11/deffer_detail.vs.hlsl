@@ -3,23 +3,7 @@
 #define dir2D wind
 #define dir2D_old wind_old
 
-cbuffer TrampleConstants : register(b6)
-{
-    float4 trample_params;
-};
-
-cbuffer WindConstants : register(b7)
-{
-    float4 wind_global;
-    float4 wind_xz1;
-    float4 wind_xz1_dir;
-    float4 wind_xz2;
-    float4 wind_xz2_dir;
-    float4 wind_xz3;
-    float4 wind_xz3_dir;
-    float4 wind_swirl;
-    float4 wind_swirl_dir;
-};
+#include "shared\detail_cb.hlsli"
 
 struct InstanceData
 {

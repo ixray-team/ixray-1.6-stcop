@@ -50,7 +50,7 @@ void CRenderTarget::phase_sslr()
 			// HACK: see sslr_hiz_reduce.cs.hlsl - vkd3d HLSL lacks RWTexture2D::GetDimensions.
 			const u32 SrcWidth = std::max(rt_sslr_hiz->dwWidth >> (MipLevel - 1), 1u);
 			const u32 SrcHeight = std::max(rt_sslr_hiz->dwHeight >> (MipLevel - 1), 1u);
-			RCache.set_c("HiZSizes", float(SrcWidth), float(SrcHeight), float(MipWidth), float(MipHeight));
+			RCache.Constants.Write<CBPost>().HiZSizes.set(float(SrcWidth), float(SrcHeight), float(MipWidth), float(MipHeight));
 #endif
 
 			IRHIUnorderedAccessView* MipUAV[2] =
@@ -344,7 +344,7 @@ void CRender::render_reflections()
 	Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
 	{
 		RImplementation.rmNormal();
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE); 
+		RCache.set_CullMode(ERHI_CULLMODE::NONE); 
 	});
 
 	Target->u_setrt(DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);

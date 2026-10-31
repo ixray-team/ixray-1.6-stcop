@@ -27,7 +27,7 @@ void CRenderTarget::phase_new_dof()
 
         DrawSQ(s_dof_coc, rt_dof_focus, 0, []
         {
-            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_CullMode(ERHI_CULLMODE::NONE);
             RCache.set_Stencil(false);
         });
     }
@@ -37,7 +37,6 @@ void CRenderTarget::phase_new_dof()
     // -------------------------------
     float W = (float)Device.TargetWidth;
     float H = (float)Device.TargetHeight;
-    float rW = 1.0f / W;
     float rH = 1.0f / H;
 
     VP_DOF.Width  = W;
@@ -50,9 +49,9 @@ void CRenderTarget::phase_new_dof()
     {
         DrawSQ(s_dof_coc, rt_dof_coc, 1, [&]
         {
-            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_CullMode(ERHI_CULLMODE::NONE);
             RCache.set_Stencil(false);
-            RCache.set_c("dof_params", 10.f, 16.5f, 0.024f, rH);
+            RCache.Constants.Write<CBPost>().dof_params.set(10.f, 16.5f, 0.024f, rH);
         });
     }
     
@@ -62,9 +61,8 @@ void CRenderTarget::phase_new_dof()
     {
         DrawSQ(s_dof_coc, rt_dof_blur1, 2, [&]
         {
-            GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+            RCache.set_CullMode(ERHI_CULLMODE::NONE);
             RCache.set_Stencil(false);
-            RCache.set_c("dof_rt_size", W, H, rW, rH);
         });
     }
     /*
@@ -73,7 +71,7 @@ void CRenderTarget::phase_new_dof()
     // -------------------------------
     {
         u_setrt(rt_dof_blur2, nullptr, nullptr, nullptr);
-        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+        RCache.set_CullMode(ERHI_CULLMODE::NONE);
         RCache.set_Stencil(false);
 
         // element 3 = dof_blur2
@@ -81,7 +79,6 @@ void CRenderTarget::phase_new_dof()
 
         // TODO: set blur params; hex diagonal dir
         // RCache.set_c("dof_blur_params", ...);
-        RCache.set_c("dof_rt_size", W, H, rW, rH);
 
         RCache.set_Geometry(FSTriangleGeom);
         RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
@@ -92,7 +89,7 @@ void CRenderTarget::phase_new_dof()
     // -------------------------------
     {
         u_setrt(rt_dof_blur3, nullptr, nullptr, nullptr);
-        GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+        RCache.set_CullMode(ERHI_CULLMODE::NONE);
         RCache.set_Stencil(false);
 
         // element 4 = dof_blur3
@@ -100,7 +97,6 @@ void CRenderTarget::phase_new_dof()
 
         // TODO: set blur params; rhomboid dir and final weights
         // RCache.set_c("dof_blur_params", ...);
-        RCache.set_c("dof_rt_size", W, H, rW, rH);
 
         RCache.set_Geometry(FSTriangleGeom);
         RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);

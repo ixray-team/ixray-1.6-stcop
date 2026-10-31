@@ -21,9 +21,9 @@ void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
 
 	DrawPassSQ(s_gamma, 0, [&]
 	{
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		RImplementation.rmNormal();
-		RCache.set_c("color_params", contrast, gamma, brightness, 0.0f);
-		RCache.set_c("color_grading", color_grading.r, color_grading.g, color_grading.b, 0.0f);
+		RCache.Constants.Write<CBFrame>().color_params.set(contrast, gamma, brightness, 0.0f);
+		RCache.Constants.Write<CBFrame>().color_grading.set(color_grading.r, color_grading.g, color_grading.b, 0.0f);
 	});
 }

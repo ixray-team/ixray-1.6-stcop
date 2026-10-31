@@ -13,9 +13,9 @@ void CRenderTarget::phase_bloom_upsample()
 		DrawSQ(s_bloom_upsample, *targets[i], i, [&]
 		{
 			RImplementation.rmNormal();
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			RCache.set_Stencil(false);
-			RCache.set_c("upsample_params", float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
+			RCache.Constants.Write<CBPost>().upsample_params.set(float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
 		});
 	}
 }

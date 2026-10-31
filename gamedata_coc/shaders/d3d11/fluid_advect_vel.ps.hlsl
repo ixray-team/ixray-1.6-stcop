@@ -1,6 +1,5 @@
 #include "fluid_common.hlsli"
 
-float GravityBuoyancy;
 
 //	Pixel
 float4 main(p_fluidsim input) : SV_Target

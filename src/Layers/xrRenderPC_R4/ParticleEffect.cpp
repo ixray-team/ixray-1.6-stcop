@@ -27,7 +27,7 @@ static void ApplyTexgen(const Fmatrix& mVP)
 	};
 
 	mTexgen.mul(mTexelAdjust, mVP);
-	RCache.set_c("mVPTexgen", mTexgen);
+	
 }
 
 void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particles& P, size_t pID, u32 )
@@ -674,7 +674,7 @@ void CParticleEffect::Render(float)
 	RCache.set_xform_world(Fidentity);
 	RCache.set_Geometry(geom);
 
-	GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+	RCache.set_CullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 
 	const bool HudMode = GetHudMode();
 
@@ -701,7 +701,7 @@ void CParticleEffect::Render(float)
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
 	}
 
-	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_CullMode(ERHI_CULLMODE::BACK);
 }
 
 ICF void FillSpriteEditor(PAPI::Particles::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
@@ -1038,9 +1038,9 @@ void CParticleEffect::RenderEditor()
 			RCache.set_xform_world(Fidentity);
 			RCache.set_Geometry(geom);
 
-			GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+			RCache.set_CullMode(ERHI_CULLMODE::BACK);
 
 			if (GetHudMode())
 			{

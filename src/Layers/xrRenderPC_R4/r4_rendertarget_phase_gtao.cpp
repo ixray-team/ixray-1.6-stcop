@@ -13,9 +13,9 @@ void CRenderTarget::phase_gtao()
 		GPU_EVENT(gtao_render);
 		DrawSQ(s_gtao, rt_gtao_0, 0, [&]
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			RCache.set_Stencil(false);
-			RCache.set_c("gtao_parameters", p_scale);
+			RCache.Constants.Write<CBPost>().gtao_parameters = p_scale;
 		});
 	}
 
@@ -23,7 +23,7 @@ void CRenderTarget::phase_gtao()
 		GPU_EVENT(gtao_filter);
 		DrawSQ(s_gtao, rt_ssao_temp, 1, []
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 			RCache.set_Stencil(false);
 		});
 	}
@@ -35,6 +35,6 @@ void CRenderTarget::pharse_velocity()
 
 	DrawSQ(s_gtao, rt_Velocity, 2, []
 	{
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		RCache.set_CullMode(ERHI_CULLMODE::NONE);
 	});
 }

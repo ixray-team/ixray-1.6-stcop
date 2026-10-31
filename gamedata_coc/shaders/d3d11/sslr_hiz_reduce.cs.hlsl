@@ -4,10 +4,7 @@ RWTexture2D<float> u_hiz_dst : register(u1);
 
 #ifdef IXR_VKD3D_COMPILER
 // HACK: vkd3d HLSL has no GetDimensions on RWTexture2D; the engine passes the sizes instead.
-cbuffer cb_hiz : register(b6)
-{
-    float4 HiZSizes; // xy = source size, zw = destination size
-};
+#include "shared\post_cb.hlsli"
 #endif
 
 [numthreads(8, 8, 1)]

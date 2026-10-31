@@ -11,10 +11,7 @@ Jorge Jimenez http://www.iryoku.com/publications
 #include "common.hlsli"
 
 Texture2D t_image;
-cbuffer cb_bloom_up : register(b6)
-{
-    float4 upsample_params;
-};
+#include "shared\post_cb.hlsli"
 
 void main(in PSInputFullscreen I, out float3 upsample : SV_Target)
 {

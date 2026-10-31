@@ -1,9 +1,6 @@
 #include "common.hlsli"
 
-float4 brush_worldpos; // xy = stamp center (world XZ)
-float4 brush_params;   // x = radius, y = soft, z = stamp alpha, w = unused
-float4 brush_noise;    // x = seed, y = pattern freq, z = threshold, w = sharp/0=off
-float4 brush_color;    // rgb = tint, a = edge hardness
+#include "shared\extra_cb.hlsli"
 
 struct v2p
 {

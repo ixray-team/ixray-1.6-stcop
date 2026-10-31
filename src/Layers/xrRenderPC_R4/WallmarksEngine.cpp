@@ -405,13 +405,13 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 		RCache.set_Geometry(hGeom);
 		if (bSuppressCull)
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+			RCache.set_CullMode(ERHI_CULLMODE::NONE);
 		}
 
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_offset, w_count / 3);
 		if (bSuppressCull)
 		{
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+			RCache.set_CullMode(ERHI_CULLMODE::BACK);
 		}
 		Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}

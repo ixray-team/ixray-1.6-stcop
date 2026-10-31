@@ -1,7 +1,7 @@
 // This is really short version of CAS based on AMD presentation (https://gpuopen.com/wp-content/uploads/2019/07/FidelityFX-CAS.pptx)
 #include "common.hlsli"
 
-float sharpening_intensity;
+#include "shared\post_cb.hlsli"
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

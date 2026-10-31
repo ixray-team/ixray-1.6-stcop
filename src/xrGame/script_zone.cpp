@@ -107,7 +107,6 @@ void CScriptZone::OnRender()
 {
 	if(!bDebug) return;
 	DRender->OnFrameEnd();
-	//RCache.OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();
