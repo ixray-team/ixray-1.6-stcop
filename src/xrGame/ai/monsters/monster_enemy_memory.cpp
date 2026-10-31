@@ -29,18 +29,6 @@ void CMonsterEnemyMemory::init_external(CBaseMonster *M, TTime mem_time)
 
 extern CActor*	g_actor;
 
-void CMonsterEnemyMemory::RememberLightEnemy(const CEntityAlive& Target)
-{
-	add_enemy(&Target);
-	if (smart_cast<const CAI_Dog*>(monster))
-	{
-		if (CMonsterSquad* Squad = monster_squad().get_squad(monster))
-		{
-			Squad->set_home_in_danger();
-		}
-	}
-}
-
 void CMonsterEnemyMemory::update() 
 {
 	VERIFY		(monster->g_Alive());

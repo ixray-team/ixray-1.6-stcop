@@ -4,8 +4,6 @@ See [Shadow of Chernobyl anomaly detectors](soc-detectors.md) for the required c
 
 See [Night vision](night-vision.md) for shader generations, equipment profiles, the UI edge mask and electronics interference.
 
-See [AI reaction to the actor's torch](actor-light-perception.md) for headlamp, hand torch and weapon torch detection distances.
-
 ## Any Inventory Item (CInventoryItem)
 > [!IMPORTANT]
 > **Status**: Supported <br>

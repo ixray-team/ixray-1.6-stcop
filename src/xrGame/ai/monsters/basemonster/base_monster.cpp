@@ -387,14 +387,6 @@ void CBaseMonster::shedule_Update(u32 dt)
 	}
 #endif
 
-	if (g_Alive() && OnServer())
-	{
-		if (CActor* Player = Actor())
-		{
-			Player->UpdateLightAwareness(*this);
-		}
-	}
-
 	inherited::shedule_Update	(dt);
 
 	if (OnServer())
