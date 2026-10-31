@@ -73,6 +73,7 @@ enum class EEngineExternalGame
 	Enable3DIcons,
 	EnableRagdolledZombiePseudodeath,
 	EnableStackWindow,
+	EnableFirstPersonDie,
 	None
 };
 

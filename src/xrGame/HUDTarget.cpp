@@ -194,6 +194,7 @@ void CHUDTarget::Render()
 		Load();
 		return;
 	}
+
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUDTarget = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
 	bool  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
@@ -216,7 +217,13 @@ void CHUDTarget::Render()
 	VERIFY(g_bRendering);
 
 	CActor* Actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+
 	if (!Actor)
+	{
+		return;
+	}
+
+	if (!Actor->g_Alive())
 	{
 		return;
 	}

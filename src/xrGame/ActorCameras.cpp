@@ -530,11 +530,25 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		cam_Active()->f_fov = fFOV;
 		cam_Active()->Update(CamPivot, dangle);
-	}
+		
+		if (cam_active == eacFirstEye)
+		{
+			Cameras().Rig().Update(this, fFOV);
+		}
 
-	if (Level().CurrentEntity() == this)
-	{
-		if(!psActorFlags.test(AF_NO_CLIP))
+		const static bool fp_die = EngineExternal()[EEngineExternalGame::EnableFirstPersonDie];
+
+		if (!g_Alive() && cam_active == eacFirstEye && fp_die)
+		{
+			Fmatrix world_head;
+			Visual()->dcast_PKinematics()->LL_GetBoneWorldTransform(m_head, XFORM(), world_head);
+
+			cam_Active()->vDirection = world_head.k;
+			cam_Active()->vNormal = world_head.i;
+			cam_Active()->vPosition = world_head.c;
+		}
+		
+		if (!psActorFlags.test(AF_NO_CLIP))
 		{
 			collide_camera(*cam_Active(), Device.fViewportNear, this);
 		}
@@ -564,11 +578,6 @@ void CActor::cam_Update(float dt, float fFOV)
 		dbg_draw_viewport(Cameras(), Device.fViewportNear);
 	}
 #endif
-
-	if (Level().CurrentEntity() == this && cam_active == eacFirstEye)
-	{
-		Cameras().Rig().Update(this, fFOV);
-	}
 
 	Cameras().UpdateFromCamera(cam_active==eacLookAt ? cameras[eacLookAt] : cameras[eacFirstEye]);
 	UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
