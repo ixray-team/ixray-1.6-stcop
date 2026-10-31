@@ -16,6 +16,7 @@
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "../xrRender/ShaderCache.h"
 
 CRender RImplementation;
 
@@ -119,6 +120,7 @@ void CRender::create()
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
 	Engine.External.SetSkinningMode();
+	clearAllShaderOptions();
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
@@ -833,13 +835,14 @@ HRESULT	CRender::shader_compile			(
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
-	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
-	if (FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+	u32 RealCodeCRC = 0;
+	const bool CanUseCache = ps_r__common_flags.test(RFLAG_USE_CACHE) && ShaderCache::CalculateShaderCRC(pSrcData, SrcDataLen, RealCodeCRC);
+	if (CanUseCache && FS.exist(file_name)) {
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 		IReader* file = FS.r_open(file_name);
-		if (file->length()>4)
+		if (file->length() >= 8)
 		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
@@ -863,7 +866,7 @@ HRESULT	CRender::shader_compile			(
 		_result = GRHI->BuildShader("r2", pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
 
 		if (SUCCEEDED(_result)) {
-			if (ps_r__common_flags.test(RFLAG_USE_CACHE))
+			if (CanUseCache)
 			{
 				IWriter* file = FS.w_open(file_name);
 				u32 const crc = crc32(pShaderBuf.data(), pShaderBuf.size());
