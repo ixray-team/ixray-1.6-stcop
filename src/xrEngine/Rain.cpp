@@ -314,7 +314,7 @@ void CEffect_Rain::OnFrame()
 	// ambient sound
 	if (snd_Ambient.is_playing())
 	{
-		m_rainVolume = std::max(0.1f, factor) * hemi_factor;
+		m_rainVolume = 0.5f * (1.f + factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 
