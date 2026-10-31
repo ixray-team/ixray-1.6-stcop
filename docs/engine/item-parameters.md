@@ -17,6 +17,8 @@ Stock artefact and consumable panels currently keep standalone row definitions. 
 - Consumable `boost_radiation_restore` rows use `sign_inverse="1"`: the panel negates radiation removal for display, so a negative displayed radiation change is beneficial. Positive radiation immunity/protection bonuses retain the normal sign rule.
 - Negative consumable effects use the same rows and colors as positive effects rather than being filtered out.
 
+A panel can override the beneficial effect color with a `positive_color` child using standard `color` or `r`/`g`/`b`/`a` attributes. The default remains blue. Stock SoC `af_params` panels set `<positive_color color="green"/>`; other panels retain their existing colors.
+
 `value:text_colorize` defaults to `colorize` but can independently disable value coloring. Stock `additional_weight` and `boost_max_weight` rows set it to zero, preserving gray positive carrying-weight values while tinting the icon. Legacy rows use the same attribute on the row element.
 
 ## Grouping
