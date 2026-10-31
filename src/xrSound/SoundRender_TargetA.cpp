@@ -180,7 +180,8 @@ void	CSoundRender_TargetA::fill_parameters()
 
 	VERIFY2(m_pEmitter,SE->source()->file_name());
     float	_gain	= m_pEmitter->smooth_volume;			clamp	(_gain,EPS_S,1.f);
-    if (!fsimilar(_gain,cache_gain, 0.01f))
+
+    if (!fsimilar(_gain, cache_gain, std::max(_gain, cache_gain) * 0.01f))
 	{
         cache_gain	= _gain;
         A_CHK(alSourcef	(pSource, AL_GAIN,				_gain));
