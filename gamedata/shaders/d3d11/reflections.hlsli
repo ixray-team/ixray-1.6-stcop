@@ -309,12 +309,14 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect)
 	[loop]
 	while (Level >= 0 && Iteration < HIZ_MAX_ITERATIONS && T < TMax)
 	{
-		float2 CellCount = float2(max(HizSize >> uint(Level), 1u));
-		float2 Cell = floor(Ray.xy * CellCount);
+		// Interior texels of level L cover [c, c + 1) << L pixels, the last one also covers the odd remainder
+		uint2 CellCount = max(HizSize >> uint(Level), 1u);
+		uint2 Cell = min(uint2(saturate(Ray.xy) * float2(HizSize)) >> uint(Level), CellCount - 1u);
 
 		float SurfaceZ = s_hiz.Load(int3(Cell, Level)).x;
 
-		Plane = (Cell + CrossStep) / CellCount + CrossOffset;
+		uint2 Edge = Cell + uint2(CrossStep);
+		Plane = float2(Edge >= CellCount ? HizSize : Edge << uint(Level)) / float2(HizSize) + CrossOffset;
 		TPlane = (Plane - Origin.xy) * InvDir.xy;
 
 		float TCell = min(TPlane.x, TPlane.y);
