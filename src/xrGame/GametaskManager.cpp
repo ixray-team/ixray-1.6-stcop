@@ -486,6 +486,20 @@ void CGameTaskManager::MapLocationRelcase(CMapLocation* ml)
 	CGameTask* gt = HasGameTask(ml, false);
 	if(gt)
 		gt->RemoveMapLocations(true);
+
+	for (SGameTaskKey& key : GetGameTasks())
+	{
+		CGameTask* task = key.getGameTask();
+		if (!task)
+			continue;
+
+		for (u16 i = 0; i < task->GetObjectivesCount(); ++i)
+		{
+			SGameTaskObjective& obj = task->Objective(i);
+			if (obj.m_linked_map_location == ml)
+				obj.m_linked_map_location = nullptr;
+		}
+	}
 }
 
 CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inprocess)
