@@ -163,7 +163,7 @@ void UIRenderForm::DrawVP()
 	const bool SameSize = View.RTFreez && EContext.UI->RT && View.RTFreez->dwWidth == EContext.UI->RT->dwWidth && View.RTFreez->dwHeight == EContext.UI->RT->dwHeight;
 	if (SameSize && ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID))
 	{
-		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
+		RImplementation.Imm().CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;

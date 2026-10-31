@@ -420,6 +420,7 @@ void CEditShape::Render(int priority, bool strictB2F)
     if (!IsLoaded || GEditorDraw.IsSubmitPass())
         return;
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	inherited::Render(priority, strictB2F);
     if (1==priority){
         if (strictB2F){
@@ -439,7 +440,7 @@ void CEditShape::Render(int priority, bool strictB2F)
                     B.scale				(S.R,S.R,S.R);
                     B.translate_over	(S.P);
                     B.mulA_43			(_Transform());
-                    RCache.set_xform_world(B);
+                    Cmd.SetObjectTransform(B);
                     EDevice->SetShader	(GEditorDraw.WireShader);
                     AddCross(zero,1.f,1.f,1.f,1.f,1.f,1.f,m_DrawEdgeColor,false);
                     DU_impl.DrawIdentSphere	(true,true,clr,m_DrawEdgeColor);
@@ -448,7 +449,7 @@ void CEditShape::Render(int priority, bool strictB2F)
                 {
                     Fmatrix B			= it->data.box;
                     B.mulA_43			(_Transform());
-                    RCache.set_xform_world(B);
+                    Cmd.SetObjectTransform(B);
                     DU_impl.DrawIdentBox(true,true,clr,m_DrawEdgeColor);
                 }break;
                 }
@@ -457,7 +458,7 @@ void CEditShape::Render(int priority, bool strictB2F)
         }else{
             if( Selected()&&m_Box.is_valid() ){
 		        EDevice->SetShader		(GEditorDraw.SelectionShader);
-                RCache.set_xform_world	(_Transform());
+                Cmd.SetObjectTransform(_Transform());
                 u32 clr 				= Locked()?0xFFFF0000:0xFFFFFFFF;
                 EDevice->SetShader		(GEditorDraw.WireShader);
                 DU_impl.DrawSelectionBoxB(m_Box,&clr);

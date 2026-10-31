@@ -16,7 +16,6 @@ void CBlender_nvg::Compile(CBlender_Compile& C)
 		case 0:
 			C.r_Pass("stub_fullscreen_triangle", "nvg_render", false, false, false);
 			C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
-			C.r_dx10Sampler("smp_rtlinear");
 			C.r_End();
 			break;
 	}

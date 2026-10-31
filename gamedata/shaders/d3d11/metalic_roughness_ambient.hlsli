@@ -72,7 +72,7 @@ float3 CompureDiffuseIrradance(float3 N, float3 Hemi)
 
 	return Irradance * Hemi;
 }
-Texture2D s_env_fwd;
+Texture2D s_env_fwd : register(t49);
 
 float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 {

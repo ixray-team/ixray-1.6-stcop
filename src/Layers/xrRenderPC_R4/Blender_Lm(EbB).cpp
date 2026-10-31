@@ -62,8 +62,8 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)
 		{
-		case SE_R1_NORMAL_HQ:
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalHQ:
+		case ShaderVariant::NormalLQ:
 
 			if (oBlend.value)	C.r_Pass	("lmapE","lmapE",true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	("lmapE","lmapE",true);
@@ -74,21 +74,21 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 			C.r_End			();
 			
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", TEX_POINT_ATT, true);
 			r1_tex(C, "s_att", TEX_POINT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", "internal\\internal_light_att", true);
 			r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			
 			C.r_Pass		("lmap_l","lmap_l",false);
 			r1_tex(C, "s_base", C.L_textures[0]);
@@ -115,10 +115,10 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 	{
 		switch (C.iElement)
 		{
-			case SE_R2_NORMAL_HQ:
-			case SE_R2_NORMAL_LQ:
+			case ShaderVariant::NormalHQ:
+			case ShaderVariant::NormalLQ:
 			{
-				uber_forward(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_base", "forward_base", true, true, 0);
+				uber_forward(C, ShaderVariant::NormalHQ == C.iElement, "deffer_base", "forward_base", true, true, 0);
 				break;
 			}
 		}
@@ -128,29 +128,27 @@ void CBlender_LmEbB::Compile(CBlender_Compile& C)
 
 		switch (C.iElement)
 		{
-		case SE_R2_NORMAL_HQ:
+		case ShaderVariant::NormalHQ:
 			uber_deffer(C, true, "deffer_base", "deffer_base", true, 0, true);
 			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
-		case SE_R2_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			uber_deffer(C, false, "deffer_base", "deffer_base", true, 0, true);
 			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
-		case SE_R2_SHADOW:
+		case ShaderVariant::Shadow:
 			C.r_Pass("shadow_base", "shadow_base", false);
 			C.r_dx10Texture("s_base", C.L_textures[0]);
-			C.r_dx10Sampler("smp_base");
-			C.r_dx10Sampler("smp_linear");
 			C.r_ColorWriteEnable(false, false, false, false);
 			C.r_End();
 			break;
-		case SE_R2_REFLECTIONS:
-			RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
-			RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		case ShaderVariant::Reflection:
+			C.AddDefine("USE_LENGTH_BUFFER", "1");
+			C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 			uber_forward(C, false, "deffer_base", "forward_base", true, false, 0);
 			break;
 		}

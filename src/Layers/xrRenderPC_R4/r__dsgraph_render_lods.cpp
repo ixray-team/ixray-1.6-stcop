@@ -12,32 +12,35 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 	PROF_EVENT("LODS: Render")
 	if (!mapLOD.size())
 		return;
- 
+	GfxCmdList& Cmd = *Backend;
+
 	// *** Fill VB and generate groups
-	u32 shid = _setup_zb?SE_R1_LMODELS:SE_R1_NORMAL_LQ;
+	u32 shid = _setup_zb?ShaderVariant::ModelLighting:ShaderVariant::NormalLQ;
 	FLOD* firstV = (FLOD*)mapLOD[0].val.pVisual;
-	ref_selement cur_S = firstV->shader->E[shid];
+	ref_selement cur_S;
 	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
 	if (ssaRange<EPS_S)
 		ssaRange = EPS_S;
 
 	const u32 uiVertexPerImposter = 4;
-	const u32 uiImpostersFit = RCache.Vertex.GetSize() / (firstV->geom->vb_stride*uiVertexPerImposter);
+	const u32 uiImpostersFit = Cmd.Vertex.GetSize() / (firstV->geom->vb_stride*uiVertexPerImposter);
 
 	//Msg						("dbg_lods: shid[%d],firstV[%X]",shid,u32((void*)firstV));
 	//Msg						("dbg_lods: shader[%X]",u32((void*)firstV->shader._get()));
 	//Msg						("dbg_lods: shader_E[%X]",u32((void*)cur_S._get()));
 
-	for (u32 i=0; i< mapLOD.size(); i++)
+	for (u32 i = 0; i < mapLOD.size();)
 	{
 		const u32 iBatchSize = (u32)std::min(mapLOD.size() - i, uiImpostersFit);
+		const u32 BatchStart = i;
+		cur_S = mapLOD[i].val.pVisual->shader->E[shid];
 		int cur_count = 0;
 		u32 vOffset;
 		struct _hw4
 		{
 			FLOD::_hw buff[4];
 		};
-		_hw4* V = (_hw4*)RCache.Vertex.Lock(iBatchSize*uiVertexPerImposter,firstV->geom->vb_stride, vOffset);
+		_hw4* V = (_hw4*)Cmd.Vertex.Lock(iBatchSize*uiVertexPerImposter,firstV->geom->vb_stride, vOffset);
 
 		for ( u32 j=0; j<iBatchSize; ++j, ++i )
 		{
@@ -139,13 +142,13 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 			V++;
 		}
 		lstLODgroups.push_back(cur_count);
-		RCache.Vertex.Unlock(iBatchSize*uiVertexPerImposter*4, firstV->geom->vb_stride);
+		Cmd.Vertex.Unlock(iBatchSize*uiVertexPerImposter, firstV->geom->vb_stride);
 
 		// *** Render
-		RCache.set_xform_world(Fidentity);
+		Cmd.SetObjectTransform(Fidentity);
 		for ( u32 uiPass = 0; uiPass < SHADER_PASSES_MAX; ++uiPass)
 		{
-			int current=0;
+			u32 current = BatchStart;
 			u32 vCurOffset = vOffset;
 			
 			for (int p_count : lstLODgroups)
@@ -153,11 +156,10 @@ void R_dsgraph_structure::r_dsgraph_render_lods(bool _setup_zb, bool _clear)
 				u32 uiNumPasses = mapLOD[current].val.pVisual->shader->E[shid]->passes.size();
 				if (uiPass<uiNumPasses)
 				{
-					RCache.set_Element(mapLOD[current].val.pVisual->shader->E[shid], uiPass);
-					RCache.set_Geometry(firstV->geom);
-					RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vCurOffset,0,4*p_count,0,2*p_count);
+					Cmd.SetPass(mapLOD[current].val.pVisual->shader->E[shid], uiPass);
+					Cmd.SetGeometry(firstV->geom);
+					Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (2*p_count) * 3, 0, vCurOffset);
 				}
-				RCache.stat.r.s_flora_lods.add(4*p_count);
 				current	+= p_count;
 				vCurOffset += 4*p_count;
 			}

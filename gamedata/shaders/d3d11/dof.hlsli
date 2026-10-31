@@ -13,7 +13,7 @@ float3 dof(float2 center)
 
 // x - near y - focus z - far w - sky distance
 #include "shared\post_cb.hlsli"
-Texture2D<float> s_dof_scope_mask;
+Texture2D<float> s_dof_scope_mask : register(t26);
 
 float DOFFactor(float depth)
 {

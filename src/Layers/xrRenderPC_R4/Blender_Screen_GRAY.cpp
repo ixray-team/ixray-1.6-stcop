@@ -36,41 +36,6 @@ void	CBlender_Screen_GRAY::Compile	(CBlender_Compile& C)
 	C.r_Pass("stub_notransform_t", "stub_default", false);
 	if (C.L_textures.size())
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-	C.r_dx10Sampler("smp_rtlinear");
 	C.PassSET_ZB(false, false);
 	C.r_End();
-	return;
-	C.PassBegin		();
-	{
-		C.PassSET_ZB			(false,false);
-		C.PassSET_Blend		(false,D3DBLEND_ONE,D3DBLEND_ZERO,	false,0);
-		C.PassSET_LightFog	(false,false);
-
-		C.R().SetRS		(D3DRS_TEXTUREFACTOR,color_rgba(76+105,150+105,29+105,0));
-
-		// Stage0 - Base texture
-		C.StageBegin		();
-		{
-			C.StageSET_Address	(D3DTADDRESS_CLAMP);
-			C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_ADD,			D3DTA_DIFFUSE);
-			C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_ADD,			D3DTA_DIFFUSE);
-			C.Stage_Texture		(oT_Name);
-			C.Stage_Matrix		(oT_xform,	0);
-			C.Stage_Constant	("$null");
-		}
-		C.StageEnd			();
-
-		// Stage1 - Base texture
-		C.StageBegin		();
-		{
-			C.StageSET_Address	(D3DTADDRESS_CLAMP);
-			C.StageSET_Color	(D3DTA_CURRENT,	  D3DTOP_DOTPRODUCT3,	D3DTA_TFACTOR);
-			C.StageSET_Alpha	(D3DTA_CURRENT,	  D3DTOP_DOTPRODUCT3,	D3DTA_TFACTOR);
-			C.Stage_Texture		(oT_Name);
-			C.Stage_Matrix		(oT_xform,	0);
-			C.Stage_Constant	("$null");
-		}
-		C.StageEnd			();
-	}
-	C.PassEnd			();
 }

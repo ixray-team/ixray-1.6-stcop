@@ -9,27 +9,27 @@ inline void CreateEffectSQ(ref_shader& Shader, const char* ShadernName = nullptr
 }
 
 template <class TBind>
-inline void CRenderTarget::DrawPassSQ(const ref_shader& Shader, u32 Element, TBind&& Bind)
+inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& Shader, u32 Element, TBind&& Bind)
 {
-	RCache.set_Element(Shader->E[Element]);
+	Cmd.SetPass(Shader->E[Element]);
 	Bind();
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetGeometry(FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 }
 
-inline void CRenderTarget::DrawPassSQ(const ref_shader& shader, u32 Element)
+inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& shader, u32 Element)
 {
-	DrawPassSQ(shader, Element, [] {});
+	DrawPassSQ(Cmd, shader, Element, [] {});
 }
 
 template <class TBind>
-inline void CRenderTarget::DrawSQ(const ref_shader& Shader, const ref_rt& Target, u32 Element, TBind&& Bind)
+inline void CRenderTarget::DrawSQ(GfxCmdList& Cmd, const ref_shader& Shader, const ref_rt& Target, u32 Element, TBind&& Bind)
 {
-	u_setrt(Target, nullptr, nullptr, nullptr);
-	DrawPassSQ(Shader, Element, Bind);
+	u_setrt(Cmd, Target, nullptr, nullptr, nullptr);
+	DrawPassSQ(Cmd, Shader, Element, Bind);
 }
 
-inline void CRenderTarget::DrawSQ(const ref_shader& Shader, const ref_rt& Target, u32 Element)
+inline void CRenderTarget::DrawSQ(GfxCmdList& Cmd, const ref_shader& Shader, const ref_rt& Target, u32 Element)
 {
-	DrawSQ(Shader, Target, Element, [] {});
+	DrawSQ(Cmd, Shader, Target, Element, [] {});
 }

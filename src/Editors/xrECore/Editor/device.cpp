@@ -288,19 +288,19 @@ void CEditorRenderDevice::Clear()
 		ClearColor[3] = color_get_A(EPrefs->scene_clear_color) / 255.f;
 	}
 
-	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1, 0);
-	GRHI->ClearTarget(GRHI->GetRenderTargetView(0), ClearColor);
+	RImplementation.Imm().ClearDepthStencil(RImplementation.Imm().GetDepthStencil(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1, 0);
+	RImplementation.Imm().ClearTarget(RImplementation.Imm().GetRenderTarget(0), ClearColor);
 }
 
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::RenderNearer(float n){
     m_fNearer=mProject._43;
     mProject._43=m_fNearer-n;
-    RCache.set_xform_project(mProject);
+    RImplementation.Imm().SetView(RImplementation.Imm().GetView().View, mProject);
 }
 void CEditorRenderDevice::ResetNearer(){
     mProject._43=m_fNearer;
-    RCache.set_xform_project(mProject);
+    RImplementation.Imm().SetView(RImplementation.Imm().GetView().View, mProject);
 }
 //---------------------------------------------------------------------------
 bool CEditorRenderDevice::Create()
@@ -417,7 +417,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 	// General Render States
     _SetupStates		();
     
-    RCache.OnDeviceCreate		();
+    RImplementation.Imm().OnDeviceCreate		();
 	DEV->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
 
@@ -437,7 +437,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 {
 	b_is_Ready 						= false;
 
-	RCache.Invalidate();
+	RImplementation.Imm().Invalidate();
 
     EContext.UI->OnDeviceDestroy			();
 
@@ -451,7 +451,7 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 
 	DEV->OnDeviceDestroy	(bKeepTextures);
 
-	RCache.OnDeviceDestroy		();
+	RImplementation.Imm().OnDeviceDestroy		();
 	::RImplementation.OnDeviceDestroy	();
 }
 
@@ -548,7 +548,7 @@ bool CEditorRenderDevice::Begin()
 	GRHI->BeginFrame();
 	Clear();
 
-	RCache.OnFrameBegin();
+	RImplementation.Imm().OnFrameBegin();
 	g_bRendering = true;
 	return		true;
 }
@@ -559,7 +559,7 @@ void CEditorRenderDevice::End()
 	VERIFY(b_is_Ready);
 	g_bRendering = 	false;
 	// end scene
-	RCache.OnFrameEnd();
+	RImplementation.Imm().OnFrameEnd();
 	GRHI->Present();
 }
 
@@ -570,8 +570,8 @@ void CEditorRenderDevice::UpdateView()
 	{
 		EContext.UI->CurrentView().m_Camera.GetView(mView);
 	}
-    RCache.set_xform_view(mView);
-    RCache.set_xform_project(mProject);
+    GfxCmdList& Cmd = RImplementation.Imm();
+    Cmd.SetView(mView, mProject);
     mFullTransform.mul(mProject,mView);
 
 // frustum culling sets

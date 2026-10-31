@@ -2,7 +2,7 @@
 #include <imgui.h>
 
 #ifdef IXR_WINDOWS
-#	include <d3d11.h>
+#	include "../../D3D11/Device.h"
 
 #	include "imgui_impl_dx11.h"
 #	include "imgui_impl_dx12.h"
@@ -138,7 +138,7 @@ RHI_API void RHIUtils::ImGui::DrawData()
 	switch (GRHI->APILevel)
 	{
 #ifdef IXR_WINDOWS
-		case ERHI_API_LAYER::D3D11: ImGui_ImplDX11_RenderDrawData(::ImGui::GetDrawData());  break;
+		case ERHI_API_LAYER::D3D11: ImGui_ImplDX11_RenderDrawData(::ImGui::GetDrawData()); static_cast<InternalDevice11*>(GRHI->DevicePtr)->InvalidateBindings(); break;
         case ERHI_API_LAYER::D3D12: DrawImGui12(); break;
 #endif
 	}

@@ -1,19 +1,14 @@
-<shader version="2" r1_static="1">
+<shader r1_static="1">
 	<normal>
-		<pass vs="stub_default" ps="stub_srgb"/>
-		<zb test="1" write="0"/>
-		<blend enable="1" src="one" dest="one"/>
-		<texture name="s_base" value="{base}"/>
-		<sampler name="smp_base"/>
+		<pass vs="stub_default" ps="stub_srgb" zwrite="0" blend="one,one">
+			<texture name="s_base" src="@base"/>
+		</pass>
 	</normal>
-	<static>
+	<option name="USE_R1_STATIC_LIGHTING">
 		<normal>
-			<pass vs="stub_default" ps="stub_default"/>
-			<zb test="1" write="0"/>
-			<blend enable="1" src="one" dest="one"/>
-			<texture name="s_base" value="{base}"/>
-			<sampler name="smp_base"/>
-			<sampler name="smp_rtlinear"/>
+			<pass vs="stub_default" ps="stub_default" zwrite="0" blend="one,one">
+				<texture name="s_base" src="@base"/>
+			</pass>
 		</normal>
-	</static>
+	</option>
 </shader>

@@ -2,7 +2,7 @@
 
 #include "r4_rendertarget.h"
 
-void CRenderTarget::phase_bloom_downsample()
+void CRenderTarget::phase_bloom_downsample(GfxCmdList& Cmd)
 {
 	GPU_EVENT(phase_bloom_downsample);
 
@@ -11,12 +11,12 @@ void CRenderTarget::phase_bloom_downsample()
 
 	for (u32 i = 0; i < std::size(targets); ++i)
 	{
-		DrawSQ(s_bloom_downsample, *targets[i], elements[i], [&]
+		DrawSQ(Cmd, s_bloom_downsample, *targets[i], elements[i], [&]
 		{
 			RImplementation.rmNormal();
-			RCache.set_CullMode(ERHI_CULLMODE::NONE);
-			RCache.set_Stencil(false);
-			RCache.Constants.Write<CBPost>().downsample_params.set(float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
+			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+			Cmd.SetStencil(false);
+			Cmd.Constants.Write<CBPost>().downsample_params.set(float(dwWidth), float(dwHeight), 1.0f / float(dwWidth), 1.0f / float(dwHeight));
 		});
 	}
 }

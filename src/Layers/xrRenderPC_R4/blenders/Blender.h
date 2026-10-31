@@ -41,9 +41,6 @@ protected:
 	xrP_BOOL					oStrictSorting;
 	string64					oT_Name;
 	string64					oT_xform;
-protected:
-	u32							BC				(bool v)		{ return v?0xff:0; }
-	bool						c_XForm			();
 public:
 	static			IBlender*	Create			(CLASS_ID cls);
 	static			void		CreatePalette	(xr_vector<IBlender*> & palette);

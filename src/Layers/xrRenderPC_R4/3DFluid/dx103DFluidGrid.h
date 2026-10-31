@@ -12,10 +12,10 @@ public:
 
 	void	Initialize( int gridWidth, int gridHeight, int gridDepth);
 
-	void	DrawSlices();
-	void	DrawSlicesToScreen();
-	void	DrawBoundaryQuads();
-	void	DrawBoundaryLines();
+	void	DrawSlices(GfxCmdList& Cmd);
+	void	DrawSlicesToScreen(GfxCmdList& Cmd);
+	void	DrawBoundaryQuads(GfxCmdList& Cmd);
+	void	DrawBoundaryLines(GfxCmdList& Cmd);
 	
 private:
 	void	CreateVertexBuffers();

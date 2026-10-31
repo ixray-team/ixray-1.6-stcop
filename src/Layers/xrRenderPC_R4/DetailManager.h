@@ -219,7 +219,7 @@ public:
 
 	void							hw_Load			();
 	void							hw_Unload		();
-	void							hw_Render		(light*L=NULL);
+	void							hw_Render		(GfxCmdList& Cmd, light*L=NULL);
 
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
 
@@ -238,7 +238,7 @@ public:
 	void							TrampleAnimateItems		();
 	xr_vector<u32>					TrampleActiveSlots;
 
-	void							hw_Render_dump	(const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
+	void							hw_Render_dump	(GfxCmdList& Cmd, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 
 	// get unpacked slot
 	DetailSlot&						QueryDB			(int sx, int sz);
@@ -257,7 +257,7 @@ public:
 
 	void							Load			();
 	void							Unload			();
-	void							Render			();
+	void							Render			(GfxCmdList& Cmd);
 
 	void							cache_Alloc();
 	void							cache_Free();

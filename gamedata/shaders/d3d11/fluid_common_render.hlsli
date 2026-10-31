@@ -16,24 +16,24 @@
 //--------------------------------------------------------------------------------------
 // Textures
 //--------------------------------------------------------------------------------------
-Texture2D sceneDepthTex;
-Texture3D colorTex;
+Texture2D sceneDepthTex : register(t0);
+Texture3D colorTex : register(t1);
 
-Texture2D rayDataTex;
-Texture2D rayDataTexSmall;
-Texture2D rayCastTex;
-Texture2D edgeTex;
-Texture2D jitterTex;
+Texture2D rayDataTex : register(t2);
+Texture2D rayDataTexSmall : register(t3);
+Texture2D rayCastTex : register(t4);
+Texture2D edgeTex : register(t5);
+Texture2D jitterTex : register(t6);
 
-Texture2D fireTransferFunction;
+Texture2D fireTransferFunction : register(t7);
 
 //--------------------------------------------------------------------------------------
 // Samplers
 //--------------------------------------------------------------------------------------
 
-sampler samPointClamp;
-sampler samLinearClamp;
-sampler samRepeat;
+sampler samPointClamp : register(s8);
+sampler samLinearClamp : register(s10);
+sampler samRepeat : register(s11);
 
 //--------------------------------------------------------------------------------------
 // Variables

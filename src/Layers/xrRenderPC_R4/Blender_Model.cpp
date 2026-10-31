@@ -72,7 +72,7 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 
 		if (is_blend)
 		{
-			RImplementation.addShaderOption("FORWARD_ONLY", "1");
+			C.AddDefine("FORWARD_ONLY", "1");
 		}
 
 		uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, nullptr, true);
@@ -91,14 +91,14 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 		const char*	psname		= nullptr;
 		switch (C.iElement)
 		{
-		case SE_R1_UI:
+		case ShaderVariant::UI:
 			vsname = psname =	"model_def_hq";
 			if (oBlend.value)	C.r_Pass	(vsname,"r1_simple",true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			else				C.r_Pass	(vsname,"r1_simple",true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			C.r_End				();
 			break;
-		case SE_R1_NORMAL_HQ:	
+		case ShaderVariant::NormalHQ:	
 			vsname = psname =	"model_def_hq";
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			else				C.r_Pass	(vsname,psname,true);
@@ -106,14 +106,14 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 			r1_tex(C, "s_lmap", "$user$projector", true, true);
 			C.r_End				();
 			break;
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			vsname = psname =	"model_def_lq"; 
 			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			else				C.r_Pass	(vsname,psname,true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			C.r_End				();
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			vsname				= "model_def_point";
 			psname				= "add_point";
 			if (oBlend.value)	C.r_Pass	(vsname,psname,false,true,false,true,D3DBLEND_ONE,	D3DBLEND_ONE,true,oAREF.value);
@@ -123,7 +123,7 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 			r1_tex(C, "s_att", TEX_POINT_ATT, true);
 			C.r_End				();
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			vsname				= "model_def_spot";
 			psname				= "add_spot";
 			if (oBlend.value)	C.r_Pass	(vsname,psname,false,true,false,true,D3DBLEND_ONE,	D3DBLEND_ONE,true,oAREF.value);
@@ -133,7 +133,7 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 			r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 			C.r_End				();
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			vsname				= "model_def_shadow";
 			psname				= "model_shadow";
 			C.r_Pass			(vsname,psname,false,false,false,true,D3DBLEND_ZERO,D3DBLEND_SRCCOLOR,false,0);

@@ -103,7 +103,7 @@ static bool IsSpotShadowCacheCaster(const ShaderElement& Element, R_dsgraph_stru
 	{
 		return RejectLambda("additional_shader_stages");
 	}
-	if ((Pass.M && !Pass.M->empty()) || (Pass.C && !Pass.C->empty()))
+	if (Pass.M && !Pass.M->empty())
 	{
 		return RejectLambda("animated_matrix_or_constant");
 	}
@@ -430,7 +430,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 	if (!pVisual->shader._get()) return;
 
-	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
 	if (SpotShadowPass && (bHUD || val_bUI))
 	{
@@ -566,7 +566,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		mapMatrixStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapMatrixTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
 
-		Ntex->val.visuals.push_back({ SSA, val_pObject, pVisual, *val_pTransform });
+		Ntex->val.push_back({ SSA, val_pObject, pVisual, *val_pTransform });
 	}
 }
 
@@ -628,7 +628,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	// a) Allow to optimize RT order
 	// b) Should be rendered to special distort buffer in another pass
 	if (!pVisual->shader._get()) return;
-	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
 	if (!SpotShadowPass && !SpotShadowBuild && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
 	{

@@ -30,8 +30,9 @@ static t_node_tc node_tc[16]=
 
 void ESceneAIMapTool::OnDeviceCreate()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	m_Shader.create("editor\\ai_node","ed\\ed_ai_arrows_01");
-    m_RGeom.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.Index.Buffer());        
+    m_RGeom.create(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
 }
 
 void ESceneAIMapTool::OnDeviceDestroy()
@@ -45,6 +46,7 @@ bool ai_map_shown = true;
 static const u32 block_size = 0x2000;
 void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 {
+    GfxCmdList& Cmd = RImplementation.Imm();
     if (!IsLoaded)
         return;
 
@@ -55,7 +57,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
     {
         if (!strictB2F)
         {
-            RCache.set_xform_world(Fidentity);
+            Cmd.SetObjectTransform(Fidentity);
 			if (OBJCLASS_AIMAP==LTools->CurrentClassID())
             {
 	            u32 clr = 0xffffc000;
@@ -72,7 +74,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 				HashRect(EContext.UI->CurrentView().m_Camera.GetPosition(), m_VisRadius, rect);
 
                 u32 vBase;
-                _VertexStream* Stream= &RCache.Vertex;
+                _VertexStream* Stream= &Cmd.Vertex;
                 FVF::LIT* pv		= (FVF::LIT*)Stream->Lock(block_size,m_RGeom->vb_stride,vBase);
                 u32	cnt				= 0;
 

@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "CHudInitializer.h"
 
-void CRenderTarget::accum_point		(light* L)
+void CRenderTarget::accum_point		(GfxCmdList& Cmd, light* L)
 {
 	if (L == nullptr)
 	{
 		return;
 	}
 	PROF_EVENT("CRenderTarget::accum_point")
-	phase_accumulator				();
+	phase_accumulator				(Cmd);
 	RImplementation.stats.l_visible	++;
 
 	ref_shader		shader	    = L->s_point;
@@ -17,7 +17,7 @@ void CRenderTarget::accum_point		(light* L)
 		shader			= s_accum_point;
 	}
 
-	CHudInitializer initalizer(false, true);
+	CHudInitializer initalizer(Cmd, false, true);
 
 	if(L->flags.bHudMode) 
 	{
@@ -34,9 +34,8 @@ void CRenderTarget::accum_point		(light* L)
 	Device.mView.transform_tiny		(L_pos,L->position);
 
 	// Xforms
-	RCache.set_xform_world			(L->m_xform);
-	RCache.set_xform_view			(Device.mView);
-	RCache.set_xform_project		(Device.mProject);
+	Cmd.SetObjectTransform(L->m_xform);
+	Cmd.SetView(Device.mView, Device.mProject);
 	enable_scissor					(L);
 	enable_dbt_bounds				(L);
 
@@ -44,29 +43,29 @@ void CRenderTarget::accum_point		(light* L)
 	// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 	// *** thus can cope without stencil clear with 127 lights
 	// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-	RCache.set_Element				(s_accum_mask->E[SE_MASK_POINT]);			// masker
+	Cmd.SetPass				(s_accum_mask->E[SE_MASK_POINT]);			// masker
 
 	// backfaces: if (1<=stencil && zfail)	stencil = light_id
-	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
-   	RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
-	draw_volume						(L);
+	Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
+   	Cmd.SetStencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+	draw_volume						(Cmd, L);
 
 	// frontfaces: if (1<=stencil && zfail)	stencil = 0x1
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
-	draw_volume						(L);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetStencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+	draw_volume						(Cmd, L);
 
 	// nv-stencil recompression
-	if (RImplementation.o.nvstencil)		u_stencil_optimize();
+	if (RImplementation.o.nvstencil)		u_stencil_optimize(Cmd);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RCache.set_ColorWriteEnable				();
-	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
+	Cmd.SetColorWriteEnable				();
+	Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
-	Fmatrix			m_Texgen;			u_compute_texgen_screen	(m_Texgen	);
-	Fmatrix			m_Texgen_J;			u_compute_texgen_jitter	(m_Texgen_J	);
+	Fmatrix			m_Texgen;			u_compute_texgen_screen	(Cmd, m_Texgen	);
+	Fmatrix			m_Texgen_J;			u_compute_texgen_jitter	(Cmd, m_Texgen_J	);
 
 	// Draw volume with projective texgen
 	{
@@ -81,23 +80,23 @@ void CRenderTarget::accum_point		(light* L)
 			_id						= SE_L_UNSHADOWED;
 			//m_Shadow				= m_Lmap;
 		}
-		RCache.set_Element				(shader->E[ _id ]	);
+		Cmd.SetPass				(shader->E[ _id ]	);
 
 		// Constants
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L_R*L_R));
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
-		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L_R*L_R));
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		Cmd.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
+		Cmd.Constants.Write<CBPass>().m_texgen = m_Texgen;
 
-		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
+		Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
 		// Render if (light_id <= stencil && z-pass)
-		RCache.set_Stencil(true, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
-		draw_volume(L);
+		Cmd.SetStencil(true, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
+		draw_volume(Cmd, L);
 	}
 
-	RCache.set_Scissor(0);
+	Cmd.SetScissor(0);
 
-	increment_light_marker();
+	increment_light_marker(Cmd);
 
 	u_DBT_disable				();
 

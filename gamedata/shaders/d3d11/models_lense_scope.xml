@@ -1,30 +1,17 @@
-<shader version="2" r1_static="1">
-	<normal>
-		<pass vs="model_scope_lense" ps="model_scope_lense"/>
-		<fog value="1"/>
-		<zb test="1" write="0"/>
-		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
-		<aref enable="1" value="0"/>
-		<sorting priority="2" strict="1"/>
-		<distort value="1"/>
-		<texture name="s_base" value="{base}"/>
-		<texture name="s_vp2" value="$user$viewport2"/>
-		<texture name="s_scope_ui" value="$user$ui_pda"/>
-		<sampler name="smp_base"/>
-		<sampler name="smp_rtlinear"/>
+<shader r1_static="1">
+	<normal sort="2" strict="1" distort="1">
+		<pass vs="model_scope_lense" ps="model_scope_lense" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_vp2" src="$user$viewport2"/>
+			<texture name="s_scope_ui" src="$user$ui_pda"/>
+		</pass>
 	</normal>
-	<static>
-		<normal>
-			<pass vs="model_env_lq" ps="model_env_lq"/>
-			<fog value="1"/>
-			<zb test="1" write="0"/>
-			<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
-			<aref enable="1" value="0"/>
-			<sorting priority="2" strict="1"/>
-			<texture name="s_base" value="{base}"/>
-			<texture name="s_env" value="sky\sky_5_cube"/>
-			<sampler name="smp_base"/>
-			<sampler name="smp_rtlinear"/>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal sort="2" strict="1">
+			<pass vs="model_env_lq" ps="model_env_lq" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_env" src="sky\sky_5_cube"/>
+			</pass>
 		</normal>
-	</static>
+	</option>
 </shader>

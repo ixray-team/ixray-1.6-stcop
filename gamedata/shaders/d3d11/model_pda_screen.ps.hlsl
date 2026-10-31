@@ -7,8 +7,8 @@ struct 	v2p
   	float4	c0:			COLOR0;		// sun.(fog*fog)
 };
 
-Texture2D 	s_vp2;
-Texture2D 	s_load;
+Texture2D 	s_vp2 : register(t26);
+Texture2D 	s_load : register(t25);
 float4 problems_main(p_bumped_new I)
 {
     // Получаем базовые UV-координаты из tcdh.xy

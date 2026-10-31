@@ -1,10 +1,7 @@
-<shader version="2">
+<shader>
 	<normal>
-		<pass vs="stub_notransform_t" ps="scope_detector"/>
-		<fog value="0"/>
-		<zb test="0" write="0"/>
-		<blend enable="1" src="one" dest="invsrcalpha"/>
-		<texture name="s_base" value="{base}"/>
-		<sampler name="smp_base"/>
+		<pass vs="stub_notransform_t" ps="scope_detector" zfunc="always" zwrite="0" blend="one,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+		</pass>
 	</normal>
 </shader>

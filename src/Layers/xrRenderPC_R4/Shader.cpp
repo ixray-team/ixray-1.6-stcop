@@ -36,13 +36,6 @@ SMatrixList::~SMatrixList()
 		DEV->_DeleteMatrixList(this);
 	}
 }
-SConstantList::~SConstantList()
-{
-	if (ResourcesAlive())
-	{
-		DEV->_DeleteConstantList(this);
-	}
-}
 SPass::~SPass()
 {
 	if (ResourcesAlive())
@@ -114,7 +107,6 @@ bool SPass::equal(const SPass& other)
 	if (constants	!= other.constants)		return false;	// is this nessesary??? (ps+vs already combines)
 
 	if (T != other.T)					return false;
-	if (C != other.C)					return false;
 	if (M != other.M)					return false;
 	return true;
 }
@@ -161,16 +153,7 @@ bool ShaderElement::equal	(ShaderElement* S)
 //
 bool Shader::equal	(Shader& S)
 {
-	if (UIElement != S.UIElement)
-	{
-		return false;
-	}
-	return
-		E[0] && E[0]->equal(&*S.E[0]) &&
-		E[1] && E[1]->equal(&*S.E[1]) &&
-		E[2] && E[2]->equal(&*S.E[2]) &&
-		E[3] && E[3]->equal(&*S.E[3]) &&
-		E[4] && E[4]->equal(&*S.E[4]);
+	return std::equal(std::begin(E), std::end(E), std::begin(S.E));
 }
 bool Shader::equal	(Shader* S)
 {	return	equal(*S);	}
@@ -232,22 +215,9 @@ Shader::Shader()
 
 void Shader::_copy(Shader& Other)
 {
-	UIElement = Other.UIElement;
 	for (u32 i = 0; i < SHADER_ELEMENTS_MAX; i++)
 	{
 		E[i] = Other.E[i];
-	}
-}
-
-SConstantList::SConstantList()
-{}
-
-void SConstantList::_copy(const SConstantList& Other)
-{
-	clear();
-	for (u32 i = 0; i < Other.size(); i++)
-	{
-		push_back(Other[i]);
 	}
 }
 

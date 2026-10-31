@@ -113,7 +113,7 @@ void EScene::Render(const Fmatrix& camera)
 			PROF_EVENT("EScene::Render tool")
 			PROF_TAG("ClassID", (u32)(*s_it)->FClassID);
 			EDevice->SetShader(B ? GEditorDraw.SelectionShader : GEditorDraw.WireShader);
-			RCache.set_xform_world(Fidentity);
+			RImplementation.Imm().SetObjectTransform(Fidentity);
 			(*s_it)->OnRenderRoot(P, B);
 		}
 	};

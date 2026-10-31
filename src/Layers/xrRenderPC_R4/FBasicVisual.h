@@ -13,6 +13,7 @@
 class					CKinematicsAnimated;
 class					CKinematics;
 class					IParticleCustom;
+class					GfxCmdList;
 
 struct IRender_Mesh	
 {
@@ -64,7 +65,7 @@ public:
 	xr_atomic_bool IsSpotShadowCacheReferenced = false;
 	shared_str					texture_name, orig_texture_name;
 	shared_str					shader_name, orig_shader_name;
-	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
+	virtual void				Render						(GfxCmdList& Cmd, float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
 	virtual void				Load						(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release						();						// Shared memory release
 	virtual void				Copy						(dxRender_Visual* from);

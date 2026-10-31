@@ -351,15 +351,15 @@ public:
 
 	// Geometry of a surface only, for the renderer scene graph (it sets the shader pass)
 	// World is needed to hide chunks of disabled regions; null draws every chunk
-	void			RenderGeometry			(CCustomObject*, CSurface* S, const Fmatrix* World = nullptr);
+	void			RenderGeometry			(GfxCmdList& Cmd, CCustomObject*, CSurface* S, const Fmatrix* World = nullptr);
 	// Geometry of a surface drawn InstanceCount times (instanced vertex shader of the current pass)
-	void			RenderGeometryInstanced	(CSurface* S, u32 InstanceCount);
-	void			RenderSkeletonGeometry	(CCustomObject*, CSurface* S);
+	void			RenderGeometryInstanced	(GfxCmdList& Cmd, CSurface* S, u32 InstanceCount);
+	void			RenderSkeletonGeometry	(GfxCmdList& Cmd, CCustomObject*, CSurface* S);
 	// Adds the surface to the renderer scene graph when it is visible in the current view
 	void			Submit					(CCustomObject*, const Fmatrix& parent, CSurface* S, const ref_shader& Shader, const ref_shader& InstancedShader, bool Skeleton);
 private:
 	// Skeleton surface with bones; applies every pass of PassShader, or the current pass when null
-	void			DrawSkeleton			(CCustomObject*, CSurface* S, ref_shader* PassShader);
+	void			DrawSkeleton			(GfxCmdList& Cmd, CCustomObject*, CSurface* S, ref_shader* PassShader);
 public:
 
 	void 			RenderSelection			(CCustomObject* parent, u32 color);

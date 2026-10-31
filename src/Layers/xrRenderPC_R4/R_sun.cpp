@@ -130,7 +130,7 @@ void CRender::BeginSunShadowFrame()
 		}
 	}
 	// Reflections can sample the captures before this frame's sun pass.
-	RCache.Constants.UpdateSunShadows();
+	Imm().Constants.UpdateSunShadows();
 }
 
 void CRender::GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const
@@ -487,7 +487,7 @@ void CRender::append_sun_dynamics()
 	}
 }
 
-void CRender::render_sun_cascades()
+void CRender::render_sun_cascades(GfxCmdList& Cmd)
 {
 	wait_sun_collect();
 	if (!sun_collect_active.load(std::memory_order_acquire))
@@ -503,7 +503,7 @@ void CRender::render_sun_cascades()
 	const bool IsCached = GetSunShadowCacheMode() > 0;
 	if (!IsCached || LastSunUpdateFrame != Device.dwFrame)
 	{
-		GRHI->SetViewport(viewport);
+		Cmd.SetViewport(viewport);
 
 		phase = PHASE_SMAP;
 		append_sun_dynamics();
@@ -524,28 +524,27 @@ void CRender::render_sun_cascades()
 			fuckingsun->X.D.maxX = fuckingsun->X.D.maxY = o.smapsize - 1;
 			fuckingsun->X.D.combine = sun_cascade_xforms[i];
 
-			RCache.set_Textures(&SunShadowEmptyTextures);
+			Cmd.SetTextures(&SunShadowEmptyTextures);
 			GRHI->ShaderResourceCache->Apply();
-			Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
+			Target->u_setrt(Cmd, Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
 			GRHI->ApplyRenderTargetChange();
 			// Empty captures must discard the previous slice as well.
-			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+			Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 
 			bool bNormal = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
 			bool bSpecial = Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
 
 			if (bNormal || bSpecial)
 			{
-				RCache.set_xform_world(Fidentity);
-				RCache.set_xform_view(Fidentity);
-				RCache.set_xform_project(fuckingsun->X.D.combine);
+				Cmd.SetObjectTransform(Fidentity);
+				Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
 
 				Graph.r_dsgraph_render_graph(0);
 
 				CDetailManager* ActiveDetails = GetDetails();
 				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				{
-					ActiveDetails->hw_Render();
+					ActiveDetails->hw_Render(Cmd);
 				}
 
 				fuckingsun->X.D.transluent = false;
@@ -553,7 +552,7 @@ void CRender::render_sun_cascades()
 				if (bSpecial)
 				{
 					fuckingsun->X.D.transluent = true;
-					Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
+					Target->phase_smap_direct_tsh(Cmd, fuckingsun, SE_SUN_FAR);
 					Graph.r_dsgraph_render_graph(1);
 					Graph.r_dsgraph_render_sorted();
 				}
@@ -583,19 +582,18 @@ void CRender::render_sun_cascades()
 
 	GraphMain.r_pmask(true, false);
 
-	RCache.Constants.UpdateSunShadows();
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.Constants.UpdateSunShadows();
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Device.mView, Device.mProject);
 
-	viewport.Width = (float)RCache.get_width();
-	viewport.Height = (float)RCache.get_height();
+	viewport.Width = (float)Cmd.GetWidth();
+	viewport.Height = (float)Cmd.GetHeight();
 
-	GRHI->SetViewport(viewport);
+	Cmd.SetViewport(viewport);
 	// Detach the array DSV before any lighting pass binds its SRV.
-	Target->phase_accumulator();
+	Target->phase_accumulator(Cmd);
 	GRHI->ApplyRenderTargetChange();
-	Target->accum_direct_cascade();
+	Target->accum_direct_cascade(Cmd);
 
 	if (sun_restore_shafts)
 	{
@@ -819,7 +817,7 @@ void CRender::PrepareSunCascade(u32 Index)
 	PreparedSunCascades[Index].PrepareMilliseconds = PrepareTimer.GetElapsed_sec() * 1000.f;
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+void CRender::render_sun_cascade(GfxCmdList& Cmd, u32 cascade_ind)
 {
 	PROF_EVENT("Render Cascade");
 	GPU_EVENT(RenderSunCascade);
@@ -848,12 +846,12 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		// Finalize & Cleanup
 		fuckingsun->X.D.combine = cull_xform;
 
-		RCache.set_Textures(&SunShadowEmptyTextures);
+		Cmd.SetTextures(&SunShadowEmptyTextures);
 		GRHI->ShaderResourceCache->Apply();
-		Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
+		Target->u_setrt(Cmd, Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
 		GRHI->ApplyRenderTargetChange();
 		// Empty captures must discard the previous slice as well.
-		GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+		Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 
 		// Render shadow-map
 		//. !!! We should clip based on shrinked frustum (again)
@@ -863,17 +861,15 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			if (bNormal || bSpecial)
 			{
-				RCache.set_xform_world(Fidentity);
-				RCache.set_xform_view(Fidentity);
-
-				RCache.set_xform_project(fuckingsun->X.D.combine);
+				Cmd.SetObjectTransform(Fidentity);
+				Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
 
 				GraphMain.r_dsgraph_render_graph(0);
 
 				CDetailManager* ActiveDetails = GetDetails();
 				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				{
-					ActiveDetails->hw_Render();
+					ActiveDetails->hw_Render(Cmd);
 				}
 
 				fuckingsun->X.D.transluent = false;
@@ -881,7 +877,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 				if (bSpecial)
 				{
 					fuckingsun->X.D.transluent = true;
-					Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
+					Target->phase_smap_direct_tsh(Cmd, fuckingsun, SE_SUN_FAR);
 					GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
 					GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
 				}

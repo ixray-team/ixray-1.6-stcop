@@ -12,7 +12,6 @@
 #include	"tss_def.h"
 #include	"TextureDescrManager.h"
 #include "dx11XMLBlendCompiler.h"
-#include "ShaderBind.h"
 
 // refs
 class CSVGStorage;
@@ -24,10 +23,6 @@ private:
 	struct str_pred {
 		IC bool operator()(const char* x, const char* y) const
 		{	return xr_strcmp(x,y)<0;	}
-	};
-	struct texture_detail	{
-		const char*			T;
-		RHIShaderConstant::Setup*	cs;
 	};
 public:
 	using map_Blender = xr_map<const char*, IBlender*, str_pred>;
@@ -66,8 +61,6 @@ public:
 	using map_PS = xr_map<const char*, SPS*, str_pred>;
 	using map_PSIt = map_PS::iterator;
 
-	using map_TD = xr_map<const char*, texture_detail, str_pred>;
-	using map_TDIt = map_TD::iterator;
 
 private:
 	// data
@@ -84,7 +77,6 @@ private:
 
 	map_RTC												m_rtargets_c;
 	map_GS												m_gs;
-	map_TD												m_td;
 
 	xr_vector<SState*>									v_states;
 	xr_vector<SDeclaration*>							v_declarations;
@@ -96,7 +88,6 @@ private:
 	// lists
 	xr_vector<STextureList*>							lst_textures;
 	xr_vector<SMatrixList*>								lst_matrices;
-	xr_vector<SConstantList*>							lst_constants;
 
 	// main shader-array
 	xr_vector<SPass*>									v_passes;
@@ -112,8 +103,12 @@ private:
 
 public:
 	CTextureDescrMngr									m_textures_description;
-	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
 	std::atomic<bool>									bDeferredLoad;
+private:
+	xr_string_map<xr_string, xr_unique_ptr<CXMLBlend>>	m_XMLBlends;
+	void							LoadXMLBlends		();
+	CXMLBlend*						FindXMLBlend		(const char* s_shader);
+public:
 	// Miscelaneous
 	void							_ParseList			(sh_list& dest, const char* names);
 	IBlender*						_GetBlender			(const char* Name);
@@ -121,7 +116,6 @@ public:
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void							_GetVideoMemoryUsage(u64& RenderTargets, u64& ShadowMaps, u64& Textures);
 	void							_DumpMemoryUsage	();
-//.	bool							_GetDetailTexture	(const char* Name, const char*& T, RHIShaderConstant::Setup* &M);
 
 	map_Blender&					_GetBlenders		()		{	return m_blenders;	}
 
@@ -153,23 +147,23 @@ public:
 	CRTC*							_CreateRTC			(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void							_DeleteRT			(const CRT*	RT	);
 
-	ref_gs							_CreateGS			(const char* Name);
+	ref_gs							_CreateGS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeleteGS			(const SGS*	GS);
 	void							_DeleteRTC			(const CRTC* RT);
 
-	ref_hs							_CreateHS			(const char* Name);
+	ref_hs							_CreateHS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeleteHS			(const SHS*	HS	);
 
-	ref_ds							_CreateDS			(const char* Name);
+	ref_ds							_CreateDS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeleteDS			(const SDS*	DS	);
 
-	ref_cs							_CreateCS			(const char* Name);
+	ref_cs							_CreateCS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeleteCS			(const SCS*	CS	);
 
-	ref_ps							_CreatePS			(const char* Name);
+	ref_ps							_CreatePS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeletePS			(const SPS*	PS	);
 
-	ref_vs							_CreateVS			(const char* Name);
+	ref_vs							_CreateVS			(const char* Name, const ShaderExternalMap& Defines = {});
 	void							_DeleteVS			(const SVS*	VS	);
 
 	ref_pass _CreatePass(const SPass& proto);
@@ -189,8 +183,6 @@ public:
 	ref_matrix_list _CreateMatrixList(SMatrixList& L);
 	void							_DeleteMatrixList	(const SMatrixList* L);
 
-	ref_constant_list _CreateConstantList(SConstantList& L);
-	void							_DeleteConstantList	(const SConstantList* L);
 
 	ref_selement _CreateElement(ShaderElement& L);
 	void							_DeleteElement		(const ShaderElement* L);
@@ -217,7 +209,6 @@ public:
 	void			Delete					(const Shader*		S	);
 	void			RecompileShaders		();
 	void			RecompileDX12Shaders	();
-	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
@@ -262,34 +253,22 @@ private:
 	T& GetShaderMap();
 
 	template<typename T>
-	resptr_core<T, resptr_base<T>> CreateShader(const char* name);
+	resptr_core<T, resptr_base<T>> CreateShader(const char* name, const ShaderExternalMap& Defines);
 
 	template<typename T>
 	void DestroyShader(const T* sh);
 
 private:
 
-	struct XMLBlendCacheEntry
-	{
-#ifndef MASTER_GOLD
-		u32 crc = 0;
-#endif
-		Shader* shader = nullptr;
-	};
-
-	xr_hash_map<xr_string, XMLBlendCacheEntry> m_xmlBlendCache;
-
 	struct StageCompileInfo
 	{
 		shared_str source;
 		int skinning = -1;
 		ShaderExternalMap options;
-		xr_vector<ShaderBindSlot> binds;
 	};
 	xr_hash_map<xr_resource_uniq*, StageCompileInfo> m_stage_info;
-	void RememberStage(xr_resource_uniq* stage, const char* source, int skinning);
+	void RememberStage(xr_resource_uniq* stage, const char* source, int skinning, const ShaderExternalMap& Defines);
 	void ForgetStage(const xr_resource_uniq* stage);
-	void ClearXMLBlendCache();
 };
 
 #endif //ResourceManagerH

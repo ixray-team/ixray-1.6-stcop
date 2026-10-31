@@ -51,16 +51,16 @@ public:
 	dx103DFluidEmitters(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid *pGrid);
 	~dx103DFluidEmitters();
 
-	void	RenderDensity(const dx103DFluidData &FluidData);
-	void	RenderVelocity(const dx103DFluidData &FluidData);
+	void	RenderDensity(GfxCmdList& Cmd, const dx103DFluidData &FluidData);
+	void	RenderVelocity(GfxCmdList& Cmd, const dx103DFluidData &FluidData);
 	
 private:
 
 	void	InitShaders();
 	void	DestroyShaders();
 
-	void	ApplyDensity( const CEmitter &Emitter);
-	void	ApplyVelocity( const CEmitter &Emitter);
+	void	ApplyDensity( GfxCmdList& Cmd, const CEmitter &Emitter);
+	void	ApplyVelocity( GfxCmdList& Cmd, const CEmitter &Emitter);
 
 private:
 	Fvector3	m_vGridDim;

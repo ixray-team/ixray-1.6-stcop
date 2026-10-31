@@ -1,6 +1,6 @@
 #include "common_iostructs.hlsli"
 
-Texture2D<float> s_static_shadow;
+Texture2D<float> s_static_shadow : register(t25);
 #include "shared\post_cb.hlsli"
 
 float main(PSInputFullscreen Input) : SV_Depth

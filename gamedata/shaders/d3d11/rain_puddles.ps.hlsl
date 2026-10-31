@@ -1,8 +1,8 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
 
-TextureCube s_env0;
-TextureCube s_env1;
+TextureCube s_env0 : register(t26);
+TextureCube s_env1 : register(t49);
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

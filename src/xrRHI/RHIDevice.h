@@ -3,12 +3,18 @@
 #include "RHIEnums.h"
 
 class RHIObject;
-class IRHIShaderDeclaration;
 class IRHIStateManager;
 
 struct RHIRasterizerDesc;
 struct RHIDepthStencilDesc;
 struct RHIBlendDesc;
+
+struct RHIConstantWrite
+{
+	u32 Slot;
+	u32 Size;
+	const void* Data;
+};
 
 class IRHIDevice
 {
@@ -23,20 +29,17 @@ public:
 	float RenderScale = 1.f;
 	u32 FeatureLevel;
 	u32 VertexCache;
+	u32 ConstantEpoch = 0;
 
 	// Texture factory
 	IRHITextureFactory* TextureFactory = nullptr;
 
 	// Drawing methods
 	virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) = 0;
-	virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) = 0;
-	virtual void Draw(u32 startVertex, u32 primitiveCount) = 0;
-	virtual void DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) = 0;
-
-	virtual void DrawIndexedInstanced(
-		u32 baseVertex, u32 startVertex, u32 vertexCount,
-		u32 startIndex, u32 primitiveCount,
-		u32 instanceCount, u32 startInstanceLocation) = 0;
+	virtual void Draw(u32 VertexCount, u32 StartVertex) = 0;
+	virtual void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex) = 0;
+	virtual void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance) = 0;
+	virtual void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance) = 0;
 	
 	virtual void DrawNoInputAssembly(u32 vertexCount) = 0;
 
@@ -53,7 +56,6 @@ public:
 
 	// Texture management
 	virtual IRHITextureFactory* GetTextureFactory() = 0;
-	virtual void SetTextureFactory(IRHITextureFactory* factory) = 0;
 	virtual void SetViewport(RHIViewport& VP) = 0;
 
 	// Buffer stuff
@@ -76,9 +78,8 @@ public:
     virtual void* GetContext() = 0;
     virtual void* GetSwapchain() = 0;
     virtual void BeginFrame() = 0;
-    virtual IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize) = 0;
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) = 0;
-    virtual void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type) = 0;
+    virtual void SetConstants(const RHIConstantWrite* Writes, u32 Count) = 0;
     virtual void ClearVertexBuffer(u32 vb_stride) = 0;
     virtual void ClearIndexBuffer() = 0;
     virtual void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) = 0;
@@ -91,7 +92,7 @@ public:
     virtual void SetInputLayout(RHIObject* layout) = 0;
     virtual void Dispatch(u32 x, u32 y, u32 z) = 0;
     virtual HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state) = 0;
-    virtual void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type) = 0;
+    virtual void SetSamplers(RHIObject* const* States, u32 Count) = 0;
     virtual void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) = 0;
     virtual void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) = 0;
     virtual HRESULT CreateOcclusionQuery(RHIObject** out_query) = 0;

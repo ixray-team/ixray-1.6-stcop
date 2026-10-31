@@ -1,5 +1,5 @@
 #include "common.hlsli"
-Texture2D s_vollight;
+Texture2D s_vollight : register(t25);
 
 
 float4 main(PSInputFullscreen I) : SV_Target

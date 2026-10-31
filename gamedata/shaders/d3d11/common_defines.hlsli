@@ -11,12 +11,6 @@
 
 #define LUMINANCE_VECTOR float3(0.2126, 0.7152, 0.0722)//float3(0.3f, 0.38f, 0.22f)
 
-#if defined(SM_5) || defined(SM_4_1)
-    #define TEXTURE2DMS(a, b) Texture2DMS<a>
-#else
-    #define TEXTURE2DMS(a, b) Texture2DMS<a, b>
-#endif
-
 #ifndef SMAP_size
     #define SMAP_size 1024
 #endif

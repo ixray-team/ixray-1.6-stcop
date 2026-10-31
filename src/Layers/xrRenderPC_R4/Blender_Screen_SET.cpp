@@ -108,7 +108,7 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 	if (LightingModeIsStaticRender() && 0 == xr_strcmp(getName(), "effects\\glow"))
 	{
 		const char* scale = oBlend.IDselected == 9 ? "4" : (oBlend.IDselected == 7 || oBlend.IDselected == 8 ? "2" : "1");
-		RImplementation.addShaderOption("R1_COLOR_SCALE", scale);
+		C.AddDefine("R1_COLOR_SCALE", scale);
 		C.r_Pass("r1_glow", "r1_glow", false, oZTest.value, oZWrite.value, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.IDselected == 1 || oBlend.IDselected == 5 || oBlend.IDselected >= 7, oBlend.IDselected == 7 ? 0 : oAREF.value);
 		r1_tex(C, "s_base", C.L_textures[0], oClamp.value);
 	}
@@ -119,9 +119,10 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		u32 iSmp = C.r_dx10Sampler("smp_base");
-		if (oClamp.value && (iSmp != u32(-1)))
-			C.i_Address(iSmp, D3DTADDRESS_CLAMP);
+		if (oClamp.value)
+		{
+			C.AddDefine("SMP_BASE_CLAMP", "1");
+		}
 
 	}
 	else
@@ -147,13 +148,14 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 
 		VERIFY(C.L_textures.size() > 0);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		u32 iSmp = C.r_dx10Sampler("smp_base");
 		if (EditorMode)
 		{
 			C.r_Matrix(oT_xform);
 		}
-		if (oClamp.value && (iSmp != u32(-1)))
-			C.i_Address(iSmp, D3DTADDRESS_CLAMP);
+		if (oClamp.value)
+		{
+			C.AddDefine("SMP_BASE_CLAMP", "1");
+		}
 	}
 
 	C.PassSET_ZB(oZTest.value, oZWrite.value);
@@ -191,7 +193,6 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 		break;
 	}
-	C.PassSET_LightFog(oLighting.value, oFog.value);
 
 	C.r_End();
 }

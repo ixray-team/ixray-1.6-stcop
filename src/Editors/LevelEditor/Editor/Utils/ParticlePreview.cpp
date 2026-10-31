@@ -338,12 +338,13 @@ bool CParticlePreviewCache::Render(Entry& Item)
 	const Fvector SavedTop = Device.vCameraTop;
 	const Fvector SavedRight = Device.vCameraRight;
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	IRHIRenderTargetView* SavedRT[4] = {};
 	for (u32 Idx = 0; Idx < 4; ++Idx)
 	{
-		SavedRT[Idx] = GRHI->GetRenderTargetView(Idx);
+		SavedRT[Idx] = Cmd.GetRenderTarget(Idx);
 	}
-	IRHIDepthStencilView* SavedDSV = GRHI->GetDepthStencilView();
+	IRHIDepthStencilView* SavedDSV = Cmd.GetDepthStencil();
 
 	Device.mView = View;
 	Device.mProject = Project;
@@ -356,24 +357,23 @@ bool CParticlePreviewCache::Render(Entry& Item)
 	Device.vCameraTop.set(Camera.j);
 	Device.vCameraRight.set(Camera.i);
 
-	RCache.set_xform_view(View);
-	RCache.set_xform_project(Project);
+	Cmd.SetView(View, Project);
 
-	RCache.set_RT(TargetColor->pRT);
-	RCache.set_RT(nullptr, 1);
-	RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
-	GRHI->SetDepthStencilView(TargetDepth->pZRT);
-	GRHI->ApplyRenderTargetChange();
+	Cmd.SetRenderTarget(TargetColor->pRT);
+	Cmd.SetRenderTarget(nullptr, 1);
+	Cmd.SetRenderTarget(nullptr, 2);
+	Cmd.SetRenderTarget(nullptr, 3);
+	Cmd.SetDepthStencil(TargetDepth->pZRT);
+	Cmd.ApplyRenderTargets();
 
-	GRHI->ClearTarget(TargetColor->pRT, PreviewClearColor);
-	GRHI->ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
+	Cmd.ClearTarget(TargetColor->pRT, PreviewClearColor);
+	Cmd.ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
 
 	RHIViewport Viewport = {0, 0, (float)PreviewSize, (float)PreviewSize, 0.f, 1.f};
-	GRHI->SetViewport(Viewport);
+	Cmd.SetViewport(Viewport);
 
-	((CRender*)::Render)->Models->RenderSingle(Item.Visual, Fidentity, 1.0f);
-	GRHI->ApplyRenderTargetChange();
+	((CRender*)::Render)->Models->RenderSingle(Cmd, Item.Visual, Fidentity, 1.0f);
+	Cmd.ApplyRenderTargets();
 
 	U32Vec& Pixels = Item.Pixels;
 	const bool IsValid = EDevice->ReadbackRT(TargetColor, Pixels);
@@ -385,15 +385,14 @@ bool CParticlePreviewCache::Render(Entry& Item)
 	Device.vCameraDirection = SavedDirection;
 	Device.vCameraTop = SavedTop;
 	Device.vCameraRight = SavedRight;
-	RCache.set_xform_view(SavedView);
-	RCache.set_xform_project(SavedProject);
+	Cmd.SetView(SavedView, SavedProject);
 
 	for (u32 Idx = 0; Idx < 4; ++Idx)
 	{
-		RCache.set_RT(SavedRT[Idx], Idx);
+		Cmd.SetRenderTarget(SavedRT[Idx], Idx);
 	}
-	GRHI->SetDepthStencilView(SavedDSV);
-	GRHI->ApplyRenderTargetChange();
+	Cmd.SetDepthStencil(SavedDSV);
+	Cmd.ApplyRenderTargets();
 
 	if (!IsValid)
 	{

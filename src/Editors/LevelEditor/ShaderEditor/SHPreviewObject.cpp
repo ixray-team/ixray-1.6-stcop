@@ -389,8 +389,8 @@ void CPreviewObject::UpdateClipSpace(const Fmatrix& WVP)
 		return;
 
 	// HACK: inverse of stub_notransform_t screen-space mapping, so POSITIONT shaders render in 3D
-	const float W = RCache.get_target_width();
-	const float H = RCache.get_target_height();
+	const float W = GfxCmdList::GetTargetWidth();
+	const float H = GfxCmdList::GetTargetHeight();
 
 	const bool clip = bNotransform;
 	CMatrix* TexGen = clip ? FindTexGenMatrix() : nullptr;

@@ -388,50 +388,49 @@ bool CMaterialPreview::Render(const STextureParams& Params, u32 Width, u32 Heigh
 	LightDir.setHP(Yaw + LightYaw, -LightPitch);
 	LightDir.invert();
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	IRHIRenderTargetView* SavedRT[4] = {};
 	for (u32 Idx = 0; Idx < 4; ++Idx)
 	{
-		SavedRT[Idx] = GRHI->GetRenderTargetView(Idx);
+		SavedRT[Idx] = Cmd.GetRenderTarget(Idx);
 	}
-	IRHIDepthStencilView* SavedDSV = GRHI->GetDepthStencilView();
+	IRHIDepthStencilView* SavedDSV = Cmd.GetDepthStencil();
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(View);
-	RCache.set_xform_project(Project);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(View, Project);
 
-	RCache.set_RT(TargetColor->pRT);
-	RCache.set_RT(nullptr, 1);
-	RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
-	GRHI->SetDepthStencilView(TargetDepth->pZRT);
-	GRHI->ApplyRenderTargetChange();
+	Cmd.SetRenderTarget(TargetColor->pRT);
+	Cmd.SetRenderTarget(nullptr, 1);
+	Cmd.SetRenderTarget(nullptr, 2);
+	Cmd.SetRenderTarget(nullptr, 3);
+	Cmd.SetDepthStencil(TargetDepth->pZRT);
+	Cmd.ApplyRenderTargets();
 
-	GRHI->ClearTarget(TargetColor->pRT, PreviewClearColor);
-	GRHI->ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
+	Cmd.ClearTarget(TargetColor->pRT, PreviewClearColor);
+	Cmd.ClearDepthStencil(TargetDepth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
 
 	RHIViewport Viewport = {0, 0, (float)Width, (float)Height, 0.f, 1.f};
-	GRHI->SetViewport(Viewport);
+	Cmd.SetViewport(Viewport);
 
 	const bool IsPBR = Params.material == STextureParams::tmPBR_Material;
 	const bool UseParallax = UseBump && Params.bump_mode == STextureParams::tbmUseParallax;
 
-	RCache.set_Element(PreviewShader->E[4]);
-	RCache.Constants.Write<CBEditor>().preview_flags.set(UseBump ? 1.f : 0.f, UseParallax ? 1.f : 0.f, UseDetail ? 1.f : 0.f, UseDetailBump ? 1.f : 0.f);
-	RCache.Constants.Write<CBEditor>().preview_material.set(Params.detail_scale, float(Params.material) + Params.material_weight, IsPBR ? 1.f : 0.f, AlphaTest ? 1.f : 0.f);
-	RCache.Constants.Write<CBEditor>().preview_light.set(LightDir.x, LightDir.y, LightDir.z, Ambient);
-	RCache.Constants.Write<CBEditor>().preview_eye.set(Position.x, Position.y, Position.z, UVTiling);
-	RCache.set_Geometry(Geometry);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, VertexCount, 0, IndexCount / 3);
+	Cmd.SetPass(PreviewShader->E[4]);
+	Cmd.Constants.Write<CBEditor>().preview_flags.set(UseBump ? 1.f : 0.f, UseParallax ? 1.f : 0.f, UseDetail ? 1.f : 0.f, UseDetailBump ? 1.f : 0.f);
+	Cmd.Constants.Write<CBEditor>().preview_material.set(Params.detail_scale, float(Params.material) + Params.material_weight, IsPBR ? 1.f : 0.f, AlphaTest ? 1.f : 0.f);
+	Cmd.Constants.Write<CBEditor>().preview_light.set(LightDir.x, LightDir.y, LightDir.z, Ambient);
+	Cmd.Constants.Write<CBEditor>().preview_eye.set(Position.x, Position.y, Position.z, UVTiling);
+	Cmd.SetGeometry(Geometry);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, IndexCount, 0, 0);
 
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.SetView(Device.mView, Device.mProject);
 
 	for (u32 Idx = 0; Idx < 4; ++Idx)
 	{
-		RCache.set_RT(SavedRT[Idx], Idx);
+		Cmd.SetRenderTarget(SavedRT[Idx], Idx);
 	}
-	GRHI->SetDepthStencilView(SavedDSV);
-	GRHI->ApplyRenderTargetChange();
+	Cmd.SetDepthStencil(SavedDSV);
+	Cmd.ApplyRenderTargets();
 
 	return true;
 }

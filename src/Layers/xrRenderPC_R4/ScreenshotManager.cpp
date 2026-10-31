@@ -9,7 +9,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode mode, c
 	if (!GRHI || !GRHI->DevicePtr) {
 		return false;
 	}
-	IRHIRenderTargetView* target = GRHI->GetRenderTargetView(0);
+	IRHIRenderTargetView* target = RImplementation.Imm().GetRenderTarget(0);
 	if (!target) {
 		target = RTarget;
 	}

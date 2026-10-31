@@ -56,12 +56,12 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
-	if (C.iElement == SE_R2_UI)
+	if (C.iElement == ShaderVariant::UI)
 	{
-		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 		if (oStrictSorting.value || (oBlend.value && oAREF.value < 16))
 		{
-			RImplementation.addShaderOption("UI_ALPHA_BLEND", "1");
+			C.AddDefine("UI_ALPHA_BLEND", "1");
 		}
 		uber_deffer(C, true, "deffer_model", "ui_base", !!oBlend.value, 0, true);
 
@@ -75,16 +75,15 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("sky_s0", "shaders\\newsky_viewport");
 
 		C.r_dx10Texture("s_material", r2_material);
-		C.r_dx10Sampler("smp_material");
 
 		C.r_End();
 
 		return;
 	}
-	else if (C.iElement == SE_R2_REFLECTIONS)
+	else if (C.iElement == ShaderVariant::Reflection)
 	{
-		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
-		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		C.AddDefine("USE_LENGTH_BUFFER", "1");
+		C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 
 		uber_forward(C, false, "deffer_model", "forward_base", oBlend.value, false, 0);
 
@@ -95,22 +94,20 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 	{
 		switch (C.iElement)
 		{
-			case SE_R2_HUD:
-			case SE_R2_NORMAL_HQ:
-			case SE_R2_NORMAL_LQ:
+			case ShaderVariant::HUD:
+			case ShaderVariant::NormalHQ:
+			case ShaderVariant::NormalLQ:
 			{
-				uber_forward(C, SE_R2_NORMAL_LQ != C.iElement, "deffer_model", "forward_base", true, true);
+				uber_forward(C, ShaderVariant::NormalLQ != C.iElement, "deffer_model", "forward_base", true, true);
 				break;
 			}
-			case SE_R2_SHADOW:
+			case ShaderVariant::Shadow:
 			{
-				RImplementation.addShaderOption("DISABLE_VELOCITY", "1");
-				RImplementation.addShaderOption("USE_TRANSPARENT", "1");
+				C.AddDefine("DISABLE_VELOCITY", "1");
+				C.AddDefine("USE_TRANSPARENT", "1");
 				C.r_Pass("shadow_model", "shadow_base", false, true, false, true, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
 
 				C.r_dx10Texture("s_base", C.L_textures[0]);
-				C.r_dx10Sampler("smp_base");
-				C.r_dx10Sampler("smp_linear");
 
 				C.r_End();
 				break;
@@ -124,31 +121,29 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 		C.TessMethod = oTessellation.IDselected;
 		switch (C.iElement)
 		{
-		case SE_R2_HUD:
-		case SE_R2_NORMAL_HQ: // deffer
+		case ShaderVariant::HUD:
+		case ShaderVariant::NormalHQ: // deffer
 			uber_deffer(C, true, "deffer_model", "deffer_base", bAref, 0, true);
 
 			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
-		case SE_R2_NORMAL_LQ: // deffer
+		case ShaderVariant::NormalLQ: // deffer
 			uber_deffer(C, false, "deffer_model", "deffer_base", bAref, 0, true);
 			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
-		case SE_R2_SHADOW: // smap
+		case ShaderVariant::Shadow: // smap
 			if (bAref) {
-				RImplementation.addShaderOption("USE_AREF", "1");
+				C.AddDefine("USE_AREF", "1");
 			}
 			
-			RImplementation.addShaderOption("DISABLE_VELOCITY", "1");
+			C.AddDefine("DISABLE_VELOCITY", "1");
 			C.r_Pass("shadow_model", "shadow_base", false);
 
 			C.r_dx10Texture("s_base", C.L_textures[0]);
-			C.r_dx10Sampler("smp_base");
-			C.r_dx10Sampler("smp_linear");
 			C.r_ColorWriteEnable(false, false, false, false);
 			C.r_End();
 			break;

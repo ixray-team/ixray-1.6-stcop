@@ -27,7 +27,7 @@ struct editor_instance
     float4 W2;
 };
 
-StructuredBuffer<editor_instance> editor_instances;
+StructuredBuffer<editor_instance> editor_instances : register(t25);
 #include "shared\extra_cb.hlsli"
 
 float4x4 editor_affine(float3x4 M)

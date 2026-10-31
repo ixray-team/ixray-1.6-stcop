@@ -97,7 +97,7 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 	{
 		if ((true == strictB2F) && (1 == priority)) {
 			EDevice->SetShader(GEditorDraw.WireShader);
-			RCache.set_xform_world(Fidentity);
+			RImplementation.Imm().SetObjectTransform(Fidentity);
 			Fvector dir;
 
             // if (EngineExternal()[EEngineExternalEnvironment::ReadSunConfig])

@@ -20,9 +20,6 @@ public:
 		C.r_dx10Texture("s_sky0", "$null");
 		C.r_dx10Texture("s_sky1", "$null");
 
-		C.r_dx10Sampler("smp_rtlinear");
-		C.r_dx10Sampler("smp_linear");
-		C.r_dx10Sampler("smp_base");
 
 		C.PassSET_ZB(LightingModeIsStaticRender(), false);
 		C.r_End ();

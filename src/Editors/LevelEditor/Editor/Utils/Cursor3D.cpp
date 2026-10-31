@@ -61,6 +61,7 @@ void C3DCursor::GetPickPoint(Fvector& src, Fvector& dst, Fvector* N)
 
 void C3DCursor::Render()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (m_Visible && !EContext.UI->CurrentView().m_Camera.IsMoving())
 	{
 		SRayPickInfo pinf;
@@ -92,7 +93,7 @@ void C3DCursor::Render()
 						GetPickPoint(p, m_RenderBuffer[idx], NULL);
 					}
 
-					RCache.set_xform_world(Fidentity);
+					Cmd.SetObjectTransform(Fidentity);
 					EDevice->SetShader(GEditorDraw.WireShader);
 					DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, m_RenderBuffer.size(), m_RenderBuffer.data(), m_RenderBuffer.size(), dwColor, true, true);
 				}
@@ -109,7 +110,7 @@ void C3DCursor::Render()
 					pt[3].set(pt[0].p.x, pt[0].p.y - 1, pt[0].p.z, pt[0].p.w, dwColor, 0, 0);
 					pt[4].set(pt[0].p.x, pt[0].p.y + 1, pt[0].p.z, pt[0].p.w, dwColor, 0, 0);
 					EDevice->RenderNearer(0.001);
-					RCache.set_xform_world(Fidentity);
+					Cmd.SetObjectTransform(Fidentity);
 					EDevice->SetShader(GEditorDraw.WireShader);
 					DU_impl.DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY::POINT_LIST, 5, pt, 5, true, true);
 					EDevice->ResetNearer();

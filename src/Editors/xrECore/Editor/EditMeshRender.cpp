@@ -384,11 +384,13 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 
 struct SelectionColorRaii
 {
-	SelectionColorRaii(CCustomObject* Parent, CEditableMesh::EditColorMesh& m_color_map)
+	GfxCmdList& Cmd;
+
+	SelectionColorRaii(GfxCmdList& Cmd, CCustomObject* Parent, CEditableMesh::EditColorMesh& m_color_map) : Cmd(Cmd)
 	{
 		if (!Parent)
 		{
-			RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
+			Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 			return;
 		}
 
@@ -398,7 +400,7 @@ struct SelectionColorRaii
 		auto It = m_color_map.find(Parent);
 		if (It == m_color_map.end())
 		{
-			RCache.Constants.Write<CBEditor>().editor_selection = sum_color;
+			Cmd.Constants.Write<CBEditor>().editor_selection = sum_color;
 			return;
 		}
 
@@ -413,12 +415,12 @@ struct SelectionColorRaii
 			sum_color.add(color.mul(pColor.second.a));
 		}
 
-		RCache.Constants.Write<CBEditor>().editor_selection = sum_color;
+		Cmd.Constants.Write<CBEditor>().editor_selection = sum_color;
 	}
 
 	~SelectionColorRaii()
 	{
-		RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
+		Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 	}
 };
 
@@ -449,7 +451,7 @@ void CEditableMesh::SetColor(CCustomObject* Parent, u8 ID, u32 Color)
 
 void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurface* S)
 {
-	SelectionColorRaii pRenderColor(pParent, m_color_map);
+	SelectionColorRaii pRenderColor(RImplementation.Imm(), pParent, m_color_map);
 
 	if (!m_RenderBuffers) 
 	{
@@ -512,10 +514,10 @@ void CEditableMesh::Submit(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 	GEditorSceneSubmit.AddSurface(pParent, this, S, Shader, InstancedShader, parent, Skeleton);
 }
 
-void CEditableMesh::RenderGeometry(CCustomObject* pParent, CSurface* S, const Fmatrix* World)
+void CEditableMesh::RenderGeometry(GfxCmdList& Cmd, CCustomObject* pParent, CSurface* S, const Fmatrix* World)
 {
 	PROF_EVENT("CEditableMesh::RenderGeometry")
-	SelectionColorRaii pRenderColor(pParent, m_color_map);
+	SelectionColorRaii pRenderColor(Cmd, pParent, m_color_map);
 
 	if (!m_RenderBuffers)
 	{
@@ -531,13 +533,13 @@ void CEditableMesh::RenderGeometry(CCustomObject* pParent, CSurface* S, const Fm
 				continue;
 			}
 
-			RCache.set_Geometry(rb_it.pGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwStartVertex, rb_it.dwNumVertex / 3);
+			Cmd.SetGeometry(rb_it.pGeom);
+			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwNumVertex, rb_it.dwStartVertex);
 		}
 	}
 }
 
-void CEditableMesh::RenderGeometryInstanced(CSurface* S, u32 InstanceCount)
+void CEditableMesh::RenderGeometryInstanced(GfxCmdList& Cmd, CSurface* S, u32 InstanceCount)
 {
 	if (!m_RenderBuffers)
 	{
@@ -548,8 +550,8 @@ void CEditableMesh::RenderGeometryInstanced(CSurface* S, u32 InstanceCount)
 	{
 		for (auto& rb_it : rb_pair->second)
 		{
-			RCache.set_Geometry(rb_it.pGeom);
-			RCache.RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwStartVertex, rb_it.dwNumVertex / 3, InstanceCount);
+			Cmd.SetGeometry(rb_it.pGeom);
+			Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, rb_it.dwNumVertex, InstanceCount, rb_it.dwStartVertex);
 		}
 	}
 }
@@ -620,17 +622,17 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 	// set model shader from surface (active shader in editor device)
 	ref_shader shader = EDevice->GetShader();
 	EDevice->SetShader(shader);
-	DrawSkeleton(pParent, S, &shader);
+	DrawSkeleton(RImplementation.Imm(), pParent, S, &shader);
 }
 
-void CEditableMesh::RenderSkeletonGeometry(CCustomObject* pParent, CSurface* S)
+void CEditableMesh::RenderSkeletonGeometry(GfxCmdList& Cmd, CCustomObject* pParent, CSurface* S)
 {
-	DrawSkeleton(pParent, S, nullptr);
+	DrawSkeleton(Cmd, pParent, S, nullptr);
 }
 
-void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader* PassShader)
+void CEditableMesh::DrawSkeleton(GfxCmdList& Cmd, CCustomObject* pParent, CSurface* S, ref_shader* PassShader)
 {
-	SelectionColorRaii pRenderColor(pParent, m_color_map);
+	SelectionColorRaii pRenderColor(Cmd, pParent, m_color_map);
 
 	if (!IsGeneratedSVertices(RENDER_SKELETON_LINKS))
 	{
@@ -647,11 +649,11 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 	IntVec& face_lst = sp_it->second;
 	size_t FaceCount = face_lst.size();
 
-	_VertexStream* Stream = &RCache.Vertex;
+	_VertexStream* Stream = &Cmd.Vertex;
 	const u32 stride = m_Parent->vs_SkeletonGeom->vb_stride;
 	VERIFY(stride == sizeof(svertRender));
 
-	ERHI_CULLMODE OldCullMode = RCache.get_CullMode();
+	ERHI_CULLMODE OldCullMode = Cmd.GetCullMode();
 	// Without a shader the caller (the scene graph) has set the pass already
 	const u32 dwRequired = PassShader ? (u32)(*PassShader)->E[0]->passes.size() : 1;
 
@@ -696,11 +698,11 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 		{
 			if (PassShader)
 			{
-				RCache.set_Shader(*PassShader, dwPass);
+				Cmd.SetPass(*PassShader, dwPass);
 			}
 
 			const BoneVec& boneVec = m_Parent->m_Bones;
-			Hlsl::float4* Bones = RCache.Constants.Write<CBSkin>().sbones_array;
+			Hlsl::float4* Bones = Cmd.Constants.Write<CBSkin>().sbones_array;
 			for (u16 mid = 0, count = (u16)std::min<size_t>(boneVec.size(), MAX_BONES_COUNT); mid < count; mid++)
 			{
 				const Fmatrix& M = boneVec[mid]->_RenderTransform();
@@ -711,17 +713,17 @@ void CEditableMesh::DrawSkeleton(CCustomObject* pParent, CSurface* S, ref_shader
 
 			if (S->_flags().is(SSurfaceData::sf2Sided))
 			{
-				RCache.set_CullMode(ERHI_CULLMODE::NONE);
+				Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 			}
 			else
 			{
-				RCache.set_CullMode(OldCullMode);
+				Cmd.SetCullMode(OldCullMode);
 			}
 			EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
-			RCache.set_Geometry(m_Parent->vs_SkeletonGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, batchFaces);
+			Cmd.SetGeometry(m_Parent->vs_SkeletonGeom);
+			Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batchFaces * 3, vBase);
 		}
 	}
 
-	RCache.set_CullMode(OldCullMode);
+	Cmd.SetCullMode(OldCullMode);
 }

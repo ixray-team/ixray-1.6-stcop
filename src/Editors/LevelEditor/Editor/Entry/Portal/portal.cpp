@@ -52,7 +52,7 @@ void CPortal::Render(int priority, bool strictB2F)
 		}
 
 		EDevice->SetShader(GEditorDraw.WireShader);
-		RCache.set_xform_world(Fidentity);
+		RImplementation.Imm().SetObjectTransform(Fidentity);
 
 		FvectorVec V;
 		V.reserve((src.size()) * 3);

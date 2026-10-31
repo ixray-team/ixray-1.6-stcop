@@ -6,62 +6,6 @@
 
 namespace
 {
-class cl_gridDim : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		const int tW = FluidManager.GetTextureWidth();
-		const int tH = FluidManager.GetTextureHeight();
-		const int tD = FluidManager.GetTextureDepth();
-		CBFluid& Fluid = RCache.Constants.Write<CBFluid>();
-		Fluid.textureWidth = (float)tW;
-		Fluid.textureHeight = (float)tH;
-		Fluid.textureDepth = (float)tD;
-		Fluid.gridDim.set((float)tW, (float)tH, (float)tD, 0.0f);
-		Fluid.recGridDim.set(1.0f / tW, 1.0f / tH, 1.0f / tD, 0.0f);
-		Fluid.maxGridDim = (float)std::max(tW, std::max(tH, tD));
-	}
-};
-static cl_gridDim		binder_gridDim;
-
-void BindConstants(CBlender_Compile& C)
-{
-	for (const char* Name : { "textureWidth", "textureHeight", "textureDepth", "gridDim", "recGridDim", "maxGridDim" })
-	{
-		C.r_Setup(Name, &binder_gridDim);
-	}
-}
-void SetupSamplers(CBlender_Compile& C)
-{
-	int smp = C.r_dx10Sampler("samPointClamp");
-	if ( smp != u32(-1) )
-	{
-		C.i_Address( smp, D3DTADDRESS_CLAMP);
-		C.i_Filter( smp, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
-	}
-
-	smp = C.r_dx10Sampler("samLinear");
-	if ( smp != u32(-1) )
-	{
-		C.i_Address( smp, D3DTADDRESS_CLAMP);
-		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-	}
-
-	smp = C.r_dx10Sampler("samLinearClamp");
-	if ( smp != u32(-1) )
-	{
-		C.i_Address( smp, D3DTADDRESS_CLAMP);
-		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-	}
-
-	smp = C.r_dx10Sampler("samRepeat");
-	if ( smp != u32(-1) )
-	{
-		C.i_Address( smp, D3DTADDRESS_WRAP);
-		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-	}
-	
-}
 void SetupTextures(CBlender_Compile& C, bool render = false)
 {
 	if (!render)
@@ -116,8 +60,6 @@ void CBlender_fluid_advect::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound befor r_End()
@@ -140,8 +82,6 @@ void CBlender_fluid_advect_velocity::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound befor r_End()
@@ -174,8 +114,6 @@ void CBlender_fluid_simulate::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound before r_End()
@@ -202,8 +140,6 @@ void CBlender_fluid_obst::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound before r_End()
@@ -225,8 +161,6 @@ void CBlender_fluid_emitter::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound before r_End()
@@ -246,8 +180,6 @@ void CBlender_fluid_obstdraw::Compile(CBlender_Compile& C)
 
 	C.r_CullMode(D3DCULL_NONE);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C);
 
 	//	Constants must be bound before r_End()
@@ -290,8 +222,6 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
 
 	//C.PassSET_ZB(false,false);
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C, true);
 
 	//	Constants must be bound before r_End()
@@ -328,8 +258,6 @@ void CBlender_fluid_raycast::Compile(CBlender_Compile& C)
 		break;
 	}
 
-	BindConstants(C);
-	SetupSamplers(C);
 	SetupTextures(C, true);
 
 	//	Constants must be bound before r_End()

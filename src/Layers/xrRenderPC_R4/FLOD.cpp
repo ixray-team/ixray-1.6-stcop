@@ -55,7 +55,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 #endif
 
 	// VS
-	geom.create(dwDecl, std::size(dwDecl), RCache.Vertex.Buffer(), RCache.QuadIB);
+	geom.create(dwDecl, std::size(dwDecl), RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
 
 	// lod correction
 	Fvector3			S;
@@ -90,6 +90,6 @@ void FMUMeshLODs::Load(const char* N, IReader* data, u32 dwFlags)
 	});
 }
 
-void FLOD::Render		(float LOD)
+void FLOD::Render		(GfxCmdList& Cmd, float LOD)
 {
 }

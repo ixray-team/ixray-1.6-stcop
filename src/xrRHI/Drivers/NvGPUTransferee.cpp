@@ -69,9 +69,6 @@ void CNvReader::Initialize()
 		{ return; }
 		if (!TryToInitializeFunctionLambda((void**)&NvAPI_EnumLogicalGPUs, 0x48B3EA59))
 		{ return; }
-		// GPU usage query is optional - engine can continue without it (we'll fallback at call sites)
-		if (!TryToInitializeFunctionLambda((void**)&NvAPI_GPU_GetUsages, 0x189A1FDF, /*required=*/false))
-		{ return; }
 		if (!TryToInitializeFunctionLambda((void**)&NvAPI_GPU_PhysicalFromLogical, 0x0AEA3FA32))
 		{ return; }
 		if (!TryToInitializeFunctionLambda((void**)&NvAPI_D3D11_SetDepthBoundsTest, 0x7AAF7A04, false))
@@ -94,10 +91,6 @@ void CNvReader::InitDeviceInfo()
 		bSupport = false;
 		return;
 	}
-
-
-	// gpuUsages[0] must be this value, otherwise NvAPI_GPU_GetUsages won't work
-	gpuUsages[0] = (NVAPI_MAX_USAGES_PER_GPU * 4) | 0x10000;
 
 	(*NvAPI_EnumPhysicalGPUs)(gpuHandlesPh, &AdapterID);
 
@@ -128,20 +121,6 @@ void CNvReader::MakeGPUCount()
 	{
 		Msg("[MSG] NVidia MGPU: %d-Way SLI detected.", AdapterFinal);
 	}
-}
-
-u32 CNvReader::GetPercentActive()
-{
-	// NvAPI_GPU_GetUsages may be optional/unavailable in some environments (Wine / shim).
-	// If it's not present, return 0 (no usage info) instead of crashing.
-	if (NvAPI_GPU_GetUsages == nullptr)
-	{
-		return 0;
-	}
-
-	(*NvAPI_GPU_GetUsages)(gpuHandlesPh[0], gpuUsages);
-	int usage = gpuUsages[3];
-	return (u32)usage;
 }
 
 u32 CNvReader::GetGPUCount()

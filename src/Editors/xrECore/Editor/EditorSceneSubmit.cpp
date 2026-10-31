@@ -17,24 +17,24 @@ static void RegisterWorkerThread()
 	}
 }
 
-void CEditableSurfaceVisual::Render(float LOD)
+void CEditableSurfaceVisual::Render(GfxCmdList& Cmd, float LOD)
 {
 	// An instanced vertex shader reads the transform from editor_instances, not from the object
 	// constants: drawn plainly it would take the first copy of whatever group bound that slot last
-	SVS* VS = RCache.get_VS();
+	SVS* VS = Cmd.GetVS();
 	if (!Skeleton && VS != nullptr && VS->editor_instance_slot != u32(-1))
 	{
-		GEditorSceneSubmit.DrawSingleInstanced(*this);
+		GEditorSceneSubmit.DrawSingleInstanced(Cmd, *this);
 		return;
 	}
 
 	if (Skeleton)
 	{
-		Mesh->RenderSkeletonGeometry(Parent, Surface);
+		Mesh->RenderSkeletonGeometry(Cmd, Parent, Surface);
 	}
 	else
 	{
-		Mesh->RenderGeometry(Parent, Surface, &Transform);
+		Mesh->RenderGeometry(Cmd, Parent, Surface, &Transform);
 	}
 }
 
@@ -95,9 +95,9 @@ bool SEditorInstanceBuffer::Upload(const Fvector4* Rows, u32 Count)
 	return true;
 }
 
-void CEditableInstancedVisual::Render(float LOD)
+void CEditableInstancedVisual::Render(GfxCmdList& Cmd, float LOD)
 {
-	GEditorSceneSubmit.DrawInstances(*this);
+	GEditorSceneSubmit.DrawInstances(Cmd, *this);
 }
 
 void CEditorSceneSubmit::BeginFrame()
@@ -509,11 +509,11 @@ void CEditorSceneSubmit::ApplyDeferred(SDeferredSubmit& Job)
 	}
 }
 
-void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
+void CEditorSceneSubmit::DrawInstances(GfxCmdList& Cmd, const CEditableInstancedVisual& Visual)
 {
-	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
+	Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
-	SVS* VS = RCache.get_VS();
+	SVS* VS = Cmd.GetVS();
 	const bool CanInstance = VS != nullptr && VS->editor_instance_slot != u32(-1) && Visual.Uploaded;
 	if (!CanInstance)
 	{
@@ -527,20 +527,20 @@ void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 			M.j.set(R[0].y, R[1].y, R[2].y);	M._24 = 0.f;
 			M.k.set(R[0].z, R[1].z, R[2].z);	M._34 = 0.f;
 			M.c.set(R[0].w, R[1].w, R[2].w);	M._44 = 1.f;
-			RCache.set_xform_world(M);
-			Visual.Mesh->RenderGeometry(nullptr, Visual.Surface);
+			Cmd.SetObjectTransform(M);
+			Visual.Mesh->RenderGeometry(Cmd, nullptr, Visual.Surface);
 		}
 
-		RCache.set_xform_world(Fidentity);
+		Cmd.SetObjectTransform(Fidentity);
 		return;
 	}
 
-	RCache.set_VSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
-	RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
-	Visual.Mesh->RenderGeometryInstanced(Visual.Surface, Visual.InstanceCount());
+	Cmd.SetResource(ERHI_SHADER_TYPE::VS, VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
+	Cmd.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
+	Visual.Mesh->RenderGeometryInstanced(Cmd, Visual.Surface, Visual.InstanceCount());
 }
 
-void CEditorSceneSubmit::DrawSingleInstanced(CEditableSurfaceVisual& Visual)
+void CEditorSceneSubmit::DrawSingleInstanced(GfxCmdList& Cmd, CEditableSurfaceVisual& Visual)
 {
 	static bool Reported = false;
 	if (!Reported)
@@ -566,13 +566,13 @@ void CEditorSceneSubmit::DrawSingleInstanced(CEditableSurfaceVisual& Visual)
 		{ M._13, M._23, M._33, M._43 },
 	};
 
-	SVS* VS = RCache.get_VS();
+	SVS* VS = Cmd.GetVS();
 	if (!Visual.InstanceBuffer.Upload(Rows, 1))
 	{
 		return;
 	}
 
-	RCache.set_VSResource(VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
-	RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
-	Visual.Mesh->RenderGeometryInstanced(Visual.Surface, 1);
+	Cmd.SetResource(ERHI_SHADER_TYPE::VS, VS->editor_instance_slot, Visual.InstanceBuffer.SRV);
+	Cmd.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
+	Visual.Mesh->RenderGeometryInstanced(Cmd, Visual.Surface, 1);
 }

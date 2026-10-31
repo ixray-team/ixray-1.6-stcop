@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	void on_dbg_render();
+	void on_dbg_render(GfxCmdList& Cmd);
 
 	#if DEBUG 
 	struct pixel_box

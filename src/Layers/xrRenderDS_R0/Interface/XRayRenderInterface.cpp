@@ -49,11 +49,6 @@ void CDS0_RenderInterface::level_Unload()
 {
 }
 
-HRESULT CDS0_RenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
-{
-	return E_NOTIMPL;
-}
-
 LPCSTR CDS0_RenderInterface::getShaderPath()
 {
 	return LPCSTR();

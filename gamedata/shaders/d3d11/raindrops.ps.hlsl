@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-Texture2D s_droplets;
+Texture2D s_droplets : register(t25);
 
 #include "shared\extra_cb.hlsli"
 

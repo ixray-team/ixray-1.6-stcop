@@ -29,8 +29,6 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 			xr_sprintf(TextureName, "shaders\\gasmasks\\mask_nm_%u", Index);
 			C.r_dx10Texture(SamplerName, TextureName);
 		}
-		C.r_dx10Sampler("smp_nofilter");
-		C.r_dx10Sampler("smp_rtlinear");
 		C.r_End();
 		return;
 	}
@@ -54,6 +52,5 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 
 	C.r_dx10Texture("s_breath", "shaders\\gasmask\\Condensation");
 	C.r_dx10Texture("s_gasmask", TexturePassName);
-	C.r_dx10Sampler("smp_rtlinear");
 	C.r_End();
 }

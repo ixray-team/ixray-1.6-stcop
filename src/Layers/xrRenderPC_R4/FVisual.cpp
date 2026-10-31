@@ -182,7 +182,7 @@ static SVS* incompatible_vertex_shader(const ref_shader& sh, u32 element, const 
 bool Fvisual::fast_usable()
 {
 	if (m_fast_usable < 0)
-		m_fast_usable = incompatible_vertex_shader(shader, SE_R2_SHADOW, m_fast->rm_geom) ? 0 : 1;
+		m_fast_usable = incompatible_vertex_shader(shader, ShaderVariant::Shadow, m_fast->rm_geom) ? 0 : 1;
 
 	return m_fast_usable != 0;
 }
@@ -193,7 +193,7 @@ void Fvisual::check_layout()
 		return;
 
 	m_layout_checked = true;
-	for (u32 element : { u32(SE_R2_NORMAL_HQ), u32(SE_R2_NORMAL_LQ), u32(SE_R2_SHADOW) })
+	for (u32 element : { u32(ShaderVariant::NormalHQ), u32(ShaderVariant::NormalLQ), u32(ShaderVariant::Shadow) })
 	{
 		if (SVS* vs = incompatible_vertex_shader(shader, element, rm_geom))
 		{
@@ -204,18 +204,16 @@ void Fvisual::check_layout()
 	}
 }
 
-void Fvisual::Render(float)
+void Fvisual::Render(GfxCmdList& Cmd, float)
 {
 	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && fast_usable())
 	{
-		RCache.set_Geometry(m_fast->rm_geom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
-		RCache.stat.r.s_static.add(m_fast->vCount);
+		Cmd.SetGeometry(m_fast->rm_geom);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->dwPrimitives * 3, m_fast->iBase, m_fast->vBase);
 		return;
 	}
-	RCache.set_Geometry(rm_geom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, vCount, iBase, dwPrimitives);
-	RCache.stat.r.s_static.add(vCount);
+	Cmd.SetGeometry(rm_geom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwPrimitives * 3, iBase, vBase);
 }
 
 #define PCOPY(a)	a = pFrom->a

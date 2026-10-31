@@ -20,8 +20,6 @@ public:
 	virtual void level_Load(IReader*) override;
 	virtual void level_Unload() override;
 
-	virtual HRESULT shader_compile(LPCSTR name,	DWORD const* pSrcData,	UINT SrcDataLen,	LPCSTR pFunctionName,LPCSTR pTarget,	DWORD Flags,	void*& result) override;
-
 	virtual void Statistics(CGameFont* F) override {};
 	virtual LPCSTR getShaderPath() override;
 	virtual IRender_Sector* getSector(int id) override;

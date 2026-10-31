@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_accumulator()
+void CRenderTarget::phase_accumulator(GfxCmdList& Cmd)
 {
 	// Targets
 	if (dwAccumulatorClearMark == Device.dwFrame)
 	{
 		// normal operation - setup
-		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
+		u_setrt(Cmd, rt_Accumulator, nullptr, nullptr, RDepth);
 	}
 	else
 	{
@@ -14,34 +14,34 @@ void CRenderTarget::phase_accumulator()
 		dwAccumulatorClearMark = Device.dwFrame;
 
 		// clear
-		u_setrt(rt_Accumulator, nullptr, nullptr, RDepth);
-		reset_light_marker();
-		GRHI->ClearTarget(rt_Accumulator->pRT);
+		u_setrt(Cmd, rt_Accumulator, nullptr, nullptr, RDepth);
+		reset_light_marker(Cmd);
+		Cmd.ClearTarget(rt_Accumulator->pRT);
 
 		// Stencil	- draw only where stencil >= 0x1
-		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
-		RCache.set_ColorWriteEnable();
+		Cmd.SetStencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetColorWriteEnable();
 	}
 
 	// Restore viewport after shadow map rendering
 	RImplementation.rmNormal();
 }
 
-void CRenderTarget::phase_vol_accumulator()
+void CRenderTarget::phase_vol_accumulator(GfxCmdList& Cmd)
 {
 	if (!m_bHasActiveVolumetric)
 	{
 		m_bHasActiveVolumetric = true;
-		u_setrt(rt_Generic_2, nullptr, nullptr, RDepth);
-		GRHI->ClearTarget(rt_Generic_2->pRT);
+		u_setrt(Cmd, rt_Generic_2, nullptr, nullptr, RDepth);
+		Cmd.ClearTarget(rt_Generic_2->pRT);
 	}
 	else
 	{
-		u_setrt(rt_Generic_2, nullptr, nullptr, RDepth);
+		u_setrt(Cmd, rt_Generic_2, nullptr, nullptr, RDepth);
 	}
 
-	RCache.set_Stencil(false);
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_ColorWriteEnable();
+	Cmd.SetStencil(false);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetColorWriteEnable();
 }

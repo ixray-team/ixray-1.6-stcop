@@ -8,7 +8,7 @@ struct v2p
     float fDensity : TEXCOORD2; // plane density along Z axis
 };
 
-Texture2D s_noise;
+Texture2D s_noise : register(t26);
 
 #define USE_LMAP
 #define USE_LMAPXFORM

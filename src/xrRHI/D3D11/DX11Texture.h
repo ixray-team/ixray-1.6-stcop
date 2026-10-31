@@ -11,10 +11,6 @@ private:
     ID3D11Texture1D* Texture1D = nullptr;
     ID3D11Resource* Resource = nullptr;
     
-    IRHIShaderResourceView* SRV = nullptr;
-    IRHIRenderTargetView* RTV = nullptr;
-    IRHIDepthStencilView* DSV = nullptr;
-    
     RHITextureDesc m_desc;
     
 public:
@@ -35,9 +31,6 @@ public:
     virtual ERHI_FORMAT GetFormat() const override;
     virtual ERHI_USAGE GetUsage() const override;
     
-    virtual IRHIShaderResourceView* GetShaderResourceView() override;
-    virtual IRHIRenderTargetView* GetRenderTargetView() override;
-    virtual IRHIDepthStencilView* GetDepthStencilView() override;
     virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box) override;
     virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) override;
     virtual void Unlock() override;
@@ -55,14 +48,12 @@ class DX11ShaderResourceView :
 {
 private:
     ID3D11ShaderResourceView* SRV = nullptr;
-    IRHISurface* Surface = nullptr;
     
 public:
-    DX11ShaderResourceView(ID3D11ShaderResourceView* srv, IRHISurface* surface);
+    DX11ShaderResourceView(ID3D11ShaderResourceView* srv);
     virtual ~DX11ShaderResourceView();
     
     virtual void* GetRawSRV() override;
-    virtual IRHISurface* GetSurface() override;
 
     virtual void AddRef() override;
     virtual u32 Release() override;
@@ -140,7 +131,6 @@ public:
     virtual IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource) override;
     virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) override;
-    virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) override;
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) override;
     virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;

@@ -11,7 +11,7 @@ bool CEditorInstanceBatcher::IsShaderSupported(Shader* S)
 	}
 
 	// Every element the scene graph picks for a surface: normal HQ / LQ and shadow generation
-	for (u32 Element = 0; Element <= SE_R2_SHADOW; ++Element)
+	for (u32 Element = 0; Element <= ShaderVariant::Shadow; ++Element)
 	{
 		if (!S->E[Element])
 		{
@@ -84,7 +84,7 @@ void CEditorInstanceBatcher::End()
 {
 	if (Active && !Items.empty())
 	{
-		Flush();
+		Flush(RImplementation.Imm());
 	}
 
 	Active = false;
@@ -104,7 +104,7 @@ void CEditorInstanceBatcher::Add(ref_shader& S, ref_geom& Geom, u32 VertexCount,
 	Items.push_back({ &*S, &*Geom, VertexCount, u32(Instances.size() - 1) });
 }
 
-void CEditorInstanceBatcher::Flush()
+void CEditorInstanceBatcher::Flush(GfxCmdList& Cmd)
 {
 	std::sort(Items.begin(), Items.end(), [](const SItem& A, const SItem& B)
 	{
@@ -121,7 +121,7 @@ void CEditorInstanceBatcher::Flush()
 		return A.VertexCount < B.VertexCount;
 	});
 
-	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
+	Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
 	const u32 ItemCount = (u32)Items.size();
 	for (u32 ChunkStart = 0; ChunkStart < ItemCount; ChunkStart += BufferCapacity)
@@ -156,26 +156,26 @@ void CEditorInstanceBatcher::Flush()
 				++RunEnd;
 			}
 
-			DrawRun(First, RunStart - ChunkStart, RunEnd - RunStart);
+			DrawRun(Cmd, First, RunStart - ChunkStart, RunEnd - RunStart);
 			RunStart = RunEnd;
 		}
 	}
 }
 
-void CEditorInstanceBatcher::DrawRun(const SItem& First, u32 Offset, u32 Count)
+void CEditorInstanceBatcher::DrawRun(GfxCmdList& Cmd, const SItem& First, u32 Offset, u32 Count)
 {
 	Shader* S = First.ShaderPtr;
 	const u32 PassCount = (u32)S->E[0]->passes.size();
 
 	for (u32 PassID = 0; PassID < PassCount; ++PassID)
 	{
-		RCache.set_Shader(S, PassID);
-		RCache.Constants.Write<CBEditor>().editor_instance_params.set(float(Offset), 0.0f, 0.0f, 0.0f);
+		Cmd.SetPass(S, PassID);
+		Cmd.Constants.Write<CBEditor>().editor_instance_params.set(float(Offset), 0.0f, 0.0f, 0.0f);
 
-		RCache.set_VSResource(S->E[0]->passes[PassID]->vs->editor_instance_slot, SRV);
+		Cmd.SetResource(ERHI_SHADER_TYPE::VS, S->E[0]->passes[PassID]->vs->editor_instance_slot, SRV);
 		EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 
-		RCache.set_Geometry(First.GeomPtr);
-		RCache.RenderInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, First.VertexCount / 3, Count);
+		Cmd.SetGeometry(First.GeomPtr);
+		Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, First.VertexCount, Count, 0);
 	}
 }

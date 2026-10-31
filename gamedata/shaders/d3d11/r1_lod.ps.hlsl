@@ -12,10 +12,10 @@ struct v2p
     float fog : TEXCOORD7;
 };
 
-Texture2D s_base0;
-Texture2D s_base1;
-Texture2D s_hemi0;
-Texture2D s_hemi1;
+Texture2D s_base0 : register(t49);
+Texture2D s_base1 : register(t50);
+Texture2D s_hemi0 : register(t51);
+Texture2D s_hemi1 : register(t52);
 
 float4 main(v2p I) : SV_Target
 {

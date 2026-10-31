@@ -7,9 +7,7 @@ DX12Buffer::DX12Buffer(InternalDevice12& device, const RHIBufferDesc& desc, cons
     {
         InternalDevice12::ContextLock guard(_device);
         _device._buffers.push_back(this);
-        const bool isConstant = desc.Type == ERHI_BUFFER_TYPE::CONSTANT;
-        const bool isStream = desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && !isConstant && desc.Type != ERHI_BUFFER_TYPE::STRUCTURED;
-        if (!isConstant && !isStream)
+        if (desc.Usage != ERHI_USAGE::USAGE_DYNAMIC || desc.Type == ERHI_BUFFER_TYPE::STRUCTURED)
         {
             _resource.Native = device.CreateNativeBuffer(desc.Size, D3D12_HEAP_TYPE_DEFAULT);
             _resource.States.assign(1, D3D12_RESOURCE_STATE_COMMON);
@@ -86,8 +84,7 @@ bool DX12Buffer::Map(ERHI_BUFFER_MAP type, u32 flags, RHIMappedSubresource* out_
         *out_data = { _data.data(), _desc.Size, _desc.Size };
         return true;
     }
-    const bool stream = _desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::CONSTANT &&
-        _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED;
+    const bool stream = _desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED;
     u8* mapped = nullptr;
     bool copyShadow = false;
     {
@@ -128,8 +125,7 @@ void DX12Buffer::Unmap()
     InternalDevice12::ContextLock guard(_device);
     R_ASSERT(_isMapped);
     _isMapped = false;
-    if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::CONSTANT &&
-        _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED &&
+    if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED &&
         _mapType != ERHI_BUFFER_MAP::READ && _mapType != ERHI_BUFFER_MAP::READ_AND_WRITE)
     {
         return;
@@ -143,17 +139,6 @@ void DX12Buffer::Unmap()
 void DX12Buffer::UpdateSubresource(void* data, u32 size)
 {
     R_ASSERT(data && size <= _desc.Size);
-    if (_desc.Type == ERHI_BUFFER_TYPE::CONSTANT)
-    {
-        InternalDevice12::ContextLock guard(_device);
-        R_ASSERT(!_isMapped);
-        if (data != _data.data())
-        {
-            memcpy(_data.data(), data, size);
-        }
-        ++_generation;
-        return;
-    }
     if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED)
     {
         u8* destination = nullptr;
@@ -200,22 +185,6 @@ D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
         return _nativeAddress;
     }
     InternalDevice12::ContextLock guard(_device);
-    if (_desc.Type == ERHI_BUFFER_TYPE::CONSTANT)
-    {
-        const u64 aligned = (u64(_desc.Size) + 255) & ~u64(255);
-        const bool live = _upload.Resource && !_upload.Owned && _upload.Frame == _device._frame &&
-            _device._frames[_upload.Frame].UploadSerial == _upload.Serial;
-        if (_uploaded != _generation || !live)
-        {
-            _upload = _device.AllocateUpload(aligned, 256);
-            memcpy(_upload.Data, _data.data(), _desc.Size);
-            memset(_upload.Data + _desc.Size, 0, aligned - _desc.Size);
-            _device._counters.CopiedBytes.fetch_add(aligned, std::memory_order_relaxed);
-            _uploaded = _generation;
-        }
-        _published = _upload.Resource->GetGPUVirtualAddress() + _upload.Offset;
-        return _published;
-    }
     if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED)
     {
         if (!_upload.Owned)
@@ -231,16 +200,6 @@ D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
         return _published;
     }
     return _resource.Native->GetGPUVirtualAddress();
-}
-
-u64 DX12Buffer::PublishedAddress() const
-{
-    if (_desc.Type != ERHI_BUFFER_TYPE::CONSTANT || _uploaded != _generation || !_upload.Resource || _upload.Owned ||
-        _upload.Frame != _device._frame || _device._frames[_upload.Frame].UploadSerial != _upload.Serial)
-    {
-        return 0;
-    }
-    return _published;
 }
 
 void DX12Buffer::DiscardStream()

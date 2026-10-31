@@ -16,7 +16,7 @@ struct InstanceData
     float2 trample_dir;
 };
 
-StructuredBuffer<InstanceData> detail_buffer : register(t0);
+StructuredBuffer<InstanceData> detail_buffer : register(t25);
 
 #ifndef DETAIL_SHADOW_PASS
 	#define OutStructure p_bumped_new

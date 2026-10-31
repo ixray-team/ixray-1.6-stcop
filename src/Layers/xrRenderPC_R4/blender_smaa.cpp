@@ -15,8 +15,6 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_position", r2_RT_P);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -28,8 +26,6 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_areatex", "shaders\\smaa\\smaa_area_tex_dx10");
         C.r_dx10Texture("s_searchtex", "shaders\\smaa\\smaa_search_tex");
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -40,8 +36,6 @@ void CBlender_SMAA::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_generic0);
         C.r_dx10Texture("s_blendtex", r2_RT_smaa_blendtex);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 

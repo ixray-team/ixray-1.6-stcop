@@ -2,30 +2,30 @@
 
 void CRenderTarget::phase_smap_spot_clear()
 {
-	GRHI->ClearTarget(rt_smap_surf->pRT, ERTColor::Black);
-	GRHI->ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+	RImplementation.Imm().ClearTarget(rt_smap_surf->pRT, ERTColor::Black);
+	RImplementation.Imm().ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 }
 
-void CRenderTarget::phase_smap_spot(light* L)
+void CRenderTarget::phase_smap_spot(GfxCmdList& Cmd, light* L)
 {
 	RHIViewport VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
-	SetupSpotShadowTarget(rt_smap_depth->pZRT, rt_smap_depth->dwWidth, rt_smap_depth->dwHeight, VP, rt_smap_surf->pRT);
+	SetupSpotShadowTarget(Cmd, rt_smap_depth->pZRT, rt_smap_depth->dwWidth, rt_smap_depth->dwHeight, VP, rt_smap_surf->pRT);
 }
 
-void CRenderTarget::SetupSpotShadowTarget(IRHIDepthStencilView* Depth, u32 Width, u32 Height, RHIViewport Viewport, IRHIRenderTargetView* Color)
+void CRenderTarget::SetupSpotShadowTarget(GfxCmdList& Cmd, IRHIDepthStencilView* Depth, u32 Width, u32 Height, RHIViewport Viewport, IRHIRenderTargetView* Color)
 {
-	u_setrt(Width, Height, Color, nullptr, nullptr, Depth);
-	GRHI->SetViewport(Viewport);
-	RCache.set_Scissor(nullptr);
-	RCache.set_Z(TRUE);
-	RCache.set_RenderState(D3DRS_ZWRITEENABLE, TRUE);
-	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(false);
-	RCache.set_ColorWriteEnable(false);
+	u_setrt(Cmd, Width, Height, Color, nullptr, nullptr, Depth);
+	Cmd.SetViewport(Viewport);
+	Cmd.SetScissor(nullptr);
+	Cmd.SetDepthEnable(TRUE);
+	Cmd.SetDepthWrite(true);
+	Cmd.SetDepthFunc(D3DCMP_LESSEQUAL);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetStencil(false);
+	Cmd.SetColorWriteEnable(false);
 }
 
-void CRenderTarget::phase_smap_spot_tsh(light* L)
+void CRenderTarget::phase_smap_spot_tsh(GfxCmdList& Cmd, light* L)
 {
-	RCache.set_ColorWriteEnable();
+	Cmd.SetColorWriteEnable();
 }

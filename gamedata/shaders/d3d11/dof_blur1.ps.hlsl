@@ -1,8 +1,8 @@
 #include "common.hlsli"
 
-Texture2D<float> t_coc;
-Texture2D<float4> t_image;
-Texture2D<float4> t_bimage;
+Texture2D<float> t_coc : register(t28);
+Texture2D<float4> t_image : register(t25);
+Texture2D<float4> t_bimage : register(t26);
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

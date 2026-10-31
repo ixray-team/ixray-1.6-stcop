@@ -39,7 +39,6 @@ IC	void jitter(CBlender_Compile& C)
 	C.r_dx10Texture("jitter1", JITTER(1));
 	C.r_dx10Texture("jitter2", JITTER(2));
 
-	C.r_dx10Sampler("smp_jitter");
 }
 #if defined(IXR_APPLE_SERIES)
 // HACK: the DXMT D3D / windows-compat headers leave NULL unusable (it expands to nothing),

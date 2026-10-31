@@ -86,10 +86,11 @@ bool CLight::GetBox( Fbox& box )
 
 void CLight::Render(int priority, bool strictB2F)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	inherited::Render(priority,strictB2F);
     if ((1==priority)&&(false==strictB2F)){
         EDevice->SetShader		(GEditorDraw.WireShader);
-        RCache.set_xform_world	(Fidentity);
+        Cmd.SetObjectTransform(Fidentity);
     	u32 clr = Locked()?LOCK_COLOR:Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
     	switch (m_Type){
         case ELight::ltPoint:
@@ -130,7 +131,7 @@ void CLight::Render(int priority, bool strictB2F)
     }else if ((1==priority)&&(true==strictB2F))
     {
         EDevice->SetShader		(GEditorDraw.SelectionShader);
-        RCache.set_xform_world	(Fidentity);
+        Cmd.SetObjectTransform(Fidentity);
     	switch (m_Type)
         {
         case ELight::ltPoint:

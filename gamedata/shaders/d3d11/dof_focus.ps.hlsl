@@ -1,6 +1,6 @@
 #include "common.hlsli"
 
-Texture2D<float> t_focus_prev;
+Texture2D<float> t_focus_prev : register(t25);
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

@@ -10,7 +10,7 @@ struct InstanceData
     float trample_visual;
     float2 trample_dir;
 };
-StructuredBuffer<InstanceData> detail_buffer : register(t0);
+StructuredBuffer<InstanceData> detail_buffer : register(t25);
 struct vf
 {
     float2 tc0 : TEXCOORD0;

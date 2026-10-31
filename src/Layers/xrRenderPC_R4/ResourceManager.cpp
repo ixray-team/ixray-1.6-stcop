@@ -8,7 +8,6 @@
 #include "tss.h"
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
-#include "XMLBlendV2.h"
 
 #include "3DFluid/dx103DFluidManager.h"
 //	Already defined in Texture.cpp
@@ -38,7 +37,6 @@ namespace
 			{
 				ShaderCreateLock.AcquireShared();
 			}
-			RImplementation.clearAllShaderOptions();
 		}
 
 		~ShaderCreateScope()
@@ -68,45 +66,30 @@ namespace
 	};
 }
 
-#ifndef MASTER_GOLD
-static u32 CalculateXMLCRC(const char* path)
+void CResourceManager::LoadXMLBlends()
 {
-	IReader* reader = FS.r_open(path);
-	if (!reader)
+	m_XMLBlends.clear();
+	xr_vector<char*>* Folder = FS.file_list_open(_game_shaders_, RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);
+	if (!Folder)
 	{
-		return 0;
+		return;
 	}
-
-	u32 crc = crc32(reader->pointer(), reader->length());
-	FS.r_close(reader);
-	return crc;
+	for (char* File : *Folder)
+	{
+		if (const char* Ext = strext(File); Ext && !xr_strcmp(Ext, ".xml"))
+		{
+			m_XMLBlends[xr_string(File, Ext - File)] = xr_make_unique<CXMLBlend>(File);
+		}
+	}
+	FS.file_list_close(Folder);
 }
 
-#endif
-
-static xr_string MakeXMLBlendKey(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+CXMLBlend* CResourceManager::FindXMLBlend(const char* s_shader)
 {
-	xr_string key = s_shader ? s_shader : "";
-	key += "|";
-	key += s_textures ? s_textures : "";
-	key += "|";
-	key += s_constants ? s_constants : "";
-	key += "|";
-	key += s_matrices ? s_matrices : "";
-	key += "|";
-	key += xr_string::ToString(Engine.External.GetSkinningMode());
-	if (RImplementation.IsEditorInstancing())
-	{
-		key += "|inst";
-	}
-	return key;
-}
-
-void CResourceManager::ClearXMLBlendCache()
-{
-	ShaderCreateScope Scope(true);
-	xrCriticalSectionGuard CacheGuard(creationGuard);
-	m_xmlBlendCache.clear();
+	xr_string Name = s_shader ? s_shader : "";
+	std::replace(Name.begin(), Name.end(), '\\', '_');
+	const auto It = m_XMLBlends.find(Name);
+	return It == m_XMLBlends.end() ? nullptr : It->second.get();
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -231,7 +214,7 @@ void CResourceManager::_DeleteElement(const ShaderElement* S)
 	Msg	("! ERROR: Failed to find compiled 'shader-element'");
 }
 
-ref_shader CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
+ref_shader CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, const char* s_textures, const char*, const char* s_matrices)
 {
 	CBlender_Compile	C;
 	Shader				S;
@@ -251,63 +234,19 @@ ref_shader CResourceManager::_cpp_Create(IBlender* B, const char* s_shader, cons
 
 	// Parse names
 	_ParseList			(C.L_textures,	s_textures	);
-	_ParseList			(C.L_constants,	s_constants	);
 	_ParseList			(C.L_matrices,	s_matrices	);
 
-	// Compile element	(LOD0 - HQ)
+	const bool Detail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+	const bool UseDetail[ShaderVariant::Count] = { Detail, Detail, false, false, true, false, !LightingModeIsStaticRender() };
+	for (u32 Variant = 0; Variant < ShaderVariant::Count; ++Variant)
 	{
-		C.iElement			= 0;
-		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[0]				= _CreateElement	(E);
+		C.iElement = Variant;
+		C.bDetail = UseDetail[Variant];
+		ShaderElement E;
+		C._cpp_Compile(&E);
+		S.E[Variant] = _CreateElement(E);
 	}
 
-	// Compile element	(LOD1)
-	{
-		C.iElement			= 1;
-		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[1]				= _CreateElement	(E);
-	}
-
-	// Compile element
-	{
-		C.iElement			= 2;
-		C.bDetail			= false;
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[2]				= _CreateElement	(E);
-	}
-
-	// Compile element
-	{
-		C.iElement			= 3;
-		C.bDetail			= false;
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[3]				= _CreateElement	(E);
-	}
-
-	// Compile element
-	{
-		C.iElement			= 4;
-		C.bDetail			= true;	//.$$$ HACK :)
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[4]				= _CreateElement	(E);
-	}
-
-	// Compile element
-	{
-		C.iElement			= 5;
-		C.bDetail			= false;
-		ShaderElement		E;
-		C._cpp_Compile		(&E);
-		S.E[5]				= _CreateElement	(E);
-	}
-	
 	ref_shader ResultShader = _CreateShader(&S);
 	return ResultShader;
 }
@@ -347,9 +286,11 @@ ref_shader CResourceManager::_Compile(const char* s_shader, const char* s_textur
 		if (ref_shader pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
 			return pShader;
 	}
+
+	CXMLBlend* XMLBlend = FindXMLBlend(s_shader);
 #if !defined(_EDITOR)
 	// Editors render the deferred path, so they never take the static (R1) blenders
-	if (LightingModeIsStaticRender() && !XMLBlendV2::IsStaticBlend(s_shader))
+	if (LightingModeIsStaticRender() && !(XMLBlend && XMLBlend->IsStatic()))
 	{
 		if (IBlender* blender = _FindBlender(s_shader))
 		{
@@ -359,16 +300,20 @@ ref_shader CResourceManager::_Compile(const char* s_shader, const char* s_textur
 	}
 #endif
 
-	if (CXMLBlend::Check(s_shader))
-		return xr_make_unique<CXMLBlend>(s_shader)->Compile(s_textures);
+	if (XMLBlend)
+	{
+		if (ref_shader pShader = XMLBlend->Compile(s_textures))
+			return pShader;
+	}
 
 	if (ref_shader pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices))
 		return pShader;
 
-	if (!CXMLBlend::Check("stub_default"))
+	CXMLBlend* Stub = FindXMLBlend("stub_default");
+	if (!Stub)
 		FATAL("Can't find stub_default.xml");
 
-	return xr_make_unique<CXMLBlend>("stub_default")->Compile(s_textures);
+	return Stub->Compile(s_textures);
 }
 
 ref_shader CResourceManager::Create(const char* s_shader, const char* s_textures, const char* s_constants, const char* s_matrices)
@@ -378,50 +323,7 @@ ref_shader CResourceManager::Create(const char* s_shader, const char* s_textures
 	if (g_dedicated_server)
 		return nullptr;
 
-	ref_shader pShader;
-	if (!IsForceBlenderShader(s_shader) && CXMLBlend::Check(s_shader))
-	{
-		xr_string key = MakeXMLBlendKey(s_shader, s_textures, s_constants, s_matrices);
-
-#ifndef MASTER_GOLD
-		u32 current_crc = CalculateXMLCRC(s_shader);
-#endif
-
-		{
-			xrCriticalSectionGuard CacheGuard(creationGuard);
-			auto it = m_xmlBlendCache.find(key);
-			if (it != m_xmlBlendCache.end())
-			{
-#ifndef MASTER_GOLD
-				if (it->second.crc == current_crc)
-#endif
-				{
-					ref_shader Cached;
-					if (ResourceLifetime::TryAcquire(it->second.shader, Cached))
-					{
-						return Cached;
-					}
-				}
-			}
-		}
-
-		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
-
-		if (pShader)
-		{
-			XMLBlendCacheEntry entry;
-			entry.shader = pShader._get();
-
-#ifndef MASTER_GOLD
-			entry.crc = current_crc;
-#endif
-
-			xrCriticalSectionGuard CacheGuard(creationGuard);
-			m_xmlBlendCache[key] = entry;
-		}
-	}
-	else
-		pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
+	ref_shader pShader = _Compile(s_shader, s_textures, s_constants, s_matrices);
 
 	xrCriticalSectionGuard MetadataGuard(creationGuard);
 	if (pShader && !pShader->src_shader)
@@ -453,7 +355,6 @@ void CResourceManager::RecompileShaders()
 			continue;
 
 		Engine.External.SetSkinningMode(S->src_skinning);
-		RImplementation.clearAllShaderOptions();
 		ref_shader N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
 		if (N == S)
 			continue;
@@ -470,14 +371,6 @@ void CResourceManager::Delete(const Shader* S)
 		return;
 
 	xrCriticalSectionGuard guard(creationGuard);
-
-	for (auto it = m_xmlBlendCache.begin(); it != m_xmlBlendCache.end(); )
-	{
-		if (it->second.shader == S)
-			it = m_xmlBlendCache.erase(it);
-		else
-			++it;
-	}
 
 	if (reclaim(v_shaders, S))
 		return;
@@ -560,7 +453,7 @@ void CResourceManager::DeferredUpload()
 	WaitForTextureLoading();
 
 	FluidManager.Initialize(70, 70, 70);
-	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+	FluidManager.SetScreenSize((u32)GfxCmdList::GetWidth(), (u32)GfxCmdList::GetHeight());
 }
 
 void CResourceManager::DeferredUnload() 

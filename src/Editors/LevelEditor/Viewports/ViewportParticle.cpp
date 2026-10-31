@@ -49,6 +49,7 @@ void CViewportParticle::Draw()
 
 void CViewportParticle::Render()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (EContext.UI->ViewID != View.ViewportID)
 	{
 		return;
@@ -58,14 +59,14 @@ void CViewportParticle::Render()
 	{
 		ParticleGroupView->OnFrame(Device.dwTimeDelta);
 		//ParticleGroupView->Render(0);
-		((CRender*)::Render)->Models->RenderSingle(ParticleGroupView, Fidentity, 1.f);
+		((CRender*)::Render)->Models->RenderSingle(Cmd, ParticleGroupView, Fidentity, 1.f);
 	}
 
 	if (ParticleEffectView != nullptr)
 	{
 		ParticleEffectView->OnFrame(Device.dwTimeDelta);
 		//ParticleEffectView->Render(0);
-		((CRender*)::Render)->Models->RenderSingle(ParticleEffectView, Fidentity, 1.f);
+		((CRender*)::Render)->Models->RenderSingle(Cmd, ParticleEffectView, Fidentity, 1.f);
 	}
 }
 

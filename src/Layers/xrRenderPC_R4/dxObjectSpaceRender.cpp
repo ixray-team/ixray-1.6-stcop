@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "dxDebugRender.h"
 
 #ifdef DEBUG
 
@@ -27,17 +28,18 @@ void dxObjectSpaceRender::dbgAddSphere(const Fsphere &sphere, u32 colour)
 void dxObjectSpaceRender::dbgRender()
 {
 	R_ASSERT(bDebug);
+	GfxCmdList& Cmd = RImplementation.Imm();
 
-	RCache.set_Shader(m_shDebug);
+	Cmd.SetPass(m_shDebug);
 	for (u32 i=0; i<q_debug.boxes.size(); i++)
 	{
 		Fobb&		obb		= q_debug.boxes[i];
 		Fmatrix		X,S,R;
 		obb.xform_get(X);
-		RCache.dbg_DrawOBB(X, obb.m_halfsize, color_xrgb(255,0,0));
+		DebugRenderImpl.DrawOBB(X, obb.m_halfsize, color_xrgb(255,0,0));
 		S.scale		(obb.m_halfsize);
 		R.mul		(X,S);
-		RCache.dbg_DrawEllipse(R, color_xrgb(0,0,255));
+		DebugRenderImpl.DrawEllipse(R, color_xrgb(0,0,255));
 	}
 	q_debug.boxes.clear();
 
@@ -48,14 +50,14 @@ void dxObjectSpaceRender::dbgRender()
 		Fmatrix		M;
 		M.scale		(S.R,S.R,S.R);
 		M.translate_over(S.P);
-		RCache.dbg_DrawEllipse(M,P.second);
+		DebugRenderImpl.DrawEllipse(M,P.second);
 	}
 	dbg_S.clear();
 }
 
 void dxObjectSpaceRender::SetShader()
 {
-	RCache.set_Shader(m_shDebug);
+	RImplementation.Imm().SetPass(m_shDebug);
 }
 
 #endif // DEBUG

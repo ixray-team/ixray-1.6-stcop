@@ -201,9 +201,10 @@ void CEditorDrawUtilities::OnDeviceCreate()
 		boxvert[i*6+5].set(p.x,p.y,p.z-S.z*0.25f);
 	}
 // create render stream
-	vs_L.create		(FVF::F_L,RCache.Vertex.Buffer(),RCache.Index.Buffer());
-	vs_TL.create	(FVF::F_TL,RCache.Vertex.Buffer(),RCache.Index.Buffer());
-	vs_LIT.create	(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.Index.Buffer());
+	GfxCmdList& Cmd = RImplementation.Imm();
+	vs_L.create		(FVF::F_L,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
+	vs_TL.create	(FVF::F_TL,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
+	vs_LIT.create	(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
 
 	m_Font = g_FontManager->GetFont("stat_font");
 }
@@ -293,7 +294,7 @@ void CEditorDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector&
 
 void CEditorDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 {
-	RCache.set_xform_world(Fidentity);
+	RImplementation.Imm().SetObjectTransform(Fidentity);
 	AddCross(p, radius,radius,radius, radius,radius,radius, c, true);
 }
 
@@ -320,7 +321,7 @@ void CEditorDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 	DrawLine(p0, p1, clr);
 
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			    vBase;
 
 	if (s) DU_DRAW_SH(s);
@@ -379,8 +380,8 @@ static Fvector PT [6] = {
 	int k;
 	FVF::L*	pv;
 	WORD* i;
-	_VertexStream*	Stream	= &RCache.Vertex;
-	_IndexStream*	StreamI	= &RCache.Index;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
+	_IndexStream*	StreamI	= &RImplementation.Imm().Index;
 
 	// fill VB
 	pv	 			= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
@@ -540,7 +541,7 @@ void CEditorDrawUtilities::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, c
 	Device.mFullTransform.transform(c,p);
 	c.x = (float)iFloor(_x2real(c.x)); c.y = (float)iFloor(_y2real(-c.y));
 
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32 vBase;
 	FVF::TL* pv	= (FVF::TL*)Stream->Lock(5,vs_TL->vb_stride,vBase);
 	pv->p.set(c.x-s,c.y-s,0,1); pv->color=clr; pv++;
@@ -600,7 +601,7 @@ void CEditorDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, 
 	u32 cc=(clr)?*clr:boxcolor;
 
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase;
 	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(boxvertcount,vs_L->vb_stride,vBase);
 	for (int i=0; i<boxvertcount; i++,pv++){
@@ -618,7 +619,7 @@ void CEditorDrawUtilities::DrawSelectionBox(const Fvector& C, const Fvector& S, 
 
 void CEditorDrawUtilities::DrawBox(const Fvector& offs, const Fvector& Size, bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 {
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	if (bWire){
 		u32			vBase;
 		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(identboxwirecount,vs_L->vb_stride,vBase);
@@ -655,7 +656,7 @@ void CEditorDrawUtilities::DrawOBB(const Fmatrix& parent, const Fobb& box, u32 c
 	S.scale			(box.m_halfsize.x*2.f,box.m_halfsize.y*2.f,box.m_halfsize.z*2.f);
 	X.mul_43		(R,S);
 	R.mul_43		(parent,X); 
-	RCache.set_xform_world(R);
+	RImplementation.Imm().SetObjectTransform(R);
 	DrawIdentBox	(true,true,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -666,7 +667,7 @@ void CEditorDrawUtilities::DrawAABB(const Fmatrix& parent, const Fvector& center
 	S.scale			(size.x*2.f,size.y*2.f,size.z*2.f);
 	S.translate_over(center);
 	R.mul_43		(parent,S); 
-	RCache.set_xform_world(R);
+	RImplementation.Imm().SetObjectTransform(R);
 	DrawIdentBox	(bSolid,bWire,clr_s,clr_w);
 }
 
@@ -676,7 +677,7 @@ void CEditorDrawUtilities::DrawAABB(const Fvector& p0, const Fvector& p1, u32 cl
 	Fvector	C; C.set((p1.x+p0.x)*0.5f,(p1.y+p0.y)*0.5f,(p1.z+p0.z)*0.5f);
 	R.scale			(std::abs(p1.x-p0.x), std::abs(p1.y-p0.y), std::abs(p1.z-p0.z));
 	R.translate_over(C);
-	RCache.set_xform_world(R);
+	RImplementation.Imm().SetObjectTransform(R);
 	DrawIdentBox	(bSolid,bWire,clr_s,clr_w);
 }
 
@@ -686,14 +687,14 @@ void CEditorDrawUtilities::DrawSphere(const Fmatrix& parent, const Fvector& cent
 	B.scale				(radius,radius,radius);
 	B.translate_over	(center);
 	B.mulA_43			(parent);
-	RCache.set_xform_world(B);
+	RImplementation.Imm().SetObjectTransform(B);
 	DrawIdentSphere		(bSolid, bWire, clr_s,clr_w);
 }
 //----------------------------------------------------
 
 void CEditorDrawUtilities::DrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, bool bSolid, bool bWire)
 {
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 
 	u32				vBase;
 	if (bSolid)
@@ -723,17 +724,17 @@ void CEditorDrawUtilities::DD_DrawFace_begin(bool bWire)
 {
 	VERIFY				(m_DD_pv_start==0);
 	m_DD_wire			= bWire;
-	m_DD_pv_start		= (FVF::L*)RCache.Vertex.Lock(MAX_VERT_COUNT,vs_L->vb_stride,m_DD_base);	
+	m_DD_pv_start		= (FVF::L*)RImplementation.Imm().Vertex.Lock(MAX_VERT_COUNT,vs_L->vb_stride,m_DD_base);	
 	m_DD_pv				= m_DD_pv_start;
 }
 void CEditorDrawUtilities::DD_DrawFace_flush(bool try_again)
 {
-	RCache.Vertex.Unlock((u32)(m_DD_pv-m_DD_pv_start),vs_L->vb_stride);
+	RImplementation.Imm().Vertex.Unlock((u32)(m_DD_pv-m_DD_pv_start),vs_L->vb_stride);
 	if (m_DD_wire)		DU_DRAW_RS(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
 	DU_DRAW_DP			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vs_L,m_DD_base,u32(m_DD_pv-m_DD_pv_start)/3);
 	if (m_DD_wire)		DU_DRAW_RS(D3DRS_FILLMODE,FILL_MODE);
 	if (try_again){
-		m_DD_pv_start	= (FVF::L*)RCache.Vertex.Lock(MAX_VERT_COUNT,vs_L->vb_stride,m_DD_base);	
+		m_DD_pv_start	= (FVF::L*)RImplementation.Imm().Vertex.Lock(MAX_VERT_COUNT,vs_L->vb_stride,m_DD_base);	
 		m_DD_pv			= m_DD_pv_start;
 	}
 }
@@ -773,7 +774,7 @@ void CEditorDrawUtilities::DrawCylinder(const Fmatrix& parent, const Fvector& ce
 	// final xform
 	Fmatrix xf;			xf.mul (mR,mScale);
 	xf.mulA_43			(parent);
-	RCache.set_xform_world(xf);
+	RImplementation.Imm().SetObjectTransform(xf);
 	DrawIdentCylinder	(bSolid,bWire,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -799,7 +800,7 @@ void CEditorDrawUtilities::DrawCone	(const Fmatrix& parent, const Fvector& apex,
 	// final xform
 	Fmatrix xf;			xf.mul (mR,mScale);
 	xf.mulA_43			(parent);
-	RCache.set_xform_world(xf);
+	RImplementation.Imm().SetObjectTransform(xf);
 	DrawIdentCone		(bSolid,bWire,clr_s,clr_w);
 }
 //----------------------------------------------------
@@ -820,7 +821,7 @@ void CEditorDrawUtilities::DrawPlane	(const Fvector& p, const Fvector& n, const 
 	mR.c                = p;			  		mR._44          = 1;
 	
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase;
 	
 	if (bSolid){
@@ -857,7 +858,7 @@ void CEditorDrawUtilities::DrawPlane  (const Fvector& center, const Fvector2& sc
 	M.setHPB		(rotate.y,rotate.x,rotate.z);
 	M.translate_over(center);
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase;
 	
 	if (bSolid){
@@ -890,7 +891,7 @@ void CEditorDrawUtilities::DrawPlane  (const Fvector& center, const Fvector2& sc
 
 void CEditorDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, const Fvector& v, u32 clr_s, u32 clr_w, bool bSolid, bool bWire)
 {
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 
 	u32				vBase;
 	if (bSolid)
@@ -922,7 +923,7 @@ void CEditorDrawUtilities::DrawRectangle(const Fvector& o, const Fvector& u, con
 //----------------------------------------------------
 void CEditorDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45)
 {
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	// actual rendering
 	u32			vBase;
 	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(bRot45?12:6,vs_L->vb_stride,vBase);
@@ -952,9 +953,9 @@ void CEditorDrawUtilities::DrawPivot(const Fvector& pos, float sz)
 	DU_DRAW_SH(GEditorDraw.WireShader);
 	AddCross(pos, sz, sz, sz, sz, sz, sz, 0xFF7FFF7F);
 
-	RCache.stat.calls--;
-	RCache.stat.verts -= 9;
-	RCache.stat.polys -= 3;
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.Stats.Calls--;
+	Cmd.Stats.Polys -= 3;
 }
 
 void CEditorDrawUtilities::DrawAxis(const Fmatrix& T)
@@ -965,7 +966,7 @@ void CEditorDrawUtilities::DrawAxis(const Fmatrix& T)
 void CEditorDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, bool sel)
 {
 	VERIFY( Device.b_is_Ready );
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	Fvector c,r,n,d;
 	float w	= T.c.x*Device.mFullTransform._14 + T.c.y*Device.mFullTransform._24 + T.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
 	if (w<0) 
@@ -1042,9 +1043,9 @@ void CEditorDrawUtilities::DrawGrid()
 
 	Fmatrix World;
 	World.identity();
-	RCache.set_xform_world(World);
+	RImplementation.Imm().SetObjectTransform(World);
 
-	_VertexStream* Stream = &RCache.Vertex;
+	_VertexStream* Stream = &RImplementation.Imm().Vertex;
 	u32 VBase;
 
 	const u32 VertexCount = TotalLines * 2;
@@ -1127,7 +1128,7 @@ void CEditorDrawUtilities::DrawGrid()
 void CEditorDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)
 {
 	VERIFY(Device.b_is_Ready);
-	_VertexStream* Stream = &RCache.Vertex;
+	_VertexStream* Stream = &RImplementation.Imm().Vertex;
 	u32 vBase;
 	FVF::TL* pv = (FVF::TL*)Stream->Lock(6, vs_TL->vb_stride, vBase);
 
@@ -1151,7 +1152,7 @@ void CEditorDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const I
 void CEditorDrawUtilities::DrawPrimitiveL	(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, bool bCull, bool bCycle)
 {
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase, dwNeed=(bCycle)?vc+1:vc;
 	FVF::L*	pv	= (FVF::L*)Stream->Lock(dwNeed,vs_L->vb_stride,vBase);
 	for(int k=0; k<vc; k++,pv++)
@@ -1168,7 +1169,7 @@ static xr_vector<FVF::L> g_idxVerts[2]; // 0 = LINE_LIST, 1 = TRIANGLE_LIST
 static xr_vector<u16>    g_idxIdx[2];
 static u32               g_idxPrims[2] = {0, 0};
 
-static void FlushIndexBatch(int slot);
+static void FlushIndexBatch(GfxCmdList& Cmd, int slot);
 
 void CEditorDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 											u32 pc, 
@@ -1186,7 +1187,7 @@ void CEditorDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 	// topology at FlushDU(). This avoids one draw call per CSE_ALifeGraphPoint
 	// (on_render issues 2 calls each), which previously cost dozens of FPS.
 	if (g_idxVerts[slot].size() + vb_size > 65000)
-		FlushIndexBatch(slot);
+		FlushIndexBatch(RImplementation.Imm(), slot);
 
 	u32 base = (u32)g_idxVerts[slot].size();
 	for (int k = 0; k < vb_size; ++k)
@@ -1200,24 +1201,24 @@ void CEditorDrawUtilities::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY pt,
 	g_idxPrims[slot] += pc;
 }
 
-static void FlushIndexBatch(int slot)
+static void FlushIndexBatch(GfxCmdList& Cmd, int slot)
 {
 	if (g_idxVerts[slot].empty())
 		return;
 
-	_VertexStream* Stream = &RCache.Vertex;
+	_VertexStream* Stream = &Cmd.Vertex;
 	u32 vBase;
 	FVF::L* pv = (FVF::L*)Stream->Lock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride, vBase);
 	memcpy(pv, g_idxVerts[slot].data(), g_idxVerts[slot].size() * sizeof(FVF::L));
 	Stream->Unlock(g_idxVerts[slot].size(), DU_impl.vs_L->vb_stride);
 
-	_IndexStream* StreamI = &RCache.Index;
+	_IndexStream* StreamI = &Cmd.Index;
 	u32 iBase;
 	u16* i = StreamI->Lock(g_idxIdx[slot].size(), iBase);
 	memcpy(i, g_idxIdx[slot].data(), g_idxIdx[slot].size() * sizeof(u16));
 	StreamI->Unlock(g_idxIdx[slot].size());
 
-	RCache.set_xform_world(Fidentity);
+	Cmd.SetObjectTransform(Fidentity);
 	GEditorDraw.SetShader(GEditorDraw.SelectionShader);
 	DU_DRAW_DIP(
 		(slot == 0) ? ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST : ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,
@@ -1236,7 +1237,7 @@ static void FlushIndexBatch(int slot)
 void CEditorDrawUtilities::DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, bool bCull, bool bCycle)
 {
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase, dwNeed=(bCycle)?vc+1:vc;
 	FVF::TL* pv		= (FVF::TL*)Stream->Lock(dwNeed,vs_TL->vb_stride,vBase);
 	for(int k=0; k<vc; k++,pv++)
@@ -1252,7 +1253,7 @@ void CEditorDrawUtilities::DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, F
 void CEditorDrawUtilities::DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, bool bCull, bool bCycle)
 {
 	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
+	_VertexStream*	Stream	= &RImplementation.Imm().Vertex;
 	u32			vBase, dwNeed=(bCycle)?vc+1:vc;
 	FVF::LIT* 	pv	= (FVF::LIT*)Stream->Lock(dwNeed,vs_LIT->vb_stride,vBase);
 	for(int k=0; k<vc; k++,pv++)
@@ -1334,7 +1335,7 @@ static void PushLineVert(const Fvector& p, u32 clr)
 
 	// Positions are in the caller's current world space. Bake that matrix now:
 	// FlushDU runs after other objects have replaced xform and the shader.
-	const Fmatrix& world = RCache.get_xform_world();
+	const Fmatrix& world = RImplementation.Imm().GetObjectTransform();
 	Fvector w;
 	world.transform_tiny(w, p);
 
@@ -1382,6 +1383,8 @@ RENDER_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 
 RENDER_API void FlushDU()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
+
 	// Lines batched while the scene was being submitted are not drawn
 	if (GEditorDraw.IsSubmitPass())
 	{
@@ -1390,10 +1393,10 @@ RENDER_API void FlushDU()
 
 	if (!g_lineVerts.empty())
 	{
-		RCache.set_xform_world(Fidentity);
+		Cmd.SetObjectTransform(Fidentity);
 		GEditorDraw.SetShader(GEditorDraw.WireShader);
 
-		_VertexStream* Stream = &RCache.Vertex;
+		_VertexStream* Stream = &Cmd.Vertex;
 
 		u32 vBase;
 		FVF::L* pv = (FVF::L*)Stream->Lock(
@@ -1416,6 +1419,6 @@ RENDER_API void FlushDU()
 		g_lineVerts.clear();
 	}
 
-	FlushIndexBatch(0);
-	FlushIndexBatch(1);
+	FlushIndexBatch(Cmd, 0);
+	FlushIndexBatch(Cmd, 1);
 }

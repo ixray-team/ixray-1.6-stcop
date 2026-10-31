@@ -14,39 +14,39 @@ void CRenderTarget::CreateRainStreakTargets(ERHI_FORMAT Format)
 	RainLayers.create("rain_layers");
 }
 
-void CRenderTarget::PhaseRainStreaksBegin()
+void CRenderTarget::PhaseRainStreaksBegin(GfxCmdList& Cmd)
 {
 	GPU_EVENT(PhaseRainStreaks);
 
-	GRHI->SetDepthStencilView(nullptr);
-	GRHI->CopySurface(RainDepth->pSurface, RDepth->GetSurface());
+	Cmd.SetDepthStencil(nullptr);
+	Cmd.CopySurface(RainDepth->pSurface, RDepth->GetSurface());
 
-	u_setrt(RainRefraction, nullptr, nullptr, nullptr);
+	u_setrt(Cmd, RainRefraction, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(FALSE);
 
-	RCache.set_Element(RainRefractionBlur->E[0]);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetPass(RainRefractionBlur->E[0]);
+	Cmd.SetGeometry(FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 
 	if (LightingModeIsStaticRender())
 	{
-		u_setrt(rt_Generic_0, nullptr, RDepth);
+		u_setrt(Cmd, rt_Generic_0, nullptr, RDepth);
 	}
 	else if (RImplementation.o.dx11_disable_motion_vectors)
 	{
-		u_setrt(rt_Generic_0, ReactiveMask, RDepth);
+		u_setrt(Cmd, rt_Generic_0, ReactiveMask, RDepth);
 	}
 	else
 	{
-		u_setrt(rt_Generic_0, rt_Velocity, ReactiveMask, RDepth);
+		u_setrt(Cmd, rt_Generic_0, rt_Velocity, ReactiveMask, RDepth);
 	}
 
 	RImplementation.rmNormal();
 }
 
-void CRenderTarget::PhaseRainLayers(float SkyVisibility)
+void CRenderTarget::PhaseRainLayers(GfxCmdList& Cmd, float SkyVisibility)
 {
 	GPU_EVENT(PhaseRainLayers);
 
@@ -59,22 +59,22 @@ void CRenderTarget::PhaseRainLayers(float SkyVisibility)
 
 	const float Speed = 0.5f * (Desc.rain_speed_min + Desc.rain_speed_max);
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Element(RainLayers->E[0]);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Constants.Write<CBPost>().rain_layers_params.set(Desc.rain_density, SkyVisibility, Speed, g_RainRefraction);
-	RCache.Constants.Write<CBPost>().rain_layers_direction.set(Direction.x, Direction.y, Direction.z, 0.0f);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetPass(RainLayers->E[0]);
+	Cmd.SetGeometry(FSTriangleGeom);
+	Cmd.Constants.Write<CBPost>().rain_layers_params.set(Desc.rain_density, SkyVisibility, Speed, g_RainRefraction);
+	Cmd.Constants.Write<CBPost>().rain_layers_direction.set(Direction.x, Direction.y, Direction.z, 0.0f);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 }
 
-void CRenderTarget::PhaseRainStreaksEnd()
+void CRenderTarget::PhaseRainStreaksEnd(GfxCmdList& Cmd)
 {
 	if (RImplementation.o.dx11_disable_motion_vectors || LightingModeIsStaticRender())
 	{
-		u_setrt(rt_Generic_0, nullptr, RDepth);
+		u_setrt(Cmd, rt_Generic_0, nullptr, RDepth);
 	}
 	else
 	{
-		u_setrt(rt_Generic_0, rt_Velocity, RDepth);
+		u_setrt(Cmd, rt_Generic_0, rt_Velocity, RDepth);
 	}
 }

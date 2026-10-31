@@ -73,9 +73,9 @@
 	inline CResourceManager::map_CS& CResourceManager::GetShaderMap(){return m_cs;}
 
 	template<typename T>
-	inline resptr_core<T, resptr_base<T>> CResourceManager::CreateShader(const char* _name)
+	inline resptr_core<T, resptr_base<T>> CResourceManager::CreateShader(const char* _name, const ShaderExternalMap& Defines)
 	{
-		xr_string res_name = _name + RImplementation.getShaderParams();
+		xr_string res_name = _name + RImplementation.getShaderParams(Defines);
 		const char* name = res_name.c_str();
 
 		using RefType = resptr_core<T, resptr_base<T>>;
@@ -102,7 +102,7 @@
 				sh = new T();
 				sh->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 				sh_map.insert(std::make_pair(sh->set_name(name), sh));
-				RememberStage(sh, _name, Engine.External.GetSkinningMode());
+				RememberStage(sh, _name, Engine.External.GetSkinningMode(), Defines);
 				RefType(sh).swap(Result);
 				IsNew = true;
 			}
@@ -136,9 +136,9 @@
 			const char*						c_entry		= "main";
 
 			// Compile
-			HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+			HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, RHI_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh, Defines);
 
-			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+			R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 			sh->CompileState.MarkCompiled();
 			FS.r_close					( file );
 

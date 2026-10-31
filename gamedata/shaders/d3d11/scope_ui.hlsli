@@ -1,7 +1,7 @@
 #ifndef SCOPE_UI_HLSLI
 #define SCOPE_UI_HLSLI
 
-Texture2D s_scope_ui;
+Texture2D s_scope_ui : register(t25);
 
 float3 ApplyScopeUI(float3 Color, float2 ScreenPosition)
 {

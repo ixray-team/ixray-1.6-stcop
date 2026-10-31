@@ -188,7 +188,7 @@ void CTexture::ProcessStaging()
 		VERIFY(!"CTexture::ProcessStaging unsupported dimensions.");
 	}
 
-	GRHI->CopySurface(pTargetSurface, pSurface);
+	RImplementation.Imm().CopySurface(pTargetSurface, pSurface);
 
 	flags.bLoadedAsStaging = false;
 

@@ -60,9 +60,10 @@ bool dxRainRender::InstanceStream::Upload(const void* Data, u32 Count, u32 Strid
 
 dxRainRender::dxRainRender()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	AirShader.create("effects\\rain_instanced", "fx\\hud_rain");
 	ImpactShader.create("effects\\rain_impact", "fx\\hud_rain");
-	Geometry.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+	Geometry.create(FVF::F_LIT, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 	DropBounds.set(Fvector().set(0.f, 0.f, 0.f), 1.f);
 }
 
@@ -83,6 +84,7 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 		return;
 	}
 	GPU_EVENT(Rain);
+	GfxCmdList& Cmd = RImplementation.Imm();
 	CRenderTarget& Target = *RImplementation.Target;
 	const bool Dynamic = LightingModeIsDynamicRender();
 	if (!Dynamic)
@@ -100,18 +102,18 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 	const bool Pbr = g_RainShading == 2 || (g_RainShading == 0 && Dynamic && !RImplementation.o.dx11_use_legacy_light);
 
 	// Rain has color-only output; leave the opaque scene's velocity untouched.
-	Target.u_setrt(Target.rt_Generic_0, nullptr, RDepth);
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Stencil(FALSE);
-	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
+	Target.u_setrt(Cmd, Target.rt_Generic_0, nullptr, RDepth);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetStencil(FALSE);
+	Cmd.SetColorWriteEnable();
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	u32 VertexOffset = 0;
-	auto* Vertices = static_cast<FVF::LIT*>(RCache.Vertex.Lock(4, sizeof(FVF::LIT), VertexOffset));
+	auto* Vertices = static_cast<FVF::LIT*>(Cmd.Vertex.Lock(4, sizeof(FVF::LIT), VertexOffset));
 	Vertices[0].set(-1.f, -1.f, 0.f, 0xffffffff, 0.f, 1.f);
 	Vertices[1].set(-1.f, 1.f, 0.f, 0xffffffff, 0.f, 0.f);
 	Vertices[2].set(1.f, -1.f, 0.f, 0xffffffff, 1.f, 1.f);
 	Vertices[3].set(1.f, 1.f, 0.f, 0xffffffff, 1.f, 0.f);
-	RCache.Vertex.Unlock(4, sizeof(FVF::LIT));
+	Cmd.Vertex.Unlock(4, sizeof(FVF::LIT));
 
 	auto Draw = [&](ref_shader& Shader, InstanceStream& Stream, const void* Data, u32 Count, u32 Stride, u32 Children, float Radius)
 	{
@@ -119,32 +121,32 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 		{
 			return;
 		}
-		RCache.set_Shader(Shader);
-		RCache.set_Stencil(FALSE);
-		RCache.set_ColorWriteEnable();
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetPass(Shader);
+		Cmd.SetStencil(FALSE);
+		Cmd.SetColorWriteEnable();
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 		const u32 Slot = Shader->E[0]->passes[0]->vs->RainInstanceSlot;
 		if (Slot == u32(-1))
 		{
 			return;
 		}
-		RCache.set_Geometry(Geometry);
-		CBPost& Post = RCache.Constants.Write<CBPost>();
+		Cmd.SetGeometry(Geometry);
+		CBPost& Post = Cmd.Constants.Write<CBPost>();
 		Post.RainShape.set(Owner.RainWidth * (2.f / 3.f), Owner.RainLength * 0.5f, Radius, g_RainDropsFeather);
 		Post.RainColor.set(Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainDropsOpacity * g_RainDropsOpacity);
 		Post.RainShading.set(Pbr ? 1.f : 0.f, g_RainDropsColorBlend, g_RainDropsTransmission, g_RainDropsRefraction);
-		RCache.set_VSResource(Slot, Stream.View);
-		RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, VertexOffset, 0, 4, 0, 2, Count * Children, 0);
-		RCache.set_VSResource(Slot, nullptr);
+		Cmd.SetResource(ERHI_SHADER_TYPE::VS, Slot, Stream.View);
+		Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, Count * Children, 0, VertexOffset, 0);
+		Cmd.SetResource(ERHI_SHADER_TYPE::VS, Slot, nullptr);
 		GRHI->ShaderResourceCache->Apply();
 	};
 	Draw(AirShader, AirStream, Owner.RainInstances.data(), u32(Owner.RainInstances.size()), sizeof(CEffect_Rain::RainInstance), 1, g_RainDropsRadius);
 	Draw(ImpactShader, ImpactStream, Owner.ImpactInstances.data(), u32(Owner.ImpactInstances.size()), sizeof(CEffect_Rain::ImpactInstance), 4, g_RainDropsImpactRadius);
 
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 	if (Dynamic && !RImplementation.o.dx11_disable_motion_vectors)
 	{
-		Target.u_setrt(Target.rt_Generic_0, Target.rt_Velocity, RDepth);
+		Target.u_setrt(Cmd, Target.rt_Generic_0, Target.rt_Velocity, RDepth);
 	}
 }
 

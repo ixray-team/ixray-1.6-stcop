@@ -83,7 +83,7 @@ void CLightProjector::set_object	(IRenderable* O)
 	}
 }
 
-void CLightProjector::setup		(int id)
+void CLightProjector::setup		(GfxCmdList& Cmd, int id)
 {
 	if (id>=int(cache.size()) || id<0)	{
 		
@@ -93,7 +93,7 @@ void CLightProjector::setup		(int id)
 	float			Rd			= R.O->renderable.visual->getVisData().sphere.R;
 	float			dist		= R.C.distance_to	(Device.vCameraPosition)+Rd;
 	float			factor		= _sqr(dist/clipD(Rd))*(1-ps_r1_lmodel_lerp) + ps_r1_lmodel_lerp;
-	CBObject& Object = RCache.Constants.Write<CBObject>();
+	CBObject& Object = Cmd.Constants.Write<CBObject>();
 	Object.m_plmap_xform = R.UVgen;
 	Fvector&	m	= R.UVclamp_min;
 	Object.m_plmap_clamp[0].set(m.x, m.y, m.z, factor);
@@ -113,7 +113,7 @@ void CLightProjector::OnAppActivate()
 }
 
 #include "SkeletonCustom.h"
-void CLightProjector::calculate	()
+void CLightProjector::calculate	(GfxCmdList& Cmd)
 {
 	if (receivers.empty())		return;
 
@@ -145,9 +145,9 @@ void CLightProjector::calculate	()
 	if (taskid.empty())			return;
 
 	Device.Statistic->RenderDUMP_Pcalc.Begin	();
-	RImplementation.Target->u_setrt(RT, nullptr, depth->pZRT);
-	GRHI->ClearDepthStencil(depth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
-	RCache.set_xform_world		(Fidentity);
+	RImplementation.Target->u_setrt(Cmd, RT, nullptr, depth->pZRT);
+	Cmd.ClearDepthStencil(depth->pZRT, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
+	Cmd.SetObjectTransform(Fidentity);
 
 	for (u32 c_it=0; c_it<cache.size(); c_it++)
 	{
@@ -179,7 +179,7 @@ void CLightProjector::calculate	()
 		float		p_near		=	P_cam_dist-EPS_L;									
 		float		p_far		=	P_cam_dist+p_R+P_cam_range;	
 		mProject.build_projection_HAT	(p_hat,p_asp,p_near,p_far);
-		RCache.set_xform_project		(mProject);
+		Cmd.SetView(Cmd.GetView().View, mProject);
 
 		Fmatrix		mView;
 		Fvector		v_C, v_Cs, v_N;
@@ -230,18 +230,18 @@ void CLightProjector::calculate	()
 		}
 
 		mView.build_camera		(v_C,v_Cs,v_N);
-		RCache.set_xform_view	(mView);
+		Cmd.SetView(mView, Cmd.GetView().Project);
 
 		int		s_x				=	c_it%P_o_line;
 		int		s_y				=	c_it/P_o_line;
 		RHIViewport VP = { (float)s_x * P_o_size, (float)s_y * P_o_size, (float)P_o_size, (float)P_o_size, 0, 1 };
-		GRHI->SetViewport(VP);
+		Cmd.SetViewport(VP);
 
 		Fvector&	cap			=	LT->get_approximate();
-		RCache.set_Element(clear->E[0]);
-		RCache.Constants.Write<CBMaterial>().tfactor.set(cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f);
-		RCache.set_Geometry(RImplementation.Target->FSTriangleGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		Cmd.SetPass(clear->E[0]);
+		Cmd.Constants.Write<CBMaterial>().tfactor.set(cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f);
+		Cmd.SetGeometry(RImplementation.Target->FSTriangleGeom);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 
 		Fmatrix					mCombine;		mCombine.mul	(mProject,mView);
 		Fmatrix					mTemp;
@@ -275,15 +275,14 @@ void CLightProjector::calculate	()
 			spatial->spatial_updatesector();
 			if (spatial->sector)
 			{
-				RImplementation.GraphMain.r_dsgraph_render_R1_box(spatial->sector, BB, SE_R1_LMODELS);
+				RImplementation.GraphMain.r_dsgraph_render_R1_box(spatial->sector, BB, ShaderVariant::ModelLighting);
 			}
 		}
 	}
 
 	Device.Statistic->RenderDUMP_Pcalc.End	();
 	
-	RCache.set_xform_project	(Device.mProject);
-	RCache.set_xform_view		(Device.mView);
+	Cmd.SetView(Device.mView, Device.mProject);
 }
 
 #ifdef DEBUG

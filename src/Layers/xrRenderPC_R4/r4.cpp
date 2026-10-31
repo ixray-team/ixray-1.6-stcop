@@ -15,7 +15,6 @@
 
 #include "3DFluid/dx103DFluidManager.h"
 #include "ShaderResourceTraits.h"
-#include "ShaderBind.h"
 
 #include "RenderInterfaceShared.h"
 #include "OverlayAPI/DLSSWrapper.h"
@@ -49,43 +48,35 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
 	if (LightingModeIsStaticRender())
 	{
-		if (GraphMain.val_bUI && pVisual->shader->E[SE_R1_UI])
-			return pVisual->shader->E[SE_R1_UI]._get();
+		if (GraphMain.val_bUI && pVisual->shader->E[ShaderVariant::UI])
+			return pVisual->shader->E[ShaderVariant::UI]._get();
 		if (phase == PHASE_NORMAL)
-			return pVisual->shader->E[L_Projector && L_Projector->shadowing() ? SE_R1_NORMAL_HQ : SE_R1_NORMAL_LQ]._get();
+			return pVisual->shader->E[L_Projector && L_Projector->shadowing() ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ]._get();
 		return rimp_select_sh_static(pVisual, cdist_sq);
 	}
 	if (!!GraphMain.val_bUI)
 	{
-		if (auto* Element = pVisual->shader->UIElement._get())
-		{
-			return Element;
-		}
-		if (auto pSh = pVisual->shader->E[SE_R2_UI]._get())
-		{
-			return pSh;
-		}
-
-		return pVisual->shader->E[SE_R2_NORMAL_LQ]._get();
+		const auto& E = pVisual->shader->E;
+		return (E[ShaderVariant::UI] ? E[ShaderVariant::UI] : E[ShaderVariant::Special] ? E[ShaderVariant::Special] : E[ShaderVariant::NormalLQ])._get();
 	}
 
-	int id = SE_R2_SHADOW;
+	int id = ShaderVariant::Shadow;
 
 	if (CRender::PHASE_NORMAL == phase)
 	{
 		if (is_hud)
 		{
-			if (auto pSh = pVisual->shader->E[SE_R2_HUD]._get())
+			if (auto pSh = pVisual->shader->E[ShaderVariant::HUD]._get())
 			{
 				return pSh;
 			}
 		}
 
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
 	}
 	else if (CRender::PHASE_REFLECT == phase)
 	{
-		id = SE_R2_REFLECTIONS;
+		id = ShaderVariant::Reflection;
 	}
 
 	return pVisual->shader->E[id]._get();
@@ -96,149 +87,26 @@ ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cd
 	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
 	if (LightingModeIsStaticRender())
 	{
-		int id = SE_R1_NORMAL_LQ;
-		if (phase == PHASE_POINT) id = SE_R1_LPOINT;
-		else if (phase == PHASE_SPOT) id = SE_R1_LSPOT;
-		else if (phase == PHASE_LMODELS) id = SE_R1_LMODELS;
-		else if ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) id = SE_R1_NORMAL_HQ;
+		int id = ShaderVariant::NormalLQ;
+		if (phase == PHASE_POINT) id = ShaderVariant::PointLight;
+		else if (phase == PHASE_SPOT) id = ShaderVariant::SpotLight;
+		else if (phase == PHASE_LMODELS) id = ShaderVariant::ModelLighting;
+		else if ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) id = ShaderVariant::NormalHQ;
 		return pVisual->shader->E[id]._get();
 	}
-	int id = SE_R2_SHADOW;
+	int id = ShaderVariant::Shadow;
 
 	if (CRender::PHASE_NORMAL == phase)
 	{
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
 	}
 	else if (CRender::PHASE_REFLECT == phase)
 	{
-		id = SE_R2_REFLECTIONS;
+		id = ShaderVariant::Reflection;
 	}
 
 	return pVisual->shader->E[id]._get();
 }
-
-static class cl_parallax : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		float h = ps_r2_df_parallax_h;
-		RCache.Constants.Write<CBMaterial>().parallax.set(h, -h / 2.f, 1.f / r_dtex_range, 1.f / r_dtex_range);
-	}
-} binder_parallax;
-
-static class cl_pos_decompress_params2 : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		RCache.Constants.Write<CBView>().pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
-	}
-} binder_pos_decompress_params2;
-
-static class RainPuddleWaterBoundsSetup : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		RCache.Constants.Write<CBVisor>().RainPuddleWaterBounds = RImplementation.RainPuddleWater.GetBounds();
-	}
-} g_RainPuddleWaterBoundsBinder;
-
-static class RainPuddleWaterHeightRangeSetup : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		RCache.Constants.Write<CBVisor>().RainPuddleWaterHeightRange = RImplementation.RainPuddleWater.GetHeightRange();
-	}
-} g_RainPuddleWaterHeightRangeBinder;
-
-static class RainPuddleControlSetup : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		const bool Enabled = RImplementation.o.RainPuddles && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
-		RCache.Constants.Write<CBVisor>().RainPuddleControl.set(Enabled ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
-	}
-} g_RainPuddleControlBinder;
-
-static class cl_invP : public RHIShaderConstant::Setup
-{
-	u32 marker = 0;
-	Fmatrix result{};
-
-	void setup() override
-	{
-		if (Device.dwFrame != marker)
-		{
-			result.invert44(Device.mProject_saved);
-			marker = Device.dwFrame;
-		}
-
-		RCache.Constants.Write<CBView>().m_invP = result;
-	}
-}	binder_invP;
-
-static class cl_alpha_ref	: public RHIShaderConstant::Setup 
-{
-	void setup() override
-	{
-		GRHI->StateManager->BindAlphaRefCallback([](u32 m_uiAlphaRef)
-		{
-			RCache.Constants.Write<CBMaterial>().m_AlphaRef = (float)m_uiAlphaRef / 255.0f;
-		});
-	}
-} binder_alpha_ref;
-
-static class cl_m_shadow_sun : public RHIShaderConstant::Setup
-{
-	void setup() override
-	{
-		for(int i = 0; i < 3; i++)
-		{
-			Fmatrix Transform;
-			Fvector4 Capture, Warp;
-			RImplementation.GetSunShadowConstants(i, Transform, Capture, Warp);
-			RCache.Constants.Write<CBLight>().m_shadow_sun[i] = Transform;
-		}
-	}
-}	binder_m_shadow_sun;
-
-class SunShadowArrayConstant final : public RHIShaderConstant::Setup
-{
-public:
-	explicit SunShadowArrayConstant(bool IsWarpValue) : IsWarp(IsWarpValue) {}
-	~SunShadowArrayConstant() override = default;
-
-	void setup() override
-	{
-		CBLight& Light = RCache.Constants.Write<CBLight>();
-		Hlsl::float4* Values = IsWarp ? Light.SunReceiverWarpBias : Light.SunCaptureDirectionDepth;
-		for (u32 Index = 0; Index < 3; ++Index)
-		{
-			Fmatrix Transform;
-			Fvector4 Capture, Warp;
-			RImplementation.GetSunShadowConstants(Index, Transform, Capture, Warp);
-			Values[Index] = IsWarp ? Warp : Capture;
-		}
-	}
-
-private:
-	bool IsWarp;
-};
-
-class SunShadowCacheConstant final : public RHIShaderConstant::Setup
-{
-public:
-	SunShadowCacheConstant() = default;
-	~SunShadowCacheConstant() override = default;
-
-	void setup() override
-	{
-		RCache.Constants.Write<CBLight>().SunCacheParams.set(float(RImplementation.GetSunShadowCacheMode()), 0, 0, 0);
-	}
-};
-
-static SunShadowArrayConstant g_SunCaptureConstant(false);
-static SunShadowArrayConstant g_SunWarpConstant(true);
-static SunShadowCacheConstant g_SunCacheConstant;
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
@@ -296,28 +164,11 @@ void CRender::create()
 	UpdateRainPuddleMode();
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
-	UpdateDefaultShaderOptions();
 
 	o.dx11_allow_wboit_transparency = LightingModeIsDynamicRender() && !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
 
-	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && RFeatureLevel >= RHI_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
+	o.dx11_enable_tessellation = LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
-	// constants
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterBounds", &g_RainPuddleWaterBoundsBinder);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleWaterHeightRange", &g_RainPuddleWaterHeightRangeBinder);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("RainPuddleControl", &g_RainPuddleControlBinder);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunCaptureDirectionDepth", &g_SunCaptureConstant);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunReceiverWarpBias", &g_SunWarpConstant);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("SunCacheParams", &g_SunCacheConstant);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_AlphaRef", &binder_alpha_ref);
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("parallax", &binder_parallax);
-
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP", &binder_invP);
-
-	c_lmaterial = "L_material";
-	c_sbase = "s_base";
 
 	m_bMakeAsyncSS = false;
 
@@ -368,7 +219,7 @@ void CRender::create()
 	if (LightingModeIsDynamicRender())
 	{
 		FluidManager.Initialize(70, 70, 70);
-		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+		FluidManager.SetScreenSize((u32)GfxCmdList::GetWidth(), (u32)GfxCmdList::GetHeight());
 	}
 
 	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
@@ -509,7 +360,7 @@ void CRender::reset_end()
 	xrRender_apply_tf();
 	if (LightingModeIsDynamicRender())
 	{
-		FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+		FluidManager.SetScreenSize((u32)GfxCmdList::GetWidth(), (u32)GfxCmdList::GetHeight());
 	}
 
 	// Set this flag true to skip the first render frame,
@@ -683,6 +534,15 @@ CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 
 CRender::CRender() : m_bFirstFrameAfterReset(false)
 {
+	GraphMain.Backend = &Backend;
+	for (R_dsgraph_structure& Graph : GraphReflection)
+	{
+		Graph.Backend = &Backend;
+	}
+	for (R_dsgraph_structure& Graph : GraphSun)
+	{
+		Graph.Backend = &Backend;
+	}
 	init_cacades();
 }
 
@@ -731,79 +591,107 @@ bool CRender::IsEditorInstancing() const
 	return g_EditorInstancing;
 }
 
-xr_string CRender::getShaderParams() 
+namespace
 {
-	static thread_local xr_vector<xr_string> crc_vector;
-
-	crc_vector.resize(0);
-	crc_vector.reserve(16);
-
-	xr_string params;
-	const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
-	if(!ShaderOptions.empty())
+	u32 DefinesCRC(const ShaderExternalMap& Defines)
 	{
-		for(const auto& [Name, Value] : ShaderOptions)
+		xr_vector<xr_string> Parts;
+		Parts.reserve(Defines.size());
+		for (const auto& [Name, Value] : Defines)
 		{
-			crc_vector.push_back(Name);
-			crc_vector.back().append(Value);
+			Parts.push_back(Name + Value);
 		}
-
-		u32 start_crc = 0xffffffff;
-		std::sort(crc_vector.begin(), crc_vector.end());
-
-		for (const auto& Value : crc_vector)
+		std::sort(Parts.begin(), Parts.end());
+		u32 CRC = 0xffffffff;
+		for (const xr_string& Part : Parts)
 		{
-			start_crc = crc32(Value.data(), Value.size(), start_crc);
+			CRC = crc32(Part.data(), Part.size(), CRC);
 		}
-
-		params = "_";
-		params += xr_string::ToString(start_crc);
+		return CRC;
 	}
-
-	// Match the procedural permutation in the in-memory shader resource cache.
-	if (o.ProceduralRainPuddles)
-	{
-		params += "_puddles";
-	}
-
-	if (IsEditorInstancing())
-	{
-		params += "_inst";
-	}
-
-	if (const u32 bind_key = ShaderBind_CacheKey())
-	{
-		char hex[16];
-		xr_sprintf(hex, "_b%08x", bind_key);
-		params += hex;
-	}
-
-	return params;
 }
 
-xr_string CRender::getShaderParamsDebug() 
+ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) const
 {
-	const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
-	if (!ShaderOptions.empty())
+	const bool Dynamic = LightingModeIsDynamicRender();
+	const bool Static = LightingModeIsStaticRender();
+	const int Skinning = Engine.External.GetSkinningMode();
+	string16 SmapSize, SunShafts, SunQuality;
+	xr_sprintf(SmapSize, "%04u", u32(o.smapsize));
+	xr_sprintf(SunShafts, "%d", ps_r_sun_shafts);
+	xr_sprintf(SunQuality, "%d", ps_r_sun_quality);
+
+	const struct
 	{
-		xr_string params = "";
+		bool Enabled;
+		const char* Name;
+		const char* Value;
+	} Flags[] =
+	{
+		{ true, "SMAP_size", SmapSize },
+		{ Dynamic && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS), "USE_SUNMASK", "1" },
+		{ Dynamic && o.sunstatic, "USE_R2_STATIC_SUN", "1" },
+		{ Skinning < 0, "SKIN_NONE", "1" },
+		{ Skinning == 0, "SKIN_0", "1" },
+		{ Skinning == 1, "SKIN_1", "1" },
+		{ Skinning == 2, "SKIN_2", "1" },
+		{ Skinning == 3, "SKIN_3", "1" },
+		{ Skinning == 4, "SKIN_4", "1" },
+		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER), "USE_SOFT_WATER", "1" },
+		{ !o.dx11_use_legacy_light && o.offscreen_reflecitons, "USE_OFFSCREEN_REFLECTIONS", "1" },
+		{ !o.dx11_use_legacy_light && o.deffered_reflecitons, "USE_SSLR_REFLECTIONS", "1" },
+		{ !!o.ProceduralRainPuddles, "USE_RAIN_PUDDLES", "1" },
+		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES), "USE_SOFT_PARTICLES", "1" },
+		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_DOF), "USE_DOF", "1" },
+		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SCREEN_SPACE_HUD_SHADOWS), "USE_HUD_SHADOWS", "1" },
+		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST), "USE_HASHED_AREF", "1" },
+		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER), "USE_SSLR_ON_WATER", "1" },
+		{ Dynamic && ps_r_sun_shafts > 0, "SUN_SHAFTS_QUALITY", SunShafts },
+		{ Dynamic && ps_r_sun_quality > 0, "SUN_QUALITY", SunQuality },
+		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX), "ALLOW_STEEPPARALLAX", "1" },
+		{ !!o.dx11_disable_motion_vectors, "DISABLE_MOTION_VECTORS", "1" },
+		{ Device.IsEditorMode(), "EDITOR_MODE", "1" },
+		{ IsEditorInstancing(), "USE_EDITOR_INSTANCING", "1" },
+		{ Static, "USE_R1_STATIC_LIGHTING", "2" },
+		{ Static, "USE_LEGACY_LIGHT", "1" },
+#if defined(IXR_APPLE_SERIES)
+		// vkd3d HLSL lacks some intrinsics (e.g. RWTexture2D::GetDimensions); shaders branch on this.
+		{ true, "IXR_VKD3D_COMPILER", "1" },
+#endif
+	};
 
-		for (auto& [Name, Value] : ShaderOptions)
-		{
-			params += Name + (Value[0] ? "_" + Value : "") + ",";
-		}
-
-		params[params.size() - 1] = ' ';
-
-		if (IsEditorInstancing())
-		{
-			params += "[inst]";
-		}
-
-		return params;
+	ShaderExternalMap Result = EngineExternal().ShadersOptions;
+	for (const auto& [Name, Value] : Defines)
+	{
+		Result[Name] = Value;
 	}
+	for (const auto& Flag : Flags)
+	{
+		if (Flag.Enabled)
+		{
+			Result[Flag.Name] = Flag.Value;
+		}
+	}
+	return Result;
+}
 
-	return IsEditorInstancing() ? "[inst]" : "";
+xr_string CRender::getShaderParams(const ShaderExternalMap& Defines) const
+{
+	ShaderExternalMap Key = GetShaderDefines(Defines);
+	std::erase_if(Key, [](const auto& Define) { return Define.first.starts_with("SKIN_"); });
+	string32 Text;
+	xr_sprintf(Text, "_%08x", DefinesCRC(Key));
+	return Text;
+}
+
+xr_string CRender::getShaderParamsDebug(const ShaderExternalMap& Defines) const
+{
+	xr_string Params;
+	for (const auto& [Name, Value] : GetShaderDefines(Defines))
+	{
+		Params += Name + (Value.empty() ? "" : "_" + Value) + ",";
+	}
+	return Params;
 }
 
 bool CRender::NeedMotionVectors() const
@@ -839,7 +727,6 @@ void CRender::SyncMotionVectors()
 		return;
 
 	o.dx11_disable_motion_vectors = !o.dx11_disable_motion_vectors;
-	UpdateDefaultShaderOptions();
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 }
 
@@ -857,79 +744,8 @@ void CRender::SyncReflections()
 
 	// USE_SSLR_REFLECTIONS and USE_SSLR_ON_WATER are shader defines
 	o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
-	UpdateDefaultShaderOptions();
 	dxRenderDeviceRender::Instance().Resources->RecompileShaders();
 	SyncMotionVectors();
-}
-
-namespace
-{
-	xrSRWLock DefaultShaderOptionsLock;
-	ShaderExternalMap DefaultShaderOptions;
-
-	struct ThreadShaderOptions
-	{
-		bool IsInitialized = false;
-		ShaderExternalMap Options;
-	};
-	thread_local ThreadShaderOptions CurrentThreadShaderOptions;
-
-	void CopyDefaultShaderOptions(ThreadShaderOptions& Target)
-	{
-		xrSRWLockGuard Guard(DefaultShaderOptionsLock, true);
-		Target.Options = DefaultShaderOptions;
-		Target.IsInitialized = true;
-	}
-}
-
-void CRender::UpdateDefaultShaderOptions()
-{
-	ShaderExternalMap Options = EngineExternal().ShadersOptions;
-	if (LightingModeIsStaticRender())
-	{
-		Options["USE_R1_STATIC_LIGHTING"] = "2";
-		Options["USE_LEGACY_LIGHT"] = "1";
-	}
-
-	if (o.dx11_disable_motion_vectors)
-	{
-		Options["DISABLE_MOTION_VECTORS"] = "1";
-	}
-
-	{
-		xrSRWLockGuard Guard(DefaultShaderOptionsLock);
-		if (!DefaultShaderOptions.empty() && DefaultShaderOptions != Options)
-		{
-			Msg("* Default shader options changed: %u -> %u", u32(DefaultShaderOptions.size()), u32(Options.size()));
-		}
-		DefaultShaderOptions = std::move(Options);
-	}
-	clearAllShaderOptions();
-}
-
-ShaderExternalMap& CRender::CurrentShaderOptions()
-{
-	ThreadShaderOptions& Current = CurrentThreadShaderOptions;
-	if (!Current.IsInitialized)
-	{
-		CopyDefaultShaderOptions(Current);
-	}
-	return Current.Options;
-}
-
-void CRender::clearAllShaderOptions()
-{
-	CopyDefaultShaderOptions(CurrentThreadShaderOptions);
-}
-
-void CRender::addShaderOption(const char* name, const char* value) 
-{
-	CurrentShaderOptions()[name] = value;
-}
-
-size_t CRender::ShaderOptionsCount()
-{
-	return CurrentShaderOptions().size();
 }
 
 template <typename T>
@@ -1160,15 +976,6 @@ public:
 
 		// duplicate and zero-terminate
 		u32 size = R->length();
-		u8* rewritten = nullptr;
-		u32 rewritten_size = 0;
-		if (ShaderBind_Rewrite(static_cast<const u8*>(R->pointer()), size, rewritten, rewritten_size))
-		{
-			FS.r_close(R);
-			*ppData = rewritten;
-			*pBytes = rewritten_size;
-			return S_OK;
-		}
 		u8* data = xr_alloc<u8>(size + 1);
 		CopyMemory(data, R->pointer(), size);
 		data[size] = 0;
@@ -1193,342 +1000,30 @@ HRESULT	CRender::shader_compile(
 	const char* pFunctionName,
 	const char* pTarget,
 	DWORD Flags,
-	void*& result) 
+	void*& result,
+	const ShaderExternalMap& Defines)
 {
 	PROF_EVENT("CRender::shader_compile");
 	PROF_EVENT_DYNAMIC(name);
-	RHIShaderMacro defines[128];
-	int def_it = 0;
-
-	char c_smapsize[32];
-	char c_sun_shafts[32];
-	char c_sun_quality[32];
-
-	char sh_name[MAX_PATH] = "";
-
-	// options
-	u32 len = xr_strlen(sh_name);
-	
-	for(auto& [Name, Value] : CurrentShaderOptions())
-	{
-		defines[def_it++] = {
-			Name.c_str(),
-			Value.c_str()
-		};
-	}
-	
-	// options
+	ShaderExternalMap AllDefines = GetShaderDefines(Defines);
 	// Only vertex shaders read SKIN_*: other stages compile and cache one variant for every skinning mode
-	const int m_skinning = (pTarget != nullptr && pTarget[0] == 'v') ? Engine.External.GetSkinningMode() : -1;
+	if (pTarget[0] != 'v')
 	{
-		xr_sprintf(c_smapsize, "%04d", u32(o.smapsize));
-
-		defines[def_it].Name = "SMAP_size";
-		defines[def_it].Definition = c_smapsize;
-
-		def_it++;
-
-		VERIFY(xr_strlen(c_smapsize) == 4);
-		xr_strcat(sh_name, c_smapsize); len += 4;
+		std::erase_if(AllDefines, [](const auto& Define) { return Define.first.starts_with("SKIN_"); });
+		AllDefines["SKIN_NONE"] = "1";
 	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)) {
-		defines[def_it].Name = "USE_SUNMASK";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)); ++len;
-
-	if(LightingModeIsDynamicRender() && o.sunstatic) {
-		defines[def_it].Name = "USE_R2_STATIC_SUN";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(o.sunstatic); ++len;
-
-	// skinning
-	if(m_skinning < 0) {
-		defines[def_it].Name = "SKIN_NONE";
-		defines[def_it].Definition = "1";
-		def_it++;
-
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0'; ++len;
-	}
-
-	if(0 == m_skinning) {
-		defines[def_it].Name = "SKIN_0";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(0 == m_skinning); ++len;
-
-	if(1 == m_skinning) {
-		defines[def_it].Name = "SKIN_1";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(1 == m_skinning); ++len;
-
-	if(2 == m_skinning) {
-		defines[def_it].Name = "SKIN_2";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(2 == m_skinning); ++len;
-
-	if(3 == m_skinning) {
-		defines[def_it].Name = "SKIN_3";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(3 == m_skinning); ++len;
-
-	if(4 == m_skinning) {
-		defines[def_it].Name = "SKIN_4";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(4 == m_skinning); ++len;
-
-	//	Igor: need restart options
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER)) {
-		defines[def_it].Name = "USE_SOFT_WATER";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(!o.dx11_use_legacy_light && !!o.offscreen_reflecitons) {
-		defines[def_it].Name = "USE_OFFSCREEN_REFLECTIONS";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(!o.dx11_use_legacy_light && !!o.deffered_reflecitons) {
-		defines[def_it].Name = "USE_SSLR_REFLECTIONS";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if (o.ProceduralRainPuddles)
+	RHIShaderMacro defines[128];
+	u32 def_it = 0;
+	for (const auto& [Name, Value] : AllDefines)
 	{
-		defines[def_it].Name = "USE_RAIN_PUDDLES";
-		defines[def_it].Definition = "1";
-		++def_it;
-		sh_name[len++] = 'P';
+		VERIFY(def_it < std::size(defines) - 1);
+		defines[def_it++] = { Name.c_str(), Value.c_str() };
 	}
+	defines[def_it] = { nullptr, nullptr };
 
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES)) {
-		defines[def_it].Name = "USE_SOFT_PARTICLES";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_DOF)) {
-		defines[def_it].Name = "USE_DOF";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_SCREEN_SPACE_HUD_SHADOWS)) {
-		defines[def_it].Name = "USE_HUD_SHADOWS";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST)) {
-		defines[def_it].Name = "USE_HASHED_AREF";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER)) {
-		defines[def_it].Name = "USE_SSLR_ON_WATER";
-		defines[def_it].Definition = "1";
-
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r_sun_shafts > 0) {
-		xr_sprintf(c_sun_shafts, "%d", ps_r_sun_shafts);
-		defines[def_it].Name = "SUN_SHAFTS_QUALITY";
-		defines[def_it].Definition = c_sun_shafts;
-
-		def_it++;
-		sh_name[len] = '0' + static_cast<char>(ps_r_sun_shafts); ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r_sun_quality > 0) {
-		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
-		defines[def_it].Name = "SUN_QUALITY";
-		defines[def_it].Definition = c_sun_quality;
-
-		def_it++;
-		sh_name[len] = '0' + static_cast<char>(ps_r_sun_quality); ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(LightingModeIsDynamicRender() && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX)) {
-		defines[def_it].Name = "ALLOW_STEEPPARALLAX";
-		defines[def_it].Definition = "1";
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(o.dx11_disable_motion_vectors) {
-		// The macro is already provided by addShaderOption(); passing it twice makes
-		// the shader compiler report a macro redefinition for every permutation.
-		sh_name[len] = '1'; ++len;
-	}
-	else {
-		sh_name[len] = '0';	++len;
-	}
-
-	if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
-		defines[def_it].Name = "SM_4_1";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(RFeatureLevel == RHI_FEATURE_LEVEL_10_1); ++len;
-
-	if(RFeatureLevel >= RHI_FEATURE_LEVEL_11_0) {
-		defines[def_it].Name = "SM_5";
-		defines[def_it].Definition = "1";
-		def_it++;
-	}
-	sh_name[len] = '0' + char(RFeatureLevel >= RHI_FEATURE_LEVEL_11_0); ++len;
-
-	// Editor-only defines are suffixed only when set, so the game shader cache names stay unchanged
-	if (Device.IsEditorMode()) {
-		defines[def_it].Name = "EDITOR_MODE";
-		defines[def_it].Definition = "1";
-		def_it++;
-		sh_name[len] = 'e'; ++len;
-	}
-
-	if (IsEditorInstancing()) {
-		defines[def_it].Name = "USE_EDITOR_INSTANCING";
-		defines[def_it].Definition = "1";
-		def_it++;
-		sh_name[len] = '1'; ++len;
-	}
-
-#if defined(IXR_APPLE_SERIES)
-	// vkd3d HLSL lacks some intrinsics (e.g. RWTexture2D::GetDimensions); shaders branch on this.
-	// The shader cache is per platform, so sh_name needs no suffix.
-	defines[def_it].Name = "IXR_VKD3D_COMPILER";
-	defines[def_it].Definition = "1";
-	def_it++;
-#endif
-
-	// finish
-	defines[def_it].Name = 0;
-	defines[def_it].Definition = 0;
-
-	def_it++;
-	sh_name[len] = 0;
-
-	if(0 == xr_strcmp(pFunctionName, "main")) {
-		if('v' == pTarget[0]) {
-			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
-				pTarget = "vs_4_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
-				pTarget = "vs_4_1";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
-				pTarget = "vs_5_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
-				pTarget = "vs_5_0";
-			}
-		}
-		else if('p' == pTarget[0]) {
-			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
-				pTarget = "ps_4_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
-				pTarget = "ps_4_1";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
-				pTarget = "ps_5_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
-				pTarget = "ps_5_0";
-			}
-		}
-		else if('g' == pTarget[0]) {
-			if(RFeatureLevel == RHI_FEATURE_LEVEL_10_0) {
-				pTarget = "gs_4_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_10_1) {
-				pTarget = "gs_4_1";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
-				pTarget = "gs_5_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
-				pTarget = "gs_5_0";
-			}
-		}
-		else if('c' == pTarget[0]) {
-			if(RFeatureLevel == RHI_FEATURE_LEVEL_11_0) {
-				pTarget = "cs_5_0";
-			}
-			else if(RFeatureLevel == RHI_FEATURE_LEVEL_11_1) {
-				pTarget = "cs_5_0";
-			}
-		}
-	}
+	char ShaderTarget[] = "?s_5_0";
+	ShaderTarget[0] = pTarget[0];
+	pTarget = ShaderTarget;
 
 	HRESULT _result = E_FAIL;
 
@@ -1545,8 +1040,6 @@ HRESULT	CRender::shader_compile(
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);
-		xr_strcat(file, "\\");
-		xr_strcat(file, sh_name);
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
@@ -1556,23 +1049,7 @@ HRESULT	CRender::shader_compile(
 	IReader R = IReader((char*)pSrcData, SrcDataLen);
 	GetShaderCRC(&R, RealCodeCRC, crc_file_list);
 
-	u32 options_crc = 0xffffffff;
-	{
-		static thread_local xr_vector<xr_string> option_parts;
-		option_parts.clear();
-		const ShaderExternalMap& ShaderOptions = CurrentShaderOptions();
-		option_parts.reserve(ShaderOptions.size());
-		for (const auto& [option_name, option_value] : ShaderOptions)
-		{
-			option_parts.push_back(option_name);
-			option_parts.back().append(option_value);
-		}
-		std::sort(option_parts.begin(), option_parts.end());
-		for (const auto& part : option_parts)
-		{
-			options_crc = crc32(part.data(), part.size(), options_crc);
-		}
-	}
+	const u32 options_crc = DefinesCRC(AllDefines);
 
 	Flags |= RHI_SHADER_OPTIMIZATION_LEVEL3;
 	if (Core.ParamsData.test(ECoreParams::debug_shaders))
@@ -1616,22 +1093,12 @@ HRESULT	CRender::shader_compile(
 		RHIBlob* pErrorBuf = nullptr;
 
 		includer Includer;
-
-		u8* rewritten = nullptr;
-		u32 rewritten_size = 0;
-		const void* src = pSrcData;
-		UINT src_len = SrcDataLen;
-		if (ShaderBind_Rewrite(reinterpret_cast<const u8*>(pSrcData), SrcDataLen, rewritten, rewritten_size))
-		{
-			src = rewritten;
-			src_len = rewritten_size;
-		}
 		{
 			PROF_EVENT("CRender::D3DCompile");
 			PROF_EVENT_DYNAMIC(name);
 			_result = GRHI->CompileShader(
-				src,
-				src_len,
+				pSrcData,
+				SrcDataLen,
 				name,
 				defines,
 				&Includer,
@@ -1642,7 +1109,6 @@ HRESULT	CRender::shader_compile(
 				&pErrorBuf
 			);
 		}
-		xr_free(rewritten);
 
 		if (SUCCEEDED(_result))
 		{

@@ -10,7 +10,7 @@ public:
 	CDS0_DebugRender();
 	virtual void Render() override;
 
-	// routed to RCache
+	// routed to the immediate backend
 	virtual void NextSceneMode() override;
 	virtual void ZEnable(bool bEnable) override;
 	virtual void OnFrameEnd() override;

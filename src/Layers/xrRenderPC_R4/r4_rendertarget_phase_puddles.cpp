@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-bool CRenderTarget::phase_puddles()
+bool CRenderTarget::phase_puddles(GfxCmdList& Cmd)
 {
 	auto& wetness_factor = g_pGamePersistent->Environment().wetness_factor;
 
@@ -10,8 +10,8 @@ bool CRenderTarget::phase_puddles()
 		return false;
 	}
 
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Shader(s_puddles);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetPass(s_puddles);
 
 	auto puddles = 0;
 
@@ -22,10 +22,10 @@ bool CRenderTarget::phase_puddles()
 			continue;
 		}
 
-		RCache.set_xform_world(puddle.m_world);
+		Cmd.SetObjectTransform(puddle.m_world);
 
-		RCache.Constants.Write<CBPost>().puddle_constants = g_pGamePersistent->Environment().wetness_factor * puddle.m_height;
-		RCache.Render_noIA(6);
+		Cmd.Constants.Write<CBPost>().puddle_constants = g_pGamePersistent->Environment().wetness_factor * puddle.m_height;
+		Cmd.DrawNoInput(6);
 
 		++puddles;
 	}
@@ -61,7 +61,7 @@ void ApplyObliqueClipPlane
 	mProject._43 = mPlane.d * Denom;
 }
 
-void CRenderTarget::phase_planar()
+void CRenderTarget::phase_planar(GfxCmdList& Cmd)
 {
 	if (RImplementation.m_levels_puddles.empty())
 	{
@@ -112,39 +112,37 @@ void CRenderTarget::phase_planar()
 
 		if (IsRender)
 		{
-			GRHI->ClearTarget(rt_planar_color->pRT, ERTColor::Black);
-			GRHI->ClearDepthStencil(rt_planar_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+			Cmd.ClearTarget(rt_planar_color->pRT, ERTColor::Black);
+			Cmd.ClearDepthStencil(rt_planar_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 
-			u_setrt(rt_planar_color, NULL, rt_planar_depth->pZRT);
+			u_setrt(Cmd, rt_planar_color, NULL, rt_planar_depth->pZRT);
 			RImplementation.rmNormal();
 
-			RCache.set_Stencil(FALSE);
-			RCache.set_ColorWriteEnable();
+			Cmd.SetStencil(FALSE);
+			Cmd.SetColorWriteEnable();
 
 			ps_r_taa_jitter.x = -ps_r_taa_jitter.x;
 			ps_r_taa_jitter_full.x = -ps_r_taa_jitter_full.x;
 
-			RCache.set_xform_project(ReflectProject);
-			RCache.set_xform_view(ReflectView);
+			Cmd.SetView(ReflectView, ReflectProject);
 
 			RImplementation.GraphMain.r_dsgraph_render_graph(0);
 
-			RCache.set_xform_project(Device.mProject);
-			RCache.set_xform_view(Device.mView);
-
-			RImplementation.phase = CRender::PHASE_NORMAL;
-
 			ps_r_taa_jitter.x = -ps_r_taa_jitter.x;
 			ps_r_taa_jitter_full.x = -ps_r_taa_jitter_full.x;
+
+			Cmd.SetView(Device.mView, Device.mProject);
+
+			RImplementation.phase = CRender::PHASE_NORMAL;
 		}
 
-		u_setrt(rt_sslr, 0, 0, 0);
+		u_setrt(Cmd, rt_sslr, 0, 0, 0);
 		RImplementation.rmNormal();
 
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
-		RCache.set_Shader(s_puddles);
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetPass(s_puddles);
 
-		RCache.set_xform_world(planar.m_world);
-		RCache.Render_noIA(6);
+		Cmd.SetObjectTransform(planar.m_world);
+		Cmd.DrawNoInput(6);
 	}
 }

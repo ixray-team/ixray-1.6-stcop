@@ -82,7 +82,7 @@ void EParticlesObject::Render(int priority, bool strictB2F)
 
     if (::Render->occ_visible(bb))
     {
-        RCache.set_xform_world(Fidentity);
+        RImplementation.Imm().SetObjectTransform(Fidentity);
         if (1 == priority) 
         {
             if (!strictB2F) 

@@ -67,7 +67,7 @@ bool ESoundSource::GetBox( Fbox& box )
 void ESoundSource::Render(int priority, bool strictB2F)
 {
 	if((1==priority)&&(false==strictB2F)){
-		RCache.set_xform_world	(Fidentity);
+		RImplementation.Imm().SetObjectTransform(Fidentity);
 		EDevice->SetShader		(GEditorDraw.WireShader);
 		u32 clr0				= Locked()?SOUND_LOCK_COLOR:Selected()?SOUND_SEL0_COLOR:SOUND_NORM_COLOR;
 		u32 clr1				= Locked()?SOUND_LOCK_COLOR:Selected()?SOUND_SEL1_COLOR:SOUND_NORM_COLOR;

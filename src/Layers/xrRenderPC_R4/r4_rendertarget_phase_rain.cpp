@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_rain()
+void CRenderTarget::phase_rain(GfxCmdList& Cmd)
 {
-	u_setrt(rt_Color, nullptr, nullptr, nullptr);
+	u_setrt(Cmd, rt_Color, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();
 }

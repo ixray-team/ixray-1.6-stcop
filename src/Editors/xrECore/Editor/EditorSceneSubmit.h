@@ -70,7 +70,7 @@ public:
 	// Used only when the pass binds an instanced vertex shader to this single copy
 	SEditorInstanceBuffer InstanceBuffer;
 
-	void Render(float LOD) override;
+	void Render(GfxCmdList& Cmd, float LOD) override;
 };
 
 class CEditableInstancedVisual final : public dxRender_Visual
@@ -90,7 +90,7 @@ public:
 	// Copies Rows to the GPU buffer, growing it when needed
 	bool Upload() { Uploaded = InstanceBuffer.Upload(Rows.data(), InstanceCount()); return Uploaded; }
 
-	void Render(float LOD) override;
+	void Render(GfxCmdList& Cmd, float LOD) override;
 };
 
 class ECORE_API CEditorSceneSubmit
@@ -136,9 +136,9 @@ public:
 	// The tasks read the occlusion data the renderer rebuilds after the first pass
 	void WaitPrepared();
 
-	void DrawInstances(const CEditableInstancedVisual& Visual);
+	void DrawInstances(GfxCmdList& Cmd, const CEditableInstancedVisual& Visual);
 	// A single copy whose pass bound an instanced vertex shader: drawn as one instance
-	void DrawSingleInstanced(CEditableSurfaceVisual& Visual);
+	void DrawSingleInstanced(GfxCmdList& Cmd, CEditableSurfaceVisual& Visual);
 
 private:
 	struct SPending

@@ -11,12 +11,12 @@ struct DX12Shader
     u32 ConstantMask = 0;
     u32 SamplerMask = 0;
     u32 UAVMask = 0;
-    D3D12_SRV_DIMENSION Dimensions[16] = {};
+    D3D12_SRV_DIMENSION Dimensions[DX12ViewSlots] = {};
     D3D12_UAV_DIMENSION UAVDimensions[8] = {};
-    D3D_RESOURCE_RETURN_TYPE ReturnTypes[16] = {};
-    u8 ResourceKinds[16] = {};
+    D3D_RESOURCE_RETURN_TYPE ReturnTypes[DX12ViewSlots] = {};
+    u8 ResourceKinds[DX12ViewSlots] = {};
     u8 UAVKinds[8] = {};
-    D3D12_CPU_DESCRIPTOR_HANDLE NullSrvs[16] = {};
+    D3D12_CPU_DESCRIPTOR_HANDLE NullSrvs[DX12ViewSlots] = {};
     bool NullReady = false;
     xr_vector<u8> Code;
 };
@@ -49,13 +49,10 @@ public:
     InternalDevice12();
     ~InternalDevice12() override;
     void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
-    void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) override;
-    void Draw(u32 startVertex, u32 primitiveCount) override;
-    void DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
-    void DrawIndexedInstanced(
-		u32 baseVertex, u32 startVertex, u32 vertexCount,
-		u32 startIndex, u32 primitiveCount,
-		u32 instanceCount, u32 startInstanceLocation) override;
+    void Draw(u32 VertexCount, u32 StartVertex) override;
+    void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex) override;
+    void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance) override;
+    void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance) override;
     void DrawNoInputAssembly(u32 vertexCount) override;
     void ResizeBuffers(u32 Width, u32 Height) override;
     void ClearTarget(void* Target, ERTColor Transparent) override;
@@ -66,7 +63,6 @@ public:
     void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
     void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
     IRHITextureFactory* GetTextureFactory() override;
-    void SetTextureFactory(IRHITextureFactory* factory) override;
     void SetViewport(RHIViewport& VP) override;
     IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr) override;
     void SetScissorRect(Irect* R) override;
@@ -76,9 +72,8 @@ public:
     void* GetContext() override;
     void* GetSwapchain() override;
     void BeginFrame() override;
-    IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize) override;
     IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) override;
-    void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type) override;
+    void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearVertexBuffer(u32 vb_stride) override;
     void ClearIndexBuffer() override;
     void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
@@ -90,7 +85,7 @@ public:
     void SetInputLayout(RHIObject* layout) override;
     void Dispatch(u32 x, u32 y, u32 z) override;
     HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state) override;
-    void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type) override;
+    void SetSamplers(RHIObject* const* states, u32 count) override;
     void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) override;
     void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) override;
     HRESULT CreateOcclusionQuery(RHIObject** out_query) override;
@@ -169,13 +164,14 @@ public:
 private:
     mutable xrCriticalSection _contextMutex;
     static constexpr u32 FrameCount = 3;
-    static constexpr u32 RootConstantSlots = 4;
-    static constexpr u32 TableConstantCount = 14 - RootConstantSlots;
-    static constexpr u32 TablesPerStage = 3;
+    static constexpr u32 TablesPerStage = 2;
     static constexpr u32 GraphicsTableCount = 5 * TablesPerStage + 1;
     static constexpr u32 ComputeTableCount = TablesPerStage + 1;
-    static_assert(GraphicsTableCount + 5 * RootConstantSlots * 2 <= 64, "graphics root signature exceeds 64 DWORDs");
-    static_assert(ComputeTableCount + RootConstantSlots * 2 <= 64, "compute root signature exceeds 64 DWORDs");
+    static constexpr u32 ConstantSlots = RHI_MAX_CONSTANT_BUFFERS;
+    static constexpr u32 DrawSlot = ConstantSlots - 1;
+    static constexpr u32 DrawConstants = 24;
+    static_assert(GraphicsTableCount + DrawSlot * 2 + DrawConstants <= 64, "graphics root signature exceeds 64 DWORDs");
+    static_assert(ComputeTableCount + DrawSlot * 2 + DrawConstants <= 64, "compute root signature exceeds 64 DWORDs");
     static constexpr u32 ResourceDescriptorCount = 1000000;
     static constexpr u32 StaticResourceDescriptors = 65536;
     static constexpr u32 SamplerDescriptorCount = 2048;
@@ -249,21 +245,15 @@ private:
     };
     struct DescriptorTable
     {
-        u64 Keys[32] = {};
+        u64 Keys[DX12ViewSlots] = {};
         u32 Count = 0;
         u32 Next = 0;
         bool IsSampler = false;
         D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
     };
-    struct ConstantCache
-    {
-        u64 Keys[TableConstantCount] = {};
-        D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
-        u64 Generation = 0;
-    };
     struct ViewCache
     {
-        u64 Keys[16] = {};
+        u64 Keys[DX12ViewSlots] = {};
         D3D12_GPU_DESCRIPTOR_HANDLE Handle = {};
         u64 ShaderId = 0;
         u64 Generation = 0;
@@ -426,9 +416,9 @@ private:
     xr_vector<DX12ShaderResourceView*> _images;
     float _depthMinimum = 0;
     float _depthMaximum = 1;
-    xr_vector<RHIRasterizerDesc*> _rasterStates;
-    xr_vector<RHIDepthStencilDesc*> _depthStates;
-    xr_vector<RHIBlendDesc*> _blendStates;
+    xr_hash_map<u64, xr_vector<RHIRasterizerDesc*>> _rasterStates;
+    xr_hash_map<u64, xr_vector<RHIDepthStencilDesc*>> _depthStates;
+    xr_hash_map<u64, xr_vector<RHIBlendDesc*>> _blendStates;
     bool _boundHeaps = false;
     bool _boundGraphicsRoot = false;
     bool _boundComputeRoot = false;
@@ -444,14 +434,15 @@ private:
     bool _samplersDirty[6] = { true, true, true, true, true, true };
     u32 _vertexMask = 0;
     u64 _tableGeneration = 1;
-    u64 _rootConstants[6][RootConstantSlots] = {};
+    u64 _rootConstants[2][ConstantSlots] = {};
+    u64 _ranges[ConstantSlots] = {};
+    u32 _rootData[DrawConstants] = {};
+    u32 _rootDataDirty = 0;
     u64 _nullConstants = 0;
     u64 _nullConstantsEpoch = 0;
     u64 _barrierEpoch = 1;
     u64 _attachmentEpoch = 0;
-    ConstantCache _constantCaches[6];
     ViewCache _viewCaches[6];
-    DX12Descriptor _nullCbv = {};
     SamplerCache _samplerCaches[6];
     UAVCache _uavCaches[2];
     std::atomic<u32> _pendingCount{ 0 };
@@ -467,8 +458,7 @@ private:
     DX12Shader* _computeShader = nullptr;
     DX12InputLayout* _layout = nullptr;
     DX12Sampler* _samplers[6][16] = {};
-    DX12Buffer* _constants[6][14] = {};
-    DX12ShaderResourceView* _resources[6][16] = {};
+    DX12ShaderResourceView* _resources[6][DX12ViewSlots] = {};
     DX12UnorderedAccessView* _computeUAVs[8] = {};
     DX12UnorderedAccessView* _renderUAVs[8] = {};
     DX12RenderTargetView* _targets[8] = {};
@@ -506,8 +496,7 @@ private:
     void BindNullConstants(bool compute);
     void BindRootConstants(bool compute);
     void FinishDraw();
-    u32 RootConstantParameter(bool compute, u32 stage, u32 slot) const;
-    D3D12_GPU_DESCRIPTOR_HANDLE ConstantTable(u32 stage);
+    u32 ConstantParameter(bool compute) const { return compute ? ComputeTableCount : GraphicsTableCount; }
     D3D12_GPU_DESCRIPTOR_HANDLE ViewTable(u32 stage);
     D3D12_GPU_DESCRIPTOR_HANDLE SamplerTable(u32 stage);
     D3D12_GPU_DESCRIPTOR_HANDLE UAVTable(bool compute);

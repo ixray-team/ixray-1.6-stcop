@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-void CRenderTarget::accum_reflected		(light* L)
+void CRenderTarget::accum_reflected		(GfxCmdList& Cmd, light* L)
 {
-	phase_accumulator				();
+	phase_accumulator				(Cmd);
 	RImplementation.stats.l_visible	++;
 
 	// *** assume accumulator setted up ***
@@ -10,22 +10,21 @@ void CRenderTarget::accum_reflected		(light* L)
 	ref_shader		shader				= s_accum_reflected;
 
 	bool	bIntersect			= false; //enable_scissor(L);
-	RCache.set_xform_world		(L->m_xform			);
-	RCache.set_xform_view		(Device.mView		);
-	RCache.set_xform_project	(Device.mProject	);
+	Cmd.SetObjectTransform(L->m_xform);
+	Cmd.SetView(Device.mView, Device.mProject);
 	bIntersect					= enable_scissor	(L);
 	enable_dbt_bounds			(L);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RCache.set_ColorWriteEnable				();
-	RCache.set_CullMode(bIntersect ? ERHI_CULLMODE::FRONT : ERHI_CULLMODE::BACK);
+	Cmd.SetColorWriteEnable				();
+	Cmd.SetCullMode(bIntersect ? ERHI_CULLMODE::FRONT : ERHI_CULLMODE::BACK);
 
 	// 2D texgen (texture adjustment matrix)
 	Fmatrix			m_Texgen;
 	{
-		float	_w						= RCache.get_width();
-		float	_h						= RCache.get_height();
+		float	_w						= Cmd.GetWidth();
+		float	_h						= Cmd.GetHeight();
 		float	o_w						= (.5f / _w);
 		float	o_h						= (.5f / _h);
 		Fmatrix			m_TexelAdjust		= 
@@ -35,7 +34,7 @@ void CRenderTarget::accum_reflected		(light* L)
 			0.0f,				0.0f,				1.0f,			0.0f,
 			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
 		};
-		m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+		m_Texgen.mul	(m_TexelAdjust,Cmd.GetWorldViewProject());
 	}
 
 	// Common constants
@@ -46,14 +45,14 @@ void CRenderTarget::accum_reflected		(light* L)
 
 	{
 		// Lighting
-		RCache.set_Shader			(shader);
+		Cmd.SetPass			(shader);
 
 		// Constants
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L->range*L->range));
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
-		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-		draw_volume(L);
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, 1/(L->range*L->range));
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		Cmd.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		Cmd.SetStencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		draw_volume(Cmd, L);
 	}
 
 	// 

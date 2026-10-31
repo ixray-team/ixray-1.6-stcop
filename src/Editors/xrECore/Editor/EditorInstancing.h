@@ -29,8 +29,8 @@ private:
 	};
 
 	bool CreateBuffer();
-	void Flush();
-	void DrawRun(const SItem& First, u32 Offset, u32 Count);
+	void Flush(GfxCmdList& Cmd);
+	void DrawRun(GfxCmdList& Cmd, const SItem& First, u32 Offset, u32 Count);
 
 	static constexpr u32 BufferCapacity = 4096;
 

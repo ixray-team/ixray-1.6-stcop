@@ -24,8 +24,6 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
         C.r_dx10Texture("t_focus_prev", r2_RT_dof_focus_prev);
         C.r_dx10Texture("s_position", r2_RT_P);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
         C.r_End();
         break;
 
@@ -39,8 +37,6 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
         C.r_dx10Texture("t_coc_prev",r2_RT_dof_coc_prev);   // if doing simple temporal lerp in same UV
         C.r_dx10Texture("s_position", r2_RT_P);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
         C.r_End();
         break;
     
@@ -53,8 +49,6 @@ void CBlender_new_dof::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("t_bimage", r2_RT_bloomC);   // if you want to read original unblurred color for better quality (optional)
         C.r_dx10Texture("t_coc",   r2_RT_dof_coc);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
         C.r_End();
         break;
     }

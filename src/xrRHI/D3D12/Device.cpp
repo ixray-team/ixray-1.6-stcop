@@ -222,18 +222,19 @@ InternalDevice12::~InternalDevice12()
     {
         pipeline.Pipeline->Release();
     }
-    for (auto state : _rasterStates)
+    const auto release = [](auto& cache)
     {
-        xr_delete(state);
-    }
-    for (auto state : _depthStates)
-    {
-        xr_delete(state);
-    }
-    for (auto state : _blendStates)
-    {
-        xr_delete(state);
-    }
+        for (auto& [hash, bucket] : cache)
+        {
+            for (auto state : bucket)
+            {
+                xr_delete(state);
+            }
+        }
+    };
+    release(_rasterStates);
+    release(_depthStates);
+    release(_blendStates);
     CollectRetired();
     for (auto& frame : _frames)
     {
@@ -1142,7 +1143,7 @@ void InternalDevice12::UpdateBuffers()
     depthDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
     depthDesc.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL;
     HalfTarget.set((int)depthDesc.Width, (int)depthDesc.Height);
-    _depthSurface = static_cast<DX12Surface*>(_textureFactory->CreateDepthStencil(depthDesc));
+    _depthSurface = static_cast<DX12Surface*>(_textureFactory->CreateTexture2D(depthDesc, nullptr));
     RenderDSV = _textureFactory->CreateDepthStencilView(_depthSurface);
 }
 
@@ -1243,6 +1244,7 @@ void InternalDevice12::Present()
         chunk.Used = 0;
     }
     ++frame.UploadSerial;
+    ++ConstantEpoch;
     _frame = next;
     _uploadLock.Leave();
     if ((++_presentCount & 255) == 0)
@@ -1259,11 +1261,6 @@ void InternalDevice12::Present()
 IRHITextureFactory* InternalDevice12::GetTextureFactory()
 {
     return _textureFactory;
-}
-
-void InternalDevice12::SetTextureFactory(IRHITextureFactory* factory)
-{
-    R_ASSERT(factory == _textureFactory);
 }
 
 IRHIBuffer* InternalDevice12::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* data)
@@ -1394,57 +1391,37 @@ void InternalDevice12::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
     }
 }
 
-void InternalDevice12::Draw(u32 startVertex, u32 primitiveCount)
+void InternalDevice12::Draw(u32 VertexCount, u32 StartVertex)
 {
-    ContextLock guard(*this);
-    if (!primitiveCount)
-    {
-        return;
-    }
-    if (!PrepareDraw(false))
-    {
-        return;
-    }
-    DX12_GPU_EVENT(_commands, "D3D12: Draw");
-    _commands->DrawInstanced(RHITopologyUtils::GetVertexCount(primitiveCount, _topology), 1, startVertex, 0);
-    FinishDraw();
+    DrawInstanced(VertexCount, 1, StartVertex, 0);
 }
 
-void InternalDevice12::DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void InternalDevice12::DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance)
 {
     ContextLock guard(*this);
-    if (!primitiveCount || !instanceCount)
-    {
-        return;
-    }
-    if (!PrepareDraw(false))
+    if (!VertexCount || !InstanceCount || !PrepareDraw(false))
     {
         return;
     }
     DX12_GPU_EVENT(_commands, "D3D12: DrawInstanced");
-    _commands->DrawInstanced(RHITopologyUtils::GetVertexCount(primitiveCount, _topology), instanceCount, startVertex, startInstanceLocation);
+    _commands->DrawInstanced(VertexCount, InstanceCount, StartVertex, StartInstance);
     FinishDraw();
 }
 
-void InternalDevice12::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+void InternalDevice12::DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex)
 {
-    ContextLock guard(*this);
-    DrawIndexedInstanced(baseVertex, startVertex, vertexCount, startIndex, primitiveCount, 1, 0);
+    DrawIndexedInstanced(IndexCount, 1, StartIndex, BaseVertex, 0);
 }
 
-void InternalDevice12::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void InternalDevice12::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance)
 {
     ContextLock guard(*this);
-    if (!primitiveCount || !instanceCount)
-    {
-        return;
-    }
-    if (!PrepareDraw(false))
+    if (!IndexCount || !InstanceCount || !PrepareDraw(false))
     {
         return;
     }
     DX12_GPU_EVENT(_commands, "D3D12: DrawIndexed");
-    _commands->DrawIndexedInstanced(RHITopologyUtils::GetIndexCount(primitiveCount, _topology), instanceCount, startIndex, (INT)baseVertex, startInstanceLocation);
+    _commands->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, (INT)BaseVertex, StartInstance);
     FinishDraw();
 }
 

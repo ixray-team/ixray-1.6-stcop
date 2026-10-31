@@ -140,7 +140,7 @@ void CRenderTarget::ClearSpotShadowCache()
 {
 	if (!SpotShadowCache.empty() || SpotShadowLastMode > 0)
 	{
-		RCache.Invalidate();
+		RImplementation.Imm().Invalidate();
 	}
 	SpotShadowCache.clear();
 	SpotShadowCacheBytes = 0;
@@ -150,7 +150,7 @@ void CRenderTarget::ReleaseSpotShadowDepth(SpotShadowCacheEntry& Entry)
 {
 	if (Entry.Depth || Entry.CopyShader)
 	{
-		RCache.set_Textures(&SpotShadowEmptyTextures);
+		RImplementation.Imm().SetTextures(&SpotShadowEmptyTextures);
 		GRHI->ShaderResourceCache->Apply();
 	}
 	SpotShadowCacheBytes -= Entry.Bytes;
@@ -189,7 +189,7 @@ void CRenderTarget::BeginSpotShadowCacheFrame()
 			++Index;
 			continue;
 		}
-		RCache.set_Textures(&SpotShadowEmptyTextures);
+		RImplementation.Imm().SetTextures(&SpotShadowEmptyTextures);
 		GRHI->ShaderResourceCache->Apply();
 		SpotShadowCacheBytes -= Entry.Bytes;
 		SpotShadowCache.erase(SpotShadowCache.begin() + Index);
@@ -390,18 +390,18 @@ bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& En
 		{
 			Renderer.r_dsgraph_insert_static(Visual);
 		}
-		RCache.set_Textures(&SpotShadowEmptyTextures);
+		GfxCmdList& Cmd = RImplementation.Imm();
+		Cmd.SetTextures(&SpotShadowEmptyTextures);
 		GRHI->ShaderResourceCache->Apply();
 		RHIViewport Viewport = {0.f, 0.f, float(Entry.Key.Size), float(Entry.Key.Size), 0.f, 1.f};
-		SetupSpotShadowTarget(Entry.Depth->pZRT, Entry.Key.Size, Entry.Key.Size, Viewport);
-		GRHI->ClearDepthStencil(Entry.Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-		RCache.set_xform_world(Fidentity);
-		RCache.set_xform_view(Source.X.S.view);
-		RCache.set_xform_project(Source.X.S.project);
+		SetupSpotShadowTarget(Cmd, Entry.Depth->pZRT, Entry.Key.Size, Entry.Key.Size, Viewport);
+		Cmd.ClearDepthStencil(Entry.Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+		Cmd.SetObjectTransform(Fidentity);
+		Cmd.SetView(Source.X.S.view, Source.X.S.project);
 		Renderer.r_dsgraph_render_graph(0);
 		// Detach the cache DSV before the atlas restore reads its SRV.
-		phase_smap_spot(&Source);
-		GRHI->ApplyRenderTargetChange();
+		phase_smap_spot(Cmd, &Source);
+		Cmd.ApplyRenderTargets();
 	}
 	else if (Entry.Depth)
 	{
@@ -417,26 +417,27 @@ void CRenderTarget::RestoreSpotShadowCache(const light& Source, SpotShadowCacheE
 {
 	PROF_EVENT("SpotShadowCache::Restore");
 	GPU_EVENT(SpotShadowCacheRestore);
-	RCache.set_Textures(&SpotShadowEmptyTextures);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.SetTextures(&SpotShadowEmptyTextures);
 	GRHI->ShaderResourceCache->Apply();
 	RHIViewport Viewport = {float(Source.X.S.posX), float(Source.X.S.posY), float(Source.X.S.size), float(Source.X.S.size), 0.f, 1.f};
 	// Keep the atlas RTV/DSV pair bound across restore and geometry draws.
 	// The copy shader only writes depth; detaching the RTV needlessly unbinds the entire OM state.
-	SetupSpotShadowTarget(rt_smap_depth->pZRT, rt_smap_depth->dwWidth, rt_smap_depth->dwHeight, Viewport, rt_smap_surf->pRT);
-	GRHI->ApplyRenderTargetChange();
+	SetupSpotShadowTarget(Cmd, rt_smap_depth->pZRT, rt_smap_depth->dwWidth, rt_smap_depth->dwHeight, Viewport, rt_smap_surf->pRT);
+	Cmd.ApplyRenderTargets();
 	Irect Tile;
 	Tile.set(Source.X.S.posX, Source.X.S.posY, Source.X.S.posX + Source.X.S.size, Source.X.S.posY + Source.X.S.size);
 	const auto BindLambda = [&]
 	{
-		RCache.Constants.Write<CBPost>().shadow_cache_destination.set(float(Source.X.S.posX), float(Source.X.S.posY), 0.f, 0.f);
-		RCache.set_Scissor(&Tile);
-		RCache.set_Z(TRUE);
-		RCache.set_ZFunc(D3DCMP_ALWAYS);
+		Cmd.Constants.Write<CBPost>().shadow_cache_destination.set(float(Source.X.S.posX), float(Source.X.S.posY), 0.f, 0.f);
+		Cmd.SetScissor(&Tile);
+		Cmd.SetDepthEnable(TRUE);
+		Cmd.SetDepthFunc(D3DCMP_ALWAYS);
 	};
-	DrawPassSQ(Entry.CopyShader, 0, BindLambda);
-	RCache.set_Textures(&SpotShadowEmptyTextures);
+	DrawPassSQ(Cmd, Entry.CopyShader, 0, BindLambda);
+	Cmd.SetTextures(&SpotShadowEmptyTextures);
 	GRHI->ShaderResourceCache->Apply();
-	RCache.set_Scissor(nullptr);
+	Cmd.SetScissor(nullptr);
 	++SpotShadowStatistics.Restores;
 	SpotShadowStatistics.RestoredPixels += u64(Source.X.S.size) * Source.X.S.size;
 }
@@ -508,9 +509,9 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	}
 
 	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
-	const Fmatrix World = RCache.get_xform_world();
-	const Fmatrix View = RCache.get_xform_view();
-	const Fmatrix Project = RCache.get_xform_project();
+	GfxCmdList& Cmd = RImplementation.Imm();
+	const Fmatrix World = Cmd.GetObjectTransform();
+	const GfxView View = Cmd.GetView();
 	const bool PreviousPass = Renderer.SpotShadowPass;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto* PreviousCachedCasters = Renderer.SpotShadowCachedCasters;
@@ -538,10 +539,9 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		Renderer.SpotShadowDynamicItems = PreviousDynamicItems;
 		Renderer.View = PreviousFrustum;
 		Renderer.set_Feedback(Feedback, FeedbackBreak);
-		RCache.set_Scissor(nullptr);
-		RCache.set_xform_world(World);
-		RCache.set_xform_view(View);
-		RCache.set_xform_project(Project);
+		Cmd.SetScissor(nullptr);
+		Cmd.SetObjectTransform(World);
+		Cmd.SetView(View);
 	};
 	xr_scope_exit RestoreState(std::move(RestoreStateLambda));
 	Renderer.SpotShadowPass = true;
@@ -635,10 +635,9 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		{
 			Renderer.r_dsgraph_insert_static(Visual);
 		}
-		phase_smap_spot(&Source);
-		RCache.set_xform_world(Fidentity);
-		RCache.set_xform_view(Source.X.S.view);
-		RCache.set_xform_project(Source.X.S.project);
+		phase_smap_spot(Cmd, &Source);
+		Cmd.SetObjectTransform(Fidentity);
+		Cmd.SetView(Source.X.S.view, Source.X.S.project);
 		Renderer.r_dsgraph_render_graph(0);
 	}
 	Renderer.SpotShadowCachedCasters = &Entry->CachedCasterSet;
@@ -677,10 +676,9 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	{
 		RestoreSpotShadowCache(Source, *Entry);
 	}
-	phase_smap_spot(&Source);
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Source.X.S.view);
-	RCache.set_xform_project(Source.X.S.project);
+	phase_smap_spot(Cmd, &Source);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Source.X.S.view, Source.X.S.project);
 	if (HasNormal)
 	{
 		GPU_EVENT(SpotShadowCacheDynamic);
@@ -691,13 +689,13 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		RImplementation.GetDetails() && RImplementation.GetDetails()->dtSlots && Source.SpatialComponent &&
 		Source.SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 	{
-		RImplementation.GetDetails()->hw_Render(&Source);
+		RImplementation.GetDetails()->hw_Render(Cmd, &Source);
 	}
 	if (HasSpecial)
 	{
 		GPU_EVENT(SpotShadowCacheSpecial);
 		Source.X.S.transluent = true;
-		phase_smap_spot_tsh(&Source);
+		phase_smap_spot_tsh(Cmd, &Source);
 		Renderer.r_dsgraph_render_graph(1);
 		Renderer.r_dsgraph_render_sorted(false);
 		++SpotShadowStatistics.SpecialPasses;

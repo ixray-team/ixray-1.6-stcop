@@ -1,19 +1,6 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
-// eye-params
-float					r__dtex_range	= 50;
-class cl_dt_scaler		: public RHIShaderConstant::Setup {
-public:
-	float				scale;
-
-	cl_dt_scaler		(float s) : scale(s)	{};
-
-	void setup() override
-	{
-		RCache.Constants.Write<CBMaterial>().dt_params.set(scale, scale, scale, 1 / r__dtex_range);
-	}
-};
 
 static shared_str NormalizeTexKey(const shared_str& Name)
 {
@@ -54,7 +41,6 @@ void CTextureDescrMngr::LoadLTX()
 
 				shared_str key = NormalizeTexKey(item.first);
 				texture_desc& desc		= m_texture_details[key];
-				cl_dt_scaler*& dts = m_detail_scalers[key];
 				desc.m_assoc			= new texture_assoc();
 
 				string_path				T;
@@ -63,12 +49,7 @@ void CTextureDescrMngr::LoadLTX()
 				int res = sscanf					(*item.second,"%[^,],%f",T,&s);
 				R_ASSERT(res==2);
 				desc.m_assoc->detail_name = T;
-				if (dts)
-					dts->scale = s;
-				else
-					dts = new cl_dt_scaler(s);
-
-//				desc.m_assoc->cs		= new cl_dt_scaler(s);
+				m_detail_scalers[key] = s;
 
 				desc.m_assoc->usage		= 0;
 				if(strstr(item.second.c_str(),"usage[diffuse_or_bump]"))
@@ -194,7 +175,6 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 			shared_str key = NormalizeTexKey(shared_str(fn));
 			MapAccessCS.Enter();
 			texture_desc& desc = m_texture_details[key];
-			cl_dt_scaler*& dts = m_detail_scalers[key];
 			MapAccessCS.Leave();
 
 			if (tp.detail_name.size() &&
@@ -226,14 +206,9 @@ void CTextureDescrMngr::LoadTHM(const char* initial)
 				desc.m_assoc = new texture_assoc();
 				desc.m_assoc->detail_name = tp.detail_name;
 
-				if (dts)
-				{
-					dts->scale = tp.detail_scale;
-				}
-				else
-				{
-					dts = new cl_dt_scaler(tp.detail_scale);
-				}
+				MapAccessCS.Enter();
+				m_detail_scalers[key] = tp.detail_scale;
+				MapAccessCS.Leave();
 
 				desc.m_assoc->usage = 0;
 
@@ -337,12 +312,6 @@ void CTextureDescrMngr::UnLoad()
 
 CTextureDescrMngr::~CTextureDescrMngr()
 {
-	map_CS::iterator I = m_detail_scalers.begin();
-	map_CS::iterator E = m_detail_scalers.end();
-
-	for(;I!=E;++I)
-		xr_delete(I->second);
-
 	m_detail_scalers.clear	();
 }
 
@@ -419,7 +388,7 @@ void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, bool& bDiff
 	}
 }
 
-bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const
+bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*& res, const float*& Scale) const
 {
 	map_TD::const_iterator I = m_texture_details.find(NormalizeTexKey(tex_name));
 	if (I!=m_texture_details.end())
@@ -429,7 +398,7 @@ bool CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, const char*
             texture_assoc* TA = I->second.m_assoc;
 			res	= TA->detail_name.c_str();
 			map_CS::const_iterator It2 = m_detail_scalers.find(NormalizeTexKey(tex_name));
-			CS	= It2==m_detail_scalers.end()?nullptr:It2->second;//TA->cs;
+			Scale = It2 == m_detail_scalers.end() ? nullptr : &It2->second;
 			return true;
 		}
 	}

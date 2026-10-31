@@ -2,7 +2,7 @@
 #define rain_common_hlsli_included
 
 
-Texture2D s_rain_refraction;
+Texture2D s_rain_refraction : register(t25);
 
 float3 RainSkyTint()
 {

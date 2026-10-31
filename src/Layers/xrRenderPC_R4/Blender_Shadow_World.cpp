@@ -35,11 +35,9 @@ void CBlender_ShWorld::Compile(CBlender_Compile& C)
 
 	VERIFY(C.L_textures.size() > 0);
 	C.r_dx10Texture("s_base", C.L_textures[0]);
-	C.r_dx10Sampler("smp_base");
 
 	C.PassSET_ZB(true, false);
 	C.PassSET_Blend(true, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, false, 0);
-	C.PassSET_LightFog(false, false);
 
 	C.r_End();
 }

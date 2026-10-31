@@ -1,26 +1,15 @@
-<shader version="2" r1_static="1">
-	<normal>
-		<pass vs="model_distort" ps="model_exoscreen"/>
-		<fog value="0"/>
-		<zb test="1" write="0"/>
-		<blend enable="1" src="srcalpha" dest="one"/>
-		<aref enable="1" value="0"/>
-		<sorting priority="2" strict="1"/>
-		<texture name="s_base" value="{base}"/>
-		<sampler name="smp_base"/>
+<shader r1_static="1">
+	<normal sort="2" strict="1">
+		<pass vs="model_distort" ps="model_exoscreen" zwrite="0" blend="srcalpha,one" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
 	</normal>
-	<static>
-		<normal>
-			<pass vs="r1_model_lplanes" ps="r1_exoscreen"/>
-			<fog value="0"/>
-			<zb test="1" write="0"/>
-			<blend enable="1" src="srcalpha" dest="one"/>
-			<aref enable="1" value="0"/>
-			<sorting priority="2" strict="1"/>
-			<texture name="s_base" value="{base}"/>
-			<texture name="s_lmap" value="ui\ui_mono_noise"/>
-			<sampler name="smp_base"/>
-			<sampler name="smp_rtlinear"/>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal sort="2" strict="1">
+			<pass vs="r1_model_lplanes" ps="r1_exoscreen" zwrite="0" blend="srcalpha,one" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_lmap" src="ui\ui_mono_noise"/>
+			</pass>
 		</normal>
-	</static>
+	</option>
 </shader>

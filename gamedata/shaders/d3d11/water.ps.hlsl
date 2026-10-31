@@ -18,16 +18,16 @@ struct vf
 };
 
 
-Texture2D s_nmap;
-TextureCube s_env0;
-TextureCube s_env1;
+Texture2D s_nmap : register(t54);
+TextureCube s_env0 : register(t26);
+TextureCube s_env1 : register(t49);
 
 #ifdef EDITOR_MODE
 #include "shared\extra_cb.hlsli"
 #endif
 
-Texture2D s_leaves;
-Texture2D s_caustic;
+Texture2D s_leaves : register(t55);
+Texture2D s_caustic : register(t28);
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {

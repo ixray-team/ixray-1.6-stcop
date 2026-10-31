@@ -10,11 +10,11 @@ void CRenderTarget::init_fsr()
 
 	Fsr3Wrapper::ContextParameters initParams = {};
 
-	initParams.displaySize.width = (u32)RCache.get_target_width();
-	initParams.displaySize.height = (u32)RCache.get_target_height();
+	initParams.displaySize.width = (u32)GfxCmdList::GetTargetWidth();
+	initParams.displaySize.height = (u32)GfxCmdList::GetTargetHeight();
 
-	initParams.maxRenderSize.width = (u32)RCache.get_width();
-	initParams.maxRenderSize.height = (u32)RCache.get_height();
+	initParams.maxRenderSize.width = (u32)GfxCmdList::GetWidth();
+	initParams.maxRenderSize.height = (u32)GfxCmdList::GetHeight();
 
 	g_Fsr3Wrapper.Create(initParams);
 }
@@ -34,10 +34,10 @@ bool CRenderTarget::phase_fsr()
 
 	fsr3Params.resolvedColorResource = rt_Generic->pSurface;
 
-	fsr3Params.renderWidth = (u32)RCache.get_width();
-	fsr3Params.renderHeight = (u32)RCache.get_height();
-	fsr3Params.displayWidth = (u32)RCache.get_target_width();
-	fsr3Params.displayHeight = (u32)RCache.get_target_height();
+	fsr3Params.renderWidth = (u32)GfxCmdList::GetWidth();
+	fsr3Params.renderHeight = (u32)GfxCmdList::GetHeight();
+	fsr3Params.displayWidth = (u32)GfxCmdList::GetTargetWidth();
+	fsr3Params.displayHeight = (u32)GfxCmdList::GetTargetHeight();
 
 	fsr3Params.cameraReset = Device.IsEditorMode() && GEditorDraw.UpscalerReset;
 

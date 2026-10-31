@@ -13,8 +13,8 @@ static void ApplyTexgen(const Fmatrix& mVP)
 {
 	Fmatrix mTexgen;
 
-	const float _w = float(RCache.get_width());
-	const float _h = float(RCache.get_height());
+	const float _w = float(GfxCmdList::GetWidth());
+	const float _h = float(GfxCmdList::GetHeight());
 	const float o_w = 0.f;
 	const float o_h = 0.f;
 
@@ -284,7 +284,7 @@ void CParticleEffect::GeomCreate()
 	xrCriticalSectionGuard guard(&onframe_lock);
 	if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 	{
-		geom.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+		geom.create(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
 		shader = m_Def->m_CachedShader;
 	}
 }
@@ -638,11 +638,11 @@ void CParticleEffect::UpdateCache()
 	}
 }
 
-void CParticleEffect::Render(float)
+void CParticleEffect::Render(GfxCmdList& Cmd, float)
 {
 	if (Device.IsEditorMode())
 	{
-		RenderEditor();
+		RenderEditor(Cmd);
 		return;
 	}
 
@@ -671,21 +671,21 @@ void CParticleEffect::Render(float)
 		return;
 	}
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Geometry(geom);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetGeometry(geom);
 
-	RCache.set_CullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+	Cmd.SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 
 	const bool HudMode = GetHudMode();
 
-	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(PAPI::Particles::LITBUFF));
+	u32 MAX_SPRITES = Cmd.Vertex.GetSize() / u32(sizeof(PAPI::Particles::LITBUFF));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
 
-		PAPI::Particles::LITBUFF* buff = (PAPI::Particles::LITBUFF*)RCache.Vertex.Lock(vertices_in_batch, geom->vb_stride, vOffset);
+		PAPI::Particles::LITBUFF* buff = (PAPI::Particles::LITBUFF*)Cmd.Vertex.Lock(vertices_in_batch, geom->vb_stride, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
 		{
 			buff[i] = particles.buff_arr[start_idx + i];
@@ -697,11 +697,11 @@ void CParticleEffect::Render(float)
 				}
 			}
 		}
-		RCache.Vertex.Unlock(vertices_in_batch, geom->vb_stride);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
+		Cmd.Vertex.Unlock(vertices_in_batch, geom->vb_stride);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertices_in_batch / 2u) * 3, 0u, vOffset);
 	}
 
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 ICF void FillSpriteEditor(PAPI::Particles::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
@@ -761,7 +761,7 @@ ICF void FillSpriteEditor(PAPI::Particles::LITBUFF*& pv, const Fvector& pos, con
 }
 
 // Editor path: immediate sprite fill without the per-frame cache.
-void CParticleEffect::RenderEditor()
+void CParticleEffect::RenderEditor(GfxCmdList& Cmd)
 {
 	// PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
@@ -775,7 +775,7 @@ void CParticleEffect::RenderEditor()
 	{
 		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
-			PAPI::Particles::LITBUFF* pv_start = (PAPI::Particles::LITBUFF*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+			PAPI::Particles::LITBUFF* pv_start = (PAPI::Particles::LITBUFF*)Cmd.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
 			PAPI::Particles::LITBUFF* pv = pv_start;
 
 			if (IsFrameStepped())
@@ -1022,31 +1022,29 @@ void CParticleEffect::RenderEditor()
 				}
 			}
 			dwCount = u32(pv - pv_start) * 4;
-			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
+			Cmd.Vertex.Unlock(dwCount, geom->vb_stride);
 
-			CHudInitializer initalizer(false, true);
+			CHudInitializer initalizer(Cmd, false, true);
 
 			if (GetHudMode())
 			{
 				initalizer.SetHudMode();
-				RCache.set_xform_view(Device.mView);
-				RCache.set_xform_project(Device.mProject);
+				Cmd.SetView(Device.mView, Device.mProject);
 				ApplyTexgen(Device.mFullTransform);
 			}
 
 
-			RCache.set_xform_world(Fidentity);
-			RCache.set_Geometry(geom);
+			Cmd.SetObjectTransform(Fidentity);
+			Cmd.SetGeometry(geom);
 
-			RCache.set_CullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwOffset, 0, dwCount, 0, dwCount / 2);
-			RCache.set_CullMode(ERHI_CULLMODE::BACK);
+			Cmd.SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (dwCount / 2) * 3, 0, dwOffset);
+			Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 
 			if (GetHudMode())
 			{
 				initalizer.SetDefaultMode();
-				RCache.set_xform_view(Device.mView);
-				RCache.set_xform_project(Device.mProject);
+				Cmd.SetView(Device.mView, Device.mProject);
 				ApplyTexgen(Device.mFullTransform);
 			}
 		}

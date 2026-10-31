@@ -6,10 +6,10 @@
 // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
 // https://seblagarde.wordpress.com/2013/01/03/water-drop-2b-dynamic-rain-and-its-effects/
 
-Texture2D s_puddles_perlin;
-Texture2D s_puddles_normal;
-Texture2D s_puddles_ripples;
-Texture2D<float2> s_puddles_water_height;
+Texture2D s_puddles_perlin : register(t28);
+Texture2D s_puddles_normal : register(t54);
+Texture2D s_puddles_ripples : register(t55);
+Texture2D<float2> s_puddles_water_height : register(t57);
 #include "shared\extra_cb.hlsli"
 
 #ifdef RAIN_PUDDLE_COMPUTE

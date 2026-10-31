@@ -1,10 +1,6 @@
 #include "common.hlsli"
 
-#if defined(SM_5) || defined(SM_4_1)
-    #define SMAA_HLSL_4_1
-#else
-    #define SMAA_HLSL_4
-#endif
+#define SMAA_HLSL_4_1
 
 #define SMAA_INCLUDE_VS 1
 #define SMAA_RT_METRICS scaled_screen_res.zwxy

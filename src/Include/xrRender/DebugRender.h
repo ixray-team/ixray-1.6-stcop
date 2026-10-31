@@ -17,7 +17,7 @@ public:
 	virtual void	Render				() = 0;
 	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color) = 0;
 	
-	// routed to RCache
+	// routed to the immediate backend
 	virtual void	NextSceneMode		() = 0;
 	virtual void	ZEnable				(bool bEnable) = 0;
 	virtual void	OnFrameEnd			() = 0;

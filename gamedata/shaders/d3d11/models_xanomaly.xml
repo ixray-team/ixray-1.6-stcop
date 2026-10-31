@@ -1,26 +1,13 @@
-<shader version="2">
-	<normal>
-		<pass vs="model_distort4glass" ps="particle_hard"/>
-		<fog value="1"/>
-		<zb test="1" write="0"/>
-		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
-		<aref enable="1" value="0"/>
-		<sorting priority="3" strict="1"/>
-		<texture name="s_base" value="{base}"/>
-		<sampler name="smp_base"/>
-		<sampler name="smp_linear"/>
-		<sampler name="smp_rtlinear"/>
-		<sampler name="smp_material"/>
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="model_distort4glass" ps="particle_hard" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
 	</normal>
-	<l_special>
-		<pass vs="model_distort4glass" ps="particle_distort_hard"/>
-		<sorting priority="2" strict="1"/>
-		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
-		<zb test="1" write="1"/>
-		<fog value="0"/>
-		<distort value="1"/>
-		<texture name="s_base" value="{base}"/>
-		<texture name="s_distort" value="pfx\pfx_dist_glass3"/>
-		<sampler name="smp_linear"/>
+	<l_special sort="2" strict="1" distort="1">
+		<pass vs="model_distort4glass" ps="particle_distort_hard" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="pfx\pfx_dist_glass3"/>
+		</pass>
 	</l_special>
 </shader>

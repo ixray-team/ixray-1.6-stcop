@@ -229,7 +229,7 @@ void CRender::rmNear()
 	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
 	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
 	RHIViewport VP = { 0, 0, W, H, 0, 0.02f };
-	GRHI->SetViewport(VP);
+	RImplementation.Imm().SetViewport(VP);
 }
 
 void CRender::rmFar()
@@ -238,7 +238,7 @@ void CRender::rmFar()
 	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
 	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
 	RHIViewport VP = { 0, 0, W, H, 0.99999f, 1.f };
-	GRHI->SetViewport(VP);
+	RImplementation.Imm().SetViewport(VP);
 }
 
 void CRender::rmNormal()
@@ -247,7 +247,7 @@ void CRender::rmNormal()
 	const float W = T ? (float)T->get_width() : (float)Device.TargetWidth;
 	const float H = T ? (float)T->get_height() : (float)Device.TargetHeight;
 	RHIViewport VP = { 0, 0, W, H, 0, 1.f };
-	GRHI->SetViewport(VP);
+	RImplementation.Imm().SetViewport(VP);
 }
 
 void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase)

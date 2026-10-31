@@ -303,7 +303,7 @@ void CHOM::Enable()
 
 void CHOM::OnRender()
 {
-	Raster.on_dbg_render();
+	Raster.on_dbg_render(RImplementation.Imm());
 
 	if (psDeviceFlags.is(rsOcclusionDraw))
 	{

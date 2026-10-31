@@ -3,7 +3,7 @@
 #include "FBasicVisual.h"
 #include "SkeletonCustom.h"
 
-void	CRender::render_lights	(light_Package& LP)
+void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 {
 	Target->BeginSpotShadowCacheFrame();
 	//////////////////////////////////////////////////////////////////////////
@@ -170,10 +170,9 @@ void	CRender::render_lights	(light_Package& LP)
 					{
 						stats.s_merged++;
 						L_spot_s.push_back(L);
-						Target->phase_smap_spot(L);
-						RCache.set_xform_world(Fidentity);
-						RCache.set_xform_view(L->X.S.view);
-						RCache.set_xform_project(L->X.S.project);
+						Target->phase_smap_spot(Cmd, L);
+						Cmd.SetObjectTransform(Fidentity);
+						Cmd.SetView(L->X.S.view, L->X.S.project);
 						GraphMain.r_dsgraph_render_graph(0);
 
 						if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
@@ -181,14 +180,14 @@ void	CRender::render_lights	(light_Package& LP)
 							GetDetails() && GetDetails()->dtSlots &&
 							L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) <= _sqr(40.f + L->SpatialComponent->sphere.R))
 						{
-							GetDetails()->hw_Render(L);
+							GetDetails()->hw_Render(Cmd, L);
 						}
 
 						L->X.S.transluent = false;
 						if (bSpecial)
 						{
 							L->X.S.transluent = true;
-							Target->phase_smap_spot_tsh(L);
+							Target->phase_smap_spot_tsh(Cmd, L);
 
 							{
 								PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
@@ -215,7 +214,7 @@ void	CRender::render_lights	(light_Package& LP)
 			}
 			{
 				PROF_EVENT("UNSHADOWED_LIGHTS");
-				Target->phase_accumulator();
+				Target->phase_accumulator(Cmd);
 				{
 					PROF_EVENT("POINT_LIGHTS");
 
@@ -229,12 +228,12 @@ void	CRender::render_lights	(light_Package& LP)
 							L_->vis_update();
 							if (L_->vis.visible)
 							{
-								Target->accum_point(L_);
+								Target->accum_point(Cmd, L_);
 							}
 						}
 						else
 						{
-							Target->accum_point(L_);
+							Target->accum_point(Cmd, L_);
 						}
 					}
 				}
@@ -251,12 +250,12 @@ void	CRender::render_lights	(light_Package& LP)
 							L_->vis_update();
 							if (L_->vis.visible)
 							{
-								Target->accum_spot(L_);
+								Target->accum_spot(Cmd, L_);
 							}
 						}
 						else
 						{
-							Target->accum_spot(L_);
+							Target->accum_spot(Cmd, L_);
 						}
 					}
 				}
@@ -267,10 +266,10 @@ void	CRender::render_lights	(light_Package& LP)
 				PROF_EVENT("ACCUM_SPOT");
 				for (u32 it = 0; it < L_spot_s.size(); it++)
 				{
-					Target->accum_spot(L_spot_s[it]);
+					Target->accum_spot(Cmd, L_spot_s[it]);
 					if (ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
 					{
-						Target->accum_volumetric_lv(L_spot_s[it]);
+						Target->accum_volumetric_lv(Cmd, L_spot_s[it]);
 					}
 				}
 
@@ -289,11 +288,11 @@ void	CRender::render_lights	(light_Package& LP)
 				{
 					Lvec[pid]->vis_update();
 					if (Lvec[pid]->vis.visible)
-						Target->accum_point(Lvec[pid]);
+						Target->accum_point(Cmd, Lvec[pid]);
 				}
 				else
 				{
-					Target->accum_point(Lvec[pid]);
+					Target->accum_point(Cmd, Lvec[pid]);
 				}
 			}
 			Lvec.clear();
@@ -310,11 +309,11 @@ void	CRender::render_lights	(light_Package& LP)
 				{
 					Lvec[pid]->vis_update();
 					if (Lvec[pid]->vis.visible)
-						Target->accum_spot(Lvec[pid]);
+						Target->accum_spot(Cmd, Lvec[pid]);
 				}
 				else
 				{
-					Target->accum_spot(Lvec[pid]);
+					Target->accum_spot(Cmd, Lvec[pid]);
 				}
 			}
 			Lvec.clear();

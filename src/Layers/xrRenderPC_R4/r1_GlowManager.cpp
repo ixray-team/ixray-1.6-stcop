@@ -119,7 +119,8 @@ void CGlowManager::Load		(IReader* fs)
 	}
 	dwTestID		= 0;
 
-	hGeom.create	(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+	GfxCmdList& Cmd	= RImplementation.Imm();
+	hGeom.create	(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.QuadIB);
 }
 
 void CGlowManager::Unload	()
@@ -188,17 +189,17 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, float r, u32 clr)
 	pv->set		(b.x+pos.x,b.y+pos.y,b.z+pos.z,	clr, 1.f,0.f);	pv++;
 }
 
-void CGlowManager::Render			()
+void CGlowManager::Render			(GfxCmdList& Cmd)
 {
 	if (Selected.empty())					return		;
-	RCache.set_xform_world					(Fidentity)	;
+	Cmd.SetObjectTransform(Fidentity);
 
 	Device.Statistic->RenderDUMP_Glows.Begin	();
-	render_sw								();
+	render_sw								(Cmd);
 	Device.Statistic->RenderDUMP_Glows.End	();
 }
 
-void CGlowManager::render_sw		()
+void CGlowManager::render_sw		(GfxCmdList& Cmd)
 {
 	
 	CObject*	o_main		= g_pGameLevel->CurrentViewEntity();
@@ -218,10 +219,10 @@ void CGlowManager::render_sw		()
 		}
 	}
 
-	render_selected			();
+	render_selected			(Cmd);
 }
 
-void CGlowManager::render_hw		()
+void CGlowManager::render_hw		(GfxCmdList& Cmd)
 {
 	
 	SelectedToTest_2		= SelectedToTest_1;
@@ -235,11 +236,11 @@ void CGlowManager::render_hw		()
 		Selected.erase	(Selected.begin()+ID);
 	}
 
-	render_selected			();
+	render_selected			(Cmd);
 
 }
 
-void CGlowManager::render_selected()
+void CGlowManager::render_selected(GfxCmdList& Cmd)
 {
 	
 	std::sort		(Selected.begin(),Selected.end(),glow_compare);
@@ -261,7 +262,7 @@ void CGlowManager::render_selected()
 
 		u32		vOffset;
 		u32		end		= pos+count;
-		FVF::LIT* pvs	= pv = (FVF::LIT*) RCache.Vertex.Lock(count*4,hGeom->vb_stride,vOffset);
+		FVF::LIT* pvs	= pv = (FVF::LIT*) Cmd.Vertex.Lock(count*4,hGeom->vb_stride,vOffset);
 		for (; pos<end; pos++)
 		{
 			
@@ -290,11 +291,11 @@ void CGlowManager::render_selected()
 			FillSprite		(pv,G.position,G.radius,clr);
 		}
 		int vCount				= int(pv-pvs);
-		RCache.Vertex.Unlock	(vCount,hGeom->vb_stride);
+		Cmd.Vertex.Unlock	(vCount,hGeom->vb_stride);
 		if (vCount) {
-			RCache.set_Shader		(T);
-			RCache.set_Geometry		(hGeom);
-			RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,vCount,0,vCount/2);
+			Cmd.SetPass		(T);
+			Cmd.SetGeometry		(hGeom);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vCount/2) * 3, 0, vOffset);
 		}
 	}
 	Selected.resize(0);
@@ -302,5 +303,6 @@ void CGlowManager::render_selected()
 
 void CGlowManager::reset_geometry()
 {
-	hGeom.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	hGeom.create(FVF::F_LIT, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 }

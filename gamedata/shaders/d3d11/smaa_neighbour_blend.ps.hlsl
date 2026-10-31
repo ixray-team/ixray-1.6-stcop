@@ -10,18 +10,14 @@ Back to the Roots
 
 #include "common.hlsli"
 
-#if defined(SM_5) || defined(SM_4_1)
-    #define SMAA_HLSL_4_1
-#else
-    #define SMAA_HLSL_4
-#endif
+#define SMAA_HLSL_4_1
 
 #define SMAA_RT_METRICS scaled_screen_res.zwxy
 #define SMAA_PRESET_ULTRA
 
 #include "smaa.hlsli"
 
-Texture2D s_blendtex;
+Texture2D s_blendtex : register(t25);
 
 struct p_smaa
 {

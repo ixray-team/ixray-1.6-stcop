@@ -118,10 +118,6 @@ class IRHISurface :
 public:
 	virtual ~IRHISurface() = default;
 
-	virtual IRHIShaderResourceView* GetShaderResourceView() = 0;
-	virtual IRHIRenderTargetView* GetRenderTargetView() = 0;
-	virtual IRHIDepthStencilView* GetDepthStencilView() = 0;
-
 	virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box) = 0;
 
 	virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) = 0;
@@ -134,8 +130,6 @@ public:
 	virtual ~IRHIShaderResourceView() = default;
 
 	virtual void* GetRawSRV() = 0;
-
-	virtual IRHISurface* GetSurface() = 0;
 
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
@@ -208,7 +202,6 @@ public:
 	virtual IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource) = 0;
 	virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) = 0;
 	virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) = 0;
-	virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) = 0;
 	virtual IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) = 0;
 	virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) = 0;
 	virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) = 0;

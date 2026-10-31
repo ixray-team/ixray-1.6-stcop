@@ -25,16 +25,6 @@ static int ParseName(const char* N)
 	return -1;
 }
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CBlender_Compile::CBlender_Compile		()
-{
-}
-CBlender_Compile::~CBlender_Compile		()
-{
-}
 void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 {
 	SH =			_SH;
@@ -138,68 +128,10 @@ void	CBlender_Compile::SetParams		(int iPriority, bool bStrictB2F)
 	//SH->Flags.bLighting		= false;
 }
 
-void	CBlender_Compile::PassBegin()
-{
-	RS.Invalidate();
-	passTextures.clear();
-	passMatrices.clear();
-	passConstants.clear();
-	xr_strcpy(pass_ps, "null");
-	xr_strcpy(pass_vs, "null");
-	dwStage = 0;
-}
-
-void	CBlender_Compile::PassEnd			()
-{
-	// Last Stage - disable
-	RS.SetTSS				(Stage(),D3DTSS_COLOROP,D3DTOP_DISABLE);
-	RS.SetTSS				(Stage(),D3DTSS_ALPHAOP,D3DTOP_DISABLE);
-
-	SPass	proto;
-	// Create pass
-	proto.state		= DEV->_CreateState		(RS.GetContainer());
-	proto.ps		= DEV->_CreatePS			(pass_ps);
-	proto.vs		= DEV->_CreateVS			(pass_vs);
-	ctable.merge	(&proto.ps->constants);
-	ctable.merge	(&proto.vs->constants);
-	proto.gs		= DEV->_CreateGS			(pass_gs);
-	ctable.merge	(&proto.gs->constants);
-	proto.hs		= DEV->_CreateHS			(pass_hs);
-	ctable.merge	(&proto.hs->constants);
-	proto.ds		= DEV->_CreateDS			(pass_ds);
-	ctable.merge	(&proto.ds->constants);
-	proto.cs		= DEV->_CreateCS			(pass_cs);
-	ctable.merge	(&proto.cs->constants);
-	SetMapping				();
-	proto.constants	= DEV->_CreateConstantTable(ctable);
-	proto.T 		= DEV->_CreateTextureList	(passTextures);
-	proto.M			= DEV->_CreateMatrixList	(passMatrices);
-	proto.C			= DEV->_CreateConstantList	(passConstants);
-
-	ref_pass	_pass_		= DEV->_CreatePass			(proto);
-	SH->passes.push_back	(_pass_);
-}
-
-void	CBlender_Compile::PassSET_PS		(const char* name)
-{
-	xr_strcpy	(pass_ps,name);
-	_strlwr	(pass_ps);
-}
-
-void	CBlender_Compile::PassSET_VS		(const char* name)
-{
-	xr_strcpy	(pass_vs,name);
-	_strlwr	(pass_vs);
-}
-
 void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
 	RS.SetRS	(D3DRS_ZWRITEENABLE,	BC(bZWrite));
-	/*
-	if (bZWrite || bZTest)				RS.SetRS	(D3DRS_ZENABLE,	D3DZB_TRUE);
-	else								RS.SetRS	(D3DRS_ZENABLE,	D3DZB_FALSE);
-	*/
 }
 void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32 abDST)
 {
@@ -214,7 +146,7 @@ void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32
 	RS.SetRS(idx, D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 
 	// UI targets need coverage alpha, rather than alpha multiplied by itself.
-	const bool IsUIBlend = iElement == SE_R2_UI && bABlend;
+	const bool IsUIBlend = iElement == ShaderVariant::UI && bABlend;
 	RS.SetRS(idx, D3DRS_SRCBLENDALPHA, IsUIBlend ? D3DBLEND_ONE : (bABlend ? abSRC : D3DBLEND_ONE));
 	RS.SetRS(idx, D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
 }
@@ -226,12 +158,9 @@ void CBlender_Compile::PassSET_ablend_mode(bool bABlend, u32 abSRC, u32 abDST)
 
 void CBlender_Compile::PassSET_ablend_aref(u32 idx, bool bATest, u32 aRef)
 {
-	clamp(aRef, 0u, 255u);
-	RS.SetRS(idx, D3DRS_ALPHATESTENABLE, BC(bATest));
-
-	if (bATest)	
+	if (bATest)
 	{
-		RS.SetRS(idx, D3DRS_ALPHAREF, u32(aRef));
+		RS.SetRS(idx, D3DRS_ALPHAREF, std::min(aRef, 255u));
 	}
 }
 
@@ -251,100 +180,8 @@ void CBlender_Compile::PassSET_Blend(bool bABlend, u32 abSRC, u32 abDST, bool bA
 	PassSET_Blend(u32(-1), bABlend, abSRC, abDST, bATest, aRef);
 }
 
-void CBlender_Compile::PassSET_LightFog(bool bLight, bool bFog)
-{
-	RS.SetRS(D3DRS_LIGHTING, BC(bLight));
-	RS.SetRS(D3DRS_FOGENABLE, BC(bFog));
-}
-
-//
-void	CBlender_Compile::StageBegin	()
-{
-	StageSET_Address	(D3DTADDRESS_WRAP);	// Wrapping enabled by default
-}
-void	CBlender_Compile::StageEnd		()
-{
-	dwStage	++;
-}
-void	CBlender_Compile::StageSET_Address	(u32 adr)
-{
-	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSU,	adr);
-	RS.SetSAMP	(Stage(),D3DSAMP_ADDRESSV,	adr);
-}
-void CBlender_Compile::StageSET_Color(u32 a1, u32 op, u32 a2)
-{
-	RS.SetColor(Stage(), a1, op, a2);
-}
-void CBlender_Compile::StageSET_Alpha(u32 a1, u32 op, u32 a2)
-{
-	RS.SetColor	(Stage(),a1,op,a2);
-}
-void	CBlender_Compile::StageSET_Color3	(u32 a1, u32 op, u32 a2, u32 a3)
-{
-	RS.SetColor3(Stage(),a1,op,a2,a3);
-}
-
-void	CBlender_Compile::StageSET_TMC		(const char* T, const char* M, const char* C, int UVW_channel)
-{
-	Stage_Texture		(T);
-	Stage_Matrix		(M,UVW_channel);
-	Stage_Constant		(C);
-}
-
-void CBlender_Compile::Stage_Texture	(const char* name, u32 ,	u32	 fmin, u32 fmip, u32 fmag)
-{
-	sh_list& lst=	L_textures;
-	int id		=	ParseName(name);
-	const char* N	=	name;
-	if (id>=0)	{
-		if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
-		N = *lst [id];
-	}
-	passTextures.push_back(std::make_pair(Stage(), ref_texture(DEV->_CreateTexture(N))));
-	//	i_Address				(Stage(),address);
-	i_Filter(Stage(), fmin, fmip, fmag);
-}
-
 void CBlender_Compile::r_Matrix(const char* name)
 {
 	int id = ParseName(name);
 	passMatrices.push_back(DEV->_CreateMatrix((id >= 0 && id < (int)L_matrices.size()) ? *L_matrices[id] : name));
-}
-
-void CBlender_Compile::Stage_Matrix(const char* name, int iChannel)
-{
-	sh_list& lst = L_matrices;
-	int id = ParseName(name);
-	CMatrix* M = DEV->_CreateMatrix((id >= 0 && id < lst.size()) ? *lst[id] : name);
-	passMatrices.push_back(M);
-
-	// Setup transform pipeline
-	u32	ID = Stage();
-	if (M) {
-		switch (M->dwMode)
-		{
-		case CMatrix::modeProgrammable:	StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID);					break;
-		case CMatrix::modeTCM:			StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel);						break;
-		case CMatrix::modeC_refl:		StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID);			break;
-		case CMatrix::modeS_refl:		StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID);					break;
-		default:						StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);						break;
-		}
-	}
-	else {
-		// No XForm at all
-		StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
-	}
-}
-void	CBlender_Compile::StageSET_XForm	(u32 tf, u32 tc)
-{
-	RS.SetTSS	(Stage(),D3DTSS_TEXTURETRANSFORMFLAGS,	tf);
-	RS.SetTSS	(Stage(),D3DTSS_TEXCOORDINDEX,			tc);
-}
-
-
-void CBlender_Compile::Stage_Constant(const char* name)
-{
-	sh_list& lst= L_constants;
-	int id		= ParseName(name);
-	passConstants.push_back	(DEV->_CreateConstant((id>=0)?*lst[id]:name));
 }

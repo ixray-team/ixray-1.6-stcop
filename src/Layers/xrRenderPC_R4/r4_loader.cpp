@@ -47,7 +47,6 @@ void CRender::level_Load(IReader* fs)
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 	UpdateRainPuddleMode();
-	UpdateDefaultShaderOptions();
 	if (o.ProceduralRainPuddles)
 	{
 		RainPuddleWater.Build(&g_pGameLevel->ObjectSpace);
@@ -206,7 +205,6 @@ void CRender::level_Load(IReader* fs)
 	pApp->LoadEnd				();
 
 	// sanity-clear
-	GraphMain.lstLODs.clear				();
 	GraphMain.lstLODgroups.clear			();
 	GraphMain.mapLOD.clear				();
 

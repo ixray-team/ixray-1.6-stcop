@@ -24,8 +24,5 @@ void BlenderRainPuddles::Compile(CBlender_Compile& C)
 	C.r_dx10Texture("s_image", r2_RT_generic);
 	C.r_dx10Texture("s_env0", r2_T_sky0);
 	C.r_dx10Texture("s_env1", r2_T_sky1);
-	C.r_dx10Sampler("smp_nofilter");
-	C.r_dx10Sampler("smp_rtlinear");
-	C.r_dx10Sampler("smp_linear");
 	C.r_End();
 }

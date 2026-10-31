@@ -27,7 +27,6 @@
 #include "RHITypes.h"
 #include "RHIStateTypes.h"
 #include "RHIResource.h"
-#include "RHIShaderCompiler.h"
 #include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
@@ -79,10 +78,10 @@ public:
 
 	// Drawing methods
 	void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology);
-	void Draw(u32 startVertex, u32 primitiveCount);
-	void DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation);
-	void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount);
-	void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation);
+	void Draw(u32 VertexCount, u32 StartVertex);
+	void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance);
+	void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex);
+	void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance);
 	void DrawNoInputAssembly(u32 vertexCount);
 	IRHIDevice* CreateDevice(ERHI_API_LAYER APILevel);
 	void ResizeBuffers(u32 Width, u32 Height);
@@ -90,12 +89,6 @@ public:
 	void* GetContext();
 	void* GetSwapchain();
 
-	// D3D11 multicontext helpers (immediate/deferred)
-	void* GetImmediateContext();
-	void* CreateDeferredContext();
-	void  ReleaseDeferredContext(void* context);
-
-	void ClearRawTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, const float* Color);
 	void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil);
@@ -111,16 +104,14 @@ public:
 	[[nodiscard]] IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource);
 	[[nodiscard]] IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
 	[[nodiscard]] IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
-	[[nodiscard]] IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
 	[[nodiscard]] IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* surface, const RHIShaderResourceViewDesc* desc);
 	[[nodiscard]] IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc);
 	[[nodiscard]] IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
 	[[nodiscard]] IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	[[nodiscard]] IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
 	[[nodiscard]] IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
-	[[nodiscard]] IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
 
-	void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type);
+	void SetConstants(const RHIConstantWrite* Writes, u32 Count);
 	void SetShader(RHIObject* shader, ERHI_SHADER_TYPE type);
 	void Dispatch(u32 x, u32 y, u32 z);
 	HRESULT CreateShader(const void* code, size_t size, ERHI_SHADER_TYPE type, RHIObject** out_shader);
@@ -128,7 +119,7 @@ public:
 	HRESULT CreateInputLayout(const RHIInputElementDesc* desc, size_t count, const void* code, size_t size, RHIObject** out_layout);
 	void SetInputLayout(RHIObject* layout);
 	HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state);
-	void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type);
+	void SetSamplers(RHIObject* const* States, u32 Count);
 	void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views);
 	void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts = nullptr);
 	HRESULT CreateOcclusionQuery(RHIObject** out_query);
@@ -175,23 +166,11 @@ public:
 
 	u32 GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize);
 
-	HRESULT BuildShader
-	(
-		const char* shader_dir,
-		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
-		const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors
-	);
-
 	void EvictManagedResources();
-
-	// State manager helpers (for multi-context use)
-	IRHIStateManager* CreateStateManager(void* context = nullptr);
-	void DestroyStateManager(IRHIStateManager* manager);
 
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
-	CRHIShaderCompilerShell* ShaderCompiler = nullptr;
 	IRHIStateManager* StateManager = nullptr;
 
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;

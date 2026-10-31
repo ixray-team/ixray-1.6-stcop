@@ -13,5 +13,5 @@ void dxUISequenceVideoItem::Copy(IUISequenceVideoItem&_in)
 
 void dxUISequenceVideoItem::CaptureTexture()
 {
-	m_texture = RCache.get_ActiveTexture(0);
+	m_texture = RImplementation.Imm().GetTexture(0);
 }

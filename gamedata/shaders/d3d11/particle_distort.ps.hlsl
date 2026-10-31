@@ -7,7 +7,7 @@ struct v2p
 };
 
 // Pixel
-Texture2D s_distort;
+Texture2D s_distort : register(t25);
 float4 main(v2p I) : SV_Target
 {
     float4 distort = s_distort.Sample(smp_linear, I.tc);

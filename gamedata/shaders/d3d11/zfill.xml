@@ -1,14 +1,8 @@
-<shader version="2">
-	<normal>
-		<pass vs="particle" ps="particle_hard"/>
-		<sorting priority="3" strict="1"/>
-		<blend enable="1" src="srcalpha" dest="one"/>
-		<aref enable="0" value="0"/>
-		<zb test="0" write="0"/>
-		<fog value="0"/>
-		<texture name="s_base" value="{base}"/>
-		<texture name="s_position" value="$user$position"/>
-		<sampler name="smp_base"/>
-		<sampler name="smp_nofilter"/>
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="particle" ps="particle_hard" zfunc="always" zwrite="0" blend="srcalpha,one">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
 	</normal>
 </shader>

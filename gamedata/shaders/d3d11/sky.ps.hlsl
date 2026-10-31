@@ -14,8 +14,8 @@ struct v2p
     float4 hpos : SV_POSITION;
 };
 
-TextureCube s_sky0 : register(t0);
-TextureCube s_sky1 : register(t1);
+TextureCube s_sky0 : register(t25);
+TextureCube s_sky1 : register(t26);
 
 static const float4 constant_view_angle = float4(0.5, 1.0, -1.0, 0.999);
 static const float2 constant_position = float2(0.9, -0.6);

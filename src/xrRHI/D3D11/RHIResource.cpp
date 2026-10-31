@@ -1,6 +1,6 @@
 #include "Device.h"
 #include "RHIStateTypesDX11.h"
-#include "DX11ShaderDeclaration.h"
+#include "RHIStateManagerDX11.h"
 #include <DirectXTex.h>
 
 static void ReleaseObject(void* resource)
@@ -61,6 +61,7 @@ InternalDevice11::SetInputLayout(RHIObject* layout)
 void
 InternalDevice11::Dispatch(u32 x, u32 y, u32 z)
 {
+	ApplyBindings(1u << 5);
 	static_cast<ID3D11DeviceContext*>(GetImmediateContext())->Dispatch(x, y, z);
 }
 
@@ -78,22 +79,15 @@ InternalDevice11::CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_
 }
 
 void
-InternalDevice11::SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type)
+InternalDevice11::SetSamplers(RHIObject* const* States, u32 Count)
 {
-	ID3D11SamplerState* native[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
-	R_ASSERT(start <= std::size(native) && count <= std::size(native) - start);
-	for (u32 state_idx = 0; state_idx < count; ++state_idx) {
-		native[state_idx] = states[state_idx] ? static_cast<ID3D11SamplerState*>(states[state_idx]->resource) : nullptr;
+	R_ASSERT(Count <= std::size(Samplers));
+	for (u32 Index = 0; Index < Count; ++Index)
+	{
+		Samplers[Index] = States[Index] ? static_cast<ID3D11SamplerState*>(States[Index]->resource) : nullptr;
 	}
-	auto context = static_cast<ID3D11DeviceContext*>(GetImmediateContext());
-	switch (type) {
-	case ERHI_SHADER_TYPE::PS: context->PSSetSamplers(start, count, native); break;
-	case ERHI_SHADER_TYPE::VS: context->VSSetSamplers(start, count, native); break;
-	case ERHI_SHADER_TYPE::GS: context->GSSetSamplers(start, count, native); break;
-	case ERHI_SHADER_TYPE::HS: context->HSSetSamplers(start, count, native); break;
-	case ERHI_SHADER_TYPE::DS: context->DSSetSamplers(start, count, native); break;
-	case ERHI_SHADER_TYPE::CS: context->CSSetSamplers(start, count, native); break;
-	}
+	SamplerCount = Count;
+	SamplerPending = 0x3f;
 }
 
 void
@@ -182,21 +176,21 @@ void*
 InternalDevice11::GetState(const RHIRasterizerDesc& desc)
 {
 	auto native = RHI_ConvertState(desc);
-	return GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::RS, &native);
+	return static_cast<RHIStateManagerDX11*>(GRHI->StateManager)->GetCache(ERHI_STATE_CACHE_TYPE::RS, &native);
 }
 
 void*
 InternalDevice11::GetState(const RHIDepthStencilDesc& desc)
 {
 	auto native = RHI_ConvertState(desc);
-	return GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::DS, &native);
+	return static_cast<RHIStateManagerDX11*>(GRHI->StateManager)->GetCache(ERHI_STATE_CACHE_TYPE::DS, &native);
 }
 
 void*
 InternalDevice11::GetState(const RHIBlendDesc& desc)
 {
 	auto native = RHI_ConvertState(desc);
-	return GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::BS, &native);
+	return static_cast<RHIStateManagerDX11*>(GRHI->StateManager)->GetCache(ERHI_STATE_CACHE_TYPE::BS, &native);
 }
 
 HRESULT
@@ -225,6 +219,8 @@ InternalDevice11::SetRawBlendState(void* state, const float* factor, u32 mask)
 void InternalDevice11::SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type)
 {
     void* NativeShader = shader ? shader->resource : nullptr;
+	const u32 Stage = (1u << u32(Type)) & 31u;
+	GraphicsStages = (GraphicsStages & ~Stage) | (NativeShader ? Stage : 0u);
 
 		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetImmediateContext();
 
@@ -252,29 +248,122 @@ void InternalDevice11::ClearVertexBuffer(u32 vb_stride)
     GetImmediateContext()->IASetVertexBuffers(0, 1, &buffer, &vb_stride, &offset);
 }
 
-void InternalDevice11::SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type)
+void InternalDevice11::SetConstants(const RHIConstantWrite* Writes, u32 Count)
 {
-	VERIFY(Count <= RHI_MAX_CONSTANT_BUFFERS);
-
-	ID3D11Buffer* DXBuffer[RHI_MAX_CONSTANT_BUFFERS];
-	for (u32 i = 0; i < Count; ++i)
-		DXBuffer[i] = Buffers[i] ? ((CD3D11Buffer*)Buffers[i])->GetD3DObject() : nullptr;
-
-	ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetImmediateContext();
-	switch (Type)
+	ID3D11Device* Device = static_cast<ID3D11Device*>(RawDevice);
+	D3D11_MAPPED_SUBRESOURCE Mapped = {};
+	u32 Mask = 0;
+	if (HWContext1 != nullptr)
 	{
-		case ERHI_SHADER_TYPE::PS: Context->PSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::VS: Context->VSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::GS: Context->GSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::HS: Context->HSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::DS: Context->DSSetConstantBuffers(Start, Count, DXBuffer); break;
-		case ERHI_SHADER_TYPE::CS: Context->CSSetConstantBuffers(Start, Count, DXBuffer); break;
+		u32 Total = 0;
+		for (u32 WriteIdx = 0; WriteIdx < Count; ++WriteIdx)
+		{
+			Total += (Writes[WriteIdx].Size + 255) & ~255u;
+		}
+		VERIFY(Total <= ConstantRingSize);
+		if (RingPos + Total > ConstantRingSize)
+		{
+			++RingIndex;
+			RingPos = 0;
+		}
+		if (RingIndex == ConstantRings.size())
+		{
+			const D3D11_BUFFER_DESC Desc = { ConstantRingSize, D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, 0, 0 };
+			ConstantRings.push_back(nullptr);
+			R_CHK(Device->CreateBuffer(&Desc, nullptr, &ConstantRings.back()));
+		}
+		ID3D11Buffer* Ring = ConstantRings[RingIndex];
+		if (FAILED(HWRenderContext->Map(Ring, 0, RingPos ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &Mapped)))
+		{
+			return;
+		}
+		for (u32 WriteIdx = 0; WriteIdx < Count; ++WriteIdx)
+		{
+			const RHIConstantWrite& Write = Writes[WriteIdx];
+			const u32 Aligned = (Write.Size + 255) & ~255u;
+			memcpy(static_cast<u8*>(Mapped.pData) + RingPos, Write.Data, Write.Size);
+			ConstantBuffers[Write.Slot] = Ring;
+			ConstantFirst[Write.Slot] = RingPos / 16;
+			ConstantNum[Write.Slot] = Aligned / 16;
+			RingPos += Aligned;
+			Mask |= 1u << Write.Slot;
+		}
+		HWRenderContext->Unmap(Ring, 0);
 	}
+	else
+	{
+		for (u32 WriteIdx = 0; WriteIdx < Count; ++WriteIdx)
+		{
+			const RHIConstantWrite& Write = Writes[WriteIdx];
+			ID3D11Buffer*& Buffer = ConstantBuffers[Write.Slot];
+			if (ConstantCapacity[Write.Slot] < Write.Size)
+			{
+				if (Buffer != nullptr)
+				{
+					Buffer->Release();
+				}
+				const D3D11_BUFFER_DESC Desc = { Write.Size, D3D11_USAGE_DYNAMIC, D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, 0, 0 };
+				R_CHK(Device->CreateBuffer(&Desc, nullptr, &Buffer));
+				ConstantCapacity[Write.Slot] = Write.Size;
+				Mask |= 1u << Write.Slot;
+			}
+			if (FAILED(HWRenderContext->Map(Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Mapped)))
+			{
+				continue;
+			}
+			memcpy(Mapped.pData, Write.Data, Write.Size);
+			HWRenderContext->Unmap(Buffer, 0);
+		}
+	}
+	for (u32& Pending : ConstantPending)
+	{
+		Pending |= Mask;
+	}
+	ConstantLive |= Mask;
 }
 
-IRHIShaderDeclaration* InternalDevice11::CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize)
+void InternalDevice11::ApplyBindings(u32 Stages)
 {
-    return new DX11ShaderDeclaration(Desc, DeclSize);
+	static const decltype(&ID3D11DeviceContext1::PSSetConstantBuffers1) SetRanges[] = { &ID3D11DeviceContext1::PSSetConstantBuffers1, &ID3D11DeviceContext1::VSSetConstantBuffers1,
+		&ID3D11DeviceContext1::GSSetConstantBuffers1, &ID3D11DeviceContext1::HSSetConstantBuffers1, &ID3D11DeviceContext1::DSSetConstantBuffers1, &ID3D11DeviceContext1::CSSetConstantBuffers1 };
+	static const decltype(&ID3D11DeviceContext::PSSetConstantBuffers) SetBuffers[] = { &ID3D11DeviceContext::PSSetConstantBuffers, &ID3D11DeviceContext::VSSetConstantBuffers,
+		&ID3D11DeviceContext::GSSetConstantBuffers, &ID3D11DeviceContext::HSSetConstantBuffers, &ID3D11DeviceContext::DSSetConstantBuffers, &ID3D11DeviceContext::CSSetConstantBuffers };
+	for (u32 Stage = 0; Stage < 6; ++Stage)
+	{
+		const u32 Pending = ConstantPending[Stage];
+		if (!(Stages & (1u << Stage)) || Pending == 0)
+		{
+			continue;
+		}
+		const u32 Lo = std::countr_zero(Pending);
+		const u32 Num = 32 - std::countl_zero(Pending) - Lo;
+		if (HWContext1 != nullptr)
+		{
+			(HWContext1->*SetRanges[Stage])(Lo, Num, ConstantBuffers + Lo, ConstantFirst + Lo, ConstantNum + Lo);
+		}
+		else
+		{
+			(HWRenderContext->*SetBuffers[Stage])(Lo, Num, ConstantBuffers + Lo);
+		}
+		ConstantPending[Stage] = 0;
+	}
+
+	static const decltype(&ID3D11DeviceContext::PSSetSamplers) SetSamplerFns[] = { &ID3D11DeviceContext::PSSetSamplers, &ID3D11DeviceContext::VSSetSamplers,
+		&ID3D11DeviceContext::GSSetSamplers, &ID3D11DeviceContext::HSSetSamplers, &ID3D11DeviceContext::DSSetSamplers, &ID3D11DeviceContext::CSSetSamplers };
+	for (u32 Pending = Stages & SamplerPending; Pending; Pending &= Pending - 1)
+	{
+		(HWRenderContext->*SetSamplerFns[std::countr_zero(Pending)])(0, SamplerCount, Samplers);
+	}
+	SamplerPending &= ~Stages;
+}
+
+void InternalDevice11::InvalidateBindings()
+{
+	for (u32& Pending : ConstantPending)
+	{
+		Pending = ConstantLive;
+	}
+	SamplerPending = 0x3f;
 }
 
 IRHIShaderResourceView* InternalDevice11::CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc)
@@ -289,5 +378,5 @@ IRHIShaderResourceView* InternalDevice11::CreateShaderResourceView(IRHIBuffer* B
 		ID3D11ShaderResourceView* srv = nullptr;
 		R_CHK(DxDevice->CreateShaderResourceView(((CD3D11Buffer*)Buffer)->GetD3DObject(), &Desc, &srv));
 
-		return new DX11ShaderResourceView(srv, nullptr);
+		return new DX11ShaderResourceView(srv);
 }

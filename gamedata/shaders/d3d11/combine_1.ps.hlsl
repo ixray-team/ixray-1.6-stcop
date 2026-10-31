@@ -8,7 +8,7 @@
 #include "metalic_roughness_ambient.hlsli"
 #include "reflections.hlsli"
 
-Texture2D s_occ;
+Texture2D s_occ : register(t26);
 
 float4 main(PSInputFullscreen I) : SV_Target
 {

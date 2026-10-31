@@ -2,7 +2,7 @@
 #include "mblur.hlsli"
 #include "dof.hlsli"
 
-Texture3D s_lut;
+Texture3D s_lut : register(t25);
 
 #include "shared\post_cb.hlsli"
 

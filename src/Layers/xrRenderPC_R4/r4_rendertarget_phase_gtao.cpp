@@ -2,39 +2,39 @@
 
 #include "r4_rendertarget.h"
 
-void CRenderTarget::phase_gtao()
+void CRenderTarget::phase_gtao(GfxCmdList& Cmd)
 {
 	GPU_EVENT(phase_gtao);
 
-	float p_scale = RCache.get_height() / (tan(deg2rad(Device.fFOV) * 0.5f) * 2.0f);
+	float p_scale = Cmd.GetHeight() / (tan(deg2rad(Device.fFOV) * 0.5f) * 2.0f);
 	p_scale *= 0.5;
 
 	{
 		GPU_EVENT(gtao_render);
-		DrawSQ(s_gtao, rt_gtao_0, 0, [&]
+		DrawSQ(Cmd, s_gtao, rt_gtao_0, 0, [&]
 		{
-			RCache.set_CullMode(ERHI_CULLMODE::NONE);
-			RCache.set_Stencil(false);
-			RCache.Constants.Write<CBPost>().gtao_parameters = p_scale;
+			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+			Cmd.SetStencil(false);
+			Cmd.Constants.Write<CBPost>().gtao_parameters = p_scale;
 		});
 	}
 
 	{
 		GPU_EVENT(gtao_filter);
-		DrawSQ(s_gtao, rt_ssao_temp, 1, []
+		DrawSQ(Cmd, s_gtao, rt_ssao_temp, 1, [&]
 		{
-			RCache.set_CullMode(ERHI_CULLMODE::NONE);
-			RCache.set_Stencil(false);
+			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+			Cmd.SetStencil(false);
 		});
 	}
 }
 
-void CRenderTarget::pharse_velocity()
+void CRenderTarget::pharse_velocity(GfxCmdList& Cmd)
 {
 	GPU_EVENT(pharse_velocity);
 
-	DrawSQ(s_gtao, rt_Velocity, 2, []
+	DrawSQ(Cmd, s_gtao, rt_Velocity, 2, [&]
 	{
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	});
 }

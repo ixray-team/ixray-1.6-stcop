@@ -10,7 +10,7 @@ Jorge Jimenez http://www.iryoku.com/publications
 
 #include "common.hlsli"
 
-Texture2D t_image;
+Texture2D t_image : register(t25);
 #include "shared\post_cb.hlsli"
 
 void main(in PSInputFullscreen I, out float3 upsample : SV_Target)

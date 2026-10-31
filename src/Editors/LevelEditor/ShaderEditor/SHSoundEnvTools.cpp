@@ -302,7 +302,7 @@ void CSHSoundEnvTools::OnFrame()
 void CSHSoundEnvTools::OnRender()
 {
 	if (m_PreviewSnd.is_playing()){	
-		RCache.set_xform_world	(Fidentity);
+		RImplementation.Imm().SetObjectTransform(Fidentity);
 		EDevice->SetShader	(GEditorDraw.WireShader);
 		u32 clr0			= SOUND_SEL0_COLOR;
 		u32 clr1			= SOUND_SEL1_COLOR;

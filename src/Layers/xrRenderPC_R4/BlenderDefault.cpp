@@ -55,7 +55,7 @@ void CBlender_default::Compile(CBlender_Compile& C)
 
 	switch (C.iElement)
 	{
-	case SE_R1_NORMAL_HQ:
+	case ShaderVariant::NormalHQ:
 		// Level view
 		if (C.bDetail_Diffuse)
 		{
@@ -74,28 +74,28 @@ void CBlender_default::Compile(CBlender_Compile& C)
 			C.r_End		();
 		}
 		break;
-	case SE_R1_NORMAL_LQ:
+	case ShaderVariant::NormalLQ:
 		C.r_Pass		("lmap","lmap",true);
 		r1_tex(C, "s_base", C.L_textures[0]);
 		r1_tex(C, "s_lmap", C.L_textures[1]);
 		r1_tex(C, "s_hemi", *C.L_textures[2], true);
 		C.r_End			();
 		break;
-	case SE_R1_LPOINT:
+	case ShaderVariant::PointLight:
 		C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 		r1_tex(C, "s_base", C.L_textures[0]);
 		r1_tex(C, "s_lmap", TEX_POINT_ATT, true);
 		r1_tex(C, "s_att", TEX_POINT_ATT, true);
 		C.r_End			();
 		break;
-	case SE_R1_LSPOT:
+	case ShaderVariant::SpotLight:
 		C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 		r1_tex(C, "s_base", C.L_textures[0]);
 		r1_tex(C, "s_lmap", "internal\\internal_light_att", true, true);
 		r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 		C.r_End			();
 		break;
-	case SE_R1_LMODELS:
+	case ShaderVariant::ModelLighting:
 		C.r_Pass		("lmap_l","lmap_l",false);
 		r1_tex(C, "s_base", C.L_textures[0]);
 		r1_tex(C, "s_lmap", C.L_textures[1]);

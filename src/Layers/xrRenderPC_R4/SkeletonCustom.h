@@ -101,7 +101,7 @@ public:
 
 	u32							dwFirstRenderFrame;
 
-	void						StoreVisualMatrix(Fmatrix& world_matrix);
+	void						StoreVisualMatrix(const Fmatrix& world_matrix);
 protected:
 	SkeletonWMVec				wallmarks;
 	u32							wm_frame;

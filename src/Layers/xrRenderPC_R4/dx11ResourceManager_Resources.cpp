@@ -17,9 +17,9 @@
 #include "../../xrCore/FVFLegacy.h"
 using namespace FVF;
 
-ref_hs	CResourceManager::_CreateHS			(const char* Name)
+ref_hs	CResourceManager::_CreateHS			(const char* Name, const ShaderExternalMap& Defines)
 {
-	return CreateShader<SHS>(Name);
+	return CreateShader<SHS>(Name, Defines);
 }
 
 void	CResourceManager::_DeleteHS			(const SHS*	HS	)
@@ -27,9 +27,9 @@ void	CResourceManager::_DeleteHS			(const SHS*	HS	)
 	DestroyShader(HS);
 }
 
-ref_ds	CResourceManager::_CreateDS			(const char* Name)
+ref_ds	CResourceManager::_CreateDS			(const char* Name, const ShaderExternalMap& Defines)
 {
-	return CreateShader<SDS>(Name);
+	return CreateShader<SDS>(Name, Defines);
 }
 
 void	CResourceManager::_DeleteDS			(const SDS*	DS	)
@@ -37,9 +37,9 @@ void	CResourceManager::_DeleteDS			(const SDS*	DS	)
 	DestroyShader(DS);
 }
 
-ref_cs	CResourceManager::_CreateCS			(const char* Name)
+ref_cs	CResourceManager::_CreateCS			(const char* Name, const ShaderExternalMap& Defines)
 {
-	return CreateShader<SCS>(Name);
+	return CreateShader<SCS>(Name, Defines);
 }
 
 void	CResourceManager::_DeleteCS			(const SCS*	CS	)
@@ -78,7 +78,7 @@ ref_state CResourceManager::_CreateState(SimulatorStates& state_code)
 	// Create New
 	v_states.push_back				(new SState());
 	v_states.back()->dwFlags		|= xr_resource_flagged::RF_REGISTERED;
-	v_states.back()->state			= dx10State::Create(state_code);
+	v_states.back()->state			= GfxPipelineState::Create(state_code);
 	v_states.back()->state_code		= state_code;
 	return v_states.back();
 }
@@ -118,7 +118,6 @@ ref_pass CResourceManager::_CreatePass(const SPass& proto)
 	P->iPriority = proto.iPriority;
 	P->T = proto.T;
 	P->M = proto.M;
-	P->C = proto.C;
 
 	v_passes.push_back(P);
 	return v_passes.back();
@@ -133,7 +132,7 @@ void CResourceManager::_DeletePass(const SPass* P)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-ref_vs	CResourceManager::_CreateVS		(const char* _name)
+ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap& Defines)
 {
 	xr_string res_name = _name;
 
@@ -143,7 +142,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name)
 		res_name += "_" + xr_string::ToString(m_skinning);
 	}
 
-	res_name += RImplementation.getShaderParams();
+	res_name += RImplementation.getShaderParams(Defines);
 	const char* name = res_name.c_str();
 
 	SVS* _vs = nullptr;
@@ -168,7 +167,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name)
 			_vs = new SVS();
 			_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
-			RememberStage(_vs, _name, m_skinning);
+			RememberStage(_vs, _name, m_skinning, Defines);
 			ref_vs(_vs).swap(Result);
 			IsNew = true;
 		}
@@ -211,18 +210,14 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name)
 		FS.r_close(file);
 
 		// Select target
-		const char* c_target = "vs_2_0";
+		const char* c_target = "vs_5_0";
 		const char* c_entry = "main";
-
-		if (strstr(data, "main_vs_1_1")) { c_target = "vs_1_1"; c_entry = "main_vs_1_1"; }
-		if (strstr(data, "main_vs_2_0")) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
-		if (strstr(data, "main_vs_4_0")) { c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
 		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
+		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs, Defines);
 
-		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_vs->CompileState.MarkCompiled();
 
 		// ����������� �������� � �������
@@ -281,9 +276,9 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-ref_ps	CResourceManager::_CreatePS			(const char* _name)
+ref_ps	CResourceManager::_CreatePS			(const char* _name, const ShaderExternalMap& Defines)
 {
-	xr_string res_name = _name + RImplementation.getShaderParams();
+	xr_string res_name = _name + RImplementation.getShaderParams(Defines);
 	const char* name = res_name.c_str();
 
 	SPS* _ps = nullptr;
@@ -308,7 +303,7 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name)
 			_ps = new SPS();
 			_ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_ps.insert(std::make_pair(_ps->set_name(name), _ps));
-			RememberStage(_ps, _name, Engine.External.GetSkinningMode());
+			RememberStage(_ps, _name, Engine.External.GetSkinningMode(), Defines);
 			ref_ps(_ps).swap(Result);
 			IsNew = true;
 		}
@@ -357,19 +352,12 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name)
 		// Select target
 		const char* c_target	= "ps_5_0";
 		const char* c_entry		= "main";
-		
-		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
-		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
-		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
-		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
-		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
-		if (strstr(data,"main_ps_4_0"))			{ c_target = "ps_4_0"; c_entry = "main_ps_4_0"; }
 
 		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
+		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps, Defines);
 
-		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_ps->CompileState.MarkCompiled();
 
 		// ����������� �������� � �������
@@ -411,9 +399,9 @@ void	CResourceManager::_DeletePS			(const SPS* ps)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-ref_gs	CResourceManager::_CreateGS			(const char* _name)
+ref_gs	CResourceManager::_CreateGS			(const char* _name, const ShaderExternalMap& Defines)
 {
-	xr_string res_name = _name + RImplementation.getShaderParams();
+	xr_string res_name = _name + RImplementation.getShaderParams(Defines);
 	const char* name = res_name.c_str();
 
 	SGS* _gs = nullptr;
@@ -438,7 +426,7 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name)
 			_gs = new SGS();
 			_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_gs.insert(std::make_pair(_gs->set_name(name), _gs));
-			RememberStage(_gs, _name, Engine.External.GetSkinningMode());
+			RememberStage(_gs, _name, Engine.External.GetSkinningMode(), Defines);
 			ref_gs(_gs).swap(Result);
 			IsNew = true;
 		}
@@ -480,14 +468,14 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name)
 		R_ASSERT2				( file, cname );
 
 		// Select target
-		const char*						c_target	= "gs_4_0";
+		const char*						c_target	= "gs_5_0";
 		const char*						c_entry		= "main";
 
 		DWORD flags = RHI_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
+		HRESULT	const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs, Defines);
 
-		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug(Defines).c_str());
 		_gs->CompileState.MarkCompiled();
 
 		FS.r_close				( file );
@@ -512,13 +500,12 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
 }
 
-void CResourceManager::RememberStage(xr_resource_uniq* stage, const char* source, int skinning)
+void CResourceManager::RememberStage(xr_resource_uniq* stage, const char* source, int skinning, const ShaderExternalMap& Defines)
 {
 	StageCompileInfo info;
 	info.source = source;
 	info.skinning = skinning;
-	info.options = RImplementation.ShaderOptions();
-	info.binds = ShaderBind_Snapshot();
+	info.options = Defines;
 	m_stage_info[stage] = std::move(info);
 }
 
@@ -564,35 +551,6 @@ struct SkinningScope
 	}
 };
 
-struct ShaderOptionScope
-{
-	ShaderExternalMap saved;
-	explicit ShaderOptionScope(const ShaderExternalMap& options)
-		: saved(RImplementation.ShaderOptions())
-	{
-		RImplementation.SetShaderOptions(options);
-	}
-	~ShaderOptionScope()
-	{
-		RImplementation.SetShaderOptions(saved);
-	}
-};
-
-// Register slots come from the blender's ShaderBind scope, and the resource name already carries its key.
-// Recompiling outside that scope lets the compiler auto-assign registers and breaks every binding.
-struct ShaderBindScope
-{
-	xr_vector<ShaderBindSlot> saved;
-	explicit ShaderBindScope(const xr_vector<ShaderBindSlot>& binds) : saved(ShaderBind_Snapshot())
-	{
-		ShaderBind_Set(binds.data(), u32(binds.size()));
-	}
-	~ShaderBindScope()
-	{
-		ShaderBind_Set(saved.data(), u32(saved.size()));
-	}
-};
-
 void CResourceManager::RecompileDX12Shaders()
 {
 	if (!GRHI || GRHI->APILevel != ERHI_API_LAYER::D3D12)
@@ -610,7 +568,7 @@ void CResourceManager::RecompileDX12Shaders()
 	u32 compiled = 0;
 	u32 failed = 0;
 
-	auto compile_stage = [&](xr_resource_uniq* stage, RHIObject* hw, const char* ext, const char* default_target, char stage_kind) -> int
+	auto compile_stage = [&](xr_resource_uniq* stage, RHIObject* hw, const char* ext, const char* target) -> int
 	{
 		if (!hw)
 		{
@@ -629,36 +587,17 @@ void CResourceManager::RecompileDX12Shaders()
 			return -1;
 		}
 
-		const char* entry = "main";
-		const char* target = default_target;
-		if (stage_kind == 'v')
-		{
-			if (strstr(data.data(), "main_vs_1_1")) { target = "vs_1_1"; entry = "main_vs_1_1"; }
-			if (strstr(data.data(), "main_vs_2_0")) { target = "vs_2_0"; entry = "main_vs_2_0"; }
-			if (strstr(data.data(), "main_vs_4_0")) { target = "vs_4_0"; entry = "main_vs_4_0"; }
-		}
-		else if (stage_kind == 'p')
-		{
-			if (strstr(data.data(), "main_ps_1_1")) { target = "ps_1_1"; entry = "main_ps_1_1"; }
-			if (strstr(data.data(), "main_ps_1_2")) { target = "ps_1_2"; entry = "main_ps_1_2"; }
-			if (strstr(data.data(), "main_ps_1_3")) { target = "ps_1_3"; entry = "main_ps_1_3"; }
-			if (strstr(data.data(), "main_ps_1_4")) { target = "ps_1_4"; entry = "main_ps_1_4"; }
-			if (strstr(data.data(), "main_ps_2_0")) { target = "ps_2_0"; entry = "main_ps_2_0"; }
-			if (strstr(data.data(), "main_ps_4_0")) { target = "ps_4_0"; entry = "main_ps_4_0"; }
-		}
-
-		ShaderOptionScope options(info->second.options);
 		SkinningScope skinning(info->second.skinning);
-		ShaderBindScope binds(info->second.binds);
 		void* result = stage;
-		const HRESULT hr = ::Render->shader_compile(
+		const HRESULT hr = RImplementation.shader_compile(
 			*stage->cName,
 			(DWORD const*)data.data(),
 			u32(data.size() - 1),
-			entry,
+			"main",
 			target,
 			RHI_SHADER_PACK_MATRIX_ROW_MAJOR,
-			result);
+			result,
+			info->second.options);
 		return SUCCEEDED(hr) ? 1 : -1;
 	};
 
@@ -682,11 +621,11 @@ void CResourceManager::RecompileDX12Shaders()
 		{
 			kept->AddRef();
 		}
-		const int status = compile_stage(vs, vs->vs, ".vs.hlsl", "vs_2_0", 'v');
+		const int status = compile_stage(vs, vs->vs, ".vs.hlsl", "vs_5_0");
 		RHIBlob* current = (vs->signature && vs->signature->signature) ? vs->signature->signature : nullptr;
 		if (status > 0 && kept && kept != current)
 		{
-			RCache.m_pInputLayout = nullptr;
+			RImplementation.Imm().m_pInputLayout = nullptr;
 			if (GRHI)
 			{
 				GRHI->SetInputLayout(nullptr);
@@ -710,27 +649,27 @@ void CResourceManager::RecompileDX12Shaders()
 	for (auto& [name, ps] : m_ps)
 	{
 		(void)name;
-		note(compile_stage(ps, ps->ps, ".ps.hlsl", "ps_5_0", 'p'));
+		note(compile_stage(ps, ps->ps, ".ps.hlsl", "ps_5_0"));
 	}
 	for (auto& [name, gs] : m_gs)
 	{
 		(void)name;
-		note(compile_stage(gs, gs->gs, ".gs.hlsl", "gs_4_0", 'g'));
+		note(compile_stage(gs, gs->gs, ".gs.hlsl", "gs_5_0"));
 	}
 	for (auto& [name, hs] : m_hs)
 	{
 		(void)name;
-		note(compile_stage(hs, hs->sh, ".hs.hlsl", "hs_5_0", 'h'));
+		note(compile_stage(hs, hs->sh, ".hs.hlsl", "hs_5_0"));
 	}
 	for (auto& [name, ds] : m_ds)
 	{
 		(void)name;
-		note(compile_stage(ds, ds->sh, ".ds.hlsl", "ds_5_0", 'd'));
+		note(compile_stage(ds, ds->sh, ".ds.hlsl", "ds_5_0"));
 	}
 	for (auto& [name, cs] : m_cs)
 	{
 		(void)name;
-		note(compile_stage(cs, cs->sh, ".cs.hlsl", "cs_5_0", 'c'));
+		note(compile_stage(cs, cs->sh, ".cs.hlsl", "cs_5_0"));
 	}
 
 	Msg("* r_recompile_shaders: %u compiled, %u failed", compiled, failed);
@@ -815,7 +754,7 @@ void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
 ref_ctable CResourceManager::_CreateConstantTable(R_constant_table& C)
 {
 	ref_ctable Result;
-	if (C.empty())		return nullptr;
+	if (!C.DetailScale)		return nullptr;
 
 	xrCriticalSectionGuard guard(creationGuard);
 
@@ -1194,37 +1133,6 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 	Msg	("! ERROR: Failed to find compiled list of xform-defs");
 }
 //--------------------------------------------------------------------------------------------------------------
-ref_constant_list CResourceManager::_CreateConstantList(SConstantList& L)
-{
-	ref_constant_list Result;
-	bool bEmpty = true;
-	xrCriticalSectionGuard guard(creationGuard);
-	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
-	if (bEmpty)	return nullptr;
-
-	for (u32 it=0; it<lst_constants.size(); it++)
-	{
-		SConstantList*	base		= lst_constants[it];
-		if (ResourceLifetime::IsAlive(base) && L.equal(*base) && ResourceLifetime::TryAcquire(base, Result))
-		{
-			return Result;
-		}
-	}
-
-	SConstantList* lst = new SConstantList();
-	lst->_copy(L);
-
-	lst->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
-	lst_constants.push_back	(lst);
-	return lst;
-}
-void			CResourceManager::_DeleteConstantList(const SConstantList* L )
-{
-	if (0==(L->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	xrCriticalSectionGuard guard(creationGuard);
-	if (reclaim(lst_constants,L))					return;
-	Msg	("! ERROR: Failed to find compiled list of r1-constant-defs");
-}
 //--------------------------------------------------------------------------------------------------------------
 ref_input_sign CResourceManager::_CreateInputSignature(RHIBlob* pBlob)
 {
