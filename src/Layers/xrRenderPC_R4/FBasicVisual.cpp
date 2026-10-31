@@ -14,10 +14,23 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-IRender_Mesh::~IRender_Mesh()		
-{ 
-	_RELEASE(p_rm_Vertices); 
-	_RELEASE(p_rm_Indices);		
+IRender_Mesh::~IRender_Mesh()
+{
+	_RELEASE(p_rm_Vertices);
+	_RELEASE(p_rm_Indices);
+	if (OwnsAlloc)
+	{
+		RImplementation.Geometry.Free(Alloc);
+	}
+}
+
+void IRender_Mesh::SetPulled(const GeometryAlloc& Block)
+{
+	Alloc = Block;
+	OwnsAlloc = true;
+	vBase = Block.VertexBase;
+	iBase = Block.IndexBase;
+	rm_geom.create(EGeomSource::Static, Block.Page);
 }
 
 dxRender_Visual::dxRender_Visual		()

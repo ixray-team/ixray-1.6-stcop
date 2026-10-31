@@ -1,16 +1,18 @@
 #include "common.hlsli"
 
-void main(in v_tree I, out p_bumped_new O)
+void main(PULL_INPUT, out p_bumped_new O)
 {
-    float4 pos = float4(mul(m_xform, I.P).xyz, 1.0);
+    PulledVertex V = PullVertex(VertexId);
+    float4 pos = float4(mul(m_xform, float4(V.P, 1.0f)).xyz, 1.0);
     float4 pos_old = pos;
 
-    float2 tc = I.tc.xy * consts.xy;
-    float sun = I.Nh.w * c_sun.x + c_sun.y;
-    float hemi = I.Nh.w * c_scale.w + c_bias.w;
+    float2 tc = V.UV;
+    float L_base = DecodeU8x4(V.C).x;
+    float sun = L_base * c_sun.x + c_sun.y;
+    float hemi = L_base * c_scale.w + c_bias.w;
 
 #ifdef USE_LENGTH_BUFFER
-	O.lmap = I.Nh.w * c_scale.xyz + c_bias.xyz;
+	O.lmap = L_base * c_scale.xyz + c_bias.xyz;
 #endif
 
 #ifdef USE_TREEWAVE
@@ -18,13 +20,13 @@ void main(in v_tree I, out p_bumped_new O)
     float H = pos.y - base;
 
     float dp = calc_cyclic(wave.w + dot(pos.xyz, wave.xyz));
-    float frac = I.tc.z * consts.x;
+    float frac = DecodeS16x2(V.X).x * consts.x;
     float inten = H * dp;
 
     pos.xz += calc_xz_wave(wind.xz * inten, frac);
 
     float dp_old = calc_cyclic(wave_old.w + dot(pos_old.xyz, wave_old.xyz));
-    float frac_old = I.tc.z * consts_old.x;
+    float frac_old = DecodeS16x2(V.X).x * consts_old.x;
     float inten_old = H * dp_old;
 
     pos_old.xz += calc_xz_wave(wind_old.xz * inten_old, frac_old);
@@ -35,11 +37,11 @@ void main(in v_tree I, out p_bumped_new O)
     O.tcdh = float4(tc.xy, hemi, sun);
     O.position = float4(Pe, 1.0f);
 
-    float3 N = unpack_bx4(unpack_D3DCOLOR(I.Nh).xyz);
+    float3 N = 2.0f * V.N;
 	
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
-    float3 T = unpack_bx4(unpack_D3DCOLOR(I.T).xyz);
-    float3 B = unpack_bx4(unpack_D3DCOLOR(I.B).xyz);
+    float3 T = 2.0f * V.T;
+    float3 B = 2.0f * V.B;
 
     float3x3 xform = mul((float3x3)m_xform_v, float3x3(
         T.x, B.x, N.x,

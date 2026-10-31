@@ -328,7 +328,7 @@ void CRenderTarget::accum_volumetric(GfxCmdList& Cmd, light* L)
 
 		Cmd.SetGeometry(g_accum_volumetric);
 		//	Igor: no need to do it per sub-sample. Plain AA will go just fine.
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (VOLUMETRIC_SLICES * 2) * 3, 0, 0);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (VOLUMETRIC_SLICES * 2) * 3, g_accum_volumetric_alloc.IndexBase, g_accum_volumetric_alloc.VertexBase);
 		Cmd.SetColorWriteEnable();
 	}
 

@@ -35,37 +35,18 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
 	dxRender_Visual::Load(N, data, dwFlags);
 
-	RHIInputElementDesc* vFormat	= nullptr;
-	size_t FormatSize = 0;
-
-	// read vertices
 	bool FoundedChunk = !!data->find_chunk(OGF_GCONTAINER);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_GCONTAINER");
 
 	{
-		// verts
-		u32 ID				= data->r_u32				();
-		vBase				= data->r_u32				();
-		vCount				= data->r_u32				();
-		vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
-		
-		VERIFY				(nullptr==p_rm_Vertices);
-
-		p_rm_Vertices		= RImplementation.getVB			(ID);
-		p_rm_Vertices->AddRef();
-		vBase				+= RImplementation.getVB_Base	(ID);
-
-		// indices
-		dwPrimitives		= 0;
-		ID					= data->r_u32				();
-		iBase				= data->r_u32				();
-		iCount				= data->r_u32				();
-		dwPrimitives		= iCount/3;
-		
-		VERIFY				(nullptr==p_rm_Indices);
-		p_rm_Indices			= RImplementation.getIB		(ID);
-		p_rm_Indices->AddRef	();
-		iBase				+= RImplementation.getIB_Base	(ID);
+		const u32 VertexBuffer = data->r_u32();
+		const u32 VertexBase = data->r_u32();
+		vCount = data->r_u32();
+		const u32 IndexBuffer = data->r_u32();
+		const u32 IndexBase = data->r_u32();
+		iCount = data->r_u32();
+		dwPrimitives = iCount / 3;
+		SetPulled(RImplementation.UploadLevelMesh(false, VertexBuffer, VertexBase, vCount, IndexBuffer, IndexBase, iCount));
 	}
 
 	// load tree-def
@@ -78,9 +59,6 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		data->r			(&c_bias,	sizeof(c_bias));	c_bias.rgb.mul	(.5f);	c_bias.hemi	*=.5f;	c_bias.sun	*=.5f;
 		//Msg				("hemi[%f / %f], sun[%f / %f]",c_scale.hemi,c_bias.hemi,c_scale.sun,c_bias.sun);
 	}
-
-	// Geom
-	rm_geom.create			(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 
 	// Get constants
 	m_xform				= "m_xform";

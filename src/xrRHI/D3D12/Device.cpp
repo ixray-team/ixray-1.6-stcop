@@ -109,6 +109,7 @@ InternalDevice12::InternalDevice12()
     }
     FeatureLevel = RHI_FEATURE_LEVEL_11_1;
     VertexCache = 32;
+    NoOverwriteSRV = true;
     D3D12_FEATURE_DATA_D3D12_OPTIONS2 options = {};
     _canUseDepthBounds = SUCCEEDED(GetDevice()->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))) &&
         options.DepthBoundsTestSupported;
@@ -477,6 +478,17 @@ void InternalDevice12::CollectRetired()
     }
 }
 
+DX12Upload InternalDevice12::CreateUpload(u64 size)
+{
+    DX12Upload upload;
+    upload.Size = size;
+    upload.Owned = true;
+    upload.Resource = CreateNativeBuffer(size, D3D12_HEAP_TYPE_UPLOAD);
+    D3D12_RANGE range = {};
+    R_CHK(upload.Resource->Map(0, &range, (void**)&upload.Data));
+    return upload;
+}
+
 DX12Upload InternalDevice12::AcquireStream(u64 size)
 {
     DX12Upload upload;
@@ -494,25 +506,24 @@ DX12Upload InternalDevice12::AcquireStream(u64 size)
         {
             upload.Resource = stream.Resource;
             upload.Data = stream.Data;
+            _streamPoolBytes -= stream.Size;
             stream = _streamPool.back();
             _streamPool.pop_back();
             return upload;
         }
     }
-    upload.Resource = CreateNativeBuffer(size, D3D12_HEAP_TYPE_UPLOAD);
-    D3D12_RANGE range = {};
-    R_CHK(upload.Resource->Map(0, &range, (void**)&upload.Data));
-    return upload;
+    return CreateUpload(size);
 }
 
 void InternalDevice12::RecycleStream(const DX12Upload& upload)
 {
-    if (_streamPool.size() >= 64)
+    if (_streamPoolBytes + upload.Size > 128ull * 1024 * 1024)
     {
         upload.Resource->Unmap(0, nullptr);
         Retire(upload.Resource);
         return;
     }
+    _streamPoolBytes += upload.Size;
     _streamPool.push_back({ upload.Resource, upload.Data, upload.Size, _isRecording ? _nextFence : _nextFence - 1 });
 }
 
@@ -646,7 +657,7 @@ DX12Upload InternalDevice12::AllocateUpload(u64 size, u64 alignment)
         }
     }
     UploadChunk chunk;
-    chunk.Size = std::max(u64(4 * 1024 * 1024), (size + alignment - 1) & ~(alignment - 1));
+    chunk.Size = std::max(UploadChunkSize, (size + alignment - 1) & ~(alignment - 1));
     chunk.Resource = CreateNativeBuffer(chunk.Size, D3D12_HEAP_TYPE_UPLOAD);
     D3D12_RANGE range = {};
     R_CHK(chunk.Resource->Map(0, &range, (void**)&chunk.Data));
@@ -940,6 +951,11 @@ void InternalDevice12::DrainUploads()
             Commands()->CopyBufferRegion(copy.Buffer->GetResource().Native, copy.DestOffset, copy.Source.Resource,
                 copy.Source.Offset, copy.CopySize);
             copy.Buffer->Release();
+        }
+        if (copy.Source.Owned)
+        {
+            copy.Source.Resource->Unmap(0, nullptr);
+            Retire(copy.Source.Resource);
         }
     }
     _draining = false;

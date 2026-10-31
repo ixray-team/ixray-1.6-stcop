@@ -436,38 +436,6 @@ IRenderVisual* CRender::model_CreateParticles(const char* name) {
 	}
 }
 
-RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
-{
-	if(_alt)
-	{
-		*Count = xDC[id].size();
-		return xDC[id].begin();
-	}
-	else
-	{
-		*Count = nDC[id].size();
-		return nDC[id].begin();
-	}
-}
-
-IRHIBuffer* CRender::getVB(int id, bool	_alt) {
-	if(_alt) {
-		VERIFY(id<int(xVB.size()));	return xVB[id];
-	}
-	else {
-		VERIFY(id<int(nVB.size()));	return nVB[id];
-	}
-}
-
-IRHIBuffer* CRender::getIB(int id, bool	_alt) {
-	if(_alt) {
-		VERIFY(id<int(xIB.size()));	return xIB[id];
-	}
-	else {
-		VERIFY(id<int(nIB.size()));	return nIB[id];
-	}
-}
-
 FSlideWindowItem* CRender::getSWI(int id)
 {
 	VERIFY(id<int(SWIs.size()));
@@ -762,11 +730,22 @@ static HRESULT create_shader(
 			_RELEASE(pSignatureBlob);
 		}
 
+		RHIShaderReflection reflection;
+		const bool Reflected = SUCCEEDED(GRHI->ReflectShader(buffer, buffer_size, reflection));
+		svs_result->Input = EVertexInput::None;
+		for (const RHIShaderInputDesc& Input : reflection.Inputs)
+		{
+			if (!Input.SystemValueType)
+			{
+				svs_result->Input = !xr_strcmp(Input.SemanticName, "DRAWID") ? EVertexInput::Pulled : EVertexInput::Legacy;
+				break;
+			}
+		}
+
 		// The editors bind structured instance buffers and reflect VS inputs, the game does not
 		if (Device.IsEditorMode())
 		{
-			RHIShaderReflection reflection;
-			if (SUCCEEDED(GRHI->ReflectShader(buffer, buffer_size, reflection)))
+			if (Reflected)
 			{
 				for (const RHIShaderResourceDesc& Resource : reflection.Resources)
 				{

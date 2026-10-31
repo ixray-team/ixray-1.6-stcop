@@ -4,6 +4,7 @@
 #include <dxgi1_6.h>
 
 class InternalDevice12;
+class DX12ShaderResourceView;
 
 struct DX12Descriptor
 {
@@ -49,14 +50,17 @@ public:
     u32 GetSize() const override;
     bool Map(ERHI_BUFFER_MAP type, u32 flags, RHIMappedSubresource* out_data) override;
     void Unmap() override;
-    void UpdateSubresource(void* data, u32 size) override;
+    void UpdateSubresource(const void* data, u32 size, u32 offset = 0) override;
     void SetVertexBuffer(u32 slot, u32 stride, u32 offset) override;
     void SetIndexBuffer(bool is32Bit, u32 offset) override;
     D3D12_GPU_VIRTUAL_ADDRESS GetAddress();
+    ID3D12Resource* GetNative() const { return _resource.Native ? _resource.Native : _upload.Resource; }
     DX12Resource& GetResource() { return _resource; }
     const RHIBufferDesc& GetDesc() const { return _desc; }
 
 private:
+    friend class DX12ShaderResourceView;
+    bool IsStream() const { return _desc.Usage == ERHI_USAGE::USAGE_DYNAMIC; }
     void DiscardStream();
     InternalDevice12& _device;
     RHIBufferDesc _desc;
@@ -65,6 +69,7 @@ private:
     D3D12_GPU_VIRTUAL_ADDRESS _nativeAddress = 0;
     u64 _published = 0;
     xr_vector<u8> _data;
+    xr_vector<DX12ShaderResourceView*> _views;
     std::atomic<u32> _references = 1;
     bool _isMapped = false;
     ERHI_BUFFER_MAP _mapType = ERHI_BUFFER_MAP::WRITE;
@@ -121,6 +126,7 @@ struct DX12View
     u32 FirstSlice = 0;
     u32 SliceCount = 1;
     u32 Flags = 0;
+    u32 Elements = 0;
     u8 Planes = 1;
     u8 Kind = DX12KindTyped;
 };

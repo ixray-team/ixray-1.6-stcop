@@ -1,15 +1,15 @@
-#define USE_LM_HEMI
 #include "r1_common.hlsli"
 #include "r1_static.hlsli"
 
-vf_spot main(v_static v)
+vf_spot main(PULL_INPUT)
 {
     vf_spot o;
+    PulledVertex V = PullVertex(VertexId);
 
-    o.hpos = mul(m_WVP, v.P);
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w);
+    o.hpos = mul(m_WVP, float4(V.P, 1.0f));
+    o.tc0 = V.UV;
 
-    o.color = calc_spot(o.tc1, o.tc2, float4(mul(m_W, v.P), 1.0f), unpack_normal(v.Nh.xyz));
+    o.color = calc_spot(o.tc1, o.tc2, float4(mul(m_W, float4(V.P, 1.0f)), 1.0f), V.N);
 
     return o;
 }

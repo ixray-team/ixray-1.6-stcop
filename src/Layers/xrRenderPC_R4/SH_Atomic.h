@@ -21,6 +21,13 @@ struct RENDER_API SInputSignature : public xr_resource_flagged
 };
 typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
 
+enum class EVertexInput : u8
+{
+	None,
+	Legacy,
+	Pulled
+};
+
 struct RENDER_API SVS : public xr_resource_uniq
 {
 	RHIObject*					vs;
@@ -29,6 +36,8 @@ struct RENDER_API SVS : public xr_resource_uniq
 	RHIBlob*							vs_code;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
+	EVertexInput						Input = EVertexInput::None;
+	bool								MismatchLogged = false;
 	SVS				();
 	~SVS			();
 };

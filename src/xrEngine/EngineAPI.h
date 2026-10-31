@@ -85,6 +85,7 @@ enum class EditorUI : u8
 	UI_General,
 	ECSViewer,
 	Tools_AIGridEditor,
+	Profiler,
 	Count
 };
 

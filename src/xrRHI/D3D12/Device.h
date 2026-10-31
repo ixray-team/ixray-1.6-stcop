@@ -73,6 +73,7 @@ public:
     void* GetSwapchain() override;
     void BeginFrame() override;
     IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) override;
+    IRHIUnorderedAccessView* CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc) override;
     void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearVertexBuffer(u32 vb_stride) override;
     void ClearIndexBuffer() override;
@@ -177,6 +178,7 @@ private:
     static constexpr u32 SamplerDescriptorCount = 2048;
     static constexpr u32 StaticSamplerDescriptors = 512;
     static constexpr u32 PipelineBuckets = 1024;
+    static constexpr u64 UploadChunkSize = 4 * 1024 * 1024;
     static_assert((PipelineBuckets & (PipelineBuckets - 1)) == 0, "pipeline bucket count must be a power of two");
     struct UploadChunk
     {
@@ -405,6 +407,7 @@ private:
     u32 _descriptorStride[4] = {};
     xr_vector<u32> _freeDescriptors[4];
     xr_vector<PooledStream> _streamPool;
+    u64 _streamPoolBytes = 0;
     xr_vector<RetiredObject> _retiredObjects;
     xr_vector<RetiredDescriptor> _retiredDescriptors;
     xr_vector<GraphicsPipeline> _graphicsPipelines;
@@ -479,6 +482,7 @@ private:
     u32 ImageIndex(u64 texture) const;
     u64 Submit();
     void CollectRetired();
+    DX12Upload CreateUpload(u64 size);
     DX12Upload AcquireStream(u64 size);
     void RecycleStream(const DX12Upload& upload);
     void UpdateBuffers();
@@ -504,6 +508,7 @@ private:
     void CacheTable(DescriptorTable& table);
     DX12Descriptor AllocateTable(u32 count, bool sampler);
     void MarkViewsDirty() { std::fill(std::begin(_viewsDirty), std::end(_viewsDirty), true); }
+    void WriteBufferView(DX12View& view);
     ID3D12DescriptorHeap* Heap(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
     friend class DX12StateManager;
     friend class DX12Buffer;

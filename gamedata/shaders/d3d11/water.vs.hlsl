@@ -2,16 +2,6 @@
 #include "shared\waterconfig.hlsli"
 #include "shared\watermove.hlsli"
 
-struct v_vert
-{
-    float4 P : POSITION; // (float,float,float,1)
-    float4 N : NORMAL; // (nx,ny,nz,hemi occlusion)
-    float4 T : TANGENT;
-    float4 B : BINORMAL;
-    float4 color : COLOR0; // (r,g,b,dir-occlusion)
-    int2 uv : TEXCOORD0; // (u0,v0)
-};
-
 struct vf
 {
     float2 tbase : TEXCOORD0; // base
@@ -90,12 +80,12 @@ void main(in v_model v, out vf o)
     water_main(P, N, Identity, float4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, o);
 }
 #else
-void main(in v_vert v, out vf o)
+void main(PULL_INPUT, out vf o)
 {
-    v.N = unpack_D3DCOLOR(v.N);
-    v.color = unpack_D3DCOLOR(v.color);
+    PulledVertex V = PullVertex(VertexId);
+    float4 C = DecodeU8x4(V.C);
 
     // Level geometry is in world space
-    water_main(v.P, normalize(unpack_bx2(v.N.xyz)), (float3x3)m_W, v.color, v.N.w, o);
+    water_main(float4(V.P, 1.0f), normalize(V.N), (float3x3)m_W, float4(DecodeU8x4(V.X).xyz, C.y), C.x, o);
 }
 #endif

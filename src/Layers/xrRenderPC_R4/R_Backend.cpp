@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "R_Backend.h"
+#include "dxRenderDeviceRender.h"
 
 // Create Quad-IB
 void GfxCmdList::CreateQuadIB()
@@ -34,6 +35,13 @@ void GfxCmdList::OnDeviceCreate	()
 	EditorMode			= Device.IsEditorMode();
 	CreateQuadIB		();
 
+	xr_vector<u32> Iota(65536);
+	std::iota(Iota.begin(), Iota.end(), 0u);
+	RHIUtils::CreateVertexBuffer(&IotaVB, Iota.data(), u32(Iota.size() * sizeof(u32)));
+	const RHIInputElementDesc DrawId = { "DRAWID", 0, ERHI_FORMAT::R32_UINT, 0, 0, ERHI_INPUT_CLASSIFICATION::INSTANCE_DATA, 1 };
+	PulledDecl = DEV->_CreateDecl(&DrawId, 1);
+	Heap = &RImplementation.Geometry;
+
 	// streams
 	Vertex.Create		();
 	Index.Create		();
@@ -51,6 +59,24 @@ void GfxCmdList::OnDeviceDestroy()
 
 	// Quad
 	_RELEASE							(QuadIB);
+
+	_RELEASE(IotaVB);
+	_RELEASE(PulledLayout);
+	PulledDecl = nullptr;
+	Heap->Destroy();
+	Heap = nullptr;
+	if (GRHI->ShaderResourceCache)
+	{
+		GRHI->ShaderResourceCache->ResetDeviceState();
+	}
+}
+
+void GfxCmdList::CreatePulledLayout()
+{
+	ref_vs Reference = DEV->_CreateVS("pull_reference");
+	CHECK_OR_EXIT(Reference->signature, "pull_reference.vs.hlsl has no input signature");
+	RHIBlob* Signature = Reference->signature->signature;
+	CHK_DX(GRHI->CreateInputLayout(PulledDecl->dx10_dcl_code.data(), PulledDecl->dx10_dcl_code.size(), Signature->GetBufferPointer(), Signature->GetBufferSize(), &PulledLayout));
 }
 
 void GfxCmdList::SetVertices(IRHIBuffer* _vb, u32 _vb_stride)

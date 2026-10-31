@@ -206,17 +206,10 @@ private:
 	ref_geom						g_accum_omnipart;
 	ref_geom						g_accum_volumetric;
 
-	IRHIBuffer*		g_accum_point_vb;
-	IRHIBuffer*		g_accum_point_ib;
-
-	IRHIBuffer*		g_accum_omnip_vb;
-	IRHIBuffer*		g_accum_omnip_ib;
-
-	IRHIBuffer*		g_accum_spot_vb	;
-	IRHIBuffer*		g_accum_spot_ib	;
-
-	IRHIBuffer*		g_accum_volumetric_vb;
-	IRHIBuffer*		g_accum_volumetric_ib;
+	GeometryAlloc				g_accum_point_alloc = {};
+	GeometryAlloc				g_accum_omnip_alloc = {};
+	GeometryAlloc				g_accum_spot_alloc = {};
+	GeometryAlloc				g_accum_volumetric_alloc = {};
 
 	RHIObject*			g_debug_blend_state = nullptr;
 

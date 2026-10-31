@@ -380,3 +380,10 @@ IRHIShaderResourceView* InternalDevice11::CreateShaderResourceView(IRHIBuffer* B
 
 		return new DX11ShaderResourceView(srv);
 }
+
+IRHIUnorderedAccessView* InternalDevice11::CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc)
+{
+	RHIUAVDesc BufferDesc = Desc;
+	BufferDesc.ViewDimension = ERHI_VIEW_DIMENSION::Buffer;
+	return TextureFactory->CreateUAV(static_cast<CD3D11Buffer*>(Buffer)->GetD3DObject(), BufferDesc);
+}

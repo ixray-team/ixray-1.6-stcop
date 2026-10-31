@@ -12,19 +12,20 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_static v)
+vf main(PULL_INPUT)
 {
     vf o;
+    PulledVertex V = PullVertex(VertexId);
 
-    float2 dt = calc_detail(v.P.xyz);
-    float3 N = unpack_normal(v.Nh.xyz);
-    o.hpos = mul(m_VP, v.P); 
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w); 
+    float2 dt = calc_detail(V.P);
+    float3 N = V.N;
+    o.hpos = mul(m_VP, float4(V.P, 1.0f)); 
+    o.tc0 = V.UV; 
     o.tc1 = o.tc0; 
     o.tc2 = o.tc0 * dt_params.xy; 
     o.c0 = float4(r1_v_hemi(N), dt.x); 
     o.c1 = float4(r1_v_sun(N), dt.y); 
-    o.fog = calc_fogging(v.P); 
+    o.fog = calc_fogging(float4(V.P, 1.0f)); 
 
     return o;
 }

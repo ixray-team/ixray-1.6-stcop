@@ -344,7 +344,7 @@ bool InternalDevice11::CreateD3D11()
 	}
 
 	D3D11_FEATURE_DATA_D3D11_OPTIONS Options = {};
-	if (FAILED(HWRenderContext->QueryInterface(IID_PPV_ARGS(&HWContext1))) || FAILED(DX11Device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &Options, sizeof(Options))) || !Options.ConstantBufferOffsetting || !Options.MapNoOverwriteOnDynamicConstantBuffer)
+	if (FAILED(DX11Device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &Options, sizeof(Options))) || FAILED(HWRenderContext->QueryInterface(IID_PPV_ARGS(&HWContext1))) || !Options.ConstantBufferOffsetting || !Options.MapNoOverwriteOnDynamicConstantBuffer)
 	{
 		if (HWContext1 != nullptr)
 		{
@@ -352,6 +352,7 @@ bool InternalDevice11::CreateD3D11()
 			HWContext1 = nullptr;
 		}
 	}
+	NoOverwriteSRV = Options.MapNoOverwriteOnDynamicBufferSRV;
 
 	if (!UpdateBuffersD3D11())
 	{

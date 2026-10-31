@@ -30,6 +30,7 @@ public:
 	u32 FeatureLevel;
 	u32 VertexCache;
 	u32 ConstantEpoch = 0;
+	bool NoOverwriteSRV = false;
 
 	// Texture factory
 	IRHITextureFactory* TextureFactory = nullptr;
@@ -79,6 +80,7 @@ public:
     virtual void* GetSwapchain() = 0;
     virtual void BeginFrame() = 0;
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) = 0;
+    virtual IRHIUnorderedAccessView* CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc) = 0;
     virtual void SetConstants(const RHIConstantWrite* Writes, u32 Count) = 0;
     virtual void ClearVertexBuffer(u32 vb_stride) = 0;
     virtual void ClearIndexBuffer() = 0;

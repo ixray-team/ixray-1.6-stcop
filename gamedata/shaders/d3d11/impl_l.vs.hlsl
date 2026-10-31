@@ -9,14 +9,15 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_static v)
+vf main(PULL_INPUT)
 {
     vf o;
+    PulledVertex V = PullVertex(VertexId);
 
-    o.hpos = mul(m_VP, v.P); 
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w); 
+    o.hpos = mul(m_VP, float4(V.P, 1.0f)); 
+    o.tc0 = V.UV; 
     o.tc1 = o.tc0; 
-    o.c0 = r1_v_hemi(unpack_normal(v.Nh.xyz)); 
+    o.c0 = r1_v_hemi(V.N); 
 
     return o;
 }

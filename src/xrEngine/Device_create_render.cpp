@@ -7,6 +7,8 @@
 static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
 extern ENGINE_API bool g_appLoaded;
+void DrawProfilerOverlay();
+
 void DrawMainViewport()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -177,6 +179,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 				ImGui::MenuItem("ECS Viewer", nullptr, &States[static_cast<u8>(EditorUI::ECSViewer)]);
 				ImGui::MenuItem("SVG Storage Viewer Debug", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
+				ImGui::MenuItem("Profiler", nullptr, &States[static_cast<u8>(EditorUI::Profiler)]);
 			#if defined(IXRAY_PROFILER)
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
@@ -241,6 +244,9 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
+#ifdef DEBUG_DRAW
+	ImManager.Subscribe("Profiler", CImGuiManager::ERenderPriority::eLow, DrawProfilerOverlay);
+#endif
 #endif
 	GRHI->CreateDevice(API);
 

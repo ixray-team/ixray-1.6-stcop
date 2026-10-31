@@ -3,17 +3,12 @@
 
 void CRenderTarget::accum_point_geom_create()
 {
-	u32 vCount = DU_SPHERE_NUMVERTEX;
-	u32 vSize = 3 * 4;
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&g_accum_point_vb, du_sphere_vertices, vCount * vSize));
-
-	// Indices
-	u32	iCount = DU_SPHERE_NUMFACES * 3;
-	R_ASSERT(RHIUtils::CreateIndexBuffer(&g_accum_point_ib, du_sphere_faces, iCount * 2));
+	g_accum_point_alloc = RImplementation.Geometry.AllocPositions(du_sphere_vertices, DU_SPHERE_NUMVERTEX, du_sphere_faces, DU_SPHERE_NUMFACES * 3);
+	g_accum_point.create(EGeomSource::Static, g_accum_point_alloc.Page);
 }
 
 void CRenderTarget::accum_point_geom_destroy()
 {
-	_RELEASE(g_accum_point_ib);
-	_RELEASE(g_accum_point_vb);
+	g_accum_point.destroy();
+	RImplementation.Geometry.Free(g_accum_point_alloc);
 }

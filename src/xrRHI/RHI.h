@@ -109,6 +109,7 @@ public:
 	[[nodiscard]] IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
 	[[nodiscard]] IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	[[nodiscard]] IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
+	[[nodiscard]] IRHIUnorderedAccessView* CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc);
 	[[nodiscard]] IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
 
 	void SetConstants(const RHIConstantWrite* Writes, u32 Count);
@@ -163,6 +164,7 @@ public:
 	void ClearIndexBuffer();
 
 	bool IsTessPass() const;
+	bool SupportsNoOverwriteSRV() const;
 
 	u32 GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize);
 

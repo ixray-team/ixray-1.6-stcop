@@ -52,6 +52,7 @@ public:
     void* GetSwapchain() override;
     void BeginFrame() override;
     IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) override;
+    IRHIUnorderedAccessView* CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc) override;
     void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearVertexBuffer(u32 vb_stride) override;
     void ClearIndexBuffer() override;

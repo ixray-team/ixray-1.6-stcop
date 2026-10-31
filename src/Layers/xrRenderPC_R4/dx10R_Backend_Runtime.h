@@ -23,6 +23,15 @@ IC bool GfxCmdList::PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32
 	{
 		return false;
 	}
+	if (CurrentVS && CurrentVS->Input != EVertexInput::None && (CurrentVS->Input == EVertexInput::Pulled) != (GeomSource != EGeomSource::Legacy))
+	{
+		if (!CurrentVS->MismatchLogged)
+		{
+			CurrentVS->MismatchLogged = true;
+			Msg("! Draw skipped: vertex shader '%s' expects %s vertices", *CurrentVS->cName, CurrentVS->Input == EVertexInput::Pulled ? "pulled" : "input-assembler");
+		}
+		return false;
+	}
 	if (Indexed && GRHI->IsTessPass())
 	{
 		R_ASSERT(Topology == ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
@@ -30,6 +39,11 @@ IC bool GfxCmdList::PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32
 	}
 	Stats.Calls++;
 	Stats.Polys += RHITopologyUtils::GetPrimitiveCount(Count, Topology) * Instances;
+	if (Heap && Heap->HasPending())
+	{
+		Heap->Flush();
+		Heap->Bind(*this);
+	}
 	GRHI->SetPrimitiveTopology(Topology);
 	GRHI->ShaderResourceCache->Apply();
 	GRHI->ApplyRenderTargetChange();
@@ -39,35 +53,65 @@ IC bool GfxCmdList::PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32
 	return true;
 }
 
+ICF void GfxCmdList::SetDrawBase(u32 VertexBase, u32 Flags)
+{
+	const CBDraw& Current = Constants.Read<CBDraw>();
+	if (Current.draw_vertex_base != VertexBase || Current.draw_source_base != 0 || Current.draw_flags != Flags)
+	{
+		CBDraw& Draw = Constants.Write<CBDraw>();
+		Draw.draw_vertex_base = VertexBase;
+		Draw.draw_source_base = 0;
+		Draw.draw_flags = Flags;
+	}
+}
+
+static_assert(u32(EGeomSource::Static) - 1 == DRAW_SOURCE_STATIC && u32(EGeomSource::Skinned) - 1 == DRAW_SOURCE_SKINNED && u32(EGeomSource::Ring) - 1 == DRAW_SOURCE_RING);
+
+ICF bool GfxCmdList::SetPulledBase(u32 VertexBase)
+{
+	if (GeomSource == EGeomSource::Legacy)
+	{
+		return false;
+	}
+	SetDrawBase(VertexBase, (u32(GeomSource) - 1) | (GeomPage << DRAW_PAGE_SHIFT));
+	return true;
+}
+
 IC void GfxCmdList::Draw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 StartVertex)
 {
-	if (PrepareDraw(Topology, VertexCount, 1, false))
-	{
-		GRHI->Draw(VertexCount, StartVertex);
-	}
+	DrawInstanced(Topology, VertexCount, 1, StartVertex);
 }
 
 IC void GfxCmdList::DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 IndexCount, u32 StartIndex, u32 BaseVertex)
 {
-	if (PrepareDraw(Topology, IndexCount, 1, true))
-	{
-		GRHI->DrawIndexed(IndexCount, StartIndex, BaseVertex);
-	}
+	DrawIndexedInstanced(Topology, IndexCount, 1, StartIndex, BaseVertex, 0);
 }
 
-IC void GfxCmdList::DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 InstanceCount, u32 StartVertex)
+IC void GfxCmdList::DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance)
 {
+	const bool Pulled = SetPulledBase(StartVertex);
 	if (PrepareDraw(Topology, VertexCount, InstanceCount, false))
 	{
-		GRHI->DrawInstanced(VertexCount, InstanceCount, StartVertex, 0);
+		GRHI->DrawInstanced(VertexCount, InstanceCount, Pulled ? 0 : StartVertex, StartInstance);
 	}
 }
 
 IC void GfxCmdList::DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance)
 {
+	const bool Pulled = SetPulledBase(BaseVertex);
 	if (PrepareDraw(Topology, IndexCount, InstanceCount, true))
 	{
-		GRHI->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
+		GRHI->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, Pulled ? 0 : BaseVertex, StartInstance);
+	}
+}
+
+IC void GfxCmdList::DrawQuads(u32 Quads, u32 BaseVertex)
+{
+	VERIFY(GeomSource == EGeomSource::Ring);
+	SetDrawBase(BaseVertex, DRAW_SOURCE_RING | DRAW_QUADS);
+	if (PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6 * Quads, 1, false))
+	{
+		GRHI->DrawInstanced(6 * Quads, 1, 0, 0);
 	}
 }
 
@@ -80,6 +124,7 @@ IC void GfxCmdList::DrawNoInput(u32 VertexCount)
 	FlushStates();
 	Constants.Flush();
 	GRHI->DrawNoInputAssembly(VertexCount);
+	m_pInputLayout = nullptr;
 }
 
 IC void GfxCmdList::SetGeometry(SGeometry* _geom)
@@ -88,11 +133,26 @@ IC void GfxCmdList::SetGeometry(SGeometry* _geom)
 
 	SetVertices(_geom->vb, _geom->vb_stride);
 	SetIndices(_geom->ib);
+	GeomSource = _geom->Source;
+	GeomPage = _geom->Page;
 }
 
 IC void GfxCmdList::ApplyVertexLayout()
 {
 	VERIFY(decl);
+	if (decl && decl == PulledDecl._get())
+	{
+		if (!PulledLayout)
+		{
+			CreatePulledLayout();
+		}
+		if (m_pInputLayout != PulledLayout)
+		{
+			m_pInputLayout = PulledLayout;
+			GRHI->SetInputLayout(m_pInputLayout);
+		}
+		return;
+	}
 	if (!decl || !m_pInputSignature)
 		return;
 

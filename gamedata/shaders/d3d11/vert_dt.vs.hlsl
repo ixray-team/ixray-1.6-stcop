@@ -11,26 +11,27 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_static_color v)
+vf main(PULL_INPUT)
 {
     vf o;
+    PulledVertex V = PullVertex(VertexId);
 
-    float3 N = unpack_normal(v.Nh.xyz);
-    o.hpos = mul(m_WVP, v.P);
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w);
+    float3 N = V.N;
+    o.hpos = mul(m_WVP, float4(V.P, 1.0f));
+    o.tc0 = V.UV;
 
     o.tc1 = o.tc0 * dt_params.xy;
 
-    float3 L_rgb = unpack_D3DCOLOR(v.color).xyz;
-    float3 L_hemi = r1_v_hemi(N) * v.Nh.w;
-    float3 L_sun = r1_v_sun(N) * v.color.w;
+    float3 L_rgb = DecodeU8x4(V.X).xyz;
+    float3 L_hemi = r1_v_hemi(N) * DecodeU8x4(V.C).x;
+    float3 L_sun = r1_v_sun(N) * DecodeU8x4(V.C).y;
     float3 L_final = L_rgb + L_hemi + L_sun + L_ambient.xyz;
 
-    float2 dt = calc_detail(mul(m_W, v.P));
+    float2 dt = calc_detail(mul(m_W, float4(V.P, 1.0f)));
 
     o.c0 = float4(L_final.x, L_final.y, L_final.z, dt.x);
     o.c1 = dt.y;
-    o.fog = r1_fog(mul(m_W, v.P));
+    o.fog = r1_fog(mul(m_W, float4(V.P, 1.0f)));
 
     return o;
 }

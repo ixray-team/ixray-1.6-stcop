@@ -118,6 +118,7 @@
 #include "xr_path.h"
 #include "stack_string.h"
 #include "_static_thread.h"
+#include "Kernel/FrameProfiler.h"
 
 // stl ext
 struct XRCORE_API xr_rtoken

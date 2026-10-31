@@ -15,6 +15,58 @@
 #include "3DFluid/dx103DFluidVolume.h"
 
 #include "FHierrarhyVisual.h"
+#include "LegacyVertexElement.h"
+
+namespace
+{
+	template<class T>
+	T ReadAt(const u8* Source, u16 Offset)
+	{
+		T Value;
+		memcpy(&Value, Source + Offset, sizeof(T));
+		return Value;
+	}
+
+	Fvector UnpackColorVector(u32 Value)
+	{
+		return { float((Value >> 16) & 0xFF) / 127.5f - 1.0f, float((Value >> 8) & 0xFF) / 127.5f - 1.0f, float(Value & 0xFF) / 127.5f - 1.0f };
+	}
+
+	PackedVertex EncodeLevelVertex(const CRender::LevelVertexChunk& Chunk, const u8* Source)
+	{
+		PackedVertex Vertex = {};
+		Vertex.P = ReadAt<Fvector>(Source, Chunk.Position);
+		if (Chunk.Normal == CRender::LevelVertexChunk::Absent)
+		{
+			return Vertex;
+		}
+		const u32 N = ReadAt<u32>(Source, Chunk.Normal);
+		const u32 T = ReadAt<u32>(Source, Chunk.Tangent);
+		const u32 B = ReadAt<u32>(Source, Chunk.Binormal);
+		VertexPacking::EncodeFrame(Vertex, UnpackColorVector(N), UnpackColorVector(T), UnpackColorVector(B));
+		const u32 Hemi = N >> 24;
+		if (Chunk.Tex0Short4)
+		{
+			const auto UV = ReadAt<std::array<s16, 4>>(Source, Chunk.Tex0);
+			VertexPacking::EncodeUV(Vertex, UV[0] / 2048.0f, UV[1] / 2048.0f);
+			Vertex.C = color_rgba(Hemi, Hemi, 255, 0);
+			Vertex.X = u16(UV[2]);
+			return Vertex;
+		}
+		const auto UV = ReadAt<std::array<s16, 2>>(Source, Chunk.Tex0);
+		VertexPacking::EncodeUV(Vertex, (UV[0] + float(T >> 24) / 255.0f) / 1024.0f, (UV[1] + float(B >> 24) / 255.0f) / 1024.0f);
+		if (Chunk.Color != CRender::LevelVertexChunk::Absent)
+		{
+			const u32 Color = ReadAt<u32>(Source, Chunk.Color);
+			Vertex.C = color_rgba(Hemi, Color >> 24, 255, 0);
+			Vertex.X = Color & 0x00FFFFFFu;
+			return Vertex;
+		}
+		Vertex.C = color_rgba(Hemi, 0, 255, 0);
+		Vertex.X = Chunk.Tex1 != CRender::LevelVertexChunk::Absent ? ReadAt<u32>(Source, Chunk.Tex1) : 0;
+		return Vertex;
+	}
+}
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -119,12 +171,35 @@ void CRender::level_Load(IReader* fs)
 			}
 		}
 
+		u64 TotalVertices = 0;
+		u64 TotalIndices = 0;
+		for (u32 Alternative = 0; Alternative < 2; ++Alternative)
+		{
+			for (const LevelVertexChunk& Chunk : LevelVertices[Alternative])
+			{
+				TotalVertices += Chunk.Count;
+			}
+			for (const xr_vector<u16>& Chunk : LevelIndices[Alternative])
+			{
+				TotalIndices += Chunk.size();
+			}
+		}
+		Geometry.Reserve(u32(std::min<u64>(TotalVertices, u32(-1))), u32(std::min<u64>(TotalIndices, u32(-1))));
+
 		// Visuals
 		g_pGamePersistent->SetLoadStageTitle("st_loading_spatial_db");
 		g_pGamePersistent->LoadTitle();
 		chunk						= fs->open_chunk(fsL_VISUALS);
 		LoadVisuals					(chunk);
 		chunk->close				();
+
+		for (u32 Alternative = 0; Alternative < 2; ++Alternative)
+		{
+			LevelVertices[Alternative] = {};
+			LevelIndices[Alternative] = {};
+		}
+		LevelScratch = {};
+		Geometry.Reserve(0, 0);
 
 		// Details
 		g_pGamePersistent->SetLoadStageTitle("st_loading_details");
@@ -337,14 +412,7 @@ void CRender::level_Unload()
 	SWIs.clear				();
 
 	//*** VB/IB
-	for (I=0; I<nVB.size(); I++)	_RELEASE(nVB[I]);
-	for (I=0; I<xVB.size(); I++)	_RELEASE(xVB[I]);
-	nVB.clear(); xVB.clear();
-	for (I=0; I<nIB.size(); I++)	_RELEASE(nIB[I]);
-	for (I=0; I<xIB.size(); I++)	_RELEASE(xIB[I]);
-	nIB.clear(); xIB.clear();
-	nDC.clear(); xDC.clear();
-	nVBBase.clear(); xVBBase.clear(); nIBBase.clear(); xIBBase.clear();
+	Geometry.Trim();
 
 	//*** Components
 	xr_delete(L_Projector);
@@ -364,57 +432,90 @@ void CRender::level_Unload()
 
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<VertexDeclarator> &_DC	= _alternative?xDC:nDC;
-	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xVB:nVB;
-	
-	// Vertex buffers
-	u32 count = fs.r_u32();
-	_DC.resize(count);
-	_VB.resize(count);
+	using XRay::Legacy::LEGACYVERTEXELEMENT9;
+	xr_vector<LevelVertexChunk>& Chunks = LevelVertices[_alternative];
+	Chunks.resize(fs.r_u32());
+	for (LevelVertexChunk& Chunk : Chunks)
+	{
+		LEGACYVERTEXELEMENT9 Decl[XRay::Legacy::LEGACYMAXDECLLENGTH + 1];
+		fs.r(Decl, sizeof(Decl));
+		const u32 Length = u32(XRay::Legacy::GetDeclLength(Decl));
+		fs.advance(int((Length + 1) * sizeof(LEGACYVERTEXELEMENT9)) - int(sizeof(Decl)));
+		for (u32 Index = 0; Index < Length; ++Index)
+		{
+			const LEGACYVERTEXELEMENT9& Element = Decl[Index];
+			const auto Expect = [&Element](u8 Type)
+			{
+				if (Element.Type != Type)
+				{
+					FATAL(make_string<const char*>("Level geometry: element usage %u index %u has unsupported type %u", Element.Usage, Element.UsageIndex, Element.Type));
+				}
+				return Element.Offset;
+			};
+			switch (Element.Usage)
+			{
+			case D3DDECLUSAGE_POSITION: Chunk.Position = Expect(D3DDECLTYPE_FLOAT3); break;
+			case D3DDECLUSAGE_NORMAL: Chunk.Normal = Expect(D3DDECLTYPE_D3DCOLOR); break;
+			case D3DDECLUSAGE_TANGENT: Chunk.Tangent = Expect(D3DDECLTYPE_D3DCOLOR); break;
+			case D3DDECLUSAGE_BINORMAL: Chunk.Binormal = Expect(D3DDECLTYPE_D3DCOLOR); break;
+			case D3DDECLUSAGE_COLOR: Chunk.Color = Expect(D3DDECLTYPE_D3DCOLOR); break;
+			case D3DDECLUSAGE_TEXCOORD:
+				if (Element.UsageIndex == 0)
+				{
+					Chunk.Tex0Short4 = Element.Type == D3DDECLTYPE_SHORT4;
+					Chunk.Tex0 = Chunk.Tex0Short4 ? Element.Offset : Expect(D3DDECLTYPE_SHORT2);
+				}
+				else if (Element.UsageIndex == 1)
+				{
+					Chunk.Tex1 = Expect(D3DDECLTYPE_SHORT2);
+				}
+				break;
+			}
+		}
+		const bool Shaded = Chunk.Normal != LevelVertexChunk::Absent;
+		if (Chunk.Position == LevelVertexChunk::Absent || (Shaded && (Chunk.Tangent == LevelVertexChunk::Absent || Chunk.Binormal == LevelVertexChunk::Absent || Chunk.Tex0 == LevelVertexChunk::Absent)))
+		{
+			FATAL(make_string<const char*>("Level geometry: vertex declaration of %u elements has no POSITION or an incomplete normal frame", Length));
+		}
+		Chunk.Stride = u32(XRay::Legacy::ComputeVertexSize(Decl, 0));
+		Chunk.Count = fs.r_u32();
+		if (u64(Chunk.Count) * Chunk.Stride > u32(-1))
+		{
+			FATAL(make_string<const char*>("Level geometry: vertex buffer of %u vertices x %u bytes is too large", Chunk.Count, Chunk.Stride));
+		}
+		Chunk.Data.resize(size_t(Chunk.Count) * Chunk.Stride);
+		fs.r(Chunk.Data.data(), u32(Chunk.Data.size()));
+	}
+}
 
-	ReadVBChunk(_VB, _DC, count, fs, _alternative ? &xVBBase : &nVBBase);
+GeometryAlloc CRender::UploadLevelMesh(bool Alternative, u32 VertexBuffer, u32 VertexBase, u32 VertexCount, u32 IndexBuffer, u32 IndexBase, u32 IndexCount)
+{
+	const xr_vector<LevelVertexChunk>& VertexChunks = LevelVertices[Alternative];
+	const xr_vector<xr_vector<u16>>& IndexChunks = LevelIndices[Alternative];
+	if (VertexBuffer >= VertexChunks.size() || IndexBuffer >= IndexChunks.size() || u64(VertexBase) + VertexCount > VertexChunks[VertexBuffer].Count || u64(IndexBase) + IndexCount > IndexChunks[IndexBuffer].size())
+	{
+		FATAL(make_string<const char*>("Level geometry: visual references vertices %u+%u of buffer %u and indices %u+%u of buffer %u out of range", VertexBase, VertexCount, VertexBuffer, IndexBase, IndexCount, IndexBuffer));
+	}
+	const LevelVertexChunk& Chunk = VertexChunks[VertexBuffer];
+	LevelScratch.resize(VertexCount);
+	for (u32 Index = 0; Index < VertexCount; ++Index)
+	{
+		LevelScratch[Index] = EncodeLevelVertex(Chunk, Chunk.Data.data() + size_t(VertexBase + Index) * Chunk.Stride);
+	}
+	const GeometryAlloc Block = Geometry.Alloc(VertexCount, IndexCount);
+	Geometry.Upload(Block, 0, LevelScratch.data(), VertexCount);
+	Geometry.UploadIndices(Block, 0, IndexChunks[IndexBuffer].data() + IndexBase, IndexCount);
+	return Block;
 }
 
 void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<IRHIBuffer*>& _IB	= _alternative?xIB:nIB;
-	xr_vector<u32>& _Base		= _alternative?xIBBase:nIBBase;
-
-	// Index buffers
-	u32 count = fs.r_u32();
-	_IB.resize(count);
-	_Base.resize(count);
-
-	const intptr_t Start = fs.tell();
-	xr_vector<u32> PoolIndices, PoolOf(count);
-	for (u32 i=0; i<count; i++)
+	xr_vector<xr_vector<u16>>& Chunks = LevelIndices[_alternative];
+	Chunks.resize(fs.r_u32());
+	for (xr_vector<u16>& Chunk : Chunks)
 	{
-		u32 iCount = fs.r_u32();
-		fs.advance(intptr_t(iCount)*2);
-		if (PoolIndices.empty() || u64(PoolIndices.back()) + iCount > (64ull << 20))
-			PoolIndices.push_back(0);
-		PoolOf[i] = u32(PoolIndices.size()) - 1;
-		_Base[i] = PoolIndices.back();
-		PoolIndices.back() += iCount;
-	}
-	fs.advance(Start - fs.tell());
-
-	u32 i = 0;
-	for (u32 p = 0; p < PoolIndices.size(); p++)
-	{
-		xr_vector<u16> Data(PoolIndices[p]);
-		const u32 First = i;
-		for (; i<count && PoolOf[i]==p; i++)
-		{
-			u32 iCount = fs.r_u32();
-			fs.r(Data.data() + _Base[i], iCount*2);
-		}
-		RHIUtils::CreateIndexBuffer(&_IB[First], Data.data(), PoolIndices[p]*2);
-		for (u32 j=First+1; j<i; j++)
-		{
-			_IB[j] = _IB[First];
-			_IB[j]->AddRef();
-		}
+		Chunk.resize(fs.r_u32());
+		fs.r(Chunk.data(), u32(Chunk.size() * sizeof(u16)));
 	}
 }
 

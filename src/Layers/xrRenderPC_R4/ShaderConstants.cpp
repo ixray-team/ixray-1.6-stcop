@@ -240,7 +240,7 @@ void CShaderConstants::ResetMaterial()
 void CShaderConstants::SetLOD(float LOD)
 {
 	const float Factor = clampr(ceil(LOD * LOD * LOD * LOD * LOD * 8.0f), 1.0f, 7.0f);
-	Write<CBDraw>().triLOD.set(Factor, Factor, Factor, Factor);
+	Write<CBDraw>().triLOD = Factor;
 }
 
 void CShaderConstants::UpdateScreen()

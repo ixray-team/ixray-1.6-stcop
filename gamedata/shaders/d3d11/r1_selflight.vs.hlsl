@@ -7,11 +7,12 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_selflight v)
+vf main(PULL_INPUT)
 {
     vf o;
-    o.hpos = mul(m_WVP, v.P);
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w);
-    o.fog = r1_fog(mul(m_W, v.P));
+    PulledVertex V = PullVertex(VertexId);
+    o.hpos = mul(m_WVP, float4(V.P, 1.0f));
+    o.tc0 = V.UV;
+    o.fog = r1_fog(mul(m_W, float4(V.P, 1.0f)));
     return o;
 }

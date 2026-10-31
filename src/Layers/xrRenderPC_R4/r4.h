@@ -25,6 +25,7 @@ class CGlowManager;
 #include "../../xrEngine/IRenderable.h"
 #include "../../xrEngine/Fmesh.h"
 #include "r4_editor_hiz.h"
+#include "PackedVertex.h"
 #include <atomic>
 
 class dxRender_Visual;
@@ -100,6 +101,7 @@ public:
 	CHOM														HOM;
 	R_occlusion													HWOCC;
 
+	GeometryHeap Geometry;
 	GfxCmdList Backend;
 	GfxCmdList& Imm() { return Backend; }
 
@@ -110,11 +112,24 @@ public:
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										Shaders;
-	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
-	xr_vector<VertexDeclarator>									nDC,xDC;
-	xr_vector<IRHIBuffer*>							nVB,xVB;
-	xr_vector<IRHIBuffer*>							nIB,xIB;
-	xr_vector<u32>									nVBBase,xVBBase,nIBBase,xIBBase;
+	struct LevelVertexChunk
+	{
+		static constexpr u16 Absent = 0xFFFF;
+		xr_vector<u8> Data;
+		u32 Count = 0;
+		u32 Stride = 0;
+		u16 Position = Absent;
+		u16 Normal = Absent;
+		u16 Tangent = Absent;
+		u16 Binormal = Absent;
+		u16 Color = Absent;
+		u16 Tex0 = Absent;
+		u16 Tex1 = Absent;
+		bool Tex0Short4 = false;
+	};
+	xr_vector<LevelVertexChunk>									LevelVertices[2];
+	xr_vector<xr_vector<u16>>									LevelIndices[2];
+	xr_vector<PackedVertex>										LevelScratch;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -206,11 +221,7 @@ public:
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud = false);
-	RHIInputElementDesc*			getVB_Format				(int id, size_t* Count, bool	_alt=false);
-	IRHIBuffer*			getVB						(int id, bool	_alt=false);
-	IRHIBuffer*			getIB						(int id, bool	_alt=false);
-	u32					getVB_Base					(int id, bool	_alt=false)	{ return (_alt?xVBBase:nVBBase)[id]; }
-	u32					getIB_Base					(int id, bool	_alt=false)	{ return (_alt?xIBBase:nIBBase)[id]; }
+	GeometryAlloc					UploadLevelMesh				(bool Alternative, u32 VertexBuffer, u32 VertexBase, u32 VertexCount, u32 IndexBuffer, u32 IndexBase, u32 IndexCount);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();
@@ -560,7 +571,6 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs, xr_vector<u32>* OutBase = nullptr);
 };
 
 extern RENDER_API CRender			RImplementation;

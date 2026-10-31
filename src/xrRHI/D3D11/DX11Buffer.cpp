@@ -32,6 +32,8 @@ u32 GetD3D11BindFlags(ERHI_BUFFER_TYPE bufferType)
 		return D3D11_BIND_CONSTANT_BUFFER;
 	case ERHI_BUFFER_TYPE::STRUCTURED:
 		return D3D11_BIND_SHADER_RESOURCE;
+	case ERHI_BUFFER_TYPE::STRUCTURED_RW:
+		return D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	}
 
 	return 0;
@@ -99,7 +101,7 @@ void CD3D11Buffer::Create(const RHIBufferDesc& desc /*= {}*/, const RHIBufferSub
 	d3d11desc.CPUAccessFlags = GetD3D11CPUAccess(static_cast<ERHI_CPU_ACCESS_FLAG>(m_bufferDesc.CPUAccessFlags));
 	d3d11desc.MiscFlags = 0;
 
-	if (m_bufferDesc.Type == ERHI_BUFFER_TYPE::STRUCTURED)
+	if (m_bufferDesc.Type == ERHI_BUFFER_TYPE::STRUCTURED || m_bufferDesc.Type == ERHI_BUFFER_TYPE::STRUCTURED_RW)
 	{
 		d3d11desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 		d3d11desc.StructureByteStride = m_bufferDesc.StructureByteStride;
@@ -144,16 +146,25 @@ void CD3D11Buffer::Unmap()
 	pImmediateContext->Unmap(m_pBuffer, 0);
 }
 
-void CD3D11Buffer::UpdateSubresource(void* pData, u32 Size)
+void CD3D11Buffer::UpdateSubresource(const void* Data, u32 Size, u32 Offset)
 {
 	ID3D11DeviceContext* pImmediateContext = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
 	R_ASSERT(pImmediateContext);
+	R_ASSERT(Data && Size <= m_bufferDesc.Size && Offset <= m_bufferDesc.Size - Size);
 
+	if (m_bufferDesc.Usage != ERHI_USAGE::USAGE_DYNAMIC)
+	{
+		const D3D11_BOX Box = { Offset, 0, 0, Offset + Size, 1, 1 };
+		pImmediateContext->UpdateSubresource(m_pBuffer, 0, &Box, Data, 0, 0);
+		return;
+	}
+
+	VERIFY(Offset == 0);
 	D3D11_MAPPED_SUBRESOURCE mapped;
 	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 	R_ASSERT(SUCCEEDED(hr));
 
-	memcpy(mapped.pData, pData, Size);
+	memcpy(mapped.pData, Data, Size);
 
 	pImmediateContext->Unmap(m_pBuffer, 0);
 }

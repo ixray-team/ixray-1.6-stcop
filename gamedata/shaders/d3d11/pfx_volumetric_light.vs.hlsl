@@ -7,11 +7,11 @@ struct VSOutput
 };
 
 
-VSOutput main(in float3 vertices : POSITION)
+VSOutput main(PULL_INPUT)
 {
     VSOutput O;
 
-    O.hpos = mul(m_WVP, float4(vertices, 1.0));
+    O.hpos = mul(m_WVP, float4(PullVertex(VertexId).P, 1.0));
     O.hpos2d = O.hpos; //No transformation
 
     return O;

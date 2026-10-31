@@ -1,15 +1,24 @@
 #include "Device.h"
 
 DX12Buffer::DX12Buffer(InternalDevice12& device, const RHIBufferDesc& desc, const RHIBufferSubresource* data) :
-    _device(device), _desc(desc), _data(desc.Size)
+    _device(device), _desc(desc), _data(desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && desc.Type != ERHI_BUFFER_TYPE::STRUCTURED ? desc.Size : 0)
 {
     R_ASSERT(desc.Size);
     {
         InternalDevice12::ContextLock guard(_device);
         _device._buffers.push_back(this);
-        if (desc.Usage != ERHI_USAGE::USAGE_DYNAMIC || desc.Type == ERHI_BUFFER_TYPE::STRUCTURED)
+        if (IsStream())
         {
-            _resource.Native = device.CreateNativeBuffer(desc.Size, D3D12_HEAP_TYPE_DEFAULT);
+            _resource.UniformState = D3D12_RESOURCE_STATE_GENERIC_READ;
+            if (!data || !data->pSysMem)
+            {
+                DiscardStream();
+            }
+        }
+        else
+        {
+            _resource.Native = device.CreateNativeBuffer(desc.Size, D3D12_HEAP_TYPE_DEFAULT,
+                desc.Type == ERHI_BUFFER_TYPE::STRUCTURED_RW ? D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS : D3D12_RESOURCE_FLAG_NONE);
             _resource.States.assign(1, D3D12_RESOURCE_STATE_COMMON);
             _nativeAddress = _resource.Native->GetGPUVirtualAddress();
         }
@@ -17,7 +26,7 @@ DX12Buffer::DX12Buffer(InternalDevice12& device, const RHIBufferDesc& desc, cons
     if (data && data->pSysMem)
     {
         R_ASSERT(!data->SysMemSize || data->SysMemSize >= desc.Size);
-        UpdateSubresource(const_cast<void*>(data->pSysMem), desc.Size);
+        UpdateSubresource(data->pSysMem, desc.Size);
     }
 }
 
@@ -75,6 +84,7 @@ bool DX12Buffer::Map(ERHI_BUFFER_MAP type, u32 flags, RHIMappedSubresource* out_
         void* mapped = nullptr;
         D3D12_RANGE range = { 0, _desc.Size };
         R_CHK(readback->Map(0, &range, &mapped));
+        _data.resize(_desc.Size);
         memcpy(_data.data(), mapped, _desc.Size);
         D3D12_RANGE written = {};
         readback->Unmap(0, &written);
@@ -84,7 +94,6 @@ bool DX12Buffer::Map(ERHI_BUFFER_MAP type, u32 flags, RHIMappedSubresource* out_
         *out_data = { _data.data(), _desc.Size, _desc.Size };
         return true;
     }
-    const bool stream = _desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED;
     u8* mapped = nullptr;
     bool copyShadow = false;
     {
@@ -92,23 +101,20 @@ bool DX12Buffer::Map(ERHI_BUFFER_MAP type, u32 flags, RHIMappedSubresource* out_
         R_ASSERT(!_isMapped);
         _mapType = type;
         _isMapped = true;
-        if (!stream)
+        if (!IsStream())
         {
+            _data.resize(_desc.Size);
             mapped = _data.data();
-        }
-        else if (type == ERHI_BUFFER_MAP::WRITE_NO_OVERWRITE && _upload.Owned)
-        {
-            mapped = _upload.Data;
         }
         else
         {
-            DiscardStream();
             if (type != ERHI_BUFFER_MAP::WRITE_NO_OVERWRITE)
             {
+                DiscardStream();
                 _device._counters.Discards.fetch_add(1, std::memory_order_relaxed);
+                copyShadow = type != ERHI_BUFFER_MAP::WRITE_DISCARD && !_data.empty();
             }
             mapped = _upload.Data;
-            copyShadow = type != ERHI_BUFFER_MAP::WRITE_DISCARD;
         }
     }
     if (copyShadow)
@@ -125,55 +131,50 @@ void DX12Buffer::Unmap()
     InternalDevice12::ContextLock guard(_device);
     R_ASSERT(_isMapped);
     _isMapped = false;
-    if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED &&
-        _mapType != ERHI_BUFFER_MAP::READ && _mapType != ERHI_BUFFER_MAP::READ_AND_WRITE)
-    {
-        return;
-    }
-    if (_mapType != ERHI_BUFFER_MAP::READ)
+    if (!IsStream() && _mapType != ERHI_BUFFER_MAP::READ)
     {
         UpdateSubresource(_data.data(), _desc.Size);
     }
 }
 
-void DX12Buffer::UpdateSubresource(void* data, u32 size)
+void DX12Buffer::UpdateSubresource(const void* data, u32 size, u32 offset)
 {
-    R_ASSERT(data && size <= _desc.Size);
-    if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED)
+    R_ASSERT(data && size <= _desc.Size && offset <= _desc.Size - size);
+    if (IsStream())
     {
+        VERIFY(!offset);
         u8* destination = nullptr;
         {
             InternalDevice12::ContextLock guard(_device);
             R_ASSERT(!_isMapped);
-            if (!_upload.Owned || _mapType != ERHI_BUFFER_MAP::WRITE_NO_OVERWRITE)
-            {
-                DiscardStream();
-                _device._counters.Discards.fetch_add(1, std::memory_order_relaxed);
-            }
+            DiscardStream();
+            _device._counters.Discards.fetch_add(1, std::memory_order_relaxed);
             destination = _upload.Data;
-            if (data != _data.data())
+            if (!_data.empty() && data != _data.data())
             {
                 memcpy(_data.data(), data, size);
             }
         }
-        memcpy(destination, _data.data(), _desc.Size);
-        _device._counters.CopiedBytes.fetch_add(_desc.Size, std::memory_order_relaxed);
+        const u32 copied = _data.empty() ? size : _desc.Size;
+        memcpy(destination, _data.empty() ? data : _data.data(), copied);
+        _device._counters.CopiedBytes.fetch_add(copied, std::memory_order_relaxed);
         return;
     }
-    DX12Upload upload = _device.AllocateUpload(size);
+    DX12Upload upload = size >= InternalDevice12::UploadChunkSize ? _device.CreateUpload(size) : _device.AllocateUpload(size);
     memcpy(upload.Data, data, size);
     _device._counters.CopiedBytes.fetch_add(size, std::memory_order_relaxed);
     {
         InternalDevice12::ContextLock guard(_device);
         R_ASSERT(!_isMapped);
-        if (data != _data.data())
+        if (!_data.empty() && data != _data.data())
         {
-            memcpy(_data.data(), data, size);
+            memcpy(_data.data() + offset, data, size);
         }
     }
     InternalDevice12::PendingCopy copy;
     copy.Buffer = this;
     copy.Source = upload;
+    copy.DestOffset = offset;
     copy.CopySize = size;
     _device.EnqueueCopy(std::move(copy));
 }
@@ -185,21 +186,11 @@ D3D12_GPU_VIRTUAL_ADDRESS DX12Buffer::GetAddress()
         return _nativeAddress;
     }
     InternalDevice12::ContextLock guard(_device);
-    if (_desc.Usage == ERHI_USAGE::USAGE_DYNAMIC && _desc.Type != ERHI_BUFFER_TYPE::STRUCTURED)
+    if (!_published)
     {
-        if (!_upload.Owned)
-        {
-            DiscardStream();
-            memcpy(_upload.Data, _data.data(), _desc.Size);
-            _device._counters.CopiedBytes.fetch_add(_desc.Size, std::memory_order_relaxed);
-        }
-        if (!_published)
-        {
-            _published = _upload.Resource->GetGPUVirtualAddress();
-        }
-        return _published;
+        _published = _upload.Resource->GetGPUVirtualAddress();
     }
-    return _resource.Native->GetGPUVirtualAddress();
+    return _published;
 }
 
 void DX12Buffer::DiscardStream()
@@ -210,6 +201,14 @@ void DX12Buffer::DiscardStream()
     }
     _upload = _device.AcquireStream(_desc.Size);
     _published = 0;
+    for (auto view : _views)
+    {
+        _device.WriteBufferView(view->View);
+    }
+    if (!_views.empty())
+    {
+        _device.MarkViewsDirty();
+    }
 }
 
 void DX12Buffer::SetVertexBuffer(u32 slot, u32 stride, u32 offset)
@@ -383,12 +382,21 @@ DX12ShaderResourceView::DX12ShaderResourceView(InternalDevice12& device, const D
     InternalDevice12::ContextLock guard(_device);
     RetainView(View);
     _device.RegisterImage(this);
+    if (View.Buffer && View.Buffer->IsStream())
+    {
+        View.Buffer->_views.push_back(this);
+    }
 }
 
 DX12ShaderResourceView::~DX12ShaderResourceView()
 {
     InternalDevice12::ContextLock guard(_device);
     _device.UnregisterImage(this);
+    if (View.Buffer)
+    {
+        auto& views = View.Buffer->_views;
+        views.erase(std::remove(views.begin(), views.end(), this), views.end());
+    }
     ReleaseView(_device, View);
 }
 

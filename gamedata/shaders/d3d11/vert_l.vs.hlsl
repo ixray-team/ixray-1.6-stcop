@@ -7,17 +7,18 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_static_color v)
+vf main(PULL_INPUT)
 {
     vf o;
+    PulledVertex V = PullVertex(VertexId);
 
-    float3 N = unpack_normal(v.Nh.xyz);
-    float3 L_rgb = unpack_D3DCOLOR(v.color).xyz;
-    float3 L_hemi = r1_v_hemi(N) * v.Nh.w;
-    float L_sun = v.color.w;
+    float3 N = V.N;
+    float3 L_rgb = DecodeU8x4(V.X).xyz;
+    float3 L_hemi = r1_v_hemi(N) * DecodeU8x4(V.C).x;
+    float L_sun = DecodeU8x4(V.C).y;
     float3 L_final = L_rgb + L_hemi + L_ambient.xyz;
 
-    o.hpos = mul(m_WVP, v.P);
+    o.hpos = mul(m_WVP, float4(V.P, 1.0f));
     o.c0 = float4(L_final.x, L_final.y, L_final.z, L_sun);
     return o;
 }

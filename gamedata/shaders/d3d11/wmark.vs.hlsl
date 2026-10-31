@@ -9,6 +9,7 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
+#ifdef EDITOR_MODE
 vf main(v_static v)
 {
     vf o;
@@ -23,4 +24,20 @@ vf main(v_static v)
 
     return o;
 }
+#else
+vf main(PULL_INPUT)
+{
+    vf o;
+    PulledVertex V = PullVertex(VertexId);
+
+    float4 P = wmark_shift(V.P, V.N);
+    o.hpos = mul(m_VP, P);
+    o.tc0 = V.UV;
+    o.c0 = 0;
+    o.fog = 1.0f - calc_fogging(V.P);
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
+
+    return o;
+}
+#endif
 

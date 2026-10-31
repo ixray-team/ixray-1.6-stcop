@@ -10,11 +10,11 @@ struct v2p
     float4 hpos : SV_POSITION;
 };
 
-v2p main(float3 P : POSITION)
+v2p main(PULL_INPUT)
 {
     v2p o;
     float4 vPos = 1.0f;
-    vPos.xyz = lerp(vMinBounds, vMaxBounds, P);
+    vPos.xyz = lerp(vMinBounds, vMaxBounds, PullVertex(VertexId).P);
 	
     o.hpos = mul(m_P, vPos);
 

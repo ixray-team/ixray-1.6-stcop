@@ -111,13 +111,24 @@ CBUFFER(CBSkin, 6)
 	float4 sbones_array_old[MAX_BONES_COUNT * 3];
 CBUFFER_END
 
+#define DRAW_SOURCE_STATIC 0u
+#define DRAW_SOURCE_SKINNED 1u
+#define DRAW_SOURCE_RING 2u
+#define DRAW_SOURCE_MASK 3u
+#define DRAW_PAGE_SHIFT 2u
+#define DRAW_PAGE_MASK 7u
+#define DRAW_QUADS 32u
+
 CBUFFER(CBDraw, 13)
 	float4 L_material;
 	float4 hemi_cube_pos_faces;
 	float4 hemi_cube_neg_faces;
 	float4 L_model_light_color;
 	float4 L_model_light_dir;
-	float4 triLOD;
+	float triLOD;
+	uint draw_vertex_base;
+	uint draw_source_base;
+	uint draw_flags;
 CBUFFER_END
 
 #endif

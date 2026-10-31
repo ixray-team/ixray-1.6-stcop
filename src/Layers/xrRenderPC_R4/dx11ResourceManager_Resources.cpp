@@ -756,7 +756,7 @@ SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t De
 	for (u32 it = 0; it < v_geoms.size(); it++)
 	{
 		SGeometry& G = *(v_geoms[it]);
-		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride))	return v_geoms[it];
+		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride) && (G.Source == EGeomSource::Legacy))	return v_geoms[it];
 	}
 
 	SGeometry* Geom = new SGeometry();
@@ -781,7 +781,7 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb
 	for (u32 it=0; it<v_geoms.size(); it++)
 	{
 		SGeometry& G	= *(v_geoms[it]);
-		if ((G.dcl==dcl) && (G.vb==vb) && (G.ib==ib) && (G.vb_stride==vb_stride))	return v_geoms[it];
+		if ((G.dcl==dcl) && (G.vb==vb) && (G.ib==ib) && (G.vb_stride==vb_stride) && (G.Source==EGeomSource::Legacy))	return v_geoms[it];
 	}
 
 	SGeometry *Geom		=	new SGeometry	();
@@ -801,6 +801,33 @@ SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IRHIBuffer* vb, IRHIBuffer* i
 	SGeometry* g = CreateGeom(dcl.data(), vb, ib);
 
 	return	g;
+}
+
+SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page)
+{
+	VERIFY(Source != EGeomSource::Legacy);
+	VERIFY(Source == EGeomSource::Ring || Page < RImplementation.Geometry.PageCount());
+	xrCriticalSectionGuard guard(creationGuard);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	IRHIBuffer* Indices = Source == EGeomSource::Ring ? nullptr : RImplementation.Geometry.IndexBuffer(Page);
+	for (SGeometry* G : v_geoms)
+	{
+		if (G->Source == Source && G->Page == Page && G->vb == Cmd.IotaVB && G->ib == Indices)
+		{
+			return G;
+		}
+	}
+
+	SGeometry* Geom = new SGeometry();
+	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	Geom->dcl = Cmd.PulledDecl;
+	Geom->vb = Cmd.IotaVB;
+	Geom->vb_stride = sizeof(u32);
+	Geom->ib = Indices;
+	Geom->Source = Source;
+	Geom->Page = u8(Page);
+	v_geoms.push_back(Geom);
+	return Geom;
 }
 
 void CResourceManager::DeleteGeom(const SGeometry* Geom)
