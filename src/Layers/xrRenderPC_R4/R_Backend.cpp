@@ -7,7 +7,7 @@ void GfxCmdList::OnDeviceCreate	()
 {
 	EditorMode			= Device.IsEditorMode();
 
-	xr_vector<u32> Iota(65536);
+	xr_vector<u32> Iota(IotaSize);
 	std::iota(Iota.begin(), Iota.end(), 0u);
 	RHIUtils::CreateVertexBuffer(&IotaVB, Iota.data(), u32(Iota.size() * sizeof(u32)));
 	const RHIInputElementDesc DrawId = { "DRAWID", 0, ERHI_FORMAT::R32_UINT, 0, 0, ERHI_INPUT_CLASSIFICATION::INSTANCE_DATA, 1 };

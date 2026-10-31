@@ -92,7 +92,7 @@ void CEditorInstanceBatcher::End()
 	Instances.clear();
 }
 
-void CEditorInstanceBatcher::Add(ref_shader& S, ref_geom& Geom, u32 VertexCount, const Fmatrix& World)
+void CEditorInstanceBatcher::Add(ref_shader& S, ref_geom& Geom, u32 VertexBase, u32 VertexCount, const Fmatrix& World)
 {
 	VERIFY(Active);
 
@@ -101,24 +101,14 @@ void CEditorInstanceBatcher::Add(ref_shader& S, ref_geom& Geom, u32 VertexCount,
 	Inst.Rows[1].set(World._12, World._22, World._32, World._42);
 	Inst.Rows[2].set(World._13, World._23, World._33, World._43);
 
-	Items.push_back({ &*S, &*Geom, VertexCount, u32(Instances.size() - 1) });
+	Items.push_back({ &*S, &*Geom, VertexBase, VertexCount, u32(Instances.size() - 1) });
 }
 
 void CEditorInstanceBatcher::Flush(GfxCmdList& Cmd)
 {
 	std::sort(Items.begin(), Items.end(), [](const SItem& A, const SItem& B)
 	{
-		if (A.ShaderPtr != B.ShaderPtr)
-		{
-			return A.ShaderPtr < B.ShaderPtr;
-		}
-
-		if (A.GeomPtr != B.GeomPtr)
-		{
-			return A.GeomPtr < B.GeomPtr;
-		}
-
-		return A.VertexCount < B.VertexCount;
+		return std::tie(A.ShaderPtr, A.GeomPtr, A.VertexBase) < std::tie(B.ShaderPtr, B.GeomPtr, B.VertexBase);
 	});
 
 	Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
@@ -151,7 +141,7 @@ void CEditorInstanceBatcher::Flush(GfxCmdList& Cmd)
 			while (RunEnd < ChunkEnd
 				&& Items[RunEnd].ShaderPtr == First.ShaderPtr
 				&& Items[RunEnd].GeomPtr == First.GeomPtr
-				&& Items[RunEnd].VertexCount == First.VertexCount)
+				&& Items[RunEnd].VertexBase == First.VertexBase)
 			{
 				++RunEnd;
 			}
@@ -176,6 +166,6 @@ void CEditorInstanceBatcher::DrawRun(GfxCmdList& Cmd, const SItem& First, u32 Of
 		EDevice->SetRS(D3DRS_FILLMODE, GEditorDraw.FillMode);
 
 		Cmd.SetGeometry(First.GeomPtr);
-		Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, First.VertexCount, Count, 0);
+		Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, First.VertexCount, Count, First.VertexBase);
 	}
 }

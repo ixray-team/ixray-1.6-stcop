@@ -1,5 +1,6 @@
 #pragma once
 #include <bit>
+#include "RenderAPI.h"
 #include "FVF.h"
 
 struct PackedVertex
@@ -15,11 +16,13 @@ static_assert(sizeof(PackedVertex) == 32);
 
 namespace VertexPacking
 {
-	u32 EncodeOct(const Fvector& N);
+	RENDER_API u32 EncodeOct(const Fvector& N);
 	// Unnormalized, bit-exact with the shader's DecodeOctRaw: the tangent basis branches on it.
-	Fvector DecodeOct(u32 Value);
-	void EncodeFrame(PackedVertex& Vertex, Fvector N, const Fvector& T, const Fvector& B);
-	bool UVRecenter(const Fvector2* UV, u32 Count, Fvector2& Offset);
+	RENDER_API Fvector DecodeOct(u32 Value);
+	RENDER_API void EncodeFrame(PackedVertex& Vertex, Fvector N, const Fvector& T, const Fvector& B);
+	RENDER_API bool UVRecenter(const Fvector2* UV, u32 Count, Fvector2& Offset);
+	RENDER_API Fvector2 FitUV(const Fvector2* UV, u32 Count, const char* Name);
+	RENDER_API void GenerateTangents(const Fvector* Positions, const Fvector2* UV, u32 VertexCount, const u16* Indices, u32 IndexCount, Fvector* Tangents, Fvector* Binormals);
 
 	inline void EncodeUV(PackedVertex& Vertex, float U, float V)
 	{
@@ -28,6 +31,12 @@ namespace VertexPacking
 		const u32 QV = u32(std::lrint(std::max(-8388608.0f, std::min(V * 262144.0f, 8388607.0f))));
 		Vertex.TF = (Vertex.TF & 0xFFFFu) | ((QU & 0xFFu) << 16) | ((QV & 0xFFu) << 24);
 		Vertex.UV = ((QU >> 8) & 0xFFFFu) | (QV >> 8 << 16);
+	}
+
+	inline void EncodeFitUV(PackedVertex& Vertex, const Fvector2& UV, const Fvector2& Offset)
+	{
+		constexpr float Limit = 32.0f - 1.0f / 262144.0f;
+		EncodeUV(Vertex, std::clamp(UV.x + Offset.x, -32.0f, Limit), std::clamp(UV.y + Offset.y, -32.0f, Limit));
 	}
 
 	inline u32 EncodeColor(float X, float Y, float Z, float W)

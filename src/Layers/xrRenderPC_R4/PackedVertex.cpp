@@ -88,4 +88,49 @@ namespace VertexPacking
 		const bool FitsU = AxisOffset(Min.x, Max.x, Offset.x);
 		return AxisOffset(Min.y, Max.y, Offset.y) && FitsU;
 	}
+
+	Fvector2 FitUV(const Fvector2* UV, u32 Count, const char* Name)
+	{
+		Fvector2 Offset;
+		if (!UVRecenter(UV, Count, Offset) && Name)
+		{
+			Msg("! %s: uv span exceeds the [-32, 32) vertex range, uv clamped", Name);
+		}
+		else if (Name && (Offset.x != 0.0f || Offset.y != 0.0f))
+		{
+			Msg("* %s: uv recentred by (%g, %g)", Name, Offset.x, Offset.y);
+		}
+		return Offset;
+	}
+
+	void GenerateTangents(const Fvector* Positions, const Fvector2* UV, u32 VertexCount, const u16* Indices, u32 IndexCount, Fvector* Tangents, Fvector* Binormals)
+	{
+		std::fill_n(Tangents, VertexCount, Fvector{ 0.0f, 0.0f, 0.0f });
+		std::fill_n(Binormals, VertexCount, Fvector{ 0.0f, 0.0f, 0.0f });
+		for (u32 Index = 0; Index + 2 < IndexCount; Index += 3)
+		{
+			const u32 A = Indices[Index], B = Indices[Index + 1], C = Indices[Index + 2];
+			if (A >= VertexCount || B >= VertexCount || C >= VertexCount)
+			{
+				continue;
+			}
+			const Fvector E1 = Fvector().sub(Positions[B], Positions[A]);
+			const Fvector E2 = Fvector().sub(Positions[C], Positions[A]);
+			const Fvector2 D1 = { UV[B].x - UV[A].x, UV[B].y - UV[A].y };
+			const Fvector2 D2 = { UV[C].x - UV[A].x, UV[C].y - UV[A].y };
+			const float Det = D1.x * D2.y - D2.x * D1.y;
+			if (std::abs(Det) < 1e-12f)
+			{
+				continue;
+			}
+			const float R = 1.0f / Det;
+			const Fvector T = Fvector().mad(Fvector().mul(E1, D2.y * R), E2, -D1.y * R);
+			const Fvector Bt = Fvector().mad(Fvector().mul(E2, D1.x * R), E1, -D2.x * R);
+			for (const u32 Vertex : { A, B, C })
+			{
+				Tangents[Vertex].add(T);
+				Binormals[Vertex].add(Bt);
+			}
+		}
+	}
 }

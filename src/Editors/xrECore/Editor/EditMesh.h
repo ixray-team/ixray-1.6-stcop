@@ -193,10 +193,8 @@ struct SDeclaration;
 
 #if 1
 	struct ECORE_API st_RenderBuffer{
-		u32			dwStartVertex;
-		u32			dwNumVertex;
-		ref_geom 	pGeom;
-		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(nullptr){;}
+		GeometryAlloc	Alloc{};
+		ref_geom 		pGeom;
 	};
 	using RBVector = xr_vector<st_RenderBuffer>;
 	using RBVecIt = RBVector::iterator;
@@ -226,7 +224,7 @@ class ECORE_API CEditableMesh
 public:
 	static 			bool m_bDraftMeshMode;
 
-	void 			GenerateRenderBuffers();
+	void 			GenerateRenderBuffers(bool Quiet = false);
 	void 			UnloadRenderBuffers();
 	void 			GenerateFNormals	();
 	void 			GenerateVNormals	(const Fmatrix* parent_xform, bool force = false);
@@ -284,7 +282,7 @@ public:
 
 	EditColorMesh m_color_map;
 
-	void 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& data);
+	u32 			FillRenderBuffer		(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, PackedVertex* Vertices, Fvector2* UV, bool Quiet);
 
 	void 			RecurseTri				(int id);
 

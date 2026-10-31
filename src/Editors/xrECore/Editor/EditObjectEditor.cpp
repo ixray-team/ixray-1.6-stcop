@@ -31,17 +31,6 @@ static Fvector LOD_pos[4] =
 	{-1.0f + offs_x,-1.0f + offs_y, 0.0f}
 };
 
-static FVF::LIT LOD[6] =
-{
-	{{-1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 0
-	{{ 1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 1
-	{{ 1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 2
-
-	{{-1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 0
-	{{ 1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 2
-	{{-1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 3
-};
-
 bool CEditableObject::Reload()
 {
 	ClearGeometry();
@@ -375,6 +364,11 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 
 void CEditableObject::RenderLOD(const Fmatrix& parent)
 {
+	if (!m_LODShader)
+	{
+		return;
+	}
+
 	Fvector C;
 	C.sub(parent.c, EContext.UI->CurrentView().m_Camera.GetPosition());
 	C.y = 0;
@@ -408,19 +402,22 @@ void CEditableObject::RenderLOD(const Fmatrix& parent)
 
 	Fvector p[4];
 	Fvector2 t[4];
-	GetLODFrame(max_frame, p, t);
+	GetLODFrame(max_frame, p, t, &parent);
 
-	LOD[0].p.set(p[0]); LOD[0].t.set(t[0]); LOD[0].color = 0xFFFFFFFF;
-	LOD[1].p.set(p[1]); LOD[1].t.set(t[1]); LOD[1].color = 0xFFFFFFFF;
-	LOD[2].p.set(p[2]); LOD[2].t.set(t[2]); LOD[2].color = 0xFFFFFFFF;
+	// Imposter record (facets at vBase + 1, best = next = 0, alpha = blend = 255), then 4 world-space facet corners for lod.vs
+	VertexRing& Stream = RImplementation.Imm().Vertex;
+	u32 vBase;
+	PackedVertex* V = (PackedVertex*)Stream.Lock(5, EVertexFormat::Packed, vBase);
+	V[0] = { {}, vBase + 1, 255u << 8 | 255u << 16, 0, 0, 0 };
+	for (u32 i = 0; i < 4; ++i)
+	{
+		V[i + 1] = { p[i], 0, 0, 0, 0xFFFFFFFF, 255 };
+		VertexPacking::EncodeUV(V[i + 1], t[i].x, t[i].y);
+	}
+	Stream.Unlock(5);
 
-	LOD[3].p.set(p[0]); LOD[3].t.set(t[0]); LOD[3].color = 0xFFFFFFFF;
-	LOD[4].p.set(p[2]); LOD[4].t.set(t[2]); LOD[4].color = 0xFFFFFFFF;
-	LOD[5].p.set(p[3]); LOD[5].t.set(t[3]); LOD[5].color = 0xFFFFFFFF;
-
-	RImplementation.Imm().SetObjectTransform(parent);
-	EDevice->SetShader(m_LODShader ? m_LODShader : GEditorDraw.WireShader);
-	DU_impl.DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 2, LOD, 6, true, false);
+	EDevice->SetShader(m_LODShader);
+	EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, DU_impl.RingGeom, vBase, 2);
 }
 
 xr_string CEditableObject::GetLODTextureName()
@@ -470,20 +467,20 @@ void CEditableObject::DefferedLoadRP()
 }
 void CEditableObject::DefferedUnloadRP()
 {
+	// удалить буфера
+	for (EditMeshIt _M = m_Meshes.begin(); _M != m_Meshes.end(); _M++)
+	{
+		if (*_M)
+		{
+			(*_M)->UnloadRenderBuffers();
+		}
+	}
 	if (!(m_LoadState.is(LS_RBUFFERS)))
 	{
 		return;
 	}
 	// skeleton
 	vs_SkeletonGeom.destroy();
-	// удалить буфера
-	for (EditMeshIt _M = m_Meshes.begin(); _M != m_Meshes.end(); _M++)
-	{
-		if (*_M)
-		{
-			(*_M)->GenerateRenderBuffers();
-		}
-	}
 	// удалить shaders
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{

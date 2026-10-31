@@ -130,6 +130,7 @@ public:
 	xr_vector<LevelVertexChunk>									LevelVertices[2];
 	xr_vector<xr_vector<u16>>									LevelIndices[2];
 	xr_vector<PackedVertex>										LevelScratch;
+	xr_map<xr_array<u32, 7>, GeometryAlloc>					LevelMeshes;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 

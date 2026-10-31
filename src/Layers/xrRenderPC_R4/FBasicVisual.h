@@ -33,7 +33,6 @@ struct IRender_Mesh
 	u32							dwPrimitives;
 
 	GeometryAlloc				Alloc = {};
-	bool						OwnsAlloc = false;
 
 	IRender_Mesh				()				{ p_rm_Vertices=nullptr; p_rm_Indices=nullptr;						}
 	void						SetPulled		(const GeometryAlloc& Block);

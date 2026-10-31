@@ -71,10 +71,11 @@ void water_main(float4 P, float3 N, float3x3 NormalToWorld, float4 Color, float 
 }
 
 #ifdef EDITOR_MODE
-void main(in v_model v, out vf o)
+void main(PULL_INPUT, out vf o)
 {
-    float4 P = float4(mul(m_W, v.P), 1.0f);
-    float3 N = normalize(mul((float3x3)m_W, (float3)v.N));
+    PulledVertex V = PullVertex(VertexId);
+    float4 P = float4(mul(m_W, float4(V.P, 1.0f)), 1.0f);
+    float3 N = normalize(mul((float3x3)m_W, V.N));
 
     float3x3 Identity = float3x3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
     water_main(P, N, Identity, float4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, o);

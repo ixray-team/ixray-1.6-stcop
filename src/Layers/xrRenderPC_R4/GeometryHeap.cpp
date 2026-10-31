@@ -10,7 +10,7 @@ namespace
 	constexpr u32 MaxVertices = MaxBytes / Stride;
 	constexpr u32 MaxIndices = MaxBytes / IndexStride;
 	constexpr u32 DefaultVertices = (32u << 20) / Stride;
-	constexpr u32 DefaultIndices = 4 * DefaultVertices;
+	constexpr u32 DefaultIndices = 16 * DefaultVertices;
 	constexpr u32 ArenaKeep = 4u << 20;
 	constexpr u32 VertexSlot = ShaderBindings::Texture("g_Vertices0");
 	static_assert(ShaderBindings::Texture("g_Vertices4") + GeometryHeap::MaxPages - 1 == VertexSlot);
@@ -122,8 +122,9 @@ u32 GeometryHeap::OpenPage(u32 Vertices, u32 Indices)
 		FATAL(make_string<const char*>("GeometryHeap: all %u pages are full, %u vertices and %u indices do not fit", MaxPages, Vertices, Indices));
 	}
 	HeapPage& Item = Pages[Page];
-	Item.VertexCapacity = std::min(std::max({ Vertices, ReservedVertices, DefaultVertices }), MaxVertices);
-	Item.IndexCapacity = std::min(std::max({ Indices, ReservedIndices, DefaultIndices }), MaxIndices);
+	const u32 Scale = 1u << std::min(Page, 2u);
+	Item.VertexCapacity = std::min(std::max(Vertices, ReservedVertices ? ReservedVertices : DefaultVertices * Scale), MaxVertices);
+	Item.IndexCapacity = std::min(std::max(Indices, ReservedIndices ? ReservedIndices : DefaultIndices * Scale), MaxIndices);
 
 	RHIBufferDesc Desc = {};
 	Desc.Size = Item.VertexCapacity * Stride;
@@ -176,6 +177,15 @@ GeometryAlloc GeometryHeap::Alloc(u32 Vertices, u32 Indices)
 	}
 	ReservedVertices -= std::min(ReservedVertices, Vertices);
 	ReservedIndices -= std::min(ReservedIndices, IndexSpan);
+	if (FreeRefs.empty())
+	{
+		Refs.resize(std::max<size_t>(Refs.size(), 1));
+		FreeRefs.push_back(u32(Refs.size()));
+		Refs.push_back(0);
+	}
+	Result.Ref = FreeRefs.back();
+	FreeRefs.pop_back();
+	Refs[Result.Ref] = 1;
 	return Result;
 }
 
@@ -192,12 +202,42 @@ GeometryAlloc GeometryHeap::AllocPositions(const Fvector* Positions, u32 Count, 
 	return Block;
 }
 
-void GeometryHeap::Free(const GeometryAlloc& Block)
+void GeometryHeap::Retain(const GeometryAlloc& Block)
 {
+	if (Block.Ref)
+	{
+		xrCriticalSectionGuard Guard(Lock);
+		VERIFY(Block.Ref < Refs.size() && Refs[Block.Ref]);
+		++Refs[Block.Ref];
+	}
+}
+
+void GeometryHeap::Free(GeometryAlloc& Block)
+{
+	if (!Block.Ref)
+	{
+		return;
+	}
 	xrCriticalSectionGuard Guard(Lock);
-	HeapPage& Item = Pages[Block.Page];
-	Give(Item.FreeVertices, Block.VertexBase, Block.VertexCount);
-	Give(Item.FreeIndices, Block.IndexBase, (Block.IndexCount + 1) & ~1u);
+	VERIFY(Block.Ref < Refs.size() && Refs[Block.Ref]);
+	if (--Refs[Block.Ref] == 0)
+	{
+		FreeRefs.push_back(Block.Ref);
+		HeapPage& Item = Pages[Block.Page];
+		const u32 IndexSpan = (Block.IndexCount + 1) & ~1u;
+		const auto Overlaps = [](const PendingCopy& Copy, IRHIBuffer* Buffer, u32 Offset, u32 Size)
+		{
+			return Size && Copy.Buffer == Buffer && Copy.Offset < Offset + Size && Offset < Copy.Offset + Copy.Size;
+		};
+		std::erase_if(Copies, [&](const PendingCopy& Copy)
+		{
+			return Overlaps(Copy, Item.Vertices, Block.VertexBase * Stride, Block.VertexCount * Stride) || Overlaps(Copy, Item.Indices, Block.IndexBase * IndexStride, IndexSpan * IndexStride);
+		});
+		Give(Item.FreeVertices, Block.VertexBase, Block.VertexCount);
+		Give(Item.FreeIndices, Block.IndexBase, IndexSpan);
+		Pending = !Copies.empty();
+	}
+	Block = {};
 }
 
 void GeometryHeap::Queue(IRHIBuffer* Buffer, u32 Offset, const void* Data, u32 Size)

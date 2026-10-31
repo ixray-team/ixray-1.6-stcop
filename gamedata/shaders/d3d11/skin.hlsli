@@ -3,15 +3,6 @@
 
 #include "common.hlsli"
 
-struct v_model_skinned_0
-{
-    float4 P : POSITION;
-    float3 N : NORMAL;
-    float3 T : TANGENT;
-    float3 B : BINORMAL;
-    float2 tc : TEXCOORD0;
-};
-
 struct v_model_skinned_1
 {
     float4 P : POSITION;
@@ -74,20 +65,21 @@ float4 skinning_pos(float4 pos, float4 m0, float4 m1, float4 m2)
 	);
 }
 
-v_model skinning_0(v_model_skinned_0 v)
+v_model PullModel(uint VertexId)
 {
+    PulledVertex V = PullVertex(VertexId);
     v_model o;
-    o.P = float4(v.P.xyz, 1.f);
-	
+    o.P = float4(V.P, 1.0f);
+
 #ifndef DISABLE_MOTION_VECTORS
     o.P_old = o.P;
 #endif
 
-    o.N = unpack_normal(v.N);
-    o.T = unpack_normal(v.T);
-    o.B = unpack_normal(v.B);
+    o.N = V.N;
+    o.T = V.T;
+    o.B = V.B;
 
-    o.tc = v.tc;
+    o.tc = V.UV;
     return o;
 }
 

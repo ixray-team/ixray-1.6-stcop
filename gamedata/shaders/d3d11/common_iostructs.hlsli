@@ -237,14 +237,6 @@ struct v_model
 #endif
 };
 
-//	Details
-struct v_detail
-{
-    float4 pos : POSITION; // position, frac
-    float2 tc : TEXCOORD0; // texcoord
-    float4 N : NORMAL; // (nx,ny,nz)
-};
-
 //	Fullscreen triangle
 struct PSInputFullscreen
 {

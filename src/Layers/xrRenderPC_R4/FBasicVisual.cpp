@@ -18,16 +18,12 @@ IRender_Mesh::~IRender_Mesh()
 {
 	_RELEASE(p_rm_Vertices);
 	_RELEASE(p_rm_Indices);
-	if (OwnsAlloc)
-	{
-		RImplementation.Geometry.Free(Alloc);
-	}
+	RImplementation.Geometry.Free(Alloc);
 }
 
 void IRender_Mesh::SetPulled(const GeometryAlloc& Block)
 {
 	Alloc = Block;
-	OwnsAlloc = true;
 	vBase = Block.VertexBase;
 	iBase = Block.IndexBase;
 	rm_geom.create(EGeomSource::Static, Block.Page);
@@ -91,7 +87,7 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
 
 ICF int RenderMode_to_SkinningMode(u32 rm)
 {
-	return (rm == CSkeletonX::RM_SKINNING_SOFT) ? -1 : int(rm) - 1;
+	return rm <= CSkeletonX::RM_SINGLE ? -1 : int(rm) - 1;
 }
 void dxRender_Visual::reload_shader()
 {

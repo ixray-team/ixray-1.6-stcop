@@ -162,6 +162,8 @@ void	FTreeVisual::Copy	(dxRender_Visual *pSrc)
 	PCOPY(iBase);
 	PCOPY(iCount);
 	PCOPY(dwPrimitives);
+	PCOPY(Alloc);
+	RImplementation.Geometry.Retain(Alloc);
 
 	PCOPY(xform);
 	PCOPY(c_scale);

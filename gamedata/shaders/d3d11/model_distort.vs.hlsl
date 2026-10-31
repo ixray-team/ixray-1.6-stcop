@@ -29,16 +29,9 @@ vf _main(v_model v)
 }
 
 #ifdef SKIN_NONE
-vf main(v_model v)
+vf main(PULL_INPUT)
 {
-    return _main(v);
-}
-#endif
-
-#ifdef SKIN_0
-vf main(v_model_skinned_0 v)
-{
-    return _main(skinning_0(v));
+    return _main(PullModel(VertexId));
 }
 #endif
 

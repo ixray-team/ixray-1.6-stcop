@@ -7,6 +7,7 @@
 
 extern float ps_r__detail_rnd_scale_max;
 
+
 extern float ps_trample_bend;
 extern float ps_trample_squash;
 extern float ps_trample_trail_min;
@@ -407,7 +408,7 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
-					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, 0, 0, 0);
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
 					instanceCount = 0; //Reset
 
 				}
@@ -417,81 +418,65 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 			if (instanceCount > 0)
 			{
 				currentBuffer->Unmap();
-				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, 0, 0, 0);
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
 			}
 		}
 	}
 	else
 	{
-		if (ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))//experimental
+		const bool FastDetails = ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE);
+		for (CDetail* ObjectPtr : objects)
 		{
-		for (CDetail* DPtr : objects)
-		{
-			CDetail& D = *DPtr;
-			Cmd.SetPass(D.shader->E[lod_id], 0);
-				if (!EditorMode && ps_trample_enabled)
-				{
-					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
-				}
-				u32 buff_size = D.m_items[render_key][var_id].size();
-				if (buff_size)
-				{
-					Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), D.DetailGPUBoundBuffers[render_key][var_id].second);
-					Cmd.SetGeometry(D.hw_Geom);
-					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, D.number_indices, buff_size, 0, 0, 0);
-				}
-			}
-		}
-		else
-		{
-			for (CDetail* ObjectPtr : objects)
+			CDetail& Object = *ObjectPtr;
+			Cmd.SetPass(Object.shader->E[lod_id], 0);
+			if (!EditorMode && ps_trample_enabled)
 			{
-				CDetail& Object = *ObjectPtr;
-				Cmd.SetPass(Object.shader->E[lod_id], 0);
-				if (!EditorMode && ps_trample_enabled)
-				{
-					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
-				}
-				auto& items = Object.m_items[render_key][var_id];
-				u32 totalInstances = items.size();
-				if (u32(0) == totalInstances) continue;
+				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
+				Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
+			}
+			auto& items = Object.m_items[render_key][var_id];
+			u32 totalInstances = items.size();
+			if (u32(0) == totalInstances) continue;
 
-				auto it = DetailInstanceBuffers.lower_bound(totalInstances);
+			Cmd.SetGeometry(Object.hw_Geom);
+			if (FastDetails && totalInstances <= GfxCmdList::IotaSize)
+			{
+				Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), Object.DetailGPUBoundBuffers[render_key][var_id].second);
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, totalInstances, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
+				continue;
+			}
 
-				//Use largest buffer possible [should keep HUGE buffer around in those cases]
-				if (it == DetailInstanceBuffers.end())
-				{
-					it = std::prev(DetailInstanceBuffers.end());
-				}
+			auto it = DetailInstanceBuffers.lower_bound(totalInstances);
 
-				//Current buffer size and resources
-				u32 currentSize = it->first;
-				IRHIBuffer* currentBuffer = it->second.first;
-				IRHIShaderResourceView* currentSRV = it->second.second;
+			//Use largest buffer possible [should keep HUGE buffer around in those cases]
+			if (it == DetailInstanceBuffers.end())
+			{
+				it = std::prev(DetailInstanceBuffers.end());
+			}
 
-				//Bind (current) buffer SRV
-				Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
+			//Current buffer size and resources
+			u32 currentSize = it->first;
+			IRHIBuffer* currentBuffer = it->second.first;
+			IRHIShaderResourceView* currentSRV = it->second.second;
 
-				//Set IB, VB and decls
-				Cmd.SetGeometry(Object.hw_Geom);
-				u32 offset = 0u, chunkSize = 0u;
-				RHIMappedSubresource pSubRes;
-				CDetail::SlotItem* items_data = items.data();
-				while (offset < totalInstances)
-				{
-					chunkSize = std::min(currentSize, totalInstances - offset);
+			//Bind (current) buffer SRV
+			Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
 
-					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+			u32 offset = 0u, chunkSize = 0u;
+			RHIMappedSubresource pSubRes;
+			CDetail::SlotItem* items_data = items.data();
+			while (offset < totalInstances)
+			{
+				chunkSize = std::min(currentSize, totalInstances - offset);
 
-					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
+				R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
-					currentBuffer->Unmap();
-					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, chunkSize, 0, 0, 0);
+				memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
 
-					offset += chunkSize;
-				}
+				currentBuffer->Unmap();
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, chunkSize, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
+
+				offset += chunkSize;
 			}
 		}
 	}

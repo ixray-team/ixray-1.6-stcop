@@ -32,8 +32,6 @@ struct RENDER_API SVS : public xr_resource_uniq
 {
 	RHIObject*					vs;
 	ref_input_sign						signature;
-	// full compiled VS bytecode (kept so editors/tools can reflect inputs)
-	RHIBlob*							vs_code;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
 	EVertexInput						Input = EVertexInput::None;
@@ -96,10 +94,6 @@ struct RENDER_API SDeclaration : public xr_resource_flagged
 	//	Maps input signature to input layout
 	xr_map<RHIBlob*, RHIObject*> vs_to_layout;
 	xr_vector<RHIInputElementDesc> dx10_dcl_code;
-	//	Pristine declaration as created (never patched by the shader preview).
-	//	Used as the source for VS-input mapping so repeated patches to
-	//	dx10_dcl_code don't degrade the channel set.
-	xr_vector<RHIInputElementDesc> dx10_dcl_code_pristine;
 
 	//	Use this for DirectX10 to cache DX9 declaration for comparison purpose only
 	xr_vector<D3DVERTEXELEMENT9>		dcl_code;

@@ -199,6 +199,7 @@ void CRender::level_Load(IReader* fs)
 			LevelIndices[Alternative] = {};
 		}
 		LevelScratch = {};
+		LevelMeshes = {};
 		Geometry.Reserve(0, 0);
 
 		// Details
@@ -411,9 +412,6 @@ void CRender::level_Unload()
 	for (I=0; I<SWIs.size();I++)xr_free	(SWIs[I].sw);
 	SWIs.clear				();
 
-	//*** VB/IB
-	Geometry.Trim();
-
 	//*** Components
 	xr_delete(L_Projector);
 	xr_delete(L_Shadows);
@@ -421,6 +419,9 @@ void CRender::level_Unload()
 	xr_delete(L_Glows);
 	xr_delete					(Details);
 	xr_delete					(Wallmarks);
+
+	//*** VB/IB
+	Geometry.Trim();
 
 	m_levels_puddles.resize(0);
 	m_levels_planars.resize(0);
@@ -496,6 +497,12 @@ GeometryAlloc CRender::UploadLevelMesh(bool Alternative, u32 VertexBuffer, u32 V
 	{
 		FATAL(make_string<const char*>("Level geometry: visual references vertices %u+%u of buffer %u and indices %u+%u of buffer %u out of range", VertexBase, VertexCount, VertexBuffer, IndexBase, IndexCount, IndexBuffer));
 	}
+	const auto [Shared, Inserted] = LevelMeshes.try_emplace({ u32(Alternative), VertexBuffer, VertexBase, VertexCount, IndexBuffer, IndexBase, IndexCount });
+	if (!Inserted)
+	{
+		Geometry.Retain(Shared->second);
+		return Shared->second;
+	}
 	const LevelVertexChunk& Chunk = VertexChunks[VertexBuffer];
 	LevelScratch.resize(VertexCount);
 	for (u32 Index = 0; Index < VertexCount; ++Index)
@@ -505,6 +512,7 @@ GeometryAlloc CRender::UploadLevelMesh(bool Alternative, u32 VertexBuffer, u32 V
 	const GeometryAlloc Block = Geometry.Alloc(VertexCount, IndexCount);
 	Geometry.Upload(Block, 0, LevelScratch.data(), VertexCount);
 	Geometry.UploadIndices(Block, 0, IndexChunks[IndexBuffer].data() + IndexBase, IndexCount);
+	Shared->second = Block;
 	return Block;
 }
 

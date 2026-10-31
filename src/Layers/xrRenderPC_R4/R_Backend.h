@@ -35,6 +35,7 @@ public:
 	_VertexStream LegacyVertex{ 256 };
 	_IndexStream Index;
 
+	static constexpr u32 IotaSize = 65536;
 	IRHIBuffer* IotaVB = nullptr;
 	ref_declaration PulledDecl;
 	GeometryHeap* Heap = nullptr;

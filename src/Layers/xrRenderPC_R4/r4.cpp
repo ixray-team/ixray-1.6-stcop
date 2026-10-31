@@ -570,7 +570,6 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ Dynamic && ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS), "USE_SUNMASK", "1" },
 		{ Dynamic && o.sunstatic, "USE_R2_STATIC_SUN", "1" },
 		{ Skinning < 0, "SKIN_NONE", "1" },
-		{ Skinning == 0, "SKIN_0", "1" },
 		{ Skinning == 1, "SKIN_1", "1" },
 		{ Skinning == 2, "SKIN_2", "1" },
 		{ Skinning == 3, "SKIN_3", "1" },
@@ -742,34 +741,24 @@ static HRESULT create_shader(
 			}
 		}
 
-		// The editors bind structured instance buffers and reflect VS inputs, the game does not
-		if (Device.IsEditorMode())
+		// The editors bind structured instance buffers, the game does not
+		if (Device.IsEditorMode() && Reflected)
 		{
-			if (Reflected)
+			for (const RHIShaderResourceDesc& Resource : reflection.Resources)
 			{
-				for (const RHIShaderResourceDesc& Resource : reflection.Resources)
+				if (Resource.Type != ERHI_SHADER_RESOURCE_TYPE::STRUCTURED)
 				{
-					if (Resource.Type != ERHI_SHADER_RESOURCE_TYPE::STRUCTURED)
-					{
-						continue;
-					}
-
-					if (!xr_strcmp(Resource.Name, "detail_buffer"))
-					{
-						svs_result->instance_buffer_slot = Resource.BindPoint;
-					}
-					else if (!xr_strcmp(Resource.Name, "editor_instances"))
-					{
-						svs_result->editor_instance_slot = Resource.BindPoint;
-					}
+					continue;
 				}
-			}
 
-			RHIBlob* pCodeBlob = nullptr;
-			if (SUCCEEDED(GRHI->CreateBlob(buffer_size, &pCodeBlob)))
-			{
-				CopyMemory(pCodeBlob->GetBufferPointer(), buffer, buffer_size);
-				svs_result->vs_code = pCodeBlob;
+				if (!xr_strcmp(Resource.Name, "detail_buffer"))
+				{
+					svs_result->instance_buffer_slot = Resource.BindPoint;
+				}
+				else if (!xr_strcmp(Resource.Name, "editor_instances"))
+				{
+					svs_result->editor_instance_slot = Resource.BindPoint;
+				}
 			}
 		}
 		_result = S_OK;

@@ -617,7 +617,6 @@ SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size
 
 	SDeclaration* Declaration = new SDeclaration();
 	Declaration->dx10_dcl_code.assign(dcl, dcl + declSize);
-	Declaration->dx10_dcl_code_pristine = Declaration->dx10_dcl_code;
 	Declaration->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(Declaration);
 	return Declaration;
@@ -640,7 +639,6 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 	//CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
 	D->dcl_code.assign		(dcl,dcl+dcl_size);
 	dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
-	D->dx10_dcl_code_pristine = D->dx10_dcl_code;
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
 	v_declarations.push_back(D);
 	return D;

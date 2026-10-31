@@ -23,9 +23,6 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	dxRender_Visual::Load		(N,data,dwFlags);
 
-	xr_vector<RHIInputElementDesc> dcl;
-	RHIInputElementDesc*	vFormat	= nullptr;
-	size_t FormatSize = 0;
 	dwPrimitives				= 0;
 
 	if (data->find_chunk(OGF_GCONTAINER))
@@ -57,40 +54,77 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		return;
 	}
 
-	if ((dwFlags & VLOAD_NOVERTICES) == 0)
+	const auto Fail = [N](const char* Reason)
 	{
-		bool FoundedChunk = data->find_chunk(OGF_VERTICES);
-		R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
+		Msg("! Model '%s': %s", N, Reason);
+		Debug.do_exit(std::string("Model '") + N + "': " + Reason);
+	};
 
-		vBase = 0;
-		u32 fvf = data->r_u32();
-		R_ASSERT(RHIUtils::Shader::CreateInputLayoutFromFVF(fvf, dcl));
-		vFormat = dcl.data();
-		FormatSize = dcl.size();
-
-		vCount = data->r_u32();
-		u32 vStride = (u32)RHIUtils::Shader::ComputeVertexStride(dcl);
-
-		VERIFY(nullptr == p_rm_Vertices);
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
-	}
-
+	const u64 IndexBytes = u64(data->find_chunk(OGF_INDICES));
+	if (IndexBytes < 4)
 	{
-		bool FoundedChunk = data->find_chunk(OGF_INDICES);
-		R_ASSERT2(FoundedChunk, "Not found chunk OGF_INDICES");
-
-		iBase				= 0;
-		iCount				= data->r_u32();
-		dwPrimitives		= iCount/3;
-
-		VERIFY(nullptr == p_rm_Indices);
-		R_ASSERT(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2, false, false));
+		Fail("OGF_INDICES chunk is missing");
 	}
-
-	if (dwFlags&VLOAD_NOVERTICES)	
+	iBase = 0;
+	iCount = data->r_u32();
+	dwPrimitives = iCount / 3;
+	if (4 + u64(iCount) * sizeof(u16) > IndexBytes)
+	{
+		Fail("OGF_INDICES chunk is shorter than its index count");
+	}
+	if (dwFlags & VLOAD_NOVERTICES)
+	{
 		return;
+	}
+	const u16* Indices = (const u16*)data->pointer();
 
-	rm_geom.create(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
+	const u64 VertexBytes = u64(data->find_chunk(OGF_VERTICES));
+	if (VertexBytes < 8)
+	{
+		Fail("OGF_VERTICES chunk is missing");
+	}
+	const u32 Fvf = data->r_u32();
+	vCount = data->r_u32();
+	constexpr u32 Required = D3DFVF_XYZ | D3DFVF_TEX1;
+	if ((Fvf & ~(Required | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_SPECULAR)) != 0 || (Fvf & Required) != Required)
+	{
+		Fail("unsupported vertex format, expected XYZ, optional NORMAL/DIFFUSE/SPECULAR and one float2 TEXCOORD");
+	}
+	const u32 Stride = 20 + (Fvf & D3DFVF_NORMAL ? 12 : 0) + (Fvf & D3DFVF_DIFFUSE ? 4 : 0) + (Fvf & D3DFVF_SPECULAR ? 4 : 0);
+	if (8 + u64(vCount) * Stride > VertexBytes)
+	{
+		Fail("OGF_VERTICES chunk is shorter than its vertex count");
+	}
+
+	const u8* Source = (const u8*)data->pointer();
+	xr_vector<Fvector> Frames(size_t(vCount) * 4);
+	xr_vector<Fvector2> UV(vCount);
+	Fvector* Positions = Frames.data();
+	Fvector* Normals = Positions + vCount;
+	Fvector* Tangents = Normals + vCount;
+	Fvector* Binormals = Tangents + vCount;
+	for (u32 Index = 0; Index < vCount; ++Index)
+	{
+		const u8* Vertex = Source + size_t(Index) * Stride;
+		Positions[Index] = *(const Fvector*)Vertex;
+		Normals[Index] = Fvf & D3DFVF_NORMAL ? *(const Fvector*)(Vertex + 12) : Fvector{ 0.0f, 0.0f, 0.0f };
+		UV[Index] = *(const Fvector2*)(Vertex + Stride - 8);
+	}
+	VertexPacking::GenerateTangents(Positions, UV.data(), vCount, Indices, iCount, Tangents, Binormals);
+	const Fvector2 Offset = VertexPacking::FitUV(UV.data(), vCount, N);
+
+	xr_vector<PackedVertex> Records(vCount);
+	for (u32 Index = 0; Index < vCount; ++Index)
+	{
+		PackedVertex& Vertex = Records[Index];
+		Vertex = { Positions[Index], 0, 0, 0, 0, 0 };
+		VertexPacking::EncodeFrame(Vertex, Normals[Index], Tangents[Index], Binormals[Index]);
+		VertexPacking::EncodeFitUV(Vertex, UV[Index], Offset);
+	}
+	const GeometryAlloc Block = RImplementation.Geometry.Alloc(vCount, iCount);
+	RImplementation.Geometry.Upload(Block, 0, Records.data(), vCount);
+	RImplementation.Geometry.UploadIndices(Block, 0, Indices, iCount);
+	SetPulled(Block);
 }
 
 void Fvisual::Render(GfxCmdList& Cmd, float)
@@ -118,10 +152,11 @@ void Fvisual::Copy(dxRender_Visual* pSrc)
 	PCOPY(vBase);
 	PCOPY(vCount);
 
-	PCOPY(p_rm_Indices); if (p_rm_Indices) p_rm_Indices->AddRef();
 	PCOPY(iBase);
 	PCOPY(iCount);
 	PCOPY(dwPrimitives);
+	PCOPY(Alloc);
+	RImplementation.Geometry.Retain(Alloc);
 
 	PCOPY(m_fast);
 }

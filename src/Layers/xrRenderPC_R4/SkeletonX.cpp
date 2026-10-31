@@ -345,7 +345,7 @@ void CSkeletonX::_Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffs
 			Cmd.SetObjectTransform(W, O);
 
 			Cmd.SetGeometry(hGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, 0);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, vBase);
 		}
 		break;
 	case RM_SKINNING_1B:
@@ -356,7 +356,7 @@ void CSkeletonX::_Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffs
 			//PROF_EVENT("RM_SKINNING")
 			transfer_matrices(Cmd, Parent->bone_instances, u16(RMS_bonecount), phase_normal);
 			Cmd.SetGeometry(hGeom);
-			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, 0);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, 0);
 		}
 		break;
 	}
@@ -391,7 +391,7 @@ void CSkeletonX::_Render_soft(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount_, u32
 	}
 
 	Cmd.SetGeometry(hGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, vOffset);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iBase + iOffset, vOffset);
 }
 
 void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
@@ -404,8 +404,6 @@ void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
 		Fvisual::Load(N, data, dwFlags | VLOAD_NOVERTICES);
 	Engine.External.SetSkinningMode();
 	_DuplicateIndices(data);
-
-	vBase = 0;
 	_Load_hw(_verts_);
 }
 
@@ -451,7 +449,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 				// HW- single bone
 				RenderMode = RM_SINGLE;
 				RMS_boneid = *bids.begin();
-				Engine.External.SetSkinningMode(0);
+				Engine.External.SetSkinningMode();
 			}
 			else if (sw_bones_cnt <= hw_bones_cnt)
 			{
@@ -789,19 +787,45 @@ ICF void _Load_hw_generic(CSkeletonX& V, void* _verts_, DeclT(&decl)[Size], Vert
 
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
 	xr_free(dstOriginal);
-	V.rm_geom.create(decl, Size, V.p_rm_Vertices, V.p_rm_Indices);
+	V.rm_geom.create(decl, Size, V.p_rm_Vertices, RImplementation.Geometry.IndexBuffer(V.Alloc.Page));
 }
 
 void CSkeletonX::_Load_hw(void* _verts_)
 {
+	GeometryHeap& Heap = RImplementation.Geometry;
+	GeometryAlloc Block = Heap.Alloc(RenderMode == RM_SINGLE ? vCount : 0, iCount);
+	Heap.UploadIndices(Block, 0, *m_Indices, iCount);
+	if (RenderMode == RM_SINGLE)
+	{
+		vertBoned1W* Source = (vertBoned1W*)_verts_;
+		Vertices1W.create(crc32(Source, vCount * sizeof(vertBoned1W)), vCount, Source);
+		xr_vector<Fvector2> UV(vCount);
+		for (u32 Index = 0; Index < vCount; ++Index)
+		{
+			UV[Index] = { Source[Index].u, Source[Index].v };
+		}
+		const Fvector2 Offset = VertexPacking::FitUV(UV.data(), vCount, dbg_name.c_str());
+		xr_vector<PackedVertex> Records(vCount, PackedVertex{});
+		for (u32 Index = 0; Index < vCount; ++Index)
+		{
+			Records[Index].P = Source[Index].P;
+			VertexPacking::EncodeFrame(Records[Index], Source[Index].N, Source[Index].T, Source[Index].B);
+			VertexPacking::EncodeFitUV(Records[Index], UV[Index], Offset);
+		}
+		Heap.Upload(Block, 0, Records.data(), vCount);
+		SetPulled(Block);
+		return;
+	}
+	Alloc = Block;
+	vBase = 0;
+	iBase = Block.IndexBase;
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
 	{
-		rm_geom.create(vertRenderFVF, RImplementation.Imm().LegacyVertex.Buffer(), p_rm_Indices);
+		rm_geom.create(vertRenderFVF, RImplementation.Imm().LegacyVertex.Buffer(), Heap.IndexBuffer(Block.Page));
 		break;
 	}
-	case RM_SINGLE:
 	case RM_SKINNING_1B:
 	{
 		_Load_hw_generic<vertBoned1W, vertHW_1W>(*this, _verts_, dwDecl_1W, Vertices1W);
@@ -840,12 +864,12 @@ void CSkeletonX::_CollectBoneFaces()
 	if (progressive_mesh)
 	{
 		FSlideWindow& SW = nSWI.sw[0]; // max LOD
-		indices = *m_Indices + iBase + SW.offset;
+		indices = *m_Indices + SW.offset;
 		iCount_ = SW.num_tris * 3;
 	}
 	else
 	{
-		indices = *m_Indices + iBase;
+		indices = *m_Indices;
 		iCount_ = iCount;
 	}
 
@@ -854,7 +878,7 @@ void CSkeletonX::_CollectBoneFaces()
 		vertBoned1W* vertices = *Vertices1W;
 		for (u32 idx = 0; idx < iCount_; idx++)
 		{
-			vertBoned1W& v = vertices[vBase + indices[idx]];
+			vertBoned1W& v = vertices[indices[idx]];
 			Parent->LL_GetData((u16)v.m).AppendFace(ChildIDX, (u16)(idx / 3));
 		}
 	}
@@ -863,7 +887,7 @@ void CSkeletonX::_CollectBoneFaces()
 		vertBoned2W* vertices = *Vertices2W;
 		for (u32 idx = 0; idx < iCount_; idx++)
 		{
-			vertBoned2W& v = vertices[vBase + indices[idx]];
+			vertBoned2W& v = vertices[indices[idx]];
 			Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
 			Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
 		}
@@ -873,7 +897,7 @@ void CSkeletonX::_CollectBoneFaces()
 		vertBoned3W* vertices = *Vertices3W;
 		for (u32 idx = 0; idx < iCount_; idx++)
 		{
-			vertBoned3W& v = vertices[vBase + indices[idx]];
+			vertBoned3W& v = vertices[indices[idx]];
 			Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
 			Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
 			Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));
@@ -884,7 +908,7 @@ void CSkeletonX::_CollectBoneFaces()
 		vertBoned4W* vertices = *Vertices4W;
 		for (u32 idx = 0; idx < iCount_; idx++)
 		{
-			vertBoned4W& v = vertices[vBase + indices[idx]];
+			vertBoned4W& v = vertices[indices[idx]];
 			Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
 			Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
 			Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));

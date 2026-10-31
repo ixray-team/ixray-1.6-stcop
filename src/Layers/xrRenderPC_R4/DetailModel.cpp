@@ -1,22 +1,6 @@
 #include "stdafx.h"
 #include "DetailManager.h"
 
-struct vertHW
-{
-	Fvector4 pos_frac;
-	Fvector2 uv;
-	u32 normal = 0;
-};
-
-extern constexpr u8 q_N(float v);
-
-static RHIInputElementDesc dwDecl[] =
-{
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-};
-
 CDetail::CDetail()
 {
 	vertices = nullptr;
@@ -25,8 +9,6 @@ CDetail::CDetail()
 	number_indices = 0;
 	m_fMinScale = 0.5f;
 	m_fMaxScale = 2.f;
-	hw_VB = nullptr;
-	hw_IB = nullptr;
 	for (u32 i = 0; i < 2; i++)
 		for (u32 j = 0; j < 3; j++)
 			DetailGPUBoundBuffers[i][j] = {nullptr, nullptr};
@@ -52,9 +34,7 @@ void CDetail::Unload	()
 
 	shader.destroy();
 
-	//LVutner: Release (per-object) IB/VB
-	_RELEASE(hw_VB);
-	_RELEASE(hw_IB);
+	RImplementation.Geometry.Free(Alloc);
 	hw_Geom.destroy();
 
 	for (u32 i = 0; i < 2; i++)
@@ -134,9 +114,9 @@ void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest,
 	}
 }
 
-//LVutner: Create vertex and index buffers
 void CDetail::LoadGeom()
 {
+	RImplementation.Geometry.Free(Alloc);
 	xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
 	Fvector normal;
 
@@ -157,29 +137,27 @@ void CDetail::LoadGeom()
 		vNormals[idx_2].add(normal);
 	}
 
-	xr_vector<vertHW> pV;
-	vertHW V;
-
+	xr_vector<Fvector2> UV(number_vertices);
 	for (u32 v = 0; v < number_vertices; v++)
 	{
-		V.pos_frac.x = vertices[v].P.x;
-		V.pos_frac.y = vertices[v].P.y;
-		V.pos_frac.z = vertices[v].P.z;
-		V.pos_frac.w = vertices[v].P.y / (bv_bb.max.y - bv_bb.min.y);
+		UV[v].set(vertices[v].u, vertices[v].v);
+	}
+	const Fvector2 Offset = VertexPacking::FitUV(UV.data(), number_vertices, "detail model");
+	const float Height = bv_bb.max.y - bv_bb.min.y;
+	const float Scale = Height > EPS_L ? 2048.0f / Height : 0.0f;
 
-		auto& vNormal = vNormals[v].normalize_safe();
-		V.normal = color_rgba(q_N(vNormal.x), q_N(vNormal.y), q_N(vNormal.z), 0);
-
-		V.uv.x = vertices[v].u;
-		V.uv.y = vertices[v].v;
-
-		pV.push_back(V);
+	xr_vector<PackedVertex> Records(number_vertices);
+	for (u32 v = 0; v < number_vertices; v++)
+	{
+		const s16 Frac = s16(std::lrint(std::clamp(vertices[v].P.y * Scale, -32768.0f, 32767.0f)));
+		Records[v] = { vertices[v].P, VertexPacking::EncodeOct(vNormals[v].normalize_safe()), 0, 0, 0, u16(Frac) };
+		VertexPacking::EncodeFitUV(Records[v], UV[v], Offset);
 	}
 
-	u32 size_indices = number_indices * sizeof(u16);
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
-	R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
-	hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
+	Alloc = RImplementation.Geometry.Alloc(number_vertices, number_indices);
+	RImplementation.Geometry.Upload(Alloc, 0, Records.data(), number_vertices);
+	RImplementation.Geometry.UploadIndices(Alloc, 0, indices, number_indices);
+	hw_Geom.create(EGeomSource::Static, Alloc.Page);
 }
 
 void CDetail::Load(IReader* S)
@@ -229,84 +207,10 @@ void CDetail::Load(IReader* S)
 
 	bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
-	//LVutner: Create vertex and index buffers
-	{
-		xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
-		Fvector normal;
-
-		for (u32 i = 0; i < number_indices; i += 3)
-		{
-			const auto& idx_0 = indices[i + 0];
-			const auto& idx_1 = indices[i + 1];
-			const auto& idx_2 = indices[i + 2];
-
-			const auto& v_0 = vertices[idx_0].P;
-			const auto& v_1 = vertices[idx_1].P;
-			const auto& v_2 = vertices[idx_2].P;
-
-			normal.mknormal(v_0, v_1, v_2);
-
-			vNormals[idx_0].add(normal);
-			vNormals[idx_1].add(normal);
-			vNormals[idx_2].add(normal);
-		}
-		
-#if 0
-		xr_vector<Fvector> vNormals2 = vNormals;
-
-		for (u32 idx = 0; idx < number_vertices; ++idx)
-		{
-			const auto& v_0 = vertices[idx].P;
-
-			for (u32 idx_1 = 0; idx_1 < number_vertices; ++idx_1)
-			{
-				const auto& v_1 = vertices[idx_1].P;
-
-				if (idx_1 == idx)
-				{
-					continue;
-				}
-
-				if (v_0.distance_to_sqr(v_1) <= EPS)
-				{
-					vNormals2[idx].add(vNormals[idx_1]);
-				}
-			}
-		}
-
-		vNormals = vNormals2;
-#endif
-
-		xr_vector<vertHW> pV;
-		vertHW V;
-
-		for (u32 v = 0; v < number_vertices; v++)
-		{
-			V.pos_frac.x = vertices[v].P.x;
-			V.pos_frac.y = vertices[v].P.y;
-			V.pos_frac.z = vertices[v].P.z;
-			V.pos_frac.w = vertices[v].P.y / (bv_bb.max.y - bv_bb.min.y);
-
-			auto& vNormal = vNormals[v].normalize_safe();
-			V.normal = color_rgba(q_N(vNormal.x), q_N(vNormal.y), q_N(vNormal.z), 0);
-
-			V.uv.x = vertices[v].u;
-			V.uv.y = vertices[v].v;
-
-			pV.push_back(V);
-		}
-
-		R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
-		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
-		hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
-	}
-
 	if (!Device.IsEditorMode())
 	{
 		Optimize	();
 	}
-
-	LoadGeom();
 }
 
 bool CDetail::LoadFromDM(const char* dm_path)
@@ -331,6 +235,7 @@ bool CDetail::LoadFromDM(const char* dm_path)
 
 	Load(F);
 	FS.r_close(F);
+	LoadGeom();
 
 	Msg("* CDetail::LoadFromDM: loaded '%s' (%d verts, %d indices)", fn, number_vertices, number_indices);
 	return true;

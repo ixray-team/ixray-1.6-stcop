@@ -13,16 +13,9 @@ p_shadow _main(v_model I, object_xforms X)
 }
 
 #ifdef SKIN_NONE
-p_shadow main(v_model v, uint InstanceID : SV_InstanceID)
+p_shadow main(PULL_INPUT)
 {
-    return _main(v, object_get_xforms(InstanceID));
-}
-#endif
-
-#ifdef SKIN_0
-p_shadow main(v_model_skinned_0 v)
-{
-    return _main(skinning_0(v), object_default_xforms());
+    return _main(PullModel(VertexId), object_get_xforms(DrawId));
 }
 #endif
 
