@@ -857,7 +857,7 @@ void CUIMainIngameWnd::Update()
 		}
 	};
 
-	bool b_God = ( GodMode() || ( !lookat_player ) )? true : lookat_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
+	bool b_God = ( ( IsGameTypeSingle() && psActorFlags.test(AF_GOD_MODE) ) || ( !lookat_player ) )? true : lookat_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
 	if ( b_God )
 	{
 		SetWarningIconColor( ewiInvincible, 0xffffffff );
