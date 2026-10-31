@@ -34,6 +34,7 @@ void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 		{
 			g_DLSSWrapper.GetRenderScale(RenderScale);
 		}
+		break;
 		case 3:
 		{
 			g_Fsr3Wrapper.GetRenderScale(RenderScale);
@@ -342,9 +343,12 @@ dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
 #ifndef _EDITOR
 #ifdef USE_DX11
-	//	TODO: DX10: Implement GetDeviceState
 	//	TODO: DX10: Implement DXGI_PRESENT_TEST testing
-	//VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
+	if (NeedScaleReset)
+	{
+		NeedScaleReset = false;
+		return dsNeedReset;
+	}
 #else //USE_DX11
 	HRESULT	_hr		= RDevice->TestCooperativeLevel();
 	if (FAILED(_hr))
