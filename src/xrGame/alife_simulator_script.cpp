@@ -400,7 +400,9 @@ void AlifeRemoveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, 
 	KNOWN_INFO_VECTOR	*known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
 	if (!known_info)
 		return;
-	known_info->erase(std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)),known_info->end());
+	auto it = std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id));
+	if (it != known_info->end())
+		known_info->erase(it);
 }
 
 void teleport_object(CALifeSimulator* alife, ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector& position)
