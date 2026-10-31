@@ -675,13 +675,7 @@ void CSceneObject::ClearSurface()
 			}
 			else if (surf->IsVoid())
 			{
-				if (m_pReference->IsSkeleton())
-					Engine.External.SetSkinningMode(4);
-
 				surf->OnDeviceCreate();
-
-				if (m_pReference->IsSkeleton())
-					Engine.External.SetSkinningMode();
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 BIND_TEXTURE(Texture_velocity0, 0)
 BIND_TEXTURE(s_base, 0)
 BIND_TEXTURE(sceneDepthTex, 0)
+BIND_TEXTURE(g_SkinData, 0)
 BIND_TEXTURE(Texture_velocity1, 1)
 BIND_TEXTURE(colorTex, 1)
 BIND_TEXTURE(s_bump, 1)

@@ -232,7 +232,6 @@ class ECORE_API CEditableObject :
 	friend class TfrmEditLibrary;
 	friend class MeshExpUtility;
 
-	ref_geom 		vs_SkeletonGeom;
 // desc
 	shared_str 		m_CreateName;
 	__time32_t			m_CreateTime;

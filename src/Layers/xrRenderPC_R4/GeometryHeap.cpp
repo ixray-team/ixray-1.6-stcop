@@ -125,6 +125,7 @@ u32 GeometryHeap::OpenPage(u32 Vertices, u32 Indices)
 	const u32 Scale = 1u << std::min(Page, 2u);
 	Item.VertexCapacity = std::min(std::max(Vertices, ReservedVertices ? ReservedVertices : DefaultVertices * Scale), MaxVertices);
 	Item.IndexCapacity = std::min(std::max(Indices, ReservedIndices ? ReservedIndices : DefaultIndices * Scale), MaxIndices);
+	ReservedVertices = ReservedIndices = 0;
 
 	RHIBufferDesc Desc = {};
 	Desc.Size = Item.VertexCapacity * Stride;
@@ -300,13 +301,13 @@ void GeometryHeap::Flush()
 	Pending = false;
 }
 
-void GeometryHeap::Bind(GfxCmdList& Cmd)
+void GeometryHeap::Bind(GfxCmdList& Cmd, ERHI_SHADER_TYPE Stage)
 {
 	for (u32 Page = 0, Count = Opened; Page < Count; ++Page)
 	{
 		if (Pages[Page].View)
 		{
-			Cmd.SetResource(ERHI_SHADER_TYPE::VS, VertexSlot - Page, Pages[Page].View);
+			Cmd.SetResource(Stage, VertexSlot - Page, Pages[Page].View);
 		}
 	}
 }

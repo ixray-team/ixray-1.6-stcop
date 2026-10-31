@@ -24,10 +24,6 @@ vf _main(v_model v)
     o.tc1 = calc_reflection(pos_w, norm_w);
     o.c0 = calc_model_lq_lighting(norm_w);
     o.fog = calc_fogging(float4(pos_w, 1)); 
-
-#ifdef SKIN_COLOR
-    o.c0.rgb *= v.rgb_tint;
-#endif
     return o;
 }
 

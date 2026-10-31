@@ -10,7 +10,6 @@
 
 #include "FBasicVisual.h"
 #include "../../xrEngine/Fmesh.h"
-#include "SkeletonX.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -125,19 +124,9 @@ void dxRender_Visual::Load		(const char* N, IReader *data, u32 )
     }
 }
 
-ICF int RenderMode_to_SkinningMode(u32 rm)
-{
-	return rm <= CSkeletonX::RM_SINGLE ? -1 : int(rm) - 1;
-}
 void dxRender_Visual::reload_shader()
 {
-	int old_mode = Engine.External.GetSkinningMode();
-	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
-	{
-		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
-	}
 	shader.create(*shader_name, *texture_name);
-	Engine.External.SetSkinningMode(old_mode);
 	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
 	{
 		RImplementation.Target->InvalidateSpotShadowCache();
@@ -145,13 +134,7 @@ void dxRender_Visual::reload_shader()
 }
 void dxRender_Visual::restore_shader()
 {
-	int old_mode = Engine.External.GetSkinningMode();
-	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
-	{
-		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
-	}
 	shader.create(*orig_shader_name, *texture_name);
-	Engine.External.SetSkinningMode(old_mode);
 	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
 	{
 		RImplementation.Target->InvalidateSpotShadowCache();
@@ -159,13 +142,7 @@ void dxRender_Visual::restore_shader()
 }
 void dxRender_Visual::restore_texture()
 {
-	int old_mode = Engine.External.GetSkinningMode();
-	if (CSkeletonX* S = smart_cast<CSkeletonX*>(this))
-	{
-		Engine.External.SetSkinningMode(RenderMode_to_SkinningMode(S->RenderMode));
-	}
 	shader.create(*shader_name, *orig_texture_name);
-	Engine.External.SetSkinningMode(old_mode);
 	if (IsSpotShadowCacheReferenced.load(std::memory_order_relaxed) && RImplementation.Target)
 	{
 		RImplementation.Target->InvalidateSpotShadowCache();

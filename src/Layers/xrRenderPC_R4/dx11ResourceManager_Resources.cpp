@@ -135,13 +135,6 @@ void CResourceManager::_DeletePass(const SPass* P)
 ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap& Defines)
 {
 	xr_string res_name = _name;
-
-	const int m_skinning = Engine.External.GetSkinningMode();
-	if (m_skinning >= 0)
-	{
-		res_name += "_" + xr_string::ToString(m_skinning);
-	}
-
 	res_name += RImplementation.getShaderParams(Defines);
 	const char* name = res_name.c_str();
 
@@ -167,7 +160,7 @@ ref_vs	CResourceManager::_CreateVS		(const char* _name, const ShaderExternalMap&
 			_vs = new SVS();
 			_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
-			RememberStage(_vs, _name, m_skinning, Defines);
+			RememberStage(_vs, _name, Defines);
 			ref_vs(_vs).swap(Result);
 			IsNew = true;
 		}
@@ -303,7 +296,7 @@ ref_ps	CResourceManager::_CreatePS			(const char* _name, const ShaderExternalMap
 			_ps = new SPS();
 			_ps->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_ps.insert(std::make_pair(_ps->set_name(name), _ps));
-			RememberStage(_ps, _name, Engine.External.GetSkinningMode(), Defines);
+			RememberStage(_ps, _name, Defines);
 			ref_ps(_ps).swap(Result);
 			IsNew = true;
 		}
@@ -426,7 +419,7 @@ ref_gs	CResourceManager::_CreateGS			(const char* _name, const ShaderExternalMap
 			_gs = new SGS();
 			_gs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
 			m_gs.insert(std::make_pair(_gs->set_name(name), _gs));
-			RememberStage(_gs, _name, Engine.External.GetSkinningMode(), Defines);
+			RememberStage(_gs, _name, Defines);
 			ref_gs(_gs).swap(Result);
 			IsNew = true;
 		}
@@ -500,11 +493,10 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 	Msg	("! ERROR: Failed to find compiled geometry shader '%s'",*gs->cName);
 }
 
-void CResourceManager::RememberStage(xr_resource_uniq* stage, const char* source, int skinning, const ShaderExternalMap& Defines)
+void CResourceManager::RememberStage(xr_resource_uniq* stage, const char* source, const ShaderExternalMap& Defines)
 {
 	StageCompileInfo info;
 	info.source = source;
-	info.skinning = skinning;
 	info.options = Defines;
 	m_stage_info[stage] = std::move(info);
 }
@@ -536,19 +528,6 @@ struct ShaderCacheBypassScope
 {
 	ShaderCacheBypassScope() { RImplementation.SetShaderCacheBypass(true); }
 	~ShaderCacheBypassScope() { RImplementation.SetShaderCacheBypass(false); }
-};
-
-struct SkinningScope
-{
-	int saved;
-	explicit SkinningScope(int mode) : saved(Engine.External.GetSkinningMode())
-	{
-		Engine.External.SetSkinningMode(mode);
-	}
-	~SkinningScope()
-	{
-		Engine.External.SetSkinningMode(saved);
-	}
 };
 
 void CResourceManager::RecompileDX12Shaders()
@@ -587,7 +566,6 @@ void CResourceManager::RecompileDX12Shaders()
 			return -1;
 		}
 
-		SkinningScope skinning(info->second.skinning);
 		void* result = stage;
 		const HRESULT hr = RImplementation.shader_compile(
 			*stage->cName,

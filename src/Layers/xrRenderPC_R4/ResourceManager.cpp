@@ -332,7 +332,6 @@ ref_shader CResourceManager::Create(const char* s_shader, const char* s_textures
 		pShader->src_textures = s_textures;
 		pShader->src_constants = s_constants;
 		pShader->src_matrices = s_matrices;
-		pShader->src_skinning = Engine.External.GetSkinningMode();
 	}
 
 	return pShader;
@@ -346,23 +345,18 @@ void CResourceManager::RecompileShaders()
 	}
 	ShaderCreateScope Scope(true);
 
-	const int skinning = Engine.External.GetSkinningMode();
-
 	for (size_t i = 0; i < v_shaders.size(); ++i)
 	{
 		Shader* S = v_shaders[i];
 		if (!S->src_shader)
 			continue;
 
-		Engine.External.SetSkinningMode(S->src_skinning);
 		ref_shader N = _Compile(S->src_shader.c_str(), S->src_textures.c_str(), S->src_constants.c_str(), S->src_matrices.c_str());
 		if (N == S)
 			continue;
 
 		S->_copy(*N);
 	}
-
-	Engine.External.SetSkinningMode(skinning);
 }
 
 void CResourceManager::Delete(const Shader* S)

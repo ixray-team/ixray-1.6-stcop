@@ -549,7 +549,7 @@ void CEditorSceneSubmit::DrawSingleInstanced(GfxCmdList& Cmd, CEditableSurfaceVi
 
 		// Which shader the copy carries: its source and whether it is the surface's regular or instanced one
 		Shader* Carried = Visual.shader._get();
-		Msg("! [EditorSceneSubmit]   carried shader '%s' textures '%s' skinning %d", Carried ? Carried->src_shader.c_str() : "?", Carried ? Carried->src_textures.c_str() : "?", Carried ? Carried->src_skinning : -2);
+		Msg("! [EditorSceneSubmit]   carried shader '%s' textures '%s'", Carried ? Carried->src_shader.c_str() : "?", Carried ? Carried->src_textures.c_str() : "?");
 		if (Visual.Surface)
 		{
 			Msg("! [EditorSceneSubmit]   surface shader '%s' texture '%s': carried == regular %d, carried == instanced %d", Visual.Surface->_ShaderName(), Visual.Surface->_Texture(),

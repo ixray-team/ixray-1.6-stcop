@@ -56,11 +56,11 @@ IC bool GfxCmdList::PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32
 ICF void GfxCmdList::SetDrawBase(u32 VertexBase, u32 Flags)
 {
 	const CBDraw& Current = Constants.Read<CBDraw>();
-	if (Current.draw_vertex_base != VertexBase || Current.draw_source_base != 0 || Current.draw_flags != Flags)
+	if (Current.draw_vertex_base != VertexBase || Current.draw_source_base != SourceBase || Current.draw_flags != Flags)
 	{
 		CBDraw& Draw = Constants.Write<CBDraw>();
 		Draw.draw_vertex_base = VertexBase;
-		Draw.draw_source_base = 0;
+		Draw.draw_source_base = SourceBase;
 		Draw.draw_flags = Flags;
 	}
 }
@@ -135,6 +135,7 @@ IC void GfxCmdList::SetGeometry(SGeometry* _geom)
 	SetIndices(_geom->ib);
 	GeomSource = _geom->Source;
 	GeomPage = _geom->Page;
+	SourceBase = 0;
 }
 
 IC void GfxCmdList::ApplyVertexLayout()
