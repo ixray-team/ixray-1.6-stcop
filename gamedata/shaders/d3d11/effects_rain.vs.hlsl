@@ -11,15 +11,17 @@ struct v2p
 };
 
 // Vertex
-void main(in v_TL I, out v2p O)
+void main(PULL_INPUT, out v2p O)
 {
-	O.Point = mul(m_WV, I.P);
-    O.HPos = mul(m_WVP, I.P);
-	O.World = mul(m_W, I.P);
+	RingVertex V = PullRing(VertexId);
+	float4 P = float4(V.P, 1.0f);
+
+	O.Point = mul(m_WV, P);
+    O.HPos = mul(m_WVP, P);
+	O.World = mul(m_W, P);
 	
     O.HPos.xy += m_taa_jitter.xy * O.HPos.w;
 	
-    O.Tex0 = I.Tex0;
-    O.Color = I.Color.bgra;
+    O.Tex0 = V.UV;
+    O.Color = V.C;
 }
-

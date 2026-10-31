@@ -56,7 +56,6 @@ private:
 	ref_rt					RT_temp;
 	ref_shader				sh_BlurTR;
 	ref_shader				sh_BlurRT;
-	ref_geom				geom_Blur;
 	ref_shader				sh_World;
 	ref_geom				geom_World;
 	ref_shader				sh_Screen;

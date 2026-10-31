@@ -5,25 +5,16 @@
 #include "dxDebugRender.h"
 #include "dxUIShader.h"
 
-#include "dx10BufferUtils.h"
-
 dxDebugRender DebugRenderImpl;
 
 dxDebugRender::dxDebugRender()
 {
 	m_lines.reserve			(line_vertex_limit);
-	m_dbgVB = nullptr;
 }
 
 void dxDebugRender::Init()
 {
-	R_ASSERT(RHIUtils::CreateVertexBuffer(
-		&m_dbgVB,
-		nullptr,
-		line_vertex_limit * 2,
-		false));
-
-	m_dbgGeom.create(FVF::F_L, m_dbgVB, nullptr);
+	m_dbgGeom.create(EGeomSource::Ring);
 	m_dbgShaders[dbgShaderWorld].create("debug_draw");
 }
 
@@ -31,9 +22,6 @@ void dxDebugRender::Shutdown()
 {
 	m_dbgShaders[dbgShaderWorld].destroy();
 	m_dbgGeom.destroy();
-
-	m_dbgVB->Release();
-	m_dbgVB = nullptr;
 }
 
 void dxDebugRender::Render()
@@ -43,16 +31,15 @@ void dxDebugRender::Render()
 
 	GPU_EVENT(DebugRender);
 	GfxCmdList& Cmd = RImplementation.Imm();
+	const size_t MaxLines = Cmd.Vertex.GetCapacity() / 2;
 	size_t offset = 0;
 	while (offset < m_lines.size())
 	{
-		size_t drawCount = std::min((size_t)line_vertex_limit / sizeof(std::pair<FVF::L, FVF::L>), m_lines.size() - offset);
+		size_t drawCount = std::min(MaxLines, m_lines.size() - offset);
 
-		m_dbgVB->UpdateSubresource
-		(
-			m_lines.data() + offset,
-			drawCount * sizeof(std::pair<FVF::L, FVF::L>)
-		);
+		u32 vOffset;
+		CopyMemory(Cmd.Vertex.Lock(u32(drawCount * 2), EVertexFormat::L, vOffset), m_lines.data() + offset, drawCount * sizeof(std::pair<FVF::L, FVF::L>));
+		Cmd.Vertex.Unlock(u32(drawCount * 2));
 
 		Cmd.SetObjectTransform(Fidentity);
 		Cmd.SetView(Device.mView, Device.mProject);
@@ -62,7 +49,7 @@ void dxDebugRender::Render()
 		}
 		Cmd.SetPass(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
 		Cmd.SetGeometry(m_dbgGeom);
-		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, drawCount * 2, 0);
+		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, u32(drawCount * 2), vOffset);
 
 		offset += drawCount;
 	}

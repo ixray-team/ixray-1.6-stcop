@@ -1,12 +1,5 @@
 #include "common.hlsli"
 
-struct vv
-{
-    float4 P : POSITION;
-    float2 tc : TEXCOORD0;
-    float4 c : COLOR0;
-};
-
 struct v2p
 {
     float2 tc : TEXCOORD0;
@@ -18,19 +11,19 @@ struct v2p
 };
 
 
-v2p main(vv v)
+v2p main(PULL_INPUT)
 {
     v2p o;
+    RingVertex V = PullRing(VertexId);
+    float4 P = float4(V.P, 1.0f);
 
-    o.hpos = mul(m_WVP, v.P); // xform, input in world coords
-    //	o.hpos 		= mul	(m_VP, v.P);		// xform, input in world coords
-    o.tc = v.tc; // copy tc
-    o.c = unpack_D3DCOLOR(v.c); // copy color
+    o.hpos = mul(m_WVP, P); // xform, input in world coords
+    o.tc = V.UV;
+    o.c = V.C;
 
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
-    o.tctexgen.xyz = mul(m_WV, v.P).xyz;
+    o.tctexgen.xyz = mul(m_WV, P).xyz;
 	
-    o.fog = 1.0f - calc_fogging(v.P.xyz); // fog, input in world coords
+    o.fog = 1.0f - calc_fogging(V.P); // fog, input in world coords
     return o;
 }
-

@@ -8,8 +8,9 @@ struct RainInstance
 };
 StructuredBuffer<RainInstance> RainInstances;
 
-RainVertex main(v_TL I, uint InstanceID : SV_InstanceID)
+RainVertex main(PULL_INPUT, uint InstanceID : SV_InstanceID)
 {
+	RingVertex I = PullRing(VertexId);
 	RainInstance Drop = RainInstances[InstanceID];
 	float3 Head = mul(m_V, float4(Drop.Position, 1.0f));
 	float3 Direction = mul((float3x3)m_V, Drop.Direction);
@@ -25,5 +26,5 @@ RainVertex main(v_TL I, uint InstanceID : SV_InstanceID)
 	float HalfLength = lerp(min(RainShape.x, RainShape.y), RainShape.y, sqrt(saturate(Len2)));
 	// Keep the leading edge at Head for every scale and viewing angle; only the tail changes length.
 	float3 Point = Head + Radius * (AxisX * I.P.x * RainShape.x + AxisY * (I.P.y + 1.0f) * HalfLength);
-	return RainProject(Point, I.Tex0, AxisX, AxisY, 1.0f);
+	return RainProject(Point, I.UV, AxisX, AxisY, 1.0f);
 }

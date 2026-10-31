@@ -10,6 +10,7 @@ void CEditorDrawContext::OnDeviceCreate()
 	WireShader.create("editor\\wire");
 	SelectionShader.create("editor\\selection");
 	ShaderTL.create("editor\\default");
+	TerrainShader.create("editor\\terrain");
 }
 
 void CEditorDrawContext::OnDeviceDestroy()
@@ -19,6 +20,7 @@ void CEditorDrawContext::OnDeviceDestroy()
 	WireShader.destroy();
 	SelectionShader.destroy();
 	ShaderTL.destroy();
+	TerrainShader.destroy();
 
 	_RELEASE(DetailInstanceSRV);
 	_RELEASE(DetailInstanceBuffer);

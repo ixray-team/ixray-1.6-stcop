@@ -91,7 +91,7 @@ struct RENDER_API resptrcode_geom:
 	void 				create			(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	void 				create			(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	void				create			(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
-	void				create			(EGeomSource Source, u32 Page = 0);
+	void				create			(EGeomSource Source, u32 Page = 0, IRHIBuffer* RingIndices = nullptr);
 	void				destroy			()			{ _set(nullptr);		}
 	u32					stride			()	const	{ return _get()->vb_stride;	}
 };

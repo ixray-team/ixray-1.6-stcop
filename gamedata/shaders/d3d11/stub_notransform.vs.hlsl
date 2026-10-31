@@ -1,14 +1,14 @@
 #include "common_iostructs.hlsli"
 
 // Vertex
-v2p_TL main(v_TL I)
+v2p_TL main(PULL_INPUT)
 {
     v2p_TL O;
+    RingVertex V = PullRing(VertexId);
 
-    O.HPos = I.P;
-    O.Tex0 = I.Tex0;
-    //	Some shaders that use this stub don't need Color at all
-    O.Color = I.Color.bgra; //	swizzle vertex colour
+    O.HPos = float4(V.P, 1.0f);
+    O.Tex0 = V.UV;
+    O.Color = V.C;
 
     return O;
 }

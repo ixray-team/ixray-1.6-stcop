@@ -136,4 +136,23 @@ PulledVertex PullVertex(uint VertexId)
 	return Decode(LoadPacked(VertexIndex(VertexId)));
 }
 
+struct RingVertex
+{
+	float3 P;
+	float2 UV;
+	float4 C;
+	uint X;
+};
+
+RingVertex PullRing(uint VertexId)
+{
+	PackedVertex V = LoadPacked(VertexIndex(VertexId));
+	RingVertex O;
+	O.P = V.P;
+	O.UV = DecodeUV(V.TF, V.UV);
+	O.C = DecodeU8x4(V.C);
+	O.X = V.X;
+	return O;
+}
+
 #endif

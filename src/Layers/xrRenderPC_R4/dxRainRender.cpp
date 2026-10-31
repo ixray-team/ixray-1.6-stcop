@@ -60,10 +60,9 @@ bool dxRainRender::InstanceStream::Upload(const void* Data, u32 Count, u32 Strid
 
 dxRainRender::dxRainRender()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
 	AirShader.create("effects\\rain_instanced", "fx\\hud_rain");
 	ImpactShader.create("effects\\rain_impact", "fx\\hud_rain");
-	Geometry.create(FVF::F_LIT, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+	Geometry.create(EGeomSource::Ring);
 	DropBounds.set(Fvector().set(0.f, 0.f, 0.f), 1.f);
 }
 
@@ -108,12 +107,14 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 	Cmd.SetColorWriteEnable();
 	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	u32 VertexOffset = 0;
-	auto* Vertices = static_cast<FVF::LIT*>(Cmd.Vertex.Lock(4, sizeof(FVF::LIT), VertexOffset));
+	auto* Vertices = static_cast<FVF::LIT*>(Cmd.Vertex.Lock(6, EVertexFormat::LIT, VertexOffset));
 	Vertices[0].set(-1.f, -1.f, 0.f, 0xffffffff, 0.f, 1.f);
 	Vertices[1].set(-1.f, 1.f, 0.f, 0xffffffff, 0.f, 0.f);
 	Vertices[2].set(1.f, -1.f, 0.f, 0xffffffff, 1.f, 1.f);
 	Vertices[3].set(1.f, 1.f, 0.f, 0xffffffff, 1.f, 0.f);
-	Cmd.Vertex.Unlock(4, sizeof(FVF::LIT));
+	Vertices[4] = Vertices[2];
+	Vertices[5] = Vertices[1];
+	Cmd.Vertex.Unlock(6);
 
 	auto Draw = [&](ref_shader& Shader, InstanceStream& Stream, const void* Data, u32 Count, u32 Stride, u32 Children, float Radius)
 	{
@@ -136,7 +137,7 @@ void dxRainRender::Render(CEffect_Rain& Owner)
 		Post.RainColor.set(Owner.RainColor.x, Owner.RainColor.y, Owner.RainColor.z, Owner.RainDropsOpacity * g_RainDropsOpacity);
 		Post.RainShading.set(Pbr ? 1.f : 0.f, g_RainDropsColorBlend, g_RainDropsTransmission, g_RainDropsRefraction);
 		Cmd.SetResource(ERHI_SHADER_TYPE::VS, Slot, Stream.View);
-		Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, Count * Children, 0, VertexOffset, 0);
+		Cmd.DrawInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, Count * Children, VertexOffset);
 		Cmd.SetResource(ERHI_SHADER_TYPE::VS, Slot, nullptr);
 		GRHI->ShaderResourceCache->Apply();
 	};

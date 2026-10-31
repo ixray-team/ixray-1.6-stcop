@@ -1,29 +1,19 @@
 #include "common.hlsli"
-#include "common_iostructs.hlsli"
+#include "shared\post_cb.hlsli"
 
-
-// Vertex
-v2p_postpr main(v_postpr I)
+v2p_postpr main(uint VertexId : SV_VertexID)
 {
     v2p_postpr O;
+    uint Corner = (0x123210u >> (VertexId * 4u)) & 0xFu;
+    float2 S = float2(Corner >> 1u, ~Corner & 1u);
+    float2 P = PostRect.xy + S * PostRect.zw + 0.5f;
 
-    //	O.HPos	= I.P;
-
-    {
-        I.P.xy += 0.5f;
-        //		O.HPos.x = I.P.x/1024 * 2 - 1;
-        //		O.HPos.y = (I.P.y/768 * 2 - 1)*-1;
-        O.HPos.x = I.P.x * screen_res.z * 2 - 1;
-        O.HPos.y = (I.P.y * screen_res.w * 2 - 1) * -1;
-        O.HPos.zw = I.P.zw;
-    }
-
-    O.Tex0 = I.Tex0;
-    O.Tex1 = I.Tex1;
-    O.Tex2 = I.Tex2;
-
-    O.Color = I.Color.bgra; //	swizzle vertex colour
-    O.Gray = I.Gray.bgra; //	swizzle vertex colour
+    O.HPos = float4(P * screen_res.zw * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f), 0.0f, 1.0f);
+    O.Tex0 = lerp(PostUV[0].xy, PostUV[0].zw, S);
+    O.Tex1 = lerp(PostUV[1].xy, PostUV[1].zw, S);
+    O.Tex2 = lerp(PostUV[2].xy, PostUV[2].zw, S);
+    O.Color = PostColor[0];
+    O.Gray = PostColor[1];
 
     return O;
 }

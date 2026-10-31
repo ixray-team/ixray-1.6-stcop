@@ -7,17 +7,12 @@ dxUIRender UIRenderImpl;
 
 void dxUIRender::CreateUIGeom()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
-	hGeom_L.create(FVF::F_L, Cmd.Vertex.Buffer(), nullptr);
-	hGeom_TL.create(FVF::F_TL, Cmd.Vertex.Buffer(), nullptr);
-	hGeom_LIT.create(FVF::F_LIT, Cmd.Vertex.Buffer(), nullptr);
+	hGeom.create(EGeomSource::Ring);
 }
 
 void dxUIRender::DestroyUIGeom()
 {
-	hGeom_L = nullptr;
-	hGeom_TL = nullptr;
-	hGeom_LIT = nullptr;
+	hGeom = nullptr;
 }
 
 void dxUIRender::SetShader(IUIShader &shader)
@@ -98,15 +93,15 @@ void** dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePoint
 	switch(m_PointType)
 	{
 	case pttLIT:
-		LIT_start_pv	= (FVF::LIT*)Cmd.Vertex.Lock(m_iMaxVerts,hGeom_LIT.stride(),vOffset);
+		LIT_start_pv	= (FVF::LIT*)Cmd.Vertex.Lock(m_iMaxVerts,EVertexFormat::LIT,vOffset);
 		LIT_pv			= LIT_start_pv;
 		return (void**)&LIT_pv;
 	case pttTL:
-		TL_start_pv		= (FVF::TL*)Cmd.Vertex.Lock(m_iMaxVerts,hGeom_TL.stride(),vOffset);
+		TL_start_pv		= (FVF::TL*)Cmd.Vertex.Lock(m_iMaxVerts,EVertexFormat::TL,vOffset);
 		TL_pv			= TL_start_pv;
 		return (void**)&TL_pv;
 	case pttL:
-		L_start_pv		= (FVF::L*)Cmd.Vertex.Lock(m_iMaxVerts,hGeom_L.stride(),vOffset);
+		L_start_pv		= (FVF::L*)Cmd.Vertex.Lock(m_iMaxVerts,EVertexFormat::L,vOffset);
 		L_pv			= L_start_pv;
 		return (void**)&L_pv;
 	}
@@ -125,29 +120,20 @@ void dxUIRender::FlushPrimitive()
 	{
 	case pttLIT:
 		p_cnt						= LIT_pv-LIT_start_pv;
-		VERIFY(u32(p_cnt)<=m_iMaxVerts);
-
-		Cmd.Vertex.Unlock		(u32(p_cnt),hGeom_LIT.stride());
-		Cmd.SetGeometry	 		(hGeom_LIT);
 		break;
 	case pttTL:
 		p_cnt						= TL_pv-TL_start_pv;
-		VERIFY(u32(p_cnt)<=m_iMaxVerts);
-
-		Cmd.Vertex.Unlock		(u32(p_cnt),hGeom_TL.stride());
-		Cmd.SetGeometry	 		(hGeom_TL);
 		Cmd.SetDepthEnable				(FALSE);
 		break;
 	case pttL:
 		p_cnt = L_pv - L_start_pv;
-		VERIFY(u32(p_cnt) <= m_iMaxVerts);
-
-		Cmd.Vertex.Unlock(u32(p_cnt), hGeom_L.stride());
-		Cmd.SetGeometry(hGeom_L);
 		break;
 	default:
 		NODEFAULT;
 	}
+	VERIFY(u32(p_cnt)<=m_iMaxVerts);
+	Cmd.Vertex.Unlock		(u32(p_cnt));
+	Cmd.SetGeometry	 		(hGeom);
 
 	//	Update data for primitive type
 	switch(PrimitiveType)
@@ -206,5 +192,5 @@ void dxUIRender::zb_enable(u32 val)
 
 u32 dxUIRender::VBuffMaxSize()
 {
-	return RImplementation.Imm().Vertex.GetSize();
+	return RImplementation.Imm().Vertex.GetCapacity() * sizeof(FVF::L);
 }

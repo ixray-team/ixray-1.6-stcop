@@ -2,38 +2,10 @@
 #include "R_Backend.h"
 #include "dxRenderDeviceRender.h"
 
-// Create Quad-IB
-void GfxCmdList::CreateQuadIB()
-{
-	const u32 dwTriCount = 4 * (4096 * 8);
-	const u32 dwIdxCount = dwTriCount * 2 * 3;
-	static u16 IndexBufferStatic[dwIdxCount];
-	u16* Indices = IndexBufferStatic;
-
-	int Cnt = 0;
-	int ICnt = 0;
-	for (int i = 0; i < dwTriCount; ++i)
-	{
-		Indices[ICnt++] = u16(Cnt + 0);
-		Indices[ICnt++] = u16(Cnt + 1);
-		Indices[ICnt++] = u16(Cnt + 2);
-
-		Indices[ICnt++] = u16(Cnt + 3);
-		Indices[ICnt++] = u16(Cnt + 2);
-		Indices[ICnt++] = u16(Cnt + 1);
-
-		Cnt += 4;
-	}
-
-	// Create immutable index buffer with initial data
-	R_ASSERT(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBufferStatic, dwIdxCount * 2));
-}
-
 // Device dependance
 void GfxCmdList::OnDeviceCreate	()
 {
 	EditorMode			= Device.IsEditorMode();
-	CreateQuadIB		();
 
 	xr_vector<u32> Iota(65536);
 	std::iota(Iota.begin(), Iota.end(), 0u);
@@ -43,7 +15,8 @@ void GfxCmdList::OnDeviceCreate	()
 	Heap = &RImplementation.Geometry;
 
 	// streams
-	Vertex.Create		();
+	Vertex.Create		(*this);
+	LegacyVertex.Create	();
 	Index.Create		();
 	Constants.Create();
 	SetView(ViewState);
@@ -55,10 +28,8 @@ void GfxCmdList::OnDeviceDestroy()
 {
 	// streams
 	Index.Destroy		();
+	LegacyVertex.Destroy();
 	Vertex.Destroy		();
-
-	// Quad
-	_RELEASE							(QuadIB);
 
 	_RELEASE(IotaVB);
 	_RELEASE(PulledLayout);

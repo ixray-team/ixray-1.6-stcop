@@ -7,10 +7,8 @@
 
 dxThunderboltRender::dxThunderboltRender()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
-	// geom
-	hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
-	hGeom_gradient.create(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.QuadIB);
+	hGeom_model.create(EGeomSource::Ring, 0, RImplementation.Imm().Index.Buffer());
+	hGeom_gradient.create(EGeomSource::Ring);
 }
 
 dxThunderboltRender::~dxThunderboltRender()
@@ -40,12 +38,12 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 
 	u32 vCount_Lock = pThRen->l_model->number_vertices;
 	u32 iCount_Lock = pThRen->l_model->number_indices;
-	IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)Cmd.Vertex.Lock(vCount_Lock, hGeom_model->vb_stride, v_offset);
+	IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)Cmd.Vertex.Lock(vCount_Lock, EVertexFormat::LIT, v_offset);
 	u16* i_ptr = Cmd.Index.Lock(iCount_Lock, i_offset);
 	// XForm verts
 	pThRen->l_model->transfer(owner.current_xform,v_ptr,0xffffffff,i_ptr,0,0.f,dv);
 	// Flush if needed
-	Cmd.Vertex.Unlock(vCount_Lock,hGeom_model->vb_stride);
+	Cmd.Vertex.Unlock(vCount_Lock);
 	Cmd.Index.Unlock(iCount_Lock);
 	Cmd.SetObjectTransform(Fidentity);
 	Cmd.SetPass(pThRen->l_model->shader);
@@ -63,7 +61,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 			Fvector p; u32 color; Fvector2 t;
 		} buff[4];
 	};
-	LITF* pv = (LITF*)Cmd.Vertex.Lock(8,hGeom_gradient.stride(),VS_Offset);
+	LITF* pv = (LITF*)Cmd.Vertex.Lock(8, EVertexFormat::LIT, VS_Offset);
 	// top
 	{
 		u32 c_val = iFloor(owner.current->m_GradientTop->fOpacity*owner.lightning_phase*255.f);
@@ -96,7 +94,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 		};
 		pv++;
 	}
-	Cmd.Vertex.Unlock(8,hGeom_gradient.stride());
+	Cmd.Vertex.Unlock(8);
 	Cmd.SetObjectTransform(Fidentity);
 	Cmd.SetGeometry(hGeom_gradient);
 	Cmd.SetPass(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader);
@@ -105,12 +103,12 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	Cmd.SetDepthEnable(true);
 	Cmd.SetDepthFunc(D3DCMP_LESSEQUAL);
 
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, VS_Offset);
+	Cmd.DrawQuads(1, VS_Offset);
 	Cmd.SetPass(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader);
 
 	//	Hack. Since lightning gradient uses sun shader override z write settings manually
 	Cmd.SetDepthEnable(true);
 	Cmd.SetDepthFunc(D3DCMP_LESSEQUAL);
 
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, VS_Offset+4);
+	Cmd.DrawQuads(1, VS_Offset + 4);
 }

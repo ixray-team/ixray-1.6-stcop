@@ -30,9 +30,8 @@ static t_node_tc node_tc[16]=
 
 void ESceneAIMapTool::OnDeviceCreate()
 {
-	GfxCmdList& Cmd = RImplementation.Imm();
 	m_Shader.create("editor\\ai_node","ed\\ed_ai_arrows_01");
-    m_RGeom.create(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.Index.Buffer());
+    m_RGeom.create(EGeomSource::Ring);
 }
 
 void ESceneAIMapTool::OnDeviceDestroy()
@@ -74,8 +73,8 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
 				HashRect(EContext.UI->CurrentView().m_Camera.GetPosition(), m_VisRadius, rect);
 
                 u32 vBase;
-                _VertexStream* Stream= &Cmd.Vertex;
-                FVF::LIT* pv		= (FVF::LIT*)Stream->Lock(block_size,m_RGeom->vb_stride,vBase);
+                VertexRing* Stream= &Cmd.Vertex;
+                FVF::LIT* pv		= (FVF::LIT*)Stream->Lock(block_size,EVertexFormat::LIT,vBase);
                 u32	cnt				= 0;
 
                 for (int x=rect.x1; x<=rect.x2; x++){
@@ -118,9 +117,9 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                                     cnt+=6;
                                     
                                     if (cnt>=block_size-6){
-                                        Stream->Unlock	(cnt,m_RGeom->vb_stride);
+                                        Stream->Unlock	(cnt);
                                         EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
-                                        pv 				= (FVF::LIT*)Stream->Lock(block_size,m_RGeom->vb_stride,vBase);
+                                        pv 				= (FVF::LIT*)Stream->Lock(block_size,EVertexFormat::LIT,vBase);
                                         cnt				= 0;
                                     }	
                                 }
@@ -129,7 +128,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                     }
                 }
 
-				Stream->Unlock		(cnt,m_RGeom->vb_stride);
+				Stream->Unlock		(cnt);
                 if (cnt) EDevice->DP	(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
                 EDevice->SetRS		(D3DRS_CULLMODE,		D3DCULL_CCW);
             }

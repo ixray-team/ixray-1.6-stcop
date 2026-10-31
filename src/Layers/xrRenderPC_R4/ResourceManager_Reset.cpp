@@ -24,40 +24,29 @@ void CResourceManager::reset_begin()
 	}
 
 	// destroy DStreams
- 	Cmd.old_QuadIB					= Cmd.QuadIB;
- 	_RELEASE							(Cmd.QuadIB);
-
 	Cmd.Index.reset_begin	();
-	Cmd.Vertex.reset_begin	();
+	Cmd.LegacyVertex.reset_begin	();
 }
 
 void CResourceManager::reset_end()
 {
 	GfxCmdList& Cmd = RImplementation.Imm();
 	// create RDStreams
-	Cmd.Vertex.reset_end		();
+	Cmd.LegacyVertex.reset_end		();
 	Cmd.Index.reset_end		();
 	Evict(); 
-	Cmd.CreateQuadIB();
 
 	// remark geom's which point to dynamic VB/IB
 	{
 		for (u32 _it=0; _it<v_geoms.size(); _it++)
 		{
 			SGeometry*	_G = v_geoms[_it];
-			if	(_G->vb == Cmd.Vertex.old_pVB) 
-				_G->vb = Cmd.Vertex.Buffer	();
+			if	(_G->vb == Cmd.LegacyVertex.old_pVB) 
+				_G->vb = Cmd.LegacyVertex.Buffer	();
 
-			// Here we may recover the buffer using one of 
-			// the immediate backend's index buffers.
-			// Do not remove else.
 			if	(_G->ib == Cmd.Index.old_pIB) 
 			{
 				_G->ib = Cmd.Index.Buffer	();
-			}
-			else if	(_G->ib == Cmd.old_QuadIB) 
-			{
-				_G->ib = Cmd.QuadIB;
 			}
 		}
 	}

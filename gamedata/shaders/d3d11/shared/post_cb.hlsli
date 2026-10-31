@@ -33,6 +33,9 @@ CBUFFER(CBPost, 7)
 	float4 rain_layers_params;
 	float4 rain_layers_direction;
 	float4 shadow_cache_destination;
+	float4 PostRect;
+	float4 PostUV[3];
+	float4 PostColor[2];
 	float gtao_parameters;
 	float puddle_constants;
 	float sharpening_intensity;

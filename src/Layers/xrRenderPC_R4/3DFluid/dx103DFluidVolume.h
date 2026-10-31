@@ -17,9 +17,6 @@ public:
 	virtual void	Release() override;
 
 private:
-	//	For debug purpose only
-	ref_geom		m_Geom;
-
 	dx103DFluidData	m_FluidData;
 };
 

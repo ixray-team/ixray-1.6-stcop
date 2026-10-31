@@ -11,8 +11,9 @@ struct ImpactInstance
 };
 StructuredBuffer<ImpactInstance> RainInstances;
 
-RainVertex main(v_TL I, uint InstanceID : SV_InstanceID)
+RainVertex main(PULL_INPUT, uint InstanceID : SV_InstanceID)
 {
+	RingVertex I = PullRing(VertexId);
 	ImpactInstance Impact = RainInstances[InstanceID / 4u];
 	uint Child = InstanceID % 4u;
 	float Phase = saturate(Impact.Age / max(Impact.Lifetime, 1e-4f));
@@ -60,5 +61,5 @@ RainVertex main(v_TL I, uint InstanceID : SV_InstanceID)
 	}
 	float3 Center = mul(m_V, float4(Position, 1.0f));
 	float3 Point = Center + AxisX * I.P.x * HalfWidth + AxisY * I.P.y * HalfHeight;
-	return RainProject(Point, I.Tex0, AxisX, AxisY, Fade);
+	return RainProject(Point, I.UV, AxisX, AxisY, Fade);
 }

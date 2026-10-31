@@ -6,6 +6,7 @@
 #define D3DUtilsH
 
 #include "RenderAPI.h"
+#include "GeometryHeap.h"
 #include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
@@ -20,19 +21,13 @@ namespace DebugDraw
 
 struct SPrimitiveBuffer{
     ref_geom				pGeom;
-    u32						v_cnt;
-    u32						i_cnt;
+    GeometryAlloc			Alloc = {};
     ERHI_PRIMITIVE_TOPOLOGY 	p_type;
     u32						p_cnt;
-	typedef xr_delegate<void()> TOnRender;
-    TOnRender				OnRender;
-    void 			RenderDIP();
-    void 			RenderDP();
 public:
-                            SPrimitiveBuffer():OnRender(0),pGeom(0){;}
-    void					CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices=0, u32 _i_cnt=0);
+    void					CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, const Fvector* vertices, u32 v_cnt, const u16* indices, u32 i_cnt);
     void					Destroy();
-    void					Render(){OnRender();}
+    void					Render();
 };
 
 //----------------------------------------------------
@@ -54,9 +49,7 @@ class RENDER_API CDrawUtilities:
     SPrimitiveBuffer		m_WireBox;
 	CGameFont* 				m_Font;
 public:
-	ref_geom 	vs_L;
-	ref_geom 	vs_TL;
-	ref_geom 	vs_LIT;
+	ref_geom 	RingGeom;
 protected:
     FVF::L*		m_DD_pv;
     FVF::L*		m_DD_pv_start;
@@ -70,9 +63,6 @@ public:
 public:
 	CDrawUtilities()
     {
-        vs_L	= 0;
-        vs_TL	= 0;
-        vs_LIT	= 0;
         m_DD_pv			= 0;
         m_DD_pv_start	= 0;
         m_DD_base		= 0;

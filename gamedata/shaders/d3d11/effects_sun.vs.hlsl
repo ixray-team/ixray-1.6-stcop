@@ -1,15 +1,15 @@
 #include "common.hlsli"
 
 // Vertex
-v2p_TL main(v_TL I)
+v2p_TL main(PULL_INPUT)
 {
     v2p_TL O;
+    RingVertex V = PullRing(VertexId);
 
-    //	O.HPos = I.P;
-    O.HPos = mul(m_VP, I.P); // xform, input in world coords
+    O.HPos = mul(m_VP, float4(V.P, 1.0f)); // xform, input in world coords
     O.HPos.z = O.HPos.w;
-    O.Tex0 = I.Tex0;
-    O.Color = I.Color.bgra; //	swizzle vertex colour
+    O.Tex0 = V.UV;
+    O.Color = V.C;
 
     return O;
 }

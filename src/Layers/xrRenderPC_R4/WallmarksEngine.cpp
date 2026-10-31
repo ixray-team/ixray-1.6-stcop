@@ -108,7 +108,7 @@ CWallmarksEngine::CWallmarksEngine	()
 {
 	static_pool.reserve		(256);
 	marks.reserve			(256);
-	hGeom.create			(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), nullptr);
+	hGeom.create			(EGeomSource::Ring);
 }
 
 CWallmarksEngine::~CWallmarksEngine	()
@@ -386,11 +386,11 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 }
 
 extern float r_ssaDISCARD;
-ICF void BeginStream(GfxCmdList& Cmd, ref_geom hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
+ICF void BeginStream(GfxCmdList& Cmd, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
 {
 	PROF_EVENT("BeginStream");
 	w_offset				= 0;
-	w_verts					= (FVF::LIT*)Cmd.Vertex.Lock	(MAX_TRIS*3,hGeom->vb_stride,w_offset);
+	w_verts					= (FVF::LIT*)Cmd.Vertex.Lock	(MAX_TRIS*3, EVertexFormat::LIT, w_offset);
 	w_start					= w_verts;
 }
 
@@ -398,7 +398,7 @@ ICF void FlushStream(GfxCmdList& Cmd, ref_geom hGeom, ref_shader shader, u32& w_
 {
 	PROF_EVENT("FlushStream");
 	u32 w_count					= u32(w_verts-w_start);
-	Cmd.Vertex.Unlock		(w_count,hGeom->vb_stride);
+	Cmd.Vertex.Unlock		(w_count);
 	if (w_count)
 	{
 		Cmd.SetPass(shader);
@@ -444,7 +444,7 @@ void CWallmarksEngine::Render(GfxCmdList& Cmd)
 	for (WMSlotVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
 		u32			w_offset;
 		FVF::LIT	*w_verts, *w_start;
-		BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
+		BeginStream	(Cmd, w_offset,w_verts,w_start);
 		wm_slot* slot			= *slot_it;	
 		// static wallmarks
 		{
@@ -459,7 +459,7 @@ void CWallmarksEngine::Render(GfxCmdList& Cmd)
 						u32 w_count		= u32(w_verts-w_start);
 						if ((w_count+W->verts.size())>=(MAX_TRIS*3)){
 							FlushStream	(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,false);
-							BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
+							BeginStream	(Cmd, w_offset,w_verts,w_start);
 						}
 						static_wm_render	(W,w_verts);
 					}
@@ -478,7 +478,7 @@ void CWallmarksEngine::Render(GfxCmdList& Cmd)
 		}
 		// Flush stream
 		FlushStream				(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,false);	//. remove line if !(suppress cull needed)
-		BeginStream				(Cmd, hGeom,w_offset,w_verts,w_start);
+		BeginStream				(Cmd, w_offset,w_verts,w_start);
 
 		// dynamic wallmarks
 		{
@@ -495,7 +495,7 @@ void CWallmarksEngine::Render(GfxCmdList& Cmd)
 					u32 w_count		= u32(w_verts-w_start);
 					if ((w_count+W->VCount())>=(MAX_TRIS*3)){
 						FlushStream	(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,true);
-						BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
+						BeginStream	(Cmd, w_offset,w_verts,w_start);
 					}
 
 					FVF::LIT	*w_save = w_verts;
