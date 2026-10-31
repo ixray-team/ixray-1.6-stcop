@@ -26,7 +26,6 @@ constexpr const char* kCinemaSettingsFile = "cinema_editor\\settings.ltx";
 constexpr const char* kCinemaPresetsFile = "cinema_editor\\presets.ltx";
 constexpr s32 kCinemaPresetVersion = 1;
 constexpr u32 kCinemaMaxPresets = 128;
-constexpr float kCinemaMinGroundNormalY = 0.5f;
 constexpr u32 kCinemaSceneMaxActors = 1024;
 constexpr u32 kCinemaSceneMaxPlaylist = 256;
 
@@ -694,6 +693,19 @@ static const SEditorTheme kCinemaThemes[] =
 };
 
 constexpr s32 kCinemaThemeCount = static_cast<s32>(std::size(kCinemaThemes));
+
+static bool CinemaResetRequested()
+{
+	if (!ImGui::BeginPopupContextItem())
+	{
+		return false;
+	}
+
+	const bool reset = ImGui::MenuItem("Reset to default");
+
+	ImGui::EndPopup();
+	return reset;
+}
 
 static bool CinemaContainsFilter(const char* text, const char* filter)
 {
@@ -1774,10 +1786,9 @@ private:
 	void BuildLibrary();
 	void BuildActorSources(SCinemaActor& actor);
 
-	bool AddActor(const Fvector& position, const char* visual, bool adjustGround);
+	bool AddActor(const Fvector& position, const char* visual);
 	bool AddActorInFront(const char* visual);
 	bool SetActorVisual(SCinemaActor& actor, const char* visual);
-	bool SnapActorToGround(SCinemaActor& actor); 
 	void SetActorItem(SCinemaActor& actor, const shared_str& section);
 	void RefreshActorItemBones(SCinemaActor& actor);
 	void DuplicateSelectedActor(bool withPlaylist, bool startPlayback);
@@ -1898,7 +1909,6 @@ private:
 	s32 ThemeIndex = 0;
 	bool SettingsLoaded = false;
 	bool SpawnFromCamera = false;
-	bool SnapToGround = true;
 	s32 TrimDragMarker = 0;
 	s32 TrimDragIndex = -1;
 	xr_string TrimDragKey;
@@ -1996,7 +2006,6 @@ void CCinemaFilmMakerManager::LoadSettings()
 	}
 
 	SpawnFromCamera = ini.read_if_exists<bool>("editor", "spawn_from_camera", SpawnFromCamera);
-	SnapToGround = ini.read_if_exists<bool>("editor", "snap_to_ground", SnapToGround);
 	TimelinesOpenByDefault = ini.read_if_exists<bool>("editor", "timelines_open", TimelinesOpenByDefault);
 
 	for (s32 index = 0; index < 64; ++index)
@@ -2042,7 +2051,6 @@ void CCinemaFilmMakerManager::SaveSettings()
 	CInifile ini(nullptr, FALSE, FALSE, FALSE);
 	ini.w_string("editor", "theme", GetTheme().Id);
 	ini.w_bool("editor", "spawn_from_camera", SpawnFromCamera);
-	ini.w_bool("editor", "snap_to_ground", SnapToGround);
 	ini.w_bool("editor", "timelines_open", TimelinesOpenByDefault);
 
 	for (u32 index = 0; index < static_cast<u32>(ExtraAnimationPaths.size()); ++index)
@@ -3229,7 +3237,7 @@ void CCinemaFilmMakerManager::RemovePlaylistEntry(SCinemaActor& actor, s32 index
 	}
 }
 
-bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visual, bool adjustGround)
+bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visual)
 {
 	if (visual == nullptr || visual[0] == '\0' || !VisualPathExists(visual))
 	{
@@ -3250,11 +3258,6 @@ bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visu
 	if (!SetActorVisual(*actor, visual))
 	{
 		return false;
-	}
-
-	if (adjustGround)
-	{
-		SnapActorToGround(*actor);
 	}
 
 	Actors.push_back(std::move(actor));
@@ -3281,7 +3284,7 @@ bool CCinemaFilmMakerManager::AddActorInFront(const char* visual)
 
 	direction.normalize_safe();
 	position.mad(direction, 3.0f);
-	return AddActor(position, visual, SnapToGround);
+	return AddActor(position, visual);
 }
 
 bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* visual)
@@ -3355,96 +3358,6 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 	return true;
 }
 
-bool CCinemaFilmMakerManager::SnapActorToGround(SCinemaActor& actor)
-{
-	if (actor.Model == nullptr || g_pGameLevel == nullptr)
-	{
-		return false;
-	}
-
-	float bottom = 0.0f;
-	float top = 2.0f;
-
-	if (actor.LocalBox.is_valid())
-	{
-		bottom = actor.LocalBox.min.y * actor.Scale.y;
-		top = actor.LocalBox.max.y * actor.Scale.y;
-	}
-
-	Fvector traceStart = actor.Position;
-	traceStart.y += top + 0.5f;
-
-	collide::rq_result result = {};
-
-	if (!g_pGameLevel->ObjectSpace.RayPick(traceStart, Fvector().set(0.0f, -1.0f, 0.0f), top + 200.0f, collide::rqtStatic, result, nullptr))
-	{
-		return false;
-	}
-
-	Fvector up = {};
-	up.set(0.0f, 1.0f, 0.0f);
-
-	if (result.element >= 0)
-	{
-		xr_vector<CDB::TRI>& triangles = g_pGameLevel->ObjectSpace.GetStaticTris();
-		xr_vector<Fvector>& vertices = g_pGameLevel->ObjectSpace.GetStaticVerts();
-
-		if (static_cast<size_t>(result.element) < triangles.size())
-		{
-			const CDB::TRI& triangle = triangles[result.element];
-			const size_t vertexCount = vertices.size();
-
-			if (triangle.verts[0] < vertexCount && triangle.verts[1] < vertexCount && triangle.verts[2] < vertexCount)
-			{
-				Fvector edge1 = {};
-				Fvector edge2 = {};
-
-				edge1.sub(vertices[triangle.verts[1]], vertices[triangle.verts[0]]);
-				edge2.sub(vertices[triangle.verts[2]], vertices[triangle.verts[0]]);
-
-				up.crossproduct(edge1, edge2);
-				up.normalize_safe();
-
-				if (up.y < 0.0f)
-				{
-					up.invert();
-				}
-			}
-		}
-	}
-
-	if (up.y < kCinemaMinGroundNormalY)
-	{
-		up.set(0.0f, 1.0f, 0.0f);
-	}
-
-	Fvector hit = {};
-	hit.set(actor.Position.x, traceStart.y - result.range, actor.Position.z);
-
-	const Fvector forward = actor.Orientation.k;
-	const float yaw = -atan2f(forward.x, forward.z);
-
-	Fvector flat = {};
-	flat.set(-sinf(yaw), 0.0f, cosf(yaw));
-
-	Fvector slopeDir = {};
-	slopeDir.mad(flat, up, -flat.dotproduct(up));
-
-	if (slopeDir.square_magnitude() > EPS)
-	{
-		slopeDir.normalize();
-
-		Fvector slopeRight = {};
-		slopeRight.crossproduct(up, slopeDir);
-
-		actor.Orientation.i.set(slopeRight);
-		actor.Orientation.j.set(up);
-		actor.Orientation.k.set(slopeDir);
-	}
-
-	actor.Position.mad(hit, up, -bottom);
-	return true;
-}
 
 static u16 CinemaFindBone(IKinematics* skeleton, const char* name)
 {
@@ -5594,21 +5507,17 @@ void CCinemaFilmMakerManager::DrawToolbar()
 		SaveSettings();
 	}
 
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::SetTooltip("New NPC appears where the camera looks instead of in front of the player");
-	}
+	const bool cameraSpawnHovered = ImGui::IsItemHovered();
 
-	layout.Item(CinemaButtonWidth("Snap to ground") + 26.0f);
-
-	if (ImGui::Checkbox("Snap to ground##spawn", &SnapToGround))
+	if (CinemaResetRequested() && SpawnFromCamera)
 	{
+		SpawnFromCamera = false;
 		SaveSettings();
 	}
 
-	if (ImGui::IsItemHovered())
+	if (cameraSpawnHovered)
 	{
-		ImGui::SetTooltip("Place the NPC on the ground on spawn, tilt it to the slope and keep it on surfaces when dragging the X and Z axes");
+		ImGui::SetTooltip("New NPC appears where the camera looks instead of in front of the player\nRight click to reset");
 	}
 
 	ImGui::BeginDisabled(selectedActor == nullptr);
@@ -5706,6 +5615,20 @@ void CCinemaFilmMakerManager::DrawToolbar()
 
 		ImGui::Separator();
 
+		if (ImGui::MenuItem("Reset editor settings"))
+		{
+			SpawnFromCamera = false;
+			ThemeIndex = 0;
+			TimelinesOpenByDefault = true;
+			TimelinesOpenDirty = true;
+			Snap = false;
+			TranslateStep = 0.1f;
+			RotateStepDeg = 5.0f;
+			SaveSettings();
+		}
+
+		ImGui::Separator();
+
 		if (Level != nullptr)
 		{
 			string_path sceneFolder = {};
@@ -5731,15 +5654,30 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	layout.Item(CinemaButtonWidth("Snap") + 20.0f);
 	ImGui::Checkbox("Snap##gizmo", &Snap);
 
+	if (CinemaResetRequested() && Snap)
+	{
+		Snap = false;
+	}
+
 	if (Snap)
 	{
 		layout.Item(110.0f);
 		ImGui::SetNextItemWidth(100.0f);
 		ImGui::DragFloat("Move##snap_step", &TranslateStep, 0.01f, 0.01f, 10.0f, "%.2f");
 
+		if (CinemaResetRequested())
+		{
+			TranslateStep = 0.1f;
+		}
+
 		layout.Item(140.0f);
 		ImGui::SetNextItemWidth(100.0f);
 		ImGui::DragFloat("Rotate step##snap_step", &RotateStepDeg, 0.5f, 0.5f, 180.0f, "%.1f");
+
+		if (CinemaResetRequested())
+		{
+			RotateStepDeg = 5.0f;
+		}
 	}
 }
 
@@ -5805,14 +5743,25 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 	bool loop = actor->Loop;
 
 	controls.Item(CinemaButtonWidth("Loop") + 20.0f);
-	if (ImGui::Checkbox("Loop##actor", &loop))
+
+	const auto applyLoop = [actor](bool value)
 	{
-		actor->Loop = loop;
+		actor->Loop = value;
 
 		if (actor->Animated != nullptr && actor->Motion.valid() && !actor->MotionFx && actor->PlaylistIndex < 0)
 		{
 			CinemaSetBlendLoop(actor->Animated, actor->Motion, actor->Loop);
 		}
+	};
+
+	if (ImGui::Checkbox("Loop##actor", &loop))
+	{
+		applyLoop(loop);
+	}
+
+	if (CinemaResetRequested() && actor->Loop)
+	{
+		applyLoop(false);
 	}
 
 	bool pingPong = actor->PingPong;
@@ -5822,6 +5771,12 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 	if (ImGui::Checkbox("Ping-pong##actor", &pingPong))
 	{
 		actor->PingPong = pingPong;
+		actor->PlayDirection = actor->Speed >= 0.0f ? 1.0f : -1.0f;
+	}
+
+	if (CinemaResetRequested() && actor->PingPong)
+	{
+		actor->PingPong = false;
 		actor->PlayDirection = actor->Speed >= 0.0f ? 1.0f : -1.0f;
 	}
 
@@ -5838,6 +5793,12 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 	if (ImGui::DragFloat("Speed##actor", &speed, 0.01f, -4.0f, 4.0f, "%.2f"))
 	{
 		actor->Speed = speed;
+		ApplySpeed(*actor);
+	}
+
+	if (CinemaResetRequested() && actor->Speed != 1.0f)
+	{
+		actor->Speed = 1.0f;
 		ApplySpeed(*actor);
 	}
 
@@ -5869,6 +5830,11 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 			actor->Position = position;
 		}
 
+		if (CinemaResetRequested())
+		{
+			actor->Position.set(0.0f, 0.0f, 0.0f);
+		}
+
 		Fvector hpb = {};
 		actor->Orientation.getHPB(hpb);
 		Fvector degrees = hpb;
@@ -5877,6 +5843,11 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		if (ImGui::DragFloat3("Rotation", &degrees.x, 0.5f, -3600.0f, 3600.0f, "%.1f"))
 		{
 			actor->Orientation.setHPB(deg2rad(degrees.x), deg2rad(degrees.y), deg2rad(degrees.z));
+		}
+
+		if (CinemaResetRequested())
+		{
+			actor->Orientation.setHPB(0.0f, 0.0f, 0.0f);
 		}
 
 		ImGui::TextDisabled("H / P / B, degrees");
@@ -5900,6 +5871,11 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 			actor->Scale = scale;
 		}
 
+		if (CinemaResetRequested())
+		{
+			actor->Scale.set(1.0f, 1.0f, 1.0f);
+		}
+
 		ImGui::SameLine();
 
 		if (ImGui::SmallButton("Reset##scale"))
@@ -5921,6 +5897,13 @@ void CCinemaFilmMakerManager::DrawClipTimelines(SCinemaActor& actor)
 
 	if (ImGui::Checkbox("Open timelines by default##cinema", &TimelinesOpenByDefault))
 	{
+		TimelinesOpenDirty = true;
+		SaveSettings();
+	}
+
+	if (CinemaResetRequested() && !TimelinesOpenByDefault)
+	{
+		TimelinesOpenByDefault = true;
 		TimelinesOpenDirty = true;
 		SaveSettings();
 	}
@@ -6134,6 +6117,12 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 			ApplySpeed(actor);
 		}
 
+		if (trim != nullptr && CinemaResetRequested())
+		{
+			trim->Speed = actor.Speed;
+			ApplySpeed(actor);
+		}
+
 		ImGui::SameLine();
 		ImGui::TextDisabled("base: %.2f", actor.Speed);
 
@@ -6144,6 +6133,11 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		if (trim != nullptr && ImGui::DragFloat("Blend##clip", &blendTime, 0.005f, 0.0f, 1.0f, "%.2f s"))
 		{
 			trim->Blend = blendTime;
+		}
+
+		if (trim != nullptr && CinemaResetRequested())
+		{
+			trim->Blend = 0.0f;
 		}
 
 		if (ImGui::IsItemHovered())
@@ -6176,6 +6170,11 @@ void CCinemaFilmMakerManager::DrawModelTab()
 
 	ImGui::SetNextItemWidth(-1.0f);
 	ImGui::InputTextWithHint("##cinema_ogf_filter", "Search .ogf", ModelFileFilter, sizeof(ModelFileFilter));
+
+	if (CinemaResetRequested())
+	{
+		ModelFileFilter[0] = '\0';
+	}
 
 	xr_vector<s32> filteredFiles;
 	filteredFiles.reserve(ModelFiles.size());
@@ -6282,6 +6281,11 @@ void CCinemaFilmMakerManager::DrawItemTab()
 
 	ImGui::SetNextItemWidth(-1.0f);
 	ImGui::InputTextWithHint("##cinema_item_filter", "Search items", ItemFilter, sizeof(ItemFilter));
+
+	if (CinemaResetRequested())
+	{
+		ItemFilter[0] = '\0';
+	}
 
 	xr_vector<s32> filteredItems;
 	filteredItems.reserve(HandItems.size());
@@ -6397,6 +6401,11 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 	const float addWidth = CinemaButtonWidth("Add");
 	ImGui::SetNextItemWidth(std::max(80.0f, availableWidth - addWidth - ImGui::GetStyle().ItemSpacing.x));
 	ImGui::InputTextWithHint("##cinema_clip_filter", "Search animations and sources", ClipFilter, sizeof(ClipFilter));
+
+	if (CinemaResetRequested())
+	{
+		ClipFilter[0] = '\0';
+	}
 	ImGui::SameLine();
 	ImGui::BeginDisabled(!hasSelectedClip);
 
@@ -6600,6 +6609,16 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 		if (actor.Animated != nullptr && actor.Motion.valid() && !actor.MotionFx && actor.PlaylistIndex < 0)
 		{
 			CinemaSetBlendLoop(actor.Animated, actor.Motion, actor.Loop);
+		}
+	}
+
+	if (CinemaResetRequested() && actor.Loop)
+	{
+		actor.Loop = false;
+
+		if (actor.Animated != nullptr && actor.Motion.valid() && !actor.MotionFx && actor.PlaylistIndex < 0)
+		{
+			CinemaSetBlendLoop(actor.Animated, actor.Motion, false);
 		}
 	}
 
@@ -7007,12 +7026,6 @@ void CCinemaFilmMakerManager::UpdateGizmo(SCinemaActor& actor)
 		}
 
 		actor.Position.mad(Gizmo.StartPosition, Gizmo.AxisDir, delta);
-
-		if (SnapToGround && Gizmo.Axis != EGizmoAxis::Y)
-		{
-			SnapActorToGround(actor);
-		}
-
 		return;
 	}
 
