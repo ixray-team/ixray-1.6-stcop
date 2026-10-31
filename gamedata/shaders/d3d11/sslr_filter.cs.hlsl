@@ -145,7 +145,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float NdotV = max(EPS, dot(O.Normal, -View));
 
-	[loop]
+	[unroll]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = mul(Rotation, Disk32_Normalized[i]) * scaled_screen_res.zw * DISK32_RADIUS;

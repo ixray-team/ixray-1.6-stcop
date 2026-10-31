@@ -93,6 +93,10 @@ DX12Surface* InternalDevice12::CreateTexture(const RHITextureDesc& requested, D3
         return nullptr;
     }
     _counters.Allocations.fetch_add(1, std::memory_order_relaxed);
+    if (native.Flags)
+    {
+        Prioritize(resource);
+    }
     desc.Height = native.Height;
     DX12Surface* surface = new DX12Surface(*this, desc, dimension, resource, D3D12_RESOURCE_STATE_COMMON);
     for (u32 subresource_idx = 0; subresource_idx < count; ++subresource_idx)

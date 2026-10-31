@@ -371,6 +371,7 @@ private:
     ID3D12CommandQueue* _queue = nullptr;
     ID3D12GraphicsCommandList* _commands = nullptr;
     ID3D12GraphicsCommandList1* _commands1 = nullptr;
+    ID3D12Device1* _device1 = nullptr;
     ID3D12Fence* _fence = nullptr;
     HANDLE _fenceEvent = nullptr;
     ID3D12DescriptorHeap* _resourceHeap = nullptr;
@@ -485,6 +486,7 @@ private:
     DX12Upload CreateUpload(u64 size);
     DX12Upload AcquireStream(u64 size);
     void RecycleStream(const DX12Upload& upload);
+    void Prioritize(ID3D12Pageable* object);
     void UpdateBuffers();
     void ReleaseBuffers();
     void CreateRootSignatures();

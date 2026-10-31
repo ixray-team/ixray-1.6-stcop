@@ -76,9 +76,6 @@ void InternalDevice12::PopGPUEvent(int index)
     auto& frame = _frames[u32(index) / QUERY_MAX_COUNT];
     const u32 slot = u32(index) % QUERY_MAX_COUNT;
     Commands()->EndQuery(frame.Timestamps, D3D12_QUERY_TYPE_TIMESTAMP, slot * 2 + 1);
-    _commands->ResolveQueryData(frame.Timestamps, D3D12_QUERY_TYPE_TIMESTAMP, slot * 2, 2,
-        frame.TimestampReadback, u64(slot) * 2 * sizeof(u64));
-    frame.StatsFence = PendingFence();
     R_ASSERT(_statsStack);
     --_statsStack;
 }
@@ -115,7 +112,14 @@ void InternalDevice12::EndGPUStats()
     {
         return;
     }
-    PopGPUEvent(_frameEvent);
+    if (_frameEvent >= 0)
+    {
+        auto& frame = _frames[u32(_frameEvent) / QUERY_MAX_COUNT];
+        PopGPUEvent(_frameEvent);
+        _commands->ResolveQueryData(frame.Timestamps, D3D12_QUERY_TYPE_TIMESTAMP, 0, u32(frame.Events.count) * 2,
+            frame.TimestampReadback, 0);
+        frame.StatsFence = PendingFence();
+    }
     _frameEvent = -1;
     _statsActive = false;
 }

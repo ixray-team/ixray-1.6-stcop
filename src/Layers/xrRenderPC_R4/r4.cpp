@@ -936,8 +936,7 @@ HRESULT	CRender::shader_compile(
 	const u32 options_crc = DefinesCRC(AllDefines);
 
 	Flags |= RHI_SHADER_OPTIMIZATION_LEVEL3;
-	if (Core.ParamsData.test(ECoreParams::debug_shaders))
-		Flags |= RHI_SHADER_DEBUG | RHI_SHADER_DEBUG_NAME_FOR_SOURCE;
+	Flags |= RHI_SHADER_DEBUG | RHI_SHADER_DEBUG_NAME_FOR_SOURCE;
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
 

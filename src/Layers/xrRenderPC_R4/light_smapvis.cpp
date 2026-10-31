@@ -16,6 +16,7 @@ void	smapvis::invalidate	()
 {
 	state		=	state_counting;
 	testQ_V		=	0;
+	testQ_frame	=	0;
 	frame_sleep	=	Device.dwFrame + ps_r__LightSleepFrames;
 	invisible.clear	();
 }
@@ -29,9 +30,13 @@ void	smapvis::begin		()
 		break;
 	case state_working:
 		// mark already known to be invisible visuals, set breakpoint
-		testQ_V							= 0;
-		testQ_id						= 0;
+		flushoccq						();
 		mark							();
+		if (testQ_V)
+		{
+			break;
+		}
+		testQ_id						= 0;
 		RImplementation.GraphMain.set_Feedback(this, test_current);
 		break;
 	case state_usingTC:
@@ -60,7 +65,7 @@ void	smapvis::end		()
 	case state_working:
 		// feedback should be called at this time -> clear feedback
 		// issue query
-		if (testQ_V)
+		if (testQ_V && testQ_frame <= Device.dwFrame)
 		{
 			RImplementation.occq_begin				(testQ_id);
 			RImplementation.GraphMain.marker					+= 1;
@@ -79,7 +84,7 @@ void	smapvis::end		()
 void smapvis::flushoccq()
 {
 	// the tough part
-	if (testQ_frame != Device.dwFrame)
+	if (testQ_frame > Device.dwFrame)
 	{
 		return;
 	}
