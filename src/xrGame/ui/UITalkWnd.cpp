@@ -17,6 +17,7 @@
 #include "../../xrEngine/CameraBase.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
 
 #include "GamePersistent.h"
 
@@ -269,6 +270,16 @@ void CUITalkWnd::Update()
 		if (nullptr == pOurGO || nullptr == pOtherGO)
 		{
 			HideDialog();
+			return;
+		}
+	}
+
+	if (!UITalkDialogWnd->IsShown() && GetHolder() && GetHolder()->TopInputReceiver() == this)
+	{
+		// Trade and upgrade windows hide the contents while the talk dialog stays in the input stack.
+		UITalkDialogWnd->Show();
+		if (!IsShown() || !m_pActor)
+		{
 			return;
 		}
 	}
