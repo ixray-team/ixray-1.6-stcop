@@ -623,7 +623,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		}
 
 		//if (IsGameTypeSingle())
-			//p1.set(get_LastFP2());
+		//p1.set(get_LastFP2());
 
 		Fmatrix launch_matrix;
 		launch_matrix.identity();
@@ -660,48 +660,50 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		d.mul(CRocketLauncher::m_fLaunchSpeed);
 		VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
 		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel); 
-
-		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
-		if (!IsGameTypeSingle())
+		
+		if (CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket())
 		{
-			if (!pGrenade)
+			if (!IsGameTypeSingle())
 			{
-				if (m_ammoTypes.size() > AmmoType.MagazineType && pSettings->line_exist(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name"))
-				{
-					shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
-					if (fake_grenade_name.size())
-					{
-						CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
-						pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
-					}
-				}
-
 				if (!pGrenade)
 				{
-					return;
+					if (m_ammoTypes.size() > AmmoType.MagazineType && pSettings->line_exist(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name"))
+					{
+						shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
+						if (fake_grenade_name.size())
+						{
+							CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+							pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
+						}
+					}
+
+					if (!pGrenade)
+					{
+						return;
+					}
 				}
 			}
+
+			VERIFY(pGrenade);
+			pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
+
+			if (Local() && OnServer())
+			{
+				VERIFY(m_magazine.size());
+				m_magazine.pop_back();
+				--AmmoElapsed.MagazineElapsed;
+				VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
+
+				NET_Packet P;
+				u_EventGen(P, GE_LAUNCH_ROCKET, ID());
+				P << getCurrentRocket()->ID();
+				u_EventSend(P);
+			}
 		}
-
-		VERIFY(pGrenade);
-		pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
-
-		if (Local() && OnServer())
-		{
-			VERIFY(m_magazine.size());
-			m_magazine.pop_back();
-			--AmmoElapsed.MagazineElapsed;
-			VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
-
-			NET_Packet P;
-			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
-			P << getCurrentRocket()->ID();
-			u_EventSend(P);
-		}
+		//режим стрельбы очередями
+		else
+			inherited::state_Fire(dt);
 	}
-	//режим стрельбы очередями
-	else
-		inherited::state_Fire(dt);
 }
 
 void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
