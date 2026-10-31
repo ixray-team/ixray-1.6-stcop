@@ -288,6 +288,8 @@ enum
 	R4FLAG_RAIN_PUDDLES = (1 << 21),
 	RFLAG_MT_SKELETONS = (1 << 22),
 	RFLAG_MT_MODEL_LOAD = (1 << 23),
+	R4FLAG_GTAO_HQ = (1 << 24),
+	R4FLAG_SSLR_HQ = (1 << 25),
 };
 
 // Registers the renderer console commands. The game calls it when the renderer is loaded;

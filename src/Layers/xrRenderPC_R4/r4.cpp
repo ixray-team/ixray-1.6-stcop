@@ -162,6 +162,8 @@ void CRender::create()
 
 	o.RainPuddles = LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
 	UpdateRainPuddleMode();
+	o.GtaoHq = ps_r2_ls_flags_ext.test(R4FLAG_GTAO_HQ);
+	o.SslrHq = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_HQ);
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
 
@@ -323,6 +325,8 @@ void CRender::reset_begin() {
 	}
 	o.RainPuddles = LightingModeIsDynamicRender() && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES);
 	UpdateRainPuddleMode();
+	o.GtaoHq = ps_r2_ls_flags_ext.test(R4FLAG_GTAO_HQ);
+	o.SslrHq = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_HQ);
 }
 
 void CRender::reset_end()
@@ -608,6 +612,8 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ !o.dx11_use_legacy_light && o.offscreen_reflecitons, "USE_OFFSCREEN_REFLECTIONS", "1" },
 		{ !o.dx11_use_legacy_light && o.deffered_reflecitons, "USE_SSLR_REFLECTIONS", "1" },
 		{ !!o.ProceduralRainPuddles, "USE_RAIN_PUDDLES", "1" },
+		{ !!o.GtaoHq, "USE_GTAO_HQ", "1" },
+		{ !!o.SslrHq, "USE_SSLR_HQ", "1" },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES), "USE_SOFT_PARTICLES", "1" },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_DOF), "USE_DOF", "1" },
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SCREEN_SPACE_HUD_SHADOWS), "USE_HUD_SHADOWS", "1" },

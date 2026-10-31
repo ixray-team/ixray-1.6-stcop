@@ -93,7 +93,7 @@ void main(vf I, out IXRayForward O)
     float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
+		float4 vslr = FastViewReflections(ReflectPoint, Reflect, 0.0f, Hash(I.hpos.xy + timers.x));
 		
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;

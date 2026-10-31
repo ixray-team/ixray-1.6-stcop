@@ -7,7 +7,6 @@
 
 #define USE_VASYAN_CUTOFF
 
-// #define VSLR_SLOW_BREAK	
 // #define SSLR_SLOW_BREAK
 
 float3 gbuf_unpack_position(float2 uv)
@@ -73,71 +72,76 @@ float BinaryRefinementHUD(inout float3 EndProj, float3 Reflect)
 	return HitDepth;
 }
 
-float4 FastViewReflections(float3 Point, float3 Reflect)
-{	
-	float RadiusS = fog_params.z * fog_params.z;
+#define VSLR_STEPS 12
+#define VSLR_GROWTH 1.5f
+
+// Ray march against the distance cube centred at the camera, from LStart (the part already traced on screen) to the fog distance.
+// Samples grow geometrically, Noise shifts all of them once per ray in that log domain. The binary refinement runs once, after the loop.
+float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noise)
+{
 	float DistanceS = dot(Point, Point);
-	
-	if(DistanceS >= RadiusS) 
+	float Range = fog_params.z - sqrt(DistanceS) - LStart;
+
+	if (DistanceS >= fog_params.z * fog_params.z || Range <= 0.0f)
 	{
 		return float4(Reflect, 0.0f);
 	}
-	
-	float3 SamplePoint = Reflect;
-	
-	float Step = rcp(SSLR_STEPS + 1) * 0.02f;
-	float L = 0.011f;
-	
-	Step *= fog_params.z - sqrt(DistanceS);
-	
-	bool Fade = false;
-	
+
+	float Scale = Range / (pow(VSLR_GROWTH, VSLR_STEPS) - 1.0f);
+	float Growth = pow(VSLR_GROWTH, Noise);
+
+	float3 SamplePoint = Point;
+	float L = LStart + 0.011f;
+	float PrevL = L;
+
 	float Delta = 0.0f;
 	float OldDelta = 0.0f;
-	float SampleHitPointLen = 0;
-	
-	float MaxLen = 0; //s_env_dist.SampleLevel(smp_nofilter, Reflect.xyz, 0).x; MaxLen *= MaxLen;
+	float SampleHitPointLen = 0.0f;
+	float MaxLen = 0.0f;
+	bool Crossed = false;
 
 	[loop]
-	for(uint i = 0; i < SSLR_STEPS; ++i)
+	for (uint i = 0; i < VSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(SamplePoint.xyz * timers.x), float3(12.989, 42.364, 78.233))));
-		L += JStep;
-		
-		Step *= 1.342264f;
-		
-		SamplePoint.xyz = Point.xyz + Reflect * L;
-		
-		SampleHitPointLen = s_env_dist.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).x;
+		PrevL = L;
+		L = LStart + 0.011f + Scale * (Growth - 1.0f);
+		Growth *= VSLR_GROWTH;
+
+		SamplePoint = Point + Reflect * L;
+
+		SampleHitPointLen = s_env_dist.SampleLevel(smp_nofilter, SamplePoint, 0).x;
 		SampleHitPointLen *= SampleHitPointLen;
-		
+
 		MaxLen = max(MaxLen, SampleHitPointLen);
 		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
-		
-		
+
 		if (Delta > 0 && OldDelta <= 0)
 		{
-			float3 JReflect = Reflect * JStep * 0.5f;
-			SamplePoint.xyz -= JReflect;
-			
-			SampleHitPointLen = BinaryRefinement(SamplePoint.xyz, JReflect);
-			MaxLen = max(MaxLen, SampleHitPointLen);
-		
-			Delta = dot(SamplePoint.xyz, SamplePoint.xyz) - SampleHitPointLen;
-			Fade = abs(Delta) / max(dot(SamplePoint.xyz, SamplePoint.xyz), SampleHitPointLen) < 0.1f;
-
-#ifdef VSLR_SLOW_BREAK
-			if(Fade)
-#endif
+			Crossed = true;
 			break;
 		}
-		
+
 		OldDelta = Delta;
 	}
-	
+
+	bool Fade = false;
+
+	[branch]
+	if (Crossed)
+	{
+		float3 JReflect = Reflect * (L - PrevL) * 0.5f;
+		SamplePoint -= JReflect;
+
+		SampleHitPointLen = BinaryRefinement(SamplePoint, JReflect);
+		MaxLen = max(MaxLen, SampleHitPointLen);
+
+		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
+		Fade = abs(Delta) / max(dot(SamplePoint, SamplePoint), SampleHitPointLen) < 0.1f;
+	}
+
 	SamplePoint = normalize(SamplePoint) * sqrt(SampleHitPointLen);
 	MaxLen = Fade ? 1.0f : 1.0f - saturate(2.5f * sqrt(MaxLen) * fog_params.w + fog_params.x);
-	
+
 	return float4(SamplePoint, MaxLen);
 }
 
@@ -252,7 +256,9 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 // when it dips below the cell minimum. A hit is reported once it is below level 0.
 Texture2D<float> s_hiz : register(t25);
 
-#define HIZ_MAX_ITERATIONS 64
+// Rays just above a surface cannot use the coarse levels and step a pixel or two per iteration: the cap is the trace distance
+#define HIZ_MAX_ITERATIONS 128
+#define HIZ_ROUGH_ITERATIONS 24
 #define HIZ_RAY_EPS 0.005f
 #define HIZ_THICKNESS 0.5f
 #define HIZ_THICKNESS_SCALE 0.05f
@@ -262,7 +268,8 @@ float HiZViewDepth(float Depth)
 	return m_P._34 / (Depth - m_P._33);
 }
 
-float4 HiZTraceSSR(float3 Point, float3 Reflect)
+// VslrStart: view-space length along the ray from which the cube march has to continue, -1 when the trace reached the fog distance on screen
+float4 HiZTraceSSR(float3 Point, float3 Reflect, uint MaxIterations, out float VslrStart)
 {
 	// Keep the end point in front of the near plane
 	float Near = -m_P._34 / m_P._33;
@@ -305,9 +312,10 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect)
 
 	int Level = 0;
 	uint Iteration = 0;
+	bool Hold = false;
 
 	[loop]
-	while (Level >= 0 && Iteration < HIZ_MAX_ITERATIONS && T < TMax)
+	while (Level >= 0 && Iteration < MaxIterations && T < TMax)
 	{
 		// Interior texels of level L cover [c, c + 1) << L pixels, the last one also covers the odd remainder
 		uint2 CellCount = max(HizSize >> uint(Level), 1u);
@@ -323,12 +331,23 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect)
 		float TSurface = Dir.z > 0.0f ? (SurfaceZ - Origin.z) * InvDir.z : 1e20f;
 
 		bool Above = Ray.z < SurfaceZ;
-		bool Skip = Above && TCell < TSurface;
 
-		T = Above ? min(TCell, TSurface) : T;
+		// Deeper than the thickness behind a level 0 surface the ray passes behind that object (grass, poles, characters)
+		// and goes on pixel by pixel, instead of ending as a miss at the first one
+		float SurfaceViewZ = HiZViewDepth(SurfaceZ);
+		bool Behind = Level == 0 && !Above && HiZViewDepth(Ray.z) - SurfaceViewZ > max(HIZ_THICKNESS, SurfaceViewZ * HIZ_THICKNESS_SCALE);
+
+		bool Skip = Above ? TCell < TSurface : Behind;
+
+		T = Above ? min(TCell, TSurface) : (Behind ? TCell : T);
 		Ray = Origin + Dir * T;
 
-		Level = min(Level + (Skip ? 1 : -1), MaxLevel);
+		// After a descent the parent cell has failed: going back up before the ray leaves it would fail again
+		// and cost two iterations per cell, grazing rays then run out of iterations in blocks of coarse cells
+		uint2 Parent = uint2(saturate(Ray.xy) * float2(HizSize)) >> uint(Level + 1);
+		Hold = Behind || (Skip ? Hold && all(Parent == (Cell >> 1u)) : true);
+
+		Level = Behind ? 0 : (Skip ? min(Level + (Hold ? 0 : 1), MaxLevel) : Level - 1);
 		++Iteration;
 	}
 
@@ -342,13 +361,19 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect)
 	float Thickness = max(HIZ_THICKNESS, SurfaceViewZ * HIZ_THICKNESS_SCALE);
 	Hit = Hit && HiZViewDepth(Ray.z) - SurfaceViewZ < Thickness;
 
+	// Screen parameter to view-space length: 1/w is linear on screen
+	float TEnd = min(T, TMax);
+	bool Resolved = TEnd >= 1.0f && RayLength >= fog_params.z;
+	VslrStart = Resolved ? -1.0f : 0.9f * RayLength * TEnd * StartProj.w / lerp(EndProj.w, StartProj.w, TEnd);
+
 	float3 HitPoint = GbufferGetPointRealUnjitter(Ray.xy, HitDepth);
 	return float4(HitPoint, Hit ? 1.0f : 0.0f);
 }
 
+// Water and legacy puddles: fixed-point search, the next length along the ray is the distance to the depth buffer point
+// under the current one
 float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 {
-#if 1 //ndef USE_OFFSCREEN_REFLECTIONS
     float2 ReflUV = 0.0;
     float3 HitPos, TestPos;
     float L = 0.025f, DeltaL = 0.0f;
@@ -368,7 +393,16 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
        HitPos = gbuf_unpack_position(ReflUV);
        if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))))
        {
-           L = length(Point - HitPos);
+           float NewL = length(Point - HitPos);
+
+           // Converged: the remaining iterations would read the same depth
+           bool Converged = abs(NewL - L) < L * 0.01f;
+           L = NewL;
+
+           if (Converged)
+           {
+               break;
+           }
        }
        else
        {
@@ -378,12 +412,6 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 	
     DeltaL = length(HitPos) - length(Point);
     Fade *= step(-0.4f, DeltaL);
-#else
-	float4 HitPos = FastViewReflectionsSSR(Point, Reflect, false);
-	float2 ReflUV = gbuf_unpack_uv(HitPos.xyz);
-	
-	float Fade = HitPos.w;
-#endif
 
     float Attention = GetBorderAtten(ReflUV, 0.125f);
 
