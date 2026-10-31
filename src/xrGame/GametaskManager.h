@@ -31,6 +31,7 @@ public:
 	vGameTasks&				GetGameTasks					();
 	CGameTask*				HasGameTask						(const CMapLocation* ml, bool only_inprocess);
 	CGameTask*				HasGameTask						(const shared_str& id, bool only_inprocess);
+	CGameTask*				FindMapLocationUser				(const CMapLocation* ml, const CGameTask* excluded);
 	CGameTask*				GiveGameTaskToActor				(const shared_str& id, u32 timeToComplete, bool bCheckExisting = true, u32 timer_ttl = 0);
 	CGameTask*				GiveGameTaskToActor				(CGameTask* t, u32 timeToComplete, bool bCheckExisting, u32 timer_ttl);
 	void test_groid();

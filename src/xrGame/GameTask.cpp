@@ -6,6 +6,7 @@
 #include "map_location.h"
 #include "map_spot.h"
 #include "map_manager.h"
+#include "GametaskManager.h"
 
 #include "Level.h"
 #include "Actor.h"
@@ -494,7 +495,12 @@ void SGameTaskObjective::CreateMapLocation( bool on_load )
 void SGameTaskObjective::RemoveMapLocations(bool notify)
 {
 	if ( m_linked_map_location && !notify)
-		Level().MapManager().RemoveMapLocation( m_linked_map_location );
+	{
+		if (CGameTask* user = Level().GameTaskManager()->FindMapLocationUser(m_linked_map_location, m_parent))
+			m_linked_map_location->m_owner_task_id = user->m_ID;
+		else
+			Level().MapManager().RemoveMapLocation( m_linked_map_location );
+	}
 
 	m_map_location			= nullptr;
 	m_linked_map_location	= nullptr;
