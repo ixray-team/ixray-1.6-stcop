@@ -134,6 +134,7 @@ ICF void GfxCmdList::SetVS(ref_vs& _vs)
 
 ICF void GfxCmdList::SetVS(SVS* _vs)
 {
+
 	CurrentVS = _vs;
 	m_pInputSignature = (_vs && _vs->signature) ? _vs->signature->signature : nullptr;
 	GRHI->SetShader(_vs ? _vs->vs : nullptr, ERHI_SHADER_TYPE::VS);
