@@ -148,12 +148,6 @@ void CUIInventoryWnd::Init()
 
 	inherited::InitGamepadSelectors		();
 
-	//pop-up menu
-	m_UIPropertiesBox					= new CUIPropertiesBox();
-	AttachChild							(m_UIPropertiesBox);
-	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
-	m_UIPropertiesBox->Hide				();
-
 	AttachChild							(&UIStaticTime);
 	xml_init.InitStatic					(uiXml, "time_static", 0, &UIStaticTime);
 
@@ -189,6 +183,11 @@ void CUIInventoryWnd::Init()
 	wndPointers["BagList"]				= m_pUIBagList;
 
 	ReadWndSelectorsInfo(uiXml, "ui_c_navi_inventory", m_ui_navigation_lists[mmInventory], wndPointers);
+
+	m_UIPropertiesBox = new CUIPropertiesBox();
+	AttachChild(m_UIPropertiesBox);
+	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0, 0), Fvector2().set(300, 300));
+	m_UIPropertiesBox->Hide();
 }
 
 void CUIInventoryWnd::Update()
