@@ -371,7 +371,7 @@ private:
 
 	bool m_bIsSafemode = false;
 
-	CAnimatorCamLerpEffectorConst* m_pCameraIdle = nullptr;
+	bool HasIdleCameraAnim = false;
 
 	void UpdateCameraIdleAnimation();
 
