@@ -37,7 +37,7 @@ extern RENDER_API float	ps_current_detail_density;
 
 RENDER_API void bwdithermap(int levels, int magic[16][16]);
 
-class light;
+class CFrustum;
 
 class RENDER_API CDetailManager
 {
@@ -219,7 +219,7 @@ public:
 
 	void							hw_Load			();
 	void							hw_Unload		();
-	void							hw_Render		(GfxCmdList& Cmd, light*L=NULL);
+	void							hw_Render		(GfxCmdList& Cmd, Fmatrix* CullXform = nullptr, bool Trimmed = false);
 
 	xr_map<u32, std::pair<IRHIBuffer*, IRHIShaderResourceView*>> DetailInstanceBuffers;
 
@@ -239,7 +239,7 @@ public:
 	xr_vector<u32>					TrampleActiveSlots;
 
 	template<typename T>
-	void							hw_Render_dump	(GfxCmdList& Cmd, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
+	void							hw_Render_dump	(GfxCmdList& Cmd, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum = nullptr, bool Trimmed = false);
 
 	// get unpacked slot
 	DetailSlot&						QueryDB			(int sx, int sz);

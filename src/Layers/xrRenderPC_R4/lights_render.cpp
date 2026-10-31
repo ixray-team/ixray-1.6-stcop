@@ -160,7 +160,7 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 						GetDetails() && GetDetails()->dtSlots &&
 						L->flags.bShadow && !decorative_light && L->SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 					{
-						GetDetails()->hw_Render(Cmd, L);
+						GetDetails()->hw_Render(Cmd, &L->X.S.combine);
 					}
 
 					L->X.S.transluent = false;

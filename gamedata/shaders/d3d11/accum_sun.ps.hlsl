@@ -3,6 +3,8 @@
 #include "ScreenSpaceContactShadows.hlsl"
 #include "shadow.hlsli"
 
+Texture2D s_sun_contact : register(t26);
+
 struct PSInput
 {
 	float4 hpos : SV_POSITION;
@@ -63,6 +65,12 @@ float4 main(PSInput I) : SV_Target
 		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz);
 	}
 #endif
+
+	// Direct light ends up scaled by min(Shadow, contact), so casters already in the shadow map are not darkened twice
+	if (Shadow > 0.0f)
+	{
+		Light *= GammaToLinear(min(1.0f, s_sun_contact.Load(int3(I.hpos.xy, 0)).x / Shadow));
+	}
 
 	if (O.MaterialID == FOLIAGE_ID || O.MaterialID == TERRAIN_ID)
 	{

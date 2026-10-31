@@ -697,6 +697,8 @@ CRenderTarget::CRenderTarget()
 	s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
 
 	s_accum_direct_volumetric.create("accum_volumetric_sun");
+	SunContactShader.create("sun_contact_shadows");
+	SunContactTarget.create(r2_RT_sun_contact, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
 
 	{
 		RHITextureDesc TextureDesc = {};

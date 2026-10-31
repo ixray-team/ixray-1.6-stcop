@@ -69,6 +69,24 @@ void CRenderTarget::accum_direct_cascade(GfxCmdList& Cmd)
 		m_clouds_shadow.mulA_44(m_xform);
 	}
 
+	if (g_SunContactSteps > 0)
+	{
+		GPU_EVENT(sun_contact_shadows);
+		DrawSQ(Cmd, SunContactShader, SunContactTarget, 0, [&]
+		{
+			CBLight& Light = Cmd.Constants.Write<CBLight>();
+			Light.Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0.0f);
+			Light.sun_contact_ray.set(float(g_SunContactSteps), g_SunContactLength, g_SunContactStart, 0.0f);
+			Light.sun_contact_depth.set(g_SunContactThickness, g_SunContactThicknessScale, g_SunContactBias, g_SunContactBiasScale);
+			Light.sun_contact_fade.set(g_SunContactFar, 1.0f / g_SunContactFade, 0.0f, 0.0f);
+		});
+	}
+	else
+	{
+		const float Lit[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		Cmd.ClearTarget(SunContactTarget->pRT, Lit);
+	}
+
 	//Render the AO and view-z into new rendertarget
 	phase_accumulator(Cmd);
 

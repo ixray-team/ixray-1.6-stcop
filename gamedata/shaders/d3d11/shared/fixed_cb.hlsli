@@ -84,6 +84,9 @@ CBUFFER(CBLight, 4)
 	float3 vMinBounds;
 	float3 vMaxBounds;
 	float4 FrustumClipPlane[6];
+	float4 sun_contact_ray;
+	float4 sun_contact_depth;
+	float4 sun_contact_fade;
 CBUFFER_END
 
 CBUFFER(CBPass, 5)

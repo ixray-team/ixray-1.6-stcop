@@ -194,6 +194,8 @@ private:
 	ref_shader					s_accum_mask	;
 	ref_shader					s_accum_direct	;
 	ref_shader					s_accum_direct_volumetric;
+	ref_shader					SunContactShader;
+	ref_rt						SunContactTarget;
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;

@@ -246,6 +246,7 @@ float		ps_r2_ls_squality			= 10.0f;				// 1.00f
 float		ps_r2_sun_bias				= -0.01f;			// 
 float		ps_r2_sun_far				= 160.f;
 float		ps_r2_sun_near				= 20.f;
+int			ps_r2_sun_details_cascades	= 2;
 float		ps_r2_sun_depth_far_scale	= 1.00000f;			// 1.00001f
 float		ps_r2_sun_depth_near_scale	= 1.0000f;			// 1.00001f
 float		ps_r2_sun_lumscale			= 1.1f;				// 1.0f
@@ -268,6 +269,16 @@ float		ps_r2_lt_smooth				= 1.f;				// 1.f
 float		ps_r2_slight_fade			= 0.6f;				// 1.f
 
 float		ps_r4_vslr_distance			= 0.7f;				// 1.f
+
+int			g_SunContactSteps			= 12;
+float		g_SunContactLength			= 0.5f;
+float		g_SunContactThickness		= 0.5f;
+float		g_SunContactThicknessScale	= 0.01f;
+float		g_SunContactBias			= 0.02f;
+float		g_SunContactBiasScale		= 0.002f;
+float		g_SunContactStart			= 2.0f;
+float		g_SunContactFar				= 250.0f;
+float		g_SunContactFade			= 50.0f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
@@ -988,6 +999,7 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask32,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
+	CMD4(CCC_Integer,	"r2_sun_details_cascades",&ps_r2_sun_details_cascades,0,	3		);
 	CMD3(CCC_Mask32,		"r2_lights_details",	&ps_r2_ls_flags,			R2FLAG_LIGHTS_DETAILS);
 	CMD3(CCC_Mask32,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
 	
@@ -1176,6 +1188,15 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 
 	CMD3(CCC_Mask32, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+	CMD4(CCC_Integer, "r4_sun_contact_steps", &g_SunContactSteps, 0, 32);
+	CMD4(CCC_Float, "r4_sun_contact_length", &g_SunContactLength, 0.05f, 2.0f);
+	CMD4(CCC_Float, "r4_sun_contact_thickness", &g_SunContactThickness, 0.01f, 2.0f);
+	CMD4(CCC_Float, "r4_sun_contact_thickness_scale", &g_SunContactThicknessScale, 0.0f, 0.1f);
+	CMD4(CCC_Float, "r4_sun_contact_bias", &g_SunContactBias, 0.001f, 0.5f);
+	CMD4(CCC_Float, "r4_sun_contact_bias_scale", &g_SunContactBiasScale, 0.0f, 0.02f);
+	CMD4(CCC_Float, "r4_sun_contact_start", &g_SunContactStart, 0.0f, 8.0f);
+	CMD4(CCC_Float, "r4_sun_contact_far", &g_SunContactFar, 10.0f, 1000.0f);
+	CMD4(CCC_Float, "r4_sun_contact_fade", &g_SunContactFade, 1.0f, 500.0f);
 	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);

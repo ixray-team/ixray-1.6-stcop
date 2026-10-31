@@ -22,6 +22,9 @@ public:
 	
 	ref_geom			hw_Geom;
 	GeometryAlloc		Alloc = {};
+	ref_geom			TrimGeom;
+	GeometryAlloc		TrimAlloc = {};
+	shared_str			Texture;
 
 	std::pair<IRHIBuffer*, IRHIShaderResourceView*> DetailGPUBoundBuffers[2][3];
 	virtual void	LoadGeom();
@@ -31,6 +34,7 @@ public:
 	void Load(IReader* S);
 	bool LoadFromDM(const char* dm_path);
 	void Optimize();
+	bool Trim(xr_vector<fvfVertexIn>& Verts, xr_vector<u16>& Inds) const;
 	virtual void Unload();
 
 	virtual void transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset);

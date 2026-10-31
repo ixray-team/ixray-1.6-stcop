@@ -10,7 +10,7 @@ static void SetOptimizedClear(RHITextureDesc& desc, const char* name)
     const float white[4] = { 1.f, 1.f, 1.f, 1.f };
     const float reflection[4] = { 0.f, 0.f, 0.f, 0.75f };
     const char* grayNames[] = { r2_RT_generic1, r2_RT_N, r2_RT_luminance_cur, r2_RT_dof_focus, r2_RT_dof_focus_prev };
-    const char* whiteNames[] = { r2_RT_ssao_temp, r2_RT_wboit_revealage, r2_RT_planar_color, r2_RT_smap_surf, "$user$temp" };
+    const char* whiteNames[] = { r2_RT_ssao_temp, r2_RT_sun_contact, r2_RT_wboit_revealage, r2_RT_planar_color, r2_RT_smap_surf, "$user$temp" };
     for (auto entry : grayNames)
     {
         if (!strcmp(name, entry))

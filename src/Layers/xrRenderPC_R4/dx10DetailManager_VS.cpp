@@ -270,12 +270,14 @@ void CDetailManager::hw_Unload()
 	TrampleActiveSlots.clear();
 }
 
-void CDetailManager::hw_Render(GfxCmdList& Cmd, light* L)
+void CDetailManager::hw_Render(GfxCmdList& Cmd, Fmatrix* CullXform, bool Trimmed)
 {
 	PROF_EVENT("CDetailManager::hw_Render");
 	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	Cmd.SetObjectTransform(Fidentity);
 
+	CFrustum Frustum;
+	const CFrustum* CullFrustum = CullXform ? &Frustum.CreateFromMatrix(*CullXform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR) : nullptr;
 	Fvector4 wave, wave_old;
 
 	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? ShaderVariant::NormalHQ : SE_R2_DETAIL_SHADOW_HQ;
@@ -287,7 +289,7 @@ void CDetailManager::hw_Render(GfxCmdList& Cmd, light* L)
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
-		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, CullFrustum, Trimmed);
 	}
 
 	// Wave1
@@ -295,21 +297,21 @@ void CDetailManager::hw_Render(GfxCmdList& Cmd, light* L)
 		PROF_EVENT("Wave1")
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
-		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, CullFrustum, Trimmed);
 	}
 
 	// Still
 	if(RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
-		hw_Render_dump<CDetail::SlotItem>(Cmd, wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, CullFrustum);
 	}
 
 	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 template<typename T>
-void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
+void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, const CFrustum* CullFrustum, bool Trimmed)
 {
 	const bool EditorMode = Device.IsEditorMode();
 	if (!EditorMode && !objects.empty())
@@ -356,11 +358,8 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 			return;
 	}
 
-	if (phase_shmap && L)
+	if (phase_shmap && CullFrustum)
 	{
-		Fvector l_spatial_pos = L->SpatialComponent->sphere.P;
-		float l_range_sqr = _sqr(L->SpatialComponent->sphere.R);
-
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;
@@ -390,14 +389,16 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 			//Bind (current) buffer SRV
 			Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
 
-			//Set IB, VB and decls
-			Cmd.SetGeometry(Object.hw_Geom);
+			const bool UseTrim = Trimmed && Object.TrimAlloc.Ref;
+			const GeometryAlloc& Block = UseTrim ? Object.TrimAlloc : Object.Alloc;
+			Cmd.SetGeometry(UseTrim ? Object.TrimGeom : Object.hw_Geom);
 
+			const float ObjectRadius = Object.bv_sphere.P.magnitude() + Object.bv_sphere.R;
 			u32 instanceCount = 0;
 			RHIMappedSubresource pSubRes;
 			for (CDetail::SlotItem& Instance : items)
 			{
-				if (l_spatial_pos.distance_to_sqr(Instance.pos) >= l_range_sqr)
+				if (!CullFrustum->testSphere_dirty(Instance.pos, ObjectRadius * Instance.scale))
 					continue;
 
 				if (instanceCount == 0)
@@ -408,7 +409,7 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
-					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Block.IndexCount, instanceCount, Block.IndexBase, Block.VertexBase, 0);
 					instanceCount = 0; //Reset
 
 				}
@@ -418,7 +419,7 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 			if (instanceCount > 0)
 			{
 				currentBuffer->Unmap();
-				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, Object.Alloc.IndexBase, Object.Alloc.VertexBase, 0);
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Block.IndexCount, instanceCount, Block.IndexBase, Block.VertexBase, 0);
 			}
 		}
 	}

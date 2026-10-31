@@ -14,6 +14,7 @@ constexpr float tweak_COP_initial_offs = 1200.0f;
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A;
 extern float r_ssaLOD_B;
+extern int ps_r2_sun_details_cascades;
  
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
@@ -397,9 +398,9 @@ void CRender::render_sun_cascades(GfxCmdList& Cmd)
 			Graph.r_dsgraph_render_graph(0);
 
 			CDetailManager* ActiveDetails = GetDetails();
-			if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+			if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (int)i < ps_r2_sun_details_cascades)
 			{
-				ActiveDetails->hw_Render(Cmd);
+				ActiveDetails->hw_Render(Cmd, &fuckingsun->X.D.combine, i > 0);
 			}
 
 			fuckingsun->X.D.transluent = false;
@@ -678,9 +679,9 @@ void CRender::render_sun_cascade(GfxCmdList& Cmd, u32 cascade_ind)
 				GraphMain.r_dsgraph_render_graph(0);
 
 				CDetailManager* ActiveDetails = GetDetails();
-				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (int)cascade_ind < ps_r2_sun_details_cascades)
 				{
-					ActiveDetails->hw_Render(Cmd);
+					ActiveDetails->hw_Render(Cmd, &fuckingsun->X.D.combine, cascade_ind > 0);
 				}
 
 				fuckingsun->X.D.transluent = false;

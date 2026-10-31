@@ -20,6 +20,42 @@ CRHI::GetDDSMetadata(const void* data, size_t size, RHITextureMetadata& out_meta
 	return result;
 }
 
+bool
+CRHI::DecodeAlpha(const void* Data, size_t Size, xr_vector<u8>& Alpha, u32& Width, u32& Height)
+{
+	DirectX::ScratchImage Source, Decoded;
+	if (!Data || FAILED(DirectX::LoadFromDDSMemory(Data, Size, DirectX::DDS_FLAGS_NONE, nullptr, Source)))
+	{
+		return false;
+	}
+	const DirectX::Image* Image = Source.GetImage(0, 0, 0);
+	if (!Image || !Image->width || !Image->height || Image->width > 16384 || Image->height > 16384)
+	{
+		return false;
+	}
+	if (Image->format != DXGI_FORMAT_R8G8B8A8_UNORM)
+	{
+		const HRESULT Result = DirectX::IsCompressed(Image->format) ? DirectX::Decompress(*Image, DXGI_FORMAT_R8G8B8A8_UNORM, Decoded)
+			: DirectX::Convert(*Image, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, Decoded);
+		if (FAILED(Result))
+		{
+			return false;
+		}
+		Image = Decoded.GetImage(0, 0, 0);
+	}
+	Width = u32(Image->width);
+	Height = u32(Image->height);
+	Alpha.resize(size_t(Width) * Height);
+	for (u32 Y = 0; Y < Height; Y++)
+	{
+		for (u32 X = 0; X < Width; X++)
+		{
+			Alpha[size_t(Y) * Width + X] = Image->pixels[Y * Image->rowPitch + X * 4 + 3];
+		}
+	}
+	return true;
+}
+
 HRESULT
 CRHI::LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface)
 {

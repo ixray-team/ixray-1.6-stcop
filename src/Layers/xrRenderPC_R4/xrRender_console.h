@@ -143,6 +143,15 @@ extern RENDER_API float			ps_r2_dhemi_light_flow;		// .1f
 extern RENDER_API int			ps_r2_dhemi_count;			// 5
 extern RENDER_API float			ps_r2_slight_fade;			// 1.f
 extern RENDER_API float			ps_r4_vslr_distance;		// 1.f
+extern RENDER_API int			g_SunContactSteps;
+extern RENDER_API float			g_SunContactLength;
+extern RENDER_API float			g_SunContactThickness;
+extern RENDER_API float			g_SunContactThicknessScale;
+extern RENDER_API float			g_SunContactBias;
+extern RENDER_API float			g_SunContactBiasScale;
+extern RENDER_API float			g_SunContactStart;
+extern RENDER_API float			g_SunContactFar;
+extern RENDER_API float			g_SunContactFade;
 extern RENDER_API int			ps_r2_wait_sleep;
 
 //	x - min (0), y - focus (1.4), z - max (100)
