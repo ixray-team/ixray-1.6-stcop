@@ -60,13 +60,21 @@ public:
     ~DLSSWrapper();
 
 private:
+    ID3D11Texture2D* GetColorInput(ID3D11Texture2D* Source);
+
     NVSDK_NGX_Parameter* NgxParameters = nullptr;
     NVSDK_NGX_Handle* Handle = nullptr;
+
+    // Private copy of the color input, see GetColorInput
+    ID3D11Texture2D* ColorInput = nullptr;
 
     Ivector2 DisplaySize{};
 
     bool DLSSInited = false;
     bool Created = false;
+
+    bool HistoryValid = false;
+    u32 LastDrawFrame = 0;
 };
 
 extern DLSSWrapper g_DLSSWrapper;

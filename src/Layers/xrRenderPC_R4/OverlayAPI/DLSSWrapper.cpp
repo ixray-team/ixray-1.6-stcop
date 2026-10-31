@@ -37,6 +37,43 @@ u32 DLSSWrapper::GetOptimalPresetForScale(float scale)
 	return ps_render_scale_preset;
 }
 
+// DLSS on D3D11 reads its inputs from CUDA through interop. On some launches it saw a different image
+// in the color render target than D3D11 did (black sky, dark scene), and the output stayed black until
+// vid_restart reallocated the targets. Feed it a plain texture that is only written by a copy instead
+ID3D11Texture2D* DLSSWrapper::GetColorInput(ID3D11Texture2D* Source)
+{
+	D3D11_TEXTURE2D_DESC SourceDesc;
+	Source->GetDesc(&SourceDesc);
+
+	if (ColorInput != nullptr)
+	{
+		D3D11_TEXTURE2D_DESC Desc;
+		ColorInput->GetDesc(&Desc);
+
+		if (Desc.Width != SourceDesc.Width || Desc.Height != SourceDesc.Height || Desc.Format != SourceDesc.Format)
+		{
+			_RELEASE(ColorInput);
+		}
+	}
+
+	if (ColorInput == nullptr)
+	{
+		D3D11_TEXTURE2D_DESC Desc = SourceDesc;
+		Desc.Usage = D3D11_USAGE_DEFAULT;
+		Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		Desc.CPUAccessFlags = 0;
+		Desc.MiscFlags = 0;
+
+		if (FAILED(RDevice->CreateTexture2D(&Desc, nullptr, &ColorInput)))
+		{
+			return Source;
+		}
+	}
+
+	RContext->CopyResource(ColorInput, Source);
+	return ColorInput;
+}
+
 void DLSSWrapper::Create()
 {
 	if (Platform::IsWindows7OrOlder())
@@ -220,6 +257,12 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 	DLSSCreateParams.InFeatureCreateFlags |= NVSDK_NGX_DLSS_Feature_Flags_MVLowRes;
 	DLSSCreateParams.InFeatureCreateFlags |= NVSDK_NGX_DLSS_Feature_Flags_AutoExposure;
 
+	if (Handle != nullptr)
+	{
+		NVSDK_NGX_D3D11_ReleaseFeature(Handle);
+		Handle = nullptr;
+	}
+
 	NVSDK_NGX_Result Result = NGX_D3D11_CREATE_DLSS_EXT(RContext, &Handle, NgxParameters, &DLSSCreateParams);
 
 	if (Result != NVSDK_NGX_Result_Success)
@@ -228,6 +271,8 @@ void DLSSWrapper::Resize(const ContextParameters& Parameters)
 		Created = false;
 		return;
 	}
+
+	HistoryValid = false;
 #endif
 }
 
@@ -245,6 +290,8 @@ void DLSSWrapper::Destroy()
 		NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
 		NgxParameters = nullptr;
 	}
+
+	_RELEASE(ColorInput);
 
 	if (DLSSInited)
 	{
@@ -267,7 +314,7 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 #ifdef IXR_X64
 	NVSDK_NGX_D3D11_DLSS_Eval_Params DLSSEvalParams = {};
 
-	DLSSEvalParams.Feature.pInColor = params.unresolvedColorResource;
+	DLSSEvalParams.Feature.pInColor = GetColorInput(params.unresolvedColorResource);
 	DLSSEvalParams.Feature.pInOutput = params.resolvedColorResource;
 	DLSSEvalParams.Feature.InSharpness = params.sharpness;
 
@@ -280,7 +327,10 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	DLSSEvalParams.InJitterOffsetX = params.cameraJitterX;
 	DLSSEvalParams.InJitterOffsetY = params.cameraJitterY;
 
-	DLSSEvalParams.InReset = params.cameraReset;
+	// The history is stale for a new feature or after frames without evaluation (loading, main menu, reset).
+	// Without a reset, a single invalid frame stays in the history and the auto exposure forever
+	const bool HistoryStale = !HistoryValid || LastDrawFrame + 1 != Device.dwFrame;
+	DLSSEvalParams.InReset = params.cameraReset || HistoryStale;
 
 	DLSSEvalParams.InMVScaleX = -(float)params.renderWidth * 0.5f;
 	DLSSEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
@@ -293,8 +343,12 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	if(Result != NVSDK_NGX_Result_Success)
 	{
 		Msg("! NGX_D3D11_EVALUATE_DLSS_EXT not valid. Need use FSR");
+		HistoryValid = false;
 		return false;
 	}
+
+	HistoryValid = true;
+	LastDrawFrame = Device.dwFrame;
 #endif
 
 	return true;
