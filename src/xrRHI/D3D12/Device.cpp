@@ -87,6 +87,7 @@ InternalDevice12::InternalDevice12()
         adapter = nullptr;
     }
     R_ASSERT2(RawDevice, "Unable to create a native D3D12 device");
+    GetDevice()->QueryInterface(IID_PPV_ARGS(&_device1));
     if (Core.ParamsData.test(ECoreParams::dxdebug))
     {
         ID3D12InfoQueue* messages = nullptr;
@@ -260,6 +261,10 @@ InternalDevice12::~InternalDevice12()
     if (_commands1)
     {
         _commands1->Release();
+    }
+    if (_device1)
+    {
+        _device1->Release();
     }
     for (auto& pipeline : _mipPipelines)
     {
@@ -687,7 +692,20 @@ ID3D12Resource* InternalDevice12::CreateNativeBuffer(u64 size, D3D12_HEAP_TYPE h
         heap == D3D12_HEAP_TYPE_READBACK ? D3D12_RESOURCE_STATE_COPY_DEST : D3D12_RESOURCE_STATE_COMMON;
     R_CHK(GetDevice()->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE, &desc, state, nullptr, IID_PPV_ARGS(&resource)));
     _counters.Allocations.fetch_add(1, std::memory_order_relaxed);
+    if (heap == D3D12_HEAP_TYPE_DEFAULT)
+    {
+        Prioritize(resource);
+    }
     return resource;
+}
+
+void InternalDevice12::Prioritize(ID3D12Pageable* object)
+{
+    const D3D12_RESIDENCY_PRIORITY priority = D3D12_RESIDENCY_PRIORITY_HIGH;
+    if (_device1)
+    {
+        _device1->SetResidencyPriority(1, &object, &priority);
+    }
 }
 
 void InternalDevice12::Transition(DX12Resource& resource, D3D12_RESOURCE_STATES state, u32 subresource)

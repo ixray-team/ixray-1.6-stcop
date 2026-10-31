@@ -93,6 +93,7 @@ bool calc_cascades(in float3 position, in float4x4 smap_vp_matrix[3], inout int 
 	bool is_in_bounds = false;
 	smap_texcoord = 0.0f;
 
+	[unroll]
 	for(cascade_index = 0; cascade_index < 3; cascade_index++)
 	{
 		//Transform position into UV space
