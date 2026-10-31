@@ -1,25 +1,22 @@
 #pragma once
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
-#include "blenders/Blender.h"
-#include "blenders/Blender_Recorder.h"
+
+class CBlender_Compile;
 
 class CXMLBlend
 {
-	CBlender_Compile* pCompiler;
-	string256			File;
-	CXml				Parser;
-
 public:
-	CXMLBlend(const char* FileName);
-	~CXMLBlend();
-	Shader* Compile(const char* Texture);
-	ShaderElement* MakeShader(const char* Texture, XML_NODE* pElement);
+	explicit CXMLBlend(const char* FileName);
 
-	static bool			Check(const char* FileName);
+	bool IsStatic();
+	Shader* Compile(const char* Textures);
 
 private:
-	u32				BlendValidate(shared_str type);
-	u32				StencilValidate(shared_str type);
-	u32				CMPFunValidate(shared_str type);
-	D3DCULL			CullModeValidate(shared_str type);
+	XML_NODE* ActiveSet();
+	ShaderElement* CompileElement(CBlender_Compile& C, XML_NODE* Node, const char* const (&Sources)[3]);
+	void CompilePass(CBlender_Compile& C, XML_NODE* Node, const char* const (&Sources)[3]);
+	void SetBlend(CBlender_Compile& C, u32 Index, const char* Value);
+
+	CXml Parser;
+	string_path File;
 };

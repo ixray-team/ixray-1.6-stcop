@@ -2,29 +2,29 @@
 
 void CRenderTarget::phase_smap_spot_clear()
 {
-	GRHI->ClearTarget(rt_smap_surf->pRT, ERTColor::Black);
-	GRHI->ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+	RImplementation.Imm().ClearTarget(rt_smap_surf->pRT, ERTColor::Black);
+	RImplementation.Imm().ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 }
 
-void CRenderTarget::phase_smap_spot(light* L)
+void CRenderTarget::phase_smap_spot(GfxCmdList& Cmd, light* L)
 {
 	// Targets + viewport
-	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+	u_setrt(Cmd, rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
 
 	RHIViewport VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
-	GRHI->SetViewport(VP);
+	Cmd.SetViewport(VP);
 
 	// Misc - draw only front-faces //back-faces
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(false);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetStencil(false);
 
 	// no transparency
 	#pragma todo("can optimize for multi-lights covering more than say 50%...")
 
-	RCache.set_ColorWriteEnable(false);
+	Cmd.SetColorWriteEnable(false);
 }
 
-void CRenderTarget::phase_smap_spot_tsh(light* L)
+void CRenderTarget::phase_smap_spot_tsh(GfxCmdList& Cmd, light* L)
 {
-	RCache.set_ColorWriteEnable();
+	Cmd.SetColorWriteEnable();
 }

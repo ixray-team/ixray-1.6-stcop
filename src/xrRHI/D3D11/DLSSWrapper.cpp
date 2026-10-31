@@ -1,5 +1,4 @@
-#include "../RHI.h"
-#include <d3d11.h>
+#include "Device.h"
 #ifdef IXR_WINDOWS
 #include "../D3D12/Device.h"
 #endif
@@ -414,6 +413,7 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
         FillDLSSParameters<ID3D11Texture2D>(evaluation, params);
         Result = NGX_D3D11_EVALUATE_DLSS_EXT(static_cast<ID3D11DeviceContext*>(GRHI->GetContext()),
             DLSS_State.Handle, DLSS_State.NgxParameters, &evaluation);
+        static_cast<InternalDevice11*>(GRHI->DevicePtr)->InvalidateBindings();
     }
 
 	if(Result != NVSDK_NGX_Result_Success)

@@ -28,7 +28,7 @@ static u16			facetable[16][3]		= {
 	{ 2, 4, 1 },
 };
 
-void CRenderTarget::accum_direct_cascade()
+void CRenderTarget::accum_direct_cascade(GfxCmdList& Cmd)
 {
 	light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
 
@@ -70,22 +70,22 @@ void CRenderTarget::accum_direct_cascade()
 	}
 
 	//Render the AO and view-z into new rendertarget
-	phase_accumulator();
+	phase_accumulator(Cmd);
 
-	DrawPassSQ(s_accum_direct, 0, [&]
+	DrawPassSQ(Cmd, s_accum_direct, 0, [&]
 	{
-		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0.0);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
+		Cmd.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0.0);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		Cmd.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
 	});
 
 	if (ps_r_sun_shafts > 0)
 	{
-		accum_direct_volumetric();
+		accum_direct_volumetric(Cmd);
 	}	
 }
 
-void CRenderTarget::accum_direct_volumetric()
+void CRenderTarget::accum_direct_volumetric(GfxCmdList& Cmd)
 {
 	GPU_EVENT(accum_direct_volumetric);
 
@@ -103,12 +103,12 @@ void CRenderTarget::accum_direct_volumetric()
 	Device.mView.transform_dir(L_dir, fuckingsun->direction);
 	L_dir.normalize();
 
-	phase_vol_accumulator();
-	RCache.set_ColorWriteEnable();
+	phase_vol_accumulator(Cmd);
+	Cmd.SetColorWriteEnable();
 
-	DrawPassSQ(s_accum_direct_volumetric, 0, [&]
+	DrawPassSQ(Cmd, s_accum_direct_volumetric, 0, [&]
 	{
-		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, 0);
+		Cmd.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, 0);
 	});
 }

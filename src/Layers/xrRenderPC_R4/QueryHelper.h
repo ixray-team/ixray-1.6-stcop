@@ -17,13 +17,13 @@ IC HRESULT GetData( RHIObject *pQuery, void *pData, UINT DataSize, u32 Flags = 0
 
 IC HRESULT BeginQuery( RHIObject *pQuery)
 {
-	GRHI->BeginQuery(pQuery);
+	RImplementation.Imm().BeginQuery(pQuery);
 	return S_OK;
 }
 
 IC HRESULT EndQuery( RHIObject *pQuery)
 {
-	GRHI->EndQuery(pQuery);
+	RImplementation.Imm().EndQuery(pQuery);
 	return S_OK;
 }
 

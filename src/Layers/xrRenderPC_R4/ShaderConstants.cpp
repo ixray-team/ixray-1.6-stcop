@@ -9,7 +9,6 @@
 #include "../../xrEngine/date_time.h"
 #include "../../xrEngine/Rain.h"
 
-extern float r_dtex_range;
 extern ENGINE_API Fcolor nvg_color;
 
 namespace
@@ -18,16 +17,6 @@ namespace
 	constexpr bool SlotsMatchOrder(std::index_sequence<Index...>)
 	{
 		return ((std::tuple_element_t<Index, Tuple>::Slot == Index) && ...);
-	}
-
-	void Store(IRHIBuffer* Buffer, const void* Data, u32 Size)
-	{
-		RHIMappedSubresource Mapped{};
-		if (Buffer && Buffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &Mapped))
-		{
-			CopyMemory(Mapped.pData, Data, Size);
-			Buffer->Unmap();
-		}
 	}
 
 	Fmatrix Inverse43(const Fmatrix& M)
@@ -55,61 +44,60 @@ void CShaderConstants::Create()
 {
 	static_assert(SlotsMatchOrder<Blocks>(std::make_index_sequence<Count>()));
 
-	std::apply([this](auto&... Block) { (RHIUtils::CreateConstantBuffer(&Buffers[Block.Slot], sizeof(Block)), ...); }, Shadow);
-
 	CBObject& Object = Write<CBObject>();
 	Object.m_plmap_xform = Fidentity;
 	Object.m_plmap_clamp[0].set(0, 0, 0, 1);
 	ResetMaterial();
-
-	std::apply([this](auto&... Block) { (Upload(Block, true), ...); }, Shadow);
-	Dirty = 0;
-	Bound = false;
-}
-
-void CShaderConstants::Destroy()
-{
-	for (IRHIBuffer*& Buffer : Buffers)
-	{
-		_RELEASE(Buffer);
-	}
+	PushedEpoch = ~0u;
 }
 
 template<class T>
-void CShaderConstants::Upload(const T& Block, bool Force)
+void CShaderConstants::Collect(const T& Block, u32 Force, RHIConstantWrite* Writes, u32& Num)
 {
+	constexpr u32 Bit = 1u << T::Slot;
 	T& Last = std::get<T>(Uploaded);
-	if (!Force && (!(Dirty & (1u << T::Slot)) || !std::memcmp(&Last, &Block, sizeof(T))))
+	u32 Size = sizeof(T);
+	u32 Pushed = sizeof(T);
+	if constexpr (std::is_same_v<T, CBSkin>)
+	{
+		Size = SkinSize;
+		Pushed = PushedSkinSize;
+	}
+	if (!(Force & Bit) && (!(Dirty & Bit) || (Size <= Pushed && !std::memcmp(&Last, &Block, Size))))
 	{
 		return;
 	}
 
-	Last = Block;
-	Store(Buffers[T::Slot], &Block, sizeof(T));
+	std::memcpy(&Last, &Block, Size);
+	Writes[Num++] = { T::Slot, Size, &Last };
+	if constexpr (std::is_same_v<T, CBSkin>)
+	{
+		PushedSkinSize = Size;
+	}
 }
 
 void CShaderConstants::Flush()
 {
-	if (!Bound)
+	const u32 Epoch = GRHI->DevicePtr->ConstantEpoch;
+	const u32 Force = Epoch != PushedEpoch ? (1u << Count) - 1 : 0;
+	PushedEpoch = Epoch;
+	if (!(Dirty | Force))
 	{
-		for (ERHI_SHADER_TYPE Stage : { ERHI_SHADER_TYPE::VS, ERHI_SHADER_TYPE::PS, ERHI_SHADER_TYPE::GS, ERHI_SHADER_TYPE::HS, ERHI_SHADER_TYPE::DS, ERHI_SHADER_TYPE::CS })
-		{
-			GRHI->SetConstantBuffers(0, Count, Buffers, Stage);
-		}
-		Bound = true;
+		return;
 	}
 
-	if (Dirty)
+	RHIConstantWrite Writes[Count];
+	u32 Num = 0;
+	std::apply([&](auto&... Block) { (Collect(Block, Force, Writes, Num), ...); }, Shadow);
+	Dirty = 0;
+	if (Num)
 	{
-		std::apply([this](auto&... Block) { (Upload(Block, false), ...); }, Shadow);
-		Dirty = 0;
+		GRHI->SetConstants(Writes, Num);
 	}
 }
 
 void CShaderConstants::UpdateFrame()
 {
-	InvalidateBindings();
-
 	CBFrame& Frame = Write<CBFrame>();
 	const float Time = Device.fTimeGlobal;
 	Frame.timers.set(Time, Time - Device.fTimeDelta, Time * 0.1f, std::sin(Time));
@@ -181,105 +169,88 @@ void CShaderConstants::UpdateFrame()
 		const CEnvironment& Env = g_pGamePersistent->Environment();
 		Frame.env_wind.set(Env.wind_blast_direction.x, Env.wind_blast_direction.y, Env.wind_blast_direction.z, Env.wind_strength_factor);
 	}
+
+#ifdef _EDITOR
+	Frame.def_aref = 100.f / 255.f;
+#else
+	Frame.def_aref = ps_r2_def_aref_quality / 255.f;
+#endif
+
+	CBUIIcon& Icon = Write<CBUIIcon>();
+	const UIIconLighting& IconLight = *Device.m_pRender->GetUIIconLighting();
+	Icon.ui_icon_light.set(IconLight.Color.x * IconLight.Intensity, IconLight.Color.y * IconLight.Intensity, IconLight.Color.z * IconLight.Intensity, IconLight.Ambient);
+	Icon.ui_icon_direction.set(IconLight.Direction.x, IconLight.Direction.y, IconLight.Direction.z, 0.0f);
+	Icon.ui_emissive_tint.set(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// x: 1 in the unlit view (no weather): forward shaders that depend on the environment (water) show their base texture instead
+	Write<CBEditor>().editor_params.set(Device.IsEditorMode() && !RImplementation.EditorIsLit() ? 1.f : 0.f, 0.f, 0.f, 0.f);
 }
 
-void CShaderConstants::UpdateView(const R_xforms& X)
+void CShaderConstants::UpdateView(const GfxView& X)
 {
 	CBView& View = Write<CBView>();
 	Fmatrix VP;
-	VP.mul(X.m_p, X.m_v);
+	VP.mul(X.Project, X.View);
 	Fmatrix VPOld;
-	VPOld.mul(X.m_p_old, X.m_v_old);
-	View.m_V = X.m_v;
-	View.m_P = X.m_p;
+	VPOld.mul(X.ProjectOld, X.ViewOld);
+	View.m_V = X.View;
+	View.m_P = X.Project;
 	View.m_VP = VP;
-	View.m_invV = Inverse43(X.m_v);
-	View.m_invP = Inverse44(X.m_p);
+	View.m_invV = Inverse43(X.View);
+	View.m_invP = Inverse44(Device.mProject_saved);
 	View.m_VP_old = VPOld;
 	View.m_invVP_old = Inverse44(VPOld);
 	View.eye_position = Device.vCameraPosition;
 	View.eye_direction = Device.vCameraDirection;
 	View.eye_normal = Device.vCameraTop;
-	View.pos_decompression_params2.set(RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
+	View.pos_decompression_params2.set(GfxCmdList::GetWidth(), GfxCmdList::GetHeight(), 1.0f / GfxCmdList::GetWidth(), 1.0f / GfxCmdList::GetHeight());
 
 	CBPass& Pass = Write<CBPass>();
 	Pass.m_P_hud = Device.mProject_hud;
 	Pass.m_invP_hud = Inverse44(Device.mProject_hud);
 
-	if (!Device.IsEditorMode())
+	CBLight& Light = Write<CBLight>();
+	for (u32 Index = 0; Index < 3 && Index < RImplementation.m_sun_cascades.size(); ++Index)
 	{
-		CBLight& Light = Write<CBLight>();
-		for (u32 Index = 0; Index < 3 && Index < RImplementation.m_sun_cascades.size(); ++Index)
-		{
-			const Fmatrix Adjust = { 0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, RImplementation.m_sun_cascades[Index].bias, 1 };
-			Fmatrix Shadow;
-			Shadow.mul(Adjust, RImplementation.m_sun_cascades[Index].xform);
-			Light.m_shadow_sun[Index] = Shadow;
-		}
+		const Fmatrix Adjust = { 0.5f, 0, 0, 0, 0, -0.5f, 0, 0, 0, 0, 1, 0, 0.5f, 0.5f, RImplementation.m_sun_cascades[Index].bias, 1 };
+		Fmatrix Shadow;
+		Shadow.mul(Adjust, RImplementation.m_sun_cascades[Index].xform);
+		Light.m_shadow_sun[Index] = Shadow;
 	}
-
-	CBObject& Object = Write<CBObject>();
-	Object.m_WV = X.m_wv;
-	Object.m_WVP = X.m_wvp;
-	Object.m_WVP_old = X.m_wvp_old;
 	UpdateScreen();
 }
 
-void CShaderConstants::UpdateObject(const R_xforms& X)
+void CShaderConstants::UpdateObject(const Fmatrix& World, const Fmatrix& WorldView, const Fmatrix& WorldViewProject, const Fmatrix& WorldViewProjectOld)
 {
 	CBObject& Object = Write<CBObject>();
-	Fmatrix InvW;
-	InvW.invert_b(X.m_w);
-	Object.m_W = X.m_w;
-	Object.m_invW = InvW;
-	Object.m_WV = X.m_wv;
-	Object.m_WVP = X.m_wvp;
-	Object.m_WVP_old = X.m_wvp_old;
+	Object.m_W = World;
+	Object.m_WV = WorldView;
+	Object.m_WVP = WorldViewProject;
+	Object.m_WVP_old = WorldViewProjectOld;
 }
 
 void CShaderConstants::ResetMaterial()
 {
 	CBMaterial& Material = Write<CBMaterial>();
 	Material = {};
-	Material.parallax.set(ps_r2_df_parallax_h, -ps_r2_df_parallax_h / 2, 1.0f / r_dtex_range, 1.0f / r_dtex_range);
-	Material.def_aref = ps_r2_def_aref_quality / 255.0f;
+	Write<CBDraw>() = {};
 	Material.tfactor.set(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void CShaderConstants::SetLOD(float LOD)
 {
 	const float Factor = clampr(ceil(LOD * LOD * LOD * LOD * LOD * 8.0f), 1.0f, 7.0f);
-	Write<CBMaterial>().triLOD.set(Factor, Factor, Factor, Factor);
+	Write<CBDraw>().triLOD.set(Factor, Factor, Factor, Factor);
 }
 
 void CShaderConstants::UpdateScreen()
 {
 	CBView& View = Write<CBView>();
-	const float TargetWidth = RCache.get_target_width();
-	const float TargetHeight = RCache.get_target_height();
-	const float Width = RCache.get_width();
-	const float Height = RCache.get_height();
+	const float TargetWidth = GfxCmdList::GetTargetWidth();
+	const float TargetHeight = GfxCmdList::GetTargetHeight();
+	const float Width = GfxCmdList::GetWidth();
+	const float Height = GfxCmdList::GetHeight();
 	View.screen_res.set(TargetWidth, TargetHeight, 1.0f / TargetWidth, 1.0f / TargetHeight);
 	View.scaled_screen_res.set(Width, Height, 1.0f / Width, 1.0f / Height);
 	View.m_taa_jitter.set(ps_r_taa_jitter.x, ps_r_taa_jitter.y, ps_r_taa_jitter.z, float(Device.dwFrame));
-}
-
-void CShaderConstants::OnShaderBind(const R_xforms& X)
-{
-	UpdateScreen();
-
-#ifdef _EDITOR
-	Write<CBMaterial>().def_aref = 100.f / 255.f;
-#else
-	Write<CBMaterial>().def_aref = ps_r2_def_aref_quality / 255.f;
-#endif
-
-	Fmatrix Adjust = Fidentity;
-	Adjust._11 = 0.5f;
-	Adjust._22 = -0.5f;
-	Adjust._41 = 0.5f;
-	Adjust._42 = 0.5f;
-	Fmatrix Texgen;
-	Texgen.mul(Adjust, X.m_wvp);
-	Write<CBPass>().m_texgen = Texgen;
 }

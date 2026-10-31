@@ -11,7 +11,7 @@ static RHIViewport VP_DOF = {
     1.0f
 };
 
-void CRenderTarget::phase_new_dof()
+void CRenderTarget::phase_new_dof(GfxCmdList& Cmd)
 {
     // -------------------------------
     // 0) Focus (1x1)
@@ -21,12 +21,12 @@ void CRenderTarget::phase_new_dof()
 
         VP_DOF.Width  = W;
         VP_DOF.Height = H;
-        GRHI->SetViewport(VP_DOF);
+        Cmd.SetViewport(VP_DOF);
 
-        DrawSQ(s_dof_coc, rt_dof_focus, 0, []
+        DrawSQ(Cmd, s_dof_coc, rt_dof_focus, 0, [&]
         {
-            RCache.set_CullMode(ERHI_CULLMODE::NONE);
-            RCache.set_Stencil(false);
+            Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+            Cmd.SetStencil(false);
         });
     }
 
@@ -39,17 +39,17 @@ void CRenderTarget::phase_new_dof()
 
     VP_DOF.Width  = W;
     VP_DOF.Height = H;
-    GRHI->SetViewport(VP_DOF);
+    Cmd.SetViewport(VP_DOF);
 
     // -------------------------------
     // 1) CoC
     // -------------------------------
     {
-        DrawSQ(s_dof_coc, rt_dof_coc, 1, [&]
+        DrawSQ(Cmd, s_dof_coc, rt_dof_coc, 1, [&]
         {
-            RCache.set_CullMode(ERHI_CULLMODE::NONE);
-            RCache.set_Stencil(false);
-            RCache.Constants.Write<CBPost>().dof_params.set(10.f, 16.5f, 0.024f, rH);
+            Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+            Cmd.SetStencil(false);
+            Cmd.Constants.Write<CBPost>().dof_params.set(10.f, 16.5f, 0.024f, rH);
         });
     }
     
@@ -57,10 +57,10 @@ void CRenderTarget::phase_new_dof()
     // 2) Blur pass 1 (Vertical)
     // -------------------------------
     {
-        DrawSQ(s_dof_coc, rt_dof_blur1, 2, [&]
+        DrawSQ(Cmd, s_dof_coc, rt_dof_blur1, 2, [&]
         {
-            RCache.set_CullMode(ERHI_CULLMODE::NONE);
-            RCache.set_Stencil(false);
+            Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+            Cmd.SetStencil(false);
         });
     }
     /*

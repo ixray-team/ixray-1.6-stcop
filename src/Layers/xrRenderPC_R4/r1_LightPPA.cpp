@@ -12,7 +12,7 @@ const float MAX_DISTANCE			=	50.f;
 const float	SSM_near_plane			=	.1f;
 const float	SSM_tex_size 			=	32.f;
 
-void CLightR_Manager::render_point	(u32 _priority)
+void CLightR_Manager::render_point	(GfxCmdList& Cmd, u32 _priority)
 {
 	
 	Fvector		lc_COP		= Device.vCameraPosition	;
@@ -61,9 +61,9 @@ void CLightR_Manager::render_point	(u32 _priority)
 		Fmatrix L_texgen;
 		L_texgen.mul(m_TexelAdjust, L_combine);
 
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 0.5f / L->range);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
-		RCache.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 0.5f / L->range);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
+		Cmd.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
 		if (_priority == 1)
@@ -89,7 +89,7 @@ void CLightR_Manager::render_point	(u32 _priority)
 
 		bool bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 
-		RCache.set_Constants((R_constant_table*)0);
+		Cmd.SetConstantTable((R_constant_table*)0);
 		if (bHUD && _priority == 0)
 		{
 			g_hud->Render_Last();
@@ -102,7 +102,7 @@ void CLightR_Manager::render_point	(u32 _priority)
 	}
 }
 
-void CLightR_Manager::render_spot	(u32 _priority)
+void CLightR_Manager::render_spot	(GfxCmdList& Cmd, u32 _priority)
 {
 
 	Fvector		lc_COP		= Device.vCameraPosition	;
@@ -143,9 +143,9 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		};
 		Fmatrix		L_texgen;		L_texgen.mul(m_TexelAdjust, L_combine);
 
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 1.f / L->range);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
-		RCache.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L->position.x, L->position.y, L->position.z, 1.f / L->range);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L->color.r * clampr(lc_scale, 0.f, 1.f), L->color.g * clampr(lc_scale, 0.f, 1.f), L->color.b * clampr(lc_scale, 0.f, 1.f), 1.f);
+		Cmd.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
 		
@@ -172,7 +172,7 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		F.CreateFromMatrix(L_combine, FRUSTUM_P_ALL);
 		bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 
-		RCache.set_Constants(nullptr);
+		Cmd.SetConstantTable(nullptr);
 		if (bHUD && _priority == 0)
 			g_hud->Render_Last();
 
@@ -185,18 +185,18 @@ void CLightR_Manager::render_spot	(u32 _priority)
 	}
 }
 
-void CLightR_Manager::render		(u32 _priority)
+void CLightR_Manager::render		(GfxCmdList& Cmd, u32 _priority)
 {
 	if (selected_spot.size())		{ 
 		RImplementation.phase		= CRender::PHASE_SPOT;
-		render_spot			(_priority);	
+		render_spot			(Cmd, _priority);	
 
 		if(_priority == 1)
 			selected_spot.clear	();
 	}
 	if (selected_point.size())		{ 
 		RImplementation.phase		= CRender::PHASE_POINT;
-		render_point		(_priority);	
+		render_point		(Cmd, _priority);	
 		
 		if(_priority == 1)
 			selected_point.clear();

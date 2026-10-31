@@ -26,6 +26,7 @@ struct DX12Resource
 static constexpr u8 DX12KindTyped = 0;
 static constexpr u8 DX12KindStructured = 1;
 static constexpr u8 DX12KindRaw = 2;
+static constexpr u32 DX12ViewSlots = u32(ERHI_MAX_TEXTURE::PixelShaderTextures);
 
 struct DX12Upload
 {
@@ -52,7 +53,6 @@ public:
     void SetVertexBuffer(u32 slot, u32 stride, u32 offset) override;
     void SetIndexBuffer(bool is32Bit, u32 offset) override;
     D3D12_GPU_VIRTUAL_ADDRESS GetAddress();
-    u64 PublishedAddress() const;
     DX12Resource& GetResource() { return _resource; }
     const RHIBufferDesc& GetDesc() const { return _desc; }
 
@@ -63,8 +63,6 @@ private:
     DX12Resource _resource;
     DX12Upload _upload;
     D3D12_GPU_VIRTUAL_ADDRESS _nativeAddress = 0;
-    u64 _generation = 0;
-    u64 _uploaded = 0;
     u64 _published = 0;
     xr_vector<u8> _data;
     std::atomic<u32> _references = 1;
@@ -90,9 +88,6 @@ public:
     ERHI_FORMAT GetFormat() const override { return _desc.Format; }
     ERHI_USAGE GetUsage() const override { return _desc.Usage; }
     ERHI_RESOURCE_DIMENSION GetTextureType() const override;
-    IRHIShaderResourceView* GetShaderResourceView() override { return nullptr; }
-    IRHIRenderTargetView* GetRenderTargetView() override { return nullptr; }
-    IRHIDepthStencilView* GetDepthStencilView() override { return nullptr; }
     bool UpdateData(u32 mip, u32 layer, const RHISubResource* data, const RHIBox& box) override;
     void* Lock(u32 mip = 0, u32* out_pitch = nullptr) override;
     void Unlock() override;
@@ -136,7 +131,6 @@ public:
     DX12ShaderResourceView(InternalDevice12& device, const DX12View& view);
     ~DX12ShaderResourceView() override;
     void* GetRawSRV() override;
-    IRHISurface* GetSurface() override { return View.Surface; }
     void AddRef() override;
     u32 Release() override;
     DX12View View;
@@ -204,7 +198,6 @@ public:
     IRHISurface* CreateTexture3D(const RHITextureDesc& desc, const RHISubResource* data) override;
     IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
     IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) override;
-    IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) override;
     IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) override;
     IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;

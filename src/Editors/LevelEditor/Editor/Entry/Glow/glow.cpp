@@ -64,7 +64,7 @@ void CGlow::Render(int priority, bool strictB2F)
     	if (!m_bDefLoad) OnDeviceCreate();
         ESceneGlowTool* gt 		= smart_cast<ESceneGlowTool*>(FParentTools);
         VERIFY					(gt);
-        RCache.set_xform_world	(Fidentity);
+        RImplementation.Imm().SetObjectTransform(Fidentity);
 
         if (gt->m_Flags.is(ESceneGlowTool::flTestVisibility))
         { 

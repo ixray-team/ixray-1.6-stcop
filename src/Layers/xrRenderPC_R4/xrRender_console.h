@@ -150,6 +150,7 @@ extern RENDER_API Fvector3		ps_r2_dof;
 extern RENDER_API float			ps_r2_dof_sky;				//	distance to sky
 extern RENDER_API float			ps_r2_dof_kernel_size;		//	7.0f
 extern RENDER_API float			ps_r2_def_aref_quality;
+extern RENDER_API float			r__dtex_range;
 
 extern RENDER_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
 extern RENDER_API float			ps_r3_dyn_wet_surf_far;		// 30.0f

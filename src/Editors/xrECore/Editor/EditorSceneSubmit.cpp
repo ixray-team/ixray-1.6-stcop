@@ -5,21 +5,21 @@
 
 ECORE_API CEditorSceneSubmit GEditorSceneSubmit;
 
-void CEditableSurfaceVisual::Render(float LOD)
+void CEditableSurfaceVisual::Render(GfxCmdList& Cmd, float LOD)
 {
 	if (Skeleton)
 	{
-		Mesh->RenderSkeletonGeometry(Parent, Surface);
+		Mesh->RenderSkeletonGeometry(Cmd, Parent, Surface);
 	}
 	else
 	{
-		Mesh->RenderGeometry(Parent, Surface);
+		Mesh->RenderGeometry(Cmd, Parent, Surface);
 	}
 }
 
-void CEditableInstancedVisual::Render(float LOD)
+void CEditableInstancedVisual::Render(GfxCmdList& Cmd, float LOD)
 {
-	GEditorSceneSubmit.DrawInstances(*this);
+	GEditorSceneSubmit.DrawInstances(Cmd, *this);
 }
 
 void CEditorSceneSubmit::BeginFrame()
@@ -221,11 +221,11 @@ bool CEditorSceneSubmit::CreateBuffer()
 	return true;
 }
 
-void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
+void CEditorSceneSubmit::DrawInstances(GfxCmdList& Cmd, const CEditableInstancedVisual& Visual)
 {
-	RCache.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
+	Cmd.Constants.Write<CBEditor>().editor_selection.set(0, 0, 0, 0);
 
-	SVS* VS = RCache.get_VS();
+	SVS* VS = Cmd.GetVS();
 	const bool CanInstance = VS != nullptr && VS->editor_instance_slot != u32(-1) && CreateBuffer();
 
 	const u32 Total = Visual.InstanceCount();
@@ -246,19 +246,19 @@ void CEditorSceneSubmit::DrawInstances(const CEditableInstancedVisual& Visual)
 				M.j.set(R[0].y, R[1].y, R[2].y);	M._24 = 0.f;
 				M.k.set(R[0].z, R[1].z, R[2].z);	M._34 = 0.f;
 				M.c.set(R[0].w, R[1].w, R[2].w);	M._44 = 1.f;
-				RCache.set_xform_world(M);
-				Visual.Mesh->RenderGeometry(nullptr, Visual.Surface);
+				Cmd.SetObjectTransform(M);
+				Visual.Mesh->RenderGeometry(Cmd, nullptr, Visual.Surface);
 			}
 
-			RCache.set_xform_world(Fidentity);
+			Cmd.SetObjectTransform(Fidentity);
 			continue;
 		}
 
 		CopyMemory(Mapped.pData, Rows, ChunkCount * sizeof(Fvector4) * 3);
 		Buffer->Unmap();
 
-		RCache.set_VSResource(VS->editor_instance_slot, SRV);
-		RCache.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
-		Visual.Mesh->RenderGeometryInstanced(Visual.Surface, ChunkCount);
+		Cmd.SetResource(ERHI_SHADER_TYPE::VS, VS->editor_instance_slot, SRV);
+		Cmd.Constants.Write<CBEditor>().editor_instance_params.set(0.f, 0.f, 0.f, 0.f);
+		Visual.Mesh->RenderGeometryInstanced(Cmd, Visual.Surface, ChunkCount);
 	}
 }

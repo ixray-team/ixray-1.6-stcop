@@ -38,7 +38,6 @@ void CRender::level_Load(IReader* fs)
 	IReader*						chunk;
 
 	o.dx11_disable_motion_vectors = MotionVectorsDisabled();
-	clearAllShaderOptions();
 
 	// Shaders
 	g_pGamePersistent->SetLoadStageTitle("st_loading_shaders");
@@ -167,7 +166,6 @@ void CRender::level_Load(IReader* fs)
 	pApp->LoadEnd				();
 
 	// sanity-clear
-	GraphMain.lstLODs.clear				();
 	GraphMain.lstLODgroups.clear			();
 	GraphMain.mapLOD.clear				();
 

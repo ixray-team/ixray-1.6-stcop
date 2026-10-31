@@ -8,57 +8,35 @@
 #include "SH_RT.h"
 
 #include "dx10R_Backend_Runtime.h"
-#include "StateManager/dx10State.h"
+#include "StateManager/GfxPipelineState.h"
 
-IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
-{ 
-	xforms.set_W(M_);	
-}
-IC	void	CBackend::set_xform_view	(const Fmatrix& M_)					
-{ 
-	xforms.set_V(M_);	
-}
-IC	void	CBackend::set_xform_project	(const Fmatrix& M_)
-{ 
-	xforms.set_P(M_);	
-}
-
-IC	void	CBackend::set_xform_world_old	(const Fmatrix& M_)
+ICF void	GfxCmdList::SetStates		(GfxPipelineState* _state)
 {
-	xforms.set_W_old(M_);
-}
-IC	void	CBackend::set_xform_view_old	(const Fmatrix& M_)					
-{ 
-	xforms.set_V_old(M_);
-}
-IC	void	CBackend::set_xform_project_old	(const Fmatrix& M_)
-{ 
-	xforms.set_P_old(M_);
-}
-
-IC	const Fmatrix&	CBackend::get_xform_world	()	{ return xforms.get_W();	}
-IC	const Fmatrix&	CBackend::get_xform_view	()	{ return xforms.get_V();	}
-IC	const Fmatrix&	CBackend::get_xform_project	()	{ return xforms.get_P();	}
-
-IC	const Fmatrix&	CBackend::get_xform_world_old	()	{ return xforms.get_W_old();	}
-IC	const Fmatrix&	CBackend::get_xform_view_old	()	{ return xforms.get_V_old();	}
-IC	const Fmatrix&	CBackend::get_xform_project_old	()	{ return xforms.get_P_old();	}
-
-IC	IRHIRenderTargetView* CBackend::get_RT(u32 ID)
-{
-	return GRHI->GetRenderTargetView(ID);
-}
-
-ICF void	CBackend::set_States		(dx10State* _state)
-{
+	state = _state;
+	Raster = _state->Raster;
+	Depth = _state->Depth;
+	Blend = _state->Blend;
+	States[0] = _state->RasterState;
+	States[1] = _state->DepthState;
+	States[2] = _state->BlendState;
+	StatesDirty = true;
+	if (_state->StencilRef != u32(-1))
 	{
-		state			= _state;
-		state->Apply	();
+		StencilRef = _state->StencilRef;
 	}
+	if (ScissorOverride && !Raster.ScissorEnable)
+	{
+		EditRaster().ScissorEnable = true;
+	}
+	if (FillOverride && Raster.FillMode != FillOverrideMode)
+	{
+		EditRaster().FillMode = FillOverrideMode;
+	}
+	SetAlphaRef(_state->AlphaRef);
 }
 
 // FFP texture transform emulation (D3DTS_TEXTURE0)
-IC void CBackend::set_Matrices			(SMatrixList*	_M)
+IC void GfxCmdList::SetMatrices			(SMatrixList*	_M)
 {
 	M = _M;
 	CMatrix* mat = (M && !M->empty()) ? (*M)[0]._get() : nullptr;
@@ -73,26 +51,34 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 	}
 }
 
-IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
+IC void GfxCmdList::SetPipeline(SPass& P)
 {
-	//PROF_EVENT("CBackend::set_Element")
-	SPass&	P		= *(S->passes[pass]);
-	set_States		(P.state);
-	set_PS			(P.ps);
-	set_VS			(P.vs);
-	set_GS			(P.gs);
-	set_HS			(P.hs);
-	set_DS			(P.ds);
-	set_CS			(P.cs);
-	set_Constants	(P.constants);
-	set_Textures	(P.T);
+	SetStates(P.state);
+	SetPS(P.ps);
+	SetVS(P.vs);
+	SetGS(P.gs);
+	SetHS(P.hs);
+	SetDS(P.ds);
+	SetCS(P.cs);
+}
+
+IC void GfxCmdList::SetPass(SPass& P)
+{
+	SetPipeline(P);
+	SetConstantTable(P.constants);
+	SetTextures(P.T);
 	if (EditorMode)
 	{
-		set_Matrices	(P.M);
+		SetMatrices(P.M);
 	}
 }
 
-ICF void CBackend::set_Shader(Shader* S, u32 pass)
+IC void GfxCmdList::SetPass(ShaderElement* S, u32 pass)
+{
+	SetPass(*S->passes[pass]);
+}
+
+ICF void GfxCmdList::SetPass(Shader* S, u32 pass)
 {
 	if (S == nullptr)
 	{
@@ -100,7 +86,7 @@ ICF void CBackend::set_Shader(Shader* S, u32 pass)
 		return;
 	}
 
-	set_Element(S->E[0], pass);
+	SetPass(S->E[0], pass);
 }
 
 #endif

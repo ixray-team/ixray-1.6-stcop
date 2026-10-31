@@ -5,7 +5,7 @@ struct v2p
     float2 tc : TEXCOORD0; // base & distort
 };
 
-Texture2D s_distort;
+Texture2D s_distort : register(t25);
 
 // Pixel
 float4 main(v2p I) : SV_Target

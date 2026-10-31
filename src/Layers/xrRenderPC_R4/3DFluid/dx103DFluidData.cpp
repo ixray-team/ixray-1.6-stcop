@@ -71,7 +71,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, const RHITextureDesc&
 	DescRT.ArraySize = TexDesc.Depth;
 
 	m_pRenderTargetViews[rtIndex] = GRHI->CreateRenderTargetView(m_pRTTextures[rtIndex], DescRT);
-	GRHI->ClearTarget(m_pRenderTargetViews[rtIndex]);
+	RImplementation.Imm().ClearTarget(m_pRenderTargetViews[rtIndex]);
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)

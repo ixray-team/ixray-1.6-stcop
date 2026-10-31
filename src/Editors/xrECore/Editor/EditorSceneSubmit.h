@@ -14,7 +14,7 @@ public:
 	CSurface* Surface = nullptr;
 	bool Skeleton = false;
 
-	void Render(float LOD) override;
+	void Render(GfxCmdList& Cmd, float LOD) override;
 };
 
 class CEditableInstancedVisual final : public dxRender_Visual
@@ -26,7 +26,7 @@ public:
 
 	u32 InstanceCount() const { return u32(Rows.size() / 3); }
 
-	void Render(float LOD) override;
+	void Render(GfxCmdList& Cmd, float LOD) override;
 };
 
 class ECORE_API CEditorSceneSubmit
@@ -43,7 +43,7 @@ public:
 
 	void AddSurface(CCustomObject* Parent, CEditableMesh* Mesh, CSurface* Surface, const ref_shader& Shader, const ref_shader& InstancedShader, const Fmatrix& Transform, bool Skeleton);
 	void Flush();
-	void DrawInstances(const CEditableInstancedVisual& Visual);
+	void DrawInstances(GfxCmdList& Cmd, const CEditableInstancedVisual& Visual);
 
 private:
 	struct SPending

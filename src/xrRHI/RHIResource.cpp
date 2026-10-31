@@ -189,9 +189,9 @@ CRHI::CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state)
 }
 
 void
-CRHI::SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type)
+CRHI::SetSamplers(RHIObject* const* States, u32 Count)
 {
-    DevicePtr->SetSamplers(start, count, states, type);
+    DevicePtr->SetSamplers(States, Count);
 }
 
 void

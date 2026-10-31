@@ -13,6 +13,9 @@ move temp/gamedata_cs gamedata_cs_origin
 move temp/gamedata_soc gamedata_soc_origin
 move temp/gamedata_coc gamedata_coc_origin
 
+:: Every variant ships the shared shaders
+for %%d in (gamedata_cs gamedata_soc gamedata_coc) do xcopy /e /i /y /q gamedata\shaders %%d\shaders >nul
+
 :: Generate patch
 %compressor% -diff gamedata gamedata_origin -out patch
 %compressor% -diff gamedata_cs gamedata_cs_origin -out patch_cs
@@ -26,5 +29,6 @@ rd /s /q gamedata_origin 2>nul
 rd /s /q gamedata_cs_origin 2>nul
 rd /s /q gamedata_soc_origin 2>nul
 rd /s /q gamedata_coc_origin 2>nul
+for %%d in (gamedata_cs gamedata_soc gamedata_coc) do rd /s /q %%d\shaders 2>nul
 
 echo Cache cleared successfully!

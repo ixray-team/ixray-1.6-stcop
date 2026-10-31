@@ -269,16 +269,16 @@ void CDetailManager::hw_Unload()
 	TrampleActiveSlots.clear();
 }
 
-void CDetailManager::hw_Render(light* L)
+void CDetailManager::hw_Render(GfxCmdList& Cmd, light* L)
 {
 	PROF_EVENT("CDetailManager::hw_Render");
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_xform_world(Fidentity);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetObjectTransform(Fidentity);
 
 	Fvector4 wave, wave_old;
 
-	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_HQ : SE_R2_DETAIL_SHADOW_HQ;
-	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_LQ : SE_R2_DETAIL_SHADOW_LQ;
+	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? ShaderVariant::NormalHQ : SE_R2_DETAIL_SHADOW_HQ;
+	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? ShaderVariant::NormalLQ : SE_R2_DETAIL_SHADOW_LQ;
 
 	// Wave0
 	{
@@ -286,7 +286,7 @@ void CDetailManager::hw_Render(light* L)
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
-		hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 	}
 
 	// Wave1
@@ -294,61 +294,59 @@ void CDetailManager::hw_Render(light* L)
 		PROF_EVENT("Wave1")
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
-		hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 	}
 
 	// Still
 	if(RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
-		hw_Render_dump<CDetail::SlotItem>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
+		hw_Render_dump<CDetail::SlotItem>(Cmd, wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 template<typename T>
-void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
+void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
 	const bool EditorMode = Device.IsEditorMode();
 	if (!EditorMode && !objects.empty())
 	{
 		//Render state, shaders & so on [only 1st pass]
-		RCache.set_Element(objects[0]->shader->E[lod_id], 0);
+		Cmd.SetPass(objects[0]->shader->E[lod_id], 0);
 	}
 
 	bool phase_shmap = RImplementation.phase == CRender::PHASE_SMAP;
 	if(!phase_shmap)
-		RImplementation.apply_lmaterial(); //Material ID
+		RImplementation.apply_lmaterial(Cmd); //Material ID
 
 	if (LightingModeIsStaticRender())
-		RCache.Constants.Write<CBPass>().consts.set(1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+		Cmd.Constants.Write<CBPass>().consts.set(1.f, 1.f, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
 
 	if(var_id != 0)
 	{
-		RCache.Constants.Write<CBPass>().wave = wave;
-		RCache.Constants.Write<CBPass>().wind = wind;
+		Cmd.Constants.Write<CBPass>().wave = wave;
+		Cmd.Constants.Write<CBPass>().wind = wind;
 
-		RCache.Constants.Write<CBPass>().wave_old = wave_old;
-		RCache.Constants.Write<CBPass>().wind_old = wind_old;
+		Cmd.Constants.Write<CBPass>().wave_old = wave_old;
+		Cmd.Constants.Write<CBPass>().wind_old = wind_old;
 	}
 
 	if (!EditorMode)
 	{
 		CDetailWind::Constants wc;
 		CDetailWind::ComputeConstants(wc);
-		RCache.Constants.Write<CBDetail>().wind_global = wc.global;
-		RCache.Constants.Write<CBDetail>().wind_xz1 = wc.xz1;
-		RCache.Constants.Write<CBDetail>().wind_xz1_dir = wc.xz1_dir;
-		RCache.Constants.Write<CBDetail>().wind_xz2 = wc.xz2;
-		RCache.Constants.Write<CBDetail>().wind_xz2_dir = wc.xz2_dir;
-		RCache.Constants.Write<CBDetail>().wind_xz3 = wc.xz3;
-		RCache.Constants.Write<CBDetail>().wind_xz3_dir = wc.xz3_dir;
-		RCache.Constants.Write<CBDetail>().wind_swirl = wc.swirl;
-		RCache.Constants.Write<CBDetail>().wind_swirl_dir = wc.swirl_dir;
+		Cmd.Constants.Write<CBDetail>().wind_global = wc.global;
+		Cmd.Constants.Write<CBDetail>().wind_xz1 = wc.xz1;
+		Cmd.Constants.Write<CBDetail>().wind_xz1_dir = wc.xz1_dir;
+		Cmd.Constants.Write<CBDetail>().wind_xz2 = wc.xz2;
+		Cmd.Constants.Write<CBDetail>().wind_xz2_dir = wc.xz2_dir;
+		Cmd.Constants.Write<CBDetail>().wind_xz3 = wc.xz3;
+		Cmd.Constants.Write<CBDetail>().wind_xz3_dir = wc.xz3_dir;
+		Cmd.Constants.Write<CBDetail>().wind_swirl = wc.swirl;
+		Cmd.Constants.Write<CBDetail>().wind_swirl_dir = wc.swirl_dir;
 	}
-
-	RCache.FlushConstants();
 
 	if (!EditorMode)
 	{
@@ -365,12 +363,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;
-			RCache.set_Element(Object.shader->E[lod_id], 0);
+			Cmd.SetPass(Object.shader->E[lod_id], 0);
 			if (!EditorMode && ps_trample_enabled)
 			{
 				Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-				RCache.Constants.Write<CBDetail>().trample_params = tp_val;
-				RCache.FlushConstants();
+				Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
 			}
 			auto& items = Object.m_items[render_key][var_id];
 			u32 totalInstances = items.size();
@@ -390,10 +387,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			IRHIShaderResourceView* currentSRV = it->second.second;
 
 			//Bind (current) buffer SRV
-			RCache.set_VSResource(0, currentSRV);
+			Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
 
 			//Set IB, VB and decls
-			RCache.set_Geometry(Object.hw_Geom);
+			Cmd.SetGeometry(Object.hw_Geom);
 
 			u32 instanceCount = 0;
 			RHIMappedSubresource pSubRes;
@@ -410,7 +407,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (instanceCount == currentSize)
 				{
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, 0, 0, 0);
 					instanceCount = 0; //Reset
 
 				}
@@ -420,7 +417,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			if (instanceCount > 0)
 			{
 				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
+				Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, instanceCount, 0, 0, 0);
 			}
 		}
 	}
@@ -431,19 +428,18 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		for (CDetail* DPtr : objects)
 		{
 			CDetail& D = *DPtr;
-			RCache.set_Element(D.shader->E[lod_id], 0);
+			Cmd.SetPass(D.shader->E[lod_id], 0);
 				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.Constants.Write<CBDetail>().trample_params = tp_val;
-					RCache.FlushConstants();
+					Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
 				}
 				u32 buff_size = D.m_items[render_key][var_id].size();
 				if (buff_size)
 				{
-					RCache.set_VSResource(0, D.DetailGPUBoundBuffers[render_key][var_id].second);
-					RCache.set_Geometry(D.hw_Geom);
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, D.number_vertices, 0, D.number_indices / 3, buff_size, 0);
+					Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), D.DetailGPUBoundBuffers[render_key][var_id].second);
+					Cmd.SetGeometry(D.hw_Geom);
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, D.number_indices, buff_size, 0, 0, 0);
 				}
 			}
 		}
@@ -452,12 +448,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			for (CDetail* ObjectPtr : objects)
 			{
 				CDetail& Object = *ObjectPtr;
-				RCache.set_Element(Object.shader->E[lod_id], 0);
+				Cmd.SetPass(Object.shader->E[lod_id], 0);
 				if (!EditorMode && ps_trample_enabled)
 				{
 					Fvector4 tp_val; tp_val.set(ps_trample_bend, ps_trample_squash, 0.0f, 0.0f);
-					RCache.Constants.Write<CBDetail>().trample_params = tp_val;
-					RCache.FlushConstants();
+					Cmd.Constants.Write<CBDetail>().trample_params = tp_val;
 				}
 				auto& items = Object.m_items[render_key][var_id];
 				u32 totalInstances = items.size();
@@ -477,10 +472,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				IRHIShaderResourceView* currentSRV = it->second.second;
 
 				//Bind (current) buffer SRV
-				RCache.set_VSResource(0, currentSRV);
+				Cmd.SetResource(ERHI_SHADER_TYPE::VS, ShaderBindings::Texture("detail_buffer"), currentSRV);
 
 				//Set IB, VB and decls
-				RCache.set_Geometry(Object.hw_Geom);
+				Cmd.SetGeometry(Object.hw_Geom);
 				u32 offset = 0u, chunkSize = 0u;
 				RHIMappedSubresource pSubRes;
 				CDetail::SlotItem* items_data = items.data();
@@ -493,7 +488,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
 
 					currentBuffer->Unmap();
-					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0);
+					Cmd.DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Object.number_indices, chunkSize, 0, 0, 0);
 
 					offset += chunkSize;
 				}

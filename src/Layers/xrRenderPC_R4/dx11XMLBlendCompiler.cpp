@@ -1,325 +1,276 @@
-//////////////////////////////////////////////////////////////
-// Desc		: XML Blend Compiler
-// Author	: ForserX
-//////////////////////////////////////////////////////////////
-// Oxygen Engine 2016-2019
-//////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "dx11XMLBlendCompiler.h"
 #include "dxRenderDeviceRender.h"
-#include "uber_deffer.h"
+#include "blenders/Blender_Recorder.h"
+
+namespace
+{
+	struct NamedValue
+	{
+		std::string_view Name;
+		u32 Value;
+	};
+
+	constexpr NamedValue Blends[] =
+	{
+		{ "zero", D3DBLEND_ZERO }, { "one", D3DBLEND_ONE }, { "srccolor", D3DBLEND_SRCCOLOR }, { "invsrccolor", D3DBLEND_INVSRCCOLOR },
+		{ "srcalpha", D3DBLEND_SRCALPHA }, { "invsrcalpha", D3DBLEND_INVSRCALPHA }, { "destalpha", D3DBLEND_DESTALPHA }, { "invdestalpha", D3DBLEND_INVDESTALPHA },
+		{ "destcolor", D3DBLEND_DESTCOLOR }, { "invdestcolor", D3DBLEND_INVDESTCOLOR }, { "srcalphasat", D3DBLEND_SRCALPHASAT },
+	};
+
+	constexpr NamedValue Compares[] =
+	{
+		{ "never", D3DCMP_NEVER }, { "less", D3DCMP_LESS }, { "equal", D3DCMP_EQUAL }, { "lessequal", D3DCMP_LESSEQUAL },
+		{ "greater", D3DCMP_GREATER }, { "notequal", D3DCMP_NOTEQUAL }, { "greaterequal", D3DCMP_GREATEREQUAL }, { "always", D3DCMP_ALWAYS },
+	};
+
+	constexpr NamedValue StencilOps[] =
+	{
+		{ "keep", D3DSTENCILOP_KEEP }, { "zero", D3DSTENCILOP_ZERO }, { "replace", D3DSTENCILOP_REPLACE }, { "incrsat", D3DSTENCILOP_INCRSAT },
+		{ "decrsat", D3DSTENCILOP_DECRSAT }, { "invert", D3DSTENCILOP_INVERT }, { "incr", D3DSTENCILOP_INCR }, { "decr", D3DSTENCILOP_DECR },
+	};
+
+	constexpr NamedValue CullModes[] = { { "none", D3DCULL_NONE }, { "cw", D3DCULL_CW }, { "ccw", D3DCULL_CCW } };
+
+	template<size_t Count>
+	u32 Lookup(const NamedValue (&Table)[Count], std::string_view Name, const char* File)
+	{
+		for (const NamedValue& Item : Table)
+		{
+			if (Item.Name == Name)
+			{
+				return Item.Value;
+			}
+		}
+		R_ASSERT4(false, "Unknown shader state value", xr_string(Name.data(), u32(Name.size())).c_str(), File);
+		return 0;
+	}
+
+	bool ShaderOption(const char* Name)
+	{
+#if !defined(_EDITOR)
+		if (!xr_strcmp(Name, "USE_R1_STATIC_LIGHTING"))
+		{
+			return LightingModeIsStaticRender();
+		}
+#endif
+		return EngineExternal().ShadersOptions.contains(xr_string(Name));
+	}
+
+	xr_string ResolveTexture(const char* Source, const char* const (&Sources)[3])
+	{
+		static constexpr std::string_view Prefixes[] = { "@base", "@second", "@detail" };
+		for (u32 Index = 0; Index < std::size(Prefixes); ++Index)
+		{
+			if (std::string_view(Source).starts_with(Prefixes[Index]))
+			{
+				return xr_string(Sources[Index]) + (Source + Prefixes[Index].size());
+			}
+		}
+		return Source;
+	}
+}
 
 CXMLBlend::CXMLBlend(const char* FileName)
 {
-	string256 FixedName;
-	for (int i = 0, l = xr_strlen(FileName) + 1; i < l; ++i)
-		FixedName[i] = ('\\' == FileName[i]) ? '_' : FileName[i];
-
-	xr_strconcat(FixedName, FixedName, ".xml");
-	memcpy(File, FixedName, sizeof(FixedName));
-
-	pCompiler = new CBlender_Compile();
-	xr_string ValidDir = RImplementation.getShaderPath();
-	if (ValidDir.ends_with('\\'))
+	xr_strcpy(File, FileName);
+	xr_string Directory = RImplementation.getShaderPath();
+	if (Directory.ends_with('\\'))
 	{
-		ValidDir.pop_back();
+		Directory.pop_back();
 	}
-
-	Parser.Load(_game_shaders_, ValidDir.c_str(), File);
-	pCompiler->detail_texture = nullptr;
-	pCompiler->detail_scaler = nullptr;
+	Parser.Load(_game_shaders_, Directory.c_str(), File);
 }
 
-CXMLBlend::~CXMLBlend()
+bool CXMLBlend::IsStatic()
 {
-	xr_delete(pCompiler);
+	return Parser.ReadAttribBool(Parser.GetRoot(), "r1_static", false);
 }
 
-Shader* CXMLBlend::Compile(const char* Texture)
+XML_NODE* CXMLBlend::ActiveSet()
 {
-	Shader* pShader = new Shader();
-	XML_NODE* pRoot = Parser.GetRoot();
-	for (u32 Iter = 0; Iter < 6; Iter++)
+	XML_NODE* Root = Parser.GetRoot();
+	for (int Index = 0, Count = Parser.GetNodesNum(Root, "option"); Index < Count; ++Index)
 	{
-		bool bUseDetail = true;
-		string16 buff;
-		xr_sprintf(buff, sizeof(buff), "element_%d", Iter);
-		XML_NODE* pElement = Parser.NavigateToNode(pRoot, buff);
-		if (!pElement)
+		XML_NODE* Option = Parser.NavigateToNode(Root, "option", Index);
+		if (ShaderOption(Parser.ReadAttrib(Option, "name", "")))
 		{
-			string16 buff_nd;
-			xr_sprintf(buff_nd, sizeof(buff), "element_nd_%d", Iter);
-			pElement = Parser.NavigateToNode(pRoot, buff_nd);
-			bUseDetail = false;
-		}
-
-		if (pElement)
-		{
-			DEV->_ParseList(pCompiler->L_textures, Texture);
-			pCompiler->iElement = Iter;
-			pCompiler->bDetail = bUseDetail ? DEV->m_textures_description.GetDetailTexture(pCompiler->L_textures[0], pCompiler->detail_texture, pCompiler->detail_scaler) : false;
-
-			pShader->E[Iter] = MakeShader(Texture, pElement);
+			return Option;
 		}
 	}
-
-	Shader* ResultShader = DEV->_CreateShader(pShader);
-	xr_delete(pShader);
-	return ResultShader;
+	return Root;
 }
 
-ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
+Shader* CXMLBlend::Compile(const char* Textures)
 {
-	pCompiler->SH = new ShaderElement();
-	pCompiler->RS.Invalidate();
-
-	// Compile
-	const char* t_0 = *pCompiler->L_textures[0] ? *pCompiler->L_textures[0] : "null";
-
-	// Parse root attributes
-	bool bFog = Parser.ReadAttribBool(pElement, "fog", true);
-	bool bZb[2] =
+	XML_NODE* Set = ActiveSet();
+	XML_NODE* Variants[] = { Parser.NavigateToNode(Set, "normal_hq"), Parser.NavigateToNode(Set, "normal"), Parser.NavigateToNode(Set, "normal_ui"),
+		Parser.NavigateToNode(Set, "normal_hud"), Parser.NavigateToNode(Set, "l_point"), Parser.NavigateToNode(Set, "l_spot"), Parser.NavigateToNode(Set, "l_special") };
+	auto [NormalHQ, Normal, NormalUI, NormalHUD, LPoint, LSpot, LSpecial] = Variants;
+	if (!NormalHQ && !Normal && !LSpecial)
 	{
-		Parser.ReadAttribBool(pElement, "zread", true),
-		Parser.ReadAttribBool(pElement, "zwrite", true),
+		return nullptr;
+	}
+
+	CBlender_Compile C;
+	C.BT = nullptr;
+	C.bEditor = false;
+	C.bDetail = false;
+	C.detail_texture = nullptr;
+	C.detail_scaler = nullptr;
+	DEV->_ParseList(C.L_textures, Textures);
+	const bool Detail = (NormalHQ || Normal || NormalUI || NormalHUD) && DEV->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+
+	const char* const Sources[3] =
+	{
+		*C.L_textures[0] ? *C.L_textures[0] : "null",
+		C.L_textures.size() > 1 ? *C.L_textures[1] : "null",
+		C.L_textures.size() > 2 && C.L_textures[2].size() ? *C.L_textures[2] : (C.detail_texture ? C.detail_texture : "null"),
 	};
-	const char* PSName = Parser.ReadAttrib(pElement, "ps", "false");
-	const char* VSName = Parser.ReadAttrib(pElement, "vs", "false");
-	const char* GSName = Parser.ReadAttrib(pElement, "gs", nullptr);
-
-	if (GSName != nullptr)
+	auto Element = [&](XML_NODE* Node, int Index, bool UseDetail)
 	{
-		pCompiler->r_Pass(VSName, GSName, PSName, bFog, bZb[0], bZb[1]);
+		C.iElement = Index;
+		C.bDetail = UseDetail && Detail;
+		return CompileElement(C, Node, Sources);
+	};
+
+	Shader S;
+	if (XML_NODE* First = NormalHQ && (Detail || !Normal) ? NormalHQ : Normal)
+	{
+		S.E[ShaderVariant::NormalHQ] = Element(First, ShaderVariant::NormalHQ, true);
 	}
-	else
+	if (NormalUI)
 	{
-		pCompiler->r_Pass(VSName, PSName, bFog, bZb[0], bZb[1]);
+		S.E[ShaderVariant::UI] = Element(NormalUI, ShaderVariant::UI, true);
 	}
-
-	bool bUber = Parser.ReadAttribBool(pElement, "uber_deffer");
-	if (bUber)
+	if (NormalHUD && !LightingModeIsStaticRender())
 	{
-		uber_deffer(*pCompiler, true, nullptr, nullptr, false, nullptr, true, true);
+		S.E[ShaderVariant::HUD] = Element(NormalHUD, ShaderVariant::HUD, true);
 	}
-
-	// Check blend
-	XML_NODE* pBlend = Parser.NavigateToNode(pElement, "blend");
-	if (pBlend)
+	if (Normal)
 	{
-		bool bStatus = Parser.ReadAttribBool(pBlend, "status");
-		u32 SrcType = BlendValidate(Parser.ReadAttrib(pBlend, "src", "zero"));
-		u32 DestType = BlendValidate(Parser.ReadAttrib(pBlend, "dest", "zero"));
-		pCompiler->PassSET_ablend_mode(bStatus, SrcType, DestType);
+		S.E[ShaderVariant::NormalLQ] = Element(Normal, ShaderVariant::NormalLQ, true);
 	}
-
-	// Check sorting
-	XML_NODE* pSorting = Parser.NavigateToNode(pElement, "sort");
-	if (pSorting)
+	if (LPoint)
 	{
-		bool bStatus = Parser.ReadAttribBool(pSorting, "status");
-		int Count = Parser.ReadAttribInt(pSorting, "count", 1);
-		pCompiler->SetParams(Count, bStatus);
+		S.E[ShaderVariant::PointLight] = Element(LPoint, ShaderVariant::PointLight, false);
 	}
-
-	// Check culling 
-	XML_NODE* pCullMode = Parser.NavigateToNode(pElement, "cull_mode");
-	if (pCullMode)
+	if (LSpot)
 	{
-		pCompiler->r_CullMode(CullModeValidate(Parser.ReadAttrib(pCullMode, "mode", "none")));
+		S.E[ShaderVariant::SpotLight] = Element(LSpot, ShaderVariant::SpotLight, false);
 	}
-
-	// Distort, emissive and wmark
-	XML_NODE* pFlags = Parser.NavigateToNode(pElement, "flags");
-	if (pFlags)
+	if (LSpecial)
 	{
-		pCompiler->SH->flags.bDistort = Parser.ReadAttribBool(pFlags, "dist");
-		pCompiler->SH->flags.bEmissive = Parser.ReadAttribBool(pFlags, "emissive");
-		pCompiler->SH->flags.bWmark = Parser.ReadAttribBool(pFlags, "wmark");
+		S.E[ShaderVariant::Special] = Element(LSpecial, ShaderVariant::Special, false);
 	}
+	return DEV->_CreateShader(&S);
+}
 
-	// Check atoc
-	XML_NODE* pAtoc = Parser.NavigateToNode(pElement, "atoc");
-	if (pAtoc)
-		pCompiler->RS.SetRS(XRDX10RS_ALPHATOCOVERAGE, Parser.ReadAttribBool(pAtoc, "status"));
+ShaderElement* CXMLBlend::CompileElement(CBlender_Compile& C, XML_NODE* Node, const char* const (&Sources)[3])
+{
+	ShaderElement Element;
+	C.SH = &Element;
+	C.RS.Invalidate();
 
-	// Check aref
-	XML_NODE* pAref = Parser.NavigateToNode(pElement, "aref");
-	if (pAref)
+	if (const int Sort = Parser.ReadAttribInt(Node, "sort", -1); Sort >= 0)
 	{
-		bool bStatus = Parser.ReadAttribBool(pAref, "status");
-		int Count = Parser.ReadAttribInt(pAref, "count", 0);
-		pCompiler->PassSET_ablend_aref(bStatus, Count);
+		C.SetParams(Sort, Parser.ReadAttribBool(Node, "strict"));
 	}
+	Element.flags.bEmissive = Parser.ReadAttribBool(Node, "emissive");
+	Element.flags.bDistort = Parser.ReadAttribBool(Node, "distort");
+	Element.flags.bWmark = Parser.ReadAttribBool(Node, "wmark");
+	Element.flags.bScopeMask = Parser.ReadAttribBool(Node, "scope");
 
-	// Check color
-	XML_NODE* pColor = Parser.NavigateToNode(pElement, "color");
-	if (pColor)
+	for (int Index = 0, Count = Parser.GetNodesNum(Node, "pass"); Index < Count; ++Index)
 	{
-		pCompiler->r_ColorWriteEnable
-		(
-			Parser.ReadAttribBool(pColor, "r"),
-			Parser.ReadAttribBool(pColor, "g"),
-			Parser.ReadAttribBool(pColor, "b"),
-			Parser.ReadAttribBool(pColor, "a")
-		);
+		CompilePass(C, Parser.NavigateToNode(Node, "pass", Index), Sources);
 	}
+	return DEV->_CreateElement(Element);
+}
 
-	// Check stencil 
-	XML_NODE* pStencil = Parser.NavigateToNode(pElement, "stencil");
-	if (pStencil)
+void CXMLBlend::SetBlend(CBlender_Compile& C, u32 Index, const char* Value)
+{
+	if (!Value)
 	{
-		bool bStatus = Parser.ReadAttribBool(pStencil, "status");
-		u32 CMP = CMPFunValidate(Parser.ReadAttrib(pStencil, "cmp", "never"));
-		u32 Mask = Parser.ReadAttribInt(pStencil, "mask", 0);
-		u32 WriteMask = Parser.ReadAttribInt(pStencil, "wmask", 0);;
+		return;
+	}
+	const char* Comma = strchr(Value, ',');
+	if (!Comma)
+	{
+		C.PassSET_ablend_mode(Index, false, D3DBLEND_ONE, D3DBLEND_ZERO);
+		return;
+	}
+	C.PassSET_ablend_mode(Index, true, Lookup(Blends, std::string_view(Value, Comma - Value), File), Lookup(Blends, Comma + 1, File));
+}
 
-		u32 Fail = StencilValidate(Parser.ReadAttrib(pStencil, "fail", "zero"));
-		u32 Pass = StencilValidate(Parser.ReadAttrib(pStencil, "pass", "zero"));
-		u32 zFail = StencilValidate(Parser.ReadAttrib(pStencil, "zfail", "zero"));
+void CXMLBlend::CompilePass(CBlender_Compile& C, XML_NODE* Node, const char* const (&Sources)[3])
+{
+	C.r_Pass(Parser.ReadAttrib(Node, "vs", "null"), Parser.ReadAttrib(Node, "gs", "null"), Parser.ReadAttrib(Node, "ps", "null"), true);
 
-		pCompiler->r_Stencil(bStatus, CMP, Mask, WriteMask, Fail, Pass, zFail);
-
-		XML_NODE* pStencilRef = Parser.NavigateToNode(pStencil, "ref");
-		if (pStencilRef)
-			pCompiler->r_StencilRef(Parser.ReadAttribInt(pStencilRef, "value", 0));
+	if (const char* ZFunc = Parser.ReadAttrib(Node, "zfunc", nullptr))
+	{
+		C.RS.SetRS(D3DRS_ZFUNC, Lookup(Compares, ZFunc, File));
+	}
+	if (!Parser.ReadAttribBool(Node, "zwrite", true))
+	{
+		C.RS.SetRS(D3DRS_ZWRITEENABLE, FALSE);
 	}
 
-	// Check body 
-	int Idx = 1;
-	XML_NODE* pTexture = Parser.NavigateToNode(pElement, "texture");
-	while (pTexture)
+	SetBlend(C, u32(-1), Parser.ReadAttrib(Node, "blend", nullptr));
+	for (u32 Index = 0; Index < 4; ++Index)
 	{
-		shared_str TextureName = Parser.ReadAttrib(pTexture, "name", "none");
-		shared_str RtName = Parser.ReadAttrib(pTexture, "rt", "none");
-		shared_str AddNode = Parser.ReadAttrib(pTexture, "append", "none");
-		xr_string DestTexName = Parser.ReadAttrib(pTexture, "dest", "none");
-		if (TextureName != "none" && RtName != "none")
+		string16 Key;
+		xr_sprintf(Key, "blend%u", Index);
+		SetBlend(C, Index, Parser.ReadAttrib(Node, Key, nullptr));
+	}
+
+	if (const int Aref = Parser.ReadAttribInt(Node, "aref", -1); Aref >= 0)
+	{
+		C.PassSET_ablend_aref(true, u32(Aref));
+	}
+	if (const char* Color = Parser.ReadAttrib(Node, "color", nullptr))
+	{
+		C.r_ColorWriteEnable(strchr(Color, 'r'), strchr(Color, 'g'), strchr(Color, 'b'), strchr(Color, 'a'));
+	}
+	if (const char* Stencil = Parser.ReadAttrib(Node, "stencil", nullptr))
+	{
+		string256 Tokens[6] = {};
+		const int Count = _GetItemCount(Stencil);
+		for (int Index = 0; Index < Count && Index < 6; ++Index)
 		{
-			if (RtName == "t_base")
-			{
-				xr_string BaseName = t_0;
-
-				if (AddNode != "none")
-				{
-					BaseName += AddNode.c_str();
-				}
-
-				if (DestTexName != "none")
-				{
-					xr_string TryTexName = TextureName.c_str() + DestTexName;
-					pCompiler->r_dx10Texture(TryTexName.c_str(), BaseName.c_str());
-				}
-				else
-				{
-					pCompiler->r_dx10Texture(TextureName.c_str(), BaseName.c_str());
-				}
-			}
-			else
-			{
-				pCompiler->r_dx10Texture(TextureName.c_str(), RtName.c_str());
-			}
+			_GetItem(Stencil, Index, Tokens[Index]);
 		}
-
-		pTexture = Parser.NavigateToNode(pElement, "texture", Idx);
-		Idx++;
+		if (Count < 6)
+		{
+			C.r_Stencil(false);
+		}
+		else
+		{
+			C.r_Stencil(true, Lookup(Compares, Tokens[0], File), atoi(Tokens[1]), atoi(Tokens[2]), Lookup(StencilOps, Tokens[3], File), Lookup(StencilOps, Tokens[4], File), Lookup(StencilOps, Tokens[5], File));
+		}
 	}
-
-	Idx = 1;
-	XML_NODE* pSampler = Parser.NavigateToNode(pElement, "sampler");
-	while (pSampler)
+	if (const int Ref = Parser.ReadAttribInt(Node, "stencil_ref", -1); Ref >= 0)
 	{
-		shared_str SamplerName = Parser.ReadAttrib(pSampler, "name", "none");
-		if (SamplerName != "none")
-			pCompiler->r_dx10Sampler(SamplerName.c_str());
-
-		pSampler = Parser.NavigateToNode(pElement, "sampler", Idx);
-		Idx++;
+		C.r_StencilRef(u32(Ref));
+	}
+	if (const char* Cull = Parser.ReadAttrib(Node, "cull", nullptr))
+	{
+		C.r_CullMode(D3DCULL(Lookup(CullModes, Cull, File)));
+	}
+	if (Parser.ReadAttribBool(Node, "atoc"))
+	{
+		C.RS.SetRS(XRDX10RS_ALPHATOCOVERAGE, TRUE);
 	}
 
-	pCompiler->r_End();
-	ShaderElement* pTryElement = DEV->_CreateElement(*pCompiler->SH);
-	xr_delete(pCompiler->SH);
-	return pTryElement;
-}
-
-bool CXMLBlend::Check(const char* FileName)
-{
-	string256 NewName;
-	for (int i = 0, l = xr_strlen(FileName) + 1; i < l; ++i)
-		NewName[i] = ('\\' == FileName[i]) ? '_' : FileName[i];
-
-	xr_strconcat(NewName, NewName, ".xml");
-	string_path PathAndFile;
-
-	FS.update_path(PathAndFile, _game_shaders_, RImplementation.getShaderPath());
-	xr_strconcat(PathAndFile, PathAndFile, NewName);
-
-	return FS.exist(PathAndFile);
-}
-
-u32 CXMLBlend::BlendValidate(shared_str type)
-{
-	u32 SrcType = 0;
-	if (type == "zero")			SrcType = D3DBLEND::D3DBLEND_ZERO;
-	if (type == "one")	        SrcType = D3DBLEND::D3DBLEND_ONE;
-	if (type == "srccolor")	    SrcType = D3DBLEND::D3DBLEND_SRCCOLOR;
-	if (type == "invsrccolor")  SrcType = D3DBLEND::D3DBLEND_INVSRCCOLOR;
-	if (type == "srcalpha")	    SrcType = D3DBLEND::D3DBLEND_SRCALPHA;
-	if (type == "invsrcalpha")  SrcType = D3DBLEND::D3DBLEND_INVSRCALPHA;
-	if (type == "destalpha")	SrcType = D3DBLEND::D3DBLEND_DESTALPHA;
-	if (type == "invdestalpha") SrcType = D3DBLEND::D3DBLEND_INVDESTALPHA;
-	if (type == "destcolor")	SrcType = D3DBLEND::D3DBLEND_DESTCOLOR;
-	if (type == "invdestcolor")	SrcType = D3DBLEND::D3DBLEND_INVDESTCOLOR;
-	if (type == "srcalphasat")	SrcType = D3DBLEND::D3DBLEND_SRCALPHASAT;
-
-	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - undefined blend function (D3DBLEND) value: %s", File, type.c_str()));
-
-	return SrcType;
-}
-
-u32 CXMLBlend::StencilValidate(shared_str type)
-{
-	u32 SrcType = 0;
-	if (type == "keep")			SrcType = D3DSTENCILOP::D3DSTENCILOP_KEEP;
-	if (type == "zero")			SrcType = D3DSTENCILOP::D3DSTENCILOP_ZERO;
-	if (type == "replace")	    SrcType = D3DSTENCILOP::D3DSTENCILOP_REPLACE;
-	if (type == "incrsat")		SrcType = D3DSTENCILOP::D3DSTENCILOP_INCRSAT;
-	if (type == "decrsat")	    SrcType = D3DSTENCILOP::D3DSTENCILOP_DECRSAT;
-	if (type == "invert")		SrcType = D3DSTENCILOP::D3DSTENCILOP_INVERT;
-	if (type == "incr")			SrcType = D3DSTENCILOP::D3DSTENCILOP_INCR;
-	if (type == "decr")			SrcType = D3DSTENCILOP::D3DSTENCILOP_DECR;
-
-	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - undefined stencil operator (D3DSTENCILOP) value: %s", File, type.c_str()));
-
-	return SrcType;
-}
-
-u32 CXMLBlend::CMPFunValidate(shared_str type)
-{
-	u32 SrcType = 0;
-	if (type == "never")		SrcType = D3DCMPFUNC::D3DCMP_NEVER;
-	if (type == "less")	        SrcType = D3DCMPFUNC::D3DCMP_LESS;
-	if (type == "equal")	    SrcType = D3DCMPFUNC::D3DCMP_EQUAL;
-	if (type == "lessequal")	SrcType = D3DCMPFUNC::D3DCMP_LESSEQUAL;
-	if (type == "greater")	    SrcType = D3DCMPFUNC::D3DCMP_GREATER;
-	if (type == "notequal")		SrcType = D3DCMPFUNC::D3DCMP_NOTEQUAL;
-	if (type == "greaterequal")	SrcType = D3DCMPFUNC::D3DCMP_GREATEREQUAL;
-	if (type == "always")		SrcType = D3DCMPFUNC::D3DCMP_ALWAYS;
-
-	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - undefined compare function (D3DCMPFUNC) value: %s", File, type.c_str()));
-
-	return SrcType;
-}
-
-D3DCULL CXMLBlend::CullModeValidate(shared_str type)
-{
-	D3DCULL SrcType;
-	if (type == "none")			SrcType = D3DCULL::D3DCULL_NONE;
-	if (type == "cw")			SrcType = D3DCULL::D3DCULL_CW;
-	if (type == "ccw")			SrcType = D3DCULL::D3DCULL_CCW;
-
-	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - invalid cull mode (D3DCULL) value: %s", File, type.c_str()));
-
-	return SrcType;
+	for (int Index = 0, Count = Parser.GetNodesNum(Node, "texture"); Index < Count; ++Index)
+	{
+		XML_NODE* Texture = Parser.NavigateToNode(Node, "texture", Index);
+		C.r_dx10Texture(Parser.ReadAttrib(Texture, "name", ""), ResolveTexture(Parser.ReadAttrib(Texture, "src", "null"), Sources).c_str());
+	}
+	for (int Index = 0, Count = Parser.GetNodesNum(Node, "define"); Index < Count; ++Index)
+	{
+		XML_NODE* Define = Parser.NavigateToNode(Node, "define", Index);
+		C.AddDefine(Parser.ReadAttrib(Define, "name", ""), Parser.ReadAttrib(Define, "value", ""));
+	}
+	C.r_End();
 }

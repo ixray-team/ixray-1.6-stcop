@@ -14,6 +14,7 @@
 #include "WallmarksEngine.h"
 
 #include "SMAP_Allocator.h"
+#include "ShaderBindings.h"
 #include "Light_DB.h"
 #include "LightTrack.h"
 #include "r1_LightProjector.h"
@@ -99,6 +100,9 @@ public:
 	CHOM														HOM;
 	R_occlusion													HWOCC;
 
+	GfxCmdList Backend;
+	GfxCmdList& Imm() { return Backend; }
+
 	R_dsgraph_structure GraphMain;
 	xr_array<R_dsgraph_structure, 6> GraphReflection;
 	xr_array<R_dsgraph_structure, 3> GraphSun;
@@ -128,8 +132,6 @@ public:
 	light_Package												LP_pending;
 
 
-	shared_str													c_sbase			;
-	shared_str													c_lmaterial		;
 	float														o_hemi			;
 	float														o_hemi_cube[CROS_impl::NUM_FACES]	;
 	float														o_sun			;
@@ -153,19 +155,19 @@ private:
 	void							Load3DFluid					();
 
 public:
-	void							render_main					(bool deffered, bool zfill = false);
-	void render_static();
-	void							render_forward				();
-	void							render_lights				(light_Package& LP	);
-	void							render_menu					();
-	void							render_rain					();
+	void							render_main					(GfxCmdList& Cmd, bool deffered, bool zfill = false);
+	void render_static(GfxCmdList& Cmd);
+	void							render_forward				(GfxCmdList& Cmd);
+	void							render_lights				(GfxCmdList& Cmd, light_Package& LP	);
+	void							render_menu					(GfxCmdList& Cmd);
+	void							render_rain					(GfxCmdList& Cmd);
 
-	void							render_sun_cascade			(u32 cascade_ind);
+	void							render_sun_cascade			(GfxCmdList& Cmd, u32 cascade_ind);
 	void							init_cacades				();
-	void							render_sun_cascades			();
+	void							render_sun_cascades			(GfxCmdList& Cmd);
 	void begin_reflection_collect();
 	void collect_reflections();
-	void render_reflections();
+	void render_reflections(GfxCmdList& Cmd);
 	void wait_reflection_collect();
 
 	void reset_sun_collect();
@@ -226,7 +228,7 @@ public:
 
 	Fvector avg_lit_color, avg_lit_dir;
 
-	ICF void						apply_object				(IRenderable*	O)
+	ICF void						apply_object				(GfxCmdList& Cmd, IRenderable*	O)
 	{
 		// Editors do not track lighting per object (no CROS_impl): one hemi for the whole scene
 		if (Device.IsEditorMode())
@@ -237,17 +239,17 @@ public:
 
 		if (LightingModeIsStaticRender())
 		{
-			RCache.Constants.Write<CBObject>().L_dynamic_props.set(0, 0, 0, 0);
-			RCache.Constants.Write<CBObject>().m_plmap_clamp[0].set(0, 0, 0, 1);
-			RCache.Constants.Write<CBObject>().m_plmap_xform = Fidentity;
+			Cmd.Constants.Write<CBObject>().L_dynamic_props.set(0, 0, 0, 0);
+			Cmd.Constants.Write<CBObject>().m_plmap_clamp[0].set(0, 0, 0, 1);
+			Cmd.Constants.Write<CBObject>().m_plmap_xform = Fidentity;
 			if (!O || !O->renderable_ROS())
 				return;
 			CROS_impl& light_state = *static_cast<CROS_impl*>(O->renderable_ROS());
 			light_state.update_smooth(O);
 			const float sun = 0.5f * light_state.get_sun();
-			RCache.Constants.Write<CBObject>().L_dynamic_props.set(sun, sun, sun, 0.5f * light_state.get_hemi());
+			Cmd.Constants.Write<CBObject>().L_dynamic_props.set(sun, sun, sun, 0.5f * light_state.get_hemi());
 			if (L_Projector && light_state.shadow_recv_frame == Device.dwFrame && O->renderable_ShadowReceive())
-				L_Projector->setup(light_state.shadow_recv_slot);
+				L_Projector->setup(Cmd, light_state.shadow_recv_slot);
 			return;
 		}
 		if (0==O)					return;
@@ -273,20 +275,19 @@ public:
 
 		avg_lit_color = avg_lit_dir = { 0,0,0 };
 	}
-	IC void							apply_lmaterial				()
+	IC void							apply_lmaterial				(GfxCmdList& Cmd)
 	{
-		ref_constant constant = RCache.get_c(c_sbase);		
-		
-		CBMaterial& Material = RCache.Constants.Write<CBMaterial>();
-		RCache.xforms.m_v.transform_tiny(avg_lit_dir);
-		Material.L_model_light_color.set(avg_lit_color.x, avg_lit_color.y, avg_lit_color.z, 0);
-		Material.L_model_light_dir.set(avg_lit_dir.x, avg_lit_dir.y, avg_lit_dir.z, 0);
+		CBDraw& Draw = Cmd.Constants.Write<CBDraw>();
+		Cmd.GetView().View.transform_tiny(avg_lit_dir);
+		Draw.L_model_light_color.set(avg_lit_color.x, avg_lit_color.y, avg_lit_color.z, 0);
+		Draw.L_model_light_dir.set(avg_lit_dir.x, avg_lit_dir.y, avg_lit_dir.z, 0);
 		avg_lit_color = avg_lit_dir = { 0,0,0 };
 
-		RHIShaderConstant* C = constant ? &*constant : nullptr;		// get sampler
-		if (0 == C) return;
-		CTexture* T = RCache.get_ActiveTexture(u32(C->samp));
-		VERIFY(T);
+		CTexture* T = Cmd.GetPassTexture(CTexture::rstPixel + ShaderBindings::Texture("s_base"));
+		if (!T)
+		{
+			return;
+		}
 
 		float mtl = T->m_material;
 
@@ -310,11 +311,11 @@ public:
 			mtl = mtl * mtl * (3.0f - 2.0f * mtl);
 		}
 
-		Material.L_material.set(o_hemi, o_sun, 0, mtl);
-		Material.hemi_cube_pos_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
+		Draw.L_material.set(o_hemi, o_sun, 0, mtl);
+		Draw.hemi_cube_pos_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y],
 			o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z], 0);
-		Material.hemi_cube_neg_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
+		Draw.hemi_cube_neg_faces.set(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X],
 			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y],
 			o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z], 0);
 	}
@@ -346,7 +347,7 @@ public:
 
 	// Detail Layers Editor tool (brush overlay + ImGui window)
 	void renderImGuiDebugWindow_DetailLayersEditor() override;
-	void DetailLayers_RenderBrush3D();
+	void DetailLayers_RenderBrush3D(GfxCmdList& Cmd);
 	// Releases the lazily created brush render objects while the RHI/device is still
 	// alive (called from destroy()). Never leave these statics to DLL detach - the
 	// device is gone by then and their destructors crash on the imported DevicePtr.
@@ -367,18 +368,17 @@ public:
 
 	IRHISurface* texture_load(const char*	fname, u32& msize, bool bStaging = false);
 
-	virtual HRESULT					shader_compile			(
+	HRESULT							shader_compile			(
 		const char*							name,
 		DWORD const*					pSrcData,
 		UINT                            SrcDataLen,
 		const char*                          pFunctionName,
 		const char*                          pTarget,
 		DWORD                           Flags,
-		void*&							result);
+		void*&							result,
+		const ShaderExternalMap&		Defines);
 	void							SetShaderCacheBypass	(bool bypass);
 	bool							ShaderCacheBypassed		() const { return m_shaderCacheBypass; }
-	const ShaderExternalMap&		ShaderOptions			() const { return m_ShaderOptions; }
-	void							SetShaderOptions		(const ShaderExternalMap& options) { m_ShaderOptions = options; }
 
 	struct PuddleBase 
 	{
@@ -480,7 +480,6 @@ public:
 	virtual void set_LocalTransform(Fmatrix* M, void* graph = nullptr)
 	{
 		VERIFY(M);
-		TargetGraph(graph).val_pLocalTransform = M;
 	}
 	virtual void set_UI(bool V, void* graph = nullptr) { TargetGraph(graph).val_bUI = V; }
 	virtual void set_HUD(bool V, void* graph = nullptr) { TargetGraph(graph).val_bHUD = V; }
@@ -498,17 +497,13 @@ public:
 	CRender														();
 	virtual ~CRender											();
 
-	xr_string						getShaderParams				();
-	xr_string						getShaderParamsDebug		();
-
-	void							addShaderOption				(const char* name, const char* value = "");
-	void							clearAllShaderOptions		();
+	ShaderExternalMap				GetShaderDefines			(const ShaderExternalMap& Defines) const;
+	xr_string						getShaderParams				(const ShaderExternalMap& Defines) const;
+	xr_string						getShaderParamsDebug		(const ShaderExternalMap& Defines) const;
 
 	bool							NeedMotionVectors			() const;
 	bool							MotionVectorsDisabled		() const;
 	void							SyncMotionVectors			();
-
-	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
 	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
@@ -537,18 +532,18 @@ public:
 	bool							EditorDynamicLights			= true;
 	bool							EditorLightShadows			= true;
 
-	void							EditorRenderMain			(bool Deferred);
-	void							EditorRenderSubspace		(CFrustum& Frustum);
-	void							EditorCollect				(bool Deferred, bool Shadows);
+	void							EditorRenderMain			(GfxCmdList& Cmd, bool Deferred);
+	void							EditorRenderSubspace		(GfxCmdList& Cmd, CFrustum& Frustum);
+	void							EditorCollect				(GfxCmdList& Cmd, bool Deferred, bool Shadows);
 	void							EditorSyncLights			();
 	xr_vector<light*>				EditorLights;
 
 private:
 	void							EditorCreate				();
 	void							EditorDestroy				();
-	void							EditorRenderUnlit			();
+	void							EditorRenderUnlit			(GfxCmdList& Cmd);
 	// Depth for the helpers drawn at the viewport size over the (possibly upscaled) scene
-	IRHIDepthStencilView*			EditorOverlayDepth			();
+	IRHIDepthStencilView*			EditorOverlayDepth			(GfxCmdList& Cmd);
 
 	IBlender*						EditorUnlitBlender			= nullptr;
 	ref_shader						EditorUnlitShader;
@@ -558,7 +553,6 @@ private:
 public:
 
 private:
-	ShaderExternalMap				m_ShaderOptions;
 	bool							m_shaderCacheBypass = false;
 
 protected:

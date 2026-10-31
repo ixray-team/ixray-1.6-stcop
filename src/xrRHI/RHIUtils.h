@@ -40,22 +40,6 @@ namespace RHIUtils
 		return true;
 	}
 
-	inline bool CreateConstantBuffer(IRHIBuffer** ppBuffer, u32 DataSize)
-	{
-		RHIBufferDesc desc = {};
-		desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-		desc.Size = DataSize;
-		desc.Type = ERHI_BUFFER_TYPE::CONSTANT;
-		desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, nullptr);
-		if (!pBuffer)
-			return false;
-
-		*ppBuffer = pBuffer;
-		return true;
-	}
-
 	inline bool CreateInputLayoutFromFVF(uint32_t fvfCode, xr_vector<RHIInputElementDesc>& il)
 	{
 		static constexpr ERHI_FORMAT s_blendFormats[] =

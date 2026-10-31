@@ -108,7 +108,7 @@ CWallmarksEngine::CWallmarksEngine	()
 {
 	static_pool.reserve		(256);
 	marks.reserve			(256);
-	hGeom.create			(FVF::F_LIT, RCache.Vertex.Buffer(), nullptr);
+	hGeom.create			(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), nullptr);
 }
 
 CWallmarksEngine::~CWallmarksEngine	()
@@ -386,51 +386,51 @@ void CWallmarksEngine::AddSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm)
 }
 
 extern float r_ssaDISCARD;
-ICF void BeginStream(ref_geom hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
+ICF void BeginStream(GfxCmdList& Cmd, ref_geom hGeom, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start)
 {
 	PROF_EVENT("BeginStream");
 	w_offset				= 0;
-	w_verts					= (FVF::LIT*)RCache.Vertex.Lock	(MAX_TRIS*3,hGeom->vb_stride,w_offset);
+	w_verts					= (FVF::LIT*)Cmd.Vertex.Lock	(MAX_TRIS*3,hGeom->vb_stride,w_offset);
 	w_start					= w_verts;
 }
 
-ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start, bool bSuppressCull)
+ICF void FlushStream(GfxCmdList& Cmd, ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*& w_verts, FVF::LIT*& w_start, bool bSuppressCull)
 {
 	PROF_EVENT("FlushStream");
 	u32 w_count					= u32(w_verts-w_start);
-	RCache.Vertex.Unlock		(w_count,hGeom->vb_stride);
+	Cmd.Vertex.Unlock		(w_count,hGeom->vb_stride);
 	if (w_count)
 	{
-		RCache.set_Shader(shader);
-		RCache.set_Geometry(hGeom);
+		Cmd.SetPass(shader);
+		Cmd.SetGeometry(hGeom);
 		if (bSuppressCull)
 		{
-			RCache.set_CullMode(ERHI_CULLMODE::NONE);
+			Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 		}
 
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_offset, w_count / 3);
+		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
 		if (bSuppressCull)
 		{
-			RCache.set_CullMode(ERHI_CULLMODE::BACK);
+			Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 		}
 		Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }
 
-void CWallmarksEngine::Render()
+void CWallmarksEngine::Render(GfxCmdList& Cmd)
 {
 //	if (marks.empty())			return;
 	// Projection and xform
 	float	_43					= Device.mProject._43;
 	Device.mProject._43			-= ps_r__WallmarkSHIFT; 
-	RCache.set_xform_world		(Fidentity);
-	RCache.set_xform_project	(Device.mProject);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Cmd.GetView().View, Device.mProject);
 
 	Fmatrix	mSavedView			= Device.mView;
 	Fvector	mViewPos			;
 			mViewPos.mad		(Device.vCameraPosition, Device.vCameraDirection,ps_r__WallmarkSHIFT_V);
 	Device.mView.build_camera_dir	(mViewPos,Device.vCameraDirection,Device.vCameraTop);
-	RCache.set_xform_view		(Device.mView);
+	Cmd.SetView(Device.mView, Cmd.GetView().Project);
 
 	Device.Statistic->RenderDUMP_WM.Begin	();
 	Device.Statistic->RenderDUMP_WMS_Count	= 0;
@@ -444,7 +444,7 @@ void CWallmarksEngine::Render()
 	for (WMSlotVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
 		u32			w_offset;
 		FVF::LIT	*w_verts, *w_start;
-		BeginStream	(hGeom,w_offset,w_verts,w_start);
+		BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
 		wm_slot* slot			= *slot_it;	
 		// static wallmarks
 		{
@@ -458,8 +458,8 @@ void CWallmarksEngine::Render()
 					if (ssa>=ssaCLIP)	{
 						u32 w_count		= u32(w_verts-w_start);
 						if ((w_count+W->verts.size())>=(MAX_TRIS*3)){
-							FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,false);
-							BeginStream	(hGeom,w_offset,w_verts,w_start);
+							FlushStream	(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,false);
+							BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
 						}
 						static_wm_render	(W,w_verts);
 					}
@@ -477,8 +477,8 @@ void CWallmarksEngine::Render()
 			}
 		}
 		// Flush stream
-		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,false);	//. remove line if !(suppress cull needed)
-		BeginStream				(hGeom,w_offset,w_verts,w_start);
+		FlushStream				(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,false);	//. remove line if !(suppress cull needed)
+		BeginStream				(Cmd, hGeom,w_offset,w_verts,w_start);
 
 		// dynamic wallmarks
 		{
@@ -494,8 +494,8 @@ void CWallmarksEngine::Render()
 					Device.Statistic->RenderDUMP_WMD_Count++;
 					u32 w_count		= u32(w_verts-w_start);
 					if ((w_count+W->VCount())>=(MAX_TRIS*3)){
-						FlushStream	(hGeom,slot->shader,w_offset,w_verts,w_start,true);
-						BeginStream	(hGeom,w_offset,w_verts,w_start);
+						FlushStream	(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,true);
+						BeginStream	(Cmd, hGeom,w_offset,w_verts,w_start);
 					}
 
 					FVF::LIT	*w_save = w_verts;
@@ -511,7 +511,7 @@ void CWallmarksEngine::Render()
 			slot->skeleton_items.clear();
 		}
 		// Flush stream
-		FlushStream				(hGeom,slot->shader,w_offset,w_verts,w_start,true);
+		FlushStream				(Cmd, hGeom,slot->shader,w_offset,w_verts,w_start,true);
 	}
 
 	lock.Leave();				// Physics may add wallmarks in parallel with rendering
@@ -523,6 +523,5 @@ void CWallmarksEngine::Render()
 	// Projection
 	Device.mView				= mSavedView;
 	Device.mProject._43			= _43;
-	RCache.set_xform_view		(Device.mView);
-	RCache.set_xform_project	(Device.mProject);
+	Cmd.SetView(Device.mView, Device.mProject);
 }

@@ -22,7 +22,6 @@ public:
 	virtual void Present() override;
 
 	virtual IRHITextureFactory* GetTextureFactory() override;
-	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
 	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
 	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
 	virtual void SetViewport(RHIViewport& VP) override;
@@ -40,23 +39,20 @@ public:
 
     // Drawing methods
     virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
-    virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) override;
-    virtual void Draw(u32 startVertex, u32 primitiveCount) override;
-    virtual void DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
-    virtual void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
+    void Draw(u32 VertexCount, u32 StartVertex) override;
+    void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex) override;
+    void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance) override;
+    void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance) override;
     virtual void DrawNoInputAssembly(u32 vertexCount) override;
 
     // Context helpers
     ID3D11DeviceContext* GetImmediateContext() const;
-    ID3D11DeviceContext* CreateDeferredContext();
-    void ReleaseDeferredContext(ID3D11DeviceContext* context);
 
     void* GetContext() override;
     void* GetSwapchain() override;
     void BeginFrame() override;
-    IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize) override;
     IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) override;
-    void SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type) override;
+    void SetConstants(const RHIConstantWrite* Writes, u32 Count) override;
     void ClearVertexBuffer(u32 vb_stride) override;
     void ClearIndexBuffer() override;
     void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) override;
@@ -67,7 +63,7 @@ public:
     void SetInputLayout(RHIObject* layout) override;
     void Dispatch(u32 x, u32 y, u32 z) override;
     HRESULT CreateSamplerState(const RHISampleDesc& desc, RHIObject** out_state) override;
-    void SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type) override;
+    void SetSamplers(RHIObject* const* States, u32 Count) override;
     void SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views) override;
     void SetComputeUAVs(u32 start, u32 count, IRHIUnorderedAccessView* const* views, const u32* initial_counts) override;
     HRESULT CreateOcclusionQuery(RHIObject** out_query) override;
@@ -93,7 +89,22 @@ public:
 	IDXGISwapChain* HWSwapchain = nullptr;
 	ID3D11DeviceContext* HWRenderContext = nullptr;
 
+	void InvalidateBindings();
+
 private:
+	void ApplyBindings(u32 Stages);
+
+	static constexpr u32 ConstantRingSize = 4u << 20;
+	ID3D11DeviceContext1* HWContext1 = nullptr;
+	xr_vector<ID3D11Buffer*> ConstantRings;
+	u32 RingIndex = 0, RingPos = 0;
+	ID3D11Buffer* ConstantBuffers[RHI_MAX_CONSTANT_BUFFERS] = {};
+	u32 ConstantCapacity[RHI_MAX_CONSTANT_BUFFERS] = {};
+	UINT ConstantFirst[RHI_MAX_CONSTANT_BUFFERS] = {}, ConstantNum[RHI_MAX_CONSTANT_BUFFERS] = {};
+	u32 ConstantLive = 0, ConstantPending[6] = {}, GraphicsStages = 0;
+	ID3D11SamplerState* Samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {};
+	u32 SamplerCount = 0, SamplerPending = 0;
+
 	bool CreateD3D11();
 	void DestroyD3D11();
 	bool UpdateBuffersD3D11();

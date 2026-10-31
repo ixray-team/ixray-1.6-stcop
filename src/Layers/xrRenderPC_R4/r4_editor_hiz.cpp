@@ -166,15 +166,15 @@ bool CEditorHiZ::CreateResources(u32 Width, u32 Height)
 	return true;
 }
 
-void CEditorHiZ::Build()
+void CEditorHiZ::Build(GfxCmdList& Cmd)
 {
 	if (!IsSupported())
 	{
 		return;
 	}
 
-	const u32 Width = (u32)RCache.get_width();
-	const u32 Height = (u32)RCache.get_height();
+	const u32 Width = (u32)GfxCmdList::GetWidth();
+	const u32 Height = (u32)GfxCmdList::GetHeight();
 	if (Width == 0 || Height == 0 || !CreateResources(Width, Height))
 	{
 		return;
@@ -195,15 +195,15 @@ void CEditorHiZ::Build()
 	GPU_EVENT(editor_hiz);
 
 	SPass& P = *(Shader->E[0]->passes[0]);
-	RCache.set_States(P.state);
-	RCache.set_Constants(P.constants);
-	RCache.set_Textures(P.T);
-	RCache.set_CS(P.cs);
-	RCache.Constants.Write<CBEditor>().editor_hiz_params.set(float(Width), float(Height), 0.f, 0.f);
+	Cmd.SetStates(P.state);
+	Cmd.SetConstantTable(P.constants);
+	Cmd.SetTextures(P.T);
+	Cmd.SetCS(P.cs);
+	Cmd.Constants.Write<CBEditor>().editor_hiz_params.set(float(Width), float(Height), 0.f, 0.f);
 
 	UINT InitialCount = 0;
 	HWContext()->CSSetUnorderedAccessViews(0, 1, &GridUAV, &InitialCount);
-	RCache.Compute((GridWidth + 7) / 8, (GridHeight + 7) / 8, 1);
+	Cmd.Dispatch((GridWidth + 7) / 8, (GridHeight + 7) / 8, 1);
 
 	ID3D11UnorderedAccessView* NullUAV = nullptr;
 	HWContext()->CSSetUnorderedAccessViews(0, 1, &NullUAV, &InitialCount);

@@ -224,15 +224,6 @@ public:
 	virtual bool					InIndoor				()											{ return false; }
 	virtual size_t					SectorsCount			()											{ return size_t(0); }
 
-	virtual HRESULT					shader_compile			(
-		const char*							name,
-		DWORD const*                    pSrcData,
-		UINT                            SrcDataLen,
-		const char*                          pFunctionName,
-		const char*                          pTarget,
-		DWORD                           Flags,
-		void*&							result
-	)																									{return S_OK;};
 
 	// Information
 	virtual	void					Statistics				(CGameFont* F	)							{};

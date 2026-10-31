@@ -2,7 +2,7 @@
 
 #include "dxRenderDeviceRender.h"
 
-void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
+void CRenderTarget::PhaseGammaApply(GfxCmdList& Cmd, IRHIRenderTargetView* Destination)
 {
 	float w = float(Device.TargetWidth);
 	float h = float(Device.TargetHeight);
@@ -17,13 +17,13 @@ void CRenderTarget::PhaseGammaApply(IRHIRenderTargetView* Destination)
 	contrast = contrast * 0.5f + 0.5f;
 	gamma = 1.0f / std::max(EPS_S, gamma);
 
-	u_setrt(w, h, Destination ? Destination : RTarget, nullptr, nullptr, nullptr);
+	u_setrt(Cmd, w, h, Destination ? Destination : RTarget, nullptr, nullptr, nullptr);
 
-	DrawPassSQ(s_gamma, 0, [&]
+	DrawPassSQ(Cmd, s_gamma, 0, [&]
 	{
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 		RImplementation.rmNormal();
-		RCache.Constants.Write<CBFrame>().color_params.set(contrast, gamma, brightness, 0.0f);
-		RCache.Constants.Write<CBFrame>().color_grading.set(color_grading.r, color_grading.g, color_grading.b, 0.0f);
+		Cmd.Constants.Write<CBFrame>().color_params.set(contrast, gamma, brightness, 0.0f);
+		Cmd.Constants.Write<CBFrame>().color_grading.set(color_grading.r, color_grading.g, color_grading.b, 0.0f);
 	});
 }

@@ -54,13 +54,14 @@ CLightShadows::CLightShadows()
 
 	RT.create				(RTname,S_rt_size,S_rt_size,S_rtf);
 	RT_temp.create			(RTtemp,S_rt_size,S_rt_size,S_rtf);
+	GfxCmdList& Cmd			= RImplementation.Imm();
 	CBlender_ShWorld world_blender;
 	sh_World.create(&world_blender, "effects\\shadow_world", RTname);
-	geom_World.create		(FVF::F_LIT,	RCache.Vertex.Buffer(), nullptr);
+	geom_World.create		(FVF::F_LIT,	Cmd.Vertex.Buffer(), nullptr);
 	CBlender_Blur blur_blender;
 	sh_BlurTR.create(&blur_blender, "blur4", RTtemp2);
 	sh_BlurRT.create(&blur_blender, "blur4", RTname2);
-	geom_Blur.create		(FVF::F_TL4uv,	RCache.Vertex.Buffer(), RCache.QuadIB);
+	geom_Blur.create		(FVF::F_TL4uv,	Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 }
 
@@ -132,11 +133,11 @@ void CLightShadows::add_element	(NODE& N)
 {
 	if (0==current)										return;
 	VERIFY2	(casters.back()->nodes.size()<24,"Object exceeds limit of 24 renderable parts/materials");
-	if (0==N.pVisual->shader->E[SE_R1_LMODELS]._get())	return;
+	if (0==N.pVisual->shader->E[ShaderVariant::ModelLighting]._get())	return;
 	casters.back()->nodes.push_back		(N);
 }
 
-void CLightShadows::calculate	()
+void CLightShadows::calculate	(GfxCmdList& Cmd)
 {
 	if (casters.empty())		return;
 
@@ -163,9 +164,9 @@ void CLightShadows::calculate	()
 
 			if (!bRTS)	{
 				bRTS						= true;
-				RImplementation.Target->u_setrt(RT_temp, nullptr, nullptr);
+				RImplementation.Target->u_setrt(Cmd, RT_temp, nullptr, nullptr);
 				const float clear_color[] = {1.f, 1.f, 1.f, 1.f};
-				GRHI->ClearTarget(RT_temp->pRT, clear_color);
+				Cmd.ClearTarget(RT_temp->pRT, clear_color);
 			}
 
 			Fvector		Lpos	= L.source->position;
@@ -215,7 +216,7 @@ void CLightShadows::calculate	()
 			mProject.build_projection_HAT	(p_hat,p_asp,p_near,	p_far);
 
 			mProjectR = mProject;
-			RCache.set_xform_project		(mProject);
+			Cmd.SetView(Cmd.GetView().View, mProject);
 
 			Fmatrix		mView;
 			Fvector		v_D,v_N,v_R;
@@ -226,7 +227,7 @@ void CLightShadows::calculate	()
 			v_R.crossproduct		(v_N,v_D);
 			v_N.crossproduct		(v_D,v_R);
 			mView.build_camera		(Lpos,C.C,v_N);
-			RCache.set_xform_view	(mView);
+			Cmd.SetView(mView, Cmd.GetView().Project);
 
 			Fmatrix					mCombine,mCombineR;
 			mCombine.mul			(mProject,mView);
@@ -235,15 +236,15 @@ void CLightShadows::calculate	()
 			int		s_x			=	slot_id%slot_line;
 			int		s_y			=	slot_id/slot_line;
 			RHIViewport VP = { (float)s_x * S_size, (float)s_y * S_size, (float)S_size, (float)S_size, 0, 1 };
-			GRHI->SetViewport(VP);
+			Cmd.SetViewport(VP);
 
 			for (u32 n_it=0; n_it<C.nodes.size(); n_it++)
 			{
 				NODE& N					=	C.nodes[n_it];
 				dxRender_Visual *V		=	N.pVisual;
-				RCache.set_Element		(V->shader->E[SE_R1_LMODELS]);
-				RCache.set_xform_world	(N.Matrix);
-				V->Render				(-1.0f);
+				Cmd.SetPass		(V->shader->E[ShaderVariant::ModelLighting]);
+				Cmd.SetObjectTransform(N.Matrix);
+				V->Render				(Cmd, -1.0f);
 			}
 
 			shadows.push_back		(shadow());
@@ -268,23 +269,22 @@ void CLightShadows::calculate	()
 	{
 		
 		u32							Offset;
-		FVF::TL4uv* pv				= (FVF::TL4uv*) RCache.Vertex.Lock	(4,geom_Blur.stride(),Offset);
+		FVF::TL4uv* pv				= (FVF::TL4uv*) Cmd.Vertex.Lock	(4,geom_Blur.stride(),Offset);
 		ApplyBlur4	(pv,S_rt_size,S_rt_size,S_blur_kernel);
-		RCache.Vertex.Unlock		(4,geom_Blur.stride());
+		Cmd.Vertex.Unlock		(4,geom_Blur.stride());
 
-		RImplementation.Target->u_setrt(RT, nullptr, nullptr);
+		RImplementation.Target->u_setrt(Cmd, RT, nullptr, nullptr);
 		RHIViewport blur_viewport = {0, 0, float(S_rt_size), float(S_rt_size), 0, 1};
-		GRHI->SetViewport(blur_viewport);
-		RCache.set_Shader			(sh_BlurTR	);
-		RCache.set_Geometry			(geom_Blur	);
-		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
+		Cmd.SetViewport(blur_viewport);
+		Cmd.SetPass			(sh_BlurTR	);
+		Cmd.SetGeometry			(geom_Blur	);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
 	}
 
 
 	Device.Statistic->RenderDUMP_Scalc.End	();
 	
-	RCache.set_xform_project	(Device.mProject);
-	RCache.set_xform_view		(Device.mView);
+	Cmd.SetView(Device.mView, Device.mProject);
 }
 
 #define CLS(a)	color_rgba	(a,a,a,a)
@@ -386,7 +386,7 @@ void  PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* 
 	c2 = iCeil_SSE(255.f*A);
 }
 
-void CLightShadows::render	()
+void CLightShadows::render	(GfxCmdList& Cmd)
 {
 	
 	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
@@ -408,15 +408,15 @@ void CLightShadows::render	()
 	
 	Device.mProject._43			-=	0.002f; 
 	
-	RCache.set_xform_world		(Fidentity);
-	RCache.set_xform_project	(Device.mProject);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Cmd.GetView().View, Device.mProject);
 	Fvector	View				= Device.vCameraPosition;
 
-	RCache.set_Shader			(sh_World);
-	RCache.set_Geometry			(geom_World);
+	Cmd.SetPass			(sh_World);
+	Cmd.SetGeometry			(geom_World);
 	int batch					= 0;
 	u32 Offset					= 0;
-	FVF::LIT* pv				= (FVF::LIT*) RCache.Vertex.Lock	(batch_size*3,geom_World->vb_stride,Offset);
+	FVF::LIT* pv				= (FVF::LIT*) Cmd.Vertex.Lock	(batch_size*3,geom_World->vb_stride,Offset);
 	for (u32 s_it=0; s_it<shadows.size(); s_it++)
 	{
 		Device.Statistic->RenderDUMP_Srender.Begin	();
@@ -539,19 +539,19 @@ void CLightShadows::render	()
 			batch++;
 			if (batch==batch_size)	{
 				
-				RCache.Vertex.Unlock	(batch*3,geom_World->vb_stride);
-				RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,batch);
+				Cmd.Vertex.Unlock	(batch*3,geom_World->vb_stride);
+				Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batch * 3, Offset);
 
-				pv						= (FVF::LIT*) RCache.Vertex.Lock(batch_size*3,geom_World->vb_stride,Offset);
+				pv						= (FVF::LIT*) Cmd.Vertex.Lock(batch_size*3,geom_World->vb_stride,Offset);
 				batch					= 0;
 			}
 		}
 		Device.Statistic->RenderDUMP_Srender.End	();
 	}
 
-	RCache.Vertex.Unlock	(batch*3,geom_World->vb_stride);
+	Cmd.Vertex.Unlock	(batch*3,geom_World->vb_stride);
 	if (batch)				{
-		RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,batch);
+		Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, batch * 3, Offset);
 	}
 
 	shadows.clear				();
@@ -567,5 +567,5 @@ void CLightShadows::render	()
 	}
 
 	Device.mProject._43			= _43;
-	RCache.set_xform_project	(Device.mProject);
+	Cmd.SetView(Cmd.GetView().View, Device.mProject);
 }

@@ -4,6 +4,7 @@
 
 dxRainRender::dxRainRender()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	IReader* F = FS.r_open(_game_meshes_,"dm\\rain.dm"); 
 	VERIFY3(F,"Can't open file.","dm\\rain.dm");
 
@@ -11,8 +12,8 @@ dxRainRender::dxRainRender()
 
 	//
 	SH_Rain.create("effects\\rain","fx\\fx_rain");
-	hGeom_Rain.create(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
-	hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	hGeom_Rain.create(FVF::F_LIT, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+	hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
 	
 	FS.r_close(F);
 }
@@ -31,6 +32,7 @@ void dxRainRender::Copy(IRainRender &_in)
 
 void dxRainRender::Render(CEffect_Rain &owner)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	auto& m_sprites = owner.m_sprites;
 	u32 total_sprites = (u32)m_sprites.size();
@@ -38,22 +40,22 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		return;
 
 	// perform update
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Shader(SH_Rain);
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Geometry(hGeom_Rain);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetPass(SH_Rain);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetGeometry(hGeom_Rain);
 
-	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(CEffect_Rain::rain_sprite));
+	u32 MAX_SPRITES = Cmd.Vertex.GetSize() / u32(sizeof(CEffect_Rain::rain_sprite));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
-		CEffect_Rain::rain_sprite* buff = (CEffect_Rain::rain_sprite*)RCache.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
+		CEffect_Rain::rain_sprite* buff = (CEffect_Rain::rain_sprite*)Cmd.Vertex.Lock(vertices_in_batch, hGeom_Rain->vb_stride, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
 			buff[i] = m_sprites[start_idx + i];
-		RCache.Vertex.Unlock(vertices_in_batch, hGeom_Rain->vb_stride);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
+		Cmd.Vertex.Unlock(vertices_in_batch, hGeom_Rain->vb_stride);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertices_in_batch / 2u) * 3, 0u, vOffset);
 	}
 
 	// Particles
@@ -70,15 +72,15 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 		f_rain_color.mul(0.9f);
 		factor_visual *= 0.8f;
-		_IndexStream& _IS = RCache.Index;
-		RCache.set_Shader(DM_Drop->shader);
-		RCache.set_CullMode(ERHI_CULLMODE::NONE);
+		_IndexStream& _IS = Cmd.Index;
+		Cmd.SetPass(DM_Drop->shader);
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 		Fmatrix mXform,mScale;
 		int pcount = 0;
 		u32 v_offset,i_offset;
 		u32 vCount_Lock = particles_cache*DM_Drop->number_vertices;
 		u32 iCount_Lock = particles_cache*DM_Drop->number_indices;
-		IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)RCache.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
+		IRender_DetailModel::fvfVertexOut* v_ptr = (IRender_DetailModel::fvfVertexOut*)Cmd.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
 		u16* i_ptr = _IS.Lock(iCount_Lock, i_offset);
 		while (P)
 		{
@@ -111,12 +113,12 @@ void dxRainRender::Render(CEffect_Rain &owner)
 				if (pcount >= particles_cache)
 				{
 					// flush
-					RCache.Vertex.Unlock(vCount_Lock,hGeom_Drops->vb_stride);
+					Cmd.Vertex.Unlock(vCount_Lock,hGeom_Drops->vb_stride);
 					_IS.Unlock(iCount_Lock);
-					RCache.set_Geometry(hGeom_Drops);
-					RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,v_offset,0,vCount_Lock,i_offset, iCount_Lock/3);
+					Cmd.SetGeometry(hGeom_Drops);
+					Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, iCount_Lock, i_offset, v_offset);
 
-					v_ptr = (IRender_DetailModel::fvfVertexOut*)RCache.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
+					v_ptr = (IRender_DetailModel::fvfVertexOut*)Cmd.Vertex.Lock(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
 					i_ptr = _IS.Lock(iCount_Lock, i_offset);
 
 					pcount = 0;
@@ -130,15 +132,15 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		vCount_Lock = pcount*DM_Drop->number_vertices;
 		iCount_Lock = pcount*DM_Drop->number_indices;
 		u32	dwNumPrimitives = iCount_Lock/3;
-		RCache.Vertex.Unlock(vCount_Lock,hGeom_Drops->vb_stride);
+		Cmd.Vertex.Unlock(vCount_Lock,hGeom_Drops->vb_stride);
 		_IS.Unlock(iCount_Lock);
 		if (pcount)
 		{
-			RCache.set_Geometry(hGeom_Drops);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,v_offset,0,vCount_Lock,i_offset,dwNumPrimitives);
+			Cmd.SetGeometry(hGeom_Drops);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwNumPrimitives * 3, i_offset, v_offset);
 		}
 	}
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 const Fsphere& dxRainRender::GetDropBounds() const

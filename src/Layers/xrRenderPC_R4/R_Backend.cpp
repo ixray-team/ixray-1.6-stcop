@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "R_Backend.h"
 
-CBackend RCache;
-
 // Create Quad-IB
-void CBackend::CreateQuadIB()
+void GfxCmdList::CreateQuadIB()
 {
 	const u32 dwTriCount = 4 * (4096 * 8);
 	const u32 dwIdxCount = dwTriCount * 2 * 3;
@@ -31,7 +29,7 @@ void CBackend::CreateQuadIB()
 }
 
 // Device dependance
-void CBackend::OnDeviceCreate	()
+void GfxCmdList::OnDeviceCreate	()
 {
 	EditorMode			= Device.IsEditorMode();
 	CreateQuadIB		();
@@ -40,15 +38,13 @@ void CBackend::OnDeviceCreate	()
 	Vertex.Create		();
 	Index.Create		();
 	Constants.Create();
-	Constants.UpdateObject(xforms);
-	Constants.UpdateView(xforms);
+	SetView(ViewState);
 	// invalidate caching
 	Invalidate			();
 }
 
-void CBackend::OnDeviceDestroy()
+void GfxCmdList::OnDeviceDestroy()
 {
-	Constants.Destroy();
 	// streams
 	Index.Destroy		();
 	Vertex.Destroy		();
@@ -57,7 +53,7 @@ void CBackend::OnDeviceDestroy()
 	_RELEASE							(QuadIB);
 }
 
-void CBackend::set_Vertices(IRHIBuffer* _vb, u32 _vb_stride)
+void GfxCmdList::SetVertices(IRHIBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb != _vb) || (vb_stride != _vb_stride))
 	{
@@ -75,7 +71,7 @@ void CBackend::set_Vertices(IRHIBuffer* _vb, u32 _vb_stride)
 	}
 }
 
-void CBackend::set_Indices(IRHIBuffer* _ib)
+void GfxCmdList::SetIndices(IRHIBuffer* _ib)
 {
 	if (ib != _ib)
 	{

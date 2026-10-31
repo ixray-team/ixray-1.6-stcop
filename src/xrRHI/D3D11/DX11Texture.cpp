@@ -172,10 +172,6 @@ DX11Surface::DX11Surface(ID3D11Texture1D* texture)
 
 DX11Surface::~DX11Surface()
 {
-	xr_delete(SRV);
-	xr_delete(RTV);
-	xr_delete(DSV);
-
 	if (Resource)
 	{
 		Resource->Release();
@@ -262,26 +258,6 @@ ERHI_USAGE DX11Surface::GetUsage() const
 	return (ERHI_USAGE)m_desc.Usage;
 }
 
-IRHIShaderResourceView* DX11Surface::GetShaderResourceView()
-{
-	if (!SRV && Resource)
-	{
-		// Create SRV if needed
-		// This would need device context to create SRV
-	}
-	return SRV;
-}
-
-IRHIRenderTargetView* DX11Surface::GetRenderTargetView()
-{
-	return RTV;
-}
-
-IRHIDepthStencilView* DX11Surface::GetDepthStencilView()
-{
-	return DSV;
-}
-
 bool DX11Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box)
 {
 	if (!Resource || !subResource || !subResource->Data)
@@ -330,8 +306,8 @@ void DX11Surface::Unlock()
 }
 
 // DX11 Shader Resource View implementation
-DX11ShaderResourceView::DX11ShaderResourceView(ID3D11ShaderResourceView* srv, IRHISurface* surface)
-	: SRV(srv), Surface(surface)
+DX11ShaderResourceView::DX11ShaderResourceView(ID3D11ShaderResourceView* srv)
+	: SRV(srv)
 {
 }
 
@@ -365,11 +341,6 @@ u32 DX11ShaderResourceView::Release()
 	}
 
 	return 0;
-}
-
-IRHISurface* DX11ShaderResourceView::GetSurface()
-{
-	return Surface;
 }
 
 // DX11 Render Target View implementation
@@ -604,12 +575,6 @@ IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 	return new DX11Surface(texture);
 }
 
-IRHISurface* DX11TextureFactory::CreateDepthStencil(const RHITextureDesc& desc)
-{
-	// Similar to CreateRenderTarget but with depth format
-	return nullptr;
-}
-
 IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc)
 {
 	DX11Surface* dx11Surface = static_cast<DX11Surface*>(surface);
@@ -650,7 +615,7 @@ IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface
 	if (FAILED(hr))
 		return nullptr;
 
-	return new DX11ShaderResourceView(srv, surface);
+	return new DX11ShaderResourceView(srv);
 }
 
 IRHIRenderTargetView* DX11TextureFactory::CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc)

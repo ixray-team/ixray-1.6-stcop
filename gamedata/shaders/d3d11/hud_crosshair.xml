@@ -1,0 +1,5 @@
+<shader>
+	<normal>
+		<pass vs="hud_crosshair" ps="simple_color" zfunc="always" zwrite="0" blend="srcalpha,invsrcalpha"/>
+	</normal>
+</shader>

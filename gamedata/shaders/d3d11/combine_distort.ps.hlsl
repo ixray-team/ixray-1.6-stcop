@@ -1,5 +1,5 @@
 #include "common.hlsli"
-Texture2D s_distort;
+Texture2D s_distort : register(t25);
 
 float3 main(PSInputFullscreen I) : SV_Target
 {

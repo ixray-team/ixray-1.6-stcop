@@ -64,10 +64,10 @@ public:
 	void	Unload			();
 
 	void reset_geometry();
-	void	render_selected	();
-	void	render_sw		();
-	void	render_hw		();
-	void	Render			();
+	void	render_selected	(GfxCmdList& Cmd);
+	void	render_sw		(GfxCmdList& Cmd);
+	void	render_hw		(GfxCmdList& Cmd);
+	void	Render			(GfxCmdList& Cmd);
 
 	CGlowManager			();
 	~CGlowManager			();

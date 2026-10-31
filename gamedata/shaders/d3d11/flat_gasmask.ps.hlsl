@@ -3,17 +3,17 @@
 #include "shared\VisorDrops.hlsli"
 
 #include "shared\extra_cb.hlsli"
-Texture2D s_droplets;
-Texture2D s_mask_nm_1;
-Texture2D s_mask_nm_2;
-Texture2D s_mask_nm_3;
-Texture2D s_mask_nm_4;
-Texture2D s_mask_nm_5;
-Texture2D s_mask_nm_6;
-Texture2D s_mask_nm_7;
-Texture2D s_mask_nm_8;
-Texture2D s_mask_nm_9;
-Texture2D s_mask_nm_10;
+Texture2D s_droplets : register(t25);
+Texture2D s_mask_nm_1 : register(t26);
+Texture2D s_mask_nm_2 : register(t49);
+Texture2D s_mask_nm_3 : register(t50);
+Texture2D s_mask_nm_4 : register(t51);
+Texture2D s_mask_nm_5 : register(t52);
+Texture2D s_mask_nm_6 : register(t53);
+Texture2D s_mask_nm_7 : register(t54);
+Texture2D s_mask_nm_8 : register(t55);
+Texture2D s_mask_nm_9 : register(t56);
+Texture2D s_mask_nm_10 : register(t28);
 
 //-' Gasmask settings
 #define GM_DIST_INT 				0.025f //Refraction intensity

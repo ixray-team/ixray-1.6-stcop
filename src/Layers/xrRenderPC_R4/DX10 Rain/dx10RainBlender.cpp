@@ -10,11 +10,11 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+	C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 
 	if (!C.L_textures.empty())
 	{
-		RImplementation.addShaderOption("USE_RAIN_MASK", "1");
+		C.AddDefine("USE_RAIN_MASK", "1");
 	}
 
 	C.r_ComputePass("rain_render");
@@ -37,10 +37,6 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_mask", C.L_textures[0]);
 	}
 
-	C.r_dx10Sampler("smp_nofilter");
-	C.r_dx10Sampler("smp_rtlinear");
-	C.r_dx10Sampler("smp_linear");
-	C.r_dx10Sampler("smp_smap");
 
 	C.r_End();
 }

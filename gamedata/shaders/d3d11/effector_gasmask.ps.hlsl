@@ -8,8 +8,8 @@
 #define VIS_GLASS_RADIUS 0.32f
 #define VIS_GLASS_INTENSITY 0.45f
 
-Texture2D s_gasmask;
-Texture2D s_breath;
+Texture2D s_gasmask : register(t26);
+Texture2D s_breath : register(t25);
 
 float3 calc_visor_reflect(float3 color, float2 tc)
 {

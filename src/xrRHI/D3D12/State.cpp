@@ -1,6 +1,5 @@
 #include "Device.h"
 #include "../Layout/ImGui/imgui_impl_dx12.h"
-#include "../../xrCore/D3DLegacy.h"
 
 static D3D12_RASTERIZER_DESC RasterizerDesc(const RHIRasterizerDesc& desc)
 {
@@ -44,17 +43,12 @@ public:
     {
         Reset();
     }
-    ~DX12StateManager() override = default;
     void Apply() override
     {
         InternalDevice12::ContextLock guard(_device);
         if (_dirty)
         {
             _nativeRaster = RasterizerDesc(_rasterDesc);
-            if (_isFillModeOverride)
-            {
-                _nativeRaster.FillMode = (D3D12_FILL_MODE)_overrideFillMode;
-            }
             _nativeDepth = DepthDesc(_depthDesc);
             _nativeBlend = BlendDesc(_blendDesc);
             _dirty = false;
@@ -63,13 +57,13 @@ public:
         if (_appliedSerial != _device._stateSerial)
         {
             auto& state = _device._graphicsState;
-            if (state.SampleMask != _sampleMask || memcmp(&state.Rasterizer, &_nativeRaster, sizeof(_nativeRaster)) ||
+            if (state.SampleMask != UINT32_MAX || memcmp(&state.Rasterizer, &_nativeRaster, sizeof(_nativeRaster)) ||
                 memcmp(&state.Depth, &_nativeDepth, sizeof(_nativeDepth)) || memcmp(&state.Blend, &_nativeBlend, sizeof(_nativeBlend)))
             {
                 state.Rasterizer = _nativeRaster;
                 state.Depth = _nativeDepth;
                 state.Blend = _nativeBlend;
-                state.SampleMask = _sampleMask;
+                state.SampleMask = UINT32_MAX;
                 _device._pipelineDirty = true;
                 ++_device._stateSerial;
             }
@@ -77,35 +71,15 @@ public:
         }
 
         _device._stencilRef = _stencilRef;
-        _device._scissorEnabled = _isScissorOverride ? _overrideScissorValue : _rasterDesc.ScissorEnable;
+        _device._scissorEnabled = _rasterDesc.ScissorEnable;
     }
     void Reset() override
     {
         ResetRDesc();
         ResetDDesc();
         ResetBDesc();
-        _sampleMask = UINT32_MAX;
         _stencilRef = 0;
-        _isScissorOverride = false;
-        _isFillModeOverride = false;
-        _overrideFillMode = RHI_FILL_SOLID;
-        CacheCullMode = ERHI_CULLMODE::BACK;
         Apply();
-    }
-    void EnableScissoring(bool enabled = true) override
-    {
-        _rasterDesc.ScissorEnable = enabled;
-    }
-    void OverrideScissoring(bool overrideValue = true, bool value = true) override
-    {
-        _isScissorOverride = overrideValue;
-        _overrideScissorValue = value;
-    }
-    void OverrideFillMode(bool overrideValue, u32 mode) override
-    {
-        _isFillModeOverride = overrideValue;
-        _overrideFillMode = ToFillMode(mode);
-        _dirty = true;
     }
     void SetRasterizerState(void* state) override
     {
@@ -113,7 +87,6 @@ public:
         if (state)
         {
             _rasterDesc = *(RHIRasterizerDesc*)state;
-            CacheCullMode = (ERHI_CULLMODE)_rasterDesc.CullMode;
         }
         else
         {
@@ -145,45 +118,13 @@ public:
         }
     }
     void SetStencilRef(u32 value) override { _stencilRef = value; }
-    void UnmapConstants() override { BindAlphaCallback = nullptr; }
-    void SetSampleMask(u32 value)
-    {
-        _sampleMask = value;
-        _dirty = true;
-    }
-    void* GetCache(ERHI_STATE_CACHE_TYPE type, void* desc) override
-    {
-        switch (type)
-        {
-        case ERHI_STATE_CACHE_TYPE::RS: return _device.GetState(*(RHIRasterizerDesc*)desc);
-        case ERHI_STATE_CACHE_TYPE::DS: return _device.GetState(*(RHIDepthStencilDesc*)desc);
-        case ERHI_STATE_CACHE_TYPE::BS: return _device.GetState(*(RHIBlendDesc*)desc);
-        }
-        return nullptr;
-    }
-    void SetAlphaRef(u32 NewAlphaRef) override;
-    void SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail) override;
-    void SetRenderState(u32 p1, u32 p2) override;
-    void SetDepthFunc(u32 Func) override;
-    void SetDepthEnable(u32 Enable) override;
-    void SetColorWriteEnable(u32 WriteMask) override;
-    void SetCullMode(ERHI_CULLMODE Mode) override;
-    void BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback) override;
-    void SetMultisample(u32 Enable);
 
 private:
     InternalDevice12& _device;
     RHIRasterizerDesc _rasterDesc = {};
     RHIDepthStencilDesc _depthDesc = {};
     RHIBlendDesc _blendDesc = {};
-    u32 _sampleMask = UINT32_MAX;
     u32 _stencilRef = 0;
-    u32 _alphaRef = 0;
-    bool _isScissorOverride = false;
-    bool _overrideScissorValue = false;
-    bool _isFillModeOverride = false;
-    ERHI_FILL_MODE _overrideFillMode = RHI_FILL_SOLID;
-    static ERHI_FILL_MODE ToFillMode(u32 mode) { return mode == RHI_FILL_SOLID ? RHI_FILL_SOLID : RHI_FILL_WIREFRAME; }
     D3D12_RASTERIZER_DESC _nativeRaster = {};
     D3D12_DEPTH_STENCIL_DESC _nativeDepth = {};
     D3D12_BLEND_DESC _nativeBlend = {};
@@ -254,296 +195,23 @@ void DX12StateManager::ResetRDesc()
 	_rasterDesc.AntialiasedLineEnable = false;
 }
 
-void DX12StateManager::SetAlphaRef(u32 NewAlphaRef)
-{
-	_alphaRef = NewAlphaRef;
-
-	if (BindAlphaCallback)
-	{
-		BindAlphaCallback(_alphaRef);
-	}
-}
-
-void DX12StateManager::SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
-{
-	_dirty = true;
-	_depthDesc.StencilEnable = Enable;
-	_depthDesc.StencilReadMask = Mask;
-	_depthDesc.StencilWriteMask = WriteMask;
-
-	_depthDesc.FrontFace.StencilFailOp = (ERHI_STENCIL_OP)Fail;
-	_depthDesc.FrontFace.StencilDepthFailOp = (ERHI_STENCIL_OP)ZFail;
-	_depthDesc.FrontFace.StencilPassOp = (ERHI_STENCIL_OP)Pass;
-	_depthDesc.FrontFace.StencilFunc = (ERHI_COMPARISON)Func;
-
-	_depthDesc.BackFace.StencilFailOp = (ERHI_STENCIL_OP)Fail;
-	_depthDesc.BackFace.StencilDepthFailOp = (ERHI_STENCIL_OP)ZFail;
-	_depthDesc.BackFace.StencilPassOp = (ERHI_STENCIL_OP)Pass;
-	_depthDesc.BackFace.StencilFunc = (ERHI_COMPARISON)Func;
-
-	SetStencilRef(Ref);
-}
-
-void DX12StateManager::SetRenderState(u32 p1, u32 p2)
-{
-	_dirty = true;
-	switch (p1)
-	{
-	case D3DRS_ZENABLE:
-		SetDepthEnable(p2 ? TRUE : FALSE);
-		break;
-
-	case D3DRS_FILLMODE:
-		_rasterDesc.FillMode = ToFillMode(p2);
-		break;
-
-	case D3DRS_ZWRITEENABLE:
-		_depthDesc.DepthWriteMask = p2 ? RHI_DEPTH_WRITE_MASK_ALL : RHI_DEPTH_WRITE_MASK_ZERO;
-		break;
-
-	case D3DRS_ALPHATESTENABLE:
-
-		break;
-
-	case D3DRS_TEXTUREFACTOR:
-
-		break;
-
-	case D3DRS_CULLMODE:
-		switch (p2)
-		{
-		case 1:
-			SetCullMode(ERHI_CULLMODE::NONE);
-			break;
-		case 2:
-			SetCullMode(ERHI_CULLMODE::FRONT);
-			break;
-		case 3:
-			SetCullMode(ERHI_CULLMODE::BACK);
-			break;
-		}
-		break;
-
-	case D3DRS_SRCBLEND:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].SrcBlend = (ERHI_BLEND)p2;
-		}
-		break;
-
-	case D3DRS_DESTBLEND:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].DestBlend = (ERHI_BLEND)p2;
-		}
-		break;
-
-	case D3DRS_ZFUNC:
-		SetDepthFunc(p2);
-		break;
-
-	case D3DRS_ALPHAREF:
-		SetAlphaRef(p2);
-		break;
-
-	case D3DRS_ALPHAFUNC:
-		
-		break;
-
-	case D3DRS_ALPHABLENDENABLE:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].BlendEnable = (BOOL)p2;
-		}
-		break;
-
-	case D3DRS_STENCILENABLE:
-		_depthDesc.StencilEnable = (BOOL)p2;
-		break;
-
-	case D3DRS_STENCILFAIL:
-		_depthDesc.FrontFace.StencilFailOp = (ERHI_STENCIL_OP)p2;
-		_depthDesc.BackFace.StencilFailOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_STENCILZFAIL:
-		_depthDesc.FrontFace.StencilDepthFailOp = (ERHI_STENCIL_OP)p2;
-		_depthDesc.BackFace.StencilDepthFailOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_STENCILPASS:
-		_depthDesc.FrontFace.StencilPassOp = (ERHI_STENCIL_OP)p2;
-		_depthDesc.BackFace.StencilPassOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_STENCILFUNC:
-		_depthDesc.FrontFace.StencilFunc = (ERHI_COMPARISON)p2;
-		_depthDesc.BackFace.StencilFunc = (ERHI_COMPARISON)p2;
-		break;
-
-	case D3DRS_CCW_STENCILFAIL:
-		_depthDesc.BackFace.StencilFailOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_CCW_STENCILZFAIL:
-		_depthDesc.BackFace.StencilDepthFailOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_CCW_STENCILPASS:
-		_depthDesc.BackFace.StencilPassOp = (ERHI_STENCIL_OP)p2;
-		break;
-
-	case D3DRS_CCW_STENCILFUNC:
-		_depthDesc.BackFace.StencilFunc = (ERHI_COMPARISON)p2;
-		break;
-
-	case D3DRS_STENCILREF:
-		SetStencilRef(p2);
-		break;
-
-	case D3DRS_STENCILMASK:
-		_depthDesc.StencilReadMask = (UINT8)p2;
-		break;
-
-	case D3DRS_STENCILWRITEMASK:
-		_depthDesc.StencilWriteMask = (UINT8)p2;
-		break;
-
-	case D3DRS_SCISSORTESTENABLE:
-		EnableScissoring(p2 ? TRUE : FALSE);
-		break;
-
-	case D3DRS_SLOPESCALEDEPTHBIAS:
-		_rasterDesc.SlopeScaledDepthBias = *((float*)&p2);
-		break;
-
-	case D3DRS_DEPTHBIAS:
-		_rasterDesc.DepthBias = (INT)p2;
-		break;
-
-	case D3DRS_COLORWRITEENABLE:
-		SetColorWriteEnable(p2);
-		break;
-
-	case D3DRS_COLORWRITEENABLE1:
-	case D3DRS_COLORWRITEENABLE2:
-	case D3DRS_COLORWRITEENABLE3:
-	{
-		int targetIndex = p1 - D3DRS_COLORWRITEENABLE1;
-		if (targetIndex >= 0 && targetIndex < 8)
-		{
-			_blendDesc.RenderTarget[targetIndex].RenderTargetWriteMask = p2;
-		}
-	}
-	break;
-
-	case D3DRS_BLENDOP:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].BlendOp = (ERHI_BLEND_OP)p2;
-		}
-		break;
-
-	case D3DRS_SRCBLENDALPHA:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].SrcBlendAlpha = (ERHI_BLEND)p2;
-		}
-		break;
-
-	case D3DRS_DESTBLENDALPHA:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].DestBlendAlpha = (ERHI_BLEND)p2;
-		}
-		break;
-
-	case D3DRS_BLENDOPALPHA:
-		for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-		{
-			_blendDesc.RenderTarget[target_idx].BlendOpAlpha = (ERHI_BLEND_OP)p2;
-		}
-		break;
-
-	case D3DRS_SEPARATEALPHABLENDENABLE:
-		
-		_blendDesc.IndependentBlendEnable = TRUE;
-		break;
-
-	case D3DRS_MULTISAMPLEANTIALIAS:
-		SetMultisample(p2);
-		break;
-
-	case D3DRS_MULTISAMPLEMASK:
-		SetSampleMask(p2);
-		break;
-
-	case D3DRS_ANTIALIASEDLINEENABLE:
-		_rasterDesc.AntialiasedLineEnable = (BOOL)p2;
-		break;
-
-	default:
-		break;
-	}
-}
-
-void DX12StateManager::SetDepthFunc(u32 Func)
-{
-	_dirty = true;
-	_depthDesc.DepthFunc = (ERHI_COMPARISON)Func;
-}
-
-void DX12StateManager::SetDepthEnable(u32 Enable)
-{
-	_dirty = true;
-	_depthDesc.DepthEnable = Enable;
-}
-
-void DX12StateManager::SetColorWriteEnable(u32 WriteMask)
-{
-	_dirty = true;
-	for (u32 target_idx = 0; target_idx < 8; ++target_idx)
-	{
-		_blendDesc.RenderTarget[target_idx].RenderTargetWriteMask = WriteMask;
-	}
-}
-
-void DX12StateManager::SetCullMode(ERHI_CULLMODE Mode)
-{
-	_dirty = true;
-	_rasterDesc.CullMode = (ERHI_CULL_MODE)Mode;
-	CacheCullMode = Mode;
-}
-
-void DX12StateManager::BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback)
-{
-	BindAlphaCallback = Callback;
-
-	if (BindAlphaCallback)
-	{
-		BindAlphaCallback(_alphaRef);
-	}
-}
-
-void DX12StateManager::SetMultisample(u32 Enable)
-{
-	_dirty = true;
-	_rasterDesc.MultisampleEnable = Enable;
-}
-
 template <typename TDesc>
-static void* CacheState(const TDesc& desc, xr_vector<TDesc*>& cache)
+static void* CacheState(const TDesc& desc, xr_hash_map<u64, xr_vector<TDesc*>>& cache)
 {
-    for (auto state : cache)
+    u64 hash = 14695981039346656037ull;
+    for (const u8 byte : std::span(reinterpret_cast<const u8*>(&desc), sizeof(desc)))
+    {
+        hash = (hash ^ byte) * 1099511628211ull;
+    }
+    auto& bucket = cache[hash];
+    for (auto state : bucket)
     {
         if (!memcmp(state, &desc, sizeof(desc)))
         {
             return state;
         }
     }
-    auto state = new TDesc(desc);
-    cache.push_back(state);
-    return state;
+    return bucket.emplace_back(new TDesc(desc));
 }
 
 void* InternalDevice12::GetState(const RHIRasterizerDesc& desc)
@@ -617,7 +285,7 @@ public:
     {
         for (u32 stage_idx = 0; stage_idx < 6; ++stage_idx)
         {
-            for (u32 slot_idx = 0; slot_idx < 16; ++slot_idx)
+            for (u32 slot_idx = 0; slot_idx < DX12ViewSlots; ++slot_idx)
             {
                 _device.BindResource(stage_idx, slot_idx, nullptr);
             }
@@ -638,34 +306,4 @@ private:
 IRHIShaderResourceStateCache* InternalDevice12::CreateResourceCache()
 {
     return new DX12ResourceCache(*this);
-}
-
-class DX12ShaderDeclaration final : public IRHIShaderDeclaration
-{
-public:
-    DX12ShaderDeclaration(const RHIInputElementDesc* desc, size_t count) : IRHIShaderDeclaration(desc, count) {}
-    ~DX12ShaderDeclaration() override
-    {
-        if (_layout)
-        {
-            _layout->Release();
-        }
-    }
-    void GenerateLayerDescriptors(RHIBlob* signature) override
-    {
-        if (!_layout)
-        {
-            R_CHK(GRHI->CreateInputLayout(Descriptors.data(), Descriptors.size(), signature->GetBufferPointer(),
-                signature->GetBufferSize(), &_layout));
-        }
-    }
-    void ApplyLayout() override { GRHI->SetInputLayout(_layout); }
-
-private:
-    RHIObject* _layout = nullptr;
-};
-
-IRHIShaderDeclaration* InternalDevice12::CreateDecl(const RHIInputElementDesc* desc, size_t count)
-{
-    return new DX12ShaderDeclaration(desc, count);
 }

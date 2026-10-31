@@ -1,7 +1,7 @@
 #include "r1_water.hlsli"
 
-Texture2D s_distort0;
-Texture2D s_distort1;
+Texture2D s_distort0 : register(t25);
+Texture2D s_distort1 : register(t26);
 
 float4 main(vf_waterd I) : SV_Target
 {

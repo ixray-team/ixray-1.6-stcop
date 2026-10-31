@@ -16,7 +16,6 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 	{
 		C.r_Pass("stub_notransform", "copy", false, false, false);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();
 
 		return;
@@ -29,19 +28,19 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 
 	if(C.iElement != SE_L_UNSHADOWED) 
 	{
-		RImplementation.addShaderOption("USE_SHADOW", "1");
+		C.AddDefine("USE_SHADOW", "1");
 	}
 
 	if (C.iElement == SE_L_TRANSLUENT)
 	{
-		RImplementation.addShaderOption("USE_SMAP", "1");
+		C.AddDefine("USE_SMAP", "1");
 	}
 
-	RImplementation.addShaderOption("USE_LMAP", "1");
+	C.AddDefine("USE_LMAP", "1");
 
 	if(C.iElement != SE_L_FULLSIZE)
 	{
-		RImplementation.addShaderOption("USE_LMAPXFORM", "1");
+		C.AddDefine("USE_LMAPXFORM", "1");
 	}
 
 	C.r_Pass("accum_volume", "accum_base", false, false, false, true, D3DBLEND_ONE, D3DBLEND_ONE);
@@ -54,9 +53,6 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 	C.r_dx10Texture("s_lmap", C.L_textures[0]);
 	C.r_dx10Texture("s_accumulator", r2_RT_accum);
 
-	C.r_dx10Sampler("smp_rtlinear");
-	C.r_dx10Sampler("smp_material");
-	C.r_dx10Sampler("smp_nofilter");
 
 	jitter(C);
 
@@ -64,7 +60,6 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 	{
 		C.r_dx10Texture("s_smap", r2_RT_smap_depth);
 		C.r_dx10Texture("s_mask", r2_RT_smap_surf);
-		C.r_dx10Sampler("smp_smap");
 	}
 
 	C.r_End();

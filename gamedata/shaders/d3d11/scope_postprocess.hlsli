@@ -2,7 +2,7 @@
 #define SCOPE_POSTPROCESS_HLSLI
 
 #ifdef SCOPE_POSTPROCESS
-Texture2D s_scope_tonemap;
+Texture2D s_scope_tonemap : register(t25);
 #include "shared\post_cb.hlsli"
 
 // Matches combine_2 without the bloom term: the legacy pipeline squares the color only to mix bloom.

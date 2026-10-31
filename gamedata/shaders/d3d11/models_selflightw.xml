@@ -1,17 +1,12 @@
-<w>
-	<element_0 ps="deffer_base" vs="deffer_model" fog="false">
-		<stencil status="true" cmp="always" mask="255" wmask="127" fail="keep" pass="replace" zfail="keep">
-			<ref value="1" />
-		</stencil>
-    	<flags emissive="true" />
-
-		<texture name="s_base" rt="t_base" />
-		<sampler name="smp_base" />
-  </element_0>
-
-  <element_nd_4 ps="accum_emissivew" vs="deffer_model" fog="false" zread="true" zwrite="false">
-		<flags emissive="true" />
-		<texture name="s_base" rt="t_base" />
-		<sampler name="smp_base" />
-	</element_nd_4>
-</w>
+<shader>
+	<normal_hq emissive="1">
+		<pass vs="deffer_model" ps="deffer_base" stencil="always,255,127,keep,replace,keep" stencil_ref="1">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal_hq>
+	<l_special emissive="1">
+		<pass vs="deffer_model" ps="accum_emissivew" zwrite="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</l_special>
+</shader>

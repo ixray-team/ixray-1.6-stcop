@@ -1,7 +1,7 @@
 #pragma once
 #include "RenderAPI.h"
 
-class R_xforms;
+struct GfxView;
 
 namespace Hlsl
 {
@@ -54,19 +54,31 @@ namespace Hlsl
 }
 
 using Hlsl::CBFrame, Hlsl::CBView, Hlsl::CBObject, Hlsl::CBMaterial, Hlsl::CBLight, Hlsl::CBPass, Hlsl::CBSkin;
-using Hlsl::CBPost, Hlsl::CBDetail, Hlsl::CBFluid, Hlsl::CBUIIcon, Hlsl::CBVisor, Hlsl::CBEditor;
+using Hlsl::CBPost, Hlsl::CBDetail, Hlsl::CBFluid, Hlsl::CBUIIcon, Hlsl::CBVisor, Hlsl::CBEditor, Hlsl::CBDraw;
+static_assert(sizeof(CBDraw) == 96);
+static_assert(sizeof(CBSkin) <= 65536);
 
 class RENDER_API CShaderConstants
 {
 public:
 	void Create();
-	void Destroy();
 
 	template<class T>
 	T& Write()
 	{
 		Dirty |= 1u << T::Slot;
+		if constexpr (std::is_same_v<T, CBSkin>)
+		{
+			SkinSize = sizeof(CBSkin);
+		}
 		return std::get<T>(Shadow);
+	}
+
+	CBSkin& WriteSkin(u32 Bones)
+	{
+		CBSkin& Skin = Write<CBSkin>();
+		SkinSize = offsetof(CBSkin, sbones_array_old) + Bones * sizeof(Hlsl::float3x4);
+		return Skin;
 	}
 
 	template<class T>
@@ -76,26 +88,25 @@ public:
 	}
 
 	void Flush();
-	void InvalidateBindings() { Bound = false; }
 
 	void UpdateFrame();
-	void UpdateView(const R_xforms& X);
-	void UpdateObject(const R_xforms& X);
+	void UpdateView(const GfxView& View);
+	void UpdateObject(const Fmatrix& World, const Fmatrix& WorldView, const Fmatrix& WorldViewProject, const Fmatrix& WorldViewProjectOld);
 	void ResetMaterial();
 	void SetLOD(float LOD);
-	void OnShaderBind(const R_xforms& X);
+	void UpdateScreen();
 
 private:
-	using Blocks = std::tuple<CBFrame, CBView, CBObject, CBMaterial, CBLight, CBPass, CBSkin, CBPost, CBDetail, CBFluid, CBUIIcon, CBVisor, CBEditor>;
+	using Blocks = std::tuple<CBFrame, CBView, CBObject, CBMaterial, CBLight, CBPass, CBSkin, CBPost, CBDetail, CBFluid, CBUIIcon, CBVisor, CBEditor, CBDraw>;
 	static constexpr u32 Count = std::tuple_size_v<Blocks>;
 
 	template<class T>
-	void Upload(const T& Block, bool Force);
-	void UpdateScreen();
+	void Collect(const T& Block, u32 Force, RHIConstantWrite* Writes, u32& Num);
 
 	Blocks Shadow{};
 	Blocks Uploaded{};
-	IRHIBuffer* Buffers[Count] = {};
 	u32 Dirty = 0;
-	bool Bound = false;
+	u32 PushedEpoch = ~0u;
+	u32 SkinSize = sizeof(CBSkin);
+	u32 PushedSkinSize = 0;
 };

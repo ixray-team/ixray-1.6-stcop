@@ -18,9 +18,7 @@ public:
 public:
 	virtual ~IRHIGPU() = default;
 	virtual void Initialize() = 0;
-	virtual void Destroy() {}
 
-	virtual u32 GetPercentActive() = 0;
 	virtual u32 GetGPUCount() = 0;
 
 	virtual CNvReader* GetNV()   { return nullptr; }

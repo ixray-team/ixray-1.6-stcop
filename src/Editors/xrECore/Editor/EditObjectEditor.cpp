@@ -162,7 +162,7 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 	}
 	else 
 	{
-		RCache.set_xform_world(parent);
+		RImplementation.Imm().SetObjectTransform(parent);
 
 		if (m_objectFlags.is(eoHOM))
 		{
@@ -418,7 +418,7 @@ void CEditableObject::RenderLOD(const Fmatrix& parent)
 	LOD[4].p.set(p[2]); LOD[4].t.set(t[2]); LOD[4].color = 0xFFFFFFFF;
 	LOD[5].p.set(p[3]); LOD[5].t.set(t[3]); LOD[5].color = 0xFFFFFFFF;
 
-	RCache.set_xform_world(parent);
+	RImplementation.Imm().SetObjectTransform(parent);
 	EDevice->SetShader(m_LODShader ? m_LODShader : GEditorDraw.WireShader);
 	DU_impl.DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 2, LOD, 6, true, false);
 }
@@ -455,7 +455,8 @@ void CEditableObject::DefferedLoadRP()
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
-	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	GfxCmdList& Cmd = RImplementation.Imm();
+	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();

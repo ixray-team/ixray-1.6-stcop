@@ -18,7 +18,7 @@
 
 #include "common.hlsli"
 
-Texture2D s_image_prev; //Previous rt_generic_0
+Texture2D s_image_prev : register(t25); //Previous rt_generic_0
 
 //Settings...
 #define TAA_BLEND_WEIGHT 0.9 //Blend weight

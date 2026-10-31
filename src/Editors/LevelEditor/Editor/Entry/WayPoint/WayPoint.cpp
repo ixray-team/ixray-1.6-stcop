@@ -545,7 +545,7 @@ void CWayObject::Render(int priority, bool strictB2F)
 		return;
 
 	if ((1==priority)&&(false==strictB2F)){
-		RCache.set_xform_world(Fidentity);
+		RImplementation.Imm().SetObjectTransform(Fidentity);
 		EDevice->SetShader(GEditorDraw.WireShader);
 		for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++) (*it)->Render(GetName(),Selected());
 		if( Selected() ){

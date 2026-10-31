@@ -11,13 +11,13 @@ void CRenderTarget::init_dlss()
 	DLSSWrapper::ContextParameters initParams;
 
 	initParams.displaySize = { 
-		(int)RCache.get_target_width(),
-		(int)RCache.get_target_height() 
+		(int)GfxCmdList::GetTargetWidth(),
+		(int)GfxCmdList::GetTargetHeight() 
 	};
 
 	initParams.renderSize = { 
-		(int)RCache.get_width(),
-		(int)RCache.get_height() 
+		(int)GfxCmdList::GetWidth(),
+		(int)GfxCmdList::GetHeight() 
 	};
 
 	initParams.preset = ps_render_scale_preset;
@@ -41,8 +41,8 @@ bool CRenderTarget::phase_dlss()
 
 	dlssParams.resolvedColorResource = rt_Generic->pSurface;
 
-	dlssParams.renderWidth = (int)RCache.get_width();
-	dlssParams.renderHeight = (int)RCache.get_height();
+	dlssParams.renderWidth = (int)GfxCmdList::GetWidth();
+	dlssParams.renderHeight = (int)GfxCmdList::GetHeight();
 
 	dlssParams.cameraReset = Device.IsEditorMode() && GEditorDraw.UpscalerReset;
 

@@ -16,7 +16,7 @@ public:
 	virtual void OnRender(CStatGraph &owner);
 
 private:
-	void RenderBack(CStatGraph &owner);
+	void RenderBack(GfxCmdList& Cmd, CStatGraph &owner);
 	void RenderBars(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements);
 	void RenderBarLines(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements);
 	void RenderLines(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements );

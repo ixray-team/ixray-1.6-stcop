@@ -1,0 +1,45 @@
+<shader>
+	<normal sort="2" distort="1">
+		<pass vs="water_puddles" ps="water" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="water\water_water"/>
+			<texture name="s_nmap" src="water\water_normal"/>
+			<texture name="s_env0" src="$user$sky0"/>
+			<texture name="s_env1" src="$user$sky1"/>
+			<texture name="s_env" src="$user$env"/>
+			<texture name="s_env_dist" src="$user$env_temp"/>
+			<texture name="env_s0" src="$user$env_s0"/>
+			<texture name="env_s1" src="$user$env_s1"/>
+			<texture name="s_accumulator" src="$user$accum"/>
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_velocity" src="$user$velocity"/>
+			<texture name="s_image" src="$user$generic"/>
+			<texture name="s_material" src="$user$material"/>
+			<texture name="s_leaves" src="water\water_foam"/>
+			<texture name="s_caustic" src="water\water_caustic"/>
+			<texture name="s_smap_sun" src="$user$smap_depth_sun"/>
+		</pass>
+	</normal>
+	<option name="ALLOW_WBOIT_TRANSPARENCY">
+		<normal sort="2" distort="1">
+			<pass vs="water_puddles" ps="water" zwrite="0" blend="one,one" blend2="destcolor,zero" blend1="srcalpha,invsrcalpha">
+				<texture name="s_base" src="water\water_water"/>
+				<texture name="s_nmap" src="water\water_normal"/>
+				<texture name="s_env0" src="$user$sky0"/>
+				<texture name="s_env1" src="$user$sky1"/>
+				<texture name="s_env" src="$user$env"/>
+				<texture name="s_env_dist" src="$user$env_temp"/>
+				<texture name="env_s0" src="$user$env_s0"/>
+				<texture name="env_s1" src="$user$env_s1"/>
+				<texture name="s_accumulator" src="$user$accum"/>
+				<texture name="s_position" src="$user$position"/>
+				<texture name="s_velocity" src="$user$velocity"/>
+				<texture name="s_image" src="$user$generic"/>
+				<texture name="s_material" src="$user$material"/>
+				<texture name="s_leaves" src="water\water_foam"/>
+				<texture name="s_caustic" src="water\water_caustic"/>
+				<texture name="s_smap_sun" src="$user$smap_depth_sun"/>
+				<define name="USE_WBOIT_TRANSPARENCY" value="1"/>
+			</pass>
+		</normal>
+	</option>
+</shader>

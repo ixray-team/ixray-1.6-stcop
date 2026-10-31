@@ -150,7 +150,7 @@ public:
 	void			xform_calc				();
 #ifndef _EDITOR
 	void			optimize_smap_size		();
-	void			vis_prepare				();
+	void			vis_prepare				(GfxCmdList& Cmd);
 	void			vis_update				();
 	void			export_ 					(light_Package& dest);
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);

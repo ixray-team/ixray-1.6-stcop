@@ -11,13 +11,11 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        RImplementation.addShaderOption("USE_GAMMA_FIX");
+        C.AddDefine("USE_GAMMA_FIX");
 
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_generic);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -26,8 +24,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomA);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -36,8 +32,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomB);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -46,8 +40,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomC);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -56,8 +48,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomD);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -66,8 +56,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomE);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -76,8 +64,6 @@ void CBlender_bloom_downsample::Compile(CBlender_Compile& C)
         C.r_Pass("stub_fullscreen_triangle", "bloom_downsample", false, false, false);
         C.r_dx10Texture("s_image", r2_RT_bloomF);
 
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 

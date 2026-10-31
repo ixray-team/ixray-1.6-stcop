@@ -14,13 +14,11 @@ class CAMDReader :
 	using ADL_OVERDRIVE5_TEMPERATURE_GET = int(*)(int, int, ADLTemperature*);
 	using ADL_ADAPTER_NUMBEROFADAPTERS_GET = int(*)(int*);
 	using ADL_ADAPTER_ADAPTERINFO_GET = int(*)(LPAdapterInfo, int);
-	using ADL_OVERDRIVE5_CURRENTACTIVITY_GET = int(*)(int, ADLPMActivity*);
 	using ADL_MAIN_CONTROL_DESTROY = int(*)();
 
 	// ADL 2.x
 	using ADL2_MAIN_CONTROL_CREATE = int(*)(ADL_MAIN_MALLOC_CALLBACK, int, ADL_CONTEXT_HANDLE*);
 	using ADL2_MAIN_CONTROL_DESTROY = int(*)(ADL_CONTEXT_HANDLE);
-	using ADL2_OVERDRIVE5_CURRENTACTIVITY_GET = int(*)(ADL_CONTEXT_HANDLE, int, ADLPMActivity*);
 
 	// AGS Core
 	using AGS_GPU_COUNT_GET = AGSReturnCode(*)(AGSContext*, int*);
@@ -49,7 +47,6 @@ private:
 	int				AdapterID;
 	int				AdapterADLInfo;
 	int				AdapterAGSInfo;
-	ADLPMActivity	activity;
 	HMODULE		    hAMDMain;
 	HMODULE		    hAMDAGS;
 	AGSContext*		Context;
@@ -73,13 +70,11 @@ public:
 	ADL_ADAPTER_ADAPTERINFO_GET				ADL_Adapter_AdapterInfo_Get;
 	ADL_ADAPTER_NUMBEROFADAPTERS_GET		GetAdapter_NumberOfAdapters;
 	ADL_ADAPTER_ACTIVE_GET					GetAdapter_Active;
-	ADL_OVERDRIVE5_CURRENTACTIVITY_GET		GetOverdrive5_CurrentActivity;
 	ADL_OVERDRIVE5_TEMPERATURE_GET			GetTemperatureGPU;
 
 	// ADL 2
 	ADL2_MAIN_CONTROL_CREATE ADL2_Main_Control_Create;
 	ADL2_MAIN_CONTROL_DESTROY ADL2_Main_Control_Destroy;
-	ADL2_OVERDRIVE5_CURRENTACTIVITY_GET ADL2_CurrentActivityGet;
 
 	AGS_INITIALIZE							AGSInitializeProc;
 	AGS_DEINIT								AGSDeinit;
@@ -98,9 +93,6 @@ public:
 	u32		GetTemperature();
 
 	virtual void	Initialize();
-	virtual void	Destroy();
-
-	virtual u32		GetPercentActive();
 	virtual u32		GetGPUCount		();
 
 	AGSContext* GetContext() const;
@@ -112,5 +104,4 @@ public:
 public:
 	static bool bAMDSupportADL;
 	bool bGPUCoreDetected = false;
-	bool bGPUDriverNotActual = false;
 };

@@ -20,8 +20,6 @@ public:
 	virtual void level_Load(IReader*);
 	virtual void level_Unload();
 
-	virtual HRESULT shader_compile(LPCSTR name,	DWORD const* pSrcData,	UINT SrcDataLen,	LPCSTR pFunctionName,LPCSTR pTarget,	DWORD Flags,	void*& result);
-
 	virtual void Statistics(CGameFont* F) {};
 	virtual LPCSTR getShaderPath();
 	virtual IRender_Sector* getSector(int id);

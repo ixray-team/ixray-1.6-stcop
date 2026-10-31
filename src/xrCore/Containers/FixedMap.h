@@ -114,6 +114,20 @@ private:
 		}
 	}
 
+	template<class F>
+	void recurseRL(TNode* N, F& CB)
+	{
+		if (N->right)
+		{
+			recurseRL(N->right, CB);
+		}
+		CB(N);
+		if (N->left)
+		{
+			recurseRL(N->left, CB);
+		}
+	}
+
 	void getLR(TNode* N, xr_vector<T, typename allocator::template helper<T>::result>& D)
 	{
 		if (N->left)
@@ -310,6 +324,14 @@ public:
 		}
 	}
 	void traverseRL(callback CB)
+	{
+		if (pool)
+		{
+			recurseRL(nodes, CB);
+		}
+	}
+	template<class F>
+	void traverseRL(F&& CB)
 	{
 		if (pool)
 		{

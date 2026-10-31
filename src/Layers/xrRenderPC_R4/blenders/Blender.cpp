@@ -72,5 +72,5 @@ void	IBlender::Load(	IReader& fs, u16  )
 void IBlender::Compile(CBlender_Compile& C) 
 {
 	C.SetParams(oPriority.value, oStrictSorting.value ? true : false);
-	C.bHudElement = (C.iElement == SE_R2_HUD);
+	C.bHudElement = (C.iElement == ShaderVariant::HUD);
 }

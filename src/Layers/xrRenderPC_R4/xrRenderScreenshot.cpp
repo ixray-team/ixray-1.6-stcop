@@ -11,7 +11,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 {
 	VERIFY(!m_bMakeAsyncSS);
 
-	IRHIRenderTargetView* Rtv = GRHI->GetRenderTargetView(0);
+	IRHIRenderTargetView* Rtv = RImplementation.Imm().GetRenderTarget(0);
 	if (Rtv == nullptr)
 	{
 		Rtv = RTarget;

@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="stub_default" ps="stub_default">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

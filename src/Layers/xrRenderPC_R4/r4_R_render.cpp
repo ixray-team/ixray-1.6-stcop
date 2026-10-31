@@ -37,12 +37,12 @@ ICF float GetDistFromCamera(const Fvector& from_position)
 	return adjusted_distane;
 }
 
-void CRender::render_main	(bool deffered, bool zfill)
+void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 {
 	GPU_EVENT(render_main);
 	if (Device.IsEditorMode())
 	{
-		EditorRenderMain(deffered);
+		EditorRenderMain(Cmd, deffered);
 		return;
 	}
 //	Msg						("---begin");
@@ -344,16 +344,16 @@ void CRender::render_main	(bool deffered, bool zfill)
 	}
 }
 
-void CRender::render_menu() {
+void CRender::render_menu(GfxCmdList& Cmd) {
 	GPU_EVENT(render_menu);
 	//	Globals
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(false);
-	RCache.set_ColorWriteEnable();
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetStencil(false);
+	Cmd.SetColorWriteEnable();
 
 	// Main Render
 	{
-		Target->u_setrt(Target->rt_Generic, 0, 0, 0);		// LDR RT
+		Target->u_setrt(Cmd, Target->rt_Generic, 0, 0, 0);		// LDR RT
 		rmNormal();
 
 		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
@@ -361,60 +361,62 @@ void CRender::render_menu() {
 
 	// Distort
 	{
-		Target->u_setrt(Target->rt_Generic_1, 0, 0, 0);		// Now RT is a distortion mask
+		Target->u_setrt(Cmd, Target->rt_Generic_1, 0, 0, 0);		// Now RT is a distortion mask
 		rmNormal();
-		GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
+		Cmd.ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
 		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 
 	// Actual Display
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	Target->u_setrt(Cmd, (u32)Cmd.GetTargetWidth(), (u32)Cmd.GetTargetHeight(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	rmNormal();
 
-	RCache.set_Shader(Target->s_menu);
-	RCache.set_Geometry(Target->g_menu);
+	Cmd.SetPass(Target->s_menu);
+	Cmd.SetGeometry(Target->g_menu);
 
 	Fvector2 p0, p1;
 	u32 Offset;
 	constexpr auto C = color_rgba(255, 255, 255, 255);
-	float	_w = RCache.get_target_width();
-	float	_h = RCache.get_target_height();
+	float	_w = Cmd.GetTargetWidth();
+	float	_h = Cmd.GetTargetHeight();
 	float	d_Z = EPS_S;
 	float	d_W = 1.f;
 
 	p0.set(.5f / _w, .5f / _h);
 	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
-	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, Target->g_menu->vb_stride, Offset);
+	FVF::TL* pv = (FVF::TL*)Cmd.Vertex.Lock(4, Target->g_menu->vb_stride, Offset);
 
 	pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);	pv++;
 	pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);	pv++;
 	pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);	pv++;
 	pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);	pv++;
 
-	RCache.Vertex.Unlock(4, Target->g_menu->vb_stride);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+	Cmd.Vertex.Unlock(4, Target->g_menu->vb_stride);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
 }
 
 #include "../../Include/xrRender/UIRender.h"
 
 void CRender::RenderUI(Fcolor* color)
 {
-	auto pRT_0 = RCache.get_RT(0);
-	auto pRT_1 = RCache.get_RT(1);
-	auto pRT_2 = RCache.get_RT(2);
-	auto pRT_3 = RCache.get_RT(3);
+	GfxCmdList& Cmd = Imm();
+	auto pRT_0 = Cmd.GetRenderTarget(0);
+	auto pRT_1 = Cmd.GetRenderTarget(1);
+	auto pRT_2 = Cmd.GetRenderTarget(2);
+	auto pRT_3 = Cmd.GetRenderTarget(3);
 
 	auto dwWidth = Target->get_width();
 	auto dwHeight = Target->get_height();
 
-	auto pZRT = GRHI->GetDepthStencilView();
+	auto pZRT = Cmd.GetDepthStencil();
 
 	ps_r_taa_jitter.set(0, 0, -1);
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+	Cmd.Constants.UpdateScreen();
 
-	GRHI->ClearDepthStencil(Target->rt_ui_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
-	Target->u_setrt(Target->rt_ui_color, NULL, Target->rt_ui_depth->pZRT);
+	Cmd.ClearDepthStencil(Target->rt_ui_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+	Target->u_setrt(Cmd, Target->rt_ui_color, NULL, Target->rt_ui_depth->pZRT);
 
 	auto Scissor = UIRender->GetScissor();
 	Scissor.mul(2, 2);
@@ -425,11 +427,11 @@ void CRender::RenderUI(Fcolor* color)
 	const bool HasBackground = Target->rt_BackbufferLUT->pRT == pRT_0;
 	if (HasBackground)
 	{
-		Target->phase_ui_postprocess_copy();
+		Target->phase_ui_postprocess_copy(Cmd);
 	}
 	else
 	{
-		GRHI->ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
+		Cmd.ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
 	}
 
 	bool ui_saved = GraphMain.val_bUI;
@@ -440,12 +442,12 @@ void CRender::RenderUI(Fcolor* color)
 
 	Scissor.div(2, 2);
 
-	Target->u_setrt(dwWidth, dwHeight, pRT_0, pRT_1, pRT_2, pRT_3, pZRT);
+	Target->u_setrt(Cmd, dwWidth, dwHeight, pRT_0, pRT_1, pRT_2, pRT_3, pZRT);
 
 	UIRender->SetScissor(&Scissor);
 	RImplementation.rmNormal();
 
-	Target->phase_ui_postprocess(color, HasBackground);
+	Target->phase_ui_postprocess(Cmd, color, HasBackground);
 	++GraphMain.marker;
 }
 
@@ -453,6 +455,7 @@ void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
 	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
+	GfxCmdList& Cmd = Imm();
 
 	// The editors render their scene without a level, HUD or menu
 	const bool EditorMode = Device.IsEditorMode();
@@ -463,7 +466,7 @@ void CRender::Render()
 
 		if (_menu_pp)
 		{
-			render_menu();
+			render_menu(Cmd);
 			return;
 		};
 
@@ -473,7 +476,7 @@ void CRender::Render()
 
 		if (bMenu)
 		{
-			Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+			Target->u_setrt(Cmd, (u32)Cmd.GetTargetWidth(), (u32)Cmd.GetTargetHeight(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 			return;
 		}
 	}
@@ -498,13 +501,13 @@ void CRender::Render()
 
 	if (EditorMode && !EditorIsLit())
 	{
-		EditorRenderUnlit();
+		EditorRenderUnlit(Cmd);
 		return;
 	}
 
 	if (!EditorMode && LightingModeIsStaticRender())
 	{
-		render_static();
+		render_static(Cmd);
 		return;
 	}
 
@@ -516,33 +519,36 @@ void CRender::Render()
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+		Cmd.Constants.UpdateScreen();
 
-		render_reflections();
+		render_reflections(Cmd);
 	}
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
-		s32 jitterPhaseCount = g_Fsr3Wrapper.GetJitterPhaseCount(static_cast<u32>(RCache.get_width()), static_cast<u32>(RCache.get_target_width()));
+		s32 jitterPhaseCount = g_Fsr3Wrapper.GetJitterPhaseCount(static_cast<u32>(Cmd.GetWidth()), static_cast<u32>(Cmd.GetTargetWidth()));
 		g_Fsr3Wrapper.GetJitterOffset(ps_r_taa_jitter_full.x, ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
 
-		ps_r_taa_jitter.x = 2.0f * ps_r_taa_jitter_full.x / RCache.get_width();
-		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / RCache.get_height();
+		ps_r_taa_jitter.x = 2.0f * ps_r_taa_jitter_full.x / Cmd.GetWidth();
+		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / Cmd.GetHeight();
 		ps_r_taa_jitter.z = float(Device.dwFrame % jitterPhaseCount) / float(jitterPhaseCount) + EPS;
+		Cmd.Constants.UpdateScreen();
 	}
 	else
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+		Cmd.Constants.UpdateScreen();
 	}
 
 	Device.ScopePostprocessActive = false;
 	// Shared item UI is rendered once before any world or HUD passes.
-	GRHI->ClearTarget(Target->rt_ui_pda->pRT, ERTColor::Transparent);
+	Cmd.ClearTarget(Target->rt_ui_pda->pRT, ERTColor::Transparent);
 	if (GActorInterface)
 	{
-		Target->u_setrt(Target->rt_ui_pda, 0, 0);
+		Target->u_setrt(Cmd, Target->rt_ui_pda, 0, 0);
 		rmNormal();
 
 		GActorInterface->RenderItemUI();
@@ -550,26 +556,26 @@ void CRender::Render()
 
 	if (NeedMotionVectors())
 	{
-		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
+		Target->u_setrt(Cmd, Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
 		rmNormal();
 
-		GRHI->ClearTarget(Target->rt_Generic_0->pRT);
-		GRHI->ClearTarget(Target->rt_Velocity->pRT);
+		Cmd.ClearTarget(Target->rt_Generic_0->pRT);
+		Cmd.ClearTarget(Target->rt_Velocity->pRT);
 	}
 	else
 	{
-		Target->u_setrt(Target->rt_Generic_0, 0, 0, 0);
+		Target->u_setrt(Cmd, Target->rt_Generic_0, 0, 0, 0);
 		rmNormal();
 
-		GRHI->ClearTarget(Target->rt_Generic_0->pRT);
+		Cmd.ClearTarget(Target->rt_Generic_0->pRT);
 	}
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(false);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(false);
 
 	g_pGamePersistent->Environment().RenderSky();
 
-	RCache.set_xform_world(Fidentity);
+	Cmd.SetObjectTransform(Fidentity);
 
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	GraphMain.View = 0;
@@ -588,18 +594,18 @@ void CRender::Render()
 			Device.Statistic->RenderCALC.Begin();
 			GraphMain.r_pmask(true, false); // enable priority "0"
 			phase = PHASE_SMAP;
-			render_main(false, true);
+			render_main(Cmd, false, true);
 			GraphMain.r_pmask(true, false); // disable priority "1"
 			Device.Statistic->RenderCALC.End();
 
 			// flush
 			Target->phase_scene_prepare();
-			RCache.set_ColorWriteEnable(false);
+			Cmd.SetColorWriteEnable(false);
 			{
-				CEditorFillModeScope FillModeScope(EditorMode);
+				CEditorFillModeScope FillModeScope(Cmd, EditorMode);
 				GraphMain.r_dsgraph_render_graph(0);
 			}
-			RCache.set_ColorWriteEnable();
+			Cmd.SetColorWriteEnable();
 		}
 		else
 		{
@@ -613,7 +619,7 @@ void CRender::Render()
 	GraphMain.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
 	phase										= PHASE_NORMAL;
 
-	render_main									(true);
+	render_main									(Cmd, true);
 	GraphMain.r_pmask(true, false); // disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
@@ -627,30 +633,30 @@ void CRender::Render()
 
 	rmNormal();
 
-	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
+	Target->u_setrt(Cmd, (u32)Cmd.GetWidth(), (u32)Cmd.GetHeight(), nullptr, nullptr, nullptr, RDepth);
 
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{
 		GPU_EVENT(DEFER_PART0_NO_SPLIT);
-		CEditorFillModeScope FillModeScope(EditorMode);
+		CEditorFillModeScope FillModeScope(Cmd, EditorMode);
 		// level, DO NOT SPLIT
-		Target->phase_scene_begin				();
+		Target->phase_scene_begin				(Cmd);
 		GraphMain.r_dsgraph_render_hud();
 		GraphMain.r_dsgraph_render_scope();
-		Target->phase_scene_begin				();
+		Target->phase_scene_begin				(Cmd);
 		GraphMain.r_dsgraph_render_graph(0);
 		GraphMain.r_dsgraph_render_lods(true, true);
-		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
-		DetailLayers_RenderBrush3D			();
+		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render(Cmd);
+		DetailLayers_RenderBrush3D			(Cmd);
 		Target->phase_scene_end					();
 	} 
 	else 
 	{
 		GPU_EVENT(DEFER_PART0_SPLIT);
-		CEditorFillModeScope FillModeScope(EditorMode);
+		CEditorFillModeScope FillModeScope(Cmd, EditorMode);
 		// level, SPLIT
-		Target->phase_scene_begin				();
+		Target->phase_scene_begin				(Cmd);
 		GraphMain.r_dsgraph_render_graph(0);
 		Target->disable_aniso					();
 	}
@@ -665,7 +671,7 @@ void CRender::Render()
 		{
 
 			//******* Occlusion testing of volume-limited light-sources
-			Target->phase_occq							();
+			Target->phase_occq							(Cmd);
 			LP_normal.clear								();
 			LP_pending.clear							();
 			{
@@ -687,7 +693,7 @@ void CRender::Render()
 						light*	L			= LP.v_point	[it];
 						if(L->flags.bOccq&&!L->flags.bHudMode)
 						{
-							L->vis_prepare		();
+							L->vis_prepare		(Cmd);
 							if (L->vis.pending)	LP_pending.v_point.push_back	(L);
 							else				LP_normal.v_point.push_back		(L);
 						}
@@ -698,7 +704,7 @@ void CRender::Render()
 						light*	L			= LP.v_spot		[it];
 						if(L->flags.bOccq&&!L->flags.bHudMode)
 						{
-							L->vis_prepare		();
+							L->vis_prepare		(Cmd);
 							if (L->vis.pending)	LP_pending.v_spot.push_back		(L);
 							else				LP_normal.v_spot.push_back		(L);
 						}
@@ -709,7 +715,7 @@ void CRender::Render()
 						light*	L			= LP.v_shadowed	[it];
 						if(L->flags.bOccq&&!L->flags.bHudMode)
 						{
-							L->vis_prepare		();
+							L->vis_prepare		(Cmd);
 							if (L->vis.pending)	LP_pending.v_shadowed.push_back	(L);
 							else				LP_normal.v_shadowed.push_back	(L);
 						}
@@ -727,14 +733,14 @@ void CRender::Render()
 	if (split_the_scene_to_minimize_wait)	
 	{
 		GPU_EVENT(DEFER_PART1_SPLIT);
-		CEditorFillModeScope FillModeScope(EditorMode);
+		CEditorFillModeScope FillModeScope(Cmd, EditorMode);
 		
 		// level
-		Target->phase_scene_begin				();
+		Target->phase_scene_begin				(Cmd);
 		GraphMain.r_dsgraph_render_hud					();
 		GraphMain.r_dsgraph_render_lods					(true,true);
-		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render();
-		DetailLayers_RenderBrush3D			();
+		if (CDetailManager* ActiveDetails = GetDetails())	ActiveDetails->Render(Cmd);
+		DetailLayers_RenderBrush3D			(Cmd);
 		Target->phase_scene_end					();
 	}
 
@@ -742,12 +748,12 @@ void CRender::Render()
 
 	if (EditorMode && EditorOcclusionCulling)
 	{
-		EditorHiZ.Build();
+		EditorHiZ.Build(Cmd);
 	}
 
 	if (!!o.dx11_disable_motion_vectors && NeedMotionVectors())
 	{
-		Target->pharse_velocity();
+		Target->pharse_velocity(Cmd);
 	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
@@ -755,17 +761,17 @@ void CRender::Render()
 	{
 		GPU_EVENT(PhaseWinter);
 
-		Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
+		Target->u_setrt(Cmd, (u32)Cmd.GetWidth(), (u32)Cmd.GetHeight(), nullptr, nullptr, nullptr, nullptr);
 
-		GRHI->SetUnorderedAccessViews(Target->rt_Color->pUAView, 0);
-		GRHI->SetUnorderedAccessViews(Target->rt_Normal->pUAView, 1);
-		GRHI->SetUnorderedAccessViews(Target->rt_Surface->pUAView, 2);
+		Cmd.SetUAV(Target->rt_Color->pUAView, 0);
+		Cmd.SetUAV(Target->rt_Normal->pUAView, 1);
+		Cmd.SetUAV(Target->rt_Surface->pUAView, 2);
 
-		Target->PhaseEffectSQ(EffectSQ::Winter);
+		Target->PhaseEffectSQ(Cmd, EffectSQ::Winter);
 
-		GRHI->SetUnorderedAccessViews(NULL, 0);
-		GRHI->SetUnorderedAccessViews(NULL, 1);
-		GRHI->SetUnorderedAccessViews(NULL, 2);
+		Cmd.SetUAV(NULL, 0);
+		Cmd.SetUAV(NULL, 1);
+		Cmd.SetUAV(NULL, 2);
 	}
 
 	// Wall marks
@@ -773,8 +779,8 @@ void CRender::Render()
 	{
 		GPU_EVENT(DEFER_WALLMARKS);
 
-		Target->phase_wallmarks();
-		Wallmarks->Render();
+		Target->phase_wallmarks(Cmd);
+		Wallmarks->Render(Cmd);
 	}
 
 	// Update incremental shadowmap-visibility solver
@@ -805,7 +811,7 @@ void CRender::Render()
 	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF))
 	{
 		GPU_EVENT(DEFER_RAIN);
-		render_rain();
+		render_rain(Cmd);
 	}
 
 	rmNormal();
@@ -818,38 +824,37 @@ void CRender::Render()
 		GPU_EVENT(DEFER_SUN);
 
 		RImplementation.stats.l_visible++;
-		render_sun_cascades();
-		Target->increment_light_marker();
+		render_sun_cascades(Cmd);
+		Target->increment_light_marker(Cmd);
 	}
 
 	phase = PHASE_NORMAL;
 
 	{
 		GPU_EVENT(DEFER_SELF_ILLUM);
-		Target->phase_accumulator();
+		Target->phase_accumulator(Cmd);
 
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
-		RCache.set_xform_project(Device.mProject);
-		RCache.set_xform_view(Device.mView);
+		Cmd.SetView(Device.mView, Device.mProject);
 
 		// Stencil - write 0x1 at pixel pos - 
-		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-		RCache.set_CullMode(ERHI_CULLMODE::BACK);
-		RCache.set_ColorWriteEnable();
+		Cmd.SetStencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+		Cmd.SetColorWriteEnable();
 		GraphMain.r_dsgraph_render_emissive();
 	}
 
 	// Lighting, non dependant on OCCQ
 	{
 		GPU_EVENT(DEFER_LIGHT_NO_OCCQ);
-		Target->phase_accumulator();
-		render_lights(LP_normal);
+		Target->phase_accumulator(Cmd);
+		render_lights(Cmd, LP_normal);
 	}
 
 	// Lighting, dependant on OCCQ
 	{
 		GPU_EVENT(DEFER_LIGHT_OCCQ);
-		render_lights(LP_pending);
+		render_lights(Cmd, LP_pending);
 	}
 
 	phase = PHASE_NORMAL;
@@ -857,13 +862,13 @@ void CRender::Render()
 	// Postprocess
 	{
 		GPU_EVENT(DEFER_LIGHT_COMBINE);
-		Target->phase_combine();
+		Target->phase_combine(Cmd);
 	}
 
 	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 }
 
-void CRender::render_forward()
+void CRender::render_forward(GfxCmdList& Cmd)
 {
 	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
@@ -872,7 +877,7 @@ void CRender::render_forward()
 	GraphMain.r_pmask(false, true);
 	phase = PHASE_NORMAL;
 
-	render_main(false);
+	render_main(Cmd, false);
 	GraphMain.mapLOD.clear();
 
 	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size();
@@ -881,53 +886,53 @@ void CRender::render_forward()
 	if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
 	{
 		GPU_EVENT(Forward_rendering_puddles);
-		bSpecial |= Target->phase_puddles();
+		bSpecial |= Target->phase_puddles(Cmd);
 	}
 
 	// May be WBOIT
 	{
-		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
+		CEditorFillModeScope FillModeScope(Cmd, Device.IsEditorMode());
 		GraphMain.r_dsgraph_render_graph(1);
 	}
 
 	bool bDistort = GraphMain.mapDistort.size() || GraphMain.mapHUDDistort.size();
-	GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
+	Cmd.ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
 
 	if (bDistort)
 	{
 		GPU_EVENT(render_distort_objects);
-		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
+		Target->u_setrt(Cmd, Target->rt_Generic_1, 0, 0, RDepth);
 
 		RImplementation.rmNormal();
-		RCache.set_CullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil(FALSE);
-		RCache.set_ColorWriteEnable();
+		Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+		Cmd.SetStencil(FALSE);
+		Cmd.SetColorWriteEnable();
 		RImplementation.GraphMain.r_dsgraph_render_distort();
 	}
 
 	if(bDistort || bSpecial)
 	{
-		Target->u_setrt(Target->rt_Accumulator, 0, 0, 0);
+		Target->u_setrt(Cmd, Target->rt_Accumulator, 0, 0, 0);
 
-		RCache.set_Element(Target->s_combine->E[1]);
-		RCache.set_Geometry(Target->FSTriangleGeom);
+		Cmd.SetPass(Target->s_combine->E[1]);
+		Cmd.SetGeometry(Target->FSTriangleGeom);
 
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-		GRHI->CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+		Cmd.CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
 	}
 
 	RImplementation.o.distortion = false;
 
 	if(RImplementation.o.dx11_disable_motion_vectors)
 	{
-		Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+		Target->u_setrt(Cmd, Target->rt_Generic_0, nullptr, RDepth);
 	}
 	else
 	{
-		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+		Target->u_setrt(Cmd, Target->rt_Generic_0, Target->rt_Velocity, RDepth);
 	}
 
-	GraphMain.PortalTraverser.fade_render();
+	GraphMain.PortalTraverser.fade_render(Cmd);
 
 	// Editor helpers under the blended geometry
 	if (Device.IsEditorMode() && g_EditorRenderHost)
@@ -936,12 +941,12 @@ void CRender::render_forward()
 	}
 
 	{
-		CEditorFillModeScope FillModeScope(Device.IsEditorMode());
+		CEditorFillModeScope FillModeScope(Cmd, Device.IsEditorMode());
 		GraphMain.r_dsgraph_render_sorted(false);
 	}
 
 	g_pGamePersistent->Environment().RenderLast();
-	Target->phase_combine_volumetric();
+	Target->phase_combine_volumetric(Cmd);
 
 	const bool bHUD_UI = g_hud && g_hud->RenderActiveItemUIQuery();
 	if (bSpecial = GraphMain.mapHUDSorted.size() > 0; bSpecial || GraphMain.mapHUDEmissive.size() > 0 || bHUD_UI)
@@ -950,19 +955,19 @@ void CRender::render_forward()
 		{
 			if (Device.ScopePostprocessActive)
 			{
-				Target->phase_pp(&Device.ScopePostprocess);
+				Target->phase_pp(Cmd, &Device.ScopePostprocess);
 				if (RImplementation.o.dx11_disable_motion_vectors)
 				{
-					Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+					Target->u_setrt(Cmd, Target->rt_Generic_0, nullptr, RDepth);
 				}
 				else
 				{
-					Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+					Target->u_setrt(Cmd, Target->rt_Generic_0, Target->rt_Velocity, RDepth);
 				}
 			}
 			else
 			{
-				GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+				Cmd.CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
 			}
 		}
 

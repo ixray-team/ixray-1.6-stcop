@@ -646,7 +646,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 	if (m_Motion&&m_Motion->animator&&bSelected&&(1==priority)&&(false==strictB2F))
 		m_Motion->animator->DrawPath();
 
-	RCache.set_xform_world		(Fidentity);
+	RImplementation.Imm().SetObjectTransform(Fidentity);
 	EDevice->SetShader			(GEditorDraw.WireShader);
 	m_Data->on_render			(&DU_impl,this,bSelected,parent,priority,strictB2F);
 
@@ -1076,13 +1076,14 @@ void CSpawnPoint::RenderSimBox()
 	m.c.set(c);
 				 
 			   //     B.mulA_43			(_Transform());
-	RCache.set_xform_world(m);
+	RImplementation.Imm().SetObjectTransform(m);
 	u32 clr = 0x06005000;
 	DU_impl.DrawIdentBox(true,false,clr,clr);
 }
 
 void CSpawnPoint::Render( int priority, bool strictB2F )
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (!IsLoaded)
 		return;
 
@@ -1146,7 +1147,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 	// render spawn point
 	if (1==priority){
 		if (strictB2F){
-			RCache.set_xform_world(FTransformRP);
+			Cmd.SetObjectTransform(FTransformRP);
 			if (m_SpawnData.Valid()){
 				// render icon
 				ESceneSpawnTool* st	= smart_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
@@ -1226,7 +1227,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 			}
 			if(Selected())
 			{
-				RCache.set_xform_world(Fidentity);
+				Cmd.SetObjectTransform(Fidentity);
 				Fbox bb; GetBox(bb);
 				u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
 				EDevice->SetShader(GEditorDraw.WireShader);

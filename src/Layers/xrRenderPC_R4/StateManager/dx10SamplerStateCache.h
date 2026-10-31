@@ -1,77 +1,21 @@
-#ifndef	dx10SamplerStateCache_included
-#define	dx10SamplerStateCache_included
 #pragma once
-
 
 class dx10SamplerStateCache
 {
 public:
-	enum
-	{
-		hInvalidHandle = 0xFFFFFFFF
-	};
-
-	//	State handle
-	typedef	u32	SHandle;
-	typedef	xr_vector<SHandle>	HArray;
-public:
-	dx10SamplerStateCache();
-	~dx10SamplerStateCache();
-
-	void	ClearStateArray();
-
-	SHandle	GetState(RHISampleDesc& desc );
-
-	void	VSApplySamplers(HArray &samplers);
-	void	PSApplySamplers(HArray &samplers);
-	void	GSApplySamplers(HArray &samplers);
-	void	HSApplySamplers(HArray &samplers);
-	void	DSApplySamplers(HArray &samplers);
-	void	CSApplySamplers(HArray &samplers);
-
-	void	SetMaxAnisotropy( UINT uiMaxAniso);
-	void SetMipLodBias(float mipMapLODBias);
-	//	Marks all device sample as unused
-	void	ResetDeviceState();
-
-	//	Private declarations
-private:
-	typedef	RHIObject	IDeviceState;
-
-	struct StateRecord 
-	{
-		u32					m_crc;
-		IDeviceState*		m_pState;
-	};
+	void Create();
+	void Destroy();
+	void SetMaxAnisotropy(u32 MaxAniso);
+	void SetMipLodBias(float Bias);
 
 private:
-	void	CreateState(RHISampleDesc desc, IDeviceState** ppIState );
-	SHandle	FindState( const RHISampleDesc& desc, u32 StateCRC );
+	void CreateSet(u32 Set);
+	void Bind() const;
 
-	void	PrepareSamplerStates(
-		HArray &samplers, 
-		RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
-		SHandle pCurrentState[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
-		u32	&uiMin,
-		u32	&uiMax
-	) const;
-
-	//	Private data
-private:
-	//	This must be cleared on device destroy
-	xr_vector<StateRecord>	m_StateArray;
-
-	SHandle					m_aPSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aVSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aGSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aHSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aDSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	SHandle					m_aCSSamplers[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-
-	u32						m_uiMaxAnisotropy;
-	float m_mipLodBias;
+	RHIObject* States[2][16] = {};
+	u32 MaxAnisotropy = 1;
+	u32 ActiveSet = 0;
+	float MipLodBias = 0.0f;
 };
 
-extern	dx10SamplerStateCache	SSManager;
-
-#endif	//	dx10SamplerStateCache_included
+extern dx10SamplerStateCache SSManager;

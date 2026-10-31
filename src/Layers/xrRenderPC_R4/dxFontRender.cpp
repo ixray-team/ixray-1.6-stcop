@@ -19,19 +19,21 @@ void dxFontRender::Initialize(const char* cShader, const char* cTexture) {
 		pTexture.create(cTexture);
 	}
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	pShader.create(cShader, cTexture);
-	pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+	pGeom.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 }
 
 void dxFontRender::OnRender(CGameFont& owner)
 {
 	VERIFY(g_bRendering);
+	GfxCmdList& Cmd = RImplementation.Imm();
 
-	RenderBase(owner);
+	RenderBase(Cmd, owner);
 
 	for (GamepadIcon s : IconsToRender)
 	{
-		RenderIcon(s);
+		RenderIcon(Cmd, s);
 	}
 	IconsToRender.clear();
 }
@@ -79,10 +81,10 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	pTexture->surface_set(rhiSurface);
 }
 
-void dxFontRender::RenderBase(CGameFont& owner)
+void dxFontRender::RenderBase(GfxCmdList& Cmd, CGameFont& owner)
 {
 	if(pShader != nullptr) {
-		RCache.set_Shader(pShader);
+		Cmd.SetPass(pShader);
 	}
 
 	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
@@ -95,7 +97,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			Fvector4 p; u32 color; Fvector2 uv;
 		} buff[4];
 	};
-	const u32 maxGlyphs = std::min(RCache.Vertex.GetSize() / pGeom.stride() / 4, 16384u);
+	const u32 maxGlyphs = std::min(Cmd.Vertex.GetSize() / pGeom.stride() / 4, 16384u);
 	auto stringIt = owner.strings.begin();
 	while (stringIt != owner.strings.end())
 	{
@@ -117,7 +119,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			continue;
 		}
 		u32 vOffset;
-		TLF* vertexes = (TLF*)RCache.Vertex.Lock(glyphCount * 4, pGeom.stride(), vOffset);
+		TLF* vertexes = (TLF*)Cmd.Vertex.Lock(glyphCount * 4, pGeom.stride(), vOffset);
 		TLF* start = vertexes;
 
 		for (; stringIt != batchEnd; ++stringIt)
@@ -304,25 +306,25 @@ void dxFontRender::RenderBase(CGameFont& owner)
 
 		// Unlock and draw
 		u32 vertexesCount = (u32)(vertexes - start) * 4;
-		RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+		Cmd.Vertex.Unlock(vertexesCount, pGeom.stride());
 		if (vertexesCount)
 		{
-			RCache.set_Geometry(pGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
+			Cmd.SetGeometry(pGeom);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertexesCount / 2) * 3, 0, vOffset);
 		}
 	}
 }
 
-void dxFontRender::RenderIcon(GamepadIcon icon)
+void dxFontRender::RenderIcon(GfxCmdList& Cmd, GamepadIcon icon)
 {
 	if (!icon.shader)
 	{
 		icon.shader.create("hud\\default", icon.file_name.c_str());
 	}
-	RCache.set_Shader(icon.shader);
+	Cmd.SetPass(icon.shader);
 
-	float fWidth = RCache.get_ActiveTexture(0)->get_Width();
-	float fHeight = RCache.get_ActiveTexture(0)->get_Height();
+	float fWidth = Cmd.GetTexture(0)->get_Width();
+	float fHeight = Cmd.GetTexture(0)->get_Height();
 
 	// lock AGP memory
 	u32	vOffset;
@@ -333,7 +335,7 @@ void dxFontRender::RenderIcon(GamepadIcon icon)
 			Fvector4 p; u32 color; Fvector2	uv;
 		} buff[4];
 	};
-	TLF* vertexes = (TLF*)RCache.Vertex.Lock(4, pGeom.stride(), vOffset);
+	TLF* vertexes = (TLF*)Cmd.Vertex.Lock(4, pGeom.stride(), vOffset);
 	TLF* start = vertexes;
 
 	float Y2 = icon.pos.y + icon.sz.y;
@@ -359,8 +361,8 @@ void dxFontRender::RenderIcon(GamepadIcon icon)
 
 	// Unlock and draw
 	u32 vertexesCount = (u32)(vertexes - start) * 4;
-	RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+	Cmd.Vertex.Unlock(vertexesCount, pGeom.stride());
 
-	RCache.set_Geometry(pGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
+	Cmd.SetGeometry(pGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (vertexesCount / 2) * 3, 0, vOffset);
 }

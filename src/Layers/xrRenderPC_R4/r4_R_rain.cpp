@@ -26,7 +26,7 @@ static int			facetable[6][4] = {
 	{ 3, 2, 4, 5 },		{ 1, 0, 7, 6 },
 };
 
-void CRender::render_rain()
+void CRender::render_rain(GfxCmdList& Cmd)
 {
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	static float fRainFov = Device.fFOV;
@@ -216,10 +216,9 @@ void CRender::render_rain()
 
 	if (bNormal || bSpecial) 
 	{
-		Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
-		RCache.set_xform_world(Fidentity);
-		RCache.set_xform_view(Fidentity);
-		RCache.set_xform_project(RainLight.X.D.combine);
+		Target->phase_smap_direct(Cmd, &RainLight, SE_SUN_RAIN_SMAP);
+		Cmd.SetObjectTransform(Fidentity);
+		Cmd.SetView(Fidentity, RainLight.X.D.combine);
 		GraphMain.r_dsgraph_render_graph(0);
 	}
 
@@ -227,11 +226,10 @@ void CRender::render_rain()
 	GraphMain.r_pmask(true, false);
 
 	// Restore XForms
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Device.mView, Device.mProject);
 
 	// Accumulate
-	Target->phase_rain();
-	Target->draw_rain(RainLight);
+	Target->phase_rain(Cmd);
+	Target->draw_rain(Cmd, RainLight);
 }

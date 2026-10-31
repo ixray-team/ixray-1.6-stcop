@@ -17,7 +17,7 @@
 
 #include "common.hlsli"
 
-Texture2D<uint> t_gtao_packed;
+Texture2D<uint> t_gtao_packed : register(t25);
 
 float main(PSInputFullscreen I) : SV_Target
 {

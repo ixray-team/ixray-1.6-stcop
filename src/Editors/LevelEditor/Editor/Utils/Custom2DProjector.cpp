@@ -63,18 +63,19 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 		}
 	}
 
-	geom.create(FVF::F_V, RCache.Vertex.Buffer(), 0);
+	geom.create(FVF::F_V, RImplementation.Imm().Vertex.Buffer(), 0);
 }
 
 void CCustom2DProjector::Render(bool blended)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (!Valid()) return;
     EDevice->RenderNearer(0.001f);
-	RCache.set_xform_world(Fidentity);
+	Cmd.SetObjectTransform(Fidentity);
     EDevice->SetShader	(blended?shader_blended:shader_overlap);
     div_t cnt 			= div(mesh.size(),MAX_BUF_SIZE);
     u32 vBase;
-    _VertexStream* Stream = &RCache.Vertex;
+    _VertexStream* Stream = &Cmd.Vertex;
     for (int k=0; k<cnt.quot; k++){
 		FVF::V*	pv	 	= (FVF::V*)Stream->Lock(MAX_BUF_SIZE,geom->vb_stride,vBase);
 		CopyMemory		(pv,mesh.data()+k*MAX_BUF_SIZE,sizeof(FVF::V)*MAX_BUF_SIZE);
@@ -96,7 +97,7 @@ void CCustom2DProjector::CreateShader()
 	if (Valid()){
 		shader_blended.create	("editor\\do_base",*name);
 		shader_overlap.create	("default",*name);
-		geom.create				(FVF::F_V,RCache.Vertex.Buffer(),0);
+		geom.create				(FVF::F_V,RImplementation.Imm().Vertex.Buffer(),0);
 	}
 }
 

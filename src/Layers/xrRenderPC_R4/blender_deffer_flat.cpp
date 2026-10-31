@@ -40,33 +40,31 @@ void	CBlender_deffer_flat::Compile(CBlender_Compile& C)
 	C.TessMethod = oTessellation.IDselected;
 	switch (C.iElement)
 	{
-	case SE_R2_NORMAL_HQ: // deffer
+	case ShaderVariant::NormalHQ: // deffer
 		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
 
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 		C.r_End();
 		break;
-	case SE_R2_NORMAL_LQ: // deffer
+	case ShaderVariant::NormalLQ: // deffer
 		uber_deffer(C, false, "deffer_base", "deffer_base", false, 0, true);
 
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 		C.r_End();
 		break;
-	case SE_R2_SHADOW: // smap-direct
+	case ShaderVariant::Shadow: // smap-direct
 		C.r_Pass("shadow_base", "shadow_base", false);
 
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		C.r_dx10Sampler("smp_base");
-		C.r_dx10Sampler("smp_linear");
 		C.r_ColorWriteEnable(false, false, false, false);
 
 		C.r_End();
 		break;
-	case SE_R2_REFLECTIONS:
-		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
-		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+	case ShaderVariant::Reflection:
+		C.AddDefine("USE_LENGTH_BUFFER", "1");
+		C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 		uber_forward(C, false, "deffer_base", "forward_base", false, false, 0);
 		break;
 	}

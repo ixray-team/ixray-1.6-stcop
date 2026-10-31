@@ -15,6 +15,7 @@ static void DeleteSampler(void* payload)
 {
     auto sampler = static_cast<DX12Sampler*>(payload);
     sampler->Device->Retire(sampler->Descriptor);
+    sampler->Device->InvalidateBindings();
     xr_delete(sampler);
 }
 
@@ -86,7 +87,7 @@ static HRESULT ReflectBindings(TReflection* reflection, DX12Shader* shader)
         }
         else if (binding.Type != D3D_SIT_CBUFFER && binding.Type != D3D_SIT_SAMPLER)
         {
-            for (u32 binding_idx = binding.BindPoint; binding_idx < std::min(16u, binding.BindPoint + binding.BindCount); ++binding_idx)
+            for (u32 binding_idx = binding.BindPoint; binding_idx < std::min(DX12ViewSlots, binding.BindPoint + binding.BindCount); ++binding_idx)
             {
                 shader->Dimensions[binding_idx] = binding.Dimension == D3D_SRV_DIMENSION_BUFFEREX ?
                     D3D12_SRV_DIMENSION_BUFFER : (D3D12_SRV_DIMENSION)binding.Dimension;
@@ -304,33 +305,61 @@ HRESULT InternalDevice12::CreateSamplerState(const RHISampleDesc& desc, RHIObjec
     return S_OK;
 }
 
-void InternalDevice12::SetSamplers(u32 start, u32 count, RHIObject* const* states, ERHI_SHADER_TYPE type)
+void InternalDevice12::SetSamplers(RHIObject* const* states, u32 count)
 {
     ContextLock guard(*this);
-    R_ASSERT((u32)type < 6 && start <= 16 && count <= 16 - start);
-    for (u32 sampler_idx = 0; sampler_idx < count; ++sampler_idx)
+    R_ASSERT(count <= 16);
+    for (u32 stage = 0; stage < 6; ++stage)
     {
-        auto native = states[sampler_idx] ? static_cast<DX12Sampler*>(states[sampler_idx]->resource) : nullptr;
-        auto& slot = _samplers[(u32)type][start + sampler_idx];
-        _samplersDirty[(u32)type] |= slot != native;
-        slot = native;
+        for (u32 sampler_idx = 0; sampler_idx < count; ++sampler_idx)
+        {
+            auto native = states[sampler_idx] ? static_cast<DX12Sampler*>(states[sampler_idx]->resource) : nullptr;
+            auto& slot = _samplers[stage][sampler_idx];
+            _samplersDirty[stage] |= slot != native;
+            slot = native;
+        }
     }
 }
 
-void InternalDevice12::SetConstantBuffers(u32 start, u32 count, IRHIBuffer* const* buffers, ERHI_SHADER_TYPE type)
+void InternalDevice12::SetConstants(const RHIConstantWrite* writes, u32 count)
 {
-    ContextLock guard(*this);
-    R_ASSERT((u32)type < 6 && start <= 14 && count <= 14 - start);
-    for (u32 buffer_idx = 0; buffer_idx < count; ++buffer_idx)
+    const auto aligned = [](const RHIConstantWrite& write) { return write.Slot == DrawSlot ? 0 : (u64(write.Size) + 255) & ~u64(255); };
+    u64 total = 0;
+    for (u32 write_idx = 0; write_idx < count; ++write_idx)
     {
-        _constants[(u32)type][start + buffer_idx] = static_cast<DX12Buffer*>(buffers[buffer_idx]);
+        const RHIConstantWrite& write = writes[write_idx];
+        R_ASSERT(write.Slot < ConstantSlots && write.Size <= (write.Slot == DrawSlot ? sizeof(_rootData) : 65536));
+        total += aligned(write);
     }
+    const DX12Upload upload = total ? AllocateUpload(total, 256) : DX12Upload{};
+    for (u64 write_idx = 0, offset = 0; write_idx < count; offset += aligned(writes[write_idx++]))
+    {
+        if (writes[write_idx].Slot != DrawSlot)
+        {
+            memcpy(upload.Data + offset, writes[write_idx].Data, writes[write_idx].Size);
+        }
+    }
+    const u64 base = total ? upload.Resource->GetGPUVirtualAddress() + upload.Offset : 0;
+    ContextLock guard(*this);
+    for (u64 write_idx = 0, offset = 0; write_idx < count; offset += aligned(writes[write_idx++]))
+    {
+        if (writes[write_idx].Slot == DrawSlot)
+        {
+            memcpy(_rootData, writes[write_idx].Data, writes[write_idx].Size);
+            _rootDataDirty = 3;
+        }
+        else
+        {
+            _ranges[writes[write_idx].Slot] = base + offset;
+        }
+    }
+    _counters.CopiedBytes.fetch_add(total, std::memory_order_relaxed);
 }
 
 void InternalDevice12::BindResource(u32 stage, u32 slot, IRHIShaderResourceView* resource)
 {
     ContextLock guard(*this);
-    R_ASSERT(stage < 6 && slot < 16);
+    R_ASSERT(stage < 6 && slot < DX12ViewSlots);
     auto native = static_cast<DX12ShaderResourceView*>(resource);
     _viewsDirty[stage] |= _resources[stage][slot] != native;
     _resources[stage][slot] = native;
@@ -339,7 +368,7 @@ void InternalDevice12::BindResource(u32 stage, u32 slot, IRHIShaderResourceView*
 void InternalDevice12::SetComputeResources(u32 start, u32 count, IRHIShaderResourceView* const* views)
 {
     ContextLock guard(*this);
-    R_ASSERT(start <= 16 && count <= 16 - start);
+    R_ASSERT(start <= DX12ViewSlots && count <= DX12ViewSlots - start);
     for (u32 view_idx = 0; view_idx < count; ++view_idx)
     {
         BindResource(5, start + view_idx, views[view_idx]);
@@ -518,11 +547,6 @@ HRESULT InternalDevice12::GetQueryData(RHIObject* object, void* data, u32 size, 
     return result;
 }
 
-u32 InternalDevice12::RootConstantParameter(bool compute, u32 stage, u32 slot) const
-{
-    return (compute ? ComputeTableCount : GraphicsTableCount) + (compute ? 0u : stage) * RootConstantSlots + slot;
-}
-
 void InternalDevice12::CreateRootSignatures()
 {
     auto create = [&](bool compute, ID3D12RootSignature** out_signature)
@@ -531,14 +555,13 @@ void InternalDevice12::CreateRootSignatures()
         const D3D12_SHADER_VISIBILITY visibility[5] = { D3D12_SHADER_VISIBILITY_PIXEL, D3D12_SHADER_VISIBILITY_VERTEX,
             D3D12_SHADER_VISIBILITY_GEOMETRY, D3D12_SHADER_VISIBILITY_HULL, D3D12_SHADER_VISIBILITY_DOMAIN };
         D3D12_DESCRIPTOR_RANGE ranges[GraphicsTableCount] = {};
-        D3D12_ROOT_PARAMETER parameters[GraphicsTableCount + 5 * RootConstantSlots] = {};
+        D3D12_ROOT_PARAMETER parameters[GraphicsTableCount + ConstantSlots] = {};
         for (u32 stage_idx = 0; stage_idx < stages; ++stage_idx)
         {
             const u32 base = stage_idx * TablesPerStage;
             const auto stageVisibility = compute ? D3D12_SHADER_VISIBILITY_ALL : visibility[stage_idx];
-            ranges[base] = { D3D12_DESCRIPTOR_RANGE_TYPE_CBV, TableConstantCount, RootConstantSlots, 0, 0 };
-            ranges[base + 1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 0, 0, 0 };
-            ranges[base + 2] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 16, 0, 0, 0 };
+            ranges[base] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, DX12ViewSlots, 0, 0, 0 };
+            ranges[base + 1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 16, 0, 0, 0 };
             for (u32 table_idx = 0; table_idx < TablesPerStage; ++table_idx)
             {
                 auto& parameter = parameters[base + table_idx];
@@ -546,21 +569,25 @@ void InternalDevice12::CreateRootSignatures()
                 parameter.DescriptorTable = { 1, &ranges[base + table_idx] };
                 parameter.ShaderVisibility = stageVisibility;
             }
-            for (u32 slot_idx = 0; slot_idx < RootConstantSlots; ++slot_idx)
-            {
-                auto& root = parameters[RootConstantParameter(compute, stage_idx, slot_idx)];
-                root.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-                root.Descriptor = { slot_idx, 0 };
-                root.ShaderVisibility = stageVisibility;
-            }
         }
         const u32 uavParameter = stages * TablesPerStage;
         ranges[uavParameter] = { D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 8, 0, 0, 0 };
         parameters[uavParameter].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
         parameters[uavParameter].DescriptorTable = { 1, &ranges[uavParameter] };
         parameters[uavParameter].ShaderVisibility = compute ? D3D12_SHADER_VISIBILITY_ALL : D3D12_SHADER_VISIBILITY_PIXEL;
+        for (u32 slot_idx = 0; slot_idx < DrawSlot; ++slot_idx)
+        {
+            auto& root = parameters[ConstantParameter(compute) + slot_idx];
+            root.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+            root.Descriptor = { slot_idx, 0 };
+            root.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+        }
+        auto& draw = parameters[ConstantParameter(compute) + DrawSlot];
+        draw.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+        draw.Constants = { DrawSlot, 0, DrawConstants };
+        draw.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
         D3D12_ROOT_SIGNATURE_DESC desc = {};
-        desc.NumParameters = uavParameter + 1 + stages * RootConstantSlots;
+        desc.NumParameters = ConstantParameter(compute) + ConstantSlots;
         desc.pParameters = parameters;
         desc.Flags = compute ? D3D12_ROOT_SIGNATURE_FLAG_NONE : D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
         ID3DBlob* blob = nullptr;
@@ -648,80 +675,6 @@ DX12Descriptor InternalDevice12::AllocateTable(u32 count, bool sampler)
     return descriptor;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::ConstantTable(u32 stage)
-{
-    auto shader = stage == 5 ? _computeShader : _graphicsState.Shaders[stage];
-    auto& cache = _constantCaches[stage];
-    u64 keys[TableConstantCount] = {};
-    bool same = cache.Handle.ptr && cache.Generation == _tableGeneration;
-    for (u32 buffer_idx = 0; buffer_idx < TableConstantCount; ++buffer_idx)
-    {
-        auto buffer = shader && (shader->ConstantMask & (1u << (buffer_idx + RootConstantSlots))) ?
-            _constants[stage][buffer_idx + RootConstantSlots] : nullptr;
-        u64 key = 0;
-        if (buffer)
-        {
-            key = buffer->PublishedAddress();
-            if (!key)
-            {
-                key = buffer->GetAddress();
-            }
-        }
-        keys[buffer_idx] = key;
-        same &= key == cache.Keys[buffer_idx];
-    }
-    if (same)
-    {
-        return cache.Handle;
-    }
-    DescriptorTable table;
-    table.Count = TableConstantCount;
-    memcpy(table.Keys, keys, sizeof(keys));
-    auto handle = FindTable(table);
-    if (!handle.ptr)
-    {
-        if (!_nullCbv.Cpu.ptr)
-        {
-            _nullCbv = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-            const D3D12_CONSTANT_BUFFER_VIEW_DESC nullDesc = { 0, 256 };
-            GetDevice()->CreateConstantBufferView(&nullDesc, _nullCbv.Cpu);
-        }
-        const auto descriptor = AllocateTable(table.Count, false);
-        table.Handle = descriptor.Gpu;
-        const u32 stride = _descriptorStride[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV];
-        D3D12_CPU_DESCRIPTOR_HANDLE sources[TableConstantCount];
-        for (u32 buffer_idx = 0; buffer_idx < TableConstantCount; ++buffer_idx)
-        {
-            sources[buffer_idx] = _nullCbv.Cpu;
-        }
-        auto destination = descriptor.Cpu;
-        const UINT count = TableConstantCount;
-        GetDevice()->CopyDescriptors(1, &destination, &count, count, sources, nullptr, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        u32 created = 0;
-        for (u32 buffer_idx = 0; buffer_idx < TableConstantCount; ++buffer_idx)
-        {
-            if (!keys[buffer_idx])
-            {
-                continue;
-            }
-            const D3D12_CONSTANT_BUFFER_VIEW_DESC desc = { keys[buffer_idx],
-                (_constants[stage][buffer_idx + RootConstantSlots]->GetSize() + 255u) & ~255u };
-            D3D12_CPU_DESCRIPTOR_HANDLE slot = descriptor.Cpu;
-            slot.ptr += u64(buffer_idx) * stride;
-            GetDevice()->CreateConstantBufferView(&desc, slot);
-            ++created;
-        }
-        _counters.DescriptorCopies.fetch_add(TableConstantCount, std::memory_order_relaxed);
-        _counters.CbvCreates.fetch_add(created, std::memory_order_relaxed);
-        CacheTable(table);
-        handle = table.Handle;
-    }
-    memcpy(cache.Keys, keys, sizeof(keys));
-    cache.Handle = handle;
-    cache.Generation = _tableGeneration;
-    return handle;
-}
-
 D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::ViewTable(u32 stage)
 {
     auto shader = stage == 5 ? _computeShader : _graphicsState.Shaders[stage];
@@ -733,8 +686,8 @@ D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::ViewTable(u32 stage)
         return cache.Handle;
     }
     DescriptorTable table;
-    table.Count = 16;
-    for (u32 view_idx = 0; view_idx < 16; ++view_idx)
+    table.Count = DX12ViewSlots;
+    for (u32 view_idx = 0; view_idx < DX12ViewSlots; ++view_idx)
     {
         auto view = shader && shader->Dimensions[view_idx] != D3D12_SRV_DIMENSION_UNKNOWN ?
             _resources[stage][view_idx] : nullptr;
@@ -790,23 +743,23 @@ D3D12_GPU_DESCRIPTOR_HANDLE InternalDevice12::ViewTable(u32 stage)
             table.Handle = descriptor.Gpu;
             if (!shader->NullReady)
             {
-                for (u32 view_idx = 0; view_idx < 16; ++view_idx)
+                for (u32 view_idx = 0; view_idx < DX12ViewSlots; ++view_idx)
                 {
                     shader->NullSrvs[view_idx] = NullSrv(u32(shader->Dimensions[view_idx]), u32(shader->ReturnTypes[view_idx]),
                         shader->ResourceKinds[view_idx]).Cpu;
                 }
                 shader->NullReady = true;
             }
-            D3D12_CPU_DESCRIPTOR_HANDLE sources[16];
-            for (u32 view_idx = 0; view_idx < 16; ++view_idx)
+            D3D12_CPU_DESCRIPTOR_HANDLE sources[DX12ViewSlots];
+            for (u32 view_idx = 0; view_idx < DX12ViewSlots; ++view_idx)
             {
                 sources[view_idx] = table.Keys[view_idx] >> 63 ? shader->NullSrvs[view_idx] :
                     _resources[stage][view_idx]->View.Descriptor.Cpu;
             }
             auto destination = descriptor.Cpu;
-            const UINT count = 16;
+            const UINT count = DX12ViewSlots;
             GetDevice()->CopyDescriptors(1, &destination, &count, count, sources, nullptr, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-            _counters.DescriptorCopies.fetch_add(16, std::memory_order_relaxed);
+            _counters.DescriptorCopies.fetch_add(count, std::memory_order_relaxed);
             CacheTable(table);
             handle = table.Handle;
         }
@@ -1225,64 +1178,59 @@ void InternalDevice12::BindNullConstants(bool compute)
         _nullConstants = upload.Resource->GetGPUVirtualAddress() + upload.Offset;
         _nullConstantsEpoch = _epoch;
     }
-    for (u32 stage_idx = 0; stage_idx < (compute ? 1u : 5u); ++stage_idx)
+    _rootDataDirty |= 1u << compute;
+    for (u32 slot_idx = 0; slot_idx < DrawSlot; ++slot_idx)
     {
-        for (u32 slot_idx = 0; slot_idx < RootConstantSlots; ++slot_idx)
+        _rootConstants[compute][slot_idx] = _nullConstants;
+        if (compute)
         {
-            _rootConstants[compute ? 5 : stage_idx][slot_idx] = _nullConstants;
-            if (compute)
-            {
-                _commands->SetComputeRootConstantBufferView(RootConstantParameter(true, 0, slot_idx), _nullConstants);
-            }
-            else
-            {
-                _commands->SetGraphicsRootConstantBufferView(RootConstantParameter(false, stage_idx, slot_idx), _nullConstants);
-            }
+            _commands->SetComputeRootConstantBufferView(ConstantParameter(true) + slot_idx, _nullConstants);
+        }
+        else
+        {
+            _commands->SetGraphicsRootConstantBufferView(ConstantParameter(false) + slot_idx, _nullConstants);
         }
     }
 }
 
 void InternalDevice12::BindRootConstants(bool compute)
 {
-    for (u32 stage_idx = 0; stage_idx < (compute ? 1u : 5u); ++stage_idx)
+    u32 mask = 0;
+    for (auto shader : _graphicsState.Shaders)
     {
-        auto shader = compute ? _computeShader : _graphicsState.Shaders[stage_idx];
-        if (!shader)
+        mask |= shader ? shader->ConstantMask : 0;
+    }
+    mask = compute ? _computeShader->ConstantMask : mask;
+    if ((mask >> DrawSlot) & (_rootDataDirty >> compute) & 1)
+    {
+        _rootDataDirty &= ~(1u << compute);
+        if (compute)
+        {
+            _commands->SetComputeRoot32BitConstants(ConstantParameter(true) + DrawSlot, DrawConstants, _rootData, 0);
+        }
+        else
+        {
+            _commands->SetGraphicsRoot32BitConstants(ConstantParameter(false) + DrawSlot, DrawConstants, _rootData, 0);
+        }
+    }
+    mask &= ~(1u << DrawSlot);
+    for (unsigned long slot_idx; _BitScanForward(&slot_idx, mask); mask &= mask - 1)
+    {
+        const u64 address = _ranges[slot_idx] ? _ranges[slot_idx] : _nullConstants;
+        if (_rootConstants[compute][slot_idx] == address)
         {
             continue;
         }
-        const u32 stage = compute ? 5 : stage_idx;
-        for (u32 slot_idx = 0; slot_idx < RootConstantSlots; ++slot_idx)
+        _rootConstants[compute][slot_idx] = address;
+        if (compute)
         {
-            if (!(shader->ConstantMask & (1u << slot_idx)))
-            {
-                continue;
-            }
-            auto buffer = _constants[stage][slot_idx];
-            u64 address = _nullConstants;
-            if (buffer)
-            {
-                address = buffer->PublishedAddress();
-                if (!address)
-                {
-                    address = buffer->GetAddress();
-                }
-            }
-            if (_rootConstants[stage][slot_idx] == address)
-            {
-                continue;
-            }
-            _rootConstants[stage][slot_idx] = address;
-            if (compute)
-            {
-                _commands->SetComputeRootConstantBufferView(RootConstantParameter(true, 0, slot_idx), address);
-            }
-            else
-            {
-                _commands->SetGraphicsRootConstantBufferView(RootConstantParameter(false, stage_idx, slot_idx), address);
-            }
-            _counters.RootBinds.fetch_add(1, std::memory_order_relaxed);
+            _commands->SetComputeRootConstantBufferView(ConstantParameter(true) + slot_idx, address);
         }
+        else
+        {
+            _commands->SetGraphicsRootConstantBufferView(ConstantParameter(false) + slot_idx, address);
+        }
+        _counters.RootBinds.fetch_add(1, std::memory_order_relaxed);
     }
 }
 
@@ -1305,10 +1253,9 @@ bool InternalDevice12::PrepareDrawLocked(bool compute)
         if (compute)
         {
             R_ASSERT(_computeShader);
-            tables[0] = ConstantTable(5);
-            tables[1] = ViewTable(5);
-            tables[2] = SamplerTable(5);
-            tables[3] = UAVTable(true);
+            tables[0] = ViewTable(5);
+            tables[1] = SamplerTable(5);
+            tables[2] = UAVTable(true);
         }
         else
         {
@@ -1319,9 +1266,8 @@ bool InternalDevice12::PrepareDrawLocked(bool compute)
                     continue;
                 }
                 const u32 base = stage_idx * TablesPerStage;
-                tables[base] = ConstantTable(stage_idx);
-                tables[base + 1] = ViewTable(stage_idx);
-                tables[base + 2] = SamplerTable(stage_idx);
+                tables[base] = ViewTable(stage_idx);
+                tables[base + 1] = SamplerTable(stage_idx);
             }
             tables[GraphicsTableCount - 1] = UAVTable(false);
         }

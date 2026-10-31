@@ -303,23 +303,23 @@ public:
 	void						accum_volumetric_geom_create();
 	void						accum_volumetric_geom_destroy();
 
-	void						u_stencil_optimize		(eStencilOptimizeMode eSOM = SO_Light);
-	void						u_compute_texgen_screen	(Fmatrix&	dest);
-	void						u_compute_texgen_jitter	(Fmatrix&	dest);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb);
-	void						u_setrt					(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb);
-	void						u_setrt					(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb);
+	void						u_stencil_optimize		(GfxCmdList& Cmd, eStencilOptimizeMode eSOM = SO_Light);
+	void						u_compute_texgen_screen	(GfxCmdList& Cmd, Fmatrix&	dest);
+	void						u_compute_texgen_jitter	(GfxCmdList& Cmd, Fmatrix&	dest);
+	void						u_setrt					(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb);
+	void						u_setrt					(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb);
+	void						u_setrt					(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb);
+	void						u_setrt					(GfxCmdList& Cmd, u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb);
+	void						u_setrt					(GfxCmdList& Cmd, u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb);
 
 	template <class Bind>
-	void						DrawPassSQ	(const ref_shader& shader, u32 element, Bind&& bind);
-	void						DrawPassSQ	(const ref_shader& shader, u32 element);
+	void						DrawPassSQ	(GfxCmdList& Cmd, const ref_shader& shader, u32 element, Bind&& bind);
+	void						DrawPassSQ	(GfxCmdList& Cmd, const ref_shader& shader, u32 element);
 	template <class Bind>
-	void						DrawSQ			(const ref_shader& shader, const ref_rt& target, u32 element, Bind&& bind);
-	void						DrawSQ			(const ref_shader& shader, const ref_rt& target, u32 element = 0);
+	void						DrawSQ			(GfxCmdList& Cmd, const ref_shader& shader, const ref_rt& target, u32 element, Bind&& bind);
+	void						DrawSQ			(GfxCmdList& Cmd, const ref_shader& shader, const ref_rt& target, u32 element = 0);
 	void						ResolveSurface			(const ref_rt& dst, const ref_rt& src);
-	void						u_calc_tc_noise(Fvector2& p0, Fvector2& p1, float Scale, float FPS, bool IsScope);
+	void						u_calc_tc_noise(GfxCmdList& Cmd, Fvector2& p0, Fvector2& p1, float Scale, float FPS, bool IsScope);
 	void						u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
 	bool						u_need_PP				();
 	bool						u_need_CM				();
@@ -332,50 +332,50 @@ public:
 	bool						phase_xess();
 	void						init_dlss();
 	bool						phase_dlss();
-	void						phase_scale				();
-	void						PhaseEditorScale		();
+	void						phase_scale				(GfxCmdList& Cmd);
+	void						PhaseEditorScale		(GfxCmdList& Cmd);
 
 	void						copy_position			();
 
-	void						phase_smaa				();
-	void						phase_taa				();
-	void						phase_mblur				();
-	void						phase_depth_upscale		();
+	void						phase_smaa				(GfxCmdList& Cmd);
+	void						phase_taa				(GfxCmdList& Cmd);
+	void						phase_mblur				(GfxCmdList& Cmd);
+	void						phase_depth_upscale		(GfxCmdList& Cmd);
 
-	void						phase_ui_postprocess	(Fcolor*, bool HasBackground);
-	void						phase_ui_postprocess_copy();
+	void						phase_ui_postprocess	(GfxCmdList& Cmd, Fcolor*, bool HasBackground);
+	void						phase_ui_postprocess_copy(GfxCmdList& Cmd);
 
-	void						phase_gtao				();
-	void						phase_sslr				();
-	void						pharse_velocity			();
+	void						phase_gtao				(GfxCmdList& Cmd);
+	void						phase_sslr				(GfxCmdList& Cmd);
+	void						pharse_velocity			(GfxCmdList& Cmd);
 
 
-	bool						phase_puddles			();
-	void PhaseRainPuddles();
-	void						phase_planar			();
+	bool						phase_puddles			(GfxCmdList& Cmd);
+	void PhaseRainPuddles(GfxCmdList& Cmd);
+	void						phase_planar			(GfxCmdList& Cmd);
 
-	void						PhaseEffectSQ			(EffectSQ Effect);
+	void						PhaseEffectSQ			(GfxCmdList& Cmd, EffectSQ Effect);
 
-	void						phase_scene_forward		();
+	void						phase_scene_forward		(GfxCmdList& Cmd);
 	void						phase_scene_prepare		();
 
-	void						phase_scene_begin		();
+	void						phase_scene_begin		(GfxCmdList& Cmd);
 	void						phase_scene_end			();
-	void						phase_occq				();
-	void						phase_ssao				();
-	void						phase_downsamp			();
-	void						phase_wallmarks			();
-	void						phase_smap_direct		(light* L,	u32 sub_phase);
-	void						phase_smap_direct_tsh	(light* L,	u32 sub_phase);
+	void						phase_occq				(GfxCmdList& Cmd);
+	void						phase_ssao				(GfxCmdList& Cmd);
+	void						phase_downsamp			(GfxCmdList& Cmd);
+	void						phase_wallmarks			(GfxCmdList& Cmd);
+	void						phase_smap_direct		(GfxCmdList& Cmd, light* L,	u32 sub_phase);
+	void						phase_smap_direct_tsh	(GfxCmdList& Cmd, light* L,	u32 sub_phase);
 	void						phase_smap_spot_clear	();
-	void						phase_smap_spot			(light* L);
-	void						phase_smap_spot_tsh		(light* L);
-	void						phase_accumulator		();
-	void						phase_vol_accumulator	();
+	void						phase_smap_spot			(GfxCmdList& Cmd, light* L);
+	void						phase_smap_spot_tsh		(GfxCmdList& Cmd, light* L);
+	void						phase_accumulator		(GfxCmdList& Cmd);
+	void						phase_vol_accumulator	(GfxCmdList& Cmd);
 	void						shadow_direct			(light* L, u32 dls_phase);
 
-	void						phase_rain				();
-	void						draw_rain				(light &RainSetup);
+	void						phase_rain				(GfxCmdList& Cmd);
+	void						draw_rain				(GfxCmdList& Cmd, light &RainSetup);
 
 	bool						need_to_render_sunshafts();
 
@@ -384,26 +384,26 @@ public:
 
 	void						disable_aniso			();
 
-	void						draw_volume				(light* L);
-	void						accum_direct_cascade	();
-	void						accum_direct_volumetric	();
-	void						accum_point				(light* L);
-	void						accum_spot				(light* L);
-	void						accum_reflected			(light* L);
+	void						draw_volume				(GfxCmdList& Cmd, light* L);
+	void						accum_direct_cascade	(GfxCmdList& Cmd);
+	void						accum_direct_volumetric	(GfxCmdList& Cmd);
+	void						accum_point				(GfxCmdList& Cmd, light* L);
+	void						accum_spot				(GfxCmdList& Cmd, light* L);
+	void						accum_reflected			(GfxCmdList& Cmd, light* L);
 	//	Igor: for volumetric lights
-	void						accum_volumetric		(light* L);
-	void						accum_volumetric_lv		(light* L);
+	void						accum_volumetric		(GfxCmdList& Cmd, light* L);
+	void						accum_volumetric_lv		(GfxCmdList& Cmd, light* L);
 
 	void						phase_bloom				();
 	void						phase_luminance			();
-	void						phase_combine			();
-	void						phase_combine_volumetric();
-	void						phase_pp(const SPPInfo* ScopeInfo = nullptr);
+	void						phase_combine			(GfxCmdList& Cmd);
+	void						phase_combine_volumetric(GfxCmdList& Cmd);
+	void						phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo = nullptr);
 	//==========================================================
-	void						phase_bloom_downsample();
-	void						phase_bloom_upsample();
-	void						phase_new_luminance();
-	void						phase_new_dof();
+	void						phase_bloom_downsample(GfxCmdList& Cmd);
+	void						phase_bloom_upsample(GfxCmdList& Cmd);
+	void						phase_new_luminance(GfxCmdList& Cmd);
+	void						phase_new_dof(GfxCmdList& Cmd);
 	//==========================================================
 
 
@@ -431,12 +431,12 @@ public:
 
 	//	Need to reset stencil only when marker overflows.
 	//	Don't clear when render for the first time
-	void						reset_light_marker( bool bResetStencil = false);
-	void						increment_light_marker();
+	void						reset_light_marker(GfxCmdList& Cmd, bool bResetStencil = false);
+	void						increment_light_marker(GfxCmdList& Cmd);
 
 	void						DoAsyncScreenshot		();
 	// Resolves the LDR frame into Destination (the swapchain target when null)
-	void						PhaseGammaApply			(IRHIRenderTargetView* Destination = nullptr);
+	void						PhaseGammaApply			(GfxCmdList& Cmd, IRHIRenderTargetView* Destination = nullptr);
 
 #ifdef DEBUG
 	IC void						dbg_addline				(Fvector& P0, Fvector& P1, u32 c)					{

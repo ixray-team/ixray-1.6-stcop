@@ -35,8 +35,8 @@ private:
 public:
 	void					set_object		(IRenderable*	O);
 	bool					shadowing		()			{ return current!=nullptr;	}
-	void					calculate		();
-	void					setup			(int slot);
+	void					calculate		(GfxCmdList& Cmd);
+	void					setup			(GfxCmdList& Cmd, int slot);
 	void					finalize		()			{ receivers.clear(); taskid.clear();	}
 	void					invalidate		();
 

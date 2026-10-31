@@ -75,7 +75,4 @@ public:
 	void			Save		(IWriter* fs);
 };
 
-typedef	resptr_core<CConstant,resptr_base<CConstant> >	
-	ref_constant_obsolette;
-
 #endif

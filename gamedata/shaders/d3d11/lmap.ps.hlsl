@@ -12,7 +12,7 @@ struct v2p
 };
 
 #ifdef USE_R1_EMISSION
-Texture2D s_emission;
+Texture2D s_emission : register(t25);
 #endif
 
 float4 main(v2p I) : SV_Target

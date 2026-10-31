@@ -7,7 +7,7 @@ static Fmatrix s_mView_saved;
 static Fmatrix s_mProject_saved;
 static Fmatrix s_mFullTransform_saved;
 
-CHudInitializer::CHudInitializer(bool setup, bool ajust)
+CHudInitializer::CHudInitializer(GfxCmdList& Cmd, bool setup, bool ajust) : Cmd(Cmd)
 {
 	b_auto_setup = setup;
 	b_ajust = ajust;
@@ -45,8 +45,7 @@ void CHudInitializer::SetHudMode()
 
 	if(Device.m_pRender) 
 	{
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-		Device.m_pRender->SetCacheXformOld(Device.mView_hud_old, Device.mProject_hud_old);
+		Cmd.SetView({ Device.mView, Device.mProject, Device.mView_hud_old, Device.mProject_hud_old });
 	}
 
 	if (b_ajust)
@@ -68,8 +67,7 @@ void CHudInitializer::SetDefaultMode()
 
 	if(Device.m_pRender) 
 	{
-		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
-		Device.m_pRender->SetCacheXformOld(Device.mView_old, Device.mProject_old);
+		Cmd.SetView({ Device.mView, Device.mProject, Device.mView_old, Device.mProject_old });
 	}
 }
 

@@ -5,7 +5,6 @@
 #include "D3D12/Device.h"
 #endif
 #include "D3D11/DX11GPUEvents.h"
-#include "D3D11/DX11ShaderDeclaration.h"
 #include "D3D11/DX11ShaderResourceStateCache.h"
 #include "D3D11/RHIStateManagerDX11.h"
 #include "Drivers/AMDAntiLag.h"
@@ -44,7 +43,6 @@ CRHI::~CRHI()
 	xr_delete(StateManager);
 	xr_delete(DevicePtr);
 	xr_delete(DriverExt);
-	xr_delete(ShaderCompiler);
 	xr_delete(DriverAntiLag);
 }
 
@@ -102,7 +100,6 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
         }
 
     R_ASSERT2(DevicePtr, "Unsupported graphics API");
-    ShaderCompiler = new CRHIShaderCompilerShell(APILevel);
 
 	return DevicePtr;
 }
@@ -129,68 +126,9 @@ void* CRHI::GetContext()
     return DevicePtr ? DevicePtr->GetContext() : nullptr;
 }
 
-void* CRHI::GetImmediateContext()
-{
-	return GetContext();
-}
-
-void* CRHI::CreateDeferredContext()
-{
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		return ((InternalDevice11*)DevicePtr)->CreateDeferredContext();
-	}
-
-	VERIFY(!"Unsupported");
-	return nullptr;
-}
-
-void CRHI::ReleaseDeferredContext(void* context)
-{
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		((InternalDevice11*)DevicePtr)->ReleaseDeferredContext((ID3D11DeviceContext*)context);
-		return;
-	}
-
-	VERIFY(!"Unsupported");
-}
-
-IRHIStateManager* CRHI::CreateStateManager(void* context)
-{
-#ifdef IXR_WINDOWS
-    if (APILevel == ERHI_API_LAYER::D3D12)
-    {
-        R_ASSERT(!context || context == GetContext());
-        return static_cast<InternalDevice12*>(DevicePtr)->CreateStateManager();
-    }
-#endif
-	if (APILevel == ERHI_API_LAYER::D3D11)
-	{
-		auto* dxContext = context
-			? static_cast<ID3D11DeviceContext*>(context)
-			: static_cast<ID3D11DeviceContext*>(GetContext());
-
-		return new RHIStateManagerDX11(dxContext);
-	}
-
-	VERIFY(!"Unsupported");
-	return nullptr;
-}
-
-void CRHI::DestroyStateManager(IRHIStateManager* manager)
-{
-	xr_delete(manager);
-}
-
 void* CRHI::GetSwapchain()
 {
     return DevicePtr ? DevicePtr->GetSwapchain() : nullptr;
-}
-
-void CRHI::ClearRawTarget(void* Target, ERTColor Transparent)
-{
-	DevicePtr->ClearTarget(Target, Transparent);
 }
 
 void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
@@ -361,11 +299,6 @@ IRHISurface* CRHI::CreateRenderTarget(const RHITextureDesc& desc)
 	return DevicePtr->GetTextureFactory()->CreateRenderTarget(desc);
 }
 
-IRHISurface* CRHI::CreateDepthStencil(const RHITextureDesc& desc)
-{
-	return DevicePtr->GetTextureFactory()->CreateDepthStencil(desc);
-}
-
 IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc)
 {
     return DevicePtr->CreateShaderResourceView(Buffer, desc);
@@ -396,14 +329,9 @@ IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubreso
 	return DevicePtr->CreateBuffer(desc, pSubresource);
 }
 
-IRHIShaderDeclaration* CRHI::CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize)
+void CRHI::SetConstants(const RHIConstantWrite* Writes, u32 Count)
 {
-    return DevicePtr->CreateDecl(Desc, DeclSize);
-}
-
-void CRHI::SetConstantBuffers(u32 Start, u32 Count, IRHIBuffer* const* Buffers, ERHI_SHADER_TYPE Type)
-{
-    DevicePtr->SetConstantBuffers(Start, Count, Buffers, Type);
+    DevicePtr->SetConstants(Writes, Count);
 }
 
 void CRHI::GPUStatsBegin() const
@@ -486,24 +414,24 @@ void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 	DevicePtr->SetPrimitiveTopology(topology);
 }
 
-void CRHI::Draw(u32 startVertex, u32 primitiveCount)
+void CRHI::Draw(u32 VertexCount, u32 StartVertex)
 {
-	DevicePtr->Draw(startVertex, primitiveCount);
+	DevicePtr->Draw(VertexCount, StartVertex);
 }
 
-void CRHI::DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void CRHI::DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance)
 {
-	DevicePtr->DrawInstanced(startVertex, primitiveCount, instanceCount, startInstanceLocation);
+	DevicePtr->DrawInstanced(VertexCount, InstanceCount, StartVertex, StartInstance);
 }
 
-void CRHI::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+void CRHI::DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex)
 {
-	DevicePtr->DrawIndexed(baseVertex, startVertex, vertexCount, startIndex, primitiveCount);
+	DevicePtr->DrawIndexed(IndexCount, StartIndex, BaseVertex);
 }
 
-void CRHI::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void CRHI::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance)
 {
-	DevicePtr->DrawIndexedInstanced(baseVertex, startVertex, vertexCount, startIndex, primitiveCount, instanceCount, startInstanceLocation);
+	DevicePtr->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
 }
 
 void CRHI::DrawNoInputAssembly(u32 vertexCount)
@@ -550,11 +478,6 @@ HRESULT CRHI::ReplaceShader(RHIObject* shader, const void* code, size_t size)
 	return DevicePtr->ReplaceShader(shader, code, size);
 }
 
-HRESULT CRHI::BuildShader(const char* shader_dir, const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
-{
-	return ShaderCompiler->Build(shader_dir, srcData, srcSize, sourceName, defines, include, entryPoint, target, flags1, flags2, code, errors);
-}
-
 void CRHI::EvictManagedResources()
 {
 	DevicePtr->EvictManagedResources();
@@ -578,7 +501,6 @@ void CRHI::SetViewport(RHIViewport& VP)
 
 void CRHI::SetScissorRect(Irect* R)
 {
-	GRHI->StateManager->EnableScissoring(R != nullptr);
 	DevicePtr->SetScissorRect(R);
 }
 

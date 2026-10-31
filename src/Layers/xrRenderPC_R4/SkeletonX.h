@@ -218,8 +218,8 @@ public:
 		u32					RMS_bonecount;		// skinning, maximal bone ID
 	};
 
-	void _Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
-	void _Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
+	void _Render_soft(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
+	void _Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
 	void _Load(const char* N, IReader *data, u32& dwVertCount);
 	void _Load_hw(void* data);
 	void _CollectBoneFaces();
@@ -250,7 +250,7 @@ public:
 	virtual void Copy(dxRender_Visual* V);
 	virtual void Release();
 
-	virtual void Render(float LOD);
+	virtual void Render(GfxCmdList& Cmd, float LOD);
 	virtual void Load(const char* N, IReader* data, u32 dwFlags);
 
 	void SetParent(CKinematics* K) { Parent = K; }

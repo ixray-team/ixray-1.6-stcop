@@ -54,7 +54,7 @@ void CEStats::Show()
     }
 
     // calc FPS & TPS
-    CBackend::_stats& DPS = RCache.stat;
+    GfxCmdList::_stats& DPS = RImplementation.Imm().stat;
     if (EDevice->fTimeDelta > EPS_S)
     {
         float fps = 1.f / EDevice->fTimeDelta;

@@ -157,7 +157,7 @@ void CSector::Render(int priority, bool strictB2F)
 				EDevice->SetShader(GEditorDraw.WireShader);
 				EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
 
-				RCache.set_xform_world(Fidentity);
+				RImplementation.Imm().SetObjectTransform(Fidentity);
 				DU_impl.DrawSelectionBoxB(m_SectorBox);
 			}
 		}

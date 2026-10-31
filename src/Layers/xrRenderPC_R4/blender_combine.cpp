@@ -33,10 +33,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 
 		jitter(C);
 
-		C.r_dx10Sampler		("smp_nofilter");
-		C.r_dx10Sampler		("smp_material");
-		C.r_dx10Sampler		("smp_rtlinear");
-		C.r_dx10Sampler		("smp_linear");
 
 		C.r_End				();
 		break;
@@ -47,13 +43,9 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_image", r2_RT_generic0);
 		C.r_dx10Texture("s_distort", r2_RT_generic1);
 
-		C.r_dx10Texture("s_vollight", r2_RT_generic2);
-
 		C.r_dx10Texture("s_accumulator", r2_RT_wboit);
 		C.r_dx10Texture("s_refl", r2_RT_wboit_revealage);
 
-		C.r_dx10Sampler("smp_nofilter");
-		C.r_dx10Sampler("smp_rtlinear");
 		C.r_End();
 		break;
 
@@ -64,27 +56,27 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 
 		if (is_loot_present) 
 		{
-			RImplementation.addShaderOption("USE_LUT_TEXTURE", "1");
+			C.AddDefine("USE_LUT_TEXTURE", "1");
 		}
 
 		if (ps_r2_new_autoexposure)
 		{
-			RImplementation.addShaderOption("USE_NEW_ADAPT", "1");
+			C.AddDefine("USE_NEW_ADAPT", "1");
 		}
 
 		if (ps_r2_new_bloom_tonemap)
 		{
-			RImplementation.addShaderOption("USE_NEW_BLOOM", "1");
+			C.AddDefine("USE_NEW_BLOOM", "1");
 		}
 
 		if (ps_r2_crossfeed)
 		{
-			RImplementation.addShaderOption("USE_CROSSFEED", "1");
+			C.AddDefine("USE_CROSSFEED", "1");
 		}
 
 		if (ps_r2_vibrance)
 		{
-			RImplementation.addShaderOption("USE_VIBRANCE", "1");
+			C.AddDefine("USE_VIBRANCE", "1");
 		}
 		
 		C.r_Pass("stub_fullscreen_triangle", "combine_2", false, false, false);
@@ -100,8 +92,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 			C.r_dx10Texture("s_lut", "shaders\\lut");
 		}
 
-		C.r_dx10Sampler("smp_nofilter");
-		C.r_dx10Sampler("smp_rtlinear");
 		C.r_End();
 		break;
 	}
@@ -112,10 +102,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_smap", r2_RT_smap_depth);
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
 		
-		C.r_dx10Sampler("smp_rtlinear");
-		C.r_dx10Sampler("smp_smap");
-		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();
 	}
-	RImplementation.clearAllShaderOptions();
+	C.Defines.clear();
 }

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "dx10StateUtils.h"
 
-#include "Utils/dxHashHelper.h"
 
 namespace dx10StateUtils
 {
@@ -121,26 +120,6 @@ ERHI_BLEND_OP ConvertBlendOp(D3DBLENDOP Op)
 	}
 }
 
-ERHI_TEXTURE_ADDRESS_MODE ConvertTextureAddressMode(D3DTEXTUREADDRESS Mode)
-{
-	switch(Mode)
-	{
-	case D3DTADDRESS_WRAP:
-		return ERHI_TEXTURE_ADDRESS_MODE::WRAP;
-	case D3DTADDRESS_MIRROR:
-		return ERHI_TEXTURE_ADDRESS_MODE::MIRROR;
-	case D3DTADDRESS_CLAMP:
-		return ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
-	case D3DTADDRESS_BORDER:
-		return ERHI_TEXTURE_ADDRESS_MODE::BORDER;
-	case D3DTADDRESS_MIRRORONCE:
-		return ERHI_TEXTURE_ADDRESS_MODE::MIRROR_ONCE;
-	default:
-		VERIFY(!"ConvertTextureAddressMode can't convert argument!");
-		return ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
-	}
-}
-
 void ResetDescription( RHIRasterizerDesc &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
@@ -195,180 +174,6 @@ void ResetDescription( RHIBlendDesc &desc )
 		desc.RenderTarget[i].BlendEnable = false;
 		desc.RenderTarget[i].RenderTargetWriteMask = RHI_COLOR_WRITE_ENABLE_ALL;
 	}
-}
-
-void ResetDescription(RHISampleDesc& desc)
-{
-	ZeroMemory(&desc, sizeof(desc));
-
-	desc.Filter = ERHI_FILTER::MIN_MAG_MIP_LINEAR;
-	desc.AddressU = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
-	desc.AddressV = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
-	desc.AddressW = ERHI_TEXTURE_ADDRESS_MODE::CLAMP;
-	desc.MipLODBias = 0;
-	desc.MaxAnisotropy = 1;
-	desc.ComparisonFunc = ERHI_COMPARISON_FUNC::NEVER;
-	desc.BorderColor[0] = 1.0f;
-	desc.BorderColor[1] = 1.0f;
-	desc.BorderColor[2] = 1.0f;
-	desc.BorderColor[3] = 1.0f;
-	desc.MinLOD = -FLT_MAX;
-	desc.MaxLOD = FLT_MAX;
-}
-
-bool operator==(const RHIRasterizerDesc &desc1, const RHIRasterizerDesc &desc2)
-{
-	if (desc1.FillMode != desc2.FillMode) return false;
-	if (desc1.CullMode != desc2.CullMode) return false;
-	if (desc1.FrontCounterClockwise != desc2.FrontCounterClockwise) return false;
-	if (desc1.DepthBias != desc2.DepthBias) return false;
-	if (desc1.DepthBiasClamp != desc2.DepthBiasClamp) return false;
-	if (desc1.SlopeScaledDepthBias != desc2.SlopeScaledDepthBias) return false;
-	if (desc1.DepthClipEnable != desc2.DepthClipEnable) return false;
-	if (desc1.ScissorEnable != desc2.ScissorEnable) return false;
-	if (desc1.MultisampleEnable != desc2.MultisampleEnable) return false;
-	if (desc1.AntialiasedLineEnable != desc2.AntialiasedLineEnable) return false;
-
-	return true;
-}
-
-bool operator==(const RHIDepthStencilDesc &desc1, const RHIDepthStencilDesc &desc2)
-{
-	if ( desc1.DepthEnable != desc2.DepthEnable) return false;
-	
-	if (desc1.DepthEnable) {
-		if ( desc1.DepthWriteMask != desc2.DepthWriteMask) return false;
-		if ( desc1.DepthFunc != desc2.DepthFunc) return false;
-	}
-
-	if ( desc1.StencilEnable != desc2.StencilEnable) return false;
-
-	if (desc1.StencilEnable) {
-		if ( desc1.StencilReadMask != desc2.StencilReadMask) return false;
-		if ( desc1.StencilWriteMask != desc2.StencilWriteMask) return false;
-
-		if ( desc1.FrontFace.StencilFailOp != desc2.FrontFace.StencilFailOp) return false;
-		if ( desc1.FrontFace.StencilDepthFailOp != desc2.FrontFace.StencilDepthFailOp) return false;
-		if ( desc1.FrontFace.StencilPassOp != desc2.FrontFace.StencilPassOp) return false;
-		if ( desc1.FrontFace.StencilFunc != desc2.FrontFace.StencilFunc) return false;
-
-		if ( desc1.BackFace.StencilFailOp != desc2.BackFace.StencilFailOp) return false;
-		if ( desc1.BackFace.StencilDepthFailOp != desc2.BackFace.StencilDepthFailOp) return false;
-		if ( desc1.BackFace.StencilPassOp != desc2.BackFace.StencilPassOp) return false;
-		if ( desc1.BackFace.StencilFunc != desc2.BackFace.StencilFunc) return false;
-	}
-	
-	return true;
-}
-
-bool operator==(const RHIBlendDesc &desc1, const RHIBlendDesc &desc2)
-{
-	if ( desc1.AlphaToCoverageEnable != desc2.AlphaToCoverageEnable) return false;
-	if ( desc1.IndependentBlendEnable != desc2.IndependentBlendEnable) return false;
-	
-	for ( int i=0; i<4/*8*//*It's quick fix for dx11 port because of mispatch of desc*/; ++i)
-	{
-		if ( desc1.RenderTarget[i].SrcBlend != desc2.RenderTarget[i].SrcBlend) return false;
-		if ( desc1.RenderTarget[i].DestBlend != desc2.RenderTarget[i].DestBlend) return false;
-		if ( desc1.RenderTarget[i].BlendOp != desc2.RenderTarget[i].BlendOp) return false;
-		if ( desc1.RenderTarget[i].SrcBlendAlpha != desc2.RenderTarget[i].SrcBlendAlpha) return false;
-		if ( desc1.RenderTarget[i].DestBlendAlpha != desc2.RenderTarget[i].DestBlendAlpha) return false;
-		if ( desc1.RenderTarget[i].BlendOpAlpha != desc2.RenderTarget[i].BlendOpAlpha) return false;
-		if ( desc1.RenderTarget[i].BlendEnable!= desc2.RenderTarget[i].BlendEnable) return false;
-		if ( desc1.RenderTarget[i].RenderTargetWriteMask!= desc2.RenderTarget[i].RenderTargetWriteMask) return false;
-	}
-
-	return true;
-}
-
-u32 GetHash( const RHIRasterizerDesc &desc )
-{
-	dxHashHelper	Hash;
-
-	Hash.AddData( &desc.FillMode, sizeof(desc.FillMode) );
-	Hash.AddData( &desc.CullMode, sizeof(desc.CullMode) );
-	Hash.AddData( &desc.FrontCounterClockwise, sizeof(desc.FrontCounterClockwise) );
-	Hash.AddData( &desc.DepthBias, sizeof(desc.DepthBias) );
-	Hash.AddData( &desc.DepthBiasClamp, sizeof(desc.DepthBiasClamp) );
-	Hash.AddData( &desc.SlopeScaledDepthBias, sizeof(desc.SlopeScaledDepthBias) );
-	Hash.AddData( &desc.DepthClipEnable, sizeof(desc.DepthClipEnable) );
-	Hash.AddData( &desc.ScissorEnable, sizeof(desc.ScissorEnable) );
-	Hash.AddData( &desc.MultisampleEnable, sizeof(desc.MultisampleEnable) );
-	Hash.AddData( &desc.AntialiasedLineEnable, sizeof(desc.AntialiasedLineEnable) );
-	
-	return Hash.GetHash();
-}
-
-u32 GetHash( const RHIDepthStencilDesc &desc )
-{
-	dxHashHelper	Hash;
-
-	Hash.AddData( &desc.DepthEnable, sizeof(desc.DepthEnable) );
-	Hash.AddData( &desc.DepthWriteMask, sizeof(desc.DepthWriteMask) );
-	Hash.AddData( &desc.DepthFunc, sizeof(desc.DepthFunc) );
-	Hash.AddData( &desc.StencilEnable, sizeof(desc.StencilEnable) );
-	Hash.AddData( &desc.StencilReadMask, sizeof(desc.StencilReadMask) );
-	Hash.AddData( &desc.StencilWriteMask, sizeof(desc.StencilWriteMask) );
-
-	Hash.AddData( &desc.FrontFace.StencilFailOp, sizeof(desc.FrontFace.StencilFailOp) );
-	Hash.AddData( &desc.FrontFace.StencilDepthFailOp, sizeof(desc.FrontFace.StencilDepthFailOp) );
-	Hash.AddData( &desc.FrontFace.StencilPassOp, sizeof(desc.FrontFace.StencilPassOp) );
-	Hash.AddData( &desc.FrontFace.StencilFunc, sizeof(desc.FrontFace.StencilFunc) );
-
-	Hash.AddData( &desc.BackFace.StencilFailOp, sizeof(desc.BackFace.StencilFailOp) );
-	Hash.AddData( &desc.BackFace.StencilDepthFailOp, sizeof(desc.BackFace.StencilDepthFailOp) );
-	Hash.AddData( &desc.BackFace.StencilPassOp, sizeof(desc.BackFace.StencilPassOp) );
-	Hash.AddData( &desc.BackFace.StencilFunc, sizeof(desc.BackFace.StencilFunc) );
-
-	return Hash.GetHash();
-}
-
-u32 GetHash( const RHIBlendDesc &desc )
-{
-	dxHashHelper	Hash;
-
-	Hash.AddData( &desc.AlphaToCoverageEnable, sizeof(desc.AlphaToCoverageEnable) );
-	Hash.AddData( &desc.IndependentBlendEnable, sizeof(desc.IndependentBlendEnable) );
-
-	for ( int i=0; i<8; ++i)
-	{
-		Hash.AddData( &desc.RenderTarget[i].SrcBlend, sizeof(desc.RenderTarget[i].SrcBlend) );
-		Hash.AddData( &desc.RenderTarget[i].DestBlend, sizeof(desc.RenderTarget[i].DestBlend) );
-		Hash.AddData( &desc.RenderTarget[i].BlendOp, sizeof(desc.RenderTarget[i].BlendOp) );
-		Hash.AddData( &desc.RenderTarget[i].SrcBlendAlpha, sizeof(desc.RenderTarget[i].SrcBlendAlpha) );
-		Hash.AddData( &desc.RenderTarget[i].DestBlendAlpha, sizeof(desc.RenderTarget[i].DestBlendAlpha) );
-		Hash.AddData( &desc.RenderTarget[i].BlendOpAlpha, sizeof(desc.RenderTarget[i].BlendOpAlpha) );
-		Hash.AddData( &desc.RenderTarget[i].BlendEnable, sizeof(desc.RenderTarget[i].BlendEnable) );
-		Hash.AddData( &desc.RenderTarget[i].RenderTargetWriteMask, sizeof(desc.RenderTarget[i].RenderTargetWriteMask) );
-	}
-
-	return Hash.GetHash();
-}
-
-u32 GetHash(const RHISampleDesc& desc)
-{
-	dxHashHelper Hash;
-
-	Hash.AddData(&desc.Filter, sizeof(desc.Filter));
-	Hash.AddData(&desc.AddressU, sizeof(desc.AddressU));
-	Hash.AddData(&desc.AddressV, sizeof(desc.AddressV));
-	Hash.AddData(&desc.AddressW, sizeof(desc.AddressW));
-	//	Ignore anisotropy and bias since it's set up automatically by the manager
-	//Hash.AddData( &desc.MipLODBias, sizeof(desc.MipLODBias) );
-//	Hash.AddData( &desc.MaxAnisotropy, sizeof(desc.MaxAnisotropy) );
-	Hash.AddData(&desc.ComparisonFunc, sizeof(desc.ComparisonFunc));
-	Hash.AddData(&desc.BorderColor[0], sizeof(desc.BorderColor[0]));
-	Hash.AddData(&desc.BorderColor[1], sizeof(desc.BorderColor[1]));
-	Hash.AddData(&desc.BorderColor[2], sizeof(desc.BorderColor[2]));
-	Hash.AddData(&desc.BorderColor[3], sizeof(desc.BorderColor[3]));
-	Hash.AddData(&desc.MinLOD, sizeof(desc.MinLOD));
-	Hash.AddData(&desc.MaxLOD, sizeof(desc.MaxLOD));
-
-	return Hash.GetHash();
-}
-
-void ValidateState(RHIRasterizerDesc &desc)
-{
 }
 
 void ValidateState(RHIDepthStencilDesc &desc)
@@ -466,24 +271,6 @@ void ValidateState(RHIBlendDesc &desc)
 				break;
 			}
 		}
-	}
-}
-
-void ValidateState(RHISampleDesc& desc)
-{
-	if ((desc.AddressU != ERHI_TEXTURE_ADDRESS_MODE::BORDER)
-		&& (desc.AddressV != ERHI_TEXTURE_ADDRESS_MODE::BORDER)
-		&& (desc.AddressW != ERHI_TEXTURE_ADDRESS_MODE::BORDER))
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			desc.BorderColor[i] = 0.0f;
-		}
-	}
-
-	if (desc.Filter != ERHI_FILTER::ANISOTROPIC && desc.Filter != ERHI_FILTER::COMPARISON_ANISOTROPIC)
-	{
-		desc.MaxAnisotropy = 1;
 	}
 }
 

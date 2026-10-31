@@ -32,16 +32,17 @@ namespace
 	class SubmitScope
 	{
 	public:
-		SubmitScope()
+		SubmitScope(GfxCmdList& Cmd)
+			: Cmd(Cmd)
 		{
 			for (u32 Index = 0; Index < 4; ++Index)
 			{
-				SavedRT[Index] = RCache.get_RT(Index);
-				RCache.set_RT(nullptr, Index);
+				SavedRT[Index] = Cmd.GetRenderTarget(Index);
+				Cmd.SetRenderTarget(nullptr, Index);
 			}
 
-			SavedZB = GRHI->GetDepthStencilView();
-			GRHI->SetDepthStencilView(nullptr);
+			SavedZB = Cmd.GetDepthStencil();
+			Cmd.SetDepthStencil(nullptr);
 
 			SavedPass = GEditorDraw.Pass;
 			GEditorDraw.Pass = EEditorDrawPass::Submit;
@@ -53,12 +54,13 @@ namespace
 
 			for (u32 Index = 0; Index < 4; ++Index)
 			{
-				RCache.set_RT(SavedRT[Index], Index);
+				Cmd.SetRenderTarget(SavedRT[Index], Index);
 			}
-			GRHI->SetDepthStencilView(SavedZB);
+			Cmd.SetDepthStencil(SavedZB);
 		}
 
 	private:
+		GfxCmdList& Cmd;
 		IRHIRenderTargetView* SavedRT[4] = {};
 		IRHIDepthStencilView* SavedZB = nullptr;
 		EEditorDrawPass SavedPass = EEditorDrawPass::Immediate;
@@ -112,7 +114,6 @@ namespace
 
 			C.r_Pass("stub_fullscreen_triangle", "editor_unlit", false, false, false);
 			C.r_dx10Texture("s_image", r2_RT_albedo);
-			C.r_dx10Sampler("smp_nofilter");
 			C.r_End();
 		}
 	};
@@ -147,26 +148,9 @@ namespace
 
 			C.r_Pass("stub_fullscreen_triangle", "editor_depth_upscale", false, false, true);
 			C.r_dx10Texture("s_position", r2_RT_P);
-			C.r_dx10Sampler("smp_nofilter");
 			C.r_End();
 		}
 	};
-}
-
-namespace
-{
-	// x: 1 in the unlit view (no weather): forward shaders that depend on the environment
-	// (water) show their base texture instead
-	class CEditorParamsBinder final : public RHIShaderConstant::Setup
-	{
-	public:
-		void setup() override
-		{
-			RCache.Constants.Write<CBEditor>().editor_params.set(RImplementation.EditorIsLit() ? 0.f : 1.f, 0.f, 0.f, 0.f);
-		}
-	};
-
-	CEditorParamsBinder EditorParamsBinder;
 }
 
 //---------------------------------------------------------------------------
@@ -174,8 +158,6 @@ namespace
 
 void CRender::EditorCreate()
 {
-	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("editor_params", &EditorParamsBinder);
-
 	EditorUnlitBlender = new CBlender_EditorUnlit();
 	EditorUnlitShader.create(EditorUnlitBlender);
 
@@ -214,10 +196,11 @@ bool CRender::EditorIsLit() const
 	return Environment.CurrentEnv != nullptr && Environment.Current[0] != nullptr && Environment.Current[1] != nullptr;
 }
 
-void CRender::EditorRenderUnlit()
+void CRender::EditorRenderUnlit(GfxCmdList& Cmd)
 {
 	ps_r_taa_jitter.set(0.f, 0.f, -1.f);
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+	Cmd.Constants.UpdateScreen();
 
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	GraphMain.View = nullptr;
@@ -227,23 +210,23 @@ void CRender::EditorRenderUnlit()
 	float ClearColor[4] = { EditorClearColor.r, EditorClearColor.g, EditorClearColor.b, EditorClearColor.a };
 
 	Target->phase_scene_prepare();
-	GRHI->ClearTarget(Target->rt_Color->pRT, ClearColor);
+	Cmd.ClearTarget(Target->rt_Color->pRT, ClearColor);
 
 	GraphMain.r_pmask(true, false, true);
 	phase = PHASE_NORMAL;
-	render_main(true);
+	render_main(Cmd, true);
 	GraphMain.r_pmask(true, false);
 
 	rmNormal();
 	{
-		CEditorFillModeScope FillModeScope(true);
-		Target->phase_scene_begin();
+		CEditorFillModeScope FillModeScope(Cmd, true);
+		Target->phase_scene_begin(Cmd);
 		GraphMain.r_dsgraph_render_hud();
-		Target->phase_scene_begin();
+		Target->phase_scene_begin(Cmd);
 		GraphMain.r_dsgraph_render_graph(0);
 		if (CDetailManager* SceneDetails = GetDetails())
 		{
-			SceneDetails->Render();
+			SceneDetails->Render(Cmd);
 		}
 		Target->phase_scene_end();
 	}
@@ -251,34 +234,33 @@ void CRender::EditorRenderUnlit()
 	if (EditorOcclusionCulling)
 	{
 		Target->copy_position();
-		EditorHiZ.Build();
+		EditorHiZ.Build(Cmd);
 	}
 
 	// Albedo into a target of the scene size, upscaled to the viewport at the end
-	const u32 Width = (u32)RCache.get_width();
-	const u32 Height = (u32)RCache.get_height();
+	const u32 Width = (u32)GfxCmdList::GetWidth();
+	const u32 Height = (u32)GfxCmdList::GetHeight();
 
-	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, nullptr);
+	Target->u_setrt(Cmd, Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, nullptr);
 	rmNormal();
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
-	RCache.set_ColorWriteEnable();
-	RCache.set_Element(EditorUnlitShader->E[0]);
-	RCache.set_Geometry(Target->FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(FALSE);
+	Cmd.SetColorWriteEnable();
+	Cmd.SetPass(EditorUnlitShader->E[0]);
+	Cmd.SetGeometry(Target->FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 
 	// Forward geometry (blended surfaces, particles)
 	GraphMain.r_pmask(false, true);
 	phase = PHASE_NORMAL;
-	render_main(false);
+	render_main(Cmd, false);
 
-	Target->u_setrt(Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, RDepth);
+	Target->u_setrt(Cmd, Width, Height, Target->rt_Generic_0->pRT, nullptr, nullptr, nullptr, RDepth);
 	rmNormal();
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Device.mView, Device.mProject);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 
 	// Helpers under the blended geometry
 	if (g_EditorRenderHost)
@@ -287,14 +269,14 @@ void CRender::EditorRenderUnlit()
 	}
 
 	{
-		CEditorFillModeScope FillModeScope(true);
+		CEditorFillModeScope FillModeScope(Cmd, true);
 		GraphMain.r_dsgraph_render_graph(1);
 		GraphMain.r_dsgraph_render_sorted(false);
 	}
 
 	GraphMain.r_pmask(true, false);
 
-	Target->PhaseEditorScale();
+	Target->PhaseEditorScale(Cmd);
 }
 
 //---------------------------------------------------------------------------
@@ -340,7 +322,7 @@ void CRender::model_Render(IRenderVisual* V, const Fmatrix& Transform, int Prior
 		return;
 	}
 
-	Models->Render((dxRender_Visual*)V, Transform, Priority, StrictB2F, LOD);
+	Models->Render(Imm(), (dxRender_Visual*)V, Transform, Priority, StrictB2F, LOD);
 }
 
 void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, float LOD)
@@ -363,19 +345,19 @@ void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, flo
 		return;
 	}
 
-	Models->RenderSingle((dxRender_Visual*)V, Transform, LOD);
+	Models->RenderSingle(Imm(), (dxRender_Visual*)V, Transform, LOD);
 }
 
 //---------------------------------------------------------------------------
 // Scene collection
 
-void CRender::EditorRenderMain(bool Deferred)
+void CRender::EditorRenderMain(GfxCmdList& Cmd, bool Deferred)
 {
 	GraphMain.marker++;
-	EditorCollect(Deferred, false);
+	EditorCollect(Cmd, Deferred, false);
 }
 
-void CRender::EditorRenderSubspace(CFrustum& Frustum)
+void CRender::EditorRenderSubspace(GfxCmdList& Cmd, CFrustum& Frustum)
 {
 	GraphMain.marker++;
 
@@ -383,7 +365,7 @@ void CRender::EditorRenderSubspace(CFrustum& Frustum)
 	ViewBase = Frustum;
 	GraphMain.View = &ViewBase;
 
-	EditorCollect(true, true);
+	EditorCollect(Cmd, true, true);
 
 	ViewBase = SavedView;
 	GraphMain.View = nullptr;
@@ -481,7 +463,7 @@ void CRender::EditorSyncLights()
 	}
 }
 
-void CRender::EditorCollect(bool Deferred, bool Shadows)
+void CRender::EditorCollect(GfxCmdList& Cmd, bool Deferred, bool Shadows)
 {
 	set_Object(nullptr);
 	// Normal (static) items and details apply the material without an object
@@ -490,7 +472,7 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 	// The editors control visibility themselves (their device flags have no rsDraw* bits)
 	if (g_EditorRenderHost)
 	{
-		SubmitScope Scope;
+		SubmitScope Scope(Cmd);
 		if (Shadows)
 		{
 			g_EditorRenderHost->SubmitShadowCasters();
@@ -574,7 +556,7 @@ void CRender::EditorCollect(bool Deferred, bool Shadows)
 //---------------------------------------------------------------------------
 // Output
 
-IRHIDepthStencilView* CRender::EditorOverlayDepth()
+IRHIDepthStencilView* CRender::EditorOverlayDepth(GfxCmdList& Cmd)
 {
 	if (!Target->rt_EditorOverlayDepth)
 	{
@@ -584,38 +566,39 @@ IRHIDepthStencilView* CRender::EditorOverlayDepth()
 	Target->copy_position();
 
 	IRHIDepthStencilView* Depth = Target->rt_EditorOverlayDepth->pZRT;
-	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), nullptr, nullptr, nullptr, nullptr, Depth);
+	Target->u_setrt(Cmd, Target->get_target_width(), Target->get_target_height(), nullptr, nullptr, nullptr, nullptr, Depth);
 	rmNormal();
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
-	RCache.set_Element(EditorDepthUpscaleShader->E[0]);
-	RCache.set_Geometry(Target->FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(FALSE);
+	Cmd.SetPass(EditorDepthUpscaleShader->E[0]);
+	Cmd.SetGeometry(Target->FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 
 	return Depth;
 }
 
 void CRender::EditorBeginOverlay()
 {
-	IRHIDepthStencilView* Depth = EditorOverlayDepth();
+	GfxCmdList& Cmd = Imm();
+	IRHIDepthStencilView* Depth = EditorOverlayDepth(Cmd);
 
 	ps_r_taa_jitter.set(0.f, 0.f, -1.f);
 	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+	Cmd.Constants.UpdateScreen();
 
-	Target->u_setrt(Target->get_target_width(), Target->get_target_height(), Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, Depth);
+	Target->u_setrt(Cmd, Target->get_target_width(), Target->get_target_height(), Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, Depth);
 	rmNormal();
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Device.mView, Device.mProject);
 
-	RCache.set_Stencil(FALSE);
-	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetStencil(FALSE);
+	Cmd.SetColorWriteEnable();
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 void CRender::EditorPresent(IRHIRenderTargetView* Destination)
 {
-	Target->PhaseGammaApply(Destination);
+	Target->PhaseGammaApply(Imm(), Destination);
 }

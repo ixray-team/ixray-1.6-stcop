@@ -1,0 +1,8 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="r1_distort" zfunc="always" zwrite="0">
+			<texture name="s_image" src="$user$generic0"/>
+			<texture name="s_distort" src="$user$generic1"/>
+		</pass>
+	</normal>
+</shader>

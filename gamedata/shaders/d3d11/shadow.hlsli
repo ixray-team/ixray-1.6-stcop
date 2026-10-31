@@ -4,16 +4,16 @@
 #include "common.hlsli"
 #include "pcf_filter.hlsli"
 
-Texture2DArray<float> s_smap_sun; //Sun, three cascades
-Texture2D<float> s_smap; //Point-spot, rain
+Texture2DArray<float> s_smap_sun : register(t50); //Sun, three cascades
+Texture2D<float> s_smap : register(t51); //Point-spot, rain
 
 
 
-SamplerComparisonState smp_smap;
+SamplerComparisonState smp_smap : register(s5);
 
-SamplerState smp_jitter;
-Texture2D jitter0;
-Texture2D jitter1;
+SamplerState smp_jitter : register(s6);
+Texture2D jitter0 : register(t52);
+Texture2D jitter1 : register(t53);
 
 //Calculates cascade indices
 bool calc_cascades(in float3 position, in float4x4 smap_vp_matrix[3], inout int cascade_index, inout float3 smap_texcoord)

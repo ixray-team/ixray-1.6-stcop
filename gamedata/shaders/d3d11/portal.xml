@@ -1,0 +1,5 @@
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="portal" ps="portal" zwrite="0" blend="srcalpha,invsrcalpha"/>
+	</normal>
+</shader>

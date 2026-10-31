@@ -69,12 +69,12 @@ extern RENDER_API CEditorDrawContext GEditorDraw;
 class CEditorFillModeScope
 {
 public:
-	explicit CEditorFillModeScope(bool Enable) :
-		Active(Enable && GEditorDraw.FillMode != D3DFILL_SOLID)
+	explicit CEditorFillModeScope(GfxCmdList& Cmd, bool Enable) :
+		Cmd(Cmd), Active(Enable && GEditorDraw.FillMode != D3DFILL_SOLID)
 	{
 		if (Active)
 		{
-			RCache.set_FillModeOverride(true, GEditorDraw.FillMode);
+			Cmd.SetFillModeOverride(true, GEditorDraw.FillMode);
 		}
 	}
 
@@ -82,7 +82,7 @@ public:
 	{
 		if (Active)
 		{
-			RCache.set_FillModeOverride(false, D3DFILL_SOLID);
+			Cmd.SetFillModeOverride(false, D3DFILL_SOLID);
 		}
 	}
 
@@ -90,5 +90,6 @@ public:
 	CEditorFillModeScope& operator=(const CEditorFillModeScope&) = delete;
 
 private:
+	GfxCmdList& Cmd;
 	bool Active;
 };

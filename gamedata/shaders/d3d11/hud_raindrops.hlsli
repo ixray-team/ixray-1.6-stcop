@@ -2,7 +2,7 @@
 #define HUD_RAINDROPS_HLSLI
 
 // r: lifetime, g: normal Y, b: normal X, a: phase
-Texture2D s_hud_rain;
+Texture2D s_hud_rain : register(t28);
 
 static const float kHudRainDensity = 0.225f;
 static const float kHudRainUvScale = 1.25f;

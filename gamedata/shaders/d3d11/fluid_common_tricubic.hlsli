@@ -1,6 +1,6 @@
 /////////////////////////////////
 // BEGIN Custom Sampling Functions
-Texture1D HHGGTex;
+Texture1D HHGGTex : register(t8);
 
 // cubic b-spline
 float bsW0(float a)

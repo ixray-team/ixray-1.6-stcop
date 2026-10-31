@@ -25,6 +25,8 @@ struct R_CullTLS
 
 extern thread_local R_CullTLS g_r_cull_tls;
 
+class GfxCmdList;
+
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//
 //////////////////////////////////////////////////////////////////////////
@@ -41,13 +43,12 @@ class R_dsgraph_structure
 {
 public:
 	CFrustum* View = nullptr;
+	GfxCmdList* Backend = nullptr;
 	IRenderable*												val_pObject;
 	Fmatrix*													val_pTransform;
-	Fmatrix*													val_pLocalTransform;
 	bool														val_bHUD;
 	bool														val_bUI;
 	bool														val_bInvisible;
-	bool														val_bRecordMP;		// record nearest for multi-pass
 
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
 	u32															val_feedback_breakp;// breakpoint
@@ -75,14 +76,11 @@ public:
 	R_dsgraph::mapHUD_T											mapHUDScopeMask;
 	R_dsgraph::mapSorted_T										mapHUDDistort;
 
-	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
 	xr_vector<ISpatialShared>				lstRenderables;
 	xr_vector<ISpatialShared>				lstRenderablesMain;
 	xr_vector<ISpatialShared>				lstSpatial	;
 	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstVisuals	;
-
-	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstRecorded	;
 
 	u32															counter_S	;
 	u32															counter_D	;
@@ -104,7 +102,6 @@ public:
 		val_bHUD			= false	;
 		val_bUI				= false	;
 		val_bInvisible		= false	;
-		val_bRecordMP		= false	;
 		val_feedback		= 0;
 		val_feedback_breakp	= 0;
 		r_pmask				(true,true);
@@ -113,13 +110,10 @@ public:
 
 	void r_dsgraph_destroy()
 	{
-		lstLODs.clear();
 		lstLODgroups.clear();
 		lstRenderables.clear();
 		lstSpatial.clear();
 		lstVisuals.clear();
-
-		lstRecorded.clear();
 
 		for (int i = 0; i < SHADER_PASSES_MAX; ++i)
 		{

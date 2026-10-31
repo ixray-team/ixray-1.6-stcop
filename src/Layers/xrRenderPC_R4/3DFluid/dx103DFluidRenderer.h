@@ -24,7 +24,7 @@ public:
 
 	void	SetScreenSize(int width, int height);
 
-	void	Draw(const dx103DFluidData &FluidData);
+	void	Draw(GfxCmdList& Cmd, const dx103DFluidData &FluidData);
 
 	static const char**	GetRTNames() { return m_pRTNames; }
 	static const char**	GetResourceRTNames() { return m_pResourceRTNames; }
@@ -64,15 +64,15 @@ private:
 	void	CalculateRenderTextureSize(int screenWidth, int screenHeight);
 	void	CreateRayDataResources( int width, int height );
 
-	void	ComputeRayData(const dx103DFluidData& FluidData);
-	void	ComputeEdgeTexture(const dx103DFluidData& FluidData);
+	void	ComputeRayData(GfxCmdList& Cmd, const dx103DFluidData& FluidData);
+	void	ComputeEdgeTexture(GfxCmdList& Cmd, const dx103DFluidData& FluidData);
 
-	void	DrawScreenQuad();
-	void	DrawBox();
+	void	DrawScreenQuad(GfxCmdList& Cmd);
+	void	DrawBox(GfxCmdList& Cmd);
 
 	void	CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData);
 
-	void	Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly);
+	void	Prepare(GfxCmdList& Cmd, const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly);
 
 private:
 	bool		m_bInited;

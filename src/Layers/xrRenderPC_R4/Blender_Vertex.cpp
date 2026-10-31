@@ -59,7 +59,7 @@ void CBlender_Vertex::Compile	(CBlender_Compile& C)
 	{
 		switch (C.iElement)
 		{
-		case SE_R1_NORMAL_HQ:
+		case ShaderVariant::NormalHQ:
 			// Level view
 			if (C.bDetail_Diffuse)
 			{
@@ -73,27 +73,27 @@ void CBlender_Vertex::Compile	(CBlender_Compile& C)
 				C.r_End		();
 			}
 			break;
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			// Level view
 			C.r_Pass	("vert","vert",true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			C.r_End		();
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			C.r_Pass		("vert_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", TEX_POINT_ATT, true);
 			r1_tex(C, "s_att", TEX_POINT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			C.r_Pass		("vert_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", "internal\\internal_light_att", true, true);
 			r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			// Lighting only
 			C.r_Pass		("vert_l","vert_l",false);
 			r1_tex(C, "s_base", C.L_textures[0]);

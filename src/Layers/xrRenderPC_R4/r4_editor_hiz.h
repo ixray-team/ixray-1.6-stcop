@@ -16,7 +16,7 @@ public:
 	~CEditorHiZ();
 
 	void Destroy();
-	void Build();
+	void Build(GfxCmdList& Cmd);
 	void Fetch();
 	bool IsVisible(const Fbox& Box) const;
 

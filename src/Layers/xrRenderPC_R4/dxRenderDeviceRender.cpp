@@ -74,18 +74,19 @@ void dxRenderDeviceRender::updateGamma()
 
 void dxRenderDeviceRender::OnDeviceDestroy( bool bKeepTextures)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	Resources->WaitForTextureLoading();
 #ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
 #endif // #ifdef DEBUG_DRAW
 
-	RCache.Invalidate();
+	Cmd.Invalidate();
 
 	m_WireShader.destroy();
 	m_SelectionShader.destroy();
 
 	Resources->OnDeviceDestroy( bKeepTextures);
-	RCache.OnDeviceDestroy();
+	Cmd.OnDeviceDestroy();
 }
 
 void dxRenderDeviceRender::ValidateHW()
@@ -95,7 +96,7 @@ void dxRenderDeviceRender::ValidateHW()
 void dxRenderDeviceRender::DestroyHW()
 {
 	xr_delete(Resources);
-	SSManager.ClearStateArray();
+	SSManager.Destroy();
 	CImGuiManager::Instance().Destroy(true);
 }
 
@@ -130,16 +131,13 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 void dxRenderDeviceRender::SetupStates()
 {
 	Caps.Update();
-
-	//	TODO: DX10: Implement Resetting of render states into default mode
-	// SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
-	// SSManager.SetMipLodBias(ps_r__tf_Mipbias);
 }
 
 void dxRenderDeviceRender::OnDeviceCreate(const char* shName)
 {
+	SSManager.Create();
 	// Signal everyone - device created
-	RCache.OnDeviceCreate		();
+	RImplementation.Imm().OnDeviceCreate		();
 	m_Gamma.Update				();
 	Resources->OnDeviceCreate	(shName);
 	::Render->create			();
@@ -230,23 +228,24 @@ bool dxRenderDeviceRender::GetForceGPU_REF()
 
 u32 dxRenderDeviceRender::GetCacheStatPolys()
 {
-	return RCache.stat.polys;
+	return RImplementation.Imm().Stats.Polys;
 }
 
 void dxRenderDeviceRender::GetCacheStats(u32& calls, u32& verts, u32& polys, u32& static_dips)
 {
-	calls		= RCache.stat.calls;
-	verts		= RCache.stat.verts;
-	polys		= RCache.stat.polys;
-	static_dips	= RCache.stat.r.s_static.dips;
+	GfxCmdList& Cmd = RImplementation.Imm();
+	calls		= Cmd.Stats.Calls;
+	verts		= 0;
+	polys		= Cmd.Stats.Polys;
+	static_dips	= 0;
 }
 
 void dxRenderDeviceRender::Begin()
 {
-
-	RCache.OnFrameBegin();
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Z(true);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.OnFrameBegin();
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetDepthEnable(true);
 
 	if (Resources)
 	{
@@ -260,11 +259,11 @@ void dxRenderDeviceRender::Begin()
 
 void dxRenderDeviceRender::Clear()
 {
-	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
+	RImplementation.Imm().ClearDepthStencil(RImplementation.Imm().GetDepthStencil(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
-		GRHI->ClearTarget(RCache.get_RT());
+		RImplementation.Imm().ClearTarget(RImplementation.Imm().GetRenderTarget());
 	}
 }
 
@@ -272,13 +271,13 @@ void DoAsyncScreenshot();
 
 void dxRenderDeviceRender::End()
 {
-
+	GfxCmdList& Cmd = RImplementation.Imm();
 	{
 		GPU_EVENT(GAMMA_APPLY);
-		RImplementation.Target->PhaseGammaApply();
+		RImplementation.Target->PhaseGammaApply(Cmd);
 	}
 
-	RCache.OnFrameEnd();
+	Cmd.OnFrameEnd();
 	{
 		PROF_EVENT("Async Screenshot");
 		DoAsyncScreenshot();
@@ -289,8 +288,8 @@ void dxRenderDeviceRender::End()
 		CImGuiManager& MyImGui = CImGuiManager::Instance();
 		MyImGui.BeginRender();
 
-		//GRHI->SetDepthStencilView(RDepth);
-		GRHI->SetRenderTargetView(RSwapchainTarget, 0, true);
+		//Cmd.SetDepthStencil(RDepth);
+		Cmd.SetRenderTarget(RSwapchainTarget, 0, true);
 
 		MyImGui.Render();
 		MyImGui.AfterRender();
@@ -300,8 +299,8 @@ void dxRenderDeviceRender::End()
 	}
 #else
 
-	//GRHI->SetDepthStencilView(RDepth);
-	GRHI->SetRenderTargetView(RTarget, 0, true);
+	//Cmd.SetDepthStencil(RDepth);
+	Cmd.SetRenderTarget(RTarget, 0, true);
 
 #endif
 
@@ -324,13 +323,13 @@ void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 
 void dxRenderDeviceRender::ClearTarget()
 {
-	GRHI->ClearTarget(RCache.get_RT());
+	RImplementation.Imm().ClearTarget(RImplementation.Imm().GetRenderTarget());
 }
 
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
-	RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
-	GRHI->SetDepthStencilView(nullptr);
+	RImplementation.Imm().SetRenderTarget(RImplementation.Target->rt_BackbufferLUT->pRT);
+	RImplementation.Imm().SetDepthStencil(nullptr);
 }
 
 void dxRenderDeviceRender::InvalidateRenderCache()
@@ -339,16 +338,16 @@ void dxRenderDeviceRender::InvalidateRenderCache()
 	IRHIRenderTargetView* Targets[RHI_MAX_RENDER_TARGETS]{};
 	for (u32 Index = 0; Index < RHI_MAX_RENDER_TARGETS; ++Index)
 	{
-		Targets[Index] = GRHI->GetRenderTargetView(Index);
+		Targets[Index] = RImplementation.Imm().GetRenderTarget(Index);
 	}
-	auto* Depth = GRHI->GetDepthStencilView();
-	RCache.Invalidate();
+	auto* Depth = RImplementation.Imm().GetDepthStencil();
+	RImplementation.Imm().Invalidate();
 	for (u32 Index = 0; Index < RHI_MAX_RENDER_TARGETS; ++Index)
 	{
-		GRHI->SetRenderTargetView(Targets[Index], Index);
+		RImplementation.Imm().SetRenderTarget(Targets[Index], Index);
 	}
-	GRHI->SetDepthStencilView(Depth);
-	GRHI->ApplyRenderTargetChange();
+	RImplementation.Imm().SetDepthStencil(Depth);
+	RImplementation.Imm().ApplyRenderTargets();
 }
 
 UIIconLighting* dxRenderDeviceRender::GetUIIconLighting()
@@ -358,14 +357,14 @@ UIIconLighting* dxRenderDeviceRender::GetUIIconLighting()
 
 void dxRenderDeviceRender::SetCacheXform(Fmatrix &mView, Fmatrix &mProject)
 {
-	RCache.set_xform_view(mView);
-	RCache.set_xform_project(mProject);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.SetView(mView, mProject);
 }
 
 void dxRenderDeviceRender::SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject)
 {
-	RCache.set_xform_view_old(mView);
-	RCache.set_xform_project_old(mProject);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.SetView({ Cmd.GetView().View, Cmd.GetView().Project, mView, mProject });
 }
 
 bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()

@@ -30,10 +30,6 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 
 	jitter(C);
 
-	C.r_dx10Sampler("smp_nofilter");
-	C.r_dx10Sampler("smp_material");
-	C.r_dx10Sampler("smp_linear");
-	C.r_dx10Sampler("smp_smap");
 
 	C.r_End();
 }

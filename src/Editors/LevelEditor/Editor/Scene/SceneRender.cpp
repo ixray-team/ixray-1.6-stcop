@@ -82,7 +82,7 @@ void EScene::Render(const Fmatrix& camera)
 		for (; s_it != s_end; s_it++)
 		{
 			EDevice->SetShader(B ? GEditorDraw.SelectionShader : GEditorDraw.WireShader);
-			RCache.set_xform_world(Fidentity);
+			RImplementation.Imm().SetObjectTransform(Fidentity);
 			(*s_it)->OnRenderRoot(P, B);
 		}
 	};

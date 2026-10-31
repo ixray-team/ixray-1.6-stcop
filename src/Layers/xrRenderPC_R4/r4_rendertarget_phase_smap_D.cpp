@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
+void CRenderTarget::phase_smap_direct(GfxCmdList& Cmd, light* L, u32 sub_phase)
 {
-	u_setrt(nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
-	GRHI->ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+	u_setrt(Cmd, nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
+	Cmd.ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 	
 	//	Prepare viewport for shadow map rendering
 	if(sub_phase != SE_SUN_RAIN_SMAP)
@@ -20,17 +20,17 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 			0.0f, 1.0f
 		};
 
-		GRHI->SetViewport(VP);
+		Cmd.SetViewport(VP);
 	}
 
 	// Stencil	- disable
-	RCache.set_Stencil(false);
+	Cmd.SetStencil(false);
 }
 
-void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
+void CRenderTarget::phase_smap_direct_tsh(GfxCmdList& Cmd, light* L, u32 sub_phase)
 {
-	RCache.set_ColorWriteEnable();
+	Cmd.SetColorWriteEnable();
 	RImplementation.rmNormal();
 
-	GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
+	Cmd.ClearTarget(Cmd.GetRenderTarget(), ERTColor::Black);
 }

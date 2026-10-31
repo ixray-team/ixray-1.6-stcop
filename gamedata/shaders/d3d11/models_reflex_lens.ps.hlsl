@@ -20,8 +20,8 @@ struct vf
 	float3 P : TEXCOORD4;
 };
 
-TextureCube	s_env0;
-TextureCube	s_env1;
+TextureCube	s_env0 : register(t26);
+TextureCube	s_env1 : register(t49);
 
 float3 sample_sky(float3 dir)
 {

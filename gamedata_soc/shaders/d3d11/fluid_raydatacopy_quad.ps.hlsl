@@ -1,8 +1,0 @@
-#include "fluid_common_render.hlsli"
-
-//	Pixel
-//	TODO: DX10: replace WorldViewProjection with m_WVP
-float4 main(PS_INPUT_RAYCAST input) : SV_Target
-{
-    return rayDataTex.Sample(samPointClamp, float2(input.pos.x / RTWidth, input.pos.y / RTHeight));
-}

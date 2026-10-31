@@ -29,7 +29,6 @@ static void WipeMap(FixedMAP<K, T, A>& m);
 
 static void WipeMap(R_dsgraph::mapNormalAdvStages& s);
 static void WipeMap(R_dsgraph::mapMatrixAdvStages& s);
-static void WipeMap(R_dsgraph::mapMatrixItems& i);
 
 template <class T>
 static void WipeMap(T& v)
@@ -57,12 +56,6 @@ static void WipeMap(R_dsgraph::mapMatrixAdvStages& s)
 	WipeMap(s.mapCS);
 }
 
-static void WipeMap(R_dsgraph::mapMatrixItems& i)
-{
-	i.visuals.clear();
-	i.particles.clear();
-}
-
 void R_dsgraph_structure::r_dsgraph_clear_passes()
 {
 	for (u32 i = 0; i < 2; ++i)
@@ -83,7 +76,6 @@ void R_dsgraph_structure::r_dsgraph_clear_aux()
 	mapEmissive.clear();
 	mapLOD.clear();
 	mapWmark.clear();
-	lstLODs.clear();
 	lstLODgroups.clear();
 }
 
@@ -92,12 +84,13 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	PROF_EVENT("r_dsgraph_render_graph");
 	//GPU_EVENT(r_dsgraph_render_graph);
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
+	GfxCmdList& Cmd = *Backend;
 
 	// **************************************************** NORMAL
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	{
-		RCache.set_xform_world			(Fidentity);
+		Cmd.SetObjectTransform(Fidentity);
 		{
 			// Render several passes
 			PROF_EVENT("NORMAL_SHADER_PASSES");
@@ -107,49 +100,48 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 				mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
 				for (mapNormalVS::TNode& Nvs : vs)
 				{
-					RCache.set_VS					(Nvs.key);
+					Cmd.SetVS					(Nvs.key);
 	
 					//	GS setup
 					mapNormalGS&		gs			= Nvs.val;
 					for (mapNormalGS::TNode& Ngs : gs)
 					{
-						GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
+						Cmd.SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 						mapNormalPS&		ps			= Ngs.val;
 						for (mapNormalPS::TNode& Nps : ps)
 						{
-							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
+							Cmd.SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
 							mapNormalCS&		cs			= Nps.val.mapCS;
-							GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-							GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
+							Cmd.SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+							Cmd.SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
 							for (mapNormalCS::TNode& Ncs : cs)
 							{
-								RCache.set_Constants			(Ncs.key);
+								Cmd.SetConstantTable			(Ncs.key);
 	
 								mapNormalStates&	states		= Ncs.val;
 								for (mapNormalStates::TNode& Nstate : states)
 								{
-									RCache.set_States					(Nstate.key);
+									Cmd.SetStates					(Nstate.key);
 	
 									mapNormalTextures&		tex			= Nstate.val;
 									for (mapNormalTextures::TNode& Ntex : tex)
 									{
-										RCache.set_Textures					(Ntex.key);
-										RImplementation.apply_lmaterial		();
+										Cmd.SetTextures					(Ntex.key);
+										RImplementation.apply_lmaterial		(Cmd);
 	
 										mapNormalItems&				items	= Ntex.val;
 										for (_NormalItem& Ni : items)
 										{
 											float LOD = calcLOD(Ni.ssa, Ni.R);
-											RCache.Constants.SetLOD(LOD);
+											Cmd.Constants.SetLOD(LOD);
 											if (Ni.geom)
 											{
-												RCache.set_Geometry(Ni.geom);
-												RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Ni.vBase, 0, Ni.vCount, Ni.iBase, Ni.pCount);
-												RCache.stat.r.s_static.add(Ni.vCount);
+												Cmd.SetGeometry(Ni.geom);
+												Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Ni.pCount * 3, Ni.iBase, Ni.vBase);
 											}
 											else
 											{
-												Ni.pVisual->Render(LOD);
+												Ni.pVisual->Render(Cmd, LOD);
 											}
 										}
 										if(_clear)items.clear();
@@ -176,59 +168,48 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 			mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
 			for (mapMatrixVS::TNode& Nvs : vs)
 			{
-				RCache.set_VS					(Nvs.key);	
+				Cmd.SetVS					(Nvs.key);	
 				mapMatrixGS&		gs			= Nvs.val;
 				for (mapMatrixGS::TNode& Ngs : gs)
 				{
-					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
+					Cmd.SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 	
 					mapMatrixPS&		ps			= Ngs.val;
 					for (mapMatrixPS::TNode& Nps : ps)
 					{
-						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
+						Cmd.SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
 						mapMatrixCS&		cs			= Nps.val.mapCS;
-						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
+						Cmd.SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+						Cmd.SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
 						for (mapMatrixCS::TNode& Ncs : cs)
 						{
-							RCache.set_Constants			(Ncs.key);
+							Cmd.SetConstantTable			(Ncs.key);
 	
 							mapMatrixStates&	states		= Ncs.val;
 							for (mapMatrixStates::TNode& Nstate : states)
 							{
-								RCache.set_States					(Nstate.key);
+								Cmd.SetStates					(Nstate.key);
 	
 								mapMatrixTextures&		tex			= Nstate.val;
 								for (mapMatrixTextures::TNode& Ntex : tex)
 								{
-									RCache.set_Textures					(Ntex.key);
+									Cmd.SetTextures					(Ntex.key);
 	
 									mapMatrixItems& items = Ntex.val;
-									auto& visuals = items.visuals;
-									if(!visuals.empty())
+									for (_MatrixItem& Ni : items)
 									{
-										for (_MatrixItem& Ni : visuals)
+										if (Ni.pVisual->shader == nullptr)
 										{
-											if (Ni.pVisual->shader == nullptr)
-											{
-												continue;
-											}
-											RCache.set_xform_world(Ni.Matrix);
-											RImplementation.apply_object(Ni.pObject);
-											RImplementation.apply_lmaterial();
+											continue;
+										}
+										Cmd.SetObjectTransform(Ni.Matrix);
+										RImplementation.apply_object(Cmd, Ni.pObject);
+										RImplementation.apply_lmaterial(Cmd);
 	
-											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-											RCache.Constants.SetLOD(LOD);
-											Ni.pVisual->Render(LOD);
-										}if (_clear)items.visuals.clear();
-										continue;
-									}
-	
-									auto& particles = items.particles;
-									for (dxRender_Visual* pVisual : particles)
-										pVisual->Render(0);
-									if (_clear)items.particles.clear();
-	
+										float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
+										Cmd.Constants.SetLOD(LOD);
+										Ni.pVisual->Render(Cmd, LOD);
+									}if (_clear) items.clear();
 								}if(_clear) tex.clear();
 							}if(_clear) states.clear();
 						}if(_clear) cs.clear();
@@ -239,64 +220,59 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
-ICF void RenderNode(mapSorted_Node& N, bool emissive = false)
+ICF void RenderNode(GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
 {
 	dxRender_Visual* V = N.val.pVisual;
 
 	VERIFY(V && V->shader._get());
-	RCache.set_Element(N.val.se);
+	Cmd.SetPass(N.val.se);
 
-	if (RCache.get_c("ui_emissive_tint")._get())
+	const auto* Settings = RImplementation.GraphMain.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
+	Hlsl::float4& Tint = Cmd.Constants.Write<CBUIIcon>().ui_emissive_tint;
+	if (Settings)
 	{
-		const auto* Settings = RImplementation.GraphMain.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
-		Hlsl::float4& Tint = RCache.Constants.Write<CBUIIcon>().ui_emissive_tint;
-		if (Settings)
-		{
-			Tint.set(Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, 1.0f);
-		}
-		else
-		{
-			Tint.set(1.0f, 1.0f, 1.0f, 1.0f);
-		}
+		Tint.set(Settings->Color.x * Settings->Intensity, Settings->Color.y * Settings->Intensity, Settings->Color.z * Settings->Intensity, 1.0f);
+	}
+	else
+	{
+		Tint.set(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	if (emissive)
 	{
-		RCache.set_RenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		RCache.set_RenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-		RCache.set_RenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+		Cmd.SetBlend(true, D3DBLEND_ONE, D3DBLEND_ONE);
+		Cmd.SetColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 	}
 	else if (RImplementation.GraphMain.val_bUI && N.val.se->flags.bEmissive)
 	{
-		RCache.set_ColorWriteEnable();
-		RCache.set_RenderState(D3DRS_ZWRITEENABLE, TRUE);
+		Cmd.SetColorWriteEnable();
+		Cmd.SetDepthWrite(true);
 	}
 
 	if (V->dcast_ParticleCustom())
 	{
-		V->Render(0);
+		V->Render(Cmd, 0);
 		return;
 	}
 
-	RCache.set_xform_world(N.val.Matrix);
+	Cmd.SetObjectTransform(N.val.Matrix);
 
-	RImplementation.apply_object(N.val.pObject);
-	RImplementation.apply_lmaterial();
+	RImplementation.apply_object(Cmd, N.val.pObject);
+	RImplementation.apply_lmaterial(Cmd);
 
-	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
+	V->Render(Cmd, calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
-ICF void sorted_L1(mapSorted_Node* N)
+ICF void sorted_L1(GfxCmdList& Cmd, mapSorted_Node* N)
 {
-	RenderNode(*N);
+	RenderNode(Cmd, *N);
 }
 
-ICF void RenderMap(mapSorted_T& Map, bool emissive = false)
+ICF void RenderMap(GfxCmdList& Cmd, mapSorted_T& Map, bool emissive = false)
 {
 	for (auto& Node : Map)
 	{
-		RenderNode(Node, emissive);
+		RenderNode(Cmd, Node, emissive);
 	}
 
 	Map.clear();
@@ -304,23 +280,26 @@ ICF void RenderMap(mapSorted_T& Map, bool emissive = false)
 
 void R_dsgraph_structure::r_dsgraph_render_ui()
 {
-	RenderMap(mapUI);
+	GfxCmdList& Cmd = *Backend;
+	RenderMap(Cmd, mapUI);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
-	RenderMap(mapUIEmissive);
+	GfxCmdList& Cmd = *Backend;
+	RenderMap(Cmd, mapUIEmissive);
 
-	mapUISorted.traverseRL(sorted_L1);
+	mapUISorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
 	mapUISorted.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
 	PROF_EVENT("r_dsgraph_render_hud");
-	CHudInitializer initalizer(true, true);
+	GfxCmdList& Cmd = *Backend;
+	CHudInitializer initalizer(Cmd, true, true);
 
-	RenderMap(mapHUD);
+	RenderMap(Cmd, mapHUD);
 
 }
 
@@ -329,7 +308,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 	PROF_EVENT("r_dsgraph_render_hud_ui");
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
-	CHudInitializer initalizer(true, true);
+	GfxCmdList& Cmd = *Backend;
+	CHudInitializer initalizer(Cmd, true, true);
 
 
 	g_hud->RenderActiveItemUI();
@@ -338,8 +318,9 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 {
 	PROF_EVENT("r_dsgraph_render_sorted");
+	GfxCmdList& Cmd = *Backend;
 
-	mapSorted.traverseRL(sorted_L1);
+	mapSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
 	mapSorted.clear();
 
 	if (render_hud)
@@ -352,53 +333,58 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 {
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
-	CHudInitializer initalizer(true, true);
-	auto velocity_target = RCache.get_RT(1);
-	RCache.set_RT(nullptr, 1);
-	RenderMap(mapHUDEmissive, true);
-	RCache.set_RT(velocity_target, 1);
+	GfxCmdList& Cmd = *Backend;
+	CHudInitializer initalizer(Cmd, true, true);
+	auto velocity_target = Cmd.GetRenderTarget(1);
+	Cmd.SetRenderTarget(nullptr, 1);
+	RenderMap(Cmd, mapHUDEmissive, true);
+	Cmd.SetRenderTarget(velocity_target, 1);
 
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
 	{
 		r_dsgraph_render_hud_ui();
 	}
 
-	mapHUDSorted.traverseRL(sorted_L1);
+	mapHUDSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
 	mapHUDSorted.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
 	PROF_EVENT("r_dsgraph_render_emissive");
+	GfxCmdList& Cmd = *Backend;
 
-	RenderMap(mapEmissive);
+	RenderMap(Cmd, mapEmissive);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_scope()
 {
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
+	GfxCmdList& Cmd = *Backend;
 	RImplementation.Target->copy_position();
 
-	RImplementation.Target->u_setrt(NULL, NULL, RDepth);
+	RImplementation.Target->u_setrt(Cmd, NULL, NULL, RDepth);
 
-	CHudInitializer initalizer(true);
-	RenderMap(mapHUDScopeMask);
+	CHudInitializer initalizer(Cmd, true);
+	RenderMap(Cmd, mapHUDScopeMask);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
 	PROF_EVENT("r_dsgraph_render_wmarks");
+	GfxCmdList& Cmd = *Backend;
 
-	RenderMap(mapWmark);
+	RenderMap(Cmd, mapWmark);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_distort()
 {
 	PROF_EVENT("r_dsgraph_render_distort");
-	RenderMap(mapDistort);
+	GfxCmdList& Cmd = *Backend;
+	RenderMap(Cmd, mapDistort);
 
-	CHudInitializer initalizer(true, true);
-	RenderMap(mapHUDDistort);
+	CHudInitializer initalizer(Cmd, true, true);
+	RenderMap(Cmd, mapHUDDistort);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -410,7 +396,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 	{
 		CFrustum	EditorFrustum;
 		EditorFrustum.CreateFromMatrix	(mCombined,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
-		RImplementation.EditorRenderSubspace(EditorFrustum);
+		RImplementation.EditorRenderSubspace(*Backend, EditorFrustum);
 		return;
 	}
 
@@ -426,7 +412,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	PROF_EVENT("r_dsgraph_render_subspace")
 	if (Device.IsEditorMode())
 	{
-		RImplementation.EditorRenderSubspace(*_frustum);
+		RImplementation.EditorRenderSubspace(*Backend, *_frustum);
 		return;
 	}
 	VERIFY							(_sector);
@@ -575,6 +561,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB, int sh)
 {
+	GfxCmdList&	Cmd			= *Backend;
 	CSector*	S			= (CSector*)_S;
 	lstVisuals.clear		();
 	lstVisuals.push_back	(S->root());
@@ -676,8 +663,8 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 				{
 					for (u32 pass=0; pass<E_->passes.size(); pass++)
 					{
-						RCache.set_Element			(E_,pass);
-						V->Render					(-1.f);
+						Cmd.SetPass			(E_,pass);
+						V->Render					(Cmd, -1.f);
 					}
 				}
 			}

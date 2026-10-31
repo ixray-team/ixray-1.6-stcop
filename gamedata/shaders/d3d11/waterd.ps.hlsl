@@ -16,7 +16,7 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-Texture2D s_distort;
+Texture2D s_distort : register(t25);
 
 // Pixel
 float4 main(vf I) : SV_Target

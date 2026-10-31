@@ -1,0 +1,23 @@
+<shader r1_static="1">
+	<normal sort="2" strict="1" distort="1">
+		<pass vs="model_distort" ps="model_scope_lense_night" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_image" src="$user$accum"/>
+			<texture name="s_scope_ui" src="$user$ui_pda"/>
+		</pass>
+	</normal>
+	<l_special scope="1">
+		<pass vs="scope_lense_mask" ps="scope_lense_mask" zfunc="always">
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</l_special>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal sort="2" strict="1">
+			<pass vs="model_env_lq" ps="model_env_lq" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_env" src="sky\sky_5_cube"/>
+			</pass>
+		</normal>
+	</option>
+</shader>

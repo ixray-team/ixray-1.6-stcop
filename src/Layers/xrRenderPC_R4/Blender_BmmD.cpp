@@ -77,7 +77,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)
 		{
-		case SE_R1_NORMAL_HQ:
+		case ShaderVariant::NormalHQ:
 #ifndef _EDITOR
 			if (ps_r1_flags.test(R1FLAG_TERRAIN_MASK))
 			{
@@ -101,28 +101,28 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			r1_tex(C, "s_detail", oT2_Name);
 			C.r_End			();
 			break;
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			C.r_Pass		("impl_dt",	"impl_dt", true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", C.L_textures[1]);
 			r1_tex(C, "s_detail", oT2_Name);
 			C.r_End			();
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			C.r_Pass("impl_point", "add_point", false, true, false, true, D3DBLEND_ONE, D3DBLEND_ONE, true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", TEX_POINT_ATT, true);
 			r1_tex(C, "s_att", TEX_POINT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			C.r_Pass("impl_spot", "add_spot", false, true, false, true, D3DBLEND_ONE, D3DBLEND_ONE, true);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", "internal\\internal_light_att", true);
 			r1_tex(C, "s_att", TEX_SPOT_ATT, true);
 			C.r_End			();
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			C.r_Pass		("impl_l","impl_l", false);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			r1_tex(C, "s_lmap", C.L_textures[1]);
@@ -138,7 +138,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		string256 mask;
 		xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
-		RImplementation.addShaderOption("USE_4_BUMP", "");
+		C.AddDefine("USE_4_BUMP", "");
 
 		//	C.r_Pass("impl_dt", "impl_dt", TRUE);
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
@@ -159,8 +159,8 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		return;
 	}
 
-	RImplementation.addShaderOption("USE_LM_HEMI", "1");
-	RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
+	C.AddDefine("USE_LM_HEMI", "1");
+	C.AddDefine("USE_TDETAIL_BUMP", "1");
 
 	bool isSpecularR = false;
 	bool isSpecularG = false;
@@ -168,8 +168,8 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	bool isSpecularA = false;
 
 	switch(C.iElement) {
-	case SE_R2_NORMAL_HQ:
-	case SE_R2_NORMAL_LQ:
+	case ShaderVariant::NormalHQ:
+	case ShaderVariant::NormalLQ:
 		C.SH->flags.bLandscape = false;
 
 		//C.r_Pass("deffer_base", "dumb", FALSE, TRUE, TRUE);
@@ -178,9 +178,9 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 		C.bDetail_Bump = C.bDetail_Diffuse;
 
-		if(C.iElement == SE_R2_NORMAL_HQ)
+		if(C.iElement == ShaderVariant::NormalHQ)
 		{
-			RImplementation.addShaderOption("USE_4_BUMP", "");
+			C.AddDefine("USE_4_BUMP", "");
 
 			string_path temp { };
 
@@ -195,32 +195,32 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			if (IsSpecularExist(oR_Name))
 			{
 				isSpecularR = true;
-				RImplementation.addShaderOption("USE_4_R_IOR_TEXTURE", "1");
+				C.AddDefine("USE_4_R_IOR_TEXTURE", "1");
 			}
 
 			if (IsSpecularExist(oG_Name))
 			{
 				isSpecularG = true;
-				RImplementation.addShaderOption("USE_4_G_IOR_TEXTURE", "1");
+				C.AddDefine("USE_4_G_IOR_TEXTURE", "1");
 			}
 
 			if (IsSpecularExist(oB_Name))
 			{
 				isSpecularB = true;
-				RImplementation.addShaderOption("USE_4_B_IOR_TEXTURE", "1");
+				C.AddDefine("USE_4_B_IOR_TEXTURE", "1");
 			}
 
 			if (IsSpecularExist(oA_Name))
 			{
 				isSpecularA = true;
-				RImplementation.addShaderOption("USE_4_A_IOR_TEXTURE", "1");
+				C.AddDefine("USE_4_A_IOR_TEXTURE", "1");
 			}
 		}
 
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
 	//	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 
-		if(C.iElement == SE_R2_NORMAL_HQ)
+		if(C.iElement == ShaderVariant::NormalHQ)
 		{
 			for(const char* unused : { "s_bump", "s_bumpX", "s_detail", "s_detailBump", "s_detailBumpX" })
 				C.r_dx10Unbind(unused);
@@ -235,7 +235,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_puddles_ripples", "shaders\\rain_puddles_ripples");
 		}
 
-		if(C.iElement == SE_R2_NORMAL_HQ) 
+		if(C.iElement == ShaderVariant::NormalHQ) 
 		{
 			C.r_dx10Texture("s_mask", mask);
 
@@ -280,21 +280,19 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 
 		C.r_End ();
 		break;
-	case SE_R2_SHADOW:
+	case ShaderVariant::Shadow:
 		C.r_Pass("shadow_base", "shadow_base", false);
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		C.r_dx10Sampler("smp_base");
-		C.r_dx10Sampler("smp_linear");
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;
-	case SE_R2_REFLECTIONS:
+	case ShaderVariant::Reflection:
 		C.SH->flags.bLandscape = false;
 		C.bDetail = !!DEV->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 		C.bDetail_Bump = C.bDetail_Diffuse = C.bDetail;
 
-		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
-		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
+		C.AddDefine("USE_LENGTH_BUFFER", "1");
+		C.AddDefine("DISABLE_MOTION_VECTORS", "1");
 
 		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
 
@@ -306,10 +304,9 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_dx10Texture("sky_s0", r2_T_sky0);
 		C.r_dx10Texture("sky_s1", r2_T_sky1);
 
-		C.r_dx10Sampler("smp_material");
 		C.r_End();
 		break;
 	}
 
-	RImplementation.clearAllShaderOptions();
+	C.Defines.clear();
 }

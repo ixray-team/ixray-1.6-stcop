@@ -1,0 +1,9 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="accum_volumetric_sun" zfunc="always" zwrite="0" blend="one,one">
+			<texture name="s_blue_noise" src="shaders\blue_noise_3x3"/>
+			<texture name="s_smap_sun" src="$user$smap_depth_sun"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</normal>
+</shader>

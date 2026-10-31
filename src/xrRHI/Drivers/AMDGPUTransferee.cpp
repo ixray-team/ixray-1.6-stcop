@@ -9,7 +9,6 @@ extern "C"
 bool CAMDReader::bAMDSupportADL = false;
 
 CAMDReader::CAMDReader() : 
-	activity({ 0 }), 
 	AdapterID(-1),
 	AdapterAGSInfo(0),
 	hAMDMain(nullptr),
@@ -83,10 +82,6 @@ void CAMDReader::Initialize()
 		{
 			return;
 		}
-		if (!TryInitializeAMDFunctionLambda((void**)&GetOverdrive5_CurrentActivity, "ADL_Overdrive5_CurrentActivity_Get"))
-		{
-			return;
-		}
 		if (!TryInitializeAMDFunctionLambda((void**)&Main_Control_Destroy, "ADL_Main_Control_Destroy"))
 		{
 			return;
@@ -98,7 +93,6 @@ void CAMDReader::Initialize()
 
 		ADL2_Main_Control_Create = (ADL2_MAIN_CONTROL_CREATE)GetProcAddress(hAMDMain, "ADL2_Main_Control_Create");;
 		ADL2_Main_Control_Destroy = (ADL2_MAIN_CONTROL_DESTROY)GetProcAddress(hAMDMain, "ADL2_Main_Control_Destroy");
-		ADL2_CurrentActivityGet = (ADL2_OVERDRIVE5_CURRENTACTIVITY_GET)GetProcAddress(hAMDMain, "ADL2_Overdrive5_CurrentActivity_Get");
 
 		bAMDSupportADL = true;
 
@@ -114,7 +108,6 @@ void CAMDReader::Initialize()
 
 		InitDeviceInfo();
 
-		activity.iSize = sizeof(ADLPMActivity);
 		GPUID = ERHI_GPU::AMD;
 	}
 	else
@@ -176,16 +169,6 @@ void CAMDReader::Initialize()
 
 
 	bInitialized = true;
-}
-
-void CAMDReader::Destroy()
-{
-	if (hAMDAGS != nullptr)
-	{
-		u32 DeviceRefs = 0;
-		u32 DeviceImmediateRefs = 0;
-		AGSCrossfireGPUExtDestroy(Context, ReturnedParams.pDevice, &DeviceRefs, ReturnedParams.pImmediateContext, &DeviceImmediateRefs);
-	}
 }
 
 bool CAMDReader::IsInitialized() const
@@ -274,29 +257,6 @@ void CAMDReader::MakeGPUCount()
 	else					   Msg("[AGS] CrossFire GPU count: %d", AdapterAGSInfo);
 }
 
-u32 CAMDReader::GetPercentActive()
-{
-	if (bGPUDriverNotActual)
-		return 0;
-
-	if (ADL2_CurrentActivityGet)
-	{
-		int ResCode = ADL2_CurrentActivityGet(hADLContext, AdapterID, &activity);
-
-		if (ResCode == ADL_ERR_INVALID_ADL_IDX)
-		{
-			Msg("! AMD ADL Error: Need update GPU driver!");
-			bGPUDriverNotActual = true;
-		}
-	}
-	else
-	{
-		GetOverdrive5_CurrentActivity(AdapterID, &activity);
-	}
-
-	return activity.iActivityPercent;
-}
-
 u32 CAMDReader::GetTemperature()
 {
 	ADLTemperature adlTemperature = { 0 };
@@ -321,9 +281,7 @@ u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** p
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0
+		D3D_FEATURE_LEVEL_11_0
 	};
 
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);

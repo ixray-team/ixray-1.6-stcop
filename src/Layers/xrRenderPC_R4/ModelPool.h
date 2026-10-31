@@ -68,7 +68,7 @@ public:
 	void					ClearPool			( bool b_complete );
 
 	void					OnDeviceDestroy		();
-	void 					Render				(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
-	void 					RenderSingle		(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
+	void 					Render				(GfxCmdList& Cmd, dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
+	void 					RenderSingle		(GfxCmdList& Cmd, dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
 };
 #endif //ModelPoolH

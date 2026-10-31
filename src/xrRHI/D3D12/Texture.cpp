@@ -286,11 +286,6 @@ IRHISurface* DX12TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
     return CreateTexture2D(desc, nullptr);
 }
 
-IRHISurface* DX12TextureFactory::CreateDepthStencil(const RHITextureDesc& desc)
-{
-    return CreateTexture2D(desc, nullptr);
-}
-
 IRHISurface* DX12TextureFactory::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& requested)
 {
     if (!data)

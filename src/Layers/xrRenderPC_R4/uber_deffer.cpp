@@ -61,7 +61,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if(lmap) 
 	{
-		RImplementation.addShaderOption("USE_LM_HEMI", "1");
+		C.AddDefine("USE_LM_HEMI", "1");
 	}
 
 	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
@@ -71,7 +71,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if(aref)
 	{
-		RImplementation.addShaderOption("USE_AREF", "1");
+		C.AddDefine("USE_AREF", "1");
 
 		pTexture->Load();
 
@@ -79,18 +79,18 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 		if(Format >= ERHI_FORMAT::BC1_TYPELESS && Format < ERHI_FORMAT::BC2_TYPELESS)
 		{
-			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
+			C.AddDefine("USE_DXT1_HACK", "1");
 		}
 	}
 
 	if(!!DEV->m_textures_description.UsePBRTexures(fname))
 	{
-		RImplementation.addShaderOption("USE_PBR", "1");
+		C.AddDefine("USE_PBR", "1");
 	}
 
 	if(bump)
 	{
-		RImplementation.addShaderOption("USE_BUMP", "1");
+		C.AddDefine("USE_BUMP", "1");
 
 		xr_strcpy(fnameA, pTexture.bump_get().c_str());
 		xr_strconcat(fnameB, fnameA, "#");
@@ -102,12 +102,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if(C.bUseSteepParallax)
 	{
-		RImplementation.addShaderOption("USE_STEEPPARALLAX", "1");
+		C.AddDefine("USE_STEEPPARALLAX", "1");
 	}
 
 	if(dt && dt[0] && C.bDetail_Diffuse)
 	{
-		RImplementation.addShaderOption("USE_TDETAIL", "1");
+		C.AddDefine("USE_TDETAIL", "1");
 	}
 
 	if (C.bDetail_Diffuse)
@@ -120,22 +120,22 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse)
 	{
-		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
+		C.AddDefine("USE_TDETAIL_BUMP", "1");
 	}
 
 	if(hq)
 	{
-		RImplementation.addShaderOption("USE_HIGH_QUALITY", "1");
+		C.AddDefine("USE_HIGH_QUALITY", "1");
 	}
 
 	if (strstr(vs, "model") != nullptr)
 	{
-		RImplementation.addShaderOption("FORWARD_LIGHT", "1");
+		C.AddDefine("FORWARD_LIGHT", "1");
 	}
 
 	if (C.bHudElement && strstr(vs, "deffer_model") != nullptr)
 	{
-		RImplementation.addShaderOption("USE_HUD_RAINDROPS", "1");
+		C.AddDefine("USE_HUD_RAINDROPS", "1");
 	}
 
 	if(bump)
@@ -154,14 +154,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if (snow_texture)
 	{
-		RImplementation.addShaderOption("USE_SNOW_TEXTURE", "1");
+		C.AddDefine("USE_SNOW_TEXTURE", "1");
 	}
 	
 	bool hair_texture = FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_hairmask.dds");
 
 	if (hair_texture)
 	{
-		RImplementation.addShaderOption("USE_HAIRMASK", "1");
+		C.AddDefine("USE_HAIRMASK", "1");
 	}
 	
 	bool specular_texture = FS.exist(temp, "$textures$", C.L_textures[0].c_str(), "_spec.dds");
@@ -169,7 +169,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 	if (specular_texture)
 	{
-		RImplementation.addShaderOption("USE_IOR_TEXTURE", "1");
+		C.AddDefine("USE_IOR_TEXTURE", "1");
 	}
 
 	if (bHasDetailBump)
@@ -185,7 +185,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	{
 		for (auto& [Name, Value] : *pShaderOptions)
 		{
-			RImplementation.addShaderOption(Name.data(), Value.data());
+			C.AddDefine(Name.data(), Value.data());
 		}
 
 		if (hq && pShaderOptions->contains(xr_string("USE_PARRALAX_INTERIOR")))
@@ -228,11 +228,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 				C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
 			}
 
-			C.r_dx10Sampler("smp_smap");
 
-			C.r_dx10Sampler("smp_base");
-			C.r_dx10Sampler("smp_linear");
-			C.r_dx10Sampler("smp_rtlinear");
 
 			C.r_End(false);
 			C.RS.SetRS(D3DRS_ZFUNC, RHI_COMPARISON_LESS_EQUAL);
@@ -245,23 +241,15 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 		if (C.TessMethod & CBlender_Compile::TESS_PN) 
 		{
-			RImplementation.addShaderOption("TESS_PN", "1");
+			C.AddDefine("TESS_PN", "1");
 		}
 
 		if (C.TessMethod & CBlender_Compile::TESS_HM) 
 		{
-			RImplementation.addShaderOption("TESS_HM", "1");
+			C.AddDefine("TESS_HM", "1");
 		}
 
 		C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
-
-		u32 stage = C.r_dx10Sampler("smp_bump_ds");
-
-		if (stage != u32(-1))
-		{
-			C.i_Address(stage, D3DTADDRESS_WRAP);
-			C.i_FilterAnizo(stage, true);
-		}
 
 		if (bump)
 		{
@@ -342,12 +330,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	{
 		C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
 	}
-	C.r_dx10Sampler("smp_smap");
 
-	C.r_dx10Sampler("smp_base");
-	C.r_dx10Sampler("smp_linear");
-	C.r_dx10Sampler("smp_rtlinear");
-	C.r_dx10Sampler("smp_nofilter");
 
 
 	if (EditorMode)
@@ -357,7 +340,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		C.r_dx10Texture("env_s1", "$user$env_s1");
 		C.r_dx10Texture("sky_s0", "$user$sky0");
 		C.r_dx10Texture("sky_s1", "$user$sky1");
-		C.r_dx10Sampler("smp_material");
 	}
 
 	if (!DO_NOT_FINISH) 
@@ -372,7 +354,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 
 	if (use_wboit)
 	{
-		RImplementation.addShaderOption("USE_WBOIT_TRANSPARENCY");
+		C.AddDefine("USE_WBOIT_TRANSPARENCY");
 	}
 
 	uber_deffer(C, hq, vs, ps, aref && !blend, detail_replace, true, DO_NOT_START);
@@ -409,7 +391,6 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 
 		C.r_dx10Texture("s_env_fwd", r2_RT_env_fwd);
 
-		C.r_dx10Sampler("smp_material");
 	}
 
 	if(!DO_NOT_FINISH)
@@ -420,7 +401,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 
 void uber_deffer_editor_end(CBlender_Compile& C)
 {
-	if (C.iElement == SE_R2_SHADOW || C.iElement == SE_R2_REFLECTIONS)
+	if (C.iElement == ShaderVariant::Shadow || C.iElement == ShaderVariant::Reflection)
 	{
 		// Shadow elements (SE_R2_DETAIL_SHADOW_HQ/LQ for the details)
 		C.r_ColorWriteEnable(false, false, false, false);

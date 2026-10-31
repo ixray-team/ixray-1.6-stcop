@@ -238,6 +238,7 @@ void CGroupObject::Scale(Fvector& amount)
 
 void CGroupObject::Render(int priority, bool strictB2F)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	inherited::Render(priority, strictB2F);
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
     {
@@ -248,7 +249,7 @@ void CGroupObject::Render(int priority, bool strictB2F)
     	    case OBJCLASS_SCENEOBJECT: it->pObject->Render(priority,strictB2F); break;
             default:
                 EDevice->SetShader(strictB2F?GEditorDraw.SelectionShader:GEditorDraw.WireShader);
-                RCache.set_xform_world(Fidentity);
+                Cmd.SetObjectTransform(Fidentity);
                 it->pObject->Render(priority,strictB2F);
         	}
     	}
@@ -259,7 +260,7 @@ void CGroupObject::Render(int priority, bool strictB2F)
     	if (Selected()&&GetBox(bb))
         {
             EDevice->SetShader(GEditorDraw.WireShader);
-            RCache.set_xform_world(Fidentity);
+            Cmd.SetObjectTransform(Fidentity);
             u32 clr = Locked()?0xFFFF0000:0xFF7070FF;
             DU_impl.DrawSelectionBoxB(bb,&clr);
         }

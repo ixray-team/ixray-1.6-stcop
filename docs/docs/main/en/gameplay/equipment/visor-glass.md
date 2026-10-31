@@ -210,7 +210,7 @@ Starting an animator manually from Lua does not, by itself, attach the actor's w
 
 ## Shaders and textures
 
-All paths below are relative to the selected game package:
+Shader paths are relative to `gamedata` for every game; texture paths are relative to the selected game package:
 
 | Resource | Purpose |
 | --- | --- |

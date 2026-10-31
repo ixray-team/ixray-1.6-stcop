@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-void CRenderTarget::PhaseRainPuddles()
+void CRenderTarget::PhaseRainPuddles(GfxCmdList& Cmd)
 {
 	if (!RImplementation.o.RainPuddles || !g_pGamePersistent || g_pGamePersistent->Environment().wetness_factor < EPS_L)
 	{
@@ -9,10 +9,10 @@ void CRenderTarget::PhaseRainPuddles()
 	}
 
 	GPU_EVENT(RainPuddlesReflections);
-	u_setrt(rt_Generic_0, nullptr, nullptr, RDepth);
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(false);
-	RCache.set_Element(RainPuddlesShader->E[0]);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	u_setrt(Cmd, rt_Generic_0, nullptr, nullptr, RDepth);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(false);
+	Cmd.SetPass(RainPuddlesShader->E[0]);
+	Cmd.SetGeometry(FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 }

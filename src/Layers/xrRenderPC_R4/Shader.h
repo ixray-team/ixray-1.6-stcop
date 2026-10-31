@@ -18,7 +18,7 @@ typedef xr_vector<shared_str>	sh_list;
 class					CBlender_Compile;
 class					IBlender;
 #define	SHADER_PASSES_MAX		2
-#define SHADER_ELEMENTS_MAX	6
+#define SHADER_ELEMENTS_MAX	7
 
 #pragma pack(push,4)
 
@@ -64,18 +64,6 @@ struct RENDER_API SMatrixList : public xr_resource_flagged, public FixedVector<r
 
 typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_list;
 //////////////////////////////////////////////////////////////////////////
-struct  RENDER_API SConstantList : public xr_resource_flagged, public FixedVector<ref_constant_obsolette, 4>
-{
-	~SConstantList();
-	SConstantList();
-
-	SConstantList& operator=(const SConstantList& Other) = delete;
-	void _copy(const SConstantList& Other);
-};
-
-typedef	resptr_core<SConstantList,resptr_base<SConstantList> >								ref_constant_list;
-
-//////////////////////////////////////////////////////////////////////////
 struct RENDER_API SGeometry
 	: public xr_resource_flagged
 {
@@ -111,7 +99,6 @@ struct	  RENDER_API		SPass			: public xr_resource_flagged									{
 	ref_ctable							constants;	// may be NULL
 
 	ref_texture_list					T;
-	ref_constant_list					C;
 	u8 iPriority = u8(-1);
 
 	ref_matrix_list						M;
@@ -153,11 +140,9 @@ typedef	resptr_core<ShaderElement,resptr_base<ShaderElement> >								ref_seleme
 //////////////////////////////////////////////////////////////////////////
 struct 	 RENDER_API	Shader			: public xr_resource_flagged									{
 public:
-	ref_selement		E		[SHADER_ELEMENTS_MAX];	// R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,	
-										// R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+	ref_selement		E		[SHADER_ELEMENTS_MAX];	// material shaders: indexed by ShaderVariant, internal blenders: pass index
 
 	shared_str			src_shader, src_textures, src_constants, src_matrices;
-	ref_selement UIElement;
 	int					src_skinning = -1;
 
 	Shader();
@@ -177,22 +162,25 @@ struct 	 RENDER_API	resptrcode_shader	: public resptr_base<Shader>
 };
 typedef	resptr_core<Shader,resptrcode_shader>												ref_shader;
 
-enum	SE_R1				{
-	SE_R1_NORMAL_HQ			= 0,	// high quality/detail
-	SE_R1_NORMAL_LQ			= 1,	// normal or low quality
-	SE_R1_LPOINT			= 2,	// add: point light
-	SE_R1_LSPOT				= 3,	// add:	spot light
-	SE_R1_LMODELS			= 4,	// lighting info for models or shadowing from models
-	SE_R1_UI				= 5,	// 
-};
+namespace ShaderVariant
+{
+	enum : u32
+	{
+		NormalHQ,
+		NormalLQ,
+		Shadow,
+		Reflection,
+		Special,
+		HUD,
+		UI,
+		Count,
 
-//#define		SE_R2_NORMAL_HQ		0	// high quality/detail
-//#define		SE_R2_NORMAL_LQ		1	// low quality
-//#define		SE_R2_SHADOW		2	// shadow generation
-//	E[3] - can use for night vision but need to extend SE_R1. Will need 
-//	Extra shader element.
-//	E[4] - distortion or self illumination(self emission). 
-//	E[4] Can use for lightmap capturing.
+		PointLight = Shadow,
+		SpotLight = Reflection,
+		ModelLighting = Special,
+	};
+}
+static_assert(ShaderVariant::Count == SHADER_ELEMENTS_MAX);
 
 #pragma pack(pop)
 

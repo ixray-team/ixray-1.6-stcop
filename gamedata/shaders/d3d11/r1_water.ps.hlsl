@@ -1,8 +1,8 @@
 #include "r1_water.hlsli"
 
-Texture2D s_nmap;
-TextureCube s_env0;
-TextureCube s_env1;
+Texture2D s_nmap : register(t54);
+TextureCube s_env0 : register(t26);
+TextureCube s_env1 : register(t49);
 
 float4 main(vf_water I) : SV_Target
 {

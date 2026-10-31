@@ -1,5 +1,4 @@
-#include "../RHI.h"
-#include <d3d11.h>
+#include "Device.h"
 #include <FidelityFX/host/ffx_fsr3upscaler.h>
 #include <FidelityFX/host/backends/dx11/ffx_dx11.h>
 
@@ -139,7 +138,7 @@ bool Fsr3Wrapper::Create(ContextParameters params)
 {
 	Destroy();
 
-	if (GRHI->APILevel != ERHI_API_LAYER::D3D11 || GRHI->DevicePtr->FeatureLevel < D3D_FEATURE_LEVEL_11_0 || !static_cast<ID3D11Device*>(GRHI->DevicePtr->RawDevice) || !params.maxRenderSize.width || !params.displaySize.width)
+	if (GRHI->APILevel != ERHI_API_LAYER::D3D11 || !static_cast<ID3D11Device*>(GRHI->DevicePtr->RawDevice) || !params.maxRenderSize.width || !params.displaySize.width)
 	{
 		return false;
 	}
@@ -290,6 +289,7 @@ bool Fsr3Wrapper::Draw(const DrawParameters& params)
 	FsrDesc.viewSpaceToMetersFactor = 1.0f;
 
 	const FfxErrorCode ErrorCode = ffxFsr3UpscalerContextDispatch(&Fsr_State.Context, &FsrDesc);
+	static_cast<InternalDevice11*>(GRHI->DevicePtr)->InvalidateBindings();
 	if (ErrorCode != FFX_OK)
 	{
 		Msg("! [FSR3] dispatch failed (%d)", ErrorCode);

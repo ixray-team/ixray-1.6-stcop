@@ -221,7 +221,7 @@ void CToolCustom::Render()
 {
 	// render errors
 	EDevice->SetShader(GEditorDraw.SelectionShader);
-	RCache.set_xform_world(Fidentity);
+	RImplementation.Imm().SetObjectTransform(Fidentity);
 	EDevice->RenderNearer(0.0003f);
 	EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
 	xr_string temp;

@@ -18,21 +18,21 @@ struct SRTState
 
 	void Save()
 	{
-		RT[0] = GRHI->GetRenderTargetView(0);
-		RT[1] = GRHI->GetRenderTargetView(1);
-		RT[2] = GRHI->GetRenderTargetView(2);
-		RT[3] = GRHI->GetRenderTargetView(3);
-		DSV = GRHI->GetDepthStencilView();
+		RT[0] = RImplementation.Imm().GetRenderTarget(0);
+		RT[1] = RImplementation.Imm().GetRenderTarget(1);
+		RT[2] = RImplementation.Imm().GetRenderTarget(2);
+		RT[3] = RImplementation.Imm().GetRenderTarget(3);
+		DSV = RImplementation.Imm().GetDepthStencil();
 	}
 
-	void Restore()
+	void Restore(GfxCmdList& Cmd)
 	{
 		for (u32 Idx = 0; Idx < 4; ++Idx)
 		{
-			RCache.set_RT(RT[Idx], Idx);
+			Cmd.SetRenderTarget(RT[Idx], Idx);
 		}
-		GRHI->SetDepthStencilView(DSV);
-		GRHI->ApplyRenderTargetChange();
+		Cmd.SetDepthStencil(DSV);
+		Cmd.ApplyRenderTargets();
 	}
 };
 
@@ -53,28 +53,29 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 	// free managed resource
 	DEV->Evict();
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	SRTState Saved;
 	Saved.Save();
 
-	RCache.set_RT(rtColor->pRT);
-	RCache.set_RT(nullptr, 1);
-	RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
-	GRHI->SetDepthStencilView(rtDepth->pZRT);
-	GRHI->ApplyRenderTargetChange();
+	Cmd.SetRenderTarget(rtColor->pRT);
+	Cmd.SetRenderTarget(nullptr, 1);
+	Cmd.SetRenderTarget(nullptr, 2);
+	Cmd.SetRenderTarget(nullptr, 3);
+	Cmd.SetDepthStencil(rtDepth->pZRT);
+	Cmd.ApplyRenderTargets();
 
 	Clear();
 
 	RHIViewport VP = {0, 0, (float)TexWidth, (float)TexHeight, 0.f, 1.f};
-	GRHI->SetViewport(VP);
-	RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+	Cmd.SetViewport(VP);
+	Cmd.SetStencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 	ResetMaterial();
 
 	Tools->Render();
 
-	GRHI->ApplyRenderTargetChange();
+	Cmd.ApplyRenderTargets();
 
-	Saved.Restore();
+	Saved.Restore(Cmd);
 	return true;
 }
 
@@ -160,6 +161,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 		return false;
 	}
 
+	GfxCmdList& Cmd = RImplementation.Imm();
 	xr_vector<IRHIShaderResourceView*> Srvs;
 	Srvs.resize(SrcRTs.size());
 	for (u32 Idx = 0; Idx < SrcRTs.size(); ++Idx)
@@ -173,7 +175,7 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 			}
 			return false;
 		}
-		RCache.set_CSResource(Idx, Srvs[Idx]);
+		Cmd.SetResource(ERHI_SHADER_TYPE::CS, Idx, Srvs[Idx]);
 	}
 
 	IRHIUnorderedAccessView* Uav = AtlasRT->pUAView;
@@ -187,19 +189,19 @@ bool CEditorRenderDevice::DownsampleLODAtlas(xr_vector<ref_rt>& SrcRTs, ref_rt& 
 	}
 
 	UINT UavInit = 0;
-	GRHI->SetComputeUAVs(0, 1, &Uav, &UavInit);
+	Cmd.SetComputeUAVs(0, 1, &Uav, &UavInit);
 
-	RCache.set_CS(Compute);
-	RCache.Compute(((TargetW * Samples) + 7) / 8, (TargetH + 7) / 8, 1);
+	Cmd.SetCS(Compute);
+	Cmd.Dispatch(((TargetW * Samples) + 7) / 8, (TargetH + 7) / 8, 1);
 
 	for (u32 Idx = 0; Idx < Srvs.size(); ++Idx)
 	{
-		RCache.set_CSResource(Idx, nullptr);
+		Cmd.SetResource(ERHI_SHADER_TYPE::CS, Idx, nullptr);
 		Srvs[Idx]->Release();
 	}
 	IRHIUnorderedAccessView* NullUAV = nullptr;
-	GRHI->SetComputeUAVs(0, 1, &NullUAV, &UavInit);
-	GRHI->SetShader(nullptr, ERHI_SHADER_TYPE::CS);
+	Cmd.SetComputeUAVs(0, 1, &NullUAV, &UavInit);
+	Cmd.SetShader(nullptr, ERHI_SHADER_TYPE::CS);
 
 	return true;
 }

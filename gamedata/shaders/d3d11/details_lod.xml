@@ -1,0 +1,36 @@
+<shader r1_static="1">
+	<normal>
+		<pass vs="lod" ps="lod" zwrite="0" blend="srcalpha,invsrcalpha" aref="8">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_hemi" src="@base_nm"/>
+		</pass>
+	</normal>
+	<l_special>
+		<pass vs="lod" ps="lod" stencil="always,255,127,keep,replace,keep" stencil_ref="1">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_base0" src="@base"/>
+			<texture name="s_base1" src="@base"/>
+			<texture name="s_hemi0" src="@base_nm"/>
+			<texture name="s_hemi1" src="@base_nm"/>
+			<texture name="s_hemi" src="@base_nm"/>
+		</pass>
+	</l_special>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal>
+			<pass vs="lod" ps="lod" zwrite="0" blend="srcalpha,invsrcalpha" aref="8">
+				<texture name="s_base0" src="@base"/>
+				<texture name="s_base1" src="@base"/>
+				<texture name="s_hemi0" src="@base_nm"/>
+				<texture name="s_hemi1" src="@base_nm"/>
+			</pass>
+		</normal>
+		<l_special>
+			<pass vs="lod" ps="lod" aref="200">
+				<texture name="s_base0" src="@base"/>
+				<texture name="s_base1" src="@base"/>
+				<texture name="s_hemi0" src="@base_nm"/>
+				<texture name="s_hemi1" src="@base_nm"/>
+			</pass>
+		</l_special>
+	</option>
+</shader>

@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-void CRenderTarget::draw_rain(light& RainSetup)
+void CRenderTarget::draw_rain(GfxCmdList& Cmd, light& RainSetup)
 {
 	GPU_EVENT(draw_rain);
 
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	float fWetnessFactor = g_pGamePersistent->Environment().wetness_factor;
 
-	const UINT tgroupsX = (RCache.get_width() + 7u) / 8u;
-	const UINT tgroupsY = (RCache.get_height() + 7u) / 8u;
+	const UINT tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
+	const UINT tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
 
 	Fvector L_dir;
 	Fvector W_dirX;
@@ -78,28 +78,28 @@ void CRenderTarget::draw_rain(light& RainSetup)
 		ShaderElement* S;
 		S = (&*(s_rain->E[0]));
 		SPass& P = *(S->passes[0]);
-		RCache.set_States(P.state);
-		RCache.set_Constants(P.constants);
-		RCache.set_Textures(P.T);
-		RCache.set_CS(P.cs);
+		Cmd.SetStates(P.state);
+		Cmd.SetConstantTable(P.constants);
+		Cmd.SetTextures(P.T);
+		Cmd.SetCS(P.cs);
 
-		RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
+		Cmd.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0);
 
-		RCache.Constants.Write<CBPost>().WorldX.set(W_dirX.x, W_dirX.y, W_dirX.z, 0);
-		RCache.Constants.Write<CBPost>().WorldZ.set(W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
+		Cmd.Constants.Write<CBPost>().WorldX.set(W_dirX.x, W_dirX.y, W_dirX.z, 0);
+		Cmd.Constants.Write<CBPost>().WorldZ.set(W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
 
-		RCache.Constants.Write<CBLight>().m_shadow = m_shadow;
-		RCache.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
+		Cmd.Constants.Write<CBLight>().m_shadow = m_shadow;
+		Cmd.Constants.Write<CBLight>().m_sunmask = m_clouds_shadow;
 
 		static float AngleFactor = 0.0f;
 		AngleFactor += Device.fTimeDelta * (0.15f + fRainFactor * 0.15f);
 
 		AngleFactor = AngleFactor - std::floor(AngleFactor);
 
-		RCache.Constants.Write<CBPost>().RainDensity.set(fRainFactor, AngleFactor, fWetnessFactor, 0);
-		RCache.Constants.Write<CBPost>().RainFallof.set(ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
+		Cmd.Constants.Write<CBPost>().RainDensity.set(fRainFactor, AngleFactor, fWetnessFactor, 0);
+		Cmd.Constants.Write<CBPost>().RainFallof.set(ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 
-		RCache.Constants.Write<CBPost>().m_level_scale.set(RImplementation.m_puddles_level_bound.lt.x, RImplementation.m_puddles_level_bound.lt.y, RImplementation.m_puddles_level_bound.rb.x, RImplementation.m_puddles_level_bound.rb.y);
+		Cmd.Constants.Write<CBPost>().m_level_scale.set(RImplementation.m_puddles_level_bound.lt.x, RImplementation.m_puddles_level_bound.lt.y, RImplementation.m_puddles_level_bound.rb.x, RImplementation.m_puddles_level_bound.rb.y);
 
 
 		IRHIUnorderedAccessView* our_uav[3] =
@@ -109,13 +109,13 @@ void CRenderTarget::draw_rain(light& RainSetup)
 			rt_Surface->pUAView
 		};
 
-		GRHI->SetComputeUAVs(0, std::size(our_uav), our_uav, nullptr);
+		Cmd.SetComputeUAVs(0, std::size(our_uav), our_uav, nullptr);
 
 		//Dispatch
-		RCache.Compute(tgroupsX, tgroupsY, 1);
+		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
 
 		//Unbind
-		GRHI->SetComputeUAVs(0, std::size(uav_dummy), uav_dummy, nullptr);
-		RCache.unbind_cs_textures();
+		Cmd.SetComputeUAVs(0, std::size(uav_dummy), uav_dummy, nullptr);
+		Cmd.UnbindComputeTextures();
 	}
 }

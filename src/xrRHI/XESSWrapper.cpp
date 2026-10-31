@@ -5,6 +5,7 @@
 #include <xess/xess.h>
 #include <xess/xess_d3d11.h>
 #include "D3D12/xess_d3d12.h"
+#include "D3D11/Device.h"
 #include "D3D12/Device.h"
 #endif
 
@@ -197,6 +198,7 @@ bool XeSSWrapper::Draw(const DrawParameters& params)
         xess_d3d11_execute_params_t desc = {};
         FillXeSSParameters<ID3D11Resource>(desc, params, _resetHistory);
         result = xessD3D11Execute(context, &desc);
+        static_cast<InternalDevice11*>(GRHI->DevicePtr)->InvalidateBindings();
     }
     if (result < XESS_RESULT_SUCCESS)
     {

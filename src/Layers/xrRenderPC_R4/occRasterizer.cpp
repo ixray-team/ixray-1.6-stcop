@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "dxDebugRender.h"
 #include "occRasterizer.h"
 
 #if DEBUG 
@@ -120,7 +121,7 @@ void occRasterizer::propagade	()
 	propagade_depth	(bufDepth_3,bufDepth_2,occ_dim_3);
 }
 
-void occRasterizer::on_dbg_render()
+void occRasterizer::on_dbg_render(GfxCmdList& Cmd)
 {
 #if DEBUG
 	if( !ps_r2_ls_flags_ext.is(R_FLAGEXT_HOM_DEPTH_DRAW) )
@@ -170,8 +171,8 @@ void occRasterizer::on_dbg_render()
 			// draw wire
 			Device.SetNearer(true);
 
-			RCache.set_Shader	(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_DrawOBB(Transform, tmp.radius, color_xrgb(u32(255 * pow(tmp.z, 20.f)), u32(255 * (1 - pow(tmp.z, 20.f))), 0));
+			Cmd.SetPass	(dxRenderDeviceRender::Instance().m_SelectionShader);
+			DebugRenderImpl.DrawOBB(Transform, tmp.radius, color_xrgb(u32(255 * pow(tmp.z, 20.f)), u32(255 * (1 - pow(tmp.z, 20.f))), 0));
 			Device.SetNearer(false);
 		}
 	}

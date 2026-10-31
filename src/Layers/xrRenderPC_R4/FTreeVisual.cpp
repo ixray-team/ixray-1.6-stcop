@@ -122,7 +122,7 @@ struct	FTreeVisual_setup
 	}
 };
 
-void FTreeVisual::Render	(float LOD)
+void FTreeVisual::Render	(GfxCmdList& Cmd, float LOD)
 {
 	//PROF_EVENT("FTreeVisual::Render");
 	static FTreeVisual_setup tvs, tvs_old;
@@ -133,8 +133,8 @@ void FTreeVisual::Render	(float LOD)
 
 	// setup constants
 	Fmatrix xform_v;
-	xform_v.mul_43(RCache.get_xform_view(), xform);
-	CBPass& Pass = RCache.Constants.Write<CBPass>();
+	xform_v.mul_43(Cmd.GetView().View, xform);
+	CBPass& Pass = Cmd.Constants.Write<CBPass>();
 	Pass.m_xform_v = xform_v;
 
 	float s = ps_r__Tree_SBC;
@@ -209,12 +209,11 @@ void FTreeVisual_ST::Load		(const char* N, IReader *data, u32 dwFlags)
 	inherited::Load				(N,data,dwFlags);
 	Device.m_trees_poses_st.push_back(&xform);
 }
-void FTreeVisual_ST::Render		(float LOD)
+void FTreeVisual_ST::Render		(GfxCmdList& Cmd, float LOD)
 {
-	inherited::Render			(LOD);
-	RCache.set_Geometry			(rm_geom);
-	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,vCount,iBase,dwPrimitives);
-	RCache.stat.r.s_flora.add	(vCount);
+	inherited::Render			(Cmd, LOD);
+	Cmd.SetGeometry			(rm_geom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwPrimitives * 3, iBase, vBase);
 }
 void FTreeVisual_ST::Copy		(dxRender_Visual *pSrc)
 {
@@ -254,9 +253,9 @@ void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 	Device.m_trees_poses_pm.push_back(&xform);
 }
 
-void FTreeVisual_PM::Render		(float LOD)
+void FTreeVisual_PM::Render		(GfxCmdList& Cmd, float LOD)
 {
-	inherited::Render			(LOD);
+	inherited::Render			(Cmd, LOD);
 	int lod_id					= last_lod;
 	if (LOD>=0.f) {
 		lod_id					= iFloor((1.f-LOD)*float(pSWI->count-1)+0.5f);
@@ -264,9 +263,8 @@ void FTreeVisual_PM::Render		(float LOD)
 	}
 	VERIFY						(lod_id>=0 && lod_id<int(pSWI->count));
 	FSlideWindow& SW			= pSWI->sw[lod_id];
-	RCache.set_Geometry			(rm_geom);
-	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
-	RCache.stat.r.s_flora.add	(SW.num_verts);
+	Cmd.SetGeometry			(rm_geom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, SW.num_tris * 3, iBase+SW.offset, vBase);
 }
 
 void FTreeVisual_PM::Copy		(dxRender_Visual *pSrc)

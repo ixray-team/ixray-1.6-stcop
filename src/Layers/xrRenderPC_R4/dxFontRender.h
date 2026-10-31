@@ -24,8 +24,8 @@ public:
 	virtual void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) override;
 	virtual bool GetAtlasTexSize(u32& outW, u32& outH) const override;
 
-	void RenderBase(CGameFont& owner);
-	void RenderIcon(GamepadIcon icon);
+	void RenderBase(GfxCmdList& Cmd, CGameFont& owner);
+	void RenderIcon(GfxCmdList& Cmd, GamepadIcon icon);
 
 private:
 	ref_shader				pShader;

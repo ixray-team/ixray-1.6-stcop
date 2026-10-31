@@ -88,7 +88,7 @@ void dx103DFluidObstacles::DestroyShaders()
 	}
 }
 
-void dx103DFluidObstacles::ProcessObstacles( const dx103DFluidData &FluidData, float timestep )
+void dx103DFluidObstacles::ProcessObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, float timestep )
 {
 	GPU_EVENT(ProcessObstacles);
 
@@ -113,15 +113,15 @@ void dx103DFluidObstacles::ProcessObstacles( const dx103DFluidData &FluidData, f
 		WorldToFluid.mul(TranslateScale,InvFluidTranform);
 	}
 
-	ProcessDynamicObstacles( FluidData, WorldToFluid, timestep );
+	ProcessDynamicObstacles( Cmd, FluidData, WorldToFluid, timestep );
 
 	//	Render static obstacles last
 	//	to override speed where bounding shapes of dynamic and
 	//	static objects intersect.
-	ProcessStaticObstacles( FluidData, WorldToFluid );
+	ProcessStaticObstacles( Cmd, FluidData, WorldToFluid );
 }
 
-void dx103DFluidObstacles::RenderStaticOOBB( const Fmatrix &Transform)
+void dx103DFluidObstacles::RenderStaticOOBB( GfxCmdList& Cmd, const Fmatrix &Transform)
 {
 	GPU_EVENT(RenderObstacle);
 
@@ -136,15 +136,15 @@ void dx103DFluidObstacles::RenderStaticOOBB( const Fmatrix &Transform)
 		Fvector4	TransformedPlane;
 		ClipTransform.transform(TransformedPlane, UnitClipPlanes[i]);
 		TransformedPlane.normalize_as_plane();
-		RCache.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
+		Cmd.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
 	}
 
-	m_pGrid->DrawSlices();
+	m_pGrid->DrawSlices(Cmd);
 }
 
-void dx103DFluidObstacles::ProcessStaticObstacles( const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid )
+void dx103DFluidObstacles::ProcessStaticObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid )
 {
-	RCache.set_Element(m_ObstacleTechnique[OS_OOBB]);
+	Cmd.SetPass(m_ObstacleTechnique[OS_OOBB]);
 
 	const xr_vector<Fmatrix> &Obstacles = FluidData.GetObstaclesList();
 	int iObstNum = (int)Obstacles.size();
@@ -153,11 +153,11 @@ void dx103DFluidObstacles::ProcessStaticObstacles( const dx103DFluidData &FluidD
 		Fmatrix Transform;
 		Transform.mul(WorldToFluid, Obstacles[i]);
 
-		RenderStaticOOBB(Transform);
+		RenderStaticOOBB(Cmd, Transform);
 	}
 }
 
-void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid, float timestep )
+void dx103DFluidObstacles::ProcessDynamicObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid, float timestep )
 {
 	m_lstRenderables.resize(0);
 	m_lstShells.resize(0);
@@ -217,41 +217,41 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 	if (! (m_lstShells.size() || m_lstElements.size()))
 		return;
 
-	RCache.set_Element(m_ObstacleTechnique[OS_DynamicOOBB]);
+	Cmd.SetPass(m_ObstacleTechnique[OS_DynamicOOBB]);
 
 	Fmatrix	FluidToWorld;
 	FluidToWorld.invert(WorldToFluid);
 
-	RCache.Constants.Write<CBFluid>().WorldToLocal = WorldToFluid;	
-	RCache.Constants.Write<CBFluid>().LocalToWorld = FluidToWorld;
+	Cmd.Constants.Write<CBFluid>().WorldToLocal = WorldToFluid;	
+	Cmd.Constants.Write<CBFluid>().LocalToWorld = FluidToWorld;
 
 	int iShellsNum = (int)m_lstShells.size();
 	for (int i=0; i<iShellsNum; ++i)
 	{
-		RenderPhysicsShell( m_lstShells[i], WorldToFluid, timestep );
+		RenderPhysicsShell( Cmd, m_lstShells[i], WorldToFluid, timestep );
 	}
 
 	int iElementsNum = (int)m_lstElements.size();
 	for (int i=0; i<iElementsNum; ++i)
 	{
-		RenderPhysicsElement( *m_lstElements[i], WorldToFluid, timestep );
+		RenderPhysicsElement( Cmd, *m_lstElements[i], WorldToFluid, timestep );
 	}
 	
 }
 
 //	TODO: DX10: Do it using instancing.
-void dx103DFluidObstacles::RenderPhysicsShell( const IPhysicsShell *pShell, const Fmatrix &WorldToFluid, float timestep )
+void dx103DFluidObstacles::RenderPhysicsShell( GfxCmdList& Cmd, const IPhysicsShell *pShell, const Fmatrix &WorldToFluid, float timestep )
 {
 	u16 iObstNum = pShell->get_ElementsNumber();
 	for (u16 i=0; i<iObstNum; ++i)
 	{
 		const IPhysicsElement &Element = pShell->Element(i);
 
-		RenderPhysicsElement( Element, WorldToFluid, timestep );
+		RenderPhysicsElement( Cmd, Element, WorldToFluid, timestep );
 	}
 }
 
-void dx103DFluidObstacles::RenderPhysicsElement( const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderPhysicsElement( GfxCmdList& Cmd, const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep)
 {
 	//	Shader must be already set up!
 	const Fvector3	&MassCenter3 = Element.mass_Center();
@@ -290,16 +290,16 @@ void dx103DFluidObstacles::RenderPhysicsElement( const IPhysicsElement &Element,
 	//	Emphasize velocity influence on the fog
 	//TranslationVelocity.mul( 2.0f );
 
-	RCache.Constants.Write<CBFluid>().MassCenter = MassCenter;
-	RCache.Constants.Write<CBFluid>().OOBBWorldAngularVelocity = AngularVelocity;
-	RCache.Constants.Write<CBFluid>().OOBBWorldTranslationVelocity = TranslationVelocity;
+	Cmd.Constants.Write<CBFluid>().MassCenter = MassCenter;
+	Cmd.Constants.Write<CBFluid>().OOBBWorldAngularVelocity = AngularVelocity;
+	Cmd.Constants.Write<CBFluid>().OOBBWorldTranslationVelocity = TranslationVelocity;
 
 	int iShapeNum = Element.numberOfGeoms();
 
 	for ( u16 i=0; i<iShapeNum; ++i)
 	{
 		if (Element.geometry(i)->collide_fluids())
-			RenderDynamicOOBB( *Element.geometry(i), WorldToFluid, timestep);
+			RenderDynamicOOBB( Cmd, *Element.geometry(i), WorldToFluid, timestep);
 	}
 }
 
@@ -373,7 +373,7 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, co
 }
 */
 
-void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsGeometry &Geometry, const Fmatrix &WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderDynamicOOBB( GfxCmdList& Cmd, const IPhysicsGeometry &Geometry, const Fmatrix &WorldToFluid, float timestep)
 {
 	GPU_EVENT(RenderDynamicObstacle);
 
@@ -403,8 +403,8 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsGeometry &Geometry, 
 		Fvector4	TransformedPlane;
 		ClipTransform.transform(TransformedPlane, UpdatedPlane);
 		TransformedPlane.normalize_as_plane();
-		RCache.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
+		Cmd.Constants.Write<CBFluid>().OOBBClipPlane[i] = TransformedPlane;
 	}
 
-	m_pGrid->DrawSlices();
+	m_pGrid->DrawSlices(Cmd);
 }

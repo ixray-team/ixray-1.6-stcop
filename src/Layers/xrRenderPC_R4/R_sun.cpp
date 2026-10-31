@@ -358,7 +358,7 @@ void CRender::append_sun_dynamics()
 	}
 }
 
-void CRender::render_sun_cascades()
+void CRender::render_sun_cascades(GfxCmdList& Cmd)
 {
 	wait_sun_collect();
 	if (!sun_collect_active.load(std::memory_order_acquire))
@@ -371,7 +371,7 @@ void CRender::render_sun_cascades()
 			0.f, 0.f, (float)RImplementation.o.smapsize, (float)RImplementation.o.smapsize, 0.f, 1.f
 		};
 
-		GRHI->SetViewport(viewport);
+		Cmd.SetViewport(viewport);
 
 	phase = PHASE_SMAP;
 	append_sun_dynamics();
@@ -388,19 +388,18 @@ void CRender::render_sun_cascades()
 
 		if (bNormal || bSpecial)
 		{
-			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-			Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
+			Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[i], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+			Target->u_setrt(Cmd, Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[i]);
 
-			RCache.set_xform_world(Fidentity);
-			RCache.set_xform_view(Fidentity);
-			RCache.set_xform_project(fuckingsun->X.D.combine);
+			Cmd.SetObjectTransform(Fidentity);
+			Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
 
 			Graph.r_dsgraph_render_graph(0);
 
 			CDetailManager* ActiveDetails = GetDetails();
 			if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 			{
-				ActiveDetails->hw_Render();
+				ActiveDetails->hw_Render(Cmd);
 			}
 
 			fuckingsun->X.D.transluent = false;
@@ -408,7 +407,7 @@ void CRender::render_sun_cascades()
 			if (bSpecial)
 			{
 				fuckingsun->X.D.transluent = true;
-				Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
+				Target->phase_smap_direct_tsh(Cmd, fuckingsun, SE_SUN_FAR);
 				Graph.r_dsgraph_render_graph(1);
 				Graph.r_dsgraph_render_sorted();
 			}
@@ -419,15 +418,14 @@ void CRender::render_sun_cascades()
 
 	GraphMain.r_pmask(true, false);
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetView(Device.mView, Device.mProject);
 
-	viewport.Width = (float)RCache.get_width();
-	viewport.Height = (float)RCache.get_height();
+	viewport.Width = (float)Cmd.GetWidth();
+	viewport.Height = (float)Cmd.GetHeight();
 
-	GRHI->SetViewport(viewport);
-	Target->accum_direct_cascade();
+	Cmd.SetViewport(viewport);
+	Target->accum_direct_cascade(Cmd);
 
 	if (sun_restore_shafts)
 	{
@@ -440,7 +438,7 @@ void CRender::render_sun_cascades()
 	}
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+void CRender::render_sun_cascade(GfxCmdList& Cmd, u32 cascade_ind)
 {
 	PROF_EVENT("Render Cascade");
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
@@ -672,19 +670,17 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			if (bNormal || bSpecial)
 			{
-				GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-				Target->u_setrt(Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
-				RCache.set_xform_world(Fidentity);
-				RCache.set_xform_view(Fidentity);
-
-				RCache.set_xform_project(fuckingsun->X.D.combine);
+				Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
+				Target->u_setrt(Cmd, Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
+				Cmd.SetObjectTransform(Fidentity);
+				Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
 
 				GraphMain.r_dsgraph_render_graph(0);
 
 				CDetailManager* ActiveDetails = GetDetails();
 				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				{
-					ActiveDetails->hw_Render();
+					ActiveDetails->hw_Render(Cmd);
 				}
 
 				fuckingsun->X.D.transluent = false;
@@ -692,7 +688,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 				if (bSpecial)
 				{
 					fuckingsun->X.D.transluent = true;
-					Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
+					Target->phase_smap_direct_tsh(Cmd, fuckingsun, SE_SUN_FAR);
 					GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
 					GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
 				}

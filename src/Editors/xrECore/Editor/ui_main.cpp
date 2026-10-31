@@ -500,7 +500,7 @@ void TUI::PrepareRedraw()
 
 	// set render state
 	EDevice->SetRS(D3DRS_TEXTUREFACTOR, 0xffffffff);
-	RCache.set_xform_world(Fidentity);
+	RImplementation.Imm().SetObjectTransform(Fidentity);
 }
 
 void TUI::Invalidate()
@@ -515,6 +515,7 @@ ECORE_API xrCriticalSection temp_render_lock;
 void TUI::Redraw()
 {
 	xrCriticalSectionGuard guard_lock(temp_render_lock);
+	GfxCmdList& Cmd = RImplementation.Imm();
 
 	PrepareRedraw();
 
@@ -564,8 +565,8 @@ void TUI::Redraw()
 
 			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
-			RCache.set_xform_project(EDevice->mProject);
-			RCache.set_xform_world(Fidentity);
+			Cmd.SetView(Cmd.GetView().View, EDevice->mProject);
+			Cmd.SetObjectTransform(Fidentity);
 		}
 		else
 		{
@@ -614,8 +615,7 @@ void TUI::Redraw()
 			EDevice->mView_old = View.PrevView;
 			EDevice->mProject_old = View.PrevProject;
 			EDevice->mFullTransform_old.mul(View.PrevProject, View.PrevView);
-			RCache.set_xform_view_old(View.PrevView);
-			RCache.set_xform_project_old(View.PrevProject);
+			Cmd.SetView({ Cmd.GetView().View, Cmd.GetView().Project, View.PrevView, View.PrevProject });
 
 			View.PrevView = EDevice->mView;
 			View.PrevProject = EDevice->mProject;
@@ -703,7 +703,7 @@ void TUI::Redraw()
 
 			// Resolve into the viewport target
 			RImplementation.EditorPresent(RT->pRT);
-			GRHI->CopySurface(RTCopy->pRT, RT->pRT);
+			Cmd.CopySurface(RTCopy->pRT, RT->pRT);
 		}
 
 		g_bRendering = false;
@@ -899,8 +899,9 @@ bool TUI::OnCreate()
 	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, CurrentView().m_Camera.m_Znear, CurrentView().m_Camera.m_Zfar);
 	EDevice->m_fNearer = EDevice->mProject._43;
 
-	RCache.set_xform_project(EDevice->mProject);
-	RCache.set_xform_world(Fidentity);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	Cmd.SetView(Cmd.GetView().View, EDevice->mProject);
+	Cmd.SetObjectTransform(Fidentity);
 
 
 	RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);

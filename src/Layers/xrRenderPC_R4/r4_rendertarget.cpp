@@ -43,7 +43,7 @@ static RHIInputElementDesc InputDecl[] =
 	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT,	0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
 
@@ -59,19 +59,15 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	RCache.set_RT(_1 ? _1->pRT : NULL, 0);
-	RCache.set_RT(_2 ? _2->pRT : NULL, 1);
-	RCache.set_RT(_3 ? _3->pRT : NULL, 2);
-	RCache.set_RT(_4 ? _4->pRT : NULL, 3);
-	GRHI->SetDepthStencilView(zb);
+	Cmd.SetRenderTargets({ _1 ? _1->pRT : nullptr, _2 ? _2->pRT : nullptr, _3 ? _3->pRT : nullptr, _4 ? _4->pRT : nullptr }, zb);
 }
 
 void CRenderTarget::ResolveSurface(const ref_rt& dst, const ref_rt& src)
 {
-	GRHI->CopySurface(dst->pSurface, src->pSurface);
+	RImplementation.Imm().CopySurface(dst->pSurface, src->pSurface);
 }
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
 	if (_1)
@@ -86,15 +82,10 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT(nullptr, 0);
-	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT(nullptr, 1);
-	if (_3) RCache.set_RT(_3->pRT, 2); else RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
-
-	GRHI->SetDepthStencilView(zb);
+	Cmd.SetRenderTargets({ _1 ? _1->pRT : nullptr, _2 ? _2->pRT : nullptr, _3 ? _3->pRT : nullptr }, zb);
 }
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(GfxCmdList& Cmd, const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
 	if (_1)
@@ -109,78 +100,63 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencil
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT(nullptr, 0);
-	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT(nullptr, 1);
-	RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
-
-	GRHI->SetDepthStencilView(zb);
+	Cmd.SetRenderTargets({ _1 ? _1->pRT : nullptr, _2 ? _2->pRT : nullptr }, zb);
 }
 
-void CRenderTarget::u_setrt(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(GfxCmdList& Cmd, u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb)
 {
 	dwWidth = W;
 	dwHeight = H;
 
-	RCache.set_RT(_1, 0);
-	RCache.set_RT(_2, 1);
-	RCache.set_RT(_3, 2);
-	RCache.set_RT(nullptr, 3);
-
-	GRHI->SetDepthStencilView(zb);
+	Cmd.SetRenderTargets({ _1, _2, _3 }, zb);
 }
 
-void CRenderTarget::u_setrt(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(GfxCmdList& Cmd, u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIRenderTargetView* _4, IRHIDepthStencilView* zb)
 {
 	dwWidth = W;
 	dwHeight = H;
 
-	RCache.set_RT(_1, 0);
-	RCache.set_RT(_2, 1);
-	RCache.set_RT(_3, 2);
-	RCache.set_RT(_4, 3);
-
-	GRHI->SetDepthStencilView(zb);
+	Cmd.SetRenderTargets({ _1, _2, _3, _4 }, zb);
 }
 
-void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
+void	CRenderTarget::u_stencil_optimize	(GfxCmdList& Cmd, eStencilOptimizeMode eSOM)
 {
 	//	TODO: DX10: remove half pixel offset?
 	VERIFY	(RImplementation.o.nvstencil);
 	u32		Offset;
-	float	_w					= RCache.get_width();
-	float	_h					= RCache.get_height();
+	float	_w					= Cmd.GetWidth();
+	float	_h					= Cmd.GetHeight();
 	u32		C					= color_rgba	(255,255,255,255);
 	float	eps					= 0;
 	float	_dw					= 0.5f;
 	float	_dh					= 0.5f;
-	FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
+	FVF::TL* pv					= (FVF::TL*) Cmd.Vertex.Lock	(4,g_combine->vb_stride,Offset);
 	pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
 	pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
-	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-	RCache.set_Element			(s_occq->E[1]	);
+	Cmd.Vertex.Unlock		(4,g_combine->vb_stride);
+	Cmd.SetPass			(s_occq->E[1]	);
 
 	switch(eSOM)
 	{
 	case SO_Light:
-		RCache.set_StencilRef(dwLightMarkerID);
+		Cmd.SetStencilRef(dwLightMarkerID);
 		break;
 	case SO_Combine:
-		RCache.set_StencilRef(0x01);
+		Cmd.SetStencilRef(0x01);
 		break;
 	default:
 		VERIFY(!"CRenderTarget::u_stencil_optimize. switch no default!");
 	}	
 
-	RCache.set_Geometry			(g_combine		);
-	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
+	Cmd.SetGeometry			(g_combine		);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
 	
 }
 
 // 2D texgen (texture adjustment matrix)
-void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
+void CRenderTarget::u_compute_texgen_screen(GfxCmdList& Cmd, Fmatrix& m_Texgen)
 {
 	Fmatrix			m_TexelAdjust		= 
 	{
@@ -189,11 +165,11 @@ void CRenderTarget::u_compute_texgen_screen(Fmatrix& m_Texgen)
 		0.0f,				0.0f,				1.0f,			0.0f,
 		0.5f,				0.5f ,				0.0f,			1.0f
 	};
-	m_Texgen.mul	(m_TexelAdjust,RCache.xforms.m_wvp);
+	m_Texgen.mul	(m_TexelAdjust,Cmd.GetWorldViewProject());
 }
 
 // 2D texgen for jitter (texture adjustment matrix)
-void CRenderTarget::u_compute_texgen_jitter(Fmatrix& m_Texgen_J)
+void CRenderTarget::u_compute_texgen_jitter(GfxCmdList& Cmd, Fmatrix& m_Texgen_J)
 {
 	// place into	0..1 space
 	Fmatrix TexelAdjust = 
@@ -203,11 +179,11 @@ void CRenderTarget::u_compute_texgen_jitter(Fmatrix& m_Texgen_J)
 		0.0f,				0.0f,				1.0f,			0.0f,
 		0.5f,				0.5f,				0.0f,			1.0f
 	};
-	m_Texgen_J.mul	(TexelAdjust,RCache.xforms.m_wvp);
+	m_Texgen_J.mul	(TexelAdjust,Cmd.GetWorldViewProject());
 
 	// rescale - tile it
-	float	scale_X			= RCache.get_width() / float(TEX_jitter);
-	float	scale_Y			= RCache.get_height() / float(TEX_jitter);
+	float	scale_X			= Cmd.GetWidth() / float(TEX_jitter);
+	float	scale_Y			= Cmd.GetHeight() / float(TEX_jitter);
 	//float	offset			= (.5f / float(TEX_jitter));
 	TexelAdjust.scale			(scale_X,	scale_Y,1.f	);
 	//TexelAdjust.translate_over(offset,	offset,	0	);
@@ -303,28 +279,29 @@ u32 CRenderTarget::get_height()
 
 u32 CRenderTarget::get_core_width()
 {
-	return (u32)RCache.get_width();
+	return (u32)GfxCmdList::GetWidth();
 }
 
 u32 CRenderTarget::get_core_height()
 {
-	return (u32)RCache.get_height();
+	return (u32)GfxCmdList::GetHeight();
 }
 
 u32 CRenderTarget::get_target_width()
 {
-	return (u32)RCache.get_target_width();
+	return (u32)GfxCmdList::GetTargetWidth();
 }
 
 u32 CRenderTarget::get_target_height()
 {
-	return (u32)RCache.get_target_height();
+	return (u32)GfxCmdList::GetTargetHeight();
 }
 
 xr_map<xr_string, float> PowerMap;
 
 CRenderTarget::CRenderTarget()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (g_debug_blend_state == nullptr) {
 		RHIBlendDesc desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -506,8 +483,8 @@ CRenderTarget::CRenderTarget()
 	// Editors always render the deferred path, so they need the full target set
 	if (LightingModeIsStaticRender())
     {
-        const u32 width = (u32)RCache.get_target_width();
-        const u32 height = (u32)RCache.get_target_height();
+        const u32 width = (u32)Cmd.GetTargetWidth();
+        const u32 height = (u32)Cmd.GetTargetHeight();
         const auto format = ERHI_FORMAT::R8G8B8A8_UNORM;
         rt_Generic_0.create(r2_RT_generic0, width, height, format);
         rt_Generic_1.create(r2_RT_generic1, width, height, format);
@@ -522,12 +499,12 @@ CRenderTarget::CRenderTarget()
         s_postprocess.create("postprocess");
         s_r1_distort.create("r1_distort");
         s_menu.create("distort");
-        g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_menu.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+        g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+        g_menu.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
         t_envmap_0.create(r2_T_envs0);
         t_envmap_1.create(r2_T_envs1);
         CreateFSTriangle();
-        u_setrt(rt_BackbufferLUT, nullptr, nullptr);
+        u_setrt(Cmd, rt_BackbufferLUT, nullptr, nullptr);
         Msg("* R1 static frame: normalized forward lighting; temporal AA, upscalers and deferred effects disabled");
         return;
     }
@@ -542,9 +519,8 @@ CRenderTarget::CRenderTarget()
 	b_combine = new CBlender_combine();
 	b_ssao = new CBlender_SSAO();
 
-	CRT::CRTCreationFlags isUAV = RFeatureLevel >= RHI_FEATURE_LEVEL_11_0 ? CRT::USE_UAV_FLAG : (CRT::CRTCreationFlags)NULL;
 
-	u32 s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
+	u32 s_dwWidth = (u32)Cmd.GetWidth(), s_dwHeight = (u32)Cmd.GetHeight();
 
 	// The editor viewport is not the window: depth has to match the viewport targets
 	if (Device.IsEditorMode())
@@ -573,9 +549,9 @@ CRenderTarget::CRenderTarget()
 			SurfaceFormat = ERHI_FORMAT::R8_UNORM;
 		}
 
-		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat, 1, isUAV);
-		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, SurfaceFormat, 1, isUAV);
-		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, NormalFormat, 1, isUAV);
+		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat, 1, CRT::USE_UAV_FLAG);
+		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, SurfaceFormat, 1, CRT::USE_UAV_FLAG);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, NormalFormat, 1, CRT::USE_UAV_FLAG);
 
 		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, HDR_Format);
 
@@ -596,7 +572,7 @@ CRenderTarget::CRenderTarget()
 		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), HDR_Format);
 		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), HDR_Format);
 
-		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT, 1, isUAV);
+		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 
 		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
 		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT);
@@ -706,11 +682,11 @@ CRenderTarget::CRenderTarget()
 			for(auto& pRT : rt_Reflection_temp->pRT)
 			{
 				Fvector4 FogPlane = { 2000, 0, 0, 0 };
-				GRHI->ClearTarget(pRT, &FogPlane.x);
+				Cmd.ClearTarget(pRT, &FogPlane.x);
 			}
 
 			Fvector4 Reflections = { 0, 0, 0, 0.75f }; // Hack
-			GRHI->ClearTarget(rt_Reflection_forward->pRT, &Reflections.x);
+			Cmd.ClearTarget(rt_Reflection_forward->pRT, &Reflections.x);
 		}
 
 		CreateEffectSQ<CBlender_sslr>(s_sslr);
@@ -857,7 +833,7 @@ CRenderTarget::CRenderTarget()
 
 		rt_LUM_D.create(r2_RT_luminance_cur, LW_D, LH_D, fmt);
 
-		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
+		Cmd.ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
 
 		f_bloom_factor = 0.5f;
 	}
@@ -869,8 +845,8 @@ CRenderTarget::CRenderTarget()
 		rt_dof_focus.create(r2_RT_dof_focus, FW, FH, fmt);
 		rt_dof_focus_prev.create(r2_RT_dof_focus_prev, FW, FH, fmt);
 
-		GRHI->ClearTarget(rt_dof_focus->pRT, ERTColor::Gray);
-		GRHI->ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Gray);
+		Cmd.ClearTarget(rt_dof_focus->pRT, ERTColor::Gray);
+		Cmd.ClearTarget(rt_dof_focus_prev->pRT, ERTColor::Gray);
 		//fmt = ERHI_FORMAT::R16G16B16A16_FLOAT;
 		u32 CoCW = Device.TargetWidth, CoCH = Device.TargetHeight;
 		rt_dof_coc.create(r2_RT_dof_coc, CoCW, CoCH, fmt);
@@ -898,14 +874,14 @@ CRenderTarget::CRenderTarget()
 		s_combine.create(b_combine, "r2\\combine");
 		s_combine_volumetric.create("combine_volumetric");
 
-		g_combine_VP.create(InputDecl, std::size(InputDecl), RCache.Vertex.Buffer(), RCache.QuadIB);
-		g_combine_cuboid.create(InputDecl, std::size(InputDecl), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+		g_combine_VP.create(InputDecl, std::size(InputDecl), Cmd.Vertex.Buffer(), Cmd.QuadIB);
+		g_combine_cuboid.create(InputDecl, std::size(InputDecl), Cmd.Vertex.Buffer(), Cmd.Index.Buffer());
 
-		g_combine.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
-		g_combine_2UV.create(FVF::F_TL2uv, RCache.Vertex.Buffer(), RCache.QuadIB);
+		g_combine.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
+		g_combine_2UV.create(FVF::F_TL2uv, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 		u32 fvf_aa_AA = D3DFVF_XYZRHW | D3DFVF_TEX7 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3) | D3DFVF_TEXCOORDSIZE2(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6);
-		g_aa_AA.create(fvf_aa_AA, RCache.Vertex.Buffer(), RCache.QuadIB);
+		g_aa_AA.create(fvf_aa_AA, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 		t_envmap_0.create(r2_T_envs0);
 		t_envmap_1.create(r2_T_envs1);
@@ -1056,13 +1032,13 @@ CRenderTarget::CRenderTarget()
 	// PP
 	s_postprocess.create("postprocess");
 	ScopePostprocessShader.create("scope_postprocess");
-	g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);
+	g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
 	// Menu
 	s_menu.create("distort");
-	g_menu.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
+	g_menu.create(FVF::F_TL, Cmd.Vertex.Buffer(), Cmd.QuadIB);
 
-	u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	u_setrt(Cmd, Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 
 	dwWidth = Device.TargetWidth;
 	dwHeight = Device.TargetHeight;
@@ -1093,7 +1069,7 @@ CRenderTarget::~CRenderTarget	()
 {
 	if (EditorWindowDepth != nullptr)
 	{
-		GRHI->SetDepthStencilView(nullptr);
+		RImplementation.Imm().SetDepthStencil(nullptr);
 		GRHI->DevicePtr->RenderDSV = EditorWindowDepth;
 		EditorWindowDepth = nullptr;
 	}
@@ -1187,15 +1163,15 @@ CRenderTarget::~CRenderTarget	()
 	FSTriangleIB->Release();
 }
 
-void CRenderTarget::reset_light_marker( bool bResetStencil)
+void CRenderTarget::reset_light_marker(GfxCmdList& Cmd, bool bResetStencil)
 {
 	dwLightMarkerID = 5;
 	if (bResetStencil)
 	{
 		u32 Offset;
 
-		float _w = RCache.get_width();
-		float _h = RCache.get_height();
+		float _w = Cmd.GetWidth();
+		float _h = Cmd.GetHeight();
 
 		constexpr u32 C = color_rgba(255, 255, 255, 255);
 		float eps = 0;
@@ -1203,28 +1179,28 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		float _dw = 0.5f;
 		float _dh = 0.5f;
 
-		FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+		FVF::TL* pv = (FVF::TL*)Cmd.Vertex.Lock(4, g_combine->vb_stride, Offset);
 		pv->set(-_dw, _h - _dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(-_dw, -_dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(_w - _dw, _h - _dh, eps, 1.f, C, 0, 0);	pv++;
 		pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);	pv++;
 
-		RCache.Vertex.Unlock(4, g_combine->vb_stride);
-		RCache.set_Element(s_occq->E[2]);
-		RCache.set_Geometry(g_combine);
+		Cmd.Vertex.Unlock(4, g_combine->vb_stride);
+		Cmd.SetPass(s_occq->E[2]);
+		Cmd.SetGeometry(g_combine);
 
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
 	}
 }
 
-void CRenderTarget::increment_light_marker()
+void CRenderTarget::increment_light_marker(GfxCmdList& Cmd)
 {
 	dwLightMarkerID += 2;
 
 	const u32 iMaxMarkerValue = 255;
 
 	if(dwLightMarkerID > iMaxMarkerValue)
-		reset_light_marker(true);
+		reset_light_marker(Cmd, true);
 }
 
 bool CRenderTarget::need_to_render_sunshafts()
@@ -1246,6 +1222,6 @@ void CRenderTarget::copy_position()
 {
 	GPU_EVENT(ZBUFFER_COPY);
 
-	GRHI->SetDepthStencilView(nullptr);
-	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
+	RImplementation.Imm().SetDepthStencil(nullptr);
+	RImplementation.Imm().CopySurface(rt_Position->pSurface, RDepth->GetSurface());
 }

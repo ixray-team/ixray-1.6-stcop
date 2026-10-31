@@ -65,7 +65,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 	}
 }
 
-void FProgressive::Render	(float LOD)
+void FProgressive::Render	(GfxCmdList& Cmd, float LOD)
 {
 	//PROF_EVENT("FProgressive::Render");
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP)
@@ -73,9 +73,8 @@ void FProgressive::Render	(float LOD)
 		int lod_id			= iFloor((1.f-clampr(LOD,0.f,1.f))*float(xSWI->count-1)+0.5f);
 		VERIFY				(lod_id>=0 && lod_id<int(xSWI->count));
 		FSlideWindow& SW	= xSWI->sw[lod_id];
-		RCache.set_Geometry	(m_fast->rm_geom);
-		RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_fast->vBase,0,SW.num_verts,m_fast->iBase+SW.offset,SW.num_tris);
-		RCache.stat.r.s_static.add	(SW.num_verts);
+		Cmd.SetGeometry	(m_fast->rm_geom);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, SW.num_tris * 3, m_fast->iBase+SW.offset, m_fast->vBase);
 	} else {
 		int lod_id		= last_lod;
 		if (LOD>=0.f){
@@ -85,9 +84,8 @@ void FProgressive::Render	(float LOD)
 		}
 		VERIFY				(lod_id>=0 && lod_id<int(nSWI.count));
 		FSlideWindow& SW	= nSWI.sw[lod_id];
-		RCache.set_Geometry	(rm_geom);
-		RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,SW.num_verts,iBase+SW.offset,SW.num_tris);
-		RCache.stat.r.s_static.add	(SW.num_verts);
+		Cmd.SetGeometry	(rm_geom);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, SW.num_tris * 3, iBase+SW.offset, vBase);
 	}
 }
 

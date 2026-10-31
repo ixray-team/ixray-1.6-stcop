@@ -1,14 +1,9 @@
-<w>
-	<element_0 ps="accum_volumetric" vs="accum_volumetric" fog="0" zread="1" zwrite="0">
-		<blend status="1" src="one" dest="one" />
-		<sort status="0" count="2" />
-
-        <texture name="s_lmap" rt="t_base" />
-        <texture name="s_smap" rt="$user$smap_depth" />
-		<texture name="s_noise" rt="fx\fx_noise" />
-
-        <sampler name="smp_rtlinear" />
-        <sampler name="smp_linear" />
-        <sampler name="smp_smap" />
-    </element_0>
-</w>
+<shader>
+	<normal_hq sort="2">
+		<pass vs="accum_volumetric" ps="accum_volumetric" zwrite="0" blend="one,one">
+			<texture name="s_lmap" src="@base"/>
+			<texture name="s_smap" src="$user$smap_depth"/>
+			<texture name="s_noise" src="fx\fx_noise"/>
+		</pass>
+	</normal_hq>
+</shader>

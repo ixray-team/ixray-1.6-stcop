@@ -30,6 +30,7 @@ void dxLensFlareRender::Copy(ILensFlareRender &_in)
 void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool bGradient)
 {
 	PROF_EVENT("dxLensFlareRender::Render");
+	GfxCmdList& Cmd = RImplementation.Imm();
 	Fcolor dwLight;
 	Fcolor color;
 	Fvector vec, vecSx, vecSy;
@@ -46,7 +47,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 			Fvector p; u32 color; Fvector2 t;
 		} buff[4];
 	};
-	LITF* pv = (LITF*)RCache.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
+	LITF* pv = (LITF*)Cmd.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
 	Fvector& vecLight = owner.vecLight;
 	if (bSun)
 	{
@@ -127,25 +128,26 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 			}
 		}
 	}
-	RCache.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
+	Cmd.Vertex.Unlock(_2render.size() * 4, hGeom.stride());
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Geometry(hGeom);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetGeometry(hGeom);
 
 	for(u32 i = 0; i < _2render.size(); i++)
 	{
 		if (_2render[i])
 		{
 			u32 vBase = i * 4 + VS_Offset;
-			RCache.set_Shader(_2render[i]);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, 4, 0, 2);
+			Cmd.SetPass(_2render[i]);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, vBase);
 		}
 	}
 }
 
 void dxLensFlareRender::OnDeviceCreate()
 {
-	hGeom.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+	GfxCmdList& Cmd = RImplementation.Imm();
+	hGeom.create(FVF::F_LIT,Cmd.Vertex.Buffer(),Cmd.QuadIB);
 }
 
 void dxLensFlareRender::OnDeviceDestroy()

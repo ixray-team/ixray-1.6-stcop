@@ -267,7 +267,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		}
 	}
 
-	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
 	if (!val_bUI && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
 	{
@@ -398,7 +398,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		mapMatrixStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapMatrixTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
 
-		Ntex->val.visuals.push_back({ SSA, val_pObject, pVisual, *val_pTransform });
+		Ntex->val.push_back({ SSA, val_pObject, pVisual, *val_pTransform });
 	}
 }
 
@@ -436,7 +436,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	// a) Allow to optimize RT order
 	// b) Should be rendered to special distort buffer in another pass
 	if (!pVisual->shader._get()) return;
-	ShaderElement* sh_d = pVisual->shader->E[4] ? &*pVisual->shader->E[4] : nullptr;
+	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
 	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
 	{
@@ -815,7 +815,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 			{
 				add_leafs_Static(Casted->children, *this);
 			}
-		}
+		}return;
 	case MT_TREE_ST:
 	case MT_TREE_PM:
 	{

@@ -105,7 +105,7 @@ namespace R_dsgraph
 	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;
 	using mapNormalItems = mapNormalDirect;
 	using mapNormalTextures = FixedMAP<STextureList*,mapNormalItems,render_allocator>;
-	using mapNormalStates = FixedMAP<dx10State*,mapNormalTextures,render_allocator>;
+	using mapNormalStates = FixedMAP<GfxPipelineState*,mapNormalTextures,render_allocator>;
 	using mapNormalCS = FixedMAP<R_constant_table*,mapNormalStates,render_allocator>;
 	struct	mapNormalAdvStages
 	{
@@ -122,14 +122,9 @@ namespace R_dsgraph
 
 
 	// MATRIX
-	using mapMatrixDirect = xr_vector<_MatrixItem,render_allocator::helper<_MatrixItem>::result>;
-	struct mapMatrixItems
-	{
-		mapMatrixDirect visuals;
-		xr_vector<dxRender_Visual*, render_allocator::helper<dxRender_Visual*>::result> particles;
-	};
+	using mapMatrixItems = xr_vector<_MatrixItem,render_allocator::helper<_MatrixItem>::result>;
 	using mapMatrixTextures = FixedMAP<STextureList*,mapMatrixItems,render_allocator>;
-	using mapMatrixStates = FixedMAP<dx10State*,mapMatrixTextures,render_allocator>;
+	using mapMatrixStates = FixedMAP<GfxPipelineState*,mapMatrixTextures,render_allocator>;
 	using mapMatrixCS = FixedMAP<R_constant_table*,mapMatrixStates,render_allocator>;
 	struct	mapMatrixAdvStages
 	{

@@ -60,7 +60,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 	{
 		if(!!oBlend.value)
 		{
-			RImplementation.addShaderOption("FORWARD_ONLY", "1");
+			C.AddDefine("FORWARD_ONLY", "1");
 		}
 
 		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, nullptr, true);
@@ -77,7 +77,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)
 		{
-		case SE_R1_NORMAL_HQ:
+		case ShaderVariant::NormalHQ:
 			{
 				const char*					sname	= "lmap";
 				if (C.bDetail_Diffuse)	sname	= "lmap_dt";
@@ -90,7 +90,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 				C.r_End		();
 			}
 			break;
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			{
 				const char*					sname	= "lmap";
 				if (oBlend.value)	C.r_Pass	(sname,sname,true,true,true,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,oAREF.value);
@@ -101,7 +101,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 				C.r_End		();
 			}
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			if (!oBlend.value)	
 			{
 				C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
@@ -111,7 +111,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 				C.r_End			();
 			}
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			if (!oBlend.value)	
 			{
 				C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
@@ -121,7 +121,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 				C.r_End			();
 			}
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			// Lighting only, not use alpha-channel
 			C.r_Pass		("lmap_l","lmap_l",false);
 			r1_tex(C, "s_base", C.L_textures[0]);

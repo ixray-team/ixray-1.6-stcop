@@ -4,18 +4,12 @@
 #pragma once
 #include "../../xrEngine/ETextureParams.h"
 
-class cl_dt_scaler;
-
 class CTextureDescrMngr
 {
 	struct texture_assoc
 	{
 		shared_str			detail_name;
-		RHIShaderConstant::Setup*	cs;
-		u8					usage;
-        texture_assoc       () : cs(nullptr), usage(0) {}
-		~texture_assoc		() { xr_delete(cs); }
-
+		u8					usage = 0;
 	};
 	struct texture_spec
 	{
@@ -35,7 +29,7 @@ class CTextureDescrMngr
 	using map_TD = xr_map<shared_str, texture_desc>;
 	using map_TDIt = map_TD::iterator;
 
-	using map_CS = xr_map<shared_str, cl_dt_scaler*>;
+	using map_CS = xr_map<shared_str, float>;
 	using map_CSIt = map_CS::iterator;
 
 	map_TD									m_texture_details;
@@ -52,7 +46,7 @@ public:
 	shared_str	GetBumpName		(const shared_str& tex_name) const;
 	float		GetMaterial		(const shared_str& tex_name) const;
 	void		GetTextureUsage	(const shared_str& tex_name, bool& bDiffuse, bool& bBump) const;
-	bool		GetDetailTexture(const shared_str& tex_name, const char*& res, RHIShaderConstant::Setup* &CS) const;
+	bool		GetDetailTexture(const shared_str& tex_name, const char*& res, const float*& Scale) const;
 	bool		UseSteepParallax(const shared_str& tex_name) const;
 	bool		UsePBRTexures	(const shared_str& tex_name) const;
 

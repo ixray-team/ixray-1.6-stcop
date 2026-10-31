@@ -37,8 +37,8 @@ public:
 	void	SetScreenSize( int width, int height ) {if (m_bInited) m_pRenderer->SetScreenSize( width, height ); }
 
 	//		Interface for fluid volume 
-	void	Update( dx103DFluidData &FluidData, float timestep );
-	void	RenderFluid( dx103DFluidData &FluidData );
+	void	Update( GfxCmdList& Cmd, dx103DFluidData &FluidData, float timestep );
+	void	RenderFluid( GfxCmdList& Cmd, dx103DFluidData &FluidData );
 
 	//		Interface for blenders
 	int		GetTextureWidth() const { return m_iTextureWidth; }
@@ -94,15 +94,15 @@ private:
 	void	DetachAndSwapFluidData( dx103DFluidData &FluidData );
 
 	//	Simulation code
-	void	AdvectColorBFECC( float timestep, bool bTeperature );
-	void	AdvectColor( float timestep, bool bTeperature );
-	void	AdvectVelocity( float timestep, float fGravity );
-	void	ApplyVorticityConfinement( float timestep );
-	void	ApplyExternalForces(const dx103DFluidData &FluidData, float timestep );
-	void	ComputeVelocityDivergence( float timestep );
-	void	ComputePressure( float timestep );
-	void	ProjectVelocity( float timestep );
-	void	UpdateObstacles( const dx103DFluidData &FluidData, float timestep );
+	void	AdvectColorBFECC( GfxCmdList& Cmd, float timestep, bool bTeperature );
+	void	AdvectColor( GfxCmdList& Cmd, float timestep, bool bTeperature );
+	void	AdvectVelocity( GfxCmdList& Cmd, float timestep, float fGravity );
+	void	ApplyVorticityConfinement( GfxCmdList& Cmd, float timestep );
+	void	ApplyExternalForces(GfxCmdList& Cmd, const dx103DFluidData &FluidData, float timestep );
+	void	ComputeVelocityDivergence( GfxCmdList& Cmd, float timestep );
+	void	ComputePressure( GfxCmdList& Cmd, float timestep );
+	void	ProjectVelocity( GfxCmdList& Cmd, float timestep );
+	void	UpdateObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, float timestep );
 
 private:
 	bool	m_bInited;

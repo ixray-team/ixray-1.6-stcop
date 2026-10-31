@@ -1,0 +1,16 @@
+<shader>
+	<normal>
+		<pass vs="clouds" ps="clouds" zfunc="always" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_clouds0" src="null"/>
+			<texture name="s_clouds1" src="null"/>
+		</pass>
+	</normal>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal>
+			<pass vs="clouds" ps="clouds" zwrite="0" blend="srcalpha,invsrcalpha">
+				<texture name="s_clouds0" src="null"/>
+				<texture name="s_clouds1" src="null"/>
+			</pass>
+		</normal>
+	</option>
+</shader>

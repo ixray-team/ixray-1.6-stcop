@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="hud3d" ps="hud3d" zwrite="0" blend="srcalpha,invsrcalpha" color="rgb">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

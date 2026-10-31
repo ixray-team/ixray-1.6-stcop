@@ -242,7 +242,7 @@ void CSkeletonX::Release()
 		Fvisual::Release();
 }
 
-void CSkeletonX::Render(float LOD)
+void CSkeletonX::Render(GfxCmdList& Cmd, float LOD)
 {
 	//PROF_EVENT("CSkeletonX_PM::Render");
 	if (!visible) return;
@@ -257,13 +257,13 @@ void CSkeletonX::Render(float LOD)
 		}
 		VERIFY(lod_id >= 0 && lod_id<int(nSWI.count));
 		FSlideWindow& SW = nSWI.sw[lod_id];
-		_Render(rm_geom, SW.num_verts, SW.offset, SW.num_tris);
+		_Render(Cmd, rm_geom, SW.num_verts, SW.offset, SW.num_tris);
 	}
 	else
-		_Render(rm_geom, vCount, 0, dwPrimitives);
+		_Render(Cmd, rm_geom, vCount, 0, dwPrimitives);
 }
 
-ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
+ICF void transfer_matrices(GfxCmdList& Cmd, CBoneInstance* BI, u16 bonecount, bool phase_normal)
 {
 	struct arraybuff{Fvector4 buff[3];};
 
@@ -272,7 +272,7 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 		return;
 	}
 
-	CBSkin& Skin = RCache.Constants.Write<CBSkin>();
+	CBSkin& Skin = Cmd.Constants.WriteSkin(bonecount);
 	arraybuff* array = reinterpret_cast<arraybuff*>(Skin.sbones_array);
 	arraybuff* array_old = reinterpret_cast<arraybuff*>(Skin.sbones_array_old);
 
@@ -313,41 +313,39 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 	}
 }
 
-void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+void CSkeletonX::_Render(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
 	//PROF_EVENT("CSkeletonX::_Render");
 	bool phase_normal = RImplementation.phase == RImplementation.PHASE_NORMAL;
 
 	if(phase_normal)
 	{
-		Parent->StoreVisualMatrix(RCache.xforms.m_w);
+		Parent->StoreVisualMatrix(Cmd.GetObjectTransform());
 
 		if(RenderMode != RM_SINGLE)
-			RCache.set_xform_world_old(Parent->mOldWorldMartrix);
+			Cmd.SetObjectTransform(Cmd.GetObjectTransform(), Parent->mOldWorldMartrix);
 	}
 
 	switch (RenderMode)
 	{
 	case RM_SKINNING_SOFT:
-		_Render_soft(hGeom,vCount,iOffset,pCount);
+		_Render_soft(Cmd, hGeom,vCount,iOffset,pCount);
 		break;
 	case RM_SINGLE:	
 		{
 			//PROF_EVENT("RM_SINGLE")
 			CBoneInstance& B = Parent->bone_instances[u16(RMS_boneid)];
 			const Fmatrix& R = phase_normal ? B.mRenderTransform_tmp : B.mRenderTransform;
-			Fmatrix	W;	W.mul_43(RCache.xforms.m_w, R);
-
-			RCache.set_xform_world	(W);
-
+			Fmatrix	W;	W.mul_43(Cmd.GetObjectTransform(), R);
+			Fmatrix	O = Fidentity;
 			if(phase_normal)
 			{
-				Fmatrix	O; O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
-				RCache.set_xform_world_old(O);
+				O.mul_43(Parent->mOldWorldMartrix, B.mRenderTransform_old);
 			}
+			Cmd.SetObjectTransform(W, O);
 
-			RCache.set_Geometry(hGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, vCount, iOffset, pCount);
+			Cmd.SetGeometry(hGeom);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, 0);
 		}
 		break;
 	case RM_SKINNING_1B:
@@ -356,19 +354,19 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 	case RM_SKINNING_4B:
 		{
 			//PROF_EVENT("RM_SKINNING")
-			transfer_matrices(Parent->bone_instances, u16(RMS_bonecount), phase_normal);
-			RCache.set_Geometry(hGeom);
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,vCount,iOffset,pCount);
+			transfer_matrices(Cmd, Parent->bone_instances, u16(RMS_bonecount), phase_normal);
+			Cmd.SetGeometry(hGeom);
+			Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, 0);
 		}
 		break;
 	}
 }
-void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount_, u32 iOffset, u32 pCount)
+void CSkeletonX::_Render_soft(GfxCmdList& Cmd, ref_geom& hGeom, u32 vCount_, u32 iOffset, u32 pCount)
 {
 	//PROF_EVENT("CSkeletonX::_Render_soft")
 	u32 vOffset = cache_vOffset;
 
-	_VertexStream& _VS = RCache.Vertex;
+	_VertexStream& _VS = Cmd.Vertex;
 	if (cache_DiscardID!=_VS.DiscardID() || vCount_ !=cache_vCount )
 	{
 		vertRender*	Dest = (vertRender*)_VS.Lock(vCount_,hGeom->vb_stride,vOffset);
@@ -392,8 +390,8 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount_, u32 iOffset, u32 pCo
 		_VS.Unlock(vCount_,hGeom->vb_stride);
 	}
 
-	RCache.set_Geometry(hGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,vCount,iOffset,pCount);
+	Cmd.SetGeometry(hGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, pCount * 3, iOffset, vOffset);
 }
 
 void CSkeletonX::Load(const char* N, IReader* data, u32 dwFlags)
@@ -417,14 +415,11 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 	bool FoundedChunk = !!data->find_chunk(OGF_VERTICES);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
 
-	//u16 hw_bones_cnt = u16((Caps.geometry.dwRegisters-22)/3);
-	//	Igor: some shaders in r1 need more free constant registers
-	u16 hw_bones_cnt = 65; // 75 // u16((256 - 22 - 3) / 3);
+	// HW vertices pack bone ids into u8
+	constexpr u16 hw_bones_cnt = MAX_BONES_COUNT - 1;
 	u16 sw_bones_cnt = 0;
 
-	hw_bones_cnt = 254;
-
-	buffer_vector<u16> bids(_alloca(hw_bones_cnt * sizeof(u16)), hw_bones_cnt);
+	buffer_vector<u16> bids(_alloca(MAX_BONES_COUNT * sizeof(u16)), MAX_BONES_COUNT);
 	//если поймаете исключение замените на xr_vector
 
 	u32 dwVertType,size,it,crc;
@@ -803,7 +798,7 @@ void CSkeletonX::_Load_hw(void* _verts_)
 	{
 	case RM_SKINNING_SOFT:
 	{
-		rm_geom.create(vertRenderFVF, RCache.Vertex.Buffer(), p_rm_Indices);
+		rm_geom.create(vertRenderFVF, RImplementation.Imm().Vertex.Buffer(), p_rm_Indices);
 		break;
 	}
 	case RM_SINGLE:

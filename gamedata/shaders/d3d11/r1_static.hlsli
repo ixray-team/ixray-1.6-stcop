@@ -80,7 +80,7 @@ float2 calc_xz_wave(float2 direction, float rigidity)
 {
     return direction * rigidity;
 }
-Texture2D s_att;
+Texture2D s_att : register(t28);
 
 struct vf_point
 {

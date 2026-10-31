@@ -1,8 +1,8 @@
 #include "common.hlsli"
 #include "shadow.hlsli"
 
-Texture3D s_water;
-Texture2D s_waterFall;
+Texture3D s_water : register(t25);
+Texture2D s_waterFall : register(t26);
 
 #include "shared\post_cb.hlsli"
 

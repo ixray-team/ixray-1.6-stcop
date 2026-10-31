@@ -12,7 +12,6 @@
 struct SDL_Window;
 
 
-#define RFeatureLevel (GRHI->DevicePtr->FeatureLevel)
 #define RDepth (GRHI->DevicePtr->RenderDSV)
 #define RSwapchainTarget (GRHI->DevicePtr->SwapChainRTV)
 

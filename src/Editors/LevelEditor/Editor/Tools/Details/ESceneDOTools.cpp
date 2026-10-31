@@ -144,6 +144,7 @@ bool EDetailManager::IsObjectsDrawn()
 
 void EDetailManager::OnRender(int priority, bool strictB2F)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	if (!IsLoaded)
 	{
 		return;
@@ -157,7 +158,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 			{
 				if (m_Flags.is(flSlotBoxesDraw))
 				{
-					RCache.set_xform_world(Fidentity);
+					Cmd.SetObjectTransform(Fidentity);
 					EDevice->SetShader(GEditorDraw.WireShader);
 
 					Fvector c;
@@ -193,7 +194,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 			}
 			else
 			{
-				RCache.set_xform_world(Fidentity);
+				Cmd.SetObjectTransform(Fidentity);
 				if (m_Flags.is(flBaseTextureDraw))
 				{
 					m_Base.Render(m_Flags.is(flBaseTextureBlended));

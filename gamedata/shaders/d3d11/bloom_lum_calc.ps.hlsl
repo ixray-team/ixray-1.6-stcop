@@ -12,7 +12,7 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 
 #include "common.hlsli"
 
-uniform Texture2D p_image;
+uniform Texture2D p_image : register(t25);
 
 #include "shared\post_cb.hlsli"
 

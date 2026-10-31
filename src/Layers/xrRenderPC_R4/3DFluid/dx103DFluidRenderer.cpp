@@ -335,10 +335,10 @@ void dx103DFluidRenderer::CreateRayDataResources( int width, int height )
 	}
 }
 
-void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
+void dx103DFluidRenderer::Draw(GfxCmdList& Cmd, const dx103DFluidData &FluidData)
 {
 	//	We don't need ZB anyway
-	GRHI->SetDepthStencilView(0);
+	Cmd.SetDepthStencil(0);
 
 	CRenderTarget* pTarget = RImplementation.Target;
 	const dx103DFluidData::Settings &VolumeSettings = FluidData.GetSettings();
@@ -350,7 +350,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 
 	//	Set shader element to set up all necessary constants to constant buffer
 	//	If you change constant buffer layout make sure this hack works ok.
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
+	Cmd.SetPass(m_RendererTechnique[RS_CompRayData_Back]);
 
 	// Ray cast and render to a temporary buffer
 	//=========================================================================
@@ -359,97 +359,97 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	//  This function will render to a buffer of float4 vectors, where
 	//  xyz is starting position of the ray in grid space
 	//  w is the length of the ray in view space
-	ComputeRayData(FluidData);
+	ComputeRayData(Cmd, FluidData);
 
 	// Do edge detection on this image to find any 
 	//  problematic areas where we need to raycast at higher resolution
-	ComputeEdgeTexture(FluidData);
+	ComputeEdgeTexture(Cmd, FluidData);
 
 	// Raycast into the temporary render target: 
 	//  raycasting is done at the smaller resolution, using a fullscreen quad
-	GRHI->ClearTarget(RT[RRT_RayCastTex]->pRT);
-	pTarget->u_setrt(RT[RRT_RayCastTex],0,0,0);		// LDR RT
+	Cmd.ClearTarget(RT[RRT_RayCastTex]->pRT);
+	pTarget->u_setrt(Cmd, RT[RRT_RayCastTex],0,0,0);		// LDR RT
 
 	RImplementation.rmNormal();
 
 	if (bRenderFire)
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFire]);
+		Cmd.SetPass(m_RendererTechnique[RS_QuadRaycastFire]);
 	else
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFog]);
+		Cmd.SetPass(m_RendererTechnique[RS_QuadRaycastFog]);
 
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
+	Prepare(Cmd, FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
 
-	DrawScreenQuad();
+	DrawScreenQuad(Cmd);
 
 	//	Restore render state
-	pTarget->phase_scene_forward(); // LDR RT
+	pTarget->phase_scene_forward(Cmd); // LDR RT
 
 	if (bRenderFire)
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
+		Cmd.SetPass(m_RendererTechnique[RS_QuadRaycastCopyFire]);
 	else
-		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog]);
+		Cmd.SetPass(m_RendererTechnique[RS_QuadRaycastCopyFog]);
 
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
+	Prepare(Cmd, FluidData, Cmd.GetWidth(), Cmd.GetHeight(), true);
 
-	RCache.Constants.Write<CBFluid>().DiffuseLight.set(LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
+	Cmd.Constants.Write<CBFluid>().DiffuseLight.set(LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
-	DrawScreenQuad();
+	DrawScreenQuad(Cmd);
 }
 
-void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
+void dx103DFluidRenderer::ComputeRayData(GfxCmdList& Cmd, const dx103DFluidData& FluidData)
 {
 	// Clear the color buffer to 0
-	GRHI->ClearTarget(RT[RRT_RayDataTex]->pRT);
+	Cmd.ClearTarget(RT[RRT_RayDataTex]->pRT);
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
+	pTarget->u_setrt(Cmd, RT[RRT_RayDataTex],0,0,0);		// LDR RT
+	Cmd.SetPass(m_RendererTechnique[RS_CompRayData_Back]);
 
 	// Setup viewport to match the window's backbuffer
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), false);
+	Prepare(Cmd, FluidData, Cmd.GetWidth(), Cmd.GetHeight(), false);
 
-	DrawBox();
+	DrawBox(Cmd);
 
-	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
+	pTarget->u_setrt(Cmd, RT[RRT_RayDataTex],0,0,0);		// LDR RT
+	Cmd.SetPass(m_RendererTechnique[RS_CompRayData_Front]);
+	Prepare(Cmd, FluidData, Cmd.GetWidth(), Cmd.GetHeight(), true);
 
-	DrawBox();
+	DrawBox(Cmd);
 
 }
 
-void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
+void dx103DFluidRenderer::ComputeEdgeTexture(GfxCmdList& Cmd, const dx103DFluidData& FluidData)
 {
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt(RT[RRT_RayDataTexSmall],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
+	pTarget->u_setrt(Cmd, RT[RRT_RayDataTexSmall],0,0,0);		// LDR RT
+	Cmd.SetPass(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
 
 	// First setup viewport to match the size of the destination low-res texture
 	RImplementation.rmNormal();
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
+	Prepare(Cmd, FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
 
 	// Downsample the rayDataTexture to a new small texture, simply using point sample (no filtering)
-	DrawScreenQuad();
+	DrawScreenQuad(Cmd);
 
 	// Create an edge texture, performing edge detection on 'rayDataTexSmall'
-	pTarget->u_setrt(RT[RRT_EdgeTex],0,0,0);		// LDR RT
-	RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, true);
+	pTarget->u_setrt(Cmd, RT[RRT_EdgeTex],0,0,0);		// LDR RT
+	Cmd.SetPass(m_RendererTechnique[RS_QuadEdgeDetect]);
+	Prepare(Cmd, FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, true);
 
-	DrawScreenQuad();
+	DrawScreenQuad(Cmd);
 }
 
-void dx103DFluidRenderer::DrawScreenQuad()
+void dx103DFluidRenderer::DrawScreenQuad(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomQuadVertex);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 0, 2);
+	Cmd.SetGeometry(m_GeomQuadVertex);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 4, 0);
 }
 
-void dx103DFluidRenderer::DrawBox()
+void dx103DFluidRenderer::DrawBox(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomGridBox);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, m_iGridBoxVertNum ,0, m_iGridBoxFaceNum);
+	Cmd.SetGeometry(m_GeomGridBox);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iGridBoxFaceNum * 3, 0, 0);
 }
 
 void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData)
@@ -519,30 +519,30 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 	}
 }
 
-void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly)
+void dx103DFluidRenderer::Prepare(GfxCmdList& Cmd, const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly)
 {
-	RCache.Constants.Write<CBFluid>().RTWidth = (float)RTWidth;
-	RCache.Constants.Write<CBFluid>().RTHeight = (float)RTHeight;
+	Cmd.Constants.Write<CBFluid>().RTWidth = (float)RTWidth;
+	Cmd.Constants.Write<CBFluid>().RTHeight = (float)RTHeight;
 
 
 	//if (SizeOnly)
 	//	return;
 
 	const Fmatrix& transform = FluidData.GetTransform();
-	RCache.set_xform_world(transform);
+	Cmd.SetObjectTransform(transform);
 
 	// The near and far planes are used to unproject the scene's z-buffer values
-	RCache.Constants.Write<CBFluid>().ZNear = Device.fViewportNear;
-	RCache.Constants.Write<CBFluid>().ZFar = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+	Cmd.Constants.Write<CBFluid>().ZNear = Device.fViewportNear;
+	Cmd.Constants.Write<CBFluid>().ZFar = g_pGamePersistent->Environment().CurrentEnv->far_plane;
 
 	auto gridWorld = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&transform));
-	auto View = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&RCache.xforms.m_v));
+	auto View = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&Cmd.GetView().View));
 	auto WorldView = gridWorld * View;
 
 	// The length of one of the axis of the worldView matrix is the length of longest side of the box
 	//  in view space. This is used to convert the length of a ray from view space to grid space.
 	float worldScale = XMVectorGetX(XMVector3Length(WorldView.r[0]));
-	RCache.Constants.Write<CBFluid>().gridScaleFactor = worldScale;
+	Cmd.Constants.Write<CBFluid>().gridScaleFactor = worldScale;
 
 	// We prepend the current world matrix with this other matrix which adds an offset (-0.5, -0.5, -0.5)
 	//  and scale factors to account for unequal number of voxels on different sides of the volume box. 
@@ -550,20 +550,20 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	//  raytracing through it.
 	WorldView = m_gridMatrix * WorldView;
 
-	auto temp = RCache.xforms.m_p;
+	auto temp = Cmd.GetView().Project;
 	temp._31 += ps_r_taa_jitter.x;
 	temp._32 += ps_r_taa_jitter.y;
 
 	// worldViewProjection is used to transform the volume box to screen space
 	auto Projection = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&temp));
 	auto WorldViewProjection = WorldView * Projection;
-	RCache.Constants.Write<CBFluid>().WorldViewProjection = *(Fmatrix*)&WorldViewProjection;
+	Cmd.Constants.Write<CBFluid>().WorldViewProjection = *(Fmatrix*)&WorldViewProjection;
 
 	// invWorldViewProjection is used to transform positions in the "near" plane into grid space
 	Fmatrix tempMatrix1{};
 	auto InvWorldViewProjection = XMMatrixInverse(nullptr, WorldViewProjection);
 	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&tempMatrix1), InvWorldViewProjection);
-	RCache.Constants.Write<CBFluid>().InvWorldViewProjection = tempMatrix1;
+	Cmd.Constants.Write<CBFluid>().InvWorldViewProjection = tempMatrix1;
 
 	// Compute the inverse of the worldView matrix 
 	auto WorldViewInv = XMMatrixInverse(nullptr, WorldView);
@@ -572,7 +572,7 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	auto EyeInGridSpace = XMVector3Transform(XMVectorSet(0, 0, 0, 0), WorldViewInv);
 	Fvector4 tempVector{};
 	XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&tempVector), EyeInGridSpace);
-	RCache.Constants.Write<CBFluid>().eyeOnGrid = tempVector;
+	Cmd.Constants.Write<CBFluid>().eyeOnGrid = tempVector;
 
-	RCache.Constants.Write<CBFluid>().DepthUnpack.set(RCache.xforms.m_p._43, RCache.xforms.m_p._33, 0.0f, 0.0f);
+	Cmd.Constants.Write<CBFluid>().DepthUnpack.set(Cmd.GetView().Project._43, Cmd.GetView().Project._33, 0.0f, 0.0f);
 }

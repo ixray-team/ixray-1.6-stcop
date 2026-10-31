@@ -40,5 +40,5 @@ public:
 	void prepare_local_clips(u32 sector_count, u32 portal_count);
 	void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
 	void fade_portal(CPortal* _p, float ssa);
-	void fade_render();
+	void fade_render(GfxCmdList& Cmd);
 };

@@ -205,6 +205,7 @@ const int	MAX_R_VERTEX	= 4096;
 
 void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
 {
+    GfxCmdList& Cmd = RImplementation.Imm();
     if (!IsLoaded)
         return;
 
@@ -218,13 +219,13 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
             // Projection and xform
             float _43				= EDevice->mProject._43;
             EDevice->mProject._43 	-= 0.01f;
-            RCache.set_xform_world	(Fidentity);
-            RCache.set_xform_project(EDevice->mProject);
+            Cmd.SetObjectTransform(Fidentity);
+            Cmd.SetView(Cmd.GetView().View, EDevice->mProject);
 
             float	ssaCLIP		   	= r_ssaDISCARD/4;
 
             u32			w_offset   	= 0;
-            FVF::LIT*	w_verts 	= (FVF::LIT*) RCache.Vertex.Lock(MAX_R_VERTEX,hGeom->vb_stride,w_offset);
+            FVF::LIT*	w_verts 	= (FVF::LIT*) Cmd.Vertex.Lock(MAX_R_VERTEX,hGeom->vb_stride,w_offset);
             FVF::LIT*	w_start 	= w_verts;
 
             for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
@@ -241,12 +242,12 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
 	                        u32 w_count	= u32(w_verts-w_start);
                             if (w_count+3>MAX_R_VERTEX){
                                 // Flush stream
-                                RCache.Vertex.Unlock   	(w_count,hGeom->vb_stride);
-                                RCache.set_Shader		(slot->shader);
-                                RCache.set_Geometry		(hGeom);
-                                RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,w_offset,w_count/3);
+                                Cmd.Vertex.Unlock   	(w_count,hGeom->vb_stride);
+                                Cmd.SetPass		(slot->shader);
+                                Cmd.SetGeometry		(hGeom);
+                                Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
                                 // Restart (re-lock/re-calc)
-                                w_verts					= (FVF::LIT*)	RCache.Vertex.Lock	(MAX_R_VERTEX,hGeom->vb_stride,w_offset);
+                                w_verts					= (FVF::LIT*)	Cmd.Vertex.Lock	(MAX_R_VERTEX,hGeom->vb_stride,w_offset);
                                 w_start					= w_verts;
                             }
                             // real fill buffer
@@ -262,16 +263,16 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
             }
             // Flush stream
             u32 w_count				= u32(w_verts-w_start);
-            RCache.Vertex.Unlock	(w_count,hGeom->vb_stride);
+            Cmd.Vertex.Unlock	(w_count,hGeom->vb_stride);
             if (w_count)			
             {
-				RCache.set_Shader	(slot->shader);
-                RCache.set_Geometry	(hGeom);
-                RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,w_offset,w_count/3);
+				Cmd.SetPass	(slot->shader);
+                Cmd.SetGeometry	(hGeom);
+                Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_count, w_offset);
             }
             // Projection
             EDevice->mProject._43		= _43;
-            RCache.set_xform_project	(EDevice->mProject);
+            Cmd.SetView(Cmd.GetView().View, EDevice->mProject);
         }
         if ((1==priority)&&(false==strictB2F)){
             for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
@@ -586,7 +587,7 @@ bool ESceneWallmarkTool::Export(const char* path)
 
 void ESceneWallmarkTool::OnDeviceCreate()
 {
-	hGeom.create	(FVF::F_LIT, RCache.Vertex.Buffer(), NULL);
+	hGeom.create	(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), NULL);
 }
 
 void ESceneWallmarkTool::OnDeviceDestroy()

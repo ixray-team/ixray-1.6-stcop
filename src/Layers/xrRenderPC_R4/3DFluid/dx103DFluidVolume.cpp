@@ -23,7 +23,7 @@ void dx103DFluidVolume::Load( const char* N, IReader *data, u32 dwFlags )
 	shader.create("fluid3d_stub","water\\water_ryaska1");
 
 	//	Create debug geom
-	m_Geom.create			(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
+	m_Geom.create			(FVF::F_LIT, RImplementation.Imm().Vertex.Buffer(), RImplementation.Imm().QuadIB);
 
 	Type = MT_3DFLUIDVOLUME;
 
@@ -93,7 +93,7 @@ void dx103DFluidVolume::Load( const char* N, IReader *data, u32 dwFlags )
 	*/
 }
 
-void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
+void dx103DFluidVolume::Render( GfxCmdList& Cmd, float LOD )		// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored ?
 {
 	if (LightingModeIsStaticRender())
 		return;
@@ -104,7 +104,7 @@ void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - m
 
 	u32 dwOffset,dwCount;
 
-	FVF::LIT* pv_start	= (FVF::LIT*)RCache.Vertex.Lock(6*3*2,m_Geom->vb_stride,dwOffset);
+	FVF::LIT* pv_start	= (FVF::LIT*)Cmd.Vertex.Lock(6*3*2,m_Geom->vb_stride,dwOffset);
 	FVF::LIT* pv		= pv_start;
 
 	u32 clr = 0xFFFFFFFF;
@@ -155,18 +155,18 @@ void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - m
 
 	}
 
-	RCache.set_xform_world( m_FluidData.GetTransform() );
+	Cmd.SetObjectTransform(m_FluidData.GetTransform());
 
 	dwCount = u32( pv - pv_start );
-	RCache.Vertex.Unlock( dwCount, m_Geom->vb_stride );
-	RCache.set_Geometry( m_Geom );
+	Cmd.Vertex.Unlock( dwCount, m_Geom->vb_stride );
+	Cmd.SetGeometry( m_Geom );
 
 	//	Render obstacles
 	const xr_vector<Fmatrix> &Obstacles = m_FluidData.GetObstaclesList();
 	int iObstNum = (int)Obstacles.size();
 	for (int i=0; i<iObstNum; ++i)
 	{
-		RCache.set_xform_world( Obstacles[i] );
+		Cmd.SetObjectTransform(Obstacles[i]);
 	}
 	
 //	FluidManager.Update( m_FluidData, 1.0f/30.0f);
@@ -175,8 +175,8 @@ void dx103DFluidVolume::Render( float LOD )		// LOD - Level Of Detail  [0.0f - m
 	const float fTimeStep = 2.0f;
 
 	//FluidManager.Update( m_FluidData, 2.0f);
-	FluidManager.Update( m_FluidData, fTimeStep);
-	FluidManager.RenderFluid( m_FluidData );
+	FluidManager.Update( Cmd, m_FluidData, fTimeStep);
+	FluidManager.RenderFluid( Cmd, m_FluidData );
 }
 
 void dx103DFluidVolume::Copy( dxRender_Visual *pFrom )

@@ -9,8 +9,14 @@
 #include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
-#define DU_DRAW_DIP	RCache.dbg_DIP
-#define DU_DRAW_DP	RCache.DrawTriangleFan
+namespace DebugDraw
+{
+	void Primitive(GfxCmdList& Cmd, ERHI_PRIMITIVE_TOPOLOGY Topology, ref_geom Geom, u32 BaseVertex, u32 PrimitiveCount);
+}
+
+#define DU_DRAW_DIP(Topology, Geom, BaseVertex, StartVertex, VertexCount, StartIndex, PrimitiveCount) \
+	{ RImplementation.Imm().SetGeometry(Geom); RImplementation.Imm().DrawIndexed(Topology, RHITopologyUtils::GetIndexCount(PrimitiveCount, Topology), StartIndex, BaseVertex); }
+#define DU_DRAW_DP(Topology, Geom, BaseVertex, PrimitiveCount) DebugDraw::Primitive(RImplementation.Imm(), Topology, Geom, BaseVertex, PrimitiveCount)
 
 struct SPrimitiveBuffer{
     ref_geom				pGeom;
@@ -20,8 +26,8 @@ struct SPrimitiveBuffer{
     u32						p_cnt;
 	typedef xr_delegate<void()> TOnRender;
     TOnRender				OnRender;
-    void 			RenderDIP()	{DU_DRAW_DIP(p_type,pGeom,0,0,v_cnt,0,p_cnt);}
-    void 			RenderDP()	{DU_DRAW_DP	(p_type,pGeom,0,p_cnt);}
+    void 			RenderDIP();
+    void 			RenderDP();
 public:
                             SPrimitiveBuffer():OnRender(0),pGeom(0){;}
     void					CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices=0, u32 _i_cnt=0);

@@ -1,0 +1,14 @@
+<shader r1_static="1">
+	<normal sort="2" strict="1">
+		<pass vs="base_lplanes" ps="base_lplanes" zwrite="0" blend="srcalpha,one">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal sort="2">
+			<pass vs="r1_lplanes" ps="r1_lplanes" zwrite="0" blend="srcalpha,one" aref="0">
+				<texture name="s_base" src="@base"/>
+			</pass>
+		</normal>
+	</option>
+</shader>

@@ -1,7 +1,7 @@
 #include "common.hlsli"
 
-Texture2D<float> t_coc_prev;
-Texture2D<float> t_focus;
+Texture2D<float> t_coc_prev : register(t25);
+Texture2D<float> t_focus : register(t26);
 
 #include "shared\post_cb.hlsli"
 

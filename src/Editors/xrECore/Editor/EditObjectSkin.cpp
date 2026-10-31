@@ -121,7 +121,7 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
 		BoneVec& lst = m_Bones;
         for(BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++){
 	        EDevice->SetShader(GEditorDraw.WireShader);
-	        RCache.set_xform_world(parent);
+	        RImplementation.Imm().SetObjectTransform(parent);
             Fmatrix& M 		= (*b_it)->_LTransform();
             Fvector p1		= M.c;
             u32 c_joint		= (*b_it)->flags.is(CBone::flSelected)?color_bone_sel_color:color_bone_norm_color;

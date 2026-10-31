@@ -5,6 +5,7 @@
 
 void CResourceManager::reset_begin()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	WaitForTextureLoading();
 	// destroy everything, renderer may use
 	::Render->reset_begin		();
@@ -23,39 +24,40 @@ void CResourceManager::reset_begin()
 	}
 
 	// destroy DStreams
- 	RCache.old_QuadIB					= RCache.QuadIB;
- 	_RELEASE							(RCache.QuadIB);
+ 	Cmd.old_QuadIB					= Cmd.QuadIB;
+ 	_RELEASE							(Cmd.QuadIB);
 
-	RCache.Index.reset_begin	();
-	RCache.Vertex.reset_begin	();
+	Cmd.Index.reset_begin	();
+	Cmd.Vertex.reset_begin	();
 }
 
 void CResourceManager::reset_end()
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	// create RDStreams
-	RCache.Vertex.reset_end		();
-	RCache.Index.reset_end		();
+	Cmd.Vertex.reset_end		();
+	Cmd.Index.reset_end		();
 	Evict(); 
-	RCache.CreateQuadIB();
+	Cmd.CreateQuadIB();
 
 	// remark geom's which point to dynamic VB/IB
 	{
 		for (u32 _it=0; _it<v_geoms.size(); _it++)
 		{
 			SGeometry*	_G = v_geoms[_it];
-			if	(_G->vb == RCache.Vertex.old_pVB) 
-				_G->vb = RCache.Vertex.Buffer	();
+			if	(_G->vb == Cmd.Vertex.old_pVB) 
+				_G->vb = Cmd.Vertex.Buffer	();
 
 			// Here we may recover the buffer using one of 
-			// RCache's index buffers.
+			// the immediate backend's index buffers.
 			// Do not remove else.
-			if	(_G->ib == RCache.Index.old_pIB) 
+			if	(_G->ib == Cmd.Index.old_pIB) 
 			{
-				_G->ib = RCache.Index.Buffer	();
+				_G->ib = Cmd.Index.Buffer	();
 			}
-			else if	(_G->ib == RCache.old_QuadIB) 
+			else if	(_G->ib == Cmd.old_QuadIB) 
 			{
-				_G->ib = RCache.QuadIB;
+				_G->ib = Cmd.QuadIB;
 			}
 		}
 	}
@@ -79,7 +81,7 @@ void CResourceManager::reset_end()
 	// create state-blocks
 	{
 		for (u32 _it=0; _it<v_states.size(); _it++)
-			v_states[_it]->state = dx10State::Create(v_states[_it]->state_code);
+			v_states[_it]->state = GfxPipelineState::Create(v_states[_it]->state_code);
 	}
 
 	// create everything, renderer may use
@@ -104,8 +106,6 @@ CResourceManager::~CResourceManager		()
 #ifdef DEBUG
 	Dump(false);
 #endif
-
-	m_xmlBlendCache.clear();
 }
 
 void CResourceManager::Dump(bool bBrief)
@@ -119,7 +119,6 @@ void CResourceManager::Dump(bool bBrief)
 	Msg		("* RM_Dump: states    : %d",		v_states.size());
 	Msg		("* RM_Dump: tex_list  : %d",		lst_textures.size());
 	Msg		("* RM_Dump: matrices  : %d",		lst_matrices.size());
-	Msg		("* RM_Dump: lst_constants: %d",	lst_constants.size());
 	Msg		("* RM_Dump: v_passes  : %d",		v_passes.size());
 	Msg		("* RM_Dump: v_elements: %d",		v_elements.size());
 	Msg		("* RM_Dump: v_shaders : %d",		v_shaders.size());

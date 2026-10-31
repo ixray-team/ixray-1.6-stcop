@@ -10,11 +10,7 @@ Back to the Roots
 
 #include "common.hlsli"
 
-#if defined(SM_5) || defined(SM_4_1)
-    #define SMAA_HLSL_4_1
-#else
-    #define SMAA_HLSL_4
-#endif
+#define SMAA_HLSL_4_1
 
 #define SMAA_RT_METRICS scaled_screen_res.zwxy
 
@@ -22,9 +18,9 @@ Back to the Roots
 
 #include "smaa.hlsli"
 
-Texture2D s_edgetex;
-Texture2D s_areatex;
-Texture2D s_searchtex;
+Texture2D s_edgetex : register(t26);
+Texture2D s_areatex : register(t25);
+Texture2D s_searchtex : register(t28);
 
 // Struct
 struct p_smaa

@@ -83,7 +83,7 @@ void CActorTools::Render()
 		if (m_RenderObject.IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
 		{
 			RImplementation.model_RenderSingle(m_RenderObject.m_pVisual, m_RenderObject.ObjectXFORM(), m_RenderObject.m_fLOD);
-			RCache.set_xform_world(World);
+			RImplementation.Imm().SetObjectTransform(World);
 			if (EPrefs->object_flags.is(epoDrawJoints))
 			{
 				CKinematics* K = dynamic_cast<CKinematics*>(m_RenderObject.m_pVisual);

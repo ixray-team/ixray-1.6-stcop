@@ -261,26 +261,26 @@ void dx103DFluidGrid::InitBoundaryLines( VS_INPUT_FLUIDSIM_STRUCT** vertices, in
 	}
 }
 
-void dx103DFluidGrid::DrawSlices( void )
+void dx103DFluidGrid::DrawSlices(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomSlices);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesSlices/3);
+	Cmd.SetGeometry(m_GeomSlices);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iNumVerticesSlices, 0);
 }
 
-void dx103DFluidGrid::DrawSlicesToScreen( void )
+void dx103DFluidGrid::DrawSlicesToScreen(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomRenderQuad);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesRenderQuad/3);
+	Cmd.SetGeometry(m_GeomRenderQuad);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iNumVerticesRenderQuad, 0);
 }
 
-void dx103DFluidGrid::DrawBoundaryQuads( void )
+void dx103DFluidGrid::DrawBoundaryQuads(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomBoundarySlices);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesBoundarySlices/3);
+	Cmd.SetGeometry(m_GeomBoundarySlices);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iNumVerticesBoundarySlices, 0);
 }
 
-void dx103DFluidGrid::DrawBoundaryLines( void )
+void dx103DFluidGrid::DrawBoundaryLines(GfxCmdList& Cmd)
 {
-	RCache.set_Geometry(m_GeomBoundaryLines);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesBoundaryLines/3);
+	Cmd.SetGeometry(m_GeomBoundaryLines);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_iNumVerticesBoundaryLines, 0);
 }

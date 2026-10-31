@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-void CRenderTarget::phase_sslr()
+void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 {
 	if (RImplementation.o.dx11_use_legacy_light || !RImplementation.o.deffered_reflecitons)
 		return;
@@ -9,8 +9,8 @@ void CRenderTarget::phase_sslr()
 	GPU_EVENT(phase_sslr);
 
 	//groups
-	const UINT tgroupsX = (RCache.get_width() + 7u) / 8u;
-	const UINT tgroupsY = (RCache.get_height() + 7u) / 8u;
+	const UINT tgroupsX = (Cmd.GetWidth() + 7u) / 8u;
+	const UINT tgroupsY = (Cmd.GetHeight() + 7u) / 8u;
 
 	// Min-Z pyramid for the hierarchical trace (Stachowiak, Stochastic SSR)
 	{
@@ -23,24 +23,24 @@ void CRenderTarget::phase_sslr()
 		{
 			ShaderElement* S = &*(s_sslr->E[4]);
 			SPass& P = *(S->passes[0]);
-			RCache.set_States(P.state);
-			RCache.set_Constants(P.constants);
-			RCache.set_Textures(P.T);
-			RCache.set_CS(P.cs);
+			Cmd.SetStates(P.state);
+			Cmd.SetConstantTable(P.constants);
+			Cmd.SetTextures(P.T);
+			Cmd.SetCS(P.cs);
 
-			GRHI->SetComputeUAVs(0, 1, &MipUAVs[0]);
+			Cmd.SetComputeUAVs(0, 1, &MipUAVs[0]);
 
-			RCache.Compute(tgroupsX, tgroupsY, 1);
+			Cmd.Dispatch(tgroupsX, tgroupsY, 1);
 
-			GRHI->SetComputeUAVs(0, 1, uav_dummy);
+			Cmd.SetComputeUAVs(0, 1, uav_dummy);
 		}
 
 		ShaderElement* S = &*(s_sslr->E[5]);
 		SPass& P = *(S->passes[0]);
-		RCache.set_States(P.state);
-		RCache.set_Constants(P.constants);
-		RCache.set_Textures(P.T);
-		RCache.set_CS(P.cs);
+		Cmd.SetStates(P.state);
+		Cmd.SetConstantTable(P.constants);
+		Cmd.SetTextures(P.T);
+		Cmd.SetCS(P.cs);
 
 		for (u32 MipLevel = 1; MipLevel < MipUAVs.size(); ++MipLevel)
 		{
@@ -53,11 +53,11 @@ void CRenderTarget::phase_sslr()
 				MipUAVs[MipLevel]
 			};
 
-			GRHI->SetComputeUAVs(0, 2, MipUAV);
-			RCache.Compute((MipWidth + 7u) / 8u, (MipHeight + 7u) / 8u, 1);
+			Cmd.SetComputeUAVs(0, 2, MipUAV);
+			Cmd.Dispatch((MipWidth + 7u) / 8u, (MipHeight + 7u) / 8u, 1);
 		}
 
-		GRHI->SetComputeUAVs(0, 2, uav_dummy);
+		Cmd.SetComputeUAVs(0, 2, uav_dummy);
 	}
 
 	{
@@ -70,10 +70,10 @@ void CRenderTarget::phase_sslr()
 	    ShaderElement* S;
         S = (&*(s_sslr->E[0]));
         SPass& P = *(S->passes[0]);
-        RCache.set_States(P.state);
-        RCache.set_Constants(P.constants);
-        RCache.set_Textures(P.T);
-        RCache.set_CS(P.cs);
+        Cmd.SetStates(P.state);
+        Cmd.SetConstantTable(P.constants);
+        Cmd.SetTextures(P.T);
+        Cmd.SetCS(P.cs);
 
 		//Bind UAVs
 		IRHIUnorderedAccessView* our_uav[2] = {
@@ -81,14 +81,14 @@ void CRenderTarget::phase_sslr()
             rt_sslr_data->pUAView
 		};
 
-		GRHI->SetComputeUAVs(0, 2, our_uav);
+		Cmd.SetComputeUAVs(0, 2, our_uav);
 
 		//Dispatch
-		RCache.Compute(tgroupsX, tgroupsY, 1);
+		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
 
 		//Unbind
-		GRHI->SetComputeUAVs(0, 2, uav_dummy);
-		RCache.unbind_cs_textures();
+		Cmd.SetComputeUAVs(0, 2, uav_dummy);
+		Cmd.UnbindComputeTextures();
 	}
 
 
@@ -100,19 +100,19 @@ void CRenderTarget::phase_sslr()
 	    ShaderElement* S;
         S = (&*(s_sslr->E[1]));
         SPass& P = *(S->passes[0]);
-        RCache.set_States(P.state);
-        RCache.set_Constants(P.constants);
-        RCache.set_Textures(P.T);
-        RCache.set_CS(P.cs);
+        Cmd.SetStates(P.state);
+        Cmd.SetConstantTable(P.constants);
+        Cmd.SetTextures(P.T);
+        Cmd.SetCS(P.cs);
 
 		IRHIUnorderedAccessView* our_uav = rt_sslr_temp->pUAView;
 
-		GRHI->SetComputeUAVs(0, 1, &our_uav);
+		Cmd.SetComputeUAVs(0, 1, &our_uav);
 
-		RCache.Compute(tgroupsX, tgroupsY, 1);
+		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
 
-		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
-		RCache.unbind_cs_textures();
+		Cmd.SetComputeUAVs(0, 1, &uav_dummy);
+		Cmd.UnbindComputeTextures();
 	}
 
 	{
@@ -123,19 +123,19 @@ void CRenderTarget::phase_sslr()
 	    ShaderElement* S;
         S = (&*(s_sslr->E[2]));
         SPass& P = *(S->passes[0]);
-        RCache.set_States(P.state);
-        RCache.set_Constants(P.constants);
-        RCache.set_Textures(P.T);
-        RCache.set_CS(P.cs);
+        Cmd.SetStates(P.state);
+        Cmd.SetConstantTable(P.constants);
+        Cmd.SetTextures(P.T);
+        Cmd.SetCS(P.cs);
 
 		IRHIUnorderedAccessView* our_uav = rt_sslr->pUAView;
 
-		GRHI->SetComputeUAVs(0, 1, &our_uav);
+		Cmd.SetComputeUAVs(0, 1, &our_uav);
 
-		RCache.Compute(tgroupsX, tgroupsY, 1);
+		Cmd.Dispatch(tgroupsX, tgroupsY, 1);
 
-		GRHI->SetComputeUAVs(0, 1, &uav_dummy);
-		RCache.unbind_cs_textures();
+		Cmd.SetComputeUAVs(0, 1, &uav_dummy);
+		Cmd.UnbindComputeTextures();
 
 		//LVutner: Meh.
 		ResolveSurface(rt_sslr_old, rt_sslr);
@@ -251,7 +251,7 @@ void CRender::collect_reflections()
 	reflection_done.notify_all();
 }
 
-void CRender::render_reflections()
+void CRender::render_reflections(GfxCmdList& Cmd)
 {
 	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons)
 	{
@@ -308,7 +308,7 @@ void CRender::render_reflections()
 	{
 		EnvView.build_camera_dir(reflection_cam_pos, CmDir[i], CmNorm[i]);
 
-		GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
+		Cmd.ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
 
 		bool NeedRender = GraphReflection[i].mapNormalPasses[0][0].size() || GraphReflection[i].mapMatrixPasses[0][0].size() ||
 						GraphReflection[i].mapNormalPasses[1][0].size() || GraphReflection[i].mapMatrixPasses[1][0].size() || GraphReflection[i].mapSorted.size();
@@ -318,31 +318,29 @@ void CRender::render_reflections()
 			continue;
 		}
 
-		GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
-		Target->u_setrt(DwSize, DwSize, Target->rt_Reflection->pRT[i], Target->rt_Reflection_temp->pRT[i], NULL, Target->rt_Depth->pZRT);
+		Cmd.ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
+		Target->u_setrt(Cmd, DwSize, DwSize, Target->rt_Reflection->pRT[i], Target->rt_Reflection_temp->pRT[i], NULL, Target->rt_Depth->pZRT);
 
 		RImplementation.rmNormal();
-		RCache.set_Stencil(FALSE);
-		RCache.set_ColorWriteEnable();
-		RCache.set_xform_view(EnvView);
-		RCache.set_xform_project(EnvProject);
+		Cmd.SetStencil(FALSE);
+		Cmd.SetColorWriteEnable();
+		Cmd.SetView(EnvView, EnvProject);
 
 		GraphReflection[i].r_dsgraph_render_graph(0);
 	}
 
-	RCache.set_xform_project(Device.mProject);
-	RCache.set_xform_view(Device.mView);
+	Cmd.SetView(Device.mView, Device.mProject);
 	is_render_cubemap = false;
 	phase = PHASE_NORMAL;
 
-	Target->DrawSQ(Target->s_sslr, Target->rt_Reflection_forward, 3, []
+	Target->DrawSQ(Cmd, Target->s_sslr, Target->rt_Reflection_forward, 3, [&]
 	{
 		RImplementation.rmNormal();
-		RCache.set_CullMode(ERHI_CULLMODE::NONE); 
+		Cmd.SetCullMode(ERHI_CULLMODE::NONE); 
 	});
 
-	Target->u_setrt(DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);
-	GRHI->GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());
+	Target->u_setrt(Cmd, DwSize, DwSize, nullptr, nullptr, nullptr, nullptr);
+	Cmd.GenerateMips(Target->rt_Reflection_forward->pTexture->get_SRView());
 
 	Device.Statistic->TEST2.End();
 }

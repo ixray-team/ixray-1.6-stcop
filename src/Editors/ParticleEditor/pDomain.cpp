@@ -83,7 +83,7 @@ void 	PDomain::Render		(u32 clr, const Fmatrix& parent)
 	if (!flags.is(flRenderable)) return;
 	u32 clr_s = subst_alpha	(clr,0x60);
 	u32 clr_w = subst_alpha	(clr,0xff);
-    RCache.set_xform_world	(parent);
+    RImplementation.Imm().SetObjectTransform(parent);
 	switch(type){
     case PDPoint: 	
 		GEditorDraw.SetShader	(GEditorDraw.WireShader);

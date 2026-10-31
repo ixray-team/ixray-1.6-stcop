@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "r4_rendertarget.h"
 
-void	CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1, float Scale, float FPS, bool IsScope)
+void	CRenderTarget::u_calc_tc_noise(GfxCmdList& Cmd, Fvector2& p0, Fvector2& p1, float Scale, float FPS, bool IsScope)
 {
-	CTexture*	T					= RCache.get_ActiveTexture	(2);
-	VERIFY2		(T, "Texture #3 in noise shader should be setted up");
+	CTexture*	T					= Cmd.GetTexture	(ShaderBindings::Texture("s_noise"));
+	VERIFY2		(T, "s_noise in noise shader should be setted up");
 	u32			tw					= iCeil(float(T->get_Width	())*std::max(Scale, EPS_L)+EPS_S);
 	u32			th					= iCeil(float(T->get_Height ())*std::max(Scale, EPS_L)+EPS_S);
 	VERIFY2		(tw && th, "Noise scale can't be zero in any way");
@@ -25,8 +25,8 @@ void	CRenderTarget::u_calc_tc_noise(Fvector2& p0, Fvector2& p1, float Scale, flo
 	u32			shift_h				= ShiftHeight;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					= (u32)RCache.get_target_width();
-	u32			_h					= (u32)RCache.get_target_height();
+	u32			_w					= (u32)Cmd.GetTargetWidth();
+	u32			_h					= (u32)Cmd.GetTargetHeight();
 	float CountWidth = float(_w) / float(tw);
 	float CountHeight = float(_h) / float(th);
 	float		end_u				= start_u + CountWidth;
@@ -105,12 +105,12 @@ struct TL_2c3uv		{
 	}
 };
 
-void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
+void CRenderTarget::phase_pp(GfxCmdList& Cmd, const SPPInfo* ScopeInfo)
 {
 	// combination/postprocess
-	u32 _w = (u32)RCache.get_target_width();
-	u32 _h = (u32)RCache.get_target_height();
-	u_setrt(_w, _h, ScopeInfo ? rt_Accumulator->pRT : rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	u32 _w = (u32)Cmd.GetTargetWidth();
+	u32 _h = (u32)Cmd.GetTargetHeight();
+	u_setrt(Cmd, _w, _h, ScopeInfo ? rt_Accumulator->pRT : rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	const float Gray = ScopeInfo ? ScopeInfo->gray : param_gray;
 	const float Noise = ScopeInfo ? ScopeInfo->noise.intensity : param_noise;
 	SPPInfo::SColor ScopeBaseColor = ScopeInfo ? ScopeInfo->color_base : pp_identity.color_base;
@@ -132,7 +132,7 @@ void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 	//	Element 4 for color map post-process
 	bool bCMap = MapInfluence > 0.001f;
 
-	RCache.set_Element((ScopeInfo ? ScopePostprocessShader : s_postprocess)->E[bCMap ? 4 : 0]);
+	Cmd.SetPass((ScopeInfo ? ScopePostprocessShader : s_postprocess)->E[bCMap ? 4 : 0]);
 
 	int		gblend		= clampr		(iFloor((1-Gray)*255.f),0,255);
 	int		nblend		= clampr		(iFloor((1-Noise)*255.f),0,255);
@@ -153,25 +153,25 @@ void CRenderTarget::phase_pp(const SPPInfo* ScopeInfo)
 		l0.set(r0.x + ScopeInfo->duality.h * 0.5f, r0.y + ScopeInfo->duality.v * 0.5f);
 		l1.set(1.0f + r0.x, 1.0f + r0.y);
 	}
-	u_calc_tc_noise(n0, n1, ScopeInfo ? ScopeInfo->noise.grain : param_noise_scale, ScopeInfo ? ScopeInfo->noise.fps : param_noise_fps, ScopeInfo != nullptr);
+	u_calc_tc_noise(Cmd, n0, n1, ScopeInfo ? ScopeInfo->noise.grain : param_noise_scale, ScopeInfo ? ScopeInfo->noise.fps : param_noise_fps, ScopeInfo != nullptr);
 
 	// Fill vertex buffer
 	float				du	= ps_r1_pps_u, dv = ps_r1_pps_v;
-	TL_2c3uv* pv			= (TL_2c3uv*) RCache.Vertex.Lock	(4,g_postprocess.stride(),Offset);
+	TL_2c3uv* pv			= (TL_2c3uv*) Cmd.Vertex.Lock	(4,g_postprocess.stride(),Offset);
 	pv->set(du+0,			dv+float(_h),	p_color, p_gray, r0.x, r1.y, l0.x, l1.y, n0.x, n1.y);	pv++;
 	pv->set(du+0,			dv+0,			p_color, p_gray, r0.x, r0.y, l0.x, l0.y, n0.x, n0.y);	pv++;
 	pv->set(du+float(_w),	dv+float(_h),	p_color, p_gray, r1.x, r1.y, l1.x, l1.y, n1.x, n1.y);	pv++;
 	pv->set(du+float(_w),	dv+0,			p_color, p_gray, r1.x, r0.y, l1.x, l0.y, n1.x, n0.y);	pv++;
-	RCache.Vertex.Unlock										(4,g_postprocess.stride());
+	Cmd.Vertex.Unlock										(4,g_postprocess.stride());
 
 	// Actual rendering
-	RCache.Constants.Write<CBFrame>().c_brightness.set(p_brightness.x, p_brightness.y, p_brightness.z, 0);
-	RCache.Constants.Write<CBFrame>().c_colormap.set(MapInfluence, MapInterpolate, 0, 0);
+	Cmd.Constants.Write<CBFrame>().c_brightness.set(p_brightness.x, p_brightness.y, p_brightness.z, 0);
+	Cmd.Constants.Write<CBFrame>().c_colormap.set(MapInfluence, MapInterpolate, 0, 0);
 	if (ScopeInfo)
 	{
 		// The scope shader converts HDR to display colors the same way as combine_2
-		RCache.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
+		Cmd.Constants.Write<CBPost>().bloom_params.set(ps_r2_bloom_amount, ps_r2_bloom_desaturation, ps_r2_bloom_tint_amount, 0.0f);
 	}
-	RCache.set_Geometry	(g_postprocess);
-	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
+	Cmd.SetGeometry	(g_postprocess);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 6, 0, Offset);
 }

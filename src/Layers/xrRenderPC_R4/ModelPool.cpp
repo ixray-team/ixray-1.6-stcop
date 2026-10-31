@@ -509,7 +509,7 @@ IC bool	_IsValidShader(dxRender_Visual* visual, u32 priority, bool strictB2F)
     return false;
 }
 
-void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD)
+void 	CModelPool::Render(GfxCmdList& Cmd, dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD)
 {
     // render visual
     xr_vector<dxRender_Visual*>::iterator I,E;
@@ -520,18 +520,18 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             CKinematics* pV		= smart_cast<CKinematics*>(m_pVisual); VERIFY(pV);
             if (fis_zero(m_fLOD,EPS)&&pV->m_lod){
 		        if (_IsValidShader(pV->m_lod,priority,strictB2F)){
-	                RCache.set_Shader		(pV->m_lod->shader?pV->m_lod->shader: GEditorDraw.WireShader);
-    	            RCache.set_xform_world	(mTransform);
-        	        pV->m_lod->Render		(1.f);
+	                Cmd.SetPass		(pV->m_lod->shader?pV->m_lod->shader: GEditorDraw.WireShader);
+    	            Cmd.SetObjectTransform(mTransform);
+        	        pV->m_lod->Render		(Cmd, 1.f);
                 }
             }else{
                 I = pV->children.begin		();
                 E = pV->children.end		();
                 for (; I!=E; I++){
                     if (_IsValidShader(*I,priority,strictB2F)){
-                        RCache.set_Shader		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
-                        RCache.set_xform_world	(mTransform);
-                        (*I)->Render		 	(m_fLOD);
+                        Cmd.SetPass		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
+                        Cmd.SetObjectTransform(mTransform);
+                        (*I)->Render		 	(Cmd, m_fLOD);
                     }
                 }
             }
@@ -544,9 +544,9 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
             E = pV->children.end		();
             for (; I!=E; I++){
 		        if (_IsValidShader(*I,priority,strictB2F)){
-	                RCache.set_Shader		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
-    	            RCache.set_xform_world	(mTransform);
-        	        (*I)->Render		 	(m_fLOD);
+	                Cmd.SetPass		((*I)->shader?(*I)->shader: GEditorDraw.WireShader);
+    	            Cmd.SetObjectTransform(mTransform);
+        	        (*I)->Render		 	(Cmd, m_fLOD);
                 }
             }
         }
@@ -557,43 +557,43 @@ void 	CModelPool::Render(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, 
 		for (PS::CParticleGroup::SItem& item : pG->items)
 		{
 			if (item.root_effect)
-				Render(item.root_effect, Fidentity, priority, strictB2F, m_fLOD);
+				Render(Cmd, item.root_effect, Fidentity, priority, strictB2F, m_fLOD);
 
 			xrCriticalSectionGuard guard(item.childs_cs);
 			for (dxRender_Visual* pEffect : item.children_related)
-				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
+				Render(Cmd, pEffect, Fidentity, priority, strictB2F, m_fLOD);
 
 			for (dxRender_Visual* pEffect : item.children_free)
-				Render(pEffect, Fidentity, priority, strictB2F, m_fLOD);
+				Render(Cmd, pEffect, Fidentity, priority, strictB2F, m_fLOD);
 		}
     }break;
     case MT_PARTICLE_EFFECT:{
 //		if (_IsBoxVisible(m_pVisual,mTransform))
         {
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
-                RCache.set_xform_world		(mTransform);
-                m_pVisual->Render		 	(m_fLOD);
+                Cmd.SetPass			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
+                Cmd.SetObjectTransform(mTransform);
+                m_pVisual->Render		 	(Cmd, m_fLOD);
             }
         }
     }break;
     default:
         if (_IsBoxVisible(m_pVisual,mTransform)){
             if (_IsValidShader(m_pVisual,priority,strictB2F)){
-                RCache.set_Shader			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
-                RCache.set_xform_world		(mTransform);
-                m_pVisual->Render		 	(m_fLOD);
+                Cmd.SetPass			(m_pVisual->shader?m_pVisual->shader: GEditorDraw.WireShader);
+                Cmd.SetObjectTransform(mTransform);
+                m_pVisual->Render		 	(Cmd, m_fLOD);
             }
         }
         break;
     }
 }
 
-void 	CModelPool::RenderSingle(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD)
+void 	CModelPool::RenderSingle(GfxCmdList& Cmd, dxRender_Visual* m_pVisual, const Fmatrix& mTransform, float m_fLOD)
 {
 	for (int p=0; p<4; p++){
-    	Render(m_pVisual,mTransform,p,false,m_fLOD);
-    	Render(m_pVisual,mTransform,p,true,m_fLOD);
+    	Render(Cmd, m_pVisual,mTransform,p,false,m_fLOD);
+    	Render(Cmd, m_pVisual,mTransform,p,true,m_fLOD);
     }
 }
 void CModelPool::OnDeviceDestroy()

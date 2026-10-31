@@ -161,18 +161,16 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	rm_geom.create(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 }
 
-void Fvisual::Render(float)
+void Fvisual::Render(GfxCmdList& Cmd, float)
 {
 	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP)
 	{
-		RCache.set_Geometry(m_fast->rm_geom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
-		RCache.stat.r.s_static.add(m_fast->vCount);
+		Cmd.SetGeometry(m_fast->rm_geom);
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->dwPrimitives * 3, m_fast->iBase, m_fast->vBase);
 		return;
 	}
-	RCache.set_Geometry(rm_geom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, vCount, iBase, dwPrimitives);
-	RCache.stat.r.s_static.add(vCount);
+	Cmd.SetGeometry(rm_geom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwPrimitives * 3, iBase, vBase);
 }
 
 #define PCOPY(a)	a = pFrom->a

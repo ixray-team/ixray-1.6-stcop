@@ -4,7 +4,7 @@ constexpr u32 RHI_VERTEX_TEXTURESAMPLER = 256;
 constexpr u32 RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION = 16384;
 constexpr u32 RHI_SHADERS_TYPE_SIZE = 6;
 constexpr u32 RHI_MAX_RENDER_TARGETS = 6;
-constexpr u32 RHI_MAX_CONSTANT_BUFFERS = 22;
+constexpr u32 RHI_MAX_CONSTANT_BUFFERS = 14;
 constexpr u32 RHI_APPEND_ALIGNED_ELEMENT = 0xffffffff;
 
 // Legacy shit
@@ -39,5 +39,3 @@ constexpr u32 RHI_FVF_TEX8             = 0x800;
 constexpr u32 RHI_FVF_LASTBETA_UBYTE4   = 0x1000;
 constexpr u32 RHI_FVF_LASTBETA_D3DCOLOR = 0x8000;
 constexpr u32 RHI_FVF_RESERVED2			= 0x6000;
-
-constexpr u32 RHI_COMMONSHADER_SAMPLER_SLOT_COUNT = 16;

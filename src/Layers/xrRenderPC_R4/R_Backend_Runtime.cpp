@@ -4,7 +4,7 @@ using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
 
-void CBackend::OnFrameEnd	()
+void GfxCmdList::OnFrameEnd	()
 {
 	if (!g_dedicated_server)
 	{
@@ -13,7 +13,7 @@ void CBackend::OnFrameEnd	()
 //#endif
 }
 
-void CBackend::OnFrameBegin	()
+void GfxCmdList::OnFrameBegin	()
 {
 	if (!g_dedicated_server)
 	{
@@ -25,26 +25,26 @@ void CBackend::OnFrameBegin	()
 		RImplementation.rmNormal();
 		if (!EditorMode)
 		{
-			set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+			SetRenderTarget(RImplementation.Target->rt_BackbufferLUT->pRT);
 		}
 		Constants.UpdateFrame();
-		Constants.UpdateView(xforms);
-		Memory.mem_fill(&stat,0,sizeof(stat));
+		SetView(ViewState);
+		Stats = {};
 		Vertex.Flush();
 		Index.Flush();
-		set_Stencil(false);
+		SetStencil(false);
 	}
 }
 
-void CBackend::unbind_cs_textures()
+void GfxCmdList::UnbindComputeTextures()
 {
 	IRHIShaderResourceView* none[mtMaxComputeShaderTextures] = {};
 	GRHI->SetComputeResources(0, mtMaxComputeShaderTextures, none);
-	for (auto& texture : textures_cs)
-		texture = nullptr;
+	std::memset(Textures[5], 0, sizeof(Textures[5]));
+	TextureMask[5] = 0;
 }
 
-void CBackend::Invalidate	()
+void GfxCmdList::Invalidate	()
 {
 	if (GRHI != nullptr)
 	{
@@ -63,219 +63,197 @@ void CBackend::Invalidate	()
 	vb_stride					= 0;
 
 	state						= nullptr;
+	std::fill(std::begin(States), std::end(States), nullptr);
 	ctable						= nullptr;
 
 	T							= nullptr;
 	M							= nullptr;
-	C							= nullptr;
 
 	m_pInputLayout				= nullptr;
 	m_PrimitiveTopology			= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	m_bChangedRTorZB			= false;
 	m_pInputSignature			= nullptr;
+	StatesDirty = true;
 	if (GRHI != nullptr)
 	{
 		GRHI->StateManager->Reset();
-		//	Redundant call. Just no note that we need to unmap const
-		//	if we create dedicated class.
-		GRHI->StateManager->UnmapConstants();
 	}
-
-	SSManager.ResetDeviceState();
 
 	if (GRHI && GRHI->ShaderResourceCache)
 	{
 		GRHI->ShaderResourceCache->ResetDeviceState();
 	}
 
-	for (u32 gs_it =0; gs_it < mtMaxGeometryShaderTextures;)	textures_gs	[gs_it++]	= 0;
-	for (u32 hs_it =0; hs_it < mtMaxHullShaderTextures;)	textures_hs	[hs_it++]	= 0;
-	for (u32 ds_it =0; ds_it < mtMaxDomainShaderTextures;)	textures_ds	[ds_it++]	= 0;
-	for (u32 cs_it =0; cs_it < mtMaxComputeShaderTextures;)	textures_cs	[cs_it++]	= 0;
-
-	for (u32 ps_it =0; ps_it < mtMaxPixelShaderTextures;)	textures_ps	[ps_it++]	= nullptr;
-	for (u32 vs_it =0; vs_it < mtMaxVertexShaderTextures;)	textures_vs	[vs_it++]	= nullptr;
+	std::memset(Textures, 0, sizeof(Textures));
+	std::memset(TextureMask, 0, sizeof(TextureMask));
 	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= nullptr;
 }
 
-void CBackend::set_Textures(STextureList* _T)
+namespace
+{
+	using StageResourceFn = void (IRHIShaderResourceStateCache::*)(u32, IRHIShaderResourceView*);
+	constexpr StageResourceFn StageResource[] = { &IRHIShaderResourceStateCache::SetPSResource, &IRHIShaderResourceStateCache::SetVSResource, &IRHIShaderResourceStateCache::SetGSResource,
+		&IRHIShaderResourceStateCache::SetHSResource, &IRHIShaderResourceStateCache::SetDSResource, &IRHIShaderResourceStateCache::SetCSResource };
+}
+
+void GfxCmdList::SetConstantTable(R_constant_table* C_)
+{
+	ctable = C_;
+	if (C_ && C_->DetailScale)
+	{
+		const float Scale = *C_->DetailScale;
+		Constants.Write<CBMaterial>().dt_params.set(Scale, Scale, Scale, 1 / r__dtex_range);
+	}
+}
+
+void GfxCmdList::SetResource(ERHI_SHADER_TYPE Stage, u32 Slot, IRHIShaderResourceView* View)
+{
+	const u32 Kind = u32(Stage);
+	Textures[Kind][Slot] = nullptr;
+	TextureMask[Kind] &= ~(1ull << Slot);
+	(GRHI->ShaderResourceCache->*StageResource[Kind])(Slot, View);
+}
+
+void GfxCmdList::SetTextures(STextureList* _T)
 {
 	PROF_EVENT("set_Textures");
-	if (T == _T)	return;
+	if (T == _T)
+	{
+		return;
+	}
 	T = _T;
-	//	If resources weren't set at all we should clear from resource #0.
-	int _last_ps = -1;
-	int _last_vs = -1;
-	int _last_gs = -1;
-	int _last_hs = -1;
-	int _last_ds = -1;
-	int _last_cs = -1;
-	STextureList::iterator	_it = _T->begin();
-	STextureList::iterator	_end = _T->end();
 
-	for (; _it != _end; _it++)
+	u64 Used[6] = {};
+	for (auto& [Stage, Texture] : *_T)
 	{
-		std::pair<u32, ref_texture>& loader = *_it;
-		u32			load_id = loader.first;
-		CTexture* load_surf = loader.second ? &*loader.second : nullptr;
-		//		if (load_id < 256)		{
-		if (load_id < CTexture::rstVertex)
+		const u32 Kind = Stage / CTexture::rstVertex;
+		const u32 Slot = Stage % CTexture::rstVertex;
+		CTexture* Surface = Texture._get();
+		if (!Surface)
 		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < mtMaxPixelShaderTextures);
-			// ordinary pixel surface
-			if ((int)load_id > _last_ps)		_last_ps = load_id;
-			if (textures_ps[load_id] != load_surf)
-			{
-				textures_ps[load_id] = load_surf;
-				if (load_surf)
-				{
-					load_surf->bind(load_id);
-				}
-			}
+			continue;
 		}
-		else
-			if (load_id < CTexture::rstGeometry)
-			{
-				//	Set up pixel shader resources
-				//VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
-
-				// vertex only //d-map or vertex	
-				u32		load_id_remapped = load_id - CTexture::rstVertex;
-				if ((int)load_id_remapped > _last_vs)	_last_vs = load_id_remapped;
-				if (textures_vs[load_id_remapped] != load_surf)
-				{
-					textures_vs[load_id_remapped] = load_surf;
-					if (load_surf)
-					{
-						load_surf->bind(load_id);
-					}
-				}
-			}
-			else if (load_id < CTexture::rstHull)
-			{
-				//	Set up pixel shader resources
-				//VERIFY(load_id < CTexture::rstGeometry + mtMaxGeometryShaderTextures);
-
-				// vertex only //d-map or vertex	
-				u32		load_id_remapped = load_id - CTexture::rstGeometry;
-				if ((int)load_id_remapped > _last_gs)	_last_gs = load_id_remapped;
-				if (textures_gs[load_id_remapped] != load_surf)
-				{
-					textures_gs[load_id_remapped] = load_surf;
-					if (load_surf)
-					{
-						load_surf->bind(load_id);
-					}
-				}
-			}
-			else if (load_id < CTexture::rstDomain)
-			{
-				//	Set up pixel shader resources
-				//VERIFY(load_id < CTexture::rstHull + mtMaxHullShaderTextures);
-
-				// vertex only //d-map or vertex	
-				u32		load_id_remapped = load_id - CTexture::rstHull;
-				if ((int)load_id_remapped > _last_hs)	_last_hs = load_id_remapped;
-				if (textures_hs[load_id_remapped] != load_surf)
-				{
-					textures_hs[load_id_remapped] = load_surf;
-
-					if (load_surf)
-					{
-						load_surf->bind(load_id);
-					}
-				}
-			}
-			else if (load_id < CTexture::rstCompute)
-			{
-				//	Set up pixel shader resources
-				//VERIFY(load_id < CTexture::rstDomain + mtMaxDomainShaderTextures);
-
-				// vertex only //d-map or vertex	
-				u32		load_id_remapped = load_id - CTexture::rstDomain;
-				if ((int)load_id_remapped > _last_ds)	_last_ds = load_id_remapped;
-				if (textures_ds[load_id_remapped] != load_surf)
-				{
-					textures_ds[load_id_remapped] = load_surf;
-					if (load_surf)
-					{
-						load_surf->bind(load_id);
-					}
-				}
-			}
-			else if (load_id < CTexture::rstInvalid)
-			{
-				//	Set up pixel shader resources
-				//VERIFY(load_id < CTexture::rstCompute + mtMaxComputeShaderTextures);
-
-				// vertex only //d-map or vertex	
-				u32		load_id_remapped = load_id - CTexture::rstCompute;
-				if ((int)load_id_remapped > _last_cs)	_last_cs = load_id_remapped;
-				if (textures_cs[load_id_remapped] != load_surf)
-				{
-					textures_cs[load_id_remapped] = load_surf;
-					if (load_surf)
-					{
-						load_surf->bind(load_id);
-					}
-				}
-			}
-			else VERIFY("Invalid enum");
+		Used[Kind] |= 1ull << Slot;
+		if (Textures[Kind][Slot] != Surface)
+		{
+			Textures[Kind][Slot] = Surface;
+			Surface->bind(Stage);
+		}
 	}
 
-	// clear remaining stages (PS)
-	for (++_last_ps; _last_ps < mtMaxPixelShaderTextures; _last_ps++)
+	for (u32 Kind = 0; Kind < 6; ++Kind)
 	{
-		if (!textures_ps[_last_ps])
-			continue;
-
-		textures_ps[_last_ps] = nullptr;
-		GRHI->ShaderResourceCache->SetPSResource(_last_ps, nullptr);
+		for (u64 Stale = TextureMask[Kind] & ~Used[Kind]; Stale; Stale &= Stale - 1)
+		{
+			const u32 Slot = u32(std::countr_zero(Stale));
+			Textures[Kind][Slot] = nullptr;
+			(GRHI->ShaderResourceCache->*StageResource[Kind])(Slot, nullptr);
+		}
+		TextureMask[Kind] = Used[Kind];
 	}
-	// clear remaining stages (VS)
-	for (++_last_vs; _last_vs < mtMaxVertexShaderTextures; _last_vs++)
+}
+
+void GfxCmdList::FlushStates()
+{
+	if (StatesDirty)
 	{
-		if (!textures_vs[_last_vs])
-			continue;
-
-		textures_vs[_last_vs] = nullptr;
-		GRHI->ShaderResourceCache->SetVSResource(_last_vs, nullptr);
+		const auto Resolve = [this](void*& Cached, const auto& Desc) { return Cached || !state ? Cached : (Cached = GRHI->GetState(Desc)); };
+		IRHIStateManager& Manager = *GRHI->StateManager;
+		Manager.SetRasterizerState(Resolve(States[0], Raster));
+		Manager.SetDepthStencilState(Resolve(States[1], Depth));
+		Manager.SetBlendState(Resolve(States[2], Blend));
+		Manager.SetStencilRef(StencilRef);
+		StatesDirty = false;
 	}
+	GRHI->StateManager->Apply();
+}
 
-	// clear remaining stages (VS)
-	for (++_last_gs; _last_gs < mtMaxGeometryShaderTextures; _last_gs++)
+void GfxCmdList::SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail)
+{
+	RHIDepthStencilDesc& Desc = EditDepth();
+	Desc.StencilEnable = !!Enable;
+	Desc.StencilReadMask = u8(Mask);
+	Desc.StencilWriteMask = u8(WriteMask);
+	Desc.FrontFace = { ERHI_STENCIL_OP(Fail), ERHI_STENCIL_OP(ZFail), ERHI_STENCIL_OP(Pass), ERHI_COMPARISON(Func) };
+	Desc.BackFace = Desc.FrontFace;
+	SetStencilRef(Ref);
+}
+
+void GfxCmdList::SetBlend(bool Enable, u32 Src, u32 Dst)
+{
+	for (RHIRenderTargetBlendDesc& Target : EditBlend().RenderTarget)
 	{
-		if (!textures_gs[_last_gs])
-			continue;
-
-		textures_gs[_last_gs] = 0;
-		GRHI->ShaderResourceCache->SetGSResource(_last_gs, nullptr);
+		Target.BlendEnable = Enable;
+		Target.SrcBlend = ERHI_BLEND(Src);
+		Target.DestBlend = ERHI_BLEND(Dst);
 	}
+}
 
-	for (++_last_hs; _last_hs < mtMaxHullShaderTextures; _last_hs++)
+void GfxCmdList::SetColorWriteEnable(u32 Mask)
+{
+	for (RHIRenderTargetBlendDesc& Target : EditBlend().RenderTarget)
 	{
-		if (!textures_hs[_last_hs])
-			continue;
-
-		textures_hs[_last_hs] = 0;
-		GRHI->ShaderResourceCache->SetHSResource(_last_hs, nullptr);
+		Target.RenderTargetWriteMask = u8(Mask);
 	}
-	for (++_last_ds; _last_ds < mtMaxDomainShaderTextures; _last_ds++)
+}
+
+void GfxCmdList::SetScissor(Irect* Rect)
+{
+	if (Raster.ScissorEnable != (Rect != nullptr))
 	{
-		if (!textures_ds[_last_ds])
-			continue;
-
-		textures_ds[_last_ds] = 0;
-		GRHI->ShaderResourceCache->SetDSResource(_last_ds, nullptr);
+		EditRaster().ScissorEnable = Rect != nullptr;
 	}
-	for (++_last_cs; _last_cs < mtMaxComputeShaderTextures; _last_cs++)
+	GRHI->SetScissorRect(Rect);
+}
+
+void GfxCmdList::SetScissorOverride(bool Override)
+{
+	ScissorOverride = Override;
+	EditRaster().ScissorEnable = Override || (state && state->Raster.ScissorEnable);
+}
+
+void GfxCmdList::SetFillModeOverride(bool Override, u32 Mode)
+{
+	FillOverride = Override;
+	FillOverrideMode = Mode == RHI_FILL_SOLID ? RHI_FILL_SOLID : RHI_FILL_WIREFRAME;
+	EditRaster().FillMode = Override ? FillOverrideMode : (state ? state->Raster.FillMode : RHI_FILL_SOLID);
+}
+
+void GfxCmdList::SetView(const GfxView& View)
+{
+	ViewState = View;
+	Constants.UpdateView(ViewState);
+	UpdateObject();
+}
+
+void GfxCmdList::SetObjectTransform(const Fmatrix& W, const Fmatrix& WOld)
+{
+	World = W;
+	WorldOld = WOld;
+	UpdateObject();
+}
+
+void GfxCmdList::UpdateObject()
+{
+	Fmatrix WorldView, WorldViewOld, WorldViewProjectOld;
+	WorldView.mul_43(ViewState.View, World);
+	WorldViewProject.mul(ViewState.Project, WorldView);
+	WorldViewOld.mul_43(ViewState.ViewOld, WorldOld);
+	WorldViewProjectOld.mul(ViewState.ProjectOld, WorldViewOld);
+	Constants.UpdateObject(World, WorldView, WorldViewProject, WorldViewProjectOld);
+}
+
+void GfxCmdList::SetRenderTargets(std::initializer_list<IRHIRenderTargetView*> Targets, IRHIDepthStencilView* Depth)
+{
+	VERIFY(Targets.size() <= 4);
+	u32 Index = 0;
+	for (IRHIRenderTargetView* Target : Targets)
 	{
-		if (!textures_cs[_last_cs])
-			continue;
-
-		textures_cs[_last_cs] = 0;
-		GRHI->ShaderResourceCache->SetCSResource(_last_cs, nullptr);
+		GRHI->SetRenderTargetView(Target, Index++);
 	}
-
+	for (; Index < 4; ++Index)
+	{
+		GRHI->SetRenderTargetView(nullptr, Index);
+	}
+	GRHI->SetDepthStencilView(Depth);
 }

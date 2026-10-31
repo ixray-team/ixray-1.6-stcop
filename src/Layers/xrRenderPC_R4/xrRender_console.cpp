@@ -121,7 +121,7 @@ xr_token							screenshot_format_token[] = {
 
 // Common
 extern int			psSkeletonUpdate;
-extern float		r__dtex_range;
+float			r__dtex_range = 50;
 
 int			ps_r__LightSleepFrames		= 10	;
 int			g_AnimCubicInterpolation	= 1	;

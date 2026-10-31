@@ -83,6 +83,7 @@ const u32 lod_ss_quality  = 8;
 
 void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 {
+	GfxCmdList& Cmd = RImplementation.Imm();
 	U32Vec 	PixelsVec;
     Fmatrix save_projection		= EDevice->mProject;
     Fmatrix save_view			= EDevice->mView;
@@ -134,8 +135,7 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
 		BoundBox.xform(MatrixV);
 
 		MatrixP.build_projection_ortho(R, BoundBox.max.y - BoundBox.min.y, BoundBox.min.z, BoundBox.max.z);
-		RCache.set_xform_project(MatrixP);
-		RCache.set_xform_view(MatrixV);
+		Cmd.SetView(MatrixV, MatrixP);
 		EDevice->mFullTransform.mul(MatrixP, MatrixV);
 
 		string_path NormalTexPath;
@@ -219,8 +219,7 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
     psDeviceFlags 				= old_flag;
     EPrefs->scene_clear_color 	= cc;
 
-    RCache.set_xform_view		(save_view);
-    RCache.set_xform_project	(save_projection);
+    Cmd.SetView(save_view, save_projection);
 }
 
 void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int _samples, int quality)

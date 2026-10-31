@@ -1,4 +1,4 @@
 #pragma once
 
-class dx10State;
+struct GfxPipelineState;
 #define DX10_ONLY(expr) expr

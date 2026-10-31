@@ -39,21 +39,7 @@ void CResourceManager::OnDeviceDestroy(bool )
 		xr_delete(b->second);
 	}
 	m_blenders.clear	();
-
-	// destroy TD
-	for (map_TDIt _t=m_td.begin(); _t!=m_td.end(); _t++)
-	{
-		xr_free		((char*&)_t->first);
-		xr_free		((char*&)_t->second.T);
-		xr_delete	(_t->second.cs);
-	}
-	m_td.clear		();
-
-	// scripting
-	if (!Device.IsEditorMode())
-	{
-		LS_Unload			();
-	}
+	m_XMLBlends.clear	();
 }
 
 void	CResourceManager::OnDeviceCreate	(IReader* F)
@@ -62,10 +48,7 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 	string256	name;
 
-//#ifndef _EDITOR
-	// scripting
-	LS_Load					();
-//#endif
+	LoadXMLBlends			();
 	IReader*	fs			= nullptr;
 	// Load constants
  	fs	 		  			= F->open_chunk	(0);

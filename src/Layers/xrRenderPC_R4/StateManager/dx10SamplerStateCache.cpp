@@ -1,241 +1,130 @@
 #include "stdafx.h"
 #include "dx10SamplerStateCache.h"
 
-#include "../dx10StateUtils.h"
+#include "../ShaderBindings.h"
 
-using dx10StateUtils::operator==;
+dx10SamplerStateCache SSManager;
 
-dx10SamplerStateCache	SSManager;
-
-dx10SamplerStateCache::dx10SamplerStateCache():
-	m_uiMaxAnisotropy(1), m_mipLodBias(0.0f)
+namespace
 {
-	static const int iMaxRSStates = 10;
-	m_StateArray.reserve(iMaxRSStates);
-	ResetDeviceState();
-}
+	using Filter = ERHI_FILTER;
+	using Address = ERHI_TEXTURE_ADDRESS_MODE;
 
-dx10SamplerStateCache::~dx10SamplerStateCache()
-{
-	ClearStateArray();
-}
-
-dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(RHISampleDesc& desc )
-{
-	SHandle	hResult;
-
-	//	MaxAnisitropy is reset by ValidateState if not aplicable
-	//	to the filter mode used.
-	desc.MaxAnisotropy = m_uiMaxAnisotropy;
-	desc.MipLODBias = m_mipLodBias;
-
-	dx10StateUtils::ValidateState(desc);
-
-	u32 crc = dx10StateUtils::GetHash(desc);
-
-	hResult = FindState( desc, crc);
-
-	if ( hResult == hInvalidHandle )
+	constexpr struct
 	{
-		StateRecord rec{};
-		rec.m_crc = crc;
-		CreateState(desc, &rec.m_pState);
-		hResult = (u32)m_StateArray.size();
-		m_StateArray.push_back(rec);
-	}
-
-	return hResult;
-}
-
-void dx10SamplerStateCache::CreateState(RHISampleDesc desc, IDeviceState** ppIState )
-{
-	CHK_DX(GRHI->CreateSamplerState(desc, ppIState));
-}
-
-dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState( const RHISampleDesc& desc, u32 StateCRC )
-{
-    u32 res = 0xffffffff;
-	u32 i=0;
-
-	for (; i<m_StateArray.size(); ++i)
+		std::string_view Name;
+		Filter Mode;
+		Address UV;
+		Address W;
+		ERHI_COMPARISON_FUNC Compare;
+	} Samplers[] =
 	{
-		if (m_StateArray[i].m_crc==StateCRC)
+		{ "smp_nofilter", Filter::MIN_MAG_MIP_POINT, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_rtlinear", Filter::MIN_MAG_LINEAR_MIP_POINT, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_linear", Filter::MIN_MAG_MIP_LINEAR, Address::WRAP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_base", Filter::ANISOTROPIC, Address::WRAP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_material", Filter::MIN_MAG_LINEAR_MIP_POINT, Address::CLAMP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_smap", Filter::COMPARISON_MIN_MAG_LINEAR_MIP_POINT, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::LESS_EQUAL },
+		{ "smp_jitter", Filter::MIN_MAG_MIP_POINT, Address::WRAP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_bump_ds", Filter::ANISOTROPIC, Address::WRAP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "samPointClamp", Filter::MIN_MAG_MIP_POINT, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "samLinear", Filter::MIN_MAG_MIP_LINEAR, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "samLinearClamp", Filter::MIN_MAG_MIP_LINEAR, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "samRepeat", Filter::MIN_MAG_MIP_LINEAR, Address::WRAP, Address::WRAP, ERHI_COMPARISON_FUNC::NEVER },
+		{ "smp_base_clamp", Filter::ANISOTROPIC, Address::CLAMP, Address::CLAMP, ERHI_COMPARISON_FUNC::NEVER },
+	};
+	static_assert(std::size(Samplers) == ShaderBindings::SamplerCount);
+}
+
+void dx10SamplerStateCache::Create()
+{
+	Destroy();
+	CreateSet(0);
+	CreateSet(1);
+	Bind();
+}
+
+void dx10SamplerStateCache::Destroy()
+{
+	for (auto& Set : States)
+	{
+		for (RHIObject*& State : Set)
 		{
-			RHISampleDesc descCandidate;
-			m_StateArray[i].m_pState->GetDesc(&descCandidate);
-			if (descCandidate==desc)
-			{
-                res = i;
-                break;
-			}
+			_RELEASE(State);
 		}
 	}
-
-    return res != 0xffffffff ? i : (u32)hInvalidHandle;
 }
 
-void dx10SamplerStateCache::ClearStateArray()
+void dx10SamplerStateCache::CreateSet(u32 Set)
 {
-	for (u32 i=0; i<m_StateArray.size(); ++i)
+	for (const auto& Sampler : Samplers)
 	{
-		_RELEASE(m_StateArray[i].m_pState);
+		const bool Anisotropic = Sampler.Mode == Filter::ANISOTROPIC;
+		RHISampleDesc Desc = {};
+		Desc.Filter = Sampler.Mode;
+		Desc.AddressU = Sampler.UV;
+		Desc.AddressV = Sampler.UV;
+		Desc.AddressW = Sampler.W;
+		Desc.MipLODBias = Anisotropic ? MipLodBias : 0.0f;
+		Desc.MaxAnisotropy = Anisotropic && Set == 0 ? MaxAnisotropy : 1;
+		Desc.ComparisonFunc = Sampler.Compare;
+		Desc.MinLOD = -FLT_MAX;
+		Desc.MaxLOD = FLT_MAX;
+
+		RHIObject*& State = States[Set][ShaderBindings::Sampler(Sampler.Name)];
+		_RELEASE(State);
+		CHK_DX(GRHI->CreateSamplerState(Desc, &State));
 	}
-
-	m_StateArray.resize(0);
 }
 
-void dx10SamplerStateCache::PrepareSamplerStates(
-	HArray &samplers, 
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
-	SHandle				pCurrentState[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT],
-	u32	&uiMin,
-	u32	&uiMax
-) const
+void dx10SamplerStateCache::Bind() const
 {
-	//	It seems that sizeof pSS is 4 wor win32!
-	ZeroMemory(pSS, sizeof(pSS[0])* RHI_COMMONSHADER_SAMPLER_SLOT_COUNT);
-
-	for ( u32 i=0; i<samplers.size(); ++i )
-	{
-		if (samplers[i]!=hInvalidHandle)
-		{
-			VERIFY(samplers[i]<m_StateArray.size());
-			pSS[i] = m_StateArray[samplers[i]].m_pState;
-		}
-	}
-
-	uiMin = 0;
-	uiMax = RHI_COMMONSHADER_SAMPLER_SLOT_COUNT -1;
+	GRHI->SetSamplers(States[ActiveSet], ShaderBindings::SamplerCount);
 }
 
-void dx10SamplerStateCache::VSApplySamplers(HArray &samplers)
+void dx10SamplerStateCache::SetMaxAnisotropy(u32 MaxAniso)
 {
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aVSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::VS);
-}
-
-void dx10SamplerStateCache::PSApplySamplers(HArray &samplers)
-{
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aPSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::PS);
-}
-
-void dx10SamplerStateCache::GSApplySamplers(HArray &samplers)
-{
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aGSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::GS);
-}
-
-void dx10SamplerStateCache::HSApplySamplers(HArray &samplers)
-{
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aHSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::HS);
-}
-
-void dx10SamplerStateCache::DSApplySamplers(HArray &samplers)
-{
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aDSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::DS);
-}
-
-void dx10SamplerStateCache::CSApplySamplers(HArray &samplers)
-{
-	RHIObject	*pSS[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	u32 uiMin;
-	u32 uiMax;
-	PrepareSamplerStates( samplers, pSS, m_aCSSamplers, uiMin, uiMax);
-	GRHI->SetSamplers(uiMin, uiMax-uiMin+1, &pSS[uiMin], ERHI_SHADER_TYPE::CS);
-}
-
-void dx10SamplerStateCache::SetMaxAnisotropy(UINT uiMaxAniso)
-{
-	clamp(uiMaxAniso, (u32)1, (u32)16);
-
-	if (m_uiMaxAnisotropy == uiMaxAniso)
+	clamp(MaxAniso, 1u, 16u);
+	const u32 Set = MaxAniso == 1;
+	const bool Rebuild = !Set && MaxAnisotropy != MaxAniso;
+	if (Set == ActiveSet && !Rebuild)
 	{
 		return;
 	}
 
-	m_uiMaxAnisotropy = uiMaxAniso;
-	for (u32 i = 0; i < m_StateArray.size(); ++i)
+	ActiveSet = Set;
+	if (Rebuild)
 	{
-		StateRecord& rec = m_StateArray[i];
-		RHISampleDesc desc;
-
-		if (rec.m_pState != nullptr)
-		{
-			rec.m_pState->GetDesc(&desc);
-			desc.MaxAnisotropy = m_uiMaxAnisotropy;
-			dx10StateUtils::ValidateState(desc);
-			rec.m_pState->Release();
-			CreateState(desc, &rec.m_pState);
-		}
+		MaxAnisotropy = MaxAniso;
 	}
+	if (!States[0][0])
+	{
+		return;
+	}
+	if (Rebuild)
+	{
+		CreateSet(0);
+	}
+	Bind();
 }
 
-void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) 
+void dx10SamplerStateCache::SetMipLodBias(float Bias)
 {
-	if (ps_r_scale_mode > 1) {
-		mipMapLodBias += std::min(0.0f, log2(RCache.get_width() / RCache.get_target_width()) - 1.0f + EPS);
+	if (ps_r_scale_mode > 1)
+	{
+		Bias += std::min(0.0f, log2(GfxCmdList::GetWidth() / GfxCmdList::GetTargetWidth()) - 1.0f + EPS);
 	}
-
-	clamp(mipMapLodBias, -3.0f, 3.0f);
-
-	if (m_mipLodBias == mipMapLodBias) {
+	clamp(Bias, -3.0f, 3.0f);
+	if (MipLodBias == Bias)
+	{
 		return;
 	}
 
-	m_mipLodBias = mipMapLodBias;
-
-	for (u32 i = 0; i < m_StateArray.size(); ++i)
+	MipLodBias = Bias;
+	if (States[0][0])
 	{
-		StateRecord& rec = m_StateArray[i];
-		RHISampleDesc desc{};
-
-		if (rec.m_pState != nullptr)
-		{
-			rec.m_pState->GetDesc(&desc);
-
-			if(desc.Filter == ERHI_FILTER::ANISOTROPIC)
-			{
-				desc.MipLODBias = m_mipLodBias;
-			}
-			else {
-				desc.MipLODBias = 0.0f;
-			}
-
-			dx10StateUtils::ValidateState(desc);
-			rec.m_pState->Release();
-
-			CreateState(desc, &rec.m_pState);
-		}
-	}
-}
-
-void dx10SamplerStateCache::ResetDeviceState()
-{
-	for (int i=0; i<sizeof(m_aPSSamplers)/sizeof(m_aPSSamplers[0]); ++i)
-	{
-		m_aPSSamplers[i] = (SHandle)hInvalidHandle;
-		m_aVSSamplers[i] = (SHandle)hInvalidHandle;
-		m_aGSSamplers[i] = (SHandle)hInvalidHandle;
-		m_aHSSamplers[i] = (SHandle)hInvalidHandle;
-		m_aDSSamplers[i] = (SHandle)hInvalidHandle;
-		m_aCSSamplers[i] = (SHandle)hInvalidHandle;
+		CreateSet(0);
+		CreateSet(1);
+		Bind();
 	}
 }

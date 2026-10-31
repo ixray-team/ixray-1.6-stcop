@@ -16,8 +16,6 @@ void CBlender_nvg::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
         C.r_dx10Texture("s_position", r2_RT_upscaled_depth);
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
-		C.r_dx10Sampler("smp_rtlinear");
-		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();
 		break;
     }

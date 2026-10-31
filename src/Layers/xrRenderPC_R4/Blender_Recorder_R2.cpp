@@ -5,67 +5,13 @@
 #include "blenders/Blender_Recorder.h"
 #include "blenders/Blender.h"
 #include "dxRenderDeviceRender.h"
-#include "ShaderBind.h"
 #include "SH_Texture.h"
+#include "ShaderBindings.h"
 
 #include "tss.h"
 #include "../../xrEngine/EngineAPI.h"
 
 void fix_texture_name(LPSTR fn);
-
-void CBlender_Compile::i_Address(u32 s, u32 address)
-{
-    if (s == u32(-1))
-    {
-        Msg("i_Address: invalid sampler index");
-        return;
-    }
-    RS.SetSAMP(s, D3DSAMP_ADDRESSU, address);
-    RS.SetSAMP(s, D3DSAMP_ADDRESSV, address);
-    RS.SetSAMP(s, D3DSAMP_ADDRESSW, address);
-}
-
-void CBlender_Compile::i_BorderColor(u32 s, u32 color)
-{
-    if (s == u32(-1))
-    {
-        Msg("i_BorderColor: invalid sampler index");
-        return;
-    }
-    RS.SetSAMP(s, D3DSAMP_BORDERCOLOR, color);
-}
-
-void CBlender_Compile::i_Filter_Min(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MINFILTER, f);
-}
-
-void CBlender_Compile::i_Filter_Mip(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MIPFILTER, f);
-}
-
-void CBlender_Compile::i_Filter_Mag(u32 s, u32 f)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, D3DSAMP_MAGFILTER, f);
-}
-
-void CBlender_Compile::i_FilterAnizo(u32 s, bool value)
-{
-    VERIFY(s != u32(-1));
-    RS.SetSAMP(s, XRDX10SAMP_ANISOTROPICFILTER, value);
-}
-
-void CBlender_Compile::i_Filter(u32 s, u32 _min, u32 _mip, u32 _mag)
-{
-    VERIFY(s != u32(-1));
-    i_Filter_Min(s, _min);
-    i_Filter_Mip(s, _mip);
-    i_Filter_Mag(s, _mag);
-}
 
 // Provide DX9-style wrappers that call the same implementations
 
@@ -100,198 +46,44 @@ void CBlender_Compile::r_CullMode(D3DCULL Mode)
     RS.SetRS(D3DRS_CULLMODE, (u32)Mode);
 }
 
-const CBlender_Compile::PassBind* CBlender_Compile::FindBind(const char* name, char space) const
-{
-    for (u32 i = 0; i < pass_bind_count; ++i)
-    {
-        if (pass_binds[i].space == space && !xr_strcmp(pass_binds[i].name, name))
-            return &pass_binds[i];
-    }
-    return nullptr;
-}
-
-void CBlender_Compile::AddBind(const char* name, u32 slot, char space)
-{
-    PassBind& bind = pass_binds[pass_bind_count++];
-    xr_strcpy(bind.name, name);
-    bind.slot = slot;
-    bind.space = space;
-}
-
 void CBlender_Compile::CreatePassShaders()
 {
     if (!shaders_pending)
         return;
     shaders_pending = false;
 
-    ShaderBindSlot slots[32] = {};
-    for (u32 i = 0; i < pass_bind_count; ++i)
+    if (pass_compute)
     {
-        xr_strcpy(slots[i].name, pass_binds[i].name);
-        slots[i].slot = pass_binds[i].slot;
-        slots[i].space = pass_binds[i].space;
-    }
-
-    ShaderBind_Set(slots, pass_compute || _stricmp(pass_ps, "null") ? pass_bind_count : 0);
-    if (pass_compute)
-        dest.cs = DEV->_CreateCS(pass_cs);
-    else
-        dest.ps = DEV->_CreatePS(pass_ps);
-    ShaderBind_Clear();
-
-    if (pass_compute)
+        dest.cs = DEV->_CreateCS(pass_cs, Defines);
         return;
-    dest.vs = DEV->_CreateVS(pass_vs);
-    dest.gs = DEV->_CreateGS(pass_gs);
-    dest.hs = DEV->_CreateHS(pass_hs);
-    dest.ds = DEV->_CreateDS(pass_ds);
+    }
+    dest.ps = DEV->_CreatePS(pass_ps, Defines);
+    dest.vs = DEV->_CreateVS(pass_vs, Defines);
+    dest.gs = DEV->_CreateGS(pass_gs, Defines);
+    dest.hs = DEV->_CreateHS(pass_hs, Defines);
+    dest.ds = DEV->_CreateDS(pass_ds, Defines);
     dest.cs = DEV->_CreateCS("null");
 }
 
-u32 CBlender_Compile::r_dx10Sampler(const char* ResourceName)
+void CBlender_Compile::r_dx10Texture(const char* ResourceName, const char* texture)
 {
     VERIFY(ResourceName);
-    string256 name;
-    xr_strcpy(name, ResourceName);
-    fix_texture_name(name);
-
-    const u32 base = pass_compute ? CTexture::rstCompute : CTexture::rstPixel;
-    if (const PassBind* bound = FindBind(name, 's'))
-        return base + bound->slot;
-    if (next_samp >= 16)
-    {
-        Msg("! r_dx10Sampler: no free sampler slot for %s", name);
-        return u32(-1);
-    }
-    const u32 stage = base + next_samp;
-    AddBind(name, next_samp++, 's');
-
-    if (0 == xr_strcmp(ResourceName, "smp_nofilter"))
-    {
-        i_Address(stage, D3DTADDRESS_CLAMP);
-        i_Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_rtlinear"))
-    {
-        i_Address(stage, D3DTADDRESS_CLAMP);
-        i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_linear"))
-    {
-        i_Address(stage, D3DTADDRESS_WRAP);
-        i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_base"))
-    {
-        i_Address(stage, D3DTADDRESS_WRAP);
-        i_FilterAnizo(stage, true);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_material"))
-    {
-        i_Address(stage, D3DTADDRESS_CLAMP);
-        i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-        RS.SetSAMP(stage, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_smap"))
-    {
-        i_Address(stage, D3DTADDRESS_CLAMP);
-        i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, true);
-        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, RHI_COMPARISON_LESS_EQUAL);
-    }
-
-    if (0 == xr_strcmp(ResourceName, "smp_jitter"))
-    {
-        i_Address(stage, D3DTADDRESS_WRAP);
-        i_Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
-    }
-
-    return stage;
-}
-
-void CBlender_Compile::r_dx10Texture(const char* ResourceName, const char* texture, u32 slot)
-{
-    VERIFY(ResourceName);
-    if (!texture) return;
+    const u32 Slot = ShaderBindings::Texture(ResourceName);
+    if (!texture || Slot == u32(-1))
+        return;
     string256 TexName;
     xr_strcpy(TexName, texture);
     fix_texture_name(TexName);
 
-    if (const PassBind* bound = FindBind(ResourceName, 't'))
-        slot = bound->slot;
-    else
-    {
-        if (slot == u32(-1))
-            slot = next_tex;
-        if (slot >= 16)
-        {
-            Msg("! r_dx10Texture: no free texture slot for %s", ResourceName);
-            return;
-        }
-        next_tex = std::max(next_tex, slot + 1);
-        AddBind(ResourceName, slot, 't');
-    }
-
-    const u32 stage = (pass_compute ? CTexture::rstCompute : CTexture::rstPixel) + slot;
-    if (!xr_strcmp(ResourceName, "s_base"))
-    {
-        ref_constant C = ctable.get(ResourceName);
-        RHIShaderConstant* sampler = C ? &*C : AddConstant(ResourceName);
-        sampler->samp = u16(stage);
-    }
+    const u32 stage = (pass_compute ? CTexture::rstCompute : CTexture::rstPixel) + Slot;
     passTextures.erase(std::remove_if(passTextures.begin(), passTextures.end(), [stage](const auto& it) { return it.first == stage; }), passTextures.end());
     passTextures.push_back(std::make_pair(stage, ref_texture(DEV->_CreateTexture(TexName))));
 }
 
 void CBlender_Compile::r_dx10Unbind(const char* ResourceName)
 {
-    const PassBind* bound = FindBind(ResourceName, 't');
-    if (!bound)
-        return;
-
-    const u32 gone = bound->slot;
-    const u32 base = pass_compute ? CTexture::rstCompute : CTexture::rstPixel;
-    passTextures.erase(std::remove_if(passTextures.begin(), passTextures.end(), [&](const auto& it) { return it.first == base + gone; }), passTextures.end());
-    for (auto& it : passTextures)
-    {
-        if (it.first > base + gone && it.first < base + 16)
-            --it.first;
-    }
-
-    PassBind* const first = pass_binds;
-    std::move(first + (bound - first) + 1, first + pass_bind_count, first + (bound - first));
-    --pass_bind_count;
-    for (u32 i = 0; i < pass_bind_count; ++i)
-    {
-        if (pass_binds[i].space == 't' && pass_binds[i].slot > gone)
-            --pass_binds[i].slot;
-    }
-    --next_tex;
-
-    const PassBind* sbase = FindBind("s_base", 't');
-    ref_constant C = sbase ? ctable.get("s_base") : nullptr;
-    if (C)
-        C->samp = u16(base + sbase->slot);
-}
-
-RHIShaderConstant* CBlender_Compile::AddConstant(const char* name)
-{
-    ref_constant C = new RHIShaderConstant();
-    C->name = name;
-    ctable.table.push_back(C);
-    std::sort(ctable.table.begin(), ctable.table.end(), [](const ref_constant& a, const ref_constant& b) { return xr_strcmp(a->name, b->name) < 0; });
-    ctable.handlers_valid = false;
-    return &*C;
-}
-
-void CBlender_Compile::r_Setup(const char* name, RHIShaderConstant::Setup* s)
-{
-    AddConstant(name)->handler = s;
+    const u32 stage = (pass_compute ? CTexture::rstCompute : CTexture::rstPixel) + ShaderBindings::Texture(ResourceName);
+    passTextures.erase(std::remove_if(passTextures.begin(), passTextures.end(), [stage](const auto& it) { return it.first == stage; }), passTextures.end());
 }
 
 void CBlender_Compile::r_ColorWriteEnable(bool cR, bool cG, bool cB, bool cA)
@@ -313,25 +105,19 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _ps, bool bFog, bool 
     r_Pass(_vs, "null", _ps, bFog, bZtest, bZwrite, bABlend, abSRC, abDST, aTest, aRef);
 }
 
-void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps, bool bFog, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
+void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps, bool, bool bZtest, bool bZwrite, bool bABlend, D3DBLEND abSRC, D3DBLEND abDST, bool aTest, u32 aRef)
 {
     RS.Invalidate();
     ctable.clear();
     passTextures.clear();
     passMatrices.clear();
-    passConstants.clear();
-    dwStage = 0;
-    pass_bind_count = 0;
-    next_tex = 0;
-    next_samp = 0;
     pass_compute = false;
 
     PassSET_ZB(bZtest, bZwrite);
     PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
-    PassSET_LightFog(false, bFog);
 
     if (LightingModeIsStaticRender() && aTest)
-        RImplementation.addShaderOption("USE_R1_ALPHA_TEST", "1");
+        AddDefine("USE_R1_ALPHA_TEST", "1");
 
     xr_strcpy(pass_vs, _vs ? _vs : "null");
     xr_strcpy(pass_ps, _ps ? _ps : "null");
@@ -340,12 +126,6 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
     xr_strcpy(pass_ds, "null");
     xr_strcpy(pass_cs, "null");
     shaders_pending = true;
-
-    if (0 == _stricmp(_ps, "null"))
-    {
-        RS.SetTSS(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
-        RS.SetTSS(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-    }
 
     SetPassPriority(-1);
 }
@@ -362,9 +142,6 @@ void CBlender_Compile::r_ComputePass(const char* cs)
 {
     ctable.clear();
     passTextures.clear();
-    pass_bind_count = 0;
-    next_tex = 0;
-    next_samp = 0;
     pass_compute = true;
     xr_strcpy(pass_cs, cs ? cs : "null");
     shaders_pending = true;
@@ -373,21 +150,17 @@ void CBlender_Compile::r_ComputePass(const char* cs)
 void CBlender_Compile::r_End(bool clear)
 {
     CreatePassShaders();
-    SetMapping();
+    ctable.DetailScale = detail_scaler;
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
-	
-    dest.C = nullptr;
-    ref_matrix_list temp(nullptr);
-	
     dest.M = DEV->_CreateMatrixList(passMatrices);
 
     SH->passes.push_back(DEV->_CreatePass(dest));
 
     if (clear)
     {
-        RImplementation.clearAllShaderOptions();
+        Defines.clear();
     }
 
     SetPassPriority(-1);

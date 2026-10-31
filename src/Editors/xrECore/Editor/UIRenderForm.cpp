@@ -161,7 +161,7 @@ void UIRenderForm::DrawVP()
 
 	if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID)
 	{
-		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
+		RImplementation.Imm().CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;

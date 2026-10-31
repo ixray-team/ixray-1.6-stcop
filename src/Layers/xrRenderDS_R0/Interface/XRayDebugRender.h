@@ -10,7 +10,7 @@ public:
 	CDS0_DebugRender();
 	virtual void Render();
 
-	// routed to RCache
+	// routed to the immediate backend
 	virtual void NextSceneMode();
 	virtual void ZEnable(bool bEnable);
 	virtual void OnFrameEnd();

@@ -12,13 +12,11 @@ void CBlender_scale::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	RImplementation.addShaderOption("FILTER_TYPE", C.iElement == 0 ? "smp_nofilter" : "smp_rtlinear");
+	C.AddDefine("FILTER_TYPE", C.iElement == 0 ? "smp_nofilter" : "smp_rtlinear");
 
 	C.r_Pass("stub_fullscreen_triangle", "copy_image", false, false, false);
 	C.r_dx10Texture("s_image", r2_RT_generic0);
 
-	C.r_dx10Sampler("smp_nofilter");
-	C.r_dx10Sampler("smp_rtlinear");
 
 	C.r_End();
 }

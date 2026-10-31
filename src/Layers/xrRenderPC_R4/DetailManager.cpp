@@ -194,7 +194,7 @@ void CDetailManager::Unload		()
 }
 
 #include "../../xrEngine/xr_ioc_cmd.h"
-void CDetailManager::Render()
+void CDetailManager::Render(GfxCmdList& Cmd)
 {
 	PROF_EVENT("Render details");
 	const bool EditorMode = Device.IsEditorMode();
@@ -420,7 +420,7 @@ void CDetailManager::Render()
 	m_time_rot_2 += (PI_MUL_2 * fDelta / swing_current.rot2);
 	m_time_pos += fDelta * swing_current.speed;
 
-	hw_Render();
+	hw_Render(Cmd);
 
 	if (m_frame_render != Device.dwFrame) {
 		m_time_pos_old = m_time_pos;

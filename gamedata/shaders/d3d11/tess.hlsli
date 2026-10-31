@@ -86,10 +86,10 @@ void ComputePatchVertex(float3 P[3], float3 N[3], float3 uvw, in PNPatch patch, 
            patch.f3N101 * w * v;
 }
 
-sampler smp_bump_ds;
-Texture2D s_tbump;
-Texture2D s_tbumpX;
-Texture2D s_tdetailBumpX;
+sampler smp_bump_ds : register(s7);
+Texture2D s_tbump : register(t25);
+Texture2D s_tbumpX : register(t26);
+Texture2D s_tdetailBumpX : register(t28);
 
 void ComputeDisplacedVertex(inout float3 P, float3 N, float2 tc, float2 tcd)
 {

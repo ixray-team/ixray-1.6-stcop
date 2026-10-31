@@ -1,9 +1,9 @@
 #include "common.hlsli"
 #include "scope_postprocess.hlsli"
 
-Texture2D s_base0;
-Texture2D s_base1;
-Texture2D s_noise;
+Texture2D s_base0 : register(t49);
+Texture2D s_base1 : register(t50);
+Texture2D s_noise : register(t26);
 
 
 // Pixel

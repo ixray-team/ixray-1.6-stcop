@@ -100,7 +100,7 @@ public:
 	void				AddSkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
 
 	// render
-	void				Render					();
+	void				Render					(GfxCmdList& Cmd);
 
 	void				clear					();
 };

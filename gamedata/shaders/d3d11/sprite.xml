@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="sprite" ps="sprite">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

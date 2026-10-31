@@ -13,46 +13,7 @@ void	SimulatorStates::set_RS(u32 a, u32 b, u32 c)
 		),
 	States.end());
 
-	// Register
-	State st;
-	st.set_RS(a, b, c);
-	States.push_back(st);
-}
-
-void	SimulatorStates::set_TSS	(u32 a, u32 b, u32 c)
-{
-	// Search duplicates
-	for (int t=0; t<int(States.size()); t++)
-	{
-		State& S	= States[t];
-		if ((1==S.type)&&(a==S.v1)&&(b==S.v2)) {
-			States.erase(States.begin()+t);
-			break;
-		}
-	}
-
-	// Register
-	State		st;
-	st.set_TSS	(a,b,c);
-	States.push_back(st);
-}
-
-void	SimulatorStates::set_SAMP	(u32 a, u32 b, u32 c)
-{
-	// Search duplicates
-	for (int t=0; t<int(States.size()); t++)
-	{
-		State& S	= States[t];
-		if ((2==S.type)&&(a==S.v1)&&(b==S.v2)) {
-			States.erase(States.begin()+t);
-			break;
-		}
-	}
-
-	// Register
-	State		st;
-	st.set_SAMP	(a,b,c);
-	States.push_back(st);
+	States.push_back({ 0, a, b, c });
 }
 
 bool	SimulatorStates::equal	(SimulatorStates& S)
@@ -70,7 +31,7 @@ void	SimulatorStates::clear	()
 
 #include "dx10StateUtils.h"
 
-void SimulatorStates::UpdateState( dx10State &state) const
+void SimulatorStates::UpdateState( GfxPipelineState &state) const
 {
 	for (u32 it=0; it<States.size(); it++)
 	{
@@ -80,10 +41,10 @@ void SimulatorStates::UpdateState( dx10State &state) const
 			switch (S.v1)
 			{
 			case D3DRS_STENCILREF:
-				state.UpdateStencilRef(S.v2);
+				state.StencilRef = S.v2;
 				break;
 			case D3DRS_ALPHAREF:
-				state.UpdateAlphaRef(S.v2);
+				state.AlphaRef = S.v2;
 				break;
 			}
 		}
@@ -112,20 +73,6 @@ void SimulatorStates::UpdateDesc( RHIRasterizerDesc &desc ) const
 			case D3DRS_CULLMODE:
 				desc.CullMode = (ERHI_CULL_MODE)S.v2;
 				break;
-
-			case D3DRS_DEPTHBIAS:
-				VERIFY(0);
-				break;
-
-			case D3DRS_SLOPESCALEDEPTHBIAS:
-				VERIFY(0);
-				break;
-				
-			//	desc.DepthClipEnable = true;
-			
-			case D3DRS_SCISSORTESTENABLE:
-				desc.ScissorEnable = S.v2;
-				break;
 			}
 		}
 	}
@@ -140,10 +87,6 @@ void SimulatorStates::UpdateDesc( RHIDepthStencilDesc &desc ) const
 		{
 			switch (S.v1)
 			{
-			case D3DRS_ZENABLE:
-				desc.DepthEnable = S.v2?1:0;
-				break;
-
 			case D3DRS_ZWRITEENABLE:
 				desc.DepthWriteMask = S.v2 ? RHI_DEPTH_WRITE_MASK_ALL : RHI_DEPTH_WRITE_MASK_ZERO;
 				break;
@@ -292,161 +235,5 @@ void SimulatorStates::UpdateDesc( RHIBlendDesc &desc ) const
 				break;
 			}
 		}
-	}
-}
-
-void SimulatorStates::UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex) const
-{
-	const ERHI_FILTER MipfilterLinear = ERHI_FILTER::MIN_MAG_POINT_MIP_LINEAR;
-	const ERHI_FILTER MagfilterLinear = ERHI_FILTER::MIN_POINT_MAG_LINEAR_MIP_POINT;
-	const ERHI_FILTER MinfilterLinear = ERHI_FILTER::MIN_LINEAR_MAG_MIP_POINT;
-	const ERHI_FILTER AllfilterLinear = ERHI_FILTER::MIN_MAG_MIP_LINEAR;
-	const ERHI_FILTER FilterAnisotropic = ERHI_FILTER::ANISOTROPIC;
-	const ERHI_FILTER FilterComparison = ERHI_FILTER::COMPARISON_MIN_MAG_MIP_POINT;
-
-	for (u32 it = 0; it < States.size(); it++)
-	{
-		const State& S = States[it];
-		if (S.type == 2)
-		{
-			int iSamplerIndex = int(S.v1);
-			iSamplerIndex -= iBaseSamplerIndex;
-
-			if ((iSamplerIndex >= RHI_COMMONSHADER_SAMPLER_SLOT_COUNT) || iSamplerIndex < 0)
-				continue;
-
-			SamplerUsed[iSamplerIndex] = true;
-			RHISampleDesc& desc = descArray[iSamplerIndex];
-
-			switch (S.v2)
-			{
-				//D3D_FILTER Filter;
-			case D3DSAMP_MAGFILTER:	/* D3DTEXTUREFILTER filter to use for magnification */
-				switch (S.v3)
-				{
-				case D3DTEXF_NONE:
-				case D3DTEXF_POINT:
-					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MagfilterLinear));
-					break;
-				case D3DTEXF_LINEAR:
-					desc.Filter = (ERHI_FILTER)(desc.Filter | MagfilterLinear);
-					break;
-				default:
-					NODEFAULT;
-				}
-				break;
-
-			case D3DSAMP_MINFILTER:	/* D3DTEXTUREFILTER filter to use for minification */
-				switch (S.v3)
-				{
-				case D3DTEXF_NONE:
-				case D3DTEXF_POINT:
-					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MinfilterLinear));
-					break;
-				case D3DTEXF_LINEAR:
-					desc.Filter = (ERHI_FILTER)(desc.Filter | MinfilterLinear);
-					break;
-				default:
-					NODEFAULT;
-				}
-				break;
-
-			case D3DSAMP_MIPFILTER:	/* D3DTEXTUREFILTER filter to use between mipmaps during minification */
-				switch (S.v3)
-				{
-				case D3DTEXF_NONE:
-				case D3DTEXF_POINT:
-					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MipfilterLinear));
-					//desc.Filter &= ~MipfilterLinear;
-					break;
-				case D3DTEXF_LINEAR:
-					desc.Filter = (ERHI_FILTER)(desc.Filter | MipfilterLinear);
-					//desc.Filter |= MipfilterLinear;
-					break;
-				default:
-					NODEFAULT;
-				}
-				break;
-
-			case XRDX10SAMP_ANISOTROPICFILTER:
-				if (S.v3)
-					desc.Filter = (ERHI_FILTER)(desc.Filter | FilterAnisotropic);
-				//desc.Filter |= FilterAnisotropic;
-				else
-					desc.Filter = (ERHI_FILTER)(desc.Filter & (~FilterAnisotropic));
-				//desc.Filter &= ~FilterAnisotropic;
-				break;
-
-			case XRDX10SAMP_COMPARISONFILTER:
-				if (S.v3)
-					desc.Filter = (ERHI_FILTER)(desc.Filter | FilterComparison);
-				else
-					desc.Filter = (ERHI_FILTER)(desc.Filter & (~FilterComparison));
-				break;
-
-				//D3Dxx_TEXTURE_ADDRESS_MODE AddressU;
-			case D3DSAMP_ADDRESSU:	/* D3DTEXTUREADDRESS for U coordinate */
-				desc.AddressU = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3));
-				break;
-
-			case D3DSAMP_ADDRESSV:	/* D3DTEXTUREADDRESS for V coordinate */
-				desc.AddressV = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3));
-				break;
-
-			case D3DSAMP_ADDRESSW:	/* D3DTEXTUREADDRESS for W coordinate */
-				desc.AddressW = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3));
-				break;
-
-				//	FLOAT MipLODBias
-			case D3DSAMP_MIPMAPLODBIAS:
-				desc.MipLODBias = *((float*)(&(S.v3)));
-				break;
-
-				//	UINT MaxAnisotropy;
-			case D3DSAMP_MAXANISOTROPY:
-				desc.MaxAnisotropy = S.v3;
-				break;
-
-				//	D3Dxx_COMPARISON_FUNC ComparisonFunc;
-			case XRDX10SAMP_COMPARISONFUNC:
-				desc.ComparisonFunc = (ERHI_COMPARISON_FUNC)S.v3;
-				break;
-
-				//	FLOAT BorderColor[4];
-			case D3DSAMP_BORDERCOLOR:
-			{
-				desc.BorderColor[0] = ((S.v3 >> 16) & 0xff) / 255.0f;
-				desc.BorderColor[1] = ((S.v3 >> 8) & 0xff) / 255.0f;
-				desc.BorderColor[2] = ((S.v3) & 0xff) / 255.0f;
-				desc.BorderColor[3] = ((S.v3 >> 24) & 0xff) / 255.0f;
-			}
-			break;
-
-			//	FLOAT MinLOD;
-			case XRDX10SAMP_MINLOD:
-				desc.MinLOD = (FLOAT)S.v3;
-				break;
-
-				//	FLOAT MaxLOD;
-			case D3DSAMP_MAXMIPLEVEL:
-				desc.MaxLOD = (FLOAT)S.v3;
-				break;
-			}
-		}
-	}
-
-	//	Validate data
-	for (int i = 0; i < RHI_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
-	{
-		RHISampleDesc& desc = descArray[i];
-		if (!!(desc.Filter & FilterAnisotropic))
-		{
-			desc.Filter = (ERHI_FILTER)(desc.Filter | AllfilterLinear);
-			//desc.Filter |= AllfilterLinear;
-		}
-
-		VERIFY(desc.MinLOD <= desc.MaxLOD);
-		if (desc.MinLOD > desc.MaxLOD)
-			desc.MaxLOD = desc.MinLOD;
 	}
 }

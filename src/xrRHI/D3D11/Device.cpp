@@ -43,15 +43,6 @@ IRHITextureFactory* InternalDevice11::GetTextureFactory()
 	return TextureFactory;
 }
 
-void InternalDevice11::SetTextureFactory(IRHITextureFactory* factory)
-{
-	if (TextureFactory)
-	{
-		delete TextureFactory;
-	}
-	TextureFactory = static_cast<DX11TextureFactory*>(factory);
-}
-
 bool InternalDevice11::UpdateBuffersD3D11()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -286,8 +277,7 @@ bool InternalDevice11::CreateD3D11()
 		const D3D_FEATURE_LEVEL pFeatureLevels[] =
 		{
 			D3D_FEATURE_LEVEL_11_1,
-			D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_10_1
+			D3D_FEATURE_LEVEL_11_0
 		};
 
 		D3D_FEATURE_LEVEL CurLevel;
@@ -350,6 +340,16 @@ bool InternalDevice11::CreateD3D11()
 				infoQueue->SetBreakOnID(D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET, false);
 				infoQueue->Release();
 			}
+		}
+	}
+
+	D3D11_FEATURE_DATA_D3D11_OPTIONS Options = {};
+	if (FAILED(HWRenderContext->QueryInterface(IID_PPV_ARGS(&HWContext1))) || FAILED(DX11Device->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS, &Options, sizeof(Options))) || !Options.ConstantBufferOffsetting || !Options.MapNoOverwriteOnDynamicConstantBuffer)
+	{
+		if (HWContext1 != nullptr)
+		{
+			HWContext1->Release();
+			HWContext1 = nullptr;
 		}
 	}
 
@@ -522,6 +522,27 @@ void InternalDevice11::DestroyD3D11()
 			g_pAnnotation = nullptr;
 		}
 
+		for (ID3D11Buffer* Ring : ConstantRings)
+		{
+			Ring->Release();
+		}
+		ConstantRings.clear();
+
+		for (ID3D11Buffer*& Buffer : ConstantBuffers)
+		{
+			if (HWContext1 == nullptr && Buffer != nullptr)
+			{
+				Buffer->Release();
+			}
+			Buffer = nullptr;
+		}
+
+		if (HWContext1 != nullptr)
+		{
+			HWContext1->Release();
+			HWContext1 = nullptr;
+		}
+
 		if (HWRenderContext != nullptr)
 		{
 			((ID3D11DeviceContext*)HWRenderContext)->Release();
@@ -545,6 +566,8 @@ void InternalDevice11::DestroyD3D11()
 void InternalDevice11::Present()
 {
 	HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+	RingIndex = RingPos = 0;
+	++ConstantEpoch;
 }
 
 void InternalDevice11::CopySurface(IRHISurface* Dest, IRHISurface* Source)
@@ -651,54 +674,51 @@ void InternalDevice11::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 	HWRenderContext->IASetPrimitiveTopology(d3dTopology);
 }
 
-void InternalDevice11::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+void InternalDevice11::DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex)
 {
-	if (primitiveCount == 0)
+	if (IndexCount == 0)
 	{
 		return;
 	}
-
-	u32 indexCount = RHITopologyUtils::GetIndexCount(primitiveCount, currentTopology);
-	HWRenderContext->DrawIndexed(indexCount, startIndex, baseVertex);
+	ApplyBindings(GraphicsStages);
+	HWRenderContext->DrawIndexed(IndexCount, StartIndex, BaseVertex);
 }
 
-void InternalDevice11::Draw(u32 startVertex, u32 primitiveCount)
+void InternalDevice11::Draw(u32 VertexCount, u32 StartVertex)
 {
-	if (primitiveCount == 0)
+	if (VertexCount == 0)
 	{
 		return;
 	}
-
-	u32 vertexCount = RHITopologyUtils::GetVertexCount(primitiveCount, currentTopology);
-	HWRenderContext->Draw(vertexCount, startVertex);
+	ApplyBindings(GraphicsStages);
+	HWRenderContext->Draw(VertexCount, StartVertex);
 }
 
-void InternalDevice11::DrawInstanced(u32 startVertex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void InternalDevice11::DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance)
 {
-	if (primitiveCount == 0 || instanceCount == 0)
+	if (VertexCount == 0 || InstanceCount == 0)
 	{
 		return;
 	}
-
-	u32 vertexCount = RHITopologyUtils::GetVertexCount(primitiveCount, currentTopology);
-	HWRenderContext->DrawInstanced(vertexCount, instanceCount, startVertex, startInstanceLocation);
+	ApplyBindings(GraphicsStages);
+	HWRenderContext->DrawInstanced(VertexCount, InstanceCount, StartVertex, StartInstance);
 }
 
-void InternalDevice11::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+void InternalDevice11::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance)
 {
-	if (primitiveCount == 0)
+	if (IndexCount == 0 || InstanceCount == 0)
 	{
 		return;
 	}
-
-	u32 indexCount = RHITopologyUtils::GetIndexCount(primitiveCount, currentTopology);
-	HWRenderContext->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstanceLocation);
+	ApplyBindings(GraphicsStages);
+	HWRenderContext->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
 }
 
 void InternalDevice11::DrawNoInputAssembly(u32 vertexCount)
 {
 	HWRenderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	HWRenderContext->IASetInputLayout(nullptr);
+	ApplyBindings(GraphicsStages);
 	HWRenderContext->Draw(vertexCount, 0);
 }
 
@@ -718,20 +738,4 @@ void InternalDevice11::SetScissorRect(Irect* R)
 ID3D11DeviceContext* InternalDevice11::GetImmediateContext() const
 {
 	return HWRenderContext;
-}
-
-ID3D11DeviceContext* InternalDevice11::CreateDeferredContext()
-{
-	ID3D11DeviceContext* deferredContext = nullptr;
-	HRESULT hr = DX11Device->CreateDeferredContext(0, &deferredContext);
-	R_CHK(hr);
-	return deferredContext;
-}
-
-void InternalDevice11::ReleaseDeferredContext(ID3D11DeviceContext* context)
-{
-	if (context)
-	{
-		context->Release();
-	}
 }

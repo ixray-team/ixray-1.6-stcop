@@ -62,7 +62,7 @@ void CBlender_Particle::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	if (LightingModeIsStaticRender())
 	{
-		if (C.iElement > SE_R1_NORMAL_LQ) return;
+		if (C.iElement > ShaderVariant::NormalLQ) return;
 		const D3DBLEND src[] = {D3DBLEND_ONE, D3DBLEND_SRCALPHA, D3DBLEND_ONE, D3DBLEND_DESTCOLOR, D3DBLEND_DESTCOLOR, D3DBLEND_SRCALPHA};
 		const D3DBLEND dst[] = {D3DBLEND_ZERO, D3DBLEND_INVSRCALPHA, D3DBLEND_ONE, D3DBLEND_ZERO, D3DBLEND_SRCCOLOR, D3DBLEND_ONE};
 		VERIFY(oBlend.IDselected < std::size(src));
@@ -84,22 +84,23 @@ void CBlender_Particle::Compile	(CBlender_Compile& C)
 		case 5:	C.r_Pass("particle", "particle", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_ONE, TRUE, 0);	break;	// ALPHA-ADD
 		}
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		u32 hSampler = C.r_dx10Sampler("smp_base");
-		if (oClamp.value && (hSampler != (u32)-1))
-			C.i_Address(hSampler, D3DTADDRESS_CLAMP);
+		if (oClamp.value)
+		{
+			C.AddDefine("SMP_BASE_CLAMP", "1");
+		}
 		C.r_End();
 		return;
 	}
 
 	switch	(C.iElement) 
 	{
-		case SE_R2_HUD:
-		case SE_R2_NORMAL_HQ:
-		case SE_R2_NORMAL_LQ:
+		case ShaderVariant::HUD:
+		case ShaderVariant::NormalHQ:
+		case ShaderVariant::NormalLQ:
 		{
-			if (C.iElement != SE_R2_NORMAL_HQ)
+			if (C.iElement != ShaderVariant::NormalHQ)
 			{
-				RImplementation.addShaderOption("DISABLE_SOFT_PARTICLES", "1");
+				C.AddDefine("DISABLE_SOFT_PARTICLES", "1");
 			}
 
 			switch (oBlend.IDselected)
@@ -115,9 +116,6 @@ void CBlender_Particle::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Texture("s_position", "$user$position");
 
-			C.r_dx10Sampler("smp_base");
-			C.r_dx10Sampler("smp_linear");
-			C.r_dx10Sampler("smp_nofilter");
 
 			C.r_End();
 			break;

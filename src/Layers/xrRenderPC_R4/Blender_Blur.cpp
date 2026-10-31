@@ -32,6 +32,5 @@ void CBlender_Blur::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	C.r_Pass("r1_shadow_blur", "r1_shadow_blur", false, false, false);
 	C.r_dx10Texture("s_base", C.L_textures[0]);
-	C.r_dx10Sampler("smp_rtlinear");
 	C.r_End();
 }

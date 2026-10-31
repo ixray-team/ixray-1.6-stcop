@@ -4,7 +4,7 @@
 
 Fvector3 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f }; // Force Volumetric, Vol Intensity, Vol Quality
 
-void CRenderTarget::accum_spot(light* L)
+void CRenderTarget::accum_spot(GfxCmdList& Cmd, light* L)
 {
 	if (L == nullptr)
 	{
@@ -12,7 +12,7 @@ void CRenderTarget::accum_spot(light* L)
 	}
 
 	PROF_EVENT("CRenderTarget::accum_spot")
-	phase_accumulator();
+	phase_accumulator(Cmd);
 	RImplementation.stats.l_visible++;
 
 	// *** assume accumulator already setup ***
@@ -33,7 +33,7 @@ void CRenderTarget::accum_spot(light* L)
 		}
 	}
 
-	CHudInitializer initalizer(false, true);
+	CHudInitializer initalizer(Cmd, false, true);
 
 	if(L->flags.bHudMode) 
 	{
@@ -43,38 +43,37 @@ void CRenderTarget::accum_spot(light* L)
 	bool	bIntersect = false; //enable_scissor(L);
 	{
 		// setup xform
-		RCache.set_xform_world(L->m_xform);
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
+		Cmd.SetObjectTransform(L->m_xform);
+		Cmd.SetView(Device.mView, Device.mProject);
 		bIntersect = enable_scissor(L);
 		enable_dbt_bounds(L);
 
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-		RCache.set_Element(s_accum_mask->E[SE_MASK_SPOT]);		// masker
+		Cmd.SetPass(s_accum_mask->E[SE_MASK_SPOT]);		// masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
-		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
-		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
-		draw_volume(L);
+		Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
+		Cmd.SetStencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+		draw_volume(Cmd, L);
 
 		// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
-		RCache.set_CullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
-		draw_volume(L);
+		Cmd.SetCullMode(ERHI_CULLMODE::BACK);
+		Cmd.SetStencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+		draw_volume(Cmd, L);
 	}
 
 	// nv-stencil recompression
-	if(RImplementation.o.nvstencil)	u_stencil_optimize();
+	if(RImplementation.o.nvstencil)	u_stencil_optimize(Cmd);
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
+	Cmd.SetColorWriteEnable();
+	Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
-	Fmatrix			m_Texgen;			u_compute_texgen_screen(m_Texgen);
+	Fmatrix			m_Texgen;			u_compute_texgen_screen(Cmd, m_Texgen);
 
 	// Shadow xform (+texture adjustment matrix)
 	Fmatrix			m_Shadow, m_Lmap;
@@ -144,27 +143,27 @@ void CRenderTarget::accum_spot(light* L)
 			m_Shadow = m_Lmap;
 		}
 
-		RCache.set_Element(shader->E[_id]);
-		RCache.set_CullMode(ERHI_CULLMODE::FRONT);
+		Cmd.SetPass(shader->E[_id]);
+		Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
 
 		// Constants
 		//float	att_R = L->range * .95f;
 		float	att_R = L->range;
 		float	att_factor = 1.f / (att_R * att_R);
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
-		RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
-		RCache.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
-		RCache.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
-		RCache.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		Cmd.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		Cmd.Constants.Write<CBLight>().m_shadow = m_Shadow;
+		Cmd.Constants.Write<CBLight>().Ldynamic_hud = (int)L->flags.bHudMode;
+		Cmd.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
+		Cmd.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
 
-		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
-		draw_volume(L);
+		Cmd.SetStencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
+		draw_volume(Cmd, L);
 	}
 
-	RCache.set_Scissor(0);
-	increment_light_marker();
+	Cmd.SetScissor(0);
+	increment_light_marker(Cmd);
 
 	u_DBT_disable();
 
@@ -174,7 +173,7 @@ void CRenderTarget::accum_spot(light* L)
 	}
 }
 
-void CRenderTarget::accum_volumetric(light* L)
+void CRenderTarget::accum_volumetric(GfxCmdList& Cmd, light* L)
 {
 	if (L == nullptr)
 	{
@@ -183,7 +182,7 @@ void CRenderTarget::accum_volumetric(light* L)
 
 	if(!L->flags.bVolumetric) return;
 	PROF_EVENT("CRenderTarget::accum_volumetric")
-	phase_vol_accumulator();
+	phase_vol_accumulator(Cmd);
 
 	ref_shader			shader;
 
@@ -197,17 +196,16 @@ void CRenderTarget::accum_volumetric(light* L)
 	bool	bIntersect = false; //enable_scissor(L);
 	{
 		// setup xform
-		RCache.set_xform_world(L->m_xform);
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
+		Cmd.SetObjectTransform(L->m_xform);
+		Cmd.SetView(Device.mView, Device.mProject);
 		bIntersect = enable_scissor(L);
 	}
 
-	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);		// back
+	Cmd.SetColorWriteEnable();
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);		// back
 
 	// 2D texgens 
-	Fmatrix			m_Texgen;			u_compute_texgen_screen(m_Texgen);
+	Fmatrix			m_Texgen;			u_compute_texgen_screen(Cmd, m_Texgen);
 
 	// Shadow xform (+texture adjustment matrix)
 	Fmatrix			m_Shadow, m_Lmap;
@@ -294,20 +292,20 @@ void CRenderTarget::accum_volumetric(light* L)
 
 	// Draw volume with projective texgen
 	{
-		RCache.set_Element(shader->E[0]);
+		Cmd.SetPass(shader->E[0]);
 
 		// Constants
 		float	att_R = L->m_volumetric_distance * L->range;// *.95f;
 		float	att_factor = 1.f / (att_R * att_R);
-		RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
-		RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
-		RCache.Constants.Write<CBPass>().m_texgen = m_Texgen;
-		RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
-		RCache.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
-		RCache.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
-		RCache.Constants.Write<CBLight>().vMinBounds.set(aabb.x1, aabb.y1, aabb.z1);
+		Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+		Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L_spec);
+		Cmd.Constants.Write<CBPass>().m_texgen = m_Texgen;
+		Cmd.Constants.Write<CBLight>().m_shadow = m_Shadow;
+		Cmd.Constants.Write<CBMaterial>().m_lmap[0].set(m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41);
+		Cmd.Constants.Write<CBMaterial>().m_lmap[1].set(m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42);
+		Cmd.Constants.Write<CBLight>().vMinBounds.set(aabb.x1, aabb.y1, aabb.z1);
 		//	Increase camera-space aabb z size to compensate decrease of slices number
-		RCache.Constants.Write<CBLight>().vMaxBounds.set(aabb.x2, aabb.y2, aabb.z1 + (aabb.z2 - aabb.z1) / fQuality);
+		Cmd.Constants.Write<CBLight>().vMaxBounds.set(aabb.x2, aabb.y2, aabb.z1 + (aabb.z2 - aabb.z1) / fQuality);
 
 		//	Set up user clip planes
 		{
@@ -322,22 +320,22 @@ void CRenderTarget::accum_volumetric(light* L)
 				Fvector4	TransformedPlane;
 				PlaneTransform.transform(TransformedPlane, ClipPlane);
 				TransformedPlane.mul(-1.0f);
-				RCache.Constants.Write<CBLight>().FrustumClipPlane[i] = TransformedPlane;
+				Cmd.Constants.Write<CBLight>().FrustumClipPlane[i] = TransformedPlane;
 			}
 		}
 
-		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+		Cmd.SetColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 
-		RCache.set_Geometry(g_accum_volumetric);
+		Cmd.SetGeometry(g_accum_volumetric);
 		//	Igor: no need to do it per sub-sample. Plain AA will go just fine.
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, VOLUMETRIC_SLICES * 4, 0, VOLUMETRIC_SLICES * 2);
-		RCache.set_ColorWriteEnable();
+		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, (VOLUMETRIC_SLICES * 2) * 3, 0, 0);
+		Cmd.SetColorWriteEnable();
 	}
 
-	RCache.set_Scissor(0);
+	Cmd.SetScissor(0);
 }
 
-void CRenderTarget::accum_volumetric_lv(light* L)
+void CRenderTarget::accum_volumetric_lv(GfxCmdList& Cmd, light* L)
 {
 	//LV: Point lights will be fixed later... I hope
 	if (L == nullptr)
@@ -349,13 +347,12 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 		return;
 	}
 
-	phase_vol_accumulator();
+	phase_vol_accumulator(Cmd);
 
 	//Set XFORMs, we gonna transform our geometry in VS
 	L->xform_calc();
-	RCache.set_xform_world(L->m_xform);
-	RCache.set_xform_view(Device.mView);
-	RCache.set_xform_project(Device.mProject);
+	Cmd.SetObjectTransform(L->m_xform);
+	Cmd.SetView(Device.mView, Device.mProject);
 
 	//Shadow xform (+texture adjustment matrix)
 	Fmatrix m_Shadow, m_Lmap;
@@ -402,18 +399,18 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	float att_factor = 1.f / (att_R * att_R);
 
 	//Set the shader
-	RCache.set_Element(s_combine->E[3]);
-	RCache.set_CullMode(ERHI_CULLMODE::FRONT);
-	RCache.set_Stencil(false);
+	Cmd.SetPass(s_combine->E[3]);
+	Cmd.SetCullMode(ERHI_CULLMODE::FRONT);
+	Cmd.SetStencil(false);
 
-	RCache.set_ColorWriteEnable();
+	Cmd.SetColorWriteEnable();
 	//Set constants
-	RCache.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
-	RCache.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, -cos(L->cone * 0.5));
-	RCache.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L->get_LOD());
+	Cmd.Constants.Write<CBLight>().Ldynamic_pos.set(L_pos.x, L_pos.y, L_pos.z, att_factor);
+	Cmd.Constants.Write<CBLight>().Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, -cos(L->cone * 0.5));
+	Cmd.Constants.Write<CBLight>().Ldynamic_color.set(L_clr.x, L_clr.y, L_clr.z, L->get_LOD());
 
-	RCache.Constants.Write<CBLight>().m_shadow = m_Shadow;
+	Cmd.Constants.Write<CBLight>().m_shadow = m_Shadow;
 
 	//Render, no IB/VB - geometry in VS
-	draw_volume(L);
+	draw_volume(Cmd, L);
 }

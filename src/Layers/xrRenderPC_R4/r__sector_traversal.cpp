@@ -78,7 +78,7 @@ void CPortalTraverser::fade_portal	(CPortal* _p, float ssa)
 void CPortalTraverser::initialize	()
 {
 	f_shader.create					("portal");
-	f_geom.create					(FVF::F_L, RCache.Vertex.Buffer(), 0);
+	f_geom.create					(FVF::F_L, RImplementation.Imm().Vertex.Buffer(), 0);
 }
 void CPortalTraverser::destroy		()
 {
@@ -88,7 +88,7 @@ void CPortalTraverser::destroy		()
 
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
-void CPortalTraverser::fade_render	()
+void CPortalTraverser::fade_render	(GfxCmdList& Cmd)
 {
 	if (f_portals.empty())
 		return;
@@ -116,7 +116,7 @@ void CPortalTraverser::fade_render	()
 		FVF::L buff[3];
 	};
 	
-	LF* _v = (LF*)RCache.Vertex.Lock(poly_per_portal*3,f_geom.stride(),_offset);
+	LF* _v = (LF*)Cmd.Vertex.Lock(poly_per_portal*3,f_geom.stride(),_offset);
 	float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
 	Fvector _ambient_f = g_pGamePersistent->Environment().CurrentEnv->ambient;
 	u32 _ambient = psGameFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
@@ -142,16 +142,16 @@ void CPortalTraverser::fade_render	()
 			_v++;
 		}
 	}
-	RCache.Vertex.Unlock(poly_per_portal*3,f_geom.stride());
+	Cmd.Vertex.Unlock(poly_per_portal*3,f_geom.stride());
 
 	// render
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Shader(f_shader);
-	RCache.set_Geometry(f_geom);
+	Cmd.SetObjectTransform(Fidentity);
+	Cmd.SetPass(f_shader);
+	Cmd.SetGeometry(f_geom);
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,_offset, poly_per_portal);
-	RCache.set_CullMode(ERHI_CULLMODE::BACK);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.Draw(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, poly_per_portal * 3, _offset);
+	Cmd.SetCullMode(ERHI_CULLMODE::BACK);
 
 	// cleanup
 	f_portals.clear();

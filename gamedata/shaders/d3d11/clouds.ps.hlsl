@@ -7,8 +7,8 @@ struct v2p
     float2 tc1 : TEXCOORD1;
 };
 
-Texture2D s_clouds0 : register(t0);
-Texture2D s_clouds1 : register(t1);
+Texture2D s_clouds0 : register(t25);
+Texture2D s_clouds1 : register(t26);
 
 // Pixel
 float4 main(v2p I) : SV_Target

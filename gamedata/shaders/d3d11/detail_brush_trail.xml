@@ -1,0 +1,5 @@
+<shader>
+	<l_special>
+		<pass vs="detail_brush_trail" ps="detail_brush_trail" zfunc="always" zwrite="0" blend="srcalpha,invsrcalpha"/>
+	</l_special>
+</shader>

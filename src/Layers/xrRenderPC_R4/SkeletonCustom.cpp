@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include 	"stdafx.h"
+#include "dxDebugRender.h"
 
 #include	"SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
@@ -56,12 +57,12 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 		Fvector P1,P2;
 		M1.transform_tiny(P1,Z);
 		M2.transform_tiny(P2,Z);
-		RCache.dbg_DrawLINE(XFORM, P1, P2, color_xrgb(0, 255, 0));
+		DebugRenderImpl.DrawLine(XFORM, P1, P2, color_xrgb(0, 255, 0));
 
 		Fmatrix M;
 		M.mul_43(XFORM,M2);
-		RCache.dbg_DrawOBB(M, H1, color_xrgb(255, 255, 255));
-		RCache.dbg_DrawOBB(M, H2, color_xrgb(255, 255, 255));
+		DebugRenderImpl.DrawOBB(M, H1, color_xrgb(255, 255, 255));
+		DebugRenderImpl.DrawOBB(M, H2, color_xrgb(255, 255, 255));
 	}
 #endif
 
@@ -72,7 +73,7 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 		Fmatrix		Mbox;	obb.xform_get(Mbox);
 		Fmatrix		X;		X.mul(Mbone,Mbox);
 		Fmatrix		W;		W.mul(XFORM,X);
-		RCache.dbg_DrawOBB(W, obb.m_halfsize, color_xrgb(0, 0, 255));
+		DebugRenderImpl.DrawOBB(W, obb.m_halfsize, color_xrgb(0, 0, 255));
 	}
 }
 #endif
@@ -920,7 +921,7 @@ int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups)
     return (int)groups.size();
 }
 
-void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
+void CKinematics::StoreVisualMatrix(const Fmatrix& world_matrix)
 {
 	PROF_EVENT("StoreVisualMatrix")
 

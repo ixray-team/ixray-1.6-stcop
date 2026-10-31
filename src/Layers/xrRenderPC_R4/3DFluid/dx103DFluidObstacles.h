@@ -14,7 +14,7 @@ public:
 	dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid *pGrid);
 	~dx103DFluidObstacles();
 
-	void	ProcessObstacles( const dx103DFluidData &FluidData, float timestep );
+	void	ProcessObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, float timestep );
 
 private:
 	enum ObstacleShader
@@ -28,16 +28,16 @@ private:
 	void	InitShaders();
 	void	DestroyShaders();
 
-	void	ProcessStaticObstacles( const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid );
-	void	ProcessDynamicObstacles( const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid, float timestep );
+	void	ProcessStaticObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid );
+	void	ProcessDynamicObstacles( GfxCmdList& Cmd, const dx103DFluidData &FluidData, const Fmatrix &WorldToFluid, float timestep );
 
 	//	This technique renders several objects.
-	void	RenderPhysicsShell( const IPhysicsShell *pShell, const Fmatrix &WorldToFluid, float timestep );
-	void	RenderPhysicsElement( const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep);
+	void	RenderPhysicsShell( GfxCmdList& Cmd, const IPhysicsShell *pShell, const Fmatrix &WorldToFluid, float timestep );
+	void	RenderPhysicsElement( GfxCmdList& Cmd, const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep);
 
-	void	RenderStaticOOBB( const Fmatrix &Transform);
+	void	RenderStaticOOBB( GfxCmdList& Cmd, const Fmatrix &Transform);
 	//void	RenderDynamicOOBB( const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep);
-	void	RenderDynamicOOBB( const IPhysicsGeometry &Geometry, const Fmatrix &WorldToFluid, float timestep);
+	void	RenderDynamicOOBB( GfxCmdList& Cmd, const IPhysicsGeometry &Geometry, const Fmatrix &WorldToFluid, float timestep);
 	
 private:
 	Fvector3	m_vGridDim;

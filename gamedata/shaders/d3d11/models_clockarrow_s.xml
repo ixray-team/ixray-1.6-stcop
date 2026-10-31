@@ -1,0 +1,8 @@
+<shader>
+	<normal sort="2" strict="1" distort="1">
+		<pass vs="model_distort" ps="model_clockarrow_s" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_lmap" src="$blackalpha"/>
+		</pass>
+	</normal>
+</shader>

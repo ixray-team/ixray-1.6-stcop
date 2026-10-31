@@ -5,7 +5,7 @@
 #include "shared\cbuffer.hlsli"
 #endif
 
-#define MAX_BONES_COUNT 128
+#define MAX_BONES_COUNT 256
 
 CBUFFER(CBFrame, 0)
 	float4 timers;
@@ -37,6 +37,7 @@ CBUFFER(CBFrame, 0)
 	float4 c_colormap;
 	float4 hud_rain;
 	float4 m_digiclock;
+	float def_aref;
 CBUFFER_END
 
 CBUFFER(CBView, 1)
@@ -58,7 +59,6 @@ CBUFFER_END
 
 CBUFFER(CBObject, 2)
 	float3x4 m_W;
-	float3x4 m_invW;
 	float3x4 m_WV;
 	float4x4 m_WVP;
 	float4x4 m_WVP_old;
@@ -68,16 +68,8 @@ CBUFFER(CBObject, 2)
 CBUFFER_END
 
 CBUFFER(CBMaterial, 3)
-	float4 L_material;
-	float4 hemi_cube_pos_faces;
-	float4 hemi_cube_neg_faces;
 	float4 dt_params;
-	float4 parallax;
-	float def_aref;
 	float m_AlphaRef;
-	float4 L_model_light_color;
-	float4 L_model_light_dir;
-	float4 triLOD;
 	float4 m_lmap[2];
 	float4 tfactor;
 CBUFFER_END
@@ -117,6 +109,15 @@ CBUFFER_END
 CBUFFER(CBSkin, 6)
 	float4 sbones_array[MAX_BONES_COUNT * 3];
 	float4 sbones_array_old[MAX_BONES_COUNT * 3];
+CBUFFER_END
+
+CBUFFER(CBDraw, 13)
+	float4 L_material;
+	float4 hemi_cube_pos_faces;
+	float4 hemi_cube_neg_faces;
+	float4 L_model_light_color;
+	float4 L_model_light_dir;
+	float4 triLOD;
 CBUFFER_END
 
 #endif

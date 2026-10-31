@@ -16,21 +16,21 @@
 // Textures
 //--------------------------------------------------------------------------------------
 
-Texture3D Texture_velocity0;
-Texture3D Texture_velocity1;
-Texture3D Texture_color;
-Texture3D Texture_obstacles;
-Texture3D Texture_obstvelocity;
-Texture3D Texture_pressure;
-Texture3D Texture_tempscalar;
-Texture3D Texture_tempvector;
+Texture3D Texture_velocity0 : register(t0);
+Texture3D Texture_velocity1 : register(t1);
+Texture3D Texture_color : register(t2);
+Texture3D Texture_obstacles : register(t3);
+Texture3D Texture_obstvelocity : register(t4);
+Texture3D Texture_pressure : register(t5);
+Texture3D Texture_tempscalar : register(t6);
+Texture3D Texture_tempvector : register(t7);
 
 //--------------------------------------------------------------------------------------
 // Samplers
 //--------------------------------------------------------------------------------------
 
-sampler samPointClamp;
-sampler samLinear;
+sampler samPointClamp : register(s8);
+sampler samLinear : register(s9);
 
 //--------------------------------------------------------------------------------------
 // Variables

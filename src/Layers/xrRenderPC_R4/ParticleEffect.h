@@ -47,8 +47,8 @@ namespace PS
 		void	 			OnFrame				(u32 dt);
 		virtual void	 	UpdateCache			();
 
-		virtual void		Render				(float LOD);
-		void				RenderEditor		();
+		virtual void		Render				(GfxCmdList& Cmd, float LOD);
+		void				RenderEditor		(GfxCmdList& Cmd);
 		virtual void		Copy				(dxRender_Visual* pFrom);
 
 		virtual void 		GeomCreate();

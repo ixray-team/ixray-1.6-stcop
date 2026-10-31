@@ -1,22 +1,22 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_scale()
+void CRenderTarget::phase_scale(GfxCmdList& Cmd)
 {
-	DrawSQ(s_scale, rt_Generic, ps_r_scale_mode, []
+	DrawSQ(Cmd, s_scale, rt_Generic, ps_r_scale_mode, []
 	{
 		RImplementation.rmNormal();
 	});
 }
 
-void CRenderTarget::PhaseEditorScale()
+void CRenderTarget::PhaseEditorScale(GfxCmdList& Cmd)
 {
-	u_setrt(get_target_width(), get_target_height(), rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
+	u_setrt(Cmd, get_target_width(), get_target_height(), rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();
 
-	RCache.set_CullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
-	RCache.set_ColorWriteEnable();
-	RCache.set_Element(s_scale->E[1]);
-	RCache.set_Geometry(FSTriangleGeom);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
+	Cmd.SetStencil(FALSE);
+	Cmd.SetColorWriteEnable();
+	Cmd.SetPass(s_scale->E[1]);
+	Cmd.SetGeometry(FSTriangleGeom);
+	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
 }

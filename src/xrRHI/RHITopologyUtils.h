@@ -41,4 +41,17 @@ struct RHITopologyUtils
     {
         return GetIndexCount(primitiveCount, topology);
     }
+
+    static u32 GetPrimitiveCount(u32 count, ERHI_PRIMITIVE_TOPOLOGY topology)
+    {
+        switch (topology)
+        {
+        case ERHI_PRIMITIVE_TOPOLOGY::POINT_LIST: return count;
+        case ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST: return count / 2;
+        case ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP: return count > 1 ? count - 1 : 0;
+        case ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP:
+        case ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN: return count > 2 ? count - 2 : 0;
+        default: return count / 3;
+        }
+    }
 };

@@ -11,8 +11,8 @@ void CRenderTarget::init_xess()
         return;
     }
     XeSSWrapper::ContextParameters params;
-    params.outputWidth = (u32)RCache.get_target_width();
-    params.outputHeight = (u32)RCache.get_target_height();
+    params.outputWidth = (u32)GfxCmdList::GetTargetWidth();
+    params.outputHeight = (u32)GfxCmdList::GetTargetHeight();
     params.preset = ps_render_scale_preset;
     params.scale = ps_render_scale;
     g_XESSWrapper.Create(params);
@@ -26,8 +26,8 @@ bool CRenderTarget::phase_xess()
     params.pVelocityTexture = rt_Velocity->pSurface;
     params.pDepthTexture = rt_Position->pSurface;
     params.pOutputTexture = rt_Generic->pSurface;
-    params.inputWidth = (u32)RCache.get_width();
-    params.inputHeight = (u32)RCache.get_height();
+    params.inputWidth = (u32)GfxCmdList::GetWidth();
+    params.inputHeight = (u32)GfxCmdList::GetHeight();
     params.jitterOffsetX = ps_r_taa_jitter_full.x;
     params.jitterOffsetY = ps_r_taa_jitter_full.y;
     return g_XESSWrapper.Draw(params);

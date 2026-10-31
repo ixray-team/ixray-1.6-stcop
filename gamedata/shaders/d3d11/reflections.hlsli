@@ -250,7 +250,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 // Hierarchical trace over the min-Z pyramid: the ray walks cell by cell in screen space
 // (uv, device z), goes one level coarser after an empty cell and one level finer
 // when it dips below the cell minimum. A hit is reported once it is below level 0.
-Texture2D<float> s_hiz;
+Texture2D<float> s_hiz : register(t25);
 
 #define HIZ_MAX_ITERATIONS 64
 #define HIZ_RAY_EPS 0.005f

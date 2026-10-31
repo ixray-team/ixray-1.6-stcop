@@ -32,9 +32,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("env_s1", r2_T_envs1);
 
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
-        C.r_dx10Sampler("smp_linear");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -59,9 +56,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_sslr);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
-        C.r_dx10Sampler("smp_linear");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -83,9 +77,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_sslr_temp);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
-        C.r_dx10Sampler("smp_linear");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
 
@@ -99,9 +90,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
 
-        C.r_dx10Sampler("smp_linear");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
 
         C.r_End();
         break;

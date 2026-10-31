@@ -6,11 +6,11 @@ static const float fParallaxStartFade = 8.0f;
 static const float fParallaxStopFade = 12.0f;
 
 #ifdef USE_IOR_TEXTURE
-Texture2D s_specular;
+Texture2D s_specular : register(t25);
 #endif
 
 #ifdef USE_SNOW_TEXTURE
-Texture2D s_snow;
+Texture2D s_snow : register(t26);
 #endif
 
 #ifndef PARALLAX_HEIGHT

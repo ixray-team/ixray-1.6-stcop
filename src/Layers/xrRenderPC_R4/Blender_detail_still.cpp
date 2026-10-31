@@ -49,21 +49,21 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 
 		switch (C.iElement)
 		{
-		case SE_R1_NORMAL_HQ:
+		case ShaderVariant::NormalHQ:
 			C.r_Pass("detail_wave", "detail", true, true, true, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : false, oBlend.value ? 200 : 0);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			C.r_End		();
 			break;
-		case SE_R1_NORMAL_LQ:
+		case ShaderVariant::NormalLQ:
 			C.r_Pass("detail_still", "detail", true, true, true, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : false, oBlend.value ? 200 : 0);
 			r1_tex(C, "s_base", C.L_textures[0]);
 			C.r_End		();
 			break;
-		case SE_R1_LPOINT:
+		case ShaderVariant::PointLight:
 			break;
-		case SE_R1_LSPOT:
+		case ShaderVariant::SpotLight:
 			break;
-		case SE_R1_LMODELS:
+		case ShaderVariant::ModelLighting:
 			break;
 		}
 	
@@ -81,30 +81,30 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 
 	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ)
 	{
-		RImplementation.addShaderOption("DISABLE_MOTION_VECTORS", "1");
-		RImplementation.addShaderOption("DETAIL_SHADOW_PASS", "1");
-		RImplementation.addShaderOption("USE_AREF", "1");
+		C.AddDefine("DISABLE_MOTION_VECTORS", "1");
+		C.AddDefine("DETAIL_SHADOW_PASS", "1");
+		C.AddDefine("USE_AREF", "1");
 	}
 	else
 	{
-		RImplementation.addShaderOption("FIX_CULL_NORMAL", "1");
+		C.AddDefine("FIX_CULL_NORMAL", "1");
 	}
 
-	if (C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_DETAIL_SHADOW_HQ)
+	if (C.iElement == ShaderVariant::NormalHQ || C.iElement == SE_R2_DETAIL_SHADOW_HQ)
 	{
-		RImplementation.addShaderOption("USE_TREEWAVE", "1");
+		C.AddDefine("USE_TREEWAVE", "1");
 	}
 
 	switch(C.iElement)
 	{
-	case SE_R2_NORMAL_HQ:
+	case ShaderVariant::NormalHQ:
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 		C.r_CullMode(D3DCULL_NONE);
 		C.r_End();
 		break;
-	case SE_R2_NORMAL_LQ:
+	case ShaderVariant::NormalLQ:
 		uber_deffer(C, false, "deffer_detail", "deffer_base", true, 0, true);
 		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
@@ -116,13 +116,11 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		C.r_Pass("deffer_detail", "shadow_base", false);
 
 		C.r_dx10Texture("s_base", C.L_textures[0]);
-		C.r_dx10Sampler("smp_base");
-		C.r_dx10Sampler("smp_linear");
 		C.r_CullMode(D3DCULL_NONE);
 
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 	}
 
-	RImplementation.clearAllShaderOptions();
+	C.Defines.clear();
 }
