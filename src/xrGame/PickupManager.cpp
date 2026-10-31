@@ -123,8 +123,9 @@ ICF void closest_point_on_bone_shape(const SBoneShape& shape, const Fvector& poi
 	}
 }
 
-void get_nearest_bone_position(IKinematics* pK, const Fvector& dest_pos, const Fvector& dest_dir, Fvector& target_pos, const Fmatrix& xform)
+bool get_nearest_bone_position(IKinematics* pK, const Fvector& dest_pos, const Fvector& dest_dir, Fvector& target_pos, const Fmatrix& xform)
 {
+	bool found = false;
 	Fmatrix inv_xform;
 	inv_xform.invert(xform);
 	Fvector ray_pos, ray_dir;
@@ -180,10 +181,16 @@ void get_nearest_bone_position(IKinematics* pK, const Fvector& dest_pos, const F
 		{
 			min_dist = curr_dist;
 			target_pos = t_pos;
+			found = true;
 		}
 	}
 
-	xform.transform_tiny(target_pos);
+	if (found)
+	{
+		xform.transform_tiny(target_pos);
+	}
+
+	return found;
 }
 bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 {
@@ -193,7 +200,11 @@ bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 	}
 
 	Fvector dir, to;
-	get_nearest_bone_position(PKinematics(item->Visual()), from, Actor()->cam_Active()->vDirection, to, item->XFORM());
+	IKinematics* pK = PKinematics(item->Visual());
+	if (pK == nullptr || !get_nearest_bone_position(pK, from, Actor()->cam_Active()->vDirection, to, item->XFORM()))
+	{
+		item->Center(to);
+	}
 	float range = dir.sub(to, from).magnitude();
 	dir.normalize();
 
@@ -210,18 +221,19 @@ bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 
 		if (result.O)
 		{
-			if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
-			{
-				tmp_s.bOverlaped = true;
-				return true;
-			}
-
+			// Level-placed items may carry the SDK "Model\Obstacle" flag, so the target must be skipped first
 			if (result.O == tmp_s.item)
 			{
 				return true;
 			}
 
-			CGameObject* GO = result.O != nullptr ? result.O->cast_game_object() : nullptr;
+			if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
+			{
+				tmp_s.bOverlaped = true;
+				return false;
+			}
+
+			CGameObject* GO = result.O->cast_game_object();
 			if (GO == nullptr)
 			{
 				return true;
@@ -253,8 +265,11 @@ bool CPickUpManager::CanPickItem(const Fvector& from, CObject* item)
 			{
 				return true;
 			}
+
+			tmp_s.bOverlaped = true;
+			return false;
 		}
-		
+
 		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
