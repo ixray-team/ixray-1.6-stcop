@@ -102,6 +102,25 @@ struct IXRayGbuffer
 	uint MaterialID;
 };
 
+// Legacy lighting keeps gloss (specular intensity) instead of a PBR surface: reflect as a mirror scaled by gloss
+float3 GbufferSpecular(IXRayGbuffer O)
+{
+#ifdef USE_LEGACY_LIGHT
+	return O.Gloss * 0.04f;
+#else
+	return O.Specular;
+#endif
+}
+
+float GbufferRoughness(IXRayGbuffer O)
+{
+#ifdef USE_LEGACY_LIGHT
+	return 0.0f;
+#else
+	return O.Roughness;
+#endif
+}
+
 struct IXRayGbufferPack
 {
 	float4 Color : SV_Target0;

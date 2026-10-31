@@ -52,7 +52,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	
 	[branch]
-	if (SslrWeight(O.Normal, O.View, O.Specular, O.Roughness) <= 0.0f)
+	if (SslrWeight(O.Normal, O.View, GbufferSpecular(O), GbufferRoughness(O)) <= 0.0f)
 	{
 		// Zero ray data: sslr_filter gives it the floor weight
 		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth < 0.02f);
@@ -97,7 +97,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	else
 	{
-		SSLR = HiZTraceSSR(StartPoint, Reflection, uint(lerp(HIZ_MAX_ITERATIONS, HIZ_ROUGH_ITERATIONS, SslrRoughTrace(O.Roughness))), VslrStart);
+		SSLR = HiZTraceSSR(StartPoint, Reflection, uint(lerp(HIZ_MAX_ITERATIONS, HIZ_ROUGH_ITERATIONS, SslrRoughTrace(GbufferRoughness(O)))), VslrStart);
 	}
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
@@ -112,7 +112,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
-		if(SSLR.w < 1.0f && VslrStart >= 0.0f && SslrRoughTrace(O.Roughness) < 1.0f)
+		if(SSLR.w < 1.0f && VslrStart >= 0.0f && SslrRoughTrace(GbufferRoughness(O)) < 1.0f)
 		{
 			// The cube is coarser than the depth buffer: only the cube march starts at its surface
 			float VslrScale = min(1.0f, s_env_dist.SampleLevel(smp_linear, StartPoint, 0.0f).x / max(EPS, length(StartPoint)));
@@ -164,7 +164,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #endif
 
 		// Screen-space AO occludes only the fallback of missed rays, traced hits come from the lit image
-		Color *= LinearToGamma(SpecularOcclusion(saturate(dot(O.Normal, -ViewVec)), s_occ.Load(int3(Pixel, 0)).x, O.Roughness));
+		Color *= LinearToGamma(SpecularOcclusion(saturate(dot(O.Normal, -ViewVec)), s_occ.Load(int3(Pixel, 0)).x, GbufferRoughness(O)));
 
 		Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	}

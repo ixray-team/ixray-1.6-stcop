@@ -119,7 +119,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	// Combine uses the environment here, the depth keeps the history test valid when the pixel returns to SSLR
 	[branch]
-	if (SslrWeight(O.Normal, O.View, O.Specular, O.Roughness) <= 0.0f)
+	if (SslrWeight(O.Normal, O.View, GbufferSpecular(O), GbufferRoughness(O)) <= 0.0f)
 	{
 		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth);
 		return;
