@@ -7,6 +7,15 @@
 #include "DetailFormat.h"
 #include "DetailModel.h"
 
+// Keep the legacy 16-byte DetailSlot for the Level Editor. The game renderer
+// uses a decoded slot with 16-bit IDs and does not reinterpret mapped bytes.
+#ifndef _EDITOR
+#    include "../../xrCore/DetailRuntimeSlot.h"
+using RuntimeDetailSlot = ixray::detail_format::RuntimeSlot;
+#else
+using RuntimeDetailSlot = DetailSlot;
+#endif
+
 #ifdef _EDITOR
 //.	#include	"ESceneClassList.h"
 	constexpr int	dm_max_decompress	= 14;
@@ -51,7 +60,7 @@ public:
 		u32 id; // ID модельки
 		xr_vector<CDetail::SlotItem*> items[3]; // список кустиков
 
-		ICF SlotPart() : id(DetailSlot::ID_Empty){}
+		ICF SlotPart() : id(RuntimeDetailSlot::ID_Empty){}
 	};
 	enum SlotType
 	{
@@ -66,7 +75,7 @@ public:
 			u32 empty :1;
 			u32 type :1;
 		};
-		DetailSlot* DS;
+		RuntimeDetailSlot* DS;
 		vis_data vis;
 		SlotPart G[dm_obj_in_slot];
 
@@ -108,8 +117,11 @@ public:
 
 	IReader* dtFS = nullptr;
 	DetailHeader dtH;
-	DetailSlot* dtSlots = nullptr;		// note: pointer into VFS
-	DetailSlot DS_empty;
+#ifndef _EDITOR
+	xr_vector<RuntimeDetailSlot> dtSlotsOwned; // decoded v3/v4, no VFS bitfields
+#endif
+	RuntimeDetailSlot* dtSlots = nullptr;
+	RuntimeDetailSlot DS_empty;
 
 	xr_atomic_bool task_finished = true;
 	int render_key = 1, calc_key = 0;
@@ -159,7 +171,7 @@ public:
 #endif
 
 	// get unpacked slot
-	DetailSlot&						QueryDB			(int sx, int sz);
+	RuntimeDetailSlot&					QueryDB			(int sx, int sz);
     
 	void							cache_ReInitialize();
 	void							cache_Update	(const Fvector& view);

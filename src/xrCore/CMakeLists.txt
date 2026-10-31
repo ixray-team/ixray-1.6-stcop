@@ -171,6 +171,14 @@ endif()
 # Move precompiled header
 target_validate_pch(xrCore ${CMAKE_CURRENT_SOURCE_DIR})
 
+# The portable detail codec conditionally includes stdafx.h. MSVC's /Yu
+# skips the opening #if before the PCH include and reports C1020 at #endif.
+# Compile this translation unit without precompiled headers.
+set_source_files_properties(DetailFormatCodec.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+if(MSVC)
+	set_source_files_properties(DetailFormatCodec.cpp PROPERTIES COMPILE_OPTIONS "/Y-")
+endif()
+
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
