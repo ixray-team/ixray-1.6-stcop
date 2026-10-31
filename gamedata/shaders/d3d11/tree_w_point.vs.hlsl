@@ -3,23 +3,24 @@
 
 
 
-vf_point main(v_tree v)
+vf_point main(PULL_INPUT)
 {
+    PulledVertex V = PullVertex(VertexId);
     vf_point o;
 
-    float3 pos = mul(m_xform, v.P);
+    float3 pos = mul(m_xform, float4(V.P, 1.0f));
 
     float base = m_xform._24; 
     float dp = calc_cyclic(wave.w + dot(pos, (float3)wave));
     float H = pos.y - base; 
-    float frac = v.tc.z * consts.x; 
+    float frac = DecodeS16x2(V.X).x * consts.x; 
     float inten = H * dp; 
     float2 result = calc_xz_wave(wind.xz * inten, frac);
     float4 f_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
-    float3 f_N = normalize(mul((float3x3)m_xform, unpack_normal(v.Nh.xyz)));
+    float3 f_N = normalize(mul((float3x3)m_xform, V.N));
 
     o.hpos = mul(m_VP, f_pos);
-    o.tc0 = (v.tc * consts).xy;
+    o.tc0 = V.UV;
     o.color = calc_point(o.tc1, o.tc2, f_pos, f_N);
 
     return o;

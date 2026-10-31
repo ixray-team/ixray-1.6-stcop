@@ -273,7 +273,7 @@ void CShaderConstants::SetLOD(float LOD, float Dist)
 		Factor = (float)ps_r4_tess_max;
 	}
 
-	Write<CBDraw>().triLOD.set(Factor, Factor, Factor, Factor);
+	Write<CBDraw>().triLOD = Factor;
 }
 
 void CShaderConstants::UpdateScreen()

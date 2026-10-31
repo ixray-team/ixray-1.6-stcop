@@ -1,16 +1,17 @@
 #include "r1_water.hlsli"
 
-vf_water main(v_static_color v)
+vf_water main(PULL_INPUT)
 {
     vf_water o;
-    float4 P = watermove(v.P);
-    float3 N = unpack_normal(v.Nh.xyz);
-    float3 T = unpack_normal(v.T.xyz);
-    float3 B = unpack_normal(v.B.xyz);
-    float4 C = unpack_D3DCOLOR(v.color);
+    PulledVertex V = PullVertex(VertexId);
+    float4 P = watermove(float4(V.P, 1.0f));
+    float3 N = V.N;
+    float3 T = V.T;
+    float3 B = V.B;
+    float4 C = float4(DecodeU8x4(V.X).xyz, DecodeU8x4(V.C).y);
 
     o.v2point = P.xyz - eye_position;
-    o.tbase = unpack_tc_base(v.tc, v.T.w, v.B.w);
+    o.tbase = V.UV;
     o.tnorm0 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_0, P.xz, W_DISTORT_AMP_0);
     o.tnorm1 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_1, P.xz, W_DISTORT_AMP_1);
 
@@ -19,8 +20,8 @@ vf_water main(v_static_color v)
     o.M2 = xform[1];
     o.M3 = xform[2];
 
-    float3 L = C.rgb + r1_v_hemi(N) * unpack_D3DCOLOR(v.Nh).w + r1_v_sun(N) * C.w + L_ambient.xyz;
+    float3 L = C.rgb + r1_v_hemi(N) * DecodeU8x4(V.C).x + r1_v_sun(N) * C.w + L_ambient.xyz;
     o.hpos = mul(m_VP, P);
-    o.c0 = float4(L, r1_fog(v.P.xyz));
+    o.c0 = float4(L, r1_fog(V.P));
     return o;
 }

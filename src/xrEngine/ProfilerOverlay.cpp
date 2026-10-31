@@ -51,7 +51,7 @@ private:
 	ImU32 BlockColor(u32 Node, float Alpha) const;
 };
 
-static CProfilerOverlay g_Overlay;
+static CProfilerOverlay Overlay;
 
 static float ToMs(u64 Ticks)
 {
@@ -612,7 +612,7 @@ void CProfilerOverlay::DrawBlock(u32 Node, float X, float Width, float Y, bool A
 	List->AddRectFilled(Min, Max, BlockColor(Node, Ancestor ? 0.4f : 1.0f));
 	if (Max.x - Min.x > 16.0f)
 	{
-		char Label[256] = {};
+		string256 Label;
 		xr_sprintf(Label, "%s  %.2f ms", Item.Name, NodeMs[Node]);
 		List->PushClipRect(Min, Max, true);
 		List->AddText(ImVec2(X + 2.0f, Y + 1.0f), IM_COL32_BLACK, Label);
@@ -682,6 +682,6 @@ ImU32 CProfilerOverlay::BlockColor(u32 Node, float Alpha) const
 
 void DrawProfilerOverlay()
 {
-	g_Overlay.Draw();
+	Overlay.Draw();
 }
 #endif

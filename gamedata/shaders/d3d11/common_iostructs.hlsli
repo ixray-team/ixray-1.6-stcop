@@ -1,6 +1,8 @@
 #ifndef common_iostructs_h_included
 #define common_iostructs_h_included
 
+#include "shared\vertex.hlsli"
+
 ////////////////////////////////////////////////////////////////
 //	This file contains io structs:
 //	v_name	:	input for vertex shader.

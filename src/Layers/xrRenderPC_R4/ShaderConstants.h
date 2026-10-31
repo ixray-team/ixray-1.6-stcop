@@ -41,6 +41,7 @@ namespace Hlsl
 
 	using float3x4 = floatNx4<3>;
 	using float4x4 = floatNx4<4>;
+	using uint = u32;
 
 #define CBUFFER(name, slot) struct alignas(16) name { static constexpr u32 Slot = slot;
 #define CBUFFER_END };

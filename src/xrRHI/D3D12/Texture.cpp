@@ -546,23 +546,48 @@ IRHIShaderResourceView* InternalDevice12::CreateShaderResourceView(IRHIBuffer* s
 {
     ContextLock guard(*this);
     R_ASSERT(source && requested);
-    auto buffer = static_cast<DX12Buffer*>(source);
+    DX12View view;
+    view.Buffer = static_cast<DX12Buffer*>(source);
+    view.Format = (DXGI_FORMAT)requested->Format;
+    view.Elements = requested->ElementWidth;
+    view.Kind = view.Format == DXGI_FORMAT_UNKNOWN ? DX12KindStructured :
+        view.Format == DXGI_FORMAT_R32_TYPELESS ? DX12KindRaw : DX12KindTyped;
+    view.Descriptor = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    WriteBufferView(view);
+    return new DX12ShaderResourceView(*this, view);
+}
+
+void InternalDevice12::WriteBufferView(DX12View& view)
+{
     D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-    desc.Format = (DXGI_FORMAT)requested->Format;
+    desc.Format = view.Format;
     desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
     desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    desc.Buffer.NumElements = requested->ElementWidth;
+    desc.Buffer.NumElements = view.Elements;
     if (desc.Format == DXGI_FORMAT_UNKNOWN)
     {
-        desc.Buffer.StructureByteStride = buffer->GetDesc().StructureByteStride;
+        desc.Buffer.StructureByteStride = view.Buffer->GetDesc().StructureByteStride;
     }
+    GetDevice()->CreateShaderResourceView(view.Buffer->GetNative(), &desc, view.Descriptor.Cpu);
+    view.Descriptor.Generation = _nextDescriptor++;
+    _counters.SrvCreates.fetch_add(1, std::memory_order_relaxed);
+}
+
+IRHIUnorderedAccessView* InternalDevice12::CreateUAV(IRHIBuffer* source, const RHIUAVDesc& requested)
+{
+    ContextLock guard(*this);
+    auto buffer = static_cast<DX12Buffer*>(source);
+    R_ASSERT(buffer && buffer->GetDesc().Type == ERHI_BUFFER_TYPE::STRUCTURED_RW && buffer->GetResource().Native && requested.Format == ERHI_FORMAT::UNKNOWN);
+    D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
+    desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+    desc.Buffer.FirstElement = requested.FirstElement;
+    desc.Buffer.NumElements = requested.NumElements;
+    desc.Buffer.StructureByteStride = buffer->GetDesc().StructureByteStride;
     DX12View view;
     view.Buffer = buffer;
     view.Format = desc.Format;
-    view.Kind = desc.Format == DXGI_FORMAT_UNKNOWN ? DX12KindStructured :
-        desc.Format == DXGI_FORMAT_R32_TYPELESS ? DX12KindRaw : DX12KindTyped;
     view.Descriptor = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    GetDevice()->CreateShaderResourceView(buffer->GetResource().Native, &desc, view.Descriptor.Cpu);
-    _counters.SrvCreates.fetch_add(1, std::memory_order_relaxed);
-    return new DX12ShaderResourceView(*this, view);
+    GetDevice()->CreateUnorderedAccessView(buffer->GetResource().Native, nullptr, &desc, view.Descriptor.Cpu);
+    _counters.UavCreates.fetch_add(1, std::memory_order_relaxed);
+    return new DX12UnorderedAccessView(*this, view);
 }

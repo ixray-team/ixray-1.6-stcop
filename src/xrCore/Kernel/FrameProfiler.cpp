@@ -12,7 +12,7 @@ struct ProfilerThread
 	u64 Start[CFrameProfiler::MaxDepth];
 };
 
-static thread_local ProfilerThread g_CurrentThread;
+static thread_local ProfilerThread CurrentThread;
 
 void CFrameProfiler::SetEnabled(bool Value)
 {
@@ -47,7 +47,7 @@ void CFrameProfiler::Frame()
 
 void CFrameProfiler::Begin(const char* Name)
 {
-	ProfilerThread& Thread = g_CurrentThread;
+	ProfilerThread& Thread = CurrentThread;
 	if (Thread.Track == None)
 	{
 		Thread.Track = AddTrack(nullptr);
@@ -71,7 +71,7 @@ void CFrameProfiler::Begin(const char* Name)
 
 void CFrameProfiler::End()
 {
-	ProfilerThread& Thread = g_CurrentThread;
+	ProfilerThread& Thread = CurrentThread;
 	if (Thread.Skipped != 0)
 	{
 		Thread.Skipped--;
@@ -84,7 +84,7 @@ void CFrameProfiler::End()
 
 void CFrameProfiler::SetThreadName(const char* Name)
 {
-	ProfilerThread& Thread = g_CurrentThread;
+	ProfilerThread& Thread = CurrentThread;
 	if (Thread.Track == None)
 	{
 		Thread.Track = AddTrack(Name);

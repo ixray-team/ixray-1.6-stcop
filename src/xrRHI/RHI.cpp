@@ -324,6 +324,11 @@ IRHIUnorderedAccessView* CRHI::CreateUAV(IRHISurface* Surface, const RHIUAVDesc&
 	return DevicePtr->GetTextureFactory()->CreateUAV(Surface, desc);
 }
 
+IRHIUnorderedAccessView* CRHI::CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc)
+{
+	return DevicePtr->CreateUAV(Buffer, Desc);
+}
+
 IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource)
 {
 	return DevicePtr->CreateBuffer(desc, pSubresource);
@@ -447,6 +452,11 @@ void CRHI::ClearIndexBuffer()
 bool CRHI::IsTessPass() const
 {
 	return Shaders[(size_t)ERHI_SHADER_TYPE::HS] || Shaders[(size_t)ERHI_SHADER_TYPE::DS];
+}
+
+bool CRHI::SupportsNoOverwriteSRV() const
+{
+	return DevicePtr->NoOverwriteSRV;
 }
 
 #ifndef D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT

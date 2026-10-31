@@ -9,7 +9,7 @@
 Texture2D s_puddles_perlin : register(t28);
 Texture2D s_puddles_normal : register(t54);
 Texture2D s_puddles_ripples : register(t55);
-Texture2D<float2> s_puddles_water_height : register(t57);
+Texture2D<float2> s_puddles_water_height : register(t56);
 #include "shared\extra_cb.hlsli"
 
 #ifdef RAIN_PUDDLE_COMPUTE

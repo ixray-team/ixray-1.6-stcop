@@ -21,6 +21,10 @@ void GfxCmdList::OnFrameBegin	()
 		{
 			RImplementation.SyncMotionVectors();
 		}
+		if (Heap)
+		{
+			Heap->Flush();
+		}
 		Invalidate();
 		RImplementation.rmNormal();
 		if (!EditorMode)
@@ -38,8 +42,11 @@ void GfxCmdList::OnFrameBegin	()
 
 void GfxCmdList::UnbindComputeTextures()
 {
-	IRHIShaderResourceView* none[mtMaxComputeShaderTextures] = {};
-	GRHI->SetComputeResources(0, mtMaxComputeShaderTextures, none);
+	for (u32 Slot = 0; Slot < mtMaxComputeShaderTextures; ++Slot)
+	{
+		GRHI->ShaderResourceCache->SetCSResource(Slot, nullptr);
+	}
+	GRHI->ShaderResourceCache->Apply();
 	std::memset(Textures[5], 0, sizeof(Textures[5]));
 	TextureMask[5] = 0;
 }
@@ -61,6 +68,8 @@ void GfxCmdList::Invalidate	()
 	vb							= nullptr;
 	ib							= nullptr;
 	vb_stride					= 0;
+	GeomSource					= EGeomSource::Legacy;
+	GeomPage					= 0;
 
 	state						= nullptr;
 	std::fill(std::begin(States), std::end(States), nullptr);
@@ -82,6 +91,10 @@ void GfxCmdList::Invalidate	()
 	if (GRHI && GRHI->ShaderResourceCache)
 	{
 		GRHI->ShaderResourceCache->ResetDeviceState();
+		if (Heap)
+		{
+			Heap->Bind(*this);
+		}
 	}
 
 	std::memset(Textures, 0, sizeof(Textures));

@@ -4,20 +4,14 @@
 #else
 #include "common.hlsli"
 
-struct a2v
+void main(PULL_INPUT, out p_shadow O)
 {
-    float4 P : POSITION;
-};
-
+    PulledVertex V = PullVertex(VertexId);
 #ifdef USE_AREF
-void main(in v_static I, out p_shadow O)
-{
-    O.tc0 = unpack_tc_base(I.tc, I.T.w, I.B.w);
+    O.tc0 = V.UV;
 #else
-void main(in a2v I, out p_shadow O)
-{
     O.tc0 = 0.0f;
 #endif
-    O.hpos = mul(m_WVP, I.P);
+    O.hpos = mul(m_WVP, float4(V.P, 1.0f));
 }
 #endif

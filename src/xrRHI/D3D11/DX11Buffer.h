@@ -16,7 +16,7 @@ public:
 	bool Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresource* pData) override;
 	void Unmap() override;
 
-	void UpdateSubresource(void* pData, u32 Size) override;
+	void UpdateSubresource(const void* Data, u32 Size, u32 Offset = 0) override;
 
 	void SetVertexBuffer(u32 StartSlot, const u32 Stride, const u32 Offset) override;
 	void SetIndexBuffer(bool Is32BitBuffer, u32 Offset) override;

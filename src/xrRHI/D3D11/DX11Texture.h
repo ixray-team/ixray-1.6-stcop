@@ -135,6 +135,7 @@ public:
     virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
     virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) override;
+    IRHIUnorderedAccessView* CreateUAV(ID3D11Resource* pResource, const RHIUAVDesc& desc);
     
 private:
     u32 ConvertBindFlags(u32 bindFlags);

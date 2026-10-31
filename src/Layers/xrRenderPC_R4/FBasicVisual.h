@@ -6,6 +6,7 @@
 #include "../../xrEngine/vis_common.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../../Include/xrRender/RenderVisual.h"
+#include "GeometryHeap.h"
 
 #define VLOAD_NOVERTICES		(1<<0)
 
@@ -31,7 +32,11 @@ struct IRender_Mesh
 	u32							iCount;
 	u32							dwPrimitives;
 
+	GeometryAlloc				Alloc = {};
+	bool						OwnsAlloc = false;
+
 	IRender_Mesh				()				{ p_rm_Vertices=nullptr; p_rm_Indices=nullptr;						}
+	void						SetPulled		(const GeometryAlloc& Block);
 	virtual ~IRender_Mesh		();
 private:
 	IRender_Mesh				(const IRender_Mesh& other);

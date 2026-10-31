@@ -9,15 +9,16 @@ float2 tc0 : TEXCOORD0;
 	float4 hpos : SV_POSITION;
 };
 
-void main(in v_static_color v, out vf o)
+void main(PULL_INPUT, out vf o)
 {
-	float3 N = unpack_normal(v.Nh.xyz);
-	o.hpos = mul(m_WVP, v.P);
-	o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w);
+	PulledVertex V = PullVertex(VertexId);
+	float3 N = V.N;
+	o.hpos = mul(m_WVP, float4(V.P, 1.0f));
+	o.tc0 = V.UV;
 
-	float3 L_rgb = unpack_D3DCOLOR(v.color).xyz;
-	float3 L_hemi = r1_v_hemi(N) * unpack_D3DCOLOR(v.Nh).w;
-	float3 L_sun = r1_v_sun(N) * unpack_D3DCOLOR(v.color).w;
+	float3 L_rgb = DecodeU8x4(V.X).xyz;
+	float3 L_hemi = r1_v_hemi(N) * DecodeU8x4(V.C).x;
+	float3 L_sun = r1_v_sun(N) * DecodeU8x4(V.C).y;
 	o.c0 = L_rgb + L_hemi + L_sun + L_ambient.xyz;
-	o.fog = r1_fog(mul(m_W, v.P));
+	o.fog = r1_fog(mul(m_W, float4(V.P, 1.0f)));
 }

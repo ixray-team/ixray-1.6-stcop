@@ -1,4 +1,3 @@
-#define USE_LM_HEMI
 #include "r1_common.hlsli"
 #include "r1_static.hlsli"
 
@@ -14,22 +13,23 @@ struct vf
     float4 hpos : SV_POSITION;
 };
 
-vf main(v_static v)
+vf main(PULL_INPUT)
 {
     vf o;
+    PulledVertex V = PullVertex(VertexId);
 
-    float3 pos_w = v.P;
-    float3 norm_w = normalize(unpack_normal(v.Nh.xyz));
+    float3 pos_w = V.P;
+    float3 norm_w = V.N;
 
-    o.hpos = mul(m_VP, v.P); 
-    o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w); 
+    o.hpos = mul(m_VP, float4(V.P, 1.0f)); 
+    o.tc0 = V.UV; 
     
-    o.tc1 = unpack_tc_lmap(v.lmh); 
+    o.tc1 = unpack_tc_lmap(DecodeS16x2(V.X)); 
     o.tch = o.tc1;
     o.tc2 = calc_reflection(pos_w, norm_w);
     o.c0 = r1_v_hemi(norm_w); 
     o.c1 = r1_v_sun(norm_w); 
-    o.fog = calc_fogging(v.P); 
+    o.fog = calc_fogging(float4(V.P, 1.0f)); 
 
     return o;
 }

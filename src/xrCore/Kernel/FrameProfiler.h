@@ -22,7 +22,7 @@ public:
 
 	struct Track
 	{
-		char Name[64];
+		string64 Name;
 		u32 Root;
 		u32 Stack[MaxDepth];
 	};

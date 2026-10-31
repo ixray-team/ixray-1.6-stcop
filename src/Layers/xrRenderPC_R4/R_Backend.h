@@ -4,6 +4,7 @@
 #include "R_DStreams.h"
 #include "r_constants.h"
 #include "ShaderConstants.h"
+#include "GeometryHeap.h"
 #include "../../xrRHI/RHIEnums.h"
 #include "../../xrRHI/RHITopologyUtils.h"
 
@@ -36,6 +37,9 @@ public:
 	IRHIBuffer* QuadIB;
 	IRHIBuffer* old_QuadIB;
 	IRHIBuffer* CuboidIB;
+	IRHIBuffer* IotaVB = nullptr;
+	ref_declaration PulledDecl;
+	GeometryHeap* Heap = nullptr;
 
 	CShaderConstants				Constants;
 
@@ -50,6 +54,9 @@ private:
 	IRHIBuffer* vb;
 	IRHIBuffer* ib;
 	u32								vb_stride;
+	RHIObject* PulledLayout = nullptr;
+	EGeomSource GeomSource = EGeomSource::Legacy;
+	u32 GeomPage = 0;
 
 	// Pixel/Vertex constants
 	R_constant_table*				ctable;
@@ -202,8 +209,9 @@ public:
 
 	ICF	void						Draw				(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 StartVertex);
 	ICF	void						DrawIndexed			(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 IndexCount, u32 StartIndex, u32 BaseVertex);
-	ICF	void						DrawInstanced		(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 InstanceCount, u32 StartVertex);
+	ICF	void						DrawInstanced		(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance = 0);
 	ICF	void						DrawIndexedInstanced(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance);
+	ICF	void						DrawQuads			(u32 Quads, u32 BaseVertex);
 	ICF	void						DrawNoInput			(u32 VertexCount);
 	ICF	void						Dispatch			(u32 GroupsX, u32 GroupsY, u32 GroupsZ);
 
@@ -218,8 +226,11 @@ public:
 
 private:
 	void	ApplyVertexLayout();
+	void	CreatePulledLayout();
 	void	FlushStates();
 	ICF bool PrepareDraw(ERHI_PRIMITIVE_TOPOLOGY Topology, u32 Count, u32 Instances, bool Indexed);
+	ICF void SetDrawBase(u32 VertexBase, u32 Flags);
+	ICF bool SetPulledBase(u32 VertexBase);
 	void	UpdateObject();
 
 	GfxView					ViewState;

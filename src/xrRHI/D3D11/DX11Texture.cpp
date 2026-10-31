@@ -685,6 +685,11 @@ IRHIDepthStencilView* DX11TextureFactory::CreateDepthStencilView(IRHISurface* su
 
 IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc)
 {
+	return CreateUAV(static_cast<ID3D11Resource*>(pTexture->GetRawTexture()), desc);
+}
+
+IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(ID3D11Resource* pResource, const RHIUAVDesc& desc)
+{
 	D3D11_UNORDERED_ACCESS_VIEW_DESC dxDesc;
 	ZeroMemory(&dxDesc, sizeof(dxDesc));
 
@@ -711,8 +716,6 @@ IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(IRHISurface* pTexture, co
 	}
 
 	ID3D11UnorderedAccessView* pUAV = nullptr;
-	ID3D11Resource* pResource = static_cast<ID3D11Resource*>(pTexture->GetRawTexture());
-
 	HRESULT hr = Device->CreateUnorderedAccessView(pResource, &dxDesc, &pUAV);
 	if (SUCCEEDED(hr))
 		return new DX11UnorderedAccessView(pUAV);
