@@ -465,6 +465,9 @@ void SGameTaskObjective::CreateMapLocation( bool on_load )
 				break;
 			}
 		}
+
+		if (!m_linked_map_location && !res.empty())
+			m_linked_map_location = res.front();
 //.		m_linked_map_location =	Level().MapManager().GetMapLocation(m_map_location, m_map_object_id);
 	}
 	else
