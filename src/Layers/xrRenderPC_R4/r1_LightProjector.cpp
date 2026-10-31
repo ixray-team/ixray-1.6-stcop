@@ -240,8 +240,7 @@ void CLightProjector::calculate	(GfxCmdList& Cmd)
 		Fvector&	cap			=	LT->get_approximate();
 		Cmd.SetPass(clear->E[0]);
 		Cmd.Constants.Write<CBMaterial>().tfactor.set(cap.x, cap.y, cap.z, (cap.x + cap.y + cap.z) / 4.f);
-		Cmd.SetGeometry(RImplementation.Target->FSTriangleGeom);
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+		Cmd.DrawNoInput(3);
 
 		Fmatrix					mCombine;		mCombine.mul	(mProject,mView);
 		Fmatrix					mTemp;

@@ -1459,22 +1459,6 @@ void InternalDevice12::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u
     FinishDraw();
 }
 
-void InternalDevice12::DrawNoInputAssembly(u32 vertexCount)
-{
-    ContextLock guard(*this);
-    if (!vertexCount)
-    {
-        return;
-    }
-    if (!PrepareDraw(false))
-    {
-        return;
-    }
-    DX12_GPU_EVENT(_commands, "D3D12: DrawNoInputAssembly");
-    _commands->DrawInstanced(vertexCount, 1, 0, 0);
-    FinishDraw();
-}
-
 void InternalDevice12::Dispatch(u32 x, u32 y, u32 z)
 {
     PROF_EVENT("D3D12: Dispatch");

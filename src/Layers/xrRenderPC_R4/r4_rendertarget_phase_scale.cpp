@@ -17,6 +17,5 @@ void CRenderTarget::PhaseEditorScale(GfxCmdList& Cmd)
 	Cmd.SetStencil(FALSE);
 	Cmd.SetColorWriteEnable();
 	Cmd.SetPass(s_scale->E[1]);
-	Cmd.SetGeometry(FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 }

@@ -409,12 +409,6 @@ void InternalDevice12::BindIndexBuffer(DX12Buffer* buffer, bool is32Bit, u32 off
     _indexOffset = offset;
 }
 
-void InternalDevice12::ClearVertexBuffer(u32 stride)
-{
-    ContextLock guard(*this);
-    BindVertexBuffer(nullptr, 0, stride, 0);
-}
-
 void InternalDevice12::ClearIndexBuffer()
 {
     ContextLock guard(*this);

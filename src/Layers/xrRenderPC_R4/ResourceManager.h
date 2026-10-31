@@ -78,11 +78,8 @@ private:
 	map_GS												m_gs;
 
 	xr_vector<SState*>									v_states;
-	xr_vector<SDeclaration*>							v_declarations;
 	xr_vector<SGeometry*>								v_geoms;
 	xr_vector<R_constant_table*>						v_constant_tables;
-
-	xr_vector<SInputSignature*>							v_input_signature;
 
 	// lists
 	xr_vector<STextureList*>							lst_textures;
@@ -134,9 +131,6 @@ public:
 	void							_DeleteConstantTable(const R_constant_table* C);
 
 
-	SInputSignature*				_CreateInputSignature(RHIBlob* pBlob);
-	void							_DeleteInputSignature(const SInputSignature* pSignature);
-
 	CRT*							_CreateRT			(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	CRTC*							_CreateRTC			(const char* Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void							_DeleteRT			(const CRT*	RT	);
@@ -166,10 +160,6 @@ public:
 	// Shader compiling / optimizing
 	SState*							_CreateState		(SimulatorStates& Code);
 	void							_DeleteState		(const SState* SB);
-
-	SDeclaration*					_CreateDecl			(D3DVERTEXELEMENT9* dcl);
-	SDeclaration*					_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize);
-	void							_DeleteDecl			(const SDeclaration* dcl);
 
 	STextureList*					_CreateTextureList	(STextureList& L);
 	void							_DeleteTextureList	(const STextureList* L);
@@ -204,9 +194,6 @@ public:
 	void			RecompileShaders		();
 	void			RecompileDX12Shaders	();
 
-	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
-	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
-	SGeometry*		CreateGeom				(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreatePulledGeom		(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices);
 	void			DeleteGeom				(const SGeometry* VS		);
 	void			DeferredLoad			(bool E)					{ bDeferredLoad=E;	}

@@ -74,8 +74,7 @@ void CRender::render_static(GfxCmdList& Cmd)
 	g_pGamePersistent->OnRenderPPUI_PP();
 	Target->u_setrt(Cmd, Target->rt_Back_Buffer, nullptr, nullptr);
 	Cmd.SetPass(Target->s_r1_distort->E[0]);
-	Cmd.SetGeometry(Target->FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 	Target->phase_pp(Cmd);
 	L_Projector->finalize();
 }

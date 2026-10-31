@@ -493,7 +493,6 @@ CRenderTarget::CRenderTarget()
         g_menu.create(EGeomSource::Ring);
         t_envmap_0.create(r2_T_envs0);
         t_envmap_1.create(r2_T_envs1);
-        CreateFSTriangle();
         u_setrt(Cmd, rt_BackbufferLUT, nullptr, nullptr);
         Msg("* R1 static frame: normalized forward lighting; temporal AA, upscalers and deferred effects disabled");
         return;
@@ -1014,27 +1013,6 @@ CRenderTarget::CRenderTarget()
 
 	dwWidth = Device.TargetWidth;
 	dwHeight = Device.TargetHeight;
-
-	CreateFSTriangle();
-}
-
-//Creates fullscreen triangle
-void CRenderTarget::CreateFSTriangle()
-{
-	//LVutner: A couple ideas: nuke vertex color, nuke index buffer, nuke vertex buffer. Thank you.
-	FVF::TL verts[3];
-	constexpr u32 color = color_rgba(0, 0, 0, 255);
-
-	verts[0].set(-1.0, 1.0, 1.0, 1.0, color, 0.0, 0.0);
-	verts[1].set(3.0, 1.0, 1.0, 1.0, color, 2.0, 0.0);
-	verts[2].set(-1.0, -3.0, 1.0, 1.0, color, 0.0, 2.0);
-
-	static constexpr u16 indices[3] = { 0, 1, 2 };
-
-	RHIUtils::CreateVertexBuffer(&FSTriangleVB, verts, sizeof(verts), true);
-	RHIUtils::CreateIndexBuffer(&FSTriangleIB, indices, sizeof(indices), true);
-
-	FSTriangleGeom.create(FVF::F_TL, FSTriangleVB, FSTriangleIB);
 }
 
 CRenderTarget::~CRenderTarget	()
@@ -1052,8 +1030,6 @@ CRenderTarget::~CRenderTarget	()
         t_envmap_1->surface_set(nullptr);
         CImGuiManager::Instance().Unsubscribe("GraphicDebug");
         _RELEASE(g_debug_blend_state);
-        _RELEASE(FSTriangleVB);
-        _RELEASE(FSTriangleIB);
         return;
     }
 	_RELEASE					(t_ss_async);
@@ -1130,9 +1106,6 @@ CRenderTarget::~CRenderTarget	()
 		g_debug_blend_state->Release();
 		g_debug_blend_state = nullptr;
 	}
-
-	FSTriangleVB->Release();
-	FSTriangleIB->Release();
 }
 
 void CRenderTarget::reset_light_marker(GfxCmdList& Cmd, bool bResetStencil)

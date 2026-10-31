@@ -234,18 +234,12 @@ private:
 	ref_shader					s_dof_blur1;
 	ref_shader					s_dof_blur2;
 	ref_shader					s_dof_blur3;
-	
-
-	// FX: ScreenQuad
-	IRHIBuffer* FSTriangleVB = nullptr;
-	IRHIBuffer* FSTriangleIB = nullptr;
 
 	// Combine
 	ref_geom					g_combine;
 	ref_shader				s_combine_volumetric;
 public:
 	ref_shader				s_combine;
-	ref_geom				FSTriangleGeom;
 	ref_shader s_r1_distort;
 	ref_shader				s_postprocess;
 	ref_shader ScopePostprocessShader;
@@ -280,7 +274,6 @@ private:
 	bool						m_bHasActiveVolumetric;
 public:
 								CRenderTarget			();
-								void CreateFSTriangle();
 								~CRenderTarget			();
 	void						accum_point_geom_create	();
 	void						accum_point_geom_destroy();

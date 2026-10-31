@@ -66,7 +66,6 @@ typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_li
 //////////////////////////////////////////////////////////////////////////
 enum class EGeomSource : u8
 {
-	Legacy,
 	Static,
 	Skinned,
 	Ring
@@ -75,11 +74,8 @@ enum class EGeomSource : u8
 struct RENDER_API SGeometry
 	: public xr_resource_flagged
 {
-	ref_declaration		dcl;
-	IRHIBuffer*	vb;
 	IRHIBuffer*	ib;
-	u32					vb_stride;
-	EGeomSource			Source = EGeomSource::Legacy;
+	EGeomSource			Source = EGeomSource::Static;
 	u8					Page = 0;
 						~SGeometry		();
 						SGeometry& operator=(const SGeometry& Other) = delete;
@@ -88,12 +84,8 @@ struct RENDER_API SGeometry
 struct RENDER_API resptrcode_geom:
 	public resptr_base<SGeometry>
 {
-	void 				create			(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
-	void 				create			(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
-	void				create			(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	void				create			(EGeomSource Source, u32 Page = 0, IRHIBuffer* RingIndices = nullptr);
 	void				destroy			()			{ _set(nullptr);		}
-	u32					stride			()	const	{ return _get()->vb_stride;	}
 };
 
 typedef	resptr_core<SGeometry,resptrcode_geom>												ref_geom;

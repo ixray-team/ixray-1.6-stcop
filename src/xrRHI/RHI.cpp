@@ -10,8 +10,6 @@
 #include "Drivers/AMDAntiLag.h"
 #include "D3D11/RHIProfiler.h"
 
-#include <DirectXMesh.h>
-
 #ifdef IXR_WINDOWS
 #	include "Drivers/AMDGPUTransferee.h"
 #	include "Drivers/NvGPUTransferee.h"
@@ -409,11 +407,6 @@ void CRHI::GPUStatsEnd() const
 	}
 }
 
-void CRHI::ClearVertexBuffer(u32 vb_stride)
-{
-    DevicePtr->ClearVertexBuffer(vb_stride);
-}
-
 void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 {
 	DevicePtr->SetPrimitiveTopology(topology);
@@ -439,11 +432,6 @@ void CRHI::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartInde
 	DevicePtr->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
 }
 
-void CRHI::DrawNoInputAssembly(u32 vertexCount)
-{
-	DevicePtr->DrawNoInputAssembly(vertexCount);
-}
-
 void CRHI::ClearIndexBuffer()
 {
     DevicePtr->ClearIndexBuffer();
@@ -457,30 +445,6 @@ bool CRHI::IsTessPass() const
 bool CRHI::SupportsNoOverwriteSRV() const
 {
 	return DevicePtr->NoOverwriteSRV;
-}
-
-#ifndef D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT
-#	define D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT 32
-#endif
-
-u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
-{
-#ifdef IXR_WINDOWS
-	if (DevicePtr)
-	{
-		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
-		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
-
-		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)Desc, DescSize, Offsets, Strides);
-		return Strides[0];
-	}
-	else
-#endif
-	{
-		VERIFY(!"Implement me!");
-	}
-
-	return u32(-1);
 }
 
 HRESULT CRHI::ReplaceShader(RHIObject* shader, const void* code, size_t size)

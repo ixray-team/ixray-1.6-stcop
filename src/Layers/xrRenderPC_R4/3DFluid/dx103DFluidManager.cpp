@@ -100,7 +100,7 @@ void dx103DFluidManager::Initialize(int width, int height, int depth)
 
 	m_pGrid = new dx103DFluidGrid();
 
-	m_pGrid->Initialize(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);
+	m_pGrid->Initialize(m_iTextureDepth);
 
 	m_pRenderer = new dx103DFluidRenderer();
 	m_pRenderer->Initialize(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);

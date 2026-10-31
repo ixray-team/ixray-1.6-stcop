@@ -189,7 +189,6 @@ using SurfFacesPairIt = SurfFaces::iterator;
 struct st_RenderBuffer;
 class CSurface;
 class CSector;
-struct SDeclaration;
 
 #if 1
 	struct ECORE_API st_RenderBuffer{

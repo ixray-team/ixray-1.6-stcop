@@ -248,8 +248,7 @@ void CRender::EditorRenderUnlit(GfxCmdList& Cmd)
 	Cmd.SetStencil(FALSE);
 	Cmd.SetColorWriteEnable();
 	Cmd.SetPass(EditorUnlitShader->E[0]);
-	Cmd.SetGeometry(Target->FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 
 	// Forward geometry (blended surfaces, particles)
 	GraphMain.r_pmask(false, true);
@@ -572,8 +571,7 @@ IRHIDepthStencilView* CRender::EditorOverlayDepth(GfxCmdList& Cmd)
 	Cmd.SetCullMode(ERHI_CULLMODE::NONE);
 	Cmd.SetStencil(FALSE);
 	Cmd.SetPass(EditorDepthUpscaleShader->E[0]);
-	Cmd.SetGeometry(Target->FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 
 	return Depth;
 }

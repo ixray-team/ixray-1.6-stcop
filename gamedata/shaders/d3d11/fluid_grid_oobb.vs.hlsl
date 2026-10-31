@@ -1,8 +1,9 @@
 #include "fluid_common.hlsli"
 
 //	Vertex
-v2g_fluidsim_clip main(v_fluidsim input)
+v2g_fluidsim_clip main(uint VertexId : SV_VertexID)
 {
+    v_fluidsim input = FluidSliceVertex(VertexId);
     v2g_fluidsim_clip output = (v2g_fluidsim_clip)0;
 
     output.pos = float4(input.position.x, input.position.y, input.position.z, 1.0);

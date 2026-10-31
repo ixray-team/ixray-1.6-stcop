@@ -718,12 +718,8 @@ static HRESULT create_shader(
 			return		E_FAIL;
 		}
 
-		RHIBlob* pSignatureBlob = nullptr;
-		if (SUCCEEDED(GRHI->GetInputSignature(buffer, buffer_size, &pSignatureBlob)) && pSignatureBlob)
-		{
-			svs_result->signature = dxRenderDeviceRender::Instance().Resources->_CreateInputSignature(pSignatureBlob);
-			_RELEASE(pSignatureBlob);
-		}
+		_RELEASE(svs_result->Signature);
+		GRHI->GetInputSignature(buffer, buffer_size, &svs_result->Signature);
 
 		RHIShaderReflection reflection;
 		const bool Reflected = SUCCEEDED(GRHI->ReflectShader(buffer, buffer_size, reflection));

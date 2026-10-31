@@ -715,14 +715,6 @@ void InternalDevice11::DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u
 	HWRenderContext->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, BaseVertex, StartInstance);
 }
 
-void InternalDevice11::DrawNoInputAssembly(u32 vertexCount)
-{
-	HWRenderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	HWRenderContext->IASetInputLayout(nullptr);
-	ApplyBindings(GraphicsStages);
-	HWRenderContext->Draw(vertexCount, 0);
-}
-
 void InternalDevice11::SetScissorRect(Irect* R)
 {
 	if (R)

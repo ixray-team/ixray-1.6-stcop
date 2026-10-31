@@ -10,12 +10,7 @@
 #include "blenders/Blender.h"
 #include "blenders/Blender_Recorder.h"
 
-#include "dx10BufferUtils.h"
-
 #include "ShaderResourceTraits.h"
-
-#include "../../xrCore/FVFLegacy.h"
-using namespace FVF;
 
 SHS*	CResourceManager::_CreateHS			(const char* Name, const ShaderExternalMap& Defines)
 {
@@ -215,25 +210,6 @@ void	CResourceManager::_DeleteVS			(const SVS* vs)
 	{
 		ForgetStage(vs);
 		m_vs.erase(I);
-
-		// A shader that failed to compile has no input signature and no layouts
-		if (!vs->signature)
-		{
-			return;
-		}
-
-		xr_vector<SDeclaration*>::iterator iDecl;
-		for (iDecl = v_declarations.begin(); iDecl!=v_declarations.end(); ++iDecl)
-		{
-			xr_map<RHIBlob*, RHIObject*>::iterator iLayout;
-			iLayout = (*iDecl)->vs_to_layout.find(vs->signature->signature);
-			if (iLayout!=(*iDecl)->vs_to_layout.end())
-			{
-				//	Release vertex layout
-				_RELEASE(iLayout->second);
-				(*iDecl)->vs_to_layout.erase(iLayout);
-			}
-		}
 		return;
 	}
 	Msg	("! ERROR: Failed to find compiled vertex-shader '%s'",*vs->cName);
@@ -505,35 +481,7 @@ void CResourceManager::RecompileDX12Shaders()
 	for (auto& [name, vs] : m_vs)
 	{
 		(void)name;
-		RHIBlob* kept = (vs->signature && vs->signature->signature) ? vs->signature->signature : nullptr;
-		if (kept)
-		{
-			kept->AddRef();
-		}
-		const int status = compile_stage(vs, vs->vs, ".vs.hlsl", "vs_5_0");
-		RHIBlob* current = (vs->signature && vs->signature->signature) ? vs->signature->signature : nullptr;
-		if (status > 0 && kept && kept != current)
-		{
-			RImplementation.Imm().m_pInputLayout = nullptr;
-			if (GRHI)
-			{
-				GRHI->SetInputLayout(nullptr);
-			}
-			for (SDeclaration* decl : v_declarations)
-			{
-				auto layout = decl->vs_to_layout.find(kept);
-				if (layout != decl->vs_to_layout.end())
-				{
-					_RELEASE(layout->second);
-					decl->vs_to_layout.erase(layout);
-				}
-			}
-		}
-		if (kept)
-		{
-			kept->Release();
-		}
-		note(status);
+		note(compile_stage(vs, vs->vs, ".vs.hlsl", "vs_5_0"));
 	}
 	for (auto& [name, ps] : m_ps)
 	{
@@ -565,71 +513,6 @@ void CResourceManager::RecompileDX12Shaders()
 }
 
 //--------------------------------------------------------------------------------------------------------------
-static bool	dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
-{
-	// check sizes
-	size_t a_size = GetDeclLength(a);
-	size_t b_size = GetDeclLength(b);
-	if (a_size != b_size)	return false;
-	return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
-}
-
-static bool dcl_equal(const RHIInputElementDesc* a, size_t aDeclSize, const RHIInputElementDesc* b, size_t bDeclSize)
-{
-	if (aDeclSize != bDeclSize)
-		return false;
-	return 0 == memcmp(a, b, aDeclSize * sizeof(RHIInputElementDesc));
-}
-
-SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize)
-{
-	xrCriticalSectionGuard guard(creationGuard);
-
-	// Search equal code
-	for (u32 it = 0; it < v_declarations.size(); it++)
-	{
-		SDeclaration* Declaration = v_declarations[it];
-		if (dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()))
-			return Declaration;
-	}
-
-	SDeclaration* Declaration = new SDeclaration();
-	Declaration->dx10_dcl_code.assign(dcl, dcl + declSize);
-	Declaration->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-	v_declarations.push_back(Declaration);
-	return Declaration;
-}
-
-SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
-{
-	xrCriticalSectionGuard guard(creationGuard);
-	// Search equal code
-	for (u32 it=0; it<v_declarations.size(); it++)
-	{
-		SDeclaration*		D		= v_declarations[it];;
-		if (dcl_equal(dcl,&*D->dcl_code.begin()))	return D;
-	}
-
-	// Create _new
-	SDeclaration* D			= new SDeclaration();
-	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
-	//	Don't need it for DirectX 10 here
-	//CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
-	D->dcl_code.assign		(dcl,dcl+dcl_size);
-	dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
-	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-	v_declarations.push_back(D);
-	return D;
-}
-
-void		CResourceManager::_DeleteDecl		(const SDeclaration* dcl)
-{
-	if (0==(dcl->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	xrCriticalSectionGuard guard(creationGuard);
-	if (reclaim(v_declarations,dcl))					return;
-	Msg	("! ERROR: Failed to find compiled vertex-declarator");
-}
-
 //--------------------------------------------------------------------------------------------------------------
 R_constant_table*	CResourceManager::_CreateConstantTable	(R_constant_table& C)
 {
@@ -721,74 +604,14 @@ void	CResourceManager::_DeleteRTC(const CRTC* RT) {
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 
-SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	xrCriticalSectionGuard guard(creationGuard);
-
-	SDeclaration* dcl = _CreateDecl(DescList, DeclSize);
-	u32 vb_stride = (u32)GRHI->GetInputElementDescStride(DescList, DeclSize);
-
-	// ***** first pass - search already loaded shader
-	for (u32 it = 0; it < v_geoms.size(); it++)
-	{
-		SGeometry& G = *(v_geoms[it]);
-		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride) && (G.Source == EGeomSource::Legacy))	return v_geoms[it];
-	}
-
-	SGeometry* Geom = new SGeometry();
-	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-	Geom->dcl = dcl;
-	Geom->vb = vb;
-	Geom->vb_stride = vb_stride;
-	Geom->ib = ib;
-	v_geoms.push_back(Geom);
-	return	Geom;
-}
-
-SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	xrCriticalSectionGuard guard(creationGuard);
-	R_ASSERT			(decl && vb);
-
-	SDeclaration* dcl	= _CreateDecl			(decl);
-	u32 vb_stride = (u32)ComputeVertexSize(decl, 0);
-
-	// ***** first pass - search already loaded shader
-	for (u32 it=0; it<v_geoms.size(); it++)
-	{
-		SGeometry& G	= *(v_geoms[it]);
-		if ((G.dcl==dcl) && (G.vb==vb) && (G.ib==ib) && (G.vb_stride==vb_stride) && (G.Source==EGeomSource::Legacy))	return v_geoms[it];
-	}
-
-	SGeometry *Geom		=	new SGeometry	();
-	Geom->dwFlags		|=	xr_resource_flagged::RF_REGISTERED;
-	Geom->dcl			=	dcl;
-	Geom->vb			=	vb;
-	Geom->vb_stride		=	vb_stride;
-	Geom->ib			=	ib;
-	v_geoms.push_back	(Geom);
-	return	Geom;
-}
-SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
-	xrCriticalSectionGuard guard(creationGuard);
-	CHK_DX(CreateDeclFromFVF(FVF, dcl));
-	SGeometry* g = CreateGeom(dcl.data(), vb, ib);
-
-	return	g;
-}
-
 SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
 {
-	VERIFY(Source != EGeomSource::Legacy);
 	VERIFY(Source == EGeomSource::Ring ? Page == 0 : Page < RImplementation.Geometry.PageCount() && RingIndices == nullptr);
 	xrCriticalSectionGuard guard(creationGuard);
-	GfxCmdList& Cmd = RImplementation.Imm();
 	IRHIBuffer* Indices = Source == EGeomSource::Ring ? RingIndices : RImplementation.Geometry.IndexBuffer(Page);
 	for (SGeometry* G : v_geoms)
 	{
-		if (G->Source == Source && G->Page == Page && G->vb == Cmd.IotaVB && G->ib == Indices)
+		if (G->Source == Source && G->Page == Page && G->ib == Indices)
 		{
 			return G;
 		}
@@ -796,9 +619,6 @@ SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page, IRHI
 
 	SGeometry* Geom = new SGeometry();
 	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-	Geom->dcl = Cmd.PulledDecl;
-	Geom->vb = Cmd.IotaVB;
-	Geom->vb_stride = sizeof(u32);
 	Geom->ib = Indices;
 	Geom->Source = Source;
 	Geom->Page = u8(Page);
@@ -1026,36 +846,4 @@ void			CResourceManager::_DeleteMatrixList ( const SMatrixList* L )
 	xrCriticalSectionGuard guard(creationGuard);
 	if (reclaim(lst_matrices,L))					return;
 	Msg	("! ERROR: Failed to find compiled list of xform-defs");
-}
-//--------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
-SInputSignature* CResourceManager::_CreateInputSignature(RHIBlob* pBlob)
-{
-	VERIFY(pBlob);
-
-	xrCriticalSectionGuard guard(creationGuard);
-	for (u32 it=0; it<v_input_signature.size(); it++)
-	{
-		SInputSignature*	sign		= v_input_signature[it];
-		if ( (pBlob->GetBufferSize() == sign->signature->GetBufferSize()) &&
-			(!(memcmp(pBlob->GetBufferPointer(), sign->signature->GetBufferPointer(), pBlob->GetBufferSize()))))
-		{
-			return sign;
-		}
-	}
-
-	SInputSignature	*pSign = new SInputSignature(pBlob);
-
-	pSign->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-	v_input_signature.push_back	(pSign);
-
-	return pSign;
-}
-//--------------------------------------------------------------------------------------------------------------
-void CResourceManager::_DeleteInputSignature(const SInputSignature* pSignature)
-{
-	if (0==(pSignature->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	xrCriticalSectionGuard guard(creationGuard);
-	if (reclaim(v_input_signature, pSignature))						return;
-	Msg	("! ERROR: Failed to find compiled constant buffer");
 }

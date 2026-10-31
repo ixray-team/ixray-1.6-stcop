@@ -41,8 +41,6 @@ public:
 	virtual void DrawIndexed(u32 IndexCount, u32 StartIndex, u32 BaseVertex) = 0;
 	virtual void DrawInstanced(u32 VertexCount, u32 InstanceCount, u32 StartVertex, u32 StartInstance) = 0;
 	virtual void DrawIndexedInstanced(u32 IndexCount, u32 InstanceCount, u32 StartIndex, u32 BaseVertex, u32 StartInstance) = 0;
-	
-	virtual void DrawNoInputAssembly(u32 vertexCount) = 0;
 
 public:
 	virtual ~IRHIDevice() = default;
@@ -82,7 +80,6 @@ public:
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc) = 0;
     virtual IRHIUnorderedAccessView* CreateUAV(IRHIBuffer* Buffer, const RHIUAVDesc& Desc) = 0;
     virtual void SetConstants(const RHIConstantWrite* Writes, u32 Count) = 0;
-    virtual void ClearVertexBuffer(u32 vb_stride) = 0;
     virtual void ClearIndexBuffer() = 0;
     virtual void SetShader(RHIObject* shader, ERHI_SHADER_TYPE Type) = 0;
     virtual HRESULT LoadDDS(const void* data, size_t size, ERHI_USAGE usage, u32 bind_flags, ERHI_CPU_ACCESS_FLAG cpu_flags, int& lod, bool fallback, IRHISurface** out_surface) = 0;

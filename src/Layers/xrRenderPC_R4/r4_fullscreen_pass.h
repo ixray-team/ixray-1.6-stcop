@@ -13,8 +13,7 @@ inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& Shader,
 {
 	Cmd.SetPass(Shader->E[Element]);
 	Bind();
-	Cmd.SetGeometry(FSTriangleGeom);
-	Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+	Cmd.DrawNoInput(3);
 }
 
 inline void CRenderTarget::DrawPassSQ(GfxCmdList& Cmd, const ref_shader& shader, u32 Element)

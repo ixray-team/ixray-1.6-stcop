@@ -30,21 +30,6 @@ void	resptrcode_shader::create		(IBlender* B, const char* s_shader, const char* 
 }
 
 //////////////////////////////////////////////////////////////////////////
-void resptrcode_geom::create(u32 FVF, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	_set(DEV->CreateGeom(FVF, vb, ib));
-}
-
-void resptrcode_geom::create(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	_set(DEV->CreateGeom(DescList, DeclSize, vb, ib));
-}
-
-void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib)
-{
-	_set(DEV->CreateGeom(decl, vb, ib));
-}
-
 void resptrcode_geom::create(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
 {
 	_set(DEV->CreatePulledGeom(Source, Page, RingIndices));

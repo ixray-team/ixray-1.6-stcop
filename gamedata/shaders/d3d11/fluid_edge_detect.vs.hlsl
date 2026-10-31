@@ -2,13 +2,14 @@
 
 //	Vertex
 //	A full-screen edge detection pass to locate artifacts
-VS_OUTPUT_EDGE main(VS_INPUT input)
+VS_OUTPUT_EDGE main(uint VertexId : SV_VertexID)
 {
+    float3 Pos = FluidQuadVertex(VertexId);
     VS_OUTPUT_EDGE output = (VS_OUTPUT_EDGE)0;
-    output.position = float4(input.pos, 1);
+    output.position = float4(Pos, 1);
 
     float2 texelSize = 1.0 / float2(RTWidth, RTHeight);
-    float2 center = float2((input.pos.x + 1) / 2.0, 1.0 - (input.pos.y + 1) / 2.0);
+    float2 center = float2((Pos.x + 1) / 2.0, 1.0 - (Pos.y + 1) / 2.0);
 
     // Eight nearest neighbours needed for Sobel.
     output.textureUV00 = center + float2(-texelSize.x, -texelSize.y);

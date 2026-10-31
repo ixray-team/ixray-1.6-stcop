@@ -48,9 +48,19 @@ static const float k = 0.006;
 //	fluidsim
 struct v_fluidsim
 {
-    float3 position : POSITION; // 2D slice vertex coordinates in clip space
-    float3 textureCoords0 : TEXCOORD; // 3D cell coordinates (x,y,z in 0-dimension range)
+    float3 position;
+    float3 textureCoords0;
 };
+
+v_fluidsim FluidSliceVertex(uint VertexId)
+{
+    uint Corner = VertexId % 6;
+    float2 Cell = float2((0x16 >> Corner) & 1 ? textureWidth - 1.0 : 1.0, (0x34 >> Corner) & 1 ? textureHeight - 1.0 : 1.0);
+    v_fluidsim Vertex;
+    Vertex.position = float3(Cell.x * 2.0 / textureWidth - 1.0, -Cell.y * 2.0 / textureHeight + 1.0, 0.0);
+    Vertex.textureCoords0 = float3(Cell, VertexId / 6 + 1);
+    return Vertex;
+}
 
 struct v2g_fluidsim
 {

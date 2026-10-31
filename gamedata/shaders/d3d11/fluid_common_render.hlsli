@@ -61,10 +61,25 @@ static const float smokeColorMultiplier = 0.02f;
 //--------------------------------------------------------------------------------------
 // Structs
 //--------------------------------------------------------------------------------------
-struct VS_INPUT
+static const uint FluidBoxIndex[36] = {
+    0, 4, 1, 1, 4, 5,
+    0, 1, 2, 2, 1, 3,
+    4, 6, 5, 6, 7, 5,
+    2, 3, 6, 3, 7, 6,
+    1, 5, 3, 3, 5, 7,
+    0, 2, 4, 2, 6, 4};
+
+float3 FluidBoxVertex(uint VertexId)
 {
-    float3 pos : POSITION;
-};
+    uint Index = FluidBoxIndex[VertexId];
+    return float3(Index >> 2, (Index >> 1) & 1, Index & 1);
+}
+
+float3 FluidQuadVertex(uint VertexId)
+{
+    uint Corner = (0x312210 >> (VertexId * 4)) & 3;
+    return float3((Corner & 1) * 2.0 - 1.0, 1.0 - (Corner & 2), 0.0);
+}
 
 struct PS_INPUT_RAYDATA_BACK
 {

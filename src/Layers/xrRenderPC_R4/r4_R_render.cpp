@@ -917,9 +917,7 @@ void CRender::render_forward(GfxCmdList& Cmd)
 		Target->u_setrt(Cmd, Target->rt_Accumulator, 0, 0, 0);
 
 		Cmd.SetPass(Target->s_combine->E[1]);
-		Cmd.SetGeometry(Target->FSTriangleGeom);
-
-		Cmd.DrawIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 3, 0, 0);
+		Cmd.DrawNoInput(3);
 		Cmd.CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
 	}
 

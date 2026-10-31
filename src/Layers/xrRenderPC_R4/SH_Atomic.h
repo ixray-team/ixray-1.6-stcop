@@ -13,14 +13,6 @@
 //////////////////////////////////////////////////////////////////////////
 // Atomic resources
 //////////////////////////////////////////////////////////////////////////
-struct RENDER_API SInputSignature : public xr_resource_flagged
-{
-	RHIBlob*							signature;
-	SInputSignature(RHIBlob* pBlob);
-	~SInputSignature();
-};
-typedef	resptr_core<SInputSignature,resptr_base<SInputSignature> >	ref_input_sign;
-
 enum class EVertexInput : u8
 {
 	None,
@@ -31,7 +23,7 @@ enum class EVertexInput : u8
 struct RENDER_API SVS : public xr_resource_uniq
 {
 	RHIObject*					vs;
-	ref_input_sign						signature;
+	RHIBlob*							Signature = nullptr;
 	u32									instance_buffer_slot = u32(-1);
 	u32									editor_instance_slot = u32(-1);
 	EVertexInput						Input = EVertexInput::None;
@@ -87,19 +79,6 @@ struct RENDER_API SState : public xr_resource_flagged
 	~SState			();
 };
 typedef	resptr_core<SState,resptr_base<SState> >	ref_state;
-
-//////////////////////////////////////////////////////////////////////////
-struct RENDER_API SDeclaration : public xr_resource_flagged
-{
-	//	Maps input signature to input layout
-	xr_map<RHIBlob*, RHIObject*> vs_to_layout;
-	xr_vector<RHIInputElementDesc> dx10_dcl_code;
-
-	//	Use this for DirectX10 to cache DX9 declaration for comparison purpose only
-	xr_vector<D3DVERTEXELEMENT9>		dcl_code;
-	~SDeclaration	();
-};
-typedef	resptr_core<SDeclaration,resptr_base<SDeclaration> >	ref_declaration;
 
 #pragma pack(pop)
 #endif //sh_atomicH

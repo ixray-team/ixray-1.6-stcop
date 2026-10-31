@@ -4,24 +4,23 @@ class CEditableObject;
 
 namespace XRay::Editor::HeightmapUtils
 {
-	struct SHeightMapVertex
-	{
-		Fvector p;
-		u32 color;
-	};
-
 	struct SHeightMapChunk
 	{
 		xr_vector<Fvector> Vertices;    // Вершины чанка (уже оптимизированные)
 		xr_vector<u32> Colors;          // Цвета (если нужны)
-		xr_vector<SHeightMapVertex> Gpu; // Кэш вершин (позиция+цвет) для отрисовки
 		Fbox BBox;                      // Bounding-box чанка
 		bool IsFlat;					// Можно ли упростить (все Y почти одинаковы)
 		bool IsValid = false;
 		int LodLevel;					// Уровень детализации (0 = максимальный)
+		u32 Block = 0;
+		u32 Base = 0;
 	};
 
-	struct SGpuCache; // определён в HeightMap.cpp (ref_geom и т.п.)
+	struct SHeightMapBlock
+	{
+		GeometryAlloc Alloc{};
+		ref_geom Geom;
+	};
 
 	struct SHeightMapRenderData
 	{
@@ -35,10 +34,7 @@ namespace XRay::Editor::HeightmapUtils
 		xr_vector<u32> Colors;
 		Fbox BoundingBox;
 
-		// Персистентный GPU-буфер высотной карты (строится только при IsDirty)
-		SGpuCache* Gpu = nullptr;
-		xr_vector<u32> ChunkBase;   // базовая вершина чанка в общем буфере
-		xr_vector<u32> ChunkCount;  // число вершин чанка
+		xr_vector<SHeightMapBlock> Blocks;
 
 		void InvalidateGpu();
 
@@ -49,8 +45,6 @@ namespace XRay::Editor::HeightmapUtils
 			Chunks.clear();
 			Colors.clear();
 			BoundingBox.invalidate();
-			ChunkBase.clear();
-			ChunkCount.clear();
 		}
 	};
 
@@ -67,7 +61,7 @@ namespace XRay::Editor::HeightmapUtils
 		SHeightMapRenderData RenderData;
 
 		SHeightMap() : Width(0), Height(0), Data(nullptr), MinH(0), MaxH(0) {}
-		~SHeightMap() { if (Data) xr_free(Data); }
+		~SHeightMap() { RenderData.InvalidateGpu(); if (Data) xr_free(Data); }
 
 		IC float GetHeight(u32 x, u32 z) const
 		{
