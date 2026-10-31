@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "ImUtils.h"
+#include "../Actor.h"
 #include "../HUDManager.h"
 #include "../HUDTarget.h"
 #include "../../Include/xrRender/Kinematics.h"

@@ -320,6 +320,9 @@ struct p_bumped_new
     float3 M1 : TEXCOORD2; // nmap 2 eye - 1
     float3 M2 : TEXCOORD3; // nmap 2 eye - 2
     float3 M3 : TEXCOORD4; // nmap 2 eye - 3
+#ifdef USE_DETAIL_TERRAIN_TINT
+    float4 terrain_tint : TEXCOORD8; // linear ground color and per-vertex influence
+#endif
 	
 #ifdef USE_LENGTH_BUFFER
 	#ifndef USE_LM_HEMI
