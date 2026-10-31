@@ -35,7 +35,9 @@ void CDetail::Unload	()
 	shader.destroy();
 
 	RImplementation.Geometry.Free(Alloc);
+	RImplementation.Geometry.Free(TrimAlloc);
 	hw_Geom.destroy();
+	TrimGeom.destroy();
 
 	for (u32 i = 0; i < 2; i++)
 	{
@@ -114,50 +116,62 @@ void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest,
 	}
 }
 
+namespace
+{
+	GeometryAlloc UploadDetailGeom(const CDetail::fvfVertexIn* Vertices, u32 VertexCount, const u16* Indices, u32 IndexCount, float Scale, ref_geom& Geom)
+	{
+		xr_vector<Fvector> vNormals(VertexCount, Fidentity.c);
+		Fvector normal;
+
+		for (u32 i = 0; i < IndexCount; i += 3)
+		{
+			const auto& idx_0 = Indices[i + 0];
+			const auto& idx_1 = Indices[i + 1];
+			const auto& idx_2 = Indices[i + 2];
+
+			normal.mknormal(Vertices[idx_0].P, Vertices[idx_1].P, Vertices[idx_2].P);
+
+			vNormals[idx_0].add(normal);
+			vNormals[idx_1].add(normal);
+			vNormals[idx_2].add(normal);
+		}
+
+		xr_vector<Fvector2> UV(VertexCount);
+		for (u32 v = 0; v < VertexCount; v++)
+		{
+			UV[v].set(Vertices[v].u, Vertices[v].v);
+		}
+		const Fvector2 Offset = VertexPacking::FitUV(UV.data(), VertexCount, "detail model");
+
+		xr_vector<PackedVertex> Records(VertexCount);
+		for (u32 v = 0; v < VertexCount; v++)
+		{
+			const s16 Frac = s16(std::lrint(std::clamp(Vertices[v].P.y * Scale, -32768.0f, 32767.0f)));
+			Records[v] = { Vertices[v].P, VertexPacking::EncodeOct(vNormals[v].normalize_safe()), 0, 0, 0, u16(Frac) };
+			VertexPacking::EncodeFitUV(Records[v], UV[v], Offset);
+		}
+
+		const GeometryAlloc Block = RImplementation.Geometry.Alloc(VertexCount, IndexCount);
+		RImplementation.Geometry.Upload(Block, 0, Records.data(), VertexCount);
+		RImplementation.Geometry.UploadIndices(Block, 0, Indices, IndexCount);
+		Geom.create(EGeomSource::Static, Block.Page);
+		return Block;
+	}
+}
+
 void CDetail::LoadGeom()
 {
 	RImplementation.Geometry.Free(Alloc);
-	xr_vector<Fvector> vNormals(number_vertices, Fidentity.c);
-	Fvector normal;
-
-	for (u32 i = 0; i < number_indices; i += 3)
-	{
-		const auto& idx_0 = indices[i + 0];
-		const auto& idx_1 = indices[i + 1];
-		const auto& idx_2 = indices[i + 2];
-
-		const auto& v_0 = vertices[idx_0].P;
-		const auto& v_1 = vertices[idx_1].P;
-		const auto& v_2 = vertices[idx_2].P;
-
-		normal.mknormal(v_0, v_1, v_2);
-
-		vNormals[idx_0].add(normal);
-		vNormals[idx_1].add(normal);
-		vNormals[idx_2].add(normal);
-	}
-
-	xr_vector<Fvector2> UV(number_vertices);
-	for (u32 v = 0; v < number_vertices; v++)
-	{
-		UV[v].set(vertices[v].u, vertices[v].v);
-	}
-	const Fvector2 Offset = VertexPacking::FitUV(UV.data(), number_vertices, "detail model");
+	RImplementation.Geometry.Free(TrimAlloc);
 	const float Height = bv_bb.max.y - bv_bb.min.y;
 	const float Scale = Height > EPS_L ? 2048.0f / Height : 0.0f;
-
-	xr_vector<PackedVertex> Records(number_vertices);
-	for (u32 v = 0; v < number_vertices; v++)
+	Alloc = UploadDetailGeom(vertices, number_vertices, indices, number_indices, Scale, hw_Geom);
+	xr_vector<fvfVertexIn> Verts;
+	xr_vector<u16> Inds;
+	if (!Device.IsEditorMode() && Texture.size() && Trim(Verts, Inds))
 	{
-		const s16 Frac = s16(std::lrint(std::clamp(vertices[v].P.y * Scale, -32768.0f, 32767.0f)));
-		Records[v] = { vertices[v].P, VertexPacking::EncodeOct(vNormals[v].normalize_safe()), 0, 0, 0, u16(Frac) };
-		VertexPacking::EncodeFitUV(Records[v], UV[v], Offset);
+		TrimAlloc = UploadDetailGeom(Verts.data(), u32(Verts.size()), Inds.data(), u32(Inds.size()), Scale, TrimGeom);
 	}
-
-	Alloc = RImplementation.Geometry.Alloc(number_vertices, number_indices);
-	RImplementation.Geometry.Upload(Alloc, 0, Records.data(), number_vertices);
-	RImplementation.Geometry.UploadIndices(Alloc, 0, indices, number_indices);
-	hw_Geom.create(EGeomSource::Static, Alloc.Page);
 }
 
 void CDetail::Load(IReader* S)
@@ -169,6 +183,7 @@ void CDetail::Load(IReader* S)
 	S->r_stringZ(fnT, sizeof(fnT));
 
 	shader.create(fnS, fnT);
+	Texture = fnT;
 
 	// Params
 	m_Flags.assign(S->r_u32());

@@ -689,7 +689,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		RImplementation.GetDetails() && RImplementation.GetDetails()->dtSlots && Source.SpatialComponent &&
 		Source.SpatialComponent->sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 	{
-		RImplementation.GetDetails()->hw_Render(Cmd, &Source);
+		RImplementation.GetDetails()->hw_Render(Cmd, &Source.X.S.combine);
 	}
 	if (HasSpecial)
 	{
