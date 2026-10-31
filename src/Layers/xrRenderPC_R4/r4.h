@@ -198,7 +198,6 @@ public:
 	Fvector reflection_cam_dir;
 	Fvector reflection_cam_top;
 	Fvector reflection_cam_right;
-	float reflection_fov = 75.f;
 	float reflection_near = 0.2f;
 	float reflection_far = 1000.f;
 	IRender_Sector* reflection_sector = nullptr;

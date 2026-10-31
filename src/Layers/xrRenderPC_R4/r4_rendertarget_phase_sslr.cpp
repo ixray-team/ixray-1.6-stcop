@@ -148,7 +148,6 @@ void CRender::begin_reflection_collect()
 	reflection_cam_dir = Device.vCameraDirection;
 	reflection_cam_top = Device.vCameraTop;
 	reflection_cam_right = Device.vCameraRight;
-	reflection_fov = Device.fFOV;
 	reflection_near = Device.fViewportNear;
 	reflection_sector = pLastSector;
 	reflection_far = 1000.f;
@@ -196,8 +195,7 @@ void CRender::collect_reflections()
 	Device.Statistic->TEST2.Begin();
 
 	const u32 dwSize = Target->rt_Reflection->dwSize;
-	const float fov_factor = _sqr(90.f / reflection_fov);
-	const float screen = _sqr((float)dwSize) * fov_factor * (EPS_S + ps_r__LOD);
+	const float screen = _sqr((float)dwSize) * (EPS_S + ps_r__LOD);
 
 	R_CullTLS cull;
 	cull.active = true;

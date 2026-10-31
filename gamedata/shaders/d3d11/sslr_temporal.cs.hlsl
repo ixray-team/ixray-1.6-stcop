@@ -57,7 +57,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 SSLR5 = s_image.Load(int3(I.hpos.xy + int2(+1, +1), 0));
 	float4 SSLR6 = s_image.Load(int3(I.hpos.xy + int2(-1, +1), 0));
 	float4 SSLR7 = s_image.Load(int3(I.hpos.xy + int2(-1, -1), 0));
-	float4 SSLR8 = s_image.Load(int3(I.hpos.xy + int2(-1, -1), 0));
+	float4 SSLR8 = s_image.Load(int3(I.hpos.xy + int2(+1, -1), 0));
 	
 	float4 SSLRBoxMinPos = min(SSLR0, min(SSLR2, min(SSLR6, SSLR8)));
 	float4 SSLRBoxMaxPos = max(SSLR0, max(SSLR2, max(SSLR6, SSLR8)));

@@ -60,16 +60,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
        Reflection = normalize(Reflection + O.Normal);
     }
 	
-	float3 StartPoint = ReflectPoint;
-	
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	float ReflectDist = s_env_dist.SampleLevel(smp_linear, StartPoint.xyz, 0.0f).x;
-	
-	ReflectDist /= max(EPS, length(StartPoint));
-	StartPoint *= min(1.0f, ReflectDist);
-#endif
-	
-	StartPoint *= 0.996f;
+	float3 StartPoint = ReflectPoint * 0.996f;
 	
 	Point.xyz = StartPoint + Reflection * fog_params.z;	
 	
@@ -101,7 +92,9 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		if(SSLR.w < 1.0f)
 		{
-			float4 VSLR = FastViewReflections(StartPoint.xyz, Reflection.xyz);
+			// The cube is coarser than the depth buffer: only the cube march starts at its surface
+			float VslrScale = min(1.0f, s_env_dist.SampleLevel(smp_linear, StartPoint, 0.0f).x / max(EPS, length(StartPoint)));
+			float4 VSLR = FastViewReflections(StartPoint * VslrScale, Reflection.xyz);
 			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
 		}
 	} 
