@@ -4,6 +4,7 @@
 #include "../../xrEngine/Environment.h"
 
 #include "../xrRender/dxEnvironmentRender.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 ENGINE_API extern bool turn_nvg; //Переместить в более подходящее место
 
@@ -226,6 +227,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_xess())
 			{
 				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+				dxRenderDeviceRender::Instance().NeedScaleReset = true;
 			}
 			break;
 		}
@@ -234,6 +236,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_fsr()) 
 			{
 				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+				dxRenderDeviceRender::Instance().NeedScaleReset = true;
 			}
 			break;
 		}
@@ -242,6 +245,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_dlss())
 			{
 				ps_proxy_r_scale_mode = ps_r_scale_mode = 3;
+				dxRenderDeviceRender::Instance().NeedScaleReset = true;
 			}
 			break;
 		}
