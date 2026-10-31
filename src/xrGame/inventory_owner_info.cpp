@@ -19,6 +19,76 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_thread.h"
+
+// 0 - off, 1 - log info portion changes, 2 - also log the Lua stack
+int g_info_portion_log = 0;
+
+namespace
+{
+	thread_local const char* InfoChangeSource = "direct";
+
+	class CInfoChangeSourceScope
+	{
+		const char* PrevSource;
+
+	public:
+		explicit CInfoChangeSourceScope(const char* Source) : PrevSource(InfoChangeSource)
+		{
+			InfoChangeSource = Source;
+		}
+
+		~CInfoChangeSourceScope()
+		{
+			InfoChangeSource = PrevSource;
+		}
+	};
+
+	void LogLuaStack()
+	{
+		if (!g_pScriptEngine)
+		{
+			return;
+		}
+
+		CScriptThread* Thread = g_pScriptEngine->current_thread();
+		lua_State* L = Thread ? Thread->lua() : g_pScriptEngine->lua();
+		if (!L)
+		{
+			return;
+		}
+
+		lua_Debug DebugInfo;
+		int Level = 0;
+		for (; lua_getstack(L, Level, &DebugInfo); ++Level)
+		{
+			lua_getinfo(L, "Sln", &DebugInfo);
+			Msg("    %2d : %s(%d) : %s", Level, DebugInfo.short_src, DebugInfo.currentline, DebugInfo.name ? DebugInfo.name : "?");
+		}
+
+		if (Level == 0)
+		{
+			Msg("    (no Lua stack)");
+		}
+	}
+}
+
+void CInventoryOwner::LogInfoChange(u16 OwnerId, const shared_str& InfoId, bool Added, const char* Source)
+{
+	if (g_info_portion_log <= 0)
+	{
+		return;
+	}
+
+	Msg("~ [info] %s [%s] owner=[%u] source=[%s] frame=[%u]", Added ? "give" : "disable", InfoId.c_str(), OwnerId,
+		Source ? Source : InfoChangeSource, Device.dwFrame);
+
+	if (g_info_portion_log >= 2)
+	{
+		LogLuaStack();
+	}
+}
 
 void  CInventoryOwner::OnEvent(NET_Packet& P, u16 type)
 {
@@ -47,6 +117,7 @@ void  CInventoryOwner::OnEvent(NET_Packet& P, u16 type)
 		P.r_stringZ(info_id);		//номер полученной информации
 		P.r_u8(add_info);			//добавление или убирание информации
 
+		CInfoChangeSourceScope SourceScope("net event");
 		if (add_info)
 		{
 			OnReceiveInfo(info_id);
@@ -71,6 +142,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 	if (known_info.end() == it)
 	{
 		known_info.emplace_back(info_id, Level().GetGameTime());
+		LogInfoChange(object_id(), info_id, true, nullptr);
 	}
 	else
 	{
@@ -139,6 +211,7 @@ void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 	}
 
 	known_info.erase(it);
+	LogInfoChange(object_id(), info_id, false, nullptr);
 }
 
 void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const

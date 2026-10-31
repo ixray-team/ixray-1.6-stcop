@@ -390,6 +390,7 @@ void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, co
 	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
 	{
 		known_info->push_back(INFO_DATA(info_id, Level().GetGameTime()));
+		CInventoryOwner::LogInfoChange(id, info_id, true, "alife()");
 	}
 
 	return;
@@ -402,7 +403,10 @@ void AlifeRemoveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, 
 		return;
 	auto it = std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id));
 	if (it != known_info->end())
+	{
 		known_info->erase(it);
+		CInventoryOwner::LogInfoChange(id, info_id, false, "alife()");
+	}
 }
 
 void teleport_object(CALifeSimulator* alife, ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector& position)

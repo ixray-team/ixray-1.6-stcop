@@ -166,6 +166,8 @@ public:
 	//есть ли информация у персонажа
 	virtual bool HasInfo(shared_str info_id) const;
 	virtual bool GetInfo(shared_str info_id, INFO_DATA&) const;
+	// Logs an info portion change when g_info_portion_log is set
+	static void LogInfoChange(u16 OwnerId, const shared_str& InfoId, bool Added, const char* Source);
 
 #ifdef DEBUG
 	void DumpInfo() const;
