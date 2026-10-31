@@ -55,7 +55,10 @@ void skinned_main(in v_model I, in float3 basis, out p_bumped_new O, in object_x
 #ifndef DISABLE_MOTION_VECTORS
     O.hpos_curr = O.hpos;
 #ifdef USE_EDITOR_INSTANCING
-    O.hpos_old = O.hpos;
+    // Placed copies do not move: the previous position is the same world point seen by the
+    // previous camera. Copying hpos would give a zero velocity while the camera moves, and the
+    // temporal upscaler would blend in whatever covered this pixel a frame ago.
+    O.hpos_old = mul(m_VP_old, float4(mul(X.W, I.P), 1.0f));
 #else
     O.hpos_old = mul(m_WVP_old, I.P_old);
 #endif

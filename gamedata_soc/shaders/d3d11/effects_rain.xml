@@ -5,7 +5,10 @@
 		<blend enable="1" src="srcalpha" dest="invsrcalpha"/>
 		<texture name="env_s0" value="$user$env_s0"/>
 		<texture name="env_s1" value="$user$env_s1"/>
-		<texture name="s_base" value="{base}"/>
+		<texture name="s_base" value="fx\hud_rain"/>
+		<texture name="s_image" value="$user$generic"/>
+		<texture name="s_bloom" value="$user$bloomA2"/>
 		<sampler name="smp_base"/>
+		<sampler name="smp_rtlinear"/>
 	</normal>
 </shader>
