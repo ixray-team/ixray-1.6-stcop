@@ -29,6 +29,8 @@ public:
 	static	bool			saved_game_exist	(const char* saved_game_name);
 	static	bool			valid_saved_game	(IReader &stream);
 	static	bool			valid_saved_game	(const char* saved_game_name);
+	// Name without extension of the most recently written valid saved game, or an empty string.
+	static	xr_string		FindLatest			();
 	inline	const _TIME_ID	&game_time			() const;
 	inline	const _LEVEL_ID	&level_id			() const;
 	inline	const char*			level_name			() const;

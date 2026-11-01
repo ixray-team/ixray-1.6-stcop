@@ -15,8 +15,6 @@
 #include "../gamespy/GameSpy_Full.h"
 #include "../../xrUI/UIHelper.h"
 
-extern string_path g_last_saved_game;
-
 CUIMMShniaga::CUIMMShniaga()
 {
 	m_sound			= new CMMSound();
@@ -94,7 +92,7 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, const char* path)
 
 	if (!g_pGameLevel || !g_pGameLevel->bReady) 
 	{
-		if (!*g_last_saved_game || !CSavedGameWrapper::valid_saved_game(g_last_saved_game))
+		if (CSavedGameWrapper::FindLatest().empty())
 			CreateList		(m_buttons, xml_doc, "menu_main");
 		else
 			CreateList		(m_buttons, xml_doc, "menu_main_last_save");

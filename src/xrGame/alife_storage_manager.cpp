@@ -27,8 +27,6 @@ XRCORE_API string_path g_bug_report_file;
 
 using namespace ALife;
 
-extern string_path g_last_saved_game;
-
 CALifeStorageManager::~CALifeStorageManager()
 {
 }
@@ -39,8 +37,6 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 
 	string_path					save_name;
 	strncpy_s					(save_name, sizeof(save_name), save_name_no_check, sizeof(save_name)-5-xr_strlen(IXRAY_DEF_SAVE_EXTENSION)-xr_strlen(game_saves_path));
-
-	xr_strcpy(g_last_saved_game, save_name);
 
 	string_path					saveBackup;
 	xr_strcpy					(saveBackup,m_save_name);
@@ -191,11 +187,7 @@ bool CALifeStorageManager::load(const char* save_name_no_check)
 	string_path file_name;
 	FS.update_path(file_name, "$game_saves$", m_save_name);
 
-	xr_strcpy(g_last_saved_game, save_name);
 	xr_strcpy(g_bug_report_file, file_name);
-
-	xr_strcpy					(g_last_saved_game, save_name);
-	xr_strcpy					(g_bug_report_file, file_name);
 
     IReader* stream = FS.r_open(file_name);
     if (!stream)

@@ -19,6 +19,7 @@
 #include "../xrEngine/string_table.h"
 
 extern const char* alife_section;
+extern bool valid_saved_game_name(const char* file_name);
 
 const char* CSavedGameWrapper::saved_game_full_name	(const char* saved_game_name, string_path& result, const char* extension)
 {
@@ -58,6 +59,41 @@ bool CSavedGameWrapper::valid_saved_game		(const char* saved_game_name)
 	bool						result = valid_saved_game(*stream);
 	FS.r_close					(stream);
 	return						(result);
+}
+
+xr_string CSavedGameWrapper::FindLatest()
+{
+	// Saves can be copied or deleted outside the game, so refresh the folder first.
+	FS.get_path("$game_saves$")->m_Flags.set(FS_Path::flNeedRescan, true);
+	FS.rescan_pathes(false);
+
+	string32 Mask;
+	xr_strconcat(Mask, "*", IXRAY_DEF_SAVE_EXTENSION);
+
+	FS_FileSet Files;
+	FS.file_list(Files, "$game_saves$", FS_ListFiles | FS_RootOnly | FS_ClampExt, Mask);
+
+	xr_vector<const FS_File*> SortedFiles;
+	SortedFiles.reserve(Files.size());
+	for (const FS_File& File : Files)
+	{
+		SortedFiles.push_back(&File);
+	}
+
+	std::sort(SortedFiles.begin(), SortedFiles.end(), [](const FS_File* Left, const FS_File* Right)
+	{
+		return Left->time_write > Right->time_write;
+	});
+
+	for (const FS_File* File : SortedFiles)
+	{
+		if (valid_saved_game_name(File->name.c_str()) && valid_saved_game(File->name.c_str()))
+		{
+			return File->name;
+		}
+	}
+
+	return {};
 }
 
 CSavedGameWrapper::CSavedGameWrapper			(const char* saved_game_name)

@@ -57,8 +57,6 @@
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-string_path		g_last_saved_game;
-
 #ifdef DEBUG
 extern float air_resistance_epsilon;
 #endif // #ifdef DEBUG
@@ -682,58 +680,35 @@ public:
 
 	virtual void	Execute(const char* args)
 	{
-		string_path				saved_game = "";
-		if (args)
+		// Older user.ltx files still contain "load_last_save <name>"; that line must not start a game.
+		if (args && *args)
 		{
-			strncpy_s(saved_game, sizeof(saved_game), args, _MAX_PATH - 1);
+			return;
 		}
 
-
-		if (saved_game && *saved_game)
+		const xr_string SavedGame = CSavedGameWrapper::FindLatest();
+		if (SavedGame.empty())
 		{
-			xr_strcpy(g_last_saved_game, saved_game);
-
+			Msg("! Cannot load last saved game: no valid saved games found");
 			return;
 		}
 
-		if (!*g_last_saved_game) {
-			Msg("! cannot load last saved game since it hasn't been specified");
-			return;
-		}
-
-		if (!CSavedGameWrapper::saved_game_exist(g_last_saved_game)) {
-			Msg("! Cannot find saved game %s", g_last_saved_game);
-			return;
-		}
-
-		if (!CSavedGameWrapper::valid_saved_game(g_last_saved_game)) {
-			Msg("! Cannot load saved game %s, version mismatch or saved game is corrupted", g_last_saved_game);
-			return;
-		}
-
-		if (!valid_saved_game_name(g_last_saved_game))
+		string_path Command;
+		if (ai().get_alife())
 		{
-			Msg("! Cannot load saved game %s, invalid file name", g_last_saved_game);
-			return;
+			xr_strconcat(Command, "load ", SavedGame.c_str());
+		}
+		else
+		{
+			xr_strconcat(Command, "start server(", SavedGame.c_str(), "/single/alife/load)");
 		}
 
-		string256 command;
-		if (ai().get_alife()) {
-			xr_strconcat(command, "load ", g_last_saved_game);
-			Console->Execute(command);
-			return;
-		}
-
-		xr_strconcat(command, "start server(", g_last_saved_game, "/single/alife/load)");
-		Console->Execute(command);
+		Console->Execute(Command);
 	}
 
 	virtual void	Save(IWriter* F)
 	{
-		if (!*g_last_saved_game)
-			return;
-
-		F->w_printf("%s %s\r\n", cName, g_last_saved_game);
+		// Nothing to store: the newest saved game is looked up on disk.
 	}
 };
 
@@ -2960,8 +2935,6 @@ void CCC_RegisterCommands()
 	extern bool g_debug_doors;
 	CMD2(CCC_Boolean, "ai_debug_doors", &g_debug_doors);
 #endif // #ifdef DEBUG
-
-	* g_last_saved_game = 0;
 
 	CMD3(CCC_String, "slot_0", g_quick_use_slots[0], 32);
 	CMD3(CCC_String, "slot_1", g_quick_use_slots[1], 32);

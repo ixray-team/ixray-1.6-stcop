@@ -25,8 +25,6 @@
 using namespace ALife;
 using namespace luabind; //Alundaio
 
-extern string_path g_last_saved_game;
-
 class CSwitchPredicate 
 {
 private:
@@ -307,8 +305,6 @@ void CALifeUpdateManager::load			(const char* game_name, bool no_assert, bool ne
 	//u32									memory_usage = Memory.mem_usage();
 #endif
 
-	xr_strcpy								(g_last_saved_game,game_name);
-
 	if (new_only || !CALifeStorageManager::load(game_name)) {
 		R_ASSERT3						(new_only || no_assert && xr_strlen(game_name),"Cannot find the specified saved game ",game_name);
 		new_game						(game_name);
@@ -354,7 +350,6 @@ bool CALifeUpdateManager::load_game		(const char* game_name, bool no_assert)
 
 void CALifeUpdateManager::load_from_editor()
 {
-	xr_strcpy(g_last_saved_game, "editor");
 	new_game_for_editor();
 
 	if (g_pGameLevel)
