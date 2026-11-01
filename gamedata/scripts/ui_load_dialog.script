@@ -34,6 +34,9 @@ function load_dialog:FillList()
 	local f		= getFS()
 	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*"..saved_game_extension)
 	local f_cnt = flist:Size()
+	if f_cnt == 0 then
+		self:OnListItemClicked()
+	end
 
 	flist:Sort(FS.FS_sort_by_modif_down)
 
@@ -194,8 +197,6 @@ function file_data(fname)
 end
 
 function load_dialog:OnListItemClicked()
-	if self.list_box:GetSize()==0 then return end
-
 	local item			= self.list_box:GetSelectedItem()
 
 	if item == nil then
@@ -319,6 +320,7 @@ function load_dialog:OnButton_load_clicked()
 end
 
 function load_dialog:OnButton_back_clicked()
+	self.owner:RefreshLastSaveButton()
 	self.owner:ShowDialog(true)
 	self:HideDialog()
 	self.owner:Show						(true)

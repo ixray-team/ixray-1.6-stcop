@@ -52,11 +52,31 @@ end
 function main_menu:__finalize()
 end
 
+function main_menu:RefreshLastSaveButton()
+	if level.present() and not IsGameTypeSingle() then
+		return
+	end
+
+	local saves = getFS():file_list_open_ex("$game_saves$", bit_or(FS.FS_ListFiles, FS.FS_RootOnly), "*" .. save_extension())
+	if saves:Size() == 0 then
+		local page = "menu_main"
+		if level.present() then
+			page = db.actor and not db.actor:alive() and "menu_main_single_dead_no_save" or "menu_main_single_no_save"
+		end
+		self.shniaga:SetPage(CUIMMShniaga.epi_new_game, "ui_mm_main.xml", "menu_new_game")
+		self.shniaga:ShowPage(CUIMMShniaga.epi_new_game)
+		self.shniaga:SetPage(CUIMMShniaga.epi_main, "ui_mm_main.xml", page)
+		self.shniaga:ShowPage(CUIMMShniaga.epi_main)
+	end
+end
+
 function main_menu:InitControls()
 	self:SetWndRect	(Frect():set(0,0,1024,768))
 
     self.main_xml:InitStatic("background", self)
     self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self)
+
+	self:RefreshLastSaveButton()
 
 	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")
