@@ -283,6 +283,8 @@ function actor_binder:task_callback(_task, _objective, _state)
 			news_manager.send_task(db.actor, "update", _task, _objective)
 		end
 	end
+
+	SendScriptCallback("actor_on_task_state", _task, _state, _objective:get_idx()) -- IX-Ray
 end
 
 ----------------------------------------------------------------------------------------------------------------------

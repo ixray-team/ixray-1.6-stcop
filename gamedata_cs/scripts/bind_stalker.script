@@ -311,6 +311,9 @@ function actor_binder:task_callback(_task, _state)
 		end
 	end
 
+	-- Sent before task_manager drops the finished task from its registry
+	SendScriptCallback("actor_on_task_state", _task, _state, 0) -- IX-Ray
+
 	task_manager.task_callback(_task, _state)
 end
 
