@@ -459,6 +459,8 @@ void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
 	tNetPacket.w_u32			(m_bDirectControl);
 	tNetPacket.w_u32			(m_tNodeID);
 	tNetPacket.w_u32			(m_flags.get());
+	R_ASSERT3					(tNetPacket.w_tell() + m_ini_string.size() + 1 + 2 * sizeof(u32) < NET_PacketSizeLimit,
+		"custom data is too large for the spawn packet", name_replace());
 	tNetPacket.w_stringZ		(m_ini_string);
 	tNetPacket.w_u32			(m_story_id);
 	tNetPacket.w_u32			(m_spawn_story_id);
