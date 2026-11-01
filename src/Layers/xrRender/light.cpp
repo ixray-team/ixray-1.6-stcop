@@ -73,6 +73,7 @@ void light::destroy(bool deffered)
 	set_active(false);
 	if(deffered)
 	{
+		xrCriticalSectionGuard guard(&RImplementation.LightsDequeLock);
 		if(std::find(RImplementation.v_all_lights_dque.begin(),RImplementation.v_all_lights_dque.end(), this)==RImplementation.v_all_lights_dque.end())
 			RImplementation.v_all_lights_dque.push_back(this);
 	}
@@ -124,7 +125,11 @@ void light::set_shadow(bool b)
 			// tough: delete 6 shadowed lights
 			if (0!=omnipart[0])
 			{
-				for (int f=0; f<6; f++)	xr_delete(omnipart[f]);
+				for (int f=0; f<6; f++)
+				{
+					omnipart[f]->destroy(true);
+					omnipart[f] = nullptr;
+				}
 			}
 		}
 	}

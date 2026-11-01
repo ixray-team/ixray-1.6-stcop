@@ -310,9 +310,15 @@ void CRender::Calculate()
 	Target->reset_light_marker();
 	{
 		//Lights Delete queue
-		for (light*L:v_all_lights_dque)
+		xr_list<light*> DeleteQueue;
+		{
+			xrCriticalSectionGuard guard(&LightsDequeLock);
+			DeleteQueue.swap(v_all_lights_dque);
+		}
+		for (light* L : DeleteQueue)
+		{
 			xr_delete(L);
-		v_all_lights_dque.clear();
+		}
 	}
 	{
 		g_SpatialSpace->q_frustum
