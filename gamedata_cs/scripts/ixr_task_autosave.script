@@ -1,0 +1,242 @@
+--[[
+	IX-Ray task autosave
+	Version: 1.0
+	Script: ixr_task_autosave.script
+	Description: Story save when a task is given or completed, like scenario_autosave in Call of Pripyat.
+	In Shadow of Chernobyl a completed task stage is saved too.
+	The save is skipped when the "Important saves" option (g_important_save) is off.
+	The same file is used by Shadow of Chernobyl and Clear Sky.
+]]
+
+-- Let rewards, info portions and follow-up tasks settle before saving
+local SAVE_DELAY_MS = 1500
+-- Minimal gap between two task saves; a later event postpones the save instead of dropping it
+local SAVE_COOLDOWN_MS = 15000
+-- Tasks given right after a level load are covered by the level change autosave
+local LEVEL_LOAD_GRACE_MS = 5000
+-- Safety limit only: the save command copies the name into a 259-byte buffer, Cyrillic takes 2 bytes in UTF-8
+local TITLE_MAX_CHARS = 100
+
+local pending_save_name = nil
+local pending_save_time = 0
+local last_save_time = nil
+local level_ready_time = nil
+
+local function on_level_ready()
+	level_ready_time = time_global()
+	pending_save_name = nil
+end
+
+-- Random trader tasks in Shadow of Chernobyl are found by id; their title is only the task kind
+local function is_soc_random_task(task_id)
+	local get_random_task = rawget(task_manager, "get_random_task")
+	if get_random_task == nil then
+		return false
+	end
+
+	local random_task = get_random_task()
+	if random_task == nil or random_task.task_info == nil then
+		return false
+	end
+
+	for _, info in pairs(random_task.task_info) do
+		if info.complex_type == task_id then
+			return true
+		end
+	end
+
+	return false
+end
+
+-- Clear Sky gives these generated tasks on its own: the reward pickup right after a task is completed,
+-- and the shelter during a surge
+local CS_SERVICE_TASK_TYPES = {
+	take_reward = true,
+	hide_from_surge = true,
+}
+
+local function is_cs_service_task(task_id)
+	local get_task_manager = rawget(task_manager, "get_task_manager")
+	if get_task_manager == nil then
+		return false
+	end
+
+	local manager = get_task_manager()
+	local info = manager and manager.task_info and manager.task_info[task_id]
+	return info ~= nil and CS_SERVICE_TASK_TYPES[info.type] == true
+end
+
+local function is_save_wanted(tsk)
+	return not is_cs_service_task(tsk:get_id())
+end
+
+-- Name of the whole task for the save; a random task in Shadow of Chernobyl names its target in objective 1
+local function get_task_title_id(tsk)
+	if is_soc_random_task(tsk:get_id()) and tsk:get_objectives_cnt() > 1 then
+		local description = tsk:get_objective(1):get_description()
+		if description ~= nil and description ~= "" then
+			return description
+		end
+	end
+
+	return tsk:get_title()
+end
+
+-- Splits a string into UTF-8 characters, or returns nil when it is not valid UTF-8
+local function split_utf8(text)
+	local chars = {}
+	local len = string.len(text)
+	local i = 1
+	while i <= len do
+		local lead = string.byte(text, i)
+		local size = 1
+		if lead >= 0xF0 then
+			size = 4
+		elseif lead >= 0xE0 then
+			size = 3
+		elseif lead >= 0xC0 then
+			size = 2
+		elseif lead >= 0x80 then
+			return nil
+		end
+
+		if i + size - 1 > len then
+			return nil
+		end
+
+		for k = i + 1, i + size - 1 do
+			local byte = string.byte(text, k)
+			if byte < 0x80 or byte > 0xBF then
+				return nil
+			end
+		end
+
+		table.insert(chars, string.sub(text, i, i + size - 1))
+		i = i + size
+	end
+
+	return chars
+end
+
+-- Cuts the text to max_chars characters, at a word boundary when it keeps at least half of the text
+local function shorten(text, max_chars)
+	local chars = split_utf8(text)
+	if chars == nil then
+		-- Single-byte code page
+		chars = {}
+		for i = 1, string.len(text) do
+			chars[i] = string.sub(text, i, i)
+		end
+	end
+
+	if #chars <= max_chars then
+		return text
+	end
+
+	local cut = max_chars
+	for i = max_chars + 1, math.floor(max_chars / 2), -1 do
+		if chars[i] == " " then
+			cut = i - 1
+			break
+		end
+	end
+
+	return table.concat(chars, "", 1, cut)
+end
+
+local function make_save_name(caption_id, title_id)
+	local title = game.translate_string(title_id or "")
+	-- Characters rejected by valid_saved_game_name() and control characters
+	title = string.gsub(title, "[%c/\\:%*%?\"<>|%^%%]", " ")
+	title = string.gsub(title, "%s+", " ")
+	title = string.gsub(title, "^[%s%.]+", "")
+	title = shorten(title, TITLE_MAX_CHARS)
+	-- Windows drops trailing dots and spaces from file names
+	title = string.gsub(title, "[%s%.,;%-]+$", "")
+
+	local save_name = user_name() .. " - " .. game.translate_string(caption_id)
+	if title ~= "" then
+		save_name = save_name .. " - " .. title
+	end
+
+	return save_name
+end
+
+local function on_task_state(tsk, state, objective_idx)
+	if tsk == nil then
+		return
+	end
+
+	local caption_id = nil
+	local title_id = get_task_title_id(tsk)
+	if objective_idx ~= 0 then
+		-- Shadow of Chernobyl reports every objective; objective 0 is the whole task.
+		-- The engine updates objectives in index order, so the last stage of a random task can complete
+		-- in the same pass right after the whole task; the task completion save covers it
+		if state ~= task.completed or tsk:get_state() ~= task.in_progress then
+			return
+		end
+
+		caption_id = "st_ixr_task_autosave_stage"
+		local objective = tsk:get_objective(objective_idx)
+		local description = objective and objective:get_description()
+		if description ~= nil and description ~= "" then
+			title_id = description
+		end
+	elseif state == task.in_progress then
+		caption_id = "st_ixr_task_autosave_new"
+	elseif state == task.completed then
+		caption_id = "st_ixr_task_autosave_done"
+	else
+		return
+	end
+
+	if level_ready_time == nil or time_global() < level_ready_time + LEVEL_LOAD_GRACE_MS then
+		return
+	end
+
+	if not is_save_wanted(tsk) then
+		return
+	end
+
+	-- Several tasks changing at once (complete one, get the next) produce one save named after the latest
+	pending_save_name = make_save_name(caption_id, title_id)
+	pending_save_time = time_global() + SAVE_DELAY_MS
+end
+
+local function on_actor_update()
+	if pending_save_name == nil then
+		return
+	end
+
+	local now = time_global()
+	if now < pending_save_time then
+		return
+	end
+
+	if last_save_time ~= nil and now < last_save_time + SAVE_COOLDOWN_MS then
+		return
+	end
+
+	-- Wait for the dialog to close so the save has the dialog results and a clean screenshot
+	if db.actor == nil or db.actor:is_talking() then
+		return
+	end
+
+	local save_name = pending_save_name
+	pending_save_name = nil
+
+	if not IsImportantSave() or not db.actor:alive() then
+		return
+	end
+
+	last_save_time = now
+	get_console():execute("save " .. save_name)
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_first_update", on_level_ready)
+	RegisterScriptCallback("on_game_present", on_level_ready)
+	RegisterScriptCallback("actor_on_task_state", on_task_state)
+	RegisterScriptCallback("actor_on_update", on_actor_update)
+end

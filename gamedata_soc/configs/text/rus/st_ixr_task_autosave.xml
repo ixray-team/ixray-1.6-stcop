@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_ixr_task_autosave_new">
+		<text>Взято</text>
+	</string>
+	<string id="st_ixr_task_autosave_stage">
+		<text>Этап</text>
+	</string>
+	<string id="st_ixr_task_autosave_done">
+		<text>Выполнено</text>
+	</string>
+</string_table>
