@@ -259,6 +259,25 @@ bool CSoundRender_Emitter::update_culling(float dt)
 {
 	float volume_att = 1.f;
 
+	//LostAlphaRus in
+	float volume_factor = 0.0f;
+	switch (owner_data->s_type)
+	{
+		case st_Effect:
+			volume_factor = psSoundVEffects * psSoundVFactor;
+			break;
+		case st_Music:
+			volume_factor = psSoundVMusic;
+			break;
+		case st_Shooting:
+			volume_factor = psSoundVShooting * psSoundVEffects * psSoundVFactor;
+			break;
+	}
+	//LostAlphaRus out
+
+	// User volume sliders only scale the gain. Culling them against psSoundCull silenced quiet sounds at low slider values
+	const bool Muted = fis_zero(volume_factor);
+
 	if (b2D)
 	{
 		occluder_volume = 1.f;
@@ -276,20 +295,7 @@ bool CSoundRender_Emitter::update_culling(float dt)
 		volume_att = linear_attenuation(p_source, dist);
 		clamp(volume_att, 0.f, p_source.volume);
 
-		float volume_factor = 0.0f;
-		switch (owner_data->s_type)
-		{
-			case st_Effect:
-				volume_factor = psSoundVEffects * psSoundVFactor;
-				break;
-			case st_Music:
-				volume_factor = psSoundVMusic;
-				break;
-			case st_Shooting:
-				volume_factor = psSoundVShooting * psSoundVEffects * psSoundVFactor;
-				break;
-		}
-		float fade_scale = bStopping || (p_source.base_volume * p_source.volume * volume_factor < psSoundCull) ? -1.f : 1.f;
+		float fade_scale = bStopping || Muted || (p_source.base_volume * p_source.volume < psSoundCull) ? -1.f : 1.f;
 		fade_volume += dt * 10.f * fade_scale;
 		//LostAlphaRus out
 
@@ -305,25 +311,10 @@ bool CSoundRender_Emitter::update_culling(float dt)
 	}
 	clamp(fade_volume, 0.f, 1.f);
 	// Update smoothing
-	// 
-	//LostAlphaRus in
-	float volume_factor = 0.0f;
-	switch (owner_data->s_type)
-	{
-		case st_Effect:
-			volume_factor = psSoundVEffects * psSoundVFactor;
-			break;
-		case st_Music:
-			volume_factor = psSoundVMusic;
-			break;
-		case st_Shooting:
-			volume_factor = psSoundVShooting * psSoundVEffects * psSoundVFactor;
-			break;
-	}
-	smooth_volume = (p_source.base_volume * volume_att * volume_factor * occluder_volume * fade_volume);
-	//LostAlphaRus out
+	const float AudibleVolume = p_source.base_volume * volume_att * occluder_volume * fade_volume;
+	smooth_volume = AudibleVolume * volume_factor;
 
-	if (smooth_volume < psSoundCull)
+	if (Muted || AudibleVolume < psSoundCull)
 		return false;	// allow volume to go up
 	// Here we has enought "PRIORITY" to be soundable
 	// If we are playing already, return OK
