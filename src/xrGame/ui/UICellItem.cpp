@@ -114,9 +114,15 @@ CUICellItem::~CUICellItem()
 	m_pCellsConditions.clear();
 }
 
+CUIXml& CUICellItem::GetXml()
+{
+	static CUIXml Xml;
+	return Xml;
+}
+
 void CUICellItem::init()
 {
-	static CUIXml uiXml;
+	CUIXml& uiXml = GetXml();
 	static bool isActorMenuItem = false;
 	static bool isInitialized = false;
 
