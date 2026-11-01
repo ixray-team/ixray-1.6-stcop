@@ -620,8 +620,11 @@ end
 function sim_squad_generic:find_target()
 	local player = self.board.players[self.player_id]
 	local tt = player:find_target(self)
+	-- Если группировка сняла цель, отряд не должен идти к старой.
 	if tt ~= nil then
 		self.assigned_target_smart_id = self.board.smarts[tt].smrt.id
+	else
+		self.assigned_target_smart_id = nil
 	end
 end
 

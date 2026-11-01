@@ -133,17 +133,19 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
     elseif (sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level]) and
 	    is_point_avail(point, squad.player_id) then
 -- Если точка доступна и она в одном кластере с нами
+	    -- Заполненность своими отрядами важна только для цели. Транзитная точка не должна блокировать путь.
+	    local is_target = point.id == tgt_smart_id
 	    if point.player_name == "none" then
             -- точка ничья
             point_value = point_value + 1
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
-            if friendly_squad_quan >= point.squad_capacity then
+            if is_target and friendly_squad_quan >= point.squad_capacity then
                 point_value = point_value + 1000
             end
         elseif point.player_name == squad.player_id then
             -- точка наша
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id]) + board:get_smart_population(point)
-            if friendly_squad_quan < point.squad_capacity then
+            if not is_target or friendly_squad_quan < point.squad_capacity then
                 -- Если точка наша и есть пустые места - вес 1
                 point_value = point_value + 1
             else
@@ -522,14 +524,13 @@ function sim_board:remove_squad(squad)
                 sim_combat:unregister_squad(squad)
         end
 
-        if squad.current_action == nil or
-       squad.current_action.dest_smrt == nil
-        then
-                squad.board:exit_smart(squad, self.smarts[squad.smart_id].smrt)
+        -- Атака должна вернуть свой слот в current_attack_quantity, иначе точка остается заблокированной навсегда.
+        if squad.current_action ~= nil then
+                squad.current_action:finalize()
+                squad.current_action = nil
         end
-        if squad.sim_combat_id ~= nil then
-                src_smart.combat_manager:unregister_squad(squad)
-        end
+
+        squad.board:exit_smart(squad, self.smarts[squad.smart_id].smrt)
         squad:hide()
 
         local player = self.players[squad.player_id]

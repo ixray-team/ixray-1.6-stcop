@@ -69,8 +69,19 @@ function se_sim_faction:on_register()
 		-- Нужно зарегить отряд в sim_board
 		sim_board.get_sim_board().squads[squad.squad_id] = squad
 	end
+	self:rebuild_attack_quantity()
 
 	self:fill_start_position()
+end
+-- Пересчет счетчика атакующих по реальным действиям отрядов. Лечит сейвы с утекшим счетчиком.
+function se_sim_faction:rebuild_attack_quantity()
+	self.current_attack_quantity = {}
+	for k,squad in pairs(self.squads) do
+		local action = squad.current_action
+		if action ~= nil and action.name == "attack_point" then
+			self.current_attack_quantity[action.dest_smrt_id] = (self.current_attack_quantity[action.dest_smrt_id] or 0) + 1
+		end
+	end
 end
 -- Вычитка парамтеров из кастом даты
 function se_sim_faction:read_params()
@@ -504,7 +515,10 @@ function se_sim_faction:calculate_squad_tasks()
 					break
 				end
 			end
-			table.remove(distance_table[k].targets, del_id)
+			-- table.remove(t, nil) удаляет последний элемент, поэтому отряд из другого кластера выбивал чужого кандидата.
+			if del_id ~= nil then
+				table.remove(distance_table[k].targets, del_id)
+			end
 
 			if #distance_table[k].targets < 1 then
 				table.insert(remove_table, k)

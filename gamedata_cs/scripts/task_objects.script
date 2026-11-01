@@ -653,7 +653,10 @@ function CCaptureSmartTask:check_task(tm)
 				--' Запускаем контратаку
 				for k,v in pairs(self.board:get_nearest_smarts(target_obj)) do
 					for kk,vv in pairs(self.board.smarts[v.id].squads) do
-						if self.counter_attack_community == vv.player_id then
+						-- Перебивать уже идущую атаку нельзя: ее слот в current_attack_quantity не освободится.
+						if self.counter_attack_community == vv.player_id and
+							 (vv.current_action == nil or vv.current_action.name == "stay_point")
+						then
 							ally_squad.sound_manager:set_story("squad_"..self.counter_attack_community.."_counter_launched")
 							printf("Launch counter attack [%s] -> [%s]", vv.squad_id, target_obj:name())
 							vv.current_action = sim_squad_generic.sim_attack_point(vv, target_obj.id, true)

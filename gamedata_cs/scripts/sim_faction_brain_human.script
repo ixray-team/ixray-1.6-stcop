@@ -394,7 +394,7 @@ function faction_brain_human:init_player_task(target_data)
 		if current_task.type == task_type then
 			return
 		end
-		task.last_check_task = "reversed"
+		current_task.last_check_task = "reversed"
 		return
 	end
 
