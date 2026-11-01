@@ -50,7 +50,13 @@ void ParseFile(const char* path, CMemoryWriter& W, IReader *F, CXml* xml )
 	{
 		F->r_string(str,sizeof(str));
 
-		if (str[0] && (str[0]=='#') && strstr(str,"#include"))
+		const char* Directive = str;
+		while (*Directive == ' ' || *Directive == '\t')
+		{
+			++Directive;
+		}
+
+		if (Directive[0] == '#' && strstr(Directive, "#include"))
 		{
 			string256 inc_name = { };
 			if (_GetItem(str, 1, inc_name, '"'))
