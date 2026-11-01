@@ -2,6 +2,10 @@
 
 #include "Actor.h"
 #include "ImUtils.h"
+#include "../ParticlesObject.h"
+#include "../GamePersistent.h"
+#include "../../Include/xrRender/EnvironmentRender.h"
+#include "../../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../HUDManager.h"
 #include "../HUDTarget.h"
 #include "../../Include/xrRender/Kinematics.h"
@@ -9,6 +13,8 @@
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/pure.h"
 #include "../../xrEngine/ImGuiManager.h"
+#include "../../xrEngine/ParticleAnimCurveInterface.h"
+#include "../../xrEngine/Fmesh.h"
 #include "../../xrCore/Kernel/EngineExternal.h"
 #include "imgui_internal.h"
 #include <filesystem>
@@ -28,6 +34,13 @@ constexpr s32 kCinemaPresetVersion = 1;
 constexpr u32 kCinemaMaxPresets = 128;
 constexpr u32 kCinemaSceneMaxActors = 1024;
 constexpr u32 kCinemaSceneMaxPlaylist = 256;
+
+bool IsCinemaParticle(const shared_str& name)
+{
+	const auto& names = GamePersistent().Environment().m_pRender->particles_systems_library().vec_all_particles();
+	auto* curves = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	return std::find(names.begin(), names.end(), name) != names.end() && (!curves || !curves->FindIPAC(name.c_str()));
+}
 
 enum class EGizmoMode : u8
 {
@@ -117,6 +130,191 @@ struct SSceneActorData
 	bool PosePaused = false;
 };
 
+struct SParticleCurveKey
+{
+	float Time = 0.0f;
+	float Value = 0.0f;
+};
+
+struct SParticleWave
+{
+	s32 Type = 0;
+	float Amplitude = 0.0f;
+	float Frequency = 1.0f;
+	float Phase = 0.0f;
+	float Minimum = -3600.0f;
+	float Maximum = 3600.0f;
+};
+
+class CCinemaParticleObject final : public CParticlesObject
+{
+public:
+	CCinemaParticleObject(const char* name) : CParticlesObject(name, false, true) {}
+
+	void SetSpeed(float speed) { Speed.store(speed); }
+	void Update(u32 dt, CFrustum* viewbase) override
+	{
+		const double scaled = std::min(static_cast<double>(dt) * Speed.load() + Remainder, static_cast<double>(u32(-1)));
+		const u32 elapsed = static_cast<u32>(scaled);
+		Remainder = scaled - elapsed;
+		CParticlesObject::Update(elapsed, viewbase);
+	}
+
+private:
+	xr_atomic_float Speed = 1.0f;
+	double Remainder = 0.0;
+};
+
+static xr_shared_ptr<CParticlesObject> CreateCinemaParticle(const char* name)
+{
+	auto particle = xr_make_shared<CCinemaParticleObject>(name);
+	GamePersistent().ps_active_deffer.push_back(particle);
+	return particle;
+}
+
+struct SCinemaParticle
+{
+	shared_str Name;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix Orientation = Fmatrix().identity();
+	float Scale = 1.0f;
+	float Speed = 1.0f;
+	xr_shared_ptr<CParticlesObject> Object;
+	bool Timeline = true;
+	bool Loop = true;
+	float In = 0.0f;
+	float Out = 10.0f;
+	float Time = 0.0f;
+	bool Running = false;
+	bool Started = false;
+	bool Modulation = false;
+	Fvector EndOffset = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fvector EndRotation = Fvector().set(0.0f, 0.0f, 0.0f);
+	float EndScale = 1.0f;
+	xr_vector<SParticleCurveKey> Curves[8];
+	SParticleWave Waves[8];
+	s32 CurveChannel = 0;
+	s32 CurveDrag = -1;
+	SCinemaParticle()
+	{
+		Waves[6].Minimum = 0.1f;
+		Waves[6].Maximum = 5.0f;
+		Waves[7].Minimum = 0.0f;
+		Waves[7].Maximum = 4.0f;
+	}
+};
+
+constexpr float ParticleCurveLerp(float a, float b, float factor)
+{
+	return a + (b - a) * factor;
+}
+
+static_assert(ParticleCurveLerp(2.0f, 6.0f, 0.0f) == 2.0f);
+static_assert(ParticleCurveLerp(2.0f, 6.0f, 0.5f) == 4.0f);
+static_assert(ParticleCurveLerp(2.0f, 6.0f, 1.0f) == 6.0f);
+
+static float ParticleCurveValue(const xr_vector<SParticleCurveKey>& keys, float time, float fallback)
+{
+	if (keys.empty())
+	{
+		return fallback;
+	}
+	if (time <= keys.front().Time)
+	{
+		return keys.front().Value;
+	}
+	for (size_t i = 1; i < keys.size(); ++i)
+	{
+		if (time <= keys[i].Time)
+		{
+			const float duration = keys[i].Time - keys[i - 1].Time;
+			const float factor = duration > 0.0f ? (time - keys[i - 1].Time) / duration : 1.0f;
+			return ParticleCurveLerp(keys[i - 1].Value, keys[i].Value, factor);
+		}
+	}
+	return keys.back().Value;
+}
+
+constexpr float ParticleWaveShape(s32 type, float fraction)
+{
+	switch (type)
+	{
+	case 2: return fraction < 0.5f ? 4.0f * fraction - 1.0f : 3.0f - 4.0f * fraction;
+	case 3: return fraction < 0.5f ? 1.0f : -1.0f;
+	case 4: return 2.0f * fraction - 1.0f;
+	default: return 0.0f;
+	}
+}
+
+static_assert(ParticleWaveShape(2, 0.0f) == -1.0f);
+static_assert(ParticleWaveShape(2, 0.5f) == 1.0f);
+static_assert(ParticleWaveShape(3, 0.5f) == -1.0f);
+static_assert(ParticleWaveShape(4, 0.5f) == 0.0f);
+
+static float ParticleModulatedValue(const SCinemaParticle& particle, u32 channel, float time)
+{
+	const auto& wave = particle.Waves[channel];
+	const float cycle = time * wave.Frequency + wave.Phase;
+	const float fraction = cycle - floorf(cycle);
+	const float signal = wave.Type == 1 ? sinf(cycle * PI_MUL_2) : ParticleWaveShape(wave.Type, fraction);
+	return std::clamp(ParticleCurveValue(particle.Curves[channel], time, channel >= 6 ? 1.0f : 0.0f) + wave.Amplitude * signal, wave.Minimum, wave.Maximum);
+}
+
+constexpr bool ValidParticleTimeline(float in, float out)
+{
+	return in >= 0.0f && out >= in + 0.01f && out <= 600.0f;
+}
+
+static_assert(ValidParticleTimeline(0.0f, 10.0f));
+static_assert(!ValidParticleTimeline(1.0f, 1.0f));
+static_assert(!ValidParticleTimeline(-1.0f, 10.0f));
+static_assert(!ValidParticleTimeline(0.0f, 601.0f));
+
+static Fvector ParticlePosition(const SCinemaParticle& particle)
+{
+	Fvector position = particle.Position;
+	if (particle.Modulation && particle.Out > 0.0f)
+	{
+		Fvector offset;
+		offset.set(ParticleModulatedValue(particle, 0, particle.Time), ParticleModulatedValue(particle, 1, particle.Time), ParticleModulatedValue(particle, 2, particle.Time));
+		position.add(offset);
+	}
+	return position;
+}
+
+void UpdateParticleTransform(SCinemaParticle& particle)
+{
+	Fmatrix transform = particle.Orientation;
+	transform.c = ParticlePosition(particle);
+	float scale = particle.Scale;
+	if (particle.Modulation && particle.Out > 0.0f)
+	{
+		Fmatrix rotation;
+		rotation.setHPB(deg2rad(ParticleModulatedValue(particle, 3, particle.Time)), deg2rad(ParticleModulatedValue(particle, 4, particle.Time)), deg2rad(ParticleModulatedValue(particle, 5, particle.Time)));
+		Fmatrix result;
+		result.mul(particle.Orientation, rotation);
+		result.c = transform.c;
+		transform = result;
+		scale *= ParticleModulatedValue(particle, 6, particle.Time);
+	}
+	particle.Object->UpdateParent(transform, zero_vel);
+	particle.Object->SetScale(scale);
+	static_cast<CCinemaParticleObject*>(particle.Object.get())->SetSpeed(std::clamp(particle.Speed * (particle.Modulation ? ParticleModulatedValue(particle, 7, particle.Time) : 1.0f), 0.0f, 4.0f));
+}
+
+void StartParticleTimeline(SCinemaParticle& particle)
+{
+	particle.Object->Stop(false);
+	particle.Time = 0.0f;
+	particle.Running = particle.Timeline;
+	particle.Started = !particle.Timeline || particle.In <= 0.0f;
+	if (particle.Started)
+	{
+		UpdateParticleTransform(particle);
+		particle.Object->Play(false);
+	}
+}
+
 struct SClipDragPayload
 {
 	string_path Source = {};
@@ -194,7 +392,7 @@ struct SCinemaActor;
 struct SGizmoDrag
 {
 	bool Active = false;
-	SCinemaActor* Actor = nullptr;
+	Fvector* Position = nullptr;
 	EGizmoMode Mode = EGizmoMode::Translate;
 	EGizmoAxis Axis = EGizmoAxis::None;
 	Fvector AxisDir = Fvector().set(0.0f, 0.0f, 0.0f);
@@ -1091,6 +1289,226 @@ static bool VisualPathExists(const char* visual)
 	return false;
 }
 
+static bool CinemaReadString(IReader& reader, xr_string& value)
+{
+	if (reader.elapsed() <= 0 || !memchr(reader.pointer(), 0, static_cast<size_t>(reader.elapsed())))
+	{
+		return false;
+	}
+	reader.r_stringZ(value);
+	return true;
+}
+
+static bool CinemaCheckMotionData(IReader& file, const char* path, const xr_vector<xr_string>& bones, xr_string& error)
+{
+	CReaderGuarded params(file.open_chunk(OGF_S_SMPARAMS));
+	if (!params || params->elapsed() < 4)
+	{
+		error = xr_string("Invalid animation parameters: ") + path;
+		return false;
+	}
+	const u16 version = params->r_u16();
+	const u16 parts = params->r_u16();
+	if (version > xrOGF_SMParamsVersion || parts > MAX_PARTS)
+	{
+		error = xr_string("Unsupported animation parameters: ") + path;
+		return false;
+	}
+	u32 count = 0;
+	xr_vector<bool> seenIndices(bones.size(), false);
+	xr_set<xr_string> seenBones;
+	for (u16 i = 0; i < parts; ++i)
+	{
+		xr_string name;
+		if (!CinemaReadString(*params, name) || params->elapsed() < 2)
+		{
+			error = xr_string("Invalid animation partition: ") + path;
+			return false;
+		}
+		const u16 partBones = params->r_u16();
+		for (u16 j = 0; j < partBones; ++j)
+		{
+			if (!CinemaReadString(*params, name) || params->elapsed() < 4)
+			{
+				error = xr_string("Invalid animation bone data: ") + path;
+				return false;
+			}
+			const u32 index = params->r_u32();
+			const bool found = std::find(bones.begin(), bones.end(), name) != bones.end();
+			if (!found || index >= bones.size() || seenIndices[index] || !seenBones.insert(name).second)
+			{
+				error = xr_string("Animation ") + path + " is incompatible with the model: bone " + name;
+				return false;
+			}
+			seenIndices[index] = true;
+			++count;
+		}
+	}
+	if (count != bones.size())
+	{
+		error = xr_string("Animation bone count differs from the model: ") + path;
+		return false;
+	}
+	return true;
+}
+
+static bool CinemaCheckMotion(const char* path, const xr_vector<xr_string>& bones, xr_string& error)
+{
+	string_path resolved = {};
+	if (!FS.exist(resolved, "$level$", path) && !FS.exist(resolved, _game_meshes_, path))
+	{
+		error = xr_string("Animation file not found: ") + path;
+		return false;
+	}
+	CReaderGuarded file(FS.r_open(resolved));
+	if (!file)
+	{
+		error = xr_string("Could not read animation file: ") + path;
+		return false;
+	}
+	return CinemaCheckMotionData(*file, path, bones, error);
+}
+
+static bool CinemaCheckMotionPath(const char* path, const xr_vector<xr_string>& bones, xr_string& error)
+{
+	if (strstr(path, "\\*.omf"))
+	{
+		FS_FileSet files;
+		FS.file_list(files, _game_meshes_, FS_ListFiles, path);
+		FS.file_list(files, "$level$", FS_ListFiles, path);
+		if (files.empty())
+		{
+			error = xr_string("No animation files found: ") + path;
+			return false;
+		}
+		for (const FS_File& file : files)
+		{
+			if (!CinemaCheckMotion(file.name.c_str(), bones, error))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	return CinemaCheckMotion((xr_string(path) + ".omf").c_str(), bones, error);
+}
+
+static bool CinemaCheckVisual(const char* visual, xr_string& error)
+{
+	string_path fileName = {};
+	xr_strcpy(fileName, visual);
+	if (!strext(fileName))
+	{
+		xr_strcat(fileName, ".ogf");
+	}
+	string_path resolved = {};
+	if (!FS.exist(resolved, _game_meshes_, fileName) && !FS.exist(resolved, "$level$", fileName))
+	{
+		error = xr_string("Model not found: ") + visual;
+		return false;
+	}
+	CReaderGuarded file(FS.r_open(resolved));
+	if (!file)
+	{
+		error = xr_string("Could not read model: ") + visual;
+		return false;
+	}
+	CReaderGuarded boneChunk(file->open_chunk(OGF_S_BONE_NAMES));
+	if (!boneChunk)
+	{
+		return true;
+	}
+	if (boneChunk->elapsed() < 4)
+	{
+		error = xr_string("Invalid model bones: ") + visual;
+		return false;
+	}
+	const u32 count = boneChunk->r_u32();
+	if (count > 65535)
+	{
+		error = xr_string("Invalid model bone count: ") + visual;
+		return false;
+	}
+	xr_vector<xr_string> bones;
+	for (u32 i = 0; i < count; ++i)
+	{
+		xr_string name;
+		xr_string parent;
+		if (!CinemaReadString(*boneChunk, name) || !CinemaReadString(*boneChunk, parent) || boneChunk->elapsed() < sizeof(Fobb))
+		{
+			error = xr_string("Invalid model bones: ") + visual;
+			return false;
+		}
+		xr_strlwr(name.data());
+		bones.push_back(std::move(name));
+		boneChunk->advance(sizeof(Fobb));
+	}
+	CReaderGuarded refs(file->open_chunk(OGF_S_MOTION_REFS));
+	if (refs)
+	{
+		xr_string list;
+		if (!CinemaReadString(*refs, list))
+		{
+			error = xr_string("Invalid model animation references: ") + visual;
+			return false;
+		}
+		for (u32 i = 0, countRefs = _GetItemCount(list.c_str()); i < countRefs; ++i)
+		{
+			string_path path = {};
+			_GetItem(list.c_str(), i, path);
+			if (!CinemaCheckMotionPath(path, bones, error))
+			{
+				return false;
+			}
+		}
+	}
+	else
+	{
+		CReaderGuarded refs2(file->open_chunk(OGF_S_MOTION_REFS2));
+		if (refs2)
+		{
+			if (refs2->elapsed() < 4)
+			{
+				error = xr_string("Invalid model animation references: ") + visual;
+				return false;
+			}
+			const u32 countRefs = refs2->r_u32();
+			for (u32 i = 0; i < countRefs; ++i)
+			{
+				xr_string path;
+				if (!CinemaReadString(*refs2, path) || !CinemaCheckMotionPath(path.c_str(), bones, error))
+				{
+					if (error.empty())
+					{
+						error = xr_string("Invalid model animation references: ") + visual;
+					}
+					return false;
+				}
+			}
+		}
+		else if (file->find_chunk(OGF_S_SMPARAMS) && !CinemaCheckMotionData(*file, visual, bones, error))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static bool CinemaCheckActorMotion(const SCinemaActor& actor, const char* path, xr_string& error)
+{
+	if (!actor.Skeleton || !actor.Skeleton->LL_Bones())
+	{
+		error = "The model has no skeleton to validate animations.";
+		return false;
+	}
+	xr_vector<xr_string> bones;
+	for (const auto& bone : *actor.Skeleton->LL_Bones())
+	{
+		bones.emplace_back(bone.first.c_str());
+	}
+	return CinemaCheckMotionPath(path, bones, error);
+}
+
 static void ReleaseActorModel(SCinemaActor& actor)
 {
 	CinemaClearBindPose(actor);
@@ -1731,7 +2149,14 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 		if (ImGui::IsItemHovered())
 		{
 			const float hoverTime = xToTime(mouse.x);
-			ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nCtrl+drag - add segment, drag a flag - move it, right click on a segment - delete", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f));
+			if (trim)
+			{
+				ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nCtrl+drag - add segment, drag a flag - move it, right click on a segment - delete", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f));
+			}
+			else
+			{
+				ImGui::SetTooltip("Time: %.3f s", hoverTime);
+			}
 		}
 	}
 	else
@@ -1774,6 +2199,10 @@ public:
 
 private:
 	void ClearActors();
+	void ClearParticles();
+	bool AddParticle(const shared_str& name, const Fvector& position);
+	void DrawParticleTab();
+	void DrawParticleBrowser();
 	void ClearGizmo();
 	void ResetSelection();
 	void SelectActor(s32 index);
@@ -1842,8 +2271,8 @@ private:
 	void AppendWorldGizmo();
 	EGizmoAxis HitTranslateAxis(const Fvector& pivot, float size, const ImVec2& mouse) const;
 	EGizmoAxis HitRotateAxis(const Fvector& pivot, float size, const ImVec2& mouse) const;
-	void BeginGizmo(SCinemaActor& actor, EGizmoAxis axis);
-	void UpdateGizmo(SCinemaActor& actor);
+	void BeginGizmo(Fvector& position, Fmatrix& orientation, const Fvector& pivot, EGizmoAxis axis);
+	void UpdateGizmo(Fvector& position, Fmatrix& orientation);
 	void PickActorAtMouse();
 
 	void UpdateActorPlayback(SCinemaActor& actor);
@@ -1872,10 +2301,16 @@ private:
 	const SCinemaActor* GetSelectedActor() const;
 
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
+	xr_vector<SCinemaParticle> Particles;
+	xr_vector<SCinemaParticle> SceneParticles;
+	s32 SelectedParticle = -1;
+	char ParticleFilter[128] = {};
+	shared_str SelectedParticleName;
 	xr_vector<SAnimationSource> Library;
 	xr_vector<shared_str> ModelFiles;
 	xr_vector<SHandItem> HandItems;
 	IGame_Level* Level = nullptr;
+	bool LevelWasReady = false;
 	s32 Selected = -1;
 	s32 SelectedOgf = -1;
 	s32 SelectedSource = -1;
@@ -1929,6 +2364,8 @@ void CCinemaFilmMakerManager::Shutdown()
 {
 	ClearGizmo();
 	ClearActors();
+	ClearParticles();
+	SceneParticles.clear();
 	Library.clear();
 	LibraryBuilt = false;
 	ModelFiles.clear();
@@ -1947,6 +2384,7 @@ void CCinemaFilmMakerManager::Shutdown()
 	SceneDialogRequested = false;
 	SceneLoadRequested = false;
 	Level = nullptr;
+	LevelWasReady = false;
 	Selected = -1;
 }
 
@@ -2111,6 +2549,38 @@ void CCinemaFilmMakerManager::ClearActors()
 	NameEditActor = -1;
 }
 
+void CCinemaFilmMakerManager::ClearParticles()
+{
+	for (auto& particle : Particles)
+	{
+		::Particles::Details::Destroy(particle.Object);
+	}
+	Particles.clear();
+	SelectedParticle = -1;
+}
+
+bool CCinemaFilmMakerManager::AddParticle(const shared_str& name, const Fvector& position)
+{
+	if (Particles.size() >= kCinemaSceneMaxActors)
+	{
+		return false;
+	}
+	if (!IsCinemaParticle(name))
+	{
+		return false;
+	}
+	SCinemaParticle particle;
+	particle.Name = name;
+	particle.Position = position;
+	particle.Object = CreateCinemaParticle(name.c_str());
+	StartParticleTimeline(particle);
+	SelectActor(-1);
+	ClearGizmo();
+	Particles.push_back(std::move(particle));
+	SelectedParticle = static_cast<s32>(Particles.size()) - 1;
+	return true;
+}
+
 void CCinemaFilmMakerManager::ResetSelection()
 {
 	SelectedSource = -1;
@@ -2125,6 +2595,10 @@ void CCinemaFilmMakerManager::SelectActor(s32 index)
 		index = -1;
 	}
 
+	if (index >= 0)
+	{
+		SelectedParticle = -1;
+	}
 	if (Selected == index)
 	{
 		return;
@@ -2166,13 +2640,18 @@ void CCinemaFilmMakerManager::OnFrame()
 		return;
 	}
 
-	if (Level != g_pGameLevel)
+	if (Level != g_pGameLevel || (Level != nullptr && LevelWasReady && !Level->bReady))
 	{
 		ClearGizmo();
 		ClearActors();
+		ClearParticles();
+		SceneParticles.clear();
 		Library.clear();
 		LibraryBuilt = false;
 		SceneData.clear();
+		SceneDialogLines.clear();
+		SceneDialogMode = ESceneDialog::None;
+		SceneDialogRequested = false;
 		SceneList.clear();
 		SceneListSelected.clear();
 		SceneLoadRequested = false;
@@ -2180,6 +2659,7 @@ void CCinemaFilmMakerManager::OnFrame()
 		TrimDragIndex = -1;
 		TrimDragKey.clear();
 		Level = g_pGameLevel;
+		LevelWasReady = false;
 		Selected = -1;
 		SelectedSource = -1;
 		SelectedClip = -1;
@@ -2190,6 +2670,7 @@ void CCinemaFilmMakerManager::OnFrame()
 	{
 		return;
 	}
+	LevelWasReady = Level->bReady;
 
 	if (!LibraryBuilt && Level->bReady)
 	{
@@ -2201,6 +2682,42 @@ void CCinemaFilmMakerManager::OnFrame()
 		UpdateActorTrim(*actor);
 		UpdateActorPlayback(*actor);
 		UpdateActorPlacement(*actor);
+	}
+	for (auto& particle : Particles)
+	{
+		if (!particle.Running)
+		{
+			continue;
+		}
+		particle.Time = std::min(particle.Time + Device.fTimeDelta, particle.Out);
+		if (particle.Modulation)
+		{
+			UpdateParticleTransform(particle);
+		}
+		if (particle.Time >= particle.Out)
+		{
+			if (particle.Loop)
+			{
+				StartParticleTimeline(particle);
+			}
+			else
+			{
+				particle.Object->Stop(false);
+				particle.Running = false;
+			}
+		}
+		else if (!particle.Started && particle.Time >= particle.In)
+		{
+			UpdateParticleTransform(particle);
+			particle.Object->Play(false);
+			particle.Started = true;
+		}
+		else if (particle.Loop && particle.Started && particle.Time > particle.In + 0.05f && !particle.Object->IsPlaying())
+		{
+			particle.Object->Stop(false);
+			UpdateParticleTransform(particle);
+			particle.Object->Play(false);
+		}
 	}
 }
 
@@ -2234,11 +2751,6 @@ void CCinemaFilmMakerManager::BuildModelFiles()
 		return xr_strcmp(left.c_str(), right.c_str()) < 0;
 	});
 
-	if (SelectedVisual.size() == 0 && !ModelFiles.empty())
-	{
-		SelectedOgf = 0;
-		SelectedVisual = ModelFiles.front();
-	}
 }
 
 void CCinemaFilmMakerManager::BuildHandItems()
@@ -2501,6 +3013,12 @@ bool CCinemaFilmMakerManager::EnsureSource(SCinemaActor& actor, const shared_str
 	string_path path = {};
 	xr_strcpy(path, source.c_str());
 	path[source.size() - 4] = '\0';
+	xr_string error;
+	if (!CinemaCheckActorMotion(actor, path, error))
+	{
+		Msg("! Cinema editor: %s", error.c_str());
+		return false;
+	}
 
 	actor.Animated->append_motion_from_path(actor.Visual.c_str(), path);
 	return true;
@@ -3048,6 +3566,10 @@ void CCinemaFilmMakerManager::StartActorPlayback(SCinemaActor& actor)
 
 void CCinemaFilmMakerManager::StartPlayAll()
 {
+	for (auto& particle : Particles)
+	{
+		StartParticleTimeline(particle);
+	}
 	for (auto& actor : Actors)
 	{
 		if (!actor->Playlist.empty())
@@ -3086,6 +3608,11 @@ void CCinemaFilmMakerManager::StopActor(SCinemaActor& actor)
 
 void CCinemaFilmMakerManager::StopAll()
 {
+	for (auto& particle : Particles)
+	{
+		particle.Object->Stop(false);
+		particle.Running = false;
+	}
 	for (auto& actor : Actors)
 	{
 		StopActor(*actor);
@@ -3262,6 +3789,7 @@ bool CCinemaFilmMakerManager::AddActor(const Fvector& position, const char* visu
 
 	Actors.push_back(std::move(actor));
 	Selected = static_cast<s32>(Actors.size()) - 1;
+	SelectedParticle = -1;
 	ResetSelection();
 	return true;
 }
@@ -3301,6 +3829,13 @@ bool CCinemaFilmMakerManager::SetActorVisual(SCinemaActor& actor, const char* vi
 
 	if (!VisualPathExists(visual))
 	{
+		return false;
+	}
+
+	xr_string error;
+	if (!CinemaCheckVisual(visual, error))
+	{
+		ShowSceneDialog(ESceneDialog::Info, "Cannot load model", { error });
 		return false;
 	}
 
@@ -3929,7 +4464,7 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 			ImGui::EndChild();
 		}
 
-		ImGui::TextDisabled("Loading replaces the current scene (%u NPC).", static_cast<u32>(Actors.size()));
+		ImGui::TextDisabled("Loading replaces the current scene (%u NPC, %u particles).", static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()));
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(SceneListSelected.empty());
@@ -3977,6 +4512,7 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 		if (ImGui::Button("Cancel", ImVec2(120.0f, 0.0f)))
 		{
 			SceneData.clear();
+			SceneParticles.clear();
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -3997,6 +4533,8 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 	}
 
 	case ESceneDialog::None:
+		ImGui::CloseCurrentPopup();
+		break;
 	default:
 		break;
 	}
@@ -4013,7 +4551,7 @@ void CCinemaFilmMakerManager::RequestSaveScene()
 
 	xr_vector<xr_string> lines;
 
-	if (Actors.empty())
+	if (Actors.empty() && Particles.empty())
 	{
 		lines.push_back("The scene is empty: there is nothing to save.");
 	}
@@ -4066,7 +4604,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		return;
 	}
 
-	if (Actors.empty())
+	if (Actors.empty() && Particles.empty())
 	{
 		dialog.push_back("The scene is empty: there is nothing to save.");
 		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
@@ -4083,6 +4621,55 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	ini.w_string("scene", "level", Level->name().c_str());
 	ini.w_string("scene", "platform", EngineExternal().GetCurrentPlatformName());
 	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
+	ini.w_u32("scene", "particles", static_cast<u32>(Particles.size()));
+	for (u32 i = 0; i < Particles.size(); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "particle_%03u", i);
+		ini.w_string(section, "name", Particles[i].Name.c_str());
+		ini.w_fvector3(section, "position", Particles[i].Position);
+		Fvector rotation = {};
+		Particles[i].Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_float(section, "scale", Particles[i].Scale);
+		ini.w_bool(section, "timeline", Particles[i].Timeline);
+		ini.w_bool(section, "loop", Particles[i].Loop);
+		ini.w_bool(section, "modulation", Particles[i].Modulation);
+		ini.w_fvector3(section, "modulation_offset", Particles[i].EndOffset);
+		ini.w_fvector3(section, "modulation_rotation", Particles[i].EndRotation);
+		ini.w_float(section, "modulation_scale", Particles[i].EndScale);
+		ini.w_u32(section, "curve_version", 1);
+		ini.w_float(section, "speed", Particles[i].Speed);
+		for (u32 channel = 0; channel < 8; ++channel)
+		{
+			string32 key = {};
+			const auto& wave = Particles[i].Waves[channel];
+			xr_sprintf(key, "wave_%u_type", channel);
+			ini.w_s32(section, key, wave.Type);
+			xr_sprintf(key, "wave_%u_amplitude", channel);
+			ini.w_float(section, key, wave.Amplitude);
+			xr_sprintf(key, "wave_%u_frequency", channel);
+			ini.w_float(section, key, wave.Frequency);
+			xr_sprintf(key, "wave_%u_phase", channel);
+			ini.w_float(section, key, wave.Phase);
+			xr_sprintf(key, "wave_%u_min", channel);
+			ini.w_float(section, key, wave.Minimum);
+			xr_sprintf(key, "wave_%u_max", channel);
+			ini.w_float(section, key, wave.Maximum);
+			xr_sprintf(key, "curve_%u_count", channel);
+			ini.w_u32(section, key, static_cast<u32>(Particles[i].Curves[channel].size()));
+			for (u32 k = 0; k < Particles[i].Curves[channel].size(); ++k)
+			{
+				xr_sprintf(key, "curve_%u_%u_time", channel, k);
+				ini.w_float(section, key, Particles[i].Curves[channel][k].Time);
+				xr_sprintf(key, "curve_%u_%u_value", channel, k);
+				ini.w_float(section, key, Particles[i].Curves[channel][k].Value);
+			}
+		}
+		ini.w_float(section, "in", Particles[i].In);
+		ini.w_float(section, "out", Particles[i].Out);
+	}
 
 	for (u32 i = 0; i < static_cast<u32>(Actors.size()); ++i)
 	{
@@ -4196,7 +4783,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	SceneNameLast = cleanName;
 
 	string256 summary = {};
-	xr_sprintf(summary, "Saved %u NPC to \"%s\".", static_cast<u32>(Actors.size()), cleanName.c_str());
+	xr_sprintf(summary, "Saved %u NPC and %u particles to \"%s\".", static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()), cleanName.c_str());
 
 	dialog.push_back(summary);
 	dialog.push_back(path);
@@ -4280,6 +4867,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	xr_vector<xr_string> warnings;
 
 	SceneData.clear();
+	SceneParticles.clear();
 
 	string_path path = {};
 	CinemaScenePath(path, Level->name(), name);
@@ -4528,7 +5116,135 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		SceneData.push_back(std::move(data));
 	}
 
-	if (SceneData.empty())
+	for (CInifile::Sect& section : ini.sections())
+	{
+		if (section.Name.size() == 0 || _strnicmp(section.Name.c_str(), "particle_", 9) != 0)
+		{
+			continue;
+		}
+		if (SceneParticles.size() >= kCinemaSceneMaxActors)
+		{
+			warnings.push_back("The scene contains too many particles: the rest was ignored.");
+			break;
+		}
+		SCinemaParticle particle;
+		particle.Name = CinemaReadString(ini, section.Name.c_str(), "name");
+		if (!IsCinemaParticle(particle.Name))
+		{
+			warnings.push_back(xr_string("Particle not found: ") + (particle.Name.size() ? particle.Name.c_str() : "<empty>"));
+			continue;
+		}
+		if (ini.line_exist(section.Name.c_str(), "position"))
+		{
+			particle.Position = ini.r_fvector3(section.Name.c_str(), "position");
+		}
+		if (ini.line_exist(section.Name.c_str(), "rotation"))
+		{
+			const Fvector rotation = ini.r_fvector3(section.Name.c_str(), "rotation");
+			if (std::isfinite(rotation.x) && std::isfinite(rotation.y) && std::isfinite(rotation.z))
+			{
+				particle.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+			}
+		}
+		particle.Scale = ini.read_if_exists<float>(section.Name.c_str(), "scale", 1.0f);
+		if (!std::isfinite(particle.Scale) || particle.Scale < 0.1f || particle.Scale > 5.0f)
+		{
+			particle.Scale = 1.0f;
+			warnings.push_back(xr_string("Invalid particle scale: ") + particle.Name.c_str() + " - using default.");
+		}
+		particle.Timeline = true;
+		particle.Loop = ini.read_if_exists<bool>(section.Name.c_str(), "loop", false);
+		particle.Speed = ini.read_if_exists<float>(section.Name.c_str(), "speed", 1.0f);
+		if (!std::isfinite(particle.Speed) || particle.Speed < 0.0f || particle.Speed > 4.0f)
+		{
+			particle.Speed = 1.0f;
+			warnings.push_back(xr_string("Invalid particle speed: ") + particle.Name.c_str());
+		}
+		particle.Modulation = ini.read_if_exists<bool>(section.Name.c_str(), "modulation", false);
+		particle.EndOffset = ini.read_if_exists<Fvector>(section.Name.c_str(), "modulation_offset", particle.EndOffset);
+		particle.EndRotation = ini.read_if_exists<Fvector>(section.Name.c_str(), "modulation_rotation", particle.EndRotation);
+		particle.EndScale = ini.read_if_exists<float>(section.Name.c_str(), "modulation_scale", 1.0f);
+		if (!std::isfinite(particle.EndOffset.x) || !std::isfinite(particle.EndOffset.y) || !std::isfinite(particle.EndOffset.z) ||
+			!std::isfinite(particle.EndRotation.x) || !std::isfinite(particle.EndRotation.y) || !std::isfinite(particle.EndRotation.z) ||
+			!std::isfinite(particle.EndScale) || particle.EndScale < 0.1f || particle.EndScale > 5.0f)
+		{
+			particle.Modulation = false;
+			particle.EndOffset.set(0.0f, 0.0f, 0.0f);
+			particle.EndRotation.set(0.0f, 0.0f, 0.0f);
+			particle.EndScale = 1.0f;
+			warnings.push_back(xr_string("Invalid particle modulation: ") + particle.Name.c_str());
+		}
+		particle.In = ini.read_if_exists<float>(section.Name.c_str(), "in", 0.0f);
+		particle.Out = ini.read_if_exists<float>(section.Name.c_str(), "out", 10.0f);
+		if (!std::isfinite(particle.In) || !std::isfinite(particle.Out) || !ValidParticleTimeline(particle.In, particle.Out))
+		{
+			warnings.push_back(xr_string("Invalid particle timeline: ") + particle.Name.c_str() + " - using defaults.");
+			particle.Timeline = true;
+			particle.In = 0.0f;
+			particle.Out = 10.0f;
+		}
+		if (ini.read_if_exists<u32>(section.Name.c_str(), "curve_version", 0) == 1)
+		{
+			for (u32 channel = 0; channel < 8; ++channel)
+			{
+				string32 key = {};
+				auto& wave = particle.Waves[channel];
+				xr_sprintf(key, "wave_%u_type", channel);
+				wave.Type = ini.read_if_exists<s32>(section.Name.c_str(), key, 0);
+				xr_sprintf(key, "wave_%u_amplitude", channel);
+				wave.Amplitude = ini.read_if_exists<float>(section.Name.c_str(), key, 0.0f);
+				xr_sprintf(key, "wave_%u_frequency", channel);
+				wave.Frequency = ini.read_if_exists<float>(section.Name.c_str(), key, 1.0f);
+				xr_sprintf(key, "wave_%u_phase", channel);
+				wave.Phase = ini.read_if_exists<float>(section.Name.c_str(), key, 0.0f);
+				xr_sprintf(key, "wave_%u_min", channel);
+				wave.Minimum = ini.read_if_exists<float>(section.Name.c_str(), key, wave.Minimum);
+				xr_sprintf(key, "wave_%u_max", channel);
+				wave.Maximum = ini.read_if_exists<float>(section.Name.c_str(), key, wave.Maximum);
+				if (wave.Type < 0 || wave.Type > 4 || !std::isfinite(wave.Amplitude) || wave.Amplitude < 0.0f || wave.Amplitude > 3600.0f || !std::isfinite(wave.Frequency) || wave.Frequency < 0.0f || wave.Frequency > 100.0f || !std::isfinite(wave.Phase) || fabsf(wave.Phase) > 100.0f || !std::isfinite(wave.Minimum) || !std::isfinite(wave.Maximum) || wave.Minimum < (channel == 6 ? 0.1f : channel == 7 ? 0.0f : -3600.0f) || wave.Maximum > (channel == 6 ? 5.0f : channel == 7 ? 4.0f : 3600.0f) || wave.Minimum > wave.Maximum)
+				{
+					wave = SParticleWave();
+					if (channel == 6)
+					{
+						wave.Minimum = 0.1f;
+						wave.Maximum = 5.0f;
+					}
+					else if (channel == 7)
+					{
+						wave.Minimum = 0.0f;
+						wave.Maximum = 4.0f;
+					}
+					warnings.push_back(xr_string("Invalid particle wave: ") + particle.Name.c_str());
+				}
+				xr_sprintf(key, "curve_%u_count", channel);
+				const u32 count = std::min(ini.read_if_exists<u32>(section.Name.c_str(), key, 0), 128u);
+				for (u32 k = 0; k < count; ++k)
+				{
+					xr_sprintf(key, "curve_%u_%u_time", channel, k);
+					const float time = ini.read_if_exists<float>(section.Name.c_str(), key, -1.0f);
+					xr_sprintf(key, "curve_%u_%u_value", channel, k);
+					const float value = ini.read_if_exists<float>(section.Name.c_str(), key, channel >= 6 ? 1.0f : 0.0f);
+					if (std::isfinite(time) && time >= 0.0f && time <= 600.0f && std::isfinite(value) && value >= (channel == 6 ? 0.1f : channel == 7 ? 0.0f : -3600.0f) && value <= (channel == 6 ? 5.0f : channel == 7 ? 4.0f : 3600.0f))
+					{
+						particle.Curves[channel].push_back({ time, value });
+					}
+				}
+				std::stable_sort(particle.Curves[channel].begin(), particle.Curves[channel].end(), [](const auto& a, const auto& b) { return a.Time < b.Time; });
+			}
+		}
+		else if (particle.Modulation)
+		{
+			const float values[] = { particle.EndOffset.x, particle.EndOffset.y, particle.EndOffset.z, particle.EndRotation.x, particle.EndRotation.y, particle.EndRotation.z, particle.EndScale };
+			for (u32 channel = 0; channel < 7; ++channel)
+			{
+				particle.Curves[channel].push_back({ 0.0f, channel == 6 ? 1.0f : 0.0f });
+				particle.Curves[channel].push_back({ particle.Out, values[channel] });
+			}
+		}
+		SceneParticles.push_back(std::move(particle));
+	}
+
+	if (SceneData.empty() && SceneParticles.empty())
 	{
 		dialog = warnings;
 		dialog.push_back("There is nothing to load.");
@@ -4537,7 +5253,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	}
 
 	string256 summary = {};
-	xr_sprintf(summary, "Load scene \"%s\"? The current scene (%u NPC) will be replaced by the saved one (%u NPC).", name, static_cast<u32>(Actors.size()), static_cast<u32>(SceneData.size()));
+	xr_sprintf(summary, "Load scene \"%s\"? Replace %u NPC and %u particles with %u NPC and %u particles?", name, static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()), static_cast<u32>(SceneData.size()), static_cast<u32>(SceneParticles.size()));
 
 	dialog.push_back(summary);
 	dialog.insert(dialog.end(), warnings.begin(), warnings.end());
@@ -4548,15 +5264,49 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 void CCinemaFilmMakerManager::ApplyLoadedScene()
 {
-	if (SceneData.empty())
+	if (SceneData.empty() && SceneParticles.empty())
 	{
 		return;
 	}
 
 	ClearGizmo();
 	ClearActors();
+	ClearParticles();
 
 	xr_vector<xr_string> issues;
+	for (const auto& particle : SceneParticles)
+	{
+		if (!AddParticle(particle.Name, particle.Position))
+		{
+			issues.push_back(xr_string("Particle not found: ") + particle.Name.c_str());
+		}
+		else
+		{
+			auto& loaded = Particles.back();
+			loaded.Orientation = particle.Orientation;
+			loaded.Scale = particle.Scale;
+			UpdateParticleTransform(loaded);
+			loaded.Timeline = particle.Timeline;
+			loaded.Loop = particle.Loop;
+			loaded.Speed = particle.Speed;
+			loaded.Modulation = particle.Modulation;
+			loaded.EndOffset = particle.EndOffset;
+			loaded.EndRotation = particle.EndRotation;
+			loaded.EndScale = particle.EndScale;
+			for (u32 channel = 0; channel < 8; ++channel)
+			{
+				loaded.Curves[channel] = particle.Curves[channel];
+				loaded.Waves[channel] = particle.Waves[channel];
+			}
+			loaded.In = particle.In;
+			loaded.Out = particle.Out;
+			if (loaded.Timeline)
+			{
+				StartParticleTimeline(loaded);
+			}
+		}
+	}
+	SceneParticles.clear();
 	u32 droppedAnimations = 0;
 
 	for (const SSceneActorData& data : SceneData)
@@ -4610,6 +5360,10 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	SceneData.clear();
 
 	Selected = Actors.empty() ? -1 : 0;
+	if (Selected >= 0)
+	{
+		SelectedParticle = -1;
+	}
 	ResetSelection();
 
 	if (droppedAnimations > 0)
@@ -4620,7 +5374,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	}
 
 	string256 summary = {};
-	xr_sprintf(summary, "Loaded %u NPC.", static_cast<u32>(Actors.size()));
+	xr_sprintf(summary, "Loaded %u NPC and %u particles.", static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()));
 	issues.insert(issues.begin(), summary);
 
 	ShowSceneDialog(ESceneDialog::Info, "Load scene", issues);
@@ -4741,6 +5495,13 @@ void CCinemaFilmMakerManager::ApplyExtraSources(SCinemaActor& actor)
 		{
 			continue;
 		}
+		xr_string error;
+		if (!CinemaCheckActorMotion(actor, path.c_str(), error))
+		{
+			ExtraPathStatus = error;
+			Msg("! Cinema editor: %s", error.c_str());
+			continue;
+		}
 
 		actor.Animated->append_motion_from_path(actor.Visual.c_str(), path.c_str());
 		actor.AppliedExtraPaths.emplace_back(path.c_str());
@@ -4825,8 +5586,8 @@ void CCinemaFilmMakerManager::DrawExtraSources()
 		}
 		else
 		{
-			AddExtraAnimationPath(clean.c_str());
 			ExtraPathStatus.clear();
+			AddExtraAnimationPath(clean.c_str());
 			ExtraPathEdit[0] = '\0';
 		}
 	}
@@ -5440,7 +6201,6 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 
 void CCinemaFilmMakerManager::DrawToolbar()
 {
-	const bool hasModel = SelectedVisual.size() > 0 && VisualPathExists(SelectedVisual.c_str());
 	const float available = ImGui::GetContentRegionAvail().x;
 	SToolbarLayout layout(available);
 
@@ -5483,21 +6243,6 @@ void CCinemaFilmMakerManager::DrawToolbar()
 	if (ImGui::IsItemHovered())
 	{
 		ImGui::SetTooltip("Selected actor");
-	}
-
-	layout.Item(CinemaButtonWidth("Add"));
-	ImGui::BeginDisabled(!hasModel);
-
-	if (ImGui::Button("Add##toolbar"))
-	{
-		AddActorInFront(SelectedVisual.c_str());
-	}
-
-	ImGui::EndDisabled();
-
-	if (ImGui::IsItemHovered() && SelectedVisual.size() > 0)
-	{
-		ImGui::SetTooltip("Add the selected model\n%s", SelectedVisual.c_str());
 	}
 
 	layout.Item(CinemaButtonWidth("Camera spawn") + 26.0f);
@@ -5556,7 +6301,7 @@ void CCinemaFilmMakerManager::DrawToolbar()
 		ImGui::EndPopup();
 	}
 
-	ImGui::BeginDisabled(Actors.empty());
+	ImGui::BeginDisabled(Actors.empty() && Particles.empty());
 
 	layout.Item(CinemaButtonWidth("Play All"));
 	if (ImGui::Button("Play All##toolbar"))
@@ -5683,6 +6428,13 @@ void CCinemaFilmMakerManager::DrawToolbar()
 
 void CCinemaFilmMakerManager::DrawSelectedActor()
 {
+	ImGui::BeginDisabled(SelectedVisual.size() == 0 || !VisualPathExists(SelectedVisual.c_str()));
+	if (ImGui::Button("Add##actor"))
+	{
+		AddActorInFront(SelectedVisual.c_str());
+	}
+	ImGui::EndDisabled();
+
 	SCinemaActor* actor = GetSelectedActor();
 
 	if (actor == nullptr)
@@ -6714,6 +7466,438 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 	ImGui::EndChild();
 }
 
+void CCinemaFilmMakerManager::DrawParticleBrowser()
+{
+	ImGui::SetNextItemWidth(-1.0f);
+	ImGui::InputTextWithHint("##particle_filter", "Search particles", ParticleFilter, sizeof(ParticleFilter));
+	if (CinemaResetRequested())
+	{
+		ParticleFilter[0] = '\0';
+	}
+	const auto& names = GamePersistent().Environment().m_pRender->particles_systems_library().vec_all_particles();
+	auto* curves = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	xr_vector<s32> filtered;
+	for (s32 i = 0; i < static_cast<s32>(names.size()); ++i)
+	{
+		if ((!curves || !curves->FindIPAC(names[i].c_str())) && CinemaContainsFilter(names[i].c_str(), ParticleFilter))
+		{
+			filtered.push_back(i);
+		}
+	}
+	if (ImGui::BeginChild("##particle_library", ImVec2(0.0f, 160.0f), true))
+	{
+		ImGuiListClipper clipper;
+		clipper.Begin(static_cast<int>(filtered.size()));
+		while (clipper.Step())
+		{
+			for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
+			{
+				const auto& name = names[filtered[row]];
+				ImGui::PushID(filtered[row]);
+				if (ImGui::Selectable(name.c_str(), name == SelectedParticleName))
+				{
+					SelectedParticleName = name;
+					if (SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()))
+					{
+						auto& particle = Particles[SelectedParticle];
+						if (particle.Name != name && IsCinemaParticle(name))
+						{
+							auto replacement = CreateCinemaParticle(name.c_str());
+							::Particles::Details::Destroy(particle.Object);
+							particle.Object = std::move(replacement);
+							particle.Name = name;
+							StartParticleTimeline(particle);
+						}
+					}
+				}
+				ImGui::PopID();
+			}
+		}
+		if (filtered.empty())
+		{
+			ImGui::TextDisabled("Nothing found");
+		}
+	}
+	ImGui::EndChild();
+	ImGui::TextDisabled("Effect: %s", SelectedParticleName.size() ? SelectedParticleName.c_str() : "<none>");
+	ImGui::BeginDisabled(SelectedParticleName.size() == 0 || Particles.size() >= kCinemaSceneMaxActors);
+	if (ImGui::Button("Add##particle"))
+	{
+		Fvector position = Device.vCameraPosition;
+		Fvector direction = Device.vCameraDirection;
+		if (!SpawnFromCamera && g_actor != nullptr)
+		{
+			position = g_actor->Position();
+			direction = g_actor->Direction();
+		}
+		direction.normalize_safe();
+		position.mad(direction, 3.0f);
+		AddParticle(SelectedParticleName, position);
+	}
+	ImGui::EndDisabled();
+}
+
+void CCinemaFilmMakerManager::DrawParticleTab()
+{
+	if (ImGui::CollapsingHeader("Particle library##cinema", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		DrawParticleBrowser();
+	}
+	ImGui::Separator();
+	ImGui::TextDisabled("Placed particles");
+	for (s32 index = 0; index < static_cast<s32>(Particles.size()); ++index)
+	{
+		ImGui::PushID(index);
+		auto& particle = Particles[index];
+		const bool open = ImGui::TreeNodeEx(particle.Name.c_str(), ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes | (SelectedParticle == index ? ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_DefaultOpen : 0));
+		if (ImGui::IsItemClicked())
+		{
+			SelectActor(-1);
+			ClearGizmo();
+			SelectedParticle = index;
+		}
+		if (!open)
+		{
+			ImGui::PopID();
+			continue;
+		}
+		ImGui::TextDisabled("Effect");
+		ImGui::SameLine();
+		ImGui::TextUnformatted(particle.Name.c_str());
+
+		SToolbarLayout controls(ImGui::GetContentRegionAvail().x);
+		controls.Item(CinemaButtonWidth("Play"));
+		if (ImGui::Button("Play##particle"))
+		{
+			StartParticleTimeline(particle);
+		}
+		controls.Item(CinemaButtonWidth("Stop"));
+		if (ImGui::Button("Stop##particle"))
+		{
+			particle.Object->Stop(false);
+			particle.Running = false;
+		}
+		controls.Item(CinemaButtonWidth("Loop") + 20.0f);
+		ImGui::Checkbox("Loop##particle", &particle.Loop);
+		controls.Item(170.0f);
+		ImGui::SetNextItemWidth(100.0f);
+		if (ImGui::DragFloat("Speed##particle", &particle.Speed, 0.01f, 0.0f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		{
+			UpdateParticleTransform(particle);
+		}
+		if (CinemaResetRequested())
+		{
+			particle.Speed = 1.0f;
+			UpdateParticleTransform(particle);
+		}
+		controls.Item(CinemaButtonWidth("Duplicate"));
+		ImGui::BeginDisabled(Particles.size() >= kCinemaSceneMaxActors);
+		const bool duplicate = ImGui::Button("Duplicate##particle");
+		ImGui::EndDisabled();
+		if (duplicate)
+		{
+			SCinemaParticle copy = particle;
+			copy.Object = nullptr;
+			ImGui::TreePop();
+			ImGui::PopID();
+			if (AddParticle(copy.Name, copy.Position))
+			{
+				auto& created = Particles.back();
+				created.Orientation = copy.Orientation;
+				created.Scale = copy.Scale;
+				created.Timeline = copy.Timeline;
+				created.Loop = copy.Loop;
+				created.Speed = copy.Speed;
+				created.Modulation = copy.Modulation;
+				created.EndOffset = copy.EndOffset;
+				created.EndRotation = copy.EndRotation;
+				created.EndScale = copy.EndScale;
+				for (u32 channel = 0; channel < 8; ++channel)
+				{
+					created.Curves[channel] = copy.Curves[channel];
+					created.Waves[channel] = copy.Waves[channel];
+				}
+				created.In = copy.In;
+				created.Out = copy.Out;
+				StartParticleTimeline(created);
+			}
+			return;
+		}
+		controls.Item(CinemaButtonWidth("Delete"));
+		if (ImGui::Button("Delete##particle"))
+		{
+			ClearGizmo();
+			::Particles::Details::Destroy(particle.Object);
+			ImGui::TreePop();
+			ImGui::PopID();
+			Particles.erase(Particles.begin() + index);
+			SelectedParticle = -1;
+			return;
+		}
+		if (particle.Running && !particle.Started)
+		{
+			ImGui::TextDisabled("Waiting to start");
+		}
+		else
+		{
+			ImGui::TextDisabled(particle.Object->IsPlaying() ? "Playing" : "Not playing");
+		}
+		if (ImGui::TreeNodeEx("Timeline##particle", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_DrawLinesToNodes | ImGuiTreeNodeFlags_SpanAvailWidth))
+		{
+			const ImVec2 origin = ImGui::GetCursorScreenPos();
+			const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
+			float time = particle.Time;
+			DrawAnimationTimeline("##particle_timeline", time, particle.Out, nullptr, GetTheme(), nullptr, TrimDragMarker, TrimDragIndex, TrimDragKey, "");
+			const float inX = origin.x + width * particle.In / particle.Out;
+			ImGui::GetWindowDrawList()->AddLine(ImVec2(inX, origin.y), ImVec2(inX, origin.y + 64.0f), IM_COL32(120, 230, 150, 240), 2.0f);
+			ImGui::TextDisabled("%.2f / %.2f s", particle.Time, particle.Out);
+			if (ImGui::TreeNodeEx("Playback##particle", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth))
+			{
+				bool changed = ImGui::DragFloat("IN (start delay)##particle", &particle.In, 0.05f, 0.0f, particle.Out - 0.01f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
+				changed |= ImGui::DragFloat("OUT (stop time)##particle", &particle.Out, 0.05f, particle.In + 0.01f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
+				if (changed)
+				{
+					StartParticleTimeline(particle);
+				}
+				ImGui::TextDisabled("IN starts the effect; OUT stops it. Play starts from zero.");
+				ImGui::TextDisabled("Seeking and reverse playback are unavailable.");
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNodeEx("Modulation##particle", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth))
+			{
+				bool changed = ImGui::Checkbox("Enable modulation##particle", &particle.Modulation);
+				ImGui::SameLine();
+				if (ImGui::SmallButton("Reset##particle_modulation_enabled"))
+				{
+					particle.Modulation = false;
+					changed = true;
+				}
+				const char* channels[] = { "Offset X", "Offset Y", "Offset Z", "Rotation H", "Rotation P", "Rotation B", "Size multiplier", "Speed multiplier" };
+				if (ImGui::Combo("Parameter##particle_curve", &particle.CurveChannel, channels, IM_ARRAYSIZE(channels)))
+				{
+					particle.CurveDrag = -1;
+				}
+				ImGui::SameLine();
+				if (ImGui::SmallButton("Reset##particle_curve_parameter"))
+				{
+					particle.CurveChannel = 0;
+					particle.CurveDrag = -1;
+				}
+				auto& keys = particle.Curves[particle.CurveChannel];
+				const float lower = particle.CurveChannel == 6 ? 0.1f : particle.CurveChannel == 7 ? 0.0f : -3600.0f;
+				const float upper = particle.CurveChannel == 6 ? 5.0f : particle.CurveChannel == 7 ? 4.0f : 3600.0f;
+				const float fallback = particle.CurveChannel >= 6 ? 1.0f : 0.0f;
+				auto& wave = particle.Waves[particle.CurveChannel];
+				const auto resetValue = [&](const char* id, auto& value, auto defaultValue)
+				{
+					ImGui::SameLine();
+					ImGui::PushID(id);
+					const bool reset = ImGui::SmallButton("Reset");
+					ImGui::PopID();
+					if (reset)
+					{
+						value = defaultValue;
+						changed = true;
+					}
+				};
+				if (ImGui::Button("Reset channel##particle_modulation"))
+				{
+					keys.clear();
+					wave = SParticleWave();
+					wave.Minimum = lower;
+					wave.Maximum = upper;
+					particle.CurveDrag = -1;
+					changed = true;
+				}
+				const char* waveTypes[] = { "None", "Sine", "Triangle", "Square", "Sawtooth" };
+				changed |= ImGui::Combo("Wave##particle", &wave.Type, waveTypes, IM_ARRAYSIZE(waveTypes));
+				resetValue("wave", wave.Type, 0);
+				if (wave.Type != 0)
+				{
+					changed |= ImGui::DragFloat("Amplitude##particle_wave", &wave.Amplitude, 0.01f, 0.0f, 3600.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+					resetValue("amplitude", wave.Amplitude, 0.0f);
+					changed |= ImGui::DragFloat("Frequency##particle_wave", &wave.Frequency, 0.01f, 0.0f, 100.0f, "%.2f Hz", ImGuiSliderFlags_AlwaysClamp);
+					resetValue("frequency", wave.Frequency, 1.0f);
+					changed |= ImGui::DragFloat("Phase##particle_wave", &wave.Phase, 0.01f, -100.0f, 100.0f, "%.2f cycles", ImGuiSliderFlags_AlwaysClamp);
+					resetValue("phase", wave.Phase, 0.0f);
+				}
+				changed |= ImGui::DragFloat("Minimum##particle_wave", &wave.Minimum, 0.01f, lower, wave.Maximum, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				resetValue("minimum", wave.Minimum, lower);
+				wave.Minimum = std::isfinite(wave.Minimum) ? std::clamp(wave.Minimum, lower, wave.Maximum) : lower;
+				changed |= ImGui::DragFloat("Maximum##particle_wave", &wave.Maximum, 0.01f, wave.Minimum, upper, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				resetValue("maximum", wave.Maximum, upper);
+				wave.Maximum = std::isfinite(wave.Maximum) ? std::clamp(wave.Maximum, wave.Minimum, upper) : upper;
+				float minValue = particle.CurveChannel == 6 ? 0.1f : particle.CurveChannel == 7 ? 0.0f : -1.0f;
+				float maxValue = particle.CurveChannel >= 6 ? 2.0f : 1.0f;
+				for (const auto& key : keys)
+				{
+					minValue = std::min(minValue, key.Value);
+					maxValue = std::max(maxValue, key.Value);
+				}
+				for (u32 sample = 0; sample <= 128; ++sample)
+				{
+					const float value = ParticleModulatedValue(particle, particle.CurveChannel, particle.Out * sample / 128.0f);
+					minValue = std::min(minValue, value);
+					maxValue = std::max(maxValue, value);
+				}
+				const ImVec2 start = ImGui::GetCursorScreenPos();
+				const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
+				const float height = 100.0f;
+				ImGui::InvisibleButton("##particle_curve", ImVec2(width, height));
+				ImDrawList* draw = ImGui::GetWindowDrawList();
+				draw->AddRectFilled(start, ImVec2(start.x + width, start.y + height), GetTheme().TimelineBackground);
+				const auto point = [&](float time, float value)
+				{
+					return ImVec2(start.x + std::clamp(time / particle.Out, 0.0f, 1.0f) * width, start.y + height - (value - minValue) / (maxValue - minValue) * height);
+				};
+				ImVec2 previous = point(0.0f, ParticleCurveValue(keys, 0.0f, fallback));
+				for (const auto& key : keys)
+				{
+					if (key.Time > particle.Out)
+					{
+						break;
+					}
+					const ImVec2 current = point(key.Time, key.Value);
+					draw->AddLine(previous, current, GetTheme().TimelinePlayhead, 2.0f);
+					draw->AddCircleFilled(current, 4.0f, GetTheme().TimelinePlayhead);
+					previous = current;
+				}
+				draw->AddLine(previous, point(particle.Out, ParticleCurveValue(keys, particle.Out, fallback)), GetTheme().TimelinePlayhead, 2.0f);
+				previous = point(0.0f, ParticleModulatedValue(particle, particle.CurveChannel, 0.0f));
+				for (u32 sample = 1; sample <= 128; ++sample)
+				{
+					const float time = particle.Out * sample / 128.0f;
+					const ImVec2 current = point(time, ParticleModulatedValue(particle, particle.CurveChannel, time));
+					draw->AddLine(previous, current, IM_COL32(120, 230, 150, 240), 1.5f);
+					previous = current;
+				}
+				draw->AddLine(point(particle.Time, minValue), point(particle.Time, maxValue), GetTheme().TimelineText);
+				draw->AddRect(start, ImVec2(start.x + width, start.y + height), GetTheme().TimelineBorder);
+				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					const ImVec2 mouse = ImGui::GetIO().MousePos;
+					float nearest = 64.0f;
+					for (s32 k = 0; k < static_cast<s32>(keys.size()); ++k)
+					{
+						if (keys[k].Time > particle.Out)
+						{
+							continue;
+						}
+						const ImVec2 p = point(keys[k].Time, keys[k].Value);
+						const float distance = (p.x - mouse.x) * (p.x - mouse.x) + (p.y - mouse.y) * (p.y - mouse.y);
+						if (distance < nearest)
+						{
+							nearest = distance;
+							particle.CurveDrag = k;
+						}
+					}
+				}
+				if (particle.CurveDrag >= 0 && particle.CurveDrag < static_cast<s32>(keys.size()) && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+				{
+					const ImVec2 mouse = ImGui::GetIO().MousePos;
+					auto& key = keys[particle.CurveDrag];
+					const float left = particle.CurveDrag > 0 ? keys[particle.CurveDrag - 1].Time : 0.0f;
+					const float right = particle.CurveDrag + 1 < static_cast<s32>(keys.size()) ? std::min(keys[particle.CurveDrag + 1].Time, particle.Out) : particle.Out;
+					key.Time = std::clamp((mouse.x - start.x) / width * particle.Out, std::min(left, right), right);
+					key.Value = std::clamp(maxValue - (mouse.y - start.y) / height * (maxValue - minValue), lower, upper);
+					changed = true;
+				}
+				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+				{
+					particle.CurveDrag = -1;
+				}
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && keys.size() < 128)
+				{
+					const ImVec2 mouse = ImGui::GetIO().MousePos;
+					keys.push_back({ std::clamp((mouse.x - start.x) / width * particle.Out, 0.0f, particle.Out), std::clamp(maxValue - (mouse.y - start.y) / height * (maxValue - minValue), lower, upper) });
+					particle.CurveDrag = -1;
+					changed = true;
+				}
+				ImGui::TextDisabled("Orange: keys. Green: result with wave and limits.");
+				ImGui::TextDisabled("Double-click to add a key; drag keys or edit their values below.");
+				for (s32 keyIndex = 0; keyIndex < static_cast<s32>(keys.size()); ++keyIndex)
+				{
+					ImGui::PushID(keyIndex);
+					ImGui::SetNextItemWidth(100.0f);
+					changed |= ImGui::DragFloat("Time##key", &keys[keyIndex].Time, 0.01f, 0.0f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
+					resetValue("time", keys[keyIndex].Time, 0.0f);
+					ImGui::SameLine();
+					ImGui::SetNextItemWidth(100.0f);
+					changed |= ImGui::DragFloat("Value##key", &keys[keyIndex].Value, 0.01f, lower, upper, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+					resetValue("value", keys[keyIndex].Value, fallback);
+					ImGui::SameLine();
+					if (ImGui::SmallButton("Remove##key"))
+					{
+						keys.erase(keys.begin() + keyIndex);
+						changed = true;
+						ImGui::PopID();
+						break;
+					}
+					ImGui::PopID();
+				}
+				if (changed)
+				{
+					std::stable_sort(keys.begin(), keys.end(), [](const auto& a, const auto& b) { return a.Time < b.Time; });
+				}
+				if (changed)
+				{
+					UpdateParticleTransform(particle);
+				}
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::CollapsingHeader("Transform##particle", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			bool changed = ImGui::DragFloat3("Position##particle", &particle.Position.x, 0.01f, -100000.0f, 100000.0f, "%.2f");
+			if (CinemaResetRequested())
+			{
+				particle.Position.set(0.0f, 0.0f, 0.0f);
+				changed = true;
+			}
+			Fvector degrees = {};
+			particle.Orientation.getHPB(degrees);
+			degrees.mul(rad2deg(1.0f));
+			if (ImGui::DragFloat3("Rotation##particle", &degrees.x, 0.5f, -3600.0f, 3600.0f, "%.1f"))
+			{
+				particle.Orientation.setHPB(deg2rad(degrees.x), deg2rad(degrees.y), deg2rad(degrees.z));
+				changed = true;
+			}
+			if (CinemaResetRequested())
+			{
+				particle.Orientation.setHPB(0.0f, 0.0f, 0.0f);
+				changed = true;
+			}
+			ImGui::TextDisabled("H / P / B, degrees");
+			if (ImGui::Button("Reset tilt##particle"))
+			{
+				const Fvector forward = particle.Orientation.k;
+				particle.Orientation.setHPB(-atan2f(forward.x, forward.z), 0.0f, 0.0f);
+				changed = true;
+			}
+			changed |= ImGui::DragFloat("Scale##particle", &particle.Scale, 0.01f, 0.1f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			if (CinemaResetRequested())
+			{
+				particle.Scale = 1.0f;
+				changed = true;
+			}
+			ImGui::SameLine();
+			if (ImGui::SmallButton("Reset##particle_scale"))
+			{
+				particle.Scale = 1.0f;
+				changed = true;
+			}
+			ImGui::TextDisabled("Uniform particle size; emitter shape is unchanged");
+			if (changed)
+			{
+				UpdateParticleTransform(particle);
+			}
+		}
+		ImGui::TreePop();
+		ImGui::PopID();
+	}
+}
+
 void CCinemaFilmMakerManager::DrawPanel()
 {
 	if (!g_pGameLevel)
@@ -6737,6 +7921,11 @@ void CCinemaFilmMakerManager::DrawPanel()
 
 	if (ImGui::BeginTabBar("##cinema_tabs"))
 	{
+		if (ImGui::BeginTabItem("Particles"))
+		{
+			DrawParticleTab();
+			ImGui::EndTabItem();
+		}
 		if (ImGui::BeginTabItem("Actor"))
 		{
 			DrawSelectedActor();
@@ -6922,29 +8111,28 @@ void CCinemaFilmMakerManager::AppendWorldGizmo()
 		return;
 	}
 
+	LevelInspector& inspector = HUD().world_prims;
 	SCinemaActor* actor = GetSelectedActor();
-
-	if (actor == nullptr || actor->Model == nullptr)
+	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
+	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr)
 	{
 		return;
 	}
-
-	const float distance = Device.vCameraPosition.distance_to(actor->Position);
+	const Fvector position = particle ? ParticlePosition(*particle) : actor->Position;
+	const float distance = Device.vCameraPosition.distance_to(position);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 	const EGizmoAxis hoveredAxis = Gizmo.Active ? Gizmo.Axis : HoveredAxis;
-	LevelInspector& inspector = HUD().world_prims;
-
 	if (GizmoMode == EGizmoMode::Translate)
 	{
-		AppendTranslateGizmo(inspector, actor->Position, size, hoveredAxis);
+		AppendTranslateGizmo(inspector, position, size, hoveredAxis);
 	}
 	else
 	{
-		AppendRotateGizmo(inspector, actor->Position, size, hoveredAxis);
+		AppendRotateGizmo(inspector, position, size, hoveredAxis);
 	}
 }
 
-void CCinemaFilmMakerManager::BeginGizmo(SCinemaActor& actor, EGizmoAxis axis)
+void CCinemaFilmMakerManager::BeginGizmo(Fvector& position, Fmatrix& orientation, const Fvector& pivot, EGizmoAxis axis)
 {
 	if (axis == EGizmoAxis::None)
 	{
@@ -6953,13 +8141,13 @@ void CCinemaFilmMakerManager::BeginGizmo(SCinemaActor& actor, EGizmoAxis axis)
 
 	Gizmo = SGizmoDrag();
 	Gizmo.Active = true;
-	Gizmo.Actor = &actor;
+	Gizmo.Position = &position;
 	Gizmo.Mode = GizmoMode;
 	Gizmo.Axis = axis;
 	Gizmo.AxisDir = AxisVector(axis);
-	Gizmo.Pivot = actor.Position;
-	Gizmo.StartPosition = actor.Position;
-	Gizmo.StartOrientation = actor.Orientation;
+	Gizmo.Pivot = pivot;
+	Gizmo.StartPosition = position;
+	Gizmo.StartOrientation = orientation;
 
 	Fvector origin = {};
 	Fvector direction = {};
@@ -6994,9 +8182,9 @@ void CCinemaFilmMakerManager::BeginGizmo(SCinemaActor& actor, EGizmoAxis axis)
 	Gizmo.UseScreenAngle = screenFallback;
 }
 
-void CCinemaFilmMakerManager::UpdateGizmo(SCinemaActor& actor)
+void CCinemaFilmMakerManager::UpdateGizmo(Fvector& position, Fmatrix& orientation)
 {
-	if (!Gizmo.Active || Gizmo.Actor != &actor)
+	if (!Gizmo.Active || Gizmo.Position != &position)
 	{
 		return;
 	}
@@ -7025,7 +8213,7 @@ void CCinemaFilmMakerManager::UpdateGizmo(SCinemaActor& actor)
 			delta = roundf(delta / TranslateStep) * TranslateStep;
 		}
 
-		actor.Position.mad(Gizmo.StartPosition, Gizmo.AxisDir, delta);
+		position.mad(Gizmo.StartPosition, Gizmo.AxisDir, delta);
 		return;
 	}
 
@@ -7053,12 +8241,9 @@ void CCinemaFilmMakerManager::UpdateGizmo(SCinemaActor& actor)
 	Fmatrix rotation;
 	rotation.rotation(Gizmo.AxisDir, accumulated);
 
-	actor.Orientation.mul(Gizmo.StartOrientation, rotation);
+	orientation.mul(Gizmo.StartOrientation, rotation);
 
-	Fvector offset = {};
-	offset.sub(Gizmo.StartPosition, Gizmo.Pivot);
-	rotation.transform_dir(offset, offset);
-	actor.Position.add(Gizmo.Pivot, offset);
+	position = Gizmo.StartPosition;
 }
 
 void CCinemaFilmMakerManager::PickActorAtMouse()
@@ -7072,6 +8257,7 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 	}
 
 	s32 bestIndex = -1;
+	s32 bestParticle = -1;
 	float bestDistance = flt_max;
 
 	for (s32 i = 0; i < static_cast<s32>(Actors.size()); ++i)
@@ -7106,8 +8292,18 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 			bestIndex = i;
 		}
 	}
+	for (s32 i = 0; i < static_cast<s32>(Particles.size()); ++i)
+	{
+		float distance = 0.0f;
+		if (RaySphere(origin, direction, ParticlePosition(Particles[i]), 0.3f, distance) && distance < bestDistance)
+		{
+			bestDistance = distance;
+			bestParticle = i;
+			bestIndex = -1;
+		}
+	}
 
-	if (bestIndex < 0)
+	if (bestIndex < 0 && bestParticle < 0)
 	{
 		const ImVec2 mouse = ImGui::GetIO().MousePos;
 		float bestScreenDistance = 32.0f;
@@ -7146,6 +8342,16 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 	}
 
 	SelectActor(bestIndex);
+	if (bestParticle >= 0)
+	{
+		ClearGizmo();
+		SelectedParticle = bestParticle;
+	}
+	else if (bestIndex < 0)
+	{
+		ClearGizmo();
+		SelectedParticle = -1;
+	}
 }
 
 void CCinemaFilmMakerManager::DrawGizmo()
@@ -7155,8 +8361,9 @@ void CCinemaFilmMakerManager::DrawGizmo()
 	const bool canInteract = capturing && !mouseOverUi && !ImGui::IsAnyItemActive();
 
 	SCinemaActor* actor = GetSelectedActor();
+	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
 
-	if (actor == nullptr || actor->Model == nullptr || g_pGameLevel == nullptr)
+	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr) || g_pGameLevel == nullptr)
 	{
 		ClearGizmo();
 		HoveredAxis = EGizmoAxis::None;
@@ -7169,20 +8376,23 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		return;
 	}
 
-	if (Gizmo.Active && Gizmo.Actor != actor)
+	Fvector& position = particle ? particle->Position : actor->Position;
+	Fmatrix& orientation = particle ? particle->Orientation : actor->Orientation;
+	const Fvector pivot = particle ? ParticlePosition(*particle) : position;
+	if (Gizmo.Active && Gizmo.Position != &position)
 	{
 		ClearGizmo();
 	}
 
 	const ImVec2 mouse = ImGui::GetIO().MousePos;
-	const float distance = Device.vCameraPosition.distance_to(actor->Position);
+	const float distance = Device.vCameraPosition.distance_to(pivot);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 
 	EGizmoAxis hoveredAxis = EGizmoAxis::None;
 
 	if (!Gizmo.Active && canInteract)
 	{
-		hoveredAxis = GizmoMode == EGizmoMode::Translate ? HitTranslateAxis(actor->Position, size, mouse) : HitRotateAxis(actor->Position, size, mouse);
+		hoveredAxis = GizmoMode == EGizmoMode::Translate ? HitTranslateAxis(pivot, size, mouse) : HitRotateAxis(pivot, size, mouse);
 	}
 
 	if (Gizmo.Active)
@@ -7202,13 +8412,21 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
-			actor->Position = Gizmo.StartPosition;
-			actor->Orientation = Gizmo.StartOrientation;
+			position = Gizmo.StartPosition;
+			orientation = Gizmo.StartOrientation;
+			if (particle)
+			{
+				UpdateParticleTransform(*particle);
+			}
 			ClearGizmo();
 			return;
 		}
 
-		UpdateGizmo(*actor);
+		UpdateGizmo(position, orientation);
+		if (particle)
+		{
+			UpdateParticleTransform(*particle);
+		}
 		return;
 	}
 
@@ -7221,7 +8439,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 	{
 		if (hoveredAxis != EGizmoAxis::None)
 		{
-			BeginGizmo(*actor, hoveredAxis);
+			BeginGizmo(position, orientation, pivot, hoveredAxis);
 		}
 		else
 		{
