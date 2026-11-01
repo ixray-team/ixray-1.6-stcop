@@ -62,7 +62,7 @@
 	
 	<our_money_static x="20" y="-17" width="100" height="46" stretch="1">
 		<texture>ui_hud_frame_moneyNumber</texture>
-		<text align="c" y="10" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
+		<text align="c" vert_align="c" y="3" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
 	</our_money_static>
 
 	<dragdrop_list x="18" y="35" width="248" height="410"
@@ -76,7 +76,7 @@
 
 	<other_money_static x="140" y="-17" width="100" height="46" stretch="1">
 	<texture>ui_hud_frame_moneyNumber</texture>
-		<text align="c" y="10" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
+		<text align="c" vert_align="c" y="3" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
 	</other_money_static>
 
 	<dragdrop_list x="18" y="35" width="248" height="410"

@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <w>
 
-	<static_name x="23" y="188" width="139" height="30" stretch="1">
+	<static_name x="27" y="188" width="135" height="30" stretch="1">
 		<text font="letterica18" r="238" g="155" b="23" complex_mode="1" align="l" vert_align="c"/>		
 	</static_name>
 
-	<static_weight x="23" y="222" width="67" height="20" stretch="1">
+	<static_weight x="27" y="222" width="63" height="20" stretch="1">
 		<text align="l" font="letterica16" r="135" g="128" b="122"/>
 	</static_weight>
 
