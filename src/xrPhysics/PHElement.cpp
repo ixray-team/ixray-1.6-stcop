@@ -36,6 +36,7 @@
 #include "PHElement.h"
 #include "PHElementInline.h"
 extern CPHWorld*				ph_world;
+static const float velocity_damping_reference_step = 0.01f;
 
 
 
@@ -459,6 +460,25 @@ void CPHElement::PhDataUpdate(dReal step)
 	VERIFY(!fis_zero(m_l_scale));
 	VERIFY(!fis_zero(m_w_scale));
 
+	// Scales are per-step damping tuned for 100 Hz; keep the same decay per second at any frequency
+	const float damping_steps = step / velocity_damping_reference_step;
+	const dReal l_scale = std::pow(m_l_scale, damping_steps);
+	const dReal w_scale = std::pow(m_w_scale, damping_steps);
+	dBodySetLinearVel(
+		m_body,
+		linear_velocity[0]			/l_scale		,
+		linear_velocity[1]			/l_scale		,
+		linear_velocity[2]			/l_scale
+		);
+	dBodySetAngularVel(
+		m_body,
+		angular_velocity[0]			/w_scale		,
+		angular_velocity[1]			/w_scale		,
+		angular_velocity[2]			/w_scale
+		);
+
+	///////////////////scale changes values directly so get base values after it/////////////////////////
+	/////////////////////////////base values////////////////////////////////////////////////////////////
 	dReal linear_velocity_smag	=		dDOT(linear_velocity,linear_velocity);
 	dReal linear_velocity_mag		=	_sqrt(linear_velocity_smag);
 
@@ -473,7 +493,7 @@ void CPHElement::PhDataUpdate(dReal step)
 	////////////////limit linear vel////////////////////////////////////////////////////////////////////////////////////////
 
 	//VERIFY(dV_valid(linear_velocity));
-	if(linear_velocity_mag>m_l_limit*m_l_scale)
+	if(linear_velocity_mag>m_l_limit)
 	{
 		CutVelocity(m_l_limit,m_w_limit);
 		VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate end, body position");
@@ -483,7 +503,7 @@ void CPHElement::PhDataUpdate(dReal step)
 		angular_velocity_mag	=	_sqrt(angular_velocity_smag);
 	}
 
-	if(angular_velocity_mag>m_w_limit*m_w_scale)
+	if(angular_velocity_mag>m_w_limit)
 	{
 		CutVelocity(m_l_limit,m_w_limit);
 		angular_velocity_smag	=	dDOT(angular_velocity,angular_velocity);
