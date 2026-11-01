@@ -77,6 +77,13 @@ function load_dialog:InitControls()
 	self.file_caption 		= xml:InitTextWnd("form:file_caption",self.form)
 	self.file_data			= xml:InitTextWnd("form:file_data",self.form)
 
+	-- Layout from XML; a long save name wraps and pushes the file data down
+	local caption_pos		= self.file_caption:GetWndPos()
+	local data_pos			= self.file_data:GetWndPos()
+	self.file_caption_height = self.file_caption:GetHeight()
+	self.file_data_pos		= vector2():set(data_pos.x, data_pos.y)
+	self.file_data_gap		= data_pos.y - caption_pos.y - self.file_caption_height
+
 	xml:InitFrame			("form:list_frame",self.form)
 
 	self.list_box			= xml:InitListBox("form:list",self.form)
@@ -193,13 +200,26 @@ function file_data(fname)
 	end
 end
 
+function load_dialog:SetFileCaption(text)
+	self.file_caption:SetText(text)
+	self.file_caption:SetHeight(self.file_caption_height)
+	self.file_caption:AdjustHeightToText()
+
+	local height = math.max(self.file_caption:GetHeight(), self.file_caption_height)
+	self.file_caption:SetHeight(height)
+
+	local caption_pos = self.file_caption:GetWndPos()
+	local data_y = math.max(self.file_data_pos.y, caption_pos.y + height + self.file_data_gap)
+	self.file_data:SetWndPos(vector2():set(self.file_data_pos.x, data_y))
+end
+
 function load_dialog:OnListItemClicked()
 	if self.list_box:GetSize()==0 then return end
 
 	local item			= self.list_box:GetSelectedItem()
 
 	if item == nil then
-		self.file_caption:SetText	("")
+		self:SetFileCaption			("")
 		self.file_data:SetText		("")
 
 		local r = self.picture:GetTextureRect()
@@ -209,8 +229,7 @@ function load_dialog:OnListItemClicked()
 		return
 	end
 	local item_text				= item.fn:GetText()
-	self.file_caption:SetText	(item_text)
-	self.file_caption:SetEllipsis(true)
+	self:SetFileCaption			(item_text)
 	self.file_data:SetText		(file_data(item_text))
 
 	if file_exist(item_text .. saved_game_extension) ~= true then
