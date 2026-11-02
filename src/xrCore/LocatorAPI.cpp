@@ -644,17 +644,26 @@ bool CLocatorAPI::Recurse(const char* path)
 		{
 			xr_path elem_path = elem;
 
-			const bool IsDirectory = elem.is_directory();
+			std::error_code Error;
+			const bool IsDirectory = elem.is_directory(Error);
 			if (IsIgnoredPath(elem_path, IsDirectory))
 			{
+				continue;
+			}
+
+			const auto WriteTime = Error ? std::filesystem::file_time_type {} : elem.last_write_time(Error);
+			const auto FileSize = (Error || IsDirectory) ? 0 : elem.file_size(Error);
+			if (Error)
+			{
+				Msg("! FS: Can't read [%s]: %s", elem_path.xstring().c_str(), Error.message().c_str());
 				continue;
 			}
 
 			GetScanCacheBuffer()->emplace_back();
 			scan_chache& chache = GetScanCacheBuffer()->back();
 			chache.dir = IsDirectory;
-			chache.ftime = xr_chrono_to_time_t(elem.last_write_time());
-			chache.fsize = (chache.dir ? 0 : elem.file_size());
+			chache.ftime = xr_chrono_to_time_t(WriteTime);
+			chache.fsize = FileSize;
 			chache.fileName = elem_path.xfilename();
 		}
 	}
