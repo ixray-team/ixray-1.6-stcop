@@ -540,27 +540,66 @@ void CGamePersistent::UpdateParticles()
 			}
 		}
 
-		static xr_task_group particle_tasks;
+		// A blocking task_group::wait() inside this Pre-Render task resumes only near the end of the frame,
+		// so buckets are claimed through a counter: this thread processes every bucket no helper has
+		// started and waits only for buckets already in progress. Helpers that start late find nothing.
+		struct UpdateBatch
+		{
+			xr_vector<xr_vector<xr_shared_ptr<CParticlesObject>>> Buckets;
+			CFrustum Frustum;
+			u32 Time = 0;
+			xr_atomic_u32 NextBucket = 0;
+			xr_atomic_u32 FinishedBuckets = 0;
+		};
 
+		xr_shared_ptr<UpdateBatch> Batch = std::make_shared<UpdateBatch>();
+		Batch->Frustum = frustum;
+		Batch->Time = dwTime;
 		for (u32 i = 0; i < last_count; ++i)
 		{
-			particle_tasks.run([i, dwTime]()
+			if (!workers[i].second.empty())
 			{
-				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
+				Batch->Buckets.push_back(std::move(workers[i].second));
+			}
+		}
+
+		const u32 BucketCount = (u32)Batch->Buckets.size();
+		auto ProcessBuckets = [](UpdateBatch& Target)
+		{
+			const u32 Count = (u32)Target.Buckets.size();
+			for (u32 Index = Target.NextBucket.fetch_add(1); Index < Count; Index = Target.NextBucket.fetch_add(1))
+			{
+				xr_vector<xr_shared_ptr<CParticlesObject>>& Bucket = Target.Buckets[Index];
+				std::sort(Bucket.begin(), Bucket.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{
 					return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->sphere.P) < Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->sphere.P);
 				});
 
-				for (xr_shared_ptr<CParticlesObject>& particle : workers[i].second)
+				for (xr_shared_ptr<CParticlesObject>& particle : Bucket)
 				{
 					if (particle->m_NeedDestroy) continue;
-					particle->Update(dwTime - particle->dwLastTime, &frustum);
-					particle->dwLastTime = dwTime;
+					particle->Update(Target.Time - particle->dwLastTime, &Target.Frustum);
+					particle->dwLastTime = Target.Time;
 				}
+
+				Target.FinishedBuckets.fetch_add(1, std::memory_order_release);
+			}
+		};
+
+		static xr_task_group particle_tasks;
+		for (u32 i = 1; i < BucketCount; ++i)
+		{
+			particle_tasks.run([Batch, ProcessBuckets]()
+			{
+				ProcessBuckets(*Batch);
 			});
 		}
 
-		particle_tasks.wait();
+		ProcessBuckets(*Batch);
+		while (Batch->FinishedBuckets.load(std::memory_order_acquire) < BucketCount)
+		{
+			std::this_thread::yield();
+		}
 	}
 }
 
