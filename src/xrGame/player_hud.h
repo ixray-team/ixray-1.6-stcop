@@ -1056,6 +1056,10 @@ public:
 	u32						SprintLayerFrame = u32(-1);
 	Fmatrix					SprintLayerPrev[2] = { Fidentity, Fidentity };
 	Fmatrix					SprintLayerResidual[2] = { Fidentity, Fidentity };
+	Fmatrix					SprintBasePrev[2] = { Fidentity, Fidentity };
+	Fmatrix					SprintBaseResidual[2] = { Fidentity, Fidentity };
+	MotionID				SprintBaseMotion;
+	u32						SprintBaseState = 0;
 	float					SprintEndPower = 1.f;
 	float					SprintPose = 0.f;
 	float					SprintPoseShape = 0.f;
@@ -1117,6 +1121,7 @@ private:
 	void			HandsIkFingerState	(SHandsIkFrame& F);
 	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
 	void			HandsIkHandTargets	(SHandsIkFrame& F);
+	void			HandsIkSprintBaseSmooth(SHandsIkFrame& F);
 	void			HandsIkAttachTarget	(SHandsIkFrame& F);
 	bool			HandsIkSwayNeeded	(const SHandsIkFrame& F) const;
 	void			HandsIkLeftSway		(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
