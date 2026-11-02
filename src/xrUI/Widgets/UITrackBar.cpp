@@ -188,7 +188,7 @@ static std::string FormatFloatWithStep(float value, int num_of_signs)
 	float rounded_value = std::round(value * multiplier) / multiplier;
 
 	// Проверяем, является ли округлённое значение целым
-	if (std::fabs(std::floor(rounded_value) - rounded_value) < 0.00001f)
+	if (num_of_signs <= 1 && std::fabs(std::floor(rounded_value) - rounded_value) < 0.00001f)
 	{
 		return std::to_string(static_cast<int>(rounded_value)); // преобразуем в строку как целое число
 	}
