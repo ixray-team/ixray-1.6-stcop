@@ -84,6 +84,7 @@ static const SCameraRigParam g_rig_params[] =
 	{ "Shot fingers", "shot_fingers_chance", nullptr, &g_rig.shot_fingers_chance, nullptr, 1, false, 0.01f },
 	{ "Shot fingers", "shot_fingers_delay", nullptr, &g_rig.shot_fingers_delay, nullptr, 1, false, 0.005f },
 	{ "Shot fingers", "shot_fingers_blend", nullptr, &g_rig.shot_fingers_blend, nullptr, 1, false, 0.005f },
+	{ "Shot fingers", "shot_fingers_blend_out", nullptr, &g_rig.shot_fingers_blend_out, nullptr, 1, false, 0.005f },
 	{ "Shot fingers", "shot_fingers_burst_chance", nullptr, &g_rig.shot_fingers_burst_chance, nullptr, 1, false, 0.005f },
 	{ "Shot fingers", "shot_fingers_max_chance", nullptr, &g_rig.shot_fingers_max_chance, nullptr, 1, false, 0.01f },
 	{ "Shot fingers", "shot_fingers_full_chance", nullptr, &g_rig.shot_fingers_full_chance, nullptr, 1, false, 0.01f },
