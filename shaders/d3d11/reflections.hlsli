@@ -7,6 +7,18 @@
 
 #define USE_VASYAN_CUTOFF
 
+// Pixel whose ray is stored in texel Texel of the sslr_render targets. Half resolution traces one pixel of every 2x2 quad,
+// the pick rotates each frame (Stachowiak, SIGGRAPH 2015), and the results stay packed in the top-left quarter
+uint2 SslrTracedPixel(uint2 Texel)
+{
+#ifdef USE_SSLR_HQ
+	return Texel;
+#else
+	static const uint2 QuadPick[4] = { uint2(0, 0), uint2(1, 1), uint2(1, 0), uint2(0, 1) };
+	return Texel * 2 + QuadPick[uint(m_taa_jitter.w) % 4];
+#endif
+}
+
 
 float3 gbuf_unpack_position(float2 uv)
 {
@@ -152,7 +164,16 @@ float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noi
 	return float4(mul(SamplePoint - m_probe._14_24_34, (float3x3)m_probe), MaxLen);
 }
 
-float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
+// March offset of a pixel (interleaved gradient noise): fixed in screen space without TAA, a new one every frame with it
+float SslrPixelNoise(float2 HPos)
+{
+	HPos += m_taa_jitter.z < 0.0f ? 0.0f : 5.588238f * float(uint(m_taa_jitter.w) % 64);
+	return frac(52.9829189f * frac(dot(HPos, float2(0.06711056f, 0.00583715f))));
+}
+
+// Noise shifts every sample of the ray by the same share of its step: a per-step random length hits or misses thin geometry
+// per pixel and reshuffles whenever the ray moves
+float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud, float Noise)
 {
 	float4 StartProj, EndProj;
 	float3 ReflectBase = Reflect;
@@ -184,8 +205,8 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	
 	float L = 0.001f;
 	
-	Step *= 0.1f;
 	float StepScale = 1.21f;
+	Step *= 0.1f * pow(StepScale, Noise - 0.5f);
 	
 	float Delta = 0.0f;
 	float OldDelta = 0.0f;
@@ -193,7 +214,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(EndProj.xyz * (m_taa_jitter.z < 0.0f ? 1.0f : timers.x)), float3(12.989, 42.364, 78.233))));
+		float JStep = Step;
 		L += JStep;
 		
 		Step *= StepScale;
@@ -378,7 +399,7 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect, uint MaxIterations, out float V
 	return float4(HitPoint, Hit ? 1.0f : 0.0f);
 }
 
-float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect, bool MatchProbe)
+float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect, bool MatchProbe, float Noise)
 {
     float Fade = saturate(dot(Reflect, normalize(Point)) * 4.0f);
     if (Fade < 0.001f)
@@ -386,7 +407,7 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect, bool MatchProbe
        return 0.0f;
     }
 
-    float4 Hit = FastViewReflectionsSSR(Point, Reflect, false);
+    float4 Hit = FastViewReflectionsSSR(Point, Reflect, false, Noise);
     Fade *= Hit.w;
 
     if (Fade <= 0.0f)

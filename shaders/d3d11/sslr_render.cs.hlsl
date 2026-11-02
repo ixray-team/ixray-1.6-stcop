@@ -16,17 +16,13 @@ Texture2D s_occ : register(t26);
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
-#ifdef USE_SSLR_HQ
-	uint2 Pixel = DTid;
-#else
-	// Half resolution traces one pixel of every 2x2 quad, the pick rotates each frame (Stachowiak, SIGGRAPH 2015).
-	// The results stay packed in the top-left quarter, sslr_filter reuses them as rays of the full resolution pixels.
-	static const uint2 QuadPick[4] = { uint2(0, 0), uint2(1, 1), uint2(1, 0), uint2(0, 1) };
-	uint2 Pixel = DTid * 2 + QuadPick[uint(m_taa_jitter.w) % 4];
-#endif
+	uint2 Pixel = SslrTracedPixel(DTid);
 
     IXRayGbuffer O = (IXRayGbuffer)NULL;
     GbufferUnpack(Pixel, O);
+
+	// u_sslr.w: view distance of the ray origin, negative on the HUD. sslr_filter rebuilds the origin from it
+	float OriginDist = O.Depth < 0.02f ? -O.ViewDist : O.ViewDist;
 
 	//LVutner: Init
 	float4 Final = (0.0).xxxx;
@@ -46,8 +42,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		Final.xyz *= rcp(1.0f + Final.xyz);
 		Final.xyz = saturate(Final.xyz);
-		Final.w = 0.0f;
-	
+		Final.w = OriginDist;
+
 		u_sslr[DTid.xy] = Final;
 		u_sslr_data[DTid.xy] = Point;
 		
@@ -58,7 +54,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	if (SslrWeight(O.Normal, O.View, GbufferSpecular(O), GbufferRoughness(O)) <= 0.0f)
 	{
 		// Zero ray data: sslr_filter gives it the floor weight
-		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth < 0.02f);
+		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, OriginDist);
 		u_sslr_data[DTid.xy] = 0.0f;
 		return;
 	}
@@ -96,7 +92,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	[branch]
 	if (isHUDRender)
 	{
-		SSLR = FastViewReflectionsSSR(StartPoint, Reflection, true);
+		SSLR = FastViewReflectionsSSR(StartPoint, Reflection, true, Jitter.z);
 	}
 	else
 	{
@@ -175,7 +171,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	Point.w = rcp(max(EPS_S, H.w));
 	
-	Final.w = isHUDRender;
+	Final.w = OriginDist;
 
 	//LVutner: Write to UAVs
 	u_sslr[DTid.xy] = Final;

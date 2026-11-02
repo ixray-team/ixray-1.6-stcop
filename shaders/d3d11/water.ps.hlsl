@@ -88,7 +88,7 @@ void main(vf I, out IXRayForward O)
 	
 	float3 ReflectPoint = I.tctexgen.xyz * 0.99f + Nw * 0.07f;
 	
-    float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect, true);
+    float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect, true, SslrPixelNoise(I.hpos.xy));
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
 		float4 vslr = FastViewReflections(ReflectPoint, Reflect, 0.0f, Hash(I.hpos.xy));

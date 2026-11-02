@@ -179,8 +179,7 @@ float SslrWeight(float3 Normal, float3 View, float3 Specular, float Roughness)
 	return saturate((dot(F, LUMINANCE_VECTOR) - 0.005f) * 200.0f);
 }
 
-// Rough reflections are blurred by the filter and the history: from roughness 0.5 to 0.7 the trace gets shorter,
-// and above it misses fall back to the environment without the cube march
+// Rough reflections are blurred by the filter and the history: from roughness 0.5 to 0.7 the trace gets shorter
 float SslrRoughTrace(float Roughness)
 {
 	return saturate((Roughness - 0.5f) * 5.0f);

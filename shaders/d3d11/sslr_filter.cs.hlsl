@@ -18,8 +18,8 @@
 #define DISK32_RADIUS16 1.48565f
 #define DISK32_RADIUS32 1.0f
 
-#define NUM_SAMPLES 16
-#define DISK32_RADIUS DISK32_RADIUS16
+#define NUM_SAMPLES 8
+#define DISK32_RADIUS DISK32_RADIUS8
 
 static const float2 Disk32_Normalized[32] = {
 	float2(0.408569f, 0.024217f),
@@ -109,7 +109,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     IXRayGbuffer O = (IXRayGbuffer)NULL;
     GbufferUnpack((uint2)I.hpos.xy, O);
 
-	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
+	bool isHUDRender = O.Depth < 0.02f;
 	
 	if(O.Depth >= 1.0f)
 	{
@@ -153,14 +153,17 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		float2 nearest_sample = mirror(I.texcoord.xy + offset * SampleRadius);
 		offset = nearest_sample * SSLR_TRACE_UV;
 
-		float nearest_depth = s_position.SampleLevel(smp_nofilter, nearest_sample, 0).x;
-		float3 nearest_pos = GbufferGetPointRealUnjitter(nearest_sample, nearest_depth);
+		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
+		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
+
+		// Ray origin from the distance sslr_render stored, the depth only picks the HUD or the world projection
+		bool nearest_hud = Color.w < 0.0f;
+		float2 nearest_uv = (float2(SslrTracedPixel(uint2(offset * pos_decompression_params2.xy))) + 0.5f) * pos_decompression_params2.zw;
+		float3 nearest_pos = normalize(GbufferGetPointRealUnjitter(nearest_uv, nearest_hud ? 0.01f : 0.5f)) * abs(Color.w);
+
 		float mat_test = uint(s_normal.SampleLevel(smp_nofilter, nearest_sample, 0).w * MAX_ID) == O.MaterialID ? 1.0f : 0.0f;
 		mat_test *= saturate(1.0f - abs(dot(O.Normal, nearest_pos - ReflectPoint)) / (0.02f * O.ViewDist + 0.05f));
-		
-		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
-		
-		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
+
 		float3 Light = ReflectPoint - SSLR.xyz;
 		
 		float Length = length(Light);
@@ -181,7 +184,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #endif
 		
 		//HUD weight
-		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
+		SampleWeight *= nearest_hud == isHUDRender ? 1.0f : 0.0f;
 		SampleWeight *= max(mat_test, 1e-3f);
 
 		// Inverse luminance weighting against fireflies
