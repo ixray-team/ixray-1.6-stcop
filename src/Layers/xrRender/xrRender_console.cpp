@@ -25,10 +25,11 @@ xr_token							qpreset_token							[ ]={
 
 u32 ps_r2_smapsize = 2048;
 xr_token qsmapsize_token[] = {
+	{ "512", 512 },
 	{ "1024", 1024 },
 	{ "2048", 2048 },
-	{ "3072", 3072 },
-	{ "4096", 4096 },
+//	{ "3072", 3072 },
+//	{ "4096", 4096 },
 	{ nullptr, 0   }
 };
 
@@ -199,7 +200,7 @@ bool		ps_r2_autoexposure_soft_log = false;			// autoexposure soft log (for auto 
 float		ps_r2_autoexposure_soft_log_k = 3.0f;			// autoexposure soft log acceptance in EV (for soft log)
 float		ps_r2_autoexposure_soft_limiter = 3.5f;			// autoexposure soft limiter in EV (for soft log)
 float		ps_r2_autoexposure_sensitivity = 0.15f;			// autoexposure sensitivity (for soft log)
-float		ps_r2_bloom_amount			= 0.04f;			// bloom amount, exposure independant (0.04f)
+float		ps_r2_bloom_amount			= 0.2f;			// bloom amount, exposure independant (0.04f)
 float		ps_r2_bloom_desaturation	= 0.1f;				// bloom desaturation (0.1f)
 float		ps_r2_bloom_tint_amount		= 0.1f;				// bloom tint amount (0.1f)
 Fvector3    ps_r2_bloom_tint_color		= Fvector3().set(1.0f, 0.95f, 0.85f);	// bloom tint color 
@@ -244,7 +245,7 @@ int			ps_r2_wait_sleep			= 0;
 float		ps_r4_mblur_power = 0.25f;
 float		ps_r1_full_detail_distance_scale = 0.5f;
 
-float		ps_r2_lt_smooth				= 1.f;				// 1.f
+float		ps_r2_lt_smooth				= 10.f;				// 1.f
 float		ps_r2_slight_fade			= 0.6f;				// 1.f
 
 float		ps_r4_vslr_distance			= 0.7f;				// 1.f
@@ -803,8 +804,8 @@ void		xrRender_initconsole	()
 
 	// IX-Ray
 	CMD3(CCC_Mask32, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
-	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.15f, 1.0f);
-	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 2000);
+	CMD4(CCC_DetailReloadDetails, "r__detail_density", &ps_current_detail_density, 0.25f, 1.0f);
+	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 50, 500);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_min", &ps_r__detail_rnd_scale_min, 0.0f, 100.0f);
 	CMD4(CCC_DetailReloadDetails, "r__detail_rnd_scale_max", &ps_r__detail_rnd_scale_max, 0.0f, 100.0f);
 
