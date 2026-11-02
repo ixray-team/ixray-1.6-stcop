@@ -940,7 +940,7 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 			ImGui::CloseCurrentPopup();
 		};
 
-		xr_vector<shared_str> names = { HudAttachMarks::Ik, HudAttachMarks::Fingers, "mm_unpend", "Left" };
+		xr_vector<shared_str> names = { HudAttachMarks::Ik, HudAttachMarks::Fingers, "mm_unpend", "Left", "Right" };
 		if (state.Item != nullptr)
 		{
 			state.Item->UpdateAttachPose();
@@ -959,7 +959,7 @@ static void OMFEditorMarks(SOMFMotion& motion, float length)
 		{
 			for (const motion_marks& marks : it.Def->marks)
 			{
-				if (std::find(names.begin(), names.end(), marks.name) == names.end())
+				if (std::none_of(names.begin(), names.end(), [&marks](const shared_str& name) { return xr_stricmp(name.c_str(), marks.name.c_str()) == 0; }))
 				{
 					names.push_back(marks.name);
 				}
