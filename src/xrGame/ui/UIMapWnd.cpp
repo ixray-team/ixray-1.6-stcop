@@ -142,6 +142,9 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 		sx = uiXml.ReadAttribFlt( pth, 0, "sx", -5.0f );
 		sy = uiXml.ReadAttribFlt( pth, 0, "sy", -5.0f );
 
+		// Fixed-layout profiles ignore the computed length, so a resized map frame needs its own profile
+		const char* scrollProfile		= uiXml.ReadAttrib(start_from, 0, "scroll_profile", "pda");
+
 		CUIWindow* rect_parent			= m_use_legacy_map ? m_UILevelFrame : m_UIMainFrame;
 		Frect r							= rect_parent->GetWndRect();
 
@@ -151,7 +154,7 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 		const float scrollVLength = r.bottom - r.top - dy * 2.0f;
 
 		m_UIMainScrollH = new CUIScrollBar();
-		CUIScrollBar::InitForProfile(*m_UIMainScrollH, scrollHPos, scrollHLength, true, "pda");
+		CUIScrollBar::InitForProfile(*m_UIMainScrollH, scrollHPos, scrollHLength, true, scrollProfile);
 
 		m_UIMainScrollH->SetStepSize	(std::max( 1, (int)(m_UILevelFrame->GetWidth()*0.1f) ) );
 		m_UIMainScrollH->SetPageSize	( (int)m_UILevelFrame->GetWidth() ); // iFloor
@@ -161,7 +164,7 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 		AddCallback						(m_UIMainScrollH, SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
 
 		m_UIMainScrollV = new CUIScrollBar();
-		CUIScrollBar::InitForProfile(*m_UIMainScrollV, scrollVPos, scrollVLength, false, "pda");
+		CUIScrollBar::InitForProfile(*m_UIMainScrollV, scrollVPos, scrollVLength, false, scrollProfile);
 
 		m_UIMainScrollV->SetStepSize	(std::max( 1, (int)(m_UILevelFrame->GetHeight()*0.1f) ) );
 		m_UIMainScrollV->SetPageSize	( (int)m_UILevelFrame->GetHeight() );

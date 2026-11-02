@@ -69,6 +69,7 @@ void CUIMapLocationHint::Init(CUIXml& uiXml, const char* path)
 
 	m_posx_icon    = m_info["t_icon"]->GetWndPos().x;
 	m_posx_caption = m_info["t_caption"]->GetWndPos().x;
+	SideTaskIcon   = uiXml.ReadAttribInt(path, 0, "side_task_icon", 0) != 0;
 }
 
 void CUIMapLocationHint::SetInfoMode(u8 mode)
@@ -177,7 +178,8 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 	m_info["t_hint_text"]->SetWndPos(pos);
 		
 	
-	if ( task->GetTaskType() == eTaskTypeStoryline || !Level().GameTaskManager()->IsMultipleTask())
+	const bool hideIcon = task->GetTaskType() == eTaskTypeAdditional && Level().GameTaskManager()->IsMultipleTask() && !SideTaskIcon;
+	if ( !hideIcon )
 	{
 		m_info["t_icon"]->Show( true );
 		float w = m_info["t_time"]->GetWidth();
@@ -203,7 +205,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		pos_.y = std::max( pos_.y, m_info["t_icon"]->GetWndPos().y + m_info["t_icon"]->GetWndSize().y + 7 );
 		m_info["t_hint_text"]->SetWndPos( pos_ );
 	}
-	else if ( task->GetTaskType() == eTaskTypeAdditional && Level().GameTaskManager()->IsMultipleTask() )
+	else
 	{
 		m_info["t_icon"]->Show( false );
 		float w = m_info["t_hint_text"]->GetWidth();

@@ -32,4 +32,6 @@ public:
 private:
 	float			m_posx_icon;
 	float			m_posx_caption;
+	// Clear Sky hides the icon of side tasks when storyline and side tasks are active at once
+	bool			SideTaskIcon = false;
 };

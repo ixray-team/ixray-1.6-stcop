@@ -184,9 +184,22 @@ void CUITaskWnd::Init()
 
 	if (!m_features.filterTabs)
 	{
-		m_task_wnd->SetFilterMode(
-			m_pSecondaryTaskItem ? ETaskListFilter::Side : ETaskListFilter::All
-		);
+		// The secondary task row lists side tasks only (Clear Sky) unless the layout asks for another filter
+		ETaskListFilter filter = m_pSecondaryTaskItem ? ETaskListFilter::Side : ETaskListFilter::All;
+		const char* filterName = xml.ReadAttrib("second_task_wnd", 0, "filter", "");
+		if (0 == _stricmp(filterName, "all"))
+		{
+			filter = ETaskListFilter::All;
+		}
+		else if (0 == _stricmp(filterName, "story"))
+		{
+			filter = ETaskListFilter::Story;
+		}
+		else if (0 == _stricmp(filterName, "side"))
+		{
+			filter = ETaskListFilter::Side;
+		}
+		m_task_wnd->SetFilterMode(filter);
 	}
 	else
 	{

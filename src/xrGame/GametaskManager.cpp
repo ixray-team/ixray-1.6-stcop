@@ -431,7 +431,24 @@ CGameTask* CGameTaskManager::ActiveTask(ETaskType type)
 	if (!t_id.size())
 		return nullptr;
 
-	return HasGameTask(t_id, true);
+	CGameTask* task = HasGameTask(t_id, true);
+
+	// Saves from single task mode keep any task type in the storyline slot
+	if (task && m_flags.test(eMultipleTasks) && task->GetTaskType() != t)
+	{
+		if (task->GetTaskType() < eTaskTypeCount)
+		{
+			shared_str& ownId = g_active_task_id[task->GetTaskType()];
+			if (!ownId.size())
+				ownId = t_id;
+		}
+
+		t_id = "";
+		m_flags.set(eChanged, true);
+		return nullptr;
+	}
+
+	return task;
 }
 /*
 void CGameTaskManager::SetActiveTask(const shared_str& id, ETaskType type)

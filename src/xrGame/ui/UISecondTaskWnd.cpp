@@ -379,9 +379,21 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 	CGameTaskManager* taskManager = Level().GameTaskManager();
 	ETaskType taskType = taskManager->IsMultipleTask() ? eTaskTypeAdditional : eTaskTypeStoryline;
 	CGameTask* pActiveTask = taskManager->ActiveTask(taskType);
+	WINDOW_LIST& wndList = m_list->Items();
+
+	// A list with every task type steps from the last picked task, which stays active for its own type
+	for (CUIWindow* wnd : wndList)
+	{
+		CGameTask* task = static_cast<UITaskListWndItem*>(wnd)->get_task();
+		if (task == SelectedTask && taskManager->ActiveTask(task->GetTaskType()) == task)
+		{
+			pActiveTask = task;
+			break;
+		}
+	}
+
 	if (pActiveTask)
 	{
-		WINDOW_LIST& wndList = m_list->Items();
 		for (WINDOW_LIST_it it = wndList.begin(); it != wndList.end(); ++it)
 		{
 			UITaskListWndItem* item = static_cast<UITaskListWndItem*>(*it);
@@ -393,6 +405,7 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 					{
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it + 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
+						SelectedTask = nextToItem->get_task();
 						const float barHeight = m_list->ScrollBar() ? m_list->ScrollBar()->GetHeight() : 0.0f;
 						m_list->ScrollToItem(nextToItem, iFloor(-barHeight / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
 						if (m_pUiSounds)
@@ -408,6 +421,7 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 					{
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it - 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
+						SelectedTask = nextToItem->get_task();
 						const float barHeight = m_list->ScrollBar() ? m_list->ScrollBar()->GetHeight() : 0.0f;
 						m_list->ScrollToItem(nextToItem, iFloor(-barHeight / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
 						if (m_pUiSounds)
@@ -744,6 +758,10 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 	{
 		if ( msg == BUTTON_DOWN )
 		{
+			if (UITaskListWnd* owner = smart_cast<UITaskListWnd*>(GetMessageTarget()))
+			{
+				owner->SetSelectedTask(m_task);
+			}
 			Level().GameTaskManager()->SetActiveTask( m_task );
 			return;
 		}

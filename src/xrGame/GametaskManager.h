@@ -25,7 +25,13 @@ public:
 							CGameTaskManager				();
 							~CGameTaskManager				();
 
-    void					AllowMultipleTask				(bool allow) { m_flags.set(eMultipleTasks, allow); }
+    void					AllowMultipleTask				(bool allow)
+	{
+		// Active tasks may have been picked in single task mode before the PDA was created
+		if (!!m_flags.test(eMultipleTasks) != allow)
+			m_flags.set(eChanged, true);
+		m_flags.set(eMultipleTasks, allow);
+	}
     bool					IsMultipleTask					() { return m_flags.test(eMultipleTasks); }
 
 	vGameTasks&				GetGameTasks					();

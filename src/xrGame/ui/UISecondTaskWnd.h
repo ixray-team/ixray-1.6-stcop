@@ -57,6 +57,7 @@ public:
 			void	SetUiSounds			(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			ETaskListFilter GetFilterMode() const { return m_filter; }
 			bool	HasFilterTabs		() const { return m_filter_tabs != nullptr; }
+			void	SetSelectedTask		(CGameTask* task) { SelectedTask = task; }
 			void	UpdateStorylineTask	(CGameTask* task);
 			CUITaskItem* GetStorylineTaskItem() const { return _storylineTaskItem; }
 
@@ -93,6 +94,8 @@ private: // m_
 	float				m_orig_h;
 	ETaskListFilter		m_filter;
 	CPdaUiSounds*		m_pUiSounds = nullptr;
+	// Last task picked in the list; only compared against list items, never dereferenced on its own
+	CGameTask*			SelectedTask = nullptr;
 
 }; // class UITaskListWnd
 

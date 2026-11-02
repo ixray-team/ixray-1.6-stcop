@@ -33,7 +33,7 @@
 		</auto_static>
 	</gamepad_legend>
 	
-	<background x="35" y="41" width="955" height="90">
+	<background x="35" y="41" width="955" height="116">
         <texture>ui_inGame2_pda_buttons_background</texture>
 	</background>
 
@@ -49,7 +49,7 @@
 		</auto_frameline>
 	</line_devider>
 
-	<center_background x="35" y="124" width="955" height="30">
+	<center_background x="35" y="150" width="955" height="30">
 		<auto_static x="0" y="1" width="26" height="29">
 			<texture>ui_inGame2_pda_missionlist_button_leftside</texture>
 		</auto_static>
@@ -61,7 +61,7 @@
 		</auto_static>
 	</center_background>
 
-	<btn_second_task x="52" y="132" width="120" height="19" hint="ui_show_second_task_wnd" frame_mode="1">
+	<btn_second_task x="52" y="158" width="120" height="19" hint="ui_show_second_task_wnd" frame_mode="1">
 		<window_name>btn_second_task</window_name>
         <texture_e>ui_inGame2_pda_missionlist_button_e</texture_e>
         <texture_t>ui_inGame2_pda_missionlist_button_ht</texture_t>
@@ -75,25 +75,25 @@
         </text_color>
 	</btn_second_task>
 
-	<map_wnd scroll_enable="1" map_move_step="11">
+	<map_wnd scroll_enable="1" map_move_step="11" scroll_profile="pda_tasks_map">
 		<!-- Map sounds (inside map_wnd, used by pda_tasks and pda_map tabs): -->
 		<!-- <snd_map_zoom_in>device\pda\pda_map_zoom_in</snd_map_zoom_in> -->
 		<!-- <snd_map_zoom_out>device\pda\pda_map_zoom_out</snd_map_zoom_out> -->
 		<!-- <snd_map_zoom>device\pda\pda_map_zoom</snd_map_zoom> -->
 		<!-- <snd_map_center>device\pda\pda_map_center</snd_map_center> -->
 		<!-- <snd_map_pan>device\pda\pda_map_pan</snd_map_pan> -->
-		<main_wnd x="35" y="149" width="955" height="555">
-	        <auto_frameline x="0" y="0" width="955" height="555" vertical="1">
+		<main_wnd x="35" y="175" width="955" height="529">
+	        <auto_frameline x="0" y="0" width="955" height="529" vertical="1">
 	            <texture>ui_inGame2_pda_map_background</texture>
 	        </auto_frameline>
 		</main_wnd>
-		<level_frame x="6" y="7" width="923" height="523"/>
-		<main_map_frame x="6" y="4" width="946" height="551" dx="0" dy="3" sx="19" sy="22">
-	        <auto_frameline x="0" y="0" width="923" height="526" vertical="1">
+		<level_frame x="6" y="7" width="923" height="497"/>
+		<main_map_frame x="6" y="4" width="946" height="525" dx="0" dy="3" sx="19" sy="22">
+	        <auto_frameline x="0" y="0" width="923" height="500" vertical="1">
 				<texture>ui_inGame2_pda_map_frame</texture>
 	        </auto_frameline>
 		</main_map_frame>
-		<map_hint_item x="0" y="0" width="300" height="200">
+		<map_hint_item x="0" y="0" width="300" height="200" side_task_icon="1">
 			<texture>ui_icons_PDA_tooltips</texture>
 			<simple_text x="8" y="12" width="185" height="192" complex_mode="1">
 				<text  align="l" font="letterica18"/>
@@ -114,7 +114,7 @@
 		</map_hint_item>
 	</map_wnd>
 
-	<filter_treasures x="233" y="132" width="179" height="19">
+	<filter_treasures x="233" y="158" width="179" height="19">
 		<window_name>filter_treasures</window_name>
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_treasures_text</text>
@@ -125,7 +125,7 @@
             <h r="255" g="255" b="255"/>
         </text_color>
 	</filter_treasures>
-	<filter_primary_objects x="412" y="132" width="179" height="19">
+	<filter_primary_objects x="412" y="158" width="179" height="19">
 		<window_name>filter_primary_objects</window_name>
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_primary_objects_text</text>
@@ -136,7 +136,7 @@
             <h r="255" g="255" b="255"/>
         </text_color>
 	</filter_primary_objects>
-	<filter_secondary_tasks x="591" y="132" width="179" height="19">
+	<filter_secondary_tasks x="591" y="158" width="179" height="19">
 		<window_name>filter_secondary_tasks</window_name>
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_secondary_tasks_text</text>
@@ -147,7 +147,7 @@
             <h r="255" g="255" b="255"/>
         </text_color>
 	</filter_secondary_tasks>
-	<filter_quest_npcs x="770" y="132" width="179" height="19">
+	<filter_quest_npcs x="770" y="158" width="179" height="19">
 		<window_name>filter_quest_npcs</window_name>
         <texture>ui_inGame2_pda_smallbutton</texture>
 		<text x="-179" y="0" align="c" vert_align="c" font="letterica16">filter_quest_npcs_text</text>
@@ -173,7 +173,21 @@
 		<texture>ui_inGame2_pda_center_on_mission_button</texture>
 	</btn_task_focus>
 
-	<btn_nav_parent x="854" y="458" width="69" height="69">
+	<secondary_task_item x="58" y="124" width="800" height="24">
+		<window_name>pda_task_item2</window_name>
+		<t_icon x="0" y="1" width="41" height="23"/>
+		<t_icon_over x="0" y="1" width="41" height="23"/>
+		<t_caption x="45" y="0" width="760" height="24">
+			<text align="l" vert_align="c" font="letterica18" r="170" g="170" b="170"/>
+		</t_caption>
+	</secondary_task_item>
+
+	<btn_task_focus2 x="950" y="127" width="19" height="19" hint="ui_task_btn_focus_center2">
+		<window_name>btn_task_focus2</window_name>
+		<texture>ui_inGame2_pda_center_on_mission_button</texture>
+	</btn_task_focus2>
+
+	<btn_nav_parent x="854" y="432" width="69" height="69">
 		<btn_nav_0 x="0" y="0" width="21" height="21" hint="ui_map_btn_legend">
 			<window_name>btn_nav_legend</window_name>
 			<texture>ui_inGame2_pda_control_map_button_0</texture>
@@ -212,8 +226,8 @@
 		</btn_nav_8>
 	</btn_nav_parent>
 
-	<second_task_wnd x="10" y="10" width="350" height="523">
-		<background_frame x="0" y="0" width="343" height="513">
+	<second_task_wnd x="10" y="10" width="350" height="497" filter="all">
+		<background_frame x="0" y="0" width="343" height="487">
 			<texture>ui_icons_PDA_dialog</texture>
 	        <auto_frameline x="15" y="33" width="316" height="3">
 	            <texture>ui_inGame2_pda_map_devider</texture>
@@ -229,7 +243,7 @@
 			<window_name>task_btn_close</window_name>
 			<texture>ui_task_bt_close</texture>
 		</btn_close>
-		<task_list x="15" y="44" width="315" height="450" item_height="35" scroll_profile="default" always_show_scroll="1" />
+		<task_list x="15" y="44" width="315" height="424" item_height="35" scroll_profile="default" always_show_scroll="1" />
 		<task_item  x="0" y="0" width="298" height="35">
 			<activ  r="255" g="255" b="255"/>
 			<unread r="220" g="220" b="220"/>

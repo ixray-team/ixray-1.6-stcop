@@ -446,6 +446,8 @@ void CUIGameCustom::StartTalk(bool disable_break)
 {
 	RemoveCustomStatic("main_task");
 	RemoveCustomStatic("secondary_task");
+	RemoveCustomStatic("side_task");
+	RemoveCustomStatic("side_task_description");
 
 	TalkMenu->b_disable_break = disable_break;
 	TalkMenu->ShowDialog(true);

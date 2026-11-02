@@ -67,6 +67,8 @@ void CUIGameSP::OnFrame()
 		{
 			RemoveCustomStatic		("main_task");
 			RemoveCustomStatic		("secondary_task");
+			RemoveCustomStatic		("side_task");
+			RemoveCustomStatic		("side_task_description");
 			m_game_objective		= nullptr;
 		}
 	}
@@ -243,7 +245,21 @@ void CUIGameSP::OnAction(CActor* actor, EGameActions action)
 			CGameTask* t1 = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
 			CGameTask* t2 = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
 
-			if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2)
+			const bool sideTaskDescription = m_msgs_xml->NavigateToNode("secondary_task") && m_msgs_xml->NavigateToNode("side_task")
+				&& m_msgs_xml->NavigateToNode("side_task_description");
+
+			if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2 && sideTaskDescription)
+			{
+				m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Title).c_str());
+				SDrawStaticStruct* description = AddCustomStatic("secondary_task", true);
+				description->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Description).c_str());
+
+				SDrawStaticStruct* sideTitle = AddCustomStatic("side_task", true);
+				sideTitle->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t2->m_Title).c_str());
+				SDrawStaticStruct* sideDescription = AddCustomStatic("side_task_description", true);
+				sideDescription->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t2->m_Description).c_str());
+			}
+			else if (Level().GameTaskManager()->IsMultipleTask() && t1 && t2)
 			{
 				m_game_objective->m_static->TextItemControl()->SetTextST(g_pStringTable->ParseStringFromScript(t1->m_Title).c_str());
 				SDrawStaticStruct* sm2 = AddCustomStatic("secondary_task", true);

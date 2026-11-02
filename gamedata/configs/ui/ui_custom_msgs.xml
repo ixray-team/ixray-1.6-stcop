@@ -34,6 +34,14 @@
 		<text align="c" font="graffiti22"  r="240" g="217" b="182" a="200"/>
 	</secondary_task>
 
+	<side_task  x="235" y="260" width="554" height="60" complex_mode="1">
+		<text align="c" font="graffiti32"  r="240" g="217" b="182" a="255"/>
+	</side_task>
+
+	<side_task_description  x="235" y="320" width="554" height="60" complex_mode="1" light_anim="ui_tesk_description" la_alpha="1" la_text="1" la_cyclic="0">
+		<text align="c" font="graffiti22"  r="240" g="217" b="182" a="200"/>
+	</side_task_description>
+
   <cs_psy_danger  x="262" y="30" width="500" height="20" complex_mode="1">
                 <text font="graffiti22"  r="240" g="217" b="182" a="255" align="c"/>
         </cs_psy_danger>
