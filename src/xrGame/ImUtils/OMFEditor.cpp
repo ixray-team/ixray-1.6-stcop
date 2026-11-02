@@ -1607,6 +1607,17 @@ void RenderToolsOMFEditorWindow()
 		}
 	}
 
+	motion_descr additive;
+	if (anm == nullptr && HudMotionPlayerSelectedAdditive(item, additive))
+	{
+		OMFEditorAddMotion(state.HandsModel, additive, false);
+		hands = OMFEditorFindMotion(state.HandsModel, additive.mid);
+		state.Weapon = false;
+
+		ImGui::Separator();
+		OMFEditorMotionInfo("Additive motion", hands, additive.name.c_str());
+	}
+
 	SOMFMotion* selected = state.Weapon && !combined ? weapon : hands;
 	if (selected != nullptr)
 	{
