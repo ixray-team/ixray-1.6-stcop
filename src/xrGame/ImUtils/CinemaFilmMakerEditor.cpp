@@ -535,6 +535,13 @@ static float CinemaButtonWidth(const char* label)
 	return ImGui::CalcTextSize(label).x + ImGui::GetStyle().FramePadding.x * 2.0f;
 }
 
+static void CinemaHint(const char* text)
+{
+	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	ImGui::TextWrapped("%s", text);
+	ImGui::PopStyleColor(); 
+}
+
 static const char* CinemaFileName(const char* path)
 {
 	if (path == nullptr)
@@ -2380,6 +2387,7 @@ private:
 	void DrawParticleTab();
 	void DrawLightTab();
 	void DrawLightModulation(SCinemaLight& light);
+	void DuplicateLights(const xr_vector<s32>& indices);
 	void RemoveLights(const xr_vector<s32>& indices);
 	void TransformSelectedLights(const Fvector& previousPosition, const Fmatrix& previousOrientation);
 	void DrawParticleBrowser();
@@ -3409,9 +3417,10 @@ bool CCinemaFilmMakerManager::ApplyDefaultPose(SCinemaActor& actor)
 
 	if (source != nullptr && clip != nullptr && PlayClip(actor, *source, *clip, false))
 	{
-		CinemaSetBlendLoop(actor.Animated, actor.Motion, true);
+		CinemaSetBlendTime(actor.Animated, actor.Motion, 0.0f);
+		CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
 		actor.PlaylistIndex = -1;
-		actor.Paused = false;
+		actor.Paused = true;
 		return true;
 	}
 
@@ -6175,12 +6184,12 @@ void CCinemaFilmMakerManager::RemoveExtraAnimationPath(s32 index)
 
 void CCinemaFilmMakerManager::DrawExtraSources()
 {
-	if (!ImGui::CollapsingHeader("Extra animation sources"))
+	if (!ImGui::TreeNodeEx("Extra animation sources##cinema", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
 		return;
 	}
 
-	ImGui::TextDisabled("Path to .omf files relative to meshes or the level folder: animations\\mod\\*.omf or animations\\mod\\walk");
+	CinemaHint("Path to .omf files relative to meshes or the level folder: animations\\mod\\*.omf or animations\\mod\\walk");
 
 	const float addWidth = CinemaButtonWidth("Add");
 	ImGui::SetNextItemWidth(std::max(120.0f, ImGui::GetContentRegionAvail().x - addWidth - ImGui::GetStyle().ItemSpacing.x));
@@ -6217,6 +6226,7 @@ void CCinemaFilmMakerManager::DrawExtraSources()
 	if (ExtraAnimationPaths.empty())
 	{
 		ImGui::TextDisabled("No extra sources added");
+		ImGui::TreePop();
 		return;
 	}
 
@@ -6224,20 +6234,24 @@ void CCinemaFilmMakerManager::DrawExtraSources()
 	{
 		ImGui::PushID(index);
 
-		ImGui::TextUnformatted(ExtraAnimationPaths[index].c_str());
-		ImGui::SameLine();
-
 		if (ImGui::SmallButton("Remove##extra_path"))
 		{
 			RemoveExtraAnimationPath(index);
 			ImGui::PopID();
 			break;
 		}
+		ImGui::SameLine();
+		ImGui::TextWrapped("%s", ExtraAnimationPaths[index].c_str());
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("%s", ExtraAnimationPaths[index].c_str());
+		}
 
 		ImGui::PopID();
 	}
 
-	ImGui::TextDisabled("Animations already loaded stay on NPC that were created before removal");
+	CinemaHint("Animations already loaded stay on NPC that were created before removal.");
+	ImGui::TreePop();
 }
 
 void CCinemaFilmMakerManager::LoadPresets()
@@ -6734,14 +6748,15 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 
 	ImGui::EndDisabled();
 
-	ImGui::Separator();
+	ImGui::SeparatorText("Saved presets");
 
 	if (Presets.empty())
 	{
-		ImGui::TextDisabled("No presets yet.");
+		ImGui::TextDisabled("No presets yet. Select an actor and save it as a preset.");
 		return;
 	}
 
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Double-click: spawn");
 	const float listHeight = std::clamp(ImGui::GetContentRegionAvail().y - 90.0f, 120.0f, 420.0f);
 
 	ImGui::BeginChild("##cinema_preset_list", ImVec2(0.0f, listHeight), true);
@@ -7591,8 +7606,9 @@ void CCinemaFilmMakerManager::DrawModelTab()
 	const float listHeight = std::clamp(availableHeight * 0.4f, 150.0f, 240.0f);
 	const bool hasModel = SelectedVisual.size() > 0 && VisualPathExists(SelectedVisual.c_str());
 
+	ImGui::SeparatorText("Model library");
 	ImGui::SetNextItemWidth(-1.0f);
-	ImGui::InputTextWithHint("##cinema_ogf_filter", "Search .ogf", ModelFileFilter, sizeof(ModelFileFilter));
+	ImGui::InputTextWithHint("##cinema_ogf_filter", "Search models", ModelFileFilter, sizeof(ModelFileFilter));
 
 	if (CinemaResetRequested())
 	{
@@ -7699,6 +7715,7 @@ void CCinemaFilmMakerManager::DrawItemTab()
 
 	BuildHandItems();
 
+	ImGui::SeparatorText("Item library");
 	const float availableHeight = ImGui::GetContentRegionAvail().y;
 	const float listHeight = std::max(150.0f, availableHeight - 105.0f);
 
@@ -7757,7 +7774,7 @@ void CCinemaFilmMakerManager::DrawItemTab()
 
 	ImGui::EndChild();
 
-	ImGui::Separator();
+	ImGui::SeparatorText("Selected item");
 	ImGui::TextDisabled("Item");
 	ImGui::SameLine();
 	ImGui::TextUnformatted(actor->ItemSection.size() > 0 ? actor->ItemSection.c_str() : "<none>");
@@ -7853,6 +7870,7 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 		ImGui::SetTooltip("Add the selected animation to the playlist");
 	}
 
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Double-click: add");
 	ImGui::BeginChild("##cinema_animation_library", ImVec2(0.0f, libraryHeight), true);
 
 	bool anySource = false;
@@ -8053,6 +8071,7 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 {
 	ImGui::SeparatorText("Playlist");
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Right-click: actions");
 
 	SToolbarLayout playlistControls(ImGui::GetContentRegionAvail().x);
 
@@ -8256,6 +8275,7 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 			filtered.push_back(i);
 		}
 	}
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle");
 	if (ImGui::BeginChild("##particle_library", ImVec2(0.0f, 160.0f), true))
 	{
 		ImGuiListClipper clipper;
@@ -8364,9 +8384,10 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 
 void CCinemaFilmMakerManager::DrawParticleTab()
 {
-	if (ImGui::CollapsingHeader("Particle library##cinema", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Particle library##cinema", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
 		DrawParticleBrowser();
+		ImGui::TreePop();
 	}
 	if (SelectedParticle < 0 || SelectedParticle >= static_cast<s32>(Particles.size()))
 	{
@@ -8408,7 +8429,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	{
 		ImGui::SetTooltip("Create a group containing the selected particles");
 	}
-	ImGui::TextDisabled("Shift+click: select range | Ctrl+click: toggle | Drag to group");
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Drag to group");
 
 	s32 droppedParticle = -1;
 	s32 targetParticle = -1;
@@ -9074,7 +9095,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			}
 			ImGui::TreePop();
 		}
-		if (ImGui::CollapsingHeader("Transform##particle", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::TreeNodeEx("Transform##particle", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 		{
 			bool changed = ImGui::DragFloat3("Position##particle", &particle.Position.x, 0.01f, -100000.0f, 100000.0f, "%.2f");
 			if (CinemaResetRequested())
@@ -9125,6 +9146,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			{
 				UpdateParticleTransform(particle);
 			}
+			ImGui::TreePop();
 		}
 		Fvector oldRotation, newRotation;
 		before.Orientation.getHPB(oldRotation);
@@ -9296,6 +9318,56 @@ void CCinemaFilmMakerManager::TransformSelectedLights(const Fvector& previousPos
 		orientation.mul(rotation, light.Orientation);
 		light.Orientation = orientation;
 		ApplyCinemaLight(light);
+	}
+}
+
+void CCinemaFilmMakerManager::DuplicateLights(const xr_vector<s32>& indices)
+{
+	xr_vector<SCinemaLightData> copies;
+	for (const s32 index : indices)
+	{
+		if (index >= 0 && index < static_cast<s32>(Lights.size()))
+		{
+			copies.push_back(Lights[index]);
+		}
+	}
+	if (copies.empty() || copies.size() > kCinemaSceneMaxActors - Lights.size())
+	{
+		return;
+	}
+	ClearGizmo();
+	xr_vector<s32> created;
+	bool failed = false;
+	for (auto& data : copies)
+	{
+		SCinemaLight light;
+		static_cast<SCinemaLightData&>(light) = std::move(data);
+		light.Position.x += 1.0f;
+		light.CurveDrag = -1;
+		light.Light = ::Render->light_create();
+		if (!light.Light)
+		{
+			failed = true;
+			continue;
+		}
+		ApplyCinemaLight(light, true);
+		Lights.push_back(std::move(light));
+		created.push_back(static_cast<s32>(Lights.size()) - 1);
+	}
+	if (!created.empty())
+	{
+		SelectActor(-1);
+		SelectedParticle = -1;
+		SelectedParticleGroup = -1;
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
+		SelectedLights = std::move(created);
+		SelectedLight = SelectedLights.back();
+		LightSelectionAnchor = SelectedLight;
+	}
+	if (failed)
+	{
+		ShowSceneDialog(ESceneDialog::Info, "Duplicate lights", { "The renderer could not create one or more lights." });
 	}
 }
 
@@ -9566,6 +9638,8 @@ void CCinemaFilmMakerManager::DrawLightModulation(SCinemaLight& light)
 
 void CCinemaFilmMakerManager::DrawLightTab()
 {
+	ImGui::SeparatorText("Scene lights");
+	ImGui::TextDisabled("%u lights", static_cast<u32>(Lights.size()));
 	ImGui::BeginDisabled(Lights.size() >= kCinemaSceneMaxActors);
 	if (ImGui::Button("Add light"))
 	{
@@ -9599,9 +9673,15 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		}
 	}
 	ImGui::EndDisabled();
-	ImGui::SeparatorText("Scene lights");
+	if (Lights.empty())
+	{
+		CinemaHint("No lights yet. Choose Add light to place one in the scene.");
+		return;
+	}
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Right-click: actions");
 	s32 clicked = -1;
 	s32 remove = -1;
+	s32 duplicate = -1;
 	for (s32 i = 0; i < static_cast<s32>(Lights.size()); ++i)
 	{
 		string64 label = {};
@@ -9613,12 +9693,25 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		}
 		if (ImGui::BeginPopupContextItem())
 		{
+			const size_t count = selected ? SelectedLights.size() : 1;
+			ImGui::BeginDisabled(count > kCinemaSceneMaxActors - Lights.size());
+			if (ImGui::MenuItem("Duplicate"))
+			{
+				duplicate = i;
+			}
+			ImGui::EndDisabled();
 			if (ImGui::MenuItem("Remove"))
 			{
 				remove = i;
 			}
 			ImGui::EndPopup();
 		}
+	}
+	if (duplicate >= 0)
+	{
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), duplicate) != SelectedLights.end();
+		DuplicateLights(selected ? SelectedLights : xr_vector<s32>{ duplicate });
+		return;
 	}
 	if (remove >= 0)
 	{
@@ -9676,7 +9769,19 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	{
 		ImGui::TextDisabled("%u selected. Edits apply to all selected lights.", static_cast<u32>(SelectedLights.size()));
 	}
-	if (ImGui::Button("Delete##light"))
+	ImGui::SeparatorText("Selected light");
+	SToolbarLayout lightActions(ImGui::GetContentRegionAvail().x);
+	lightActions.Item(CinemaButtonWidth("Duplicate"));
+	ImGui::BeginDisabled(SelectedLights.size() > kCinemaSceneMaxActors - Lights.size());
+	if (ImGui::Button("Duplicate##light"))
+	{
+		DuplicateLights(SelectedLights);
+		ImGui::EndDisabled();
+		return;
+	}
+	ImGui::EndDisabled();
+	lightActions.Item(CinemaButtonWidth("Remove"));
+	if (ImGui::Button("Remove##light"))
 	{
 		RemoveLights(SelectedLights);
 		return;
@@ -9684,48 +9789,58 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	auto& light = Lights[SelectedLight];
 	const SCinemaLightData previous = light;
 	bool textureChanged = false;
-	ImGui::SeparatorText("Light settings");
-	bool changed = ImGui::Combo("Type", &light.Type, "Point\0Spot\0");
-	changed |= ImGui::Checkbox("Enabled", &light.Active);
-	changed |= ImGui::Checkbox("Shadows", &light.Shadow);
-	const bool colorChanged = ImGui::ColorEdit3("Color", &light.Color.x, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
-	changed |= colorChanged;
-	changed |= ImGui::DragFloat("Range", &light.Range, 0.1f, 0.1f, 1000.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-	changed |= ImGui::DragFloat("Virtual size", &light.VirtualSize, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-	if (light.Type == 1)
+	bool changed = false;
+	bool colorChanged = false;
+	bool positionChanged = false;
+	bool rotationChanged = false;
+	if (ImGui::TreeNodeEx("Light settings##light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
-		changed |= ImGui::DragFloat("Cone angle", &light.Cone, 0.5f, 1.0f, 120.0f, "%.1f deg", ImGuiSliderFlags_AlwaysClamp);
-		if (ImGui::InputText("Projection texture", light.Texture, sizeof(light.Texture), ImGuiInputTextFlags_EnterReturnsTrue))
+		changed = ImGui::Combo("Type", &light.Type, "Point\0Spot\0");
+		changed |= ImGui::Checkbox("Enabled", &light.Active);
+		changed |= ImGui::Checkbox("Shadows", &light.Shadow);
+		colorChanged = ImGui::ColorEdit3("Color", &light.Color.x, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+		changed |= colorChanged;
+		changed |= ImGui::DragFloat("Range", &light.Range, 0.1f, 0.1f, 1000.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		changed |= ImGui::DragFloat("Virtual size", &light.VirtualSize, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		if (light.Type == 1)
 		{
-			textureChanged = true;
+			changed |= ImGui::DragFloat("Cone angle", &light.Cone, 0.5f, 1.0f, 120.0f, "%.1f deg", ImGuiSliderFlags_AlwaysClamp);
+			if (ImGui::InputText("Projection texture", light.Texture, sizeof(light.Texture), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				textureChanged = true;
+			}
+			ImGui::TextDisabled("Press Enter to apply the texture. Shadowed spots only.");
 		}
-		ImGui::TextDisabled("Press Enter to apply the texture. Shadowed spots only.");
-	}
-	changed |= ImGui::Checkbox("Volumetric", &light.Volumetric);
-	if (light.Volumetric)
-	{
-		changed |= ImGui::DragFloat("Volume quality", &light.VolumeQuality, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		changed |= ImGui::DragFloat("Volume intensity", &light.VolumeIntensity, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		changed |= ImGui::DragFloat("Volume distance", &light.VolumeDistance, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		if (ImGui::IsItemHovered())
+		changed |= ImGui::Checkbox("Volumetric", &light.Volumetric);
+		if (light.Volumetric)
 		{
-			ImGui::SetTooltip("The renderer uses a minimum distance of 0.01.");
+			changed |= ImGui::DragFloat("Volume quality", &light.VolumeQuality, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			changed |= ImGui::DragFloat("Volume intensity", &light.VolumeIntensity, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			changed |= ImGui::DragFloat("Volume distance", &light.VolumeDistance, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("The renderer uses a minimum distance of 0.01.");
+			}
 		}
+		changed |= ImGui::Checkbox("Indirect", &light.Indirect);
+		changed |= ImGui::Checkbox("HUD mode", &light.HudMode);
+		changed |= ImGui::Checkbox("Occlusion queries", &light.Occlusion);
+		ImGui::TreePop();
 	}
-	changed |= ImGui::Checkbox("Indirect", &light.Indirect);
-	changed |= ImGui::Checkbox("HUD mode", &light.HudMode);
-	changed |= ImGui::Checkbox("Occlusion queries", &light.Occlusion);
-	ImGui::SeparatorText("Transform");
-	const bool positionChanged = ImGui::DragFloat3("Position##light", &light.Position.x, 0.05f);
-	changed |= positionChanged;
-	Fvector rotation = {};
-	light.Orientation.getHPB(rotation);
-	rotation.mul(rad2deg(1.0f));
-	const bool rotationChanged = ImGui::DragFloat3("Rotation##light", &rotation.x, 0.5f);
-	if (rotationChanged)
+	if (ImGui::TreeNodeEx("Transform##light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
-		light.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
-		changed = true;
+		positionChanged = ImGui::DragFloat3("Position##light", &light.Position.x, 0.05f);
+		changed |= positionChanged;
+		Fvector rotation = {};
+		light.Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+		rotationChanged = ImGui::DragFloat3("Rotation##light", &rotation.x, 0.5f);
+		if (rotationChanged)
+		{
+			light.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+			changed = true;
+		}
+		ImGui::TreePop();
 	}
 	if (changed)
 	{
@@ -9852,13 +9967,19 @@ void CCinemaFilmMakerManager::DrawPanel()
 		{
 			DrawActorToolbar();
 			ImGui::Separator();
-			if (ImGui::CollapsingHeader("Model##cinema_actor", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNodeEx("Model##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 			{
 				DrawModelTab();
+				ImGui::TreePop();
 			}
 			if (ImGui::TreeNodeEx("Actor settings##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 			{
 				DrawSelectedActor();
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNodeEx("Item##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+			{
+				DrawItemTab();
 				ImGui::TreePop();
 			}
 			if (ImGui::TreeNodeEx("Animations##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
@@ -9875,11 +9996,6 @@ void CCinemaFilmMakerManager::DrawPanel()
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Item"))
-		{
-			DrawItemTab();
-			ImGui::EndTabItem();
-		}
 
 		ImGui::EndTabBar();
 	}
