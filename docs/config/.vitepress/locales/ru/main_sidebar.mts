@@ -231,6 +231,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'Компиляторы', link: '/utilities/compilers' },
       { text: 'Компрессор', link: '/utilities/compressor' },
+      { text: 'Level Inspector', link: '/utilities/level-inspector' },
     ],
   },
   {
