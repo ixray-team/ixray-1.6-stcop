@@ -528,6 +528,7 @@ struct attachable_hud_item final
 	float							SprintPoseInertia = 0.08f;
 	xr_vector<shared_str>			RetargetMotions;
 	shared_str						RetargetReference;
+	shared_str						RetargetSource;
 	xr_hash_map<shared_str, SHudRetargetLayer>	RetargetLayers;
 	shared_str						AttachPoseReference;
 	bool							RetargetPlaying = false;

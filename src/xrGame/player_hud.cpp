@@ -1080,6 +1080,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	AdditiveReference = pSettings->read_if_exists<str_c>(sect_name, "additive_reference", nullptr);
 	hud_read_motion_list(sect_name, "retarget_motions", RetargetMotions);
 	RetargetReference = pSettings->read_if_exists<str_c>(sect_name, "retarget_reference", nullptr);
+	RetargetSource = pSettings->read_if_exists<str_c>(sect_name, "retarget_source", nullptr);
 	LoadRetargetLayers();
 	hud_read_motion_list(sect_name, "left_hand_free_motions", LeftHandFreeMotions);
 
@@ -3023,6 +3024,12 @@ bool attachable_hud_item::RetargetMode(const shared_str& motion, shared_str& ref
 	}
 
 	const shared_str& source = hud_retarget_source_idle(base_name(motion.c_str()));
+	if (RetargetReference.size() != 0 && source == RetargetSource)
+	{
+		reference = RetargetReference;
+		return true;
+	}
+
 	const player_hud_motion* own_idle = OwnIdle();
 	const shared_str own = own_idle != nullptr ? own_idle->m_base_name : shared_str();
 	if (source.size() != 0 ? source != own : RetargetReference.size() != 0)
