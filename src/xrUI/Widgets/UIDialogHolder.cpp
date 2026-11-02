@@ -51,7 +51,14 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	xrCriticalSectionGuard Guard(DialogsLock);
 	R_ASSERT						( !pDialog->IsShown() );
 
+	// Show(true) may close the dialog right away (e.g. talk window without a partner), so it needs a holder
+	pDialog->SetHolder				(this);
 	AddDialogToRender				(pDialog);
+	if (!pDialog->IsShown() || pDialog->GetHolder() != this)
+	{
+		return;
+	}
+
 	SetMainInputReceiver			(pDialog, false);
 
 	if(UseIndicators())
@@ -67,7 +74,6 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 			g_pGameCustom->ShowGameIndicators(false);
 		}
 	}
-	pDialog->SetHolder				(this);
 
 	if( pDialog->NeedCursor() )
 		GetUICursor().Show();
