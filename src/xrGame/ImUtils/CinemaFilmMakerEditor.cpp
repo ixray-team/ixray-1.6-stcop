@@ -8,6 +8,9 @@
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
 #include "../HUDManager.h"
 #include "../HUDTarget.h"
+#include "../Level.h"
+#include "../Level_Bullet_Manager.h"
+#include "../WeaponAmmo.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "../../Include/xrRender/RenderVisual.h"
@@ -77,6 +80,7 @@ struct SPlaylistEntry
 	shared_str Source;
 	shared_str Name;
 	bool Fx = false;
+	bool Muted = false;
 };
 
 struct STrimSegment
@@ -90,6 +94,7 @@ struct STrimRange
 	shared_str Source;
 	shared_str Name;
 	xr_vector<STrimSegment> Segments;
+	xr_vector<float> Shots;
 	float Speed = 1.0f;
 	float Blend = 0.0f;
 };
@@ -714,6 +719,7 @@ struct SCinemaActor
 	shared_str MotionSource;
 	bool MotionFx = false;
 	float FxDeadline = 0.0f;
+	float ShotPreviousTime = -1.0f;
 	shared_str ItemSection;
 	IRenderVisual* ItemModel = nullptr;
 	bool ItemWeaponStyle = false;
@@ -2076,7 +2082,7 @@ static void SortSegmentList(xr_vector<STrimSegment>& segments)
 }
 
 static bool DrawAnimationTimeline(const char* id, float& time, float total, const CMotionDef* motionDef, const SEditorTheme& theme,
-	STrimRange* trim, s32& dragMarker, s32& dragIndex, xr_string& dragKey, const char* trimKey)
+	STrimRange* trim, s32& dragMarker, s32& dragIndex, xr_string& dragKey, const char* trimKey, bool canShoot)
 {
 	const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
 	constexpr float height = 64.0f;
@@ -2091,6 +2097,7 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 	const float pixelsPerSecond = total > 0.0f ? width / total : 0.0f;
 	const ImVec2 mouse = ImGui::GetIO().MousePos;
 	const bool ctrlHeld = ImGui::GetIO().KeyCtrl;
+	const bool shiftHeld = ImGui::GetIO().KeyShift;
 
 	const auto timeToX = [&](float value)
 	{
@@ -2133,7 +2140,11 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 		{
 			if (dragMarker == 0 && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
-				if (ctrlHeld)
+				if (shiftHeld && !ctrlHeld && canShoot && trim->Shots.size() < kCinemaSceneMaxPlaylist)
+				{
+					trim->Shots.push_back(std::min(xToTime(mouse.x), std::max(0.0f, total - END_EPS)));
+				}
+				else if (ctrlHeld)
 				{
 					STrimSegment segment;
 					segment.Start = xToTime(mouse.x);
@@ -2214,7 +2225,7 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 			}
 		}
 
-		if (dragMarker == 0 && ImGui::IsItemActive())
+		if (dragMarker == 0 && ImGui::IsItemActive() && !shiftHeld)
 		{
 			time = xToTime(mouse.x);
 			changed = true;
@@ -2322,6 +2333,12 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 
 		if (trim != nullptr)
 		{
+			for (const float shot : trim->Shots)
+			{
+				const float shotX = timeToX(shot);
+				draw->AddLine(ImVec2(shotX, origin.y + 9.0f), ImVec2(shotX, origin.y + height - 9.0f), IM_COL32(255, 75, 75, 255), 2.0f);
+				draw->AddCircleFilled(ImVec2(shotX, origin.y + height - 5.0f), 4.0f, IM_COL32(255, 75, 75, 255));
+			}
 			for (const STrimSegment& segment : trim->Segments)
 			{
 				const float inX = timeToX(segment.Start);
@@ -2340,7 +2357,7 @@ static bool DrawAnimationTimeline(const char* id, float& time, float total, cons
 			const float hoverTime = xToTime(mouse.x);
 			if (trim)
 			{
-				ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nCtrl+drag - add segment, drag a flag - move it, right click on a segment - delete", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f));
+				ImGui::SetTooltip("Time: %.3f s\nFrame: %d\nCtrl+drag - add segment, drag a flag - move it, right click on a segment - delete%s", hoverTime, iFloor(hoverTime / SAMPLE_SPF + 0.5f), canShoot ? "\nShift+click - add shot" : "");
 			}
 			else
 			{
@@ -2477,6 +2494,7 @@ private:
 	void PickActorAtMouse();
 
 	void UpdateActorPlayback(SCinemaActor& actor);
+	void UpdateActorShots(SCinemaActor& actor);
 	void AdvanceActorPlaylist(SCinemaActor& actor);
 	bool TryPlayPlaylistFrom(SCinemaActor& actor, s32 start);
 	bool PlayPlaylistEntry(SCinemaActor& actor, s32 index);
@@ -3051,9 +3069,16 @@ void CCinemaFilmMakerManager::OnFrame()
 
 	for (auto& actor : Actors)
 	{
+		const STrimRange* trim = FindTrim(*actor, actor->MotionSource, actor->MotionName);
+		if (trim != nullptr && !trim->Shots.empty())
+		{
+			UpdateActorPlacement(*actor);
+			UpdateActorShots(*actor);
+		}
 		UpdateActorTrim(*actor);
-		UpdateActorPlayback(*actor);
 		UpdateActorPlacement(*actor);
+		UpdateActorShots(*actor);
+		UpdateActorPlayback(*actor);
 	}
 	for (auto& light : Lights)
 	{
@@ -3485,6 +3510,7 @@ bool CCinemaFilmMakerManager::PlayClip(SCinemaActor& actor, const SAnimationSour
 	}
 
 	actor.Motion = motion;
+	actor.ShotPreviousTime = -1.0f;
 	actor.MotionName = clip.Name;
 	actor.MotionSource = source.Id;
 	actor.MotionFx = clip.Fx;
@@ -3518,6 +3544,11 @@ bool CCinemaFilmMakerManager::PlayPlaylistEntry(SCinemaActor& actor, s32 index)
 	}
 
 	const SPlaylistEntry& entry = actor.Playlist[index];
+	if (entry.Muted)
+	{
+		return false;
+	}
+
 	const SAnimationSource* source = FindSource(actor, entry.Source);
 
 	if (source == nullptr)
@@ -3878,6 +3909,118 @@ void CCinemaFilmMakerManager::UpdateActorTrim(SCinemaActor& actor)
 }
 
 
+static void CinemaFireShot(SCinemaActor& actor)
+{
+	if (g_actor == nullptr || g_pGameLevel == nullptr || pSettings == nullptr || actor.ItemSection.size() == 0 || actor.Object.ItemVisual == nullptr)
+	{
+		return;
+	}
+	const char* section = actor.ItemSection.c_str();
+	if (!pSettings->line_exist(section, "fire_point") || !pSettings->line_exist(section, "ammo_class"))
+	{
+		return;
+	}
+	string128 ammo = {};
+	_GetItem(pSettings->r_string(section, "ammo_class"), 0, ammo);
+	if (!ammo[0] || !pSettings->section_exist(ammo))
+	{
+		return;
+	}
+	const char* required[] = { "k_dist", "k_disp", "k_hit", "k_impulse", "tracer", "buck_shot", "impair", "wm_size", "inv_name_short" };
+	for (const char* key : required)
+	{
+		if (!pSettings->line_exist(ammo, key))
+		{
+			return;
+		}
+	}
+	if ((!pSettings->line_exist(ammo, "k_ap") && !pSettings->line_exist(ammo, "k_pierce")) || (!pSettings->line_exist(ammo, "k_air_resistance") && !pSettings->line_exist("bullet_manager", "air_resistance_k")) || !std::isfinite(pSettings->r_float(ammo, "k_dist")) || pSettings->r_float(ammo, "k_dist") <= 0.0f || pSettings->r_float(ammo, "wm_size") <= 0.0f)
+	{
+		return;
+	}
+	const float speed = pSettings->read_if_exists<float>(section, "bullet_speed", 0.0f) * pSettings->read_if_exists<float>(section, "bullet_speed_mult", 1.0f);
+	const float distance = pSettings->read_if_exists<float>(section, "fire_distance", 0.0f) * pSettings->read_if_exists<float>(section, "fire_distance_mult", 1.0f);
+	if (!std::isfinite(speed) || !std::isfinite(distance) || speed <= 0.0f || distance <= 0.0f)
+	{
+		return;
+	}
+	float power = 0.0f;
+	if (pSettings->line_exist(section, "hit_power"))
+	{
+		string32 value = {};
+		_GetItem(pSettings->r_string(section, "hit_power"), 0, value);
+		power = static_cast<float>(atof(value));
+	}
+	const float impulse = pSettings->read_if_exists<float>(section, "hit_impulse", 0.0f) * pSettings->read_if_exists<float>(section, "hit_impulse_mult", 1.0f);
+	const Fmatrix& transform = actor.Object.ItemTransform;
+	Fvector position = {};
+	transform.transform_tiny(position, pSettings->r_fvector3(section, "fire_point"));
+	Fvector direction = transform.k;
+	if (direction.square_magnitude() <= EPS_S)
+	{
+		return;
+	}
+	direction.normalize();
+	CCartridge cartridge;
+	cartridge.Load(ammo, 0);
+	Level().BulletManager().AddBullet(position, direction, speed, power, impulse, g_actor->ID(), g_actor->ID(), ALife::eHitTypeFireWound, distance, cartridge, pSettings->read_if_exists<float>(section, "air_resistance_factor", 1.0f), true);
+}
+
+static constexpr bool CinemaCrossedShot(float shot, float from, float to, bool forward)
+{
+	return forward ? shot > from && shot <= to : shot < from && shot >= to;
+}
+
+static_assert(CinemaCrossedShot(0.5f, 0.4f, 0.5f, true));
+static_assert(!CinemaCrossedShot(0.5f, 0.5f, 0.6f, true));
+static_assert(CinemaCrossedShot(0.5f, 0.6f, 0.5f, false));
+static_assert(!CinemaCrossedShot(0.5f, 0.5f, 0.4f, false));
+
+void CCinemaFilmMakerManager::UpdateActorShots(SCinemaActor& actor)
+{
+	if (actor.Animated == nullptr || !actor.Motion.valid() || actor.MotionFx)
+	{
+		actor.ShotPreviousTime = -1.0f;
+		return;
+	}
+	CBlend* blend = CinemaFindBlend(actor.Animated, actor.Motion);
+	if (blend == nullptr)
+	{
+		actor.ShotPreviousTime = -1.0f;
+		return;
+	}
+	const float now = blend->timeCurrent;
+	const float previous = actor.ShotPreviousTime < 0.0f ? (actor.PlayDirection >= 0.0f ? -EPS_S : now + EPS_S) : actor.ShotPreviousTime;
+	actor.ShotPreviousTime = now;
+	if (actor.Paused || (!blend->playing && now == previous))
+	{
+		return;
+	}
+	const STrimRange* trim = FindTrim(actor, actor.MotionSource, actor.MotionName);
+	if (trim == nullptr || trim->Shots.empty())
+	{
+		return;
+	}
+	const bool forward = actor.PlayDirection >= 0.0f;
+	for (const float shot : trim->Shots)
+	{
+		if (shot > blend->timeTotal)
+		{
+			continue;
+		}
+		if (!trim->Segments.empty() && std::none_of(trim->Segments.begin(), trim->Segments.end(), [shot](const STrimSegment& segment) { return shot >= segment.Start && shot <= segment.End; }))
+		{
+			continue;
+		}
+		const bool wrapped = forward ? now < previous : now > previous;
+		const bool hit = wrapped ? (CinemaCrossedShot(shot, previous, forward ? blend->timeTotal : 0.0f, forward) || CinemaCrossedShot(shot, forward ? -EPS_S : blend->timeTotal + EPS_S, now, forward)) : CinemaCrossedShot(shot, previous, now, forward);
+		if (hit)
+		{
+			CinemaFireShot(actor);
+		}
+	}
+}
+
 void CCinemaFilmMakerManager::UpdateActorPlayback(SCinemaActor& actor)
 {
 	if (actor.PlaylistIndex < 0 || actor.Paused || actor.PlaylistIndex >= static_cast<s32>(actor.Playlist.size()))
@@ -3933,7 +4076,10 @@ void CCinemaFilmMakerManager::StartPlaylist(SCinemaActor& actor, s32 start)
 
 	actor.Paused = false;
 	actor.PlaylistIndex = -1;
-	TryPlayPlaylistFrom(actor, start);
+	if (!TryPlayPlaylistFrom(actor, start))
+	{
+		StopActor(actor);
+	}
 }
 
 void CCinemaFilmMakerManager::StartActorPlayback(SCinemaActor& actor)
@@ -4550,6 +4696,48 @@ static void SplitTrimValue(const xr_string& text, xr_vector<xr_string>& parts)
 	}
 }
 
+static void CinemaSaveShots(CInifile& ini, const char* section, const char* trimKey, const xr_vector<float>& shots)
+{
+	if (shots.empty())
+	{
+		return;
+	}
+	string64 key = {};
+	xr_sprintf(key, "%s_shots", trimKey);
+	xr_string value;
+	for (float shot : shots)
+	{
+		string32 number = {};
+		xr_sprintf(number, "%.5f|", shot);
+		value += number;
+	}
+	ini.w_string(section, key, value.c_str());
+}
+
+static void CinemaLoadShots(CInifile& ini, const char* section, const char* trimKey, xr_vector<float>& shots)
+{
+	string64 key = {};
+	xr_sprintf(key, "%s_shots", trimKey);
+	if (!ini.line_exist(section, key))
+	{
+		return;
+	}
+	xr_vector<xr_string> values;
+	SplitTrimValue(ini.r_string(section, key), values);
+	for (const xr_string& value : values)
+	{
+		if (value.empty() || shots.size() >= kCinemaSceneMaxPlaylist)
+		{
+			continue;
+		}
+		const float time = static_cast<float>(atof(value.c_str()));
+		if (std::isfinite(time) && time >= 0.0f)
+		{
+			shots.push_back(time);
+		}
+	}
+}
+
 static bool CinemaParseTrim(const shared_str& value, STrimRange& trim)
 {
 	if (value.size() == 0)
@@ -4631,7 +4819,7 @@ static bool CinemaParseTrim(const shared_str& value, STrimRange& trim)
 		}
 	}
 
-	if (trim.Source.size() == 0 || trim.Name.size() == 0 || trim.Segments.empty())
+	if (trim.Source.size() == 0 || trim.Name.size() == 0)
 	{
 		return false;
 	}
@@ -4691,6 +4879,7 @@ bool CCinemaFilmMakerManager::RestoreActorPose(SCinemaActor& actor, const SScene
 	if (!data.PoseFx && data.PoseTime > 0.0f)
 	{
 		CinemaSetBlendTime(actor.Animated, actor.Motion, data.PoseTime);
+		actor.ShotPreviousTime = data.PoseTime;
 	}
 
 	if (data.PosePaused)
@@ -5223,6 +5412,8 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			string1024 value = {};
 			xr_sprintf(value, "%s|%s|%u", entry.Source.c_str(), entry.Name.c_str(), entry.Fx ? 1u : 0u);
 			ini.w_string(section, line, value);
+			xr_sprintf(line, "playlist_%03u_muted", j);
+			ini.w_bool(section, line, entry.Muted);
 		}
 
 		ini.w_bool(section, "pingpong", actor.PingPong);
@@ -5233,11 +5424,6 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			const STrimRange& trim = actor.Trims[j];
 
 			if (trim.Source.size() == 0 || trim.Name.size() == 0)
-			{
-				continue;
-			}
-
-			if (trim.Segments.empty())
 			{
 				continue;
 			}
@@ -5267,6 +5453,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			}
 
 			ini.w_string(section, line, value.c_str());
+			CinemaSaveShots(ini, section, line, trim.Shots);
 		}
 	}
 
@@ -5559,6 +5746,8 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			entry.Source = text.substr(0, first).c_str();
 			entry.Name = text.substr(first + 1, second - first - 1).c_str();
 			entry.Fx = text.compare(second + 1, xr_string::npos, "1") == 0;
+			xr_sprintf(line, "playlist_%03u_muted", j);
+			entry.Muted = ini.line_exist(sect, line) && ini.r_bool(sect, line);
 			data.Playlist.push_back(entry);
 		}
 
@@ -5613,6 +5802,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 				continue;
 			}
 
+			CinemaLoadShots(ini, sect, line, trim.Shots);
 			data.Trims.push_back(trim);
 		}
 
@@ -6427,6 +6617,8 @@ void CCinemaFilmMakerManager::LoadPresets()
 			entry.Source = text.substr(0, first).c_str();
 			entry.Name = text.substr(first + 1, second - first - 1).c_str();
 			entry.Fx = text.compare(second + 1, xr_string::npos, "1") == 0;
+			xr_sprintf(line, "playlist_%03u_muted", index);
+			entry.Muted = ini.line_exist(sect, line) && ini.r_bool(sect, line);
 			preset.Playlist.push_back(entry);
 		}
 
@@ -6481,6 +6673,7 @@ void CCinemaFilmMakerManager::LoadPresets()
 				continue;
 			}
 
+			CinemaLoadShots(ini, sect, line, trim.Shots);
 			preset.Trims.push_back(trim);
 		}
 
@@ -6532,6 +6725,8 @@ void CCinemaFilmMakerManager::SavePresets()
 			string1024 value = {};
 			xr_sprintf(value, "%s|%s|%u", entry.Source.c_str(), entry.Name.c_str(), entry.Fx ? 1u : 0u);
 			ini.w_string(section, line, value);
+			xr_sprintf(line, "playlist_%03u_muted", entryIndex);
+			ini.w_bool(section, line, entry.Muted);
 		}
 
 		ini.w_bool(section, "pingpong", preset.PingPong);
@@ -6542,11 +6737,6 @@ void CCinemaFilmMakerManager::SavePresets()
 			const STrimRange& trim = preset.Trims[trimIndex];
 
 			if (trim.Source.size() == 0 || trim.Name.size() == 0)
-			{
-				continue;
-			}
-
-			if (trim.Segments.empty())
 			{
 				continue;
 			}
@@ -6576,6 +6766,7 @@ void CCinemaFilmMakerManager::SavePresets()
 			}
 
 			ini.w_string(section, line, value.c_str());
+			CinemaSaveShots(ini, section, line, trim.Shots);
 		}
 	}
 
@@ -7547,7 +7738,8 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 	string512 trimKey = {};
 	xr_sprintf(trimKey, "%s|%s", source.Id.c_str(), clip.Name.c_str());
 
-	if (DrawAnimationTimeline("##cinema_clip_timeline", time, total, actor.Animated->LL_GetMotionDef(motion), GetTheme(), trim, TrimDragMarker, TrimDragIndex, TrimDragKey, trimKey))
+	const bool canShoot = actor.ItemSection.size() > 0 && pSettings != nullptr && pSettings->line_exist(actor.ItemSection.c_str(), "fire_point");
+	if (DrawAnimationTimeline("##cinema_clip_timeline", time, total, actor.Animated->LL_GetMotionDef(motion), GetTheme(), trim, TrimDragMarker, TrimDragIndex, TrimDragKey, trimKey, canShoot))
 	{
 		if (!playing)
 		{
@@ -7557,6 +7749,7 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		actor.Paused = true;
 		CinemaSetBlendPlaying(actor.Animated, actor.Motion, false);
 		CinemaSetBlendTime(actor.Animated, actor.Motion, time);
+		actor.ShotPreviousTime = time;
 	}
 
 	if (ImGui::IsItemHovered() || ImGui::IsItemActive())
@@ -7573,6 +7766,40 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 	else
 	{
 		ImGui::TextDisabled("Clip length: %.3f s", total);
+	}
+
+	if (trim != nullptr && canShoot)
+	{
+		if (ImGui::TreeNodeEx("Shots###clip_shots", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+		{
+			ImGui::BeginDisabled(trim->Shots.size() >= kCinemaSceneMaxPlaylist);
+			if (ImGui::SmallButton("Add shot at playhead"))
+			{
+				trim->Shots.push_back(std::clamp(time, 0.0f, std::max(0.0f, total - END_EPS)));
+			}
+			ImGui::EndDisabled();
+			ImGui::SameLine();
+			ImGui::TextDisabled("Shift+click on timeline");
+			if (!pSettings->line_exist(actor.ItemSection.c_str(), "ammo_class"))
+			{
+				ImGui::TextDisabled("This item has no ammo_class for bullet shots.");
+			}
+			for (s32 index = 0; index < static_cast<s32>(trim->Shots.size()); ++index)
+			{
+				ImGui::PushID(index);
+				ImGui::SetNextItemWidth(110.0f);
+				ImGui::DragFloat("Time##shot", &trim->Shots[index], 0.01f, 0.0f, std::max(0.0f, total - END_EPS), "%.3f s", ImGuiSliderFlags_AlwaysClamp);
+				ImGui::SameLine();
+				if (ImGui::SmallButton("Remove##shot"))
+				{
+					trim->Shots.erase(trim->Shots.begin() + index);
+					ImGui::PopID();
+					break;
+				}
+				ImGui::PopID();
+			}
+			ImGui::TreePop();
+		}
 	}
 
 	if (ImGui::TreeNodeEx("Segments###clip_segments", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
@@ -7659,7 +7886,7 @@ void CCinemaFilmMakerManager::DrawClipTimeline(SCinemaActor& actor, const SAnima
 		ImGui::TreePop();
 	}
 
-	if (trim != nullptr && trim->Segments.empty() && fabsf(trim->Speed - actor.Speed) <= 0.001f && trim->Blend <= 0.0f)
+	if (trim != nullptr && trim->Segments.empty() && trim->Shots.empty() && fabsf(trim->Speed - actor.Speed) <= 0.001f && trim->Blend <= 0.0f)
 	{
 		RemoveTrim(actor, source.Id, clip.Name);
 	}
@@ -8197,7 +8424,7 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 		}
 	}
 
-	ImGui::BeginChild("##cinema_playlist_items", ImVec2(0.0f, 0.0f), true);
+	ImGui::BeginChild("##cinema_playlist_items", ImVec2(0.0f, std::max(300.0f, ImGui::GetContentRegionAvail().y)), true);
 
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -8220,16 +8447,34 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 		ImGui::TextDisabled("Drag animations here or use the context menu");
 	}
 
+	bool muteChanged = false;
 	for (s32 i = 0; i < static_cast<s32>(actor.Playlist.size()); ++i)
 	{
-		const SPlaylistEntry& entry = actor.Playlist[i];
-
+		SPlaylistEntry& entry = actor.Playlist[i];
+		const bool selected = actor.PlaylistSelection.empty() ? actor.PlaylistSelected == i : std::find(actor.PlaylistSelection.begin(), actor.PlaylistSelection.end(), i) != actor.PlaylistSelection.end();
 		ImGui::PushID(i);
 
-		string256 label = {};
-		xr_sprintf(label, "%d. %s%s%s", i + 1, entry.Name.c_str(), entry.Fx ? " [fx]" : "", actor.PlaylistIndex == i ? "  [playing]" : "");
+		bool enabled = !entry.Muted;
+		if (ImGui::Checkbox("##playlist_enabled", &enabled))
+		{
+			const auto indices = selected && !actor.PlaylistSelection.empty() ? actor.PlaylistSelection : xr_vector<s32>{ i };
+			for (const s32 index : indices)
+			{
+				if (index >= 0 && index < static_cast<s32>(actor.Playlist.size()))
+				{
+					actor.Playlist[index].Muted = !enabled;
+				}
+			}
+			muteChanged = true;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Enable or mute selected playlist entries");
+		}
+		ImGui::SameLine();
 
-		const bool selected = actor.PlaylistSelection.empty() ? actor.PlaylistSelected == i : std::find(actor.PlaylistSelection.begin(), actor.PlaylistSelection.end(), i) != actor.PlaylistSelection.end();
+		string256 label = {};
+		xr_sprintf(label, "%d. %s%s%s%s", i + 1, entry.Name.c_str(), entry.Fx ? " [fx]" : "", entry.Muted ? " [muted]" : "", actor.PlaylistIndex == i ? "  [playing]" : "");
 		if (ImGui::Selectable(label, selected))
 		{
 			if (ImGui::GetIO().KeyShift && actor.PlaylistAnchor >= 0 && actor.PlaylistAnchor < static_cast<s32>(actor.Playlist.size()))
@@ -8325,6 +8570,32 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 	}
 
 	ImGui::EndChild();
+
+	if (muteChanged && actor.PlaylistIndex >= 0 && actor.PlaylistIndex < static_cast<s32>(actor.Playlist.size()) && actor.Playlist[actor.PlaylistIndex].Muted)
+	{
+		if (actor.MotionFx && actor.Animated != nullptr && actor.Motion.valid())
+		{
+			struct StopFx : IterateBlendsCallback
+			{
+				MotionID Motion;
+				void operator()(CBlend& blend) override
+				{
+					if (blend.motionID == Motion)
+					{
+						blend.blendAmount = 0.0f;
+						blend.set_falloff_state();
+					}
+				}
+			} stopFx;
+			stopFx.Motion = actor.Motion;
+			actor.Animated->LL_IterateBlends(stopFx);
+		}
+		AdvanceActorPlaylist(actor);
+		if (actor.PlaylistIndex < 0)
+		{
+			StopActor(actor);
+		}
+	}
 }
 
 void CCinemaFilmMakerManager::DrawParticleBrowser()
@@ -8954,7 +9225,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			const ImVec2 origin = ImGui::GetCursorScreenPos();
 			const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
 			float time = particle.Time;
-			DrawAnimationTimeline("##particle_timeline", time, particle.Out, nullptr, GetTheme(), nullptr, TrimDragMarker, TrimDragIndex, TrimDragKey, "");
+			DrawAnimationTimeline("##particle_timeline", time, particle.Out, nullptr, GetTheme(), nullptr, TrimDragMarker, TrimDragIndex, TrimDragKey, "", false);
 			const float inX = origin.x + width * particle.In / particle.Out;
 			ImGui::GetWindowDrawList()->AddLine(ImVec2(inX, origin.y), ImVec2(inX, origin.y + 64.0f), IM_COL32(120, 230, 150, 240), 2.0f);
 			ImGui::TextDisabled("%.2f / %.2f s", particle.Time, particle.Out);
