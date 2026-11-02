@@ -1,9 +1,10 @@
 #pragma once
-#include <mutex>
+#include "../Kernel/xrSyncronize.h"
+
+extern xrCriticalSection g_ThreadStackSymbolLock;
 
 namespace StackTrace
 {
-	static std::mutex look_function;
 	static bool symEngineInitialized = false;
 
 	using CrashHandler = void(*)();
@@ -115,7 +116,7 @@ namespace StackTrace
 
 	std::vector<std::string> BuildStackTrace(PCONTEXT threadCtx, u16 maxFramesCount)
 	{
-		std::lock_guard<std::mutex> lock(look_function);
+		xrCriticalSectionGuard Lock(g_ThreadStackSymbolLock);
 
 		//SStringVec traceResult;
 		std::vector<std::string> traceResult;

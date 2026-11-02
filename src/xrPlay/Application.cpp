@@ -11,6 +11,9 @@
 #include "../xrCore/git_version.h"
 #include "../xrCore/CrashDumpHelper.h"
 #include "../xrCore/Kernel/TaskbarProgress.h"
+#ifdef IXR_WINDOWS
+#include "../xrCore/ThreadStackDump.h"
+#endif
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
@@ -38,7 +41,15 @@ int CApplication::Run()
 	CrashDumpHelper::Start();
 
 	MigrateToGameWindow();
+#ifdef IXR_WINDOWS
+	string_path StackFolder;
+	FS.update_path(StackFolder, "$logs$", "");
+	StartThreadStackListener(StackFolder);
+#endif
 	EngineLoopAndDestroy();
+#ifdef IXR_WINDOWS
+	StopThreadStackListener();
+#endif
 
 	EndPlay();
 

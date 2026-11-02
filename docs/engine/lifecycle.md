@@ -91,6 +91,14 @@ while !quiting:
 
 Shutdown in `EngineLoopAndDestroy`: spatial DBs, `DEL_INSTANCE(g_pGamePersistent)`, `pApp`, input, `cfg_save`, sound, `Device` / unload DLLs. Then `EndPlay`.
 
+## Manual thread stacks (Windows)
+
+Press **Ctrl+Shift+J** to write the engine's thread stacks to `$logs$/thread_stacks_<timestamp>_<ticks>.txt`. Holding the keys produces one file; release and press again for another. After capture completes, a dialog reports success or failure and shows the output path. The file records individual thread capture errors.
+
+A separate Windows thread registers the shortcut after the game window is initialized, so it can respond even when the main loop is hung. The shortcut is system-wide while the game runs; registration failure is recorded in the log. The report includes thread IDs, addresses, modules, and available function names and source lines; matching PDB files provide names. Threads are captured one at a time and may exit or be inaccessible. The process pauses each other thread while walking its stack, which can block if the thread holds a lock needed for stack walking.
+
+Post-build check: press the shortcut in the menu, in a level, and while the main thread is blocked; verify multiple thread IDs and readable frames in the text file. Hold the keys and confirm only one file is created, then release and press again. Verify an error dialog appears when the output folder is unavailable.
+
 ## Autotest
 
 Launch `xrEngine.exe` from the game folder. Implementation: `src/xrEngine/Autotest.cpp`. `FrameBegin` runs from `on_idle`, `FrameEnd` from `dxRenderDeviceRender`.
