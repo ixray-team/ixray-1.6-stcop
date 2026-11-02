@@ -3147,6 +3147,17 @@ shared_str attachable_hud_item::SprintLayerReference() const
 	return reference;
 }
 
+bool attachable_hud_item::AdditiveAlias(const shared_str& alias) const
+{
+	if (strstr(alias.c_str(), "anm_idle_sprint") == alias.c_str() && SprintLayered())
+	{
+		return true;
+	}
+
+	shared_str reference;
+	return RetargetMode(alias, reference) || (CCameraRig::Enabled() && hud_motion_listed(AdditiveMotions, alias));
+}
+
 u8 attachable_hud_item::LeftHandAttachMotionMode(const shared_str& motion) const
 {
 	shared_str reference;
