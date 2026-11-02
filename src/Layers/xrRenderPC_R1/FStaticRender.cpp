@@ -22,6 +22,7 @@
 #include "../xrRender/RenderInterfaceShared.h"
 #include "../xrRender/ShaderCache.h"
 #include "../xrRender/dxUIRender.h"
+#include "../xrRender/FullDetailDistance.h"
 using namespace R_dsgraph;
 
 CRender RImplementation;
@@ -416,9 +417,8 @@ void CRender::Calculate				()
 				}
 			}
 
-			const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
-			const float full_detail_distance = use_full_detail_distance ? std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
-		
+			const float full_detail_distance = FullDetailDistance::Get();
+
 			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 			{
 				ISpatial* spatial = lstRenderables[o_it].get();
@@ -427,8 +427,7 @@ void CRender::Calculate				()
 					continue;
 				}
 
-				if (use_full_detail_distance &&
-					Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
+				if (FullDetailDistance::IsBeyond(*spatial, full_detail_distance))
 				{
 					light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ? (light*)spatial->dcast_Light() : nullptr;
 					if (!L || !L->flags.bHudMode)

@@ -5,6 +5,7 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
 #include "../xrRender/SkeletonCustom.h"
+#include "../xrRender/FullDetailDistance.h"
 static	float	CalcSSADynamic				(const Fvector& C, float R)
 {
     Fvector4 v_res1, v_res2;
@@ -121,8 +122,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 		}
 
-		const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
-		const float full_detail_distance = use_full_detail_distance ? std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
+		const float full_detail_distance = FullDetailDistance::Get();
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
@@ -132,8 +132,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 				continue;
 			}
 
-			if (use_full_detail_distance &&
-				Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
+			if (FullDetailDistance::IsBeyond(*spatial, full_detail_distance))
 			{
 				light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ? (light*)spatial->dcast_Light() : nullptr;
 				if (!L || !L->flags.bHudMode)

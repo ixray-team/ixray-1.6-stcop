@@ -13,6 +13,7 @@
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../../xrEngine/IGame_Actor.h"
+#include "../xrRender/FullDetailDistance.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
@@ -148,17 +149,14 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 		}
 		PROF_EVENT("add_dynamic")
-		const bool use_full_detail_distance = ps_r1_full_detail_distance_scale < 1.f;
-		const float full_detail_distance = use_full_detail_distance ?
-			std::max(100.f, g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r1_full_detail_distance_scale) : 0.f;
+		const float full_detail_distance = FullDetailDistance::Get();
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
 			ISpatial*	spatial	= lstRenderablesMain[o_it].get();
 			if	(0==spatial) continue;
 
-			if (use_full_detail_distance &&
-				Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) > _sqr(full_detail_distance + spatial->sphere.R))
+			if (FullDetailDistance::IsBeyond(*spatial, full_detail_distance))
 			{
 				light* L = (spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE ?
 					(light*)spatial->dcast_Light() : nullptr;
