@@ -12,12 +12,14 @@
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/pure.h"
+#include "../../xrEngine/Render.h"
 #include "../../xrEngine/ImGuiManager.h"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrCore/Kernel/EngineExternal.h"
 #include "imgui_internal.h"
 #include <filesystem>
+#include <type_traits>
 
 CBlend* PlayMotionByParts(IKinematicsAnimated* sa, MotionID motion_ID, bool bMixIn, PlayCallback Callback, LPVOID CallbackParam);
 
@@ -172,12 +174,131 @@ static xr_shared_ptr<CParticlesObject> CreateCinemaParticle(const char* name)
 	return particle;
 }
 
+constexpr u32 kCinemaLightChannels = 15;
+
+constexpr float CinemaLightChannelDefault(u32 channel)
+{
+	return channel < 6 ? 0.0f : 1.0f;
+}
+
+static_assert(CinemaLightChannelDefault(0) == 0.0f);
+static_assert(CinemaLightChannelDefault(5) == 0.0f);
+static_assert(CinemaLightChannelDefault(6) == 1.0f);
+static_assert(CinemaLightChannelDefault(14) == 1.0f);
+
+struct SCinemaLightData
+{
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix Orientation = Fmatrix().identity();
+	Fvector Color = Fvector().set(1.0f, 1.0f, 1.0f);
+	float Range = 8.0f;
+	float Cone = 60.0f;
+	float VirtualSize = 0.1f;
+	float VolumeQuality = 1.0f;
+	float VolumeIntensity = 1.0f;
+	float VolumeDistance = 1.0f;
+	s32 Type = 0;
+	bool Active = true;
+	bool Shadow = false;
+	bool Volumetric = false;
+	bool Indirect = false;
+	bool HudMode = false;
+	bool Occlusion = true;
+	char Texture[240] = {};
+	bool Modulation = false;
+	bool Loop = true;
+	bool Running = true;
+	float Duration = 10.0f;
+	float Time = 0.0f;
+	xr_vector<SParticleCurveKey> Curves[kCinemaLightChannels];
+	SParticleWave Waves[kCinemaLightChannels];
+	s32 CurveChannel = 0;
+	s32 CurveDrag = -1;
+
+	SCinemaLightData()
+	{
+		for (u32 i = 6; i < kCinemaLightChannels; ++i)
+		{
+			Waves[i].Minimum = 0.0f;
+			Waves[i].Maximum = 10.0f;
+		}
+	}
+};
+
+struct SCinemaLight : SCinemaLightData
+{
+	ref_light Light;
+
+	SCinemaLight() = default;
+	SCinemaLight(const SCinemaLight&) = delete;
+	SCinemaLight& operator=(const SCinemaLight&) = delete;
+
+	SCinemaLight(SCinemaLight&& other) noexcept : SCinemaLightData(std::move(other))
+	{
+		Light.swap(other.Light);
+	}
+
+	SCinemaLight& operator=(SCinemaLight&& other) noexcept
+	{
+		if (this != &other)
+		{
+			Light.destroy();
+			SCinemaLightData::operator=(std::move(other));
+			Light.swap(other.Light);
+		}
+		return *this;
+	}
+
+	~SCinemaLight()
+	{
+		Light.destroy();
+	}
+};
+
+static_assert(!std::is_copy_constructible_v<SCinemaLight>);
+static_assert(!std::is_copy_assignable_v<SCinemaLight>);
+static_assert(std::is_nothrow_move_constructible_v<SCinemaLight>);
+static_assert(std::is_nothrow_move_assignable_v<SCinemaLight>);
+
+static void UpdateCinemaLightValues(SCinemaLight& light);
+
+static void ApplyCinemaLight(SCinemaLight& light, bool texture = false)
+{
+	if (!light.Light)
+	{
+		return;
+	}
+	light.Light->set_type(light.Type == 0 ? IRender_Light::POINT : IRender_Light::SPOT);
+	light.Light->set_shadow(light.Shadow);
+	light.Light->set_volumetric(light.Volumetric);
+	light.Light->set_indirect(light.Indirect);
+	UpdateCinemaLightValues(light);
+	light.Light->set_hud_mode(light.HudMode);
+	light.Light->set_occq_mode(light.Occlusion);
+	if (texture)
+	{
+		light.Light->set_texture(light.Texture);
+	}
+	light.Light->set_active(light.Active);
+}
+
 struct SCinemaParticleGroup
 {
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fmatrix Orientation = Fmatrix().identity();
 	float Scale = 1.0f;
 };
+
+constexpr bool CinemaSelectionInRange(size_t index, size_t first, size_t last)
+{
+	return index >= std::min(first, last) && index <= std::max(first, last);
+}
+
+static_assert(CinemaSelectionInRange(2, 1, 3));
+static_assert(CinemaSelectionInRange(2, 3, 1));
+static_assert(CinemaSelectionInRange(1, 1, 3));
+static_assert(CinemaSelectionInRange(3, 1, 3));
+static_assert(!CinemaSelectionInRange(0, 3, 1));
 
 struct SCinemaParticle
 {
@@ -266,6 +387,46 @@ static float ParticleModulatedValue(const SCinemaParticle& particle, u32 channel
 	const float fraction = cycle - floorf(cycle);
 	const float signal = wave.Type == 1 ? sinf(cycle * PI_MUL_2) : ParticleWaveShape(wave.Type, fraction);
 	return std::clamp(ParticleCurveValue(particle.Curves[channel], time, channel >= 6 ? 1.0f : 0.0f) + wave.Amplitude * signal, wave.Minimum, wave.Maximum);
+}
+
+static float LightModulatedValue(const SCinemaLight& light, u32 channel, float time)
+{
+	const auto& wave = light.Waves[channel];
+	const float cycle = time * wave.Frequency + wave.Phase;
+	const float fraction = cycle - floorf(cycle);
+	const float signal = wave.Type == 1 ? sinf(cycle * PI_MUL_2) : ParticleWaveShape(wave.Type, fraction);
+	return std::clamp(ParticleCurveValue(light.Curves[channel], time, CinemaLightChannelDefault(channel)) + wave.Amplitude * signal, wave.Minimum, wave.Maximum);
+}
+
+static void UpdateCinemaLightValues(SCinemaLight& light)
+{
+	if (!light.Light)
+	{
+		return;
+	}
+	Fvector position = light.Position;
+	Fmatrix orientation = light.Orientation;
+	float values[kCinemaLightChannels] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
+	if (light.Modulation)
+	{
+		for (u32 i = 0; i < kCinemaLightChannels; ++i)
+		{
+			values[i] = LightModulatedValue(light, i, light.Time);
+		}
+		position.add(Fvector().set(values[0], values[1], values[2]));
+		Fmatrix rotation;
+		rotation.setHPB(deg2rad(values[3]), deg2rad(values[4]), deg2rad(values[5]));
+		orientation.mul(light.Orientation, rotation);
+	}
+	light.Light->set_position(position);
+	light.Light->set_rotation(orientation.k, orientation.i);
+	light.Light->set_color(light.Color.x * values[6], light.Color.y * values[7], light.Color.z * values[8]);
+	light.Light->set_range(std::clamp(light.Range * values[9], 0.1f, 1000.0f));
+	light.Light->set_cone(deg2rad(std::clamp(light.Cone * values[10], 1.0f, 120.0f)));
+	light.Light->set_virtual_size(std::clamp(light.VirtualSize * values[11], 0.0f, 100.0f));
+	light.Light->set_volumetric_quality(std::clamp(light.VolumeQuality * values[12], 0.01f, 1.0f));
+	light.Light->set_volumetric_intensity(std::clamp(light.VolumeIntensity * values[13], 0.0f, 100.0f));
+	light.Light->set_volumetric_distance(std::clamp(light.VolumeDistance * values[14], 0.01f, 1.0f));
 }
 
 constexpr bool ValidParticleTimeline(float in, float out)
@@ -525,6 +686,8 @@ struct SCinemaActor
 	float PlayDirection = 1.0f;
 	s32 PlaylistIndex = -1;
 	s32 PlaylistSelected = -1;
+	xr_vector<s32> PlaylistSelection;
+	s32 PlaylistAnchor = -1;
 	bool Loop = false;
 	float Speed = 1.0f;
 	bool Paused = false;
@@ -2208,9 +2371,17 @@ public:
 private:
 	void ClearActors();
 	void ClearParticles();
+	void ClearLights();
 	void TransformParticleGroup(s32 index, const SCinemaParticleGroup& previous);
+	void TransformSelectedParticles(const SCinemaParticleGroup& previous, const SCinemaParticleGroup& current);
 	bool AddParticle(const shared_str& name, const Fvector& position);
+	void DuplicateParticles(const xr_vector<s32>& indices);
+	void RemoveParticles(const xr_vector<s32>& indices);
 	void DrawParticleTab();
+	void DrawLightTab();
+	void DrawLightModulation(SCinemaLight& light);
+	void RemoveLights(const xr_vector<s32>& indices);
+	void TransformSelectedLights(const Fvector& previousPosition, const Fmatrix& previousOrientation);
 	void DrawParticleBrowser();
 	void ClearGizmo();
 	void ResetSelection();
@@ -2264,6 +2435,7 @@ private:
 	void DrawPresetTab();
 
 	void DrawToolbar();
+	void DrawActorToolbar();
 	void DrawSelectedActor();
 	void DrawModelTab();
 	void DrawItemTab();
@@ -2310,14 +2482,23 @@ private:
 	const SCinemaActor* GetSelectedActor() const;
 
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
+	xr_vector<SCinemaLight> Lights;
+	xr_vector<SCinemaLight> SceneLights;
+	s32 SelectedLight = -1;
+	xr_vector<s32> SelectedLights;
+	s32 LightSelectionAnchor = -1;
 	xr_vector<SCinemaParticle> Particles;
 	xr_vector<SCinemaParticle> SceneParticles;
 	xr_vector<SCinemaParticleGroup> ParticleGroups;
 	xr_vector<SCinemaParticleGroup> SceneParticleGroups;
 	s32 SelectedParticleGroup = -1;
 	s32 SelectedParticle = -1;
+	xr_vector<s32> SelectedParticles;
+	s32 ParticleSelectionAnchor = -1;
 	char ParticleFilter[128] = {};
 	shared_str SelectedParticleName;
+	xr_vector<shared_str> SelectedParticleNames;
+	shared_str ParticleLibraryAnchor;
 	xr_vector<SAnimationSource> Library;
 	xr_vector<shared_str> ModelFiles;
 	xr_vector<SHandItem> HandItems;
@@ -2327,6 +2508,8 @@ private:
 	s32 SelectedOgf = -1;
 	s32 SelectedSource = -1;
 	s32 SelectedClip = -1;
+	xr_vector<std::pair<s32, s32>> SelectedClips;
+	std::pair<s32, s32> ClipAnchor = { -1, -1 };
 	s32 NameEditActor = -1;
 	shared_str SelectedVisual;
 	u32 NextNameIndex = 1;
@@ -2366,6 +2549,8 @@ private:
 	xr_string ExtraPathStatus;
 	char ExtraPathEdit[260] = {};
 	s32 PresetSelected = -1;
+	xr_vector<s32> PresetSelection;
+	s32 PresetAnchor = -1;
 	bool PresetsLoaded = false;
 	char PresetNameEdit[128] = {};
 };
@@ -2377,6 +2562,8 @@ void CCinemaFilmMakerManager::Shutdown()
 	ClearGizmo();
 	ClearActors();
 	ClearParticles();
+	ClearLights();
+	SceneLights.clear();
 	SceneParticles.clear();
 	Library.clear();
 	LibraryBuilt = false;
@@ -2392,6 +2579,8 @@ void CCinemaFilmMakerManager::Shutdown()
 	Presets.clear();
 	PresetsLoaded = false;
 	PresetSelected = -1;
+	PresetSelection.clear();
+	PresetAnchor = -1;
 	SceneDialogMode = ESceneDialog::None;
 	SceneDialogRequested = false;
 	SceneLoadRequested = false;
@@ -2561,6 +2750,14 @@ void CCinemaFilmMakerManager::ClearActors()
 	NameEditActor = -1;
 }
 
+void CCinemaFilmMakerManager::ClearLights()
+{
+	Lights.clear();
+	SelectedLight = -1;
+	SelectedLights.clear();
+	LightSelectionAnchor = -1;
+}
+
 void CCinemaFilmMakerManager::ClearParticles()
 {
 	for (auto& particle : Particles)
@@ -2571,6 +2768,8 @@ void CCinemaFilmMakerManager::ClearParticles()
 	ParticleGroups.clear();
 	SelectedParticleGroup = -1;
 	SelectedParticle = -1;
+	SelectedParticles.clear();
+	ParticleSelectionAnchor = -1;
 }
 
 void CCinemaFilmMakerManager::TransformParticleGroup(s32 index, const SCinemaParticleGroup& previous)
@@ -2612,6 +2811,29 @@ void CCinemaFilmMakerManager::TransformParticleGroup(s32 index, const SCinemaPar
 	}
 }
 
+void CCinemaFilmMakerManager::TransformSelectedParticles(const SCinemaParticleGroup& previous, const SCinemaParticleGroup& current)
+{
+	Fmatrix inverse, rotation;
+	inverse.invert(previous.Orientation);
+	rotation.mul(current.Orientation, inverse);
+	for (const s32 selected : SelectedParticles)
+	{
+		if (selected == SelectedParticle || selected < 0 || selected >= static_cast<s32>(Particles.size()))
+		{
+			continue;
+		}
+		auto& particle = Particles[selected];
+		Fvector offset, rotated;
+		offset.sub(particle.Position, previous.Position);
+		rotation.transform_dir(rotated, offset);
+		particle.Position.add(current.Position, rotated);
+		Fmatrix orientation;
+		orientation.mul(rotation, particle.Orientation);
+		particle.Orientation = orientation;
+		UpdateParticleTransform(particle);
+	}
+}
+
 bool CCinemaFilmMakerManager::AddParticle(const shared_str& name, const Fvector& position)
 {
 	if (Particles.size() >= kCinemaSceneMaxActors)
@@ -2632,11 +2854,71 @@ bool CCinemaFilmMakerManager::AddParticle(const shared_str& name, const Fvector&
 	SelectedParticleGroup = -1;
 	Particles.push_back(std::move(particle));
 	SelectedParticle = static_cast<s32>(Particles.size()) - 1;
+	SelectedParticles = { SelectedParticle };
+	ParticleSelectionAnchor = SelectedParticle;
 	return true;
+}
+
+void CCinemaFilmMakerManager::DuplicateParticles(const xr_vector<s32>& indices)
+{
+	xr_vector<SCinemaParticle> copies;
+	for (const s32 index : indices)
+	{
+		if (index >= 0 && index < static_cast<s32>(Particles.size()))
+		{
+			copies.push_back(Particles[index]);
+		}
+	}
+	if (copies.empty() || copies.size() > kCinemaSceneMaxActors - Particles.size())
+	{
+		return;
+	}
+	xr_vector<s32> createdIndices;
+	for (auto& copy : copies)
+	{
+		if (!AddParticle(copy.Name, copy.Position))
+		{
+			continue;
+		}
+		auto& created = Particles.back();
+		const auto object = created.Object;
+		created = copy;
+		created.Object = object;
+		created.CurveDrag = -1;
+		StartParticleTimeline(created);
+		createdIndices.push_back(static_cast<s32>(Particles.size()) - 1);
+	}
+	if (!createdIndices.empty())
+	{
+		SelectedParticles = std::move(createdIndices);
+		SelectedParticle = SelectedParticles.back();
+		ParticleSelectionAnchor = SelectedParticle;
+	}
+}
+
+void CCinemaFilmMakerManager::RemoveParticles(const xr_vector<s32>& indices)
+{
+	xr_vector<s32> sorted = indices;
+	std::sort(sorted.begin(), sorted.end());
+	sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());
+	ClearGizmo();
+	for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
+	{
+		if (*it >= 0 && *it < static_cast<s32>(Particles.size()))
+		{
+			::Particles::Details::Destroy(Particles[*it].Object);
+			Particles.erase(Particles.begin() + *it);
+		}
+	}
+	SelectedParticle = -1;
+	SelectedParticles.clear();
+	ParticleSelectionAnchor = -1;
 }
 
 void CCinemaFilmMakerManager::ResetSelection()
 {
+	SelectedClips.clear();
+	ClipAnchor = { -1, -1 };
 	SelectedSource = -1;
 	SelectedClip = -1;
 	NameEditActor = -1;
@@ -2644,6 +2926,9 @@ void CCinemaFilmMakerManager::ResetSelection()
 
 void CCinemaFilmMakerManager::SelectActor(s32 index)
 {
+	SelectedLight = -1;
+	SelectedLights.clear();
+	LightSelectionAnchor = -1;
 	if (index < -1 || index >= static_cast<s32>(Actors.size()))
 	{
 		index = -1;
@@ -2653,6 +2938,8 @@ void CCinemaFilmMakerManager::SelectActor(s32 index)
 	{
 		SelectedParticleGroup = -1;
 		SelectedParticle = -1;
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
 	}
 	if (Selected == index)
 	{
@@ -2700,6 +2987,8 @@ void CCinemaFilmMakerManager::OnFrame()
 		ClearGizmo();
 		ClearActors();
 		ClearParticles();
+		ClearLights();
+		SceneLights.clear();
 		SceneParticles.clear();
 		Library.clear();
 		LibraryBuilt = false;
@@ -2737,6 +3026,23 @@ void CCinemaFilmMakerManager::OnFrame()
 		UpdateActorTrim(*actor);
 		UpdateActorPlayback(*actor);
 		UpdateActorPlacement(*actor);
+	}
+	for (auto& light : Lights)
+	{
+		if (!light.Modulation || !light.Running)
+		{
+			continue;
+		}
+		light.Time = std::min(light.Time + Device.fTimeDelta, light.Duration);
+		if (light.Time >= light.Duration && light.Loop)
+		{
+			light.Time = 0.0f;
+		}
+		else if (light.Time >= light.Duration)
+		{
+			light.Running = false;
+		}
+		UpdateCinemaLightValues(light);
 	}
 	for (auto& particle : Particles)
 	{
@@ -2952,6 +3258,13 @@ void CCinemaFilmMakerManager::BuildLibrary()
 
 void CCinemaFilmMakerManager::BuildActorSources(SCinemaActor& actor)
 {
+	if (GetSelectedActor() == &actor)
+	{
+		SelectedClips.clear();
+		ClipAnchor = { -1, -1 };
+		SelectedSource = -1;
+		SelectedClip = -1;
+	}
 	actor.Sources.clear();
 
 	if (actor.Animated == nullptr || actor.Skeleton == nullptr)
@@ -3621,6 +3934,12 @@ void CCinemaFilmMakerManager::StartActorPlayback(SCinemaActor& actor)
 
 void CCinemaFilmMakerManager::StartPlayAll()
 {
+	for (auto& light : Lights)
+	{
+		light.Time = 0.0f;
+		light.Running = true;
+		UpdateCinemaLightValues(light);
+	}
 	for (auto& particle : Particles)
 	{
 		StartParticleTimeline(particle);
@@ -3663,6 +3982,12 @@ void CCinemaFilmMakerManager::StopActor(SCinemaActor& actor)
 
 void CCinemaFilmMakerManager::StopAll()
 {
+	for (auto& light : Lights)
+	{
+		light.Running = false;
+		light.Time = 0.0f;
+		UpdateCinemaLightValues(light);
+	}
 	for (auto& particle : Particles)
 	{
 		particle.Object->Stop(false);
@@ -3736,6 +4061,8 @@ void CCinemaFilmMakerManager::AddClipToPlaylist(SCinemaActor& actor, const share
 
 	actor.Playlist.push_back({ .Source = source, .Name = name, .Fx = fx });
 	actor.PlaylistSelected = static_cast<s32>(actor.Playlist.size()) - 1;
+	actor.PlaylistSelection = { actor.PlaylistSelected };
+	actor.PlaylistAnchor = actor.PlaylistSelected;
 }
 
 void CCinemaFilmMakerManager::MovePlaylistEntry(SCinemaActor& actor, s32 from, s32 to)
@@ -3754,6 +4081,8 @@ void CCinemaFilmMakerManager::MovePlaylistEntry(SCinemaActor& actor, s32 from, s
 		--insertAt;
 	}
 
+	actor.PlaylistSelection.clear();
+	actor.PlaylistAnchor = -1;
 	const SPlaylistEntry entry = actor.Playlist[from];
 	actor.Playlist.erase(actor.Playlist.begin() + from);
 	actor.Playlist.insert(actor.Playlist.begin() + insertAt, entry);
@@ -4519,7 +4848,7 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 			ImGui::EndChild();
 		}
 
-		ImGui::TextDisabled("Loading replaces the current scene (%u NPC, %u particles).", static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()));
+		ImGui::TextDisabled("Loading replaces the current scene (%u NPC, %u particles, %u lights).", static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()), static_cast<u32>(Lights.size()));
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(SceneListSelected.empty());
@@ -4568,6 +4897,7 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 		{
 			SceneData.clear();
 			SceneParticles.clear();
+			SceneLights.clear();
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -4606,7 +4936,7 @@ void CCinemaFilmMakerManager::RequestSaveScene()
 
 	xr_vector<xr_string> lines;
 
-	if (Actors.empty() && Particles.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty())
 	{
 		lines.push_back("The scene is empty: there is nothing to save.");
 	}
@@ -4659,7 +4989,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		return;
 	}
 
-	if (Actors.empty() && Particles.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty())
 	{
 		dialog.push_back("The scene is empty: there is nothing to save.");
 		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
@@ -4677,6 +5007,65 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	ini.w_string("scene", "platform", EngineExternal().GetCurrentPlatformName());
 	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
 	ini.w_u32("scene", "particles", static_cast<u32>(Particles.size()));
+	ini.w_u32("scene", "lights", static_cast<u32>(Lights.size()));
+	for (u32 i = 0; i < Lights.size(); ++i)
+	{
+		const auto& light = Lights[i];
+		string32 section = {};
+		xr_sprintf(section, "light_%03u", i);
+		Fvector rotation = {};
+		light.Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+		ini.w_fvector3(section, "position", light.Position);
+		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_fvector3(section, "color", light.Color);
+		ini.w_float(section, "range", light.Range);
+		ini.w_float(section, "cone", light.Cone);
+		ini.w_float(section, "virtual_size", light.VirtualSize);
+		ini.w_float(section, "volume_quality", light.VolumeQuality);
+		ini.w_float(section, "volume_intensity", light.VolumeIntensity);
+		ini.w_float(section, "volume_distance", light.VolumeDistance);
+		ini.w_s32(section, "type", light.Type);
+		ini.w_bool(section, "active", light.Active);
+		ini.w_bool(section, "shadow", light.Shadow);
+		ini.w_bool(section, "volumetric", light.Volumetric);
+		ini.w_bool(section, "indirect", light.Indirect);
+		ini.w_bool(section, "hud_mode", light.HudMode);
+		ini.w_bool(section, "occlusion", light.Occlusion);
+		ini.w_bool(section, "modulation", light.Modulation);
+		ini.w_bool(section, "modulation_loop", light.Loop);
+		ini.w_float(section, "modulation_duration", light.Duration);
+		for (u32 channel = 0; channel < kCinemaLightChannels; ++channel)
+		{
+			string32 key = {};
+			const auto& wave = light.Waves[channel];
+			xr_sprintf(key, "wave_%u_type", channel);
+			ini.w_s32(section, key, wave.Type);
+			xr_sprintf(key, "wave_%u_amplitude", channel);
+			ini.w_float(section, key, wave.Amplitude);
+			xr_sprintf(key, "wave_%u_frequency", channel);
+			ini.w_float(section, key, wave.Frequency);
+			xr_sprintf(key, "wave_%u_phase", channel);
+			ini.w_float(section, key, wave.Phase);
+			xr_sprintf(key, "wave_%u_min", channel);
+			ini.w_float(section, key, wave.Minimum);
+			xr_sprintf(key, "wave_%u_max", channel);
+			ini.w_float(section, key, wave.Maximum);
+			xr_sprintf(key, "curve_%u_count", channel);
+			ini.w_u32(section, key, static_cast<u32>(light.Curves[channel].size()));
+			for (u32 k = 0; k < light.Curves[channel].size(); ++k)
+			{
+				xr_sprintf(key, "curve_%u_%u_time", channel, k);
+				ini.w_float(section, key, light.Curves[channel][k].Time);
+				xr_sprintf(key, "curve_%u_%u_value", channel, k);
+				ini.w_float(section, key, light.Curves[channel][k].Value);
+			}
+		}
+		if (light.Texture[0])
+		{
+			ini.w_string(section, "texture", light.Texture);
+		}
+	}
 	ini.w_u32("scene", "particle_groups", static_cast<u32>(ParticleGroups.size()));
 	for (u32 i = 0; i < ParticleGroups.size(); ++i)
 	{
@@ -4936,6 +5325,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 	SceneData.clear();
 	SceneParticles.clear();
+	SceneLights.clear();
 	SceneParticleGroups.clear();
 
 	string_path path = {};
@@ -5348,7 +5738,109 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		SceneParticles.push_back(std::move(particle));
 	}
 
-	if (SceneData.empty() && SceneParticles.empty())
+	const u32 lightCount = ini.read_if_exists<u32>("scene", "lights", 0);
+	for (u32 i = 0; i < std::min(lightCount, kCinemaSceneMaxActors); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "light_%03u", i);
+		if (!ini.section_exist(section))
+		{
+			warnings.push_back("A light section is missing.");
+			continue;
+		}
+		SCinemaLight light;
+		light.Position = ini.read_if_exists<Fvector>(section, "position", light.Position);
+		const Fvector rotation = ini.read_if_exists<Fvector>(section, "rotation", Fvector().set(0.0f, 0.0f, 0.0f));
+		light.Color = ini.read_if_exists<Fvector>(section, "color", light.Color);
+		light.Range = ini.read_if_exists<float>(section, "range", light.Range);
+		light.Cone = ini.read_if_exists<float>(section, "cone", light.Cone);
+		light.VirtualSize = ini.read_if_exists<float>(section, "virtual_size", light.VirtualSize);
+		light.VolumeQuality = ini.read_if_exists<float>(section, "volume_quality", light.VolumeQuality);
+		light.VolumeIntensity = ini.read_if_exists<float>(section, "volume_intensity", light.VolumeIntensity);
+		light.VolumeDistance = ini.read_if_exists<float>(section, "volume_distance", light.VolumeDistance);
+		light.Type = ini.read_if_exists<s32>(section, "type", light.Type);
+		light.Active = ini.read_if_exists<bool>(section, "active", light.Active);
+		light.Shadow = ini.read_if_exists<bool>(section, "shadow", light.Shadow);
+		light.Volumetric = ini.read_if_exists<bool>(section, "volumetric", light.Volumetric);
+		light.Indirect = ini.read_if_exists<bool>(section, "indirect", light.Indirect);
+		light.HudMode = ini.read_if_exists<bool>(section, "hud_mode", light.HudMode);
+		light.Occlusion = ini.read_if_exists<bool>(section, "occlusion", light.Occlusion);
+		light.Modulation = ini.read_if_exists<bool>(section, "modulation", false);
+		light.Loop = ini.read_if_exists<bool>(section, "modulation_loop", true);
+		light.Duration = ini.read_if_exists<float>(section, "modulation_duration", 10.0f);
+		if (!std::isfinite(light.Duration) || light.Duration < 0.01f || light.Duration > 600.0f)
+		{
+			light.Duration = 10.0f;
+			warnings.push_back("Invalid light modulation duration: using default.");
+		}
+		for (u32 channel = 0; channel < kCinemaLightChannels; ++channel)
+		{
+			string32 key = {};
+			auto& wave = light.Waves[channel];
+			const float lower = channel < 6 ? -3600.0f : 0.0f;
+			const float upper = channel < 6 ? 3600.0f : 10.0f;
+			xr_sprintf(key, "wave_%u_type", channel);
+			wave.Type = ini.read_if_exists<s32>(section, key, 0);
+			xr_sprintf(key, "wave_%u_amplitude", channel);
+			wave.Amplitude = ini.read_if_exists<float>(section, key, 0.0f);
+			xr_sprintf(key, "wave_%u_frequency", channel);
+			wave.Frequency = ini.read_if_exists<float>(section, key, 1.0f);
+			xr_sprintf(key, "wave_%u_phase", channel);
+			wave.Phase = ini.read_if_exists<float>(section, key, 0.0f);
+			xr_sprintf(key, "wave_%u_min", channel);
+			wave.Minimum = ini.read_if_exists<float>(section, key, lower);
+			xr_sprintf(key, "wave_%u_max", channel);
+			wave.Maximum = ini.read_if_exists<float>(section, key, upper);
+			if (wave.Type < 0 || wave.Type > 4 || !std::isfinite(wave.Amplitude) || wave.Amplitude < 0.0f || wave.Amplitude > 3600.0f ||
+				!std::isfinite(wave.Frequency) || wave.Frequency < 0.0f || wave.Frequency > 100.0f || !std::isfinite(wave.Phase) || fabsf(wave.Phase) > 100.0f ||
+				!std::isfinite(wave.Minimum) || !std::isfinite(wave.Maximum) || wave.Minimum < lower || wave.Maximum > upper || wave.Minimum > wave.Maximum)
+			{
+				wave = SParticleWave();
+				wave.Minimum = lower;
+				wave.Maximum = upper;
+				warnings.push_back("Invalid light modulation wave: using default.");
+			}
+			xr_sprintf(key, "curve_%u_count", channel);
+			const u32 count = std::min(ini.read_if_exists<u32>(section, key, 0), 128u);
+			for (u32 k = 0; k < count; ++k)
+			{
+				xr_sprintf(key, "curve_%u_%u_time", channel, k);
+				const float time = ini.read_if_exists<float>(section, key, -1.0f);
+				xr_sprintf(key, "curve_%u_%u_value", channel, k);
+				const float value = ini.read_if_exists<float>(section, key, channel < 6 ? 0.0f : 1.0f);
+				if (std::isfinite(time) && time >= 0.0f && time <= 600.0f && std::isfinite(value) && value >= lower && value <= upper)
+				{
+					light.Curves[channel].push_back({ time, value });
+				}
+			}
+			std::stable_sort(light.Curves[channel].begin(), light.Curves[channel].end(), [](const auto& a, const auto& b) { return a.Time < b.Time; });
+		}
+		const shared_str texture = CinemaReadString(ini, section, "texture");
+		if (texture.size() && texture.size() < sizeof(light.Texture))
+		{
+			xr_strcpy(light.Texture, texture.c_str());
+		}
+		const auto validVector = [](const Fvector& v) { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); };
+		if (!validVector(light.Position) || !validVector(rotation) || !validVector(light.Color) ||
+			light.Color.x < 0.0f || light.Color.y < 0.0f || light.Color.z < 0.0f ||
+			!std::isfinite(light.Range) || light.Range < 0.1f || light.Range > 1000.0f ||
+			!std::isfinite(light.Cone) || light.Cone < 1.0f || light.Cone > 120.0f ||
+			!std::isfinite(light.VirtualSize) || light.VirtualSize < 0.0f || light.VirtualSize > 100.0f ||
+			!std::isfinite(light.VolumeQuality) || light.VolumeQuality < 0.01f || light.VolumeQuality > 1.0f ||
+			!std::isfinite(light.VolumeIntensity) || light.VolumeIntensity < 0.0f || light.VolumeIntensity > 100.0f ||
+			!std::isfinite(light.VolumeDistance) || light.VolumeDistance < 0.0f || light.VolumeDistance > 1.0f || light.Type < 0 || light.Type > 1)
+		{
+			warnings.push_back("Invalid light settings: light skipped.");
+			continue;
+		}
+		light.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+		SceneLights.push_back(std::move(light));
+	}
+	if (lightCount > kCinemaSceneMaxActors)
+	{
+		warnings.push_back("Too many lights: the rest were ignored.");
+	}
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty())
 	{
 		dialog = warnings;
 		dialog.push_back("There is nothing to load.");
@@ -5360,6 +5852,9 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	xr_sprintf(summary, "Load scene \"%s\"? Replace %u NPC and %u particles with %u NPC and %u particles?", name, static_cast<u32>(Actors.size()), static_cast<u32>(Particles.size()), static_cast<u32>(SceneData.size()), static_cast<u32>(SceneParticles.size()));
 
 	dialog.push_back(summary);
+	string128 lightSummary = {};
+	xr_sprintf(lightSummary, "Replace %u lights with %u lights?", static_cast<u32>(Lights.size()), static_cast<u32>(SceneLights.size()));
+	dialog.push_back(lightSummary);
 	dialog.insert(dialog.end(), warnings.begin(), warnings.end());
 
 	ShowSceneDialog(ESceneDialog::Confirm, "Load scene", dialog);
@@ -5368,7 +5863,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 void CCinemaFilmMakerManager::ApplyLoadedScene()
 {
-	if (SceneData.empty() && SceneParticles.empty())
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty())
 	{
 		return;
 	}
@@ -5376,10 +5871,25 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	ClearGizmo();
 	ClearActors();
 	ClearParticles();
+	ClearLights();
+	xr_vector<xr_string> issues;
+	for (auto& light : SceneLights)
+	{
+		light.Light = ::Render->light_create();
+		if (light.Light)
+		{
+			ApplyCinemaLight(light, true);
+			Lights.push_back(std::move(light));
+		}
+		else
+		{
+			issues.push_back("A light could not be created by the renderer.");
+		}
+	}
+	SceneLights.clear();
 	ParticleGroups = SceneParticleGroups;
 	SceneParticleGroups.clear();
 
-	xr_vector<xr_string> issues;
 	for (const auto& particle : SceneParticles)
 	{
 		if (!AddParticle(particle.Name, particle.Position))
@@ -6026,6 +6536,8 @@ void CCinemaFilmMakerManager::RequestSavePreset()
 
 void CCinemaFilmMakerManager::SavePresetFromActor(const char* name)
 {
+	PresetSelection.clear();
+	PresetAnchor = -1;
 	xr_vector<xr_string> lines;
 
 	const SCinemaActor* actor = GetSelectedActor();
@@ -6163,6 +6675,8 @@ void CCinemaFilmMakerManager::ApplyPresetToActor(s32 index)
 	actor->Trims = preset.Trims;
 	actor->PingPong = preset.PingPong;
 	actor->Playlist.clear();
+	actor->PlaylistSelection.clear();
+	actor->PlaylistAnchor = -1;
 
 	for (const SPlaylistEntry& entry : preset.Playlist)
 	{
@@ -6243,9 +6757,40 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 		string256 label = {};
 		xr_sprintf(label, "%s   (%u animations)", preset.Name.c_str(), static_cast<u32>(preset.Playlist.size()));
 
-		if (ImGui::Selectable(label, PresetSelected == index))
+		const bool selected = PresetSelection.empty() ? PresetSelected == index : std::find(PresetSelection.begin(), PresetSelection.end(), index) != PresetSelection.end();
+		if (ImGui::Selectable(label, selected))
 		{
-			PresetSelected = index;
+			if (ImGui::GetIO().KeyShift && PresetAnchor >= 0 && PresetAnchor < static_cast<s32>(Presets.size()))
+			{
+				PresetSelection.clear();
+				for (s32 i = std::min(PresetAnchor, index); i <= std::max(PresetAnchor, index); ++i)
+				{
+					PresetSelection.push_back(i);
+				}
+			}
+			else if (ImGui::GetIO().KeyCtrl)
+			{
+				if (PresetSelection.empty() && PresetSelected >= 0)
+				{
+					PresetSelection.push_back(PresetSelected);
+				}
+				const auto it = std::find(PresetSelection.begin(), PresetSelection.end(), index);
+				if (it == PresetSelection.end())
+				{
+					PresetSelection.push_back(index);
+				}
+				else
+				{
+					PresetSelection.erase(it);
+				}
+				PresetAnchor = index;
+			}
+			else
+			{
+				PresetSelection = { index };
+				PresetAnchor = index;
+			}
+			PresetSelected = std::find(PresetSelection.begin(), PresetSelection.end(), index) != PresetSelection.end() ? index : (PresetSelection.empty() ? -1 : PresetSelection.back());
 		}
 
 		if (ImGui::IsItemHovered())
@@ -6277,7 +6822,11 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 
 	if (ImGui::Button("Spawn##preset"))
 	{
-		SpawnFromPreset(PresetSelected);
+		const auto indices = PresetSelection.empty() ? xr_vector<s32>{ PresetSelected } : PresetSelection;
+		for (const s32 index : indices)
+		{
+			SpawnFromPreset(index);
+		}
 	}
 
 	if (ImGui::IsItemHovered())
@@ -6285,7 +6834,7 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 		ImGui::SetTooltip("Create a new NPC in front of you from this preset");
 	}
 
-	ImGui::BeginDisabled(actor == nullptr);
+	ImGui::BeginDisabled(actor == nullptr || PresetSelection.size() > 1);
 
 	actions.Item(CinemaButtonWidth("Apply to selected") + 10.0f);
 
@@ -6300,13 +6849,20 @@ void CCinemaFilmMakerManager::DrawPresetTab()
 
 	if (ImGui::Button("Delete##preset"))
 	{
-		DeletePreset(PresetSelected);
+		auto indices = PresetSelection.empty() ? xr_vector<s32>{ PresetSelected } : PresetSelection;
+		std::sort(indices.begin(), indices.end(), std::greater<s32>());
+		for (const s32 index : indices)
+		{
+			DeletePreset(index);
+		}
+		PresetSelection.clear();
+		PresetAnchor = -1;
 	}
 
 	ImGui::EndDisabled();
 }
 
-void CCinemaFilmMakerManager::DrawToolbar()
+void CCinemaFilmMakerManager::DrawActorToolbar()
 {
 	const float available = ImGui::GetContentRegionAvail().x;
 	SToolbarLayout layout(available);
@@ -6424,7 +6980,59 @@ void CCinemaFilmMakerManager::DrawToolbar()
 
 	ImGui::EndDisabled();
 
-	layout.Item(CinemaButtonWidth("More"));
+}
+
+void CCinemaFilmMakerManager::DrawToolbar()
+{
+	SToolbarLayout layout(ImGui::GetContentRegionAvail().x);
+
+	layout.Item(CinemaButtonWidth("Translate") + 20.0f);
+	if (ImGui::RadioButton("Translate##gizmo_mode", GizmoMode == EGizmoMode::Translate))
+	{
+		GizmoMode = EGizmoMode::Translate;
+	}
+
+	layout.Item(CinemaButtonWidth("Rotate") + 20.0f);
+	if (ImGui::RadioButton("Rotate##gizmo_mode", GizmoMode == EGizmoMode::Rotate))
+	{
+		GizmoMode = EGizmoMode::Rotate;
+	}
+
+	layout.Item(CinemaButtonWidth("Snap") + 20.0f);
+	ImGui::Checkbox("Snap##gizmo", &Snap);
+
+	if (CinemaResetRequested() && Snap)
+	{
+		Snap = false;
+	}
+
+	if (Snap)
+	{
+		layout.Item(110.0f);
+		ImGui::SetNextItemWidth(100.0f);
+		ImGui::DragFloat("Move##snap_step", &TranslateStep, 0.01f, 0.01f, 10.0f, "%.2f");
+
+		if (CinemaResetRequested())
+		{
+			TranslateStep = 0.1f;
+		}
+
+		layout.Item(140.0f);
+		ImGui::SetNextItemWidth(100.0f);
+		ImGui::DragFloat("Rotate step##snap_step", &RotateStepDeg, 0.5f, 0.5f, 180.0f, "%.1f");
+
+		if (CinemaResetRequested())
+		{
+			RotateStepDeg = 5.0f;
+		}
+	}
+	ImGui::SameLine();
+	const float moreWidth = CinemaButtonWidth("More");
+	if (ImGui::GetContentRegionAvail().x < moreWidth)
+	{
+		ImGui::NewLine();
+	}
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + std::max(0.0f, ImGui::GetContentRegionAvail().x - moreWidth));
 	if (ImGui::Button("More##toolbar"))
 	{
 		ImGui::OpenPopup("##cinema_more_popup");
@@ -6491,66 +7099,20 @@ void CCinemaFilmMakerManager::DrawToolbar()
 		ImGui::EndPopup();
 	}
 
-	layout.Item(CinemaButtonWidth("Translate") + 20.0f);
-	if (ImGui::RadioButton("Translate##gizmo_mode", GizmoMode == EGizmoMode::Translate))
-	{
-		GizmoMode = EGizmoMode::Translate;
-	}
-
-	layout.Item(CinemaButtonWidth("Rotate") + 20.0f);
-	if (ImGui::RadioButton("Rotate##gizmo_mode", GizmoMode == EGizmoMode::Rotate))
-	{
-		GizmoMode = EGizmoMode::Rotate;
-	}
-
-	layout.Item(CinemaButtonWidth("Snap") + 20.0f);
-	ImGui::Checkbox("Snap##gizmo", &Snap);
-
-	if (CinemaResetRequested() && Snap)
-	{
-		Snap = false;
-	}
-
-	if (Snap)
-	{
-		layout.Item(110.0f);
-		ImGui::SetNextItemWidth(100.0f);
-		ImGui::DragFloat("Move##snap_step", &TranslateStep, 0.01f, 0.01f, 10.0f, "%.2f");
-
-		if (CinemaResetRequested())
-		{
-			TranslateStep = 0.1f;
-		}
-
-		layout.Item(140.0f);
-		ImGui::SetNextItemWidth(100.0f);
-		ImGui::DragFloat("Rotate step##snap_step", &RotateStepDeg, 0.5f, 0.5f, 180.0f, "%.1f");
-
-		if (CinemaResetRequested())
-		{
-			RotateStepDeg = 5.0f;
-		}
-	}
 }
 
 void CCinemaFilmMakerManager::DrawSelectedActor()
 {
-	ImGui::BeginDisabled(SelectedVisual.size() == 0 || !VisualPathExists(SelectedVisual.c_str()));
-	if (ImGui::Button("Add##actor"))
-	{
-		AddActorInFront(SelectedVisual.c_str());
-	}
-	ImGui::EndDisabled();
-
 	SCinemaActor* actor = GetSelectedActor();
 
 	if (actor == nullptr)
 	{
 		ImGui::TextDisabled("No actor selected");
-		ImGui::TextDisabled("Choose a model in the Model tab and press Add.");
+		ImGui::TextDisabled("Choose a model in the Model section and press Add.");
 		return;
 	}
 
+	ImGui::SeparatorText("Actor");
 	if (NameEditActor != Selected)
 	{
 		xr_strcpy(NameEdit, actor->Name.c_str());
@@ -6578,6 +7140,7 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		ImGui::SetTooltip("%s", actor->Visual.c_str());
 	}
 
+	ImGui::SeparatorText("Playback");
 	const float available = ImGui::GetContentRegionAvail().x;
 	SToolbarLayout controls(available);
 
@@ -6680,7 +7243,7 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_DrawLinesToNodes | ImGuiTreeNodeFlags_SpanAvailWidth))
 	{
 		Fvector position = actor->Position;
 
@@ -6743,6 +7306,7 @@ void CCinemaFilmMakerManager::DrawSelectedActor()
 		}
 
 		ImGui::TextDisabled("XYZ scale of the model");
+		ImGui::TreePop();
 	}
 }
 
@@ -7024,7 +7588,7 @@ void CCinemaFilmMakerManager::DrawModelTab()
 	}
 
 	const float availableHeight = ImGui::GetContentRegionAvail().y;
-	const float listHeight = std::max(150.0f, availableHeight - 105.0f);
+	const float listHeight = std::clamp(availableHeight * 0.4f, 150.0f, 240.0f);
 	const bool hasModel = SelectedVisual.size() > 0 && VisualPathExists(SelectedVisual.c_str());
 
 	ImGui::SetNextItemWidth(-1.0f);
@@ -7270,9 +7834,16 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 
 	if (ImGui::Button("Add##clip"))
 	{
-		const SAnimationSource& source = actor->Sources[SelectedSource];
-		const SAnimationClip& clip = source.Clips[SelectedClip];
-		AddClipToPlaylist(*actor, source.Id, clip.Name, clip.Fx);
+		const auto clips = SelectedClips.empty() ? xr_vector<std::pair<s32, s32>>{ { SelectedSource, SelectedClip } } : SelectedClips;
+		for (const auto& [sourceIndex, clipIndex] : clips)
+		{
+			if (sourceIndex >= 0 && sourceIndex < static_cast<s32>(actor->Sources.size()) && clipIndex >= 0 && clipIndex < static_cast<s32>(actor->Sources[sourceIndex].Clips.size()))
+			{
+				const auto& source = actor->Sources[sourceIndex];
+				const auto& clip = source.Clips[clipIndex];
+				AddClipToPlaylist(*actor, source.Id, clip.Name, clip.Fx);
+			}
+		}
 	}
 
 	ImGui::EndDisabled();
@@ -7285,6 +7856,8 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 	ImGui::BeginChild("##cinema_animation_library", ImVec2(0.0f, libraryHeight), true);
 
 	bool anySource = false;
+	xr_vector<std::pair<s32, s32>> visibleClips;
+	std::pair<s32, s32> clickedClip = { -1, -1 };
 
 	for (s32 sourceIndex = 0; sourceIndex < static_cast<s32>(actor->Sources.size()); ++sourceIndex)
 	{
@@ -7331,6 +7904,8 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 		{
 			SelectedSource = sourceIndex;
 			SelectedClip = -1;
+			SelectedClips.clear();
+			ClipAnchor = { -1, -1 };
 		}
 
 		if (ImGui::IsItemHovered())
@@ -7354,13 +7929,13 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 				string256 clipLabel = {};
 				xr_sprintf(clipLabel, "%s%s", clip.Name.c_str(), clip.Fx ? " [fx]" : "");
 
-				const bool selected = SelectedSource == sourceIndex && SelectedClip == clipIndex;
+				const std::pair<s32, s32> clipId = { sourceIndex, clipIndex };
+				visibleClips.push_back(clipId);
+				const bool selected = SelectedClips.empty() ? SelectedSource == sourceIndex && SelectedClip == clipIndex : std::find(SelectedClips.begin(), SelectedClips.end(), clipId) != SelectedClips.end();
 
 				if (ImGui::Selectable(clipLabel, selected))
 				{
-					SelectedSource = sourceIndex;
-					SelectedClip = clipIndex;
-					PreviewClip(*actor, source, clip);
+					clickedClip = clipId;
 				}
 
 				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -7379,13 +7954,25 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 				{
 					if (ImGui::MenuItem("Add to playlist"))
 					{
-						SelectedSource = sourceIndex;
-						SelectedClip = clipIndex;
-						AddClipToPlaylist(*actor, source.Id, clip.Name, clip.Fx);
+						const auto clips = selected && !SelectedClips.empty() ? SelectedClips : xr_vector<std::pair<s32, s32>>{ clipId };
+						for (const auto& [selectedSource, selectedClip] : clips)
+						{
+							if (selectedSource >= 0 && selectedSource < static_cast<s32>(actor->Sources.size()) && selectedClip >= 0 && selectedClip < static_cast<s32>(actor->Sources[selectedSource].Clips.size()))
+							{
+								const auto& itemSource = actor->Sources[selectedSource];
+								const auto& itemClip = itemSource.Clips[selectedClip];
+								AddClipToPlaylist(*actor, itemSource.Id, itemClip.Name, itemClip.Fx);
+							}
+						}
 					}
 
 					if (ImGui::MenuItem("Play preview"))
 					{
+						if (!selected)
+						{
+							SelectedClips = { clipId };
+							ClipAnchor = clipId;
+						}
 						SelectedSource = sourceIndex;
 						SelectedClip = clipIndex;
 						PreviewClip(*actor, source, clip);
@@ -7415,6 +8002,44 @@ void CCinemaFilmMakerManager::DrawAnimationTab()
 		ImGui::PopID();
 	}
 
+	if (clickedClip.first >= 0)
+	{
+		const auto first = std::find(visibleClips.begin(), visibleClips.end(), ClipAnchor);
+		const auto last = std::find(visibleClips.begin(), visibleClips.end(), clickedClip);
+		if (ImGui::GetIO().KeyShift && first != visibleClips.end() && last != visibleClips.end())
+		{
+			SelectedClips.assign(std::min(first, last), std::max(first, last) + 1);
+		}
+		else if (ImGui::GetIO().KeyCtrl)
+		{
+			const auto it = std::find(SelectedClips.begin(), SelectedClips.end(), clickedClip);
+			if (it == SelectedClips.end())
+			{
+				SelectedClips.push_back(clickedClip);
+			}
+			else
+			{
+				SelectedClips.erase(it);
+			}
+			ClipAnchor = clickedClip;
+		}
+		else
+		{
+			SelectedClips = { clickedClip };
+			ClipAnchor = clickedClip;
+		}
+		if (SelectedClips.empty())
+		{
+			SelectedClip = -1;
+		}
+		else
+		{
+			const auto active = std::find(SelectedClips.begin(), SelectedClips.end(), clickedClip) != SelectedClips.end() ? clickedClip : SelectedClips.back();
+			SelectedSource = active.first;
+			SelectedClip = active.second;
+			PreviewClip(*actor, actor->Sources[active.first], actor->Sources[active.first].Clips[active.second]);
+		}
+	}
 	if (!anySource)
 	{
 		ImGui::TextDisabled("Nothing found");
@@ -7451,6 +8076,8 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 		StopActor(actor);
 		actor.Playlist.clear();
 		actor.PlaylistSelected = -1;
+		actor.PlaylistSelection.clear();
+		actor.PlaylistAnchor = -1;
 	}
 
 	ImGui::EndDisabled();
@@ -7513,9 +8140,40 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 		string256 label = {};
 		xr_sprintf(label, "%d. %s%s%s", i + 1, entry.Name.c_str(), entry.Fx ? " [fx]" : "", actor.PlaylistIndex == i ? "  [playing]" : "");
 
-		if (ImGui::Selectable(label, actor.PlaylistSelected == i))
+		const bool selected = actor.PlaylistSelection.empty() ? actor.PlaylistSelected == i : std::find(actor.PlaylistSelection.begin(), actor.PlaylistSelection.end(), i) != actor.PlaylistSelection.end();
+		if (ImGui::Selectable(label, selected))
 		{
-			actor.PlaylistSelected = i;
+			if (ImGui::GetIO().KeyShift && actor.PlaylistAnchor >= 0 && actor.PlaylistAnchor < static_cast<s32>(actor.Playlist.size()))
+			{
+				actor.PlaylistSelection.clear();
+				for (s32 index = std::min(actor.PlaylistAnchor, i); index <= std::max(actor.PlaylistAnchor, i); ++index)
+				{
+					actor.PlaylistSelection.push_back(index);
+				}
+			}
+			else if (ImGui::GetIO().KeyCtrl)
+			{
+				if (actor.PlaylistSelection.empty() && actor.PlaylistSelected >= 0)
+				{
+					actor.PlaylistSelection.push_back(actor.PlaylistSelected);
+				}
+				const auto it = std::find(actor.PlaylistSelection.begin(), actor.PlaylistSelection.end(), i);
+				if (it == actor.PlaylistSelection.end())
+				{
+					actor.PlaylistSelection.push_back(i);
+				}
+				else
+				{
+					actor.PlaylistSelection.erase(it);
+				}
+				actor.PlaylistAnchor = i;
+			}
+			else
+			{
+				actor.PlaylistSelection = { i };
+				actor.PlaylistAnchor = i;
+			}
+			actor.PlaylistSelected = std::find(actor.PlaylistSelection.begin(), actor.PlaylistSelection.end(), i) != actor.PlaylistSelection.end() ? i : (actor.PlaylistSelection.empty() ? -1 : actor.PlaylistSelection.back());
 		}
 
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -7558,7 +8216,14 @@ void CCinemaFilmMakerManager::DrawPlaylist(SCinemaActor& actor)
 
 			if (ImGui::MenuItem("Remove"))
 			{
-				RemovePlaylistEntry(actor, i);
+				auto indices = selected && !actor.PlaylistSelection.empty() ? actor.PlaylistSelection : xr_vector<s32>{ i };
+				std::sort(indices.begin(), indices.end(), std::greater<s32>());
+				for (const s32 index : indices)
+				{
+					RemovePlaylistEntry(actor, index);
+				}
+				actor.PlaylistSelection.clear();
+				actor.PlaylistAnchor = -1;
 				ImGui::EndPopup();
 				ImGui::PopID();
 				break;
@@ -7601,9 +8266,38 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 			{
 				const auto& name = names[filtered[row]];
 				ImGui::PushID(filtered[row]);
-				if (ImGui::Selectable(name.c_str(), name == SelectedParticleName))
+				const bool selected = std::find(SelectedParticleNames.begin(), SelectedParticleNames.end(), name) != SelectedParticleNames.end();
+				if (ImGui::Selectable(name.c_str(), selected))
 				{
-					SelectedParticleName = name;
+					const auto anchor = std::find_if(filtered.begin(), filtered.end(), [&](s32 index) { return names[index] == ParticleLibraryAnchor; });
+					if (ImGui::GetIO().KeyShift && anchor != filtered.end())
+					{
+						const s32 first = static_cast<s32>(anchor - filtered.begin());
+						SelectedParticleNames.clear();
+						for (s32 i = std::min(first, row); i <= std::max(first, row); ++i)
+						{
+							SelectedParticleNames.push_back(names[filtered[i]]);
+						}
+					}
+					else if (ImGui::GetIO().KeyCtrl)
+					{
+						const auto it = std::find(SelectedParticleNames.begin(), SelectedParticleNames.end(), name);
+						if (it == SelectedParticleNames.end())
+						{
+							SelectedParticleNames.push_back(name);
+						}
+						else
+						{
+							SelectedParticleNames.erase(it);
+						}
+						ParticleLibraryAnchor = name;
+					}
+					else
+					{
+						SelectedParticleNames = { name };
+						ParticleLibraryAnchor = name;
+					}
+					SelectedParticleName = std::find(SelectedParticleNames.begin(), SelectedParticleNames.end(), name) != SelectedParticleNames.end() ? name : (SelectedParticleNames.empty() ? shared_str() : SelectedParticleNames.back());
 				}
 				ImGui::PopID();
 			}
@@ -7614,10 +8308,10 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 		}
 	}
 	ImGui::EndChild();
-	ImGui::TextDisabled("Effect: %s", SelectedParticleName.size() ? SelectedParticleName.c_str() : "<none>");
+	ImGui::TextDisabled("Selected effects: %u", static_cast<u32>(SelectedParticleNames.size()));
 	SToolbarLayout actions(ImGui::GetContentRegionAvail().x);
 	actions.Item(CinemaButtonWidth("Add to scene"));
-	ImGui::BeginDisabled(SelectedParticleName.size() == 0 || Particles.size() >= kCinemaSceneMaxActors);
+	ImGui::BeginDisabled(SelectedParticleNames.empty() || SelectedParticleNames.size() > kCinemaSceneMaxActors - Particles.size());
 	if (ImGui::Button("Add to scene##particle"))
 	{
 		Fvector position = Device.vCameraPosition;
@@ -7629,26 +8323,36 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 		}
 		direction.normalize_safe();
 		position.mad(direction, 3.0f);
-		AddParticle(SelectedParticleName, position);
+		for (const auto& name : SelectedParticleNames)
+		{
+			AddParticle(name, position);
+		}
 	}
 	ImGui::EndDisabled();
 	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
 	{
-		ImGui::SetTooltip("Add the selected library effect to the scene");
+		ImGui::SetTooltip("Add the selected library effects to the scene");
 	}
 	actions.Item(CinemaButtonWidth("Replace selected"));
-	const bool canReplace = SelectedParticleName.size() != 0 && SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size());
+	const bool canReplace = SelectedParticleNames.size() == 1 && SelectedParticleName.size() != 0 && SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size());
 	ImGui::BeginDisabled(!canReplace);
 	if (ImGui::Button("Replace selected##particle"))
 	{
-		auto& particle = Particles[SelectedParticle];
-		if (particle.Name != SelectedParticleName && IsCinemaParticle(SelectedParticleName))
+		for (const s32 selected : SelectedParticles)
 		{
-			auto replacement = CreateCinemaParticle(SelectedParticleName.c_str());
-			::Particles::Details::Destroy(particle.Object);
-			particle.Object = std::move(replacement);
-			particle.Name = SelectedParticleName;
-			StartParticleTimeline(particle);
+			if (selected < 0 || selected >= static_cast<s32>(Particles.size()))
+			{
+				continue;
+			}
+			auto& particle = Particles[selected];
+			if (particle.Name != SelectedParticleName && IsCinemaParticle(SelectedParticleName))
+			{
+				auto replacement = CreateCinemaParticle(SelectedParticleName.c_str());
+				::Particles::Details::Destroy(particle.Object);
+				particle.Object = std::move(replacement);
+				particle.Name = SelectedParticleName;
+				StartParticleTimeline(particle);
+			}
 		}
 	}
 	ImGui::EndDisabled();
@@ -7664,6 +8368,16 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	{
 		DrawParticleBrowser();
 	}
+	if (SelectedParticle < 0 || SelectedParticle >= static_cast<s32>(Particles.size()))
+	{
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
+	}
+	else if (std::find(SelectedParticles.begin(), SelectedParticles.end(), SelectedParticle) == SelectedParticles.end())
+	{
+		SelectedParticles = { SelectedParticle };
+		ParticleSelectionAnchor = SelectedParticle;
+	}
 	ImGui::SeparatorText("Scene particles");
 	ImGui::TextDisabled("%u particles | %u groups", static_cast<u32>(Particles.size()), static_cast<u32>(ParticleGroups.size()));
 	ImGui::BeginDisabled(ParticleGroups.size() >= kCinemaSceneMaxActors);
@@ -7675,32 +8389,43 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 		if (SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()))
 		{
 			ParticleGroups.back().Position = Particles[SelectedParticle].Position;
-			Particles[SelectedParticle].Group = group;
+			for (const s32 selected : SelectedParticles)
+			{
+				if (selected >= 0 && selected < static_cast<s32>(Particles.size()))
+				{
+					Particles[selected].Group = group;
+				}
+			}
 		}
 		SelectActor(-1);
 		SelectedParticle = -1;
 		SelectedParticleGroup = group;
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
 	}
 	ImGui::EndDisabled();
 	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
 	{
-		ImGui::SetTooltip("Create a group, adding the selected particle if there is one");
+		ImGui::SetTooltip("Create a group containing the selected particles");
 	}
-	ImGui::TextDisabled("Drag to group | Select for settings");
+	ImGui::TextDisabled("Shift+click: select range | Ctrl+click: toggle | Drag to group");
 
 	s32 droppedParticle = -1;
 	s32 targetParticle = -1;
 	s32 targetGroup = -1;
+	s32 contextAction = 0;
+	xr_vector<s32> contextParticles;
+	s32 clickedParticle = -1;
+	xr_vector<s32> visibleParticles;
 	const auto drawParticleRow = [&](s32 index)
 	{
+		visibleParticles.push_back(index);
 		ImGui::PushID(index);
 		const auto& particle = Particles[index];
-		if (ImGui::Selectable(CinemaFileName(particle.Name.c_str()), SelectedParticle == index))
+		const bool selected = std::find(SelectedParticles.begin(), SelectedParticles.end(), index) != SelectedParticles.end();
+		if (ImGui::Selectable(CinemaFileName(particle.Name.c_str()), selected))
 		{
-			ClearGizmo();
-			SelectActor(-1);
-			SelectedParticleGroup = -1;
-			SelectedParticle = index;
+			clickedParticle = index;
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -7723,6 +8448,32 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 				}
 			}
 			ImGui::EndDragDropTarget();
+		}
+		if (ImGui::BeginPopupContextItem("##particle_group_context"))
+		{
+			const auto& affected = selected ? SelectedParticles : xr_vector<s32>{ index };
+			ImGui::BeginDisabled(affected.size() > kCinemaSceneMaxActors - Particles.size());
+			if (ImGui::MenuItem("Duplicate"))
+			{
+				contextParticles = affected;
+				contextAction = 1;
+			}
+			ImGui::EndDisabled();
+			if (ImGui::MenuItem("Remove"))
+			{
+				contextParticles = affected;
+				contextAction = 2;
+			}
+			const bool anyGrouped = std::any_of(affected.begin(), affected.end(), [&](s32 selectedIndex)
+			{
+				return selectedIndex >= 0 && selectedIndex < static_cast<s32>(Particles.size()) && Particles[selectedIndex].Group >= 0;
+			});
+			if (anyGrouped && ImGui::MenuItem("Remove from group"))
+			{
+				contextParticles = affected;
+				contextAction = 3;
+			}
+			ImGui::EndPopup();
 		}
 		ImGui::PopID();
 	};
@@ -7749,6 +8500,8 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			ClearGizmo();
 			SelectActor(-1);
 			SelectedParticle = -1;
+			SelectedParticles.clear();
+			ParticleSelectionAnchor = -1;
 			SelectedParticleGroup = i;
 		}
 		if (ImGui::BeginDragDropTarget())
@@ -7862,9 +8615,82 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	}
 	ImGui::PopID();
 
+	if (contextAction == 1)
+	{
+		DuplicateParticles(contextParticles);
+		return;
+	}
+	if (contextAction == 2)
+	{
+		RemoveParticles(contextParticles);
+		return;
+	}
+	if (contextAction == 3)
+	{
+		for (const s32 selected : contextParticles)
+		{
+			if (selected >= 0 && selected < static_cast<s32>(Particles.size()))
+			{
+				Particles[selected].Group = -1;
+			}
+		}
+		SelectedParticles = contextParticles;
+		SelectedParticle = contextParticles.back();
+		ParticleSelectionAnchor = SelectedParticle;
+		SelectedParticleGroup = -1;
+		SelectActor(-1);
+		ClearGizmo();
+		return;
+	}
+
+	if (clickedParticle >= 0)
+	{
+		const auto first = std::find(visibleParticles.begin(), visibleParticles.end(), ParticleSelectionAnchor);
+		const auto last = std::find(visibleParticles.begin(), visibleParticles.end(), clickedParticle);
+		if (ImGui::GetIO().KeyShift && first != visibleParticles.end() && last != visibleParticles.end())
+		{
+			SelectedParticles.clear();
+			const size_t firstIndex = static_cast<size_t>(first - visibleParticles.begin());
+			const size_t lastIndex = static_cast<size_t>(last - visibleParticles.begin());
+			for (size_t i = 0; i < visibleParticles.size(); ++i)
+			{
+				if (CinemaSelectionInRange(i, firstIndex, lastIndex))
+				{
+					SelectedParticles.push_back(visibleParticles[i]);
+				}
+			}
+		}
+		else if (ImGui::GetIO().KeyCtrl)
+		{
+			const auto selected = std::find(SelectedParticles.begin(), SelectedParticles.end(), clickedParticle);
+			if (selected == SelectedParticles.end())
+			{
+				SelectedParticles.push_back(clickedParticle);
+			}
+			else
+			{
+				SelectedParticles.erase(selected);
+			}
+			ParticleSelectionAnchor = clickedParticle;
+		}
+		else
+		{
+			SelectedParticles = { clickedParticle };
+			ParticleSelectionAnchor = clickedParticle;
+		}
+		ClearGizmo();
+		SelectActor(-1);
+		SelectedParticleGroup = -1;
+		SelectedParticle = std::find(SelectedParticles.begin(), SelectedParticles.end(), clickedParticle) != SelectedParticles.end()
+			? clickedParticle : (SelectedParticles.empty() ? -1 : SelectedParticles.back());
+	}
+
 	if (droppedParticle >= 0 && droppedParticle < static_cast<s32>(Particles.size()))
 	{
-		if (targetParticle >= 0 && targetParticle < static_cast<s32>(Particles.size()) && targetParticle != droppedParticle)
+		const bool draggedSelection = std::find(SelectedParticles.begin(), SelectedParticles.end(), droppedParticle) != SelectedParticles.end();
+		const xr_vector<s32> dragged = draggedSelection ? SelectedParticles : xr_vector<s32>{ droppedParticle };
+		if (targetParticle >= 0 && targetParticle < static_cast<s32>(Particles.size()) &&
+			std::find(dragged.begin(), dragged.end(), targetParticle) == dragged.end())
 		{
 			targetGroup = Particles[targetParticle].Group;
 			if (targetGroup < 0 && ParticleGroups.size() < kCinemaSceneMaxActors)
@@ -7878,11 +8704,19 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 		}
 		if (targetGroup >= 0 && targetGroup < static_cast<s32>(ParticleGroups.size()))
 		{
-			Particles[droppedParticle].Group = targetGroup;
+			for (const s32 selected : dragged)
+			{
+				if (selected >= 0 && selected < static_cast<s32>(Particles.size()))
+				{
+					Particles[selected].Group = targetGroup;
+				}
+			}
 			SelectActor(-1);
 			ClearGizmo();
 			SelectedParticle = -1;
 			SelectedParticleGroup = targetGroup;
+			SelectedParticles.clear();
+			ParticleSelectionAnchor = -1;
 		}
 	}
 
@@ -7890,11 +8724,27 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	{
 		return;
 	}
+	if (SelectedParticles.size() > 1)
+	{
+		ImGui::TextDisabled("%u selected. Values are from the last selected; edits apply to all.", static_cast<u32>(SelectedParticles.size()));
+	}
 	ImGui::SeparatorText("Selected particle");
 	const s32 index = SelectedParticle;
 	{
 		ImGui::PushID(index);
 		auto& particle = Particles[index];
+		const SCinemaParticle before = particle;
+		bool groupChanged = false;
+		bool speedChanged = false;
+		bool loopChanged = false;
+		bool positionReset = false;
+		bool rotationReset = false;
+		bool scaleChanged = false;
+		bool modulationChanged = false;
+		bool resetTilt = false;
+		bool resetChannel = false;
+		bool resetCurveKey = false;
+		const char* resetWaveField = nullptr;
 		const bool open = ImGui::TreeNodeEx(particle.Name.c_str(), ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes | (SelectedParticle == index ? ImGuiTreeNodeFlags_Selected | ImGuiTreeNodeFlags_DefaultOpen : 0));
 		if (ImGui::IsItemClicked())
 		{
@@ -7922,6 +8772,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			if (ImGui::Selectable("None", particle.Group < 0))
 			{
 				particle.Group = -1;
+				groupChanged = true;
 			}
 			for (s32 groupIndex = 0; groupIndex < static_cast<s32>(ParticleGroups.size()); ++groupIndex)
 			{
@@ -7930,80 +8781,75 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 				if (ImGui::Selectable(label, particle.Group == groupIndex))
 				{
 					particle.Group = groupIndex;
+					groupChanged = true;
 				}
 			}
 			ImGui::EndCombo();
+		}
+		const bool anyGrouped = std::any_of(SelectedParticles.begin(), SelectedParticles.end(), [&](s32 selected)
+		{
+			return selected >= 0 && selected < static_cast<s32>(Particles.size()) && Particles[selected].Group >= 0;
+		});
+		if (anyGrouped && ImGui::Button("Remove from group##particle"))
+		{
+			particle.Group = -1;
+			groupChanged = true;
 		}
 		SToolbarLayout controls(ImGui::GetContentRegionAvail().x);
 		controls.Item(CinemaButtonWidth("Play"));
 		if (ImGui::Button("Play##particle"))
 		{
-			StartParticleTimeline(particle);
+			for (const s32 selected : SelectedParticles)
+			{
+				StartParticleTimeline(Particles[selected]);
+			}
 		}
 		controls.Item(CinemaButtonWidth("Stop"));
 		if (ImGui::Button("Stop##particle"))
 		{
-			particle.Object->Stop(false);
-			particle.Running = false;
+			for (const s32 selected : SelectedParticles)
+			{
+				Particles[selected].Object->Stop(false);
+				Particles[selected].Running = false;
+			}
 		}
 		controls.Item(CinemaButtonWidth("Loop") + 20.0f);
-		ImGui::Checkbox("Loop##particle", &particle.Loop);
+		loopChanged = ImGui::Checkbox("Loop##particle", &particle.Loop);
 		controls.Item(170.0f);
 		ImGui::SetNextItemWidth(100.0f);
 		if (ImGui::DragFloat("Speed##particle", &particle.Speed, 0.01f, 0.0f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
 		{
 			UpdateParticleTransform(particle);
+			speedChanged = true;
 		}
 		if (CinemaResetRequested())
 		{
 			particle.Speed = 1.0f;
 			UpdateParticleTransform(particle);
+			speedChanged = true;
 		}
 		controls.Item(CinemaButtonWidth("Duplicate"));
-		ImGui::BeginDisabled(Particles.size() >= kCinemaSceneMaxActors);
+		ImGui::BeginDisabled(SelectedParticles.size() > kCinemaSceneMaxActors - Particles.size());
 		const bool duplicate = ImGui::Button("Duplicate##particle");
 		ImGui::EndDisabled();
 		if (duplicate)
 		{
-			SCinemaParticle copy = particle;
-			copy.Object = nullptr;
+			const xr_vector<s32> indices = SelectedParticles;
 			ImGui::TreePop();
 			ImGui::PopID();
-			if (AddParticle(copy.Name, copy.Position))
-			{
-				auto& created = Particles.back();
-				created.Group = copy.Group;
-				created.Orientation = copy.Orientation;
-				created.Scale = copy.Scale;
-				created.Timeline = copy.Timeline;
-				created.Loop = copy.Loop;
-				created.Speed = copy.Speed;
-				created.Modulation = copy.Modulation;
-				created.EndOffset = copy.EndOffset;
-				created.EndRotation = copy.EndRotation;
-				created.EndScale = copy.EndScale;
-				for (u32 channel = 0; channel < 8; ++channel)
-				{
-					created.Curves[channel] = copy.Curves[channel];
-					created.Waves[channel] = copy.Waves[channel];
-				}
-				created.In = copy.In;
-				created.Out = copy.Out;
-				StartParticleTimeline(created);
-			}
+			DuplicateParticles(indices);
 			return;
 		}
 		controls.Item(CinemaButtonWidth("Delete"));
 		if (ImGui::Button("Delete##particle"))
 		{
-			ClearGizmo();
-			::Particles::Details::Destroy(particle.Object);
+			const xr_vector<s32> indices = SelectedParticles;
 			ImGui::TreePop();
 			ImGui::PopID();
-			Particles.erase(Particles.begin() + index);
-			SelectedParticle = -1;
+			RemoveParticles(indices);
 			return;
 		}
+
 		if (particle.Running && !particle.Started)
 		{
 			ImGui::TextDisabled("Waiting to start");
@@ -8035,11 +8881,13 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			}
 			if (ImGui::TreeNodeEx("Modulation##particle", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth))
 			{
-				bool changed = ImGui::Checkbox("Enable modulation##particle", &particle.Modulation);
+				modulationChanged = ImGui::Checkbox("Enable modulation##particle", &particle.Modulation);
+				bool changed = modulationChanged;
 				ImGui::SameLine();
 				if (ImGui::SmallButton("Reset##particle_modulation_enabled"))
 				{
 					particle.Modulation = false;
+					modulationChanged = true;
 					changed = true;
 				}
 				const char* channels[] = { "Offset X", "Offset Y", "Offset Z", "Rotation H", "Rotation P", "Rotation B", "Size multiplier", "Speed multiplier" };
@@ -8067,12 +8915,21 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 					if (reset)
 					{
 						value = defaultValue;
+						if (xr_strcmp(id, "time") == 0 || xr_strcmp(id, "value") == 0)
+						{
+							resetCurveKey = true;
+						}
+						else
+						{
+							resetWaveField = id;
+						}
 						changed = true;
 					}
 				};
 				if (ImGui::Button("Reset channel##particle_modulation"))
 				{
 					keys.clear();
+					resetChannel = true;
 					wave = SParticleWave();
 					wave.Minimum = lower;
 					wave.Maximum = upper;
@@ -8223,6 +9080,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			if (CinemaResetRequested())
 			{
 				particle.Position.set(0.0f, 0.0f, 0.0f);
+				positionReset = true;
 				changed = true;
 			}
 			Fvector degrees = {};
@@ -8236,25 +9094,30 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			if (CinemaResetRequested())
 			{
 				particle.Orientation.setHPB(0.0f, 0.0f, 0.0f);
+				rotationReset = true;
 				changed = true;
 			}
 			ImGui::TextDisabled("H / P / B, degrees");
 			if (ImGui::Button("Reset tilt##particle"))
 			{
 				const Fvector forward = particle.Orientation.k;
+				resetTilt = true;
 				particle.Orientation.setHPB(-atan2f(forward.x, forward.z), 0.0f, 0.0f);
 				changed = true;
 			}
-			changed |= ImGui::DragFloat("Scale##particle", &particle.Scale, 0.01f, 0.1f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			scaleChanged = ImGui::DragFloat("Scale##particle", &particle.Scale, 0.01f, 0.1f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+			changed |= scaleChanged;
 			if (CinemaResetRequested())
 			{
 				particle.Scale = 1.0f;
+				scaleChanged = true;
 				changed = true;
 			}
 			ImGui::SameLine();
 			if (ImGui::SmallButton("Reset##particle_scale"))
 			{
 				particle.Scale = 1.0f;
+				scaleChanged = true;
 				changed = true;
 			}
 			ImGui::TextDisabled("Uniform particle size; emitter shape is unchanged");
@@ -8263,9 +9126,693 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 				UpdateParticleTransform(particle);
 			}
 		}
+		Fvector oldRotation, newRotation;
+		before.Orientation.getHPB(oldRotation);
+		particle.Orientation.getHPB(newRotation);
+		for (const s32 selected : SelectedParticles)
+		{
+			if (selected == index || selected < 0 || selected >= static_cast<s32>(Particles.size()))
+			{
+				continue;
+			}
+			auto& other = Particles[selected];
+			bool refresh = speedChanged || positionReset || rotationReset || resetTilt || scaleChanged || modulationChanged ||
+				before.Position.x != particle.Position.x || before.Position.y != particle.Position.y || before.Position.z != particle.Position.z ||
+				oldRotation.x != newRotation.x || oldRotation.y != newRotation.y || oldRotation.z != newRotation.z;
+			if (groupChanged)
+			{
+				other.Group = particle.Group;
+			}
+			if (loopChanged)
+			{
+				other.Loop = particle.Loop;
+			}
+			if (speedChanged)
+			{
+				other.Speed = particle.Speed;
+			}
+			if (positionReset || before.Position.x != particle.Position.x)
+			{
+				other.Position.x = particle.Position.x;
+			}
+			if (positionReset || before.Position.y != particle.Position.y)
+			{
+				other.Position.y = particle.Position.y;
+			}
+			if (positionReset || before.Position.z != particle.Position.z)
+			{
+				other.Position.z = particle.Position.z;
+			}
+			Fvector rotation;
+			other.Orientation.getHPB(rotation);
+			if (rotationReset || oldRotation.x != newRotation.x)
+			{
+				rotation.x = newRotation.x;
+			}
+			if (rotationReset || oldRotation.y != newRotation.y)
+			{
+				rotation.y = newRotation.y;
+			}
+			if (rotationReset || oldRotation.z != newRotation.z)
+			{
+				rotation.z = newRotation.z;
+			}
+			if (resetTilt)
+			{
+				const Fvector forward = other.Orientation.k;
+				other.Orientation.setHPB(-atan2f(forward.x, forward.z), 0.0f, 0.0f);
+			}
+			else if (rotationReset || oldRotation.x != newRotation.x || oldRotation.y != newRotation.y || oldRotation.z != newRotation.z)
+			{
+				other.Orientation.setHPB(rotation.x, rotation.y, rotation.z);
+			}
+			if (scaleChanged)
+			{
+				other.Scale = particle.Scale;
+			}
+			if (modulationChanged)
+			{
+				other.Modulation = particle.Modulation;
+			}
+			const bool timeChanged = before.In != particle.In || before.Out != particle.Out;
+			if (timeChanged)
+			{
+				if (before.In != particle.In)
+				{
+					other.In = particle.In;
+				}
+				if (before.Out != particle.Out)
+				{
+					other.Out = particle.Out;
+				}
+				if (other.In >= other.Out)
+				{
+					if (before.In != particle.In && before.Out == particle.Out)
+					{
+						other.Out = std::min(600.0f, other.In + 0.01f);
+					}
+					else
+					{
+						other.In = std::max(0.0f, other.Out - 0.01f);
+					}
+				}
+			}
+			for (u32 channel = 0; channel < 8; ++channel)
+			{
+				const auto& oldWave = before.Waves[channel];
+				const auto& newWave = particle.Waves[channel];
+				auto& wave = other.Waves[channel];
+				refresh |= oldWave.Type != newWave.Type || oldWave.Amplitude != newWave.Amplitude || oldWave.Frequency != newWave.Frequency ||
+					oldWave.Phase != newWave.Phase || oldWave.Minimum != newWave.Minimum || oldWave.Maximum != newWave.Maximum ||
+					(channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || resetWaveField != nullptr));
+				if (oldWave.Type != newWave.Type || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "wave") == 0))))
+				{
+					wave.Type = newWave.Type;
+				}
+				if (oldWave.Amplitude != newWave.Amplitude || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "amplitude") == 0))))
+				{
+					wave.Amplitude = newWave.Amplitude;
+				}
+				if (oldWave.Frequency != newWave.Frequency || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "frequency") == 0))))
+				{
+					wave.Frequency = newWave.Frequency;
+				}
+				if (oldWave.Phase != newWave.Phase || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "phase") == 0))))
+				{
+					wave.Phase = newWave.Phase;
+				}
+				if (oldWave.Minimum != newWave.Minimum || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "minimum") == 0))))
+				{
+					wave.Minimum = newWave.Minimum;
+					wave.Maximum = std::max(wave.Maximum, wave.Minimum);
+				}
+				if (oldWave.Maximum != newWave.Maximum || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || (resetWaveField != nullptr && xr_strcmp(resetWaveField, "maximum") == 0))))
+				{
+					wave.Maximum = newWave.Maximum;
+					wave.Minimum = std::min(wave.Minimum, wave.Maximum);
+				}
+				const auto& oldKeys = before.Curves[channel];
+				const auto& newKeys = particle.Curves[channel];
+				const bool keysChanged = oldKeys.size() != newKeys.size() || !std::equal(oldKeys.begin(), oldKeys.end(), newKeys.begin(), newKeys.end(),
+					[](const SParticleCurveKey& a, const SParticleCurveKey& b) { return a.Time == b.Time && a.Value == b.Value; });
+				if (keysChanged || (channel == static_cast<u32>(particle.CurveChannel) && (resetChannel || resetCurveKey)))
+				{
+					other.Curves[channel] = newKeys;
+					refresh = true;
+				}
+			}
+			if (timeChanged)
+			{
+				StartParticleTimeline(other);
+			}
+			else if (refresh)
+			{
+				UpdateParticleTransform(other);
+			}
+		}
 		ImGui::TreePop();
 		ImGui::PopID();
 	}
+}
+
+void CCinemaFilmMakerManager::TransformSelectedLights(const Fvector& previousPosition, const Fmatrix& previousOrientation)
+{
+	const auto& current = Lights[SelectedLight];
+	Fmatrix inverse, rotation;
+	inverse.invert(previousOrientation);
+	rotation.mul(current.Orientation, inverse);
+	for (const s32 index : SelectedLights)
+	{
+		if (index == SelectedLight)
+		{
+			continue;
+		}
+		auto& light = Lights[index];
+		Fvector offset, rotated;
+		offset.sub(light.Position, previousPosition);
+		rotation.transform_dir(rotated, offset);
+		light.Position.add(current.Position, rotated);
+		Fmatrix orientation;
+		orientation.mul(rotation, light.Orientation);
+		light.Orientation = orientation;
+		ApplyCinemaLight(light);
+	}
+}
+
+void CCinemaFilmMakerManager::RemoveLights(const xr_vector<s32>& indices)
+{
+	ClearGizmo();
+	auto sorted = indices;
+	std::sort(sorted.begin(), sorted.end());
+	sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());
+	for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
+	{
+		if (*it >= 0 && *it < static_cast<s32>(Lights.size()))
+		{
+			Lights.erase(Lights.begin() + *it);
+		}
+	}
+	SelectedLight = -1;
+	SelectedLights.clear();
+	LightSelectionAnchor = -1;
+}
+
+void CCinemaFilmMakerManager::DrawLightModulation(SCinemaLight& light)
+{
+	if (!ImGui::TreeNodeEx("Modulation##light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+	{
+		return;
+	}
+	const bool enabledChanged = ImGui::Checkbox("Enable modulation##light", &light.Modulation);
+	const bool loopChanged = ImGui::Checkbox("Loop##light_modulation", &light.Loop);
+	const bool durationChanged = ImGui::DragFloat("Duration##light", &light.Duration, 0.05f, 0.01f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
+	bool playbackChanged = false;
+	if (ImGui::Button(light.Running ? "Pause##light_modulation" : "Play##light_modulation"))
+	{
+		if (!light.Running && light.Time >= light.Duration)
+		{
+			light.Time = 0.0f;
+		}
+		light.Running = !light.Running;
+		playbackChanged = true;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Restart##light_modulation"))
+	{
+		light.Time = 0.0f;
+		light.Running = true;
+		playbackChanged = true;
+	}
+	if (durationChanged)
+	{
+		light.Time = std::min(light.Time, light.Duration);
+	}
+	ImGui::TextDisabled("%.2f / %.2f s", light.Time, light.Duration);
+	ImGui::TextDisabled("Offsets are added; other channels multiply the base value.");
+	const char* channels[] = { "Offset X", "Offset Y", "Offset Z", "Rotation H", "Rotation P", "Rotation B", "Red multiplier", "Green multiplier", "Blue multiplier", "Range multiplier", "Cone multiplier", "Virtual size multiplier", "Volume quality multiplier", "Volume intensity multiplier", "Volume distance multiplier" };
+	if (ImGui::Combo("Parameter##light_curve", &light.CurveChannel, channels, IM_ARRAYSIZE(channels)))
+	{
+		light.CurveDrag = -1;
+	}
+	const u32 channel = static_cast<u32>(light.CurveChannel);
+	const float lower = channel < 6 ? -3600.0f : 0.0f;
+	const float upper = channel < 6 ? 3600.0f : 10.0f;
+	const float fallback = CinemaLightChannelDefault(channel);
+	auto& wave = light.Waves[channel];
+	auto& keys = light.Curves[channel];
+	const SParticleWave previousWave = wave;
+	const auto previousKeys = keys;
+	bool changed = false;
+	bool resetChannel = false;
+	if (ImGui::Button("Reset channel##light_modulation"))
+	{
+		keys.clear();
+		wave = SParticleWave();
+		wave.Minimum = lower;
+		wave.Maximum = upper;
+		light.CurveDrag = -1;
+		resetChannel = true;
+		changed = true;
+	}
+	const char* waveTypes[] = { "None", "Sine", "Triangle", "Square", "Sawtooth" };
+	changed |= ImGui::Combo("Wave##light", &wave.Type, waveTypes, IM_ARRAYSIZE(waveTypes));
+	if (wave.Type != 0)
+	{
+		changed |= ImGui::DragFloat("Amplitude##light_wave", &wave.Amplitude, 0.01f, 0.0f, 3600.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		changed |= ImGui::DragFloat("Frequency##light_wave", &wave.Frequency, 0.01f, 0.0f, 100.0f, "%.2f Hz", ImGuiSliderFlags_AlwaysClamp);
+		changed |= ImGui::DragFloat("Phase##light_wave", &wave.Phase, 0.01f, -100.0f, 100.0f, "%.2f cycles", ImGuiSliderFlags_AlwaysClamp);
+	}
+	changed |= ImGui::DragFloat("Minimum##light_wave", &wave.Minimum, 0.01f, lower, wave.Maximum, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	wave.Minimum = std::isfinite(wave.Minimum) ? std::clamp(wave.Minimum, lower, wave.Maximum) : lower;
+	changed |= ImGui::DragFloat("Maximum##light_wave", &wave.Maximum, 0.01f, wave.Minimum, upper, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	wave.Maximum = std::isfinite(wave.Maximum) ? std::clamp(wave.Maximum, wave.Minimum, upper) : upper;
+	float minValue = channel < 6 ? -1.0f : 0.0f;
+	float maxValue = channel < 6 ? 1.0f : 2.0f;
+	for (const auto& key : keys)
+	{
+		minValue = std::min(minValue, key.Value);
+		maxValue = std::max(maxValue, key.Value);
+	}
+	for (u32 i = 0; i <= 128; ++i)
+	{
+		const float value = LightModulatedValue(light, channel, light.Duration * i / 128.0f);
+		minValue = std::min(minValue, value);
+		maxValue = std::max(maxValue, value);
+	}
+	const ImVec2 start = ImGui::GetCursorScreenPos();
+	const float width = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
+	const float height = 100.0f;
+	ImGui::InvisibleButton("##light_curve", ImVec2(width, height));
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+	draw->AddRectFilled(start, ImVec2(start.x + width, start.y + height), GetTheme().TimelineBackground);
+	const auto point = [&](float time, float value)
+	{
+		return ImVec2(start.x + std::clamp(time / light.Duration, 0.0f, 1.0f) * width, start.y + height - (value - minValue) / (maxValue - minValue) * height);
+	};
+	ImVec2 last = point(0.0f, ParticleCurveValue(keys, 0.0f, fallback));
+	for (const auto& key : keys)
+	{
+		if (key.Time > light.Duration)
+		{
+			break;
+		}
+		const ImVec2 current = point(key.Time, key.Value);
+		draw->AddLine(last, current, GetTheme().TimelinePlayhead, 2.0f);
+		draw->AddCircleFilled(current, 4.0f, GetTheme().TimelinePlayhead);
+		last = current;
+	}
+	draw->AddLine(last, point(light.Duration, ParticleCurveValue(keys, light.Duration, fallback)), GetTheme().TimelinePlayhead, 2.0f);
+	last = point(0.0f, LightModulatedValue(light, channel, 0.0f));
+	for (u32 i = 1; i <= 128; ++i)
+	{
+		const float time = light.Duration * i / 128.0f;
+		const ImVec2 current = point(time, LightModulatedValue(light, channel, time));
+		draw->AddLine(last, current, IM_COL32(120, 230, 150, 240), 1.5f);
+		last = current;
+	}
+	draw->AddLine(point(light.Time, minValue), point(light.Time, maxValue), GetTheme().TimelineText);
+	draw->AddRect(start, ImVec2(start.x + width, start.y + height), GetTheme().TimelineBorder);
+	if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		const ImVec2 mouse = ImGui::GetIO().MousePos;
+		float nearest = 64.0f;
+		for (s32 i = 0; i < static_cast<s32>(keys.size()); ++i)
+		{
+			if (keys[i].Time > light.Duration)
+			{
+				continue;
+			}
+			const ImVec2 p = point(keys[i].Time, keys[i].Value);
+			const float distance = (p.x - mouse.x) * (p.x - mouse.x) + (p.y - mouse.y) * (p.y - mouse.y);
+			if (distance < nearest)
+			{
+				nearest = distance;
+				light.CurveDrag = i;
+			}
+		}
+	}
+	if (light.CurveDrag >= 0 && light.CurveDrag < static_cast<s32>(keys.size()) && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	{
+		const ImVec2 mouse = ImGui::GetIO().MousePos;
+		auto& key = keys[light.CurveDrag];
+		const float left = light.CurveDrag > 0 ? keys[light.CurveDrag - 1].Time : 0.0f;
+		const float right = light.CurveDrag + 1 < static_cast<s32>(keys.size()) ? std::min(keys[light.CurveDrag + 1].Time, light.Duration) : light.Duration;
+		key.Time = std::clamp((mouse.x - start.x) / width * light.Duration, std::min(left, right), right);
+		key.Value = std::clamp(maxValue - (mouse.y - start.y) / height * (maxValue - minValue), lower, upper);
+		changed = true;
+	}
+	if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	{
+		light.CurveDrag = -1;
+	}
+	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && keys.size() < 128)
+	{
+		const ImVec2 mouse = ImGui::GetIO().MousePos;
+		keys.push_back({ std::clamp((mouse.x - start.x) / width * light.Duration, 0.0f, light.Duration), std::clamp(maxValue - (mouse.y - start.y) / height * (maxValue - minValue), lower, upper) });
+		light.CurveDrag = -1;
+		changed = true;
+	}
+	ImGui::TextDisabled("Orange: keys. Green: result with wave and limits.");
+	ImGui::TextDisabled("Double-click to add a key; drag it or edit below.");
+	for (s32 i = 0; i < static_cast<s32>(keys.size()); ++i)
+	{
+		ImGui::PushID(i);
+		ImGui::SetNextItemWidth(100.0f);
+		changed |= ImGui::DragFloat("Time##light_key", &keys[i].Time, 0.01f, 0.0f, 600.0f, "%.2f s", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100.0f);
+		changed |= ImGui::DragFloat("Value##light_key", &keys[i].Value, 0.01f, lower, upper, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SameLine();
+		if (ImGui::SmallButton("Remove##light_key"))
+		{
+			keys.erase(keys.begin() + i);
+			light.CurveDrag = -1;
+			changed = true;
+			ImGui::PopID();
+			break;
+		}
+		ImGui::PopID();
+	}
+	if (changed)
+	{
+		std::stable_sort(keys.begin(), keys.end(), [](const auto& a, const auto& b) { return a.Time < b.Time; });
+	}
+	if (enabledChanged || loopChanged || durationChanged || playbackChanged || changed)
+	{
+		for (const s32 index : SelectedLights)
+		{
+			auto& target = Lights[index];
+			if (index != SelectedLight)
+			{
+				if (enabledChanged)
+				{
+					target.Modulation = light.Modulation;
+				}
+				if (loopChanged)
+				{
+					target.Loop = light.Loop;
+				}
+				if (durationChanged)
+				{
+					target.Duration = light.Duration;
+					target.Time = std::min(target.Time, target.Duration);
+				}
+				if (playbackChanged)
+				{
+					target.Running = light.Running;
+					target.Time = std::min(light.Time, target.Duration);
+				}
+				if (changed)
+				{
+					auto& otherWave = target.Waves[channel];
+					if (resetChannel || previousWave.Type != wave.Type)
+					{
+						otherWave.Type = wave.Type;
+					}
+					if (resetChannel || previousWave.Amplitude != wave.Amplitude)
+					{
+						otherWave.Amplitude = wave.Amplitude;
+					}
+					if (resetChannel || previousWave.Frequency != wave.Frequency)
+					{
+						otherWave.Frequency = wave.Frequency;
+					}
+					if (resetChannel || previousWave.Phase != wave.Phase)
+					{
+						otherWave.Phase = wave.Phase;
+					}
+					if (resetChannel || previousWave.Minimum != wave.Minimum)
+					{
+						otherWave.Minimum = wave.Minimum;
+						otherWave.Maximum = std::max(otherWave.Maximum, otherWave.Minimum);
+					}
+					if (resetChannel || previousWave.Maximum != wave.Maximum)
+					{
+						otherWave.Maximum = wave.Maximum;
+						otherWave.Minimum = std::min(otherWave.Minimum, otherWave.Maximum);
+					}
+					if (resetChannel || previousKeys.size() != keys.size() || !std::equal(previousKeys.begin(), previousKeys.end(), keys.begin(), keys.end(),
+						[](const SParticleCurveKey& a, const SParticleCurveKey& b) { return a.Time == b.Time && a.Value == b.Value; }))
+					{
+						target.Curves[channel] = keys;
+					}
+				}
+			}
+			UpdateCinemaLightValues(target);
+		}
+	}
+	ImGui::TreePop();
+}
+
+void CCinemaFilmMakerManager::DrawLightTab()
+{
+	ImGui::BeginDisabled(Lights.size() >= kCinemaSceneMaxActors);
+	if (ImGui::Button("Add light"))
+	{
+		SCinemaLight light;
+		light.Position = Device.vCameraPosition;
+		Fvector direction = Device.vCameraDirection;
+		if (!SpawnFromCamera && g_actor != nullptr)
+		{
+			light.Position = g_actor->Position();
+			direction = g_actor->Direction();
+		}
+		direction.normalize_safe();
+		light.Position.mad(direction, 3.0f);
+		light.Light = ::Render->light_create();
+		if (light.Light)
+		{
+			ApplyCinemaLight(light, true);
+			SelectActor(-1);
+			SelectedParticle = -1;
+			SelectedParticleGroup = -1;
+			SelectedParticles.clear();
+			ClearGizmo();
+			Lights.push_back(std::move(light));
+			SelectedLight = static_cast<s32>(Lights.size()) - 1;
+			SelectedLights = { SelectedLight };
+			LightSelectionAnchor = SelectedLight;
+		}
+		else
+		{
+			ShowSceneDialog(ESceneDialog::Info, "Add light", { "The renderer could not create a light." });
+		}
+	}
+	ImGui::EndDisabled();
+	ImGui::SeparatorText("Scene lights");
+	s32 clicked = -1;
+	s32 remove = -1;
+	for (s32 i = 0; i < static_cast<s32>(Lights.size()); ++i)
+	{
+		string64 label = {};
+		xr_sprintf(label, "Light %d (%s)##light%d", i + 1, Lights[i].Type == 0 ? "Point" : "Spot", i);
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), i) != SelectedLights.end();
+		if (ImGui::Selectable(label, selected))
+		{
+			clicked = i;
+		}
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::MenuItem("Remove"))
+			{
+				remove = i;
+			}
+			ImGui::EndPopup();
+		}
+	}
+	if (remove >= 0)
+	{
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), remove) != SelectedLights.end();
+		RemoveLights(selected ? SelectedLights : xr_vector<s32>{ remove });
+		return;
+	}
+	if (clicked >= 0)
+	{
+		if (SelectedLight < 0)
+		{
+			SelectActor(-1);
+			SelectedParticle = -1;
+			SelectedParticleGroup = -1;
+			SelectedParticles.clear();
+			ParticleSelectionAnchor = -1;
+		}
+		ClearGizmo();
+		const auto& io = ImGui::GetIO();
+		if (io.KeyShift && LightSelectionAnchor >= 0 && LightSelectionAnchor < static_cast<s32>(Lights.size()))
+		{
+			SelectedLights.clear();
+			for (s32 i = std::min(LightSelectionAnchor, clicked); i <= std::max(LightSelectionAnchor, clicked); ++i)
+			{
+				SelectedLights.push_back(i);
+			}
+		}
+		else if (io.KeyCtrl)
+		{
+			const auto it = std::find(SelectedLights.begin(), SelectedLights.end(), clicked);
+			if (it == SelectedLights.end())
+			{
+				SelectedLights.push_back(clicked);
+			}
+			else
+			{
+				SelectedLights.erase(it);
+			}
+			LightSelectionAnchor = clicked;
+		}
+		else
+		{
+			SelectedLights = { clicked };
+			LightSelectionAnchor = clicked;
+		}
+		SelectedLight = std::find(SelectedLights.begin(), SelectedLights.end(), clicked) != SelectedLights.end()
+			? clicked : (SelectedLights.empty() ? -1 : SelectedLights.back());
+	}
+	if (SelectedLight < 0 || SelectedLight >= static_cast<s32>(Lights.size()))
+	{
+		ImGui::TextDisabled("Select a light to edit it.");
+		return;
+	}
+	if (SelectedLights.size() > 1)
+	{
+		ImGui::TextDisabled("%u selected. Edits apply to all selected lights.", static_cast<u32>(SelectedLights.size()));
+	}
+	if (ImGui::Button("Delete##light"))
+	{
+		RemoveLights(SelectedLights);
+		return;
+	}
+	auto& light = Lights[SelectedLight];
+	const SCinemaLightData previous = light;
+	bool textureChanged = false;
+	ImGui::SeparatorText("Light settings");
+	bool changed = ImGui::Combo("Type", &light.Type, "Point\0Spot\0");
+	changed |= ImGui::Checkbox("Enabled", &light.Active);
+	changed |= ImGui::Checkbox("Shadows", &light.Shadow);
+	const bool colorChanged = ImGui::ColorEdit3("Color", &light.Color.x, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+	changed |= colorChanged;
+	changed |= ImGui::DragFloat("Range", &light.Range, 0.1f, 0.1f, 1000.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	changed |= ImGui::DragFloat("Virtual size", &light.VirtualSize, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	if (light.Type == 1)
+	{
+		changed |= ImGui::DragFloat("Cone angle", &light.Cone, 0.5f, 1.0f, 120.0f, "%.1f deg", ImGuiSliderFlags_AlwaysClamp);
+		if (ImGui::InputText("Projection texture", light.Texture, sizeof(light.Texture), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			textureChanged = true;
+		}
+		ImGui::TextDisabled("Press Enter to apply the texture. Shadowed spots only.");
+	}
+	changed |= ImGui::Checkbox("Volumetric", &light.Volumetric);
+	if (light.Volumetric)
+	{
+		changed |= ImGui::DragFloat("Volume quality", &light.VolumeQuality, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		changed |= ImGui::DragFloat("Volume intensity", &light.VolumeIntensity, 0.01f, 0.0f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		changed |= ImGui::DragFloat("Volume distance", &light.VolumeDistance, 0.01f, 0.01f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("The renderer uses a minimum distance of 0.01.");
+		}
+	}
+	changed |= ImGui::Checkbox("Indirect", &light.Indirect);
+	changed |= ImGui::Checkbox("HUD mode", &light.HudMode);
+	changed |= ImGui::Checkbox("Occlusion queries", &light.Occlusion);
+	ImGui::SeparatorText("Transform");
+	const bool positionChanged = ImGui::DragFloat3("Position##light", &light.Position.x, 0.05f);
+	changed |= positionChanged;
+	Fvector rotation = {};
+	light.Orientation.getHPB(rotation);
+	rotation.mul(rad2deg(1.0f));
+	const bool rotationChanged = ImGui::DragFloat3("Rotation##light", &rotation.x, 0.5f);
+	if (rotationChanged)
+	{
+		light.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+		changed = true;
+	}
+	if (changed)
+	{
+		light.Color.x = std::max(0.0f, light.Color.x);
+		light.Color.y = std::max(0.0f, light.Color.y);
+		light.Color.z = std::max(0.0f, light.Color.z);
+	}
+	if (changed || textureChanged)
+	{
+		for (const s32 index : SelectedLights)
+		{
+			auto& target = Lights[index];
+			if (index != SelectedLight)
+			{
+				if (light.Type != previous.Type)
+				{
+					target.Type = light.Type;
+				}
+				if (light.Active != previous.Active)
+				{
+					target.Active = light.Active;
+				}
+				if (light.Shadow != previous.Shadow)
+				{
+					target.Shadow = light.Shadow;
+				}
+				if (colorChanged)
+				{
+					target.Color = light.Color;
+				}
+				if (light.Range != previous.Range)
+				{
+					target.Range = light.Range;
+				}
+				if (light.VirtualSize != previous.VirtualSize)
+				{
+					target.VirtualSize = light.VirtualSize;
+				}
+				if (light.Cone != previous.Cone)
+				{
+					target.Cone = light.Cone;
+				}
+				if (light.Volumetric != previous.Volumetric)
+				{
+					target.Volumetric = light.Volumetric;
+				}
+				if (light.VolumeQuality != previous.VolumeQuality)
+				{
+					target.VolumeQuality = light.VolumeQuality;
+				}
+				if (light.VolumeIntensity != previous.VolumeIntensity)
+				{
+					target.VolumeIntensity = light.VolumeIntensity;
+				}
+				if (light.VolumeDistance != previous.VolumeDistance)
+				{
+					target.VolumeDistance = light.VolumeDistance;
+				}
+				if (light.Indirect != previous.Indirect)
+				{
+					target.Indirect = light.Indirect;
+				}
+				if (light.HudMode != previous.HudMode)
+				{
+					target.HudMode = light.HudMode;
+				}
+				if (light.Occlusion != previous.Occlusion)
+				{
+					target.Occlusion = light.Occlusion;
+				}
+				if (positionChanged)
+				{
+					target.Position = light.Position;
+				}
+				if (rotationChanged)
+				{
+					target.Orientation = light.Orientation;
+				}
+				if (textureChanged)
+				{
+					xr_strcpy(target.Texture, light.Texture);
+				}
+			}
+			ApplyCinemaLight(target, textureChanged);
+		}
+	}
+	DrawLightModulation(light);
 }
 
 void CCinemaFilmMakerManager::DrawPanel()
@@ -8296,15 +9843,29 @@ void CCinemaFilmMakerManager::DrawPanel()
 			DrawParticleTab();
 			ImGui::EndTabItem();
 		}
-		if (ImGui::BeginTabItem("Actor"))
+		if (ImGui::BeginTabItem("Light"))
 		{
-			DrawSelectedActor();
+			DrawLightTab();
 			ImGui::EndTabItem();
 		}
-
-		if (ImGui::BeginTabItem("Model"))
+		if (ImGui::BeginTabItem("Actor"))
 		{
-			DrawModelTab();
+			DrawActorToolbar();
+			ImGui::Separator();
+			if (ImGui::CollapsingHeader("Model##cinema_actor", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				DrawModelTab();
+			}
+			if (ImGui::TreeNodeEx("Actor settings##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+			{
+				DrawSelectedActor();
+				ImGui::TreePop();
+			}
+			if (ImGui::TreeNodeEx("Animations##cinema_actor", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
+			{
+				DrawAnimationTab();
+				ImGui::TreePop();
+			}
 			ImGui::EndTabItem();
 		}
 
@@ -8317,12 +9878,6 @@ void CCinemaFilmMakerManager::DrawPanel()
 		if (ImGui::BeginTabItem("Item"))
 		{
 			DrawItemTab();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Animations"))
-		{
-			DrawAnimationTab();
 			ImGui::EndTabItem();
 		}
 
@@ -8485,11 +10040,12 @@ void CCinemaFilmMakerManager::AppendWorldGizmo()
 	SCinemaActor* actor = GetSelectedActor();
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
 	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
-	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr)
+	SCinemaLight* light = SelectedLight >= 0 && SelectedLight < static_cast<s32>(Lights.size()) ? &Lights[SelectedLight] : nullptr;
+	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr)
 	{
 		return;
 	}
-	const Fvector position = group ? group->Position : particle ? ParticlePosition(*particle) : actor->Position;
+	const Fvector position = light ? light->Position : group ? group->Position : particle ? ParticlePosition(*particle) : actor->Position;
 	const float distance = Device.vCameraPosition.distance_to(position);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 	const EGizmoAxis hoveredAxis = Gizmo.Active ? Gizmo.Axis : HoveredAxis;
@@ -8718,11 +10274,15 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 		ClearGizmo();
 		SelectedParticleGroup = -1;
 		SelectedParticle = bestParticle;
+		SelectedParticles = { bestParticle };
+		ParticleSelectionAnchor = bestParticle;
 	}
 	else if (bestIndex < 0)
 	{
 		ClearGizmo();
 		SelectedParticle = -1;
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
 	}
 }
 
@@ -8735,8 +10295,9 @@ void CCinemaFilmMakerManager::DrawGizmo()
 	SCinemaActor* actor = GetSelectedActor();
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
 	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
+	SCinemaLight* light = SelectedLight >= 0 && SelectedLight < static_cast<s32>(Lights.size()) ? &Lights[SelectedLight] : nullptr;
 
-	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr) || g_pGameLevel == nullptr)
+	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr) || g_pGameLevel == nullptr)
 	{
 		ClearGizmo();
 		HoveredAxis = EGizmoAxis::None;
@@ -8749,8 +10310,8 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		return;
 	}
 
-	Fvector& position = group ? group->Position : particle ? particle->Position : actor->Position;
-	Fmatrix& orientation = group ? group->Orientation : particle ? particle->Orientation : actor->Orientation;
+	Fvector& position = light ? light->Position : group ? group->Position : particle ? particle->Position : actor->Position;
+	Fmatrix& orientation = light ? light->Orientation : group ? group->Orientation : particle ? particle->Orientation : actor->Orientation;
 	const Fvector pivot = particle ? ParticlePosition(*particle) : position;
 	if (Gizmo.Active && Gizmo.Position != &position)
 	{
@@ -8785,29 +10346,57 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
-			const SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+			SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+			if (particle || light)
+			{
+				previous.Position = position;
+				previous.Orientation = orientation;
+			}
 			position = Gizmo.StartPosition;
 			orientation = Gizmo.StartOrientation;
+			if (light)
+			{
+				TransformSelectedLights(previous.Position, previous.Orientation);
+				ApplyCinemaLight(*light);
+			}
 			if (group)
 			{
 				TransformParticleGroup(SelectedParticleGroup, previous);
 			}
 			if (particle)
 			{
+				SCinemaParticleGroup current;
+				current.Position = position;
+				current.Orientation = orientation;
+				TransformSelectedParticles(previous, current);
 				UpdateParticleTransform(*particle);
 			}
 			ClearGizmo();
 			return;
 		}
 
-		const SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+		SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+		if (particle || light)
+		{
+			previous.Position = position;
+			previous.Orientation = orientation;
+		}
 		UpdateGizmo(position, orientation);
+		if (light)
+		{
+			TransformSelectedLights(previous.Position, previous.Orientation);
+			ApplyCinemaLight(*light);
+		}
 		if (group)
 		{
 			TransformParticleGroup(SelectedParticleGroup, previous);
 		}
 		if (particle)
 		{
+			SCinemaParticleGroup current;
+			current.Position = position;
+			current.Orientation = orientation;
+			TransformSelectedParticles(previous, current);
 			UpdateParticleTransform(*particle);
 		}
 		return;
