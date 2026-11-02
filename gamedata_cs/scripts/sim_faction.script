@@ -434,6 +434,17 @@ function se_sim_faction:calculate_squad_tasks()
 				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1
 			end
 
+		--' Отряд ждет сдачи квеста игроком и не может уйти. Цель отдаем другому отряду,
+		--' а точку, где он стоит, считаем занятой им.
+		elseif squad:has_active_item_task() then
+			local busy_smart_id = squad.smart_id
+			if squad.current_action ~= nil and squad.current_action.name == "attack_point" then
+				busy_smart_id = squad.current_action.dest_smrt_id
+			end
+			if self.target_smart_value[busy_smart_id] ~= nil then
+				self.target_smart_value[busy_smart_id].num = self.target_smart_value[busy_smart_id].num + 1
+			end
+
 		--' Если у отряда уже есть цели и она до сих пор валидна.
 --		elseif is_valid == true and
 --			   (self.board.smarts[squad.assigned_target_smart_id].smrt.player_name ~= self.player_name or

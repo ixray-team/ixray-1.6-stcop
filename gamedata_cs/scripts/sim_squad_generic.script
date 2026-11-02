@@ -612,6 +612,20 @@ function sim_squad_generic:get_next_action()
 	self.current_action:make()
 	--self:refresh()
 end
+--' Взял ли игрок у отряда задание bring_item или recover_item, которое еще не сдал.
+function sim_squad_generic:has_active_item_task()
+	local tm = task_manager.get_task_manager()
+	for _, index in ipairs({3, 4}) do
+		local task_entity_id = self.random_tasks[index]
+		if task_entity_id ~= nil then
+			local task = tm:get_task_by_entity_id(task_entity_id)
+			if task ~= nil and task.status == "selected" then
+				return true
+			end
+		end
+	end
+	return false
+end
 --' Возвращает скриптовую цель.
 function sim_squad_generic:get_script_target()
 	return nil
@@ -1471,24 +1485,16 @@ function sim_stay_point:update()
 	--printf("Squad[%s] stay_update", self.squad_id)
 
 
-	-- Мы не можем уйти, если ждем от игрока какой то квест на bring_item или return_item
-	local task_entity_id = squad.random_tasks[3]
-	local tm = task_manager.get_task_manager()
-	if task_entity_id ~= nil then
-		local task = tm:get_task_by_entity_id(task_entity_id)
-		if task.status == "selected" then
-			return false
-		end
+	-- Мы не можем уйти, если ждем от игрока какой то квест на bring_item или return_item.
+	-- При смене состояния пересчитываем цели группировки, чтобы нашу цель взял другой свободный отряд.
+	local item_task_busy = squad:has_active_item_task()
+	if item_task_busy ~= (squad.item_task_busy == true) then
+		squad.item_task_busy = item_task_busy
+		self.board.players[self.player_id]:calculate_squad_tasks()
 	end
-
-	task_entity_id = squad.random_tasks[4]
-	if task_entity_id ~= nil then
-		local task = tm:get_task_by_entity_id(task_entity_id)
-		if task.status == "selected" then
-			return false
-		end
+	if item_task_busy then
+		return false
 	end
-
 
 	--??? Мы не можем уйти, если мы являемся инициатором задания на отложенную атаку
 	if squad.delayed_attack_task ~= nil then

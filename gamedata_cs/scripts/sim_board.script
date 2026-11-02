@@ -133,19 +133,17 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
     elseif (sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level]) and
 	    is_point_avail(point, squad.player_id) then
 -- Если точка доступна и она в одном кластере с нами
-	    -- Заполненность своими отрядами важна только для цели. Транзитная точка не должна блокировать путь.
-	    local is_target = point.id == tgt_smart_id
 	    if point.player_name == "none" then
             -- точка ничья
             point_value = point_value + 1
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id])
-            if is_target and friendly_squad_quan >= point.squad_capacity then
+            if friendly_squad_quan >= point.squad_capacity then
                 point_value = point_value + 1000
             end
         elseif point.player_name == squad.player_id then
             -- точка наша
             local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad.player_id]) + board:get_smart_population(point)
-            if not is_target or friendly_squad_quan < point.squad_capacity then
+            if friendly_squad_quan < point.squad_capacity then
                 -- Если точка наша и есть пустые места - вес 1
                 point_value = point_value + 1
             else
@@ -457,7 +455,7 @@ function sim_board:get_spawn_smart(player)
         if is_point_avail(smart, player.player_name) then
         	--printf("    point avail")
         	--printf(" cap %s + %s < %s", tostring(self:get_smart_squad_quantity(smart, player)), tostring(self:get_smart_population(smart)), tostring(smart.squad_capacity))
-            if self:get_smart_squad_quantity(smart, player) + self:get_smart_population(smart) < smart.squad_capacity then
+            if self:get_smart_squad_quantity(smart, player) + self:get_smart_population(smart) + self:get_smart_departed_squad_quantity(smart) < smart.squad_capacity then
             	--printf("    cap allowed")
                 local spawn_player = xr_logic.pick_section_from_condlist(db.actor_proxy, smart, v)
                 --printf("    spawn player %s", tostring(spawn_player))
@@ -760,6 +758,20 @@ function sim_board:get_smart_population(smart)
 --                i = i + 1
 --        end
 --        return i
+end
+-- Отряды, которые ушли из смарта, но их НПС еще занимают его работы (до прихода в новую точку).
+function sim_board:get_smart_departed_squad_quantity(smart)
+        local stayed_squads = self.smarts[smart.id].squads
+        local departed = {}
+        local quan = 0
+        for k,v in pairs(smart.npc_info) do
+                local squad_id = v.se_obj.squad_id
+                if squad_id ~= nil and stayed_squads[squad_id] == nil and departed[squad_id] == nil then
+                        departed[squad_id] = true
+                        quan = quan + 1
+                end
+        end
+        return quan
 end
 --' СТатистика отрядов по смарту. Возвращает количество отрядов, которые атакуют точку
 function sim_board:get_smart_squad_quantity(smart, player)
