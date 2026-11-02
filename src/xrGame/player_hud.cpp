@@ -3918,7 +3918,9 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 
 	const bool ancor_in_right_hand = ancor_parent != BI_NONE;
 
-	RetargetWeight = HudBlend::Ramp(RetargetWeight, item->RetargetPlaying && !(item->RetargetLayerPlaying && hud_channel_weight(m_model, LAYER_ADDITIVE_CHANNEL) > 0.f), 0.f, std::max(item->IdleFade, 0.1f), Device.fTimeDelta);
+	const float RetargetLimit = item->RetargetLayerPlaying ? 1.f - hud_channel_weight(m_model, LAYER_ADDITIVE_CHANNEL) : 1.f;
+	const float RetargetFade = std::max(item->IdleFade, 0.1f);
+	RetargetWeight = std::min(HudBlend::Ramp(RetargetWeight, item->RetargetPlaying, item->RetargetLayerPlaying ? RetargetFade : 0.f, RetargetFade, Device.fTimeDelta), RetargetLimit);
 	const bool retarget = RetargetWeight > 0.f && !ancor_in_right_hand;
 	if (retarget)
 	{
