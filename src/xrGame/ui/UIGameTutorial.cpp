@@ -344,6 +344,8 @@ void CUISequencer::OnRender	()
 	if (m_UIWindow->IsShown())
 	{
 		m_UIWindow->Draw();
+
+		UI().RenderFont();
 	}
 
 	VERIFY(m_sequencer_items.size());

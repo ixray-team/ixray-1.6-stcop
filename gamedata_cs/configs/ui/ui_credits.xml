@@ -1,4 +1,5 @@
 <credits_seq>
+		<over_main_menu>1</over_main_menu>
 		<global_wnd x="0" y="0" width="1024" height="768">
 			
 			<auto_static x="0" y="0" width="728" height="660" stretch = "1">		

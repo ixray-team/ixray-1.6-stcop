@@ -1,7 +1,6 @@
   <item>
     <length_sec>1.5</length_sec>
     <pause_state>on</pause_state>
-    <function_on_stop>xr_effects.before_credits</function_on_stop>
     <guard_key/>
     <cursor_pos x="1024" y="768"/>
     <pda_section/>
