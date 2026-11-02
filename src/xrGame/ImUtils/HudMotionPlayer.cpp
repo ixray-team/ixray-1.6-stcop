@@ -20,7 +20,6 @@ static struct
 	MotionID	AdditiveMotion;
 	MotionID	AdditiveReference;
 	shared_str	AdditiveName;
-	shared_str	AdditiveReferenceName;
 	string64	AdditiveFilter = {};
 	float		OmfSpeed = 1.f;
 	float		BaseSpeed = 1.f;
@@ -187,7 +186,6 @@ static void HudMotionPlayerClearAdditive()
 	state.AdditiveMotion = MotionID();
 	state.AdditiveReference = MotionID();
 	state.AdditiveName = nullptr;
-	state.AdditiveReferenceName = nullptr;
 }
 
 static void HudMotionPlayerIdle(CHudItem* hud_item)
@@ -308,114 +306,93 @@ static void HudMotionPlayerStart(CHudItem* hud_item, attachable_hud_item* item, 
 	}
 }
 
-static xr_vector<motion_descr> HudMotionPlayerConfigMotions(attachable_hud_item* Item, IKinematicsAnimated* Model, const char* Filter)
+struct SHudAdditiveMotion
 {
-	xr_vector<motion_descr> Motions;
-	const auto Add = [&](const shared_str& Name, MotionID Motion)
-	{
-		const bool Listed = std::any_of(Motions.begin(), Motions.end(), [&](const motion_descr& It) { return It.mid == Motion; });
-		if (!Listed && Motion.valid() && (Filter[0] == 0 || strstr(Name.c_str(), Filter) != nullptr))
-		{
-			Motions.push_back({ Motion, Name });
-		}
-	};
+	shared_str	Name;
+	int			Alias = -1;
+	MotionID	Motion;
+	shared_str	Reference;
+};
 
-	for (const player_hud_motion& Anm : Item->m_hand_motions.m_anims)
+static xr_vector<SHudAdditiveMotion> HudMotionPlayerAdditiveMotions(attachable_hud_item* Item, IKinematicsAnimated* Model, const char* Filter)
+{
+	xr_vector<SHudAdditiveMotion> Motions;
+	const auto Matches = [Filter](const shared_str& Name) { return Filter[0] == 0 || strstr(Name.c_str(), Filter) != nullptr; };
+
+	const xr_vector<player_hud_motion>& Anims = Item->m_hand_motions.m_anims;
+	for (int i = 0; i < int(Anims.size()); ++i)
 	{
-		for (const motion_descr& Descr : Anm.m_animations)
+		const player_hud_motion& Anm = Anims[i];
+		if (Item->AdditiveAlias(Anm.m_alias_name) && Matches(Anm.m_alias_name))
 		{
-			Add(Descr.name, Descr.mid);
+			Motions.push_back({ Anm.m_alias_name, i });
+		}
+
+		const auto Layer = Item->RetargetLayers.find(Anm.m_alias_name);
+		if (Layer == Item->RetargetLayers.end())
+		{
+			continue;
+		}
+
+		const MotionID Motion = Model->ID_Cycle_Safe(Layer->second.Motion);
+		const bool Listed = std::any_of(Motions.begin(), Motions.end(), [&](const SHudAdditiveMotion& It) { return It.Alias < 0 && It.Motion == Motion; });
+		if (!Listed && Motion.valid() && Matches(Layer->second.Motion))
+		{
+			Motions.push_back({ Layer->second.Motion, -1, Motion, Layer->second.Reference.size() != 0 ? Layer->second.Reference : Anm.m_base_name });
 		}
 	}
 
-	for (const auto& [Alias, Layer] : Item->RetargetLayers)
-	{
-		Add(Layer.Motion, Model->ID_Cycle_Safe(Layer.Motion));
-		if (Layer.Reference.size() != 0)
-		{
-			Add(Layer.Reference, Model->ID_Cycle_Safe(Layer.Reference));
-		}
-	}
-
-	std::sort(Motions.begin(), Motions.end(), [](const motion_descr& A, const motion_descr& B) { return xr_strcmp(A.name, B.name) < 0; });
+	std::sort(Motions.begin(), Motions.end(), [](const SHudAdditiveMotion& A, const SHudAdditiveMotion& B) { return xr_strcmp(A.Name, B.Name) < 0; });
 	return Motions;
-}
-
-static bool HudMotionPlayerAdditiveCombo(const char* Id, attachable_hud_item* Item, IKinematicsAnimated* Model, shared_str& Name, MotionID& Motion, const char* None)
-{
-	auto& state = imgui_hud_motion_player;
-	bool Changed = false;
-	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14.f);
-	if (!ImGui::BeginCombo(Id, Name.size() != 0 ? Name.c_str() : None))
-	{
-		return false;
-	}
-
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputTextWithHint("##filter", "Filter", state.AdditiveFilter, sizeof(state.AdditiveFilter));
-	if (ImGui::Selectable(None, Name.size() == 0))
-	{
-		Name = nullptr;
-		Motion = MotionID();
-		Changed = true;
-	}
-
-	for (const motion_descr& Descr : HudMotionPlayerConfigMotions(Item, Model, state.AdditiveFilter))
-	{
-		ImGui::PushID(int(Descr.mid.val));
-		if (ImGui::Selectable(Descr.name.c_str(), Descr.mid == Motion))
-		{
-			Name = Descr.name;
-			Motion = Descr.mid;
-			Changed = true;
-		}
-
-		ImGui::PopID();
-	}
-
-	ImGui::EndCombo();
-	return Changed;
-}
-
-static void HudMotionPlayerApplyLayerReference(attachable_hud_item* Item)
-{
-	auto& state = imgui_hud_motion_player;
-	for (const auto& [Alias, Layer] : Item->RetargetLayers)
-	{
-		if (Layer.Motion == state.AdditiveName && Layer.Reference.size() != 0)
-		{
-			state.AdditiveReferenceName = Layer.Reference;
-			state.AdditiveReference = g_player_hud->GetModel()->ID_Cycle_Safe(Layer.Reference);
-			return;
-		}
-	}
 }
 
 static void RenderHudMotionPlayerAdditive(CHudItem* HudItem, attachable_hud_item* Item)
 {
 	auto& state = imgui_hud_motion_player;
 	IKinematicsAnimated* Model = g_player_hud->GetModel();
-	if (HudMotionPlayerAdditiveCombo("Additive##motion", Item, Model, state.AdditiveName, state.AdditiveMotion, "-##additive"))
+	const xr_vector<player_hud_motion>& Anims = Item->m_hand_motions.m_anims;
+	const bool AliasSelected = state.Selected >= 0 && Item->AdditiveAlias(Anims[state.Selected].m_alias_name);
+	const char* Preview = AliasSelected ? Anims[state.Selected].m_alias_name.c_str() : state.AdditiveName.size() != 0 ? state.AdditiveName.c_str() : "-##additive";
+
+	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14.f);
+	if (ImGui::BeginCombo("Additive##motion", Preview))
 	{
-		state.Selected = -1;
-		if (state.AdditiveMotion.valid())
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputTextWithHint("##filter", "Filter", state.AdditiveFilter, sizeof(state.AdditiveFilter));
+		if (ImGui::Selectable("-##additive", !AliasSelected && state.AdditiveName.size() == 0))
 		{
-			HudMotionPlayerApplyLayerReference(Item);
-			HudMotionPlayerPlayAdditive(HudItem, Item, true);
-		}
-		else
-		{
+			state.Selected = -1;
+			HudMotionPlayerClearAdditive();
 			HudMotionPlayerIdle(HudItem);
 		}
+
+		for (const SHudAdditiveMotion& It : HudMotionPlayerAdditiveMotions(Item, Model, state.AdditiveFilter))
+		{
+			const bool Selected = It.Alias >= 0 ? It.Alias == state.Selected : It.Motion == state.AdditiveMotion;
+			if (!ImGui::Selectable(It.Name.c_str(), Selected))
+			{
+				continue;
+			}
+
+			HudMotionPlayerClearAdditive();
+			state.Selected = It.Alias;
+			if (It.Alias >= 0)
+			{
+				HudMotionPlayerPlay(HudItem, Item, It.Name, true);
+			}
+			else
+			{
+				state.AdditiveName = It.Name;
+				state.AdditiveMotion = It.Motion;
+				state.AdditiveReference = Model->ID_Cycle_Safe(It.Reference);
+				HudMotionPlayerPlayAdditive(HudItem, Item, true);
+			}
+		}
+
+		ImGui::EndCombo();
 	}
 
-	ImGui::SetItemTooltip("Hands motions from this weapon's hud config and retarget sets, played additively over the current idle");
-	if (HudMotionPlayerAdditiveCombo("Reference##additive", Item, Model, state.AdditiveReferenceName, state.AdditiveReference, "First frame##reference") && state.AdditiveMotion.valid())
-	{
-		HudMotionPlayerPlayAdditive(HudItem, Item, state.Paused);
-	}
-
-	ImGui::SetItemTooltip("Pose the additive delta is taken from: the first frame of the motion, or another motion's first frame (same as retarget_reference)");
+	ImGui::SetItemTooltip("Motions this weapon plays additively over the current idle, with the reference the game uses for them");
 }
 
 static float HudMotionPlayerMarkTime(float motion_time, float speed)
@@ -687,11 +664,16 @@ void RenderHudMotionPlayer()
 	}
 
 	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14.f);
-	if (ImGui::BeginCombo("##motion", state.Selected >= 0 ? motions[state.Selected].m_alias_name.c_str() : "-"))
+	if (ImGui::BeginCombo("##motion", state.Selected >= 0 && !item->AdditiveAlias(motions[state.Selected].m_alias_name) ? motions[state.Selected].m_alias_name.c_str() : "-"))
 	{
 		for (int i = 0; i < int(motions.size()); ++i)
 		{
 			const bool selected = i == state.Selected;
+			if (item->AdditiveAlias(motions[i].m_alias_name))
+			{
+				continue;
+			}
+
 			if (ImGui::Selectable(motions[i].m_alias_name.c_str(), selected))
 			{
 				state.Selected = i;
