@@ -17,6 +17,11 @@ static struct
 	shared_str	Camera;
 	MotionID	ArmsMotion;
 	MotionID	ItemMotion;
+	MotionID	AdditiveMotion;
+	MotionID	AdditiveReference;
+	shared_str	AdditiveName;
+	shared_str	AdditiveReferenceName;
+	string64	AdditiveFilter = {};
 	float		OmfSpeed = 1.f;
 	float		BaseSpeed = 1.f;
 	float		ItemBaseSpeed = 1.f;
@@ -27,6 +32,9 @@ static struct
 	bool		Keys = true;
 }
 imgui_hud_motion_player;
+
+constexpr float HudMotionPlayerAdditiveEnterTime = 0.1f;
+constexpr float HudMotionPlayerAdditiveExitTime = 0.3f;
 
 template <typename Func>
 static CBlend* HudMotionPlayerFind(IKinematicsAnimated* model, MotionID motion, const Func& func)
@@ -53,7 +61,8 @@ static CBlend* HudMotionPlayerFind(IKinematicsAnimated* model, MotionID motion, 
 
 static CBlend* HudMotionPlayerBlend(IKinematicsAnimated* model, MotionID motion)
 {
-	return HudMotionPlayerFind(model, motion, [](CBlend&) { return true; });
+	CBlend* active = HudMotionPlayerFind(model, motion, [](CBlend& blend) { return blend.blend_state() != CBlend::eFalloff; });
+	return active != nullptr ? active : HudMotionPlayerFind(model, motion, [](CBlend&) { return true; });
 }
 
 template <typename Func>
@@ -146,10 +155,52 @@ static void HudMotionPlayerStop()
 	}
 }
 
+static void HudMotionPlayerSmoothAdditiveExit(IKinematicsAnimated* Arms)
+{
+	constexpr float Rate = 1.f / HudMotionPlayerAdditiveExitTime;
+	for (u16 Part = 0, Count = Arms->partitions().count(); Part < Count; ++Part)
+	{
+		for (u32 i = 0, Blends = Arms->LL_PartBlendsCount(Part); i < Blends; ++i)
+		{
+			CBlend* Blend = Arms->LL_PartBlend(Part, i);
+			if (Blend == nullptr || Blend->channel != ADDITIVE_CHANNEL || Blend->blend_state() == CBlend::eFREE_SLOT)
+			{
+				continue;
+			}
+
+			if (Blend->blend_state() == CBlend::eFalloff)
+			{
+				Blend->blendFalloff = Rate;
+			}
+			else
+			{
+				Blend->blendAmount = EPS_S;
+				Blend->blendAccrue = Rate;
+			}
+		}
+	}
+}
+
+static void HudMotionPlayerClearAdditive()
+{
+	auto& state = imgui_hud_motion_player;
+	state.AdditiveMotion = MotionID();
+	state.AdditiveReference = MotionID();
+	state.AdditiveName = nullptr;
+	state.AdditiveReferenceName = nullptr;
+}
+
 static void HudMotionPlayerIdle(CHudItem* hud_item)
 {
+	auto& state = imgui_hud_motion_player;
+	const bool additive = state.Playing && state.AdditiveMotion.valid() && state.ArmsMotion == state.AdditiveMotion;
 	HudMotionPlayerStop();
 	hud_item->PlayAnimIdle();
+
+	if (additive && g_player_hud != nullptr && g_player_hud->GetModel() != nullptr)
+	{
+		HudMotionPlayerSmoothAdditiveExit(g_player_hud->GetModel());
+	}
 }
 
 static void HudMotionPlayerPlay(CHudItem* hud_item, attachable_hud_item* item, const shared_str& motion, bool paused, EHudMixType mix = EHudMixType::eMixHands)
@@ -199,6 +250,174 @@ static void HudMotionPlayerPlay(CHudItem* hud_item, attachable_hud_item* item, c
 	HudMotionPlayerApplyPlayback(item);
 }
 
+static void HudMotionPlayerPlayAdditive(CHudItem* hud_item, attachable_hud_item* item, bool paused)
+{
+	auto& state = imgui_hud_motion_player;
+	IKinematicsAnimated* Arms = g_player_hud->GetModel();
+	CMotionDef* Def = Arms != nullptr && !item->m_model_combined && state.AdditiveMotion.valid() ? Arms->LL_GetMotionDef(state.AdditiveMotion) : nullptr;
+	const shared_str Base = hud_item->SetCurrentStateAnimation(hud_item->SetCurrentIdleAnimation());
+	if (Def == nullptr || !hud_item->HudAnimationExist(Base))
+	{
+		return;
+	}
+
+	hud_item->PlayHUDMotion_noCB(Base, EHudMixType::eMixHands, true);
+
+	constexpr float Rate = 1.f / HudMotionPlayerAdditiveEnterTime;
+	for (u16 Part = 0, Count = Arms->partitions().count(); Part < Count; ++Part)
+	{
+		Arms->LL_FadeCycle(Part, Rate, 1 << ADDITIVE_CHANNEL);
+		if (CBlend* Blend = Arms->LL_PlayCycle(Part, state.AdditiveMotion, false, 1.f, Rate, Def->Speed(), true, nullptr, nullptr, ADDITIVE_CHANNEL))
+		{
+			Blend->additive_ref = state.AdditiveReference;
+			Blend->fall_at_end = false;
+		}
+	}
+
+	item->AdditivePlaying = true;
+	item->AdditiveOverlay = false;
+	item->RetargetPlaying = false;
+	item->RetargetLayerPlaying = false;
+
+	state.Item = hud_item;
+	state.Motion = state.AdditiveName;
+	state.Camera = nullptr;
+	state.ArmsMotion = state.AdditiveMotion;
+	state.ItemMotion = MotionID();
+	state.Playing = true;
+	state.Paused = paused;
+	state.PrevTime = 0.f;
+	state.OmfSpeed = Def->Speed();
+	state.BaseSpeed = state.OmfSpeed;
+	state.ItemBaseSpeed = state.OmfSpeed;
+	state.Speed = state.OmfSpeed;
+
+	g_player_hud->PreviewGripBlocked = false;
+	HudMotionPlayerApplyPlayback(item);
+}
+
+static void HudMotionPlayerStart(CHudItem* hud_item, attachable_hud_item* item, const shared_str& motion, bool paused, EHudMixType mix = EHudMixType::eMixHands)
+{
+	if (imgui_hud_motion_player.AdditiveMotion.valid())
+	{
+		HudMotionPlayerPlayAdditive(hud_item, item, paused);
+	}
+	else
+	{
+		HudMotionPlayerPlay(hud_item, item, motion, paused, mix);
+	}
+}
+
+static xr_vector<motion_descr> HudMotionPlayerConfigMotions(attachable_hud_item* Item, IKinematicsAnimated* Model, const char* Filter)
+{
+	xr_vector<motion_descr> Motions;
+	const auto Add = [&](const shared_str& Name, MotionID Motion)
+	{
+		const bool Listed = std::any_of(Motions.begin(), Motions.end(), [&](const motion_descr& It) { return It.mid == Motion; });
+		if (!Listed && Motion.valid() && (Filter[0] == 0 || strstr(Name.c_str(), Filter) != nullptr))
+		{
+			Motions.push_back({ Motion, Name });
+		}
+	};
+
+	for (const player_hud_motion& Anm : Item->m_hand_motions.m_anims)
+	{
+		for (const motion_descr& Descr : Anm.m_animations)
+		{
+			Add(Descr.name, Descr.mid);
+		}
+	}
+
+	for (const auto& [Alias, Layer] : Item->RetargetLayers)
+	{
+		Add(Layer.Motion, Model->ID_Cycle_Safe(Layer.Motion));
+		if (Layer.Reference.size() != 0)
+		{
+			Add(Layer.Reference, Model->ID_Cycle_Safe(Layer.Reference));
+		}
+	}
+
+	std::sort(Motions.begin(), Motions.end(), [](const motion_descr& A, const motion_descr& B) { return xr_strcmp(A.name, B.name) < 0; });
+	return Motions;
+}
+
+static bool HudMotionPlayerAdditiveCombo(const char* Id, attachable_hud_item* Item, IKinematicsAnimated* Model, shared_str& Name, MotionID& Motion, const char* None)
+{
+	auto& state = imgui_hud_motion_player;
+	bool Changed = false;
+	ImGui::SetNextItemWidth(ImGui::GetFontSize() * 14.f);
+	if (!ImGui::BeginCombo(Id, Name.size() != 0 ? Name.c_str() : None))
+	{
+		return false;
+	}
+
+	ImGui::SetNextItemWidth(-FLT_MIN);
+	ImGui::InputTextWithHint("##filter", "Filter", state.AdditiveFilter, sizeof(state.AdditiveFilter));
+	if (ImGui::Selectable(None, Name.size() == 0))
+	{
+		Name = nullptr;
+		Motion = MotionID();
+		Changed = true;
+	}
+
+	for (const motion_descr& Descr : HudMotionPlayerConfigMotions(Item, Model, state.AdditiveFilter))
+	{
+		ImGui::PushID(int(Descr.mid.val));
+		if (ImGui::Selectable(Descr.name.c_str(), Descr.mid == Motion))
+		{
+			Name = Descr.name;
+			Motion = Descr.mid;
+			Changed = true;
+		}
+
+		ImGui::PopID();
+	}
+
+	ImGui::EndCombo();
+	return Changed;
+}
+
+static void HudMotionPlayerApplyLayerReference(attachable_hud_item* Item)
+{
+	auto& state = imgui_hud_motion_player;
+	for (const auto& [Alias, Layer] : Item->RetargetLayers)
+	{
+		if (Layer.Motion == state.AdditiveName && Layer.Reference.size() != 0)
+		{
+			state.AdditiveReferenceName = Layer.Reference;
+			state.AdditiveReference = g_player_hud->GetModel()->ID_Cycle_Safe(Layer.Reference);
+			return;
+		}
+	}
+}
+
+static void RenderHudMotionPlayerAdditive(CHudItem* HudItem, attachable_hud_item* Item)
+{
+	auto& state = imgui_hud_motion_player;
+	IKinematicsAnimated* Model = g_player_hud->GetModel();
+	if (HudMotionPlayerAdditiveCombo("Additive##motion", Item, Model, state.AdditiveName, state.AdditiveMotion, "-##additive"))
+	{
+		state.Selected = -1;
+		if (state.AdditiveMotion.valid())
+		{
+			HudMotionPlayerApplyLayerReference(Item);
+			HudMotionPlayerPlayAdditive(HudItem, Item, true);
+		}
+		else
+		{
+			HudMotionPlayerIdle(HudItem);
+		}
+	}
+
+	ImGui::SetItemTooltip("Hands motions from this weapon's hud config and retarget sets, played additively over the current idle");
+	if (HudMotionPlayerAdditiveCombo("Reference##additive", Item, Model, state.AdditiveReferenceName, state.AdditiveReference, "First frame##reference") && state.AdditiveMotion.valid())
+	{
+		HudMotionPlayerPlayAdditive(HudItem, Item, state.Paused);
+	}
+
+	ImGui::SetItemTooltip("Pose the additive delta is taken from: the first frame of the motion, or another motion's first frame (same as retarget_reference)");
+}
+
 static float HudMotionPlayerMarkTime(float motion_time, float speed)
 {
 	return speed <= EPS || fsimilar(speed, 1.f) ? motion_time : motion_time / speed;
@@ -214,6 +433,19 @@ const player_hud_motion* HudMotionPlayerSelectedAnim(attachable_hud_item* item)
 	}
 
 	return &motions[state.Selected];
+}
+
+bool HudMotionPlayerSelectedAdditive(attachable_hud_item* item, motion_descr& motion)
+{
+	const auto& state = imgui_hud_motion_player;
+	if (state.Item != item->m_parent_hud_item || !state.AdditiveMotion.valid())
+	{
+		return false;
+	}
+
+	motion.mid = state.AdditiveMotion;
+	motion.name = state.AdditiveName;
+	return true;
 }
 
 bool& HudMotionPlayerKeys()
@@ -281,7 +513,7 @@ void HudMotionPlayerRefresh()
 	const float speed = state.Speed;
 	const shared_str motion = state.Motion;
 
-	HudMotionPlayerPlay(hud_item, item, motion, paused, EHudMixType::eNoMix);
+	HudMotionPlayerStart(hud_item, item, motion, paused, EHudMixType::eNoMix);
 	state.Speed = speed;
 	HudMotionPlayerApplyPlayback(item);
 	HudMotionPlayerSetTime(item, normalized);
@@ -289,7 +521,20 @@ void HudMotionPlayerRefresh()
 
 void HudMotionPlayerClose()
 {
-	if (imgui_hud_motion_player.Playing)
+	auto& state = imgui_hud_motion_player;
+	if (!state.Playing)
+	{
+		return;
+	}
+
+	CActor* actor = state.AdditiveMotion.valid() ? Actor() : nullptr;
+	PIItem active = actor != nullptr ? actor->inventory().ActiveItem() : nullptr;
+	CHudItem* hud_item = active != nullptr ? active->cast_hud_item() : nullptr;
+	if (hud_item != nullptr && hud_item == state.Item && hud_item->HudItemData() != nullptr)
+	{
+		HudMotionPlayerIdle(hud_item);
+	}
+	else
 	{
 		HudMotionPlayerStop();
 	}
@@ -320,14 +565,15 @@ bool HudMotionPlayerSeekMark(attachable_hud_item* item, IKinematicsAnimated* mod
 {
 	auto& state = imgui_hud_motion_player;
 	const xr_vector<player_hud_motion>& motions = item->m_hand_motions.m_anims;
-	if (state.Item != item->m_parent_hud_item || state.Selected < 0 || state.Selected >= int(motions.size()))
+	const bool additive = state.AdditiveMotion.valid();
+	if (state.Item != item->m_parent_hud_item || (!additive && (state.Selected < 0 || state.Selected >= int(motions.size()))))
 	{
 		return false;
 	}
 
 	if (!state.Playing)
 	{
-		HudMotionPlayerPlay(item->m_parent_hud_item, item, motions[state.Selected].m_alias_name, true);
+		HudMotionPlayerStart(item->m_parent_hud_item, item, additive ? state.AdditiveName : motions[state.Selected].m_alias_name, true);
 	}
 
 	const CBlend* blend = HudMotionPlayerBlend(model, motion);
@@ -431,6 +677,7 @@ void RenderHudMotionPlayer()
 		HudMotionPlayerStop();
 		state.Item = hud_item;
 		state.Selected = -1;
+		HudMotionPlayerClearAdditive();
 	}
 
 	const xr_vector<player_hud_motion>& motions = item->m_hand_motions.m_anims;
@@ -448,6 +695,7 @@ void RenderHudMotionPlayer()
 			if (ImGui::Selectable(motions[i].m_alias_name.c_str(), selected))
 			{
 				state.Selected = i;
+				HudMotionPlayerClearAdditive();
 				HudMotionPlayerPlay(hud_item, item, motions[i].m_alias_name, true);
 			}
 
@@ -461,15 +709,16 @@ void RenderHudMotionPlayer()
 	}
 
 	ImGui::SameLine();
-	ImGui::BeginDisabled(state.Selected < 0);
+	const bool additive = state.AdditiveMotion.valid();
+	ImGui::BeginDisabled(state.Selected < 0 && !additive);
 	if (ImGui::Button(state.Playing && !state.Paused ? "Pause" : "Play"))
 	{
-		const shared_str& motion = motions[state.Selected].m_alias_name;
+		const shared_str motion = additive ? state.AdditiveName : motions[state.Selected].m_alias_name;
 		CBlend* current = state.Playing && state.Motion == motion ? HudMotionPlayerBlend(HudMotionPlayerArmsModel(item), state.ArmsMotion) : nullptr;
 		if (current == nullptr || state.Paused && current->timeCurrent >= current->timeTotal - END_EPS - EPS_L)
 		{
 			const float speed = current != nullptr ? state.Speed : -1.f;
-			HudMotionPlayerPlay(hud_item, item, motion, false);
+			HudMotionPlayerStart(hud_item, item, motion, false);
 			if (speed > 0.f)
 			{
 				state.Speed = speed;
@@ -501,6 +750,11 @@ void RenderHudMotionPlayer()
 	if (ImGui::RadioButton("Seconds", !state.Keys))
 	{
 		state.Keys = false;
+	}
+
+	if (!item->m_model_combined)
+	{
+		RenderHudMotionPlayerAdditive(hud_item, item);
 	}
 
 	CBlend* blend = state.Playing ? HudMotionPlayerBlend(HudMotionPlayerArmsModel(item), state.ArmsMotion) : nullptr;
