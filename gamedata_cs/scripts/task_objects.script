@@ -2389,7 +2389,8 @@ function CHideFromSurgeTask:load(reader)
 	if t == 0 or t == -1 then
 		self.effector_started_time = t
 	else
-		self.effector_started_time = time_global()+t
+		-- The save stores the time passed since the effectors started
+		self.effector_started_time = time_global()-t
 	end
 	self.blowout_rumble_level = 0
 	set_save_marker(reader, "load", true, "CHideFromSurgeTask")

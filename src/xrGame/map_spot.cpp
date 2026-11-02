@@ -277,6 +277,7 @@ CComplexMapSpot::CComplexMapSpot(CMapLocation* ml)
 	: inherited(ml)
 {
 	m_infinity_time = false;
+	TimerRealTime	= false;
 	m_last_delay	= 0;
 	m_timer_finish	= 0;
 	m_left_icon		= nullptr;
@@ -317,6 +318,8 @@ void CComplexMapSpot::Load( CUIXml* xml, const char* path, float kx ) // complex
 		m_top_icon->SetHeight(m_top_icon->GetHeight() * kx);
 	}
 	m_timer					= CreateStaticOrig(*xml, "timer");
+	// real_time="1": count down real seconds instead of game hours and minutes
+	TimerRealTime			= xml->ReadAttribInt("timer", 0, "real_time", 0) != 0;
 
 	xml->SetLocalRoot		(stored_root);
 }
@@ -334,6 +337,26 @@ void CComplexMapSpot::SetTimerFinish(ALife::_TIME_ID time) // ms
 		m_infinity_time		= false;
 		m_timer->Show		(true);
 	}
+}
+
+shared_str CComplexMapSpot::TimerText() const
+{
+	const ALife::_TIME_ID Now = Level().GetGameTime();
+	if ( m_infinity_time || Now >= m_timer_finish )
+	{
+		return nullptr;
+	}
+
+	const ALife::_TIME_ID dt = m_timer_finish - Now;
+	const float TimeFactor = Level().GetGameTimeFactor();
+	if ( TimerRealTime && TimeFactor > 0.0f )
+	{
+		// Round up so the last second shows 0:01, not 0:00
+		const ALife::_TIME_ID RealDt = ALife::_TIME_ID( float(dt) / TimeFactor ) + 999;
+		return GetTimeAsString( RealDt, InventoryUtilities::etpTimeToSeconds, ':', false );
+	}
+
+	return GetTimeAsString( dt, InventoryUtilities::etpTimeToMinutes, ':', false );
 }
 
 void CComplexMapSpot::Update()
@@ -355,8 +378,7 @@ void CComplexMapSpot::Update()
 		{
 			if ( !m_infinity_time )
 			{
-				ALife::_TIME_ID dt = m_timer_finish - Level().GetGameTime();
-				m_timer->TextItemControl()->SetText( GetTimeAsString( dt, InventoryUtilities::etpTimeToMinutes, ':', false ).c_str() );
+				m_timer->TextItemControl()->SetText( TimerText().c_str() );
 			}
 		}
 	}

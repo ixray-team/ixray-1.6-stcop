@@ -7,6 +7,7 @@
 #include "map_spot.h"
 #include "map_manager.h"
 #include "GametaskManager.h"
+#include "ui/UIInventoryUtilities.h"
 
 #include "Level.h"
 #include "Actor.h"
@@ -435,6 +436,22 @@ CMapLocation* CGameTask::LinkedMapLocation()
 		return m_linked_map_location;
 
 	return Objective(m_active_objective).LinkedMapLocation();
+}
+
+xr_string CGameTask::TimeRemainsText()
+{
+	if (m_linked_map_location && m_linked_map_location->complex_spot())
+	{
+		const shared_str TimerText = m_linked_map_location->complex_spot()->TimerText();
+		if (TimerText.size())
+		{
+			return TimerText.c_str();
+		}
+	}
+
+	string512 Buffer;
+	InventoryUtilities::GetTimePeriodAsString(Buffer, sizeof(Buffer), Level().GetGameTime(), m_TimeToComplete);
+	return Buffer;
 }
 
 bool CGameTask::HasActiveMapTarget() const

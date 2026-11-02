@@ -95,7 +95,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_upgrades2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
         <text font="letterica18" r="238" g="155" b="223" align="c" stretch="1" vert_align="c" />
             <texture></texture>
         </timer>

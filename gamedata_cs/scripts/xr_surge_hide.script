@@ -14,7 +14,9 @@ phase = 0
 local state_tbl = {"wait", "sit", "sit_ass", "sit_knee"}
 base_prop = 15
 cur_prop = 15
-local add_prop = 10
+-- Game hours after the start of the last surge: no surge before the first, a sure one after the second
+local surge_min_hours = 12
+local surge_max_hours = 36
 levels_surge_table = {
 --	                    marsh       = {condlist="{+mar_story_go_to_escape_done} true", surge_time=30},
 											escape      = {condlist="{+esc_bring_habar_complete} true", surge_time=40},
@@ -394,18 +396,31 @@ function activate_surge(time)
     end
 end
 
+-- Surge chance on a level change. It grew by 10% with every level change before, so walking
+-- back and forth between levels forced a surge regardless of how long ago the last one was.
+local function get_surge_chance()
+	-- initialization_time is 0 when the save stored CTime_0, nil when it stored nothing
+	if type(initialization_time) ~= "userdata" then
+		return base_prop
+	end
+	local hours = game.get_game_time():diffSec(initialization_time) / 3600
+	if hours < surge_min_hours then
+		return 0
+	end
+	local k = math.min((hours - surge_min_hours) / (surge_max_hours - surge_min_hours), 1)
+	return math.floor(base_prop + (100 - base_prop) * k)
+end
+
 function surge_can_be_started(level)
 	if levels_surge_table[level] ~= nil then
 		local condlist = xr_logic.parse_condlist(nil, "xr_surge_hide", "condlist", levels_surge_table[level].condlist)
 		if db.actor then
 			local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
 			if cond == "true" and not surge_activated then
-				local surge = math.random(100)
-				if surge <= cur_prop then
-					cur_prop = base_prop
+				-- Kept in the save for compatibility, shows the last chance
+				cur_prop = get_surge_chance()
+				if math.random(100) <= cur_prop then
 					return math.random(levels_surge_table[level].surge_time-10, levels_surge_table[level].surge_time+10)
-				else
-					cur_prop = cur_prop + add_prop
 				end
 			end
 		end

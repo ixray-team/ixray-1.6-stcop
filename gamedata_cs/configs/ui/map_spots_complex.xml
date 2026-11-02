@@ -9,7 +9,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_secondary_task2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -28,7 +28,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" blink="1">
 			<texture  r="242" g="231" b="11">ui_pda2_secondary_alert2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -54,7 +54,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_attack_base2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -78,7 +78,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_capture_base2</texture>
 		</top_icon>      
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -97,7 +97,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_defend_base2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -121,7 +121,7 @@
         <top_icon    x="7.5"  y="0"  width="15" height="15" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_defend_base</texture>
 		</top_icon>
-        <timer       x="0"  y="17" width="30" height="10" >
+        <timer       x="0"  y="17" width="30" height="10" real_time="1">
         <text font="letterica18" color="ui_4"align="c" stretch="1" />
             <texture></texture>
         </timer>
@@ -137,7 +137,7 @@
         <top_icon   x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_bring_item2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -156,7 +156,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_bring_item2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -175,7 +175,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_secondary_task2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -194,7 +194,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_destroy_enemy2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -213,7 +213,7 @@
         <top_icon    x="6"  y="5.5"  width="19" height="19" stretch="1" >
 			<texture  r="242" g="231" b="11">ui_pda2_info2</texture>
 		</top_icon>
-        <timer       x="0"  y="25" width="30" height="10" >
+        <timer       x="0"  y="25" width="30" height="10" real_time="1">
 			<text font="letterica18" color="ui_4" align="c" stretch="1"/>
             <texture></texture>
         </timer>
@@ -246,4 +246,4 @@
 
   <texture id="ui_mmap_info"		x="846" y="946" width="11" height="11" />
   <texture id="ui_pda2_info"		x="830" y="946" width="15" height="15" />
--->
+-->

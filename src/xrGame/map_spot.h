@@ -91,6 +91,7 @@ class CComplexMapSpot : public CMapSpot
 	CUIStaticOrig*			m_timer;
 
 	bool					m_infinity_time;
+	bool					TimerRealTime;
 	int						m_last_delay;
 	ALife::_TIME_ID			m_timer_finish;
 
@@ -106,6 +107,7 @@ public:
 				void		SetTopTexture(   const char* texture_name )	{ VERIFY2(m_top_icon, texture_name);	m_top_icon->InitTexture(   texture_name ); }
 				void		SetTimerFinish( ALife::_TIME_ID time ); // ms game_time
 	ALife::_TIME_ID			GetTimerFinish() const					{ return m_timer_finish; }
+				shared_str	TimerText() const; // empty when the timer is not running
 
 protected:
 			CUIStaticOrig*	CreateStaticOrig( CUIXml& xml, const char* ui_path );

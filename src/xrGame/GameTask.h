@@ -194,6 +194,8 @@ public:
     void OnArrived();
     CMapLocation* LinkedMapLocation() override;
     bool HasActiveMapTarget() const;
+    // Map spot timer while it runs, otherwise the time left to complete
+    xr_string TimeRemainsText();
 
     void FillEncyclopedia() const;
 

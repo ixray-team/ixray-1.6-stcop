@@ -160,9 +160,8 @@ void CUITaskRootItem::Update		()
 
 	if(m_remTimeStatic->IsShown())
 	{
-		string512									buff, buff2;
-		InventoryUtilities::GetTimePeriodAsString	(buff, sizeof(buff), Level().GetGameTime(), GameTask()->m_TimeToComplete);
-		xr_sprintf										(buff2,"%s %s", *g_pStringTable->translate("ui_st_time_remains"), buff);
+		string512									buff2;
+		xr_sprintf										(buff2,"%s %s", *g_pStringTable->translate("ui_st_time_remains"), GameTask()->TimeRemainsText().c_str());
 		m_remTimeStatic->SetText					(buff2);
 	
 	}
