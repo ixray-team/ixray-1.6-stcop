@@ -4051,6 +4051,15 @@ void player_hud::BeginSprintLeftCancel()
 	SprintLeftCancel.Relative = LeftWristLast;
 }
 
+static void hud_decay_residual(Fmatrix& Residual, float Factor)
+{
+	Fquaternion Rotation;
+	Rotation.slerp(Fquaternion().set(Residual), Fquaternion().identity(), Factor);
+	const Fvector Position = Fvector().mul(Residual.c, 1.f - Factor);
+	Residual.rotation(Rotation);
+	Residual.c = Position;
+}
+
 void player_hud::SprintLayerSmooth(SHandsIkFrame& F)
 {
 	const float Time = CCameraRig::HudInertialization() > 0.f ? F.Item->SprintLayerBlend() : 0.f;
@@ -4075,11 +4084,7 @@ void player_hud::SprintLayerSmooth(SHandsIkFrame& F)
 		}
 		else
 		{
-			Fquaternion Rotation;
-			Rotation.slerp(Fquaternion().set(SprintLayerResidual[i]), Fquaternion().identity(), Factor);
-			const Fvector Position = Fvector().mul(SprintLayerResidual[i].c, 1.f - Factor);
-			SprintLayerResidual[i].rotation(Rotation);
-			SprintLayerResidual[i].c = Position;
+			hud_decay_residual(SprintLayerResidual[i], Factor);
 		}
 
 		Target.mulA_43(SprintLayerResidual[i]);
@@ -4338,6 +4343,43 @@ void player_hud::HandsIkHandTargets(SHandsIkFrame& F)
 	if (F.RetargetLeft)
 	{
 		retarget_blend(left_target, RetargetLeftTarget);
+	}
+
+	HandsIkSprintBaseSmooth(F);
+}
+
+void player_hud::HandsIkSprintBaseSmooth(SHandsIkFrame& F)
+{
+	const Fmatrix AncorFull = Fmatrix().mul_43(F.Delta, F.Model->LL_GetTransform(F.Ancor));
+	const Fmatrix AncorInverse = Fmatrix().invert(AncorFull);
+	const MotionID BaseMotion = F.SprintLayer > 0.f ? hud_dominant_motion(m_model) : MotionID();
+	const bool BaseChanged = BaseMotion.valid() && SprintBaseMotion.valid() && (BaseMotion != SprintBaseMotion || F.State != SprintBaseState);
+	SprintBaseMotion = BaseMotion;
+	SprintBaseState = F.State;
+
+	const float Factor = HudBlend::Smooth(F.Item->SprintLayerBlend() / 3.f, Device.fTimeDelta);
+	const bool Hands[2] = { F.HasRight && !F.AncorInRightHand, F.HasLeft };
+	Fmatrix* Targets[2] = { &F.RightTarget, &F.LeftTarget };
+	for (u32 i = 0; i < 2; ++i)
+	{
+		if (!Hands[i])
+		{
+			SprintBaseResidual[i] = Fidentity;
+			continue;
+		}
+
+		const Fmatrix Relative = Fmatrix().mul_43(AncorInverse, *Targets[i]);
+		if (BaseChanged)
+		{
+			SprintBaseResidual[i].mul_43(SprintBasePrev[i], Fmatrix().invert(Relative));
+		}
+		else
+		{
+			hud_decay_residual(SprintBaseResidual[i], Factor);
+		}
+
+		SprintBasePrev[i].mul_43(SprintBaseResidual[i], Relative);
+		Targets[i]->mul_43(AncorFull, SprintBasePrev[i]);
 	}
 }
 
@@ -5790,6 +5832,9 @@ void player_hud::attach_item(CHudItem* item)
 			ResolveSprintAdditive(pi);
 
 			RetargetWeight = 0.f;
+			SprintBaseMotion = MotionID();
+			SprintBaseResidual[0] = Fidentity;
+			SprintBaseResidual[1] = Fidentity;
 			RetargetLeftValid = false;
 			RetargetRightValid = false;
 			ArmRetargetMotion = MotionID();
