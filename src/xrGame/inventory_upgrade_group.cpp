@@ -76,24 +76,30 @@ UpgradeStateResult Group::can_install(CInventoryItem& item, UpgradeBase& test_up
 			continue;
 		}
 
-        bool cant_install = false;
+		Upgrade* parent = smart_cast<Upgrade*>(upgrade_base);
+		bool cant_install = false;
 		if (item.m_legacy_upgrade_mode)
 		{
-			cant_install = !item.has_upgrade(upgrade_base->id());
+			cant_install = !item.has_upgrade(parent->id());
 		}
-        else
-        {
-            Upgrade* U = smart_cast<Upgrade*>(upgrade_base);
-            cant_install = !item.has_upgrade_group(U->parent_group_id());;
-        }
+		else
+		{
+			cant_install = !item.has_upgrade_group(parent->parent_group_id());
+		}
 
-        if (cant_install)
+		if (cant_install)
 		{
 			if (loading)
 			{
 				FATAL(make_string<const char*>("Loading item: Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed! Error = result_e_parents",
 					test_upgrade.id_str(), item.m_section_id.c_str(), item.object_id()));
 			}
+
+			if (IsParentUnreachable(item, *parent))
+			{
+				return result_e_group;
+			}
+
 			return result_e_parents;
 		}
 	}
@@ -117,6 +123,56 @@ UpgradeStateResult Group::can_install(CInventoryItem& item, UpgradeBase& test_up
 	}
 
 	return result_ok;
+}
+
+bool Group::IsUnreachable(CInventoryItem& item, const UpgradeBase& test_upgrade) const
+{
+	for (const auto& included_upgrade : m_included_upgrades)
+	{
+		if (included_upgrade != &test_upgrade && item.has_upgrade(included_upgrade->id()))
+		{
+			return true;
+		}
+	}
+
+	for (const auto& upgrade_base : m_parent_upgrades)
+	{
+		if (upgrade_base->is_root())
+		{
+			continue;
+		}
+
+		if (IsParentUnreachable(item, *smart_cast<Upgrade*>(upgrade_base)))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Group::IsParentUnreachable(CInventoryItem& item, Upgrade& parent_upgrade) const
+{
+	if (item.m_legacy_upgrade_mode)
+	{
+		return parent_upgrade.IsUnreachable(item);
+	}
+
+	if (item.has_upgrade_group(parent_upgrade.parent_group_id()))
+	{
+		return false;
+	}
+
+	const Group* parent_group = parent_upgrade.parent_group();
+	for (const auto& upgrade_base : parent_group->m_included_upgrades)
+	{
+		if (!smart_cast<Upgrade*>(upgrade_base)->IsUnreachable(item))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void Group::highlight_up()

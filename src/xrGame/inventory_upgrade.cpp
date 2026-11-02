@@ -167,6 +167,16 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 	return res;
 }
 
+bool Upgrade::IsUnreachable(CInventoryItem& item)
+{
+	if (item.has_upgrade(id()))
+	{
+		return false;
+	}
+
+	return m_parent_group->IsUnreachable(item, *this);
+}
+
 bool Upgrade::check_scheme_index(Ivector2 const& scheme_index) const
 {
 	return (m_scheme_index.x == scheme_index.x && m_scheme_index.y == scheme_index.y);

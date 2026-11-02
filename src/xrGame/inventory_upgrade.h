@@ -133,6 +133,7 @@ public:
 	virtual	void fill_root_container(Root* root) override;
 
 	virtual	UpgradeStateResult can_install(CInventoryItem& item, bool loading) override;
+	bool IsUnreachable(CInventoryItem& item);
 	bool check_scheme_index(const Ivector2& scheme_index) const;
 	void set_highlight(bool value);
 	void run_effects(bool loading);

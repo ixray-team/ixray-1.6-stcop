@@ -33,6 +33,9 @@ public:
 
 	UpgradeStateResult can_install(CInventoryItem& item, UpgradeBase& test_upgrade, bool loading);
 
+	bool IsUnreachable(CInventoryItem& item, const UpgradeBase& test_upgrade) const;
+	bool IsParentUnreachable(CInventoryItem& item, Upgrade& parent_upgrade) const;
+
 	void highlight_up();
 	void highlight_down();
 
