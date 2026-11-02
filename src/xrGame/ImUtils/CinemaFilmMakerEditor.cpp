@@ -188,6 +188,7 @@ static_assert(CinemaLightChannelDefault(14) == 1.0f);
 
 struct SCinemaLightData
 {
+	s32 Group = -1;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fmatrix Orientation = Fmatrix().identity();
 	Fvector Color = Fvector().set(1.0f, 1.0f, 1.0f);
@@ -398,25 +399,35 @@ static float LightModulatedValue(const SCinemaLight& light, u32 channel, float t
 	return std::clamp(ParticleCurveValue(light.Curves[channel], time, CinemaLightChannelDefault(channel)) + wave.Amplitude * signal, wave.Minimum, wave.Maximum);
 }
 
+static void CinemaLightTransform(const SCinemaLight& light, Fvector& position, Fmatrix& orientation)
+{
+	position = light.Position;
+	orientation = light.Orientation;
+	if (light.Modulation)
+	{
+		position.add(Fvector().set(LightModulatedValue(light, 0, light.Time), LightModulatedValue(light, 1, light.Time), LightModulatedValue(light, 2, light.Time)));
+		Fmatrix rotation;
+		rotation.setHPB(deg2rad(LightModulatedValue(light, 3, light.Time)), deg2rad(LightModulatedValue(light, 4, light.Time)), deg2rad(LightModulatedValue(light, 5, light.Time)));
+		orientation.mul(light.Orientation, rotation);
+	}
+}
+
 static void UpdateCinemaLightValues(SCinemaLight& light)
 {
 	if (!light.Light)
 	{
 		return;
 	}
-	Fvector position = light.Position;
-	Fmatrix orientation = light.Orientation;
+	Fvector position;
+	Fmatrix orientation;
+	CinemaLightTransform(light, position, orientation);
 	float values[kCinemaLightChannels] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 	if (light.Modulation)
 	{
-		for (u32 i = 0; i < kCinemaLightChannels; ++i)
+		for (u32 i = 6; i < kCinemaLightChannels; ++i)
 		{
 			values[i] = LightModulatedValue(light, i, light.Time);
 		}
-		position.add(Fvector().set(values[0], values[1], values[2]));
-		Fmatrix rotation;
-		rotation.setHPB(deg2rad(values[3]), deg2rad(values[4]), deg2rad(values[5]));
-		orientation.mul(light.Orientation, rotation);
 	}
 	light.Light->set_position(position);
 	light.Light->set_rotation(orientation.k, orientation.i);
@@ -2388,6 +2399,7 @@ private:
 	void DrawLightTab();
 	void DrawLightModulation(SCinemaLight& light);
 	void DuplicateLights(const xr_vector<s32>& indices);
+	void TransformLightGroup(s32 index, const SCinemaParticleGroup& previous);
 	void RemoveLights(const xr_vector<s32>& indices);
 	void TransformSelectedLights(const Fvector& previousPosition, const Fmatrix& previousOrientation);
 	void DrawParticleBrowser();
@@ -2492,6 +2504,9 @@ private:
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
 	xr_vector<SCinemaLight> Lights;
 	xr_vector<SCinemaLight> SceneLights;
+	xr_vector<SCinemaParticleGroup> LightGroups;
+	xr_vector<SCinemaParticleGroup> SceneLightGroups;
+	s32 SelectedLightGroup = -1;
 	s32 SelectedLight = -1;
 	xr_vector<s32> SelectedLights;
 	s32 LightSelectionAnchor = -1;
@@ -2572,6 +2587,7 @@ void CCinemaFilmMakerManager::Shutdown()
 	ClearParticles();
 	ClearLights();
 	SceneLights.clear();
+	SceneLightGroups.clear();
 	SceneParticles.clear();
 	Library.clear();
 	LibraryBuilt = false;
@@ -2761,6 +2777,8 @@ void CCinemaFilmMakerManager::ClearActors()
 void CCinemaFilmMakerManager::ClearLights()
 {
 	Lights.clear();
+	LightGroups.clear();
+	SelectedLightGroup = -1;
 	SelectedLight = -1;
 	SelectedLights.clear();
 	LightSelectionAnchor = -1;
@@ -2934,6 +2952,7 @@ void CCinemaFilmMakerManager::ResetSelection()
 
 void CCinemaFilmMakerManager::SelectActor(s32 index)
 {
+	SelectedLightGroup = -1;
 	SelectedLight = -1;
 	SelectedLights.clear();
 	LightSelectionAnchor = -1;
@@ -2997,6 +3016,7 @@ void CCinemaFilmMakerManager::OnFrame()
 		ClearParticles();
 		ClearLights();
 		SceneLights.clear();
+		SceneLightGroups.clear();
 		SceneParticles.clear();
 		Library.clear();
 		LibraryBuilt = false;
@@ -4907,6 +4927,7 @@ void CCinemaFilmMakerManager::DrawSceneDialog()
 			SceneData.clear();
 			SceneParticles.clear();
 			SceneLights.clear();
+			SceneLightGroups.clear();
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -4945,7 +4966,7 @@ void CCinemaFilmMakerManager::RequestSaveScene()
 
 	xr_vector<xr_string> lines;
 
-	if (Actors.empty() && Particles.empty() && Lights.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty())
 	{
 		lines.push_back("The scene is empty: there is nothing to save.");
 	}
@@ -4998,7 +5019,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		return;
 	}
 
-	if (Actors.empty() && Particles.empty() && Lights.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty())
 	{
 		dialog.push_back("The scene is empty: there is nothing to save.");
 		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
@@ -5016,6 +5037,18 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	ini.w_string("scene", "platform", EngineExternal().GetCurrentPlatformName());
 	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
 	ini.w_u32("scene", "particles", static_cast<u32>(Particles.size()));
+	ini.w_u32("scene", "light_groups", static_cast<u32>(LightGroups.size()));
+	for (u32 i = 0; i < LightGroups.size(); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "light_group_%03u", i);
+		ini.w_fvector3(section, "position", LightGroups[i].Position);
+		Fvector rotation = {};
+		LightGroups[i].Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_float(section, "scale", LightGroups[i].Scale);
+	}
 	ini.w_u32("scene", "lights", static_cast<u32>(Lights.size()));
 	for (u32 i = 0; i < Lights.size(); ++i)
 	{
@@ -5025,6 +5058,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		Fvector rotation = {};
 		light.Orientation.getHPB(rotation);
 		rotation.mul(rad2deg(1.0f));
+		ini.w_s32(section, "group", light.Group);
 		ini.w_fvector3(section, "position", light.Position);
 		ini.w_fvector3(section, "rotation", rotation);
 		ini.w_fvector3(section, "color", light.Color);
@@ -5335,6 +5369,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	SceneData.clear();
 	SceneParticles.clear();
 	SceneLights.clear();
+	SceneLightGroups.clear();
 	SceneParticleGroups.clear();
 
 	string_path path = {};
@@ -5747,6 +5782,34 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		SceneParticles.push_back(std::move(particle));
 	}
 
+	const u32 lightGroupCount = ini.read_if_exists<u32>("scene", "light_groups", 0);
+	for (u32 i = 0; i < std::min(lightGroupCount, kCinemaSceneMaxActors); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "light_group_%03u", i);
+		SCinemaParticleGroup group;
+		if (ini.section_exist(section))
+		{
+			group.Position = ini.read_if_exists<Fvector>(section, "position", group.Position);
+			const Fvector rotation = ini.read_if_exists<Fvector>(section, "rotation", Fvector().set(0.0f, 0.0f, 0.0f));
+			group.Scale = ini.read_if_exists<float>(section, "scale", 1.0f);
+			if (std::isfinite(group.Position.x) && std::isfinite(group.Position.y) && std::isfinite(group.Position.z) &&
+				std::isfinite(rotation.x) && std::isfinite(rotation.y) && std::isfinite(rotation.z) && std::isfinite(group.Scale) && group.Scale >= 0.1f && group.Scale <= 5.0f)
+			{
+				group.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+			}
+			else
+			{
+				group = SCinemaParticleGroup();
+				warnings.push_back("Invalid light group transform: using defaults.");
+			}
+		}
+		SceneLightGroups.push_back(group);
+	}
+	if (lightGroupCount > kCinemaSceneMaxActors)
+	{
+		warnings.push_back("Too many light groups: the rest were ignored.");
+	}
 	const u32 lightCount = ini.read_if_exists<u32>("scene", "lights", 0);
 	for (u32 i = 0; i < std::min(lightCount, kCinemaSceneMaxActors); ++i)
 	{
@@ -5758,6 +5821,12 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			continue;
 		}
 		SCinemaLight light;
+		light.Group = ini.read_if_exists<s32>(section, "group", -1);
+		if (light.Group < -1 || light.Group >= static_cast<s32>(SceneLightGroups.size()))
+		{
+			light.Group = -1;
+			warnings.push_back("Invalid light group: light left ungrouped.");
+		}
 		light.Position = ini.read_if_exists<Fvector>(section, "position", light.Position);
 		const Fvector rotation = ini.read_if_exists<Fvector>(section, "rotation", Fvector().set(0.0f, 0.0f, 0.0f));
 		light.Color = ini.read_if_exists<Fvector>(section, "color", light.Color);
@@ -5849,7 +5918,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	{
 		warnings.push_back("Too many lights: the rest were ignored.");
 	}
-	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty())
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty())
 	{
 		dialog = warnings;
 		dialog.push_back("There is nothing to load.");
@@ -5872,7 +5941,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 void CCinemaFilmMakerManager::ApplyLoadedScene()
 {
-	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty())
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty())
 	{
 		return;
 	}
@@ -5881,6 +5950,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	ClearActors();
 	ClearParticles();
 	ClearLights();
+	LightGroups = std::move(SceneLightGroups);
 	xr_vector<xr_string> issues;
 	for (auto& light : SceneLights)
 	{
@@ -9297,6 +9367,32 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	}
 }
 
+void CCinemaFilmMakerManager::TransformLightGroup(s32 index, const SCinemaParticleGroup& previous)
+{
+	const auto& group = LightGroups[index];
+	Fmatrix inverse, rotation;
+	inverse.invert(previous.Orientation);
+	rotation.mul(group.Orientation, inverse);
+	const float ratio = group.Scale / previous.Scale;
+	for (auto& light : Lights)
+	{
+		if (light.Group != index)
+		{
+			continue;
+		}
+		Fvector offset, rotated;
+		offset.sub(light.Position, previous.Position);
+		rotation.transform_dir(rotated, offset);
+		rotated.mul(ratio);
+		light.Position.add(group.Position, rotated);
+		Fmatrix orientation;
+		orientation.mul(rotation, light.Orientation);
+		light.Orientation = orientation;
+		light.Range = std::clamp(light.Range * ratio, 0.1f, 1000.0f);
+		ApplyCinemaLight(light);
+	}
+}
+
 void CCinemaFilmMakerManager::TransformSelectedLights(const Fvector& previousPosition, const Fmatrix& previousOrientation)
 {
 	const auto& current = Lights[SelectedLight];
@@ -9639,7 +9735,7 @@ void CCinemaFilmMakerManager::DrawLightModulation(SCinemaLight& light)
 void CCinemaFilmMakerManager::DrawLightTab()
 {
 	ImGui::SeparatorText("Scene lights");
-	ImGui::TextDisabled("%u lights", static_cast<u32>(Lights.size()));
+	ImGui::TextDisabled("%u lights | %u groups", static_cast<u32>(Lights.size()), static_cast<u32>(LightGroups.size()));
 	ImGui::BeginDisabled(Lights.size() >= kCinemaSceneMaxActors);
 	if (ImGui::Button("Add light"))
 	{
@@ -9673,17 +9769,45 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		}
 	}
 	ImGui::EndDisabled();
-	if (Lights.empty())
+	ImGui::SameLine();
+	ImGui::BeginDisabled(LightGroups.size() >= kCinemaSceneMaxActors);
+	if (ImGui::Button("New group##light"))
+	{
+		ClearGizmo();
+		LightGroups.emplace_back();
+		const s32 group = static_cast<s32>(LightGroups.size()) - 1;
+		if (SelectedLight >= 0 && SelectedLight < static_cast<s32>(Lights.size()))
+		{
+			LightGroups.back().Position = Lights[SelectedLight].Position;
+			for (const s32 index : SelectedLights)
+			{
+				Lights[index].Group = group;
+			}
+		}
+		SelectActor(-1);
+		SelectedParticle = -1;
+		SelectedParticleGroup = -1;
+		SelectedParticles.clear();
+		SelectedLightGroup = group;
+	}
+	ImGui::EndDisabled();
+	if (Lights.empty() && LightGroups.empty())
 	{
 		CinemaHint("No lights yet. Choose Add light to place one in the scene.");
 		return;
 	}
-	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Right-click: actions");
+	CinemaHint("Shift + click: select range | Ctrl + click: toggle | Drag to group");
 	s32 clicked = -1;
 	s32 remove = -1;
 	s32 duplicate = -1;
-	for (s32 i = 0; i < static_cast<s32>(Lights.size()); ++i)
+	s32 ungroup = -1;
+	s32 draggedLight = -1;
+	s32 targetLight = -1;
+	s32 targetGroup = -1;
+	xr_vector<s32> visibleLights;
+	const auto drawLight = [&](s32 i)
 	{
+		visibleLights.push_back(i);
 		string64 label = {};
 		xr_sprintf(label, "Light %d (%s)##light%d", i + 1, Lights[i].Type == 0 ? "Point" : "Spot", i);
 		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), i) != SelectedLights.end();
@@ -9691,10 +9815,28 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		{
 			clicked = i;
 		}
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("CINEMA_LIGHT", &i, sizeof(i));
+			ImGui::TextUnformatted(label);
+			ImGui::EndDragDropSource();
+		}
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CINEMA_LIGHT"))
+			{
+				if (payload->DataSize == sizeof(s32))
+				{
+					draggedLight = *static_cast<const s32*>(payload->Data);
+					targetLight = i;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
 		if (ImGui::BeginPopupContextItem())
 		{
-			const size_t count = selected ? SelectedLights.size() : 1;
-			ImGui::BeginDisabled(count > kCinemaSceneMaxActors - Lights.size());
+			const auto& affected = selected ? SelectedLights : xr_vector<s32>{ i };
+			ImGui::BeginDisabled(affected.size() > kCinemaSceneMaxActors - Lights.size());
 			if (ImGui::MenuItem("Duplicate"))
 			{
 				duplicate = i;
@@ -9704,7 +9846,181 @@ void CCinemaFilmMakerManager::DrawLightTab()
 			{
 				remove = i;
 			}
+			const bool anyGrouped = std::any_of(affected.begin(), affected.end(), [&](s32 index) { return Lights[index].Group >= 0; });
+			if (anyGrouped && ImGui::MenuItem("Remove from group"))
+			{
+				ungroup = i;
+			}
 			ImGui::EndPopup();
+		}
+	};
+	for (s32 i = 0; i < static_cast<s32>(LightGroups.size()); ++i)
+	{
+		ImGui::PushID("light_group");
+		ImGui::PushID(i);
+		u32 count = 0;
+		for (const auto& light : Lights)
+		{
+			if (light.Group == i)
+			{
+				++count;
+			}
+		}
+		const bool open = ImGui::TreeNodeEx("##group", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | (SelectedLightGroup == i ? ImGuiTreeNodeFlags_Selected : 0), "Group %d (%u)", i + 1, count);
+		if (ImGui::IsItemClicked())
+		{
+			ClearGizmo();
+			SelectActor(-1);
+			SelectedParticle = -1;
+			SelectedParticleGroup = -1;
+			SelectedParticles.clear();
+			SelectedLightGroup = i;
+		}
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CINEMA_LIGHT"))
+			{
+				if (payload->DataSize == sizeof(s32))
+				{
+					draggedLight = *static_cast<const s32*>(payload->Data);
+					targetGroup = i;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+		if (open)
+		{
+			for (s32 index = 0; index < static_cast<s32>(Lights.size()); ++index)
+			{
+				if (Lights[index].Group == i)
+				{
+					drawLight(index);
+				}
+			}
+			if (SelectedLightGroup == i)
+			{
+				ImGui::SeparatorText("Group transform");
+				auto& group = LightGroups[i];
+				const SCinemaParticleGroup previous = group;
+				bool changed = ImGui::DragFloat3("Position##light_group", &group.Position.x, 0.01f);
+				Fvector degrees;
+				group.Orientation.getHPB(degrees);
+				degrees.mul(rad2deg(1.0f));
+				if (ImGui::DragFloat3("Rotation##light_group", &degrees.x, 0.5f))
+				{
+					group.Orientation.setHPB(deg2rad(degrees.x), deg2rad(degrees.y), deg2rad(degrees.z));
+					changed = true;
+				}
+				if (ImGui::DragFloat("Scale##light_group", &group.Scale, 0.01f, 0.1f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+				{
+					float minimum = 0.1f, maximum = 5.0f;
+					for (const auto& light : Lights)
+					{
+						if (light.Group == i)
+						{
+							minimum = std::max(minimum, previous.Scale * 0.1f / light.Range);
+							maximum = std::min(maximum, previous.Scale * 1000.0f / light.Range);
+						}
+					}
+					group.Scale = std::clamp(group.Scale, minimum, maximum);
+					changed = true;
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Scales the lights' spacing and range.");
+				}
+				if (changed)
+				{
+					ClearGizmo();
+					TransformLightGroup(i, previous);
+				}
+				if (ImGui::Button("Ungroup all##light"))
+				{
+					ClearGizmo();
+					for (auto& light : Lights)
+					{
+						if (light.Group == i)
+						{
+							light.Group = -1;
+						}
+						else if (light.Group > i)
+						{
+							--light.Group;
+						}
+					}
+					LightGroups.erase(LightGroups.begin() + i);
+					SelectedLightGroup = -1;
+					ImGui::TreePop();
+					ImGui::PopID();
+					ImGui::PopID();
+					return;
+				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+		ImGui::PopID();
+	}
+	if (!LightGroups.empty() && std::any_of(Lights.begin(), Lights.end(), [](const auto& light) { return light.Group < 0; }))
+	{
+		ImGui::SeparatorText("Ungrouped");
+	}
+	for (s32 i = 0; i < static_cast<s32>(Lights.size()); ++i)
+	{
+		if (Lights[i].Group < 0)
+		{
+			drawLight(i);
+		}
+	}
+	if (ungroup >= 0)
+	{
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), ungroup) != SelectedLights.end();
+		const auto affected = selected ? SelectedLights : xr_vector<s32>{ ungroup };
+		for (const s32 index : affected)
+		{
+			Lights[index].Group = -1;
+		}
+		ClearGizmo();
+		SelectActor(-1);
+		SelectedParticle = -1;
+		SelectedParticleGroup = -1;
+		SelectedParticles.clear();
+		ParticleSelectionAnchor = -1;
+		SelectedLights = affected;
+		SelectedLight = ungroup;
+		LightSelectionAnchor = ungroup;
+		return;
+	}
+	if (draggedLight >= 0 && draggedLight < static_cast<s32>(Lights.size()))
+	{
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), draggedLight) != SelectedLights.end();
+		const auto dragged = selected ? SelectedLights : xr_vector<s32>{ draggedLight };
+		if (targetLight >= 0 && targetLight < static_cast<s32>(Lights.size()) && std::find(dragged.begin(), dragged.end(), targetLight) == dragged.end())
+		{
+			targetGroup = Lights[targetLight].Group;
+			if (targetGroup < 0 && LightGroups.size() < kCinemaSceneMaxActors)
+			{
+				ClearGizmo();
+				LightGroups.emplace_back();
+				targetGroup = static_cast<s32>(LightGroups.size()) - 1;
+				LightGroups.back().Position = Lights[targetLight].Position;
+				Lights[targetLight].Group = targetGroup;
+			}
+		}
+		if (targetGroup >= 0 && targetGroup < static_cast<s32>(LightGroups.size()))
+		{
+			for (const s32 index : dragged)
+			{
+				Lights[index].Group = targetGroup;
+			}
+			ClearGizmo();
+			SelectActor(-1);
+			SelectedParticle = -1;
+			SelectedParticleGroup = -1;
+			SelectedParticles.clear();
+			ParticleSelectionAnchor = -1;
+			SelectedLightGroup = targetGroup;
+			clicked = -1;
 		}
 	}
 	if (duplicate >= 0)
@@ -9731,13 +10047,11 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		}
 		ClearGizmo();
 		const auto& io = ImGui::GetIO();
-		if (io.KeyShift && LightSelectionAnchor >= 0 && LightSelectionAnchor < static_cast<s32>(Lights.size()))
+		const auto first = std::find(visibleLights.begin(), visibleLights.end(), LightSelectionAnchor);
+		const auto last = std::find(visibleLights.begin(), visibleLights.end(), clicked);
+		if (io.KeyShift && first != visibleLights.end() && last != visibleLights.end())
 		{
-			SelectedLights.clear();
-			for (s32 i = std::min(LightSelectionAnchor, clicked); i <= std::max(LightSelectionAnchor, clicked); ++i)
-			{
-				SelectedLights.push_back(i);
-			}
+			SelectedLights.assign(std::min(first, last), std::max(first, last) + 1);
 		}
 		else if (io.KeyCtrl)
 		{
@@ -9757,12 +10071,16 @@ void CCinemaFilmMakerManager::DrawLightTab()
 			SelectedLights = { clicked };
 			LightSelectionAnchor = clicked;
 		}
+		SelectedLightGroup = -1;
 		SelectedLight = std::find(SelectedLights.begin(), SelectedLights.end(), clicked) != SelectedLights.end()
 			? clicked : (SelectedLights.empty() ? -1 : SelectedLights.back());
 	}
 	if (SelectedLight < 0 || SelectedLight >= static_cast<s32>(Lights.size()))
 	{
-		ImGui::TextDisabled("Select a light to edit it.");
+		if (SelectedLightGroup < 0)
+		{
+			ImGui::TextDisabled("Select a light to edit it.");
+		}
 		return;
 	}
 	if (SelectedLights.size() > 1)
@@ -9790,12 +10108,53 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	const SCinemaLightData previous = light;
 	bool textureChanged = false;
 	bool changed = false;
+	bool groupChanged = false;
+	string64 groupLabel = {};
+	if (light.Group >= 0)
+	{
+		xr_sprintf(groupLabel, "Group %d", light.Group + 1);
+	}
+	else
+	{
+		xr_strcpy(groupLabel, "None");
+	}
+	if (ImGui::BeginCombo("Group##light", groupLabel))
+	{
+		if (ImGui::Selectable("None", light.Group < 0))
+		{
+			light.Group = -1;
+			groupChanged = true;
+			changed = true;
+		}
+		for (s32 i = 0; i < static_cast<s32>(LightGroups.size()); ++i)
+		{
+			string32 label = {};
+			xr_sprintf(label, "Group %d", i + 1);
+			if (ImGui::Selectable(label, light.Group == i))
+			{
+				light.Group = i;
+				groupChanged = true;
+				changed = true;
+			}
+		}
+		ImGui::EndCombo();
+	}
+	if (std::any_of(SelectedLights.begin(), SelectedLights.end(), [&](s32 index) { return Lights[index].Group >= 0; }))
+	{
+		if (ImGui::Button("Remove from group##light"))
+		{
+			for (const s32 index : SelectedLights)
+			{
+				Lights[index].Group = -1;
+			}
+		}
+	}
 	bool colorChanged = false;
 	bool positionChanged = false;
 	bool rotationChanged = false;
 	if (ImGui::TreeNodeEx("Light settings##light", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DrawLinesToNodes))
 	{
-		changed = ImGui::Combo("Type", &light.Type, "Point\0Spot\0");
+		changed |= ImGui::Combo("Type", &light.Type, "Point\0Spot\0");
 		changed |= ImGui::Checkbox("Enabled", &light.Active);
 		changed |= ImGui::Checkbox("Shadows", &light.Shadow);
 		colorChanged = ImGui::ColorEdit3("Color", &light.Color.x, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
@@ -9855,6 +10214,10 @@ void CCinemaFilmMakerManager::DrawLightTab()
 			auto& target = Lights[index];
 			if (index != SelectedLight)
 			{
+				if (groupChanged)
+				{
+					target.Group = light.Group;
+				}
 				if (light.Type != previous.Type)
 				{
 					target.Type = light.Type;
@@ -10153,15 +10516,31 @@ void CCinemaFilmMakerManager::AppendWorldGizmo()
 	}
 
 	LevelInspector& inspector = HUD().world_prims;
+	for (s32 index = 0; index < static_cast<s32>(Lights.size()); ++index)
+	{
+		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), index) != SelectedLights.end();
+		if ((!selected && (SelectedLightGroup < 0 || Lights[index].Group != SelectedLightGroup)) || Lights[index].Type != 1)
+		{
+			continue;
+		}
+		Fvector lightPosition;
+		Fmatrix lightOrientation;
+		CinemaLightTransform(Lights[index], lightPosition, lightOrientation);
+		const float arrowSize = std::clamp(Device.vCameraPosition.distance_to(lightPosition) * 0.2f, 0.75f, 10.0f);
+		const u32 arrowColor = GetTheme().AxisHighlighted;
+		inspector.append_lines_arrow(lightPosition, lightOrientation.k, arrowSize, arrowColor);
+		inspector.append_text3d(Fvector().mad(lightPosition, lightOrientation.k, arrowSize), "Spot", arrowColor);
+	}
 	SCinemaActor* actor = GetSelectedActor();
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
 	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
 	SCinemaLight* light = SelectedLight >= 0 && SelectedLight < static_cast<s32>(Lights.size()) ? &Lights[SelectedLight] : nullptr;
-	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr)
+	SCinemaParticleGroup* lightGroup = SelectedLightGroup >= 0 && SelectedLightGroup < static_cast<s32>(LightGroups.size()) ? &LightGroups[SelectedLightGroup] : nullptr;
+	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr && lightGroup == nullptr)
 	{
 		return;
 	}
-	const Fvector position = light ? light->Position : group ? group->Position : particle ? ParticlePosition(*particle) : actor->Position;
+	const Fvector position = lightGroup ? lightGroup->Position : light ? light->Position : group ? group->Position : particle ? ParticlePosition(*particle) : actor->Position;
 	const float distance = Device.vCameraPosition.distance_to(position);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 	const EGizmoAxis hoveredAxis = Gizmo.Active ? Gizmo.Axis : HoveredAxis;
@@ -10412,8 +10791,9 @@ void CCinemaFilmMakerManager::DrawGizmo()
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
 	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
 	SCinemaLight* light = SelectedLight >= 0 && SelectedLight < static_cast<s32>(Lights.size()) ? &Lights[SelectedLight] : nullptr;
+	SCinemaParticleGroup* lightGroup = SelectedLightGroup >= 0 && SelectedLightGroup < static_cast<s32>(LightGroups.size()) ? &LightGroups[SelectedLightGroup] : nullptr;
 
-	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr) || g_pGameLevel == nullptr)
+	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr && light == nullptr && lightGroup == nullptr) || g_pGameLevel == nullptr)
 	{
 		ClearGizmo();
 		HoveredAxis = EGizmoAxis::None;
@@ -10426,8 +10806,8 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		return;
 	}
 
-	Fvector& position = light ? light->Position : group ? group->Position : particle ? particle->Position : actor->Position;
-	Fmatrix& orientation = light ? light->Orientation : group ? group->Orientation : particle ? particle->Orientation : actor->Orientation;
+	Fvector& position = lightGroup ? lightGroup->Position : light ? light->Position : group ? group->Position : particle ? particle->Position : actor->Position;
+	Fmatrix& orientation = lightGroup ? lightGroup->Orientation : light ? light->Orientation : group ? group->Orientation : particle ? particle->Orientation : actor->Orientation;
 	const Fvector pivot = particle ? ParticlePosition(*particle) : position;
 	if (Gizmo.Active && Gizmo.Position != &position)
 	{
@@ -10462,7 +10842,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
-			SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+			SCinemaParticleGroup previous = group ? *group : lightGroup ? *lightGroup : SCinemaParticleGroup();
 			if (particle || light)
 			{
 				previous.Position = position;
@@ -10479,6 +10859,10 @@ void CCinemaFilmMakerManager::DrawGizmo()
 			{
 				TransformParticleGroup(SelectedParticleGroup, previous);
 			}
+			if (lightGroup)
+			{
+				TransformLightGroup(SelectedLightGroup, previous);
+			}
 			if (particle)
 			{
 				SCinemaParticleGroup current;
@@ -10491,7 +10875,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 			return;
 		}
 
-		SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
+		SCinemaParticleGroup previous = group ? *group : lightGroup ? *lightGroup : SCinemaParticleGroup();
 		if (particle || light)
 		{
 			previous.Position = position;
@@ -10506,6 +10890,10 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		if (group)
 		{
 			TransformParticleGroup(SelectedParticleGroup, previous);
+		}
+		if (lightGroup)
+		{
+			TransformLightGroup(SelectedLightGroup, previous);
 		}
 		if (particle)
 		{
