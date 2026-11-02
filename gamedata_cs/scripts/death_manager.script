@@ -174,7 +174,7 @@ function keep_item(npc, item)
 
         --item:unload_magazine()
 		--' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+65)/100)
+		item:set_condition(item:condition() * (math.random(15)+65)/100)
 		printf("3")
         return
     end
@@ -189,7 +189,7 @@ function keep_item(npc, item)
 		end]]--
         --item:unload_magazine()
 		--' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+65)/100)
+		item:set_condition(item:condition() * (math.random(15)+65)/100)
 		printf("4")
         return
     end

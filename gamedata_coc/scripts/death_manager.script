@@ -218,7 +218,7 @@ function keep_item(npc, item)
 end
 
 function set_weapon_drop_condition(npc,itm)
-	local condition  = (math.random(40)+30)/100
+	local condition  = itm:condition() * (math.random(40)+30)/100
 	--printf("condition [%s]", tostring(condition))
 	itm:set_condition(condition)
 	

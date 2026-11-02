@@ -248,7 +248,8 @@ function set_weapon_drop_condition(item)
 	--[bug] фиксим баг, при котором можно "чинить" оружие, давая его НПСу, а затем убивая его
 	local cur_cond = item:condition()
 	if cur_cond > 0.3 then
-		local new_cond = (0.2 + (math.random(80) / 100))  * cur_cond
+		--' Оригинальный разброс ЗП (41-80%), умноженный на текущий кондишн, чтобы оружие не выпадало целым
+		local new_cond = ((math.random(40) + 40) / 100) * cur_cond
 		item:set_condition(new_cond)
 	end
 	-- [/GUNSLINGER mod]
