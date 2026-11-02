@@ -9,6 +9,8 @@ The SDK supports plugins in two languages:
 
 Place plugins in the root `plugins` folder. Subfolders are allowed; plugins are discovered recursively.
 
+Use the [SDK Package Manager](package-manager.md) to install, update and remove GitHub packages.
+
 ## Lua plugins
 Lua plugins have limited access to the game scripting API, including base classes:
 * ini_file

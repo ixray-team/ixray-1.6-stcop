@@ -10,6 +10,7 @@
 #include "../Editor/Utils/ReferenceReplacer.h"
 #include "../Editor/Utils/GitIntegration.h"
 #include "UIGitWindow.h"
+#include "UIPackageManager.h"
 
 #include "../../xrEUI/xrUITheme.h"
 #include "../../xrEUI/Windows/Help.h"
@@ -809,6 +810,11 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::MenuItem("Packages"))
+		{
+			UIPackageManager::Show();
+		}
+
 		{
 			bool selected = UIObjectList::IsOpen();
 			ImGui::SetCursorPosY((EContext.UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
@@ -1079,4 +1085,3 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		ParseObject(NormalPtr->m_pRefs, NormalPtr->m_pRefs->m_LibName.c_str(), RawObjectPath);
 	}
 }
-

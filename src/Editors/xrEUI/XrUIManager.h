@@ -1,5 +1,7 @@
 #pragma once
 
+struct ImFont;
+
 enum TShiftState_
 {
 	ssNone = 0,
@@ -45,6 +47,8 @@ public:
 	virtual bool IsPlayInEditor() { return false; }
 	void ApplyShortCutInput(DWORD Key);
 
+	ImFont* GetHeadingFont() const { return HeadingFont; }
+
 	float GetScaleDpi() const { return m_ScaleDpi; }
 	float ScaleByDpi(float value) const { return value * m_ScaleDpi; }
 
@@ -86,6 +90,9 @@ public:
 	int RequestedTabIndex = -1;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
 	void* SearchIcon = nullptr;
+
+private:
+	ImFont* HeadingFont = nullptr;
 };
 
 extern XREUI_API XrUIManager* GUIManager;

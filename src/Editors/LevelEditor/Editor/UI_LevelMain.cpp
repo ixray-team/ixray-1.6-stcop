@@ -7,6 +7,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "UI/UIPackageManager.h"
 #include "ParticleEditor/UI_ParticleTools.h"
 #include "ParticleEditor/UIParticleEditorForm.h"
 #include "ActorEditor/ActorEditor.h"
@@ -1820,6 +1821,7 @@ void CLevelMain::OnDrawUI()
 	UIObjectList::Update();
 	UIWorldPartition::Update();
 	UIGitWindow::Update();
+	UIPackageManager::Update();
 	UIActorEditorForm::Update();
 	UIShaderEditorForm::Update();
 	if (LTools->GetToolForm())

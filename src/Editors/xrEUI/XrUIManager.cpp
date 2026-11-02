@@ -102,6 +102,19 @@ void XrUIManager::Initialize(HWND hWnd, const char* ini_path)
 	float FontSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::FontSize);
 	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, FontSize * 0.75f, &icons_config, icons_ranges);
 
+	string_path HeadingPath;
+	const xr_string HeadingName = "editors\\" + ImCurrentFont;
+	FS.update_path(HeadingPath, _game_fonts_, HeadingName.c_str());
+	if (FS.TryLoad(HeadingPath))
+	{
+		// The legacy renderer uploads a static atlas: bake at the heading's actual size.
+		ImFontConfig HeadingConfig;
+		HeadingConfig.OversampleH = 3;
+		HeadingConfig.OversampleV = 2;
+		HeadingConfig.RasterizerDensity = m_ScaleDpi;
+		HeadingFont = io.Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(HeadingPath).c_str(), FontSize * 2.0f, &HeadingConfig, io.Fonts->GetGlyphRangesCyrillic());
+	}
+
 	//io.Fonts->Build();
 
 	//ImGui_ImplWin32_Init(hWnd);
@@ -113,6 +126,7 @@ void XrUIManager::Destroy()
 {
 	RHIUtils::ImGui::Destroy();
 	ImGui_ImplSDL3_Shutdown();
+	HeadingFont = nullptr;
 	ImGui::DestroyContext();
 }
 

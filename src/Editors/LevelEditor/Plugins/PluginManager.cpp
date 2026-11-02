@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PluginManager.h"
+#include "../Packages/PackageStore.h"
 
 // Subsystems
 #include "PluginLua.h"
@@ -49,12 +50,28 @@ void CPluginsManagers::Reinit()
 
 void CPluginsManagers::Init()
 {
+	string_path SdkRoot;
+	FS.update_path(SdkRoot, "$fs_root$", "");
+	xr_string RecoveryError;
+	const bool HasRecovered = SdkPackages::PackageStore(SdkRoot).Recover(RecoveryError);
+	if (!HasRecovered)
+	{
+		Msg("! [Packages] %s Packaged plugins will be skipped.", RecoveryError.c_str());
+	}
 	string_path Root;
 	FS.update_path(Root, "$fs_root$", "plugins");
 
-	for (const xr_path& FileIter : xr_dir_recursive_iter{ Root })
+	const xr_path ManagedPluginsRoot = SdkPackages::Join(Root, "packages");
+	std::error_code Code;
+	for (xr_dir_recursive_iter Iter(Root, Code), End; !Code && Iter != End; Iter.increment(Code))
 	{
-		xr_path Ext = FileIter.extension();
+		const xr_path FileIter = Iter->path();
+		if (!HasRecovered && SdkPackages::Details::SamePath(FileIter, ManagedPluginsRoot))
+		{
+			Iter.disable_recursion_pending();
+			continue;
+		}
+		const xr_path Ext = FileIter.extension();
 
 		IPluginBase* Plug = nullptr;
 
@@ -68,10 +85,16 @@ void CPluginsManagers::Init()
 		}
 
 		if (Plug == nullptr)
+		{
 			continue;
+		}
 
 		Plug->Path = FileIter.xstring();
 		Plug->Desc = Plug->ReadDesc();
 		Plug->Name = FileIter.xfilename().substr(0, FileIter.xfilename().find('.'));
+	}
+	if (Code)
+	{
+		Msg("! [Plugins] Cannot enumerate plugins: %s", Code.message().c_str());
 	}
 }

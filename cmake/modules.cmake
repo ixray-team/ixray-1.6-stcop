@@ -26,6 +26,7 @@ endif()
 
 if (IXRAY_EDITORS)
     include("${CMAKE_MODULE_PATHEX}/ImGuiNodeEditor.cmake")
+    include("${CMAKE_MODULE_PATHEX}/miniz.cmake")
 endif()
 
 # Resonance Audio 3rd

@@ -74,6 +74,7 @@ target_link_libraries(LevelEditor PUBLIC xrScripts)
 target_link_libraries(LevelEditor PUBLIC imgui_node_editor)
 target_link_libraries(LevelEditor PUBLIC xrSE_Factory)
 target_link_libraries(LevelEditor PUBLIC PCore)
+target_link_libraries(LevelEditor PRIVATE miniz)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
 add_dependencies(LevelEditor xrGame)
 

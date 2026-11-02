@@ -17,6 +17,7 @@
 #include "ShaderEditor/UIShaderEditorForm.h"
 #include "UI/LayoutEditor/UILayoutEditorForm.h"
 #include "UI/Coder/UICoderForm.h"
+#include "UI/UIPackageManager.h"
 #include "Editor/XVisor/XVisor.h"
 #include "../xrECore/Editor/UILogForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
@@ -354,6 +355,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	// Windows are destroyed before the preferences are saved: keep their full state
 	CEditorWndStates::Get().Save();
+	UIPackageManager::Destroy();
 
 	// Gives Tools back to the level tool before COMMAND_DESTROY
 	UIActorEditorForm::Destroy();
