@@ -178,8 +178,8 @@
 
 		<static_wpn_icon x="17" y="74" width="25" height="30" stretch="1"/>
 	
-		<static_fire_mode x="122" y="105" width="8" height="14" stretch="1">
-			<text font="arial_14" color="ui_2" />
+		<static_fire_mode x="116.7" y="104" width="13.3" height="16" stretch="1">
+			<text font="arial_14" color="ui_2" align="c" vert_align="c" />
 		</static_fire_mode>
 	
 	</hud_states>

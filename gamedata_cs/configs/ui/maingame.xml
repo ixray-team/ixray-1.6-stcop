@@ -180,8 +180,8 @@
 
 		<static_wpn_icon x="19" y="74" width="30" height="30"/>
 		
-		<static_fire_mode x="146" y="105" width="10" height="14">
-			<text font="letterica16" color="ui_2" />
+		<static_fire_mode x="140" y="104" width="16" height="16">
+			<text font="letterica16" color="ui_2" align="c" vert_align="c" />
 		</static_fire_mode>
 	
 	</hud_states>
