@@ -71,6 +71,7 @@ protected:
 	mutable float PendingRowHeight = 0.0f;
 	float BaseWidth = 0.0f;
 	float AvailableWidth = 0.0f;
+	float PreferredSecondColumn = -1.0f;
 	bool CanExpand = false;
 
 public:

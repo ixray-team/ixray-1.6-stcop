@@ -20,7 +20,7 @@
 		<text align="l" font="letterica16" r="196" g="18" b="18" complex_mode="1"/>
 	</static_no_trade>
 
-	<descr_list x="11" y="63" width="350" height="131" always_show_scroll="0" right_ident="10" left_ident="10" fit_to_height="1">
+	<descr_list x="11" y="63" width="350" height="131" always_show_scroll="0" right_ident="10" left_ident="10" vert_interval="4" fit_to_height="1">
 		<font font="letterica16" color="ui_6"/>
 	</descr_list>
 
@@ -259,7 +259,7 @@
       <text font="letterica18" color="ui_2" align="l" vert_align="t"/>
     </info_prerequisites>
 
-    <properties x="17" y="20" width="333" height="19" sec_col_pos="170" next_line_pos="19">
+    <properties x="17" y="20" width="333" height="19" sec_col_pos="170" next_line_pos="19" second_column_position="158">
       <icon x="0"  y="0" width="15"  height="18" stretch="1" />
       <text x="18" y="0" width="305" height="18" />
     </properties>
@@ -302,7 +302,7 @@
   
   <outfit_info x="4" y="5" width="283" height="180" row_spacing="1">
     <caption x="0" y="0" width="283" height="20">
-			<text font="letterica18" r="238" g="155" b="23" align="c" vert_align="c">ui_st_outfit_protect</text>
+			<text x="-3" font="letterica18" r="238" g="155" b="23" align="l" vert_align="c">ui_st_outfit_protect</text>
     </caption>
     
     <burn_immunity x="0" y="0" width="15" height="18" stretch="1">

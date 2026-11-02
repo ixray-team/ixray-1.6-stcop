@@ -212,6 +212,7 @@ void UIInvUpgPropertiesWnd::init_from_xml(const char* xml_name)
 	AvailableWidth = BaseWidth;
 
 	m_fsec_col_pos = ui_xml.ReadAttribFlt("properties", 0, "sec_col_pos", UI().is_widescreen() ? 105.f : 130.f);
+	PreferredSecondColumn = ui_xml.ReadAttribFlt("properties", 0, "second_column_position", -1.0f);
 	m_fnext_line_pos = ui_xml.ReadAttribFlt("properties", 0, "next_line_pos", 20.f);
 
 	const char* properties_section = "upgrades_properties";
@@ -266,14 +267,32 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 	float Height = m_Upgr_line ? m_Upgr_line->GetWndSize().y + 1.0f : 0.0f;
 	const float MinWidth = std::max(BaseWidth, AvailableWidth);
 	const float ColumnWidth = CanExpand ? std::max(MinWidth * 0.5f, RequiredColumnWidth + 1.0f) : MinWidth * 0.5f;
-	SetWidth(ColumnWidth * 2.0f);
-	m_fsec_col_pos = ColumnWidth;
+	float SecondColumn = ColumnWidth;
+	float PropertiesWidth = ColumnWidth * 2.0f;
+	if (PreferredSecondColumn >= 0.0f)
+	{
+		SecondColumn = PreferredSecondColumn;
+		if (CanExpand)
+		{
+			for (u32 Index = 0; Index + 1 < VisibleProperties.size(); Index += 2)
+			{
+				SecondColumn = std::max(SecondColumn, VisibleProperties[Index]->GetRequiredWidth() + 1.0f);
+			}
+			PropertiesWidth = std::max(MinWidth, SecondColumn + RequiredColumnWidth);
+		}
+		else
+		{
+			SecondColumn = std::clamp(SecondColumn, 1.0f, std::max(1.0f, PropertiesWidth - 1.0f));
+		}
+	}
+	SetWidth(PropertiesWidth);
+	m_fsec_col_pos = SecondColumn;
 
 	for (u32 Index = 0; Index < VisibleProperties.size(); Index += 2)
 	{
 		const bool HasRight = Index + 1 < VisibleProperties.size();
 		UIProperty* Left = VisibleProperties[Index];
-		Left->FitToWidth(HasRight ? ColumnWidth : GetWidth(), !CanExpand);
+		Left->FitToWidth(HasRight ? SecondColumn : GetWidth(), !CanExpand);
 		Left->SetWndPos(Fvector2().set(0.0f, Height));
 		Left->Show(true);
 		float RowHeight = Left->GetHeight();
@@ -281,8 +300,8 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 		if (HasRight)
 		{
 			UIProperty* Right = VisibleProperties[Index + 1];
-			Right->FitToWidth(ColumnWidth, !CanExpand);
-			Right->SetWndPos(Fvector2().set(ColumnWidth, Height));
+			Right->FitToWidth(GetWidth() - SecondColumn, !CanExpand);
+			Right->SetWndPos(Fvector2().set(SecondColumn, Height));
 			Right->Show(true);
 			RowHeight = std::max(RowHeight, Right->GetHeight());
 		}
