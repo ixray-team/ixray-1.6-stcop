@@ -24,6 +24,7 @@
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
 #include "game_cl_single.h"
+#include "Shell.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -97,7 +98,13 @@ ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 	++pp->pass;
 
 	if(result.O)
-	{	
+	{
+		// Ejected shells fly past the camera and would pull the pick (and the zoom DOF focus) to them
+		if (smart_cast<CShell*>(result.O))
+		{
+			return true;
+		}
+
 		pp->RQ				= result;
 		return false;
 	}else
