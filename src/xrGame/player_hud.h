@@ -591,6 +591,7 @@ struct attachable_hud_item final
 	MotionID AliasMotion				(const char* alias) const;
 	bool SprintLayered				() const;
 	shared_str SprintLayerReference	() const;
+	bool AdditiveAlias				(const shared_str& alias) const;
 	float SprintLayerBlend			() const { return std::max(IdleFade, 0.1f); }
 	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
