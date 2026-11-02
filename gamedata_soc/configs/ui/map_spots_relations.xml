@@ -34,7 +34,7 @@
 		<texture r="168" g="168" b="168">ui_minimap_point</texture>
 	</deadbody_mini_spot>
 
-	<deadbody_monster_mini_spot width="7" height="7" stretch="1" alignment="c">
+	<deadbody_monster_mini_spot width="6" height="6" stretch="1" alignment="c">
 		<texture r="168" g="168" b="168">ui_minimap_point</texture>
 		<svg>ui_mmap_deadbody_cross.svg</svg>
 	</deadbody_monster_mini_spot>
