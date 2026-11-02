@@ -12,6 +12,7 @@ struct STextureParams;
 class CUICellItem;
 struct attachable_hud_item;
 struct player_hud_motion;
+struct motion_descr;
 
 constexpr ImVec4 kAuthorTextColor = ImVec4(0.063f, 0.788f, 0.196f, 1.0f);
 constexpr ImVec4 kContributorsTextColor = ImVec4(0.306f, 0.745f, 0.878f, 1.0f);
@@ -748,6 +749,7 @@ void RenderHudMotionPlayer();
 void HudMotionPlayerClose();
 void HudMotionPlayerRefresh();
 const player_hud_motion* HudMotionPlayerSelectedAnim(attachable_hud_item* item);
+bool HudMotionPlayerSelectedAdditive(attachable_hud_item* item, motion_descr& motion);
 bool HudMotionPlayerCurrentMarkTime(attachable_hud_item* item, IKinematicsAnimated* model, MotionID motion, float& time);
 void RenderHudMotionPlayerSpeed(attachable_hud_item* item);
 bool& HudMotionPlayerKeys();
