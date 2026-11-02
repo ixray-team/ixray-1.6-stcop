@@ -88,7 +88,8 @@ ECompassSpotKind CMapLocation::GetCompassSpotKind() const
 	}
 
 	if (strstr(typeStr, "enemy_location") || strstr(typeStr, "friend_location") ||
-		strstr(typeStr, "neutral_location") || strstr(typeStr, "deadbody_location"))
+		strstr(typeStr, "neutral_location") || strstr(typeStr, "deadbody_location") ||
+		strstr(typeStr, "deadbody_monster_location"))
 	{
 		return ECompassSpotKind::Npc;
 	}

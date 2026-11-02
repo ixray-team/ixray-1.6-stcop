@@ -8,12 +8,18 @@
 #include "xrServer.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "Level.h"
+#include "map_manager.h"
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
 #include "../xrScripts/script_engine.h"
 #include "../ui/UIGameCustom.h"
 #include "../ui/UIPdaWnd.h"
+
+namespace
+{
+	constexpr const char* MonsterDeadbodyLocation = "deadbody_monster_location";
+}
 
 bool CPda::net_Spawn(CSE_Abstract* DC)
 {
@@ -107,12 +113,34 @@ void CPda::UpdateActiveContacts()
 			continue;
 		}
 
+		if (entityAlive->cast_base_monster() != nullptr && !entityAlive->g_Alive())
+		{
+			UpdateMonsterDeadbodyLocation(feel_object->ID());
+			continue;
+		}
+
 		if (!entityAlive->g_Alive() || entityAlive->cast_base_monster() != nullptr || entityAlive->cast_car() != nullptr)
 		{
 			continue;
 		}
 
 		m_active_contacts.push_back(feel_object);
+	}
+}
+
+void CPda::UpdateMonsterDeadbodyLocation(u16 MonsterId)
+{
+	// Monster corpses are only worth marking when they can be searched
+	const static bool IsMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
+	if (!IsMonstersInventory || !IsGameTypeSingle())
+	{
+		return;
+	}
+
+	CMapManager& MapManager = Level().MapManager();
+	if (!MapManager.HasMapLocation(MonsterDeadbodyLocation, MonsterId))
+	{
+		MapManager.AddMapLocation(MonsterDeadbodyLocation, MonsterId);
 	}
 }
 
@@ -153,6 +181,11 @@ void CPda::feel_touch_delete(CObject* O)
 
 	CEntityAlive* entity_alive = O->cast_entity_alive();
 	CInventoryOwner* pLostContactInvOwner = O->cast_inventory_owner();
+
+	if (entity_alive != nullptr && entity_alive->cast_base_monster() != nullptr)
+	{
+		Level().MapManager().RemoveMapLocation(MonsterDeadbodyLocation, O->ID());
+	}
 
 	if (entity_alive->cast_base_monster() == nullptr && entity_alive->cast_car() == nullptr && pLostContactInvOwner != nullptr)
 	{

@@ -63,6 +63,7 @@ public:
 
 protected:
 	void UpdateActiveContacts();
+	void UpdateMonsterDeadbodyLocation(u16 MonsterId);
 
 	xr_vector<CObject*>	m_active_contacts = {};
 	float m_fRadius = 0.0f;

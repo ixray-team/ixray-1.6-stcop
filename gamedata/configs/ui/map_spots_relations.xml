@@ -14,6 +14,10 @@
 		<mini_map spot="deadbody_mini_spot"/>
 	</deadbody_location>
 
+	<deadbody_monster_location hint="deadbody">
+		<mini_map spot="deadbody_monster_mini_spot"/>
+	</deadbody_monster_location>
+
 	<enemy_mini_spot width="7" height="7" stretch="1" alignment="c" >
 		<texture r="255" g="0" b="0">ui_mmap_common_actor</texture>
 		<compass max_dist="5" vert_align="center"></compass>
@@ -33,6 +37,12 @@
 		<texture r="168" g="168" b="168">ui_mmap_common_actor</texture>
 		<compass max_dist="5" vert_align="center"></compass>
 	</deadbody_mini_spot>
+
+	<deadbody_monster_mini_spot width="11" height="11" stretch="1" alignment="c">
+		<texture r="168" g="168" b="168">ui_mmap_common_actor</texture>
+		<svg>ui_mmap_deadbody_cross.svg</svg>
+		<compass max_dist="5" vert_align="center"></compass>
+	</deadbody_monster_mini_spot>
 
 
 <!-- map_spot_new_xform
