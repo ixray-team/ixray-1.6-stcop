@@ -172,9 +172,17 @@ static xr_shared_ptr<CParticlesObject> CreateCinemaParticle(const char* name)
 	return particle;
 }
 
+struct SCinemaParticleGroup
+{
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix Orientation = Fmatrix().identity();
+	float Scale = 1.0f;
+};
+
 struct SCinemaParticle
 {
 	shared_str Name;
+	s32 Group = -1;
 	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
 	Fmatrix Orientation = Fmatrix().identity();
 	float Scale = 1.0f;
@@ -2200,6 +2208,7 @@ public:
 private:
 	void ClearActors();
 	void ClearParticles();
+	void TransformParticleGroup(s32 index, const SCinemaParticleGroup& previous);
 	bool AddParticle(const shared_str& name, const Fvector& position);
 	void DrawParticleTab();
 	void DrawParticleBrowser();
@@ -2303,6 +2312,9 @@ private:
 	xr_vector<xr_unique_ptr<SCinemaActor>> Actors;
 	xr_vector<SCinemaParticle> Particles;
 	xr_vector<SCinemaParticle> SceneParticles;
+	xr_vector<SCinemaParticleGroup> ParticleGroups;
+	xr_vector<SCinemaParticleGroup> SceneParticleGroups;
+	s32 SelectedParticleGroup = -1;
 	s32 SelectedParticle = -1;
 	char ParticleFilter[128] = {};
 	shared_str SelectedParticleName;
@@ -2556,7 +2568,48 @@ void CCinemaFilmMakerManager::ClearParticles()
 		::Particles::Details::Destroy(particle.Object);
 	}
 	Particles.clear();
+	ParticleGroups.clear();
+	SelectedParticleGroup = -1;
 	SelectedParticle = -1;
+}
+
+void CCinemaFilmMakerManager::TransformParticleGroup(s32 index, const SCinemaParticleGroup& previous)
+{
+	auto& group = ParticleGroups[index];
+	Fmatrix inverse;
+	inverse.invert(previous.Orientation);
+	Fmatrix rotation;
+	rotation.mul(group.Orientation, inverse);
+#ifdef DEBUG
+	for (const Fvector axis : { Fvector().set(1.0f, 0.0f, 0.0f), Fvector().set(0.0f, 1.0f, 0.0f), Fvector().set(0.0f, 0.0f, 1.0f) })
+	{
+		Fvector before, after, expected;
+		previous.Orientation.transform_dir(before, axis);
+		rotation.transform_dir(after, before);
+		group.Orientation.transform_dir(expected, axis);
+		VERIFY(after.similar(expected));
+	}
+#endif
+	VERIFY(previous.Scale > 0.0f && group.Scale > 0.0f);
+	const float ratio = group.Scale / previous.Scale;
+	for (auto& particle : Particles)
+	{
+		if (particle.Group != index)
+		{
+			continue;
+		}
+		Fvector offset;
+		offset.sub(particle.Position, previous.Position);
+		Fvector rotated;
+		rotation.transform_dir(rotated, offset);
+		rotated.mul(ratio);
+		particle.Position.add(group.Position, rotated);
+		Fmatrix orientation;
+		orientation.mul(rotation, particle.Orientation);
+		particle.Orientation = orientation;
+		particle.Scale *= ratio;
+		UpdateParticleTransform(particle);
+	}
 }
 
 bool CCinemaFilmMakerManager::AddParticle(const shared_str& name, const Fvector& position)
@@ -2576,6 +2629,7 @@ bool CCinemaFilmMakerManager::AddParticle(const shared_str& name, const Fvector&
 	StartParticleTimeline(particle);
 	SelectActor(-1);
 	ClearGizmo();
+	SelectedParticleGroup = -1;
 	Particles.push_back(std::move(particle));
 	SelectedParticle = static_cast<s32>(Particles.size()) - 1;
 	return true;
@@ -2597,6 +2651,7 @@ void CCinemaFilmMakerManager::SelectActor(s32 index)
 
 	if (index >= 0)
 	{
+		SelectedParticleGroup = -1;
 		SelectedParticle = -1;
 	}
 	if (Selected == index)
@@ -4622,11 +4677,24 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	ini.w_string("scene", "platform", EngineExternal().GetCurrentPlatformName());
 	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
 	ini.w_u32("scene", "particles", static_cast<u32>(Particles.size()));
+	ini.w_u32("scene", "particle_groups", static_cast<u32>(ParticleGroups.size()));
+	for (u32 i = 0; i < ParticleGroups.size(); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "particle_group_%03u", i);
+		ini.w_fvector3(section, "position", ParticleGroups[i].Position);
+		Fvector rotation = {};
+		ParticleGroups[i].Orientation.getHPB(rotation);
+		rotation.mul(rad2deg(1.0f));
+		ini.w_fvector3(section, "rotation", rotation);
+		ini.w_float(section, "scale", ParticleGroups[i].Scale);
+	}
 	for (u32 i = 0; i < Particles.size(); ++i)
 	{
 		string32 section = {};
 		xr_sprintf(section, "particle_%03u", i);
 		ini.w_string(section, "name", Particles[i].Name.c_str());
+		ini.w_s32(section, "group", Particles[i].Group);
 		ini.w_fvector3(section, "position", Particles[i].Position);
 		Fvector rotation = {};
 		Particles[i].Orientation.getHPB(rotation);
@@ -4868,6 +4936,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 	SceneData.clear();
 	SceneParticles.clear();
+	SceneParticleGroups.clear();
 
 	string_path path = {};
 	CinemaScenePath(path, Level->name(), name);
@@ -5116,9 +5185,38 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		SceneData.push_back(std::move(data));
 	}
 
+	const u32 groupCount = ini.read_if_exists<u32>("scene", "particle_groups", 0);
+	for (u32 i = 0; i < std::min(groupCount, kCinemaSceneMaxActors); ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "particle_group_%03u", i);
+		SCinemaParticleGroup group;
+		if (ini.section_exist(section))
+		{
+			group.Position = ini.read_if_exists<Fvector>(section, "position", group.Position);
+			const Fvector rotation = ini.read_if_exists<Fvector>(section, "rotation", Fvector().set(0.0f, 0.0f, 0.0f));
+			group.Scale = ini.read_if_exists<float>(section, "scale", 1.0f);
+			if (std::isfinite(group.Position.x) && std::isfinite(group.Position.y) && std::isfinite(group.Position.z) &&
+				std::isfinite(rotation.x) && std::isfinite(rotation.y) && std::isfinite(rotation.z) && std::isfinite(group.Scale) && group.Scale >= 0.1f && group.Scale <= 5.0f)
+			{
+				group.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+			}
+			else
+			{
+				group = SCinemaParticleGroup();
+				warnings.push_back("Invalid particle group transform: using defaults.");
+			}
+		}
+		SceneParticleGroups.push_back(group);
+	}
+	if (groupCount > kCinemaSceneMaxActors)
+	{
+		warnings.push_back("Too many particle groups: the rest were ignored.");
+	}
+
 	for (CInifile::Sect& section : ini.sections())
 	{
-		if (section.Name.size() == 0 || _strnicmp(section.Name.c_str(), "particle_", 9) != 0)
+		if (section.Name.size() == 0 || _strnicmp(section.Name.c_str(), "particle_", 9) != 0 || _strnicmp(section.Name.c_str(), "particle_group_", 15) == 0)
 		{
 			continue;
 		}
@@ -5128,6 +5226,12 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			break;
 		}
 		SCinemaParticle particle;
+		particle.Group = ini.read_if_exists<s32>(section.Name.c_str(), "group", -1);
+		if (particle.Group < -1 || particle.Group >= static_cast<s32>(SceneParticleGroups.size()))
+		{
+			particle.Group = -1;
+			warnings.push_back("Invalid particle group: particle left ungrouped.");
+		}
 		particle.Name = CinemaReadString(ini, section.Name.c_str(), "name");
 		if (!IsCinemaParticle(particle.Name))
 		{
@@ -5272,6 +5376,8 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	ClearGizmo();
 	ClearActors();
 	ClearParticles();
+	ParticleGroups = SceneParticleGroups;
+	SceneParticleGroups.clear();
 
 	xr_vector<xr_string> issues;
 	for (const auto& particle : SceneParticles)
@@ -5283,6 +5389,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 		else
 		{
 			auto& loaded = Particles.back();
+			loaded.Group = particle.Group;
 			loaded.Orientation = particle.Orientation;
 			loaded.Scale = particle.Scale;
 			UpdateParticleTransform(loaded);
@@ -7497,18 +7604,6 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 				if (ImGui::Selectable(name.c_str(), name == SelectedParticleName))
 				{
 					SelectedParticleName = name;
-					if (SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()))
-					{
-						auto& particle = Particles[SelectedParticle];
-						if (particle.Name != name && IsCinemaParticle(name))
-						{
-							auto replacement = CreateCinemaParticle(name.c_str());
-							::Particles::Details::Destroy(particle.Object);
-							particle.Object = std::move(replacement);
-							particle.Name = name;
-							StartParticleTimeline(particle);
-						}
-					}
 				}
 				ImGui::PopID();
 			}
@@ -7520,8 +7615,10 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 	}
 	ImGui::EndChild();
 	ImGui::TextDisabled("Effect: %s", SelectedParticleName.size() ? SelectedParticleName.c_str() : "<none>");
+	SToolbarLayout actions(ImGui::GetContentRegionAvail().x);
+	actions.Item(CinemaButtonWidth("Add to scene"));
 	ImGui::BeginDisabled(SelectedParticleName.size() == 0 || Particles.size() >= kCinemaSceneMaxActors);
-	if (ImGui::Button("Add##particle"))
+	if (ImGui::Button("Add to scene##particle"))
 	{
 		Fvector position = Device.vCameraPosition;
 		Fvector direction = Device.vCameraDirection;
@@ -7535,6 +7632,30 @@ void CCinemaFilmMakerManager::DrawParticleBrowser()
 		AddParticle(SelectedParticleName, position);
 	}
 	ImGui::EndDisabled();
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("Add the selected library effect to the scene");
+	}
+	actions.Item(CinemaButtonWidth("Replace selected"));
+	const bool canReplace = SelectedParticleName.size() != 0 && SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size());
+	ImGui::BeginDisabled(!canReplace);
+	if (ImGui::Button("Replace selected##particle"))
+	{
+		auto& particle = Particles[SelectedParticle];
+		if (particle.Name != SelectedParticleName && IsCinemaParticle(SelectedParticleName))
+		{
+			auto replacement = CreateCinemaParticle(SelectedParticleName.c_str());
+			::Particles::Details::Destroy(particle.Object);
+			particle.Object = std::move(replacement);
+			particle.Name = SelectedParticleName;
+			StartParticleTimeline(particle);
+		}
+	}
+	ImGui::EndDisabled();
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("Replace the selected scene particle with the selected library effect");
+	}
 }
 
 void CCinemaFilmMakerManager::DrawParticleTab()
@@ -7543,9 +7664,234 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 	{
 		DrawParticleBrowser();
 	}
-	ImGui::Separator();
-	ImGui::TextDisabled("Placed particles");
+	ImGui::SeparatorText("Scene particles");
+	ImGui::TextDisabled("%u particles | %u groups", static_cast<u32>(Particles.size()), static_cast<u32>(ParticleGroups.size()));
+	ImGui::BeginDisabled(ParticleGroups.size() >= kCinemaSceneMaxActors);
+	if (ImGui::Button("New group##particle"))
+	{
+		ClearGizmo();
+		ParticleGroups.emplace_back();
+		const s32 group = static_cast<s32>(ParticleGroups.size()) - 1;
+		if (SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()))
+		{
+			ParticleGroups.back().Position = Particles[SelectedParticle].Position;
+			Particles[SelectedParticle].Group = group;
+		}
+		SelectActor(-1);
+		SelectedParticle = -1;
+		SelectedParticleGroup = group;
+	}
+	ImGui::EndDisabled();
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+	{
+		ImGui::SetTooltip("Create a group, adding the selected particle if there is one");
+	}
+	ImGui::TextDisabled("Drag to group | Select for settings");
+
+	s32 droppedParticle = -1;
+	s32 targetParticle = -1;
+	s32 targetGroup = -1;
+	const auto drawParticleRow = [&](s32 index)
+	{
+		ImGui::PushID(index);
+		const auto& particle = Particles[index];
+		if (ImGui::Selectable(CinemaFileName(particle.Name.c_str()), SelectedParticle == index))
+		{
+			ClearGizmo();
+			SelectActor(-1);
+			SelectedParticleGroup = -1;
+			SelectedParticle = index;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("%s\nDrag onto another particle or a group", particle.Name.c_str());
+		}
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("CINEMA_PARTICLE", &index, sizeof(index));
+			ImGui::TextUnformatted(particle.Name.c_str());
+			ImGui::EndDragDropSource();
+		}
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CINEMA_PARTICLE"))
+			{
+				if (payload->DataSize == sizeof(s32))
+				{
+					droppedParticle = *static_cast<const s32*>(payload->Data);
+					targetParticle = index;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+		ImGui::PopID();
+	};
+
+	if (Particles.empty() && ParticleGroups.empty())
+	{
+		ImGui::TextDisabled("No particles yet. Select an effect above and choose Add to scene.");
+	}
+	for (s32 i = 0; i < static_cast<s32>(ParticleGroups.size()); ++i)
+	{
+		ImGui::PushID("group");
+		ImGui::PushID(i);
+		u32 count = 0;
+		for (const auto& particle : Particles)
+		{
+			if (particle.Group == i)
+			{
+				++count;
+			}
+		}
+		const bool open = ImGui::TreeNodeEx("##particle_group", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | (SelectedParticleGroup == i ? ImGuiTreeNodeFlags_Selected : 0), "Group %d (%u)", i + 1, count);
+		if (ImGui::IsItemClicked())
+		{
+			ClearGizmo();
+			SelectActor(-1);
+			SelectedParticle = -1;
+			SelectedParticleGroup = i;
+		}
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CINEMA_PARTICLE"))
+			{
+				if (payload->DataSize == sizeof(s32))
+				{
+					droppedParticle = *static_cast<const s32*>(payload->Data);
+					targetGroup = i;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+		if (open)
+		{
+			for (s32 index = 0; index < static_cast<s32>(Particles.size()); ++index)
+			{
+				if (Particles[index].Group == i)
+				{
+					drawParticleRow(index);
+				}
+			}
+			if (SelectedParticleGroup == i)
+			{
+				ImGui::SeparatorText("Group transform");
+				auto& group = ParticleGroups[i];
+				const SCinemaParticleGroup previous = group;
+				bool changed = ImGui::DragFloat3("Position##group", &group.Position.x, 0.01f);
+				Fvector degrees;
+				group.Orientation.getHPB(degrees);
+				degrees.mul(rad2deg(1.0f));
+				if (ImGui::DragFloat3("Rotation##group", &degrees.x, 0.5f))
+				{
+					group.Orientation.setHPB(deg2rad(degrees.x), deg2rad(degrees.y), deg2rad(degrees.z));
+					changed = true;
+				}
+				if (ImGui::DragFloat("Scale##group", &group.Scale, 0.01f, 0.1f, 5.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+				{
+					float minimum = 0.1f, maximum = 5.0f;
+					for (const auto& particle : Particles)
+					{
+						if (particle.Group == i)
+						{
+							minimum = std::max(minimum, previous.Scale * 0.1f / particle.Scale);
+							maximum = std::min(maximum, previous.Scale * 5.0f / particle.Scale);
+						}
+					}
+					group.Scale = std::clamp(group.Scale, minimum, maximum);
+					changed = true;
+				}
+				if (changed)
+				{
+					ClearGizmo();
+					SelectActor(-1);
+					SelectedParticle = -1;
+					SelectedParticleGroup = i;
+					TransformParticleGroup(i, previous);
+				}
+				if (ImGui::Button("Ungroup all##particle"))
+				{
+					ClearGizmo();
+					for (auto& particle : Particles)
+					{
+						if (particle.Group == i)
+						{
+							particle.Group = -1;
+						}
+						else if (particle.Group > i)
+						{
+							--particle.Group;
+						}
+					}
+					ParticleGroups.erase(ParticleGroups.begin() + i);
+					SelectedParticleGroup = -1;
+					ImGui::TreePop();
+					ImGui::PopID();
+					ImGui::PopID();
+					return;
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Remove the group; its particles stay in the scene");
+				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+		ImGui::PopID();
+	}
+
+	if (!Particles.empty())
+	{
+		bool hasUngrouped = false;
+		for (const auto& particle : Particles)
+		{
+			hasUngrouped |= particle.Group < 0;
+		}
+		if (hasUngrouped && !ParticleGroups.empty())
+		{
+			ImGui::SeparatorText("Ungrouped");
+		}
+	}
+	ImGui::PushID("ungrouped");
 	for (s32 index = 0; index < static_cast<s32>(Particles.size()); ++index)
+	{
+		if (Particles[index].Group < 0)
+		{
+			drawParticleRow(index);
+		}
+	}
+	ImGui::PopID();
+
+	if (droppedParticle >= 0 && droppedParticle < static_cast<s32>(Particles.size()))
+	{
+		if (targetParticle >= 0 && targetParticle < static_cast<s32>(Particles.size()) && targetParticle != droppedParticle)
+		{
+			targetGroup = Particles[targetParticle].Group;
+			if (targetGroup < 0 && ParticleGroups.size() < kCinemaSceneMaxActors)
+			{
+				ClearGizmo();
+				ParticleGroups.emplace_back();
+				targetGroup = static_cast<s32>(ParticleGroups.size()) - 1;
+				ParticleGroups.back().Position = Particles[targetParticle].Position;
+				Particles[targetParticle].Group = targetGroup;
+			}
+		}
+		if (targetGroup >= 0 && targetGroup < static_cast<s32>(ParticleGroups.size()))
+		{
+			Particles[droppedParticle].Group = targetGroup;
+			SelectActor(-1);
+			ClearGizmo();
+			SelectedParticle = -1;
+			SelectedParticleGroup = targetGroup;
+		}
+	}
+
+	if (SelectedParticle < 0 || SelectedParticle >= static_cast<s32>(Particles.size()))
+	{
+		return;
+	}
+	ImGui::SeparatorText("Selected particle");
+	const s32 index = SelectedParticle;
 	{
 		ImGui::PushID(index);
 		auto& particle = Particles[index];
@@ -7554,17 +7900,40 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 		{
 			SelectActor(-1);
 			ClearGizmo();
+			SelectedParticleGroup = -1;
 			SelectedParticle = index;
 		}
 		if (!open)
 		{
 			ImGui::PopID();
-			continue;
+			return;
 		}
-		ImGui::TextDisabled("Effect");
-		ImGui::SameLine();
-		ImGui::TextUnformatted(particle.Name.c_str());
-
+		char groupLabel[48];
+		if (particle.Group < 0)
+		{
+			xr_strcpy(groupLabel, "None");
+		}
+		else
+		{
+			xr_sprintf(groupLabel, "Group %d", particle.Group + 1);
+		}
+		if (ImGui::BeginCombo("Group##particle", groupLabel))
+		{
+			if (ImGui::Selectable("None", particle.Group < 0))
+			{
+				particle.Group = -1;
+			}
+			for (s32 groupIndex = 0; groupIndex < static_cast<s32>(ParticleGroups.size()); ++groupIndex)
+			{
+				char label[48];
+				xr_sprintf(label, "Group %d", groupIndex + 1);
+				if (ImGui::Selectable(label, particle.Group == groupIndex))
+				{
+					particle.Group = groupIndex;
+				}
+			}
+			ImGui::EndCombo();
+		}
 		SToolbarLayout controls(ImGui::GetContentRegionAvail().x);
 		controls.Item(CinemaButtonWidth("Play"));
 		if (ImGui::Button("Play##particle"))
@@ -7603,6 +7972,7 @@ void CCinemaFilmMakerManager::DrawParticleTab()
 			if (AddParticle(copy.Name, copy.Position))
 			{
 				auto& created = Particles.back();
+				created.Group = copy.Group;
 				created.Orientation = copy.Orientation;
 				created.Scale = copy.Scale;
 				created.Timeline = copy.Timeline;
@@ -8114,11 +8484,12 @@ void CCinemaFilmMakerManager::AppendWorldGizmo()
 	LevelInspector& inspector = HUD().world_prims;
 	SCinemaActor* actor = GetSelectedActor();
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
-	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr)
+	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
+	if ((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr)
 	{
 		return;
 	}
-	const Fvector position = particle ? ParticlePosition(*particle) : actor->Position;
+	const Fvector position = group ? group->Position : particle ? ParticlePosition(*particle) : actor->Position;
 	const float distance = Device.vCameraPosition.distance_to(position);
 	const float size = std::clamp(distance * 0.15f, 0.5f, 8.0f);
 	const EGizmoAxis hoveredAxis = Gizmo.Active ? Gizmo.Axis : HoveredAxis;
@@ -8345,6 +8716,7 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 	if (bestParticle >= 0)
 	{
 		ClearGizmo();
+		SelectedParticleGroup = -1;
 		SelectedParticle = bestParticle;
 	}
 	else if (bestIndex < 0)
@@ -8362,8 +8734,9 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 	SCinemaActor* actor = GetSelectedActor();
 	SCinemaParticle* particle = SelectedParticle >= 0 && SelectedParticle < static_cast<s32>(Particles.size()) ? &Particles[SelectedParticle] : nullptr;
+	SCinemaParticleGroup* group = SelectedParticleGroup >= 0 && SelectedParticleGroup < static_cast<s32>(ParticleGroups.size()) ? &ParticleGroups[SelectedParticleGroup] : nullptr;
 
-	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr) || g_pGameLevel == nullptr)
+	if (((actor == nullptr || actor->Model == nullptr) && particle == nullptr && group == nullptr) || g_pGameLevel == nullptr)
 	{
 		ClearGizmo();
 		HoveredAxis = EGizmoAxis::None;
@@ -8376,8 +8749,8 @@ void CCinemaFilmMakerManager::DrawGizmo()
 		return;
 	}
 
-	Fvector& position = particle ? particle->Position : actor->Position;
-	Fmatrix& orientation = particle ? particle->Orientation : actor->Orientation;
+	Fvector& position = group ? group->Position : particle ? particle->Position : actor->Position;
+	Fmatrix& orientation = group ? group->Orientation : particle ? particle->Orientation : actor->Orientation;
 	const Fvector pivot = particle ? ParticlePosition(*particle) : position;
 	if (Gizmo.Active && Gizmo.Position != &position)
 	{
@@ -8412,8 +8785,13 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 		if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
+			const SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
 			position = Gizmo.StartPosition;
 			orientation = Gizmo.StartOrientation;
+			if (group)
+			{
+				TransformParticleGroup(SelectedParticleGroup, previous);
+			}
 			if (particle)
 			{
 				UpdateParticleTransform(*particle);
@@ -8422,7 +8800,12 @@ void CCinemaFilmMakerManager::DrawGizmo()
 			return;
 		}
 
+		const SCinemaParticleGroup previous = group ? *group : SCinemaParticleGroup();
 		UpdateGizmo(position, orientation);
+		if (group)
+		{
+			TransformParticleGroup(SelectedParticleGroup, previous);
+		}
 		if (particle)
 		{
 			UpdateParticleTransform(*particle);
