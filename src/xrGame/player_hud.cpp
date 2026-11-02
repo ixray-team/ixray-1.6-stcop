@@ -5418,6 +5418,12 @@ static xr_vector<u16> hud_bone_descendants(IKinematics* kinematics, u16 bone, u1
 	return bones;
 }
 
+static bool hud_item_zoomed(const attachable_hud_item* Item)
+{
+	const CWeapon* Weapon = Item->m_parent_hud_item->cast_weapon();
+	return Weapon != nullptr && Weapon->IsZoomed();
+}
+
 void player_hud::StartShotFingers(attachable_hud_item* item)
 {
 	SHudShotFingers& S = ShotFingers;
@@ -5477,7 +5483,7 @@ void player_hud::StartShotFingers(attachable_hud_item* item)
 	}
 
 	IKinematics* kinematics = m_model->dcast_PKinematics();
-	S.Full = ::Random.randF() < CCameraRig::Params().shot_fingers_full_chance;
+	S.Full = !hud_item_zoomed(item) && ::Random.randF() < CCameraRig::Params().shot_fingers_full_chance;
 	if (S.Full)
 	{
 		S.Bones = hud_bone_descendants(kinematics, kinematics->LL_GetBoneRoot(), BI_NONE);
@@ -5554,21 +5560,27 @@ void player_hud::UpdateShotFingers(bool BeforeIk)
 		return;
 	}
 
+	if (S.Full && hud_item_zoomed(item))
+	{
+		S.Stopping = true;
+	}
+
 	S.Time += Device.fTimeDelta;
 	if (S.Stopping)
 	{
 		S.Fade = blend > EPS ? S.Fade - Device.fTimeDelta / blend : 0.f;
 	}
 
+	const float blend_out = CCameraRig::Params().shot_fingers_blend_out;
 	const float time = S.First + S.Time;
-	if (time >= S.Second || S.Fade <= 0.f)
+	if (time >= S.Second + blend_out || S.Fade <= 0.f)
 	{
 		S.Active = false;
 		return;
 	}
 
 	const float edge = std::min(blend, (S.Second - S.First) * 0.5f);
-	S.Weight = hud_smooth(hud_mark_ramp(time - S.First, edge) * hud_mark_ramp(S.Second - time, edge) * std::clamp(S.Fade, 0.f, 1.f));
+	S.Weight = hud_smooth(hud_mark_ramp(time - S.First, edge) * hud_mark_ramp(S.Second + blend_out - time, blend_out) * std::clamp(S.Fade, 0.f, 1.f));
 	if (S.Full)
 	{
 		ApplyShotFingers();
@@ -5578,7 +5590,7 @@ void player_hud::UpdateShotFingers(bool BeforeIk)
 void player_hud::ApplyShotFingers()
 {
 	SHudShotFingers& S = ShotFingers;
-	const float time = S.First + S.Time;
+	const float time = std::min(S.First + S.Time, S.Second);
 	const float weight = S.Weight;
 	xr_vector<Fquaternion> pose;
 	xr_vector<Fvector> positions;
