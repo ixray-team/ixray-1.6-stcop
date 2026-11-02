@@ -78,9 +78,15 @@ CGameFont* CFontManager::CloneFont(const shared_str& name)
 	auto it = Fonts.find(name);
 	if (it != Fonts.end())
 	{
-		CGameFont* font = new CGameFont(name.c_str(), 0);
+		// Clones share the atlas texture, so every clone must stay registered to be reinitialized on reset
 		shared_str newName;
-		newName.printf("%s_cloned", name.c_str());
+		u32 CloneIndex = 0;
+		do
+		{
+			newName.printf("%s_cloned%u", name.c_str(), CloneIndex++);
+		} while (Fonts.contains(newName));
+
+		CGameFont* font = new CGameFont(name.c_str(), 0);
 		Fonts[newName] = font;
 		return font;
 	}
