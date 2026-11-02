@@ -1034,6 +1034,7 @@ void CInifile::Load(IReader* F, const char* path, allow_include_func_t allow_inc
 	OverrideParentDataMap.reserve(16);
 	OverrideToFilename.reserve(16);
 	// Read contents of root file
+	xr_strcpy(DLTXCurrentFileName, sizeof(DLTXCurrentFileName), m_file_name[0] ? m_file_name : "<memory>");
 	LTXLoad(F, path, OverrideData, OverrideParentDataMap, true, true, m_file_name[0] ? m_file_name : "<memory>");
 
 	F->seek(0);
@@ -1114,8 +1115,12 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			IReader* I = FS.r_open(_fn);
 			R_ASSERT3(I, "Can't find include file:", name);
 
-			strcpy(DLTXCurrentFileName, name);
+			// Sections after the include belong to the including file again
+			string_path PrevFileName;
+			xr_strcpy(PrevFileName, sizeof(PrevFileName), DLTXCurrentFileName);
+			xr_strcpy(DLTXCurrentFileName, sizeof(DLTXCurrentFileName), name);
 			LTXLoad(I, inc_path, OutputData, ParentDataMap, bOverridesOnly, false, _fn);
+			xr_strcpy(DLTXCurrentFileName, sizeof(DLTXCurrentFileName), PrevFileName);
 
 			FS.r_close(I);
 		}
