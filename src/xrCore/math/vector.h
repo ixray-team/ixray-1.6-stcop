@@ -96,6 +96,8 @@ template <class T> struct _quaternion;
 #include "_obb.h"
 #include "_sphere.h"
 #include "_cylinder.h"
+#include "_cone.h"
+#include "ShapeCollisionShapes.h"
 #include "../compression/pv3/_compressed_normal.h"
 #include "_plane.h"
 #include "_plane2.h"
