@@ -461,6 +461,9 @@ function WeatherManager:finalize()
 end
 
 function WeatherManager:reset()	
+	if self.storage.w_section ~= nil then
+		self:play_weather(self.storage.w_section)
+	end
 end
 
 function WeatherManager:get_weather_fx()
