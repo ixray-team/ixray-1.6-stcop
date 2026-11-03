@@ -3438,9 +3438,9 @@ void LevelInspector::DrawAIPaths()
 				if (!view_base.testSphere_dirty(Fvector().mad(dest_pos, dest_dir.normalize_safe(), rad), rad + 0.4f))
 					continue;
 
-				Fcylinder cone;
+				Fcone cone;
 				cone.m_direction = { 0,1,0 };
-				cone.m_center = dest_pos;
+				cone.m_translate = dest_pos;
 				cone.m_radius = 0.4f;
 				cone.m_height = .5f;
 				append_cone(cone, 0, color_rgba(255, 0, 0, 100));

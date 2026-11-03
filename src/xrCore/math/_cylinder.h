@@ -212,6 +212,404 @@ public:
 		}
     }
 //----------------------------------------------------------------------------
+	//The axis is m_direction (unit length), the cylinder is centered at m_center with
+	//the full height m_height and the radius m_radius.
+
+	//A cheap distance reject first, then the cylinder is tested as its bounding OBB:
+	//the OBB encloses the cylinder, so a reported separation is a real one.
+	ICF bool	intersectAABB	(const _vector3<T>& aabbCenter, const _vector3<T>& aabbExtents) const
+	{
+		const T maxCylSize = std::max(m_radius, T(0.5) * m_height);
+		const T maxBoxSize = aabbExtents.magnitude();
+
+		_vector3<T> diff; diff.sub(aabbCenter, m_center);
+
+		if (diff.magnitude() > maxCylSize + maxBoxSize + T(1))
+			return false;
+
+		_vector3<T> kW, kU, kV;
+		local_basis(kW, kU, kV);
+
+		_obb<T> obb;
+		obb.m_translate.set(m_center);
+		obb.m_halfsize.set(m_radius, m_radius, T(0.5) * m_height);
+
+		obb.m_rotate.i = kU;
+		obb.m_rotate.j = kV;
+		obb.m_rotate.k = kW;
+
+		return obb.intersectAABB(aabbCenter, aabbExtents);
+	}
+
+	//Thirteen separating axes, the same scheme as _obb::intersectTri: the cylinder
+	//basis, the triangle normal and the cross products of the basis axes with the
+	//triangle edges. bClass3 enables the cross product axes.
+	ICF bool	intersectTri	(const _vector3<T>* verts, bool bClass3 = true) const
+	{
+		_vector3<T> axes[13];
+		u32 total_axes = 3;
+
+		_vector3<T> kW = m_direction;
+		_vector3<T> kU, kV;
+		_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
+
+		axes[0] = kU;
+		axes[1] = kV;
+		axes[2] = kW;
+
+		_vector3<T> edge1, edge2;
+		edge1.sub(verts[1], verts[0]);
+		edge2.sub(verts[2], verts[0]);
+
+		_vector3<T> tri_normal;
+		tri_normal.crossproduct(edge1, edge2);
+
+		if (tri_normal.square_magnitude() > T(0.0001))
+		{
+			axes[total_axes].normalize(tri_normal);
+			total_axes++;
+		}
+
+		if (bClass3)
+		{
+			_vector3<T> edges[3];
+			edges[0] = edge1;
+			edges[1].sub(verts[2], verts[1]);
+			edges[2].sub(verts[0], verts[2]);
+
+			for (u8 i = 0; i < 3; i++)
+			{
+				for (u8 j = 0; j < 3; j++)
+				{
+					_vector3<T> axis;
+					axis.crossproduct(axes[j], edges[i]);
+
+					if (axis.square_magnitude() > T(0.0001) && total_axes < 13)
+					{
+						axes[total_axes].normalize(axis);
+						total_axes++;
+					}
+				}
+			}
+		}
+
+		for (u32 i = 0; i < total_axes; i++)
+		{
+			if (axes[i].square_magnitude() < T(0.0001))
+				continue;
+
+			const T p0 = verts[0].dotproduct(axes[i]);
+			const T p1 = verts[1].dotproduct(axes[i]);
+			const T p2 = verts[2].dotproduct(axes[i]);
+
+			const T minTri = std::min(p0, std::min(p1, p2));
+			const T maxTri = std::max(p0, std::max(p1, p2));
+
+			const T cylProj = m_center.dotproduct(axes[i]);
+			T cylHalf = T(0);
+
+			if (i < 3)
+			{
+				cylHalf = (i == 2) ? T(0.5) * m_height : m_radius;
+			}
+			else
+			{
+				const T dotU = axes[i].dotproduct(kU);
+				const T dotV = axes[i].dotproduct(kV);
+				const T dotW = axes[i].dotproduct(kW);
+
+				cylHalf = m_radius * _sqrt(dotU * dotU + dotV * dotV) + T(0.5) * m_height * std::abs(dotW);
+			}
+
+			const T cylMin = cylProj - cylHalf;
+			const T cylMax = cylProj + cylHalf;
+
+			const T epsilon = T(0.0001);
+			if (maxTri < cylMin - epsilon || minTri > cylMax + epsilon)
+				return false;
+		}
+
+		return true;
+	}
+
+	//Contact points of the triangle with the cylinder: the triangle vertices inside,
+	//the edge intersections, the cap crossings, the side generatrices and, when
+	//nothing was found, the cylinder axis crossing the triangle.
+	ICF void	FindContactsClipping	(_vector3<T>* tri, void (*callback)(const _vector3<T>& contact, void* user_data), void* user_data = nullptr)
+	{
+		_vector3<T> kW = m_direction;
+		_vector3<T> kU, kV;
+		_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
+
+		const T fHalfHeight = T(0.5) * m_height;
+		_vector3<T> topCenter, bottomCenter;
+		topCenter.mad(m_center, kW, fHalfHeight);
+		bottomCenter.mad(m_center, kW, -fHalfHeight);
+
+		_vector3<T> contacts[8];
+		int numContacts = 0;
+		const T contactEpsilon = T(0.001);
+		const T fRadiusSqr = m_radius * m_radius;
+
+		bool bContactFound = false;
+
+		for (u8 i = 0; i < 3; i++)
+		{
+			if (IsPointInCylinder(tri[i], kW, kU, kV, fHalfHeight, fRadiusSqr))
+			{
+				if (AddContactWithDeduplication(contacts, numContacts, tri[i], callback, user_data, contactEpsilon))
+					bContactFound = true;
+			}
+		}
+
+		for (u8 i = 0; i < 3; i++)
+		{
+			CheckTriangleEdgeIntersection(tri[i], tri[(i + 1) % 3], kW, kU, kV, fHalfHeight, fRadiusSqr,
+				contacts, numContacts, bContactFound, callback, user_data, contactEpsilon);
+		}
+
+		CheckCapIntersection(topCenter, kW, kU, kV, tri, fRadiusSqr, contacts, numContacts, bContactFound, callback, user_data, contactEpsilon);
+		CheckCapIntersection(bottomCenter, kW, kU, kV, tri, fRadiusSqr, contacts, numContacts, bContactFound, callback, user_data, contactEpsilon);
+
+		{
+			const int numEdges = 8;
+
+			for (int i = 0; i < numEdges; i++)
+			{
+				const T angle = (T(i) * T(PI_MUL_2)) / T(numEdges);
+				const T x = std::cos(angle) * m_radius;
+				const T y = std::sin(angle) * m_radius;
+
+				_vector3<T> edgeStart, edgeEnd;
+				edgeStart.mad(topCenter, kU, x);
+				edgeStart.mad(edgeStart, kV, y);
+				edgeEnd.mad(bottomCenter, kU, x);
+				edgeEnd.mad(edgeEnd, kV, y);
+
+				_vector3<T> edgeDir;
+				edgeDir.sub(edgeEnd, edgeStart);
+				const T edgeLength = edgeDir.normalize_magn();
+
+				_vector3<T> edge0; edge0.sub(tri[1], tri[0]);
+				_vector3<T> edge1; edge1.sub(tri[2], tri[0]);
+				_vector3<T> pvec; pvec.crossproduct(edgeDir, edge1);
+				const T det = edge0.dotproduct(pvec);
+
+				if (std::abs(det) < T(0.001))
+					continue;
+
+				const T invDet = T(1) / det;
+
+				_vector3<T> tvec; tvec.sub(edgeStart, tri[0]);
+				const T u = tvec.dotproduct(pvec) * invDet;
+
+				if (u < T(0) || u > T(1))
+					continue;
+
+				_vector3<T> qvec; qvec.crossproduct(tvec, edge0);
+				const T v = edgeDir.dotproduct(qvec) * invDet;
+
+				if (v < T(0) || u + v > T(1))
+					continue;
+
+				const T t = edge1.dotproduct(qvec) * invDet;
+
+				if (t >= T(0) && t <= edgeLength)
+				{
+					_vector3<T> contact;
+					contact.mad(edgeStart, edgeDir, t);
+
+					if (AddContactWithDeduplication(contacts, numContacts, contact, callback, user_data, contactEpsilon))
+						bContactFound = true;
+				}
+			}
+		}
+
+		if (!bContactFound)
+		{
+			_vector3<T> axisStart = bottomCenter;
+			_vector3<T> axisDir = kW;
+			const T axisLength = m_height;
+			_vector3<T> edge1; edge1.sub(tri[1], tri[0]);
+			_vector3<T> edge2; edge2.sub(tri[2], tri[0]);
+			_vector3<T> pvec; pvec.crossproduct(axisDir, edge2);
+			const T det = edge1.dotproduct(pvec);
+
+			if (std::abs(det) > T(0.001))
+			{
+				const T invDet = T(1) / det;
+
+				_vector3<T> tvec; tvec.sub(axisStart, tri[0]);
+				const T u = tvec.dotproduct(pvec) * invDet;
+
+				if (u >= T(0) && u <= T(1))
+				{
+					_vector3<T> qvec; qvec.crossproduct(tvec, edge1);
+					const T v = axisDir.dotproduct(qvec) * invDet;
+
+					if (v >= T(0) && u + v <= T(1))
+					{
+						const T t = edge2.dotproduct(qvec) * invDet;
+
+						if (t >= T(0) && t <= axisLength)
+						{
+							_vector3<T> axisContact;
+							axisContact.mad(axisStart, axisDir, t);
+
+							_vector3<T> toContact; toContact.sub(axisContact, m_center);
+							T z = toContact.dotproduct(kW);
+							z = std::min(fHalfHeight, std::max(-fHalfHeight, z));
+
+							T projU = toContact.dotproduct(kU);
+							T projV = toContact.dotproduct(kV);
+							const T dist2D = _sqrt(projU * projU + projV * projV);
+
+							if (dist2D > T(0.001))
+							{
+								projU /= dist2D;
+								projV /= dist2D;
+							}
+							else
+							{
+								projU = T(1);
+								projV = T(0);
+							}
+
+							_vector3<T> surfaceContact;
+							surfaceContact.mad(m_center, kU, projU * m_radius);
+							surfaceContact.mad(surfaceContact, kV, projV * m_radius);
+							surfaceContact.mad(surfaceContact, kW, z);
+
+							AddContactWithDeduplication(contacts, numContacts, surfaceContact, callback, user_data, contactEpsilon);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	ICF bool	IsPointInCylinder	(const _vector3<T>& point, const _vector3<T>& kW, const _vector3<T>& kU, const _vector3<T>& kV, T fHalfHeight, T fRadiusSqr) const
+	{
+		_vector3<T> local;
+		local.sub(point, m_center);
+
+		const T z = local.dotproduct(kW);
+		const T x = local.dotproduct(kU);
+		const T y = local.dotproduct(kV);
+
+		return (x * x + y * y <= fRadiusSqr && std::abs(z) <= fHalfHeight);
+	}
+//----------------------------------------------------------------------------
+private:
+	ICF void	local_basis	(_vector3<T>& kW, _vector3<T>& kU, _vector3<T>& kV) const
+	{
+		kW = m_direction;
+		if (kW.square_magnitude() > T(1e-12))
+			kW.normalize();
+		else
+			kW.set(T(0), T(1), T(0));
+
+		_vector3<T>::generate_orthonormal_basis(kW, kU, kV);
+	}
+
+	ICF bool	AddContactWithDeduplication	(_vector3<T>* contacts, int& numContacts, const _vector3<T>& point,
+		void (*callback)(const _vector3<T>&, void*), void* user_data, T contactEpsilon) const
+	{
+		for (int j = 0; j < numContacts; j++)
+		{
+			if (contacts[j].similar(point, contactEpsilon))
+				return false;
+		}
+
+		if (numContacts < 8)
+		{
+			contacts[numContacts++] = point;
+			callback(point, user_data);
+			return true;
+		}
+
+		return false;
+	}
+
+	ICF void	CheckCapIntersection	(const _vector3<T>& capCenter, const _vector3<T>& kW, const _vector3<T>& kU, const _vector3<T>& kV,
+		_vector3<T>* tri, T fRadiusSqr, _vector3<T>* contacts, int& numContacts, bool& bContactFound,
+		void (*callback)(const _vector3<T>&, void*), void* user_data, T contactEpsilon) const
+	{
+		const T planeD = -capCenter.dotproduct(kW);
+
+		_vector3<T> intersectionPoints[3];
+		int numPoints = 0;
+
+		for (u8 i = 0; i < 3; i++)
+		{
+			const _vector3<T>& p1 = tri[i];
+			const _vector3<T>& p2 = tri[(i + 1) % 3];
+
+			const T d1 = p1.dotproduct(kW) + planeD;
+			const T d2 = p2.dotproduct(kW) + planeD;
+
+			if (d1 * d2 < T(0))
+			{
+				const T t = d1 / (d1 - d2);
+
+				_vector3<T> intersectPt;
+				intersectPt.lerp(p1, p2, t);
+				intersectionPoints[numPoints++] = intersectPt;
+			}
+			else if (std::abs(d1) < T(0.001))
+			{
+				intersectionPoints[numPoints++] = p1;
+			}
+		}
+
+		for (int i = 0; i < numPoints; i++)
+		{
+			_vector3<T> toPoint;
+			toPoint.sub(intersectionPoints[i], capCenter);
+
+			const T projU = toPoint.dotproduct(kU);
+			const T projV = toPoint.dotproduct(kV);
+
+			if (projU * projU + projV * projV <= fRadiusSqr)
+			{
+				if (AddContactWithDeduplication(contacts, numContacts, intersectionPoints[i], callback, user_data, contactEpsilon))
+					bContactFound = true;
+			}
+		}
+	}
+
+	ICF void	CheckTriangleEdgeIntersection	(const _vector3<T>& start, const _vector3<T>& end,
+		const _vector3<T>& kW, const _vector3<T>& kU, const _vector3<T>& kV,
+		T fHalfHeight, T fRadiusSqr, _vector3<T>* contacts, int& numContacts, bool& bContactFound,
+		void (*callback)(const _vector3<T>&, void*), void* user_data, T contactEpsilon) const
+	{
+		_vector3<T> edge; edge.sub(end, start);
+
+		if (edge.square_magnitude() <= T(1e-12))
+			return;
+
+		const T edgeLength = edge.normalize_magn();
+
+		T afT[2];
+		ecode code[2];
+		const int count = intersect(start, edge, afT, code);
+
+		for (int j = 0; j < count; j++)
+		{
+			if (afT[j] >= T(-0.001) && afT[j] <= edgeLength + T(0.001))
+			{
+				_vector3<T> contact;
+				contact.mad(start, edge, afT[j]);
+
+				if (IsPointInCylinder(contact, kW, kU, kV, fHalfHeight, fRadiusSqr))
+				{
+					if (AddContactWithDeduplication(contacts, numContacts, contact, callback, user_data, contactEpsilon))
+						bContactFound = true;
+				}
+			}
+		}
+	}
+//----------------------------------------------------------------------------
 };
 
 typedef _cylinder<float>	Fcylinder;
