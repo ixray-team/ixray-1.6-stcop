@@ -41,7 +41,7 @@ private:
 	PackageCatalog& Catalog;
 	PackageThread::Launcher Launch;
 	PackageThread Worker;
-	std::atomic_bool IsComplete{false};
+	xr_atomic_bool IsComplete{false};
 	bool IsRunning = false;
 	Result Pending;
 };

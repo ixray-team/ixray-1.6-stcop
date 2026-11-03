@@ -1,7 +1,8 @@
 #pragma once
 
 #include "PackageStore.h"
-#include <SDL3/SDL_filesystem.h>
+#include <chrono>
+#include <thread>
 
 namespace SdkPackages
 {
@@ -74,14 +75,15 @@ public:
 		}
 		for (u32 Attempt = 0; Attempt < 16; ++Attempt)
 		{
-			if (SDL_RenamePath(Utf8(Pending).c_str(), Utf8(Target).c_str()))
+			std::filesystem::rename(Pending, Target, Code);
+			if (!Code)
 			{
 				return true;
 			}
 			// Brief filesystem readers can temporarily prevent replacement on Windows.
-			SDL_Delay(2);
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 		}
-		Error = xr_string("Cannot replace catalog snapshot; previous data retained. ") + SDL_GetError();
+		Error = xr_string("Cannot replace catalog snapshot; previous data retained. ") + Code.message().c_str();
 		return false;
 	}
 

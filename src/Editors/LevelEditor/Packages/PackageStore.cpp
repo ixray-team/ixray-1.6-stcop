@@ -23,7 +23,7 @@ bool Equal(const xr_path& First, const xr_path& Second, xr_string& Error, std::s
 		{
 			return Fail(Error, "Cannot read installed package files.");
 		}
-		std::array<char, 65536> LeftBytes{}, RightBytes{};
+		xr_array<char, 65536> LeftBytes{}, RightBytes{};
 		do
 		{
 			if (Stop.stop_requested())
@@ -134,7 +134,7 @@ namespace Details
 {
 bool CopyBytes(std::istream& Input, std::ostream& Output, xr_string& Error, std::stop_token Stop, const ProgressCallback& Progress)
 {
-	std::array<char, 65536> Bytes;
+	xr_array<char, 65536> Bytes;
 	PackageProgress Current;
 	do
 	{
@@ -860,7 +860,7 @@ bool PackageStore::Recover(xr_string& Error) const
 		return !Code || Details::Fail(Error, "Cannot inspect package recovery storage.");
 	}
 	bool HasTransactions = false;
-	for (std::filesystem::directory_iterator Iter(Parent, Code), End; !Code && Iter != End; Iter.increment(Code))
+	for (xr_dir_iter Iter(Parent, Code), End; !Code && Iter != End; Iter.increment(Code))
 	{
 		if (std::filesystem::exists(Join(Iter->path(), "transaction.json"), Code) || std::filesystem::exists(Join(Iter->path(), "finished.json"), Code))
 		{
@@ -886,7 +886,7 @@ bool PackageStore::Recover(xr_string& Error) const
 	{
 		return Details::Fail(Error, "SDK package storage is busy or inaccessible. Close other package operations and retry.");
 	}
-	for (std::filesystem::directory_iterator Iter(Parent, Code), End; !Code && Iter != End; Iter.increment(Code))
+	for (xr_dir_iter Iter(Parent, Code), End; !Code && Iter != End; Iter.increment(Code))
 	{
 		const auto Stage = Iter->path();
 		const auto Journal = Join(Stage, "transaction.json");

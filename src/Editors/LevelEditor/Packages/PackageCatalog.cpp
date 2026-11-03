@@ -319,7 +319,7 @@ bool PackageCatalog::Refresh(const nlohmann::json& Index, const ManifestFetcher&
 			}
 		}
 	};
-	std::array<PackageThread, MaxConcurrentPackages> Workers;
+	xr_array<PackageThread, MaxConcurrentPackages> Workers;
 	const auto JoinWorkersLambda = [&]()
 	{
 		for (auto& Worker : Workers)

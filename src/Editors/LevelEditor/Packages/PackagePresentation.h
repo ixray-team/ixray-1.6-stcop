@@ -195,7 +195,7 @@ inline void FindDocument(const xr_path& Root, const std::initializer_list<const 
 		return;
 	}
 	size_t Count = 0;
-	for (std::filesystem::directory_iterator Iter(Root, Code), End; !Code && Iter != End && Count++ < 4096; Iter.increment(Code))
+	for (xr_dir_iter Iter(Root, Code), End; !Code && Iter != End && Count++ < 4096; Iter.increment(Code))
 	{
 		if (!IsUtf8Path(Iter->path()))
 		{
