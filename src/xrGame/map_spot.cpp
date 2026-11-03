@@ -56,14 +56,27 @@ void CMapSpot::Load(CUIXml* xml, const char* path, float kx)
 		m_border_static->Show	( false );
 		if (!Heading()) 
 		{
+			const Fvector2 BorderPosition = m_border_static->GetWndPos();
+			const bool IsBorderCentered = m_border_static->GetAlignment() == waNone &&
+				fsimilar((2.0f * BorderPosition.x + m_border_static->GetWidth()) * kx, GetWidth()) &&
+				fsimilar(2.0f * BorderPosition.y + m_border_static->GetHeight(), GetHeight());
+
 			m_border_static->SetWidth(m_border_static->GetWidth() * kx);
 			if (!UI().is_widescreen()) 
 			{
 				m_border_static->SetHeight(m_border_static->GetHeight() * kx);
 			} 
-			else 
+			else if (!IsBorderCentered)
 			{
 				m_border_static->SetTextureOffset(1, 0);
+			}
+
+			if (IsBorderCentered)
+			{
+				// Preserve the authored center after applying the aspect-ratio correction.
+				m_border_static->SetWndPos(Fvector2().set(
+					0.5f * (GetWidth() - m_border_static->GetWidth()),
+					0.5f * (GetHeight() - m_border_static->GetHeight())));
 			}
 			m_border_static->SetStretchTexture(true);
 		}
