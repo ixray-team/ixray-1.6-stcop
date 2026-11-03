@@ -19,7 +19,7 @@ public:
 
 public:
 										IRenderable					();
-	virtual								~IRenderable				();
+	virtual ~IRenderable				() override;
 	IRender_ObjectSpecific*				renderable_ROS				()	;
 
 	virtual	void						renderable_Render			()	= 0;

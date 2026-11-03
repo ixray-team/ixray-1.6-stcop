@@ -1,3 +1,7 @@
+#ifdef EDITOR_MODE
+// Editable meshes of the editors use the model vertex format (float position, normal, basis, uv)
+#include "deffer_model.vs.hlsl"
+#else
 #include "common.hlsli"
 
 #ifdef USE_LM_HEMI
@@ -55,4 +59,4 @@ void main(in v_in I, out p_bumped_new O)
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
-
+#endif

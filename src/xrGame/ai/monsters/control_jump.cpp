@@ -21,7 +21,7 @@
 
 #include "../../trajectories.h"
 #include "../../../xrPhysics/IPHWorld.h"
-#include "../../../xrPhysics/PHCharacter.h"
+#include "../../../xrPhysics/IPHCharacter.h"
 #include "../../../xrCore/math/_vector3d_ext.h"
 
 void CControlJump::reinit()
@@ -88,7 +88,7 @@ bool CControlJump::check_start_conditions()
 	}
 	if (is_active())				return false;	
 	if (m_man->is_captured_pure())	return false;
-	CPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
+	IPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
 	// Controller release is not proof of physical touchdown.
 	if (Character->JumpState() || !Character->HasGroundSupport())
 	{
@@ -359,7 +359,7 @@ void CControlJump::update_frame()
 {
 	if (IsEvasiveFlight())
 	{
-		CPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
+		IPHCharacter* Character = m_object->character_physics_support()->movement()->PHCharacter();
 		if (!Character->IsEnabled())
 		{
 			// Ballistic flight cannot remain asleep while its visual animation keeps running.
@@ -423,7 +423,7 @@ bool CControlJump::is_on_the_ground()
 	{
 		// The animated center/ray proximity is not a physical landing contact.
 		CPHMovementControl* Movement = m_object->character_physics_support()->movement();
-		CPHCharacter* Character = Movement->PHCharacter();
+		IPHCharacter* Character = Movement->PHCharacter();
 		return !Character->JumpState() && Character->HasGroundSupport();
 	}
 

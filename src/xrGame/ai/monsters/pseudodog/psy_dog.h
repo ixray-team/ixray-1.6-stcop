@@ -5,6 +5,7 @@
 class CPsyDogPhantom;
 class CPsyDogAura;
 
+XREFLECT(LuaExport, Constructible)
 class CPsyDog final : 
 	public CAI_PseudoDog 
 {
@@ -31,20 +32,20 @@ class CPsyDog final :
 
 public:
 						CPsyDog				();
-		virtual			~CPsyDog			();
+	virtual ~CPsyDog			() override;
 
-		virtual void	Load				(const char* section);
-		virtual bool	net_Spawn			(CSE_Abstract *dc);
-		virtual void	reinit				();
-		virtual void	reload				(const char* section);
-		virtual void	net_Destroy			();
-		virtual void	Die					(CObject* who);
+	virtual void	Load				(const char* section) override;
+	virtual bool	net_Spawn			(CSE_Abstract *dc) override;
+	virtual void	reinit				() override;
+	virtual void	reload				(const char* section) override;
+	virtual void	net_Destroy			() override;
+	virtual void	Die					(CObject* who) override;
 
-		virtual void	Think				();
+	virtual void	Think				() override;
 //				void	on_phantom_appear	();
-		virtual IStateManagerBase *create_state_manager	();
+	virtual IStateManagerBase *create_state_manager	() override;
 
-		virtual	char*	get_monster_class_name () { return (char*) "psydog"; }
+	virtual char*	get_monster_class_name () override { return (char*) "psydog"; }
 
 				u8		get_phantoms_count	();
 				bool	must_hide			() {return get_phantoms_count() < m_min_phantoms_count;}
@@ -59,7 +60,7 @@ private:
 private:
 	xr_vector<CPsyDogPhantom*> m_storage;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };
 
 
@@ -67,6 +68,7 @@ private:
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
 
+XREFLECT(LuaExport, Constructible)
 class CPsyDogPhantom final : public CAI_PseudoDog {
 	typedef CAI_PseudoDog inherited;
 	
@@ -88,13 +90,13 @@ class CPsyDogPhantom final : public CAI_PseudoDog {
 
 public:
 					CPsyDogPhantom		();
-	virtual			~CPsyDogPhantom		();
-	virtual bool	net_Spawn			(CSE_Abstract *dc);
-	virtual void	Think				();
-	virtual	void	Hit					(SHit* pHDS);
+	virtual ~CPsyDogPhantom		() override;
+	virtual bool	net_Spawn			(CSE_Abstract *dc) override;
+	virtual void	Think				() override;
+	virtual void	Hit					(SHit* pHDS) override;
 
-	virtual void	net_Destroy			();
-	virtual void	Die					(CObject* who);
+	virtual void	net_Destroy			() override;
+	virtual void	Die					(CObject* who) override;
 
 			void	destroy_from_parent	();
 private:
@@ -102,5 +104,5 @@ private:
 			void	try_to_register_to_parent	();
 			bool	is_wait_to_destroy_object	() {return (m_parent_id == ALife::INVALID_OBJECT_ID);}
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

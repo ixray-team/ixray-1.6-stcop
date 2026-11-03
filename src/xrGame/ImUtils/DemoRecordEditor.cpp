@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ImUtils.h"
 #include "FDemoRecord.h"
+#include "../xrPhysics/IPHCapture.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "player_hud.h"
 
@@ -294,7 +295,58 @@ void RenderDemoRecordEditorWindow()
 				ImGui::BulletText("Pause           - Pause / unpause");
 				ImGui::BulletText("`               - Show console");
 			}
+
+			ImGui::SeparatorText("Grab tool (physics objects)");
+			ImGui::BulletText("G               - Toggle grab tool");
+			ImGui::BulletText("H               - Toggle free chain for grabbed object");
+			ImGui::BulletText("LMB (hold)      - Grab and hold an object; release to drop");
+			ImGui::BulletText("RMB             - Throw grabbed object");
+			ImGui::BulletText("MWHEEL (grab)   - Push / pull grabbed object");
+			ImGui::BulletText("TAB + mouse     - Rotate grabbed object (camera look locked)");
+			ImGui::BulletText("ENTER           - Fix / release held element");
+			ImGui::BulletText("SHIFT+ENTER     - Fix / release every shell element");
+			ImGui::BulletText("CTRL+ENTER      - Release every shell element");
 			ImGui::TreePop();
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Grab tool"))
+	{
+		ImGui::Checkbox("Enable grab tool (demo_record_grab)", &demo_record_grab);
+		tip("Console option demo_record_grab. While recording, G toggles the tool without restarting. "
+			"Hold LMB to grab the physics object under the camera ray and carry it; release LMB to drop it. RMB throws it.");
+
+		ImGui::SliderFloat("AMotor force", &g_CameraCaptureMotorForce, 0.f, 200000.f, "%.0f");
+		tip("dParamFMax of the angular motor that holds the grabbed object. Higher = stiffer, faster hold; "
+			"lower = softer and more inertial. 0 disables the motor (the object stops following the camera).");
+
+		ImGui::Checkbox("Disable shell collisions while held", &g_CameraCaptureNoCollision);
+		tip("Calls CPHShell::DisableCollision() on the grabbed object's shell while it is held, so it does not collide "
+			"with anything. Collisions are restored on release; if the shell already had them disabled, that state is kept.");
+
+		ImGui::Checkbox("Enable self-collision while held", &g_CameraCaptureSelfCollision);
+		tip("Calls CPHShell::SetSelfCollision(true) on the grabbed object's shell while it is held. "
+			"Restored on release; if the shell already had self-collision enabled, that state is kept.");
+
+		ImGui::Checkbox("Prefer exact integration while held", &g_CameraCaptureExactIntegration);
+		tip("Calls CPHShell::SetPrefereExactIntegration() on the grabbed object's shell while it is held "
+			"(more accurate integration for the shell). Restored on release; if it was already enabled, that state is kept.");
+
+		ImGui::TextDisabled("State: %s", demo_record->GrabCapture != nullptr ? "holding an object" : "idle");
+
+		if (g_CameraCaptureShellInfo.Elements > 0)
+		{
+			ImGui::TextDisabled("Held shell: %d elements, self-collision contacts (last step): %d",
+				g_CameraCaptureShellInfo.Elements, g_CameraCaptureShellInfo.SelfCollisionContacts);
+
+			if (g_CameraCaptureShellInfo.Animator)
+			{
+				ImGui::TextDisabled("Held shell is animation driven: self-collision is skipped.");
+			}
+			else if (g_CameraCaptureShellInfo.Elements < 2)
+			{
+				ImGui::TextDisabled("Single-element shell: there is nothing to self-collide.");
+			}
 		}
 	}
 

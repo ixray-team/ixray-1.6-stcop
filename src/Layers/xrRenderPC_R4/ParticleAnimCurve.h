@@ -22,7 +22,7 @@ namespace PS
         RENDER_API Fvector4 CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time);
 
     public:
-        RENDER_API ~CPACDef();
+        RENDER_API virtual ~CPACDef() override;
 
         IC const char* getName() const {return m_Name.c_str();}
         RENDER_API void setName(const char* name);
@@ -50,6 +50,8 @@ namespace PS
 		void FillProp(const char* pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
 		bool Validate(bool bMsg);
+        // Reloads the curve in place from a Save stream (undo)
+        bool Restore(IReader& F);
 
         void SplitKeysForPlot(
             xr_vector<float>& R_keys_y,

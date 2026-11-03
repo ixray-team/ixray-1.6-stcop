@@ -182,6 +182,18 @@ IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bSta
 	{
 		goto _BUMP_from_base;
 	}
+	// Save thumbnails arrive as a path inside $game_saves$; resolving them against a
+	// texture root would prepend another directory and never match.
+	{
+		string_path direct = {};
+		xr_strconcat(direct, fRName, ".dds");
+		if (FS.exist(direct))
+		{
+			xr_strcpy(fn, direct);
+			goto _DDS;
+		}
+	}
+
 	if (FS.exist(fn, "$level$", fname, ".dds"))
 	{
 		goto _DDS;

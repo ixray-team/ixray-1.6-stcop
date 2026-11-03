@@ -12,13 +12,13 @@ protected:
 
 public:
 						CStateMonsterSquadRestFollow	(_Object *obj);
-	virtual				~CStateMonsterSquadRestFollow	();
+	virtual ~CStateMonsterSquadRestFollow	() override;
 
-	virtual void		initialize						();
-	virtual void		reselect_state					();
-	virtual void		setup_substates					();
-	virtual void		check_force_state				();
-	virtual void		remove_links					(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize						() override;
+	virtual void		reselect_state					() override;
+	virtual void		setup_substates					() override;
+	virtual void		check_force_state				() override;
+	virtual void		remove_links					(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_squad_rest_follow_inline.h"

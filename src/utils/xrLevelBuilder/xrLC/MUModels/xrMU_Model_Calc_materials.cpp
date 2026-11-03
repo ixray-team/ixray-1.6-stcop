@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "xrMU_Model.h"
-#include "../../../Shader_xrLC.h"
+#include "../../../Shader_xrLC_Compilers.h"
 
 bool	cmp_face_material		(_face* f1, _face* f2)
 {
 	if (f1->dwMaterial != f2->dwMaterial)
-	    return f1->dwMaterial < f2->dwMaterial;
+	{
+		return f1->dwMaterial < f2->dwMaterial;
+	}
 
-    //Seakad: Grouping of polygons to cut more evenly
+	//Seakad: Grouping of polygons to cut more evenly
     Fvector ca, cb;
     ca.add(f1->v[0]->P, f1->v[1]->P); 
     ca.add(f1->v[2]->P);
@@ -18,18 +20,20 @@ bool	cmp_face_material		(_face* f1, _face* f2)
     cb.div(3.f);
 
     if (ca.x != cb.x)
-        return ca.x < cb.x;
+    {
+	    return ca.x < cb.x;
+    }
 
-    return ca.z < cb.z;
+	return ca.z < cb.z;
 }
 //static xrMU_Model::v_faces temp_vector;
 void xrMU_Model::calc_materials	()
 {
  	xrMU_Model::v_faces &temp_vector			= m_faces;
 
-	std::sort			(temp_vector.begin(),temp_vector.end(),cmp_face_material);
+	std::ranges::sort			(temp_vector,cmp_face_material);
 
-	static const u32 MAX_SUBDIV_VERTS = 30000;
+	static constexpr u32 MAX_SUBDIV_VERTS = 30000;
     //Seakad: Overall, without Stripify and MakeProgressive i would bet 40k, otherwise 30k as a reserve.
     m_subdivs.clear();
 
@@ -38,6 +42,7 @@ void xrMU_Model::calc_materials	()
 
 	_subdiv				current;
 	current.material	= temp_vector[0]->dwMaterial;
+	current.bSharedMaterial = temp_vector[0]->flags.bSharedMaterial;
 	current.start		= 0;
 	current.count		= 1;
 
@@ -46,14 +51,20 @@ void xrMU_Model::calc_materials	()
     auto face_new_vert_count = [&](const _face* F) -> u32
     {
         u32 count = (u32)unique_verts.size();
-        if (unique_verts.find(F->v[0]) == unique_verts.end())
-            ++count;
+        if (!unique_verts.contains(F->v[0]))
+        {
+	        ++count;
+        }
 
-        if (unique_verts.find(F->v[1]) == unique_verts.end())
-            ++count;
+        if (!unique_verts.contains(F->v[1]))
+        {
+	        ++count;
+        }
 
-        if (unique_verts.find(F->v[2]) == unique_verts.end())
-            ++count;
+        if (!unique_verts.contains(F->v[2]))
+        {
+	        ++count;
+        }
 
         return count;
     };
@@ -76,6 +87,7 @@ void xrMU_Model::calc_materials	()
 			// end of strip 
 			m_subdivs.push_back	(current);
 			current.material	= F->dwMaterial;
+			current.bSharedMaterial = F->flags.bSharedMaterial;
 			current.start		= it;
 			current.count		= 0;
 

@@ -53,9 +53,9 @@ class CSE_ALifeItemFuel;
 #pragma warning(disable:4005)
 
 SERVER_ENTITY_DECLARE_BEGIN(CPureServerObject,IPureServerObject)
-	virtual							~CPureServerObject() = default;
-	virtual void					load(IReader	&tFileStream);
-	virtual void					save(IWriter	&tMemoryStream);
+virtual ~CPureServerObject() override = default;
+virtual void					load(IReader	&tFileStream) override;
+virtual void					save(IWriter	&tMemoryStream) override;
 	virtual void					load(NET_Packet	&tNetPacket);
 	virtual void					save(NET_Packet	&tNetPacket);
 };
@@ -114,12 +114,12 @@ public:
 	//client object custom data serialization
 	xr_vector<u8>					client_data;
 	CSaveChunk* client_data_new = nullptr;
-	virtual void					load					(NET_Packet	&tNetPacket);
+virtual void					load					(NET_Packet	&tNetPacket) override;
 
 	//////////////////////////////////////////////////////////////////////////
 	
 									CSE_Abstract			(const char* caSection);
-	virtual							~CSE_Abstract			();
+virtual ~CSE_Abstract			() override;
 	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
 #if !defined(XRGAME_EXPORTS)
 	virtual void					FillProps				(const char* pref, PropItemVec &items);
@@ -133,23 +133,24 @@ public:
 #endif
 	virtual bool					Net_Relevant			(){return false;}; // !!!! WARNING!!!
 	//
-	virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal);
-	virtual bool			Spawn_Read				(NET_Packet &tNetPacket);
-	virtual bool Spawn_Serialize(ISaveObject& Object, bool bLocal = true, bool Copying = false);
-	virtual const char*			name					() const override;
-	virtual const char*			name_replace			() const override;
-	virtual void			set_name				(const char* s) override
+virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal) override;
+virtual bool			Spawn_Read				(NET_Packet &tNetPacket) override;
+virtual bool Spawn_Serialize(ISaveObject& Object, bool bLocal = true, bool Copying = false) override;
+virtual const char*			name					() const override;
+virtual const char*			name_replace			() const override;
+
+virtual void			set_name				(const char* s) override
 	{
 		s_name		= s;
 	};
-	virtual void			set_name_replace		(const char* s) override {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
-	virtual Fvector&		position				();
-	virtual Fvector&		angle					();
-	virtual Flags16&		flags					();
-	virtual CSE_Visual* 	visual					();
-	virtual ISE_Shape*  	shape					();
-	virtual CSE_Motion* 	motion					();
-	virtual bool			validate				();
+virtual void			set_name_replace		(const char* s) override {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+virtual Fvector&		position				() override;
+virtual Fvector&		angle					() override;
+virtual Flags16&		flags					() override;
+virtual CSE_Visual* 	visual					() override;
+virtual ISE_Shape*  	shape					() override;
+virtual CSE_Motion* 	motion					() override;
+virtual bool			validate				() override;
 	//
 
 	IC		const Fvector			&Position				() const					{return o_Position;};

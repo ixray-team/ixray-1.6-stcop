@@ -18,6 +18,8 @@ CCustomPreferences* EPrefs=nullptr;
 CCustomPreferences::CCustomPreferences()
 {
 	bOpen = false;
+	// Visible in every editor tab
+	TabIndex = -1;
 	// view
 	view_np				= 0.1f;
 	view_fp				= 1500.f;
@@ -163,15 +165,15 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 
 void CCustomPreferences::FillProp(PropItemVec& props)
 {
-	PHelper().CreateU32		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
-	PHelper().CreateU32		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
+	PHelper().CreateNumeric		(props,"Common\\Recent Count", 						&scene_recent_count, 	0, 		25);
+	PHelper().CreateNumeric		(props,"Common\\Undo Level", 						&scene_undo_level, 		0, 		125);
 	PHelper().CreateBool	(props,"Common\\More Stats Info", 					&bMoreStats);
 
 	PHelper().CreateBool	(props,"Viewport\\Buttons\\Axis", 					&ShowAxisButtons);
 	PHelper().CreateBool	(props,"Viewport\\Buttons\\Old Camera Controls", 	&ShowOldCameraButtons);
 
 	PHelper().CreateFloat	(props,"Viewport\\Grid\\Cell Size", 				&grid_cell_size, 		0.1f, 	10.f);
-	PHelper().CreateU32		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
+	PHelper().CreateNumeric		(props,"Viewport\\Grid\\Cell Count", 				&grid_cell_count, 		10, 	1000);
 
 	PHelper().CreateFloat	(props,"Viewport\\Camera\\Move Sens", 				&cam_sens_move);
 	PHelper().CreateFloat	(props,"Viewport\\Camera\\Rotate Sens", 			&cam_sens_rot);
@@ -188,23 +190,25 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateColor	(props,"Viewport\\Clear Color", 					&scene_clear_color);
 	PHelper().CreateFloat	(props,"Viewport\\Light Distance", 				&LightDistance, 		1.f, 	10000.f);
 	PHelper().CreateBool	(props,"Viewport\\Occlusion Culling", 			&OcclusionCulling);
+	PHelper().CreateBool	(props,"Viewport\\Instancing", 					&Instancing);
+	PHelper().CreateBool	(props,"Viewport\\Instancing in Shadows",		&ShadowInstancing);
 
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\Animation Path", 			&object_flags, 			epoDrawAnimPath);
-	PHelper().CreateFlag32	(props,"Objects\\Show\\LOD's", 						&object_flags, 			epoDrawLOD);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Hint", 						&object_flags, 			epoShowHint);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Pivot", 						&object_flags, 			epoDrawPivot);
+	PHelper().CreateFlag	(props,"Objects\\Show\\Animation Path", 			&object_flags, 			epoDrawAnimPath);
+	PHelper().CreateFlag	(props,"Objects\\Show\\LOD's", 						&object_flags, 			epoDrawLOD);
 
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Joints", 			&object_flags, 			epoDrawJoints);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Axis", 		&object_flags, 			epoDrawBoneAxis);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Names", 		&object_flags, 			epoDrawBoneNames);
-	PHelper().CreateFlag32	(props,"Objects\\Skeleton\\Draw Bone Shapes", 		&object_flags, 			epoDrawBoneShapes);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Joints", 			&object_flags, 			epoDrawJoints);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Axis", 		&object_flags, 			epoDrawBoneAxis);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Names", 		&object_flags, 			epoDrawBoneNames);
+	PHelper().CreateFlag	(props,"Objects\\Skeleton\\Draw Bone Shapes", 		&object_flags, 			epoDrawBoneShapes);
 
-	PHelper().CreateFlag32	(props,"Objects\\Group Object\\Select ingroup", 	&object_flags, 			epoSelectInGroup);
+	PHelper().CreateFlag	(props,"Objects\\Group Object\\Select ingroup", 	&object_flags, 			epoSelectInGroup);
 
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading RB", 	&object_flags, 			epoDeffLoadRB);
-	PHelper().CreateFlag32	(props,"Objects\\Loading\\Deffered Loading CF", 	&object_flags, 			epoDeffLoadCF);
+	PHelper().CreateFlag	(props,"Objects\\Loading\\Deffered Loading RB", 	&object_flags, 			epoDeffLoadRB);
+	PHelper().CreateFlag	(props,"Objects\\Loading\\Deffered Loading CF", 	&object_flags, 			epoDeffLoadCF);
 
-	PHelper().CreateFlag32	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
+	PHelper().CreateFlag	(props,"Objects\\Library\\Discard Instance", 		&object_flags, 			epoDiscardInstance);
 
 	PHelper().CreateBool	(props,"Tools\\Box Pick\\Limited Depth", 			&bp_lim_depth);
 	PHelper().CreateBool	(props,"Tools\\Box Pick\\Back Face Culling", 		&bp_cull);
@@ -263,11 +267,86 @@ void CCustomPreferences::Edit()
 
 	bOpen = true;
 
-	PropItemVec props;
-	FillProp(props);
-
-	m_ItemProps->AssignItems(props);
+	RebuildProps();
 	EContext.UI->Push(this, false);
+}
+
+void CCustomPreferences::RebuildProps()
+{
+	PropItemVec AllProps;
+	FillProp(AllProps);
+
+	NavCategories.clear();
+	for (PropItem* Item : AllProps)
+	{
+		const xr_string Key = Item->Key();
+		for (size_t Pos = Key.find('\\'); Pos != xr_string::npos; Pos = Key.find('\\', Pos + 1))
+		{
+			xr_string Category = Key.substr(0, Pos);
+			if (std::ranges::find(NavCategories, Category) == NavCategories.end())
+			{
+				NavCategories.push_back(Category);
+			}
+		}
+	}
+
+	// Show only the selected category, everything when none is selected
+	PropItemVec Props;
+	const xr_string Prefix = SelectedCategory.empty() ? xr_string() : SelectedCategory + "\\";
+	for (PropItem* Item : AllProps)
+	{
+		if (Prefix.empty() || xr_string(Item->Key()).starts_with(Prefix))
+		{
+			Props.push_back(Item);
+		}
+		else
+		{
+			xr_delete(Item);
+		}
+	}
+
+	m_ItemProps->ClearProperties();
+	m_ItemProps->AssignItems(Props);
+}
+
+void CCustomPreferences::DrawNavNode(const xr_string& Parent)
+{
+	for (const xr_string& Category : NavCategories)
+	{
+		const size_t Split = Category.rfind('\\');
+		const xr_string CategoryParent = Split == xr_string::npos ? xr_string() : Category.substr(0, Split);
+		if (CategoryParent != Parent)
+		{
+			continue;
+		}
+
+		const char* Name = Split == xr_string::npos ? Category.c_str() : Category.c_str() + Split + 1;
+		const xr_string ChildPrefix = Category + "\\";
+		const bool HasChildren = std::ranges::any_of(NavCategories, [&ChildPrefix](const xr_string& Other) { return Other.starts_with(ChildPrefix); });
+
+		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+		if (!HasChildren)
+		{
+			Flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		}
+		if (Category == SelectedCategory)
+		{
+			Flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		const bool Opened = ImGui::TreeNodeEx(Category.c_str(), Flags, "%s", Name);
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+		{
+			SelectedCategory = Category;
+			RebuildProps();
+		}
+
+		if (Opened && HasChildren)
+		{
+			DrawNavNode(Category);
+			ImGui::TreePop();
+		}
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -420,10 +499,18 @@ void CCustomPreferences::Load()
 		GetSafe(*render, "render_radius", EDevice->RenderRadius);
 		GetSafe(*render, "light_distance", LightDistance);
 		GetSafe(*render, "occlusion_culling", OcclusionCulling);
+		GetSafe(*render, "instancing", Instancing);
+		GetSafe(*render, "shadow_instancing", ShadowInstancing);
 		GetSafe(*render, "hemi", Hemi);
 		GetSafe(*render, "dynamic_lights", DynamicLights);
 		GetSafe(*render, "light_shadows", LightShadows);
 		GetSafe(*render, "ssao_mode", ps_r_ssao_mode);
+		bool SSLRWorld = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+		bool SSLRWater = ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
+		GetSafe(*render, "sslr", SSLRWorld);
+		GetSafe(*render, "sslr_water", SSLRWater);
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WORLD, SSLRWorld);
+		ps_r2_ls_flags_ext.set(R4FLAG_SSLR_ON_WATER, SSLRWater);
 		Hemi = std::clamp(Hemi, 0.f, 1.f);
 		ps_r_ssao_mode = std::min(ps_r_ssao_mode, 2u);
 		GetSafe(*render, "w", start_w);
@@ -574,10 +661,14 @@ void CCustomPreferences::Save()
 	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
 	JSONData["render"]["light_distance"]=LightDistance;
 	JSONData["render"]["occlusion_culling"]=OcclusionCulling;
+	JSONData["render"]["instancing"]=Instancing;
+	JSONData["render"]["shadow_instancing"]=ShadowInstancing;
 	JSONData["render"]["hemi"]=Hemi;
 	JSONData["render"]["dynamic_lights"]=DynamicLights;
 	JSONData["render"]["light_shadows"]=LightShadows;
 	JSONData["render"]["ssao_mode"]=ps_r_ssao_mode;
+	JSONData["render"]["sslr"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	JSONData["render"]["sslr_water"]=ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER);
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts
@@ -604,9 +695,24 @@ void CCustomPreferences::Draw()
 	IsFocused = ImGui::IsWindowFocused();
 
 	ImGui::PopStyleVar();
+
+	if (ImGui::BeginChild("##PrefsNav", ImVec2(ImGui::GetFontSize() * 11.0f, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX))
+	{
+		if (ImGui::Selectable("All", SelectedCategory.empty()))
+		{
+			SelectedCategory.clear();
+			RebuildProps();
+		}
+		DrawNavNode(xr_string());
+	}
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+	if (ImGui::BeginChild("##PrefsProps"))
 	{
 		m_ItemProps->Draw();
 	}
+	ImGui::EndChild();
 	ImGui::End();
 }
 

@@ -66,27 +66,25 @@ enum{
 };
 
 
-EDetailManager::EDetailManager():ESceneToolBase(OBJCLASS_DO)
+EDetailManager::EDetailManager()
+	: ESceneToolBase(OBJCLASS_DO)
 {
-	dtSlots				= 0;
-    ZeroMemory			(&dtH,sizeof(dtH));
-    m_Selected.clear	();
-    InitRender			();
-//.	EDevice->seqDevCreate.Add	(this,REG_PRIORITY_LOW);
-//.	EDevice->seqDevDestroy.Add(this,REG_PRIORITY_NORMAL);
-    m_Flags.assign		(flObjectsDraw);
+	dtSlots = 0;
+	ZeroMemory(&dtH, sizeof(dtH));
+	m_Selected.clear();
+	InitRender();
+	m_Flags.assign(flObjectsDraw);
 
-	PaintColor.set	(1.f, 1.f, 1.f, 1.f);
-	BrushSize			= 10;
-	BrushStrength		= 0.5f;
-	PaintErase		= false;
-	BrushActive		= false;
-	BaseDataDirty		= false;
+	PaintColor.set(1.f, 1.f, 1.f, 1.f);
+	BrushSize = 10;
+	BrushStrength = 0.5f;
+	PaintErase = false;
+	BrushActive = false;
+	BaseDataDirty = false;
 }
 
-EDetailManager::~EDetailManager(){
-//.	EDevice->seqDevCreate.Remove(this);
-//.	EDevice->seqDevDestroy.Remove(this);
+EDetailManager::~EDetailManager()
+{
 	Clear	();
     Unload	();
 }
@@ -97,44 +95,40 @@ void EDetailManager::ClearColorIndices()
     RemoveDOs			();
     m_ColorIndices.clear();
 }
+
 void EDetailManager::ClearSlots()
 {
-    ZeroMemory			(&dtH,sizeof(DetailHeader));
-    xr_free				(dtSlots);
-	m_Selected.clear	();
-    InvalidateCache		();
+	ZeroMemory(&dtH, sizeof(DetailHeader));
+	xr_free(dtSlots);
+	m_Selected.clear();
+	InvalidateCache();
 }
+
 void EDetailManager::ClearBase()
 {
-    m_Base.Clear		();
-    m_SnapObjects.clear	();
+	m_Base.Clear();
+	m_SnapObjects.clear();
 }
+
 void EDetailManager::Clear(bool bSpecific)
 {
-	ClearBase			();
-	ClearColorIndices	();
-    ClearSlots			();
-    m_Flags.zero		();
-    m_RTFlags.zero		();
+	ClearBase();
+	ClearColorIndices();
+	ClearSlots();
+	m_Flags.zero();
+	m_RTFlags.zero();
 }
 
 void EDetailManager::InvalidateCache()
 {
-	// detail cache is rebuilt in a parallel render task (Device.DetailsTask);
-	// wait for it to finish before touching cache structures / dtSlots
     Device.DetailsTask.wait();
-	// Initialize 'vis' and 'cache'
     cache_ReInitialize();
 }
 
 void EDetailManager::InitRender()
 {
-	// inavlidate cache
-	InvalidateCache		();
-	// Make dither matrix
-	bwdithermap		(2,dither);
-
-    //hw_Load();
+	InvalidateCache();
+	bwdithermap(2, dither);
 }
 
 bool EDetailManager::IsObjectsDrawn()
@@ -206,26 +200,32 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
 
 void EDetailManager::OnDeviceCreate()
 {
-    // base texture
-    m_Base.CreateShader();
-    // detail objects
-    for (DetailIt it = objects.begin(); it != objects.end(); it++)
-        ((EDetail*)(*it))->OnDeviceCreate();
+	// base texture
+	m_Base.CreateShader();
 
-    if (!objects.empty())
-        hw_Load();
+	// detail objects
+	for (DetailIt it = objects.begin(); it != objects.end(); it++)
+	{
+		((EDetail*)(*it))->OnDeviceCreate();
+	}
+
+	if (!objects.empty())
+	{
+		hw_Load();
+	}
 }
 
 void EDetailManager::OnDeviceDestroy()
 {
 	// base texture
-    m_Base.DestroyShader();
+	m_Base.DestroyShader();
 	// detail objects
-	for (DetailIt it=objects.begin(); it!=objects.end(); it++)
-    	((EDetail*)(*it))->OnDeviceDestroy();
-	hw_Unload	();
+	for (DetailIt it = objects.begin(); it != objects.end(); it++)
+	{
+		((EDetail*)(*it))->OnDeviceDestroy();
+	}
+	hw_Unload();
 }
-
 
 void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 {
@@ -235,6 +235,7 @@ void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 		m_SnapObjects.remove(O);
     }
 }
+
 void EDetailManager::OnSynchronize()
 {
 }
@@ -244,10 +245,11 @@ void EDetailManager::OnSceneUpdate()
 
 void EDetailManager::OnFrame()
 {
-    if (m_RTFlags.is(flRTGenerateBaseMesh)&&m_Base.Valid()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,false);
-	    m_Base.CreateRMFromObjects(m_BBox,m_SnapObjects);
-    }
+	if (m_RTFlags.is(flRTGenerateBaseMesh) && m_Base.Valid())
+	{
+		m_RTFlags.set(flRTGenerateBaseMesh, false);
+		m_Base.CreateRMFromObjects(m_BBox, m_SnapObjects);
+	}
 }
 
 void EDetailManager::ExportColorIndices(const char* fname)
@@ -487,7 +489,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
     }
 
     // detail density
-    ps_r__Detail_density = ini.r_float("main", "detail_density");
+    ps_current_detail_density = ini.r_float("main", "detail_density");
 
     // base texture
     const char* s = ini.r_string("main", "base_texture");
@@ -644,7 +646,7 @@ void EDetailManager::SaveLTX(CInifile& ini, int id)
     }
 
     // detail density
-    ini.w_float("main", "detail_density", ps_r__Detail_density);
+    ini.w_float("main", "detail_density", ps_current_detail_density);
 
     u32 cnt_snap_objects = m_SnapObjects.size();
     ini.w_u32("main", "snap_objects_count", cnt_snap_objects);
@@ -711,7 +713,7 @@ bool EDetailManager::LoadStream(IReader& F)
     }
 
     if (F.find_chunk(DETMGR_CHUNK_DENSITY))
-		ps_r__Detail_density= F.r_float();
+		ps_current_detail_density= F.r_float();
 
 	// base texture
 	if(F.find_chunk(DETMGR_CHUNK_BASE_TEXTURE)){
@@ -795,7 +797,7 @@ void EDetailManager::SaveStream(IWriter& F)
 		F.close_chunk();
     }
     F.open_chunk		(DETMGR_CHUNK_DENSITY);
-    F.w_float			(ps_r__Detail_density);
+    F.w_float			(ps_current_detail_density);
     F.close_chunk		();
 	// snap objects
 	F.open_chunk		(DETMGR_CHUNK_SNAP_OBJECTS);
@@ -930,14 +932,14 @@ void EDetailManager::OnBaseTextureChange(PropValue* prop)
 void EDetailManager::FillProp(const char* pref, PropItemVec& items)
 {
 	PropValue* P;
-    P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_r__Detail_density);
+    P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_current_detail_density);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnDensityChange);
     P=PHelper().CreateChoose(items, PrepareKey(pref,"Base Texture"),					&m_Base.name, smTexture);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnBaseTextureChange);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw objects"),			&m_Flags,	flObjectsDraw);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw base texture"),		&m_Flags,	flBaseTextureDraw);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Base texture blended"),	&m_Flags,	flBaseTextureBlended);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw slot boxes"),			&m_Flags,	flSlotBoxesDraw);
+    PHelper().CreateFlag	(items, PrepareKey(pref,"Common\\Draw objects"),			&m_Flags,	flObjectsDraw);
+    PHelper().CreateFlag	(items, PrepareKey(pref,"Common\\Draw base texture"),		&m_Flags,	flBaseTextureDraw);
+    PHelper().CreateFlag	(items, PrepareKey(pref,"Common\\Base texture blended"),	&m_Flags,	flBaseTextureBlended);
+    PHelper().CreateFlag	(items, PrepareKey(pref,"Common\\Draw slot boxes"),			&m_Flags,	flSlotBoxesDraw);
 }
 
 void EDetailManager::ClearMask()
@@ -1155,7 +1157,9 @@ void EDetailManager::PaintAt(const Fvector& WorldPoint)
 void EDetailManager::RenderBrush()
 {
 	if (!BrushActive)
+	{
 		return;
+	}
 
 	const int Segments = 32;
 	Fvector Prev, Current;
@@ -1165,7 +1169,9 @@ void EDetailManager::RenderBrush()
 		Current.set(BrushPos.x + cosf(Angle) * BrushSize, BrushPos.y + 0.2f, BrushPos.z + sinf(Angle) * BrushSize);
 
 		if (Index > 0)
+		{
 			DU_impl.DrawLine(Prev, Current, PaintErase ? 0xFFFF4040 : 0xFF40FF40);
+		}
 
 		Prev = Current;
 	}
@@ -1173,13 +1179,22 @@ void EDetailManager::RenderBrush()
 
 bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)
 {
-	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
-    	((EDetail*)(*it))->OnDeviceCreate();
-        CEditableObject* E 	= ((EDetail*)(*it))->m_pRefs;
-		if (!E)				continue;
-	    CSurface* surf		= E->m_Surfaces.front(); VERIFY(surf);
-		inf->AppendTexture	(surf->m_Texture.c_str(),SSceneSummary::sttDO,0,0,"$DETAILS$");
-    }
+	static const shared_str DetailsObjName = "$DETAILS$";
+	for (CDetail* Obj : objects)
+	{
+		EDetail* Detail = (EDetail*)Obj;
+		Detail->OnDeviceCreate();
+
+		CEditableObject* E = Detail->m_pRefs;
+		if (!E)
+		{
+			continue;
+		}
+
+		CSurface* Surf = E->m_Surfaces.front();
+		VERIFY(Surf);
+		inf->AppendTexture(Surf->_Texture(), SSceneSummary::sttDO, 0, 0, DetailsObjName);
+	}
+
     return true;
 }
-

@@ -12,11 +12,11 @@ protected:
 
 public:
 						CStateGroupSquadMoveToRadiusEx	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateGroupSquadMoveToRadiusEx	() = default;
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual ~CStateGroupSquadMoveToRadiusEx	() override = default;
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 template<typename _Object>
@@ -29,11 +29,11 @@ protected:
 
 public:
 	CStateGroupSquadMoveToRadius	(_Object *obj) : inherited(obj, &data) {}
-	virtual				~CStateGroupSquadMoveToRadius	() = default;
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual ~CStateGroupSquadMoveToRadius	() override = default;
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 

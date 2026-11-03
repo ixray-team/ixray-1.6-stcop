@@ -17,6 +17,7 @@ void CBlender_taa::Compile(CBlender_Compile& C)
             C.r_dx10Texture("s_image_prev", r2_RT_generic0_prev);
             C.r_dx10Texture("s_position", r2_RT_P);
             C.r_dx10Texture("s_velocity", r2_RT_velocity);
+            C.r_dx10Texture("s_reactive", r2_RT_reactive);
             C.r_dx10Sampler("smp_rtlinear");
             C.r_dx10Sampler("smp_nofilter");
             C.r_End();

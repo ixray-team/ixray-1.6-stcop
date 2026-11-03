@@ -14,6 +14,7 @@ target_include_directories(FFxExtendedEntityesLogicObjects PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/../xrGame"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../xrGame/ui"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../xrServerEntities"
+	"${CMAKE_CURRENT_BINARY_DIR}/../xrGame/Generated"
 )
 target_compile_definitions(FFxExtendedEntityesLogicObjects PRIVATE
 	FFX_EXTENDED_ENTITYES_LOGIC_BUILD
@@ -29,7 +30,9 @@ if(MSVC)
 endif()
 
 target_link_libraries(FFxExtendedEntityesLogicObjects PRIVATE xrEngineCore xrPhysics xrScripts xrUI luabind IKAN)
-# Object compilation is independent of the game. Only the final plugin links to its host.
+# Object compilation uses the game reflection headers without depending on the game binary.
+add_dependencies(FFxExtendedEntityesLogicObjects xrGame_reflect)
+# Only the final plugin links to its host.
 add_dependencies(xrGame FFxExtendedEntityesLogicObjects)
 set_property(TARGET xrGame APPEND PROPERTY LINK_DEPENDS "$<TARGET_OBJECTS:FFxExtendedEntityesLogicObjects>" "${CMAKE_SOURCE_DIR}/cmake/FFxGameHostExports.cmake")
 

@@ -93,14 +93,14 @@ public:
 				: base::params(factor, min_factor_dist),
 				  max_evade_range(max_evade_range), pf_random_dir(pf_random_dir) {}
 
-		virtual bool update () = 0;
-		virtual	~params () {}
+		virtual bool update () override = 0;
+		virtual ~params () override {}
 	};
 
 public:
 	evade(params* params_) : base(params_), m_p_params(params_) {}
 
-	virtual vec calc_acceleration ();
+	virtual vec calc_acceleration () override;
 	
 private:
 	params* m_p_params;	
@@ -131,14 +131,14 @@ public:
 				: base::params(factor, min_factor_dist), arrive_range(arrive_range), 
 				 change_vel_range(change_vel_range), arrive_vel(arrive_vel) {}
 
-		virtual bool update () = 0;
-		virtual	~params () {}
+		virtual bool update () override = 0;
+		virtual ~params () override {}
 	};
 
 public:
 	pursue(params* params_) : base(params_), m_p_params(params_) {}
- 	
-	virtual vec calc_acceleration ();
+
+	virtual vec calc_acceleration () override;
 
 private:
 	params* m_p_params;
@@ -163,14 +163,14 @@ public:
 			   : base::params(factor), restrictor_pos(restrictor_pos), 
 			     max_allowed_range(max_allowed_range) {}
 
-		virtual bool update () = 0;
-		virtual	~params () {}
+		virtual bool update () override = 0;
+		virtual ~params () override {}
 	};
 
 public:
 	restrictor(params* params_) : base(params_), m_p_params(params_) {}
 
-    virtual vec calc_acceleration ();
+	virtual vec calc_acceleration () override;
 
 private:
 	params* m_p_params;
@@ -199,14 +199,14 @@ public:
 		       base::params(cr_fvector3(factor,0,0)), plane(plane), 
 			   conservativeness(conservativeness), angle_change(angle_change) {}
 
-		virtual bool update () = 0;
-		virtual	~params () {}
+		virtual bool update () override = 0;
+		virtual ~params () override {}
 	};
 
 public:
 	wander(params* params_) : base(params_), m_p_params(params_), m_wander_angle(0) {}
 
-	virtual vec   calc_acceleration ();
+	virtual vec   calc_acceleration () override;
 
 private:
 	float&        proj_x (vec& v);
@@ -241,16 +241,16 @@ public:
 			   : base::params(thrust_factor, min_factor_dist), turn_factor(turn_factor), 
 			     thrust_factor(thrust_factor) {}
 
-		virtual bool update () = 0;
+		virtual bool update () override = 0;
 		virtual bool test_obstacle (const vec& dest, vec& obstacle, vec& normal) = 0;
 
-		virtual	~params () {}
+		virtual ~params () override {}
 	};
 
 public:
 	containment(params* params_) : base(params_), m_p_params(params_) {}
 
-	virtual vec calc_acceleration ();
+	virtual vec calc_acceleration () override;
 	
 private:
 	params* m_p_params;
@@ -285,14 +285,14 @@ public:
 		virtual bool nomore_nearest  () = 0;
 	    virtual void next_nearest    (vec& v) = 0; // next nearest, false if finished
 
-		virtual bool update () = 0;
-		virtual	~params () {}
+		virtual bool update () override = 0;
+		virtual ~params () override {}
 	};
 
 public:
 	grouping(params* params_) : base(params_), m_p_params(params_) {}
 
-	virtual vec   calc_acceleration ();
+	virtual vec   calc_acceleration () override;
 	
 private:
 	params* m_p_params;

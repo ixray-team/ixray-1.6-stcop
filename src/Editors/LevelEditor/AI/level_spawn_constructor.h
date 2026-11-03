@@ -77,7 +77,7 @@ protected:
 	IC		const ILevelGraph			&level_graph						() const;
 	IC		const IGameLevelCrossTable	&cross_table						() const;
 	IC		LEVEL_CHANGER_STORAGE		&level_changers						() const;
-	IC		u32							level_id							(shared_str level_name) const;
+	IC		u32							level_id							(const shared_str& level_name) const;
 
 public:
 	IC									CLevelSpawnConstructor				(const IGameGraph::SLevel &level, CGameSpawnConstructor *game_spawn_constructor, bool no_separator_check);

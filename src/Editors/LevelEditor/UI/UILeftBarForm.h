@@ -6,6 +6,7 @@ public:
 	UILeftBarForm();
 	virtual ~UILeftBarForm();
 	virtual void Draw();
+	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 	void DrawObjectTool(ImVec2& WindowPadding, float PannelPadding, ImVec2& ItemSpacing);
 	IC bool IsSnapListMode()const { return m_SnapListMode; }
 

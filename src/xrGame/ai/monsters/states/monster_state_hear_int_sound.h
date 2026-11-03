@@ -10,11 +10,11 @@ protected:
 
 public:
 					CStateMonsterHearInterestingSound	(_Object *obj);
-	virtual			~CStateMonsterHearInterestingSound	() = default;
+	virtual ~CStateMonsterHearInterestingSound	() override = default;
 
-	virtual void	reselect_state						();
-	virtual void	setup_substates						();
-	virtual void	remove_links						(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	reselect_state						() override;
+	virtual void	setup_substates						() override;
+	virtual void	remove_links						(CObject* object_) override { inherited::remove_links(object_);}
 
 private:
 			Fvector	get_target_position					();

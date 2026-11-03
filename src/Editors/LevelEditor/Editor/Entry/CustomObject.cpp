@@ -71,7 +71,7 @@ void CCustomObject::OnUpdateTransform()
 
 void CCustomObject::Select( int flag )
 {
-    if (m_RT_Flags.is(flRT_Visible) && (!!m_RT_Flags.is(flRT_Selected) != flag))
+    if (Visible() && (!!m_RT_Flags.is(flRT_Selected) != flag))
     {
         m_RT_Flags.set(flRT_Selected, (flag == -1) ? (m_RT_Flags.is(flRT_Selected) ? false : true) : flag);
         //UI->RedrawScene		();
@@ -93,6 +93,14 @@ void CCustomObject::Show( bool flag )
         
     EContext.UI->RedrawScene();
 };
+
+void CCustomObject::SetRegionDisabled(bool flag)
+{
+	m_RT_Flags.set(flRT_RegionDisabled, flag);
+
+	if (flag)
+		m_RT_Flags.set(flRT_Selected, false);
+}
 
 void CCustomObject::Lock( bool flag )
 {

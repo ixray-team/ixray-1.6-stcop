@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "UI_ToolsCustom.h"
+#include "EditorSceneSubmit.h"
 #include "device.h"
 #include "ui_main.h"
 #include "../../../Layers/xrRenderPC_R4/ResourceManager.h"
@@ -76,6 +77,85 @@ bool CEditorRenderDevice::RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth)
 
 	Saved.Restore();
 	return true;
+}
+
+bool CEditorRenderDevice::RenderSceneFrame(const Fmatrix& View, const Fmatrix& Project, U32Vec& Pixels, u32& Width, u32& Height)
+{
+	ref_rt& Target = EContext.UI->RT;
+	if (!b_is_Ready || !Target || Target->pRT == nullptr)
+	{
+		return false;
+	}
+
+	const Fmatrix SavedView = mView;
+	const Fmatrix SavedProject = mProject;
+	const Fmatrix SavedFull = mFullTransform;
+	const Fvector SavedPosition = vCameraPosition;
+	const Fvector SavedDirection = vCameraDirection;
+	const Fvector SavedTop = vCameraTop;
+	const Fvector SavedRight = vCameraRight;
+
+	SRTState Saved;
+	Saved.Save();
+
+	mView = View;
+	mProject = Project;
+	mFullTransform.mul(mProject, mView);
+
+	Fmatrix Camera;
+	Camera.invert(mView);
+	vCameraPosition.set(Camera.c);
+	vCameraDirection.set(Camera.k);
+	vCameraTop.set(Camera.j);
+	vCameraRight.set(Camera.i);
+
+	RCache.set_xform_view(mView);
+	RCache.set_xform_project(mProject);
+	::Render->ViewBase.CreateFromMatrix(mFullTransform, FRUSTUM_P_ALL);
+
+	// No history: the temporal passes see a still camera
+	mView_old = mView;
+	mProject_old = mProject;
+	mFullTransform_old = mFullTransform;
+	RCache.set_xform_view_old(mView);
+	RCache.set_xform_project_old(mProject);
+	GEditorDraw.UpscalerReset = true;
+
+	++dwRenderFrame;
+	ResetMaterial();
+
+	GEditorSceneSubmit.BeginFrame();
+	RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
+	RImplementation.EditorOcclusionCulling = false;
+	::Render->Calculate();
+	::Render->Render();
+	GEditorDraw.UpscalerReset = false;
+
+	// Raw colors: the user gamma, brightness, contrast and color balance stay out of the capture
+	CGammaControl& Gamma = dxRenderDeviceRender::Instance().m_Gamma;
+	const CGammaControl SavedGamma = Gamma;
+	Gamma = CGammaControl();
+	RImplementation.EditorPresent(Target->pRT);
+	Gamma = SavedGamma;
+
+	const bool IsValid = ReadbackRT(Target, Pixels);
+	Width = Target->dwWidth;
+	Height = Target->dwHeight;
+
+	mView = SavedView;
+	mProject = SavedProject;
+	mFullTransform = SavedFull;
+	vCameraPosition = SavedPosition;
+	vCameraDirection = SavedDirection;
+	vCameraTop = SavedTop;
+	vCameraRight = SavedRight;
+	RCache.set_xform_view(mView);
+	RCache.set_xform_project(mProject);
+	::Render->ViewBase.CreateFromMatrix(mFullTransform, FRUSTUM_P_ALL);
+
+	Saved.Restore();
+	EContext.UI->RedrawScene();
+	return IsValid;
 }
 
 bool CEditorRenderDevice::ReadbackRT(ref_rt& RenderTarget, U32Vec& Pixels)

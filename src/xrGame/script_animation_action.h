@@ -36,7 +36,7 @@ public:
 	// Monster
 	// -------------------------------------------------------------------------------------------------
 	IC				CScriptAnimationAction	(MonsterSpace::EScriptMonsterAnimAction tAnimAction, int index);
-	virtual			~CScriptAnimationAction	();
+	virtual ~CScriptAnimationAction	() override;
 	IC		void	SetAnimation			(const char* caAnimationToPlay);
 	IC		void	SetMentalState			(MonsterSpace::EMentalState tMentalState);
 	IC		void	initialize				();

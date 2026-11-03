@@ -49,7 +49,7 @@ public:
 
 public:
 									CSE_ALifeInventoryItem	(const char* caSection);
-	virtual							~CSE_ALifeInventoryItem	();
+virtual ~CSE_ALifeInventoryItem	() override;
 	// we need this to prevent virtual inheritance :-(
 	virtual CSE_Abstract			*base					() { return nullptr; }
 	virtual const CSE_Abstract		*base					() const { return nullptr; }
@@ -91,14 +91,14 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeItem,CSE_ALifeDynamicObjectVisual,CSE_ALif
 	bool							m_physics_disabled;
 
 									CSE_ALifeItem	(const char* caSection);
-	virtual							~CSE_ALifeItem	();
-	virtual CSE_Abstract			*base			();
-	virtual const CSE_Abstract		*base			() const;
-	virtual CSE_Abstract			*init					();
-	virtual CSE_Abstract			*cast_abstract			() {return this;};
-	virtual CSE_ALifeInventoryItem	*cast_inventory_item	() {return this;};
-	virtual bool					Net_Relevant			();
-	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
+virtual ~CSE_ALifeItem	() override;
+virtual CSE_Abstract			*base			() override;
+virtual const CSE_Abstract		*base			() const override;
+virtual CSE_Abstract			*init					() override;
+virtual CSE_Abstract			*cast_abstract			() override {return this;};
+virtual CSE_ALifeInventoryItem	*cast_inventory_item	() override {return this;};
+virtual bool					Net_Relevant			() override;
+virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ) override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch,CSE_ALifeItem)
@@ -112,8 +112,8 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch,CSE_ALifeItem)
 	bool							m_nightvision_active;
 	bool							m_attached;
 									CSE_ALifeItemTorch	(const char* caSection);
-    virtual							~CSE_ALifeItemTorch	();
-	virtual bool					Net_Relevant			();
+virtual ~CSE_ALifeItemTorch	() override;
+virtual bool					Net_Relevant			() override;
 
 SERVER_ENTITY_DECLARE_END
 
@@ -122,18 +122,18 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemAmmo,CSE_ALifeItem)
 	u16								m_boxSize;
 
 									CSE_ALifeItemAmmo	(const char* caSection);
-	virtual							~CSE_ALifeItemAmmo	();
-	virtual CSE_ALifeItemAmmo		*cast_item_ammo		()  {return this;};
-	virtual bool					can_switch_online	() const;
-	virtual bool					can_switch_offline	() const;
+virtual ~CSE_ALifeItemAmmo	() override;
+virtual CSE_ALifeItemAmmo		*cast_item_ammo		() override {return this;};
+virtual bool					can_switch_online	() const override;
+virtual bool					can_switch_offline	() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFuel, CSE_ALifeItem)
 	CSE_ALifeItemFuel(LPCSTR caSection);
-	virtual							~CSE_ALifeItemFuel();
-	virtual CSE_ALifeItemFuel* cast_item_fuel() override { return this; }
-	virtual bool					can_switch_online() const;
-	virtual bool					can_switch_offline() const;
+virtual ~CSE_ALifeItemFuel() override;
+virtual CSE_ALifeItemFuel* cast_item_fuel() override { return this; }
+virtual bool					can_switch_online() const override;
+virtual bool					can_switch_offline() const override;
 SERVER_ENTITY_DECLARE_END
 
 
@@ -201,10 +201,10 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	u32								m_ef_weapon_type;
 
 									CSE_ALifeItemWeapon	(const char* caSection);
-	virtual							~CSE_ALifeItemWeapon();
-	virtual void					OnEvent				(NET_Packet& P, u16 type, u32 time, ClientID sender );
-	virtual u32						ef_main_weapon_type	() const;
-	virtual u32						ef_weapon_type		() const;
+virtual ~CSE_ALifeItemWeapon() override;
+virtual void					OnEvent				(NET_Packet& P, u16 type, u32 time, ClientID sender ) override;
+virtual u32						ef_main_weapon_type	() const override;
+virtual u32						ef_weapon_type		() const override;
 	u8								get_slot			();
 	u16								get_ammo_limit		();
 	u16								get_ammo_total		();
@@ -213,9 +213,9 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	void							clone_addons		(CSE_ALifeItemWeapon* parent);
 	void							clone_upgrades		(CSE_ALifeItemWeapon* parent);
 
-	virtual bool					Net_Relevant		();
+virtual bool					Net_Relevant		() override;
 
-	virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
 
 #ifndef XRGAME_EXPORTS
 	void OnEditorMagazineTypeChanged(PropValue*);
@@ -225,57 +225,57 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFlamethrower, CSE_ALifeItemWeapon)
 	CSE_ALifeItemFlamethrower(LPCSTR caSection);
-	virtual ~CSE_ALifeItemFlamethrower();
+virtual ~CSE_ALifeItemFlamethrower() override;
 
-	virtual CSE_ALifeItemFlamethrower* cast_item_flamethrower() override { return this; }
+virtual CSE_ALifeItemFlamethrower* cast_item_flamethrower() override { return this; }
 SERVER_ENTITY_DECLARE_END
 
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazined,CSE_ALifeItemWeapon)
 u8			m_u8CurFireMode;
 CSE_ALifeItemWeaponMagazined(const char* caSection);
-virtual							~CSE_ALifeItemWeaponMagazined();
+virtual ~CSE_ALifeItemWeaponMagazined() override;
 
-virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponMagazinedWGL, CSE_ALifeItemWeaponMagazined)
 bool			m_bGrenadeMode = false;
 CSE_ALifeItemWeaponMagazinedWGL(const char* caSection);
-virtual							~CSE_ALifeItemWeaponMagazinedWGL();
+virtual ~CSE_ALifeItemWeaponMagazinedWGL() override;
 
-virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
-virtual CSE_ALifeItemWeaponMagazinedWGL	*cast_item_weapon_magazined_wgl	() {return this;}
+virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
+virtual CSE_ALifeItemWeaponMagazinedWGL	*cast_item_weapon_magazined_wgl	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponShotGun,CSE_ALifeItemWeaponMagazined)
 	xr_vector<u8>				m_AmmoIDs;
 								CSE_ALifeItemWeaponShotGun(const char* caSection);
-virtual							~CSE_ALifeItemWeaponShotGun();
+virtual ~CSE_ALifeItemWeaponShotGun() override;
 
-virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponAutoShotGun,CSE_ALifeItemWeaponShotGun)
 								CSE_ALifeItemWeaponAutoShotGun(const char* caSection);
-virtual							~CSE_ALifeItemWeaponAutoShotGun();
+virtual ~CSE_ALifeItemWeaponAutoShotGun() override;
 
-virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
+virtual CSE_ALifeItemWeapon		*cast_item_weapon	() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDetector,CSE_ALifeItem)
 	u32								m_ef_detector_type;
 									CSE_ALifeItemDetector(const char* caSection);
-	virtual							~CSE_ALifeItemDetector();
-	virtual u32						ef_detector_type() const;
-	virtual CSE_ALifeItemDetector	*cast_item_detector		() {return this;}
+virtual ~CSE_ALifeItemDetector() override;
+virtual u32						ef_detector_type() const override;
+virtual CSE_ALifeItemDetector	*cast_item_detector		() override {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact,CSE_ALifeItem)
 	float							m_fAnomalyValue;
 									CSE_ALifeItemArtefact	(const char* caSection);
-	virtual							~CSE_ALifeItemArtefact	();
-	virtual bool					Net_Relevant			();
+virtual ~CSE_ALifeItemArtefact	() override;
+virtual bool					Net_Relevant			() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA,CSE_ALifeItem)
@@ -284,58 +284,58 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemPDA,CSE_ALifeItem)
 	shared_str						m_info_portion;
 
 									CSE_ALifeItemPDA(const char* caSection);
-	virtual							~CSE_ALifeItemPDA();
-	virtual CSE_ALifeItemPDA		*cast_item_pda				() {return this;};
+virtual ~CSE_ALifeItemPDA() override;
+virtual CSE_ALifeItemPDA		*cast_item_pda				() override {return this;};
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDocument,CSE_ALifeItem)
 	shared_str							m_wDoc;
 									CSE_ALifeItemDocument(const char* caSection);
-	virtual							~CSE_ALifeItemDocument();
+virtual ~CSE_ALifeItemDocument() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemGrenade,CSE_ALifeItem)
 	u32								m_ef_weapon_type;
 									CSE_ALifeItemGrenade	(const char* caSection);
-	virtual							~CSE_ALifeItemGrenade	();
-	virtual u32						ef_weapon_type			() const;
+virtual ~CSE_ALifeItemGrenade	() override;
+virtual u32						ef_weapon_type			() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemExplosive,CSE_ALifeItem)
 									CSE_ALifeItemExplosive(const char* caSection);
-	virtual							~CSE_ALifeItemExplosive();
+virtual ~CSE_ALifeItemExplosive() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemBolt,CSE_ALifeItem)
 	u32								m_ef_weapon_type;
 									CSE_ALifeItemBolt	(const char* caSection);
-	virtual							~CSE_ALifeItemBolt	();
-	virtual bool					can_save			() const;
-	virtual bool					used_ai_locations	() const;
-	virtual u32						ef_weapon_type		() const;
+virtual ~CSE_ALifeItemBolt	() override;
+virtual bool					can_save			() const override;
+virtual bool					used_ai_locations	() const override;
+virtual u32						ef_weapon_type		() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemsNotSave, CSE_ALifeItem)
 	u32								m_ef_weapon_type;
 									CSE_ALifeItemsNotSave(const char* caSection);
-	virtual							~CSE_ALifeItemsNotSave();
-	virtual bool					can_save() const;
-	virtual bool					used_ai_locations() const;
-	virtual u32						ef_weapon_type() const;
+virtual ~CSE_ALifeItemsNotSave() override;
+virtual bool					can_save() const override;
+virtual bool					used_ai_locations() const override;
+virtual u32						ef_weapon_type() const override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemCustomOutfit,CSE_ALifeItem)
 	u32								m_ef_equipment_type;
 									CSE_ALifeItemCustomOutfit	(const char* caSection);
-	virtual							~CSE_ALifeItemCustomOutfit	();
-	virtual u32						ef_equipment_type			() const;
-	virtual bool					Net_Relevant				();
+virtual ~CSE_ALifeItemCustomOutfit	() override;
+virtual u32						ef_equipment_type			() const override;
+virtual bool					Net_Relevant				() override;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemHelmet,CSE_ALifeItem)
 									CSE_ALifeItemHelmet	(const char* caSection);
-	virtual							~CSE_ALifeItemHelmet	();
-	virtual bool					Net_Relevant			();
+virtual ~CSE_ALifeItemHelmet	() override;
+virtual bool					Net_Relevant			() override;
 SERVER_ENTITY_DECLARE_END
 
 #pragma warning(pop)

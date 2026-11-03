@@ -24,20 +24,20 @@ private:
 
 public:
 						CUITalkWnd();
-	virtual				~CUITalkWnd();
+	virtual ~CUITalkWnd() override;
 
 	IC		bool		playing_sound			()		 { return m_sound.is_playing(); }
 	IC	CInventoryOwner*OthersInvOwner			() const { return m_pOthersInvOwner;	 };
 
 			void		InitTalkWnd				();
 
-	virtual bool		StopAnyMove				(){return true;}
-	virtual void		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual bool		StopAnyMove				() override {return true;}
+	virtual void		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 
-	virtual void		Draw					();
-	virtual void		Update					();
-		
-	virtual void		Show					(bool status);
+	virtual void		Draw					() override;
+	virtual void		Update					() override;
+
+	virtual void		Show					(bool status) override;
 	
 	void				Stop					();
 	void				StopTalk				();
@@ -46,7 +46,7 @@ public:
 	void				NeedUpdateQuestions		();
 	bool				IsActiveTalkUi			();
 	void				InitOthersStartDialog	();
-	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
+	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action) override;
 	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
 	virtual bool		OnGamepadKeyHold		(int id) override;
 	void				SwitchToTrade			();
@@ -54,7 +54,7 @@ public:
 	void				AddIconedMessage		(const char* caption, const char* text, const char* texture_name, const char* templ_name);
     void				AddIconedMessage		(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	void				InitTalkDialog			();

@@ -31,8 +31,6 @@ extern STORY_PAIRS								story_ids;
 extern STORY_PAIRS								spawn_story_ids;
 
 extern UI_API void dump_list_wnd							();
-extern UI_API void dump_list_lines							();
-extern UI_API void dump_list_sublines						();
 extern UI_API void clean_wnd_rects							();
 extern UI_API void dump_list_xmls							();
 extern UI_API void CreateUIGeom								();
@@ -117,8 +115,6 @@ void clean_game_globals()
 	RELATION_REGISTRY::clear_relation_registry		();
 
 	dump_list_wnd									();
-	dump_list_lines									();
-	dump_list_sublines								();
 	clean_wnd_rects									();
 	xr_delete										(g_uiSpotXml);
 	dump_list_xmls									();

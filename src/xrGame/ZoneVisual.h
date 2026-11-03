@@ -11,11 +11,11 @@ class CVisualZone : public CAnomalyZone
 
 public:
 	CVisualZone();
-	virtual ~CVisualZone();
-	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual void SwitchZoneState(EZoneState new_state);
-	virtual void Load(const char* section);
+	virtual ~CVisualZone() override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void SwitchZoneState(EZoneState new_state) override;
+	virtual void Load(const char* section) override;
 	virtual void UpdateBlowout();
 
-	CVisualZone* cast_visual_zone() override { return this; }
+	virtual CVisualZone* cast_visual_zone() override { return this; }
 };

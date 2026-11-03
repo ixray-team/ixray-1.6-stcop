@@ -14,16 +14,16 @@ public:
 	string64	oB_Name	;	//. задел на будущее
 	string64	oA_Name	;	//. задел на будущее
 public:
-	virtual		const char*		getComment()	{ return "LEVEL: Implicit**detail";	}
-	virtual		bool		canBeDetailed()	{ return true; }
-	virtual		bool		canBeLMAPped()	{ return true; }
+	virtual const char*		getComment() override { return "LEVEL: Implicit**detail";	}
+	virtual bool		canBeDetailed() override { return true; }
+	virtual bool		canBeLMAPped() override { return true; }
 
-	virtual		void		Save			( IWriter&	fs);
-	virtual		void		Load			( IReader&	fs, u16 version);
+	virtual void		Save			( IWriter&	fs) override;
+	virtual void		Load			( IReader&	fs, u16 version) override;
 
-	virtual		void		Compile			( CBlender_Compile& C);
+	virtual void		Compile			( CBlender_Compile& C) override;
 
 	CBlender_BmmD();
-	virtual ~CBlender_BmmD();
+	virtual ~CBlender_BmmD() override;
 };
 

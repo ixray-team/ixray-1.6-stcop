@@ -15,7 +15,7 @@ struct SInventoryParseItem
 	FloatVec m_chances = {};
 };
 
-XREFLECT(IniRead)
+XREFLECT(IniRead, Owner="CInventoryItem")
 struct SInventoryItemDesc final
 {
 	using Registry = TDescRegistry<SInventoryItemDesc>;

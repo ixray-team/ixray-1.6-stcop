@@ -45,9 +45,11 @@ void CDS0_DebugRender::DestroyDebugShader(dbgShaderHandle shdHandle)
 {
 }
 
+#ifdef DEBUG
 void CDS0_DebugRender::dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
 {
 }
+#endif
 
 void CDS0_DebugRender::add_lines(const Fvector* vertices, const u32& vertex_count, const u32* pairs, const u32& pair_count, const u32& color)
 {

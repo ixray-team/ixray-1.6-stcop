@@ -12,7 +12,7 @@ private:
 	typedef CUIStatic inherited;
 public:
 				CUIMessageBox		();
-	virtual		~CUIMessageBox		();
+	virtual ~CUIMessageBox		() override;
 
 	//разновидности MessageBox
 	typedef enum {		
@@ -30,8 +30,8 @@ public:
 
 	virtual void InitMessageBox		(const char* xml_template);
 			void Clear				();
-	virtual void SetText			(const char* str);
-	virtual const char* GetText			();
+	virtual void SetText			(const char* str) override;
+	virtual const char* GetText			() override;
 	const char*		 GetHost			();
 	const char*		 GetPassword		();
 	const char*		 GetUserPassword	();
@@ -42,14 +42,14 @@ public:
 	void		 SetTextEditURL		(const char* text);
 	const char*		 GetTextEditURL		();
 
-	virtual bool OnMouseAction			(float x, float y, EUIMessages mouse_action);
-	virtual void SendMessage		(CUIWindow *pWnd, s16 msg, void *pData);
+	virtual bool OnMouseAction			(float x, float y, EUIMessages mouse_action) override;
+	virtual void SendMessage		(CUIWindow *pWnd, s16 msg, void *pData) override;
 
 	void		OnYesOk				();
 	void		OnNo				();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
 
 protected:
 	xr_string	m_ret_val;

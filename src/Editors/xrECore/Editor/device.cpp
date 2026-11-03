@@ -16,6 +16,8 @@
 #include "device_win_custom.h"
 #include "../../../Include/xrRender/UIRender.h"
 #include "../../../Include/xrRender/RenderFactory.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
+#include <lunasvg.h>
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
@@ -105,6 +107,8 @@ CEditorRenderDevice::~CEditorRenderDevice()
 
 typedef void __cdecl ttapi_Done_func(void);
 
+
+
 void CEditorRenderDevice::Initialize()
 {
     m_DefaultMat.set(1,1,1);
@@ -136,6 +140,13 @@ void CEditorRenderDevice::Initialize()
 	
 	SDL_ShowWindow(g_AppInfo.Window);
 	SDL_RaiseWindow(g_AppInfo.Window);
+
+	// The window has no background brush: show a black frame with the logo until the first editor frame
+	DrawStartupFrame(true);
+
+	// >>> UX-PROGRESS: the window exists now, so the startup progress can reach the taskbar.
+	CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
+	// <<< UX-PROGRESS
 	
 
 	if (psDeviceFlags.test(mtSound))
@@ -325,6 +336,10 @@ void CEditorRenderDevice::_Create(IReader* F)
 	DEV->OnDeviceCreate	(F);
 	::RImplementation.OnDeviceCreate	();
 
+	// The editor device skips dxRenderDeviceRender::OnDeviceCreate, but DU draws (PIE debug draw) use these shaders
+	dxRenderDeviceRender::Instance().m_WireShader.create("editor\\wire");
+	dxRenderDeviceRender::Instance().m_SelectionShader.create("editor\\selection");
+
 	GEditorDraw.OnDeviceCreate();
 
 	texture_null.create("ed\\ed_nodata");
@@ -346,6 +361,8 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
     EContext.UI->OnDeviceDestroy			();
 
 	GEditorDraw.OnDeviceDestroy();
+	dxRenderDeviceRender::Instance().m_WireShader.destroy();
+	dxRenderDeviceRender::Instance().m_SelectionShader.destroy();
 	texture_null.destroy		();
 
 	GEditorInstancing.OnDeviceDestroy();
@@ -495,9 +512,20 @@ void CEditorRenderDevice::FrameMove()
     dwTimeDelta		= iFloor(fTimeDelta*1000.f+0.5f);
     dwTimeContinual	= dwTimeGlobal;
 
+	// The paused game timers stop the game, not the camera of the editor
+	static CTimer CameraTimer;
+	static bool CameraTimerStarted = false;
+	float CameraDelta = fTimeDelta;
+	if (CameraTimerStarted)
+	{
+		CameraDelta = std::min(CameraTimer.GetElapsed_sec(), 0.1f);
+	}
+	CameraTimer.Start();
+	CameraTimerStarted = true;
+
 	if (!Tools->UpdateCamera())
 	{
-		EContext.UI->CurrentView().m_Camera.Update(fTimeDelta);
+		EContext.UI->CurrentView().m_Camera.Update(g_pauseMngr.Paused() ? CameraDelta : fTimeDelta);
 	}
 
     // process objects
@@ -611,6 +639,7 @@ void CEditorRenderDevice::CreateWindow()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
+	g_AppInfo.MainThread = Platform::GetCurrentThread();
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 #if _WINDOWS
 	SetForegroundWindow(EDevice->GetHWND());

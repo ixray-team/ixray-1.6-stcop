@@ -12,6 +12,7 @@
 
 bool UILogForm::bAutoScroll = true;
 bool UILogForm::bClearInPIE = false;
+bool (*UILogForm::HideFunctor)() = nullptr;
 string_path UILogForm::Filter ="";
 string_path UILogForm::Exec="";
 xr_vector<xr_string>* UILogForm::List = nullptr;
@@ -57,6 +58,11 @@ void UILogForm::Update()
 	if (!bAllowLogCommands)
 	{
 		FirstRun = false;
+		return;
+	}
+
+	if (HideFunctor != nullptr && HideFunctor())
+	{
 		return;
 	}
 

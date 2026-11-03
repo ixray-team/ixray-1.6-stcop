@@ -37,7 +37,7 @@ void UISectorTool::Draw()
 			//XRay::ImGui::Separator();
 			if (XRay::ImGui::Button("Recalculate Portals", { SizeX, 0 }))
 			{
-				LUI->LoaderEvent.run
+				LUI->LoaderEvent.Run
 				(
 					[]() 
 					{

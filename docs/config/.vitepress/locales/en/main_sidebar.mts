@@ -63,6 +63,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     collapsed: false,
     items: [
       { text: 'General information', link: '/en/weapon-system/weapon-classes' },
+      { text: 'Actor weapon modifiers', link: '/en/weapon-system/actor-weapon-modifiers' },
       { text: 'Explosive classes', link: '/en/weapon-system/explosive-classes' }
       ,{ text: 'Shot pattern system', link: '/en/weapon-system/shot-pattern-system' }
     ]

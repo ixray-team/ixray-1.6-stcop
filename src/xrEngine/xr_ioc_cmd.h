@@ -206,7 +206,7 @@ public :
 		value->invert(mask);
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,true);
@@ -215,17 +215,17 @@ public :
 		else InvalidSyntax();
 	}
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		xr_strcpy(S, value->test(mask) ? "on" : "off");
 	}
 
-	virtual void Info(TInfo& I)
+	virtual void Info(TInfo& I) override
 	{
 		xr_strcpy(I, "'on/off' or '1/0'");
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 
@@ -249,7 +249,7 @@ public :
 		return *smart_cast<CCC_Mask32*>(it->second)->value;
 	}
 
-	virtual CCC_Mask32* dcast_mask32() { return this; }
+	virtual CCC_Mask32* dcast_mask32() override { return this; }
 };
 
 class ENGINE_API CCC_Mask16 : public IConsole_Command
@@ -277,7 +277,7 @@ public		:
 		value->invert(mask);
 	}
 
-	virtual void Execute	(const char* args)
+	virtual void Execute	(const char* args) override
 	{
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,true);
@@ -285,12 +285,14 @@ public		:
 			value->set(mask,false);
 		else InvalidSyntax();
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	xr_strcpy(S,value->test(mask)?"on":"off"); }
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	xr_strcpy(I,"'on/off' or '1/0'"); }
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 		
@@ -313,7 +315,7 @@ public		:
 		return *smart_cast<CCC_Mask16*>(it->second)->value;
 	}
 
-	virtual CCC_Mask16* dcast_mask16() { return this; }
+	virtual CCC_Mask16* dcast_mask16() override { return this; }
 };
 
 class ENGINE_API CCC_ToggleMask : public IConsole_Command
@@ -329,19 +331,22 @@ public		:
 	{bEmptyArgsHandled=true;
 	}
 	bool GetValue()const{ return value->test(mask); }
-	virtual void	Execute	(const char* args)
+
+	virtual void	Execute	(const char* args) override
 	{
 		value->set(mask,!GetValue());
 		TStatus S;
 		xr_strconcat(S,cName," is ", value->test(mask)?"on":"off");
 		Log(S);
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	xr_strcpy(S,value->test(mask)?"on":"off"); }
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	xr_strcpy(I,"'on/off' or '1/0'"); }
 
-	void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 	  	
@@ -364,7 +369,7 @@ public		:
 		return *smart_cast<CCC_ToggleMask*>(it->second)->value;
 	}
 
-	virtual CCC_ToggleMask* dcast_tmask() { return this; }
+	virtual CCC_ToggleMask* dcast_tmask() override { return this; }
 };
 
 class ENGINE_API CCC_Token : public IConsole_Command
@@ -381,7 +386,7 @@ public		:
 	{
 	}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		const xr_token* tok = tokens;
 		while (tok->name) {
@@ -393,7 +398,8 @@ public		:
 		}
 		if (!tok->name) InvalidSyntax();
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{
 		const xr_token *tok = tokens;
 		while (tok->name) {
@@ -405,7 +411,8 @@ public		:
 		}
 		xr_strcpy(S,"?");
 	}
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		I[0]=0;
 		const xr_token *tok = GetToken();
@@ -419,8 +426,8 @@ public		:
 		}
 	}
 	virtual xr_token* GetToken(){return tokens;}
-	
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 		bool res = false;
@@ -464,7 +471,7 @@ public		:
 			return *smart_cast<CCC_Token*>(it->second)->value;
 	}
 
-	virtual CCC_Token* dcast_token() { return this; }
+	virtual CCC_Token* dcast_token() override { return this; }
 };
 
 class ENGINE_API CCC_Float : public IConsole_Command
@@ -486,23 +493,25 @@ public:
 		fmax = max;
 	}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		const float v = float(atof(args));
 		if (v< min - EPS || v> max + EPS ) InvalidSyntax();
 		else	*value = v;
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	
 		xr_sprintf	(S,sizeof(S),"%3.3f",*value);
 		while	(xr_strlen(S) && '0' == S[xr_strlen(S) - 1])	S[xr_strlen(S)-1] = 0;
 	}
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		xr_sprintf(I,sizeof(I),"Float value in range [%3.3f, %3.3f]",min,max);
 	}
-	
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 		
@@ -525,7 +534,7 @@ public:
 		return *smart_cast<CCC_Float*>(it->second)->value;
 	}
 
-	virtual CCC_Float* dcast_float() { return this; }
+	virtual CCC_Float* dcast_float() override { return this; }
 };
 
 class ENGINE_API CCC_Vector3 : public IConsole_Command
@@ -544,7 +553,7 @@ public:
 	Fvector GetValue() const { return *value; }
 	Fvector*		GetValuePtr	() const {return value; }
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		Fvector v;
 		if (3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z))
@@ -571,17 +580,17 @@ public:
 		value->set(v);
 	}
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		xr_sprintf(S, sizeof(S), "%3.3f, %3.3f, %3.3f", value->x, value->y, value->z);
 	}
 
-	virtual void Info(TInfo& I)
+	virtual void Info(TInfo& I) override
 	{
 		xr_sprintf(I, sizeof(I), "vector3 in range [(%3.3f, %3.3f, %3.3f) - (%3.3f, %3.3f, %3.3f)]", min.x, min.y, min.z, max.x, max.y, max.z);
 	}
-	
-	virtual void fill_tips(vecTips& tips, u32 mode)
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 		
@@ -604,7 +613,7 @@ public:
 		return *smart_cast<CCC_Vector3*>(it->second)->value;
 	}
 
-	virtual CCC_Vector3* dcast_vector() { return this; }
+	virtual CCC_Vector3* dcast_vector() override { return this; }
 };
 
 class ENGINE_API CCC_Integer : public IConsole_Command
@@ -710,7 +719,7 @@ public:
 	  value(V)
 	{}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		int Value = 0;
 		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) 
@@ -727,13 +736,13 @@ public:
 		}
 	}
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		S[0] = 0;
 		*value ? xr_strcat(S, "true") : xr_strcat(S, "false");
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 
@@ -756,7 +765,7 @@ public:
 		return *smart_cast<CCC_Boolean*>(it->second)->value;
 	}
 
-	virtual CCC_Boolean* dcast_bool() { return this; }
+	virtual CCC_Boolean* dcast_bool() override { return this; }
 };
 
 class ENGINE_API CCC_String : public IConsole_Command
@@ -775,22 +784,22 @@ public:
 		R_ASSERT(size>1);
 	}
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		strncpy_s(value, size, args, size - 1);
 	}
 
-	virtual void Status(TStatus& S)
+	virtual void Status(TStatus& S) override
 	{
 		xr_strcpy(S, value);
 	}
 
-	virtual void Info(TInfo& I)
+	virtual void Info(TInfo& I) override
 	{
 		xr_sprintf(I, sizeof(I), "String with up to %d characters", size);
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		TStatus str;
 
@@ -812,14 +821,14 @@ public:
 		return smart_cast<CCC_String*>(it->second)->value;
 	}
 
-	virtual CCC_String* dcast_string() { return this; }
+	virtual CCC_String* dcast_string() override { return this; }
 };
 
 class ENGINE_API CCC_SaveCFG : public IConsole_Command
 {
 public:
 	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
-	virtual void Execute(const char* args);
+	virtual void Execute(const char* args) override;
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
@@ -827,7 +836,7 @@ class ENGINE_API CCC_LoadCFG : public IConsole_Command
 public:
 	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
 	virtual bool allow(const char* cmd) { return true; }
-	virtual void Execute(const char* args);
+	virtual void Execute(const char* args) override;
 };
 
 class ENGINE_API CCC_LoadCFG_custom : public CCC_LoadCFG
@@ -836,5 +845,5 @@ class ENGINE_API CCC_LoadCFG_custom : public CCC_LoadCFG
 
 public:
 	CCC_LoadCFG_custom(const char* cmd);
-	virtual bool allow(const char* cmd);
+	virtual bool allow(const char* cmd) override;
 };

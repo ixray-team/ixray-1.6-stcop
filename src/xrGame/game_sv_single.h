@@ -11,7 +11,7 @@ private:
 
 public:
 									game_sv_Single			();
-	virtual							~game_sv_Single			();
+	virtual ~game_sv_Single			() override;
 
 	const char*				type_name				() const override { return "single";};
 	void				Create					(shared_str& options) override;

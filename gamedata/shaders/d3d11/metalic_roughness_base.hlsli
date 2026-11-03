@@ -2,7 +2,9 @@
 #define metalic_roughness_base_h_ixray_included
 
 #include "common.hlsli"
+#ifndef PI
 #define PI 3.141592653589793f
+#endif
 
 struct IXRayMaterial
 {

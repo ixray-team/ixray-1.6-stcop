@@ -2,7 +2,7 @@
 #ifndef CPHMOVEMENT_CONTROL_H
 #define CPHMOVEMENT_CONTROL_H
 
-//#include "../xrPhysics/PHCharacter.h"
+//#include "../xrPhysics/IPHCharacter.h"
 //#include "../xrPhysics/MathUtils.h"
 #include "../xrPhysics/PhysicsExternalCommon.h"
 #include "../xrPhysics/MathUtils.h"
@@ -26,7 +26,7 @@ class CPhysicsShellHolder;
 class IPhysicsShellHolder;
 class CPHCapture;
 class IPHCapture;
-class CPHCharacter;
+class IPHCharacter;
 class IPhysicsElement;
 
 
@@ -45,8 +45,8 @@ void 					in_shedule_Update	( u32 DT );
 void					PHCaptureObject 	( CPhysicsShellHolder* object, CPHCaptureBoneCallback* cb =0 );
 void					PHCaptureObject 	( CPhysicsShellHolder* object, u16 element );
 IPHCapture*				PHCapture			( );
-CPHCharacter*			PHCharacter			( ){ return m_character; }
-const CPHCharacter*		PHCharacter			( )const{ return m_character; }
+IPHCharacter*			PHCharacter			( ){ return m_character; }
+const IPHCharacter*		PHCharacter			( )const{ return m_character; }
 const IPhysicsElement*	IElement			( )const;
 void					PHReleaseObject		( );
 Fvector					PHCaptureGetNearestElemPos( const CPhysicsShellHolder* object );
@@ -58,7 +58,7 @@ void					SetRestrictionType( ERestrictionType rt);
 void					SetActorMovable( bool v );
 void					SetForcedPhysicsControl( bool v );
 bool					ForcedPhysicsControl( );
-void					UpdateObjectBox( CPHCharacter *ach );
+void					UpdateObjectBox( IPHCharacter *ach );
 void					VirtualMoveTo		( const Fvector	&in_pos, Fvector &out_pos );
 void					BlockDamageSet		( u64 steps_num );
 enum					JumpType 
@@ -101,7 +101,7 @@ private:
 	void				CheckEnvironment	( const Fvector& V );
 
 	CharacterType		eCharacterType;
-	CPHCharacter*		m_character;
+	IPHCharacter*		m_character;
 	IPHCapture  *		m_capture;
 
 	float				m_fGroundDelayFactor;
@@ -165,7 +165,6 @@ public:
 #endif
 
 	void				SetPLastMaterialIDX			(u16* p);
-//	dBodyID				GetBody						( )		;
 	const Fvector&		GetVelocity					( )		{ return vVelocity;	}
 	const Fvector&		GetPathDir					( )		{ return _vPathDir;	}
 	void				SetPathDir					( const Fvector& v);
@@ -197,14 +196,14 @@ public:
 	void				CalcMaximumVelocity			(float& /**dest/**/, float /**accel/**/, float /**friction/**/){};
 	void				ActivateBox					(DWORD id, bool Check = false);
 	bool				ActivateBoxDynamic			(DWORD id,int num_it=9,int num_steps=5,float resolve_depth=0.01f);
-	void				InterpolateBox				(DWORD id,float k);
+	virtual void				InterpolateBox				(DWORD id,float k) override;
 	EEnvironment		Environment					( )			{ return eEnvironment; }
 	EEnvironment		OldEnvironment				( )			{ return eOldEnvironment; }
 	void SetVisualScale(float Scale);
 	float GetVisualScale() const { return AppliedVisualScale; }
-	const Fbox&			Box							( )			{ return aabb; }
+	virtual const Fbox&			Box							( ) override { return aabb; }
 	DWORD				BoxID						( )const	{ return m_dwCurBox;}
-	const Fbox*			Boxes						( )			{return boxes;}
+	virtual const Fbox*			Boxes						( ) override {return boxes;}
 	float				FootRadius					( )			;
 	void				CollisionEnable 			(bool enable);
 	void				CollisionDynamicEnable(bool enable);
@@ -285,12 +284,12 @@ public:
 	void				update_last_material	()				;
 	u16					injurious_material_idx	()				;
 	CPHMovementControl(CObject* parent);
-	~CPHMovementControl(void);
+	virtual ~CPHMovementControl(void) override;
 
-	CPHCharacter		*character				()	{		return m_character; };
+	virtual IPHCharacter		*character				() override {		return m_character; };
 	void				NetRelcase				( CObject* O );
 private:
-	void				actor_calculate			(Fvector& vAccel,const Fvector& camDir, float ang_speed, float jump, float dt, bool bLight);
+	virtual void				actor_calculate			(Fvector& vAccel,const Fvector& camDir, float ang_speed, float jump, float dt, bool bLight) override;
 	void				UpdateCollisionDamage	( );
 	bool				MakeJumpPath			(xr_vector<DetailPathManager::STravelPathPoint> & out_path, 
 												 u32 & travel_point,

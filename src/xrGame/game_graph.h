@@ -28,8 +28,8 @@ private:
 	friend class CRenumbererConverter;
 public:
 	CGameGraph(const IReader &stream);
-	virtual ~CGameGraph();
-	virtual void set_current_level(u32 const level_id);
+	virtual ~CGameGraph() override;
+	virtual void set_current_level(u32 const level_id) override;
 	bool AppendLevelVertices(
 		const xr_vector<SGameGraphPatchVertex>& Vertices,
 		const xr_vector<SGameGraphPatchLink>& Links,

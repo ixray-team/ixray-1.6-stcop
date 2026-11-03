@@ -590,6 +590,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, HDR_Format);
 
 		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_SNORM);
+		ReactiveMask.create(r2_RT_reactive, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());
@@ -677,7 +678,8 @@ CRenderTarget::CRenderTarget()
 
 	//SSLR
 	{
-		if(RImplementation.o.deffered_reflecitons) 
+		// The editor toggles SSLR at runtime without a reset
+		if(RImplementation.o.deffered_reflecitons || (Device.IsEditorMode() && !RImplementation.o.dx11_use_legacy_light))
 		{
 			rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
 			rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);

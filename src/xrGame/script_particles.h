@@ -20,7 +20,7 @@ class CScriptParticlesCustom:
 {
 public:
 	CObjectAnimator*			m_animator;
-	virtual						~CScriptParticlesCustom();
+	virtual ~CScriptParticlesCustom() override;
 	CScriptParticles* m_owner;
 								CScriptParticlesCustom(CScriptParticles* owner, const char* caParticlesName);
 	virtual void				Update		(u32 dt, CFrustum& viewbase);

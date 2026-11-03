@@ -14,21 +14,21 @@ typedef CPhysicsShellHolder inherited;
 
 public:
 	CPhysicsSkeletonObject(void);
-	virtual ~CPhysicsSkeletonObject(void);
+virtual ~CPhysicsSkeletonObject(void) override;
 
 
-	virtual bool					net_Spawn			( CSE_Abstract* DC)																	;
-	virtual void					net_Destroy			()																				;
-	virtual void					Load				(const char* section)																;
-	virtual void					UpdateCL			( )																				;// Called each frame, so no need for dt
-	virtual void					shedule_Update		(u32 dt)																		;	//
-	virtual void					net_Save			(NET_Packet& P)																	;
-	virtual	bool					net_SaveRelevant	()																				;
-	virtual bool					UsedAI_Locations	()																				;
+virtual bool					net_Spawn			( CSE_Abstract* DC) override;
+virtual void					net_Destroy			() override;
+virtual void					Load				(const char* section) override;
+virtual void					UpdateCL			( ) override;// Called each frame, so no need for dt
+virtual void					shedule_Update		(u32 dt) override;	//
+virtual void					net_Save			(NET_Packet& P) override;
+virtual bool					net_SaveRelevant	() override;
+virtual bool					UsedAI_Locations	() override;
 protected:
-	virtual CPhysicsShellHolder		*PPhysicsShellHolder()													{return PhysicsShellHolder();}
-	virtual CPHSkeleton				*PHSkeleton			()																	{return this;}
-	virtual void					SpawnInitPhysics	(CSE_Abstract	*D)																;
+virtual CPhysicsShellHolder		*PPhysicsShellHolder() override {return PhysicsShellHolder();}
+virtual CPHSkeleton				*PHSkeleton			() override {return this;}
+virtual void					SpawnInitPhysics	(CSE_Abstract	*D) override;
 	virtual void					PHObjectPositionUpdate()																			;
 	virtual	void					CreatePhysicsShell	(CSE_Abstract	*e)																;
 };

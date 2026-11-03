@@ -157,6 +157,8 @@ void CRenderTarget::phase_combine()
 		GRHI->ClearTarget(rt_Generic_2->pRT);
 	}
 
+	GRHI->ClearTarget(ReactiveMask->pRT);
+
 	// Forward rendering
 	{
 		GPU_EVENT(Forward_rendering);
@@ -241,7 +243,8 @@ void CRenderTarget::phase_combine()
 		{
 			if(!phase_dlss())
 			{
-				ps_proxy_r_scale_mode = ps_r_scale_mode = 3;
+				Msg("! DLSS failed, falling back to FSR until video restart");
+				ps_r_scale_mode = 3;
 			}
 			break;
 		}

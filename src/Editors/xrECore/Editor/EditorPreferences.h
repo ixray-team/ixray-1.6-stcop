@@ -32,6 +32,9 @@ class ECORE_API CCustomPreferences:
 {
 protected:	// User declarations
 	UIPropertiesForm*	m_ItemProps;
+	// Folder paths of the property keys, in FillProp order
+	xr_vector<xr_string> NavCategories;
+	xr_string		SelectedCategory;
 	json            JSONData;
 public:
 	u32             start_w;
@@ -61,7 +64,6 @@ public:
 	float			tools_sens_scale;
 
 	bool bMoreStats = false;
-	bool OpenLighting = false;
 
 	// box pick
 	bool			bp_lim_depth;
@@ -81,6 +83,8 @@ public:
 	u32				scene_clear_color;
 	float			LightDistance = 150.f;
 	bool			OcclusionCulling = true;
+	bool			Instancing = true;
+	bool			ShadowInstancing = true;
 	// Lighting window
 	float			Hemi = 0.5f;
 	bool			DynamicLights = true;
@@ -115,6 +119,8 @@ protected:
 	virtual void 	Load				();
 	virtual void 	Save				();
 	virtual void    Draw();
+	void			RebuildProps		();
+	void			DrawNavNode			(const xr_string& Parent);
 public:				// User declarations
 					CCustomPreferences	();
 	virtual 		~CCustomPreferences	();

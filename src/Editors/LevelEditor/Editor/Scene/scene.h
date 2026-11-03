@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/communicate.h"
 #include "../xrCore/memory/doug_lea_allocator.h"
+#include "../../../xrECore/Editor/UndoJournal.h"
 
 extern doug_lea_area_allocator g_render_lua_allocator_area;
 
@@ -41,13 +42,6 @@ template<class _Ty, class _Other>	inline	bool operator!=(const doug_lea_alloc<_T
 
 class PropValue;
 struct SPBItem;
-
-#pragma pack( push,1 )
-struct UndoItem 
-{
-	char m_FileName[MAX_PATH];
-};
-#pragma pack( pop )
 
 class TProperties;
 
@@ -99,8 +93,8 @@ protected:
 
 	SceneToolsMap   m_SceneTools;
 
-	xr_deque<UndoItem> m_UndoStack;
-	xr_deque<UndoItem> m_RedoStack;
+	CUndoJournal	UndoJournal;
+	u32				ModifyCount = 0;
 
 	TProperties* m_SummaryInfo;
 
@@ -160,13 +154,19 @@ public:
 	bool 			Load(const char* map_name, bool bUndo);
 	bool 			LoadLTX(const char* map_name, bool bUndo);
 
-	void 			Save(const char* map_name, bool bUndo, bool bForceSaveAll);
 	void 			SaveLTX(const char* map_name, bool bUndo, bool bForceSaveAll);
 
 	bool 			LoadSelection(const char* fname);
 	void 			SaveSelection(ObjClassID classfilter, const char* fname);
 
 	void			SaveToolLTX(ObjClassID clsid, const char* fn);
+	void			SaveToolLTX(ESceneToolBase* tool, const char* fn);
+	// Level header: options, guid, camera and snap list
+	void			SaveMainLTX(CInifile& ini);
+	// One tool into its part file; reads only the tool, so the level backup runs it on a worker thread
+	void			SaveToolPart(ESceneToolBase* tool, const char* part_name, CMemoryWriter& save_cache);
+	static bool		IsSavedTool(ObjClassID clsid, ESceneToolBase* tool);
+	static xr_string	ToolPartName(ESceneToolBase* tool, const xr_string& part_prefix);
 	bool			LoadToolLTX(ObjClassID clsid, const char* fn);
 
 	void 			Unload(bool bEditableToolsOnly);
@@ -204,6 +204,8 @@ public:
 	void 			Render(const Fmatrix& camera);
 	// Geometry of the scene objects only (shadow-map passes of the renderer)
 	void 			RenderShadowCasters();
+	// Static objects of the scene passes, for the frame-wide prepared submit list
+	void 			PrepareSubmit();
 	void 			OnFrame(float dT);
 
 	virtual void 	AppendObject(CCustomObject* object, bool bExecUnd = true);
@@ -261,6 +263,8 @@ public:
 	void 			UndoSave();
 	bool 			Undo();
 	bool 			Redo();
+	void			CaptureUndoState(CUndoJournal::State& Parts);
+	void			RestoreUndoState(const CUndoJournal::State& Parts);
 
 	bool 			GetBox(Fbox& box, ObjClassID classfilter);
 	bool 			GetBox(Fbox& box, ObjectList& lst);
@@ -275,12 +279,14 @@ public:
 	void 			OnCreate();
 	void 			OnDestroy();
 	void 			Modified();
+	// Grows with every Modified call
+	u32				GetModifyCount() const { return ModifyCount; }
 	bool 			IfModified();
 	bool 			IsUnsaved();
 	bool 			IsModified();
 
-	int 			GetUndoCount() { return m_UndoStack.size(); }
-	int 			GetRedoCount() { return m_RedoStack.size(); }
+	size_t 			GetUndoCount() const { return UndoJournal.UndoCount(); }
+	size_t 			GetRedoCount() const { return UndoJournal.RedoCount(); }
 
 	bool 			Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTestGlow, bool bTestShaderCompatible, bool bFullTest);
 	void 			OnObjectsUpdate();

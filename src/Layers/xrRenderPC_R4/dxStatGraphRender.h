@@ -9,11 +9,11 @@
 class dxStatGraphRender : public IStatGraphRender
 {
 public:
-	virtual void Copy(IStatGraphRender &_in);
+	virtual void Copy(IStatGraphRender &_in) override;
 
-	virtual void OnDeviceCreate();
-	virtual void OnDeviceDestroy();
-	virtual void OnRender(CStatGraph &owner);
+	virtual void OnDeviceCreate() override;
+	virtual void OnDeviceDestroy() override;
+	virtual void OnRender(CStatGraph &owner) override;
 
 private:
 	void RenderBack(CStatGraph &owner);

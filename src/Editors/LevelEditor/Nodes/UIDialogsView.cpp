@@ -2,6 +2,17 @@
 #include "UIDialogsView.h"
 #include "../Editor/UI_LevelTools.h"
 #include "../../../xrEngine/string_table.h"
+#include "../../xrEUI/IconsFontAwesome7.h"
+#include "NodesCommon.h"
+#include "../Editor/XVisor/XVisor.h"
+#include "UINodesEditorForm.h"
+
+static const char* GraphWindow = "Dialog Graph###LogicGraph";
+static const char* OutlinerWindow = "Outliner###LogicOutliner";
+static const char* DetailsWindow = "Details###LogicDetails";
+static const char* MessagesWindow = "Message Log###LogicMessages";
+
+static constexpr size_t UndoLimit = 128;
 
 DialogEditor* DialogEditor::Instance = nullptr;
 
@@ -12,6 +23,10 @@ ImColor NodeHeaderColor(CDialogNode* Node)
 	if (Node->IsFinal)
 	{
 		return ImColor(110, 200, 120);
+	}
+	if (Node->IsBranch)
+	{
+		return ImColor(150, 110, 210);
 	}
 	if (Node->HasInfo.size() || Node->DontHasInfo.size() || Node->Precondition.size())
 	{
@@ -25,51 +40,366 @@ ImColor LinkColor = PinColorOut;
 
 void DrawPinArrow(bool Filled)
 {
-	const float Size = 12.0f;
-	ImVec2 Pos = ImGui::GetCursorScreenPos();
-	ImDrawList* DrawList = ImGui::GetWindowDrawList();
-	ImColor White(255, 255, 255, 255);
-	if (Filled)
-	{
-		DrawList->AddTriangleFilled(
-			ImVec2(Pos.x, Pos.y + 8),
-			ImVec2(Pos.x, Pos.y + 8 + Size),
-			ImVec2(Pos.x + Size, Pos.y + 8 + Size * 0.5f),
-			White
-		);
-	}
-	else
-	{
-		DrawList->AddTriangle(
-			ImVec2(Pos.x, Pos.y + 8),
-			ImVec2(Pos.x, Pos.y + 8 + Size),
-			ImVec2(Pos.x + Size, Pos.y + 8 + Size * 0.5f),
-			ImColor(255, 255, 255, 200),
-			1.5f
-		);
-	}
-	ImGui::Dummy(ImVec2(Size, Size));
+	ImGui::Dummy({ NodesUI::PinSize, NodesUI::PinSize });
+	NodesUI::DrawExecPin(ImGui::GetWindowDrawList(), ImGui::GetItemRectMin(), NodesUI::PinSize, NodesUI::ColorPin, Filled);
 }
 } // namespace
+
+static bool FindDialogTranslation(const shared_str& Id, xr_string& OutText)
+{
+	if (g_pStringTable == nullptr || !g_pStringTable->HasString(Id))
+	{
+		return false;
+	}
+
+	OutText = Platform::ANSI_TO_UTF8(g_pStringTable->translate(Id).c_str());
+	return true;
+}
+
+static void RequestDialogLocalization(CDialogNode* Node)
+{
+	if (DialogEditor::Instance != nullptr)
+	{
+		DialogEditor::Instance->OpenLocalization(Node);
+	}
+}
+
+static bool ContainsNoCase(const char* Str, const char* Sub)
+{
+	if (Sub == nullptr || Sub[0] == '\0')
+	{
+		return true;
+	}
+
+	for (; *Str != '\0'; ++Str)
+	{
+		const char* A = Str;
+		const char* B = Sub;
+		while (*A != '\0' && *B != '\0' && tolower((u8)*A) == tolower((u8)*B))
+		{
+			++A;
+			++B;
+		}
+
+		if (*B == '\0')
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
 
 DialogEditor::DialogEditor()
 {
 	Instance = this;
-	Editor = ed::CreateEditor();
+	ed::Config Config;
+	Config.SettingsFile = nullptr;
+	Editor = ed::CreateEditor(&Config);
 	SelectedNode = nullptr;
-	IsOpen = false;
+
+	CDialogNode::FindTranslation = &FindDialogTranslation;
+	CDialogNode::RequestLocalization = &RequestDialogLocalization;
 
 	Properties = new UIPropertiesForm();
-	Properties->TabIndex = 1;
+	Properties->SetModifiedEvent(TOnCloseEvent(this, &DialogEditor::OnPropertiesModified));
 
-	ContentBrowser = new CContentView("Content Browser##DE");
-	ContentBrowser->Init();
-	ContentBrowser->TabIndex = 1;
-	EContext.UI->Push(ContentBrowser, false);
+	// The same list the Content Browser uses to open dialogs
+	if (pSettings->line_exist("dialogs", "files"))
+	{
+		xr_string Files = pSettings->r_string("dialogs", "files");
+		Files.RemoveWhitespaces();
+		GameDialogs = Files.Split(',');
+	}
+}
+
+const char* DialogEditor::GetName() const
+{
+	return "Dialogs";
+}
+
+const char* DialogEditor::GetIcon() const
+{
+	return ICON_FA_COMMENT_DOTS;
+}
+
+void DialogEditor::GetWindows(xr_vector<SNodesWindow>& Windows) const
+{
+	Windows.push_back({ GraphWindow, ENodesDock::Graph });
+	Windows.push_back({ OutlinerWindow, ENodesDock::Outliner });
+	Windows.push_back({ DetailsWindow, ENodesDock::Details });
+	Windows.push_back({ MessagesWindow, ENodesDock::Bottom });
+}
+
+bool DialogEditor::IsModeModified() const
+{
+	return Modified;
+}
+
+bool DialogEditor::SaveMode()
+{
+	if (DialogFileName.empty())
+	{
+		return false;
+	}
+	SaveDialog();
+	return true;
+}
+
+bool DialogEditor::ReloadMode()
+{
+	if (DialogFileName.empty())
+	{
+		return false;
+	}
+	if (Modified && ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo, "Discard the changes of %s?", DialogFileName.c_str()) != mrYes)
+	{
+		return false;
+	}
+
+	const shared_str Dialog = LastOpenDialog;
+	OpenFileInstance(xr_path(DialogFileName));
+	for (const DialogPair& Pair : Dialogs)
+	{
+		if (Pair.first == Dialog)
+		{
+			OpenDialog(Pair.first, Pair.second);
+			LastOpenDialog = Pair.first;
+			break;
+		}
+	}
+	return true;
+}
+
+bool DialogEditor::UndoMode(bool Redo)
+{
+	if (ChangePending)
+	{
+		CommitChange();
+	}
+
+	xr_vector<xr_string>& From = Redo ? RedoStack : UndoStack;
+	xr_vector<xr_string>& To = Redo ? UndoStack : RedoStack;
+	if (From.empty() || File.GetRoot() == nullptr)
+	{
+		return false;
+	}
+
+	To.push_back(LastState);
+	LastState = From.back();
+	From.pop_back();
+	RestoreState(LastState);
+	Modified = LastState != SavedState;
+	return true;
+}
+
+void DialogEditor::MarkChanged()
+{
+	Modified = true;
+	ChangePending = true;
+}
+
+xr_string DialogEditor::CaptureState()
+{
+	XML_NODE* Root = File.GetRoot();
+	if (Root == nullptr)
+	{
+		return xr_string();
+	}
+	tinyxml2::XMLPrinter Printer;
+	Root->GetDocument()->Print(&Printer);
+	return Printer.CStr();
+}
+
+void DialogEditor::CommitChange()
+{
+	ChangePending = false;
+	const xr_string State = CaptureState();
+	if (State == LastState)
+	{
+		return;
+	}
+	UndoStack.push_back(LastState);
+	if (UndoStack.size() > UndoLimit)
+	{
+		UndoStack.erase(UndoStack.begin());
+	}
+	RedoStack.clear();
+	LastState = State;
+	Modified = State != SavedState;
+}
+
+void DialogEditor::RestoreState(const xr_string& State)
+{
+	XML_NODE* Root = File.GetRoot();
+	tinyxml2::XMLDocument Source;
+	if (Root == nullptr || Source.Parse(State.c_str()) != tinyxml2::XML_SUCCESS || Source.FirstChildElement() == nullptr)
+	{
+		return;
+	}
+
+	// The graph keeps its places and selection by the phrase names
+	ed::SetCurrentEditor(Editor);
+	xr_map<xr_string, ImVec2> Positions;
+	for (CDialogNode* Node : Nodes)
+	{
+		auto Iter = NodeIds.find(Node);
+		if (Iter != NodeIds.end())
+		{
+			Positions[Node->NodeName.c_str()] = ed::GetNodePosition(Iter->second);
+		}
+	}
+	const xr_string Selected = SelectedNode != nullptr ? SelectedNode->NodeName.c_str() : "";
+	const shared_str Dialog = LastOpenDialog;
+
+	// The root element stays: the file keeps a pointer to it
+	Root->DeleteChildren();
+	for (const XML_NODE* Child = Source.FirstChildElement()->FirstChild(); Child != nullptr; Child = Child->NextSibling())
+	{
+		Root->InsertEndChild(Child->DeepClone(Root->GetDocument()));
+	}
+
+	RebuildDialogList();
+	for (const DialogPair& Pair : Dialogs)
+	{
+		if (Pair.first == Dialog)
+		{
+			OpenDialog(Pair.first, Pair.second);
+			break;
+		}
+	}
+	if (LastOpenDialog != Dialog)
+	{
+		// The dialog is gone
+		for (auto Node : Nodes)
+		{
+			xr_delete(Node);
+		}
+		Nodes.clear();
+		Links.clear();
+		LastOpenDialog = nullptr;
+		SelectedNode = nullptr;
+		Properties->ClearProperties();
+		return;
+	}
+
+	bool AllPlaced = true;
+	for (CDialogNode* Node : Nodes)
+	{
+		auto Iter = Positions.find(Node->NodeName.c_str());
+		if (Iter != Positions.end())
+		{
+			ed::SetNodePosition(NodeIds[Node], Iter->second);
+		}
+		else
+		{
+			AllPlaced = false;
+		}
+		if (Node->NodeName == Selected.c_str())
+		{
+			PendingSelect = NodeIds[Node];
+			SelectNodeEvent(Node);
+		}
+	}
+	NeedLayout = !AllPlaced && Positions.empty();
+	FocusFirstNode = false;
+}
+
+xr_string DialogEditor::GetModePath() const
+{
+	if (DialogFileName.empty())
+	{
+		return xr_string();
+	}
+	string_path Path = {};
+	FS.update_path(Path, CONFIG_PATH, ("gameplay\\" + DialogFileName).c_str());
+	return Path;
+}
+
+void DialogEditor::SerializeMode(nlohmann::json& Data, bool IsSaving)
+{
+	if (IsSaving)
+	{
+		Data["file"] = DialogFileName.c_str();
+		Data["dialog"] = LastOpenDialog.size() > 0 ? LastOpenDialog.c_str() : "";
+		return;
+	}
+
+	auto FileIter = Data.find("file");
+	if (FileIter == Data.end() || !FileIter->is_string() || FileIter->get_ref<const nlohmann::json::string_t&>().empty())
+	{
+		return;
+	}
+
+	const xr_string FileName = FileIter->get_ref<const nlohmann::json::string_t&>().c_str();
+	string_path Path = {};
+	FS.update_path(Path, CONFIG_PATH, ("gameplay\\" + FileName).c_str());
+	if (!FS.exist(Path))
+	{
+		return;
+	}
+
+	OpenFileInstance(xr_path(FileName));
+	auto DialogIter = Data.find("dialog");
+	if (DialogIter != Data.end() && DialogIter->is_string())
+	{
+		const shared_str Dialog = DialogIter->get_ref<const nlohmann::json::string_t&>().c_str();
+		for (const DialogPair& Pair : Dialogs)
+		{
+			if (Pair.first == Dialog)
+			{
+				OpenDialog(Pair.first, Pair.second);
+				LastOpenDialog = Pair.first;
+				break;
+			}
+		}
+	}
+}
+
+void DialogEditor::DrawModeTopBar(float ButtonSize)
+{
+	auto Hint = [](const char* Text)
+	{
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("%s", Text);
+		}
+	};
+
+	ImGui::BeginDisabled(LastOpenDialog.size() == 0);
+	if (XRay::ImGui::ToolbarButton("##dialog_layout", ICON_FA_SITEMAP " Auto Layout", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
+	{
+		NeedLayout = true;
+	}
+	Hint("Arrange the phrases by their links");
+
+	ImGui::SameLine();
+	if (XRay::ImGui::ToolbarButton("##dialog_fit", ICON_FA_EXPAND " Fit", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersRight))
+	{
+		ed::SetCurrentEditor(Editor);
+		ed::NavigateToContent();
+	}
+	Hint("Show all phrases");
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();
+	ImGui::BeginDisabled(Dialogs.empty() && DialogFileName.empty());
+	if (XRay::ImGui::ToolbarButton("##dialog_new", ICON_FA_PLUS " New Dialog", nullptr, { 0.0f, ButtonSize }, ImDrawFlags_RoundCornersAll))
+	{
+		InputBox.Mode = InputBoxMode::DialogName;
+		InputBox.Buffer[0] = '\0';
+		InputBox.IsOpen = true;
+	}
+	Hint("Add a dialog to this file");
+	ImGui::EndDisabled();
 }
 
 DialogEditor::~DialogEditor()
 {
+	CDialogNode::FindTranslation = nullptr;
+	CDialogNode::RequestLocalization = nullptr;
+
 	for (auto Node : Nodes)
 	{
 		xr_delete(Node);
@@ -80,6 +410,11 @@ DialogEditor::~DialogEditor()
 	{
 		ed::DestroyEditor(Editor);
 		Editor = nullptr;
+	}
+
+	if (Instance == this)
+	{
+		Instance = nullptr;
 	}
 }
 
@@ -95,20 +430,37 @@ void DialogEditor_DrawInputBox(DialogEditor::InputBoxState& Box)
 
 	if (ImGui::BeginPopupModal("DialogInputBox", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::Text("Enter name:");
-		ImGui::InputText("##input", Box.Buffer, IM_ARRAYSIZE(Box.Buffer));
+		const char* Title = "Phrase ID";
+		if (Box.Mode == DialogEditor::InputBoxMode::BranchName)
+		{
+			Title = "Branch phrase ID";
+		}
+		else if (Box.Mode == DialogEditor::InputBoxMode::DialogName)
+		{
+			Title = "Dialog ID";
+		}
 
-		if (ImGui::Button("OK", ImVec2(120, 0)))
+		ImGui::TextUnformatted(Title);
+		if (ImGui::IsWindowAppearing())
+		{
+			ImGui::SetKeyboardFocusHere();
+		}
+
+		ImGui::SetNextItemWidth(260.f);
+		const bool IsEnter = ImGui::InputText("##input", Box.Buffer, IM_ARRAYSIZE(Box.Buffer), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank);
+
+		ImGui::BeginDisabled(Box.Buffer[0] == '\0');
+		if (ImGui::Button("OK", ImVec2(127, 0)) || (IsEnter && Box.Buffer[0] != '\0'))
 		{
 			Box.IsOpen = false;
 			Box.HasResult = true;
 			ImGui::CloseCurrentPopup();
 		}
+		ImGui::EndDisabled();
 
-		ImGui::SetItemDefaultFocus();
 		ImGui::SameLine();
 
-		if (ImGui::Button("Cancel", ImVec2(120, 0)))
+		if (ImGui::Button("Cancel", ImVec2(127, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
 		{
 			Box.Buffer[0] = '\0';
 			Box.IsOpen = false;
@@ -119,151 +471,368 @@ void DialogEditor_DrawInputBox(DialogEditor::InputBoxState& Box)
 	}
 }
 
-void DialogEditor::Draw()
+XML_NODE* DialogEditor::CurrentDialogNode()
 {
-	if (!IsOpen)
+	auto Iter = std::find_if(Dialogs.begin(), Dialogs.end(), [this](auto& Pair)
+							 { return LastOpenDialog == Pair.first; });
+
+	return Iter != Dialogs.end() ? Iter->second : nullptr;
+}
+
+void DialogEditor::DrawOutliner()
+{
+	if (Dock.Begin(OutlinerWindow))
+	{
+		ImGui::TextDisabled("%s", DialogFileName.empty() ? "No file" : DialogFileName.c_str());
+
+		const bool ShowFiles = DialogFileName.empty();
+		ImGui::SetNextItemWidth(-1);
+		ImGui::InputTextWithHint("##DialogFilter", ShowFiles ? ICON_FA_MAGNIFYING_GLASS " Filter files" : ICON_FA_MAGNIFYING_GLASS " Filter dialogs", DialogFilter, sizeof(DialogFilter));
+
+		if (ShowFiles)
+		{
+			// No file is opened: offer the game dialogs files
+			if (ImGui::BeginChild("##DialogFiles"))
+			{
+				int Shown = 0;
+				for (const xr_string& Name : GameDialogs)
+				{
+					if (Name.empty() || !ContainsNoCase(Name.c_str(), DialogFilter))
+					{
+						continue;
+					}
+
+					++Shown;
+					const xr_string Label = xr_string(ICON_FA_FILE " ") + Name;
+					if (ImGui::Selectable(Label.c_str()))
+					{
+						OpenFileInstance(xr_string(Name + ".xml"));
+						DialogFilter[0] = '\0';
+					}
+				}
+
+				if (Shown == 0)
+				{
+					ImGui::TextDisabled(GameDialogs.empty() ? "No dialogs files in [dialogs] files" : "No files match the filter");
+				}
+			}
+			ImGui::EndChild();
+		}
+		else if (ImGui::BeginChild("##ItemsInFile"))
+		{
+			int Shown = 0;
+			for (const auto& [ID, Node] : Dialogs)
+			{
+				if (!ContainsNoCase(ID.c_str(), DialogFilter))
+				{
+					continue;
+				}
+
+				++Shown;
+				const bool IsCurrent = LastOpenDialog == ID;
+				const xr_string Label = xr_string(ICON_FA_COMMENT_DOTS " ") + ID.c_str();
+				if (ImGui::Selectable(Label.c_str(), IsCurrent))
+				{
+					OpenDialog(ID, Node);
+					LastOpenDialog = ID;
+				}
+
+				if (IsCurrent && ImGui::IsWindowAppearing())
+				{
+					ImGui::SetScrollHereY();
+				}
+			}
+
+			if (Shown == 0)
+			{
+				ImGui::TextDisabled(Dialogs.empty() ? "The file has no dialogs" : "No dialogs match the filter");
+			}
+		}
+		if (!ShowFiles)
+		{
+			ImGui::EndChild();
+		}
+	}
+	ImGui::End();
+}
+
+void DialogEditor::DrawDetails()
+{
+	if (Dock.Begin(DetailsWindow))
+	{
+		if (RefreshProperties)
+		{
+			RefreshProperties = false;
+			SelectNodeEvent(SelectedNode);
+		}
+		Properties->Draw();
+	}
+	ImGui::End();
+}
+
+void DialogEditor::SelectPhrase(CDialogNode* Node)
+{
+	auto Iter = NodeIds.find(Node);
+	if (Iter != NodeIds.end())
+	{
+		PendingSelect = Iter->second;
+		PendingFocus = true;
+		SelectNodeEvent(Node);
+	}
+}
+
+void DialogEditor::DrawMessages()
+{
+	if (Dock.Begin(MessagesWindow))
+	{
+		int Count = 0;
+		for (CDialogNode* Node : Nodes)
+		{
+			const bool HasNext = std::any_of(Links.begin(), Links.end(), [Node](const NodeLink& Link) { return Link.Source == Node; });
+			const bool HasPrevious = Node == Nodes.front() || std::any_of(Links.begin(), Links.end(), [Node](const NodeLink& Link) { return Link.Target == Node; });
+
+			xr_string Text;
+			bool IsError = false;
+			if (!Node->IsBranch && (Node->Text.size() == 0 || g_pStringTable == nullptr || !g_pStringTable->HasString(Node->Text)))
+			{
+				Text = "the text is not localized";
+			}
+			else if (!HasPrevious)
+			{
+				Text = "nothing links to the phrase";
+				IsError = true;
+			}
+			else if (Node->IsBranch && !HasNext)
+			{
+				Text = "the branch has no next phrase";
+				IsError = true;
+			}
+			else
+			{
+				continue;
+			}
+
+			++Count;
+			ImGui::PushID(Node);
+			const xr_string Label = make_string<xr_string>("%s Phrase %s: %s", IsError ? ICON_FA_CIRCLE_XMARK : ICON_FA_TRIANGLE_EXCLAMATION, Node->NodeName.c_str(), Text.c_str());
+			ImGui::PushStyleColor(ImGuiCol_Text, (IsError ? NodesUI::ColorMissing : NodesUI::ColorWarning).Value);
+			if (ImGui::Selectable(Label.c_str(), Node == SelectedNode))
+			{
+				SelectPhrase(Node);
+			}
+			ImGui::PopStyleColor();
+			ImGui::PopID();
+		}
+
+		if (Count == 0)
+		{
+			ImGui::TextDisabled(LastOpenDialog.size() == 0 ? "Select a dialog" : ICON_FA_CHECK " No problems");
+		}
+	}
+	ImGui::End();
+}
+
+void DialogEditor::DrawCanvasToolbar()
+{
+	if (LastOpenDialog.size() == 0)
+	{
+		ImGui::AlignTextToFramePadding();
+		ImGui::TextDisabled("Select a dialog");
+		return;
+	}
+
+	ImGui::AlignTextToFramePadding();
+	ImGui::TextUnformatted(LastOpenDialog.c_str());
+	ImGui::SameLine();
+	ImGui::TextDisabled("%u phrases", (u32)Nodes.size());
+
+
+	// Phrases whose text is missing in the string table
+	xr_vector<CDialogNode*> Missing;
+	for (CDialogNode* Node : Nodes)
+	{
+		if (!Node->IsBranch && (Node->Text.size() == 0 || g_pStringTable == nullptr || !g_pStringTable->HasString(Node->Text)))
+		{
+			Missing.push_back(Node);
+		}
+	}
+
+	if (!Missing.empty())
+	{
+		ImGui::SameLine();
+		ImGui::PushStyleColor(ImGuiCol_Text, { 0.95f, 0.72f, 0.3f, 1.f });
+		const bool IsPressed = ImGui::Button(make_string<xr_string>(ICON_FA_TRIANGLE_EXCLAMATION " %u not localized", (u32)Missing.size()).c_str());
+		ImGui::PopStyleColor();
+		ImGui::SetItemTooltip("Go to the next phrase without a text");
+
+		if (IsPressed)
+		{
+			auto Current = std::find(Missing.begin(), Missing.end(), SelectedNode);
+			CDialogNode* Next = (Current == Missing.end() || std::next(Current) == Missing.end()) ? Missing.front() : *std::next(Current);
+			PendingSelect = NodeIds[Next];
+			PendingFocus = true;
+		}
+	}
+}
+
+void DialogEditor::DrawContextMenu()
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+	const bool Opened = ImGui::BeginPopup("##dialogscontextmenu");
+	ImGui::PopStyleVar(2);
+	if (!Opened)
 	{
 		return;
 	}
 
-	if (ImGui::Begin("Dialogs Editor", &IsOpen))
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+
+	if (SelectedNode != nullptr)
 	{
-		if (ImGui::BeginChild("Dialogs in file", {IsOpenList ? 300.f : 20.f, 0}))
+		ImGui::TextDisabled("Phrase %s", SelectedNode->NodeName.c_str());
+
+		const bool IsLocalized = SelectedNode->Text.size() > 0 && g_pStringTable != nullptr && g_pStringTable->HasString(SelectedNode->Text);
+		if (!SelectedNode->IsBranch && ImGui::MenuItemI("Localize Text...", ICON_FA_LANGUAGE, nullptr, false, !IsLocalized))
 		{
-			if (IsOpenList)
-			{
-				ImGui::SetNextItemWidth(300);
-				if (ImGui::BeginListBox("##ItemsInFile", {0, ImGui::GetWindowSize().y - 30}))
-				{
-					for (const auto& [ID, Node] : Dialogs)
-					{
-						bool bSelect = false;
-						if (ImGui::Selectable(ID.c_str(), &bSelect))
-						{
-							OpenDialog(ID, Node);
-							IsOpenList = !IsAutoHide;
-							LastOpenDialog = ID;
-						}
-					}
-					ImGui::Separator();
-					ImGui::EndListBox();
-				}
-
-				if (ImGui::Button("Save"))
-				{
-					SaveDialog();
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("+"))
-				{
-					InputBox.Mode = InputBoxMode::DialogName;
-					InputBox.Buffer[0] = '\0';
-					InputBox.IsOpen = true;
-				}
-
-				ImGui::SameLine();
-				ImGui::Checkbox("Auto Hide", &IsAutoHide);
-
-				ImGui::SameLine();
-				ImGui::SetCursorPosX(282);
-
-				if (ImGui::Button("<"))
-				{
-					IsOpenList = false;
-				}
-			}
-			else if (ImGui::Button(">"))
-			{
-				IsOpenList = true;
-			}
+			OpenLocalization(SelectedNode);
 		}
-		ImGui::EndChild();
-		ImGui::SameLine();
+
+		if (ImGui::MenuItemI("Delete Phrase", ICON_FA_TRASH, "Del"))
+		{
+			DeleteNode(SelectedNode);
+		}
+
+		ImGui::Separator();
+	}
+
+	if (ImGui::MenuItemI("Create Phrase", ICON_FA_PLUS))
+	{
+		InputBox.Mode = InputBoxMode::NodeName;
+		InputBox.Buffer[0] = '\0';
+
+		if (!Phrases.empty())
+		{
+			int NodeID = atoi(*Phrases.back().first) + 1;
+			xr_string Suggestion = xr_string::ToString(NodeID);
+			strcpy_s(InputBox.Buffer, Suggestion.c_str());
+		}
+		InputBox.IsOpen = true;
+	}
+
+	if (ImGui::MenuItemI("Create Branch Phrase", ICON_FA_CODE_BRANCH))
+	{
+		InputBox.Mode = InputBoxMode::BranchName;
+		InputBox.Buffer[0] = '\0';
+		InputBox.IsOpen = true;
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItemI("Auto Layout", ICON_FA_SITEMAP))
+	{
+		NeedLayout = true;
+	}
+
+	if (ImGui::MenuItemI("Fit to Content", ICON_FA_LOCATION_CROSSHAIRS))
+	{
+		ed::NavigateToContent();
+	}
+
+	ImGui::PopStyleVar();
+	ImGui::EndPopup();
+}
+
+void DialogEditor::HandleShortcuts()
+{
+	if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) || ImGui::GetIO().WantTextInput)
+	{
+		return;
+	}
+
+	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S, false))
+	{
+		SaveDialog();
+	}
+}
+
+void DialogEditor::OpenLocalization(CDialogNode* Node)
+{
+	if (Node == nullptr)
+	{
+		return;
+	}
+
+	// The game convention: <dialog>_<phrase>, stored in st_<dialogs file>
+	xr_string StringId = Node->Text.size() > 0 ? Node->Text.c_str() : make_string<xr_string>("%s_%s", LastOpenDialog.c_str(), Node->NodeName.c_str());
+	xr_string FileName = DialogFileName.empty() ? xr_string("st_dialogs_editor.xml") : "st_" + DialogFileName;
+
+	const xr_string NodeName = Node->NodeName.c_str();
+	Localization.Open(StringId.c_str(), ("Phrase " + NodeName).c_str(), FileName.c_str(), [this, NodeName](const char* Id)
+	{
+		OnPhraseLocalized(NodeName.c_str(), Id);
+	});
+}
+
+void DialogEditor::OnPhraseLocalized(const char* NodeName, const char* StringId)
+{
+	for (CDialogNode* Node : Nodes)
+	{
+		if (Node->NodeName == NodeName)
+		{
+			Node->SetText(StringId);
+			MarkChanged();
+			if (Node == SelectedNode)
+			{
+				SelectNodeEvent(Node);
+			}
+			break;
+		}
+	}
+}
+
+void DialogEditor::DrawMode()
+{
+	Dock.BeginFrame();
+	DrawGraph();
+	DrawOutliner();
+	DrawDetails();
+	DrawMessages();
+	Localization.Draw();
+
+	// The changes of a frame are one step of the history
+	if (ChangePending)
+	{
+		CommitChange();
+	}
+}
+
+void DialogEditor::DrawGraph()
+{
+	if (Dock.Begin(GraphWindow))
+	{
+		HandleShortcuts();
+
+		ImGui::BeginGroup();
+		DrawCanvasToolbar();
 
 		ed::SetCurrentEditor(Editor);
+		NodesUI::ApplyGraphStyle();
 
 		if (NeedLayout)
 		{
-			LayoutNodes();
-			NeedLayout = false;
+			// Once more in the next frame when the sizes of the nodes are not known yet
+			NeedLayout = !LayoutNodes();
+			FocusFirstNode = true;
 		}
 
-		bool minimapClicked = false;
-		ImVec2 minimapClickCanvas;
-		{
-			float inf = std::numeric_limits<float>::infinity();
-			ImVec2 bMin(inf, inf), bMax(-inf, -inf);
-			for (auto* Node : Nodes)
-			{
-				auto it = NodeIds.find(Node);
-				if (it == NodeIds.end())
-				{
-					continue;
-				}
-				ImVec2 pos = ed::GetNodePosition(it->second);
-				ImVec2 size = ed::GetNodeSize(it->second);
-				if (pos.x < bMin.x)
-				{
-					bMin.x = pos.x;
-				}
-				if (pos.y < bMin.y)
-				{
-					bMin.y = pos.y;
-				}
-				if (pos.x + size.x > bMax.x)
-				{
-					bMax.x = pos.x + size.x;
-				}
-				if (pos.y + size.y > bMax.y)
-				{
-					bMax.y = pos.y + size.y;
-				}
-			}
-			if (bMin.x < inf)
-			{
-				float mapW = 180.0f, mapH = 130.0f, padding = 8.0f;
-				ImVec2 avail = ImGui::GetContentRegionAvail();
-				ImVec2 cMin = ImGui::GetCursorScreenPos();
-				ImVec2 mPos(cMin.x + avail.x - mapW - padding, cMin.y + avail.y - mapH - padding);
-
-				ImVec2 mp = ImGui::GetMousePos();
-				if (ImGui::IsMouseClicked(0) &&
-					mp.x >= mPos.x && mp.x <= mPos.x + mapW &&
-					mp.y >= mPos.y && mp.y <= mPos.y + mapH)
-				{
-					float cW = bMax.x - bMin.x;
-					float cH = bMax.y - bMin.y;
-					if (cW < 1.0f)
-					{
-						cW = 1.0f;
-					}
-					if (cH < 1.0f)
-					{
-						cH = 1.0f;
-					}
-					float margin = 20.0f;
-					float sx = mapW / (cW + margin * 2);
-					float sy = mapH / (cH + margin * 2);
-					float s = (sx < sy) ? sx : sy;
-					float dW = cW * s;
-					float dH = cH * s;
-					ImVec2 dO(mPos.x + (mapW - dW) * 0.5f, mPos.y + (mapH - dH) * 0.5f);
-
-					float cx = (mp.x - dO.x) / s + bMin.x;
-					float cy = (mp.y - dO.y) / s + bMin.y;
-					minimapClickCanvas = ImVec2(cx, cy);
-					minimapClicked = true;
-
-					ImGui::GetIO().MouseDown[0] = false;
-				}
-			}
-		}
+		Minimap.TakeClick();
 
 		ed::Begin("Canvas");
 		{
 			if (PendingSelect)
 			{
+				ed::ClearSelection();
 				ed::SelectNode(PendingSelect);
 				PendingSelect = ed::NodeId(0);
 			}
@@ -280,36 +849,6 @@ void DialogEditor::Draw()
 				}
 			}
 
-			if (minimapClicked)
-			{
-				ed::NodeId bestId = 0;
-				float bestDist = std::numeric_limits<float>::infinity();
-				for (auto* Node : Nodes)
-				{
-					auto it = NodeIds.find(Node);
-					if (it == NodeIds.end())
-					{
-						continue;
-					}
-
-					ImVec2 pos = ed::GetNodePosition(it->second);
-					ImVec2 size = ed::GetNodeSize(it->second);
-					float dx = minimapClickCanvas.x - (pos.x + size.x * 0.5f);
-					float dy = minimapClickCanvas.y - (pos.y + size.y * 0.5f);
-					float d = dx * dx + dy * dy;
-					if (d < bestDist)
-					{
-						bestDist = d;
-						bestId = it->second;
-					}
-				}
-				if (bestId)
-				{
-					ed::ClearSelection();
-					ed::SelectNode(bestId);
-				}
-			}
-
 			UpdateSelection();
 
 			ConnectedPins.clear();
@@ -322,60 +861,66 @@ void DialogEditor::Draw()
 			for (auto* Node : Nodes)
 			{
 				DrawNode(Node);
+				Minimap.AddNode(NodeIds[Node], NodeHeaderColor(Node));
 			}
 
 			for (const auto& Link : Links)
 			{
 				ed::Link(Link.Id, Link.Start, Link.End, LinkColor, 2.0f);
+				if (NodeIds.contains(Link.Source) && NodeIds.contains(Link.Target))
+				{
+					Minimap.AddLink(NodeIds[Link.Source], NodeIds[Link.Target]);
+				}
 			}
 
 			HandleLinkCreation();
 			HandleDeletion();
+
+			if (PendingFocus && ed::GetSelectedObjectCount() > 0)
+			{
+				ed::NavigateToSelection(true);
+				PendingFocus = false;
+			}
+
+			// Inside Begin/End the mouse is in canvas space
+			const ImVec2 CanvasMouse = ImGui::GetMousePos();
+
+			ed::Suspend();
+			ed::NodeId ContextNode = 0;
+			if (ed::ShowNodeContextMenu(&ContextNode))
+			{
+				ed::ClearSelection();
+				ed::SelectNode(ContextNode);
+				SelectNodeEvent(NodeFromId(ContextNode));
+				ContextMouseCanvas = CanvasMouse;
+				ImGui::OpenPopup("##dialogscontextmenu");
+			}
+			else if (ed::ShowBackgroundContextMenu())
+			{
+				ContextMouseCanvas = CanvasMouse;
+				ImGui::OpenPopup("##dialogscontextmenu");
+			}
+
+			if (LastOpenDialog.size() > 0)
+			{
+				DrawContextMenu();
+			}
+			ed::Resume();
 		}
 		ed::End();
 
-		if (minimapClicked && ed::GetSelectedObjectCount() > 0)
+		// After End: the minimap is an overlay in screen space
+		Minimap.Draw(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+		ImGui::EndGroup();
+
+		if (LastOpenDialog.size() == 0)
 		{
-			ed::NavigateToSelection(true, 0.0f);
-		}
-
-		DrawMinimap();
-
-		if (ImGui::IsMouseReleased(1))
-		{
-			ContextMouseCanvas = ed::ScreenToCanvas(ImGui::GetMousePos());
-			ImGui::OpenPopup("##dialogscontextmenu");
-		}
-
-		if (ImGui::BeginPopup("##dialogscontextmenu"))
-		{
-			if (ImGui::MenuItem("Create Node"))
-			{
-				InputBox.Mode = InputBoxMode::NodeName;
-				InputBox.Buffer[0] = '\0';
-
-				if (!Phrases.empty())
-				{
-					int NodeID = atoi(*Phrases.back().first) + 1;
-					xr_string Suggestion = xr_string::ToString(NodeID);
-					strcpy_s(InputBox.Buffer, Suggestion.c_str());
-				}
-				InputBox.IsOpen = true;
-			}
-
-			if (ImGui::MenuItem("Create Branch Node"))
-			{
-				InputBox.Mode = InputBoxMode::BranchName;
-				InputBox.Buffer[0] = '\0';
-				InputBox.IsOpen = true;
-			}
-
-			if (SelectedNode != nullptr && ImGui::MenuItem("Delete Node"))
-			{
-				DeleteNode(SelectedNode);
-			}
-
-			ImGui::EndPopup();
+			const char* Hint = Dialogs.empty() ? ICON_FA_COMMENT_DOTS "  Select a dialogs file in the Outliner" : ICON_FA_COMMENT_DOTS "  Select a dialog in the Outliner";
+			const ImVec2 Min = ImGui::GetItemRectMin();
+			const ImVec2 Max = ImGui::GetItemRectMax();
+			const ImVec2 Size = ImGui::CalcTextSize(Hint);
+			ImGui::GetWindowDrawList()->AddText({ (Min.x + Max.x - Size.x) * 0.5f, Min.y + (Max.y - Min.y) * 0.45f }, ImGui::GetColorU32(ImGuiCol_TextDisabled), Hint);
 		}
 
 		if (InputBox.IsOpen)
@@ -387,14 +932,13 @@ void DialogEditor::Draw()
 		{
 			InputBox.HasResult = false;
 
-			auto Iter = std::find_if(Dialogs.begin(), Dialogs.end(), [this](auto& Pair)
-									 { return LastOpenDialog == Pair.first; });
+			XML_NODE* DialogNode = CurrentDialogNode();
 
 			if (InputBox.Mode == InputBoxMode::NodeName || InputBox.Mode == InputBoxMode::BranchName)
 			{
-				if (Iter != Dialogs.end())
+				if (DialogNode != nullptr)
 				{
-					if (XML_NODE* RootNode = File.NavigateToNode(Iter->second, "phrase_list"))
+					if (XML_NODE* RootNode = File.NavigateToNode(DialogNode, "phrase_list"))
 					{
 						XML_NODE* NewNode = RootNode->ToElement()->InsertNewChildElement("phrase");
 						NewNode->ToElement()->SetAttribute("id", InputBox.Buffer);
@@ -409,10 +953,12 @@ void DialogEditor::Draw()
 						}
 
 						BuildIdMaps();
+						ed::SetCurrentEditor(Editor);
 						ed::SetNodePosition(NodeIds[MacroNode], ContextMouseCanvas);
 						PendingSelect = NodeIds[MacroNode];
 
 						SelectNodeEvent(MacroNode);
+						MarkChanged();
 					}
 				}
 			}
@@ -420,13 +966,17 @@ void DialogEditor::Draw()
 			{
 				XML_NODE* RootNode = nullptr;
 
-				if (Iter != Dialogs.end())
+				if (DialogNode != nullptr)
 				{
-					RootNode = Iter->second->Parent();
+					RootNode = DialogNode->Parent();
 				}
 				else if (!Dialogs.empty())
 				{
 					RootNode = Dialogs.front().second->Parent();
+				}
+				else
+				{
+					RootNode = File.GetRoot();
 				}
 
 				if (RootNode != nullptr)
@@ -435,21 +985,8 @@ void DialogEditor::Draw()
 				}
 			}
 		}
-
-		ImGui::End();
-	}
-
-
-	if (ImGui::Begin("Properties"))
-	{
-		Properties->Draw();
 	}
 	ImGui::End();
-}
-
-void DialogEditor::Show(bool State)
-{
-	IsOpen = State;
 }
 
 void DialogEditor::NewDialog(XML_NODE* RootDialogNode)
@@ -460,11 +997,21 @@ void DialogEditor::NewDialog(XML_NODE* RootDialogNode)
 
 	Dialogs.emplace_back(InputBox.Buffer, NewDialog);
 	OpenDialog(InputBox.Buffer, NewDialog);
+	LastOpenDialog = InputBox.Buffer;
+	MarkChanged();
 }
 
 void DialogEditor::SaveDialog()
 {
+	if (DialogFileName.empty())
+	{
+		return;
+	}
+
 	File.Save();
+	SavedState = CaptureState();
+	Modified = false;
+	Msg("* Dialog Editor: %s saved", DialogFileName.c_str());
 }
 
 void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
@@ -478,6 +1025,14 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 	Phrases.clear();
 	SelectedNode = nullptr;
 
+	// The dialog conditions belong to the previous dialog
+	HasInfo = nullptr;
+	DontHasInfo = nullptr;
+	Precondition = nullptr;
+	NodeHasInfo = nullptr;
+	NodeDontHasInfo = nullptr;
+	NodePrecondition = nullptr;
+
 	XML_NODE* RootNode = File.NavigateToNode(Node, "phrase_list");
 	if (RootNode == nullptr)
 	{
@@ -490,7 +1045,7 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 
 	xr_map<CDialogNode*, xr_vector<shared_str>> NodeGraph;
 
-	auto MakeListStringFromNode = [](shared_str& Value, shared_str Text)
+	auto MakeListStringFromNode = [](shared_str& Value, const shared_str& Text)
 	{
 		if (Value.size() > 0)
 		{
@@ -636,7 +1191,8 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 					{
 						for (XML_NODE* Child = Node->ParentNode->FirstChildElement(); Child != nullptr; Child = Child->NextSiblingElement())
 						{
-							if (shared_str(Child->Value()) == "next" && shared_str(Child->ToElement()->GetText()) == TryNode->NodeName.c_str())
+							const char* ChildText = Child->ToElement()->GetText();
+							if (ChildText && 0 == xr_strcmp(Child->Value(), "next") && 0 == xr_strcmp(ChildText, TryNode->NodeName.c_str()))
 							{
 								Link.NextNode = Child;
 								break;
@@ -663,6 +1219,11 @@ void DialogEditor::OpenDialog(const shared_str& Str, XML_NODE* Node)
 	SelectNodeEvent(nullptr);
 }
 
+void DialogEditor::OnPropertiesModified()
+{
+	MarkChanged();
+}
+
 void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 {
 	PropItemVec items;
@@ -672,7 +1233,11 @@ void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 	{
 		PHelper().CreateRText(items, "Preconditions\\Has Info", &HasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeHasInfo);
 		PHelper().CreateRText(items, "Preconditions\\Don't Has Info", &DontHasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeDontHasInfo);
-		PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &Precondition)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangePrecondition);
+		{
+			RTextValue* Value = PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &Precondition);
+			Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangePrecondition);
+			Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+		}
 
 		for (const auto& [ID, String] : Phrases)
 		{
@@ -690,20 +1255,39 @@ void DialogEditor::SelectNodeEvent(CDialogNode* Node)
 
 	PHelper().CreateRText(items, "Preconditions\\Has Info", &SelectedNode->HasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeHasInfo);
 	PHelper().CreateRText(items, "Preconditions\\Don't Has Info", &SelectedNode->DontHasInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeDontHasInfo);
-	PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &SelectedNode->Precondition);
+	{
+		RTextValue* Value = PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &SelectedNode->Precondition);
+		Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodePrecondition);
+		Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+	}
 
 	PHelper().CreateRText(items, "Actions\\Give Info", &SelectedNode->GiveInfo)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeGiveInfo);
-	PHelper().CreateRText(items, "Actions\\Lua Action", &SelectedNode->Action);
+	{
+		RTextValue* Value = PHelper().CreateRText(items, "Actions\\Lua Action", &SelectedNode->Action);
+		Value->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeAction);
+		Value->OnHintEvent = xr_make_delegate(this, &DialogEditor::HintScriptFunction);
+	}
 
-	PHelper().CreateRText(items, "Text\\String ID", &SelectedNode->Text);
+	PHelper().CreateRText(items, "Text\\String ID", &SelectedNode->Text)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeText);
+
+	if (!SelectedNode->IsBranch)
+	{
+		SelectedFinal = SelectedNode->IsFinal;
+		PHelper().CreateBool(items, "Phrase\\Final", &SelectedFinal)->OnChangeEvent = xr_make_delegate(this, &DialogEditor::ChangeNodeFinal);
+	}
 
 	static shared_str TranslateStr;
 
-	if (SelectedNode->Text.size() > 0)
+	xr_string Translation;
+	if (SelectedNode->Text.size() > 0 && FindDialogTranslation(SelectedNode->Text, Translation))
 	{
-		TranslateStr = Platform::ANSI_TO_UTF8(*g_pStringTable->translate(*SelectedNode->Text)).c_str();
-		PHelper().CreateCaption(items, "Text\\Translated", TranslateStr);
+		TranslateStr = Translation.c_str();
 	}
+	else
+	{
+		TranslateStr = "<not localized>";
+	}
+	PHelper().CreateCaption(items, "Text\\Translated", TranslateStr);
 
 	Properties->AssignItems(items);
 }
@@ -727,7 +1311,11 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 	}
 	Nodes.clear();
 	Links.clear();
-	IsOpenList = true;
+	LastOpenDialog = nullptr;
+	SelectedNode = nullptr;
+	Properties->ClearProperties();
+	Modified = false;
+	DialogFileName = Path.xfilename();
 
 	File.Load(CONFIG_PATH, "gameplay", Path.xstring().c_str());
 
@@ -737,9 +1325,23 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 		return;
 	}
 
-	if (!IsOpen)
+	RebuildDialogList();
+
+	UndoStack.clear();
+	RedoStack.clear();
+	ChangePending = false;
+	LastState = SavedState = CaptureState();
+
+	UINodesEditorForm::Activate(ENodesMode::Dialogs);
+}
+
+void DialogEditor::RebuildDialogList()
+{
+	Dialogs.clear();
+	XML_NODE* Node = File.GetRoot();
+	if (Node == nullptr)
 	{
-		Show(true);
+		return;
 	}
 
 	XML_NODE* ChildNode = Node->FirstChildElement();
@@ -768,9 +1370,6 @@ void DialogEditor::OpenFileInstance(const xr_path& Path)
 		xr_string NameA = *L.first;
 		xr_string NameB = *R.first;
 		return NameA < NameB; });
-
-	// Switch to Dialog Editor tab
-	EContext.UI->ActiveTabIndex = 1;
 }
 
 void DialogEditor::ChangeHasInfo(PropValue*)
@@ -849,6 +1448,45 @@ void DialogEditor::ChangeNodeGiveInfo(PropValue*)
 	}
 
 	SelectedNode->ValidateNodes(SelectedNode->GiveInfo, "give_info");
+}
+
+void DialogEditor::ChangeNodePrecondition(PropValue*)
+{
+	if (SelectedNode != nullptr)
+	{
+		SelectedNode->SetElement("precondition", SelectedNode->Precondition, SelectedNode->PreconditionNode);
+	}
+}
+
+void DialogEditor::HintScriptFunction(const xr_string& Before, xr_vector<xr_string>& Out)
+{
+	EContext.Visor->GetFunctionHints(Before, Out);
+}
+
+void DialogEditor::ChangeNodeAction(PropValue*)
+{
+	if (SelectedNode != nullptr)
+	{
+		SelectedNode->SetElement("action", SelectedNode->Action, SelectedNode->ActionNode);
+	}
+}
+
+void DialogEditor::ChangeNodeText(PropValue*)
+{
+	if (SelectedNode != nullptr)
+	{
+		SelectedNode->SetText(SelectedNode->Text);
+		// The translation caption follows the new id: not while the properties are drawn
+		RefreshProperties = true;
+	}
+}
+
+void DialogEditor::ChangeNodeFinal(PropValue*)
+{
+	if (SelectedNode != nullptr)
+	{
+		SelectedNode->SetFinal(SelectedFinal);
+	}
 }
 
 void DialogEditor::BuildIdMaps()
@@ -1005,16 +1643,16 @@ CDialogNode* DialogEditor::NodeOwningPin(ed::PinId Id)
 	return It != PinNode.end() ? It->second : nullptr;
 }
 
-void DialogEditor::LayoutNodes()
+bool DialogEditor::LayoutNodes()
 {
-	const float ColumnWidth = 360.0f;
-	const float RowHeight = 230.0f;
+	const float GapX = 80.0f;
+	const float GapY = 40.0f;
 	const float OriginX = 40.0f;
 	const float OriginY = 40.0f;
 
 	if (Nodes.empty())
 	{
-		return;
+		return true;
 	}
 
 	xr_map<CDialogNode*, xr_vector<CDialogNode*>> Outgoing;
@@ -1084,13 +1722,42 @@ void DialogEditor::LayoutNodes()
 		}
 	}
 
-	xr_map<int, int> RowCounter;
+	// The nodes are as big as their text: the columns and the rows take the real sizes.
+	// Before the first draw the size is not known yet: a guess, and the layout is made again
+	bool SizesKnown = true;
+	xr_map<CDialogNode*, ImVec2> Sizes;
+	xr_map<int, float> ColumnWidths;
 	for (CDialogNode* Node : Nodes)
 	{
-		int Column = Depth[Node];
-		int Row = RowCounter[Column]++;
-		ed::SetNodePosition(NodeIds[Node], ImVec2(OriginX + Column * ColumnWidth, OriginY + Row * RowHeight));
+		ImVec2 Size = ed::GetNodeSize(NodeIds[Node]);
+		if (Size.x < 1.0f)
+		{
+			Size = { ComputeNodeBodyWidth(Node, 480.0f) + ed::GetStyle().NodePadding.x + ed::GetStyle().NodePadding.z, 200.0f };
+			SizesKnown = false;
+		}
+		Sizes[Node] = Size;
+		float& Width = ColumnWidths[Depth[Node]];
+		Width = std::max(Width, Size.x);
 	}
+
+	xr_map<int, float> ColumnX;
+	float X = OriginX;
+	for (const auto& [Column, Width] : ColumnWidths)
+	{
+		ColumnX[Column] = X;
+		X += Width + GapX;
+	}
+
+	xr_map<int, float> ColumnY;
+	for (CDialogNode* Node : Nodes)
+	{
+		const int Column = Depth[Node];
+		auto Iter = ColumnY.find(Column);
+		const float Y = Iter != ColumnY.end() ? Iter->second : OriginY;
+		ed::SetNodePosition(NodeIds[Node], ImVec2(ColumnX[Column], Y));
+		ColumnY[Column] = Y + Sizes[Node].y + GapY;
+	}
+	return SizesKnown;
 }
 
 void DialogEditor::AddBranchOutput(CDialogNode* Node)
@@ -1119,9 +1786,8 @@ void DialogEditor::DeleteNode(CDialogNode* Node)
 		XML_NODE* Child = Other->ParentNode->FirstChildElement();
 		while (Child != nullptr)
 		{
-			shared_str ChildValue = Child->Value();
-			shared_str ChildText = Child->ToElement()->GetText();
-			if (ChildValue == "next" && ChildText.size() > 0 && ChildText == Node->NodeName.c_str())
+			const char* ChildText = Child->ToElement()->GetText();
+			if (0 == xr_strcmp(Child->Value(), "next") && ChildText && ChildText[0] && 0 == xr_strcmp(ChildText, Node->NodeName.c_str()))
 			{
 				XML_NODE* Next = Child->NextSiblingElement();
 				Other->ParentNode->ToElement()->DeleteChild(Child);
@@ -1147,9 +1813,10 @@ void DialogEditor::DeleteNode(CDialogNode* Node)
 		Links.end()
 	);
 
+	// The properties point to the fields of the node
 	if (SelectedNode == Node)
 	{
-		SelectedNode = nullptr;
+		SelectNodeEvent(nullptr);
 	}
 
 	xr_delete(Node);
@@ -1184,107 +1851,202 @@ void DialogEditor::UpdateSelection()
 
 void DialogEditor::DrawNode(CDialogNode* Node)
 {
-	ed::NodeId NodeIdValue = NodeIds[Node];
+	const ed::NodeId NodeIdValue = NodeIds[Node];
+	const auto& OutPins = OutputPins[Node];
+	const float Width = ComputeNodeBodyWidth(Node, 480.0f);
+	const float Spacing = ImGui::GetStyle().ItemSpacing.x;
 
 	ed::BeginNode(NodeIdValue);
-
-	float Top = ImGui::GetCursorPos().y;
 	ImGui::PushID(NodeIdValue.AsPointer());
+	const ImVec2 Origin = ImGui::GetCursorScreenPos();
 
-	ImGui::TextUnformatted(Node->NodeName.c_str());
-	float HeaderHeight = ImGui::GetCursorPos().y - Top;
+	auto Pin = [&](ed::PinId Id, ed::PinKind Kind)
+	{
+		ed::BeginPin(Id, Kind);
+		ed::PinPivotAlignment({ Kind == ed::PinKind::Input ? 0.0f : 1.0f, 0.5f });
+		ed::PinPivotSize({ 0, 0 });
+		DrawPinArrow(ConnectedPins.contains(Id));
+		ed::EndPin();
+	};
 
-	const float MaxBodyWidth = 310.0f;
-	float BodyWidth = ComputeNodeBodyWidth(Node, MaxBodyWidth);
-
-	const auto& OutPins = OutputPins[Node];
-
-	ed::PushStyleColor(ed::StyleColor_PinRect, ImColor(0, 0, 0, 0));
-	ed::PushStyleColor(ed::StyleColor_PinRectBorder, ImColor(0, 0, 0, 0));
-	ed::BeginPin(InputPins[Node], ed::PinKind::Input);
-	ed::PinPivotAlignment(ImVec2(0.0f, 0.5f));
-	ed::PinPivotSize(ImVec2(0, 0));
-	DrawPinArrow(ConnectedPins.find(InputPins[Node]) != ConnectedPins.end());
-	ed::EndPin();
-	ed::PopStyleColor(2);
-
+	// Header: the input, the title and the first output, like the nodes of Logic
+	Pin(InputPins[Node], ed::PinKind::Input);
 	ImGui::SameLine();
-	ImGui::Dummy(ImVec2(BodyWidth - 30, 0.0f));
-
-	ImGui::SameLine();
-	ed::PushStyleColor(ed::StyleColor_PinRect, ImColor(0, 0, 0, 0));
-	ed::PushStyleColor(ed::StyleColor_PinRectBorder, ImColor(0, 0, 0, 0));
+	const char* Icon = Node->IsBranch ? ICON_FA_CODE_BRANCH : Node->IsFinal ? ICON_FA_FLAG_CHECKERED : ICON_FA_COMMENT;
+	ImGui::Text("%s %s", Icon, Node->NodeName.c_str());
 	if (!OutPins.empty())
 	{
-		ed::BeginPin(OutPins[0], ed::PinKind::Output);
-		ed::PinPivotAlignment(ImVec2(1.0f, 0.5f));
-		ed::PinPivotSize(ImVec2(0, 0));
-		DrawPinArrow(ConnectedPins.find(OutPins[0]) != ConnectedPins.end());
-		ed::EndPin();
-	}
-	ed::PopStyleColor(2);
-
-	for (size_t k = 1; k < OutPins.size(); ++k)
-	{
-		ImGui::NewLine();
-		ImGui::Dummy(ImVec2(BodyWidth, 0.0f));
 		ImGui::SameLine();
-		ed::PushStyleColor(ed::StyleColor_PinRect, ImColor(0, 0, 0, 0));
-		ed::PushStyleColor(ed::StyleColor_PinRectBorder, ImColor(0, 0, 0, 0));
-		ed::BeginPin(OutPins[k], ed::PinKind::Output);
-		ed::PinPivotAlignment(ImVec2(1.0f, 0.5f));
-		ed::PinPivotSize(ImVec2(0, 0));
-		DrawPinArrow(ConnectedPins.find(OutPins[k]) != ConnectedPins.end());
-		ed::EndPin();
-		ed::PopStyleColor(2);
+		ImGui::SetCursorScreenPos({ Origin.x + Width - NodesUI::PinSize, Origin.y });
+		Pin(OutPins[0], ed::PinKind::Output);
 	}
 
-	if (Node->IsBranch)
+	ImGui::SetCursorScreenPos({ Origin.x + NodesUI::PinSize + Spacing, ImGui::GetItemRectMax().y + 2.0f });
 	{
-		ImGui::NewLine();
-		ImGui::Dummy(ImVec2(BodyWidth, 0.0f));
-		ImGui::SameLine();
-		if (ImGui::Button("Add output"))
+		xr_string Caption = Node->IsBranch ? "Branch" : Node->IsFinal ? "Final phrase: the dialog ends" : "Phrase";
+		if (Node == Nodes.front())
 		{
-			AddBranchOutput(Node);
+			Caption = "Start  " + Caption;
 		}
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.55f));
+		ImGui::TextUnformatted(Caption.c_str());
+		ImGui::PopStyleColor();
 	}
+	const float HeaderBottom = ImGui::GetItemRectMax().y + 4.0f;
+	ImGui::SetCursorScreenPos({ Origin.x, HeaderBottom + 8.0f });
 
-	ImGui::NewLine();
 	if (!Node->IsBranch)
 	{
-		DrawNodeBody(Node, BodyWidth);
+		DrawNodeBody(Node, Width);
 	}
+
+	// The other outputs of a branch
+	for (size_t Index = 1; Index < OutPins.size(); ++Index)
+	{
+		const xr_string Label = make_string<xr_string>("Out %u", (u32)Index + 1);
+		const float RowY = ImGui::GetCursorScreenPos().y;
+		ImGui::SetCursorScreenPos({ Origin.x + Width - NodesUI::PinSize - Spacing - ImGui::CalcTextSize(Label.c_str()).x, RowY });
+		ImGui::TextDisabled("%s", Label.c_str());
+		ImGui::SameLine();
+		Pin(OutPins[Index], ed::PinKind::Output);
+	}
+	if (Node->IsBranch)
+	{
+		ImGui::SetCursorScreenPos({ Origin.x, ImGui::GetCursorScreenPos().y + 2.0f });
+		if (ImGui::SmallButton(ICON_FA_PLUS " Output"))
+		{
+			AddBranchOutput(Node);
+			MarkChanged();
+		}
+	}
+	ImGui::Dummy({ Width, 1.0f });
 
 	ImGui::PopID();
 	ed::EndNode();
 
-	DrawNodeHeaderBackground(NodeIdValue, HeaderHeight, NodeHeaderColor(Node));
+	DrawNodeHeaderBackground(NodeIdValue, HeaderBottom - Origin.y, NodeHeaderColor(Node));
 }
 
 float DialogEditor::ComputeNodeBodyWidth(CDialogNode* Node, float MaxWidth)
 {
-	const float InputWidth = 220.0f;
-	const char* Labels[] = {
-		"Text:", "Has Info:", "Don't Has Info:", "Give Info(Y/N):", "Action:", "Precondition:"
-	};
-
-	float Width = 60.0f;
-	for (const char* Label : Labels)
+	// The node is as wide as its widest line, so the header output pin stays on the right edge
+	float Result = ImGui::CalcTextSize(Node->NodeName.c_str()).x + NodesUI::PinSize * 2.0f + 80.0f;
+	if (!Node->IsBranch)
 	{
-		float W = ImGui::CalcTextSize(Label).x + InputWidth + 8.0f;
-		if (W > Width)
+		// The string id is not wrapped: the bar offset is 8
+		Result = std::max(Result, ImGui::CalcTextSize(Node->Text.c_str()).x + 8.0f);
+
+		// A chip is never wrapped: the row icon and the chip padding are 24 and 10 (see DrawNodeBody and DrawChips)
+		auto Chips = [&Result](const shared_str& Value)
 		{
-			Width = W;
+			if (Value.size() == 0)
+			{
+				return;
+			}
+			for (xr_string Item : xr_string(Value.c_str()).Split(','))
+			{
+				Item = Item.RemoveWhitespaces();
+				Result = std::max(Result, ImGui::CalcTextSize(("+" + Item).c_str()).x + 10.0f + 24.0f);
+			}
+		};
+		Chips(Node->HasInfo);
+		Chips(Node->DontHasInfo);
+		Chips(Node->Precondition);
+		Chips(Node->GiveInfo);
+		Chips(Node->Action);
+	}
+	return std::clamp(Result, 260.0f, MaxWidth);
+}
+
+// "a, b" of the XML lists
+static void SplitList(const shared_str& Value, const char* Prefix, ImColor Color, const char* Tooltip, xr_vector<NodesUI::SChip>& Chips)
+{
+	if (Value.size() == 0)
+	{
+		return;
+	}
+	for (xr_string Item : xr_string(Value.c_str()).Split(','))
+	{
+		Item = Item.RemoveWhitespaces();
+		if (!Item.empty())
+		{
+			Chips.push_back({ xr_string(Prefix) + Item, Color, Tooltip });
 		}
 	}
-
-	return std::min(Width, MaxWidth);
 }
 
 void DialogEditor::DrawNodeBody(CDialogNode* Node, float BodyWidth)
 {
-	Node->DrawInlineEditor(BodyWidth);
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+	const ImVec2 Start = ImGui::GetCursorScreenPos();
+
+	// The phrase as the player reads it, with a bar on the left
+	xr_string Translation;
+	const bool HasText = Node->Text.size() > 0;
+	const bool Localized = HasText && CDialogNode::FindTranslation != nullptr && CDialogNode::FindTranslation(Node->Text, Translation);
+	ImGui::SetCursorScreenPos({ Start.x + 8.0f, Start.y });
+	ImGui::BeginGroup();
+	if (Localized)
+	{
+		size_t MaxLength = 260;
+		const bool IsCut = Translation.size() > MaxLength;
+		while (IsCut && MaxLength > 0 && (static_cast<u8>(Translation[MaxLength]) & 0xC0) == 0x80)
+		{
+			--MaxLength;
+		}
+		const xr_string Shown = IsCut ? Translation.substr(0, MaxLength) + "..." : Translation;
+		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + BodyWidth - 8.0f);
+		ImGui::TextUnformatted(Shown.c_str());
+		ImGui::PopTextWrapPos();
+		if (IsCut)
+		{
+			ImGui::SetItemTooltip("%s", Translation.c_str());
+		}
+	}
+	else
+	{
+		ImGui::TextColored(NodesUI::ColorWarning, ICON_FA_TRIANGLE_EXCLAMATION " %s", HasText ? "Not localized" : "No text");
+		ImGui::SameLine();
+		if (ImGui::SmallButton(ICON_FA_LANGUAGE " Localize..."))
+		{
+			OpenLocalization(Node);
+		}
+	}
+	if (HasText)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 0.4f));
+		ImGui::TextUnformatted(Node->Text.c_str());
+		ImGui::PopStyleColor();
+		ImGui::SetItemTooltip("The string id of the text");
+	}
+	ImGui::EndGroup();
+	DrawList->AddRectFilled({ Start.x, Start.y }, { Start.x + 3.0f, ImGui::GetItemRectMax().y }, Localized ? (ImU32)NodeHeaderColor(Node) : (ImU32)NodesUI::ColorWarning, 1.5f);
+	ImGui::SetCursorScreenPos({ Start.x, ImGui::GetItemRectMax().y + 6.0f });
+
+	// Only what is set is shown: the fields are edited in the Details
+	xr_vector<NodesUI::SChip> Conditions;
+	SplitList(Node->HasInfo, "+", ImColor(110, 200, 90), "The player has the info", Conditions);
+	SplitList(Node->DontHasInfo, "-", ImColor(230, 90, 80), "The player has no info", Conditions);
+	SplitList(Node->Precondition, "?", ImColor(90, 170, 240), "Lua precondition", Conditions);
+
+	xr_vector<NodesUI::SChip> Effects;
+	SplitList(Node->GiveInfo, "+", ImColor(190, 120, 240), "Gives the info", Effects);
+	SplitList(Node->Action, "%", ImColor(240, 150, 60), "Lua action", Effects);
+
+	auto Row = [&](const char* Icon, const char* Tooltip, const xr_vector<NodesUI::SChip>& Chips)
+	{
+		if (Chips.empty())
+		{
+			return;
+		}
+		ImGui::TextDisabled("%s", Icon);
+		ImGui::SetItemTooltip("%s", Tooltip);
+		ImGui::SameLine();
+		NodesUI::DrawChips(Chips, BodyWidth - 24.0f);
+		ImGui::SetCursorScreenPos({ Start.x, ImGui::GetCursorScreenPos().y + 2.0f });
+	};
+	Row(ICON_FA_FILTER, "Shown when", Conditions);
+	Row(ICON_FA_BOLT, "Does when said", Effects);
 }
 
 void DialogEditor::DrawNodeHeaderBackground(ed::NodeId Id, float HeaderHeight, ImColor Color)
@@ -1296,14 +2058,7 @@ void DialogEditor::DrawNodeHeaderBackground(ed::NodeId Id, float HeaderHeight, I
 		return;
 	}
 
-	float TopPadding = ed::GetStyle().NodePadding.y;
-	float Rounding = ed::GetStyle().NodeRounding;
-	ImVec2 TopLeft = Position;
-	ImVec2 BottomRight = ImVec2(Position.x + Size.x, Position.y + TopPadding + HeaderHeight);
-
-	ImDrawList* DrawList = ed::GetNodeBackgroundDrawList(Id);
-	DrawList->AddRectFilled(TopLeft, BottomRight, Color, Rounding, ImDrawFlags_RoundCornersTop);
-	DrawList->AddLine(ImVec2(TopLeft.x, BottomRight.y), ImVec2(BottomRight.x, BottomRight.y), ImColor(255, 255, 255, 70), 1.0f);
+	NodesUI::DrawNodeHeader(ed::GetNodeBackgroundDrawList(Id), Position, Size.x, ed::GetStyle().NodePadding.y + HeaderHeight, Color);
 }
 
 void DialogEditor::HandleLinkCreation()
@@ -1358,6 +2113,7 @@ void DialogEditor::HandleLinkCreation()
 						Link.Target = Target;
 						Link.NextNode = NextNode;
 						Links.push_back(Link);
+						MarkChanged();
 					}
 				}
 				else
@@ -1391,6 +2147,7 @@ void DialogEditor::HandleDeletion()
 			if (Node != nullptr && ed::AcceptDeletedItem())
 			{
 				DeleteNode(Node);
+				MarkChanged();
 			}
 		}
 
@@ -1416,171 +2173,9 @@ void DialogEditor::HandleDeletion()
 				}
 
 				Links.erase(Iter);
+				MarkChanged();
 			}
 		}
 	}
 	ed::EndDelete();
-}
-
-void DialogEditor::DrawMinimap()
-{
-	if (Nodes.empty())
-	{
-		return;
-	}
-
-	float inf = std::numeric_limits<float>::infinity();
-	ImVec2 BoundsMin(inf, inf);
-	ImVec2 boundsMax(-inf, -inf);
-
-	for (auto* Node : Nodes)
-	{
-		auto Iter = NodeIds.find(Node);
-		if (Iter == NodeIds.end())
-		{
-			continue;
-		}
-
-		ImVec2 Pos = ed::GetNodePosition(Iter->second);
-		ImVec2 Size = ed::GetNodeSize(Iter->second);
-
-		if (Pos.x < BoundsMin.x)
-		{
-			BoundsMin.x = Pos.x;
-		}
-		if (Pos.y < BoundsMin.y)
-		{
-			BoundsMin.y = Pos.y;
-		}
-		if (Pos.x + Size.x > boundsMax.x)
-		{
-			boundsMax.x = Pos.x + Size.x;
-		}
-		if (Pos.y + Size.y > boundsMax.y)
-		{
-			boundsMax.y = Pos.y + Size.y;
-		}
-	}
-
-	if (BoundsMin.x == inf)
-	{
-		return;
-	}
-
-	float MapW = 180.0f;
-	float MapH = 130.0f;
-	float Padding = 8.0f;
-
-	ImVec2 Avail = ImGui::GetContentRegionAvail();
-	ImVec2 CanvasMin = ImGui::GetCursorScreenPos();
-	ImVec2 MapPos(CanvasMin.x + Avail.x - MapW - Padding, CanvasMin.y + Avail.y - MapH - Padding);
-
-	float ContentW = boundsMax.x - BoundsMin.x;
-	float ContentH = boundsMax.y - BoundsMin.y;
-	
-	if (ContentW < 1.0f)
-	{
-		ContentW = 1.0f;
-	}
-
-	if (ContentH < 1.0f)
-	{
-		ContentH = 1.0f;
-	}
-
-	float Margin = 20.0f;
-	float ScaleX = MapW / (ContentW + Margin * 2);
-	float ScaleY = MapH / (ContentH + Margin * 2);
-	float Scale = (ScaleX < ScaleY) ? ScaleX : ScaleY;
-
-	float DrawW = ContentW * Scale;
-	float DrawH = ContentH * Scale;
-	ImVec2 DrawOrigin(MapPos.x + (MapW - DrawW) * 0.5f, MapPos.y + (MapH - DrawH) * 0.5f);
-
-	ImGui::SetNextWindowPos(MapPos);
-	ImGui::SetNextWindowSize(ImVec2(MapW, MapH));
-	ImGui::SetNextWindowBgAlpha(0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
-
-	ImGui::Begin("##minimap_overlay", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs);
-
-	ImDrawList* DrawList = ImGui::GetWindowDrawList();
-
-	DrawList->AddRectFilled(MapPos, ImVec2(MapPos.x + MapW, MapPos.y + MapH), IM_COL32(30, 30, 30, 200), 4.0f);
-	DrawList->AddRect(MapPos, ImVec2(MapPos.x + MapW, MapPos.y + MapH), IM_COL32(100, 100, 100, 200), 4.0f);
-
-	for (auto* Node : Nodes)
-	{
-		auto it = NodeIds.find(Node);
-		if (it == NodeIds.end())
-		{
-			continue;
-		}
-
-		ImVec2 pos = ed::GetNodePosition(it->second);
-		ImVec2 size = ed::GetNodeSize(it->second);
-
-		ImVec2 nMin(DrawOrigin.x + (pos.x - BoundsMin.x) * Scale, DrawOrigin.y + (pos.y - BoundsMin.y) * Scale);
-		ImVec2 nMax(nMin.x + size.x * Scale, nMin.y + size.y * Scale);
-
-		ImU32 color = IM_COL32(90, 130, 210, 255);
-		if (Node->IsFinal)
-		{
-			color = IM_COL32(110, 200, 120, 255);
-		}
-		else if (Node->HasInfo.size() || Node->DontHasInfo.size() || Node->Precondition.size())
-		{
-			color = IM_COL32(200, 160, 90, 255);
-		}
-
-		if (Node == SelectedNode)
-		{
-			color = IM_COL32(255, 255, 100, 255);
-		}
-
-		DrawList->AddRectFilled(nMin, nMax, color, 1.0f);
-	}
-
-	for (const auto& Link : Links)
-	{
-		if (Link.Source == nullptr || Link.Target == nullptr)
-		{
-			continue;
-		}
-
-		auto itS = NodeIds.find(Link.Source);
-		auto itT = NodeIds.find(Link.Target);
-		if (itS == NodeIds.end() || itT == NodeIds.end())
-		{
-			continue;
-		}
-
-		ImVec2 sPos = ed::GetNodePosition(itS->second);
-		ImVec2 sSize = ed::GetNodeSize(itS->second);
-		ImVec2 tPos = ed::GetNodePosition(itT->second);
-		ImVec2 tSize = ed::GetNodeSize(itT->second);
-
-		ImVec2 p1(DrawOrigin.x + (sPos.x + sSize.x * 0.5f - BoundsMin.x) * Scale, DrawOrigin.y + (sPos.y + sSize.y * 0.5f - BoundsMin.y) * Scale);
-		ImVec2 p2(DrawOrigin.x + (tPos.x + tSize.x * 0.5f - BoundsMin.x) * Scale, DrawOrigin.y + (tPos.y + tSize.y * 0.5f - BoundsMin.y) * Scale);
-
-		DrawList->AddLine(p1, p2, IM_COL32(150, 230, 120, 120), 1.0f);
-	}
-
-	ImVec2 ScreenSize = ed::GetScreenSize();
-
-	ImVec2 vpMin(DrawOrigin.x + (-BoundsMin.x) * Scale, DrawOrigin.y + (-BoundsMin.y) * Scale);
-	ImVec2 vpMax(DrawOrigin.x + (ScreenSize.x - BoundsMin.x) * Scale, DrawOrigin.y + (ScreenSize.y - BoundsMin.y) * Scale);
-
-	vpMin.x = std::max(vpMin.x, MapPos.x);
-	vpMin.y = std::max(vpMin.y, MapPos.y);
-	vpMax.x = std::min(vpMax.x, MapPos.x + MapW);
-	vpMax.y = std::min(vpMax.y, MapPos.y + MapH);
-
-	DrawList->AddRect(vpMin, vpMax, IM_COL32(255, 255, 255, 180), 0.0f, 0, 1.0f);
-
-	ImGui::End();
-	ImGui::PopStyleVar(4);
 }

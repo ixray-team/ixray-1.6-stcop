@@ -20,9 +20,9 @@ protected:
 
 public:
 						CStalkerActionDangerBySoundListenTo	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize							();
-	virtual void		execute								();
-	virtual void		finalize							();
+	virtual void		initialize							() override;
+	virtual void		execute								() override;
+	virtual void		finalize							() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -35,9 +35,9 @@ protected:
 
 public:
 						CStalkerActionDangerBySoundCheck	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize							();
-	virtual void		execute								();
-	virtual void		finalize							();
+	virtual void		initialize							() override;
+	virtual void		execute								() override;
+	virtual void		finalize							() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,9 +50,9 @@ protected:
 
 public:
 						CStalkerActionDangerBySoundTakeCover(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize							();
-	virtual void		execute								();
-	virtual void		finalize							();
+	virtual void		initialize							() override;
+	virtual void		execute								() override;
+	virtual void		finalize							() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -65,9 +65,9 @@ protected:
 
 public:
 						CStalkerActionDangerBySoundLookOut	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize							();
-	virtual void		execute								();
-	virtual void		finalize							();
+	virtual void		initialize							() override;
+	virtual void		execute								() override;
+	virtual void		finalize							() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ protected:
 
 public:
 						CStalkerActionDangerBySoundLookAround	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize								();
-	virtual void		execute									();
-	virtual void		finalize								();
+	virtual void		initialize								() override;
+	virtual void		execute									() override;
+	virtual void		finalize								() override;
 };

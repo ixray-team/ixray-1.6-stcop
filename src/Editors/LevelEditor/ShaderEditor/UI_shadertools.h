@@ -1,0 +1,96 @@
+//---------------------------------------------------------------------------
+#ifndef UI_ShaderToolsH
+#define UI_ShaderToolsH
+
+#include "SHToolsInterface.h"
+// refs
+class CEditableObject;
+class CLibObject;
+class IBlender;
+
+class CShaderTool: public CToolCustom
+{
+	typedef CToolCustom inherited;
+
+    void				RegisterTools		();
+    void				UnregisterTools		();
+    void				RealUpdateProperties();
+    void				RealUpdateList		();
+
+    enum{
+    	flRefreshProps 	= (1ul<<0ul),
+    	flRefreshList 	= (1ul<<1ul),
+    };
+    Flags32				m_Flags;
+
+    void 				PrepareLighting		();
+public:
+	UIItemListForm*			m_Items;
+    UIPropertiesForm*		m_ItemProps;
+    UIPropertiesForm*		m_PreviewProps;
+
+    using ToolsMap = xr_map<EToolsID, ISHTools*>;
+    using ToolsPairIt = ToolsMap::iterator;
+
+    ToolsMap			m_Tools;
+    ISHTools*			m_Current;
+    ISHTools*			Current				(){return m_Current;}
+
+    void 	 	OnItemFocused		(ListItem* items);
+public:
+						CShaderTool			();
+    virtual 			~CShaderTool		();
+
+    virtual void		Render				();
+	virtual void		RenderEnvironment	() ;
+    virtual void		OnFrame				();
+
+    virtual bool		OnCreate			();
+    virtual void		OnDestroy			();
+
+    virtual bool		IfModified			();
+    virtual bool		IsModified			();
+    virtual void		Modified			(); 
+
+    virtual const char*		GetInfo				();
+    
+    virtual void		ZoomObject			(bool bSelOnly);
+
+    virtual bool		Load				(const char* name);
+    virtual bool		Save				(const char* name, bool bInternal=false);
+    virtual void		Reload				();
+    
+    virtual void		OnDeviceCreate		();
+    virtual void		OnDeviceDestroy		();
+
+    virtual void		Clear				(){inherited::Clear();}
+
+    virtual void		OnShowHint			(AStringVec& SS);
+
+    virtual bool  	MouseStart  		(TShiftState Shift){return inherited::MouseStart(Shift);return false;}
+    virtual bool  	MouseEnd    		(TShiftState Shift){inherited::MouseEnd(Shift); return false;}
+    virtual void  	MouseMove   		(TShiftState Shift){inherited::MouseMove(Shift);}
+
+    virtual bool		Pick				(TShiftState Shift){return false;}
+	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
+
+    virtual void		ShowProperties		(const char* focused_item);
+    virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
+    virtual void		UpdateList			(bool bForced=false){m_Flags.set(flRefreshList,true); if (bForced) RealUpdateList();}
+    virtual bool		GetSelectionPosition	(Fmatrix& result);
+
+    const char*				CurrentToolsName	();
+
+    void				OnChangeEditor		(ISHTools* tools);
+
+    void				ApplyChanges		();
+
+    ISHTools*			FindTools			(EToolsID id);
+  //  ISHTools*			FindTools			(TElTabSheet* sheet);
+
+    // Draws the deferred dialogs of every tool
+    void				OnDrawUI			();
+};
+extern CShaderTool*	STools;
+//---------------------------------------------------------------------------
+#endif

@@ -6,7 +6,7 @@
 #include "../xrEngine/bone.h"
 
 //#include "Physics.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 #include "../xrPhysics/PhysicsShell.h"
 //#include "Hit.h"
 #include "Level.h"
@@ -65,20 +65,10 @@ void	character_shell_control::set_fatal_impulse			( SHit &H ) const
 		H.impulse*=(H.type() == ALife::eHitTypeExplosion ? 1.f : skel_fatal_impulse_factor);
 	}
 }
-void  OnCharacterContactInDeath(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+void  OnCharacterContactInDeath(bool& do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dSurfaceParameters		&surface=c.surface;
-	character_shell_control* l_character_physic_support=0;
-	if (bo1)
-	{
-		l_character_physic_support=(character_shell_control*)PHRetrieveGeomUserData(c.geom.g1)->callback_data;
-	}
-	else
-	{
-		l_character_physic_support=(character_shell_control*)PHRetrieveGeomUserData(c.geom.g2)->callback_data;
-	}
-
-	surface.mu=l_character_physic_support->curr_skin_friction_in_death();
+	character_shell_control* l_character_physic_support=(character_shell_control*)c.GetCallbackData(bo1);
+	c.SetFriction(l_character_physic_support->curr_skin_friction_in_death());
 }
 void	character_shell_control::	set_start_shell_params		(CPhysicsShell	* sh) const
 {

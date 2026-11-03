@@ -135,5 +135,10 @@ void main(p_bumped_new I,
 #endif
 
     GbufferPack(O, M);
+
+#ifdef FORWARD_ONLY
+    // Editor blended surfaces: alpha blending uses the base texture alpha, not the packed AO/gloss
+    O.Color.w = M.Color.w;
+#endif
 }
 

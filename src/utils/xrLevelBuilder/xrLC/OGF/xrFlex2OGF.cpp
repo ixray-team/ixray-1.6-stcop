@@ -18,10 +18,23 @@ void CBuild::validate_splits			()
 		if ((*it)->size() > c_SS_HighVertLimit*2)		{
 			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
 			Errors++;
+		}		
+		
+		bool InitValue = (*it)->at(0)->flags.bSharedMaterial;
+		for (auto elem : **it)
+		{
+			if (elem->flags.bSharedMaterial != InitValue)
+			{
+				clMsg("! ERROR: subdiv #%d has faces with different material types!", MODEL_ID);
+				Errors++;
+			}
 		}
-	};
+	}
 
-	clMsg("! Validate errors splits: %u", Errors);
+	if (Errors)
+	{
+		clMsg("! Validate errors splits: %u", Errors);
+	}
 }
 
 void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] ) 
@@ -51,15 +64,14 @@ void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
 	// Geometry
 	Face2OGF_Vertices( FF, V );
 	// build face
-	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
+	ogf._BuildFace(V[0],V[1],V[2],_tc_);
 	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
 }
 
 void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 {
-	for (vecFaceCit Fit=faces.begin(); Fit!=faces.end(); Fit++)
+	for (auto FF : faces)
 	{
-		Face*	FF = *Fit;
 		R_ASSERT(FF);
 		OGF_AddFace( ogf, *FF, _tc_ );
 	}
@@ -93,18 +105,18 @@ void CBuild::Flex2OGF()
  			OGF*		pOGF	= new OGF ();
 			Face*		F		= (* faces->begin() );	// first face	
 			R_ASSERT	(F);
-			b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
-			auto Sector = M->sector;
+			auto Sector = CBuild::GetMaterialSector(*F);
 			
 			try 
 			{
 				// Common data
 				pOGF->Sector		= Sector;
 				pOGF->material		= F->dwMaterial;
+				pOGF->bSharedMaterial = F->flags.bSharedMaterial;
 			
 				// Collect textures
 				OGF_Texture			T;
-				T.pBuildSurface = &textures()[M->surfidx];
+				T.pBuildSurface = &CBuild::GetTexture(*F);
 				T.name = T.pBuildSurface->name;
 				pOGF->textures.push_back(T);
 			

@@ -21,9 +21,9 @@ struct ARTICLE_DATA : public IPureSerializeObject<IReader,IWriter>
 			readed			(false),
 			article_type	(articleType)
 	{}
-	
-	virtual void load (IReader& stream);
-	virtual void save (IWriter&);
+
+	virtual void load (IReader& stream) override;
+	virtual void save (IWriter&) override;
 
 	ALife::_TIME_ID			receive_time;
 	shared_str				article_id;

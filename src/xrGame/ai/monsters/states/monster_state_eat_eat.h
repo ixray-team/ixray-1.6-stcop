@@ -11,14 +11,14 @@ protected:
 
 public:
 						CStateMonsterEating		(_Object *obj);
-	virtual				~CStateMonsterEating	();
+	virtual ~CStateMonsterEating	() override;
 
-	virtual void		initialize				();
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object);
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		remove_links			(CObject* object) override;
 
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
 };
 
 #include "monster_state_eat_eat_inline.h"

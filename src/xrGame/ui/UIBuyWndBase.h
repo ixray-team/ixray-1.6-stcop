@@ -33,7 +33,7 @@ class IBuyWnd:			public CUIDialogWnd
 {
 
 public:
-	virtual						~IBuyWnd					()	{};
+	virtual ~IBuyWnd					() override {};
 	virtual void 				Init						(const shared_str& sectionName, const shared_str& sectionPrice)	=0;
 	virtual void				BindDragDropListEvents		(CUIDragDropListEx* lst, bool bDrag)							=0;
 
@@ -64,6 +64,6 @@ public:
 	virtual void				TryUsePreset				(ETradePreset idx)												=0;
 	virtual bool				IsIgnoreMoneyAndRank		()																=0;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 };

@@ -97,6 +97,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("3rd Person Adjust", CImGuiManager::ERenderPriority::eMedium, Render3rdAdjust);
 		CImGuiManager::Instance().Subscribe("3D Icons Adjust", CImGuiManager::ERenderPriority::eMedium, Render3DIconAdjust);
 		CImGuiManager::Instance().Subscribe("Actor Animations", CImGuiManager::ERenderPriority::eMedium, RenderActorAnimationManager);
+		CImGuiManager::Instance().Subscribe("Cinema Film Maker Editor", CImGuiManager::ERenderPriority::eMedium, RenderCinemaFilmMakerEditor);
 		CImGuiManager::Instance().Subscribe("Demo Record", CImGuiManager::ERenderPriority::eMedium, RenderDemoRecordEditorWindow);
 
 		InitImGuiCLSIDInGame();
@@ -507,7 +508,10 @@ const char* clsid_manager::translateCLSID(CLASS_ID id) {
 			name[i] = '\0';
 		}
 	}
-	return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+	// The caller keeps the pointer, so the text has to outlive this call.
+	static thread_local xr_string Translated;
+	Translated = g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+	return Translated.c_str();
 }
 
 void InitImGuiInGameInputReceiver()

@@ -148,6 +148,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
 				ImGui::MenuItem("3D Icons Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3DIconAdjust)]);
 				ImGui::MenuItem("Actor Animations", nullptr, &States[static_cast<u8>(EditorUI::Game_ActorAnimations)]);
+				ImGui::MenuItem("Cinema Film Maker Editor", nullptr, &States[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)]);
 				ImGui::MenuItem("Level Inspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
 				ImGui::MenuItem("Cutscene Adjust", nullptr, &States[static_cast<u8>(EditorUI::CutsceneAdjust)]);
@@ -321,21 +322,34 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 
 	if (psDeviceFlags.is(rsFullscreen)) 
 	{
+#if defined(IXR_APPLE_SERIES)
+		// Do not pin a display mode: SDL3 then uses the current desktop resolution, while a
+		// mode that is missing from the list (a fresh install starts from 1024x768) leaves
+		// the window windowed.
+		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+#else
 		SDL_DisplayMode displayMode;
 		displayMode.w = psCurrentVidMode[0];
 		displayMode.h = psCurrentVidMode[1];
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
+#endif
 	}
 	else 
 	{
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
+		SDL_SetWindowBordered(g_AppInfo.Window, true);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
 		const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
 		if (bCentered) {
 			SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 		}
+	}
+
+	if (!g_dedicated_server && !Autotest::Active())
+	{
+		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 
 	ResizeBuffers(width, height);
@@ -369,7 +383,8 @@ void CRenderDevice::EndRender()
 							g_pGamePersistent->m_pMainMenu			   &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
 
-	if (int target_fps = main_menu_active ? main_menu_fps_limit : fps_limit; target_fps > 0)
+	const int target_fps = s_StartupActive ? 60 : (main_menu_active ? main_menu_fps_limit : fps_limit);
+	if (target_fps > 0)
 	{
 		static tick prev_ticks = clock::now().time_since_epoch().count();
 		tick curr_ticks = clock::now().time_since_epoch().count();

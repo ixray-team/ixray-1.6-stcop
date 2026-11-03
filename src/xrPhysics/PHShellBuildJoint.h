@@ -2,7 +2,7 @@
 
 #include "../xrEngine/bone.h"
 
-#include "PHJoint.h"
+#include "PhysicsShell.h"
 //#include "PHElement.h"
 
 static const Fvector 	X 			= { 1, 0, 0 };
@@ -238,4 +238,4 @@ IC CPhysicsJoint	*BuildJoint( const IBoneData &bone_data, CPhysicsElement* root_
 		
 
 	return J;
-}
+}

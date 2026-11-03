@@ -2,11 +2,6 @@
 #ifndef BoneH
 #define BoneH
 
-#ifdef _LW_EXPORT
-#include <lwrender.h>
-#include <lwhost.h>
-#endif
-
 // refs
 class CBone;
 
@@ -226,11 +221,6 @@ public:
 	void			    Save			(IWriter& F);
 	void			    Load_0			(IReader& F);
 	void			    Load_1			(IReader& F);
-
-#ifdef _LW_EXPORT
-	void			    ParseBone		(LWItemID bone);
-#endif
-
 	void			    SaveData		(IWriter& F);
 	void			    LoadData		(IReader& F);
     void			    ResetData		();

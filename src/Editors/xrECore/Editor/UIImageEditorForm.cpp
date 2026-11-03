@@ -102,6 +102,8 @@ void UIImageEditorForm::Draw()
 				UpdateSelected();
 				HideLib();
 			}
+			ImGui::SameLine();
+			ImGui::Checkbox("Delete Sources", &m_bDeleteSourceTextures);
 		}
 		ImGui::EndGroup();
 	}
@@ -110,19 +112,7 @@ void UIImageEditorForm::Draw()
 	{
 		ImGui::BeginChild("Right", ImVec2(0, 0));
 		{
-			if (m_Texture == nullptr)
-			{
-				u32 mem = 0;
-
-				auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
-				if (baseTexture)
-				{
-					m_Texture = new CTexture;
-					m_Texture->surface_set(baseTexture);
-					baseTexture->Release();
-				}
-			}
-			ImGui::Image(m_Texture->get_SRView()->GetRawSRV(), ImVec2(128, 128));
+			DrawPreview();
 			m_ItemProps->Draw();
 
 			if (!IsDocked)
@@ -134,6 +124,62 @@ void UIImageEditorForm::Draw()
 	}
 }
 
+void UIImageEditorForm::DrawPreview()
+{
+	static const char* ModeNames[] = {"Image", "Sphere", "Box", "Plane"};
+	static constexpr float PreviewHeight = 220.f;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.f, ImGui::GetStyle().ItemSpacing.y));
+	for (int Index = 0; Index < int(std::size(ModeNames)); ++Index)
+	{
+		const ImDrawFlags Rounding = Index == 0 ? ImDrawFlags_RoundCornersLeft : Index == int(std::size(ModeNames)) - 1 ? ImDrawFlags_RoundCornersRight : ImDrawFlags_RoundCornersNone;
+		bool Active = int(PreviewMode) == Index;
+
+		ImGui::PushID(Index);
+		if (XRay::ImGui::ToolbarButton("##PreviewMode", ModeNames[Index], &Active, { 0.f, 0.f }, Rounding))
+		{
+			PreviewMode = EPreviewMode(Index);
+		}
+		ImGui::PopID();
+
+		if (Index + 1 < int(std::size(ModeNames)))
+		{
+			ImGui::SameLine();
+		}
+	}
+	ImGui::PopStyleVar();
+
+	// The 3D preview shows the last focused texture with its edited, unsaved parameters
+	ETextureThumbnail* Thm = m_THM_Current.empty() ? nullptr : m_THM_Current.back();
+	if (PreviewMode != EPreviewMode::Image && Thm != nullptr)
+	{
+		switch (PreviewMode)
+		{
+		case EPreviewMode::Sphere:	Preview.SetShape(CMaterialPreview::EShape::Sphere); break;
+		case EPreviewMode::Box:		Preview.SetShape(CMaterialPreview::EShape::Box); break;
+		default:					Preview.SetShape(CMaterialPreview::EShape::Plane); break;
+		}
+
+		Preview.ShowShapeSelector = false;
+		Preview.Draw(Thm->_Format(), ImVec2(0.f, PreviewHeight));
+		return;
+	}
+
+	if (m_Texture == nullptr)
+	{
+		u32 mem = 0;
+
+		auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
+		if (baseTexture)
+		{
+			m_Texture = new CTexture;
+			m_Texture->surface_set(baseTexture);
+			baseTexture->Release();
+		}
+	}
+	ImGui::Image(m_Texture && m_Texture->get_SRView() ? m_Texture->get_SRView()->GetRawSRV() : nullptr, ImVec2(128, 128));
+}
+
 void UIImageEditorForm::Update()
 {
 	if (Form)
@@ -141,7 +187,6 @@ void UIImageEditorForm::Update()
 		if (!Form->IsClosed())
 		{
 			bool NeedShow = true;
-			Form->BeginDraw();
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
 			if (ImGui::Begin("Image Editor", &NeedShow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 			{
@@ -149,7 +194,6 @@ void UIImageEditorForm::Update()
 			}
 			ImGui::PopStyleVar(1);
 			ImGui::End();
-			Form->EndDraw();
 
 			if (!NeedShow)
 			{
@@ -227,13 +271,21 @@ void UIImageEditorForm::ImportTextures()
 
 ETextureThumbnail* UIImageEditorForm::FindUsedTHM(const shared_str& name)
 {
-	THMMapIt it = m_THM_Used.find(name);
-	if (it != m_THM_Used.end())
-		return it->second;
+	static xrCriticalSection THMUsedCS;
+	ETextureThumbnail* thm = nullptr;
 
-	ETextureThumbnail* thm = new ETextureThumbnail(name.c_str(), false);
-	m_THM_Used[name] = thm;
+	{
+		xrCriticalSectionGuard guard(THMUsedCS);
+		THMMapIt it = m_THM_Used.find(name);
+		if (it != m_THM_Used.end())
+		{
+			return it->second;
+		}
 
+		thm = new ETextureThumbnail(name.c_str(), false);
+		m_THM_Used[name] = thm;
+	}
+		
 	if (bImportMode)
 	{
 		xr_string fn = name.c_str();
@@ -343,31 +395,24 @@ void UIImageEditorForm::InitItemList()
 {
 	R_ASSERT(m_THM_Used.empty());
 	if (!bImportMode)
-		ImageLib.GetTexturesRaw(texture_map);
-	/*
-		FS_FileSet				flist;
-		FS.file_list			(flist,"$game_textures$",FS_ListFiles|FS_ClampExt,"*.thm");
-		Msg						("TfrmImageLib::InitItemsList count of .thm files=%d", flist.size());
-		FS_FileSetIt It			= flist.begin();
-		FS_FileSetIt It_e		= flist.end();
-		string256 				tex_name;
-		for(;It!=It_e;++It)
-		{
-			shared_str sn 		=(*It).name.c_str();
-			FindUsedTHM			(sn);
-		}
-	*/
-
-	ListItemsVec 			items;
-	// fill
-	FS_FileSetIt it = texture_map.begin();
-	FS_FileSetIt _E = texture_map.end();
-	for (; it != _E; it++)
 	{
-		ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0);
-		I->m_Object = (void*)(FindUsedTHM(it->name.c_str()));
-		R_ASSERT2(I->m_Object, it->name.c_str());
+		ImageLib.GetTexturesRaw(texture_map);
 	}
+
+	ListItemsVec items;
+	xr_vector<xr_pair<ListItem*, str_c>> list_elems;
+	list_elems.reserve(items.size());
+	for (auto& elem : texture_map)
+	{
+		list_elems.emplace_back(LHelper().CreateItem(items, elem.name.c_str(), 0), elem.name.c_str());
+	}
+	xr_parallel_for(size_t(0), list_elems.size(), [&](size_t i)
+	{
+		auto& elem = list_elems[i];
+		elem.first->m_Object = FindUsedTHM(elem.second);
+		R_ASSERT2(elem.first->m_Object, elem.second);
+		Msg("Load THM for %s", elem.second);
+	});
 	m_ItemList->AssignItems(items);
 }
 
@@ -382,7 +427,7 @@ void UIImageEditorForm::UpdateLib()
 	VERIFY(!bReadonlyMode);
 	RegisterModifiedTHM();
 	SaveUsedTHM();
-	ImageLib.CommitTextureLib(bImportMode, texture_map, modif_map);
+	ImageLib.CommitTextureLib(bImportMode, texture_map, modif_map, m_bDeleteSourceTextures);
 }
 
 void UIImageEditorForm::UpdateSelected() 
@@ -433,6 +478,13 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 		m_Texture = new CTexture;
 		m_Texture->surface_set(Surf);
 		Surf->Release();
+
+		Preview.SetTexture(prop->Key());
+	}
+
+	if (item.empty())
+	{
+		Preview.SetTexture("");
 	}
 
 	m_ItemProps->AssignItems(props);

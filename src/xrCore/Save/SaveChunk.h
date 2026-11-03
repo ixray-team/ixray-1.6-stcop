@@ -15,14 +15,14 @@ class XRCORE_API CSaveChunk final: public ISaveable {
 	void ParseRec(IReader* stream, ESaveVariableType type_key);
 
 protected:
-	virtual void* GetValue() { return nullptr; };
+	virtual void* GetValue() override { return nullptr; };
 
 	virtual ISaveable* MakeCopy() override;
 
 public:
 	CSaveChunk() = default;
 	CSaveChunk(shared_str ChunkName) : _chunkName(ChunkName) {}
-	~CSaveChunk();
+	virtual ~CSaveChunk() override;
 
 	void SetChunkName(shared_str ChunkName) {IVERIFY(!_chunkName.size()); _chunkName = ChunkName;}
 	LPCSTR GetChunkName() const { return _chunkName.c_str(); }
@@ -39,7 +39,7 @@ public:
 	// this will detach subchunk from this, so detached won't be destroyed during this chunk destruction
 	bool DetachSubchunk(CSaveChunk& subchunk);
 	
-	void Write(CMemoryBuffer& Buffer, SSaveTask* Task);
+	virtual void Write(CMemoryBuffer& Buffer, SSaveTask* Task) override;
 
 	virtual ESaveVariableType GetVariableType() override { return ESaveVariableType::t_chunk; }
 

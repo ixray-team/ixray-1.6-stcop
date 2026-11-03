@@ -7,6 +7,10 @@ static const u32 CHUNK_OBJECT_COUNT		= 0x0002;
 static const u32 CHUNK_OBJECTS			= 0x0003;
 static const u32 CHUNK_FLAGS			= 0x0004;
 
+// SaveStream writes the tool data alone. Per thread: the level backup reads the objects on a worker
+// while the undo journal saves the tool data on the main thread.
+static thread_local bool SaveToolOnly = false;
+
 
 bool ESceneCustomOTool::OnLoadSelectionAppendObject(CCustomObject* obj)
 {
@@ -146,7 +150,7 @@ void ESceneCustomOTool::SaveStream(IWriter& F)
 
 	F.open_chunk		(CHUNK_OBJECTS);
 	int count			= 0;
-	for(ObjectIt it = m_Objects.begin();it!=m_Objects.end();++it)
+	for(ObjectIt it = m_Objects.begin();!SaveToolOnly && it!=m_Objects.end();++it)
 	{
 		if ( (*it)->IsDeleted() || (*it)->m_CO_Flags.test(CCustomObject::flObjectInGroup) )
 		continue;
@@ -160,6 +164,13 @@ void ESceneCustomOTool::SaveStream(IWriter& F)
 	F.w_chunk		(CHUNK_OBJECT_COUNT,&Objcount,sizeof(Objcount));
 }
 
+
+void ESceneCustomOTool::SaveToolStream(IWriter& F)
+{
+	SaveToolOnly = true;
+	SaveStream(F);
+	SaveToolOnly = false;
+}
 
 bool ESceneCustomOTool::Export(const char* path)
 {

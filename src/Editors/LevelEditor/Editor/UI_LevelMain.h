@@ -16,6 +16,7 @@ enum ELECommand
     
 	COMMAND_CLEAN_LIBRARY,
     COMMAND_LIBRARY_EDITOR,
+    COMMAND_SHARED_MATERIALS_EDITOR,
     COMMAND_LANIM_EDITOR,
 	COMMAND_CLEAR_DEBUG_DRAW,
     COMMAND_IMPORT_COMPILER_ERROR,
@@ -79,6 +80,37 @@ enum ELECommand
     COMMAND_LE_END
 };
 
+// Background level work: loading, building, generating. The level backup waits until it is done.
+class CLevelLoaderTasks
+{
+public:
+	template<typename Func>
+	void Run(Func&& Function, const char* Text = nullptr)
+	{
+		g_LevelAutoBackup.Cancel();
+		TaskbarText = Text;
+		EContext.UI->ProgressStatus = 0.f;
+		Active++;
+		Tasks.run
+		(
+			[this, Function = std::forward<Func>(Function)]()
+			{
+				Function();
+				Active--;
+			}
+		);
+	}
+
+	void Wait() { Tasks.wait(); }
+	bool IsBusy() const { return Active != 0; }
+	const char* GetTaskbarText() const { return TaskbarText; }
+
+private:
+	xr_task_group Tasks;
+	xr_atomic_u32 Active = 0;
+	const char* TaskbarText = nullptr;
+};
+
 class CLevelMain :
 	public TUI
 {
@@ -89,7 +121,7 @@ class CLevelMain :
 
 public:
 	C3DCursor* m_Cursor;
-	xr_task_group LoaderEvent;
+	CLevelLoaderTasks LoaderEvent;
 
 public:
 	CLevelMain();
@@ -117,9 +149,14 @@ public:
 	virtual Ivector2 GetRenderMousePosition() const override;
 	virtual void OnDrawUI() override;
 
+	void UpdateTaskbar();
+
 	virtual bool IsPlayInEditor();
 
 private:
+	bool TaskbarActive = false;
+	bool TaskbarIndeterminate = false;
+	int TaskbarProgress = -1;
 };
 
 extern CLevelMain*	LUI;

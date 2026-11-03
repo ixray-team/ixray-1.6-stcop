@@ -12,11 +12,11 @@ private:
 	typedef CArtefact inherited;
 public:
 	CElectricBall(void);
-	virtual ~CElectricBall(void);
+	virtual ~CElectricBall(void) override;
 
-	virtual void Load				(const char* section);
+	virtual void Load				(const char* section) override;
 
 protected:
-	virtual void	UpdateCLChild	();
+	virtual void	UpdateCLChild	() override;
 
 };

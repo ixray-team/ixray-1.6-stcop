@@ -8,7 +8,7 @@
 
 #include "ParticlesObject.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 
 CBastArtefact::CBastArtefact(void) 
 {
@@ -31,24 +31,18 @@ CBastArtefact::~CBastArtefact(void)
 }
 
 //вызывается при столкновении мочалки с чем-то
-void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/) 
+void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/) 
 {
-	dxGeomUserData *l_pUD1 = nullptr;
-	dxGeomUserData *l_pUD2 = nullptr;
-	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
-	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
-
-	if(!l_pUD1 || !l_pUD2) return;
+	if(!c.HasUserData(true) || !c.HasUserData(false)) return;
 
 	//определить кто есть кто, из двух столкнувшихся предметов
-	CBastArtefact *pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : nullptr;
-	if(!pBastArtefact) pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : nullptr;
+	CBastArtefact *pBastArtefact = smart_cast<CBastArtefact*>(c.GetObject(true));
+	if(!pBastArtefact) pBastArtefact = smart_cast<CBastArtefact*>(c.GetObject(false));
 	if(!pBastArtefact) return;
 	if(!pBastArtefact->IsAttacking()) return;
 
-	CEntityAlive *pEntityAlive = nullptr;
-	pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : nullptr;
-	if(!pEntityAlive) pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : nullptr;
+	CEntityAlive *pEntityAlive = smart_cast<CEntityAlive*>(c.GetObject(true));
+	if(!pEntityAlive) pEntityAlive = smart_cast<CEntityAlive*>(c.GetObject(false));
 
 	pBastArtefact->BastCollision(pEntityAlive);
 }
@@ -275,4 +269,4 @@ void CBastArtefact::setup_physic_shell	()
 	m_pPhysicsShell->set_PhysicsRefObject(this);
 	m_pPhysicsShell->set_ObjectContactCallback(ObjectContactCallback);
 	m_pPhysicsShell->set_ContactCallback(nullptr);
-}
+}

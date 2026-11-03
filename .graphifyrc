@@ -1,0 +1,7 @@
+# Graphify project configuration.
+# Reference: https://docs.graphify.com/reference/configuration
+
+# X-Ray is C++23, and its headers carry classes, templates and namespaces.
+# Graphify classifies a bare .h as C by default, which drops most of that,
+# so declare this project's headers as C++.
+language.h=cpp

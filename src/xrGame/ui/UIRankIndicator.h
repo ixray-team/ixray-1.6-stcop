@@ -15,8 +15,8 @@ class CUIRankIndicator final :
 public:
 
 					CUIRankIndicator		();
-	virtual			~CUIRankIndicator		();
+	virtual ~CUIRankIndicator		() override;
 	void			InitFromXml				(CUIXml& xml_doc);
 	void			SetRank					(u8 team, u8 rank);
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

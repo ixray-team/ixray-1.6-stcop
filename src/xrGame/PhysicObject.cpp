@@ -13,7 +13,7 @@
 #include "game_object_space.h"
 //#include "../xrPhysics/PhysicsShellAnimator.h"
 #include "moving_bones_snd_player.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 #include "script_game_object.h"
 #ifdef	DEBUG
 #include "PHDebug.h"
@@ -136,31 +136,9 @@ void CPhysicObject::stop_bones_sound()
 	bones_snd_player->stop();
 }
 
-static CPhysicsShellHolder* retrive_collide_object(bool bo1, dContact& c)
+static void door_ignore(bool& do_collide, bool bo1, CPHContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
 {
-	CPhysicsShellHolder* collide_obj = nullptr;
-	dxGeomUserData* ud = 0;
-
-	if (bo1)
-	{
-		ud = PHRetrieveGeomUserData(c.geom.g2);
-	}
-	else
-	{
-		ud = PHRetrieveGeomUserData(c.geom.g1);
-	}
-
-	if (ud)
-	{
-		collide_obj = static_cast<CPhysicsShellHolder*>(ud->ph_ref_object);
-	}
-
-	return collide_obj;
-}
-
-static void door_ignore(bool& do_collide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
-{
-	CPhysicsShellHolder* collide_obj = retrive_collide_object(bo1, c);
+	CPhysicsShellHolder* collide_obj = static_cast<CPhysicsShellHolder*>(c.GetObject(!bo1));
 	if (!collide_obj || collide_obj->cast_actor())
 	{
 		return;

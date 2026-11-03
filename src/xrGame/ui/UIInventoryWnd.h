@@ -27,23 +27,23 @@ private:
 	typedef CUIActorMenuBase inherited;
 public:
 							CUIInventoryWnd					();
-	virtual ~CUIInventoryWnd() = default;
+	virtual ~CUIInventoryWnd() override = default;
 
 	virtual void			Init							();
 
 	void					InitInventory					();
 
-	virtual void			SendMessage						(CUIWindow *pWnd, s16 msg, void *pData);
+	virtual void			SendMessage						(CUIWindow *pWnd, s16 msg, void *pData) override;
 
-	virtual CInventoryOwner* GetInventoryOwner			() { return m_pInvOwner; }
+	virtual CInventoryOwner* GetInventoryOwner			() override { return m_pInvOwner; }
 
-	virtual void			Update							();
+	virtual void			Update							() override;
 
-	virtual void			Show							(bool status);
+	virtual void			Show							(bool status) override;
 
-	virtual CUIDragDropListEx*	GetActorList				() { return m_pUIBagList; }
-	virtual CUIDragDropListEx*	GetBeltList					() { return m_pUIBeltList; }
-	virtual void				UpdateActor					();
+	virtual CUIDragDropListEx*	GetActorList				() override { return m_pUIBagList; }
+	virtual CUIDragDropListEx*	GetBeltList					() override { return m_pUIBeltList; }
+	virtual void				UpdateActor					() override;
 protected:
 	CUIStatic					UIBeltSlots;
 	CUIStatic					UIBack;
@@ -77,8 +77,8 @@ protected:
 	CUIOutfitInfo				UIOutfitInfo;
 
 	CInventoryOwner*			m_pInvOwner;
-	
-	virtual void				SetCurrentItem				(CUICellItem* itm);
+
+	virtual void				SetCurrentItem				(CUICellItem* itm) override;
 
 	TIItemContainer				ruck_list;
 	u32							m_iCurrentActiveSlot;

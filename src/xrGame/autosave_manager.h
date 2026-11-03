@@ -19,11 +19,11 @@ private:
 	shared_str save_str;
 public:
 						CAutosaveManager		();
-	virtual				~CAutosaveManager		();
-	virtual	shared_str	shedule_Name			() const		{ return shared_str("autosave_manager"); }
-	virtual	void		shedule_Update			(u32 dt);
-	virtual float		shedule_Scale			();
-	virtual bool		shedule_Needed			()				{ return true; }
+	virtual ~CAutosaveManager		() override;
+	virtual shared_str	shedule_Name			() const override { return shared_str("autosave_manager"); }
+	virtual void		shedule_Update			(u32 dt) override;
+	virtual float		shedule_Scale			() override;
+	virtual bool		shedule_Needed			() override { return true; }
 			void		on_game_loaded			();
 
 public:

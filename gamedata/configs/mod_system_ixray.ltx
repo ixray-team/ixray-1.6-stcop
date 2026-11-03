@@ -1009,3 +1009,12 @@ glass_present = true
 [default_burning_data]
 burn_sound = ambient\fire2
 burning_fx = damage_fx\burn_creatures00
+
+[trade_storage_box_base]
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\trade_storade_box"
+class				= O_TRDBOX
+cform				= skeleton
+visual				= dynamics\equipment_cache\equipment_box_01_case.ogf
+script_binding      = bind_physic_object.init

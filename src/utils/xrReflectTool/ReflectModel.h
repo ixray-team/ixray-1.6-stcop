@@ -57,12 +57,15 @@ namespace XReflectTool
 		std::vector<std::string> ParamTypes;
 		std::string Qualifiers;
 		std::string OperatorSymbol;
+		// Index of the first parameter with a default value, -1 when there is none.
+		int FirstDefault = -1;
 	};
 
 	enum class EMemberKind
 	{
 		Method,
 		Field,
+		Property,
 		Constructor,
 		Operator,
 		Enum,
@@ -77,6 +80,8 @@ namespace XReflectTool
 		bool ReadOnly = false;
 		std::string Condition;
 		std::string Policies;
+		// Property: C++ name of the setter member; empty for a read-only property.
+		std::string Setter;
 		// Enum: qualified enumerator prefix and the enumerator names.
 		std::string EnumScope;
 		std::vector<std::pair<std::string, std::string>> Enumerators; // Lua name, C++ name
@@ -92,6 +97,8 @@ namespace XReflectTool
 		std::string IniKey;
 		// Read only when this earlier IniRead field of the class is true.
 		std::string IniIf;
+		// C++ type as declared, for the ltx schema of the editor
+		std::string IniType;
 	};
 
 	struct ClassInfo
@@ -104,6 +111,8 @@ namespace XReflectTool
 		std::string RuntimeCondition;
 		bool LuaExport = false;
 		bool IniRead = false;
+		// Object class that reads the section: the editor maps it to the CLSIDs of the sections
+		std::string IniOwner;
 		bool Constructible = false;
 		bool ToString = false;
 		std::vector<std::string> PublicBases;

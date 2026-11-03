@@ -254,6 +254,7 @@ void CPda::Serialize(ISaveObject& Object)
 	{
 		inherited::Serialize(Object);
 		Object << m_sFullName;
+		IPowerManager::net_serialize(Object);
 	}
 }
 

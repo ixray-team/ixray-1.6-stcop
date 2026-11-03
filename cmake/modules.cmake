@@ -1,6 +1,8 @@
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/finders" ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATHEX "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
+include("${CMAKE_MODULE_PATHEX}/mimalloc.cmake")
+
 include("${CMAKE_MODULE_PATHEX}/SDL3.cmake")
 include("${CMAKE_MODULE_PATHEX}/LuaJIT.cmake")
 include("${CMAKE_MODULE_PATHEX}/LuaBind.cmake")
@@ -30,6 +32,10 @@ endif()
 include("${CMAKE_MODULE_PATHEX}/eigen.cmake")
 include("${CMAKE_MODULE_PATHEX}/pffft.cmake")
 
+if(IXRAY_PHYSICS_BACKEND STREQUAL "Box3D")
+    include("${CMAKE_MODULE_PATHEX}/Box3D.cmake")
+endif()
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATHEX}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATHEX}/Opus.cmake")
@@ -38,7 +44,9 @@ endif()
 
 if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/amd_ags.cmake")
-    include("${CMAKE_MODULE_PATHEX}/discord_game_sdk.cmake")
+    if(IXRAY_DISCORD_RPC)
+        include("${CMAKE_MODULE_PATHEX}/discord_game_sdk.cmake")
+    endif()
     include("${CMAKE_MODULE_PATHEX}/FSR3.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")

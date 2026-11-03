@@ -37,6 +37,7 @@ public:
 	void ApplyMainViewport(ImGuiCallback RenderFunction);
 	void Subscribe(shared_str Name, u32 RenderPriority, ImGuiCallback&& RenderFunction);
 	void Unsubscribe(shared_str Name);
+	void UnsubscribeAll();
 
 	void BeginRender();
 	void Render();

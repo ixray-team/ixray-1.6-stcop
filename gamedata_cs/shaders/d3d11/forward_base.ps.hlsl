@@ -53,9 +53,9 @@ void main(p_bumped_new I, out OutStructure O)
 
 #ifdef USE_HUD_RAINDROPS
 #if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(true), M.Point);
 #else
-    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false));
+    HudRain_Perturb(M.Normal, hudRain, HudRain_NormalScale(false), M.Point);
 #endif
     HudRain_Wet(M, hudRain);
 #endif
@@ -101,7 +101,7 @@ void main(p_bumped_new I, out OutStructure O)
 		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 	}
 
-	if(cascade_index >= 2)
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 	{
 		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;
@@ -178,4 +178,3 @@ void main(p_bumped_new I, out OutStructure O)
 	O.Length = ViewLength;
 #endif
 }
-

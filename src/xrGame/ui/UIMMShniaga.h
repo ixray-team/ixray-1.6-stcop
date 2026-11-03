@@ -13,21 +13,21 @@ class CUIMMShniaga final :	public CUIWindow,
 public:
 
 						CUIMMShniaga			();
-	virtual				~CUIMMShniaga			();
+	virtual ~CUIMMShniaga			() override;
 
 			void 		InitShniaga				(CUIXml& xml_doc, const char* path);
-	virtual void 		Update					();
-	virtual void 		Draw					();
+	virtual void 		Update					() override;
+	virtual void 		Draw					() override;
 
-	virtual bool 		OnMouseAction			(float x, float y, EUIMessages mouse_action);
-	virtual bool 		OnKeyboardAction		(int dik, EUIMessages keyboard_action);
-	virtual bool 		OnGamepadKeyAction		(int id, EUIMessages keyboard_action);
-	virtual bool		OnGamepadKeyHold		(int key);
-	virtual void 		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = 0);
+	virtual bool 		OnMouseAction			(float x, float y, EUIMessages mouse_action) override;
+	virtual bool 		OnKeyboardAction		(int dik, EUIMessages keyboard_action) override;
+	virtual bool 		OnGamepadKeyAction		(int id, EUIMessages keyboard_action) override;
+	virtual bool		OnGamepadKeyHold		(int key) override;
+	virtual void 		SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = 0) override;
 			void 		SetVisibleMagnifier		(bool f);
-	virtual void		OnDeviceReset			();
+	virtual void		OnDeviceReset			() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	enum	enum_page_id
 	{

@@ -23,20 +23,20 @@ private:
 	xr_vector<CInventoryOwner*>	m_pda_list;
 public:
 								CUIPdaContactsWnd		();
-	virtual						~CUIPdaContactsWnd		();
+	virtual ~CUIPdaContactsWnd		() override;
 
 	void						Init					();
 
 
-	virtual void				Draw					();
-	virtual void				Update					();
+	virtual void				Draw					() override;
+	virtual void				Update					() override;
 	virtual void				DrawHint				();
-	virtual void				Reset					();
+	virtual void				Reset					() override;
 
-	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold		(int id);
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool				OnGamepadKeyHold		(int id) override;
 
-	virtual void				Show					(bool status);
+	virtual void				Show					(bool status) override;
 
 	void 						AddContact				(CInventoryOwner* pda);
 	void 						RemoveAll				();
@@ -48,7 +48,7 @@ public:
 	UIHint*						m_hint_wnd;
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CUIXml*						_layoutXml = nullptr;
@@ -68,13 +68,13 @@ private:
 	typedef CUIPdaListItem inherited;
 public:
 								CUIPdaContactItem		(CUIPdaContactsWnd* cw)		{m_cw = cw;}
-	virtual						~CUIPdaContactItem		() = default;
-	virtual void				SetSelected				(bool b);
-	virtual bool				OnMouseDown				(int mouse_btn);
+	virtual ~CUIPdaContactItem		() override = default;
+	virtual void				SetSelected				(bool b) override;
+	virtual bool				OnMouseDown				(int mouse_btn) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUISelectable* ui_cast_selectable() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUISelectable* ui_cast_selectable() override { return this; }
 
-	virtual void				OnFocusReceive			();
+	virtual void				OnFocusReceive			() override;
 			void				SetHintText				();
 };

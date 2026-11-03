@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "dxStatsRender.h"
 #include "../../xrEngine/GameFont.h"
+#include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/Environment.h"
+#include "../../xrEngine/Rain.h"
 #include "dxRenderDeviceRender.h"
 
 void dxStatsRender::Copy(IStatsRender&_in)
@@ -13,6 +16,10 @@ void dxStatsRender::OutData1 (CGameFont &F)
 	F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
 	F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
 	F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
+	if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
+	{
+		g_pGamePersistent->pEnvironment->eff_Rain->Statistics(F);
+	}
 }
 
 void dxStatsRender::OutData2 (CGameFont &F)

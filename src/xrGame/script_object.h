@@ -17,13 +17,13 @@ class CScriptObject :
 {
 public:
 								CScriptObject			();
-	virtual						~CScriptObject			();
-	virtual DLL_Pure			*_construct				();
-	virtual	void				reinit					();
-	virtual bool				net_Spawn				(CSE_Abstract* DC);
-	virtual void				net_Destroy				();
-	virtual bool				UsedAI_Locations		();
-	virtual void				shedule_Update			(u32 DT);
-	virtual void				UpdateCL				();
-	virtual CScriptEntity*		cast_script_entity		()	{return this;}
+	virtual ~CScriptObject			() override;
+	virtual DLL_Pure			*_construct				() override;
+	virtual void				reinit					() override;
+	virtual bool				net_Spawn				(CSE_Abstract* DC) override;
+	virtual void				net_Destroy				() override;
+	virtual bool				UsedAI_Locations		() override;
+	virtual void				shedule_Update			(u32 DT) override;
+	virtual void				UpdateCL				() override;
+	virtual CScriptEntity*		cast_script_entity		() override {return this;}
 };

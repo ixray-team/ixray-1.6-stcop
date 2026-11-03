@@ -8,14 +8,14 @@ class CStateMonsterHittedHide : public CState<_Object> {
 public:
 
 					CStateMonsterHittedHide	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateMonsterHittedHide() = default;
+	virtual ~CStateMonsterHittedHide() override = default;
 
-	virtual void	initialize				();
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual bool 	check_completion		();
-	virtual bool 	check_start_conditions	();
+	virtual bool 	check_completion		() override;
+	virtual bool 	check_start_conditions	() override;
 };
 
 #include "monster_state_hitted_hide_inline.h"

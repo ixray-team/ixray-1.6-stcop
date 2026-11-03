@@ -10,9 +10,11 @@ using Fvector4It = Fvector4Vec::iterator;
 bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
 {
     CSurface* surf = R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
-    Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
-    if (!c_sh->flags.bRendering) 
-        return false;
+    Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
+    if (!c_sh->flags.bRendering)
+    {
+	    return false;
+    }
 
     const Fvector2* cuv[3];
     R->e_mesh->GetFaceTC(R->tag, cuv);
@@ -52,10 +54,12 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
     mtl.sector = (u16)sector_num;
     mtl.shader_xrlc = -1;
 
-    if ((u16(-1) == mtl.surfidx) || (u16(-1) == mtl.shader)) 
-        return -2;
+    if ((u16(-1) == mtl.surfidx) || (u16(-1) == mtl.shader))
+    {
+	    return -2;
+    }
 
-    int mtl_idx = FindInMaterials(&mtl);
+    int mtl_idx = FindInMaterials(mtl);
     if (mtl_idx < 0)
     {
         l_materials.push_back(mtl);

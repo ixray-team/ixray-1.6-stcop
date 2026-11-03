@@ -146,7 +146,6 @@ void export_classes	(lua_State *L)
 	CALifeSimulator::script_register(L);
 	CClientSpawnManager::script_register(L);
 	console_registrator::script_register(L);
-	CCoverPoint::script_register(L);
 	demo_player_info::script_register(L);
 	demo_info::script_register(L);
 	CEF_Storage::script_register(L);
@@ -158,20 +157,16 @@ void export_classes	(lua_State *L)
 	CObjectScript::script_register(L);
 	CPhysicObject::script_register(L);
 	CExplosive::script_register(L);
-	CF1::script_register(L);
 	CBlendScript::script_register(L);
 	IRender_VisualScript::script_register(L);
 	IKinematicsAnimatedScript::script_register(L);
 	CScriptGameDifficulty::script_register(L);
-	CHairsZone::script_register(L);
 	CHangingLamp::script_register(L);
 	CHelicopter::script_register(L);
 	CHolderCustom::script_register(L);
 	key_binding_registrator::script_register(L);
 	CLevel::script_register(L);
 	CMemoryInfo::script_register(L);
-	CMincer::script_register(L);
-	CParticleParams::script_register(L);
 	CPatrolPathParams::script_register(L);
 	CPhraseDialogExporter::script_register(L);
 	CPHCallOnStepCondition::script_register(L);
@@ -180,21 +175,13 @@ void export_classes	(lua_State *L)
 	cphysics_element_scripted::script_register(L);
 	cphysics_joint_scripted::script_register(L);
 	cphysics_shell_scripted::script_register(L);
-	cphysics_world_scripted::script_register(L);
 	CScriptPropertyEvaluator::script_register(L);
-	CPropertyStorage::script_register(L);
-	//CRadioactiveZone::script_register(L);
-	CRGD5::script_register(L);
 	CSavedGameWrapper::script_register(L);
-	CScope::script_register(L);
-	CScriptActionCondition::script_register(L);
 	CScriptAnimationAction::script_register(L);
 	CScriptBinderObject::script_register(L);
 	CScriptEffector::script_register(L);
 	CScriptEntityAction::script_register(L);
-	CScriptHit::script_register(L);
 	lanim_registrator::script_register(L);
-	CScriptMonsterAction::script_register(L);
 	CScriptMonsterHitInfo::script_register(L);
 	CScriptMovementAction::script_register(L);
 	CScriptObjectAction::script_register(L);
@@ -203,49 +190,14 @@ void export_classes	(lua_State *L)
 	CScriptRenderDevice::script_register(L);
 	CScriptSound::script_register(L);
 	CScriptSoundAction::script_register(L);
-	CScriptSoundInfo::script_register(L);
 	UIRegistrator::script_register(L);
 	CScriptWatchAction::script_register(L);
 	CScriptWorldPropertyWrapper::script_register(L);
 	CScriptWorldStateWrapper::script_register(L);
-	CScriptZone::script_register(L);
-	smart_cover__object::script_register(L);
-	CSmartZone::script_register(L);
-	CSpaceRestrictor::script_register(L);
-	CStalkerOutfit::script_register(L);
-	CTorch::script_register(L);
-	FactionState::script_register(L);
 	CWeapon::script_register(L);
-	CWeaponBinoculars::script_register(L);
-	CWeaponBM16::script_register(L);
-	CWeaponKnife::script_register(L);
-	CWeaponRG6::script_register(L);
-	CWeaponRPG7::script_register(L);
-	CWeaponSVD::script_register(L);
-	CWeaponShotgun::script_register(L);
 
 	CArtefact::script_register(L);
-	CAI_Crow::script_register(L);
-	CAI_Bloodsucker::script_register(L);
-	CAI_Boar::script_register(L);
-	CBurer::script_register(L);
-	CCat::script_register(L);
-	CChimera::script_register(L);
-	CController::script_register(L);
-	CAI_Dog::script_register(L);
-	CAI_Flesh::script_register(L);
-	CFracture::script_register(L);
-	CPoltergeist::script_register(L);
-	CAI_PseudoDog::script_register(L);
-	CPsyDog::script_register(L);
-	CPsyDogPhantom::script_register(L);
-	CPseudoGigant::script_register(L);
-	CSnork::script_register(L);
-	CTushkano::script_register(L);
-	CZombie::script_register(L);
 	CAI_Stalker::script_register(L);
-	CAI_Trader::script_register(L);
-	CCar::script_register(L);
 
 	CActor::script_register(L);
 	CEatableItem::script_register(L);
@@ -254,18 +206,11 @@ void export_classes	(lua_State *L)
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
 	CUIActorMenu::script_register(L);
-	ScriptEvent::script_register(L);
 	CInventoryBox::script_register(L);
 	CActorCondition::script_register(L);
-	CAntirad::script_register(L);
-	CBottleItem::script_register(L);
 	CCustomOutfit::script_register(L);
-	CFoodItem::script_register(L);
-	CHudItem::script_register(L);
 	CInventoryItem::script_register(L);
 	CInventoryOwner::script_register(L);
-	CMedkit::script_register(L);
-	CPhysicsShellHolder::script_register(L);
 	CWeaponAmmo::script_register(L);
 	CGameTaskManager::script_register(L);
 
@@ -280,7 +225,6 @@ void export_classes	(lua_State *L)
 	game_sv_mp::script_register(L);
 	game_sv_mp_script::script_register(L);
 	CScriptXRParser::script_register(L);
-	CInteractiveObject::script_register(L);
 
 
 	// Ехидна Эдишен

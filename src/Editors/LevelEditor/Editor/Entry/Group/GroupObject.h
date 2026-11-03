@@ -32,6 +32,9 @@ public:
     bool			CanUngroup		(bool bMsg);
     void			GroupObjects	(ObjectList& lst);
     void			UngroupObjects	();
+    // Moves objects into this group, taking them out of their previous group
+    void			AttachObjects	(ObjectList& lst);
+    void			DetachObject	(CCustomObject* object);
     u32				GetObjects		(ObjectList& lst);
     IC int			ObjectInGroupCount(){return m_ObjectsInGroup.size();}
 

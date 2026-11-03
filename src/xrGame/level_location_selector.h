@@ -38,8 +38,8 @@ public:
 	IC							CBaseLocationSelector		(CRestrictedObject *object);
 
 protected:
-	IC	virtual	void			before_search				(_vertex_id_type &vertex_id);
-	IC	virtual	void			after_search				();
+	IC virtual void			before_search				(_vertex_id_type &vertex_id) override;
+	IC virtual void			after_search				() override;
 };
 
 #include "level_location_selector_inline.h"

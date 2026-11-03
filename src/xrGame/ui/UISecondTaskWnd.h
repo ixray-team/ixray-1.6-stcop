@@ -40,19 +40,19 @@ private:
 
 public:
 					UITaskListWnd		();
-	virtual			~UITaskListWnd		();
+	virtual ~UITaskListWnd		() override;
 
 			void	init_from_xml		( CUIXml& xml, const char* path );
 
-	virtual bool	OnMouseAction		( float x, float y, EUIMessages mouse_action );
-	virtual void 	OnMouseScroll		(float iDirection);
-	virtual bool	OnGamepadKeyAction	(int id, EUIMessages gamepad_action);
-	virtual bool	OnGamepadKeyHold	(int id);
-	virtual void	Show				( bool status );
-	virtual void 	OnFocusReceive		();
-	virtual void	OnFocusLost			();
-	virtual void	Update				();
-	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
+	virtual bool	OnMouseAction		( float x, float y, EUIMessages mouse_action ) override;
+	virtual void 	OnMouseScroll		(float iDirection) override;
+	virtual bool	OnGamepadKeyAction	(int id, EUIMessages gamepad_action) override;
+	virtual bool	OnGamepadKeyHold	(int id) override;
+	virtual void	Show				( bool status ) override;
+	virtual void 	OnFocusReceive		() override;
+	virtual void	OnFocusLost			() override;
+	virtual void	Update				() override;
+	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData ) override;
 			void	SetFilterMode		(ETaskListFilter mode);
 			void	SetUiSounds			(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			ETaskListFilter GetFilterMode() const { return m_filter; }
@@ -62,7 +62,7 @@ public:
 
 			void	UpdateList			();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	void 			OnBtnClose			( CUIWindow* w, void* d);
@@ -105,19 +105,19 @@ private:
 
 public:
 					UITaskListWndItem	();
-	virtual			~UITaskListWndItem	() = default;
+	virtual ~UITaskListWndItem	() override = default;
 
 			bool	init_task			( CGameTask* task, UITaskListWnd* parent );
 		u32		get_priority_task	() const;
 	CGameTask*		get_task			() { return m_task; }
 
-	virtual void 	OnFocusReceive		();
-	virtual void	OnFocusLost			();
-	virtual void	Update				();
-	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData );
-	virtual bool	OnMouseAction				( float x, float y, EUIMessages mouse_action );
+	virtual void 	OnFocusReceive		() override;
+	virtual void	OnFocusLost			() override;
+	virtual void	Update				() override;
+	virtual void	SendMessage			( CUIWindow* pWnd, s16 msg, void* pData ) override;
+	virtual bool	OnMouseAction				( float x, float y, EUIMessages mouse_action ) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 			void	showHint			();
 			void	hide_hint			();

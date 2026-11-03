@@ -43,7 +43,7 @@ public:
 			float		ClimbDirection					();
 			void		Deactivate						();
 			bool		UpdateMaterial					( u16 &materil_idx );
-IC			Estate		State							(){return m_state;}
+IC			virtual	Estate		State							() override {return m_state;}
 private:
 			void		NewState						();
 
@@ -59,7 +59,7 @@ private:
 			void		UpdateClimbingCommon			(const Fvector	&d_to_ax,float to_ax,const Fvector& control_accel,float ca);
 			void		UpdateDepart					();
 public:
-			void		NetRelcase						( IPhysicsShellHolder* O );
+			virtual	void		NetRelcase						( IPhysicsShellHolder* O ) override;
 			
 
 };

@@ -402,7 +402,9 @@ bool animation_planner::hit_callback	(SHit const *hit)
 	return					(false);
 }
 
+#ifdef LOG_ACTION
 const char* animation_planner::object_name		() const
 {
 	return					("animation_planner");
 }
+#endif

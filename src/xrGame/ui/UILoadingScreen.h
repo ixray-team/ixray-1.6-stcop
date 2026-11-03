@@ -32,7 +32,7 @@ public:
     void SetLevelLogo(const char* name) const override;
     void SetStageTitle(const char* title) const override;
     void SetStageTip(const char* header, const char* tipNumber, const char* tip) const override;
-    virtual void Draw();
+    virtual void Draw() override;
 
-    virtual CUIWindow* ui_cast_window() { return this; }
+    virtual CUIWindow* ui_cast_window() override { return this; }
 };

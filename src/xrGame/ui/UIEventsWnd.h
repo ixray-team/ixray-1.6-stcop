@@ -58,22 +58,22 @@ public:
 public:
 
 								CUIEventsWnd			();
-	virtual						~CUIEventsWnd			();
-	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData);
+	virtual ~CUIEventsWnd			() override;
+	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData) override;
 			void				Init					();
 			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
-	virtual void				Update					();
-	virtual void				Draw					();
-	virtual void				Show					(bool status);
+	virtual void				Update					() override;
+	virtual void				Draw					() override;
+	virtual void				Show					(bool status) override;
 			void				Reload					();
-	virtual void				Reset					();
-	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold		(int id);
+	virtual void				Reset					() override;
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool				OnGamepadKeyHold		(int id) override;
 
 	CUIXml						m_ui_task_item_xml;
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 	CUIMapWnd*					m_UIMapWnd;
 	CPdaUiSounds*				m_pUiSounds = nullptr;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

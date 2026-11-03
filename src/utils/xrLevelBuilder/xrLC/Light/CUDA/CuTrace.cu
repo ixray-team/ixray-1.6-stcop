@@ -28,9 +28,18 @@ enum Flags
 // Entry points
 __device__ float calculate_energy(Hardware_FaceData& F)
 {
-	Hardware_TextureData& T = g_params.textures[F.surfidx];
+	Hardware_TextureData& T = [&F]() -> Hardware_TextureData&
+	{
+		if (F.bShared)
+		{
+			return g_params.textures_shared[F.surfidx];
+		}
+		return g_params.textures[F.surfidx];
+	}();
 	if (!T.pSurface)
+	{
 		return 1.0f;
+	}
 
 	// barycentrics
 	const float2 bc = optixGetTriangleBarycentrics();

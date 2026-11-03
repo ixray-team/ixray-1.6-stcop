@@ -18,14 +18,13 @@
 #include "alife_object_registry.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrScripts/exports/script_ini_file.h"
+#include "../xrCore/IniCache.h"
 
 #ifdef DEBUG
 #	include "moving_objects.h"
 #endif // DEBUG
 
 const char* alife_section = "alife";
-
-extern XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void restart_all				()
 {
@@ -48,20 +47,7 @@ void restart_all				()
 	ai().moving_objects().clear	();
 #endif // DEBUG
 
-	xr_vector<CInifile*> ini_files;
-	ini_files.reserve(cached_ini_map->size());
-
-	for (auto& cacheIni : *cached_ini_map)
-	{
-		ini_files.push_back(cacheIni.second);
-	}
-
-	cached_ini_map->clear();
-
-	for (CInifile* iniFile : ini_files)
-	{
-		xr_delete(iniFile);
-	}
+	ClearCachedIniFiles();
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :

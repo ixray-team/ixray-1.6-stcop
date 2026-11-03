@@ -51,10 +51,10 @@ private:
 
 public:
 	CUIAchievements(CUIScrollView* parent);
-	virtual ~CUIAchievements();
+	virtual ~CUIAchievements() override;
 
 	void init_from_xml(CUIXml& xml);
-	void Update();
+	virtual void Update() override;
 
 	void SetName(const char* name);
 	void SetDescription(const char* desc);
@@ -64,9 +64,9 @@ public:
 	void SetRepeatable(bool repeat);
 
 	virtual void DrawHint();
-	virtual void Reset();
+	virtual void Reset() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	bool ParentHasMe();

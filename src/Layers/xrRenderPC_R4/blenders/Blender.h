@@ -49,15 +49,15 @@ public:
 	static			void		CreatePalette	(xr_vector<IBlender*> & palette);
 	
 	CBlender_DESC&				getDescription	()	{return description;}
-	virtual 		const char*		getName			()	{return description.cName;}
-	virtual			const char*		getComment		()	= 0;
+	virtual const char*		getName			() override {return description.cName;}
+	virtual const char*		getComment		() override = 0;
 
 	virtual			bool		canBeDetailed	()	{ return false; }
 	virtual			bool		canBeLMAPped	()	= 0;
 	virtual			bool		canUseSteepParallax	()	{ return false; }
-	
-	virtual			void		Save			(IWriter& fs);
-	virtual			void		Load			(IReader& fs, u16 version);
+
+	virtual void		Save			(IWriter& fs) override;
+	virtual void		Load			(IReader& fs, u16 version) override;
 	
 	virtual			void		Compile			(CBlender_Compile& C);
 

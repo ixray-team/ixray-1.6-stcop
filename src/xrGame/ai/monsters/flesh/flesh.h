@@ -3,6 +3,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAI_Flesh final : public CBaseMonster,
 				  public CControlledEntity<CAI_Flesh> {
 
@@ -11,21 +12,21 @@ class CAI_Flesh final : public CBaseMonster,
 
 public:
 							CAI_Flesh		();
-	virtual					~CAI_Flesh		();	
-	
-	virtual	void	Load					(const char* section);
-	virtual	bool	net_Spawn				(CSE_Abstract* DC);
+	virtual ~CAI_Flesh		() override;
 
-	virtual	void	CheckSpecParams			(u32 spec_params);
+	virtual void	Load					(const char* section) override;
+	virtual bool	net_Spawn				(CSE_Abstract* DC) override;
 
-	virtual bool	ability_can_drag		() {return true;}
+	virtual void	CheckSpecParams			(u32 spec_params) override;
 
-	virtual	char*	get_monster_class_name () { return (char*)"flesh"; }
+	virtual bool	ability_can_drag		() override {return true;}
+
+	virtual char*	get_monster_class_name () override { return (char*)"flesh"; }
 
 
 private:
 	bool	ConeSphereIntersection	(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, 
 									Fvector SphereCenter, float SphereRadius);
 	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 };

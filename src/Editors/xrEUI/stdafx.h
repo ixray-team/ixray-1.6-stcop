@@ -23,6 +23,7 @@ enum class EDragDropType : u8
 };
 
 #include "EditorWnd.h"
+#include "UIToast.h"
 #include "XrUIManager.h"
 
 #define IMGUI_IMPL_API
@@ -30,6 +31,7 @@ enum class EDragDropType : u8
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "imgui.h"
+#include "EditorDragDrop.h"
 
 namespace ImGui
 {

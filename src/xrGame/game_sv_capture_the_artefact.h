@@ -216,7 +216,7 @@ protected:
 	void WriteGameState(CInifile& ini, const char* sect, bool bRoundResult) override;
 public:
 	game_sv_CaptureTheArtefact();
-	virtual ~game_sv_CaptureTheArtefact();
+	virtual ~game_sv_CaptureTheArtefact() override;
 
 	const char* type_name() const override;
 	void Create(shared_str &options) override;

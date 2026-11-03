@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "PhysicObject.h"
-#include "ode/contact.h"
+#include "../xrPhysics/PHContact.h"
 
 struct SGameMtl;
 
@@ -26,7 +26,7 @@ class CShell : public CPhysicObject
 public:
 	virtual bool net_Spawn(CSE_Abstract* e) override;
 	virtual void UpdateCL() override;
-	
+
 	virtual void PH_A_CrPr() override;
 	virtual void PH_B_CrPr() override;
 	virtual void net_Relcase(CObject* O) override;
@@ -34,5 +34,5 @@ public:
 private:
 	void Eject();
 
-	static void ContactCallback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2);
+	static void ContactCallback(bool& do_collide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2);
 };

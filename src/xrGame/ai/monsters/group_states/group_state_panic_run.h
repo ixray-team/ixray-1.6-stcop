@@ -6,13 +6,13 @@ class CStateGroupPanicRun : public CState<_Object> {
 
 public:
 						CStateGroupPanicRun	(_Object *obj) : inherited(obj) {}
-	virtual				~CStateGroupPanicRun	() = default;
+	virtual ~CStateGroupPanicRun	() override = default;
 
-	virtual void		initialize				();
-	virtual	void		execute					();
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
 
-	virtual bool		check_completion		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual bool		check_completion		() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "group_state_panic_run_inline.h"

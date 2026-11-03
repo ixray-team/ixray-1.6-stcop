@@ -65,7 +65,7 @@ private:
 			void						CleanupInternal();
 public:
 	UITeamState(ETeam teamId, UITeamPanels *teamPanels);
-	virtual ~UITeamState();
+	virtual ~UITeamState() override;
 	void Init(CUIXml& uiXml, const char* teamNodeName, int index);
 
 		
@@ -78,8 +78,8 @@ public:
 	s32			GetFieldValue(shared_str const & field_name) const;
 	s32			GetSummaryFrags() const;
 
-	virtual void Update();
-	virtual void Draw();
+	virtual void Update() override;
+	virtual void Draw() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

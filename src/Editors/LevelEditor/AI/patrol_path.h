@@ -29,11 +29,11 @@ public:
 #endif
 
 public:
-							CPatrolPath		(shared_str name = "");
+							CPatrolPath		(const shared_str& name = "");
 	virtual					~CPatrolPath	();
 			CPatrolPath&	load_editor(const ILevelGraph* level_graph, const IGameLevelCrossTable* cross, const IGameGraph* game_graph,class CWayObject* object);
 			CPatrolPath		&load_raw		(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream);
-	IC		const CVertex	*point			(shared_str name) const;
+	IC		const CVertex	*point			(const shared_str& name) const;
 	template <typename T>
 	IC		const CVertex	*point			(const Fvector &position, const T &evaluator) const;
 	IC		const CVertex	*point			(const Fvector &position) const;

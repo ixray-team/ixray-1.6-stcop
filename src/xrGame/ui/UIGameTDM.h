@@ -33,16 +33,16 @@ protected:
 	shared_str			m_buy_msg_caption_legacy = "tdm_buy";
 public:
 	CUIGameTDM			();
-	virtual 			~CUIGameTDM				();
-	virtual void		SetClGame				(game_cl_GameState* g);
-	virtual	void		UnLoad					();
-	virtual	void		Init					(int stage);
+	virtual ~CUIGameTDM				() override;
+	virtual void		SetClGame				(game_cl_GameState* g) override;
+	virtual void		UnLoad					() override;
+	virtual void		Init					(int stage) override;
 			void		SetScoreCaption			(int t1, int t2);			
 			void		SetBuyMsgCaption		(const char* str);
-	virtual void		SetFraglimit			(int local_frags, int fraglimit);
-	virtual void		Render					();
-	virtual void _BCL	OnFrame					();
-	
-	virtual	bool		IR_UIOnKeyboardPress	(int dik);
-	virtual bool		IR_UIOnKeyboardRelease	(int dik);
+	virtual void		SetFraglimit			(int local_frags, int fraglimit) override;
+	virtual void		Render					() override;
+	virtual void _BCL	OnFrame					() override;
+
+	virtual bool		IR_UIOnKeyboardPress	(int dik) override;
+	virtual bool		IR_UIOnKeyboardRelease	(int dik) override;
 };

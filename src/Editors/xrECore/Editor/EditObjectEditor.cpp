@@ -10,7 +10,6 @@
 #include "D3DUtils.h"
 #include "ui_main.h"
 #include "../../../Layers/xrRenderPC_R4/RenderEditorApi.h"
-#include "../Public/PropertiesListHelper.h"
 #include "../../Layers/xrRenderPC_R4/ResourceManager.h"
 #include "ImageManager.h"
 #include "EditorInstancing.h"
@@ -116,14 +115,14 @@ ref_shader CSurface::_ShaderInstanced()
 
 	m_RTFlags.set(rtInstancedShaderTried, true);
 
-	if (!_Shader() || !m_ShaderName.size() || !m_Texture.size())
+	if (!_Shader() || !_ShaderName() || !_Texture())
 	{
 		return m_ShaderInstanced;
 	}
 
-	RImplementation.EditorInstancing = true;
-	m_ShaderInstanced.create(*m_ShaderName, *m_Texture);
-	RImplementation.EditorInstancing = false;
+	RImplementation.SetEditorInstancing(true);
+	m_ShaderInstanced.create(_ShaderName(), _Texture());
+	RImplementation.SetEditorInstancing(false);
 
 	if (!CEditorInstanceBatcher::IsShaderSupported(&*m_ShaderInstanced))
 	{
@@ -139,8 +138,10 @@ static const float ssaLim = 64.f * 64.f / (640 * 480);
 
 void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
 {
+	PROF_EVENT("CEditableObject::Render")
 	if (!(m_LoadState.is(LS_RBUFFERS)))
 	{
+		PROF_EVENT("CEditableObject::DefferedLoadRP")
 		DefferedLoadRP();
 	}
 
@@ -164,32 +165,26 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 	{
 		RCache.set_xform_world(parent);
 
-		if (m_objectFlags.is(eoHOM))
+		// HOM and sound occluders are drawn as untextured half-transparent volumes with edges
+		if (m_objectFlags.is(eoHOM) || m_objectFlags.is(eoSoundOccluder))
 		{
+			const bool IsHOM = m_objectFlags.is(eoHOM);
+
 			if ((1 == priority) && (false == strictB2F))
 			{
-				RenderEdge(pParent, 0, 0x40B64646);
+				RenderEdge(pParent, 0, IsHOM ? 0x40B64646 : 0xFF000000);
 			}
 
-			if ((2 == priority) && (true == strictB2F))
+			if ((2 == priority) && (true == strictB2F) && !SubmitPass)
 			{
-				RenderSelection(pParent, 0, 0xA0FFFFFF);
+				RenderSelection(pParent, 0, IsHOM ? 0x80FFFFFF : 0x800000FF);
 			}
-
 		}
-	//	else 
-		if (m_objectFlags.is(eoSoundOccluder))
-		{
-			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(pParent, 0, 0xFF000000);
-
-			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(pParent, 0, 0xA00000FF);
-		}
-	//	else 
+		else
 		{
 			if (psDeviceFlags.is(rsEdgedFaces) && (1 == priority) && (false == strictB2F))
 			{
+				PROF_EVENT("CEditableObject::RenderEdge")
 		 		RenderEdge(pParent);
 			}
 
@@ -201,6 +196,12 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 			if (IsSkeleton())
 			{
 				Engine.External.SetSkinningMode(4);
+			}
+
+			if (SubmitPass && !IsSkeleton())
+			{
+				SubmitSurfaces(pParent, parent, priority, strictB2F, surfaces);
+				return;
 			}
 
 			size_t s_id = 0;
@@ -266,6 +267,127 @@ void CEditableObject::Render(CCustomObject* pParent, const Fmatrix& parent, int 
 			}
 
 			Engine.External.SetSkinningMode();
+		}
+	}
+}
+
+void CEditableObject::SubmitSurfaces(CCustomObject* pParent, const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
+{
+	// The scene passes use the pairs collected for the frame; shadow passes have their own
+	// frustums and collect again
+	if (!GEditorSceneSubmit.ShadowCollect)
+	{
+		if (SDeferredSubmit* Job = GEditorSceneSubmit.FindPrepared(pParent); Job != nullptr && Job->Object == this)
+		{
+			GEditorSceneSubmit.ApplyPrepared(*Job, priority, strictB2F);
+			return;
+		}
+	}
+
+	// While the scene pass collects objects the work runs later, spread over worker threads
+	if (GEditorSceneSubmit.IsDeferring())
+	{
+		SDeferredSubmit& Job = GEditorSceneSubmit.AddDeferred();
+		Job.Object = this;
+		Job.Parent = pParent;
+		Job.Transform = parent;
+		Job.Priority = priority;
+		Job.StrictB2F = strictB2F;
+		Job.Surfaces = surfaces;
+		GEditorSceneSubmit.LaunchDeferred(Job);
+		return;
+	}
+
+	PROF_EVENT("CEditableObject::SubmitSurfaces")
+	static SDeferredSubmit Job;
+	Job.Object = this;
+	Job.Parent = pParent;
+	Job.Transform = parent;
+	Job.Priority = priority;
+	Job.StrictB2F = strictB2F;
+	Job.Surfaces = surfaces;
+	CollectSubmitPairs(Job);
+	GEditorSceneSubmit.ApplyDeferred(Job);
+}
+
+void CEditableObject::PrepareSubmitShaders() const
+{
+	for (CSurface* Surface : m_Surfaces)
+	{
+		Surface->EnsureShader();
+	}
+}
+
+void CEditableObject::CollectSubmitPairs(SDeferredSubmit& Job) const
+{
+	Job.Selected.clear();
+	Job.Pairs.clear();
+	Job.Fallback.clear();
+
+	// Surfaces of this pass, once per object instead of once per mesh
+	for (size_t s_id = 0; s_id < m_Surfaces.size(); ++s_id)
+	{
+		CSurface* Surface = m_Surfaces[s_id];
+		if (!Surface->m_bEditorVisible)
+		{
+			continue;
+		}
+
+		// Runs on a submit worker: PrepareSubmitShaders created the shaders on the primary thread
+		const int Priority = Surface->_PriorityNoRef();
+		const bool StrictB2F = Surface->_StrictB2FNoRef();
+		if (Job.Priority != SDeferredSubmit::AllPriorities && (Priority != Job.Priority || StrictB2F != Job.StrictB2F))
+		{
+			continue;
+		}
+
+		SDeferredSubmit::SSelected& Sel = Job.Selected.emplace_back();
+		Sel.Surface = Surface;
+		Sel.Priority = Priority;
+		Sel.StrictB2F = StrictB2F;
+		Sel.DrawSurface = (Job.Surfaces != nullptr && Job.Surfaces->size() > s_id) ? (*Job.Surfaces)[s_id] : Surface;
+	}
+
+	if (Job.Selected.empty())
+	{
+		return;
+	}
+
+	// Walk the surfaces each mesh has faces of: a large object has hundreds of meshes and
+	// surfaces, and most pairs are empty
+	for (CEditableMesh* Mesh : m_Meshes)
+	{
+		const RBMap* Buffers = Mesh->GetRenderBuffers();
+		if (Buffers == nullptr)
+		{
+			// Submit generates the buffers on first use, on the primary thread
+			Job.Fallback.push_back(Mesh);
+			continue;
+		}
+
+		if (!Mesh->m_Flags.is(CEditableMesh::flVisible))
+		{
+			continue;
+		}
+
+		Fbox Box;
+		Mesh->GetBox(Box);
+		Box.xform(Job.Transform);
+		if (!::Render->occ_visible(Box))
+		{
+			continue;
+		}
+
+		for (const auto& [Surface, Vector] : *Buffers)
+		{
+			for (u32 Index = 0; Index < u32(Job.Selected.size()); ++Index)
+			{
+				if (Job.Selected[Index].Surface == Surface)
+				{
+					Job.Pairs.push_back({ Mesh, Index });
+					break;
+				}
+			}
 		}
 	}
 }
@@ -440,7 +562,7 @@ void CEditableObject::OnDeviceDestroy()
 	DefferedUnloadRP();
 }
 
-static RHIInputElementDesc dwDecl_4W[] =
+static RHIInputElementDesc SkeletonGeomDecl[] =
 {
 	{ "POSITION",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0,  ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 	{ "NORMAL",    0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
@@ -455,7 +577,7 @@ void CEditableObject::DefferedLoadRP()
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
-	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	vs_SkeletonGeom.create(SkeletonGeomDecl, std::size(SkeletonGeomDecl), RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();
@@ -520,26 +642,28 @@ IC bool BE(bool A, bool B)
 bool CEditableObject::CheckShaderCompatible()
 {
 	bool bRes 			= true;
-	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+	for (auto& m_Surface : m_Surfaces)
 	{
-		IBlender* 		B = DEV->_FindBlender(*(*s_it)->m_ShaderName);
-		Shader_xrLC* 	C = EDevice->ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
+		IBlender* B = DEV->_FindBlender(m_Surface->_ShaderName());
+		Shader_xrLC* C = EDevice->ShaderXRLC.Get(m_Surface->_ShaderXRLCName());
 		if (!B||!C){
-			ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(),(*s_it)->m_ShaderName.c_str(),(*s_it)->m_ShaderXRLCName.c_str());
-			bRes 		= false;
-		}else{
-			if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex)){
-				ELog.Msg	(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", m_LibName.c_str(),
-					(*s_it)->m_Name.c_str(), (*s_it)->m_ShaderName.c_str(), (*s_it)->m_ShaderXRLCName.c_str());
+			ELog.Msg(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",m_LibName.c_str(), m_Surface->_ShaderName(), m_Surface->_ShaderXRLCName());
+			bRes = false;
+		}
+		else if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex))
+		{
+			ELog.Msg(mtError,"Object '%s', material '%s': engine shader '%s' non compatible with compiler shader '%s'", m_LibName.c_str(),
+				m_Surface->_Name(),
+				m_Surface->_ShaderName(),
+				m_Surface->_ShaderXRLCName());
 				
-				bRes 		= false;
-			}
+			bRes = false;
 		}
 	}
 	return bRes;
 }
 
-bool CEditableObject::CreateBone(shared_str Name)
+bool CEditableObject::CreateBone(const shared_str& Name)
 {
 	if (!m_Bones.empty() || !m_BoneParts.empty() || m_objectFlags.test(eoDynamic))
 		return false;

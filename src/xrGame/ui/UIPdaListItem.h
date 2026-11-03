@@ -16,11 +16,11 @@ private:
 	typedef UIHintWindow inherited;
 public:
 					CUIPdaListItem		();
-	virtual			~CUIPdaListItem		();
+	virtual ~CUIPdaListItem		() override;
 	virtual void	Init				(float x, float y, float width, float height);
 	virtual void	InitCharacter		(CInventoryOwner* pInvOwner);
-	
-	virtual CUIWindow* ui_cast_window() { return this; }
+
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 	void*					m_data;
 	CUIFrameWindow*			m_frame_selected = nullptr;

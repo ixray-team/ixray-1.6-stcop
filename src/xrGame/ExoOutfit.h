@@ -11,5 +11,5 @@ class CExoOutfit final : public CCustomOutfit
 {
 public:
 	CExoOutfit() = default;
-	virtual ~CExoOutfit() = default;
+	virtual ~CExoOutfit() override = default;
 };

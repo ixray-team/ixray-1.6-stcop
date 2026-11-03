@@ -10,11 +10,11 @@ protected:
 
 public:
 					CStateMonsterHearDangerousSound		(_Object *obj);
-	virtual			~CStateMonsterHearDangerousSound	() = default;
+	virtual ~CStateMonsterHearDangerousSound	() override = default;
 
-	virtual void	reselect_state						();
-	virtual void	setup_substates						();
-	virtual void	remove_links						(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	reselect_state						() override;
+	virtual void	setup_substates						() override;
+	virtual void	remove_links						(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_hear_danger_sound_inline.h"

@@ -50,7 +50,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorState	(CWeapon *item, CAI_Stalker *owner, u32 state, bool equality = true);
-	virtual bool		evaluate						();
+	virtual bool		evaluate						() override;
 };
 
 class CObjectPropertyEvaluatorWeaponHidden : public CObjectPropertyEvaluatorBase<CWeapon> {
@@ -58,7 +58,7 @@ protected:
 	typedef CObjectPropertyEvaluatorBase<CWeapon> inherited;
 public:
 							CObjectPropertyEvaluatorWeaponHidden	(CWeapon *item, CAI_Stalker *owner);
-	virtual bool		evaluate						();
+	virtual bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorAmmo	(CWeapon *item, CAI_Stalker *owner, u32 ammo_type);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorEmpty	(CWeapon *item, CAI_Stalker *owner, u32 ammo_type);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorFull	(CWeapon *item, CAI_Stalker *owner, u32 ammo_type);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorReady	(CWeapon *item, CAI_Stalker *owner, u32 ammo_type);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorQueue	(CWeapon *item, CAI_Stalker *owner, u32 type);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ protected:
 
 public:
 						CObjectPropertyEvaluatorNoItems	(CAI_Stalker *owner);
-	virtual bool	evaluate						();
+	bool	evaluate						() override;
 	IC		CAI_Stalker &object							() const;	
 };
 
@@ -160,7 +160,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorMissile	(CMissile *item, CAI_Stalker *owner, u32 state, bool equality = true);
-	virtual bool		evaluate						();
+	bool		evaluate						() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorMissileStarted	(CMissile *item, CAI_Stalker *owner);
-	virtual bool		evaluate								();
+	bool		evaluate								() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -190,7 +190,7 @@ protected:
 
 public:
 							CObjectPropertyEvaluatorMissileHidden	(CMissile *item, CAI_Stalker *owner);
-	virtual bool		evaluate								();
+	bool		evaluate								() override;
 };
 
 #include "object_property_evaluators_inline.h"

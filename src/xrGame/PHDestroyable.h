@@ -60,7 +60,7 @@ public:
 			SHit						&FatalHit					(){return m_fatal_hit;}
 			void						Load						(const char* section)																							;
 			void						Load						(CInifile* ini,const char* section)																				;
-virtual		void						NotificateDestroy			(CPHDestroyableNotificate *dn)																				;
+			virtual void						NotificateDestroy			(CPHDestroyableNotificate *dn) override;
 			void						PhysicallyRemoveSelf		()																											;
 IC			bool						Destroyable					()										{return !!m_flags.test(fl_destroyable);}
 IC			bool						Destroyed					()										{return !!m_flags.test(fl_destroyed);}

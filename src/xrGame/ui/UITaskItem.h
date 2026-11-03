@@ -22,10 +22,10 @@ protected:
 	void					Init			();
 public:
 					CUITaskItemLegacy				(CUIEventsWnd* w);
-	virtual			~CUITaskItemLegacy();
-	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
+	virtual ~CUITaskItemLegacy() override;
+	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
 
-	virtual bool	OnMouseDown				(int mouse_btn);
+	virtual bool	OnMouseDown				(int mouse_btn) override;
 			
 	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx);
 
@@ -49,13 +49,13 @@ protected:
 	void			Init					();
 public:	
 					CUITaskRootItem			(CUIEventsWnd* w);
-	virtual			~CUITaskRootItem		();
-	virtual void	Update					();
-	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx);
+	virtual ~CUITaskRootItem		() override;
+	virtual void	Update					() override;
+	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx) override;
 	void 	OnSwitchDescriptionClicked(CUIWindow*, void*);
 
-	virtual void	MarkSelected			(bool b);
-	virtual bool	OnDbClick				();
+	virtual void	MarkSelected			(bool b) override;
+	virtual bool	OnDbClick				() override;
 };
 
 class CUITaskSubItem :public CUITaskItemLegacy
@@ -76,11 +76,11 @@ protected:
 
 public:	
 					CUITaskSubItem			(CUIEventsWnd* w);
-	virtual			~CUITaskSubItem			();
-	virtual void	Update					();
-	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx);
+	virtual ~CUITaskSubItem			() override;
+	virtual void	Update					() override;
+	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx) override;
 			void	OnActiveObjectiveClicked();
 	void 	OnShowDescriptionClicked(CUIWindow*, void*);
-	virtual void	MarkSelected			(bool b);
-	virtual bool	OnDbClick				();
+	virtual void	MarkSelected			(bool b) override;
+	virtual bool	OnDbClick				() override;
 };

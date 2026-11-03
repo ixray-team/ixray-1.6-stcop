@@ -1028,7 +1028,7 @@ u32	CMissile::ef_weapon_type		() const
 bool CMissile::render_item_ui_query()
 {
 	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem() && m_pInventory->ActiveItem() == this;
-	bool parent_actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
+	CActor* parent_actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
 	return b_is_active_item && !m_bUseAltThrow && (GetState() == eReady) && !m_throw && parent_actor;
 }
 
@@ -1049,43 +1049,25 @@ void CMissile::render_item_ui()
 	g_MissileForceShape->Draw();
 }
 
-void CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+void CMissile::ExitContactCallback(bool& do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData	*gd1=nullptr,	*gd2=nullptr;
-	if(bo1)
-	{
-		gd1 =PHRetrieveGeomUserData(c.geom.g1);
-		gd2 =PHRetrieveGeomUserData(c.geom.g2);
-	}
-	else
-	{
-		gd2 =PHRetrieveGeomUserData(c.geom.g1);
-		gd1 =PHRetrieveGeomUserData(c.geom.g2);
-	}
-	if (gd1 && gd2 && (CPhysicsShellHolder*)gd1->callback_data == gd2->ph_ref_object)	
+	if (c.HasUserData(bo1) && c.HasUserData(!bo1) && (CPhysicsShellHolder*)c.GetCallbackData(bo1) == c.GetObject(!bo1))
 	{
 		do_colide = false;
 	}
 
 	if (do_colide)
 	{
-		ExitContactCallback_Patch(c.geom.g2);
-		ExitContactCallback_Patch(c.geom.g1);
+		ExitContactCallback_Patch(c.GetObject(false));
+		ExitContactCallback_Patch(c.GetObject(true));
 	}
 }
 
 #include "Grenade.h"
 
-void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
+void CMissile::ExitContactCallback_Patch(IPhysicsShellHolder* object)
 {
-	dxGeomUserData* geom_data = PHRetrieveGeomUserData(dxGeom);
-
-	if (geom_data == nullptr)
-	{
-		return;
-	}
-
-	CGrenade* grenade = smart_cast<CGrenade*>(geom_data->ph_ref_object);
+	CGrenade* grenade = smart_cast<CGrenade*>(object);
 
 	if (grenade == nullptr)
 	{
@@ -1169,4 +1151,4 @@ void CMissile::PrepareGrenadeForSuicideThrow(float force)
 	m_fMinForce = force;
 	m_fMaxForce = force;
 	m_fConstForce = force;
-}
+}

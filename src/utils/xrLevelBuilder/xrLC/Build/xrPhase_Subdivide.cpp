@@ -50,9 +50,8 @@ void CBuild::xrPhase_Subdivide()
 		Fvector size;
 
 		bb.invalidate();
-		for (vecFaceIt F = g_XSplit[X]->begin(); F != g_XSplit[X]->end(); F++)
+		for (auto XF : *g_XSplit[X])
 		{
-			Face* XF = *F;
 			bb.modify(XF->v[0]->P);
 			bb.modify(XF->v[1]->P);
 			bb.modify(XF->v[2]->P);
@@ -60,15 +59,18 @@ void CBuild::xrPhase_Subdivide()
 
 		// analyze if we need to split
 		size.sub(bb.max, bb.min);
-		BOOL	bSplit = FALSE;
-		if (size.x > c_SS_maxsize)					bSplit = TRUE;
-		if (size.y > c_SS_maxsize)					bSplit = TRUE;
-		if (size.z > c_SS_maxsize)					bSplit = TRUE;
-		if (int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit = TRUE;
-		CDeflector* defl_base = (CDeflector*)g_XSplit[X]->front()->pDeflector;
+		bool bSplit = false;
+		if (size.x > c_SS_maxsize || size.y > c_SS_maxsize || size.z > c_SS_maxsize || int(g_XSplit[X]->size()) > c_SS_HighVertLimit)
+		{
+			bSplit = true;
+		}
+		CDeflector* defl_base = g_XSplit[X]->front()->pDeflector;
 		if (!bSplit && defl_base) {
-			if (defl_base->layer.width >=  (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))	bSplit = TRUE;
-			if (defl_base->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))	bSplit = TRUE;
+			if (defl_base->layer.width >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER) 
+				|| defl_base->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * gCompilerMode.LC_BORDER))
+			{
+				bSplit = true;
+			}
 		}
 
 		// perform subdivide if needed
@@ -79,13 +81,11 @@ void CBuild::xrPhase_Subdivide()
 		if (size.x >= size.y && size.x >= size.z) {
 			box_edge = 0;
 		}
+		else if (size.y >= size.x && size.y >= size.z) {
+			box_edge = 1;
+		}
 		else {
-			if (size.y >= size.x && size.y >= size.z) {
-				box_edge = 1;
-			}
-			else {
-				box_edge = 2;
-			}
+			box_edge = 2;
 		}
 		setup_bbs(b1, b2, bb, box_edge);
 
@@ -98,13 +98,18 @@ void CBuild::xrPhase_Subdivide()
 		s2.clear();
 		s1.clear();
 		iteration_per_edge++;
-		for (vecFaceIt F = g_XSplit[X]->begin(); F != g_XSplit[X]->end(); F++)
+		for (auto XF : *g_XSplit[X])
 		{
-			Face* XF = *F;
 			Fvector C;
 			XF->CalcCenter(C);
-			if (b1.contains(C)) { s1.push_back(XF); }
-			else { s2.push_back(XF); }
+			if (b1.contains(C))
+			{
+				s1.push_back(XF);
+			}
+			else
+			{
+				s2.push_back(XF);
+			}
 		}
 
 		if ((int(s1.size()) < c_SS_LowVertLimit) || (int(s2.size()) < c_SS_LowVertLimit))

@@ -147,6 +147,28 @@ void CInteractiveObject::load(IReader& input_packet)
 	}
 }
 
+void CInteractiveObject::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CInteractiveObject::Serialize")
+	{
+		inherited::Serialize(Object);
+		Object << left_uses;
+		
+		if (!Object.IsSave() && !m_bone_names.empty())
+		{
+			u8 total_bones = m_bone_names.size();
+			if (left_uses < total_bones)
+			{
+				for (u8 i = left_uses; i < total_bones; i++)
+				{
+					SetVisible(m_bone_names[i].c_str(), false);
+				}
+			}
+			SetText();
+		}
+	}
+}
+
 void CInteractiveObject::OnUse()
 {
 	if (left_uses > 0)
@@ -235,15 +257,4 @@ void CInteractiveObject::SetVisible(shared_str bone_name, bool bVisibility)
 	KI->LL_SetBoneVisible(boneId, bVisibility, true);
 	KI->CalculateBones(true);
 	SetText();
-}
-
-using namespace luabind;
-#pragma optimize("s",on)
-void CInteractiveObject::script_register(lua_State* L)
-{
-    module(L)
-        [
-            class_<CInteractiveObject, CGameObject>("CInteractiveObject")
-                .def(constructor<>())
-        ];
 }

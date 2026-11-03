@@ -15,12 +15,12 @@ class CStateMonsterHittedMoveOut : public CState<_Object> {
 public:
 
 					CStateMonsterHittedMoveOut	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateMonsterHittedMoveOut	() = default;
+	virtual ~CStateMonsterHittedMoveOut	() override = default;
 
-	virtual	void	initialize					();
-	virtual void	execute						();
-	virtual bool 	check_completion			();
-	virtual void	remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize					() override;
+	virtual void	execute						() override;
+	virtual bool 	check_completion			() override;
+	virtual void	remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 
 private:
 			void	select_target				();

@@ -132,7 +132,7 @@ public:
     static u32	SelectPMColor		(float pm);
 public:
     			SSceneSummary		();
-    void 		AppendTexture		(shared_str name, ESummaryTextureType type, float area, float pixel_area, shared_str obj_name)
+    void 		AppendTexture		(const shared_str& name, ESummaryTextureType type, float area, float pixel_area, const shared_str& obj_name)
     {
         TISetIt it 			= std::find(textures.begin(),textures.end(),name);
         if (it==textures.end()){
@@ -150,7 +150,7 @@ public:
         info->effective_area+=area;
         info->pixel_area+=pixel_area;
     }
-    void 		AppendObject		(shared_str name)
+    void 		AppendObject		(const shared_str& name)
     {
         OISetIt it 			= std::find(objects.begin(),objects.end(),name);
         if (it==objects.end()){

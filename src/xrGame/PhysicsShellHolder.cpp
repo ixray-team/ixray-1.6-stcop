@@ -112,6 +112,7 @@ bool CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 		}
 		ApplySpawnIniToPhysicShell(pSettings,PPhysicsShell(),false);
 
+		ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(), m_pPhysicsShell, false);
 
 		st_enable_state=(u8)stNotDefitnite;
 	}
@@ -265,6 +266,7 @@ void CPhysicsShellHolder::setup_physic_shell	()
 	PKinematics(Visual())->CalculateBones(true);
 		
 	ApplySpawnIniToPhysicShell(spawn_ini(),PPhysicsShell(),false);
+	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(), m_pPhysicsShell, false);
 	correct_spawn_pos();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 

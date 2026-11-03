@@ -155,6 +155,7 @@ class FRbmkObjectActionBase : public FRbmkGoapAction
 {
 public:
 	CAI_Stalker* GetOwner() const { return reinterpret_cast<CAI_Stalker*>(Owner->Owner); }
+
 	virtual void Active() override
 	{
 		if(bAimed1)
@@ -195,7 +196,6 @@ public:
 class FRbmkObjectActionShow : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -255,7 +255,6 @@ public:
 class FRbmkObjectActionHide : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Update() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -293,7 +292,6 @@ public:
 class FRbmkObjectActionDrop : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -311,7 +309,6 @@ public:
 class FRbmkObjectActionStrapping : public FRbmkObjectActionWeaponBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionWeaponBase::Active();
@@ -368,7 +365,6 @@ public:
 class FRbmkObjectActionStrappingToIdle : public FRbmkObjectActionWeaponBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionWeaponBase::Active();
@@ -477,7 +473,7 @@ public:
 class FRbmkObjectActionAim : public FRbmkObjectActionWeaponBase
 {
 public:
-	FRbmkObjectActionAim& SetValue(bool* InAimed, bool InNeedValue,uint32* InAimTime)
+	FRbmkObjectActionAim& SetValue(bool* InAimed, bool InNeedValue,u32* InAimTime)
 	{
 		bAimed = InAimed;
 		bNeedValue = InNeedValue;
@@ -516,15 +512,15 @@ public:
 
 	bool* bAimed = nullptr;
 	bool bNeedValue = false;
-	uint32 Timer = 0;
-	uint32* AimTime = nullptr;
+	u32 Timer = 0;
+	u32* AimTime = nullptr;
 };
 
 
 class FRbmkObjectActionQueueWait : public FRbmkObjectActionWeaponBase
 {
 public:
-	FRbmkObjectActionQueueWait& SetValue(uint32* InQueueInterval)
+	FRbmkObjectActionQueueWait& SetValue(u32* InQueueInterval)
 	{
 		QueueInterval = InQueueInterval;
 		return *this;
@@ -553,15 +549,14 @@ public:
 			}
 		}
 	}
-	uint32*QueueInterval = nullptr;
-	uint32 Timer = 0;
+	u32*QueueInterval = nullptr;
+	u32 Timer = 0;
 };
 
 
 class FRbmkObjectActionFire : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
@@ -589,20 +584,19 @@ public:
 		}
 	}
 
-	virtual void End()
+	virtual void End() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
 		StalkerOwner->inventory().Action(kWPN_FIRE, CMD_STOP);
 	}
 
-	uint32 Timer;
+	u32 Timer;
 };
 
 
 class FRbmkObjectActionFireNoReload : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
@@ -652,7 +646,6 @@ public:
 class FRbmkObjectActionReload : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -742,7 +735,6 @@ public:
 class FRbmkObjectActionThrowMissile : public FRbmkObjectActionBase
 {
 public:
-
 	virtual void Active() override
 	{
 		FRbmkObjectActionBase::Active();
@@ -783,8 +775,8 @@ public:
 		}
 	}
 
-	uint32 Timer = 0;
-	uint32 InertiaTime = 0;
+	u32 Timer = 0;
+	u32 InertiaTime = 0;
 };
 class FRbmkObjectActionObjectActions: public FRbmkGoapAction
 {
@@ -1158,8 +1150,8 @@ public:
 	bool*				bStrapped;
 	bool*				bStrapped2Idle;
 	bool*				bUseEnough;
-	uint32*				QueueInterval;
-	uint32				AimTime = 500;
+	u32*				QueueInterval;
+	u32				AimTime = 500;
 };
 
 
@@ -1256,6 +1248,7 @@ class FRbmkObjectPropertyCurrentObject  final : public FRbmkGoapProperty
 public:
 	
 	CAI_Stalker* GetOwner() const { return reinterpret_cast<CAI_Stalker*>(Owner->Owner); }
+
 	virtual bool GetProperty() const override
 	{
 		CAI_Stalker* StalkerOwner = GetOwner();
@@ -1456,7 +1449,7 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 		MinQueueInterval	= InMinQueueInterval;
 		MaxQueueInterval	= InMaxQueueInterval;
 		
-		uint32		QueueSize = 1;
+		u32		QueueSize = 1;
 		if (MaxQueueSize == InMinQueueSize)
 			QueueSize		= std::max(1u,MinQueueSize);
 		else
@@ -1509,7 +1502,7 @@ bool FRbmkObjectHandlerPlanner::IsWeaponGoingToBeStrapped(const CGameObject* Gam
 	return false;
 }
 
-uint32 FRbmkObjectHandlerPlanner::GetAimTime(const CWeapon* GameObject) const
+u32 FRbmkObjectHandlerPlanner::GetAimTime(const CWeapon* GameObject) const
 {
 	static shared_str NAME_IdleStrap = "IdleStrap";
 	if (auto Actions = ItemActions.find(const_cast<CWeapon*>(GameObject));Actions != ItemActions.end())
@@ -1520,7 +1513,7 @@ uint32 FRbmkObjectHandlerPlanner::GetAimTime(const CWeapon* GameObject) const
 	return 500;
 }
 
-void FRbmkObjectHandlerPlanner::SetAimTime(const CWeapon* GameObject, uint32 NewAimTime)
+void FRbmkObjectHandlerPlanner::SetAimTime(const CWeapon* GameObject, u32 NewAimTime)
 {
 	static shared_str NAME_IdleStrap = "IdleStrap";
 	if (auto Actions = ItemActions.find(const_cast<CWeapon*>(GameObject));Actions != ItemActions.end())

@@ -43,7 +43,7 @@ void CSMotion::Clear()
     bone_mots.clear();
 }
 
-st_BoneMotion* CSMotion::FindBoneMotion(shared_str name)
+st_BoneMotion* CSMotion::FindBoneMotion(const shared_str& name)
 {
     for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
         if (bm_it->name.equal(name)) return &*bm_it;

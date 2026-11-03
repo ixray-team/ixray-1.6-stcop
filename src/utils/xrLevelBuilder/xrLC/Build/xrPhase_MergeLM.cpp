@@ -10,42 +10,37 @@
 #include "../../UI/CompilersUI.h"
 #include <ppl.h>
 
-extern CompilersMode gCompilerMode;
+#include <algorithm>
 
-// Other Stuff
-IC int	compare_defl(CDeflector* D1, CDeflector* D2)
-{
-	// First  - by material
-	u16 M1 = D1->GetBaseMaterial();
-	u16 M2 = D2->GetBaseMaterial();
-	if (M1 < M2)	return	1;  // less
-	if (M1 > M2)	return	0;	// more
-	return				2;	// equal
-}
+extern CompilersMode gCompilerMode;
 
 // should define LESS(D1<D2) behaviour
 // sorting - in increasing order
 IC int	sort_defl_analyze(CDeflector* D1, CDeflector* D2)
 {
 	// first  - get material index
-	u16 M1 = D1->GetBaseMaterial();
-	u16 M2 = D2->GetBaseMaterial();
+	auto& M1 = D1->GetBaseMaterial();
+	auto& M2 = D2->GetBaseMaterial();
 
 	// 1. material area
-	u32	 A1 = pBuild->materials()[M1].internal_max_area;
-	u32	 A2 = pBuild->materials()[M2].internal_max_area;
+	u32	 A1 = pBuild->GetMaterialInternalMaxArea(M1);
+	u32	 A2 = pBuild->GetMaterialInternalMaxArea(M2);
 	if (A1 < A2)	return	2;	// A2 better
 	if (A1 > A2)	return	1;	// A1 better
 
 	// 2. material sector (geom - locality)
-	u32	 s1 = pBuild->materials()[M1].sector;
-	u32	 s2 = pBuild->materials()[M2].sector;
+	u32	 s1 = pBuild->GetMaterialSector(M1);
+	u32	 s2 = pBuild->GetMaterialSector(M2);
 	if (s1 < s2)	return	2;	// s2 better
 	if (s1 > s2)	return	1;	// s1 better
 
-	// 3. just material index
-	if (M1 < M2)	return	2;	// s2 better
-	if (M1 > M2)	return	1;	// s1 better
+	// 3. just material index	
+	// // TODO: Ну бля, а как мне сравнивать shared и unique материалы?
+	if (M1.flags.bSharedMaterial == M2.flags.bSharedMaterial)
+	{
+		if (M1.dwMaterial < M2.dwMaterial)	return	2;	// s2 better
+		if (M1.dwMaterial > M2.dwMaterial)	return	1;	// s1 better
+	}
 
 	// 4. deflector area
 	u32 da1 = D1->layer.Area();
@@ -125,21 +120,20 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 				}
 				IndexLock.Leave();
 			}
-			else
-				if (L.Area() < 128)
-					ErrorsPlace.fetch_add(1);
+			else if (L.Area() < 128)
+			{
+				ErrorsPlace.fetch_add(1);
+			}
 		}
 	});
 
-	Layer.erase(
-		std::remove_if(Layer.begin(), Layer.end(),
-			[](CDeflector* D)
-			{
-				if (D == nullptr || D->bMerged) { xr_delete(D); return true; } // Чистим память !
+	std::erase_if(Layer,
+	              [](CDeflector* D)
+	              {
+		              if (D == nullptr || D->bMerged) { xr_delete(D); return true; } // Чистим память !
 
-				return false;
-			}), Layer.end()
-	);
+		              return false;
+	              });
   	return MergedCount;
 }
  
@@ -155,19 +149,18 @@ u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	u32 MERGED = 0;
 
 	u32 LMSIZE = gCompilerMode.LC_sizeLmaps;
-	for (int it = 0; it < Layer.size(); it++)
+	for (auto& it : Layer)
 	{
-		if (Layer[it]->bMerged) continue;
+		if (it->bMerged) continue;
 
 		if (_Y > LMSIZE - 32) break;
 
-		lm_layer& L = Layer[it]->layer;
+		lm_layer& L = it->layer;
 
 		u32 WIDTH = L.width + (2 * BORDER);
 		u32 HEIGHT = L.height + (2 * BORDER);
 
-		if (_Max_y < HEIGHT)
-			_Max_y = HEIGHT;
+		_Max_y = std::max<u32>(_Max_y, HEIGHT);
 
 		if (_X + WIDTH > LMSIZE - 32)
 		{
@@ -183,12 +176,12 @@ u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 		rT = rS;
 
 		// Нужен только в оригенальной LMerge
-		bool		bRotated = false;
 		if (_Y < LMSIZE - HEIGHT)
 		{
-			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
-			Layer[it]->bMerged = true;
-			Layer[it]->layer.clear_memory();
+			bool bRotated = false;
+			lmap->Capture(it, rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+			it->bMerged = true;
+			it->layer.clear_memory();
 			MERGED++;
 		}
 
@@ -196,14 +189,12 @@ u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	}
  
 	// Удаляем то что сделали !
-	Layer.erase(
-		std::remove_if(Layer.begin(), Layer.end(),
-			[](CDeflector* D)
-			{
-				if (D == nullptr || D->bMerged) { xr_delete(D); return true; }
- 				return false;
-			}), Layer.end()
-	);
+	std::erase_if(Layer,
+	              [](CDeflector* D)
+	              {
+		              if (D == nullptr || D->bMerged) { xr_delete(D); return true; }
+		              return false;
+	              });
 
 	return MERGED;
 }
@@ -215,18 +206,28 @@ void CBuild::xrPhase_MergeLM()
 
 	Phase("Building Lmaps...");
 	// **** Select all deflectors, which contain this light-layer
- 	for (u32 it = 0; it < materials().size(); it++)
-		materials()[it].internal_max_area = 0;
- 	for (auto D : Layer)
- 		materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
+ 	for (auto& it : materials())
+    {
+	    it.internal_max_area = 0;
+    }
+	for (auto& elem : materials_shared())
+	{
+		elem.internal_max_area = 0;
+	}
+	for (auto D : Layer)
+	{
 	
+		auto& area = CBuild::GetMutableMaterialInternalMaxArea(D->GetBaseMaterial());
+		area = std::max(D->layer.Area(), area);
+	}
+
 
 	// Merge this layer (which left unmerged)
 	u32 StartSize   = Layer.size();
 	u32 TotalMerged = 0;
 	CTimer tStats; 
  
-	while (Layer.size())
+	while (!Layer.empty())
 	{
  		tStats.Start();
  
@@ -235,12 +236,12 @@ void CBuild::xrPhase_MergeLM()
     	
 		if (gCompilerMode.LC_fast_way)
 		{
-			std::sort(Layer.begin(), Layer.end(), [](CDeflector* d1, CDeflector* d2) { return d1->layer.height < d2->layer.height; });
+			std::ranges::sort(Layer, [](CDeflector* d1, CDeflector* d2) { return d1->layer.height < d2->layer.height; });
  			TotalMerged += MergeLmapFast(Layer, lmap);
 		}
 		else
 		{
-			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
+			std::ranges::stable_sort(Layer, sort_defl_complex);
 
 			placer_perpixel._InitSurface();
  			TotalMerged += MergeLmap_Compact(Layer, lmap);

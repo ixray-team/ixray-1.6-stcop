@@ -125,14 +125,16 @@ public:
 		
 		in_process = true;
 		
-		for (PureReg<T>& reg_entry : pure_objects)
+		const size_t count = pure_objects.size();
+		for (size_t i = 0; i < count; ++i)
 		{
+			const PureReg<T> reg_entry = pure_objects[i];
 			if (reg_entry.priority == REG_PRIORITY_INVALID)
 				continue;
-			
+
 			if (reg_entry.object == nullptr)
 				continue;
-			
+
 			(reg_entry.object->*pureMethod)();
 		}
 

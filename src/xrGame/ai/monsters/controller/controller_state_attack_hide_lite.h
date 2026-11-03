@@ -16,18 +16,18 @@ class CStateControlHideLite : public CState<_Object> {
 public:
 
 					CStateControlHideLite	(_Object *obj) : inherited(obj) {}
-	virtual			~CStateControlHideLite	() = default;
+	virtual ~CStateControlHideLite	() override = default;
 
-	virtual void	reinit					();
+	virtual void	reinit					() override;
 
-	virtual void	initialize				();
-	virtual void	execute					();
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
 
-	virtual void	finalize				();
+	virtual void	finalize				() override;
 
-	virtual bool 	check_completion		();
-	virtual bool 	check_start_conditions	();
-	virtual void	remove_links			(CObject* object) {}
+	virtual bool 	check_completion		() override;
+	virtual bool 	check_start_conditions	() override;
+	virtual void	remove_links			(CObject* object) override {}
 
 
 private:

@@ -76,7 +76,7 @@ private:
 public:
 					CSightManager						(CAI_Stalker *object);
 	virtual	void	Load								(const char* section);
-	virtual	void	reinit								();
+	virtual void	reinit								() override;
 	virtual	void	reload								(const char* section);
 			void	remove_links						(CObject *object);
 			void	Exec_Look							(float dt);
@@ -96,7 +96,7 @@ public:
 	template <typename T1>
 	IC		void	setup								(T1 _1);
 			void	setup								(const CSightAction &sight_action);
-	virtual void	update								();
+	virtual void	update								() override;
 	IC		bool	turning_in_place					() const;
 	IC		bool	enabled								() const;
 			void	enable								(bool value);

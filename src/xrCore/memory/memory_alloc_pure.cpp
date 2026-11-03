@@ -16,6 +16,6 @@ void CMemAllocPure::free(void* p) {
 }
 
 CMemAllocPure* CMemAllocPure::Create() {
-	static CMemAllocPure gMemPure;
+	static constinit CMemAllocPure gMemPure;
 	return &gMemPure;
 }

@@ -247,11 +247,11 @@ public:
 	bool has_visible_bones();
 	CSkeletonX(bool val) : progressive_mesh(val) {}
 
-	virtual void Copy(dxRender_Visual* V);
-	virtual void Release();
+	virtual void Copy(dxRender_Visual* V) override;
+	virtual void Release() override;
 
-	virtual void Render(float LOD);
-	virtual void Load(const char* N, IReader* data, u32 dwFlags);
+	virtual void Render(float LOD) override;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags) override;
 
 	void SetParent(CKinematics* K) { Parent = K; }
 	void AfterLoad(CKinematics* parent, u16 child_idx);

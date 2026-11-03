@@ -9,12 +9,20 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Scene/LEPhysics.h"
-#include "Nodes/UIDialogsView.h"
-#include "UI/UIEditLibrary.h"
+#include "Nodes/UINodesEditorForm.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
+#include "ShaderEditor/UI_shadertools.h"
+#include "ShaderEditor/UIShaderEditorForm.h"
+#include "UI/LayoutEditor/UILayoutEditorForm.h"
+#include "UI/Coder/UICoderForm.h"
+#include "Editor/XVisor/XVisor.h"
+#include "../xrECore/Editor/UILogForm.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "../xrECore/Editor/UIMinimapEditorForm.h"
 
-#include "../../xrPlay/Splash.h"
+#include "../../xrCore/Kernel/TaskbarProgress.h"
 
 #include "../../xrEngine/std_classes.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -25,13 +33,12 @@
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/FPSCounter.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
+void DragPreview(const xr_string*, int);
 
-static DialogEditor* g_DialogEditor = nullptr;
-static UIEditLibrary* g_ObjectLibrary = nullptr;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
@@ -43,14 +50,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		return 0;
 	}
 
-	splash::SetBackground(IDB_LE);
-	std::jthread s(splash::Show);
 
-	splash::SetProgressStatus(5, "Initializing Debugger");
+
+	CRenderDevice::SetStartupStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
 	
-	splash::SetProgressStatus(10, "Initializing Core System");
+	CRenderDevice::SetStartupStatus(10, "Initializing Core System");
 
 	const char* FSName = "fs.ltx";
 	const char* fsgame_ltx_name = "-fsltx ";
@@ -64,58 +70,71 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
-	splash::SetProgressStatus(20, "Initializing Level Tools");
+	CRenderDevice::SetStartupStatus(20, "Initializing Level Tools");
 
 	Tools = new CLevelTool();
 	LTools = static_cast<CLevelTool*>(Tools);
 
-	splash::SetProgressStatus(25, "Registering UI Commands");
+	CRenderDevice::SetStartupStatus(25, "Registering UI Commands");
 
 	EContext.UI = new CLevelMain();
 	EContext.UI->RegisterCommands();
 	EContext.UI->GeneralTabs.push_back({ICON_FA_MOUNTAIN " Scene View##scene_view", []()->bool {return Scene->IsUnsaved(); }});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_COMMENT_DOTS " Dialog Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Anim Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap Editor", nullptr});
-	EContext.UI->GeneralTabs.push_back({ICON_FA_CUBES " Object Library", nullptr});
+	// Light Animations and Minimap keep the tabs 2 and 3
+	EContext.UI->GeneralTabs.push_back({ICON_FA_DIAGRAM_PROJECT " Nodes", []()->bool {return UINodesEditorForm::IsModified(); }});
+	const int NodesTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_LIGHTBULB " Light Animations", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_MAP " Minimap", nullptr});
+	EContext.UI->GeneralTabs.push_back({ICON_FA_FIRE " Particles", []()->bool {return PTools != nullptr && PTools->IsModified(); }});
+	const int ParticleEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_PERSON " Actors", []()->bool {return ATools != nullptr && ATools->IsModified(); }});
+	const int ActorEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_PALETTE " Shaders", []()->bool {return STools != nullptr && STools->IsModified(); }});
+	const int ShaderEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_OBJECT_GROUP " UI Layout", []()->bool {return UILayoutEditorForm::IsModified(); }});
+	const int LayoutEditorTab = (int)EContext.UI->GeneralTabs.size() - 1;
+	EContext.UI->GeneralTabs.push_back({ICON_FA_CODE " Coder", []()->bool {return UICoderForm::IsModified(); }});
+	const int CoderTab = (int)EContext.UI->GeneralTabs.size() - 1;
 
 	LUI = static_cast<CLevelMain*>(EContext.UI);
 
-	splash::SetProgressStatus(30, "Creating Editor Scene");
+	CRenderDevice::SetStartupStatus(30, "Creating Editor Scene");
 
 	Scene = new EScene();
 	EditorScene = Scene;
 
-	splash::SetProgressStatus(25, "Initializing Content View");
+	CRenderDevice::SetStartupStatus(25, "Initializing Content View");
 
 	GContentView = new CContentView;
+	GContentView->SetStateName("ContentBrowser");
 
-	splash::SetProgressStatus(26, "Initializing Git Integration");
+	CRenderDevice::SetStartupStatus(26, "Initializing Git Integration");
 
 	static CGitIntegration GitIntegration;
 	GitIntegration.Initialize();
 	CGitLFSConfig::Instance().Load();
 
-	splash::SetProgressStatus(30, "Creating Main UI Form");
+	CRenderDevice::SetStartupStatus(30, "Creating Main UI Form");
 
+	EContext.Visor = new CXVisor();
 	UIMainForm* MainForm = new UIMainForm();
 
 	pApp = new XRayEditor();
 	g_XrGameManager = new XrGameManager();
 	g_SEFactoryManager = new XrSEFactoryManager();
 
-	splash::SetProgressStatus(40, "Loading Game Materials");
+	CRenderDevice::SetStartupStatus(40, "Loading Game Materials");
 
 	// Initialize APP
 	GameMaterialLibraryEditors->Load();
 
-	splash::SetProgressStatus(55, "Initializing Game Persistent Objects");
+	CRenderDevice::SetStartupStatus(55, "Initializing Game Persistent Objects");
 
 	g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));
 	EDevice->seqAppStart.Process<&pureAppStart::OnAppStart>();
 	g_pGamePersistent->Environment().EnsureMixer();
 
-	splash::SetProgressStatus(65, "Setting Up Console");
+	CRenderDevice::SetStartupStatus(65, "Setting Up Console");
 
 	Console->Execute("default_controls");
 
@@ -132,35 +151,60 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	Console->Hide();
 	g_lighting_mode = ELightingMode::Dynamic;
 
-	splash::SetProgressStatus(75, "Performing Final UI Setup");
+	CRenderDevice::SetStartupStatus(75, "Performing Final UI Setup");
 
 	::MainForm = MainForm;
 	MainForm->TabIndex = -1;
 	EContext.UI->Push(MainForm, false);
 
-	g_DialogEditor = new DialogEditor();
-	g_DialogEditor->TabIndex = 1;
-	g_DialogEditor->Show(true);
-	EContext.UI->Push(g_DialogEditor, false);
-
-	g_ObjectLibrary = UIEditLibrary::Init();
-	g_ObjectLibrary->TabIndex = (int)EContext.UI->GeneralTabs.size() - 1;
-	EContext.UI->Push(g_ObjectLibrary, false);
+	UIParticleEditorForm::Create(ParticleEditorTab);
+	UIActorEditorForm::Create(ActorEditorTab);
+	UIShaderEditorForm::Create(ShaderEditorTab);
+	UILayoutEditorForm::Create(LayoutEditorTab);
+	UICoderForm::Create(CoderTab);
+	UINodesEditorForm::Create(NodesTab);
+	// The Nodes tab shows its own Message Log
+	UILogForm::HideFunctor = []() { return UINodesEditorForm::IsActive(); };
 
 	pFPSCounter = new XRay::Hardware::FPSCounter();
 	UIEditLightAnim::Show();
 	UIMinimapEditorForm::Show();
 
 	bool NeedExit = false;
-	splash::SetProgressStatus(85, "Performing Final Checks");
+	CRenderDevice::SetStartupStatus(85, "Performing Final Checks");
 	MainForm->GetRenderForm()->DragFunctor = DragDrop;
+	MainForm->GetRenderForm()->DragPreviewFunctor = DragPreview;
 	
-	splash::SetProgressStatus(90, "Finalizing UI Setup");
+	CRenderDevice::SetStartupStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	EContext.UI->PushBegin(GContentView);
 
-	splash::SetProgressStatus(100, "Finalizing");
-	splash::Close();
+	// An .object passed on the command line opens in the Actor Editor tab
+	{
+		int ArgsCount = 0;
+		LPWSTR* Args = CommandLineToArgvW(GetCommandLineW(), &ArgsCount);
+		if (Args != nullptr)
+		{
+			if (ArgsCount > 1)
+			{
+				xr_string FirstArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Args[1]));
+				if (FirstArg.ends_with(".object"))
+				{
+					UIActorEditorForm::Open(FirstArg.c_str());
+				}
+			}
+			LocalFree(Args);
+		}
+	}
+
+	CRenderDevice::SetStartupStatus(95, "Baking Lua API");
+	UICoderForm::BakeIfMissing();
+
+	CRenderDevice::FinishStartup();
+	SDL_RaiseWindow(g_AppInfo.Window);
+	// The startup screen polls the events: SDL_EVENT_WINDOW_SHOWN never reaches the loop below
+	Device.b_is_Active = true;
+	
 	while (!NeedExit)
 	{
 		SDL_Event Event;
@@ -193,6 +237,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				break;
 			}
 			case SDL_EVENT_WINDOW_SHOWN:
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
 			case SDL_EVENT_WINDOW_MOUSE_ENTER:
 				Device.b_is_Active = true;
 				//if (UI) UI->OnAppActivate();
@@ -253,6 +298,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				}
 				pInput->MouseScroll(Event.wheel.y);
 			}break;
+			case SDL_EVENT_DROP_FILE:
+			{
+				xr_string File = Event.drop.data;
+				xr_strlwr(File);
+				UIActorEditorForm::DropFile(File);
+			}break;
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 			{
@@ -292,11 +343,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 
 		MainForm->Frame();
+		LUI->UpdateTaskbar();
 
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
-	s.join();
+	//s.join();
+
+	CTaskbarProgress::Instance().Release();
+
+	// Windows are destroyed before the preferences are saved: keep their full state
+	CEditorWndStates::Get().Save();
+
+	// Gives Tools back to the level tool before COMMAND_DESTROY
+	UIActorEditorForm::Destroy();
+	UIShaderEditorForm::Destroy();
+	UILayoutEditorForm::Destroy();
+	UICoderForm::Destroy();
+	UINodesEditorForm::Destroy();
+	xr_delete(EContext.Visor);
+
+	// The shared content browser icons hold textures: release them before the device
+	CContentView::ClearIcons();
 	
 	CGitLFSConfig::Instance().Save();
 	GitIntegration.Shutdown();

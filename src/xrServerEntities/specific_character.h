@@ -120,7 +120,7 @@ private:
 public:
 
 								CSpecificCharacter		();
-								~CSpecificCharacter		();
+	virtual ~CSpecificCharacter		() override;
 
 	virtual void				Load					(shared_str		id);
 
@@ -129,7 +129,7 @@ protected:
 	SSpecificCharacterData*		  data					()			{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
 
 	//загрузка из XML файла
-	virtual void				load_shared				(const char*);
+	virtual void				load_shared				(const char*) override;
 	static void					InitXmlIdToIndex		();
 
 	shared_str		m_OwnId;

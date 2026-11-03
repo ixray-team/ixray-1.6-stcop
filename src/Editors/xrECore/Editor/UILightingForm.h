@@ -16,6 +16,7 @@ private:
 	void DrawViewMode();
 	void DrawEnvironment();
 	void DrawAmbient();
+	void DrawReflections();
 	void DrawLights();
 	void DrawRain();
 

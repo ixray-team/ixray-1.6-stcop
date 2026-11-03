@@ -39,7 +39,7 @@ private:
 	float BaseCostX = 0.0f;
 public:
 						CUIItemInfo			();
-	virtual				~CUIItemInfo		();
+	virtual ~CUIItemInfo		() override;
 	CInventoryItem*		CurrentItem			() const {return m_pInvItem;}
 	void				InitItemInfo		(Fvector2 pos, Fvector2 size, const char* xml_name);
 	bool				InitItemInfo		(const char* xml_name);
@@ -57,9 +57,9 @@ public:
 	void				ScrollDown			();
 	void				ScrollUp			();
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
-	virtual void		Draw				();
+	virtual void		Draw				() override;
 	bool				m_b_FitToHeight;
 	u32					delay;
 	

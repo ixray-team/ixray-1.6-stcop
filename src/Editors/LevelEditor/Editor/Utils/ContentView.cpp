@@ -6,10 +6,38 @@
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
-#include "IconsFontAwesome6.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
+#include "IconsFontAwesome7.h"
 #include "../../UI/UITextureViewer.h"
+#include "EFDEditor.h"
+#include "../../UI/LayoutEditor/UILayoutEditorForm.h"
+#include "../../UI/Coder/UICoderForm.h"
+#include "../../Nodes/Logic/UILogicEditorForm.h"
 
 CContentView* GContentView = nullptr;
+
+xr_hash_map<xr_string, CContentView::IconData> CContentView::Icons;
+CParticlePreviewCache CContentView::ParticlePreviews;
+
+void CContentView::ClearIcons()
+{
+	ParticlePreviews.Clear();
+	Icons.clear();
+}
+
+void CContentView::InvalidateIcon(const xr_string& FullPath)
+{
+	xr_string Path = FullPath;
+	xr_strlwr(Path);
+
+	for (auto It = Icons.begin(); It != Icons.end();)
+	{
+		xr_string IconPath = It->first;
+		xr_strlwr(IconPath);
+		It = IconPath == Path ? Icons.erase(It) : std::next(It);
+	}
+}
 
 CContentView::CContentView(xr_string NewWindowName)
 	: WatcherPtr(nullptr), WindowName(NewWindowName)
@@ -278,6 +306,7 @@ void CContentView::Draw()
 	}
 
 	UpdateSoundPreview();
+	ParticlePreviews.Update();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(250, 100));
@@ -341,16 +370,7 @@ void CContentView::Draw()
 				ImGui::PopStyleColor();
 			}
 
-			const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-			if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{
-				ImDrawList* draw_list = ImGui::GetWindowDrawList();
-				ImVec2 p_min = ImGui::GetItemRectMin();
-				ImVec2 p_max = ImGui::GetItemRectMax();
-				draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-				draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-			}
+			EditorDragDrop::HighlightTarget();
 			ImGui::EndTable();
 		}
 		ImGui::PopStyleVar();
@@ -842,8 +862,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 			if (ParentPath == path)
 			{
 				FileOptData FileInfo;
-				FileInfo.File = Name;
-				FileInfo.File.replace_extension(ext);
+				FileInfo.File = xr_string(Name) + "." + ext;
 
 				Files.push_back(FileInfo);
 				ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
@@ -865,7 +884,7 @@ void CContentView::RescanParticlesDirectory(const xr_string& path)
 		else if (path.empty() && !PEPath.has_parent_path())
 		{
 			FileOptData FileInfo;
-			FileInfo.File = Name;
+			FileInfo.File = xr_string(Name) + "." + ext;
 			Files.push_back(FileInfo);
 			ParticlesCache[xr_string(Name) + "." + ext] = Ptr;
 		}
@@ -945,16 +964,37 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 					xr_string FileName = FilePath.File.xfilename();
 					FileName = FileName.substr(0, FileName.size() - 4);
 
+					// Game dialogs go to the Dialog Editor, the other xml files are text
 					auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
 					if (Iter != GameDialogs.end())
 					{
 						DialogEditor::OpenFile(FilePath.File.xfilename());
 					}
+					else
+					{
+						UICoderForm::OpenFile(FilePath.File.xstring());
+					}
+				}
+				else if (UILogicEditorForm::CanOpen(FilePath.File.xstring()))
+				{
+					UILogicEditorForm::OpenFile(FilePath.File.xstring());
+				}
+				else if (UICoderForm::CanOpen(FilePath.File.xstring()))
+				{
+					UICoderForm::OpenFile(FilePath.File.xstring());
 				}
 				if (FilePath.File.extension() == ".thm")
 				{
 					ThmPropWnd.Load(FilePath.File);
 					ThmPropWnd.Show();
+				}
+				else if (FilePath.File.extension() == ".efd")
+				{
+					CEFDEditor::Open(FilePath.File);
+				}
+				else if (FilePath.File.extension() == CUILayoutDocument::WidgetExt)
+				{
+					UILayoutEditorForm::OpenWidget(FilePath.File.stem().string().c_str());
 				}
 				else if (FilePath.File.extension() == ".tga")
 				{
@@ -989,6 +1029,28 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 void CContentView::ClearFileList()
 {
 	Files.clear();
+}
+
+void CContentView::Reveal(const xr_string& FullPath)
+{
+	xr_path File = FullPath;
+	if (!std::filesystem::exists(File))
+	{
+		return;
+	}
+
+	IsSpawnElement = false;
+	IsParticles = false;
+	IsFindResult = false;
+	FindStr[0] = 0;
+	CurrentDir = xr_path(File.parent_path()).xstring();
+	xr_strlwr(CurrentDir);
+	RescanDirectory();
+
+	SelectedObjects.clear();
+	SelectedObjects.push_back(File);
+	RevealPath = File.xstring();
+	xr_strlwr(RevealPath);
 }
 
 void CContentView::RescanDirectory()
@@ -1039,6 +1101,8 @@ void CContentView::Destroy()
 	SoundPreviews.Clear();
 
 	MenuIcon.destroy();
+	ParticlePreviews.Clear();
+	ThmPropWnd.ClearPreview();
 	Icons.clear();
 
 	IsWndDestroyed = true;
@@ -1079,7 +1143,60 @@ void CContentView::RemoveCustomIcon(const xr_string& icon)
 		Icons.erase(icon);
 }
 
+void CContentView::Serialize(nlohmann::json& Data, bool IsSaving)
+{
+	if (IsSaving)
+	{
+		Data["CurPath"] = CurrentDir;
+		Data["ISEPath"] = VirtualPath;
+		Data["IsSpawnElement"] = IsSpawnElement;
+		Data["IsParticles"] = IsParticles;
+		Data["ViewMode"] = ViewMode;
+		return;
+	}
+
+	ReadState(Data, "CurPath", CurrentDir);
+	ReadState(Data, "ISEPath", VirtualPath);
+	ReadState(Data, "ViewMode", ViewMode);
+	ReadState(Data, "IsSpawnElement", IsSpawnElement);
+	ReadState(Data, "IsParticles", IsParticles);
+
+	if (!std::filesystem::exists(xr_path(CurrentDir)))
+	{
+		CurrentDir = RootDir;
+	}
+
+	if (IsSpawnElement)
+	{
+		RescanISEDirectory(VirtualPath);
+	}
+	else if (IsParticles)
+	{
+		// The particles folder is virtual: its listing comes from the particle library
+		RescanParticlesDirectory(VirtualPath);
+	}
+}
+
 void CContentView::Init()
+{
+	// The shared icons are loaded by the first browser
+	if (!Icons.contains("Folder"))
+	{
+		LoadBaseIcons();
+	}
+
+	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
+
+	LoadExtDest();
+
+	SoundPreviews.Initialize();
+
+	xr_string Files = pSettings->r_string("dialogs", "files");
+	Files.RemoveWhitespaces();
+	GameDialogs = Files.Split(',');
+}
+
+void CContentView::LoadBaseIcons()
 {
 	Icons["Folder"] = {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
 	Icons[".."]		= {DEV->_CreateTexture("ed\\content_browser\\folder"),	true};
@@ -1100,17 +1217,10 @@ void CContentView::Init()
 	Icons["env_mod"]= {DEV->_CreateTexture("ed\\content_browser\\env_mod"),	true};
 	Icons["dialogs"] = { DEV->_CreateTexture("ed\\content_browser\\dialogs"),true};
 	Icons["multi"]	= {DEV->_CreateTexture("ed\\content_browser\\multi"),	true};
-
-	MenuIcon = DEV->_CreateTexture("ed\\bar\\menu");
+	Icons["efd"]	= {DEV->_CreateTexture("ed\\content_browser\\efd"),		true};
+	Icons["widget"]	= {DEV->_CreateTexture("ed\\content_browser\\widget"),	true};
 
 	LoadCustomIcons();
-	LoadExtDest();
-
-	SoundPreviews.Initialize();
-
-	xr_string Files = pSettings->r_string("dialogs", "files");
-	Files.RemoveWhitespaces();
-	GameDialogs = Files.Split(',');
 }
 
 void CContentView::LoadExtDest()
@@ -1133,6 +1243,8 @@ void CContentView::LoadExtDest()
 	ExtDesc[".ltx"] = "Config";
 	ExtDesc[".script"] = "Lua Script";
 	ExtDesc["dialogs"] = "Dialog Description";
+	ExtDesc[".efd"] = "Evaluation Function";
+	ExtDesc[CUILayoutDocument::WidgetExt] = "UI Widget";
 }
 
 bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
@@ -1154,110 +1266,83 @@ void CContentView::AcceptDragDropAction(const CContentView::FileOptData& InitFil
 		return;
 	}
 
-	auto ImData = ImGui::AcceptDragDropPayload("TEST");
-
-	if (ImData == nullptr)
-		ImData = ImGui::AcceptDragDropPayload("FLDR");
-
-	if (ImData == nullptr)
-		ImData = ImGui::AcceptDragDropPayload("OTHR");
-
-	if (ImData != nullptr)
+	static constexpr EDragDropType MovableTypes[] =
 	{
-		if (ImData != nullptr)
-			Data = *(DragDropData*)ImData->Data;
+		EDragDropType::Folder, EDragDropType::File, EDragDropType::Viewport,
+		EDragDropType::RandomAppend, EDragDropType::Details, EDragDropType::Logic
+	};
 
-		if (Data.FileName != InitFileName.File.xstring()) //На всякий случай
+	for (EDragDropType Type : MovableTypes)
+	{
+		const char* Dropped = EditorDragDrop::Accept(Type);
+		if (Dropped == nullptr)
 		{
-			CutAction(/*Data.FileName*/);
+			continue;
+		}
+
+		if (InitFileName.File.xstring() != Dropped)
+		{
+			CutAction();
 			PasteAction(InitFileName.File);
 		}
+		break;
 	}
 
 	ImGui::EndDragDropTarget();
 }
 
+static EDragDropType GetFileDragType(const xr_path& FilePath)
+{
+	const xr_string Extension = FilePath.extension().string().c_str();
+
+	if (Extension == ".dti")
+	{
+		return EDragDropType::Details;
+	}
+
+	if (Extension == ".rai")
+	{
+		return EDragDropType::RandomAppend;
+	}
+
+	if (Extension == ".ltx" && FilePath.xstring().Contains("scripts\\"))
+	{
+		return EDragDropType::Logic;
+	}
+
+	// Level Editor and Actor Editor viewports
+	// .uiw: UI Layout widgets, shown in Play In Editor
+	static const char* ViewportExtensions[] = {".object", ".group", ".r16", ".ise", ".ogf", ".skl", ".skls", ".omf", ".bones", CUILayoutDocument::WidgetExt};
+	for (const char* ViewportExtension : ViewportExtensions)
+	{
+		if (Extension == ViewportExtension)
+		{
+			return EDragDropType::Viewport;
+		}
+	}
+
+	return EDragDropType::File;
+}
+
 bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
 {
-	/*
-		Разделение на 3 типа dnd:
-
-			TEST - ".object", ".group", ".ise"
-					Объекты, которые принимает вьюпорт
-
-			FLDR - Только папки.
-					Для работы только в Content View
-
-			OTHR - Все иные объекты.
-					В дальнейшем можно как-нибудь использовать.
-					Или просто удалить совместив с FLDR.
-	*/
-
-	bool WeCanDrag = false;
-
-	if (FilePath.has_extension()) //File DnD
+	if (FilePath.has_extension())
 	{
-		xr_string Extension = FilePath.extension().string().c_str();
-		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
-		
-		bool IsGameLogicFile = false;
-		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
-		{
-			WeCanDrag = true;
-			IsGameLogicFile = true;
-		}
-
 		if (!ImGui::BeginDragDropSource())
 		{
 			return false;
 		}
 
-		if (WeCanDrag)
+		const EDragDropType Type = SelectedObjects.size() == 1 ? GetFileDragType(FilePath) : EDragDropType::File;
+
+		// Spawn elements are dropped by section
+		xr_string Value = FilePath.xstring();
+		if (Type == EDragDropType::Viewport && (IsSpawnElement || Value.ends_with(".ise")) && InitFileName.ISESect.size() > 0)
 		{
-			if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
-			{
-				if (InitFileName.ISESect.size() > 0)
-				{
-					Data.FileName = InitFileName.ISESect.c_str();
-				}
-			}
-			else
-			{
-				Data.FileName = FilePath;
-			}
-
-			xr_string PayloadName = "TEST";
-			GUIManager->DnDType = EDragDropType::Viewport;
-
-			if (SelectedObjects.size() != 1)
-			{
-				PayloadName = "OTHR";
-				GUIManager->DnDType = EDragDropType::File;
-			}
-			else if (FilePath.xstring().ends_with(".dti"))
-			{
-				PayloadName += "#dti";
-				GUIManager->DnDType = EDragDropType::Details;
-			}
-			else if (FilePath.xstring().ends_with(".rai"))
-			{
-				PayloadName += "#rai";
-				GUIManager->DnDType = EDragDropType::RandomAppend;
-			}
-			else if (IsGameLogicFile)
-			{
-				PayloadName += "#cd";
-				GUIManager->DnDType = EDragDropType::Logic;
-			}
-
-			ImGui::SetDragDropPayload(PayloadName.c_str(), &Data, sizeof(DragDropData));
+			Value = InitFileName.ISESect.c_str();
 		}
-		else 
-		{
-			Data.FileName = FilePath;
-			ImGui::SetDragDropPayload("OTHR", &Data, sizeof(DragDropData));
-			GUIManager->DnDType = EDragDropType::File;
-		}
+
+		EditorDragDrop::SetPayload(Type, Value);
 	}
 	else
 	{
@@ -1266,9 +1351,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 			return false;
 		}
 
-		Data.FileName = FilePath;
-		GUIManager->DnDType = EDragDropType::Folder;
-		ImGui::SetDragDropPayload("FLDR", &Data, sizeof(DragDropData));
+		EditorDragDrop::SetPayload(EDragDropType::Folder, FilePath.xstring());
 	}
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
@@ -1296,6 +1379,17 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos() + ImVec2{ ImGui::GetScrollX(), ImGui::GetScrollY() };
 			DrawHintPos.y -= 15;
 			CurrentItemHint = { Platform::ANSI_TO_UTF8(FileName) ,DrawHintPos, true };
+		}
+	}
+
+	if (!RevealPath.empty())
+	{
+		xr_string Path = FilePath.xstring();
+		xr_strlwr(Path);
+		if (Path == RevealPath)
+		{
+			ImGui::SetScrollHereY(0.5f);
+			RevealPath.clear();
 		}
 	}
 
@@ -1697,9 +1791,29 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 				EContext.UI->Push(MeshView);
 			}
+
+			if (ImGui::MenuItem("Edit in Actor Editor"))
+			{
+				UIActorEditorForm::Open(Path.xstring().c_str());
+			}
 		}
 		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
 		{
+			if (UILogicEditorForm::CanOpen(Path.xstring()))
+			{
+				if (ImGui::MenuItem("Open in Node Editor"))
+				{
+					UILogicEditorForm::OpenFile(Path.xstring());
+				}
+			}
+
+			if (ImGui::MenuItem("Open in Coder"))
+			{
+				UICoderForm::OpenFile(Path.xstring());
+			}
+
+			ImGui::Separator();
+
 			if (ImGui::MenuItem("Open in VSCode"))
 			{
 #ifdef IXR_WINDOWS
@@ -1722,10 +1836,20 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		else if (Path.extension().string() == ".pg" || Path.extension().string() == ".pe")
 		{
-			if (ImGui::MenuItem("Open"))
+			const bool IsGroup = Path.extension().string() == ".pg";
+			auto Found = ParticlesCache.find(Path.xstring());
+			void* Ptr = Found != ParticlesCache.end() ? Found->second : nullptr;
+
+			if (Ptr == nullptr)
+			{
+				xr_path DefName = Path;
+				DefName.replace_extension();
+				Ptr = IsGroup ? (void*)RImplementation.PSLibrary.FindPGD(DefName.xstring().c_str()) : (void*)RImplementation.PSLibrary.FindPED(DefName.xstring().c_str());
+			}
+
+			if (Ptr != nullptr && ImGui::MenuItem("Open"))
 			{
 				CViewportParticle* MeshView = new CViewportParticle;
-				void* Ptr = ParticlesCache[Path.xstring()];
 
 				if (Path.extension().string() == ".pg")
 				{
@@ -1737,6 +1861,18 @@ bool CContentView::DrawContext(const xr_path& Path)
 				}
 
 				EContext.UI->Push(MeshView);
+			}
+
+			if (Ptr != nullptr && ImGui::MenuItem("Edit in Particle Editor"))
+			{
+				if (Path.extension().string() == ".pg")
+				{
+					UIParticleEditorForm::Open(((PS::CPGDef*)Ptr)->m_Name.c_str());
+				}
+				else
+				{
+					UIParticleEditorForm::Open(((PS::CPEDef*)Ptr)->m_Name.c_str());
+				}
 			}
 		}
 		else if (Path.extension().string() == ".level")
@@ -1913,6 +2049,20 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	if (Icons.contains(IconPath))
 		return Icons[IconPath];
 
+	if (IsParticles && (IconPath.ends_with(".pe") || IconPath.ends_with(".pg")))
+	{
+		auto Found = ParticlesCache.find(IconPath);
+		if (Found == ParticlesCache.end())
+			return Icons["file"];
+
+		ref_texture Preview = ParticlePreviews.Get(IconPath, Found->second, IconPath.ends_with(".pg"));
+		if (!Preview)
+			return Icons["file"];
+
+		Icons[IconPath] = { Preview, false };
+		return Icons[IconPath];
+	}
+
 	if (IconPath.Contains(".~"))
 		return Icons["backup"];
 
@@ -1927,6 +2077,12 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];
+
+	if (IconPath.ends_with(".efd"))
+		return Icons["efd"];
+
+	if (IconPath.ends_with(CUILayoutDocument::WidgetExt))
+		return Icons["widget"];
 	
 	if (IconPath.ends_with(".xml"))
 	{

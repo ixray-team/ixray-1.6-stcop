@@ -31,7 +31,7 @@ public:
 	void Close();
 	void Break();
 
-	virtual void ApplyDamage(u16 level);
+	virtual void ApplyDamage(u16 level) override;
 	void Update();
 	float GetAngle();
 	bool CanEnter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos);

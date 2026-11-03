@@ -58,7 +58,8 @@ public:
 	virtual ~CEditorRenderDevice();
 
 
-	virtual bool Paused() const { return false; };
+	// Play In Editor: the paused timers of the game are stopped
+	virtual bool Paused() const { return g_pauseMngr.Paused(); };
 	void time_factor(float);
 	bool Create();
 	void Destroy();
@@ -140,14 +141,18 @@ public:
 	bool MakeScreenshot(U32Vec& pixels, u32 width, u32 height);
 
 	bool RenderScreenshotRT(ref_rt& rtColor, ref_rt& rtDepth);
+	// One frame of the editor scene pipeline from the given camera, read back from the viewport target
+	bool RenderSceneFrame(const Fmatrix& View, const Fmatrix& Project, U32Vec& Pixels, u32& Width, u32& Height);
 	bool ReadbackRT(ref_rt& rt, U32Vec& pixels);
 	bool DownsampleLODAtlas(xr_vector<ref_rt>& srcRTs, ref_rt& atlasRT, u32 tgt_w, u32 tgt_h, u32 samples, u32 quality);
 
 	void InitTimer();
 
 	// Mode control
+	// The game stops, the editor keeps running: its camera uses a timer that is not paused
 	virtual void Pause(bool bOn, bool bTimer, bool bSound, const char* reason) override
 	{
+		CRenderDevice::Pause(bOn, bTimer, bSound, reason);
 	}
 
 	virtual void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input) override

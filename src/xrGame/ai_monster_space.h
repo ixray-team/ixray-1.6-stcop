@@ -107,6 +107,7 @@ namespace MonsterSpace {
 		eAA_NoAction			= u32(-1)
 	};
 
+	XREFLECT(LuaEnum, Self="CScriptMonsterAction", Scope="MonsterSpace", Name="type", Names="rest=eGA_Rest,eat=eGA_Eat,attack=eGA_Attack,panic=eGA_Panic")
 	enum EScriptMonsterGlobalAction {
 		eGA_Rest				= u32(0),
 		eGA_Eat,

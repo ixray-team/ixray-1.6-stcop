@@ -370,7 +370,6 @@ void CCarDoor::ClosingToClosed()
 float CCarDoor::GetAngle()
 {
 	if (!Joint || !Joint->bActive) return 0.f;
-	//return dJointGetHingeAngle(Joint->GetDJoint());
 	return Joint->GetAxisAngle(0);
 }
 
@@ -670,4 +669,4 @@ void CCarDoor::SDoorway::Init(CCarDoor* adoor)
 			}
 		}
 	}
-}
+}

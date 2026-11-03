@@ -47,13 +47,13 @@ private:
 public:
 			CUIRankFaction		();
 			CUIRankFaction		( shared_str const& faction_id );
-	virtual	~CUIRankFaction	();
+	virtual ~CUIRankFaction	() override;
 
 	void	init_from_xml		( CUIXml& xml );
 	void	rating				( u8 new_sn, bool force = false );
 	void	update_info			( u8 sn );
 	float	get_faction_power	();
 	IC	u8	get_cur_sn			()	{	return m_prev_sn; }
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 }; // class CUIRankFaction

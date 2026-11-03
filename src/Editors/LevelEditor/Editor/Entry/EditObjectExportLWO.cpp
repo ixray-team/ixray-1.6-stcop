@@ -19,11 +19,11 @@ bool CEditableObject::ExportLWO(const char* fname)
 	for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
 	{
 		CSurface* S = *s_it;
-		F->w_stringZ(S->m_Name.c_str());
+		F->w_stringZ(S->_Name());
 		S->tag = s_it - m_Surfaces.begin();
-		if (FindLPCSTR(images, S->m_Texture.c_str()) < 0)
+		if (FindLPCSTR(images, S->_Texture()) < 0)
 		{
-			images.push_back(S->m_Texture.c_str());
+			images.push_back(S->_Texture());
 		}
 	}
 	F->close_chunk();
@@ -38,13 +38,12 @@ bool CEditableObject::ExportLWO(const char* fname)
 		F->close_chunk();
 	}
 	// surfaces
-	for (auto s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+	for (auto S : m_Surfaces)
 	{
-		CSurface* S = *s_it;
-		int im_idx = FindLPCSTR(images, S->m_Texture.c_str());
+		int im_idx = FindLPCSTR(images, S->_Texture());
 		R_ASSERT(im_idx >= 0);
 		const char* vm_name = S->m_VMap.c_str();
-		F->Wsurface(S->m_Name.c_str(), S->m_Flags.is(CSurface::sf2Sided), (u16)im_idx, (vm_name && vm_name[0]) ? vm_name : "Texture", S->m_ShaderName.c_str(), S->m_ShaderXRLCName.c_str());
+		F->Wsurface(S->_Name(), S->_flags().is(SSurfaceData::sf2Sided), (u16)im_idx, (vm_name && vm_name[0]) ? vm_name : "Texture", S->_ShaderName(), S->_ShaderXRLCName());
 	}
 	// meshes/layers
 	for (EditMeshIt mesh_it = m_Meshes.begin(); mesh_it != m_Meshes.end(); mesh_it++)
@@ -60,7 +59,7 @@ bool CEditableObject::ExportLWO(const char* fname)
 		F->open_chunk(ID_PNTS);
 		for (u32 point_id = 0; point_id < MESH->m_Vertices.size(); point_id++)
 		{
-			F->w_vector(MESH->m_Vertices.data()[point_id]);
+			F->w_vector(MESH->m_Vertices[point_id]);
 		}
 		F->close_chunk();
 		// polygons
@@ -68,19 +67,19 @@ bool CEditableObject::ExportLWO(const char* fname)
 		F->w_u32(ID_FACE);
 		for (u32 f_id = 0; f_id < MESH->m_Faces.size(); f_id++)
 		{
-			F->w_face3(MESH->m_Faces.data()[f_id].pv[0].pindex, MESH->m_Faces.data()[f_id].pv[1].pindex, MESH->m_Faces.data()[f_id].pv[2].pindex);
+			F->w_face3(MESH->m_Faces[f_id].pv[0].pindex, MESH->m_Faces[f_id].pv[1].pindex, MESH->m_Faces[f_id].pv[2].pindex);
 		}
 		F->close_chunk();
 		// surf<->face
 		F->open_chunk(ID_PTAG);
 		F->w_u32(ID_SURF);
-		for (SurfFacesPairIt sf_it = MESH->m_SurfFaces.begin(); sf_it != MESH->m_SurfFaces.end(); sf_it++)
+		for (auto& m_SurfFace : MESH->m_SurfFaces)
 		{
-			IntVec& lst = sf_it->second;
-			for (IntIt i_it = lst.begin(); i_it != lst.end(); i_it++)
+			IntVec& lst = m_SurfFace.second;
+			for (int& i_it : lst)
 			{
-				F->w_vx(*i_it);
-				F->w_u16(WORD(sf_it->first->tag));
+				F->w_vx(i_it);
+				F->w_u16(WORD(m_SurfFace.first->tag));
 			}
 		}
 		F->close_chunk();

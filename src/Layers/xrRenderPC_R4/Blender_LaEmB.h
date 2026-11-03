@@ -20,14 +20,14 @@ public:
 	void		compile_3	(CBlender_Compile& C);
 	void		compile_3c	(CBlender_Compile& C);
 public:
-	virtual		const char*		getComment()	{ return "LEVEL: (lmap+env*const)*base";	}
-	virtual		bool		canBeLMAPped()	{ return true; }
+	virtual const char*		getComment() override { return "LEVEL: (lmap+env*const)*base";	}
+	virtual bool		canBeLMAPped() override { return true; }
 
-	virtual		void		Save			(IWriter&  fs);
-	virtual		void		Load			(IReader&	fs, u16 version);
+	virtual void		Save			(IWriter&  fs) override;
+	virtual void		Load			(IReader&	fs, u16 version) override;
 
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual void		Compile			(CBlender_Compile& C) override;
 
 	CBlender_LaEmB();
-	virtual ~CBlender_LaEmB();
+	virtual ~CBlender_LaEmB() override;
 };

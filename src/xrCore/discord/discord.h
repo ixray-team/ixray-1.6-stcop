@@ -1,5 +1,5 @@
 #pragma once
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 #include <discord_gamesdk/cpp/discord.h>
 #endif
 
@@ -10,7 +10,7 @@ private:
     xr_string Status;
     xr_string Phase;
 
-#ifdef IXR_WINDOWS
+#ifdef IXR_ENABLE_DISCORD
 protected:
     discord::Activity Activity; 
     discord::Core* Core = nullptr;

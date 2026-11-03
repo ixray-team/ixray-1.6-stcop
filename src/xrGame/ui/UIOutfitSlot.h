@@ -11,15 +11,15 @@ class CUIOutfitDragDropList :public CUIDragDropListEx
 
 public:
 							CUIOutfitDragDropList	();
-	virtual					~CUIOutfitDragDropList	();
+	virtual ~CUIOutfitDragDropList	() override;
 
-	virtual void			SetItem					(CUICellItem* itm); //auto
-	virtual bool			SetItem					(CUICellItem* itm, Fvector2 abs_pos);  // start at cursor pos
-	virtual void			SetItem					(CUICellItem* itm, Ivector2 cell_pos); // start at cell
-	virtual CUICellItem*	RemoveItem				(CUICellItem* itm, bool force_root);
+	virtual void			SetItem					(CUICellItem* itm) override; //auto
+	virtual bool			SetItem					(CUICellItem* itm, Fvector2 abs_pos) override;  // start at cursor pos
+	virtual void			SetItem					(CUICellItem* itm, Ivector2 cell_pos) override; // start at cell
+	virtual CUICellItem*	RemoveItem				(CUICellItem* itm, bool force_root) override;
 	void					SetOutfit				(CUICellItem* itm);
-	virtual	void			Draw					();
+	virtual void			Draw					() override;
 			void			SetVisualAnimation		(const char* animation);
 
-	virtual CUIOutfitDragDropList* ui_cast_outfit_dragdrop_list() { return this; }
+	virtual CUIOutfitDragDropList* ui_cast_outfit_dragdrop_list() override { return this; }
 };

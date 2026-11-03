@@ -9,10 +9,10 @@ class CDB_OptimizeTree : public Opcode::AABBNoLeafTree
 {
 public:
 	CDB_OptimizeTree();
-	~CDB_OptimizeTree();
+	virtual ~CDB_OptimizeTree() override;
 
 	void Store(IWriter* pWriter);
 	bool Restore(IReader* pReader);
 
-	bool Build(Opcode::AABBTree* tree);
+	virtual bool Build(Opcode::AABBTree* tree) override;
 };

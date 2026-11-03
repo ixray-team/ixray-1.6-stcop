@@ -10,7 +10,7 @@
 #include "Editor/Utils/GitLFSConfig.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../xrECore/Editor/UILightingForm.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
 
@@ -92,45 +92,32 @@ UIMainForm::UIMainForm()
 	TransformLocalOrWorld = DEV->_CreateTexture("ed\\icons\\Tool Local");
 	TransformLocalOrWorld2 = DEV->_CreateTexture("ed\\icons\\Tool World");
 
-	LoadWindowsStates();
+	m_LeftBar->SetStateName("left_bar");
+	m_Properties->SetStateName("properties");
+	m_WorldProperties->SetStateName("world_properties");
+	OpenSavedWindows();
 }
 
 void UIMainForm::ResetEnd()
 {
 }
 
-void UIMainForm::LoadWindowsStates()
+void UIMainForm::OpenSavedWindows()
 {
-	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
+	// These windows exist only while open: their own state is applied on creation
+	const CEditorWndStates& States = CEditorWndStates::Get();
 
-	if (LPrefs->OpenObjectList)
+	if (States.IsOpen("world_partition"))
+	{
+		UIWorldPartition::Show();
+	}
+
+	if (States.IsOpen("object_list", true))
 	{
 		UIObjectList::Show();
 	}
-	else
-	{
-		UIObjectList::Close();
-	}
 
-	if (LPrefs->OpenProperties)
-	{
-		m_Properties->Open();
-	}
-	else
-	{
-		m_Properties->Close();
-	}
-
-	if (LPrefs->OpenWorldProperties)
-	{
-		m_WorldProperties->Open();
-	}
-	else
-	{
-		m_WorldProperties->Close();
-	}
-
-	if (LPrefs->OpenLighting)
+	if (States.IsOpen("lighting"))
 	{
 		UILightingForm::Show();
 	}
@@ -138,12 +125,7 @@ void UIMainForm::LoadWindowsStates()
 
 UIMainForm::~UIMainForm()
 {
-	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
-
-	LPrefs->OpenProperties = !m_Properties->IsClosed();
-	LPrefs->OpenWorldProperties = !m_WorldProperties->IsClosed();
-	LPrefs->OpenObjectList = UIObjectList::IsOpen();
-	LPrefs->OpenLightAnim = UIEditLightAnim::IsOpen();
+	CEditorWndStates::Get().Save();
 
 	ClearChooseEvents();
 	xr_delete(m_WorldProperties);
@@ -262,6 +244,7 @@ void UIMainForm::DrawMenuItemI(const char* label, const char* icon, int command,
 
 void UIMainForm::Draw()
 {
+	PROF_EVENT("UIMainForm::Draw")
 	bOpen = true;
 	m_MainMenu->Draw();
 	m_TopBar->Draw();
@@ -282,12 +265,12 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
-	if (ImGui::BeginMenu("Create"))
+	if (ImGui::BeginMenuI("Create", ICON_FA_PLUS))
 	{
-		if (ImGui::BeginMenu("Shape"))
+		if (ImGui::BeginMenuI("Shape", ICON_FA_SHAPES))
 		{
-			DrawMenuItem("Box", COMMAND_CREATE_SHAPE_BOX);
-			DrawMenuItem("Sphere", COMMAND_CREATE_SHAPE_SPHERE);
+			DrawMenuItemI("Box", ICON_FA_CUBE, COMMAND_CREATE_SHAPE_BOX);
+			DrawMenuItemI("Sphere", ICON_FA_CIRCLE, COMMAND_CREATE_SHAPE_SPHERE);
 
 			ImGui::EndMenu();
 		}
@@ -349,7 +332,7 @@ void UIMainForm::DrawContextMenu()
 
 	DrawMenuItemI("Properties", ICON_FA_GEAR, COMMAND_SHOW_PROPERTIES);
 
-	if (ImGui::MenuItem("Make Heightmap"))
+	if (ImGui::MenuItemI("Make Heightmap", ICON_FA_MOUNTAIN))
 	{
 		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
 		if (CSceneObject* Obj = (CSceneObject*)mt->LastSelected())

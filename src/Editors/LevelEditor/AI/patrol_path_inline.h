@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	const CPatrolPath::CVertex *CPatrolPath::point	(shared_str name) const
+IC	const CPatrolPath::CVertex *CPatrolPath::point	(const shared_str& name) const
 {
 	const_vertex_iterator		I = vertices().begin();
 	const_vertex_iterator		E = vertices().end();

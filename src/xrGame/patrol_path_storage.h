@@ -30,10 +30,10 @@ protected:
 
 public:
 	IC								CPatrolPathStorage	();
-	virtual							~CPatrolPathStorage	();
+	virtual ~CPatrolPathStorage	() override;
 	virtual void					unload				();
-	virtual	void					load				(IReader &stream);
-	virtual	void					save				(IWriter &stream);
+	virtual void					load				(IReader &stream) override;
+	virtual void					save				(IWriter &stream) override;
 
 public:
 			void					load_raw			(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream);

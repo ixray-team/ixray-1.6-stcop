@@ -43,6 +43,8 @@ public:
 
     FvectorVec&		Vertices()	{return m_Vertices;}
     void			SetSectors	(CSector* sf, CSector* sb){m_SectorFront=sf; m_SectorBack=sb;}
+    CSector*		SectorFront	() const {return m_SectorFront;}
+    CSector*		SectorBack	() const {return m_SectorBack;}
 
     virtual bool 	GetSummaryInfo(SSceneSummary* inf);
 };

@@ -96,26 +96,26 @@ public:
 	CMapSpot*				pSelectedMapSpot;
 	Fvector2				last_cursor_pos;
 
-	virtual void			Reset				();
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void			Reset				() override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 public:
 							CUIPdaWnd			();
-	virtual					~CUIPdaWnd			();
+	virtual ~CUIPdaWnd			() override;
 
 	void ResetCursor();
 
 	virtual void 			Init				();
 
-	virtual void 			SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
+	virtual void 			SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
 
-	virtual void 			Draw				();
-	virtual void 			Update				();
-	virtual void 			Show				(bool status);
+	virtual void 			Draw				() override;
+	virtual void 			Update				() override;
+	virtual void 			Show				(bool status) override;
 	virtual bool			OnMouseAction		(float x, float y, EUIMessages mouse_action) override;
-	virtual bool			OnKeyboardAction	(int dik, EUIMessages keyboard_action);
-	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
-	virtual bool			OnGamepadKeyHold	(int key);
+	virtual bool			OnKeyboardAction	(int dik, EUIMessages keyboard_action) override;
+	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action) override;
+	virtual bool			OnGamepadKeyHold	(int key) override;
 			UIHint*			get_hint_wnd		() const { return m_hint_wnd; }
 			CPdaUiSounds&	UiSounds			() { return m_uiSounds; }
 			const CPdaUiSounds& UiSounds		() const { return m_uiSounds; }
@@ -130,12 +130,12 @@ public:
 			CUIWindow*		GetActiveDialog		() 					{return m_pActiveDialog;};
 			const char*			GetActiveSection	()					{return m_sActiveSection.c_str();};
 			CUITabControl*	GetTabControl		()					{return UITabControl;};
-	
-			virtual void HideDialog() override;
+
+	virtual void HideDialog() override;
 
 			void			SetActiveSubdialog	(const shared_str& section);
 			void			SetActiveSubdialog_script(const char* section)				{ SetActiveSubdialog((const shared_str&)section); };
-	virtual bool			StopAnyMove			();
+	virtual bool			StopAnyMove			() override;
 			void			PdaContentsChanged	(pda_section::part type);
 
 			void			UpdatePda			();

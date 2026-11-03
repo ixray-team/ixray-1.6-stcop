@@ -50,6 +50,13 @@ CShootingObject::~CShootingObject()
 
 void CShootingObject::destroy_particles()
 {
+	for (auto& Particle : ShellParticles)
+	{
+		Particle->Destroy();
+	}
+
+	ShellParticles.clear();
+
 	for (auto& Particle : smoke_particles)
 	{
 		Particle->Destroy();
@@ -216,9 +223,11 @@ void CShootingObject::Light_Render	(const Fvector& P)
 		return;
 	}
 
+
 	float light_scale			= light_time/light_lifetime;
 	R_ASSERT(light_render);
 
+	light_render->set_shadow	(Device.vCameraPosition.distance_to_sqr(get_CurrentFirePoint()) <= 2500.f);
 	light_render->set_position	(P);
 	light_render->set_color		(light_build_color.r*light_scale,light_build_color.g*light_scale,light_build_color.b*light_scale);
 	light_render->set_range		(light_build_range*light_scale);
@@ -254,7 +263,7 @@ void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 
 	m_pShellParticles->UpdateParent(pos, parent_vel);
 	m_pShellParticles->Play(in_hud_mode);
-	
+	ShellParticles.push_back(m_pShellParticles);
 }
 
 void CShootingObject::StartShellEjection(const Fvector& parent_vel, const shared_str& section)
@@ -419,6 +428,25 @@ void CShootingObject::UpdateEffects()
 
 	u32 dwTime = Device.dwTimeDelta;
 
+	for (size_t Index = 0; Index < ShellParticles.size();)
+	{
+		auto& Particle = ShellParticles[Index];
+		Particle->SetHudMode(in_hud_mode);
+		if (in_hud_mode)
+		{
+			Particle->Update(dwTime);
+		}
+
+		if (!Particle->IsPlaying() || Particle->m_NeedDestroy)
+		{
+			fast_erase(ShellParticles, Index);
+		}
+		else
+		{
+			++Index;
+		}
+	}
+
 	for (size_t i = 0; i < flame_particles.size();)
 	{
 		flame_particles[i]->SetXFORM(pos);
@@ -545,37 +573,18 @@ void CShootingObject::FireBullet(const Fvector& pos,
 	}
 	m_fPredBulletTime = Device.fTimeGlobal;
 
-	float l_fHitPower = 0.0f;
-	if (ParentIsActor())//если из оружия стреляет актёр(игрок)
-	{
-		if (IsGameTypeSingle())
-		{
-			l_fHitPower			= fvHitPower[g_SingleGameDifficulty];
-		}
-		else
-		{
-			l_fHitPower			= fvHitPower[egdMaster];
-		}
-	}
-	else
-	{
-		l_fHitPower			= fvHitPower[egdMaster];
-	}
+	const ESingleGameDifficulty hit_power_difficulty =
+		UseSinglePlayerHitPower ? g_SingleGameDifficulty : egdMaster;
+	float l_fHitPower = fvHitPower[hit_power_difficulty];
 
-	Level().BulletManager().AddBullet( pos, 
-										dir,
-										m_fStartBulletSpeed * cur_silencer_koef.bullet_speed,
-										l_fHitPower * cur_silencer_koef.hit_power,
-										fHitImpulse * cur_silencer_koef.hit_impulse,
-										parent_id, 
-										weapon_id,
-										ALife::eHitTypeFireWound, 
-										fireDistance, 
-										cartridge, 
-										m_air_resistance_factor,
-										send_hit, 
-										aim_bullet);
+	const WeaponModifiers::WpnModifierType& Modifiers = *OwnerWeaponModifiers;
+	l_fHitPower = l_fHitPower * Modifiers[WeaponModifiers::eHitPowerCoeff] * Modifiers[fire_mode == eSilencerFire ? WeaponModifiers::eSilencerHitPowerCoeff : WeaponModifiers::eUnsilencedHitPowerCoeff];
+	const float BulletSpeed = m_fStartBulletSpeed * cur_silencer_koef.bullet_speed * Modifiers[WeaponModifiers::eBulletSpeedCoeff];
+	const float HitImpulse = fHitImpulse * cur_silencer_koef.hit_impulse * Modifiers[WeaponModifiers::eHitImpulseCoeff];
+
+	Level().BulletManager().AddBullet(pos, dir, BulletSpeed, l_fHitPower * cur_silencer_koef.hit_power, HitImpulse, parent_id, weapon_id, ALife::eHitTypeFireWound, fireDistance, cartridge, m_air_resistance_factor, send_hit, aim_bullet);
 }
+
 void CShootingObject::FireStart	()
 {
 	bWorking=true;	

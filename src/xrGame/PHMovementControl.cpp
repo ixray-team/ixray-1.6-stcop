@@ -3,11 +3,10 @@
 
 #include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/AI/alife_space.h"
-#include "../xrPhysics/PHCharacter.h"
+#include "../xrPhysics/IPHCharacter.h"
 #include "../xrPhysics/IPHCapture.h"
 #include "../xrPhysics/IPhysicsShellHolder.h"
 #include "../xrPhysics/ElevatorState.h"
-#include "../xrPhysics/CalculateTriangle.h"
 #include "../xrPhysics/IColisiondamageInfo.h"
 #include "../xrPhysics/phvalide.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -132,7 +131,7 @@ void CPHMovementControl::SetVelocityLimit(float val)
 
 float CPHMovementControl::VelocityLimit()
 {
-	if(!m_character || !m_character->b_exist) return 0.f;
+	if(!m_character || !m_character->Exists()) return 0.f;
 	return m_character->GetMaximumVelocity();
 }
 
@@ -346,7 +345,7 @@ void CPHMovementControl::Calculate(const xr_vector<DetailPathManager::STravelPat
 		vPosition.set(pObject->Position());
 	}
 
-	if (!m_character->b_exist)	return;
+	if (!m_character->Exists())	return;
 
 	if (bNonInteractiveMode)
 	{
@@ -921,7 +920,7 @@ case peAtWall : eEnvironment=peAtWall		;break;
 
 void CPHMovementControl::GroundNormal(Fvector& norm)
 {
-	if (m_character && m_character->b_exist)m_character->GroundNormal(norm);
+	if (m_character && m_character->Exists())m_character->GroundNormal(norm);
 	else norm.set(0.f, 1.f, 0.f);
 }
 
@@ -966,7 +965,7 @@ VERIFY_BOUNDARIES2(pos,ph_boundaries(),m_character->PhysicsRefObject(),"CPHMovem
 			Msg("CPHMovementControl::TryPosition %s (CPHMovementControl::vPosition) %f,%f,%f",PH_DBG_ObjectTrackName(),vPosition.x,vPosition.y,vPosition.z);
 		}
 #endif
-		if (m_character->b_exist) {	
+		if (m_character->Exists()) {	
 			bool					ret = m_character->TryPosition(pos,b_exect_position)&&!bExernalImpulse;
 			m_character->GetPosition(vPosition);
 			return					(ret);
@@ -1161,9 +1160,9 @@ void CPHMovementControl::SetVisualScale(float Scale)
 	aabb.min.mul(Ratio);
 	aabb.max.mul(Ratio);
 	AppliedVisualScale = Scale;
-	if (m_character && m_character->b_exist)
+	if (m_character && m_character->Exists())
 	{
-		dVector3 Size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
+		Fvector Size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
 		m_character->SetBox(Size);
 	}
 }
@@ -1174,7 +1173,7 @@ void CPHMovementControl::CreateCharacter()
 	{
 		SetVisualScale(Kinematics->GetVisualScale());
 	}
-	dVector3 size={aabb.x2-aabb.x1,aabb.y2-aabb.y1,aabb.z2-aabb.z1};
+	Fvector size = {aabb.x2-aabb.x1,aabb.y2-aabb.y1,aabb.z2-aabb.z1};
 	m_character->Create(size);
 	m_character->SetMaterial(m_material);
 	m_character->SetAirControlFactor(fAirControlParam);
@@ -1222,20 +1221,20 @@ void CPHMovementControl::ActivateBox(DWORD id, bool Check/*false*/)
 	m_dwCurBox = id;
 	aabb.set(boxes[id]);
 
-	if (!m_character || !m_character->b_exist)
+	if (!m_character || !m_character->Exists())
 		return;
 
-	dVector3 size = { aabb.x2 - aabb.x1,aabb.y2 - aabb.y1,aabb.z2 - aabb.z1 };
+	Fvector size = { aabb.x2 - aabb.x1,aabb.y2 - aabb.y1,aabb.z2 - aabb.z1 };
 	m_character->SetBox(size);
 }
 
 void CPHMovementControl::InterpolateBox		(DWORD id, float k)
 { 
 	if (m_dwCurBox == id) return;
-	if(!m_character||!m_character->b_exist) return;
-	dVector3 size={aabb.x2-aabb.x1,aabb.y2-aabb.y1,aabb.z2-aabb.z1};
-	dVector3 to_size={boxes[id].x2-boxes[id].x1,boxes[id].y2-boxes[id].y1,boxes[id].z2-boxes[id].z1};
-	dVectorInterpolate(size,to_size,k);
+	if(!m_character||!m_character->Exists()) return;
+	Fvector size = {aabb.x2-aabb.x1,aabb.y2-aabb.y1,aabb.z2-aabb.z1};
+	Fvector to_size = {boxes[id].x2-boxes[id].x1,boxes[id].y2-boxes[id].y1,boxes[id].z2-boxes[id].z1};
+	size.lerp(size,to_size,k);
 	m_character->SetBox(size);
 }
 
@@ -1244,7 +1243,7 @@ void CPHMovementControl::ApplyHit(const Fvector& dir,const float P,ALife::EHitTy
 
 	VERIFY( m_character );
 	// stop-motion
-	if(!m_character->CastActorCharacter())
+	if(!m_character->IsActorCharacter())
 		return;
 	if ( 	
 		(Environment()==CPHMovementControl::peOnGround || Environment()==CPHMovementControl::peAtWall) 
@@ -1289,7 +1288,7 @@ void CPHMovementControl::MulFrictionFactor(float f)
 
 IElevatorState	*CPHMovementControl::ElevatorState()
 {
-	if(!m_character || !m_character->b_exist)
+	if(!m_character || !m_character->Exists())
 		return nullptr;
 	return m_character->ElevatorState();
 }
@@ -1329,7 +1328,8 @@ bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if (mtl->Flags.test(SGameMtl::flInjurious))
 	{
 		Fvector tri_norm;
-		GetNormal(T, tri_norm, Level().ObjectSpace.GetStaticVerts().data());
+		const Fvector* verts = Level().ObjectSpace.GetStaticVerts().data();
+		tri_norm.crossproduct(Fvector().sub(verts[T->verts[1]], verts[T->verts[0]]), Fvector().sub(verts[T->verts[2]], verts[T->verts[1]]));
 
 		if (p.m_dir.dotproduct(tri_norm) < 0.f)
 			p.m_movement->in_dead_area_count++;
@@ -1358,10 +1358,10 @@ void CPHMovementControl::TraceBorder(const Fvector &prev_position)
 	g_pGameLevel->ObjectSpace.RayQuery(storage,RD,BorderTraceCallback,&p,nullptr,smart_cast<CObject*>(m_character->PhysicsRefObject()));
 }
 
-void CPHMovementControl::UpdateObjectBox(CPHCharacter* ach)
+void CPHMovementControl::UpdateObjectBox(IPHCharacter* ach)
 {
-	if (!m_character || !m_character->b_exist) return;
-	if (!ach || !ach->b_exist) return;
+	if (!m_character || !m_character->Exists()) return;
+	if (!ach || !ach->Exists()) return;
 
 	Fvector cbox;
 	//PKinematics(pObject->Visual())->CalculateBones();
@@ -1405,7 +1405,7 @@ const IPhysicsElement*	CPHMovementControl::IElement( )const
 {
 	if(!CharacterExist()) 
 		return 0;
-	return m_character;
+	return m_character->PhysicsElement();
 }
 
 static const u32 move_steps_max_num = 20;
@@ -1420,12 +1420,11 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 	class ph_character_state_save
 	{
 	public:
-		ph_character_state_save ( CPHCharacter* character ): character_(character),  
+		ph_character_state_save ( IPHCharacter* character ): character_(character),  
 						  saved_callback_( character->ObjectContactCallBack() ) 
 		{
 			character_->get_State( sv_state );
-			character_->SetObjectContactCallback(virtual_move_collide_callback);
-			character_->SetObjectContactCallbackData( static_cast<CPHObject*> (character) );
+			character_->SetVirtualMoveContactCallback();
 			character_->SwitchOFFInitContact();
 			character_->SetApplyGravity( false );
 		}
@@ -1441,7 +1440,7 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 
 	private:
 		SPHNetState				  sv_state;
-		CPHCharacter*             character_;
+		IPHCharacter*             character_;
 		ObjectContactCallbackFun* saved_callback_; 
 		
 	} cleanup( m_character );
@@ -1486,7 +1485,7 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 void CPHMovementControl::SetNonInteractive(bool v)
 {
 	VERIFY(m_character);
-	if (!m_character->b_exist)
+	if (!m_character->Exists())
 		return;
 	if (bNonInteractiveMode == v)
 		return;
@@ -1517,7 +1516,7 @@ void	CPHMovementControl::SetJumpUpVelocity(float velocity)
 }
 void		CPHMovementControl::EnableCharacter()
 {
-	if (m_character && m_character->b_exist)
+	if (m_character && m_character->Exists())
 		m_character->Enable();
 }
 
@@ -1559,7 +1558,7 @@ void	CPHMovementControl::GetDesiredPos(Fvector& dpos)
 }
 bool	CPHMovementControl::CharacterExist() const
 {
-	return (m_character && m_character->b_exist);
+	return (m_character && m_character->Exists());
 }
 void CPHMovementControl::update_last_material()
 {
@@ -1575,7 +1574,7 @@ u16	CPHMovementControl::injurious_material_idx()
 void	CPHMovementControl::SetApplyGravity(bool flag)
 {
 	bIsAffectedByGravity = flag;
-	if (m_character && m_character->b_exist)
+	if (m_character && m_character->Exists())
 		m_character->SetApplyGravity(flag);
 }
 void	CPHMovementControl::GetDeathPosition(Fvector& pos)
@@ -1601,7 +1600,7 @@ void	CPHMovementControl::GetCharacterPosition(Fvector& P)
 }
 void		CPHMovementControl::InterpolatePosition(Fvector& P)
 {
-	VERIFY(m_character && m_character->b_exist);
+	VERIFY(m_character && m_character->Exists());
 	m_character->IPosition(P);
 }
 void		CPHMovementControl::SetMass(float M)
@@ -1619,7 +1618,7 @@ float		CPHMovementControl::FootRadius()
 }
 void		CPHMovementControl::CollisionEnable(bool enable)
 {
-	if (!m_character || !m_character->b_exist)
+	if (!m_character || !m_character->Exists())
 		return;
 	if (enable)
 		m_character->collision_enable();
@@ -1630,7 +1629,7 @@ void		CPHMovementControl::CollisionEnable(bool enable)
 
 void CPHMovementControl::CollisionDynamicEnable(bool enable)
 {
-	if (!m_character || !m_character->b_exist)
+	if (!m_character || !m_character->Exists())
 		return;
 	if (enable)
 		m_character->collision_dynamic_enable();
@@ -1676,7 +1675,7 @@ void		CPHMovementControl::SetPLastMaterialIDX(u16* p)
 
 bool CPHMovementControl::JumpState( )
 { 
-	return ( m_character&&m_character->b_exist	&& 
+	return ( m_character&&m_character->Exists()	&& 
 			 m_character->IsEnabled( )			&& 
 			 m_character->JumpState( ) 
 			);
@@ -1685,7 +1684,7 @@ bool CPHMovementControl::JumpState( )
 bool CPHMovementControl::PhysicsOnlyMode( )
 { 
 	return	m_character				&& 
-			m_character->b_exist	&&
+			m_character->Exists()	&&
 			m_character->IsEnabled()&&
 			( m_character->JumpState( ) || m_character->ForcedPhysicsControl( ) )
 			; 

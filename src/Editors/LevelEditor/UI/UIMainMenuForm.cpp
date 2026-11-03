@@ -1,7 +1,12 @@
 #include "stdafx.h"
+#include "Coder/UICoderForm.h"
 #include "../../xrEUI/imgui_IconMenuItem.h"
 
-#include "../Nodes/UIMacroView.h"
+#include "../Nodes/UINodesEditorForm.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ShaderEditor/UIShaderEditorForm.h"
+#include "../ActorEditor/ActorEditor.h"
 #include "../Editor/Utils/ReferenceReplacer.h"
 #include "../Editor/Utils/GitIntegration.h"
 #include "UIGitWindow.h"
@@ -19,7 +24,7 @@
 #include "UIWidgetsTest.h"
 
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -116,16 +121,86 @@ void UIMainMenuForm::Draw()
 		ImVec2 cp;
 		if (ImGui::BeginMenu("File")){
 			DrawMenuItemI("Clear", ICON_FA_FILE, COMMAND_CLEAR);
-			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
-			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
-			DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
+			if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+			{
+				if (ImGui::MenuItemI("Open", ICON_FA_FILE_IMPORT, *GetCommandShortcat(COMMAND_LOAD)))
+				{
+					Particles->LoadXR();
+				}
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					Particles->SaveCurrent();
+				}
+				if (ImGui::MenuItemI("Save All", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Particles->Save(false);
+				}
+				if (ImGui::MenuItemI("Save .xr", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Particles->Save(true);
+				}
+			}
+			else if (UIShaderEditorForm::IsActive())
+			{
+				if (ImGui::MenuItemI("Reload", ICON_FA_ARROWS_ROTATE, *GetCommandShortcat(COMMAND_LOAD)))
+				{
+					UIShaderEditorForm::ReloadCurrent();
+				}
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					UIShaderEditorForm::SaveAll();
+				}
+			}
+			else if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+			{
+				DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
+				if (ImGui::MenuItemI("Save", ICON_FA_FLOPPY_DISK, *GetCommandShortcat(COMMAND_SAVE)))
+				{
+					Actor->CommandSave(CCommandVar(), CCommandVar());
+				}
+				if (ImGui::MenuItemI("Save As...", ICON_FA_FLOPPY_DISK, ""))
+				{
+					Actor->CommandSave(CCommandVar(), 1);
+				}
+			}
+			else
+			{
+				DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
+				DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
+				DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
+			}
 			ImGui::Separator();
 
 			DrawMenuItemI("Open Selection", ICON_FA_FILE_IMPORT, COMMAND_LOAD_SELECTION);
 			DrawMenuItemI("Save Selection", ICON_FA_FLOPPY_DISK, COMMAND_SAVE_SELECTION);
 			ImGui::Separator();
 
-			if (ImGui::BeginMenu("Open Recent", *GetCommandShortcat(COMMAND_LOAD)))
+			if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+			{
+				AStringVec& RecentFiles = static_cast<CLevelPreferences*>(EPrefs)->ActorRecentFiles;
+				if (ImGui::BeginMenu("Open Recent"))
+				{
+					for (const xr_string& File : RecentFiles)
+					{
+						if (ImGui::MenuItem(File.c_str(), ""))
+						{
+							Actor->CommandLoad(Platform::UTF8_to_CP1251(File), CCommandVar());
+							break;
+						}
+					}
+
+					if (!RecentFiles.empty())
+					{
+						ImGui::Separator();
+						if (ImGui::MenuItem("Clear List", ""))
+						{
+							RecentFiles.clear();
+						}
+					}
+					ImGui::EndMenu();
+				}
+			}
+			else if (ImGui::BeginMenu("Open Recent", *GetCommandShortcat(COMMAND_LOAD)))
 			{
 				for (auto& str : EPrefs->scene_recent_list)
 				{
@@ -150,6 +225,8 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
 			ImGui::EndMenu();
 		}
+
+		UIActorEditorForm::DrawMainMenu();
 		
 
 		if (ImGui::BeginMenu("Scene")){
@@ -163,6 +240,15 @@ void UIMainMenuForm::Draw()
 						MainForm->GetWorldPropertiesFrom()->Close();
 				}
 
+				bool PartitionOpen = UIWorldPartition::IsOpen();
+				if (ImGui::MenuItemI("World Partition", ICON_FA_TABLE_CELLS, "", &PartitionOpen))
+				{
+					if (PartitionOpen)
+						UIWorldPartition::Show();
+					else
+						UIWorldPartition::Close();
+				}
+
 				if (ImGui::MenuItemI("Export as archive", ICON_FA_FILE_ZIPPER))
 				{
 					ExportLevelAsArchive();
@@ -170,9 +256,34 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::Separator();
 
+			if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+			{
+				if (ImGui::MenuItemI("Reload", ICON_FA_ARROWS_ROTATE, ""))
+				{
+					if (Particles->IfModified())
+					{
+						Particles->Reload();
+					}
+				}
+				if (ImGui::MenuItemI("Compact", ICON_FA_COMPRESS, ""))
+				{
+					Particles->Compact(0, 0);
+				}
+			}
+
 			if (ImGui::BeginMenuI("Validate##list", ICON_FA_CIRCLE_CHECK))
 			{
-				DrawMenuItemI("Validate", ICON_FA_CIRCLE_CHECK, COMMAND_VALIDATE_SCENE);
+				if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+				{
+					if (ImGui::MenuItemI("Validate", ICON_FA_CIRCLE_CHECK, ""))
+					{
+						Particles->Validate(true);
+					}
+				}
+				else
+				{
+					DrawMenuItemI("Validate", ICON_FA_CIRCLE_CHECK, COMMAND_VALIDATE_SCENE);
+				}
 				ImGui::Separator();
 				if (ImGui::BeginMenuI("Make Missing LODs", ICON_FA_IMAGES, !EPrefs->UseMULODs))
 				{
@@ -312,6 +423,8 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Objects"))
 		{
+			DrawMenuItem("Shared Materials Editor", COMMAND_SHARED_MATERIALS_EDITOR);
+			ImGui::Separator();
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
@@ -348,8 +461,8 @@ void UIMainMenuForm::Draw()
 
 				for (; I != E; ++I)
 				{
-					ETextureThumbnail* TH = new ETextureThumbnail((*I).name.c_str(), false);
-					TH->Load((*I).name.c_str(), _textures_);
+					ETextureThumbnail* TH = new ETextureThumbnail(I->name.c_str(), false);
+					TH->Load(I->name.c_str(), _textures_);
 					TH->Save();
 					xr_delete(TH);
 				}
@@ -373,6 +486,23 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Options"))
 		{
+			// The scripts of Play In Editor own the Lua state
+			const bool BakeLocked = Scene->IsPlayInEditor();
+			ImGui::BeginDisabled(BakeLocked);
+			if (ImGui::MenuItemI("Bake Lua API", ICON_FA_DATABASE, ""))
+			{
+				UICoderForm::RequestBake();
+			}
+			ImGui::EndDisabled();
+			if (BakeLocked)
+			{
+				ImGui::SetItemTooltip("Stop Play In Editor to bake the Lua API");
+			}
+			else
+			{
+				ImGui::SetItemTooltip("Writes $app_data_root$\\lua_api.txt and ltx_schema.txt for the code completion (Ctrl+Space)");
+			}
+			ImGui::Separator();
 			if (ImGui::BeginMenu("Render"))
 			{
 				EditorRenderMenu::DrawItems();
@@ -435,7 +565,9 @@ void UIMainMenuForm::Draw()
                             ExecCommand(COMMAND_WEATHER_PROPERTIES);
                         }
                         if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        {
+	                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        }
                     }
 					bool selected = !psDeviceFlags.test(rsEnvironment);
 					if (ImGui::MenuItem("None", "", &selected))
@@ -444,7 +576,9 @@ void UIMainMenuForm::Draw()
 						EContext.UI->RedrawScene();
 					}
                     if (ImGui::IsItemHovered())
-                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    {
+	                    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    }
 					ImGui::Separator();
 					for (auto& i : g_pGamePersistent->Environment().WeatherCycles)
 					{
@@ -456,7 +590,9 @@ void UIMainMenuForm::Draw()
 							EContext.UI->RedrawScene();
 						}
                         if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        {
+	                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                        }
 					}
 
 					ImGui::EndMenu();
@@ -491,18 +627,24 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Windows"))
 		{
-			//DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
-
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
 			{
-				static CUIMacroView* View = nullptr;
-				if (View == nullptr)
-				{
-					View = new CUIMacroView;
-					EContext.UI->Push(View);
-				}
+				UINodesEditorForm::Activate(ENodesMode::Macros);
+			}
 
-				View->Show(true);
+			if (ImGui::MenuItemI("Particle Editor", ICON_FA_FIRE, ""))
+			{
+				UIParticleEditorForm::Open();
+			}
+
+			if (ImGui::MenuItemI("Actor Editor", ICON_FA_PERSON, ""))
+			{
+				UIActorEditorForm::Open();
+			}
+
+			if (ImGui::MenuItemI("Shader Editor", ICON_FA_PALETTE, ""))
+			{
+				UIShaderEditorForm::Open();
 			}
 
 			ImGui::Separator();
@@ -519,9 +661,13 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Properties", ICON_FA_GEAR, "", &selected))
 				{
 					if (selected)
+					{
 						MainForm->GetPropertiesForm()->Open();
+					}
 					else
+					{
 						MainForm->GetPropertiesForm()->Close();
+					}
 				}
 			}
 			{
@@ -545,7 +691,9 @@ void UIMainMenuForm::Draw()
 						ThemeInstance.Show(true);
 					}
 					else
+					{
 						ThemeInstance.Show(false);
+					}
 				}
 			}
 
@@ -557,7 +705,9 @@ void UIMainMenuForm::Draw()
 					auto& W = CUIWidgetsTest::Instance();
 
 					if (!EContext.UI->HasWindow<CUIWidgetsTest>())
-						EContext.UI->Push(&W, false);      // false = не удалять UI менеджером
+					{
+						EContext.UI->Push(&W, false); // false = не удалять UI менеджером
+					}
 
 					W.Show(true);
 				}
@@ -565,6 +715,39 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::EndMenu();
 		}
+
+#if defined(IXRAY_PROFILER)
+		// The viewport stops redrawing while the cursor is outside the window: capturing from
+		// here keeps the frames of the editor itself in the capture
+		if (ImGui::BeginMenu("Profiler"))
+		{
+			static bool Capturing = false;
+			if (ImGui::MenuItem("Optick Start Capture", nullptr, false, !Capturing))
+			{
+				PROF_START_CAPTURE();
+				Capturing = true;
+			}
+
+			if (ImGui::MenuItem("Optick Stop Capture", nullptr, false, Capturing))
+			{
+				PROF_STOP_CAPTURE();
+				Capturing = false;
+
+				string256 CurrentDate{};
+				string256 CurrentTime{};
+
+				Time Now{};
+				xr_strconcat(CurrentDate, Now.GetYearString().c_str(), ".", Now.GetMonthString().c_str(), ".", Now.GetDayString().c_str());
+				xr_strconcat(CurrentTime, Now.GetHoursString().c_str(), ".", Now.GetMinutesString().c_str(), ".", Now.GetSecondsString().c_str());
+				string_path FileName{};
+				xr_strconcat(FileName, "ixray-editor-optick-", CurrentDate, "-", CurrentTime, ".opt");
+
+				PROF_SAVE_CAPTURE(FileName);
+				Msg("* Optick capture saved: %s", FileName);
+			}
+			ImGui::EndMenu();
+		}
+#endif
 
 		if (ImGui::BeginMenu("Help"))
 		{
@@ -630,7 +813,7 @@ void UIMainMenuForm::Draw()
 			bool selected = UIObjectList::IsOpen();
 			ImGui::SetCursorPosY((EContext.UI->GetMenuBarButtonHeight() - ImGui::GetFontSize()) / 2.f - ImGui::GetStyle().FramePadding.y);
 
-			if (ImGui::Checkbox("Object List", &selected))
+			if (ImGui::Checkbox("Outliner", &selected))
 			{
 				if (UIObjectList::IsOpen())
 				{
@@ -641,7 +824,8 @@ void UIMainMenuForm::Draw()
 					UIObjectList::Show();
 				}
 			}
-			
+
+
 			ImGui::SameLine();
 			
 			// Git icon button
@@ -787,7 +971,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		for (CSurface* Surface : Obj->m_Surfaces)
 		{
 			DirFilePath = TexturesObjectPath;
-			xr_string TextureName = Surface->m_Texture.c_str();
+			xr_string TextureName = Surface->_Texture();
 			TextureName += ".dds";
 
 			auto Dirs = TextureName.Split('\\');
@@ -848,7 +1032,9 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		const xr_string& LodTexture = Obj->GetReference()->GetLODTextureName();
 
 		if (LodTexture.empty())
+		{
 			continue;
+		}
 
 		CopyLodTexture(LodTexture);
 		CopyLodTexture(LodTexture + "_nm");

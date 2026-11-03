@@ -15,15 +15,15 @@ protected:
 	CUIStatic* m_stats;
 public:
 	CUIGameFMP();
-	virtual ~CUIGameFMP();
+	virtual ~CUIGameFMP() override;
 
-	virtual	void Init(int stage);
+	virtual void Init(int stage) override;
 
-	virtual void SetClGame(game_cl_GameState* g);
+	virtual void SetClGame(game_cl_GameState* g) override;
 
-	virtual void HideShownDialogs();
+	virtual void HideShownDialogs() override;
 
-	virtual void _BCL OnFrame();
+	virtual void _BCL OnFrame() override;
 
-	virtual bool IR_UIOnKeyboardPress(int dik);
+	virtual bool IR_UIOnKeyboardPress(int dik) override;
 };

@@ -10,16 +10,16 @@ class CMosquitoBald : public CAnomalyZone
 public:
 	XPROPERTY(LuaConstructor)
 	CMosquitoBald();
-	virtual ~CMosquitoBald();
+	virtual ~CMosquitoBald() override;
 
-	virtual void Load(const char* section);
-	virtual void Affect(SZoneObjectInfo* O);
+	virtual void Load(const char* section) override;
+	virtual void Affect(SZoneObjectInfo* O) override;
 
-	CMosquitoBald* cast_mosquito_bald_zone() override { return this; }
+	virtual CMosquitoBald* cast_mosquito_bald_zone() override { return this; }
 
 protected:
-	virtual bool BlowoutState();
-	virtual void UpdateSecondaryHit();
+	virtual bool BlowoutState() override;
+	virtual void UpdateSecondaryHit() override;
 	//для того чтобы blowout обновился один раз
 	//после того как зона перключилась в другое состояние
 	bool m_bLastBlowoutUpdate;

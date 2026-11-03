@@ -6,16 +6,16 @@ class CBlender_Editor_Selection : public IBlender
 {
 	string64	oT_Factor;
 public:
-	virtual		const char*		getComment()	{ return "EDITOR: selection"; }
-	virtual		bool		canBeLMAPped()	{ return false; }
-	
-	virtual		void		Save			(IWriter&  fs);
-	virtual		void		Load			(IReader&	fs, u16 version);
-	
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual const char*		getComment() override { return "EDITOR: selection"; }
+	virtual bool		canBeLMAPped() override { return false; }
+
+	virtual void		Save			(IWriter&  fs) override;
+	virtual void		Load			(IReader&	fs, u16 version) override;
+
+	virtual void		Compile			(CBlender_Compile& C) override;
 	
 	CBlender_Editor_Selection();
-	virtual ~CBlender_Editor_Selection();
+	virtual ~CBlender_Editor_Selection() override;
 
 };
 

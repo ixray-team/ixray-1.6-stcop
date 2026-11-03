@@ -14,6 +14,7 @@ class CTelekineticPoltergeist;
 class CWeaponMagazined;
 class CGrenade;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEnergyHolder, public ITelekineticEnemy
 {
 	using inherited = CBaseMonster;
@@ -150,11 +151,10 @@ private:
 
 public:
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 	friend class CFlamePoltergeist;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 class IPolter
@@ -353,7 +353,7 @@ public:
 	float master_difficulty_object_hit_factor;
 
 	CTelekineticPoltergeist(CPoltergeist* polter);
-	~CTelekineticPoltergeist();
+	virtual ~CTelekineticPoltergeist() override;
 
 	void load(const char* section) override;
 	void update_schedule() override;

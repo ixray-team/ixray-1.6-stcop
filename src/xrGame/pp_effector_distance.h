@@ -12,13 +12,13 @@ class CPPEffectorDistance : public CPPEffectorController {
 	float			m_radius;
 	float			m_dist;
 public:
-	virtual void	load					(const char* section);
+	virtual void	load					(const char* section) override;
 	IC		void	set_radius				(float r) {m_radius = r;}
 	IC		void	set_current_dist		(float dist) {m_dist = dist;}
 
-	virtual bool	check_completion		();
-	virtual bool	check_start_conditions	();
-	virtual void	update_factor			();
+	virtual bool	check_completion		() override;
+	virtual bool	check_start_conditions	() override;
+	virtual void	update_factor			() override;
 
-	virtual CPPEffectorControlled *create_effector	();
+	virtual CPPEffectorControlled *create_effector	() override;
 };

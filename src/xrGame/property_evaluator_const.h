@@ -20,7 +20,8 @@ protected:
 
 public:
 	IC CPropertyEvaluatorConst	(bool value, const char* evaluator_name = "");
-	virtual bool evaluate()
+
+	virtual bool evaluate() override
 	{
 		return (this->m_value);
 	}

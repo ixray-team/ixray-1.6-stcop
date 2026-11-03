@@ -1188,6 +1188,9 @@ bool CWeapon::net_Spawn(CSE_Abstract* DC)
 
 void CWeapon::net_Destroy()
 {
+	WeaponOwner = nullptr;
+	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	UseSinglePlayerHitPower = false;
 	inherited::net_Destroy();
 
 	//удалить эффекты вспышки от выстрела
@@ -1498,6 +1501,9 @@ void CWeapon::shedule_Update	(u32 dT)
 
 void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 {
+	WeaponOwner = nullptr;
+	OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	UseSinglePlayerHitPower = false;
 	RemoveShotEffector			();
 
 	inherited::OnH_B_Independent(just_before_destroy);
@@ -1547,6 +1553,16 @@ void CWeapon::OnH_A_Independent	()
 void CWeapon::OnH_A_Chield		()
 {
 	inherited::OnH_A_Chield		();
+	WeaponOwner = H_Parent()->cast_entity_alive();
+	if (WeaponOwner)
+	{
+		OwnerWeaponModifiers = &WeaponOwner->WeaponModifierCoefficients;
+	}
+	else
+	{
+		OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	}
+	UseSinglePlayerHitPower = IsGameTypeSingle() && ParentIsActor();
 	UpdateAddonsVisibility		();
 	ProcessScope();
 };
@@ -5381,6 +5397,12 @@ void CWeapon::MakeWeaponKick(Fvector& pos, Fvector& dir)
 
 void CWeapon::net_Relcase(CObject* object)
 {
+	if (object == H_Parent())
+	{
+		WeaponOwner = nullptr;
+		OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+		UseSinglePlayerHitPower = false;
+	}
 	inherited::net_Relcase(object);
 
 	if (TBinocularsVision* Vision = GetComponent<TBinocularsVision>())

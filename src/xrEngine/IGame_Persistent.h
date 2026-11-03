@@ -87,11 +87,11 @@ public:
 	virtual void					OnRenderPPUI_main	() {};
 	virtual void					OnRenderPPUI_PP		() {};
 
-	virtual	void					OnAppStart			();
-	virtual void					OnAppEnd			();
-	virtual	void					OnAppActivate		();
-	virtual void					OnAppDeactivate		();
-	virtual void		_BCL		OnFrame				();
+	virtual void					OnAppStart			() override;
+	virtual void					OnAppEnd			() override;
+	virtual void					OnAppActivate		() override;
+	virtual void					OnAppDeactivate		() override;
+	virtual void		_BCL		OnFrame				() override;
 	virtual void					OnFrameMT			();
 
 	// вызывается только когда изменяется тип игры
@@ -108,13 +108,14 @@ public:
 	virtual	float					MtlTransparent		(u32 mtl_idx) { return 1;}
 
 	IGame_Persistent				();
-	virtual ~IGame_Persistent		();
+	~IGame_Persistent		() override;
 
 	ICF		u32						GameType			() {return m_game_params.m_e_game_type;};
 	virtual void					Statistics			(CGameFont* F) {}
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
 	virtual void					SetLoadStageTitle	(const char* /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
+	virtual bool					IsIntroActive		() const { return false; }
 	virtual void					GetTextureParams	(shared_str tex, Frect& out_rect, shared_str& file_name) {}
 	virtual void					ChangeCursorPosition(Fvector2 value) {}
 };

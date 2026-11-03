@@ -109,5 +109,5 @@ protected:
 	bool feel_touch_contact(CObject* O) override;
 public:
 	CZoneList() = default;
-	virtual	~CZoneList();
+	virtual ~CZoneList() override;
 };

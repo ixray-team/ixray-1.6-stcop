@@ -67,7 +67,7 @@ Active point-directed evasive flight bypasses grounded path steering in CPHMovem
 
 Evasive touchdown now returns directly to locomotion: the native moving-ground animation must not be played stationary. Physical touchdown requires elapsed flight time, contact, non-jumping PH state and ground environment. Flight duration is retained separately for diagnostics; phase, actual velocities, physics state, scale and loaded bounds are shown. Animation ownership resets clear pending completion flags and stale fading blends cannot complete the current global motion.
 
-Touchdown and diagnostics read `CPHCharacter::HasGroundSupport() const`. `ContactWas()` consumes a one-shot control-contact event and must not be used as a support predicate or by diagnostic drawing. The persistent getter uses the physical support state and upward contact normal; it is independent of gameplay/debug read order. The new virtual interface method requires rebuilding the physics runtime and its dependent consumers together.
+Touchdown and diagnostics read `IPHCharacter::HasGroundSupport() const`. `ContactWas()` consumes a one-shot control-contact event and must not be used as a support predicate or by diagnostic drawing. The persistent getter uses the physical support state and upward contact normal; it is independent of gameplay/debug read order. The new virtual interface method requires rebuilding the physics runtime and its dependent consumers together.
 
 Jump startup requires both an idle controller and physical ground support with no pending/active physical jump. Evasive bounds are revalidated natively at request and takeoff. Ballistic prediction returns a local duration and cannot modify an already running jump timer.
 

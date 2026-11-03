@@ -33,10 +33,7 @@ int ar_def_line = 0;
 int ar_lastdef_line = 0;
 int bp_twice_check_res = 1;
 int lua_debugger_ver = 0;             // luapanda.lua的版本，便于做向下兼容
-struct path_transfer_node;
 struct breakpoint;
-// 路径缓存队列 getinfo -> format
-std::list<path_transfer_node*> getinfo_to_format_cache;
 // 存放断点map，key为source
 std::map<std::string, std::map<int, breakpoint>> all_breakpoint_map;
 
@@ -87,6 +84,8 @@ struct path_transfer_node {
         dst = _dst;
     }
 };
+
+std::list<path_transfer_node> getinfo_to_format_cache;
 
 // 断点信息
 struct breakpoint {
@@ -375,8 +374,8 @@ const char* getPath(lua_State* L, const char* source) {
     //检查缓存
     for (auto iter = getinfo_to_format_cache.begin(); iter != getinfo_to_format_cache.end(); iter++)
     {
-        if (!strcmp((*iter)->src.c_str(), source)) {
-            return (*iter)->dst.c_str();
+        if (!strcmp(iter->src.c_str(), source)) {
+            return iter->dst.c_str();
         }
     }
 
@@ -387,10 +386,9 @@ const char* getPath(lua_State* L, const char* source) {
     }
     const char* retSource = lua_tostring(L, -1);
     //加入缓存,返回
-    path_transfer_node* nd = new path_transfer_node(source, retSource);
-    getinfo_to_format_cache.push_back(nd);
+    getinfo_to_format_cache.emplace_back(source, retSource);
 
-    return retSource;
+    return getinfo_to_format_cache.back().dst.c_str();
 }
 
 // 向 lua 中 checkRealHitBreakpoint 查询是否在缓存中，以判断是否真正命中断点
@@ -823,7 +821,7 @@ void debug_hook_c(lua_State* L, lua_Debug* ar) {
     if (lua_getinfo(L, "Slf", ar) != 0) {
         //if in c function , return
         if (!hook_process_cfunction(L, ar)) return;
-        //if in debugger , return	
+        //if in debugger , return
         int source_len = (int)strlen(ar->source);
         if (debug_file_path_len == source_len) {
             if (!strcmp(debug_file_path, ar->source))	return;

@@ -17,16 +17,16 @@ class CUIDemoPlayControl final :
 	typedef CUIDialogWnd inherited;
 public:
 	CUIDemoPlayControl	();
-	~CUIDemoPlayControl	();
+	virtual ~CUIDemoPlayControl	() override;
 
 	virtual void	Init			();
-	virtual void	SendMessage		(CUIWindow *pWnd, s16 msg, void *pData = NULL);
+	virtual void	SendMessage		(CUIWindow *pWnd, s16 msg, void *pData = NULL) override;
 	//virtual bool	OnMouse			(float x, float y, EUIMessages mouse_action);
 	//virtual bool	OnKeyboard		(int dik, EUIMessages keyboard_action);
-	virtual bool OnKeyboardAction	(int dik, EUIMessages keyboard_action);
-	virtual bool WorkInPause			() const	{return true;}
+	virtual bool OnKeyboardAction	(int dik, EUIMessages keyboard_action) override;
+	virtual bool WorkInPause			() const override {return true;}
 
-	virtual	void		Update			();
+	virtual void		Update			() override;
 	Fvector2 const &	GetLastCursorPos() const	{ return m_last_curr_pos; };
 
 	void			OnRestart		(CUIWindow* w, void* d);
@@ -39,7 +39,7 @@ public:
 	void			OnRewindTypeSelected	(CUIWindow* w, void* d);
 	void			OnRewindPlayerSelected	(CUIWindow* w, void* d);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private:
 	void					StopRewind				();

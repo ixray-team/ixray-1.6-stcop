@@ -11,10 +11,10 @@ protected:
 
 public:
 						CStateMonsterFindEnemy	(_Object *obj);
-	virtual				~CStateMonsterFindEnemy	();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual ~CStateMonsterFindEnemy	() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 
-	virtual	void		reselect_state			();
+	virtual void		reselect_state			() override;
 };
 
 #include "monster_state_find_enemy_inline.h"

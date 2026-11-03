@@ -20,10 +20,10 @@ protected:
 
 public:
 					CUIEncyclopediaArticleWnd		();
-	virtual			~CUIEncyclopediaArticleWnd		();
+virtual ~CUIEncyclopediaArticleWnd		() override;
 			void	Init							(const char* xml_name, const char* start_from);
 			void	SetArticle						(CEncyclopediaArticle*);
 			void	SetArticle						(const char*);
-	virtual	bool	OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual CUIWindow* ui_cast_window				() { return this; }
+virtual bool	OnMouseAction					(float x, float y, EUIMessages mouse_action) override;
+virtual CUIWindow* ui_cast_window				() override { return this; }
 };

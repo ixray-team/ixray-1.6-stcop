@@ -182,7 +182,9 @@ void target_selector::add_actions		()
 	add_operator			(eWorldOperatorLoopholeTargetDefaultBehaviour,		action);
 }
 
+#ifdef LOG_ACTION
 const char*	target_selector::object_name	() const
 {
 	return					("target_selector");
 }
+#endif

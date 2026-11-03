@@ -140,7 +140,7 @@ void ConvertAlphaToNormalMap_4x(NVI_Image* pSrc, float scale, bool wrap)
     CalculateNormalMap(pSrc, kernels, num_kernels, scale, wrap);
 }
 
-static float gloss_power = 0.f;
+static thread_local float gloss_power = 0.f;
 
 IC u32 it_gloss_rev(u32 d, u32 s)
 {

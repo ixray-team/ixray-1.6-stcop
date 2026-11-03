@@ -10,11 +10,11 @@ class CControlThreaten : public CControl_ComCustom<SControlThreatenData> {
 	typedef CControl_ComCustom<SControlThreatenData> inherited;
 
 public:
-	virtual void	reinit					();
-	virtual void	update_schedule			();
-	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*);
-	virtual void	activate				();
-	virtual void	on_release				();
-	virtual bool	check_start_conditions	();
+	virtual void	reinit					() override;
+	virtual void	update_schedule			() override;
+	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*) override;
+	virtual void	activate				() override;
+	virtual void	on_release				() override;
+	virtual bool	check_start_conditions	() override;
 };
 

@@ -134,7 +134,7 @@ public:
 	void						MoveScrollH		( float dx );
 	void 						ActivatePropertiesBox(CUIWindow* w);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 public:
 	CUICustomMap*				m_tgtMap;
@@ -164,13 +164,13 @@ protected:
 
 public:
 								CUIMapWnd				();
-	virtual						~CUIMapWnd				();
+	virtual ~CUIMapWnd				() override;
 
 	virtual void				Init					(const char* xml_name, const char* start_from);
-	virtual void				Show					(bool status);
-	virtual void				Draw					();
-	virtual void				Reset					();
-	virtual void				Update					();
+	virtual void				Show					(bool status) override;
+	virtual void				Draw					() override;
+	virtual void				Reset					() override;
+	virtual void				Update					() override;
 			void				DrawHint				();
 
 		
@@ -196,14 +196,14 @@ public:
 			void				Hint					(const shared_str& text);
 			bool				ApplyMouseWheelZoom		(EUIMessages mouse_action);
 			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
-	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual bool				OnKeyboardAction				(int dik, EUIMessages keyboard_action);
-	virtual bool				OnKeyboardHold			(int dik);
-	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold		(int id);
-	virtual bool				OnGamepadStickAction	(int id, Fvector2 value, EUIMessages gamepad_action);
+	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action) override;
+	virtual bool				OnKeyboardAction				(int dik, EUIMessages keyboard_action) override;
+	virtual bool				OnKeyboardHold			(int dik) override;
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool				OnGamepadKeyHold		(int id) override;
+	virtual bool				OnGamepadStickAction	(int id, Fvector2 value, EUIMessages gamepad_action) override;
 
-	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
 
 	void						SetTargetMap			(CUICustomMap* m, bool bZoomIn = false);
 	void						SetTargetMap			(CUICustomMap* m, const Fvector2& pos, bool bZoomIn = false);

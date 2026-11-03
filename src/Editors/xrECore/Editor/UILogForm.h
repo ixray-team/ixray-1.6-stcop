@@ -10,6 +10,8 @@ public:
 	static void SetActive();
 	static void Hide();
 	static void Update();
+	// The window is not drawn while it returns true: workspaces with their own messages
+	static bool (*HideFunctor)();
 	static void Destroy();
 
 	static void Clear();

@@ -7,6 +7,7 @@
 
 class CLAItem;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CTorch final : public CInventoryItemObject, public IPowerManager
 {
 	using inherited = CInventoryItemObject;
@@ -32,7 +33,7 @@ private:
 
 public:
 	CTorch();
-	virtual	~CTorch();
+	virtual ~CTorch() override;
 
 	virtual void Load(const char* section) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
@@ -42,12 +43,13 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void OnH_A_Chield() override;
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 
-	virtual void	OnMoveToSlot(const SInvItemPlace& prev);
-	virtual void	OnMoveToRuck(const SInvItemPlace& prev);
+	virtual void	OnMoveToSlot(const SInvItemPlace& prev) override;
+	virtual void	OnMoveToRuck(const SInvItemPlace& prev) override;
 	virtual void	UpdateCL() override;
 
 	void Switch();
@@ -59,7 +61,7 @@ public:
 	bool IsSwitched() const { return m_switched_on; }
 
 	//CAttachableItem
-	virtual	void enable(bool value) override;
+	virtual void enable(bool value) override;
 
 	HUD_SOUND_COLLECTION m_sounds;
 
@@ -74,6 +76,7 @@ public:
 	{
 		return (!H_Parent());
 	}
+
 	virtual void create_physic_shell() override;
 	virtual void activate_physic_shell() override;
 	virtual void setup_physic_shell() override;
@@ -81,7 +84,6 @@ public:
 	virtual void afterDetach() override;
 	virtual void renderable_Render() override;
 
-	virtual CTorch* cast_torch() { return this; }
+	virtual CTorch* cast_torch() override { return this; }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

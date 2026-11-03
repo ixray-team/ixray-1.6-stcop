@@ -11,9 +11,9 @@ private:
 	float const& m_fTimeDelta;
 public:
 	CSpectrCameraFirstEye(float const& fTimeDelta, CObject* p, u32 flags = 0);
-	virtual ~CSpectrCameraFirstEye();
+	virtual ~CSpectrCameraFirstEye() override;
 
 	CSpectrCameraFirstEye& operator=(CSpectrCameraFirstEye& copy) = delete;
 
-	virtual void Move(int cmd, float val = 0, float factor = 1.0f);
+	virtual void Move(int cmd, float val = 0, float factor = 1.0f) override;
 };

@@ -75,6 +75,8 @@ void CGroupObject::OnFrame()
 
 bool CGroupObject::LL_AppendObject(CCustomObject* object)
 {
+	// The object moves from its tool into the group
+	g_LevelAutoBackup.Cancel();
 	if (!object->CanAttach())
 	{
 		ELog.Msg(mtError,"Can't attach object: '%s'",object->GetName());
@@ -426,7 +428,7 @@ void CGroupObject::FillProp(const char* pref, PropItemVec& items)
 	{
 		string_path					pk;
 		sprintf						(pk,"%s (%s)",PrepareKey(pref, it->pObject->GetName()).c_str(),it->pObject->FParentTools->ClassDesc());
-		V = PHelper().CreateFlag32	(items, pk, &it->pObject->m_CO_Flags, flObjectInGroupUnique);
+		V = PHelper().CreateFlag	(items, pk, &it->pObject->m_CO_Flags, flObjectInGroupUnique);
 		V->OnChangeEvent.bind		(this,&CCustomObject::OnChangeIngroupUnique);
 	}
 }
@@ -546,8 +548,37 @@ void CGroupObject::GroupObjects(ObjectList& lst)
 		UpdatePivot(0, false);
 }
 
+void CGroupObject::AttachObjects(ObjectList& lst)
+{
+	for (CCustomObject* Obj : lst)
+	{
+		if (Obj == this || Obj->GetOwner() == this)
+			continue;
+
+		if (CGroupObject* Old = smart_cast<CGroupObject*>(Obj->GetOwner()))
+			Old->DetachObject(Obj);
+
+		LL_AppendObject(Obj);
+	}
+
+	if (m_ObjectsInGroup.size())
+		UpdatePivot(0, false);
+}
+
+void CGroupObject::DetachObject(CCustomObject* object)
+{
+	g_LevelAutoBackup.Cancel();
+	ObjectsInGroup::iterator it = std::find(m_ObjectsInGroup.begin(), m_ObjectsInGroup.end(), object);
+	if (it == m_ObjectsInGroup.end())
+		return;
+
+	m_ObjectsInGroup.erase(it);
+	object->OnDetach();
+}
+
 void CGroupObject::UngroupObjects()
 {
+	g_LevelAutoBackup.Cancel();
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
 		it->pObject->OnDetach		();
 

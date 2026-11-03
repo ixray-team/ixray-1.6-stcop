@@ -44,16 +44,16 @@ protected:
 
 public:
 									CObjectHandler			(CAI_Stalker *object);
-	virtual							~CObjectHandler			();
-	virtual	void					Load					(const char* section);
+	virtual ~CObjectHandler			() override;
+	virtual void					Load					(const char* section) override;
 	virtual	void					reinit					(CAI_Stalker *object);
-	virtual	void					reload					(const char* section);
-	virtual bool					net_Spawn				(CSE_Abstract* DC);
+	virtual void					reload					(const char* section) override;
+	virtual bool					net_Spawn				(CSE_Abstract* DC) override;
 	virtual	void					update					();
-	virtual void					OnItemTake				(CInventoryItem *inventory_item);
-	virtual void					OnItemDrop				(CInventoryItem *inventory_item, bool just_before_destroy);
-	virtual	void					attach					(CInventoryItem *inventory_item);
-	virtual	void					detach					(CInventoryItem *inventory_item);
+	virtual void					OnItemTake				(CInventoryItem *inventory_item) override;
+	virtual void					OnItemDrop				(CInventoryItem *inventory_item, bool just_before_destroy) override;
+	virtual void					attach					(CInventoryItem *inventory_item) override;
+	virtual void					detach					(CInventoryItem *inventory_item) override;
 			CInventoryItem			*best_weapon			() const;
 			void					set_goal				(MonsterSpace::EObjectAction object_action, CGameObject *game_object = 0, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300, u32 max_queue_interval = 300);
 			void					set_goal				(MonsterSpace::EObjectAction object_action, CInventoryItem *inventory_item, u32 min_queue_size = -1, u32 max_queue_size = -1, u32 min_queue_interval = 300, u32 max_queue_interval = 300);
@@ -69,7 +69,7 @@ public:
 
 
 public:
-	virtual bool					can_use_dynamic_lights	();
+	virtual bool					can_use_dynamic_lights	() override;
 			void					aim_time				(const CWeapon &weapon, const u32 &aim_time) const;
 			u32						aim_time				(const CWeapon &weapon) const;
 };

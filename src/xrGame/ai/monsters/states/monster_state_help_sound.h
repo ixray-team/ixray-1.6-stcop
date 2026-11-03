@@ -10,15 +10,15 @@ protected:
 
 public:
 					CStateMonsterHearHelpSound	(_Object *obj);
-	virtual			~CStateMonsterHearHelpSound	() = default;
+	virtual ~CStateMonsterHearHelpSound	() override = default;
 
-	virtual void	reselect_state				();
-	virtual void	setup_substates				();
+	virtual void	reselect_state				() override;
+	virtual void	setup_substates				() override;
 
-	virtual bool	check_start_conditions		();
-	virtual bool	check_completion			();
+	virtual bool	check_start_conditions		() override;
+	virtual bool	check_completion			() override;
 
-	virtual void	remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_help_sound_inline.h"

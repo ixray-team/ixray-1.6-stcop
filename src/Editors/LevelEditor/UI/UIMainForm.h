@@ -9,7 +9,7 @@ public:
     virtual void Draw() override;
     virtual void ResetEnd() override;
 
-    void LoadWindowsStates();
+    void OpenSavedWindows();
     bool Frame();
     IC UILeftBarForm* GetLeftBarForm() {return m_LeftBar;}
     IC UITopBarForm* GetTopBarForm() { return m_TopBar; }

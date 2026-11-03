@@ -31,8 +31,8 @@ public:
 
 	void					Destroy				();				//be careful
 
-	virtual void	_BCL	OnFrame				();
-	virtual void			OnRender			();
+	virtual void	_BCL	OnFrame				() override;
+	virtual void			OnRender			() override;
 	CUIWindow*				MainWnd				()				{return m_UIWindow;}
 	bool					IsActive			()				{return !!m_flags.test(etsActive);}
 	bool					Need3DRender		();
@@ -40,24 +40,24 @@ public:
 
 	const char*					m_name;
 	//IInputReceiver
-	virtual void			IR_OnMousePress		(int btn);
-	virtual void			IR_OnMouseRelease	(int btn);
-	virtual void			IR_OnMouseHold		(int btn);
-	virtual void			IR_OnMouseMove		(int x, int y);
-	virtual void			IR_OnMouseStop		(int x, int y);
+	virtual void			IR_OnMousePress		(int btn) override;
+	virtual void			IR_OnMouseRelease	(int btn) override;
+	virtual void			IR_OnMouseHold		(int btn) override;
+	virtual void			IR_OnMouseMove		(int x, int y) override;
+	virtual void			IR_OnMouseStop		(int x, int y) override;
 
-	virtual void			IR_OnKeyboardPress	(int dik);
-	virtual void			IR_OnKeyboardRelease(int dik);
-	virtual void			IR_OnKeyboardHold	(int dik);
+	virtual void			IR_OnKeyboardPress	(int dik) override;
+	virtual void			IR_OnKeyboardRelease(int dik) override;
+	virtual void			IR_OnKeyboardHold	(int dik) override;
 
-	virtual void			IR_GamepadUpdateStick(int id, Fvector2 value);
-	virtual void			IR_GamepadKeyPress	(int id);
-    virtual void			IR_GamepadKeyRelease(int id);
-	virtual void			IR_GamepadKeyHold	(int id);
-	virtual void			IR_OnGyroscopeMove	(Fvector3 value);
+	virtual void			IR_GamepadUpdateStick(int id, Fvector2 value) override;
+	virtual void			IR_GamepadKeyPress	(int id) override;
+	virtual void			IR_GamepadKeyRelease(int id) override;
+	virtual void			IR_GamepadKeyHold	(int id) override;
+	virtual void			IR_OnGyroscopeMove	(Fvector3 value) override;
 
-	virtual void			IR_OnMouseWheel		(int direction)	;
-	virtual void			IR_OnActivate		(void);
+	virtual void			IR_OnMouseWheel		(int direction) override;
+	virtual void			IR_OnActivate		(void) override;
 			bool			Persistent			() {return !!m_flags.test(etsPersistent);}
 			bool			ButtonPress			(int id);
 	xr_delegate<void()>	m_on_destroy_event;
@@ -158,20 +158,20 @@ public:
 	xr_vector<SActionItem>	m_actions;
 public:
 							CUISequenceSimpleItem(CUISequencer* owner):CUISequenceItem(owner){}
-	virtual					~CUISequenceSimpleItem();
-	virtual void			Load				(CUIXml* xml,int idx);
-	
-	virtual void			Start				();
-	virtual bool			Stop				(bool bForce=false);
+	virtual ~CUISequenceSimpleItem() override;
+	virtual void			Load				(CUIXml* xml,int idx) override;
 
-	virtual void			Update				();
-	virtual void			OnRender			();
-	virtual void			OnKeyboardPress		(int dik);
-	virtual void			OnMousePress		(int btn);
+	virtual void			Start				() override;
+	virtual bool			Stop				(bool bForce=false) override;
 
-	virtual bool			IsPlaying			();
+	virtual void			Update				() override;
+	virtual void			OnRender			() override;
+	virtual void			OnKeyboardPress		(int dik) override;
+	virtual void			OnMousePress		(int btn) override;
+
+	virtual bool			IsPlaying			() override;
 protected:
-	virtual float			current_factor		();
+	virtual float			current_factor		() override;
 };
 
 class CUISequenceVideoItem final : public CUISequenceItem
@@ -193,16 +193,16 @@ class CUISequenceVideoItem final : public CUISequenceItem
 	u32						m_sync_time;
 public:
 							CUISequenceVideoItem(CUISequencer* owner);
-	virtual					~CUISequenceVideoItem();
-	virtual void			Load				(CUIXml* xml,int idx);
+	virtual ~CUISequenceVideoItem() override;
+	virtual void			Load				(CUIXml* xml,int idx) override;
 
-	virtual void			Start				();
-	virtual bool			Stop				(bool bForce=false);
+	virtual void			Start				() override;
+	virtual bool			Stop				(bool bForce=false) override;
 
-	virtual void			Update				();
-	virtual void			OnRender			();
-	virtual void			OnKeyboardPress		(int dik){}
-	virtual void			OnMousePress		(int btn){};
+	virtual void			Update				() override;
+	virtual void			OnRender			() override;
+	virtual void			OnKeyboardPress		(int dik) override {}
+	virtual void			OnMousePress		(int btn) override {};
 
-	virtual bool			IsPlaying			();
+	virtual bool			IsPlaying			() override;
 };

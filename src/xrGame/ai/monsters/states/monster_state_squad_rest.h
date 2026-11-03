@@ -12,11 +12,11 @@ protected:
 
 public:
 						CStateMonsterSquadRest		(_Object *obj);
-	virtual				~CStateMonsterSquadRest		();
+	virtual ~CStateMonsterSquadRest		() override;
 
-	virtual void		reselect_state				();
-	virtual void		setup_substates				();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		reselect_state				() override;
+	virtual void		setup_substates				() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_squad_rest_inline.h"

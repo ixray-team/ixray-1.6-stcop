@@ -9,10 +9,10 @@ class IRender_DetailModel;
 class dxThunderboltDescRender : public IThunderboltDescRender
 {
 public:
-	virtual void Copy(IThunderboltDescRender &_in);
+	virtual void Copy(IThunderboltDescRender &_in) override;
 
-	virtual void CreateModel(const char* m_name);
-	virtual void DestroyModel();
+	virtual void CreateModel(const char* m_name) override;
+	virtual void DestroyModel() override;
 //private:
 public:
 	IRender_DetailModel*		l_model;

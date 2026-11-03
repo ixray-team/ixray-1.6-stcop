@@ -10,6 +10,7 @@
 #include "../xrEngine/Render.h"
 #include "anticheat_dumpable_object.h"
 #include "../xrPhysics/DamageSource.h"
+#include "WeaponsModifiers.h"
 
 class CCartridge;
 class CParticlesObject;
@@ -23,7 +24,7 @@ class CShootingObject :
 {
 protected:
 	CShootingObject();
-	virtual ~CShootingObject();
+	virtual ~CShootingObject() override;
 
 	void	reload(const char* section) {};
 	void	Load(const char* section);
@@ -35,6 +36,8 @@ private:
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
 protected:
+	const WeaponModifiers::WpnModifierType* OwnerWeaponModifiers = &WeaponModifiers::DefaultCoefficients;
+	bool UseSinglePlayerHitPower = false;
 
 	enum
 	{
@@ -190,13 +193,14 @@ protected:
 	shared_str m_sFlameSilencerParticles;
 	shared_str m_sFlameGlauncherParticles;
 
+	xr_vector<xr_shared_ptr<CParticlesObject>> ShellParticles;
 	xr_vector<xr_shared_ptr<CParticlesObject>> smoke_particles;
 	xr_vector<xr_shared_ptr<CParticlesObject>> flame_particles;
 
 	ALife::_OBJECT_ID initiator_id;
 
 public:
-	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const;
+	virtual void DumpActiveParams(shared_str const& section_name, CInifile& dst_ini) const override;
 
 	void SetInitiator(ALife::_OBJECT_ID id) override { initiator_id = id; }
 	ALife::_OBJECT_ID Initiator() override { return initiator_id; }

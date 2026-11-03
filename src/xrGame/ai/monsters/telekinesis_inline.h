@@ -114,7 +114,7 @@ void CTelekinesis<_Object>::UpdateSched()
 }
 
 template <typename _Object>
-void CTelekinesis<_Object>::PhDataUpdate(dReal step)
+void CTelekinesis<_Object>::PhDataUpdate(float step)
 {
 	if (!active) return;
 
@@ -129,7 +129,7 @@ void CTelekinesis<_Object>::PhDataUpdate(dReal step)
 
 
 template <typename _Object>
-void  CTelekinesis<_Object>::PhTune(dReal step)
+void  CTelekinesis<_Object>::PhTune(float step)
 {
 	for (u32 i = 0; i < objects.size(); i++) {
 		switch (objects[i].get_state()) {

@@ -9,13 +9,13 @@ class	CStateGroupPanic : public CState<_Object> {
 	
 public:
 						CStateGroupPanic		(_Object *obj);
-	virtual				~CStateGroupPanic		();
+	virtual ~CStateGroupPanic		() override;
 
-	virtual void		initialize				();
-	virtual	void		reselect_state			();
-	virtual void		check_force_state		();
-	virtual void		setup_substates			();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize				() override;
+	virtual void		reselect_state			() override;
+	virtual void		check_force_state		() override;
+	virtual void		setup_substates			() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "group_state_panic_inline.h"

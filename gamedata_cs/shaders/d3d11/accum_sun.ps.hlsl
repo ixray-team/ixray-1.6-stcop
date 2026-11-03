@@ -35,7 +35,7 @@ float4 main(PSInput I) : SV_Target
 		Shadow *= shadow_sun(smap_texcoord, cascade_index);
 	}
 	
-	if(cascade_index >= 2)
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
 	{
 		float3 Factor = smoothstep(0.5f, 0.49f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;
@@ -56,15 +56,25 @@ float4 main(PSInput I) : SV_Target
     float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Specular, O.Roughness);
 #endif
 
-    Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
-	
 #ifdef USE_HUD_SHADOWS
+	// Contact shadows treat back-lit surfaces as occluded by themselves, so keep translucency out of them
 	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS)
 	{
 		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz);
 	}
 #endif
-	
+
+	if (O.MaterialID == FOLIAGE_ID || O.MaterialID == TERRAIN_ID)
+	{
+		Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
+	}
+	else
+	{
+		const float HudSkinTranslucency = 0.35f;
+		float SkinScale = O.Depth < 0.02f ? HudSkinTranslucency : 1.0f;
+		Light += SkinTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal, O.View) * O.SSS * SkinScale * O.Color;
+	}
+
 	Light *= GammaToLinear(Shadow);
 	return float4(Light, 0);
 }

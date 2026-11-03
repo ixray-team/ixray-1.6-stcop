@@ -1,8 +1,15 @@
 #include "stdafx.h"
 #include "UITopBarForm.h"
 #include <shellapi.h>
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 #include "../xrECore/Editor/imgui_EditorEx.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
+#include "../ShaderEditor/UIShaderEditorForm.h"
+#include "Coder/UICoderForm.h"
+#include "../Nodes/UINodesEditorForm.h"
+#include "../ActorEditor/ActorEditor.h"
+#include "../Editor/Scene/LEPhysics.h"
 
 UITopBarForm::UITopBarForm()
 {
@@ -19,7 +26,6 @@ UITopBarForm::UITopBarForm()
 	InitIcons();
 
 	m_VerifySpaceRestrictors = false;
-    m_Simulate               = false;
 }
 
 UITopBarForm::~UITopBarForm() 
@@ -71,7 +77,77 @@ void UITopBarForm::Draw()
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
 		ImGui::PopStyleVar(); // WindowMinSize
-		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		const float ToolbarStartY = ImGui::GetCursorPosY();
+		if (UICoderForm::IsActive())
+		{
+			if (ImGui::BeginTable("##CoderToolbar", 3, ImGuiTableFlags_SizingFixedFit))
+			{
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("CoderUndo", Icons["undo"], "Undo the last edit of the file", ImDrawFlags_RoundCornersLeft, ClickUndo);
+					IMGUI_HINT_BUTTON("CoderRedo", Icons["redo"], "Repeat the last edit of the file", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("CoderReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
+					IMGUI_HINT_BUTTON("CoderSave", Icons["save_level"], "Save the file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
+					if (XRay::ImGui::ToolbarButton("##CoderReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
+					{
+						UICoderForm::RevealInBrowser();
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						ImGui::SetTooltip("Show the file in the Content Browser");
+					}
+					ImGui::SameLine();
+				}
+				if (ImGui::TableNextColumn())
+				{
+					UICoderForm::DrawTopBar(ButtonSize);
+				}
+				ImGui::EndTable();
+			}
+		}
+		else if (UINodesEditorForm::IsActive())
+		{
+			if (ImGui::BeginTable("##NodesToolbar", 4, ImGuiTableFlags_SizingFixedFit))
+			{
+				if (ImGui::TableNextColumn())
+				{
+					UINodesEditorForm::DrawModeSwitch(ButtonSize);
+					ImGui::SameLine();
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("NodesUndo", Icons["undo"], "Undo the last edit of the graph", ImDrawFlags_RoundCornersLeft, ClickUndo);
+					IMGUI_HINT_BUTTON("NodesRedo", Icons["redo"], "Repeat the last edit of the graph", ImDrawFlags_RoundCornersRight, ClickRedo);
+				}
+				if (ImGui::TableNextColumn())
+				{
+					IMGUI_HINT_BUTTON("NodesReload", Icons["open_level"], "Read the file from the disk again", ImDrawFlags_RoundCornersLeft, ClickOpen);
+					IMGUI_HINT_BUTTON("NodesSave", Icons["save_level"], "Save the file (Ctrl+S)", ImDrawFlags_RoundCornersNone, ClickSave);
+					if (XRay::ImGui::ToolbarButton("##NodesReveal", ICON_FA_LOCATION_CROSSHAIRS, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
+					{
+						UINodesEditorForm::RevealInBrowser();
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						ImGui::SetTooltip("Show the file in the Content Browser");
+					}
+					ImGui::SameLine();
+				}
+				if (ImGui::TableNextColumn())
+				{
+					UINodesEditorForm::DrawTopBar(ButtonSize);
+				}
+				ImGui::EndTable();
+			}
+		}
+		else
+		{
+		if (ImGui::BeginTable("##ToolbarTable", 9, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed);
 			ImGui::TableSetupColumn("File");
@@ -82,7 +158,6 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Directory Actions");
 			ImGui::TableSetupColumn("Sound Preferences");
 			ImGui::TableSetupColumn("Physics");
-			ImGui::TableSetupColumn("Preferences");
 
 			auto yMaxSize = ImGui::GetContentRegionAvail().y;
 			if (ImGui::TableNextColumn())
@@ -108,7 +183,22 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
+				CParticleTool* Particles = UIParticleEditorForm::GetActiveTool();
+				if (Particles != nullptr)
+				{
+					// Particles tab: the button plays the edited particle instead of the level
+					auto PlayParticle = [Particles]() { Particles->PlayCurrent(); };
+					auto StopParticle = [Particles]() { Particles->StopCurrent(false); };
+					if (Particles->IsPlaying())
+					{
+						IMGUI_HINT_BUTTON("StopParticle", m_tTerminated, "Stop Particle", ImDrawFlags_RoundCornersLeft, StopParticle);
+					}
+					else
+					{
+						IMGUI_HINT_BUTTON("PlayParticle", Icons["play_in_editor"], "Play Particle", ImDrawFlags_RoundCornersLeft, PlayParticle);
+					}
+				}
+				else if (LTools->IsCompilerRunning() || LTools->IsGameRunning())
 				{
 					IMGUI_HINT_BUTTON("StopPIE", m_tTerminated, "Stop Play in Editor", ImDrawFlags_RoundCornersLeft, ClickTerminated);
 				}
@@ -177,9 +267,23 @@ void UITopBarForm::Draw()
 			{
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
 				
-				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
+				// Actors tab: the button simulates the edited actor instead of the level
+				CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+				bool IsSimulating = Actor != nullptr ? Actor->IsPhysics() : g_scene_physics.Simulating();
+				if (XRay::ImGui::ToolbarButton("PhysSimulation228", ICON_FA_PERSON_FALLING, &IsSimulating, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersLeft))
 				{
-					ExecCommand(COMMAND_SIMULATE, true);
+					if (Actor == nullptr)
+					{
+						ExecCommand(COMMAND_SIMULATE, true);
+					}
+					else if (Actor->IsPhysics())
+					{
+						Actor->PhysicsStopSimulate();
+					}
+					else
+					{
+						Actor->PhysicsSimulate();
+					}
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -188,10 +292,12 @@ void UITopBarForm::Draw()
 				}
 				ImGui::SameLine(0, 0);
 
-				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
+				ImGui::BeginDisabled(Actor != nullptr);
+				if (XRay::ImGui::ToolbarButton("UsePos228", ICON_FA_THUMBTACK, nullptr, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
+				ImGui::EndDisabled();
 
 				if (ImGui::IsItemHovered())
 				{
@@ -200,13 +306,13 @@ void UITopBarForm::Draw()
 				}
 				ImGui::PopStyleColor();
 			}
-
-			if (ImGui::TableNextColumn())
-			{
-				IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
-			}
         }
 		ImGui::EndTable();
+		}
+
+		// Pinned to the right edge in every editor mode
+		ImGui::SetCursorPos({ ImGui::GetWindowContentRegionMax().x - ButtonSize, ToolbarStartY + ToolbarPadding });
+		IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
 	}
 	ImGui::End();
 	ImGui::PopStyleColor(2);
@@ -251,10 +357,64 @@ void UITopBarForm::ClickNew()
 }
 void UITopBarForm::ClickOpen()
 {
+	if (UICoderForm::IsActive())
+	{
+		UICoderForm::Reload();
+		return;
+	}
+
+	if (UINodesEditorForm::IsActive())
+	{
+		UINodesEditorForm::Reload();
+		return;
+	}
+
+	if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+	{
+		Particles->LoadXR();
+		return;
+	}
+
+	if (UIShaderEditorForm::IsActive())
+	{
+		UIShaderEditorForm::ReloadCurrent();
+		return;
+	}
+
 	ExecCommand(COMMAND_LOAD);
 }
 void UITopBarForm::ClickSave()
 {
+	if (UICoderForm::IsActive())
+	{
+		UICoderForm::Save();
+		return;
+	}
+
+	if (UINodesEditorForm::IsActive())
+	{
+		UINodesEditorForm::Save();
+		return;
+	}
+
+	if (UIParticleEditorForm::IsActive())
+	{
+		UIParticleEditorForm::SaveCurrent();
+		return;
+	}
+
+	if (UIShaderEditorForm::IsActive())
+	{
+		UIShaderEditorForm::SaveAll();
+		return;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		Actor->CommandSave(CCommandVar(), CCommandVar());
+		return;
+	}
+
 	ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()));
 }
 void UITopBarForm::ClickReloadConfigs()

@@ -92,7 +92,7 @@ protected:
 	void						PlaySnd						(eActorMenuSndAction a);
 
 								CUIActorMenuBase			();
-	virtual						~CUIActorMenuBase			();
+	virtual ~CUIActorMenuBase			() override;
 	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
 	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
@@ -402,14 +402,14 @@ public:
 	virtual void				UpdateActor					() {}
 
 	void						OnInventoryAction			(PIItem pItem, u16 action_type);
-	virtual void				Update						();
+	virtual void				Update						() override;
 
-	virtual bool				OnMouseAction				(float x, float y, EUIMessages mouse_action);
-	virtual bool				OnKeyboardAction			(int dik, EUIMessages keyboard_action);
-	virtual bool				OnKeyboardHold				(int dik);
-	virtual bool				OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold			(int id);
-	virtual bool				StopAnyMove					();
+	virtual bool				OnMouseAction				(float x, float y, EUIMessages mouse_action) override;
+	virtual bool				OnKeyboardAction			(int dik, EUIMessages keyboard_action) override;
+	virtual bool				OnKeyboardHold				(int dik) override;
+	virtual bool				OnGamepadKeyAction			(int id, EUIMessages gamepad_action) override;
+	virtual bool				OnGamepadKeyHold			(int id) override;
+	virtual bool				StopAnyMove					() override;
 	virtual void				UpdatePrices				() {}
 	void						ReloadGamepadLegend			();
 	bool						NeedToShowInfos				() const { return m_bShowInfoWnds; }

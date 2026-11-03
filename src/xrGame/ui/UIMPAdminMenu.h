@@ -34,15 +34,15 @@ private:
 
 public:
 							CUIMpAdminMenu();
-		virtual				~CUIMpAdminMenu();
+		virtual ~CUIMpAdminMenu() override;
 				void		Init();
-		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-		virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
+		virtual void 		SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
+		virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
 				void		SetActiveSubdialog	(const shared_str& section);
 		void		RemoteAdminLogin(CUIWindow*, void*);
 				void		ShowMessageBox(CUIMessageBox::E_MESSAGEBOX_STYLE style, const char* reason="");
 
-		virtual CUIWindow* ui_cast_window() { return this; }
+		virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 

@@ -29,16 +29,16 @@ public:
 
 public:
 	CGlow();
-	virtual	~CGlow();
+	virtual ~CGlow() override;
 
-	virtual void set_active			(bool);
-	virtual bool get_active			();
-	virtual void set_position		(const Fvector& P);
-	virtual void set_direction		(const Fvector& P);
-	virtual void set_radius			(float			R);
-	virtual void set_texture		(LPCSTR			name);
-	virtual void set_color			(const Fcolor&	C);
-	virtual void set_color			(float r, float g, float b);
+	virtual void set_active			(bool) override;
+	virtual bool get_active			() override;
+	virtual void set_position		(const Fvector& P) override;
+	virtual void set_direction		(const Fvector& P) override;
+	virtual void set_radius			(float			R) override;
+	virtual void set_texture		(LPCSTR			name) override;
+	virtual void set_color			(const Fcolor&	C) override;
+	virtual void set_color			(float r, float g, float b) override;
 	virtual void spatial_move		() override;
 
 	virtual CGlow* dcast_CGlow() override { return this; };

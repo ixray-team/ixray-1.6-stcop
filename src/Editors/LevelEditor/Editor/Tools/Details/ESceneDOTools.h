@@ -83,6 +83,7 @@ protected:
     // controls
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
+	virtual void		OnActivate				();
 public:
     void  		        OnBaseTextureChange(PropValue* prop);
 // render part -----------------------------------------------------------------

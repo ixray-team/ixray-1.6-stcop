@@ -371,9 +371,7 @@ void XrUIManager::Draw()
 	{
 		if (ui->TabIndex < 0 || ui->TabIndex == ActiveTabIndex)
 		{
-			ui->BeginDraw();
 			ui->Draw();
-			ui->EndDraw();
 		}
 	}
 	Rendering = false;
@@ -382,6 +380,8 @@ void XrUIManager::Draw()
 	{
 		ImGui::PopItemFlag();
 	}
+
+	Toasts.Draw();
 
 	ImGui::PopFont();
 	ImGui::PopFont();

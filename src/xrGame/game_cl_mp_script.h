@@ -12,10 +12,10 @@ protected:
 	game_PlayerState*				GetLocalPlayer			(){return local_player;};
 public:
 									game_cl_mp_script		();
-	virtual		bool				CanBeReady				(){return false;};
-	virtual		void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst)	{};
-	virtual		void				shedule_Update			(u32 dt);
-	virtual		game_PlayerState*	createPlayerState(NET_Packet* account_info)		{return inherited::createPlayerState(account_info); };
+	virtual bool				CanBeReady				() override {return false;};
+	virtual void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst) override {};
+	virtual void				shedule_Update			(u32 dt) override;
+	virtual game_PlayerState*	createPlayerState(NET_Packet* account_info) override {return inherited::createPlayerState(account_info); };
 
 				void				EventGen				( NET_Packet* P, u16 type, u16 dest);
 				void				GameEventGen			( NET_Packet* P, u16 dest);

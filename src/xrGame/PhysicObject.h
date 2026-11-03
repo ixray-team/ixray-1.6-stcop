@@ -76,41 +76,41 @@ private:
 public:
 			bool						get_door_vectors				( Fvector& closed, Fvector& open ) const;
 
-			virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-			virtual CPhysicObject*		 cast_physics_object() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CPhysicObject*		 cast_physics_object() override { return this; }
 
 public:
 			CPhysicObject(void);
-	virtual ~CPhysicObject(void);
+	virtual ~CPhysicObject(void) override;
 	//virtual void						make_Interpolation	(); // interpolation from last visible to corrected position/rotation
 	virtual	void						Interpolate();
 			float						interpolate_states(net_update_PItem const & first, net_update_PItem const & last, SPHNetState & current);
 
-	virtual bool						net_Spawn						( CSE_Abstract* DC)																	;
+	virtual bool						net_Spawn						( CSE_Abstract* DC) override;
 	virtual void						CreatePhysicsShell				(CSE_Abstract* e)																;
-	virtual void						net_Destroy						()																				;
-	virtual void						Load							(const char* section)																;
-	virtual void						shedule_Update					(u32 dt)																		;	//
-	virtual void						UpdateCL						()																				;
-	virtual void						net_Save						(NET_Packet& P)																	;
-	virtual	bool						net_SaveRelevant				()																				;
-	virtual bool						UsedAI_Locations				()																				;
-	virtual ICollisionHitCallback		*get_collision_hit_callback		()																				;
-	virtual void						set_collision_hit_callback		(ICollisionHitCallback *cc)														;
-	virtual	bool						is_ai_obstacle					() const;
+	virtual void						net_Destroy						() override;
+	virtual void						Load							(const char* section) override;
+	virtual void						shedule_Update					(u32 dt) override;	//
+	virtual void						UpdateCL						() override;
+	virtual void						net_Save						(NET_Packet& P) override;
+	virtual bool						net_SaveRelevant				() override;
+	virtual bool						UsedAI_Locations				() override;
+	virtual ICollisionHitCallback		*get_collision_hit_callback		() override;
+	virtual void						set_collision_hit_callback		(ICollisionHitCallback *cc) override;
+	virtual bool						is_ai_obstacle					() const override;
 
-	virtual void						net_Export						(NET_Packet& P);
-	virtual void						net_Import						(NET_Packet& P);
+	virtual void						net_Export						(NET_Packet& P) override;
+	virtual void						net_Import						(NET_Packet& P) override;
 
-	virtual void						PH_B_CrPr						();					// actions & operations before physic correction-prediction steps
-	virtual void						PH_I_CrPr						();					// actions & operations after correction before prediction steps
-	virtual void						PH_A_CrPr						();					// actions & operations after phisic correction-prediction steps
+	virtual void						PH_B_CrPr						() override;					// actions & operations before physic correction-prediction steps
+	virtual void						PH_I_CrPr						() override;					// actions & operations after correction before prediction steps
+	virtual void						PH_A_CrPr						() override;					// actions & operations after phisic correction-prediction steps
 protected:
-	virtual void						SpawnInitPhysics				(CSE_Abstract	*D)																;
+	virtual void						SpawnInitPhysics				(CSE_Abstract	*D) override;
 	virtual void						RunStartupAnim					(CSE_Abstract	*D)																;
-	virtual CPhysicsShellHolder			*PPhysicsShellHolder			()													{return PhysicsShellHolder();}
-	virtual CPHSkeleton					*PHSkeleton						()																	{return this;}
-	virtual	void						InitServerObject				(CSE_Abstract	*po)															;
+	virtual CPhysicsShellHolder			*PPhysicsShellHolder			() override {return PhysicsShellHolder();}
+	virtual CPHSkeleton					*PHSkeleton						() override {return this;}
+	virtual void						InitServerObject				(CSE_Abstract	*po) override;
 	virtual void						PHObjectPositionUpdate			()																				;
 
 	void								net_Export_PH_Params			(NET_Packet& P, SPHNetState& State, mask_num_items&	num_items);

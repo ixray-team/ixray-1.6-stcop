@@ -1,16 +1,26 @@
 #include "stdafx.h"
-#include "xrMemory_align.h"
+#ifdef IXRAY_USE_MIMALLOC
+#include "memory_alloc_mimalloc.h"
+#else
+#include "memory_alloc_pure.h"
+#endif
+
+namespace MemoryAllocators
+{
+static IMemoryAllocator& Get()
+{
+#ifdef IXRAY_USE_MIMALLOC
+	return *CMemAllocMimalloc::Create();
+#else
+	return *CMemAllocPure::Create();
+#endif
+}
+}
 
 void* xrMemory::mem_alloc(size_t size)
 {
 	stat_calls++;
-	if (pAlloc == nullptr)
-	{
-		auto ptr = malloc(size);
-		PROF_MEM_ALLOC_CAPTURE(ptr, size);
-    	return ptr;
-	}
-	auto ptr = pAlloc->alloc(size);
+	auto ptr = MemoryAllocators::Get().alloc(size);
 	PROF_MEM_ALLOC_CAPTURE(ptr, size);
 	return ptr;
 }
@@ -19,25 +29,14 @@ void xrMemory::mem_free(void* P)
 {
 	stat_calls++;
 	PROF_MEM_FREE_CAPTURE(P);
-	if (pAlloc == nullptr)
-	{
-		free(P);
-		return;
-	}
-	return pAlloc->free(P);
+	MemoryAllocators::Get().free(P);
 }
 
 void* xrMemory::mem_realloc(void* P, size_t size)
 {
 	stat_calls++;
 	PROF_MEM_FREE_CAPTURE(P);
-	if (pAlloc == nullptr)
-	{
-		auto ptr = realloc(P, size);
-		PROF_MEM_ALLOC_CAPTURE(ptr, size);
-		return ptr;
-	}
-	auto ptr = pAlloc->realloc(P, size);
+	auto ptr = MemoryAllocators::Get().realloc(P, size);
 	PROF_MEM_ALLOC_CAPTURE(ptr, size);
 	return ptr;
 }

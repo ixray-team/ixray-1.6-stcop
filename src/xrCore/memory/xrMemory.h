@@ -1,4 +1,5 @@
 #pragma once
+#include <new>
 #include "xrMemory_pso.h"
 
 class IMemoryAllocator
@@ -10,7 +11,6 @@ public:
 };
 
 class XRCORE_API xrMemory {
-	IMemoryAllocator* pAlloc = nullptr;
 public:
 	xrMemory			();
 	void				_initialize		();
@@ -55,6 +55,13 @@ IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);			
 IC void		operator delete		(void *p)			{	xr_free(p);											}
 IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
 IC void		operator delete[]	(void* p)			{	xr_free(p);											}
+
+IC void operator delete(void* P, size_t) noexcept { Memory.mem_free(P); }
+IC void operator delete[](void* P, size_t) noexcept { Memory.mem_free(P); }
+IC void* operator new(size_t Size, const std::nothrow_t&) noexcept { return Memory.mem_alloc(Size ? Size : 1); }
+IC void* operator new[](size_t Size, const std::nothrow_t&) noexcept { return Memory.mem_alloc(Size ? Size : 1); }
+IC void operator delete(void* P, const std::nothrow_t&) noexcept { Memory.mem_free(P); }
+IC void operator delete[](void* P, const std::nothrow_t&) noexcept { Memory.mem_free(P); }
 
 
 // POOL-ing

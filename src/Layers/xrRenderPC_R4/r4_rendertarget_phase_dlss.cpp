@@ -34,7 +34,7 @@ bool CRenderTarget::phase_dlss()
 	dlssParams.depthbufferResource = (ID3D11Texture2D*)rt_Position->pSurface->GetRawTexture();
 
 	dlssParams.exposureResource = nullptr;
-	dlssParams.reactiveMapResource = nullptr;
+	dlssParams.reactiveMapResource = (ID3D11Texture2D*)ReactiveMask->pSurface->GetRawTexture();
 	dlssParams.transparencyAndCompositionResource = nullptr;
 
 	dlssParams.resolvedColorResource = (ID3D11Texture2D*)rt_Generic->pSurface->GetRawTexture();
@@ -42,12 +42,22 @@ bool CRenderTarget::phase_dlss()
 	dlssParams.renderWidth = (int)RCache.get_width();
 	dlssParams.renderHeight = (int)RCache.get_height();
 
-	dlssParams.cameraReset = Device.IsEditorMode() && GEditorDraw.UpscalerReset;
+	static Fvector PrevCameraPos = {};
+	static Fvector PrevCameraDir = {};
+	static u32 PrevFrame = 0;
+
+	bool CameraCut = (Device.dwFrame != PrevFrame + 1)
+		|| (PrevCameraPos.distance_to_sqr(Device.vCameraPosition) > 5.f * 5.f)
+		|| (PrevCameraDir.dotproduct(Device.vCameraDirection) < 0.5f);
+
+	PrevCameraPos.set(Device.vCameraPosition);
+	PrevCameraDir.set(Device.vCameraDirection);
+	PrevFrame = Device.dwFrame;
+
+	dlssParams.cameraReset = Device.IsEditorMode() ? GEditorDraw.UpscalerReset : CameraCut;
 
 	dlssParams.cameraJitterX = ps_r_taa_jitter_full.x;
 	dlssParams.cameraJitterY = ps_r_taa_jitter_full.y;
-
-	dlssParams.sharpness = 0.0f;
 
 	dlssParams.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 

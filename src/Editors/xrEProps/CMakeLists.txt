@@ -4,12 +4,8 @@ project(xrEProps)
 file(GLOB_RECURSE EPROPS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
 )
-file(GLOB_RECURSE EPROPS_SOURCE_NODE_FILES CONFIGURE_DEPENDS
-    "NodeBuilder/*.*"
-)
 file(GLOB_RECURSE EPROPS_SOURCE_PUBLIC_FILES CONFIGURE_DEPENDS
     "../Public/PropertiesListTypes.h"
-    "../Public/PropertiesListHelper.h"
     "../Public/xrEProps.h"
     "../Public/ItemListTypes.h"
 )
@@ -17,7 +13,6 @@ file(GLOB_RECURSE EPROPS_SOURCE_PUBLIC_FILES CONFIGURE_DEPENDS
 set(EPROPS_SRC_FILES)
 
 source_group("src" FILES ${EPROPS_SOURCE_ALL_FILES})
-source_group("nodes" FILES ${EPROPS_SOURCE_NODE_FILES})
 source_group("public" FILES ${EPROPS_SOURCE_PUBLIC_FILES})
 
 # Apply list
@@ -36,13 +31,11 @@ target_precompile_headers(xrEProps PRIVATE "stdafx.h")
 target_compile_definitions(xrEProps PRIVATE XREPROPS_EXPORTS)
 target_compile_definitions(xrEProps PRIVATE _WINDOWS)
 target_compile_definitions(xrEProps PRIVATE _EDITOR)
-target_compile_definitions(xrEProps PUBLIC XR_EDITOR_NEW)
 
 target_compile_definitions(xrEProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrEProps PUBLIC xrEUI)
-target_link_libraries(xrEProps PUBLIC xrRHI)
+target_link_libraries(xrEProps PUBLIC xrCore)
 
 # Move precompiled header
 set_target_properties(xrEProps PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

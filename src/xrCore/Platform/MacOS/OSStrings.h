@@ -127,12 +127,12 @@ inline errno_t strncpy_s(char * dest, const char * src, size_t count)
     if (!dest || !src)
         return EINVAL;
 
-    if (count == 0)
-        return ERANGE;
-
+    // MSVC's three-argument form copies at most `count` characters and always
+    // null-terminates. Copying count-1 truncates callers that pass an exact
+    // character count (e.g. "QUICK_USE_1" -> "QUICK_USE_", "USE" -> "US").
     size_t len = strlen(src);
-    if (len >= count)
-        len = count - 1;
+    if (len > count)
+        len = count;
 
     memcpy(dest, src, len);
     dest[len] = '\0';
@@ -157,24 +157,21 @@ inline int strncpy_s(char * dest, size_t dst_size, const char * source, size_t n
         return EINVAL;
     }
 
-    size_t i, end;
+    size_t end;
     if(num < dst_size)
         end = num;
     else
         end = dst_size - 1;
 
-    for(i = 0; i < end && source[i]; i++)
+    // Read the source only up to the copy limit: the caller may hand us a buffer that is
+    // not NUL-terminated within num bytes, and peeking at source[end] reads past it.
+    size_t i = 0;
+    for (; i < end && source[i]; i++)
         dest[i] = source[i];
 
-    if(!source[i] || end == num)
-    {
-        dest[i] = '\0';
-        return 0;
-    }
+    dest[i] = '\0';
 
-    dest[0] = '\0';
-
-    return EINVAL;
+    return 0;
 }
 
 inline int strcat_s(char * dest, size_t num, const char * source)

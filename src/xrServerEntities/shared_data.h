@@ -49,7 +49,9 @@ template<class SHARED_TYPE, class KEY_TYPE> class CSharedObj : public CSingleton
 
 public:
 				CSharedObj	() = default;
-	virtual		~CSharedObj	() {
+
+	virtual ~CSharedObj	() override
+	{
 		for (SHARED_DATA_MAP_IT it = _shared_tab.begin(); it != _shared_tab.end(); ++it){
 			xr_delete(it->second);
 		}

@@ -3,6 +3,7 @@
 
 class CUIArtefactDetectorSimple;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CSimpleDetector final : public CCustomDetector
 {
 	using inherited = CCustomDetector;
@@ -10,8 +11,8 @@ public:
 	CSimpleDetector();
 	~CSimpleDetector() override = default;
 
-	virtual CCustomDetector* cast_custom_detector() { return this; }
-	virtual CCustomDevice* cast_custom_device() { return this; }
+	virtual CCustomDetector* cast_custom_detector() override { return this; }
+	virtual CCustomDevice* cast_custom_device() override { return this; }
 
 protected:
 	void UpdateAf() override;

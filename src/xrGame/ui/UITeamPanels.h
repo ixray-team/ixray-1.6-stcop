@@ -26,8 +26,8 @@ private:
 	void InitAllTeams(shared_str const & team_node);
 public:
 	UITeamPanels();
-	virtual ~UITeamPanels();
-	virtual void Update();
+	virtual ~UITeamPanels() override;
+	virtual void Update() override;
 	
 	void Init(const char* xmlName, const char* panelsRootNode);
 	
@@ -39,7 +39,7 @@ public:
 
 	void SetArtefactsCount(s32 greenTeamArtC, s32 blueTeamArtC);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };
 
 #endif

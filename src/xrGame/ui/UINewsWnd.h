@@ -12,15 +12,15 @@ class CUINewsWnd: public CUIWindow
 	Flags16			m_flags;
 public:
 					CUINewsWnd	();
-	virtual			~CUINewsWnd	();
+	virtual ~CUINewsWnd	() override;
 
 			void	Init		();
 			void	Init		(const char* xml_name, const char* start_from);
 	void			AddNews		();
-	virtual void	Show		(bool status);
-	virtual void	Update		();
-	virtual bool	OnGamepadKeyAction(int id, EUIMessages gamepad_action);
-	virtual bool	OnGamepadKeyHold(int id);
+	virtual void	Show		(bool status) override;
+	virtual void	Update		() override;
+	virtual bool	OnGamepadKeyAction(int id, EUIMessages gamepad_action) override;
+	virtual bool	OnGamepadKeyHold(int id) override;
 
 	CUIScrollView*	UIScrollWnd;
 	CUIXml			NewsXML;

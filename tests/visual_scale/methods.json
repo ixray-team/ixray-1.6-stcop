@@ -44,7 +44,7 @@
     "float CControlJump::get_min_distance"
   ],
   [
-    "src/xrPhysics/PHSimpleCharacter.cpp",
+    "src/xrPhysics/ODE/PHSimpleCharacter.cpp",
     "void CPHSimpleCharacter::SetBox("
   ],
   [

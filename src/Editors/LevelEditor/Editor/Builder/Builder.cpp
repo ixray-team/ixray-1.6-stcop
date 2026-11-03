@@ -17,16 +17,14 @@ ICF static void simple_hemi_callback(float x, float y, float z, float E, LPVOID 
 SceneBuilder::SceneBuilder()
 {
 	m_iDefaultSectorNum = 0;
-	l_scene_stat		= 0;
-	l_verts				= 0;
-	l_faces				= 0;
-	l_smgroups			= 0;
-	l_vert_cnt			= 0;
-	l_face_cnt 			= 0;
-	l_vert_it	 		= 0;
-	l_face_it			= 0;
-	object_for_render	= 0;
-	m_save_as_object	= false;
+	l_scene_stat = nullptr;
+	l_verts = {};
+	l_faces = {};
+	l_smgroups = {};
+	l_vert_it = 0;
+	l_face_it = 0;
+	object_for_render = nullptr;
+	m_save_as_object = false;
 }
 
 SceneBuilder::~SceneBuilder()
@@ -42,6 +40,9 @@ SceneBuilder::~SceneBuilder()
 
 bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	if(m_save_as_object)
 	{
 		EvictResource	();
@@ -247,6 +248,9 @@ bool SceneBuilder::MakePlanars()
 
 bool SceneBuilder::MakeAIMap(bool Legacy)
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text;
 	do
 	{
@@ -271,6 +275,9 @@ bool SceneBuilder::MakeAIMap(bool Legacy)
 
 bool SceneBuilder::MakeDetails()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	EContext.UI->BeginEState(esBuildLevel);
 
 	xr_string error_text;
@@ -294,6 +301,9 @@ bool SceneBuilder::MakeDetails()
 
 bool SceneBuilder::MakeHOM()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text = "";
 	EContext.UI->ResetBreak();
 	ELog.Msg(mtInformation, "Making started...");
@@ -333,6 +343,9 @@ bool SceneBuilder::MakeHOM()
 
 bool SceneBuilder::MakeSOM()
 {
+	// Streamed out objects have no geometry
+	GWorldPartition.StreamInAll();
+
 	xr_string error_text = "";
 	EContext.UI->ResetBreak();
 	ELog.Msg(mtInformation, "Making started...");

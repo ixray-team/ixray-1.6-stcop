@@ -51,7 +51,7 @@ public:
 	// Trader Specific
 	///////////////////////////////////////////////////////////////////////////////////
 	IC				CScriptSoundAction	(const char* caSoundToPlay, const char* caBoneName, MonsterSpace::EMonsterHeadAnimType head_anim_type);
-	virtual			~CScriptSoundAction	();
+	virtual ~CScriptSoundAction	() override;
 			void	SetSound			(const char* caSoundToPlay);
 	IC		void	SetSound			(const CScriptSound &sound);
 	IC		void	SetPosition			(const Fvector &tPosition);

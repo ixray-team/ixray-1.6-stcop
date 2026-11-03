@@ -327,7 +327,7 @@ void ESoundSource::FillProp(const char* pref, PropItemVec& values)
 	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Pause delta\\Hint"),	"Zero - play sound looped.");
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Pause delta\\From"),	&m_RandomPause.x);
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Pause delta\\To"),	&m_RandomPause.y);
-//	V=PHelper().CreateFlag32		(values,PHelper().PrepareKey(pref,"Looped"),	&m_Flags,				flLooped);
+//	V=PHelper().CreateFlag		(values,PHelper().PrepareKey(pref,"Looped"),	&m_Flags,				flLooped);
 //    V->OnChangeEvent			= OnChangeSource;
 }
 

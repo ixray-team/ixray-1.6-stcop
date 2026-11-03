@@ -1,4 +1,4 @@
-#include "common_iostructs.hlsli"
+#include "common.hlsli"
 
 
 // Vertex

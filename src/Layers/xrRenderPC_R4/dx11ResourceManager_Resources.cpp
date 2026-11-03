@@ -480,18 +480,22 @@ SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
 {
 	xrCriticalSectionGuard guard(creationGuard);
 	// Search equal code
+	const size_t DclSize = GetDeclLength(dcl) + 1;
 	for (u32 it=0; it<v_declarations.size(); it++)
 	{
-		SDeclaration*		D		= v_declarations[it];;
-		if (dcl_equal(dcl,&*D->dcl_code.begin()))	return D;
+		SDeclaration*		D		= v_declarations[it];
+		// Compare against the stored copy by its own length: walking it for a 0xFF
+		// terminator reads past the vector when the declaration was stored elsewhere.
+		if (D->dcl_code.size() == DclSize &&
+		    0 == memcmp(dcl, D->dcl_code.data(), DclSize * sizeof(D3DVERTEXELEMENT9)))
+			return D;
 	}
 
 	// Create _new
 	SDeclaration* D			= new SDeclaration();
-	u32 dcl_size = (u32)GetDeclLength(dcl) + 1;
 	//	Don't need it for DirectX 10 here
 	//CHK_DX					(RDevice->CreateVertexDeclaration(dcl,&D->dcl));
-	D->dcl_code.assign		(dcl,dcl+dcl_size);
+	D->dcl_code.assign		(dcl,dcl+DclSize);
 	dx10BufferUtils::ConvertVertexDeclaration(D->dcl_code, D->dx10_dcl_code);
 	D->dx10_dcl_code_pristine = D->dx10_dcl_code;
 	D->dwFlags				|= xr_resource_flagged::RF_REGISTERED;

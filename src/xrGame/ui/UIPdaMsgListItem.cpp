@@ -5,8 +5,7 @@
 
 void CUIPdaMsgListItem::SetFont(CGameFont* pFont)
 {
-	if (&UITimeText)
-		UITimeText.SetFont		(pFont);
+	UITimeText.SetFont			(pFont);
 	if (UICaptionText)
 		UICaptionText->SetFont	(pFont);
 	UIMsgText.SetFont		(pFont);

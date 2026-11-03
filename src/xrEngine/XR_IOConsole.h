@@ -137,8 +137,8 @@ public:
 	void AddLogEntry(const char* line);
 	void ClearLog();
 
-	virtual void OnRender();
-	virtual void _BCL OnFrame();
+	virtual void OnRender() override;
+	virtual void _BCL OnFrame() override;
 
 	void AddCommand(IConsole_Command* cc);
 	void RemoveCommand(IConsole_Command* cc);

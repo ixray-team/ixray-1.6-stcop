@@ -1,0 +1,645 @@
+#include "stdafx.h"
+#include "UIPropertiesForm.h"
+#include "../../HintInput.h"
+#include "../xrEUI/IconsFontAwesome7.h"
+
+UIPropertiesForm::UIPropertiesForm() :
+	m_Root("", this), SearchRoot("", this)
+{
+	m_bModified = false;
+	m_EditChooseValue = nullptr;
+	m_EditShortcutValue = nullptr;
+	m_EditTextureValue = nullptr;
+	m_EditTextValueData = nullptr;
+	m_Flags.zero();
+}
+
+UIPropertiesForm::~UIPropertiesForm()
+{
+	xr_free(m_EditTextValueData);
+	ClearProperties();
+}
+
+void UIPropertiesForm::UpdateCallbacks()
+{
+	bool HasResult = false;
+
+	if (m_EditChooseValue)
+	{
+		shared_str result;
+		if (UIChooseForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (m_EditChooseValue->AfterEdit<ChooseValue, shared_str>(result))
+				{
+					if (m_EditChooseValue->ApplyValue<ChooseValue, shared_str>(result))
+					{
+						Modified();
+					}
+				}
+			}
+
+			m_EditChooseValue = nullptr;
+		}
+
+		UIChooseForm::Update();
+	}
+
+	if (m_EditTextureValue)
+	{
+		shared_str result;
+		if (UIChooseForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (result.c_str() == nullptr)
+				{
+					xr_string result_as_str = "$null";
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+					{
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
+						{
+							Modified();
+						}
+					}
+				}
+				else
+				{
+					xr_string result_as_str = result.c_str();
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+					{
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
+						{
+							Modified();
+						}
+					}
+				}
+			}
+
+			m_EditTextureValue = nullptr;
+		}
+		UIChooseForm::Update();
+	}
+
+	if (m_EditShortcutValue)
+	{
+		xr_shortcut result;
+		if (UIKeyPressForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (m_EditShortcutValue->AfterEdit<ShortcutValue, xr_shortcut>(result))
+				{
+					if (m_EditShortcutValue->ApplyValue<ShortcutValue, xr_shortcut>(result))
+					{
+						Modified();
+					}
+				}
+			}
+			m_EditShortcutValue = nullptr;
+		}
+	}
+
+}
+void UIPropertiesForm::Draw()
+{
+	if (!bAsyncUpdated)
+	{
+		return;
+	}
+
+	DrawComplete = false;
+	
+	UpdateCallbacks();
+
+	const float BorderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+	const float Padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
+	const float ButtonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
+	const float Icon			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 0.7f;
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { BorderSize, BorderSize });
+	if (!IsSearchDisabled)
+	{
+		const size_t TableRowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - TableRowHeight);
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { ButtonPaddingX, Padding });
+		string32 FindStr = {};
+		xr_strcpy(FindStr, m_SearchText.c_str());
+
+		if (ImGui::InputTextWithHint("##search", "Search...", FindStr, sizeof(FindStr)))
+		{
+			m_SearchText = FindStr;
+			SearchRoot.Items.clear();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_GEAR))
+		{
+			ImGui::OpenPopup("MenuEdit");
+		}
+
+		if (ImGui::BeginPopup("MenuEdit"))
+		{
+			if (ImGui::MenuItem("Collapse All"))
+			{
+				m_Root.SetOpenRecursive(false);
+				SearchRoot.SetOpenRecursive(false);
+			}
+
+			if (ImGui::MenuItem("Expand All"))
+			{
+				m_Root.SetOpenRecursive(true);
+				SearchRoot.SetOpenRecursive(true);
+			}
+
+			ImGui::EndPopup();
+		}
+
+		if (GUIManager->SearchIcon)
+		{
+			ImVec2 IconSize = { Icon, Icon };
+
+			ImGui::SameLine();
+			ImVec2 CursorPos = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(ImVec2(CursorPos.x - IconSize.x - BorderSize - Padding - TableRowHeight, CursorPos.y + (TableRowHeight - Icon) / 2.f));
+
+			ImGui::Image(GUIManager->SearchIcon, IconSize);
+		}
+
+		IsSearchActive = !m_SearchText.empty();
+
+		ImGui::PopStyleVar(2);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
+		ImGui::BeginChild("##Scroll");
+		ImGui::BeginChild("##Content", { -2.f, 0.f }, ImGuiChildFlags_AutoResizeY);
+	}
+
+	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_BordersInner | ImGuiTableFlags_Resizable;
+	ImGuiTableFlags Flags = DefFlags | (IsFitMode ? ImGuiTableFlags_SizingFixedFit : ImGuiTableFlags_Resizable);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, ImGui::GetStyle().CellPadding.y));
+
+	if (ImGui::BeginTable("props", 2, Flags))
+	{
+		ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
+		ImGui::TableSetupColumn(" Prop", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableHeadersRow();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH), 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+
+		if (IsSearchActive)
+		{
+			DrawFilteredProperties();
+		}
+		else
+		{
+			m_Root.DrawRoot();
+		}
+
+		ImGui::PopStyleVar(3);
+
+		ImGui::EndTable();
+	}
+
+	ImGui::PopStyleVar();
+	if (!IsSearchDisabled)
+	{
+		ImGui::EndChild();
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+	}
+	ImGui::PopStyleVar();
+
+	DrawComplete = true;
+}
+
+void UIPropertiesForm::ResetEnd()
+{
+}
+
+void UIPropertiesForm::AssignItemsAsync(PropItemVec items)
+{
+	bAsyncUpdated = false;
+
+	m_Items = items;
+	for (PropItem* PItem : items)
+	{
+		PItem->m_Owner = this;
+		UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.AppendItem(PItem->Key()));
+		VERIFY(Item);
+		Item->PItem = PItem;
+		Item->IsTexture = PItem->IsTextureItem;
+	}
+
+	bAsyncUpdated = true;
+}
+
+void UIPropertiesForm::AssignItems(PropItemVec& items)
+{
+	if (!bAsyncUpdated)
+		return;
+
+	m_Items = items;
+
+	m_SearchText = "";
+	m_SearchText.clear();
+
+	for (PropItem* PItem : items)
+	{
+		PItem->m_Owner = this;
+		UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.AppendItem(PItem->Key()));
+		VERIFY(Item);
+		Item->PItem = PItem;
+		Item->IsTexture = PItem->IsTextureItem;
+	}
+}
+
+PropItem* UIPropertiesForm::FindItemOfName(shared_str name)
+{
+	for (PropItem* I : m_Items)
+	{
+		const char* key = I->Key();
+		if (strrchr(key, '\\'))
+		{
+			key = strrchr(key, '\\') + 1;
+		}
+		if (name == key)
+		{
+			return I;
+		}
+	}
+	return nullptr;
+}
+
+void UIPropertiesForm::ClearProperties()
+{
+	VERIFY(!m_EditChooseValue);
+	for (PropItem* I : m_Items)
+	{
+		xr_delete(I);
+	}
+	m_Root = UIPropertiesItem("",this);
+	m_Items.clear();
+
+	m_SearchText = "";
+	m_SearchText.clear();
+}
+
+PropItem* UIPropertiesForm::FindItem(const char* name)
+{
+	UIPropertiesItem*Item = static_cast<UIPropertiesItem *>( m_Root.FindItem(name));
+	if (Item)
+	{
+		return Item->PItem;
+	}
+	return nullptr;
+}
+
+UIPropertiesItem* UIPropertiesForm::FindPropItem(const char* path)
+{
+	UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.FindItem(path));
+	if (Item)
+	{
+		return Item;
+	}
+	return nullptr;
+}
+
+void UIPropertiesForm::DrawEditText()
+{
+	if (ImGui::BeginPopupContextItem("EditText", 0))
+	{
+		if (m_EditTextValueData && ImGui::IsWindowAppearing())
+		{
+			m_EditTextEditor.SetText(IsUTF8(m_EditTextValueData) ? xr_string(m_EditTextValueData) : xr_string(Platform::ANSI_TO_UTF8(m_EditTextValueData).c_str()));
+		}
+
+		ImGui::BeginGroup();
+		if (ImGui::Button(ICON_FA_CHECK " OK") || (!m_EditTextEditor.IsHintsOpen() && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Enter)))
+		{
+			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
+			if (V1)
+			{
+				xr_string out = m_EditTextValueData;
+				if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
+				{
+					if (m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
+					{
+						xr_free(m_EditTextValueData);
+						Modified();
+						ImGui::CloseCurrentPopup();
+					}
+				}
+			}
+			else
+			{
+				RTextValue* V2 = dynamic_cast<RTextValue*>(m_EditTextValue->GetFrontValue());
+				if (V2)
+				{
+					shared_str out = !IsUTF8(m_EditTextValueData) ? m_EditTextValueData : Platform::UTF8_to_CP1251(m_EditTextValueData).data();
+					if (m_EditTextValue->AfterEdit<RTextValue, shared_str>(out))
+					{
+						if (m_EditTextValue->ApplyValue<RTextValue, shared_str>(out))
+						{
+							xr_free(m_EditTextValueData);
+							Modified();
+							ImGui::CloseCurrentPopup();
+						}
+						else
+						{
+							ImGui::CloseCurrentPopup();
+						}
+					}
+				}
+				else
+				{
+					STextValue* V3 = dynamic_cast<STextValue*>(m_EditTextValue->GetFrontValue());
+					if (V3)
+					{
+						xr_string out = m_EditTextValueData;
+						if (m_EditTextValue->AfterEdit<STextValue, xr_string>(out))
+						{
+							if (m_EditTextValue->ApplyValue<STextValue, xr_string>(out))
+							{
+								xr_free(m_EditTextValueData);
+								Modified();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+					}
+					else
+					{
+						VERIFY(false);
+					}
+				}
+			}
+		}
+		ImGui::SameLine(0);
+
+		if (ImGui::Button(ICON_FA_XMARK " Cancel"))
+		{
+			xr_free(m_EditTextValueData);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine(0);
+
+		if (ImGui::Button(ICON_FA_FLOPPY_DISK " Apply"))
+		{
+			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
+			if (V1)
+			{
+				xr_string out = m_EditTextValueData;
+				if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
+				{
+					if (m_EditTextValue->ApplyValue<CTextValue, const char*>(out.c_str()))
+					{
+						Modified();
+					}
+				}
+			}
+			else
+			{
+				RTextValue* V2 = dynamic_cast<RTextValue*>(m_EditTextValue->GetFrontValue());
+				if (V2)
+				{
+					shared_str out = m_EditTextValueData;
+					if (m_EditTextValue->AfterEdit<RTextValue, shared_str>(out))
+					{
+						if (m_EditTextValue->ApplyValue<RTextValue, shared_str>(out))
+						{
+							Modified();
+						}
+					}
+				}
+				else
+				{
+					STextValue* V3 = dynamic_cast<STextValue*>(m_EditTextValue->GetFrontValue());
+					if (V3)
+					{
+						xr_string out = m_EditTextValueData;
+						if (m_EditTextValue->AfterEdit<STextValue, xr_string>(out))
+						{
+							if (m_EditTextValue->ApplyValue<STextValue, xr_string>(out))
+							{
+								Modified();
+							}
+						}
+					}
+					else
+					{
+						VERIFY(false);
+					}
+				}
+			}
+		}
+		ImGui::SameLine();
+		ImGui::TextDisabled("|");
+		ImGui::SameLine();
+
+		if (ImGui::Button(ICON_FA_FOLDER_OPEN))
+		{
+			xr_string fn;
+			if (EFS.GetOpenName("$import$", fn, false, NULL, 2)) 
+			{
+				xr_string buf;
+				FS.TryLoad(fn);
+				IReader* F = FS.r_open(fn.c_str());
+
+				F->r_stringZ(buf);
+				xr_free(m_EditTextValueData);
+				m_EditTextValueData = xr_strdup(buf.c_str());
+				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData)+1;
+				FS.r_close(F);
+				m_EditTextEditor.SetText(IsUTF8(m_EditTextValueData) ? xr_string(m_EditTextValueData) : xr_string(Platform::ANSI_TO_UTF8(m_EditTextValueData).c_str()));
+			}
+		}
+		
+		ImGui::SetItemTooltip("Load the text from a file");
+		ImGui::SameLine(0);
+		if (ImGui::Button(ICON_FA_FILE_EXPORT))
+		{
+			xr_string fn;
+			if (EFS.GetSaveName("$import$", fn, NULL, 2))
+			{
+				CMemoryWriter F;
+				F.w_stringZ(m_EditTextValueData);
+				if (!F.save_to(fn.c_str()))
+					Msg("!Can't save text file: %s", fn.c_str());
+			}
+		}
+		
+		ImGui::SetItemTooltip("Save the text to a file");
+		ImGui::SameLine(0);
+		if (ImGui::Button(ICON_FA_ERASER) && m_EditTextValueData)
+		{
+			m_EditTextValueData[0] = 0;
+			m_EditTextEditor.SetText(xr_string());
+		}
+		ImGui::SetItemTooltip("Clear");
+		ImGui::EndGroup();
+
+		if (m_EditTextValueData)
+		{
+			PropValue* Front = m_EditTextValue->GetFrontValue();
+			const TOnHintEvent Hints = Front != nullptr ? Front->OnHintEvent : TOnHintEvent();
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImGui::GetStyle().FramePadding);
+			if (m_EditTextEditor.Render("##text", { 560.0f, 260.0f }, Hints))
+			{
+				// The values keep the text in the code page of the game
+				xr_free(m_EditTextValueData);
+				m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(m_EditTextEditor.GetText().c_str()).c_str());
+				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData) + 1;
+			}
+			ImGui::PopStyleVar();
+			ImGui::TextDisabled(Hints.empty() ? "Ctrl+Enter: OK" : "Ctrl+Space: hints, Tab or Enter: accept, Ctrl+Enter: OK");
+		}
+		
+		ImGui::EndPopup();
+	}
+}
+
+void UIPropertiesForm::DrawEditGameType()
+{
+	if (ImGui::BeginPopupContextItem("EditGameType", 0))
+	{
+		R_ASSERT(m_EditGameTypeValue);
+
+		bool test = false;
+		ImGui::BeginGroup();
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
+			if (ImGui::Checkbox("Single", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
+			if (ImGui::Checkbox("DM", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
+			if (ImGui::Checkbox("TDM", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
+			if (ImGui::Checkbox("ArtefactHunt", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
+			if (ImGui::Checkbox("CTA", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
+			if (ImGui::Checkbox("FMP", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
+			}
+
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCapturePoints);
+			if (ImGui::Checkbox("CP", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDCapturePoints, cheked);
+			}
+
+		}
+		ImGui::EndGroup(); ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+		{
+			if (m_EditGameTypeValue->AfterEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
+				if (m_EditGameTypeValue->ApplyValue<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
+				{
+					Modified();
+				}
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::Button("Cancel", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+		{
+			m_EditGameTypeValue = nullptr;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndGroup();
+		ImGui::EndPopup();
+	}
+}
+
+void UIPropertiesForm::DrawFilteredProperties()
+{
+	if (SearchRoot.Items.empty())
+	{
+		for (PropItem* PItem : m_Items)
+		{
+			if (DoesItemMatchSearch(PItem->Key()))
+			{
+				UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(SearchRoot.AppendItem(PItem->Key()));
+				VERIFY(Item);
+				Item->PItem = PItem;
+				Item->IsTexture = PItem->IsTextureItem;
+			}
+		}
+	}
+
+	SearchRoot.DrawRoot();
+}
+
+bool UIPropertiesForm::DoesItemMatchSearch(shared_str ItemName)
+{
+	if (!ItemName || m_SearchText.empty())
+	{
+		return true;
+	}
+
+	const char* key = *ItemName;
+	if (strrchr(key, '\\'))
+	{
+		key = strrchr(key, '\\') + 1;
+	}
+
+	xr_string itemName = key;
+	xr_string searchLower = m_SearchText;
+
+	xr_strlwr(itemName);
+	xr_strlwr(searchLower);
+
+	return itemName.Contains(searchLower);
+}
+
+int UIPropertiesForm::GetVisibleItemsCount()
+{
+	if (!IsSearchActive)
+	{
+		return m_Items.size();
+	}
+
+	int Count = 0;
+	for (PropItem* item : m_Items)
+	{
+		if (DoesItemMatchSearch(item->key))
+		{
+			Count++;
+		}
+	}
+	return Count;
+}

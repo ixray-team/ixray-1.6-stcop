@@ -13,7 +13,7 @@ public:
 
 	XPROPERTY(LuaConstructor)
 	AntigasFilter();
-	virtual	~AntigasFilter();
+	virtual ~AntigasFilter() override;
 
 	virtual void Load(const char* section) override;
 

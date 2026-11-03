@@ -37,7 +37,8 @@ namespace CDB
 				u32 material : 14;		  //
 				u32 suppress_shadows : 1; //
 				u32 suppress_wm : 1;	  //
-				u32 sector : 16;		  //
+				u32 sector : 15;		  // was 16
+				u32 shared_material:1;
 			};
 		};
 		ICF u32 IDvert(u32 ID) { return verts[ID]; }
@@ -96,7 +97,8 @@ namespace CDB
 				u32		material:14;		// 
 				u32		suppress_shadows:1;	// 
 				u32		suppress_wm:1;		// 
-				u32		sector:16;			// 
+				u32		sector:15;			// was 16
+				u32 shared_material:1;
 			};
 		};
 		int				id;
@@ -121,9 +123,14 @@ namespace CDB
 		u32 frustum_mode = 0;
 		u32 obb_mode = 0;
 		u32 sphere_mode = 0;
+		u32 cylinder_mode = 0;
+		u32 cone_mode = 0;
 		u32 custom_mode = 0;
 		// Result management
 		xr_vector<RESULT> rd;
+		//Shared tree walk for the shape queries (box, obb, sphere, cylinder, cone).
+		template <class Shape>
+		void			shape_query		(const MODEL* m_def, const Shape& shape, u32 mode);
 	public:
  		// Older
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
@@ -142,6 +149,12 @@ namespace CDB
 		ICF void		sphere_options(u32 f) { sphere_mode = f; }
 		void		 	sphere_query(const MODEL* m_def, const Fsphere& _sphere);
 		ICF void		sphere_query(const MODEL* m_def, const Fvector& P, float R) { sphere_query(m_def, Fsphere{P,R}); }
+
+		ICF void		cylinder_options(u32 f) { cylinder_mode = f; }
+		void			cylinder_query(const MODEL* m_def, const Fcylinder& _cylinder);
+
+		ICF void		cone_options(u32 f) { cone_mode = f; }
+		void			cone_query(const MODEL* m_def, const Fcone& _cone);
 
 		ICF void		custom_options(u32 f) { obb_mode = f; }
 		void			custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric);
@@ -250,8 +263,8 @@ namespace CDB
 			flags.reserve(apx_faces);
 		}
 
-		void				add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
-		void				add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
+		void add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, bool bSharedMaterial, u32 flags );
+		void add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
 
 		ICF xr_vector<Fvector>& getV_Vec()			{ return verts;				}
 		ICF Fvector*			getV()				{ return &*verts.begin();	}

@@ -23,15 +23,15 @@ private:
 
 public:
 							CActorMP			();
-	virtual void			net_Export			(NET_Packet		&packet);
-	virtual void			net_Import			(NET_Packet		&packet);
-	virtual bool			net_Relevant		();
-	virtual void			OnEvent				(NET_Packet		&packet, u16 type);
-	virtual void			Die					(CObject		*killer);
-	virtual void			DumpActiveParams	(shared_str const & section_name, CInifile & dst_ini) const;
-	shared_str const 		GetAnticheatSectionName	() const { return "mp_actor"; };
-	virtual void			On_SetEntity		();
-	virtual void			On_LostEntity		();
+	virtual void			net_Export			(NET_Packet		&packet) override;
+	virtual void			net_Import			(NET_Packet		&packet) override;
+	virtual bool			net_Relevant		() override;
+	virtual void			OnEvent				(NET_Packet		&packet, u16 type) override;
+	virtual void			Die					(CObject		*killer) override;
+	virtual void			DumpActiveParams	(shared_str const & section_name, CInifile & dst_ini) const override;
+	virtual shared_str const 		GetAnticheatSectionName	() const override { return "mp_actor"; };
+	virtual void			On_SetEntity		() override;
+	virtual void			On_LostEntity		() override;
 protected:
 			void			use_booster				(NET_Packet &packet);
 };

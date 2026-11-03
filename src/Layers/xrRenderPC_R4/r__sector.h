@@ -41,10 +41,10 @@ public:
 	float							distance		(const Fvector &V)	{ return std::abs(P.classify(V)); }
 
 									CPortal			();
-	virtual							~CPortal		();
+	virtual ~CPortal		() override;
 
 #ifdef DEBUG_DRAW
-	virtual void					OnRender		();
+	virtual void					OnRender		() override;
 #endif
 };
 
@@ -69,7 +69,7 @@ public:
 	void							load			(IReader& fs);
 
 	CSector							()				{ m_root = NULL;	}
-	virtual							~CSector		( );
+	virtual ~CSector		( ) override;
 };
 
 class	CPortalTraverser

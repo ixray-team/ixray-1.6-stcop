@@ -6,6 +6,7 @@
 // ADD(CInteractiveObject	,CSE_ALifeInteractiveObject	,CLSID_OBJECT_INTERACT	,"obj_interact");
 // CLSID_OBJECT_INTERACT	MK_CLSID('I','N','T','E','R','A','C','T')
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CInteractiveObject :
 	public CGameObject
 {
@@ -24,7 +25,7 @@ public:
 	bool useSpawnAtBoneIndexSections = false;
 
 	CInteractiveObject();
-	~CInteractiveObject();
+	virtual ~CInteractiveObject() override;
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual void net_Relcase(CObject* O) override;
@@ -35,6 +36,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual bool net_SaveRelevant() override  { return true; }
 
@@ -47,5 +49,4 @@ public:
 	ICF ref_sound& GetRandomSound(xr_vector<ref_sound>& soundsArray) { return soundsArray[::Random.randI(soundsArray.size())]; }
 	void OnUse();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

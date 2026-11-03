@@ -17,7 +17,7 @@ class CUIGrenadeParams : public CUIWindow
 {
 public:
 							CUIGrenadeParams		();
-	virtual					~CUIGrenadeParams();
+	virtual ~CUIGrenadeParams() override;
 
 	void 					InitFromXml			(CUIXml& xml_doc);
 	void					SetInfo				(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn);

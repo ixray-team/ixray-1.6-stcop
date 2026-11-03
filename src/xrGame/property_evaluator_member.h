@@ -21,8 +21,8 @@ protected:
 
 public:
 						CPropertyEvaluatorMember(CPropertyStorage *storage, u32 condition_id, bool value, bool equality = true, const char* evaluator_name = "");
-	virtual void		setup					(_object_type *object, CPropertyStorage *storage);
-	virtual bool	evaluate				();
+	virtual void		setup					(_object_type *object, CPropertyStorage *storage) override;
+	virtual bool	evaluate				() override;
 };
 
 

@@ -6,6 +6,7 @@
 #include "std_classes.h"
 #include "../xrCore/Collision/ISpatial.h"
 #include "ILoadingScreen.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 
 ENGINE_API bool g_appLoaded = false;
 
@@ -165,6 +166,9 @@ void CEngineApp::LoadBegin()
 
 		phase_timer.Start();
 		load_stage = 0;
+
+		CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
+		CTaskbarProgress::Instance().SetTooltip("IX-Ray Engine - loading");
 	}
 }
 
@@ -177,6 +181,10 @@ void CEngineApp::LoadEnd()
 		//Console->Execute("stat_memory");
 		g_appLoaded = true;
 		//		DUMP_PHASE;
+
+		CTaskbarProgress::Instance().Reset();
+		CTaskbarProgress::Instance().SetTooltip("IX-Ray Engine");
+		CTaskbarProgress::Instance().RequestAttention();
 	}
 }
 
@@ -215,6 +223,23 @@ void CEngineApp::LoadForceFinish()
 
 void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 {
+	if (_ls_title != nullptr && _ls_title[0] != 0)
+	{
+		xr_string Tooltip = "IX-Ray Engine - ";
+		Tooltip += _ls_title;
+
+		// The title is set right before the stage itself, so show the stage being started.
+		if (max_load_stage > 0)
+		{
+			const int Stage = load_stage < max_load_stage ? load_stage + 1 : max_load_stage;
+			char StageInfo[32];
+			xr_sprintf(StageInfo, " (%d/%d)", Stage, max_load_stage);
+			Tooltip += StageInfo;
+		}
+
+		CTaskbarProgress::Instance().SetTooltip(Tooltip.c_str());
+	}
+
 	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
 	if (GLoadingScreen && isLoadingStagesEnabled)
 	{
@@ -242,6 +267,9 @@ void CEngineApp::LoadStage()
 		max_load_stage = 14;
 	LoadDraw();
 	++load_stage;
+
+	CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Normal);
+	CTaskbarProgress::Instance().SetProgress((u64)load_stage, (u64)max_load_stage);
 }
 
 void CEngineApp::LoadSwitch()

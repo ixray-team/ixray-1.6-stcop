@@ -7,15 +7,15 @@ public:
 	xrP_BOOL	oBlend;
 	bool		lmapped;
 public:
-	virtual		const char*		getComment()	{ return "LEVEL: defer-base-aref";	}
-	virtual		bool		canBeDetailed()	{ return true;		}
-	virtual		bool		canBeLMAPped()	{ return lmapped;	}
-	virtual		bool		canUseSteepParallax	()	{ return true; }
+	virtual const char*		getComment() override { return "LEVEL: defer-base-aref";	}
+	virtual bool		canBeDetailed() override { return true;		}
+	virtual bool		canBeLMAPped() override { return lmapped;	}
+	virtual bool		canUseSteepParallax	() override { return true; }
 
-	virtual		void		Save			(IWriter&	fs);
-	virtual		void		Load			(IReader&	fs, u16 version);
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual void		Save			(IWriter&	fs) override;
+	virtual void		Load			(IReader&	fs, u16 version) override;
+	virtual void		Compile			(CBlender_Compile& C) override;
 
 	CBlender_deffer_aref					(bool _lmapped=false);
-	virtual ~CBlender_deffer_aref			();
+	virtual ~CBlender_deffer_aref			() override;
 };

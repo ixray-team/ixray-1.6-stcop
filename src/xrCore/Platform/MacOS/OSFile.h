@@ -62,9 +62,33 @@ using __time64_t = time_t;
 using __time32_t = long;
 using _fsize_t =  unsigned long;
 
+namespace Platform
+{
+// Engine strings are CP1251 while macOS paths must be UTF-8. Returns true when the
+// conversion changed the path, i.e. the file can only exist under the converted name.
+inline bool CP1251PathToUtf8(const char* Path, char* Out, size_t OutSize)
+{
+    CP1251_PATH_TO_UTF8(Path, Out, OutSize);
+    for (size_t i = 0; i < OutSize; ++i)
+    {
+        if (Path[i] != Out[i])
+            return true;
+        if (Path[i] == 0)
+            return false;
+    }
+    return false;
+}
+}
+
 inline bool _sopen_s(int* handle, const char* FileName, ...)
 {
     auto NewHandle = open(FileName, O_RDONLY);
+    if (NewHandle == -1)
+    {
+        char Utf8[_MAX_PATH];
+        if (Platform::CP1251PathToUtf8(FileName, Utf8, sizeof(Utf8)))
+            NewHandle = open(Utf8, O_RDONLY);
+    }
     *handle = NewHandle;
     return NewHandle == -1;
 }
@@ -82,19 +106,26 @@ inline errno_t fopen_s(FILE **f, const char *name, const char *mode)
 
 inline int _mkdir(const char *dir)
 {
-    return mkdir(dir, S_IRWXU);
+    int Result = mkdir(dir, S_IRWXU);
+    if (Result != 0 && errno == ENOENT)
+    {
+        char Utf8[_MAX_PATH];
+        if (Platform::CP1251PathToUtf8(dir, Utf8, sizeof(Utf8)))
+            Result = mkdir(Utf8, S_IRWXU);
+    }
+    return Result;
 }
 
 inline errno_t _wfopen_s_cp1251(FILE** File, const char* Path, const char* Mode)
 {
 #if defined(__APPLE__)
     *File = fopen(Path, Mode);
-    if (*File == nullptr && (errno == EILSEQ || errno == EINVAL))
+    if (*File == nullptr)
     {
         // Engine strings are CP1251 while macOS paths must be UTF-8.
         char Utf8[_MAX_PATH];
-        Platform::CP1251_PATH_TO_UTF8(Path, Utf8, sizeof(Utf8));
-        *File = fopen(Utf8, Mode);
+        if (Platform::CP1251PathToUtf8(Path, Utf8, sizeof(Utf8)))
+            *File = fopen(Utf8, Mode);
     }
     return *File == nullptr ? errno : 0;
 #else

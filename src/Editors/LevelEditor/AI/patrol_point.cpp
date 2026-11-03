@@ -53,7 +53,7 @@ IC	void CPatrolPoint::correct_position						(const ILevelGraph *level_graph, con
 	m_game_vertex_id	= cross->vertex(level_vertex_id(level_graph,cross,game_graph)).game_vertex_id();
 }
 
-CPatrolPoint::CPatrolPoint									(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name)
+CPatrolPoint::CPatrolPoint									(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, const shared_str& name)
 {
 #ifdef DEBUG
 	VERIFY				(path);

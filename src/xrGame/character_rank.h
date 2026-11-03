@@ -30,7 +30,7 @@ private:
 
 public:
 	CHARACTER_RANK			():m_current_value(-type_max(s32)){};
-	~CHARACTER_RANK			(){};
+	virtual ~CHARACTER_RANK			() override {};
 
 	void						set				(s32);
 

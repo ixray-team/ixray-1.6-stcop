@@ -1,6 +1,10 @@
 #include "common.hlsli"
 #include "common_iostructs.hlsli"
 
+#ifdef EDITOR_MODE
+// Texture transform of the editor helper draws (fixed-function D3DTS_TEXTURE0 emulation)
+uniform float4x4 m_tc_xform;
+#endif
 
 // Vertex
 v2p_TL main(v_TL_positiont I)
@@ -18,7 +22,11 @@ v2p_TL main(v_TL_positiont I)
         O.HPos.zw = I.P.zw;
     }
 
+#ifdef EDITOR_MODE
+    O.Tex0 = mul(m_tc_xform, float4(I.Tex0, 1.0f, 0.0f)).xy;
+#else
     O.Tex0 = I.Tex0;
+#endif
     O.Color = I.Color.bgra; //	swizzle vertex colour
 
     return O;

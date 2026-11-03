@@ -57,7 +57,7 @@ public:
 		}
 	};
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		int cnt = _GetItemCount(args);
 		luabind::object params_to_lua = luabind::newtable(ai().script_engine().lua());
@@ -71,7 +71,7 @@ public:
 		functor(params_to_lua);
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode)
+	virtual void fill_tips(vecTips& tips, u32 mode) override
 	{
 		tips = m_fill_tips;
 		IConsole_Command::fill_tips(tips, mode);

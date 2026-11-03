@@ -6,9 +6,9 @@
 class CBlender_default		: public IBlender  
 {
 public:
-	virtual		const char*		getComment()	{ return "LEVEL: lmap*base (default)";	}
-	virtual		bool		canBeDetailed()	{ return true; }
-	virtual		bool		canBeLMAPped()	{ return true; }
+	virtual const char*		getComment() override { return "LEVEL: lmap*base (default)";	}
+	virtual bool		canBeDetailed() override { return true; }
+	virtual bool		canBeLMAPped() override { return true; }
 
 #ifdef _EDITOR
 	virtual		bool		canUseSteepParallax() {
@@ -16,13 +16,13 @@ public:
 	}
 #endif
 
-	virtual		void		Save			(IWriter&	fs);
-	virtual		void		Load			(IReader&	fs, u16 version);
+	virtual void		Save			(IWriter&	fs) override;
+	virtual void		Load			(IReader&	fs, u16 version) override;
 
-	virtual		void		Compile			(CBlender_Compile& C);
+	virtual void		Compile			(CBlender_Compile& C) override;
 
 	CBlender_default();
-	virtual ~CBlender_default();
+	virtual ~CBlender_default() override;
 
 private:
 	xrP_TOKEN	oTessellation;

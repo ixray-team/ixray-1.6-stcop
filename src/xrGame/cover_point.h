@@ -10,6 +10,7 @@
 
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Name="cover_point")
 class CCoverPoint {
 public:
 	Fvector				m_position;
@@ -18,11 +19,13 @@ public:
 
 public:
 	IC					CCoverPoint		(Fvector const &point, u32 const &level_vertex_id);
+	XPROPERTY(LuaCallable)
 	IC	Fvector	const	&position		() const;
+	XPROPERTY(LuaCallable)
 	IC	u32				level_vertex_id	() const;
+	XPROPERTY(LuaCallable)
+	IC	bool			is_smart_cover	() const { return !!m_is_smart_cover; }
 	IC	bool			operator==		(CCoverPoint const &point) const;
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "cover_point_inline.h"

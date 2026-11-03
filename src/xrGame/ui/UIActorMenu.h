@@ -132,10 +132,10 @@ public:
 	void						ReloadActorInfo						();
 	void						SetPartner							(CInventoryOwner* io);
 	void						SetInvBox							(CInventoryBox* box);
-	virtual CInventoryBox*		GetInvBox							() {return m_pInvBox;}
+	virtual CInventoryBox*		GetInvBox							() override {return m_pInvBox;}
 
-	virtual CUIWindow*			ui_cast_window						() { return this; }
-	
+	virtual CUIWindow*			ui_cast_window						() override { return this; }
+
 	virtual ui_actor_state_wnd* GetActorState() override { return m_ActorStateInfo; }
 
 	virtual CUIDragDropListEx* GetActorList() override { return m_pInventoryBagList; }
@@ -174,9 +174,9 @@ protected:
 	void						DeInitDeadBodySearchMode			();
 
 	void						CurModeToScript						();
-	virtual void				PerformDisassemble					();
+	virtual void				PerformDisassemble					() override;
 
-	virtual	void				InfoCurItem							(CUICellItem* cell_item); //on update item
+	virtual void				InfoCurItem							(CUICellItem* cell_item) override; //on update item
 	
 	void						CheckDistance						();
 
@@ -188,39 +188,39 @@ protected:
 
 	void						SetActorInfoMP();
 	void						UpdateActorMoneyMP();
-	virtual void				UpdateOutfit						();
+	virtual void				UpdateOutfit						() override;
 	void						TryDisassembleItem					(CUIWindow* w, void* d);
-	
 
-	virtual void				TradeShowMessage					(s64 money_actor, s64 money_patner);
+
+	virtual void				TradeShowMessage					(s64 money_actor, s64 money_patner) override;
 
 public:
 								CUIActorMenu						();
-	virtual						~CUIActorMenu						();
+	virtual ~CUIActorMenu						() override;
 
-	virtual CInventoryOwner*	GetInventoryOwner					() { return m_pActorInvOwner; }
-	virtual CInventoryOwner*	GetPartner							() { return m_pPartnerInvOwner; }
-	virtual bool				ShouldPutArtefactsToBag				() { return true; }
-	virtual void				SetCurrentItem						(CUICellItem* itm);
-	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-	virtual void				Draw								();
-	virtual void				Update								();
-	virtual void				Show								(bool status);
+	virtual CInventoryOwner*	GetInventoryOwner					() override { return m_pActorInvOwner; }
+	virtual CInventoryOwner*	GetPartner							() override { return m_pPartnerInvOwner; }
+	virtual bool				ShouldPutArtefactsToBag				() override { return true; }
+	virtual void				SetCurrentItem						(CUICellItem* itm) override;
+	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL) override;
+	virtual void				Draw								() override;
+	virtual void				Update								() override;
+	virtual void				Show								(bool status) override;
 
 	// trade
-	virtual void				UpdatePrices						();
+	virtual void				UpdatePrices						() override;
 
 	bool						DropAllItemsFromRuck				(bool quest_force = false); //debug func
 
-	virtual void				UpdateActor							();
+	virtual void				UpdateActor							() override;
 	void						UpdatePartnerBag					();
-	virtual void				UpdateDeadBodyBag					();
+	virtual void				UpdateDeadBodyBag					() override;
 
 	void						OnBtnPerformTradeBuy				(CUIWindow* w, void* d);
 	void						OnBtnPerformTradeSell				(CUIWindow* w, void* d);
 	void						OnBtnExitClicked					(CUIWindow* w, void* d);
 
-	virtual void				HideDialog							();
+	virtual void				HideDialog							() override;
 
 	void OnSuccessRepairMP(PIItem item);
 

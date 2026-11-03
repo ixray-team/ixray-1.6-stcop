@@ -14,6 +14,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [actor-light-perception.md](actor-light-perception.md) | Gunslinger torch detection, AI memory integration, caching |
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
+| [physics-abstraction.md](physics-abstraction.md) | Plan to hide ODE behind xrPhysics interfaces for Box3D |
 | [build.md](build.md) | Targets and CMake options |
 | [style.md](style.md) | RAII, types, platform split |
 

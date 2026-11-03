@@ -8,13 +8,13 @@ class CStateMonsterRestSleep : public CState<_Object> {
 	typedef CState<_Object> inherited;
 public:
 						CStateMonsterRestSleep	(_Object *obj);
-	virtual				~CStateMonsterRestSleep	();
+	virtual ~CStateMonsterRestSleep	() override;
 
-	virtual	void		initialize				();
-	virtual	void		execute					();
-	virtual	void		finalize				();
-	virtual	void		critical_finalize		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize				() override;
+	virtual void		execute					() override;
+	virtual void		finalize				() override;
+	virtual void		critical_finalize		() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_rest_sleep_inline.h"

@@ -18,7 +18,9 @@ void UILPropertiesForm::Draw()
 			{
 				if (PropUpdateIsCompleted)
 				{
+					g_LevelAutoBackup.BeginToolWidgets();
 					LTools->GetProperties()->Draw();
+					g_LevelAutoBackup.EndToolWidgets();
 				}
 				else
 				{

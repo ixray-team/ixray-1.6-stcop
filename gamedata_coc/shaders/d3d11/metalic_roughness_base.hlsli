@@ -2,7 +2,9 @@
 #define metalic_roughness_base_h_ixray_included
 
 #include "common.hlsli"
+#ifndef PI
 #define PI 3.141592653589793f
+#endif
 
 struct IXRayMaterial
 {
@@ -12,6 +14,8 @@ struct IXRayMaterial
 	float Specular;
 	
     float AO;
+	float TerrainHeight;
+	bool HasTerrainHeight;
 #else
 	float Gloss;
 	float Material;
@@ -29,34 +33,34 @@ struct IXRayMaterial
 	float Sun;
 	
 	uint MaterialID;
-	
-	IXRayMaterial Lerp(in IXRayMaterial B, float Factor)
-	{
-		IXRayMaterial O = this;
-
-	#ifndef USE_LEGACY_LIGHT
-		O.Metalness = lerp(Metalness, B.Metalness, Factor);
-		O.Roughness = lerp(Roughness, B.Roughness, Factor);
-		O.Specular = lerp(Specular, B.Specular, Factor);
-		O.AO = lerp(AO, B.AO, Factor);
-	#else
-		O.Gloss = lerp(Gloss, B.Gloss, Factor);
-		O.Material = lerp(Material, B.Material, Factor);
-	#endif
-
-		O.SSS = lerp(SSS, B.SSS, Factor);
-
-		O.Normal = lerp(Normal, B.Normal, Factor);
-		O.Normal = normalize(O.Normal);
-
-		O.Color = lerp(Color, B.Color, Factor);
-
-		O.Hemi = lerp(Hemi, B.Hemi, Factor);
-		O.Sun = lerp(Sun, B.Sun, Factor);
-
-		return O;
-	}
 };
+
+IXRayMaterial IXRayMaterial_Lerp(in IXRayMaterial A, in IXRayMaterial B, float Factor)
+{
+	IXRayMaterial O = A;
+
+#ifndef USE_LEGACY_LIGHT
+	O.Metalness = lerp(A.Metalness, B.Metalness, Factor);
+	O.Roughness = lerp(A.Roughness, B.Roughness, Factor);
+	O.Specular = lerp(A.Specular, B.Specular, Factor);
+	O.AO = lerp(A.AO, B.AO, Factor);
+#else
+	O.Gloss = lerp(A.Gloss, B.Gloss, Factor);
+	O.Material = lerp(A.Material, B.Material, Factor);
+#endif
+
+	O.SSS = lerp(A.SSS, B.SSS, Factor);
+
+	O.Normal = lerp(A.Normal, B.Normal, Factor);
+	O.Normal = normalize(O.Normal);
+
+	O.Color = lerp(A.Color, B.Color, Factor);
+
+	O.Hemi = lerp(A.Hemi, B.Hemi, Factor);
+	O.Sun = lerp(A.Sun, B.Sun, Factor);
+
+	return O;
+}
 
 #define BASE_ID 0
 #define OBJECT_ID 1
@@ -75,6 +79,8 @@ struct IXRayGbuffer
 	float3 Specular;
 	
 	float AO;
+	float TerrainHeight;
+	bool HasTerrainHeight;
 #else
 	float Gloss;
 	float Material;
@@ -180,6 +186,33 @@ inline void WboitBufferPack(inout IXRayForward O, in float3 Point)
 	O.Color.xyz = O.Color.xzy * O.Color.w;
 }
 
+#ifndef USE_LEGACY_LIGHT
+inline float PackTerrainSurface(in float SSS, in float TerrainHeight, in bool HasTerrainHeight)
+{
+	// Terrain stores either SSS or height, with bit 7 selecting height.
+	bool HasHeight = HasTerrainHeight && SSS <= EPS;
+	float Value = HasHeight ? TerrainHeight : SSS;
+	uint Packed = uint(saturate(Value) * 127.0f + 0.5f);
+
+	if (HasHeight)
+	{
+		Packed |= 0x80u;
+	}
+
+	return float(Packed) / 255.0f;
+}
+
+inline void UnpackTerrainSurface(in float Surface, out float SSS, out float TerrainHeight, out bool HasTerrainHeight)
+{
+	uint Packed = uint(saturate(Surface) * 255.0f + 0.5f);
+	float Value = float(Packed & 0x7Fu) / 127.0f;
+
+	HasTerrainHeight = (Packed & 0x80u) != 0;
+	TerrainHeight = HasTerrainHeight ? Value : 0.0f;
+	SSS = HasTerrainHeight ? 0.0f : Value;
+}
+#endif
+
 inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 {
     O.Color.xyz = M.Color.xyz;
@@ -200,6 +233,10 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	O.Material.y = M.Roughness;
 	O.Material.z = M.Specular;
 	O.Material.w = M.SSS;
+	if (M.MaterialID == TERRAIN_ID)
+	{
+		O.Material.w = PackTerrainSurface(M.SSS, M.TerrainHeight, M.HasTerrainHeight);
+	}
 	
 	#ifdef USE_R2_STATIC_SUN
 		O.Color.xyz *= O.Color.w;
@@ -264,6 +301,15 @@ inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial 
 	
 	M.MaterialID = uint(O.Normal.w * MAX_ID);
     M.Hemi = O.Normal.z;
+
+#ifndef USE_LEGACY_LIGHT
+	M.TerrainHeight = 0.0f;
+	M.HasTerrainHeight = false;
+	if (M.MaterialID == TERRAIN_ID)
+	{
+		UnpackTerrainSurface(O.Material.w, M.SSS, M.TerrainHeight, M.HasTerrainHeight);
+	}
+#endif
 }
 
 inline float4 GbufferGetPoint(in float2 HPos)
@@ -408,6 +454,12 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
 	Surface.z = Surface.z * Surface.z * 0.16f;
 	
 	O.SSS = Surface.w;
+	O.TerrainHeight = 0.0f;
+	O.HasTerrainHeight = false;
+	if (O.MaterialID == TERRAIN_ID)
+	{
+		UnpackTerrainSurface(Surface.w, O.SSS, O.TerrainHeight, O.HasTerrainHeight);
+	}
 	O.Roughness = Surface.y;
 	
 	O.Specular = lerp(Surface.z, Sample.xyz, Surface.x);
@@ -417,9 +469,9 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
 
 inline void GbufferUnpack(in uint2 HPos, inout IXRayGbuffer O)
 {
+	GbufferUnpackNormal(HPos, O);
 	GbufferUnpackColor(HPos, O);
 	GbufferUnpackDepth(HPos, O);
-	GbufferUnpackNormal(HPos, O);
 }
 
 #endif

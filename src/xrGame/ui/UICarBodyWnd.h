@@ -22,28 +22,28 @@ private:
 	typedef CUIActorMenuBase	inherited;
 public:
 								CUICarBodyWnd				();
-	virtual						~CUICarBodyWnd				();
+	virtual ~CUICarBodyWnd				() override;
 
 	virtual void				Init						();
 
-	virtual void				SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
+	virtual void				SendMessage					(CUIWindow *pWnd, s16 msg, void *pData) override;
 
 	void						InitCarBody					(CInventoryOwner* pOurInv, CInventoryOwner* pOthersInv);
 	void						InitCarBody					(CInventoryOwner* pOur, CInventoryBox* pInvBox);
-	virtual void				Draw						();
-	virtual void				Update						();
-		
-	virtual void				Show						(bool status);
+	virtual void				Draw						() override;
+	virtual void				Update						() override;
+
+	virtual void				Show						(bool status) override;
 
 	void						DisableAll					();
 	void						EnableAll					();
 
-	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pOurObject; }
-	virtual CInventoryOwner*	GetPartner					() { return m_pOthersObject; }
+	virtual CInventoryOwner*	GetInventoryOwner			() override { return m_pOurObject; }
+	virtual CInventoryOwner*	GetPartner					() override { return m_pOthersObject; }
 
-	virtual CUIDragDropListEx*	GetActorList				() { return m_pUIOurBagList; }
-	virtual CUIDragDropListEx*	GetPartnerList				() { return m_pUIOthersBagList; }
-	virtual CInventoryBox*		GetInvBox					() { return m_pInventoryBox; }
+	virtual CUIDragDropListEx*	GetActorList				() override { return m_pUIOurBagList; }
+	virtual CUIDragDropListEx*	GetPartnerList				() override { return m_pUIOthersBagList; }
+	virtual CInventoryBox*		GetInvBox					() override { return m_pInventoryBox; }
 protected:
 	CInventoryOwner*			m_pOurObject;
 
@@ -72,5 +72,5 @@ protected:
 
 	void						UpdateLists					();
 
-	virtual void				SetCurrentItem				(CUICellItem* itm);
+	virtual void				SetCurrentItem				(CUICellItem* itm) override;
 };

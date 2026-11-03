@@ -37,42 +37,42 @@ protected:
 	detector_fn_t hide_callback = nullptr;
 public:
 	CCustomDevice() = default;
-	~CCustomDevice() override;
+	virtual ~CCustomDevice() override;
 
-	bool net_Spawn(CSE_Abstract* DC) override;
-	void LoadSounds(const char* section) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void LoadSounds(const char* section) override;
 
-	void OnH_B_Independent(bool just_before_destroy) override;
+	virtual void OnH_B_Independent(bool just_before_destroy) override;
 
-	void shedule_Update(u32 dt) override;
-	void UpdateCL() override;
+	virtual void shedule_Update(u32 dt) override;
+	virtual void UpdateCL() override;
 
 	void switch_device();
 	bool IsWorking();
-	bool need_renderable() final override;
-	void OnMoveToRuck(const SInvItemPlace& prev) override;
+	virtual bool need_renderable() final;
+	virtual void OnMoveToRuck(const SInvItemPlace& prev) override;
 	void ShowingCallback(CBlend* B);
-	void OnStateSwitch(u8 S) override;
-	void OnAnimationEnd(u8 state) override;
-	void UpdateXForm() override;
-	void SwitchState(u8 S) final override;
-	void UpdateHudAdditonal(Fmatrix& trans) override;
+	virtual void OnStateSwitch(u8 S) override;
+	virtual void OnAnimationEnd(u8 state) override;
+	virtual void UpdateXForm() override;
+	virtual void SwitchState(u8 S) final;
+	virtual void UpdateHudAdditonal(Fmatrix& trans) override;
 	void ToggleDetector(bool bFastMode, bool switching = false);
 	void HideDetector(bool bFastMode, bool force = false);
 	void ShowDetector(bool bFastMode);
-	bool CheckCompatibility(CHudItem* itm) override;
+	virtual bool CheckCompatibility(CHudItem* itm) override;
 
-	void PlayAnimIdle() final override;
+	virtual void PlayAnimIdle() final;
 	shared_str SetCurrentAimAnimation();
 
 	void ClearCallback() { hide_callback = nullptr; }
 	void HideAndSetCallback(const detector_fn_t fn);
 
-	virtual u32	ef_detector_type() const { return 1; }
+	virtual u32	ef_detector_type() const override { return 1; }
 
 	bool NeedActivation() const { return m_bNeedActivation; }
 
-	virtual bool can_be_attached() const;
+	virtual bool can_be_attached() const override;
 	void PlayWpnFinishDetector();
 	virtual void TurnDetectorInternal(bool b);
 	void SwitchZoom(bool status);
@@ -87,11 +87,11 @@ public:
 	bool CanShooting(bool dry = false) const;
 	bool CanJammed() const;
 	bool CanLightMisfire() const;
-	IC virtual bool IsZoomed() const final override { return m_bIsZoomed; }
+	IC virtual bool IsZoomed() const final { return m_bIsZoomed; }
 
-	virtual CCustomDevice* cast_custom_device() { return this; }
+	virtual CCustomDevice* cast_custom_device() override { return this; }
 
-	virtual bool NeedMovementBlend() const final override;
+	virtual bool NeedMovementBlend() const final;
 
 protected:
 	bool CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate);

@@ -153,8 +153,7 @@ bool ShaderElement::equal	(ShaderElement& S)
 
 bool ShaderElement::equal	(ShaderElement* S)
 {	
-	if (nullptr==S && nullptr==this)	return true;
-	if (nullptr==S || nullptr==this)	return false;
+	if (nullptr==S)	return false;
 	return	equal	(*S);	
 }
 

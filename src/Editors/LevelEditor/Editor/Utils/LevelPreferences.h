@@ -1,5 +1,7 @@
 #pragma once
 
+class CContentView;
+
 class CLevelPreferences : 
 	public CCustomPreferences
 {
@@ -15,13 +17,16 @@ protected:
 public:
 	virtual void FillProp(PropItemVec& items);
 
+	// Recent objects of the Actor Editor tab, kept apart from the recent levels
+	void AppendActorRecentFile(const char* Name);
+
 public:
 
 	bool PIEArtSpawnPos = false;
-	bool OpenObjectList;
-	bool OpenProperties;
-	bool OpenWorldProperties;
-	bool OpenSnapList;
-	bool OpenLightAnim;
 	bool PreviewRenderLibrary = false;
+
+	// Actor Editor
+	bool ActorAlwaysShowKeyBar12 = false;
+	bool ActorAlwaysShowKeyBar34 = false;
+	AStringVec ActorRecentFiles;
 };

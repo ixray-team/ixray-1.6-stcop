@@ -12,9 +12,9 @@ class CPoltergeisMovementManager : public CControlPathBuilder {
 
 public:
 					CPoltergeisMovementManager	(CPoltergeist *monster) : inherited((CCreature*)monster), m_monster(monster) {}
-	virtual			~CPoltergeisMovementManager	(){}
+	virtual ~CPoltergeisMovementManager	() override {}
 
-	virtual	void	move_along_path				(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta);
+	virtual void	move_along_path				(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta) override;
 
 			Fvector	CalculateRealPosition		();
 };

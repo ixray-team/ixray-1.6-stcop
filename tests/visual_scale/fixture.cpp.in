@@ -5,6 +5,7 @@
 #include "../src/xrCore/Save/SaveObject.h"
 #include <cassert>
 #include <limits>
+#include <source_location>
 #include "../src/xrGame/monster_scale.h"
 #undef PROF_EVENT
 #define PROF_EVENT(...)
@@ -27,7 +28,7 @@ public:
 @METHOD_2@
 @METHOD_3@
 
-void Check(bool Value){ if(!Value){puts("FAIL"); exit(1);} }
+void Check(bool Value, const std::source_location Location = std::source_location::current()){ if(!Value){printf("FAIL at %s:%u\n", Location.function_name(), Location.line()); exit(1);} }
 void Near(float A,float B){Check(std::abs(A-B)<0.001f);}
 void Near(const Fvector&A,const Fvector&B){Near(A.x,B.x);Near(A.y,B.y);Near(A.z,B.z);}
 void TestSkeleton(){
@@ -62,7 +63,7 @@ void TestSkeleton(){
 }
 class CSE_ALifeObject {
 public:
- u16 m_wVersion=135,m_tGraphID=7;float m_fDistance=2.f,VisualScale=1.f;bool m_bDirectControl=true;
+ u16 m_wVersion=136,m_tGraphID=7;float m_fDistance=2.f,VisualScale=1.f;bool m_bDirectControl=true;
  u16 m_tSpawnID=0;u32 m_tNodeID=11,m_story_id=15,m_spawn_story_id=18;flags32 m_flags;
  shared_str m_ini_string,m_script_story_ID;CInifile*m_ini_file=nullptr;
  bool SetVisualScale(float);void STATE_Write(NET_Packet&);void STATE_Read(NET_Packet&,u16);void STATE_Serialize(ISaveObject&);
@@ -74,13 +75,18 @@ public:
 class SaveAccess:public CSaveObjectSave{public:CSaveChunk* Root(){return _rootChunk;}};
 void TestPersistence(){
  for(float Scale:{0.5f,1.f,2.75f}){
-  CSE_ALifeObject Source;Source.VisualScale=Scale;Source.m_flags.zero();Source.m_ini_string="";
-  NET_Packet P;Source.STATE_Write(P);P.r_seek(0);CSE_ALifeObject Dest;Dest.STATE_Read(P,0);Near(Dest.VisualScale,Scale);Check(Dest.m_tNodeID==11);Check(P.r_eof());
+  CSE_ALifeObject Source;Source.VisualScale=Scale;Source.m_script_story_ID="scale-test-story";Source.m_flags.zero();Source.m_ini_string="";
+  NET_Packet P;Source.STATE_Write(P);P.r_seek(0);CSE_ALifeObject Dest;Dest.STATE_Read(P,0);Near(Dest.VisualScale,Scale);Check(Dest.m_tNodeID==11);Check(Dest.m_script_story_ID==Source.m_script_story_ID);Check(P.r_eof());
   SaveAccess Save;Source.STATE_Serialize(Save);CSaveObjectLoad Load(Save.Root());CSE_ALifeObject Restored;Restored.STATE_Serialize(Load);Near(Restored.VisualScale,Scale);
  }
  // Old spawn packets have no scale field, so retain the section default.
  CSE_ALifeObject Source;Source.m_flags.zero();Source.m_ini_string="";NET_Packet P;Source.STATE_Write(P);P.r_seek(0);
- CSE_ALifeObject Old;Old.m_wVersion=134;Old.VisualScale=1.25f;Old.STATE_Read(P,0);Near(Old.VisualScale,1.25f);Check(P.r_tell()+sizeof(float)==P.w_tell());
+ CSE_ALifeObject Old;Old.m_wVersion=134;Old.VisualScale=1.25f;Old.STATE_Read(P,0);Near(Old.VisualScale,1.25f);Check(P.r_tell()+sizeof(float)+1==P.w_tell());
+ // Death or Die version 135 stores scale directly after the version 134 payload.
+ const u32 PrefixSize=P.r_tell();
+ NET_Packet Legacy;Legacy.construct(P.B.data.data(),PrefixSize);Legacy.w_float(2.5f);Legacy.r_seek(0);
+ CSE_ALifeObject LegacyObject;LegacyObject.m_wVersion=135;LegacyObject.STATE_Read(Legacy,0);
+ Near(LegacyObject.VisualScale,2.5f);Check(Legacy.r_eof());
  for(float Invalid:{0.f,-1.f,101.f,std::numeric_limits<float>::infinity()}){
   CSE_ALifeObject Bad;Bad.VisualScale=Invalid;Bad.m_flags.zero();Bad.m_ini_string="";NET_Packet Packet;Bad.STATE_Write(Packet);Packet.r_seek(0);CSE_ALifeObject Loaded;Loaded.STATE_Read(Packet,0);Near(Loaded.VisualScale,1);
  }
@@ -97,7 +103,7 @@ public:
 
 class CPHMovementControl {
 public:
- using dVector3=float[4];struct Body {bool b_exist=false;void SetBox(const dVector3&) {}};Body*m_character=nullptr;
+ using dVector3=float[4];struct Body {bool b_exist=false;bool Exists() const {return b_exist;}void SetBox(const Fvector&) {}};Body*m_character=nullptr;
  float AppliedVisualScale=1;Fbox boxes[4],aabb;
  void SetVisualScale(float);
 };

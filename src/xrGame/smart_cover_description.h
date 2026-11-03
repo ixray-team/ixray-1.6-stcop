@@ -40,7 +40,7 @@ private:
 
 public:
 									description			(shared_str const &table_id);
-									~description		();
+	virtual ~description		() override;
 	IC		shared_str const		&table_id			() const;
 	IC		Loopholes const			&loopholes			() const;
 	IC		TransitionGraph	const	&transitions		() const;

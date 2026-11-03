@@ -52,7 +52,14 @@ YAML::Node CYaml::NavigateToNode(const YAML::Node& BaseNode, const char* ChildNo
 const char* CYaml::GetString(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr)
 {
 	const YAML::Node node = NavigateToNode(BaseNode, ChildNodeName);
-	return node && !node.IsNull() ? node.as<std::string>().c_str() : DefaultStr;
+	if (!node || node.IsNull())
+	{
+		return DefaultStr;
+	}
+	// The caller keeps the returned pointer, so the string has to outlive this call.
+	static thread_local std::string value;
+	value = node.as<std::string>();
+	return value.c_str();
 }
 
 xr_string CYaml::GetStringRoot(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr)

@@ -4,6 +4,7 @@
 #include "WeaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Constructible)
 class CWeaponRG6 final : public CRocketLauncher,
 	public CWeaponShotgun
 {
@@ -14,12 +15,12 @@ class CWeaponRG6 final : public CRocketLauncher,
 
 public:
 	CWeaponRG6() = default;
-	virtual ~CWeaponRG6() = default;
+	virtual ~CWeaponRG6() override = default;
 	virtual bool	net_Spawn				(CSE_Abstract* DC) override;
 	virtual void	Load					(const char* section) override;
 	virtual void	OnEvent					(NET_Packet& P, u16 type) override;
 
-	virtual CWeaponRG6* cast_weapon_rg6() { return this; }
+	virtual CWeaponRG6* cast_weapon_rg6() override { return this; }
 	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	virtual void	PlayAnimOpenWeapon() override;
@@ -31,5 +32,4 @@ protected:
 	virtual void	ReloadMagazine			() override;
 	virtual void	FireTrace				(const Fvector& P, const Fvector& D) override;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

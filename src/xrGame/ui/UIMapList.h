@@ -20,12 +20,12 @@ class CUIXml;
 class CUIMapList final : public CUIWindow {
 public:
 					CUIMapList();
-	virtual			~CUIMapList();
-	virtual void	Update();
-	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void* pData  = NULL);
-			void	InitFromXml(CUIXml& xml_doc, const char* path);	
+	virtual ~CUIMapList() override;
+	virtual void	Update() override;
+	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void* pData  = NULL) override;
+	virtual void	InitFromXml(CUIXml& xml_doc, const char* path);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 			void	SetWeatherSelector(CUIComboBox* ws);
 			void	SetModeSelector(CUIWindow* ms);

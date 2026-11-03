@@ -6,13 +6,6 @@
 
 static int GlobalViewportIndex = 0;
 
-namespace ImGui
-{
-	XREUI_API ImFont* LightFont;
-	XREUI_API ImFont* RegularFont;
-	XREUI_API ImFont* MediumFont;
-	XREUI_API ImFont* BoldFont;
-}
 
 UIRenderForm::UIRenderForm()
 {
@@ -159,7 +152,9 @@ void UIRenderForm::DrawVP()
 		}
 	}
 
-	if ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID)
+	auto& View = EContext.UI->Views[ViewportID];
+	const bool SameSize = View.RTFreez && EContext.UI->RT && View.RTFreez->dwWidth == EContext.UI->RT->dwWidth && View.RTFreez->dwHeight == EContext.UI->RT->dwHeight;
+	if (SameSize && ((EContext.UI->IsPlayInEditor() && ViewportID == 0) || EContext.UI->ViewID == ViewportID))
 	{
 		GRHI->CopySurface(EContext.UI->Views[ViewportID].RTFreez->pRT, EContext.UI->RT->pRT);
 	}
@@ -332,12 +327,17 @@ void UIRenderForm::DrawVP()
 
 		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !EContext.UI->IsPlayInEditor())
 		{
-			if (ImGui::BeginPopupContextItem("Menu"))
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6.f, 6.f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 6.f));
+			const bool MenuOpened = ImGui::BeginPopupContextItem("Menu");
+			if (MenuOpened)
 			{
 				m_OnContextMenu();
 				ImGui::EndPopup();
 			}
-			else
+			ImGui::PopStyleVar(2);
+
+			if (!MenuOpened)
 			{
 				EContext.UI->m_ContextRDir = EContext.UI->m_CurrentRDir;
 				EContext.UI->m_ContextRStart = EContext.UI->m_CurrentRStart;
@@ -359,49 +359,54 @@ void UIRenderForm::DrawVP()
 
 void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 {
-	const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+	EditorDragDrop::HighlightTarget(EDragDropType::Viewport);
 
-	if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Viewport)
+	// Secondary viewports take drops only when they handle them
+	bool Previewing = false;
+	if ((ViewportID == 0 || DragFunctor != nullptr) && ImGui::BeginDragDropTarget())
 	{
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImVec2 p_min = ImGui::GetItemRectMin();
-		ImVec2 p_max = ImGui::GetItemRectMax();
-		draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-	}
+		// Accepted while hovering too, so the dragged object can be shown before the drop
+		bool IsDelivery = false;
+		if (const char* Dropped = EditorDragDrop::Accept(EDragDropType::Viewport, ImGuiDragDropFlags_AcceptBeforeDelivery, &IsDelivery))
+		{
+			const xr_string FileName = Dropped;
+			const int Type = GetDropType(FileName);
 
-	if (ViewportID != 0 || !ImGui::BeginDragDropTarget())
-		return;
+			if (IsDelivery)
+			{
+				DragFunctor(FileName, Type);
+			}
+			else if (DragPreviewFunctor != nullptr)
+			{
+				DragPreviewFunctor(&FileName, Type);
+				Previewing = true;
+			}
+		}
 
-	auto ImData = ImGui::AcceptDragDropPayload("TEST");
-
-	if (ImData == nullptr)
-	{
 		ImGui::EndDragDropTarget();
-		return;
 	}
 
-	struct DragDropData
+	// The payload left the viewport, was dropped or the drag was cancelled
+	if (DragPreviewActive && !Previewing && DragPreviewFunctor != nullptr)
 	{
-		xr_string FileName;
-	} Data = *(DragDropData*)ImData->Data;
+		DragPreviewFunctor(nullptr, 0);
+	}
+	DragPreviewActive = Previewing;
+}
 
-
-	if (Data.FileName.ends_with(".object"))
+int UIRenderForm::GetDropType(const xr_string& FileName)
+{
+	if (FileName.ends_with(".object"))
 	{
-		DragFunctor(Data.FileName, 2);
+		return 2;
 	}
-	else if (Data.FileName.ends_with(".group"))
+	if (FileName.ends_with(".group"))
 	{
-		DragFunctor(Data.FileName, 0);
+		return 0;
 	}
-	else if (Data.FileName.ends_with(".r16"))
+	if (FileName.ends_with(".r16"))
 	{
-		DragFunctor(Data.FileName, 17);
+		return 17;
 	}
-	else {
-		DragFunctor(Data.FileName, 6);
-	}
-
-	ImGui::EndDragDropTarget();
+	return 6;
 }

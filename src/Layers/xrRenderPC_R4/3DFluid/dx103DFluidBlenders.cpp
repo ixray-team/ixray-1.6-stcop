@@ -9,7 +9,7 @@ namespace
 // Volume texture width
 class cl_textureWidth		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float tW = (float)FluidManager.GetTextureWidth();
 		RCache.set_c( C, tW );
@@ -20,7 +20,7 @@ static cl_textureWidth		binder_textureWidth;
 // Volume texture height
 class cl_textureHeight		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float tH = (float)FluidManager.GetTextureHeight();
 		RCache.set_c( C, tH );
@@ -31,7 +31,7 @@ static cl_textureHeight		binder_textureHeight;
 // Volume texture depth
 class cl_textureDepth		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float tD = (float)FluidManager.GetTextureDepth();
 		RCache.set_c( C, tD );
@@ -41,7 +41,7 @@ static cl_textureDepth		binder_textureDepth;
 
 class cl_gridDim		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float tW = (float)FluidManager.GetTextureWidth();
 		float tH = (float)FluidManager.GetTextureHeight();
@@ -53,7 +53,7 @@ static cl_gridDim		binder_gridDim;
 
 class cl_recGridDim		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		float tW = (float)FluidManager.GetTextureWidth();
 		float tH = (float)FluidManager.GetTextureHeight();
@@ -65,7 +65,7 @@ static cl_recGridDim		binder_recGridDim;
 
 class cl_maxDim		: public RHIShaderConstant::Setup 
 {
-	virtual void setup(RHIShaderConstant* C)
+	virtual void setup(RHIShaderConstant* C) override
 	{
 		int tW = FluidManager.GetTextureWidth();
 		int tH = FluidManager.GetTextureHeight();

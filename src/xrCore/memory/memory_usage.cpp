@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include <malloc.h>
+#ifdef IXRAY_USE_MIMALLOC
+#include "memory_alloc_mimalloc.h"
+#endif
 
 #ifdef IXR_WINDOWS
 XRCORE_API void vminfo(size_t* _free, size_t* reserved, size_t* committed) {
@@ -166,7 +169,11 @@ u32	mem_usage_impl(void* heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 
 u32		xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree)
 {
+#ifdef IXRAY_USE_MIMALLOC
+	return CMemAllocMimalloc::Usage(pBlocksUsed, pBlocksFree);
+#else
 	return				(mem_usage_impl((void*)_get_heap_handle(), pBlocksUsed, pBlocksFree));
+#endif
 }
 #else
 u32	mem_usage_impl(void* heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
@@ -176,6 +183,10 @@ u32	mem_usage_impl(void* heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 
 u32		xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree)
 {
+#ifdef IXRAY_USE_MIMALLOC
+	return CMemAllocMimalloc::Usage(pBlocksUsed, pBlocksFree);
+#else
 	return 0;
+#endif
 }
 #endif

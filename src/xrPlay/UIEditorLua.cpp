@@ -137,7 +137,8 @@ void EditorLuaCodespace()
 	LuaEditor.Render("LuaEditor", ImVec2(-1, -1));
 
 	CodeText = LuaEditor.GetText().c_str();
-	CodeText.pop_back();
+	if (!CodeText.empty() && CodeText.back() == '\n')
+		CodeText.pop_back();
 
 	ImGui::EndChild();
 	ImGui::SameLine();

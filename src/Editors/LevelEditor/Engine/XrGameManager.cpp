@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "XrGameManager.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
+#include "../../../xrCore/IniCache.h"
+#include "../../../xrEngine/ImGuiManager.h"
 
 XrGameManager* g_XrGameManager = nullptr;
 extern "C" 
@@ -27,6 +29,10 @@ XrGameManager::XrGameManager()
 
 XrGameManager::~XrGameManager()
 {
+	// Cached ini files may be created by xrGame; delete them while its code is still loaded
+	ClearCachedIniFiles();
+	// ImGui callbacks may hold xrGame code; the manager is destroyed after the DLL is gone
+	CImGuiManager::Instance().UnsubscribeAll();
 	FreeLibrary(m_hGame);
 }
 
@@ -38,6 +44,13 @@ DLL_Pure* XrGameManager::Create(CLASS_ID clsid)
 ISE_Abstract* XrGameManager::CreateFromSection(const char* Name)
 {
 	return m_pCreateFromSection(Name);
+}
+
+bool XrGameManager::BakeIniSchema(const char* Path)
+{
+	using BakeFunction = bool(__cdecl*)(const char*);
+	BakeFunction Bake = (BakeFunction)GetProcAddress(m_hGame, "xrBakeIniSchema");
+	return Bake != nullptr && Bake(Path);
 }
 
 void XrGameManager::Destroy(ISE_Abstract* p)

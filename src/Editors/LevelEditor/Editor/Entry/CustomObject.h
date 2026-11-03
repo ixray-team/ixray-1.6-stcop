@@ -70,7 +70,7 @@ public:
 		flRT_Visible		= (1<<4),
 		flRT_SelectedLast	= (1<<5),
 		flRT_Locked			= (1<<6),
-		
+		flRT_RegionDisabled	= (1<<7), // inside a disabled world partition cell
 	};
 	Flags32			m_RT_Flags;
 public:
@@ -135,7 +135,9 @@ public:
 	bool 			Editable		() const ;
 	
 	IC bool 		Motionable		()const {return m_CO_Flags.is(flMotion); 	}
-	IC bool 		Visible			()const {return m_RT_Flags.is(flRT_Visible);	}
+	IC bool 		Visible			()const {return m_RT_Flags.is(flRT_Visible) && !m_RT_Flags.is(flRT_RegionDisabled);}
+	IC bool			RegionDisabled	()const {return m_RT_Flags.is(flRT_RegionDisabled);}
+	void			SetRegionDisabled(bool flag);
 	IC bool 		Selected		()const {return m_RT_Flags.is(flRT_Selected);}
 	IC bool			Locked			()const {return m_CO_Flags.is(flRT_Locked);}
 	IC bool			Valid			()const {return m_RT_Flags.is(flRT_Valid);}

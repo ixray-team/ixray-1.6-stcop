@@ -1,8 +1,11 @@
 ﻿#include "stdafx.h"
 #include "LevelPreferences.h"
-#include "ContentView.h"
+#include "../../ActorEditor/ActorEditor.h"
 
 #include "../xrECore/Editor/UILogForm.h"
+
+extern ECORE_API bool g_force16BitTransformQuant;
+extern ECORE_API bool g_force32BitTransformQuant;
 
 template<typename T>
 T GetSafe(const nlohmann::json& j, const char* key, T& Out)
@@ -61,6 +64,22 @@ const nlohmann::json* GetObjectSafe(const nlohmann::json& j, const char* key)
 	return &(*it);
 }
 
+void CLevelPreferences::AppendActorRecentFile(const char* Name)
+{
+	const xr_string File = Platform::ANSI_TO_UTF8(Name);
+	auto It = std::find(ActorRecentFiles.begin(), ActorRecentFiles.end(), File);
+	if (It != ActorRecentFiles.end())
+	{
+		ActorRecentFiles.erase(It);
+	}
+
+	ActorRecentFiles.insert(ActorRecentFiles.begin(), File);
+	while (ActorRecentFiles.size() > 10)
+	{
+		ActorRecentFiles.pop_back();
+	}
+}
+
 void CLevelPreferences::Load()
 {
 	if (JSONData.is_discarded() || JSONData.is_null())
@@ -73,14 +92,20 @@ void CLevelPreferences::Load()
 
 	if (const auto* windows = GetObjectSafe(JSONData, "windows"))
 	{
-		GetSafe(*windows, "object_list", OpenObjectList);
-		GetSafe(*windows, "properties", OpenProperties);
-		GetSafe(*windows, "OpenLighting", OpenLighting);
-		GetSafe(*windows, "world_properties", OpenWorldProperties);
-		GetSafe(*windows, "snap_list", OpenSnapList);
-		GetSafe(*windows, "light_anim", OpenLightAnim);
+		CEditorWndStates::Get().Load(*windows);
 
 		GetSafe(*windows, "log_clear_in_pie", UILogForm::bClearInPIE);
+	}
+
+	if (const auto* partition = GetObjectSafe(JSONData, "world_partition"))
+	{
+		bool PartitionEnabled = GWorldPartition.IsEnabled();
+		GetSafe(*partition, "enabled", PartitionEnabled);
+		GWorldPartition.SetEnabled(PartitionEnabled);
+		GetSafe(*partition, "unload_disabled", GWorldPartition.UnloadDisabled);
+		GetSafe(*partition, "stream_around_camera", GWorldPartition.StreamAroundCamera);
+		GetSafe(*partition, "stream_radius", GWorldPartition.StreamRadius);
+		GetSafe(*partition, "stream_budget", GWorldPartition.StreamBudget);
 	}
 
 	if (const auto* comp = GetObjectSafe(JSONData, "Compilers Path"))
@@ -102,22 +127,27 @@ void CLevelPreferences::Load()
 		GetSafe(*lod, "DisableBillboardLOD", DisableBillboardLOD);
 	}
 
-	if (const auto* cb = GetObjectSafe(JSONData, "ContentBrowser"))
+	if (const auto* ae = GetObjectSafe(JSONData, "ActorEditor"))
 	{
-		GetSafe(*cb, "CurPath", GContentView->CurrentDir);
+		GetSafe(*ae, "AlwaysShowKeyBar12", ActorAlwaysShowKeyBar12);
+		GetSafe(*ae, "AlwaysShowKeyBar34", ActorAlwaysShowKeyBar34);
+		GetSafe(*ae, "Force16BitAnims", g_force16BitTransformQuant);
+		GetSafe(*ae, "Force32BitAnims", g_force32BitTransformQuant);
 
-		if (!std::filesystem::exists(xr_path(GContentView->CurrentDir)))
+		int Smooth = (int)SmoothGroup;
+		SmoothGroup = (ESmoothGroup)GetSafe(*ae, "SmoothGroup", Smooth);
+
+		ActorRecentFiles.clear();
+		auto Recent = ae->find("RecentFiles");
+		if (Recent != ae->end() && Recent->is_array())
 		{
-			GContentView->CurrentDir = GContentView->RootDir;
-		}
-
-		GetSafe(*cb, "ViewMode", GContentView->ViewMode);
-		GetSafe(*cb, "ISEPath", GContentView->VirtualPath);
-		GetSafe(*cb, "IsSpawnElement", GContentView->IsSpawnElement);
-
-		if (GContentView->IsSpawnElement)
-		{
-			GContentView->RescanISEDirectory(GContentView->VirtualPath);
+			for (const auto& File : *Recent)
+			{
+				if (File.is_string())
+				{
+					ActorRecentFiles.push_back(File.get<std::string>().c_str());
+				}
+			}
 		}
 	}
 
@@ -162,16 +192,27 @@ void CLevelPreferences::Save()
 	inherited::Save		();
 
 	JSONData["gizmo"]["matrixmode"] = imManipulator.MatrixMode;
-	JSONData["windows"]["object_list"] = OpenObjectList;
-	JSONData["windows"]["properties"] = OpenProperties;
-	JSONData["windows"]["world_properties"] = OpenWorldProperties;
-	JSONData["windows"]["OpenLighting"] = OpenLighting;
-	JSONData["windows"]["snap_list"] = OpenSnapList;
+	JSONData["windows"] = CEditorWndStates::Get().Save();
 	JSONData["windows"]["log_clear_in_pie"] = UILogForm::bClearInPIE;
-	JSONData["windows"]["light_anim"] = OpenLightAnim;
+	JSONData["world_partition"]["enabled"] = GWorldPartition.IsEnabled();
+	JSONData["world_partition"]["unload_disabled"] = GWorldPartition.UnloadDisabled;
+	JSONData["world_partition"]["stream_around_camera"] = GWorldPartition.StreamAroundCamera;
+	JSONData["world_partition"]["stream_radius"] = GWorldPartition.StreamRadius;
+	JSONData["world_partition"]["stream_budget"] = GWorldPartition.StreamBudget;
 	
 	JSONData["LibaryEditor"]["Preview"] = PreviewRenderLibrary;
 	JSONData["PIE"]["ArtPos"] = PIEArtSpawnPos;
+
+	JSONData["ActorEditor"]["AlwaysShowKeyBar12"] = ActorAlwaysShowKeyBar12;
+	JSONData["ActorEditor"]["AlwaysShowKeyBar34"] = ActorAlwaysShowKeyBar34;
+	JSONData["ActorEditor"]["Force16BitAnims"] = g_force16BitTransformQuant;
+	JSONData["ActorEditor"]["Force32BitAnims"] = g_force32BitTransformQuant;
+	JSONData["ActorEditor"]["SmoothGroup"] = (int)SmoothGroup;
+	JSONData["ActorEditor"]["RecentFiles"] = nlohmann::json::array();
+	for (const xr_string& File : ActorRecentFiles)
+	{
+		JSONData["ActorEditor"]["RecentFiles"].push_back(File.c_str());
+	}
 
 	JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
 	JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
@@ -182,10 +223,6 @@ void CLevelPreferences::Save()
 	JSONData["ExperimentalLOD"]["UseMULODs"] = UseMULODs;
 	JSONData["ExperimentalLOD"]["DisableBillboardLOD"] = DisableBillboardLOD;
 
-	JSONData["ContentBrowser"]["CurPath"] = GContentView->CurrentDir;
-	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
-	JSONData["ContentBrowser"]["IsSpawnElement"] = GContentView->IsSpawnElement;
-	JSONData["ContentBrowser"]["ViewMode"] = GContentView->ViewMode;
 	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
 	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
 	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;
@@ -217,6 +254,9 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 	PHelper().CreateBool(items, "Experimental\\LOD\\Use MU LODs (4-level)", &UseMULODs);
 	PHelper().CreateBool(items, "Experimental\\LOD\\Disable Billboard LOD", &DisableBillboardLOD);
 
+	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 12", &ActorAlwaysShowKeyBar12);
+	PHelper().CreateBool(items, "Actor Editor\\Keybar\\Show Footsteps 34", &ActorAlwaysShowKeyBar34);
+
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
 	SceneToolsMapPairIt _E 	= Scene->LastTool();
 	for (; _I!=_E; _I++)
@@ -224,11 +264,11 @@ void CLevelPreferences::FillProp(PropItemVec& items)
 		{
 			if (_I->second->AllowEnabling())
 			{
-				PropValue* V 	= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
+				PropValue* V 	= PHelper().CreateFlag(items, PrepareKey("Tools\\Targets\\Enable", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
 				V->tag			= _I->second->FClassID;
 				V->OnChangeEvent.bind(this, &CLevelPreferences::OnEnabledChange);
 			}
-			PropValue* V		= PHelper().CreateFlag32(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
+			PropValue* V		= PHelper().CreateFlag(items, PrepareKey("Tools\\Targets\\Read Only", _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
 			V->tag				= _I->second->FClassID;
 			V->OnChangeEvent.bind(this, &CLevelPreferences::OnReadonlyChange);
 		}

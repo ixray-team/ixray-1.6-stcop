@@ -15,5 +15,5 @@ public:
 	void	SetVoteTimeResultMsg	(const char* s);
 	void	SetVoteMsg				(const char* s);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

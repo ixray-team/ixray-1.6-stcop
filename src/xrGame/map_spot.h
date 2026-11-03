@@ -25,15 +25,15 @@ public:
 
 public:
 							CMapSpot						(CMapLocation*);
-	virtual					~CMapSpot						();
+	virtual ~CMapSpot						() override;
 	virtual		void		Load							(CUIXml* xml, const char* path, float kx);
 	CMapLocation*			MapLocation						()							{return m_map_location;}
 				int			get_location_level				()							{return m_location_level;}
 	virtual const char*			GetHint							();
-	virtual		void		SetWndPos						(const Fvector2& pos);
-	virtual		void		Update							();
-	virtual		bool		OnMouseDown						(int mouse_btn);
-	virtual		void		OnFocusLost						();
+	virtual void		SetWndPos						(const Fvector2& pos) override;
+	virtual void		Update							() override;
+	virtual bool		OnMouseDown						(int mouse_btn) override;
+	virtual void		OnFocusLost						() override;
 
 				void		show_static_border				(bool status);
 				void		mark_focused					();
@@ -46,8 +46,8 @@ class CMapSpotPointer :public CMapSpot
 	xr_string				m_pointer_hint;
 public:
 							CMapSpotPointer					(CMapLocation*);
-	virtual					~CMapSpotPointer				();
-	virtual		const char*		GetHint							();
+	virtual ~CMapSpotPointer				() override;
+	virtual const char*		GetHint							() override;
 };
 
 class CMiniMapSpot :public CMapSpot
@@ -57,9 +57,9 @@ class CMiniMapSpot :public CMapSpot
 	Frect					m_tex_rect_above,m_tex_rect_normal,m_tex_rect_below;
 public:
 							CMiniMapSpot					(CMapLocation*);
-	virtual					~CMiniMapSpot					();
-	virtual		void		Load							(CUIXml* xml, const char* path, float kx);
-	virtual		void		Draw							();
+	virtual ~CMiniMapSpot					() override;
+	virtual void		Load							(CUIXml* xml, const char* path, float kx) override;
+	virtual void		Draw							() override;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -96,10 +96,10 @@ class CComplexMapSpot : public CMapSpot
 
 public:
 							CComplexMapSpot					(CMapLocation*);
-	virtual					~CComplexMapSpot				();
-	virtual		void		Load							(CUIXml* xml, const char* path, float kx);
-	virtual		void		Update							();
-	virtual		void		SetWndSize						(const Fvector2& size);
+	virtual ~CComplexMapSpot				() override;
+	virtual void		Load							(CUIXml* xml, const char* path, float kx) override;
+	virtual void		Update							() override;
+	virtual void		SetWndSize						(const Fvector2& size) override;
 
 				void		SetLeftTexture(  const char* texture_name )	{ VERIFY2(m_left_icon, texture_name);	m_left_icon->InitTexture(  texture_name ); }
 				void		SetRightTexture( const char* texture_name )	{ VERIFY2(m_right_icon, texture_name);	m_right_icon->InitTexture( texture_name ); }

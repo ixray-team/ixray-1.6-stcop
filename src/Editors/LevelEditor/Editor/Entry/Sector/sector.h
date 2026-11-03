@@ -20,12 +20,15 @@ class CSectorItem
 	CSceneObject* object;
 	CEditableMesh* mesh;
     shared_str MeshName;
+    // Undo: the object name while the object is recreated
+    shared_str ObjectName;
 
 public:
     CSectorItem		();
-    CSectorItem		(CSceneObject* o, CEditableMesh* m, shared_str MeshName);
+    CSectorItem		(CSceneObject* o, CEditableMesh* m, const shared_str& MeshName);
     void GetTransform(Fmatrix& parent);
     bool IsItem		(const char* O, const char* M);
+    IC CSceneObject* GetSceneObject() const { return object; }
     IC bool IsItem(CSceneObject* o, CEditableMesh* m) const { return (o == object) && (m == mesh); }
     IC bool IsItem(const CSectorItem& Item) const { return (Item.object == object) && (Item.mesh == mesh); }
 };
@@ -68,6 +71,8 @@ class CSector :
 public:
 	u8    			m_map_idx;
 
+	const SItemVec&	GetItems	() const { return sector_items; }
+
 					CSector		(LPVOID data, const char* name);
 	void 			Construct	(LPVOID data);
 	virtual 		~CSector	();
@@ -100,6 +105,9 @@ public:
     void 			SetColor 	(u32 clr){sector_color.set(subst_alpha(clr,0));}
 
     void            ReloadObjectsReferences();
+    // Undo: items of these objects keep only their names until RelinkObjects finds the new objects
+    bool			UnlinkObjects	(const xr_hash_set<CCustomObject*>& Objects);
+    void			RelinkObjects	();
     void			CaptureInsideVolume();
     void			CaptureAllUnusedMeshes	();
     void			GetCounts	(int* objects, int* meshes, int* faces);

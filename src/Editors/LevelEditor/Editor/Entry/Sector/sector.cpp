@@ -15,10 +15,12 @@ CSectorItem::CSectorItem()
 	mesh = nullptr;
 }
 
-CSectorItem::CSectorItem(CSceneObject* o, CEditableMesh* m, shared_str NewMeshName)
+CSectorItem::CSectorItem(CSceneObject* o, CEditableMesh* m, const shared_str& NewMeshName)
 {
 	object=o;
 	mesh=m;
+	if (object)
+		object->PinStreaming();
 	MeshName = NewMeshName;
 }
 
@@ -247,6 +249,54 @@ EVisible CSector::Intersect(const Fbox& box)
 }
 
 
+bool CSector::UnlinkObjects(const xr_hash_set<CCustomObject*>& Objects)
+{
+	bool Unlinked = false;
+	for (CSectorItem& Item : sector_items)
+	{
+		if (Item.object != nullptr && Objects.contains(Item.object))
+		{
+			Item.ObjectName = Item.object->GetName();
+			Item.object = nullptr;
+			Item.mesh = nullptr;
+			Unlinked = true;
+		}
+	}
+	return Unlinked;
+}
+
+void CSector::RelinkObjects()
+{
+	for (auto It = sector_items.begin(); It != sector_items.end();)
+	{
+		CSectorItem& Item = *It;
+		if (Item.object != nullptr)
+		{
+			++It;
+			continue;
+		}
+
+		Item.object = smart_cast<CSceneObject*>(Scene->FindObjectByName(Item.ObjectName.c_str(), OBJCLASS_SCENEOBJECT));
+		if (Item.object != nullptr)
+		{
+			// Sectors keep mesh pointers, so their objects never stream out
+			Item.object->PinStreaming();
+			Item.mesh = Item.object->GetReference()->FindMeshByName(Item.MeshName.c_str());
+		}
+
+		if (Item.mesh == nullptr)
+		{
+			Msg("! Sector '%s': object '%s' mesh '%s' is gone, item removed", GetName(), Item.ObjectName.c_str(), Item.MeshName.c_str());
+			It = sector_items.erase(It);
+			continue;
+		}
+
+		Item.ObjectName = shared_str();
+		++It;
+	}
+	m_Flags.set(flNeedUpdateVolume, true);
+}
+
 void CSector::ReloadObjectsReferences()
 {
 	xr_vector<CSectorItem> NeedToRemove;
@@ -385,6 +435,9 @@ void CSector::LoadSectorDef(IReader* F)
 		return;
 	}
 
+	// Sectors keep mesh pointers, so their objects never stream out
+	sitem.object->PinStreaming();
+
 	if (!(sitem.object->IsStatic() || sitem.object->IsMUStatic()))
 	{
 		ELog.Msg(mtError, "Sector Item contains object '%s' - can't load.\nObject is dynamic.", o_name);
@@ -428,6 +481,9 @@ void CSector::LoadSectorDefLTX(CInifile& ini, const char* sect_name, u32 item_id
 		m_bHasLoadError = true;
 		return;
 	}
+
+	// Sectors keep mesh pointers, so their objects never stream out
+	sitem.object->PinStreaming();
 
 	if (!(sitem.object->IsStatic() || sitem.object->IsMUStatic()))
 	{
@@ -625,7 +681,7 @@ void CSector::FillProp(const char* pref, PropItemVec& items)
 	PHelper().CreateCaption(items,PrepareKey(pref,GetName(),"Contents\\Objects"),	xr_string::ToString(objects).c_str());
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
 	PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
-	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
+	PHelper().CreateToken(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
 }
 
 
@@ -651,19 +707,25 @@ bool CSector::Validate(bool bMsg)
 	for (SItemIt it=sector_items.begin();it!=sector_items.end();it++){
 		for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++){
 			CSurface* surf 		= sf_it->first;
-			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->m_ShaderXRLCName.c_str());
+			Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 			if (c_sh == nullptr)
 			{
-				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->m_ShaderXRLCName.c_str(), surf->m_Name.c_str());
+				ELog.Msg(mtError, "*ERROR: Sector: '%s' - Shader '%s' does not exist on material '%s'", GetName(), surf->_ShaderXRLCName(), surf->_Name());
 				bRes = false;
 				continue;
 			}
 
-			if (c_sh->flags.bRendering)	bRenderableFound = true;
+			if (c_sh->flags.bRendering)
+			{
+				bRenderableFound = true;
+			}
 		}
 	}
 	if (!bRenderableFound){
-		if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+		if (bMsg)
+		{
+			ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+		}
 		bRes 		= false;
 	}        
 	return bRes;

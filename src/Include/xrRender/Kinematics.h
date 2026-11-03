@@ -115,7 +115,7 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	//void*								Update_Callback_Param;
 	virtual IRenderVisual*		_BCL 	dcast_RenderVisual() = 0;
 	virtual IKinematicsAnimated*		dcast_PKinematicsAnimated() = 0;
-
+	virtual void ReloadUserData() {};
 	// debug
 #ifdef DEBUG_DRAW
 	virtual void						DebugRender			(Fmatrix& XFORM) = 0;

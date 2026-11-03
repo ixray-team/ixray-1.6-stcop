@@ -20,10 +20,10 @@ private:
 
 public:
 						CUIRankingsCoC		(CUIScrollView* parent);
-	virtual				~CUIRankingsCoC	();
+	virtual ~CUIRankingsCoC	() override;
 
 			void		init_from_xml		(CUIXml& xml,u8 index,bool bUnique);
-			void		Update				();
+	virtual void		Update				() override;
 
 			void		SetName				(const char* name);
 			void		SetDescription		(const char* desc);
@@ -32,8 +32,8 @@ public:
 			void		SetFunctor			(const char* func);
 
 	virtual void		DrawHint			();
-	virtual void		Reset				();
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void		Reset				() override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			bool		ParentHasMe			();

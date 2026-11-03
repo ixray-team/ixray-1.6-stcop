@@ -99,6 +99,10 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 {
 	VERIFY			  	(object);
 	VERIFY				(m_Valid);
+	// Other tools keep links to objects: a running backup could save half of the change
+	g_LevelAutoBackup.Cancel();
+	// The partition keeps object pointers per cell
+	GWorldPartition.MarkDirty();
 
 	switch (object->FClassID)
 	{
@@ -134,6 +138,8 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 {
 	VERIFY(object);
 	VERIFY(m_Valid);
+	g_LevelAutoBackup.Cancel();
+	GWorldPartition.MarkDirty();
 
 	switch (object->FClassID)
 	{
@@ -184,6 +190,8 @@ void EScene::BeforeObjectChange( CCustomObject* object )
 {
 	VERIFY				(object);
 	VERIFY				(m_Valid);
+	// Other tools update their links to the object
+	g_LevelAutoBackup.Cancel();
 
 	ESceneCustomOTool* mt 	= GetOTool(object->FClassID);
 	if (mt&&mt->IsEditable()){
@@ -200,6 +208,7 @@ void EScene::BeforeObjectChange( CCustomObject* object )
 
 int EScene::MultiRenameObjects()
 {
+	g_LevelAutoBackup.Cancel();
 	int cnt						= 0;
 	
 	if (LTools->GetTarget()==OBJCLASS_DUMMY){
@@ -220,6 +229,7 @@ int EScene::MultiRenameObjects()
 
 void EScene::OnFrame( float dT )
 {
+	PROF_EVENT("EScene::OnFrame")
 	if(!valid()) return;
 	if(locked()) return;
 
@@ -295,6 +305,8 @@ void EScene::Unload(bool bEditableOnly)
 ECORE_API xrGUID generate_guid();
 void EScene::Clear(bool bEditableToolsOnly)
 {
+	g_LevelAutoBackup.Cancel();
+	GWorldPartition.MarkDirty();
 	Device.DetailsTask.wait();
 
 	// clear snap
@@ -408,7 +420,9 @@ void EScene::Modified()
 		break;
 	}
 	m_RTFlags.set(flRT_Modified|flRT_Unsaved,true);
+	ModifyCount++;
 	g_scene_physics.OnSceneModified();
+	GWorldPartition.MarkDirty();
 	UIObjectList::Refresh();
 }
 
@@ -485,6 +499,9 @@ bool EScene::ExportGame(SExportStreams* F)
 
 bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTestGlow, bool bTestShaderCompatible, bool bFullTest)
 {
+	// Validation checks the library objects of static objects
+	GWorldPartition.StreamInAll();
+
 	bool bRes = true;
 	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
 	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
@@ -691,8 +708,8 @@ void EScene::FillProp(const char* pref, PropItemVec& items, ObjClassID cls_id)
 	B->OnBtnClickEvent.bind		(this,&EScene::OnBuildControlClick);
 
 	bool enabled				= (m_LevelOp.m_BuildParams.m_quality==ebqCustom);
-	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Hemisphere quality [0-3]"),	&m_LevelOp.m_LightHemiQuality,	0,3);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Sun shadow quality [0-3]"),	&m_LevelOp.m_LightSunQuality,	0,3);       V->Owner()->Enable(enabled);
+	V=PHelper().CreateNumeric		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Hemisphere quality [0-3]"),	&m_LevelOp.m_LightHemiQuality,	0,3);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateNumeric		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Sun shadow quality [0-3]"),	&m_LevelOp.m_LightSunQuality,	0,3);       V->Owner()->Enable(enabled);
 
 	// Build Options
 	// Normals & optimization
@@ -701,9 +718,9 @@ void EScene::FillProp(const char* pref, PropItemVec& items, ObjClassID cls_id)
 
 	// Light maps
 	V=PHelper().CreateFloat		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Pixel per meter"),			&m_LevelOp.m_BuildParams.m_lm_pixels_per_meter,			0.f,20.f);	V->Owner()->Enable(enabled);
-	V=PHelper().CreateU32		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM collapsing)"), 	&m_LevelOp.m_BuildParams.m_lm_rms,						0,255);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateU32		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM zero)"),			&m_LevelOp.m_BuildParams.m_lm_rms_zero,					0,255);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateToken32	(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Jitter samples"),			&m_LevelOp.m_BuildParams.m_lm_jitter_samples, 			js_token);	V->Owner()->Enable(enabled);
+	V=PHelper().CreateNumeric		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM collapsing)"), 	&m_LevelOp.m_BuildParams.m_lm_rms,						0,255);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateNumeric		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM zero)"),			&m_LevelOp.m_BuildParams.m_lm_rms_zero,					0,255);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateToken	(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Jitter samples"),			&m_LevelOp.m_BuildParams.m_lm_jitter_samples, 			js_token);	V->Owner()->Enable(enabled);
 	
 	// tools options
 	{

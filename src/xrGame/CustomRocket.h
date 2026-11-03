@@ -9,7 +9,7 @@
 #include "../xrPhysics/PHUpdateObject.h"
 
 class CRocketLauncher;
-struct dContact;
+class CPHContact;
 struct SGameMtl;
 struct SRoketContact
 {
@@ -31,7 +31,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	CCustomRocket();
-	virtual ~CCustomRocket();
+	virtual ~CCustomRocket() override;
 
 	virtual void Load(const char* section) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
@@ -58,7 +58,7 @@ public:
 
 	virtual void PhDataUpdate(float step) override;
 	virtual void PhTune(float step) override;
-	
+
 	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); }
 
 	virtual CExplosiveRocket* cast_explosive_rocket() override { return nullptr; }
@@ -118,7 +118,7 @@ protected:
 
 	//обработка столкновения
 	void PlayContact();
-	static void	ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
+	static void	ObjectContactCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
@@ -163,6 +163,6 @@ protected:
 
 	virtual void UpdateParticles();
 #ifdef DEBUG
-	virtual void deactivate_physics_shell();
+	virtual void deactivate_physics_shell() override;
 #endif
-};
+};

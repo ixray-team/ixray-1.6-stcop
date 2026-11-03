@@ -4,7 +4,7 @@
 
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrPhysics/MathUtils.h"
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 
 #include "../Include/xrRender/Kinematics.h"
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -70,21 +70,13 @@ CPhysicsShellHolder* collide_obj = 0;
 #endif
 
 static float depth = 0;
-static void  get_depth( bool& do_colide, bool bo1, dContact& c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/)
+static void  get_depth( bool& do_colide, bool bo1, CPHContact& c, SGameMtl * /*material_1*/, SGameMtl * /*material_2*/)
 {
-	save_max( depth, c.geom.depth );
+	save_max( depth, c.GetDepth() );
 #ifdef DEBUG
-	if( depth != c.geom.depth )
+	if( depth != c.GetDepth() )
 		return;
-	dxGeomUserData* ud = 0;
-	if( bo1 )
-		ud = PHRetrieveGeomUserData( c.geom.g2 );
-	else
-		ud = PHRetrieveGeomUserData( c.geom.g1 );
-	if(ud)
-		collide_obj = static_cast<CPhysicsShellHolder*>(ud->ph_ref_object);
-	else
-		collide_obj = 0;
+	collide_obj = static_cast<CPhysicsShellHolder*>(c.GetObject(!bo1));
 #endif
 }
 static std::string collide_diag()
@@ -136,7 +128,7 @@ void imotion_position::state_start( )
 		get_controled_blend(const get_controled_blend& other) = delete;
 		get_controled_blend& operator=(const get_controled_blend& other) = delete;
 
-		virtual	void	operator () ( CBlend &B )
+		virtual void	operator () ( CBlend &B ) override
 		{
 			if( cb == B.Callback && B.bone_or_part == 0 )
 				blend = &B;
@@ -438,7 +430,8 @@ static u32	blends_num( IKinematicsAnimated& KA )
 	{
 		u32 count;
 		scbl(  ):count(){}
-		virtual	void	operator () ( CBlend &B ) 
+
+		void	operator () ( CBlend &B ) override
 		{
 			++count;
 		}
@@ -477,7 +470,7 @@ static void save_blends( buffer_vector<sblend_save>& buffer, IKinematicsAnimated
 		scbl(const scbl& other) = delete;
 		scbl& operator=(const scbl& other) = delete;
 
-		virtual	void	operator () ( CBlend &B ) 
+		void	operator () ( CBlend &B ) override
 		{
 			sblend_save s;
 			s.save( &B );
@@ -739,4 +732,4 @@ void	imotion_position::rootbone_callback	( CBoneInstance *BI )
 	KA->LL_BoneMatrixBuild( *BI, &Fidentity, keys );
 
 	R_ASSERT2( _valid(BI->mTransform), "imotion_position::rootbone_callback" );
-}
+}

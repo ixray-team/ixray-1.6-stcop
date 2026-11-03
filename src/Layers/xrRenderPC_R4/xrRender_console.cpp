@@ -6,11 +6,27 @@
 
 bool UseWeaponRainDrops = true;
 
+u32 g_RainShading = 2;
+float g_RainOpacity = 1.f;
+float g_RainColorBlend = 0.01f;
+float g_RainRadius = 0.1f;
+float g_RainImpactRadius = 1.f;
+float g_RainNear = 1.f;
+float g_RainRefraction = 12.f;
+float g_RainTransmission = 0.8f;
+float g_RainFeather = 0.15f;
+static xr_token RainShadingTokens[] =
+{
+	{"auto", 0},
+	{"simplified", 1},
+	{"pbr", 2},
+	{nullptr, 0}
+};
 int g_SpotShadowCacheMode = 0;
 int g_SunShadowCacheMode = 0;
 int g_SpotShadowCacheBudgetMb = 64;
 
-u32 g_RainDropsMode = 0;
+u32 g_RainDropsMode = 1;
 static xr_token RainDropsModeTokens[] =
 	{
 		{"texture", 0},
@@ -61,6 +77,12 @@ xr_token							qpreset_token							[ ]={
 };
 
 u32 ps_r2_smapsize = 2048;
+// DXMT emulates tessellation with mesh shaders: a high factor multiplies the triangle count
+// instead of using fixed-function hardware, which costs far more than on Windows. 7 keeps the
+// original behaviour; lowering it trades a little surface smoothness for a lot of frame time.
+int ps_r4_tess_max = 7;
+float ps_r4_tess_dist_near = 2.f;
+float ps_r4_tess_dist_far = 4.f;
 xr_token qsmapsize_token[] = {
 	{ "1024", 1024 },
 	{ "2048", 2048 },
@@ -395,12 +417,14 @@ public:
 		SSManager.SetMaxAnisotropy(val);
 	}
 	CCC_tf_Aniso(const char* N, int*	v) : CCC_Integer(N, v, 1, 16)		{ };
-	virtual void Execute	(const char* args)
+
+	virtual void Execute	(const char* args) override
 	{
 		CCC_Integer::Execute	(args);
 		apply					();
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	
 		CCC_Integer::Status		(S);
 		apply					();
@@ -418,12 +442,15 @@ public:
 		clamp(val, -3.0f, 3.0f);
 		SSManager.SetMipLodBias(val);
 	}
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CCC_Float::Execute(args);
 		apply();
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 		apply();
 	}
@@ -433,7 +460,8 @@ class CCC_R2GM : public CCC_Float
 {
 public:
 	CCC_R2GM(const char* N, float*	v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-	virtual void	Execute	(const char* args)
+
+	virtual void	Execute	(const char* args) override
 	{
 		if (0==xr_strcmp(args,"on"))	{
 			ps_r2_ls_flags.set	(R2FLAG_GLOBALMATERIAL,true);
@@ -456,7 +484,9 @@ class CCC_Screenshot : public IConsole_Command
 {
 public:
 	CCC_Screenshot(const char* N) : IConsole_Command(N)  { };
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		if (g_dedicated_server)
 			return;
 
@@ -474,7 +504,8 @@ class CCC_Preset :
 public:
 	CCC_Preset(const char* N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
 
-	virtual void	Execute	(const char* args)	{
+	virtual void	Execute	(const char* args) override
+	{
 		CCC_Token::Execute	(args);
 		string_path		_cfg;
 		string_path		cmd;
@@ -514,7 +545,7 @@ public		:
 
 	CCC_memory_stats(const char* N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		u32 m_base = 0;
 		u32 c_base = 0;
@@ -532,7 +563,7 @@ public:
 	CCC_DofFar(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -553,7 +584,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_DofNear : public CCC_Float
@@ -562,7 +593,7 @@ public:
 	CCC_DofNear(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -583,7 +614,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_DofFocus : public CCC_Float
@@ -592,7 +623,7 @@ public:
 	CCC_DofFocus(const char* N, float* V, float _min=0.0f, float _max=10000.0f) 
 		: CCC_Float( N, V, _min, _max){}
 
-	virtual void Execute(const char* args) 
+	virtual void Execute(const char* args) override
 	{
 		float v = float(atof(args));
 
@@ -620,7 +651,7 @@ public:
 	}
 
 	//	CCC_Dof should save all data as well as load from config
-	virtual void	Save	(IWriter *F)	{;}
+	virtual void	Save	(IWriter *F) override {;}
 };
 
 class CCC_Dof : public CCC_Vector3
@@ -629,7 +660,7 @@ public:
 	CCC_Dof(const char* N, Fvector* V, const Fvector _min, const Fvector _max) : 
 	  CCC_Vector3(N, V, _min, _max) {;}
 
-	virtual void	Execute	(const char* args)
+	virtual void	Execute	(const char* args) override
 	{
 		Fvector v;
 		if (3!=sscanf(args,"%f,%f,%f",&v.x,&v.y,&v.z))	
@@ -647,11 +678,13 @@ public:
 				g_pGamePersistent->SetBaseDof(ps_r2_dof);
 		}
 	}
-	virtual void	Status	(TStatus& S)
+
+	virtual void	Status	(TStatus& S) override
 	{	
 		xr_sprintf	(S,"%f,%f,%f",value->x,value->y,value->z);
 	}
-	virtual void	Info	(TInfo& I)
+
+	virtual void	Info	(TInfo& I) override
 	{	
 		xr_sprintf(I,"vector3 in range [%f,%f,%f]-[%f,%f,%f]",min.x,min.y,min.z,max.x,max.y,max.z);
 	}
@@ -662,7 +695,8 @@ class CCC_DumpResources : public IConsole_Command
 {
 public:
 	CCC_DumpResources(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		dxRenderDeviceRender::Instance().Resources->Dump(false);
 	}
@@ -676,7 +710,8 @@ class CCC_Fog_Reload : public IConsole_Command
 {
 public:
 	CCC_Fog_Reload(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) 
+
+	virtual void Execute(const char* args) override
 	{
 		FluidManager.UpdateProfiles();
 	}
@@ -689,8 +724,9 @@ public:
 	CCC_DetailRadius(const char* N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
 	{
 	};
-	
-	virtual void Execute(const char* args) {
+
+	virtual void Execute(const char* args) override
+	{
 		CCC_Integer::Execute(args);
 
 		dm_current_size				= iFloor((float)ps_r__detail_radius/4)*2;
@@ -704,8 +740,9 @@ public:
 			RImplementation.Details->RequestCacheRebuild();
 		}
 	}
-	
-	virtual void Status(TStatus& S) {
+
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Integer::Status(S);
 	}
 };
@@ -717,7 +754,8 @@ public:
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) override
+	{
 		CCC_Float::Execute(args);
 
 		if (RImplementation.b_loaded)
@@ -726,7 +764,8 @@ public:
 		}
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 	}
 };
@@ -738,12 +777,14 @@ public:
 		: CCC_Float(N, V, _min, _max) {
 	}
 
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) override
+	{
 		CCC_Float::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
 	}
 
-	virtual void Status(TStatus& S) {
+	virtual void Status(TStatus& S) override
+	{
 		CCC_Float::Status(S);
 	}
 };
@@ -754,7 +795,8 @@ public:
 	CCC_DetailReloadDetails_Boolean(LPCSTR N, bool* V)
 		: CCC_Boolean(N, V) {}
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) override
+	{
 		CCC_Boolean::Execute(args);
 		RImplementation.Details->RequestCacheRebuild();
 	}
@@ -825,7 +867,7 @@ class CCC_DetailLayersForceBake : public IConsole_Command
 public:
 	CCC_DetailLayersForceBake(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!RImplementation.Details|| !RImplementation.b_loaded)
 		{
@@ -847,7 +889,7 @@ class CCC_DetailLayersForceLoad : public IConsole_Command
 public:
 	CCC_DetailLayersForceLoad(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args)
+	virtual void Execute(const char* args) override
 	{
 		if (!RImplementation.Details|| !RImplementation.b_loaded)
 		{
@@ -1046,6 +1088,9 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
 	CMD3(CCC_Mask32, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
+	CMD4(CCC_Integer,	"r4_tess_max",		&ps_r4_tess_max,	1,	7	);
+	CMD4(CCC_Float,		"r4_tess_dist_near",&ps_r4_tess_dist_near,	0.f, 50.f);
+	CMD4(CCC_Float,		"r4_tess_dist_far",	&ps_r4_tess_dist_far,	0.f, 100.f);
 
 	CMD3(CCC_Mask32, "r4_vslr_enable", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
 	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
@@ -1201,6 +1246,15 @@ RENDER_API void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r4_use_gasmask", &UseGasmak);
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
 	CMD3(CCC_Token, "r2_rain_drops_mode", &g_RainDropsMode, RainDropsModeTokens);
+	CMD3(CCC_Token, "r_rain_shading", &g_RainShading, RainShadingTokens);
+	CMD4(CCC_Float, "r_rain_opacity", &g_RainOpacity, 0.f, 8.f);
+	CMD4(CCC_Float, "r_rain_color_blend", &g_RainColorBlend, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_radius", &g_RainRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_impact_radius", &g_RainImpactRadius, 0.01f, 2.f);
+	CMD4(CCC_Float, "r_rain_near", &g_RainNear, 0.f, 10.f);
+	CMD4(CCC_Float, "r_rain_refraction", &g_RainRefraction, 0.f, 32.f);
+	CMD4(CCC_Float, "r_rain_transmission", &g_RainTransmission, 0.f, 1.f);
+	CMD4(CCC_Float, "r_rain_feather", &g_RainFeather, 0.f, 1.f);
 	CMD2(CCC_Boolean, "r2_use_weapon_raindrops", &UseWeaponRainDrops);
 
 	// added by Papa Doenitz 2026-03-05

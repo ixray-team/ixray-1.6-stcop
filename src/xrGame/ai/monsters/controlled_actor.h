@@ -17,12 +17,12 @@ class CControlledActor : public CActorInputHandler {
 	bool	m_need_turn;
 
 public:
-	virtual void	reinit				();
-	virtual	float	mouse_scale_factor	(){return flt_max;}
-	virtual void	release				();
-	virtual void	install				(CActor *);
-	virtual void	install				();
-	virtual bool	authorized			(int cmd);
+	virtual void	reinit				() override;
+	virtual float	mouse_scale_factor	() override {return flt_max;}
+	virtual void	release				() override;
+	virtual void	install				(CActor *) override;
+	virtual void	install				() override;
+	virtual bool	authorized			(int cmd) override;
 
 			void	look_point			(const Fvector &point);
 			bool	is_turning			();

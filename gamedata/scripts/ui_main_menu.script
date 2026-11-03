@@ -450,6 +450,9 @@ function main_menu:ReloadGamepadLegend()
 		end
 	end
 	if GetModule("ixr_options") then
-		GetModule("ixr_options").get_controll("gamepad_legend"):ReloadLegend()
+		local legend = GetModule("ixr_options").get_controll("gamepad_legend")
+		if legend then
+			legend:ReloadLegend()
+		end
 	end
 end

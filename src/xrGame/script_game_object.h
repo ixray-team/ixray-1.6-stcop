@@ -1034,6 +1034,8 @@ public:
 			//Phantom
 			void				PhantomSetEnemy(CScriptGameObject*);
 			//Actor
+			float GetWeaponModifier(u32 Type) const;
+			bool SetWeaponModifier(u32 Type, float Value);
 			float		GetActorMaxWeight() const;
 			void		SetActorMaxWeight(float max_weight);
 			float		GetActorMaxWalkWeight() const;
@@ -1081,6 +1083,9 @@ public:
 	bool IsActorSafemode() const;
 	void SetActorSafemode(bool status);
 	bool IsPsiBlocked() const;
+
+	bool UseExternalStorageForTrade();
+	
 	doors::door* m_door;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

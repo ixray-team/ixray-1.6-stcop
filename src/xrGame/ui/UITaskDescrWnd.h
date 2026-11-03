@@ -17,8 +17,8 @@ protected:
 
 public:
 				CUITaskDescrWnd				();
-	virtual		~CUITaskDescrWnd			();
-	virtual void Draw						();
+	virtual ~CUITaskDescrWnd			() override;
+	virtual void Draw						() override;
 	void		Init						(CUIXml* doc, const char* start_from);
 	void		ClearAll					();
 	void		AddArticle					(const char* article);

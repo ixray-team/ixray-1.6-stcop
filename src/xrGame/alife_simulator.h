@@ -18,13 +18,13 @@ class CALifeSimulator :
 	public CALifeCombatManager
 {
 protected:
-	virtual void	setup_simulator		(CSE_ALifeObject *object);
-	virtual void	reload				(const char* section);
+	virtual void	setup_simulator		(CSE_ALifeObject *object) override;
+	virtual void	reload				(const char* section) override;
 
 public:
 					CALifeSimulator		(xrServer *server, shared_str* command_line);
-	virtual			~CALifeSimulator	();
-	virtual	void	destroy				();
+	virtual ~CALifeSimulator	() override;
+	virtual void	destroy				() override;
 	IReader const* get_config			( shared_str config ) const;
 
 private:

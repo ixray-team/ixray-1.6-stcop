@@ -16,7 +16,7 @@ class IPHWorld:
 	public iphysics_scripted_class
 {
 	public:
-	virtual								~IPHWorld						()									{}
+	virtual	~IPHWorld						() override {}
 	virtual  float						Gravity							()									= 0;
 	virtual  void						SetGravity						( float	g )							= 0;
 	virtual  bool						Processing						()									= 0;

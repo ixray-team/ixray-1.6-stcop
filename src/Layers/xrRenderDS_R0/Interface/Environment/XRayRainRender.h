@@ -4,9 +4,9 @@ class CDS0_RainRender:
 {
 public:
 	CDS0_RainRender();
-	virtual void Copy(IRainRender &_in) ;
+	virtual void Copy(IRainRender &_in) override;
 
-	virtual void Render(CEffect_Rain&owner) ;
+	virtual void Render(CEffect_Rain&owner) override;
 
-	virtual const Fsphere& GetDropBounds() const;
+	virtual const Fsphere& GetDropBounds() const override;
 };

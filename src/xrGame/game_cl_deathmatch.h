@@ -20,7 +20,7 @@ class game_cl_Deathmatch : public game_cl_mp
 	shared_str						Actor_Spawn_Effect;
 public :
 									game_cl_Deathmatch();
-	virtual							~game_cl_Deathmatch();
+	virtual ~game_cl_Deathmatch() override;
 	s32								m_s32FragLimit; //dm,tdm,ah
 	s32								m_s32TimeLimit; //dm
 	bool							m_bDamageBlockIndicators;
@@ -29,14 +29,14 @@ public :
 
 	u32								m_cl_dwWarmUp_Time;
 	string64						WinnerName;
-	
-	virtual		CUIGameCustom*		createGameUI			();
-	virtual		void				SetGameUI				(CUIGameCustom*);
-	virtual		void				net_import_state		(NET_Packet& P);
-	virtual		void				net_import_update		(NET_Packet& P);	
-	virtual		void				Init					();
 
-	virtual		void				LoadSndMessages			();
+	virtual CUIGameCustom*		createGameUI			() override;
+	virtual void				SetGameUI				(CUIGameCustom*) override;
+	virtual void				net_import_state		(NET_Packet& P) override;
+	virtual void				net_import_update		(NET_Packet& P) override;
+	virtual void				Init					() override;
+
+	virtual void				LoadSndMessages			() override;
 	protected:
 	struct PresetItem
 	{
@@ -79,19 +79,19 @@ public :
 			IBuyWnd*				InitBuyMenu				(const shared_str& BasePriceSection, s16 Team);
 			CUISkinSelectorWnd*		InitSkinMenu			(s16 Team = -1);
 			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, bool OnlyPreset = false);
-	virtual bool					CanBeReady				();
+	virtual bool					CanBeReady				() override;
 	virtual bool					CanCallBuyMenu			();
 	virtual bool					CanCallSkinMenu			();
 	virtual	bool					CanCallInventoryMenu	();
 
-	virtual bool					NeedToSendReady_Actor	(int key, game_PlayerState* ps);
-	virtual bool					NeedToSendReady_Spectator(int key, game_PlayerState* ps);
+	virtual bool					NeedToSendReady_Actor	(int key, game_PlayerState* ps) override;
+	virtual bool					NeedToSendReady_Spectator(int key, game_PlayerState* ps) override;
 
 			void					Check_Invincible_Players ();
 
-	virtual		void				shedule_Update			(u32 dt);
-	virtual		bool				OnKeyboardPress			(int key);
-	virtual		bool				OnKeyboardRelease		(int key);
+	virtual void				shedule_Update			(u32 dt) override;
+	virtual bool				OnKeyboardPress			(int key) override;
+	virtual bool				OnKeyboardRelease		(int key) override;
 
 	virtual		const shared_str	GetTeamMenu				(s16 team);
 	virtual		void				LoadTeamDefaultPresetItems	(const shared_str& caSection, IBuyWnd* pBuyMenu, PRESET_ITEMS* pPresetItems);
@@ -110,58 +110,58 @@ public :
 	virtual		void				HideBuyMenu				();
 
 public:
-	virtual s16						ModifyTeam				(s16 Team);
+	virtual s16						ModifyTeam				(s16 Team) override;
 
-	virtual		char*				getTeamSection			(int Team);
+	virtual char*				getTeamSection			(int Team) override;
 	virtual	void					SetCurrentBuyMenu		();
 	virtual	void					SetCurrentSkinMenu		();//	{pCurSkinMenu = pSkinMenuTeam0; };
 
-	virtual	void					OnSpectatorSelect		();
+	virtual void					OnSpectatorSelect		() override;
 
-	virtual	void					OnMapInfoAccept			();
-	virtual		void				OnSkinMenuBack			();
-	virtual void					OnBuyMenu_Ok			();
+	virtual void					OnMapInfoAccept			() override;
+	virtual void				OnSkinMenuBack			() override;
+	virtual void					OnBuyMenu_Ok			() override;
 	virtual	void					OnBuyMenu_DefaultItems	();
-	virtual void					OnSkinMenu_Ok			();
-	virtual		void				OnSkinMenu_Cancel		();
+	virtual void					OnSkinMenu_Ok			() override;
+	virtual void				OnSkinMenu_Cancel		() override;
 
-	virtual		void				OnGameMenuRespond_ChangeSkin	(NET_Packet& P);
+	virtual void				OnGameMenuRespond_ChangeSkin	(NET_Packet& P) override;
 
 	virtual CUIDialogWnd*			GetBuyWnd				()	{ return (CUIDialogWnd*) pCurBuyMenu; };
 	virtual CUIDialogWnd*			GetSkinWnd				()	{ return (CUIDialogWnd*) pCurSkinMenu; };
 
-	virtual		void				OnVoteStart				(NET_Packet& P);
-	virtual		void				OnVoteStop				(NET_Packet& P);
-	virtual		void				OnVoteEnd				(NET_Packet& P);
+	virtual void				OnVoteStart				(NET_Packet& P) override;
+	virtual void				OnVoteStop				(NET_Packet& P) override;
+	virtual void				OnVoteEnd				(NET_Packet& P) override;
 
-	virtual		void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst);
+	virtual void				GetMapEntities			(xr_vector<SZoneMapEntityData>& dst) override;
 
-	virtual		void				OnRender				();
-	virtual		bool				IsEnemy					(game_PlayerState* ps);
-	virtual		bool				IsEnemy					(CEntityAlive* ea1, CEntityAlive* ea2);
+	virtual void				OnRender				() override;
+	virtual bool				IsEnemy					(game_PlayerState* ps) override;
+	virtual bool				IsEnemy					(CEntityAlive* ea1, CEntityAlive* ea2) override;
 
-	virtual		void				OnSpawn					(CObject* pObj);
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase);	
-	virtual		void				OnRankChanged			(u8 OldRank);
+	virtual void				OnSpawn					(CObject* pObj) override;
+	virtual void				OnSwitchPhase			(u32 old_phase, u32 new_phase) override;
+	virtual void				OnRankChanged			(u8 OldRank) override;
 	virtual		void				PlayRankChangesSndMessage ();
-	virtual		void				OnTeamChanged			();
-	virtual		void				OnMoneyChanged			();
+	virtual void				OnTeamChanged			() override;
+	virtual void				OnMoneyChanged			() override;
 
 	virtual		void				SetScore				();
 
-	virtual		void				OnSwitchPhase_InProgress();
+	virtual void				OnSwitchPhase_InProgress() override;
 
-	virtual		u8					GetTeamCount			() { return 1; };
-	
-	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps);
-	virtual		void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what);
+	virtual u8					GetTeamCount			() override { return 1; };
 
-	virtual		void				OnGameRoundStarted				();
-	virtual		void				UpdateMapLocations		();
-	virtual		bool				IsPlayerInTeam			(game_PlayerState* ps, ETeam team);
+	virtual void				OnPlayerFlagsChanged	(game_PlayerState* ps) override;
+	virtual void				SendPickUpEvent			(ALife::_OBJECT_ID ID_who, ALife::_OBJECT_ID ID_what) override;
+
+	virtual void				OnGameRoundStarted				() override;
+	virtual void				UpdateMapLocations		() override;
+	virtual bool				IsPlayerInTeam			(game_PlayerState* ps, ETeam team) override;
 	virtual		bool				LocalPlayerCanBuyItem	(shared_str const & name_sect);
-	virtual		const char*				GetGameScore			(string32&	score_dest);
-	virtual		void				OnConnected				();
+	virtual const char*				GetGameScore			(string32&	score_dest) override;
+	virtual void				OnConnected				() override;
 
 	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
 	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return this; }

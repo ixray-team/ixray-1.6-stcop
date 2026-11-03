@@ -63,7 +63,7 @@ void CRender::level_Load(IReader* fs)
 		chunk = fs->open_chunk		(fsL_SHADERS);
 		R_ASSERT2					(chunk,"Level doesn't builded correctly.");
 		u32 count = chunk->r_u32	();
-		Shaders.resize				(count);
+		ShadersLevel.resize				(count);
 		for(u32 i=0; i<count; i++)	// skip first shader as "reserved" one
 		{
 			string512				n_sh,n_tlist;
@@ -74,7 +74,7 @@ void CRender::level_Load(IReader* fs)
 			LPSTR			delim	= strchr(n_sh,'/');
 			*delim					= 0;
 			xr_strcpy					(n_tlist,delim+1);
-			Shaders[i]				= dxRenderDeviceRender::Instance().Resources->Create(n_sh,n_tlist);
+			ShadersLevel[i]				= dxRenderDeviceRender::Instance().Resources->Create(n_sh,n_tlist);
 		}
 		chunk->close();
 	}
@@ -383,7 +383,8 @@ void CRender::level_Unload()
 	m_levels_planars.resize(0);
 
 	//*** Shaders
-	Shaders.clear();
+	ShadersLevel.clear();
+	ShadersShared.clear();
 	b_loaded					= false;
 }
 
@@ -450,11 +451,17 @@ void CRender::LoadVisuals(IReader *fs)
 	dxRender_Visual*		V		= 0;
 	ogf_header		H;
 
-	while ((chunk=fs->open_chunk(index))!=0)
+	while ((chunk=fs->open_chunk(index))!=nullptr)
 	{
 		chunk->r_chunk_safe			(OGF_HEADER,&H,sizeof(H));
 		V = Models->Instance_Create	(H.type);
-		V->Load(0,chunk,0);
+		xr_stack_string256 debug_name;
+		if (auto data = chunk->open_chunk(OGF_DEBUG_DATA); data)
+		{
+			data->r_stringZ(debug_name);
+			data->close();
+		}
+		V->Load(debug_name.empty() ? nullptr : debug_name.c_str(), chunk, 0);
 		Visuals.push_back(V);
 
 		chunk->close();

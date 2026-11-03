@@ -138,8 +138,6 @@ void CBreakableObject::CreateBroken()
 	m_Shell->Build();
 	m_Shell->setMass(m_Shell->getMass()*0.1f*100.f);
 
-	//dMass m;
-	//dMassSetBox(&m,m_Shell->getMass()/100.f,1.f,1.f,1.f);
 	//m_Shell->addEquelInertiaToEls(m);
 	m_Shell->MassAddBox( m_Shell->getMass()/100.f, Fvector().set(1,1,1) );
 	m_Shell->SmoothElementsInertia(0.3f);

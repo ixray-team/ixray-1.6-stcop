@@ -4,30 +4,31 @@
 #include "RocketLauncher.h"
 #include "../xrScripts/script_export_space.h"
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CWeaponRPG7 final : public CWeaponMagazined,
 	public CRocketLauncher
 {
 	using inherited = CWeaponMagazined;
 public:
 	CWeaponRPG7();
-	virtual	~CWeaponRPG7() = default;
+	virtual ~CWeaponRPG7() override = default;
 
-	virtual bool net_Spawn		(CSE_Abstract* DC);
-	virtual void OnStateSwitch	(u8 S);
-	virtual void OnEvent		(NET_Packet& P, u16 type);
-	virtual void ReloadMagazine	();
-	virtual void Load			(const char* section);
-	virtual	void FireTrace		(const Fvector& P, const Fvector& D);
-	virtual void on_a_hud_attach();
+	virtual bool net_Spawn		(CSE_Abstract* DC) override;
+	virtual void OnStateSwitch	(u8 S) override;
+	virtual void OnEvent		(NET_Packet& P, u16 type) override;
+	virtual void ReloadMagazine	() override;
+	virtual void Load			(const char* section) override;
+	virtual void FireTrace		(const Fvector& P, const Fvector& D) override;
+	virtual void on_a_hud_attach() override;
 
-	virtual void FireStart		();
+	virtual void FireStart		() override;
 
 			void UpdateMissileVisibility	();
-	virtual void UnloadMagazine				(bool spawn_ammo = true);
+	virtual void UnloadMagazine				(bool spawn_ammo = true) override;
 
-	virtual void net_Import			( NET_Packet& P);				// import from server
+	virtual void net_Import			( NET_Packet& P) override;				// import from server
 
-	virtual CWeaponRPG7* cast_weapon_rpg7() { return this; }
+	virtual CWeaponRPG7* cast_weapon_rpg7() override { return this; }
 	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	bool CheckRLMisfireRocket();
@@ -36,7 +37,7 @@ public:
 protected:
 	shared_str	m_sGrenadeBoneName;
 	shared_str	m_sHudGrenadeBoneName;
-	virtual bool	AllowBore		();
+	virtual bool	AllowBore		() override;
 
 	struct
 	{
@@ -64,5 +65,4 @@ protected:
 
 	shared_str	m_sRocketSection;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

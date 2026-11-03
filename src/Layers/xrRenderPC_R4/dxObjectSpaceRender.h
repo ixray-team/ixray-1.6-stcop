@@ -10,12 +10,12 @@ class dxObjectSpaceRender : public IObjectSpaceRender
 {
 public:
 	dxObjectSpaceRender();
-	virtual ~dxObjectSpaceRender();
-	virtual void Copy (IObjectSpaceRender &_in);
+	virtual ~dxObjectSpaceRender() override;
+	virtual void Copy (IObjectSpaceRender &_in) override;
 
-	virtual void dbgRender();
-	virtual void dbgAddSphere(const Fsphere &sphere, u32 colour);
-	virtual void SetShader();
+	virtual void dbgRender() override;
+	virtual void dbgAddSphere(const Fsphere &sphere, u32 colour) override;
+	virtual void SetShader() override;
 
 private:
 	ref_shader							m_shDebug;

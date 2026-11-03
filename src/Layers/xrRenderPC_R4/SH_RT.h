@@ -7,7 +7,7 @@ class RENDER_API CRT :
 {
 public:
 	CRT();
-	~CRT();
+	virtual ~CRT() override;
 
 	enum CRTCreationFlags
 	{
@@ -72,7 +72,7 @@ public:
 	u64						_order;
 
 	CRTC					();
-	~CRTC					();
+	virtual ~CRTC					() override;
 
 	void				create(const char* name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void				destroy			();

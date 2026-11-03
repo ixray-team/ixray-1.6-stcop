@@ -10,8 +10,8 @@ private:
 
 public:
 						CStateManagerChimera	(CChimera *obj);
-	virtual				~CStateManagerChimera	();
+	virtual ~CStateManagerChimera	() override;
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		execute					() override;
+	virtual void		remove_links			(CObject* object_) override { inherited::remove_links(object_);}
 };

@@ -14,6 +14,7 @@ class CPda;
 using PDA_LIST = xr_vector<CPda*>;
 using PDA_LIST_it = PDA_LIST::iterator;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CPda final :
 	public CInventoryItemObject,
 	public Feel::Touch,
@@ -22,7 +23,7 @@ class CPda final :
 	using inherited = CInventoryItemObject;
 public:
 	CPda() = default;
-	virtual	~CPda() = default;
+	virtual ~CPda() override = default;
 
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void Load(const char* section) override;

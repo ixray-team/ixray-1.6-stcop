@@ -168,7 +168,7 @@ namespace FlamethrowerTrace
 	public:
 		CCollision() = default;
 		CCollision(CTrace& Trace);
-		virtual ~CCollision();
+		virtual ~CCollision() override;
 
 		//void SetManager(CManager& Manager) { this->Manager = &Manager; }
 		void SetTrace(CTrace& Trace) { this->Trace = &Trace; }
@@ -287,7 +287,7 @@ namespace FlamethrowerTrace
 	//#endif
 	
 		CManager(CFlamethrower* flamethrower);
-		~CManager();
+		virtual ~CManager() override;
 	
 		void	feel_touch_new(CObject* O) override;
 		void	feel_touch_delete(CObject* O) override;

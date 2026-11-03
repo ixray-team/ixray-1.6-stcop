@@ -8,6 +8,7 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CBurer final : public CBaseMonster, public CTelekinesis, public ITelekineticEnemy
 {
 public:
@@ -176,7 +177,7 @@ public:
 	CBaseMonster* get_self() override;
 
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 	void set_force_gravi_attack(bool force_gravi) { m_force_gravi_attack = force_gravi; }
@@ -186,7 +187,7 @@ public:
 
 	void StaminaHit();
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+
 
 	void face_enemy();
 };

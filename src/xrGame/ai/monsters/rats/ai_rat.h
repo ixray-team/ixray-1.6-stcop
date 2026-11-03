@@ -331,94 +331,94 @@ public:
 			void				init					();
 public:
 								CAI_Rat					();
-	virtual						~CAI_Rat				();
-	virtual DLL_Pure			*_construct				();
+	virtual ~CAI_Rat				() override;
+	virtual DLL_Pure			*_construct				() override;
 
 public:
-	virtual CGameObject*		cast_game_object			()  {return this;};
-	virtual CInventoryItem*		cast_inventory_item			()	{return this;}
-	virtual CAttachableItem*	cast_attachable_item		()	{return this;}
-	virtual CEatableItem*		cast_eatable_item			()	{return this;}
-	virtual CEntityAlive*		cast_entity_alive			()	{return this;}
-	virtual CEntity*			cast_entity					()	{return this;}
-	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
-	virtual CCreature*		cast_creature			()	{return this;}
-	virtual CScriptEntity*		cast_script_entity			()	{return this;}
-	virtual CWeapon*			cast_weapon					()	{return NULL;}
+	virtual CGameObject*		cast_game_object			() override {return this;};
+	virtual CInventoryItem*		cast_inventory_item			() override {return this;}
+	virtual CAttachableItem*	cast_attachable_item		() override {return this;}
+	virtual CEatableItem*		cast_eatable_item			() override {return this;}
+	virtual CEntityAlive*		cast_entity_alive			() override {return this;}
+	virtual CEntity*			cast_entity					() override {return this;}
+	virtual CPhysicsShellHolder*cast_physics_shell_holder	() override {return this;}
+	virtual CCreature*		cast_creature			() override {return this;}
+	virtual CScriptEntity*		cast_script_entity			() override {return this;}
+	virtual CWeapon*			cast_weapon					() override {return NULL;}
 	virtual CAI_Rat				*dcast_Rat					()	{return this;};
 
 public:
-
-	virtual bool				renderable_ShadowReceive();
-	virtual bool				renderable_ShadowGenerate();
-	virtual bool				net_Spawn				(CSE_Abstract* DC);
-	virtual void				net_Destroy				();
-	virtual void				net_Export				(NET_Packet& P);
-	virtual void				net_Import				(NET_Packet& P);
-	virtual void				HitSignal				(float amount, Fvector& vLocalDir, CObject* who, s16 element);
-	virtual void				Die						(CObject* who);
-	virtual void				Load					(const char* section);
-	virtual void				Think					();
-	virtual void				SelectAnimation			(const Fvector& _view, const Fvector& _move, float speed );
-	virtual void				Exec_Action				(float dt);
-	virtual	void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power);
-	virtual void				feel_touch_new			(CObject* O);
-	virtual bool				feel_touch_on_contact	(CObject* O);
-	virtual bool				feel_vision_isRelevant	(CObject*);
-	virtual void				shedule_Update			(u32 dt);
-	virtual void				UpdateCL				();
-	virtual	void				Hit						(SHit* pHDS);
+	virtual bool				renderable_ShadowReceive() override;
+	virtual bool				renderable_ShadowGenerate() override;
+	virtual bool				net_Spawn				(CSE_Abstract* DC) override;
+	virtual void				net_Destroy				() override;
+	virtual void				net_Export				(NET_Packet& P) override;
+	virtual void				net_Import				(NET_Packet& P) override;
+	virtual void				HitSignal				(float amount, Fvector& vLocalDir, CObject* who, s16 element) override;
+	virtual void				Die						(CObject* who) override;
+	virtual void				Load					(const char* section) override;
+	virtual void				Think					() override;
+	virtual void				SelectAnimation			(const Fvector& _view, const Fvector& _move, float speed ) override;
+	virtual void				Exec_Action				(float dt) override;
+	virtual void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power) override;
+	virtual void				feel_touch_new			(CObject* O) override;
+	virtual bool				feel_touch_on_contact	(CObject* O) override;
+	virtual bool				feel_vision_isRelevant	(CObject*) override;
+	virtual void				shedule_Update			(u32 dt) override;
+	virtual void				UpdateCL				() override;
+	virtual void				Hit						(SHit* pHDS) override;
 			void				CreateSkeleton			();
-	
-	virtual void				UpdatePositionAnimation	();
+
+	virtual void				UpdatePositionAnimation	() override;
 
 	/////////////////////////////////////
 	//rat as eatable item
-	virtual void				OnHUDDraw				(CCustomHUD* hud) {inherited::OnHUDDraw(hud);}
-	virtual void				OnH_B_Chield			();
+	virtual void				OnHUDDraw				(CCustomHUD* hud) override {inherited::OnHUDDraw(hud);}
+	virtual void				OnH_B_Chield			() override;
 	virtual void				OnH_B_Independent		();
-	virtual void				OnH_A_Independent		();
-	virtual void				OnEvent					(NET_Packet& P, u16 type) {inherited::OnEvent(P,type);}
-	virtual bool				Useful					() const;
-	virtual bool				UsedAI_Locations		();
+	virtual void				OnH_A_Independent		() override;
+	virtual void				OnEvent					(NET_Packet& P, u16 type) override {inherited::OnEvent(P,type);}
+	virtual bool				Useful					() const override;
+	virtual bool				UsedAI_Locations		() override;
 	///////////////////////////////////////////////////////////////////////
-	virtual u16					PHGetSyncItemsNumber	()			{return inherited ::PHGetSyncItemsNumber();}
-	virtual CPHSynchronize*		PHGetSyncItem			(u16 item)	{return inherited ::PHGetSyncItem(item);}
-	virtual void				PHUnFreeze				()			{return inherited ::PHUnFreeze();}
-	virtual void				PHFreeze				()			{return inherited ::PHFreeze();}
+	virtual u16					PHGetSyncItemsNumber	() override {return inherited ::PHGetSyncItemsNumber();}
+	virtual CPHSynchronize*		PHGetSyncItem			(u16 item) override {return inherited ::PHGetSyncItem(item);}
+	virtual void				PHUnFreeze				() override {return inherited ::PHUnFreeze();}
+	virtual void				PHFreeze				() override {return inherited ::PHFreeze();}
 	///////////////////////////////////////////////////////////////////////
 #ifdef DEBUG_DRAW
-	virtual void				OnRender				();
+	virtual void				OnRender				() override;
 #endif
-	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const;
-	virtual	float				evaluate				(const CItemManager *manager, const CGameObject *object) const;
-	virtual	void				reinit					();
-	virtual void				reload					(const char*	section);
-	virtual const SRotation		Orientation				() const
+	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const override;
+	virtual float				evaluate				(const CItemManager *manager, const CGameObject *object) const override;
+	virtual void				reinit					() override;
+	virtual void				reload					(const char*	section) override;
+
+	virtual const SRotation		Orientation				() const override
 	{
 		return					(inherited::Orientation());
 	};
 public:
-	virtual void				make_Interpolation		();
-	virtual void				PH_B_CrPr				(); // actions & operations before physic correction-prediction steps
-	virtual void				PH_I_CrPr				(); // actions & operations after correction before prediction steps
+	virtual void				make_Interpolation		() override;
+	virtual void				PH_B_CrPr				() override; // actions & operations before physic correction-prediction steps
+	virtual void				PH_I_CrPr				() override; // actions & operations after correction before prediction steps
 #ifdef DEBUG
-	virtual void				PH_Ch_CrPr				(); // 
+	virtual void				PH_Ch_CrPr				() override; // 
 #endif
-	virtual void				PH_A_CrPr				(); // actions & operations after phisic correction-prediction steps
-	virtual void				OnH_A_Chield			();
-	virtual void				create_physic_shell		();
-	virtual void				setup_physic_shell		();
-	virtual void				activate_physic_shell	();
-	virtual void				on_activate_physic_shell();
-	virtual	Feel::Sound*		dcast_FeelSound			()			{ return this;	}
+	virtual void				PH_A_CrPr				() override; // actions & operations after phisic correction-prediction steps
+	virtual void				OnH_A_Chield			() override;
+	virtual void				create_physic_shell		() override;
+	virtual void				setup_physic_shell		() override;
+	virtual void				activate_physic_shell	() override;
+	virtual void				on_activate_physic_shell() override;
+	virtual Feel::Sound*		dcast_FeelSound			() override { return this;	}
 	virtual bool				use_model_pitch			() const;
-	virtual float				get_custom_pitch_speed	(float def_speed);
+	virtual float				get_custom_pitch_speed	(float def_speed) override;
 
 	//serialization
-	virtual void				save					(NET_Packet &output_packet) {inherited::save(output_packet);}
-	virtual void				load					(IReader &input_packet)		{inherited::load(input_packet);}
-	virtual bool				net_SaveRelevant		()							{return inherited::net_SaveRelevant();}
+	virtual void				save					(NET_Packet &output_packet) override {inherited::save(output_packet);}
+	virtual void				load					(IReader &input_packet) override {inherited::load(input_packet);}
+	virtual bool				net_SaveRelevant		() override {return inherited::net_SaveRelevant();}
 			bool				can_stand_here			();
 			bool				can_stand_in_position	();
 			Fvector				get_next_target_point	();
@@ -428,7 +428,7 @@ public:
 private:
 	steering_behaviour::manager	*m_behaviour_manager;
 protected:
-	virtual bool	use_parent_ai_locations	() const
+	virtual bool	use_parent_ai_locations	() const override
 	{
 		return CAttachableItem::use_parent_ai_locations();
 	}

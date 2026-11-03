@@ -30,7 +30,8 @@ typedef void (*TOnChooseFillEvents)();
 struct SChooseEvents{
 	enum{
     	flAnimated		= (1<<0),
-        flClearTexture  = (1<<1)
+        flClearTexture  = (1<<1),
+		flDisabled = 1<<2,
     };
 	shared_str			caption;
     TOnChooseFillItems	on_fill;

@@ -29,13 +29,13 @@ class CUIMainIngameWnd final :
 {
 public:
 	CUIMainIngameWnd();
-	virtual ~CUIMainIngameWnd();
+	virtual ~CUIMainIngameWnd() override;
 
 	virtual void Init();
-	virtual void Draw();
-	virtual void Update();
+	virtual void Draw() override;
+	virtual void Update() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 

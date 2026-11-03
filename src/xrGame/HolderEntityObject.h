@@ -21,23 +21,23 @@ private:
 
 //casts
 public:
-	virtual CHolderCustom	*cast_holder_custom	()				{return this;}
+	virtual CHolderCustom	*cast_holder_custom	() override {return this;}
 
 //general
 public:
 							CHolderEntityObject		();
-	virtual					~CHolderEntityObject	();
+	virtual ~CHolderEntityObject	() override;
 
-	virtual void			Load				(const char* section);
+	virtual void			Load				(const char* section) override;
 
-	virtual bool			net_Spawn			(CSE_Abstract* DC);
-	virtual void			net_Destroy			();
-	virtual void			net_Export			(NET_Packet& P);	// export to server
-	virtual void			net_Import			(NET_Packet& P);	// import from server
+	virtual bool			net_Spawn			(CSE_Abstract* DC) override;
+	virtual void			net_Destroy			() override;
+	virtual void			net_Export			(NET_Packet& P) override;	// export to server
+	virtual void			net_Import			(NET_Packet& P) override;	// import from server
 
-	virtual void			UpdateCL			();
+	virtual void			UpdateCL			() override;
 
-	virtual	void			Hit					(SHit* pHDS);
+	virtual void			Hit					(SHit* pHDS) override;
 
 //shooting
 private:
@@ -52,31 +52,31 @@ protected:
 
 //HolderCustom
 public:
-	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) {return !Owner();};
-	virtual void			OnMouseMove			(int x, int y);
-	virtual void			OnGamepadAxisMove	(int id, Fvector2 value);
-	virtual void			OnGamepadKeyPress	(int id);
-	virtual void			OnGamepadKeyRelease	(int id);
-	virtual void			OnKeyboardPress		(int dik);
-	virtual void			OnKeyboardRelease	(int dik);
-	virtual void			OnKeyboardHold		(int dik);
-	virtual void			OnGyroscopeMove		(Fvector3 value);
-	virtual CInventory*		GetInventory		(){return nullptr;};
-	virtual void			cam_Update			(float dt, float fov=90.0f);
+	virtual bool			Use					(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos) override {return !Owner();};
+	virtual void			OnMouseMove			(int x, int y) override;
+	virtual void			OnGamepadAxisMove	(int id, Fvector2 value) override;
+	virtual void			OnGamepadKeyPress	(int id) override;
+	virtual void			OnGamepadKeyRelease	(int id) override;
+	virtual void			OnKeyboardPress		(int dik) override;
+	virtual void			OnKeyboardRelease	(int dik) override;
+	virtual void			OnKeyboardHold		(int dik) override;
+	virtual void			OnGyroscopeMove		(Fvector3 value) override;
+	virtual CInventory*		GetInventory		() override {return nullptr;};
+	virtual void			cam_Update			(float dt, float fov=90.0f) override;
 
-	virtual void			renderable_Render	();
+	virtual void			renderable_Render	() override;
 
 	virtual void			attach_actor_script(bool bForce = false);
 	virtual void			detach_actor_script(bool bForce = false);
 
-	virtual bool			attach_Actor		(CGameObject* actor);
-	virtual void			detach_Actor		();
-	virtual bool			allowWeapon			()	const				{return m_bAllowWeapon;};
-	virtual bool			HUDView				()	const				{return true;};
-	virtual Fvector			ExitPosition()								{ return m_exit_position; };
+	virtual bool			attach_Actor		(CGameObject* actor) override;
+	virtual void			detach_Actor		() override;
+	virtual bool			allowWeapon			()	const override {return m_bAllowWeapon;};
+	virtual bool			HUDView				()	const override {return true;};
+	virtual Fvector			ExitPosition() override { return m_exit_position; };
 
-	virtual CCameraBase*	Camera				()						{return camera;};
+	virtual CCameraBase*	Camera				() override {return camera;};
 
-	virtual void			Action				(u16 id, u32 flags);
-	virtual void			SetParam			(int id, Fvector2 val);
+	virtual void			Action				(u16 id, u32 flags) override;
+	virtual void			SetParam			(int id, Fvector2 val) override;
 };

@@ -172,6 +172,8 @@ void CCustomObject::Scale( Fvector& amount)
 
 bool CCustomObject::OnObjectNameAfterEdit(PropValue* sender, shared_str& edit_val)
 {
+	// Other tools save this object by name
+	g_LevelAutoBackup.Cancel();
 	RTextValue* V = smart_cast<RTextValue*>(sender); VERIFY(V);
     if(0==edit_val.size())
     	return false;
@@ -224,7 +226,7 @@ void CCustomObject::FillProp(const char* pref, PropItemVec& items)
 
     if(m_CO_Flags.test(flObjectInGroup))
     {
-		V = PHelper().CreateFlag32	(items, PrepareKey(pref,"In group editable"),	&m_CO_Flags, flObjectInGroupUnique);
+		V = PHelper().CreateFlag	(items, PrepareKey(pref,"In group editable"),	&m_CO_Flags, flObjectInGroupUnique);
     	V->OnChangeEvent.bind		(this,&CCustomObject::OnChangeIngroupUnique);
     }
 }

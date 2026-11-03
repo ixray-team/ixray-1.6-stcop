@@ -323,7 +323,27 @@ void TextEditor::AddUndo(UndoRecord& aValue)
 
 TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPosition) const
 {
-	ImVec2 origin = ImGui::GetCursorScreenPos();
+	return ScreenPosToCoordinates(aPosition, ImGui::GetCursorScreenPos());
+}
+
+bool TextEditor::GetHoveredCoordinates(Coordinates& aOut) const
+{
+	if (!mTextHovered)
+		return false;
+	const ImVec2 mouse = ImGui::GetMousePos();
+	if (mouse.y < mTextOrigin.y || mouse.y >= mTextOrigin.y + mCharAdvance.y * (float)mLines.size())
+		return false;
+	aOut = ScreenPosToCoordinates(mouse, mTextOrigin);
+	return true;
+}
+
+ImVec2 TextEditor::GetCoordinatesScreenPos(const Coordinates& aPosition) const
+{
+	return ImVec2(mTextOrigin.x + mTextStart + TextDistanceToLineStart(aPosition), mTextOrigin.y + aPosition.mLine * mCharAdvance.y);
+}
+
+TextEditor::Coordinates TextEditor::ScreenPosToCoordinates(const ImVec2& aPosition, const ImVec2& origin) const
+{
 	ImVec2 local(aPosition.x - origin.x, aPosition.y - origin.y);
 
 	int lineNo = std::max(0, (int)floor(local.y / mCharAdvance.y));
@@ -899,12 +919,34 @@ void TextEditor::Render()
 		{
 			ImVec2 lineStartScreenPos = ImVec2(cursorScreenPos.x, cursorScreenPos.y + lineNo * mCharAdvance.y);
 			ImVec2 textScreenPos = ImVec2(lineStartScreenPos.x + mTextStart, lineStartScreenPos.y);
+			if (lineNo == mState.mCursorPosition.mLine)
+			{
+				mCursorScreenPos = ImVec2(textScreenPos.x + TextDistanceToLineStart(mState.mCursorPosition), lineStartScreenPos.y + mCharAdvance.y);
+			}
 
 			auto& line = mLines[lineNo];
 			longest = std::max(mTextStart + TextDistanceToLineStart(Coordinates(lineNo, GetLineMaxColumn(lineNo))), longest);
 			auto columnNo = 0;
 			Coordinates lineStartCoord(lineNo, 0);
 			Coordinates lineEndCoord(lineNo, GetLineMaxColumn(lineNo));
+
+			// Every match of the highlighted text, under the selection
+			if (!mHighlight.empty())
+			{
+				const ImU32 selection = mPalette[(int)PaletteIndex::Selection];
+				const ImU32 highlight = (selection & ~IM_COL32_A_MASK) | ((((selection >> IM_COL32_A_SHIFT) & 0xFF) / 2) << IM_COL32_A_SHIFT);
+				const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
+				for (int i = 0; i <= last; ++i)
+				{
+					if (!MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+						continue;
+
+					const float hstart = TextDistanceToLineStart(Coordinates(lineNo, GetCharacterColumn(lineNo, i)));
+					const float hend = TextDistanceToLineStart(Coordinates(lineNo, GetCharacterColumn(lineNo, i + (int)mHighlight.size())));
+					drawList->AddRectFilled(ImVec2(textScreenPos.x + hstart, lineStartScreenPos.y), ImVec2(textScreenPos.x + hend, lineStartScreenPos.y + mCharAdvance.y), highlight);
+					i += (int)mHighlight.size() - 1;
+				}
+			}
 
 			// Draw selection for the current line
 			float sstart = -1.0f;
@@ -1114,8 +1156,10 @@ void TextEditor::Render()
 	if (mScrollToCursor)
 	{
 		EnsureCursorVisible();
-		ImGui::SetWindowFocus();
+		if (!mScrollKeepsFocus)
+			ImGui::SetWindowFocus();
 		mScrollToCursor = false;
+		mScrollKeepsFocus = false;
 	}
 }
 
@@ -1135,6 +1179,9 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 		HandleKeyboardInputs();
 		ImGui::PushItemFlag(ImGuiItemFlags_NoTabStop, false);
 	}
+
+	mTextOrigin = ImGui::GetCursorScreenPos();
+	mTextHovered = ImGui::IsWindowHovered();
 
 	if (mHandleMouseInputs)
 		HandleMouseInputs();
@@ -2094,6 +2141,231 @@ std::string TextEditor::GetText() const
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
 }
 
+void TextEditor::VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const
+{
+	const std::string text = GetText();
+	aVisitor(text.data(), text.size(), aUserData);
+}
+
+bool TextEditor::MatchesAt(int aLine, int aIndex, const std::string& aText, bool aCaseSensitive, bool aWholeWord) const
+{
+	const Line& line = mLines[aLine];
+	if (aIndex < 0 || aIndex + (int)aText.size() > (int)line.size())
+		return false;
+
+	if (aWholeWord)
+	{
+		auto isWord = [](char c) { return std::isalnum((unsigned char)c) || c == '_' || (unsigned char)c >= 0x80; };
+		const int end = aIndex + (int)aText.size();
+		if (aIndex > 0 && isWord((char)line[aIndex - 1].mChar) && isWord(aText.front()))
+			return false;
+		if (end < (int)line.size() && isWord((char)line[end].mChar) && isWord(aText.back()))
+			return false;
+	}
+
+	for (size_t i = 0; i < aText.size(); ++i)
+	{
+		const char a = (char)line[aIndex + i].mChar;
+		const char b = aText[i];
+		if (aCaseSensitive ? a != b : std::tolower((unsigned char)a) != std::tolower((unsigned char)b))
+			return false;
+	}
+	return true;
+}
+
+void TextEditor::AddErrorMarker(int aLine, const char* aMessage)
+{
+	mErrorMarkers[aLine] = aMessage != nullptr ? aMessage : "";
+}
+
+void TextEditor::ClearErrorMarkers()
+{
+	mErrorMarkers.clear();
+}
+
+int TextEditor::CopyTextBeforeCursor(char* aOut, int aSize) const
+{
+	if (aOut == nullptr || aSize <= 0)
+		return 0;
+
+	const Coordinates cursor = GetActualCursorCoordinates();
+	int count = 0;
+	if (cursor.mLine < (int)mLines.size())
+	{
+		const Line& line = mLines[cursor.mLine];
+		const int end = std::min(GetCharacterIndex(cursor), (int)line.size());
+		// The tail is kept when the buffer is short: completion needs the text right before the cursor
+		const int begin = std::max(0, end - (aSize - 1));
+		for (int i = begin; i < end; ++i)
+			aOut[count++] = (char)line[i].mChar;
+	}
+	aOut[count] = 0;
+	return count;
+}
+
+int TextEditor::CopySelectedLineText(char* aOut, int aSize) const
+{
+	if (aOut == nullptr || aSize <= 0)
+		return 0;
+
+	aOut[0] = 0;
+	const Coordinates start = mState.mSelectionStart;
+	const Coordinates end = mState.mSelectionEnd;
+	if (!HasSelection() || start.mLine != end.mLine || start.mLine >= (int)mLines.size())
+		return 0;
+
+	const Line& line = mLines[start.mLine];
+	const int first = GetCharacterIndex(start);
+	const int last = std::min(GetCharacterIndex(end), (int)line.size());
+	int count = 0;
+	for (int i = first; i < last && count < aSize - 1; ++i)
+		aOut[count++] = (char)line[i].mChar;
+	aOut[count] = 0;
+	return count;
+}
+
+void TextEditor::SetHighlight(const char* aText, bool aCaseSensitive, bool aWholeWord)
+{
+	// Copied here: the text is owned by this module
+	mHighlight = aText != nullptr && std::strchr(aText, '\n') == nullptr ? aText : "";
+	mHighlightCaseSensitive = aCaseSensitive;
+	mHighlightWholeWord = aWholeWord;
+}
+
+int TextEditor::GetSelectedHighlight() const
+{
+	if (mHighlight.empty() || !HasSelection())
+		return 0;
+
+	const Coordinates start = mState.mSelectionStart;
+	const Coordinates end = mState.mSelectionEnd;
+	if (start.mLine != end.mLine || start.mLine >= (int)mLines.size())
+		return 0;
+
+	const int index = GetCharacterIndex(start);
+	if (GetCharacterIndex(end) - index != (int)mHighlight.size() || !MatchesAt(start.mLine, index, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+		return 0;
+
+	int count = 0;
+	for (int lineNo = 0; lineNo <= start.mLine; ++lineNo)
+	{
+		const int last = lineNo == start.mLine ? index : (int)mLines[lineNo].size() - (int)mHighlight.size();
+		for (int i = 0; i <= last; ++i)
+		{
+			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+			{
+				++count;
+				i += (int)mHighlight.size() - 1;
+			}
+		}
+	}
+	return count;
+}
+
+void TextEditor::ReplaceSelection(const char* aValue)
+{
+	if (IsReadOnly() || aValue == nullptr)
+		return;
+
+	UndoRecord u;
+	u.mBefore = mState;
+
+	if (HasSelection())
+	{
+		u.mRemoved = GetSelectedText();
+		u.mRemovedStart = mState.mSelectionStart;
+		u.mRemovedEnd = mState.mSelectionEnd;
+		DeleteSelection();
+	}
+
+	u.mAdded = aValue;
+	u.mAddedStart = GetActualCursorCoordinates();
+
+	InsertText(aValue);
+
+	u.mAddedEnd = GetActualCursorCoordinates();
+	u.mAfter = mState;
+	AddUndo(u);
+}
+
+int TextEditor::CountHighlights() const
+{
+	if (mHighlight.empty())
+		return 0;
+
+	int count = 0;
+	for (int lineNo = 0; lineNo < (int)mLines.size(); ++lineNo)
+	{
+		const int last = (int)mLines[lineNo].size() - (int)mHighlight.size();
+		for (int i = 0; i <= last; ++i)
+		{
+			if (MatchesAt(lineNo, i, mHighlight, mHighlightCaseSensitive, mHighlightWholeWord))
+			{
+				++count;
+				i += (int)mHighlight.size() - 1;
+			}
+		}
+	}
+	return count;
+}
+
+bool TextEditor::Find(const std::string& aText, bool aForward, bool aCaseSensitive, bool aWholeWord)
+{
+	mScrollKeepsFocus = true;
+	if (aText.empty() || aText.find('\n') != std::string::npos || mLines.empty())
+		return false;
+
+	auto matchesAt = [&](int aLine, int aIndex)
+	{
+		return MatchesAt(aLine, aIndex, aText, aCaseSensitive, aWholeWord);
+	};
+
+	// Glyphs are UTF-8 bytes: indices are byte offsets in the line
+	const Coordinates from = aForward ? (HasSelection() ? mState.mSelectionEnd : GetActualCursorCoordinates())
+		: (HasSelection() ? mState.mSelectionStart : GetActualCursorCoordinates());
+	const int lineCount = (int)mLines.size();
+	const int startLine = std::min(from.mLine, lineCount - 1);
+	const int startIndex = GetCharacterIndex(Coordinates(startLine, from.mColumn));
+
+	// Every line is visited once, the start line twice: after and before the cursor
+	for (int step = 0; step <= lineCount; ++step)
+	{
+		const int lineIndex = aForward ? (startLine + step) % lineCount : ((startLine - step) % lineCount + lineCount) % lineCount;
+		const int lineSize = (int)mLines[lineIndex].size();
+
+		int first = 0;
+		int last = lineSize - (int)aText.size();
+		if (step == 0)
+		{
+			if (aForward)
+				first = startIndex;
+			else
+				last = std::min(last, startIndex - 1);
+		}
+		else if (step == lineCount)
+		{
+			if (aForward)
+				last = std::min(last, startIndex - 1);
+			else
+				first = startIndex;
+		}
+
+		for (int i = aForward ? first : last; aForward ? i <= last : i >= first; i += aForward ? 1 : -1)
+		{
+			if (!matchesAt(lineIndex, i))
+				continue;
+
+			const Coordinates start(lineIndex, GetCharacterColumn(lineIndex, i));
+			const Coordinates end(lineIndex, GetCharacterColumn(lineIndex, i + (int)aText.size()));
+			SetCursorPosition(end);
+			SetSelection(start, end);
+			EnsureCursorVisible();
+			return true;
+		}
+	}
+	return false;
+}
+
 std::vector<std::string> TextEditor::GetTextLines() const
 {
 	std::vector<std::string> result;
@@ -2330,17 +2602,20 @@ void TextEditor::ColorizeInternal()
 						auto& startStr = mLanguageDefinition.mCommentStart;
 						auto& singleStartStr = mLanguageDefinition.mSingleLineComment;
 
-						if (singleStartStr.size() > 0 &&
-							currentIndex + singleStartStr.size() <= line.size() &&
-							equals(singleStartStr.begin(), singleStartStr.end(), from, from + singleStartStr.size(), pred))
-						{
-							withinSingleLineComment = true;
-						}
-						else if (!withinSingleLineComment && currentIndex + startStr.size() <= line.size() &&
+						const bool inMultiLine = commentStartLine < currentLine || (commentStartLine == currentLine && commentStartIndex <= currentIndex);
+						// The multi line start goes first: Lua "--[[" starts with the single line "--".
+						// An empty start means the language has no multi line comments
+						if (!withinSingleLineComment && !inMultiLine && !startStr.empty() && currentIndex + startStr.size() <= line.size() &&
 							equals(startStr.begin(), startStr.end(), from, from + startStr.size(), pred))
 						{
 							commentStartLine = currentLine;
 							commentStartIndex = currentIndex;
+						}
+						else if (!inMultiLine && singleStartStr.size() > 0 &&
+							currentIndex + singleStartStr.size() <= line.size() &&
+							equals(singleStartStr.begin(), singleStartStr.end(), from, from + singleStartStr.size(), pred))
+						{
+							withinSingleLineComment = true;
 						}
 
 						inComment = inComment = (commentStartLine < currentLine || (commentStartLine == currentLine && commentStartIndex <= currentIndex));

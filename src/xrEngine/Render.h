@@ -73,7 +73,7 @@ public:
 	virtual void	set_decor_object					(CObject* O, int index = 0)			= 0;
 	virtual CObject* get_decor_object					(int index = 0)						= 0;
 
-	virtual ~IRender_Light()		;
+	virtual ~IRender_Light() override;
 	virtual void					destroy(bool deffered = true)							= 0;
 };
 
@@ -101,7 +101,7 @@ public:
 	virtual void					set_texture			(const char* name)						= 0;
 	virtual void					set_color			(const Fcolor& C)					= 0;
 	virtual void					set_color			(float r, float g, float b)			= 0;
-	virtual ~IRender_Glow()			;
+	virtual ~IRender_Glow() override;
 };
 struct ENGINE_API		resptrcode_glow	: public resptr_base<IRender_Glow>
 {

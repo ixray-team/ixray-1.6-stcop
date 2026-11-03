@@ -839,9 +839,9 @@ void CSE_ALifeAnomalyZone::UPDATE_Serialize(ISaveObject& Object)
 void CSE_ALifeAnomalyZone::FillProps		(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps		(pref,items);
-	PHelper().CreateU32			(items,PrepareKey(pref,*s_name,"on/off mode\\Shift time (sec)"),	&m_start_time_shift,0,100000);
-	PHelper().CreateU32			(items,PrepareKey(pref,*s_name,"on/off mode\\Enabled time (sec)"),	&m_enabled_time,	0,100000);
-	PHelper().CreateU32			(items,PrepareKey(pref,*s_name,"on/off mode\\Disabled time (sec)"),	&m_disabled_time,	0,100000);
+	PHelper().CreateNumeric			(items,PrepareKey(pref,*s_name,"on/off mode\\Shift time (sec)"),	&m_start_time_shift,0,100000);
+	PHelper().CreateNumeric			(items,PrepareKey(pref,*s_name,"on/off mode\\Enabled time (sec)"),	&m_enabled_time,	0,100000);
+	PHelper().CreateNumeric			(items,PrepareKey(pref,*s_name,"on/off mode\\Disabled time (sec)"),	&m_disabled_time,	0,100000);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -976,8 +976,8 @@ void CSE_ALifeAnomalousZone::FillProps		(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
 	PHelper().CreateFloat			(items,PrepareKey(pref,*s_name,"offline interactive radius"),			&m_offline_interactive_radius,	0.f,	100.f);
-	PHelper().CreateU16				(items,PrepareKey(pref,*s_name,"ALife\\Artefact spawn places count"),	&m_artefact_spawn_count,		32,		256);
-	PHelper().CreateFlag32			(items,PrepareKey(pref,*s_name,"ALife\\Visible for AI"),				&m_flags,						flVisibleForAI);
+	PHelper().CreateNumeric				(items,PrepareKey(pref,*s_name,"ALife\\Artefact spawn places count"),	&m_artefact_spawn_count,		32,		256);
+	PHelper().CreateFlag			(items,PrepareKey(pref,*s_name,"ALife\\Visible for AI"),				&m_flags,						flVisibleForAI);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -1337,9 +1337,9 @@ u8 CSE_ALifeCreatureAbstract::g_group		()
 void CSE_ALifeCreatureAbstract::FillProps	(const char* pref, PropItemVec& items)
 {
   	inherited::FillProps			(pref,items);
-    PHelper().CreateU8				(items,PrepareKey(pref,*s_name, "Team"),		&s_team, 	0,64,1);
-    PHelper().CreateU8				(items,PrepareKey(pref,*s_name, "Squad"),	&s_squad, 	0,64,1);
-    PHelper().CreateU8				(items,PrepareKey(pref,*s_name, "Group"),	&s_group, 	0,64,1);
+    PHelper().CreateNumeric				(items,PrepareKey(pref,*s_name, "Team"),		&s_team, 	0,64,1);
+    PHelper().CreateNumeric				(items,PrepareKey(pref,*s_name, "Squad"),	&s_squad, 	0,64,1);
+    PHelper().CreateNumeric				(items,PrepareKey(pref,*s_name, "Group"),	&s_group, 	0,64,1);
    	PHelper().CreateFloat			(items,PrepareKey(pref,*s_name,"Personal",	"Health" 				),&fHealth,	0,2,5);
 }
 #endif // #ifndef XRGAME_EXPORTS
@@ -1579,8 +1579,8 @@ void CSE_ALifeMonsterAbstract::FillProps		(const char* pref, PropItemVec& items)
 {
   	inherited1::FillProps		(pref,items);
 	
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\No move in offline"),	&m_flags,			flOfflineNoMove);
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"Use smart terrain tasks"),	&m_flags,			flUseSmartTerrains);
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"ALife\\No move in offline"),	&m_flags,			flOfflineNoMove);
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"Use smart terrain tasks"),	&m_flags,			flUseSmartTerrains);
 
 	if (pSettings->line_exist(s_name,"SpaceRestrictionSection")) {
 		const char*					gcs = pSettings->r_string(s_name,"SpaceRestrictionSection");
@@ -2183,13 +2183,13 @@ void CSE_ALifeMonsterRat::FillProps			(const char* pref, PropItemVec& items)
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Death quant" 			),&fMoraleDeathQuant,				-100,100,5);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Fear quant" 			),&fMoraleFearQuant,				-100,100,5);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Restore quant" 		),&fMoraleRestoreQuant,				-100,100,5);
-	PHelper().CreateU16  			(items, PrepareKey(pref,*s_name,"Morale",		"Restore time interval" ),&u16MoraleRestoreTimeInterval,	0,65535,500);
+	PHelper().CreateNumeric  			(items, PrepareKey(pref,*s_name,"Morale",		"Restore time interval" ),&u16MoraleRestoreTimeInterval,	0,65535,500);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Minimum value" 		),&fMoraleMinValue,					-100,100,5);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Maximum value" 		),&fMoraleMaxValue,					-100,100,5);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Morale",		"Normal value" 			),&fMoraleNormalValue,				-100,100,5);
 	// attack																			 	
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Hit power" 			),&fHitPower,						0,200,5);
-	PHelper().CreateU16  			(items, PrepareKey(pref,*s_name,"Attack",		"Hit interval" 			),&u16HitInterval,					0,65535,500);
+	PHelper().CreateNumeric  			(items, PrepareKey(pref,*s_name,"Attack",		"Hit interval" 			),&u16HitInterval,					0,65535,500);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Distance" 				),&fAttackDistance,					0,300,10);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Maximum angle" 		),&fAttackAngle,					0,180,10);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Success probability" 	),&fAttackSuccessProbability,		0,100,1);
@@ -2311,7 +2311,7 @@ void CSE_ALifeMonsterZombie::FillProps		(const char* pref, PropItemVec& items)
    	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Personal",	"Home distance" 		),&fMaxHomeRadius,					0,300,10);
 	// attack																			 	
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Hit power" 			),&fHitPower,						0,200,5);
-	PHelper().CreateU16  			(items, PrepareKey(pref,*s_name,"Attack",		"Hit interval" 			),&u16HitInterval,					0,65535,500);
+	PHelper().CreateNumeric  			(items, PrepareKey(pref,*s_name,"Attack",		"Hit interval" 			),&u16HitInterval,					0,65535,500);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Distance" 				),&fAttackDistance,					0,300,10);
 	PHelper().CreateFloat			(items, PrepareKey(pref,*s_name,"Attack",		"Maximum angle" 		),&fAttackAngle,					0,100,1);
 }
@@ -2706,7 +2706,7 @@ void CSE_ALifeHumanAbstract::FillProps		(const char* pref, PropItemVec& items)
 {
   	inherited1::FillProps		(pref,items);
   	inherited2::FillProps		(pref,items);
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"Group behaviour"),			&m_flags,			flGroupBehaviour);
+	PHelper().CreateFlag		(items,	PrepareKey(pref,*s_name,"Group behaviour"),			&m_flags,			flGroupBehaviour);
 }
 #endif // #ifndef XRGAME_EXPORTS
 

@@ -19,13 +19,13 @@
 class fBoneNameEQ {
 	shared_str	name;
 public:
-	fBoneNameEQ(shared_str N) : name(N) {};
+	fBoneNameEQ(const shared_str& N) : name(N) {};
 	IC bool operator() (CBone* B) { return (xr_strcmp(B->Name(),name)==0); }
 };
 class fBoneWMNameEQ {
 	shared_str	wm_name;
 public:
-	fBoneWMNameEQ(shared_str N) : wm_name(N) {};
+	fBoneWMNameEQ(const shared_str& N) : wm_name(N) {};
 	IC bool operator() (CBone* B) { return (xr_strcmp(B->WMap(),wm_name)==0); }
 };
 //----------------------------------------------------
@@ -554,7 +554,7 @@ void CEditableObject::OptimizeSMotions()
 	EContext.UI->ProgressEnd(pb);
 }
 
-u16 CEditableObject::BoneIDByName(shared_str name) const
+u16 CEditableObject::BoneIDByName(const shared_str& name) const
 {
 	auto it = std::find_if
 	(

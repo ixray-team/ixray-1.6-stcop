@@ -31,7 +31,6 @@ if (MSVC)
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
 else()
 	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
-	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
 
 	if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
@@ -44,8 +43,20 @@ else()
 	endif()
 endif()
 
+if(NOT WIN32 OR NOT IXRAY_DISCORD_RPC)
+	list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
+endif()
+
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
+if(IXRAY_USE_MIMALLOC AND IXRAY_MIMALLOC_AVAILABLE AND NOT IXRAY_ASAN)
+	target_link_libraries(xrCore PRIVATE mimalloc-static)
+	target_compile_definitions(xrCore PRIVATE IXRAY_USE_MIMALLOC)
+	add_custom_command(TARGET xrCore POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${IXRAY_OUTPUT}/licenses"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "${mimalloc_SOURCE_DIR}/LICENSE" "${IXRAY_OUTPUT}/licenses/mimalloc-LICENSE.txt"
+	)
+endif()
 if(WIN32)
 	# Prebuilt SDK libraries exist only for Windows.
 	target_link_directories(xrCore PUBLIC ${IXRAY_SDK_LIB})
@@ -55,8 +66,9 @@ if(IXRAY_ASAN)
 	target_compile_definitions(xrCore PRIVATE PURE_ONLY)
 endif()
 
-if (IXRAY_DISCORD_RPC)
-	target_compile_definitions(xrCore PRIVATE IXR_ENABLE_DISCORD)
+if(WIN32 AND IXRAY_DISCORD_RPC)
+	target_compile_definitions(xrCore PUBLIC IXR_ENABLE_DISCORD)
+	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
 endif()
 
 # Includes 
@@ -77,7 +89,13 @@ target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
 target_compile_definitions(xrCore PRIVATE _USRDLL)
 
 # Profiler
-if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
+# Optick ships as a Windows nuget package, so on other platforms the profiler is off
+# unless the Tracy backend is picked.
+if (IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY AND NOT WIN32)
+	message(STATUS "Optick profiler is Windows-only: profiling disabled")
+endif()
+
+if (WIN32 AND IXRAY_PROFILER AND NOT IXRAY_PROFILER_TRACY)
 	target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
 	target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -109,10 +127,10 @@ if(WIN32)
 		target_link_libraries(xrCore PRIVATE dxerr)
 	endif()
 
-	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::WinMM)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::DBGHELP)
 	target_link_libraries(xrCore PRIVATE WindowsSDK::FAULTREP)
+	target_link_libraries(xrCore PRIVATE ole32 uuid)
 endif()
 
 # Git Info

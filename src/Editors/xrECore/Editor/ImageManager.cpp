@@ -95,13 +95,17 @@ void CImageManager::CreateTextureThumbnail(ETextureThumbnail* THM, const xr_stri
 	R_ASSERT(src_name.size());
 	string_path 	base_name;
 	if (initial)
+	{
 		FS.update_path(base_name,initial,src_name.c_str());
+	}
 	else
+	{
 		FS.update_path(base_name,_textures_,src_name.c_str());
+	}
 
 	U32Vec data;
 	u32 w, h, a;
-	xr_string fn 	= EFS.ChangeFileExt(base_name,".tga");
+	xr_string fn = EFS.ChangeFileExt(base_name,".tga");
 	if (!LoadRawImage(fn.c_str(),data,w,h,a))
 	{
 		if (!LoadRawImage(base_name, data, w, h, a))
@@ -280,22 +284,25 @@ bool CImageManager::LoadTextureData(const char* src_name, U32Vec& data, u32& w, 
 // копирует обновленные текстуры с Import'a в Textures
 // files - список файлов для копирование
 //------------------------------------------------------------------------------
-void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
+void CImageManager::SafeCopyLocalToServer(FS_FileSet& files, bool DeleteSource)
 {
 	string_path p_import, p_textures;
-	string_path src_name, dest_name;
 	FS.update_path(p_import,_import_,"");
 	FS.update_path(p_textures,_textures_,"");
 
-	FS_FileSetIt it	= files.begin();
-	FS_FileSetIt _E = files.end();
-
-	for (; it != _E; it++)
+	xr_vector<const FS_File*> files_vec;
+	files_vec.reserve(files.size());
+	for (auto& entry : files)
 	{
+		files_vec.push_back(&entry);
+	}
+	xr_parallel_for(size_t(0), files_vec.size(), [&](size_t i)
+	{
+		string_path src_name, dest_name;
 		xr_string fn;
 
 		// copy sources
-		fn = it->name;
+		fn = files_vec[i]->name;
 		xr_strconcat(src_name, p_import, fn.c_str());
 		UpdateFileName(fn);
 
@@ -311,8 +318,17 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 			DXTUtils::Converter::MakeTGA(src_name, dest_name);
 		}
 		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
-		EFS.MarkFile(src_name, true);
-	}
+		if (DeleteSource)
+		{
+			FS.file_delete(src_name);
+		}
+		else
+		{
+			EFS.MarkFile(src_name, true);
+		}
+			
+		Msg("File %s copied to rawdata", files_vec[i]->name.c_str());
+	});
 }    
 //------------------------------------------------------------------------------
 // возвращает список не синхронизированных (модифицированных) текстур
@@ -325,106 +341,188 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 	FS_FileSet M_THUM;
 	FS_FileSet M_GAME;
 
-	if (source_list) M_BASE = *source_list;
-	else FS.file_list(M_BASE,_textures_,FS_ListFiles|FS_ClampExt,"*.tga");
-	if (M_BASE.empty()) return;
-	if (sync_thm) 	FS.file_list(M_THUM,_textures_,FS_ListFiles|FS_ClampExt,"*.thm");
-	if (sync_game) 	FS.file_list(M_GAME,_game_textures_,FS_ListFiles|FS_ClampExt,"*.dds");
+	if (source_list)
+	{
+		M_BASE = *source_list;
+	}
+	else
+	{
+		FS.file_list(M_BASE,_textures_,FS_ListFiles|FS_ClampExt,"*.tga");
+	}
+	if (M_BASE.empty())
+	{
+		return;
+	}
+	if (sync_thm)
+	{
+		FS.file_list(M_THUM,_textures_,FS_ListFiles|FS_ClampExt,"*.thm");
+	}
+	if (sync_game)
+	{
+		FS.file_list(M_GAME,_game_textures_,FS_ListFiles|FS_ClampExt,"*.dds");
+	}
 
 	bool bProgress 	= M_BASE.size()>1;
+	xrCriticalSection ProgressCS;
 	
 	// lock rescanning
-	int m_age		= time(nullptr);
+	int m_age = time(nullptr);
 
 	// sync assoc
 	SPBItem* pb=nullptr;
 	if (bProgress)
 	{
-		pb = EContext.UI->ProgressStart(M_BASE.size(), "Synchronize textures...");
+		pb = EContext.UI->ProgressStart(M_BASE.size(),"Synchronize textures...");
 	}
-	FS_FileSetIt it=M_BASE.begin();
-	FS_FileSetIt _E = M_BASE.end();
-	for (; it!=_E; it++){
+
+	xr_vector<FS_File> FileSetVec = {};
+	FileSetVec.reserve(M_BASE.size());
+	for (auto& elem : M_BASE)
+	{
+		FileSetVec.push_back(elem);
+	}
+	xrCriticalSection outsCS;
+	xr_parallel_for(size_t(0), M_BASE.size(), [&](size_t z)
+	{
+		auto& Current = FileSetVec[z];
+		
 		U32Vec data;
 		u32 w, h, a;
-
-		xr_string base_name	= EFS.ChangeFileExt(it->name,""); xr_strlwr(base_name);
-		string_path				fn;
-		FS.update_path			(fn,_textures_,EFS.ChangeFileExt(base_name,".tga").c_str());
-		if (!FS.TryLoad(fn)) continue;
-
-		FS_FileSetIt th 	= M_THUM.find(base_name);
-		bool bThm = ((th==M_THUM.end()) || ((th!=M_THUM.end())&&(th->time_write!=it->time_write)));
-		FS_FileSetIt gm = M_GAME.find(base_name);
-		bool bGame= bThm || ((gm==M_GAME.end()) || ((gm!=M_GAME.end())&&(gm->time_write!=it->time_write)));
-
-		ETextureThumbnail* THM=nullptr;
+		
+		xr_string base_name	= EFS.ChangeFileExt(Current.name,"");
+		xr_strlwr(base_name);
+		string_path fn;
+		FS.update_path(fn,_textures_,EFS.ChangeFileExt(base_name,".tga").c_str());
+		if (!FS.TryLoad(fn))
+		{
+			return;
+		}
+		
+		auto th = M_THUM.find(base_name);
+		bool bThm = ((th==M_THUM.end()) || ((th!=M_THUM.end())&&(th->time_write!=Current.time_write)));
+		auto gm = M_GAME.find(base_name);
+		bool bGame = bThm || ((gm==M_GAME.end()) || ((gm!=M_GAME.end())&&(gm->time_write!=Current.time_write)));
+		
+		ETextureThumbnail* THM = nullptr;
 
 		bool bUpdated 	= false;
 		bool bFailed 	= false;
 		// check thumbnail
 		if (sync_thm&&bThm){
-			THM = new ETextureThumbnail(it->name.c_str());
-		bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);
-//.             MakeThumbnailImage(THM,data.begin(),w,h,a);
-			THM->Save	(it->time_write);
+			THM = new ETextureThumbnail(Current.name.c_str());
+			bool bRes = LoadRawImage(fn,data,w,h,a);
+			R_ASSERT(bRes);
+			THM->Save(Current.time_write);
 			bUpdated = true;
 		}
 		// check game textures
 		if (bForceGame||(sync_game&&bGame)){
-			if (!THM) THM = new ETextureThumbnail(it->name.c_str());
+			if (!THM) THM = new ETextureThumbnail(Current.name.c_str());
 			R_ASSERT(THM);
-			if (data.empty()){ bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);}
-			if (true)
+			if (data.empty())
 			{
-				string_path 			game_name;
-				xr_strconcat(game_name, base_name.c_str(), ".dds");
+				bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);
+			}
+			string_path game_name;
+			xr_strconcat(game_name, base_name.c_str(), ".dds");
 
-				FS.update_path			(game_name,_game_textures_,game_name);
-				if (MakeGameTexture(THM,game_name,data.data()))
+			FS.update_path(game_name,_game_textures_,game_name);
+			if (MakeGameTexture(THM,game_name,data.data()))
+			{
+				xrCriticalSectionGuard guard(outsCS);
+				if (sync_list)
 				{
-					if (sync_list) 		sync_list->push_back(base_name.c_str());
-					if (modif_map) 		modif_map->insert(*it);
-				}else{
-					bFailed				= true;
+					sync_list->emplace_back(base_name.c_str());
 				}
-				bUpdated 				= true;
+				if (modif_map)
+				{
+					modif_map->insert(Current);
+				}
 			}else{
-				ELog.DlgMsg(mtError,"Can't make game texture '%s'.\nInvalid size (%dx%d).",base_name.c_str(),w,h);
+				bFailed				= true;
+			}
+			bUpdated 				= true;
+		}
+		if (THM)
+		{
+			xr_delete(THM);
+		}
+		
+		if (bProgress)
+		{
+			xrCriticalSectionGuard g(ProgressCS);
+			if (bUpdated)
+			{
+				xr_stack_string256 Message = base_name.c_str();
+				if (bFailed)
+				{
+					Message += " - FAILED (";
+				} else
+				{
+					Message += " - UPDATED (";
+				}
+				Message += std::to_string(int(pb->progress)+1).c_str();
+				Message += "/";
+				Message += std::to_string(int(pb->max)).c_str();
+				Message += ")";
+				pb->Inc(Message.c_str(), bFailed);
+			} else
+			{
+				pb->Inc(base_name.c_str(), bFailed);
 			}
 		}
-		if (THM) xr_delete(THM);
-		if (EContext.UI->NeedAbort())
-		{
-			break;
-		}
-
-		if (bProgress) 
-			pb->Inc(bUpdated ? xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str() : base_name.c_str(), bFailed);
 			
 		if (bUpdated){
-			string_path             tga_fn,thm_fn,dds_fn;
-			FS.update_path			(tga_fn,_textures_,		 EFS.ChangeFileExt(base_name,".tga").c_str());
-			FS.update_path			(thm_fn,_game_textures_, EFS.ChangeFileExt(base_name,".thm").c_str());
-			FS.update_path			(dds_fn,_game_textures_, EFS.ChangeFileExt(base_name,".dds").c_str());
+			string_path tga_fn,thm_fn,dds_fn;
+			FS.update_path(tga_fn,_textures_, EFS.ChangeFileExt(base_name,".tga").c_str());
+			FS.update_path(thm_fn,_game_textures_, EFS.ChangeFileExt(base_name,".thm").c_str());
+			FS.update_path(dds_fn,_game_textures_, EFS.ChangeFileExt(base_name,".dds").c_str());
 			if (bForceBaseAge){
-				int age 			= it->time_write;
-				FS.set_file_age			(tga_fn,age);
-				FS.set_file_age			(thm_fn,age);
-				FS.set_file_age			(dds_fn,age);
+				int age = Current.time_write;
+				FS.set_file_age(tga_fn,age);
+				FS.set_file_age(thm_fn,age);
+				FS.set_file_age(dds_fn,age);
 			}else{
-				FS.set_file_age			(tga_fn,m_age);
-				FS.set_file_age			(thm_fn,m_age);
-				FS.set_file_age			(dds_fn,m_age);
+				FS.set_file_age(tga_fn,m_age);
+				FS.set_file_age(thm_fn,m_age);
+				FS.set_file_age(dds_fn,m_age);
 			}
 		}
-	}
+	});
 	if (bProgress)
 	{
 		EContext.UI->ProgressEnd(pb);
 	}
 }
-
+/*
+void CImageManager::ChangeFileAgeTo(FS_FileSet* tgt_map, int age)
+{
+	VERIFY(tgt_map);
+	FS_FileSet* 	M_BASE 		= tgt_map;
+	
+	// lock rescanning
+	FS.lock_rescan	();
+	// change
+	SPBItem* pb=0;
+	if (M_BASE->size()>1) pb	= UI->ProgressStart(M_BASE->size(),"Change textures age...");
+	FS_FileSetIt it			= M_BASE->begin();
+	FS_FileSetIt _E 			= M_BASE->end();
+	for (; it!=_E; it++){
+		xr_string base_name	= EFS.ChangeFileExt(it->name,""); xr_strlwr(base_name);
+		xr_string	tga_fn,thm_fn,dds_fn;
+		FS.update_path			(tga_fn,_textures_,		EFS.ChangeFileExt(base_name,".tga").c_str());
+		FS.update_path			(thm_fn,_textures_,		EFS.ChangeFileExt(base_name,".thm").c_str());
+		FS.update_path			(dds_fn,_game_textures_,EFS.ChangeFileExt(base_name,".dds").c_str());
+		FS.set_file_age			(tga_fn.c_str(),age);
+		FS.set_file_age			(thm_fn.c_str(),age);
+		FS.set_file_age			(dds_fn.c_str(),age);
+		if (pb) 			    pb->Inc();
+	}
+	if (pb) 					UI->ProgressEnd(pb);
+	// lock rescanning
+	FS.unlock_rescan			();
+}
+*/
 void CImageManager::WriteAssociation(CInifile* ltx_ini, const char* base_name, const STextureParams& fmt)
 {
 	ltx_ini->w_u32				("types", base_name,fmt.type);
@@ -625,9 +723,67 @@ void FlipVertical(xr_vector<u32>& pixels, int width, int height)
 	}
 }
 
-bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height)
+// Centered square of the last frame of the current viewport.
+// The editor scene goes through the deferred renderer, so the presented frame is the only finished image.
+static bool GetViewportSquare(U32Vec& Pixels, u32& Width, u32& Height)
 {
-#pragma todo("FX to Hozar: Impl")
+	ref_rt& Frame = EContext.UI->RTCopy;
+	U32Vec FramePixels;
+	if (!Frame || !EDevice->ReadbackRT(Frame, FramePixels))
+	{
+		return false;
+	}
+
+	const u32 FrameWidth = Frame->dwWidth;
+	const u32 FrameHeight = Frame->dwHeight;
+	const u32 Side = std::min(FrameWidth, FrameHeight);
+	if (Side == 0)
+	{
+		return false;
+	}
+
+	const u32 OffsetX = (FrameWidth - Side) / 2;
+	const u32 OffsetY = (FrameHeight - Side) / 2;
+
+	Pixels.resize(Side * Side);
+	for (u32 Y = 0; Y < Side; ++Y)
+	{
+		// Thumbnails are stored bottom-up
+		const u32* Src = FramePixels.data() + (OffsetY + Side - 1 - Y) * FrameWidth + OffsetX;
+		u32* Dst = Pixels.data() + Y * Side;
+		for (u32 X = 0; X < Side; ++X)
+		{
+			// B8G8R8X8: the alpha byte is undefined
+			Dst[X] = Src[X] | 0xFF000000;
+		}
+	}
+
+	// The background becomes transparent: it is the color of the frame corner
+	const u32 Background = Pixels[0];
+	auto IsBackground = [Background](u32 Color)
+	{
+		constexpr int Tolerance = 4;
+		for (u32 Shift = 0; Shift < 24; Shift += 8)
+		{
+			const int Delta = int((Color >> Shift) & 0xFF) - int((Background >> Shift) & 0xFF);
+			if (Delta > Tolerance || Delta < -Tolerance)
+			{
+				return false;
+			}
+		}
+		return true;
+	};
+
+	for (u32& Color : Pixels)
+	{
+		if (IsBackground(Color))
+		{
+			Color = 0;
+		}
+	}
+
+	Width = Side;
+	Height = Side;
 	return true;
 }
 
@@ -635,17 +791,10 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 {
 	bool bResult = true;
 
-	// save render params
-	Flags32 old_flag = psDeviceFlags;
-
-	// set render params
-	psDeviceFlags.set(rsDrawGrid, false);
-	psDeviceFlags.set(rsStatistic, false);
-
 	U32Vec pixels;
-	int w = 512, h = 512;
+	u32 w = 0, h = 0;
 
-	if (GetRTDataU32(EContext.UI->RT, pixels, w, h))
+	if (GetViewportSquare(pixels, w, h))
 	{
 		EObjectThumbnail tex(tex_name, false);
 		tex.CreateFromData(pixels.data(), w, h, obj->GetFaceCount(), obj->GetVertexCount());
@@ -657,9 +806,38 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 		ELog.DlgMsg(mtError, "Can't make screenshot.");
 	}
 
-	// restore render params
-	psDeviceFlags = old_flag;
 	return bResult;
+}
+
+static Flags32 ThumbnailDeviceFlags;
+static Flags32 ThumbnailObjectFlags;
+static int ThumbnailCaptures = 0;
+
+void CImageManager::BeginThumbnailCapture()
+{
+	if (ThumbnailCaptures++ == 0)
+	{
+		ThumbnailDeviceFlags = psDeviceFlags;
+		ThumbnailObjectFlags = EPrefs->object_flags;
+	}
+
+	psDeviceFlags.set(rsDrawGrid | rsEnvironment | rsFog | rsDrawAxis | rsDrawSafeRect | rsStatistic, false);
+	psDeviceFlags.set(rsDisableAxisCube, true);
+	EPrefs->object_flags.set(epoDrawJoints | epoDrawBoneAxis | epoDrawBoneNames | epoDrawBoneShapes, false);
+
+	EContext.UI->RedrawScene();
+}
+
+void CImageManager::EndThumbnailCapture()
+{
+	if (ThumbnailCaptures == 0 || --ThumbnailCaptures != 0)
+	{
+		return;
+	}
+
+	psDeviceFlags = ThumbnailDeviceFlags;
+	EPrefs->object_flags = ThumbnailObjectFlags;
+	EContext.UI->RedrawScene();
 }
 
 void CImageManager::RemoveTexture(UIItemListForm::Node& node)
@@ -785,12 +963,12 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 	return false;
 }
 
-void CImageManager::CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map)
+void CImageManager::CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map, bool bDeleteSourceTextures)
 {
 	if (import_mode && !texture_map.empty())
 	{
 		AStringVec modif;
-		SafeCopyLocalToServer(texture_map);
+		SafeCopyLocalToServer(texture_map, bDeleteSourceTextures);
 		FS_FileSet files = texture_map;
 		texture_map.clear();
 		for (const FS_File& it : files)

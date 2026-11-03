@@ -11,20 +11,19 @@ class CCustomOutfit :
 {
 	using inherited = CArmorBase;
 public:
-
 	virtual void Load(const char* section) override;
 
 	//коэффициент на который домножается потеря силы
 	//если на персонаже надет костюм
 	float			GetPowerLoss				();
 
-	virtual void	OnMoveToSlot				(const SInvItemPlace& prev) override final;
-	virtual void	OnMoveToRuck				(const SInvItemPlace& previous_place) override final;
+	virtual void	OnMoveToSlot				(const SInvItemPlace& prev) final;
+	virtual void	OnMoveToRuck				(const SInvItemPlace& previous_place) final;
 
-	virtual CCustomOutfit* cast_outfit			() override final { return this; }
+	virtual CCustomOutfit* cast_outfit			() final { return this; }
 
-	virtual u32	ef_equipment_type				() const override final;
-	virtual	bool BonePassBullet					(u16 boneID) override final;
+	virtual u32	ef_equipment_type				() const final;
+	virtual bool BonePassBullet					(u16 boneID) final;
 	const shared_str& GetFullIconName			() const { return OutfitDesc().m_full_icon_name; }
 	u32	get_artefact_count						() const { return m_artefact_count; }
 	void ApplySkinModel							(CActor* pActor, bool bDress, bool bHUDOnly);
@@ -43,6 +42,6 @@ public:
 	float m_additional_weight2 = 0.0f;
 
 protected:
-	virtual bool install_upgrade_impl(const char* section, bool test) override final;
+	virtual bool install_upgrade_impl(const char* section, bool test) final;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

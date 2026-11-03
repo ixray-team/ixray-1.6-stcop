@@ -22,7 +22,7 @@ public:
 
 public:
 	IC						CActionPlannerScript	();
-	virtual	void			setup					(_object_type *object);
+	virtual void			setup					(_object_type *object);
 	IC		_object_type	&object					() const;
 };
 

@@ -11,12 +11,12 @@ class CStateMonsterFindEnemyRun : public CState<_Object> {
 
 public:
 						CStateMonsterFindEnemyRun	(_Object *obj);
-	virtual				~CStateMonsterFindEnemyRun	();
+	virtual ~CStateMonsterFindEnemyRun	() override;
 
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object_) override { inherited::remove_links(object_);}
 };
 
 #include "monster_state_find_enemy_run_inline.h"

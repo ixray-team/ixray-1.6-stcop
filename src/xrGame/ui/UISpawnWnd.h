@@ -22,15 +22,15 @@ private:
 	typedef CUIDialogWnd inherited;
 public:
 	CUISpawnWnd();
-	virtual ~CUISpawnWnd();
+	virtual ~CUISpawnWnd() override;
 
 	virtual void Init();
-	virtual void SendMessage(CUIWindow *pWnd, s16 msg, void *pData);
-	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action);
+	virtual void SendMessage(CUIWindow *pWnd, s16 msg, void *pData) override;
+	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
 			void SetVisibleForBtn(ETEAMMENU_BTN btn, bool state);
 			void SetCurTeam(int team);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 			void InitTeamLogo();

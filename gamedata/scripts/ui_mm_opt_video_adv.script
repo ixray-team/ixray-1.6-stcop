@@ -49,6 +49,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
+	handler:addVramBar(self, all_modes)
+
 	handler:lineFrame(self, all_modes, "st_common_settings")
 
 	handler:addTrack(self, all_modes, "ui_mm_detail_density", "r__detail_density", 0.02, true, "float", false, system_depends.sdVidRestart)
@@ -62,7 +64,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
 	handler:lineFrame(self, all_modes, "st_surface_options")
 
-	handler:addTrack(self, all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, system_depends.sdVidRestart)
+	handler:addTrack(self, all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, system_depends.sdVidRestart, "texQuality")
 	handler:addTrack(self, all_modes, "ui_mm_anisotropic", "r__tf_aniso", 1, false, "int", false, system_depends.sdNothing)
 	
 	handler:addCheck(self, mode_1, "ui_mm_r1_detail_textures", "r1_detail_textures", system_depends.sdNothing)
@@ -91,6 +93,16 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
  	handler:addComboBox(self, scalePresetPrec, "ui_mm_r_scale_preset", "vid_scale_preset", 7, false, system_depends.sdVidRestart, "scalePreset")
     handler:AddCallback("scalePreset", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
+
+	local dlssModelPrec = function(id)
+		if mode_4(id) then
+			local scale_mode = handler:GetComboBox("scaleMode")
+			return scale_mode:GetValueOf(scale_mode:CurrentID()) == "st_filter_dlss"
+		end
+		return false
+	end
+
+	handler:addComboBox(self, dlssModelPrec, "ui_mm_r_dlss_model", "r_dlss_model", 4, false, system_depends.sdVidRestart, "dlssModel")
 	
 	local vidScalePrec = function(id)
 		if mode_4(id) then
@@ -181,7 +193,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
   	ctl = handler:addComboBox(self, mode_2, "ui_mm_sun_shafts", "r2_sun_shafts", 5, false, system_depends.sdVidRestart)
     table.insert(sunTable, ctl)
 
-  	handler:addComboBox(self, mode_2, "ui_mm_r__smap_size", "r2_smap_size", 5, false, system_depends.sdSystemRestart)
+  	handler:addComboBox(self, mode_2, "ui_mm_r__smap_size", "r2_smap_size", 5, false, system_depends.sdSystemRestart, "smapSize")
 	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
@@ -195,9 +207,9 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	handler:addCheck(self, mode_2, "ui_mm_soft_particles", "r2_soft_particles", system_depends.sdVidRestart)
 	handler:addCheck(self, mode_4, "ui_mm_r3_dynamic_wet_surfaces", "r3_dynamic_wet_surfaces", system_depends.sdNothing)
 	handler:addCheck(self, mode_4, "ui_mm_sslr_water", "r4_sslr_water", system_depends.sdSystemRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r3_volumetric_smoke", "r3_volumetric_smoke", system_depends.sdNothing)
+	handler:addCheck(self, mode_4, "ui_mm_r3_volumetric_smoke", "r3_volumetric_smoke", system_depends.sdNothing, "volSmoke")
 	handler:addCheck(self, mode_4, "ui_mm_puddles", "r4_puddles", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_rain_puddles", "r4_rain_puddles", system_depends.sdSystemRestart)
+	handler:addCheck(self, mode_4, "ui_mm_rain_puddles", "r4_rain_puddles", system_depends.sdSystemRestart, "rainPuddles")
 	handler:addCheck(self, all_modes, "ui_mm_dynamic_wallmarks", "r__wallmark_dyn", system_depends.sdNothing)
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------

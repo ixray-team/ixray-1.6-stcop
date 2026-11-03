@@ -36,15 +36,15 @@ protected:
 			void		new_game_for_editor		();
 			void		new_game				(const char*	save_name);
 			void		init_ef_storage			() const;
-	virtual	void		reload					(const char* section);
+	virtual void		reload					(const char* section) override;
 
 public:
 						CALifeUpdateManager		(xrServer *server, const char* section);
-	virtual 			~CALifeUpdateManager	();
-	virtual	shared_str	shedule_Name			() const		{ return shared_str("alife_simulator"); };
-	virtual float		shedule_Scale			();
-	virtual void		shedule_Update			(u32 dt);	
-	virtual bool		shedule_Needed			()				{return true;};
+	virtual ~CALifeUpdateManager	() override;
+	virtual shared_str	shedule_Name			() const override { return shared_str("alife_simulator"); };
+	virtual float		shedule_Scale			() override;
+	virtual void		shedule_Update			(u32 dt) override;
+	virtual bool		shedule_Needed			() override {return true;};
 			void		update_switch			();
 			void		update_scheduled		(bool init_ef = true);
 			void		load					(const char* game_name = 0, bool no_assert = false, bool new_only = false);

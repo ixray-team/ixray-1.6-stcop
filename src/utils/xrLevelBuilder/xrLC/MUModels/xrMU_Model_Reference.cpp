@@ -5,7 +5,7 @@
 #include "xrMU_Model.h"
 
 #include "../../../../xrCore/Collision/xrCDB.h"
-#include "../../../Shader_xrLC.h"
+#include "../../../Shader_xrLC_Compilers.h"
 #include "../Mesh/xrFace.h"
  
 
@@ -42,22 +42,21 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 		xr_vector<bool>	cfVertexMarks;
 		cfVertexMarks.assign(model->m_vertices.size(),false);
 
-		std::sort			(model->m_vertices.begin(),model->m_vertices.end());
+		std::ranges::sort(model->m_vertices);
 
 		// faces and mark vertices
 		cfFaces->reserve	(model->m_faces.size());
-		for (xrMU_Model::v_faces_it I=model->m_faces.begin(); I!=model->m_faces.end(); I++)
+		for (auto F : model->m_faces)
 		{
-			_face* F = *I;
 			if (F->Shader().flags.bCollision) 
 			{
 				cfFaces->push_back	(F);
 
-				for (u32 vit=0; vit<3; vit++)
+				for (auto vit : F->v)
 				{
-					u32 g_id		=  u32(std::lower_bound
-						(
-							model->m_vertices.begin(),model->m_vertices.end(),F->v[vit]
+					u32 g_id		=  u32(std::ranges::lower_bound
+						(model->m_vertices,
+						 vit
 						) 
 						- model->m_vertices.begin	());
 					cfVertexMarks	[g_id] = true;
@@ -67,24 +66,27 @@ void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 
 		// verts
 		cfVertices->reserve	(model->m_vertices.size());
-		std::sort			(cfFaces->begin(),cfFaces->end());
+		std::ranges::sort(*cfFaces);
 		for (u32 V=0; V<model->m_vertices.size(); V++)
-			if (cfVertexMarks[V]) cfVertices->push_back(model->m_vertices[V]);
+		{
+			if (cfVertexMarks[V])
+			{
+				cfVertices->push_back(model->m_vertices[V]);
+			}
+		}
 	}
 
 	// Collect faces
 	u32	Offset			= (u32)CL.getTS();
-	for (xrMU_Model::v_faces_it F = cfFaces->begin(); F!=cfFaces->end(); F++)
+	for (auto T : *cfFaces)
 	{
-		_face*	T = *F;
-		
 		// xform
 		Fvector					P[3];
 		xform.transform_tiny	(P[0],T->v[0]->P);
 		xform.transform_tiny	(P[1],T->v[1]->P);
 		xform.transform_tiny	(P[2],T->v[2]->P);
 
-		CL.add_face				( P[0], P[1], P[2], T->dwMaterialGame, sector, T->sm_group);
+		CL.add_face( P[0], P[1], P[2], T->dwMaterialGame, sector, T->flags.bSharedMaterial, T->sm_group);
 	}
 
 	xr_delete		(cfFaces);
@@ -107,9 +109,12 @@ void xrMU_Reference::export_cform_game_new(xr_vector<FaceDataEmbree>& faces)
 	for (auto F : model->m_faces)
 	{
  		const Shader_xrLC& SH = F->Shader();
- 		if (!SH.flags.bCollision) continue;
+ 		if (!SH.flags.bCollision)
+	    {
+		    continue;
+	    }
 
-		Fvector					P[3];
+	    Fvector					P[3];
 		xform.transform_tiny(P[0], F->v[0]->P);
 		xform.transform_tiny(P[1], F->v[1]->P);
 		xform.transform_tiny(P[2], F->v[2]->P);

@@ -13,6 +13,12 @@ IM_Manipulator imManipulator;
 
 void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, float canvasHeight)
 {
+	// The level backup is writing the selected tool; it never locks a tool while the gizmo is in use
+	if (g_LevelAutoBackup.IsCurrentToolLocked())
+	{
+		return;
+	}
+
 	ImGuizmo::SetRect(canvasX, canvasY, canvasWidth, canvasHeight);
 	ImGuizmo::SetDrawlist();
 	

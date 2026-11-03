@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "../xrScripts/script_export_space.h"
 
-class CInventoryBox final : public CGameObject
+class CInventoryBox : public CGameObject
 {
 	using inherited = CGameObject;
 
@@ -16,7 +16,7 @@ public:
 
 public:
 	CInventoryBox() = default;
-	virtual	~CInventoryBox() = default;
+	virtual ~CInventoryBox() override = default;
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
@@ -24,7 +24,7 @@ public:
 	virtual void net_Relcase(CObject* O) override;
 	void AddAvailableItems(TIItemContainer& items_container) const;
 	IC bool IsEmpty() const { return m_items.empty(); }
-	virtual	void UpdateCL() override;
+	virtual void UpdateCL() override;
 
 	IC void	set_in_use(bool status) { m_in_use = status; }
 	IC bool	in_use() const { return m_in_use; }
@@ -42,4 +42,19 @@ protected:
 	void SE_update_status();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 
+};
+
+class CTradeStorageBox final : public CInventoryBox
+{
+	using inherited = CInventoryBox;
+
+	xr_hash_set<shared_str> m_ItemFilter;
+
+public:
+	virtual CTradeStorageBox* cast_trade_storage_box() override { return this; }
+	virtual void Load(LPCSTR section) override;
+	IC u32 GetFilterSize() { return m_ItemFilter.size(); }
+	IC bool CanStoreItem(shared_str item) { return !m_ItemFilter.contains(item); }
+	
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -51,7 +51,8 @@ public:
 //		m_icon.SetAlignment		(waCenter);
 		m_icon.InitTexture		("ui_inGame2_inv_trash");
 	}
-	virtual void		OnDraw		(CUIDragItem* drag_item)
+
+	virtual void		OnDraw		(CUIDragItem* drag_item) override
 	{
 		Fvector2 pos			= drag_item->GetWndPos();
 		Fvector2 icon_sz		= m_icon.GetWndSize();

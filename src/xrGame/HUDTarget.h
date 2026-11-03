@@ -20,6 +20,10 @@ class CHUDTarget
 	float					accumulatedTime;
 	SPickParam				PP;
 
+	Flags8					crosshair_params;
+	bool					is_extended_inertia;
+	Fvector					extended_inertia_target;
+
 	bool					m_bShowCrosshair;
 	CHUDCrosshair			HUDCrosshair;
 

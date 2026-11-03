@@ -60,13 +60,13 @@ public:
 public:
 	IC							CActionBase			(const xr_vector<COperatorCondition> &conditions, const xr_vector<COperatorCondition> &effects, _object_type *object = 0, const char* action_name = "");
 	IC							CActionBase			(_object_type *object, const char* action_name = "");
-	virtual						~CActionBase		();
+	virtual ~CActionBase		() override;
 	IC		void				init				(_object_type *object, const char* action_name);
 	virtual void				setup				(_object_type *object, CPropertyStorage *storage);
 	virtual void				initialize			();
 	virtual void				execute				();
 	virtual void				finalize			();
-	virtual u16	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const;
+	virtual u16	weight				(const CSConditionState &condition0, const CSConditionState &condition1) const override;
 	IC		void				set_inertia_time	(u32 inertia_time);
 	IC		u32					start_level_time	() const;
 	IC		u32					inertia_time		() const;

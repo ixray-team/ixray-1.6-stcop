@@ -2,6 +2,8 @@
 #define PhysicsShellH
 #pragma once
 
+class CPHContact;
+
 #include "PHDefs.h"
 #include "PhysicsCommon.h"
 #include "ICollideValidator.h"
@@ -28,7 +30,6 @@ class IKinematics;
 typedef u32	CLClassBits;
 typedef u32	CLBits;
 
-struct dMass;
 
 
 enum motion_history_state
@@ -127,7 +128,7 @@ public:
 	virtual		void			dbg_draw_force							( float scale, u32 color )																								= 0;
 	virtual		void			dbg_draw_geometry						( float scale, u32 color, Flags32 flags = Flags32().assign( 0 ) ) const													= 0;
 #endif
-	virtual						~CPhysicsBase							()																														{};
+	virtual	~CPhysicsBase							() override {};
 };
 
 // ABSTRACT:
@@ -139,8 +140,8 @@ class	XRPHYSICS_API	CPhysicsElement	:
 
 public:
 				u16								m_SelfID																						;
-	virtual		CPhysicsShell					*PhysicsShell							()																													= 0;		
-	virtual		void							set_ContactCallback						(ContactCallbackFun	*callback)																						= 0;
+	virtual		CPhysicsShell					*PhysicsShell							()																													= 0;
+	virtual	void							set_ContactCallback						(ContactCallbackFun	*callback) override = 0;
 	virtual		IPhysicsShellHolder				*PhysicsRefObject						()																													= 0;
 	virtual		void							add_Sphere								(const Fsphere&		V)																								= 0;
 	virtual		void							add_Box									(const Fobb&		V)																								= 0;
@@ -151,7 +152,7 @@ public:
 	virtual		CODEGeom*						geometry								( u16 i )																											= 0;
 	virtual		void							add_geom								( CODEGeom* g )																										= 0;
 	virtual		void							remove_geom								( CODEGeom* g )																										= 0;
-	virtual	const IPhysicsGeometry*				geometry								( u16 i )const																										= 0;
+	virtual	const IPhysicsGeometry*				geometry								( u16 i )const override = 0;
 #ifdef	DEBUG
 	virtual		CPhysicsElement*				parent_element							()																													= 0;
 #endif
@@ -160,8 +161,6 @@ public:
 	virtual		void							set_ParentElement						(CPhysicsElement* p)																								= 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void							set_BoxMass								(const Fobb& box, float mass)																						= 0;	
-	virtual		void							setInertia								(const dMass& M)																									= 0;																
-	virtual		void							addInertia								(const dMass& M)																									= 0;
 	virtual		void							setMassMC								(float M,const Fvector& mass_center)																				= 0;
 	virtual		void							applyImpulseVsMC						(const Fvector& pos,const Fvector& dir, float val)																	= 0;
 	virtual		void							applyImpulseVsGF						(const Fvector& pos,const Fvector& dir, float val)																	= 0;
@@ -173,27 +172,26 @@ public:
 	virtual		u16								setGeomFracturable						(CPHFracture &fracture)																								= 0;
 	virtual		CPHFracture						&Fracture								(u16 num)																											= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual		u16								numberOfGeoms							()const																												= 0;
+	virtual	u16								numberOfGeoms							()const override = 0;
 	//virtual				dBodyID					get_body								()																													= 0;
-	virtual		const	Fvector					&mass_Center							()const																												= 0;
+	virtual	const	Fvector					&mass_Center							()const override = 0;
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
 	virtual		float							getRadius								()																													= 0;
 	virtual		void							GetGlobalTransformDynamic				(Fmatrix* m) const																									= 0;
-	virtual		dMass							*getMassTensor							()																													= 0;
 	virtual		void							get_MaxAreaDir							(Fvector& dir)																										= 0;
 	virtual		ObjectContactCallbackFun		*get_ObjectContactCallback				()																													= 0;
 	virtual		void							Fix										()																													= 0;
 	virtual		void							ReleaseFixed							()																													= 0;
 	virtual		bool							isFixed									()																													= 0;
 ////////////////////////////////////////////////////////////////IPhysicsElement////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual	const	Fmatrix						&XFORM									()							const																					{ return CPhysicsBase::XFORM(); }
+	virtual	const	Fmatrix						&XFORM									()							const override { return CPhysicsBase::XFORM(); }
 	//virtual		void		_BCL				CalculateBoneTransform					( Fmatrix &bone_transform )const																= 0;
 	virtual		void							GetPointVel								( Fvector	 &res_vel, const Fvector & point ) const																= 0;
 //	virtual			void						get_LinearVel							( Fvector& velocity )		const																					{ get_LinearVel( velocity ); }
 //	virtual			void						get_AngularVel							( Fvector& velocity )		const																					{ get_AngularVel( velocity ); }
-	virtual			void						get_Box									( Fvector&	sz, Fvector& c )const																					{ return	CPhysicsBase::get_Box( sz, c ); }
+	virtual	void						get_Box									( Fvector&	sz, Fvector& c )const override { return	CPhysicsBase::get_Box( sz, c ); }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual										~CPhysicsElement						()																													{};
+	virtual	~CPhysicsElement						() override {};
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
@@ -226,7 +224,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				enumType				eType																										;          //type of the joint
 public:
-	virtual		~CPhysicsJoint										()																				{};
+	virtual	~CPhysicsJoint										() override {};
 	virtual		u16					 	BoneID						()																				=0;
 	virtual		void					SetBoneID					(u16 bone_id)																	=0;
 	virtual		CPhysicsElement*		PFirst_element				()																				=0;
@@ -302,8 +300,8 @@ public:
 public:
 IC					IKinematics					*PKinematics								()																{return m_pKinematics		;}
 ////////////////////////////////////////////////////IPhysicsShell///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-virtual	const		Fmatrix						&XFORM										()const															{ return CPhysicsBase::XFORM(); }
-virtual	const		IPhysicsElement				&Element									( u16 index ) const												{ return *get_ElementByStoreOrder( index );	};
+	virtual	const		Fmatrix						&XFORM										()const override { return CPhysicsBase::XFORM(); }
+	virtual	const		IPhysicsElement				&Element									( u16 index ) const override { return *get_ElementByStoreOrder( index );	};
 virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																				= 0;
 //virtual			u16							get_ElementsNumber							( )																const	= 0;
 
@@ -322,6 +320,9 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						SetIgnoreDynamic							()																							= 0;
 	virtual			void						SetRagDoll									()																							= 0;
 	virtual			void						SetIgnoreRagDoll							()																							= 0;
+	virtual			void						SetSelfCollision							(bool Enabled)																				= 0;
+	virtual			bool						IsSelfCollision								() const																					= 0;
+	virtual			u32							LastSelfCollisionContacts					() const																					= 0;
 	virtual		const CLBits&					collide_bits								()const 																					= 0;
 	virtual		const _flags<CLClassBits>&		collide_class_bits 							()const 																					= 0;
 	virtual			void						CreateShellAnimator							( CInifile const * ini, const char* section )															= 0;
@@ -350,8 +351,6 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual			void						setMass1									(float M)																					= 0;
 	virtual			void						SmoothElementsInertia						(float k)																					= 0;
-	virtual			void						setEquelInertiaForEls						(const dMass& M)																			= 0;
-	virtual			void						addEquelInertiaToEls						(const dMass& M)																			= 0;
 	virtual			void						MassAddBox									( float mass, const Fvector &full_size )													= 0;
 	virtual			ELEMENT_STORAGE				&Elements									()																							= 0;
 	virtual			CPhysicsElement				*get_Element								(u16 bone_id)																				= 0;
@@ -360,7 +359,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			CPhysicsElement				*get_ElementByStoreOrder					(u16 num)																					= 0;
 	virtual	const CPhysicsElement				*get_ElementByStoreOrder					(u16 num) const																				= 0;
 	virtual			CPhysicsElement				*get_PhysicsParrentElement					( u16 bone_id )																				= 0;
-	virtual			u16							get_ElementsNumber							()const																						= 0;
+	virtual	u16							get_ElementsNumber							()const override = 0;
 	virtual			CPHSynchronize				*get_ElementSync							(u16 element)																				= 0;
 	virtual			CPhysicsJoint				*get_Joint									(u16 bone_id)																				= 0;
 	virtual			CPhysicsJoint				*get_Joint									(const shared_str & bone_name)																= 0;
@@ -375,6 +374,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						Disable										()																							= 0;
 	virtual			void						DisableCollision							()																							= 0;
 	virtual			void						EnableCollision								()																							= 0;
+	virtual			bool						IsCollisionDisabled							() const																					= 0;
 	virtual			void						SetRemoveCharacterCollLADisable				()																							= 0;
 	virtual			void						DisableCharacterCollision					()																							= 0;
 	virtual			void						PureStep									(float step = fixed_step)																	= 0;
@@ -407,15 +407,26 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						ObjectToRootForm							(const Fmatrix& form)							    										= 0;
 	virtual			void						SetPrefereExactIntegration					()																							= 0;
 	virtual			void						UnSetPrefereExactIntegration				()																							= 0;
-	virtual										~CPhysicsShell								()																							;
+	virtual			bool						IsPrefereExactIntegration					() const																						= 0;
+	virtual			void						vis_update_activate							()																							= 0;
+	virtual	~CPhysicsShell								() override;
 	//build_FromKinematics		in returns elements  & joint pointers according bone IDs;
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 	};
 
 
-struct dContact;
+class CPHContact;
 struct SGameMtl;
-XRPHYSICS_API void	StaticEnvironmentCB ( bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 );
+XRPHYSICS_API void	StaticEnvironmentCB ( bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2 );
+
+// Operations on an opaque geom handle (CPhysicsElement::geometry, CPhysicsShell::get_GeomByID).
+XRPHYSICS_API void	PHGeomGetXform					(const CODEGeom* Geom, Fmatrix& Form);
+XRPHYSICS_API void	PHGeomSetBoneId					(CODEGeom* Geom, u16 BoneId);
+XRPHYSICS_API void	PHGeomDestroy					(CODEGeom*& Geom);
+XRPHYSICS_API void	PHGeomAddObjectContactCallback	(CODEGeom* Geom, ObjectContactCallbackFun* Callback);
+#ifdef DEBUG
+XRPHYSICS_API void	PHGeomDbgDraw					(const CODEGeom* Geom, float Scale, u32 Color);
+#endif
 
 // Implementation creator
 XRPHYSICS_API	CPhysicsJoint*				P_create_Joint				(CPhysicsJoint::enumType type ,CPhysicsElement* first,CPhysicsElement* second)								;
@@ -447,4 +458,4 @@ XRPHYSICS_API		void				phys_shell_verify_object_model	( IPhysicsShellHolder& O )
 
 
 					void				phys_shell_verify_model			( IKinematics& K );
-#endif // PhysicsShellH
+#endif // PhysicsShellH

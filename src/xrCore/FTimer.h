@@ -217,7 +217,8 @@ public:
 class XRCORE_API CTimer_paused : public CTimer_paused_ex {
 public:
 	CTimer_paused				()		{ g_pauseMngr.Register(this);	}
-	virtual ~CTimer_paused		()		{ g_pauseMngr.UnRegister(this);	}
+	virtual ~CTimer_paused		() override
+	{ g_pauseMngr.UnRegister(this);	}
 };
 
 extern XRCORE_API bool			g_bEnableStatGather;

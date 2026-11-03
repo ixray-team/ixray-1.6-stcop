@@ -144,6 +144,18 @@ public:
 		return true;
 	};
 
+	//The same entry points as _obb::intersectAABB: another box, or a box given by its
+	//center and half extents.
+	ICF	bool	intersectAABB	(const Tvector& aabbCenter, const Tvector& aabbExtents) const
+	{
+		Tvector center, extents;
+		get_CD(center, extents);
+
+		return	std::abs(center.x - aabbCenter.x) <= extents.x + aabbExtents.x &&
+				std::abs(center.y - aabbCenter.y) <= extents.y + aabbExtents.y &&
+				std::abs(center.z - aabbCenter.z) <= extents.z + aabbExtents.z;
+	}
+
 	ICF bool intersectTri(const Tvector(&p)[3], const Tvector& center, const Tvector& extents, bool bClass3 = true)
 	{
 		Tvector tv0, tv1, tv2;
@@ -291,6 +303,68 @@ public:
 		get_CD(center, extents);
 
 		return intersectTri(p, center, extents, bClass3);
+	}
+
+	//Clips the triangle by the box and reports the vertices of the resulting polygon,
+	//the same way as _obb::FindContactsClipping does it.
+	ICF void FindContactsClipping(const Tvector* tri, void (*callback)(const Tvector& contact, void* user_data), void* user_data = nullptr) const
+	{
+		if (!callback)
+			return;
+
+		constexpr u8 MaxVertices = 12;
+
+		Tvector polygon[MaxVertices];
+		Tvector temp[MaxVertices];
+
+		u8 count = 3;
+
+		for (u8 i = 0; i < 3; ++i)
+			polygon[i].set(tri[i]);
+
+		//Six axis aligned planes, each keeps the inside half space
+		//(sign*(p[axis] - bound) <= 0).
+		for (u8 i = 0; i < 6 && count >= 3; ++i)
+		{
+			const u8 axis = i >> 1;
+			const T sign = (i & 1) ? T(1) : T(-1);
+			const T bound = (i & 1) ? max[axis] : min[axis];
+
+			u8 out = 0;
+
+			for (u8 j = 0; j < count; ++j)
+			{
+				const Tvector& a = polygon[j];
+				const Tvector& b = polygon[(j + 1) % count];
+
+				const T da = sign * (a[axis] - bound);
+				const T db = sign * (b[axis] - bound);
+
+				if (da <= T(0) && out < MaxVertices)
+					temp[out++] = a;
+
+				if (((da > T(0)) != (db > T(0))) && out < MaxVertices)
+				{
+					Tvector ab; ab.sub(b, a);
+
+					Tvector point;
+					point.mad(a, ab, da / (da - db));
+
+					temp[out++] = point;
+				}
+			}
+
+			count = out;
+
+			for (u8 k = 0; k < count; ++k)
+				polygon[k] = temp[k];
+		}
+
+		if (count < 3)
+			return;
+
+		for (u8 i = 0; i < count; ++i)
+			callback(polygon[i], user_data);
 	}
 
 	// Does the vector3 intersects box

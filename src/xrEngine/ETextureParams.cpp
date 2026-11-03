@@ -301,6 +301,13 @@ void STextureParams::OnTypeChange(PropValue* prop)
 		OnTypeChangeEvent(prop);
 }
 
+void STextureParams::OnBumpGuessChange(PropValue* v)
+{
+	
+
+	OnTypeChange(v);
+}
+
 void STextureParams::FillProp(const char* base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent)
 {
 	VERIFY(FillPropImpl);
@@ -360,6 +367,10 @@ bool STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_para
 		if(par_name=="Details\\Use As Bump (R2)")
 		{
 			res = (flags.test(flBumpDetail)==tp1.flags.test(flBumpDetail));
+		}else
+		if (par_name=="Bump\\Guess Texture From This")
+		{
+			res = guess_bump_texture_from_name==tp1.guess_bump_texture_from_name;
 		}else
 		if(par_name=="Details\\Texture")
 		{

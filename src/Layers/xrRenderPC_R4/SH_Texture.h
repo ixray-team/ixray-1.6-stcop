@@ -70,7 +70,7 @@ public:
 	bool								video_IsPlaying	();
 
 	CTexture							();
-	virtual ~CTexture					();
+	virtual ~CTexture					() override;
 
 	IRHIShaderResourceView* get_SRView() { return GetView(); }
 

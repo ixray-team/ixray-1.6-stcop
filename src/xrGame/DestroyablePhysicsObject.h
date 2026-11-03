@@ -18,19 +18,19 @@ class CDestroyablePhysicsObject :
 
 public:
 	CDestroyablePhysicsObject();
-	virtual ~CDestroyablePhysicsObject();
-	virtual CPhysicsShellHolder* PPhysicsShellHolder();
-	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual	void net_Destroy();
-	virtual	void Hit(SHit* pHDS);
-	virtual	void InitServerObject(CSE_Abstract* D);
-	virtual ICollisionDamageReceiver* PHCollisionDamageReceiver() { return (this); }
-	virtual DLL_Pure* _construct();
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-	virtual CPHDestroyable* ph_destroyable() { return this; }
-	virtual void shedule_Update(u32 dt);
-	virtual bool CanRemoveObject();
-	virtual void OnChangeVisual();
+	virtual ~CDestroyablePhysicsObject() override;
+	virtual CPhysicsShellHolder* PPhysicsShellHolder() override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void Hit(SHit* pHDS) override;
+	virtual void InitServerObject(CSE_Abstract* D) override;
+	virtual ICollisionDamageReceiver* PHCollisionDamageReceiver() override { return (this); }
+	virtual DLL_Pure* _construct() override;
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CPHDestroyable* ph_destroyable() override { return this; }
+	virtual void shedule_Update(u32 dt) override;
+	virtual bool CanRemoveObject() override;
+	virtual void OnChangeVisual() override;
 	virtual bool HasChildPart() { return !!(child_part || m_fHealth <= 0.f); };
 protected:
 	void Destroy();

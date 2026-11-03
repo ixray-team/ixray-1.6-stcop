@@ -58,6 +58,8 @@ public:
 	virtual bool   		LoadStream            		(IReader&);
 	virtual bool   		LoadLTX            		(CInifile&);
 	virtual void   		SaveStream            		(IWriter&);
+	// Undo: the tool stream without its objects, they are stored one by one
+	void				SaveToolStream				(IWriter&);
 	virtual void   		SaveLTX            		(CInifile&, int id);
 
 	virtual bool		LoadSelection      		(IReader&);

@@ -114,10 +114,10 @@ private:
 		void ApplyStatusTintColor(float contextualAlpha);
 
 public:
-	virtual					~CUIMotionIcon		();
+	virtual ~CUIMotionIcon		() override;
 							CUIMotionIcon		();
-	virtual	void			Update				();
-	virtual void			Draw				();
+	virtual void			Update				() override;
+	virtual void			Draw				() override;
 			bool			Init				(Frect const& rect, bool useCompassBar, bool useCompassLayout = false);
 			void			ApplyNavigationHost(CUIWindow* attachParent, Frect const& hostRect, bool useCompassBar);
 			bool			IsIndependent		() const { return m_independent; }
@@ -132,8 +132,8 @@ public:
 			void			ResetVisibility		();
 			float			GetThreatNormalized	() const;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIStatic* ui_cast_static() override { return this; }
 };
 
 extern CUIMotionIcon* g_pMotionIcon;

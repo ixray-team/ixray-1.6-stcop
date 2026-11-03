@@ -33,7 +33,7 @@ private:
 	float SourceDistance = -1.f;
 	Fvector SourcePosition = {};
 	Fvector LightPoint = {};
-	u16 HitObjectId = u16(-1);
+	ALife::_OBJECT_ID HitObjectId = ALife::INVALID_OBJECT_ID;
 	bool HasLightPoint = false;
 	collide::rq_results RayResults;
 };

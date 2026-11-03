@@ -197,10 +197,8 @@ struct LevelInspector final
 	}
 	ICF void append_trilines(const Fvector(&tri_verts)[3], u32 tcolor, u32 lcolor)
 	{
-		swap_color_channels(tcolor);
-		swap_color_channels(lcolor);
 		append_tri({ tri_verts[0],tri_verts[1],tri_verts[2], tcolor });
-		
+
 		append_line({ tri_verts[0], tri_verts[1], lcolor });
 		append_line({ tri_verts[0], tri_verts[2], lcolor });
 		append_line({ tri_verts[2], tri_verts[1], lcolor });
@@ -479,7 +477,7 @@ struct LevelInspector final
 		append_geometry(vertices, cylinder_lindices, cylinder_tindices, lcolor, tcolor, fastbuff);
 	}
 
-	ICF void append_cone(const Fcylinder& cone/*Р С”Р С•Р С–Р Т‘Р В°-РЎвЂљР С• Р Т‘Р С•Р В±Р В°Р Р†Р В»РЎР‹ Р С•РЎвЂљР Т‘Р ВµР В»РЎРЉР Р…РЎвЂ№Р в„– Р С”Р В»Р В°РЎРѓРЎРѓ Fcone*/, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
+	ICF void append_cone(const Fcone& cone, u32 lcolor = u32(0), u32 tcolor = u32(0), void** fastbuff = nullptr)
 	{
 		extern Fvector cone_vertices[17];
 		extern lindex cone_lindices[32];
@@ -515,7 +513,7 @@ struct LevelInspector final
 		mR.i = right;			  mR._14 = 0.f;
 		mR.j = real_up;			  mR._24 = 0.f;
 		mR.k = dir;				  mR._34 = 0.f;
-		mR.c = cone.m_center; mR._44 = 1.f;
+		mR.c = cone.m_translate; mR._44 = 1.f;
 
 		Fmatrix mScale;
 		float diam = 2.f * cone.m_radius;

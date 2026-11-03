@@ -9,7 +9,7 @@ class CUIStatic;
 class CUIFrags : public CUIWindow{
 public:
 	CUIFrags();
-	~CUIFrags();
+	virtual ~CUIFrags() override;
 	void Init(CUIXml& xml_doc, const char* path, const char* backgrnd_path);
 
 protected:

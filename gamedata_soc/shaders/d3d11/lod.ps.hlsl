@@ -1,3 +1,6 @@
+#ifdef USE_R1_STATIC_LIGHTING
+#include "r1_lod.ps.hlsl"
+#else
 #include "common.hlsli"
 #include "sload.hlsli"
 
@@ -59,3 +62,5 @@ void main(in p_bilbord I, out IXRayGbufferPack O)
     GbufferPack(O, M);
 }
 
+
+#endif

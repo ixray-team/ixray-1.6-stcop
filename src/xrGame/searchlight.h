@@ -30,22 +30,22 @@ class CProjector final : public CScriptObject {
 
 public:
 					CProjector		();
-	virtual			~CProjector		();
+	virtual ~CProjector		() override;
 
-	virtual void	Load			( const char* section);
-	virtual bool	net_Spawn		( CSE_Abstract* DC);
-	virtual void	shedule_Update	( u32 dt);							// Called by sheduler
-	virtual void	UpdateCL		( );								// Called each frame, so no need for dt
-	virtual void	renderable_Render( );
+	virtual void	Load			( const char* section) override;
+	virtual bool	net_Spawn		( CSE_Abstract* DC) override;
+	virtual void	shedule_Update	( u32 dt) override;							// Called by sheduler
+	virtual void	UpdateCL		( ) override;								// Called each frame, so no need for dt
+	virtual void	renderable_Render( ) override;
 
-	virtual bool	UsedAI_Locations();
+	virtual bool	UsedAI_Locations() override;
 
-	virtual	bool	bfAssignWatch(CScriptEntityAction	*tpEntityAction);
-	virtual	bool	bfAssignObject(CScriptEntityAction *tpEntityAction);
+	virtual bool	bfAssignWatch(CScriptEntityAction	*tpEntityAction) override;
+	virtual bool	bfAssignObject(CScriptEntityAction *tpEntityAction) override;
 
-	virtual CScriptEntity* cast_script_entity() { return this; }
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CProjector* cast_projector() { return this; }
+	virtual CScriptEntity* cast_script_entity() override { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CProjector* cast_projector() override { return this; }
 
 			Fvector GetCurrentDirection	();
 private:

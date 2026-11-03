@@ -14,12 +14,6 @@
 #include "clsid_game.h"
 #include "../xrCore/Save/SaveManager.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-
-#pragma warning(pop)
-
 #ifndef AI_COMPILER
 #	include "object_factory.h"
 #endif
@@ -463,14 +457,7 @@ void CSE_Abstract::FillProps(const char* pref, PropItemVec& items)
 {
 #ifdef XRSE_FACTORY_EXPORTS
     m_gameType.FillProp(pref, items);
-#endif // #ifdef XRSE_FACTORY_EXPORTS
-/*
-#ifdef XRGAME_EXPORTS
-#	ifdef DEBUG
-	PHelper().CreateToken8		(items,	PrepareKey(pref,"Game Type"),			&s_gameid,		game_types);
-    PHelper().CreateU16			(items,	PrepareKey(pref, "Respawn Time (s)"),	&RespawnTime,	0,43200);
-
-*/
+#endif
 }
 
 void CSE_Abstract::FillProp					(const char* pref, PropItemVec &items)

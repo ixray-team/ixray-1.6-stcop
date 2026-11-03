@@ -8,7 +8,7 @@ class cphysics_scripted :
 
 public:
 	cphysics_scripted() :m_game_scripted(0) {}
-	virtual ~cphysics_scripted();
-	virtual	void set(iphysics_game_scripted* g);
-	virtual iphysics_game_scripted* get() { return m_game_scripted; };
+	virtual	~cphysics_scripted() override;
+	virtual	void set(iphysics_game_scripted* g) override;
+	virtual	iphysics_game_scripted* get() override { return m_game_scripted; };
 };

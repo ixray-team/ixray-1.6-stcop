@@ -40,10 +40,10 @@ private:
 	
 public:
 								anti_aim_ability		(CBaseMonster* object);
-								~anti_aim_ability		();
+	virtual ~anti_aim_ability		() override;
 
 	void						load_from_ini			(CInifile const * ini, const char* section);
-	void						update_schedule			();
+	virtual void						update_schedule			() override;
 
 	void						set_callback			(hit_callback callback) { m_callback = callback; }
 	void						on_monster_death		();
@@ -53,8 +53,8 @@ public:
 private:
 	bool						can_detect				();
 	void						do_deactivate			();
-	void						activate				();
-	void						deactivate				();
+	virtual void						activate				() override;
+	virtual void						deactivate				() override;
 	bool						check_update_condition	() const;
 	float						calculate_angle			() const;
 	void						start_camera_effector	();

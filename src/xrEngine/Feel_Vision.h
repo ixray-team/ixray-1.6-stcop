@@ -33,7 +33,7 @@ namespace Feel
 		void						o_trace		(Fvector& P, float dt, float vis_threshold);
 	public:
 									Vision		(CObject* owner);
-		virtual					~	Vision		();
+		virtual ~	Vision		() override;
 		struct	 feel_visible_Item 
 		{
 			collide::ray_cache	Cache;

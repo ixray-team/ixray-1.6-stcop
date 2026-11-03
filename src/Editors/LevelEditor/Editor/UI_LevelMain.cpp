@@ -1,12 +1,22 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
 #include "../xrengine\GameFont.h"
-#include "UI\UIEditLibrary.h"
 #include "Editor/Utils/ContentView.h"
+#include "Editor/Utils/EFDEditor.h"
 #include "../xrECore/Editor/UIEditLightAnim.h"
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 #include "UI/UIGitWindow.h"
+#include "ParticleEditor/UI_ParticleTools.h"
+#include "ParticleEditor/UIParticleEditorForm.h"
+#include "ActorEditor/ActorEditor.h"
+#include "ShaderEditor/UIShaderEditorForm.h"
+#include "ShaderEditor/UI_shadertools.h"
+#include "UI/LayoutEditor/UILayoutEditorForm.h"
+#include "UI/Coder/UICoderForm.h"
+#include "Nodes/UINodesEditorForm.h"
+#include "UI/UISharedMaterialsLibrary.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
 
 ECORE_API extern bool bIsLevelEditor;
 CLevelMain* LUI = (CLevelMain*)EContext.UI;
@@ -38,9 +48,17 @@ CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 // Main commands
 CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
-	UIEditLibrary::Show();
+	// The object library lives in the Actors tab
+	UIActorEditorForm::Open();
 
 	return true;
+}
+
+CCommandVar CommandSharedMaterialsEditor(CCommandVar p1, CCommandVar p2)
+{
+	UISharedMaterialsLibrary::Show();
+
+	return TRUE;
 }
 
 CCommandVar CommandLAnimEditor(CCommandVar p1, CCommandVar p2)
@@ -159,10 +177,35 @@ CCommandVar CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 {
-	LUI->LoaderEvent.wait();
+	// Open shortcut on the Actors tab loads an object; a file name is always a level
+	CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+	if (Actor != nullptr && !p1.IsString())
+	{
+		return Actor->CommandLoad(p1, p2);
+	}
+
+	// Open shortcut on the Shaders tab reloads the current library
+	if (!p1.IsString() && UIShaderEditorForm::IsActive())
+	{
+		return UIShaderEditorForm::ReloadCurrent();
+	}
+
+	// Open shortcut on the UI Layout tab opens a layout
+	if (!p1.IsString() && UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::Open();
+	}
+
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
+		// Open shortcut on the Particles tab loads a particles .xr
+		if (!p1.IsString() && UIParticleEditorForm::IsActive())
+		{
+			return PTools->LoadXR();
+		}
+
 		if (!p1.IsString())
 		{
 			xr_string temp_fn = LTools->m_LastFileName.c_str();
@@ -194,7 +237,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			FS.r_close(R);
 			LTools->m_LastFileName = temp_fn.c_str();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[temp_fn, is_ltx]
 				{
@@ -225,7 +268,8 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 					// update props
 					ExecCommand(COMMAND_UPDATE_PROPERTIES);
 					EContext.UI->RedrawScene();
-				}
+				},
+				"Loading level..."
 			);
 		}
 
@@ -241,7 +285,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
-	LUI->LoaderEvent.wait();
+	LUI->LoaderEvent.Wait();
 
 	string_path 	fn;
 	xr_strconcat(fn,Core.CompName,"_",Core.UserName,"_backup.level");
@@ -251,7 +295,36 @@ CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 {
-	LUI->LoaderEvent.wait();
+	// Save shortcut on the Actors tab saves the edited object; a file name is always a level
+	CActorTools* Actor = UIActorEditorForm::GetActiveTool();
+	if (Actor != nullptr && !p1.IsString())
+	{
+		return Actor->CommandSave(p1, p2);
+	}
+
+	// Save shortcut on the Shaders tab saves the shader libraries
+	if (!p1.IsString() && UIShaderEditorForm::IsActive())
+	{
+		return UIShaderEditorForm::SaveAll();
+	}
+
+	// Save shortcut on the UI Layout tab saves the layout files
+	if (!p1.IsString() && UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::Save();
+	}
+
+	if (!p1.IsString() && UICoderForm::IsActive())
+	{
+		return UICoderForm::Save();
+	}
+
+	if (!p1.IsString() && UINodesEditorForm::IsActive())
+	{
+		return UINodesEditorForm::Save();
+	}
+
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
@@ -269,6 +342,12 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 		{
 			if (p1.IsInteger())
 			{
+				// Save shortcut on the Particles tab saves the current particle
+				if (UIParticleEditorForm::IsActive())
+				{
+					return UIParticleEditorForm::SaveCurrent();
+				}
+
 				return ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()), 0);
 			}
 
@@ -297,9 +376,9 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 				EContext.UI->ResetStatus();
 				// set new name
-				if (0 != xr_strcmp(Tools->m_LastFileName.c_str(), temp_fn.c_str()))
+				if (0 != xr_strcmp(LTools->m_LastFileName.c_str(), temp_fn.c_str()))
 				{
-					Tools->m_LastFileName = temp_fn.c_str();
+					LTools->m_LastFileName = temp_fn.c_str();
 				}
 				EPrefs->AppendRecentFile(temp_fn.c_str());
 				return 			true;
@@ -315,7 +394,19 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
-	LUI->LoaderEvent.wait();
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandClear(p1, p2);
+	}
+
+	// Clear on the Shaders tab resets the preview camera
+	if (UIShaderEditorForm::IsActive())
+	{
+		EContext.UI->CurrentView().m_Camera.Reset();
+		return true;
+	}
+
+	LUI->LoaderEvent.Wait();
 
 	if (!Scene->locked())
 	{
@@ -329,7 +420,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 		EContext.UI->CurrentView().m_Camera.Reset();
 		Scene->Reset();
 		Scene->m_LevelOp.Reset();
-		Tools->m_LastFileName = "";
+		LTools->m_LastFileName = "";
 		LTools->m_LastSelectionName = "";
 		Scene->UndoClear();
 		ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
@@ -457,6 +548,7 @@ CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 {
+	g_LevelAutoBackup.Cancel();
 	Lib.ReloadObjects	();
 
 	ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
@@ -587,8 +679,62 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 	return false;
 }
 
+static bool UndoEditorTab(bool Redo, bool& Handled)
+{
+	Handled = true;
+	bool Result = false;
+	if (CEFDEditor* Evaluation = CEFDEditor::GetFocused())
+	{
+		Result = Redo ? Evaluation->Redo() : Evaluation->Undo();
+	}
+	else if (CParticleTool* Particles = UIParticleEditorForm::GetActiveTool())
+	{
+		Result = Redo ? Particles->Redo() : Particles->Undo();
+	}
+	else if (CShaderTool* Shaders = UIShaderEditorForm::GetActiveTool())
+	{
+		ISHTools* Current = Shaders->Current();
+		Result = Current != nullptr && (Redo ? Current->Redo() : Current->Undo());
+	}
+	else if (UILayoutEditorForm::IsActive())
+	{
+		Result = UILayoutEditorForm::Undo(Redo);
+	}
+	else if (UICoderForm::IsActive())
+	{
+		Result = UICoderForm::Undo(Redo);
+	}
+	else if (UINodesEditorForm::IsActive())
+	{
+		Result = UINodesEditorForm::Undo(Redo);
+	}
+	else
+	{
+		Handled = false;
+		return false;
+	}
+
+	if (!Result)
+	{
+		ELog.Msg(mtInformation, Redo ? "Redo buffer empty" : "Undo buffer empty");
+	}
+	return Result;
+}
+
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
+	bool Handled = false;
+	const bool TabResult = UndoEditorTab(false, Handled);
+	if (Handled)
+	{
+		return TabResult;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandUndo(p1, p2);
+	}
+
 	LTools->GetProperties()->ClearProperties();
 
 	if (!Scene->locked())
@@ -611,6 +757,18 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 {
+	bool Handled = false;
+	const bool TabResult = UndoEditorTab(true, Handled);
+	if (Handled)
+	{
+		return TabResult;
+	}
+
+	if (CActorTools* Actor = UIActorEditorForm::GetActiveTool())
+	{
+		return Actor->CommandRedo(p1, p2);
+	}
+
 	LTools->GetProperties()->ClearProperties();
 
 	if (!Scene->locked()) 
@@ -704,14 +862,18 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to build level?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			EContext.UI->SetStatus("Building level...");
+
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.Compile(false);
-				}
+					EContext.UI->ResetStatus();
+				},
+				"Building level..."
 			);
 
 			return true;
@@ -751,14 +913,15 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export game?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakeGame();
-				}
+				},
+				"Making game..."
 			);
 
 			return true;
@@ -776,14 +939,15 @@ CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export puddles?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakePuddles();
-				}
+				},
+				"Making puddles..."
 			);
 
 			return true;
@@ -801,14 +965,15 @@ CCommandVar CommandMakePlanars(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export planars?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakePlanars();
-				}
+				},
+				"Making planars..."
 			);
 
 			return true;
@@ -826,14 +991,15 @@ CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export details?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakeDetails();
-				}
+				},
+				"Making details..."
 			);
 
 			return true;
@@ -852,14 +1018,15 @@ CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export HOM?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakeHOM();
-				}
+				},
+				"Making HOM..."
 			);
 
 			return true;
@@ -878,14 +1045,15 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export Sound Occlusion Model?"))
 		{
-			LUI->LoaderEvent.wait();
+			LUI->LoaderEvent.Wait();
 
-			LUI->LoaderEvent.run
+			LUI->LoaderEvent.Run
 			(
 				[]()
 				{
 					Builder.MakeSOM();
-				}
+				},
+				"Making SOM..."
 			);
 
 			return true;
@@ -932,6 +1100,12 @@ CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 {
+	// The UI Layout tab deletes its own selection, never the scene objects
+	if (UILayoutEditorForm::IsActive())
+	{
+		return UILayoutEditorForm::DeleteSelection();
+	}
+
 	if( !Scene->locked() ){
 		Scene->RemoveSelection	( LTools->CurrentClassID() );
 		Scene->UndoSave			();
@@ -1174,6 +1348,7 @@ void CLevelMain::RegisterCommands()
 
 	// common
 	REGISTER_CMD_S	    (COMMAND_LIBRARY_EDITOR,           	CommandLibraryEditor);
+	REGISTER_CMD_S	    (COMMAND_SHARED_MATERIALS_EDITOR,   CommandSharedMaterialsEditor);
 	REGISTER_CMD_S	    (COMMAND_LANIM_EDITOR,            	CommandLAnimEditor);
 	REGISTER_CMD_S		(COMMAND_LOAD_LEVEL_PART,			CommandLoadLevelPart);
 	REGISTER_CMD_S		(COMMAND_UNLOAD_LEVEL_PART,			CommandUnloadLevelPart);
@@ -1250,6 +1425,11 @@ char* CLevelMain::GetCaption()
 bool CLevelMain::ApplyShortCut(u32 Key, TShiftState Shift)
 {
 	if (Scene->IsPlayInEditor())
+	{
+		return true;
+	}
+
+	if (UIObjectList::ConsumesShortcut(Key))
 	{
 		return true;
 	}
@@ -1553,6 +1733,62 @@ void CLevelMain::ProgressDraw()
 	inherited::ProgressDraw();
 }
 
+void CLevelMain::UpdateTaskbar()
+{
+	if (!CTaskbarProgress::Instance().IsInitialized())
+	{
+		return;
+	}
+
+	const bool Busy = LoaderEvent.IsBusy() || EContext.UI->IsLoading;
+
+	if (Busy)
+	{
+		if (!TaskbarActive)
+		{
+			TaskbarActive = true;
+			TaskbarIndeterminate = true;
+			TaskbarProgress = -1;
+
+			const char* Text = LoaderEvent.GetTaskbarText();
+			if (Text != nullptr)
+			{
+				CTaskbarProgress::Instance().SetTooltip(Text);
+			}
+			CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
+		}
+
+		// The builder reports a percentage only while a progress item exists.
+		if (EContext.UI->IsLoading)
+		{
+			const int Progress = std::clamp((int)EContext.UI->ProgressStatus, 0, 100);
+			if (Progress != TaskbarProgress || TaskbarIndeterminate)
+			{
+				TaskbarIndeterminate = false;
+				TaskbarProgress = Progress;
+				CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Normal);
+				CTaskbarProgress::Instance().SetProgress((u64)Progress, 100);
+			}
+		}
+		else if (!TaskbarIndeterminate)
+		{
+			TaskbarIndeterminate = true;
+			TaskbarProgress = -1;
+			CTaskbarProgress::Instance().SetState(ETaskbarProgressState::Indeterminate);
+		}
+	}
+	else if (TaskbarActive)
+	{
+		TaskbarActive = false;
+		TaskbarIndeterminate = false;
+		TaskbarProgress = -1;
+		CTaskbarProgress::Instance().SetState(ETaskbarProgressState::NoProgress);
+		CTaskbarProgress::Instance().SetTooltip("IX-Ray Level Editor");
+	}
+
+	CTaskbarProgress::Instance().Update();
+}
+
 void CLevelMain::SaveSettings(nlohmann::json& js)
 {
 	inherited::SaveSettings(js);
@@ -1573,9 +1809,19 @@ Ivector2 CLevelMain::GetRenderMousePosition() const
 
 void CLevelMain::OnDrawUI()
 {
+	PROF_EVENT("CLevelMain::OnDrawUI")
 	inherited::OnDrawUI();
+	g_LevelAutoBackup.Update();
+	// Streaming swaps the references of static objects the backup reads
+	if (!g_LevelAutoBackup.IsBusy())
+	{
+		GWorldPartition.Update();
+	}
 	UIObjectList::Update();
+	UIWorldPartition::Update();
 	UIGitWindow::Update();
+	UIActorEditorForm::Update();
+	UIShaderEditorForm::Update();
 	if (LTools->GetToolForm())
 	{
 		LTools->GetToolForm()->OnDrawUI();

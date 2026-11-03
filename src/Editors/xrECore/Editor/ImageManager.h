@@ -16,7 +16,7 @@ struct SSimpleImage
     int 		LongestEdge()const 	{return (w>h)?w:h;}
     int			Area()const			{return w*h;}
 };
-IC bool operator == (const SSimpleImage& a, shared_str nm){return a.name==nm;}
+IC bool operator == (const SSimpleImage& a, const shared_str& nm){return a.name==nm;}
 IC bool operator < (const SSimpleImage& a, const SSimpleImage& b){return a.name<b.name;}
 
 using SSimpleImageVec = xr_vector<SSimpleImage>;
@@ -39,7 +39,7 @@ public:
     int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=false);
 //	int			GetServerModifiedTextures(CLocatorAPI::files_query& files);
 	int 		GetLocalNewTextures	(FS_FileSet& files);
-	void		SafeCopyLocalToServer(FS_FileSet& files);
+	void		SafeCopyLocalToServer(FS_FileSet& files, bool DeleteSource);
 
 	void		SynchronizeTextures	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=nullptr, bool bForceBaseAge=false);
     void 		SynchronizeTexture	(const char* tex_name, time_t age);
@@ -48,6 +48,10 @@ public:
     bool		MakeGameTexture		(const char* game_name, u32* data, const STextureParams& tp);
     void		CreateTextureThumbnail(ETextureThumbnail* THM, const xr_string& src_name, const char* path=nullptr, bool bSetDefParam=true);
     bool		CreateOBJThumbnail	(const char* tex_name, CEditableObject* obj, time_t age);
+    // The viewport frames between these calls show only the objects: no grid, environment, fog or helpers.
+    // CreateOBJThumbnail captures the frame rendered after BeginThumbnailCapture.
+    void		BeginThumbnailCapture();
+    void		EndThumbnailCapture	();
     void		CreateLODTexture	(CEditableObject* object, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int samples, int quality);
     void		CreateLODTexture	(CEditableObject* object, const char* tex_name, 	u32 tgt_w, u32 tgt_h, int samples, time_t age, int quality);
     void		CreateGameTexture	(const char* src_name, ETextureThumbnail* thumb=nullptr);
@@ -71,7 +75,7 @@ public:
 
     bool		CreateSmallerCubeMap(const char* src_name, const char* dst_name);
 
-    void		CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map);
+    void		CommitTextureLib(bool import_mode, FS_FileSet& texture_map, FS_FileSet& modif_map, bool bDeleteSourceTextures);
 };
 
 extern ECORE_API CImageManager ImageLib;

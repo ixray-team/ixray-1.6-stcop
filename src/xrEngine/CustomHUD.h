@@ -19,8 +19,7 @@ enum
 	HUD_CROSSHAIR_POINT = 1 << 13,
 	HUD_MINIMAP = 1 << 14,
 	HUD_HIDE_QUICK_SLOTS = 1 << 15,
-	HUD_CONTEXTUAL_STATUS = 1 << 16,
-	HUD_CROSSHAIR_INERTIA = 1 << 17
+	HUD_CONTEXTUAL_STATUS = 1 << 16
 };
 
 IC bool HUD_IsQuickSlotsAutoHide()
@@ -38,14 +37,14 @@ class ENGINE_API CCustomHUD:
 {
 public:
 					CCustomHUD				();
-	virtual			~CCustomHUD				();
+	virtual ~CCustomHUD				() override;
 
 	virtual		void		Render_First			(){;}
 	virtual		void		Render_Last				(){;}
 
 	virtual		void		OnFrame					(){;}
 	virtual		void		OnFrameMT				(){;}
-	virtual		void		OnEvent					(EVENT E, u64 P1, u64 P2){;}
+	virtual void		OnEvent					(EVENT E, u64 P1, u64 P2) override {;}
 
 	virtual		void		Load					(){;}
 	virtual		void		OnDisconnected			()=0;

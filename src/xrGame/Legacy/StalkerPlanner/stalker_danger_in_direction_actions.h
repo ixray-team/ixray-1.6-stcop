@@ -23,9 +23,9 @@ private:
 
 public:
 						CStalkerActionDangerInDirectionTakeCover	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize									();
-	virtual void		execute										();
-	virtual void		finalize									();
+	virtual void		initialize									() override;
+	virtual void		execute										() override;
+	virtual void		finalize									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,9 +41,9 @@ private:
 
 public:
 						CStalkerActionDangerInDirectionLookOut		(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize									();
-	virtual void		execute										();
-	virtual void		finalize									();
+	virtual void		initialize									() override;
+	virtual void		execute										() override;
+	virtual void		finalize									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -56,9 +56,9 @@ protected:
 
 public:
 						CStalkerActionDangerInDirectionHoldPosition	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize									();
-	virtual void		execute										();
-	virtual void		finalize									();
+	virtual void		initialize									() override;
+	virtual void		execute										() override;
+	virtual void		finalize									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,9 +71,9 @@ protected:
 
 public:
 						CStalkerActionDangerInDirectionDetour		(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize									();
-	virtual void		execute										();
-	virtual void		finalize									();
+	virtual void		initialize									() override;
+	virtual void		execute										() override;
+	virtual void		finalize									() override;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ protected:
 
 public:
 						CStalkerActionDangerInDirectionSearch	(CAI_Stalker *object, const char* action_name = "");
-	virtual void		initialize								();
-	virtual void		execute									();
-	virtual void		finalize								();
+	virtual void		initialize								() override;
+	virtual void		execute									() override;
+	virtual void		finalize								() override;
 };

@@ -64,6 +64,7 @@ private:
 	public:
 		CMatrixBuilder_SizeCam(const Fvector& contact_point, float sz, bool UseCameraDirection)
 			: sz(sz), UseCameraDirection(UseCameraDirection) { this->contact_point = contact_point; }
+
 		virtual void CreateMatrix(Fmatrix& out, const Fvector& FaceNormal) override;
 		virtual void FindBoxCenterAndDim(Fvector& bc, Fvector& bd) override;
 	};
@@ -74,6 +75,7 @@ private:
 	public:
 		CMatrixBuilder_WHR(Fvector contact_point, float w, float h, float r)
 			: w(w), h(h), r(r) { this->contact_point = contact_point; }
+
 		virtual void CreateMatrix(Fmatrix& out, const Fvector& FaceNormal) override;
 		virtual void FindBoxCenterAndDim(Fvector& bc, Fvector& bd) override;
 	};

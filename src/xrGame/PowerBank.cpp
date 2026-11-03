@@ -271,6 +271,15 @@ void PowerBank::load(IReader& input_packet)
 	}
 }
 
+void PowerBank::Serialize(ISaveObject& SaveObject)
+{
+	BEGIN_CHUNK(SaveObject, "PowerBank::Serialize")
+	{
+		CInventoryItemObject::Serialize(SaveObject);
+		SaveObject << m_power_cells;
+	}
+}
+
 bool PowerBank::OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox)
 {
 	if (m_power_cells.size() > 0)
@@ -300,16 +309,4 @@ bool PowerBank::OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBo
 	}
 
 	return false;
-}
-
-
-using namespace luabind;
-#pragma optimize("s",on)
-void PowerBank::script_register(lua_State* L)
-{
-	module(L)
-		[
-			class_<PowerBank, CGameObject>("PowerBank")
-				.def(constructor<>())
-		];
 }

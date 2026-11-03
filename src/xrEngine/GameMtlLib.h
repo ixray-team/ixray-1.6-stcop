@@ -316,7 +316,7 @@ public:
 	IC u16				GetMaterialIdx	(const char* name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
 	   SGameMtl*		GetMaterialByIdx(u16 idx)		;
 
-
+	IC GameMtlVec&		GetMaterials	(){return materials;}
 	IC GameMtlIt		FirstMaterial	(){return materials.begin();}
 	IC GameMtlIt		LastMaterial	(){return materials.end();}
 	IC u32				CountMaterial	(){return (u32)materials.size();}

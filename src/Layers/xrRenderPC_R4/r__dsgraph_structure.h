@@ -114,18 +114,22 @@ public:
 	u32															counter_D	;
 	bool														b_loaded	;
 public:
-	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
-	virtual		void					set_LocalTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pLocalTransform = M;	}
-	virtual		void					set_UI					(bool 		V	)				{ val_bUI		= V;				}
-	virtual		void					set_HUD					(bool 		V	)				{ val_bHUD		= V;				}
-	virtual		bool					get_HUD					()								{ return		val_bHUD;			}
-	virtual		void					set_Invisible			(bool 		V	)				{ val_bInvisible= V;				}
+	virtual void					set_Transform			(Fmatrix*	M	) override
+	{ VERIFY(M);	val_pTransform = M;	}
+
+	virtual void					set_LocalTransform		(Fmatrix*	M	) override
+	{ VERIFY(M);	val_pLocalTransform = M;	}
+
+	virtual void					set_UI					(bool 		V	) override { val_bUI		= V;				}
+	virtual void					set_HUD					(bool 		V	) override { val_bHUD		= V;				}
+	virtual bool					get_HUD					() override { return		val_bHUD;			}
+	virtual void					set_Invisible			(bool 		V	) override { val_bInvisible= V;				}
 				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
 				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
 				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
 
-				virtual CDB::MODEL* GetHOMModel();
-				virtual xr_vector<u32>* GetHOMInvaltids();
+	virtual CDB::MODEL* GetHOMModel() override;
+	virtual xr_vector<u32>* GetHOMInvaltids() override;
 public:
 	R_dsgraph_structure	()
 	{
@@ -213,7 +217,7 @@ private:
 	void		CollectSubspaceDynamic							(const CFrustum& MainView);
 
 public:
-	virtual		u32						memory_usage			()
+	virtual u32						memory_usage			() override
 	{
 		return	(0);
 	}

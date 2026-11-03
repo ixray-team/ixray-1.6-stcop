@@ -16,10 +16,10 @@ class dxFontRender : public IFontRender
 	};
 public:
 	dxFontRender();
-	virtual ~dxFontRender();
+	virtual ~dxFontRender() override;
 
-	virtual void Initialize(const char* cShader, const char* cTexture);
-	virtual void OnRender(CGameFont& owner);
+	virtual void Initialize(const char* cShader, const char* cTexture) override;
+	virtual void OnRender(CGameFont& owner) override;
 
 	virtual void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) override;
 	virtual bool GetAtlasTexSize(u32& outW, u32& outH) const override;

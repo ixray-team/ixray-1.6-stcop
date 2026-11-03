@@ -36,7 +36,7 @@ public:
     };
 
     CUIItemDropAmountWnd();
-    ~CUIItemDropAmountWnd();
+    virtual ~CUIItemDropAmountWnd() override;
 
     bool HasInitializedLayout() const { return _trackBar != nullptr; }
 

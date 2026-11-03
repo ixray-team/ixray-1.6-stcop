@@ -31,9 +31,11 @@ namespace smart_cover
 		target_selector(const target_selector& other) = delete;
 		target_selector& operator=(const target_selector& other) = delete;
 
-		virtual	void setup(animation_planner* object, CPropertyStorage* storage);
-		virtual void update();
-		virtual const char* object_name() const;
+		virtual void setup(animation_planner* object, CPropertyStorage* storage) override;
+		virtual void update() override;
+#ifdef LOG_ACTION
+		virtual const char* object_name() const override;
+#endif
 
 		void callback(callback_type const& callback);
 

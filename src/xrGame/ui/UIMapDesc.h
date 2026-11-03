@@ -11,12 +11,12 @@ class CUIStatsPlayerList;
 class CUIMapDesc final : public CUIDialogWnd {
 public:
 	CUIMapDesc();
-	~CUIMapDesc();
-	
-	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void *pData = 0);
-	virtual bool	OnKeyboardAction(int dik, EUIMessages keyboard_action);
+	virtual ~CUIMapDesc() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void *pData = 0) override;
+	virtual bool	OnKeyboardAction(int dik, EUIMessages keyboard_action) override;
+
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private:
 	void	Init();

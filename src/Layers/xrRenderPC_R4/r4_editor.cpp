@@ -222,12 +222,21 @@ void CRender::EditorRenderUnlit()
 	ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	View = nullptr;
 
+	if (g_EditorRenderHost)
+	{
+		g_EditorRenderHost->PrepareScene();
+	}
+
 	// G-buffer of the opaque scene; the albedo starts with the editor background colour, so the
 	// whole albedo is the final unlit image
 	float ClearColor[4] = { EditorClearColor.r, EditorClearColor.g, EditorClearColor.b, EditorClearColor.a };
 
 	Target->phase_scene_prepare();
 	GRHI->ClearTarget(Target->rt_Color->pRT, ClearColor);
+
+	// The unlit image has no distortion pass: keep distortive visuals out of mapDistort,
+	// like the deferred path does before its main calc
+	o.distortion = false;
 
 	r_pmask(true, false, true);
 	phase = PHASE_NORMAL;
@@ -291,6 +300,11 @@ void CRender::EditorRenderUnlit()
 		r_dsgraph_render_graph(1);
 		r_dsgraph_render_sorted(false);
 	}
+
+	mapEmissive.clear();
+	mapWmark.clear();
+	mapHUDEmissive.clear();
+	mapHUDSorted.clear();
 
 	r_pmask(true, false);
 

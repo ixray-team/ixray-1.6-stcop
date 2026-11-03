@@ -237,7 +237,8 @@ bool CGlow::GetSummaryInfo(SSceneSummary* inf)
 	inherited::GetSummaryInfo	(inf);
     xr_string temp = ChangeFileExt(*m_TexName, "");
     xr_strlwr(temp);
-	if (m_TexName.size()) 	inf->AppendTexture(temp.c_str(),SSceneSummary::sttGlow,0,0,"$GLOW$");
+	static const shared_str GlowObjName = "$GLOW$";
+	if (m_TexName.size()) 	inf->AppendTexture(temp.c_str(),SSceneSummary::sttGlow,0,0,GlowObjName);
 	inf->glow_cnt++;
 	return true;
 }

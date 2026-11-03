@@ -22,17 +22,17 @@ private:
 	typedef CUIActorMenuBase inherited;
 public:
 						CUITradeWnd					();
-	virtual				~CUITradeWnd				();
+	virtual ~CUITradeWnd				() override;
 
 	virtual void		Init						();
 
-	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void *pData);
+	virtual void		SendMessage					(CUIWindow *pWnd, s16 msg, void *pData) override;
 
 	void				InitTrade					(CInventoryOwner* pOur, CInventoryOwner* pOthers);
-	
-	virtual void 		Draw						();
-	virtual void 		Update						();
-	virtual void 		Show						(bool status);
+
+	virtual void 		Draw						() override;
+	virtual void 		Update						() override;
+	virtual void 		Show						(bool status) override;
 
 	void 				DisableAll					();
 	void 				EnableAll					();
@@ -92,18 +92,18 @@ protected:
 
 	TIItemContainer		ruck_list;
 
-	virtual void		SetCurrentItem				(CUICellItem* itm);
-	virtual void		TradeShowMessage			(s64 money_actor, s64 money_patner);
+	virtual void		SetCurrentItem				(CUICellItem* itm) override;
+	virtual void		TradeShowMessage			(s64 money_actor, s64 money_patner) override;
 
 public:
-	virtual CInventoryOwner*	GetInventoryOwner			() { return m_pInvOwner; }
-	virtual CInventoryOwner*	GetPartner					() { return m_pOthersInvOwner; }
-	virtual CUIDragDropListEx*	GetTradeActorList			() { return &UIOurTradeList; }
-	virtual CUIDragDropListEx*	GetTradeActorBagList		() { return &UIOurBagList; }
-	virtual CUIDragDropListEx*	GetTradePartnerList			() { return &UIOthersTradeList; }
-	virtual CUIDragDropListEx*	GetTradePartnerBagList		() { return &UIOthersBagList; }
+	virtual CInventoryOwner*	GetInventoryOwner			() override { return m_pInvOwner; }
+	virtual CInventoryOwner*	GetPartner					() override { return m_pOthersInvOwner; }
+	virtual CUIDragDropListEx*	GetTradeActorList			() override { return &UIOurTradeList; }
+	virtual CUIDragDropListEx*	GetTradeActorBagList		() override { return &UIOurBagList; }
+	virtual CUIDragDropListEx*	GetTradePartnerList			() override { return &UIOthersTradeList; }
+	virtual CUIDragDropListEx*	GetTradePartnerBagList		() override { return &UIOthersBagList; }
 
-	virtual CTrade*				GetActorTrade				() { return m_pTrade; }
-	virtual CTrade*				GetPartnerTrade				() { return m_pOthersTrade; }
-	virtual void				UpdatePrices				();
+	virtual CTrade*				GetActorTrade				() override { return m_pTrade; }
+	virtual CTrade*				GetPartnerTrade				() override { return m_pOthersTrade; }
+	virtual void				UpdatePrices				() override;
 };

@@ -97,8 +97,8 @@ protected:
 	CMapSpot*				GetSpotBorder					(CMapSpot* sp);
 public:
 							CMapLocation					(const char* type, ALife::_OBJECT_ID object_id, bool is_user_loc = false);
-	virtual					~CMapLocation					();
-	virtual void			destroy							();
+virtual ~CMapLocation					() override;
+virtual void			destroy							() override;
 
 	IC		const char*			GetType				() const		{ return m_type; };
 	Fvector2				SpotSize			();
@@ -178,15 +178,15 @@ protected:
 	bool					IsVisible							() const {return m_b_visible;};
 public:
 							CRelationMapLocation			(const shared_str& type, ALife::_OBJECT_ID object_id, ALife::_OBJECT_ID pInvOwnerActorID);
-	virtual					~CRelationMapLocation			();
-	virtual bool			Update							();
+	virtual ~CRelationMapLocation			() override;
+	virtual bool			Update							() override;
 
-	virtual void			UpdateMiniMap					(CUICustomMap* map);
-	virtual void			UpdateLevelMap					(CUICustomMap* map);
+	virtual void			UpdateMiniMap					(CUICustomMap* map) override;
+	virtual void			UpdateLevelMap					(CUICustomMap* map) override;
 
 	shared_str				GetSpotName					()	const override { return m_curr_spot_name; }
 
 #ifdef DEBUG
-	virtual void			Dump							();
+	virtual void			Dump							() override;
 #endif
 };

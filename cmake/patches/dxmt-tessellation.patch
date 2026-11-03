@@ -1,0 +1,120 @@
+diff --git a/src/airconv/dxbc_instructions.cpp b/src/airconv/dxbc_instructions.cpp
+index e2b7f86..4cf7cf9 100644
+--- a/src/airconv/dxbc_instructions.cpp
++++ b/src/airconv/dxbc_instructions.cpp
+@@ -38,6 +38,13 @@ auto readOperandRelativeIndex(
+     };
+   }
+ 
++  case D3D11_SB_OPERAND_TYPE_OUTPUT_CONTROL_POINT_ID: {
++    // Hull shaders index the input patch with the control point they run for.
++    return IndexByControlPointId{
++      .offset = offset,
++    };
++  }
++
+   case D3D10_SB_OPERAND_TYPE_INDEXABLE_TEMP: {
+     return IndexByIndexableTempComponent{
+       .regfile = OpIndex.m_RelIndex,
+@@ -50,6 +57,7 @@ auto readOperandRelativeIndex(
+ 
+   default:
+     DXASSERT_DXBC(false);
++    return 0u;
+   };
+ };
+ 
+diff --git a/src/airconv/dxbc_instructions.hpp b/src/airconv/dxbc_instructions.hpp
+index f55c4c1..b7c7444 100644
+--- a/src/airconv/dxbc_instructions.hpp
++++ b/src/airconv/dxbc_instructions.hpp
+@@ -80,6 +80,10 @@ struct IndexByTempComponent {
+   uint32_t offset;
+ };
+ 
++struct IndexByControlPointId {
++  uint32_t offset;
++};
++
+ struct IndexByIndexableTempComponent {
+   uint32_t regfile;
+   uint32_t regid;
+@@ -89,7 +93,7 @@ struct IndexByIndexableTempComponent {
+ };
+ 
+ using OperandIndex =
+-  std::variant<uint32_t, IndexByIndexableTempComponent, IndexByTempComponent>;
++  std::variant<uint32_t, IndexByIndexableTempComponent, IndexByTempComponent, IndexByControlPointId>;
+ #pragma endregion
+ 
+ enum class OperandDataType {
+diff --git a/src/airconv/nt/dxbc_converter_base.cpp b/src/airconv/nt/dxbc_converter_base.cpp
+index 58a101c..1b72c09 100644
+--- a/src/airconv/nt/dxbc_converter_base.cpp
++++ b/src/airconv/nt/dxbc_converter_base.cpp
+@@ -37,7 +37,7 @@ GetArrayType(llvm::Value *Array) {
+ 
+ llvm::Value *
+ Converter::LoadOperandIndex(const IndexByTempComponent &SrcOpIndex) {
+-  auto Comp = SrcOpIndex.component;
++  auto Comp = SrcOpIndex.component; fflush(stderr);
+   SrcOperandTemp RelReg{
+       ._ = {{Comp, Comp, Comp, Comp}, false, false, OperandDataType::Integer},
+       .regid = SrcOpIndex.regid,
+@@ -47,9 +47,14 @@ Converter::LoadOperandIndex(const IndexByTempComponent &SrcOpIndex) {
+   return ir.CreateAdd(Rel, ir.getInt32(SrcOpIndex.offset));
+ }
+ 
++llvm::Value *
++Converter::LoadOperandIndex(const IndexByControlPointId &SrcOpIndex) {
++  return ir.CreateAdd(res.thread_id_in_patch, ir.getInt32(SrcOpIndex.offset));
++}
++
+ llvm::Value *
+ Converter::LoadOperandIndex(const IndexByIndexableTempComponent &SrcOpIndex) {
+-  auto Comp = SrcOpIndex.component;
++  auto Comp = SrcOpIndex.component; fflush(stderr);
+   SrcOperandIndexableTemp RelReg{
+       ._ = {{Comp, Comp, Comp, Comp}, false, false, OperandDataType::Integer},
+       .regfile = SrcOpIndex.regfile,
+@@ -191,10 +196,10 @@ Converter::LoadOperand(const SrcOperandInput &SrcOp, mask_t Mask) {
+ llvm::Value *
+ Converter::LoadOperand(const SrcOperandTemp &SrcOp, mask_t Mask) {
+ 
+-  auto Handle = res.temp.ptr_int4;
++  auto Handle = res.temp.ptr_int4; fflush(stderr);
+ 
+   if (SrcOp.phase != ~0u) {
+-    Handle = res.phases[SrcOp.phase].temp.ptr_int4;
++    Handle = res.phases[SrcOp.phase].temp.ptr_int4; fflush(stderr);
+   }
+   auto TyHandle = GetArrayType(Handle);
+   auto TyInt = air.getIntTy();
+@@ -332,11 +337,11 @@ Converter::LoadOperand(const SrcOperandIndexableInput &SrcOp, mask_t Mask) {
+ llvm::Value *
+ Converter::LoadOperand(const SrcOperandInputICP &SrcOp, mask_t Mask) {
+   /* applies to both hull and domain shader, in this case input is a "2d" array */
+-  auto Handle = res.input.ptr_int4;
+-  auto TyHandle = GetArrayType(Handle);
++  auto Handle = res.input.ptr_int4; fflush(stderr);
++  auto TyHandle = GetArrayType(Handle); fflush(stderr);
+ 
+-  auto CPId = LoadOperandIndex(SrcOp.cpid);
+-  auto RegId = ir.getInt32(SrcOp.regid);
++  auto CPId = LoadOperandIndex(SrcOp.cpid); fflush(stderr);
++  auto RegId = ir.getInt32(SrcOp.regid); fflush(stderr);
+ 
+   if (auto Comp = ComponentFromScalarMask(Mask, SrcOp._.swizzle); Comp >= 0) {
+     auto TyInt = air.getIntTy();
+diff --git a/src/airconv/nt/dxbc_converter_base.hpp b/src/airconv/nt/dxbc_converter_base.hpp
+index c600d3d..1979314 100644
+--- a/src/airconv/nt/dxbc_converter_base.hpp
++++ b/src/airconv/nt/dxbc_converter_base.hpp
+@@ -113,6 +113,7 @@ public:
+     return ir.getInt32(SrcOpIndex);
+   }
+   llvm::Value *LoadOperandIndex(const IndexByIndexableTempComponent &SrcOpIndex);
++  llvm::Value *LoadOperandIndex(const IndexByControlPointId &SrcOpIndex);
+   llvm::Value *LoadOperandIndex(const IndexByTempComponent &SrcOpIndex);
+ 
+   llvm::Value *

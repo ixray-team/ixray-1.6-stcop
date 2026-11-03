@@ -53,11 +53,11 @@ protected:
 
 public:
 						loophole_action				(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
 };
 
 class loophole_action_no_sight : public loophole_action {
@@ -66,8 +66,8 @@ private:
 
 public:
 						loophole_action_no_sight	(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize						();
-	virtual void		finalize						();
+	virtual void		initialize						() override;
+	virtual void		finalize						() override;
 }; // class loophole_action_no_sight
 
 class loophole_lookout final : public loophole_action
@@ -77,9 +77,9 @@ private:
 
 public:
 						loophole_lookout			(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
 };
 
 class loophole_fire final : public loophole_action
@@ -93,13 +93,13 @@ private:
 
 public:
 						loophole_fire				(CAI_Stalker *object, const char* action_name);
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
-	virtual	void		on_mark						();
-	virtual	void		on_no_mark					();
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
+	virtual void		on_mark						() override;
+	virtual void		on_no_mark					() override;
 };
 
 class loophole_reload final : public loophole_action_no_sight
@@ -109,7 +109,7 @@ private:
 
 public:
 						loophole_reload				(CAI_Stalker *object, const char* action_name);
-	virtual void		select_animation			(shared_str &result);
+	virtual void		select_animation			(shared_str &result) override;
 };
 
 class transition : public loophole_action_base {
@@ -129,10 +129,10 @@ protected:
 
 public:
 						transition					(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner);
-	virtual void		initialize					();
-	virtual void		finalize					();
-	virtual void		select_animation			(shared_str &result);
-	virtual	void		on_animation_end			();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
+	virtual void		select_animation			(shared_str &result) override;
+	virtual void		on_animation_end			() override;
 };
 
 class idle_2_fire_transition : public transition {
@@ -141,8 +141,8 @@ private:
 
 public:
 						idle_2_fire_transition		(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner, bool const& use_weapon);
-	virtual void		initialize					();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
 }; // class idle_2_fire_transition
 
 class fire_2_idle_transition : public transition {
@@ -151,8 +151,8 @@ private:
 
 public:
 						fire_2_idle_transition		(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner);
-	virtual void		initialize					();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
 }; // class idle_2_fire_transition
 
 class idle_2_lookout_transition : public transition {
@@ -161,8 +161,8 @@ private:
 
 public:
 						idle_2_lookout_transition	(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner);
-	virtual void		initialize					();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
 }; // class idle_2_fire_transition
 
 class lookout_2_idle_transition : public transition {
@@ -171,8 +171,8 @@ private:
 
 public:
 						lookout_2_idle_transition	(CAI_Stalker *object, const char* action_name, const char* action_from, const char* action_to, StalkerDecisionSpace::EWorldProperties state_from, StalkerDecisionSpace::EWorldProperties state_to, animation_planner *planner);
-	virtual void		initialize					();
-	virtual void		finalize					();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
 }; // class lookout_2_idle_transition
 
 } // namespace smart_cover

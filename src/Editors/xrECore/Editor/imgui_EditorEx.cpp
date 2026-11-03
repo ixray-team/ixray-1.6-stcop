@@ -164,7 +164,14 @@ ECORE_API bool IXBeginMainMenuBar()
 					ChangedColor = true;
 				}
 
-				if (ImGui::BeginTabItem(*Name))
+				ImGuiTabItemFlags TabFlags = ImGuiTabItemFlags_None;
+				if (EContext.UI->RequestedTabIndex == TabIdx)
+				{
+					TabFlags |= ImGuiTabItemFlags_SetSelected;
+					EContext.UI->RequestedTabIndex = -1;
+				}
+
+				if (ImGui::BeginTabItem(*Name, nullptr, TabFlags))
 				{
 					EContext.UI->ActiveTabIndex = TabIdx;
 					ImGui::EndTabItem();

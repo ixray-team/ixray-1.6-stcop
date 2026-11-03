@@ -32,12 +32,12 @@ class CAnimationTriple : public CControl_ComCustom<SAnimationTripleData>{
 	EStateAnimTriple		m_current_state;
 	EStateAnimTriple		m_previous_state;
 public:
-	virtual void	reset_data				();
-	virtual	void	on_capture				();
-	virtual void	on_release				();
-	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*);
-	virtual bool	check_start_conditions	();
-	virtual void	activate				();
+	virtual void	reset_data				() override;
+	virtual void	on_capture				() override;
+	virtual void	on_release				() override;
+	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*) override;
+	virtual bool	check_start_conditions	() override;
+	virtual void	activate				() override;
 
 			void	pointbreak				();
 private:

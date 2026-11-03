@@ -143,7 +143,7 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 			dynamic_object->m_tGraphID	= parent->m_tGraphID;
 		}
 	}
-	dynamic_object->m_tSpawnID	= ALife::INVALID_OBJECT_ID;
+	dynamic_object->m_tSpawnID	= (ALife::_SPAWN_ID)ALife::INVALID_OBJECT_ID;
 
 	if (_valid(VisualScale) && VisualScale > 0.f)
 	{

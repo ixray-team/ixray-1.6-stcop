@@ -3,7 +3,7 @@
 #include "Editor/Utils/GitIntegration.h"
 #include "Editor/Utils/GitLFSConfig.h"
 
-#include "IconsFontAwesome6.h"
+#include "IconsFontAwesome7.h"
 
 UIGitWindow::UIGitWindow()
 	: IEditorWnd()
@@ -23,9 +23,7 @@ void UIGitWindow::Update()
 	{
 		if (!Form->IsClosed())
 		{
-			Form->BeginDraw();
 			Form->Draw();
-			Form->EndDraw();
 		}
 		else
 		{

@@ -1,5 +1,5 @@
 #pragma once
-#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/PHContact.h"
 #include "PhysicsShellHolder.h"
 
 class CGameObject;
@@ -114,7 +114,7 @@ struct STelekineticObject
 	virtual void throw_object_time(const Fvector& target, float time);
 	virtual void throw_update();
 	virtual void update_state();
-	static  void collision_callback(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
+	static  void collision_callback(bool& do_colide,bool bo1,CPHContact& c,SGameMtl* material_1,SGameMtl* material_2);
 	ICF virtual bool is_released() const { return state == ETelekineticState::TS_NONE; }
 	virtual void switch_state(ETelekineticState new_state);
 	ICF virtual ETelekineticState get_state() const { return state; }
@@ -206,4 +206,4 @@ struct STelekineticGrenadeObject : STelekineticObject
 	bool can_be_picked_up() override;
 
 	STelekineticGrenadeObject* cast_telekinetic_grenade_object() override { return this; }
-};
+};

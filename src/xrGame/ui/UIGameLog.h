@@ -24,13 +24,13 @@ public:
 	CUIPdaKillMessage*		AddLogMessage	(KillMessageStruct& msg);
 	CUIPdaMsgListItem*		AddPdaMessage	();
 	void					AddChatMessage	(const char* msg, const char* author);
-	virtual void			Update			();
+	virtual void			Update			() override;
 
 	void					SetTextAtrib	(CGameFont* pFont, u32 color);
 	u32						GetTextColor	()								{return txt_color;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
+	virtual CUIScrollView* ui_cast_scroll_view() override { return this; }
 
 private:
 	WINDOW_LIST				toDelList;

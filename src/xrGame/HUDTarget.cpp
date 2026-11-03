@@ -19,6 +19,7 @@
 
 #include "inventory_item.h"
 #include "Inventory.h"
+#include "Weapon.h"
 #include "../../xrUI/UIXmlInit.h"
 #include <ai/monsters/poltergeist/poltergeist.h>
 #include "../../xrUI/UIFontDefines.h"
@@ -55,6 +56,7 @@ CHUDTarget::CHUDTarget	()
 
 	Load				();
 	m_bShowCrosshair	= false;
+	crosshair_params.zero();
 }
 
 CHUDTarget::~CHUDTarget	() = default;
@@ -122,14 +124,21 @@ ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 void CHUDTarget::CursorOnFrame ()
 {
 	PROF_EVENT("CHUDTarget::CursorOnFrame");
+
+	is_extended_inertia = false;
+
 	// Render cursor
 	if(Level().CurrentEntity())
 	{
+		CActor* actor		= Level().CurrentEntity()->cast_actor();
+
 		PP.RQ.O			= 0; 
 		PP.RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
 		PP.RQ.element		= -1;
-		
-		collide::ray_defs	RD(Device.vCameraPosition, Device.vCameraDirection, PP.RQ.range, CDB::OPT_CULL, collide::rqtBoth);
+
+		float pick_range = PP.RQ.range;
+
+		collide::ray_defs	RD(Device.vCameraPosition, Device.vCameraDirection, pick_range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear			();
 		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
 		
@@ -138,6 +147,41 @@ void CHUDTarget::CursorOnFrame ()
 
 		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &PP, nullptr, Level().CurrentEntity()))
 			clamp			(PP.RQ.range, NEAR_LIM, PP.RQ.range);
+
+		if (crosshair_mode == EXTENDED && actor)
+		{
+			CWeapon* weapon = nullptr;
+			if (CInventoryItem* item = actor->inventory().ActiveItem())
+			{
+				weapon = item->cast_weapon();
+			}
+
+			if (weapon)
+			{
+				attachable_hud_item* hud_item = weapon->HudItemData();
+				const bool has_fire_point = hud_item == nullptr || hud_item->m_measures.m_prop_flags.test(hud_item_measures::e_fire_point);
+				const bool is_barrel_weapon = !weapon->cast_weapon_binoculars() && !weapon->cast_weapon_knife();
+
+				if (is_barrel_weapon && has_fire_point)
+				{
+					Fvector fire_pos = weapon->get_CurrentFirePoint();
+					Fvector fire_dir = weapon->get_LastFD();
+
+					if (fire_dir.square_magnitude() > EPS_S)
+					{
+						if ((weapon->GetHUDmode() || weapon->render_item_ui_query()) && hud_item)
+						{
+							Device.transform_hud2world(fire_pos, fire_dir);
+						}
+
+						collide::rq_result RQ;
+						const float distance = Level().ObjectSpace.RayPick(fire_pos, fire_dir, pick_range, collide::rqtBoth, RQ, Level().CurrentEntity()) ? RQ.range : pick_range;
+						extended_inertia_target.mad(fire_pos, fire_dir, distance);
+						is_extended_inertia = true;
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -168,80 +212,32 @@ void CHUDTarget::Render()
 		return;
 	}
 
-	VERIFY				(g_bRendering);
+	VERIFY(g_bRendering);
 
 	CActor* Actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (!Actor)
+	{
 		return;
+	}
 
-	bool get_motions = Actor->active_cam() == eacLookAt && ((Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) || (Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJumpSeq));
-
-	if (get_motions)
+	if (Actor->active_cam() == eacLookAt && ((Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) || (Actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJumpSeq)))
+	{
 		return;
+	}
 
-	CObject*	O		= Level().CurrentEntity();
-	if (nullptr==O)			return;
-	CEntity*	E		= O->cast_entity();
-	if (nullptr==E)			return;
+	CObject* O = Level().CurrentEntity();
+	if (nullptr == O)
+	{
+		return;
+	}
 
-	Fvector from = psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? Actor->cam_Active()->Position() : Device.vCameraPosition;
-	Fvector dir = psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? Actor->cam_Active()->Direction() : Device.vCameraDirection;
+	CEntity* E = O->cast_entity();
+	if (nullptr == E)
+	{
+		return;
+	}
 
 	u32 C = colorDefault;
-
-	Fvector picked;
-	picked.mad(from, dir, PP.RQ.range);
-
-	Fvector4 projected;
-	Device.mFullTransform.transform(projected, picked);
-	projected.y = -projected.y;
-
-	float di_size = C_SIZE / powf(projected.w, .2f);
-
-	targetFont->SetAligment(CGameFont::alCenter);
-
-	Fvector2 screen;
-	screen.set(float(Device.TargetWidth), float(Device.TargetHeight));
-
-	float size_x = screen.x * di_size;
-	float size_y = screen.y * di_size;
-	size_y = size_x;
-
-	float x = (projected.x + 1) * screen.x / 2.0f;
-	float y = (projected.y + 1) * screen.y / 2.0f;
-
-	// отрендерить кружочек или крестик
-	if (!m_bShowCrosshair)
-	{
-		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
-
-		UIRender->PushPoint(x - size_x, y + size_y, 0, C, 0, 1);
-		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
-
-		UIRender->PushPoint(x + size_x, y + size_y, 0, C, 1, 1);
-		UIRender->PushPoint(x - size_x, y - size_y, 0, C, 0, 0);
-		UIRender->PushPoint(x + size_x, y - size_y, 0, C, 1, 0);
-
-		UIRender->SetShader(*hShader);
-		UIRender->FlushPrimitive();
-	}
-	else
-	{
-		HUDCrosshair.cross_color = C;
-		HUDCrosshair.dc = {x, y};
-		HUDCrosshair.OnRender();
-	}
-
-	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
-	{
-		targetFont->SetColor(C);
-#ifdef DEBUG
-		targetFont->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
-#else
-		targetFont->OutNext("%4.1f", PP.RQ.range);
-#endif
-	}
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
@@ -302,7 +298,77 @@ void CHUDTarget::Render()
 		clamp(accumulatedTime,0.f,1.f);
 	}
 
-	psHUD_Flags.test(HUD_CROSSHAIR_INERTIA) ? targetFont->OutSetI(0.f, .033f) : targetFont->OutSetI(0.f, .033f);
+	HUDCrosshair.cross_color = C;
+
+	const bool actor_camera = crosshair_mode != DEFAULT;
+	Fvector from = actor_camera ? Actor->cam_Active()->Position() : Device.vCameraPosition;
+	Fvector dir = actor_camera ? Actor->cam_Active()->Direction() : Device.vCameraDirection;
+
+
+	Fvector picked;
+	is_extended_inertia ? picked.set(extended_inertia_target) : picked.mad(from, dir, PP.RQ.range);
+
+	Fvector4 projected;
+	Device.mFullTransform.transform(projected, picked);
+	projected.y = -projected.y;
+
+	float di_size = C_SIZE / powf(projected.w, .2f);
+
+	targetFont->SetAligment(CGameFont::alCenter);
+
+	Fvector2 screen;
+	screen.set(float(Device.TargetWidth), float(Device.TargetHeight));
+
+	float size_x = screen.x * di_size;
+	float size_y = screen.y * di_size;
+	size_y = size_x;
+
+	float x = (projected.x + 1) * screen.x / 2.0f;
+	float y = (projected.y + 1) * screen.y / 2.0f;
+
+	if (crosshair_mode != DEFAULT)
+	{
+		HUDCrosshair.dc.x = _inertion(HUDCrosshair.dc.x, x, powf(crosshair_inertia_factor, Device.fTimeDelta * 144.f));
+		HUDCrosshair.dc.y = _inertion(HUDCrosshair.dc.y, y, powf(crosshair_inertia_factor, Device.fTimeDelta * 144.f));
+	}
+	else
+	{
+		HUDCrosshair.dc.x = x;
+		HUDCrosshair.dc.y = y;
+	}
+
+	crosshair_mode == EXTENDED ? targetFont->OutSet(HUDCrosshair.dc.x, HUDCrosshair.dc.y) : targetFont->OutSetI(0.f, .033f);
+
+	// отрендерить кружочек или крестик
+	if (!m_bShowCrosshair)
+	{
+		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI().m_currentPointType);
+
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y + size_y, 0, C, 0, 1);
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
+
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y + size_y, 0, C, 1, 1);
+		UIRender->PushPoint(HUDCrosshair.dc.x - size_x, HUDCrosshair.dc.y - size_y, 0, C, 0, 0);
+		UIRender->PushPoint(HUDCrosshair.dc.x + size_x, HUDCrosshair.dc.y - size_y, 0, C, 1, 0);
+
+		UIRender->SetShader(*hShader);
+		UIRender->FlushPrimitive();
+	}
+	else
+	{
+		HUDCrosshair.OnRender();
+	}
+
+	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
+	{
+		targetFont->SetColor(C);
+#ifdef DEBUG
+		targetFont->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
+#else
+		targetFont->OutNext("%4.1f", PP.RQ.range);
+#endif
+	}
 }
 
 void CHUDTarget::net_Relcase(CObject* O)

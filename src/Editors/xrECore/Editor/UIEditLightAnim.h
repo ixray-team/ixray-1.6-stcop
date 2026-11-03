@@ -20,22 +20,26 @@ private:
 private:
 	UIItemListForm*		m_Items;
 	UIPropertiesForm*	m_Props;
-	ref_texture			m_TextureNull;
-	ImTextureID			m_Texture;
-
-	ref_texture m_ItemTexture;
-	ref_texture  m_PointerTexture;
 	CLAItem* m_CurrentItem;
 	bool m_Modife;
 
-	float m_PointerWeight;
-	bool m_PointerResize;
-	u32* m_PointerRawImage;
 	int m_PointerValue;
 	bool m_RenderAlpha;
 
+	// Preview playback
+	bool Playing = false;
+	bool Loop = true;
+	float PlayTime = 0.f;
+
+	// Timeline interaction
+	int DraggedKey = -1;
+	bool Scrubbing = false;
+	float TimelineZoom = 1.f;
+	u32 CopiedColor = 0xFFFFFFFF;
+	bool HasCopiedColor = false;
+	string256 SearchFilter = {};
+
 private:
-	void RenderItem();
 	void InitializeItems();
 	void UpdateProperties();
 	void OnCreateKeyClick();
@@ -47,7 +51,18 @@ private:
 	void OnRemoveItem(UIItemListForm::Node& node);
 	void OnRenameItem(UIItemListForm::Node& node, const char* old_full_name, const char* new_full_name, EItemType type);
 
-	void RenderPointer();
-	void FillRectPointer(const ImVec4& rect, u32 color, bool plus_one = false);
-	void FrameRectPointer(const ImVec4& rect, u32 color);
+	void DrawItemList();
+	void DrawTransport();
+	void DrawTimeline();
+	void DrawPreview();
+	void HandleShortcuts();
+
+	void SetFrame(int Frame);
+	void StopPlayback();
+	void TogglePlayback();
+	void DeleteCurrentKey();
+	void CopyColor();
+	void PasteColor();
+	void MoveCurrentKey(int Direction);
+	int GetPreviewFrame() const;
 };

@@ -99,6 +99,34 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying, bool bFree)
 	{
 		swap(O1, O2);
 	}
+	if (!bBuying)
+	{
+		IVERIFY(O2->cast_actor());
+		if (O1->ID() != pItem->parent_id())
+		{
+			auto ObjParent = Level().Objects.net_Find(pItem->parent_id());
+			if (IVERIFY(ObjParent))
+			{
+				auto Casted = ObjParent->cast_game_object();
+				if (IVERIFY(Casted))
+				{
+					O1 = Casted;
+				}
+			}
+		}
+	} else
+	{
+		IVERIFY(O1->cast_actor());
+		auto CastedInv = O2->cast_inventory_owner();
+		if (IVERIFY(CastedInv))
+		{
+			auto Inv = CastedInv->inventory();
+			if (Inv.GetTraderExternalStorageMode())
+			{
+				O2 = Inv.FindSuitableStorage(pItem->m_section_id);
+			}
+		}
+	}
 
 	NET_Packet P;
 	O1->u_EventGen(P, GE_TRADE_SELL, O1->ID());

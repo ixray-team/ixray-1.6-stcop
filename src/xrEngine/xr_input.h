@@ -140,9 +140,9 @@ public:
 	CInput						( bool bExclusive = true, int deviceForInit = default_key);
 	virtual ~CInput				( );
 
-	virtual void	_BCL		OnFrame						(void);
-	virtual void				OnAppActivate				(void);
-	virtual void				OnAppDeactivate				(void);
+	virtual void	_BCL		OnFrame						(void) override;
+	virtual void				OnAppActivate				(void) override;
+	virtual void				OnAppDeactivate				(void) override;
 
 	IInputReceiver*				CurrentIR					();
 

@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "EngineAPI.h"
 #include "../xrCore/Collision/xrCDB.h"
+#include "../xrCore/IniCache.h"
 
 #include <filesystem>
 
@@ -202,6 +203,7 @@ void CEngineAPI::Destroy(void)
 			pShutdownCallback();
 		}
 
+		ClearCachedIniFiles();
 		Platform::FreeLibrary(hGame);
 		hGame	= 0;
 	}

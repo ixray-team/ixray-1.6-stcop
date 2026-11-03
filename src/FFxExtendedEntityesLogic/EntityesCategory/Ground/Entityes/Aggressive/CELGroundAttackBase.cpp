@@ -9,7 +9,7 @@
 #include "xrGame/ai/monsters/control_manager_custom.h"
 #include "xrGame/CharacterPhysicsSupport.h"
 #include "xrGame/PHMovementControl.h"
-#include "xrPhysics/PHCharacter.h"
+#include "xrPhysics/IPHCharacter.h"
 #include "FFxExtendedEntityesLogic/Debug/Debug.h"
 // Связывает общую логику атакующих наземных существ с необходимыми службами и состоянием владельца.
 CELGroundAttackBase::CELGroundAttackBase(xr_unique_ptr<IELAdapter> OwnerAdapter, const SELPerceptionProfile& OwnerProfile) : CELGround(std::move(OwnerAdapter), OwnerProfile), AttackBehavior(*Adapter, Profile), SearchBehavior(*Adapter, Profile) {}
@@ -118,7 +118,7 @@ void CELGroundAttackBase::FillGroundDebug(SELDebugRecord& Record) const
 			Fvector Planned = Fvector().sub(Jump->setup_data().target_position, Jump->get_jump_start_pos());
 			Travel.y = Planned.y = 0.f;
 			string256 FlightLabel;
-			CPHCharacter* Character = Adapter->Monster().character_physics_support()->movement()->PHCharacter();
+			IPHCharacter* Character = Adapter->Monster().character_physics_support()->movement()->PHCharacter();
 			Fvector Velocity;
 			Character->GetVelocity(Velocity);
 			xr_sprintf(FlightLabel, "УВОРОТ [%s]: старт %s | пройдено %.2f / %.2f м | время %.2f / %.2f с", Jump->GetPhaseName(), Jump->HasFlightStarted() ? "да" : "нет", Travel.magnitude(), Planned.magnitude(), Jump->GetFlightElapsed(), Jump->GetFlightTime());

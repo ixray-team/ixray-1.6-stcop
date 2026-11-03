@@ -19,6 +19,7 @@ struct AwaitAlifeObject {
 	bool used = false;
 };
 
+XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class PowerBank final :
 	public CInventoryItemObject,
 	public pureFrame
@@ -32,11 +33,12 @@ public:
 	xr_vector<PowerCellData> m_power_cells;
 	
 	PowerBank();
-	virtual ~PowerBank();
+	virtual ~PowerBank() override;
 
 	virtual void Load(const char* section) override;
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& SaveObject) override;
 	virtual void UpdateCL() override;
 	virtual void OnFrame() override;
 
@@ -50,6 +52,4 @@ public:
 	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 	void EjectPowerCells();
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -49,9 +49,9 @@ private:
 									buffer_vector<char> & dest);
 public:
 	UIPlayerItem(ETeam team, ClientID const & clientId, UITeamState* tstate, UITeamPanels* tpanels);
-	virtual ~UIPlayerItem();
+	virtual ~UIPlayerItem() override;
 	void Init(CUIXml& uiXml, const char* playerNode, int index);
 	s32 GetPlayerCheckPoints() const;
-	virtual void Update();
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual void Update() override;
+	virtual CUIWindow* ui_cast_window() override { return this; }
 };

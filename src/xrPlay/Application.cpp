@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "Splash.h"
 #include "UIEditorMain.h"
 
 #include "../xrEngine/x_ray.h"
@@ -7,9 +6,11 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
+#include "../xrEngine/device.h"
 
 #include "../xrCore/git_version.h"
 #include "../xrCore/CrashDumpHelper.h"
+#include "../xrCore/Kernel/TaskbarProgress.h"
 
 #ifndef DEBUG_DRAW
 #	define NO_MULTI_INSTANCES
@@ -32,23 +33,9 @@ int CApplication::Run()
 		return -1;
 	}
 
-	// plat
-	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
-
-	std::thread s;
-	if (!headless)
-		s = std::thread(splash::Show);
-
 	SteamWorks.BeginPlay();
 	InitEngine();
 	CrashDumpHelper::Start();
-
-	if (!headless)
-	{
-		splash::Close();
-		if (s.joinable())
-			s.join();
-	}
 
 	MigrateToGameWindow();
 	EngineLoopAndDestroy();
@@ -65,20 +52,20 @@ void CApplication::InitEngine()
 	xrLogger::EnableFastDebugLog();
 #endif
 
-	splash::SetProgressStatus(30, "Initializing engine");
+	CRenderDevice::SetStartupStatus(30, "Initializing engine core");
 	EngineLoadStage2();
 
-	splash::SetProgressStatus(40, "Calculating renderer list");
+	CRenderDevice::SetStartupStatus(40, "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
 	Console = new CConsole();
 
-	splash::SetProgressStatus(50, "Reading user settings");
+	CRenderDevice::SetStartupStatus(50, "Reading user settings");
 	EngineLoadStage3();
 
 	ConfigureRenderer();
 
-	splash::SetProgressStatus(60, "Initializing engine external");
+	CRenderDevice::SetStartupStatus(60, "Initializing renderer external");
 	Engine.External.Initialize();
 
 	Msg
@@ -88,14 +75,17 @@ void CApplication::InitEngine()
 		_VER, _HASH, _BRANCH, _AUTHOR
 	);
 
-	splash::SetProgressStatus(70, "Creating device");
+	CRenderDevice::SetStartupStatus(70, "Creating render device");
 	EngineLoadStage4();
 
-	splash::SetProgressStatus(80, "Loading custom settings");
+	CRenderDevice::SetStartupStatus(80, "Loading custom settings");
 	LoadCustomSettings();
-	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(5);
 
-	splash::SetProgressStatus(90, "Loading menu");
+	CRenderDevice::SetStartupStatus(85, "Initializing debug tools");
+	InitDebugTools();
+	CRenderDevice::PumpStartupFrames(3);
+
 	EngineLoadStage5();
 }
 
@@ -103,6 +93,11 @@ int CApplication::BeginPlay()
 {
 	PROF_EVENT("BEGIN_PLAY");
 
+#if defined(IXR_APPLE_SERIES)
+	// Default fullscreen uses a separate Space, which drops the window's key status and with it
+	// every mouse click. The non-Spaces path is a borderless window on the current Space.
+	SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
+#endif
 	SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_STEAMDECK, "1");
 	SDL_SetHint("SDL_GAMECONTROLLER_ALLOW_STEAM_VIRTUAL_GAMEPAD", "1");
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
@@ -110,13 +105,14 @@ int CApplication::BeginPlay()
 		return -1;
 	}
 
-	splash::SetProgressStatus(5, "Initializing debugger");
+	CRenderDevice::SetStartupStatus(5, "Initializing debugger");
 	Debug._initialize(false);
 	
-	splash::SetProgressStatus(10, "Calculating display modes");
+	CRenderDevice::SetStartupStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
-	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
+	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
+	SDL_WindowFlags WndFlags = headless ? SDL_WINDOW_HIDDEN : 0;
 #if defined(IXR_APPLE_SERIES)
 	// DXMT presents through its own CAMetalLayer (see MacMetalBridge.mm), no Vulkan surface.
 	WndFlags |= SDL_WINDOW_METAL;
@@ -124,9 +120,26 @@ int CApplication::BeginPlay()
 	WndFlags = SDL_WINDOW_VULKAN;
 #endif
 
-	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], WndFlags);
+	if (!headless && g_AppInfo.Window)
+	{
+		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+		SDL_ShowWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
+		SDL_PumpEvents();
+	}
 
-	splash::SetProgressStatus(20, "Initializing xrCore");
+	if (!headless)
+	{
+		CTaskbarProgress::Instance().Initialize(g_AppInfo.Window);
+	}
+
+	if (DevicePtr == nullptr)
+	{
+		DevicePtr = new CRenderDevice();
+	}
+
+	CRenderDevice::SetStartupStatus(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
 
 	return 1;
@@ -136,6 +149,7 @@ void CApplication::EndPlay()
 {
 	PROF_EVENT("END_PLAY");
 	SteamWorks.EndPlay();
+	CTaskbarProgress::Instance().Release();
 	xr_delete(g_pStringTable);
 	if (g_AppInfo.Window)
 	{
@@ -212,18 +226,17 @@ void CApplication::MigrateToGameWindow()
 	PROF_EVENT("MigrateToGameWindow");
 	const bool headless = Autotest::Active();
 	if (headless)
-		psDeviceFlags.set(rsFullscreen, FALSE);
-	else
-		SDL_ShowWindow(g_AppInfo.Window);
-
-#if defined(IXR_APPLE_SERIES)
-	// LaunchServices starts a bare executable in the background; raise the window
-	// so input does not go to the previously active app.
-	if (!headless)
 	{
-		SDL_RaiseWindow(g_AppInfo.Window);
+		psDeviceFlags.set(rsFullscreen, FALSE);
 	}
 	else
+	{
+		SDL_ShowWindow(g_AppInfo.Window);
+		SDL_RaiseWindow(g_AppInfo.Window);
+	}
+
+#if defined(IXR_APPLE_SERIES)
+	if (headless)
 	{
 		// HACK: a hidden window starves DXMT presents; keep it visible but off screen.
 		SDL_SetWindowPosition(g_AppInfo.Window, -3000, -3000);
@@ -236,6 +249,7 @@ void CApplication::MigrateToGameWindow()
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
+	CRenderDevice::UpdateStartupFrame();
 
 	if (headless)
 	{
@@ -244,6 +258,10 @@ void CApplication::MigrateToGameWindow()
 #else
 		SDL_HideWindow(g_AppInfo.Window);
 #endif
+	}
+	else
+	{
+		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 }
 

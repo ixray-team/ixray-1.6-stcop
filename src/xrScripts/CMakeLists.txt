@@ -70,3 +70,9 @@ if (WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${LUAJIT_NAME}
     )
 endif()
+
+if (APPLE)
+    # macOS denies plain RWX mmap, so the LuaJIT machine-code allocator cannot work:
+    # the engine runs LuaJIT in interpreter mode there.
+    target_compile_definitions(xrScripts PRIVATE IXR_APPLE_SERIES)
+endif()

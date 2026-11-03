@@ -9,24 +9,24 @@ private:
 
 public:
 					CUICDkey		();
-	virtual	void	SetText			(const char* str) {}
-	virtual	const char*	GetText			();
+	virtual void	SetText			(const char* str) override {}
+	virtual const char*	GetText			() override;
 
 	// CUIOptionsItem
-	virtual void	SetCurrentOptValue	();	// opt->current
-	virtual void	SaveBackUpOptValue	();	// current->backup
-	virtual void	SaveOptValue		();	// current->opt
-	virtual void	UndoOptValue		();	// backup->current
-	virtual bool	IsChangedOptValue	() const;	// backup!=current
+	virtual void	SetCurrentOptValue	() override;	// opt->current
+	virtual void	SaveBackUpOptValue	() override;	// current->backup
+	virtual void	SaveOptValue		() override;	// current->opt
+	virtual void	UndoOptValue		() override;	// backup->current
+	virtual bool	IsChangedOptValue	() const override;	// backup!=current
 	
 			void	CreateCDKeyEntry();			
 			void	assign_callbacks();
 
-	virtual void	Show			(bool status);
-	virtual void	Draw			();
-	virtual void	OnFocusLost		();
+	virtual void	Show			(bool status) override;
+	virtual void	Draw			() override;
+	virtual void	OnFocusLost		() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 private:
 	void 	paste_from_clipboard();
@@ -43,7 +43,7 @@ private:
 
 public:
 					CUIMPPlayerName	() {};
-	virtual			~CUIMPPlayerName() {};
+	virtual ~CUIMPPlayerName() override {};
 
 //	virtual	void	SetText			(const char* str) {}
 
@@ -51,9 +51,9 @@ public:
 //	virtual void	SaveValue();
 //	virtual bool	IsChanged();
 
-	virtual void	OnFocusLost		();
+	virtual void	OnFocusLost		() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 }; // class CUIMPPlayerName
 

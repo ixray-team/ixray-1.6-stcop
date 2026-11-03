@@ -15,12 +15,12 @@ class CActorCameraManager	:public CCameraManager
 	CCameraRig				m_rig;
 
 protected:
-	virtual void			UpdateCamEffectors		();
-	virtual bool			ProcessCameraEffector	(CEffectorCam* eff);
+	virtual void			UpdateCamEffectors		() override;
+	virtual bool			ProcessCameraEffector	(CEffectorCam* eff) override;
 
 public:
 							CActorCameraManager():inherited(false){}
-	virtual					~CActorCameraManager() {}
+	virtual ~CActorCameraManager() override {}
 
 	IC void					hud_camera_Matrix		(Fmatrix& M){M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);}
 	IC CCameraRig&			Rig						(){return m_rig;}
@@ -61,14 +61,14 @@ public:
 	float				m_fov;
 
 						CAnimatorCamEffector	();
-	virtual				~CAnimatorCamEffector	();
+	virtual ~CAnimatorCamEffector	() override;
 			void		Start					(const char* fn);
-	virtual bool		ProcessCam				(SCamEffectorInfo& info);
+	virtual bool		ProcessCam				(SCamEffectorInfo& info) override;
 			void		SetCyclic				(bool b)				{m_bCyclic=b;}
-	virtual	bool		Valid					();
+	virtual bool		Valid					() override;
 			float		GetAnimatorLength		()						{return fLifeTime;};
 
-	virtual bool		AbsolutePositioning		()						{return m_bAbsolutePositioning;}
+	virtual bool		AbsolutePositioning		() override {return m_bAbsolutePositioning;}
 };
 
 class CAnimatorCamEffectorScriptCB :public CAnimatorCamEffector 
@@ -78,9 +78,9 @@ class CAnimatorCamEffectorScriptCB :public CAnimatorCamEffector
 	shared_str			cb_name;
 public:
 	CAnimatorCamEffectorScriptCB	(const char* _cb){cb_name =_cb;};
-	virtual	bool		Valid					();
-	virtual bool		AllowProcessingIfInvalid()							{return m_bAbsolutePositioning;}
-	virtual	void		ProcessIfInvalid		(SCamEffectorInfo& info);
+	virtual bool		Valid					() override;
+	virtual bool		AllowProcessingIfInvalid() override {return m_bAbsolutePositioning;}
+	virtual void		ProcessIfInvalid		(SCamEffectorInfo& info) override;
 };
 
 class CAnimatorCamLerpEffector :public CAnimatorCamEffector
@@ -90,7 +90,7 @@ protected:
 	GET_KOEFF_FUNC									m_func;
 public:
 			void		SetFactorFunc				(GET_KOEFF_FUNC f)	{m_func=f;}
-	virtual bool		ProcessCam					(SCamEffectorInfo& info);
+	virtual bool		ProcessCam					(SCamEffectorInfo& info) override;
 };
 
 class CAnimatorCamLerpEffectorConst :public CAnimatorCamLerpEffector
@@ -108,8 +108,8 @@ class CCameraEffectorControlled :public CAnimatorCamLerpEffector
 	CEffectorController*		m_controller;
 public:
 						CCameraEffectorControlled		(CEffectorController* c);
-	virtual				~CCameraEffectorControlled		();
-	virtual bool		Valid							();
+	virtual ~CCameraEffectorControlled		() override;
+	virtual bool		Valid							() override;
 };
 
 struct TSndShockEffector:
@@ -127,14 +127,14 @@ struct TSndShockEffector:
 	CActor* m_actor = nullptr;
 
 	TSndShockEffector();
-	virtual ~TSndShockEffector();
+	virtual ~TSndShockEffector() override;
 	void Start(float snd_length, float power);
 	void Update();
 
-	virtual bool Valid();
+	virtual bool Valid() override;
 			bool InWork();
 
-	virtual	float GetFactor();
+	virtual float GetFactor() override;
 
 private:
 	ECS_COMPONENT(TSndShockEffector)
@@ -162,6 +162,6 @@ class CControllerPsyHitCamEffector :public CEffectorCam {
 public:
 						CControllerPsyHitCamEffector	(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, 
 														float time, float base_fov, float dest_fov);
-	virtual bool		ProcessCam						(SCamEffectorInfo& info);
+	virtual bool		ProcessCam						(SCamEffectorInfo& info) override;
 };
 //////////////////////////////////////////////////////////////////////////

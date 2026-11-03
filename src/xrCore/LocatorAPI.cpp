@@ -749,7 +749,21 @@ void CLocatorAPI::setup_fs_path		(const char* fs_name)
 
 		if (!TryTestPath(full_current_directory))
 		{
-			TryTestPath(Platform::GetBinaryFolderPath());
+			if (!TryTestPath(Platform::GetBinaryFolderPath()))
+			{
+#ifdef __APPLE__
+				// A macOS bundle keeps the game files in Contents/Resources while the
+				// executable sits in Contents/MacOS, so look next to the binary folder
+				// before giving up.
+				const std::string resources =
+					(std::filesystem::path(Platform::GetBinaryFolderPath()).parent_path() / "Resources").generic_string();
+				if (std::filesystem::exists(resources + "/" + fs_name))
+				{
+					TestPath = Platform::RestorePath(resources.c_str());
+					std::filesystem::current_path(std::filesystem::path(resources));
+				}
+#endif
+			}
 		}
 	}
 

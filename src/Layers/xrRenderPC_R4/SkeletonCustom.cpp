@@ -150,6 +150,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 
     pUserData		= nullptr;
     m_lod			= nullptr;
+	m_reference		= nullptr;
     // loading lods
 
 	IReader* LD 	= data->open_chunk(OGF_S_LODS);
@@ -296,6 +297,35 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
 	wm_frame		= u32(-1);
 
     LL_Validate		();
+}
+
+void CKinematics::ReloadUserData()
+{
+	xr_string fn; fn.reserve(300);
+
+	fn = FS.get_path(_game_meshes_)->m_Path;
+	fn += *dbg_name;
+	if (nullptr == strext(*dbg_name))
+		fn += ".ogf";
+
+	if (!FS.exist(fn.c_str()))
+	{
+		fn = FS.get_path("$level$")->m_Path;
+		fn += *dbg_name;
+		if (nullptr == strext(*dbg_name))
+			fn += ".ogf";
+	}
+
+	IReader* data = FS.r_open(fn.c_str());
+	if (!data) return;
+
+	if (m_reference && m_reference->pUserData != pUserData)
+		xr_delete(pUserData);
+
+	IReader* UD = data->open_chunk(OGF_S_USERDATA);
+	pUserData = UD ? new CInifile(UD, FS.get_path(_game_config_)->m_Path) : nullptr;
+	UD->close();
+	data->close();
 }
 
 void iBuildGroups(CBoneData* B, buffer_vector<u16>& tgt, u16 id, u16& last_id)
@@ -473,7 +503,7 @@ void CKinematics::Copy(dxRender_Visual *P)
 
 	CKinematics* pFrom = smart_cast<CKinematics*>(P);
 	VERIFY(pFrom);
-
+	m_reference = pFrom;
 	pUserData = pFrom->pUserData;
 	bones = pFrom->SharedBones ? pFrom->SharedBones : pFrom->bones;
 	iRoot = pFrom->iRoot;
@@ -544,6 +574,11 @@ void CKinematics::Depart		()
 	children.insert				(children.end(),children_invisible.begin(),children_invisible.end());
 	children_invisible.clear	();
 	SetParentObjectId(ALife::_OBJECT_ID(-1));
+	if (m_reference && m_reference->pUserData != pUserData)
+	{
+		xr_delete(pUserData);
+		pUserData = m_reference->pUserData;
+	}
 }
 
 void CKinematics::Release		()

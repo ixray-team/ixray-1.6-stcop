@@ -29,3 +29,12 @@ void PowerCell::load(IReader& input_packet)
     m_power_cell_data.max_power = input_packet.r_float();
     m_power_cell_data.current_power = input_packet.r_float();
 }
+
+void PowerCell::Serialize(ISaveObject& SaveObject)
+{
+	BEGIN_CHUNK(SaveObject, "PowerCell::Serialize")
+	{
+		CInventoryItemObject::Serialize(SaveObject);
+		SaveObject << m_power_cell_data;
+	}
+}

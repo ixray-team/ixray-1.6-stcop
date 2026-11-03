@@ -90,7 +90,7 @@ void CSE_Visual::FillProps		(const char* pref, PropItemVec &items)
 	V->OnChangeEvent.bind		(this,&CSE_Visual::OnChangeVisual);
 	V							= PHelper().CreateChoose(items,	PrepareKey(pref,abstract->name(),"Model\\Animation"),	&startup_animation, smSkeletonAnims,0,(void*)*visual_name);
 	V->OnChangeEvent.bind		(this,&CSE_Visual::OnChangeAnim);
-	PHelper().CreateFlag8		(items, PrepareKey(pref,abstract->name(),"Model\\Obstacle"),	&flags,	flObstacle);
+	PHelper().CreateFlag		(items, PrepareKey(pref,abstract->name(),"Model\\Obstacle"),	&flags,	flObstacle);
 }
 #endif // #ifndef XRGAME_EXPORTS
 

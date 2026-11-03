@@ -12,15 +12,15 @@ class CTorridZone final : public CMosquitoBald
 public:
 	XPROPERTY(LuaConstructor)
 	CTorridZone();
-	virtual ~CTorridZone();
-	virtual void UpdateWorkload(u32 dt);
-	virtual void shedule_Update(u32 dt);
-	bool net_Spawn(CSE_Abstract* DC);
-	virtual bool IsVisibleForZones() { return true; }
-	virtual bool Enable();
-	virtual bool Disable();
+	virtual ~CTorridZone() override;
+	virtual void UpdateWorkload(u32 dt) override;
+	virtual void shedule_Update(u32 dt) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual bool IsVisibleForZones() override { return true; }
+	virtual bool Enable() override;
+	virtual bool Disable() override;
 	// Lain: added
-	virtual bool light_in_slow_mode();
-	virtual bool AlwaysTheCrow();
+	virtual bool light_in_slow_mode() override;
+	virtual bool AlwaysTheCrow() override;
 	CTorridZone* cast_torrid_zone() override { return this; }
 };

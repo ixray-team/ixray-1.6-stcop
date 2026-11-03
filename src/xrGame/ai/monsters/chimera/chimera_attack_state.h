@@ -6,13 +6,13 @@ class ChimeraAttackState : public CState<Object>
 {
 public:
 							ChimeraAttackState				(Object* obj);
-	virtual void			initialize						();
-	virtual	void			execute							();
-	virtual void 			finalize						();
-	virtual void 			critical_finalize				();
+	virtual void			initialize						() override;
+	virtual void			execute							() override;
+	virtual void 			finalize						() override;
+	virtual void 			critical_finalize				() override;
 
 private:
-	virtual bool			check_control_start_conditions	(ControlCom::EControlType type);
+	virtual bool			check_control_start_conditions	(ControlCom::EControlType type) override;
 	bool					select_target_for_move			();
 
 	Fvector					correct_jump_pos				(Fvector const&		pos);
@@ -29,7 +29,7 @@ private:
 	float					calculate_min_run_distance		() const;
 
 	typedef CState<Object>	inherited;
-	virtual void			remove_links	(CObject* object_) { inherited::remove_links(object_); }
+	virtual void			remove_links	(CObject* object_) override { inherited::remove_links(object_); }
 
 	CControl_Com*			m_capturer;
 

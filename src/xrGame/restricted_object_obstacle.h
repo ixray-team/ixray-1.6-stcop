@@ -30,10 +30,10 @@ public:
 	CRestrictedObjectObstacle& operator=(const CRestrictedObjectObstacle& other) = delete;
 
 								CRestrictedObjectObstacle	(CCreature *object, const obstacles_query &static_query, const obstacles_query &dynamic_query);
-	virtual	void				add_border					(u32 start_vertex_id, float radius) const;
-	virtual	void				add_border					(const Fvector &start_position, const Fvector &dest_position) const;
-	virtual	void				add_border					(u32 start_vertex_id, u32 dest_vertex_id) const;
-	virtual	void				remove_border				() const;
+	virtual void				add_border					(u32 start_vertex_id, float radius) const override;
+	virtual void				add_border					(const Fvector &start_position, const Fvector &dest_position) const override;
+	virtual void				add_border					(u32 start_vertex_id, u32 dest_vertex_id) const override;
+	virtual void				remove_border				() const override;
 
 	IC	const obstacles_query	&static_query				() const
 	{

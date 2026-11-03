@@ -8,6 +8,7 @@
 #include "CameraManager.h"
 #include "../xrCore/FTimer.h"
 #include "Stats.h"
+#include <functional>
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -187,11 +188,24 @@ public:
 	u32	GetSwapchainHeight() override;
 
 	void ResizeBuffers(u32 Width, u32 Height);
-	void ResizeWindow(u32 width, u32 height);
+	virtual void ResizeWindow(u32 width, u32 height) override;
 
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
 	void BeginRender() override;
+
+	void DrawStartupFrame(bool WithWindowButtons = false);
+	static void SetStartupStatus(int Progress, const char* Status = nullptr);
+	static void UpdateStartupFrame();
+	static void StartupFrameWaitTask(std::function<void()> TaskFunc, int TargetProgress = -1, const char* TargetStatus = nullptr);
+	static void PumpStartupFrames(u32 FrameCount = 1);
+	static void FinishStartup();
+
+	static int s_StartupProgress;
+	static xr_string s_StartupStatus;
+	static float s_StartupAnimationTime;
+	static u64 s_StartupLastTick;
+	static bool s_StartupActive;
 	void EndRender() override;
 
 public:
@@ -234,7 +248,7 @@ public:
 	CStats*									Statistic;
 	
 	CRenderDevice();
-	virtual ~CRenderDevice() noexcept = default;
+	virtual ~CRenderDevice() noexcept override = default;
 
 	virtual void	Pause							(bool bOn, bool bTimer, bool bSound, const char* reason);
 	bool	Paused							();
@@ -341,9 +355,9 @@ public:
 
 private:
 			void					message_loop		();
-virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
-virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
-virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
+	virtual void			_BCL	AddSeqFrame			( pureFrame* f, bool mt ) override;
+	virtual void			_BCL	RemoveSeqFrame		( pureFrame* f ) override;
+	virtual CStatsPhysics*	_BCL	StatPhysics			() override { return  Statistic ;}
 };
 
 extern ENGINE_API CRenderDevice* DevicePtr;
@@ -363,7 +377,7 @@ public:
 					CLoadScreenRenderer	();
 	void			start				(bool b_user_input);
 	void			stop				();
-	virtual void	OnRender			();
+	virtual void	OnRender			() override;
 
 	bool IsActive() const {
 		return b_registered;

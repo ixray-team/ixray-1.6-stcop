@@ -72,8 +72,8 @@ public:
 
 public:
 												CALifeSimulatorBase			(xrServer *server, const char* section);
-	virtual										~CALifeSimulatorBase		();
-	virtual	void								destroy						();
+	virtual ~CALifeSimulatorBase		() override;
+	virtual void								destroy						() override;
 	IC		bool								initialized					() const;
 	IC		const CALifeSimulatorHeader			&header						() const;
 	IC		const CALifeTimeManager				&time						() const;

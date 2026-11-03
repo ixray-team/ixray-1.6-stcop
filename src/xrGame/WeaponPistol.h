@@ -6,12 +6,12 @@ class CWeaponPistol : public CWeaponMagazined
 	using inherited = CWeaponMagazined;
 public:
 	CWeaponPistol() = default;
-	virtual	~CWeaponPistol() = default;
+	virtual ~CWeaponPistol() override = default;
 
-	virtual void	Load			(const char* section);
-	virtual void	PlayAnimHide	();
+	virtual void	Load			(const char* section) override;
+	virtual void	PlayAnimHide	() override;
 
-	virtual void	UpdateSounds	();
+	virtual void	UpdateSounds	() override;
 protected:	
 	//virtual bool	AllowFireWhileWorking() {return true;}
 

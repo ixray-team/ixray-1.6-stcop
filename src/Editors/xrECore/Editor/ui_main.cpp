@@ -7,6 +7,7 @@
 #include "ui_main.h"
 #include "D3DUtils.h"
 #include "SoundManager.h"
+#include "../../../xrCore/Kernel/TaskbarProgress.h"
 #include "../Layers/xrRenderPC_R4/PSLibrary.h"
 #include "../Layers/xrRenderPC_R4/dxRenderDeviceRender.h"
 
@@ -95,13 +96,6 @@ namespace
 	}
 }
 
-namespace ImGui
-{
-XREUI_API ImFont* LightFont;
-XREUI_API ImFont* RegularFont;
-XREUI_API ImFont* MediumFont;
-XREUI_API ImFont* BoldFont;
-} // namespace ImGui
 
 TUI::TUI()
 {
@@ -514,11 +508,18 @@ ECORE_API xrCriticalSection temp_render_lock;
 
 void TUI::Redraw()
 {
+	PROF_EVENT("TUI::Redraw")
 	xrCriticalSectionGuard guard_lock(temp_render_lock);
 
 	PrepareRedraw();
 
 	Viewport& View = CurrentView();
+
+	// The viewport window is 0x0 until ImGui lays it out: there is nothing to draw and no target size yet
+	if (View.RTSize.x <= 0 || View.RTSize.y <= 0)
+	{
+		return;
+	}
 
 	// Render quality scales the scene resolution only; the renderer upscales it to the viewport
 	// with the selected upscaler
@@ -530,6 +531,13 @@ void TUI::Redraw()
 	static int UpscaledViewID = -1;
 	static u32 UpscaledMode = 0;
 	bool UpscalerReset = UpscaledViewID != View.ViewGlobalIDX;
+	bool TargetsReset = UpscalerReset;
+
+	if (UpscalerReset)
+	{
+		View.m_Camera.BuildCamera();
+		m_Flags.set(flRedraw, true);
+	}
 
 	if (u32(View.RTSize.x) != EDevice->TargetWidth || u32(View.RTSize.y) != EDevice->TargetHeight || SceneSize.x != HalfTarget.x || SceneSize.y != HalfTarget.y || UpscaledMode != GEditorDraw.Upscaler || !RT->pSurface)
 	{
@@ -538,6 +546,7 @@ void TUI::Redraw()
 			// The DLSS / FSR contexts are created with the render targets
 			UpscaledMode = GEditorDraw.Upscaler;
 			UpscalerReset = true;
+			TargetsReset = true;
 
 			EDevice->TargetWidth = View.RTSize.x;
 			EDevice->TargetHeight = View.RTSize.y;
@@ -559,8 +568,9 @@ void TUI::Redraw()
 
 			m_Flags.set(flRedraw, true);
 
-			EDevice->m_fNearer = EDevice->mProject._43;
 			EDevice->fASPECT = float(View.RTSize.y) / float(View.RTSize.x);
+			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
+			EDevice->m_fNearer = EDevice->mProject._43;
 
 			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
@@ -577,6 +587,16 @@ void TUI::Redraw()
 
 	if (!IsPlayInEditor())
 	{
+		// The aspect is shared by the views: take the current one, its size may have changed while another view was drawn
+		if (View.RTSize.x > 0 && View.RTSize.y > 0)
+		{
+			const float Aspect = float(View.RTSize.y) / float(View.RTSize.x);
+			if (!fsimilar(Aspect, EDevice->fASPECT))
+			{
+				EDevice->fASPECT = Aspect;
+				m_Flags.set(flRedraw, true);
+			}
+		}
 		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
 	}
 
@@ -592,7 +612,7 @@ void TUI::Redraw()
 		if (m_Flags.is(flRedraw))
 		{
 			// The temporal upscalers converge over the jittered frames
-			redraw_frame = EDevice->dwRenderFrame + (IsTemporalUpscaler() ? 32 : 3);
+			redraw_frame = EDevice->dwRenderFrame + ((IsTemporalUpscaler() || TargetsReset) ? 32 : 3);
 		}
 
 		if (redraw_frame > EDevice->dwRenderFrame || IsPlayInEditor())
@@ -646,6 +666,8 @@ void TUI::Redraw()
 			{
 				RImplementation.EditorClearColor.set(EPrefs->scene_clear_color);
 				RImplementation.EditorOcclusionCulling = EPrefs->OcclusionCulling;
+				GEditorSceneSubmit.InstancingEnabled = EPrefs->Instancing;
+				GEditorSceneSubmit.ShadowInstancingEnabled = EPrefs->ShadowInstancing;
 				RImplementation.EditorHemi = EPrefs->Hemi;
 				RImplementation.EditorDynamicLights = EPrefs->DynamicLights;
 				RImplementation.EditorLightShadows = EPrefs->LightShadows;
@@ -752,6 +774,7 @@ void TUI::RealRedrawScene()
 
 void TUI::OnFrame()
 {
+	PROF_EVENT("TUI::OnFrame")
 	EDevice->FrameMove();
 	SndLib->OnFrame();
 	// tools on frame
@@ -770,6 +793,7 @@ void TUI::OnFrame()
 
 bool TUI::Idle()
 {
+	PROF_FRAME("Editor")
 	VERIFY(m_bReady);
 
 	MSG msg;
@@ -794,7 +818,10 @@ bool TUI::Idle()
 		RealResetUI();
 	}
 
-	Sleep(1);
+	{
+		PROF_EVENT("TUI::Idle Sleep")
+		Sleep(1);
+	}
 
 	if (g_pGamePersistent)
 	{
@@ -840,7 +867,10 @@ bool TUI::Idle()
 		RealQuit();
 	}
 
-	Device.SecondaryTasks.wait();
+	{
+		PROF_EVENT("TUI::Idle wait secondary")
+		Device.SecondaryTasks.wait();
+	}
 
 	return !m_AppClosed;
 }
@@ -970,6 +1000,18 @@ void TUI::ProgressDraw()
 		pbi->GetInfo(txt, p, m);
 		// progress
 		ProgressStatus = fis_zero(m) ? 0 : (int)((p / m) * 100);
+	}
+
+	// >>> UX-PROGRESS: mirror the editor progress to the taskbar.
+	// Operations that block the UI thread (AI map generation, exports) report their progress here,
+	// so the taskbar is refreshed from this thread instead of waiting for the next frame.
+	CTaskbarProgress& Taskbar = CTaskbarProgress::Instance();
+	if (pbi != nullptr && Taskbar.IsInitialized())
+	{
+		const int Progress = std::clamp((int)ProgressStatus, 0, 100);
+		Taskbar.SetState(ETaskbarProgressState::Normal);
+		Taskbar.SetProgress((u64)Progress, 100);
+		Taskbar.Update();
 	}
 }
 

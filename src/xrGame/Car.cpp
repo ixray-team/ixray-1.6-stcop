@@ -186,7 +186,7 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 	return (CScriptEntity::net_Spawn(DC) && R);
 }
 
-void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 	if (!do_colide)
 	{
@@ -371,6 +371,15 @@ void CCar::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
 	load_data(m_fuel, input_packet);
+}
+
+void CCar::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CCar::Serialize")
+	{
+		inherited::Serialize(Object);
+		Object << m_fuel;
+	}
 }
 
 void CCar::shedule_Update(u32 dt)
@@ -2098,7 +2107,7 @@ void CCar::CarExplode()
 
 	CPHSkeleton::SetNotNeedSave();
 	if (m_car_weapon)
-		m_car_weapon->Action(CCarWeapon::eWpnActivate, 0);
+		m_car_weapon->Action(ECarWeaponAction::eWpnActivate, 0);
 
 	m_lights.TurnOffHeadLights();
 	m_damage_particles.Stop1(this);
@@ -2327,4 +2336,4 @@ bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
 	}
 
 	return false;
-}
+}

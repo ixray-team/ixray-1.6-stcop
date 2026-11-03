@@ -17,6 +17,7 @@
 #ifndef NO_XR_GAME
 #	include "../xrCore/Template/object_type_traits.h"
 #	include "object_item_client_server.h"
+#	include "IniOwners.gen.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -32,7 +33,9 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, const char* script_clsid)
 		typedef			std::is_base_of<SERVER_BASE_CLASS,_server_type> a;
 		static_assert(a::value, "Server class must be derived from the SERVER_BASE_CLASS");
 	}
-	add					(new CObjectItemClientServer<_client_type,_server_type>(clsid,script_clsid));
+	CObjectItemAbstract* item = new CObjectItemClientServer<_client_type,_server_type>(clsid,script_clsid);
+	item->ini_schemas	= &XReflect::CollectIniSchemas<_client_type>;
+	add					(item);
 }
 
 template <typename _unknown_type>
@@ -43,15 +46,17 @@ IC	void CObjectFactory::add	(const CLASS_ID &clsid, const char* script_clsid)
 		typedef std::is_base_of<SERVER_BASE_CLASS,_unknown_type> b;
 		static_assert(a::value || b::value, "Class must be derived from the CLIENT_BASE_CLASS or SERVER_BASE_CLASS");
 	}
-	add
-	(
-		new CObjectItemSingle
-		<
-				_unknown_type,
-				std::is_base_of<CLIENT_BASE_CLASS,_unknown_type>::value
-		>
-		(clsid,script_clsid)
-	);
+	CObjectItemAbstract* item = new CObjectItemSingle
+	<
+			_unknown_type,
+			std::is_base_of<CLIENT_BASE_CLASS,_unknown_type>::value
+	>
+	(clsid,script_clsid);
+	if constexpr (std::is_base_of<CLIENT_BASE_CLASS,_unknown_type>::value)
+	{
+		item->ini_schemas = &XReflect::CollectIniSchemas<_unknown_type>;
+	}
+	add					(item);
 }
 
 #else // NO_XR_GAME

@@ -36,10 +36,10 @@ struct SGameTaskKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 	SGameTaskKey	():task_id(NULL),game_task(NULL)						{};
 
 
-	virtual void 	save								(IWriter &stream);
-	virtual void 	load								(IReader &stream);
+	virtual void 	save								(IWriter &stream) override;
+	virtual void 	load								(IReader &stream) override;
 	virtual void serialize(ISaveObject& Object);
-	virtual void 	destroy								();
+	virtual void 	destroy								() override;
 
 	IC CGameTask* getGameTask(void) const { return game_task; }
 	void setGameTask(CGameTask* pTask) { game_task = pTask; }
@@ -55,7 +55,7 @@ using vGameTasks_it = vGameTasks::iterator;
 
 struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, vGameTasks> 
 {
-	virtual void save(IWriter &stream)
+	virtual void save(IWriter &stream) override
 	{
 		CALifeAbstractRegistry<u16, vGameTasks>::save(stream);
 		for (auto& taskId : g_active_task_id)
@@ -63,7 +63,8 @@ struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, vGameTasks>
 			save_data(taskId, stream);
 		}
 	};
-	virtual void load(IReader &stream)
+
+	virtual void load(IReader &stream) override
 	{
 		CALifeAbstractRegistry<u16, vGameTasks>::load(stream);
 		for (auto& taskId : g_active_task_id)

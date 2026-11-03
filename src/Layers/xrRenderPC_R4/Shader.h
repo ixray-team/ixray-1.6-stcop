@@ -28,7 +28,7 @@ struct RENDER_API STextureList :
 	public xr_vector<std::pair<u32,ref_texture> >	
 {
 	typedef xr_vector<std::pair<u32,ref_texture> > inherited_vec;
-						~STextureList	();
+						virtual ~STextureList	() override;
 
 						IC bool		equal (const STextureList& base) const
 						{
@@ -57,7 +57,7 @@ struct RENDER_API SMatrixList : public xr_resource_flagged, public FixedVector<r
 {
 	SMatrixList();
 	SMatrixList& operator=(const SMatrixList& Other) = delete;
-	~SMatrixList();	
+	virtual ~SMatrixList() override;	
 	
 	void _copy(const SMatrixList& Other);
 };
@@ -66,7 +66,7 @@ typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_li
 //////////////////////////////////////////////////////////////////////////
 struct  RENDER_API SConstantList : public xr_resource_flagged, public FixedVector<ref_constant_obsolette, 4>
 {
-	~SConstantList();
+	virtual ~SConstantList() override;
 	SConstantList();
 
 	SConstantList& operator=(const SConstantList& Other) = delete;
@@ -83,7 +83,7 @@ struct RENDER_API SGeometry
 	IRHIBuffer*	vb;
 	IRHIBuffer*	ib;
 	u32					vb_stride;
-						~SGeometry		();
+						virtual ~SGeometry		() override;
 						SGeometry& operator=(const SGeometry& Other) = delete;
 };
 
@@ -116,7 +116,7 @@ struct	  RENDER_API		SPass			: public xr_resource_flagged									{
 
 	ref_matrix_list						M;
 
-						~SPass			();
+						virtual ~SPass			() override;
 
 	bool equal(const SPass& other);
 };
@@ -141,7 +141,7 @@ public:
 	FixedVector<ref_pass,SHADER_PASSES_MAX>	passes;
 
 						ShaderElement	();
-						~ShaderElement	();
+						virtual ~ShaderElement	() override;
 
 						ShaderElement& operator=(const ShaderElement& Other) = delete;
 
@@ -164,7 +164,7 @@ public:
 	Shader();
 	Shader& operator=(const Shader& Other) = delete;
 
-						~Shader			();
+						virtual ~Shader			() override;
 	bool				equal			(Shader& S);
 	bool				equal			(Shader* S);
 

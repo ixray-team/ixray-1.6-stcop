@@ -3,20 +3,15 @@
 
 #include "ThmProperties.h"
 #include "SoundPreview.h"
+#include "ParticlePreview.h"
 
 class CContentView:
 	public IEditorWnd
 {
-	friend class CLevelPreferences;
 
 private:
 
-	struct DragDropData 
-	{
-		xr_string FileName;
-	};
-
-	struct IconData 
+	struct IconData
 	{
 		ref_texture Icon;
 		bool UseButtonColor = false;
@@ -60,7 +55,13 @@ private:
 
 public:
 	CContentView(xr_string WindowName = "Content Browser");
+
+	// Drops the cached icon of a file in every content browser, so it is reloaded
+	static void InvalidateIcon(const xr_string& FullPath);
+	// Releases the shared icons while the device is alive
+	static void ClearIcons();
 	virtual void Draw() override;
+	virtual void Serialize(nlohmann::json& Data, bool IsSaving) override;
 	void DrawHeader();
 	void FindFile();
 	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);
@@ -73,6 +74,8 @@ public:
 	void RescanISEDirectory(const xr_string& path);
 	void RescanParticlesDirectory(const xr_string& path);
 	void RescanDirectory();
+	// Opens the folder of the file, selects it and scrolls to it
+	void Reveal(const xr_string& FullPath);
 
 	virtual void Init();
 	virtual void Destroy();
@@ -81,6 +84,7 @@ public:
 
 	void RemoveCustomIcon(const xr_string&);
 	void LoadCustomIcons();
+	void LoadBaseIcons();
 
 private:
 	void CollectAllFolder();
@@ -127,7 +131,6 @@ private:
 
 	HintItem CurrentItemHint;
 
-	DragDropData Data;
 	xr_vector<FileOptData> Files;
 	filewatch::FileWatch<std::string>* WatcherPtr;
 
@@ -146,7 +149,9 @@ private:
 	xr_string WindowName;
 	ImVec2 BtnSize{};
 
-	xr_hash_map<xr_string, IconData> Icons;
+	// Icon database shared by every content browser: a file icon is created once
+	static xr_hash_map<xr_string, IconData> Icons;
+	static CParticlePreviewCache ParticlePreviews;
 
 	xr_hash_map<xr_string, void*> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;
@@ -155,6 +160,7 @@ private:
 	bool IsSpawnElement = false;
 	bool IsParticles = false;
 	bool IsFindResult = false;
+	xr_string RevealPath;
 
 	bool IsThmMode = false;
 	bool IsTempMode = false;

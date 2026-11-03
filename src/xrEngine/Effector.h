@@ -18,7 +18,7 @@ public:
 public:
 						CEffectorCam	(ECamEffectorType type, float tm)	{eType=type; fLifeTime=tm; bHudAffect=true;};
 						CEffectorCam	()									{eType=(ECamEffectorType)0; fLifeTime=0.0f; bHudAffect=true;};
-	virtual				~CEffectorCam	()									{};
+	virtual ~CEffectorCam	() override {};
 			void		SetType			(ECamEffectorType type)				{eType=type;}
 			void		SetHudAffect	(bool val)							{bHudAffect=val;}
 			bool		GetHudAffect	()									{return bHudAffect;}

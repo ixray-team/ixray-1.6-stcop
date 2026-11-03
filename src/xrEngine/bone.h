@@ -376,26 +376,26 @@ IC	float	_BCL		editor_hi_limit ( u8 k ) const	{ return IK_data.limits[k].limit.y
     bool 			    ExportOGF		(IWriter& F);
 #endif
 private:
-				IBoneData&		_BCL	GetChild			( u16 id )			{return *children[id];}
-		const	IBoneData&		_BCL	GetChild			( u16 id )	const	{return *children[id];}
-        		u16				_BCL	GetSelfID			( )			const	{return (u16)SelfID;}
-				u16				_BCL	GetNumChildren		( )			const	{return u16( children.size() );}
-		const	SJointIKData&	_BCL	get_IK_data			( )			const	{return	IK_data;}
-		const	Fmatrix&		_BCL	get_bind_transform	( )			const	
+	virtual 		IBoneData&		_BCL	GetChild			( u16 id ) override {return *children[id];}
+	virtual const	IBoneData&		_BCL	GetChild			( u16 id )	const override {return *children[id];}
+    virtual 		u16				_BCL	GetSelfID			( )			const override {return (u16)SelfID;}
+	virtual 		u16				_BCL	GetNumChildren		( )			const override {return u16( children.size() );}
+	virtual const	SJointIKData&	_BCL	get_IK_data			( )			const override {return	IK_data;}
+	virtual const	Fmatrix&		_BCL	get_bind_transform	( )			const override
 		{
 			
 				return	local_rest_transform;
 
 		}
-		const	SBoneShape&		_BCL	get_shape			( )			const	{return shape;}
+	virtual const	SBoneShape&		_BCL	get_shape			( )			const override {return shape;}
 
-		const	Fobb&			_BCL	get_obb				( )			const	;
-		const	Fvector&		_BCL	get_center_of_mass	( )			const	{return center_of_mass;}
-				float			_BCL	get_mass			( )			const	{return mass;}
-				u16				_BCL	get_game_mtl_idx	( )			const	;
-				u16				_BCL	GetParentID			( )			const	{if(parent) return u16(parent->SelfID); else return u16(-1);};
-				float			_BCL	lo_limit			( u8 k )	const	{ return engine_lo_limit(k); }
-				float			_BCL	hi_limit			( u8 k )	const	{ return engine_hi_limit(k); }
+	virtual const	Fobb&			_BCL	get_obb				( )			const override;
+	virtual const	Fvector&		_BCL	get_center_of_mass	( )			const override {return center_of_mass;}
+	virtual 		float			_BCL	get_mass			( )			const override {return mass;}
+	virtual 		u16				_BCL	get_game_mtl_idx	( )			const override;
+	virtual 		u16				_BCL	GetParentID			( )			const override {if(parent) return u16(parent->SelfID); else return u16(-1);};
+	virtual 		float			_BCL	lo_limit			( u8 k )	const override { return engine_lo_limit(k); }
+	virtual 		float			_BCL	hi_limit			( u8 k )	const override { return engine_hi_limit(k); }
 };
 
 //*** Shared Bone Data ****************************************************************************
@@ -445,8 +445,8 @@ public:
 #endif
 	IC void				SetParentID		(u16 id){ParentID=id;}
 
-	IC u16		_BCL	GetSelfID		() const {return SelfID;}
-	IC u16		_BCL	GetParentID		() const {return ParentID;}
+	IC virtual u16		_BCL	GetSelfID		() const override {return SelfID;}
+	IC virtual u16		_BCL	GetParentID		() const override {return ParentID;}
 
 	// assign face
 	void				AppendFace		(u16 child_idx, u16 idx)
@@ -456,18 +456,18 @@ public:
 	// Calculation
 	void				CalculateM2B	(const Fmatrix& Parent);
 private:
-				IBoneData&		_BCL	GetChild			( u16 id )			;
-		const	IBoneData&		_BCL	GetChild			( u16 id )	const	;
-				u16				_BCL	GetNumChildren		( )			const	;
-		const	SJointIKData&	_BCL	get_IK_data			( )			const	{return	IK_data;}
-		const	Fmatrix&		_BCL	get_bind_transform	( )			const	{return	bind_transform;}
-		const	SBoneShape&		_BCL	get_shape			( )			const	{return shape;}
-		const	Fobb&			_BCL	get_obb				( )			const	{return obb;}
-		const	Fvector&		_BCL	get_center_of_mass	( )			const	{return center_of_mass;}
-				float			_BCL	get_mass			( )			const	{return mass;}
-				u16				_BCL	get_game_mtl_idx	( )			const	{return game_mtl_idx;}
-				float			_BCL	lo_limit			( u8 k )	const	{return IK_data.limits[k].limit.x;}
-				float			_BCL	hi_limit			( u8 k )	const	{return IK_data.limits[k].limit.y;}
+	virtual 		IBoneData&		_BCL	GetChild			( u16 id ) override;
+	virtual const	IBoneData&		_BCL	GetChild			( u16 id )	const override;
+	virtual 		u16				_BCL	GetNumChildren		( )			const override;
+	virtual const	SJointIKData&	_BCL	get_IK_data			( )			const override {return	IK_data;}
+	virtual const	Fmatrix&		_BCL	get_bind_transform	( )			const override {return	bind_transform;}
+	virtual const	SBoneShape&		_BCL	get_shape			( )			const override {return shape;}
+	virtual const	Fobb&			_BCL	get_obb				( )			const override {return obb;}
+	virtual const	Fvector&		_BCL	get_center_of_mass	( )			const override {return center_of_mass;}
+	virtual 		float			_BCL	get_mass			( )			const override {return mass;}
+	virtual 		u16				_BCL	get_game_mtl_idx	( )			const override {return game_mtl_idx;}
+	virtual 		float			_BCL	lo_limit			( u8 k )	const override {return IK_data.limits[k].limit.x;}
+	virtual 		float			_BCL	hi_limit			( u8 k )	const override {return IK_data.limits[k].limit.y;}
 public:
 	virtual u32			mem_usage		()
 	{

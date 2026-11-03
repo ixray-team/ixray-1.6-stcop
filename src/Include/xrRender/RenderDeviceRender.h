@@ -83,6 +83,19 @@ public:
 	virtual const FactoryPtr<IUIShader>& GetSVGDefaultShader() = 0;
 
 	virtual Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height, SVGTintRGBA tint = {}) = 0;
+
+	struct SVideoMemoryInfo
+	{
+		u64 Budget = 0;
+		u64 Usage = 0;
+		u64 RenderTargets = 0;
+		u64 ShadowMaps = 0;
+		u64 Textures = 0;
+		u32 RenderWidth = 0;
+		u32 RenderHeight = 0;
+	};
+
+	virtual bool GetVideoMemoryInfo(SVideoMemoryInfo& Info) { return false; }
 };
 
 #endif //	RenderDeviceRender_included

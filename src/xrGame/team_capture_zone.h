@@ -19,20 +19,20 @@ public:
 	typedef	CGameObject	inherited;
 
 	CTeamCaptureZone();
-	virtual			~CTeamCaptureZone();
-	virtual void	reinit();
-	virtual bool	net_Spawn(CSE_Abstract* DC);
-	virtual void	net_Destroy();
+	virtual ~CTeamCaptureZone() override;
+	virtual void	reinit() override;
+	virtual bool	net_Spawn(CSE_Abstract* DC) override;
+	virtual void	net_Destroy() override;
 
-	virtual void	Center(Fvector& C)	const;
-	virtual float	Radius() const;
+	virtual void	Center(Fvector& C)	const override;
+	virtual float	Radius() const override;
 
-	virtual void	shedule_Update(u32 dt);
+	virtual void	shedule_Update(u32 dt) override;
 	void			capture_Update(u32 dt);
 	void			update_Capture(u8 team);
-	virtual void	feel_touch_new(CObject* O);
-	virtual void	feel_touch_delete(CObject* O);
-	virtual bool	feel_touch_contact(CObject* O);
+	virtual void	feel_touch_new(CObject* O) override;
+	virtual void	feel_touch_delete(CObject* O) override;
+	virtual bool	feel_touch_contact(CObject* O) override;
 
 	virtual u8		GetZoneTeam() { return m_Team; };
 };

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
-#include "UI/UIEditLibrary.h"
 #include "Scene/LEPhysics.h"
 #include "../Viewports/ViewportMesh.h"
+#include "../ParticleEditor/UI_ParticleTools.h"
+#include "../ParticleEditor/UIParticleEditorForm.h"
 
 CLevelTool*	LTools=(CLevelTool*)Tools;
 
@@ -60,8 +61,58 @@ bool CLevelTool::OnCreate()
 	return true;
 }
 
+void CLevelTool::PlayCurrent(int idx)
+{
+	if (PTools != nullptr)
+	{
+		PTools->PlayCurrent(idx);
+	}
+}
+
+void CLevelTool::StopCurrent(bool bFinishPlaying)
+{
+	if (PTools != nullptr)
+	{
+		PTools->StopCurrent(bFinishPlaying);
+	}
+}
+
+void CLevelTool::SelectEffect(const char* name)
+{
+	if (PTools != nullptr)
+	{
+		PTools->SelectEffect(name);
+	}
+}
+
+void CLevelTool::RemoveAction(u32 idx, bool bForced)
+{
+	if (PTools != nullptr)
+	{
+		PTools->RemoveAction(idx, bForced);
+	}
+}
+
+void CLevelTool::SetCurrentPG(PS::CPGDef* P)
+{
+	if (PTools != nullptr)
+	{
+		PTools->SetCurrentPG(P);
+	}
+}
+
+void CLevelTool::EditPAC(PS::CPACDef* PAC)
+{
+	if (PTools != nullptr)
+	{
+		PTools->EditPAC(PAC);
+	}
+}
+
 void CLevelTool::OnDestroy()
 {
+	g_LevelAutoBackup.Cancel();
+	UIParticleEditorForm::Destroy();
 	inherited::OnDestroy();
 	xr_delete(m_Props);
 	xr_delete(m_WorldProps);
@@ -92,6 +143,12 @@ bool CLevelTool::MouseStart(TShiftState Shift)
 	if(CurrentTool && CurrentTool->pCurControl)
 	{
 		if ((CurrentTool->pCurControl->Action() != etaSelect) && (!CurrentTool->IsEditable() || !CurrentTool->AllowMouseStart() || (CurrentTool->FClassID == OBJCLASS_DUMMY)))
+		{
+			return false;
+		}
+
+		// The level backup is writing this tool: selecting only
+		if ((CurrentTool->pCurControl->Action() != etaSelect) && g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 		{
 			return false;
 		}
@@ -151,7 +208,7 @@ bool CLevelTool::HiddenMode()
 
 bool CLevelTool::KeyDown(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyDown(Key, Shift);
 	}
@@ -161,7 +218,7 @@ bool CLevelTool::KeyDown(WORD Key, TShiftState Shift)
 
 bool CLevelTool::KeyUp(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyUp(Key, Shift);
 	}
@@ -171,7 +228,7 @@ bool CLevelTool::KeyUp(WORD Key, TShiftState Shift)
 
 bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->KeyPress(Key, Shift);
 	}
@@ -181,7 +238,7 @@ bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
 
 bool CLevelTool::MouseWheel(int direction, TShiftState Shift)
 {
-	if (CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl && !g_LevelAutoBackup.IsToolLocked(CurrentTool->FClassID))
 	{
 		return CurrentTool->pCurControl->Wheel(direction, Shift);
 	}
@@ -421,6 +478,7 @@ const char* CLevelTool::GetInfo()
 void CLevelTool::OnFrame()
 {
 	Scene->OnFrame(EDevice->fTimeDelta);
+	UIParticleEditorForm::Update();
 	EEditorState est = EContext.UI->GetEState();
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
 	{
@@ -494,10 +552,6 @@ void CLevelTool::Render()
 	// draw scene
 	switch(est)
 	{
-		case esEditLibrary:
-			UIEditLibrary::OnRender(); 
-			break;
-
 		case esEditLightAnim:
 		case esEditScene:
 			Scene->Render(EContext.UI->CurrentView().m_Camera.GetTransform());
@@ -539,6 +593,15 @@ CDetailManager* CLevelTool::GetSceneDetails()
 	return DetailTool && DetailTool->IsObjectsDrawn() ? DetailTool : nullptr;
 }
 
+void CLevelTool::PrepareScene()
+{
+	EEditorState est = EContext.UI->GetEState();
+	if (est == esEditScene || est == esEditLightAnim)
+	{
+		Scene->PrepareSubmit();
+	}
+}
+
 void CLevelTool::SubmitShadowCasters()
 {
 	EEditorState est = EContext.UI->GetEState();
@@ -574,6 +637,13 @@ u32 CLevelTool::CollectEditorLights(EditorLightDescriptor* Out, u32 Capacity)
 		}
 
 		if (Light->m_Type != ELight::ltPoint && Light->m_Type != ELight::ltSpot)
+		{
+			continue;
+		}
+
+		// $hemi lights only emulate hemisphere lighting for the lightmap builder
+		const char* ControlName = Light->GetLControlName();
+		if (ControlName && 0 == xr_strcmp(ControlName, LCONTROL_HEMI))
 		{
 			continue;
 		}

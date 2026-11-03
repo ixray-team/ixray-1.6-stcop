@@ -53,8 +53,6 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 	xr_free(pImagePixels);
 }
 
-static HFILE gFileOut;
-
 void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::array<xr_vector<u8>, 6>& faces)
 {
 	int S = W / 4;
@@ -82,7 +80,7 @@ void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::
 int DXTCompressImageNVTT(const char* out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
 	R_ASSERT(0 != w && 0 != h);
-	gFileOut = _open(out_name, _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IWRITE);
+	auto gFileOut = _open(out_name, _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IWRITE);
 	if (gFileOut == -1)
 	{
 		fprintf(stderr, "Can't open output file %s\n", out_name);

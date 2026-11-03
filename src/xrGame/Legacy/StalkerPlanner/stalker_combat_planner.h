@@ -35,13 +35,13 @@ public:
 
 public:
 						CStalkerCombatPlanner		(CAI_Stalker *object = 0, const char* action_name = "");
-	virtual				~CStalkerCombatPlanner		();
-	virtual	void		setup						(CAI_Stalker *object, CPropertyStorage *storage);
-	virtual void		update						();
-	virtual void		initialize					();
-	virtual void		execute						();
-	virtual void		finalize					();
-	virtual	void		save						(NET_Packet &packet);
-	virtual	void		load						(IReader &packet);
+	virtual ~CStalkerCombatPlanner		() override;
+	virtual void		setup						(CAI_Stalker *object, CPropertyStorage *storage) override;
+	virtual void		update						() override;
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+	virtual void		finalize					() override;
+	virtual void		save						(NET_Packet &packet) override;
+	virtual void		load						(IReader &packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 };

@@ -19,8 +19,8 @@ private:
 	friend CRocketLauncher;
 public:
 	CExplosiveRocket() = default;
-	virtual ~CExplosiveRocket() = default;
-	virtual DLL_Pure* _construct();
+	virtual ~CExplosiveRocket() override = default;
+	virtual DLL_Pure* _construct() override;
 
 public:
 	virtual CExplosive* cast_explosive() override { return this; }
@@ -36,11 +36,10 @@ public:
 	virtual void on_activate_physic_shell() override;
 
 public:
-
 	virtual void Load(const char* section) override;
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
-	virtual	void net_Relcase(CObject* O) override;
+	virtual void net_Relcase(CObject* O) override;
 	virtual void OnH_A_Independent() override;
 	virtual void OnH_B_Independent(bool just_before_destroy) override;
 	virtual void UpdateCL() override;
@@ -49,7 +48,7 @@ public:
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
 
-	virtual	void Hit(SHit* pHDS) override
+	virtual void Hit(SHit* pHDS) override
 	{
 		inherited::Hit(pHDS);
 	};

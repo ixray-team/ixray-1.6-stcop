@@ -18,9 +18,9 @@ private:
 
 public:
 	IC						CServerEntityWrapper	(CSE_Abstract *object = 0);
-	virtual					~CServerEntityWrapper	();	
-	virtual	void			save					(IWriter &stream);
-	virtual	void			load					(IReader &stream);
+	virtual ~CServerEntityWrapper	() override;
+	virtual void			save					(IWriter &stream) override;
+	virtual void			load					(IReader &stream) override;
 			void			save_update				(IWriter &stream);
 			void			load_update				(IReader &stream);
 	void serialize_update(ISaveObject& Object);

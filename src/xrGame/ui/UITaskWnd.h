@@ -87,17 +87,17 @@ public:
 
 public:
 								CUITaskWnd				();
-	virtual						~CUITaskWnd				();
-	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData);
+	virtual ~CUITaskWnd				() override;
+	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData) override;
 			void				Init					();
-	virtual void				Update					();
-	virtual void				Draw					();
+	virtual void				Update					() override;
+	virtual void				Draw					() override;
 			void				DrawHint				();
-	virtual void				Show					(bool status);
-	virtual void				Reset					();
-	virtual bool				OnMouseAction			(float x, float y, EUIMessages mouse_action);
-	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
-	virtual bool				OnGamepadKeyHold		(int id);
+	virtual void				Show					(bool status) override;
+	virtual void				Reset					() override;
+	virtual bool				OnMouseAction			(float x, float y, EUIMessages mouse_action) override;
+	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action) override;
+	virtual bool				OnGamepadKeyHold		(int id) override;
 
 			void				ReloadTaskInfo			();
 			void				ShowMapLegend			(bool status);
@@ -132,7 +132,7 @@ public:
 			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			void				FocusPrimaryTaskOnMap	();
 
-			virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 protected:
 	CPdaUiSounds*				m_pUiSounds = nullptr;
@@ -178,20 +178,20 @@ private:
 	CGameTask*											m_owner;
 public:
 								CUITaskItem				();
-	virtual						~CUITaskItem			() = default;
+	virtual ~CUITaskItem			() override = default;
 
-	virtual void 				OnFocusReceive			();
-	virtual void	 			OnFocusLost				();
-	virtual void				Update					();
-	virtual void				OnMouseScroll			(float iDirection);
-	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action);
-	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData);
+	virtual void 				OnFocusReceive			() override;
+	virtual void	 			OnFocusLost				() override;
+	virtual void				Update					() override;
+	virtual void				OnMouseScroll			(float iDirection) override;
+	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action) override;
+	virtual void				SendMessage				(CUIWindow* pWnd, s16 msg, void* pData) override;
 
 	void						Init					(CUIXml& uiXml, const char* path);
 	void						InitTask				(CGameTask* task);
 	CGameTask*					OwnerTask				()							{return m_owner;}
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow* ui_cast_window() override { return this; }
 
 public:
 	bool						show_hint_can;

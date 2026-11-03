@@ -9,8 +9,8 @@ class	CStateBurerAttackMelee : public CStateMonsterAttack<_Object> {
 
 public:
 						CStateBurerAttackMelee			(_Object *obj);
-	virtual	bool		check_start_conditions			();
-	virtual	bool		check_completion				();
+	virtual bool		check_start_conditions			() override;
+	virtual bool		check_completion				() override;
 };
 
 #include "burer_state_attack_melee_inline.h"
