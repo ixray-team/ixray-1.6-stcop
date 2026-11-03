@@ -53,6 +53,11 @@ void CPHShell::PhTune(float Step)
 	{
 		Element->PhTune(Step);
 	}
+
+	for (CPHJoint* Joint : JointsList)
+	{
+		Joint->PhTune(Step);
+	}
 }
 
 void CPHShell::PhDataUpdate(float Step)
@@ -1485,6 +1490,7 @@ void CPHJoint::SetJointSDfactors(float spring_factor, float damping_factor)
 	Spring = spring_factor;
 	Damping = damping_factor;
 	UpdateMotor();
+	ApplyConstraintTuning();
 }
 
 void CPHJoint::GetAxisSDfactors(float& spring_factor, float& damping_factor, int axis_num)

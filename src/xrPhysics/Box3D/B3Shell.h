@@ -366,6 +366,16 @@ class CPHJoint : public CPhysicsJoint, public cphysics_scripted
 	float Spring = 1.f;
 	float Damping = 1.f;
 	b3JointId Joint = b3_nullJointId;
+	// Hinge2 steering is a spring to an angle in Box3D, while ODE drives the axis with a
+	// velocity motor. The target angle is advanced here at Axes[0].Velocity, so the
+	// authored steering_speed is kept and the spring only tracks it.
+	float SteerTarget = 0.f;
+	// The axis that carries the spherical twist limit; chosen once, when the native
+	// joint is built (the frame direction depends on it).
+	u8 FullControlTwist = 0;
+	// A full_control joint with one dominant axis is built as a revolute joint: a hinge
+	// is well conditioned, while the spherical swing limits degenerate near the rest pose.
+	bool FullControlAsHinge = false;
 	// First element had no body and the joint hangs on the ground body (ODE body_for_joint(first) == 0).
 	bool FirstIsGround = false;
 	bool FirstIsReversed() const;
@@ -378,6 +388,21 @@ class CPHJoint : public CPhysicsJoint, public cphysics_scripted
 	void DestroyNative();
 	void UpdateMotor();
 	void UpdateLimits();
+
+	// The three Euler axes of a full_control joint: 0 and 2 are explicit, 1 is their
+	// cross product, exactly as the ODE AMotor computes it.
+	void FullControlAxes(Fvector Dir[3]) const;
+	// The axis with the widest allowed range carries the twist limit: it is the main
+	// bend of the joint, and the twist keeps its asymmetric limits exactly.
+	u32 FullControlTwistAxis() const;
+	// The cone for the rest of the axes, or a negative value when they are all free.
+	float FullControlCone(u32 TwistAxis) const;
+	// True when the joint moves almost only about one axis, so a hinge can be used.
+	bool FullControlIsHinge() const;
+	// The default damping torque of a ragdoll joint (the ODE velocity motor).
+	float DefaultJointDamping() const;
+	// Applies the authored joint spring/damping to the native constraint stiffness.
+	void ApplyConstraintTuning();
 
 public:
 	CPHShell* OwnerShell = nullptr;
@@ -411,6 +436,8 @@ public:
 	virtual void Create() override;
 	virtual void RunSimulation() override {}
 	virtual void Deactivate() override;
+	// Per-step update driven by the owning shell (the hinge2 steering rate).
+	void PhTune(float Step);
 	virtual void SetBackRef(CPhysicsJoint** j) override
 	{
 		BackRef = j;
