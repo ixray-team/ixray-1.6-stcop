@@ -16,6 +16,8 @@
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../xrEngine/pure.h"
 #include "../../xrEngine/Render.h"
+#include "../../xrEngine/CameraManager.h"
+#include "../../xrEngine/Effector.h"
 #include "../../xrEngine/ImGuiManager.h"
 #include "../../xrEngine/ParticleAnimCurveInterface.h"
 #include "../../xrEngine/Fmesh.h"
@@ -120,6 +122,7 @@ struct SNpcPreset
 struct SMasterClip
 {
 	s32 Track = 0;
+	bool Muted = false;
 	shared_str Source;
 	shared_str Name;
 	float Start = 0.0f;
@@ -146,6 +149,135 @@ static constexpr float CinemaMasterClipTime(float sourceIn, float speed, float s
 static_assert(CinemaMasterClipTime(1.0f, 2.0f, 2.0f) == 0.5f);
 static_assert(CinemaMasterClipTime(0.5f, 0.5f, 1.0f) == 1.0f);
 
+struct SCinemaCameraKey
+{
+	float Time = 0.0f;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix Orientation = Fmatrix().identity();
+};
+
+struct SCinemaCameraClip
+{
+	s32 Track = 0;
+	bool Muted = false;
+	float Start = 0.0f;
+	float Duration = 1.0f;
+	float SourceDuration = 1.0f;
+	bool Stretch = true;
+	bool Smooth = true;
+	xr_vector<SCinemaCameraKey> Keys;
+};
+
+template <typename T>
+static bool CinemaMasterClipEnabled(const T& clip, const bool* mutedTracks)
+{
+	return !clip.Muted && clip.Track >= 0 && clip.Track < 32 && !mutedTracks[clip.Track];
+}
+
+static Fvector CinemaCameraPosition(bool smooth, const SCinemaCameraKey& previous, const SCinemaCameraKey& before, const SCinemaCameraKey& after, const SCinemaCameraKey& next, float blend)
+{
+	Fvector position;
+	position.lerp(before.Position, after.Position, blend);
+	if (!smooth || &before == &after) return position;
+	const float duration = after.Time - before.Time;
+	const float firstSpan = after.Time - previous.Time;
+	const float lastSpan = next.Time - before.Time;
+	if (duration <= 0.0f || firstSpan <= 0.0f || lastSpan <= 0.0f) return position;
+	const float t2 = blend * blend;
+	const float t3 = t2 * blend;
+	const float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+	const float h10 = t3 - 2.0f * t2 + blend;
+	const float h01 = -2.0f * t3 + 3.0f * t2;
+	const float h11 = t3 - t2;
+	const auto spline = [&](float a, float b, float c, float d)
+	{
+		return h00 * b + h10 * duration * (c - a) / firstSpan + h01 * c + h11 * duration * (d - b) / lastSpan;
+	};
+	position.set(spline(previous.Position.x, before.Position.x, after.Position.x, next.Position.x), spline(previous.Position.y, before.Position.y, after.Position.y, next.Position.y), spline(previous.Position.z, before.Position.z, after.Position.z, next.Position.z));
+	return position;
+}
+
+static Fquaternion CinemaCameraRotationTangent(const Fquaternion& center, const Fquaternion& other)
+{
+	Fquaternion aligned = other;
+	if (center.x * aligned.x + center.y * aligned.y + center.z * aligned.z + center.w * aligned.w < 0.0f)
+	{
+		aligned.x = -aligned.x; aligned.y = -aligned.y; aligned.z = -aligned.z; aligned.w = -aligned.w;
+	}
+	Fquaternion inverse = center;
+	inverse.x = -inverse.x; inverse.y = -inverse.y; inverse.z = -inverse.z;
+	const Fquaternion relative = Fquaternion().mul(inverse, aligned);
+	const float length = std::sqrt(relative.x * relative.x + relative.y * relative.y + relative.z * relative.z);
+	const float scale = length > EPS_S ? std::atan2(length, relative.w) / length : 0.0f;
+	return Fquaternion().set(0.0f, relative.x * scale, relative.y * scale, relative.z * scale);
+}
+
+static Fquaternion CinemaCameraRotationExp(const Fquaternion& tangent)
+{
+	const float angle = std::sqrt(tangent.x * tangent.x + tangent.y * tangent.y + tangent.z * tangent.z);
+	if (angle < EPS_S) return Fquaternion().identity();
+	Fvector axis = Fvector().set(tangent.x / angle, tangent.y / angle, tangent.z / angle);
+	return Fquaternion().rotation(axis, 2.0f * angle);
+}
+
+static Fquaternion CinemaCameraRotation(bool smooth, const SCinemaCameraKey& previous, const SCinemaCameraKey& before, const SCinemaCameraKey& after, const SCinemaCameraKey& next, float blend)
+{
+	const Fquaternion q0 = Fquaternion().set(before.Orientation).normalize();
+	const Fquaternion q1 = Fquaternion().set(after.Orientation).normalize();
+	const float duration = after.Time - before.Time;
+	const float firstSpan = after.Time - previous.Time;
+	const float lastSpan = next.Time - before.Time;
+	if (!smooth || duration <= 0.0f || firstSpan <= 0.0f || lastSpan <= 0.0f)
+	{
+		return Fquaternion().slerp(q0, q1, blend).normalize();
+	}
+	const Fquaternion qPrevious = Fquaternion().set(previous.Orientation).normalize();
+	const Fquaternion qNext = Fquaternion().set(next.Orientation).normalize();
+	const Fquaternion p0 = CinemaCameraRotationTangent(q0, qPrevious);
+	const Fquaternion p1 = CinemaCameraRotationTangent(q0, q1);
+	const Fquaternion p2 = CinemaCameraRotationTangent(q1, q0);
+	const Fquaternion p3 = CinemaCameraRotationTangent(q1, qNext);
+	Fquaternion tangent0, tangent1;
+	const float scale0 = duration / (3.0f * firstSpan);
+	const float scale1 = -duration / (3.0f * lastSpan);
+	tangent0.set(0.0f, (p1.x - p0.x) * scale0, (p1.y - p0.y) * scale0, (p1.z - p0.z) * scale0);
+	tangent1.set(0.0f, (p3.x - p2.x) * scale1, (p3.y - p2.y) * scale1, (p3.z - p2.z) * scale1);
+	const Fquaternion control0 = Fquaternion().mul(q0, CinemaCameraRotationExp(tangent0));
+	const Fquaternion control1 = Fquaternion().mul(q1, CinemaCameraRotationExp(tangent1));
+	const Fquaternion a = Fquaternion().slerp(q0, control0, blend).normalize();
+	const Fquaternion b = Fquaternion().slerp(control0, control1, blend).normalize();
+	const Fquaternion c = Fquaternion().slerp(control1, q1, blend).normalize();
+	const Fquaternion d = Fquaternion().slerp(a, b, blend).normalize();
+	const Fquaternion e = Fquaternion().slerp(b, c, blend).normalize();
+	return Fquaternion().slerp(d, e, blend).normalize();
+}
+
+struct SCinemaCameraState
+{
+	bool Active = true;
+	bool Attached = true;
+	bool DemoType = false;
+	Fvector Position = Fvector().set(0.0f, 0.0f, 0.0f);
+	Fmatrix Orientation = Fmatrix().identity();
+};
+
+class CCinemaCameraEffector final : public CEffectorCam
+{
+	xr_shared_ptr<SCinemaCameraState> State;
+public:
+	CCinemaCameraEffector(ECamEffectorType type, xr_shared_ptr<SCinemaCameraState> state) : CEffectorCam(type, FLT_MAX), State(std::move(state)) {}
+	~CCinemaCameraEffector() override { State->Attached = false; }
+	bool AbsolutePositioning() override { return true; }
+	bool ProcessCam(SCamEffectorInfo& info) override
+	{
+		if (!State->Active) return false;
+		info.p = State->Position;
+		info.d = State->Orientation.k;
+		info.n = State->Orientation.j;
+		return true;
+	}
+};
+
 struct SMasterPlaylistSlice
 {
 	const SAnimationSource* Source = nullptr;
@@ -164,6 +296,14 @@ struct SMasterClipSelection
 	s32 Clip = -1;
 
 	bool operator==(const SMasterClipSelection&) const = default;
+};
+
+struct SMasterClipProperties
+{
+	float* Start = nullptr;
+	float* Duration = nullptr;
+	s32* Track = nullptr;
+	bool* Muted = nullptr;
 };
 
 struct SMasterGizmoSnapshot
@@ -262,6 +402,7 @@ static_assert(CinemaLightChannelDefault(14) == 1.0f);
 struct SMasterLightClip
 {
 	s32 Track = 0;
+	bool Muted = false;
 	float Start = 0.0f;
 	float Duration = 1.0f;
 	float StartIntensity = 1.0f;
@@ -444,6 +585,7 @@ static_assert(!CinemaSelectionInRange(0, 3, 1));
 struct SMasterParticleClip
 {
 	s32 Track = 0;
+	bool Muted = false;
 	float Start = 0.0f;
 	float Duration = 1.0f;
 };
@@ -2580,13 +2722,18 @@ public:
 	float MasterClipStart() const;
 	s32 FindAvailableMasterTrack(float start, float duration) const;
 	void UpdatePatternSettingsSelection(s32 type, size_t previousCount);
+	void UpdateMasterCamera();
+	void ResetMasterTimeline();
 	void UpdateMasterActors();
 	float BuildMasterPlaylist(SCinemaActor& actor, xr_vector<SMasterPlaylistSlice>& slices);
 	void UpdateMasterActorTransforms();
 	void UpdateMasterLightTransforms();
 	void UpdateMasterLights();
 	void UpdateMasterGroups();
+	SMasterClipProperties MasterClipProperties(const SMasterClipSelection& item);
 	void MoveMasterClips(float delta);
+	void ResizeMasterClips(float delta);
+	void MoveMasterClipTracks(const SMasterClipSelection& anchor, s32 track);
 	void UpdateMasterParticles();
 	void UpdateMasterParticleTransforms();
 	void FireMasterShots(float from, float to, bool includeStart);
@@ -2769,6 +2916,16 @@ private:
 	EGizmoMode GizmoMode = EGizmoMode::Translate;
 	EGizmoAxis HoveredAxis = EGizmoAxis::None;
 	SGizmoDrag Gizmo;
+	xr_shared_ptr<SCinemaCameraState> CameraState;
+	xr_vector<SCinemaCameraClip> Cameras;
+	xr_vector<SCinemaCameraClip> SceneCameras;
+	s32 SelectedCameraKey = -1;
+	s32 CameraTimelineDragKey = -1;
+	s32 CameraTimelineContextKey = -1;
+	s32 CameraTimelineContextCamera = -1;
+	float CameraTimelineDragRange = 0.0f;
+	bool CameraPreview = false;
+	bool MasterCameraScrubPreview = false;
 	xr_vector<SSceneActorData> SceneData;
 	xr_vector<xr_string> SceneDialogLines;
 	xr_vector<xr_string> SceneList;
@@ -2783,7 +2940,10 @@ private:
 	bool MasterPatternEditorOpen = false;
 	SMasterClipSelection MasterEditingPattern;
 	bool MasterPlaying = false;
+	bool HideHelpersDuringPlayback = true;
 	bool MasterActive = false;
+	bool MasterTrackMuted[32] = {};
+	bool LoadedTrackMuted[32] = {};
 	bool MasterIncludeStart = true;
 	bool MasterParticleSeek = false;
 	xr_vector<SMasterClipSelection> MasterClipSelection;
@@ -2815,14 +2975,20 @@ private:
 	float MasterTime = 0.0f;
 	float MasterDuration = 20.0f;
 	float MasterZoom = 1.0f;
+	float MasterSidebarWidth = 0.0f;
 	bool MasterSnap = false;
 	bool MasterDragMoved = false;
+	bool MasterGroupResize = false;
+	SMasterClipSelection MasterGroupResizeAnchor;
 	float MasterDragTarget = 0.0f;
 	bool MasterDuplicateDrag = false;
 	bool MasterDuplicateMoved = false;
 	SMasterClipSelection MasterDuplicateTarget;
+	float MasterContextStart = 0.0f;
+	s32 MasterContextTrack = 0;
 	bool MasterPanCandidate = false;
 	bool MasterPanDragged = false;
+	bool MasterMiddlePan = false;
 	bool MasterShiftClickPending = false;
 	bool MasterSingleClickPending = false;
 	SMasterClipSelection MasterSingleClickItem;
@@ -2857,10 +3023,14 @@ CCinemaFilmMakerManager* g_CinemaFilmMaker = nullptr;
 
 void CCinemaFilmMakerManager::Shutdown()
 {
+	if (CameraState) CameraState->Active = false;
+	CameraState.reset();
 	ClearGizmo();
 	ClearActors();
 	ClearParticles();
 	ClearLights();
+	Cameras.clear();
+	SceneCameras.clear();
 	SceneLights.clear();
 	SceneLightGroups.clear();
 	SceneParticles.clear();
@@ -2946,6 +3116,7 @@ void CCinemaFilmMakerManager::LoadSettings()
 	SpawnFromCamera = ini.read_if_exists<bool>("editor", "spawn_from_camera", SpawnFromCamera);
 	TimelinesOpenByDefault = ini.read_if_exists<bool>("editor", "timelines_open", TimelinesOpenByDefault);
 	MasterSnap = ini.read_if_exists<bool>("editor", "master_snap", MasterSnap);
+	HideHelpersDuringPlayback = ini.read_if_exists<bool>("editor", "hide_helpers_during_playback", HideHelpersDuringPlayback);
 	const float gridStep = ini.read_if_exists<float>("editor", "master_snap_step", MasterSnapStep);
 	if (std::isfinite(gridStep) && gridStep >= 0.001f && gridStep <= 60.0f)
 	{
@@ -2997,6 +3168,7 @@ void CCinemaFilmMakerManager::SaveSettings()
 	ini.w_bool("editor", "spawn_from_camera", SpawnFromCamera);
 	ini.w_bool("editor", "timelines_open", TimelinesOpenByDefault);
 	ini.w_bool("editor", "master_snap", MasterSnap);
+	ini.w_bool("editor", "hide_helpers_during_playback", HideHelpersDuringPlayback);
 	ini.w_float("editor", "master_snap_step", MasterSnapStep);
 
 	for (u32 index = 0; index < static_cast<u32>(ExtraAnimationPaths.size()); ++index)
@@ -3045,6 +3217,7 @@ void CCinemaFilmMakerManager::ClearActors()
 	MasterPatternEditorOpen = false;
 	MasterDuplicateDrag = false;
 	MasterDuplicateMoved = false;
+	MasterGroupResize = false;
 	MasterBoxSelecting = false;
 	MasterBoxBaseSelection.clear();
 	MasterClipSelection.clear();
@@ -3322,16 +3495,27 @@ void CCinemaFilmMakerManager::OnFrame()
 	{
 		MasterDuplicateDrag = false;
 		MasterDuplicateMoved = false;
+		MasterGroupResize = false;
+		MasterMiddlePan = false;
+		MasterCameraScrubPreview = false;
+		CameraPreview = false;
 		MasterBoxSelecting = false;
 		MasterBoxBaseSelection.clear();
 	}
 
 	if (Level != g_pGameLevel || (Level != nullptr && LevelWasReady && !Level->bReady))
 	{
+		if (CameraState) CameraState->Active = false;
+		CameraState.reset();
 		ClearGizmo();
 		ClearActors();
 		ClearParticles();
 		ClearLights();
+		Cameras.clear();
+		SceneCameras.clear();
+		SelectedCameraKey = -1;
+		CameraPreview = false;
+		MasterCameraScrubPreview = false;
 		SceneLights.clear();
 		SceneLightGroups.clear();
 		SceneParticles.clear();
@@ -3347,6 +3531,9 @@ void CCinemaFilmMakerManager::OnFrame()
 		MasterPlaying = false;
 		MasterActive = false;
 		MasterIncludeStart = true;
+		MasterParticleSeek = false;
+		std::fill(std::begin(MasterTrackMuted), std::end(MasterTrackMuted), false);
+		std::fill(std::begin(LoadedTrackMuted), std::end(LoadedTrackMuted), false);
 		MasterSelectedActor = -1;
 		MasterSelectedClip = -1;
 		MasterSelectedLight = -1;
@@ -3377,6 +3564,7 @@ void CCinemaFilmMakerManager::OnFrame()
 		return;
 	}
 	LevelWasReady = Level->bReady;
+	if (LevelWasReady) MasterActive = true;
 
 	if (MasterPlaying && Level->bReady && std::isfinite(Device.fTimeDelta))
 	{
@@ -3413,6 +3601,8 @@ void CCinemaFilmMakerManager::OnFrame()
 				else
 				{
 					MasterPlaying = false;
+					MasterCameraScrubPreview = false;
+					CameraPreview = false;
 				}
 			}
 			else if (step <= 0.0f)
@@ -3453,7 +3643,7 @@ void CCinemaFilmMakerManager::OnFrame()
 		{
 			const bool active = std::any_of(actor->MasterClips.begin(), actor->MasterClips.end(), [&](const SMasterClip& clip)
 			{
-				return MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
+				return CinemaMasterClipEnabled(clip, MasterTrackMuted) && MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
 			});
 			if (active)
 			{
@@ -3546,6 +3736,100 @@ void CCinemaFilmMakerManager::OnFrame()
 			UpdateParticleTransform(particle);
 			particle.Object->Play(false);
 		}
+	}
+	UpdateMasterCamera();
+}
+
+static xr_vector<bool> CinemaCameraConflicts(const xr_vector<SCinemaCameraClip>& cameras, const bool* mutedTracks)
+{
+	xr_vector<s32> order;
+	order.reserve(cameras.size());
+	for (s32 i = 0; i < static_cast<s32>(cameras.size()); ++i)
+	{
+		if (CinemaMasterClipEnabled(cameras[i], mutedTracks)) order.push_back(i);
+	}
+	std::sort(order.begin(), order.end(), [&](s32 a, s32 b)
+	{
+		if (cameras[a].Start != cameras[b].Start) return cameras[a].Start < cameras[b].Start;
+		if (cameras[a].Track != cameras[b].Track) return cameras[a].Track < cameras[b].Track;
+		return a < b;
+	});
+	xr_vector<bool> conflicts(cameras.size(), false);
+	float acceptedEnd = 0.0f;
+	for (s32 index : order)
+	{
+		if (cameras[index].Start < acceptedEnd) conflicts[index] = true;
+		else acceptedEnd = cameras[index].Start + cameras[index].Duration;
+	}
+	return conflicts;
+}
+
+void CCinemaFilmMakerManager::UpdateMasterCamera()
+{
+	const SCinemaCameraClip* active = nullptr;
+	const bool editingCamera = MasterPatternEditorOpen && MasterEditingPattern.Type == 4;
+	const bool cameraViewRequested = MasterPlaying || (editingCamera ? CameraPreview : MasterCameraScrubPreview);
+	if (MasterActive && Level && Level->bReady && cameraViewRequested)
+	{
+		const xr_vector<bool> conflicts = CinemaCameraConflicts(Cameras, MasterTrackMuted);
+		for (s32 i = 0; i < static_cast<s32>(Cameras.size()); ++i)
+		{
+			const auto& camera = Cameras[i];
+			if (CinemaMasterClipEnabled(camera, MasterTrackMuted) && !camera.Keys.empty() && !conflicts[i] && MasterTime >= camera.Start && MasterTime < camera.Start + camera.Duration)
+			{
+				active = &camera;
+				break;
+			}
+		}
+	}
+	if (!active)
+	{
+		if (CameraState) CameraState->Active = false;
+		CameraState.reset();
+		return;
+	}
+	float time = MasterTime - active->Start;
+	if (active->Stretch) time *= active->SourceDuration / active->Duration;
+	const SCinemaCameraKey* before = nullptr;
+	const SCinemaCameraKey* after = nullptr;
+	for (const auto& key : active->Keys)
+	{
+		if (key.Time <= time && (!before || key.Time > before->Time)) before = &key;
+		if (key.Time >= time && (!after || key.Time < after->Time)) after = &key;
+	}
+	if (!before) before = after;
+	if (!after) after = before;
+	if (!before || !after) return;
+	float blend = before == after || after->Time <= before->Time ? 0.0f : std::clamp((time - before->Time) / (after->Time - before->Time), 0.0f, 1.0f);
+	if (CameraState && (!CameraState->Attached || (!CameraState->DemoType && !g_pGameLevel->Cameras().GetCamEffector(cefDemo))))
+	{
+		CameraState->Active = false;
+		CameraState.reset();
+	}
+	bool initializeCamera = false;
+	if (!CameraState)
+	{
+		CameraState = xr_make_shared<SCinemaCameraState>();
+		CameraState->DemoType = g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr;
+		const ECamEffectorType type = CameraState->DemoType ? cefDemo : g_pGameLevel->Cameras().RequestCamEffectorId();
+		g_pGameLevel->Cameras().AddCamEffector(new CCinemaCameraEffector(type, CameraState));
+		initializeCamera = CameraState->DemoType;
+	}
+	const SCinemaCameraKey* previous = before;
+	const SCinemaCameraKey* next = after;
+	if (active->Smooth && before != after)
+	{
+		for (const auto& key : active->Keys)
+		{
+			if (key.Time < before->Time && (previous == before || key.Time > previous->Time)) previous = &key;
+			if (key.Time > after->Time && (next == after || key.Time < next->Time)) next = &key;
+		}
+	}
+	CameraState->Position = CinemaCameraPosition(active->Smooth, *previous, *before, *after, *next, blend);
+	CameraState->Orientation.rotation(CinemaCameraRotation(active->Smooth, *previous, *before, *after, *next, blend));
+	if (initializeCamera && g_actor && g_actor->cam_Active())
+	{
+		g_pGameLevel->Cameras().UpdateFromCamera(g_actor->cam_Active());
 	}
 }
 
@@ -3967,7 +4251,7 @@ void CCinemaFilmMakerManager::StartParticleSpawnPreview(SCinemaParticle& particl
 {
 	if (MasterPlaying || particle.PatternPreview || !std::any_of(particle.MasterClips.begin(), particle.MasterClips.end(), [&](const SMasterParticleClip& clip)
 	{
-		return MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
+		return CinemaMasterClipEnabled(clip, MasterTrackMuted) && MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
 	}))
 	{
 		return;
@@ -3980,6 +4264,25 @@ void CCinemaFilmMakerManager::StartParticleSpawnPreview(SCinemaParticle& particl
 	particle.Object->Stop(false);
 	UpdateParticleTransform(particle);
 	particle.Object->Play(false);
+}
+
+void CCinemaFilmMakerManager::ResetMasterTimeline()
+{
+	StopPatternPreviews();
+	MasterPlaying = false;
+	MasterActive = true;
+	MasterCameraScrubPreview = false;
+	CameraPreview = false;
+	MasterIncludeStart = true;
+	MasterParticleSeek = true;
+	MasterTime = 0.0f;
+	for (SCinemaParticle& particle : Particles)
+	{
+		if (particle.PatternOwned && particle.MasterTrack)
+		{
+			StartParticleSpawnPreview(particle);
+		}
+	}
 }
 
 void CCinemaFilmMakerManager::PreviewParticle(const shared_str& name)
@@ -4011,7 +4314,7 @@ void CCinemaFilmMakerManager::PreviewParticle(const shared_str& name)
 		}
 		const bool activeClip = MasterActive && particle.MasterTrack && std::any_of(particle.MasterClips.begin(), particle.MasterClips.end(), [&](const SMasterParticleClip& clip)
 		{
-			return MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
+			return CinemaMasterClipEnabled(clip, MasterTrackMuted) && MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
 		});
 		if (MasterPlaying && activeClip)
 		{
@@ -5700,7 +6003,7 @@ void CCinemaFilmMakerManager::RequestSaveScene()
 
 	xr_vector<xr_string> lines;
 
-	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty() && Cameras.empty())
 	{
 		lines.push_back("The scene is empty: there is nothing to save.");
 	}
@@ -5800,7 +6103,7 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 		return;
 	}
 
-	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty())
+	if (Actors.empty() && Particles.empty() && Lights.empty() && LightGroups.empty() && Cameras.empty())
 	{
 		dialog.push_back("The scene is empty: there is nothing to save.");
 		ShowSceneDialog(ESceneDialog::Info, "Save scene", dialog);
@@ -5821,6 +6124,39 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 	ini.w_bool("scene", "master_loop_range", MasterUseLoopRange);
 	ini.w_float("scene", "master_loop_start", MasterLoopStart);
 	ini.w_float("scene", "master_loop_end", MasterLoopEnd);
+	for (u32 track = 0; track < 32; ++track)
+	{
+		string32 key = {};
+		xr_sprintf(key, "master_track_%02u_muted", track);
+		ini.w_bool("scene", key, MasterTrackMuted[track]);
+	}
+	ini.w_u32("scene", "cameras", static_cast<u32>(Cameras.size()));
+	for (u32 i = 0; i < Cameras.size(); ++i)
+	{
+		const SCinemaCameraClip& camera = Cameras[i];
+		string32 section = {};
+		xr_sprintf(section, "camera_%03u", i);
+		ini.w_float(section, "start", camera.Start);
+		ini.w_float(section, "duration", camera.Duration);
+		ini.w_float(section, "source_duration", camera.SourceDuration);
+		ini.w_s32(section, "track", camera.Track);
+		ini.w_bool(section, "muted", camera.Muted);
+		ini.w_bool(section, "stretch", camera.Stretch);
+		ini.w_bool(section, "smooth", camera.Smooth);
+		ini.w_u32(section, "keys", static_cast<u32>(camera.Keys.size()));
+		for (u32 j = 0; j < camera.Keys.size(); ++j)
+		{
+			string64 key = {};
+			xr_sprintf(key, "key_%03u_time", j);
+			ini.w_float(section, key, camera.Keys[j].Time);
+			xr_sprintf(key, "key_%03u_position", j);
+			ini.w_fvector3(section, key, camera.Keys[j].Position);
+			Fvector rotation;
+			camera.Keys[j].Orientation.getHPB(rotation);
+			xr_sprintf(key, "key_%03u_rotation", j);
+			ini.w_fvector3(section, key, rotation);
+		}
+	}
 	ini.w_u32("scene", "actors", static_cast<u32>(Actors.size()));
 	ini.w_u32("scene", "particles", static_cast<u32>(Particles.size()));
 	ini.w_u32("scene", "light_groups", static_cast<u32>(LightGroups.size()));
@@ -5871,6 +6207,8 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			ini.w_float(section, key, clip.Duration);
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			ini.w_s32(section, key, clip.Track);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			ini.w_bool(section, key, clip.Muted);
 			xr_sprintf(key, "master_clip_%03u_intensity_start", j);
 			ini.w_float(section, key, clip.StartIntensity);
 			xr_sprintf(key, "master_clip_%03u_intensity_end", j);
@@ -5974,6 +6312,8 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			ini.w_float(section, key, Particles[i].MasterClips[j].Duration);
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			ini.w_s32(section, key, Particles[i].MasterClips[j].Track);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			ini.w_bool(section, key, Particles[i].MasterClips[j].Muted);
 		}
 		ini.w_s32(section, "group", Particles[i].Group);
 		ini.w_fvector3(section, "position", Particles[i].MasterTransformOwned ? Particles[i].MasterSavedPosition : Particles[i].Position);
@@ -6062,6 +6402,8 @@ void CCinemaFilmMakerManager::SaveSceneFile(const char* name)
 			ini.w_float(section, key, clip.Duration);
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			ini.w_s32(section, key, clip.Track);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			ini.w_bool(section, key, clip.Muted);
 			xr_sprintf(key, "master_clip_%03u_source_in", j);
 			ini.w_float(section, key, clip.SourceIn);
 			xr_sprintf(key, "master_clip_%03u_source_out", j);
@@ -6256,6 +6598,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	xr_vector<xr_string> warnings;
 
 	SceneData.clear();
+	SceneCameras.clear();
 	SceneParticles.clear();
 	SceneLights.clear();
 	SceneLightGroups.clear();
@@ -6313,6 +6656,50 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		warnings.push_back("Invalid master loop range; using the full scene.");
 	}
 
+	for (u32 track = 0; track < 32; ++track)
+	{
+		string32 key = {};
+		xr_sprintf(key, "master_track_%02u_muted", track);
+		LoadedTrackMuted[track] = ini.read_if_exists<bool>("scene", key, false);
+	}
+	const u32 cameraCount = std::min(ini.read_if_exists<u32>("scene", "cameras", 0), kCinemaSceneMaxActors);
+	for (u32 i = 0; i < cameraCount; ++i)
+	{
+		string32 section = {};
+		xr_sprintf(section, "camera_%03u", i);
+		if (!ini.section_exist(section)) continue;
+		SCinemaCameraClip camera;
+		camera.Start = ini.read_if_exists<float>(section, "start", 0.0f);
+		camera.Duration = ini.read_if_exists<float>(section, "duration", 1.0f);
+		camera.SourceDuration = ini.read_if_exists<float>(section, "source_duration", camera.Duration);
+		camera.Track = ini.read_if_exists<s32>(section, "track", 0);
+		camera.Muted = ini.read_if_exists<bool>(section, "muted", false);
+		camera.Stretch = ini.read_if_exists<bool>(section, "stretch", true);
+		camera.Smooth = ini.read_if_exists<bool>(section, "smooth", true);
+		if (!std::isfinite(camera.Start) || camera.Start < 0.0f || camera.Start > 3600.0f || !std::isfinite(camera.Duration) || camera.Duration < 0.01f || camera.Duration > 3600.0f || !std::isfinite(camera.SourceDuration) || camera.SourceDuration < 0.01f || camera.SourceDuration > 3600.0f || camera.Track < 0 || camera.Track >= 32)
+		{
+			warnings.push_back("Invalid camera clip: skipped.");
+			continue;
+		}
+		const u32 keyCount = std::min(ini.read_if_exists<u32>(section, "keys", 0), 1024u);
+		for (u32 j = 0; j < keyCount; ++j)
+		{
+			string64 timeKey = {}, positionKey = {}, rotationKey = {};
+			xr_sprintf(timeKey, "key_%03u_time", j);
+			xr_sprintf(positionKey, "key_%03u_position", j);
+			xr_sprintf(rotationKey, "key_%03u_rotation", j);
+			if (!ini.line_exist(section, timeKey) || !ini.line_exist(section, positionKey) || !ini.line_exist(section, rotationKey)) continue;
+			SCinemaCameraKey key;
+			key.Time = ini.r_float(section, timeKey);
+			key.Position = ini.r_fvector3(section, positionKey);
+			const Fvector rotation = ini.r_fvector3(section, rotationKey);
+			if (!std::isfinite(key.Time) || key.Time < 0.0f || key.Time > 3600.0f || !_valid(key.Position) || !_valid(rotation)) continue;
+			key.Orientation.setHPB(rotation.x, rotation.y, rotation.z);
+			camera.Keys.push_back(key);
+		}
+		std::stable_sort(camera.Keys.begin(), camera.Keys.end(), [](const auto& a, const auto& b) { return a.Time < b.Time; });
+		SceneCameras.push_back(std::move(camera));
+	}
 	const shared_str fileLevel = CinemaReadString(ini, "scene", "level");
 	const shared_str filePlatform = CinemaReadString(ini, "scene", "platform");
 	const shared_str currentLevel = Level->name();
@@ -6383,6 +6770,8 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			clip.Duration = ini.line_exist(sect, key) ? ini.r_float(sect, key) : 0.0f;
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			clip.Track = std::clamp(ini.read_if_exists<s32>(sect, key, static_cast<s32>(SceneData.size() % 32)), 0, 31);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			clip.Muted = ini.read_if_exists<bool>(sect, key, false);
 			xr_sprintf(key, "master_clip_%03u_source_in", j);
 			clip.SourceIn = ini.read_if_exists<float>(sect, key, 0.0f);
 			xr_sprintf(key, "master_clip_%03u_source_out", j);
@@ -6683,6 +7072,8 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			clip.Duration = ini.read_if_exists<float>(section.Name.c_str(), key, 1.0f);
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			clip.Track = std::clamp(ini.read_if_exists<s32>(section.Name.c_str(), key, static_cast<s32>((SceneParticles.size() + 10) % 32)), 0, 31);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			clip.Muted = ini.read_if_exists<bool>(section.Name.c_str(), key, false);
 			if (std::isfinite(clip.Start) && clip.Start >= 0.0f && clip.Start <= 3600.0f && std::isfinite(clip.Duration) && clip.Duration >= 0.01f && clip.Duration <= 3600.0f)
 			{
 				particle.MasterClips.push_back(clip);
@@ -6890,6 +7281,8 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 			clip.Duration = ini.read_if_exists<float>(section, key, 1.0f);
 			xr_sprintf(key, "master_clip_%03u_track", j);
 			clip.Track = std::clamp(ini.read_if_exists<s32>(section, key, static_cast<s32>((SceneLights.size() + 20) % 32)), 0, 31);
+			xr_sprintf(key, "master_clip_%03u_muted", j);
+			clip.Muted = ini.read_if_exists<bool>(section, key, false);
 			xr_sprintf(key, "master_clip_%03u_intensity_start", j);
 			clip.StartIntensity = ini.read_if_exists<float>(section, key, 1.0f);
 			xr_sprintf(key, "master_clip_%03u_intensity_end", j);
@@ -7010,7 +7403,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 	{
 		warnings.push_back("Too many lights: the rest were ignored.");
 	}
-	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty())
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty() && SceneCameras.empty())
 	{
 		dialog = warnings;
 		dialog.push_back("There is nothing to load.");
@@ -7033,7 +7426,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 
 void CCinemaFilmMakerManager::ApplyLoadedScene()
 {
-	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty())
+	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty() && SceneCameras.empty())
 	{
 		return;
 	}
@@ -7043,7 +7436,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	ClearParticles();
 	ClearLights();
 	MasterPlaying = false;
-	MasterActive = false;
+	MasterActive = true;
 	MasterIncludeStart = true;
 	MasterSelectedActor = -1;
 	MasterSelectedClip = -1;
@@ -7059,6 +7452,9 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	MasterUseLoopRange = LoadedMasterUseLoopRange;
 	MasterLoopStart = LoadedMasterLoopStart;
 	MasterLoopEnd = LoadedMasterLoopEnd;
+	std::copy(std::begin(LoadedTrackMuted), std::end(LoadedTrackMuted), std::begin(MasterTrackMuted));
+	Cameras = std::move(SceneCameras);
+	SelectedCameraKey = -1;
 	LightGroups = std::move(SceneLightGroups);
 	xr_vector<xr_string> issues;
 	for (auto& light : SceneLights)
@@ -7219,6 +7615,7 @@ void CCinemaFilmMakerManager::ApplyLoadedScene()
 	}
 
 	SceneData.clear();
+	ResetMasterTimeline();
 
 	Selected = Actors.empty() ? -1 : 0;
 	if (Selected >= 0)
@@ -8340,6 +8737,7 @@ void CCinemaFilmMakerManager::DrawToolbar()
 			ThemeIndex = 0;
 			TimelinesOpenByDefault = true;
 			TimelinesOpenDirty = true;
+			HideHelpersDuringPlayback = true;
 			Snap = false;
 			TranslateStep = 0.1f;
 			RotateStepDeg = 5.0f;
@@ -11777,7 +12175,7 @@ void CCinemaFilmMakerManager::UpdateMasterActors()
 		const SMasterClip* selected = nullptr;
 		for (const SMasterClip& entry : actor.MasterClips)
 		{
-			if (entry.Start <= MasterTime && MasterTime < entry.Start + entry.Duration && (selected == nullptr || entry.Start > selected->Start))
+			if (CinemaMasterClipEnabled(entry, MasterTrackMuted) && entry.Start <= MasterTime && MasterTime < entry.Start + entry.Duration && (selected == nullptr || entry.Start > selected->Start))
 			{
 				selected = &entry;
 			}
@@ -11940,7 +12338,7 @@ void CCinemaFilmMakerManager::UpdateMasterLights()
 		const SMasterLightClip* active = nullptr;
 		for (const SMasterLightClip& clip : light.MasterClips)
 		{
-			if (MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration && (active == nullptr || clip.Start > active->Start))
+			if (CinemaMasterClipEnabled(clip, MasterTrackMuted) && MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration && (active == nullptr || clip.Start > active->Start))
 			{
 				active = &clip;
 			}
@@ -12010,7 +12408,7 @@ void CCinemaFilmMakerManager::UpdateMasterParticles()
 			const bool editorOpen = Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)];
 			const bool withinClip = MasterActive && particle.MasterTrack && std::any_of(particle.MasterClips.begin(), particle.MasterClips.end(), [&](const SMasterParticleClip& clip)
 			{
-				return MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
+				return CinemaMasterClipEnabled(clip, MasterTrackMuted) && MasterTime >= clip.Start && MasterTime < clip.Start + clip.Duration;
 			});
 			const bool editing = editorOpen && (particle.PreviewOnSpawn ? withinClip : (MasterPatternEditorOpen && MasterEditingPattern.Type == 3 && std::find(SelectedParticles.begin(), SelectedParticles.end(), index) != SelectedParticles.end()));
 			const bool activeClip = MasterPlaying && withinClip;
@@ -12053,6 +12451,11 @@ void CCinemaFilmMakerManager::UpdateMasterParticles()
 		}
 		if (!particle.MasterOwned)
 		{
+			if (particle.PatternOwned && !MasterPlaying && !MasterParticleSeek && Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)])
+			{
+				StartParticleSpawnPreview(particle);
+				if (particle.PatternPreview) continue;
+			}
 			particle.MasterSavedTime = particle.Time;
 			particle.MasterSavedRunning = particle.Running;
 			particle.MasterSavedStarted = particle.Started;
@@ -12066,10 +12469,16 @@ void CCinemaFilmMakerManager::UpdateMasterParticles()
 		for (s32 i = 0; i < static_cast<s32>(particle.MasterClips.size()); ++i)
 		{
 			const SMasterParticleClip& clip = particle.MasterClips[i];
-			if (CinemaMasterParticleActive(MasterTime, clip.Start, clip.Duration) && (active < 0 || clip.Start > particle.MasterClips[active].Start))
+			if (CinemaMasterClipEnabled(clip, MasterTrackMuted) && CinemaMasterParticleActive(MasterTime, clip.Start, clip.Duration) && (active < 0 || clip.Start > particle.MasterClips[active].Start))
 			{
 				active = i;
 			}
+		}
+		if (active >= 0 && particle.PatternOwned && !MasterPlaying && (MasterParticleSeek || active != particle.MasterPlayingClip) &&
+			fabsf(MasterTime - particle.MasterClips[active].Start) <= EPS_S && Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)])
+		{
+			StartParticleSpawnPreview(particle);
+			if (particle.PatternPreview) continue;
 		}
 		const bool rewind = particle.MasterPreviousTime >= 0.0f && MasterTime < particle.MasterPreviousTime;
 		if (active != particle.MasterPlayingClip || (active >= 0 && (rewind || MasterParticleSeek)))
@@ -12130,6 +12539,7 @@ void CCinemaFilmMakerManager::FireMasterShots(float from, float to, bool include
 		}
 		for (const SMasterClip& clip : actor->MasterClips)
 		{
+			if (!CinemaMasterClipEnabled(clip, MasterTrackMuted)) continue;
 			if (actor->PatternOwned)
 			{
 				xr_vector<SMasterPlaylistSlice> slices;
@@ -12182,7 +12592,7 @@ void CCinemaFilmMakerManager::FireMasterShots(float from, float to, bool include
 		const SMasterClip* active = nullptr;
 		for (const SMasterClip& clip : actor.MasterClips)
 		{
-			if (clip.Start <= event.Time && event.Time < clip.Start + clip.Duration && (active == nullptr || clip.Start > active->Start))
+			if (CinemaMasterClipEnabled(clip, MasterTrackMuted) && clip.Start <= event.Time && event.Time < clip.Start + clip.Duration && (active == nullptr || clip.Start > active->Start))
 			{
 				active = &clip;
 			}
@@ -12279,45 +12689,89 @@ static void CinemaSelectMasterClip(xr_vector<SMasterClipSelection>& selected, SM
 	anchor = clicked;
 }
 
+SMasterClipProperties CCinemaFilmMakerManager::MasterClipProperties(const SMasterClipSelection& item)
+{
+	if (item.Type == 1 && item.Object >= 0 && item.Object < static_cast<s32>(Actors.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Actors[item.Object]->MasterClips.size()))
+	{
+		auto& clip = Actors[item.Object]->MasterClips[item.Clip];
+		return { &clip.Start, &clip.Duration, &clip.Track, &clip.Muted };
+	}
+	if (item.Type == 2 && item.Object >= 0 && item.Object < static_cast<s32>(Lights.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Lights[item.Object].MasterClips.size()))
+	{
+		auto& clip = Lights[item.Object].MasterClips[item.Clip];
+		return { &clip.Start, &clip.Duration, &clip.Track, &clip.Muted };
+	}
+	if (item.Type == 3 && item.Object >= 0 && item.Object < static_cast<s32>(Particles.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Particles[item.Object].MasterClips.size()))
+	{
+		auto& clip = Particles[item.Object].MasterClips[item.Clip];
+		return { &clip.Start, &clip.Duration, &clip.Track, &clip.Muted };
+	}
+	if (item.Type == 4 && item.Object >= 0 && item.Object < static_cast<s32>(Cameras.size()) && item.Clip == 0)
+	{
+		auto& clip = Cameras[item.Object];
+		return { &clip.Start, &clip.Duration, &clip.Track, &clip.Muted };
+	}
+	return {};
+}
+
+void CCinemaFilmMakerManager::ResizeMasterClips(float delta)
+{
+	float lower = -FLT_MAX;
+	float upper = FLT_MAX;
+	for (const auto& item : MasterClipSelection)
+	{
+		const auto clip = MasterClipProperties(item);
+		if (!clip.Duration) continue;
+		lower = std::max(lower, 0.01f - *clip.Duration);
+		upper = std::min(upper, std::max(0.0f, std::max(0.01f, MasterDuration - *clip.Start) - *clip.Duration));
+	}
+	if (lower > upper) return;
+	delta = std::clamp(delta, lower, upper);
+	for (const auto& item : MasterClipSelection)
+	{
+		const auto clip = MasterClipProperties(item);
+		if (clip.Duration) *clip.Duration += delta;
+	}
+}
+
+void CCinemaFilmMakerManager::MoveMasterClipTracks(const SMasterClipSelection& anchor, s32 track)
+{
+	const auto anchorClip = MasterClipProperties(anchor);
+	if (!anchorClip.Track) return;
+	s32 lower = -31;
+	s32 upper = 31;
+	for (const auto& item : MasterClipSelection)
+	{
+		const auto clip = MasterClipProperties(item);
+		if (!clip.Track) continue;
+		lower = std::max(lower, -*clip.Track);
+		upper = std::min(upper, 31 - *clip.Track);
+	}
+	const s32 delta = std::clamp(track - *anchorClip.Track, lower, upper);
+	for (const auto& item : MasterClipSelection)
+	{
+		const auto clip = MasterClipProperties(item);
+		if (clip.Track) *clip.Track += delta;
+	}
+}
+
 void CCinemaFilmMakerManager::MoveMasterClips(float delta)
 {
 	float lower = -MasterDuration;
 	float upper = MasterDuration;
-	const auto getStart = [&](const SMasterClipSelection& item) -> float*
+	for (const auto& item : MasterClipSelection)
 	{
-		if (item.Type == 1 && item.Object >= 0 && item.Object < static_cast<s32>(Actors.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Actors[item.Object]->MasterClips.size()))
-		{
-			return &Actors[item.Object]->MasterClips[item.Clip].Start;
-		}
-		if (item.Type == 2 && item.Object >= 0 && item.Object < static_cast<s32>(Lights.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Lights[item.Object].MasterClips.size()))
-		{
-			return &Lights[item.Object].MasterClips[item.Clip].Start;
-		}
-		if (item.Type == 3 && item.Object >= 0 && item.Object < static_cast<s32>(Particles.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Particles[item.Object].MasterClips.size()))
-		{
-			return &Particles[item.Object].MasterClips[item.Clip].Start;
-		}
-		return nullptr;
-	};
-	for (const SMasterClipSelection& item : MasterClipSelection)
-	{
-		if (const float* start = getStart(item))
-		{
-			lower = std::max(lower, -*start);
-			upper = std::min(upper, MasterDuration - *start);
-		}
+		const auto clip = MasterClipProperties(item);
+		if (!clip.Start) continue;
+		lower = std::max(lower, -*clip.Start);
+		upper = std::min(upper, MasterDuration - *clip.Start);
 	}
-	if (lower > upper)
-	{
-		return;
-	}
+	if (lower > upper) return;
 	delta = std::clamp(delta, lower, upper);
-	for (const SMasterClipSelection& item : MasterClipSelection)
+	for (const auto& item : MasterClipSelection)
 	{
-		if (float* start = getStart(item))
-		{
-			*start += delta;
-		}
+		const auto clip = MasterClipProperties(item);
+		if (clip.Start) *clip.Start += delta;
 	}
 }
 
@@ -12330,11 +12784,11 @@ static_assert(CinemaMasterMoveKey(1.0f, 10.0f, 10.0f, 100.0f) == 2.0f);
 static_assert(CinemaMasterMoveKey(1.0f, -20.0f, 10.0f, 100.0f) == 0.0f);
 static_assert(CinemaMasterMoveKey(9.0f, 20.0f, 10.0f, 100.0f) == 10.0f);
 
-static void CinemaDrawMasterClipResize(float& clipDuration, float clipStart, ImDrawList* draw, float x, float end, float y, float width, float rowHeight, float rulerWidth, float sceneDuration, bool snap, float snapStep, bool& dragged, float& dragTarget)
+static bool CinemaDrawMasterClipResize(float& clipDuration, float clipStart, ImDrawList* draw, float x, float end, float y, float width, float rowHeight, float rulerWidth, float sceneDuration, bool snap, float snapStep, bool& dragged, float& dragTarget)
 {
 	if (clipStart + clipDuration > sceneDuration)
 	{
-		return;
+		return false;
 	}
 	const float handleX = width < 8.0f ? x + width : end - 5.0f;
 	ImGui::SetCursorScreenPos(ImVec2(handleX, y + 2.0f));
@@ -12364,6 +12818,7 @@ static void CinemaDrawMasterClipResize(float& clipDuration, float clipStart, ImD
 		}
 		dragged = false;
 	}
+	return true;
 }
 
 static constexpr float CinemaMasterZoomScroll(float scroll, float width, float zoomRatio, float fraction)
@@ -12432,6 +12887,7 @@ s32 CCinemaFilmMakerManager::FindAvailableMasterTrack(float start, float duratio
 				check(particle.MasterClips);
 			}
 		}
+		check(Cameras);
 		if (!occupied)
 		{
 			return track;
@@ -12531,30 +12987,17 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				MasterIncludeStart = true;
 			}
 			MasterPlaying = !MasterPlaying;
+			if (!MasterPlaying)
+			{
+				MasterCameraScrubPreview = false;
+				CameraPreview = false;
+			}
 			MasterActive = true;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Stop"))
 		{
-			StopPatternPreviews();
-			MasterPlaying = false;
-			MasterActive = false;
-			MasterIncludeStart = true;
-			MasterTime = 0.0f;
-			UpdateMasterGroups();
-			UpdateMasterLightTransforms();
-			UpdateMasterLights();
-			UpdateMasterParticleTransforms();
-			UpdateMasterParticles();
-			UpdateMasterActorTransforms();
-			for (auto& actor : Actors)
-			{
-				if (actor->MasterOwned)
-				{
-					StopActor(*actor);
-					actor->MasterOwned = false;
-				}
-			}
+			ResetMasterTimeline();
 		}
 		ImGui::SameLine();
 		ImGui::Checkbox("Loop", &MasterLoop);
@@ -12570,6 +13013,10 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			MasterTime = std::min(MasterTime, MasterDuration);
 			MasterLoopEnd = std::clamp(MasterLoopEnd, 0.01f, MasterDuration);
 			MasterLoopStart = std::clamp(MasterLoopStart, 0.0f, std::max(0.0f, MasterLoopEnd - 0.01f));
+		}
+		if (ImGui::Checkbox("Hide editor helpers during playback", &HideHelpersDuringPlayback))
+		{
+			SaveSettings();
 		}
 		ImGui::Checkbox("Loop range##master", &MasterUseLoopRange);
 		if (MasterUseLoopRange)
@@ -12598,7 +13045,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			MasterZoom = 1.0f;
 		}
 		ImGui::SameLine();
-		ImGui::TextDisabled("Wheel: zoom | Right-drag: pan | Shift-drag: temporarily disable snap.");
+		CinemaHint("Wheel: zoom | Middle-drag: pan | Right-drag: horizontal pan | Shift-drag: temporarily disable snap.");
 		if (ImGui::Checkbox("Snap to grid##master", &MasterSnap))
 		{
 			SaveSettings();
@@ -12619,20 +13066,28 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		if (ImGui::SliderFloat("##master_time", &MasterTime, 0.0f, MasterDuration, "Time: %.2f s"))
 		{
 			StopPatternPreviews();
+			MasterCameraScrubPreview = true;
 			MasterActive = true;
 			MasterIncludeStart = true;
 			MasterParticleSeek = true;
 		}
 		ImGui::Separator();
-		ImGui::TextDisabled("Click to select, double-click to edit, Ctrl + drag to duplicate. Drag empty space to select; Ctrl adds to box selection.");
+		CinemaHint("Click: select | Double-click: edit | Ctrl + drag: duplicate | Drag: move selection | Drag edge: resize selection | Shift: disable snap | Drag empty space: select area");
 		const float availableWidth = ImGui::GetContentRegionAvail().x;
-		const float objectsWidth = std::clamp(availableWidth * 0.25f, 200.0f, 280.0f);
-		const float patternsHeight = ImGui::GetTextLineHeightWithSpacing() + ImGui::GetFrameHeightWithSpacing() * 3.0f + ImGui::GetStyle().WindowPadding.y * 2.0f;
+		const float splitterWidth = 6.0f;
+		const ImGuiStyle& style = ImGui::GetStyle();
+		const float checkboxWidth = ImGui::GetFrameHeight() + style.ItemInnerSpacing.x + ImGui::CalcTextSize("Stretch to clip").x;
+		const float minSidebarWidth = std::max(140.0f, std::max(checkboxWidth, CinemaButtonWidth("Add shot at playhead")) + 2.0f * style.WindowPadding.x + style.ScrollbarSize + 2.0f);
+		const float maxSidebarWidth = std::max(minSidebarWidth, availableWidth - splitterWidth - 180.0f);
+		if (MasterSidebarWidth <= 0.0f) MasterSidebarWidth = std::clamp(availableWidth * 0.25f, 200.0f, 280.0f);
+		MasterSidebarWidth = std::clamp(MasterSidebarWidth, minSidebarWidth, maxSidebarWidth);
+		const float objectsWidth = MasterSidebarWidth;
+		const float patternsHeight = ImGui::GetTextLineHeightWithSpacing() + ImGui::GetFrameHeightWithSpacing() * 4.0f + ImGui::GetStyle().WindowPadding.y * 2.0f;
 		ImGui::BeginChild("##master_patterns", ImVec2(objectsWidth, patternsHeight), true, ImGuiWindowFlags_NoMove);
 		ImGui::TextUnformatted("Add pattern");
-		if (ImGui::Button("Actor##pattern", ImVec2(-1.0f, 0.0f)))
+		const auto addActorPattern = [&](float start, s32 targetTrack)
 		{
-			const s32 track = FindAvailableMasterTrack(MasterClipStart(), std::min(1.0f, MasterDuration - MasterClipStart()));
+			const s32 track = targetTrack >= 0 ? targetTrack : FindAvailableMasterTrack(start, std::min(1.0f, MasterDuration - start));
 			if (!ModelFilesBuilt) BuildModelFiles();
 			const shared_str visual = SelectedVisual.size() && VisualPathExists(SelectedVisual.c_str()) ? SelectedVisual : (ModelFiles.empty() ? shared_str() : ModelFiles.front());
 			if (visual.size() && Actors.size() < kCinemaSceneMaxActors && AddActorInFront(visual.c_str()))
@@ -12642,7 +13097,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				actor.PatternOwned = true;
 				SMasterClip clip;
 				clip.Track = track;
-				clip.Start = MasterClipStart();
+				clip.Start = start;
 				clip.Duration = std::min(1.0f, MasterDuration - clip.Start);
 				actor.MasterClips.push_back(clip);
 				MasterActive = true;
@@ -12656,10 +13111,10 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			{
 				ShowSceneDialog(ESceneDialog::Info, "Add actor pattern", { "Select an available model in the Actor tab first." });
 			}
-		}
-		if (ImGui::Button("Particle##pattern", ImVec2(-1.0f, 0.0f)))
+		};
+		const auto addParticlePattern = [&](float start, s32 targetTrack)
 		{
-			const s32 track = FindAvailableMasterTrack(MasterClipStart(), std::min(1.0f, MasterDuration - MasterClipStart()));
+			const s32 track = targetTrack >= 0 ? targetTrack : FindAvailableMasterTrack(start, std::min(1.0f, MasterDuration - start));
 			const auto& names = GamePersistent().Environment().m_pRender->particles_systems_library().vec_all_particles();
 			shared_str name = SelectedParticleName;
 			if (!name.size() || !IsCinemaParticle(name))
@@ -12678,7 +13133,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				particle.PatternOwned = true;
 				SMasterParticleClip clip;
 				clip.Track = track;
-				clip.Start = MasterClipStart();
+				clip.Start = start;
 				clip.Duration = std::min(1.0f, MasterDuration - clip.Start);
 				particle.MasterClips.push_back(clip);
 				MasterActive = true;
@@ -12693,10 +13148,10 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			{
 				ShowSceneDialog(ESceneDialog::Info, "Add particle pattern", { "No usable particle effect is available." });
 			}
-		}
-		if (ImGui::Button("Light##pattern", ImVec2(-1.0f, 0.0f)))
+		};
+		const auto addLightPattern = [&](float start, s32 targetTrack)
 		{
-			const s32 track = FindAvailableMasterTrack(MasterClipStart(), std::min(1.0f, MasterDuration - MasterClipStart()));
+			const s32 track = targetTrack >= 0 ? targetTrack : FindAvailableMasterTrack(start, std::min(1.0f, MasterDuration - start));
 			if (Lights.size() < kCinemaSceneMaxActors)
 			{
 				SCinemaLight light;
@@ -12709,7 +13164,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 					light.PatternOwned = true;
 					SMasterLightClip clip;
 					clip.Track = track;
-					clip.Start = MasterClipStart();
+					clip.Start = start;
 					clip.Duration = std::min(1.0f, MasterDuration - clip.Start);
 					light.MasterClips.push_back(clip);
 					MasterActive = true;
@@ -12723,10 +13178,40 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				}
 				else ShowSceneDialog(ESceneDialog::Info, "Add light pattern", { "The renderer could not create a light." });
 			}
-		}
+		};
+		const auto addCameraPattern = [&](float start, s32 targetTrack)
+		{
+			SCinemaCameraClip camera;
+			if (Cameras.size() >= kCinemaSceneMaxActors) return;
+			camera.Start = start;
+			camera.Duration = std::min(1.0f, MasterDuration - camera.Start);
+			camera.SourceDuration = camera.Duration;
+			camera.Track = targetTrack >= 0 ? targetTrack : FindAvailableMasterTrack(camera.Start, camera.Duration);
+			ClearGizmo();
+			Cameras.push_back(std::move(camera));
+			MasterSelectedActor = MasterSelectedLight = MasterSelectedParticle = -1;
+			MasterClipSelection = { { 4, static_cast<s32>(Cameras.size()) - 1, 0 } };
+			MasterClipAnchor = MasterClipSelection.front();
+			MasterActive = true;
+		};
+		if (ImGui::Button("Actor##pattern", ImVec2(-1.0f, 0.0f))) addActorPattern(MasterClipStart(), -1);
+		if (ImGui::Button("Particle##pattern", ImVec2(-1.0f, 0.0f))) addParticlePattern(MasterClipStart(), -1);
+		if (ImGui::Button("Light##pattern", ImVec2(-1.0f, 0.0f))) addLightPattern(MasterClipStart(), -1);
+		if (ImGui::Button("Camera##pattern", ImVec2(-1.0f, 0.0f))) addCameraPattern(MasterClipStart(), -1);
 		ImGui::EndChild();
 		const ImVec2 inspectorPosition = ImGui::GetCursorScreenPos();
-		ImGui::SameLine();
+		ImGui::SameLine(0.0f, 0.0f);
+		ImGui::InvisibleButton("##master_sidebar_splitter", ImVec2(splitterWidth, std::max(1.0f, ImGui::GetContentRegionAvail().y)));
+		if (ImGui::IsItemHovered() || ImGui::IsItemActive())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+			ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), ImGui::GetColorU32(ImGuiCol_SeparatorHovered));
+		}
+		if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+		{
+			MasterSidebarWidth = std::clamp(MasterSidebarWidth + ImGui::GetIO().MouseDelta.x, minSidebarWidth, maxSidebarWidth);
+		}
+		ImGui::SameLine(0.0f, 0.0f);
 		ImGui::BeginChild("##master_tracks", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoMove);
 		xr_vector<SMasterClipSelection> visibleMasterClips;
 		for (s32 i = 0; i < static_cast<s32>(Actors.size()); ++i)
@@ -12759,6 +13244,10 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				}
 			}
 		}
+		for (s32 i = 0; i < static_cast<s32>(Cameras.size()); ++i)
+		{
+			if (Cameras[i].Start <= MasterDuration) visibleMasterClips.push_back({ 4, i, 0 });
+		}
 		MasterClipSelection.erase(std::remove_if(MasterClipSelection.begin(), MasterClipSelection.end(), [&](const SMasterClipSelection& item)
 		{
 			return std::find(visibleMasterClips.begin(), visibleMasterClips.end(), item) == visibleMasterClips.end();
@@ -12778,6 +13267,18 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		const ImU32 textColor = ImGui::GetColorU32(ImGuiCol_Text);
 		const float rulerStart = origin.x + labelWidth;
 		const ImGuiIO& io = ImGui::GetIO();
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Middle)) MasterMiddlePan = false;
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Middle) &&
+			!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right) && !ImGui::IsAnyItemActive())
+		{
+			MasterMiddlePan = true;
+		}
+		if (MasterMiddlePan && ImGui::IsMouseDragging(ImGuiMouseButton_Middle))
+		{
+			ImGui::SetScrollX(std::clamp(ImGui::GetScrollX() - io.MouseDelta.x, 0.0f, ImGui::GetScrollMaxX()));
+			ImGui::SetScrollY(std::clamp(ImGui::GetScrollY() - io.MouseDelta.y, 0.0f, ImGui::GetScrollMaxY()));
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
+		}
 		if (ImGui::IsWindowHovered() && io.MousePos.x >= rulerStart && io.MousePos.y >= origin.y && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
 		{
 			MasterPanCandidate = true;
@@ -12789,7 +13290,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			ImGui::SetScrollX(std::clamp(ImGui::GetScrollX() - io.MouseDelta.x, 0.0f, ImGui::GetScrollMaxX()));
 			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
 		}
-		if (ImGui::IsWindowHovered() && io.MouseWheel != 0.0f && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
+		if (ImGui::IsWindowHovered() && io.MouseWheel != 0.0f && !MasterMiddlePan && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
 			const float newZoom = std::clamp(MasterZoom * powf(1.2f, io.MouseWheel), 1.0f, 32.0f);
 			const float fraction = std::clamp((io.MousePos.x - rulerStart) / rulerWidth, 0.0f, 1.0f);
@@ -12825,6 +13326,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		{
 			StopPatternPreviews();
 			MasterTime = std::clamp((ImGui::GetIO().MousePos.x - rulerStart) / rulerWidth, 0.0f, 1.0f) * MasterDuration;
+			MasterCameraScrubPreview = true;
 			MasterActive = true;
 			MasterIncludeStart = true;
 			MasterParticleSeek = true;
@@ -12833,13 +13335,11 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		s32 pendingTrack = -1;
 		SMasterClipSelection pendingTrackClip;
 		const s32 trackCount = 32;
+		bool contextOverClip = false;
+		const xr_vector<bool> cameraConflicts = CinemaCameraConflicts(Cameras, MasterTrackMuted);
 		const auto duplicateStart = [&]() -> float*
 		{
-			const SMasterClipSelection& item = MasterDuplicateTarget;
-			if (item.Type == 1 && item.Object >= 0 && item.Object < static_cast<s32>(Actors.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Actors[item.Object]->MasterClips.size())) return &Actors[item.Object]->MasterClips[item.Clip].Start;
-			if (item.Type == 2 && item.Object >= 0 && item.Object < static_cast<s32>(Lights.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Lights[item.Object].MasterClips.size())) return &Lights[item.Object].MasterClips[item.Clip].Start;
-			if (item.Type == 3 && item.Object >= 0 && item.Object < static_cast<s32>(Particles.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Particles[item.Object].MasterClips.size())) return &Particles[item.Object].MasterClips[item.Clip].Start;
-			return nullptr;
+			return MasterClipProperties(MasterDuplicateTarget).Start;
 		};
 		if (MasterDuplicateDrag && ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 		{
@@ -12861,7 +13361,25 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		{
 			char trackName[32] = {};
 			xr_sprintf(trackName, "Track %d", track + 1);
-			draw->AddText(ImVec2(origin.x + 4.0f, y + 4.0f), textColor, trackName);
+			ImGui::PushID(track);
+			ImGui::SetCursorScreenPos(ImVec2(origin.x, y));
+			ImGui::InvisibleButton("##track_label", ImVec2(labelWidth, rowHeight), ImGuiButtonFlags_MouseButtonRight);
+			const bool trackHovered = ImGui::IsItemHovered();
+			if (!MasterPanDragged && ImGui::BeginPopupContextItem("##track_context"))
+			{
+				if (ImGui::MenuItem(MasterTrackMuted[track] ? "Unmute track" : "Mute track"))
+				{
+					MasterTrackMuted[track] = !MasterTrackMuted[track];
+					StopPatternPreviews();
+				}
+				ImGui::EndPopup();
+			}
+			if (trackHovered) ImGui::SetTooltip(MasterTrackMuted[track] ? "Track muted. Right-click to unmute." : "Right-click for track actions.");
+			ImGui::PopID();
+			draw->PushClipRect(ImVec2(origin.x, y), ImVec2(rulerStart, y + rowHeight), true);
+			draw->AddText(ImVec2(origin.x + 4.0f, y + 4.0f), MasterTrackMuted[track] ? ImGui::GetColorU32(ImGuiCol_TextDisabled) : textColor, trackName);
+			if (MasterTrackMuted[track]) draw->AddCircleFilled(ImVec2(rulerStart - 7.0f, y + rowHeight * 0.5f), 3.0f, IM_COL32(230, 160, 90, 255));
+			draw->PopClipRect();
 			draw->AddRectFilled(ImVec2(rulerStart, y), ImVec2(rulerStart + rulerWidth, y + rowHeight), ImGui::GetColorU32((track & 1) ? ImGuiCol_ChildBg : ImGuiCol_FrameBg));
 			if (MasterSnap && visibleRight >= visibleLeft)
 			{
@@ -12884,6 +13402,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				const float x = rulerStart + rulerWidth * clip.Start / MasterDuration;
 				const float end = rulerStart + rulerWidth * std::min(MasterDuration, clip.Start + clip.Duration) / MasterDuration;
 				const float width = std::max(4.0f, end - x);
+				if (io.MousePos.x >= x && io.MousePos.x <= x + width + 5.0f && io.MousePos.y >= y && io.MousePos.y < y + rowHeight) contextOverClip = true;
 				ImGui::PushID(type);
 				ImGui::PushID(objectIndex);
 				ImGui::PushID(clipIndex);
@@ -12940,6 +13459,15 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 							StopPatternPreviews(true);
 							MasterEditingPattern = item;
 							MasterPatternEditorOpen = true;
+							if (type == 4)
+							{
+								MasterPlaying = false;
+								MasterTime = clip.Start;
+								SelectedCameraKey = -1;
+								CameraTimelineDragKey = -1;
+								CameraPreview = false;
+								MasterActive = true;
+							}
 							if (type == 1)
 							{
 								SelectActor(objectIndex);
@@ -12952,7 +13480,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 								SelectedLights = { objectIndex };
 								SelectedLightGroup = -1;
 							}
-							else
+							else if (type == 3)
 							{
 								SelectActor(-1);
 								SelectedParticle = objectIndex;
@@ -13009,17 +13537,66 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 					MasterDragMoved = false;
 				}
 				const bool selected = std::find(MasterClipSelection.begin(), MasterClipSelection.end(), item) != MasterClipSelection.end();
-				draw->AddRectFilled(ImVec2(x, y + 2.0f), ImVec2(x + width, y + rowHeight - 2.0f), ImGui::GetColorU32(selected ? ImGuiCol_HeaderActive : ImGuiCol_Header));
+				const bool conflict = type == 4 && cameraConflicts[objectIndex];
+				const bool muted = !CinemaMasterClipEnabled(clip, MasterTrackMuted);
+				const bool clipHovered = ImGui::IsItemHovered();
+				draw->AddRectFilled(ImVec2(x, y + 2.0f), ImVec2(x + width, y + rowHeight - 2.0f), muted ? IM_COL32(65, 65, 65, 255) : conflict ? IM_COL32(90, 90, 90, 255) : ImGui::GetColorU32(selected ? ImGuiCol_HeaderActive : ImGuiCol_Header));
+				if (muted && selected) draw->AddRect(ImVec2(x, y + 2.0f), ImVec2(x + width, y + rowHeight - 2.0f), ImGui::GetColorU32(ImGuiCol_HeaderActive));
 				draw->PushClipRect(ImVec2(x, y + 2.0f), ImVec2(x + width, y + rowHeight - 2.0f), true);
 				draw->AddText(ImVec2(x + 3.0f, y + 4.0f), textColor, label);
 				draw->PopClipRect();
 				if (!MasterPanDragged && ImGui::BeginPopupContextItem("##pattern_context"))
 				{
+					const bool group = selected && MasterClipSelection.size() > 1;
+					if (ImGui::MenuItem(group ? (clip.Muted ? "Unmute selected" : "Mute selected") : (clip.Muted ? "Unmute clip" : "Mute clip")))
+					{
+						const bool mute = !clip.Muted;
+						if (group)
+						{
+							for (const auto& selectedItem : MasterClipSelection)
+							{
+								const auto properties = MasterClipProperties(selectedItem);
+								if (properties.Muted) *properties.Muted = mute;
+							}
+						}
+						else clip.Muted = mute;
+						StopPatternPreviews();
+					}
 					if (ImGui::MenuItem("Duplicate")) { clipActionType = type; clipActionObject = objectIndex; clipActionIndex = clipIndex; clipActionDuplicate = true; }
 					if (ImGui::MenuItem("Remove")) { clipActionType = type; clipActionObject = objectIndex; clipActionIndex = clipIndex; clipActionDuplicate = false; }
 					ImGui::EndPopup();
 				}
-				CinemaDrawMasterClipResize(clip.Duration, clip.Start, draw, x, end, y, width, rowHeight, rulerWidth, MasterDuration, MasterSnap && !io.KeyShift, MasterSnapStep, MasterDragMoved, MasterDragTarget);
+				if (clipHovered)
+				{
+					if (clip.Muted) ImGui::SetTooltip("Clip muted");
+					else if (MasterTrackMuted[clip.Track]) ImGui::SetTooltip("Track muted");
+					else if (conflict) ImGui::SetTooltip("Two camera clips cannot be active at the same time. This clip is disabled due to overlap.");
+				}
+				const float previousDuration = clip.Duration;
+				const bool resizeHandle = CinemaDrawMasterClipResize(clip.Duration, clip.Start, draw, x, end, y, width, rowHeight, rulerWidth, MasterDuration, MasterSnap && !io.KeyShift, MasterSnapStep, MasterDragMoved, MasterDragTarget);
+				if (resizeHandle && ImGui::IsItemActivated())
+				{
+					MasterGroupResize = selected && MasterClipSelection.size() > 1;
+					MasterGroupResizeAnchor = item;
+					if (!selected)
+					{
+						MasterClipSelection = { item };
+						MasterClipAnchor = item;
+						MasterSelectedActor = type == 1 ? objectIndex : -1;
+						MasterSelectedClip = type == 1 ? clipIndex : -1;
+						MasterSelectedLight = type == 2 ? objectIndex : -1;
+						MasterSelectedLightClip = type == 2 ? clipIndex : -1;
+						MasterSelectedParticle = type == 3 ? objectIndex : -1;
+						MasterSelectedParticleClip = type == 3 ? clipIndex : -1;
+					}
+				}
+				if (resizeHandle && MasterGroupResize && MasterGroupResizeAnchor == item && clip.Duration != previousDuration)
+				{
+					const float delta = clip.Duration - previousDuration;
+					clip.Duration = previousDuration;
+					ResizeMasterClips(delta);
+				}
+				if (resizeHandle && MasterGroupResizeAnchor == item && ImGui::IsItemDeactivated()) MasterGroupResize = false;
 				ImGui::PopID();
 				ImGui::PopID();
 				ImGui::PopID();
@@ -13043,6 +13620,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				if (!Particles[i].MasterTrack) continue;
 				for (s32 j = 0; j < static_cast<s32>(Particles[i].MasterClips.size()); ++j) drawClip(Particles[i].MasterClips[j], 3, i, j, Particles[i].Name.c_str());
 			}
+			for (s32 i = 0; i < static_cast<s32>(Cameras.size()); ++i) drawClip(Cameras[i], 4, i, 0, "Camera");
 			y += rowHeight;
 		}
 		const float canvasTop = origin.y + rowHeight;
@@ -13108,6 +13686,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 					if (!Particles[i].MasterTrack) continue;
 					for (s32 j = 0; j < static_cast<s32>(Particles[i].MasterClips.size()); ++j) selectInBox(Particles[i].MasterClips[j], 3, i, j);
 				}
+				for (s32 i = 0; i < static_cast<s32>(Cameras.size()); ++i) selectInBox(Cameras[i], 4, i, 0);
 				const SMasterClipSelection focus = MasterClipSelection.empty() ? SMasterClipSelection{} : MasterClipSelection.back();
 				MasterClipAnchor = focus;
 				MasterSelectedActor = focus.Type == 1 ? focus.Object : -1;
@@ -13129,11 +13708,30 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				MasterBoxBaseSelection.clear();
 			}
 		}
+		if (ImGui::IsWindowHovered() && MasterPanCandidate && !MasterPanDragged && ImGui::IsMouseReleased(ImGuiMouseButton_Right) && !contextOverClip &&
+			io.MousePos.x >= rulerStart && io.MousePos.x <= rulerStart + rulerWidth && io.MousePos.y >= origin.y + rowHeight && io.MousePos.y < y)
+		{
+			float start = (io.MousePos.x - rulerStart) * MasterDuration / rulerWidth;
+			if (MasterSnap && !io.KeyShift) start = roundf(start / MasterSnapStep) * MasterSnapStep;
+			MasterContextStart = std::clamp(start, 0.0f, std::max(0.0f, MasterDuration - 0.01f));
+			MasterContextTrack = std::clamp(static_cast<s32>((io.MousePos.y - origin.y - rowHeight) / rowHeight), 0, trackCount - 1);
+			ImGui::OpenPopup("##master_add_pattern_context");
+		}
+		if (ImGui::BeginPopup("##master_add_pattern_context"))
+		{
+			if (ImGui::BeginMenu("Add pattern"))
+			{
+				if (ImGui::MenuItem("Actor")) addActorPattern(MasterContextStart, MasterContextTrack);
+				if (ImGui::MenuItem("Particle")) addParticlePattern(MasterContextStart, MasterContextTrack);
+				if (ImGui::MenuItem("Light")) addLightPattern(MasterContextStart, MasterContextTrack);
+				if (ImGui::MenuItem("Camera")) addCameraPattern(MasterContextStart, MasterContextTrack);
+				ImGui::EndMenu();
+			}
+			ImGui::EndPopup();
+		}
 		if (pendingTrack >= 0)
 		{
-			if (pendingTrackClip.Type == 1) Actors[pendingTrackClip.Object]->MasterClips[pendingTrackClip.Clip].Track = pendingTrack;
-			else if (pendingTrackClip.Type == 2) Lights[pendingTrackClip.Object].MasterClips[pendingTrackClip.Clip].Track = pendingTrack;
-			else if (pendingTrackClip.Type == 3) Particles[pendingTrackClip.Object].MasterClips[pendingTrackClip.Clip].Track = pendingTrack;
+			MoveMasterClipTracks(pendingTrackClip, pendingTrack);
 		}
 		if (MasterUseLoopRange)
 		{
@@ -13163,6 +13761,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 			}
 			MasterDuplicateDrag = false;
 			MasterDuplicateMoved = false;
+			MasterGroupResize = false;
 			MasterDragMoved = false;
 			MasterShiftClickPending = false;
 			MasterSingleClickPending = false;
@@ -13172,7 +13771,12 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		{
 			MasterPatternEditorOpen = false;
 			const SMasterClipSelection clicked{ clipActionType, clipActionObject, clipActionIndex };
-			xr_vector<SMasterClipSelection> targets = !shortcutDuplicate && std::find(MasterClipSelection.begin(), MasterClipSelection.end(), clicked) != MasterClipSelection.end() ? MasterClipSelection : xr_vector<SMasterClipSelection>{ clicked };
+			xr_vector<SMasterClipSelection> targets = std::find(MasterClipSelection.begin(), MasterClipSelection.end(), clicked) != MasterClipSelection.end() ? MasterClipSelection : xr_vector<SMasterClipSelection>{ clicked };
+			const size_t originalActors = Actors.size();
+			const size_t originalLights = Lights.size();
+			const size_t originalParticles = Particles.size();
+			const size_t originalCameras = Cameras.size();
+			xr_vector<SMasterClipSelection> createdItems;
 			SMasterClipSelection created;
 			std::sort(targets.begin(), targets.end(), [](const SMasterClipSelection& a, const SMasterClipSelection& b)
 			{
@@ -13205,7 +13809,9 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 							RefreshActorItemBones(result);
 							result.MasterTrack = result.PatternOwned = true;
 							result.MasterClips = { copy };
-							created = { 1, static_cast<s32>(Actors.size()) - 1, 0 };
+							const SMasterClipSelection copyItem{ 1, static_cast<s32>(Actors.size()) - 1, 0 };
+							createdItems.push_back(copyItem);
+							if (item == clicked) created = copyItem;
 						}
 					}
 					else if (!clipActionDuplicate)
@@ -13230,7 +13836,9 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 							result.Position = position;
 							result.MasterTrack = result.PatternOwned = true;
 							result.MasterClips = { copy };
-							created = { 2, static_cast<s32>(Lights.size()) - 1, 0 };
+							const SMasterClipSelection copyItem{ 2, static_cast<s32>(Lights.size()) - 1, 0 };
+							createdItems.push_back(copyItem);
+							if (item == clicked) created = copyItem;
 						}
 					}
 					else
@@ -13253,7 +13861,9 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 							SCinemaParticle& result = Particles.back();
 							result.MasterTrack = result.PatternOwned = true;
 							result.MasterClips = { copy };
-							created = { 3, static_cast<s32>(Particles.size()) - 1, 0 };
+							const SMasterClipSelection copyItem{ 3, static_cast<s32>(Particles.size()) - 1, 0 };
+							createdItems.push_back(copyItem);
+							if (item == clicked) created = copyItem;
 						}
 					}
 					else
@@ -13263,10 +13873,44 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 						if (Particles[item.Object].PatternOwned && Particles[item.Object].MasterClips.empty()) RemoveParticles({ item.Object });
 					}
 				}
+				else if (item.Type == 4 && item.Object >= 0 && item.Object < static_cast<s32>(Cameras.size()))
+				{
+					ClearGizmo();
+					if (clipActionDuplicate && Cameras.size() < kCinemaSceneMaxActors)
+					{
+						SCinemaCameraClip copy = Cameras[item.Object];
+						if (!shortcutDuplicate) copy.Start = std::min(MasterDuration, copy.Start + copy.Duration);
+						Cameras.push_back(std::move(copy));
+						const SMasterClipSelection copyItem{ 4, static_cast<s32>(Cameras.size()) - 1, 0 };
+						createdItems.push_back(copyItem);
+						if (item == clicked) created = copyItem;
+					}
+					else if (!clipActionDuplicate) Cameras.erase(Cameras.begin() + item.Object);
+				}
 			}
-			if (shortcutDuplicate && created.Type != 0)
+			if (clipActionDuplicate && createdItems.size() != targets.size())
 			{
-				MasterClipSelection = { created };
+				while (Actors.size() > originalActors)
+				{
+					SelectActor(static_cast<s32>(Actors.size()) - 1);
+					DeleteSelectedActor();
+				}
+				while (Lights.size() > originalLights) RemoveLights({ static_cast<s32>(Lights.size()) - 1 });
+				while (Particles.size() > originalParticles) RemoveParticles({ static_cast<s32>(Particles.size()) - 1 });
+				Cameras.resize(originalCameras);
+				MasterClipSelection = targets;
+				MasterClipAnchor = clicked;
+				MasterSelectedActor = clicked.Type == 1 ? clicked.Object : -1;
+				MasterSelectedClip = clicked.Type == 1 ? clicked.Clip : -1;
+				MasterSelectedLight = clicked.Type == 2 ? clicked.Object : -1;
+				MasterSelectedLightClip = clicked.Type == 2 ? clicked.Clip : -1;
+				MasterSelectedParticle = clicked.Type == 3 ? clicked.Object : -1;
+				MasterSelectedParticleClip = clicked.Type == 3 ? clicked.Clip : -1;
+				ShowSceneDialog(ESceneDialog::Info, "Duplicate clips", { "Could not duplicate all selected clips. Check object limits and available resources." });
+			}
+			else if (shortcutDuplicate && created.Type != 0)
+			{
+				MasterClipSelection = std::move(createdItems);
 				MasterClipAnchor = created;
 				MasterSelectedActor = created.Type == 1 ? created.Object : -1;
 				MasterSelectedClip = created.Type == 1 ? created.Clip : -1;
@@ -13289,6 +13933,7 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		}
 		ImGui::SetCursorScreenPos(inspectorPosition);
 		ImGui::BeginChild("##master_inspector", ImVec2(objectsWidth, 0.0f), true, ImGuiWindowFlags_NoMove);
+		ImGui::PushTextWrapPos(0.0f);
 		ImGui::TextUnformatted("Clip settings");
 		if (MasterSelectedActor >= 0 && MasterSelectedActor < static_cast<s32>(Actors.size()))
 		{
@@ -13425,7 +14070,8 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 					for (s32 shotIndex = 0; shotIndex < static_cast<s32>(clip.Shots.size()); ++shotIndex)
 					{
 						ImGui::PushID(shotIndex);
-						ImGui::SetNextItemWidth(100.0f);
+						const float removeWidth = ImGui::CalcTextSize("Remove").x + 2.0f * ImGui::GetStyle().FramePadding.x;
+						ImGui::SetNextItemWidth(std::max(1.0f, ImGui::GetContentRegionAvail().x - removeWidth - ImGui::GetStyle().ItemSpacing.x));
 						if (ImGui::DragFloat("##shot_time", &clip.Shots[shotIndex], 0.01f, 0.0f, 3600.0f, "%.2f s"))
 						{
 							clip.Shots[shotIndex] = std::isfinite(clip.Shots[shotIndex]) ? std::clamp(clip.Shots[shotIndex], 0.0f, 3600.0f) : 0.0f;
@@ -13598,10 +14244,32 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				}
 			}
 		}
+		else if (MasterClipAnchor.Type == 4 && MasterClipAnchor.Object >= 0 && MasterClipAnchor.Object < static_cast<s32>(Cameras.size()))
+		{
+			SCinemaCameraClip& camera = Cameras[MasterClipAnchor.Object];
+			ImGui::TextUnformatted("Camera");
+			ImGui::TextUnformatted("Start (s)");
+			ImGui::SetNextItemWidth(-1.0f);
+			if (ImGui::DragFloat("##camera_start", &camera.Start, 0.05f, 0.0f, 3600.0f, "%.2f")) camera.Start = std::isfinite(camera.Start) ? std::clamp(camera.Start, 0.0f, 3600.0f) : 0.0f;
+			ImGui::TextUnformatted("Duration (s)");
+			ImGui::SetNextItemWidth(-1.0f);
+			if (ImGui::DragFloat("##camera_duration", &camera.Duration, 0.05f, 0.01f, 3600.0f, "%.2f")) camera.Duration = std::isfinite(camera.Duration) ? std::clamp(camera.Duration, 0.01f, 3600.0f) : 1.0f;
+			ImGui::Checkbox("Stretch to clip", &camera.Stretch);
+			ImGui::Checkbox("Smooth motion", &camera.Smooth);
+			if (ImGui::Button("Remove clip##camera"))
+			{
+				ClearGizmo();
+				Cameras.erase(Cameras.begin() + MasterClipAnchor.Object);
+				MasterClipSelection.clear();
+				MasterClipAnchor = {};
+				MasterPatternEditorOpen = false;
+			}
+		}
 		else
 		{
 			ImGui::TextDisabled("Select a pattern on the timeline.");
 		}
+		ImGui::PopTextWrapPos();
 		ImGui::EndChild();
 		DrawSceneDialog();
 	}
@@ -13622,7 +14290,8 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		const s32 clip = MasterEditingPattern.Clip;
 		const bool valid = (type == 1 && index >= 0 && index < static_cast<s32>(Actors.size()) && clip >= 0 && clip < static_cast<s32>(Actors[index]->MasterClips.size())) ||
 			(type == 2 && index >= 0 && index < static_cast<s32>(Lights.size()) && clip >= 0 && clip < static_cast<s32>(Lights[index].MasterClips.size())) ||
-			(type == 3 && index >= 0 && index < static_cast<s32>(Particles.size()) && clip >= 0 && clip < static_cast<s32>(Particles[index].MasterClips.size()));
+			(type == 3 && index >= 0 && index < static_cast<s32>(Particles.size()) && clip >= 0 && clip < static_cast<s32>(Particles[index].MasterClips.size())) ||
+			(type == 4 && index >= 0 && index < static_cast<s32>(Cameras.size()) && clip == 0);
 		if (!valid)
 		{
 			MasterPatternEditorOpen = false;
@@ -13644,8 +14313,194 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 				}
 				else if (type == 2) DrawLightTab();
 				else if (type == 3) DrawParticleTab();
+				else if (type == 4)
+				{
+					SCinemaCameraClip& camera = Cameras[index];
+					const auto removeKey = [&](s32 keyIndex)
+					{
+						if (keyIndex < 0 || keyIndex >= static_cast<s32>(camera.Keys.size())) return;
+						ClearGizmo();
+						camera.Keys.erase(camera.Keys.begin() + keyIndex);
+						if (SelectedCameraKey == keyIndex) SelectedCameraKey = -1;
+						else if (SelectedCameraKey > keyIndex) --SelectedCameraKey;
+						CameraTimelineDragKey = -1;
+						CameraTimelineContextKey = -1;
+					};
+					ImGui::TextWrapped("Camera keys use time relative to the start of the clip.");
+					ImGui::Checkbox("Preview camera", &CameraPreview);
+					ImGui::TextDisabled("Disable preview to position the view before adding a key.");
+					if (ImGui::Button("Fit clip to keys") && !camera.Keys.empty())
+					{
+						float last = 0.0f;
+						for (const auto& key : camera.Keys) last = std::max(last, key.Time);
+						const float lastInClip = camera.Stretch ? last * camera.Duration / camera.SourceDuration : last;
+						camera.SourceDuration = std::max(0.01f, last);
+						camera.Duration = std::max(0.01f, lastInClip);
+					}
+					if (ImGui::Button("Add key from view") && camera.Keys.size() < 1024)
+					{
+						SCinemaCameraKey key;
+						if (camera.Keys.empty()) camera.SourceDuration = camera.Duration;
+						key.Time = std::clamp(MasterTime - camera.Start, 0.0f, camera.Duration);
+						if (camera.Stretch) key.Time *= camera.SourceDuration / camera.Duration;
+						key.Position = Device.vCameraPosition;
+						key.Orientation.i = Device.vCameraRight;
+						key.Orientation.j = Device.vCameraTop;
+						key.Orientation.k = Device.vCameraDirection;
+						ClearGizmo();
+						camera.Keys.push_back(key);
+						SelectedCameraKey = static_cast<s32>(camera.Keys.size()) - 1;
+						MasterPlaying = false;
+					}
+					ImGui::SeparatorText("Key timeline");
+					CinemaHint("Shift + click: add key from view | Drag marker: move key | Right-click marker: actions");
+					if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) CameraTimelineDragKey = -1;
+					float keyRange = camera.Duration;
+					for (const auto& key : camera.Keys)
+					{
+						const float localTime = camera.Stretch ? key.Time * camera.Duration / camera.SourceDuration : key.Time;
+						keyRange = std::max(keyRange, localTime);
+					}
+					if (CameraTimelineDragKey >= 0 && ImGui::IsMouseDown(ImGuiMouseButton_Left)) keyRange = CameraTimelineDragRange;
+					const ImVec2 timelineOrigin = ImGui::GetCursorScreenPos();
+					const float timelineWidth = std::max(ImGui::GetContentRegionAvail().x, 1.0f);
+					float localTime = std::clamp(MasterTime - camera.Start, 0.0f, keyRange);
+					DrawAnimationTimeline("##camera_key_timeline", localTime, keyRange, nullptr, GetTheme(), nullptr, TrimDragMarker, TrimDragIndex, TrimDragKey, "", false);
+					const ImVec2 mouse = ImGui::GetIO().MousePos;
+					const auto keyLocalTime = [&](const SCinemaCameraKey& key)
+					{
+						return camera.Stretch ? key.Time * camera.Duration / camera.SourceDuration : key.Time;
+					};
+					const auto timeToX = [&](float time)
+					{
+						return timelineOrigin.x + std::clamp(time / keyRange, 0.0f, 1.0f) * timelineWidth;
+					};
+					s32 hoveredKey = -1;
+					float hoverDistance = 7.0f;
+					if (ImGui::IsItemHovered())
+					{
+						for (s32 k = 0; k < static_cast<s32>(camera.Keys.size()); ++k)
+						{
+							const float distance = fabsf(mouse.x - timeToX(keyLocalTime(camera.Keys[k])));
+							if (distance < hoverDistance || (hoveredKey >= 0 && k == SelectedCameraKey && distance == hoverDistance))
+							{
+								hoverDistance = distance;
+								hoveredKey = k;
+							}
+						}
+					}
+					if (ImGui::IsItemActivated())
+					{
+						CameraTimelineDragKey = hoveredKey;
+						CameraTimelineDragRange = keyRange;
+						if (hoveredKey < 0 && ImGui::GetIO().KeyShift && camera.Keys.size() < 1024)
+						{
+							if (camera.Keys.empty()) camera.SourceDuration = camera.Duration;
+							const float time = std::clamp((mouse.x - timelineOrigin.x) / timelineWidth, 0.0f, 1.0f) * keyRange;
+							SCinemaCameraKey key;
+							key.Time = std::min(3600.0f, camera.Stretch ? time * camera.SourceDuration / camera.Duration : time);
+							key.Position = Device.vCameraPosition;
+							key.Orientation.i = Device.vCameraRight;
+							key.Orientation.j = Device.vCameraTop;
+							key.Orientation.k = Device.vCameraDirection;
+							ClearGizmo();
+							camera.Keys.push_back(key);
+							CameraTimelineDragKey = static_cast<s32>(camera.Keys.size()) - 1;
+							hoveredKey = CameraTimelineDragKey;
+						}
+						if (hoveredKey >= 0)
+						{
+							ClearGizmo();
+							SelectedCameraKey = hoveredKey;
+						}
+					}
+					if (ImGui::IsItemActive())
+					{
+						const float time = std::clamp((mouse.x - timelineOrigin.x) / timelineWidth, 0.0f, 1.0f) * keyRange;
+						if (CameraTimelineDragKey >= 0 && CameraTimelineDragKey < static_cast<s32>(camera.Keys.size()))
+						{
+							if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) camera.Keys[CameraTimelineDragKey].Time = std::min(3600.0f, camera.Stretch ? time * camera.SourceDuration / camera.Duration : time);
+						}
+						else
+						{
+							MasterTime = std::clamp(camera.Start + std::min(time, camera.Duration), 0.0f, MasterDuration);
+							MasterCameraScrubPreview = true;
+							MasterActive = true;
+							MasterIncludeStart = true;
+							MasterParticleSeek = true;
+						}
+					}
+					if (ImGui::IsItemDeactivated()) CameraTimelineDragKey = -1;
+					ImDrawList* draw = ImGui::GetWindowDrawList();
+					const ImU32 keyColor = IM_COL32(95, 190, 255, 255);
+					const ImU32 selectedColor = IM_COL32(255, 200, 85, 255);
+					if (camera.Duration < keyRange)
+					{
+						const float clipEnd = timeToX(camera.Duration);
+						draw->AddRectFilled(ImVec2(clipEnd, timelineOrigin.y + 1.0f), ImVec2(timelineOrigin.x + timelineWidth - 1.0f, timelineOrigin.y + 63.0f), IM_COL32(0, 0, 0, 120));
+						draw->AddLine(ImVec2(clipEnd, timelineOrigin.y), ImVec2(clipEnd, timelineOrigin.y + 64.0f), GetTheme().TimelineBorder);
+					}
+					for (s32 k = 0; k < static_cast<s32>(camera.Keys.size()); ++k)
+					{
+						const float x = timeToX(keyLocalTime(camera.Keys[k]));
+						const ImU32 color = k == SelectedCameraKey ? selectedColor : keyColor;
+						draw->AddLine(ImVec2(x, timelineOrigin.y + 9.0f), ImVec2(x, timelineOrigin.y + 55.0f), color, 2.0f);
+						draw->AddCircleFilled(ImVec2(x, timelineOrigin.y + 59.0f), 4.0f, color);
+					}
+					if (hoveredKey >= 0 && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+					{
+						ClearGizmo();
+						SelectedCameraKey = hoveredKey;
+						CameraTimelineContextKey = hoveredKey;
+						CameraTimelineContextCamera = index;
+						ImGui::OpenPopup("##camera_key_context");
+					}
+					if (ImGui::BeginPopup("##camera_key_context"))
+					{
+						if (CameraTimelineContextCamera != index || CameraTimelineContextKey < 0 || CameraTimelineContextKey >= static_cast<s32>(camera.Keys.size()))
+						{
+							ImGui::CloseCurrentPopup();
+						}
+						else if (ImGui::MenuItem("Remove key"))
+						{
+							removeKey(CameraTimelineContextKey);
+							hoveredKey = -1;
+						}
+						ImGui::EndPopup();
+					}
+					if (hoveredKey >= 0)
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+						ImGui::SetTooltip("Key %d: %.3f s\nDrag to move; right-click for actions", hoveredKey + 1, keyLocalTime(camera.Keys[hoveredKey]));
+					}
+					ImGui::TextDisabled("%.2f / %.2f s", std::clamp(MasterTime - camera.Start, 0.0f, camera.Duration), camera.Duration);
+					for (s32 k = 0; k < static_cast<s32>(camera.Keys.size()); ++k)
+					{
+						ImGui::PushID(k);
+						char label[64] = {};
+						float keyTime = camera.Stretch ? camera.Keys[k].Time * camera.Duration / camera.SourceDuration : camera.Keys[k].Time;
+						xr_sprintf(label, "Key %d (%.2f s)", k + 1, keyTime);
+						if (ImGui::Selectable(label, SelectedCameraKey == k)) SelectedCameraKey = k;
+						ImGui::PopID();
+					}
+					if (SelectedCameraKey >= 0 && SelectedCameraKey < static_cast<s32>(camera.Keys.size()))
+					{
+						SCinemaCameraKey& key = camera.Keys[SelectedCameraKey];
+						float keyTime = camera.Stretch ? key.Time * camera.Duration / camera.SourceDuration : key.Time;
+						if (ImGui::DragFloat("Key time (s)", &keyTime, 0.01f, 0.0f, 3600.0f))
+						{
+							keyTime = std::isfinite(keyTime) ? std::clamp(keyTime, 0.0f, 3600.0f) : 0.0f;
+							key.Time = std::min(3600.0f, camera.Stretch ? keyTime * camera.SourceDuration / camera.Duration : keyTime);
+						}
+						const Fvector oldPosition = key.Position;
+						if (ImGui::DragFloat3("Position", &key.Position.x, 0.01f) && !_valid(key.Position)) key.Position = oldPosition;
+						Fvector rotation; key.Orientation.getHPB(rotation); rotation.mul(rad2deg(1.0f));
+						if (ImGui::DragFloat3("Rotation", &rotation.x, 0.1f) && _valid(rotation)) key.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
+						if (ImGui::Button("Remove key")) removeKey(SelectedCameraKey);
+					}
+				}
 				else ImGui::TextDisabled("Select an actor with a timeline pattern to edit it.");
-				UpdatePatternSettingsSelection(type, previousCount);
+				if (type != 4) UpdatePatternSettingsSelection(type, previousCount);
 				if (MasterPatternEditorOpen && type == 2 && SelectedLight == MasterEditingPattern.Object && MasterEditingPattern.Object >= 0 && MasterEditingPattern.Object < static_cast<s32>(Lights.size()))
 				{
 					SCinemaLight& light = Lights[MasterEditingPattern.Object];
@@ -13844,7 +14699,8 @@ xr_vector<SMasterClipSelection> CCinemaFilmMakerManager::GetMasterGizmoObjects()
 	{
 		const bool valid = (item.Type == 1 && item.Object >= 0 && item.Object < static_cast<s32>(Actors.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Actors[item.Object]->MasterClips.size())) ||
 			(item.Type == 2 && item.Object >= 0 && item.Object < static_cast<s32>(Lights.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Lights[item.Object].MasterClips.size())) ||
-			(item.Type == 3 && item.Object >= 0 && item.Object < static_cast<s32>(Particles.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Particles[item.Object].MasterClips.size()));
+			(item.Type == 3 && item.Object >= 0 && item.Object < static_cast<s32>(Particles.size()) && item.Clip >= 0 && item.Clip < static_cast<s32>(Particles[item.Object].MasterClips.size())) ||
+			(item.Type == 4 && item.Object >= 0 && item.Object < static_cast<s32>(Cameras.size()) && item.Clip == 0 && !Cameras[item.Object].Keys.empty());
 		if (!valid)
 		{
 			continue;
@@ -13871,6 +14727,13 @@ Fvector CCinemaFilmMakerManager::GetMasterGizmoObjectPosition(const SMasterClipS
 		CinemaLightTransform(Lights[item.Object], position, orientation);
 		return position;
 	}
+	if (item.Type == 4)
+	{
+		Fvector position = Fvector().set(0.0f, 0.0f, 0.0f);
+		const auto& keys = Cameras[item.Object].Keys;
+		for (const auto& key : keys) position.add(key.Position);
+		return position.mul(1.0f / static_cast<float>(keys.size()));
+	}
 	Fvector position = ParticlePosition(Particles[item.Object]);
 	Fmatrix orientation = Particles[item.Object].Orientation;
 	CinemaApplyMasterGroup(Particles[item.Object].MasterGroup, position, orientation);
@@ -13884,6 +14747,20 @@ void CCinemaFilmMakerManager::TransformMasterGizmoObjects(const Fvector& previou
 	rotation.mul(MasterGizmoOrientation, inverse);
 	for (const SMasterClipSelection& item : MasterGizmoObjects)
 	{
+		if (item.Type == 4 && item.Object >= 0 && item.Object < static_cast<s32>(Cameras.size()))
+		{
+			for (auto& key : Cameras[item.Object].Keys)
+			{
+				Fvector relative, rotated;
+				relative.sub(key.Position, previousPosition);
+				rotation.transform_dir(rotated, relative);
+				key.Position.add(MasterGizmoPosition, rotated);
+				Fmatrix transformed;
+				transformed.mul(rotation, key.Orientation);
+				key.Orientation = transformed;
+			}
+			continue;
+		}
 		Fvector* position = nullptr;
 		Fmatrix* orientation = nullptr;
 		if (item.Type == 1 && item.Object >= 0 && item.Object < static_cast<s32>(Actors.size()))
@@ -13933,7 +14810,7 @@ void CCinemaFilmMakerManager::TransformMasterGizmoObjects(const Fvector& previou
 
 void CCinemaFilmMakerManager::AppendWorldGizmo()
 {
-	if (g_pGameLevel == nullptr || g_hud == nullptr)
+	if ((MasterPlaying && HideHelpersDuringPlayback) || g_pGameLevel == nullptr || g_hud == nullptr)
 	{
 		return;
 	}
@@ -13944,6 +14821,58 @@ void CCinemaFilmMakerManager::AppendWorldGizmo()
 	}
 
 	LevelInspector& inspector = HUD().world_prims;
+	const bool cameraFocused = MasterClipAnchor.Type == 4 && MasterClipAnchor.Object >= 0 && MasterClipAnchor.Object < static_cast<s32>(Cameras.size()) &&
+		std::find(MasterClipSelection.begin(), MasterClipSelection.end(), MasterClipAnchor) != MasterClipSelection.end();
+	const bool editingFocusedCamera = cameraFocused && MasterPatternEditorOpen && MasterEditingPattern == MasterClipAnchor;
+	if (cameraFocused)
+	{
+		const auto& camera = Cameras[MasterClipAnchor.Object];
+		xr_vector<s32> order;
+		for (s32 i = 0; i < static_cast<s32>(camera.Keys.size()); ++i) order.push_back(i);
+		std::stable_sort(order.begin(), order.end(), [&](s32 a, s32 b) { return camera.Keys[a].Time < camera.Keys[b].Time; });
+		for (size_t i = 0; i < order.size(); ++i)
+		{
+			const auto& key = camera.Keys[order[i]];
+			const u32 color = editingFocusedCamera && order[i] == SelectedCameraKey ? GetTheme().AxisHighlighted : IM_COL32(100, 180, 255, 255);
+			inspector.append_sphere(key.Position, 0.12f, color, color);
+			inspector.append_lines_arrow(key.Position, key.Orientation.k, 0.6f, color);
+			if (i && camera.Keys[order[i - 1]].Time < key.Time)
+			{
+				size_t previousIndex = i - 1;
+				while (previousIndex > 0 && camera.Keys[order[previousIndex - 1]].Time == camera.Keys[order[previousIndex]].Time) --previousIndex;
+				const auto& before = camera.Keys[order[previousIndex]];
+				size_t earlierIndex = previousIndex;
+				if (earlierIndex > 0)
+				{
+					--earlierIndex;
+					while (earlierIndex > 0 && camera.Keys[order[earlierIndex - 1]].Time == camera.Keys[order[earlierIndex]].Time) --earlierIndex;
+				}
+				size_t nextIndex = i;
+				size_t searchIndex = i + 1;
+				while (searchIndex < order.size() && camera.Keys[order[searchIndex]].Time == key.Time) ++searchIndex;
+				if (searchIndex < order.size()) nextIndex = searchIndex;
+				const auto& earlier = camera.Keys[order[earlierIndex]];
+				const auto& after = camera.Keys[order[nextIndex]];
+				Fvector point = before.Position;
+				const s32 segments = camera.Smooth ? 16 : 1;
+				for (s32 segment = 1; segment <= segments; ++segment)
+				{
+					const Fvector next = CinemaCameraPosition(camera.Smooth, earlier, before, key, after, static_cast<float>(segment) / static_cast<float>(segments));
+					inspector.append_line(point, next, color);
+					point = next;
+				}
+			}
+		}
+		if (editingFocusedCamera && MasterClipSelection.size() == 1 && SelectedCameraKey >= 0 && SelectedCameraKey < static_cast<s32>(camera.Keys.size()))
+		{
+			const Fvector& position = camera.Keys[SelectedCameraKey].Position;
+			const float size = std::clamp(Device.vCameraPosition.distance_to(position) * 0.15f, 0.5f, 8.0f);
+			const EGizmoAxis axis = Gizmo.Active ? Gizmo.Axis : HoveredAxis;
+			if (GizmoMode == EGizmoMode::Translate) AppendTranslateGizmo(inspector, position, size, axis);
+			else AppendRotateGizmo(inspector, position, size, axis);
+			return;
+		}
+	}
 	for (s32 index = 0; index < static_cast<s32>(Lights.size()); ++index)
 	{
 		const bool selected = std::find(SelectedLights.begin(), SelectedLights.end(), index) != SelectedLights.end() ||
@@ -14227,11 +15156,82 @@ void CCinemaFilmMakerManager::PickActorAtMouse()
 
 void CCinemaFilmMakerManager::DrawGizmo()
 {
+	if (MasterPlaying && HideHelpersDuringPlayback)
+	{
+		ClearGizmo();
+		HoveredAxis = EGizmoAxis::None;
+		return;
+	}
 	const bool capturing = CImGuiManager::Instance().IsCapturingInputs();
 	const bool mouseOverUi = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
 	const bool canInteract = capturing && !mouseOverUi && !ImGui::IsAnyItemActive();
 
+	if (MasterClipSelection.size() == 1 && MasterPatternEditorOpen && MasterEditingPattern.Type == 4 && MasterEditingPattern.Object >= 0 && MasterEditingPattern.Object < static_cast<s32>(Cameras.size()) &&
+		MasterClipAnchor == MasterEditingPattern && std::find(MasterClipSelection.begin(), MasterClipSelection.end(), MasterEditingPattern) != MasterClipSelection.end())
+	{
+		auto& keys = Cameras[MasterEditingPattern.Object].Keys;
+		if (SelectedCameraKey >= 0 && SelectedCameraKey < static_cast<s32>(keys.size()))
+		{
+			auto& key = keys[SelectedCameraKey];
+			if (Gizmo.Active && Gizmo.Position != &key.Position) ClearGizmo();
+			const float size = std::clamp(Device.vCameraPosition.distance_to(key.Position) * 0.15f, 0.5f, 8.0f);
+			EGizmoAxis axis = Gizmo.Active ? Gizmo.Axis : EGizmoAxis::None;
+			if (!Gizmo.Active && canInteract) axis = GizmoMode == EGizmoMode::Translate ? HitTranslateAxis(key.Position, size, ImGui::GetIO().MousePos) : HitRotateAxis(key.Position, size, ImGui::GetIO().MousePos);
+			HoveredAxis = axis;
+			if (Gizmo.Active)
+			{
+				if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) ClearGizmo();
+				else if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+				{
+					key.Position = Gizmo.StartPosition;
+					key.Orientation = Gizmo.StartOrientation;
+					ClearGizmo();
+				}
+				else UpdateGizmo(key.Position, key.Orientation);
+			}
+			else if (canInteract && axis != EGizmoAxis::None && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			{
+				BeginGizmo(key.Position, key.Orientation, key.Position, axis);
+				return;
+			}
+			if (Gizmo.Active) return;
+		}
+		if (canInteract && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			Fvector origin, direction;
+			if (MouseRay(origin, direction))
+			{
+				s32 nearest = -1;
+				float nearestDistance = FLT_MAX;
+				for (s32 i = 0; i < static_cast<s32>(keys.size()); ++i)
+				{
+					float distance = 0.0f;
+					if (RaySphere(origin, direction, keys[i].Position, 0.12f, distance) && distance < nearestDistance)
+					{
+						nearest = i;
+						nearestDistance = distance;
+					}
+				}
+				ClearGizmo();
+				SelectedCameraKey = nearest;
+				if (nearest < 0)
+				{
+					MasterClipSelection.clear();
+					MasterClipAnchor = {};
+					PickActorAtMouse();
+				}
+			}
+		}
+		return;
+	}
+
 	const auto masterObjects = GetMasterGizmoObjects();
+	if (masterObjects.empty() && MasterClipAnchor.Type == 4 && canInteract && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	{
+		SelectedCameraKey = -1;
+		MasterClipSelection.clear();
+		MasterClipAnchor = {};
+	}
 	if (masterObjects != MasterGizmoObjects)
 	{
 		if (Gizmo.Active && Gizmo.Position == &MasterGizmoPosition)
@@ -14295,6 +15295,12 @@ void CCinemaFilmMakerManager::DrawGizmo()
 						Lights[index].Orientation = snapshot.Orientation;
 						UpdateCinemaLightValues(Lights[index]);
 					}
+					else if (snapshot.Object.Type == 4 && index >= 0 && index < static_cast<s32>(Cameras.size()) && snapshot.Object.Clip >= 0 && snapshot.Object.Clip < static_cast<s32>(Cameras[index].Keys.size()))
+					{
+						auto& key = Cameras[index].Keys[snapshot.Object.Clip];
+						key.Position = snapshot.Position;
+						key.Orientation = snapshot.Orientation;
+					}
 					else if (snapshot.Object.Type == 3 && index >= 0 && index < static_cast<s32>(Particles.size()))
 					{
 						SCinemaParticle& particle = Particles[index];
@@ -14335,9 +15341,17 @@ void CCinemaFilmMakerManager::DrawGizmo()
 						{
 							MasterGizmoSnapshots.push_back({ item, Lights[item.Object].Position, Lights[item.Object].Orientation });
 						}
-						else
+						else if (item.Type == 3)
 						{
 							MasterGizmoSnapshots.push_back({ item, Particles[item.Object].Position, Particles[item.Object].Orientation });
+						}
+						else if (item.Type == 4)
+						{
+							const auto& keys = Cameras[item.Object].Keys;
+							for (s32 i = 0; i < static_cast<s32>(keys.size()); ++i)
+							{
+								MasterGizmoSnapshots.push_back({ { 4, item.Object, i }, keys[i].Position, keys[i].Orientation });
+							}
 						}
 					}
 				}
