@@ -280,18 +280,25 @@ void CPHElement::PhTune(float Step)
 		return;
 	}
 
-	// Square air resistance as in ODE.
+	// Air resistance exactly as in ODE (PHElement::PhTune): a quadratic linear force and a
+	// torque proportional to the angular velocity. The old multiplicative decay was tens
+	// of times weaker, so a ragdoll limb could swing for minutes.
 	const b3Vec3 Linear = b3Body_GetLinearVelocity(Body);
 	const float Speed = b3Length(Linear);
 	if (Speed > EPS_L && AirLinear > 0.f)
 	{
-		B3_SAFE(b3Body_ApplyForceToCenter(Body, b3MulSV(-AirLinear * Speed, Linear), false));
+		float Drag = Speed * AirLinear;
+		if (Drag > Mass / Step)
+		{
+			Drag = Mass / Step;
+		}
+		B3_SAFE(b3Body_ApplyForceToCenter(Body, b3MulSV(-Drag, Linear), false));
 	}
+
 	const b3Vec3 Angular = b3Body_GetAngularVelocity(Body);
 	if (AirAngular > 0.f)
 	{
-		const float Damp = std::min(AirAngular * Step, 0.5f);
-		B3_SAFE(b3Body_SetAngularVelocity(Body, b3MulSV(1.f - Damp, Angular)));
+		B3_SAFE(b3Body_ApplyTorque(Body, b3MulSV(-AirAngular, Angular), false));
 	}
 }
 

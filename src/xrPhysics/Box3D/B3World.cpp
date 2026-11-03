@@ -403,8 +403,10 @@ void CB3World::SetStep(float S)
 
 void CB3World::StepNumIterations(int Iterations)
 {
-	// ODE iterations map loosely to Box3D sub-steps.
-	SubSteps = clampr(Iterations / 4, 1, 8);
+	// Box3D has no solver iteration count: the sub-steps are the only convergence knob.
+	// ODE solves every constraint `Iterations` times per step, here every sub-step solves
+	// them once, so a long ragdoll chain needs more sub-steps than the default four.
+	SubSteps = clampr(Iterations / 2, 1, 8);
 }
 
 u32 CB3World::CalcNumSteps(u32 DeltaTime)
