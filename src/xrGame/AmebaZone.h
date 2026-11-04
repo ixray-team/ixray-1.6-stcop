@@ -3,7 +3,7 @@
 #include "AnomalyZone.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "ZoneVisual.h"
-#include "../../../xrPhysics/PHUpdateObject.h"
+#include "../../xrPhysics/PHUpdateObject.h"
 
 XREFLECT(LuaExport, Bases="CGameObject", Constructible)
 class CAmebaZone final : public CVisualZone, public CPHUpdateObject

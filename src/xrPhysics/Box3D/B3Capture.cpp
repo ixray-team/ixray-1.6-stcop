@@ -14,8 +14,9 @@
 #include "../../xrEngine/bone.h"
 #include "../../xrEngine/CameraBase.h"
 #include "../../xrEngine/device.h"
+#include "../../xrEngine/GameMtlLib.h"
 
-// Capture: the target element is pulled to the capture point with a force-limited velocity controller.
+// Capture: the target element is pulled to the capture point, then held there by a joint.
 class CB3Capture :
 	public IPHCapture,
 	public CPHUpdateObject
@@ -42,24 +43,20 @@ class CB3Capture :
 	u32 TimeStart = 0;
 	bool FreeChain = false;
 
-	// Character drag, as CPHCapture: ODE holds the grabbed element with a ball joint to a body
-	// that is teleported to the hand, and an angular motor keeps the grabbed orientation. Box3D
-	// has no AMotor: a weld joint with a rigid linear part and a soft angular part is the same
-	// constraint, so the object follows the hand instead of lagging behind a force spring.
+	// CPHCapture ties the element to a body teleported to the hand with a ball joint and an AMotor
+	// (a velocity lock with a capped torque). One spherical joint to a kinematic helper that never
+	// rotates is both: its motor drives the element's angular velocity to the target.
 	b3BodyId Helper = b3_nullBodyId;
 	b3JointId Joint = b3_nullJointId;
 	// CPHCapture::Init reads velocity_scale: the element's velocities are limited while dragging.
 	float VelocityScale = 1.f;
 	// CPHCapture::EnableAMotor / SetFreeChain: the camera motor drives the grabbed orientation.
 	bool MotorEnabled = true;
-	// Element orientation at the moment the joint was created: the joint frame on the element.
-	b3Quat CaptureRotation0 = b3Quat_identity;
-	// CPHSimpleCharacter drag: the grabbed orientation is held with a soft angular spring.
-	static constexpr float CaptureAngularHertz = 6.f;
-	static constexpr float CaptureAngularDamping = 1.f;
-	// Camera grab: ODE drives the orientation with a very strong AMotor, so the angular hold of
-	// the joint is as stiff as Box3D allows.
-	static constexpr float CameraCaptureAngularHertz = 60.f;
+	// The release test needs the net constraint force on the element over the step.
+	b3Vec3 PreStepVelocity = b3Vec3_zero;
+	// CPHCapture b_collide / b_disabled: a released object ignores its holder until a step without contact.
+	bool ReleasedTouch = false;
+	bool ElementSlept = false;
 
 	// Camera grab (no character): the element is glued to the capture point and follows
 	// the camera orientation, exactly like the ODE capture. The grabbed orientation is
@@ -142,15 +139,13 @@ class CB3Capture :
 		}
 		UpdateCapturePos();
 
-		Fvector Position;
-		Element->GetGlobalPositionDynamic(&Position);
-		if (Position.distance_to(CapturePos) > PullDistance)
+		// CPHCapture measures from the body position, which in ODE is the centre of mass.
+		if (Element->mass_Center().distance_to(CapturePos) > PullDistance)
 		{
 			return;
 		}
 
-		const float Mass = Element->PhysicsShell() ? Element->PhysicsShell()->getMass() : Element->getMass();
-		PullForce = std::min(PullForce, 4.f * g_B3World->Gravity() * Mass);
+		PullForce = std::min(PullForce, 4.f * g_B3World->Gravity() * ShellMass());
 		TimeStart = Device.dwTimeGlobal;
 
 		if (Character)
@@ -185,28 +180,56 @@ class CB3Capture :
 		for (int Side = 0; Side < 2; ++Side)
 		{
 			IPhysicsShellHolder* Holder = Contact.GetObject(Side == 0);
-			IPhysicsShellHolder* Other = Contact.GetObject(Side != 0);
-			if (Holder == nullptr || Other == nullptr)
-			{
-				continue;
-			}
-			// The holder is the actor: its capture knows which element it drags.
-			IPHCapture* Capture = Holder->PHCapture();
-			if (Capture == nullptr)
-			{
-				continue;
-			}
-			if (static_cast<CB3Capture*>(Capture)->Target == Other)
+			if (CB3Capture* Capture = Holder ? Holding(Holder, Contact.GetObject(Side != 0)) : nullptr)
 			{
 				DoCollide = false;
+				Capture->ReleasedTouch = true;
 				return;
 			}
 		}
 	}
 
-	// CPHCapture::PullingUpdate: the ball joint and the motor are created at the capture point
-	// once the element is close enough. The helper body is kinematic, so the joint drags the
-	// element exactly where the hand is, as ODE does by teleporting a heavy body.
+	float ShellMass() const
+	{
+		return Element->PhysicsShell() ? Element->PhysicsShell()->getMass() : Element->getMass();
+	}
+
+	float MotorTorque() const
+	{
+		return MotorEnabled ? (Character ? 0.2f * CaptureForce : g_CameraCaptureMotorForce) : 0.f;
+	}
+
+	// CPHCapture::ApplyAnchorRotation: the camera grab turns the element towards its camera-relative orientation.
+	b3Vec3 MotorVelocity(float Step) const
+	{
+		if (Character || !MotorEnabled || !RelRotationValid)
+		{
+			return b3Vec3_zero;
+		}
+
+		Fmatrix Desired, Current, Error;
+		Desired.mul(CameraRotation, RelRotation);
+		Element->GetGlobalTransformDynamic(&Current);
+		Error.mul(Desired, Fmatrix().transpose(Current));
+
+		Fvector Velocity = CameraVelocityValid ? CameraAngularVelocity : Fvector().set(0.f, 0.f, 0.f);
+		Velocity.mad(Fvector().set(Error._23 - Error._32, Error._31 - Error._13, Error._12 - Error._21), 0.5f * std::min(0.25f / Step, 60.f));
+		Velocity.clamp(Fvector().set(-20.f, -20.f, -20.f), Fvector().set(20.f, 20.f, 20.f));
+		return B3Math::AngularToB3(Velocity);
+	}
+
+	void Pull(const Fvector& Position)
+	{
+		// A constant force towards the hand, as m_taget_element->applyForce(dir, m_pull_force).
+		Fvector Dir;
+		Dir.sub(CapturePos, Position);
+		if (Dir.magnitude() >= EPS_L)
+		{
+			Element->applyForce(Dir.normalize(), PullForce);
+		}
+	}
+
+	// CPHCapture::PullingUpdate: the joint is created at the capture point once the element is close enough.
 	bool CreateAnchor()
 	{
 		if (g_B3World == nullptr || Element == nullptr || g_B3World->IsStepping())
@@ -231,50 +254,14 @@ class CB3Capture :
 		Def.isAwake = true;
 		Helper = b3CreateBody(g_B3World->Id(), &Def);
 
-		// Local frame on the element: the capture point, rotated so that its world rotation is
-		// identity at creation, as the ODE motor takes the current relative pose as zero.
 		const b3WorldTransform Body = b3Body_GetTransform(E->Body);
-		const b3Vec3 LocalAnchor = b3InvRotateVector(Body.q, b3SubPos(B3Math::ToB3(CapturePos), Body.p));
-		CaptureRotation0 = Body.q;
-
-		b3WeldJointDef JointDef = b3DefaultWeldJointDef();
+		b3SphericalJointDef JointDef = b3DefaultSphericalJointDef();
 		JointDef.base.bodyIdA = Helper;
 		JointDef.base.bodyIdB = E->Body;
-		JointDef.base.localFrameA.p = b3Vec3_zero;
-		JointDef.base.localFrameA.q = b3Quat_identity;
-		JointDef.base.localFrameB.p = LocalAnchor;
-		JointDef.base.localFrameB.q = b3Conjugate(Body.q);
-		// Rigid position (the ODE ball joint) and an angular hold: soft for the actor drag, as
-		// stiff as Box3D allows for the camera (the ODE AMotor with a huge motor force).
-		JointDef.linearHertz = 0.f;
-		JointDef.linearDampingRatio = 1.f;
-		if (Character)
-		{
-			JointDef.angularHertz = CaptureAngularHertz;
-			JointDef.angularDampingRatio = CaptureAngularDamping;
-			Joint = b3CreateWeldJoint(g_B3World->Id(), &JointDef);
-		}
-		else if (MotorEnabled)
-		{
-			JointDef.angularHertz = CameraCaptureAngularHertz;
-			JointDef.angularDampingRatio = 1.f;
-			Joint = b3CreateWeldJoint(g_B3World->Id(), &JointDef);
-		}
-		else
-		{
-			// Motor blocked (free chain): the element must rotate freely, so only the ball part
-			// of the capture is constrained (the ODE AMotor with zero force).
-			b3SphericalJointDef SphereDef = b3DefaultSphericalJointDef();
-			SphereDef.base.bodyIdA = Helper;
-			SphereDef.base.bodyIdB = E->Body;
-			SphereDef.base.localFrameA.p = b3Vec3_zero;
-			SphereDef.base.localFrameA.q = b3Quat_identity;
-			SphereDef.base.localFrameB.p = LocalAnchor;
-			SphereDef.base.localFrameB.q = b3Quat_identity;
-			SphereDef.enableSpring = false;
-			SphereDef.enableConeLimit = false;
-			Joint = b3CreateSphericalJoint(g_B3World->Id(), &SphereDef);
-		}
+		JointDef.base.localFrameB.p = b3InvRotateVector(Body.q, b3SubPos(B3Math::ToB3(CapturePos), Body.p));
+		JointDef.enableMotor = true;
+		JointDef.maxMotorTorque = MotorTorque();
+		Joint = b3CreateSphericalJoint(g_B3World->Id(), &JointDef);
 		if (!b3Joint_IsValid(Joint))
 		{
 			DestroyAnchor();
@@ -285,9 +272,8 @@ class CB3Capture :
 		// would only cap the speed the body keeps when it is released.
 		Element->set_DynamicLimits();
 
-		// CPHCapture::PullingUpdate stops the element before the joint takes it. A rebuilt joint
-		// (motor toggle) must not stop the body again.
-		if (State != EState::Captured)
+		// CPHCapture::PullingUpdate stops the element before the joint takes it, unless the chain is free.
+		if (!FreeChain)
 		{
 			Element->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
 			Element->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
@@ -312,51 +298,47 @@ class CB3Capture :
 		}
 	}
 
-	// CPHCapture::CapturedUpdate: the helper body is moved to the hand before the step, so the
-	// joint drags the element within the same step. Its rotation is the camera orientation offset
-	// by the grabbed orientation, which is what the ODE motor held.
+	// CPHCapture::CapturedUpdate teleports the hand, and its ball joint closes world_erp of the gap
+	// per step: the helper moves as much, or spreads the gap over the frame when it has more steps.
+	// Called before the step only, so the world is not locked.
 	void TuneAnchor(float Step)
-	{
-		if (!b3Body_IsValid(Helper))
-		{
-			return;
-		}
-
-		b3Quat Rotation = b3Quat_identity;
-		if (Character == nullptr && MotorEnabled && RelRotationValid)
-		{
-			Fmatrix Desired;
-			Desired.mul(CameraRotation, RelRotation);
-			Desired.c.set(0.f, 0.f, 0.f);
-			Rotation = b3MulQuat(B3Math::ToB3(Desired).q, b3Conjugate(CaptureRotation0));
-		}
-
-		B3_SAFE(b3Body_SetTargetTransform(Helper, {b3ToPos(B3Math::ToB3(CapturePos)), Rotation}, Step, true));
-	}
-
-	// CPHCapture::CapturedUpdate: a stuck element releases the capture, and the actor feels the
-	// load of what he drags.
-	void UpdateAnchor()
 	{
 		if (!b3Joint_IsValid(Joint))
 		{
 			return;
 		}
 
-		const b3Vec3 Force = b3Joint_GetConstraintForce(Joint); // the force applied to the element
-		const float Magnitude = b3Length(Force);
-		if (Magnitude > CaptureForce)
+		const float Horizon = Step * std::max(float(g_B3World->StepsLeft()), 1.f / world_erp);
+		b3Body_SetTargetTransform(Helper, {b3ToPos(B3Math::ToB3(CapturePos)), b3Quat_identity}, Horizon, true);
+		b3SphericalJoint_SetMaxMotorTorque(Joint, MotorTorque());
+		b3SphericalJoint_SetMotorVelocity(Joint, MotorVelocity(Step));
+	}
+
+	// CPHCapture::CapturedUpdate: ODE's joint feedback is the net constraint force on the element,
+	// which releases it; the ball joint stretch (absolute world_spring) tugs the holder.
+	void UpdateAnchor(float Step)
+	{
+		const CPHElement* E = static_cast<const CPHElement*>(Element);
+		if (!b3Joint_IsValid(Joint) || !b3Body_IsValid(E->Body))
+		{
+			return;
+		}
+
+		const float Mass = b3Body_GetMass(E->Body);
+		b3Vec3 Force = b3MulSV(Mass / Step, b3Sub(b3Body_GetLinearVelocity(E->Body), PreStepVelocity));
+		Force.y += Element->get_ApplyByGravity() ? Mass * g_B3World->Gravity() : 0.f;
+		if (b3LengthSquared(Force) > CaptureForce * CaptureForce)
 		{
 			Release();
 			return;
 		}
 
-		if (Character && Magnitude > CaptureForce / 2.2f)
+		const b3Vec3 JointForce = b3Joint_GetConstraintForce(Joint);
+		const float Magnitude = b3Length(JointForce);
+		if (Magnitude > EPS && b3Joint_GetLinearSeparation(Joint) > CaptureForce / 2.2f / world_spring)
 		{
-			// The reaction pulls the actor towards the object: capture_force / 15 is constant,
-			// exactly the m_joint_feedback force ODE applies to the character.
-			const Fvector Reaction = B3Math::FromB3(b3MulSV(-(CaptureForce / 15.f) / Magnitude, Force));
-			Character->ApplyForce(Reaction);
+			// The reaction pulls the actor towards the object with capture_force / 15, as ODE.
+			Character->ApplyForce(B3Math::FromB3(b3MulSV(-(CaptureForce / 15.f) / Magnitude, JointForce)));
 		}
 	}
 
@@ -369,10 +351,8 @@ class CB3Capture :
 			return;
 		}
 
-		Fvector Position;
-		Element->GetGlobalPositionDynamic(&Position);
+		const Fvector Position = Element->mass_Center();
 		const float Distance = Position.distance_to(CapturePos);
-
 		if (State == EState::Pulling)
 		{
 			if (Distance > PullDistance || Device.dwTimeGlobal - TimeStart > TimeLimit)
@@ -380,38 +360,28 @@ class CB3Capture :
 				Release();
 				return;
 			}
-
-			if (Distance < CaptureDistance)
+			if (Distance >= CaptureDistance)
 			{
-				if (CreateAnchor())
-				{
-					State = EState::Captured;
-				}
+				Pull(Position);
 				return;
 			}
-
-			// A constant force towards the hand, as m_taget_element->applyForce(dir, m_pull_force).
-			Fvector Dir;
-			Dir.sub(CapturePos, Position);
-			if (Dir.magnitude() < EPS_L)
+			if (!CreateAnchor())
 			{
 				return;
 			}
-			Dir.normalize();
-			Element->applyForce(Dir, PullForce);
-			return;
+			State = EState::Captured;
 		}
-
-		// Captured: CPHCapture does not recheck the distance (a big element is grabbed at its
-		// edge, so its center is far from the hand); the joint holds it.
-		if (!b3Joint_IsValid(Joint))
+		else if (!b3Joint_IsValid(Joint))
 		{
 			// The element's body is gone (shell deactivated): nothing holds it any more.
 			Release();
 			return;
 		}
 
+		// Captured: CPHCapture does not recheck the distance (a big element is grabbed at its
+		// edge, so its center is far from the hand); the joint holds it.
 		TuneAnchor(Step);
+		PreStepVelocity = b3Body_GetLinearVelocity(static_cast<CPHElement*>(Element)->Body);
 	}
 
 	CPhysicsShell* TargetShell() const
@@ -606,7 +576,25 @@ class CB3Capture :
 		TuneAnchor(Step);
 	}
 
+	// CPHCapture::Deactivate: the capture is over and the holder collides with the object again.
+	void Finish()
+	{
+		if (Character && State != EState::Free)
+		{
+			Character->SetObjectContactCallback(nullptr);
+		}
+		State = EState::Free;
+		CPHUpdateObject::Deactivate();
+	}
+
 public:
+	// The capture of Holder while it holds Object, released or not.
+	static CB3Capture* Holding(IPhysicsShellHolder* Holder, const IPhysicsShellHolder* Object)
+	{
+		CB3Capture* Capture = static_cast<CB3Capture*>(Holder->PHCapture());
+		return Capture && Capture->State != EState::Free && Capture->Target == Object ? Capture : nullptr;
+	}
+
 	CB3Capture(IPHCharacter* InCharacter, IPhysicsShellHolder* InTarget, CPhysicsElement* InElement, const Fvector* GlobalPos, bool InFreeChain) :
 		Character(InCharacter),
 		Target(InTarget),
@@ -628,15 +616,14 @@ public:
 		// A capture destroyed without an explicit release must not leave the joint, the velocity
 		// limits or the actor's contact callback behind.
 		Release();
-		CPHUpdateObject::Deactivate();
+		Finish();
 	}
 
 	virtual bool Failed() override
 	{
-		// CPHCapture::Failed: true once the capture is over. A released capture is spent, and
-		// CPHMovementControl::in_shedule_Update destroys it, which is what clears PHCapture()
-		// and lets the actor grab the next object. Without it the first drag disables the key.
-		return State == EState::Free || State == EState::Released;
+		// CPHCapture::Failed: a released capture lives until the holder and the object separate,
+		// then CPHMovementControl::in_shedule_Update destroys it and the actor can grab again.
+		return State == EState::Free;
 	}
 	virtual bool isCaptured() override
 	{
@@ -653,9 +640,10 @@ public:
 
 	virtual void ApplyForce(Fvector dir, float force) override
 	{
-		if (Element)
+		// CPHCapture::ApplyForce: the force is in shell weights, capped as ODE's BodyCutForce.
+		if (CPHElement* E = g_B3World ? static_cast<CPHElement*>(Element) : nullptr)
 		{
-			Element->applyForce(dir, force);
+			E->applyForce(dir, std::min(force * g_B3World->Gravity() * ShellMass(), E->LinearLimit / fixed_step * E->getMass()));
 		}
 	}
 	virtual void SetRotation(Fmatrix form) override
@@ -683,19 +671,8 @@ public:
 	}
 	virtual void EnableAMotor(bool val) override
 	{
-		// CPHCapture::EnableAMotor: on/off for the rotation hold. The ball joint can not change
-		// its angular part, so the capture joint is rebuilt: weld with the motor, ball without.
-		if (MotorEnabled == val)
-		{
-			return;
-		}
-
+		// CPHCapture::EnableAMotor: TuneAnchor applies the motor torque before the next step.
 		MotorEnabled = val;
-
-		if (Character == nullptr && State == EState::Captured && g_B3World != nullptr && !g_B3World->IsStepping())
-		{
-			CreateAnchor();
-		}
 	}
 	virtual void SetFreeChain(bool val) override
 	{
@@ -763,6 +740,7 @@ public:
 		if (O == Target)
 		{
 			Release();
+			Finish();
 			Element = nullptr;
 		}
 	}
@@ -771,38 +749,9 @@ public:
 		if (Element && Element->PhysicsShell() == s)
 		{
 			Release();
+			Finish();
 			Element = nullptr;
 		}
-	}
-	// CPHCapture: a released body flies on with the motion of the hand. The joint already gives
-	// the element the hand velocity, but the velocity limit and a hand that stopped inside the
-	// last step can leave it slower, so the hand velocity is transferred explicitly.
-	bool TakeReleaseVelocity(Fvector& Linear, Fvector& Angular) const
-	{
-		if (Character != nullptr || !b3Joint_IsValid(Joint) || !b3Body_IsValid(Helper) || Element == nullptr)
-		{
-			return false;
-		}
-
-		const CPHElement* E = static_cast<const CPHElement*>(Element);
-		if (!b3Body_IsValid(E->Body))
-		{
-			return false;
-		}
-
-		const b3Vec3 HandVelocity = b3Body_GetLinearVelocity(Helper);
-		const b3Vec3 HandAngular = b3Body_GetAngularVelocity(Helper);
-		if (b3LengthSquared(HandVelocity) < 0.0025f && b3LengthSquared(HandAngular) < 0.0025f)
-		{
-			// The hand stood still: keep whatever velocity the element already has.
-			return false;
-		}
-
-		const b3Vec3 R = b3SubPos(b3Body_GetPosition(Helper), b3Body_GetWorldCenterOfMass(E->Body));
-		// Velocity of the grabbed point -> velocity of the centre of mass.
-		Linear = B3Math::FromB3(b3Sub(HandVelocity, b3Cross(HandAngular, R)));
-		Angular = B3Math::AngularFromB3(HandAngular);
-		return true;
 	}
 
 	virtual void Release() override
@@ -812,29 +761,14 @@ public:
 			return;
 		}
 
+		// CPHCapture::Release: the element is free again and keeps its velocity, but it ignores
+		// the holder until they separate.
 		State = EState::Released;
-		CPHUpdateObject::Deactivate();
-
-		Fvector ReleaseVelocity = {0.f, 0.f, 0.f};
-		Fvector ReleaseAngular = {0.f, 0.f, 0.f};
-		const bool KeepVelocity = TakeReleaseVelocity(ReleaseVelocity, ReleaseAngular);
-
+		ReleasedTouch = true;
 		DestroyAnchor();
-
-		// CPHCapture::Release: the element is free again.
 		if (Element && Target && Target->ObjectPPhysicsShell() && Target->ObjectPPhysicsShell()->isActive())
 		{
 			Element->set_DynamicLimits();
-			if (KeepVelocity)
-			{
-				// After the limits are back, otherwise CutVelocity would clamp the throw.
-				Element->set_LinearVel(ReleaseVelocity);
-				Element->set_AngularVel(ReleaseAngular);
-			}
-		}
-		if (Character)
-		{
-			Character->SetObjectContactCallback(nullptr);
 		}
 
 		RestoreGravity();
@@ -854,7 +788,18 @@ public:
 
 	virtual void PhTune(float Step) override
 	{
-		if (Element == nullptr || (State != EState::Pulling && State != EState::Captured))
+		if (Element == nullptr || State == EState::Free)
+		{
+			return;
+		}
+
+		// CPHCapture::PhTune: a sleeping element is woken, and a released one waits a step for its contacts.
+		ElementSlept = Element->isActive() && !Element->isEnabled();
+		if (ElementSlept)
+		{
+			Element->Enable();
+		}
+		if (State == EState::Released)
 		{
 			return;
 		}
@@ -868,35 +813,22 @@ public:
 			return;
 		}
 
-		Fvector Position;
-		Element->GetGlobalPositionDynamic(&Position);
+		const Fvector Position = Element->mass_Center();
 		const float Distance = Position.distance_to(CapturePos);
-
 		if (State == EState::Pulling)
 		{
 			if (Distance > PullDistance)
 			{
 				Release();
-				return;
 			}
-			if (Distance < CaptureDistance)
+			else if (Distance >= CaptureDistance)
 			{
-				if (CreateAnchor())
-				{
-					State = EState::Captured;
-				}
-				return;
+				Pull(Position);
 			}
-
-			// CPHCapture::PullingUpdate: a constant force towards the captured point.
-			Fvector Dir;
-			Dir.sub(CapturePos, Position);
-			if (Dir.magnitude() < EPS_L)
+			else if (CreateAnchor())
 			{
-				return;
+				State = EState::Captured;
 			}
-			Dir.normalize();
-			Element->applyForce(Dir, PullForce);
 			return;
 		}
 
@@ -905,13 +837,21 @@ public:
 
 	virtual void PhDataUpdate(float Step) override
 	{
-		if (Element == nullptr || Character == nullptr || State != EState::Captured)
+		if (State == EState::Released)
 		{
+			// CPHCapture::ReleasedUpdate: the holder collides with the object again after a step without contact.
+			if (!ElementSlept && !std::exchange(ReleasedTouch, false))
+			{
+				Finish();
+			}
 			return;
 		}
 
-		// The joint force is known after the step: it releases a stuck element and tugs the actor.
-		UpdateAnchor();
+		if (Element && Character && State == EState::Captured)
+		{
+			// The joint state is known after the step: it releases a stuck element and tugs the actor.
+			UpdateAnchor(Step);
+		}
 	}
 };
 
@@ -935,37 +875,41 @@ static CPhysicsElement* ElementOfBone(IPhysicsShellHolder* Object, u16 BoneId, c
 	}
 
 	// A bone without a physics element: the element under the aimed point (CPHCapture uses
-	// NearestToPoint too). Falling back to element 0 grabbed the wrong part of the body.
-	if (Anchor)
-	{
-		return Shell->NearestToPoint(*Anchor);
-	}
-
-	return Shell->get_Element(BoneId);
+	// NearestToPoint too). Without an aimed point ODE's can_capture refuses the bone.
+	return Anchor ? Shell->NearestToPoint(*Anchor) : nullptr;
 }
 
+// CPHCapture can_capture: an active shell, and a character grab neither takes inventory items
+// nor starts without the character's controller.
+static bool CanCapture(IPHCharacter* Character, IPhysicsShellHolder* Object)
+{
+	CPhysicsShell* Shell = Object ? Object->ObjectPPhysicsShell() : nullptr;
+	return Shell && Shell->isActive() && (Character == nullptr || (Character->Exists() && !Object->IsInventoryItem()));
+}
+
+// The monster drag picks the element nearest to the monster body. ODE passed the model-space
+// capture bone position to a world-space search, which picked an arbitrary limb.
 IPHCapture* phcapture_create(IPHCharacter* ch, IPhysicsShellHolder* object, NearestToPointCallback* cb)
 {
-	CPhysicsShell* Shell = object ? object->ObjectPPhysicsShell() : nullptr;
-	if (ch == nullptr || Shell == nullptr || !Shell->isActive())
+	if (ch == nullptr || !CanCapture(ch, object))
 	{
 		return nullptr;
 	}
 
 	Fvector From;
 	ch->GetBodyPosition(From);
-	return new CB3Capture(ch, object, Shell->NearestToPoint(From, cb), nullptr, false);
+	return new CB3Capture(ch, object, object->ObjectPPhysicsShell()->NearestToPoint(From, cb), nullptr, false);
 }
 
 IPHCapture* phcapture_create(IPHCharacter* ch, IPhysicsShellHolder* object, u16 element)
 {
-	CPhysicsElement* Element = ElementOfBone(object, element, nullptr);
+	CPhysicsElement* Element = CanCapture(ch, object) ? ElementOfBone(object, element, nullptr) : nullptr;
 	return Element ? new CB3Capture(ch, object, Element, nullptr, false) : nullptr;
 }
 
 IPHCapture* phcapture_create(IPHCharacter* ch, IPhysicsShellHolder* object, u16 element, const Fvector& global_pos, bool free_chain)
 {
-	CPhysicsElement* Element = ElementOfBone(object, element, &global_pos);
+	CPhysicsElement* Element = CanCapture(ch, object) ? ElementOfBone(object, element, &global_pos) : nullptr;
 	return Element ? new CB3Capture(ch, object, Element, &global_pos, free_chain) : nullptr;
 }
 
@@ -980,44 +924,107 @@ void phcapture_destroy(IPHCapture*& c)
 	c = nullptr;
 }
 
-// Box overlap against level and static shells.
-static bool BoxOverlaps(const Fvector& HalfSize, const Fmatrix& Form, u64 Mask)
+static constexpr u64 SolidMask = B3Category::Level | B3Category::Static;
+// ODE resolve_depth: a resting contact is not an overlap.
+static constexpr float ActivationDepth = 0.01f;
+// ActorCameraCollision camera_collision_sckin_depth.
+static constexpr float CameraSkin = 0.04f;
+static constexpr int QueryPlanes = 32;
+
+struct SB3Query
 {
-	if (g_B3World == nullptr)
-	{
-		return false;
-	}
-
-	b3Vec3 Points[8];
-	for (int I = 0; I < 8; ++I)
-	{
-		Fvector Local;
-		Local.set((I & 1) ? HalfSize.x : -HalfSize.x, (I & 2) ? HalfSize.y : -HalfSize.y, (I & 4) ? HalfSize.z : -HalfSize.z);
-		Fvector Global;
-		Form.transform_tiny(Global, Local);
-		Points[I] = B3Math::ToB3(Global);
-	}
-
-	b3ShapeProxy Proxy = {};
-	Proxy.points = Points;
-	Proxy.count = 8;
-	Proxy.radius = 0.f;
-
-	b3QueryFilter Filter = b3DefaultQueryFilter();
-	Filter.categoryBits = B3Category::Dynamic;
-	Filter.maskBits = Mask;
+	IPhysicsShellHolder* Self;
 	bool Hit = false;
-	const auto Callback = [](b3ShapeId ShapeId, void* Context) -> bool
+	int PlaneCount = 0;
+	b3CollisionPlane Planes[QueryPlanes];
+};
+
+// The shapes of Self, of what Self holds and of passable materials do not block its queries.
+static bool Blocks(b3ShapeId ShapeId, IPhysicsShellHolder* Self)
+{
+	const CODEGeom* Geom = static_cast<const CODEGeom*>(b3Shape_GetUserData(ShapeId));
+	if (Geom == nullptr || Geom->Owner == nullptr)
 	{
-		*static_cast<bool*>(Context) = true;
+		return true;
+	}
+
+	IPhysicsShellHolder* Owner = Geom->Owner->RefObject;
+	if (Self && Owner && (Owner == Self || CB3Capture::Holding(Self, Owner)))
+	{
 		return false;
-	};
-	b3World_OverlapShape(g_B3World->Id(), b3Vec3_zero, &Proxy, Filter, Callback, &Hit);
-	return Hit;
+	}
+
+	const SGameMtl* Mtl = GMLibrary().GetMaterialByIdx(Geom->Owner->Material);
+	return Mtl == nullptr || !Mtl->Flags.test(SGameMtl::flPassable);
 }
 
-// Finds a free spot for a box near Position: as is, then lifted, then around.
-static bool FindFreeBox(const Fvector& HalfSize, Fmatrix Form, u64 Mask, Fvector& Result)
+static b3QueryFilter QueryFilter(u64 Mask)
+{
+	b3QueryFilter Filter = b3DefaultQueryFilter();
+	Filter.categoryBits = B3Category::Dynamic | ((Mask & B3Category::ActorObstacle) ? B3Category::ActorObstacleQuery : 0ull);
+	Filter.maskBits = Mask;
+	return Filter;
+}
+
+static bool Overlaps(b3Vec3 Origin, const b3ShapeProxy& Proxy, u64 Mask, IPhysicsShellHolder* Self)
+{
+	SB3Query Query = {Self};
+	b3World_OverlapShape(g_B3World->Id(), Origin, &Proxy, QueryFilter(Mask), [](b3ShapeId ShapeId, void* Context) -> bool
+	{
+		SB3Query& Data = *static_cast<SB3Query*>(Context);
+		Data.Hit = Blocks(ShapeId, Data.Self);
+		return !Data.Hit;
+	}, &Query);
+	return Query.Hit;
+}
+
+static bool Casts(b3Vec3 Origin, const b3ShapeProxy& Proxy, b3Vec3 Translation, u64 Mask, IPhysicsShellHolder* Self)
+{
+	SB3Query Query = {Self};
+	b3World_CastShape(g_B3World->Id(), Origin, &Proxy, Translation, QueryFilter(Mask), [](b3ShapeId ShapeId, b3Pos, b3Vec3, float, uint64_t, int, int, void* Context) -> float
+	{
+		SB3Query& Data = *static_cast<SB3Query*>(Context);
+		Data.Hit = Blocks(ShapeId, Data.Self);
+		return Data.Hit ? 0.f : -1.f;
+	}, &Query);
+	return Query.Hit;
+}
+
+// One mover pass: the translation that pushes the capsule out of what it overlaps.
+static b3Vec3 PushOut(b3Vec3 Origin, const b3Capsule& Capsule, u64 Mask, IPhysicsShellHolder* Self)
+{
+	SB3Query Query = {Self};
+	b3World_CollideMover(g_B3World->Id(), Origin, &Capsule, QueryFilter(Mask), [](b3ShapeId ShapeId, const b3PlaneResult* Results, int Count, void* Context) -> bool
+	{
+		SB3Query& Data = *static_cast<SB3Query*>(Context);
+		if (Blocks(ShapeId, Data.Self))
+		{
+			for (int I = 0; I < Count && Data.PlaneCount < QueryPlanes; ++I)
+			{
+				Data.Planes[Data.PlaneCount++] = {Results[I].plane, FLT_MAX, 0.f, true};
+			}
+		}
+		return Data.PlaneCount < QueryPlanes;
+	}, &Query);
+	return b3SolvePlanes(b3Vec3_zero, Query.Planes, Query.PlaneCount).delta;
+}
+
+// Box corners at Form's rotation, relative to the box centre, shrunk by Inset.
+static b3ShapeProxy BoxProxy(const Fvector& HalfSize, const Fmatrix& Form, float Inset, b3Vec3 (&Points)[8])
+{
+	const Fvector Half = {std::max(HalfSize.x - Inset, 0.f), std::max(HalfSize.y - Inset, 0.f), std::max(HalfSize.z - Inset, 0.f)};
+	for (int I = 0; I < 8; ++I)
+	{
+		Fvector Corner;
+		Form.transform_dir(Corner, Fvector().set((I & 1) ? Half.x : -Half.x, (I & 2) ? Half.y : -Half.y, (I & 4) ? Half.z : -Half.z));
+		Points[I] = B3Math::ToB3(Corner);
+	}
+	return {Points, 8, 0.f};
+}
+
+// PHActivationShape: the box takes the first free spot near its start. The path of its centre
+// is cast too, so a lateral offset never carries it through a thin wall.
+static bool FindFreeBox(const Fvector& HalfSize, const Fmatrix& Form, u64 Mask, IPhysicsShellHolder* Self, Fvector& Result)
 {
 	static const Fvector Offsets[] = {
 		{0.f, 0.f, 0.f}, {0.f, 0.1f, 0.f}, {0.f, 0.25f, 0.f}, {0.f, 0.5f, 0.f},
@@ -1025,35 +1032,41 @@ static bool FindFreeBox(const Fvector& HalfSize, Fmatrix Form, u64 Mask, Fvector
 		{0.5f, 0.25f, 0.f}, {-0.5f, 0.25f, 0.f}, {0.f, 0.25f, 0.5f}, {0.f, 0.25f, -0.5f},
 		{0.f, 1.f, 0.f}};
 
-	const Fvector Start = Form.c;
+	Result.set(Form.c);
+	if (g_B3World == nullptr)
+	{
+		return true;
+	}
+
+	b3Vec3 Points[8];
+	const b3ShapeProxy Box = BoxProxy(HalfSize, Form, ActivationDepth, Points);
+	const b3ShapeProxy Centre = {&b3Vec3_zero, 1, 0.f};
+	const b3Vec3 Start = B3Math::ToB3(Form.c);
 	for (const Fvector& Offset : Offsets)
 	{
-		Form.c.add(Start, Offset);
-		if (!BoxOverlaps(HalfSize, Form, Mask))
+		const b3Vec3 Move = B3Math::ToB3(Offset);
+		if (!Overlaps(b3Add(Start, Move), Box, Mask, Self) && (&Offset == &Offsets[0] || !Casts(Start, Centre, Move, Mask, Self)))
 		{
-			Result.set(Form.c);
+			Result.add(Offset);
 			return true;
 		}
 	}
-	Result.set(Start);
 	return false;
 }
-
-static constexpr u64 SolidMask = B3Category::Level | B3Category::Static;
 
 void ActivateShapeExplosive(IPhysicsShellHolder* self_obj, const Fvector& size, Fvector& out_size, Fvector& in_out_pos)
 {
 	out_size.set(size);
 	Fmatrix Form = Fidentity;
 	Form.c.set(in_out_pos);
-	FindFreeBox(Fvector().mul(size, 0.5f), Form, SolidMask, in_out_pos);
+	FindFreeBox(Fvector().mul(size, 0.5f), Form, SolidMask, self_obj, in_out_pos);
 }
 
 void ActivateShapePhysShellHolder(IPhysicsShellHolder* obj, const Fmatrix& in_xform, const Fvector& in_size, Fvector& in_pos, Fvector& out_pos)
 {
 	Fmatrix Form = in_xform;
 	Form.c.set(in_pos);
-	FindFreeBox(Fvector().mul(in_size, 0.5f), Form, SolidMask, out_pos);
+	FindFreeBox(Fvector().mul(in_size, 0.5f), Form, SolidMask, obj, out_pos);
 }
 
 bool ActivateShapeCharacterPhysicsSupport(Fvector& out_pos, const Fvector& vbox, const Fvector& activation_pos, const Fmatrix& mXFORM, bool not_collide_characters, bool set_rotation, IPhysicsShellHolder* m_EntityAlife)
@@ -1061,45 +1074,72 @@ bool ActivateShapeCharacterPhysicsSupport(Fvector& out_pos, const Fvector& vbox,
 	Fmatrix Form = set_rotation ? mXFORM : Fidentity;
 	Form.c.set(activation_pos);
 	const u64 Mask = not_collide_characters ? SolidMask : (SolidMask | B3Category::Character);
-	return FindFreeBox(Fvector().mul(vbox, 0.5f), Form, Mask, out_pos);
+	return FindFreeBox(Fvector().mul(vbox, 0.5f), Form, Mask, m_EntityAlife, out_pos);
 }
 
 bool ActivateBoxDynamic(IPHMovementControl* mov_control, bool character_exist, DWORD id, int num_it, int num_steps, float resolve_depth)
 {
 	IPHCharacter* Character = mov_control->character();
-	if (!character_exist || Character == nullptr)
+	if (Character == nullptr || g_B3World == nullptr)
 	{
 		return true;
 	}
 
-	const Fbox& Box = mov_control->Boxes()[id];
-	Fvector Size, Center;
-	Box.getsize(Size);
-	Box.getcenter(Center);
+	// MovementBoxDynamicActivate: a shrinking box always fits. A growing one, or a character just
+	// created, may be pushed out by at most the change of the box radius, else the box is refused.
+	const Fbox& From = mov_control->Box();
+	const Fbox& To = mov_control->Boxes()[id];
+	Fvector FromSize, ToSize;
+	From.getsize(FromSize);
+	To.getsize(ToSize);
+	if (character_exist && ToSize.x <= FromSize.x && ToSize.y <= FromSize.y && ToSize.z <= FromSize.z)
+	{
+		return true;
+	}
+
+	IPhysicsShellHolder* Self = Character->PhysicsRefObject();
+	const u64 Mask = SolidMask | B3Category::Dynamic | B3Category::Character | (Character->IsActorCharacter() ? B3Category::ActorObstacle : 0ull);
+	const float Radius = std::max(0.1f, std::min(ToSize.x, ToSize.z) * 0.5f);
+	const b3Capsule Capsule = {{0.f, Radius, 0.f}, {0.f, std::max(ToSize.y - Radius, Radius + 0.01f), 0.f}, Radius - (character_exist ? resolve_depth : 0.1f)};
+	const b3ShapeProxy Proxy = {&Capsule.center1, 2, Capsule.radius};
 
 	Fvector Position;
 	Character->GetPosition(Position);
-	Fmatrix Form = Fidentity;
-	Form.c.set(Position.x + Center.x, Position.y + Center.y + 0.01f, Position.z + Center.z);
-	Fvector Free;
-	if (!FindFreeBox(Fvector().mul(Size, 0.5f), Form, SolidMask, Free))
+	const b3Vec3 Start = B3Math::ToB3(Position);
+	if (!Overlaps(Start, Proxy, Mask, Self))
+	{
+		return true;
+	}
+
+	const b3Vec3 Delta = PushOut(Start, Capsule, Mask, Self);
+	const float Pass = character_exist ? std::abs(From.getradius() - To.getradius()) : To.getradius();
+	if (b3Length(Delta) > Pass || Overlaps(b3Add(Start, Delta), Proxy, Mask, Self))
 	{
 		return false;
 	}
 
-	Fvector NewPosition;
-	NewPosition.sub(Free, Center);
-	NewPosition.y -= 0.01f;
-	Character->SetPosition(NewPosition);
+	Character->SetPosition(B3Math::FromB3(b3Add(Start, Delta)));
 	return true;
 }
 
 bool test_camera_box(const Fvector& box_size, const Fmatrix& xform, IPhysicsShellHolder* l_actor)
 {
-	return BoxOverlaps(Fvector().mul(box_size, 0.5f), xform, SolidMask);
+	if (g_B3World == nullptr)
+	{
+		return false;
+	}
+
+	// ActorCameraCollision set_camera_collision: box_size holds half extents, and the box is
+	// taller and deeper, shifted down and back. Only contacts deeper than half the skin count.
+	Fvector Centre;
+	Centre.mad(xform.c, xform.j, -0.5f * box_size.y).mad(xform.k, -box_size.z);
+	b3Vec3 Points[8];
+	const b3ShapeProxy Box = BoxProxy(Fvector().set(box_size.x, box_size.y * 1.5f, box_size.z * 2.f), xform, CameraSkin * 0.5f, Points);
+	return Overlaps(B3Math::ToB3(Centre), Box, SolidMask | B3Category::Dynamic | B3Category::Character, l_actor);
 }
 
-// Pulls the camera towards the actor head when level geometry is between them.
+// The camera stays in sight of the actor (a ray from the actor axis at eye height, at most 1.5 m),
+// then the near-plane volume is pushed out of everything but the actor, as ODE's camera box.
 void collide_camera(CCameraBase& camera, float _viewport_near, IPhysicsShellHolder* l_actor)
 {
 	if (g_B3World == nullptr || l_actor == nullptr)
@@ -1107,20 +1147,32 @@ void collide_camera(CCameraBase& camera, float _viewport_near, IPhysicsShellHold
 		return;
 	}
 
-	Fvector Head = l_actor->ObjectXFORM().c;
-	Head.y += 1.5f;
+	const Fvector& Origin = l_actor->ObjectXFORM().c;
+	const Fvector Head = {Origin.x, Origin.y + std::min(1.5f, camera.vPosition.y - Origin.y), Origin.z};
 	Fvector Dir;
 	Dir.sub(camera.vPosition, Head);
 	const float Distance = Dir.magnitude();
-	if (Distance < EPS_L)
-	{
-		return;
-	}
-	Dir.div(Distance);
-
 	SB3RayHit Hit;
-	if (g_B3World->RayPick(Head, Dir, Distance + _viewport_near, SolidMask, Hit))
+	if (Distance > EPS_L && g_B3World->RayPick(Head, Dir.div(Distance), Distance + _viewport_near, SolidMask, Hit))
 	{
 		camera.vPosition.mad(Head, Dir, std::max(0.f, Hit.Distance - _viewport_near));
+	}
+
+	// A capsule across the near plane: as wide as the box, no deeper than the near plane plus a
+	// little, so a first-person eye 0.35 m from a wall is not pushed back.
+	float HalfWidth, HalfHeight;
+	tviewport_size(_viewport_near, camera, HalfWidth, HalfHeight);
+	const b3Vec3 Side = B3Math::ToB3(Fvector().mul(camera.Right(), std::max(HalfWidth - HalfHeight, 0.f)));
+	const b3Capsule Volume = {b3Neg(Side), Side, HalfHeight + CameraSkin};
+	b3Vec3 Centre = B3Math::ToB3(Fvector().mad(camera.vPosition, camera.Direction(), _viewport_near * 0.5f));
+	for (int I = 0; I < 5; ++I)
+	{
+		const b3Vec3 Delta = PushOut(Centre, Volume, SolidMask | B3Category::Dynamic | B3Category::Character, l_actor);
+		if (b3LengthSquared(Delta) < 1e-8f)
+		{
+			break;
+		}
+		Centre = b3Add(Centre, Delta);
+		camera.vPosition.add(B3Math::FromB3(Delta));
 	}
 }

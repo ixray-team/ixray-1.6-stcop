@@ -296,14 +296,15 @@ bool can_create_phys_shell(string1024& reason, IPhysicsShellHolder& O)
 	return true;
 }
 
-// ODE turns this contact into a one-sided static contact; Box3D keeps the normal contact.
+// ODE turns this contact into a one-sided static contact; Box3D keeps the normal contact, and a
+// frozen world holds the other bodies still instead (CB3World::Freeze).
 void StaticEnvironmentCB(bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2)
 {
 }
 
-static float ContactEnergy(const dContact& Contact, bool First)
+// Kinetic energy lost along the normal, as E_NL in the ODE backend. Kinematic and static sides are infinite mass.
+static float ContactEnergy(const dContact& Contact)
 {
-	// Kinetic energy lost along the normal, as E_NL in the ODE backend.
 	float Mass[2] = {0.f, 0.f};
 	float Velocity[2] = {0.f, 0.f};
 	for (int I = 0; I < 2; ++I)
@@ -324,21 +325,14 @@ static float ContactEnergy(const dContact& Contact, bool First)
 		Velocity[I] = B3Math::FromB3(b3Body_GetLinearVelocity(Body)).dotproduct(Contact.Normal);
 	}
 
-	// Normal points from the first side to the second: approaching means V0 > V1.
-	if (Velocity[0] <= Velocity[1])
+	// The normal points from the second side to the first: approaching means V0 < V1.
+	const float Approach = Contact.ApproachSpeed >= 0.f ? Contact.ApproachSpeed : Velocity[1] - Velocity[0];
+	if (Approach <= 0.f)
 	{
 		return 0.f;
 	}
-	if (Mass[0] <= 0.f || Mass[1] <= 0.f)
-	{
-		const int Moving = Mass[0] > 0.f ? 0 : 1;
-		return Mass[Moving] * Velocity[Moving] * Velocity[Moving] * 0.5f;
-	}
-
-	const float Total = Mass[0] + Mass[1];
-	const float Center = (Mass[0] * Velocity[0] + Mass[1] * Velocity[1]) / Total;
-	const float Start = 0.5f * (Mass[0] * Velocity[0] * Velocity[0] + Mass[1] * Velocity[1] * Velocity[1]);
-	return Start - 0.5f * Total * Center * Center;
+	const float Reduced = Mass[0] > 0.f && Mass[1] > 0.f ? Mass[0] * Mass[1] / (Mass[0] + Mass[1]) : Mass[0] + Mass[1];
+	return 0.5f * Reduced * Approach * Approach;
 }
 
 void DamageReceiverCollisionCallback(bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2)
@@ -382,7 +376,7 @@ void DamageReceiverCollisionCallback(bool& do_colide, bool bo1, CPHContact& cont
 	SelfGeom->GetGlobalForm(Form);
 	Pos.sub(Native.Position, Form.c);
 	const ALife::_OBJECT_ID SourceId = Damager ? Damager->ObjectID() : ALife::INVALID_OBJECT_ID;
-	Receiver->CollisionHit(SourceId, SelfGeom->BoneId, ContactEnergy(Native, true) * DamagerFactor / Sum, Native.Normal, Pos);
+	Receiver->CollisionHit(SourceId, SelfGeom->BoneId, ContactEnergy(Native) * DamagerFactor / Sum, Native.Normal, Pos);
 }
 
 void BreakableObjectCollisionCallback(bool& do_colide, bool bo1, CPHContact& contact, SGameMtl* material_1, SGameMtl* material_2)
@@ -404,7 +398,12 @@ void BreakableObjectCollisionCallback(bool& do_colide, bool bo1, CPHContact& con
 	Fvector Dir;
 	Dir.mul(Native.Normal, -NormalSign);
 	Fvector Pos = Native.Position;
-	Receiver->CollisionHit(ALife::INVALID_OBJECT_ID, u16(-1), ContactEnergy(Native, true), Dir, Pos);
+	Receiver->CollisionHit(ALife::INVALID_OBJECT_ID, u16(-1), ContactEnergy(Native), Dir, Pos);
+	// ODE CPHStaticGeomShell::PhDataUpdate: the recorded damage is processed once the step is over.
+	if (g_B3World)
+	{
+		g_B3World->Defer([Self] { Self->enable_notificate(); });
+	}
 }
 
 // Static geom shell: a static Box3D body with one box, owned by an IPhysicsShellHolder.
