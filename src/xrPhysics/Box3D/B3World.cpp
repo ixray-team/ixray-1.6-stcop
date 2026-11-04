@@ -3,6 +3,8 @@
 #include "B3Math.h"
 #include "PHContact.h"
 #include "console_vars.h"
+#include "IPhysicsShellHolder.h"
+#include "icollisiondamagereceiver.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrCore/Collision/xr_area.h"
 #include "../../xrEngine/GameMtlLib.h"
@@ -75,6 +77,18 @@ CB3World::~CB3World()
 	Destroy();
 }
 
+// ODE surface: mu = f1 * f2, and a bounce only when both materials bounce (non-bounceable shapes
+// store restitution 0), at the lower value. A contact callback's override replaces the mix.
+static float MixFriction(float A, uint64_t IdA, float B, uint64_t IdB)
+{
+	return (IdA & B3MaterialFlag::Friction) ? A : ((IdB & B3MaterialFlag::Friction) ? B : A * B);
+}
+
+static float MixRestitution(float A, uint64_t IdA, float B, uint64_t IdB)
+{
+	return (IdA & B3MaterialFlag::Bounce) ? A : ((IdB & B3MaterialFlag::Bounce) ? B : std::min(A, B));
+}
+
 void CB3World::Create(bool Mt, CObjectSpace* InObjectSpace, CObjectList* InLevelObjects)
 {
 	ObjectSpacePtr = InObjectSpace;
@@ -83,6 +97,19 @@ void CB3World::Create(bool Mt, CObjectSpace* InObjectSpace, CObjectList* InLevel
 	b3WorldDef Def = b3DefaultWorldDef();
 	Def.gravity = B3Math::ToB3(Fvector().set(0.f, -GravityValue, 0.f));
 	Def.maximumLinearSpeed = default_l_limit;
+	Def.frictionCallback = &MixFriction;
+	Def.restitutionCallback = &MixRestitution;
+	// Shot mark thresholds (VelCret) do the gating, as ODE did for every contact.
+	Def.hitEventThreshold = 0.2f;
+	// Box3D makes static contacts twice as stiff: this keeps level contacts near the ODE ERP.
+	Def.contactHertz = 30.f;
+	Def.contactDampingRatio = 4.f;
+	Def.contactSpeed = 3.f;
+	// The bounce start velocity is per pair in ODE and global here: take the default object material's.
+	if (auto It = GMLibrary().GetMaterialIt("objects\\small_box"); It != GMLibrary().GetMaterials().end() && (*It)->fPHBounceStartVelocity > 0.f)
+	{
+		Def.restitutionThreshold = (*It)->fPHBounceStartVelocity;
+	}
 	World = b3CreateWorld(&Def);
 	b3World_SetPreSolveCallback(World, &CB3World::PreSolve, this);
 	b3World_SetCustomFilterCallback(World, &CB3World::CustomFilter, this);
@@ -140,29 +167,41 @@ bool CB3World::CreateStaticMesh(const Fvector* Verts, size_t VertCount, const CD
 	BodyDef.type = b3_staticBody;
 	StaticBody = b3CreateBody(World, &BodyDef);
 
-	const bool Solid = BuildMesh(Vertices, Tris, TriCount, false);
-	BuildMesh(Vertices, Tris, TriCount, true);
+	const bool Solid = BuildMesh(Vertices, Tris, TriCount, MeshSolid);
+	BuildMesh(Vertices, Tris, TriCount, MeshPassable);
+	BuildMesh(Vertices, Tris, TriCount, MeshActorObstacle);
 	return Solid;
 }
 
-// Solid mesh: every non-passable triangle. Liquid mesh: passable liquid triangles, which in ODE
-// make contacts that never collide but splash and slow bodies down.
-bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris, size_t TriCount, bool Liquid)
+// Passable triangles in ODE make contacts that never collide but splash, slow bodies down and,
+// for actor obstacles, block characters (CPHActorCharacter::InitContact). Box3D never calls
+// pre-solve for mesh contacts, so they are query-only meshes whose masks no body category matches.
+bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris, size_t TriCount, EMesh Kind)
 {
+	static constexpr struct
+	{
+		u64 Category;
+		u64 Mask;
+		const char* Name;
+	} Kinds[MeshCount] = {
+		{B3Category::Level, B3Category::Dynamic, "level"},
+		{B3Category::Liquid, B3Category::LiquidQuery, "passable"},
+		{B3Category::ActorObstacle, B3Category::ActorObstacleQuery, "actor obstacle"}};
+
 	// Box3D takes up to 256 materials per shape: map game materials to slots.
 	xr_vector<b3SurfaceMaterial> Materials;
 	xr_hash_map<u32, u8> MaterialSlots;
 	xr_vector<int32_t> Indices;
 	xr_vector<uint8_t> MaterialIndices;
-	xr_vector<int>& ToCdb = Liquid ? LiquidToCdbTriangle : MeshToCdbTriangle;
-	ToCdb.clear();
+	SLevelMesh& Target = Meshes[Kind];
+	Target.ToCdb.clear();
 	for (size_t I = 0; I < TriCount; ++I)
 	{
 		const u32 GameMaterial = Tris[I].material;
 		SGameMtl* Mtl = GMLibrary().GetMaterialByIdx(u16(GameMaterial));
 		const bool Passable = Mtl && Mtl->Flags.test(SGameMtl::flPassable);
-		const bool IsLiquid = Passable && Mtl->Flags.test(SGameMtl::flLiquid);
-		if (Liquid ? !IsLiquid : Passable)
+		const bool Keep = Kind == MeshSolid ? !Passable : (Passable && (Kind == MeshPassable || Mtl->Flags.test(SGameMtl::flActorObstacle)));
+		if (!Keep)
 		{
 			continue;
 		}
@@ -194,7 +233,7 @@ bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris
 		Indices.push_back(int32_t(Tris[I].verts[2]));
 		Indices.push_back(int32_t(Tris[I].verts[1]));
 		MaterialIndices.push_back(It->second);
-		ToCdb.push_back(int(I));
+		Target.ToCdb.push_back(int(I));
 	}
 
 	if (MaterialIndices.empty())
@@ -208,35 +247,24 @@ bool CB3World::BuildMesh(const xr_vector<b3Vec3>& Vertices, const CDB::TRI* Tris
 	MeshDef.indices = Indices.data();
 	MeshDef.triangleCount = int(MaterialIndices.size());
 	MeshDef.materialIndices = MaterialIndices.data();
-	MeshDef.identifyEdges = !Liquid;
+	MeshDef.identifyEdges = Kind == MeshSolid;
 	// Median split builds the tree much faster than SAH on a level-sized mesh.
 	MeshDef.useMedianSplit = true;
 
-	b3MeshData* Mesh = b3CreateMesh(&MeshDef, nullptr, 0);
-	if (Mesh == nullptr)
+	Target.Data = b3CreateMesh(&MeshDef, nullptr, 0);
+	if (Target.Data == nullptr)
 	{
-		Msg("! [Box3D] failed to build the %s mesh", Liquid ? "liquid" : "level");
+		Msg("! [Box3D] failed to build the %s mesh", Kinds[Kind].Name);
 		return false;
 	}
 
 	b3ShapeDef ShapeDef = b3DefaultShapeDef();
 	ShapeDef.materials = Materials.data();
 	ShapeDef.materialCount = int(Materials.size());
-	// Box3D never calls pre-solve for mesh contacts, so liquid cannot be a disabled contact:
-	// it takes part only in queries (see ProcessLiquidContacts).
-	ShapeDef.filter.categoryBits = Liquid ? B3Category::Liquid : B3Category::Level;
-	ShapeDef.filter.maskBits = Liquid ? B3Category::LiquidQuery : B3Category::Dynamic;
-	const b3ShapeId Shape = b3CreateMeshShape(StaticBody, &ShapeDef, Mesh, b3Vec3{1.f, 1.f, 1.f});
-	if (Liquid)
-	{
-		LiquidMesh = Mesh;
-		LiquidShape = Shape;
-	}
-	else
-	{
-		StaticMesh = Mesh;
-	}
-	Msg("* [Box3D] %s mesh: %d triangles, %d materials", Liquid ? "liquid" : "level", int(MaterialIndices.size()), int(Materials.size()));
+	ShapeDef.filter.categoryBits = Kinds[Kind].Category;
+	ShapeDef.filter.maskBits = Kinds[Kind].Mask;
+	Target.Shape = b3CreateMeshShape(StaticBody, &ShapeDef, Target.Data, b3Vec3{1.f, 1.f, 1.f});
+	Msg("* [Box3D] %s mesh: %d triangles, %d materials", Kinds[Kind].Name, int(MaterialIndices.size()), int(Materials.size()));
 	return true;
 }
 
@@ -247,17 +275,14 @@ void CB3World::DestroyStaticMesh()
 		b3DestroyBody(StaticBody);
 	}
 	StaticBody = b3_nullBodyId;
-	LiquidShape = b3_nullShapeId;
 
-	if (StaticMesh != nullptr)
+	for (SLevelMesh& Mesh : Meshes)
 	{
-		b3DestroyMesh(StaticMesh);
-		StaticMesh = nullptr;
-	}
-	if (LiquidMesh != nullptr)
-	{
-		b3DestroyMesh(LiquidMesh);
-		LiquidMesh = nullptr;
+		if (Mesh.Data != nullptr)
+		{
+			b3DestroyMesh(Mesh.Data);
+		}
+		Mesh = SLevelMesh();
 	}
 }
 
@@ -290,6 +315,7 @@ bool CB3World::RayPick(const Fvector& Start, const Fvector& Dir, float Range, u6
 	b3QueryFilter Filter = b3DefaultQueryFilter();
 	// Shapes test their mask against the query category: query as a dynamic body.
 	Filter.categoryBits = (Mask & B3Category::Ladder) ? B3Category::Ladder : ((Mask & B3Category::Liquid) ? B3Category::LiquidQuery : B3Category::Dynamic);
+	Filter.categoryBits |= (Mask & B3Category::ActorObstacle) ? B3Category::ActorObstacleQuery : 0ull;
 	Filter.maskBits = Mask;
 
 	SB3RayContext Context{&Hit};
@@ -300,10 +326,12 @@ bool CB3World::RayPick(const Fvector& Start, const Fvector& Dir, float Range, u6
 	}
 
 	Hit.Distance *= Range;
-	const xr_vector<int>& ToCdb = B3_ID_EQUALS(Hit.Shape, LiquidShape) ? LiquidToCdbTriangle : MeshToCdbTriangle;
-	if (Hit.Geom == nullptr && Hit.Triangle >= 0 && Hit.Triangle < int(ToCdb.size()))
+	for (const SLevelMesh& Mesh : Meshes)
 	{
-		Hit.Triangle = ToCdb[Hit.Triangle];
+		if (B3_ID_EQUALS(Hit.Shape, Mesh.Shape) && Hit.Triangle >= 0 && Hit.Triangle < int(Mesh.ToCdb.size()))
+		{
+			Hit.Triangle = Mesh.ToCdb[Hit.Triangle];
+		}
 	}
 	return true;
 }
@@ -319,11 +347,18 @@ b3BodyId CB3World::GroundBody()
 	return Ground;
 }
 
-// Elements of one shell collide only with self collision; shells of one collision group never collide.
+// Characters are dynamic and character class, static geom shells have no class (CPHCollideValidator).
+static CLClassBits CollideClass(const SB3GeomOwner& Owner)
+{
+	return Owner.Shell ? Owner.Shell->CollideClassBits.flags : (Owner.Character ? B3CollideClass::Dynamic | B3CollideClass::Character : 0);
+}
+
+// Elements of one shell collide only with self collision; shells of one collision group never collide;
+// then the collide classes. Runs only when Box3D creates a pair: changes go through CPHShell::ResetPairs.
 bool CB3World::CustomFilter(b3ShapeId ShapeA, b3ShapeId ShapeB, void* Context)
 {
-	CODEGeom* GeomA = static_cast<CODEGeom*>(b3Shape_GetUserData(ShapeA));
-	CODEGeom* GeomB = static_cast<CODEGeom*>(b3Shape_GetUserData(ShapeB));
+	const CODEGeom* GeomA = static_cast<const CODEGeom*>(b3Shape_GetUserData(ShapeA));
+	const CODEGeom* GeomB = static_cast<const CODEGeom*>(b3Shape_GetUserData(ShapeB));
 	if (GeomA == nullptr || GeomB == nullptr || GeomA->Owner == nullptr || GeomB->Owner == nullptr)
 	{
 		return true;
@@ -331,15 +366,15 @@ bool CB3World::CustomFilter(b3ShapeId ShapeA, b3ShapeId ShapeB, void* Context)
 
 	CPHShell* ShellA = GeomA->Owner->Shell;
 	CPHShell* ShellB = GeomB->Owner->Shell;
-	if (ShellA == nullptr || ShellB == nullptr)
+	if (ShellA && ShellA == ShellB)
 	{
-		return true;
+		return ShellA->SelfCollides(GeomA->Owner, GeomB->Owner);
 	}
-	if (ShellA == ShellB)
+	if (ShellA && ShellB && ShellA->IsGroupObject() && ShellA->GetCLGroup() == ShellB->GetCLGroup())
 	{
-		return ShellA->IsSelfCollision();
+		return false;
 	}
-	return !(ShellA->IsGroupObject() && ShellA->GetCLGroup() == ShellB->GetCLGroup());
+	return B3CollideClass::DoCollide(CollideClass(*GeomA->Owner), CollideClass(*GeomB->Owner));
 }
 
 float CB3World::InterpolationFactor() const
@@ -355,6 +390,7 @@ void CB3World::AddShell(CPHShell* Shell)
 void CB3World::RemoveShell(CPHShell* Shell)
 {
 	Shells.Erase(Shell);
+	std::erase_if(FrozenBodies, [Shell](const SFrozenBody& Entry) { return Entry.Shell == Shell; });
 }
 
 void CB3World::AddUpdateObject(CPHUpdateObject* Object)
@@ -419,16 +455,66 @@ u32 CB3World::CalcNumSteps(u32 DeltaTime)
 	return iCeil((float(DeltaTime) - FrameTimeValue * 1000) / (fixed_step * 1000));
 }
 
+void CB3World::FreezeBody(b3BodyId Body, CPHShell* Shell)
+{
+	FrozenBodies.push_back({Body, Shell, b3Body_GetLinearVelocity(Body), b3Body_GetAngularVelocity(Body), b3Body_GetGravityScale(Body)});
+}
+
+// ODE takes every object out of the step until a shell UnFreeze puts it back, so a FlyTo moves only
+// the corpse. Box3D steps every body: while frozen, Step holds the bodies awake now still, character
+// capsules included, unless their shell is thawed. UnFreeze gives them their motion back.
 void CB3World::Freeze()
 {
-	R_ASSERT2(!IsFrozen, "already freezed!!!");
-	IsFrozen = true;
+	R_ASSERT2(!Frozen, "already freezed!!!");
+	Frozen = true;
+	FrozenBodies.clear();
+	for (CPHShell* Shell : Shells)
+	{
+		Shell->Thawed = false;
+		for (CPHElement* Element : Shell->ElementsList)
+		{
+			if (Element->IsAwake())
+			{
+				FreezeBody(Element->Body, Shell);
+			}
+		}
+	}
+
+	// Move events list every body awake in the last step; capsule shapes belong to a character owner.
+	const b3BodyEvents Events = b3World_GetBodyEvents(World);
+	for (int I = 0; I < Events.moveCount; ++I)
+	{
+		const b3BodyId Body = Events.moveEvents[I].bodyId;
+		b3ShapeId Shape;
+		if (b3Body_IsValid(Body) && b3Body_IsAwake(Body) && b3Body_GetShapes(Body, &Shape, 1) == 1)
+		{
+			const CODEGeom* Geom = static_cast<const CODEGeom*>(b3Shape_GetUserData(Shape));
+			if (Geom && Geom->Owner && Geom->Owner->Character)
+			{
+				FreezeBody(Body, nullptr);
+			}
+		}
+	}
 }
 
 void CB3World::UnFreeze()
 {
-	R_ASSERT2(IsFrozen, "is not freezed!!!");
-	IsFrozen = false;
+	R_ASSERT2(Frozen, "is not freezed!!!");
+	Frozen = false;
+	for (const SFrozenBody& Entry : FrozenBodies)
+	{
+		if (b3Body_IsValid(Entry.Body) && !(Entry.Shell && Entry.Shell->Thawed))
+		{
+			b3Body_SetLinearVelocity(Entry.Body, Entry.Linear);
+			b3Body_SetAngularVelocity(Entry.Body, Entry.Angular);
+			b3Body_SetGravityScale(Entry.Body, Entry.GravityScale);
+		}
+	}
+	FrozenBodies.clear();
+	for (CPHShell* Shell : Shells)
+	{
+		Shell->Thawed = false;
+	}
 }
 
 void CB3World::OnFrame()
@@ -439,7 +525,7 @@ void CB3World::OnFrame()
 
 void CB3World::FrameStep(float DeltaTime)
 {
-	if (IsFrozen)
+	if (Frozen)
 	{
 		return;
 	}
@@ -463,8 +549,10 @@ void CB3World::FrameStep(float DeltaTime)
 	IsProcessing = true;
 	for (u32 I = 0; I < StepsNumber; ++I)
 	{
+		StepsRemaining = StepsNumber - I;
 		Step();
 	}
+	StepsRemaining = 1;
 	IsProcessing = false;
 }
 
@@ -475,14 +563,42 @@ void CB3World::Step()
 
 	for (CPHShell* Shell : Shells)
 	{
-		Shell->PhTune(fixed_step);
+		if (Shell->SelfCollisionDirty)
+		{
+			Shell->BuildSelfCollisionPairs();
+		}
+		if (Simulated(Shell))
+		{
+			Shell->PhTune(fixed_step);
+		}
 	}
-	for (CPHUpdateObject* Object : UpdateObjects)
+	if (!Frozen)
 	{
-		Object->PhTune(fixed_step);
+		for (CPHUpdateObject* Object : UpdateObjects)
+		{
+			Object->PhTune(fixed_step);
+		}
+		UpdateCallback->update_step();
 	}
-
-	UpdateCallback->update_step();
+	for (CPHShell* Shell : Shells)
+	{
+		if (Simulated(Shell))
+		{
+			for (CPHElement* Element : Shell->ElementsList)
+			{
+				Element->FlushForces(fixed_step);
+			}
+		}
+	}
+	for (const SFrozenBody& Entry : FrozenBodies)
+	{
+		if (b3Body_IsValid(Entry.Body) && !(Entry.Shell && Entry.Shell->Thawed))
+		{
+			b3Body_SetLinearVelocity(Entry.Body, b3Vec3_zero);
+			b3Body_SetAngularVelocity(Entry.Body, b3Vec3_zero);
+			b3Body_SetGravityScale(Entry.Body, 0.f);
+		}
+	}
 
 	Stepping = true;
 	b3World_Step(World, fixed_step, SubSteps);
@@ -505,11 +621,25 @@ void CB3World::Step()
 
 	for (CPHShell* Shell : Shells)
 	{
+		if (!Simulated(Shell))
+		{
+			continue;
+		}
+
 		Shell->PhDataUpdate(fixed_step);
+		// ODE DisableObject: the corpse stops colliding with characters once it first comes to rest.
+		if (Shell->RemoveCharCollOnDisable && !Shell->isEnabled())
+		{
+			Shell->RemoveCharCollOnDisable = false;
+			Shell->DisableCharacterCollision();
+		}
 	}
-	for (CPHUpdateObject* Object : UpdateObjects)
+	if (!Frozen)
 	{
-		Object->PhDataUpdate(fixed_step);
+		for (CPHUpdateObject* Object : UpdateObjects)
+		{
+			Object->PhDataUpdate(fixed_step);
+		}
 	}
 }
 
@@ -519,20 +649,57 @@ static SGameMtl* MaterialOf(u16 Index)
 	return Mtl ? Mtl : GMLibrary().GetMaterialByIdx(0);
 }
 
-static void CallObjectCallbacks(const xr_vector<ObjectContactCallbackFun*>& Callbacks, bool& DoCollide, bool First, CPHContact& Contact, SGameMtl* M1, SGameMtl* M2)
+static void CallObjectCallbacks(const xr_vector<ObjectContactCallbackFun*>& Callbacks, bool& DoCollide, int Side, CPHContact& Contact, SGameMtl* M1, SGameMtl* M2, ObjectContactCallbackFun* Skip)
 {
 	// Callbacks may remove themselves.
 	for (size_t I = 0; I < Callbacks.size(); ++I)
 	{
 		ObjectContactCallbackFun* Callback = Callbacks[I];
-		Callback(DoCollide, First, Contact, M1, M2);
+		if (Callback != Skip)
+		{
+			Contact.Native().Side = u8(Side);
+			Contact.Native().FrictionRead = false;
+			Callback(DoCollide, Side == 0, Contact, M1, M2);
+		}
 	}
+}
+
+static void CallGeomCallbacks(dContact& Native, int Side, bool& DoCollide, ObjectContactCallbackFun* Skip = nullptr)
+{
+	CODEGeom* Geom = Native.Geom[Side];
+	if (Geom == nullptr)
+	{
+		return;
+	}
+
+	CPHContact Contact(Native);
+	SGameMtl* M1 = MaterialOf(Native.Material[0]);
+	SGameMtl* M2 = MaterialOf(Native.Material[1]);
+	CallObjectCallbacks(Geom->ObjectCallbacks, DoCollide, Side, Contact, M1, M2, Skip);
+	if (Geom->Owner)
+	{
+		CallObjectCallbacks(Geom->Owner->ObjectCallbacks, DoCollide, Side, Contact, M1, M2, Skip);
+	}
+}
+
+static bool HasCallbacks(const CODEGeom& Geom)
+{
+	return !Geom.ObjectCallbacks.empty() || (Geom.Owner && !Geom.Owner->ObjectCallbacks.empty());
+}
+
+static bool HasCallback(const CODEGeom& Geom, ObjectContactCallbackFun* Callback)
+{
+	const auto Has = [Callback](const xr_vector<ObjectContactCallbackFun*>& List) { return std::find(List.begin(), List.end(), Callback) != List.end(); };
+	return Has(Geom.ObjectCallbacks) || (Geom.Owner && Has(Geom.Owner->ObjectCallbacks));
 }
 
 bool CB3World::PreSolve(b3ShapeId ShapeA, b3ShapeId ShapeB, b3Pos Point, b3Vec3 Normal, void* Context)
 {
 	CB3World& Self = *static_cast<CB3World*>(Context);
-
+	if (!B3CharacterPreSolve(ShapeA, ShapeB))
+	{
+		return false;
+	}
 
 	dContact Native;
 	Native.Geom[0] = static_cast<CODEGeom*>(b3Shape_GetUserData(ShapeA));
@@ -543,7 +710,7 @@ bool CB3World::PreSolve(b3ShapeId ShapeA, b3ShapeId ShapeB, b3Pos Point, b3Vec3 
 	}
 
 	Native.Position = B3Math::FromB3(Point);
-	Native.Normal = B3Math::FromB3(Normal);
+	Native.Normal = B3Math::FromB3(b3Neg(Normal));
 	for (int I = 0; I < 2; ++I)
 	{
 		CODEGeom* Geom = Native.Geom[I];
@@ -557,22 +724,19 @@ bool CB3World::PreSolve(b3ShapeId ShapeA, b3ShapeId ShapeB, b3Pos Point, b3Vec3 
 		return false;
 	}
 
-	CPHContact Contact(Native);
-	bool DoCollide = true;
-	for (int I = 0; I < 2; ++I)
+	// ODE collides the geoms of one shell without object callbacks.
+	const SB3GeomOwner* OwnerA = Native.Geom[0] ? Native.Geom[0]->Owner : nullptr;
+	const SB3GeomOwner* OwnerB = Native.Geom[1] ? Native.Geom[1]->Owner : nullptr;
+	if (OwnerA && OwnerB && OwnerA->Shell && OwnerA->Shell == OwnerB->Shell)
 	{
-		CODEGeom* Geom = Native.Geom[I];
-		if (Geom == nullptr)
-		{
-			continue;
-		}
-
-		CallObjectCallbacks(Geom->ObjectCallbacks, DoCollide, I == 0, Contact, M1, M2);
-		if (Geom->Owner)
-		{
-			CallObjectCallbacks(Geom->Owner->ObjectCallbacks, DoCollide, I == 0, Contact, M1, M2);
-		}
+		return true;
 	}
+
+	// As ODE: the second side first. Collision damage comes per contact point after the step.
+	Native.Friction = M1->fPHFriction * M2->fPHFriction;
+	bool DoCollide = true;
+	CallGeomCallbacks(Native, 1, DoCollide, &DamageReceiverCollisionCallback);
+	CallGeomCallbacks(Native, 0, DoCollide, &DamageReceiverCollisionCallback);
 	return DoCollide;
 }
 
@@ -583,6 +747,62 @@ bool CB3World::AllowContact(b3ShapeId ShapeA, b3ShapeId ShapeB, const Fvector& P
 	const bool Allow = PreSolve(ShapeA, ShapeB, B3Math::ToB3(Point), B3Math::ToB3(Normal), this);
 	Stepping = WasStepping;
 	return Allow;
+}
+
+void CB3World::OverlapGeom(const CODEGeom& Geom, const Fmatrix& Form, float Inset, u64 Mask, b3OverlapResultFcn* Fcn, void* Context) const
+{
+	b3Vec3 Points[B3_MAX_SHAPE_CAST_POINTS];
+	b3ShapeProxy Proxy = {Points, 0, 0.f};
+	Proxy.count = Geom.MakeProxy(Form, Inset, Points, Proxy.radius);
+	b3QueryFilter Filter = b3DefaultQueryFilter();
+	Filter.categoryBits = B3Category::Dynamic;
+	Filter.maskBits = Mask;
+	b3World_OverlapShape(World, b3Vec3_zero, &Proxy, Filter, Fcn, Context);
+}
+
+// Only imotion reads the depth, against 1 cm: a proxy shrunk by 1 cm overlaps only deeper contacts.
+void CB3World::CollideGeom(CODEGeom& Geom, const Fmatrix& Form, u64 Mask)
+{
+	struct SContext
+	{
+		CB3World* World;
+		CODEGeom* Geom;
+		Fvector Position;
+	};
+	const auto Callback = [](b3ShapeId ShapeId, void* Context) -> bool
+	{
+		const SContext& Self = *static_cast<SContext*>(Context);
+		const SB3GeomOwner& Owner = *Self.Geom->Owner;
+		CODEGeom* Other = static_cast<CODEGeom*>(b3Shape_GetUserData(ShapeId));
+		if (Other && Other->Owner && ((Owner.Shell && Other->Owner->Shell == Owner.Shell) || (Owner.RefObject && Other->Owner->RefObject == Owner.RefObject)))
+		{
+			return true;
+		}
+
+		dContact Native;
+		Native.Position = Self.Position;
+		Native.Normal.set(0.f, 1.f, 0.f);
+		Native.Depth = 0.02f;
+		Native.ApproachSpeed = 0.f;
+		Native.Geom[0] = Self.Geom;
+		Native.Geom[1] = Other;
+		Native.Material[0] = Owner.Material;
+		Native.Material[1] = Other && Other->Owner ? Other->Owner->Material : Self.World->DefaultMaterial;
+		bool DoCollide = true;
+		CallGeomCallbacks(Native, 0, DoCollide);
+		return true;
+	};
+
+	if (Geom.Owner == nullptr)
+	{
+		return;
+	}
+	SContext Context{this, &Geom};
+	Form.transform_tiny(Context.Position, Geom.LocalForm.c);
+	const bool WasStepping = Stepping;
+	Stepping = true;
+	OverlapGeom(Geom, Form, 0.01f, Mask, Callback, &Context);
+	Stepping = WasStepping;
 }
 
 void CB3World::ProcessHitEvents()
@@ -635,105 +855,164 @@ void CB3World::ProcessHitEvents()
 	}
 }
 
-// Box3D never calls pre-solve for mesh contacts, so object contact callbacks get the level here,
-// after the step, from the deepest touching point of each manifold. As in ODE the level side has
-// no geom and takes the triangle material. DoCollide cannot undo a solved contact and is ignored.
+// CPHContactBodyEffector::Apply: drag against the velocity; on a solid surface only along it.
+static void ApplyDrag(b3BodyId Body, float RecipFlotation, const Fvector* Normal)
+{
+	const Fvector Velocity = B3Math::FromB3(b3Body_GetLinearVelocity(Body));
+	const float Drag = std::min(Velocity.magnitude() * 10000.f * RecipFlotation * RecipFlotation, b3Body_GetMass(Body) / fixed_step);
+	if (!fis_zero(Drag))
+	{
+		Fvector Force;
+		Force.mul(Velocity, -Drag);
+		if (Normal)
+		{
+			Force.mad(*Normal, -Force.dotproduct(*Normal));
+		}
+		b3Body_ApplyForceToCenter(Body, B3Math::ToB3(Force), true);
+	}
+}
+
+// Box3D never calls pre-solve for mesh contacts and calls it once per pair, so after the step the
+// contact data gives, as ODE per touching point: object callbacks for the level, collision damage
+// for every contact, solid slow-down drag. DoCollide cannot undo a solved contact and is ignored.
 void CB3World::ProcessLevelContacts()
 {
 	for (CPHShell* Shell : Shells)
 	{
-		if (!Shell->isActive())
+		if (!Shell->isActive() || !Simulated(Shell))
 		{
 			continue;
 		}
 
 		for (CPHElement* Element : Shell->ElementsList)
 		{
+			if (!Element->IsAwake())
+			{
+				continue;
+			}
+
+			float SlowDown = 0.f;
+			Fvector SlowDownNormal;
 			for (CODEGeom* Geom : Element->Geoms)
 			{
-				const bool HasCallbacks = !Geom->ObjectCallbacks.empty() || (Geom->Owner && !Geom->Owner->ObjectCallbacks.empty());
-				if (HasCallbacks && b3Shape_IsValid(Geom->Shape))
+				if (b3Shape_IsValid(Geom->Shape))
 				{
-					CallLevelContactCallbacks(Geom, Geom->Shape);
+					ProcessGeomContacts(*Element, *Geom, SlowDown, SlowDownNormal);
 				}
+			}
+			if (SlowDown > 0.f && !Shell->TracedGeoms)
+			{
+				ApplyDrag(Element->Body, SlowDown, &SlowDownNormal);
 			}
 		}
 	}
 	RunDeferred();
 }
 
-void CB3World::CallLevelContactCallbacks(CODEGeom* Geom, b3ShapeId Shape)
+// As ODE the level is side 0 with the triangle material, and the normal points from side 1 to side 0.
+void CB3World::ProcessGeomContacts(CPHElement& Element, CODEGeom& Geom, float& SlowDown, Fvector& SlowDownNormal)
 {
+	const b3ShapeId Shape = Geom.Shape;
 	const int Capacity = b3Shape_GetContactCapacity(Shape);
 	if (Capacity <= 0)
 	{
 		return;
 	}
+	if (ContactScratch.size() < size_t(Capacity))
+	{
+		ContactScratch.resize(Capacity);
+	}
 
-	xr_vector<b3ContactData> Contacts(Capacity);
-	const int Count = b3Shape_GetContactData(Shape, Contacts.data(), Capacity);
+	const int Count = b3Shape_GetContactData(Shape, ContactScratch.data(), Capacity);
+	const bool Callbacks = HasCallbacks(Geom);
+	const bool Damage = Callbacks && HasCallback(Geom, &DamageReceiverCollisionCallback);
+	// Without the bounce flag the solver did not bounce this step: the first SetBounce impact bounces here.
+	const bool HadBounce = (b3Shape_GetSurfaceMaterial(Shape).userMaterialId & B3MaterialFlag::Bounce) != 0;
+	float BounceSpeed = 0.f;
+	float Bounce = 0.f;
+	Fvector BounceNormal;
 	for (int I = 0; I < Count; ++I)
 	{
-		const b3ContactData& Data = Contacts[I];
-		const bool LevelA = B3_ID_EQUALS(b3Shape_GetBody(Data.shapeIdA), StaticBody);
-		const bool LevelB = B3_ID_EQUALS(b3Shape_GetBody(Data.shapeIdB), StaticBody);
-		if (LevelA == LevelB)
+		const b3ContactData& Data = ContactScratch[I];
+		const bool IsA = B3_ID_EQUALS(Data.shapeIdA, Shape);
+		const b3ShapeId OtherShape = IsA ? Data.shapeIdB : Data.shapeIdA;
+		const bool Level = B3_ID_EQUALS(b3Shape_GetBody(OtherShape), StaticBody);
+		CODEGeom* Other = static_cast<CODEGeom*>(b3Shape_GetUserData(OtherShape));
+		if (!Level && (!Damage || (Other && Other->Owner && Other->Owner->Shell == Element.Shell)))
 		{
 			continue;
 		}
 
+		const b3Pos CenterA = b3Body_GetWorldCenterOfMass(b3Shape_GetBody(Data.shapeIdA));
 		for (int M = 0; M < Data.manifoldCount; ++M)
 		{
 			const b3Manifold& Manifold = Data.manifolds[M];
-			const b3ManifoldPoint* Deepest = nullptr;
 			for (int P = 0; P < Manifold.pointCount; ++P)
 			{
 				const b3ManifoldPoint& Point = Manifold.points[P];
-				const bool Touching = Point.separation <= 0.f || Point.totalNormalImpulse > 0.f;
-				if (Touching && (Deepest == nullptr || Point.separation < Deepest->separation))
+				const size_t Triangle = size_t(Point.triangleIndex);
+				if (Point.totalNormalImpulse <= 0.f || (Level && (Point.triangleIndex < 0 || Triangle >= Meshes[MeshSolid].ToCdb.size())))
 				{
-					Deepest = &Point;
+					continue;
+				}
+
+				dContact Native;
+				Native.Position = B3Math::FromB3(b3OffsetPos(CenterA, Point.anchorA));
+				Native.Depth = std::max(-Point.separation, 0.f);
+				Native.ApproachSpeed = std::max(-Point.normalVelocity, 0.f);
+				Native.Geom[0] = Level ? nullptr : (IsA ? &Geom : Other);
+				Native.Geom[1] = Level || !IsA ? &Geom : Other;
+				Native.Normal = B3Math::FromB3(Level && IsA ? Manifold.normal : b3Neg(Manifold.normal));
+				for (int S = 0; S < 2; ++S)
+				{
+					Native.Material[S] = Native.Geom[S] && Native.Geom[S]->Owner ? Native.Geom[S]->Owner->Material : DefaultMaterial;
+				}
+				if (Level)
+				{
+					Native.Material[0] = u16(ObjectSpacePtr->GetStaticTris()[Meshes[MeshSolid].ToCdb[Triangle]].material);
+					SGameMtl* Mtl = MaterialOf(Native.Material[0]);
+					if (Mtl->Flags.test(SGameMtl::flSlowDown) && 1.f - Mtl->fFlotationFactor > SlowDown)
+					{
+						SlowDown = 1.f - Mtl->fFlotationFactor;
+						SlowDownNormal = Native.Normal;
+					}
+					if (!Callbacks)
+					{
+						continue;
+					}
+				}
+
+				SGameMtl* M1 = MaterialOf(Native.Material[0]);
+				SGameMtl* M2 = MaterialOf(Native.Material[1]);
+				Native.Friction = M1->fPHFriction * M2->fPHFriction;
+				bool DoCollide = true;
+				Stepping = true; // world changes from callbacks wait for RunDeferred, as in pre-solve
+				if (Level)
+				{
+					CallGeomCallbacks(Native, 1, DoCollide);
+				}
+				else
+				{
+					CPHContact Contact(Native);
+					Native.Side = IsA ? 0 : 1;
+					DamageReceiverCollisionCallback(DoCollide, IsA, Contact, M1, M2);
+				}
+				Stepping = false;
+
+				if (Level && Native.Bounce > 0.f && !HadBounce && Native.ApproachSpeed > std::max(Native.BounceVel, BounceSpeed))
+				{
+					BounceSpeed = Native.ApproachSpeed;
+					Bounce = Native.Bounce;
+					BounceNormal = Native.Normal;
 				}
 			}
-			if (Deepest == nullptr)
-			{
-				continue;
-			}
-
-			const size_t MeshTriangle = size_t(Deepest->triangleIndex);
-			if (Deepest->triangleIndex < 0 || MeshTriangle >= MeshToCdbTriangle.size())
-			{
-				continue;
-			}
-			const CDB::TRI& Tri = ObjectSpacePtr->GetStaticTris()[MeshToCdbTriangle[MeshTriangle]];
-
-			// The geom goes first; the normal points from it to the level.
-			const b3BodyId GeomBody = b3Shape_GetBody(Shape);
-			const b3Vec3 Anchor = LevelA ? Deepest->anchorB : Deepest->anchorA;
-			dContact Native;
-			Native.Position = B3Math::FromB3(b3OffsetPos(b3Body_GetWorldCenterOfMass(GeomBody), Anchor));
-			Native.Normal = B3Math::FromB3(Manifold.normal);
-			if (LevelA)
-			{
-				Native.Normal.invert();
-			}
-			Native.Depth = std::max(-Deepest->separation, 0.f);
-			Native.Geom[0] = Geom;
-			Native.Material[0] = Geom->Owner ? Geom->Owner->Material : DefaultMaterial;
-			Native.Material[1] = u16(Tri.material);
-
-			SGameMtl* M1 = MaterialOf(Native.Material[0]);
-			SGameMtl* M2 = MaterialOf(Native.Material[1]);
-			CPHContact Contact(Native);
-			bool DoCollide = true;
-			Stepping = true; // world changes from callbacks wait for RunDeferred, as in pre-solve
-			CallObjectCallbacks(Geom->ObjectCallbacks, DoCollide, true, Contact, M1, M2);
-			if (Geom->Owner)
-			{
-				CallObjectCallbacks(Geom->Owner->ObjectCallbacks, DoCollide, true, Contact, M1, M2);
-			}
-			Stepping = false;
 		}
+	}
+
+	if (BounceSpeed > 0.f)
+	{
+		const b3BodyId Body = Element.Body;
+		b3Body_SetLinearVelocity(Body, b3MulAdd(b3Body_GetLinearVelocity(Body), -Bounce * BounceSpeed, B3Math::ToB3(BounceNormal)));
 	}
 }
 
@@ -750,14 +1029,19 @@ void CB3World::RunDeferred()
 
 void CB3World::ProcessLiquidContacts()
 {
-	if (!b3Shape_IsValid(LiquidShape))
+	if (!b3Shape_IsValid(Meshes[MeshPassable].Shape))
 	{
 		return;
 	}
 
-	// A body is in liquid when a liquid surface crosses its bounding sphere: probe with a vertical ray.
+	// A body touches a passable surface when it crosses its bounding sphere: probe with a vertical ray.
 	for (CPHShell* Shell : Shells)
 	{
+		if (!Simulated(Shell))
+		{
+			continue;
+		}
+
 		for (CPHElement* Element : Shell->ElementsList)
 		{
 			const b3BodyId Body = Element->Body;
@@ -780,20 +1064,10 @@ void CB3World::ProcessLiquidContacts()
 			const Fvector Velocity = B3Math::FromB3(b3Body_GetLinearVelocity(Body));
 			const float Mass = b3Body_GetMass(Body);
 
-			// CPHContactBodyEffector::Apply for a passable material: drag against the whole velocity.
-			// ODE adds the effector only for flSlowDown materials (Physics.cpp).
-			if (Mtl->Flags.test(SGameMtl::flSlowDown))
+			// ODE adds the effector only for flSlowDown, and to ray-motion objects only in liquid (Physics.cpp).
+			if (Mtl->Flags.test(SGameMtl::flSlowDown) && (Mtl->Flags.test(SGameMtl::flLiquid) || !Shell->TracedGeoms))
 			{
-				const float RecipFlotation = 1.f - Mtl->fFlotationFactor;
-				const float Drag = std::min(Velocity.magnitude() * 10000.f * RecipFlotation * RecipFlotation, Mass / fixed_step);
-				if (!fis_zero(Drag))
-				{
-					Fvector Force;
-					Force.mul(Velocity, -Drag);
-					// The drag must not hold the item up against gravity: slow the sinking, do not stop it.
-					Force.y = std::min(Force.y, Mass * GravityValue * 0.8f);
-					B3_SAFE(b3Body_ApplyForceToCenter(Body, B3Math::ToB3(Force), true));
-				}
+				ApplyDrag(Body, 1.f - Mtl->fFlotationFactor, nullptr);
 			}
 
 			if (Element->Owner.ContactCallback)

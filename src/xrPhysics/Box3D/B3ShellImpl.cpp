@@ -7,6 +7,8 @@
 #include "../../xrEngine/bone.h"
 #include "PHShellBuildJoint.h"
 
+extern Fbox phBoundaries;
+
 CPhysicsShell::~CPhysicsShell()
 {
 }
@@ -24,7 +26,7 @@ CPHShell::CPHShell()
 #ifdef DEBUG
 	dbg_obj = nullptr;
 #endif
-	CollideClassBits.assign(0);
+	CollideClassBits.assign(B3CollideClass::Dynamic);
 }
 
 CPHShell::~CPHShell()
@@ -66,6 +68,45 @@ void CPHShell::PhDataUpdate(float Step)
 	{
 		Element->CutVelocity();
 		Element->PullState(true);
+	}
+
+	CPHElement* RootElement = Root();
+	if (RootElement && RootElement->IsAwake() && RootElement->CurForm.c.y < phBoundaries.y1)
+	{
+		Disable();
+	}
+
+	const bool Enabled = isEnabled();
+	if (Enabled != WasEnabled)
+	{
+		WasEnabled = Enabled;
+		if (Enabled)
+		{
+			vis_update_activate();
+		}
+		else
+		{
+			--ActiveCount;
+		}
+	}
+
+	SelfContacts = 0;
+	for (CPHElement* Element : ElementsList)
+	{
+		b3ContactData Contacts[32];
+		const int Count = SelfCollision && Element->IsAwake() ? b3Body_GetContactData(Element->Body, Contacts, 32) : 0;
+		for (int I = 0; I < Count; ++I)
+		{
+			const b3ContactData& Contact = Contacts[I];
+			const b3BodyId BodyA = b3Shape_GetBody(Contact.shapeIdA);
+			if (B3_ID_EQUALS(BodyA, Element->Body) && OwnsBody(b3Shape_GetBody(Contact.shapeIdB)))
+			{
+				for (int M = 0; M < Contact.manifoldCount; ++M)
+				{
+					SelfContacts += u32(Contact.manifolds[M].pointCount);
+				}
+			}
+		}
 	}
 }
 
@@ -120,6 +161,7 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 		g_B3World->AddShell(this);
 		InWorld = true;
 	}
+	FinishActivate(disable);
 
 	Fvector LinearVel;
 	LinearVel.sub(m2.c, m0.c);
@@ -155,7 +197,40 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
 		g_B3World->AddShell(this);
 		InWorld = true;
 	}
+	FinishActivate(disable);
 	SetCallbacks();
+}
+
+// As ODE activate(): a shell activated disabled puts its object to processing sleep. Ragdoll
+// inertia smoothing waits for the bodies.
+void CPHShell::FinishActivate(bool Disable)
+{
+	WasEnabled = !Disable;
+	if (Disable)
+	{
+		--ActiveCount;
+	}
+	if (SmoothInertia <= 0.f)
+	{
+		return;
+	}
+
+	b3Matrix3 Mean = b3Mat3_zero;
+	for (CPHElement* Element : ElementsList)
+	{
+		if (b3Body_IsValid(Element->Body))
+		{
+			Mean = b3AddMM(Mean, b3Body_GetMassData(Element->Body).inertia);
+		}
+	}
+	Mean = b3MulSM(SmoothInertia / float(ElementsList.size()), Mean);
+	for (CPHElement* Element : ElementsList)
+	{
+		Element->InertiaKeep *= 1.f - SmoothInertia;
+		Element->ExtraInertia = b3AddMM(b3MulSM(1.f - SmoothInertia, Element->ExtraInertia), Mean);
+		Element->ApplyMassData();
+	}
+	SmoothInertia = 0.f;
 }
 
 void CPHShell::Activate(bool disable, bool not_set_bone_callbacks)
@@ -172,6 +247,8 @@ void CPHShell::Activate(const Fmatrix& form, bool disable)
 
 void CPHShell::Build(bool disable)
 {
+	// ODE Build does not touch the processing count; RunSimulation enables the shell.
+	ActiveCount += Active ? 0 : 1;
 	Activate(true, true);
 }
 
@@ -187,6 +264,7 @@ void CPHShell::RunSimulation(bool place_current_forms)
 		ActivatingBonePoses(*m_pKinematics);
 	}
 	Enable();
+	WasEnabled = true;
 }
 
 // As ODE: disabled callbacks let the animation drive the bones (imotion_position death animation).
@@ -229,6 +307,10 @@ void CPHShell::ActivatingBonePoses(IKinematics& K)
 		if (Element->m_SelfID != BI_NONE)
 		{
 			Element->ToBonePos(K.LL_GetTransform(Element->m_SelfID));
+			if (Element == Root())
+			{
+				ObjectInRootForm.invert(K.LL_GetTransform(Element->m_SelfID));
+			}
 		}
 	}
 }
@@ -279,6 +361,24 @@ void CPHShell::InterpolateGlobalTransform(Fmatrix* m)
 	m->mulB_43(ObjectInRootForm);
 	mXFORM.set(*m);
 	VERIFY2(_valid(*m), "not valide transform");
+
+	IPhysicsShellHolder* Object = Root() ? Root()->PhysicsRefObject() : nullptr;
+	if (Object && ActiveCount < 0)
+	{
+		Object->ObjectProcessingDeactivate();
+		Object->ObjectSpatialMove();
+		ActiveCount = 0;
+	}
+}
+
+void CPHShell::vis_update_activate()
+{
+	IPhysicsShellHolder* Object = Root() ? Root()->PhysicsRefObject() : nullptr;
+	if (++ActiveCount > 0 && Object)
+	{
+		ActiveCount = 0;
+		Object->ObjectProcessingActivate();
+	}
 }
 
 void CPHShell::GetGlobalTransformDynamic(Fmatrix* m)
@@ -373,13 +473,40 @@ void CPHShell::Enable()
 	}
 }
 
+// ODE disables only this shell's bodies; Box3D sleeps the whole island, so the shell is put to sleep
+// only when no other dynamic body touches it. Otherwise it stops and Box3D sleeps it later.
 void CPHShell::Disable()
 {
+	if (g_B3World && g_B3World->IsStepping())
+	{
+		g_B3World->Defer([this]() { Disable(); });
+		return;
+	}
+
+	bool Alone = true;
 	for (CPHElement* Element : ElementsList)
 	{
-		if (b3Body_IsValid(Element->Body))
+		if (!b3Body_IsValid(Element->Body))
 		{
-			B3_SAFE(b3Body_SetAwake(Element->Body, false));
+			continue;
+		}
+
+		b3Body_SetLinearVelocity(Element->Body, b3Vec3_zero);
+		b3Body_SetAngularVelocity(Element->Body, b3Vec3_zero);
+		b3ContactData Contacts[32];
+		const int Count = b3Body_GetContactData(Element->Body, Contacts, 32);
+		for (int I = 0; I < Count && Alone; ++I)
+		{
+			const b3BodyId BodyA = b3Shape_GetBody(Contacts[I].shapeIdA);
+			const b3BodyId Other = B3_ID_EQUALS(BodyA, Element->Body) ? b3Shape_GetBody(Contacts[I].shapeIdB) : BodyA;
+			Alone = b3Body_GetType(Other) != b3_dynamicBody || OwnsBody(Other);
+		}
+	}
+	for (CPHElement* Element : ElementsList)
+	{
+		if (Alone && b3Body_IsValid(Element->Body))
+		{
+			b3Body_SetAwake(Element->Body, false);
 		}
 	}
 }
@@ -436,12 +563,46 @@ float CPHShell::getVolume()
 	return Volume;
 }
 
+// As ODE: mass is the box density; every element gets the box mass and inertia at its center.
 void CPHShell::MassAddBox(float mass, const Fvector& full_size)
 {
-	if (CPHElement* RootElement = Root())
+	const float M = mass * full_size.x * full_size.y * full_size.z;
+	const float X = full_size.x * full_size.x / 12.f;
+	const float Y = full_size.y * full_size.y / 12.f;
+	const float Z = full_size.z * full_size.z / 12.f;
+	const b3Matrix3 Inertia = {{M * (Y + Z), 0.f, 0.f}, {0.f, M * (X + Z), 0.f}, {0.f, 0.f, M * (X + Y)}};
+	for (CPHElement* Element : ElementsList)
 	{
-		RootElement->setMass(RootElement->getMass() + mass);
+		Element->AddedMass += M;
+		Element->ExtraInertia = b3AddMM(Element->ExtraInertia, Inertia);
+		Element->ApplyMassData();
 	}
+}
+
+// As ODE: before the bodies exist the masses are blended at once and the inertia once they are
+// created; on a built shell (BreakableObject) ODE leaves the bodies alone.
+void CPHShell::SmoothElementsInertia(float k)
+{
+	float Mean = 0.f;
+	for (CPHElement* Element : ElementsList)
+	{
+		if (b3Body_IsValid(Element->Body))
+		{
+			return;
+		}
+		Mean += Element->getMass();
+	}
+	Mean *= k / float(ElementsList.size());
+	for (CPHElement* Element : ElementsList)
+	{
+		const float Scale = 1.f - k + Mean / std::max(Element->Mass, EPS_S);
+		Element->Mass *= Scale;
+		for (auto& Entry : Element->GeomMasses)
+		{
+			Entry.second *= Scale;
+		}
+	}
+	SmoothInertia = k;
 }
 
 void CPHShell::get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext) const
@@ -495,20 +656,53 @@ void CPHShell::applyImpulseTrace(const Fvector& pos, const Fvector& dir, float v
 
 void CPHShell::applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val, const u16 id)
 {
-	CPhysicsElement* Element = id == BI_NONE ? Root() : get_Element(id);
-	if (Element == nullptr)
-	{
-		Element = Root();
-	}
-	if (Element)
+	if (CPhysicsElement* Element = id == BI_NONE ? nullptr : get_Element(id))
 	{
 		Element->applyImpulseTrace(pos, dir, val, id);
 	}
 }
 
+// As ODE ShellHit.cpp: a blast pushes every geom of the shell at a random point in its element, and
+// its hit position (often the world center of the target) is never a lever arm.
 void CPHShell::applyHit(const Fvector& pos, const Fvector& dir, float val, const u16 id, ALife::EHitType hit_type)
 {
-	applyImpulseTrace(pos, dir, val, id);
+	if (id == BI_NONE)
+	{
+		return;
+	}
+	if (m_pKinematics == nullptr)
+	{
+		applyImpulseTrace(pos, dir, val);
+		return;
+	}
+	if (hit_type != ALife::eHitTypeExplosion)
+	{
+		applyImpulseTrace(pos, dir, val, id);
+		return;
+	}
+	if (!Active)
+	{
+		return;
+	}
+
+	Enable();
+	const float Impulse = val / _sqrt(_sqrt(float(ElementsList.size())));
+	for (CPHElement* Element : ElementsList)
+	{
+		const float Radius = Element->getRadius();
+		for (CODEGeom* Geom : Element->Geoms)
+		{
+			Fvector Point, Dir;
+			Point.random_point(Fvector().set(Radius, Radius, Radius));
+			Dir.random_dir();
+			if (!fis_zero(pos.magnitude(), EPS_L))
+			{
+				Dir.mul(0.5f).add(dir);
+			}
+			Dir.normalize_safe();
+			Element->applyImpulseTrace(Point, Dir, Impulse / float(Element->Geoms.size()), Geom->BoneId);
+		}
+	}
 }
 
 void CPHShell::setTorque(const Fvector& torque)
@@ -529,9 +723,15 @@ void CPHShell::setForce(const Fvector& force)
 
 void CPHShell::applyGravityAccel(const Fvector& accel)
 {
+	if (!Active)
+	{
+		return;
+	}
+
+	const Fvector Accel = Fvector().mul(accel, float(ElementsList.size()));
 	for (CPHElement* Element : ElementsList)
 	{
-		Element->applyGravityAccel(accel);
+		Element->applyGravityAccel(Accel);
 	}
 }
 
@@ -746,36 +946,165 @@ void CPHShell::SetIgnoreStatic()
 	SetGeomFilter();
 }
 
+// ODE: not dynamic class, so characters too; static geom shells still collide.
 void CPHShell::SetIgnoreDynamic()
 {
-	CollideMask &= ~(B3Category::Dynamic | B3Category::Static);
+	CollideMask &= ~(B3Category::Dynamic | B3Category::Character);
 	SetGeomFilter();
+}
+
+// Character exclusion lives in the mask: character mover queries skip shapes that do not accept characters.
+void CPHShell::DisableCharacterCollision()
+{
+	CollideMask &= ~B3Category::Character;
+	CollideClassBits.set(B3CollideClass::NCCharacter, true);
+	SetGeomFilter();
+}
+
+void CPHShell::ResetPairs()
+{
+	const u64 Mask = CollisionDisabled ? 0ull : CollideMask;
+	for (CPHElement* Element : ElementsList)
+	{
+		for (CODEGeom* Geom : Element->Geoms)
+		{
+			Geom->SetMask(0ull);
+			Geom->SetMask(Mask);
+		}
+	}
+}
+
+void CPHShell::SetClassBit(CLClassBits Bit)
+{
+	if (!CollideClassBits.test(Bit))
+	{
+		CollideClassBits.set(Bit, true);
+		ResetPairs();
+	}
 }
 
 void CPHShell::SetRagDoll()
 {
+	if (CollideClassBits.test(B3CollideClass::RagDoll))
+	{
+		return;
+	}
+
+	// Recycled contacts keep their old friction: the death skin friction must reach resting contacts.
+	for (CPHElement* Element : ElementsList)
+	{
+		const b3BodyId Body = Element->Body;
+		if (b3Body_IsValid(Body))
+		{
+			B3_SAFE(b3Body_EnableContactRecycling(Body, false));
+		}
+	}
+	SetClassBit(B3CollideClass::RagDoll);
 }
 
 void CPHShell::SetIgnoreRagDoll()
 {
+	SetClassBit(B3CollideClass::NCRagDoll);
 }
 
 void CPHShell::SetIgnoreAnimated()
 {
+	SetClassBit(B3CollideClass::NCAnimated);
 }
 
 void CPHShell::SetSmall()
 {
+	SetClassBit(B3CollideClass::Small);
 }
 
 void CPHShell::SetIgnoreSmall()
 {
+	SetClassBit(B3CollideClass::NCSmall);
+}
+
+void CPHShell::SetBullets()
+{
+	const bool Bullet = IsBullet();
+	for (CPHElement* Element : ElementsList)
+	{
+		const b3BodyId Body = Element->Body;
+		if (b3Body_IsValid(Body))
+		{
+			B3_SAFE(b3Body_SetBullet(Body, Bullet));
+		}
+	}
+}
+
+void CPHShell::BuildSelfCollisionPairs()
+{
+	SelfCollisionDirty = false;
+	SelfCollisionExcluded.clear();
+	if (SelfCollision && g_B3World)
+	{
+		struct SContext
+		{
+			CPHShell* Shell;
+			const SB3GeomOwner* Owner;
+		};
+		const auto Callback = [](b3ShapeId ShapeId, void* Context) -> bool
+		{
+			const SContext& Self = *static_cast<SContext*>(Context);
+			const CODEGeom* Other = static_cast<const CODEGeom*>(b3Shape_GetUserData(ShapeId));
+			if (Other && Other->Owner && Other->Owner->Shell == Self.Shell && Other->Owner != Self.Owner)
+			{
+				const SB3GeomOwner* OtherOwner = Other->Owner;
+				Self.Shell->SelfCollisionExcluded.emplace_back(std::min(Self.Owner, OtherOwner), std::max(Self.Owner, OtherOwner));
+			}
+			return true;
+		};
+		// Overlap deeper than 1 cm, as ODE SelfCollisionOverlap.
+		for (CPHElement* Element : ElementsList)
+		{
+			SContext Context{this, &Element->Owner};
+			for (CODEGeom* Geom : Element->Geoms)
+			{
+				g_B3World->OverlapGeom(*Geom, Element->CurForm, 0.01f, B3Category::Dynamic, Callback, &Context);
+			}
+		}
+	}
+	ResetPairs();
+}
+
+bool CPHShell::SelfCollides(const SB3GeomOwner* A, const SB3GeomOwner* B) const
+{
+	const std::pair<const SB3GeomOwner*, const SB3GeomOwner*> Pair(std::min(A, B), std::max(A, B));
+	return SelfCollision && std::find(SelfCollisionExcluded.begin(), SelfCollisionExcluded.end(), Pair) == SelfCollisionExcluded.end();
+}
+
+void CPHShell::CollideAll()
+{
+	if (g_B3World == nullptr || CollisionDisabled)
+	{
+		return;
+	}
+
+	for (CPHElement* Element : ElementsList)
+	{
+		for (CODEGeom* Geom : Element->Geoms)
+		{
+			g_B3World->CollideGeom(*Geom, Element->CurForm, CollideMask & (B3Category::Level | B3Category::Static | B3Category::Dynamic | B3Category::Character));
+		}
+	}
+	if (!g_B3World->IsStepping())
+	{
+		g_B3World->RunDeferred();
+	}
 }
 
 void CPHShell::CreateShellAnimator(CInifile const* ini, const char* section)
 {
+	SetClassBit(B3CollideClass::Animated);
 	xr_delete(Animator);
 	Animator = new CPhysicsShellAnimator(this, ini, section);
+	if (IPhysicsShellHolder* Object = Root() ? Root()->PhysicsRefObject() : nullptr)
+	{
+		Object->ObjectProcessingActivate();
+	}
 }
 
 void CPHShell::AnimatorOnFrame(bool calculate_bones)
@@ -788,6 +1117,10 @@ void CPHShell::AnimatorOnFrame(bool calculate_bones)
 
 bool CPHShell::isBreakable()
 {
+	if (BreakingBlocked)
+	{
+		return false;
+	}
 	for (CPHJoint* Joint : JointsList)
 	{
 		if (Joint->isBreakable())
@@ -842,6 +1175,8 @@ static bool IsBoneInSubtree(IKinematics& K, u16 Id, u16 Root)
 
 // Every broken joint cuts the subtree below its bone into a new shell. The new shell keeps the
 // Box3D bodies; the game gives it a kinematics and a holder (CPHSkeleton::UnsplitSingle).
+// As ODE, from the last joint to the first: children were added after their parents, so a broken
+// child leaves first and a broken parent then takes the rest of its subtree.
 void CPHShell::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
 {
 	if (m_pKinematics == nullptr)
@@ -850,9 +1185,10 @@ void CPHShell::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
 	}
 
 	const JOINT_STORAGE Joints = JointsList;
-	for (CPHJoint* Broken : Joints)
+	for (auto Rit = Joints.rbegin(); Rit != Joints.rend(); ++Rit)
 	{
-		if (!Broken->Broken)
+		CPHJoint* Broken = *Rit;
+		if (!Broken->Broken || Broken->OwnerShell != this)
 		{
 			continue;
 		}
@@ -864,6 +1200,14 @@ void CPHShell::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
 
 		CPHShell* NewShell = static_cast<CPHShell*>(P_create_Shell());
 		NewShell->CollideMask = CollideMask;
+		NewShell->CollideClassBits = CollideClassBits;
+		NewShell->RemoveCharCollOnDisable = RemoveCharCollOnDisable;
+		NewShell->TracedGeoms = TracedGeoms;
+		NewShell->GeomTrace = GeomTrace;
+		if (IsGroupObject())
+		{
+			NewShell->RegisterToCLGroup(GetCLGroup());
+		}
 		for (auto It = ElementsList.begin(); It != ElementsList.end();)
 		{
 			CPHElement* Element = *It;
@@ -903,6 +1247,10 @@ void CPHShell::SplitProcess(PHSHELL_PAIR_VECTOR& out_shels)
 			continue;
 		}
 
+		// ODE SplitJoint: the part keeps none of the source object's callbacks.
+		NewShell->set_ObjectContactCallback(nullptr);
+		NewShell->set_CallbackData(nullptr);
+		NewShell->set_PhysicsRefObject(nullptr);
 		NewShell->Active = true;
 		NewShell->Root()->GetGlobalTransformDynamic(&NewShell->mXFORM);
 		if (g_B3World)
@@ -1175,9 +1523,11 @@ void CPHShell::AddElementRecursive(CPhysicsElement* RootElement, u16 Id, Fmatrix
 	CPhysicsElement* E = RootElement;
 	CPhysicsJoint* J = nullptr;
 	const bool HasShape = !NoPhysicsShape(BoneData.get_shape());
+	const bool Breakable = JointData.ik_flags.test(SJointIKData::flBreakable);
 	if (HasShape || !RootElement)
 	{
-		if (JointData.type == jtRigid && RootElement)
+		// A rigid breakable bone (ODE CPHFracture) gets its own element, welded to the parent.
+		if (JointData.type == jtRigid && RootElement && !Breakable)
 		{
 			Fmatrix VsRoot;
 			VsRoot.invert(RootElement->mXFORM);
@@ -1201,12 +1551,18 @@ void CPHShell::AddElementRecursive(CPhysicsElement* RootElement, u16 Id, Fmatrix
 
 			if (RootElement)
 			{
-				J = BuildJoint(BoneData, RootElement, E);
+				const bool Fracture = Breakable && JointData.type == jtRigid;
+				J = Fracture ? P_create_Joint(CPhysicsJoint::ball, RootElement, E) : BuildJoint(BoneData, RootElement, E);
 				if (J)
 				{
 					J->SetBoneID(Id);
 					add_Joint(J);
-					if (JointData.ik_flags.test(SJointIKData::flBreakable))
+					if (Fracture)
+					{
+						J->SetAnchorVsSecondElement(0.f, 0.f, 0.f);
+						static_cast<CPHJoint*>(J)->SetFracture(JointData.break_force, JointData.break_torque);
+					}
+					else if (Breakable)
 					{
 						J->SetBreakable(JointData.break_force, JointData.break_torque);
 					}
@@ -1351,6 +1707,10 @@ CPHJoint::CPHJoint(enumType Type, CPhysicsElement* InFirst, CPhysicsElement* InS
 {
 	eType = Type;
 	bActive = false;
+	if (Type == hinge2 && InSecond)
+	{
+		static_cast<CPHElement*>(InSecond)->AllowFastRotation = true;
+	}
 }
 
 CPHJoint::~CPHJoint()
@@ -1417,10 +1777,16 @@ static int ClampAxis(int AxisNum)
 	return clampr(AxisNum, 0, 2);
 }
 
+// ODE re-aims a live joint (SetAxisDirDynamic); Box3D rebuilds the frames from the current poses.
 void CPHJoint::SetAxisDir(const Fvector& orientation, const int axis_num)
 {
 	Axes[ClampAxis(axis_num)].Direction.set(orientation);
 	Axes[ClampAxis(axis_num)].Vs = vs_global;
+	if (b3Joint_IsValid(Joint))
+	{
+		DestroyNative();
+		CreateNative();
+	}
 }
 
 void CPHJoint::SetAxisDirVsFirstElement(const Fvector& orientation, const int axis_num)
@@ -1489,8 +1855,9 @@ void CPHJoint::SetJointSDfactors(float spring_factor, float damping_factor)
 {
 	Spring = spring_factor;
 	Damping = damping_factor;
+	// ODE puts them only on the motor CFM (Box3D motors are hard) and the hinge2 suspension, never
+	// on the joint constraint itself.
 	UpdateMotor();
-	ApplyConstraintTuning();
 }
 
 void CPHJoint::GetAxisSDfactors(float& spring_factor, float& damping_factor, int axis_num)

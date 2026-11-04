@@ -2,11 +2,16 @@
 #include "B3Shell.h"
 #include "B3World.h"
 #include "B3Math.h"
+#include "console_vars.h"
+#include "../../xrCore/Kernel/EngineExternal.h"
 
 static constexpr float MaxB3Angle = 0.99f * PI;
 
-// A joint whose other axes stay within this angle behaves as a hinge (about 11 degrees).
-static constexpr float FullControlHingeTolerance = 0.2f;
+// A joint whose other axes stay within this angle behaves as a hinge (about 2 degrees).
+static constexpr float FullControlHingeTolerance = 0.03f;
+
+// ODE CPHFracture compares the torque against break_torque times this.
+static constexpr float FractureTorqueFactor = 10000000.f;
 
 static b3BodyId BodyOf(CPhysicsElement* Element)
 {
@@ -29,11 +34,68 @@ static bool IsFreeRange(float Low, float High)
 	return !(High - Low < PI * 2.f);
 }
 
+// ODE CalcAxis: a range set at creation is shifted to contain the bind pose.
+static void NormalizeOdeRange(float& Low, float& High)
+{
+	if (Low < -PI)
+	{
+		High -= Low + PI;
+		Low = -PI;
+	}
+	if (Low > 0.f)
+	{
+		High -= Low;
+		Low = 0.f;
+	}
+	if (High > PI)
+	{
+		Low -= High - PI;
+		High = PI;
+	}
+	if (High < 0.f)
+	{
+		Low -= High;
+		High = 0.f;
+	}
+}
+
+// ODE breaks on |value|^2 > limit^2 / ph_break_common_factor; a zero factor never breaks.
+static float BreakThreshold(float Value)
+{
+	return _valid(Value) ? std::abs(Value) : FLT_MAX;
+}
+
+// ODE hinge2 suspension is an absolute spring of 20000*sf N/m and a damper of 1000*df N*s/m;
+// Box3D scales its soft spring by the effective mass.
+static void WheelSuspension(b3BodyId BodyA, b3BodyId BodyB, float Spring, float Damping, float& Hertz, float& DampingRatio)
+{
+	const float MassA = b3Body_GetMass(BodyA);
+	const float MassB = b3Body_GetMass(BodyB);
+	const float Mass = std::max(MassA > 0.f ? MassA * MassB / (MassA + MassB) : MassB, EPS_L);
+	const float K = std::max(20000.f * Spring, EPS_L);
+	Hertz = clampr(_sqrt(K / Mass) / (2.f * PI), 0.1f, 60.f);
+	DampingRatio = clampr(1000.f * Damping / (2.f * _sqrt(K * Mass)), 0.f, 50.f);
+}
+
+// Rodrigues in engine numbers, the space ODE measures its Euler angles in.
+static void RotateFrame(Fmatrix& Frame, const Fvector& Axis, float Angle)
+{
+	const float C = std::cos(Angle);
+	const float S = std::sin(Angle);
+	for (Fvector* V : {&Frame.i, &Frame.j, &Frame.k})
+	{
+		Fvector Cross;
+		Cross.crossproduct(Axis, *V);
+		const float Along = Axis.dotproduct(*V) * (1.f - C);
+		V->mul(C).mad(Cross, S).mad(Axis, Along);
+	}
+}
+
 // An engine angle around an axis is the negative angle around the mirrored axis.
 static void ToB3Limits(float Low, float High, float& Lower, float& Upper)
 {
-	Lower = clampr(-High, -MaxB3Angle, MaxB3Angle);
-	Upper = clampr(-Low, -MaxB3Angle, MaxB3Angle);
+	Lower = std::clamp(-High, -MaxB3Angle, MaxB3Angle);
+	Upper = std::clamp(-Low, -MaxB3Angle, MaxB3Angle);
 	if (Lower > Upper)
 	{
 		std::swap(Lower, Upper);
@@ -45,8 +107,8 @@ static void ToB3Limits(float Low, float High, float& Lower, float& Upper)
 // directly here.
 static void ToB3SteeringLimits(float Low, float High, float& Lower, float& Upper)
 {
-	Lower = clampr(Low, -MaxB3Angle, MaxB3Angle);
-	Upper = clampr(High, -MaxB3Angle, MaxB3Angle);
+	Lower = std::clamp(Low, -MaxB3Angle, MaxB3Angle);
+	Upper = std::clamp(High, -MaxB3Angle, MaxB3Angle);
 	if (Lower > Upper)
 	{
 		std::swap(Lower, Upper);
@@ -140,83 +202,71 @@ void CPHJoint::FullControlAxes(Fvector Dir[3]) const
 	Dir[1].normalize_safe();
 }
 
-u32 CPHJoint::FullControlTwistAxis() const
+// At creation ODE CalcAxis shifts every range to contain the bind pose; later changes apply raw.
+void CPHJoint::AxisRanges(float Low[3], float High[3], bool Creation) const
 {
-	u32 Best = 0;
-	float BestRange = -1.f;
-
 	for (u32 i = 0; i < 3; ++i)
 	{
-		if (IsFreeRange(Axes[i].Low, Axes[i].High))
-			continue;
-
-		const float Range = Axes[i].High - Axes[i].Low;
-
-		if (Range > BestRange)
+		Low[i] = Axes[i].Low;
+		High[i] = Axes[i].High;
+		if (Creation)
 		{
-			BestRange = Range;
+			NormalizeOdeRange(Low[i], High[i]);
+		}
+	}
+}
+
+// The widest range carries the twist: a free axis when there is one, so the cone covers the
+// limited ones, otherwise the main bend, whose asymmetric limits the twist keeps exactly.
+static u32 FullControlTwistAxis(const float Low[3], const float High[3])
+{
+	u32 Best = 0;
+	for (u32 i = 1; i < 3; ++i)
+	{
+		if (High[i] - Low[i] > High[Best] - Low[Best])
+		{
 			Best = i;
 		}
 	}
-
-	if (BestRange <= 1e-4f)
-	{
-		// Only locked axes are left: a free axis has to carry the twist, otherwise the
-		// joint would lose the rotation ODE still allows.
-		for (u32 i = 0; i < 3; ++i)
-		{
-			if (IsFreeRange(Axes[i].Low, Axes[i].High))
-				return i;
-		}
-	}
-
 	return Best;
 }
 
-float CPHJoint::FullControlCone(u32 TwistAxis) const
+// One circular cone stands for the two other ODE Euler stops: half of the wider range around
+// the centre of both. A free axis must not be capped by the other one, so it disables the cone.
+static float FullControlCone(u32 Twist, const float Low[3], const float High[3])
 {
 	float Cone = 0.f;
-	bool Limited = false;
-
 	for (u32 i = 0; i < 3; ++i)
 	{
-		if (i == TwistAxis || IsFreeRange(Axes[i].Low, Axes[i].High))
+		if (i == Twist)
+		{
 			continue;
-
-		Limited = true;
-
-		const float Extent = std::max(std::abs(Axes[i].Low), std::abs(Axes[i].High));
-
-		if (Extent > Cone)
-			Cone = Extent;
+		}
+		if (IsFreeRange(Low[i], High[i]))
+		{
+			return -1.f;
+		}
+		Cone = std::max(Cone, 0.5f * (High[i] - Low[i]));
 	}
-
-	return Limited ? clampr(Cone, 0.05f, PI) : -1.f;
+	return clampr(Cone, 0.05f, 0.5f * PI);
 }
 
 // The joint moves almost only about its widest axis (a knee, an elbow, a finger): such a
 // joint is built as a hinge. The spherical swing limits are degenerate when the joint is
 // straight (the swing axis is a cross product of two parallel axes), which never settles.
-bool CPHJoint::FullControlIsHinge() const
+static bool FullControlIsHinge(u32 Twist, const float Low[3], const float High[3])
 {
-	const u32 Twist = FullControlTwistAxis();
-
-	if (IsFreeRange(Axes[Twist].Low, Axes[Twist].High))
+	if (IsFreeRange(Low[Twist], High[Twist]))
 	{
 		return false;
 	}
-
 	for (u32 i = 0; i < 3; ++i)
 	{
-		if (i == Twist || IsFreeRange(Axes[i].Low, Axes[i].High))
-			continue;
-
-		const float Extent = std::max(std::abs(Axes[i].Low), std::abs(Axes[i].High));
-
-		if (Extent > FullControlHingeTolerance)
+		if (i != Twist && (IsFreeRange(Low[i], High[i]) || std::max(std::abs(Low[i]), std::abs(High[i])) > FullControlHingeTolerance))
+		{
 			return false;
+		}
 	}
-
 	return true;
 }
 
@@ -261,36 +311,6 @@ static float SanitizeMotor(float Value)
 	return Value;
 }
 
-// ODE damps every ragdoll joint with a velocity motor (dParamFMax, dParamVel = 0). Most
-// bones have friction 0, so the motor was off and a joint could resonate forever. The
-// torque is scaled by the lighter body: enough to kill a resonance, small enough to let
-// the limb swing for a second or two before it settles.
-float CPHJoint::DefaultJointDamping() const
-{
-	const float MassA = First ? First->getMass() : 0.f;
-	const float MassB = Second ? Second->getMass() : 0.f;
-	const float Gravity = g_B3World ? g_B3World->Gravity() : 9.81f;
-
-	return 0.025f * std::min(MassA, MassB) * Gravity;
-}
-
-void CPHJoint::ApplyConstraintTuning()
-{
-	if (!b3Joint_IsValid(Joint))
-	{
-		return;
-	}
-
-	// ODE makes the stops soft with ERP/CFM from the same spring/damping factors; Box3D
-	// has a soft constraint, so the factors are mapped onto its stiffness and damping.
-	// Softer than the defaults makes a ball joint pump energy (checked on a test rig), so
-	// the tuning only stiffens.
-	const float Hertz = clampr(60.f * Spring, 60.f, 120.f);
-	const float DampingRatio = clampr(2.f * Damping, 2.f, 4.f);
-
-	B3_SAFE(b3Joint_SetConstraintTuning(Joint, Hertz, DampingRatio));
-}
-
 void CPHJoint::CreateNative()
 {
 	if (g_B3World == nullptr)
@@ -310,6 +330,9 @@ void CPHJoint::CreateNative()
 		BodyA = g_B3World->GroundBody();
 	}
 
+	float Low[3], High[3];
+	AxisRanges(Low, High, true);
+
 	Fvector AnchorGlobal;
 	GlobalAnchor(AnchorGlobal);
 	Fvector Axis0, Axis1;
@@ -317,6 +340,8 @@ void CPHJoint::CreateNative()
 	GlobalAxis(1, Axis1);
 
 	Fmatrix Frame;
+	Fvector Dir[3];
+	float Cone = -1.f;
 	if (eType == hinge2)
 	{
 		// Wheel: suspension and steering along frame X (axis 0), spin along frame Z (axis 1).
@@ -327,12 +352,26 @@ void CPHJoint::CreateNative()
 		Fmatrix SecondForm = ElementForm(Second);
 		MakeFrame(AnchorGlobal, SecondForm.k, &SecondForm.i, Frame);
 	}
+	else if (eType == slider)
+	{
+		// Box3D slides along frame X. ODE CreateSlider: the axis of the first body, or of the second
+		// when the first is fixed (the position is then measured the other way), inverted in SoC.
+		Axes[0].Vs = Axes[1].Vs = FirstIsReversed() ? vs_second : vs_first;
+		GlobalAxis(0, Axis0);
+		if (EngineExternal().ShadowOfChernobylMode() != FirstIsReversed())
+		{
+			Axis0.invert();
+		}
+		Fvector Normal;
+		Normal.crossproduct(Axis0, std::abs(Axis0.y) < 0.9f ? Fvector().set(0.f, 1.f, 0.f) : Fvector().set(1.f, 0.f, 0.f));
+		MakeFrame(AnchorGlobal, Normal, &Axis0, Frame);
+	}
 	else if (eType == full_control)
 	{
-		// The twist goes to the axis with the widest range, the cone covers the rest.
-		Fvector Dir[3];
 		FullControlAxes(Dir);
-		FullControlTwist = u8(FullControlTwistAxis());
+		FullControlTwist = u8(FullControlTwistAxis(Low, High));
+		FullControlAsHinge = FullControlIsHinge(FullControlTwist, Low, High);
+		Cone = FullControlAsHinge ? -1.f : FullControlCone(FullControlTwist, Low, High);
 		MakeFrame(AnchorGlobal, Dir[FullControlTwist], nullptr, Frame);
 	}
 	else
@@ -340,33 +379,43 @@ void CPHJoint::CreateNative()
 		MakeFrame(AnchorGlobal, Axis0, nullptr, Frame);
 	}
 
+	// The cone is centred on the middle of the two other ODE ranges: frame A turns to the child
+	// pose there, the Euler rotation R0 * R1 * R2 about the bind axes by minus each centre (ODE
+	// angles are the parent relative to the child); frame B stays at the bind pose.
+	Fmatrix FrameA = Frame;
+	for (int i = 2; Cone > 0.f && i >= 0; --i)
+	{
+		if (i != FullControlTwist)
+		{
+			RotateFrame(FrameA, Dir[i], -0.5f * (Low[i] + High[i]));
+		}
+	}
+
 	const b3Transform World = B3Math::ToB3(Frame);
-	b3JointDef Base = {};
+	const b3Transform WorldA = B3Math::ToB3(FrameA);
 	auto FillBase = [&](b3JointDef& Def)
 	{
 		Def.bodyIdA = BodyA;
 		Def.bodyIdB = BodyB;
-		Def.localFrameA = b3InvMulTransforms(b3Body_GetTransform(BodyA), World);
+		Def.localFrameA = b3InvMulTransforms(b3Body_GetTransform(BodyA), WorldA);
 		Def.localFrameB = b3InvMulTransforms(b3Body_GetTransform(BodyB), World);
 		Def.collideConnected = false;
-		Def.forceThreshold = Base.forceThreshold;
-		Def.torqueThreshold = Base.torqueThreshold;
+		Def.forceThreshold = ForceThreshold;
+		Def.torqueThreshold = TorqueThreshold;
 		Def.userData = this;
 	};
 
 	const float Friction = SanitizeMotor(Axes[0].Force);
-	Base.forceThreshold = BreakForce > 0.f ? BreakForce : FLT_MAX;
-	Base.torqueThreshold = BreakTorque > 0.f ? BreakTorque : FLT_MAX;
 	switch (eType)
 	{
 	case hinge:
 	{
 		b3RevoluteJointDef Def = b3DefaultRevoluteJointDef();
 		FillBase(Def.base);
-		if (!IsFreeRange(Axes[0].Low, Axes[0].High))
+		if (!IsFreeRange(Low[0], High[0]))
 		{
 			Def.enableLimit = true;
-			ToB3Limits(Axes[0].Low, Axes[0].High, Def.lowerAngle, Def.upperAngle);
+			ToB3Limits(Low[0], High[0], Def.lowerAngle, Def.upperAngle);
 		}
 		Def.enableMotor = Friction > 0.f;
 		Def.maxMotorTorque = Friction;
@@ -392,11 +441,10 @@ void CPHJoint::CreateNative()
 		b3WheelJointDef Def = b3DefaultWheelJointDef();
 		FillBase(Def.base);
 		Def.enableSuspensionSpring = true;
-		Def.suspensionHertz = clampr(4.f * Spring, 0.5f, 20.f);
-		Def.suspensionDampingRatio = clampr(0.7f * Damping, 0.1f, 2.f);
+		WheelSuspension(BodyA, BodyB, Spring, Damping, Def.suspensionHertz, Def.suspensionDampingRatio);
 		Def.enableSteering = true;
-		Def.enableSteeringLimit = !IsFreeRange(Axes[0].Low, Axes[0].High);
-		ToB3SteeringLimits(Axes[0].Low, Axes[0].High, Def.lowerSteeringLimit, Def.upperSteeringLimit);
+		Def.enableSteeringLimit = !IsFreeRange(Low[0], High[0]);
+		ToB3SteeringLimits(Low[0], High[0], Def.lowerSteeringLimit, Def.upperSteeringLimit);
 		Def.steeringHertz = WheelSteeringHertz;
 		Def.steeringDampingRatio = WheelSteeringDampingRatio;
 		Def.maxSteeringTorque = std::max(Axes[0].Force, 1000.f);
@@ -411,6 +459,14 @@ void CPHJoint::CreateNative()
 	}
 	case ball:
 	{
+		if (Weld)
+		{
+			b3WeldJointDef Def = b3DefaultWeldJointDef();
+			FillBase(Def.base);
+			Joint = b3CreateWeldJoint(g_B3World->Id(), &Def);
+			break;
+		}
+
 		b3SphericalJointDef Def = b3DefaultSphericalJointDef();
 		FillBase(Def.base);
 
@@ -425,17 +481,14 @@ void CPHJoint::CreateNative()
 		const u32 Twist = FullControlTwist;
 
 		// ODE gives every axis the same maximum motor torque.
-		const float Authored = SanitizeMotor(std::max(Axes[0].Force, std::max(Axes[1].Force, Axes[2].Force)));
-		const float Motor = std::max(Authored, DefaultJointDamping());
-
-		FullControlAsHinge = FullControlIsHinge();
+		const float Motor = SanitizeMotor(std::max(Axes[0].Force, std::max(Axes[1].Force, Axes[2].Force)));
 
 		if (FullControlAsHinge)
 		{
 			b3RevoluteJointDef Def = b3DefaultRevoluteJointDef();
 			FillBase(Def.base);
 			Def.enableLimit = true;
-			ToB3Limits(Axes[Twist].Low, Axes[Twist].High, Def.lowerAngle, Def.upperAngle);
+			ToB3Limits(Low[Twist], High[Twist], Def.lowerAngle, Def.upperAngle);
 			Def.enableMotor = Motor > 0.f;
 			Def.maxMotorTorque = Motor;
 			Def.motorSpeed = -Axes[Twist].Velocity;
@@ -446,13 +499,12 @@ void CPHJoint::CreateNative()
 		b3SphericalJointDef Def = b3DefaultSphericalJointDef();
 		FillBase(Def.base);
 
-		if (!IsFreeRange(Axes[Twist].Low, Axes[Twist].High))
+		if (!IsFreeRange(Low[Twist], High[Twist]))
 		{
 			Def.enableTwistLimit = true;
-			ToB3Limits(Axes[Twist].Low, Axes[Twist].High, Def.lowerTwistAngle, Def.upperTwistAngle);
+			ToB3Limits(Low[Twist], High[Twist], Def.lowerTwistAngle, Def.upperTwistAngle);
 		}
 
-		const float Cone = FullControlCone(Twist);
 		Def.enableConeLimit = Cone > 0.f;
 		Def.coneAngle = (Cone > 0.f) ? Cone : 0.05f;
 
@@ -463,19 +515,14 @@ void CPHJoint::CreateNative()
 		break;
 	}
 	}
-
-	ApplyConstraintTuning();
 }
 
-void CPHJoint::UpdateMotor()
+void CPHJoint::UpdateMotor(bool Wake)
 {
 	if (!b3Joint_IsValid(Joint))
 	{
 		return;
 	}
-
-	// Box3D does not wake sleeping bodies on motor changes (ph_door closes a door that fell asleep open).
-	B3_SAFE(b3Joint_WakeBodies(Joint));
 
 	switch (eType)
 	{
@@ -501,8 +548,10 @@ void CPHJoint::UpdateMotor()
 		B3_SAFE(b3WheelJoint_SetMaxSteeringTorque(Joint, std::max(Axes[0].Force, 1000.f)));
 		B3_SAFE(b3WheelJoint_SetSteeringHertz(Joint, WheelSteeringHertz));
 		B3_SAFE(b3WheelJoint_SetSteeringDampingRatio(Joint, WheelSteeringDampingRatio));
-		B3_SAFE(b3WheelJoint_SetSuspensionHertz(Joint, clampr(4.f * Spring, 0.5f, 20.f)));
-		B3_SAFE(b3WheelJoint_SetSuspensionDampingRatio(Joint, clampr(0.7f * Damping, 0.1f, 2.f)));
+		float Hertz, DampingRatio;
+		WheelSuspension(b3Joint_GetBodyA(Joint), b3Joint_GetBodyB(Joint), Spring, Damping, Hertz, DampingRatio);
+		B3_SAFE(b3WheelJoint_SetSuspensionHertz(Joint, Hertz));
+		B3_SAFE(b3WheelJoint_SetSuspensionDampingRatio(Joint, DampingRatio));
 		B3_SAFE(b3WheelJoint_EnableSpinMotor(Joint, Axes[1].Force > 0.f));
 		B3_SAFE(b3WheelJoint_SetMaxSpinTorque(Joint, Axes[1].Force));
 		B3_SAFE(b3WheelJoint_SetSpinMotorSpeed(Joint, -Axes[1].Velocity));
@@ -513,8 +562,7 @@ void CPHJoint::UpdateMotor()
 		break;
 	case full_control:
 	{
-		const float Authored = SanitizeMotor(std::max(Axes[0].Force, std::max(Axes[1].Force, Axes[2].Force)));
-		const float Motor = std::max(Authored, DefaultJointDamping());
+		const float Motor = SanitizeMotor(std::max(Axes[0].Force, std::max(Axes[1].Force, Axes[2].Force)));
 
 		if (FullControlAsHinge)
 		{
@@ -526,10 +574,32 @@ void CPHJoint::UpdateMotor()
 
 		B3_SAFE(b3SphericalJoint_EnableMotor(Joint, Motor > 0.f));
 		B3_SAFE(b3SphericalJoint_SetMaxMotorTorque(Joint, Motor));
+		B3_SAFE(b3SphericalJoint_SetMotorVelocity(Joint, b3Vec3_zero));
 		break;
 	}
 	}
-	B3_SAFE(b3Joint_WakeBodies(Joint));
+
+	// Box3D does not wake sleeping bodies on motor changes (ph_door closes a door that fell asleep open).
+	if (Wake)
+	{
+		B3_SAFE(b3Joint_WakeBodies(Joint));
+	}
+}
+
+// ODE set_JointResistance: SetForce and SetVelocity(0) on every axis, which never enable the
+// shell. Corpses call it every frame, so only a real change reaches the native motor.
+void CPHJoint::SetResistance(float Force)
+{
+	if (eType == ball || (std::abs(Force - Axes[0].Force) < 1e-3f && Axes[0].Velocity == 0.f))
+	{
+		return;
+	}
+	for (SAxis& Axis : Axes)
+	{
+		Axis.Force = Force;
+		Axis.Velocity = 0.f;
+	}
+	UpdateMotor(false);
 }
 
 void CPHJoint::PhTune(float Step)
@@ -548,15 +618,27 @@ void CPHJoint::PhTune(float Step)
 	B3_SAFE(b3WheelJoint_SetTargetSteeringAngle(Joint, SteerTarget));
 }
 
+// ODE CPHJointDestroyInfo checks the forces and the torques against break_force alone;
+// break_torque is never compared.
 void CPHJoint::SetBreakable(float force, float torque)
 {
-	BreakForce = force;
-	BreakTorque = torque;
+	Breakable = true;
+	ForceThreshold = TorqueThreshold = BreakThreshold(force / _sqrt(ph_console::phBreakCommonFactor));
 	if (b3Joint_IsValid(Joint))
 	{
-		B3_SAFE(b3Joint_SetForceThreshold(Joint, force > 0.f ? force : FLT_MAX));
-		B3_SAFE(b3Joint_SetTorqueThreshold(Joint, torque > 0.f ? torque : FLT_MAX));
+		B3_SAFE(b3Joint_SetForceThreshold(Joint, ForceThreshold));
+		B3_SAFE(b3Joint_SetTorqueThreshold(Joint, TorqueThreshold));
 	}
+}
+
+// ODE CPHFracture: breaks at force * ph_break_common_factor > break_force, and at torque *
+// ph_break_common_factor > break_torque * FractureTorqueFactor. Set before activation.
+void CPHJoint::SetFracture(float Force, float Torque)
+{
+	Weld = true;
+	Breakable = true;
+	ForceThreshold = BreakThreshold(Force / ph_console::phBreakCommonFactor);
+	TorqueThreshold = BreakThreshold(Torque * FractureTorqueFactor / ph_console::phBreakCommonFactor);
 }
 
 void CPHJoint::UpdateLimits()
@@ -620,7 +702,9 @@ void CPHJoint::UpdateLimits()
 			B3_SAFE(b3SphericalJoint_EnableTwistLimit(Joint, false));
 		}
 
-		const float Cone = FullControlCone(Twist);
+		float Low[3], High[3];
+		AxisRanges(Low, High, false);
+		const float Cone = FullControlCone(Twist, Low, High);
 		B3_SAFE(b3SphericalJoint_EnableConeLimit(Joint, Cone > 0.f));
 
 		if (Cone > 0.f)
@@ -718,7 +802,9 @@ float CPHJoint::GetAxisAngleRate(int axis_num)
 		Second->get_AngularVel(AngularB);
 	}
 	GlobalAxis(axis_num, Axis);
-	return Fvector().sub(AngularB, AngularA).dotproduct(Axis);
+	const float Rate = Fvector().sub(AngularB, AngularA).dotproduct(Axis);
+	// ODE dJointGetHingeAngleRate: axis.(w1 - w2), negated for a reversed joint.
+	return eType == hinge && !FirstIsReversed() ? -Rate : Rate;
 }
 
 void CPHJoint::GetAxisDirDynamic(int num, Fvector& axis)
