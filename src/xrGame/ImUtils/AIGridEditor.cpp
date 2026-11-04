@@ -37,30 +37,43 @@ static u64 Key(int X, int Z)
 	return (u64(u32(X)) << 32) | u32(Z);
 }
 
+struct PickContext
+{
+	collide::rq_result Result;
+	bool IgnoreActorObstacles = true;
+};
+
 static bool PickCallback(collide::rq_result& Result, LPVOID Data)
 {
+	auto& Context = *static_cast<PickContext*>(Data);
 	const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
 	const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
-	if (Material && (Material->Flags.is(SGameMtl::flPassable) || Material->Flags.is(SGameMtl::flActorObstacle)))
+	if (Material && (Material->Flags.is(SGameMtl::flPassable) || (Context.IgnoreActorObstacles && Material->Flags.is(SGameMtl::flActorObstacle))))
 	{
 		return true;
 	}
-	*static_cast<collide::rq_result*>(Data) = Result;
+	Context.Result = Result;
 	return false;
 }
 
-static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fvector& Hit, Fvector* Normal = nullptr)
+static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fvector& Hit, Fvector* Normal = nullptr, u16* MaterialIndex = nullptr, bool IgnoreActorObstacles = true)
 {
-	collide::rq_result Result;
+	PickContext Context;
+	Context.IgnoreActorObstacles = IgnoreActorObstacles;
+	auto& Result = Context.Result;
 	Result.set(nullptr, Range, -1);
 	collide::rq_results Results;
 	collide::ray_defs Definition(Origin, Direction, Range, CDB::OPT_FULL_TEST, collide::rqtStatic);
-	g_pGameLevel->ObjectSpace.RayQuery(Results, Definition, PickCallback, &Result, nullptr, nullptr);
+	g_pGameLevel->ObjectSpace.RayQuery(Results, Definition, PickCallback, &Context, nullptr, nullptr);
 	if (Result.element < 0)
 	{
 		return false;
 	}
 	Hit.mad(Origin, Direction, Result.range);
+	if (MaterialIndex)
+	{
+		*MaterialIndex = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element].material;
+	}
 	if (Normal)
 	{
 		const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
@@ -103,6 +116,13 @@ public:
 	u32 RemovedCount = 0;
 	u32 Selected = Invalid;
 	float Radius = 2.f;
+	bool FilterAngle = false;
+	float MinAngle = 0.f;
+	float MaxAngle = 56.f;
+	bool FilterMaterial = false;
+	bool HasMaterial = false;
+	u16 BrushMaterial = 0;
+	xr_string MaterialName;
 	float DrawDistance = 70.f;
 	bool Brush = false;
 	bool Single = false;
@@ -141,6 +161,8 @@ public:
 		Triangles.clear();
 		Graph = nullptr;
 		HasGround = false;
+		HasMaterial = false;
+		MaterialName.clear();
 		Selected = Invalid;
 		Pending = false;
 		PendingRevert = false;
@@ -296,7 +318,7 @@ public:
 			B.y += Height;
 			Direction.sub(B, A);
 			float Length = Direction.magnitude();
-			if (Length > EPS_L && Ray(A, Direction.div(Length), Length - EPS_L, Hit))
+			if (Length > EPS_L && Ray(A, Direction.div(Length), Length - EPS_L, Hit, nullptr, nullptr, false))
 			{
 				return false;
 			}
@@ -304,11 +326,25 @@ public:
 		return true;
 	}
 
+	bool AllowsSurface(const Fvector& Normal, u16 MaterialIndex) const
+	{
+		const float Angle = rad2deg(acosf(clampr(Normal.y, -1.f, 1.f)));
+		return (FilterAngle ? (Angle >= MinAngle && Angle <= MaxAngle) : Normal.y >= .55f) &&
+			   (!FilterMaterial || (HasMaterial && MaterialIndex == BrushMaterial));
+	}
+
 	void Paint(const Fvector& Hit)
 	{
+		if (FilterMaterial && !HasMaterial)
+		{
+			Status = "Capture a surface material before painting with the material filter.";
+			return;
+		}
 		const int CenterX = X(Hit), CenterZ = Z(Hit);
 		const int Extent = iCeil(Radius / Header.size);
 		xr_vector<u32> Added;
+		xr_vector<Node> Candidates;
+		xr_hash_map<u64, u32> CandidateColumns;
 		// Full deterministic coverage: every cell center inside the disk.
 		for (int CX = CenterX - Extent; CX <= CenterX + Extent; ++CX)
 		{
@@ -320,19 +356,24 @@ public:
 					continue;
 				}
 				Fvector Ground, Normal;
-				if (!Ray(P, Fvector().set(0, -1, 0), 5.5f, Ground, &Normal) || Normal.y < .55f)
+				u16 MaterialIndex = 0;
+				if (!Ray(P, Fvector().set(0, -1, 0), 5.5f, Ground, &Normal, &MaterialIndex))
 				{
 					continue;
 				}
-				u32 Existing = Nearest(CX, CZ, Ground.y, Header.size, true);
+				if (!AllowsSurface(Normal, MaterialIndex))
+				{
+					continue;
+				}
 				// Reject unsupported edges and abrupt height changes across a cell.
 				bool Supported = true;
 				for (int I = 0; I < 4; ++I)
 				{
-					Fvector Sample = P, Surface;
+					Fvector Sample = P, Surface, SampleNormal;
+					u16 SampleMaterial = 0;
 					Sample.x += DX[I] * Header.size * .4f;
 					Sample.z += DZ[I] * Header.size * .4f;
-					if (!Ray(Sample, Fvector().set(0, -1, 0), 5.5f, Surface) || fabsf(Surface.y - Ground.y) > Header.size)
+					if (!Ray(Sample, Fvector().set(0, -1, 0), 5.5f, Surface, &SampleNormal, &SampleMaterial) || fabsf(Surface.y - Ground.y) > Header.size || !AllowsSurface(SampleNormal, SampleMaterial))
 					{
 						Supported = false;
 						break;
@@ -342,34 +383,84 @@ public:
 				{
 					continue;
 				}
-				Node N = Existing < Nodes.size() ? Nodes[Existing] : Node{};
-				if (N.Deleted)
-				{
-					--RemovedCount;
-				}
+				Node N;
 				N.Position = Ground;
 				N.Normal = Normal;
-				N.Modified = true;
-				N.Deleted = false;
-				N.Vertex.UncompressedNode.plane = pvCompress(Normal);
-				for (u8 I = 0; I < 4; ++I)
+				CandidateColumns[Key(CX, CZ)] = u32(Candidates.size());
+				Candidates.push_back(N);
+			}
+		}
+		// Grow only from the active grid through traversable neighbouring cells.
+		// Background geometry across a wall must not seed a disconnected island.
+		xr_vector<u8> Reachable(Candidates.size(), 0);
+		xr_vector<u32> Queue;
+		for (u32 I = 0; I < Candidates.size(); ++I)
+		{
+			const Fvector& P = Candidates[I].Position;
+			const int CX = X(P), CZ = Z(P);
+			for (int D = -1; D < 4; ++D)
+			{
+				const u32 Anchor = Nearest(CX + (D < 0 ? 0 : DX[D]), CZ + (D < 0 ? 0 : DZ[D]), P.y, Header.size);
+				if (Anchor < Nodes.size() && Travel(Nodes[Anchor].Position, P))
 				{
-					N.Vertex.link(I, Invalid);
-				}
-				if (Existing < Nodes.size())
-				{
-					Nodes[Existing] = N;
-					Cache(Existing, false);
-					Added.push_back(Existing);
-				}
-				else
-				{
-					u32 ID = u32(Nodes.size());
-					Nodes.push_back(N);
-					Cache(ID);
-					Added.push_back(ID);
+					Reachable[I] = 1;
+					Queue.push_back(I);
+					break;
 				}
 			}
+		}
+		for (size_t Head = 0; Head < Queue.size(); ++Head)
+		{
+			const Fvector P = Candidates[Queue[Head]].Position;
+			for (u8 D = 0; D < 4; ++D)
+			{
+				const auto It = CandidateColumns.find(Key(X(P) + DX[D], Z(P) + DZ[D]));
+				if (It != CandidateColumns.end() && !Reachable[It->second] && Travel(P, Candidates[It->second].Position))
+				{
+					Reachable[It->second] = 1;
+					Queue.push_back(It->second);
+				}
+			}
+		}
+		for (u32 I = 0; I < Candidates.size(); ++I)
+		{
+			if (!Reachable[I] || Nodes.size() >= Invalid - 1)
+			{
+				continue;
+			}
+			const auto& Candidate = Candidates[I];
+			const u32 Existing = Nearest(X(Candidate.Position), Z(Candidate.Position), Candidate.Position.y, Header.size, true);
+			Node N = Existing < Nodes.size() ? Nodes[Existing] : Node{};
+			if (N.Deleted)
+			{
+				--RemovedCount;
+			}
+			N.Position = Candidate.Position;
+			N.Normal = Candidate.Normal;
+			N.Modified = true;
+			N.Deleted = false;
+			N.Vertex.UncompressedNode.plane = pvCompress(N.Normal);
+			for (u8 I = 0; I < 4; ++I)
+			{
+				N.Vertex.link(I, Invalid);
+			}
+			if (Existing < Nodes.size())
+			{
+				Nodes[Existing] = N;
+				Cache(Existing, false);
+				Added.push_back(Existing);
+			}
+			else
+			{
+				u32 ID = u32(Nodes.size());
+				Nodes.push_back(N);
+				Cache(ID);
+				Added.push_back(ID);
+			}
+		}
+		if (!Candidates.empty() && Queue.empty())
+		{
+			Status = "Painting blocked: extend the existing AI grid without crossing walls.";
 		}
 		for (u32 ID : Added)
 		{
@@ -1501,6 +1592,41 @@ void RenderAIGridEditorWindow()
 			Editor.Single = false;
 		}
 		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 500.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		bool FiltersChanged = ImGui::Checkbox("Filter surface angle", &Editor.FilterAngle);
+		ImGui::BeginDisabled(!Editor.FilterAngle);
+		FiltersChanged |= ImGui::SliderFloat("Min angle (degrees)", &Editor.MinAngle, 0.f, 180.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+		Editor.MaxAngle = std::max(Editor.MinAngle, Editor.MaxAngle);
+		FiltersChanged |= ImGui::SliderFloat("Max angle (degrees)", &Editor.MaxAngle, Editor.MinAngle, 180.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::EndDisabled();
+		FiltersChanged |= ImGui::Checkbox("Only captured material", &Editor.FilterMaterial);
+		ImGui::SameLine();
+		if (ImGui::Button("Capture material"))
+		{
+			Fvector Surface;
+			u16 MaterialIndex = 0;
+			if (AIGrid::Ray(Device.vCameraPosition, Device.vCameraDirection, 500.f, Surface, nullptr, &MaterialIndex))
+			{
+				const SGameMtl* Material = GMLib.GetMaterialByIdx(MaterialIndex);
+				if (Material)
+				{
+					Editor.BrushMaterial = MaterialIndex;
+					Editor.MaterialName = Material->m_Name.c_str();
+					Editor.HasMaterial = true;
+					Editor.Status = "Captured material at the centre of the view.";
+					FiltersChanged = true;
+				}
+			}
+			else
+			{
+				Editor.Status = "No static surface under the centre of the view; captured material unchanged.";
+			}
+		}
+		ImGui::TextWrapped("Material: %s", Editor.HasMaterial ? Editor.MaterialName.c_str() : "not captured");
+		ImGui::TextWrapped("Angle from (0, 1, 0): 0 = upward floor, 90 = wall. Painting extends the existing grid without crossing walls.");
+		if (FiltersChanged)
+		{
+			Editor.LastStroke.set(flt_max, flt_max, flt_max);
+		}
 		if (ImGui::Checkbox("Edit individual node", &Editor.Single) && Editor.Single)
 		{
 			Editor.Brush = false;
