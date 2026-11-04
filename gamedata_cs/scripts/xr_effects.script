@@ -500,7 +500,7 @@ function kill_npc(actor, npc, p)
 	if p and p[1] then
 				npc = level_object_by_sid(tonumber(p[1]))
 	end
-	if npc ~= nil and npc:alive() then
+	if npc ~= nil and npc:alive() and npc:death_time() == 0 then
 		npc:kill(npc)
 	end
 	--end
