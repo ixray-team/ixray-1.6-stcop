@@ -82,7 +82,6 @@ function notify_on_use(victim, who)
 		else
 			-- Дефолт
 			--xr_sound.set_sound_play(victim:id(), "use_no_default")
-			xr_abuse.add_abuse(victim, 1)
 		end
 	end
 end
