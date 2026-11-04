@@ -961,7 +961,7 @@ end
 
 function in_crosshair()
 	local active_slot = db.actor:active_slot()
-	if active_slot == 2 or active_slot == 3	then
+	if active_slot == CInventory.INV_SLOT_2 or active_slot == CInventory.INV_SLOT_3	then
 		local active_item = db.actor:active_item()
 		if active_item and IsWeapon( active_item ) then
 			for id,st in pairs(db.storage) do

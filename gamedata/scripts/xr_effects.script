@@ -823,8 +823,8 @@ function actor_punch(npc)
 	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
 
 	local active_slot = db.actor:active_slot()
-	if active_slot ~= 2 and
-		 active_slot ~= 3
+	if active_slot ~= CInventory.INV_SLOT_2 and
+		 active_slot ~= CInventory.INV_SLOT_3
 	then
 		return
 	end
@@ -3141,7 +3141,7 @@ function create_cutscene_actor_with_weapon(actor, npc, p)
 
 	if slot_override == 0 then
 		slot = db.actor:active_slot()
-		if(slot~=2 and slot~=3) then
+		if(slot~=CInventory.INV_SLOT_2 and slot~=CInventory.INV_SLOT_3) then
 			return
 		end
 		active_item = db.actor:active_item()

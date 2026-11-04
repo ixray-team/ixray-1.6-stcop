@@ -25,19 +25,19 @@ function get_weapon()
 	local slot = db.actor:active_slot()
 	local item
 	
-	if (slot == 3 or slot == 2) then
+	if (slot == CInventory.INV_SLOT_3 or slot == CInventory.INV_SLOT_2) then
 		item = db.actor:item_in_slot(slot)
 		if (item and IsWeapon(item)) then 
 			return item
 		end
 	end
 	
-	item = db.actor:item_in_slot(3)
+	item = db.actor:item_in_slot(CInventory.INV_SLOT_3)
 	if (item and IsWeapon(item)) then 
 		return item 
 	end
 	
-	item = db.actor:item_in_slot(2)
+	item = db.actor:item_in_slot(CInventory.INV_SLOT_2)
 	if (item and IsWeapon(item)) then 
 		return item 
 	end

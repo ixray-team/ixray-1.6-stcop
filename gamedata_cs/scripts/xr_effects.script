@@ -575,8 +575,8 @@ function actor_punch(npc)
 	level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
 
 	local active_slot = db.actor:active_slot()
-	if active_slot ~= 1 and
-		 active_slot ~= 2
+	if active_slot ~= CInventory.INV_SLOT_2 and
+		 active_slot ~= CInventory.INV_SLOT_3
 	then
 		return
 	end
