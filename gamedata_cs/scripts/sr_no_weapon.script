@@ -21,8 +21,6 @@ function action_no_weapon:reset_scheme()
 	
 	self.state = state_nowhere -- еще неясно, в зоне он, или нет
 	
-	self:switch_state(db.actor)
-	
 	db.no_weap_zones[self.object:name()] = false
 end
 
@@ -65,7 +63,11 @@ function action_no_weapon:switch_state( actor )
 	
 	if state == state_inside or state == state_nowhere then
 		if not self.object:inside( actor:center() ) then			
-			self:zone_leave()
+			if state == state_inside then
+				self:zone_leave()
+			else
+				self.state = state_outside
+			end
 			--printf("on_update2 state[%s]", tostring(self.state))
 			return
 		end
@@ -94,7 +96,7 @@ function action_no_weapon:zone_leave()
 	local custom_static = hud:GetCustomStatic("can_use_weapon_now")
 	if db.no_weap_zones[self.object:name()] == true then
 		db.no_weap_zones[self.object:name()] = false
-	elseif custom_static == nil then
+	elseif not bind_stalker.check_for_weapon_hide_by_zones() and custom_static == nil then
 		hud:AddCustomStatic("can_use_weapon_now", true)
 		hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST("st_can_use_weapon_now")
 	end
