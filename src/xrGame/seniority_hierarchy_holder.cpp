@@ -18,7 +18,7 @@ CSeniorityHierarchyHolder::~CSeniorityHierarchyHolder	()
 
 CTeamHierarchyHolder &CSeniorityHierarchyHolder::team	(u32 team_id)
 {
-	VERIFY3					(team_id < max_team_count,"Team id is invalid : ",*SeniorityHierarchy::to_string(team_id));
+	CHECK_OR_EXIT(team_id < max_team_count, make_string<const char*>("Invalid hierarchy team id: %u (expected < %u)", team_id, u32(max_team_count)));
 	if (!m_teams[team_id])
 		m_teams[team_id]	= new CTeamHierarchyHolder(this);
 	return					(*m_teams[team_id]);

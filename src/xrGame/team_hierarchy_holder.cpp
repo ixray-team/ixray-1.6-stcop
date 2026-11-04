@@ -19,7 +19,7 @@ CTeamHierarchyHolder::~CTeamHierarchyHolder			()
 
 CSquadHierarchyHolder &CTeamHierarchyHolder::squad	(u32 squad_id) const
 {
-	VERIFY3					(squad_id < max_squad_count,"Squad id is invalid : ",*SeniorityHierarchy::to_string(squad_id));
+	CHECK_OR_EXIT(squad_id < max_squad_count, make_string<const char*>("Invalid hierarchy squad id: %u (expected < %u)", squad_id, u32(max_squad_count)));
 	if (!m_squads[squad_id])
 		m_squads[squad_id]	= new CSquadHierarchyHolder(const_cast<CTeamHierarchyHolder*>(this));
 	return					(*m_squads[squad_id]);
