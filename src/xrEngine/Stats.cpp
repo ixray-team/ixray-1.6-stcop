@@ -157,6 +157,7 @@ void CStats::Show()
 		F.OutNext	("TPS:         %4.0f M",	fTPS);
 		m_pRender->OutData1(F);
 		m_pRender->OutData3(F);
+		m_pRender->OutUpscalerStatus(F);   
 		F.OutSkip	();
 
 #define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))

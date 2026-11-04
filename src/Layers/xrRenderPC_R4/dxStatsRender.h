@@ -16,6 +16,7 @@ public:
 	virtual void GuardVerts (CGameFont &F) override;
 	virtual void GuardDrawCalls (CGameFont &F) override;
 	virtual void SetDrawParams (IRenderDeviceRender *pRender) override;
+	virtual void OutUpscalerStatus(CGameFont &F) override;
 private:
 };
 

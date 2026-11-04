@@ -615,6 +615,7 @@ CRenderTarget::CRenderTarget()
 	rt_planar_color.create(r2_RT_planar_color, s_dwWidth, s_dwHeight, ERHI_FORMAT::R11G11B10_FLOAT);
 
 	init_fsr();
+	init_fsr4();
 	init_dlss();
 	init_xess();
 

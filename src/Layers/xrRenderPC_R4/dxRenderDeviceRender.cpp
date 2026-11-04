@@ -19,6 +19,7 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 
 #include "..\xrRenderPC_R4\OverlayAPI\DLSSWrapper.h"
 #include "..\xrRenderPC_R4\OverlayAPI\FSR3Wrapper.h"
+#include "..\xrRenderPC_R4\OverlayAPI\FSR4Wrapper.h"
 
 void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 {
@@ -36,6 +37,10 @@ void dxRenderDeviceRender::GetRenderScale(float& RenderScale)
 		case 3:
 		{
 			g_Fsr3Wrapper.GetRenderScale(RenderScale);
+		}
+		case 5:
+		{
+			g_Fsr4Wrapper.GetRenderScale(RenderScale);
 		}
 		break;
 	}

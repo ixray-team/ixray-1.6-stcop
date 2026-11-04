@@ -82,6 +82,9 @@ if (WIN32)
 	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3_DX11)
 	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR3)
 
+	target_link_libraries(xrRender_R4 PRIVATE FidelityFX_SDK)
+	target_link_libraries(xrRender_R4 PRIVATE d3d12)
+
 	target_link_libraries(xrRender_R4 PUBLIC NVIDIA::DLSS)
 	target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
 	target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)

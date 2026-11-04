@@ -17,6 +17,7 @@ public:
 	virtual void GuardVerts (CGameFont &F) = 0;
 	virtual void GuardDrawCalls (CGameFont &F) = 0;
 	virtual void SetDrawParams (IRenderDeviceRender *pRender) = 0;
+	virtual void OutUpscalerStatus(CGameFont &F) = 0;
 };
 
 #endif	//	StatsRender_included
