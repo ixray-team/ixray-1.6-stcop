@@ -963,7 +963,8 @@ void CWeaponMagazined::ReloadMagazine()
 		m_DefaultCartridge.Load( m_ammoTypes[AmmoType.MagazineType].c_str(), AmmoType.MagazineType );
 
 	CCartridge l_cartridge = m_DefaultCartridge;
-	while(AmmoElapsed.MagazineElapsed < iMagazineSize)
+	const int ReloadCapacity = std::clamp(iMagazineSize, 0, int(u16(-1)));
+	while (AmmoElapsed.MagazineElapsed < ReloadCapacity)
 	{
 		if (!unlimited_ammo())
 		{
@@ -980,7 +981,7 @@ void CWeaponMagazined::ReloadMagazine()
 	if(m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer()) 
 		m_pCurrentAmmo->SetDropManual(true);
 
-	if(iMagazineSize > AmmoElapsed.MagazineElapsed) 
+	if (ReloadCapacity > AmmoElapsed.MagazineElapsed)
 	{ 
 		m_bLockType = true; 
 		ReloadMagazine(); 
@@ -1003,7 +1004,7 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
 }
 
-bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
+bool CWeaponMagazined::HaveCartridgeInInventory(u32 cnt)
 {
 	if (unlimited_ammo())
 	{
@@ -1068,7 +1069,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	}
 
 	CCartridge l_cartridge = m_DefaultCartridge;
-	while (cnt)
+	while (cnt && AmmoElapsed.MagazineElapsed < u16(-1))
 	{
 		if (!unlimited_ammo())
 		{

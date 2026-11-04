@@ -3504,6 +3504,11 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 		if (E)
 		{
 			E->net_Ready = true;
+			// Live updates always use the current packet format.
+			if (E->cast_item_weapon())
+			{
+				E->m_wVersion = SPAWN_VERSION;
+			}
 			E->UPDATE_Read(P);
 
 			if (g_pGamePersistent->GameType() == eGameIDFreeMP)

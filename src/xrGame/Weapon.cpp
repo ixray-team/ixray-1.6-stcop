@@ -253,7 +253,7 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 
-	AmmoElapsed.MagazineElapsed = pSettings->r_s32(section, "ammo_elapsed");
+	AmmoElapsed.MagazineElapsed = pSettings->r_u16(section, "ammo_elapsed");
 	iMagazineSize = pSettings->r_s32(section, "ammo_mag_size");
 	
 	cam_recoil.LegacyRecoil = zoom_cam_recoil.LegacyRecoil = pSettings->line_exist(section, "cam_dispertion_frac"); // do not confuse with cam_dispersion_frac param from CS/CoP
@@ -1111,7 +1111,8 @@ void CWeapon::net_Export(NET_Packet& P)
 
 	u8 need_upd				= IsUpdating() ? 1 : 0;
 	P.w_u8					(need_upd);
-	P.w_u16					(AmmoElapsed.data);
+	P.w_u16(AmmoElapsed.MagazineElapsed);
+	P.w_u16(AmmoElapsed.GrenadeElapsed);
 	P.w_u8					(m_flagsAddOnState);
 	P.w_u8					(AmmoType.data);
 	P.w_u8					((u8)GetState());
@@ -1134,7 +1135,8 @@ void CWeapon::net_Import(NET_Packet& P)
 	u8 flags = 0;
 	P.r_u8(flags);
 
-	P.r_u16(AmmoElapsed.data);
+	P.r_u16(AmmoElapsed.MagazineElapsed);
+	P.r_u16(AmmoElapsed.GrenadeElapsed);
 
 	u8 NewAddonState;
 	P.r_u8(NewAddonState);
@@ -1209,7 +1211,9 @@ void CWeapon::net_Import(NET_Packet& P)
 void CWeapon::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
-	save_data(AmmoElapsed.data, output_packet);
+	// Keep the legacy client-data layout; net_Spawn restores full counts from the server entity.
+	const u16 PackedAmmo = static_cast<u16>(std::min<u16>(AmmoElapsed.MagazineElapsed, 255) | (std::min<u16>(AmmoElapsed.GrenadeElapsed, 255) << 8));
+	save_data(PackedAmmo, output_packet);
 	save_data(iAmmoChamberElapsed, output_packet);
 	save_data(m_cur_scope, output_packet);
 	save_data(m_flagsAddOnState, output_packet);
@@ -1231,7 +1235,10 @@ void CWeapon::save(NET_Packet& output_packet)
 void CWeapon::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
-	load_data(AmmoElapsed.data, input_packet);
+	u16 PackedAmmo = 0;
+	load_data(PackedAmmo, input_packet);
+	AmmoElapsed.MagazineElapsed = PackedAmmo & 0xff;
+	AmmoElapsed.GrenadeElapsed = PackedAmmo >> 8;
 	load_data(iAmmoChamberElapsed, input_packet);
 	load_data(m_cur_scope, input_packet);
 	load_data(m_flagsAddOnState, input_packet);
@@ -3556,7 +3563,7 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
 {
-	AmmoElapsed.MagazineElapsed = ammo_count;
+	AmmoElapsed.MagazineElapsed = static_cast<u16>(std::clamp(ammo_count, 0, int(u16(-1))));
 
 	u16 uAmmo = AmmoElapsed.MagazineElapsed;
 
@@ -4749,7 +4756,7 @@ int CWeapon::GetMagCapacity()
 		}
 	}
 
-	return size;
+	return std::clamp(size, 0, int(u16(-1)));
 }
 
 bool CWeapon::IsActionProcessing() const

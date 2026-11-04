@@ -558,7 +558,17 @@ void CSE_ALifeItemWeapon::UPDATE_Read(NET_Packet	&tNetPacket)
 
 	tNetPacket.r_float_q8		(m_fCondition,0.0f,1.0f);
 	tNetPacket.r_u8				(wpn_flags);
-	tNetPacket.r_u16			(a_elapsed.data);
+	if (m_wVersion > 134)
+	{
+		tNetPacket.r_u16(a_elapsed.MagazineElapsed);
+		tNetPacket.r_u16(a_elapsed.GrenadesElapsed);
+	}
+	else
+	{
+		const u16 PackedAmmo = tNetPacket.r_u16();
+		a_elapsed.MagazineElapsed = PackedAmmo & 0xff;
+		a_elapsed.GrenadesElapsed = PackedAmmo >> 8;
+	}
 	tNetPacket.r_u8				(m_addon_flags.flags);
 	tNetPacket.r_u8				(a_ammo_type.data);
 	tNetPacket.r_u8				(wpn_state);
@@ -606,7 +616,8 @@ void CSE_ALifeItemWeapon::UPDATE_Write(NET_Packet& tNetPacket)
 
 	tNetPacket.w_float_q8(m_fCondition, 0.0f, 1.0f);
 	tNetPacket.w_u8(wpn_flags);
-	tNetPacket.w_u16(a_elapsed.data);
+	tNetPacket.w_u16(a_elapsed.MagazineElapsed);
+	tNetPacket.w_u16(a_elapsed.GrenadesElapsed);
 	tNetPacket.w_u8(m_addon_flags.get());
 	tNetPacket.w_u8(a_ammo_type.data);
 	tNetPacket.w_u8(wpn_state);
@@ -622,7 +633,17 @@ void CSE_ALifeItemWeapon::STATE_Read(NET_Packet& tNetPacket, u16 size)
 {
 	inherited::STATE_Read(tNetPacket, size);
 	tNetPacket.r_u16(a_current);
-	tNetPacket.r_u16(a_elapsed.data);
+	if (m_wVersion > 134)
+	{
+		tNetPacket.r_u16(a_elapsed.MagazineElapsed);
+		tNetPacket.r_u16(a_elapsed.GrenadesElapsed);
+	}
+	else
+	{
+		const u16 PackedAmmo = tNetPacket.r_u16();
+		a_elapsed.MagazineElapsed = PackedAmmo & 0xff;
+		a_elapsed.GrenadesElapsed = PackedAmmo >> 8;
+	}
 	tNetPacket.r_u8(wpn_state);
 
 	if (m_wVersion > 40)
@@ -670,7 +691,8 @@ void CSE_ALifeItemWeapon::STATE_Write(NET_Packet& tNetPacket)
 {
 	inherited::STATE_Write(tNetPacket);
 	tNetPacket.w_u16(a_current);
-	tNetPacket.w_u16(a_elapsed.data);
+	tNetPacket.w_u16(a_elapsed.MagazineElapsed);
+	tNetPacket.w_u16(a_elapsed.GrenadesElapsed);
 	tNetPacket.w_u8(wpn_state);
 	tNetPacket.w_u8(m_addon_flags.get());
 	tNetPacket.w_u8(a_ammo_type.data);
@@ -741,7 +763,7 @@ void CSE_ALifeItemWeapon::FillProps			(const char* pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref, items);
 	PHelper().CreateU8(items, PrepareKey(pref, *s_name, "Ammo type:"), &a_ammo_type.data, 0, 30, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineTypeChanged);
-	PHelper().CreateU16(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.data, 0, 255, 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged);
+	PHelper().CreateU16(items, PrepareKey(pref, *s_name, "Ammo: in magazine"), &a_elapsed.MagazineElapsed, 0, u16(-1), 1)->OnChangeEvent.bind(this, &CSE_ALifeItemWeapon::OnEditorMagazineElapsedChanged);
 	
 
 	if (m_scope_status == ALife::eAddonAttachable)

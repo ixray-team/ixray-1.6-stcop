@@ -156,16 +156,8 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 
 	struct ammo_elapsed_t
 	{
-		union
-		{
-			u16 data = 0;
-
-			struct
-			{
-				u16 MagazineElapsed : 8;
-				u16 GrenadesElapsed : 8;
-			};
-		};
+		u16 MagazineElapsed = 0;
+		u16 GrenadesElapsed = 0;
 	} a_elapsed;
 
 	struct ammo_type_t

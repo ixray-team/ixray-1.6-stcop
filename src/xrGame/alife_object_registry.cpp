@@ -123,6 +123,11 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 	tNetPacket.r_begin		(u_id);
 	R_ASSERT2				(M_UPDATE==u_id,"Invalid packet ID (!= M_UPDATE)");
 	tpALifeDynamicObject->UPDATE_Read(tNetPacket);
+	// Subsequent live updates use the current packet format.
+	if (tpALifeDynamicObject->cast_item_weapon())
+	{
+		tpALifeDynamicObject->m_wVersion = SPAWN_VERSION;
+	}
 
 	return					(tpALifeDynamicObject);
 }

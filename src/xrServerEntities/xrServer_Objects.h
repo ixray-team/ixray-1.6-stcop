@@ -169,8 +169,9 @@
 // 132	 CSE_ALifeItemWeapon			added chamber_ammo_type
 // 133	 CSE_ALifeItemWeapon			added a_chamber_elapsed
 // 134	 CSE_ALifeItemWeaponMagazinedWGL	added m_bGrenadeMode
+// 135	 CSE_ALifeItemWeapon			expanded ammunition counters to u16
 //------------------------------------------------------------------------------
-#define SPAWN_VERSION u16(134)
+#define SPAWN_VERSION u16(135)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
 public:

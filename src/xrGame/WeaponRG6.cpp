@@ -182,7 +182,8 @@ void CWeaponRG6::ReloadMagazine()
 
 	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[AmmoType.MagazineType], "fake_grenade_name");
 
-	while (AmmoElapsed.MagazineElapsed < iMagazineSize)
+	const int ReloadCapacity = std::clamp(iMagazineSize, 0, int(u16(-1)));
+	while (AmmoElapsed.MagazineElapsed < ReloadCapacity)
 	{
 		if (!unlimited_ammo())
 		{
@@ -200,7 +201,7 @@ void CWeaponRG6::ReloadMagazine()
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(true);
 
-	if (iMagazineSize > AmmoElapsed.MagazineElapsed)
+	if (ReloadCapacity > AmmoElapsed.MagazineElapsed)
 	{
 		m_bLockType = true;
 		ReloadMagazine();
