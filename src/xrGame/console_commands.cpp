@@ -2951,9 +2951,6 @@ public:
 				Particle->Destroy();
 			}
 		}
-
-		Persistent->destroy_particles(true);
-		Persistent->ps_active_deffer.clear();
 	}
 };
 
