@@ -16,6 +16,8 @@
 #include "game_cl_single.h"
 #include "Hit.h"
 #include "PHDestroyable.h"
+#include "BreakableObject.h"
+#include "Explosive.h"
 #include "Actor.h"
 #include "Actor_Flags.h"
 #include "AnomalyZone.h"
@@ -516,35 +518,39 @@ bool valid_saved_game_name(const char* file_name)
 	return		(true);
 }
 
-void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* file_ext)
+void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* file_ext, bool rescan = true)
 {
 	VERIFY(dir && file_ext);
-	files.resize(0);
+	files.clear();
 
-	FS_Path* P = FS.get_path(dir);
-	P->m_Flags.set(FS_Path::flNeedRescan, true);
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
-	FS.rescan_pathes(false);
+	if (rescan)
+	{
+		FS_Path* P = FS.get_path(dir);
+		P->m_Flags.set(FS_Path::flNeedRescan, true);
+		FS.m_Flags.set(CLocatorAPI::flNeedCheck, true);
+		FS.rescan_pathes(false);
+	}
 
 	string256 fext;
 	xr_strconcat(fext, "*", file_ext);
 
-	FS_FileSet  files_set;
+	FS_FileSet files_set;
 	FS.file_list(files_set, dir, FS_ListFiles, fext);
 	u32 len_str_ext = xr_strlen(file_ext);
 
-	FS_FileSetIt itb = files_set.begin();
-	FS_FileSetIt ite = files_set.end();
-
-	for (; itb != ite; ++itb)
+	files.reserve(files_set.size());
+	string_path fn;
+	for (const FS_File& file : files_set)
 	{
-		const char* fn_ext = (*itb).name.c_str();
+		const char* fn_ext = file.name.c_str();
 		VERIFY(xr_strlen(fn_ext) > len_str_ext);
-		string_path fn;
+		
 		strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
 		files.push_back(fn);
 	}
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
+
+	if (rescan)
+		FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 #include "UIGameCustom.h"
@@ -2006,7 +2012,8 @@ public:
 				}
 			}
 
-			Fvector3 point = Fvector3().mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+			Fvector point;
+			point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 			for (size_t i = 0; i < count; i++) {
 				auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
@@ -2054,7 +2061,8 @@ public:
 
 			if (pSettings->section_exist(nameSection))
 			{
-				Fvector3 madPos = Fvector3().mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+				Fvector madPos;
+				madPos.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 				NET_Packet		P;
 				P.w_begin(M_REMOTE_CONTROL_CMD);
@@ -2801,6 +2809,212 @@ public:
 	}
 };
 
+class CCC_KillAllDestructible : public IConsole_Command
+{
+public:
+	CCC_KillAllDestructible(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+
+	virtual void Execute(const char* args) override
+	{
+		if (!g_pGameLevel)
+		{
+			Msg("! kill_all_destructible: no active level");
+			return;
+		}
+
+		for (u32 i = 0; i < Level().Objects.o_count(); ++i)
+		{
+			CObject* Object = Level().Objects.o_get_by_iterator(i);
+			if (!Object || Object->getDestroy())
+			{
+				continue;
+			}
+
+			if (!Object->H_Parent())
+			{
+				if (CExplosive* Explosive = Object->cast_explosive())
+				{
+					if (!Explosive->IsExploding())
+					{
+						Fvector Normal;
+						Explosive->FindNormal(Normal);
+						Explosive->GenExplodeEvent(Object->Position(), Normal);
+					}
+				}
+			}
+
+			if (CEntity* Entity = Object->cast_entity())
+			{
+				if (Actor() && Entity->ID() == Actor()->ID())
+				{
+					continue;
+				}
+
+				if (Entity->g_Alive() && !Entity->AlreadyDie())
+				{
+					Entity->KillEntity(Entity->ID(), true);
+					continue;
+				}
+			}
+
+			if (CPHDestroyable* Destroyable = smart_cast<CPHDestroyable*>(Object))
+			{
+				if (Destroyable->CanDestroy())
+				{
+					Destroyable->Destroy(Object->ID(), "physic_destroyable_object");
+					if (CPhysicsShellHolder* Holder = Object->cast_physics_shell_holder())
+					{
+						Holder->SheduleRegister();
+					}
+					continue;
+				}
+			}
+
+			CGameObject* GameObject = Object->cast_game_object();
+			CBreakableObject* Breakable = GameObject ? GameObject->cast_breakable_object() : nullptr;
+			if (Breakable)
+			{
+				SHit Hit(1.f, Fvector().set(0.f, -1.f, 0.f), nullptr, BI_NONE, Fvector().set(0.f, 0.f, 0.f), 0.f, ALife::eHitTypeStrike, 0.f, false);
+				Breakable->Hit(&Hit);
+			}
+		}
+	}
+};
+
+class CCC_DestroyAllObjects : public IConsole_Command
+{
+public:
+	CCC_DestroyAllObjects(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+
+	virtual void Execute(const char* args) override
+	{
+		if (!g_pGameLevel)
+		{
+			Msg("! destroy_all_objects: no active level");
+			return;
+		}
+
+		for (u32 i = 0; i < Level().Objects.o_count(); ++i)
+		{
+			CObject* Object = Level().Objects.o_get_by_iterator(i);
+			if (!Object || Object->getDestroy())
+			{
+				continue;
+			}
+
+			if (Actor() && Object->ID() == Actor()->ID())
+			{
+				continue;
+			}
+
+			if (Object->H_Parent())
+			{
+				continue;
+			}
+
+			if (CGameObject* GameObject = Object->cast_game_object())
+			{
+				GameObject->DestroyObject();
+			}
+		}
+	}
+};
+
+class CCC_DestroyAllParticles : public IConsole_Command
+{
+public:
+	CCC_DestroyAllParticles(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+
+	virtual void Execute(const char* args) override
+	{
+		CGamePersistent* Persistent = smart_cast<CGamePersistent*>(g_pGamePersistent);
+		if (!Persistent)
+		{
+			Msg("! destroy_all_particles: no game persistent");
+			return;
+		}
+
+		for (xr_shared_ptr<CParticlesObject>& Particle : Persistent->ps_active)
+		{
+			if (Particle)
+			{
+				Particle->Stop(false);
+				Particle->Destroy();
+			}
+		}
+
+		for (xr_shared_ptr<CParticlesObject>& Particle : Persistent->ps_active_deffer)
+		{
+			if (Particle)
+			{
+				Particle->Stop(false);
+				Particle->Destroy();
+			}
+		}
+
+		Persistent->destroy_particles(true);
+		Persistent->ps_active_deffer.clear();
+	}
+};
+
+class CCC_GSpawnDestroyable : public IConsole_Command
+{
+public:
+	CCC_GSpawnDestroyable(const char* N) : IConsole_Command(N) {}
+
+	virtual void Execute(const char* args) override
+	{
+		if (!g_pGameLevel || !IsGameTypeSingle())
+		{
+			Msg("! g_spawn_destroyable: single player level required");
+			return;
+		}
+
+		CActor* CurrentActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+		if (CurrentActor == nullptr)
+		{
+			return;
+		}
+
+		int Count = 1;
+		string512 ModelName = {};
+		int Parsed = sscanf_s(args, "%s %d", ModelName, (unsigned)sizeof(ModelName), &Count);
+		if (Parsed < 1 || Parsed > 2 || Count < 1 || Count > 256)
+		{
+			Msg("! Format: g_spawn_destroyable <model> [count: 1..256]");
+			return;
+		}
+
+		Fvector Point;
+		Point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+
+		for (int i = 0; i < Count; ++i)
+		{
+			CSE_Abstract* Item = Level().Server->game->alife().spawn_item("physic_destroyable_object", Point, 0, CurrentActor->ai_location().game_vertex_id(), ALife::INVALID_OBJECT_ID);
+			if (Item == nullptr)
+			{
+				Msg("! Cannot spawn physic_destroyable_object");
+				continue;
+			}
+
+			if (CSE_Visual* Visual = smart_cast<CSE_Visual*>(Item))
+			{
+				Visual->set_visual(ModelName);
+			}
+
+			if (CSE_ALifeObject* AlifeObject = Item->cast_alife_object())
+			{
+				AlifeObject->use_ai_locations(false);
+			}
+		}
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) override
+	{
+		get_files_list(tips, _game_meshes_, ".ogf", false);
+	}
+};
+
 void CCC_RegisterCommands()
 {
 	// options
@@ -2842,6 +3056,10 @@ void CCC_RegisterCommands()
 	// game
 	CMD3(CCC_Mask32, "g_crouch_toggle", &psActorFlags, AF_CROUCH_TOGGLE);
 	CMD1(CCC_GameDifficulty, "g_game_difficulty");
+	CMD1(CCC_KillAllDestructible, "kill_all_destructible");
+	CMD1(CCC_DestroyAllObjects, "destroy_all_objects");
+	CMD1(CCC_DestroyAllParticles, "destroy_all_particles");
+	CMD1(CCC_GSpawnDestroyable, "g_spawn_destroyable");
 
 	CMD3(CCC_Mask32, "g_backrun", &psActorFlags, AF_RUN_BACKWARD);
 
