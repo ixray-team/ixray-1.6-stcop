@@ -123,22 +123,15 @@ int CApplication::BeginPlay()
 	EnumerateDisplayModes();
 
 	const bool headless = Autotest::Active() || CommandLine.find("-autotest") != xr_string::npos;
-	SDL_WindowFlags WndFlags = headless ? SDL_WINDOW_HIDDEN : 0;
+	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
 #if defined(IXR_APPLE_SERIES)
 	// DXMT presents through its own CAMetalLayer (see MacMetalBridge.mm), no Vulkan surface.
 	WndFlags |= SDL_WINDOW_METAL;
 #elif !defined(IXR_WINDOWS)
-	WndFlags = SDL_WINDOW_VULKAN;
+	WndFlags |= SDL_WINDOW_VULKAN;
 #endif
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], WndFlags);
-	if (!headless && g_AppInfo.Window)
-	{
-		SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-		SDL_ShowWindow(g_AppInfo.Window);
-		SDL_RaiseWindow(g_AppInfo.Window);
-		SDL_PumpEvents();
-	}
 
 	if (!headless)
 	{

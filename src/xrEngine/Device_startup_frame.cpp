@@ -193,12 +193,22 @@ struct StartupCanvas
 		Pixels.assign(W * H, ClearColor);
 	}
 
-	void PutPixel(u32 X, u32 Y, u32 Color)
+	void BlendPixel(u32 X, u32 Y, u32 Color, u32 Alpha)
 	{
-		if (X < Width && Y < Height)
+		if (X >= Width || Y >= Height)
 		{
-			Pixels[Y * Width + X] = Color;
+			return;
 		}
+
+		// NOTE(vertver): use better font with blending instead of VGA stuff
+		u32& Dst = Pixels[Y * Width + X];
+		u32 Out = 0xFF000000;
+		for (u32 Shift = 0; Shift < 24; Shift += 8)
+		{
+			Out |= ((((Dst >> Shift) & 0xFF) * (255 - Alpha) + ((Color >> Shift) & 0xFF) * Alpha) / 255) << Shift;
+		}
+
+		Dst = Out;
 	}
 
 	void FillRect(u32 X, u32 Y, u32 W, u32 H, u32 Color)
@@ -225,44 +235,32 @@ struct StartupCanvas
 			FillRect(X + W - 1, Y, 1, H, Color);
 	}
 
-	void DrawChar8x16(u32 X, u32 Y, char C, u32 Color, u32 Scale)
+	void DrawString(u32 X, u32 Y, const char* Str, u32 Color, u32 Size)
 	{
-		const u8 Code = static_cast<u8>(C);
-		if (Code < 32 || Code > 126)
-		{
-			return;
-		}
-		const u8* Glyph = StartupFont8x16[Code - 32];
-		for (u32 Row = 0; Row < 16; ++Row)
-		{
-			const u8 RowBits = Glyph[Row];
-			for (u32 Col = 0; Col < 8; ++Col)
-			{
-				if (RowBits & (1 << (7 - Col)))
-				{
-					if (Scale == 1)
-					{
-						PutPixel(X + Col, Y + Row, Color);
-					}
-					else
-					{
-						FillRect(X + Col * Scale, Y + Row * Scale, Scale, Scale, Color);
-					}
-				}
-			}
-		}
-	}
+		const u32 W = StartupFontWidth[Size];
+		const u32 H = StartupFontHeight[Size];
 
-	void DrawString(u32 X, u32 Y, const char* Str, u32 Color, u32 Scale)
-	{
-		if (!Str)
-			return;
-		u32 CurX = X;
 		while (*Str)
 		{
-			DrawChar8x16(CurX, Y, *Str, Color, Scale);
-			CurX += 8 * Scale;
-			++Str;
+			const u8 Code = static_cast<u8>(*Str);
+			if (Code < 32 || Code > 126)
+			{
+				Str++;
+				X += W;
+				continue;
+			}
+
+			const u8* Glyph = StartupFontAlpha[Size] + (Code - 32) * ((W * H + 1) / 2);
+			for (u32 Index = 0; Index < W * H; ++Index)
+			{
+				if (const u32 Alpha = (Glyph[Index / 2] >> (Index & 1 ? 0 : 4)) & 0xF)
+				{
+					BlendPixel(X + Index % W, Y + Index / W, Color, Alpha * 17);
+				}
+			}
+
+			Str++;
+			X += W;
 		}
 	}
 };
@@ -460,9 +458,9 @@ static void RenderInfoBox(IRHISurface* Target, u32 Width, u32 Height, u32 PosX, 
 		StartupCanvas Canvas;
 		Canvas.Resize(Width, Height, 0xFF000000);
 
-		const u32 FontScale = (Dpi >= 1.5f) ? 2 : 1;
+		const u32 FontSize = Dpi >= 1.5f ? 1 : 0;
 		const u32 StatusLen = u32(xr_strlen(ValidStatus));
-		const u32 TextW = StatusLen * 8 * FontScale;
+		const u32 TextW = StatusLen * StartupFontWidth[FontSize];
 		const u32 TextX = (Width > TextW) ? (Width - TextW) / 2 : 0;
 		const u32 TextY = u32(2.0f * Dpi);
 
@@ -481,7 +479,7 @@ static void RenderInfoBox(IRHISurface* Target, u32 Width, u32 Height, u32 PosX, 
 
 		if (StatusLen > 0)
 		{
-			Canvas.DrawString(TextX, TextY, ValidStatus, TextColor, FontScale);
+			Canvas.DrawString(TextX, TextY, ValidStatus, TextColor, FontSize);
 		}
 
 		// Progress bar
@@ -490,7 +488,7 @@ static void RenderInfoBox(IRHISurface* Target, u32 Width, u32 Height, u32 PosX, 
 		if (BarH < 4)
 			BarH = 4;
 		const u32 BarX = (Width > BarW) ? (Width - BarW) / 2 : 0;
-		const u32 BarY = TextY + 16 * FontScale + u32(8.0f * Dpi);
+		const u32 BarY = TextY + StartupFontHeight[FontSize] + u32(8.0f * Dpi);
 
 		Canvas.FillRect(BarX, BarY, BarW, BarH, BarBgColor);
 		Canvas.DrawRectOutline(BarX > 0 ? BarX - 1 : 0, BarY > 0 ? BarY - 1 : 0, BarW + 2, BarH + 2, BarBorderColor);
@@ -506,10 +504,10 @@ static void RenderInfoBox(IRHISurface* Target, u32 Width, u32 Height, u32 PosX, 
 		string32 PercentStr;
 		xr_sprintf(PercentStr, "%d%%", ClampedProgress);
 		const u32 PercentLen = u32(xr_strlen(PercentStr));
-		const u32 PercentW = PercentLen * 8;
+		const u32 PercentW = PercentLen * StartupFontWidth[0];
 		const u32 PercentX = (Width > PercentW) ? (Width - PercentW) / 2 : 0;
 		const u32 PercentY = BarY + BarH + u32(8.0f * Dpi);
-		Canvas.DrawString(PercentX, PercentY, PercentStr, PercentColor, 1);
+		Canvas.DrawString(PercentX, PercentY, PercentStr, PercentColor, 0);
 
 		s_CachedInfoBoxPixels = std::move(Canvas.Pixels);
 	}

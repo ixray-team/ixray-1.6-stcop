@@ -220,6 +220,8 @@ ENGINE_API void EngineLoadStage4()
 	execUserScript();
 	if (Autotest::Active())
 		psDeviceFlags.set(rsFullscreen, FALSE);
+	else if (!g_dedicated_server)
+		Device.ResizeWindow(psCurrentVidMode[0], psCurrentVidMode[1]);
 	InitSound2();
 
 	// ...command line for auto start

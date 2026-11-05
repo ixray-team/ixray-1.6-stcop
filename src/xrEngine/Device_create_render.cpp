@@ -379,10 +379,14 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 
 	if (!g_dedicated_server && !Autotest::Active())
 	{
+		SDL_ShowWindow(g_AppInfo.Window);
 		SDL_RaiseWindow(g_AppInfo.Window);
 	}
 
-	ResizeBuffers(width, height);
+	if (GRHI->DevicePtr != nullptr)
+	{
+		ResizeBuffers(width, height);
+	}
 }
 
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
