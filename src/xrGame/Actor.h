@@ -140,6 +140,7 @@ public:
 
 	void						shedule_Update		( u32 T ) override;
 	void PlayRainOnHelmetSound();
+	void						UpdateWoundedSounds();
 	void						UpdateCL			( ) override;
 	void draw_electrical_fur();
 			void						UpdateLensFOV		(CWeapon* wpn, float value);

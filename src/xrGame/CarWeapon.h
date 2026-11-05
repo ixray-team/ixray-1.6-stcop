@@ -151,7 +151,8 @@ public:
 			const Fvector&	ViewCameraPos		(){return m_cam_xform.c;};
 			const Fvector&	ViewCameraDir		(){return m_cam_xform.k;};
 			const Fvector&	ViewCameraNorm		(){return m_cam_xform.i;};
-			const Fmatrix&	ViewCameraMatx		(){return m_cam_xform;};
+			// UNUSED: ViewCameraMatx
+			// const Fmatrix&	ViewCameraMatx		(){return m_cam_xform;};
 			CCameraBase*	Camera				(){return camera;};
 			bool			CameraEnabled		(){return !!(m_cam_bone != BI_NONE);};
 			bool			CombinedInput		(){return m_combine_input;};
@@ -160,8 +161,9 @@ public:
 			float			GetDispersion		(){if(GetGunsSize())return m_cur_gun->GetDispersion(); return 0.0f;};
 			int				GetGunsSize			(){return m_turret_guns.size();};
 			void			SetGun				(int val);
-			void			SetPrevGun			();
-			void			SetNextGun			();
+			// UNUSED: SetPrevGun / SetNextGun
+			// void			SetPrevGun			();
+			// void			SetNextGun			();
 			void			SetGunCircle		();
 			void			GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 			void			AppendAmmoToGuns(CWeaponAmmo *ammo);

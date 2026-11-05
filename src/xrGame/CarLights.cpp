@@ -23,9 +23,9 @@ SCarLight::SCarLight()
 	light_type		= 0;
 	l_direction		= Fvector().set(0.f, 0.f, 0.f);
 	l_position		= Fvector().set(0.f, 0.f, 0.f);
-	f_position		= Fvector().set(0.f, 0.f, 0.f);
-	eff_LensFlare	= NULL;
-	m_Fl_desc		= NULL;
+	// f_position		= Fvector().set(0.f, 0.f, 0.f);
+	// eff_LensFlare	= NULL;
+	// m_Fl_desc		= NULL;
 }
 
 SCarLight::~SCarLight()
@@ -33,8 +33,8 @@ SCarLight::~SCarLight()
 	light_render.destroy	()	;
 	glow_render.destroy		()	;
 	bone_id			=	BI_NONE	;
-	xr_delete(eff_LensFlare);
-	xr_delete(m_Fl_desc);
+	// xr_delete(eff_LensFlare);
+	// xr_delete(m_Fl_desc);
 }
 
 void SCarLight::Destroy()
@@ -42,7 +42,7 @@ void SCarLight::Destroy()
 	light_render.destroy();
 	glow_render.destroy();
 	bone_id = BI_NONE;
-	if (eff_LensFlare) {}
+	// if (eff_LensFlare) {}
 }
 
 void SCarLight::Init(CCarLights* holder)
@@ -108,7 +108,7 @@ void SCarLight::TurnOn()
 	}
 	glow_render ->set_active(true);
 	light_render->set_active(true);
-	if(eff_LensFlare) {}
+	// if(eff_LensFlare) {}
 
 	m_holder->PCar()->calc_bones_at_once = true;
 }
@@ -123,7 +123,7 @@ void SCarLight::TurnOff()
 	{
 		K->LL_SetBoneVisible(bone_id,FALSE,TRUE);
 	}
-	if(eff_LensFlare) {}
+	// if(eff_LensFlare) {}
 }
 
 bool SCarLight::isOn()
@@ -232,11 +232,12 @@ void CCarLights::TurnOffLights()
 	for(;i!=e;++i) (*i)->TurnOff();
 }
 
-bool CCarLights::IsLight(u16 bone_id)
-{
-	SCarLight* light=NULL;
-	return findLight(bone_id,light);
-}
+// UNUSED: IsLight
+// bool CCarLights::IsLight(u16 bone_id)
+// {
+// 	SCarLight* light=NULL;
+// 	return findLight(bone_id,light);
+// }
 bool CCarLights::findLight(u16 bone_id,SCarLight* &light)
 {
 	LIGHTS_I i,e=m_lights.end();

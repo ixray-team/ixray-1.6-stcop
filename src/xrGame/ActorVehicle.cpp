@@ -25,6 +25,8 @@
 
 #include "pch_script.h"
 #include "game_object_space.h"
+
+extern bool need_restore_detector;
 #include "script_game_object.h"
 #include "../xrScripts/script_callback_ex.h"
 
@@ -77,10 +79,11 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
 	SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
 
-	if (CCustomDevice* device = GetDevice())
+	if (CCustomDevice* device = GetDevice(true))
 	{
 		if (!device->IsHidden() && !device->IsHiding())
 		{
+			need_restore_detector = true;
 			device->HideDetector(true, true);
 		}
 	}
@@ -113,26 +116,22 @@ void CActor::detach_Vehicle()
 
 	car->PPhysicsShell()->SplitterHolderDeactivate();
 
-	if (!character_physics_support()->movement()->ActivateBoxDynamic(0))
-	{
-		car->PPhysicsShell()->SplitterHolderActivate();
-		return;
-	}
-
-	car->PPhysicsShell()->SplitterHolderActivate();
 	m_holder->detach_Actor();
 
 	const Fvector exit_pos = m_holder->ExitPosition();
 	const Fvector exit_vel = m_holder->ExitVelocity();
 
-	// Recreate the character at the exit point after detaching from the car.
-	// Without the second activation the character can stay inside the car shell
-	// and the first exit after loading a save causes a collision push/damage.
+	// The character is destroyed while the actor is attached, so create it only
+	// at the exit point. Activating it before detaching created a body inside the
+	// car and pushed the vehicle on the first exit after loading a save.
 	Position().set(exit_pos);
+	character_physics_support()->movement()->SetPosition(exit_pos);
 	character_physics_support()->movement()->CreateCharacter();
 	character_physics_support()->movement()->SetPosition(exit_pos);
 	character_physics_support()->movement()->SetVelocity(exit_vel);
 	character_physics_support()->movement()->ActivateBoxDynamic(0);
+
+	car->PPhysicsShell()->SplitterHolderActivate();
 
 	r_model_yaw = -m_holder->Camera()->yaw;
 	r_torso.yaw = r_model_yaw;

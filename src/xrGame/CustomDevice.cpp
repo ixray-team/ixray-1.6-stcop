@@ -123,6 +123,7 @@ void CCustomDevice::HideDetector(bool bFastMode, bool force)
 {
 	if (force)
 	{
+		m_bNeedActivation = false;
 		if (GetNextState() != eHiding)
 		{
 			m_bFastAnimMode = bFastMode;
@@ -148,6 +149,12 @@ void CCustomDevice::HideDetector(bool bFastMode, bool force)
 
 void CCustomDevice::ShowDetector(bool bFastMode)
 {
+	CActor* actor = Actor();
+	if (actor != nullptr && actor->Holder() != nullptr && H_Parent() == actor)
+	{
+		return;
+	}
+
 	if (GetState() == eHidden)
 	{
 		ToggleDetector(bFastMode);
@@ -275,6 +282,10 @@ void CCustomDevice::switch_device()
 {
 	CObject* control_entity = Level().CurrentControlEntity();
 	CActor* actor = control_entity != nullptr ? control_entity->cast_actor() : nullptr;
+	if (actor != nullptr && actor->Holder() != nullptr && H_Parent() == actor)
+	{
+		return;
+	}
 	if (actor != nullptr && actor->HudAnimator() != nullptr && actor->HudAnimator()->IsAnyAnimatorActive())
 	{
 		return;

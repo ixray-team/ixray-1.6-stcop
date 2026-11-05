@@ -1,4 +1,6 @@
 #pragma once
+// UNUSED: legacy CCarDoor implementation; current cars use CCar::SDoor.
+#if 0
 class CCar;
 
 class CCarDoor :
@@ -75,3 +77,4 @@ public:
 
 	eState state;
 };
+#endif // 0

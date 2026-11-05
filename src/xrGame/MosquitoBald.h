@@ -20,6 +20,7 @@ public:
 protected:
 	virtual bool BlowoutState() override;
 	virtual void UpdateSecondaryHit() override;
+	virtual bool ShouldIgnoreObject(CGameObject* pObject) override;
 	//для того чтобы blowout обновился один раз
 	//после того как зона перключилась в другое состояние
 	bool m_bLastBlowoutUpdate;

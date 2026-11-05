@@ -3265,6 +3265,9 @@ void CCC_RegisterCommands()
 	extern float rs_car_steer_factor;
 	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.5f, 3.f);
 
+	extern float rs_car_fov_effects;
+	CMD4(CCC_Float, "rs_car_fov_effects", &rs_car_fov_effects, 0.f, 2.f);
+
 	extern bool rs_car_god;
 	CMD2(CCC_Boolean, "rs_car_god", &rs_car_god);
 

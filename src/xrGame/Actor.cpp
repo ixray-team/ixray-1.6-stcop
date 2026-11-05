@@ -1866,7 +1866,11 @@ void CActor::UpdateCL()
 
 	CCustomDevice* dev = GetDevice();
 
-	if (!g_player_hud->m_need_reload && !HudAnimator()->IsAnyAnimatorActive())
+	if (m_holder)
+	{
+		// Do not restore the detector HUD while the actor is inside a vehicle.
+	}
+	else if (!g_player_hud->m_need_reload && !HudAnimator()->IsAnyAnimatorActive())
 	{
 	
 		if (item != nullptr || dev != nullptr)
@@ -2712,6 +2716,93 @@ void CActor::set_state_box(u32	mstate)
 		character_physics_support()->movement()->ActivateBox(0, true);
 }
 
+void CActor::UpdateWoundedSounds()
+{
+	if (g_dedicated_server)
+	{
+		return;
+	}
+
+	const bool IsLocalActor = this == Level().CurrentControlEntity() || this == Level().CurrentEntity();
+	if (!IsLocalActor)
+	{
+		return;
+	}
+
+	//тяжёлое дыхание при усталости и хромании
+	if (conditions().IsLimping() && g_Alive() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
+	{
+		if (!m_HeavyBreathSnd.is_playing())
+		{
+			m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0, ACTOR_HEIGHT, 0), sm_Looped | sm_2D);
+		}
+		else
+		{
+			m_HeavyBreathSnd.set_position(Fvector().set(0, ACTOR_HEIGHT, 0));
+		}
+	}
+	else if (m_HeavyBreathSnd.is_playing())
+	{
+		m_HeavyBreathSnd.stop();
+	}
+
+	//звук кровотечения
+	float bs = conditions().BleedingSpeed();
+	if (bs > 0.6f)
+	{
+		Fvector snd_pos;
+		snd_pos.set(0, ACTOR_HEIGHT, 0);
+		if (!m_BloodSnd.is_playing())
+		{
+			m_BloodSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
+		}
+		else
+		{
+			m_BloodSnd.set_position(snd_pos);
+		}
+
+		float v = bs + 0.25f;
+		m_BloodSnd.set_volume(v);
+	}
+	else if (m_BloodSnd.is_playing())
+	{
+		m_BloodSnd.stop();
+	}
+
+	if (!g_Alive() && m_BloodSnd.is_playing())
+	{
+		m_BloodSnd.stop();
+	}
+
+	//звук опасности
+	bs = conditions().GetZoneDanger();
+	if (bs > 0.1f)
+	{
+		Fvector snd_pos;
+		snd_pos.set(0, ACTOR_HEIGHT, 0);
+		if (!m_DangerSnd.is_playing())
+		{
+			m_DangerSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
+		}
+		else
+		{
+			m_DangerSnd.set_position(snd_pos);
+		}
+
+		float v = bs + 0.25f;
+		m_DangerSnd.set_volume(v);
+	}
+	else if (m_DangerSnd.is_playing())
+	{
+		m_DangerSnd.stop();
+	}
+
+	if (!g_Alive() && m_DangerSnd.is_playing())
+	{
+		m_DangerSnd.stop();
+	}
+}
+
 void CActor::shedule_Update	(u32 DT)
 {
 	PROF_EVENT("CActor shedule_Update");
@@ -2734,6 +2825,7 @@ void CActor::shedule_Update	(u32 DT)
 		if (m_holder)
 		{
 			UpdateArtefactsOnBeltAndOutfit();
+			UpdateWoundedSounds();
 		}
 		return;
 	}
@@ -2769,70 +2861,8 @@ void CActor::shedule_Update	(u32 DT)
 
 	UpdateCameraIdleAnimation();
 
-	//звук тяжелого дыхания при уталости и хромании
-	if(this==Level().CurrentControlEntity() && !g_dedicated_server && Holder() == nullptr)
-	{
-		if(conditions().IsLimping() && g_Alive() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST)){
-			if(!m_HeavyBreathSnd.is_playing())
-			{
-				m_HeavyBreathSnd.play_at_pos(this, Fvector().set(0,ACTOR_HEIGHT,0), sm_Looped | sm_2D);
-			}
-			else
-			{
-				m_HeavyBreathSnd.set_position(Fvector().set(0,ACTOR_HEIGHT,0));
-			}
-		}
-		else if(m_HeavyBreathSnd.is_playing()){
-			m_HeavyBreathSnd.stop		();
-		}
+	UpdateWoundedSounds();
 
-		// -------------------------------
-		float bs = conditions().BleedingSpeed();
-		if(bs>0.6f)
-		{
-			Fvector snd_pos;
-			snd_pos.set(0,ACTOR_HEIGHT,0);
-			if(!m_BloodSnd.is_playing())
-				m_BloodSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
-			else
-				m_BloodSnd.set_position(snd_pos);
-
-			float v = bs+0.25f;
-
-			m_BloodSnd.set_volume	(v);
-		}else{
-			if(m_BloodSnd.is_playing())
-				m_BloodSnd.stop();
-		}
-
-		if(!g_Alive()&&m_BloodSnd.is_playing())
-				m_BloodSnd.stop();
-		// -------------------------------
-		bs = conditions().GetZoneDanger();
-		if ( bs > 0.1f )
-		{
-			Fvector snd_pos;
-			snd_pos.set(0,ACTOR_HEIGHT,0);
-			if(!m_DangerSnd.is_playing())
-				m_DangerSnd.play_at_pos(this, snd_pos, sm_Looped | sm_2D);
-			else
-				m_DangerSnd.set_position(snd_pos);
-
-			float v = bs+0.25f;
-//			Msg( "bs            = %.2f", bs );
-
-			m_DangerSnd.set_volume	(v);
-		}
-		else
-		{
-			if(m_DangerSnd.is_playing())
-				m_DangerSnd.stop();
-		}
-
-		if(!g_Alive()&&m_DangerSnd.is_playing())
-			m_DangerSnd.stop();
-	}
-	
 	if (!g_Alive())
 	{
 		UpdatePlayerView();

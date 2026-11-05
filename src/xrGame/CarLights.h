@@ -11,15 +11,18 @@ struct SCarLight
 {
 	ref_light				light_render;
 	ref_glow				glow_render;
-	CLensFlare*				eff_LensFlare;
-	CLensFlareDescriptor*	m_Fl_desc;
+	// UNUSED: lens flare support
+	// CLensFlare*				eff_LensFlare;
+	// CLensFlareDescriptor*	m_Fl_desc;
 	u16						bone_id;
-	bool					visible;
+	// UNUSED: visible
+	// bool					visible;
 	int						light_type;
 	
 	Fvector					l_direction;
 	Fvector					l_position;
-	Fvector					f_position;
+	// UNUSED: f_position
+	// Fvector					f_position;
 	CCarLights*				m_holder;				
 			SCarLight		();
 			~SCarLight		();
@@ -31,7 +34,8 @@ struct SCarLight
 	void	Destroy			();
 	void	Update			();
 	void	ParseDefinitions(LPCSTR section);
-	static void		_BCL	Set_bone_visible		(CBoneInstance*);
+	// UNUSED: Set_bone_visible
+	// static void		_BCL	Set_bone_visible		(CBoneInstance*);
 	
 
 };
@@ -61,7 +65,7 @@ public:
 	bool    IsAvailable		(){return !m_lights.empty(); };
 	bool	IsOn				()					{ for (SCarLight* light : m_lights) if (light && light->isOn()) return true; return false; }
 	void	SwitchHeadLights	()					{ SwitchLights(); }
-	bool	IsLight				(u16 bone_id)					;
+// 	bool	IsLight				(u16 bone_id)					;
 	bool	findLight			(u16 bone_id,SCarLight* &light);
 			CCarLights			()								;
 			~CCarLights			()								;
