@@ -307,7 +307,7 @@ void CCar::SCarSound::UpdateDrive()
 		float state_change_down = pcar->m_sound_state_change_down;// 2.5f;
 		float idle_state_change_up = pcar->m_sound_idle_change_up;// 12.f;
 		float idle_state_change_down = pcar->m_sound_idle_change_down;// 0.5f;
-		if (pcar->m_transmission_stage >= 10)
+		if (pcar->IsTransmissionSwitching())
 			state_change_down *= pcar->m_sound_state_switch_factor;
 		else
 		{
@@ -328,7 +328,7 @@ void CCar::SCarSound::UpdateDrive()
 			state_change_up *= 1.5f;
 		}
 		float vol = volume;
-		if (pcar->m_transmission_stage >= 10)
+		if (pcar->IsTransmissionSwitching())
 			vol *= pcar->m_transmission_switch_volume;
 
 		//Msg("pcar->m_engine_rpm_scale %f", pcar->m_engine_rpm_scale);
@@ -431,7 +431,7 @@ void CCar::SCarSound::UpdateDrive()
 			delay *= pcar->m_nitro_switch_boost;
 
 		float sound_rpm = pcar->m_current_rpm;
-		if (pcar->m_transmission_stage >= 10 && delay > 0.f)
+		if (pcar->IsTransmissionSwitching() && delay > 0.f)
 		{
 			float x = (Device.fTimeGlobal - pcar->m_transmission_switch_sound_time) * (1.f / delay);
 			x = 0.5f * sinf(PI * x - PI * 0.5f) + 0.5f;
@@ -579,7 +579,7 @@ void CCar::SCarSound::UpdateDrive()
 		if (snd_blower._p)
 		{
 			float blower_scale = pcar->m_engine_state_scale;
-			if (pcar->e_state_drive == drive && pcar->m_transmission_stage >= 10)
+			if (pcar->e_state_drive == drive && pcar->IsTransmissionSwitching())
 				blower_scale = 1.f;
 			float blower_vol = (pcar->m_blower_volume_min + (1.f - pcar->m_blower_volume_min) * blower_scale);
 
@@ -626,7 +626,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (snd_nitro.is_playing())
 			{
 				snd_nitro.set_frequency(0.7f + 0.3f * (pcar->m_engine_sound_scale_absolute));
-				if (pcar->m_transmission_stage < 10)
+				if (!pcar->IsTransmissionSwitching())
 					snd_nitro.set_volume(volume);
 				else
 					snd_nitro.set_volume(volume * 0.6f);
@@ -835,7 +835,7 @@ void CCar::SCarSound::Valve()
 		snd_valve.play(pcar);
 		pcar->m_engine_valve = 0;
 		float switch_vol = 1.f;
-		if (pcar->m_transmission_stage >= 10)
+		if (pcar->IsTransmissionSwitching())
 			switch_vol *= pcar->m_valve_switch_volume;
 		float time = (Device.fTimeGlobal - pcar->m_valve_time) * 4.f;
 		clamp(time, 0.f, 1.f);
@@ -941,7 +941,7 @@ void CCar::SCarSound::Whine()
 		float vol = 1.f;
 		vol = 0.45f + 0.55f * pcar->m_engine_state_scale;
 		
-		if (pcar->m_transmission_stage >= 10 && pcar->e_state_drive == drive)
+		if (pcar->IsTransmissionSwitching() && pcar->e_state_drive == drive)
 			vol *= pcar->m_transmission_switch_volume;
 		//pcar->m_whine_sound_scale = pcar->m_whine_sound_scale * (0.99f + 0.01f * vol);
 		//Msg("whine %f", pcar->m_whine_sound_scale);

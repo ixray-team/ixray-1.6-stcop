@@ -97,7 +97,7 @@ void	CCar::cam_Update			(float dt, float fov)
 		//accel = powf(accel, 0.8f);
 		//Msg("accel %f", accel);
 		float car_fov_accel = 1.f;
-		if (e_state_drive == drive && m_transmission_stage < 10)
+		if (e_state_drive == drive && !IsTransmissionSwitching())
 		{
 			if (!m_nitro_engage)
 				car_fov_accel = 1.25f;
