@@ -268,9 +268,9 @@ void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 		// The title is set right before the stage itself, so show the stage being started.
 		if (max_load_stage > 0)
 		{
-			const int Stage = load_stage < max_load_stage ? load_stage + 1 : max_load_stage;
+			const int Stage = load_stage < max_load_stage.load() ? load_stage + 1 : max_load_stage.load();
 			char StageInfo[32];
-			xr_sprintf(StageInfo, " (%d/%d)", Stage, max_load_stage);
+			xr_sprintf(StageInfo, " (%d/%d)", Stage, max_load_stage.load());
 			Tooltip += StageInfo;
 		}
 
