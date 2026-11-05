@@ -14,6 +14,7 @@ class CUICellItem;
 class CInventoryBox;
 class CInventoryOwner;
 class CUIItemDropAmountWnd;
+class CCar;
 class CWeaponMagazined;
 
 class CUICarBodyWnd: public CUIActorMenuBase
@@ -49,7 +50,9 @@ protected:
 	CInventoryOwner*			m_pOurObject;
 
 	CInventoryOwner*			m_pOthersObject;
+	CCar*						m_pCar;
 	CInventoryBox*				m_pInventoryBox;
+	shared_str					m_othersBagWndPrefix;
 
 	CUIDragDropListEx*			m_pUIOurBagList;
 	CUIDragDropListEx*			m_pUIOthersBagList;

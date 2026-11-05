@@ -24,6 +24,8 @@ class CTextureDescrMngr
 		bool				m_use_steep_parallax;
 		bool				m_use_pbr;
 		ShaderExternalMap	ShadersOptions;
+
+		texture_spec() : m_material(1.0f), m_use_steep_parallax(false), m_use_pbr(false) {}
 	};
 	struct texture_desc{
 		texture_assoc*		m_assoc;
@@ -44,6 +46,10 @@ class CTextureDescrMngr
 
 	void		LoadTHM		(const char* initial);
 	void		LoadLTX		();
+	void		LoadMiniLTX	();
+
+	void		CheckAndCreate_Assoc	(texture_desc& desc);
+	void		CheckAndCreate_Spec		(texture_desc& desc);
 
 public:
 				~CTextureDescrMngr();

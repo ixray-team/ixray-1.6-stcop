@@ -50,6 +50,51 @@ extern	float	g_fTimeFactor;
 
 #define CURRENT_ENTITY()	(game?((IsGameTypeSingle()) ? CurrentEntity() : CurrentControlEntity()):nullptr)
 
+static bool UIForwardsInputToActor(int Dik, bool Press)
+{
+	CUIGameCustom* GameUI = CurrentGameUI();
+	if (GameUI == nullptr || g_pGameLevel == nullptr)
+	{
+		return false;
+	}
+
+	CUIDialogWnd* InputReceiver = GameUI->TopInputReceiver();
+	if (InputReceiver == nullptr || !InputReceiver->IR_process() || InputReceiver->StopAnyMove())
+	{
+		return false;
+	}
+
+	CObject* InputTarget = IsGameTypeSingle() ? g_pGameLevel->CurrentEntity() : g_pGameLevel->CurrentControlEntity();
+	if (InputTarget == nullptr || g_pGameLevel->CurrentEntity() != InputTarget)
+	{
+		return false;
+	}
+
+	if (Press)
+	{
+		// CDialogHolder passes movement and quick-use keys through to the
+		// level instead of forwarding them, so keep the final dispatch for them.
+		switch (get_binded_action(Dik))
+		{
+		case kQUICK_USE_1:
+		case kQUICK_USE_2:
+		case kQUICK_USE_3:
+		case kQUICK_USE_4:
+		case kUSE_MEDKIT:
+		case kUSE_BANDAGE:
+		case kUP:
+		case kDOWN:
+		case kLEFT:
+		case kRIGHT:
+			return false;
+		default:
+			break;
+		}
+	}
+
+	return true;
+}
+
 void CLevel::IR_OnMouseWheel( int direction )
 {
 	if(	g_bDisableAllInput || !bReady	) return;
@@ -188,6 +233,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 
 	bool b_ui_exist = (!!CurrentGameUI());
+	const bool UIForwardsInput = UIForwardsInputToActor(key, true);
 
 	if (_curr == kPAUSE && !EngineExternal()[EEngineExternalSystem::DisablePause])
 	{
@@ -586,7 +632,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if (bindConsoleCmds.execute(key))
 		return;
 
-	if (CURRENT_ENTITY())		
+	if (!UIForwardsInput && CURRENT_ENTITY())
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR)				IR->IR_OnKeyboardPress(key);
@@ -622,6 +668,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	}
 
 	if (!bReady || g_bDisableAllInput	)								return;
+
+	const bool UIForwardsInput = UIForwardsInputToActor(key, false);
+
 	if ( CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardRelease(key)) return;
 	if (game && game->OnKeyboardRelease(get_binded_action(key)) )		return;
 	if (Device.Paused() 
@@ -633,7 +682,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	if (g_actor)
 		g_actor->callback(GameObject::eKeyRelease)(key);
 
-	if (CURRENT_ENTITY())		
+	if (!UIForwardsInput && CURRENT_ENTITY())
 	{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr) {
@@ -692,13 +741,15 @@ void CLevel::IR_OnKeyboardHold(int key)
 
 #endif // DEBUG
 
+	const bool UIForwardsInput = UIForwardsInputToActor(key, false);
+
 	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardHold(key)) return;
 	if (Device.Paused() && !Level().IsDemoPlay() 
 #ifdef DEBUG
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		) return;
-	if (CURRENT_ENTITY())
+	if (!UIForwardsInput && CURRENT_ENTITY())
 	{
 		IInputReceiver*	IR	= smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR != nullptr)

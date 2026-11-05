@@ -5,6 +5,7 @@
 #include "../../xrUI/ui_defs.h"
 
 class CUIStatic;
+class CInventory;
 
 //размеры сетки в текстуре инвентаря
 #define INV_GRID_WIDTH(SCALE_ICON) (50.0f * SCALE_ICON)
@@ -111,6 +112,7 @@ const shared_str Get_GameTimeAndDate_AsString();
 const char* GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
 // Отобразить вес, который несет (*pInvOwner)
 void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
+void UpdateWeightContainer(CUIStatic& wnd, CInventory* pInventory, LPCSTR prefixStr);
 void UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_max, CInventoryOwner* pInvOwner);
 void UpdateVolumeStr(CUIStatic* volumeLabel, CUIStatic* volumeMax, CInventoryOwner* pInvOwner);
 

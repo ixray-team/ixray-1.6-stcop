@@ -1787,6 +1787,8 @@ bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
 	CCar* pCar = m_pOwner->cast_car();
 
 	//актер всегда может взять вещь
+	// Actors and cars have dedicated transfer rules; other containers use
+	// their configured max weight as a hard limit.
 	if (pCar == nullptr && pActor == nullptr && TotalWeight() + CalcItemWeight(inventory_item) > m_pOwner->MaxCarryWeight())
 	{
 		return false;

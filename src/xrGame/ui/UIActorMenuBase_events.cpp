@@ -13,6 +13,7 @@
 #include "../InventoryVolumeSystem.h"
 #include "../InventoryWeaponSlotLayout.h"
 #include "../eatable_item_object.h"
+#include "../Car.h"
 #include "../../xrUI/UICursor.h"
 
 void move_item_from_to(ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id);
@@ -1476,6 +1477,17 @@ bool CUIActorMenuBase::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 	if ( GetPartner() )
 	{
+		if (CCar* car = GetPartner()->cast_car())
+		{
+			const float maxWeight = car->inventory().GetMaxWeight();
+			const float invWeight = car->inventory().CalcTotalWeight();
+			const float itmWeight = quest_item->m_pInventory ? quest_item->m_pInventory->CalcItemWeight(quest_item) : quest_item->Weight();
+			if (invWeight + itmWeight > maxWeight + EPS_S)
+			{
+				return false;
+			}
+		}
+
 		if ( !GetPartner()->deadbody_can_take_status())
 		{
 			return false;

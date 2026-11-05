@@ -55,6 +55,22 @@
 
 extern u32 hud_adj_mode;
 
+static bool IsActorItemUseAction(int bind)
+{
+	switch (bind)
+	{
+	case kUSE_BANDAGE:
+	case kUSE_MEDKIT:
+	case kQUICK_USE_1:
+	case kQUICK_USE_2:
+	case kQUICK_USE_3:
+	case kQUICK_USE_4:
+		return true;
+	default:
+		return false;
+	}
+}
+
 void CActor::IR_OnKeyboardPress(int dik)
 {
 	if (IsCameraFocusInputLocked())
@@ -129,7 +145,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 
 	auto bindRadial = get_binded_action(dik, agUIRadialWeapon);
 	auto bindAim = get_binded_action(dik, agAiming);
-	if(m_holder && kUSE != bind)
+	if(m_holder && kUSE != bind && !IsActorItemUseAction(bind))
 	{
 		m_holder->OnKeyboardPress			(dik);
 		if(m_holder->allowWeapon())
@@ -1094,7 +1110,7 @@ void CActor::IR_GamepadKeyPress(int id)
 
 	if (!g_Alive()) return;
 
-	if(m_holder && kUSE != bind)
+	if(m_holder && kUSE != bind && !IsActorItemUseAction(bind))
 	{
 		m_holder->OnGamepadKeyPress		(id);
 		if(m_holder->allowWeapon() && inventory().Action((u16)bind, CMD_START))		return;

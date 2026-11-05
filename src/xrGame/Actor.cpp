@@ -2728,6 +2728,13 @@ void CActor::shedule_Update	(u32 DT)
 	{
 		m_sDefaultObjAction				= nullptr;
 		inherited::shedule_Update		(DT);
+
+		// While the actor is inside a vehicle normal movement updates are skipped,
+		// but artefacts on the belt must keep affecting the actor.
+		if (m_holder)
+		{
+			UpdateArtefactsOnBeltAndOutfit();
+		}
 		return;
 	}
 

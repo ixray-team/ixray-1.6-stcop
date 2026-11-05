@@ -428,6 +428,29 @@ const char* InventoryUtilities::GetTimePeriodAsString(LPSTR _buff, u32 buff_sz, 
 
 //////////////////////////////////////////////////////////////////////////
 
+void InventoryUtilities::UpdateWeightContainer(CUIStatic& wnd, CInventory* pInventory, LPCSTR prefixStr)
+{
+	R_ASSERT(pInventory);
+
+	string128 buf;
+	const float total = pInventory->CalcTotalWeight();
+	const float max = pInventory->GetMaxWeight();
+
+	string64 prefix;
+	if (prefixStr && prefixStr[0])
+	{
+		xr_sprintf(prefix, "%s : ", prefixStr);
+	}
+	else
+	{
+		prefix[0] = 0;
+	}
+
+	wnd.TextItemControl()->SetTextColor(total > max ? color_rgba(255, 0, 0, 255) : color_rgba(238, 153, 26, 255));
+	xr_sprintf(buf, "%s%3.1f /%5.1f kg", prefix, total, max);
+	wnd.TextItemControl()->SetText(buf);
+}
+
 void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 {
 	CInventoryOwner *pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());

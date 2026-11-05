@@ -9,6 +9,10 @@
 #include "../Inventory.h"
 #include "../InventoryWeaponSlotLayout.h"
 #include "../inventory_item.h"
+#include "../Actor.h"
+#include "../holder_custom.h"
+#include "../Car.h"
+#include "../Level.h"
 #include "../medkit.h"
 #include "../Weapon.h"
 #include "../trade_parameters.h"
@@ -34,6 +38,19 @@
 #include "../../xrUI/UICursor.h"
 #include "UIInvUpgradeInfo.h"
 #include "UIMessageBoxEx.h"
+
+static CCar* ActorHolderCar(CInventoryOwner* Owner)
+{
+	CActor* Actor = Owner != nullptr ? Owner->cast_actor() : nullptr;
+	CHolderCustom* Holder = Actor != nullptr ? Actor->Holder() : nullptr;
+	return Holder != nullptr ? Holder->cast_car() : nullptr;
+}
+
+static bool CarBlocksInventoryControl(CInventoryOwner* Owner)
+{
+	CCar* Car = ActorHolderCar(Owner);
+	return Car != nullptr && !Car->AllowInventoryControl();
+}
 
 void move_item_from_to (ALife::_OBJECT_ID from_id, ALife::_OBJECT_ID to_id, ALife::_OBJECT_ID what_id)
 {
@@ -2298,12 +2315,40 @@ void CUIActorMenuBase::OnBtnPerformTrade(CUIWindow* w, void* d)
 	UpdateItemsPlace();
 }
 
-bool CUIActorMenuBase::StopAnyMove()  // true = актёр не идёт при открытом меню
+void CUIActorMenuBase::Show(bool status)
+{
+	inherited::Show(status);
+
+	if (!status)
+	{
+		return;
+	}
+
+	CInventoryOwner* Owner = GetInventoryOwner();
+	if (Owner == nullptr && Level().CurrentViewEntity() != nullptr)
+	{
+		Owner = Level().CurrentViewEntity()->cast_inventory_owner();
+	}
+
+	if (CarBlocksInventoryControl(Owner))
+	{
+		if (CCar* Car = ActorHolderCar(Owner))
+		{
+			Car->ReleaseInput();
+		}
+	}
+}
+
+bool CUIActorMenuBase::StopAnyMove()
 {
 	switch ( m_currMenuMode )
 	{
 	case mmInventory:
-		return pInput->GetControllerMode();
+		if (pInput->GetControllerMode())
+		{
+			return true;
+		}
+		return CarBlocksInventoryControl(GetInventoryOwner());
 	case mmUndefined:
 	case mmTrade:
 	case mmUpgrade:

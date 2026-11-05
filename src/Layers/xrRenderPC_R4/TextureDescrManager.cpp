@@ -134,6 +134,188 @@ void CTextureDescrMngr::LoadLTX()
 	}//file-exist
 }
 
+void CTextureDescrMngr::CheckAndCreate_Assoc(texture_desc& desc)
+{
+	if (desc.m_assoc == nullptr)
+	{
+		desc.m_assoc = new texture_assoc();
+	}
+}
+
+void CTextureDescrMngr::CheckAndCreate_Spec(texture_desc& desc)
+{
+	if (desc.m_spec == nullptr)
+	{
+		desc.m_spec = new texture_spec();
+	}
+}
+
+void CTextureDescrMngr::LoadMiniLTX()
+{
+	FS_FileSet flist;
+	FS.file_list(flist, _game_textures_, FS_ListFiles, "*.ltx");
+
+#ifdef DEBUG
+	Msg("count of texture .ltx files=%d", flist.size());
+#endif
+
+	for (const FS_File& file : flist)
+	{
+		string_path ltx_path;
+		FS.update_path(ltx_path, _game_textures_, file.name.c_str());
+
+		string_path dds_path;
+		xr_strcpy(dds_path, ltx_path);
+		LPSTR dds_ext = strext(dds_path);
+		if (dds_ext == nullptr)
+		{
+			continue;
+		}
+
+		*dds_ext = 0;
+		xr_strcat(dds_path, ".dds");
+		if (!FS.exist(dds_path))
+		{
+			continue;
+		}
+
+		string_path texture_name;
+		xr_strcpy(texture_name, file.name.c_str());
+		LPSTR texture_ext = strext(texture_name);
+		if (texture_ext == nullptr)
+		{
+			continue;
+		}
+		*texture_ext = 0;
+
+		CInifile mini_ltx(ltx_path);
+		if (!mini_ltx.section_exist("config") && !mini_ltx.section_exist("shaders_options"))
+		{
+			continue;
+		}
+
+		const shared_str key = NormalizeTexKey(shared_str(texture_name));
+		texture_desc& desc = m_texture_details[key];
+
+		if (mini_ltx.line_exist("config", "detail_texture"))
+		{
+			CheckAndCreate_Assoc(desc);
+			desc.m_assoc->detail_name = mini_ltx.r_string("config", "detail_texture");
+		}
+
+		if (mini_ltx.line_exist("config", "detail_texture_scaler"))
+		{
+			cl_dt_scaler*& scaler = m_detail_scalers[key];
+			const float scale = mini_ltx.r_float("config", "detail_texture_scaler");
+			if (scaler == nullptr)
+			{
+				scaler = new cl_dt_scaler(scale);
+			}
+			else
+			{
+				scaler->scale = scale;
+			}
+		}
+
+		if (mini_ltx.line_exist("config", "usage"))
+		{
+			CheckAndCreate_Assoc(desc);
+
+			const char* usage = mini_ltx.r_string("config", "usage");
+			desc.m_assoc->usage = 0;
+			if (xr_strcmp(usage, "diffuse_or_bump") == 0)
+			{
+				desc.m_assoc->usage = (1 << 0) | (1 << 1);
+			}
+			else if (xr_strcmp(usage, "bump") == 0)
+			{
+				desc.m_assoc->usage = (1 << 1);
+			}
+			else if (xr_strcmp(usage, "diffuse") == 0)
+			{
+				desc.m_assoc->usage = (1 << 0);
+			}
+		}
+
+		float MaterialValue = -1.0f;
+		bool MaterialTypeFound = false;
+		bool MaterialIsPbr = false;
+
+		if (mini_ltx.line_exist("config", "material_type"))
+		{
+			const char* material_type = mini_ltx.r_string("config", "material_type");
+			if (xr_strcmp(material_type, "orennayar_blin") == 0)
+			{
+				MaterialValue = 0.0f;
+				MaterialTypeFound = true;
+			}
+			else if (xr_strcmp(material_type, "blin_phong") == 0)
+			{
+				MaterialValue = 1.0f;
+				MaterialTypeFound = true;
+			}
+			else if (xr_strcmp(material_type, "phong_metal") == 0)
+			{
+				MaterialValue = 2.0f;
+				MaterialTypeFound = true;
+			}
+			else if (xr_strcmp(material_type, "metal_orennayar") == 0)
+			{
+				MaterialValue = 3.0f;
+				MaterialTypeFound = true;
+			}
+			else if (xr_strcmp(material_type, "pbr") == 0)
+			{
+				MaterialValue = 4.0f;
+				MaterialTypeFound = true;
+				MaterialIsPbr = true;
+			}
+		}
+
+		if (mini_ltx.line_exist("config", "material_weight"))
+		{
+			if (!MaterialTypeFound)
+			{
+				MaterialValue = 0.0f;
+			}
+			MaterialValue += mini_ltx.r_float("config", "material_weight");
+			MaterialTypeFound = true;
+		}
+
+		if (MaterialTypeFound)
+		{
+			CheckAndCreate_Spec(desc);
+			desc.m_spec->m_material = MaterialValue;
+
+			if (mini_ltx.line_exist("config", "material_type"))
+			{
+				desc.m_spec->m_use_pbr = MaterialIsPbr;
+			}
+		}
+
+		if (mini_ltx.line_exist("config", "bump_texture"))
+		{
+			CheckAndCreate_Spec(desc);
+			desc.m_spec->m_bump_name = mini_ltx.r_string("config", "bump_texture");
+		}
+
+		if (mini_ltx.line_exist("config", "parallax"))
+		{
+			CheckAndCreate_Spec(desc);
+			desc.m_spec->m_use_steep_parallax = mini_ltx.r_bool("config", "parallax");
+		}
+
+		if (mini_ltx.section_exist("shaders_options"))
+		{
+			CheckAndCreate_Spec(desc);
+			for (auto& Line : mini_ltx.r_section("shaders_options").Data)
+			{
+				desc.m_spec->ShadersOptions[*Line.first] = *Line.second;
+			}
+		}
+	}
+}
+
 void CTextureDescrMngr::LoadTHM(const char* initial)
 {
 	FS_FileSet				flist;
@@ -319,6 +501,7 @@ void CTextureDescrMngr::Load()
 	LoadLTX					();
 	LoadTHM					(_game_textures_);
 	LoadTHM					("$level$");
+	LoadMiniLTX				();
 
 #ifdef DEBUG
 	Msg("load time=%d ms",TT.GetElapsed_ms());
@@ -386,12 +569,12 @@ bool CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
 
 ShaderExternalMap* CTextureDescrMngr::GetShaderExternal(const shared_str& tex_name) const
 {
-	if (auto I = m_texture_details.find(NormalizeTexKey(tex_name)); I != m_texture_details.end())
+	if (auto I = m_texture_details.find(NormalizeTexKey(tex_name)); I != m_texture_details.end() && I->second.m_spec != nullptr)
 	{
 		return &I->second.m_spec->ShadersOptions;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const

@@ -103,6 +103,9 @@ void CUICarBodyWnd::Init()
 	AttachChild						(m_pUIOthersBagWnd);
 	xml_init.InitStatic				(uiXml, "others_bag_static", 0, m_pUIOthersBagWnd);
 
+	m_pCar							= nullptr;
+	m_othersBagWndPrefix			= m_pUIOthersBagWnd->GetText();
+
 	m_pUIOurBagList					= new CUIDragDropListEx(); m_pUIOurBagList->SetAutoDelete(true);
 	m_pUIOurBagWnd->AttachChild		(m_pUIOurBagList);	
 	CUIXmlInitGame::InitDragDropListEx		(uiXml, "dragdrop_list_our", 0, m_pUIOurBagList);
@@ -181,6 +184,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 {
 	m_pOurObject									= pOur;
 	m_pOthersObject									= nullptr;
+	m_pCar											= nullptr;
 	m_pInventoryBox									= pInvBox;
 	m_pInventoryBox->set_in_use						(true);
 
@@ -197,6 +201,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 {
 	m_pOurObject									= pOur;
 	m_pOthersObject									= pOthers;
+	m_pCar											= smart_cast<CCar*>(pOthers);
 	m_pInventoryBox									= nullptr;
 	
 	m_pUICharacterInfoLeft->InitCharacter			(m_pOurObject);
@@ -241,10 +246,17 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 void CUICarBodyWnd::UpdateLists()
 {
+	if (m_pOthersObject)
+		m_pCar = smart_cast<CCar*>(m_pOthersObject);
+
 	InitInventoryContents(GetActorList());
 	UpdateDeadBodyBagList();
 
 	InventoryUtilities::UpdateWeight				(*m_pUIOurBagWnd);
+	if (m_pCar)
+		InventoryUtilities::UpdateWeightContainer(*m_pUIOthersBagWnd, &m_pCar->inventory(), m_othersBagWndPrefix.c_str());
+	else
+		m_pUIOthersBagWnd->SetText(m_othersBagWndPrefix.c_str());
 	UpdateConditionProgressBars();
 }
 
@@ -279,7 +291,13 @@ void CUICarBodyWnd::Update()
 {
 	if(	m_pOurObject->inventory().ModifyFrame()==Device.dwFrame || 
 		(m_pOthersObject&&m_pOthersObject->inventory().ModifyFrame()==Device.dwFrame))
+	{
 		InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
+		if (m_pCar)
+			InventoryUtilities::UpdateWeightContainer(*m_pUIOthersBagWnd, &m_pCar->inventory(), m_othersBagWndPrefix.c_str());
+		else
+			m_pUIOthersBagWnd->SetText(m_othersBagWndPrefix.c_str());
+	}
 	
 	if(m_pOthersObject && m_pOurObject->cast_game_object()->Position().distance_to(m_pOthersObject->cast_game_object()->Position()) > 3.0f)
 	{
@@ -315,6 +333,10 @@ void CUICarBodyWnd::Show(bool status)
 		InventoryUtilities::SendInfoToActor("ui_car_body");
 		SetCurrentItem(nullptr);
 		InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
+		if (m_pCar)
+			InventoryUtilities::UpdateWeightContainer(*m_pUIOthersBagWnd, &m_pCar->inventory(), m_othersBagWndPrefix.c_str());
+		else
+			m_pUIOthersBagWnd->SetText(m_othersBagWndPrefix.c_str());
 		PlaySnd(eSndOpen);
 	}
 	else

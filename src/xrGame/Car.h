@@ -225,6 +225,7 @@ static	const u16				cAsCallsnum						= 3;
 	void					AscCall				(EAsyncCalls c)	;
 ////////////////////////////////////////////////////////////////////////////////////////
 	virtual bool						CanRemoveObject				();
+	void								DropTrunkContents			();
 ////////////////////////////////////////////////////////////////////////
 	CPhysicsShell*						characters_scraper_shell;
 	BONE_P_MAP							bone_map;					//interface for PhysicsShell
@@ -314,6 +315,7 @@ public:
 	bool	b_event_drag_activated;
 	bool	b_awd;
 	bool	m_firsteye_panel;
+	bool	m_allow_inventory_control;
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
 
@@ -1294,6 +1296,7 @@ public:
 	bool					b_all_recurs_opened;
 	void					UpdateRecursiveDoors		();
 	bool					HasFirstCam(){return active_camera->tag == EctFirstCam;}
+	bool					AllowInventoryControl() const { return m_allow_inventory_control; }
 
 	bool					Use							(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos);
 	void					DoExit						();

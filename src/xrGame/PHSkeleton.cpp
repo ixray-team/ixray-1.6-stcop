@@ -111,7 +111,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 		
 		CPHDestroyableNotificate::spawn_notificate(D);
 
-		if(K)
+		if(K && obj->PPhysicsShell())
 		{
 			CInifile* ini=K->LL_UserData();
 			if(ini&&ini->section_exist("collide"))

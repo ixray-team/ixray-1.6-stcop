@@ -94,11 +94,20 @@ void CUIActorMenu::DeInitDeadBodySearchMode()
 
 void CUIActorMenu::UpdateDeadBodyBag()
 {
-	string64 buf;
+	string128 buf;
 
 	const char* kg_str = g_pStringTable->translate( "st_kg" ).c_str();
 	float total	= CalcItemsWeight( m_pDeadBodyBagList );
-	xr_sprintf( buf, "%.1f %s", total, kg_str );
+	CCar* pCar = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_car() : nullptr;
+	if (pCar != nullptr)
+	{
+		const char* max_str = g_pStringTable->translate( "ui_inv_max_weight" ).c_str();
+		xr_sprintf( buf, "%.1f %s (%s %.1f %s)", total, kg_str, max_str, pCar->inventory().GetMaxWeight(), kg_str );
+	}
+	else
+	{
+		xr_sprintf( buf, "%.1f %s", total, kg_str );
+	}
 	m_PartnerWeight->SetText( buf );
 	m_PartnerWeight->AdjustWidthToText();
 

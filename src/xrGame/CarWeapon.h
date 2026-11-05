@@ -57,6 +57,7 @@ public:
 	bool					unlimited_ammo		();
 
 	void					AddAmmo(CWeaponAmmo *ammo);
+	void					RefreshAmmoFromCar();
 	void					DecreaseAmmo();
 	void					DropEmptyAmmoBoxes();
 	int						GetAmmoCount(int ammotype = -1);
