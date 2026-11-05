@@ -28,7 +28,7 @@ void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font, const f
 	{
 		IReader* FontReader = FS.r_open(FullPath);
 
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), scale * 20.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		R_ASSERT(FontHandle);
 
 		ImGuiFontsPtr.push_back(FontReader);

@@ -525,7 +525,7 @@ void RenderSpawnManagerWindow() {
 		};
 
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
-	if (ImGui::Begin("Spawn Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)], ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::Begin("Spawn Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)]))
 	{
 		if (ImGui::Checkbox("spawn on Level", &imgui_spawn_manager.spawn_on_level))
 		{
