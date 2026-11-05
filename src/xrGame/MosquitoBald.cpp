@@ -2,6 +2,7 @@
 #include "MosquitoBald.h"
 #include "Level.h"
 #include "PhysicsShellHolder.h"
+#include "Car.h"
 #include "../xrEngine/xr_collide_form.h"
 
 CMosquitoBald::CMosquitoBald(void) 
@@ -17,6 +18,16 @@ CMosquitoBald::~CMosquitoBald(void)
 void CMosquitoBald::Load(const char* section) 
 {
 	inherited::Load(section);
+}
+
+bool CMosquitoBald::ShouldIgnoreObject(CGameObject* pObject)
+{
+	if (pObject != nullptr && pObject->cast_car() != nullptr)
+	{
+		return false;
+	}
+
+	return inherited::ShouldIgnoreObject(pObject);
 }
 
 bool CMosquitoBald::BlowoutState()
@@ -63,7 +74,26 @@ void CMosquitoBald::Affect(SZoneObjectInfo* O)
 	if(power > 0.01f) 
 	{
 		position_in_bone_space.set(0.f,0.f,0.f);
-		CreateHit(pGameObject->ID(),ID(),hit_dir,power,0,position_in_bone_space,impulse,m_eHitTypeBlowout);
+
+		ALife::EHitType hit_type = m_eHitTypeBlowout;
+		if (CCar* car = pGameObject->cast_car())
+		{
+			// A non-zero hit_stall_threshold enables the LA anomaly engine hit:
+			// HitEngine lowers current power/RPM and can stop the engine.
+			if (car->HitStallThreshold() != 0.f)
+			{
+				car->HitEngine(this, power);
+			}
+
+			// Collision-like body damage. The anomaly force is scaled by the car
+			// mass (1000 kg reference) and hit_anomaly_scale; CCar::Hit applies
+			// the car's strike_immunity on the resulting strike hit.
+			const float MassScale = pGameObject->GetMass() / 1000.f;
+			power *= MassScale * car->HitAnomalyScale();
+			hit_type = ALife::eHitTypeStrike;
+		}
+
+		CreateHit(pGameObject->ID(),ID(),hit_dir,power,0,position_in_bone_space,impulse,hit_type);
 		PlayHitParticles(pGameObject);
 	}
 }

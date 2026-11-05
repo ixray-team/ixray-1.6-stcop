@@ -199,10 +199,10 @@ private:
 	collide::rq_results		RQR;
 
 #ifdef DEBUG
-	CFunctionGraph 					m_dbg_power_rpm			;
-	CFunctionGraph 					m_dbg_torque_rpm		;
-	CStatGraph	   					*m_dbg_dynamic_plot		;
-	bool							b_plots					;
+// 	CFunctionGraph 					m_dbg_power_rpm			;
+// 	CFunctionGraph 					m_dbg_torque_rpm		;
+// 	CStatGraph	   					*m_dbg_dynamic_plot		;
+// 	bool							b_plots					;
 	float _stdcall			TorqueRpmFun		(float rpm)		{return Parabola(rpm)/rpm;}
 	void 					InitDebug			()				{}
 	void 					DbgSheduleUpdate	()				{}
@@ -210,7 +210,7 @@ private:
 	void 					DbgCreatePlots		()				{}
 	void 					DBgClearPlots		()				{}
 #endif
-////////////////////////////////////////////////////////////////////	
+////////////////////////////////////////////////////////////////////
 	Flags16						async_calls						;
 static	const u16				cAsCallsnum						= 3;
 	enum EAsyncCalls
@@ -286,7 +286,7 @@ public:
 	bool b_engine_on;
 	bool b_clutch;
 	bool b_starting;
-	bool b_stalling;
+// 	bool b_stalling;
 	bool b_breaks;
 	bool b_transmission_switching;
 
@@ -307,17 +307,19 @@ public:
 	float   m_break_start;
 	float	m_handbreak_start;
 	float	m_break_time;
-	float	m_breaks_to_back_rate;
+// 	float	m_breaks_to_back_rate;
 	float	m_power_neutral_factor;//multiplier for power when accelerator is not pressed (0-1,0.25)
 	bool	b_exploded;
 	bool	b_event_exit_car;
 	u32		m_exit_car_time;
+	u16		m_exit_door_bone;
 	bool	b_event_drag_activated;
 	bool	b_awd;
 	bool	m_firsteye_panel;
 	bool	m_allow_inventory_control;
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
+	float	m_hit_anomaly_scale;
 
 	struct SHeadlightHideaway
 	{
@@ -414,6 +416,9 @@ public:
 		float								tire_particle_scale_min;
 		float								tire_particle_scale_max;
 		float								max_control_velocity;
+		// The drive motor was switched to zero-velocity axle friction while
+		// the wheel had no ground contact. Restore the drive target on landing.
+		bool								AirborneFriction;
 		struct			SWheelCollisionParams
 		{
 			float							spring_factor		;
@@ -483,6 +488,7 @@ virtual void ApplyDamage			(u16 level);
 			tire_drive_source = nullptr;
 			WheelFlags = {0};
 			max_control_velocity = 0.f;
+			AirborneFriction = false;
 		}
 	};
 	struct SWheelDrive  
@@ -505,7 +511,7 @@ virtual void ApplyDamage			(u16 level);
 		float pos_right;
 		float lo_limit;
 		float hi_limit;
-		float steering_velocity;
+// 		float steering_velocity;
 		float steering_torque;
 		bool  limited;			//zero limited for idle steering drive
 		float GetSteerAngle()
@@ -580,7 +586,7 @@ virtual void ApplyDamage			(u16 level);
 		bool			lamba_door;
 		bool			vertical_door;
 
-		float			dist_to_door;
+// 		float			dist_to_door;
 		float			dist_to_door_avlbl;
 		float			opened_angle;
 		float			closed_angle;
@@ -602,8 +608,10 @@ virtual void ApplyDamage			(u16 level);
 		u32				open_time;
 		u32				real_open_time;
 		u32				real_close_time;
-		u32				switch_time;
+// 		u32				switch_time;
 		bool			no_deactivate;
+		// UNUSED: legacy doorway helper
+#if 0
 		struct SDoorway
 		{
 		Fvector2		door_plane_ext;
@@ -614,6 +622,7 @@ virtual void ApplyDamage			(u16 level);
 			void Init		(SDoor	*adoor);
 			void Trace		(const Fvector &point,const Fvector &dir);
 		};
+#endif
 		Fvector2		door_plane_ext;
 		_vector2<int>	door_plane_axes;
 		Fvector			door_dir_in_door;
@@ -670,7 +679,7 @@ virtual void ApplyDamage(u16 level);
 			a_vel_factor_opening = 1.f;
 			torque_factor_closing = 1.f;
 			a_vel_factor_closing = 1.f;
-			dist_to_door = 0.0f;
+// 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;
 
 			non_enterable = false;
@@ -765,7 +774,7 @@ virtual void ApplyDamage(u16 level);
 private:
 	typedef CEntity			inherited;
 private:
-	CCarTurret*				m_car_weapon_active;
+// 	CCarTurret*				m_car_weapon_active;
 	int						m_car_weapon_slots;
 	xr_vector<CCarTurret*>	m_car_weapons;
 	float					m_steer_angle;
@@ -781,7 +790,7 @@ private:
 	float					break_start_dt;
 	Fvector					m_camera_position[EctMaxCam];
 	Fvector					CarCameraDirection;
-	Fvector					carCameraNormal;
+// 	Fvector					carCameraNormal;
 	float					m_camera_inert_x;
 	float					m_camera_inert_z;
 	u32						m_camera_last_mmove_time;
@@ -868,6 +877,7 @@ private:
 	u32						m_hit_engine_time;
 	float					m_slip_start_time;
 	float					m_steer_boost;
+	u32						m_steer_boost_frame;
 	float					m_steer_turn_factor;
 	float					m_steer_counter_turn_factor;
 	float					m_steer_turn_compensation;
@@ -884,11 +894,11 @@ private:
 
 	float					m_limiter_volume;
 	//float					m_limiter_exhaust_volume;
-	float					m_limiter_engine_volume;
+// 	float					m_limiter_engine_volume;
 	float					m_transmission_switch_time;
-	float					m_transmission_switch_end_time;
+// 	float					m_transmission_switch_end_time;
 	float					m_transmission_switch_sound_time;
-	bool					m_transmission_switched;
+// 	bool					m_transmission_switched;
 	bool					m_transmission_sound_played;
 	float					m_sound_state_after_switch;
 	u32						m_engine_valve;
@@ -918,8 +928,8 @@ private:
 	float					m_sound_switch_effect_duration;
 	//float					m_engine_exhaust_idle_volume_scale;
 	float					m_engine_idle_volume_scale;
-	float					m_engine_idle_volume_scale_current;
-	float					m_engine_idle_volume_scale_current_drive;
+// 	float					m_engine_idle_volume_scale_current;
+// 	float					m_engine_idle_volume_scale_current_drive;
 	float					m_engine_rpm_scale;
 	float					m_idle_state_scale;
 	float					m_idle_state_scale_last;
@@ -940,7 +950,7 @@ private:
 	//float					m_engine_exhaust_volume_scale;
 	float					m_engine_decel_volume_scale;
 	//float					m_engine_decel_exhaust_volume_scale;
-	float					m_engine_gas_sound_scale;
+// 	float					m_engine_gas_sound_scale;
 	bool					m_sound;
 	//bool					m_exhaust_sound;
 	float					m_engine_drive;
@@ -1075,7 +1085,7 @@ private:
 	bool					m_torch_usage;
 	//gauge
 
-	float					m_fSaveMaxRPM;
+// 	float					m_fSaveMaxRPM;
 	float					m_max_rpm;
 	float					m_min_rpm;
 	float					m_power_rpm;//max power
@@ -1085,8 +1095,8 @@ private:
 	xr_vector<Fmatrix>		bones_bind_forms;
 	Fvector					bind_center;
 
-	CGameFont*				pFontTest;
-	ui_shader				hVideoShader;
+// 	CGameFont*				pFontTest;
+// 	ui_shader				hVideoShader;
 
 
 	float					m_steering_speed;
@@ -1114,7 +1124,7 @@ private:
 	void				 SwitchEngineDoors					()  ;
 	void				 NeutralDrive						()	;
 	void				 UpdatePower						()	;
-	void				 ReleasePedals						()	;
+// 	void				 ReleasePedals						()	;
 	void				 ResetKeys							()	;
 	XPROPERTY(LuaCallable)
 	void				 ShowTrunk							()	;
@@ -1132,7 +1142,7 @@ IC	float	 			EngineRpmFromWheels					(){return dFabs(DriveWheelsMeanAngleRate()*
 	void				SteerLeft							();
 	void				SteerIdle							();
 	void				Transmission						(size_t num);
-	void				CircleSwitchTransmission			();
+// 	void				CircleSwitchTransmission			();
 	void				TransmissionUp						();
 	void				TransmissionDown					();
 IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
@@ -1280,13 +1290,13 @@ public:
 	bool					is_Door						(u16 id);
 	bool					DoorOpen					(u16 id);
 	bool					DoorClose					(u16 id);
-	bool					DoorUse						(u16 id);
+// 	bool					DoorUse						(u16 id);
 	bool					DoorSwitch					(u16 id);
 	bool					Enter						(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos);
 	bool					Exit						(const Fvector& pos,const Fvector& dir);
 	bool					IsHeadLightsAvailable		(){return m_lights.IsAvailable();};
 	SDoor*					Get_Door					(u16 id, bool all = false);
-	bool					All_Doors_closed			();
+// 	bool					All_Doors_closed			();
 	SDoor*					GetNearestDoor				(Fvector look_pos, Fvector look_dir, bool special = false);
 	u16						GetNearestBone				(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test = false);
 	Fvector					GetBindCenter				(){return bind_center;}
@@ -1300,7 +1310,7 @@ public:
 
 	bool					Use							(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos);
 	void					DoExit						();
-	void					DoEnter						();
+// 	void					DoEnter						();
 	XPROPERTY(LuaCallable)
 	void					OpenTrunkBone				();
 	XPROPERTY(LuaCallable)
@@ -1311,6 +1321,8 @@ public:
 	// stop engine due to external forces
 	void					KillEngine					();
 	void					HitEngine					(CObject *obj, float scale);
+	float					HitStallThreshold			() const		{ return m_hit_stall_threshold; }
+	float					HitAnomalyScale				() const		{ return m_hit_anomaly_scale; }
 	u16						GetTrunkBone				() const		{return m_bone_trunk;};
 	u16						DriverAnimationType 		();
 	virtual	bool			register_schedule() const { return false; }
@@ -1391,20 +1403,20 @@ public:
 	CInventory*				GetInventory				() override { return &inventory(); }
 		  void				VisualUpdate				(float fov=90.0f);
 		  void				DrawCarInfo				();
-	Fvector					GetTorqAxes					(u16 elem_id);
-	Fvector					GetForcAxes					(u16 elem_id);
+// 	Fvector					GetTorqAxes					(u16 elem_id);
+// 	Fvector					GetForcAxes					(u16 elem_id);
 	Fvector					GetAvelAxes					(u16 elem_id);
 	Fvector					GetLvelAxes					(u16 elem_id);
-	void					SetTorqAxes					(u16 elem_id, Fvector trq);
-	void					SetForcAxes					(u16 elem_id, Fvector frc);
+// 	void					SetTorqAxes					(u16 elem_id, Fvector trq);
+// 	void					SetForcAxes					(u16 elem_id, Fvector frc);
 	void					SetAvelAxes					(u16 elem_id, Fvector avel);
 	void					SetLvelAxes					(u16 elem_id, Fvector lvel);
 
-	void					WheelsSetSpring(float spring = 0.f);
-	void					WheelsSetDamping(float damping = 0.f);
+// 	void					WheelsSetSpring(float spring = 0.f);
+// 	void					WheelsSetDamping(float damping = 0.f);
 
-	float					WheelsGetSpring();
-	float					WheelsGetDamping();
+// 	float					WheelsGetSpring();
+// 	float					WheelsGetDamping();
 
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;

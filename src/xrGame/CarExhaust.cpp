@@ -23,16 +23,24 @@ void CCar::SExhaust::Init()
 {
 	VERIFY(!physics_world()->Processing());
 
-	if (*pcar->m_exhaust_particles)
+	const char* ExhaustParticles = pcar->m_exhaust_particles.c_str();
+	if (ExhaustParticles != nullptr && ExhaustParticles[0] != '\0')
 	{
-		p_pgobject = Particles::Details::Create(*pcar->m_exhaust_particles, false);
-		p_pgobject->UpdateParent(pcar->XFORM(), zero_vel);
+		p_pgobject = Particles::Details::Create(ExhaustParticles, false);
+		if (p_pgobject)
+		{
+			p_pgobject->UpdateParent(pcar->XFORM(), zero_vel);
+		}
 	}
 
-	if (pcar->m_nitro && pcar->b_nitro_particles_enabled && *pcar->m_nitro_particles)
+	const char* NitroParticles = pcar->m_nitro_particles.c_str();
+	if (pcar->m_nitro && pcar->b_nitro_particles_enabled && NitroParticles != nullptr && NitroParticles[0] != '\0')
 	{
-		p_pgobject_nitro = Particles::Details::Create(*pcar->m_nitro_particles, false);
-		p_pgobject_nitro->UpdateParent(pcar->XFORM(), zero_vel);
+		p_pgobject_nitro = Particles::Details::Create(NitroParticles, false);
+		if (p_pgobject_nitro)
+		{
+			p_pgobject_nitro->UpdateParent(pcar->XFORM(), zero_vel);
+		}
 	}
 }
 
@@ -136,6 +144,11 @@ void CCar::SExhaust::PlayPop()
 	BI_M = BI.mTransform;
 	BI_M.mulA_43(pcar->XFORM());
 
-	if (!*pcar->m_pop_particles) return;
-	Level().ph_commander().add_call(new CPHOnesCondition(), new CCarParticlesPlayCall(BI_M, velocity, *pcar->m_pop_particles));
+	const char* PopParticles = pcar->m_pop_particles.c_str();
+	if (PopParticles == nullptr || PopParticles[0] == '\0')
+	{
+		return;
+	}
+
+	Level().ph_commander().add_call(new CPHOnesCondition(), new CCarParticlesPlayCall(BI_M, velocity, PopParticles));
 }

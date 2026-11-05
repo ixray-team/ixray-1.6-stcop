@@ -8,6 +8,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"
+#include "Level.h"
 #include "../xrCore/net_utils.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "MathUtils.h"
@@ -32,6 +33,7 @@ bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 void CCar::SDoor::Init()
 {
 	update=false;
+	float OpenTorqueFactor = pcar->m_doors_torque_factor;
 	joint= pcar->bone_map.find(bone_id)->second.joint;
 	if(!joint) return;
 	R_ASSERT2(dJointGetType(joint->GetDJoint())==dJointTypeHinge,"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
@@ -64,6 +66,7 @@ void CCar::SDoor::Init()
 			{
 				if (ini->line_exist(bone_name, "use_distance"))
 					dist_to_door_avlbl = ini->r_float(bone_name, "use_distance");
+				OpenTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_torque_factor", OpenTorqueFactor);
 
 				if (ini->line_exist(bone_name, "non_enterable"))
 					non_enterable = !!ini->r_bool(bone_name, "non_enterable");
@@ -235,8 +238,10 @@ void CCar::SDoor::Init()
 		pos_open=1.f;
 		joint->GetLimits(closed_angle,opened_angle,0);
 		//	closed_angle+=2.f*M_PI/180.f;
-		//opened_angle-=4.f*M_PI/180.f;
-		opened_angle-=opened_angle/4.f;
+		// Keep the same small margin as the opposite hinge direction; the old
+		// 25% reduction made positive-side doors report "opened" long before
+		// the actual limit and they visibly stopped short.
+		opened_angle-=2.f*M_PI/180.f;
 	}
 	else
 	{
@@ -262,7 +267,7 @@ void CCar::SDoor::Init()
 	Fvector shoulder;
 
 	shoulder.sub(door_transform.c,joint->PSecond_element()->mass_Center());
-	torque=shoulder.magnitude()*joint->PSecond_element()->getMass()*pcar->m_doors_torque_factor*10.f;
+	torque=shoulder.magnitude()*joint->PSecond_element()->getMass()*OpenTorqueFactor*10.f;
 	state=opened;
 //	Close();
 }
@@ -344,7 +349,7 @@ void CCar::SDoor::Update()
 			{
 				if (pos_open * opened_angle < pos_open * door_angle)
 				{
-					if (!spring_loaded_door&&!lamba_door)
+					if (!spring_loaded_door)
 						NeutralTorque(torque);
 					open_time = Device.dwTimeGlobal;
 					state = opened;
@@ -353,30 +358,27 @@ void CCar::SDoor::Update()
 			}
 			case opened:
 			{
-				if (non_enterable || non_exitable)
+				// Only spring_loaded doors are held at the opened limit.
+				// non_enterable/non_exitable only restrict entry and exit; they
+				// must not affect the door physics or prevent it from closing.
+				if (spring_loaded_door)
 				{
 					if (Device.dwTimeGlobal - open_time > 1000)
 					{
-						if (!spring_loaded_door&&!lamba_door)
-							ApplyTorque((torque*torque_factor_opening) / 5.f, a_vel*a_vel_factor_opening);
+						ApplyTorque((torque*torque_factor_opening) / 5.f, a_vel*a_vel_factor_opening);
 						RemoveFromUpdate();
 					}
+					break;
 				}
-				else
+
+				if (pcar->m_pPhysicsShell->isEnabled() && pcar->GetVelocityM() > 0.01f)
 				{
-					if (pcar->m_pPhysicsShell->isEnabled())
-					{
-						if (pcar->GetVelocityM() > 0.01f)
-						{
-							Fvector angil, torque;
-							Fvector angil2; pcar->m_pPhysicsShell->get_AngularVel(angil2); torque.set(angil2);
-							pcar->m_pPhysicsShell->get_AngularVel(angil);
-							float odoor_trq = torque.magnitude();
-							float odoor_vel = angil.magnitude() + (-(pcar->GetVelocityM() * 0.8f));
-							if (!spring_loaded_door&&!lamba_door)
-								ApplyTorque(odoor_trq, odoor_vel);
-						}
-					}
+					Fvector angil, torque;
+					Fvector angil2; pcar->m_pPhysicsShell->get_AngularVel(angil2); torque.set(angil2);
+					pcar->m_pPhysicsShell->get_AngularVel(angil);
+					float odoor_trq = torque.magnitude();
+					float odoor_vel = angil.magnitude() + (-(pcar->GetVelocityM() * 0.8f));
+					ApplyTorque(odoor_trq, odoor_vel);
 				}
 			}
 		}
@@ -641,7 +643,7 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 {
 	if(pcar->bones_bind_forms.empty())
 		return;
-//	if(!joint) 
+//	if(!joint)
 	{
 		IKinematics* K=PKinematics(pcar->Visual());
 		//CBoneInstance bi=K->LL_GetBoneInstance(bone_id);
@@ -664,7 +666,54 @@ void CCar::SDoor::GetExitPosition(Fvector& pos)
 		dir_from_car.y=0.f;
 		if(add1.dotproduct(dir_from_car)<0.f)add1.invert();	
 		add1.mul(3.f);
+
+		// A smaller clearance than before: enough for the actor capsule, but not
+		// so far that the player is moved away from the door unnecessarily.
+		Fvector exit_dir = add1;
+		const bool has_exit_dir = safe_normalize(exit_dir);
+		if (has_exit_dir)
+			add1.mad(exit_dir, 0.30f);
+
 		pos.add(add1);
+
+		bool exit_blocked = false;
+		if (has_exit_dir)
+		{
+			Fvector side;
+			side.crossproduct(exit_dir, Fvector().set(0.f, 1.f, 0.f));
+			safe_normalize(side);
+
+			const float check_distance =
+				Fvector(pos.x - pf.c.x, 0.f, pos.z - pf.c.z).magnitude() + 0.45f;
+			const float side_offsets[] = { -0.30f, 0.f, 0.30f };
+			const float height_offsets[] = { 0.60f, 1.25f };
+			for (float side_offset : side_offsets)
+			{
+				for (float height_offset : height_offsets)
+				{
+					Fvector from = pf.c;
+					from.y = pos.y + height_offset;
+					from.mad(side, side_offset);
+					collide::rq_result result;
+					if (Level().ObjectSpace.RayPick(from, exit_dir, check_distance, collide::rqtStatic, result, pcar))
+					{
+						exit_blocked = true;
+						break;
+					}
+				}
+				if (exit_blocked)
+					break;
+			}
+		}
+
+		if (exit_blocked)
+		{
+			// The door opens into a wall. Put the actor above the car instead of
+			// letting the character body resolve the overlap by pushing the car.
+			Fvector local_top = pcar->m_sits_transforms.c;
+			local_top.y += 1.6f;
+			pcar->XFORM().transform_tiny(pos, local_top);
+		}
 		return;
 	}
 	//float lo_ext,hi_ext;
@@ -897,6 +946,8 @@ void CCar::SDoor::Repair()
 		Deactivate();
 	}
 }
+// UNUSED: legacy doorway helper
+#if 0
 CCar::SDoor::SDoorway::SDoorway()
 {
 	door=NULL;
@@ -1018,3 +1069,4 @@ void CCar::SDoor::SDoorway::Trace(const Fvector &point,const Fvector &dir)
 {
 
 }
+#endif // 0

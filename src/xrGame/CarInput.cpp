@@ -37,6 +37,29 @@ static int CarInputAction(int cmd)
 	return get_binded_action(cmd);
 }
 
+static bool IsActionKeyHeld(EGameActions Action)
+{
+	if (pInput == nullptr)
+	{
+		return false;
+	}
+
+	const int Key0 = get_action_dik(Action, 0);
+	const int Key1 = get_action_dik(Action, 1);
+	const bool ControllerMode = pInput->GetControllerMode();
+
+	auto IsDown = [ControllerMode](int Dik)
+	{
+		if (Dik == 0)
+		{
+			return false;
+		}
+		return ControllerMode ? pInput->iGetAsyncGamepadKeyState(Dik) : pInput->iGetAsyncKeyState(Dik);
+	};
+
+	return IsDown(Key0) || IsDown(Key1);
+}
+
 void	CCar::OnMouseMove(int dx, int dy)
 {
 	if (!IsMyCar() && !g_dedicated_server)					return;
@@ -340,7 +363,16 @@ void	CCar::OnKeyboardHold(int cmd)
 	for(;CWPB!=m_car_weapons.end();++CWPB)
 		if((*CWPB)->IsActive() && !(*CWPB)->CombinedInput())
 			return;
-	m_steer_boost = 0.f;
+	// Reset once per frame, not on every held key. KeyboardUpdate sends hold
+	// for all pressed keys, so resetting here for every call meant that a
+	// later key (for example kFWD) cleared the boost set by steering.
+	if (m_steer_boost_frame != Device.dwFrame)
+	{
+		m_steer_boost_frame = Device.dwFrame;
+		m_steer_boost = 0.f;
+	}
+	float steer_boost = 0.f;
+	const bool SteerInputConflict = IsActionKeyHeld(kL_STRAFE) && IsActionKeyHeld(kR_STRAFE);
 	float boost_left = 1.f;
 	float boost_right = 1.f;
 	float boost_speed = 1.f - GetSpeedKmH() * 0.002f;
@@ -410,8 +442,8 @@ void	CCar::OnKeyboardHold(int cmd)
 		case kCROUCH:	b_auto_transmission_stop = true; break;
 		case kSPRINT_TOGGLE: b_nitro_engage = true; break;
 		case kBACK: if (OwnerActor() && b_engine_on) brake = boost_brake * (m_brake_boost * Device.fTimeDelta);	break;
-		case kR_STRAFE:	if (OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) m_steer_boost = boost_speed * boost_right * Device.fTimeDelta;	break;
-		case kL_STRAFE:	if (OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) m_steer_boost = boost_speed * boost_left * -(Device.fTimeDelta); break;
+		case kR_STRAFE:	if (!SteerInputConflict && OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) { steer_boost = boost_speed * boost_right * Device.fTimeDelta; m_steer_boost = steer_boost; } break;
+		case kL_STRAFE:	if (!SteerInputConflict && OwnerActor() && b_engine_on && (m_steer_speed_boost || m_steer_spin_boost)) { steer_boost = boost_speed * boost_left * -(Device.fTimeDelta); m_steer_boost = steer_boost; } break;
 		case kDROP: m_car_sound->Horn(true); break;
 		case kCAM_ZOOM_IN:
 			ZoomCamera(kCAM_ZOOM_IN, 2.f * Device.fTimeDelta);
@@ -474,7 +506,7 @@ void	CCar::OnKeyboardHold(int cmd)
 				if (m_steer_speed_boost && !b_burnout)
 				{
 					Fvector angular_velocity = GetAvelAxes(0);
-					angular_velocity.y += m_steer_boost * m_steer_speed_boost;
+					angular_velocity.y += steer_boost * m_steer_speed_boost;
 					SetAvelAxes(0, angular_velocity);
 				}
 			}
@@ -483,7 +515,7 @@ void	CCar::OnKeyboardHold(int cmd)
 				if (m_steer_spin_boost && b_burnout)
 				{
 					Fvector angular_velocity = GetAvelAxes(0);
-					angular_velocity.y += m_steer_boost * m_steer_spin_boost;
+					angular_velocity.y += steer_boost * m_steer_spin_boost;
 					SetAvelAxes(0, angular_velocity);
 				}
 			}

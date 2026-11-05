@@ -187,6 +187,9 @@ protected:
 	//воздействие зоной на объект
 	virtual		void		Affect						(SZoneObjectInfo* O)  {}
 
+	//объект не должен получать урон от зоны
+	virtual		bool		ShouldIgnoreObject			(CGameObject* pObject);
+
 	//воздействовать на все объекты в зоне
 	void					AffectObjects				();
 

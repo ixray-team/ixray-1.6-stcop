@@ -925,13 +925,11 @@ void CAnomalyZone::shedule_Update(u32 dt)
 				continue;
 			}
 
-			CEntityAlive* pEntityAlive = pObject->cast_entity_alive();
-
 			info.dw_time_in_zone += dt;
 
 			if((!info.small_object && m_iDisableHitTime != -1 && (int)info.dw_time_in_zone > m_iDisableHitTime) || (info.small_object && m_iDisableHitTimeSmall != -1 && (int)info.dw_time_in_zone > m_iDisableHitTimeSmall))
 			{
-				if(!pEntityAlive || !pEntityAlive->g_Alive())
+				if(ShouldIgnoreObject(pObject))
 				{
 					info.zone_ignore = true;
 				}
@@ -939,7 +937,7 @@ void CAnomalyZone::shedule_Update(u32 dt)
 
 			if(m_iDisableIdleTime != -1 && (int)info.dw_time_in_zone > m_iDisableIdleTime)
 			{
-				if(!pEntityAlive || !pEntityAlive->g_Alive())
+				if(ShouldIgnoreObject(pObject))
 				{
 					StopObjectIdleParticles(pObject);
 				}
@@ -1088,6 +1086,12 @@ float CAnomalyZone::effective_radius(float nearest_shape_radius)
 float CAnomalyZone::Power(float dist, float nearest_shape_radius) 
 {
 	return  m_fMaxPower * RelativePower(dist, nearest_shape_radius);
+}
+
+bool CAnomalyZone::ShouldIgnoreObject(CGameObject* pObject)
+{
+	CEntityAlive* pEntityAlive = pObject != nullptr ? pObject->cast_entity_alive() : nullptr;
+	return pEntityAlive == nullptr || !pEntityAlive->g_Alive();
 }
 
 void CAnomalyZone::PlayIdleParticles(bool bIdleLight)

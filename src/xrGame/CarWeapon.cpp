@@ -351,17 +351,18 @@ void CCarTurret::OnMouseMove(int dx, int dy)
 	mouse_moving_time = Device.dwTimeGlobal;
 }
 
-float decreasetozero(float val, int stop_speed)
-{
-	float decrement = _abs(val) / 10.f;
-
-	if (val > 0.0000000f)
-	    val -= decrement*stop_speed*fixed_step;
-	if (val < 0.0000000f)
-	    val += decrement*stop_speed*fixed_step;
-
-	return val;
-}
+// UNUSED: decreasetozero
+// float decreasetozero(float val, int stop_speed)
+// {
+// 	float decrement = _abs(val) / 10.f;
+//
+// 	if (val > 0.0000000f)
+// 	    val -= decrement*stop_speed*fixed_step;
+// 	if (val < 0.0000000f)
+// 	    val += decrement*stop_speed*fixed_step;
+//
+// 	return val;
+// }
 
 #include "../xrPhysics/ODE/PHWorld.h"
 
@@ -422,7 +423,8 @@ void CCarTurret::PhDataUpdate()
 			JointTurret->PSecond_element()->Enable();
 
 		float world_gravity = physics_world()->Gravity();
-		float total_mass = JointGun->PSecond_element()->getMass()+JointTurret->PSecond_element()->getMass();
+		// UNUSED: total_mass
+		// float total_mass = JointGun->PSecond_element()->getMass()+JointTurret->PSecond_element()->getMass();
 
 		// Physical turrets use joint velocity directly. Apply the same
 		// min/max speed limits that non-physical turrets use in UpdateBarrelDir.
@@ -705,29 +707,31 @@ void CCarTurret::SetGun(int val)
 	}
 }
 
-void CCarTurret::SetPrevGun()
-{
-	if (GetGunsSize() == 0)
-	{
-		return;
-	}
+// UNUSED: SetPrevGun
+// void CCarTurret::SetPrevGun()
+// {
+// 	if (GetGunsSize() == 0)
+// 	{
+// 		return;
+// 	}
+//
+// 	--m_icur_gun_idx;
+// 	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
+// 	SetGun(m_icur_gun_idx);
+// }
 
-	--m_icur_gun_idx;
-	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
-	SetGun(m_icur_gun_idx);
-}
-
-void CCarTurret::SetNextGun()
-{
-	if (GetGunsSize() == 0)
-	{
-		return;
-	}
-
-	++m_icur_gun_idx;
-	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
-	SetGun(m_icur_gun_idx);
-}
+// UNUSED: SetNextGun
+// void CCarTurret::SetNextGun()
+// {
+// 	if (GetGunsSize() == 0)
+// 	{
+// 		return;
+// 	}
+//
+// 	++m_icur_gun_idx;
+// 	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
+// 	SetGun(m_icur_gun_idx);
+// }
 
 void CCarTurret::SetGunCircle()
 {
