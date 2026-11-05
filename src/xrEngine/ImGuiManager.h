@@ -2,6 +2,14 @@
 
 struct ImFont;
 
+namespace ImGui
+{
+	extern ENGINE_API ImFont* LightFont;
+	extern ENGINE_API ImFont* RegularFont;
+	extern ENGINE_API ImFont* MediumFont;
+	extern ENGINE_API ImFont* BoldFont;
+}
+
 namespace ImGuiPriority
 {
 	constexpr u32 High = 1;
