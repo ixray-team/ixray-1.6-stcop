@@ -26,7 +26,7 @@ namespace VertexPacking
 
 	inline void EncodeUV(PackedVertex& Vertex, float U, float V)
 	{
-		VERIFY(U >= -32.0f && U < 32.0f && V >= -32.0f && V < 32.0f);
+		VERIFY(U >= -32.0f && U <= 32.0f && V >= -32.0f && V <= 32.0f);
 		const u32 QU = u32(std::lrint(std::max(-8388608.0f, std::min(U * 262144.0f, 8388607.0f))));
 		const u32 QV = u32(std::lrint(std::max(-8388608.0f, std::min(V * 262144.0f, 8388607.0f))));
 		Vertex.TF = (Vertex.TF & 0xFFFFu) | ((QU & 0xFFu) << 16) | ((QV & 0xFFu) << 24);

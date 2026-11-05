@@ -83,10 +83,12 @@ void CUIProgressShape::Draw()
 		else
 			DrawWidgetText();
 	}
-	if (m_pTexture)
-		UIRender->SetShader				(*m_pTexture->GetShader());
-	else
-		UIRender->SetShader				(*GetShader());
+	CUIStaticItem& Item = m_pTexture ? m_pTexture->GetUIStaticItem() : GetUIStaticItem();
+	Frect tex_rect = Item.GetTextureRect();
+	if (Item.uFlags.test(CUIStaticItem::flValidTextureRect) && (tex_rect.width() == 0.0f || tex_rect.height() == 0.0f))
+		return;
+
+	UIRender->SetShader				(*Item.GetShader());
 
 	Fvector2						tsize;
 	UIRender->GetActiveTextureResolution(tsize);
@@ -106,12 +108,6 @@ void CUIProgressShape::Draw()
 
 	Fvector2						center_pos;
 	pos_rect.getcenter				(center_pos);
-
-	Frect tex_rect;
-	if (m_pTexture)
-		tex_rect = m_pTexture->GetUIStaticItem().GetTextureRect();
-	else
-		tex_rect = GetUIStaticItem().GetTextureRect();
 
 	tex_rect.lt.x					/= tsize.x;
 	tex_rect.lt.y					/= tsize.y;

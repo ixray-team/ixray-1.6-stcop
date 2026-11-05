@@ -48,6 +48,10 @@ void restart_all				()
 
 	g_pGamePersistent->ixr_framework_onframe.reset();
 	{
+		PROF_EVENT("restart_all: cached ini");
+		ClearCachedIniFiles();
+	}
+	{
 		PROF_EVENT("restart_all: script engine");
 		ai().script_engine().init	();
 	}
@@ -56,11 +60,6 @@ void restart_all				()
 #ifdef DEBUG
 	ai().moving_objects().clear	();
 #endif // DEBUG
-
-	{
-		PROF_EVENT("restart_all: cached ini");
-		ClearCachedIniFiles();
-	}
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :

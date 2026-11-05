@@ -82,7 +82,7 @@ CGameFont* CFontManager::CloneFont(const shared_str& name)
 	{
 		CGameFont* font = new CGameFont(name.c_str(), 0);
 		shared_str newName;
-		newName.printf("%s_cloned", name.c_str());
+		newName.printf("%s_cloned_%p", name.c_str(), font);
 		Fonts[newName] = font;
 		return font;
 	}
