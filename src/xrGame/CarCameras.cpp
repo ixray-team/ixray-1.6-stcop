@@ -1,71 +1,273 @@
-#include "StdAfx.h"
-
+#include "stdafx.h"
+#pragma hdrstop
 #ifdef DEBUG
-
+#include "ode_include.h"
+#include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
-#include "../xrPhysics/IPHWorld.h"
+#include "phworld.h"
 #endif
 #include "alife_space.h"
-#include "Hit.h"
+#include "hit.h"
 #include "PHDestroyable.h"
-#include "Car.h"
-#include "Actor.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "car.h"
+#include "actor.h"
+#include "actoreffector.h"
 #include "cameralook.h"
-#include "CameraFirstEye.h"
-#include "Level.h"
-#include "../xrEngine/CameraManager.h"
-
+#include "camerafirsteye.h"
+#include "level.h"
+#include "../xrEngine/cameramanager.h"
+#include "../xrEngine/camerabase.h"
 bool CCar::HUDView() const		
 {
-	return active_camera->tag==ectFirst;
+	return active_camera->tag==EctFirstCam;
 }
+#include "phworld.h"
+float rs_car_fov_effects = 1.f;
+float rs_car_cam_inert = 1.f;
+float inertion_factor	= 0.95f;
+float rs_car_cam_angle = 6.f;
 
 void	CCar::cam_Update			(float dt, float fov)
 {
+	float ifps = Device.fTimeDelta > 0.f ? (1.f / Device.fTimeDelta) : 60.f;
+
+	//clamp(ifps, 0.f, 300.0f);
+	//ifps = pow((300.f - ifps), 4.f) / 8100000000.f;
+	//ifps = 0.5f + 0.5f * (1.f - ifps);
+	ifps *= 0.008f;
+	ifps = (powf(ifps, 1.f / 8.f) - (1.f / ifps) + 10.4f) * (0.089f);
+	clamp(ifps, 0.1f, 1.f);
+
+	inertion_factor = ifps;
+	//Msg("inert %f", inertion_factor);
+
 	VERIFY(!physics_world()->Processing());
 	Fvector							P,Da;
 	Da.set							(0,0,0);
-	//bool							owner = !!Owner();
 
-	XFORM().transform_tiny			(P, *m_camera_current_position);
-
-	switch(active_camera->tag) {
-	case ectFirst:
-		// rotate head
-		if(OwnerActor()) OwnerActor()->Orientation().yaw	= -active_camera->yaw;
-		if(OwnerActor()) OwnerActor()->Orientation().pitch	= -active_camera->pitch;
-		break;
-	case ectChase:						break;
-	case ectFree:						break;
+	if(active_camera->tag == EctFirstCam)
+	{
+		if(OwnerActor())
+		{
+			OwnerActor()->Orientation().yaw	= -active_camera->yaw;
+			OwnerActor()->Orientation().pitch = -active_camera->pitch;
+		}
 	}
-	active_camera->f_fov				= fov;
-	active_camera->Update				(P,Da);
+	else
+	{
+		if(OwnerActor())
+		{
+			OwnerActor()->Orientation().yaw	= 0;
+			OwnerActor()->Orientation().pitch = 0;
+		}
+	}
+
+	XFORM().transform_tiny(P, m_camera_position[active_camera->tag]);
+
+	float car_fov = fov;
+	if (rs_car_fov_effects)// && GetVelocity().dotproduct(XFORM().k) > 0.f)
+	{
+		//float fov_spd = GetSpeedKmH() * 0.075f;
+		//clamp(fov_spd, 0.f, 1.f);
+		//fov_spd = sinf(0.5f * PI * powf(fov_spd, 0.5f));
+
+		//float accel = (m_last_avelocity) * 50.f;
+		//clamp(accel, 0.f, 8.f);
+		//accel = powf(accel, 0.8f);
+		//Msg("accel %f", accel);
+		float car_fov_accel = 1.f;
+		if (e_state_drive == drive && m_transmission_stage < 10)
+		{
+			if (!m_nitro_engage)
+				car_fov_accel = 1.25f;
+			else
+				car_fov_accel = 2.5f;
+		}
+		//Msg("fov accel %f", car_fov_accel);
+		float speed = GetSpeedKmH() - 15.f;
+		speed /= 400.f;
+		clamp(speed, 0.f, 1.f);
+		float car_fov_spd = 1.f + rs_car_fov_effects * 0.04f * sinf(0.5f * PI * powf(speed, 0.8f));
+		//Msg("fov spd %f", car_fov_spd);
+		car_fov_accel = (1.f + rs_car_fov_effects * 0.0025f * m_acceleration * car_fov_accel);
+		//Msg("fov accel2 %f", car_fov_accel);
+		car_fov = car_fov_accel * car_fov_spd;
+		//Msg("car fov %f", car_fov);
+		m_camera_acceleration = m_camera_acceleration + (car_fov - m_camera_acceleration) * 7.f * Device.fTimeDelta;
+		//Msg("car fov inert %f", m_camera_acceleration);
+		car_fov = m_camera_acceleration * fov;
+	}
+	if (rs_car_fov_effects && active_camera->tag != EctFirstCam)
+		car_fov *= 0.93f;
+
+    if (m_pPhysicsShell && Device.dwTimeGlobal - m_camera_last_mmove_time > 3000)
+    {
+	    Fvector	xyz;
+        if (GetSpeedKmH() >= 5.f)
+        {
+            Fvector lin_vel;
+            m_pPhysicsShell->get_ElementByStoreOrder(0)->get_LinearVel(lin_vel);
+			//lin_vel.y = 0;
+	        Fmatrix _m;
+	        _m.identity();
+	        _m.k.normalize_safe(lin_vel);
+	        Fvector::generate_orthonormal_basis(_m.k, _m.j, _m.i);
+
+	        _m.getXYZi(xyz);
+        }
+        else
+            XFORM().getXYZi(xyz);
+
+		float camera_angle = deg2rad(90.f * powf(rs_car_cam_angle / 90.f, 1.f / m_camera_angle_factor));
+		//Msg("%f", rad2deg(camera_angle));
+
+	    camera[EctThridCam]->yaw = angle_inertion_var(camera[EctThridCam]->yaw, xyz.y,
+	    									0.001f,
+	    									60.f,
+	    									20.f,
+	    									Device.fTimeDelta);
+
+	    camera[EctThridCam]->pitch = angle_inertion_var(camera[EctThridCam]->pitch, xyz.x + camera_angle,
+	    									0.001f,
+	    									30.f,
+	    									20.f,
+	    									Device.fTimeDelta);
+        Fvector	xyz2;
+        XFORM().getXYZi(xyz2);
+	    camera[EctSecondCam]->yaw = angle_inertion_var(camera[EctSecondCam]->yaw, xyz2.y,
+	    									0.01f,
+	    									20.f,
+	    									5.f,
+	    									Device.fTimeDelta);
+
+	    camera[EctSecondCam]->pitch = angle_inertion_var(camera[EctSecondCam]->pitch, (xyz2.x * 0.95f + camera_angle),
+	    									0.01f,
+	    									10.f,
+	    									5.f,
+	    									Device.fTimeDelta);
+		
+		if (m_roll_lock_second)
+		{
+			camera[EctSecondCam]->roll = angle_inertion_var(camera[EctSecondCam]->roll, xyz2.z,
+											0.01f,
+											20.f,
+											5.f,
+											Device.fTimeDelta);
+		}
+    } 
+
+	active_camera->f_fov = car_fov;
+	active_camera->Update(P, Da);
+
+	if((active_camera->tag == EctFirstCam) && rs_car_cam_inert && Device.dwTimeGlobal - m_dwAttachTime > 50)
+	{
+		float time = float(Device.dwTimeGlobal - m_dwAttachTime) / 1000.f;
+		clamp(time, 0.f, 1.f);
+		m_last_avelocity = 0.02f * GetAVelocityM() * 4.f + (1.f - 0.02f) * m_last_avelocity;
+		clamp(m_last_avelocity, 0.f, 1.f);
+		//Msg("avel %f", m_last_avelocity);
+		//Msg("getavel %f", GetAVelocityM());
+		float inert_k = fabsf(m_camera_inertion_k);
+		float dir_inert = inert_k * inertion_factor * m_last_avelocity * time * rs_car_cam_inert;
+		//if (m_camera_inertion_k < 0.f)
+		//	dir_inert += (1.f - inert_k * inertion_factor) * psCamInert;
+		//nev_dir.inertion(active_camera->vDirection, m_camera_inertion_k*inertion_factor);
+		CarCameraDirection.x = dir_inert * CarCameraDirection.x + (1.f - dir_inert) * active_camera->vDirection.x;
+		CarCameraDirection.y = dir_inert * CarCameraDirection.y + (1.f - dir_inert) * active_camera->vDirection.y;
+		CarCameraDirection.z = dir_inert * CarCameraDirection.z + (1.f - dir_inert) * active_camera->vDirection.z;
+		if (m_camera_inertion_k < 0.f)
+		{
+			m_camera_inert_x = 5.f * Device.fTimeDelta * (active_camera->vDirection.x - CarCameraDirection.x) + (1.f - 5.f * Device.fTimeDelta) * m_camera_inert_x;
+			m_camera_inert_z = 5.f * Device.fTimeDelta * (active_camera->vDirection.z - CarCameraDirection.z) + (1.f - 5.f * Device.fTimeDelta) * m_camera_inert_z;
+			//Msg("x %f", m_camera_inert_x);
+			//Msg("x %f", m_camera_inert_z);
+			Fvector nev_dir = Device.vCameraDirection;
+			nev_dir.x = active_camera->vDirection.x + m_camera_inert_x;
+			nev_dir.y = active_camera->vDirection.y - (active_camera->vDirection.y - CarCameraDirection.y);
+			nev_dir.z = active_camera->vDirection.z + m_camera_inert_z;
+			active_camera->vDirection.set(nev_dir);
+		}
+		else
+			active_camera->vDirection.set(CarCameraDirection);
+		
+		float up_inert = fabsf(m_camera_inertion_n) * inertion_factor * (0.5f + 0.5f * m_last_avelocity) * time * rs_car_cam_inert;
+		Fvector nev_up = Device.vCameraTop;
+		nev_up.inertion(active_camera->vNormal, up_inert);
+		active_camera->vNormal.set(nev_up);
+	}
+	else
+	{
+		CarCameraDirection.x = active_camera->vDirection.x;
+		CarCameraDirection.y = active_camera->vDirection.y;
+		CarCameraDirection.z = active_camera->vDirection.z;
+	}
+	//if (active_camera->tag == ectFirst)
+	//{
+		if(OwnerActor())
+		{
+			OwnerActor()->Cameras().UpdateFromCamera(active_camera);
+			OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+		}
+	//}
+	//else
+	//{
+	//	Level().Cameras().UpdateFromCamera(active_camera);
+	//	Level().Cameras().ApplyDevice(Device.fViewportNear);
+	//}
 }
 
-void	CCar::OnCameraChange		(int type)
+
+void	CCar::OnCameraChange(int type)
 {
-	if(Owner())
+	if (Owner())
 	{
-		if	(type==ectFirst)
+		if(type == EctFiveCam)
 		{
-			m_camera_current_position = &m_camera_position;
-			Owner()->setVisible(false);
+			camera[EctFiveCam]->Set(camera[EctFourthCam]->Position(), camera[EctFourthCam]->Direction(), camera[EctFourthCam]->Up());
+			camera[EctFiveCam]->f_fov = camera[EctFourthCam]->f_fov;
+			camera[EctFiveCam]->yaw = camera[EctFourthCam]->yaw;
+			camera[EctFiveCam]->pitch = camera[EctFourthCam]->pitch;
+			camera[EctFiveCam]->roll = camera[EctFourthCam]->roll;
 		}
-		else if(active_camera && active_camera->tag==ectFirst)
-		{
-			m_camera_current_position = &m_camera_position_2;
-			Owner()->setVisible(true);
-		}
-	}
-	
-	if (!active_camera||active_camera->tag!=type){
-		active_camera	= camera[type];
-		if (ectFree==type){
-			Fvector xyz;
-			XFORM().getXYZi(xyz);
-			active_camera->yaw		= xyz.y;
-		}
+
+		m_dwAttachTime = Device.dwTimeGlobal;
+		// Visibility must follow the target camera, not the previous one: entering the
+		// car while the chase camera is already active has to show the actor model.
+		Owner()->setVisible(type != EctFirstCam);
+
+		//IKinematics*	pKinematics = smart_cast<IKinematics*>(Owner()->Visual());
+		//u16 		head_bone = pKinematics->LL_BoneID("bip01_head");
+		/*
+		if (type==ectFirst)
+			pKinematics->LL_HideBoneVisible(head_bone,FALSE);
+		else if (active_camera->tag==ectFirst)
+			pKinematics->LL_HideBoneVisible(head_bone,TRUE);
+		*/
+		//Level().Cameras().UpdateFromCamera(active_camera);
+		//Level().Cameras().ApplyDevice(Device.fViewportNear);
 	}
 
+	if (active_camera && active_camera->tag == EctFiveCam && type == EctFourthCam)
+	{
+		active_camera = camera[type];
+		return;
+	}
+
+	if (!active_camera || active_camera->tag != type)
+	{
+		active_camera = camera[type];
+
+		if (EctFirstCam == type)
+			return;
+		if (EctFiveCam == type)
+			return;
+		if (EctFirstCam != type && EctFiveCam != type)
+		{
+			Fvector xyz;
+			XFORM().getXYZi(xyz);
+			active_camera->yaw = xyz.y;
+		}
+	}
 }
 

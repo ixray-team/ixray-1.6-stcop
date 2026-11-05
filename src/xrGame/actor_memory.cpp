@@ -11,6 +11,7 @@
 #include "Actor.h"
 #include "../xrEngine/CameraBase.h"
 #include "GamePersistent.h"
+#include "holder_custom.h"
 
 CActorMemory::CActorMemory(CActor* actor) : inherited(actor, 100), m_actor(actor)
 {
@@ -19,6 +20,12 @@ CActorMemory::CActorMemory(CActor* actor) : inherited(actor, 100), m_actor(actor
 
 bool CActorMemory::feel_vision_isRelevant(CObject* O)
 {
+	CHolderCustom* holder = smart_cast<CHolderCustom*>(O);
+	if (holder && holder->Owner())
+	{
+		return true;
+	}
+
 	CEntityAlive* entity_alive = O != nullptr ? O->cast_entity_alive() : nullptr;
 	return !!(entity_alive != nullptr);
 }

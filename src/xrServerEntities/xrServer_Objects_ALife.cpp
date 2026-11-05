@@ -2264,6 +2264,7 @@ CSE_ALifeCar::CSE_ALifeCar				(const char* caSection) : CSE_ALifeDynamicObjectVi
 	m_flags.set					(flUseSwitches,false);
 	m_flags.set					(flSwitchOffline,false);
 	health						=1.0f;
+	fuel						=pSettings->read_if_exists<float>(caSection, "fuel_tank", 10.0f);
 }
 
 CSE_ALifeCar::~CSE_ALifeCar				()
@@ -2426,6 +2427,7 @@ void CSE_ALifeCar::data_load(NET_Packet	&tNetPacket)
 		wheel_states.push_back(ws);
 	}
 	health=tNetPacket.r_float();
+	fuel=tNetPacket.r_float();
 }
 void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 {
@@ -2452,6 +2454,7 @@ void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 		//wheel_states.clear();
 	}
 	tNetPacket.w_float(health);
+	tNetPacket.w_float(fuel);
 }
 
 void CSE_ALifeCar::data_serialize(ISaveObject& Object)
@@ -2459,7 +2462,7 @@ void CSE_ALifeCar::data_serialize(ISaveObject& Object)
 	BEGIN_CHUNK(Object,"CSE_ALifeCar::data")
 	{
 		inherited2::data_serialize(Object);
-		Object << o_Position << o_Angle << health << door_states << wheel_states;
+		Object << o_Position << o_Angle << health << fuel << door_states << wheel_states;
 	}
 }
 

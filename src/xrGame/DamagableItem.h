@@ -12,6 +12,7 @@ public:
 	virtual		void				Init				(float max_health,u16 level_num)	;
 				void				HitEffect			()									;
 				void				RestoreEffect		()									;
+	virtual		void				Repair				()									;
 				float				DamageLevelToHealth	(u16 dl)							;
 protected:
 				u16 				DamageLevel			()									;
@@ -26,6 +27,7 @@ class CDamagableHealthItem :
 	float							m_health											;
 public:
 	virtual void					Init			(float max_health,u16 level_num) override;
+	virtual void					Repair			() override;
 			void					Hit				(float P)							;
 			void					SetHealth		(float health)						{m_health=health;}
 protected:

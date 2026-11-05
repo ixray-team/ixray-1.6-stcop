@@ -350,6 +350,15 @@ void CActor::IR_OnMouseWheel(int direction)
 		return;
 	}
 
+	if (m_holder)
+	{
+		if (CCar* car = m_holder->cast_car())
+		{
+			car->OnMouseWheel(direction);
+			return;
+		}
+	}
+
 	if (inventory().Action(direction > 0 ? (u16)kWPN_ZOOM_DEC : (u16)kWPN_ZOOM_INC, CMD_START))
 		return;
 	
@@ -2191,6 +2200,15 @@ void CActor::SwitchTorch()
 		{
 			torch->Switch();
 		}
+	}
+}
+
+void CActor::UseTorch()
+{
+	PIItem item = inventory().ItemFromSlot(TORCH_SLOT);
+	if (CTorch* torch = item != nullptr ? item->cast_torch() : nullptr)
+	{
+		torch->Switch();
 	}
 }
 

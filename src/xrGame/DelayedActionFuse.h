@@ -14,6 +14,7 @@ class CDelayedActionFuse
 public:
 		void	SetTimer				(float current_condition)										;
 		void	Initialize				(float time,float critical_condition)							;
+		void	Reset					()																;
 ICF		bool	CheckCondition			(float current_condition)										{if(isInitialized()&&!isActive()&&m_fSpeedChangeCondition>=current_condition){SetTimer(current_condition);return true;} else return false ;}
 ICF		bool	isActive				()																{return !!m_dafflags.test(flActive);}
 ICF		bool	isInitialized			()																{return !!m_dafflags.test(flInitialized);}

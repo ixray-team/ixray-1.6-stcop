@@ -13,6 +13,8 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
+#include "CustomDevice.h"
+#include "Torch.h"
 #include "../Include/xrRender/Kinematics.h"
 //#include "PHShellSplitter.h"
 
@@ -75,6 +77,22 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 
 	SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
 
+	if (CCustomDevice* device = GetDevice())
+	{
+		if (!device->IsHidden() && !device->IsHiding())
+		{
+			device->HideDetector(true, true);
+		}
+	}
+
+	if (PIItem torch_item = inventory().ItemFromSlot(TORCH_SLOT))
+	{
+		if (CTorch* torch = torch_item->cast_torch())
+		{
+			torch->Switch(false);
+		}
+	}
+
 	CStepManager::on_animation_start(MotionID(), 0);
 
 	this->callback(GameObject::eAttachVehicle)(car->lua_game_object());
@@ -104,14 +122,24 @@ void CActor::detach_Vehicle()
 	car->PPhysicsShell()->SplitterHolderActivate();
 	m_holder->detach_Actor();
 
-	character_physics_support()->movement()->SetPosition(m_holder->ExitPosition());
-	character_physics_support()->movement()->SetVelocity(m_holder->ExitVelocity());
+	const Fvector exit_pos = m_holder->ExitPosition();
+	const Fvector exit_vel = m_holder->ExitVelocity();
+
+	// Recreate the character at the exit point after detaching from the car.
+	// Without the second activation the character can stay inside the car shell
+	// and the first exit after loading a save causes a collision push/damage.
+	Position().set(exit_pos);
+	character_physics_support()->movement()->CreateCharacter();
+	character_physics_support()->movement()->SetPosition(exit_pos);
+	character_physics_support()->movement()->SetVelocity(exit_vel);
+	character_physics_support()->movement()->ActivateBoxDynamic(0);
 
 	r_model_yaw = -m_holder->Camera()->yaw;
 	r_torso.yaw = r_model_yaw;
 	r_model_yaw_dest = r_model_yaw;
 	m_holder = nullptr;
 	SetCallbacks();
+	cam_Set(eacFirstEye);
 
 	IKinematicsAnimated* V = Visual()->dcast_PKinematicsAnimated();
 	R_ASSERT(V);
@@ -139,7 +167,7 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 		{
 			if (m_holder == vehicle)
 			{
-				if (m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+				if (m_holder && m_holder->Use(Device.vCameraPosition, Device.vCameraDirection, center))
 				{
 					detach_Vehicle();
 				}
@@ -175,5 +203,20 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 void CActor::on_requested_spawn(CObject* object)
 {
 	CCar* car = object != nullptr ? object->cast_car() : nullptr;
+	if (car == nullptr)
+	{
+		return;
+	}
+
 	attach_Vehicle(car);
+	if (m_holder != car)
+	{
+		return;
+	}
+
+	// Restore the actor torso from the car heading. Without this, a save made
+	// while looking south can load with the actor/camera facing the opposite way.
+	Fvector xyz;
+	car->XFORM().getXYZi(xyz);
+	r_torso.yaw = xyz.y;
 }

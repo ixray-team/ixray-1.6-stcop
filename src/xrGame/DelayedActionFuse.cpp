@@ -21,6 +21,11 @@ void CDelayedActionFuse::SetTimer(float current_condition)
 	StartTimerEffects();
 
 }
+void CDelayedActionFuse::Reset()
+{
+	m_dafflags.set(flActive, false);
+}
+
 float CDelayedActionFuse::Time()
 {
 	VERIFY(isInitialized());

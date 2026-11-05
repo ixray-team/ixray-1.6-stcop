@@ -33,6 +33,7 @@
 #include "../../../../xrScripts/script_callback_ex.h"
 #include "../../../ActorCondition.h"
 #include "../../../Inventory.h"
+#include "../../../holder_custom.h"
 #include "../../../Weapon.h"
 #include "../../../WeaponMagazinedWGrenade.h"
 #include "../../../InventoryOwner.h"
@@ -644,6 +645,11 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 
 	if ((O->SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return false;
+
+	// A driven vehicle is a valid target even though the driver is hidden.
+	CHolderCustom* holder = smart_cast<CHolderCustom*>(O);
+	if (holder && holder->Owner())
+		return true;
 
 	// если спит, то ничего не видит
 	if (m_bSleep) return false;

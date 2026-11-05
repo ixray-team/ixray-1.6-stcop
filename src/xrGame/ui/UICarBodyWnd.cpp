@@ -36,6 +36,7 @@
 #include "ui_drop_amount.h"
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
+#include "../Car.h"
 
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
@@ -295,8 +296,19 @@ void CUICarBodyWnd::Update()
 }
 
 
-void CUICarBodyWnd::Show(bool status) 
-{ 
+void CUICarBodyWnd::HideDialog()
+{
+	if (IsShown() && m_pOthersObject)
+	{
+		if (CCar* Car = m_pOthersObject->cast_car())
+			Car->CloseTrunkBone();
+	}
+
+	inherited::HideDialog();
+}
+
+void CUICarBodyWnd::Show(bool status)
+{
 	inherited::Show(status);
 	if (status)
 	{

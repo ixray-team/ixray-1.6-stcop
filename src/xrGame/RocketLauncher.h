@@ -20,6 +20,10 @@ public:
 
 	virtual CRocketLauncher* cast_rocket_launcher() { return this; }
 
+	CCustomRocket* getCurrentRocket();
+	void dropCurrentRocket();
+	u32	getRocketCount();
+
 protected:
 	static void ApplyNetworkLaunchParams(NET_Packet& Packet, CCustomRocket& Rocket, ALife::_OBJECT_ID Initiator);
 
@@ -29,9 +33,6 @@ protected:
 	ROCKET_VECTOR m_rockets = {};
 	ROCKET_VECTOR m_launched_rockets = {};
 
-	CCustomRocket* getCurrentRocket();
-	void dropCurrentRocket();
-	u32	getRocketCount();
 	float m_fLaunchSpeed = 0.0f;
 
 };

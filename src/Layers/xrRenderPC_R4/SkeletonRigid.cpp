@@ -205,6 +205,24 @@ void check_kinematics(CKinematics* _k, const char* s)
 }
 #endif
 
+#ifndef MASTER_GOLD
+namespace
+{
+	// Nearly aligned parent and bind transforms can underflow into subnormal
+	// values. They are below any meaningful precision, but _valid rejects them.
+	void FlushSubnormals(Fmatrix& Matrix)
+	{
+		for (size_t i = 0; i < 16; ++i)
+		{
+			if (std::fpclassify(Matrix.mm[i]) == FP_SUBNORMAL)
+			{
+				Matrix.mm[i] = 0.f;
+			}
+		}
+	}
+}
+#endif
+
 void CKinematics::BuildBoneMatrix( const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 channel_mask/* = (1<<0)*/ )
 {
 	bi.mTransform.mul_43(*parent,bd->bind_transform);
@@ -225,12 +243,14 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 		{
 			BuildBoneMatrix( bd, bi, parent, channel_mask );
 #ifndef MASTER_GOLD
+			FlushSubnormals( bi.mTransform );
 			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" );
 #endif // #ifndef MASTER_GOLD
 			if (bi.callback())
 			{
 				bi.callback()(&bi);
 #ifndef MASTER_GOLD
+				FlushSubnormals( bi.mTransform );
 				R_ASSERT2( _valid( bi.mTransform ), make_string<const char*>( "callback kils bone matrix bone: %s " , bd->name.c_str() ) );
 #endif // #ifndef MASTER_GOLD
 			}

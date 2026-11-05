@@ -28,6 +28,7 @@
 #include "../../EntityCondition.h"
 #include "../../sound_player.h"
 #include "../../cover_point.h"
+#include "../../holder_custom.h"
 #include "../../agent_member_manager.h"
 #include "../../agent_location_manager.h"
 #include "../../danger_cover_location.h"
@@ -722,7 +723,13 @@ IC bool ray_query_callback	(const collide::rq_result& result, LPVOID params)
 		return							(false);
 	}
 
-	CEntityAlive						*entity_alive = const_cast<CObject*>(result.GetDynamic())->cast_entity_alive();
+	CEntityAlive						*entity_alive = result.GetDynamic() ? const_cast<CObject*>(result.GetDynamic())->cast_entity_alive() : nullptr;
+	if (!entity_alive && result.GetDynamic())
+	{
+		CHolderCustom* holder = const_cast<CObject*>(result.GetDynamic())->cast_holder_custom();
+		if (holder && holder->Owner())
+			entity_alive = holder->Owner()->cast_entity_alive();
+	}
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
 		{

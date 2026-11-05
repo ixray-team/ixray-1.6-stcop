@@ -20,6 +20,7 @@
 #include "Explosive.h"
 #include "Actor.h"
 #include "Actor_Flags.h"
+#include "Car.h"
 #include "AnomalyZone.h"
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/script_engine_space.h"
@@ -217,6 +218,50 @@ static void full_memory_stats()
 	Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
 #endif
 }
+
+class CCC_CarRepair : public IConsole_Command
+{
+public:
+	CCC_CarRepair(const char* N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	virtual void Execute(const char* args) override
+	{
+		CCar* car = (g_actor && g_actor->Holder()) ? g_actor->Holder()->cast_car() : nullptr;
+		if (!car)
+		{
+			Msg("! rs_car_repair: sit in a car first");
+			return;
+		}
+
+		car->ConsoleRepair();
+		Msg("* Car repaired");
+	}
+};
+
+class CCC_CarRefuel : public IConsole_Command
+{
+public:
+	CCC_CarRefuel(const char* N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+	}
+
+	virtual void Execute(const char* args) override
+	{
+		CCar* car = (g_actor && g_actor->Holder()) ? g_actor->Holder()->cast_car() : nullptr;
+		if (!car)
+		{
+			Msg("! rs_car_refuel: sit in a car first");
+			return;
+		}
+
+		car->ConsoleRefuel();
+		Msg("* Car refueled");
+	}
+};
 
 class CCC_MemStats : public IConsole_Command
 {
@@ -3428,6 +3473,18 @@ void CCC_RegisterCommands()
 
 	CMD2(CCC_Boolean, "g_autosaves_enabled", &g_autosaves_enabled);
 	CMD4(CCC_Integer, "g_autosaves_interval", &g_autosaves_interval, 1, 120);
+
+	extern bool rs_car_info;
+	CMD2(CCC_Boolean, "rs_car_info", &rs_car_info);
+
+	extern float rs_car_steer_factor;
+	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.5f, 3.f);
+
+	extern bool rs_car_god;
+	CMD2(CCC_Boolean, "rs_car_god", &rs_car_god);
+
+	CMD1(CCC_CarRepair, "rs_car_repair");
+	CMD1(CCC_CarRefuel, "rs_car_refuel");
 
 	extern float bullet_manager_time_factor;
 	CMD4(CCC_Float, "bullet_manager_time_factor", &bullet_manager_time_factor, EPS_L, 10.f);

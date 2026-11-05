@@ -1949,7 +1949,14 @@ void CActor::UpdateCL()
 
 	float current_fov = currentFOV();
 
-	if (g_Alive() && m_holder == nullptr)
+	if (m_holder)
+	{
+		if (CCar* car = m_holder->cast_car())
+		{
+			car->UpdateEx(current_fov);
+		}
+	}
+	else if (g_Alive())
 	{
 		UpdatePlayerView();
 	}
@@ -2279,7 +2286,7 @@ void CActor::UpdateCL()
 	UpdateDefferedMessages();
 	UpdateConditionArtefacts();
 
-	if (g_Alive()) 
+	if (g_Alive())
 		CStepManager::update(this==Level().CurrentViewEntity());
 
 	if (TSndShockEffector* SndShockEffector = GetComponent<TSndShockEffector>())

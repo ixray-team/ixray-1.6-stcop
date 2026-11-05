@@ -47,9 +47,59 @@ CPHDestroyable::CPHDestroyable()
 	m_flags.set(fl_released,true);
 	m_depended_objects=0;
 }
+static bool destroyed_visual_has_physics(const shared_str& visual_name)
+{
+	string_path file_name;
+	if (FS.exist(file_name, "$game_meshes$", *visual_name, ".ogf") == nullptr)
+	{
+		Msg("! [destroyed] visual not found: %s", *visual_name);
+		return false;
+	}
+
+	if (Render == nullptr)
+	{
+		Msg("! [destroyed] render is unavailable, cannot validate visual: %s", *visual_name);
+		return false;
+	}
+
+	IRenderVisual* visual = Render->model_Create(*visual_name);
+	IKinematics* kinematics = visual != nullptr ? visual->dcast_PKinematics() : nullptr;
+	bool has_shapes = false;
+
+	if (kinematics != nullptr)
+	{
+		for (u16 bone_id = 0; bone_id < kinematics->LL_BoneCount(); ++bone_id)
+		{
+			const SBoneShape& shape = kinematics->GetBoneData(bone_id).get_shape();
+			if (shape.type != SBoneShape::stNone && !shape.flags.test(SBoneShape::sfNoPhysics))
+			{
+				has_shapes = true;
+				break;
+			}
+		}
+	}
+
+	if (visual != nullptr)
+	{
+		Render->model_Delete(visual);
+	}
+
+	if (!has_shapes)
+	{
+		Msg("! [destroyed] visual has no physics shapes: %s", *visual_name);
+	}
+
+	return has_shapes;
+}
+
 /////////spawn object representing destroyed item//////////////////////////////////////////////////////////////////////////////////
 void CPHDestroyable::GenSpawnReplace(ALife::_OBJECT_ID ref_id,const char* section,shared_str visual_name)
 {
+
+	if (strstr(*visual_name, "vehicles\\") != nullptr && !destroyed_visual_has_physics(visual_name))
+	{
+		return;
+	}
 
 	CSE_Abstract				*D	= F_entity_Create(section);//*cNameSect()
 	VERIFY						(D);

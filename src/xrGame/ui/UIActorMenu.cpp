@@ -690,6 +690,12 @@ void CUIActorMenu::HideDialog()
 	if (!IsShown())
 		return;
 
+	if (m_currMenuMode == mmDeadBodySearch && m_pPartnerInvOwner)
+	{
+		if (CCar* car = m_pPartnerInvOwner->cast_car())
+			car->CloseTrunkBone();
+	}
+
 	CBackpackAnimator* backpack_animator = m_pActorInvOwner->cast_actor()->HudAnimator()->BackpackAnimator();
 
 	if (backpack_animator != nullptr

@@ -919,6 +919,7 @@ public:
 			void				SwitchNightVision				();
 			void				StartNVPPE						();
 			void				SwitchTorch						();
+			void				UseTorch						();
 			void				ClearMask						();
 			void				ClearMaskCB						();
 			void				MakeKick						();

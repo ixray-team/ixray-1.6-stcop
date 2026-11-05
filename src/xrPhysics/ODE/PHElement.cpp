@@ -695,6 +695,10 @@ void CPHElement::InterpolateGlobalTransform(Fmatrix* m)
 
 void CPHElement::GetGlobalTransformDynamic(Fmatrix* m) const
 {
+	// Deactivated elements keep their last valid transform, matching the Box3D backend.
+	if (!m_body)
+		return;
+
 	PHDynamicData::DMXPStoFMX(dBodyGetRotation(m_body),dBodyGetPosition(m_body),*m);
 	MulB43InverceLocalForm(*m);
 	VERIFY(_valid(*m));

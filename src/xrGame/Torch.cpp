@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Torch.h"
 #include "Actor.h"
+#include "ActorEffector.h"
+#include "Car.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/xr_collide_form.h"
@@ -276,8 +278,40 @@ void CTorch::UpdateCL()
 
 		if (actor != nullptr)
 		{
-			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
-			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			if (actor->Holder() != nullptr)
+			{
+				CCar* car = smart_cast<CCar*>(actor->Holder());
+				if (car != nullptr)
+				{
+					if (car->Camera()->tag == CCar::EctFirstCam)
+					{
+						Fmatrix camera_matrix;
+						actor->Cameras().camera_Matrix(camera_matrix);
+
+						float heading, pitch, bank;
+						camera_matrix.getHPB(heading, pitch, bank);
+						m_prev_hp.x = angle_inertion_var(m_prev_hp.x, heading, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+						m_prev_hp.y = angle_inertion_var(m_prev_hp.y, pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+					}
+					else
+					{
+						float heading, pitch, bank;
+						M.getHPB(heading, pitch, bank);
+						m_prev_hp.x = angle_inertion_var(m_prev_hp.x, heading, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+						m_prev_hp.y = angle_inertion_var(m_prev_hp.y, pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+					}
+				}
+				else
+				{
+					m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+					m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+				}
+			}
+			else
+			{
+				m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+				m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			}
 			if (actor->active_cam() == eacFirstEye)
 			{
 				light_render->set_ignore_object(H_Parent());

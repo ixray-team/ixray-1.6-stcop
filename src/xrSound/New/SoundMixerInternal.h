@@ -51,7 +51,8 @@ struct sound_slot_state
     u32 bus;
     u32 zone_idx;
     u32 position;
-    u32 stopping_position;
+    u32 stopping_position = (u32)-1;
+    u32 stopping_end = (u32)-1;
     f32 history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1];
     f32 delay = 0.f;
     xr_string sound_name;
