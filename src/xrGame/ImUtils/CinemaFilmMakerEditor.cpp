@@ -5308,6 +5308,10 @@ public:
 	void Shutdown();
 
 private:
+	void RestoreInspectorDepth();
+	LevelInspector* DepthInspector = nullptr;
+	bool PreviousInspectorDepth = true;
+	bool PreviousInspectorToggleMode = false;
 	void ClearActors();
 	void ClearParticles();
 	void ClearLights();
@@ -5596,6 +5600,7 @@ CCinemaFilmMakerManager* g_CinemaFilmMaker = nullptr;
 
 void CCinemaFilmMakerManager::Shutdown()
 {
+	RestoreInspectorDepth();
 	if (CameraState) CameraState->Active = false;
 	CameraState.reset();
 	ClearGizmo();
@@ -6394,7 +6399,34 @@ void CCinemaFilmMakerManager::UpdateMasterCamera()
 
 void CCinemaFilmMakerManager::Render()
 {
+	if (g_hud == nullptr || g_pGameLevel == nullptr ||
+		!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_CinemaFilmMakerEditor)] ||
+		(MasterPlaying && HideHelpersDuringPlayback))
+	{
+		RestoreInspectorDepth();
+		return;
+	}
+
+	LevelInspector& inspector = HUD().world_prims;
+	if (DepthInspector != &inspector)
+	{
+		DepthInspector = &inspector;
+		PreviousInspectorDepth = inspector.zbuffer_enable;
+		PreviousInspectorToggleMode = inspector.key_toggle_mode;
+	}
+	inspector.key_toggle_mode = true;
+	inspector.zbuffer_enable = false;
 	AppendWorldGizmo();
+}
+
+void CCinemaFilmMakerManager::RestoreInspectorDepth()
+{
+	if (DepthInspector && g_hud && DepthInspector == &HUD().world_prims)
+	{
+		DepthInspector->zbuffer_enable = PreviousInspectorDepth;
+		DepthInspector->key_toggle_mode = PreviousInspectorToggleMode;
+	}
+	DepthInspector = nullptr;
 }
 
 void CCinemaFilmMakerManager::BuildModelFiles()
@@ -17241,7 +17273,7 @@ EGizmoAxis CCinemaFilmMakerManager::HitTranslateAxis(const Fvector& pivot, float
 	}
 
 	EGizmoAxis bestAxis = EGizmoAxis::None;
-	float bestDistance = 8.0f;
+	float bestDistance = 12.0f;
 
 	for (const EGizmoAxis axis : { EGizmoAxis::X, EGizmoAxis::Y, EGizmoAxis::Z })
 	{
@@ -17270,7 +17302,7 @@ EGizmoAxis CCinemaFilmMakerManager::HitRotateAxis(const Fvector& pivot, float si
 	constexpr int segments = 64;
 
 	EGizmoAxis bestAxis = EGizmoAxis::None;
-	float bestDistance = 8.0f;
+	float bestDistance = 12.0f;
 
 	for (const EGizmoAxis axis : { EGizmoAxis::X, EGizmoAxis::Y, EGizmoAxis::Z })
 	{
