@@ -200,9 +200,6 @@ public:
 	void Render(const char* aTitle, const ImVec2& aSize = ImVec2(), bool aBorder = false);
 	void SetText(const std::string& aText);
 	std::string GetText() const;
-	// Returns the byte count excluding the terminator. The caller owns the buffer.
-	// A null buffer queries the size; a non-empty buffer is always terminated.
-	size_t CopyText(char* Buffer, size_t Capacity) const;
 	// The text stays in this module: callers with their own allocator must not free a returned std::string
 	void VisitText(void (*aVisitor)(const char* aText, size_t aSize, void* aUserData), void* aUserData) const;
 

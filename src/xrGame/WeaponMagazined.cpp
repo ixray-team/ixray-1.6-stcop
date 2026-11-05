@@ -662,7 +662,7 @@ void CWeaponMagazined::FireStart()
 				SwitchState(eFire);
 			}
 		}
-		else if (!IsPending() && GetState() != eFire && !(CurrentState == eReload && IsActor && CanStartOverlay()))
+		else if (!IsPending() && GetState() != eFire)
 		{
 			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 			{
@@ -1852,24 +1852,7 @@ void CWeaponMagazined::OnShot()
 	{
 		bool aim = IsZoomed() && m_shot_cams[1].size() > 0;
 		const RStringVec& cams = m_shot_cams[aim ? 1 : 0];
-
-		Fvector scale_hpb = { 1.f, 1.f, 1.f };
-		Fvector scale_pos = { 1.f, 1.f, 1.f };
-		if (CamShotVariation > 0.f)
-		{
-			scale_hpb.set(1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation));
-			scale_pos.set(1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation), 1.f + Random.randFs(CamShotVariation));
-		}
-
-		if (CamShotMirror && Random.randI(2) != 0)
-		{
-			scale_hpb.x = -scale_hpb.x;
-			scale_hpb.z = -scale_hpb.z;
-			scale_pos.x = -scale_pos.x;
-		}
-
-		const float speed = 1.f + Random.randFs(CamShotSpeedVariation);
-		if (!pActor->Cameras().Rig().PlayAnim(*cams[Random.randI(cams.size())], crcShot, speed, false, scale_hpb, scale_pos))
+		if (!pActor->Cameras().Rig().PlayAnim(*cams[Random.randI(cams.size())], crcShot, 1.f, false))
 		{
 			StartCamEffector(cams, false, 33000, 33999);
 		}
@@ -2101,20 +2084,6 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 		}
 	}
 	inherited::OnAnimationEnd(state);
-}
-
-void CWeaponMagazined::OnOverlayResume()
-{
-	m_iShotNum = 0;
-	if (m_fOldBulletSpeed != 0.f)
-	{
-		SetBulletSpeed(m_fOldBulletSpeed);
-	}
-}
-
-shared_str CWeaponMagazined::OverlayIdleAnimation()
-{
-	return IsZoomed() ? SetCurrentAimAnimation() : inherited::OverlayIdleAnimation();
 }
 
 void CWeaponMagazined::switch2_Idle	()
@@ -3470,7 +3439,7 @@ void CWeaponMagazined::PlayAnimShoot()
 
 	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());
 
-	if (g_player_hud != nullptr && H_Parent() != nullptr && H_Parent() == Level().CurrentControlEntity() && !OverlayActive())
+	if (g_player_hud != nullptr && H_Parent() != nullptr && H_Parent() == Level().CurrentControlEntity())
 	{
 		g_player_hud->OnShotAnimation(HudItemData());
 	}

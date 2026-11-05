@@ -14,9 +14,6 @@ class CHolderCustom
 private:
 	CGameObject*			m_owner;
 	CActor*					m_ownerActor;
-protected:
-	CGameObject*			Owner				(){return m_owner;}
-	CActor*					OwnerActor			(){return m_ownerActor;}
 public:
 	bool					m_bEnterLocked;
 	bool					m_bExitLocked;
@@ -24,12 +21,16 @@ public:
 	virtual					~CHolderCustom		()				{;}
 	virtual	void			UpdateEx			(float fov){}; //called by owner
 
+	CGameObject*			Owner				(){return m_owner;}
+	CActor*					OwnerActor			(){return m_ownerActor;}
+
 	virtual CHolderCustom*	cast_holder_custom	()				{ return this; }
 	virtual CCar*			cast_car			()				{ return nullptr; }
 	virtual CGameObject*	cast_game_object	()				{ return nullptr; }
 
 			bool			Engaged				()				{return m_owner!= nullptr;}
 	virtual void			OnMouseMove			(int x, int y)	= 0;
+	virtual void			OnMouseWheel		(int direction)	{};
 	virtual void			OnGamepadAxisMove	(int id, Fvector2 value) = 0;
 	virtual void			OnGamepadKeyPress	(int id)		= 0;
 	virtual void			OnGamepadKeyRelease	(int id)		= 0;

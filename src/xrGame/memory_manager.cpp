@@ -25,6 +25,7 @@
 #include "agent_enemy_manager.h"
 #include "script_game_object.h"
 #include "Actor.h"
+#include "holder_custom.h"
 
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
@@ -186,17 +187,30 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 
 		danger().add(member);
 		
-		if (CEntityAlive* entity_alive = const_cast<CGameObject*>(member.m_object)->cast_entity_alive())
+		CEntityAlive* entity_alive = const_cast<CGameObject*>(member.m_object)->cast_entity_alive();
+		if (!entity_alive)
 		{
-			if (add_enemies)
+			// A car with a driver stands in for its owner, otherwise enemies
+			// stop tracking the player as soon as he gets into a vehicle.
+			CHolderCustom* holder = const_cast<CGameObject*>(member.m_object)->cast_holder_custom();
+			if (holder && holder->Owner())
 			{
-				if (enemy().add(entity_alive))
-			continue;
+				entity_alive = holder->Owner()->cast_entity_alive();
+			}
 		}
 
+		if (entity_alive)
+		{
+			if (add_enemies && enemy().add(entity_alive))
+			{
+				continue;
+			}
+
 			const CAI_Stalker* stalker = entity_alive->cast_stalker();
-		if (m_stalker && stalker)
-			continue;
+			if (m_stalker && stalker)
+			{
+				continue;
+			}
 		}
 
 		item().add(member.m_object);

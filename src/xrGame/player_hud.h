@@ -8,173 +8,11 @@
 #include "../../xrUI/ui_base.h"
 
 class player_hud;
-struct SHandsIkFrame;
 class CWatchDevice;
 class CHudItem;
 class CMotionDef;
 class CHudAnimatorBase;
 class CObjectAnimator;
-
-namespace HudAttachMarks
-{
-	constexpr const char* Ik = "mm_ik";
-	constexpr const char* Fingers = "mm_ik_fingers";
-}
-
-namespace HudSpring
-{
-	inline void Solve(float& value, float& velocity, float goal, float omega, float damping, float dt)
-	{
-		if (omega <= 0.f || dt <= 0.f)
-		{
-			return;
-		}
-
-		const float offset = value - goal;
-		const float speed = velocity;
-		const float zeta = std::max(damping, 0.f);
-
-		if (std::abs(zeta - 1.f) < 1e-3f)
-		{
-			const float decay = std::exp(-omega * dt);
-			const float slope = speed + omega * offset;
-			value = goal + (offset + slope * dt) * decay;
-			velocity = (speed - omega * slope * dt) * decay;
-		}
-		else if (zeta < 1.f)
-		{
-			const float damped = omega * std::sqrt(1.f - zeta * zeta);
-			const float decay = std::exp(-zeta * omega * dt);
-			const float cosine = std::cos(damped * dt);
-			const float sine = std::sin(damped * dt);
-			const float b = (speed + zeta * omega * offset) / damped;
-			value = goal + decay * (offset * cosine + b * sine);
-			velocity = decay * (speed * cosine - (offset * damped + zeta * omega * b) * sine);
-		}
-		else
-		{
-			const float root = omega * std::sqrt(zeta * zeta - 1.f);
-			const float r1 = -zeta * omega + root;
-			const float r2 = -zeta * omega - root;
-			const float c2 = (speed - r1 * offset) / (r2 - r1);
-			const float c1 = offset - c2;
-			const float e1 = std::exp(r1 * dt);
-			const float e2 = std::exp(r2 * dt);
-			value = goal + c1 * e1 + c2 * e2;
-			velocity = c1 * r1 * e1 + c2 * r2 * e2;
-		}
-	}
-
-	inline void Step(Fvector& value, Fvector& velocity, const Fvector& goal, float omega, float damping, float dt)
-	{
-		Solve(value.x, velocity.x, goal.x, omega, damping, dt);
-		Solve(value.y, velocity.y, goal.y, omega, damping, dt);
-		Solve(value.z, velocity.z, goal.z, omega, damping, dt);
-	}
-
-	inline void Follow(Fvector& value, Fvector& velocity, const Fvector& goal, float half_life, float damping, float dt)
-	{
-		if (half_life <= 0.f)
-		{
-			value = goal;
-			velocity.set(0.f, 0.f, 0.f);
-			return;
-		}
-
-		Step(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
-	}
-
-	inline void Step(float& value, float& velocity, float goal, float half_life, float damping, float dt)
-	{
-		if (half_life <= 0.f)
-		{
-			value = goal;
-			velocity = 0.f;
-			return;
-		}
-
-		Solve(value, velocity, goal, 2.f * 0.69314718f / half_life, damping, dt);
-	}
-}
-
-struct SHudVectorSpring
-{
-	Fvector Value = {};
-	Fvector Velocity = {};
-};
-
-struct SHudLeftFollow
-{
-	Fquaternion Rotation;
-	Fvector Position = {};
-	Fvector PositionVelocity = {};
-	Fvector RotationVelocity = {};
-	u32 Frame = u32(-1);
-};
-
-struct SHudTurnPivot
-{
-	Fvector2 Rate = {};
-	float LiftSpeed = 0.f;
-	SHudVectorSpring Lag;
-	SHudVectorSpring Lift;
-	float Tilt = 0.f;
-	float TiltVelocity = 0.f;
-};
-
-struct SHudShotFingers
-{
-	bool Pending = false;
-	bool Active = false;
-	bool Stopping = false;
-	bool Full = false;
-	float Weight = 0.f;
-	float SinceShot = 0.f;
-	u32 BurstShots = 0;
-	float Time = 0.f;
-	float First = 0.f;
-	float Second = 0.f;
-	float Speed = 1.f;
-	float Fade = 1.f;
-	MotionID Motion;
-	xr_vector<u16> Bones;
-	xr_vector<Fquaternion> Reference;
-	xr_vector<Fvector> ReferencePos;
-};
-
-struct SHudHandJump
-{
-	u32 StatePrev = 0;
-	float FallSpeed = 0.f;
-	float Time = 1000.f;
-	float Power = 0.f;
-	float Weight = 0.f;
-	float Velocity = 0.f;
-};
-
-namespace HudBlend
-{
-	inline float Ramp(float weight, bool on, float time_in, float time_out, float dt)
-	{
-		const float time = on ? time_in : time_out;
-		if (time <= 0.f)
-		{
-			return on ? 1.f : 0.f;
-		}
-
-		return std::clamp(weight + (on ? dt : -dt) / time, 0.f, 1.f);
-	}
-
-	inline float Ramp(float weight, bool on, float time, float dt)
-	{
-		return Ramp(weight, on, time, time, dt);
-	}
-
-	inline float Smooth(float time, float dt)
-	{
-		return time > 0.f ? 1.f - expf(-dt / time) : 1.f;
-	}
-}
 
 enum EHudMixType : u8
 {
@@ -182,30 +20,6 @@ enum EHudMixType : u8
 	eMixHands,
 	eMixAll
 };
-
-enum class EHudCycleMode : u8
-{
-	Replace,
-	KeepBase,
-	Additive
-};
-
-struct SHudCycleMode
-{
-	EHudCycleMode	Type = EHudCycleMode::Replace;
-	float			BlendIn = 0.f;
-	float			BlendOut = 0.f;
-	bool			Loop = false;
-	bool			FadeAdditive = false;
-	MotionID		Reference;
-};
-
-struct SHudRetargetLayer
-{
-	shared_str		Motion;
-	shared_str		Reference;
-};
-
 enum EHudOffsetAxis : u8
 {
 	eAxisPos,
@@ -269,7 +83,6 @@ struct player_hud_motion_container final
 	xr_vector<attachable_hud_item_motion> m_item_anims;
 	xr_hash_map<shared_str, bool> m_names;
 	xr_vector<shared_str> m_banned_bone_parts = {};
-	xr_hash_map<shared_str, shared_str> PoseOverrides;
 	player_hud_motion* find_motion(const shared_str& name);
 	attachable_hud_item_motion* find_item_motion(const shared_str& name);
 	bool has_motion(const shared_str& name);
@@ -434,116 +247,28 @@ struct attachable_hud_item final
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
 	int								m_aim_bone_id = BI_NONE;
-	u16								LeftIkBone = BI_NONE;
-	Fmatrix							LeftIkOffset = Fidentity;
-	bool							LeftIkFixed = false;
-	float							LeftHandAttachBlend = 0.f;
-	float							LeftHandIkBlend = 0.25f;
-	float							LeftHandFingerGrip = 1.f;
-	shared_str						LeftHandAttachTarget;
-	shared_str						AttachPose;
-	shared_str						IkMark = HudAttachMarks::Ik;
-	shared_str						FingersMark = HudAttachMarks::Fingers;
-	xr_vector<shared_str>			LeftHandAttachMotions;
-	xr_vector<shared_str>			LeftHandAttachAnimatedArmMotions;
-	Fmatrix							LeftHandAttachRef = Fidentity;
-	bool							LeftHandAttachRefValid = false;
-	bool							LeftHandAttachRefTried = false;
-	xr_vector<Fquaternion>			FingerGripPose;
-	xr_vector<Fvector>				FingerGripPos;
-	shared_str						FingerGripPoseMotion;
-	Fmatrix							LeftHandAttachAncorRef = Fidentity;
-	Fmatrix							LeftHandAttachArmRootRef = Fidentity;
-	xr_vector<Fquaternion>			LeftHandAttachPoseRef;
-	xr_vector<Fvector>				LeftHandAttachPosRef;
-	float							AimReloadMotion = 1.f;
-	Fvector							AimReloadOffsetPos = {};
-	Fvector							AimReloadOffsetRot = {};
-	float							AimReloadZoomOut = 0.f;
-	float							AimReloadPoseInertia = 0.15f;
-	float							AimReloadPoseInertiaOut = 0.05f;
-	Fvector							AimReloadPushPos = {};
-	Fvector							CrouchOffsetPos = {};
-	Fvector							CrouchOffsetRot = {};
-	Fvector							WalkOffsetPos = {};
-	Fvector							WalkOffsetRot = {};
-	float							CrouchPoseInertia = 0.25f;
-	float							CrouchPoseInertiaOut = -1.f;
-	float							CrouchPoseDelay = 0.f;
-	float							WalkPoseDelay = 5.f;
-	float							WalkPoseInertia = 0.6f;
-	float							WalkPoseInertiaOut = 0.12f;
-	float							CarryPoseDamping = 0.8f;
-	Fvector							LookSwayPos = {};
-	float							AimSwayScale = 0.2f;
-	float							LookSwayInertia = 0.04f;
-	float							LookSwayDamping = 0.8f;
-	Fvector							LeftSwayLook = {};
-	Fvector							LeftSwayBob = {};
-	Fvector							LeftSwayJump = {};
-	Fvector							RightSwayLook = {};
-	Fvector							RightSwayJump = {};
-	xr_vector<u16>					LeftHandItemBones;
-	xr_vector<u16>					RightHandItemBones;
-	Fvector							LeftBobPos = { 1.f, 1.f, 1.f };
-	Fvector							LeftBobRot = { 1.f, 1.f, 1.f };
-	float							LeftFollowLag = 0.f;
-	float							LeftFollowTurn = 1.f;
-	Fvector							LeftFollowMove = { 1.f, 1.f, 1.f };
-	float							LeftFollowMoveRot = 1.f;
-	Fvector							AimLeftElbowOffset = {};
-	float							HandSwayInertia = 0.08f;
-	float							HandSwayDamping = 0.6f;
-	Fvector							TurnPivotLook = {};
-	float							TurnPivotMax = 6.f;
-	float							TurnPivotInertia = 0.07f;
-	float							TurnPivotDamping = 0.5f;
-	float							AimTurnPivotScale = 0.3f;
-	float							TurnPivotGripLag = 1.f;
-	float							TurnPivotLift = 0.f;
-	float							TurnPivotLiftPos = 0.f;
-	float							TurnPivotLiftMax = 0.01f;
-	float							TurnPivotLiftInertia = 0.08f;
-	float							TurnPivotLiftFall = 1.f;
-	float							TurnTilt = 0.f;
-	float							TurnTiltMax = 8.f;
-	u16								TurnPivotBone = BI_NONE;
-	float							AimBlendInertia = 0.f;
-	float							HudMass = 1.f;
-	bool							IkEnabled = true;
-	float							ShotVariation = 0.f;
-	float							ShotTwist = 0.f;
-	float							AimShotMotion = 1.f;
-	float							IdleFade = 0.f;
-	float							SprintBlendIn = 0.f;
-	float							SprintLeftGripRange = 0.6f;
-	float							SprintLeftCancelReturn = 0.35f;
-	xr_vector<shared_str>			AdditiveMotions;
-	float							AdditiveBlendIn = 0.f;
-	float							AdditiveBlendOut = 0.1f;
-	bool							AdditivePlaying = false;
-	bool							ForceAdditive = false;
-	bool							KeepAdditive = false;
-	bool							AdditiveOverlay = false;
-	shared_str						AdditiveReference;
-	float							SprintPoseInertia = 0.08f;
-	xr_vector<shared_str>			RetargetMotions;
-	shared_str						RetargetReference;
-	shared_str						RetargetSource;
-	xr_hash_map<shared_str, SHudRetargetLayer>	RetargetLayers;
-	shared_str						AttachPoseReference;
-	bool							RetargetPlaying = false;
-	bool							RetargetLayerPlaying = false;
-	MotionID						RetargetMotion;
-	MotionID						RetargetReferenceMotion;
-	xr_vector<shared_str>			LeftHandFreeMotions;
-	bool							LeftHandFree = false;
-	float							InertiaDamping = 0.55f;
-	Fvector							InertiaVelPos = zero_vel;
-	Fvector							InertiaVelRot = zero_vel;
-	float							LandingRecoverTime = 1000.f;
-	float							AirTime = 0.f;
-	Fmatrix							CollisionXform = Fidentity;
+	u16								m_left_ik_bone = BI_NONE;
+	Fmatrix							m_left_ik_offset = Fidentity;
+	bool							m_left_ik_fixed = false;
+	float							m_left_grip_blend = 0.f;
+	shared_str						m_left_grip_target;
+	xr_vector<shared_str>			m_left_grip_motions;
+	xr_vector<shared_str>			m_left_grip_hand_motions;
+	Fmatrix							m_left_grip_ref = Fidentity;
+	bool							m_left_grip_ref_valid = false;
+	bool							m_left_grip_ref_tried = false;
+	Fmatrix							m_left_grip_ancor_ref = Fidentity;
+	xr_vector<Fquaternion>			m_left_grip_pose_ref;
+	float							m_aim_reload_motion = 1.f;
+	float							m_hud_mass = 1.f;
+	float							m_shot_variation = 0.f;
+	float							m_shot_twist = 0.f;
+	float							m_aim_shot_motion = 1.f;
+	float							m_idle_fade = 0.f;
+	float							m_inertia_damping = 0.55f;
+	Fvector							m_inertia_vel_pos = zero_vel;
+	Fvector							m_inertia_vel_rot = zero_vel;
+	Fmatrix							m_collision_xform = Fidentity;
 	hud_item_measures				m_measures;
 	shared_str						m_visual_name;
 	bool							m_model_combined = false;
@@ -575,8 +300,6 @@ struct attachable_hud_item final
 		: m_parent(pparent), m_upd_firedeps_frame(u32(-1)), m_parent_hud_item(NULL) {}
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
-	void LoadRigParams				();
-	float* RigField					(const char* key, u32& count);
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
@@ -584,16 +307,7 @@ struct attachable_hud_item final
 	void render_item_ui				();
 	bool render_item_ui_query		();
 	bool need_renderable			();
-	u8 LeftHandAttachMotionMode		(const shared_str& motion) const;
-	bool RetargetMode				(const shared_str& motion, shared_str& reference) const;
-	bool RetargetLayer				(const shared_str& alias, MotionID& motion, shared_str& reference) const;
-	void LoadRetargetLayers			();
-	const player_hud_motion* OwnIdle	() const;
-	MotionID AliasMotion				(const char* alias) const;
-	bool SprintLayered				() const;
-	shared_str SprintLayerReference	() const;
-	bool AdditiveAlias				(const shared_str& alias) const;
-	float SprintLayerBlend			() const { return std::max(IdleFade, 0.1f); }
+	u8 left_grip_motion_mode		(const shared_str& motion) const;
 	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);
@@ -611,8 +325,6 @@ struct attachable_hud_item final
 	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
 	void		anim_play_bonepart	(const shared_str& anim, bool bMixIn);
-	void		PlayRetargetBase	(const shared_str& alias);
-	void		UpdateAttachPose	();
 	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd, bool disable_random);
 
 };
@@ -851,7 +563,6 @@ struct movement_layer
 
 	bool playing = false;
 
-
 	CObjectAnimator* anim = nullptr;
 
 	movement_layer()
@@ -973,7 +684,6 @@ public:
 					~player_hud			();
 	void			load				(const shared_str& model_name);
 	void			load_default		();
-	void			ReloadRigParams		();
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
@@ -1014,93 +724,19 @@ public:
 
 	void			UpdateWeaponOffset(u32 delta);
 	void			OnShotAnimation		(const attachable_hud_item* item);
-	void			UpdateShotFingers	(bool BeforeIk);
-	void			ApplyShotFingers	();
-	void			StartShotFingers	(attachable_hud_item* item);
+	void			OnHudMotionMark		(const attachable_hud_item* item, const shared_str& mark);
 	void			OnHudMotionStarted	(const shared_str& motion);
 
 	IKinematics*	m_legs_model;
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
-	float			CycleFade = 0.f;
-	SHudCycleMode	CycleMode;
-	bool			Sprinting = false;
-
-	void			SyncSprintBlend		();
-
-	enum class ESprintAdditiveStage : u8
-	{
-		None,
-		Start,
-		Loop,
-		End
-	};
-
-	ESprintAdditiveStage	SprintAdditiveStage = ESprintAdditiveStage::None;
-	attachable_hud_item*	SprintAdditiveItem = nullptr;
-	MotionID				SprintStartMotion;
-	MotionID				SprintLoopMotion;
-	MotionID				SprintEndMotion;
-	MotionID				SprintReferenceMotion;
-	bool					SprintLayerSeam = false;
-	bool					SprintLeftFree = false;
-
-	struct SSprintLeftCancel
-	{
-		bool				Active = false;
-		float				Weight = 0.f;
-		float				Hold = 1.f;
-		float				Time = 0.f;
-		Fmatrix				Relative = Fidentity;
-	};
-
-	SSprintLeftCancel		SprintLeftCancel;
-	Fmatrix					LeftWristLast = Fidentity;
-	u32						SprintLayerFrame = u32(-1);
-	Fmatrix					SprintLayerPrev[2] = { Fidentity, Fidentity };
-	Fmatrix					SprintLayerResidual[2] = { Fidentity, Fidentity };
-	Fmatrix					SprintBasePrev[2] = { Fidentity, Fidentity };
-	Fmatrix					SprintBaseResidual[2] = { Fidentity, Fidentity };
-	MotionID				SprintBaseMotion;
-	u32						SprintBaseState = 0;
-	float					SprintEndPower = 1.f;
-	float					SprintPose = 0.f;
-	float					SprintPoseShape = 0.f;
-	float					SprintExitDeviation = -1.f;
-	float					SprintExitPose = 0.f;
-	float					SprintTarget = 0.f;
-	float					SprintPoseVelocity = 0.f;
-
-	bool			SprintAdditiveEnabled	() const;
-	float			SprintPoseWeight		() const { return SprintPose; }
-	float			AimReloadPose			() const;
-	float			AimReloadPush			() const;
-	float			AimReloadDrop			() const;
-	void			UpdateCarryPose			(CActor* actor);
-	Fmatrix			CarryPoseOffset			() const;
-	void			TriggerScriptLayersInertia(float half_life);
-	void			UpdateSprintPose		();
-	float			SprintPoseTarget		();
-	float			SprintLayerDeviation	() const;
-	void			ResolveSprintAdditive	(attachable_hud_item* item);
-	bool			PlaySprintAdditive		(attachable_hud_item* item, MotionID motion, bool loop, float progress, float power = 1.f, bool inertialize = false);
-	void			StopSprintAdditive		(float blend);
-	float			SprintAdditiveProgress	(MotionID motion) const;
-	void			FreezeSprintAdditive	(MotionID motion);
-	void			UpdateSprintAdditive	(bool sprint);
-	void			UpdateSprintAdditiveChain();
-	void			UpdateRetargetLayerWeight();
-	void			CutSprintEnd			();
-
-	float			SprintYield = 0.f;
-
+	float			m_cycle_fade = 0.f;
 	shared_str		NextHUDSect;
 	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
 	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};
 	xr_vector<script_layer*> m_script_layers = {};
 
 	IKinematicsAnimated* GetModel() { return m_model; }
-	bool			PreviewGripBlocked = false;
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
@@ -1115,70 +751,15 @@ private:
 	bool			need_render_hands	();
 	void			update_inertion		(Fmatrix& trans);
 	void			update_hands_ik		(const Fmatrix& cam_trans, CActor* actor);
-	bool			HandsIkBegin		(SHandsIkFrame& F, CActor* actor);
-	void			HandsIkSprint		(SHandsIkFrame& F);
-	void			HandsIkSprintLeft	(SHandsIkFrame& F, MotionID SprintMotion, float SprintLayer);
-	void			BeginSprintLeftCancel();
-	void			SprintLayerSmooth	(SHandsIkFrame& F);
-	void			HandsIkWeaponPose	(SHandsIkFrame& F, CActor* actor);
-	void			HandsIkFingerState	(SHandsIkFrame& F);
-	void			HandsIkWeaponDelta	(SHandsIkFrame& F);
-	void			HandsIkHandTargets	(SHandsIkFrame& F);
-	void			HandsIkSprintBaseSmooth(SHandsIkFrame& F);
-	void			HandsIkAttachTarget	(SHandsIkFrame& F);
-	bool			HandsIkSwayNeeded	(const SHandsIkFrame& F) const;
-	void			HandsIkLeftSway		(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
-	void			HandsIkRightSway	(SHandsIkFrame& F, CActor* actor);
-	void			HandsIkTurnPivot	(SHandsIkFrame& F, const Fmatrix& CamTrans, CActor* actor);
-	void			UpdateTurnPivot		(const attachable_hud_item* Item, CActor* actor);
-	Fvector			TurnPivotPoint		(const SHandsIkFrame& F) const;
-	Fvector			TurnGripShift		(const attachable_hud_item* Item, const Fvector& Pivot, const Fmatrix& CamTrans, CActor* actor) const;
-	void			HandsIkItemBones	(SHandsIkFrame& F, const Fmatrix* WristBefore, const Fmatrix& AncorBefore);
-	void			HandsIkLeftFollow	(SHandsIkFrame& F, const Fmatrix& CamTrans, float Free, CActor* actor);
-	Fmatrix			LeftFollowTarget	(const SHandsIkFrame& F, const Fmatrix& CamTrans, const Fmatrix& Seen, CActor* actor);
-	void			UpdateHandJump		(CActor* actor, float HalfLife);
-	void			HandsIkReach		(SHandsIkFrame& F);
-	void			HandsIkSolve		(SHandsIkFrame& F);
-	void			HandsIkFingers		(SHandsIkFrame& F);
-	void			HandsIkFingerInertia	(SHandsIkFrame& F);
-	bool			LeftHandAttachReference	(attachable_hud_item* item);
-	bool			HandAttachRelative	(attachable_hud_item* item, MotionID hands_motion, float hands_time, MotionID item_motion, float item_time, Fmatrix& relative, Fmatrix* ancor_ms = nullptr);
-	bool			RetargetHandTarget	(u16 ancor, u16 wrist, MotionID motion, u8 channel, MotionID reference, Fmatrix& result, float strength = 1.f, float* deviation = nullptr);
+	bool			left_grip_reference	(attachable_hud_item* item);
 	xr_vector<u16>	left_arm_blend_bones() const;
-	xr_vector<u16>	left_hand_fingers() const;
-	bool			FingerGripReference	(attachable_hud_item* item);
-	bool			ArmRetargetReference(attachable_hud_item* item, const xr_vector<u16>& bones);
-	float								RetargetWeight = 0.f;
-	Fmatrix								RetargetLeftTarget = Fidentity;
-	Fmatrix								RetargetRightTarget = Fidentity;
-	bool								RetargetLeftValid = false;
-	bool								RetargetRightValid = false;
-	float								SprintHandWeight = 0.f;
-	bool			SprintBaseTransform	(u16 bone, Fmatrix& result) const;
-	bool			SprintBoneDelta		(u16 bone, Fmatrix& result) const;
-	float								LeftHandAttachWeight = 0.f;
-	bool								LeftHandAttachReaching = false;
-	u32									LeftHandAttachSnapFrame = u32(-1);
-	bool								LeftGripActive = false;
-	xr_vector<u16>						FingerGripBones;
-	xr_vector<Fquaternion>				FingerStartPose;
-	xr_vector<Fvector>					FingerStartPos;
-	MotionID							FingerStartMotion;
-	float								FingerStartTime = 0.f;
-	xr_vector<Fquaternion>				FingerPrevRot;
-	xr_vector<Fvector>					FingerPrevPos;
-	xr_vector<Fquaternion>				FingerResidualRot;
-	xr_vector<Fvector>					FingerResidualPos;
-	u32									FingerResidualFrame = u32(-1);
-	MotionID							ArmRetargetMotion;
-	xr_vector<Fquaternion>				ArmRetargetPose;
-	Fmatrix								ArmRetargetRootRef = Fidentity;
-	MotionID							AttachOffsetMotion;
-	bool								AttachOffsetSampled = false;
-	Fmatrix								AttachOffsetRef = Fidentity;
-	float								LeftHandAttachHold = 0.f;
-	float								LeftHandAttachArmWeight = 1.f;
-	bool								LeftHandAttachAnimatedArm = false;
+	float								m_left_grip_weight = 0.f;
+	bool								m_left_grip_reaching = false;
+	u32									m_left_grip_snap_frame = u32(-1);
+	float								m_left_grip_hold = 0.f;
+	float								m_left_grip_arm_weight = 1.f;
+	bool								m_left_grip_hand_only = false;
+	bool								m_left_grip_release_by_mark = false;
 	xr_vector<u16>	left_arm_subtree	() const;
 	const Fvector&	attach_rot			() const;
 	const Fvector&	attach_pos			() const;
@@ -1192,47 +773,22 @@ private:
 
 	IKinematicsAnimated*				m_model = nullptr;
 	xr_vector<u16>						m_ancors;
-	u16									LeftIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
-	u16									RightIkChain[3] = { BI_NONE, BI_NONE, BI_NONE };
-	float								LeftIkWeight = 0.f;
-	Fmatrix								LayersIkOffset = Fidentity;
-	Fmatrix								MovementLayersOffset = Fidentity;
-	SHudVectorSpring					LeftSway;
-	SHudVectorSpring					RightSway;
-	SHudTurnPivot						TurnPivot;
-	SHudShotFingers						ShotFingers;
-	SHudHandJump						HandJump;
-	SHudLeftFollow						LeftFollow;
-	Fvector								TurnOffset = zero_vel;
-	Fmatrix								AimReloadRef = Fidentity;
-	float								AimReloadWeight = 0.f;
-	float								AimReloadRelease = 1.f;
-	float								AimReloadPoseValue = 0.f;
-	float								AimReloadPoseVelocity = 0.f;
-	float								AimReloadPushValue = 0.f;
-	float								AimReloadPushVelocity = 0.f;
-	float								AimReloadDropValue = 0.f;
-	float								AimReloadDropVelocity = 0.f;
-	float								CrouchPoseValue = 0.f;
-	float								CrouchPoseVelocity = 0.f;
-	float								WalkPoseValue = 0.f;
-	float								WalkPoseVelocity = 0.f;
-	float								WalkTime = 0.f;
-	float								CrouchTime = 0.f;
-	Fmatrix								ScriptLayersLast = Fidentity;
-	bool								ScriptInertiaPending = false;
-	float								ScriptInertiaHalfLife = 0.f;
-	float								ScriptInertiaTime = 0.f;
-	Fvector								ScriptInertiaPos = {};
-	Fquaternion							ScriptInertiaRot;
-	Fmatrix								ShotRef = Fidentity;
-	float								ShotWeight = 0.f;
-	float								ShotRelease = 1.f;
-	Fvector								ShotRotScale = { 1.f, 1.f, 1.f };
-	Fvector								ShotPosScale = { 1.f, 1.f, 1.f };
-	Fvector2							ShotTwist = { 0.f, 0.f };
-	bool								LayersIk = false;
-	u32									MovementKey = 0;
+	u16									m_left_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	u16									m_right_ik_chain[3] = { BI_NONE, BI_NONE, BI_NONE };
+	float								m_left_ik_weight = 0.f;
+	Fmatrix								m_layers_ik_offset = Fidentity;
+	Fvector								m_turn_offset = zero_vel;
+	Fmatrix								m_aim_reload_ref = Fidentity;
+	float								m_aim_reload_weight = 0.f;
+	float								m_aim_reload_release = 1.f;
+	Fmatrix								m_shot_ref = Fidentity;
+	float								m_shot_weight = 0.f;
+	float								m_shot_release = 1.f;
+	Fvector								m_shot_rot_scale = { 1.f, 1.f, 1.f };
+	Fvector								m_shot_pos_scale = { 1.f, 1.f, 1.f };
+	Fvector2							m_shot_twist = { 0.f, 0.f };
+	bool								m_layers_ik = false;
+	u32									m_movement_key = 0;
 	attachable_hud_item*				m_attached_items[2];
 	animator_item*						m_animator_item = nullptr;
 	xr_vector<attachable_hud_item*>		m_pool;

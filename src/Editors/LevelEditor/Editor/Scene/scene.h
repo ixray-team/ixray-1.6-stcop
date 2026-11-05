@@ -352,8 +352,6 @@ public:
 	bool IsValidateLODs = true;
 
 	bool IsAIMapDefaultLegacy = false;
-	// Index in SpawnWrite::Targets used to write level.spawn.
-	u32 SpawnTarget = 0;
 private:
 	bool IsAppliedPos = false;
 	bool IsPIERayPick = false;

@@ -32,8 +32,6 @@ public:
 	MotionID		motionID = {};
 	u16				bone_or_part = 0;	// startup parameters
 	u8				channel = 0;
-	MotionID		additive_ref = {};
-	bool			SmoothWeight = false;
 
 	struct NotifyKeyframeData
 	{
@@ -71,7 +69,6 @@ IC	bool			update_time			( float dt );
 IC  void			update_play			( float dt, PlayCallback _Callback );
 IC	bool			update_falloff		( float dt );
 IC	bool			update				( float dt, PlayCallback _Callback );
-IC	float			Weight				( ) const;
 IC	ECurvature		blend_state			(  )const { return blend ;}
 IC	void			set_free_state		( ){ blend = eFREE_SLOT; }
 IC	void			set_accrue_state	( ){ blend = eAccrue; }
@@ -97,8 +94,6 @@ const CBlend& operator=( const CBlend& r )
 	motionID			=	r.motionID				;
 	bone_or_part		=	r.bone_or_part			;
 	channel				=	r.channel				;
-	additive_ref		=	r.additive_ref			;
-	SmoothWeight		=	r.SmoothWeight			;
 	blend				=	r.blend					;
 	blendAccrue			=	r.blendAccrue			;
 	blendFalloff		=	r.blendFalloff			;
@@ -119,17 +114,6 @@ const CBlend& operator=( const CBlend& r )
 };
 
 
-
-IC float CBlend::Weight() const
-{
-	if (!SmoothWeight || blendPower <= EPS || blendAmount >= blendPower)
-	{
-		return blendAmount;
-	}
-
-	const float X = clampr(blendAmount / blendPower, 0.f, 1.f);
-	return X * X * (3.f - 2.f * X) * blendPower;
-}
 
 IC void CBlend::update_play( float dt, PlayCallback _Callback )
 {

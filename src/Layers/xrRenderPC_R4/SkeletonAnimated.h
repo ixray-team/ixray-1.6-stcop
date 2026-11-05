@@ -79,8 +79,6 @@ private:
 		Fvector					VelocityR = {};
 		Fvector					OffsetT = {};
 		Fvector					VelocityT = {};
-		float					Time = 0.f;
-		u8						Channel = 0;
 		bool					Valid = false;
 		bool					Pending = false;
 		bool					Enabled = true;
@@ -90,12 +88,10 @@ private:
 	float						m_InertialTime = 0.0f;
 	float						m_InertialStamp = -1.0f;
 	float						m_InertialDelta = 0.0f;
-	bool						SmoothBlend = false;
 
 	void						InertialAdvance			();
-	void						InertialMarkPart		( u16 part, float time = 0.f, u8 channel = 0 );
-	void						InertialAddSeam			( u16 part, const CBlend& blend );
-	void						InertialApply			( u16 bone, CKey& key, bool update, u8 channel_mask );
+	void						InertialMarkPart		( u16 part );
+	void						InertialApply			( u16 bone, CKey& key, bool update );
 public:
 	virtual void				OnCalculateBones		() override;
 public:
@@ -225,10 +221,6 @@ public:
 	virtual float				get_animation_length (MotionID motion_ID) override;
 	void						LL_SetInertialization	(float time) override;
 	void						LL_SetInertializationBone(u16 bone, bool enabled) override;
-	void						LL_ResetInertialization	() override;
-	void						LL_SetSmoothBlend		(bool enabled) override { SmoothBlend = enabled; }
-	void						LL_InertializePart		(u16 part, float time, u8 channel) override { InertialMarkPart(part, time, channel); }
-	bool						LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result) override;
 	bool						LL_GetMotionBoneTransform(MotionID motion, float time, u16 bone, Fmatrix& result) override;
 };
 //IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }

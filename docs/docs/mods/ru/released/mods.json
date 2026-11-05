@@ -156,54 +156,6 @@
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png",
       "score": "Ap-Pro: 7.4"
-    },
-    {
-      "id": "deathsgame",
-      "title": "Игры смерти",
-      "description": "Группе сталкеров было поручено ликвидировать сталкера по прозвищу Математик. Известно, что на данный момент он находитса в окрестностях НИИ Агропром, поэтому группа отправляется туда.",
-      "author": "AlgerCodos",
-      "link": "https://ap-pro.ru/forums/topic/15728-stalker-igry-smerti",
-      "image": "https://dummyimage.com/262x241/84868f/f2f2f2.png&text=Игры смерти"
-    },
-    {
-      "id": "sundeath",
-      "title": "Солнце - Мёртвым! Нет дани для «Дани»",
-      "description": "Сюжет повествует о наёмнике Сэме, который после провалившегося задания оказывается единственным выжившим в подземельях «Агропрома»",
-      "author": "ChemicusOrdinarius",
-      "link": "https://ap-pro.ru/forums/topic/15707-solnce-myortvym-net-dani-dlya-dani",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Danya.png"
-    },
-    {
-      "id": "uznik",
-      "title": "Узники «Агропрома»",
-      "description": "«Бумер отправляется выполнять очередное простенькое задание Сидоровича, как вдруг что-то идёт не так...»",
-      "author": "It's boomer",
-      "link": "https://ap-pro.ru/forums/topic/15708-uzniki-agroproma",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/Uznik.png"
-    },
-    {
-      "id": "obj№32",
-      "title": "Объект №32. Бездна. Пролог",
-      "description": "Вы - обычный работник НИИ «Агропром». Ваша задача - делать свою работу и при этом остаться в живых.",
-      "author": "It's boomer",
-      "link": "https://ap-pro.ru/forums/topic/15659-obaekt-%E2%84%9632-bezdna-prolog",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/obj32.png"
-    },
-    {
-      "id": "echo",
-      "title": "Эхо, Эпизод 0.5: «Не страшны перемены»",
-      "description": "После сверхвыброса и исчезновения большей части «Чистого неба» произошли перемены. Группировки не выдерживали новый напор мутантов, «Долг» принял решение о передислокации на завод Росток. Но Воронин не был доволен лидерством Крылова и готовил свой план.",
-      "author": "TheDisam",
-      "link": "https://ap-pro.ru/forums/topic/15713-eho-epizod-05-ne-strashny-peremeny",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/echo.png"
-    },
-    {
-      "id": "hellmag",
-      "title": "Магазин из Ада BETA",
-      "description": "Ваш парень был укушен зомби и теперь нужно отработать четыре ночи в магазине по обмену хабаром, чтобы заработать на лекарство. Что может пойти не так?",
-      "author": "Mawrak",
-      "link": "https://ap-pro.ru/forums/topic/15259-konkurs-kvestov-2026-igra-v-kalmara-ap-pro-edition/page/44/?tab=comments#comment-577096",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/hellmag.png"
     }
   ]
 }

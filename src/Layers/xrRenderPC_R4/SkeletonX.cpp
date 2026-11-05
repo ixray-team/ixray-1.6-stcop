@@ -267,19 +267,6 @@ void CSkeletonX::Render(float LOD)
 		_Render(rm_geom, vCount, 0, dwPrimitives);
 }
 
-static void transfer_hair(const HairDynamics& Hair)
-{
-	void* Data = nullptr;
-	static shared_str s_hair_const = "hair_lag";
-
-	RCache.get_ConstantDirect(s_hair_const, sizeof(HairDynamics::Constants), &Data, 0, 0);
-
-	if (Data)
-	{
-		std::memcpy(Data, &Hair.GetConstants(), sizeof(HairDynamics::Constants));
-	}
-}
-
 ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 {
 	struct arraybuff{Fvector4 buff[3];};
@@ -334,8 +321,6 @@ ICF void transfer_matrices(CBoneInstance* BI, u16 bonecount, bool phase_normal)
 
 void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
-	static shared_str s_hair_const = "hair_lag";
-
 	//PROF_EVENT("CSkeletonX::_Render");
 	bool phase_normal = RImplementation.phase == RImplementation.PHASE_NORMAL;
 
@@ -381,10 +366,6 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		{
 			//PROF_EVENT("RM_SKINNING")
 			transfer_matrices(Parent->bone_instances, u16(RMS_bonecount), phase_normal);
-			if (Parent->Hair.MarkUsed(bool(RCache.get_c(s_hair_const))))
-			{
-				transfer_hair(Parent->Hair);
-			}
 			RCache.set_Geometry(hGeom);
 			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,vCount,iOffset,pCount);
 			//if (RM_SKINNING_1B==RenderMode)	

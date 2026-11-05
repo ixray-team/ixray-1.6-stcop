@@ -476,10 +476,7 @@ void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ		(m_ini_string);
 	tNetPacket.w_u32			(m_story_id);
 	tNetPacket.w_u32			(m_spawn_story_id);
-	if (g_SpawnWriteVersion > 134)
-	{
-		tNetPacket.w_stringZ(m_script_story_ID);
-	}
+	tNetPacket.w_stringZ		(m_script_story_ID);
 }
 
 void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
@@ -713,14 +710,14 @@ void CSE_ALifeGroupAbstract::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	m_bCreateSpawnPositions		= !!dwDummy;
 	tNetPacket.r_u16			(m_wCount);
 	if (m_wVersion > 19)
-		SpawnRead::ObjectIDs(tNetPacket, m_wVersion, m_tpMembers);
+		load_data				(m_tpMembers,tNetPacket);
 };
 
 void CSE_ALifeGroupAbstract::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	tNetPacket.w_u32			(m_bCreateSpawnPositions);
 	tNetPacket.w_u16			(m_wCount);
-	SpawnWrite::ObjectIDs(tNetPacket, m_tpMembers);
+	save_data					(m_tpMembers,tNetPacket);
 };
 
 void CSE_ALifeGroupAbstract::UPDATE_Read	(NET_Packet	&tNetPacket)
@@ -1302,7 +1299,7 @@ void CSE_ALifeObjectPhysic::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 
 		if (m_wVersion>56)
 		{
-			if (m_wVersion < SPAWN_VERSION_U32_ID)
+			if (m_wVersion < 130)
 			{
 				u16 ID;
 				tNetPacket.r_u16(ID);
@@ -2207,6 +2204,7 @@ CSE_ALifeCar::CSE_ALifeCar				(const char* caSection) : CSE_ALifeDynamicObjectVi
 	m_flags.set					(flUseSwitches,false);
 	m_flags.set					(flSwitchOffline,false);
 	health						=1.0f;
+	fuel						=pSettings->read_if_exists<float>(caSection, "fuel_tank", 10.0f);
 }
 
 CSE_ALifeCar::~CSE_ALifeCar				()
@@ -2369,6 +2367,7 @@ void CSE_ALifeCar::data_load(NET_Packet	&tNetPacket)
 		wheel_states.push_back(ws);
 	}
 	health=tNetPacket.r_float();
+	fuel=tNetPacket.r_float();
 }
 void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 {
@@ -2395,6 +2394,7 @@ void CSE_ALifeCar::data_save(NET_Packet &tNetPacket)
 		//wheel_states.clear();
 	}
 	tNetPacket.w_float(health);
+	tNetPacket.w_float(fuel);
 }
 
 void CSE_ALifeCar::data_serialize(ISaveObject& Object)
@@ -2402,7 +2402,7 @@ void CSE_ALifeCar::data_serialize(ISaveObject& Object)
 	BEGIN_CHUNK(Object,"CSE_ALifeCar::data")
 	{
 		inherited2::data_serialize(Object);
-		Object << o_Position << o_Angle << health << door_states << wheel_states;
+		Object << o_Position << o_Angle << health << fuel << door_states << wheel_states;
 	}
 }
 

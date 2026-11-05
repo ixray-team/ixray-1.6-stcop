@@ -516,6 +516,14 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 {
 	auto& Slot = GMixer.slots[SlotIdx - 1];
 
+	if (Slot.stopping_position != (u32)-1 && Slot.position >= std::min(Slot.stopping_end, Source.Desc.frames_total))
+	{
+		MixerNewState(SlotIdx, Mixer::State::Stopped);
+		Slot.stopping_position = (u32)-1;
+		Slot.stopping_end = (u32)-1;
+		return;
+	}
+
 	float OCCVolume = 1.0f;
 	ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(SlotIdx, Source, dt, &OCCVolume);
 	if (OCCResult == ESlotOcclusionResult::False)
@@ -555,12 +563,13 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 
 	if (Slot.stopping_position != (u32)-1)
 	{
-		u32 stopping_total = Source.Desc.frames_total - Slot.stopping_position;
+		const u32 stopping_end = std::min(Slot.stopping_end, Source.Desc.frames_total);
+		const u32 stopping_total = stopping_end > Slot.stopping_position ? stopping_end - Slot.stopping_position : 1;
 		if (stopping_total > 1 && Slot.position >= Slot.stopping_position)
 		{
 			u32 begin_offset = Slot.position - Slot.stopping_position;
 			u32 write_count = IsIntro ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * GMixer.time_factor);
-			u32 end_offset = std::min(begin_offset + write_count, Source.Desc.frames_total - 1);
+			u32 end_offset = std::min(begin_offset + write_count, stopping_total - 1);
 			BeginFactor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
 			EndFactor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
 			BeginFactor = std::clamp(BeginFactor, 0.0f, 1.0f);
@@ -741,6 +750,7 @@ ICF void DestroyInternal(int slot)
 	memset(GMixer.slots[slot - 1].history, 0, sizeof(GMixer.slots[slot - 1].history));
 	GMixer.slots[slot - 1].position = 0;
 	GMixer.slots[slot - 1].stopping_position = (u32)-1;
+	GMixer.slots[slot - 1].stopping_end = (u32)-1;
 	GMixer.slots[slot - 1].flags = 0;
 	Snd_ReleaseVoiceEffects(GMixer.slots[slot - 1], SoundEffectOp::Destroy);
 	GMixer.slots[slot - 1].bus = 0;
@@ -931,6 +941,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				ActualSlot.parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
 				ActualSlot.position = 0;
 				ActualSlot.stopping_position = (u32)-1;
+				ActualSlot.stopping_end = (u32)-1;
 				ActualSlot.sound_name = NewName;
 				ActualSlot.flags = Flags;
 				ActualSlot.bus = Snd_GetBus(Command.bus) != nullptr ? Command.bus : Snd_GetBus(Source.Desc.bus) != nullptr ? Source.Desc.bus : GMixer.default_bus;
@@ -993,14 +1004,20 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 			{
 				if (Command.param0)
 				{
-					GMixer.slots[Command.slot - 1].flags &= ~((u8)Flags::Looped);
-					GMixer.slots[Command.slot - 1].stopping_position = GMixer.slots[Command.slot - 1].position;
+					auto& Slot = GMixer.slots[Command.slot - 1];
+					Slot.flags &= ~((u8)Flags::Looped);
+					// Without an explicit fade keep the legacy behavior: fade over
+					// the remaining file. Car sounds request a short fade instead.
+					const double Fade = *(double*)&Command.param2;
+					Slot.stopping_position = Slot.position;
+					Slot.stopping_end = Fade > 0.0 ? Slot.position + (u32)(Fade * (double)SND_SAMPLERATE) : (u32)-1;
 				}
 				else
 				{
 					MixerNewState(Command.slot, State::Stopped);
 					GMixer.slots[Command.slot - 1].position = 0;
 					GMixer.slots[Command.slot - 1].stopping_position = (u32)-1;
+					GMixer.slots[Command.slot - 1].stopping_end = (u32)-1;
 				}
 			}
 			break;
@@ -1020,6 +1037,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 					{
 						GMixer.slots[Iter].position = 0;
 						GMixer.slots[Iter].stopping_position = (u32)-1;
+						GMixer.slots[Iter].stopping_end = (u32)-1;
 						GMixer.slots[Iter].prev_state = GMixer.slots[Iter].state;
 						GMixer.slots[Iter].state = State::Stopped;
 						GMixer.slots[Iter].fake_state = State::Stopped;
@@ -1244,6 +1262,11 @@ void Mixer::Pause(u32 slot)
 
 void Mixer::Stop(u32 SlotID, bool IsDeferred)
 {
+	Stop(SlotID, IsDeferred, -1.0f);
+}
+
+void Mixer::Stop(u32 SlotID, bool IsDeferred, float FadeSeconds)
+{
 	if (SlotID == 0)
 	{
 		return;
@@ -1260,8 +1283,9 @@ void Mixer::Stop(u32 SlotID, bool IsDeferred)
 		Slot.fake_state = State::Stopped;
 	}
 
+	const double Fade = FadeSeconds;
 	xrCriticalSectionGuard Guard(GMixer.play_lock);
-	GMixer.cmd.emplace_back(SoundCommand{.slot = SlotID, .id = ESoundMixerCommands::stop, .param0 = IsDeferred});
+	GMixer.cmd.emplace_back(SoundCommand{.slot = SlotID, .id = ESoundMixerCommands::stop, .param0 = IsDeferred, .param2 = *(u64*)&Fade});
 }
 
 void Mixer::UpdateParameter(u32 SlotID, ParameterId Parameter, Fvector Value)
@@ -1487,6 +1511,25 @@ float Mixer::GetDuration(u32 SlotID)
 	}
 
 	return (float)Source->Desc.frames_total / (float)SND_SAMPLERATE;
+}
+
+float Mixer::GetDuration(const char* Name)
+{
+	if (Name == nullptr || *Name == '\0')
+	{
+		return 0.0f;
+	}
+
+	xr_string Key(Name);
+	SoundSourceState* Source = Snd_AcquireSource(&Key);
+	if (Source == nullptr)
+	{
+		return 0.0f;
+	}
+
+	const float Duration = (float)Source->Desc.frames_total / (float)SND_SAMPLERATE;
+	Snd_ReleaseSource(&Key);
+	return Duration;
 }
 
 bool Mixer::SlotIsRelated(u32 slot)

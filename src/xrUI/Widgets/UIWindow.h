@@ -26,36 +26,12 @@ class CUISelectable;
 class CUIListItemServer;
 class CUIProgressShape;
 class CUIGamepadLegend;
-class CDialogHolder;
-
-namespace luabind
-{
-	template <typename TResult> class functor;
-}
 
 class UI_API CUIWindow  : 
 	public CUISimpleWindow,
 	public CUIActionRepeatersOwner
 {
-private:
-	friend class CDialogHolder;
-	xr_vector<CDialogHolder*> DialogHolders;
-	void RegisterDialogHolder(CDialogHolder* Holder);
-	void UnregisterDialogHolder(CDialogHolder* Holder);
-	struct SelfCallbackState;
-	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
-	bool DispatchSelfCallbacks(s16 Event);
-	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
-	xr_vector<CUIWindow*> ChildDrawOrder;
-	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
-	void RemoveChildDrawOrder(CUIWindow* Child);
-
 public:
-	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler);
-	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
-	void DetachFromDialogHolders();
-	bool ToFront();
-	bool ToBack();
 				CUIWindow						();
 	virtual		~CUIWindow						();
 
@@ -178,8 +154,6 @@ public:
 
 	using WINDOW_LIST = xr_vector<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
-	const WINDOW_LIST& GetChildDrawOrder() const { return ChildDrawOrder.empty() ? m_ChildWndList : ChildDrawOrder; }
-	bool HasCustomChildDrawOrder() const { return !ChildDrawOrder.empty(); }
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
 
@@ -209,7 +183,6 @@ public:
 	void					SetWindowNodeName	(const char* wn)					{ m_windowNodeName = wn; }
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
-	bool CursorOverWindow(bool Precise);
 	IC u32					FocusReceiveTime	() const					{ return m_dwFocusReceiveTime; }
 	
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}
@@ -220,17 +193,7 @@ public:
 	CExpression             m_expression;
 	xrCriticalSection csUi;
 protected:
-	bool ProcessMouseAction(float X, float Y, EUIMessages& MouseAction);
-	IC void SafeRemoveChild(CUIWindow* child)
-	{
-		xrCriticalSectionGuard guard(csUi);
-		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child);
-		if (it != m_ChildWndList.end())
-		{
-			m_ChildWndList.erase(it);
-		}
-		RemoveChildDrawOrder(child);
-	}
+	IC void					SafeRemoveChild(CUIWindow* child) { xrCriticalSectionGuard guard(csUi); WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child); if (it != m_ChildWndList.end())m_ChildWndList.erase(it); };
 
 	shared_str				m_windowName;
 	shared_str				m_windowNodeName;

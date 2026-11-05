@@ -19,6 +19,10 @@ public:
 
 	virtual CRocketLauncher* cast_rocket_launcher() { return this; }
 
+	CCustomRocket* getCurrentRocket();
+	void dropCurrentRocket();
+	u32	getRocketCount();
+
 protected:
 	using ROCKET_VECTOR = xr_vector<CCustomRocket*>;
 	using ROCKETIT = ROCKET_VECTOR::iterator;
@@ -26,9 +30,6 @@ protected:
 	ROCKET_VECTOR m_rockets = {};
 	ROCKET_VECTOR m_launched_rockets = {};
 
-	CCustomRocket* getCurrentRocket();
-	void dropCurrentRocket();
-	u32	getRocketCount();
 	float m_fLaunchSpeed = 0.0f;
 
 };

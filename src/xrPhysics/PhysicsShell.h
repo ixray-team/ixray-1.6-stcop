@@ -12,6 +12,7 @@ class CPHContact;
 #include "../xrEngine/IPhysicsShell.h"
 #include "../xrEngine/VisMask.h"
 #include "iphysics_scripted.h"
+#include "../../3rd-party/ode/include/ode/common.h"
 
 class CPhysicsJoint;
 class CPhysicsElement;
@@ -173,7 +174,7 @@ public:
 	virtual		CPHFracture						&Fracture								(u16 num)																											= 0;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual	u16								numberOfGeoms							()const override = 0;
-	//virtual				dBodyID					get_body								()																													= 0;
+	virtual				dBodyID					get_body								()																													{ return nullptr; }
 	virtual	const	Fvector					&mass_Center							()const override = 0;
 	virtual		const	Fvector					&local_mass_Center						()																													= 0;
 	virtual		float							getRadius								()																													= 0;
@@ -269,7 +270,7 @@ public:
 	virtual		void					GetMaxForceAndVelocity		(float &force,float &velocity,int axis_num)						  				=0;
 	virtual		float					GetAxisAngle				(int axis_num)													  				=0;
 	virtual		float					GetAxisAngleRate			(int axis_num)																	=0;
-//	virtual		dJointID				GetDJoint					()																  				=0;
+	virtual		dJointID				GetDJoint					()																  				{ return nullptr; }
 	virtual		void 					GetAxisSDfactors			(float& spring_factor,float& damping_factor,int axis_num)		  				=0;
 	virtual		void 					GetJointSDfactors			(float& spring_factor,float& damping_factor)					  				=0;
 	virtual		void 					GetLimits					(float& lo_limit,float& hi_limit,int axis_num)					  				=0;

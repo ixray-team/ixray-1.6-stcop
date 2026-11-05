@@ -16,7 +16,7 @@ bool CUITabButton::OnMouseDown(int mouse_btn)
 {
 	if (mouse_btn==MOUSE_1)
 	{
-		SendMessageToTarget(TAB_CHANGED, nullptr);
+		GetMessageTarget()->SendMessage(this, TAB_CHANGED, nullptr);
 		return true;
 	}else
 		return false;

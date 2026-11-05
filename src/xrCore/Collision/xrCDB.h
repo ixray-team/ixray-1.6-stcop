@@ -123,14 +123,9 @@ namespace CDB
 		u32 frustum_mode = 0;
 		u32 obb_mode = 0;
 		u32 sphere_mode = 0;
-		u32 cylinder_mode = 0;
-		u32 cone_mode = 0;
 		u32 custom_mode = 0;
 		// Result management
 		xr_vector<RESULT> rd;
-		//Shared tree walk for the shape queries (box, obb, sphere, cylinder, cone).
-		template <class Shape>
-		void			shape_query		(const MODEL* m_def, const Shape& shape, u32 mode);
 	public:
  		// Older
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
@@ -149,12 +144,6 @@ namespace CDB
 		ICF void		sphere_options(u32 f) { sphere_mode = f; }
 		void		 	sphere_query(const MODEL* m_def, const Fsphere& _sphere);
 		ICF void		sphere_query(const MODEL* m_def, const Fvector& P, float R) { sphere_query(m_def, Fsphere{P,R}); }
-
-		ICF void		cylinder_options(u32 f) { cylinder_mode = f; }
-		void			cylinder_query(const MODEL* m_def, const Fcylinder& _cylinder);
-
-		ICF void		cone_options(u32 f) { cone_mode = f; }
-		void			cone_query(const MODEL* m_def, const Fcone& _cone);
 
 		ICF void		custom_options(u32 f) { obb_mode = f; }
 		void			custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric);

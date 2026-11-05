@@ -38,7 +38,6 @@ private:
 	lanim_cont_xf			m_lanim_xform;
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 	CUIVectorBinding _svgBinding;
-	bool MouseEventsEnabled = false;
 public:
 
 							CUIStatic				();
@@ -47,8 +46,6 @@ public:
 	virtual void			Draw					();
 	virtual void			Update					();
 	virtual void			OnFocusLost				();
-	bool OnMouseAction(float X, float Y, EUIMessages MouseAction) override;
-	void EnableMouseEvents(bool Enabled) { MouseEventsEnabled = Enabled; }
 	bool InitTexture(const char* raster_texture_name, const char* svg_texture_name) override;
 	virtual const char* GetText() { return TextItemControl()->GetText(); }
 	virtual void SetText(const char* txt);
@@ -72,10 +69,7 @@ public:
 	void SetTextAlign_script(u32 align)
 	{
 		TextItemControl()->SetTextAlignment((CGameFont::EAligment)align);
-		if (CGameFont* Font = TextItemControl()->GetFont())
-		{
-			Font->SetAligment((CGameFont::EAligment)align);
-		}
+		TextItemControl()->GetFont()->SetAligment((CGameFont::EAligment)align);
 	}
 	void ReloadText() { TextItemControl()->ReloadText(); }
 

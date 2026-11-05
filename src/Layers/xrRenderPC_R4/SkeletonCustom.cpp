@@ -801,7 +801,9 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	// find similar wm
 	for (u32 wm_idx=0; wm_idx<wallmarks.size(); wm_idx++)
 	{
-		intrusive_ptr<CSkeletonWallmark>& wm = wallmarks[wm_idx];		
+		intrusive_ptr<CSkeletonWallmark>& wm = wallmarks[wm_idx];
+		if (!wm)
+			continue;
 		if (wm->Similar(shader_,cp,0.02f))
 		{ 
 			if (wm_idx<wallmarks.size()-1) 
@@ -843,10 +845,15 @@ void CKinematics::CalculateWallmarks()
 	if (!wallmarks.empty() && (wm_frame != RDEVICE.dwFrame))
 	{
 		wm_frame = RDEVICE.dwFrame;
-		bool need_remove = false;
-		for (SkeletonWMVecIt it = wallmarks.begin(); it != wallmarks.end(); it++)
+		for (SkeletonWMVecIt it = wallmarks.begin(); it != wallmarks.end();)
 		{
 			intrusive_ptr<CSkeletonWallmark>& wm = *it;
+			if (!wm)
+			{
+				it = wallmarks.erase(it);
+				continue;
+			}
+
 			float w = (RDEVICE.fTimeGlobal - wm->TimeStart()) / ps_r__WallmarkTTL;
 			if (w < 1.f)
 			{
@@ -855,18 +862,13 @@ void CKinematics::CalculateWallmarks()
 				{
 					::RImplementation.add_SkeletonWallmark(wm);
 				}
+				++it;
 			}
 			else
 			{
-				// remove wallmark				
-				need_remove = true;
+				// remove expired wallmark
+				it = wallmarks.erase(it);
 			}
-		}
-
-		if (need_remove)
-		{
-			SkeletonWMVecIt new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const intrusive_ptr<CSkeletonWallmark>& x) { return x == nullptr; });
-			wallmarks.erase(new_end, wallmarks.end());
 		}
 	}
 }
@@ -985,12 +987,6 @@ void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 				Bi.mRenderTransform_tmp.set(Bi.mRenderTransform);
 				Bi.mRenderTransform_old.set(Bi.mRenderTransform);
 			}
-		}
-
-		if (Hair.IsUsed())
-		{
-			Hair.Resolve([this](const char* Name) { return LL_BoneID(Name); }, [this](u16 Id) -> const Fobb& { return LL_GetData(Id).obb; });
-			Hair.Update(world_matrix, bone_instances, u16(bones->size()), dwFirstRenderFrame == 0 || RDEVICE.dwFrame - dwFirstRenderFrame > 1);
 		}
 
 		dwFirstRenderFrame = RDEVICE.dwFrame;

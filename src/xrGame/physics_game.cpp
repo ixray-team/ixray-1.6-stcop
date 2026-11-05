@@ -147,11 +147,25 @@ public:
 	virtual bool obsolete() const override { return false; }
 };
 
-static void play_object(IPhysicsShellHolder* RefObject, SGameMtlPair* mtl_pair, const SPHShotMarkContact& c)
+static bool is_vehicle_object(IPhysicsShellHolder* object)
+{
+	const char* section = object ? object->ObjectNameSect() : nullptr;
+	return section && (strncmp(section, "veh_", 4) == 0);
+}
+
+static void play_object(IPhysicsShellHolder* RefObject, SGameMtlPair* mtl_pair, SGameMtl* static_mtl, const SPHShotMarkContact& c)
 {
 	VERIFY(mtl_pair);
 
 	if (!RefObject || RefObject->ObjectGetDestroy())
+	{
+		return;
+	}
+
+	// A car crossing the water surface would otherwise play the water
+	// material pair's CollideSounds, which in stock gamemtl.xr are human
+	// footsteps. Car wheel sounds are handled by CCar::SWheel::Play instead.
+	if (static_mtl && static_mtl->Flags.test(SGameMtl::flLiquid) && is_vehicle_object(RefObject))
 	{
 		return;
 	}
@@ -248,7 +262,7 @@ void TContactShotMark(CDB::TRI* T, const SPHShotMarkContact& c)
 				{
 					if (c.Object && !mtl_pair->CollideSounds.empty())
 					{
-						play_object(c.Object, mtl_pair, c);
+						play_object(c.Object, mtl_pair, static_mtl, c);
 					}
 				}
 			}

@@ -28,6 +28,7 @@
 #include "../../EntityCondition.h"
 #include "../../sound_player.h"
 #include "../../cover_point.h"
+#include "../../holder_custom.h"
 #include "../../agent_member_manager.h"
 #include "../../agent_location_manager.h"
 #include "../../danger_cover_location.h"
@@ -723,6 +724,12 @@ IC bool ray_query_callback	(collide::rq_result& result, LPVOID params)
 	}
 
 	CEntityAlive						*entity_alive = result.O ? result.O->cast_entity_alive() : NULL;
+	if (!entity_alive && result.O)
+	{
+		CHolderCustom* holder = result.O->cast_holder_custom();
+		if (holder && holder->Owner())
+			entity_alive = holder->Owner()->cast_entity_alive();
+	}
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
 			return						(true);

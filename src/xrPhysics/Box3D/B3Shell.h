@@ -30,45 +30,14 @@ class IClimableObject;
 struct dContact
 {
 	Fvector Position;
-	Fvector Normal; // from the second side to the first, as in ODE
+	Fvector Normal; // from the first side to the second
 	float Depth = 0.f;
 	CODEGeom* Geom[2] = {nullptr, nullptr};
 	u16 Material[2] = {0, 0};
 	float Friction = 1.f;
 	float Bounce = 0.f;
 	float BounceVel = 0.f;
-	float ApproachSpeed = -1.f; // pre-solve approach along the normal; negative: use the live body velocities
-	u8 Side = 0; // side whose callbacks run; SetFriction and SetBounce edit its shape
-	bool FrictionRead = false;
 };
-
-// Bits above the game material in b3SurfaceMaterial::userMaterialId: the shape's value
-// replaces the friction or restitution mix (CPHContact::SetFriction, SetBounce).
-namespace B3MaterialFlag
-{
-	constexpr u64 Friction = 1ull << 32;
-	constexpr u64 Bounce = 1ull << 33;
-}
-
-// CPHCollideValidator class bits (its enum is private): every NC bit is its class bit << 1.
-namespace B3CollideClass
-{
-	constexpr CLClassBits Dynamic = 1 << 2;
-	constexpr CLClassBits Character = 1 << 4;
-	constexpr CLClassBits NCCharacter = 1 << 5;
-	constexpr CLClassBits Small = 1 << 6;
-	constexpr CLClassBits NCSmall = 1 << 7;
-	constexpr CLClassBits RagDoll = 1 << 8;
-	constexpr CLClassBits NCRagDoll = 1 << 9;
-	constexpr CLClassBits Animated = 1 << 10;
-	constexpr CLClassBits NCAnimated = 1 << 11;
-	constexpr CLClassBits Classes = Dynamic | Character | Small | RagDoll | Animated;
-
-	inline bool DoCollide(CLClassBits A, CLClassBits B)
-	{
-		return !((A & (Classes << 1) & ((B & Classes) << 1)) || (B & (Classes << 1) & ((A & Classes) << 1)));
-	}
-}
 
 // Contact callbacks and links shared by every geom of one element or static shell.
 struct SB3GeomOwner
@@ -114,10 +83,6 @@ public:
 
 	void CreateShape(b3BodyId Body, float Density, bool Dynamic, u64 Mask);
 	void SetMask(u64 Mask);
-	// Box3D pre-solve cannot edit a contact: a callback's surface edit stays on the shape.
-	void SetSurface(u64 Flag, float Value, bool Override);
-	// Convex proxy at the owner's global Form, shrunk by Inset; returns the point count.
-	int MakeProxy(const Fmatrix& Form, float Inset, b3Vec3 (&Points)[B3_MAX_SHAPE_CAST_POINTS], float& ProxyRadius) const;
 	void DestroyShape();
 	float Volume() const;
 	float Radius() const;
@@ -147,15 +112,8 @@ public:
 	mutable Fvector MassCenterGlobal = {0.f, 0.f, 0.f};
 	Fmatrix PrevForm = Fidentity;
 	Fmatrix CurForm = Fidentity;
-	// One-step force accumulator (ODE impulse = force over one fixed step), flushed in FlushForces.
 	Fvector Force = {0.f, 0.f, 0.f};
 	Fvector Torque = {0.f, 0.f, 0.f};
-	// Explicit geom masses (rigid child bones); 0 marks a massless geom moved in from another element.
-	xr_vector<std::pair<CODEGeom*, float>> GeomMasses;
-	float AddedMass = 0.f;
-	float InertiaKeep = 1.f;
-	b3Matrix3 ExtraInertia = b3Mat3_zero;
-	bool HasMassCenter = false;
 	float AirLinear = default_k_l;
 	float AirAngular = default_k_w;
 	float LinearLimit = default_l_limit;
@@ -169,8 +127,6 @@ public:
 	bool Activating = false;
 	bool HasPendingForm = false;
 	bool HasAnimTarget = false;
-	// Wheels: ODE caps only by the element limit, Box3D also by 0.25*pi per step unless set at creation.
-	bool AllowFastRotation = false;
 	Fmatrix AnimTarget = Fidentity;
 	Fmatrix PendingForm = Fidentity;
 	xrCriticalSection PendingLock;
@@ -183,13 +139,6 @@ public:
 	void DestroyBody();
 	void PullState(bool StorePrev);
 	void PhTune(float Step);
-	// As ODE BodyCutForce: the accumulated step force changes velocity by at most the element limits.
-	void FlushForces(float Step);
-	// Point is global; the torque is taken about the center of mass.
-	void AddForce(const Fvector& F, const Fvector* Point = nullptr);
-	// Mass from the geoms, moved to the authored center, plus the smoothing and box terms.
-	void ApplyMassData();
-	float SleepThreshold() const;
 	bool IsAwake() const;
 	// Bone callback: the first call places the element at the animated bone, later calls drive the bone.
 	void BonesCallBack(CBoneInstance* B);
@@ -229,7 +178,7 @@ public:
 	virtual void setDensity(float M) override;
 	virtual float getMass() override
 	{
-		return Geoms.empty() ? 0.f : Mass + AddedMass;
+		return Mass;
 	}
 	virtual float getDensity() override;
 	virtual float getVolume() override;
@@ -253,6 +202,7 @@ public:
 		AngularScale = w_scale;
 	}
 	void CutVelocity();
+	void ApplyLimitedImpulse(const Fvector& Impulse, const Fvector* Point);
 	virtual void set_ContactCallback(ContactCallbackFun* callback) override
 	{
 		Owner.ContactCallback = callback;
@@ -292,7 +242,10 @@ public:
 	}
 	virtual void SetMaterial(u16 m) override;
 	virtual void SetMaterial(const char* m) override;
-	virtual void set_DisableParams(const SAllDDOParams& params) override;
+	virtual void set_DisableParams(const SAllDDOParams& params) override
+	{
+		DisableParams = params;
+	}
 	virtual void SetTransform(const Fmatrix& m0, motion_history_state history_state) override;
 #ifdef DEBUG
 	virtual void dbg_draw_velocity(float scale, u32 color) override {}
@@ -346,7 +299,6 @@ public:
 	virtual void set_local_mass_center(const Fvector& mc) override
 	{
 		MassCenterLocal.set(mc);
-		HasMassCenter = true;
 	}
 	virtual void setQuaternion(const Fquaternion& quaternion) override;
 	virtual u16 setGeomFracturable(CPHFracture& fracture) override;
@@ -394,8 +346,8 @@ class CPHJoint : public CPhysicsJoint, public cphysics_scripted
 {
 	struct SAxis
 	{
-		Fvector Direction = {0.f, 0.f, 1.f};
-		eVs Vs = vs_first;
+		Fvector Direction = {0.f, 1.f, 0.f};
+		eVs Vs = vs_global;
 		float Low = -M_PI;
 		float High = M_PI;
 		float Force = 0.f;
@@ -414,40 +366,22 @@ class CPHJoint : public CPhysicsJoint, public cphysics_scripted
 	float Spring = 1.f;
 	float Damping = 1.f;
 	b3JointId Joint = b3_nullJointId;
-	// Hinge2 steering is a spring to an angle in Box3D, while ODE drives the axis with a
-	// velocity motor. The target angle is advanced here at Axes[0].Velocity, so the
-	// authored steering_speed is kept and the spring only tracks it.
-	float SteerTarget = 0.f;
-	// The axis that carries the spherical twist limit; chosen once, when the native
-	// joint is built (the frame direction depends on it).
-	u8 FullControlTwist = 0;
-	// A full_control joint with one dominant axis is built as a revolute joint: a hinge
-	// is well conditioned, while the spherical swing limits degenerate near the rest pose.
-	bool FullControlAsHinge = false;
 	// First element had no body and the joint hangs on the ground body (ODE body_for_joint(first) == 0).
 	bool FirstIsGround = false;
 	bool FirstIsReversed() const;
-	bool Breakable = false;
-	float ForceThreshold = FLT_MAX;
-	float TorqueThreshold = FLT_MAX;
+	float BreakForce = 0.f;
+	float BreakTorque = 0.f;
 
 	void GlobalAnchor(Fvector& Result) const;
 	void GlobalAxis(int Num, Fvector& Result) const;
-	void AxisRanges(float Low[3], float High[3], bool Creation) const;
 	void CreateNative();
 	void DestroyNative();
-	void UpdateMotor(bool Wake = true);
+	void UpdateMotor();
 	void UpdateLimits();
-
-	// The three Euler axes of a full_control joint: 0 and 2 are explicit, 1 is their
-	// cross product, exactly as the ODE AMotor computes it.
-	void FullControlAxes(Fvector Dir[3]) const;
 
 public:
 	CPHShell* OwnerShell = nullptr;
 	bool Broken = false;
-	// A rigid breakable bone (ODE CPHFracture): welded to its parent, split like a broken joint.
-	bool Weld = false;
 
 	CPHJoint(enumType Type, CPhysicsElement* InFirst, CPhysicsElement* InSecond);
 	virtual ~CPHJoint() override;
@@ -477,8 +411,6 @@ public:
 	virtual void Create() override;
 	virtual void RunSimulation() override {}
 	virtual void Deactivate() override;
-	// Per-step update driven by the owning shell (the hinge2 steering rate).
-	void PhTune(float Step);
 	virtual void SetBackRef(CPhysicsJoint** j) override
 	{
 		BackRef = j;
@@ -504,15 +436,13 @@ public:
 	virtual void SetHiLimitDynamic(int axis_num, float limit) override;
 	virtual void SetLoLimitDynamic(int axis_num, float limit) override;
 	virtual void SetBreakable(float force, float torque) override;
-	void SetFracture(float Force, float Torque);
-	void SetResistance(float Force);
 	virtual CPHJointDestroyInfo* JointDestroyInfo() override
 	{
 		return nullptr;
 	}
 	virtual bool isBreakable() override
 	{
-		return Breakable;
+		return BreakForce > 0.f || BreakTorque > 0.f;
 	}
 	virtual void SetForceAndVelocity(const float force, const float velocity = 0.f, const int axis_num = -1) override;
 	virtual void GetMaxForceAndVelocity(float& force, float& velocity, int axis_num) override;
@@ -564,21 +494,7 @@ public:
 	bool BreakingBlocked = false;
 	bool CallbacksEnabled = true;
 	bool SkipBoneCallbacks = false;
-	bool SplitterSuspended = false;
-	// ODE m_active_count: below zero the next InterpolateGlobalTransform puts the object to processing sleep.
-	int ActiveCount = 0;
-	bool WasEnabled = true;
-	float SmoothInertia = 0.f;
-	u32 SelfContacts = 0;
 	CPhysicsShellAnimator* Animator = nullptr;
-	// Steps while the world is frozen (ODE: the shell is back in the step list).
-	bool Thawed = false;
-	bool RemoveCharCollOnDisable = false;
-	bool TracedGeoms = false;
-	bool GeomTrace = true;
-	bool SelfCollisionDirty = false;
-	// Element pairs already overlapping when self collision was enabled never collide (ODE BuildSelfCollisionPairs).
-	xr_vector<std::pair<const SB3GeomOwner*, const SB3GeomOwner*>> SelfCollisionExcluded;
 
 	CPHShell();
 	virtual ~CPHShell() override;
@@ -590,23 +506,8 @@ public:
 		return ElementsList.empty() ? nullptr : ElementsList.front();
 	}
 	void SetGeomFilter();
-	// Box3D runs the custom filter only when a pair is created: recreate the pairs after its inputs change.
-	void ResetPairs();
-	void SetClassBit(CLClassBits Bit);
-	void SetBullets();
-	void BuildSelfCollisionPairs();
-	bool SelfCollides(const SB3GeomOwner* A, const SB3GeomOwner* B) const;
-	bool IsBullet() const
-	{
-		return TracedGeoms && GeomTrace;
-	}
 	void RemoveJoint(CPHJoint* Joint);
 	void AddElementRecursive(CPhysicsElement* RootElement, u16 Id, Fmatrix GlobalParent, BONE_P_MAP* GettingMap);
-	void FinishActivate(bool Disable);
-	bool OwnsBody(b3BodyId Id) const
-	{
-		return std::find(ElementsList.begin(), ElementsList.end(), b3Body_GetUserData(Id)) != ElementsList.end();
-	}
 
 	// CPhysicsBase
 	virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false) override;
@@ -675,13 +576,7 @@ public:
 	{
 		return Animator;
 	}
-	virtual void set_JointResistance(float force) override
-	{
-		for (CPHJoint* Joint : JointsList)
-		{
-			Joint->SetResistance(force);
-		}
-	}
+	virtual void set_JointResistance(float force) override {}
 	virtual void add_Element(CPhysicsElement* E) override;
 	virtual void add_Joint(CPhysicsJoint* E) override;
 	virtual CPHIsland* PIsland() override
@@ -695,7 +590,6 @@ public:
 	virtual void RegisterToCLGroup(CGID g) override
 	{
 		CLGroup = g;
-		ResetPairs();
 	}
 	virtual bool IsGroupObject() override
 	{
@@ -707,7 +601,6 @@ public:
 	virtual void SetIgnoreRagDoll() override;
 	virtual void SetSelfCollision(bool Enabled) override
 	{
-		SelfCollisionDirty = SelfCollisionDirty || SelfCollision != Enabled;
 		SelfCollision = Enabled;
 	}
 	virtual bool IsSelfCollision() const override
@@ -716,7 +609,7 @@ public:
 	}
 	virtual u32 LastSelfCollisionContacts() const override
 	{
-		return SelfContacts;
+		return 0;
 	}
 	virtual const CLBits& collide_bits() const override
 	{
@@ -736,14 +629,8 @@ public:
 	{
 		return nullptr;
 	}
-	virtual void SplitterHolderActivate() override
-	{
-		SplitterSuspended = false;
-	}
-	virtual void SplitterHolderDeactivate() override
-	{
-		SplitterSuspended = true;
-	}
+	virtual void SplitterHolderActivate() override {}
+	virtual void SplitterHolderDeactivate() override {}
 	virtual void SplitProcess(PHSHELL_PAIR_VECTOR& out_shels) override;
 	virtual void BlockBreaking() override
 	{
@@ -755,7 +642,7 @@ public:
 	}
 	virtual bool IsBreakingBlocked() override
 	{
-		return BreakingBlocked || SplitterSuspended;
+		return BreakingBlocked;
 	}
 	virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val) override;
 	virtual void applyImpulseTrace(const Fvector& pos, const Fvector& dir, float val, const u16 id) override;
@@ -766,7 +653,7 @@ public:
 	virtual void get_LinearVel(Fvector& velocity) const override;
 	virtual void get_AngularVel(Fvector& velocity) const override;
 	virtual void setMass1(float M) override;
-	virtual void SmoothElementsInertia(float k) override;
+	virtual void SmoothElementsInertia(float k) override {}
 	virtual void MassAddBox(float mass, const Fvector& full_size) override;
 	virtual ELEMENT_STORAGE& Elements() override
 	{
@@ -792,14 +679,8 @@ public:
 		return u16(JointsList.size());
 	}
 	virtual CODEGeom* get_GeomByID(u16 bone_id) override;
-	virtual void Freeze() override
-	{
-		Thawed = false;
-	}
-	virtual void UnFreeze() override
-	{
-		Thawed = true;
-	}
+	virtual void Freeze() override {}
+	virtual void UnFreeze() override {}
 	virtual void NetInterpolationModeON() override {}
 	virtual void NetInterpolationModeOFF() override {}
 	virtual void Disable() override;
@@ -809,47 +690,24 @@ public:
 	{
 		return CollisionDisabled;
 	}
-	virtual void SetRemoveCharacterCollLADisable() override
-	{
-		RemoveCharCollOnDisable = true;
-	}
-	virtual void DisableCharacterCollision() override;
+	virtual void SetRemoveCharacterCollLADisable() override {}
+	virtual void DisableCharacterCollision() override {}
 	virtual void PureStep(float step = fixed_step) override;
 	virtual void SetGlTransformDynamic(const Fmatrix& form) override;
-	virtual void CollideAll() override;
+	virtual void CollideAll() override {}
 	virtual CPhysicsElement* NearestToPoint(const Fvector& point, NearestToPointCallback* cb = 0) override;
 	virtual void build_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) override;
 	virtual void preBuild_FromKinematics(IKinematics* K, BONE_P_MAP* p_geting_map = NULL) override;
 	virtual void Build(bool disable = false) override;
 	virtual void ActivatingBonePoses(IKinematics& K) override;
-	// Traced geoms are Box3D bullets: continuous collision against dynamic bodies too. Per body, not per geom.
-	virtual void AddTracedGeom(u16 element = 0, u16 geom = 0) override
-	{
-		SetAllGeomTraced();
-	}
-	virtual void SetAllGeomTraced() override
-	{
-		TracedGeoms = GeomTrace = true;
-		SetBullets();
-	}
-	virtual void ClearTracedGeoms() override
-	{
-		TracedGeoms = false;
-		SetBullets();
-	}
-	virtual void DisableGeomTrace() override
-	{
-		GeomTrace = false;
-		SetBullets();
-	}
-	virtual void EnableGeomTrace() override
-	{
-		GeomTrace = true;
-		SetBullets();
-	}
+	virtual void AddTracedGeom(u16 element = 0, u16 geom = 0) override {}
+	virtual void SetAllGeomTraced() override {}
+	virtual void ClearTracedGeoms() override {}
+	virtual void DisableGeomTrace() override {}
+	virtual void EnableGeomTrace() override {}
 	virtual bool HasTracedGeoms() override
 	{
-		return TracedGeoms;
+		return false;
 	}
 	virtual void RunSimulation(bool place_current_forms = true) override;
 	virtual void UpdateRoot() override;
@@ -877,7 +735,7 @@ public:
 	{
 		return PreferExactIntegration;
 	}
-	virtual void vis_update_activate() override;
+	virtual void vis_update_activate() override {}
 
 	virtual iphysics_scripted& get_scripted() override
 	{

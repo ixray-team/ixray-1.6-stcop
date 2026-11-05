@@ -219,7 +219,7 @@ void CSE_PHSkeleton::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	auto self = dynamic_cast<CSE_ALifeDynamicObjectVisual*>(this); // I need to access netpacket version here
 	R_ASSERT(self);
 	
-	if(self->m_wVersion < SPAWN_VERSION_U32_ID)
+	if(self->m_wVersion < 130)
 	{
 		u16 ID16;
 		tNetPacket.r_u16(ID16);
@@ -241,7 +241,7 @@ void CSE_PHSkeleton::STATE_Write		(NET_Packet	&tNetPacket)
 	R_ASSERT				(visual);
 	tNetPacket.w_stringZ	(visual->startup_animation);
 	tNetPacket.w_u8			(_flags.flags);
-	SpawnWrite::ObjectID(tNetPacket, source_id);
+	tNetPacket << source_id;
 	////////////////////////saving///////////////////////////////////////
 	if(_flags.test(flSavedData))
 	{

@@ -21,7 +21,7 @@ hero:
       link: https://t.me/ixray_platform
 
 heroVideo:
-  url: https://www.youtube.com/watch?v=AS8tWao9t0A
+  url: https://www.youtube.com/watch?v=XPe_rKGrO6Y
   title: Обзор IX-Ray Platform
 
 features:

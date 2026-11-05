@@ -44,90 +44,6 @@ CDialogHolder::CDialogHolder()
 
 CDialogHolder::~CDialogHolder()
 {
-	ClearDialogs();
-}
-
-void CDialogHolder::ReleaseWindowIfUnused(CUIWindow* Window)
-{
-	for (const auto& Receiver : m_input_receivers)
-	{
-		if (Receiver.m_item == Window)
-		{
-			return;
-		}
-	}
-	for (const auto* Dialogs : {&m_dialogsToRender, &m_dialogsToRender_new})
-	{
-		for (const auto& Item : *Dialogs)
-		{
-			if (Item.enabled && Item.wnd == Window)
-			{
-				return;
-			}
-		}
-	}
-	Window->UnregisterDialogHolder(this);
-}
-
-void CDialogHolder::OnWindowDestroyed(CUIWindow* Window)
-{
-	xrCriticalSectionGuard Guard(DialogsLock);
-	// The object's destructor is running: never call its virtual methods here.
-	for (auto* Dialogs : {&m_dialogsToRender, &m_dialogsToRender_new})
-	{
-		for (auto& Item : *Dialogs)
-		{
-			if (Item.wnd == Window)
-			{
-				Item.wnd = nullptr;
-				Item.enabled = false;
-			}
-		}
-	}
-	for (size_t Index = m_input_receivers.size(); Index > 0; --Index)
-	{
-		const size_t Removed = Index - 1;
-		if (m_input_receivers[Removed].m_item != Window)
-		{
-			continue;
-		}
-		if (Index < m_input_receivers.size())
-		{
-			m_input_receivers[Index].m_flags = m_input_receivers[Removed].m_flags;
-		}
-		m_input_receivers[Removed].m_item->SetHolder(nullptr);
-		m_input_receivers.erase(m_input_receivers.begin() + Removed);
-	}
-}
-
-void CDialogHolder::ClearDialogs()
-{
-	xrCriticalSectionGuard Guard(DialogsLock);
-	xr_vector<CUIWindow*> Windows;
-	for (const auto& Receiver : m_input_receivers)
-	{
-		Receiver.m_item->SetHolder(nullptr);
-		Windows.push_back(Receiver.m_item);
-	}
-	for (const auto* Dialogs : {&m_dialogsToRender, &m_dialogsToRender_new})
-	{
-		for (const auto& Item : *Dialogs)
-		{
-			if (Item.enabled && Item.wnd && std::find(Windows.begin(), Windows.end(), Item.wnd) == Windows.end())
-			{
-				Windows.push_back(Item.wnd);
-			}
-		}
-	}
-	m_input_receivers.clear();
-	m_dialogsToRender.clear();
-	m_dialogsToRender_new.clear();
-	for (CUIWindow* Window : Windows)
-	{
-		Window->UnregisterDialogHolder(this);
-		Window->Show(false);
-		Window->Enable(false);
-	}
 }
 
 void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
@@ -214,10 +130,6 @@ void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
 {
 	xrCriticalSectionGuard Guard(DialogsLock);
-	if (!pDialog)
-	{
-		return;
-	}
 	dlgItem itm		(pDialog);
 	itm.enabled		= true;
 
@@ -232,7 +144,6 @@ void CDialogHolder::AddDialogToRender(CUIWindow* pDialog)
 	else
 		m_dialogsToRender.push_back(itm);
 
-	pDialog->RegisterDialogHolder(this);
 	pDialog->Show(true);
 }
 
@@ -256,7 +167,6 @@ void CDialogHolder::RemoveDialogToRender(CUIWindow* pDialog)
 	{
 		pDialog->Show(false);
 		pDialog->Enable(false);
-		ReleaseWindowIfUnused(pDialog);
 	}
 }
 
@@ -305,11 +215,7 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 		if(m_input_receivers.empty())	return;
 
 		if(!ir)
-		{
-			CUIDialogWnd* Previous = m_input_receivers.back().m_item;
 			m_input_receivers.pop_back();
-			ReleaseWindowIfUnused(Previous);
-		}
 		else{
 			VERIFY(ir && _find_remove);
 
@@ -321,14 +227,12 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 					xr_vector<recvItem>::iterator it = m_input_receivers.begin();
 					std::advance			(it,cnt-1);
 					m_input_receivers.erase	(it);
-					ReleaseWindowIfUnused(ir);
 					break;
 				}
 			
 		}
 
 	}else{
-		ir->RegisterDialogHolder(this);
 		m_input_receivers.push_back(recvItem(ir));
 	}
 };
@@ -387,7 +291,12 @@ void CDialogHolder::OnFrame()
 
 void CDialogHolder::CleanInternals()
 {
-	ClearDialogs();
+	xrCriticalSectionGuard Guard(DialogsLock);
+	while( !m_input_receivers.empty() )
+		m_input_receivers.pop_back();
+
+	m_dialogsToRender.clear	();
+	m_dialogsToRender_new.clear();
 	GetUICursor().Hide		();
 }
 

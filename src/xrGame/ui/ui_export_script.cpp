@@ -30,21 +30,6 @@ using namespace luabind;
 
 CMainMenu*	MainMenu();
 
-static CUIDialogWndEx* GetMainMenuWindow()
-{
-	if (!g_pGamePersistent || !g_pGamePersistent->m_pMainMenu)
-	{
-		return nullptr;
-	}
-	CMainMenu* Menu = smart_cast<CMainMenu*>(g_pGamePersistent->m_pMainMenu);
-	return Menu ? smart_cast<CUIDialogWndEx*>(Menu->GetWindow()) : nullptr;
-}
-
-static bool IsMainMenuActive()
-{
-	return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
-}
-
 int placeholder_func() // to keep game from crashing during menu init
 {
 	return 0;
@@ -97,8 +82,6 @@ void UIRegistrator::script_register(lua_State *L)
 
 	module(L)
 	[
-		def("GetMainMenuWindow", &GetMainMenuWindow),
-		def("IsMainMenuActive", &IsMainMenuActive),
 
 		class_<CGameFont>("CGameFont")
 			.enum_("EAligment")

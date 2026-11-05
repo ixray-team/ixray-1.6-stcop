@@ -175,7 +175,6 @@ public:
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
 	attachable_hud_item*		HudItemData				();
-	bool						SprintLayered			() const { return CachedSprintLayered; }
 	virtual void				on_a_hud_attach			();
 	XPROPERTY(LuaCallable)
 	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
@@ -197,7 +196,7 @@ public:
 	float getLookOutAmplK() const { return HudDesc().m_fLookOutAmplK; }
 	float getActorCamSpeedFactor() const { return m_fActorCamSpeedFactor; }
 
-	bool CanStartAction(CActor* pActor, u32 kfACTTYPE = 0);
+	bool CanStartAction(CActor* pActor);
 	bool SetKeyRepeatFlag(u32 kfACTTYPE);
 
 	virtual bool NeedMovementBlend() const;
@@ -349,7 +348,6 @@ public:
 	CUIWindow* ScriptWindow = nullptr;
 
 	bool m_bSwitchSprint = false;
-	bool CachedSprintLayered = false;
 
 protected:
 
@@ -373,49 +371,17 @@ protected:
 	float						m_fHudYawInertia = 0.0f;
 	float						m_fHudPitchInertia = 0.0f;
 	float						m_fHudRollInertia = 0.0f;
-	Fvector						HudInertiaVelocity = {};
-	Fmatrix						HudLookInertiaPre = Fidentity;
-	Fmatrix						HudLookInertia = Fidentity;
-	u32							HudLookInertiaFrame = u32(-1);
+	Fvector						m_vHudInertiaVelocity = {};
+	Fmatrix						m_HudLookInertiaPre = Fidentity;
+	Fmatrix						m_HudLookInertia = Fidentity;
+	u32							m_HudLookInertiaFrame = u32(-1);
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
 
-	virtual shared_str			OverlayIdleAnimation	();
-	virtual void				OnOverlayResume			()				{}
-	virtual bool				OverlayAllowed			(u8 Base, u8 Host) const	{ return false; }
-
 private:
-	struct SHudOverlayBase
-	{
-		bool					Active = false;
-		bool					Finishing = false;
-		u8						State = 0;
-		u8						HostState = u8(-1);
-		u8						RndIdx = u8(-1);
-		shared_str				Motion;
-		const CMotionDef*		Def = nullptr;
-		u32						StartTm = 0;
-		u32						CurrTm = 0;
-		u32						EndTm = 0;
-	};
-
-	SHudOverlayBase				Overlay;
-	u8							UnpendedState = u8(-1);
-
-	void						ProcessMotionMarks		(const CMotionDef* Def, u32 StartTm, u32 PrevTm, u32 CurrTm, u8 State);
-	void						UpdateOverlay			();
-	void						StartOverlay			();
-	void						ResumeOverlay			();
-	void						PlayOverlayIdle			();
-
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;
-
-public:
-	bool						CanStartOverlay			() const;
-	bool						OverlayActive			() const		{ return Overlay.Active; }
-	u8							AnimState				() const		{ return Overlay.Active && GetState() == Overlay.HostState ? Overlay.State : GetState(); }
 
 public:
 	const shared_str&			HudSection				() const		{ return hud_sect;}

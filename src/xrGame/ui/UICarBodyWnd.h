@@ -34,6 +34,7 @@ public:
 	virtual void				Update						() override;
 
 	virtual void				Show						(bool status) override;
+	virtual void				HideDialog					() override;
 
 	void						DisableAll					();
 	void						EnableAll					();

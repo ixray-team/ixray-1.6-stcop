@@ -136,12 +136,9 @@ void EditorLuaCodespace()
 
 	LuaEditor.Render("LuaEditor", ImVec2(-1, -1));
 
-	// Keep allocation and destruction in this module: TextEditor uses the CRT heap.
-	CodeText.resize(LuaEditor.CopyText(nullptr, 0));
-	LuaEditor.CopyText(CodeText.data(), CodeText.size() + 1);
+	CodeText = LuaEditor.GetText().c_str();
 	if (!CodeText.empty() && CodeText.back() == '\n')
 		CodeText.pop_back();
-	LastCodeText = CodeText;
 
 	ImGui::EndChild();
 	ImGui::SameLine();

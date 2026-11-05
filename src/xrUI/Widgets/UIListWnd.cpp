@@ -281,7 +281,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
         {
             m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
             UpdateList();
-            SendMessageToTarget(SCROLLBAR_VSCROLL, nullptr);
+            GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL, nullptr);
         }
     }
     else
@@ -324,7 +324,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                     }
                 }
 
-                SendMessageToTarget(LIST_ITEM_CLICKED, pListItem);
+                GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
             }
 
             else if (WINDOW_FOCUS_RECEIVED == msg)
@@ -756,7 +756,7 @@ bool CUIListWnd::NextItem(bool selectOnly, bool loop)
     m_iSelectedItemGroupID = pListItem->GetGroupID();
     if (!selectOnly)
 	{
-        SendMessageToTarget(LIST_ITEM_CLICKED, pListItem);
+        GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
     }
 
     int pos = GetSelectedItem();
@@ -797,7 +797,7 @@ bool CUIListWnd::PrevItem(bool selectOnly, bool loop)
     m_iSelectedItemGroupID = pListItem->GetGroupID();
     if (!selectOnly)
     {
-        SendMessageToTarget(LIST_ITEM_CLICKED, pListItem);
+        GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pListItem);
     }
 
     int pos = GetSelectedItem();

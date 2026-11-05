@@ -2,10 +2,6 @@
 #include "skin.hlsli"
 #include "editor_instancing.hlsli"
 
-#if defined(USE_HAIRMASK)
-#include "hair.hlsli"
-#endif
-
 void skinned_main(in v_model I, in float3 basis, out p_bumped_new O, in object_xforms X)
 {
     float3 Nw = mul((float3x3)X.W, (float3)I.N);

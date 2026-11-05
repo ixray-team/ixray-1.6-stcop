@@ -3,7 +3,6 @@
 #define SkeletonCustomH
 
 #include "FHierrarhyVisual.h"
-#include "HairDynamics.h"
 #include "../../xrEngine/bone.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../../xrEngine/VisMask.h"
@@ -102,7 +101,6 @@ public:
 	Fmatrix						mOldWorldMartrixTmp;
 
 	u32							dwFirstRenderFrame;
-	HairDynamics				Hair;
 
 	void						StoreVisualMatrix(Fmatrix& world_matrix);
 protected:

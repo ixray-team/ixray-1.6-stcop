@@ -37,21 +37,24 @@ void CPHCollisionDamageReceiver::Init()
 	}
 }
 
-const static float hit_threthhold=5.f;
 void CPHCollisionDamageReceiver::CollisionHit(ALife::_OBJECT_ID source_id,u16 bone_id,float power,const Fvector& dir,Fvector &pos )
 {
 
 	DAMAGE_BONES_I i=FindBone(bone_id);
 	if(i==m_controled_bones.end())return;
 	power*=i->second;
-	if(power<hit_threthhold)return;
+	if(power<m_hit_threshold)return;
 	
 	NET_Packet		P;
 	CPhysicsShellHolder *ph=PPhysicsShellHolder();
 	SHit	HS;
 	
 	HS.GenHeader(GE_HIT,ph->ID());					//	ph->u_EventGen(P,GE_HIT,ph->ID());
-	HS.whoID			= source_id;					//	P.w_u16		(ph->ID());
+	// A hit must have a valid source entity: the single-player server drops
+	// GE_HIT events whose source cannot be resolved (static level geometry,
+	// water, etc.). Attribute such hits to the car itself; the weapon field
+	// still carries the original source for diagnostics.
+	HS.whoID			= (source_id == ALife::INVALID_OBJECT_ID && ph->cast_car()) ? ph->ID() : source_id;
 	HS.weaponID			= source_id;				//	P.w_u16		(source_id);
 	HS.dir				= dir;						//	P.w_dir		(dir);
 	HS.power			= power;					//	P.w_float	(power);

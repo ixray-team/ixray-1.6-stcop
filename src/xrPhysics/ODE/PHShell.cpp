@@ -1104,7 +1104,21 @@ void CPHShell::GetGlobalTransformDynamic(Fmatrix* m)
 	i=elements.begin(); e=elements.end();
 	for( ;i!=e;++i)
 		(*i)->GetGlobalTransformDynamic(&(*i)->mXFORM);
-	m->set((*elements.begin())->mXFORM);
+
+	// Deactivated elements (for example car doors) have no ODE body and keep
+	// their last transform, so the shell root must be an element that still has one.
+	CPhysicsElement* RootElement = nullptr;
+	for (i = elements.begin(); i != e; ++i)
+	{
+		if ((*i)->get_body())
+		{
+			RootElement = *i;
+			break;
+		}
+	}
+
+	if (RootElement)
+		m->set(RootElement->mXFORM);
 
 	m->mulB_43	(m_object_in_root);
 	mXFORM.set(*m);

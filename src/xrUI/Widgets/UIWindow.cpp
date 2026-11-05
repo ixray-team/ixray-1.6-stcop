@@ -1,27 +1,11 @@
 #include "stdafx.h"
 #include "UIWindow.h"
-#include "UIDialogHolder.h"
-#include "UIDialogWnd.h"
 #include "../UICursor.h"
 
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "UIBtnHint.h"
-#include "UIStatic.h"
-#include "../../xrScripts/script_callback_ex.h"
-
-struct CUIWindow::SelfCallbackState
-{
-	struct Subscription
-	{
-		s16 Event;
-		CScriptCallbackEx<void> Handler;
-	};
-	xr_vector<Subscription> Subscriptions;
-	bool Alive = true;
-	bool HasUpdateCallback = false;
-};
 
 // #define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
@@ -135,12 +119,6 @@ m_bCustomDraw(false)
 
 CUIWindow::~CUIWindow()
 {
-	DetachFromDialogHolders();
-	if (SelfCallbacks)
-	{
-		SelfCallbacks->Alive = false;
-		SelfCallbacks->Subscriptions.clear();
-	}
 	VERIFY( !(GetParent()&&IsAutoDelete()) );
 
 	CUIWindow* parent	= GetParent();
@@ -177,158 +155,6 @@ CUIWindow::~CUIWindow()
 
 
 
-void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler)
-{
-	if (!SelfCallbacks)
-	{
-		SelfCallbacks = xr_make_shared<SelfCallbackState>();
-	}
-	SelfCallbackState::Subscription Subscription;
-	Subscription.Event = Event;
-	Subscription.Handler.set(Handler);
-	SelfCallbacks->Subscriptions.push_back(Subscription);
-	if (Event == WINDOW_UPDATE)
-	{
-		SelfCallbacks->HasUpdateCallback = true;
-	}
-	switch (Event)
-	{
-	case STATIC_MOUSE_LEFT_CLICK:
-	case STATIC_MOUSE_DOUBLE_CLICK:
-	case STATIC_MOUSE_RIGHT_CLICK:
-	case STATIC_MOUSE_DRAG:
-	case STATIC_MOUSE_MOVE:
-	case STATIC_MOUSE_WHEEL_UP:
-	case STATIC_MOUSE_WHEEL_DOWN:
-		if (CUIStatic* Static = ui_cast_static())
-		{
-			Static->EnableMouseEvents(true);
-		}
-		break;
-	default:
-		break;
-	}
-}
-
-bool CUIWindow::DispatchSelfCallbacks(s16 Event)
-{
-	const auto State = SelfCallbacks;
-	if (State)
-	{
-		// A handler may subscribe another handler or delete this control.
-		xr_vector<CScriptCallbackEx<void>> Handlers;
-		for (const auto& Subscription : State->Subscriptions)
-		{
-			if (Subscription.Event == Event)
-			{
-				Handlers.push_back(Subscription.Handler);
-			}
-		}
-		for (auto& Handler : Handlers)
-		{
-			if (!State->Alive)
-			{
-				return false;
-			}
-			Handler(this);
-		}
-		if (!State->Alive)
-		{
-			return false;
-		}
-	}
-
-	return !State || State->Alive;
-}
-
-bool CUIWindow::SendMessageToTarget(s16 Event, void* Data)
-{
-	const auto State = SelfCallbacks;
-	if (!DispatchSelfCallbacks(Event))
-	{
-		return false;
-	}
-	if (CUIWindow* Target = GetMessageTarget())
-	{
-		Target->SendMessage(this, Event, Data);
-	}
-	return !State || State->Alive;
-}
-
-bool CUIWindow::ToFront()
-{
-	CUIWindow* Parent = GetParent();
-	return Parent && Parent->MoveChildInDrawOrder(this, true);
-}
-
-bool CUIWindow::ToBack()
-{
-	CUIWindow* Parent = GetParent();
-	return Parent && Parent->MoveChildInDrawOrder(this, false);
-}
-
-bool CUIWindow::MoveChildInDrawOrder(CUIWindow* Child, bool Front)
-{
-	xrCriticalSectionGuard Guard(csUi);
-	if (!Child || Child->GetParent() != this || std::find(m_ChildWndList.begin(), m_ChildWndList.end(), Child) == m_ChildWndList.end())
-	{
-		return false;
-	}
-	if (ChildDrawOrder.empty())
-	{
-		ChildDrawOrder = m_ChildWndList;
-	}
-	auto Position = std::find(ChildDrawOrder.begin(), ChildDrawOrder.end(), Child);
-	if (Position == ChildDrawOrder.end())
-	{
-		ChildDrawOrder.push_back(Child);
-		Position = ChildDrawOrder.end() - 1;
-	}
-	if (Front)
-	{
-		std::rotate(Position, Position + 1, ChildDrawOrder.end());
-	}
-	else
-	{
-		std::rotate(ChildDrawOrder.begin(), Position, Position + 1);
-	}
-	return true;
-}
-
-void CUIWindow::RemoveChildDrawOrder(CUIWindow* Child)
-{
-	ChildDrawOrder.erase(std::remove(ChildDrawOrder.begin(), ChildDrawOrder.end(), Child), ChildDrawOrder.end());
-}
-
-void CUIWindow::RegisterDialogHolder(CDialogHolder* Holder)
-{
-	xrCriticalSectionGuard Guard(csUi);
-	if (std::find(DialogHolders.begin(), DialogHolders.end(), Holder) == DialogHolders.end())
-	{
-		DialogHolders.push_back(Holder);
-	}
-}
-
-void CUIWindow::UnregisterDialogHolder(CDialogHolder* Holder)
-{
-	xrCriticalSectionGuard Guard(csUi);
-	DialogHolders.erase(std::remove(DialogHolders.begin(), DialogHolders.end(), Holder), DialogHolders.end());
-}
-
-void CUIWindow::DetachFromDialogHolders()
-{
-	xr_vector<CDialogHolder*> Holders;
-	{
-		xrCriticalSectionGuard Guard(csUi);
-		Holders.swap(DialogHolders);
-	}
-	// Do not hold csUi while waiting for a holder's update/render lock.
-	for (CDialogHolder* Holder : Holders)
-	{
-		Holder->OnWindowDestroyed(this);
-	}
-}
-
 void CUIWindow::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
@@ -340,9 +166,7 @@ void CUIWindow::Draw()
 	}
 #endif
 
-	const WINDOW_LIST OrderedChildren = ChildDrawOrder;
-	const WINDOW_LIST& Children = OrderedChildren.empty() ? m_ChildWndList : OrderedChildren;
-	for (CUIWindow* W : Children)
+	for (CUIWindow* W : m_ChildWndList)
 	{
 		if (!W)		continue;
 		if (!W->IsShown())		continue;
@@ -401,18 +225,12 @@ void CUIWindow::Update()
 				OnFocusLost();
 		}
 	}
+	xrCriticalSectionGuard guard(csUi);
+	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
-		xrCriticalSectionGuard guard(csUi);
-		for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
-		{
-			if (!(*it)->IsShown())
-				continue;
-			(*it)->Update();
-		}
-	}
-	if (SelfCallbacks && SelfCallbacks->HasUpdateCallback)
-	{
-		DispatchSelfCallbacks(WINDOW_UPDATE);
+		if (!(*it)->IsShown())
+			continue;
+		(*it)->Update();
 	}
 }
 
@@ -426,10 +244,6 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	xrCriticalSectionGuard guard(csUi);
 	R_ASSERT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end());
 	m_ChildWndList.push_back(pChild);
-	if (!ChildDrawOrder.empty())
-	{
-		ChildDrawOrder.push_back(pChild);
-	}
 }
 
 void CUIWindow::DetachChild(CUIWindow* pChild)
@@ -449,7 +263,6 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 		{
 			m_ChildWndList.erase(it);
 		}
-		RemoveChildDrawOrder(pChild);
 	}
 
 	pChild->SetParent(nullptr);
@@ -481,7 +294,6 @@ bool CUIWindow::TryDetachChild(CUIWindow* pChild)
 	{
 		m_ChildWndList.erase(it);
 	}
-	RemoveChildDrawOrder(pChild);
 
 	csUi.Leave();
 
@@ -527,11 +339,6 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 #define DOUBLE_CLICK_TIME 250
 
 bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
-{
-	return ProcessMouseAction(x, y, mouse_action);
-}
-
-bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 {	
 	Frect	wndRect = GetWndRect();
 
@@ -602,8 +409,7 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 		return false;
 	}
 
-	const WINDOW_LIST& Children = GetChildDrawOrder();
-	xr_vector<CUIWindow*> childrenSnapshot(Children.begin(), Children.end());
+	xr_vector<CUIWindow*> childrenSnapshot(m_ChildWndList.begin(), m_ChildWndList.end());
 
 	csUi.Leave();
 
@@ -650,7 +456,8 @@ void CUIWindow::OnMouseScroll(float iDirection){
 }
 
 bool CUIWindow::OnDbClick(){
-	SendMessageToTarget(WINDOW_LBUTTON_DB_CLICK);
+	if (GetMessageTarget())
+		GetMessageTarget()->SendMessage(this, WINDOW_LBUTTON_DB_CLICK);
 	return false;
 }
 
@@ -661,120 +468,13 @@ bool CUIWindow::OnMouseDown(int mouse_btn){
 void CUIWindow::OnMouseUp(int mouse_btn){
 }
 
-CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
-{
-	if (!IsShown() || !IsEnabled())
-	{
-		return nullptr;
-	}
-	Frect Bounds;
-	GetAbsoluteRect(Bounds);
-	if (!Bounds.in(Position.x, Position.y))
-	{
-		return nullptr;
-	}
-	if (!csUi.TryEnter())
-	{
-		Reliable = false;
-		return nullptr;
-	}
-
-	CUIWindow* Result = this;
-	if (m_pMouseCapturer)
-	{
-		if (CUIWindow* Captured = m_pMouseCapturer->PickWindowAt(Position, Reliable))
-		{
-			Result = Captured;
-		}
-	}
-	else
-	{
-		const WINDOW_LIST& Children = GetChildDrawOrder();
-		for (auto Child = Children.rbegin(); Child != Children.rend(); ++Child)
-		{
-			if (*Child)
-			{
-				if (CUIWindow* Hit = (*Child)->PickWindowAt(Position, Reliable))
-				{
-					Result = Hit;
-					break;
-				}
-			}
-		}
-	}
-	csUi.Leave();
-	return Result;
-}
-
-bool CUIWindow::CursorOverWindow(bool Precise)
-{
-	if (!Precise)
-	{
-		return CursorOverWindow();
-	}
-	if (!GetUICursor().IsVisible())
-	{
-		return false;
-	}
-
-	const Fvector2 Position = GetUICursor().GetCursorPosition();
-	bool Reliable = true;
-	CUIWindow* Root = GetTop();
-	CDialogHolder* Holder = CurrentDialogHolder();
-	// A retained window from an inactive holder cannot receive mouse focus.
-	if (!Root->DialogHolders.empty() &&
-		std::find(Root->DialogHolders.begin(), Root->DialogHolders.end(), Holder) == Root->DialogHolders.end())
-	{
-		return false;
-	}
-	if (Holder)
-	{
-		if (!Holder->DialogsLock.TryEnter())
-		{
-			return false;
-		}
-		CUIDialogWnd* Receiver = Holder->TopInputReceiver();
-		bool Blocked = Receiver && Receiver->GetTop() != Root;
-		// Render-only overlays can cover the active dialog as well.
-		for (auto Item = Holder->m_dialogsToRender.rbegin(); !Blocked && Item != Holder->m_dialogsToRender.rend(); ++Item)
-		{
-			if (!Item->enabled || !Item->wnd)
-			{
-				continue;
-			}
-			if (Item->wnd == Root)
-			{
-				break;
-			}
-			// Registrations inside this tree are resolved by the child draw order below.
-			if (Item->wnd->GetTop() != Root && Item->wnd->PickWindowAt(Position, Reliable))
-			{
-				Blocked = true;
-			}
-		}
-		Holder->DialogsLock.Leave();
-		if (Blocked || !Reliable)
-		{
-			return false;
-		}
-	}
-
-	for (CUIWindow* Hit = Root->PickWindowAt(Position, Reliable); Reliable && Hit; Hit = Hit->GetParent())
-	{
-		if (Hit == this)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 void CUIWindow::OnFocusReceive()
 {
 	m_dwFocusReceiveTime	= Device.dwTimeContinual;
 	m_bCursorOverWindow		= true;	
 
-	SendMessageToTarget(WINDOW_FOCUS_RECEIVED, nullptr);
+	if (GetMessageTarget())
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, nullptr);
 }
 
 void CUIWindow::OnFocusLost()
@@ -782,7 +482,8 @@ void CUIWindow::OnFocusLost()
 	m_dwFocusReceiveTime	= 0;
 	m_bCursorOverWindow		= false;	
 
-	SendMessageToTarget(WINDOW_FOCUS_LOST, nullptr);
+	if (GetMessageTarget())
+        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, nullptr);
 }
 
 
@@ -1115,10 +816,9 @@ CUIWindow* CUIWindow::GetChildMouseHandler(){
 	}
 
 	CUIWindow* pWndResult;
-	const WINDOW_LIST& Children = GetChildDrawOrder();
-	auto it = Children.rbegin();
+	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 
-	for(; it!=Children.rend(); ++it)
+	for(; it!=m_ChildWndList.rend(); ++it)
 	{
 		Frect wndRect = (*it)->GetWndRect();
 		// very strange code.... i can't understand difference between

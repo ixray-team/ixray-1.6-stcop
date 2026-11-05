@@ -22,6 +22,7 @@ public:
 	virtual float	GetWorldYaw		( ) override { return -yaw;	};
 	virtual float	GetWorldPitch	( ) override { return pitch; };
 	virtual float	GetDist		( )	{ return prev_d;	};	
+	void			SetZoomLimits(const Fvector2& Lim) { lim_zoom = Lim; dist = (Lim[0] + Lim[1]) * 0.5f; }
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;

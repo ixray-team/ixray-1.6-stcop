@@ -569,6 +569,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar,CSE_ALifeDynamicObjectVisual,CSE_PHSke
 	xr_vector<SDoorState>			door_states;
 	xr_vector<SWheelState>			wheel_states;
 	float							health;
+	float							fuel;
 
 	u8 Engine;
 	u8 Light;

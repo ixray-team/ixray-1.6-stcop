@@ -1624,7 +1624,7 @@ float CActor::currentFOV()
 	if (eacFreeLook != cam_active && pWeapon && (rig ? aim > 0.f : pWeapon->IsZoomed()) && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
 		const float zoom_factor = pWeapon->IsZoomed() ? pWeapon->GetZoomFactor() : pWeapon->GetRTZoomFactor();
-		const float blend = aim * aim * (3.f - 2.f * aim) * (rig ? 1.f - pWeapon->AimReloadFovOut : 1.f);
+		const float blend = aim * aim * (3.f - 2.f * aim);
 		static const bool isAltFovCalc = EngineExternal()[EEngineExternalGame::EnableAlternateZoomFovCalc];
 		if (isAltFovCalc)
 		{
@@ -1949,7 +1949,14 @@ void CActor::UpdateCL()
 
 	float current_fov = currentFOV();
 
-	if (g_Alive() && m_holder == nullptr)
+	if (m_holder)
+	{
+		if (CCar* car = m_holder->cast_car())
+		{
+			car->UpdateEx(current_fov);
+		}
+	}
+	else if (g_Alive())
 	{
 		UpdatePlayerView();
 	}
@@ -2279,7 +2286,7 @@ void CActor::UpdateCL()
 	UpdateDefferedMessages();
 	UpdateConditionArtefacts();
 
-	if (g_Alive()) 
+	if (g_Alive())
 		CStepManager::update(this==Level().CurrentViewEntity());
 
 	if (TSndShockEffector* SndShockEffector = GetComponent<TSndShockEffector>())

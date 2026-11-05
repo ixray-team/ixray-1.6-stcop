@@ -74,7 +74,7 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = nul
 		}
 
 		if (GetMessageTarget())
-            SendMessageToTarget(msg,pData);
+            GetMessageTarget()->SendMessage(this,msg,pData);
 	}
 	
 }

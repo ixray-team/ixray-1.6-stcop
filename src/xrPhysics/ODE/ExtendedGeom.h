@@ -35,7 +35,12 @@ public:
 	void Add(ObjectContactCallbackFun* c)
 	{
 		VERIFY(c);
-		VERIFY(callback != c);
+
+		for (CObjectContactCallback* i = this; i; i = i->next)
+		{
+			if (i->callback == c)
+				return;
+		}
 
 		if (next)
 		{

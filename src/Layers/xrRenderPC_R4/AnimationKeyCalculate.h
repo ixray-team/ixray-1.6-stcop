@@ -302,8 +302,8 @@ ICF void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_B
 		break;
 	case 2:
 		{
-			float w0 = BA[0]->Weight();
-			float w1 = BA[1]->Weight();
+			float w0 = BA[0]->blendAmount;
+			float w1 = BA[1]->blendAmount;
 			float ws = w0+w1;
 			float w;
 			if (fis_zero(ws))	w = 0;
@@ -333,7 +333,7 @@ ICF void MixInterlerp( CKey &Result, const CKey	*R, const CBlend* const BA[MAX_B
 			float   total 	= 0;
 			ConsistantKey		S[MAX_BLENDED];
 			for (int i=0; i<b_count; i++)					
-				S[i] = { R + i, BA[i]->Weight() };
+				S[i] = { R + i, BA[i]->blendAmount };
 
 			std::sort	(S,S+b_count);
 			CKey		tmp;
@@ -417,30 +417,6 @@ ICF void keys_substruct(CKey	*R, const CKey	*BR, int b_count )
 }
 
 
-
-ICF void keys_substruct_local(CKey* R, const CKey* BR, int b_count)
-{
-	for (int i = 0; i < b_count; i++)
-	{
-		Fquaternion q;
-		q.inverse(BR[i].Q);
-		R[i].Q.set(Fquaternion().mul(q, R[i].Q));
-		R[i].T.sub(R[i].T, BR[i].T);
-	}
-}
-
-ICF void key_weight(CKey& k, float w)
-{
-	if (k.Q.w < 0.f)
-	{
-		k.Q.set(-k.Q.w, -k.Q.x, -k.Q.y, -k.Q.z);
-	}
-
-	Fquaternion identity;
-	identity.identity();
-	k.Q.slerp(identity, Fquaternion(k.Q), w);
-	k.T.mul(w);
-}
 
 ICF void q_scalem(Fmatrix &m, float v)
 {
@@ -537,19 +513,6 @@ ICF void MixChannels(CKey &Result,const CKey	*R,const animation::channel_def* BA
 		case animation::lerp:
 			lerp_factor_sum +=BA[i].factor;
 			KEY_Interp	(Result,CKey( Result ),R[i], BA[i].factor/lerp_factor_sum ); break;
-
-		case animation::add_local:
-		{
-			CKey delta = R[i];
-			if (BA[i].factor != 1.f)
-			{
-				key_weight(delta, BA[i].factor);
-			}
-
-			Result.Q.set(Fquaternion().mul(Result.Q, delta.Q));
-			Result.Q.normalize();
-			Result.T.add(delta.T);
-		} break;
 		default: NODEFAULT;
 	}
 	VERIFY( _valid( Result.T ) );

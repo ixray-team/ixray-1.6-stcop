@@ -1204,9 +1204,9 @@ void CSE_ALifeCreatureAbstract::STATE_Write	(NET_Packet &tNetPacket)
 		return !ai().alife().objects().object(elem, true);
 	});
 #endif // XRGAME_EXPORTS
-	SpawnWrite::ObjectIDs(tNetPacket, m_dynamic_out_restrictions);
-	SpawnWrite::ObjectIDs(tNetPacket, m_dynamic_in_restrictions);
-	SpawnWrite::ObjectID(tNetPacket, get_killer_id());
+	save_data					(m_dynamic_out_restrictions,tNetPacket);
+	save_data					(m_dynamic_in_restrictions,tNetPacket);
+	tNetPacket << get_killer_id();
 	R_ASSERT(!(get_health() > 0.0f && get_killer_id() != ALife::INVALID_OBJECT_ID));
 	tNetPacket.w_u64			(m_game_death_time);
 }
@@ -1228,12 +1228,12 @@ void CSE_ALifeCreatureAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 	o_model						= o_torso.yaw;
 
 	if (m_wVersion > 87) {
-		SpawnRead::ObjectIDs(tNetPacket, m_wVersion, m_dynamic_out_restrictions);
-		SpawnRead::ObjectIDs(tNetPacket, m_wVersion, m_dynamic_in_restrictions);
+		load_data				(m_dynamic_out_restrictions,tNetPacket);
+		load_data				(m_dynamic_in_restrictions,tNetPacket);
 	}
 	if (m_wVersion > 94)
 	{
-		if (m_wVersion < SPAWN_VERSION_U32_ID)
+		if (m_wVersion < 130)
 		{
 			auto ID = tNetPacket.r_u16();
 			set_killer_id(ID == 0xffff ? ALife::INVALID_OBJECT_ID : ID);
@@ -1488,7 +1488,7 @@ void CSE_ALifeMonsterAbstract::STATE_Write(NET_Packet& tNetPacket)
 	inherited1::STATE_Write(tNetPacket);
 	tNetPacket.w_stringZ(m_out_space_restrictors);
 	tNetPacket.w_stringZ(m_in_space_restrictors);
-	SpawnWrite::ObjectID(tNetPacket, m_smart_terrain_id);
+	tNetPacket << m_smart_terrain_id;
 
 	if (tNetPacket.inistream)
 		tNetPacket.w_u16((m_task_reached) ? 1 : 0);
@@ -1507,7 +1507,7 @@ void CSE_ALifeMonsterAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 
 	if (m_wVersion > 111)
 	{
-		if (m_wVersion < SPAWN_VERSION_U32_ID)
+		if (m_wVersion < 130)
 		{
 			u16 ID;
 			tNetPacket.r_u16(ID);
@@ -1686,7 +1686,7 @@ void CSE_ALifeCreatureActor::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	}
 	if(m_wVersion>88)
 	{
-		if (m_wVersion < SPAWN_VERSION_U32_ID)
+		if (m_wVersion < 130)
 		{
 			m_holderID=tNetPacket.r_u16();
 			m_holderID = m_holderID == 0xffff ? ALife::INVALID_OBJECT_ID : m_holderID;
@@ -1702,14 +1702,14 @@ void CSE_ALifeCreatureActor::STATE_Write	(NET_Packet	&tNetPacket)
 	inherited1::STATE_Write		(tNetPacket);
 	inherited2::STATE_Write		(tNetPacket);
 	inherited3::STATE_Write		(tNetPacket);
-	SpawnWrite::ObjectID(tNetPacket, m_holderID);
+	tNetPacket << m_holderID;
 };
 
 void CSE_ALifeCreatureActor::load(NET_Packet &tNetPacket)
 {
 	inherited1::load(tNetPacket);
 	inherited3::load(tNetPacket);
-	if (m_wVersion < SPAWN_VERSION_U32_ID)
+	if (m_wVersion < 130)
 	{
 		m_holderID=tNetPacket.r_u16();
 		if (m_holderID == 0xffff)
@@ -2343,12 +2343,12 @@ void CSE_ALifeMonsterBase::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if(m_wVersion>=68)
 		inherited2::STATE_Read		(tNetPacket,size);
 
-	if (m_wVersion>=109 && m_wVersion < SPAWN_VERSION_U32_ID)
+	if (m_wVersion>=109 && m_wVersion < 130)
 	{
 		u16 ID16;
 		tNetPacket.r_u16(ID16);
 		m_spec_object_id = ID16 == 0xffff ? ALife::INVALID_OBJECT_ID : ID16;
-	} else if (m_wVersion >= SPAWN_VERSION_U32_ID)
+	} else if (m_wVersion >= 130)
 	{
 		u32 ID32;
 		tNetPacket.r_u32(ID32);
@@ -2361,7 +2361,7 @@ void CSE_ALifeMonsterBase::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited1::STATE_Write		(tNetPacket);
 	inherited2::STATE_Write		(tNetPacket);
-	SpawnWrite::ObjectID(tNetPacket, m_spec_object_id);
+	tNetPacket << m_spec_object_id;	
 }
 
 void CSE_ALifeMonsterBase::SyncWrite(NET_Packet& Packet)
@@ -2883,7 +2883,7 @@ void CSE_ALifeOnlineOfflineGroup::STATE_Write				(NET_Packet &tNetPacket)
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I)
-		SpawnWrite::ObjectID(tNetPacket, (*I).first);
+		save_data				((*I).first,tNetPacket);
 #endif
 }
 
@@ -2895,7 +2895,7 @@ void CSE_ALifeOnlineOfflineGroup::STATE_Read				(NET_Packet &tNetPacket, u16 siz
 	u32							container_size = tNetPacket.r_u32();
 	for (u32 i=0; i<container_size; ++i) {
 		MEMBERS::value_type		pair;
-		pair.first				= SpawnRead::ObjectID(tNetPacket, m_wVersion);
+		load_data				(pair.first,tNetPacket);
 		pair.second				= 0;
 		m_members.insert		(pair);
 	}

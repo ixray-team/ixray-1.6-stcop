@@ -124,7 +124,6 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetFontLetterica18Russian",	&ui_font_letterica18_russian),
 		def("GetFontLetterica25",			&ui_font_letter_25),
 		def("GetCursorPosition",			&GetCursorPosition_script),
-		def("GetCurrentDialogHolder", &CurrentDialogHolder),
 		def("SetCursorPosition",			&SetCursorPosition_script),
 		def("FitInRect",					&fit_in_rect),
 		def("SetARGB", &SetARGB),
@@ -139,16 +138,12 @@ void CUIWindow::script_register(lua_State *L)
 
 		class_<CUIWindow, CUIActionRepeatersOwner>("CUIWindow")
 		.def(							constructor<>())
-		.def("AddSelfCallback", &CUIWindow::AddSelfCallback)
-		.def("ToFront", &CUIWindow::ToFront)
-		.def("ToBack", &CUIWindow::ToBack)
 		.def("AttachChild",				&CUIWindow::AttachChild, adopt<2>())
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
 			
-		.def("IsCursorOverWindow", (bool (CUIWindow::*)() const)&CUIWindow::CursorOverWindow)
-		.def("IsCursorOverWindow", (bool (CUIWindow::*)(bool))&CUIWindow::CursorOverWindow)
+		.def("IsCursorOverWindow",		&CUIWindow::CursorOverWindow)
 		.def("FocusReceiveTime",		&CUIWindow::FocusReceiveTime)
 		.def("GetAbsoluteRect",			&CUIWindow::GetAbsoluteRect)
 
@@ -268,31 +263,10 @@ void CUIWindow::script_register(lua_State *L)
 			.enum_("events")
 			[
 	// CUIWindow
-				value("MOUSE_LEFT_CLICK", int(STATIC_MOUSE_LEFT_CLICK)),
-				value("MOUSE_DOUBLE_CLICK", int(STATIC_MOUSE_DOUBLE_CLICK)),
-				value("MOUSE_RIGHT_CLICK", int(STATIC_MOUSE_RIGHT_CLICK)),
-				value("MOUSE_ENTER", int(WINDOW_FOCUS_RECEIVED)),
-				value("MOUSE_LEAVE", int(WINDOW_FOCUS_LOST)),
-				value("MOUSE_DRAG", int(STATIC_MOUSE_DRAG)),
-				value("MOUSE_MOVE", int(STATIC_MOUSE_MOVE)),
-				value("MOUSE_WHEEL_UP", int(STATIC_MOUSE_WHEEL_UP)),
-				value("MOUSE_WHEEL_DOWN", int(STATIC_MOUSE_WHEEL_DOWN)),
-				value("WINDOW_UPDATE", int(WINDOW_UPDATE)),
-				// Compatibility aliases for the initial lowercase exports.
-				value("on_mouse_left_click", int(STATIC_MOUSE_LEFT_CLICK)),
-				value("on_mouse_right_click", int(STATIC_MOUSE_RIGHT_CLICK)),
-				value("on_mouse_enter", int(WINDOW_FOCUS_RECEIVED)),
-				value("on_mouse_leave", int(WINDOW_FOCUS_LOST)),
-				value("on_mouse_drag", int(STATIC_MOUSE_DRAG)),
-				value("on_mouse_move", int(STATIC_MOUSE_MOVE)),
-				value("on_mouse_wheel_up", int(STATIC_MOUSE_WHEEL_UP)),
-				value("on_mouse_wheel_down", int(STATIC_MOUSE_WHEEL_DOWN)),
 				value("WINDOW_LBUTTON_DOWN",			int(WINDOW_LBUTTON_DOWN)),
 				value("WINDOW_RBUTTON_DOWN",			int(WINDOW_RBUTTON_DOWN)),
 				value("WINDOW_LBUTTON_UP",				int(WINDOW_LBUTTON_UP)),
 				value("WINDOW_RBUTTON_UP",				int(WINDOW_RBUTTON_UP)),
-				value("WINDOW_FOCUS_RECEIVED", int(WINDOW_FOCUS_RECEIVED)),
-				value("WINDOW_FOCUS_LOST", int(WINDOW_FOCUS_LOST)),
 				value("WINDOW_MOUSE_MOVE",				int(WINDOW_MOUSE_MOVE)),
 				value("WINDOW_LBUTTON_DB_CLICK",		int(WINDOW_LBUTTON_DB_CLICK)),
 				value("WINDOW_KEY_PRESSED",				int(WINDOW_KEY_PRESSED)),

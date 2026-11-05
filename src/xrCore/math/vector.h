@@ -24,7 +24,7 @@ const	float		EPS_L		= 0.0010000f;
 const	float		M_SQRT1_2	= 0.7071067811865475244008443621048f;//490;
 
 const	float		M_PI		= 3.1415926535897932384626433832795f;
-constexpr	float		PI			= 3.1415926535897932384626433832795f;
+const	float		PI			= 3.1415926535897932384626433832795f;
 const	float		PI_MUL_2	= 6.2831853071795864769252867665590f;
 const	float		PI_MUL_3	= 9.4247779607693797153879301498385f;
 const	float		PI_MUL_4	= 12.566370614359172953850573533118f;
@@ -96,8 +96,6 @@ template <class T> struct _quaternion;
 #include "_obb.h"
 #include "_sphere.h"
 #include "_cylinder.h"
-#include "_cone.h"
-#include "ShapeCollisionShapes.h"
 #include "../compression/pv3/_compressed_normal.h"
 #include "_plane.h"
 #include "_plane2.h"

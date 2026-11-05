@@ -340,7 +340,7 @@ void CUIStatsPlayerList::RecalcSize(){
     if(GetHeight()<m_pad->GetHeight())
 	{
 		SetHeight(m_pad->GetHeight());
-		SendMessageToTarget(CHILD_CHANGED_SIZE, nullptr);
+		GetMessageTarget()->SendMessage(this, CHILD_CHANGED_SIZE, nullptr);
 	}
 }
 

@@ -11,9 +11,7 @@ CUIDialogWnd:: CUIDialogWnd()
 }
 
 CUIDialogWnd::~CUIDialogWnd()
-{
-	DetachFromDialogHolders();
-}
+{}
 
 void CUIDialogWnd::Show(bool status)
 {
@@ -105,15 +103,10 @@ bool CUIDialogWnd::IR_process()
 
 UI_API CDialogHolder* CurrentDialogHolder()
 {
-	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-	{
-		if (CDialogHolder* Holder = g_pGamePersistent->m_pMainMenu->GetDialogHolder())
-		{
-			return Holder;
-		}
-	}
+	if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+		return g_pGamePersistent->m_pMainMenu->GetDialogHolder();
 
-	return g_pGameCustom ? g_pGameCustom->GetDialogHolder() : nullptr;
+	return g_pGameCustom->GetDialogHolder();
 }
 
 void CUIDialogWnd::ShowOrHideDialog(bool bDoHideIndicators)

@@ -2136,35 +2136,6 @@ const TextEditor::Palette & TextEditor::GetRetroBluePalette()
 }
 
 
-size_t TextEditor::CopyText(char* Buffer, size_t Capacity) const
-{
-	size_t Size = 0;
-	for (const auto& Line : mLines)
-	{
-		for (const auto& Glyph : Line)
-		{
-			if (Buffer && Capacity > 0 && Size < Capacity - 1)
-			{
-				Buffer[Size] = Glyph.mChar;
-			}
-			++Size;
-		}
-
-		// GetText() includes a newline after every line, including the last one.
-		if (Buffer && Capacity > 0 && Size < Capacity - 1)
-		{
-			Buffer[Size] = '\n';
-		}
-		++Size;
-	}
-
-	if (Buffer && Capacity > 0)
-	{
-		Buffer[std::min(Size, Capacity - 1)] = '\0';
-	}
-	return Size;
-}
-
 std::string TextEditor::GetText() const
 {
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));

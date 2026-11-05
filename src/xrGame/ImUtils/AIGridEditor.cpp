@@ -37,43 +37,30 @@ static u64 Key(int X, int Z)
 	return (u64(u32(X)) << 32) | u32(Z);
 }
 
-struct PickContext
-{
-	collide::rq_result Result;
-	bool IgnoreActorObstacles = true;
-};
-
 static bool PickCallback(collide::rq_result& Result, LPVOID Data)
 {
-	auto& Context = *static_cast<PickContext*>(Data);
 	const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
 	const SGameMtl* Material = GMLib.GetMaterialByIdx(Triangle.material);
-	if (Material && (Material->Flags.is(SGameMtl::flPassable) || (Context.IgnoreActorObstacles && Material->Flags.is(SGameMtl::flActorObstacle))))
+	if (Material && (Material->Flags.is(SGameMtl::flPassable) || Material->Flags.is(SGameMtl::flActorObstacle)))
 	{
 		return true;
 	}
-	Context.Result = Result;
+	*static_cast<collide::rq_result*>(Data) = Result;
 	return false;
 }
 
-static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fvector& Hit, Fvector* Normal = nullptr, u16* MaterialIndex = nullptr, bool IgnoreActorObstacles = true)
+static bool Ray(const Fvector& Origin, const Fvector& Direction, float Range, Fvector& Hit, Fvector* Normal = nullptr)
 {
-	PickContext Context;
-	Context.IgnoreActorObstacles = IgnoreActorObstacles;
-	auto& Result = Context.Result;
+	collide::rq_result Result;
 	Result.set(nullptr, Range, -1);
 	collide::rq_results Results;
 	collide::ray_defs Definition(Origin, Direction, Range, CDB::OPT_FULL_TEST, collide::rqtStatic);
-	g_pGameLevel->ObjectSpace.RayQuery(Results, Definition, PickCallback, &Context, nullptr, nullptr);
+	g_pGameLevel->ObjectSpace.RayQuery(Results, Definition, PickCallback, &Result, nullptr, nullptr);
 	if (Result.element < 0)
 	{
 		return false;
 	}
 	Hit.mad(Origin, Direction, Result.range);
-	if (MaterialIndex)
-	{
-		*MaterialIndex = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element].material;
-	}
 	if (Normal)
 	{
 		const auto& Triangle = g_pGameLevel->ObjectSpace.GetStaticTris()[Result.element];
@@ -115,17 +102,7 @@ public:
 	u32 SourceCount = 0;
 	u32 RemovedCount = 0;
 	u32 Selected = Invalid;
-	bool EditHeight = false;
-	bool EditTilt = false;
 	float Radius = 2.f;
-	bool ConnectedOnly = true;
-	bool FilterAngle = false;
-	float MinAngle = 0.f;
-	float MaxAngle = 56.f;
-	bool FilterMaterial = false;
-	bool HasMaterial = false;
-	u16 BrushMaterial = 0;
-	xr_string MaterialName;
 	float DrawDistance = 70.f;
 	bool Brush = false;
 	bool Single = false;
@@ -164,8 +141,6 @@ public:
 		Triangles.clear();
 		Graph = nullptr;
 		HasGround = false;
-		HasMaterial = false;
-		MaterialName.clear();
 		Selected = Invalid;
 		Pending = false;
 		PendingRevert = false;
@@ -321,7 +296,7 @@ public:
 			B.y += Height;
 			Direction.sub(B, A);
 			float Length = Direction.magnitude();
-			if (Length > EPS_L && Ray(A, Direction.div(Length), Length - EPS_L, Hit, nullptr, nullptr, false))
+			if (Length > EPS_L && Ray(A, Direction.div(Length), Length - EPS_L, Hit))
 			{
 				return false;
 			}
@@ -329,25 +304,11 @@ public:
 		return true;
 	}
 
-	bool AllowsSurface(const Fvector& Normal, u16 MaterialIndex) const
-	{
-		const float Angle = rad2deg(acosf(clampr(Normal.y, -1.f, 1.f)));
-		return (FilterAngle ? (Angle >= MinAngle && Angle <= MaxAngle) : Normal.y >= .55f) &&
-			   (!FilterMaterial || (HasMaterial && MaterialIndex == BrushMaterial));
-	}
-
 	void Paint(const Fvector& Hit)
 	{
-		if (FilterMaterial && !HasMaterial)
-		{
-			Status = "Capture a surface material before painting with the material filter.";
-			return;
-		}
 		const int CenterX = X(Hit), CenterZ = Z(Hit);
 		const int Extent = iCeil(Radius / Header.size);
 		xr_vector<u32> Added;
-		xr_vector<Node> Candidates;
-		xr_hash_map<u64, u32> CandidateColumns;
 		// Full deterministic coverage: every cell center inside the disk.
 		for (int CX = CenterX - Extent; CX <= CenterX + Extent; ++CX)
 		{
@@ -359,24 +320,19 @@ public:
 					continue;
 				}
 				Fvector Ground, Normal;
-				u16 MaterialIndex = 0;
-				if (!Ray(P, Fvector().set(0, -1, 0), 5.5f, Ground, &Normal, &MaterialIndex))
+				if (!Ray(P, Fvector().set(0, -1, 0), 5.5f, Ground, &Normal) || Normal.y < .55f)
 				{
 					continue;
 				}
-				if (!AllowsSurface(Normal, MaterialIndex))
-				{
-					continue;
-				}
+				u32 Existing = Nearest(CX, CZ, Ground.y, Header.size, true);
 				// Reject unsupported edges and abrupt height changes across a cell.
 				bool Supported = true;
 				for (int I = 0; I < 4; ++I)
 				{
-					Fvector Sample = P, Surface, SampleNormal;
-					u16 SampleMaterial = 0;
+					Fvector Sample = P, Surface;
 					Sample.x += DX[I] * Header.size * .4f;
 					Sample.z += DZ[I] * Header.size * .4f;
-					if (!Ray(Sample, Fvector().set(0, -1, 0), 5.5f, Surface, &SampleNormal, &SampleMaterial) || fabsf(Surface.y - Ground.y) > Header.size || !AllowsSurface(SampleNormal, SampleMaterial))
+					if (!Ray(Sample, Fvector().set(0, -1, 0), 5.5f, Surface) || fabsf(Surface.y - Ground.y) > Header.size)
 					{
 						Supported = false;
 						break;
@@ -386,83 +342,34 @@ public:
 				{
 					continue;
 				}
-				Node N;
+				Node N = Existing < Nodes.size() ? Nodes[Existing] : Node{};
+				if (N.Deleted)
+				{
+					--RemovedCount;
+				}
 				N.Position = Ground;
 				N.Normal = Normal;
-				CandidateColumns[Key(CX, CZ)] = u32(Candidates.size());
-				Candidates.push_back(N);
-			}
-		}
-		// Optional protection against disconnected islands beyond boundary walls.
-		xr_vector<u8> Reachable(ConnectedOnly ? Candidates.size() : 0, 0);
-		xr_vector<u32> Queue;
-		for (u32 I = 0; ConnectedOnly && I < Candidates.size(); ++I)
-		{
-			const Fvector& P = Candidates[I].Position;
-			const int CX = X(P), CZ = Z(P);
-			for (int D = -1; D < 4; ++D)
-			{
-				const u32 Anchor = Nearest(CX + (D < 0 ? 0 : DX[D]), CZ + (D < 0 ? 0 : DZ[D]), P.y, Header.size);
-				if (Anchor < Nodes.size() && Travel(Nodes[Anchor].Position, P))
+				N.Modified = true;
+				N.Deleted = false;
+				N.Vertex.UncompressedNode.plane = pvCompress(Normal);
+				for (u8 I = 0; I < 4; ++I)
 				{
-					Reachable[I] = 1;
-					Queue.push_back(I);
-					break;
+					N.Vertex.link(I, Invalid);
+				}
+				if (Existing < Nodes.size())
+				{
+					Nodes[Existing] = N;
+					Cache(Existing, false);
+					Added.push_back(Existing);
+				}
+				else
+				{
+					u32 ID = u32(Nodes.size());
+					Nodes.push_back(N);
+					Cache(ID);
+					Added.push_back(ID);
 				}
 			}
-		}
-		for (size_t Head = 0; Head < Queue.size(); ++Head)
-		{
-			const Fvector P = Candidates[Queue[Head]].Position;
-			for (u8 D = 0; D < 4; ++D)
-			{
-				const auto It = CandidateColumns.find(Key(X(P) + DX[D], Z(P) + DZ[D]));
-				if (It != CandidateColumns.end() && !Reachable[It->second] && Travel(P, Candidates[It->second].Position))
-				{
-					Reachable[It->second] = 1;
-					Queue.push_back(It->second);
-				}
-			}
-		}
-		for (u32 I = 0; I < Candidates.size(); ++I)
-		{
-			if ((ConnectedOnly && !Reachable[I]) || Nodes.size() >= Invalid - 1)
-			{
-				continue;
-			}
-			const auto& Candidate = Candidates[I];
-			const u32 Existing = Nearest(X(Candidate.Position), Z(Candidate.Position), Candidate.Position.y, Header.size, true);
-			Node N = Existing < Nodes.size() ? Nodes[Existing] : Node{};
-			if (N.Deleted)
-			{
-				--RemovedCount;
-			}
-			N.Position = Candidate.Position;
-			N.Normal = Candidate.Normal;
-			N.Modified = true;
-			N.Deleted = false;
-			N.Vertex.UncompressedNode.plane = pvCompress(N.Normal);
-			for (u8 I = 0; I < 4; ++I)
-			{
-				N.Vertex.link(I, Invalid);
-			}
-			if (Existing < Nodes.size())
-			{
-				Nodes[Existing] = N;
-				Cache(Existing, false);
-				Added.push_back(Existing);
-			}
-			else
-			{
-				u32 ID = u32(Nodes.size());
-				Nodes.push_back(N);
-				Cache(ID);
-				Added.push_back(ID);
-			}
-		}
-		if (ConnectedOnly && !Candidates.empty() && Queue.empty())
-		{
-			Status = "Painting blocked: extend the existing AI grid without crossing walls.";
 		}
 		for (u32 ID : Added)
 		{
@@ -559,275 +466,6 @@ public:
 		{
 			Status = "Game graph anchor nodes are retained to preserve level/spawn bindings.";
 		}
-	}
-
-	void SetSelectedHeight(float Height)
-	{
-		if (Selected >= Nodes.size() || Nodes[Selected].Deleted || !std::isfinite(Height))
-		{
-			return;
-		}
-		auto& N = Nodes[Selected];
-		N.Position.y = Height;
-		N.Modified = true;
-		// X/Z indices and normal stay unchanged; update only the display plane.
-		Cache(Selected, false);
-		Dirty = true;
-		Status = "Selected node height changed. Links preserved; Apply realtime / Overwrite save to commit.";
-	}
-
-	void SetSelectedTilt(float AngleX, float AngleZ)
-	{
-		if (Selected >= Nodes.size() || Nodes[Selected].Deleted || !std::isfinite(AngleX) || !std::isfinite(AngleZ))
-		{
-			return;
-		}
-		auto& N = Nodes[Selected];
-		// Independent slopes about the world X/Z axes, with an upward normal.
-		// Avoid vertical planes, which cannot represent a height-field AI node.
-		N.Normal.set(-tanf(deg2rad(clampr(AngleZ, -89.f, 89.f))), 1.f, tanf(deg2rad(clampr(AngleX, -89.f, 89.f))));
-		N.Normal.normalize_safe();
-		N.Vertex.UncompressedNode.plane = pvCompress(N.Normal);
-		N.Modified = true;
-		Cache(Selected, false);
-		Dirty = true;
-		Status = "Selected node tilt changed. Position and links preserved; Apply realtime / Overwrite save to commit.";
-	}
-
-	void DeleteSelectedNode()
-	{
-		if (Selected >= Nodes.size() || Nodes[Selected].Deleted)
-		{
-			return;
-		}
-		if (ProtectedNodes.contains(Selected))
-		{
-			Status = "Cannot delete a game graph anchor: level/spawn bindings must be preserved.";
-			return;
-		}
-		const u32 ID = Selected;
-		auto& N = Nodes[ID];
-		N.Deleted = true;
-		N.Modified = true;
-		N.Vertex.UncompressedNode.high = {};
-		N.Vertex.UncompressedNode.low = {};
-		for (auto& Other : Nodes)
-		{
-			for (u8 D = 0; D < 4; ++D)
-			{
-				if (&Other == &N || Other.Vertex.link(D) == ID)
-				{
-					Other.Vertex.link(D, Invalid);
-				}
-			}
-		}
-		++RemovedCount;
-		Selected = Invalid;
-		Dirty = true;
-		Status = "Selected node deleted; incoming links cleared. Apply realtime / Overwrite save to commit.";
-	}
-
-	void DeleteInvalidNodes()
-	{
-		const u32 Count = u32(Nodes.size());
-		xr_vector<u32> Parents(Count);
-		xr_vector<u8> Ranks(Count, 0);
-		xr_vector<u8> Links(Count, 0);
-		xr_vector<u8> HasFullNode(Count, 0);
-		for (u32 I = 0; I < Count; ++I)
-		{
-			Parents[I] = I;
-		}
-		auto Root = [&](u32 ID)
-		{
-			while (Parents[ID] != ID)
-			{
-				Parents[ID] = Parents[Parents[ID]];
-				ID = Parents[ID];
-			}
-			return ID;
-		};
-		// Components ignore link direction: a one-way edge still connects nodes.
-		for (u32 I = 0; I < Count; ++I)
-		{
-			if (Nodes[I].Deleted)
-			{
-				continue;
-			}
-			for (u8 D = 0; D < 4; ++D)
-			{
-				const u32 Other = Nodes[I].Vertex.link(D);
-				if (Other >= Count || Other == I || Nodes[Other].Deleted)
-				{
-					continue;
-				}
-				++Links[I];
-				u32 A = Root(I), B = Root(Other);
-				if (A == B)
-				{
-					continue;
-				}
-				if (Ranks[A] < Ranks[B])
-				{
-					std::swap(A, B);
-				}
-				Parents[B] = A;
-				if (Ranks[A] == Ranks[B])
-				{
-					++Ranks[A];
-				}
-			}
-		}
-		for (u32 I = 0; I < Count; ++I)
-		{
-			if (!Nodes[I].Deleted && Links[I] == 4)
-			{
-				HasFullNode[Root(I)] = 1;
-			}
-		}
-		u32 Removed = 0, Protected = 0;
-		// Classify once, before deleting; do not erode valid boundaries repeatedly.
-		for (u32 I = 0; I < Count; ++I)
-		{
-			if (Nodes[I].Deleted || (Links[I] != 0 && HasFullNode[Root(I)]))
-			{
-				continue;
-			}
-			if (ProtectedNodes.contains(I))
-			{
-				++Protected;
-				continue;
-			}
-			Nodes[I].Deleted = true;
-			Nodes[I].Modified = true;
-			Nodes[I].Vertex.UncompressedNode.high = {};
-			Nodes[I].Vertex.UncompressedNode.low = {};
-			++Removed;
-			if (Selected == I)
-			{
-				Selected = Invalid;
-			}
-		}
-		// Clear every incoming edge, including unusual links outside adjacent cells.
-		for (auto& N : Nodes)
-		{
-			for (u8 D = 0; D < 4; ++D)
-			{
-				const u32 Other = N.Vertex.link(D);
-				if (N.Deleted || (Other < Count && Nodes[Other].Deleted))
-				{
-					N.Vertex.link(D, Invalid);
-				}
-			}
-		}
-		RemovedCount += Removed;
-		Dirty |= Removed != 0;
-		string256 Message;
-		xr_sprintf(Message, "Removed %u invalid nodes; preserved %u game graph anchors. Apply realtime / Overwrite save to commit.", Removed, Protected);
-		Status = Message;
-	}
-
-	void DeleteNodesWithoutPathToSelected()
-	{
-		const u32 Count = u32(Nodes.size());
-		if (Selected >= Count || Nodes[Selected].Deleted)
-		{
-			Status = "Select a node on the main outdoor grid first (Edit individual node).";
-			return;
-		}
-		const u32 Reference = Selected;
-		// Reverse adjacency permits a linear traversal of all paths TO the anchor,
-		// including one-way links, rather than paths leading away from it.
-		xr_vector<u32> Offsets(size_t(Count) + 1, 0);
-		for (const auto& N : Nodes)
-		{
-			if (N.Deleted)
-			{
-				continue;
-			}
-			for (u8 D = 0; D < 4; ++D)
-			{
-				const u32 Other = N.Vertex.link(D);
-				if (Other < Count && !Nodes[Other].Deleted)
-				{
-					++Offsets[Other + 1];
-				}
-			}
-		}
-		for (u32 I = 0; I < Count; ++I)
-		{
-			Offsets[I + 1] += Offsets[I];
-		}
-		xr_vector<u32> Incoming(Offsets.back());
-		{
-			xr_vector<u32> Cursor = Offsets;
-			for (u32 I = 0; I < Count; ++I)
-			{
-				if (Nodes[I].Deleted)
-				{
-					continue;
-				}
-				for (u8 D = 0; D < 4; ++D)
-				{
-					const u32 Other = Nodes[I].Vertex.link(D);
-					if (Other < Count && !Nodes[Other].Deleted)
-					{
-						Incoming[Cursor[Other]++] = I;
-					}
-				}
-			}
-		}
-		xr_vector<u8> ReachesReference(Count, 0);
-		xr_vector<u32> Queue;
-		Queue.push_back(Reference);
-		ReachesReference[Reference] = 1;
-		for (size_t Head = 0; Head < Queue.size(); ++Head)
-		{
-			const u32 ID = Queue[Head];
-			for (u32 I = Offsets[ID]; I < Offsets[ID + 1]; ++I)
-			{
-				const u32 Other = Incoming[I];
-				if (!ReachesReference[Other])
-				{
-					ReachesReference[Other] = 1;
-					Queue.push_back(Other);
-				}
-			}
-		}
-		u32 Removed = 0, Protected = 0;
-		for (u32 I = 0; I < Count; ++I)
-		{
-			if (Nodes[I].Deleted || ReachesReference[I])
-			{
-				continue;
-			}
-			if (ProtectedNodes.contains(I))
-			{
-				++Protected;
-				continue;
-			}
-			Nodes[I].Deleted = true;
-			Nodes[I].Modified = true;
-			Nodes[I].Vertex.UncompressedNode.high = {};
-			Nodes[I].Vertex.UncompressedNode.low = {};
-			++Removed;
-		}
-		for (auto& N : Nodes)
-		{
-			for (u8 D = 0; D < 4; ++D)
-			{
-				const u32 Other = N.Vertex.link(D);
-				if (N.Deleted || (Other < Count && Nodes[Other].Deleted))
-				{
-					N.Vertex.link(D, Invalid);
-				}
-			}
-		}
-		RemovedCount += Removed;
-		Dirty |= Removed != 0;
-		string256 Message;
-		xr_sprintf(Message, "Removed %u nodes without a path to node %u; preserved %u game graph anchors. Apply realtime / Overwrite save to commit.", Removed, Reference, Protected);
-		Status = Message;
 	}
 
 	xr_vector<u8> DeletionMask() const
@@ -1862,43 +1500,7 @@ void RenderAIGridEditorWindow()
 		{
 			Editor.Single = false;
 		}
-		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 500.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		bool FiltersChanged = ImGui::Checkbox("Only paint connected to existing grid", &Editor.ConnectedOnly);
-		FiltersChanged |= ImGui::Checkbox("Filter surface angle", &Editor.FilterAngle);
-		ImGui::BeginDisabled(!Editor.FilterAngle);
-		FiltersChanged |= ImGui::SliderFloat("Min angle (degrees)", &Editor.MinAngle, 0.f, 180.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-		Editor.MaxAngle = std::max(Editor.MinAngle, Editor.MaxAngle);
-		FiltersChanged |= ImGui::SliderFloat("Max angle (degrees)", &Editor.MaxAngle, Editor.MinAngle, 180.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-		ImGui::EndDisabled();
-		FiltersChanged |= ImGui::Checkbox("Only captured material", &Editor.FilterMaterial);
-		ImGui::SameLine();
-		if (ImGui::Button("Capture material"))
-		{
-			Fvector Surface;
-			u16 MaterialIndex = 0;
-			if (AIGrid::Ray(Device.vCameraPosition, Device.vCameraDirection, 500.f, Surface, nullptr, &MaterialIndex))
-			{
-				const SGameMtl* Material = GMLib.GetMaterialByIdx(MaterialIndex);
-				if (Material)
-				{
-					Editor.BrushMaterial = MaterialIndex;
-					Editor.MaterialName = Material->m_Name.c_str();
-					Editor.HasMaterial = true;
-					Editor.Status = "Captured material at the centre of the view.";
-					FiltersChanged = true;
-				}
-			}
-			else
-			{
-				Editor.Status = "No static surface under the centre of the view; captured material unchanged.";
-			}
-		}
-		ImGui::TextWrapped("Material: %s", Editor.HasMaterial ? Editor.MaterialName.c_str() : "not captured");
-		ImGui::TextWrapped("Angle from (0, 1, 0): 0 = upward floor, 90 = wall. Disable connectivity protection to paint isolated areas inside buildings.");
-		if (FiltersChanged)
-		{
-			Editor.LastStroke.set(flt_max, flt_max, flt_max);
-		}
+		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 10.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 		if (ImGui::Checkbox("Edit individual node", &Editor.Single) && Editor.Single)
 		{
 			Editor.Brush = false;
@@ -1915,32 +1517,6 @@ void RenderAIGridEditorWindow()
 		{
 			const u32 ID = Editor.Selected;
 			ImGui::Text("Selected node: %u", ID);
-			ImGui::Checkbox("Edit node height Y", &Editor.EditHeight);
-			if (Editor.EditHeight)
-			{
-				float Height = Editor.Nodes[ID].Position.y;
-				if (ImGui::DragFloat("Position Y (m)", &Height, .05f, 0.f, 0.f, "%.3f"))
-				{
-					Editor.SetSelectedHeight(Height);
-				}
-			}
-			ImGui::Checkbox("Edit node tilt X/Z", &Editor.EditTilt);
-			if (Editor.EditTilt)
-			{
-				const Fvector& Normal = Editor.Nodes[ID].Normal;
-				float AngleX = rad2deg(atan2f(Normal.z, Normal.y));
-				float AngleZ = rad2deg(atan2f(-Normal.x, Normal.y));
-				bool Changed = ImGui::DragFloat("Tilt around X (degrees)", &AngleX, .1f, -89.f, 89.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-				Changed |= ImGui::DragFloat("Tilt around Z (degrees)", &AngleZ, .1f, -89.f, 89.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-				if (Changed)
-				{
-					Editor.SetSelectedTilt(AngleX, AngleZ);
-				}
-				if (ImGui::Button("Reset node tilt"))
-				{
-					Editor.SetSelectedTilt(0.f, 0.f);
-				}
-			}
 			auto Arrow = [&](u8 D, ImGuiDir Direction)
 			{
 				ImGui::PushID(int(D));
@@ -1986,34 +1562,7 @@ void RenderAIGridEditorWindow()
 			ImGui::SameLine();
 			ImGui::TextUnformatted("-Z");
 			ImGui::Unindent(35.f);
-			const bool Protected = Editor.ProtectedNodes.contains(ID);
-			ImGui::BeginDisabled(Protected);
-			if (ImGui::Button("Delete selected node"))
-			{
-				Editor.DeleteSelectedNode();
-			}
-			ImGui::EndDisabled();
-			if (Protected)
-			{
-				ImGui::TextUnformatted("Game graph anchor: deletion is protected.");
-			}
 		}
-		if (ImGui::Button("Delete invalid nodes"))
-		{
-			Editor.DeleteInvalidNodes();
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Delete nodes with no outgoing links and components without a node having all four links. Game graph anchors are preserved.");
-		}
-		const bool HasReference = Editor.Selected < Editor.Nodes.size() && !Editor.Nodes[Editor.Selected].Deleted;
-		ImGui::BeginDisabled(!HasReference);
-		if (ImGui::Button("Delete nodes without path to selected"))
-		{
-			Editor.DeleteNodesWithoutPathToSelected();
-		}
-		ImGui::EndDisabled();
-		ImGui::TextWrapped("Select a node on the main outdoor grid using Edit individual node. Cleanup keeps nodes that can reach it; game graph anchors are protected.");
 		if (ImGui::Button("Apply realtime"))
 		{
 			Editor.Pending = true;

@@ -25,6 +25,9 @@ public:
 
     void SetCarHealth(float value);
     void SetCarFuel(float value);
+    void SetFuel(float value) { SetCarFuel(value); }
+    void SetGear(const char* value) { SetSpeedMode(value); }
+    void ShowPanel(bool value) { Show(value); }
     void SetSpeed(float speed);
     void SetRPM(float rmp);
     void SetSpeedMode(const xr_string& Mode);

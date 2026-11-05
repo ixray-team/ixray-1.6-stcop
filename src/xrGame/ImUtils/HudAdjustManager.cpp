@@ -11,7 +11,6 @@
 #include "../game_news.h"
 #include "../HudTorchLight.h"
 #include "../Weapon.h"
-#include "../CameraRig.h"
 
 extern bool hud_adj_crosshair;
 extern bool forceFPDraw;
@@ -68,11 +67,6 @@ static void HudAdjustDrawSaveButton()
 
 			file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisPos]);
 			file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[EHudOffsetAxis::eAxisRot]);
-
-			if (!p_item->IkEnabled || pSettings->line_exist(p_item->m_sect_name, "hud_ik"))
-			{
-				file.w_bool(sect, "hud_ik", p_item->IkEnabled);
-			}
 		}
 		else
 		{
@@ -949,8 +943,6 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		return;
 	}
 
-	ImGui::PushID(item);
-
 	THudLightLaser* ll = nullptr;
 	THudLightTorch* lt = nullptr;
 
@@ -962,12 +954,6 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 		{
 			ll = wpn->GetLightLaser();
 		}
-	}
-
-	if (!item->m_model_combined && CCameraRig::Enabled())
-	{
-		ImGui::Checkbox("Hand IK", &item->IkEnabled);
-		ImGui::SetItemTooltip("hud_ik: off = hud offsets (aim, safemode, collision...) move the whole HUD instead of the weapon through arm IK; sway, grip, draw and holster keep IK");
 	}
 
 	firedeps fd = {};
@@ -1058,7 +1044,6 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 
 	auto drawPositions = [&](EHudOffsetType offset_type) -> void
 	{
-		ImGui::PushID(static_cast<int>(offset_type));
 		ImGui::SeparatorText("Position##HUD");
 
 		Fvector& position = offset_type ? item->m_measures.m_hands_positions.hands_offsets[EHudOffsetAxis::eAxisPos][offset_type] : item->m_measures.m_hands_attach_real[EHudOffsetAxis::eAxisPos];
@@ -1256,8 +1241,6 @@ static void HudAdjustDrawItemSettings(attachable_hud_item* item)
 				ImGui::EndTable();
 			}
 		}
-
-		ImGui::PopID();
 	};
 
 	if (!item->m_model_combined)

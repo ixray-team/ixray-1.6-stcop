@@ -132,7 +132,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	if ( msg == WINDOW_KEYBOARD_CAPTURE_LOST && m_bInputFocus)
 	{
 		m_bInputFocus = false;
-		SendMessageToTarget(EDIT_TEXT_COMMIT, nullptr );
+		GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	}
 }
 
@@ -308,7 +308,7 @@ void CUICustomEdit::Enable(bool status)
 	inherited::Enable( status );
 	if ( !status )
 	{
-		SendMessageToTarget(WINDOW_KEYBOARD_CAPTURE_LOST );
+		GetMessageTarget()->SendMessage( this, WINDOW_KEYBOARD_CAPTURE_LOST );
 	}
 }
 
@@ -329,7 +329,7 @@ void CUICustomEdit::press_escape()
 	{
 		m_bInputFocus					= false;
 		GetParent()->SetKeyboardCapture	( this, false );
-		SendMessageToTarget(EDIT_TEXT_CANCEL, nullptr );
+		GetMessageTarget()->SendMessage	( this, EDIT_TEXT_CANCEL, nullptr );
 	}
 }
 
@@ -337,7 +337,7 @@ void CUICustomEdit::press_commit()
 {
 	m_bInputFocus						= false;
 	GetParent()->SetKeyboardCapture		( this, false );
-	SendMessageToTarget(EDIT_TEXT_COMMIT, nullptr );
+	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 }
 
 void CUICustomEdit::press_tab()
@@ -347,7 +347,7 @@ void CUICustomEdit::press_tab()
 
 	m_bInputFocus						= false;
 	GetParent()->SetKeyboardCapture		( this, false );
-	SendMessageToTarget(EDIT_TEXT_COMMIT, nullptr );
+	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	GetParent()->SetKeyboardCapture		( m_next_focus_capturer, true );
 	m_next_focus_capturer->CaptureFocus	( true );
 }

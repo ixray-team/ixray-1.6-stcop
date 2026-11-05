@@ -27,6 +27,7 @@
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "holder_custom.h"
 
 #ifndef MASTER_GOLD
 #	include "Actor.h"
@@ -205,6 +206,24 @@ bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) co
 		return						false;
 	}
 
+	// While the actor is in a vehicle, either the car or the last actor
+	// entry can keep the player visible. The actor entry matters right after
+	// re-entering the car, before the car has been seen again.
+	if (CActor* actor = Actor())
+	{
+		if (actor->Holder() && smart_cast<const CActor*>(game_object))
+		{
+			if (const CGameObject* holder = actor->Holder()->cast_game_object())
+			{
+				VISIBLES::const_iterator I = std::find(objects().begin(),objects().end(), CMemoryObject::object_id(holder));
+				if ((objects().end() != I) && (*I).visible(mask()) && (*I).m_level_time >= m_last_update_time)
+				{
+					return true;
+				}
+			}
+		}
+	}
+
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(), CMemoryObject::object_id(game_object));
 	if ((objects().end() == I))
 		return						(false);
@@ -229,6 +248,24 @@ bool CVisualMemoryManager::visible_now	(const CGameObject *game_object) const
 	if ( should_ignore_object(game_object) )
 	{
 		return							false;
+	}
+
+	// While the actor is in a vehicle, either the car or the last actor
+	// entry can keep the player visible. The actor entry matters right after
+	// re-entering the car, before the car has been seen again.
+	if (CActor* actor = Actor())
+	{
+		if (actor->Holder() && smart_cast<const CActor*>(game_object))
+		{
+			if (const CGameObject* holder = actor->Holder()->cast_game_object())
+			{
+				VISIBLES::const_iterator I = std::find(objects().begin(),objects().end(), CMemoryObject::object_id(holder));
+				if ((objects().end() != I) && (*I).visible(mask()))
+				{
+					return true;
+				}
+			}
+		}
 	}
 
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(), CMemoryObject::object_id(game_object));
@@ -562,6 +599,22 @@ bool CVisualMemoryManager::visible(u32 _level_vertex_id, float yaw, float eye_fo
 
 float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
 {
+	// The car should not hide its own driver from AI vision.
+	if (O)
+	{
+		if (CActor* actor = Actor())
+		{
+			if (actor->Holder())
+			{
+				CGameObject* holder = actor->Holder()->cast_game_object();
+				if (holder && O == holder)
+				{
+					return 1.f;
+				}
+			}
+		}
+	}
+
 	float vis				= 1.f;
 	if (O){
 		IKinematics* V		= PKinematics(O->Visual());

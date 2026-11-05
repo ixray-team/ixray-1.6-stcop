@@ -84,6 +84,11 @@ void CRocketLauncher::DetachRocket(ALife::_OBJECT_ID rocket_id, bool bLaunch)
 	ROCKETIT It = std::ranges::find(m_rockets, pRocket);
 	ROCKETIT It_l = std::ranges::find(m_launched_rockets, pRocket);
 
+	if (OnServer())
+	{
+		VERIFY((It != m_rockets.end()) || (It_l != m_launched_rockets.end()));
+	};
+
 	if (It != m_rockets.end())
 	{
 		(*It)->m_bLaunched = bLaunch;
@@ -122,14 +127,7 @@ CCustomRocket* CRocketLauncher::getCurrentRocket()
 
 void CRocketLauncher::dropCurrentRocket()
 {
-	CCustomRocket* Rocket = m_rockets.back();
 	m_rockets.pop_back();
-
-	if (std::ranges::find(m_launched_rockets, Rocket) == m_launched_rockets.end())
-	{
-		Rocket->H_SetParent(nullptr, true);
-		Rocket->DestroyObject();
-	}
 }
 
 u32 CRocketLauncher::getRocketCount()

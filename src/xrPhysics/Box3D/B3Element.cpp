@@ -20,18 +20,6 @@ static u16 DefaultElementMaterial()
 	return Material;
 }
 
-static const float* FindGeomMass(const xr_vector<std::pair<CODEGeom*, float>>& Masses, const CODEGeom* Geom)
-{
-	auto It = std::find_if(Masses.begin(), Masses.end(), [Geom](const auto& Entry) { return Entry.first == Geom; });
-	return It == Masses.end() ? nullptr : &It->second;
-}
-
-static Fvector ClampMagnitude(Fvector V, float Limit)
-{
-	const float Magnitude = V.magnitude();
-	return Magnitude > Limit ? V.mul(Limit / Magnitude) : V;
-}
-
 CPHElement::CPHElement()
 {
 	mXFORM.identity();
@@ -62,10 +50,6 @@ void CPHElement::CreateBody(const Fmatrix& Form, bool Disable)
 	mXFORM.set(Form);
 	PrevForm.set(Form);
 	CurForm.set(Form);
-	if (Geoms.empty())
-	{
-		Fixed = true;
-	}
 
 	const b3Transform Transform = B3Math::ToB3(Form);
 	b3BodyDef Def = b3DefaultBodyDef();
@@ -74,91 +58,31 @@ void CPHElement::CreateBody(const Fmatrix& Form, bool Disable)
 	Def.rotation = Transform.q;
 	Def.gravityScale = ApplyGravity ? 1.f : 0.f;
 	Def.isAwake = !Disable;
-	Def.isBullet = Shell && Shell->IsBullet();
-	Def.sleepThreshold = SleepThreshold();
-	Def.allowFastRotation = AllowFastRotation;
-	Def.enableContactRecycling = !Shell || !Shell->CollideClassBits.test(B3CollideClass::RagDoll);
 	Def.userData = this;
 	Body = b3CreateBody(g_B3World->Id(), &Def);
 
 	const u64 Mask = Shell ? (Shell->CollisionDisabled ? 0ull : Shell->CollideMask) : B3Category::All;
-	float Explicit = 0.f;
-	float Volume = 0.f;
+	const float Volume = getVolume();
+	const float Density = Volume > EPS_S ? Mass / Volume : 1.f;
 	for (CODEGeom* Geom : Geoms)
 	{
-		const float* GeomMass = FindGeomMass(GeomMasses, Geom);
-		Explicit += GeomMass ? *GeomMass : 0.f;
-		Volume += GeomMass ? 0.f : Geom->Volume();
-	}
-	const float Density = Volume > EPS_S ? std::max(Mass - Explicit, 0.f) / Volume : 1.f;
-	for (CODEGeom* Geom : Geoms)
-	{
-		const float* GeomMass = FindGeomMass(GeomMasses, Geom);
 		Geom->Owner = &Owner;
 		Geom->OwnerForm = &mXFORM;
-		Geom->CreateShape(Body, GeomMass ? *GeomMass / std::max(Geom->Volume(), EPS_S) : Density, true, Mask);
-	}
-	ApplyMassData();
-}
-
-void CPHElement::ApplyMassData()
-{
-	if (Fixed || !b3Body_IsValid(Body))
-	{
-		return;
-	}
-	if (g_B3World->IsStepping())
-	{
-		g_B3World->Defer([this]() { ApplyMassData(); });
-		return;
+		Geom->CreateShape(Body, Density, true, Mask);
 	}
 
-	b3Body_ApplyMassFromShapes(Body);
-	b3MassData Data = b3Body_GetMassData(Body);
-	if (Data.mass <= EPS_S)
+	if (!Geoms.empty())
 	{
-		return;
-	}
-
-	Data.inertia = b3MulSM(Mass / Data.mass, Data.inertia);
-	if (HasMassCenter)
-	{
-		const b3Vec3 Center = B3Math::ToB3(MassCenterLocal);
-		const b3Vec3 D = b3Sub(Center, Data.center);
-		const float DD = b3Dot(D, D);
-		const b3Matrix3 Shift = {{DD - D.x * D.x, -D.y * D.x, -D.z * D.x}, {-D.x * D.y, DD - D.y * D.y, -D.z * D.y}, {-D.x * D.z, -D.y * D.z, DD - D.z * D.z}};
-		Data.inertia = b3AddMM(Data.inertia, b3MulSM(Mass, Shift));
-		Data.center = Center;
-	}
-	MassCenterLocal = B3Math::FromB3(Data.center);
-	Data.mass = Mass + AddedMass;
-	Data.inertia = b3AddMM(b3MulSM(InertiaKeep, Data.inertia), ExtraInertia);
-	b3Body_SetMassData(Body, Data);
-}
-
-float CPHElement::SleepThreshold() const
-{
-	// Kinematic (animated) bodies keep Box3D's threshold: a slow animation must not fall asleep.
-	if (Fixed)
-	{
-		return b3DefaultBodyDef().sleepThreshold;
-	}
-
-	float Radius = 0.f;
-	for (CODEGeom* Geom : Geoms)
-	{
-		Radius = std::max(Radius, Geom->Radius());
-	}
-	// ODE disabling params are path lengths per 0.01 s; Box3D sleeps on |v| + |w x extent|.
-	return (DisableParams.translational.velocity + DisableParams.rotational.velocity * Radius) / 0.01f;
-}
-
-void CPHElement::set_DisableParams(const SAllDDOParams& params)
-{
-	DisableParams = params;
-	if (b3Body_IsValid(Body))
-	{
-		b3Body_SetSleepThreshold(Body, SleepThreshold());
+		b3MassData MassData = b3Body_GetMassData(Body);
+		if (MassData.mass > EPS_S)
+		{
+			const float Scale = Mass / MassData.mass;
+			MassData.mass = Mass;
+			MassData.inertia = b3MulSM(Scale, MassData.inertia);
+			B3_SAFE(b3Body_SetMassData(Body, MassData));
+		}
+		// The center of mass comes from the shapes; trace impulses are relative to it, as in ODE.
+		MassCenterLocal = B3Math::FromB3(MassData.center);
 	}
 }
 
@@ -228,43 +152,71 @@ bool CPHElement::AnimToVel(float dt, float l_limit, float a_limit)
 	Diff.mul_43(Fmatrix().invert(Current), BonePose);
 	dt = std::max(dt, EPS_S);
 
-	Fvector Linear, Angular, TargetCenter;
-	BonePose.transform_tiny(TargetCenter, MassCenterLocal);
-	linear_diff(Linear, TargetCenter, mass_Center(), dt);
+	Fvector Linear, Angular;
+	linear_diff(Linear, BonePose.c, Current.c, dt);
 	angular_diff(Angular, Diff, dt);
 	const bool Result = Angular.square_magnitude() < a_limit * a_limit && Linear.square_magnitude() < l_limit * l_limit;
-	set_LinearVel(ClampMagnitude(Linear, l_limit));
-	set_AngularVel(ClampMagnitude(Angular, a_limit));
+	if (Linear.square_magnitude() > l_limit * l_limit)
+	{
+		Linear.normalize().mul(l_limit);
+	}
+	if (Angular.square_magnitude() > a_limit * a_limit)
+	{
+		Angular.normalize().mul(a_limit);
+	}
+	set_LinearVel(Linear);
+	set_AngularVel(Angular);
 	return Result;
 }
 
-// As ODE PhDataUpdate: over limit * scale both velocities are cut to the limits, and the motion the
-// step made with the excess is rolled back (dxStepBody with the negated excess).
+// As ODE BodyCutForce: one impulse changes linear velocity by at most l_limit and angular velocity
+// by at most w_limit. A grenade hit on a bone or the rocket engine lever would otherwise spin the
+// body so fast that it tumbles inside the step or tunnels through the level mesh.
+void CPHElement::ApplyLimitedImpulse(const Fvector& Impulse, const Fvector* Point)
+{
+	const b3BodyId Id = Body;
+	const float LLimit = LinearLimit;
+	const float WLimit = AngularLimit;
+	const b3Vec3 J = B3Math::ToB3(Impulse);
+	const bool AtPoint = Point != nullptr;
+	const b3Pos P = AtPoint ? B3Math::ToB3(*Point) : b3Pos{};
+	B3_SAFE(
+		if (!b3Body_IsValid(Id)) { return; }
+		const b3Vec3 Linear0 = b3Body_GetLinearVelocity(Id);
+		const b3Vec3 Angular0 = b3Body_GetAngularVelocity(Id);
+		if (AtPoint) { b3Body_ApplyLinearImpulse(Id, J, P, true); }
+		else { b3Body_ApplyLinearImpulseToCenter(Id, J, true); }
+		b3Vec3 DL = b3Sub(b3Body_GetLinearVelocity(Id), Linear0);
+		b3Vec3 DW = b3Sub(b3Body_GetAngularVelocity(Id), Angular0);
+		const float DLM = b3Length(DL);
+		const float DWM = b3Length(DW);
+		if (DLM > LLimit) { b3Body_SetLinearVelocity(Id, b3MulAdd(Linear0, LLimit / DLM, DL)); }
+		if (DWM > WLimit) { b3Body_SetAngularVelocity(Id, b3MulAdd(Angular0, WLimit / DWM, DW)); }
+	);
+}
+
+// As ODE PhDataUpdate: velocities over limit * scale are cut to the limit. Without it a stiff
+// stabilizing torque (rocket engine trace impulse) makes the body spin up and tumble.
 void CPHElement::CutVelocity()
 {
-	if (!Active || Fixed || !b3Body_IsValid(Body) || !b3Body_IsAwake(Body))
+	if (!Active || Fixed || !b3Body_IsValid(Body))
 	{
 		return;
 	}
 
-	const b3Vec3 Linear = b3Body_GetLinearVelocity(Body);
-	const b3Vec3 Angular = b3Body_GetAngularVelocity(Body);
-	const float LinearMagnitude = b3Length(Linear);
-	const float AngularMagnitude = b3Length(Angular);
-	if (LinearMagnitude <= LinearLimit * LinearScale && AngularMagnitude <= AngularLimit * AngularScale)
+	Fvector Linear, Angular;
+	get_LinearVel(Linear);
+	get_AngularVel(Angular);
+	if (Linear.magnitude() > LinearLimit * LinearScale)
 	{
-		return;
+		Linear.normalize().mul(LinearLimit);
+		set_LinearVel(Linear);
 	}
-
-	const b3Vec3 LinearCut = LinearMagnitude > LinearLimit ? b3MulSV(LinearLimit / LinearMagnitude, Linear) : Linear;
-	const b3Vec3 AngularCut = AngularMagnitude > AngularLimit ? b3MulSV(AngularLimit / AngularMagnitude, Angular) : Angular;
-	const b3Transform Transform = b3Body_GetTransform(Body);
-	const b3Quat Spin = b3MulQuat({b3MulSV(0.5f * fixed_step, b3Sub(AngularCut, Angular)), 0.f}, Transform.q);
-	const b3Quat Rotation = b3NormalizeQuat({b3Add(Transform.q.v, Spin.v), Transform.q.s + Spin.s});
-	const b3Vec3 Center = b3MulAdd(b3Body_GetWorldCenterOfMass(Body), fixed_step, b3Sub(LinearCut, Linear));
-	b3Body_SetTransform(Body, b3Sub(Center, b3RotateVector(Rotation, b3Body_GetLocalCenterOfMass(Body))), Rotation);
-	b3Body_SetLinearVelocity(Body, LinearCut);
-	b3Body_SetAngularVelocity(Body, AngularCut);
+	if (Angular.magnitude() > AngularLimit * AngularScale)
+	{
+		Angular.normalize().mul(AngularLimit);
+		set_AngularVel(Angular);
+	}
 }
 
 void CPHElement::ApplyPendingForm()
@@ -280,6 +232,7 @@ void CPHElement::ApplyPendingForm()
 	{
 		const b3Transform Transform = B3Math::ToB3(PendingForm);
 		B3_SAFE(b3Body_SetTransform(Body, Transform.p, Transform.q));
+		B3_SAFE(b3Body_SetAwake(Body, true));
 	}
 }
 
@@ -315,11 +268,11 @@ void CPHElement::PhTune(float Step)
 {
 	ApplyPendingForm();
 	{
-		// Re-targeted every step over the steps left in the frame: the body arrives with zero velocity.
 		xrCriticalSectionGuard Guard(PendingLock);
 		if (HasAnimTarget && b3Body_IsValid(Body))
 		{
-			B3_SAFE(b3Body_SetTargetTransform(Body, B3Math::ToB3(AnimTarget), Step * g_B3World->StepsLeft(), true));
+			HasAnimTarget = false;
+			B3_SAFE(b3Body_SetTargetTransform(Body, B3Math::ToB3(AnimTarget), Step, true));
 		}
 	}
 	if (!b3Body_IsValid(Body) || Fixed || !b3Body_IsAwake(Body))
@@ -327,67 +280,19 @@ void CPHElement::PhTune(float Step)
 		return;
 	}
 
-	// Air resistance exactly as in ODE (PHElement::PhTune): a quadratic linear force and a
-	// torque proportional to the angular velocity. The old multiplicative decay was tens
-	// of times weaker, so a ragdoll limb could swing for minutes.
+	// Square air resistance as in ODE.
 	const b3Vec3 Linear = b3Body_GetLinearVelocity(Body);
 	const float Speed = b3Length(Linear);
 	if (Speed > EPS_L && AirLinear > 0.f)
 	{
-		float Drag = Speed * AirLinear;
-		if (Drag > Mass / Step)
-		{
-			Drag = Mass / Step;
-		}
-		B3_SAFE(b3Body_ApplyForceToCenter(Body, b3MulSV(-Drag, Linear), false));
+		B3_SAFE(b3Body_ApplyForceToCenter(Body, b3MulSV(-AirLinear * Speed, Linear), false));
 	}
-
 	const b3Vec3 Angular = b3Body_GetAngularVelocity(Body);
 	if (AirAngular > 0.f)
 	{
-		B3_SAFE(b3Body_ApplyTorque(Body, b3MulSV(-AirAngular, Angular), false));
+		const float Damp = std::min(AirAngular * Step, 0.5f);
+		B3_SAFE(b3Body_SetAngularVelocity(Body, b3MulSV(1.f - Damp, Angular)));
 	}
-}
-
-void CPHElement::FlushForces(float Step)
-{
-	b3Vec3 F = B3Math::ToB3(Force);
-	b3Vec3 T = B3Math::AngularToB3(Torque);
-	Force.set(0.f, 0.f, 0.f);
-	Torque.set(0.f, 0.f, 0.f);
-	if (!b3Body_IsValid(Body) || Fixed || !b3Body_IsAwake(Body))
-	{
-		return;
-	}
-
-	const float FLimit = LinearLimit / Step * b3Body_GetMass(Body);
-	const float FMagnitude = b3Length(F);
-	if (FMagnitude > FLimit)
-	{
-		F = b3MulSV(FLimit / FMagnitude, F);
-	}
-	const float WLimit = AngularLimit / Step;
-	const float WMagnitude = b3Length(b3MulMV(b3Body_GetWorldInverseRotationalInertia(Body), T));
-	if (WMagnitude > WLimit)
-	{
-		T = b3MulSV(WLimit / WMagnitude, T);
-	}
-	B3_SAFE(b3Body_ApplyForceToCenter(Body, F, false); b3Body_ApplyTorque(Body, T, false));
-}
-
-void CPHElement::AddForce(const Fvector& F, const Fvector* Point)
-{
-	if (!b3Body_IsValid(Body) || Fixed)
-	{
-		return;
-	}
-
-	Fvector T = {0.f, 0.f, 0.f};
-	if (Point)
-	{
-		T.crossproduct(Fvector().sub(*Point, mass_Center()), F);
-	}
-	B3_SAFE(Force.add(F); Torque.add(T); b3Body_SetAwake(Body, true));
 }
 
 void CPHElement::Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable)
@@ -470,7 +375,7 @@ void CPHElement::GetGlobalTransformDynamic(Fmatrix* m) const
 
 void CPHElement::GetGlobalPositionDynamic(Fvector* v)
 {
-	v->set(mass_Center());
+	v->set(Active ? CurForm.c : mXFORM.c);
 }
 
 bool CPHElement::isEnabled() const
@@ -489,12 +394,16 @@ void CPHElement::Enable()
 void CPHElement::setMass(float M)
 {
 	Mass = std::max(M, EPS_S);
-	if (!b3Body_IsValid(Body))
+	if (b3Body_IsValid(Body))
 	{
-		HasMassCenter = false;
-		std::erase_if(GeomMasses, [](const auto& Entry) { return Entry.second > 0.f; });
+		b3MassData MassData = b3Body_GetMassData(Body);
+		if (MassData.mass > EPS_S)
+		{
+			MassData.inertia = b3MulSM(Mass / MassData.mass, MassData.inertia);
+			MassData.mass = Mass;
+			B3_SAFE(b3Body_SetMassData(Body, MassData));
+		}
 	}
-	ApplyMassData();
 }
 
 void CPHElement::setDensity(float M)
@@ -538,28 +447,31 @@ void CPHElement::applyForce(const Fvector& dir, float val)
 
 void CPHElement::applyForce(float x, float y, float z)
 {
-	AddForce(Fvector().set(x, y, z));
+	if (b3Body_IsValid(Body) && !Fixed)
+	{
+		B3_SAFE(b3Body_ApplyForceToCenter(Body, B3Math::ToB3(Fvector().set(x, y, z)), true));
+	}
 }
 
 void CPHElement::applyImpulse(const Fvector& dir, float val)
 {
-	AddForce(Fvector().mul(dir, val / fixed_step));
+	if (b3Body_IsValid(Body) && !Fixed)
+	{
+		ApplyLimitedImpulse(Fvector().mul(dir, val), nullptr);
+	}
 }
 
 void CPHElement::setTorque(const Fvector& torque)
 {
 	if (b3Body_IsValid(Body) && !Fixed)
 	{
-		B3_SAFE(Torque.set(torque); b3Body_SetAwake(Body, true));
+		B3_SAFE(b3Body_ApplyTorque(Body, B3Math::AngularToB3(torque), true));
 	}
 }
 
 void CPHElement::setForce(const Fvector& force)
 {
-	if (b3Body_IsValid(Body) && !Fixed)
-	{
-		B3_SAFE(Force.set(force); b3Body_SetAwake(Body, true));
-	}
+	applyForce(force.x, force.y, force.z);
 }
 
 void CPHElement::applyGravityAccel(const Fvector& accel)
@@ -589,7 +501,7 @@ void CPHElement::set_LinearVel(const Fvector& velocity)
 {
 	if (b3Body_IsValid(Body) && !Fixed)
 	{
-		B3_SAFE(b3Body_SetLinearVelocity(Body, B3Math::ToB3(ClampMagnitude(velocity, LinearLimit))));
+		B3_SAFE(b3Body_SetLinearVelocity(Body, B3Math::ToB3(velocity)));
 	}
 }
 
@@ -597,7 +509,7 @@ void CPHElement::set_AngularVel(const Fvector& velocity)
 {
 	if (b3Body_IsValid(Body) && !Fixed)
 	{
-		B3_SAFE(b3Body_SetAngularVelocity(Body, B3Math::AngularToB3(ClampMagnitude(velocity, AngularLimit))));
+		B3_SAFE(b3Body_SetAngularVelocity(Body, B3Math::AngularToB3(velocity)));
 	}
 }
 
@@ -648,8 +560,6 @@ void CPHElement::TransformPosition(const Fmatrix& form, motion_history_state his
 
 void CPHElement::SetTransform(const Fmatrix& m0, motion_history_state history_state)
 {
-	xrCriticalSectionGuard Guard(PendingLock);
-	HasPendingForm = false;
 	mXFORM.set(m0);
 	if (!b3Body_IsValid(Body))
 	{
@@ -695,16 +605,9 @@ void CPHElement::SetMaterial(u16 m)
 		if (b3Shape_IsValid(Geom->Shape))
 		{
 			b3SurfaceMaterial Material = b3Shape_GetSurfaceMaterial(Geom->Shape);
-			const u64 Overrides = Material.userMaterialId & (B3MaterialFlag::Friction | B3MaterialFlag::Bounce);
-			if ((Overrides & B3MaterialFlag::Friction) == 0)
-			{
-				Material.friction = Mtl->fPHFriction;
-			}
-			if ((Overrides & B3MaterialFlag::Bounce) == 0)
-			{
-				Material.restitution = Mtl->Flags.test(SGameMtl::flBounceable) ? Mtl->fPHBouncing : 0.f;
-			}
-			Material.userMaterialId = m | Overrides;
+			Material.friction = Mtl->fPHFriction;
+			Material.restitution = Mtl->Flags.test(SGameMtl::flBounceable) ? Mtl->fPHBouncing : 0.f;
+			Material.userMaterialId = m;
 			B3_SAFE(b3Shape_SetSurfaceMaterial(Geom->Shape, Material));
 		}
 	}
@@ -720,26 +623,15 @@ CPhysicsShell* CPHElement::PhysicsShell()
 	return Shell;
 }
 
-// As ODE: a geom moved in from another element keeps its global pose, and a geom added to a live
-// body does not change its mass.
 void CPHElement::add_geom(CODEGeom* g)
 {
-	if (g->OwnerForm && g->OwnerForm != &mXFORM)
-	{
-		Fmatrix Global;
-		g->GetGlobalForm(Global);
-		const Fmatrix BodyForm = b3Body_IsValid(Body) ? B3Math::FromB3(b3Body_GetTransform(Body)) : mXFORM;
-		g->LocalForm.mul_43(Fmatrix().invert(BodyForm), Global);
-	}
 	g->Owner = &Owner;
 	g->OwnerForm = &mXFORM;
 	Geoms.push_back(g);
 	if (b3Body_IsValid(Body))
 	{
 		const u64 Mask = Shell ? Shell->CollideMask : B3Category::All;
-		GeomMasses.emplace_back(g, 0.f);
-		g->CreateShape(Body, 0.f, true, Mask);
-		ApplyMassData();
+		g->CreateShape(Body, getDensity(), true, Mask);
 	}
 }
 
@@ -750,7 +642,6 @@ void CPHElement::remove_geom(CODEGeom* g)
 	{
 		g->DestroyShape();
 		Geoms.erase(It);
-		std::erase_if(GeomMasses, [g](const auto& Entry) { return Entry.first == g; });
 	}
 }
 
@@ -797,17 +688,9 @@ void CPHElement::add_Shape(const SBoneShape& shape, const Fmatrix& offset)
 	add_geom(Geom);
 }
 
-// As ODE: the rigid child bone keeps its own mass on its geom (the last one added) and moves the
-// element center to the combined center. A geomless element starts from zero mass.
 void CPHElement::add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture)
 {
-	Fvector Center;
-	offset.transform_tiny(Center, mass_center);
-	const float Base = Geoms.size() > 1 ? Mass : 0.f;
-	Mass = Base + mass;
-	MassCenterLocal.mul(Base).add(Center.mul(mass)).mul(1.f / std::max(Mass, EPS_S));
-	HasMassCenter = true;
-	GeomMasses.emplace_back(last_geom(), mass);
+	Mass += mass;
 }
 
 void CPHElement::set_BoxMass(const Fobb& box, float mass)
@@ -817,15 +700,14 @@ void CPHElement::set_BoxMass(const Fobb& box, float mass)
 
 void CPHElement::setMassMC(float M, const Fvector& mass_center)
 {
-	setMass(M);
 	MassCenterLocal.set(mass_center);
-	HasMassCenter = true;
-	ApplyMassData();
+	setMass(M);
 }
 
 void CPHElement::setDensityMC(float M, const Fvector& mass_center)
 {
-	setMassMC(M * getVolume(), mass_center);
+	MassCenterLocal.set(mass_center);
+	setDensity(M);
 }
 
 void CPHElement::applyImpulseVsMC(const Fvector& pos, const Fvector& dir, float val)
@@ -838,12 +720,15 @@ void CPHElement::applyImpulseVsMC(const Fvector& pos, const Fvector& dir, float 
 	Fvector Point;
 	CurForm.transform_dir(Point, pos);
 	Point.add(mass_Center());
-	AddForce(Fvector().mul(dir, val / fixed_step), &Point);
+	ApplyLimitedImpulse(Fvector().mul(dir, val), &Point);
 }
 
 void CPHElement::applyImpulseVsGF(const Fvector& pos, const Fvector& dir, float val)
 {
-	AddForce(Fvector().mul(dir, val / fixed_step), &pos);
+	if (b3Body_IsValid(Body) && !Fixed)
+	{
+		ApplyLimitedImpulse(Fvector().mul(dir, val), &pos);
+	}
 }
 
 // As ODE: pos is in the space of bone id; the impulse goes to that point relative to the mass center.
@@ -931,55 +816,41 @@ void CPHElement::Fix()
 		B3_SAFE(b3Body_SetType(Body, b3_kinematicBody));
 		B3_SAFE(b3Body_SetLinearVelocity(Body, b3Vec3_zero));
 		B3_SAFE(b3Body_SetAngularVelocity(Body, b3Vec3_zero));
-		b3Body_SetSleepThreshold(Body, SleepThreshold());
 	}
 }
 
 void CPHElement::ReleaseFixed()
 {
 	Fixed = false;
-	HasAnimTarget = false;
 	if (b3Body_IsValid(Body))
 	{
 		B3_SAFE(b3Body_SetType(Body, b3_dynamicBody));
-		b3Body_SetSleepThreshold(Body, SleepThreshold());
-		ApplyMassData();
+		setMass(Mass);
 	}
 }
 
-// As ODE the net state holds the center of mass, not the element origin.
 void CPHElement::get_State(SPHNetState& state)
 {
 	GetGlobalPositionDynamic(&state.position);
-	PrevForm.transform_tiny(state.previous_position, MassCenterLocal);
+	state.previous_position.set(PrevForm.c);
 	Fmatrix Form;
 	GetGlobalTransformDynamic(&Form);
 	state.quaternion.set(Form);
 	state.previous_quaternion.set(PrevForm);
 	get_LinearVel(state.linear_vel);
 	get_AngularVel(state.angular_vel);
-	state.force.set(Force);
-	state.torque.set(Torque);
+	state.force.set(0.f, 0.f, 0.f);
+	state.torque.set(0.f, 0.f, 0.f);
 	state.enabled = isEnabled();
 }
 
 void CPHElement::set_State(const SPHNetState& state)
 {
-	const auto OriginForm = [this](const Fquaternion& Q, const Fvector& Center)
-	{
-		Fmatrix Form;
-		Form.mk_xform(Q, Center);
-		Fvector Offset;
-		Form.transform_dir(Offset, MassCenterLocal);
-		Form.c.sub(Offset);
-		return Form;
-	};
-	SetTransform(OriginForm(state.quaternion, state.position), mh_not_clear);
-	PrevForm = OriginForm(state.previous_quaternion, state.previous_position);
+	Fmatrix Form;
+	Form.mk_xform(state.quaternion, state.position);
+	SetTransform(Form, mh_unspecified);
 	set_LinearVel(state.linear_vel);
 	set_AngularVel(state.angular_vel);
-	setForce(state.force);
-	setTorque(state.torque);
 	if (b3Body_IsValid(Body))
 	{
 		B3_SAFE(b3Body_SetAwake(Body, state.enabled));

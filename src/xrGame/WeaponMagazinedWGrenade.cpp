@@ -604,101 +604,109 @@ void CWeaponMagazinedWGrenade::FireEnd()
 
 void CWeaponMagazinedWGrenade::state_Fire(float dt)
 {
-	if (!m_bGrenadeMode)
-	{
-		inherited::state_Fire(dt);
-		return;
-	}
+	VERIFY(fOneShotTime > 0.f);
 
-	if (!AmmoElapsed.MagazineElapsed)
+	//режим стрельбы подствольника
+	if (m_bGrenadeMode)
 	{
-		return;
-	}
-	
-	Fvector p1 = get_LastFP2(), d = get_LastFD();
-	
-	if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
-	{
-		entity->g_fireParams(this, p1, d);
-	}
-	
-	Fmatrix launch_matrix = Fidentity;
-	launch_matrix.k.set(d);
-	Fvector::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
-	launch_matrix.c.set(p1);
-	
-	if (IsZoomed() && H_Parent() && H_Parent()->cast_actor())
-	{
-		collide::rq_result RQ;
-		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, H_Parent());
-	
-		if (HasPick)
-		{
-			Fvector Transference;
-			Transference.mul(d, RQ.range);
-			Fvector res[2];
-			u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed, EffectiveGravity(), res);
-	
-			if (canfire0 != 0)
-			{
-				d = res[0];
-			}
-			else
-			{
-				LaunchGrenadeCorrect(d);
-			}
-		}
-	};
-	
-	if (H_Parent() && H_Parent()->cast_actor() && H_Parent()->cast_actor()->ControlledTimeRemains > 0)
-	{
-		d.set(0.0f, -2.0f, 0.0f);
-	}
-	
-	d.normalize().mul(CRocketLauncher::m_fLaunchSpeed);
-
-	VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
-	CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
-	
-	CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
-	if (!IsGameTypeSingle() && !pGrenade)
-	{
-		if (m_ammoTypes.size() > AmmoType.MagazineType && pSettings->line_exist(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name"))
-		{
-			shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
-			if (fake_grenade_name.size())
-			{
-				CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
-				pGrenade = getCurrentRocket() ? getCurrentRocket()->cast_explosive_rocket() : nullptr;
-			}
-		}
-	
-		if (!pGrenade)
-		{
+		if (!AmmoElapsed.MagazineElapsed)
 			return;
+
+		Fvector	p1, d;
+		p1.set(get_LastFP2());
+		d.set(get_LastFD());
+		
+
+		if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
+		{
+			entity->g_fireParams(this, p1, d);
+		}
+
+		//if (IsGameTypeSingle())
+			//p1.set(get_LastFP2());
+
+		Fmatrix launch_matrix;
+		launch_matrix.identity();
+		launch_matrix.k.set(d);
+		Fvector::generate_orthonormal_basis(launch_matrix.k, launch_matrix.j, launch_matrix.i);
+
+		launch_matrix.c.set(p1);
+
+		if (IsGameTypeSingle() && IsZoomed() && H_Parent() && H_Parent()->cast_actor())
+		{
+			collide::rq_result RQ;
+			bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, H_Parent());
+
+			if (HasPick)
+			{
+				Fvector	Transference;
+				Transference.mul(d, RQ.range);
+				Fvector	res[2];
+				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed, EffectiveGravity(), res);
+
+				if (canfire0 != 0)
+					d = res[0];
+				else
+					LaunchGrenade_Correct(&d);
+			}
+		};
+
+		if (H_Parent() && H_Parent()->cast_actor() && H_Parent()->cast_actor()->ControlledTimeRemains > 0)
+		{
+			d.set(0.0f, -2.0f, 0.0f);
+		}
+
+		d.normalize();
+		d.mul(CRocketLauncher::m_fLaunchSpeed);
+		VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
+		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel); 
+
+		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
+		if (!IsGameTypeSingle())
+		{
+			if (!pGrenade)
+			{
+				if (m_ammoTypes.size() > AmmoType.MagazineType && pSettings->line_exist(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name"))
+				{
+					shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[AmmoType.MagazineType].c_str(), "fake_grenade_name");
+					if (fake_grenade_name.size())
+					{
+						CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+						pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
+					}
+				}
+
+				if (!pGrenade)
+				{
+					return;
+				}
+			}
+		}
+
+		VERIFY(pGrenade);
+		pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
+
+		if (Local() && OnServer())
+		{
+			VERIFY(m_magazine.size());
+			m_magazine.pop_back();
+			--AmmoElapsed.MagazineElapsed;
+			VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
+
+			NET_Packet P;
+			u_EventGen(P, GE_LAUNCH_ROCKET, ID());
+			P << getCurrentRocket()->ID();
+			u_EventSend(P);
 		}
 	}
-	
-	VERIFY(pGrenade);
-	pGrenade->SetInitiator(H_Parent() ? H_Parent()->ID() : ID());
-	
-	if (Local() && OnServer())
-	{
-		VERIFY(m_magazine.size());
-		m_magazine.pop_back();
-		--AmmoElapsed.MagazineElapsed;
-		VERIFY((u32)AmmoElapsed.MagazineElapsed == m_magazine.size());
-	
-		NET_Packet P;
-		u_EventGen(P, GE_LAUNCH_ROCKET, ID());
-		P << getCurrentRocket()->ID();
-		u_EventSend(P);
-	}
+	//режим стрельбы очередями
+	else
+		inherited::state_Fire(dt);
 }
 
-void CWeaponMagazinedWGrenade::LaunchGrenadeCorrect(Fvector& v)
+void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
 {
-	Fvector camdir = Device.vCameraDirection;
+	Fvector3 camdir = Device.vCameraDirection;
 
 	camdir.y = 0.0f;
 	camdir.normalize();
@@ -706,7 +714,7 @@ void CWeaponMagazinedWGrenade::LaunchGrenadeCorrect(Fvector& v)
 	camdir.y = 1.0f;
 	camdir.normalize();
 
-	v = camdir;
+	*v = camdir;
 }
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)

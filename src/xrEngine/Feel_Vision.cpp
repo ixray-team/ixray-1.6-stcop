@@ -277,7 +277,23 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					continue;
 
 				RQR.r_clear();
-				if (object && object->collidable.model && !object->collidable.model->_RayQuery(RD, RQR))
+				if (!object || !object->collidable.model || !object->collidable.model->_RayQuery(RD, RQR))
+					continue;
+
+				// Respect material transparency here as well: otherwise any
+				// VISIBLEFORAI object on the ray blocks vision even when the
+				// main trace already treated it as see-through (vehicles).
+				bool opaque = false;
+				for (collide::rq_result* hit = RQR.r_begin(); hit != RQR.r_end(); ++hit)
+				{
+					if (hit->element < 0 || feel_vision_mtl_transp(hit->O ? hit->O : const_cast<CObject*>(object), hit->element) < 1.f)
+					{
+						opaque = true;
+						break;
+					}
+				}
+
+				if (!opaque)
 					continue;
 
 				collision_found = true;

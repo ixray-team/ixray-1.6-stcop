@@ -47,7 +47,7 @@ bool CUIScrollBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 		SetWndPos			(pos);
 
-		SendMessageToTarget(SCROLLBOX_MOVE);
+		GetMessageTarget()->SendMessage(this, SCROLLBOX_MOVE);
 	}
 
 	if( !cursor_over )

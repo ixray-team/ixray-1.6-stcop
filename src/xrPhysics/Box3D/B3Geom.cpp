@@ -5,7 +5,7 @@
 #include "../../xrEngine/GameMtlLib.h"
 
 static constexpr float MinGeomSize = 0.005f;
-static constexpr int CylinderSides = 32;
+static constexpr int CylinderSides = 12;
 
 void SB3GeomOwner::AddObjectCallback(ObjectContactCallbackFun* Callback)
 {
@@ -73,69 +73,6 @@ void CODEGeom::SetMask(u64 Mask)
 		Filter.maskBits = Mask;
 		B3_SAFE(b3Shape_SetFilter(Shape, Filter, true));
 	}
-}
-
-static void ApplySurface(b3ShapeId Shape, u64 Flag, float Value, bool Override)
-{
-	if (b3Shape_IsValid(Shape))
-	{
-		b3SurfaceMaterial Material = b3Shape_GetSurfaceMaterial(Shape);
-		(Flag == B3MaterialFlag::Friction ? Material.friction : Material.restitution) = Value;
-		Material.userMaterialId = Override ? (Material.userMaterialId | Flag) : (Material.userMaterialId & ~Flag);
-		b3Shape_SetSurfaceMaterial(Shape, Material);
-	}
-}
-
-void CODEGeom::SetSurface(u64 Flag, float Value, bool Override)
-{
-	if (!b3Shape_IsValid(Shape))
-	{
-		return;
-	}
-
-	Value = std::max(Value, 0.f);
-	const b3SurfaceMaterial Material = b3Shape_GetSurfaceMaterial(Shape);
-	if ((Flag == B3MaterialFlag::Friction ? Material.friction : Material.restitution) != Value || ((Material.userMaterialId & Flag) != 0) != Override)
-	{
-		const b3ShapeId Id = Shape;
-		B3_SAFE(ApplySurface(Id, Flag, Value, Override));
-	}
-}
-
-int CODEGeom::MakeProxy(const Fmatrix& Form, float Inset, b3Vec3 (&Points)[B3_MAX_SHAPE_CAST_POINTS], float& ProxyRadius) const
-{
-	Fmatrix Global;
-	Global.mul_43(Form, LocalForm);
-	const float X = std::max(HalfSize.x - Inset, 0.f);
-	const float Y = std::max(HalfSize.y - Inset, 0.f);
-	const float Z = std::max(HalfSize.z - Inset, 0.f);
-	if (Type == EB3GeomType::Sphere)
-	{
-		ProxyRadius = X;
-		Points[0] = B3Math::ToB3(Global.c);
-		return 1;
-	}
-
-	ProxyRadius = 0.f;
-	const int Count = Type == EB3GeomType::Box ? 8 : B3_MAX_SHAPE_CAST_POINTS;
-	for (int I = 0; I < Count; ++I)
-	{
-		// Box corners, or two rings around the cylinder axis (local Y).
-		const float Angle = PI_MUL_2 * float(I >> 1) / float(Count >> 1);
-		Fvector Local;
-		if (Type == EB3GeomType::Box)
-		{
-			Local.set((I & 1) ? X : -X, (I & 2) ? Y : -Y, (I & 4) ? Z : -Z);
-		}
-		else
-		{
-			Local.set(X * std::cos(Angle), (I & 1) ? Y : -Y, X * std::sin(Angle));
-		}
-		Fvector Point;
-		Global.transform_tiny(Point, Local);
-		Points[I] = B3Math::ToB3(Point);
-	}
-	return Count;
 }
 
 void CODEGeom::CreateShape(b3BodyId Body, float Density, bool Dynamic, u64 Mask)

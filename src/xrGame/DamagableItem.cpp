@@ -51,10 +51,21 @@ void CDamagableItem::ApplyDamage(u16 level)
 	m_level_applied = level;
 }
 
+void CDamagableItem::Repair()
+{
+	m_level_applied = 0;
+}
+
 void CDamagableHealthItem::Init(float max_health, u16 level_num)
 {
 	inherited::Init(max_health, level_num);
 	m_health = max_health;
+}
+
+void CDamagableHealthItem::Repair()
+{
+	m_health = m_max_health;
+	inherited::Repair();
 }
 
 void CDamagableHealthItem::Hit(float P)

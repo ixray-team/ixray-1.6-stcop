@@ -63,6 +63,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos, u32 bus = 0);
     XRSOUND_API void Pause(u32 slot);
     XRSOUND_API void Stop(u32 slot, bool deferred);
+    XRSOUND_API void Stop(u32 slot, bool deferred, float fade_seconds);
     XRSOUND_API void UpdateParameter(u32 slot, ParameterId parameter, Fvector value);
     XRSOUND_API void SetVolume(u32 slot, double volume);
     XRSOUND_API void SetPanning(u32 slot, double left, double right);
@@ -72,6 +73,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API u32 GetFlags(u32 slot);
     XRSOUND_API float GetPlaytime(u32 slot);
     XRSOUND_API float GetDuration(u32 slot);
+    XRSOUND_API float GetDuration(const char* name);
     XRSOUND_API State GetState(u32 slot);
     XRSOUND_API Fvector* GetParameters(u32 slot);
 }

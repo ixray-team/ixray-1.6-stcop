@@ -301,8 +301,6 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.CallbackParam = CallbackParam;
 
 	B.channel		= channel;
-	B.additive_ref.invalidate();
-	B.SmoothWeight	= SmoothBlend;
 	B.fall_at_end	= B.stop_at_end && (channel > 1);
 }
 void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float blendAccrue, float blendFalloff,float Power ,float Speed,u16 bone)
@@ -314,7 +312,6 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.blendFalloff	= blendFalloff;
 	B.blendPower	= Power;
 	B.speed			= Speed;
-	B.SmoothWeight	= SmoothBlend;
 	B.motionID		= motion_ID;
 	B.timeCurrent	= 0;
 	B.timeTotal		= m_Motions[B.motionID.slot].bone_motions[bone]->at(motion_ID.idx).GetLength();
@@ -558,15 +555,7 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 			if ( !b_force && B.dwFrame == RDEVICE.dwFrame )
 					continue;
 			B.dwFrame =	RDEVICE.dwFrame;
-			const float TimeBefore = B.timeCurrent;
-			const bool Finished = B.update( dt, B.Callback );
-			const bool Wrapped = !B.stop_at_end && B.blendAmount > EPS_L && (B.speed >= 0.f ? B.timeCurrent < TimeBefore : B.timeCurrent > TimeBefore);
-			if (Wrapped && m_InertialTime > 0.f)
-			{
-				InertialAddSeam(part, B);
-			}
-
-			if( Finished && !leave_blends )
+			if( B.update( dt, B.Callback ) && !leave_blends )
 			{
 				DestroyCycle( B );
 				blend_cycles[part].erase( I );
@@ -970,40 +959,33 @@ const	CBlendInstance::BlendSVec	&Blend				= BLEND_INST.blend_vector();
 			CMotion& M = *LL_GetMotion(B->motionID, SelfID);
 			Dequantize(*D, *B, M, g_AnimCubicInterpolation != 0);
 
-			const bool has_ref = B->additive_ref.valid() && B->additive_ref.slot < m_Motions.size();
-			CMotion& R = has_ref ? *LL_GetMotion(B->additive_ref, SelfID) : M;
-
-			if (R.test_flag(flTKeyFFT_Bit))
-				QuatL(R._keysR32[0], BK[channel][b_count].Q);
+			if (M.test_flag(flTKeyFFT_Bit))
+				QuatL(M._keysR32[0], BK[channel][b_count].Q);
 			else
-				QR2Quat(R._keysR[0], BK[channel][b_count].Q);
+				QR2Quat(M._keysR[0], BK[channel][b_count].Q);
 
-			if (R.test_flag(flTKeyPresent))
+			if (M.test_flag(flTKeyPresent))
 			{
-				if (R.test_flag(flTKeyFFT_Bit))
+				if (M.test_flag(flTKeyFFT_Bit))
 				{
-					QT_FFT_l(R._keysT32[0], BK[channel][b_count].T);
+					QT_FFT_l(M._keysT32[0], BK[channel][b_count].T);
 				}
-				else if (R.test_flag(flTKey16IsBit))
+				else if (M.test_flag(flTKey16IsBit))
 				{
-					QT16_2T(R._keysT16[0], R, BK[channel][b_count].T);
+					QT16_2T(M._keysT16[0], M, BK[channel][b_count].T);
 				}
 				else
 				{
-					QT8_2T(R._keysT8[0], R, BK[channel][b_count].T);
+					QT8_2T(M._keysT8[0], M, BK[channel][b_count].T);
 				}
 			}
 			else
-				BK[channel][b_count].T.set(R._initT);
+				BK[channel][b_count].T.set(M._initT);
 			++b_count;
 		}
 		for(u16 j= 0;MAX_CHANNELS>j;++j)
-		{
 			if( channels.rule(j).extern_ == animation::add )
 				keys_substruct( keys.keys[j], BK[j], keys.chanel_blend_conts[j] );
-			else if (channels.rule(j).extern_ == animation::add_local)
-				keys_substruct_local(keys.keys[j], BK[j], keys.chanel_blend_conts[j]);
-		}
 }
 
 void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* parent, const SKeyTable& keys)
@@ -1033,24 +1015,6 @@ void CKinematicsAnimated::LL_BlendKeys(CKey& Result, const SKeyTable& keys)
 		// data for channel mix cycle based on ch_count
 		channels.get_def(j, BC[ch_count]);
 		process_single_channel(channel_keys[ch_count], BC[ch_count], keys.keys[j], keys.blends[j], keys.chanel_blend_conts[j]);
-
-		if (BC[ch_count].rule.extern_ == animation::add_local)
-		{
-			float weight = 0.f;
-			for (int i = 0; i < keys.chanel_blend_conts[j]; ++i)
-			{
-				weight += j == LAYER_ADDITIVE_CHANNEL ? keys.blends[j][i]->blendAmount : keys.blends[j][i]->Weight();
-			}
-
-			weight = std::clamp(weight, 0.f, 1.f);
-			if (j == LAYER_ADDITIVE_CHANNEL)
-			{
-				weight = weight * weight * (3.f - 2.f * weight);
-			}
-
-			key_weight(channel_keys[ch_count], weight);
-		}
-
 		++ch_count;
 	}
 	// Mix channels
@@ -1072,7 +1036,7 @@ void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi
 	LL_BlendKeys(Result, keys);
 
 	const u16 SelfID = bd->GetSelfID();
-	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID], channel_mask);
+	InertialApply(SelfID, Result, &bi == &bone_instances[SelfID]);
 
 	Fmatrix RES;
 	RES.mk_xform(Result.Q, Result.T);
@@ -1206,34 +1170,6 @@ void CKinematicsAnimated::LL_SetInertializationBone(u16 bone, bool enabled)
 	}
 }
 
-bool CKinematicsAnimated::LL_GetBoneTransformMasked(u16 bone, u8 channel_mask, Fmatrix& result)
-{
-	if (bone >= LL_BoneCount())
-	{
-		return false;
-	}
-
-	CBoneInstance instance = bone_instances[bone];
-	BoneChain_Calculate(&LL_GetData(bone), instance, channel_mask, true);
-	result.set(instance.mTransform);
-	return true;
-}
-
-void CKinematicsAnimated::LL_ResetInertialization()
-{
-	for (SInertialBone& S : m_InertialBones)
-	{
-		S.Valid = false;
-		S.Pending = false;
-		S.OffsetR.set(0.f, 0.f, 0.f);
-		S.VelocityR.set(0.f, 0.f, 0.f);
-		S.OffsetT.set(0.f, 0.f, 0.f);
-		S.VelocityT.set(0.f, 0.f, 0.f);
-		S.SourceVelocityR.set(0.f, 0.f, 0.f);
-		S.SourceVelocityT.set(0.f, 0.f, 0.f);
-	}
-}
-
 void CKinematicsAnimated::InertialAdvance()
 {
 	if (m_InertialBones.empty())
@@ -1248,15 +1184,10 @@ void CKinematicsAnimated::InertialAdvance()
 	}
 
 	const float Gap = m_InertialStamp < 0.f ? 1.f : Now - m_InertialStamp;
-	if (Gap > 0.25f)
-	{
-		LL_ResetInertialization();
-	}
-
 	const float Dt = std::min(Gap, 0.1f);
+	const float HalfLife = m_InertialTime / 3.f;
 	for (SInertialBone& S : m_InertialBones)
 	{
-		const float HalfLife = (S.Time > 0.f ? S.Time : m_InertialTime) / 3.f;
 		if (S.Valid && m_InertialDelta > EPS_S && Gap <= 0.1f)
 		{
 			S.SourceVelocityT.sub(S.LastT, S.PrevT).div(m_InertialDelta);
@@ -1290,7 +1221,7 @@ void CKinematicsAnimated::InertialAdvance()
 	m_InertialDelta = Dt;
 }
 
-void CKinematicsAnimated::InertialMarkPart(u16 part, float time, u8 channel)
+void CKinematicsAnimated::InertialMarkPart(u16 part)
 {
 	if (m_InertialBones.empty() || part >= MAX_PARTS)
 	{
@@ -1302,51 +1233,11 @@ void CKinematicsAnimated::InertialMarkPart(u16 part, float time, u8 channel)
 		if (Bone < m_InertialBones.size())
 		{
 			m_InertialBones[Bone].Pending = true;
-			m_InertialBones[Bone].Time = time;
-			m_InertialBones[Bone].Channel = channel;
 		}
 	}
 }
 
-void CKinematicsAnimated::InertialAddSeam(u16 part, const CBlend& blend)
-{
-	if (m_InertialBones.empty() || part >= MAX_PARTS || blend.timeTotal <= END_EPS)
-	{
-		return;
-	}
-
-	CBlend End;
-	End.timeCurrent = blend.timeTotal - END_EPS;
-	End.stop_at_end = true;
-
-	CBlend Start;
-	Start.timeCurrent = 0.f;
-	Start.stop_at_end = true;
-
-	const float Weight = std::clamp(blend.Weight(), 0.f, 1.f);
-	const bool Forward = blend.speed >= 0.f;
-	for (u16 Bone : (*m_Partition)[part].bones)
-	{
-		if (Bone >= m_InertialBones.size() || !m_InertialBones[Bone].Enabled)
-		{
-			continue;
-		}
-
-		const CMotion& Motion = *LL_GetMotion(blend.motionID, Bone);
-		CKey KeyEnd, KeyStart;
-		Dequantize(KeyEnd, End, Motion);
-		Dequantize(KeyStart, Start, Motion);
-
-		const CKey& From = Forward ? KeyEnd : KeyStart;
-		const CKey& To = Forward ? KeyStart : KeyEnd;
-
-		SInertialBone& S = m_InertialBones[Bone];
-		S.OffsetT.mad(Fvector().sub(From.T, To.T), Weight);
-		S.OffsetR.mad(Inertialization::QuatLog(Fquaternion().mul(From.Q, Inertialization::QuatInverse(To.Q))), Weight);
-	}
-}
-
-void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update, u8 channel_mask)
+void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update)
 {
 	if (bone >= m_InertialBones.size())
 	{
@@ -1354,11 +1245,6 @@ void CKinematicsAnimated::InertialApply(u16 bone, CKey& key, bool update, u8 cha
 	}
 
 	SInertialBone& S = m_InertialBones[bone];
-	if (!update && S.Channel != 0 && (channel_mask & (1 << S.Channel)) == 0)
-	{
-		return;
-	}
-
 	if (update && S.Pending)
 	{
 		S.Pending = false;

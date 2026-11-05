@@ -1,85 +1,368 @@
-#include "StdAfx.h"
-#include "Car.h"
+#include "stdafx.h"
+#include "pch_script.h"
+#include "ParticlesObject.h"
+#include "../xrPhysics/ODE/Physics.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
 #	include "PHDebug.h"
 #endif // DEBUG
-#include "Inventory.h"
-//#include "Hit.h"
-#include "PHDestroyable.h"
 
+#include "ai_space.h"
+#include "alife_simulator.h"
+#include "script_engine.h"
+#include "Hit.h"
+#include "PHDestroyable.h"
+#include "Car.h"
+#include "damage_manager.h"
+#include "HUDManager.h"
 #include "cameralook.h"
 #include "CameraFirstEye.h"
 #include "Actor.h"
 #include "ActorEffector.h"
 #include "math.h"
 #include "script_entity_action.h"
+#include "Inventory.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "../Include/xrRender/Kinematics.h"
 #include "Level.h"
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
 #include "game_object_space.h"
 #include "../xrEngine/GameMtlLib.h"
-
+#include "../xrPhysics/ODE/PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
-#include "../xrPhysics/IPHWorld.h"
-#include "../xrPhysics/IActivationShape.h"
-#include "UIGameSP.h"
+#include "car_memory.h"
 
+#include "UIGameSP.h"
+#include "GamePersistent.h"
+#include "../xrPhysics/ODE/PHElement.h"
+#include "../xrPhysics/ODE/PHShell.h"
+#include "ExplosiveRocket.h"
+#include "../xrEngine/xr_input.h"
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+
+
+ui_shader Primitives_Shader;
 CCar::CCar()
 {
-	m_bone_trunk = BI_NONE;
-	m_bone_steer = BI_NONE;
-
-	m_rpm_b = BI_NONE;
-	m_speed_b = BI_NONE;
-	m_rpm_offsets.set(0, 0, 0);
-	m_speed_offsets.set(0, 0, 0);
-
+	Primitives_Shader->create("portal");
+	bone_map = BONE_P_MAP();
+	m_memory		= NULL;
 	m_driver_anim_type = 0;
-	active_camera = 0;
-	camera[ectFirst] = new CCameraFirstEye(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid);
-	camera[ectFirst]->tag = ectFirst;
-	camera[ectFirst]->Load("car_firsteye_cam");
+	m_bone_trunk	= BI_NONE;
+	active_camera	= NULL;
 
-	camera[ectChase] = new CCameraLook(this, CCameraBase::flRelativeLink);
-	camera[ectChase]->tag = ectChase;
-	camera[ectChase]->Load("car_look_cam");
+	saved_camera = EctFirstCam;
 
-	camera[ectFree] = new CCameraLook(this);
-	camera[ectFree]->tag = ectFree;
-	camera[ectFree]->Load("car_free_cam");
-	OnCameraChange(ectFirst);
+	camera[EctFirstCam] = new CCameraFirstEye(this, CCameraBase::flRelativeLink|CCameraBase::flPositionRigid);
+	camera[EctFirstCam]->tag = EctFirstCam;
+	camera[EctFirstCam]->Load("car_firsteye_cam");
+
+	camera[EctSecondCam] = new CCameraLook(this);
+	camera[EctSecondCam]->tag = EctSecondCam;
+	camera[EctSecondCam]->Load("car_look_cam");
+
+	camera[EctThridCam]	= new CCameraLook(this);
+	camera[EctThridCam]->tag = EctThridCam;
+	camera[EctThridCam]->Load("car_free_cam");
+
+	camera[EctFourthCam] = new CCameraLook(this);
+	camera[EctFourthCam]->tag = EctFourthCam;
+	camera[EctFourthCam]->Load("car_free_cam");
+
+	camera[EctFiveCam] = new CCameraFirstEye(this);
+	camera[EctFiveCam]->tag = EctFiveCam;
+	camera[EctFiveCam]->Load("car_free_cam");
+
+	OnCameraChange(EctFirstCam);
+
+	m_repairing		=false;
 
 	///////////////////////////////
-	b_wheels_limited = false;
-	b_engine_on = false;
-	e_state_steer = idle;
-	e_state_drive = neutral;
-	m_current_gear_ratio = phInfinity;
-	rsp = false; lsp = false; fwp = false; bkp = false; brp = false;
+	//////////////////////////////
+	/////////////////////////////
+	b_wheels_limited=false;
+	b_engine_on=false;
+	e_state_steer=idle;
+	e_state_drive=neutral;
+	m_current_gear_ratio=dInfinity;
+	rsp=false;lsp=false;fwp=false;bkp=false;brp=false;fwpbkp=false;
 	///////////////////////////////
+	//////////////////////////////
+	/////////////////////////////
+	m_exhaust_particles	= "vehiclefx\\exhaust_1";
+	m_nitro_particles = "";
+	m_pop_particles = "";
+	m_car_sound			= new SCarSound(this);
 
-	m_exhaust_particles = "vehiclefx\\exhaust_1";
-	m_car_sound = new SCarSound(this);
+	CarCameraDirection.set(0.f,0.f,0.f);
+	carCameraNormal.set(0.f,0.f,0.f);
 
-	//у машины слотов в инвентаре нет
+	//РЎС“ Р СР В°РЎв‚¬Р С‘Р Р…РЎвЂ№ РЎРѓР В»Р С•РЎвЂљР С•Р Р† Р Р† Р С‘Р Р…Р Р†Р ВµР Р…РЎвЂљР В°РЎР‚Р Вµ Р Р…Р ВµРЎвЂљ
+	inventory().SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
 	m_power_increment_factor = 0.5f;
-	m_rpm_increment_factor = 0.5f;
 	m_power_decrement_factor = 0.5f;
+	m_rpm_increment_factor = 0.5f;
 	m_rpm_decrement_factor = 0.5f;
+	m_rpm_brp_increment_factor = 1.f;
+	m_rpm_brp_decrement_factor = 1.f;
 	b_breaks = false;
 	m_break_start = 0.f;
-	m_break_time = 1.;
+	m_handbreak_start = 0.f;
+	m_break_time = 1.f;
 	m_breaks_to_back_rate = 1.f;
+	m_slip_start_time = 0.f;
 
 	b_exploded = false;
-	m_car_weapon = nullptr;
+	b_awd = true;
+	m_car_weapon_active = NULL;
 	m_power_neutral_factor = 0.25f;
 	m_steer_angle = 0.f;
+	m_wheel_angle = 0.f;
+	m_current_rpm = 0.f;
+	m_current_rpm_brp_n = 1.f;
+	m_current_engine_power = 0.f;
+	m_camera_inertion_n = 0.9f;
+	m_camera_inertion_k = 0.9f;
+	m_camera_angle_factor = 1.f;
+	break_start_dt = 0.0f;
+	m_current_slip_sliding = 0.0f;
+	m_vel_sliding_threshold = 5.0f;
+	m_slip_sliding_threshold = 0.6f;
+	m_camera_inert_x = 0.f;
+	m_camera_inert_z = 0.f;
+	m_steer_boost = 0.f;
+	m_steer_turn_factor = 1.f;
+	m_steer_counter_turn_factor = 0.5f;
+	m_steer_turn_compensation = 0.5f;
+	m_steer_turn_compensation_max = 0.3f;
+	m_steer_turn_delta = 0.2f;
+
+	m_transmission_switch_rpm = 0.f;
+	m_transmission_stage = 0;
+	m_transmission_switch_delay = 0.4f;
+	m_transmission_switch_power_factor = 0.5f;
+	m_transmission_switch_volume = 1.f;
+	b_transmission_switch_drive = false;
+	//m_transmission_switch_exhaust_volume = 0.9f;
+	m_transmission_switched = true;
+	m_transmission_sound_played = true;
+	m_sound_state_after_switch = 0.f;
+
+	m_limiter_volume = 0.f;
+	//m_limiter_exhaust_volume = 0.f;
+	m_limiter_engine_volume = 0.35f;
+	m_transmission_switch_time = 0.f;
+	m_transmission_switch_end_time = 0.f;
+	m_transmission_switch_sound_time = 0.f;
+	m_engine_valve = 0;
+	m_engine_valve_switch = true;
+	m_turbo_scale = 0.f;
+	m_turbo_sound_scale = 1.f;
+	m_turbo_volume_scale = 1.f;
+	m_turbo_scale_min = 0.2f;
+	m_turbo_scale_max = 1.f;
+	m_turbo_scale_speed = 1.5f;
+	m_blower_rpm_scale = 0.9f;
+	m_blower_scale_min = 0.3f;
+	m_blower_volume_min = 0.3f;
+	m_blower_sound_forward = 0.5f;
+	m_blower_rpm_current = 0.f;
+	m_blower_inertia = 0.1f;
+	m_engine_idle_volume = 0.8f;
+	m_engine_idle_volume_scale = 1.f;
+	//m_engine_exhaust_idle_volume_scale = 1.0f;
+	m_engine_idle_volume_scale_current_drive = 0.f;
+	m_engine_idle_volume_scale_current = 0.f;
+	m_engine_rpm_scale = 0.f;
+	m_idle_state_scale = 0.f;
+	m_idle_state_scale_last = 0.f;
+	m_engine_state_scale = 0.f;
+	m_engine_state_scale_last = 0.f;
+	m_engine_state_scale_min = 0.8f;
+	m_engine_sound_scale = 1.0f;
+	m_engine_sound_scale_absolute = 1.0f;
+	m_decel_sound_boost = 1.f;
+	m_heavy_sound_boost = 1.f;
+	//m_engine_exhaust_sound_scale = 1.0f;
+	m_engine_sound_scale_max = 1.5f;
+	m_engine_sound_scale_min = 0.5f;
+	m_engine_sound_scale_factor = 1.0f;
+	m_engine_sound_stop_dt = 0.f;
+	m_engine_decel_sound_stop_dt = 0.f;
+	m_engine_volume_scale = 1.0f;
+	m_sound_state_change_up = 3.f;
+	m_sound_state_change_down = 2.5f;
+	m_sound_idle_change_up = 25.f;
+	m_sound_idle_change_down = 0.6f;
+	m_sound_state_switch_factor = 3.f;
+	m_sound_effect = 0.f;
+	m_sound_switch_effect_type = 0;
+	m_sound_switch_effect_power = 1.f;
+	m_sound_switch_effect_speed = 1.f;
+	m_sound_switch_effect_duration = 20.f;
+	//m_engine_exhaust_volume_scale = 1.0f;
+	m_engine_decel_volume_scale = 0.f;
+	//m_engine_decel_exhaust_volume_scale = 0.f;
+	//m_exhaust_sound = false;
+	m_power_reverse_factor = 0.f;
+	m_sound = false;
+	m_gas_volume_scale = 0.f;
+	m_engine_drive = 0.f;
+	m_engine_drive_noswitch = 0.f;
+	m_engine_drive_time = 0.f;
+	m_engine_heavy = 0.f;
+	m_engine_heavy_constant = 0.2f;
+	m_engine_heavy_rpm = 0.2f;
+	m_engine_heavy_switch = 0.f;
+	m_valve_volume_scale = 0.f;
+	m_valve_switch_volume = 0.8f;
+	m_valve_time = 0.f;
+	m_sound_rpm = 0.0f;
+	m_wheels_spin_factor_start = 0.75f;
+	m_wheels_spin_factor_stop = 0.8f;
+	b_auto_switch_transmission = false;
+	b_auto_transmission_stop = false;
+	b_cvt_transmission = false;
+	mb_traction = false;
+	m_dwStartTime = 0;
+	m_dwAttachTime = Device.dwTimeGlobal;
+	m_friction_slip_factor = 1.f;
+	m_friction2_slip_factor = 1.f;
+	m_friction_spin_factor = 1.f;
+	m_friction2_spin_factor = 1.f;
+	m_friction_slip_speed = 0.005f;
+	m_friction2_steering_wheels = 1.f;
+	m_friction2_nonsteering_wheels = 1.f;
+	m_friction2_brp_boost = 1.f;
+	b_drift_boost = false;
+	m_drift_start_boost = 0.f;
+	m_drift_boost_time = 0.25f;
+	m_steer_speed_boost = 0.f;
+	m_steer_spin_boost = 0.f;
+	m_brake_boost = 0.f;
+	m_switch_shake_boost = 0.f;
+	m_engine_shake_boost = 0.f;
+	m_shake_stage = false;
+	m_current_rpm_brp_n_max = 2.f;
+	m_current_rpm_brp_decrease = 1.f;
+	m_wheels_sound_delay = 0.1f;
+	m_wheels_sound_timer = 0.f;
+	m_nitro = false;
+	m_nitro_power_factor = 2.f;
+	m_nitro_fuel_factor = 2.f;
+	m_nitro_friction_factor = 1.f;
+	m_nitro_wheelie_boost = 0.f;
+	m_wheelie_boost = 0.f;
+	m_nitro_wheelie_friction_brp_factor = 1.f;
+	m_nitro_switch_boost = 0.7f;
+	m_nitro_particle_scale = 1.f;
+	b_nitro_particles_enabled = false;
+
+	m_speedometer_factor = 1.f;
+	m_speedometer_max_speed = flt_max;
+	m_speedometer_min_speed = 0.f;
+	m_speedometer_current = 0.f;
+	m_speedometer_offset = 0.f;
+	m_tachometer_factor = 1.f;
+	m_tachometer_current = 0.f;
+	m_tachometer_min_rpm = 0.f;
+	m_fuel_current = 0.f;
+	m_fuel_angle = 0.f;
+	m_fuel_offset = 0.f;
+	m_temp_current = 0.f;
+	m_temp_angle = 0.f;
+	m_temp_offset = 0.f;
+	m_temp_offset_current = 0.f;
+	m_temperature = 0.f;
+	m_gauge_angle = 0.f;
+	m_gauge_current = 0.f;
+	m_fan_speed = 1.f;
+	m_fan_rotation = 0.f;
+	m_fan_speed_current = 0.f;
+	m_fan_engine = false;
+	m_pressure_max_angle = 0.f;
+	m_pressure_idle_angle = 0.f;
+	m_pressure_factor = 1.f;
+	m_pressure_current = 0.f;
+	m_pressure_offset = 0.f;
+	m_pressure = 0.f;
+	m_blower_angle = 0.f;
+	m_blower_current = 0.f;
+	m_engine_angle = 0.f;
+	m_engine_current = 0.f;
+	m_engine_stage = false;
+	m_engine_speed = 0.f;
+	m_clock_minutes_offset = 0.f;
+	m_clock_seconds_offset = 0.f;
+	m_clock_hours_offset = 0.f;
+	m_clock_seconds_real = true;
+	m_nitro_engage = false;
+	b_nitro_engage = false;
+	m_nitro_engage_time = 0.f;
+	m_whine_speed = 50.f;
+	m_whine_reverse = true;
+	m_whine_sound_scale = 0.f;
+	m_whine_exterior_volume = 0.9f;
+	m_pop = false;
+	m_pop_time = 0.f;
+	m_pop_probability = 0.5f;
+	m_pop_single = false;
+	m_pop_played = false;
+	m_steer_start_time = 0.f;
+	m_break_abs = false;
+	m_break_abs_power = 1.f;
+	m_break_abs_individual = true;
+	m_break_abs_threshold = 0.85f;
+	m_enhanced_sound = true;
+	b_burnout = false;
+	m_steer_nonlinear = true;
+	m_steer_invert = false;
+	m_steer_threshold = 0.0002f;
+	m_last_velocity = 0.f;
+	m_last_avelocity_j = 0.f;
+	m_last_avelocity = 0.f;
+	m_acceleration = 0.f;
+	m_camera_acceleration = 1.f;
+	b_diff_lock = true;
+	m_diff_lock_power = 1.f;
+	m_diff_lock_overpower = 0.f;
+	m_firsteye_panel = false;
+	m_interior_volume = 0.7f;
+	m_hit_stall_threshold = 1.f;
+	m_brakes_pressure_factor = 0.f;
+	m_brakes_pressure_max_angle = 0.f;
+	m_brakes_pressure_current = 0.f;
+	m_brakes_pressure = 0.f;
+	m_brakes_pressure_apply_angle = 0.f;
+	m_brakes_pressure_apply_current = 0.f;
+	m_battery_factor = 0.f;
+	m_battery_angle = 0.f;
+	m_battery_current = 0.f; 
+	m_gear_park_angle_x = 0.f;
+	m_gear_drive_angle_x = -15.f;
+	m_gear_reverse_angle_x = -5.f;
+	m_gear_current_angle_x = 0.f;
+	m_gear_current_angle_z = 0.f;
+	m_gear_speed = 1.f;
+	m_gear_manual = false;
+	m_gear_left_angle = 10.f;
+	m_gear_middle_angle = 0.f;
+	m_gear_right_angle = -10.f;
+	m_car_weapon_slots = 99;
+	m_downforce = 0.f;
+	m_current_downforce = 0.f;
+	//b_downforce_compensation = false;
+	b_start_open_recursive = false;
+	b_start_close_recursive = false;
+	b_all_recurs_opened = false;
+	m_torch_usage = false;
+	m_camera_last_mmove_time = Device.dwTimeGlobal + 3000;
+	characters_scraper_shell = NULL;
+	b_event_exit_car = false;
+	m_exit_car_time = 0;
+	b_event_drag_activated = false;
 #ifdef DEBUG
 	InitDebug();
 #endif
@@ -87,23 +370,47 @@ CCar::CCar()
 
 CCar::~CCar(void)
 {
-	xr_delete(camera[0]);
-	xr_delete(camera[1]);
-	xr_delete(camera[2]);
-	xr_delete(m_car_sound);
-	ClearExhausts();
-	xr_delete(m_car_weapon);
+	for (int i=0; i<EctMaxCam; ++i)
+		xr_delete(camera[i]);
+
+	xr_delete			(m_car_sound);
+
+	ClearExhausts		();
+
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		xr_delete(*CWPB);
+
+	m_car_weapons.clear();
+
+	xr_delete			(m_memory);
+ //	xr_delete			(l_tpEntityAction);
 }
 
-void CCar::reinit()
+void CCar::reinit		()
 {
-	CEntity::reinit();
-	CScriptEntity::reinit();
+	CEntity::reinit			();
+	CScriptEntity::reinit	();
+	CInventoryOwner::reinit ();
+	if(m_memory)
+		m_memory->reinit	();
 }
 
-void CCar::reload(const char* section)
+void CCar::reload		(LPCSTR section)
 {
-	CEntity::reload(section);
+	CEntity::reload			(section);
+	CInventoryOwner::reload (section);
+	if(m_memory)
+		m_memory->reload	(section);
+	// fuel load
+	m_fuel_tank = READ_IF_EXISTS(pSettings, r_float, section, "fuel_tank", 10.f);
+	m_fuel_consumption = READ_IF_EXISTS(pSettings, r_float, section, "fuel_consumption", 0.0005f);
+	m_fuel_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_factor", 2.f);
+	m_fuel_speed_optimal = READ_IF_EXISTS(pSettings, r_float, section, "fuel_speed_optimal", 50.f);
+	clamp(m_fuel_speed_optimal, 1.f, m_fuel_speed_optimal);
+	m_fuel_rpm_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_rpm_factor", 1.f);
+	m_fuel_gas_factor = READ_IF_EXISTS(pSettings, r_float, section, "fuel_gas_factor", 1.f);
+	inventory().SetMaxWeight(READ_IF_EXISTS(pSettings, r_float, section, "trunk_capacity", 1000.f));
 }
 
 bool CCar::IsMyCar() const
@@ -112,253 +419,6 @@ bool CCar::IsMyCar() const
 		return false;
 
 	return Actor()->Holder() == this;
-}
-
-void CCar::cb_Steer(CBoneInstance* B)
-{
-	VERIFY2(fsimilar(DET(B->mTransform), 1.f, DET_CHECK_EPS), "Bones receive returns 0 matrix");
-	CCar* C = static_cast<CCar*>(B->callback_param());
-	Fmatrix m;
-
-
-	m.rotateZ(C->m_steer_angle);
-
-	B->mTransform.mulB_43(m);
-#ifdef DEBUG
-	if (!fsimilar(DET(B->mTransform), 1.f, DET_CHECK_EPS)) {
-
-		Msg("RotatingZ angle=%f", C->m_steer_angle);
-		VERIFY2(0, "Bones callback returns BAD!!! matrix");
-	}
-#endif
-}
-
-// Core events
-void	CCar::Load(const char* section)
-{
-	inherited::Load(section);
-	SpatialComponent->type |= ESPATIAL_TYPE::VISIBLEFORAI;
-
-	CInventoryOwner::Load(section);
-	inventory().m_pOwner = this;
-}
-
-bool CCar::net_Spawn(CSE_Abstract* DC)
-{
-#ifdef DEBUG
-	InitDebug();
-#endif
-
-	CSE_Abstract* e = (CSE_Abstract*)(DC);
-	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(e);
-	bool							R = inherited::net_Spawn(DC);
-
-	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(true);
-
-	CPHSkeleton::Spawn(e);
-	setEnabled(true);
-	setVisible(true);
-	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(true);
-
-	SetfHealth(co->health);
-
-	if (!g_Alive())					b_exploded = true;
-	else							b_exploded = false;
-
-	CDamagableItem::RestoreEffect();
-
-
-	CInifile* pUserData = PKinematics(Visual())->LL_UserData();
-	if (pUserData != nullptr)
-	{
-		if (pUserData->section_exist("destroyed"))
-			CPHDestroyable::Load(pUserData, "destroyed");
-
-		if (pUserData->section_exist("mounted_weapon_definition"))
-			m_car_weapon = new CCarWeapon(this);
-
-		if (pUserData->line_exist("car_definition", "trunk_bone"))
-			m_bone_trunk = PKinematics(Visual())->LL_BoneID(pUserData->r_string("car_definition", "trunk_bone"));
-	}
-	SpatialComponent->type |= ESPATIAL_TYPE::CAR;
-	return (CScriptEntity::net_Spawn(DC) && R);
-}
-
-void CCar::ActorObstacleCallback(bool& do_colide, bool bo1, CPHContact& c, SGameMtl* material_1, SGameMtl* material_2)
-{
-	if (!do_colide)
-	{
-		if (material_1 && material_1->Flags.test(SGameMtl::flActorObstacle))do_colide = true;
-		if (material_2 && material_2->Flags.test(SGameMtl::flActorObstacle))do_colide = true;
-	}
-}
-
-void CCar::SpawnInitPhysics(CSE_Abstract* D)
-{
-	CSE_PHSkeleton* so = smart_cast<CSE_PHSkeleton*>(D);
-	R_ASSERT(so);
-	ParseDefinitions();//parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
-	CreateSkeleton(D);//creates m_pPhysicsShell & fill in bone_map
-	IKinematics* K = PKinematics(Visual());
-	K->CalculateBones_Invalidate();//this need to call callbacks
-	K->CalculateBones(true);
-	Init();
-
-	SetDefaultNetState(so);
-	CPHUpdateObject::Activate();
-}
-
-void CCar::net_Destroy()
-{
-#ifdef DEBUG
-	DBgClearPlots();
-#endif
-
-	IKinematics* pKinematics = PKinematics(Visual());
-	if (m_bone_steer != BI_NONE)
-	{
-		pKinematics->LL_GetBoneInstance(m_bone_steer).reset_callback();
-	}
-	if (m_rpm_b != BI_NONE) 
-	{
-		pKinematics->LL_GetBoneInstance(m_rpm_b).reset_callback();
-	}
-	if (m_speed_b != BI_NONE) 
-	{
-		pKinematics->LL_GetBoneInstance(m_speed_b).reset_callback();
-	}
-
-	CScriptEntity::net_Destroy();
-	inherited::net_Destroy();
-	CExplosive::net_Destroy();
-	if (m_pPhysicsShell)
-	{
-		m_pPhysicsShell->Deactivate();
-		m_pPhysicsShell->ZeroCallbacks();
-		xr_delete(m_pPhysicsShell);
-	}
-	CHolderCustom::detach_Actor();
-	ClearExhausts();
-	m_wheels_map.clear();
-	m_steering_wheels.clear();
-	m_driving_wheels.clear();
-	m_exhausts.clear();
-	m_breaking_wheels.clear();
-	m_doors.clear();
-	m_gear_ratious.clear();
-	m_car_sound->Destroy();
-	CPHUpdateObject::Deactivate();
-	CPHSkeleton::RespawnInit();
-	m_damage_particles.Clear();
-	CPHDestroyable::RespawnInit();
-	CPHCollisionDamageReceiver::Clear();
-	b_breaks = false;
-}
-
-void CCar::net_Save(NET_Packet& P)
-{
-	inherited::net_Save(P);
-	SaveNetState(P);
-}
-
-bool CCar::net_SaveRelevant()
-{
-	return true;
-}
-
-void CCar::SaveNetState(NET_Packet& P)
-{
-	CPHSkeleton::SaveNetState(P);
-	P.w_vec3(Position());
-
-	Fvector Angle;
-	XFORM().getXYZ(Angle);
-	P.w_vec3(Angle);
-
-	P.w_u16(u16(m_doors.size()));
-	for (auto& [ID, CarObj] : m_doors)
-		CarObj.SaveNetState(P);
-
-	P.w_u16(u16(m_wheels_map.size()));
-	for (auto& [ID, WhellData] : m_wheels_map)
-		WhellData.SaveNetState(P);
-
-	P.w_float(GetfHealth());
-}
-
-void CCar::RestoreNetState(CSE_PHSkeleton* po)
-{
-	if (!po->_flags.test(CSE_PHSkeleton::flSavedData))
-		return;
-
-	CPHSkeleton::RestoreNetState(po);
-
-	CSE_ALifeCar* co = smart_cast<CSE_ALifeCar*>(po);
-
-	size_t StackIterator = 0;
-	for (auto& [ID, CarObj] : m_doors)
-	{
-		CarObj.RestoreNetState(*(co->door_states.begin() + StackIterator));
-		StackIterator++;
-	}
-
-	StackIterator = 0;
-	for (auto& [ID, WhellData] : m_wheels_map)
-	{
-		WhellData.RestoreNetState(*(co->wheel_states.begin() + StackIterator));
-		StackIterator++;
-	}
-
-	//as later may kill diable/enable state save it;
-	bool enable = PPhysicsShell()->isEnabled();
-
-	Fmatrix restored_form;
-	m_pPhysicsShell->GetGlobalTransformDynamic(&restored_form);
-
-	Fmatrix inv, replace, sof;
-	sof.setXYZ(co->o_Angle.x, co->o_Angle.y, co->o_Angle.z);
-	sof.c.set(co->o_Position);
-	inv.set(restored_form);
-	inv.invert();
-	replace.mul(sof, inv);
-
-	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(true);
-	m_pPhysicsShell->DisableCollision();
-
-	Fvector center; Center(center);
-	Fvector obj_size; BoundingBox().getsize(obj_size);
-
-	get_box(m_pPhysicsShell, restored_form, obj_size, center);
-
-	Fvector ap = Fvector().set(0, 0, 0);
-
-	ActivateShapePhysShellHolder(this, XFORM(), obj_size, center, ap);
-
-	m_pPhysicsShell->EnableCollision();
-
-	replace.mul(sof, inv);
-	m_pPhysicsShell->TransformPosition(replace, mh_clear);
-
-	if (enable)
-		m_pPhysicsShell->Enable();
-	else
-		m_pPhysicsShell->Disable();
-
-	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
-}
-
-void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
-{
-	if (po->_flags.test(CSE_PHSkeleton::flSavedData))
-		return;
-
-	for (auto& [ID, CarObj] : m_doors)
-	{
-		CarObj.SetDefaultNetState();
-	}
 }
 
 void CCar::save(NET_Packet& output_packet)
@@ -382,117 +442,1897 @@ void CCar::Serialize(ISaveObject& Object)
 	}
 }
 
+void CCar::cb_Steer			(CBoneInstance* B)
+{
+	CCar*	C			= static_cast<CCar*>(B->callback_param());
+	Fmatrix m;
+
+	m.rotateZ(C->m_steer_angle);
+
+	B->mTransform.mulB_43	(m);
+
+}
+
+float rs_car_steer_factor = 1.f;
+bool rs_car_god = false;
+void CCar::cb_Steer_factor			(CBoneInstance* B)
+{
+	VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones receive returns 0 matrix");
+	CCar*	C			= static_cast<CCar*>(B->callback_param());
+	Fmatrix m;
+
+	m.rotateZ(C->m_steer_angle * C->m_steer_factor * rs_car_steer_factor);
+
+	B->mTransform.mulB_43	(m);
+#ifdef DEBUG
+	if( !fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS) ){
+	
+		Msg("RotatingZ angle=%f", C->m_steer_angle);
+		VERIFY2(0,"Bones callback returns BAD!!! matrix");
+	}
+#endif
+}
+
+void CCar::cb_Gauge(CBoneInstance* B)
+{
+	Gauge_struct* C = static_cast<Gauge_struct*>(B->callback_param());
+	Fmatrix m;
+	if (!C->pcar) return;
+
+	switch (C->type)
+	{
+		case gauge_speedometer:
+		{
+			if (!C->pcar->m_driving_wheels.size()) return;
+
+			xr_vector<SWheelDrive>::iterator i, e;
+			i = C->pcar->m_driving_wheels.begin();
+			e = C->pcar->m_driving_wheels.end();
+
+			float avg_speed = 0.f;
+			for (; i != e; ++i)
+				avg_speed += _abs(i->ASpeed()) * i->pwheel->radius;
+			avg_speed = -C->pcar->m_speedometer_min_speed * fabsf(C->pcar->m_speedometer_factor) + (avg_speed * 3.6f * fabsf(C->pcar->m_speedometer_factor)) / C->pcar->m_driving_wheels.size();
+			clamp(avg_speed, 0.f, C->pcar->m_speedometer_max_speed * fabsf(C->pcar->m_speedometer_factor));
+
+			C->pcar->m_speedometer_current = (1.f - 6.f * Device.fTimeDelta) * C->pcar->m_speedometer_current + 6.f * Device.fTimeDelta * avg_speed;
+
+			if (C->pcar->m_speedometer_factor < 0.f)
+				m.rotateZ(deg2rad(C->pcar->m_speedometer_offset) + C->pcar->m_speedometer_current / 30.f);
+			else
+				m.rotateZ(-deg2rad(C->pcar->m_speedometer_offset) - C->pcar->m_speedometer_current / 30.f);
+		}break;
+
+		case gauge_tachometer:
+		{
+			float cur_rpm = C->pcar->m_current_rpm - (C->pcar->m_tachometer_min_rpm * 0.105f);
+			clamp(cur_rpm, 0.f, cur_rpm);
+			float rpm = (cur_rpm / C->pcar->m_max_rpm) * 3.f * fabsf(C->pcar->m_tachometer_factor);
+			if (!C->pcar->b_engine_on)
+				rpm = 0.f;
+
+			C->pcar->m_tachometer_current = (1.f - 15.f * Device.fTimeDelta) * C->pcar->m_tachometer_current + 15.f * Device.fTimeDelta * rpm;
+
+			if (C->pcar->m_tachometer_factor < 0.f)
+				m.rotateZ(C->pcar->m_tachometer_current);
+			else
+				m.rotateZ(-C->pcar->m_tachometer_current);
+		}break;
+
+		case gauge_fuel:
+		{
+			float fuel = (C->pcar->m_fuel / C->pcar->m_fuel_tank) + deg2rad(C->pcar->m_fuel_offset);
+			if (!C->pcar->b_engine_on)
+				fuel = 0.f;
+
+			if (C->pcar->m_fuel_current < fuel)
+				C->pcar->m_fuel_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_fuel_current + 0.9f * Device.fTimeDelta * fuel;
+			else
+				C->pcar->m_fuel_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_fuel_current + 3.f * Device.fTimeDelta * fuel;
+
+			m.rotateZ(-C->pcar->m_fuel_current * deg2rad(C->pcar->m_fuel_angle));
+		}break;
+
+		case gauge_temp:
+		{
+			float temp = 0.f;
+			float temp_speed = 1.f;
+			if (C->pcar->b_engine_on)
+			{
+				temp = 1.f;
+				if (C->pcar->b_engine_on && C->pcar->e_state_drive == drive)
+				{
+					temp = 1.2f;
+					temp_speed = 1.2f;
+				}
+				float speed = C->pcar->GetSpeedKmH();
+				clamp(speed, 0.f, 80.f);
+				temp = temp - (speed / 260.f);
+
+				C->pcar->m_temp_offset_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_temp_offset_current + 0.9f * Device.fTimeDelta * deg2rad(C->pcar->m_temp_offset);
+				C->pcar->m_temp_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_temp_current + 0.9f * Device.fTimeDelta;
+			}
+			else
+			{
+				C->pcar->m_temp_offset_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_temp_offset_current;
+				C->pcar->m_temp_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_temp_current;
+			}
+
+			C->pcar->m_temperature = (1.f - 0.006f * temp_speed * Device.fTimeDelta) * C->pcar->m_temperature + 0.006f * temp_speed * Device.fTimeDelta * deg2rad(C->pcar->m_temp_angle) * temp;
+
+			m.rotateZ(-C->pcar->m_temperature * C->pcar->m_temp_current - C->pcar->m_temp_offset_current);
+		}break;
+
+		case gauge_battery:
+		{
+			float rpm = (1.f + (C->pcar->m_current_rpm - C->pcar->m_min_rpm) / (C->pcar->m_max_rpm - C->pcar->m_min_rpm) * C->pcar->m_battery_factor);
+			float angle = fabsf(C->pcar->m_battery_angle) * rpm;
+			if (!C->pcar->b_engine_on)
+				angle = 0.f;
+
+			if (C->pcar->m_battery_current < angle)
+				C->pcar->m_battery_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_battery_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
+			else
+				C->pcar->m_battery_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_battery_current + 3.f * Device.fTimeDelta * deg2rad(angle);
+
+			if (C->pcar->m_battery_angle < 0.f)
+				m.rotateZ(C->pcar->m_battery_current);
+			else
+				m.rotateZ(-C->pcar->m_battery_current);
+		}break;
+
+		case gauge_gauge:
+		{
+			float angle = fabsf(C->pcar->m_gauge_angle);
+			if (!C->pcar->b_engine_on)
+				angle = 0.f;
+
+			if (C->pcar->m_gauge_current < angle)
+				C->pcar->m_gauge_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_gauge_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
+			else
+				C->pcar->m_gauge_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_gauge_current + 3.f * Device.fTimeDelta * deg2rad(angle);
+
+			if (C->pcar->m_gauge_angle < 0.f)
+				m.rotateZ(C->pcar->m_gauge_current);
+			else
+				m.rotateZ(-C->pcar->m_gauge_current);
+		}break;
+
+		case gauge_fan:
+		{
+			float rpm = C->pcar->m_current_rpm;
+			clamp(rpm, C->pcar->m_min_rpm, rpm);
+
+			if (C->pcar->b_engine_on)
+				C->pcar->m_fan_speed_current += 0.6f * fabsf(C->pcar->m_fan_speed) * Device.fTimeDelta;
+			else
+				C->pcar->m_fan_speed_current -= 0.6f * fabsf(C->pcar->m_fan_speed) * Device.fTimeDelta;
+			clamp(C->pcar->m_fan_speed_current, 0.f, fabsf(C->pcar->m_fan_speed));
+
+			if (!C->pcar->m_fan_engine)
+				C->pcar->m_fan_rotation = C->pcar->m_fan_rotation + C->pcar->m_fan_speed_current * 3.f * Device.fTimeDelta;
+			else
+				C->pcar->m_fan_rotation = C->pcar->m_fan_rotation + C->pcar->m_fan_speed_current * 3.f * Device.fTimeDelta * (rpm / C->pcar->m_max_rpm);
+
+			if (C->pcar->m_fan_speed < 0.f)
+				m.rotateZ(-C->pcar->m_fan_rotation);
+			else
+				m.rotateZ(C->pcar->m_fan_rotation);
+		}break;
+
+		case gauge_blower:
+		{
+			float angle = fabsf(C->pcar->m_blower_angle);
+			if (C->pcar->e_state_drive != drive)
+			{
+				angle = 0.f;
+			}
+			else
+				if (C->pcar->m_transmission_stage >= 10)
+					angle = fabsf(C->pcar->m_blower_angle) * 0.3f;
+
+			float speed = 0.3f;
+			if (C->pcar->m_transmission_stage >= 10)
+				speed *= 0.5f;
+
+			if (C->pcar->m_blower_current < angle)
+				C->pcar->m_blower_current = (1.f - speed * Device.fTimeDelta * 30.f) * C->pcar->m_blower_current + speed * Device.fTimeDelta * 30.f * deg2rad(angle);
+			else
+				C->pcar->m_blower_current = (1.f - 1.5f * speed * Device.fTimeDelta * 30.f) * C->pcar->m_blower_current + 1.5f * speed * Device.fTimeDelta * 30.f * deg2rad(angle);
+
+			if (C->pcar->m_blower_angle < 0.f)
+				m.rotateX(C->pcar->m_blower_current);
+			else
+				m.rotateX(-C->pcar->m_blower_current);
+		}break;
+
+		case gauge_pressure:
+		{
+			float rpm = C->pcar->m_current_rpm - C->pcar->m_min_rpm;
+			clamp(rpm, 0.f, C->pcar->m_max_rpm - C->pcar->m_min_rpm);
+			rpm = (rpm / (C->pcar->m_max_rpm - C->pcar->m_min_rpm)) * fabsf(C->pcar->m_pressure_factor) + deg2rad(C->pcar->m_pressure_idle_angle + C->pcar->m_pressure_offset);
+
+			if (C->pcar->b_engine_on)
+				C->pcar->m_pressure_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_pressure_current + 0.9f * Device.fTimeDelta;
+			else
+				C->pcar->m_pressure_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_pressure_current;
+
+			if (C->pcar->e_state_drive == drive)
+				rpm += 0.1f * fabsf(C->pcar->m_pressure_factor);
+
+			C->pcar->m_pressure = (1.f - 1.5f * Device.fTimeDelta) * C->pcar->m_pressure + 1.5f * Device.fTimeDelta * rpm;
+			clamp(C->pcar->m_pressure, C->pcar->m_pressure, deg2rad(C->pcar->m_pressure_max_angle + C->pcar->m_pressure_offset));
+
+			if (C->pcar->m_pressure_factor < 0.f)
+				m.rotateZ(C->pcar->m_pressure_current * C->pcar->m_pressure);
+			else
+				m.rotateZ(-C->pcar->m_pressure_current * C->pcar->m_pressure);
+		}break;
+
+		case gauge_brakes_pressure:
+		{
+			float angle = fabsf(C->pcar->m_brakes_pressure_max_angle);
+			if (!C->pcar->b_engine_on)
+				angle = 0.f;
+
+			if (C->pcar->m_brakes_pressure_current < angle)
+				C->pcar->m_brakes_pressure_current = (1.f - 0.9f * Device.fTimeDelta) * C->pcar->m_brakes_pressure_current + 0.9f * Device.fTimeDelta * deg2rad(angle);
+			else
+				C->pcar->m_brakes_pressure_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_brakes_pressure_current + 3.f * Device.fTimeDelta * deg2rad(angle);
+
+			if (C->pcar->b_engine_on)
+			{
+				if (C->pcar->b_breaks)
+				{
+					if (Device.fTimeGlobal - C->pcar->m_break_start < C->pcar->m_break_time && C->pcar->m_break_time > 0.f)
+					{
+						C->pcar->m_brakes_pressure = (1.f - 0.3f * Device.fTimeDelta * (1.f / C->pcar->m_break_time)) * C->pcar->m_brakes_pressure + (0.3f * Device.fTimeDelta * (1.f / C->pcar->m_break_time)) * C->pcar->m_brakes_pressure_factor;
+					}
+					else
+						C->pcar->m_brakes_pressure = (1.f - 0.09f * Device.fTimeDelta) * C->pcar->m_brakes_pressure + (0.09f * Device.fTimeDelta);
+				}
+				else
+					C->pcar->m_brakes_pressure = (1.f - 0.09f * Device.fTimeDelta) * C->pcar->m_brakes_pressure + (0.09f * Device.fTimeDelta);
+			}
+			else
+				C->pcar->m_brakes_pressure = (1.f - 0.05f * Device.fTimeDelta) * C->pcar->m_brakes_pressure;
+
+			if (C->pcar->m_brakes_pressure_max_angle < 0.f)
+				m.rotateZ(C->pcar->m_brakes_pressure_current * C->pcar->m_brakes_pressure);
+			else
+				m.rotateZ(-C->pcar->m_brakes_pressure_current * C->pcar->m_brakes_pressure);
+		}break;
+
+		case gauge_brakes_pressure_apply:
+		{
+			float angle = fabsf(C->pcar->m_brakes_pressure_apply_angle);
+			float press = 1.f;
+			if (!C->pcar->b_engine_on || !C->pcar->b_breaks)
+				press = 0.f;
+			else
+				if (C->pcar->m_break_time > 0.f)
+					press = (Device.fTimeGlobal - C->pcar->m_break_start) / C->pcar->m_break_time;
+
+			clamp(press, 0.f, 1.f);
+			C->pcar->m_brakes_pressure_apply_current = (1.f - 3.f * Device.fTimeDelta) * C->pcar->m_brakes_pressure_apply_current + 3.f * Device.fTimeDelta * press;
+
+			if (C->pcar->m_brakes_pressure_apply_angle < 0.f)
+				m.rotateZ(deg2rad(angle) * C->pcar->m_brakes_pressure * C->pcar->m_brakes_pressure_apply_current);
+			else
+				m.rotateZ(-deg2rad(angle) * C->pcar->m_brakes_pressure * C->pcar->m_brakes_pressure_apply_current);
+		}break;
+
+		case gauge_engine:
+		{
+			float rpm = 0.f;
+			float twist = 0.f;
+			float gas = 1.25f;
+			if (C->pcar->e_state_drive != drive || C->pcar->m_transmission_stage >= 10)
+				gas = 1.f;
+			if (!C->pcar->b_engine_on)
+				C->pcar->m_engine_current = 0.f;
+			else
+			{
+				rpm = 1.2f * gas * ((C->pcar->m_current_rpm - C->pcar->m_min_rpm) / (C->pcar->m_max_rpm - C->pcar->m_min_rpm));
+				twist = rpm;
+				clamp(twist, 0.f, 1.f);
+				clamp(rpm, 0.f, 1.f);
+				if (!C->pcar->m_engine_stage)
+				{
+					C->pcar->m_engine_current += C->pcar->m_engine_speed * (10.f + 50.f * rpm) * gas * Device.fTimeDelta;
+					if (C->pcar->m_engine_current >= 1.f)
+					{
+						C->pcar->m_engine_current = 1.f;
+						C->pcar->m_engine_stage = true;
+					}
+				}
+				else
+				{
+					C->pcar->m_engine_current -= C->pcar->m_engine_speed * (10.f + 50.f * rpm) * gas * Device.fTimeDelta;
+					if (C->pcar->m_engine_current <= -1.f)
+					{
+						C->pcar->m_engine_current = -1.f;
+						C->pcar->m_engine_stage = false;
+					}
+				}
+			}
+
+			m.rotateZ(-(C->pcar->m_engine_current * (1.f - rpm) * deg2rad(C->pcar->m_engine_angle) * gas + (twist * deg2rad(C->pcar->m_engine_angle)) * gas));
+		}break;
+
+		case gauge_gear:
+		{
+			float angle_x = C->pcar->m_gear_park_angle_x;
+			float angle_z = C->pcar->m_gear_middle_angle;
+			if (C->pcar->Owner())
+			{
+				if (!C->pcar->m_gear_manual)
+				{
+					if (C->pcar->b_engine_on || C->pcar->GetSpeedKmH() > 1.f)
+					{
+						if (C->pcar->m_current_transmission_num == 0)
+							angle_x = C->pcar->m_gear_reverse_angle_x;
+						else
+							angle_x = C->pcar->m_gear_drive_angle_x;
+					}
+				}
+				else
+				{
+					if (C->pcar->m_transmission_stage > 0)
+					{
+						angle_x = C->pcar->m_gear_park_angle_x;
+					}
+					else
+					{
+						if (C->pcar->m_current_transmission_num == 0)
+						{
+							angle_x = C->pcar->m_gear_reverse_angle_x;
+						}
+						else
+						{
+							if (C->pcar->m_current_transmission_num % 2 == 1)
+								angle_x = C->pcar->m_gear_drive_angle_x;
+							else
+								angle_x = C->pcar->m_gear_reverse_angle_x;
+						}
+					}
+
+					if (C->pcar->m_current_transmission_num == 0 || C->pcar->m_current_transmission_num > 4)
+						angle_z = C->pcar->m_gear_right_angle;
+					else
+						if (C->pcar->m_current_transmission_num < 3)
+							angle_z = C->pcar->m_gear_left_angle;
+						else
+							angle_z = C->pcar->m_gear_middle_angle;
+				}
+				float delay = C->pcar->m_transmission_switch_delay;
+				if (delay > 0.f)
+				{
+					clamp(delay, 0.f, 1.f);
+					float spd = (50.f + 150.f * (1.f - delay)) * C->pcar->m_gear_speed * Device.fTimeDelta;
+					if (C->pcar->m_gear_current_angle_x != angle_x)
+					{
+						if (C->pcar->m_gear_current_angle_x > angle_x)
+						{
+							C->pcar->m_gear_current_angle_x -= spd;
+							clamp(C->pcar->m_gear_current_angle_x, angle_x, C->pcar->m_gear_current_angle_x);
+						}
+						else
+						{
+							C->pcar->m_gear_current_angle_x += spd;
+							clamp(C->pcar->m_gear_current_angle_x, C->pcar->m_gear_current_angle_x, angle_x);
+						}
+					}
+					else
+					{
+						if (C->pcar->m_gear_current_angle_z > angle_z)
+						{
+							C->pcar->m_gear_current_angle_z -= spd * 0.5f;
+							clamp(C->pcar->m_gear_current_angle_z, angle_z, C->pcar->m_gear_current_angle_z);
+						}
+						if (C->pcar->m_gear_current_angle_z < angle_z)
+						{
+							C->pcar->m_gear_current_angle_z += spd * 0.5f;
+							clamp(C->pcar->m_gear_current_angle_z, C->pcar->m_gear_current_angle_z, angle_z);
+						}
+					}
+					angle_x = C->pcar->m_gear_current_angle_x;
+					angle_z = C->pcar->m_gear_current_angle_z;
+				}
+			}
+			if (C->pcar->m_gear_manual)
+			{
+				Fmatrix n;
+				n.rotateZ(deg2rad(angle_z));
+				B->mTransform.mulB_43(n);
+			}
+			m.rotateX(deg2rad(angle_x));
+		}break;
+
+		case clock_seconds:
+		{
+			if (!C->pcar->m_clock_seconds_real)
+				m.rotateZ(deg2rad(C->pcar->m_clock_seconds_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() * 6.f));
+			else
+				m.rotateZ(deg2rad(C->pcar->m_clock_seconds_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() * 6.f / Level().GetGameTimeFactor()));
+		}break;
+
+		case clock_minutes:
+		{
+			m.rotateZ(deg2rad(C->pcar->m_clock_minutes_offset * 6.f) - deg2rad(Level().GetGameDayTimeSec() / 10.f));
+		}break;
+
+		case clock_hours:
+		{
+			m.rotateZ(deg2rad(C->pcar->m_clock_hours_offset * 30.f) - deg2rad(Level().GetGameDayTimeSec() / 120.f));
+		}break;
+	}
+
+	B->mTransform.mulB_43(m);
+}
+
+void CCar::cb_Suspension(CBoneInstance* B)
+{
+	Suspension_struct* C = static_cast<Suspension_struct*>(B->callback_param());
+	Fmatrix m;
+	if (!C->pcar) return;
+	IKinematics* pKinematics = smart_cast<IKinematics*>(C->pcar->Visual());
+	
+	if (C->second_wheel != BI_NONE) // dependant suspension
+	{
+		u16 left_wheel_bone_id = C->first_wheel;
+		u16 right_wheel_bone_id = C->second_wheel;
+		if (left_wheel_bone_id == BI_NONE || left_wheel_bone_id >= pKinematics->LL_BoneCount()) return;
+		if (right_wheel_bone_id == BI_NONE || right_wheel_bone_id >= pKinematics->LL_BoneCount()) return;
+
+		Fmatrix left_transform = pKinematics->LL_GetTransform(left_wheel_bone_id);
+		Fmatrix right_transform = pKinematics->LL_GetTransform(right_wheel_bone_id);
+		if(_abs(left_transform.c.y) > C->pcar->Radius()) return;
+		if(_abs(right_transform.c.y) > C->pcar->Radius()) return;
+		if (C->steer)
+		{
+			Fvector dest_dir = Fvector().sub(right_transform.c, left_transform.c);
+			safe_normalize(dest_dir);
+			B->mTransform.i = dest_dir;
+		}
+
+		if (C->move)
+		{
+
+			float height = (0.5f * (left_transform.c.y + right_transform.c.y)) + C->suspension_offset;
+			B->mTransform.c.y = height;
+		}
+	}
+	else // independant suspension
+	{
+		u16 wheel_bone_id = C->first_wheel;
+		if (C->steer)
+		{
+			Fmatrix m;
+			//m.rotateZ(C->pcar->m_wheel_angle * C->steer_factor);
+			BONE_P_PAIR_CIT wheel_joint = C->pcar->bone_map.find(wheel_bone_id);
+			if (wheel_joint == C->pcar->bone_map.end()) return;
+			float angle = dJointGetHinge2Angle1(wheel_joint->second.joint->GetDJoint());
+			m.rotateZ(angle * C->steer_factor);
+
+			B->mTransform.mulB_43(m);
+		}
+		if (C->move)
+		{
+			if (wheel_bone_id == BI_NONE || wheel_bone_id >= pKinematics->LL_BoneCount()) return;
+
+			Fmatrix wheel_transform = pKinematics->LL_GetTransform(wheel_bone_id);
+			if(_abs(wheel_transform.c.y) > C->pcar->Radius()) return;
+
+			float height = wheel_transform.c.y + C->suspension_offset;
+			B->mTransform.c.y = height;
+		}
+	}
+
+}
+
+// Core events
+void	CCar::Load					( LPCSTR section )
+{
+	inherited::Load					(section);
+	SpatialComponent->type |= ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->type |= ESPATIAL_TYPE::REACTTOSOUND;
+
+	inventory().m_pOwner = this;
+	CInventoryOwner::Load(section);
+}
+
+bool	CCar::net_Spawn				(CSE_Abstract* DC)
+{
+#ifdef DEBUG
+	InitDebug();
+#endif
+	CSE_Abstract					*e = (CSE_Abstract*)(DC);
+	CSE_ALifeCar					*co=smart_cast<CSE_ALifeCar*>(e);
+	bool							R = inherited::net_Spawn(DC);
+
+	PKinematics(Visual())->CalculateBones_Invalidate();
+	PKinematics(Visual())->CalculateBones(TRUE);
+
+	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
+	CInifile* ini = pKinematics->LL_UserData();
+
+	auto b_b = pKinematics->LL_Bones()->begin();
+	auto b_e = pKinematics->LL_Bones()->end();
+	for (; b_b != b_e; ++b_b)
+	{
+		LPCSTR b_name = b_b->first.c_str();
+		if (ini->section_exist(b_name))
+		{
+			bool model_cache = true;
+			CBoneData& bd = pKinematics->LL_GetData(b_b->second);
+			if (ini->line_exist(b_name, "bind_direction"))
+			{
+				model_cache = false;
+				Fvector last_c = bd.bind_transform.c;
+				bd.bind_transform.setXYZ(ini->r_fvector3(b_name, "bind_direction"));
+				bd.bind_transform.c.set(last_c);
+			}
+
+			if (ini->line_exist(b_name, "bind_direction_add"))
+			{
+				model_cache = false;
+				Fvector dir_add = ini->r_fvector3(b_name, "bind_direction_add");
+				Fvector last_c = bd.bind_transform.c;
+				Fmatrix rX; rX.rotateX(dir_add.x);
+				bd.bind_transform.mulB_43(rX);
+				Fmatrix rY; rY.rotateY(dir_add.y);
+				bd.bind_transform.mulB_43(rY);
+				Fmatrix rZ; rZ.rotateZ(dir_add.z);
+				bd.bind_transform.mulB_43(rZ);
+				bd.bind_transform.c.set(last_c);
+			}
+
+			if (ini->line_exist(b_name, "bind_position"))
+			{
+				model_cache = false;
+				bd.bind_transform.c.set(ini->r_fvector3(b_name, "bind_position"));
+			}
+
+			if (ini->line_exist(b_name, "bind_position_add"))
+			{
+				model_cache = false;
+				bd.bind_transform.c.add(ini->r_fvector3(b_name, "bind_position_add"));
+			}
+
+			if (ini->line_exist(b_name, "bind_mass_pos"))
+			{
+				model_cache = false;
+				bd.center_of_mass.set(ini->r_fvector3(b_name, "bind_mass_pos"));
+			}
+
+			if (ini->line_exist(b_name, "bind_mass_pos_add"))
+			{
+				model_cache = false;
+				bd.center_of_mass.add(ini->r_fvector3(b_name, "bind_mass_pos_add"));
+			}
+
+			if (ini->line_exist(b_name, "bind_mass"))
+			{
+				model_cache = false;
+				bd.mass = ini->r_float(b_name, "bind_mass");
+			}
+
+			if (ini->line_exist(b_name, "bind_mass_add"))
+			{
+				model_cache = false;
+				bd.mass += ini->r_float(b_name, "bind_mass_add");
+			}
+
+			if (ini->line_exist(b_name, "bind_shape_type"))
+			{
+				model_cache = false;
+				bd.shape.type = SBoneShape::EShapeType(ini->r_u16(b_name, "bind_shape_type"));
+			}
+			switch (bd.shape.type)
+			{
+				case SBoneShape::stBox: 
+				{
+					if (ini->line_exist(b_name, "bind_shape_box_size"))
+					{
+						model_cache = false;
+						bd.shape.box.m_halfsize.set(ini->r_fvector3(b_name, "bind_shape_box_size"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_box_size_add"))
+					{
+						model_cache = false;
+						bd.shape.box.m_halfsize.add(ini->r_fvector3(b_name, "bind_shape_box_size_add"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_box_scale"))
+					{
+						model_cache = false;
+						bd.shape.box.m_halfsize.mul(ini->r_float(b_name, "bind_shape_box_scale"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_box_pos"))
+					{
+						model_cache = false;
+						bd.shape.box.m_translate.set(ini->r_fvector3(b_name, "bind_shape_box_pos"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_box_pos_add"))
+					{
+						model_cache = false;
+						bd.shape.box.m_translate.add(ini->r_fvector3(b_name, "bind_shape_box_pos_add"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_box_dir"))
+					{
+						model_cache = false;
+						Fmatrix box_dir;
+						box_dir.j = bd.shape.box.m_rotate.j;
+						box_dir.i = bd.shape.box.m_rotate.i;
+						box_dir.k = bd.shape.box.m_rotate.k;
+
+						box_dir.setXYZ(ini->r_fvector3(b_name, "bind_shape_box_dir"));
+
+						bd.shape.box.m_rotate.j = box_dir.j;
+						bd.shape.box.m_rotate.i = box_dir.i;
+						bd.shape.box.m_rotate.k = box_dir.k;
+					}
+
+					if (ini->line_exist(b_name, "bind_shape_box_dir_add"))
+					{
+						model_cache = false;
+						Fmatrix box_dir;
+						box_dir.j = bd.shape.box.m_rotate.j;
+						box_dir.i = bd.shape.box.m_rotate.i;
+						box_dir.k = bd.shape.box.m_rotate.k;
+
+						Fvector dir_add = ini->r_fvector3(b_name, "bind_shape_box_dir_add");
+
+						box_dir.rotateX(dir_add.x);
+						box_dir.rotateY(dir_add.y);
+						box_dir.rotateZ(dir_add.z);
+
+						bd.shape.box.m_rotate.j = box_dir.j;
+						bd.shape.box.m_rotate.i = box_dir.i;
+						bd.shape.box.m_rotate.k = box_dir.k;
+					}
+				}
+				case SBoneShape::stSphere: 	
+				{
+					if (ini->line_exist(b_name, "bind_shape_sphere_radius"))
+					{
+						model_cache = false;
+						bd.shape.sphere.R = ini->r_float(b_name, "bind_shape_sphere_radius");
+					}
+					if (ini->line_exist(b_name, "bind_shape_sphere_radius_add"))
+					{
+						model_cache = false;
+						bd.shape.sphere.R += ini->r_float(b_name, "bind_shape_sphere_radius_add");
+					}
+					if (ini->line_exist(b_name, "bind_shape_sphere_pos"))
+					{
+						model_cache = false;
+						bd.shape.sphere.P.set(ini->r_fvector3(b_name, "bind_shape_sphere_pos"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_sphere_pos_add"))
+					{
+						model_cache = false;
+						bd.shape.sphere.P.add(ini->r_fvector3(b_name, "bind_shape_sphere_pos_add"));
+					}
+				}
+				case SBoneShape::stCylinder:
+				{
+					if (ini->line_exist(b_name, "bind_shape_cylinder_radius"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_radius = ini->r_float(b_name, "bind_shape_cylinder_radius");
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_radius_add"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_radius += ini->r_float(b_name, "bind_shape_cylinder_radius_add");
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_height"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_height = ini->r_float(b_name, "bind_shape_cylinder_height");
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_height_add"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_height += ini->r_float(b_name, "bind_shape_cylinder_height_add");
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_pos"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_center.set(ini->r_fvector3(b_name, "bind_shape_cylinder_pos"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_pos_add"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_center.add(ini->r_fvector3(b_name, "bind_shape_cylinder_pos_add"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_dir"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_direction.set(ini->r_fvector3(b_name, "bind_shape_cylinder_dir"));
+					}
+					if (ini->line_exist(b_name, "bind_shape_cylinder_dir_add"))
+					{
+						model_cache = false;
+						bd.shape.cylinder.m_direction.add(ini->r_fvector3(b_name, "bind_shape_cylinder_dir_add"));
+					}
+				}
+			};
+			//enable_model_cache = model_cache;
+		}
+	}
+
+	CPHSkeleton::Spawn(e);
+	setEnabled						(TRUE);
+	setVisible						(TRUE);
+	PKinematics(Visual())->CalculateBones_Invalidate();
+	PKinematics(Visual())->CalculateBones(TRUE);
+	m_fSaveMaxRPM					= m_max_rpm;
+	SetfHealth						(co->health);
+	m_fuel							= co->fuel;
+	if(!g_Alive())					b_exploded=true;
+	else							b_exploded=false;
+									
+	CDamagableItem::RestoreEffect();
+	
+	//renderable.visual->bIgnoreOpt = true;
+
+	if (ini)
+	{
+		if (ini->section_exist("destroyed"))
+			CPHDestroyable::Load(ini, "destroyed");
+
+		if (ini->section_exist("visual_memory_definition"))
+		{
+			m_memory = new car_memory(this);
+			m_memory->reload(ini->r_string("visual_memory_definition", "section"));
+		}
+	}
+
+	shedule.t_min = shedule.t_max = 1;
+	CInventoryOwner::net_Spawn(DC);
+	Engine.Sheduler.Register(this, TRUE);
+
+	return							(CScriptEntity::net_Spawn(DC) && R);
+	
+}
+
+void CCar::ActorObstacleCallback					(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2)	
+{
+	dContact& c = cphc.Native();
+	if(!do_colide)
+	{
+		if(material_1&&material_1->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
+		if(material_2&&material_2->Flags.test(SGameMtl::flActorObstacle))do_colide=true;
+	}
+}
+
+void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2)	
+{
+	dContact& c = cphc.Native();
+	dxGeomUserData *l_pUD1 = retrieveGeomUserData(c.geom.g1);
+	dxGeomUserData *l_pUD2 = retrieveGeomUserData(c.geom.g2);
+	
+	if(!l_pUD1) return;
+	if(!l_pUD2) return;
+
+	//Р С•Р С—РЎР‚Р ВµР Т‘Р ВµР В»Р С‘РЎвЂљРЎРЉ Р С”РЎвЂљР С• Р ВµРЎРѓРЎвЂљРЎРЉ Р С”РЎвЂљР С•, Р С‘Р В· Р Т‘Р Р†РЎС“РЎвЂ¦ РЎРѓРЎвЂљР С•Р В»Р С”Р Р…РЎС“Р Р†РЎв‚¬Р С‘РЎвЂ¦РЎРѓРЎРЏ Р С—РЎР‚Р ВµР Т‘Р СР ВµРЎвЂљР С•Р Р†
+	CPhysicsShellHolder *Collided_object = NULL;
+	CPhysicsShellHolder *ME = smart_cast<CPhysicsShellHolder*>(l_pUD1->ph_ref_object);
+	CPhysicsShellHolder *WHO = smart_cast<CPhysicsShellHolder*>(l_pUD2->ph_ref_object);
+	Collided_object = ME ? ME : WHO ? WHO : NULL;
+	CGameObject* Collided_gobject = smart_cast<CGameObject*>(Collided_object);
+	if(!Collided_object || !Collided_object->m_pPhysicsShell || !Collided_gobject || Collided_gobject->getDestroy() || Collided_gobject->cast_actor())
+	{
+		do_colide = false;
+		return;
+	}
+}
+void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
+{
+	CSE_PHSkeleton		*so = smart_cast<CSE_PHSkeleton*>(D);
+	R_ASSERT						(so);
+	ParseDefinitions				();//parse ini filling in m_driving_wheels,m_steering_wheels,m_breaking_wheels
+	LoadBoneMap						();//fill in bone_map
+	CreateSkeleton					(D);//creates m_pPhysicsShell
+	IKinematics *K					= smart_cast<IKinematics*>(Visual());
+	CInifile* ini					= K->LL_UserData();
+	K->CalculateBones_Invalidate();//this need to call callbacks
+	K->CalculateBones	(TRUE);
+	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
+	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
+	SetDefaultNetState				(so);
+	CPHUpdateObject::Activate       ();
+
+	if (ini)
+	{
+		if(ini->line_exist("car_definition","character_scraper"))
+		{
+			characters_scraper_shell = P_create_Shell();
+			Fsphere sphere; sphere.set(Fvector().set(0,1,0), 0.1f);
+			CPhysicsElement* ROOTElem = P_create_Element(); ROOTElem->add_Sphere(sphere);
+			characters_scraper_shell->add_Element(ROOTElem);
+
+			{
+				Fvector _bind_center_ = bind_center;
+				_bind_center_.z -= Radius()*0.7f;
+				Fsphere sphere; sphere.set(_bind_center_, Radius()*0.5f);
+				CPhysicsElement* JointElem = P_create_Element(); JointElem->add_Sphere(sphere);
+				characters_scraper_shell->add_Element(JointElem);
+				
+				CPhysicsJoint* J = P_create_Joint(CPhysicsJoint::ball,ROOTElem,JointElem);
+				J->SetAnchorVsSecondElement(0.f,0.f,0.f);
+				J->SetJointSDfactors(1000.f,1000.f);
+				characters_scraper_shell->add_Joint(J);
+			}
+
+			{
+				Fvector _bind_center_ = bind_center;
+				Fsphere sphere; sphere.set(_bind_center_, Radius()*0.5f);
+				CPhysicsElement* JointElem = P_create_Element(); JointElem->add_Sphere(sphere);
+				characters_scraper_shell->add_Element(JointElem);
+				
+				CPhysicsJoint* J = P_create_Joint(CPhysicsJoint::ball,ROOTElem,JointElem);
+				J->SetAnchorVsSecondElement(0.f,0.f,0.f);
+				J->SetJointSDfactors(1000.f,1000.f);
+				characters_scraper_shell->add_Joint(J);
+			}
+
+			{
+				Fvector _bind_center_ = bind_center;
+				_bind_center_.z += Radius()*0.7f;
+				Fsphere sphere; sphere.set(_bind_center_, Radius()*0.5f);
+				CPhysicsElement* JointElem = P_create_Element(); JointElem->add_Sphere(sphere);
+				characters_scraper_shell->add_Element(JointElem);
+				
+				CPhysicsJoint* J = P_create_Joint(CPhysicsJoint::ball,ROOTElem,JointElem);
+				J->SetAnchorVsSecondElement(0.f,0.f,0.f);
+				J->SetJointSDfactors(1000.f,1000.f);
+				characters_scraper_shell->add_Joint(J);
+			}
+
+			characters_scraper_shell->SetIgnoreDynamic();
+			characters_scraper_shell->SetIgnoreStatic();
+			//characters_scraper_shell->SetIgnoreRagDoll();
+			//characters_scraper_shell->SetIgnoreSmall();
+			characters_scraper_shell->set_ApplyByGravity(FALSE);
+			characters_scraper_shell->setMass(50.f);
+			characters_scraper_shell->SetMaterial(K->LL_GetData(K->LL_GetBoneRoot()).game_mtl_idx);
+			characters_scraper_shell->set_PhysicsRefObject(NULL);
+			characters_scraper_shell->add_ObjectContactCallback(CollisionDetectionCallback);
+			characters_scraper_shell->SetPrefereExactIntegration();
+			characters_scraper_shell->Activate();
+		}
+		if (ini->section_exist("mounted_weapon_definition"))
+			m_car_weapons.push_back(new CCarTurret(this, "mounted_weapon_definition"));
+		for (int i = 0; i < m_car_weapon_slots; ++i)
+		{
+			string128 mounted_weapon_sect;
+			xr_sprintf(mounted_weapon_sect, "mounted_weapon_definition_%d", i);
+			if (ini->section_exist(mounted_weapon_sect))
+				m_car_weapons.push_back(new CCarTurret(this, mounted_weapon_sect));
+		}
+	}
+
+	auto b_b = bone_map.begin();
+	auto b_e = bone_map.end();
+	for (; b_b != b_e; ++b_b)
+	{
+		if (b_b->second.element)
+		{
+			LPCSTR b_name = K->LL_BoneName_dbg(b_b->second.element->m_SelfID);
+			//Msg("! %s", b_name);
+			if (ini->section_exist(b_name))
+			{
+				if (ini->line_exist(b_name, "linear_factor") && ini->line_exist(b_name, "angular_factor"))
+				{
+					float linear_factor = default_k_l * ini->r_float(b_name, "linear_factor");
+					float angular_factor = default_k_w * ini->r_float(b_name, "angular_factor");
+					b_b->second.element->SetAirResistance(linear_factor, angular_factor);
+				}
+				if (ini->line_exist(b_name, "linear_limit") && ini->line_exist(b_name, "angular_limit"))
+				{
+					float linear_limit = default_l_limit * ini->r_float(b_name, "linear_limit");
+					float angular_limit = default_w_limit * ini->r_float(b_name, "angular_limit");
+					b_b->second.element->set_DynamicLimits(linear_limit, angular_limit);
+				}
+				if (ini->line_exist(b_name, "linear_scale") && ini->line_exist(b_name, "angular_scale"))
+				{
+					float linear_scale = 1.01f * ini->r_float(b_name, "linear_scale");
+					float angular_scale = 1.01f * ini->r_float(b_name, "angular_scale");
+					b_b->second.element->set_DynamicScales(linear_scale, angular_scale);
+				}
+				if (ini->line_exist(b_name, "apply_by_gravity"))
+					b_b->second.element->set_ApplyByGravity(ini->r_bool(b_name, "apply_by_gravity"));
+
+				if (b_b->second.joint)
+				{
+					float velocity_ = 0.0f;
+					float force_ = 0.0f;
+					int axis_ = -1;
+					if (ini->line_exist(b_name, "joint_vel"))
+						velocity_ = ini->r_float(b_name, "joint_vel");
+					if (ini->line_exist(b_name, "joint_force"))
+						force_ = ini->r_float(b_name, "joint_force");
+					if (ini->line_exist(b_name, "joint_axis"))
+						axis_ = ini->r_s32(b_name, "joint_axis");
+
+					if (ini->line_exist(b_name, "joint_vel") || ini->line_exist(b_name, "joint_force"))
+					{
+						if (ini->line_exist(b_name, "headlight_hideaway"))
+							headlight_hideaways.push_back(SHeadlightHideaway(b_b->second.joint, velocity_, force_, axis_));
+						else if (ini->line_exist(b_name, "engine_door"))
+							engine_door.push_back(SEngineDoor(b_b->second.joint, velocity_, force_, axis_));
+						else if (ini->line_exist(b_name, "suspension_joint"))
+							suspension_joints.push_back(SSuspension(b_b->second.joint, velocity_, force_, axis_, ini->line_exist(b_name, "suspension_indpnd") ? ini->r_bool(b_name, "suspension_indpnd") : false));
+						else
+							b_b->second.joint->SetForceAndVelocity(force_, velocity_, axis_);
+					}
+				}
+			}
+		}
+	}
+
+	auto c_b = K->LL_Bones()->begin();
+	auto c_e = K->LL_Bones()->end();
+	for (; c_b != c_e; ++c_b)
+	{
+		LPCSTR b_name = c_b->first.c_str();
+
+		if (ini->section_exist(b_name))
+		{
+			if (ini->line_exist(b_name, "speedometer"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_speedometer));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "speedometer_factor"))
+					m_speedometer_factor = ini->r_float(b_name, "speedometer_factor");
+				if (ini->line_exist(b_name, "speedometer_max_speed"))
+					m_speedometer_max_speed = ini->r_float(b_name, "speedometer_max_speed");
+				if (ini->line_exist(b_name, "speedometer_min_speed"))
+					m_speedometer_min_speed = ini->r_float(b_name, "speedometer_min_speed");
+				if (ini->line_exist(b_name, "speedometer_offset"))
+					m_speedometer_offset = ini->r_float(b_name, "speedometer_offset");
+			}
+			if (ini->line_exist(b_name, "tachometer"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_tachometer));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "tachometer_factor"))
+					m_tachometer_factor = ini->r_float(b_name, "tachometer_factor");
+				if (ini->line_exist(b_name, "tachometer_min_rpm"))
+					m_tachometer_min_rpm = ini->r_float(b_name, "tachometer_min_rpm");
+			}
+			if (ini->line_exist(b_name, "fuel"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_fuel));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "fuel_angle"))
+					m_fuel_angle = ini->r_float(b_name, "fuel_angle");
+				if (ini->line_exist(b_name, "fuel_offset"))
+					m_fuel_offset = ini->r_float(b_name, "fuel_offset");
+			}
+			if (ini->line_exist(b_name, "temp"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_temp));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "temp_angle"))
+					m_temp_angle = ini->r_float(b_name, "temp_angle");
+				if (ini->line_exist(b_name, "temp_offset"))
+					m_temp_offset = ini->r_float(b_name, "temp_offset");
+			}
+			if (ini->line_exist(b_name, "gauge"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_gauge));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "gauge_angle"))
+					m_gauge_angle = ini->r_float(b_name, "gauge_angle");
+			}
+			if (ini->line_exist(b_name, "fan"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_fan));
+				//pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "fan_speed"))
+					m_fan_speed = ini->r_float(b_name, "fan_speed");
+				if (ini->line_exist(b_name, "fan_engine"))
+					m_fan_engine = ini->r_bool(b_name, "fan_engine");
+			}
+			if (ini->line_exist(b_name, "pressure"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_pressure));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "pressure_max_angle"))
+					m_pressure_max_angle = ini->r_float(b_name, "pressure_max_angle");
+				if (ini->line_exist(b_name, "pressure_idle_angle"))
+					m_pressure_idle_angle = ini->r_float(b_name, "pressure_idle_angle");
+				if (ini->line_exist(b_name, "pressure_factor"))
+					m_pressure_factor = ini->r_float(b_name, "pressure_factor");
+				if (ini->line_exist(b_name, "pressure_offset"))
+					m_pressure_offset = ini->r_float(b_name, "pressure_offset");
+			}
+			if (ini->line_exist(b_name, "battery"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_battery));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "battery_factor"))
+					m_battery_factor = ini->r_float(b_name, "battery_factor");
+				if (ini->line_exist(b_name, "battery_angle"))
+					m_battery_angle = ini->r_float(b_name, "battery_angle");
+			}
+			if (ini->line_exist(b_name, "brakes_pressure"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_brakes_pressure));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "brakes_pressure_factor"))
+					m_brakes_pressure_factor = ini->r_float(b_name, "brakes_pressure_factor");
+				if (ini->line_exist(b_name, "brakes_pressure_max_angle"))
+					m_brakes_pressure_max_angle = ini->r_float(b_name, "brakes_pressure_max_angle");
+			}
+			if (ini->line_exist(b_name, "brakes_pressure_apply"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_brakes_pressure_apply));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "brakes_pressure_apply_angle"))
+					m_brakes_pressure_apply_angle = ini->r_float(b_name, "brakes_pressure_apply_angle");
+			}
+			if (ini->line_exist(b_name, "blower"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_blower));
+				//pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "blower_angle"))
+					m_blower_angle = ini->r_float(b_name, "blower_angle");
+			}
+			if (ini->line_exist(b_name, "engine"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_engine));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "engine_angle"))
+					m_engine_angle = ini->r_float(b_name, "engine_angle");
+				if (ini->line_exist(b_name, "engine_speed"))
+					m_engine_speed = ini->r_float(b_name, "engine_speed");
+			}
+			if (ini->line_exist(b_name, "gear"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, gauge_gear));
+				if (ini->line_exist(b_name, "gear_manual"))
+					m_gear_manual = ini->r_bool(b_name, "gear_manual");
+				if (ini->line_exist(b_name, "gear_speed"))
+					m_gear_speed = ini->r_float(b_name, "gear_speed");
+				if (ini->line_exist(b_name, "gear_park_angle_x"))
+					m_gear_park_angle_x = ini->r_float(b_name, "gear_park_angle_x");
+				if (ini->line_exist(b_name, "gear_drive_angle_x"))
+					m_gear_drive_angle_x = ini->r_float(b_name, "gear_drive_angle_x");
+				if (ini->line_exist(b_name, "gear_reverse_angle_x"))
+					m_gear_reverse_angle_x = ini->r_float(b_name, "gear_reverse_angle_x");
+				if (ini->line_exist(b_name, "gear_left_angle"))
+					m_gear_left_angle = ini->r_float(b_name, "gear_left_angle");
+				if (ini->line_exist(b_name, "gear_middle_angle"))
+					m_gear_middle_angle = ini->r_float(b_name, "gear_middle_angle");
+				if (ini->line_exist(b_name, "gear_right_angle"))
+					m_gear_right_angle = ini->r_float(b_name, "gear_right_angle");
+			}
+
+			if (ini->line_exist(b_name, "clock_seconds"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, clock_seconds));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "clock_seconds_offset"))
+					m_clock_seconds_offset = ini->r_float(b_name, "clock_seconds_offset");
+				if (ini->line_exist(b_name, "clock_seconds_real"))
+					m_clock_seconds_real = ini->r_bool(b_name, "clock_seconds_real");
+			}
+			if (ini->line_exist(b_name, "clock_minutes"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, clock_minutes));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "clock_minutes_offset"))
+					m_clock_minutes_offset = ini->r_float(b_name, "clock_minutes_offset");
+			}
+			if (ini->line_exist(b_name, "clock_hours"))
+			{
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Gauge, new Gauge_struct(this, clock_hours));
+				pribor_arrows.emplace(c_b->second);
+				if (ini->line_exist(b_name, "clock_hours_offset"))
+					m_clock_hours_offset = ini->r_float(b_name, "clock_hours_offset");
+			}
+
+			if (ini->line_exist(b_name, "suspension"))
+			{	
+				LPCSTR first_bone_name = READ_IF_EXISTS(ini, r_string, b_name, "first_wheel", "BI_NONE");
+				LPCSTR second_bone_name = READ_IF_EXISTS(ini, r_string, b_name, "second_wheel", "BI_NONE");
+				bool steer = READ_IF_EXISTS(ini, r_bool, b_name, "steer", true);
+				bool move = READ_IF_EXISTS(ini, r_bool, b_name, "move", true);
+				float suspension_offset = READ_IF_EXISTS(ini, r_float, b_name, "suspension_offset", 0.f);
+				float steer_factor = READ_IF_EXISTS(ini, r_float, b_name, "steer_factor", 1.f);
+				K->LL_GetBoneInstance(c_b->second).set_callback(bctCustom, cb_Suspension, new Suspension_struct(this, K->LL_BoneID(first_bone_name), K->LL_BoneID(second_bone_name), suspension_offset, steer, move, steer_factor));
+
+			}
+		}
+	}
+
+	NeutralDrive();
+	PressBreaks();
+
+	m_pPhysicsShell->Activate	(XFORM(), 0, XFORM());
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones(TRUE);
+
+	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
+	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+}
+
+void	CCar::net_Destroy()
+{
+#ifdef DEBUG
+	DBgClearPlots();
+#endif
+	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
+	xr_vector<u16>::iterator i,e;
+	i=m_steers.begin();
+	e=m_steers.end();
+	for(;i!=e;++i)
+		if((*i)!=BI_NONE) pKinematics->LL_GetBoneInstance((*i)).reset_callback();;
+	m_lights.TurnOffLights();
+	m_stoplights.TurnOffLights();
+	m_indoorlights.TurnOffLights();
+	m_enginelights.TurnOffLights();
+	m_reverselights.TurnOffLights();
+	CScriptEntity::net_Destroy();
+	inherited::net_Destroy();
+	CExplosive::net_Destroy();
+	CInventoryOwner::net_Destroy();
+	if(m_pPhysicsShell)
+	{
+		m_pPhysicsShell->Deactivate();
+		m_pPhysicsShell->ZeroCallbacks();
+		xr_delete(m_pPhysicsShell);
+	}
+	CHolderCustom::detach_Actor();
+	ClearExhausts();
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+		if (i_w->second.tire_drive._p)
+			i_w->second.tire_drive.destroy();
+	m_wheels_map.clear();
+	m_steering_wheels.clear();
+	m_driving_wheels.clear();
+	m_exhausts.clear();
+	m_steers.clear();
+	m_indoor_l_available_doors.clear();
+	m_breaking_wheels.clear();
+	RemoveGrassSpheres();
+	xr_map<u16, SDoor>::iterator i_d, e_d;
+	i_d = m_doors.begin();
+	e_d = m_doors.end();
+	for (; i_d != e_d; ++i_d)
+	{
+		i_d->second.snd_door_open.destroy();
+		i_d->second.snd_door_close.destroy();
+	}
+	m_doors_update.clear();
+	m_doors.clear();
+	m_gear_ratious.clear();
+	m_car_sound->Destroy();
+	CPHUpdateObject::Deactivate();
+	CPHSkeleton::RespawnInit();
+	m_damage_particles.Clear();
+	CPHDestroyable::RespawnInit();
+	CPHCollisionDamageReceiver::Clear();
+	bone_map.clear();
+	
+	b_breaks = false;
+	Engine.Sheduler.Unregister(this);
+}
+
+void CCar::net_Save(NET_Packet& P)
+{
+	inherited::net_Save(P);
+	SaveNetState(P);
+	P.w_float(m_fuel);
+}
+
+
+bool CCar::net_SaveRelevant()
+{
+	return TRUE;
+	//return !m_explosion_flags.test(CExplosive::flExploding)&&!CExplosive::IsExploded()&&!CPHDestroyable::Destroyed()&&!b_exploded;
+}
+
+void CCar::SaveNetState(NET_Packet& P)
+{
+	CPHSkeleton::SaveNetState	   (P);
+	P.w_vec3(Position());
+	Fvector Angle;
+	XFORM().getXYZ(Angle);
+	P.w_vec3(Angle);
+	{
+		xr_map<u16,SDoor>::iterator i,e;
+		i=m_doors.begin();
+		e=m_doors.end();
+		P.w_u16(u16(m_doors.size()));
+		for(;i!=e;++i)
+			i->second.SaveNetState(P);
+	}
+
+	{
+		xr_map<u16,SWheel>::iterator i,e;
+		i=m_wheels_map.begin();
+		e=m_wheels_map.end();
+		P.w_u16(u16(m_wheels_map.size()));
+		for(;i!=e;++i)
+			i->second.SaveNetState(P);
+	}
+	P.w_float(GetfHealth());
+}
+
+
+void CCar::RestoreNetState(CSE_PHSkeleton* po)
+{
+	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+	CPHSkeleton::RestoreNetState(po);
+	
+	CSE_ALifeCar* co=smart_cast<CSE_ALifeCar*>(po);
+
+	{
+		xr_map<u16,SDoor>::iterator i,e;
+		xr_vector<CSE_ALifeCar::SDoorState>::iterator		ii=co->door_states.begin();
+		i=m_doors.begin();
+		e=m_doors.end();
+		for(;i!=e;++i,++ii)
+		{
+			i->second.RestoreNetState(*ii);
+		}
+	}
+	{
+		xr_map<u16,SWheel>::iterator i,e;
+		xr_vector<CSE_ALifeCar::SWheelState>::iterator		ii=co->wheel_states.begin();
+		i=m_wheels_map.begin();
+		e=m_wheels_map.end();
+		for(;i!=e;++i,++ii)
+		{
+			i->second.RestoreNetState(*ii);
+		}
+	}
+	//as later may kill diable/enable state save it;
+	bool enable = PPhysicsShell()->isEnabled();
+/////////////////////////////////////////////////////////////////////////
+	Fmatrix restored_form;
+	PPhysicsShell()->GetGlobalTransformDynamic(&restored_form);
+/////////////////////////////////////////////////////////////////////
+	Fmatrix inv ,replace,sof;
+	sof.setXYZ(co->o_Angle.x,co->o_Angle.y,co->o_Angle.z);
+	sof.c.set(co->o_Position);
+	inv.set(restored_form);
+	inv.invert();
+	replace.mul(sof,inv);
+////////////////////////////////////////////////////////////////////
+	{
+		PKinematics(Visual())->CalculateBones_Invalidate();
+		PKinematics(Visual())->CalculateBones(TRUE);
+	}
+////////////////////////////////////////////////////////////////////
+	replace.mul(sof,inv);
+	PPhysicsShell()->TransformPosition(replace, mh_clear);
+	if(enable)PPhysicsShell()->Enable();
+	else PPhysicsShell()->Disable();
+	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+}
+void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
+{
+	if(po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+	xr_map<u16,SDoor>::iterator i,e;
+	i=m_doors.begin();
+	e=m_doors.end();
+	for(;i!=e;++i)
+	{
+		i->second.SetDefaultNetState();
+	}
+}
 void CCar::shedule_Update(u32 dt)
 {
-	inherited::shedule_Update(dt);
-	if (CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(dt);
-	else	CPHSkeleton::Update(dt);
+	if(Level().Server && !getDestroy() && !b_exploded)
+	{
+		if(CSE_Abstract* DC = Level().Server->ID_to_entity(ID()))
+		{
+			if(CSE_ALifeCar* secar = smart_cast<CSE_ALifeCar*>(DC))
+			{
+				Fvector xyz; XFORM().getXYZ(xyz);
+				secar->o_Angle.set(xyz);
+				secar->o_Position.set(Position());
+			}
+ 		}
+	}
+	CInventoryOwner::UpdateInventoryOwner(dt);
 
-	if (CDelayedActionFuse::isActive() && CDelayedActionFuse::Update(GetfHealth()))
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		(*CWPB)->DropEmptyAmmoBoxes();
+
+	inherited::shedule_Update(dt);
+	if(CPHDestroyable::Destroyed())CPHDestroyable::SheduleUpdate(dt);
+	else	CPHSkeleton::Update(dt);
+	
+	if(CDelayedActionFuse::isActive()&&CDelayedActionFuse::Update(GetfHealth()))
 	{
 		//CarExplode();
 	}
-	if (b_exploded && !m_explosion_flags.test(flExploding) && !getEnabled())//!m_bExploding
-		setEnabled(true);
+	if(b_exploded&&!m_explosion_flags.test(flExploding)&&!getEnabled())//!m_bExploding
+										setEnabled(TRUE);
 #ifdef DEBUG
 	DbgSheduleUpdate();
 #endif
 }
 
-void CCar::UpdateEx(float fov)
+void CCar::UpdateEx			(float fov) 
 {
-#ifdef DEBUG
+	#ifdef DEBUG
 	DbgUbdateCl();
-#endif
+	#endif
 
+	//	Log("UpdateCL",Device.dwFrame);
+	//XFORM().set(m_pPhysicsShell->mXFORM);
 	VisualUpdate(fov);
-
-	CActor* OwnerLocal = OwnerActor();
-	if (OwnerLocal && OwnerLocal->IsMyCamera() && OwnerLocal->HasCameraEffector())
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
 	{
-		cam_Update(Device.fTimeDelta, fov);
-		OwnerLocal->Cameras().UpdateFromCamera(camera[ectFirst]);
-
-		if(!Level().Cameras().GetCamEffector(cefDemo) && active_camera->tag==ectFirst)
-			OwnerLocal->Cameras().ApplyDevice(Device.fViewportNear);
-		else
-			Level().Cameras().UpdateFromCamera(Camera());
+		(*CWPB)->UpdateCL();
+		if((*CWPB)->IsActive() && OwnerActor())
+		{
+			if(active_camera->tag == EctFirstCam && (*CWPB)->CameraEnabled() && OwnerActor()->IsMyCamera())
+			{
+				(*CWPB)->cam_Update(fov);
+				return;
+			}
+			CCameraBase* C = active_camera;
+			collide::rq_result RQ = GetPickResult(C->Position(), C->Direction(), 1000.0f, this);
+			Fvector target_position = Fvector(C->Position()).add(Fvector(C->Direction()).mul(RQ.range));
+			(*CWPB)->SetParam(CCarTurret::eWpnDesiredPos, target_position);
+		}
 	}
+	if(OwnerActor() && OwnerActor()->IsMyCamera())
+	{
+		if(active_camera->tag == EctFiveCam)
+		{
+			Fvector							Da;
+			Da.set							(0,0,0);
+			Fvector UpdatePos = active_camera->Position();
+
+			Fvector dest_dir, dest_pos;
+			dest_pos = Fvector(bind_center);
+			XFORM().transform_tiny(dest_pos);
+			dest_dir.sub(dest_pos, active_camera->Position());
+			safe_normalize(dest_dir);
+			active_camera->vDirection.set(dest_dir);
+			active_camera->vNormal.set(0,1,0);
+
+			Level().Cameras().UpdateFromCamera(active_camera);
+			Level().Cameras().ApplyDevice(Device.fViewportNear);
+		}
+		else
+			cam_Update(Device.fTimeDelta, fov);
+	}
+}
+
+CCameraBase* CCar::Camera()
+{
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+	{
+		if((*CWPB)->IsActive())
+		{
+			if(active_camera->tag == EctFirstCam && (*CWPB)->CameraEnabled() && OwnerActor() && OwnerActor()->IsMyCamera())
+				return (*CWPB)->Camera();
+		}
+	}
+	return active_camera;
 }
 
 bool CCar::AlwaysTheCrow()
 {
-	return Owner() || (m_car_weapon && m_car_weapon->IsActive());
+	bool crow = !!OwnerActor();
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		if((*CWPB)->IsActive())
+			crow = TRUE;
+
+	return crow;
 }
 
-void CCar::UpdateCL()
+void CCar::RemoveGrassSpheres()
+{
+}
+int rs_grass_s_info = false;
+void CCar::UpdateCL				( )
 {
 	inherited::UpdateCL();
 	CExplosive::UpdateCL();
-	if (m_car_weapon)
+
+	// Exit must run outside the physics step: detach_Vehicle can recreate the
+	// actor character, and destroying it during CPHWorld::Step asserts.
+	if (b_event_exit_car)
 	{
-		m_car_weapon->UpdateCL();
+		if (!OwnerActor())
+		{
+			b_event_exit_car = false;
+		}
+		else if (!Device.Paused() && Device.dwTimeGlobal >= m_exit_car_time)
+		{
+			OwnerActor()->detach_Vehicle();
+		}
 	}
-	ASCUpdate();
 
-	if (Owner())
+	//Test particles assert
+	//for (int i = 0; i < 255; ++i)
+	//{
+	//	if (auto ps = CParticlesObject::Create("phy_fx\\generic_body_dust_01", TRUE))
+	//	{
+	//		ps->UpdateParent(XFORM(), zero_vel);
+	//		GamePersistent().ps_needtoplay.push_back(ps);
+	//	}
+	//}
+	//Test Doors
+	//xr_map<u16, SDoor>::iterator i, e;
+	//i = m_doors.begin();
+	//e = m_doors.end();
+	//for (; i != e; ++i)
+	//	i->second.Switch();
+	//if (Owner() && m_pPhysicsShell)
+	//{
+	//	float liner, angul;
+	//	m_pPhysicsShell->GetAirResistance(liner, angul);
+	//	Msg("Resist: l[%f], A[%f]", liner, angul);
+	//}
+	if(!Owner())
 	{
-		UpdateEx(Owner()->cast_actor()->currentFOV());
-		return;
+		auto CWPB = m_car_weapons.begin();
+		for(;CWPB!=m_car_weapons.end();++CWPB)
+			(*CWPB)->UpdateCL();
 	}
+	if(m_memory && !m_car_weapons.empty())
+		m_memory->set_camera(m_car_weapons[0]->ViewCameraPos(), m_car_weapons[0]->ViewCameraDir(), m_car_weapons[0]->ViewCameraNorm());
 
-	VisualUpdate(90);
-	if (GetScriptControl())
-		ProcessScripts();
-}
-
-void CCar::VisualUpdate(float fov)
-{
-	Fvector lin_vel = zero_vel;
+	ASCUpdate			();
 	if(m_pPhysicsShell)
 	{
-		if (IsMyCar() || IsGameTypeSingle())
+		int odcnt = 0;
+		xr_map<u16,SDoor>::iterator i,e;
+		i=m_doors.begin();
+		e=m_doors.end();
+		for(;i!=e;++i)
 		{
-			m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+			if (i->second.state != SDoor::closed)
+			{
+				xr_vector<u16>::iterator i_l_d, i_l_e;
+				i_l_d = m_indoor_l_available_doors.begin();
+				i_l_e = m_indoor_l_available_doors.end();
+				for (; i_l_d != i_l_e; ++i_l_d)
+					if ((*i_l_d) == i->second.bone_id) odcnt++;
+				
+			}
+		}
+		if(odcnt)
+		{
+			m_indoorlights.TurnOnLights();
+		}
+		else
+			m_indoorlights.TurnOffLights();
+		if(b_engine_on)
+		{
+			m_enginelights.TurnOnLights();
+			if((brp || (fwp && bkp) || b_breaks) && break_start_dt >= 0.1f)
+				m_stoplights.TurnOnLights();
+			else
+				m_stoplights.TurnOffLights();
+			if(0 == CurrentTransmission())
+				m_reverselights.TurnOnLights();
+			else
+				m_reverselights.TurnOffLights();
+
+			
 		}
 		else
 		{
-			Interpolate();
+			m_reverselights.TurnOffLights();
+			m_stoplights.TurnOffLights();
+			m_enginelights.TurnOffLights();
 		}
-		m_pPhysicsShell->get_LinearVel(lin_vel);
+
+		if (calc_bones_at_once)
+		{
+			Visual()->dcast_PKinematics()->CalculateBones(TRUE);
+			calc_bones_at_once = false;
+		}
+	}
+	if (OwnerActor() && OwnerActor()->inventory().GetActiveSlot() != NO_ACTIVE_SLOT)
+		OwnerActor()->inventory().Activate(NO_ACTIVE_SLOT);
+	if (b_exploded)DoExit();
+	if(Owner()) return;
+//	UpdateEx			(g_fov);
+	VisualUpdate(90);
+	if (GetScriptControl())
+			ProcessScripts();
+}
+bool rs_car_info = false;
+bool rs_car_transmission = false;
+bool rs_car_hud_draw = true;
+bool rs_car_unlimitedfuel = false;
+
+void CCar::DrawCarInfo()
+{
+	if (!m_pPhysicsShell || !OwnerActor())
+		return;
+
+	CGameFont* Font = UI().Font().pFontStat;
+	if (!Font)
+		return;
+
+	Fvector AngularVelocity;
+	m_pPhysicsShell->get_AngularVel(AngularVelocity);
+
+	string64 SpeedLine;
+	xr_sprintf(SpeedLine, "speed, %f km/hour", GetSpeedKmH());
+
+	Font->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
+	Font->OutSet(Device.TargetHeight / 2, 30);
+	Font->SetAligment(CGameFont::alLeft);
+	Font->OutNext("Vel magnitude:     [%3.2f]", GetVelocityM());
+	Font->OutNext("Vel:               [%3.2f]", GetVelocity().dotproduct(XFORM().k));
+	Font->OutNext("Accel magnitude:   [%3.2f]", m_acceleration);
+	Font->OutNext("Ang speed:         [%3.2f]", GetAVelocity().dotproduct(XFORM().j));
+	Font->OutNext("Ang magnitude:     [%3.2f]", AngularVelocity.magnitude());
+	Font->OutNext(SpeedLine);
+	if (b_transmission_switching)
+		Font->SetColor(color_rgba(255, 0, 0, 255));
+	Font->OutNext("Transmission num:  [%d]", int(m_current_transmission_num));
+	Font->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
+	Font->OutNext("Gear ratio:        [%3.2f]", m_current_gear_ratio);
+	Font->OutNext("Power:             [%3.2f]", m_current_engine_power / (0.8f * 1000.f));
+	Font->OutNext("Rpm:               [%3.2f]", m_current_rpm / (1.f / 60.f * 2.f * M_PI));
+	Font->OutNext("Min[%f] Current[%f] Max[%f]", m_min_rpm, m_current_rpm, m_max_rpm);
+	Font->OutNext("Wheel torque:      [%3.2f]", RefWheelCurTorque());
+	Font->OutNext("Wheels drive rate: [%3.2f]", DriveWheelsMeanAngleRate());
+	Font->OutNext("Engine torque:     [%3.2f]", EngineCurTorque());
+	Font->OutNext("Fuel:              [%3.2f]", m_fuel);
+	Font->OutNext("Fuel consumption:  [%3.4f]", m_fuel_consumption_current);
+	Font->OutNext("Fuel consumption/hour: [%3.2f]", 3600.f * m_fuel_consumption_current);
+	Font->OutNext("Fuel consumption/100km:[%3.2f]", 100.f * 3600.f * m_fuel_consumption_current / (GetSpeedKmH() + EPS));
+	Font->OutNext("curr_slip_sliding:          %f", m_current_slip_sliding);
+	Font->OutNext("handbrake_rpm_clutch_factor:%f", m_current_rpm_brp_n);
+	Font->OutNext("last_cotact_time:           %d", int(m_last_cotact_time));
+	Font->OutNext("steer_boost:                %f", m_steer_boost * m_steer_speed_boost / Device.fTimeDelta);
+	Font->OutNext("spin_boost:                 %f", m_steer_boost * m_steer_spin_boost / Device.fTimeDelta);
+	Font->OutNext("trans stage:                %d", int(m_transmission_stage));
+	Font->OutNext("downforce:                  %f", m_current_downforce);
+	if (mb_traction)
+	{
+		Font->SetColor(color_rgba(255, 0, 0, 255));
+		Font->OutNext("Surface traction");
+		Font->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
+	}
+
+	LPCSTR StateName = "None";
+	switch (e_state_drive)
+	{
+		case drive:		StateName = "Drive";	break;
+		case neutral:	StateName = "Neutral";			break;
+	}
+
+	Font->SetColor(color_rgba(255, 255, 0, 255));
+	Font->OutNext("ENGINE STATE: %s", StateName);
+	if (b_engine_on)
+	{
+		Font->SetColor(color_rgba(0, 255, 0, 255));
+		Font->OutNext("ENGINE ON");
+	}
+	if (b_starting)
+	{
+		Font->SetColor(color_rgba(255, 0, 0, 255));
+		Font->OutNext("STARTER");
+		Font->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
+	}
+
+	// Per-wheel telemetry, ported from the LA Cars-Ext DBG panel.
+	IKinematics* WheelKinematics = PKinematics(Visual());
+	if (WheelKinematics)
+	{
+		u32 ActiveWheelIndex = 0;
+		xr_map<u16, SWheel>::iterator i_w = m_wheels_map.begin();
+		xr_map<u16, SWheel>::iterator e_w = m_wheels_map.end();
+		for (; i_w != e_w; ++i_w)
+		{
+			SWheel& Wheel = i_w->second;
+			if (!Wheel.joint || !Wheel.joint->bActive)
+				continue;
+
+			if (ActiveWheelIndex % 2 == 0)
+				Font->OutSet(Device.TargetHeight * (1.f + 0.25f * float(ActiveWheelIndex / 2)), 30.f);
+
+			Font->SetColor(color_rgba(255, 0, 255, 255));
+			Font->OutNext("[%s]", WheelKinematics->LL_BoneName_dbg(Wheel.bone_id));
+
+			LPCSTR WheelStateName = "None";
+			switch (Wheel.wheel_state)
+			{
+				case wheel_idle:	WheelStateName = "Idle";	break;
+				case wheel_limit:	WheelStateName = "Limit";	break;
+				case wheel_left:	WheelStateName = "Left";	break;
+				case wheel_right:	WheelStateName = "Right";	break;
+				case wheel_drive:	WheelStateName = "Drive";	break;
+				case wheel_brake:	WheelStateName = "Brake";	break;
+			}
+			Font->SetColor(color_rgba(255, 255, 0, 255));
+			Font->OutNext("WHEEL STATE: %s", WheelStateName);
+
+			Font->SetColor(color_rgba(0, 255, 0, 255));
+			auto BoneIt = bone_map.find(Wheel.bone_id);
+			if (BoneIt != bone_map.end() && BoneIt->second.element)
+			{
+				Fvector LinearVelocity;
+				Fvector AngularVelocityWheel;
+				CPhysicsElement* Element = BoneIt->second.element;
+				Element->get_AngularVel(AngularVelocityWheel);
+				Font->OutNext("global_angular_velocity: %f", AngularVelocityWheel.magnitude());
+				Element->get_LinearVel(LinearVelocity);
+				Font->OutNext("global_linear_velocity:  %f", LinearVelocity.magnitude());
+			}
+
+			dJointID Joint = Wheel.joint->GetDJoint();
+			Font->OutNext("torque_by_engine:       %f", dJointGetHinge2Param(Joint, dParamFMax2));
+			Font->OutNext("diff power:             %f", Wheel.wheel_diff_power);
+
+			if (Wheel.collision_params.buxe)
+				Font->SetColor(color_rgba(255, 0, 0, 255));
+			if (Wheel.collision_params.breaking)
+				Font->SetColor(color_rgba(255, 255, 0, 255));
+			if (Wheel.collision_params.slide)
+				Font->SetColor(color_rgba(0, 0, 255, 255));
+
+			Font->OutNext("velocity_by_engine_max: %f", dJointGetHinge2Param(Joint, dParamVel2));
+			Font->OutNext("velocity_current:       %f", dJointGetHinge2Angle2Rate(Joint));
+			if (Wheel.max_control_velocity > 0.f)
+				Font->OutNext("velocity_maximum:       %f", Wheel.max_control_velocity);
+
+			if (Wheel.collision_params.slide || Wheel.collision_params.buxe || Wheel.collision_params.breaking)
+				Font->SetColor(color_rgba(0, 255, 0, 255));
+
+			Font->OutNext("steering_angle:         %f", dJointGetHinge2Angle1(Joint));
+			Font->OutNext("steering_velocity:      %f", dJointGetHinge2Angle1Rate(Joint));
+			Font->OutNext("steering_velocity_max:  %f", dJointGetHinge2Param(Joint, dParamVel));
+			Font->OutNext("steering_torque:        %f", dJointGetHinge2Param(Joint, dParamFMax));
+			Font->OutNext("breaking_torque:        %f", dJointGetHinge2Param(Joint, dParamFMax2));
+
+			float SpringFactor, DampingFactor;
+			Wheel.joint->GetJointSDfactors(SpringFactor, DampingFactor);
+			Font->OutNext("current_friction_factor: %f", Wheel.collision_params.current_friction_factor);
+			Font->OutNext("current_friction2_factor:%f", Wheel.collision_params.current_friction2_factor);
+			Font->OutNext("friction_slip_factor:   %f", Wheel.collision_params.friction_slip_factor);
+			Font->OutNext("friction2_slip_factor:  %f", Wheel.collision_params.friction2_slip_factor);
+			Font->OutNext("friction_rain_factor:   %f", Wheel.collision_params.friction_rain_factor);
+			Font->OutNext("wheel_spring_factor:    %f", SpringFactor);
+			Font->OutNext("wheel_damping_factor:   %f", DampingFactor);
+
+			if (!Wheel.collision_params.traction)
+				Font->SetColor(color_rgba(255, 0, 0, 255));
+			Font->OutNext("traction");
+
+			if (m_break_abs)
+			{
+				if (Wheel.collision_params.breaking_abs && b_breaks)
+					Font->SetColor(color_rgba(255, 0, 0, 255));
+				else
+					Font->SetColor(color_rgba(0, 255, 0, 255));
+				Font->OutNext("ABS");
+			}
+
+			++ActiveWheelIndex;
+		}
+	}
+}
+
+ void CCar::VisualUpdate(float fov)
+{
+	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+	if (rs_car_info)
+		DrawCarInfo();
+	if (e_state_drive == drive && ((m_transmission_stage < 10 || (m_transmission_stage >= 10 && b_transmission_switch_drive)) || brp))
+	{
+		m_engine_valve = 1;
+		m_engine_drive = 1.f;
+		m_car_sound->snd_valve.set_volume(0.f);
+	}
+	else
+	{
+		if (m_engine_valve_switch)
+		{
+			if (m_car_sound->snd_valve._p && m_engine_valve == 1 && !(fwp && bkp))
+				m_car_sound->Valve();
+			m_engine_valve = 0;
+		}
+		m_engine_drive = 0.f;
+		m_valve_time = Device.fTimeGlobal;
+	}
+	if (e_state_drive == drive)
+	{
+		m_engine_drive_noswitch = 1.f;
+	}
+	else
+	{
+		if (!m_engine_valve_switch)
+		{
+			if (m_car_sound->snd_valve._p && m_engine_valve == 1 && !(fwp && bkp))
+				m_car_sound->Valve();
+			m_engine_valve = 0;
+		}
+		m_engine_drive_noswitch = 0.f;
+		m_engine_drive_time = Device.fTimeGlobal;
+	}
+
+	float car_rpm = m_current_rpm;
+	if (car_rpm < m_min_rpm)
+		car_rpm = m_min_rpm;
+	m_engine_rpm_scale = 1.f - (m_max_rpm - car_rpm) / (m_max_rpm - m_min_rpm); // 0-1 rpm
+	clamp(m_engine_rpm_scale, 0.f, 1.f);
+
+	if (Device.fTimeGlobal > m_transmission_switch_time + 0.4f * m_transmission_switch_delay && !m_transmission_sound_played)
+	{
+		m_car_sound->TransmissionSwitch();
+		m_transmission_sound_played = true;
+		//Msg("trans");
 	}
 
 	m_car_sound->Update();
-	if (Owner())
+	m_car_sound->Whine();
+	if (m_transmission_stage < 10 && m_pop_time + 0.15f < Device.fTimeGlobal && ((m_pop && e_state_drive == neutral && m_current_rpm > m_power_rpm * 0.8f && b_engine_on && !b_starting) || (m_pop && !m_pop_single && m_current_rpm >= m_max_rpm - (m_max_rpm * 0.02f) && e_state_drive == drive && m_transmission_stage == 0)))
 	{
-		if (m_pPhysicsShell->isEnabled() || OnClient())
+		if (Random.randF(EPS, 1.f) <= m_pop_probability && !m_pop_played)
 		{
-			Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);
+			PlayExhaustsPop();
+			m_car_sound->PopSound();
+			if (m_pop_single)
+				m_pop_played = true;
 		}
+		m_pop_time = Device.fTimeGlobal;
+	}
+	else
+		if (m_pop_time + 0.15f < Device.fTimeGlobal)
+			m_pop_played = false;
+	if(Owner())
+	{
+		Owner()->XFORM().mul_43	(XFORM(),m_sits_transforms);
 
-		if (CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr && IsMyCar())
-		{
-			CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
-			Panel.SetEngineLamp(b_engine_on);
-			Panel.SetLightLamp(m_lights.IsOn());
-
-			Panel.SetCarHealth(GetfHealth() /* /100.f*/);
-			Panel.SetCarFuel(m_fuel/* /100.f*/);
-			Panel.SetSpeed(lin_vel.magnitude() / 1000.f * 3600.f / 100.f);
-			Panel.SetRPM(m_current_rpm / m_max_rpm / 2.f);
-			Panel.SetSpeedMode(xr_string::ToString((int)m_current_transmission_num));
+		if(CurrentGameUI())//car panel ui
+		{	
+			if (rs_car_hud_draw)
+			{
+				if (active_camera->tag == EctFirstCam && m_firsteye_panel == false)
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(false);
+				else
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().ShowPanel(true);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(true);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f*/);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetSpeed(GetVelocityM() * 3.6f / 115.f);
+				if (b_engine_on)
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(m_current_rpm / m_max_rpm / 1.5f - m_min_rpm / m_max_rpm / 3.0f);
+				else
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(0.f);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetFuel(100.0f * (m_fuel / m_fuel_tank));
+				if (CurrentTransmission() == 0)
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear("R");
+				else
+					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear(std::to_string(CurrentTransmission()).c_str());
+			}
+			else
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
 		}
 	}
 
-	UpdateExhausts();
-	m_lights.Update();
+	UpdateExhausts	();
+	m_lights.Update	();
+	m_stoplights.Update	();
+	m_indoorlights.Update	();
+	m_reverselights.Update	();
+	m_enginelights.Update	();
 }
 
+#include "../xrEngine/EnnumerateVertices.h"
+bool rs_car_info_shapes = false;
+float rs_car_arrows_shift_v = 0.0001f;
+float rs_car_arrows_near = 0.0001f;
+float rs_car_arrows_alpha = 255.f;
+Fvector rs_car_arrows_color = { 255.f, 0.f, 0.f };
 void CCar::renderable_Render()
 {
-	inherited::renderable_Render();
-	if (m_car_weapon)
-		m_car_weapon->Render_internal();
+	inherited::renderable_Render			();
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		(*CWPB)->Render_internal();
+
+	//xr_map<u16, SWheel>::iterator i_w, e_w;
+	//i_w = m_wheels_map.begin();
+	//e_w = m_wheels_map.end();
+	//for (; i_w != e_w; ++i_w)
+	//{
+	//	if(!i_w->second.joint) continue;
+	//	if(!i_w->second.joint->bActive) continue;	
+	//	Fmatrix wheel_xform = i_w->second.joint->PSecond_element()->XFORM();
+	//	//Fmatrix wheel_bind_xform = bones_bind_forms[i_w->first];
+	//	//wheel_bind_xform.mulA_43(XFORM());
+	//	//wheel_xform.i = Fvector().crossproduct( wheel_bind_xform.j, wheel_xform.k );
+	//	//wheel_xform.j = Fvector().crossproduct( wheel_bind_xform.i, wheel_xform.k ).invert();
+	//	//Level().draw_axis(wheel_xform);
+	//
+	//
+	//	dVector3 vec1;
+	//	dJointGetHinge2Axis1(i_w->second.joint->GetDJoint(), vec1);
+	//	dVector3 vec2;
+	//	dJointGetHinge2Axis2(i_w->second.joint->GetDJoint(), vec2);
+	//
+	//	Fvector dir1, dir2, dir3;
+	//	dir1 = cast_fv(vec1);
+	//	dir2 = cast_fv(vec2);
+	//	dir3 = Fvector().crossproduct( dir2, dir1 );
+	//	wheel_xform.k = dir1;
+	//	wheel_xform.j = dir2;
+	//	wheel_xform.i = dir3;
+	//
+	//	Fvector pos_z = Fvector(wheel_xform.c).add(Fvector(wheel_xform.k).mul(0.1f));
+	//	Fvector pos_x = Fvector(wheel_xform.c).add(Fvector(wheel_xform.i).mul(0.1f));
+	//	Fvector pos_y = Fvector(wheel_xform.c).add(Fvector(wheel_xform.j).mul(0.1f));
+	//	Level().draw_line(wheel_xform.c, pos_z, color_rgba(0, 0, 255, 255));//z
+	//	Level().draw_line(wheel_xform.c, pos_x, color_rgba(255, 0, 0, 255));//x
+	//	Level().draw_line(wheel_xform.c, pos_y, color_rgba(0, 255, 0, 255));//y
+	//	Level().draw_text(pos_z, Ivector().set(0, 0, 255), "Axis1");
+	//	Level().draw_text(pos_x, Ivector().set(255, 0, 0), "Axis3");
+	//	Level().draw_text(pos_y, Ivector().set(0, 255, 0), "Axis2");
+	//}
+
+		// TRIANGLE PICKER
+		//if(!Actor())
+		//	return;
+		//
+		//Fvector cam_pos = OwnerActor() ? camera[EctFirstCam]->Position() : Actor()->cam_FirstEye()->Position();
+		//Fvector cam_dir = OwnerActor() ? camera[EctFirstCam]->Direction() : Actor()->cam_FirstEye()->Direction();
+		//
+		//if(IRenderVisual* V = Visual())
+		//{
+		//	if(IKinematics *K = V->dcast_PKinematics())
+		//	{
+		//		if(cam_pos.distance_to(Position()) <= Radius()*2)
+		//		{
+		//			for (auto I=K->LL_Bones()->begin(); I != K->LL_Bones()->end(); I++)
+		//			{
+		//				if(!K->LL_GetBoneVisible(I->second))
+		//					continue;
+		//
+		//				Fmatrix bone_xform = K->LL_GetTransform((*I).second);
+		//				bone_xform.mulA_43(XFORM());
+		//
+		//				float w	= bone_xform.c.x*Device.mFullTransform._14 + bone_xform.c.y*Device.mFullTransform._24 + bone_xform.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
+		//				if (w<0) continue;
+		//
+		//				IKinematics::pick_result res;
+		//				if(K->PickBone(XFORM(), res, Radius()*2, cam_pos, cam_dir, I->second, false))
+		//				{
+		//					Fvector collide_pos = Fvector(cam_pos).add(Fvector(cam_dir).mul(res.dist));
+		//
+		//					Fvector diff_cam;
+		//					diff_cam.sub(collide_pos, cam_pos);
+		//					diff_cam.normalize();
+		//					if(!diff_cam.similar(cam_dir, EPS_L))
+		//						continue;
+		//
+		//					Level().draw_line(collide_pos, Fvector(collide_pos).add(Fvector(res.normal).mul(0.2f)), color_rgba(0, 255, 0, 255));
+		//					Level().draw_line(res.tri[0], res.tri[1], color_rgba(255, 0, 0, 255));
+		//					Level().draw_line(res.tri[0], res.tri[2], color_rgba(255, 0, 0, 255));
+		//					Level().draw_line(res.tri[1], res.tri[2], color_rgba(255, 0, 0, 255));
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 }
 
 float CCar::InterpolateStates(u32 element, SCarNetUpdate const& first, SCarNetUpdate const& last, SPHNetState& current)
@@ -523,13 +2363,11 @@ float CCar::InterpolateStates(u32 element, SCarNetUpdate const& first, SCarNetUp
 	return result;
 }
 
-
 void CCar::Interpolate()
 {
 	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
 		return;
 
-	// simple linear interpolation...
 	if (m_CarNetUpdates.size() >= 2)
 	{
 		auto& first = m_CarNetUpdates.front();
@@ -676,85 +2514,1885 @@ void CCar::SyncWrite(NET_Packet& P)
 	}
 }
 
-void CCar::net_Export(NET_Packet& P)
+void	CCar::net_Export			(NET_Packet& P)
 {
 	inherited::net_Export(P);
+//	P.w_u32 (Level().timeServer());
+//	P.w_u16 (0);
 }
 
-void CCar::net_Import(NET_Packet& P)
+void	CCar::net_Import			(NET_Packet& P)
 {
 	inherited::net_Import(P);
+//	u32 TimeStamp = 0;
+//	P.w_u32 (TimeStamp);
+//	u16 NumItems = 0;
+//	P.w_u32 (NumItems);
 }
 
-void	CCar::OnHUDDraw(CCustomHUD* /**hud*/)
+void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
 {
 #ifdef DEBUG
 	Fvector velocity;
 	m_pPhysicsShell->get_LinearVel(velocity);
-	UI().Font().pFontStat->SetColor(0xffffffff);
-	UI().Font().pFontStat->OutSet(120, 530);
-	UI().Font().pFontStat->OutNext("Position:      [%3.2f, %3.2f, %3.2f]", VPUSH(Position()));
-	UI().Font().pFontStat->OutNext("Velocity:      [%3.2f]", velocity.mul(3.6f).magnitude());
+	UI().Font().pFontStat->SetColor		(0xffffffff);
+	UI().Font().pFontStat->OutSet		(120,530);
+	UI().Font().pFontStat->OutNext		("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
+	UI().Font().pFontStat->OutNext		("Velocity:      [%3.2f]",velocity.magnitude());
+
 #endif
 }
 
-void CCar::Hit(SHit* pHDS)
+//void CCar::Hit(float P,Fvector &dir,CObject * who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+void	CCar::Hit							(SHit* pHDS)
 {
-	SHit HDS = *pHDS;
-	WheelHit(HDS.damage(), HDS.bone(), HDS.hit_type);
-	DoorHit(HDS.damage(), HDS.bone(), HDS.hit_type);
-	float hitScale = 1.f, woundScale = 1.f;
+	if (OwnerActor() && rs_car_god)
+		return;
 
-	if (HDS.hit_type != ALife::eHitTypeStrike)
-	{
-		TDamageManager* DmgManager = GetComponent<TDamageManager>();
-		DmgManager->HitScale(HDS.bone(), hitScale, woundScale);
-	}
+	//if(CDelayedActionFuse::isActive()||Initiator()==u16(-1)&&HDS.hit_type==ALife::eHitTypeStrike)
+	//{
+	//	HDS.power=0.f;
+	//}
 
-	HDS.power *= GetHitImmunity(HDS.hit_type) * hitScale;
+	//if(HDS.who->ID()!=ID())
+	//{
+	//	CExplosive::SetInitiator(HDS.who->ID());
+	//}
+	WheelHit(pHDS->damage(),pHDS->bone(),pHDS->hit_type);
+	DoorHit(pHDS->damage(),pHDS->bone(),pHDS->hit_type);
+	float hitScale=1.f,woundScale=1.f;
+	if(pHDS->hit_type!=ALife::eHitTypeStrike) if (TDamageManager* DmgManager = GetComponent<TDamageManager>()) DmgManager->HitScale(pHDS->bone(), hitScale, woundScale);
+	pHDS->power *= GetHitImmunity(pHDS->hit_type) * hitScale;
 
-	inherited::Hit(&HDS);
-	if (!CDelayedActionFuse::isActive())
+	inherited::Hit(pHDS);
+	if(!CDelayedActionFuse::isActive())
 	{
 		CDelayedActionFuse::CheckCondition(GetfHealth());
 	}
 	CDamagableItem::HitEffect();
+	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
+		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
-void CCar::ChangeCondition(float fDeltaCondition)
+void CCar::ChangeCondition	(float fDeltaCondition)	
 {
+	if (OwnerActor() && rs_car_god)
+		return;
 
 	CEntity::CalcCondition(-fDeltaCondition);
 	CDamagableItem::HitEffect();
+	UpdateDamageEffects();
 	if (Local() && !g_Alive() && !AlreadyDie())
-		KillEntity(Initiator());
+		KillEntity	(Initiator());
+	if(Owner()&&Owner()->ID()==Level().CurrentEntity()->ID())
+		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
+}
+#include "AnomalyZone.h"
+void CCar::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+{
+	if(!m_pPhysicsShell)	return;
+
+	if (OwnerActor() && rs_car_god)
+		return;
+
+	
+	xr_vector<u16>::iterator i,e;
+	i=m_steers.begin();
+	e=m_steers.end();
+	for(;i!=e;++i)
+		if((*i)==element) return;
+
+	if (m_hit_stall_threshold && P > m_hit_stall_threshold && b_engine_on && (!who || (who && !smart_cast<CAnomalyZone*>(who))))
+		Stall();
+
+	if(CPHUpdateObject::IsActive())
+	{
+		Fvector vimpulse;vimpulse.set(dir);
+		vimpulse.mul(impulse);
+		vimpulse.y *=GravityFactorImpulse();
+		float mag=vimpulse.magnitude();
+		if(!fis_zero(mag))
+		{
+			 vimpulse.mul(1.f/mag);
+			 m_pPhysicsShell->applyHit(p_in_object_space,vimpulse,mag,element,hit_type);
+		}
+
+		if (P >= 0.0011f && who)
+		{
+			IKinematics* K = PKinematics(Visual());
+			IKinematics* K_who = PKinematics(who->Visual());
+			if (K && K_who)
+			{
+				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(K_who->LL_GetData(K_who->LL_GetBoneRoot()).game_mtl_idx, K->LL_GetData(element).game_mtl_idx);
+				if (mtl_pair)
+				{
+					Fvector collide_pos;
+					collide_pos.set(XFORM().c);
+					collide_pos.add(p_in_object_space);
+					Fmatrix pos;
+					pos.k.set(dir);
+					Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
+					pos.c.set(collide_pos);
+					if (!mtl_pair->CollideSounds.empty())
+					{
+						ref_sound* pSound = &mtl_pair->CollideSounds[::Random.randI(0, mtl_pair->CollideSounds.size())];
+						if (pSound && pSound->_p)
+						{
+							float volume = 0.5f+ P;
+							float freq = ::Random.randF(0.9f, 1.1f);
+							pSound->play_no_feedback(0, 0, 0, &pos.c, &volume, &freq);
+						}
+					}
+					if (P >= 0.011f)
+					{
+						if (!mtl_pair->CollideParticles.empty())
+							Level().ph_commander().add_call(new CPHOnesCondition(), new CCarParticlesPlayCall(pos, zero_vel, *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())]));
+						else
+							Level().ph_commander().add_call(new CPHOnesCondition(), new CCarParticlesPlayCall(pos, zero_vel, "phy_fx\\generic_body_dust_01"));
+					}
+				}
+			}
+		}
+	} else
+	{
+		m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+	}
 }
 
+void CCar::ApplyDamage(u16 level)
+{
+	if (level == m_level_applied) return;
+
+	if (level > m_level_applied)
+	{
+		switch(level)
+		{
+			case 1: m_damage_particles.Play1(this);break;
+			case 2: 
+				{
+					if(!CDelayedActionFuse::isActive())
+					{
+						CDelayedActionFuse::CheckCondition(GetfHealth());
+					}
+					m_damage_particles.Play2(this);
+				}
+												   break;
+			case 3: m_fuel=0.f;
+				
+		}
+	}
+	else
+	{
+		if (level < 2)
+		{
+			m_damage_particles.Stop2(this);
+			CDelayedActionFuse::Reset();
+		}
+		if (level < 1)
+		{
+			m_damage_particles.Stop1(this);
+		}
+	}
+
+	CDamagableItem::ApplyDamage(level);
+}
+
+void CCar::UpdateDamageEffects()
+{
+	const u16 level = DamageLevel();
+	if (level < m_level_applied)
+	{
+		ApplyDamage(level);
+	}
+}
+
+void CCar::RepairDamageItems()
+{
+	for (auto& door : m_doors)
+	{
+		door.second.Repair();
+	}
+	for (auto& wheel : m_wheels_map)
+	{
+		wheel.second.Repair();
+	}
+}
+
+float CCar::SetfHealth(float value)
+{
+	float result = CEntity::SetfHealth(value);
+	CDamagableItem::HitEffect();
+	UpdateDamageEffects();
+	return result;
+}
+
+void CCar::detach_Actor()
+{
+	if(!Owner()) return;
+	Owner()->setVisible(1);
+	if (OwnerActor())
+	{
+		OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
+		}
+	CHolderCustom::detach_Actor();
+	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
+	NeutralDrive();
+	Unclutch();
+	ResetKeys();
+	//m_current_rpm=m_min_rpm;
+	CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
+	PressBreaks();
+	//StartBreaking();
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		(*CWPB)->Action(CCarTurret::eWpnActivate, 0);
+
+	processing_deactivate();
+	saved_camera = ECarCamType(active_camera->tag);
+#ifdef DEBUG
+	DBgClearPlots();
+#endif
+	b_event_exit_car = false;
+	m_exit_car_time = 0;
+}
+
+bool CCar::attach_Actor(CGameObject* actor)
+{
+	b_event_exit_car = false;
+	m_exit_car_time = 0;
+	m_dwAttachTime = Device.dwTimeGlobal;
+	if(CPHDestroyable::Destroyed()) return false;
+	CHolderCustom::attach_Actor(actor);
+	Owner()->setVisible(0);
+	actor->XFORM().mul_43	(XFORM(),m_sits_transforms);
+	OnCameraChange(saved_camera);
+	PPhysicsShell()->Enable();
+	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
+	processing_activate();
+	ReleaseBreaks();
+	StopBreaking();
+	OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);
+	return true;
+}
+
+/*
+void CCar::TeleportCarAndDriver(Fvector3 pos)
+{
+
+	StopEngine();
+	HandBreak();
+
+	renderable.xform.c = pos;
+
+	m_pPhysicsShell->Activate(false);
+	m_pPhysicsShell->mXFORM.set(XFORM());
+	m_pPhysicsShell->Activate(true);
+
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	CInifile* ini = K->LL_UserData();
+	int id;
+	Fmatrix	driver_xform;
+	if (ini->line_exist("car_definition", "driver_position") && ini->line_exist("car_definition", "driver_direction"))
+	{
+		driver_xform.c.set(ini->r_fvector3("car_definition", "driver_position"));
+		driver_xform.k.set(ini->r_fvector3("car_definition", "driver_direction"));
+	}
+	else if (ini->line_exist("car_definition", "driver_place")) {
+
+		id = K->LL_BoneID(ini->r_string("car_definition", "driver_place"));
+		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
+		driver_xform.set(instance.mTransform);
+	}
+	else {
+		id = K->LL_GetBoneRoot();
+		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
+		driver_xform.set(instance.mTransform);
+	}
+
+	Owner()->setVisible(0);
+	m_sits_transforms.set(driver_xform);
+	Actor()->XFORM().mul_43(XFORM(), m_sits_transforms);
+	
+}
+*/
+CCar::SDoor* CCar::Get_Door(u16 id, bool all)
+{
+	auto i = m_doors.find(id);
+	if (i != m_doors.end())
+	{
+		if(all)
+			return &i->second;
+
+		if(i->second.joint)
+			return &i->second;
+	}
+
+	return NULL;
+}
+
+bool CCar::All_Doors_closed()
+{
+	bool opened_door_finded = false;
+	for(auto i=m_doors.begin();i!=m_doors.end();++i)
+	{
+		if(i->second.state != CCar::SDoor::closed)
+			opened_door_finded = true;
+	}
+
+	return !opened_door_finded;
+}
+
+bool CCar::is_Door(u16 id,xr_map<u16,SDoor>::iterator& i)
+{
+	i	= m_doors.find(id);
+	if (i == m_doors.end()) 
+	{
+		return false;
+	}
+	else
+	{
+		if(i->second.joint)//temp for fake doors
+			return true;
+		else
+			return false;
+	}
+}
+bool CCar::is_Door(u16 id)
+{
+	xr_map<u16,SDoor>::iterator i;
+	i	= m_doors.find(id);
+	if (i == m_doors.end()) 
+	{
+		return false;
+	}
+	return true;
+}
+
+bool CCar::Enter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
+{
+	Fvector enter_pos;
+	enter_pos.add(pos,foot_pos);
+	enter_pos.mul(0.5f);
+	for(auto i=m_doors.begin();i!=m_doors.end();++i)
+	{
+		if(i->second.CanEnter(pos,dir,enter_pos) && i->second.IsDistOfSight(pos))
+			return true;
+	}
+	return false;
+}
+
+bool CCar::Exit(const Fvector& pos,const Fvector& dir)
+{
+	xr_map<u16,SDoor>::iterator i,e;
+
+	i=m_doors.begin();e=m_doors.end();
+	for(;i!=e;++i)
+	{
+		if(i->second.CanExit(pos,dir)) 
+		{	
+			i->second.GetExitPosition(m_exit_position);
+			return true;
+		}
+	}
+	return false;
+
+}
+
+void CCar::DoEnter()
+{
+	Fvector center;
+	Center(center);
+
+	Fvector enter_pos;
+	enter_pos.add(Device.vCameraPosition,center);
+	enter_pos.mul(0.5f);
+}
+
+void CCar::DoExit()
+{
+	CActor* A=OwnerActor();
+	if(A)
+	{
+		if(!m_doors.empty())m_doors.begin()->second.GetExitPosition(m_exit_position);
+		else m_exit_position.set(Position());
+		A->detach_Vehicle();
+
+		if (CurrentGameUI()->UIMainIngameWnd->CarPanel().IsShown())
+			CurrentGameUI()->UIMainIngameWnd->CarPanel().Show(false);
+	}
+}
+static void loadcamera(LPCSTR section, CInifile *ini, CCameraBase* cam)
+{
+	if(!ini->section_exist(section)) return;
+
+	if(ini->line_exist(section,"rot_speed"))
+		cam->rot_speed			= ini->r_fvector3(section,"rot_speed");
+	if(ini->line_exist(section,"lim_yaw"))
+		cam->lim_yaw			= ini->r_fvector2(section,"lim_yaw");
+	if(ini->line_exist(section,"lim_pitch"))
+		cam->lim_pitch			= ini->r_fvector2(section,"lim_pitch");
+
+	CCameraLook *llcam = smart_cast<CCameraLook*>(cam);
+	if (llcam)
+	{
+		if(ini->line_exist(section,"lim_zoom"))
+		{
+			llcam->SetZoomLimits(ini->r_fvector2(section,"lim_zoom"));
+		}
+	}
+
+	cam->bClampPitch		= (0!=cam->lim_pitch[0])||(0!=cam->lim_pitch[1]);
+	cam->bClampYaw			= (0!=cam->lim_yaw[0])||(0!=cam->lim_yaw[1]);
+
+	if (cam->bClampPitch)	cam->pitch = (cam->lim_pitch[0]+cam->lim_pitch[1])*0.5f;
+	if (cam->bClampYaw)		cam->yaw	  = (cam->lim_yaw[0]+cam->lim_yaw[1])*0.5f;
+}
+void CCar::ParseDefinitions()
+{
+	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
+	CInifile* ini = pKinematics->LL_UserData();
+	if (ini)
+	{
+		if (ini->section_exist("explosion"))
+			CExplosive::Load(ini, "explosion");
+
+		m_sits_transforms.set(pKinematics->LL_GetTransform(pKinematics->LL_BoneID(READ_IF_EXISTS(ini, r_string, "car_definition", "driver_place", pKinematics->LL_BoneName_dbg(pKinematics->LL_GetBoneRoot())))));
+
+		Fmatrix	driver_xform_tune;
+		Fvector driver_direction = (READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_direction", Fvector().set(0.0f, 0.0f, 0.0f)));
+		//driver_xform_tune.setXYZ(READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_direction", Fvector().set(0.0f, 0.0f, 0.0f)));
+		driver_xform_tune.setXYZ(deg2rad(driver_direction.x), deg2rad(driver_direction.y), deg2rad(driver_direction.z));
+		driver_xform_tune.c.set(READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_position", Fvector().set(0.0f, 0.0f, 0.0f)));
+		m_sits_transforms.mulB_43(driver_xform_tune);
+
+		m_camera_position[EctFirstCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_firsteye", Fvector().set(0.0f, 0.0f, 0.0f));
+		m_camera_position[EctSecondCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_lookat", m_camera_position[EctFirstCam]);
+		m_camera_position[EctThridCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free", m_camera_position[EctSecondCam]);
+		m_camera_position[EctFourthCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free2", m_camera_position[EctThridCam]);
+
+		m_camera_inertion_n = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_inertion_n", m_camera_inertion_n);
+		m_camera_inertion_k = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_inertion_k", m_camera_inertion_k);
+		m_camera_angle_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "camera_angle_factor", m_camera_angle_factor);
+		clamp(m_camera_angle_factor, 0.1f, 2.f);
+
+		m_current_rpm_brp_n_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "handbrake_rpm_threshold", m_current_rpm_brp_n_max);
+		m_current_rpm_brp_decrease = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "handbrake_rpm_decrease", m_current_rpm_brp_decrease);
+		m_slip_sliding_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "slip_sliding_threshold", m_slip_sliding_threshold);
+		m_vel_sliding_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "vel_sliding_threshold", m_vel_sliding_threshold);
+		m_friction_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_slip_factor", m_friction_slip_factor);
+		m_friction2_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
+		m_friction_spin_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_spin_factor", m_friction_spin_factor);
+		m_friction2_spin_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_spin_factor", m_friction2_spin_factor);
+		m_friction_slip_speed = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction_slip_speed", m_friction_slip_speed);
+		m_friction2_steering_wheels = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_steering_wheels", m_friction2_steering_wheels);
+		m_friction2_nonsteering_wheels = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_nonsteering_wheels", m_friction2_nonsteering_wheels);
+		m_friction2_slip_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_slip_factor", m_friction2_slip_factor);
+		m_friction2_brp_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "friction2_brp_boost", m_friction2_brp_boost);
+		m_drift_start_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "drift_start_boost", m_drift_start_boost);
+		m_drift_boost_time = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "drift_boost_time", m_drift_boost_time);
+		m_steer_spin_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_spin_boost", m_steer_spin_boost);
+		m_steer_speed_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_speed_boost", m_steer_speed_boost);
+		m_steer_turn_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_factor", m_steer_turn_factor);
+		m_steer_counter_turn_factor = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_counter_turn_factor", m_steer_counter_turn_factor);
+		m_steer_turn_compensation = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_compensation", m_steer_turn_compensation);
+		m_steer_turn_compensation_max = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_compensation_max", m_steer_turn_compensation_max);
+		m_steer_turn_delta = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "steer_turn_delta", m_steer_turn_delta);
+		m_brake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "brake_boost", m_brake_boost);
+		m_switch_shake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "switch_shake_boost", m_switch_shake_boost);
+		m_engine_shake_boost = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "engine_shake_boost", m_engine_shake_boost);
+		m_wheels_spin_factor_start = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_spin_factor_start", m_wheels_spin_factor_start);
+		m_wheels_spin_factor_stop = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_spin_factor_stop", m_wheels_spin_factor_stop);
+		m_wheels_sound_delay = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
+		m_firsteye_panel = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "firsteye_panel", m_firsteye_panel);
+		m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
+		m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
+
+		loadcamera("car_firsteye_cam", ini, camera[EctFirstCam]);
+		loadcamera("car_look_cam", ini, camera[EctSecondCam]);
+		m_roll_lock_second = READ_IF_EXISTS(ini, r_bool, "car_look_cam", "roll_lock", false);
+		loadcamera("car_free_cam", ini, camera[EctThridCam]);
+		loadcamera("car_free_cam", ini, camera[EctFourthCam]);
+
+		if (ini->line_exist("car_definition", "engine_power"))
+		{
+			m_max_power = ini->r_float("car_definition", "engine_power");
+			m_max_power *= (0.8f * 1000.f);
+		}
+		if (ini->line_exist("car_definition", "engine_power_reverse_factor"))
+		{
+			m_power_reverse_factor = ini->r_float("car_definition", "engine_power_reverse_factor");
+		}
+
+		if (ini->line_exist("car_definition", "max_engine_rpm"))
+		{
+			m_max_rpm = ini->r_float("car_definition", "max_engine_rpm");
+			m_max_rpm *= (1.f / 60.f * 2.f * M_PI);
+		}
+
+		if (ini->line_exist("car_definition", "idling_engine_rpm"))
+		{
+			m_min_rpm = ini->r_float("car_definition", "idling_engine_rpm");
+			m_min_rpm *= (1.f / 60.f * 2.f * M_PI);
+		}
+
+		if (ini->line_exist("car_definition", "max_power_rpm"))
+		{
+			m_power_rpm = ini->r_float("car_definition", "max_power_rpm");
+			m_power_rpm *= (1.f / 60.f * 2.f * M_PI);
+		}
+
+		if (ini->line_exist("car_definition", "max_torque_rpm"))
+		{
+			m_torque_rpm = ini->r_float("car_definition", "max_torque_rpm");
+			m_torque_rpm *= (1.f / 60.f * 2.f * M_PI);
+		}
+
+		if (ini->line_exist("car_definition", "sound_rpm"))
+		{
+			m_sound_rpm = ini->r_float("car_definition", "sound_rpm");
+			m_sound_rpm *= (1.f / 60.f * 2.f * M_PI);
+		}
+
+		m_power_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_increment_factor", m_power_increment_factor);
+		m_power_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_decrement_factor", m_power_increment_factor);
+		m_rpm_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_increment_factor", m_rpm_increment_factor);
+		m_rpm_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_decrement_factor", m_rpm_increment_factor);
+		m_rpm_brp_increment_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_brp_increment_factor", m_rpm_brp_increment_factor);
+		m_rpm_brp_decrement_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "rpm_brp_decrement_factor", m_rpm_brp_decrement_factor);
+
+		m_power_neutral_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "power_neutral_factor", m_power_neutral_factor);
+		clamp(m_power_neutral_factor, 0.0f, 1.0f);
+
+		m_nitro = READ_IF_EXISTS(ini, r_bool, "car_definition", "nitro", m_nitro);
+		m_nitro_power_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_power_factor", m_nitro_power_factor);
+		m_nitro_fuel_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_fuel_factor", m_nitro_fuel_factor);
+		m_nitro_friction_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_friction_factor", m_nitro_friction_factor);
+		m_nitro_wheelie_boost = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_wheelie_boost", m_nitro_wheelie_boost);
+		m_wheelie_boost = READ_IF_EXISTS(ini, r_float, "car_definition", "wheelie_boost", m_wheelie_boost);
+		m_nitro_wheelie_friction_brp_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_wheelie_friction_brp_factor", m_nitro_wheelie_friction_brp_factor);
+		m_nitro_particle_scale = READ_IF_EXISTS(ini, r_float, "car_definition", "nitro_particle_scale", m_nitro_particle_scale);
+		b_nitro_particles_enabled = READ_IF_EXISTS(ini, r_bool, "car_definition", "nitro_particles_enabled", b_nitro_particles_enabled);
+
+		m_engine_sound_scale_max = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_max", m_engine_sound_scale_max);
+		m_engine_sound_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_min", m_engine_sound_scale_min);
+		m_engine_sound_scale_factor = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_sound_scale_factor", m_engine_sound_scale_factor);
+		m_engine_idle_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_idle_volume", m_engine_idle_volume);
+		m_sound_state_change_up = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_change_up", m_sound_state_change_up);
+		m_sound_state_change_down = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_change_down", m_sound_state_change_down);
+		m_sound_idle_change_up = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_idle_change_up", m_sound_idle_change_up);
+		m_sound_idle_change_down = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_idle_change_down", m_sound_idle_change_down);
+		m_sound_state_switch_factor = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_switch_factor", m_sound_state_switch_factor);
+		m_sound_state_after_switch = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_state_after_switch", m_sound_state_after_switch);
+		m_sound_switch_effect_type = READ_IF_EXISTS(ini, r_u32, "car_sound", "sound_switch_effect_type", m_sound_switch_effect_type);
+		m_sound_switch_effect_power = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_power", m_sound_switch_effect_power);
+		m_sound_switch_effect_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_speed", m_sound_switch_effect_speed);
+		m_sound_switch_effect_duration = READ_IF_EXISTS(ini, r_float, "car_sound", "sound_switch_effect_duration", m_sound_switch_effect_duration);
+		m_turbo_scale_max = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_max", m_turbo_scale_max);
+		m_turbo_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_min", m_turbo_scale_min);
+		m_turbo_scale_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "turbo_scale_speed", m_turbo_scale_speed);
+		m_valve_switch_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "valve_switch_volume", m_valve_switch_volume);
+		m_blower_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_scale_min", m_blower_scale_min);
+		m_blower_rpm_scale = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_rpm_scale", m_blower_rpm_scale);
+		m_blower_volume_min = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_volume_min", m_blower_volume_min);
+		m_blower_inertia = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_inertia", m_blower_inertia);
+		m_blower_sound_forward = READ_IF_EXISTS(ini, r_float, "car_sound", "blower_sound_forward", m_blower_sound_forward);
+		m_engine_state_scale_min = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_state_scale_min", m_engine_state_scale_min);
+		m_engine_heavy_constant = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_constant", m_engine_heavy_constant);
+		m_engine_heavy_rpm = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_rpm", m_engine_heavy_rpm);
+		m_engine_heavy_switch = READ_IF_EXISTS(ini, r_float, "car_sound", "engine_heavy_switch", m_engine_heavy_switch);
+		m_whine_speed = READ_IF_EXISTS(ini, r_float, "car_sound", "whine_speed", m_whine_speed);
+		m_whine_exterior_volume = READ_IF_EXISTS(ini, r_float, "car_sound", "whine_exterior_volume", m_whine_exterior_volume);
+		m_whine_reverse = READ_IF_EXISTS(ini, r_bool, "car_sound", "whine_reverse", m_whine_reverse);
+		m_enhanced_sound = READ_IF_EXISTS(ini, r_bool, "car_sound", "enhanced_sound", m_enhanced_sound);
+
+		if (ini->line_exist("car_definition", "exhaust_particles"))
+			m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
+		if (ini->line_exist("car_definition", "nitro_particles"))
+			m_nitro_particles = ini->r_string("car_definition", "nitro_particles");
+		if (ini->line_exist("car_definition", "pop_particles"))
+		{
+			m_pop = true;
+			m_pop_particles = ini->r_string("car_definition", "pop_particles");
+		}
+		m_pop_probability = READ_IF_EXISTS(ini, r_float, "car_definition", "pop_probability", m_pop_probability);
+		m_pop_single = READ_IF_EXISTS(ini, r_bool, "car_definition", "pop_single", m_pop_single);
+
+		b_auto_switch_transmission = !!ini->r_bool("car_definition", "auto_transmission");
+		b_cvt_transmission = READ_IF_EXISTS(ini, r_bool, "car_definition", "cvt_transmission", b_cvt_transmission);
+		m_transmission_switch_delay = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_delay", m_transmission_switch_delay);
+		m_transmission_switch_power_factor = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_power_factor", m_transmission_switch_power_factor);
+		clamp(m_transmission_switch_power_factor, 0.f, 1.f);
+		m_transmission_switch_volume = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_volume", m_transmission_switch_volume);
+		b_transmission_switch_drive = READ_IF_EXISTS(ini, r_bool, "car_definition", "transmission_switch_drive", b_transmission_switch_drive);
+		//m_transmission_switch_exhaust_volume = READ_IF_EXISTS(ini, r_float, "car_definition", "transmission_switch_exhaust_volume", m_transmission_switch_volume);
+
+		InitParabola();
+
+		m_axle_friction = READ_IF_EXISTS(ini, r_float, "car_definition", "axle_friction", 1.0f);
+		m_steering_speed = READ_IF_EXISTS(ini, r_float, "car_definition", "steering_speed", 1.0f);
+
+		if (ini->line_exist("car_definition", "break_time"))
+			m_break_time = ini->r_float("car_definition", "break_time");
+
+		m_break_abs = READ_IF_EXISTS(ini, r_bool, "car_definition", "break_abs", m_break_abs);
+		m_break_abs_power = READ_IF_EXISTS(ini, r_float, "car_definition", "break_abs_power", m_break_abs_power);
+		clamp(m_break_abs_power, 0.f, 1.f);
+		m_break_abs_individual = READ_IF_EXISTS(ini, r_bool, "car_definition", "break_abs_individual", m_break_abs_individual);
+		m_break_abs_threshold = READ_IF_EXISTS(ini, r_float, "car_definition", "break_abs_threshold", m_break_abs_threshold);
+		m_steer_nonlinear = READ_IF_EXISTS(ini, r_bool, "car_definition", "steer_nonlinear", m_steer_nonlinear);
+		m_steer_invert = READ_IF_EXISTS(ini, r_bool, "car_definition", "steer_invert", m_steer_invert);
+		b_diff_lock = READ_IF_EXISTS(ini, r_bool, "car_definition", "diff_lock", b_diff_lock);
+		m_diff_lock_power = READ_IF_EXISTS(ini, r_float, "car_definition", "diff_lock_power", m_diff_lock_power);
+
+		if (ini->section_exist("transmission_gear_ratio"))
+		{
+			float main_gear_ratio = ini->r_float("car_definition", "main_gear_ratio");
+
+			m_gear_ratious.push_back(ini->r_fvector4("transmission_gear_ratio", "R"));
+			m_gear_ratious[0][0] = -m_gear_ratious[0][0] * main_gear_ratio;
+			string32 rat_num;
+			for (int i = 1; true; ++i)
+			{
+				xr_sprintf(rat_num, "N%d", i);
+				if (!ini->line_exist("transmission_gear_ratio", rat_num)) break;
+				Fvector4 gear_rat = ini->r_fvector4("transmission_gear_ratio", rat_num);
+				gear_rat[0] *= main_gear_ratio;
+				gear_rat[1] *= (1.f / 60.f * 2.f * M_PI);
+				gear_rat[2] *= (1.f / 60.f * 2.f * M_PI);
+				m_gear_ratious.push_back(gear_rat);
+			}
+		}
+		m_car_sound->Init();
+
+		m_torch_usage = READ_IF_EXISTS(ini, r_bool, "lights", "torchlight", m_torch_usage);
+
+		m_lights.Init(this);
+		m_lights.ParseDefinitions("headlights", CCarLights::flHeadLights);
+		m_stoplights.Init(this);
+		m_stoplights.ParseDefinitions("stoplights", CCarLights::flStopLights);
+		m_indoorlights.Init(this);
+		m_indoorlights.ParseDefinitions("indoorlights", CCarLights::flIndoorLights);
+		m_reverselights.Init(this);
+		m_reverselights.ParseDefinitions("reverselights", CCarLights::flReverseLights);
+		m_enginelights.Init(this);
+		m_enginelights.ParseDefinitions("enginelights", CCarLights::flEngineLights);
+		if (ini->section_exist("animations"))
+			m_driver_anim_type = ini->r_u16("animations", "driver_animation_type");
+
+		if (ini->section_exist("doors"))
+			m_doors_torque_factor = ini->r_u16("doors", "open_torque_factor");
+
+		m_damage_particles.Init(this);
+
+		// The stock IXRAY material pairs have no collide marks for
+		// objects\car_wheel, so the Cars-Ext tire trails use their own
+		// surface-specific wallmark arrays instead of relying on gamemtl.xr.
+		if (READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "tire_trails", true)
+			&& m_tire_wallmarks_ground->empty())
+		{
+			m_tire_wallmarks_ground->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name", "wm\\wm_tire_trail_1"));
+			m_tire_wallmarks_dirt->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name_dirt", "wm\\wm_tire_trail_dirt_1"));
+			m_tire_wallmarks_grass->AppendMark(READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), "tire_trail_wallmark_name_grass", "wm\\wm_tire_trail_grass_1"));
+		}
+
+		// Wheel sounds are configured in vehicles.ltx. Stock gamemtl.xr uses
+		// human footsteps for objects\car_wheel, so the Cars-Ext defaults use
+		// the dedicated LA wheel loops and skid sounds instead.
+		if (READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "tire_sounds", true))
+		{
+			auto load_sound = [&](ref_sound& sound, LPCSTR key, LPCSTR default_name)
+			{
+				if (sound._p)
+					return;
+				LPCSTR name = READ_IF_EXISTS(pSettings, r_string, cNameSect_str(), key, default_name);
+				if (name && *name)
+					sound.create(name, st_Effect, sg_SourceType);
+			};
+
+			load_sound(m_tire_sound_road, "tire_sound_road", "car\\wheel_road");
+			load_sound(m_tire_sound_dirt, "tire_sound_dirt", "car\\wheel_dirt");
+			load_sound(m_tire_sound_grass, "tire_sound_grass", "car\\wheel_grass");
+			load_sound(m_tire_sound_water, "tire_sound_water", "car\\wheel_water");
+			load_sound(m_tire_skid_sound_road, "tire_skid_sound_road", "car\\handbrake");
+			load_sound(m_tire_skid_sound_dirt, "tire_skid_sound_dirt", "car\\dirt_skid");
+			load_sound(m_tire_skid_sound_grass, "tire_skid_sound_grass", "car\\dirt_skid");
+			load_sound(m_tire_skid_sound_water, "tire_skid_sound_water", "car\\dirt_skid");
+		}
+	}
+}
+
+CCar::ETireSurface CCar::GetTireSurface(u16 m1_id, u16 m2_id)
+{
+	const SGameMtl* material1 = GMLib.GetMaterialByID(m1_id);
+	const SGameMtl* material2 = GMLib.GetMaterialByID(m2_id);
+	const SGameMtl* ground = material1;
+
+	const bool material1_is_wheel = material1 && strstr(*material1->m_Name, "car_wheel");
+	const bool material2_is_wheel = material2 && strstr(*material2->m_Name, "car_wheel");
+	if (material1_is_wheel && !material2_is_wheel)
+		ground = material2;
+	else if (!material1_is_wheel && material2_is_wheel)
+		ground = material1;
+
+	if (ground)
+	{
+		LPCSTR name = *ground->m_Name;
+		if (strstr(name, "water"))
+			return TireSurfaceWater;
+		if (strstr(name, "grass") || strstr(name, "bush"))
+			return TireSurfaceGrass;
+		if (strstr(name, "earth") || strstr(name, "dirt") || strstr(name, "sand") || strstr(name, "gravel"))
+			return TireSurfaceDirt;
+	}
+
+	return TireSurfaceRoad;
+}
+
+IWallMarkArray* CCar::GetTireWallmarks(u16 m1_id, u16 m2_id)
+{
+	if (m_tire_wallmarks_ground->empty())
+		return nullptr;
+
+	switch (GetTireSurface(m1_id, m2_id))
+	{
+		case TireSurfaceGrass:	return &*m_tire_wallmarks_grass;
+		case TireSurfaceDirt:	return &*m_tire_wallmarks_dirt;
+		case TireSurfaceWater:	return nullptr;
+		default:				return &*m_tire_wallmarks_ground;
+	}
+}
+
+ref_sound* CCar::GetTireSound(u16 m1_id, u16 m2_id)
+{
+	switch (GetTireSurface(m1_id, m2_id))
+	{
+		case TireSurfaceDirt:	return &m_tire_sound_dirt;
+		case TireSurfaceGrass:	return &m_tire_sound_grass;
+		case TireSurfaceWater:	return &m_tire_sound_water;
+		default:				return &m_tire_sound_road;
+	}
+}
+
+ref_sound* CCar::GetTireSkidSound(u16 m1_id, u16 m2_id)
+{
+	switch (GetTireSurface(m1_id, m2_id))
+	{
+		case TireSurfaceDirt:	return &m_tire_skid_sound_dirt;
+		case TireSurfaceGrass:	return &m_tire_skid_sound_grass;
+		case TireSurfaceWater:	return &m_tire_skid_sound_water;
+		default:				return &m_tire_skid_sound_road;
+	}
+}
+
+void CCar::LoadBoneMap()
+{
+	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
+	CInifile* ini = pKinematics->LL_UserData();
+	if (ini)
+	{
+		if (ini->line_exist("car_definition", "driving_wheels"))
+			fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);
+		if (ini->line_exist("car_definition", "steering_wheels"))
+			fill_wheel_vector(ini->r_string("car_definition", "steering_wheels"), m_steering_wheels);
+		if (ini->line_exist("car_definition", "breaking_wheels"))
+			fill_wheel_vector(ini->r_string("car_definition", "breaking_wheels"), m_breaking_wheels);
+		if (ini->line_exist("car_definition", "exhausts"))
+			fill_exhaust_vector(ini->r_string("car_definition", "exhausts"), m_exhausts);
+		if (ini->line_exist("car_definition", "doors"))
+			fill_doors_map(ini->r_string("car_definition", "doors"), m_doors);
+
+		if (ini->line_exist("car_definition", "trunk_bone"))
+		{
+			u16 bone_id = pKinematics->LL_BoneID(ini->r_string("car_definition", "trunk_bone"));
+			m_bone_trunk = bone_id;
+			SDoor						door(this);
+			door.bone_id = bone_id;
+			m_doors.insert(std::make_pair(bone_id, door));
+			if (bone_map.find(bone_id) == bone_map.end())
+				bone_map.insert(std::make_pair(bone_id, physicsBone()));
+		}
+
+		if (ini->line_exist("car_definition", "doors_use_recursive"))
+		{
+			string128					S1;
+			LPCSTR						S_ = ini->r_string("car_definition", "doors_use_recursive");
+			int count = _GetItemCount(S_);
+			for (int i = 0; i < count; ++i)
+			{
+				_GetItem(S_, i, S1);
+				if(SDoor* door = Get_Door(pKinematics->LL_BoneID(S1), true))
+				{
+					m_doors_recurs.insert(std::make_pair(i, door));
+					door->recursive_door = true;
+				}
+			}
+		}
+	}
+	auto b_b = pKinematics->LL_Bones()->begin();
+	auto b_e = pKinematics->LL_Bones()->end();
+	for (; b_b != b_e; ++b_b)
+	{
+		CBoneData &bd = pKinematics->LL_GetData( b_b->second );
+
+		if (bd.shape.type != SBoneShape::stNone && !bd.shape.flags.test(SBoneShape::sfNoPhysics) && bone_map.find(b_b->second) == bone_map.end())
+			bone_map.insert(std::make_pair(b_b->second, physicsBone()));
+	}
+}
+
+void CCar::CreateSkeleton(CSE_Abstract	*po)
+{
+
+	if (!Visual()) return;
+	IRenderVisual *pVis = Visual();
+	IKinematics* pK = smart_cast<IKinematics*>(pVis);
+	IKinematicsAnimated* pKA = smart_cast<IKinematicsAnimated*>(pVis);
+	if(pKA)
+	{
+		pKA->PlayCycle		("idle");
+		pK->CalculateBones	(TRUE);
+	}
+
+	m_pPhysicsShell		= P_build_Shell(this, false, &bone_map);
+	m_pPhysicsShell->SetPrefereExactIntegration();
+	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
+	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);
+}
+
+void CCar::Init()
+{
+
+	CPHCollisionDamageReceiver::Init();
+
+	//get reference wheel radius
+	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
+	CInifile* ini = pKinematics->LL_UserData();
+
+	// Cars-Ext uses a much lower default than vanilla's 5.0. Keep the same
+	// default for models that do not override collision_hit_threshold.
+	SetCollisionHitThreshold(READ_IF_EXISTS(ini, r_float, "car_definition", "collision_hit_threshold", 1.f));
+
+	pKinematics->LL_GetBindTransform(bones_bind_forms);
+	xr_vector<Fvector> m_bind_poses;
+	for (auto b_m = bones_bind_forms.begin(); b_m != bones_bind_forms.end(); ++b_m)
+		m_bind_poses.push_back(b_m->c);
+	bind_center.set(0.f, 0.f, 0.f);
+	for (const Fvector& BindPos : m_bind_poses) bind_center.add(BindPos);
+	if (!m_bind_poses.empty()) bind_center.div(float(m_bind_poses.size()));
+
+
+	if(ini->section_exist("air_resistance"))
+	{
+		PPhysicsShell()->SetAirResistance(default_k_l*ini->r_float("air_resistance","linear_factor"),default_k_w*ini->r_float("air_resistance","angular_factor"));
+		m_downforce = READ_IF_EXISTS(ini, r_float, "air_resistance", "downforce", m_downforce);
+		//b_downforce_compensation = READ_IF_EXISTS(ini, r_bool, "air_resistance", "downforce_compensation", b_downforce_compensation);
+	}
+	PPhysicsShell()->set_DynamicScales(1.f, 1.f);
+	SAllDDOParams disable_params;
+	disable_params.Load(ini);
+	m_pPhysicsShell->set_DisableParams(disable_params);
+
+	if(ini->line_exist("car_definition","steer"))
+	{
+		string128					S1;
+		LPCSTR						S_ = ini->r_string	("car_definition","steer");
+		int count =					_GetItemCount(S_);
+		for (int i=0 ;i<count; ++i) 
+		{
+			_GetItem					(S_,i,S1);
+			m_steers.push_back(pKinematics->LL_BoneID(S1));
+			u16 bone_id	=				m_steers.back();
+
+			string128 steer_factor;
+			xr_sprintf(steer_factor, "%s_factor", S1);
+			if (ini->line_exist("car_definition", steer_factor))
+			{
+				m_steer_factor = ini->r_float("car_definition", steer_factor);
+				pKinematics->LL_GetBoneInstance(bone_id).set_callback(bctCustom, cb_Steer_factor, this);
+			}
+			else
+				pKinematics->LL_GetBoneInstance(bone_id).set_callback(bctCustom,cb_Steer,this);
+		}
+	}
+	if (ini->line_exist("lights", "indoorlightdoors"))
+	{
+		string128					S1;
+		LPCSTR						S_ = ini->r_string("lights", "indoorlightdoors");
+		int count = _GetItemCount(S_);
+		for (int i = 0; i < count; ++i)
+		{
+			_GetItem(S_, i, S1);
+			m_indoor_l_available_doors.push_back(pKinematics->LL_BoneID(S1));
+		}
+	}
+	m_steer_angle=0.f;
+	m_ref_radius = READ_IF_EXISTS(ini, r_float, "car_definition", "reference_radius", 1.f);
+	b_exploded						=false;
+	b_engine_on						=false;
+	b_clutch						=false;
+	b_starting						=false;
+	b_stalling						=false;
+	b_transmission_switching		=true;
+
+	auto root_elem = bone_map.find(pKinematics->LL_GetBoneRoot());
+	if(root_elem != bone_map.end() && root_elem->second.element)
+		m_root_transform.set(root_elem->second.element->mXFORM);
+	else
+		Msg("!!! %s bone_map[%s]", cNameVisual().c_str(), pKinematics->LL_BoneName_dbg(root_elem->first));
+
+	m_current_transmission_num=0;
+	CDamagableItem::Init(GetfHealth(),3);
+	CDelayedActionFuse::Initialize(READ_IF_EXISTS(ini, r_float, "car_definition", "time_to_explosion", 120.f), CDamagableItem::DamageLevelToHealth(2));
+	{
+		xr_map<u16,SWheel>::iterator i,e;
+		i=m_wheels_map.begin();
+		e=m_wheels_map.end();
+		for(;i!=e;++i)
+		{
+			i->second.Init();
+			i->second.CDamagableHealthItem::Init(100.f,2);
+		}
+	}
+
+	{
+		xr_vector<SWheelDrive>::iterator i,e;
+		i=m_driving_wheels.begin();
+		e=m_driving_wheels.end();
+		for(;i!=e;++i)
+			i->Init();
+	}
+
+	{
+		xr_vector<SWheelBreak>::iterator i,e;
+		i=m_breaking_wheels.begin();
+		e=m_breaking_wheels.end();
+		for(;i!=e;++i)
+			i->Init();
+	}
+
+	{
+		xr_vector<SWheelSteer>::iterator i,e;
+		i=m_steering_wheels.begin();
+		e=m_steering_wheels.end();
+		for(;i!=e;++i)
+			i->Init();
+	}
+
+	{
+		xr_vector<SExhaust>::iterator i,e;
+		i=m_exhausts.begin();
+		e=m_exhausts.end();
+		for(;i!=e;++i)
+			i->Init();
+	}
+
+	xr_map<u16, SWheel>::iterator i, e;
+	i = m_wheels_map.begin();
+	e = m_wheels_map.end();
+	for (; i != e; ++i)
+	{
+		if (!i->second.WheelFlags.test(SWheel::eWheelType::wheel_drive))
+			b_awd = false;
+	}
+
+	{
+		xr_map<u16,SDoor>::iterator i,e;
+		i=m_doors.begin();
+		e=m_doors.end();
+		for(;i!=e;++i)
+		{
+			i->second.Init();
+			i->second.CDamagableHealthItem::Init(100,1);
+		}
+			
+	}
+
+	if(ini->section_exist("damage_items"))
+	{
+		CInifile::Sect& data		= ini->r_section("damage_items");
+		for (CInifile::SectCIt		I=data.Data.begin(); I!=data.Data.end(); I++){
+			const CInifile::Item& item	= *I;
+			u16 index				= pKinematics->LL_BoneID(*item.first); 
+			R_ASSERT3(index != BI_NONE, "Wrong bone name", *item.first);
+			xr_map   <u16,SWheel>::iterator i=m_wheels_map.find(index);
+			
+			if(i!=m_wheels_map.end())
+					i->second.CDamagableHealthItem::Init(float(atof(*item.second)),2);
+			else 
+			{
+				xr_map   <u16,SDoor>::iterator i=m_doors.find(index);
+				R_ASSERT3(i!=m_doors.end(),"only wheel and doors bones allowed for damage defs",*item.first);
+				i->second.CDamagableHealthItem::Init(float(atof(*item.second)),1);
+			}
+
+		}
+	}
+	
+
+	if(ini->section_exist("immunities"))
+		LoadImmunities("immunities",ini);
+
+	if (ini->line_exist("car_definition", "damage"))
+		if (TDamageManager* DmgManager = GetComponent<TDamageManager>()) DmgManager->reload("car_definition","damage",ini);
+	
+	HandBreak();
+	Transmission(1);
+}
+
+void CCar::Revert()
+{
+	m_pPhysicsShell->applyForce(0,1.5f*EffectiveGravity()*m_pPhysicsShell->getMass(),0);
+}
+
+void CCar::NeutralDrive()
+{
+	e_state_drive = neutral;
+	if (fwp || bkp)
+		m_current_engine_power = EnginePower();
+
+	xr_map<u16, SWheel>::iterator i, e;
+	i = m_wheels_map.begin();
+	e = m_wheels_map.end();
+	for(;i!=e;++i)
+		i->second.Neutral();
+
+	//if (m_car_sound->snd_valve._p && (m_engine_valve == 1) && ((Device.fTimeGlobal - m_engine_state_start_time) > 0.0f) && (Device.fTimeGlobal - (m_transmission_switch_time + m_transmission_switch_delay) > 0.0f))
+	//{
+	//	//m_transmission_time = (Device.fTimeGlobal - m_transmission_switch_time) * 0.5f;
+	//	m_valve_time = (Device.fTimeGlobal - m_engine_state_start_time);
+	//	AscCall(ascSndValve);
+	//}
+	//e_state_drive = neutral;
+	//m_engine_valve = 0;
+}
+void CCar::ReleaseHandBreak()
+{
+	xr_map<u16, SWheel>::iterator i, e;
+	i = m_wheels_map.begin();
+	e = m_wheels_map.end();
+	for (; i != e; ++i)
+		i->second.Neutral();
+	if (e_state_drive == drive)
+		Drive();
+}
+void CCar::Drive()
+{
+	//m_engine_state_time = (Device.fTimeGlobal - m_engine_state_stop_time);
+	//if (m_car_sound->snd_gas._p && (m_engine_valve == 0) && ((Device.fTimeGlobal - m_transmission_switch_time) > 0.0f) && m_engine_state_time > 0.0f)
+	//{
+	//AscCall(ascSndGas);
+	//}
+	if(!b_clutch||!b_engine_on) return;
+	xr_vector<SWheelDrive>::iterator i, e;
+	i = m_driving_wheels.begin();
+	e = m_driving_wheels.end();
+	for (; i != e; ++i)
+		i->Drive();
+	//if (Device.fTimeGlobal < m_transmission_switch_time + m_transmission_switch_delay)
+	//	m_engine_valve_start_time = Device.fTimeGlobal;
+	e_state_drive = drive;
+	//m_engine_valve = 1;
+}
+
+void CCar::StartEngine()
+{
+	if(m_fuel<EPS||b_engine_on) return;
+	PlayExhausts();
+	m_car_sound->Start();
+	b_engine_on=true;
+	m_current_rpm=0.f;
+	m_current_engine_power = 0.f;
+	m_current_rpm_brp_n = 1.f;
+	Starter();
+}
+void CCar::StopEngine()
+{
+	if(!b_engine_on) return;
+	//m_car_sound->Stop();
+	//StopExhausts();
+	AscCall(ascSndStall);
+	AscCall(ascExhoustStop);
+	NeutralDrive();//set zero speed
+	b_engine_on=false;
+	UpdatePower();//set engine friction;
+	m_current_rpm=0.f;
+}
+
+void CCar::Stall()
+{
+	//m_car_sound->Stall();
+	//StopExhausts();
+	AscCall(ascSndStall);
+	AscCall(ascExhoustStop);
+	NeutralDrive();//set zero speed
+	b_engine_on=false;
+	UpdatePower();//set engine friction;
+	m_current_rpm=0.f;
+}
+void CCar::ReleasePedals()
+{
+	Clutch();
+	NeutralDrive();//set zero speed
+	UpdatePower();//set engine friction;
+}
+
+void CCar::SwitchEngine()
+{
+	if(b_engine_on) StopEngine();
+	else			StartEngine();
+}
+
+void CCar::SwitchEngineDoors()
+{
+	VERIFY(!physics_world()->Processing());
+
+	for (auto &it : engine_door)
+		it.Switch(b_engine_on);
+}
+
+void CCar::Clutch()
+{
+	b_clutch=true;
+}
+
+void CCar::Unclutch()
+{
+	b_clutch=false;
+}
+
+void CCar::Starter()
+{
+	b_starting=true;
+	m_dwStartTime=Device.dwTimeGlobal;
+}
+void CCar::UpdatePower()
+{
+	if (Device.dwTimeGlobal - m_hit_engine_time < 1000)
+	{
+		xr_vector<SWheelDrive>::iterator i, e;
+		i = m_driving_wheels.begin();
+		e = m_driving_wheels.end();
+		for (; i != e; ++i)
+			i->UpdatePower();
+		return;
+	}
+
+	if (b_engine_on && Device.dwTimeGlobal - m_dwStartTime > m_car_sound->engine_start_delay)
+	{
+		if (brp)
+		{
+			if ((fwp || bkp) && e_state_drive != neutral)
+			{
+				m_current_rpm += (100.f * m_rpm_increment_factor *  m_rpm_brp_increment_factor) * fixed_step * 100.f;
+				m_current_rpm_brp_n += 0.2f * fixed_step * 100.f;
+			}
+			else
+			{
+				m_current_rpm = ((1.f - (0.1f * m_rpm_decrement_factor * m_rpm_brp_decrement_factor) * fixed_step * 100.f) * m_current_rpm + (0.1f * m_rpm_decrement_factor * m_rpm_brp_decrement_factor) * fixed_step * 100.f * m_min_rpm);
+				m_current_rpm_brp_n -= m_current_rpm_brp_decrease * 0.01f * (m_current_rpm_brp_n_max - 1.f) * fixed_step * 100.f * m_current_rpm_brp_n_max;
+			}
+			clamp(m_current_rpm, m_min_rpm, m_max_rpm);
+			clamp(m_current_rpm_brp_n, 1.f, m_current_rpm_brp_n_max);
+		}
+		else
+		{
+			if (!b_awd && bkp && fwp && GetSpeedKmH() < 5.f)
+				m_current_rpm_brp_n += 0.2f * fixed_step * 100.f;
+			else
+				m_current_rpm_brp_n -= m_current_rpm_brp_decrease * 0.01f * (m_current_rpm_brp_n_max - 1.f) * fixed_step * 100.f * m_current_rpm_brp_n_max;
+			clamp(m_current_rpm_brp_n, 1.f, m_current_rpm_brp_n_max);
+			m_current_rpm = EngineDriveSpeed();
+			if (!b_cvt_transmission)
+			{
+				if (!b_auto_transmission_stop && !rs_car_transmission && mb_traction && !m_gear_ratious.empty())
+				{
+					if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
+					if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2] && GetSpeedKmH() > m_gear_ratious[CurrentTransmission()][3]) TransmissionUp();
+				}
+			}
+			else if (!m_gear_ratious.empty())
+			{
+				float rpm = m_power_rpm;
+				if (e_state_drive != drive)
+					rpm = m_torque_rpm;
+
+				if (DriveWheelsMeanAngleRate() != 0.f)
+					m_current_gear_ratio = (rpm * m_ref_radius) / (fabsf(DriveWheelsMeanAngleRate()) * m_ref_radius);
+				clamp(m_current_gear_ratio, m_gear_ratious[2][0], m_gear_ratious[1][0]);
+				if (!CurrentTransmission())
+					m_current_gear_ratio = -m_current_gear_ratio;
+			}
+			xr_vector<SWheelDrive>::iterator i, e;
+			i = m_driving_wheels.begin();
+			e = m_driving_wheels.end();
+			m_diff_lock_overpower = 0.f;
+			for (; i != e; ++i)
+			{
+				if (b_diff_lock)
+				{
+					m_diff_lock_overpower += i->pwheel->wheel_diff_power;
+				}
+				i->UpdatePower();
+			}
+		}
+		m_current_engine_power = EnginePower();
+	}
+	else
+	{
+		if (e_state_drive == neutral)
+		{
+			m_current_rpm = EngineDriveSpeed();
+			m_current_engine_power = EnginePower();
+			xr_vector<SWheelDrive>::iterator i, e;
+			i = m_driving_wheels.begin();
+			e = m_driving_wheels.end();
+			for (; i != e; ++i)
+				i->UpdatePower();
+			
+		}
+	}
+}
+
+void CCar::SteerRight()
+{
+	m_steer_start_time = Device.fTimeGlobal;
+	b_wheels_limited=true;  //no need to limit wheels when stiring
+	xr_vector<SWheelSteer>::iterator i,e;
+	i=m_steering_wheels.begin();
+	e=m_steering_wheels.end();
+	for(;i!=e;++i)
+		i->SteerRight();
+	e_state_steer=right;
+}
+
+void CCar::SteerLeft()
+{
+	m_steer_start_time = Device.fTimeGlobal;
+	b_wheels_limited=true; //no need to limit wheels when stiring
+	xr_vector<SWheelSteer>::iterator i,e;
+	i=m_steering_wheels.begin();
+	e=m_steering_wheels.end();
+	for(;i!=e;++i)
+		i->SteerLeft();
+	e_state_steer=left;
+}
+
+void CCar::SteerIdle()
+{
+	m_steer_start_time = Device.fTimeGlobal;
+	b_wheels_limited=false;
+	xr_vector<SWheelSteer>::iterator i,e;
+	i=m_steering_wheels.begin();
+	e=m_steering_wheels.end();
+	for(;i!=e;++i)
+		i->SteerIdle();
+	e_state_steer=idle;
+}
+
+void CCar::LimitWheels()
+{
+	if(b_wheels_limited) return;
+	b_wheels_limited=true;
+	xr_vector<SWheelSteer>::iterator i,e;
+	i=m_steering_wheels.begin();
+	e=m_steering_wheels.end();
+	for(;i!=e;++i)
+		i->Limit();
+}
+void CCar::HandBreak()
+{
+	float k = 1.f;
+	float time = (Device.fTimeGlobal - m_break_start);
+	if (!brp)
+	{
+		if (m_handbreak_start + 1.f < Device.fTimeGlobal)
+			b_drift_boost = true;
+		m_handbreak_start = Device.fTimeGlobal;
+	}
+	if (time < m_break_time)
+	{
+		k *= (time / m_break_time);
+	}
+	xr_vector<SWheelBreak>::iterator i, e;
+	i = m_breaking_wheels.begin();
+	e = m_breaking_wheels.end();
+	for (; i != e; ++i)
+		i->HandBreak(k);
+}
+
+void CCar::StartBreaking()
+{
+	if(!b_breaks)
+	{
+		b_breaks = true;
+		m_break_start = Device.fTimeGlobal;
+		if (m_break_abs && m_break_abs_individual)
+		{
+			xr_vector<SWheelBreak>::iterator i, e;
+			i = m_breaking_wheels.begin();
+			e = m_breaking_wheels.end();
+			for (; i != e; ++i)
+				i->pwheel->collision_params.break_start = Device.fTimeGlobal;
+		}
+	}
+}
+void CCar::StopBreaking()
+{
+	xr_map<u16, SWheel>::iterator i, e;
+	i = m_wheels_map.begin();
+	e = m_wheels_map.end();
+	for (; i != e; ++i)
+		i->second.Neutral();
+	if (e_state_drive == drive)
+		Drive();
+
+	if (b_breaks && m_break_time > 0.f && b_engine_on && Device.fTimeGlobal - m_break_start > 0.05f)
+		m_car_sound->BrakeRelease();
+	b_breaks = false;
+}
+void CCar::PressRight()
+{
+	if(lsp)
+		SteerIdle();
+	else
+		SteerRight();
+	rsp = true;
+}
+void CCar::PressLeft()
+{
+	if(rsp)
+		SteerIdle();
+	else
+		SteerLeft();
+	lsp=true;
+}
+void CCar::PressForward()
+{
+	if (bkp)
+	{
+		Unclutch();
+		NeutralDrive();
+	}
+	else
+	{
+		Unclutch();
+		NeutralDrive();
+		StartBreaking();
+	}
+
+	fwp=true;
+}
+void CCar::PressBack()
+{
+	if (fwp)
+	{
+		Unclutch();
+		NeutralDrive();
+	}
+	else
+	{
+		Unclutch();
+		NeutralDrive();
+		StartBreaking();
+	}
+	bkp=true;
+}
+void CCar::PressBreaks()
+{
+	/*
+	if (!brp && Device.fTimeGlobal - m_handbreak_start > 1.f)
+		if (m_pPhysicsShell && m_pPhysicsShell->isActive())
+		{
+			if (m_pPhysicsShell->get_ElementByStoreOrder(0))
+			{
+				//Msg("drift %f", m_handbreak_start - Device.fTimeGlobal);
+				Fvector angular_velocity = GetAvelAxes(0);
+
+				float spd = GetSpeedKmH() * 0.01f;
+				clamp(spd, 0.f, 1.f);
+				spd = sinf(0.5f * PI * powf(spd, 0.5f));
+
+				if (e_state_steer == right && angular_velocity.y > 0.f)
+				{
+					angular_velocity.y += m_drift_start_boost * spd;
+					SetAvelAxes(0, angular_velocity);
+				}
+				if (e_state_steer == left && angular_velocity.y < 0.f)
+				{
+					angular_velocity.y -= m_drift_start_boost * spd;
+					SetAvelAxes(0, angular_velocity);
+				}
+			}
+		}
+		*/
+	HandBreak();
+	brp=true;
+}
+
+void CCar::DriveBack()
+{
+	Clutch();
+	Transmission(0);
+	Drive();
+}
+void CCar::DriveForward()
+{
+	Clutch();
+	if (0 == CurrentTransmission()) Transmission(1);
+	Drive();
+}
+void CCar::ReleaseRight()
+{
+	if(lsp)
+		SteerLeft();
+	else
+		SteerIdle();
+	rsp=false;
+}
+void CCar::ReleaseLeft()
+{
+	if(rsp)
+		SteerRight();
+	else
+		SteerIdle();
+	lsp=false;
+}
+void CCar::ReleaseForward()
+{
+	if(b_breaks && !fwpbkp)
+	{
+		StopBreaking();
+	}
+	if(bkp)
+	{
+		Clutch();
+		Transmission(0);
+		Drive();
+	}
+	else
+	{
+		Unclutch();
+		NeutralDrive();
+	}
+	b_burnout = false;
+	fwp = false;
+}
+void CCar::ReleaseBack()
+{
+	if(b_breaks && !fwpbkp)
+	{
+		StopBreaking();
+	}
+	if(fwp)
+	{
+		Clutch();
+		if (0 == CurrentTransmission()) Transmission(1);
+		Drive();
+	}
+	else
+	{
+		Unclutch();
+		NeutralDrive();
+	}
+	b_burnout = false;
+	bkp=false;
+}
+
+void CCar::ReleaseBreaks()
+{
+	ReleaseHandBreak();
+	brp=false;
+}
+
+void CCar::Transmission(size_t num)
+{
+	if (m_gear_ratious.empty())return;
+	if(num<m_gear_ratious.size())
+	{
+		if (CurrentTransmission() != num)
+		{
+			//m_car_sound					->TransmissionSwitch()		;
+
+			m_transmission_sound_played = false;
+			//m_transmission_switched = false;
+			m_transmission_switch_time = Device.fTimeGlobal;
+
+			if (m_transmission_stage == 1)
+			{
+				m_transmission_stage = 10;
+				if (m_pop && e_state_drive == drive && m_current_rpm > m_torque_rpm && b_engine_on && !m_pop_single)
+				{
+					PlayExhaustsPop();
+					m_car_sound->PopSound();
+				}
+			}
+			if (m_transmission_stage == 2)
+				m_transmission_stage = 20;
+
+			m_current_transmission_num = num;
+			m_current_gear_ratio = m_gear_ratious[num][0];
+			Drive();
+
+			if (e_state_drive == drive)
+			{
+				//float spd = GetSpeedKmH() / 200.f;
+				//clamp(spd, 0.f, 0.5f);
+				float rotate = m_switch_shake_boost * m_engine_rpm_scale;
+				//Msg("wheel %f", 1.f - spd);
+				if (m_pPhysicsShell && m_pPhysicsShell->isActive())
+				{
+					if (m_pPhysicsShell->get_ElementByStoreOrder(0) && mb_traction)
+					{
+						Fvector angular_velocity = GetAvelAxes(0);
+						angular_velocity.x += rotate;
+						SetAvelAxes(0, angular_velocity);
+					}
+				}
+			}
+		}
+		else
+			if (m_transmission_stage < 10)
+			m_transmission_stage = 0;
+	}
+
+#ifdef DEBUG
+	//Log("Transmission switch %d",(u32)num);
+#endif
+}
+void CCar::CircleSwitchTransmission()
+{
+	if (m_gear_ratious.empty())return;
+	if(0==CurrentTransmission())return;
+	size_t transmission=1+CurrentTransmission();
+	transmission=transmission%m_gear_ratious.size();
+	0==transmission ? transmission++ : transmission;
+	Transmission(transmission);
+	
+}
+
+void CCar::TransmissionUp()
+{
+	if (m_gear_ratious.empty())return;
+	if(0==CurrentTransmission())return;
+	if (b_cvt_transmission)return;
+	m_transmission_switch_rpm = m_current_rpm;
+	m_transmission_switch_sound_time = Device.fTimeGlobal;
+	size_t transmission=1+CurrentTransmission();
+	size_t max_transmition_num=m_gear_ratious.size()-1;
+	transmission>max_transmition_num ? transmission=max_transmition_num :transmission;
+	if (m_transmission_stage == 0)
+		m_transmission_stage = 1;
+	Transmission(transmission);
+}
+
+void CCar::TransmissionDown()
+{
+	if (m_gear_ratious.empty())return;
+	if(0==CurrentTransmission())return;
+	if(b_cvt_transmission)return;
+	m_transmission_switch_rpm = m_current_rpm;
+	m_transmission_switch_sound_time = Device.fTimeGlobal;
+	size_t transmission=CurrentTransmission()-1;
+	transmission < 1 ? transmission = 1 : transmission;
+	if (m_transmission_stage == 0)
+		m_transmission_stage = 2;
+	Transmission(transmission);
+}
+
+
+void CCar::PhTune(float step)
+{
+	for(u16 i=PPhysicsShell()->get_ElementsNumber();i!=0;i--)	
+	{
+		CPhysicsElement* e=PPhysicsShell()->get_ElementByStoreOrder(i-1);
+		if(e->isActive()&&e->isEnabled())e->applyForce( 0, e->getMass()*AntiGravityAccel(), 0 );
+	}
+}
+float CCar::EffectiveGravity()
+{
+	float g= physics_world()->Gravity();
+	if(CPHUpdateObject::IsActive())g*=0.5f;
+	return g;
+}
+float CCar::AntiGravityAccel()
+{
+	return physics_world()->Gravity()-EffectiveGravity();
+}
+float CCar::GravityFactorImpulse()
+{
+	return _sqrt(EffectiveGravity()/physics_world()->Gravity());
+}
+
+void CCar::PlayExhausts()
+{
+
+	xr_vector<SExhaust>::iterator i,e;
+	i=m_exhausts.begin();
+	e=m_exhausts.end();
+	for(;i!=e;++i)
+		i->Play();
+}
+
+void CCar::PlayExhaustsNitro()
+{
+	xr_vector<SExhaust>::iterator i, e;
+	i = m_exhausts.begin();
+	e = m_exhausts.end();
+	for (; i != e; ++i)
+		i->PlayNitro();
+}
+
+void CCar::PlayExhaustsPop()
+{
+	xr_vector<SExhaust>::iterator i, e;
+	i = m_exhausts.begin();
+	e = m_exhausts.end();
+	for (; i != e; ++i)
+		if (Random.randF(0.f, 1.f) < 0.9f)
+			i->PlayPop();
+}
+
+void CCar::StopExhausts()
+{
+	xr_vector<SExhaust>::iterator i,e;
+	i=m_exhausts.begin();
+	e=m_exhausts.end();
+	for(;i!=e;++i)
+		i->Stop();
+}
+
+void CCar::StopExhaustsNitro()
+{
+	xr_vector<SExhaust>::iterator i, e;
+	i = m_exhausts.begin();
+	e = m_exhausts.end();
+	for (; i != e; ++i)
+		i->StopNitro();
+}
+
+void CCar::UpdateExhausts()
+{
+	if(!b_engine_on) return;
+	xr_vector<SExhaust>::iterator i,e;
+	i=m_exhausts.begin();
+	e=m_exhausts.end();
+	for(;i!=e;++i)
+		i->Update();
+}
+
+void CCar::ClearExhausts()
+{
+	xr_vector<SExhaust>::iterator i,e;
+	i=m_exhausts.begin();
+	e=m_exhausts.end();
+	for(;i!=e;++i)
+		i->Clear();
+}
+bool CCar::ScriptUseTrunk(u16 bone_id)
+{
+	if (!pSettings->section_exist("lost_alpha_cfg") || !pSettings->line_exist("lost_alpha_cfg", "on_use_trunk"))
+		return false;
+
+	luabind::functor<void>	lua_function;
+	string256		fn;
+	xr_strcpy(fn, pSettings->r_string("lost_alpha_cfg", "on_use_trunk"));
+	if (!ai().script_engine().functor<void>(fn, lua_function))
+	{
+		Msg("! CCar: cannot find Lua function %s", fn);
+		return false;
+	}
+	lua_function(ID());
+	return true;
+}
+
+u16 CCar::GetNearestBone(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test)
+{
+	range = 0.f;
+	xr_map<float, u16> m_bones_ids_v;
+
+	// The car collision model is one-sided, so a ray that starts inside the cabin does
+	// not report the car itself. Bone picking is double-sided, so scan the bones directly
+	// instead of requiring an initial collision hit (needed for first-person door use).
+	PKinematics(Visual())->CalculateBones(TRUE);
+	for (auto I = PKinematics(Visual())->LL_Bones()->begin(); I != PKinematics(Visual())->LL_Bones()->end(); ++I)
+	{
+		if(!PKinematics(Visual())->LL_GetBoneVisible(I->second))
+			continue;
+
+		Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform((*I).second);
+		bone_xform.mulA_43(XFORM());
+
+		float w	= bone_xform.c.x*Device.mFullTransform._14 + bone_xform.c.y*Device.mFullTransform._24 + bone_xform.c.z*Device.mFullTransform._34 + Device.mFullTransform._44;
+		if (w<0) continue;
+
+		IKinematics::pick_result res;
+		if(PKinematics(Visual())->PickBone(XFORM(), res, Radius()*2, look_pos, look_dir, I->second))
+		{
+			Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(res.dist));
+
+			Fvector diff_cam;
+			diff_cam.sub(collide_pos, look_pos);
+			if (!safe_normalize(diff_cam)) continue;
+			if(diff_cam.similar(look_dir, EPS_L))
+				m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), I->second));
+		}
+	}
+	if(trunk_test)
+	{
+		RQR.r_clear();
+		collide::ray_defs	Q(look_pos, look_dir, Radius()*2, CDB::OPT_CULL,collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
+		if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+		{
+			for (auto I = RQR.r_begin(); I != RQR.r_end(); ++I)
+			{
+				Fvector collide_pos = Fvector(look_pos).add(Fvector(look_dir).mul(I->range));
+
+				Fvector diff_cam;
+				diff_cam.sub(collide_pos, look_pos);
+				if (!safe_normalize(diff_cam)) continue;
+				if(diff_cam.similar(look_dir, EPS_L) && m_bone_trunk == u16(I->element))
+					m_bones_ids_v.insert(std::make_pair(look_pos.distance_to(collide_pos), u16(I->element)));
+			}
+		}
+	}
+
+	auto nearest_IT = std::min_element(m_bones_ids_v.begin(), m_bones_ids_v.end());
+	if(nearest_IT == m_bones_ids_v.end())
+		return BI_NONE;
+	range = nearest_IT->first;
+	return nearest_IT->second;
+}
+bool drag_activated = false;
+void drag_callback(void* ptr)
+{
+	CCar* pCar = (CCar*)ptr;
+	if(Device.Paused()) return;
+	if(!g_pGameLevel) return;
+	if(!g_pGameLevel->CurrentEntity()) return;
+	if(!g_actor) return;
+	if(!pCar) return;
+	if(pCar->getDestroy()) return;
+	drag_activated = true;
+	Sleep(150);
+	pCar->b_event_drag_activated = true;
+	drag_activated = false;
+}
+CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool special)
+{
+	if(Owner() && active_camera->tag != EctFirstCam)
+		return NULL;
+
+	if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		if(!special)
+		{
+			collide::rq_result RQ;
+			bool HasPick = Level().ObjectSpace.RayPick(look_pos, look_dir, 1.5f, collide::rqtObject, RQ, Level().CurrentControlEntity());
+			if(HasPick && RQ.O == this)
+			{
+				if (!Owner() && m_pPhysicsShell && g_actor)//Р ВµРЎРѓР В»Р С‘ Р Р…Р Вµ Р Р…Р В°РЎв‚¬Р В»Р С‘ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С” Р С‘Р В»Р С‘ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ РЎвЂљР С• Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• РЎвЂљР С•Р В»Р С”Р Р…РЎвЂР С Р СР В°РЎв‚¬Р С‘Р Р…РЎС“
+				{
+					if(!drag_activated)
+						thread_spawn(drag_callback,"drag_callback",0, this);
+				}
+			}
+		}
+		return NULL;
+	}
+
+	float dist;
+
+	u16 bonebypoly_id = GetNearestBone(look_pos, look_dir, dist, true);// Р С‘РЎвЂ°Р ВµР С Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬РЎС“РЎР‹ Р С”Р С•РЎРѓРЎвЂљРЎРЉ Р С—Р С• Р С—Р С•Р В»Р С‘Р С–Р С•Р Р…Р В°Р С 
+	SDoor* door = Get_Door(bonebypoly_id);
+
+	if(door)//Р Р…Р В°РЎв‚¬Р В»Р С‘ Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬РЎС“РЎР‹ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ
+	{
+		if(door->recursive_door)//Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р Р…Р В°РЎвЂ¦Р С•Р Т‘Р С‘РЎвЂљРЎРѓРЎРЏ Р Р† Р СР В°РЎРѓРЎРѓР С‘Р Р†Р Вµ Р С•Р В±РЎР‰Р ВµР Т‘Р С‘Р Р…Р ВµР Р…Р Р…РЎвЂ№РЎвЂ¦ Р Т‘Р Р†Р ВµРЎР‚Р ВµР в„–
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+			b_start_close_recursive = false;
+			b_start_open_recursive = true;
+			return NULL;//Р Р…Р Вµ Р В±РЎС“Р Т‘Р ВµР С Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°РЎвЂљРЎРЉ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р Т‘Р В»РЎРЏ Р Т‘Р В°Р В»РЎРЉР Р…Р ВµР в„–РЎв‚¬Р ВµР С–Р С• Р Р†Р В·Р В°Р С‘Р СР С•Р Т‘Р ВµР в„–РЎРѓРЎвЂљР Р†Р С‘РЎРЏ РЎРѓ Р Р…Р ВµР в„– Р В° Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• Р В·Р В°Р С—РЎС“РЎРѓРЎвЂљР С‘Р С РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘Р Р†Р Р…Р С•Р Вµ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘Р Вµ
+		}
+		if (m_bone_trunk == bonebypoly_id)//Р Т‘Р Р†Р ВµРЎР‚РЎРЉ РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+			ScriptUseTrunk(bonebypoly_id);
+			return NULL;// Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• Р С—Р ВµРЎР‚Р ВµР Т‘Р В°Р Т‘Р С‘Р С РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘Р Вµ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С Р Р† РЎРѓР С”РЎР‚Р С‘Р С—РЎвЂљРЎвЂ№ Р Р…Р Вµ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ
+		}
+	}
+	else// Р С—Р С‘Р С”Р Р…РЎС“РЎвЂљР В°РЎРЏ Р С”Р С•РЎРѓРЎвЂљРЎРЉ Р Р…Р Вµ РЎРЏР Р†Р В»РЎРЏР ВµРЎвЂљРЎРѓРЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉРЎР‹ Р С‘Р В»Р С‘ Р Т‘Р Р†Р ВµРЎР‚РЎРЉРЎР‹-Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С, Р С—Р С•Р С—РЎР‚Р С•Р В±РЎС“Р ВµР С РЎР‹Р В·Р В°Р Р…РЎС“РЎвЂљРЎРЉ Р ВµРЎвЂ Р С”Р В°Р С” Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С” Р С—Р С• РЎв‚¬Р ВµР в„–Р С—РЎС“
+	{
+		if((m_doors_recurs.empty() || (!b_start_close_recursive && b_all_recurs_opened)) && m_bone_trunk == bonebypoly_id)
+		{
+			if(special)
+			{
+				if(!Owner())
+					return door;
+				else
+					return NULL;
+			}
+			ScriptUseTrunk(bonebypoly_id);
+			return NULL;// Р С—РЎР‚Р С•РЎРѓРЎвЂљР С• Р С—Р ВµРЎР‚Р ВµР Т‘Р В°Р Т‘Р С‘Р С РЎС“Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘Р Вµ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С Р Р† РЎРѓР С”РЎР‚Р С‘Р С—РЎвЂљРЎвЂ№ Р Р…Р Вµ Р Р†Р С•Р В·Р Р†РЎР‚Р В°РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ
+		}
+	}
+
+	if(door && special && Owner() && door->non_enterable)
+		return NULL;
+
+	return door;
+}
+CCar::SDoor* GNearestDoor(CCar* pcar, xr_map<u16,CCar::SDoor> &doors)
+{
+	xr_map<float, CCar::SDoor*> m_doors;
+	for (auto I=doors.begin(); I!=doors.end(); ++I)
+	{
+		if(!pcar) continue;
+		if(!g_actor) continue;
+		if(I->second.non_enterable) continue;
+		if(I->second.non_exitable) continue;
+		Fvector center; Actor()->Center(center);
+		m_doors.insert(std::make_pair(I->second.GetWorldPosition().distance_to(center), &I->second));
+	}
+	if (m_doors.empty())
+		return nullptr;
+
+	return std::min_element(m_doors.begin(), m_doors.end())->second;
+}
 bool CCar::TryTrunk()
 {
 	if (m_bone_trunk == BI_NONE)
 		return false;
 
-	RQR.r_clear();
-	collide::ray_defs Q(Device.vCameraPosition, Device.vCameraDirection, 3.f, CDB::OPT_CULL, collide::rqtObject);
+	// The trunk uses the same per-bone parameters as doors from the model ltx,
+	// including use_distance from its [bone] section.
+	float UseDistance = 2.f;
+	auto DoorIt = m_doors.find(m_bone_trunk);
+	if (DoorIt != m_doors.end())
+		UseDistance = DoorIt->second.dist_to_door_avlbl;
 
-	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+	// The trunk is usable only when the aim ray actually hits its bone.
+	// GetNearestBone scans the car bones and also adds trunk-specific ray hits,
+	// so it works from any side but does not trigger while aiming at a door.
+	float distance = 0.f;
+	const u16 bone = GetNearestBone(Device.vCameraPosition, Device.vCameraDirection, distance, true);
+	if (bone != m_bone_trunk || distance > UseDistance)
 	{
-
-		collide::rq_results& R = RQR;
-		int y = R.r_count();
-
-		for (int k = 0; k < y; ++k)
-		{
-			collide::rq_result* I = R.r_begin() + k;
-			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
-			{
-				return true;
-			}
-		}
+		return false;
 	}
 
-	return false;
+	return IsGameTypeSingle();
 }
 
 bool CCar::TryUsableBones()
@@ -770,9 +4408,9 @@ bool CCar::TryUsableBones()
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
 		collide::rq_results& R = RQR;
-		int y = R.r_count();
+		const int Count = R.r_count();
 
-		for (int k = 0; k < y; ++k)
+		for (int k = 0; k < Count; ++k)
 		{
 			collide::rq_result* I = R.r_begin() + k;
 			if (IsGameTypeSingle() && UsableBones.contains(I->element))
@@ -783,934 +4421,469 @@ bool CCar::TryUsableBones()
 		}
 	}
 
-
 	return false;
 }
 
-void CCar::PHHit(SHit& H)
+bool CCar::Use(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 {
-	if (!m_pPhysicsShell)	return;
-	if (m_bone_steer == H.bone()) return;
-	if (CPHUpdateObject::IsActive())
+	if (!Owner())
 	{
-		Fvector vimpulse; vimpulse.set(H.direction());
-		vimpulse.mul(H.phys_impulse());
-		vimpulse.y *= GravityFactorImpulse();
-		float mag = vimpulse.magnitude();
-		if (!fis_zero(mag))
+		if (TryUsableBones())
 		{
-			vimpulse.mul(1.f / mag);
-			m_pPhysicsShell->applyHit(H.bone_space_position(), vimpulse, mag, H.bone(), H.type());
+			luabind::functor<bool> Callback;
+			if (ai().script_engine().functor(UsableBones[UsableBonesActive].c_str(), Callback))
+			{
+				if (Callback(this))
+					return false;
+			}
 		}
 
+		if (TryTrunk())
+		{
+			auto DoorIt = m_doors.find(m_bone_trunk);
+			if (DoorIt != m_doors.end())
+			{
+				SDoor& Trunk = DoorIt->second;
+				switch (Trunk.state)
+				{
+					case SDoor::closed:
+					case SDoor::closing:
+						Trunk.Open();
+						break;
+					case SDoor::opened:
+					case SDoor::broken:
+						if (CurrentGameUI())
+							CurrentGameUI()->StartCarBody(Actor(), this);
+						break;
+					case SDoor::opening:
+					default:
+						break;
+				}
+			}
+			return false;
+		}
+	}
+
+	//Р ВµРЎРѓР В»Р С‘ Р Р…Р ВµРЎвЂљ Р Т‘Р Р†Р ВµРЎР‚Р ВµР в„– Р Р† Р СР В°РЎв‚¬Р С‘Р Р…Р Вµ
+	if(!Owner())
+	{
+		if(m_doors.empty())
+		{
+			RQR.r_clear			();
+			collide::ray_defs	Q(pos, dir, Radius(), CDB::OPT_ONLYNEAREST, collide::rqtObject);  // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
+			if (g_pGameLevel->ObjectSpace.RayQuery(RQR,collidable.model,Q))
+			{
+				for (auto I = RQR.r_begin(); I != RQR.r_end(); ++I)
+				{
+					if(I->range <= 1.5f)
+						return true;
+				}
+			}
+		}
+		// Aiming at the door itself toggles it (open/close) before the entry check.
+		// Entering is done by aiming through the free space of the open doorway.
+		// use_distance from the model ltx limits how far the door can be used.
+		if (SDoor* Door = GetNearestDoor(pos, dir))
+		{
+			if (Door->IsDistOfSight(pos) && (!Door->non_exitable || Door->non_enterable))
+			{
+				Door->Use();
+				if (Door->state != SDoor::broken)
+					return false;
+			}
+		}
+		if(Enter(pos,dir,foot_pos))
+		{
+			if(active_camera->tag != EctFirstCam)
+			{
+				if(SDoor* LastDoor = GNearestDoor(this, m_doors))
+				{
+					if(LastDoor->state!=CCar::SDoor::closed)
+						LastDoor->Close();
+				}
+			}
+			return true;
+		}
 	}
 	else
 	{
-		m_pPhysicsShell->applyHit(H.bone_space_position(), H.direction(), H.phys_impulse(), H.bone(), H.type());
-	}
-}
-
-
-void CCar::ApplyDamage(u16 level)
-{
-	CDamagableItem::ApplyDamage(level);
-	switch (level)
-	{
-	case 1: m_damage_particles.Play1(this); break;
-	case 2:
-	{
-		if (!CDelayedActionFuse::isActive())
+		if (m_doors.empty())
 		{
-			CDelayedActionFuse::CheckCondition(GetfHealth());
-		}
-		m_damage_particles.Play2(this);
-	}
-	break;
-	case 3: m_fuel = 0.f;
-
-	}
-
-}
-void CCar::detach_Actor()
-{
-	if (!Owner()) return;
-	Owner()->setVisible(1);
-	CHolderCustom::detach_Actor();
-	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
-	NeutralDrive();
-	Unclutch();
-	ResetKeys();
-	m_current_rpm = m_min_rpm;
-
-	HandBreak();
-	processing_deactivate();
-#ifdef DEBUG
-	DBgClearPlots();
-#endif
-
-	if (!g_dedicated_server)
-	{
-		CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
-		Panel.Show(false);
-	}
-}
-
-bool CCar::attach_Actor(CGameObject* actor)
-{
-	if (Owner() || CPHDestroyable::Destroyed()) return false;
-	CHolderCustom::attach_Actor(actor);
-
-	IKinematics* K = PKinematics(Visual());
-	CInifile* ini = K->LL_UserData();
-	int id;
-
-	Fmatrix	driver_xform;
-	if (ini->line_exist("car_definition", "driver_position") && ini->line_exist("car_definition", "driver_direction"))
-	{
-		driver_xform.c.set(ini->r_fvector3("car_definition", "driver_position"));
-		driver_xform.k.set(ini->r_fvector3("car_definition", "driver_direction"));
-	}
-	else if (ini->line_exist("car_definition", "driver_place")) {
-
-		id = K->LL_BoneID(ini->r_string("car_definition", "driver_place"));
-		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
-		driver_xform.set(instance.mTransform);
-	}
-	else {
-		Owner()->setVisible(0);
-		id = K->LL_GetBoneRoot();
-		CBoneInstance& instance = K->LL_GetBoneInstance(u16(id));
-		driver_xform.set(instance.mTransform);
-	}
-
-	m_sits_transforms.push_back(driver_xform);
-	OnCameraChange(ectFirst);
-	PPhysicsShell()->Enable();
-	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
-
-	processing_activate();
-	ReleaseHandBreak();
-
-	if (!g_dedicated_server)
-	{
-		CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
-		Panel.Show(true);
-	}
-	return true;
-}
-
-bool CCar::is_Door(u16 id, xr_map<u16, CCarDoor>::iterator& i)
-{
-	if (m_doors.contains(id))
-	{
-		i = m_doors.find(id);
-		if (i->second.Joint)
-			return true;
-	}
-	return false;
-}
-
-bool CCar::is_Door(u16 id)
-{
-	return m_doors.contains(id);
-}
-
-bool CCar::Enter(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
-{
-	Fvector enter_pos;
-	enter_pos.add(pos, foot_pos);
-	enter_pos.mul(0.5f);
-
-	for (auto& [ID, CarObj] : m_doors)
-	{
-		if (CarObj.CanEnter(pos, dir, enter_pos))
-		{
-			//m_doors[ID].Open();
+			Fvector P;
+			XFORM().transform_tiny(P, m_last_enter_position);
+			m_exit_position.set(P);
 			return true;
 		}
-	}
-	return false;
-}
 
-bool CCar::Exit(const Fvector& pos, const Fvector& dir)
-{
-	for (auto& [ID, CarObj] : m_doors)
-	{
-		if (CarObj.CanExit(pos, dir))
+		if (active_camera->tag != EctFirstCam)
 		{
-			CarObj.GetExitPosition(m_exit_position);
-			return true;
+			if (SDoor* LastDoor = GNearestDoor(this, m_doors))
+			{
+				LastDoor->GetExitPosition(m_exit_position);
+
+				if (LastDoor->state != CCar::SDoor::opened)
+				{
+					LastDoor->Open();
+					b_event_exit_car = true;
+					m_exit_car_time = Device.dwTimeGlobal + 400;
+				}
+				else
+					OwnerActor()->detach_Vehicle();
+
+				return false;
+			}
 		}
 	}
+	//Р ВµРЎРѓР В»Р С‘ Р Т‘Р Р†Р ВµРЎР‚Р С‘ Р ВµРЎРѓРЎвЂљРЎРЉ РЎвЂљР С• Р Р…Р В°Р в„–РЎвЂљР С‘ Р В±Р В»Р С‘Р В¶Р В°Р в„–РЎв‚¬РЎС“РЎР‹
+	if(SDoor* Door = GetNearestDoor(pos, dir)) 
+	{
+		if ((Owner() && !Door->non_enterable) || (!Owner() && Door->IsDistOfSight(pos) && (!Door->non_exitable || Door->non_enterable)))
+			Door->Use();
+
+		if (Door->state != SDoor::broken)
+			return false;
+	}
+
+	if(Owner())
+		return Exit(pos,dir);
+
 	return false;
 
 }
-
-void CCar::cb_Speed(CBoneInstance* B)
+bool CCar::DoorUse(u16 id)
 {
-	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;	Fvector Vel;
-	car->m_pPhysicsShell->get_LinearVel(Vel); float m_speed = Vel.magnitude() * 0.036f;
 
-	float current_rotation = car->m_speed_offsets.x + (car->m_speed_offsets.y - car->m_speed_offsets.x) * m_speed;
-	m.rotateZ(deg2rad(clampr(current_rotation, car->m_speed_offsets.z, car->m_speed_offsets.w)));
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Use();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 
-	B->mTransform.mulB_43(m);
 }
 
-void CCar::cb_Rpm(CBoneInstance* B)
+bool CCar::DoorSwitch(u16 id)
 {
-	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Switch();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool CCar::DoorClose(u16 id)
+{
 
-	auto local_rpm = car->m_current_rpm / car->m_max_rpm;
-	float current_rotation = car->m_rpm_offsets.x + (car->m_rpm_offsets.y - car->m_rpm_offsets.x) * local_rpm;
-	m.rotateZ(deg2rad(clampr(current_rotation, car->m_rpm_offsets.z, car->m_rpm_offsets.w)));
-
-	B->mTransform.mulB_43(m);
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Close();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-void CCar::cb_Fuel(CBoneInstance* B)
+bool CCar::DoorOpen(u16 id)
 {
-	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;
 
-	auto local_fuel = car->m_fuel / car->m_fuel_tank;
-	float current_rotation = car->m_fuel_offsets.x + (car->m_fuel_offsets.y - car->m_fuel_offsets.x) * local_fuel;
-	m.rotateZ(deg2rad(clampr(current_rotation, car->m_fuel_offsets.z, car->m_fuel_offsets.w)));
+	xr_map<u16,SDoor>::iterator i;
+	if(is_Door(id,i)) 
+	{
+		i->second.Open();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+void CCar::InitParabola()
+{
+	//float t1=(m_power_rpm-m_torque_rpm);
+	//float t2=m_max_power/m_power_rpm;
+	//m_c = t2* (3.f*m_power_rpm - 4.f*m_torque_rpm)/t1/2.f;
+	//t2/=m_power_rpm;
+	//m_a = -t2/t1/2.f;
+	//m_b = t2*m_torque_rpm/t1;
 
-	B->mTransform.mulB_43(m);
+	//m_c = m_max_power* (3.f*m_power_rpm - 4.f*m_torque_rpm)/(m_power_rpm-m_torque_rpm)/2.f/m_power_rpm;
+	//m_a = -m_max_power/(m_power_rpm-m_torque_rpm)/m_power_rpm/m_power_rpm/2.f;
+	//m_b = m_max_power*m_torque_rpm/(m_power_rpm-m_torque_rpm)/m_power_rpm/m_power_rpm;
+
+	m_a=expf((m_power_rpm - m_torque_rpm)/(2.f*m_power_rpm))*m_max_power/m_power_rpm;
+	m_b=m_torque_rpm;
+	m_c=_sqrt(2.f*m_power_rpm*(m_power_rpm - m_torque_rpm));
+}
+float CCar::Parabola(float rpm)
+{
+	//float rpm_2=rpm*rpm;
+	//float value=(m_a*rpm_2*rpm_2*rpm_2+m_b*rpm_2+m_c)*rpm_2;
+	float ex=(rpm-m_b)/m_c;
+	float value=m_a*expf(-ex*ex)*rpm;
+	if(value<0.f) return 0.f;
+	if(e_state_drive == neutral)
+		value *= m_power_neutral_factor;
+	else
+	{
+		value *= m_current_rpm_brp_n;
+		if (m_transmission_switch_delay > 0.f && m_current_rpm > 0.f && m_transmission_stage >= 10)
+			value *= m_transmission_switch_power_factor;
+	}
+	//if (m_turbo_power && m_car_sound->snd_turbo._p)
+	//	value *= m_turbo_power_scale;
+
+	if (m_power_reverse_factor && m_current_transmission_num == 0)
+		value *= m_power_reverse_factor;
+
+	if (b_diff_lock && m_diff_lock_overpower > float(m_driving_wheels.size()))
+		value *= 1.f / (m_diff_lock_overpower / float(m_driving_wheels.size()));
+
+	if (m_nitro_engage)
+		value *= m_nitro_power_factor;
+
+	if (GetfHealth() < 2.f / 3.f)
+	{
+		value *= 0.9f;
+		if (GetfHealth() < 1.f / 3.f)
+			value *= 0.85f;
+	}
+	return value;
 }
 
-void CCar::ParseDefinitions()
+float CCar::EnginePower()
 {
-	bone_map.clear();
 
-	IKinematics* pKinematics = PKinematics(Visual());
-	bone_map.insert(std::make_pair(pKinematics->LL_GetBoneRoot(), physicsBone()));
-	CInifile* ini = pKinematics->LL_UserData();
-
-	if (ini == nullptr && Device.IsEditorMode())
-		return;
-
-	R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
-	CExplosive::Load(ini, "explosion");
-	//CExplosive::SetInitiator(ID());
-	m_camera_position = ini->r_fvector3("car_definition", "camera_pos");
-	m_camera_position_2 = ini->read_if_exists<Fvector3>("car_definition", "camera_pos2", m_camera_position);
-	m_camera_current_position = &m_camera_position;
-	///////////////////////////car definition///////////////////////////////////////////////////
-	fill_wheel_vector(ini->r_string("car_definition", "driving_wheels"), m_driving_wheels);
-	fill_wheel_vector(ini->r_string("car_definition", "steering_wheels"), m_steering_wheels);
-	fill_wheel_vector(ini->r_string("car_definition", "breaking_wheels"), m_breaking_wheels);
-	fill_exhaust_vector(ini->r_string("car_definition", "exhausts"), m_exhausts);
-	fill_doors_map(ini->r_string("car_definition", "doors"), m_doors);
-
-	if (ini->line_exist("car_definition", "usable_bones"))
+	float value;value = Parabola(m_current_rpm);
+	if(b_starting)
 	{
-		const char* Bones = ini->r_string("car_definition", "usable_bones");
-		const char* Callbacks = ini->r_string("car_definition", "usable_bones_callback");
-
-		int BonesCount = _GetItemCount(Bones);
-		R_ASSERT2(BonesCount == _GetItemCount(Callbacks), "Bones list should be equal to callback list!");
-
-		string32 BoneName = {};
-		string64 CallbackName = {};
-		
-		for (int Iter = 0; Iter < BonesCount; Iter++)
-		{
-			_GetItem(Bones, Iter, BoneName);
-			_GetItem(Callbacks, Iter, CallbackName);
-
-			u16 BoneID = pKinematics->LL_BoneID(BoneName);
-
-			UsableBones[BoneID] = Callbacks;
-		}
+		//if (m_current_rpm<m_min_rpm)
+		//{
+		//	value= Parabola(m_min_rpm);
+		//}
+		//else 
+			if (Device.dwTimeGlobal - m_dwStartTime > m_car_sound->engine_start_delay)
+			{
+				b_starting = false;
+				m_fuel -= 1000.f * m_fuel_consumption;
+			}
 	}
-
-	if (ini->line_exist("car_definition", "trunk_bone"))
+	if (value > m_current_engine_power)
+		return value * m_power_increment_factor * fixed_step * 100.f + m_current_engine_power * (1.f - m_power_increment_factor * fixed_step * 100.f);
+	else
+		return value * m_power_decrement_factor * fixed_step * 100.f + m_current_engine_power * (1.f - m_power_decrement_factor * fixed_step * 100.f);
+}
+float CCar::DriveWheelsMeanAngleRate()
+{
+	xr_vector<SWheelDrive>::iterator i,e;
+	i=m_driving_wheels.begin();
+	e=m_driving_wheels.end();
+	float drive_speed=0.f;
+	for(;i!=e;++i)
 	{
-		u16 bone_id = pKinematics->LL_BoneID(ini->r_string("car_definition", "trunk_bone"));
-		CCarDoor door(this);
-		door.bone_id = bone_id;
-		m_doors.insert(std::make_pair(bone_id, door));
-
-		if (!bone_map.contains(bone_id))
-		{
-			bone_map.insert(std::make_pair(bone_id, physicsBone()));
-		}
+		drive_speed+=i->ASpeed();
+		//if(wheel_speed<drive_speed)drive_speed=wheel_speed;
 	}
+	return drive_speed/m_driving_wheels.size();
+}
+float CCar::EngineDriveSpeed()
+{
+	//float wheel_speed,drive_speed=dInfinity;
+	float calc_rpm = EngineRpmFromWheels();
 
-	if (ini->section_exist("dashboard")) 
+	if(calc_rpm<m_min_rpm)
+		calc_rpm=m_min_rpm;
+
+	if (calc_rpm > m_current_rpm)
+		return	(1.f - m_rpm_increment_factor * fixed_step * 100.f) * m_current_rpm + m_rpm_increment_factor * fixed_step * 100.f * calc_rpm;
+	else
+		return	(1.f - m_rpm_decrement_factor * fixed_step * 100.f) * m_current_rpm + m_rpm_decrement_factor * fixed_step * 100.f * calc_rpm;
+
+	//if(drive_speed<dInfinity) return dFabs(drive_speed*m_current_gear_ratio);
+	//else					  return 0.f;
+}
+
+
+void CCar::UpdateFuel(float time_delta)
+{
+	if(!b_engine_on || rs_car_unlimitedfuel) return;
+	float rpm = 1.f + (m_fuel_rpm_factor * m_engine_rpm_scale);
+	float speed = 1.f + powf((GetSpeedKmH() / m_fuel_speed_optimal), m_fuel_speed_factor);
+	//Msg("speed factor %f", speed);
+	float gas = 1.f;
+	if (e_state_drive == drive)
+		gas = 1.f + 1.f * m_fuel_gas_factor;
+	if (m_nitro_engage)
+		gas *= m_nitro_fuel_factor;
+	m_fuel_consumption_current = 50.f * m_fuel_consumption * gas * speed * rpm;
+
+	m_fuel -= time_delta * m_fuel_consumption_current;
+
+	if(m_fuel<EPS) StopEngine();
+}
+
+float CCar::AddFuel(float ammount)
+{
+	float free_space=m_fuel_tank-m_fuel;
+	if(ammount < free_space)
 	{
-		if (ini->line_exist("dashboard", "rpm_bone")) 
-		{
-			auto bonename = ini->r_string("dashboard", "rpm_bone");
-			m_rpm_b = pKinematics->LL_BoneID(bonename);
-
-			R_ASSERT4(m_rpm_b != BI_NONE, "Car model has no rpm bone", cNameSect().c_str(), bonename);
-
-			auto temp = m_rpm_offsets = ini->r_fvector4("dashboard", "rpm_angle");
-			m_rpm_offsets.z = std::min(temp.z, temp.w);
-			m_rpm_offsets.w = std::max(temp.z, temp.w);
-
-			pKinematics->LL_GetBoneInstance(m_rpm_b).set_callback(bctPhysics, cb_Rpm, this);
-		}
-		if (ini->line_exist("dashboard", "fuel_bone")) 
-		{
-			auto bonename = ini->r_string("dashboard", "fuel_bone");
-			m_fuel_b = pKinematics->LL_BoneID(bonename);
-
-			R_ASSERT4(m_fuel_b != BI_NONE, "Car model has no fuel bone", cNameSect().c_str(), bonename);
-
-			auto temp = m_fuel_offsets = ini->r_fvector4("dashboard", "fuel_angle");
-			m_fuel_offsets.z = std::min(temp.z, temp.w);
-			m_fuel_offsets.w = std::max(temp.z, temp.w);
-
-			pKinematics->LL_GetBoneInstance(m_fuel_b).set_callback(bctPhysics, cb_Fuel, this);
-		}
-		if (ini->line_exist("dashboard", "speed_bone")) 
-		{
-			auto bonename = ini->r_string("dashboard", "speed_bone");
-			m_speed_b = pKinematics->LL_BoneID(bonename);
-
-			R_ASSERT4(m_speed_b != BI_NONE, "Car model has no speed bone", cNameSect().c_str(), bonename);
-
-			auto temp = m_speed_offsets = ini->r_fvector4("dashboard", "speed_angle");
-			m_speed_offsets.z = std::min(temp.z, temp.w);
-			m_speed_offsets.w = std::max(temp.z, temp.w);
-
-			pKinematics->LL_GetBoneInstance(m_speed_b).set_callback(bctPhysics, cb_Speed, this);
-		}
+		m_fuel+=ammount;
+		return ammount;
 	}
-
-	///////////////////////////car properties///////////////////////////////
-	m_max_power = ini->r_float("car_definition", "engine_power");
-	m_max_power *= (0.8f * 1000.f);
-
-	m_max_rpm = ini->r_float("car_definition", "max_engine_rpm");
-	m_max_rpm *= (1.f / 60.f * 2.f * M_PI);
-
-
-	m_min_rpm = ini->r_float("car_definition", "idling_engine_rpm");
-	m_min_rpm *= (1.f / 60.f * 2.f * M_PI);
-
-	m_power_rpm = ini->r_float("car_definition", "max_power_rpm");
-	m_power_rpm *= (1.f / 60.f * 2.f * M_PI);//
-
-	m_torque_rpm = ini->r_float("car_definition", "max_torque_rpm");
-	m_torque_rpm *= (1.f / 60.f * 2.f * M_PI);//
-
-	m_power_increment_factor = ini->read_if_exists<float>("car_definition", "power_increment_factor", m_power_increment_factor);
-	m_rpm_increment_factor = ini->read_if_exists<float>("car_definition", "rpm_increment_factor", m_rpm_increment_factor);
-	m_power_decrement_factor = ini->read_if_exists<float>("car_definition", "power_decrement_factor", m_power_increment_factor);
-	m_rpm_decrement_factor = ini->read_if_exists<float>("car_definition", "rpm_decrement_factor", m_rpm_increment_factor);
-	m_power_neutral_factor = ini->read_if_exists<float>("car_definition", "power_neutral_factor", m_power_neutral_factor);
-	R_ASSERT2(m_power_neutral_factor > 0.1f && m_power_neutral_factor < 1.f, "power_neutral_factor must be 0 - 1 !!");
-	if (ini->line_exist("car_definition", "exhaust_particles"))
+	else
 	{
-		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
+		m_fuel=m_fuel_tank;
+		return free_space;
 	}
+}
 
-	b_auto_switch_transmission = !!ini->r_bool("car_definition", "auto_transmission");
-
-	InitParabola();
-
-	m_axle_friction = ini->r_float("car_definition", "axle_friction");
-	m_steering_speed = ini->r_float("car_definition", "steering_speed");
-
-	if (ini->line_exist("car_definition", "break_time"))
-	{
-		m_break_time = ini->r_float("car_definition", "break_time");
-	}
-	// transmission
-	float main_gear_ratio = ini->r_float("car_definition", "main_gear_ratio");
-
-	R_ASSERT2(ini->section_exist("transmission_gear_ratio"), "no section transmission_gear_ratio");
-	m_gear_ratious.push_back(ini->r_fvector3("transmission_gear_ratio", "R"));
-	m_gear_ratious[0][0] = -m_gear_ratious[0][0] * main_gear_ratio;
-	string32 rat_num;
-	for (int i = 1; true; ++i)
-	{
-		xr_sprintf(rat_num, "N%d", i);
-		if (!ini->line_exist("transmission_gear_ratio", rat_num)) break;
-		Fvector gear_rat = ini->r_fvector3("transmission_gear_ratio", rat_num);
-		gear_rat[0] *= main_gear_ratio;
-		gear_rat[1] *= (1.f / 60.f * 2.f * M_PI);
-		gear_rat[2] *= (1.f / 60.f * 2.f * M_PI);
-		m_gear_ratious.push_back(gear_rat);
-	}
-
-	// sound
-	m_car_sound->Init();
-
-	// fuel
-	m_fuel_tank = ini->r_float("car_definition", "fuel_tank");
-	m_fuel_tank = ini->r_float("car_definition", "fuel_tank");
+void CCar::Refuel()
+{
 	m_fuel = m_fuel_tank;
-
-	m_fuel_consumption = ini->r_float("car_definition", "fuel_consumption");
-	m_fuel_consumption /= 100000.f;
-	if (ini->line_exist("car_definition", "exhaust_particles"))
-		m_exhaust_particles = ini->r_string("car_definition", "exhaust_particles");
-
-	// lights
-	m_lights.Init(this);
-	m_lights.ParseDefinitions();
-
-	if (ini->section_exist("animations"))
-	{
-		m_driver_anim_type = ini->r_u16("animations", "driver_animation_type");
-	}
-
-
-	if (ini->section_exist("doors"))
-	{
-		m_doors_torque_factor = ini->r_u16("doors", "open_torque_factor");
-	}
-
-	m_damage_particles.Init(this);
 }
 
-void CCar::CreateSkeleton(CSE_Abstract* po)
+void CCar::ResetKeys()
 {
-	if (!Visual()) return;
-	IRenderVisual *pVis = Visual();
-	IKinematics* pK = PKinematics(pVis);
-	IKinematicsAnimated* pKA = pVis->dcast_PKinematicsAnimated();
-	if(pKA)
-	{
-		pKA->PlayCycle		("idle");
-		pK->CalculateBones	(true);
-	}
-
-	m_pPhysicsShell		= P_build_Shell(this, false, &bone_map);
-	m_pPhysicsShell->SetPrefereExactIntegration();
-	m_pPhysicsShell->Activate(true);
-	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
-	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
-	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);
-	pK->CalculateBones(true);
+	bkp=false;
+	fwp=false;
+	lsp=false;
+	rsp=false;
+	fwpbkp=false;
 }
 
-void CCar::Init()
+#undef   _USE_MATH_DEFINES
+
+void CCar::OnEvent(NET_Packet& P, u16 type)
 {
-	CPHCollisionDamageReceiver::Init();
+	inherited::OnEvent		(P,type);
+	CExplosive::OnEvent		(P,type);
 
-	//get reference wheel radius
-	IKinematics* pKinematics = PKinematics(Visual());
-	CInifile* ini = pKinematics->LL_UserData();
-
-	if (ini == nullptr && Device.IsEditorMode())
-		return;
-
-	R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
-
-	if (ini->section_exist("air_resistance"))
+	//Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„–, Р Р…РЎС“Р В¶Р Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В»РЎРЏ РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂ№ РЎРѓ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С Р СР В°РЎв‚¬Р С‘Р Р…РЎвЂ№
+	u16 id;
+	switch (type) 
 	{
-		PPhysicsShell()->SetAirResistance(default_k_l * ini->r_float("air_resistance", "linear_factor"), default_k_w * ini->r_float("air_resistance", "angular_factor"));
-	}
-
-	if (ini->line_exist("car_definition", "steer"))
-	{
-		m_bone_steer = pKinematics->LL_BoneID(ini->r_string("car_definition", "steer"));
-		VERIFY2(fsimilar(DET(pKinematics->LL_GetTransform(m_bone_steer)), 1.f, EPS_L), "BBADD MTX");
-		pKinematics->LL_GetBoneInstance(m_bone_steer).set_callback(bctPhysics, cb_Steer, this);
-	}
-
-	m_steer_angle = 0.f;
-	m_ref_radius = ini->r_float("car_definition", "reference_radius");//ref_wheel.radius;
-	b_exploded = false;
-	b_engine_on = false;
-	b_clutch = false;
-	b_starting = false;
-	b_transmission_switching = false;
-	m_root_transform.set(bone_map.find(pKinematics->LL_GetBoneRoot())->second.element->mXFORM);
-	m_current_transmission_num = 0;
-	m_pPhysicsShell->set_DynamicScales(1.f, 1.f);
-
-	CDamagableItem::Init(GetfHealth(), 3);
-	float l_time_to_explosion = ini->read_if_exists<float>("car_definition", "time_to_explosion", 120.f);
-	CDelayedActionFuse::Initialize(l_time_to_explosion, CDamagableItem::DamageLevelToHealth(2));
-
-	for (auto& [ID, WhellData] : m_wheels_map)
-	{
-		WhellData.Init();
-		WhellData.CDamagableHealthItem::Init(100.f, 2);
-	}
-
-	for (SWheelDrive& Wheel : m_driving_wheels)
-		Wheel.Init();
-
-	for (SWheelBreak& Wheel : m_breaking_wheels)
-		Wheel.Init();
-
-	for (SWheelSteer& WheelSteer : m_steering_wheels)
-		WheelSteer.Init();
-
-	for (SExhaust& Exhaust : m_exhausts)
-		Exhaust.Init();
-
-	for (auto& [ID, CarObj] : m_doors)
-	{
-		CarObj.Init();
-		CarObj.CDamagableHealthItem::Init(100, 1);
-	}
-
-	if (ini->section_exist("damage_items"))
-	{
-		CInifile::Sect& data = ini->r_section("damage_items");
-		for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
-		{
-			const CInifile::Item& item = *I;
-			u16 index = pKinematics->LL_BoneID(*item.first);
-			R_ASSERT3(index != BI_NONE, "Wrong bone name", *item.first);
-			xr_map <u16, SWheel>::iterator i = m_wheels_map.find(index);
-
-			if (i != m_wheels_map.end())
+		case GE_TRADE_BUY:
 			{
-				i->second.CDamagableHealthItem::Init(float(atof(*item.second)), 2);
-			}
-			else
+				P.r_u16(id);
+				if (CObject* O = Level().Objects.net_Find(id))
+				{
+					CGameObject* GO = O->cast_game_object();
+					CInventoryItem* pIItem = GO ? GO->cast_inventory_item() : nullptr;
+					if (pIItem && GetInventory()->CanTakeItem(pIItem))
+					{
+						pIItem->m_ItemCurrPlace.type = eItemPlaceRuck;
+						O->H_SetParent(this);
+						inventory().Take(GO, true, true);
+					}
+					else if (GO)
+					{
+						NET_Packet Reject;
+						u_EventGen(Reject, GE_OWNERSHIP_REJECT, ID());
+						Reject.w_u16(u16(GO->ID()));
+						u_EventSend(Reject);
+					}
+				}
+			}break;
+		case GE_TRADE_SELL:
 			{
-				xr_map   <u16, CCarDoor>::iterator i_ = m_doors.find(index);
-				R_ASSERT3(i_ != m_doors.end(), "only wheel and doors bones allowed for damage defs", *item.first);
-				i_->second.CDamagableHealthItem::Init(float(atof(*item.second)), 1);
-			}
-		}
-	}
-
-	if (ini->section_exist("immunities"))
-	{
-		LoadImmunities("immunities", ini);
-	}
-
-	TDamageManager* DmgManager = GetComponent<TDamageManager>();
-	DmgManager->reload("car_definition", "damage", ini);
-
-	HandBreak();
-	Transmission(1);
-}
-
-void CCar::NeutralDrive()
-{
-	for (SWheelDrive& Wheel : m_driving_wheels)
-		Wheel.Neutral();
-
-	e_state_drive = neutral;
-}
-
-void CCar::ReleaseHandBreak()
-{
-	for (SWheelBreak& Wheel : m_breaking_wheels)
-		Wheel.Neutral();
-
-	if (e_state_drive == drive)
-		Drive();
-}
-
-void CCar::Drive()
-{
-	if (!b_clutch || !b_engine_on) 
-		return;
-
-	m_pPhysicsShell->Enable();
-	m_current_rpm = EngineDriveSpeed();
-	m_current_engine_power = EnginePower();
-
-	for (SWheelDrive& Wheel : m_driving_wheels)
-		Wheel.Drive();
-
-	e_state_drive = drive;
-
-}
-
-void CCar::StartEngine()
-{
-	if (m_fuel < EPS || b_engine_on)
-		return;
-
-	PlayExhausts();
-	m_car_sound->Start();
-	b_engine_on = true;
-	m_current_rpm = 0.f;
-	b_starting = true;
-}
-
-void CCar::StopEngine()
-{
-	if (!b_engine_on) 
-		return;
-
-	AscCall(ascSndStall);
-	AscCall(ascExhoustStop);
-
-	NeutralDrive();//set zero speed
-	b_engine_on = false;
-
-	UpdatePower();//set engine friction;
-	m_current_rpm = 0.f;
-}
-
-void CCar::Stall()
-{
-	AscCall(ascSndStall);
-	AscCall(ascExhoustStop);
-
-	NeutralDrive();//set zero speed
-	b_engine_on = false;
-
-	UpdatePower();//set engine friction;
-	m_current_rpm = 0.f;
-
-}
-void CCar::ReleasePedals()
-{
-	Clutch();
-	NeutralDrive();//set zero speed
-	UpdatePower();//set engine friction;
-}
-
-void CCar::SwitchEngine()
-{
-	if (b_engine_on) StopEngine();
-	else			StartEngine();
-}
-
-void CCar::Clutch()
-{
-	b_clutch = true;
-}
-
-void CCar::Unclutch()
-{
-	b_clutch = false;
-}
-
-void CCar::Starter()
-{
-	b_starting = true;
-	m_dwStartTime = Device.dwTimeGlobal;
-}
-
-void CCar::UpdatePower()
-{
-	m_current_rpm = EngineDriveSpeed();
-	m_current_engine_power = EnginePower();
-	if (b_auto_switch_transmission && !b_transmission_switching)
-	{
-		VERIFY2(CurrentTransmission() < m_gear_ratious.size(), "wrong transmission");
-		if (m_current_rpm < m_gear_ratious[CurrentTransmission()][1]) TransmissionDown();
-		if (m_current_rpm > m_gear_ratious[CurrentTransmission()][2]) TransmissionUp();
-	}
-
-	for (SWheelDrive& Wheel : m_driving_wheels)
-		Wheel.UpdatePower();
-}
-
-void CCar::SteerRight()
-{
-	b_wheels_limited = true;  //no need to limit wheels when stiring
-	m_pPhysicsShell->Enable();
-
-	for (SWheelSteer& Wheel : m_steering_wheels)
-		Wheel.SteerRight();
-
-	e_state_steer = right;
-
-}
-void CCar::SteerLeft()
-{
-	b_wheels_limited = true; //no need to limit wheels when stiring
-	m_pPhysicsShell->Enable();
-
-	for (SWheelSteer& Wheel : m_steering_wheels)
-		Wheel.SteerLeft();
-
-	e_state_steer = left;
-}
-
-void CCar::SteerIdle()
-{
-	b_wheels_limited = false;
-	m_pPhysicsShell->Enable();
-
-	for (SWheelSteer& Wheel : m_steering_wheels)
-		Wheel.SteerIdle();
-
-	e_state_steer = idle;
-}
-
-void CCar::LimitWheels()
-{
-	if (b_wheels_limited)
-		return;
-
-	b_wheels_limited = true;
-
-	for (SWheelSteer& Wheel : m_steering_wheels)
-		Wheel.Limit();
-}
-
-void CCar::HandBreak()
-{
-	for (SWheelBreak& Wheel : m_breaking_wheels)
-		Wheel.HandBreak();
-}
-
-void CCar::StartBreaking()
-{
-	if (!b_breaks)
-	{
-		b_breaks = true;
-		m_break_start = Device.fTimeGlobal;
+				P.r_u16(id);
+				if (CObject* O = Level().Objects.net_Find(id))
+				{
+					bool just_before_destroy = !P.r_eof() && P.r_u8();
+					O->SetTmpPreDestroy(just_before_destroy);
+					if (inventory().DropItem(O->cast_game_object(), just_before_destroy, true) && !O->getDestroy())
+						O->H_SetParent(nullptr, just_before_destroy);
+				}
+			}break;
+		case GE_OWNERSHIP_TAKE : 
+			{
+				P.r_u16(id);
+				if(CObject* O	= Level().Objects.net_Find	(id))
+				{
+					if(smart_cast<CCustomRocket*>(O))
+						CRocketLauncher::AttachRocket(id, this);
+					else
+					{
+						if (smart_cast<CWeaponAmmo*>(O))
+						{
+							auto CWPB = m_car_weapons.begin();
+							for(;CWPB!=m_car_weapons.end();++CWPB)
+								(*CWPB)->AppendAmmoToGuns(smart_cast<CWeaponAmmo*>(O));
+						}
+						if( GetInventory()->CanTakeItem(smart_cast<CInventoryItem*>(O)) ) 
+						{
+							bool duringSpawn = !P.r_eof() && P.r_u8();
+							O->H_SetParent(this);
+							inventory().Take(smart_cast<CGameObject*>(O), false, false, duringSpawn);
+						}
+						else 
+						{
+							if (!O || !O->H_Parent() || (this != O->H_Parent())) return;
+							NET_Packet P;
+							u_EventGen(P,GE_OWNERSHIP_REJECT,ID());
+							P.w_u16(u16(O->ID()));
+							u_EventSend(P);
+						}
+					}
+				}
+			}break;
+		case GE_OWNERSHIP_REJECT : 
+		case GE_LAUNCH_ROCKET : 
+			{
+				P.r_u16		(id);
+				if(CObject* O	= Level().Objects.net_Find	(id))
+				{
+					if(smart_cast<CCustomRocket*>(O))
+						CRocketLauncher::DetachRocket(id, !!(type==GE_LAUNCH_ROCKET));
+					else
+					{
+						bool just_before_destroy		= !P.r_eof() && P.r_u8();
+						O->SetTmpPreDestroy				(just_before_destroy);
+						if (inventory().DropItem(smart_cast<CGameObject*>(O), false, false) && !O->getDestroy())
+							O->H_SetParent(nullptr, just_before_destroy);
+					}
+				}
+			}break;
 	}
 }
 
-void CCar::StopBreaking()
+void CCar::ResetScriptData(void	*P)
 {
-	for (SWheelBreak& Wheel : m_breaking_wheels)
-		Wheel.Neutral();
-
-	if (e_state_drive == drive)
-		Drive();
-
-	b_breaks = false;
+	CScriptEntity::ResetScriptData(P);
 }
-
-void CCar::PressRight()
+void CCar::UpdateBackForward()
 {
-	if (lsp)
+	if(b_breaks)
 	{
-		if (!fwp)SteerIdle();
-	}
-	else
-		SteerRight();
-
-	rsp = true;
-}
-
-void CCar::PressLeft()
-{
-	if (rsp)
-	{
-		if (!fwp)SteerIdle();
-	}
-	else
-		SteerLeft();
-
-	lsp = true;
-}
-
-void CCar::PressForward()
-{
-	if (bkp)
-	{
-		Unclutch();
-		NeutralDrive();
-	}
-	else
-	{
-		DriveForward();
-	}
-	fwp = true;
-}
-
-void CCar::PressBack()
-{
-	if (fwp)
-	{
-		Unclutch();
-		NeutralDrive();
-	}
-	else
-	{
-		Unclutch();
-		NeutralDrive();
-		StartBreaking();
-	}
-	bkp = true;
-}
-
-void CCar::PressBreaks()
-{
-	HandBreak();
-	brp = true;
-}
-
-void CCar::DriveBack()
-{
-	Clutch();
-	Transmission(0);
-
-	if (0 == CurrentTransmission())
-		Starter();
-
-	Drive();
-}
-
-void CCar::DriveForward()
-{
-	Clutch();
-	if (0 == CurrentTransmission()) 
-		Transmission(1);
-
-	if (1 == CurrentTransmission())
-		Starter();
-
-	Drive();
-}
-
-void CCar::ReleaseRight()
-{
-	if (lsp)
-		SteerLeft();
-	else
-		SteerIdle();
-
-	rsp = false;
-}
-
-void CCar::ReleaseLeft()
-{
-	if (rsp)
-		SteerRight();
-	else
-		SteerIdle();
-
-	lsp = false;
-}
-
-void CCar::ReleaseForward()
-{
-	if (bkp)
-	{
-		Clutch();
-		Transmission(0);
-		Starter();
-
-		Drive();
-	}
-	else
-	{
-		Unclutch();
-		NeutralDrive();
-	}
-
-	fwp = false;
-}
-
-void CCar::ReleaseBack()
-{
-	if (b_breaks)
-	{
-		StopBreaking();
-	}
-	if (fwp)
-	{
-		Clutch();
-
-		if (0 == CurrentTransmission())
-			Transmission(1);
-
-		if (1 == CurrentTransmission()) 
-			Starter();
-
-		Drive();
-	}
-	else
-	{
-		Unclutch();
-		NeutralDrive();
-	}
-	bkp = false;
-}
-
-void CCar::ReleaseBreaks()
-{
-	ReleaseHandBreak();
-	brp = false;
-}
-
-void CCar::Transmission(size_t num)
-{
-	if (num < m_gear_ratious.size())
-	{
-		if (CurrentTransmission() != num)
+		b_burnout = false;
+		fwpbkp = false;
+		float k=1.f;
+		float time=(Device.fTimeGlobal-m_break_start);
+		if(time<m_break_time)
 		{
-			AscCall(ascSndTransmission);
-			m_current_transmission_num = num;
-			m_current_gear_ratio = m_gear_ratious[num][0];
-			b_transmission_switching = true;
-			Drive();
+			k*=(time/m_break_time);
 		}
-	}
-}
-
-void CCar::TransmissionUp()
-{
-	if (0 == CurrentTransmission())
-		return;
-
-	size_t transmission = 1 + CurrentTransmission();
-	size_t max_transmition_num = m_gear_ratious.size() - 1;
-	transmission > max_transmition_num ? transmission = max_transmition_num : transmission;
-	Transmission(transmission);
-
-}
-
-void CCar::TransmissionDown()
-{
-	if (0 == CurrentTransmission())
-		return;
-
-	size_t transmission = CurrentTransmission() - 1;
-	transmission < 1 ? transmission = 1 : transmission;
-	Transmission(transmission);
-}
-
-void CCar::PhTune(float step)
-{
-	for (u16 i = PPhysicsShell()->get_ElementsNumber(); i != 0; i--)
-	{
-		CPhysicsElement* e = PPhysicsShell()->get_ElementByStoreOrder(i - 1);
-		if (e->isActive() && e->isEnabled())
-			e->applyForce(0, e->getMass() * AntiGravityAccel(), 0);
-	}
-}
-
-float CCar::EffectiveGravity()
-{
-	float g = physics_world()->Gravity();
-	if (CPHUpdateObject::IsActive())g *= 0.5f;
-	return g;
-}
-
-float CCar::AntiGravityAccel()
-{
-	return physics_world()->Gravity() - EffectiveGravity();
-}
-
-float CCar::GravityFactorImpulse()
-{
-	return _sqrt(EffectiveGravity() / physics_world()->Gravity());
-}
-
-void CCar::UpdateBack()
-{
-	if (b_breaks)
-	{
-		float k = 1.f;
-		float time = (Device.fTimeGlobal - m_break_start);
-		if (time < m_break_time)
+		xr_vector<SWheelBreak>::iterator i,e;
+		i=m_breaking_wheels.begin();
+		e=m_breaking_wheels.end();
+		for(;i!=e;++i)
+				i->Break(k);
+		if((fwp && GetVelocity().dotproduct(Fvector(XFORM().k).invert())<EPS_L))// || (fwp && brp))
 		{
-			k *= (time / m_break_time);
+			StopBreaking();
+			DriveForward();
 		}
-
-		for (SWheelBreak& Wheel : m_breaking_wheels)
-			Wheel.Break(k);
-
-		Fvector v;
-		m_pPhysicsShell->get_LinearVel(v);
-
-		if (v.dotproduct(XFORM().k) < EPS)
+		if(bkp && GetVelocity().dotproduct(XFORM().k)<EPS_L)// || (bkp && brp))
 		{
 			StopBreaking();
 			DriveBack();
@@ -1718,347 +4891,317 @@ void CCar::UpdateBack()
 	}
 }
 
-void CCar::PlayExhausts()
+void CCar::Burnout()
 {
-	for (SExhaust& Exhaust : m_exhausts)
-		Exhaust.Play();
-}
-
-void CCar::StopExhausts()
-{
-	for (SExhaust& Exhaust : m_exhausts)
-		Exhaust.Stop();
-}
-
-void CCar::UpdateExhausts()
-{
-	if (!b_engine_on)
-		return;
-
-	for (SExhaust& Exhaust : m_exhausts)
-		Exhaust.Update();
-}
-
-void CCar::ClearExhausts()
-{
-	for (SExhaust& Exhaust : m_exhausts)
-		Exhaust.Clear();
-}
-
-void CCar::DoExit()
-{
-	if (CActor* A = OwnerActor())
+	DriveForward();
+	xr_vector<SWheelBreak>::iterator i, e;
+	i = m_breaking_wheels.begin();
+	e = m_breaking_wheels.end();
+	for (; i != e; ++i)
 	{
-		if (!m_doors.empty())m_doors.begin()->second.GetExitPosition(m_exit_position);
-		else m_exit_position.set(Position());
-
-		A->detach_Vehicle();
-
-		if (!A->g_Alive())
+		if (!i->pwheel->WheelFlags.test(SWheel::eWheelType::wheel_drive))
 		{
-			A->character_physics_support()->movement()->DestroyCharacter();
+			i->HandBreak(1.f);
+			//Msg("burn");
+		}
+	b_breaks = true;
+	}
+	xr_vector<SWheelDrive>::iterator i_b, e_b;
+	i_b = m_driving_wheels.begin();
+	e_b = m_driving_wheels.end();
+	bool burn = false;
+	for (; i_b != e_b; ++i_b)
+	{
+		if (i_b->pwheel->collision_params.buxe)
+		{
+			burn = true;
+			//Msg("burn!");
 		}
 	}
+	b_burnout = burn;
 }
 
-bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
+#include "../xrEngine/xr_input.h"
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+
+
+void CCar::UpdateRecursiveDoors()
 {
-	if (UsableBonesActive != BI_NONE)
+	if(b_start_open_recursive)
 	{
-		luabind::functor<bool> Callback;
-		ai().script_engine().functor(UsableBones[UsableBonesActive].c_str(), Callback);
-		bool CheckComplete = Callback(this);
-
-		if (CheckComplete)
+		for (int i = 0; i < m_doors_recurs.size(); ++i)//Р С—РЎР‚Р С•РЎвЂ¦Р С•Р Т‘ Р С—Р С• Р Р†РЎРѓР ВµР С Р Т‘Р Р†Р ВµРЎР‚РЎРЏР С Р С‘Р В· РЎРѓР С—Р С‘РЎРѓР С”Р В°
 		{
-			// FX: Если скрипт вернул true, то будем считать, 
-			// что Use был выполнен и посадка в машину не требуется 
+			auto prev_dit = m_doors_recurs.find(i-1);
+			auto curr_dit = m_doors_recurs.find(i);
+			auto last_dit = m_doors_recurs.find(m_doors_recurs.size()-1);
 
-			return false;
-		}
-	}
-
-	xr_map<u16, CCarDoor>::iterator i;
-
-	RQR.r_clear();
-	collide::ray_defs	Q(pos, dir, 2.0f, CDB::OPT_CULL, collide::rqtObject);
-
-	VERIFY(!fis_zero(Q.dir.square_magnitude()));
-	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
-	{
-		collide::rq_results& R = RQR;
-		for (int k = 0; k < R.r_count(); ++k)
-		{
-			collide::rq_result* I = R.r_begin() + k;
-
-			if (IsGameTypeSingleCompatible() && m_bone_trunk == (u16)I->element)
+			if(!curr_dit->second->IsDistOfSight(Device.vCameraPosition) || !curr_dit->second->IsLineOfSight())
 			{
-				bool IsDoorBone = is_Door((u16)I->element, i);
-				if (I->range < 1.f)
+				b_start_open_recursive = false;//Р В·Р В°Р С”Р В°Р Р…РЎвЂЎР С‘Р Р†Р В°Р ВµР С РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘РЎР‹
+				break;
+			}
+
+			if (last_dit != m_doors_recurs.end())//Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…РЎРЏРЎРЏ Р Р† РЎРѓР С—Р С‘РЎРѓР С”Р Вµ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
+			{
+				if(last_dit->second->state == SDoor::opened)//Р В¶Р Т‘РЎвЂР С Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…Р ВµР в„– Р Т‘Р Р†Р ВµРЎР‚Р С‘
 				{
-					if (IsDoorBone)
+					ScriptUseTrunk(m_bone_trunk);
+					b_start_open_recursive = false;//Р В·Р В°Р С”Р В°Р Р…РЎвЂЎР С‘Р Р†Р В°Р ВµР С РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘РЎР‹
+					b_all_recurs_opened = true;
+					break;
+				}
+
+			}
+
+			if(curr_dit != m_doors_recurs.end())//РЎвЂљР ВµР С”РЎС“РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
+			{
+				if(curr_dit->second->state == SDoor::closed || curr_dit->second->state == SDoor::closing)//Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р В°РЎРЏ Р В±РЎвЂ№Р В»Р В° Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР В°
+				{
+					if (prev_dit != m_doors_recurs.end())//Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
 					{
-						CCarDoor& TrunkDoor = m_doors.at(m_bone_trunk);
-						if (TrunkDoor.state != CCarDoor::eState::opened)
-							continue;
+						if(prev_dit->second->state == SDoor::opened)//Р В¶Р Т‘РЎвЂР С Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР в„– Р Т‘Р Р†Р ВµРЎР‚Р С‘
+							curr_dit->second->Open();//Р С•РЎвЂљР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°РЎС“РЎР‹
+
 					}
-
-					CurrentGameUI()->StartCarBody(Actor(), this);
+					else//Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР в„– Р Р…Р ВµРЎвЂљ, Р С•РЎвЂљР С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°РЎС“РЎР‹
+						curr_dit->second->Open();
 				}
-				else if (IsDoorBone)
-				{
-					i->second.Use();
-				}
-
-				return false;
 			}
+		}
+	}
 
-			if (is_Door((u16)I->element, i))
+	if(b_start_close_recursive)
+	{
+		for (int i=m_doors_recurs.size()-1; i>=0; --i)//Р С—РЎР‚Р С•РЎвЂ¦Р С•Р Т‘ Р С—Р С• Р Р†РЎРѓР ВµР С Р Т‘Р Р†Р ВµРЎР‚РЎРЏР С Р С‘Р В· РЎРѓР С—Р С‘РЎРѓР С”Р В° Р Р† Р С•Р В±РЎР‚Р В°РЎвЂљР Р…Р С•Р С Р Р…Р В°Р С—РЎР‚Р В°Р Р†Р В»Р ВµР Р…Р С‘Р С‘
+		{
+			auto prev_dit = m_doors_recurs.find(i+1);
+			auto curr_dit = m_doors_recurs.find(i);
+			auto last_dit = m_doors_recurs.find(0);
+
+			if(!curr_dit->second->IsDistOfSight(Device.vCameraPosition) || !curr_dit->second->IsLineOfSight())
 			{
-				bool front = i->second.IsFront(pos, dir);
-				if ((Owner()) || (!Owner() && front))i->second.Use();
-				if (i->second.state == CCarDoor::broken) break;
-				return false;
+				b_start_close_recursive = false;//Р В·Р В°Р С”Р В°Р Р…РЎвЂЎР С‘Р Р†Р В°Р ВµР С РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘РЎР‹
+				break;
+			}
+
+			if (last_dit != m_doors_recurs.end())//Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…РЎРЏРЎРЏ Р Р† РЎРѓР С—Р С‘РЎРѓР С”Р Вµ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
+			{
+				if(last_dit->second->state == SDoor::closed)//Р В¶Р Т‘РЎвЂР С Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ Р С—Р С•РЎРѓР В»Р ВµР Т‘Р Р…Р ВµР в„– Р Т‘Р Р†Р ВµРЎР‚Р С‘
+				{
+					b_start_close_recursive = false;//Р В·Р В°Р С”Р В°Р Р…РЎвЂЎР С‘Р Р†Р В°Р ВµР С РЎР‚Р ВµР С”РЎС“РЎР‚РЎРѓР С‘РЎР‹
+					b_all_recurs_opened = false;
+					break;
+				}
+
+			}
+
+			if(curr_dit != m_doors_recurs.end())//РЎвЂљР ВµР С”РЎС“РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
+			{
+				if(curr_dit->second->state == SDoor::opened || curr_dit->second->state == SDoor::opening)//Р С—РЎР‚Р С•Р Р†Р ВµРЎР‚РЎРЏР ВµР С РЎвЂЎРЎвЂљР С•Р В±РЎвЂ№ РЎвЂљР ВµР С”РЎС“РЎвЂ°Р В°РЎРЏ Р В±РЎвЂ№Р В»Р В° Р С•РЎвЂљР С”РЎР‚РЎвЂ№РЎвЂљР В°
+				{
+					if (prev_dit != m_doors_recurs.end())//Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р В°РЎРЏ Р Т‘Р Р†Р ВµРЎР‚РЎРЉ Р ВµРЎРѓРЎвЂљРЎРЉ
+					{
+						if(prev_dit->second->state == SDoor::closed)//Р В¶Р Т‘РЎвЂР С Р С•Р С”Р С•Р Р…РЎвЂЎР В°Р Р…Р С‘РЎРЏ Р В·Р В°Р С”РЎР‚РЎвЂ№РЎвЂљР С‘РЎРЏ Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР в„– Р Т‘Р Р†Р ВµРЎР‚Р С‘
+							curr_dit->second->Close();//Р В·Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°РЎС“РЎР‹
+
+					}
+					else//Р С—РЎР‚Р ВµР Т‘РЎвЂ№Р Т‘РЎС“РЎвЂ°Р ВµР в„– Р Р…Р ВµРЎвЂљ, Р В·Р В°Р С”РЎР‚РЎвЂ№Р Р†Р В°Р ВµР С РЎвЂљР ВµР С”РЎС“РЎвЂ°РЎС“РЎР‹
+						curr_dit->second->Close();
+				}
 			}
 		}
 	}
+}
 
-	if (Owner())
+void CCar::WheelsSetSpring(float spring)
+{
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
 	{
-		return Exit(pos, dir);
-	}
-
-	return Enter(pos, dir, foot_pos);
-}
-
-bool CCar::DoorUse(u16 id)
-{
-	xr_map<u16, CCarDoor>::iterator i;
-	if (is_Door(id, i))
-	{
-		i->second.Use();
-		return true;
-	}
-
-	return false;
-}
-
-bool CCar::DoorSwitch(u16 id)
-{
-	xr_map<u16, CCarDoor>::iterator i;
-	if (is_Door(id, i))
-	{
-		i->second.Switch();
-		return true;
-	}
-
-	return false;
-}
-
-bool CCar::DoorClose(u16 id)
-{
-	xr_map<u16, CCarDoor>::iterator i;
-	if (is_Door(id, i))
-	{
-		i->second.Close();
-		return true;
-	}
-
-	return false;
-}
-
-bool CCar::DoorOpen(u16 id)
-{
-	xr_map<u16, CCarDoor>::iterator i;
-	if (is_Door(id, i))
-	{
-		i->second.Open();
-		return true;
-	}
-
-	return false;
-}
-
-void CCar::InitParabola()
-{
-	m_a = expf((m_power_rpm - m_torque_rpm) / (2.f * m_power_rpm)) * m_max_power / m_power_rpm;
-	m_b = m_torque_rpm;
-	m_c = _sqrt(2.f * m_power_rpm * (m_power_rpm - m_torque_rpm));
-}
-
-float CCar::Parabola(float rpm)
-{
-	float ex = (rpm - m_b) / m_c;
-	float value = m_a * expf(-ex * ex) * rpm;
-	if (value < 0.f) return 0.f;
-	if (e_state_drive == neutral) value *= m_power_neutral_factor;
-	return value;
-}
-
-float CCar::EnginePower()
-{
-	float value; value = Parabola(m_current_rpm);
-	if (b_starting)
-	{
-		if (m_current_rpm < m_min_rpm)
+		if (i_w->second.joint && i_w->second.joint->bActive)
 		{
-			value = Parabola(m_min_rpm);
-		}
-		else if (Device.dwTimeGlobal - m_dwStartTime > 1000) b_starting = false;
-	}
+			float tmp_spr, tmp_dmp;
+			i_w->second.joint->GetJointSDfactors(tmp_spr, tmp_dmp);
 
-	if (value > m_current_engine_power)
-		return value * m_power_increment_factor + m_current_engine_power * (1.f - m_power_increment_factor);
-	else
-		return value * m_power_decrement_factor + m_current_engine_power * (1.f - m_power_decrement_factor);
-}
-
-float CCar::DriveWheelsMeanAngleRate() const
-{
-	float drive_speed = 0.f;
-
-	for (const SWheelDrive& Wheel : m_driving_wheels)
-	{
-		drive_speed += Wheel.ASpeed();
-	}
-
-	return drive_speed / m_driving_wheels.size();
-}
-
-float CCar::EngineDriveSpeed()
-{
-	float calc_rpm = 0.f;
-	if (b_transmission_switching)
-	{
-		calc_rpm = m_max_rpm;
-		if (m_current_rpm > m_power_rpm)
-		{
-			b_transmission_switching = false;
-		}
-	}
-	else
-	{
-		calc_rpm = EngineRpmFromWheels();
-
-		if (!b_clutch && calc_rpm < m_min_rpm)
-		{
-			calc_rpm = m_min_rpm;
-		}
-		limit_above(calc_rpm, m_max_rpm);
-	}
-
-	if (calc_rpm > m_current_rpm)
-		return		(1.f - m_rpm_increment_factor) * m_current_rpm + m_rpm_increment_factor * calc_rpm;
-	else
-		return		(1.f - m_rpm_decrement_factor) * m_current_rpm + m_rpm_decrement_factor * calc_rpm;
-}
-
-void CCar::UpdateFuel(float time_delta)
-{
-	if (!b_engine_on) 
-		return;
-
-	if (m_current_rpm > m_min_rpm)
-		m_fuel -= time_delta * (m_current_rpm - m_min_rpm) * m_fuel_consumption;
-	else
-		m_fuel -= time_delta * m_min_rpm * m_fuel_consumption;
-
-	if (m_fuel < EPS) 
-		StopEngine();
-}
-
-float CCar::AddFuel(float ammount)
-{
-	float free_space = m_fuel_tank - m_fuel;
-	if (ammount < free_space)
-	{
-		m_fuel += ammount;
-		return ammount;
-	}
-	else
-	{
-		m_fuel = m_fuel_tank;
-		return free_space;
-	}
-}
-
-void CCar::ResetKeys()
-{
-	bkp = false;
-	fwp = false;
-	lsp = false;
-	rsp = false;
-}
-
-#undef   _USE_MATH_DEFINES
-
-void CCar::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent(P, type);
-	CExplosive::OnEvent(P, type);
-
-	//обработка сообщений, нужных для работы с багажником машины
-	ALife::_OBJECT_ID id;
-	switch (type)
-	{
-		case GE_TRADE_BUY:
-		case GE_OWNERSHIP_TAKE:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			VERIFY(O);
-
-			CGameObject* GO = O->cast_game_object();
-			CInventoryItem* pIItem = GO->cast_inventory_item();
-			VERIFY(inventory().CanTakeItem(pIItem));
-			pIItem->m_ItemCurrPlace.type = eItemPlaceRuck;
-
-			O->H_SetParent(this);
-			inventory().Take(GO, true, true);
-			break;
-		}
-		case GE_TRADE_SELL:
-		case GE_OWNERSHIP_REJECT:
-		{
-			P >> id;
-			CObject* O = Level().Objects.net_Find(id);
-			VERIFY(O);
-
-			bool just_before_destroy = !P.r_eof() && P.r_u8();
-			bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
-
-			O->SetTmpPreDestroy(just_before_destroy);
-			inventory().DropItem(O->cast_game_object(), just_before_destroy, dont_create_shell);
-			break;
+			i_w->second.spring_factor_default = spring;
+			i_w->second.joint->SetJointSDfactors(spring, tmp_dmp);
+			Msg("-Current spring: %f", spring);
 		}
 	}
 }
 
-void CCar::ResetScriptData(void* P)
+void CCar::WheelsSetDamping(float damping)
 {
-	CScriptEntity::ResetScriptData(P);
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+	{
+		if (i_w->second.joint && i_w->second.joint->bActive)
+		{
+			float tmp_spr, tmp_dmp;
+			i_w->second.joint->GetJointSDfactors(tmp_spr, tmp_dmp);
+
+			i_w->second.damping_factor_default = damping;
+			i_w->second.joint->SetJointSDfactors(tmp_spr, damping);
+			Msg("-Current damping: %f", damping);
+		}
+	}
+}
+
+float CCar::WheelsGetSpring()
+{
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+	{
+		if (i_w->second.joint && i_w->second.joint->bActive)
+		{
+			float tmp_spr, tmp_dmp;
+			i_w->second.joint->GetJointSDfactors(tmp_spr, tmp_dmp);
+
+			return tmp_spr;
+		}
+	}
+
+	return 0.f;
+}
+
+float CCar::WheelsGetDamping()
+{
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+	{
+		if (i_w->second.joint && i_w->second.joint->bActive)
+		{
+			float tmp_spr, tmp_dmp;
+			i_w->second.joint->GetJointSDfactors(tmp_spr, tmp_dmp);
+
+			return tmp_dmp;
+		}
+	}
+
+	return 0.f;
 }
 
 void CCar::PhDataUpdate(float step)
 {
-	LimitWheels();
-	UpdateFuel(step);
-
-	UpdatePower();
-	if (b_engine_on && !b_starting && m_current_rpm < m_min_rpm)
-		Stall();
-
-	if (bkp)
+	if (!getDestroy() && !b_exploded && b_event_drag_activated)
 	{
-		UpdateBack();
+		if (!OwnerActor())
+		{
+			Fvector position_in_bone_space;
+			Fmatrix m_inv;
+			m_inv.invert(XFORM());
+			m_inv.transform_tiny(position_in_bone_space, Device.vCameraPosition_saved);
+			float impulse_factor = m_pPhysicsShell->getMass() * .5f + 100.f + g_actor->character_physics_support()->movement()->GetMass();
+			m_pPhysicsShell->applyImpulseTrace(position_in_bone_space, Device.vCameraDirection_saved, impulse_factor);
+		}
+		b_event_drag_activated = false;
 	}
+
+	if (characters_scraper_shell)
+	{
+		characters_scraper_shell->Enable();
+		characters_scraper_shell->SetTransform(XFORM(), mh_clear);
+		characters_scraper_shell->set_LinearVel(zero_vel);
+		characters_scraper_shell->set_AngularVel(zero_vel);
+		characters_scraper_shell->Update();
+	}
+
+	auto CWPB = m_car_weapons.begin();
+	for (; CWPB != m_car_weapons.end(); ++CWPB)
+	{
+		(*CWPB)->PhDataUpdate();
+	}
+
+	for (auto& it : engine_door)
+	{
+		if (!it.joint || !it.joint->bActive) continue;
+
+		float lo_limit, hi_limit;
+		it.joint->GetLimits(lo_limit, hi_limit, 0);
+		if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+		{
+			it.joint->PSecond_element()->Enable();
+		}
+	}
+
+	for (auto& it : headlight_hideaways)
+	{
+		if (!it.joint || !it.joint->bActive) continue;
+
+		float lo_limit, hi_limit;
+		it.joint->GetLimits(lo_limit, hi_limit, 0);
+		if (it.joint->GetAxisAngle(0) > lo_limit && it.joint->GetAxisAngle(0) < hi_limit)
+		{
+			it.joint->PSecond_element()->Enable();
+		}
+	}
+
+	if (m_repairing)Revert();
+	//LimitWheels();
+	UpdateFuel(step);
+	UpdatePower();
+	//Msg("burnout %d", b_burnout);
+	//if (GetVelocityM() > m_last_velocity)
+	//	m_camera_acceleration = (1.f - 0.06f * fixed_step * 100.f) * m_camera_acceleration + 0.06f * fixed_step * 100.f * (GetVelocityM() - m_last_velocity) * (0.01f / fixed_step);
+	//else
+	//	m_camera_acceleration = (1.f - 0.15f * fixed_step * 100.f) * m_camera_acceleration + 0.15f * fixed_step * 100.f * (GetVelocityM() - m_last_velocity) * (0.01f / fixed_step);
+
+	m_acceleration = (GetVelocityM() - m_last_velocity) / fixed_step;
+
+	if (m_nitro)
+	{
+		if (b_nitro_engage && e_state_drive == drive && Device.fTimeGlobal - m_nitro_engage_time > 1.f && !b_starting)
+		{
+			if (!m_nitro_engage)
+			{
+				m_car_sound->NitroStart();
+				if (b_nitro_particles_enabled)
+					PlayExhaustsNitro();
+			}
+			m_nitro_engage = 1;
+		}
+		else
+		{
+			if (m_nitro_engage)
+			{
+				m_car_sound->NitroStop();
+				if (b_nitro_particles_enabled)
+					StopExhaustsNitro();
+			}
+			m_nitro_engage = 0;
+		}
+	}
+	if (fwp && bkp)
+	{
+		fwpbkp = true;
+		Burnout();
+	}
+	else
+		if (fwp || bkp)
+			UpdateBackForward();
+		else
+			b_breaks = false;
 
 	if (brp)
 		HandBreak();
 
+	if (brp || (fwp && bkp) || b_breaks)
+		break_start_dt += Device.fTimeDelta;
+	else
+		break_start_dt = 0.f;
+	clamp(break_start_dt, 0.0f, 1.0f);
+	//////////////////////////////////////////////////////////
 	for (int k = 0; k < (int)m_doors_update.size(); ++k)
 	{
-		CCarDoor* D = m_doors_update[k];
+		SDoor* D = m_doors_update[k];
 		if (!D->update)
 		{
 			m_doors_update.erase(m_doors_update.begin() + k);
@@ -2069,20 +5212,546 @@ void CCar::PhDataUpdate(float step)
 			D->Update();
 		}
 	}
-
-	if (m_steering_wheels.empty())
+	UpdateRecursiveDoors();
+	// TRANS
+	float delay = m_transmission_switch_delay;
+	if (m_nitro_engage)
+		delay *= m_nitro_switch_boost;
+	if (Device.fTimeGlobal > m_transmission_switch_time + delay && m_transmission_stage > 2)
 	{
-		m_steer_angle = 0;
-		return;
+		if (m_transmission_stage == 10)
+			m_sound_effect = 0.f;
+		m_transmission_stage = 0;
+		m_transmission_switch_end_time = Device.fTimeGlobal;
+		m_car_sound->Gas();
+		if (e_state_drive == drive && m_sound_state_after_switch && Device.fTimeGlobal - m_engine_drive_time > 1.1f * delay)
+		{
+			clamp(m_engine_state_scale_last, m_sound_state_after_switch, m_engine_state_scale_last);
+			//Msg("after %f", Device.fTimeGlobal - m_engine_drive_time);
+		}
+	}
+	// TRANS
+	Fvector diff_dir, diff_dir2, normalized_vel, side_dir, side_dir2;
+	normalized_vel = Fvector(GetVelocity());
+	safe_normalize(normalized_vel);
+	side_dir = Fvector(XFORM().i);
+	side_dir2 = Fvector(XFORM().i).invert();
+	diff_dir.sub(side_dir, normalized_vel);
+	diff_dir2.sub(side_dir2, normalized_vel);
+	m_current_slip_sliding = _abs(diff_dir.magnitude() - diff_dir2.magnitude());
+	if (GetVelocity().dotproduct(XFORM().k) < 0.f)
+		m_current_slip_sliding *= 0.75f;
+	if (GetSpeedKmH() < 1.f)
+		m_current_slip_sliding = 0.f;
+	clamp(m_current_slip_sliding, 0.f, 3.f);
+
+	if (GetVelocity().dotproduct(XFORM().k) > 0.f && ((m_wheelie_boost && e_state_drive == drive && !b_starting) || (m_nitro_engage && m_nitro_wheelie_boost)) && !brp && m_transmission_stage < 10 && !CurrentTransmission() == 0 && !fwpbkp && mb_traction)
+	{
+		float spd = GetSpeedKmH() / 100.f;
+		float boost = m_wheelie_boost;
+		if (m_nitro_engage)
+		{
+			boost = m_nitro_wheelie_boost;
+			spd = spd / 2.f;
+		}
+
+		clamp(spd, 0.f, 1.f);
+		spd = sqrtf(spd);
+
+		float spin_time = (Device.fTimeGlobal - m_slip_start_time) - 0.3f;
+		clamp(spin_time, 0.f, 1.f);
+		float rotate = boost * fixed_step * (1.f - spd) * (1.f - spin_time);
+		//Msg("wheel %f", 1.f - spin_time);
+		if (m_pPhysicsShell && m_pPhysicsShell->isActive())
+		{
+			if (m_pPhysicsShell->get_ElementByStoreOrder(0))
+			{
+				Fvector angular_velocity = GetAvelAxes(0);
+				angular_velocity.x -= rotate;
+				SetAvelAxes(0, angular_velocity);
+			}
+		}
 	}
 
-	m_steer_angle = m_steering_wheels.begin()->GetSteerAngle() * 0.1f + m_steer_angle * 0.9f;
-	VERIFY(_valid(m_steer_angle));
+	if (m_pPhysicsShell && m_pPhysicsShell->isActive() && OwnerActor() && m_drift_start_boost && brp && !b_starting)
+		if (b_drift_boost && Device.fTimeGlobal - m_handbreak_start < m_drift_boost_time)
+		{
+			if (m_pPhysicsShell->get_ElementByStoreOrder(0))
+			{
+				//Msg("drift %f", m_handbreak_start - Device.fTimeGlobal);
+				Fvector angular_velocity = GetAvelAxes(0);
+
+				float spd = GetSpeedKmH() * 0.01f;
+				clamp(spd, 0.f, 1.f);
+				spd = sinf(0.5f * PI * powf(spd, 0.5f));
+
+				if (e_state_steer == right && angular_velocity.y > 0.f)
+				{
+					angular_velocity.y += m_drift_start_boost * spd * fixed_step;
+					SetAvelAxes(0, angular_velocity);
+				}
+				if (e_state_steer == left && angular_velocity.y < 0.f)
+				{
+					angular_velocity.y -= m_drift_start_boost * spd * fixed_step;
+					SetAvelAxes(0, angular_velocity);
+				}
+			}
+		}
+		else
+			b_drift_boost = false;
+	else
+		b_drift_boost = false;
+
+	if (m_engine_shake_boost && mb_traction && b_engine_on && brp && !b_starting)
+	{
+		float gas = 1.f;
+		if (e_state_drive != drive)
+			gas = 0.f;
+		float twist = sqrtf(m_engine_rpm_scale) * gas;
+		float spd = 1.5f - GetSpeedKmH() * 0.15f;
+		clamp(spd, 0.f, 1.f);
+		//if (!m_shake_stage)
+		//{
+		//	m_engine_current += m_engine_speed * (10.f + 50.f * m_engine_rpm_scale) * gas * fixed_step;
+		//	if (m_engine_current >= 1.f)
+		//	{
+		//		m_engine_current = 1.f;
+		//		m_shake_stage = true;
+		//	}
+		//}
+		//else
+		//{
+		//	m_engine_current -= m_engine_speed * (10.f + 50.f * m_engine_rpm_scale) * gas * fixed_step;
+		//	if (m_engine_current <= -1.f)
+		//	{
+		//		m_engine_current = -1.f;
+		//		m_shake_stage = false;
+		//	}
+		//}
+		if (m_pPhysicsShell && m_pPhysicsShell->isActive())
+		{
+			if (m_pPhysicsShell->get_ElementByStoreOrder(0))
+			{
+				float rotate = twist * spd * m_engine_shake_boost;
+				Fvector angular_velocity = GetAvelAxes(0);
+				angular_velocity.z -= rotate * fixed_step * 100.f;
+				SetAvelAxes(0, angular_velocity);
+			}
+		}
+	}
+
+	if (e_state_steer == left)
+	{
+		xr_vector<SWheelSteer>::iterator i, e;
+		i = m_steering_wheels.begin();
+		e = m_steering_wheels.end();
+		for (; i != e; ++i)
+			i->SteerLeft();
+		//Msg("left");
+	}
+	if (e_state_steer == right)
+	{
+		xr_vector<SWheelSteer>::iterator i, e;
+		i = m_steering_wheels.begin();
+		e = m_steering_wheels.end();
+		for (; i != e; ++i)
+			i->SteerRight();
+		//Msg("right");
+	}
+	if (e_state_steer == idle)
+	{
+		xr_vector<SWheelSteer>::iterator i, e;
+		i = m_steering_wheels.begin();
+		e = m_steering_wheels.end();
+		for (; i != e; ++i)
+			i->SteerIdle();
+		//Msg("idle");
+	}
+
+	if (!m_steering_wheels.empty())
+	{
+		m_steer_angle = m_steer_angle + (m_steering_wheels.begin()->GetSteerAngle() - m_steer_angle) * 15.f * fixed_step;
+		m_wheel_angle = m_steering_wheels.begin()->GetSteerAngle();
+		VERIFY(_valid(m_steer_angle));
+		VERIFY(_valid(m_wheel_angle));
+	}
+
+	//xr_map<u16, SWheel>::iterator i_b, e_b;
+	//i_b = m_wheels_map.begin();
+	//e_b = m_wheels_map.end();
+	//u32 steer_size = 0;
+	//float steer_speed = 0.f;
+	//u32 nonsteer_size = 0;
+	//float nonsteer_speed = 0.f;
+	//bool traction = true;
+	//for (; i_b != e_b; ++i_b)
+	//{
+	//	if (i_b->second.WheelFlags.test(SWheel::eWheelType::wheel_steering))
+	//	{
+	//		steer_size += 1;
+	//		steer_speed += fabsf(i_b->second.GetDriveAngleRate()) * i_b->second.radius;
+	//	}
+	//	else
+	//	{
+	//		nonsteer_size += 1;
+	//		nonsteer_speed += fabsf(i_b->second.GetDriveAngleRate()) * i_b->second.radius;
+	//	}
+	//	if (Device.dwTimeGlobal - i_b->second.collision_params.last_contact_time > 50)
+	//	{
+	//		i_b->second.collision_params.traction = false;
+	//		traction = false;
+	//	}
+	//}
+	//if (steer_size > 0)
+	//	steer_speed = steer_speed / steer_size;
+	//if (nonsteer_size > 0)
+	//	nonsteer_speed = nonsteer_speed / nonsteer_size;
+	
+	bool slip = false;
+	
+	if (OwnerActor())
+		PKinematics(Visual())->CalculateBones(TRUE);
+
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+	{
+		if (i_w->second.joint && i_w->second.joint->bActive)
+		{
+			if (i_w->second.suspension_force_inc > 0.f)
+			{
+				Fmatrix bone_bxform = bones_bind_forms[i_w->second.bone_id];//Р С—Р С•Р В»Р С•Р В¶Р ВµР Р…Р С‘Р Вµ Р С”Р С•Р В»Р ВµРЎРѓР В° Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+				Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform(i_w->second.bone_id);//Р С—Р С•Р В»Р С•Р В¶Р ВµР Р…Р С‘Р Вµ Р С”Р С•Р В»Р ВµРЎРѓР В° РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР Вµ Р Т‘Р С‘Р Р…Р В°Р СР С‘РЎвЂЎР ВµРЎРѓР С”Р С•Р Вµ
+
+				float spring_ = i_w->second.spring_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+				float damping_ = i_w->second.damping_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+				float median = (spring_ + damping_) * 0.5f;
+				//Msg("inert %f", i_w->second.suspension_inertia);
+
+				//Msg("dist %f", bone_bxform.c.distance_to(bone_xform.c));
+				if (bone_bxform.c.distance_to(bone_xform.c) > i_w->second.suspension_distance)
+				{
+					float spring_req = spring_ + (bone_bxform.c.distance_to(bone_xform.c) - i_w->second.suspension_distance) * (spring_ / median) * i_w->second.suspension_spring_factor * i_w->second.suspension_force_inc;
+					float damping_req = damping_ + (bone_bxform.c.distance_to(bone_xform.c) - i_w->second.suspension_distance) * (damping_ / median) * i_w->second.suspension_damping_factor * i_w->second.suspension_force_inc;
+
+					//Msg("spring_ req, %f", spring_req);
+					//Msg("dumping_ req, %f", damping_req);
+					if (i_w->second.spring_last < spring_req)
+					{
+						spring_ = i_w->second.suspension_inertia * i_w->second.spring_last + (1.f - i_w->second.suspension_inertia) * spring_req;
+						damping_ = i_w->second.suspension_inertia * i_w->second.damping_last + (1.f - i_w->second.suspension_inertia) * spring_req;
+					}
+					else
+					{
+						spring_ = spring_req;
+						damping_ = damping_req;
+					}
+				}
+				i_w->second.spring_last = spring_;
+				i_w->second.damping_last = damping_;
+
+				//Msg("spring_, %f", spring_);
+				//Msg("dumping_, %f", damping_);
+
+				i_w->second.joint->SetJointSDfactors(spring_, damping_);
+			}
+			else
+			{
+				i_w->second.spring_last = i_w->second.spring_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+				i_w->second.damping_last = i_w->second.damping_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+			}
+
+			if (m_downforce)
+				if (GetSpeedKmH() > 1.f && GetVelocity().dotproduct(XFORM().k) > 0.f)
+				{
+
+					float speedcar = GetSpeedKmH();
+					speedcar = GetSpeedKmH() * 0.00002f * m_downforce;//Р Р…Р В°Р Т‘Р С• Р В°Р Р†РЎвЂљР С•Р СР В°РЎвЂљР С‘Р В·Р С‘РЎР‚Р С•Р Р†Р В°РЎвЂљРЎРЉ Р С‘Р В»Р С‘ Р С—Р ВµРЎР‚Р ВµР Т‘Р ВµР В»Р В°РЎвЂљРЎРЉ
+
+					//if (b_downforce_compensation)
+					//{
+					//	Fmatrix bone_bxform = bones_bind_forms[i_w->second.bone_id];//Р С—Р С•Р В»Р С•Р В¶Р ВµР Р…Р С‘Р Вµ Р С”Р С•Р В»Р ВµРЎРѓР В° Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+					//	Fmatrix bone_xform = PKinematics(Visual())->LL_GetTransform(i_w->second.bone_id);//Р С—Р С•Р В»Р С•Р В¶Р ВµР Р…Р С‘Р Вµ Р С”Р С•Р В»Р ВµРЎРѓР В° РЎвЂљР ВµР С”РЎС“РЎвЂ°Р ВµР Вµ Р Т‘Р С‘Р Р…Р В°Р СР С‘РЎвЂЎР ВµРЎРѓР С”Р С•Р Вµ
+					//
+					//	float spring_ = i_w->second.spring_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+					//	float dumping_ = i_w->second.damping_factor_default;//Р В·Р Р…Р В°РЎвЂЎР ВµР Р…Р С‘Р Вµ Р В·Р В°Р Т‘Р В°Р Р†Р В°Р ВµР СР С•Р Вµ Р Р† РЎРѓР Т‘Р С”
+					//
+					//	spring_ += speedcar + bone_bxform.c.distance_to(bone_xform.c) * 10.f;
+					//	dumping_ += 0.1f * (speedcar + bone_bxform.c.distance_to(bone_xform.c) * 10.f);
+					//
+					//	i_w->second.joint->SetJointSDfactors(spring_, dumping_);
+					//}
+					float direction_mult;
+					Fvector diff_dir, diff_dir2, diff_dir3, diff_dir4, normalized_vel, side_dir, side_dir2;
+					normalized_vel = Fvector(GetVelocity());
+					safe_normalize(normalized_vel);
+					side_dir = Fvector(XFORM().k);
+					side_dir2 = Fvector(XFORM().k).invert();
+					diff_dir.sub(side_dir, normalized_vel);
+					diff_dir2.sub(side_dir2, normalized_vel);
+					direction_mult = 0.5f * _abs(diff_dir.magnitude() - diff_dir2.magnitude());
+					clamp(direction_mult, 0.f, 1.f);
+					float air_mult = 1.5f - float(Device.dwTimeGlobal - i_w->second.collision_params.last_contact_time) * 0.001f;
+					clamp(air_mult, 0.f, 1.f);
+					m_current_downforce = speedcar * air_mult * direction_mult;
+					m_pPhysicsShell->applyImpulseTrace(bones_bind_forms[i_w->second.bone_id].c, Fvector(XFORM().j).invert(), ((m_pPhysicsShell->getMass() / m_wheels_map.size()) * physics_world()->Gravity() * m_current_downforce) * fixed_step);
+				}
+				else
+					m_current_downforce = 0.f;
+		}
+
+		//if (i_w->second.joint->bActive)
+		//{
+		//	dVector3 vec1;
+		//	dJointGetHinge2Axis1(i_w->second.joint->GetDJoint(), vec1);
+		//	dVector3 vec2;
+		//	dJointGetHinge2Axis2(i_w->second.joint->GetDJoint(), vec2);
+		//
+		//	Fvector dir1, dir2, dir3;
+		//	dir1 = cast_fv(vec1);
+		//	dir2 = cast_fv(vec2);
+		//	dir3 = Fvector().crossproduct( dir2, dir1 );
+		//	dir3.mul(20.f);
+		//
+		//	dBodySetFiniteRotationMode(i_w->second.joint->PSecond_element()->get_body(), 1);
+		//	dBodySetFiniteRotationAxis(i_w->second.joint->PSecond_element()->get_body(), dir3.x, dir3.y, dir3.z);
+		//	dBodySetGyroscopicMode(i_w->second.joint->PSecond_element()->get_body(), 0);
+		//}
+
+		if (!mb_traction && i_w->second.tire_drive._p)
+		{
+			i_w->second.UpdateSounds();
+			i_w->second.tire_drive.stop();
+		}
+
+		if (i_w->second.joint && i_w->second.joint->bActive && !!(Device.dwTimeGlobal - m_last_cotact_time < 500))// && GetAVelocityM() > 5.0f)
+		{
+			float wheel_speed = fabsf(i_w->second.GetDriveAngleRate()) * i_w->second.radius;
+			//float speed_ms = (GetVelocityM());
+			Fvector wheel_lin_vel;
+			i_w->second.joint->PSecond_element()->get_LinearVel(wheel_lin_vel);
+			float wheel_lin_speed = wheel_lin_vel.magnitude();
+
+			float spd_dif = fabsf(wheel_speed - wheel_lin_speed) * 0.015f;
+			clamp(spd_dif, 0.f, 1.f);
+			spd_dif = sinf(0.5f * PI * powf(spd_dif, 0.5f)); //Р В±Р С•Р В»РЎРЉРЎв‚¬Р Вµ РЎРѓРЎвЂљР ВµР С—Р ВµР Р…РЎРЉ = Р В»Р С‘Р Р…Р ВµР в„–Р Р…Р ВµР Вµ Р С—Р С•РЎвЂљР ВµРЎР‚РЎРЏ РЎРѓРЎвЂ Р ВµР С—Р В»Р ВµР Р…Р С‘РЎРЏ
+
+			if (i_w->second.collision_params.traction)
+			{
+				float threshold = 2.f;
+				float wheels_spin_factor = m_wheels_spin_factor_start;
+
+				if (i_w->second.collision_params.buxe || i_w->second.collision_params.breaking || i_w->second.collision_params.slide)
+				{
+					threshold = 0.5f;
+					wheels_spin_factor = m_wheels_spin_factor_stop;
+					slip = true;
+				}
+
+				//Msg("speed wheel %f", wheel_speed);
+				//Msg("speed_ms %f", speed_ms);
+				//Msg("wheel_lin_speed %f", wheel_lin_speed);
+				//Msg("wheel ang - lin %f", wheel_speed - wheel_lin_speed);
+
+				//if (traction)
+				//{
+				//	if (steer_size > 0 && i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_steering))
+				//	{
+				//		//Msg("speed wheel %f", wheel_speed);
+				//		//Msg("speed steer %f", steer_speed);
+				//		//Msg("speed car %f", speed_ms);
+				//		wheel_speed = wheel_speed - 0.5f * (wheel_speed - steer_speed);// / steer_size;
+				//		//Msg("speed wheel diff %f", wheel_speed);
+				//	}
+				//	if (nonsteer_size > 0 && !i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_steering))
+				//	{
+				//		//Msg("speed nonsteer %f", wheel_speed);
+				//		wheel_speed = wheel_speed - 0.5f * (wheel_speed - nonsteer_speed);// / nonsteer_size;
+				//		//Msg("speed nonsteer diff %f", wheel_speed);
+				//	}
+				//}
+				if (e_state_drive == drive && i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_drive) && i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_steering))
+					wheels_spin_factor *= 0.95f;
+
+				if (wheel_speed > threshold && wheel_lin_speed < wheel_speed * wheels_spin_factor && e_state_drive == drive && i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_drive)) //_abs(i_w->second.GetDriveAngleRate()) * i_w->second.radius < GetVelocityM() * 0.6f
+				{
+					//Msg("spd dif %f", spd_dif);
+					i_w->second.collision_params.buxe = true;
+					i_w->second.collision_params.slide = false;
+					i_w->second.collision_params.breaking = false;
+				}
+				else
+				{
+					i_w->second.collision_params.buxe = false;
+					if ((wheel_lin_speed > m_vel_sliding_threshold && wheel_speed < wheel_lin_speed * wheels_spin_factor))
+						i_w->second.collision_params.breaking = true;
+					else
+					{
+						i_w->second.collision_params.breaking = false;
+						if ((wheel_lin_speed >= m_vel_sliding_threshold) && (m_current_slip_sliding >= m_slip_sliding_threshold) && ((i_w->second.wheel_state != wheel_left && i_w->second.wheel_state != wheel_right && i_w->second.wheel_state != wheel_limit)))
+							i_w->second.collision_params.slide = true;
+						else
+							i_w->second.collision_params.slide = false;
+					}
+				}
+
+				if (i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_breaking && wheel_lin_speed > m_vel_sliding_threshold && wheel_speed < wheel_lin_speed * m_break_abs_threshold)) //breaking abs
+					i_w->second.collision_params.breaking_abs = true;
+				else
+					i_w->second.collision_params.breaking_abs = false;
+			}
+			else
+			{
+			i_w->second.collision_params.buxe = false;
+			i_w->second.collision_params.slide = false;
+			i_w->second.collision_params.breaking = false;
+			}
+
+			if ((i_w->second.collision_params.buxe || (i_w->second.collision_params.slide && e_state_drive == drive && i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_drive))) && (!m_nitro_engage || (m_nitro_engage && !m_nitro_wheelie_boost)))
+			{
+				i_w->second.collision_params.friction_slip_factor = (1.f - m_friction_slip_speed * 5.f * fixed_step * 100.f) * i_w->second.collision_params.friction_slip_factor + m_friction_slip_speed * 5.f * fixed_step * 100.f * (1.f - (0.5f + 0.5f * spd_dif) * (1.f - m_friction_spin_factor));
+				i_w->second.collision_params.friction2_slip_factor = (1.f - m_friction_slip_speed * 5.f * fixed_step * 100.f) * i_w->second.collision_params.friction2_slip_factor + m_friction_slip_speed * 5.f * fixed_step * 100.f * (1.f - (0.5f + 0.5f * spd_dif) * (1.f - m_friction2_spin_factor));
+				i_w->second.collision_params.was_buxe = true;
+				i_w->second.collision_params.was_slide = false;
+			}
+			else if (i_w->second.collision_params.breaking || i_w->second.collision_params.slide)
+			{
+				i_w->second.collision_params.friction_slip_factor = (1.f - m_friction_slip_speed * 5.f * fixed_step * 100.f) * i_w->second.collision_params.friction_slip_factor + m_friction_slip_speed * 5.f * fixed_step * 100.f * (1.f - (0.5f + 0.5f * spd_dif) * (1.f - m_friction_slip_factor));
+				i_w->second.collision_params.friction2_slip_factor = (1.f - m_friction_slip_speed * 5.f * fixed_step * 100.f) * i_w->second.collision_params.friction2_slip_factor + m_friction_slip_speed * 5.f * fixed_step * 100.f * (1.f - (0.5f + 0.5f * spd_dif) * (1.f - m_friction2_slip_factor));
+				i_w->second.collision_params.was_slide = true;
+			}
+			else
+			{
+				i_w->second.collision_params.friction_slip_factor += m_friction_slip_speed * (1.f - (m_friction_spin_factor < m_friction_slip_factor ? m_friction_spin_factor : m_friction_slip_factor)) * fixed_step * 350.f;
+				i_w->second.collision_params.friction2_slip_factor += m_friction_slip_speed * (1.f - (m_friction2_spin_factor < m_friction2_slip_factor ? m_friction2_spin_factor : m_friction2_slip_factor)) * fixed_step * 350.f;
+			}
+
+			if (i_w->second.collision_params.was_buxe == true && i_w->second.collision_params.was_slide == true)
+			{
+				clamp(i_w->second.collision_params.friction_slip_factor, 1.5f, 1.5f);
+				clamp(i_w->second.collision_params.friction2_slip_factor, 1.5f, 1.5f);
+				i_w->second.collision_params.was_buxe = false;
+			}
+			else
+			{
+				clamp(i_w->second.collision_params.friction_slip_factor, i_w->second.collision_params.friction_slip_factor, 1.f);
+				clamp(i_w->second.collision_params.friction2_slip_factor, i_w->second.collision_params.friction2_slip_factor, 1.f);
+				i_w->second.collision_params.was_slide = false;
+			}
+
+			if (i_w->second.WheelFlags.test(SWheel::eWheelType::wheel_drive) && m_nitro)
+			{
+				if (m_nitro_engage)
+					if (m_nitro_wheelie_boost && !fwpbkp && !brp)
+					{
+						float spd_brp = (GetSpeedKmH() - 35.f) / 30.f;
+						clamp(spd_brp, 0.f, 1.f);
+						i_w->second.collision_params.friction_nitro_factor = m_nitro_friction_factor * (1.f + (m_current_rpm_brp_n - 1.f) * (1.f - spd_brp) * m_nitro_wheelie_friction_brp_factor);
+						//Msg("spd %f", (1.f + (m_current_rpm_brp_n - 1.f) * (1.f - spd_brp)));
+					}
+					else
+						i_w->second.collision_params.friction_nitro_factor = m_nitro_friction_factor;
+				else
+				{
+					i_w->second.collision_params.friction_nitro_factor = 1.f;
+				}
+			}
+
+			//Msg("breaking %d", i_w->second.collision_params.breaking);
+			//Msg("breaking abs %d", i_w->second.collision_params.breaking_abs);
+		}
+
+		if (Device.dwTimeGlobal - i_w->second.collision_params.last_contact_time > 50)
+			i_w->second.collision_params.traction = false;
+
+		float rain_friction = 0.f;
+		if (g_pGamePersistent->Environment().CurrentEnv->rain_density > 0.f)
+		{
+			float rain_hemi = 1.f;
+			rain_friction = 0.25f * g_pGamePersistent->Environment().CurrentEnv->rain_density;
+			clamp(rain_friction, 0.f, 1.f);
+			rain_friction = 0.25f * sinf(0.5f * PI * powf(rain_friction, 0.8f));
+			//Msg("dens %f", g_pGamePersistent->Environment().CurrentEnv->rain_density);
+			//Msg("rain %f", rain_friction);
+			rain_hemi = ROS()->get_luminocity_hemi() * 100.f;
+			clamp(rain_hemi, 0.f, 1.f);
+			//Msg("hemi factor %f", (1.f - (1.f + 0.65f * (rain_hemi - 1.f))));
+			rain_friction -= (1.f - (1.f + 0.65f * (rain_hemi - 1.f)));
+			clamp(rain_friction, 0.f, 1.f);
+		}
+		//Msg("fric2 %f", rain_friction);
+		i_w->second.collision_params.friction_rain_factor = 1.f - rain_friction;
+
+		//if (m_friction_dir_correction && i_w->second.joint->bActive)
+		//{
+		//	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(i_w->first);
+		//	Fmatrix BI_M;
+		//	BI_M = BI.mTransform;
+		//	BI_M.mulA_43(XFORM());
+		//	float bi_x, bi_y, bi_z;
+		//	BI_M.getXYZi(bi_x, bi_y, bi_z);
+		//	bi_y = rad2deg(bi_y);
+		//	//Msg("y %f", bi_y);
+		//	bi_y = _abs(fmod(bi_y, 90.f));
+		//	if (bi_y > 45.f)
+		//		bi_y = (45.f + (45.f - bi_y));
+		//	//Msg("y2 %f", bi_y);
+		//	bi_y = 1.f / (1.f + powf((bi_y / 45.f), sqrtf(2.f)) * (sqrtf(2.f) - 1.f) * m_friction_dir_correction_factor);
+		//	clamp(bi_y, 0.f, 1.f);
+		//	i_w->second.collision_params.friction_dir_factor = bi_y;
+		//	//Msg("friction %f", i_b->pwheel->collision_params.friction_dir_factor);
+		//	
+
+	}
+
+	//xr_vector<SWheelDrive>::iterator i_b, e_b;
+	//i_b = m_driving_wheels.begin();
+	//e_b = m_driving_wheels.end();
+	//u32 pos = 1;
+	//float torque = 1.f;
+	//float overtorque = 0.f;
+	//for (; i_b != e_b; ++i_b)
+	//{
+	//	float diff = i_b->DiffSpeed();	
+	//	xr_vector<SWheelDrive>::iterator i_c, e_c;
+	//	i_c = m_driving_wheels.begin();
+	//	e_c = m_driving_wheels.end();
+	//	for (; i_c != e_c; ++i_c)
+	//	{
+	//		float diff_compare = i_c->DiffSpeed();
+	//		if (diff < diff_compare)
+	//			pos += 1;
+	//	}
+	//	torque = 1.f + i_b->DiffSpeed() * m_diff_lock_power;
+	//	if (torque > float(m_driving_wheels.size()))
+	//	{
+	//		overtorque += (torque - float(m_driving_wheels.size()));
+	//		torque == float(m_driving_wheels.size());
+	//	}
+	//		//float diff = 1.f + (fabsf(DriveWheelsMeanAngleRate()) - fabsf(i_w->second.GetDriveAngleRate() * (i_w->second.radius / m_ref_radius))) / m_max_rpm * m_current_gear_ratio;
+	//		Msg("diff %f", diff);
+	//	Msg("mean %f", fabsf(DriveWheelsMeanAngleRate()));
+	//	Msg("rate %f", fabsf(i_w->second.GetDriveAngleRate() * (i_w->second.radius / m_ref_radius)));
+	//
+	//}
+
+	if (mb_traction && Device.dwTimeGlobal - m_last_cotact_time > 50)
+		mb_traction = false;
+	if (!slip)
+		m_slip_start_time = Device.fTimeGlobal;
+
+	auto b_b = suspension_joints.begin();
+	for (; b_b != suspension_joints.end(); ++b_b)
+		b_b->Update();
+
+	m_last_velocity = GetVelocityM();
+	m_last_avelocity_j = GetAVelocity().dotproduct(XFORM().j);
 }
 
 bool CCar::UsedAI_Locations()
 {
-	return (false);
+	return					(FALSE);
 }
 
 u16 CCar::DriverAnimationType()
@@ -2097,243 +5766,418 @@ void CCar::OnAfterExplosion()
 
 void CCar::OnBeforeExplosion()
 {
-	setEnabled(false);
+	setEnabled(FALSE);
 }
 
 void CCar::CarExplode()
 {
-	if (b_exploded) 
+	if (OwnerActor() && rs_car_god)
 		return;
 
+	if(b_exploded) return;
+	xr_map<u16, SWheel>::iterator i_w, e_w;
+	i_w = m_wheels_map.begin();
+	e_w = m_wheels_map.end();
+	for (; i_w != e_w; ++i_w)
+		if (i_w->second.tire_drive._p)
+			i_w->second.tire_drive.destroy();
 	CPHSkeleton::SetNotNeedSave();
-	if (m_car_weapon)
-		m_car_weapon->Action(ECarWeaponAction::eWpnActivate, 0);
+	auto CWPB = m_car_weapons.begin();
+	for(;CWPB!=m_car_weapons.end();++CWPB)
+		(*CWPB)->Action(CCarTurret::eWpnActivate, 0);
+	m_lights.TurnOffLights();
+	m_stoplights.TurnOffLights();
+	m_indoorlights.TurnOffLights();
+	m_enginelights.TurnOffLights();
+	m_reverselights.TurnOffLights();
+	b_exploded=true;
+	b_event_drag_activated = false;
+	CExplosive::GenExplodeEvent(Position(),Fvector().set(0.f,1.f,0.f));
+	if(CPHDestroyable::CanDestroy())
+		CPHDestroyable::Destroy(ID(),"physic_destroyable_object");
 
-	m_lights.TurnOffHeadLights();
+	m_car_sound->Destroy();
 	m_damage_particles.Stop1(this);
 	m_damage_particles.Stop2(this);
-	b_exploded = true;
-
-	CExplosive::GenExplodeEvent(Position(), Fvector().set(0.f, 1.f, 0.f));
-
-	if (CActor* A = OwnerActor())
-	{
-		if (!m_doors.empty())
-			m_doors.begin()->second.GetExitPosition(m_exit_position);
-		else
-			m_exit_position.set(Position());
-
-		A->detach_Vehicle();
-		if (!A->g_Alive())
-		{
-			A->character_physics_support()->movement()->DestroyCharacter();
-		}
-	}
-
-	if (CPHDestroyable::CanDestroy())
-		CPHDestroyable::Destroy(ID(), "physic_destroyable_object");
+	
+	RemoveGrassSpheres();
 }
 
-template <class T> 
-void CCar::fill_wheel_vector(const char* S, xr_vector<T>& type_wheels)
+//void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
+//{
+//
+//	dxGeomUserData *l_pUD1 = NULL;
+//	dxGeomUserData *l_pUD2 = NULL;
+//	l_pUD1 = retrieveGeomUserData(c.geom.g1);
+//	l_pUD2 = retrieveGeomUserData(c.geom.g2);
+//
+//	if(! l_pUD1) return;
+//	if(!l_pUD2) return;
+//
+//	CEntityAlive* capturer=smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object);
+//	if(capturer)
+//	{
+//		CPHCapture* capture=capturer->m_PhysicMovementControl->PHCapture();
+//		if(capture)
+//		{
+//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD2->ph_ref_object)
+//			{
+//				do_colide = false;
+//				capture->m_taget_element->Enable();
+//				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+//			}
+//
+//		}
+//
+//
+//	}
+//
+//	capturer=smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object);
+//	if(capturer)
+//	{
+//		CPHCapture* capture=capturer->m_PhysicMovementControl->PHCapture();
+//		if(capture)
+//		{
+//			if(capture->m_taget_element->PhysicsRefObject()==l_pUD1->ph_ref_object)
+//			{
+//				do_colide = false;
+//				capture->m_taget_element->Enable();
+//				if(capture->e_state==CPHCapture::cstReleased) capture->ReleaseInCallBack();
+//			}
+//
+//		}
+//
+//	}
+//}
+
+template <class T> IC void CCar::fill_wheel_vector(LPCSTR S,xr_vector<T>& type_wheels)
 {
-	IKinematics* pKinematics = PKinematics(Visual());
-	string64 S1;
-	int count = _GetItemCount(S);
-	for (int i = 0; i < count; ++i)
-	{
-		_GetItem(S, i, S1);
-
-		u16 bone_id = pKinematics->LL_BoneID(S1);
-
-		type_wheels.push_back(T());
-		T& twheel = type_wheels.back();
-
-		if (!bone_map.contains(bone_id))
-		{
-			bone_map.insert(std::make_pair(bone_id, physicsBone()));
-
-			SWheel& wheel = (m_wheels_map.insert(std::make_pair(bone_id, SWheel(this)))).first->second;
-			wheel.bone_id = bone_id;
-			twheel.pwheel = &wheel;
-			wheel.Load(S1);
-			twheel.Load(S1);
-		}
-		else
-		{
-			twheel.pwheel = &(m_wheels_map.find(bone_id))->second;
-			twheel.Load(S1);
-		}
-	}
-}
-
-IC void CCar::fill_exhaust_vector(const char* S, xr_vector<SExhaust>& exhausts)
-{
-	IKinematics* pKinematics = PKinematics(Visual());
+	IKinematics* pKinematics	=smart_cast<IKinematics*>(Visual());
 	string64					S1;
-	int count = _GetItemCount(S);
-	for (int i = 0; i < count; ++i)
+	int count =					_GetItemCount(S);
+	for (int i=0 ;i<count; ++i) 
 	{
-		_GetItem(S, i, S1);
+		_GetItem					(S,i,S1);
 
-		u16 bone_id = pKinematics->LL_BoneID(S1);
-		exhausts.push_back(SExhaust(this));
+		u16 bone_id	=				pKinematics->LL_BoneID(S1);
 
-		SExhaust& exhaust = exhausts.back();
-		exhaust.bone_id = bone_id;
+		type_wheels.push_back		(T());
+		T& twheel				= type_wheels.back();
 
-		if (!bone_map.contains(bone_id))
+		if (bone_map.find(bone_id) == bone_map.end())
 		{
-			bone_map.insert(std::make_pair(bone_id, physicsBone()));
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
+
+			SWheel& wheel			=	(m_wheels_map.insert(std::make_pair(bone_id,SWheel(this)))).first->second;
+			wheel.bone_id			=	bone_id;
+			twheel.pwheel			=	&wheel;
+			wheel						.Load(S1);
+			twheel						.Load(S1);
+		}
+		else
+		{
+			twheel.pwheel			=	&(m_wheels_map.find(bone_id))->second;
+			twheel						.Load(S1);
 		}
 	}
 }
 
-IC void CCar::fill_doors_map(const char* S, xr_map<u16, CCarDoor>& doors)
+IC void CCar::fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts)
 {
-	IKinematics* pKinematics = PKinematics(Visual());
-	string64 S1;
-	int count = _GetItemCount(S);
-
-	for (int i = 0; i < count; ++i)
+	IKinematics* pKinematics	=smart_cast<IKinematics*>(Visual());
+	string64					S1;
+	int count =					_GetItemCount(S);
+	for (int i=0 ;i<count; ++i) 
 	{
-		_GetItem(S, i, S1);
+		_GetItem					(S,i,S1);
 
-		u16 bone_id = pKinematics->LL_BoneID(S1);
-		CCarDoor door(this);
-		door.bone_id = bone_id;
-		doors.insert(std::make_pair(bone_id, door));
+		u16 bone_id	=				pKinematics->LL_BoneID(S1);
 
-		if (!bone_map.contains(bone_id))
-		{
-			bone_map.insert(std::make_pair(bone_id, physicsBone()));
-		}
+		exhausts.push_back		(SExhaust(this));
+		SExhaust& exhaust				= exhausts.back();
+		exhaust.bone_id						= bone_id;
+		if (bone_map.find(bone_id) == bone_map.end())
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
 	}
 }
 
-DLL_Pure* CCar::_construct()
+IC void CCar::fill_doors_map(LPCSTR S,xr_map<u16,SDoor>& doors)
 {
-	inherited::_construct();
-	CScriptEntity::_construct();
+	IKinematics* pKinematics	=smart_cast<IKinematics*>(Visual());
+	string64					S1;
+	int count =					_GetItemCount(S);
+	for (int i=0 ;i<count; ++i) 
+	{
+		_GetItem					(S,i,S1);
+
+		u16 bone_id	=				pKinematics->LL_BoneID(S1);
+		SDoor						door(this);
+		door.bone_id=				bone_id;
+		doors.insert				(std::make_pair(bone_id,door));
+		if (bone_map.find(bone_id) == bone_map.end())
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
+	}
+}
+
+DLL_Pure *CCar::_construct			()
+{
+	inherited::_construct		();
+	CScriptEntity::_construct	();
+	CInventoryOwner::_construct		();
 	return						(this);
 }
 
 ALife::_OBJECT_ID CCar::Initiator()
 {
-	if (g_Alive() && Owner())
+	if(g_Alive() && Owner())
 	{
 		return Owner()->ID();
 	}
-
-	return ID();
+	//else if(CExplosive::Initiator()!=u16(-1))return CExplosive::Initiator();
+	else return ID()	;
 }
 
-float CCar::RefWheelMaxSpeed()
+float	CCar::RefWheelMaxSpeed()
 {
-	return m_max_rpm / m_current_gear_ratio;
+	if (!b_cvt_transmission)
+		return m_max_rpm / m_current_gear_ratio;
+	else
+		return ((m_max_rpm / m_current_gear_ratio) * fabsf(m_current_gear_ratio)) /  m_gear_ratious[2][0];
 }
 
-float CCar::EngineCurTorque()
+float	CCar::RefWheelMaxSpeedByLastGear()
 {
-	return m_current_engine_power / m_current_rpm;
+	if(m_gear_ratious.size())
+		return m_max_rpm/m_gear_ratious[m_gear_ratious.size()-1][0];
+
+	return 1.0f;
 }
-float CCar::RefWheelCurTorque()
+
+float	CCar:: EngineCurTorque()
 {
-	if (b_transmission_switching) 
-		return 0.f;
-
-	return EngineCurTorque() * ((m_current_gear_ratio < 0.f) ? -m_current_gear_ratio : m_current_gear_ratio);
+	return m_current_engine_power/m_current_rpm;
 }
-
-void CCar::GetRayExplosionSourcePos(Fvector& pos)
+float	CCar:: RefWheelCurTorque()
 {
-	random_point_in_object_box(pos, this);
+	//if(b_transmission_switching) return 0.f;
+	return EngineCurTorque()*((m_current_gear_ratio<0.f) ? -m_current_gear_ratio : m_current_gear_ratio);
 }
-
+void CCar::GetRayExplosionSourcePos(Fvector &pos)
+{
+	random_point_in_object_box(pos,this);
+}
 void CCar::net_Relcase(CObject* O)
 {
 	CExplosive::net_Relcase(O);
 	inherited::net_Relcase(O);
+	if(m_memory)
+		m_memory->remove_links(O);
 }
 
 void CCar::ASCUpdate()
 {
-	for (u16 i = 0; i < cAsCallsnum; ++i)
+	for(u16 i=0;i<cAsCallsnum;++i)
 	{
-		EAsyncCalls c = EAsyncCalls(1 << i);
-
-		if (async_calls.test(u16(c)))
-			ASCUpdate(c);
+		EAsyncCalls c=EAsyncCalls(1<<i);
+		if(async_calls.test(u16(c)))ASCUpdate(c);
 	}
+
 }
 
 void CCar::ASCUpdate(EAsyncCalls c)
 {
-	async_calls.set(u16(c), false);
-	switch (c) 
-	{
-	case ascSndTransmission:m_car_sound->TransmissionSwitch(); break;
-	case ascSndStall:m_car_sound->Stop(); break;
-	case ascExhoustStop:StopExhausts(); break;
+	async_calls.set(u16(c),FALSE);
+	switch(c) {
+	case ascSndTransmission:m_car_sound->TransmissionSwitch();break;
+	case ascSndStall:m_car_sound->Stop();break;
+	case ascExhoustStop:StopExhausts();break;
 	default: NODEFAULT;
 	}
 }
 
 void CCar::AscCall(EAsyncCalls c)
 {
-	async_calls.set(u16(c), true);
+	async_calls.set(u16(c),TRUE);
 }
 
 bool CCar::CanRemoveObject()
 {
-	return CExplosive::IsExploded() && !CExplosive::IsSoundPlaying();
+	return CExplosive::IsExploded()&&!CExplosive::IsSoundPlaying();
 }
 
-void CCar::SetExplodeTime(u32 et)
+void		CCar::SetExplodeTime				(u32 et)	
 {
-	CDelayedActionFuse::Initialize(float(et) / 1000.f, CDamagableItem::DamageLevelToHealth(2));
+	CDelayedActionFuse::Initialize(float(et)/1000.f,CDamagableItem::DamageLevelToHealth(2));
 }
-
-u32 CCar::ExplodeTime()
+u32			CCar::ExplodeTime					()			
 {
-	if (CDelayedActionFuse::isInitialized())
-		return u32(CDelayedActionFuse::Time()) * 1000;
+	if(CDelayedActionFuse::isInitialized())
+				return u32(CDelayedActionFuse::Time())*1000;
 	else return 0;
 }
 
-void CCar::Die(CObject* who)
+void	CCar::		Die					(CObject* who)
 {
 	inherited::Die(who);
 	CarExplode();
 }
 
-Fvector	CCar::ExitVelocity()
+Fvector	CCar::		ExitVelocity				()
 {
-	CPhysicsShell* P = PPhysicsShell();
-	if (!P || !P->isActive())return Fvector().set(0, 0, 0);
-	CPhysicsElement* E = P->get_ElementByStoreOrder(0);
-	Fvector v = ExitPosition();
-
-	E->GetPointVel(v, v);
+	CPhysicsShell		*P=PPhysicsShell();
+	if(!P||!P->isActive())return Fvector().set(0,0,0);
+	CPhysicsElement *E=P->get_ElementByStoreOrder(0);
+	Fvector v=ExitPosition();
+	dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
 	return v;
 }
 
-bool CCar::DoorHit(float P, s16 element, ALife::EHitType hit_type)
+void CCar::ShowTrunk()
 {
-	if (hit_type == ALife::eHitTypeStrike && P > 20.f)
+	if (CurrentGameUI())
+		CurrentGameUI()->StartCarBody(Actor(), this);
+}
+
+void CCar::OpenTrunkBone()
+{
+	if(m_doors_recurs.empty())
+		DoorOpen(m_bone_trunk);
+}
+
+void CCar::CloseTrunkBone()
+{
+	if(m_doors_recurs.empty())
+		DoorClose(m_bone_trunk);
+	else
 	{
-		for (auto& [ID, DoorObj] : m_doors)
+		if(m_pPhysicsShell)
+			m_pPhysicsShell->Enable();
+
+		b_start_close_recursive = true;
+		b_start_open_recursive = false;
+	}
+}
+
+Fvector CCar::TrunkBoneWorldPos()
+{
+	if (IKinematics* pKinematics = PKinematics(Visual()))
+	{
+		if(m_bone_trunk != BI_NONE && m_bone_trunk < pKinematics->LL_BoneCount())
 		{
-			DoorObj.Open();
+			Fmatrix BoneMatrix;
+			Fmatrix BoneMatrixRes;
+			Fobb BoneOBB = pKinematics->LL_GetBox(m_bone_trunk);
+			BoneOBB.xform_get(BoneMatrix);
+			BoneMatrixRes.mul(pKinematics->LL_GetTransform(m_bone_trunk), BoneMatrix);
+			BoneMatrix.mul(XFORM(), BoneMatrixRes);
+			return BoneMatrix.c;
 		}
 	}
+	return Fvector(Device.vCameraPosition);
+}
 
-	auto i = m_doors.find(element);
-	if (i != m_doors.end())
+void CCar::KillEngine()
+{
+	if (!b_starting) StopEngine();
+}
+
+void CCar::HitEngine(CObject* obj, float scale)
+{
+	if (b_engine_on)
 	{
-		i->second.Hit(P);
-		return true;
+		m_hit_engine_time = Device.dwTimeGlobal;
+		m_current_engine_power -= m_current_engine_power/2.f;
+		m_current_rpm -= m_current_rpm/3.f;
+		if (m_current_rpm < m_min_rpm)
+			KillEngine();
+		//clamp(m_current_rpm, m_min_rpm, m_max_rpm);
 	}
+	if (m_pPhysicsShell)
+	{
+		Fvector dir;
+		dir.sub(Position(), obj->Position());
+		if (!safe_normalize(dir)) return;
+		m_pPhysicsShell->applyImpulse(dir, (1000.f +  0.25f * m_pPhysicsShell->getMass()) * scale);
+	}
+}
+void CCar::SHeadlightHideaway::Switch(bool hideaways_up)
+{
+	joint->SetForceAndVelocity(force, hideaways_up ? velocity : -velocity, axis_num);
+}
+void CCar::SEngineDoor::Switch(bool doors_up)
+{
+	joint->SetForceAndVelocity(force, doors_up ? velocity : -velocity, axis_num);
+}
+void CCar::SSuspension::Update()
+{
+	if (b_independent)
+		joint->SetForceAndVelocity(force, velocity, axis_num);
+	else
+	{
+		float cur_angle = dJointGetHingeAngle(joint->GetDJoint());
+		if (_abs(cur_angle) > EPS_L)
+			joint->SetForceAndVelocity(_abs((1000.0f * force) * cur_angle), -cur_angle * velocity, axis_num);
+	}
+}
 
-	return false;
-}
+Fvector CCar::GetTorqAxes(u16 elem_id)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorFromWorld(elem->get_body(),elem->get_body()->tacc[0], elem->get_body()->tacc[1], elem->get_body()->tacc[2], tmp);
+    return *(Fvector*)tmp;
+}
+Fvector CCar::GetForcAxes(u16 elem_id)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+    dBodyVectorFromWorld(elem->get_body(),elem->get_body()->facc[0], elem->get_body()->facc[1], elem->get_body()->facc[2], tmp);
+    return *(Fvector*)tmp;
+}
+
+Fvector CCar::GetAvelAxes(u16 elem_id)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorFromWorld(elem->get_body(),elem->get_body()->avel[0], elem->get_body()->avel[1], elem->get_body()->avel[2], tmp);
+    return *(Fvector*)tmp;
+}
+Fvector CCar::GetLvelAxes(u16 elem_id)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+    dBodyVectorFromWorld(elem->get_body(),elem->get_body()->lvel[0], elem->get_body()->lvel[1], elem->get_body()->lvel[2], tmp);
+    return *(Fvector*)tmp;
+}
+
+void CCar::SetTorqAxes(u16 elem_id, Fvector trq)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorToWorld(elem->get_body(),trq.x, trq.y, trq.z, tmp);
+	dBodySetTorque(elem->get_body(), tmp[0], tmp[1], tmp[2]);
+}
+
+void CCar::SetForcAxes(u16 elem_id, Fvector frc)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorToWorld(elem->get_body(),frc.x, frc.y, frc.z, tmp);
+	dBodySetForce(elem->get_body(), tmp[0], tmp[1], tmp[2]);
+}
+
+void CCar::SetAvelAxes(u16 elem_id, Fvector avel)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorToWorld(elem->get_body(),avel.x, avel.y, avel.z, tmp);
+	dBodySetAngularVel(elem->get_body(), tmp[0], tmp[1], tmp[2]);
+}
+
+void CCar::SetLvelAxes(u16 elem_id, Fvector lvel)
+{
+	CPhysicsElement *elem = m_pPhysicsShell->get_ElementByStoreOrder(elem_id);
+	dVector3 tmp;
+	dBodyVectorToWorld(elem->get_body(),lvel.x, lvel.y, lvel.z, tmp);
+	dBodySetLinearVel(elem->get_body(), tmp[0], tmp[1], tmp[2]);
+}

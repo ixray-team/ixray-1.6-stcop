@@ -385,8 +385,6 @@ void CWeapon::Load		(const char* section)
 			}
 		};
 
-		LoadCamShotParams();
-
 		LoadMoreCameras(m_shot_cams[0], "cam_shoot", "camera_effects\\weapon\\base_shoot.anm");
 		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
 
@@ -411,7 +409,6 @@ void CWeapon::Load		(const char* section)
 
 	pSettings->r_bool_nullable(section, "allow_safemode", m_bAllowSafemode);
 	pSettings->r_float_nullable(section, "safemode_rotate_time", m_fSafeModeRotateTime);
-	SafemodeDamping = pSettings->read_if_exists<float>(ReachInAllSections("safemode_damping"), "safemode_damping", -1.f);
 
 	m_AlterZoomAllowed = pSettings->read_if_exists<bool>(ReachInAllSections("alter_zoom_allowed"), "alter_zoom_allowed", false);
 
@@ -678,14 +675,6 @@ void CWeapon::Load		(const char* section)
 		IKinematics* k = Visual()->dcast_PKinematics();
 		m_mShellBone = k->LL_GetTransform(k->LL_BoneID(*m_sShellBone));
 	}
-}
-
-void CWeapon::LoadCamShotParams()
-{
-	const SCameraRigParams& rig = CCameraRig::Params();
-	CamShotVariation = std::max(pSettings->read_if_exists<float>(hud_sect, "cam_shoot_variation", rig.cam_shoot_variation), 0.f);
-	CamShotSpeedVariation = std::clamp(pSettings->read_if_exists<float>(hud_sect, "cam_shoot_speed_variation", rig.cam_shoot_speed_variation), 0.f, 0.9f);
-	CamShotMirror = pSettings->read_if_exists<bool>(hud_sect, "cam_shoot_mirror", rig.cam_shoot_mirror);
 }
 
 void CWeapon::LoadShootingParams(const char* section)
@@ -1771,11 +1760,6 @@ void CWeapon::UpdateCL()
 	{
 		s32 autoaim_period = GetAutoAimPeriod();
 		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
-		if (pActor != nullptr && IsWorking() && (pActor->GetMovementState(eReal) & mcSprint) != 0)
-		{
-			FireEnd();
-		}
-
 		if (pActor != nullptr && autoaim_period != 0 && m_bAutoAimNeedAutoShot && pActor->IsActionKeyPressedInGame(EGameActions::kWPN_FIRE) && IsAutoAimHaveTarget()
 			&& (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(m_iLastShotTime) > std::floor(m_fLastRechargeTime * 1000.0f) || m_fRechargeTime == 0.0f))
 		{
@@ -1952,11 +1936,6 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
-				if (!(flags & CMD_START) && ParentIsActor())
-				{
-					H_Parent()->cast_actor()->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, false);
-				}
-
 				if (m_pInventory != nullptr && m_pInventory->IsSlotBlocked(this))
 				{
 					return false;
@@ -1981,17 +1960,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							return false;
 						}
-
-						if ((pActor->GetMovementState(eReal) & mcSprint) != 0)
-						{
-							pActor->SetMovementState(eWishful, mcSprint, false);
-							pActor->SetActorKeyRepeatFlag(ACTOR_DEFS::kfFIRE, true);
-							return true;
-						}
 					}
 				}
 
-				if (flags&CMD_START)
+				if (flags&CMD_START) 
 				{
 					m_bAutoAimNeedReleaseShot = false;
 					m_bAutoAimNeedAutoShot = false;
@@ -2056,15 +2028,44 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		{
 			if (flags & CMD_START && ParentIsActor() && AllowSafemode())
 			{
-				if (SafemodeFeedbackDeferred())
-				{
-					SafemodeTogglePending = !SafemodeTogglePending;
-					return true;
-				}
-
 				if (CActor* pActor = H_Parent()->cast_actor())
 				{
-					ToggleSafemode(pActor);
+					ResetSubStateTime();
+
+					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
+					{
+						SwitchState(eSafemodeSwitch);
+					}
+					else
+					{
+						bool cur_status = pActor->IsSafemode();
+						if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+						{
+							if (cur_status)
+							{
+								bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
+								PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
+									m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
+							}
+							else
+							{
+								PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
+									m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
+							}
+						}
+
+						if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+						{
+							PlaySound(cur_status ? "sndSafemodeOut" : "sndSafemodeIn", get_LastFP());
+						}
+
+						if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
+						{
+							StartCamEffector(m_safemode_cams[cur_status ? 1 : 0]);
+						}
+
+						pActor->SetSafemodeStatus(!cur_status);
+					}
 					return true;
 				}
 			}
@@ -3292,10 +3293,6 @@ void CWeapon::OnZoomIn()
 		}
 
 		g_player_hud->UpdateMovementLayers();
-		if (CCameraRig::Enabled())
-		{
-			g_player_hud->TriggerScriptLayersInertia(HudItemData()->AimBlendInertia);
-		}
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
@@ -3355,10 +3352,6 @@ void CWeapon::OnZoomOut()
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[2].has_motion : m_sAimBlendParams[2].has_motion))
 	{
 		g_player_hud->UpdateMovementLayers();
-		if (CCameraRig::Enabled())
-		{
-			g_player_hud->TriggerScriptLayersInertia(HudItemData()->AimBlendInertia);
-		}
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
@@ -3732,19 +3725,11 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
-	UpdateSafemodeFeedback(pActor);
-
 	attachable_hud_item* hi = HudItemData();
 	if (hi == nullptr)
 	{
-		AimReloadFovOut = 0.f;
 		return;
 	}
-
-	const float aim_reload_pose = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadPose() : 0.f;
-	const float aim_reload_push = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadPush() : 0.f;
-	const float aim_reload_drop = g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->AimReloadDrop() : 0.f;
-	AimReloadFovOut = hi->AimReloadZoomOut * aim_reload_pose;
 
 	const EHudOffsetType idx = GetCurrentHudOffsetIdx();
 
@@ -3770,87 +3755,50 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 
 	static constexpr float SPEED_FACTOR = 3.0f;
 
-	const bool safemode_spring = CCameraRig::Enabled() && (idx == EHudOffsetType::eSafemode || m_fSafeModeRotationFactor > 0.0f);
-	if (safemode_spring)
+	if (curr_offs.similar(saved_offs, EPS))
 	{
-		const float half_life = std::max(m_fSafeModeRotateTime * 0.35f, 0.01f);
-		const float damping = SafemodeDamping >= 0.f ? SafemodeDamping : CCameraRig::Params().safemode_damping;
-		const auto spring = [&](float error, float& velocity)
-		{
-			HudSpring::Step(error, velocity, 0.f, half_life, damping, Device.fTimeDelta);
-			return error;
-		};
-
-		for (int i = 0; i < 3; ++i)
-		{
-			saved_offs[i] = curr_offs[i] + spring(saved_offs[i] - curr_offs[i], SafemodeVelocityPos[i]);
-			saved_rot[i] = angle_normalize_signed(curr_rot[i] + spring(-angle_difference_signed(curr_rot[i], saved_rot[i]), SafemodeVelocityRot[i]));
-		}
+		saved_offs.set(curr_offs);
 	}
 	else
 	{
-		SafemodeVelocityPos.set(0.f, 0.f, 0.f);
-		SafemodeVelocityRot.set(0.f, 0.f, 0.f);
-
-		if (curr_offs.similar(saved_offs, EPS))
-		{
-			saved_offs.set(curr_offs);
-		}
-		else
-		{
-			saved_offs.add(Fvector().sub(curr_offs, saved_offs).mul(factor * SPEED_FACTOR));
-		}
-
-		if (curr_rot.similar(saved_rot, EPS))
-		{
-			saved_rot.set(curr_rot);
-		}
-		else
-		{
-			Fvector angle_difference =
-			{
-				angle_normalize_signed(angle_difference_signed(curr_rot.x, saved_rot.x)*(factor * SPEED_FACTOR)),
-				angle_normalize_signed(angle_difference_signed(curr_rot.y, saved_rot.y)*(factor * SPEED_FACTOR)),
-				angle_normalize_signed(angle_difference_signed(curr_rot.z, saved_rot.z)*(factor * SPEED_FACTOR))
-			};
-			saved_rot.x = angle_normalize_signed(saved_rot.x+angle_difference.x);
-			saved_rot.y = angle_normalize_signed(saved_rot.y+angle_difference.y);
-			saved_rot.z = angle_normalize_signed(saved_rot.z+angle_difference.z);
-		}
+		saved_offs.add(Fvector().sub(curr_offs, saved_offs).mul(factor * SPEED_FACTOR));
 	}
 
-	const float sprint_pose = idx == EHudOffsetType::eSafemode && g_player_hud != nullptr && g_player_hud->attached_item(0) == hi ? g_player_hud->SprintPoseWeight() : 0.f;
-	const Fvector applied_rot = Fvector(saved_rot).mul(1.f - sprint_pose);
-	const Fvector applied_offs = Fvector(saved_offs).mul(1.f - sprint_pose);
+	if (curr_rot.similar(saved_rot, EPS))
+	{
+		saved_rot.set(curr_rot);
+	}
+	else
+	{
+		Fvector angle_difference = 
+		{
+			angle_normalize_signed(angle_difference_signed(curr_rot.x, saved_rot.x)*(factor * SPEED_FACTOR)),
+			angle_normalize_signed(angle_difference_signed(curr_rot.y, saved_rot.y)*(factor * SPEED_FACTOR)),
+			angle_normalize_signed(angle_difference_signed(curr_rot.z, saved_rot.z)*(factor * SPEED_FACTOR))
+		};
+		saved_rot.x = angle_normalize_signed(saved_rot.x+angle_difference.x);
+		saved_rot.y = angle_normalize_signed(saved_rot.y+angle_difference.y);
+		saved_rot.z = angle_normalize_signed(saved_rot.z+angle_difference.z);
+	}
 
 	Fmatrix	hud_rotation;
 	hud_rotation.identity();
-	hud_rotation.rotateX(applied_rot.x);
+	hud_rotation.rotateX(saved_rot.x);
 
 	Fmatrix	hud_rotation_y;
 	hud_rotation_y.identity();
-	hud_rotation_y.rotateY(applied_rot.y);
+	hud_rotation_y.rotateY(saved_rot.y);
 	hud_rotation.mulA_43(hud_rotation_y);
 
 	hud_rotation_y.identity();
-	hud_rotation_y.rotateZ(applied_rot.z);
+	hud_rotation_y.rotateZ(saved_rot.z);
 	hud_rotation.mulA_43(hud_rotation_y);
-	hud_rotation.translate_over(applied_offs);
+	hud_rotation.translate_over(saved_offs);
 
 	if (!LerpBoneAiming(trans, hud_rotation))
 	trans.mulB_43(hud_rotation);
 
 	m_hud_trans_last = trans;
-
-	if (aim_reload_pose > 0.f || aim_reload_push > 0.f || aim_reload_drop > 0.f)
-	{
-		const Fvector reload_rot = Fvector(hi->AimReloadOffsetRot).mul(PI / 180.f * aim_reload_pose);
-		Fmatrix reload_offset;
-		reload_offset.setXYZ(reload_rot);
-		const Fvector& reload_pos = hi->AimReloadOffsetPos;
-		reload_offset.translate_over(Fvector().set(reload_pos.x * aim_reload_pose, reload_pos.y * aim_reload_drop, reload_pos.z * aim_reload_pose).mad(hi->AimReloadPushPos, aim_reload_push));
-		trans.mulB_43(reload_offset);
-	}
 
 	if (IsZoomed())
 	{
@@ -4223,52 +4171,6 @@ const float &CWeapon::hit_probability	() const
 	return					(m_hit_probability[egdNovice]);
 }
 
-bool CWeapon::OverlayAllowed(u8 Base, u8 Host) const
-{
-	switch (Host)
-	{
-	case eFire:
-	case eFire2:
-	case eReload:
-	case eMisfire:
-	case eSwitchMode:
-	case eEmptyClick:
-	case eLightMis:
-	case eKick:
-	case eMagCheck:
-	case eFiremodeCheck:
-	case eLoadChamber:
-	case eUnloadChamber:
-	case eChamberCheck:
-	case ePump:
-	case eSafemodeSwitch:
-		break;
-	default:
-		return false;
-	}
-
-	switch (Base)
-	{
-	case eShowing:
-	case eBore:
-	case eReload:
-	case eMisfire:
-	case eSwitchMode:
-	case eLightMis:
-	case eKick:
-	case eMagCheck:
-	case eFiremodeCheck:
-	case eLoadChamber:
-	case eUnloadChamber:
-	case eChamberCheck:
-	case ePump:
-	case eSafemodeSwitch:
-		return true;
-	default:
-		return false;
-	}
-}
-
 void CWeapon::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
@@ -4318,12 +4220,6 @@ bool CWeapon::NeedBlockSprint() const
 	const u8 State = GetState();
 	const static bool IsDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	const bool layered_action = State == eReload || State == eSwitchMode || State == eSafemodeSwitch || !IsPending() && State != eHiding && State != eHidden;
-	if (layered_action && SprintLayered())
-	{
-		return m_bIsAimAnimationPlaying;
-	}
-
 	if (IsDelayedWeaponActions)
 	{
 		return State != eIdle && State != eSprintStart && State != eSprintEnd || m_bIsAimAnimationPlaying;
@@ -4331,7 +4227,7 @@ bool CWeapon::NeedBlockSprint() const
 
 	const static bool IsBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return IsPending() && (State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload) || m_bIsAimAnimationPlaying;
+	return State == eFire || State == eFire2 || IsPending() && (State == eKick || State == eSuicide || State == eSuicideStop || IsBlockSprintInReload && State == eReload) || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()
@@ -5654,132 +5550,15 @@ void CWeapon::OnSafemodeOut()
 				m_sSafemodeBlendParams[2].blend_params, false, Mix, true, g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eSafemodeOut);
 		}
 
-		PlaySafemodeFeedback(false);
-	}
-}
-
-void CWeapon::ToggleSafemode(CActor* pActor)
-{
-	if (!pActor->IsSafemode() && g_player_hud != nullptr && HudItemData() != nullptr && HudItemData() == g_player_hud->attached_item(0))
-	{
-		g_player_hud->CutSprintEnd();
-	}
-
-	ResetSubStateTime();
-
-	if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
-	{
-		SwitchState(eSafemodeSwitch);
-	}
-	else
-	{
-		bool cur_status = pActor->IsSafemode();
-		if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
 		{
-			if (cur_status)
-			{
-				bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
-				PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
-					m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
-			}
-			else
-			{
-				PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
-					m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
-			}
+			PlaySound("sndSafemodeOut", get_LastFP());
 		}
 
-		PlaySafemodeFeedback(!cur_status);
-
-		pActor->SetSafemodeStatus(!cur_status);
-	}
-}
-
-void CWeapon::OnSprintToSafemode()
-{
-	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
-	attachable_hud_item* hi = HudItemData();
-	if (pActor == nullptr || hi == nullptr || SafemodeTogglePending || !pActor->IsSafemode())
-	{
-		return;
-	}
-
-	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisPos].set(0.f, 0.f, 0.f);
-	hi->m_measures.m_hands_positions.hands_offsets_saved[EHudOffsetAxis::eAxisRot].set(0.f, 0.f, 0.f);
-	SafemodeVelocityPos.set(0.f, 0.f, 0.f);
-	SafemodeVelocityRot.set(0.f, 0.f, 0.f);
-
-	if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
-	{
-		PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
-			m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
-	}
-}
-
-bool CWeapon::SprintEndsInSafemode() const
-{
-	CObject* parent = const_cast<CObject*>(H_Parent());
-	const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr;
-	return pActor != nullptr && pActor->IsSafemode() != SafemodeTogglePending;
-}
-
-bool CWeapon::SafemodeFeedbackDeferred()
-{
-	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
-	return pActor != nullptr && SprintLayered() && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0;
-}
-
-void CWeapon::PlaySafemodeFeedback(bool entering)
-{
-	if (SafemodeFeedbackDeferred())
-	{
-		if (!SafemodeFeedbackPending)
+		if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
 		{
-			SafemodeFeedbackPending = true;
-			SafemodeFeedbackFrom = !entering;
+			StartCamEffector(m_safemode_cams[1]);
 		}
-
-		return;
-	}
-
-	SafemodeFeedbackPending = false;
-
-	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
-	{
-		PlaySound(entering ? "sndSafemodeIn" : "sndSafemodeOut", get_LastFP());
-	}
-
-	if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
-	{
-		StartCamEffector(m_safemode_cams[entering ? 0 : 1]);
-	}
-}
-
-void CWeapon::UpdateSafemodeFeedback(CActor* pActor)
-{
-	if (GetState() == eHiding || GetState() == eHidden)
-	{
-		SafemodeTogglePending = false;
-	}
-
-	if (SafemodeTogglePending && !SafemodeFeedbackDeferred())
-	{
-		SafemodeTogglePending = false;
-		if (AllowSafemode())
-		{
-			ToggleSafemode(pActor);
-		}
-	}
-
-	if (!SafemodeFeedbackPending || SafemodeFeedbackDeferred())
-	{
-		return;
-	}
-
-	SafemodeFeedbackPending = false;
-	if (pActor->IsSafemode() != SafemodeFeedbackFrom)
-	{
-		PlaySafemodeFeedback(pActor->IsSafemode());
 	}
 }
 

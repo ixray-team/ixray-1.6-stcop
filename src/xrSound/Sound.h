@@ -182,7 +182,7 @@ public:
 	IC void					set_panning				( double left, double right);
 
 	IC void					stop 					( );
-	IC void					stop_deffered			( );
+	IC void					stop_deffered			(float fade_seconds = -1.0f);
 	IC void					set_position			( const Fvector &pos);
 	IC void					set_frequency			( float freq);
 	IC void					set_range				( float min, float max );
@@ -365,10 +365,10 @@ IC void	ref_sound::stop()
 	}
 }
 
-IC void	ref_sound::stop_deffered()
+IC void	ref_sound::stop_deffered(float fade_seconds)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::Stop(slot(), true);
+		XRay::Sound::Mixer::Stop(slot(), true, fade_seconds);
 	}
 }
 

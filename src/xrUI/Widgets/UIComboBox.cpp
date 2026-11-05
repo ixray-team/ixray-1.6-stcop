@@ -126,7 +126,7 @@ void CUIComboBox::OnListItemSelect()
 	ShowList				(false);
 
 	if(bk_itoken_id!=m_itoken_id)
-		SendMessageToTarget(LIST_ITEM_SELECT, nullptr);
+		GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, nullptr);
 }
 
 void CUIComboBox::SetText(const char* text)

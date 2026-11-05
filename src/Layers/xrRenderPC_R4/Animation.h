@@ -8,7 +8,6 @@ namespace	animation
 	{
 		lerp	=0	,
 		add			,
-		add_local	,
 	};
 
 	struct channal_rule

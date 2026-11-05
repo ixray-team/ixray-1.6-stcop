@@ -350,6 +350,15 @@ void CActor::IR_OnMouseWheel(int direction)
 		return;
 	}
 
+	if (m_holder)
+	{
+		if (CCar* car = m_holder->cast_car())
+		{
+			car->OnMouseWheel(direction);
+			return;
+		}
+	}
+
 	if (inventory().Action(direction > 0 ? (u16)kWPN_ZOOM_DEC : (u16)kWPN_ZOOM_INC, CMD_START))
 		return;
 	
@@ -1546,19 +1555,19 @@ void CActor::ProcessKeys(CHudItem* itm)
 		SetActorKeyRepeatFlag(kfGLAUNCHSWITCH, false);
 	}
 
-	if ((m_iKeyFlags & kfNEXTFIREMODE) != 0 && itm->CanStartAction(this, kfNEXTFIREMODE))
+	if ((m_iKeyFlags & kfNEXTFIREMODE) != 0 && itm->CanStartAction(this))
 	{
 		wpn->Action(kWPN_FIREMODE_NEXT, CMD_START);
 		SetActorKeyRepeatFlag(kfNEXTFIREMODE, false);
 	}
 
-	if ((m_iKeyFlags & kfPREVFIREMODE) != 0 && itm->CanStartAction(this, kfPREVFIREMODE))
+	if ((m_iKeyFlags & kfPREVFIREMODE) != 0 && itm->CanStartAction(this))
 	{
 		wpn->Action(kWPN_FIREMODE_PREV, CMD_START);
 		SetActorKeyRepeatFlag(kfPREVFIREMODE, false);
 	}
 
-	if ((m_iKeyFlags & kfRELOAD) != 0 && itm->CanStartAction(this, kfRELOAD))
+	if ((m_iKeyFlags & kfRELOAD) != 0 && itm->CanStartAction(this))
 	{
 		wpn->Action(kWPN_RELOAD, CMD_START);
 		SetActorKeyRepeatFlag(kfRELOAD, false);
@@ -2191,6 +2200,15 @@ void CActor::SwitchTorch()
 		{
 			torch->Switch();
 		}
+	}
+}
+
+void CActor::UseTorch()
+{
+	PIItem item = inventory().ItemFromSlot(TORCH_SLOT);
+	if (CTorch* torch = item != nullptr ? item->cast_torch() : nullptr)
+	{
+		torch->Switch();
 	}
 }
 

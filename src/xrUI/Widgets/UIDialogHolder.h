@@ -25,9 +25,6 @@ public:
 class UI_API CDialogHolder :
 	public pureFrame
 {
-	friend class CUIWindow;
-	void OnWindowDestroyed(CUIWindow* Window);
-	void ReleaseWindowIfUnused(CUIWindow* Window);
 	//dialogs
 	xr_vector<recvItem>										m_input_receivers;
 	xr_vector<dlgItem>										m_dialogsToRender;
@@ -51,7 +48,6 @@ public:
 	void					SetMainInputReceiver			(CUIDialogWnd* ir, bool _find_remove);
 	void					AddDialogToRender				(CUIWindow* pDialog);
 	void					RemoveDialogToRender			(CUIWindow* pDialog);
-	void ClearDialogs();
 	virtual void	_BCL	OnFrame							();
 	virtual bool			UseIndicators					()						{return true;}
 

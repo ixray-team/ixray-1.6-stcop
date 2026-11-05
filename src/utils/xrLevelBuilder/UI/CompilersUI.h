@@ -86,8 +86,6 @@ struct CompilersMode
 	bool AI_NoSeparatorCheck = true;
 	bool AI_FreeMPBuild = false;
 	bool AI_AutoRegisterLevels = false;
-	// Index in SpawnWrite::Targets used to write all.spawn.
-	u32 AI_SpawnTarget = 0;
 
 	bool AI_BuildLevel = false;
 	bool AI_PureCovers = false;
@@ -113,8 +111,6 @@ void RenderMainUI();
 void RenderCompilerUI(int X, int Y);
 void InitializeUIData();
 void SaveCompilerCfg();
-u32 GetSpawnTargetCount();
-const char* GetSpawnTargetName(u32 Index);
 
 struct LightPreviewMap
 {

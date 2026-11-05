@@ -172,12 +172,12 @@ void CUITabControl::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 void CUITabControl::OnStaticFocusReceive(CUIWindow* pWnd)
 {
-	SendMessageToTarget(WINDOW_FOCUS_RECEIVED, static_cast<void*>(pWnd));
+	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_RECEIVED, static_cast<void*>(pWnd));
 }
 
 void CUITabControl::OnStaticFocusLost(CUIWindow* pWnd)
 {
-	SendMessageToTarget(WINDOW_FOCUS_LOST, static_cast<void*>(pWnd));
+	GetMessageTarget()->SendMessage			(this, WINDOW_FOCUS_LOST, static_cast<void*>(pWnd));
 }
 
 void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
@@ -192,7 +192,7 @@ void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
 		tb_cur->SendMessage(tb_cur, TAB_CHANGED, nullptr);
 	}
 
-	SendMessageToTarget(TAB_CHANGED, nullptr);
+	GetMessageTarget()->SendMessage			(this, TAB_CHANGED, nullptr);
 }
 
 int CUITabControl::GetActiveIndex() const
