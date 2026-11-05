@@ -402,6 +402,7 @@ public:
 	virtual void				UpdateActor					() {}
 
 	void						OnInventoryAction			(PIItem pItem, u16 action_type);
+	virtual void				Show						(bool status) override;
 	virtual void				Update						() override;
 
 	virtual bool				OnMouseAction				(float x, float y, EUIMessages mouse_action) override;

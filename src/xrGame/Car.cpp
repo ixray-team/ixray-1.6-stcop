@@ -329,6 +329,7 @@ CCar::CCar()
 	m_diff_lock_power = 1.f;
 	m_diff_lock_overpower = 0.f;
 	m_firsteye_panel = false;
+	m_allow_inventory_control = false;
 	m_interior_volume = 0.7f;
 	m_hit_stall_threshold = 1.f;
 	m_brakes_pressure_factor = 0.f;
@@ -1978,6 +1979,7 @@ void CCar::DrawCarInfo()
 	Font->SetColor(color_rgba(0xff, 0xff, 0xff, 0xff));
 	Font->OutSet(Device.TargetHeight / 2, 30);
 	Font->SetAligment(CGameFont::alLeft);
+	Font->OutNext("Health:            [%3.2f]", GetfHealth());
 	Font->OutNext("Vel magnitude:     [%3.2f]", GetVelocityM());
 	Font->OutNext("Vel:               [%3.2f]", GetVelocity().dotproduct(XFORM().k));
 	Font->OutNext("Accel magnitude:   [%3.2f]", m_acceleration);
@@ -2965,7 +2967,10 @@ void CCar::ParseDefinitions()
 		driver_xform_tune.c.set(READ_IF_EXISTS(ini, r_fvector3, "car_definition", "driver_position", Fvector().set(0.0f, 0.0f, 0.0f)));
 		m_sits_transforms.mulB_43(driver_xform_tune);
 
-		m_camera_position[EctFirstCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_firsteye", Fvector().set(0.0f, 0.0f, 0.0f));
+		// Original vehicles use the single camera_pos key. Cars-Ext splits it
+		// into first/lookat/free positions; keep the original key as fallback.
+		const Fvector DefaultCameraPos = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos", Fvector().set(0.0f, 0.0f, 0.0f));
+		m_camera_position[EctFirstCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_firsteye", DefaultCameraPos);
 		m_camera_position[EctSecondCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_lookat", m_camera_position[EctFirstCam]);
 		m_camera_position[EctThridCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free", m_camera_position[EctSecondCam]);
 		m_camera_position[EctFourthCam] = READ_IF_EXISTS(ini, r_fvector3, "car_definition", "camera_pos_free2", m_camera_position[EctThridCam]);
@@ -3004,6 +3009,7 @@ void CCar::ParseDefinitions()
 		m_wheels_spin_factor_stop = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_spin_factor_stop", m_wheels_spin_factor_stop);
 		m_wheels_sound_delay = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
 		m_firsteye_panel = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "firsteye_panel", m_firsteye_panel);
+		m_allow_inventory_control = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
 		m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
 		m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
 
@@ -4768,7 +4774,30 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent		(P,type);
 	CExplosive::OnEvent		(P,type);
 
+	if (type == GE_GRENADE_EXPLODE)
+	{
+		// CExplosive::OnEvent has already collected the blast objects by now.
+		// Drop the trunk after that collection, so the items are not thrown away.
+		DropTrunkContents();
+	}
+
 	//Р С•Р В±РЎР‚Р В°Р В±Р С•РЎвЂљР С”Р В° РЎРѓР С•Р С•Р В±РЎвЂ°Р ВµР Р…Р С‘Р в„–, Р Р…РЎС“Р В¶Р Р…РЎвЂ№РЎвЂ¦ Р Т‘Р В»РЎРЏ РЎР‚Р В°Р В±Р С•РЎвЂљРЎвЂ№ РЎРѓ Р В±Р В°Р С–Р В°Р В¶Р Р…Р С‘Р С”Р С•Р С Р СР В°РЎв‚¬Р С‘Р Р…РЎвЂ№
+	// Trunk UI transfers arrive as GE_TRADE_BUY, while spawn/load uses
+	// GE_OWNERSHIP_TAKE. Register ammo in both paths so turrets can use it.
+	auto AppendAmmoToWeapons = [this](CObject* Object)
+	{
+		CWeaponAmmo* Ammo = smart_cast<CWeaponAmmo*>(Object);
+		if (Ammo == nullptr)
+		{
+			return;
+		}
+
+		for (CCarTurret* Turret : m_car_weapons)
+		{
+			Turret->AppendAmmoToGuns(Ammo);
+		}
+	};
+
 	u16 id;
 	switch (type) 
 	{
@@ -4779,10 +4808,12 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 				{
 					CGameObject* GO = O->cast_game_object();
 					CInventoryItem* pIItem = GO ? GO->cast_inventory_item() : nullptr;
-					if (pIItem && GetInventory()->CanTakeItem(pIItem))
+					const bool hasCapacity = pIItem && (GetInventory()->CalcTotalWeight() + GetInventory()->CalcItemWeight(pIItem) <= GetInventory()->GetMaxWeight() + EPS_S);
+					if (hasCapacity && GetInventory()->CanTakeItem(pIItem))
 					{
 						pIItem->m_ItemCurrPlace.type = eItemPlaceRuck;
 						O->H_SetParent(this);
+						AppendAmmoToWeapons(O);
 						inventory().Take(GO, true, true);
 					}
 					else if (GO)
@@ -4814,16 +4845,11 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 						CRocketLauncher::AttachRocket(id, this);
 					else
 					{
-						if (smart_cast<CWeaponAmmo*>(O))
-						{
-							auto CWPB = m_car_weapons.begin();
-							for(;CWPB!=m_car_weapons.end();++CWPB)
-								(*CWPB)->AppendAmmoToGuns(smart_cast<CWeaponAmmo*>(O));
-						}
 						if( GetInventory()->CanTakeItem(smart_cast<CInventoryItem*>(O)) ) 
 						{
 							bool duringSpawn = !P.r_eof() && P.r_u8();
 							O->H_SetParent(this);
+							AppendAmmoToWeapons(O);
 							inventory().Take(smart_cast<CGameObject*>(O), false, false, duringSpawn);
 						}
 						else 
@@ -5761,7 +5787,7 @@ u16 CCar::DriverAnimationType()
 
 void CCar::OnAfterExplosion()
 {
-
+	DropTrunkContents();
 }
 
 void CCar::OnBeforeExplosion()
@@ -5775,6 +5801,7 @@ void CCar::CarExplode()
 		return;
 
 	if(b_exploded) return;
+
 	xr_map<u16, SWheel>::iterator i_w, e_w;
 	i_w = m_wheels_map.begin();
 	e_w = m_wheels_map.end();
@@ -6002,7 +6029,70 @@ void CCar::AscCall(EAsyncCalls c)
 
 bool CCar::CanRemoveObject()
 {
+	if (CExplosive::IsExploded())
+	{
+		// Fallback for the case when OnAfterExplosion is skipped before removal.
+		DropTrunkContents();
+	}
+
 	return CExplosive::IsExploded()&&!CExplosive::IsSoundPlaying();
+}
+
+void CCar::DropTrunkContents()
+{
+	if (inventory().m_ruck.empty())
+	{
+		return;
+	}
+
+	Fvector drop_base = Position();
+	if (IKinematics* kinematics = PKinematics(Visual()))
+	{
+		if (m_bone_trunk != BI_NONE && m_bone_trunk < kinematics->LL_BoneCount())
+		{
+			drop_base = TrunkBoneWorldPos();
+		}
+	}
+
+	const TIItemContainer trunk_items = inventory().m_ruck;
+	for (PIItem item : trunk_items)
+	{
+		if (item == nullptr || item->object().getDestroy())
+			continue;
+
+		Fvector drop_position = drop_base;
+		drop_position.x += Random.randF(-0.5f, 0.5f);
+		drop_position.y += 1.f;
+		drop_position.z += Random.randF(-0.5f, 0.5f);
+
+		// Detach the item on the server first. A direct CInventory::DropItem()
+		// only updates the local object and leaves CSE_Abstract::ID_Parent
+		// pointing to the car, so the server later rejects the item as a car child.
+		if (OnServer() && Level().Server != nullptr)
+		{
+			NET_Packet dummy;
+			Level().Server->Process_event_reject(dummy, BroadcastCID, Device.dwTimeGlobal, ID(), item->object_id(), false);
+		}
+
+		item->object().XFORM().c.set(drop_position);
+		if (!inventory().DropItem(&item->object(), false, false))
+		{
+			continue;
+		}
+
+		// CPhysicItem::activate_physic_shell() uses the old parent's XFORM.
+		// Move the freshly created shell to the intended drop position.
+		Fmatrix drop_xform = item->object().XFORM();
+		drop_xform.c.set(drop_position);
+		item->object().XFORM().set(drop_xform);
+		if (CPhysicsShell* shell = item->object().PPhysicsShell())
+		{
+			shell->SetGlTransformDynamic(drop_xform);
+			shell->set_LinearVel(Fvector().set(0.f, 0.f, 0.f));
+			shell->set_AngularVel(Fvector().set(0.f, 0.f, 0.f));
+		}
+		item->object().spatial_move();
+	}
 }
 
 void		CCar::SetExplodeTime				(u32 et)	

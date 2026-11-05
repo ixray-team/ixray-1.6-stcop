@@ -1,6 +1,7 @@
 #include "stdafx.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 #include "CarWeapon.h"
+#include "Inventory.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -73,9 +74,36 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 
 	camera					= new CCameraFirstEye(m_pcar, CCameraBase::flPositionRigid|CCameraBase::flDirectionRigid);
 	camera->Load("car_firsteye_cam");
-	m_cam_bone				= pUserData->line_exist(definition,"cam_bone") ? K->LL_BoneID(pUserData->r_string(definition,"cam_bone")) : BI_NONE;
-	m_cam_pos_rel			= READ_IF_EXISTS(pUserData, r_fvector3, definition, "cam_pos_rel", Fvector().set(0.0f, 0.0f, 0.0f));
-	m_cam_dir_rel			= READ_IF_EXISTS(pUserData, r_fvector3, definition, "cam_dir_rel", Fvector().set(0.0f, 0.0f, 0.0f));
+	const shared_str CarSection = m_pcar->cNameSect();
+	m_cam_bone = BI_NONE;
+	if (pUserData->line_exist(definition, "cam_bone"))
+	{
+		m_cam_bone = K->LL_BoneID(pUserData->r_string(definition, "cam_bone"));
+	}
+	else if (pSettings->line_exist(CarSection, "cam_bone"))
+	{
+		m_cam_bone = K->LL_BoneID(pSettings->r_string(CarSection, "cam_bone"));
+	}
+
+	m_cam_pos_rel.set(0.0f, 0.0f, 0.0f);
+	if (pUserData->line_exist(definition, "cam_pos_rel"))
+	{
+		m_cam_pos_rel = pUserData->r_fvector3(definition, "cam_pos_rel");
+	}
+	else if (pSettings->line_exist(CarSection, "cam_pos_rel"))
+	{
+		m_cam_pos_rel = pSettings->r_fvector3(CarSection, "cam_pos_rel");
+	}
+
+	m_cam_dir_rel.set(0.0f, 0.0f, 0.0f);
+	if (pUserData->line_exist(definition, "cam_dir_rel"))
+	{
+		m_cam_dir_rel = pUserData->r_fvector3(definition, "cam_dir_rel");
+	}
+	else if (pSettings->line_exist(CarSection, "cam_dir_rel"))
+	{
+		m_cam_dir_rel = pSettings->r_fvector3(CarSection, "cam_dir_rel");
+	}
 
 	m_guns_size				= READ_IF_EXISTS(pUserData, r_u16, definition, "guns_size", 100);
 	for (u16 i = 0; i < m_guns_size; ++i)
@@ -94,6 +122,14 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 	m_combine_input			= READ_IF_EXISTS(pUserData, r_bool, definition, "combine_input", TRUE);
 	m_rotate_x_bone			= pUserData->line_exist(definition,"rotate_x_bone") ? K->LL_BoneID(pUserData->r_string(definition,"rotate_x_bone")) : BI_NONE;
 	m_rotate_y_bone			= pUserData->line_exist(definition,"rotate_y_bone") ? K->LL_BoneID(pUserData->r_string(definition,"rotate_y_bone")) : BI_NONE;
+
+	// Use the turret pivot as a camera fallback when cam_bone is absent or invalid.
+	// cam_pos_rel/cam_dir_rel still apply on top of this bone.
+	if (m_cam_bone == BI_NONE)
+	{
+		m_cam_bone = m_rotate_y_bone != BI_NONE ? m_rotate_y_bone : m_rotate_x_bone;
+	}
+
 	m_bRelative_link_x		= READ_IF_EXISTS(pUserData, r_bool, definition, "rotate_x_relative", FALSE);
 	m_bRelative_link_y		= READ_IF_EXISTS(pUserData, r_bool, definition, "rotate_y_relative", FALSE);
 
@@ -388,6 +424,24 @@ void CCarTurret::PhDataUpdate()
 		float world_gravity = physics_world()->Gravity();
 		float total_mass = JointGun->PSecond_element()->getMass()+JointTurret->PSecond_element()->getMass();
 
+		// Physical turrets use joint velocity directly. Apply the same
+		// min/max speed limits that non-physical turrets use in UpdateBarrelDir.
+		auto CalculateJointVelocity = [&](float AngleDiff, float VelocityMultiplier, float Mass)
+		{
+			if (m_min_gun_speed > 0.0f && m_max_gun_speed >= m_min_gun_speed)
+			{
+				const float AbsDiff = std::abs(AngleDiff);
+				const float Speed = m_min_gun_speed + (m_max_gun_speed - m_min_gun_speed) * std::min(AbsDiff / PI, 1.0f);
+
+				// Do not overshoot the target when the remaining angle is small;
+				// the joint motor has no built-in arrival damping.
+				const float ClampedSpeed = std::min(Speed * VelocityMultiplier, AbsDiff / fixed_step);
+				return (AngleDiff < 0.0f ? -1.0f : 1.0f) * ClampedSpeed;
+			}
+
+			return VelocityMultiplier * AngleDiff * Mass * world_gravity * fixed_step;
+		};
+
 		Fvector dep;
 		Fmatrix(m_pcar->XFORM()).invert().transform_dir	(dep,m_destEnemyDir);
 		///GUN
@@ -400,7 +454,10 @@ void CCarTurret::PhDataUpdate()
 		}
 
 		dJointSetHingeParam(JointGun->GetDJoint(), dParamFMax, m_fGunForcMult_x*m_pcar->m_pPhysicsShell->getMass()*world_gravity*0.5f);
-		dJointSetHingeParam(JointGun->GetDJoint(), dParamVel, m_fGunVelMult_x*angle_difference_signed(m_tgt_x_rot, dJointGetHingeAngle(JointGun->GetDJoint()))*JointGun->PSecond_element()->getMass()*world_gravity*fixed_step);
+		dJointSetHingeParam(JointGun->GetDJoint(), dParamVel, CalculateJointVelocity(
+			angle_difference_signed(m_tgt_x_rot, dJointGetHingeAngle(JointGun->GetDJoint())),
+			m_fGunVelMult_x,
+			JointGun->PSecond_element()->getMass()));
 
 		///TURRET
 		if(m_bMouseMoving_x)
@@ -412,7 +469,10 @@ void CCarTurret::PhDataUpdate()
 		}
 
 		dJointSetHingeParam(JointTurret->GetDJoint(), dParamFMax, m_fGunForcMult_y*m_pcar->m_pPhysicsShell->getMass()*world_gravity*0.5f);
-		dJointSetHingeParam(JointTurret->GetDJoint(), dParamVel, m_fGunVelMult_y*angle_difference_signed(m_tgt_y_rot, dJointGetHingeAngle(JointTurret->GetDJoint()))*JointTurret->PSecond_element()->getMass()*world_gravity*fixed_step);
+		dJointSetHingeParam(JointTurret->GetDJoint(), dParamVel, CalculateJointVelocity(
+			angle_difference_signed(m_tgt_y_rot, dJointGetHingeAngle(JointTurret->GetDJoint())),
+			m_fGunVelMult_y,
+			JointTurret->PSecond_element()->getMass()));
 
 		if(Device.dwTimeGlobal > mouse_moving_time+100)
 		{
@@ -614,43 +674,73 @@ void CCarTurret::SetParam(int id, Fvector val)
 
 void CCarTurret::SetGun(int val)
 {
-	if(GetGunsSize() && val < GetGunsSize())
+	if (GetGunsSize() == 0)
 	{
-		bool has_fire = false;
-		if(m_cur_gun)
-		{
-			if(m_cur_gun->m_curr_idx == val)return;
-			has_fire = m_cur_gun->HasFire();
-			m_cur_gun->EndFire();
-			m_cur_gun->LightStop();
-		}
+		return;
+	}
 
-		m_cur_gun = m_turret_guns[val];
-		if(has_fire)
-			m_cur_gun->StartFire();
+	val = std::clamp(val, 0, GetGunsSize() - 1);
+	if (m_cur_gun == m_turret_guns[val])
+	{
+		m_icur_gun_idx = val;
 		m_cur_gun->m_curr_idx = val;
+		return;
+	}
+
+	const bool has_fire = m_cur_gun != nullptr && m_cur_gun->HasFire();
+	if (m_cur_gun != nullptr)
+	{
+		m_cur_gun->EndFire();
+		m_cur_gun->LightStop();
+	}
+
+	m_cur_gun = m_turret_guns[val];
+	m_icur_gun_idx = val;
+	m_cur_gun->m_curr_idx = val;
+	m_cur_gun->RefreshAmmoFromCar();
+
+	if (has_fire)
+	{
+		m_cur_gun->StartFire();
 	}
 }
 
 void CCarTurret::SetPrevGun()
 {
+	if (GetGunsSize() == 0)
+	{
+		return;
+	}
+
 	--m_icur_gun_idx;
-	clamp(m_icur_gun_idx, 0, GetGunsSize()-1);
+	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
 	SetGun(m_icur_gun_idx);
 }
 
 void CCarTurret::SetNextGun()
 {
+	if (GetGunsSize() == 0)
+	{
+		return;
+	}
+
 	++m_icur_gun_idx;
-	clamp(m_icur_gun_idx, 0, GetGunsSize()-1);
+	clamp(m_icur_gun_idx, 0, GetGunsSize() - 1);
 	SetGun(m_icur_gun_idx);
 }
 
 void CCarTurret::SetGunCircle()
 {
+	if (GetGunsSize() == 0)
+	{
+		return;
+	}
+
 	++m_icur_gun_idx;
-	if(m_icur_gun_idx >= GetGunsSize())
+	if (m_icur_gun_idx >= GetGunsSize())
+	{
 		m_icur_gun_idx = 0;
+	}
 	SetGun(m_icur_gun_idx);
 }
 
@@ -686,20 +776,25 @@ void CCarTurret::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr
 		xr_sprintf(tmpstr, "--");
 	else
 	{
-		int ammo_count = m_cur_gun->GetAmmoCount(m_cur_gun->m_ammoTypeCurrent);
-		if(ammo_count && Device.fTimeGlobal > m_cur_gun->m_sndReloadSTime + m_cur_gun->m_sndReloadTTotal)
+		const int ammo_count = m_cur_gun->GetAmmoCount(m_cur_gun->m_ammoTypeCurrent);
+
+		// Only magazine-style guns need the reload timer in the readout.
+		// Belt/box turrets keep showing the real remaining count while the
+		// ammo-type switch sound is playing.
+		if (m_cur_gun->m_aftershot_delay)
 		{
-			if(m_cur_gun->m_aftershot_delay)
-				xr_sprintf(tmpstr, "1/%d", ammo_count == 1 ? 0 : ammo_count-1);
+			if (ammo_count && Device.fTimeGlobal > m_cur_gun->m_sndReloadSTime + m_cur_gun->m_sndReloadTTotal)
+			{
+				xr_sprintf(tmpstr, "1/%d", ammo_count == 1 ? 0 : ammo_count - 1);
+			}
 			else
-				xr_sprintf(tmpstr, "%d", ammo_count);
+			{
+				xr_sprintf(tmpstr, "0/%d", ammo_count == 1 ? 0 : ammo_count);
+			}
 		}
 		else
 		{
-			if(m_cur_gun->m_aftershot_delay)
-				xr_sprintf(tmpstr, "0/%d", ammo_count == 1 ? 0 : ammo_count);
-			else
-				xr_sprintf(tmpstr, "0");
+			xr_sprintf(tmpstr, "%d", ammo_count);
 		}
 	}
 
@@ -825,6 +920,11 @@ void CCarWeapon::SwitchAmmoType()
 {
 	if(m_ammoTypes.size() < 2)
 		return;
+
+	// Re-scan the trunk before choosing the next type. Ammo may have been
+	// inserted or removed without reaching the turret registration path.
+	RefreshAmmoFromCar();
+
 	int tmpcurrtype = m_ammoTypeCurrent;
 
 	++tmpcurrtype;
@@ -905,11 +1005,10 @@ void CCarWeapon::UpdateCL()
 
 void CCarWeapon::UpdateFire()
 {
-	Device.fTimeGlobal -= Device.fTimeDelta;
+	fShotTimeCounter -= Device.fTimeDelta;
 
 	ISO::UpdateEffects();
-	
-	
+
 	if(m_bAutoFire)
 	{
 		if(m_allow_fire)
@@ -920,7 +1019,7 @@ void CCarWeapon::UpdateFire()
 
 	if(!ISO::IsWorking())
 	{
-		if(Device.fTimeGlobal<0)Device.fTimeGlobal = 0.f;
+		clamp(fShotTimeCounter, 0.0f, flt_max);
 		m_iShotsCount = 0;
 		return;
 	}
@@ -929,11 +1028,11 @@ void CCarWeapon::UpdateFire()
 	{
 		EndFire();
 		m_iShotsCount = 0;
-		Device.fTimeGlobal = 0;
+		fShotTimeCounter = 0.0f;
 		return;
 	}
 
-	if(Device.fTimeGlobal<=0)
+	if(fShotTimeCounter <= 0)
 	{
 		if(Device.fTimeGlobal < m_sndReloadSTime + m_sndReloadTTotal)
 		{
@@ -955,7 +1054,7 @@ void CCarWeapon::UpdateFire()
 			DecreaseAmmo();
 		}
 
-		Device.fTimeGlobal += fOneShotTime;
+		fShotTimeCounter += fOneShotTime;
 
 		OnShot();
 		if(HasRockets())
@@ -1057,7 +1156,35 @@ void CCarWeapon::AddAmmo(CWeaponAmmo *ammo)
 	for (int i=0; i<m_ammoTypes.size(); ++i)
 	{
 		if(!xr_strcmp(ammo->cNameSect_str(), m_ammoTypes[i].c_str()))
-			m_ammo_objects[i].push_back(ammo);
+		{
+			auto& AmmoObjects = m_ammo_objects[i];
+			if (std::find(AmmoObjects.begin(), AmmoObjects.end(), ammo) == AmmoObjects.end())
+			{
+				AmmoObjects.push_back(ammo);
+			}
+		}
+	}
+}
+
+void CCarWeapon::RefreshAmmoFromCar()
+{
+	if (m_pcar == nullptr)
+	{
+		return;
+	}
+
+	CInventory& Inventory = m_pcar->inventory();
+	for (const shared_str& AmmoType : m_ammoTypes)
+	{
+		xr_vector<PIItem> Items;
+		Inventory.GetAll(AmmoType.c_str(), Items);
+		for (PIItem Item : Items)
+		{
+			if (CWeaponAmmo* Ammo = smart_cast<CWeaponAmmo*>(Item))
+			{
+				AddAmmo(Ammo);
+			}
+		}
 	}
 }
 

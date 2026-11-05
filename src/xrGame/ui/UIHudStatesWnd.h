@@ -15,6 +15,7 @@ class CActor;
 class CUIStackPanel;
 class CInventoryItem;
 class CUIHudGroupCatalog;
+class CCar;
 
 int const it_max = ALife::infl_max_count - 1;
 
@@ -179,6 +180,7 @@ public:
 			void	UpdateHealth		( CActor* actor );
 			void	SetAmmoIcon			( const shared_str& sect_name );
 			void	UpdateActiveItemInfo( CActor* actor );
+			void	UpdateCarWeaponInfo	( CCar* car );
 
 			void 	UpdateZones			();
 			void	UpdateIndicators	( CActor* actor );

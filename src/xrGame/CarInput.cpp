@@ -18,14 +18,21 @@
 #include "level.h"
 #include "CarWeapon.h"
 
-// The generic binding lookup can resolve a key shared with a UI/other action to an
-// unrelated id (for example, drop on kG). Resolve the transport actions explicitly.
+// The generic binding lookup only searches the default action group, so
+// weapon actions from agUIRadialWeapon (for example wpn_func) never reach the
+// car. Resolve the car-relevant actions explicitly first.
 static int CarInputAction(int cmd)
 {
 	if (is_binded(kDROP, cmd))
 		return kDROP;
 	if (is_binded(kDETECTOR, cmd))
 		return kDETECTOR;
+	if (is_binded(kWPN_FUNC, cmd))
+		return kWPN_FUNC;
+	if (is_binded(kWPN_NEXT, cmd))
+		return kWPN_NEXT;
+	if (is_binded(kWPN_FIREMODE_NEXT, cmd))
+		return kWPN_FIREMODE_NEXT;
 
 	return get_binded_action(cmd);
 }

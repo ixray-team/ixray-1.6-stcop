@@ -47,7 +47,7 @@ CPHDestroyable::CPHDestroyable()
 	m_flags.set(fl_released,true);
 	m_depended_objects=0;
 }
-static bool destroyed_visual_has_physics(const shared_str& visual_name)
+static bool destroyed_visual_can_spawn(const shared_str& visual_name)
 {
 	string_path file_name;
 	if (FS.exist(file_name, "$game_meshes$", *visual_name, ".ogf") == nullptr)
@@ -64,39 +64,26 @@ static bool destroyed_visual_has_physics(const shared_str& visual_name)
 
 	IRenderVisual* visual = Render->model_Create(*visual_name);
 	IKinematics* kinematics = visual != nullptr ? visual->dcast_PKinematics() : nullptr;
-	bool has_shapes = false;
-
-	if (kinematics != nullptr)
-	{
-		for (u16 bone_id = 0; bone_id < kinematics->LL_BoneCount(); ++bone_id)
-		{
-			const SBoneShape& shape = kinematics->GetBoneData(bone_id).get_shape();
-			if (shape.type != SBoneShape::stNone && !shape.flags.test(SBoneShape::sfNoPhysics))
-			{
-				has_shapes = true;
-				break;
-			}
-		}
-	}
 
 	if (visual != nullptr)
 	{
 		Render->model_Delete(visual);
 	}
 
-	if (!has_shapes)
+	if (kinematics == nullptr)
 	{
-		Msg("! [destroyed] visual has no physics shapes: %s", *visual_name);
+		Msg("! [destroyed] visual is not a skeleton: %s", *visual_name);
+		return false;
 	}
 
-	return has_shapes;
+	return true;
 }
 
 /////////spawn object representing destroyed item//////////////////////////////////////////////////////////////////////////////////
 void CPHDestroyable::GenSpawnReplace(ALife::_OBJECT_ID ref_id,const char* section,shared_str visual_name)
 {
 
-	if (strstr(*visual_name, "vehicles\\") != nullptr && !destroyed_visual_has_physics(visual_name))
+	if (!destroyed_visual_can_spawn(visual_name))
 	{
 		return;
 	}
@@ -174,8 +161,11 @@ void CPHDestroyable::PhysicallyRemoveSelf()
 	{
 
 		//obj->PPhysicsShell()->PureStep();
-		obj->PPhysicsShell()->Disable();
-		obj->PPhysicsShell()->DisableCollision();
+		if (CPhysicsShell* shell = obj->PPhysicsShell())
+		{
+			shell->Disable();
+			shell->DisableCollision();
+		}
 
 	}
 
@@ -189,8 +179,11 @@ void CPHDestroyable::PhysicallyRemovePart(CPHDestroyableNotificate *dn)
 	CPhysicsShell			*s		=	sh		->PPhysicsShell				()		;
 							sh					->setVisible				(false)	;
 							sh					->setEnabled				(false)	;
+	if (s != nullptr)
+	{
 							s					->Disable					()		;
 							s					->DisableCollision			()		;
+	}
 }
 
 void CPHDestroyable::Destroy(ALife::_OBJECT_ID source_id/*=u16(-1)*/,const char* section/*="ph_skeleton_object"*/)
@@ -281,10 +274,22 @@ void CPHDestroyable::SheduleUpdate(u32 dt)
 
 void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 {
-	CPhysicsShell	*own_shell=PPhysicsShellHolder()->PPhysicsShell()			;
-	CPhysicsShell	*new_shell=dn->PPhysicsShellHolder()->PPhysicsShell()		;
-	IKinematics		*own_K =PKinematics(PPhysicsShellHolder()->Visual());
-	IKinematics		*new_K =PKinematics(dn->PPhysicsShellHolder()->Visual())	;
+	CPhysicsShellHolder* own_holder = PPhysicsShellHolder();
+	CPhysicsShellHolder* new_holder = dn->PPhysicsShellHolder();
+	CPhysicsShell	*own_shell=own_holder->PPhysicsShell()			;
+	CPhysicsShell	*new_shell=new_holder->PPhysicsShell()			;
+
+	// Destroyed vehicle placeholders (veh_empty) have no physics shell.
+	// Keep them visible instead of transferring physics to a missing shell.
+	if (own_shell == nullptr || new_shell == nullptr)
+	{
+		new_holder->setVisible(true);
+		new_holder->setEnabled(true);
+		return;
+	}
+
+	IKinematics		*own_K =PKinematics(own_holder->Visual());
+	IKinematics		*new_K =PKinematics(new_holder->Visual())	;
 	VERIFY			(own_K&&new_K&&own_shell&&new_shell)						;
 	CInifile		*own_ini  =own_K->LL_UserData()								;
 	CInifile		*new_ini  =new_K->LL_UserData()								;

@@ -28,6 +28,8 @@
 #include "../WeaponKnife.h"
 #include "../WeaponBinoculars.h"
 #include "../Bolt.h"
+#include "../Car.h"
+#include "../CarWeapon.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/CustomHUD.h"
 
@@ -807,6 +809,14 @@ void CUIHudStatesWnd::UpdateCaliberHudForItem(CInventoryItem* item)
 void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 {
     PIItem item = actor->inventory().ActiveItem();
+    CCar* car = actor->Holder() != nullptr ? actor->Holder()->cast_car() : nullptr;
+
+    if (item == nullptr && car != nullptr && car->HasWeaponActive())
+    {
+        UpdateCarWeaponInfo(car);
+        return;
+    }
+
     if (item)
     {
         if (item->cast_bolt() || item->cast_custom_detector() || (m_use_adaptive_ammo_widget && (item->cast_weapon_knife() || item->cast_weapon_binoculars())))
@@ -1503,6 +1513,118 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             m_ui_grenade->Show(false);
         }
     }
+}
+
+void CUIHudStatesWnd::UpdateCarWeaponInfo(CCar* car)
+{
+    CCarTurret* turret = car != nullptr ? car->GetWeaponActive() : nullptr;
+    if (turret == nullptr)
+    {
+        return;
+    }
+
+    xr_string str_name;
+    xr_string icon_sect_name;
+    xr_string str_count;
+    turret->GetBriefInfo(str_name, icon_sect_name, str_count);
+
+    m_item_info.clear();
+    m_item_info.name = str_name.c_str();
+    m_item_info.icon = icon_sect_name.c_str();
+    m_item_info.cur_ammo = str_count.c_str();
+    m_item_info.total_ammo = str_count.c_str();
+
+    if (CCarWeapon* gun = turret->GetCurrGun())
+    {
+        const int fire_mode = gun->GetFireMode();
+        if (fire_mode == -1)
+        {
+            m_item_info.fire_mode = "A";
+        }
+        else
+        {
+            string16 fire_mode_text;
+            xr_sprintf(fire_mode_text, "%d", fire_mode);
+            m_item_info.fire_mode = fire_mode_text;
+        }
+    }
+
+    if (m_static_weapon)
+    {
+        m_static_weapon->SetText(m_item_info.name.c_str());
+    }
+
+    if (m_fire_mode)
+    {
+        m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+        m_fire_mode->Show(true);
+    }
+    if (m_ui_fire_mode_icon)
+    {
+        m_ui_fire_mode_icon->Show(false);
+    }
+
+    if (m_ui_weapon_icon)
+    {
+        if (m_wpnIconHudMode == EWpnIconHudMode::AmmoText)
+        {
+            m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+            m_ui_weapon_icon->SetText(m_item_info.name.c_str());
+            m_ui_weapon_icon->Show(true);
+        }
+        else if (m_wpnIconHudMode == EWpnIconHudMode::Caliber)
+        {
+            m_ui_weapon_icon->Show(false);
+        }
+        else
+        {
+            m_ui_weapon_icon->TextureOn();
+            m_ui_weapon_icon->SetText("");
+            m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+            SetAmmoIcon(m_item_info.icon);
+        }
+    }
+
+    if (m_ui_weapon_cur_ammo)
+    {
+        m_ui_weapon_cur_ammo->SetText(m_item_info.cur_ammo.c_str());
+        m_ui_weapon_cur_ammo->Show(true);
+    }
+
+    if (m_ui_weapon_sign_ammo)
+    {
+        m_ui_weapon_sign_ammo->SetText(m_item_info.cur_ammo.c_str());
+        m_ui_weapon_sign_ammo->Show(true);
+    }
+
+    if (m_ui_weapon_fmj_ammo)
+    {
+        m_ui_weapon_fmj_ammo->Show(false);
+    }
+    if (m_ui_weapon_ap_ammo)
+    {
+        m_ui_weapon_ap_ammo->Show(false);
+    }
+    if (m_ui_weapon_third_ammo)
+    {
+        m_ui_weapon_third_ammo->Show(false);
+    }
+    if (m_ui_grenade)
+    {
+        m_ui_grenade->Show(false);
+    }
+    if (m_ui_adaptive_clip)
+    {
+        m_ui_adaptive_clip->SetText("");
+        m_ui_adaptive_clip->Show(false);
+    }
+    if (m_ui_adaptive_total)
+    {
+        m_ui_adaptive_total->SetText("");
+        m_ui_adaptive_total->Show(false);
+    }
+
+    HideCaliberHudWidgets();
 }
 
 void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)

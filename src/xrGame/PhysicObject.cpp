@@ -52,7 +52,7 @@ bool CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	setVisible(true);
 	setEnabled(true);
 
-	if (!PPhysicsShell()->isBreakable() && !CScriptBinder::object() && !CPHSkeleton::IsRemoving())
+	if (PPhysicsShell() && !PPhysicsShell()->isBreakable() && !CScriptBinder::object() && !CPHSkeleton::IsRemoving())
 	{
 		SheduleUnregister();
 	}
@@ -276,13 +276,24 @@ void CPhysicObject::net_Save(NET_Packet& P)
 void CPhysicObject::CreatePhysicsShell(CSE_Abstract* e)
 {
 	CSE_ALifeObjectPhysic	*po	= smart_cast<CSE_ALifeObjectPhysic*>(e);
+	if (!po) return;
 	CreateBody(po);
 }
 
 void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 {
 	if(m_pPhysicsShell) return;
-	if(!Visual()) return;
+	if(!Visual() || !po) return;
+
+	// Destroyed vehicle placeholders (veh_empty) may have no collision shapes.
+	// They still have to be spawned, just without a physics shell.
+	string1024 reason;
+	if (!can_create_phys_shell(reason, *this))
+	{
+		Msg("! [physics] object [%s] spawned without physics shell: %s", cName().c_str(), reason);
+		return;
+	}
+
 	const shared_str fixedBones = po->fixed_bones;
 	const char* fixed_bones = fixedBones.c_str();
 	const bool hasFixedBones = fixed_bones && fixed_bones[0] != '\0';
@@ -317,7 +328,7 @@ void CPhysicObject::UpdateCL()
 
 	// Если наш физический объект анимированный, то
 	// двигаем объект за анимацией
-	if (m_pPhysicsShell->PPhysicsShellAnimator())
+	if (m_pPhysicsShell && m_pPhysicsShell->PPhysicsShellAnimator())
 	{
 		m_pPhysicsShell->AnimatorOnFrame(!!Render->ViewBase.testSphere_dirty(SpatialComponent->sphere.P, SpatialComponent->sphere.R));
 	}
@@ -446,6 +457,11 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
 		{
 		}
 		break;
+	}
+
+	if (!m_pPhysicsShell)
+	{
+		return;
 	}
 
 	m_pPhysicsShell->mXFORM.set(XFORM());

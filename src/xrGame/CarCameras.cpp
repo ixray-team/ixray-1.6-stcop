@@ -28,6 +28,26 @@ float rs_car_cam_inert = 1.f;
 float inertion_factor	= 0.95f;
 float rs_car_cam_angle = 6.f;
 
+namespace
+{
+	float AngleInertionVarLimited(float Src, float Tgt, float MinSpeed, float MaxSpeed, float Clmp, float SpeedLimit, float Dt)
+	{
+		Tgt = angle_normalize_signed(Tgt);
+		Src = angle_normalize_signed(Src);
+
+		float Speed = std::abs((MaxSpeed - MinSpeed) * angle_difference(Tgt, Src) / Clmp) + MinSpeed;
+		Speed = std::min(Speed, SpeedLimit);
+
+		angle_lerp(Src, Tgt, Speed, Dt);
+		Src = angle_normalize_signed(Src);
+
+		float DH = angle_difference_signed(Src, Tgt);
+		float DCH = clampr(DH, -Clmp, Clmp);
+		Src -= DH - DCH;
+		return Src;
+	}
+}
+
 void	CCar::cam_Update			(float dt, float fov)
 {
 	float ifps = Device.fTimeDelta > 0.f ? (1.f / Device.fTimeDelta) : 60.f;
@@ -101,61 +121,79 @@ void	CCar::cam_Update			(float dt, float fov)
 	if (rs_car_fov_effects && active_camera->tag != EctFirstCam)
 		car_fov *= 0.93f;
 
-    if (m_pPhysicsShell && Device.dwTimeGlobal - m_camera_last_mmove_time > 3000)
-    {
-	    Fvector	xyz;
-        if (GetSpeedKmH() >= 5.f)
-        {
-            Fvector lin_vel;
-            m_pPhysicsShell->get_ElementByStoreOrder(0)->get_LinearVel(lin_vel);
+	if (m_pPhysicsShell && Device.dwTimeGlobal - m_camera_last_mmove_time > 3000)
+	{
+		// Automatic recentering is useful while driving, but it must not
+		// fight the player's camera when the car is standing still.
+		if (GetSpeedKmH() > 5.f)
+		{
+			Fvector lin_vel;
+			m_pPhysicsShell->get_ElementByStoreOrder(0)->get_LinearVel(lin_vel);
 			//lin_vel.y = 0;
-	        Fmatrix _m;
-	        _m.identity();
-	        _m.k.normalize_safe(lin_vel);
-	        Fvector::generate_orthonormal_basis(_m.k, _m.j, _m.i);
+			Fmatrix _m;
+			_m.identity();
+			_m.k.normalize_safe(lin_vel);
+			Fvector::generate_orthonormal_basis(_m.k, _m.j, _m.i);
 
-	        _m.getXYZi(xyz);
-        }
-        else
-            XFORM().getXYZi(xyz);
+			Fvector xyz;
+			_m.getXYZi(xyz);
 
-		float camera_angle = deg2rad(90.f * powf(rs_car_cam_angle / 90.f, 1.f / m_camera_angle_factor));
-		//Msg("%f", rad2deg(camera_angle));
+			const float camera_angle = deg2rad(90.f * powf(rs_car_cam_angle / 90.f, 1.f / m_camera_angle_factor));
+			//Msg("%f", rad2deg(camera_angle));
 
-	    camera[EctThridCam]->yaw = angle_inertion_var(camera[EctThridCam]->yaw, xyz.y,
-	    									0.001f,
-	    									60.f,
-	    									20.f,
-	    									Device.fTimeDelta);
+			camera[EctThridCam]->yaw = angle_inertion_var(camera[EctThridCam]->yaw, xyz.y,
+												0.001f,
+												60.f,
+												20.f,
+												Device.fTimeDelta);
 
-	    camera[EctThridCam]->pitch = angle_inertion_var(camera[EctThridCam]->pitch, xyz.x + camera_angle,
-	    									0.001f,
-	    									30.f,
-	    									20.f,
-	    									Device.fTimeDelta);
-        Fvector	xyz2;
-        XFORM().getXYZi(xyz2);
-	    camera[EctSecondCam]->yaw = angle_inertion_var(camera[EctSecondCam]->yaw, xyz2.y,
-	    									0.01f,
-	    									20.f,
-	    									5.f,
-	    									Device.fTimeDelta);
+			camera[EctThridCam]->pitch = angle_inertion_var(camera[EctThridCam]->pitch, xyz.x + camera_angle,
+												0.001f,
+												30.f,
+												20.f,
+												Device.fTimeDelta);
 
-	    camera[EctSecondCam]->pitch = angle_inertion_var(camera[EctSecondCam]->pitch, (xyz2.x * 0.95f + camera_angle),
-	    									0.01f,
-	    									10.f,
-	    									5.f,
-	    									Device.fTimeDelta);
-		
+			Fvector xyz2;
+			XFORM().getXYZi(xyz2);
+
+			// The look-at camera should face the direction of travel. When the
+			// car reverses, turn it around by 180 degrees.
+			const bool bReversing = GetVelocity().dotproduct(XFORM().k) < 0.f;
+			const float target_yaw = bReversing ? angle_normalize_signed(xyz2.y + PI) : xyz2.y;
+
+			// Keep the original centering speed, but cap the yaw rate. A full
+			// 180-degree reversal should turn at roughly the same rate as a
+			// normal 90-degree correction instead of snapping around.
+			constexpr float YawSpeedMin = 0.01f;
+			constexpr float YawSpeedMax = 20.f;
+			constexpr float YawSpeedLimit = (YawSpeedMax - YawSpeedMin) * (PI / 2.f) / 5.f + YawSpeedMin;
+
+			camera[EctSecondCam]->yaw = AngleInertionVarLimited(camera[EctSecondCam]->yaw, target_yaw,
+												YawSpeedMin,
+												YawSpeedMax,
+												5.f,
+												YawSpeedLimit,
+												Device.fTimeDelta);
+
+			camera[EctSecondCam]->pitch = angle_inertion_var(camera[EctSecondCam]->pitch, (xyz2.x * 0.95f + camera_angle),
+												0.01f,
+												10.f,
+												5.f,
+												Device.fTimeDelta);
+		}
+
 		if (m_roll_lock_second)
 		{
+			Fvector xyz2;
+			XFORM().getXYZi(xyz2);
+
 			camera[EctSecondCam]->roll = angle_inertion_var(camera[EctSecondCam]->roll, xyz2.z,
-											0.01f,
-											20.f,
-											5.f,
-											Device.fTimeDelta);
+												0.01f,
+												20.f,
+												5.f,
+												Device.fTimeDelta);
 		}
-    } 
+	}
 
 	active_camera->f_fov = car_fov;
 	active_camera->Update(P, Da);

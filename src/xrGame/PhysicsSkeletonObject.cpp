@@ -63,7 +63,17 @@ void CPhysicsSkeletonObject::CreatePhysicsShell(CSE_Abstract* e)
 {
 	CSE_PHSkeleton	*po=smart_cast<CSE_PHSkeleton*>(e);
 	if(m_pPhysicsShell) return;
-	if (!Visual()) return;
+	if (!Visual() || !po) return;
+
+	// Destroyed vehicle placeholders (veh_empty) may have no collision shapes.
+	// They still have to be spawned, just without a physics shell.
+	string1024 reason;
+	if (!can_create_phys_shell(reason, *this))
+	{
+		Msg("! [destroyed] object [%s] spawned without physics shell: %s", cName().c_str(), reason);
+		return;
+	}
+
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive));
 
 }
