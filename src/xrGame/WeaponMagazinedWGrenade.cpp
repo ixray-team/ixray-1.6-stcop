@@ -700,10 +700,10 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 				u_EventSend(P);
 			}
 		}
-		//режим стрельбы очередями
-		else
-			inherited::state_Fire(dt);
 	}
+	//режим стрельбы очередями
+	else
+		inherited::state_Fire(dt);
 }
 
 void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
