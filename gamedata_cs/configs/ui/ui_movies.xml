@@ -94,7 +94,7 @@ FOR RUSSIAN ONLY !!!
     <item type="video">
           <sound>characters_voice\scenario\video\intro</sound>
           <pause_state>on</pause_state>
-          <function_on_stop>xr_effects.start_marsh_intro</function_on_stop>
+          <function_on_stop>ixr_marsh_intro.on_movie_finished</function_on_stop>
           <video_wnd x="0" y="0" width="1024" height="768" stretch="1">
             <texture x="1" y="1" width="628" height="358">intro\intro_half</texture>
           </video_wnd>

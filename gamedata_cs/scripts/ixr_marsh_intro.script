@@ -1,0 +1,36 @@
+local new_game_pending = false
+
+local function start()
+	if not new_game_pending or not db.actor then
+		return
+	end
+
+	new_game_pending = false
+	if level.name() == "marsh" and not has_alife_info("mar_lvl_sim") then
+		db.actor:give_info_portion("mar_intro_start")
+	end
+end
+
+function on_new_game()
+	new_game_pending = true
+end
+
+function on_game_load()
+	new_game_pending = false
+end
+
+function on_actor_first_update()
+	if not splash_screen.is_used_key_press_on_start_game() then
+		start()
+	end
+end
+
+function on_movie_finished()
+	start()
+end
+
+function on_game_start()
+	RegisterScriptCallback("new_game_created", on_new_game)
+	RegisterScriptCallback("save_file_loaded", on_game_load)
+	RegisterScriptCallback("actor_on_first_update", on_actor_first_update)
+end
