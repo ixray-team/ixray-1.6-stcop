@@ -233,6 +233,25 @@ static	const u16				cAsCallsnum						= 3;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	virtual void						PhDataUpdate				(float step)			;
+	void						UpdatePhDataObjects		();
+	void						UpdateEngineAndBrakes		(float step);
+	void						UpdateDoorState			();
+	void						UpdateTransmissionState	();
+	void						UpdateSlipSliding		();
+	void						UpdateWheelieBoost		();
+	void						UpdateDriftBoost			();
+	void						UpdateEngineShake		();
+	void						UpdateSteeringWheels		();
+	bool						UpdateWheelPhysics		();
+	struct SWheel;
+	void						UpdateWheelSuspension		(SWheel& Wheel);
+	void						UpdateWheelDownforce		(SWheel& Wheel);
+	void						UpdateWheelTireSound		(SWheel& Wheel);
+	bool						UpdateWheelTraction		(SWheel& Wheel);
+	void						UpdateWheelTractionTimeout	(SWheel& Wheel);
+	void						UpdateWheelAirborneFriction	(SWheel& Wheel);
+	float						CalculateRainFrictionFactor	();
+	void						UpdateTractionAndSuspension	(bool slip);
 	virtual void						PhTune						(float step)			;
 /////////////////////////////////////////////////////////////////////////
 	virtual void						ApplyDamage					(u16 level)				;
@@ -288,7 +307,6 @@ public:
 	bool b_starting;
 // 	bool b_stalling;
 	bool b_breaks;
-	bool b_transmission_switching;
 
 	u32	 m_dwStartTime;
 	u32	 m_dwAttachTime;
@@ -419,6 +437,10 @@ public:
 		// The drive motor was switched to zero-velocity axle friction while
 		// the wheel had no ground contact. Restore the drive target on landing.
 		bool								AirborneFriction;
+		// Torque requested by the engine and by the brakes during the last
+		// physics step. Both use the same hinge2 motor parameter.
+		float								EngineTorque;
+		float								BrakeTorque;
 		struct			SWheelCollisionParams
 		{
 			float							spring_factor		;
@@ -489,6 +511,8 @@ virtual void ApplyDamage			(u16 level);
 			WheelFlags = {0};
 			max_control_velocity = 0.f;
 			AirborneFriction = false;
+			EngineTorque = 0.f;
+			BrakeTorque = 0.f;
 		}
 	};
 	struct SWheelDrive  
@@ -873,11 +897,14 @@ private:
 	float					m_slip_sliding_threshold;
 	float					m_vel_sliding_threshold;
 	float					m_axle_friction;
-	u32						m_last_cotact_time;
+	u32						m_last_contact_time;
 	u32						m_hit_engine_time;
 	float					m_slip_start_time;
 	float					m_steer_boost;
 	u32						m_steer_boost_frame;
+	// The car physics coefficients were tuned for the original 0.01 s fixed
+	// step. Keep the compensation explicit when fixed_step is used directly.
+	static constexpr float	FixedStepCompensation = 100.f;
 	float					m_steer_turn_factor;
 	float					m_steer_counter_turn_factor;
 	float					m_steer_turn_compensation;
@@ -885,7 +912,13 @@ private:
 	float					m_steer_turn_delta;
 
 	float					m_transmission_switch_rpm;
-	u32						m_transmission_stage;
+	enum class ETransmissionStage : u8
+	{
+		Drive,
+		SwitchUp,
+		SwitchDown
+	};
+	ETransmissionStage		m_transmission_stage;
 	float					m_transmission_switch_delay;
 	float					m_transmission_switch_power_factor;
 	float					m_transmission_switch_volume;
@@ -1141,7 +1174,11 @@ IC	float	 			EngineRpmFromWheels					(){return dFabs(DriveWheelsMeanAngleRate()*
 	void				SteerRight							();
 	void				SteerLeft							();
 	void				SteerIdle							();
-	void				Transmission						(size_t num);
+	IC bool				IsTransmissionSwitching				() const
+	{
+		return m_transmission_stage == ETransmissionStage::SwitchUp || m_transmission_stage == ETransmissionStage::SwitchDown;
+	}
+	void				Transmission						(size_t num, ETransmissionStage SwitchRequest = ETransmissionStage::Drive);
 // 	void				CircleSwitchTransmission			();
 	void				TransmissionUp						();
 	void				TransmissionDown					();
@@ -1209,6 +1246,22 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 	static void	__stdcall		cb_Steer_factor			(CBoneInstance* B);
 	static void __stdcall		cb_Gauge				(CBoneInstance* B);
 	static void __stdcall		cb_Suspension			(CBoneInstance* B);
+	bool					UpdateSpeedometerGauge			(Fmatrix& m);
+	bool					UpdateTachometerGauge			(Fmatrix& m);
+	bool					UpdateFuelGauge			(Fmatrix& m);
+	bool					UpdateTemperatureGauge			(Fmatrix& m);
+	bool					UpdateBatteryGauge			(Fmatrix& m);
+	bool					UpdateGenericGauge			(Fmatrix& m);
+	bool					UpdateFanGauge			(Fmatrix& m);
+	bool					UpdateBlowerGauge			(Fmatrix& m);
+	bool					UpdatePressureGauge			(Fmatrix& m);
+	bool					UpdateBrakesPressureGauge			(Fmatrix& m);
+	bool					UpdateBrakesPressureApplyGauge			(Fmatrix& m);
+	bool					UpdateEngineGauge			(Fmatrix& m);
+	bool					UpdateGearGauge			(CBoneInstance* B, Fmatrix& m);
+	bool					UpdateClockSecondsGauge			(Fmatrix& m);
+	bool					UpdateClockMinutesGauge			(Fmatrix& m);
+	bool					UpdateClockHoursGauge			(Fmatrix& m);
 
 	enum EGaugeType
 	{
@@ -1263,6 +1316,11 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 		bool move;
 		float steer_factor;
 	};
+
+	xr_vector<xr_unique_ptr<Gauge_struct>> m_gauge_params;
+	xr_vector<xr_unique_ptr<Suspension_struct>> m_suspension_params;
+	xr_vector<u16> m_gauge_bones;
+	xr_vector<u16> m_suspension_bones;
 
 	virtual	void			Hit							(SHit* pHDS);
 	virtual void			Die							(CObject* who);
@@ -1330,6 +1388,12 @@ public:
 	virtual DLL_Pure		*_construct					();
 	virtual void			Load						( LPCSTR section );
 	void					ParseDefinitions			();
+	void					LoadExplosionAndDriverDefinitions	(CInifile* ini, IKinematics* pKinematics);
+	void					LoadHandlingAndCameraDefinitions	(CInifile* ini);
+	void					LoadEngineDefinitions	(CInifile* ini);
+	void					LoadSoundDefinitions	(CInifile* ini);
+	void					LoadTransmissionDefinitions	(CInifile* ini);
+	void					LoadVisualDefinitions	(CInifile* ini);
 	virtual bool			net_Spawn					( CSE_Abstract* DC ) override;
 	virtual void			net_Destroy					();
 	virtual void			UpdateCL					( ); 
@@ -1420,6 +1484,28 @@ public:
 
 protected:
 	virtual void					SpawnInitPhysics					(CSE_Abstract	*D)																;
+	void					CreateCharacterScraper			(IKinematics* K, CInifile* ini);
+	void					CreateCarTurrets				(CInifile* ini);
+	void					ApplyBonePhysicsParams			(IKinematics* K, CInifile* ini);
+	void					BindGaugeAndSuspensionCallbacks	(IKinematics* K, CInifile* ini);
+		void BindGaugeCallback(IKinematics* K, u16 BoneId, int GaugeType);
+		void BindSpeedometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindTachometerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindFuelGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindTemperatureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindGenericGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindFanGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindBatteryGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindBrakesPressureGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindBrakesPressureApplyGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindBlowerGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindEngineGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindGearGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindClockSecondsGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindClockMinutesGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindClockHoursGauge(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
+		void BindSuspension(const char* Section, u16 BoneId, IKinematics* K, CInifile* ini);
 	virtual void					net_Save							(NET_Packet& P)																	;
 	virtual bool					net_SaveRelevant					()																				;
 			void					SaveNetState						(NET_Packet& P)																	;
@@ -1441,6 +1527,7 @@ private:
 	template <class T> IC void fill_wheel_vector(const char* S, xr_vector<T>& type_wheels);
 	IC void fill_exhaust_vector(const char* S, xr_vector<SExhaust>& exhausts);
 	IC void fill_doors_map(const char* S, xr_map<u16, SDoor>& doors);
+	void ClearCarWeapons();
 
 public:
 	virtual CEntity*			cast_entity				() override						{return this;}

@@ -46,7 +46,6 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 		//if(cp.pwheel->drive_wheel)
 			sp.mode |= dContactFDir1 | dContactMu2;
 		//else
-		//	sp.mode |= dContactFDir1;
 		Fmatrix wheel_bind_xform = cp.pwheel->car->bones_bind_forms[cp.pwheel->bone_id];
 		wheel_bind_xform.mulA_43(cp.pwheel->car->XFORM());
 
@@ -56,18 +55,12 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 			c.fdir1[0] = wheel_dir.x;
 			c.fdir1[1] = wheel_dir.y;
 			c.fdir1[2] = wheel_dir.z;
-			//Msg("x %f", wheel_dir.x);
-			//Msg("y %f", wheel_dir.y);
-			//Msg("z %f", wheel_dir.z);
 		}
 		else
 		{
 			c.fdir1[0] = cp.pwheel->car->XFORM().k.x;
 			c.fdir1[1] = cp.pwheel->car->XFORM().k.y;
 			c.fdir1[2] = cp.pwheel->car->XFORM().k.z;
-			//Msg("x %f", cp.pwheel->car->XFORM().k.x);
-			//Msg("y %f", cp.pwheel->car->XFORM().k.y);
-			//Msg("z %f", cp.pwheel->car->XFORM().k.z);
 		}
 
 		if (!(cp.buxe || cp.breaking || cp.slide))
@@ -77,7 +70,6 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 				cp.pwheel->tire_particle_scale = cp.pwheel->tire_particle_scale + (cp.pwheel->tire_particle_scale_max - cp.pwheel->tire_particle_scale) * 0.4f * fixed_step;
 			else
 				cp.pwheel->tire_particle_scale = cp.pwheel->tire_particle_scale + (cp.pwheel->tire_particle_scale_max - cp.pwheel->tire_particle_scale) * 0.5f * 0.4f * fixed_step;
-		//Msg("scale %f", cp.pwheel->tire_particle_scale);
 
 		if(material_1 && !material_2)
 			sp.mu						=		material_1->fPHFriction						;
@@ -88,7 +80,7 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 			sp.mu						*=		cp.friction_rain_factor * cp.friction_nitro_factor;
 		if (cp.pwheel->car && cp.pwheel && material_2 && material_1 && !material_2->Flags.test(SGameMtl::flPassable) && !material_1->Flags.test(SGameMtl::flPassable))
 		{
-			cp.pwheel->car->m_last_cotact_time = Device.dwTimeGlobal;
+			cp.pwheel->car->m_last_contact_time = Device.dwTimeGlobal;
 			cp.pwheel->car->mb_traction = true;
 			cp.last_contact_time = Device.dwTimeGlobal;
 			cp.traction = true;
@@ -97,11 +89,7 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 
 		if (!cp.pwheel->steer_wheel)
 		{
-			//float vel_current = _abs(dJointGetHinge2Angle2Rate(cp.pwheel->joint->GetDJoint()));
-			//float vel_total = cp.pwheel->max_control_velocity;
-			//float vel_dt = 0.f;
 			//if(vel_current > 0.f && vel_total > 0.f && _abs(dJointGetHinge2Param(cp.pwheel->joint->GetDJoint(), dParamVel2)) > 5.0f)
-			//	vel_dt = vel_current/vel_total;
 
 			sp.mu2 = cp.pwheel->car->m_friction2_nonsteering_wheels * sp.mu;//если ведущее то 2 направления трения одно в направлении колеса другое по направлению движения
 		}
@@ -163,20 +151,7 @@ void CCar::SWheel::Init()
 	e->set_ApplyByGravity(FALSE);
 	tire_particle_scale = 1.f;
 
-	//Msg("dParamSuspensionERP %f", dJointGetHinge2Param(joint->GetDJoint(), dParamSuspensionERP));
-	//Msg("dParamSuspensionCFM %f", dJointGetHinge2Param(joint->GetDJoint(), dParamSuspensionCFM));
-	//Msg("dParamLoStop %f", dJointGetHinge2Param(joint->GetDJoint(), dParamLoStop));
-	//Msg("dParamHiStop %f", dJointGetHinge2Param(joint->GetDJoint(), dParamHiStop));
-	//Msg("dParamStopERP %f", dJointGetHinge2Param(joint->GetDJoint(), dParamStopERP));
-	//Msg("dParamStopCFM %f", dJointGetHinge2Param(joint->GetDJoint(), dParamStopCFM));
 
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamStopERP, 0.5f);
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamStopCFM, 0.0f);
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamSuspensionERP, 0.4f);
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamSuspensionCFM, 0.000165f);
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamLoStop, -0.1f);
-	//dJointSetHinge2Param(joint->GetDJoint(), dParamHiStop, 0.1f);
-	//tire_trail_wallmark->create("effects\\wallmark", tire_trail_wallmark_name);
 	// The driving loop is cloned from the surface-specific sound in Play().
 	inited=true;
 	collision_params.pwheel = this;
@@ -234,7 +209,6 @@ void CCar::SWheel::Load(LPCSTR section)
 		suspension_damping_factor = READ_IF_EXISTS(ini, r_float, section, "suspension_damping_factor", suspension_damping_factor);
 	} 
 	clamp(suspension_inertia, 0.f, 1.f);
-	//tire_trail_wallmark_name = READ_IF_EXISTS(pSettings, r_string, car->cNameSect_str(), "tire_trail_wallmark_name", "wm\\wm_tire_trail_1");
 	tire_trail_wallmark_size = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_wallmark_size", 0.15f);
 	tire_trail_simulars_factor = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_similars",  0.005f);
 	tire_trail_wallmark_avlbl = READ_IF_EXISTS(pSettings, r_bool, car->cNameSect_str(), "tire_trails", true);
@@ -291,20 +265,16 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 						Fvector ang_vel;
 						element->get_AngularVel(ang_vel);
 						float ang = ang_vel.magnitude();
-						//Msg("diff %f", 1.f + 0.25f * (ang * radius / car->GetVelocityM()));
 						float volume = 0.5f * 1.f + 0.25f * (ang * radius / car->GetVelocityM());
 						clamp(volume, volume, 1.f);
 
 						float vol_start = 0.4f + (Device.fTimeGlobal - car->m_slip_start_time) * 0.5f;
 						clamp(vol_start, vol_start, 1.f);
 						volume *= vol_start;
-						//Msg("vol tire %f", vol_start);
-						//Msg("vol %f", volume);
 						float freq = ::Random.randF(0.89f, 1.11f) * (0.9f + 0.1f * volume);
 						pSound->play_no_feedback(car, 0, 0.f, &Wheel_Mtx.c, &volume, &freq);
 					}
 					car->m_wheels_sound_timer = Device.fTimeGlobal - car->m_wheels_sound_delay;
-					//Msg("timer reset %f", car->timer);
 				}
 				if (reach_ground)
 				{
@@ -355,8 +325,6 @@ void CCar::SWheel::Play(Fvector c_pos, u16 m1_id, u16 m2_id, bool tire_fulleffec
 							tire_drive.set_volume(wheelspeedvol);
 							tire_drive.set_frequency(wheelspeedfreq);
 							tire_drive.set_position(wheel_center);
-							//Msg("tire volume %f", wheelspeedvol);
-							//Msg("tire freq %f", wheelspeedfreq);
 						}
 					}
 				}
@@ -555,7 +523,6 @@ void CCar::SWheelDrive::Drive()
 {
 	float cur_speed = pwheel->car->RefWheelMaxSpeed() / gear_factor;// *(1.f / DiffSpeed());
 	pwheel->ApplyDriveAxisVel((pos_fvd*cur_speed)* pwheel->wheel_vel_factor);
-	//pwheel->wheel_state = wheel_drive;
 }
 
 float CCar::SWheelDrive::ASpeedMaximum()
@@ -570,18 +537,14 @@ void CCar::SWheelDrive::UpdatePower()
 	float lock = 1.f;
 	if (pwheel->car->b_diff_lock)
 	{
-		//float start = (pwheel->car->m_current_rpm - pwheel->car->m_min_rpm) * 10.f / pwheel->car->m_min_rpm;
-		//clamp(start, 0.f, 1.f);
-		//Msg("start %f", start);
 		float size = float(pwheel->car->m_driving_wheels.size());
 		lock = DiffSpeed() - (0.5f * size - 1.f);
 		clamp(lock, 0.f, size);
 		pwheel->wheel_diff_power = pwheel->wheel_diff_power + (lock - pwheel->wheel_diff_power) * 50.f * fixed_step;
-		//Msg("dif1 %f", lock);
-		//lock = 1.f + ((lock - 1.f) * start);// / size;
 	}
-	//Msg("dif2 %f", lock);
-	pwheel->ApplyDriveAxisTorque((pwheel->car->RefWheelCurTorque()/gear_factor) * pwheel->wheel_trq_factor * pwheel->wheel_diff_power);
+	float Torque = (pwheel->car->RefWheelCurTorque()/gear_factor) * pwheel->wheel_trq_factor * pwheel->wheel_diff_power;
+	pwheel->EngineTorque = Torque;
+	pwheel->ApplyDriveAxisTorque(Torque);
 }
 void CCar::SWheelDrive::Neutral()
 {
@@ -591,10 +554,7 @@ void CCar::SWheelDrive::Neutral()
 float CCar::SWheelDrive::DiffSpeed()
 {
 	float diff = 0.5f * float(pwheel->car->m_driving_wheels.size()) + (pwheel->car->DriveWheelsMeanAngleRate() - ASpeed()) / pwheel->car->m_max_rpm * pwheel->car->m_current_gear_ratio * pwheel->car->m_diff_lock_power;
-	//Msg("dif %f", diff);
 
-	//Msg("wheel mean %f", fabsf(pwheel->car->DriveWheelsMeanAngleRate()) * pwheel->car->m_current_gear_ratio / pwheel->car->m_current_rpm);
-	//Msg("aseed %f", ASpeed() * pwheel->car->m_current_gear_ratio / pwheel->car->m_current_rpm);
 
 	return diff;
 }
@@ -667,7 +627,6 @@ void CCar::SWheelSteer::SteerRight()
 
 		float sliding = 0.85f + pwheel->car->m_current_slip_sliding * 1.5f;
 		clamp(sliding, 1.f, 3.f);
-		//Msg("sliding turn %f", sliding);
 
 		wheel_steer_speed = sliding * back * (0.05f + 1.15f * sinf(0.5f * PI * powf(time, 0.5f)));
 
@@ -680,13 +639,11 @@ void CCar::SWheelSteer::SteerRight()
 	limited=true;						//no need to limit wheels when steering
 	if (pwheel->car->m_steer_invert)
 	{
-		//pwheel->SetSteerHiLimit(hi_limit);
 		pwheel->SetSteerLimits(hi_limit, lo_limit);
 		pwheel->ApplySteerAxisVel(wheel_steer_speed);
 	}
 	else
 	{
-		//pwheel->SetSteerLoLimit(lo_limit);
 		pwheel->SetSteerLimits(hi_limit, lo_limit);
 		pwheel->ApplySteerAxisVel( -wheel_steer_speed);
 	}
@@ -727,7 +684,6 @@ void CCar::SWheelSteer::SteerLeft()
 
 		float sliding = 0.85f + pwheel->car->m_current_slip_sliding * 1.5f;
 		clamp(sliding, 1.f, 3.f);
-		//Msg("sliding turn %f", sliding);
 
 		wheel_steer_speed = sliding * back * (0.05f + 1.15f * sinf(0.5f * PI * powf(time, 0.5f)));
 
@@ -740,13 +696,11 @@ void CCar::SWheelSteer::SteerLeft()
 	limited=true;						//no need to limit wheels when steering
 	if(!pwheel->car->m_steer_invert)
 	{
-		//pwheel->SetSteerHiLimit(hi_limit);
 		pwheel->SetSteerLimits(hi_limit, lo_limit);
 		pwheel->ApplySteerAxisVel(wheel_steer_speed);
 	}
 	else
 	{
-		//pwheel->SetSteerLoLimit(lo_limit);
 		pwheel->SetSteerLimits(hi_limit, lo_limit);
 		pwheel->ApplySteerAxisVel( -wheel_steer_speed);
 	}
@@ -771,37 +725,28 @@ void CCar::SWheelSteer::SteerIdle()
 			cur_steer = (fabsf(GetSteerAngle()) / hi_limit) * (1.f / 0.4f);
 		clamp(cur_steer, cur_steer, 1.f);
 		float return_speed = 0.05f + 0.95f * cur_steer;
-		//Msg("return_speed %f", return_speed);
 
 		float time = 2.f * (Device.fTimeGlobal - pwheel->car->m_steer_start_time) / pwheel->car->m_steering_speed;
 		clamp(time, 0.f, 0.8f);
-		//Msg("time %f", time);
 		wheel_steer_speed = (0.1f + 1.1f * sinf(1.5f * powf(time, 0.5f)));
 		//float sliding = 0.9f + pwheel->car->m_current_slip_sliding * 2.5f; // replace with angular acceleration
-		//clamp(sliding, 1.f, 3.5f);
 		Fvector ang_vel;
 		pwheel->car->m_pPhysicsShell->get_AngularVel(ang_vel);
 		float angular = (ang_vel.magnitude() - 0.1f) * 2.f;
 		clamp(angular, 1.f, 5.f);
-		//Msg("angular steer %f", angular);
 
 		float spd = 1.f + (_abs(pwheel->GetDriveAngleRate()) * pwheel->radius * 0.03f);
 		wheel_steer_speed = wheel_steer_speed * pwheel->car->m_steering_speed * angular * spd * return_speed;
-		//Msg("sliding idle %f", sliding);
-		//Msg("idle wheel_steer_speed %f", wheel_steer_speed);
-		//Msg("idle spd %f", wheel_steer_speed);
 	}
 
 	if (pwheel->GetSteerAngle() < 0.f)
 	{
 		pwheel->SetSteerLimits(0.f, lo_limit + 0.01f);
-		//pwheel->SetSteerHiLimit(0.f);
 		pwheel->ApplySteerAxisVel(wheel_steer_speed);
 	}
 	else
 	{
 		pwheel->SetSteerLimits(hi_limit - 0.01f, 0.f);
-		//pwheel->SetSteerLoLimit(0.f);
 		pwheel->ApplySteerAxisVel(-wheel_steer_speed);
 	}
 
@@ -857,6 +802,7 @@ void CCar::SWheelBreak::Break(float k)
 	{
 		if (!pwheel->car->m_break_abs_individual || !pwheel->car->m_break_abs)
 		{
+			pwheel->BrakeTorque = current_wheel_block_factor;
 			pwheel->ApplyDriveAxisVelTorque(0.f, current_wheel_block_factor);
 			if (pwheel->collision_params.breaking_abs && pwheel->car->m_break_abs)
 			{
@@ -864,7 +810,7 @@ void CCar::SWheelBreak::Break(float k)
 					pwheel->car->m_break_start = Device.fTimeGlobal - pwheel->car->m_break_time;
 				if (pwheel->car->m_break_time > 0.f)
 				{
-					pwheel->car->m_break_start += 0.015f * pwheel->car->m_break_abs_power * fixed_step * 100.f;
+					pwheel->car->m_break_start += 0.015f * pwheel->car->m_break_abs_power * fixed_step * FixedStepCompensation;
 					if (pwheel->car->m_break_start > Device.fTimeGlobal)
 						pwheel->car->m_break_start = Device.fTimeGlobal;
 				}
@@ -878,15 +824,14 @@ void CCar::SWheelBreak::Break(float k)
 			{
 				n *= (time / pwheel->car->m_break_time);
 			}
-			//Msg("n %f", n);
 			float current_wheel_individual_block_factor = 100000.f * break_torque * n;
+			pwheel->BrakeTorque = current_wheel_individual_block_factor;
 			pwheel->ApplyDriveAxisVelTorque(0.f, current_wheel_individual_block_factor);
 			if (Device.fTimeGlobal - pwheel->collision_params.break_start > pwheel->car->m_break_time)
 				pwheel->collision_params.break_start = Device.fTimeGlobal - pwheel->car->m_break_time;
 			if (pwheel->car->m_break_time > 0.f && pwheel->collision_params.breaking_abs)
 			{
-				//Msg("abs on");
-				pwheel->collision_params.break_start += 0.03f * pwheel->car->m_break_abs_power * fixed_step * 100.f;
+				pwheel->collision_params.break_start += 0.03f * pwheel->car->m_break_abs_power * fixed_step * FixedStepCompensation;
 				if (pwheel->collision_params.break_start > Device.fTimeGlobal)
 					pwheel->collision_params.break_start = Device.fTimeGlobal;
 			}
@@ -894,6 +839,7 @@ void CCar::SWheelBreak::Break(float k)
 	}
 	else
 	{
+		pwheel->BrakeTorque = current_wheel_block_factor + max_wheel_block_factor;
 		pwheel->ApplyDriveAxisVelTorque(0.f, current_wheel_block_factor + max_wheel_block_factor);
 	}
 }
@@ -904,11 +850,12 @@ void CCar::SWheelBreak::HandBreak(float k)
 	float max_wheel_block_factor = 100000.f * hand_break_torque;
 	if (!pwheel->car->b_breaks)
 	{
+		pwheel->BrakeTorque = max_wheel_block_factor;
 		pwheel->ApplyDriveAxisVelTorque(0.f, max_wheel_block_factor);
-		//pwheel->wheel_state = wheel_brake;
 	}
 	else
 	{
+		pwheel->BrakeTorque = max_wheel_block_factor + current_wheel_block_factor;
 		pwheel->ApplyDriveAxisVelTorque(0.f, max_wheel_block_factor + current_wheel_block_factor);
 	}
 }
@@ -916,6 +863,4 @@ void CCar::SWheelBreak::HandBreak(float k)
 void CCar::SWheelBreak::Neutral()
 {
 	pwheel->ApplyDriveAxisVelTorque(0.f, pwheel->car->m_axle_friction);
-	//pwheel->wheel_state = wheel_brake;
 }
-

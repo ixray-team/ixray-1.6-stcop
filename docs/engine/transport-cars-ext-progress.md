@@ -50,6 +50,7 @@
 | `TParticlesPlayer`-компонент вместо `StartParticles`/`StopParticles` | ECS-компонент IXRAY |
 | `CPHContact` вместо `dContact` в callbacks | IXRAY physics API |
 | `CarWeapon` адаптирован под `CShootingObject` IXRAY | Поля/методы LA (`fTime`, `Light_Create`, `StartShotParticles`, rocket-by-section) отсутствуют |
+| `m_transmission_stage` (`0/1/2/10/20`) заменён на `ETransmissionStage` (`Drive`/`SwitchUp`/`SwitchDown`) | Убраны магические числа. Промежуточные состояния 1/2 стали параметром `SwitchRequest` у `Transmission()`; проверки `< 10`, `>= 10`, `> 2` заменены на `IsTransmissionSwitching()`, а `rs_car_info` показывает имя состояния |
 
 ## Текущий runtime-статус
 
@@ -137,6 +138,7 @@
 | Звуки тяжёлого дыхания/кровотечения не прекращались в машине после лечения | В `CActor::shedule_Update` при `m_holder` был ранний `return` до блока обновления звуков, поэтому в машине циклы не обновлялись вообще. Логика вынесена в `CActor::UpdateWoundedSounds()` и вызывается как в ветке `m_holder`, так и в обычном пути. Теперь в машине дыхание играет при низком здоровье/хромоте и останавливается после лечения |
 | `steer_boost` всегда показывал 0 в `rs_car_info` при езде | `CCar::OnKeyboardHold` сбрасывал `m_steer_boost` в начале каждого вызова, а `KeyboardUpdate` присылает hold для всех зажатых клавиш. Клавиша газа/другая клавиша с большим DIK обрабатывалась после A/D и обнуляла значение. Сброс перенесён на кадр через `m_steer_boost_frame`; сам импульс применяется через локальное значение steering-вызова, поэтому удержание газа не применяет boost повторно. При одновременно зажатых `kL_STRAFE` и `kR_STRAFE` boost не применяется. `UpdateCL` очищает устаревшее значение, если ввода руления в кадре не было |
 | `steer_spin_boost` показывался на скорости, где не применялся | В `CCar::DrawCarInfo` выводятся только фактически активные значения: `steer_boost` при `GetSpeedKmH() > 10` и без `b_burnout`, `spin_boost` при `GetSpeedKmH() <= 10` и `b_burnout`. Неактивное значение отображается как `0`, сырое значение берётся только из текущего кадра |
+| `torque_by_engine` и `breaking_torque` всегда показывали одинаковые значения | Оба читали один параметр ODE `dParamFMax2`: у hinge2 один мотор оси привода, поэтому момент двигателя и тормозной момент не могут действовать одновременно. Теперь `SWheelDrive::UpdatePower` пишет запрошенный момент двигателя в `SWheel::EngineTorque`, а `SWheelBreak::Break`/`HandBreak` — тормозной в `SWheel::BrakeTorque`; оба поля сбрасываются в начале `PhDataUpdate`. Фактически применённый лимит по-прежнему виден в новой строке `applied_torque_limit` (это и есть `dParamFMax2`) |
 | Колесо без контакта с землёй раскручивалось двигателем и не тормозилось | В `CCar::PhDataUpdate` для колеса с `collision_params.traction == false` (нет контакта дольше 50 мс) и без торможения вызывается `SWheel::Neutral()`: мотор привода получает цель `0` и силу `m_axle_friction`, поэтому `axle_friction` работает и в воздухе. Флаг `SWheel::AirborneFriction` запоминает это состояние; при восстановлении контакта `SWheelDrive::Drive()` возвращает мотору цель скорости привода, иначе нулевая цель тормозила бы колесо после приземления. При активных тормозах `Neutral()` не вызывается, так как тормозной момент сильнее |
 | Нет LA-логики удара по двигателю машины в аномалии | Восстановлен `CCar::HitEngine` и `m_hit_engine_time`, проверка в `UpdatePower`. `CMosquitoBald` вызывает `HitEngine` из `Affect`, если у машины `hit_stall_threshold != 0`. `HitEngine` не меняет мощность/обороты первые 1000 мс после запуска двигателя; физический импульс при этом применяется. Урон кузову считается как `power * (mass / 1000) * hit_anomaly_scale`, после чего `CCar::Hit` применяет `strike_immunity` так же, как для collision damage. `hit_anomaly_scale` читается из `vehicles.ltx` и по умолчанию равен 1. Машины исключены из `ShouldIgnoreObject` для `disable_time`. В `CCar::Hit` добавлена проверка `hit_stall_threshold`: сильный неаномальный удар вызывает `Stall()`; старый `CCar::PHHit(float...)` в IXRAY больше не вызывается базовым классом |
 
@@ -191,6 +193,41 @@ Autotest эффектов повреждения: `SetfHealth(0.25)` запус�
 Звук машины: отложенная остановка в микшере теперь делает фейд ~100 мс, а loop `snd_engine` не останавливается на холостом ходу и остаётся на нулевой громкости. Debug/Release/RelWithDebInfo пересобраны, autotest без `[error]`.
 
 `axle_friction` в воздухе: Debug собран, общий autotest `RESULT: PASS`, `errors=0`. Отдельный сценарий с подвешенным колесом требует ручной проверки: в автоматическом прогоне машина не создаётся и двигатель не запускается.
+
+### Этап 1: безопасность вычислений и жизненный цикл
+
+- `EngineCurTorque`, `DriveWheelsMeanAngleRate`, `RefWheelMaxSpeed` и разностный множитель защищены от деления на ноль и пустых списков колёс/передач.
+- `Gauge_struct` и `Suspension_struct` теперь принадлежат `CCar` через `xr_unique_ptr`; `net_Destroy` сбрасывает callbacks, очищает параметры, турели и все контейнеры, включая `m_doors_recurs`.
+- `thread_spawn` для drag-callback больше не передаёт сырой `this`: используется ID машины и повторный поиск объекта после задержки.
+- Удалены мёртвые `b_transmission_switching` и `model_cache`; `fixed_step * 100.f` вынесен в `FixedStepCompensation`; `m_last_cotact_time` переименован в `m_last_contact_time`.
+
+Autotest stage 1: общий прогон и спавн `veh_zaz968` через `-autotest_post_cmd` — `RESULT: PASS`, `errors=0`.
+
+### Этап 2: структурный рефакторинг
+
+- `cb_Gauge` разбит на диспетчер и отдельный `Update*Gauge`-метод для каждого прибора.
+- `SpawnInitPhysics` разбит на `CreateCharacterScraper`, `CreateCarTurrets`, `ApplyBonePhysicsParams` и `BindGaugeAndSuspensionCallbacks`; три scraper-сферы создаются циклом по z-смещениям.
+- `ParseDefinitions` разбит на загрузчики driver/camera, handling/camera, engine, sound, transmission и visual definitions.
+- `PhDataUpdate` разбит на упорядоченные этапы: objects, engine/brakes, doors, transmission, slip, wheelie, drift, engine shake, steering, wheel physics, traction/suspension. Порядок вызовов сохранён.
+
+Проверки stage 2: Debug/Release/RelWithDebInfo собраны; общий autotest и спавн `veh_zaz968` — `RESULT: PASS`, `errors=0`.
+
+### Этап 3: гигиена кода
+
+- Из `Car.cpp` удалены блоки `// UNUSED`, закомментированный код и комментарии в битой кодировке; из `CarWheels.cpp` удалены закомментированные `Msg`-строки.
+- В `Car.cpp` убраны дублирующий include `xr_input.h` и mid-file include `EnnumerateVertices.h`; include перенесён в начальный блок.
+- Ручные iterator-циклы по `m_wheels_map`, `m_doors`, `m_driving_wheels`, `m_steering_wheels`, `m_breaking_wheels`, `m_exhausts`, `m_car_weapons`, `bone_map` и `LL_Bones()` заменены на range-for.
+- Циклы с `erase` (`m_doors_update`), `find` (`is_Door`, `Get_Door` и т.п.) и параллельные итераторы `RestoreNetState` оставлены без изменений.
+
+Проверки stage 3: Debug/Release/RelWithDebInfo собраны; общий autotest и спавн `veh_zaz968` — `RESULT: PASS`, `errors=0`.
+
+### Этап 4: разбиение оставшихся крупных функций
+
+- `BindGaugeAndSuspensionCallbacks` стал диспетчером; добавлены `BindGaugeCallback`, отдельные `Bind*Gauge`-методы для каждого прибора и `BindSuspension`. Порядок привязки и `pribor_arrows` сохранены.
+- `UpdateWheelPhysics` разбит на `UpdateWheelSuspension`, `UpdateWheelDownforce`, `UpdateWheelTireSound`, `UpdateWheelTraction`, `UpdateWheelTractionTimeout`, `UpdateWheelAirborneFriction`; rain-фактор считается один раз через `CalculateRainFrictionFactor`.
+- Удалены оставшиеся обрывки закомментированного кода в wheel-физике.
+
+Проверки stage 4: Debug/Release/RelWithDebInfo собраны; общий autotest и спавн `veh_zaz968` — `RESULT: PASS`, `errors=0`.
 
 ## Следующие шаги
 
