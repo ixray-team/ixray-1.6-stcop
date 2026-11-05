@@ -322,15 +322,9 @@ end
 
 -- AtmosFear options dialog
 function main_menu:OnButton_af_options_clicked()
-	if self.af_opt_dlg == nil then
-		self.af_opt_dlg = atmosfear_options.af_options_dialog()
-		self.af_opt_dlg.owner = self
+	if GetModule("ixr_options") then
+		GetModule("ixr_options").on_btn_options_ixr_clicked()
 	end
-
-	self.af_opt_dlg:SetCurrentValues()
-	self.af_opt_dlg:ShowDialog(true)
-	self:HideDialog()
-	self:Show(false)
 end
 -- End AtmosFear options dialog
 

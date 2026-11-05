@@ -74,6 +74,7 @@ enum class EEngineExternalGame
 	EnableRagdolledZombiePseudodeath,
 	EnableStackWindow,
 	EnableFirstPersonDie,
+	ArtefactDegradation,
 	None
 };
 
