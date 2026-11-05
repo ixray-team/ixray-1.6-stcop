@@ -998,7 +998,10 @@ void	CActor::Hit(SHit* pHDS)
 				CalcHitDamage(&HDS)
 			);
 
-			HitArtefactsCondition(HDS);
+			if (EngineExternal()[EEngineExternalGame::ArtefactDegradation])
+			{
+				HitArtefactsCondition(HDS);
+			}
 
 			if (g_Alive() && HDS.whoID == HDS.DestID && ControlledTimeRemains > 0 && (HDS.hit_type == ALife::EHitType::eHitTypeFireWound || HDS.hit_type == ALife::EHitType::eHitTypeExplosion))
 			{
@@ -2293,7 +2296,10 @@ void CActor::UpdateCL()
 	}
 
 	UpdateDefferedMessages();
-	UpdateConditionArtefacts();
+	if (EngineExternal()[EEngineExternalGame::ArtefactDegradation])
+	{
+		UpdateConditionArtefacts();
+	}
 
 	if (g_Alive()) 
 		CStepManager::update(this==Level().CurrentViewEntity());

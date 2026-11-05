@@ -23,8 +23,6 @@ function on_game_start()
 
 	_ref.register_option(nil, "coc_sleep_deprived", "ui_mm_sleep_deprived", _ref.check_box(false), this.on_change_sleep_deprived)
 
-	_ref.register_option(nil, "coc_art_degrade", "ui_mm_art_degrade", _ref.check_box(false), this.on_change_art_degrade)
-
 	_ref.register_option(nil, "coc_alife_mutant_pop", "ui_mm_alife_mutant_pop", _ref.combo_box(2, {
 		_ref.combo_box_item("0.25", true, 0.25),
 		_ref.combo_box_item("0.5", true, 0.5),
@@ -82,15 +80,6 @@ function on_change_sleep_deprived(group, name, value, is_value_from_code)
 	end
 end
 
-function on_change_art_degrade(group, name, value, is_value_from_code)
-	if level.present() and artefact_degradation then
-		if value then
-			artefact_degradation.activate_feature()
-		else
-			artefact_degradation.deactivate_feature()
-		end
-	end
-end
 
 -- Функция обработчик настроенная для базовых настроек как пример можно раскоментировать вывод в лог чтобы посомтреть как значение приходит в скрипт
 function on_change_option_value(group, name, value, is_value_from_code)

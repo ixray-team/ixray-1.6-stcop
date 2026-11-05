@@ -9,6 +9,10 @@ void SArtefactDesc::Load(const shared_str& Section)
 	}
 
 	XReflect::ReadIni(*this, Section);
+	if (!EngineExternal()[EEngineExternalGame::ArtefactDegradation])
+	{
+		m_fDegradationRate = 0.0f;
+	}
 
 	const char* HitAbsorbationSect = pSettings->r_string(Section, "hit_absorbation_sect");
 	if (pSettings->section_exist(HitAbsorbationSect))

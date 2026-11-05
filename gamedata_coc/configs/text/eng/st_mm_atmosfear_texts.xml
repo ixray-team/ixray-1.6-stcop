@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1251" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <string_table>
 	<string id="st_cap_af_weather_options">
 		<text>Weather</text>
@@ -261,4 +261,20 @@
 	<string id="st_msg_load_default_settings_done">
 		<text>Default weather, event and moon settings have been restored</text>
 	</string>
+	<string id="af3_opt_name_first_weather"><text>First weather</text></string>
+	<string id="af3_opt_name_second_weather"><text>Second weather</text></string>
+	<string id="af3_opt_name_first_weather_length"><text>First weather duration</text></string>
+	<string id="af3_opt_name_second_weather_length"><text>Second weather duration</text></string>
+	<string id="af3_opt_name__blowout"><text>Emission</text></string>
+	<string id="af3_opt_name__psy"><text>Psi storm</text></string>
+	<string id="af3_opt_name_night_params"><text>Night settings</text></string>
+	<string id="af3_opt_name__moon_phase"><text>Moon phase</text></string>
+	<string id="af3_opt_name__night_brightness"><text>Night brightness</text></string>
+	<string id="af3_opt_name__on"><text>enabled</text></string>
+	<string id="af3_opt_name__freq"><text>Interval</text></string>
+	<string id="af3_opt_name__fate"><text>Effect on NPCs</text></string>
+	<string id="af3_opt_name__warning"><text>Warning</text></string>
+	<string id="af3_opt_name__task"><text>Task</text></string>
+	<string id="af3_opt_name__title"><text>AtmosFear 3 weather</text></string>
+	<string id="af3_opt_name__addon"><text>AtmosFear 3</text></string>
 </string_table>
