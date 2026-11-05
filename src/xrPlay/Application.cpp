@@ -32,7 +32,11 @@ int CApplication::Run()
 	}
 
 	// plat
-	std::jthread s(splash::Show);
+	std::jthread SplashThread;
+	if (!Autotest::Active())
+	{
+		SplashThread = std::jthread(splash::Show);
+	}
 
 	SteamWorks.BeginPlay();
 	InitEngine();
@@ -43,7 +47,10 @@ int CApplication::Run()
 
 	EndPlay();
 
-	s.join();
+	if (SplashThread.joinable())
+	{
+		SplashThread.join();
+	}
 
 	return Autotest::Verdict();
 }

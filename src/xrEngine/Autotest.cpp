@@ -28,6 +28,8 @@ namespace
 	bool				s_hash		= false;
 	string_path			s_out		= { 0 };
 	string_path			s_cmd		= { 0 };
+	string_path			s_post_cmd	= { 0 };
+	bool				s_post_pending = false;
 	string_path			s_shot		= { 0 };
 	u32					s_shot_every = 0;
 
@@ -195,6 +197,15 @@ namespace Autotest
 
 	void FrameBegin()
 	{
+		// FrameEnd runs inside Device.End(), before the game thread of that frame is waited for.
+		// Commands such as save call scripts and must not overlap with it.
+		if (s_post_pending)
+		{
+			s_post_pending = false;
+			Msg("~ [autotest] post: %s", s_post_cmd);
+			Console->Execute(s_post_cmd);
+		}
+
 		if (!s_started)
 		{
 			s_started	= true;
@@ -217,12 +228,26 @@ namespace Autotest
 			if (const char* cmd = strstr(Core.Params, "-autotest_cmd "))
 				xr_strcpy(s_cmd, cmd + xr_strlen("-autotest_cmd "));
 
+			if (const char* pc = strstr(Core.Params, "-autotest_post_cmd "))
+				xr_strcpy(s_post_cmd, pc + xr_strlen("-autotest_post_cmd "));
+
+			if (char* tail = strstr(s_post_cmd, " -autotest"))
+				*tail = 0;
+
+			ignore_error_window = true;
+
+			psDeviceFlags.set(rsFullscreen, FALSE);
+
+			Msg("~ [autotest] frames=%u warmup=%u", s_target, s_warmup);
+
 			s_samples.reserve(s_target);
 			xrLogger::AddLogCallback(OnLog);
 			psDeviceFlags.set(rsDeviceActive, TRUE);
 			fps_limit = main_menu_fps_limit = 0;
 			s_clock.Start();
 		}
+
+		SDL_HideWindow(g_AppInfo.Window);
 
 		g_bEnableStatGather = true;
 
@@ -282,6 +307,11 @@ namespace Autotest
 
 		if (!g_pGameLevel || Device.dwPrecacheFrame || !g_loading_events.empty())
 			return;
+
+		if (s_seen == s_warmup && s_post_cmd[0])
+		{
+			s_post_pending = true;
+		}
 
 		if (s_seen++ < s_warmup)
 			return;

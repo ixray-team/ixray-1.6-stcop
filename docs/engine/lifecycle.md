@@ -10,7 +10,7 @@ EngineLoopAndDestroy → Device.Run
 EndPlay → Core._destroy
 ```
 
-After `BeginPlay`, `Run` starts the splash thread, then calls `SteamWorks.BeginPlay()`. `-autotest` does not skip that thread in this branch. Non-`DEBUG_DRAW` Windows builds take a single-instance mutex.
+After `BeginPlay`, `Run` starts the splash thread unless `-autotest` is active, then calls `SteamWorks.BeginPlay()`. Non-`DEBUG_DRAW` Windows builds take a single-instance mutex.
 
 ## BeginPlay
 
@@ -101,16 +101,17 @@ xrEngine.exe -autotest -autotest_frames 120 -autotest_warmup 150 -autotest_timeo
 
 | Flag | Default | Effect |
 | --- | --- | --- |
-| `-autotest` | — | Hide the game window after migration, set `fps_limit` and `main_menu_fps_limit` to 0, gather statistics and write the report |
+| `-autotest` | — | Hide the game window every frame, force windowed mode, suppress the error window, disable sound and mouse capture, set `fps_limit` and `main_menu_fps_limit` to 0, gather statistics and write the report |
 | `-autotest_frames N` | 120 | Measured frames |
 | `-autotest_warmup N` | 150 | Level frames skipped before measuring |
 | `-autotest_timeout S` | 300 | `exit` after this many seconds |
 | `-autotest_out <path>` | `$logs$\autotest.csv` | Timing report. One path token |
 | `-autotest_hash` | off | Per-frame CRC of the swapchain into the `hash` column |
 | `-autotest_shot [N]` | off | `$logs$\autotest_NNNN.tga` every N measured frames. Flag with no N means every frame |
+| `-autotest_post_cmd <cmd>` | — | One console command on the level when warmup ends, run at the start of the next frame before the game thread (for example `set_weather default_rain` or `save name`). Place it before `-autotest_cmd` |
 | `-autotest_cmd <cmds>` | — | Console commands once the main menu is up and `g_loading_events` is empty. Split on `;`. Also runs `keypress_on_start 0` |
 
-`-autotest_cmd` copies the rest of `Core.Params`. Put it last. This branch does not implement `-autotest_post_cmd`. Autotest does not force windowed mode or suppress error dialogs; configure those separately if needed.
+`-autotest_cmd` copies the rest of `Core.Params`. Put it last. `-autotest_post_cmd` stops at the next ` -autotest` flag.
 
 CSV columns: `frame,calc_ms,dump_ms,total_ms,calls,verts,polys,static_dips,hash`.
 
