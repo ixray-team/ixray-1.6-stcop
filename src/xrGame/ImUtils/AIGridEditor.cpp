@@ -116,6 +116,7 @@ public:
 	u32 RemovedCount = 0;
 	u32 Selected = Invalid;
 	float Radius = 2.f;
+	bool ConnectedOnly = true;
 	bool FilterAngle = false;
 	float MinAngle = 0.f;
 	float MaxAngle = 56.f;
@@ -390,11 +391,10 @@ public:
 				Candidates.push_back(N);
 			}
 		}
-		// Grow only from the active grid through traversable neighbouring cells.
-		// Background geometry across a wall must not seed a disconnected island.
-		xr_vector<u8> Reachable(Candidates.size(), 0);
+		// Optional protection against disconnected islands beyond boundary walls.
+		xr_vector<u8> Reachable(ConnectedOnly ? Candidates.size() : 0, 0);
 		xr_vector<u32> Queue;
-		for (u32 I = 0; I < Candidates.size(); ++I)
+		for (u32 I = 0; ConnectedOnly && I < Candidates.size(); ++I)
 		{
 			const Fvector& P = Candidates[I].Position;
 			const int CX = X(P), CZ = Z(P);
@@ -424,7 +424,7 @@ public:
 		}
 		for (u32 I = 0; I < Candidates.size(); ++I)
 		{
-			if (!Reachable[I] || Nodes.size() >= Invalid - 1)
+			if ((ConnectedOnly && !Reachable[I]) || Nodes.size() >= Invalid - 1)
 			{
 				continue;
 			}
@@ -458,7 +458,7 @@ public:
 				Added.push_back(ID);
 			}
 		}
-		if (!Candidates.empty() && Queue.empty())
+		if (ConnectedOnly && !Candidates.empty() && Queue.empty())
 		{
 			Status = "Painting blocked: extend the existing AI grid without crossing walls.";
 		}
@@ -557,6 +557,209 @@ public:
 		{
 			Status = "Game graph anchor nodes are retained to preserve level/spawn bindings.";
 		}
+	}
+
+	void DeleteInvalidNodes()
+	{
+		const u32 Count = u32(Nodes.size());
+		xr_vector<u32> Parents(Count);
+		xr_vector<u8> Ranks(Count, 0);
+		xr_vector<u8> Links(Count, 0);
+		xr_vector<u8> HasFullNode(Count, 0);
+		for (u32 I = 0; I < Count; ++I)
+		{
+			Parents[I] = I;
+		}
+		auto Root = [&](u32 ID)
+		{
+			while (Parents[ID] != ID)
+			{
+				Parents[ID] = Parents[Parents[ID]];
+				ID = Parents[ID];
+			}
+			return ID;
+		};
+		// Components ignore link direction: a one-way edge still connects nodes.
+		for (u32 I = 0; I < Count; ++I)
+		{
+			if (Nodes[I].Deleted)
+			{
+				continue;
+			}
+			for (u8 D = 0; D < 4; ++D)
+			{
+				const u32 Other = Nodes[I].Vertex.link(D);
+				if (Other >= Count || Other == I || Nodes[Other].Deleted)
+				{
+					continue;
+				}
+				++Links[I];
+				u32 A = Root(I), B = Root(Other);
+				if (A == B)
+				{
+					continue;
+				}
+				if (Ranks[A] < Ranks[B])
+				{
+					std::swap(A, B);
+				}
+				Parents[B] = A;
+				if (Ranks[A] == Ranks[B])
+				{
+					++Ranks[A];
+				}
+			}
+		}
+		for (u32 I = 0; I < Count; ++I)
+		{
+			if (!Nodes[I].Deleted && Links[I] == 4)
+			{
+				HasFullNode[Root(I)] = 1;
+			}
+		}
+		u32 Removed = 0, Protected = 0;
+		// Classify once, before deleting; do not erode valid boundaries repeatedly.
+		for (u32 I = 0; I < Count; ++I)
+		{
+			if (Nodes[I].Deleted || (Links[I] != 0 && HasFullNode[Root(I)]))
+			{
+				continue;
+			}
+			if (ProtectedNodes.contains(I))
+			{
+				++Protected;
+				continue;
+			}
+			Nodes[I].Deleted = true;
+			Nodes[I].Modified = true;
+			Nodes[I].Vertex.UncompressedNode.high = {};
+			Nodes[I].Vertex.UncompressedNode.low = {};
+			++Removed;
+			if (Selected == I)
+			{
+				Selected = Invalid;
+			}
+		}
+		// Clear every incoming edge, including unusual links outside adjacent cells.
+		for (auto& N : Nodes)
+		{
+			for (u8 D = 0; D < 4; ++D)
+			{
+				const u32 Other = N.Vertex.link(D);
+				if (N.Deleted || (Other < Count && Nodes[Other].Deleted))
+				{
+					N.Vertex.link(D, Invalid);
+				}
+			}
+		}
+		RemovedCount += Removed;
+		Dirty |= Removed != 0;
+		string256 Message;
+		xr_sprintf(Message, "Removed %u invalid nodes; preserved %u game graph anchors. Apply realtime / Overwrite save to commit.", Removed, Protected);
+		Status = Message;
+	}
+
+	void DeleteNodesWithoutPathToSelected()
+	{
+		const u32 Count = u32(Nodes.size());
+		if (Selected >= Count || Nodes[Selected].Deleted)
+		{
+			Status = "Select a node on the main outdoor grid first (Edit individual node).";
+			return;
+		}
+		const u32 Reference = Selected;
+		// Reverse adjacency permits a linear traversal of all paths TO the anchor,
+		// including one-way links, rather than paths leading away from it.
+		xr_vector<u32> Offsets(size_t(Count) + 1, 0);
+		for (const auto& N : Nodes)
+		{
+			if (N.Deleted)
+			{
+				continue;
+			}
+			for (u8 D = 0; D < 4; ++D)
+			{
+				const u32 Other = N.Vertex.link(D);
+				if (Other < Count && !Nodes[Other].Deleted)
+				{
+					++Offsets[Other + 1];
+				}
+			}
+		}
+		for (u32 I = 0; I < Count; ++I)
+		{
+			Offsets[I + 1] += Offsets[I];
+		}
+		xr_vector<u32> Incoming(Offsets.back());
+		{
+			xr_vector<u32> Cursor = Offsets;
+			for (u32 I = 0; I < Count; ++I)
+			{
+				if (Nodes[I].Deleted)
+				{
+					continue;
+				}
+				for (u8 D = 0; D < 4; ++D)
+				{
+					const u32 Other = Nodes[I].Vertex.link(D);
+					if (Other < Count && !Nodes[Other].Deleted)
+					{
+						Incoming[Cursor[Other]++] = I;
+					}
+				}
+			}
+		}
+		xr_vector<u8> ReachesReference(Count, 0);
+		xr_vector<u32> Queue;
+		Queue.push_back(Reference);
+		ReachesReference[Reference] = 1;
+		for (size_t Head = 0; Head < Queue.size(); ++Head)
+		{
+			const u32 ID = Queue[Head];
+			for (u32 I = Offsets[ID]; I < Offsets[ID + 1]; ++I)
+			{
+				const u32 Other = Incoming[I];
+				if (!ReachesReference[Other])
+				{
+					ReachesReference[Other] = 1;
+					Queue.push_back(Other);
+				}
+			}
+		}
+		u32 Removed = 0, Protected = 0;
+		for (u32 I = 0; I < Count; ++I)
+		{
+			if (Nodes[I].Deleted || ReachesReference[I])
+			{
+				continue;
+			}
+			if (ProtectedNodes.contains(I))
+			{
+				++Protected;
+				continue;
+			}
+			Nodes[I].Deleted = true;
+			Nodes[I].Modified = true;
+			Nodes[I].Vertex.UncompressedNode.high = {};
+			Nodes[I].Vertex.UncompressedNode.low = {};
+			++Removed;
+		}
+		for (auto& N : Nodes)
+		{
+			for (u8 D = 0; D < 4; ++D)
+			{
+				const u32 Other = N.Vertex.link(D);
+				if (N.Deleted || (Other < Count && Nodes[Other].Deleted))
+				{
+					N.Vertex.link(D, Invalid);
+				}
+			}
+		}
+		RemovedCount += Removed;
+		Dirty |= Removed != 0;
+		string256 Message;
+		xr_sprintf(Message, "Removed %u nodes without a path to node %u; preserved %u game graph anchors. Apply realtime / Overwrite save to commit.", Removed, Reference, Protected);
+		Status = Message;
 	}
 
 	xr_vector<u8> DeletionMask() const
@@ -1592,7 +1795,8 @@ void RenderAIGridEditorWindow()
 			Editor.Single = false;
 		}
 		ImGui::SliderFloat("Radius (m)", &Editor.Radius, .5f, 500.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-		bool FiltersChanged = ImGui::Checkbox("Filter surface angle", &Editor.FilterAngle);
+		bool FiltersChanged = ImGui::Checkbox("Only paint connected to existing grid", &Editor.ConnectedOnly);
+		FiltersChanged |= ImGui::Checkbox("Filter surface angle", &Editor.FilterAngle);
 		ImGui::BeginDisabled(!Editor.FilterAngle);
 		FiltersChanged |= ImGui::SliderFloat("Min angle (degrees)", &Editor.MinAngle, 0.f, 180.f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 		Editor.MaxAngle = std::max(Editor.MinAngle, Editor.MaxAngle);
@@ -1622,7 +1826,7 @@ void RenderAIGridEditorWindow()
 			}
 		}
 		ImGui::TextWrapped("Material: %s", Editor.HasMaterial ? Editor.MaterialName.c_str() : "not captured");
-		ImGui::TextWrapped("Angle from (0, 1, 0): 0 = upward floor, 90 = wall. Painting extends the existing grid without crossing walls.");
+		ImGui::TextWrapped("Angle from (0, 1, 0): 0 = upward floor, 90 = wall. Disable connectivity protection to paint isolated areas inside buildings.");
 		if (FiltersChanged)
 		{
 			Editor.LastStroke.set(flt_max, flt_max, flt_max);
@@ -1689,6 +1893,22 @@ void RenderAIGridEditorWindow()
 			ImGui::TextUnformatted("-Z");
 			ImGui::Unindent(35.f);
 		}
+		if (ImGui::Button("Delete invalid nodes"))
+		{
+			Editor.DeleteInvalidNodes();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Delete nodes with no outgoing links and components without a node having all four links. Game graph anchors are preserved.");
+		}
+		const bool HasReference = Editor.Selected < Editor.Nodes.size() && !Editor.Nodes[Editor.Selected].Deleted;
+		ImGui::BeginDisabled(!HasReference);
+		if (ImGui::Button("Delete nodes without path to selected"))
+		{
+			Editor.DeleteNodesWithoutPathToSelected();
+		}
+		ImGui::EndDisabled();
+		ImGui::TextWrapped("Select a node on the main outdoor grid using Edit individual node. Cleanup keeps nodes that can reach it; game graph anchors are protected.");
 		if (ImGui::Button("Apply realtime"))
 		{
 			Editor.Pending = true;
