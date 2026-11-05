@@ -64,6 +64,10 @@ namespace
 		{
 			if (std::string_view(Source).starts_with(Prefixes[Index]))
 			{
+				if (std::string_view(Sources[Index]) == "$null")
+				{
+					return Sources[Index];
+				}
 				return xr_string(Sources[Index]) + (Source + Prefixes[Index].size());
 			}
 		}
