@@ -175,7 +175,7 @@ void CIniReadAhead::Start(xr_vector<xr_string>&& Paths)
 	IsActive.store(true, std::memory_order_release);
 
 	Next.store(0, std::memory_order_relaxed);
-	const size_t Workers = std::min<size_t>(BackgroundLoad::WorkerCount(), Storage.size());
+	const size_t Workers = PreviousLearned.empty() ? 0 : std::min<size_t>(BackgroundLoad::WorkerCount(), Storage.size());
 	for (size_t Worker = 0; Worker < Workers; ++Worker)
 	{
 		Tasks.run([this]()
