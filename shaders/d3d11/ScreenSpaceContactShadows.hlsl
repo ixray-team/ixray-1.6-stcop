@@ -17,8 +17,46 @@
 	#define SUN_CONTACT_STEPS 16.0f
 #endif
 
+float3 uv_to_view(float2 uv, float depth)
+{
+	float2 ndc = uv * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f) - m_taa_jitter.xy;
+	float2 scale = depth < 0.02f ? float2(m_invP_hud._11, m_invP_hud._22) : float2(m_invP._11, m_invP._22);
+	return float3(ndc * scale, 1.0f) * GbufferGetViewZ(depth);
+}
+
+float3 screen_to_view(int2 pixel)
+{
+	return uv_to_view(pixel * pos_decompression_params2.zw, s_position.Load(int3(pixel, 0)).x);
+}
+
+float3 geometric_normal(int2 pixel, float3 center)
+{
+	float3 dx0 = center - screen_to_view(pixel - int2(1, 0));
+	float3 dx1 = screen_to_view(pixel + int2(1, 0)) - center;
+	float3 dy0 = center - screen_to_view(pixel - int2(0, 1));
+	float3 dy1 = screen_to_view(pixel + int2(0, 1)) - center;
+
+	float3 n0 = (abs(dx0.z) < abs(dx1.z)) ? dx0 : dx1;
+	float3 n1 = (abs(dy0.z) < abs(dy1.z)) ? dy0 : dy1;
+	if (max(abs(n0.z), abs(n1.z)) > center.z * 0.1f) {
+		return 0.0f;
+	}
+
+	float3 ng = normalize(cross(n0, n1));
+	return dot(ng, center) > 0.0f ? -ng : ng;
+}
+
+float terminator_gate(int2 pixel, float3 center, float3 normal, float3 L)
+{
+	float3 ng = geometric_normal(pixel, center);
+	return any(ng) ? saturate(-dot(normalize(normal + ng), L) * 5.0f) : 1.0f;
+}
+
 float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
 {
+	float3 ng = geometric_normal(int2(TexCoord * pos_decompression_params2.xy), Point);
+	float plane = any(ng) ? dot(ng, Point) + Point.z * 0.01f : -1.0f;
+
 	Point.xyz *= 0.99f;
 	L *= min(Point.z, HUD_SHADOWS_TRACE_LEN);
 	
@@ -41,7 +79,7 @@ float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
 		start.xyz += L * float(0.8f + 0.4f * Hash(start.xyz));
 		float depth = s_position.SampleLevel(smp_nofilter, start.xy, 0).x;
 		
-		if (depth <= start.z) {
+		if (depth <= start.z && dot(ng, uv_to_view(start.xy, depth)) > plane) {
 			visibility += 0.2f;
 			if (visibility >= 1.0f) {
 				visibility = 1.0f;
@@ -102,12 +140,10 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 		float RayZ = rcp(Ray.z);
 
 		// NOTE(vertver): grazing angle fix
-		/*
 		float2 Ndc = float2(Ray.x * 2.0f - 1.0f, 1.0f - Ray.y * 2.0f) - m_taa_jitter.xy;
-		if (min(Filtered, Nearest) * dot(Normal, float3(Ndc.x / m_P._11, Ndc.y / m_P._22, 1.0f)) - Plane < Bias) {
+		if (any(Normal) && min(Filtered, Nearest) * dot(Normal, float3(Ndc.x / m_P._11, Ndc.y / m_P._22, 1.0f)) - Plane < Bias) {
 			continue;
 		}
-			*/
 
 		float Edge = saturate(2.0f - (max(max(Z.x, Z.y), max(Z.z, Z.w)) - min(min(Z.x, Z.y), min(Z.z, Z.w))) / Thickness);
 		float Hit = saturate((RayZ - max(Filtered, Nearest)) / Bias - 1.0f) * smoothstep(Thickness, 0.5f * Thickness, RayZ - min(Filtered, Nearest));

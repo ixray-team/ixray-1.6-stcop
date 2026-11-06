@@ -20,6 +20,10 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     float3 Light = DirectLight(Ldynamic_color, LightDirection, O.Normal, O.View.xyz, O.Color, O.Specular, O.Roughness);
 #endif
 
+	if (O.Depth < 0.02f) {
+		Light *= terminator_gate(int2(pos2d.xy), O.PointHud, O.Normal, LightDirection);
+	}
+
     float3 Lightmap = GetLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w, 2.0f);
     Point.xyz = O.Normal * 0.025f + Point.xyz;
 
