@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_scale(GfxCmdList& Cmd)
 {
-	DrawSQ(Cmd, s_scale, rt_Generic, ps_r_scale_mode, []
+	DrawSQ(Cmd, s_scale, rt_Generic, std::min<u32>(ps_r_scale_mode, 1), []
 	{
 		RImplementation.rmNormal();
 	});
