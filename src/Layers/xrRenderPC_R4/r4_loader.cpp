@@ -29,6 +29,7 @@ using namespace FVF;
 
 void CRender::level_Load(IReader* fs)
 {
+	GrassTerrainTint.Destroy();
 	ResetSunShadowCache();
 	if (Target)
 	{
@@ -311,6 +312,7 @@ void CRender::LoadPlanars()
 
 void CRender::level_Unload()
 {
+	GrassTerrainTint.Destroy();
 	ResetSunShadowCache();
 	if (0==g_pGameLevel)		return;
 	if (!b_loaded)				return;

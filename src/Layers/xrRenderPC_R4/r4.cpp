@@ -431,6 +431,7 @@ void CRender::create()
 
 void CRender::destroy() 
 {
+	GrassTerrainTint.Destroy();
 	ResetSunShadowCache();
 	// Release the editor's lazily created brush resources while the device is still
 	// alive - their destructors dereference DEV, which is null by DLL detach time.
@@ -464,6 +465,7 @@ void CRender::destroy()
 }
 
 void CRender::reset_begin() {
+	GrassTerrainTint.Destroy();
 	ResetSunShadowCache();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())
