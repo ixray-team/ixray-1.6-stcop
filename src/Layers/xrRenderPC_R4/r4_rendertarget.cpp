@@ -345,7 +345,6 @@ CRenderTarget::CRenderTarget()
 	{
 		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
 		{
-			GRHI->GPUStatsEnable = false;
 			return;
 		}
 
@@ -468,7 +467,6 @@ CRenderTarget::CRenderTarget()
 
 		static int stack_levels = 0;
 		ImGui::SliderInt("Stack Levels", &stack_levels, 0, 8);
-		GRHI->GPUStatsEnable |= stack_levels > 0;
 
 		auto& perf = GRHI->GPUStats();
 		for (size_t i = 0; i < perf.count; i++)

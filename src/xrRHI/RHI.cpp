@@ -483,11 +483,6 @@ const RHI_GPU_EVENT& CRHI::GPUStats() const
 
 void CRHI::GPUStatsEnd() const
 {
-	if (!GPUStatsEnable)
-	{
-		return;
-	}
-
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 #if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
