@@ -162,6 +162,10 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 		}
 	}
 
+	if (IsAddonPhase) {
+		GAddonsManager->MapShaderPath(TempPath);
+	}
+
 	// Register file
 	desc.name = TempPath.c_str();
 	desc.vfs			= vfs;

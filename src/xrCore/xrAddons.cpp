@@ -303,3 +303,14 @@ bool CAddonManager::CanApplyFile(xr_string& TempPath, CLocatorAPI::file& Desc)
 
 	return false;
 }
+
+void CAddonManager::MapShaderPath(xr_string& TempPath) const
+{
+	string_path DataShaders;
+	xr_strconcat(DataShaders, FS.get_path(_game_data_)->m_Path, "shaders", Platform::kPreferredSeparator);
+
+	const size_t Length = xr_strlen(DataShaders);
+	if (TempPath.length() > Length && _strnicmp(TempPath.c_str(), DataShaders, Length) == 0) {
+		TempPath.replace(0, Length, FS.get_path(_game_shaders_)->m_Path);
+	}
+}
