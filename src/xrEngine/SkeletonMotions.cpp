@@ -194,8 +194,6 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 	for (u32 i = 0; i < bones->size(); i++)
 		m_motions[bones->at(i)->name].resize(dwCNT);
 
-	m_notifies.resize(dwCNT);
-	
 	// load motions
 	for (u16 m_idx = 0; m_idx < (u16)dwCNT; m_idx++)
 	{
@@ -288,6 +286,7 @@ bool motions_value::load(const char* N, IReader* data, vecBones* bones)
 		IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
 		if (notify_data)
 		{
+			m_notifies.resize(dwCNT);
 			auto bones_size = notify_data->r_u32();
 			for (u32 i = 0; i < bones_size; ++i)
 			{

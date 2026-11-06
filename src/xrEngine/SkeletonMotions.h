@@ -300,6 +300,8 @@ public:
 	const anim_notify_prefetched* motion_notify(u16 idx, u16 bone) const
 	{
 		VERIFY(p_);
+		if (p_->m_notifies.empty())
+			return nullptr;
 		const auto& Notifies = p_->m_notifies[idx];
 		auto It = Notifies.find(bone);
 		return It != Notifies.end() ? &It->second : nullptr;
