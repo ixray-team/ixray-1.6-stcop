@@ -56,7 +56,7 @@ float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
 
 // Depth march after raymarch.hlsl by Tomasz Stachowiak (Tiny Glade), dual licensed Apache-2.0 / MIT
 // Every term varies continuously with depth (fixed step count, no pixel-count clamp), so receding surfaces show no iso-depth lines
-float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L, float Jitter)
+float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L, float Jitter, bool Foliage)
 {
 	float4 Start = mul(m_P, float4(Point, 1.0f));
 	float4 End = mul(m_P, float4(Point - L * Point.z * 0.06f, 1.0f));
@@ -87,6 +87,11 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 		
 		float4 Raw = s_position.GatherRed(smp_nofilter, Ray.xy);
 		if (any(Raw < 0.02f)) {
+			continue;
+		}
+
+		// HACK(vertver): mega hype for foliage
+		[branch] if (Foliage && all(uint4(s_normal.GatherAlpha(smp_nofilter, Ray.xy) * MAX_ID) == FOLIAGE_ID)) {
 			continue;
 		}
 

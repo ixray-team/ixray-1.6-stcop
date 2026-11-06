@@ -20,7 +20,8 @@ float main(VSOutputFullscreen I) : SV_Target
 	float4 normal = s_normal.Load(int3(I.hpos.xy, 0));
 	float3 N = NormalDecode(normal.xy * 2.0f - 1.0f);
 	float nol = -dot(N, Ldynamic_dir.xyz);
-	if (uint(normal.w * MAX_ID) == FOLIAGE_ID) {
+	bool foliage = uint(normal.w * MAX_ID) == FOLIAGE_ID;
+	if (foliage) {
 		N *= sign(nol);
 		nol = abs(nol);
 	}
@@ -31,5 +32,5 @@ float main(VSOutputFullscreen I) : SV_Target
 	}
 
 	float jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, m_taa_jitter.z < 0.0f ? 0 : uint(m_taa_jitter.w) % 32)].x;
-	return 1.0f - fade * SunContactOcclusion(I.texcoord, N * 0.025f + O.Point * 0.999f, N, Ldynamic_dir.xyz, jitter);
+	return 1.0f - fade * SunContactOcclusion(I.texcoord, N * 0.025f + O.Point * 0.999f, N, Ldynamic_dir.xyz, jitter, foliage);
 }
