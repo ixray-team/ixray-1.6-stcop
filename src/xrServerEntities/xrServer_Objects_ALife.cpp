@@ -409,10 +409,27 @@ void CSE_ALifeGraphPoint::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeObject::CSE_ALifeObject			(const char* caSection) : CSE_Abstract(caSection)
 {
-	VisualScale = pSettings->read_if_exists<float>(caSection, "visual_scale", 1.f);
-	if (!_valid(VisualScale) || VisualScale < 0.01f || VisualScale > 100.f)
+	// Initialize before visuals and physics; saved state and explicit spawn scale override this default.
+	if (pSettings->line_exist(caSection, "visual_scale"))
 	{
-		VisualScale = 1.f;
+		const xr_string ScaleText = xr_string(pSettings->r_string(caSection, "visual_scale")).RemoveWhitespaces();
+		if (!ScaleText.empty())
+		{
+			string256 ScaleBuffer;
+
+			const int ScaleCount = _GetItemCount(ScaleText.c_str());
+			const float MinScale = (float) atof(_GetItem(ScaleText.c_str(), 0, ScaleBuffer));
+			const float MaxScale = ScaleCount == 2 ? (float) atof(_GetItem(ScaleText.c_str(), 1, ScaleBuffer)) : MinScale;
+
+			if (ScaleCount >= 1 && ScaleCount <= 2 && _valid(MinScale) && _valid(MaxScale) && MinScale >= 0.01f && MaxScale <= 100.f && MinScale <= MaxScale)
+			{
+				VisualScale = MinScale == MaxScale ? MinScale : Random.randF(MinScale, MaxScale);
+			}
+			else
+			{
+				Msg("! Invalid visual_scale in [%s]: %s; using 1", caSection, ScaleText.c_str());
+			}
+		}
 	}
 	m_bOnline					= false;
 	m_fDistance					= 0.0f;
