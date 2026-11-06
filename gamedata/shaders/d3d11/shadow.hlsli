@@ -72,19 +72,18 @@ bool CorrectSunShadowCoord(float3 Original, float4x4 CaptureTransform, int Index
 	return true;
 }
 
-float SampleSunShaft(float3 Coord)
+float SampleSunShaft(float3 Coord, int Cascade)
 {
 	[branch]
 	if (SunCacheParams.x > 0.0f)
 	{
 		float3 Corrected;
-		if (!CorrectSunShadowCoord(Coord, m_shadow_sun[2], 2, Corrected))
+		if (CorrectSunShadowCoord(Coord, m_shadow_sun[Cascade], Cascade, Corrected))
 		{
-			return 1.0f;
+			Coord = Corrected;
 		}
-		Coord = Corrected;
 	}
-	return s_smap_sun.SampleCmpLevelZero(smp_smap, float3(Coord.xy, 2), Coord.z);
+	return s_smap_sun.SampleCmpLevelZero(smp_smap, float3(Coord.xy, Cascade), Coord.z);
 }
 
 // Calculates cascade indices. Index 3 means no usable capture.

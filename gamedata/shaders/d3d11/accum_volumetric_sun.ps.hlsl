@@ -39,48 +39,72 @@ float4 main(PSInput I) : SV_Target
     float3 P = O.Point;
 
     float4 J0 = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
-	float coeff = (RAY_SAMPLES - J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
+	float coeff = 1.0f / RAY_SAMPLES;
 	float3 direction = P * coeff;
+	P -= direction * J0.x;
 
     float depth = P.z;
-    float deltaDepth = direction.z;
+    float dt_depth = direction.z;
 
     P = mul(m_invV, float4(P, 1.0f)).xyz;
     direction = mul((float3x3)m_invV, direction);
 
-    float4 current = mul(m_shadow_sun[2], float4(P, 1.0f));
-    float4 delta = mul(m_shadow_sun[2], float4(direction, 0.0f));
+    float3 current[3];
+    float3 delta[3];
+    [unroll] for (int cascade_idx = 0; cascade_idx < 3; cascade_idx++) {
+        current[cascade_idx] = mul(m_shadow_sun[cascade_idx], float4(P, 1.0f)).xyz;
+        delta[cascade_idx] = mul(m_shadow_sun[cascade_idx], float4(direction, 0.0f)).xyz;
+    }
 
     float res = 0.0f;
     float max_density = sun_shafts_intensity.x;
-    float density = max_density / RAY_SAMPLES;
+    float lit = 0.0f;
+    float weight = 0.0f;
 
-    if(O.Depth > 0.9999f) 
-	{
+    if (O.Depth > 0.9999f) {
 		depth = 0.0f;
         res = max_density;
     }
 
-    [loop]
-	for(int i = 0; i < RAY_SAMPLES; ++i)
-    {
-        if (depth > 0.3)
-        {
-			res += density * SampleSunShaft(current.xyz);
+    [loop] for (int i = 0; i < RAY_SAMPLES; i++) {
+        float sample = exp(-sun_shafts_intensity.w * O.ViewDist * coeff * (RAY_SAMPLES - 1 - i));
+        
+		if (depth > 0.3) {
+			float visibility = 0.0f;
+			float blend = 0.0f;
+			if (all(abs(current[0] - 0.5f) < 0.5f)) {
+				visibility = SampleSunShaft(current[0], 0);
+				float2 edge = 0.5f - abs(current[0].xy - 0.5f);
+				blend = saturate(min(edge.x, edge.y) * 10.0f);
+			}
+
+			[branch]
+			if (blend < 1.0f) {
+				float outer = SampleSunShaft(current[2], 2);
+				if (all(abs(current[1] - 0.5f) < 0.5f)) {
+					outer = min(outer, SampleSunShaft(current[1], 1));
+				}
+				visibility = lerp(outer, visibility, blend);
+			}
+
+			lit += sample * visibility;
         }
 
-        depth -= deltaDepth;
-        current -= delta;
+        weight += sample;
+        depth -= dt_depth;
+
+        [unroll] for (int cascade_idx = 0; cascade_idx < 3; cascade_idx++) {
+            current[cascade_idx] -= delta[cascade_idx];
+        }
     }
 
-    float fSturation = dot(O.View, -Ldynamic_dir.xyz);
-
-    //	Normalize dot product to
-    fSturation = 0.4f * fSturation + 0.6f;
+    res += max_density * lit / weight;
 
     float fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
-    res = lerp(res, max_density, fog);
-    res *= fSturation;
+    res = lerp(res, max_density, fog * lit / weight);
+
+    float saturation = 0.4f * dot(O.View, -Ldynamic_dir.xyz) + 0.6f;
+    res *= saturation;
 
     return GammaToLinear(res * Ldynamic_color);
 #endif // SUN_SHAFTS_QUALITY
@@ -150,7 +174,7 @@ float4 main(PSInput I) : SV_Target
     // float3 P0view = Pview - startView;
 
     // float depth = P0view.z; 
-    // float deltaDepth = deltaView.z; 
+    // float dt_depth = deltaView.z; 
 
     // float3 PW = mul(m_invV, float4(P0view, 1.f)).xyz;
     // float3 deltaW = mul(m_invV, float4(deltaView, 0.f)).xyz;
@@ -205,7 +229,7 @@ float4 main(PSInput I) : SV_Target
             // T *= exp(-sigma_t_rgb * stepLen);
         // }
 
-        // depth -= deltaDepth;
+        // depth -= dt_depth;
         // current -= deltaS;
     // }
     
