@@ -200,7 +200,7 @@ public:
 	void			RecompileShaders		();
 	void			RecompileDX12Shaders	();
 
-	SGeometry*		CreatePulledGeom		(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices);
+	ref_geom		CreatePulledGeom		(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices);
 	void			DeleteGeom				(const SGeometry* VS		);
 	void			DeferredLoad			(bool E)					{ bDeferredLoad=E;	}
 
