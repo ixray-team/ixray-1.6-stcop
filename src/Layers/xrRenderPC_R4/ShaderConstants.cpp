@@ -125,7 +125,7 @@ void CShaderConstants::UpdateFrame()
 			Frame.L_sky_color.set(Env.sky_color.x * ps_r2_sun_lumscale_sky, Env.sky_color.y * ps_r2_sun_lumscale_sky, Env.sky_color.z * ps_r2_sun_lumscale_sky, Env.sky_rotation);
 		}
 		Frame.water_intensity.set(Env.m_fWaterIntensity, Env.m_fWaterIntensity, Env.m_fWaterIntensity, 0);
-		Frame.sun_shafts_intensity.set(Env.m_fSunShaftsIntensity, Env.m_fSunShaftsIntensity, Env.m_fSunShaftsIntensity, 0);
+		Frame.sun_shafts_intensity.set(Env.m_fSunShaftsIntensity, Env.m_fSunShaftsIntensity, Env.m_fSunShaftsIntensity, g_SunShaftsFalloff);
 		Frame.rain_params.set(Env.rain_density, g_pGamePersistent->Environment().wetness_factor, 0, g_pGameLevel ? (float)g_pGameLevel->UseSnowmask : 0.f);
 		CEffect_Rain* Rain = g_pGamePersistent->Environment().eff_Rain;
 		Frame.hud_rain.set(Rain ? Rain->HudDropsTime() : 0.f, Rain && UseWeaponRainDrops ? Rain->HudDropsAmount() : 0.f, 0.f, 0.f);

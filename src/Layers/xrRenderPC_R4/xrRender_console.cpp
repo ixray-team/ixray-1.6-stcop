@@ -305,6 +305,9 @@ float		g_SunContactBiasScale		= 0.002f;
 float		g_SunContactStart			= 2.0f;
 float		g_SunContactFar				= 250.0f;
 float		g_SunContactFade			= 50.0f;
+float		g_SunContactMinPixels		= 8.0f;
+float		g_SunContactGrazing			= 0.2f;
+float		g_SunShaftsFalloff			= 0.01f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
@@ -1160,6 +1163,7 @@ RENDER_API void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
+	CMD4(CCC_Float,		"r2_sun_shafts_falloff",		&g_SunShaftsFalloff,		0.0f, 0.2f);
 	CMD3(CCC_Token,		"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 
 	CMD3(CCC_Mask32,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
@@ -1327,6 +1331,8 @@ RENDER_API void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r4_sun_contact_start", &g_SunContactStart, 0.0f, 8.0f);
 	CMD4(CCC_Float, "r4_sun_contact_far", &g_SunContactFar, 10.0f, 1000.0f);
 	CMD4(CCC_Float, "r4_sun_contact_fade", &g_SunContactFade, 1.0f, 500.0f);
+	CMD4(CCC_Float, "r4_sun_contact_min_pixels", &g_SunContactMinPixels, 0.0f, 64.0f);
+	CMD4(CCC_Float, "r4_sun_contact_grazing", &g_SunContactGrazing, 0.0f, 1.0f);
 	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);

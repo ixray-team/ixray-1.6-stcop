@@ -169,6 +169,9 @@ extern RENDER_API float			g_SunContactBiasScale;
 extern RENDER_API float			g_SunContactStart;
 extern RENDER_API float			g_SunContactFar;
 extern RENDER_API float			g_SunContactFade;
+extern RENDER_API float			g_SunContactMinPixels;
+extern RENDER_API float			g_SunContactGrazing;
+extern RENDER_API float			g_SunShaftsFalloff;
 extern RENDER_API int			ps_r2_wait_sleep;
 
 //	x - min (0), y - focus (1.4), z - max (100)
