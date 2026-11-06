@@ -38,6 +38,22 @@ ICF float GetDistFromCamera(const Fvector& from_position)
 	return adjusted_distane;
 }
 
+void CRender::BeginMainCollect(bool ZFill)
+{
+	GraphMain.private_visuals.clear();
+	// The editors move the camera for their subspaces
+	if (Device.IsEditorMode())
+	{
+		return;
+	}
+
+	GraphMain.ViewParams = MakeGraphView(phase);
+	GraphMain.ViewParams.Distortion = o.distortion;
+	GraphMain.ViewParams.ZPrefill = ZFill;
+	GraphMain.ViewParams.TrackStats = true;
+	GraphMain.OwnsView = true;
+}
+
 void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 {
 	GPU_EVENT(render_main);
@@ -47,7 +63,7 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		return;
 	}
 //	Msg						("---begin");
-	GraphMain.marker++;
+	BeginMainCollect(zfill);
 	bool dont_test_sectors = Sectors.size() <= 1;
 
 	// Calculate sector(s) and their objects
@@ -326,7 +342,7 @@ void CRender::CaptureMainParticles()
 		return;
 	}
 
-	GraphMain.marker++;
+	BeginMainCollect();
 	CollectMainDynamic(false, Sectors.size() <= 1, true);
 	RenderMainDynamic();
 }
@@ -443,11 +459,11 @@ void CRender::RenderUI(Fcolor* color)
 		Cmd.ClearTarget(Target->rt_ui_color->pRT, ERTColor::Transparent);
 	}
 
-	bool ui_saved = GraphMain.val_bUI;
-	set_UI(true);
-	GraphMain.r_dsgraph_render_ui();
-	GraphMain.r_dsgraph_render_sorted_ui();
-	set_UI(ui_saved);
+	bool ui_saved = GraphUI.val_bUI;
+	set_UI(true, &GraphUI);
+	GraphUI.r_dsgraph_render_ui();
+	GraphUI.r_dsgraph_render_sorted_ui();
+	set_UI(ui_saved, &GraphUI);
 
 	Scissor.div(2, 2);
 
@@ -457,7 +473,7 @@ void CRender::RenderUI(Fcolor* color)
 	RImplementation.rmNormal();
 
 	Target->phase_ui_postprocess(Cmd, color, HasBackground);
-	++GraphMain.marker;
+	GraphUI.private_visuals.clear();
 }
 
 // What Render() needs to reach the sun pass, known before FrameMove. A wrong guess only costs a
@@ -634,9 +650,7 @@ void CRender::Render()
 			Device.Statistic->RenderCALC.Begin();
 			GraphMain.r_pmask(true, false); // enable priority "0"
 			phase = PHASE_SMAP;
-			ZPrefill = true;
 			render_main(Cmd, false, true);
-			ZPrefill = false;
 			GraphMain.r_pmask(true, false); // disable priority "1"
 			Device.Statistic->RenderCALC.End();
 

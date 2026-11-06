@@ -110,7 +110,6 @@ public:
 
 	GeometryHeap Geometry;
 	SkinningPass Skinning;
-	bool ZPrefill = false;
 	GfxCmdList Backend;
 	GfxCmdList& Imm() { return Backend; }
 
@@ -118,6 +117,7 @@ public:
 	xr_array<R_dsgraph_structure, 6> GraphReflection;
 	xr_array<R_dsgraph_structure, 3> GraphSun;
 	R_dsgraph_structure GraphRain;
+	R_dsgraph_structure GraphUI;	// 3D icons: reads the camera UI3dStatic sets for the icon
 	R_dsgraph_structure GraphPass;	// primary thread passes that follow one another: lights, puddles
 
 	R_dsgraph_structure& BuildPassGraph(GfxCmdList& Cmd, const GraphView& View, CObject* Ignore = nullptr);
@@ -136,6 +136,7 @@ public:
 		}
 		Function(GraphRain);
 		Function(GraphPass);
+		Function(GraphUI);
 	}
 
 	// Global vertex-buffer container
@@ -240,6 +241,8 @@ public:
 	void GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const;
 	void DumpSunShadowCache() const;
 	GraphView MakeGraphView(u32 Phase) const;
+	// Starts a collection into the main graph with the current camera and phase
+	void BeginMainCollect(bool ZFill = false);
 	GraphView SunView;
 
 	// Graphs the pre-render stage collects in this frame, in order. The primary thread only waits
@@ -557,6 +560,7 @@ public:
 	virtual void					Calculate					() override;
 	virtual void					Render						() override;
 	virtual void					RenderUI					(Fcolor* = nullptr) override;
+	virtual void*					GetUIGraph					() override { return &GraphUI; }
 
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0) override;
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer) override;

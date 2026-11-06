@@ -195,10 +195,10 @@ ICF float ViewFogDistance(const R_dsgraph_structure& Graph)
 	return Graph.OwnsView ? Graph.ViewParams.FogDistance : g_pGamePersistent->Environment().CurrentEnv->fog_distance;
 }
 
-// Distortion is switched by the forward pass and only the live view takes part in it
+// Distortion is switched by the forward pass and only the main view takes part in it
 ICF bool ViewDistortion(const R_dsgraph_structure& Graph)
 {
-	return !Graph.OwnsView && RImplementation.o.distortion;
+	return Graph.OwnsView ? Graph.ViewParams.Distortion : RImplementation.o.distortion;
 }
 
 // With both priorities in one collection, these lists keep the priority they were filled at
@@ -215,7 +215,7 @@ ICF bool IsWallmarkCollected(const R_dsgraph_structure& Graph, const ShaderEleme
 // The statistics describe the main view; other graphs can run in parallel with it
 ICF CStaticTraversalStats::SectorCounters* ViewStats(const R_dsgraph_structure& Graph)
 {
-	return Graph.OwnsView ? nullptr : g_StaticTraversalStats.Current;
+	return !Graph.OwnsView || Graph.ViewParams.TrackStats ? g_StaticTraversalStats.Current : nullptr;
 }
 
 ICF bool FullDetailRejectStatic(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual)
@@ -448,33 +448,18 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		return;
 	}
 
-	if (RI.ZPrefill && IsSkeletonChild(pVisual))
+	if (ViewParams.ZPrefill && IsSkeletonChild(pVisual))
 	{
 		return;
 	}
 
-	if (private_marker)
-	{
-		if (!private_visuals.insert((void*)pVisual).second)
-		{
-			if (SpotShadowPass && !SpotShadowBuild)
-			{
-				++SpotShadowDuplicateSkips;
-			}
-			return;
-		}
-	}
-	else if (pVisual->vis.marker == marker)
+	if (!private_visuals.insert((void*)pVisual).second)
 	{
 		if (SpotShadowPass && !SpotShadowBuild)
 		{
 			++SpotShadowDuplicateSkips;
 		}
 		return;
-	}
-	else
-	{
-		pVisual->vis.marker = marker;
 	}
 
 	if (LightingModeIsStaticRender())
@@ -653,32 +638,17 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		++Stats->InsertCalls;
 	}
 
-	if (private_marker)
+	if (!private_visuals.insert((void*)pVisual).second)
 	{
-		if (!private_visuals.insert((void*)pVisual).second)
+		if (SpotShadowPass && !SpotShadowBuild)
 		{
-			if (SpotShadowPass && !SpotShadowBuild)
-			{
-				++SpotShadowDuplicateSkips;
-			}
-			return;
+			++SpotShadowDuplicateSkips;
 		}
-	}
-	else
-	{
-		if (pVisual->vis.marker == marker)
+		if (Stats)
 		{
-			if (SpotShadowPass && !SpotShadowBuild)
-			{
-				++SpotShadowDuplicateSkips;
-			}
-			if (Stats)
-			{
-				++Stats->InsertDuplicates;
-			}
-			return;
+			++Stats->InsertDuplicates;
 		}
-		pVisual->vis.marker = marker;
+		return;
 	}
 
 	if (LightingModeIsStaticRender())

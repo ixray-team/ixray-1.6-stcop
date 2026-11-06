@@ -366,13 +366,13 @@ void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, flo
 
 void CRender::EditorRenderMain(GfxCmdList& Cmd, bool Deferred)
 {
-	GraphMain.marker++;
+	BeginMainCollect();
 	EditorCollect(Cmd, Deferred, false);
 }
 
 void CRender::EditorRenderSubspace(GfxCmdList& Cmd, CFrustum& Frustum)
 {
-	GraphMain.marker++;
+	BeginMainCollect();
 
 	CFrustum SavedView = ViewBase;
 	ViewBase = Frustum;

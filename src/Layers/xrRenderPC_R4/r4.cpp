@@ -201,11 +201,9 @@ void CRender::create()
 
 	rmNormal();
 
-	GraphMain.marker = 0;
 
 	ForEachViewGraph([](R_dsgraph_structure& Graph)
 	{
-		Graph.marker = 0;
 		Graph.PortalTraverser.initialize();
 	});
 

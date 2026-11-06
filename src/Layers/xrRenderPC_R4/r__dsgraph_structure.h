@@ -39,6 +39,9 @@ struct GraphView
 	u32 TraverseOptions = 0;
 	bool PassMask[3] = { true, false, false };	// deferred, forward, wallmarks
 	bool CalculateSkeletons = false;
+	bool Distortion = false;
+	bool ZPrefill = false;
+	bool TrackStats = false;
 
 	void SetSubspace(IRender_Sector* NewSector, const Fmatrix& Combined, const Fvector& NewOrigin)
 	{
@@ -110,9 +113,6 @@ public:
 	bool val_bUI;
 	bool val_bInvisible;
 
-	// Only GraphMain uses vis.marker: visuals store a single value, so a graph that can run in
-	// parallel or between main passes deduplicates through private_visuals instead.
-	inline static u32											marker = 0;
 	bool														pmask[3];
 	bool														CollectForwardTogether = false;	// both priorities in one collection
 
@@ -153,7 +153,6 @@ public:
 
 	bool b_loaded;
 	CPortalTraverser PortalTraverser;
-	bool private_marker = false;
 	xr_hash_set<void*> private_visuals;
 
 public:

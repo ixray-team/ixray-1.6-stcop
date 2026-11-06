@@ -407,7 +407,6 @@ void R_dsgraph_structure::Begin(const GraphView& NewView)
 	PortalTraverser.ViewportNear = NewView.ViewportNear;
 	PortalTraverser.prepare_local_clips((u32)RImplementation.Sectors.size(), (u32)RImplementation.Portals.size());
 
-	private_marker = true;
 	private_visuals.clear();
 	val_pObject = nullptr;
 	val_pTransform = &Fidentity;

@@ -91,7 +91,7 @@ void CLightR_Manager::render_point	(GfxCmdList& Cmd, u32 _priority)
 		if (bHUD && _priority == 0)
 		{
 			// The HUD is already in the main graph: a new collection adds it for this light
-			RImplementation.GraphMain.marker++;
+			RImplementation.BeginMainCollect();
 			g_hud->Render_Last();
 		}
 		Graph.r_dsgraph_render_graph(_priority);
@@ -165,7 +165,7 @@ void CLightR_Manager::render_spot	(GfxCmdList& Cmd, u32 _priority)
 		Cmd.SetConstantTable(nullptr);
 		if (bHUD && _priority == 0)
 		{
-			RImplementation.GraphMain.marker++;
+			RImplementation.BeginMainCollect();
 			g_hud->Render_Last();
 		}
 
