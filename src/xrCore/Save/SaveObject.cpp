@@ -72,7 +72,7 @@ void CSaveObject::EndArray(ISaveObjectArrayHandler handler)
 	VERIFY(!_chunkStack.empty());
 	xr_string chunk = _chunkStack.top()->GetChunkName();
 	GetCurrentChunk()->EndArray();
-	R_ASSERT(handler.GetDepth() == _chunkStack.size() && handler.GetArrDepth() == _chunkStack.top()->GetArrStackSize(),
+	R_ASSERT4(handler.GetDepth() == _chunkStack.size() && handler.GetArrDepth() == _chunkStack.top()->GetArrStackSize(),
 	          "Chunk has invalid array closing tags!", chunk.c_str(), std::to_string(handler.GetArrDepth()).c_str());
 }
 

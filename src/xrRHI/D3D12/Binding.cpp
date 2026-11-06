@@ -1172,7 +1172,7 @@ void InternalDevice12::BindNullConstants(bool compute)
         _nullConstants = upload.Resource->GetGPUVirtualAddress() + upload.Offset;
         _nullConstantsEpoch = _epoch;
     }
-    _rootDataDirty |= 1u << compute;
+    _rootDataDirty |= 1u << static_cast<u32>(compute);
     for (u32 slot_idx = 0; slot_idx < DrawSlot; ++slot_idx)
     {
         _rootConstants[compute][slot_idx] = _nullConstants;
@@ -1195,9 +1195,9 @@ void InternalDevice12::BindRootConstants(bool compute)
         mask |= shader ? shader->ConstantMask : 0;
     }
     mask = compute ? _computeShader->ConstantMask : mask;
-    if ((mask >> DrawSlot) & (_rootDataDirty >> compute) & 1)
+    if ((mask >> DrawSlot) & (_rootDataDirty >> static_cast<u32>(compute)) & 1)
     {
-        _rootDataDirty &= ~(1u << compute);
+        _rootDataDirty &= ~(1u << static_cast<u32>(compute));
         if (compute)
         {
             _commands->SetComputeRoot32BitConstants(ConstantParameter(true) + DrawSlot, DrawConstants, _rootData, 0);
