@@ -305,23 +305,19 @@ void Fsr4Backend::ReleaseDevices()
     m_VersionsFailed  = false;
 }
 
-void Fsr4Backend::ResetSharedTextures()
+void Fsr4Backend::ReleaseSharedTextures()
 {
     m_Color.Destroy();
     m_Depth.Destroy();
     m_Mvec.Destroy();
     m_Output.Destroy();
-    m_Opaque.Destroy();
-    m_AfterAlpha.Destroy();
-    m_Reactive.Destroy();   // NEW
+    m_Reactive.Destroy();
 }
 
 void Fsr4Backend::ReleaseUpscalerState()
 {
     DestroyContext();
-    DestroyReactiveMask();
-    ResetSharedTextures();
-    m_TexCache = {};
+    ReleaseSharedTextures();
     m_ContextDevice.Reset();
     m_CtxOutW = m_CtxOutH = m_CtxRenderW = m_CtxRenderH = 0;
     m_CtxFlags = -1;
@@ -531,47 +527,6 @@ bool Fsr4Backend::EnsureContext(const Fsr4DrawParameters& p)
 }
 
 // ===========================================================================
-// Reactive mask (auto-generate target, D3D12-only)
-// ===========================================================================
-bool Fsr4Backend::EnsureReactiveMask(UINT w, UINT h)
-{
-    if (m_ReactiveMask && m_ReactiveW == w && m_ReactiveH == h)
-        return true;
-    m_ReactiveMask.Reset();
-
-    D3D12_HEAP_PROPERTIES heap = {};
-    heap.Type = D3D12_HEAP_TYPE_DEFAULT;
-    D3D12_RESOURCE_DESC rd = {};
-    rd.Dimension        = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-    rd.Width            = w;
-    rd.Height           = h;
-    rd.DepthOrArraySize = 1;
-    rd.MipLevels        = 1;
-    rd.Format           = DXGI_FORMAT_R8_UNORM;
-    rd.SampleDesc       = {1, 0};
-    rd.Layout           = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-    rd.Flags            = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-
-    HRESULT hr = m_D3D12Device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE, &rd,
-                                                        D3D12_RESOURCE_STATE_COMMON, nullptr,
-                                                        IID_PPV_ARGS(&m_ReactiveMask));
-    if (FAILED(hr))
-    {
-        Msg("[FSR4] Reactive mask create failed 0x%08lX", hr);
-        return false;
-    }
-    m_ReactiveW = w;
-    m_ReactiveH = h;
-    return true;
-}
-
-void Fsr4Backend::DestroyReactiveMask()
-{
-    m_ReactiveMask.Reset();
-    m_ReactiveW = m_ReactiveH = 0;
-}
-
-// ===========================================================================
 // Sync
 // ===========================================================================
 UINT64 Fsr4Backend::SignalD3D11Inputs()
@@ -655,12 +610,6 @@ UINT64 Fsr4Backend::EndFrameAndSubmit()
 }
 
 ffxReturnCode_t Fsr4Backend::DispatchUpscale(ID3D12GraphicsCommandList* cmd, ffxDispatchDescUpscale* desc)
-{
-    desc->commandList = cmd;
-    return SafeDispatch(&m_Context, &desc->header);
-}
-
-ffxReturnCode_t Fsr4Backend::DispatchReactive(ID3D12GraphicsCommandList* cmd, ffxDispatchDescUpscaleGenerateReactiveMask* desc)
 {
     desc->commandList = cmd;
     return SafeDispatch(&m_Context, &desc->header);
@@ -946,122 +895,53 @@ static bool QueryTexture(ID3D11Resource* src, Microsoft::WRL::ComPtr<ID3D11Textu
 
 bool Fsr4Backend::ResolveFrameTextures(const Fsr4DrawParameters& p, FrameTextures& out)
 {
-    // Fast path: те же входные ресурсы, что и в предыдущем кадре.
-    if (m_TexCache.colorSrc      == p.unresolvedColorResource &&
-        m_TexCache.depthSrc      == p.depthbufferResource    &&
-        m_TexCache.mvecSrc       == p.motionvectorResource   &&
-        m_TexCache.outputSrc     == p.resolvedColorResource  &&
-        m_TexCache.reactiveSrc   == p.reactiveMapResource    &&
-        m_TexCache.opaqueSrc     == p.opaqueColorResource    &&
-        m_TexCache.afterAlphaSrc == p.afterAlphaColorResource &&
-        m_TexCache.cached.color && m_TexCache.cached.depth &&
-        m_TexCache.cached.mvec  && m_TexCache.cached.output)
-    {
-        out = m_TexCache.cached;
-        return true;
-    }
-
-    FrameTextures t;
-    if (!QueryTexture(p.unresolvedColorResource, t.color) ||
-        !QueryTexture(p.depthbufferResource,     t.depth) ||
-        !QueryTexture(p.motionvectorResource,    t.mvec)  ||
-        !QueryTexture(p.resolvedColorResource,   t.output))
+    FrameTextures tex;
+    if (!QueryTexture(p.unresolvedColorResource, tex.color) ||
+        !QueryTexture(p.depthbufferResource,     tex.depth) ||
+        !QueryTexture(p.motionvectorResource,    tex.mvec)  ||
+        !QueryTexture(p.reactiveMapResource, tex.reactive)  ||
+        !QueryTexture(p.resolvedColorResource,   tex.output))
     {
         Msg("[FSR4] Failed to resolve frame textures");
         return false;
     }
 
-    // Game-provided reactive map (optional).
-    if (p.reactiveMapResource)
-        QueryTexture(p.reactiveMapResource, t.reactive);
-
-    if (p.opaqueColorResource)
-    {
-        QueryTexture(p.opaqueColorResource, t.opaque);
-        if (p.afterAlphaColorResource)
-            QueryTexture(p.afterAlphaColorResource, t.afterAlpha);
-    }
-
-    m_TexCache.colorSrc      = p.unresolvedColorResource;
-    m_TexCache.depthSrc      = p.depthbufferResource;
-    m_TexCache.mvecSrc       = p.motionvectorResource;
-    m_TexCache.outputSrc     = p.resolvedColorResource;
-    m_TexCache.reactiveSrc   = p.reactiveMapResource;
-    m_TexCache.opaqueSrc     = p.opaqueColorResource;
-    m_TexCache.afterAlphaSrc = p.afterAlphaColorResource;
-    m_TexCache.cached        = t;
-    out = t;
+    out = tex;
     return true;
 }
 
 bool Fsr4Backend::EnsureSharedTextures(const FrameTextures& tex)
 {
     if (!m_Color.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.color.Get(),
-                        false, /*isDepthIntermediate=*/false, "color") ||
+                        false, false, "color") ||
         !m_Depth.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.depth.Get(),
-                        false, /*isDepthIntermediate=*/true,  "depth") ||
+                        false, true,  "depth") ||
         !m_Mvec.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.mvec.Get(),
-                        false, /*isDepthIntermediate=*/false, "mvec") ||
+                        false, false, "mvec") ||
+        !m_Reactive.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.reactive.Get(),
+							   false, false, "reactive") ||
         !m_Output.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.output.Get(),
-                        true,  /*isDepthIntermediate=*/false, "output"))
+                        true,  false, "output"))
     {
         m_Status = IsDeviceLost() ? Fsr4Status::DeviceLost : Fsr4Status::DeviceFailed;
         return false;
     }
 
-    // Reactive: предпочитаем игру, при неудаче — fallback на автогенерацию.
-    if (tex.reactive)
-    {
-        if (!m_Reactive.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.reactive.Get(),
-                               false, /*isDepthIntermediate=*/false, "reactive"))
-        {
-            Msg("[FSR4] Game reactive mask sharing failed — falling back to auto-generate");
-            // Не валим кадр: DrawFrame увидит m_Reactive.IsValid()==false.
-        }
-    }
-    else
-    {
-        m_Reactive.Destroy();
-    }
     return true;
 }
 
-bool Fsr4Backend::PrepareReactiveMask(const Fsr4DrawParameters& p, const FrameTextures& tex)
-{
-    if (!p.opaqueColorResource || !tex.opaque)
-        return false;
-
-    if (!m_Opaque.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.opaque.Get(),
-                         false, /*isDepthIntermediate=*/false, "opaque"))
-        return false;
-    if (tex.afterAlpha &&
-        !m_AfterAlpha.Ensure(m_D3D11Device1.Get(), m_D3D12Device.Get(), tex.afterAlpha.Get(),
-                             false, /*isDepthIntermediate=*/false, "afterAlpha"))
-        return false;
-
-    return EnsureReactiveMask(p.renderWidth, p.renderHeight);
-}
-
-void Fsr4Backend::CopyInputsToShared(const FrameTextures& tex, bool autoReactive, bool gameReactive)
+void Fsr4Backend::CopyInputsToShared(const FrameTextures& tex)
 {
     m_D3D11Context->CopyResource(m_Color.GetD3D11Texture(), tex.color.Get());
     m_D3D11Context->CopyResource(m_Mvec.GetD3D11Texture(),  tex.mvec.Get());
+	
+	// Game-provided reactive — простое копирование.
+	if (m_Reactive.IsValid())
+		m_D3D11Context->CopyResource(m_Reactive.GetD3D11Texture(), tex.reactive.Get());
 
     // depth — через полноэкранный проход (D24 → R32_FLOAT).
     if (!CopyDepthToShared(tex.depth.Get()))
         Msg("[FSR4] CopyDepthToShared failed — FSR4 will receive stale depth");
-
-    // Game-provided reactive — простое копирование.
-    if (gameReactive && m_Reactive.IsValid())
-        m_D3D11Context->CopyResource(m_Reactive.GetD3D11Texture(), tex.reactive.Get());
-
-    // Auto-reactive inputs — только когда автогенерация реально пойдёт.
-    if (autoReactive)
-    {
-        m_D3D11Context->CopyResource(m_Opaque.GetD3D11Texture(), tex.opaque.Get());
-        if (tex.afterAlpha)
-            m_D3D11Context->CopyResource(m_AfterAlpha.GetD3D11Texture(), tex.afterAlpha.Get());
-    }
 }
 
 static FfxApiResource R12(ID3D12Resource* res)
@@ -1069,8 +949,7 @@ static FfxApiResource R12(ID3D12Resource* res)
     return ffxApiGetResourceDX12(res, FFX_API_RESOURCE_STATE_COMMON);
 }
 
-bool Fsr4Backend::RecordAndSubmit(const Fsr4DrawParameters& p, const FrameTextures& tex,
-                                  bool autoReactive, bool gameReactive)
+bool Fsr4Backend::RecordAndSubmit(const Fsr4DrawParameters& p)
 {
     const UINT64 inputReady = SignalD3D11Inputs();
     ID3D12GraphicsCommandList* cmd = BeginFrame(inputReady);
@@ -1081,48 +960,13 @@ bool Fsr4Backend::RecordAndSubmit(const Fsr4DrawParameters& p, const FrameTextur
         return false;
     }
 
-    bool            reactiveReady = false;
-    ID3D12Resource* reactiveRes   = nullptr;
-
-    if (gameReactive && m_Reactive.IsValid())
-    {
-        // 1) Игровой reactive — уже скопирован в CopyInputsToShared.
-        reactiveRes   = m_Reactive.GetD3D12Resource();
-        reactiveReady = true;
-    }
-    else if (autoReactive)
-    {
-        // 2) Fallback: автогенерация FFX.
-        ffxDispatchDescUpscaleGenerateReactiveMask gr = {};
-        gr.header.type     = FFX_API_DISPATCH_DESC_TYPE_UPSCALE_GENERATEREACTIVEMASK;
-        gr.colorOpaqueOnly = R12(m_Opaque.GetD3D12Resource());
-        gr.colorPreUpscale = R12((tex.afterAlpha ? m_AfterAlpha : m_Color).GetD3D12Resource());
-        gr.outReactive     = R12(m_ReactiveMask.Get());
-        gr.renderSize      = { p.renderWidth, p.renderHeight };
-        gr.scale           = 1.0f;
-        gr.cutoffThreshold = (p.flags & Fsr4Flag_Optic) ? 0.05f : 0.2f;
-        gr.binaryValue     = 0.9f;
-        gr.flags           = FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_TONEMAP
-                           | FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_THRESHOLD
-                           | FFX_UPSCALE_AUTOREACTIVEFLAGS_USE_COMPONENTS_MAX;
-
-        ffxReturnCode_t grc = DispatchReactive(cmd, &gr);
-        reactiveReady = (grc == FFX_API_RETURN_OK);
-        if (reactiveReady)
-            reactiveRes = m_ReactiveMask.Get();
-        else
-            Msg("[FSR4] Reactive dispatch failed (rc=0x%X) — upscaling without it", grc);
-    }
-
     ffxDispatchDescUpscale d = {};
     d.header.type   = FFX_API_DISPATCH_DESC_TYPE_UPSCALE;
     d.color         = R12(m_Color.GetD3D12Resource());
     d.depth         = R12(m_Depth.GetD3D12Resource());
     d.motionVectors = R12(m_Mvec.GetD3D12Resource());
     d.output        = R12(m_Output.GetD3D12Resource());
-    if (reactiveReady && reactiveRes)
-        d.reactive  = R12(reactiveRes);
-
+	d.reactive		= R12(m_Reactive.GetD3D12Resource());
     d.jitterOffset      = { p.cameraJitterX, p.cameraJitterY };
     d.motionVectorScale = { -float(p.renderWidth) * 0.5f, float(p.renderHeight) * 0.5f };
     d.renderSize        = { p.renderWidth,  p.renderHeight  };
@@ -1150,7 +994,7 @@ bool Fsr4Backend::RecordAndSubmit(const Fsr4DrawParameters& p, const FrameTextur
     return true;
 }
 
-void Fsr4Backend::CopyOutputToGame(const FrameTextures& tex)
+void Fsr4Backend::CopyOutputToGame(const FrameTextures& tex) const
 {
     m_D3D11Context->CopyResource(tex.output.Get(), m_Output.GetD3D11Texture());
 }
@@ -1194,13 +1038,9 @@ bool Fsr4Backend::DrawFrame(const Fsr4DrawParameters& params)
             return false;
     }
 
-    // Приоритет: игровой reactive → автогенерация.
-    const bool gameReactive = (tex.reactive && m_Reactive.IsValid());
-    const bool autoReactive = !gameReactive && PrepareReactiveMask(params, tex);
+    CopyInputsToShared(tex);
 
-    CopyInputsToShared(tex, autoReactive, gameReactive);
-
-    if (!RecordAndSubmit(params, tex, autoReactive, gameReactive))
+    if (!RecordAndSubmit(params))
         return false;
 
     CopyOutputToGame(tex);

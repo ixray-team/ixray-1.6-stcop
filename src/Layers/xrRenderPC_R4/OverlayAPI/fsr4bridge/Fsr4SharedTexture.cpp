@@ -2,7 +2,6 @@
 #include "Fsr4SharedTexture.h"
 #include "Fsr4BridgeCommon.h"
 
-// Map TYPELESS → concrete typed format (OpenSharedResource1 rejects TYPELESS).
 static DXGI_FORMAT CoerceTypedFormat(DXGI_FORMAT f)
 {
     switch (f)
