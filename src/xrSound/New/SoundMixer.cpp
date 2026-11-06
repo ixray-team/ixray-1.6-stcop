@@ -219,7 +219,9 @@ ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, const SoundSourceState&
 			return ESlotOcclusionResult::False;
 		}
 
-		if (occ_volume != nullptr)
+		// Sounds attached to the car (engine, doors, horn, etc.) must not be
+		// muffled by vegetation or other occluders around the listener.
+		if ((slot.flags & (u32)Mixer::Flags::NoOCC) == 0 && occ_volume != nullptr)
 		{
 			float occ = Sound->get_occlusion_to(GMixer.listener.Position, pos);
 			clamp(occ, 0.f, 1.f);
@@ -600,6 +602,10 @@ ICF void Snd_RenderSlot(u32 SlotIdx, SoundSourceState& Source, float** process_b
 	}
 
 	float VolumeFinal = OCCVolume * std::min(Gain, 1.0f) * Volume.z * Slot.fade_volume;
+	if (IsSpatial && (Slot.flags & (u16)Mixer::Flags::NoCarFactor) == 0)
+	{
+		VolumeFinal *= psSoundCarFactor;
+	}
 	BeginFactor *= VolumeFinal;
 	EndFactor *= VolumeFinal;
 
@@ -1074,7 +1080,7 @@ void Mixer::Update(void* event_handler, float time_factor, float mute_volume, fl
 				GMixer.slots[Command.slot - 1].parameters[(u32)Command.param0] = Fvector{(float)*(double*)&Command.param1, (float)*(double*)&Command.param2, (float)*(double*)&Command.param3};
 
 				auto& MixerSlot = GMixer.slots[Command.slot - 1];
-				if (MixerSlot.flags & (u16)Flags::Spatial && Command.param0 == (u16)ParameterId::Position)
+				if (MixerSlot.flags & (u16)Flags::Spatial && (MixerSlot.flags & (u16)Flags::NoOCC) == 0 && Command.param0 == (u16)ParameterId::Position)
 				{
 					auto& Pos = MixerSlot.parameters[(u32)Mixer::ParameterId::Position];
 					float OutOCC = ::Sound->get_occlusion(Pos, 0.2f, GMixer.occ);

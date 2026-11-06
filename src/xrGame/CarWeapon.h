@@ -106,6 +106,8 @@ protected:
 	bool					inited;
 	CCar*					m_pcar;
 	bool					m_bActive;
+	bool					m_bPhysicsParked;
+	float					m_parkTime;
 	bool					m_bMouseMoving_x, m_bMouseMoving_y;
 	float					m_fGunVelMult_x, m_fGunVelMult_y;
 	float					m_fGunForcMult_x, m_fGunForcMult_y;
@@ -117,7 +119,6 @@ protected:
 	float					m_fRocketLaunchSpeed;
 	bool					m_combine_input;
 	CCameraBase*			camera;
-	u16						m_guns_size;
 	xr_vector<CCarWeapon*>	m_turret_guns;
 	CCarWeapon*				m_cur_gun;
 	int						m_icur_gun_idx;
@@ -138,6 +139,8 @@ public:
 			void			UpdateCL			();
 			void			Render_internal		();
 			void			cam_Update			(float fov);
+			void			WakePhysics			();
+			void			ParkPhysics			();
 			void			PhDataUpdate		();
 			void			UpdateBarrelDir		();
 			void			OnMouseMove			(int x, int y);

@@ -19,6 +19,7 @@ class	XRSOUND_API					ISoundVoiceChat;
 
 XRSOUND_API extern u32				psSoundModel			;
 XRSOUND_API extern float			psSoundVFactor			;
+XRSOUND_API extern float			psSoundCarFactor		;
 XRSOUND_API extern float            psSoundCompression      ;
 XRSOUND_API extern float			psSoundVRecorder		;
 XRSOUND_API extern int				psSoundRecorderMode		;
@@ -59,6 +60,8 @@ enum {
 	sm_2D				= (1ul<<1ul),	//!< 2D mode
 	sm_Intro			= (1ul<<2ul),	//!< Only for music and video
 	sm_NoFeedback       = (1ul<<3ul),
+	sm_NoCarFactor		= (1ul<<4ul),	//!< Ignore the car interior volume factor
+	sm_NoOCC			= (1ul<<5ul),	//!< Ignore sound occlusion (bushes, obstacles)
 	sm_forcedword		= u32(-1),
 };
 enum esound_type

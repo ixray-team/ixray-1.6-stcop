@@ -25,4 +25,6 @@ void			PlayWheel1		(CCar*car,u16 bone_id);
 void			PlayWheel2		(CCar*car,u16 bone_id);
 void			StopWheel1		(CCar*car,u16 bone_id);
 void			StopWheel2		(CCar*car,u16 bone_id);
+bool			IsPlaying1		() const { return m_playing1; }
+bool			IsPlaying2		() const { return m_playing2; }
 };

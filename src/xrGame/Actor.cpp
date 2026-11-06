@@ -1672,7 +1672,7 @@ void CActor::PlayRainOnHelmetSound()
 
 		if (m_rainOnHelmetSnd.is_playing())
 		{
-			m_rainOnHelmetSnd.set_volume(hemiValue <= 0.3f ? 0.0f : 1.0f);
+			m_rainOnHelmetSnd.set_volume((hemiValue <= 0.3f ? 0.0f : 1.0f) * psSoundCarFactor);
 		}
 		else
 		{

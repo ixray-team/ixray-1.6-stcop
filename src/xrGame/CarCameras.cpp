@@ -274,6 +274,11 @@ void	CCar::OnCameraChange(int type)
 		// car while the chase camera is already active has to show the actor model.
 		Owner()->setVisible(type != EctFirstCam);
 
+		// First-person view muffles the outside world and the car itself, except
+		// for the gearbox sounds, which opt out of the factor with sm_NoCarFactor.
+		// The factor is recalculated again while driving as doors open and close.
+		UpdateInteriorSoundFactor(type == EctFirstCam);
+
 		//IKinematics*	pKinematics = smart_cast<IKinematics*>(Owner()->Visual());
 		//u16 		head_bone = pKinematics->LL_BoneID("bip01_head");
 		/*

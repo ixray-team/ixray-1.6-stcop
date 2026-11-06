@@ -383,7 +383,7 @@ void CEffect_Rain::OnFrame()
 	if (snd_Ambient.is_playing())
 	{
 		m_rainVolume = std::max(0.1f, factor) * hemi_factor;
-		snd_Ambient.set_volume(m_rainVolume);
+		snd_Ambient.set_volume(m_rainVolume * psSoundCarFactor);
 	}
 
 	if (CurDropSnd.is_playing())
@@ -397,7 +397,7 @@ void CEffect_Rain::OnFrame()
 			Fvector	sndP;
 			sndP.mad(Position, Direction, Distance);
 			CurDropSnd.set_position(sndP);
-			CurDropSnd.set_volume(1);
+			CurDropSnd.set_volume(psSoundCarFactor);
 		}
 		else
 		{

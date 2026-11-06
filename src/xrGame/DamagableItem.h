@@ -13,7 +13,7 @@ public:
 				void				HitEffect			()									;
 				void				RestoreEffect		()									;
 	virtual		void				Repair				()									;
-				float				DamageLevelToHealth	(u16 dl)							;
+				float				DamageLevelToHealth	(u16 dl)							const				;
 protected:
 				u16 				DamageLevel			()									;
 	virtual		float				Health				()									=0;

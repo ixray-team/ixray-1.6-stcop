@@ -20,6 +20,7 @@ float	psSoundCull = 0.01f;
 float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
 float	psSoundVFactor = 1.0f;
+float	psSoundCarFactor = 1.0f;
 float	psSoundShootingReverb = 0.6f;
 float	psSoundCompression = 0.5f;
 
@@ -507,6 +508,16 @@ u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
 	if (flags & sm_NoFeedback)
 	{
 		MixedFlags |= (u32)Mixer::Flags::NoFeedback;
+	}
+
+	if (flags & sm_NoCarFactor)
+	{
+		MixedFlags |= (u32)Mixer::Flags::NoCarFactor;
+	}
+
+	if (flags & sm_NoOCC)
+	{
+		MixedFlags |= (u32)Mixer::Flags::NoOCC;
 	}
 
 	if ((flags & sm_Intro))
