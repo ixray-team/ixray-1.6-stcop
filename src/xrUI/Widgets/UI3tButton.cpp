@@ -55,8 +55,8 @@ void CUI3tButton::AddStatic()
 
 void CUI3tButton::OnClick()
 {
-	CUIButton::OnClick	();
 	PlaySoundT			();
+	CUIButton::OnClick	();
 }
 
 bool CUI3tButton::OnMouseDown(int mouse_btn)
