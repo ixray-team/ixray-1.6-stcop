@@ -1,85 +1,107 @@
 #include "stdafx.h"
+#include <utility>
 
 
 using namespace std;
 
+namespace
+{
+	bool smem_less(const smem_value* Value, const std::pair<u32, u32>& Key)
+	{
+		if (Value->dwCRC < Key.first)	return true;
+		if (Value->dwCRC > Key.first)	return false;
+		return Value->dwLength < Key.second;
+	}
+}
+
 XRCORE_API	smem_container*	g_pSharedMemoryContainer	= nullptr;
 
-smem_value*			smem_container::dock			(u32 dwCRC, u32 dwLength, void* ptr)
+smem_value*			smem_container::find_locked		(u32 dwCRC, u32 dwLength, const void* ptr) const
 {
+	auto it = std::lower_bound(container.begin(), container.end(), std::make_pair(dwCRC, dwLength), smem_less);
+
+	for (; it != container.end(); ++it)
+	{
+		if ((*it)->dwCRC	!= dwCRC)		break;
+		if ((*it)->dwLength != dwLength)	break;
+		if (0 == memcmp((*it)->value, ptr, dwLength))
+			return *it;
+	}
+
+	return nullptr;
+}
+
+smem_value*			smem_container::dock			(u32 dwCRC, u32 dwLength, const void* ptr)
+{
+	PROF_EVENT(__FUNCTION__);
 	VERIFY(dwLength && ptr); // данные пришли валидные с dwCRC = 0, мне охренеть как "повезло"?
 
-	cs.Enter					();
-	smem_value*		result		= nullptr;
-
-	// search a place to insert
-	u8				storage		[4*sizeof(u32)];
-	smem_value*		value		= (smem_value*)storage;
-	value->dwReference			= 0;
-	value->dwCRC				= dwCRC;
-	value->dwLength				= dwLength;
-	cdb::iterator	it			= std::lower_bound	(container.begin(),container.end(),value,smem_search);
-	cdb::iterator	saved_place	= it;
-	if (container.end() != it)	{
-		// supposedly found
-		for (;;	it++)	{
-			if (it==container.end())			break;
-			if ((*it)->dwCRC	!= dwCRC)		break;
-			if ((*it)->dwLength != dwLength)	break;
-			if (0==memcmp((*it)->value,ptr,dwLength))
-			{
-				// really found
-				result			= *it;
-				break;
-			}
+	{
+		xrSRWLockGuard guard(RWLock, true);
+		if (smem_value* result = find_locked(dwCRC, dwLength, ptr))
+		{
+			++result->dwReference;
+			return result;
 		}
 	}
 
-	// if not found - create new entry
-	if (nullptr==result)
-	{
-		result					= (smem_value*) Memory.mem_alloc(4*sizeof(u32) + dwLength);
-		result->dwReference		= 0;
-		result->dwCRC			= dwCRC;
-		result->dwLength		= dwLength;
-		CopyMemory			(result->value,ptr,dwLength);
-		container.insert		(saved_place,result);
-	}
+	// if not found - create new entry outside the lock
+	smem_value* result = (smem_value*)Memory.mem_alloc(4 * sizeof(u32) + dwLength);
+	result->dwReference = 0;
+	result->dwCRC = dwCRC;
+	result->dwLength = dwLength;
+	CopyMemory(result->value, ptr, dwLength);
 
-	// exit
-	cs.Leave					();
-	return						result;
+	{
+		xrSRWLockGuard guard(RWLock, false);
+
+		// double-check: another thread could have inserted the same value
+		if (smem_value* existing = find_locked(dwCRC, dwLength, ptr))
+		{
+			++existing->dwReference;
+			xr_free(result);
+			return existing;
+		}
+
+		auto it = std::lower_bound(container.begin(), container.end(), std::make_pair(dwCRC, dwLength), smem_less);
+		container.insert(it, result);
+		++result->dwReference;
+		return result;
+	}
 }
 
 void				smem_container::clean			()
 {
-	cs.Enter		();
+	xrSRWLockGuard	guard(RWLock, false);
+
 	cdb::iterator	it	= container.begin	();
 	cdb::iterator	end	= container.end		();
 	for (; it!=end; it++)	if (0==(*it)->dwReference)	xr_free	(*it);
 	container.erase	(remove(container.begin(),container.end(),(smem_value*)nullptr),container.end());
 	if (container.empty())	container.clear	();
-	cs.Leave		();
 }
 
 void				smem_container::dump			()
 {
-	cs.Enter		();
+	xrSRWLockGuard	guard(RWLock, true);
+
 	cdb::iterator	it	= container.begin	();
 	cdb::iterator	end	= container.end		();
 
-	FILE* F;
+	FILE* F = nullptr;
 	fopen_s(&F, "x:\\$smem_dump$.txt","w");
+	if (nullptr == F)
+		return;
 
 	for (; it!=end; it++)
 		fprintf		(F,"%4d : crc[%6x], %d bytes\n",(*it)->dwReference.load(),(*it)->dwCRC,(*it)->dwLength);
 	fclose			(F);
-	cs.Leave		();
 }
 
 u32					smem_container::stat_economy	()
 {
-	cs.Enter		();
+	xrSRWLockGuard	guard(RWLock, true);
+
 	cdb::iterator	it		= container.begin	();
 	cdb::iterator	end		= container.end		();
 	s64				counter	= 0;
@@ -91,7 +113,6 @@ u32					smem_container::stat_economy	()
 		counter		-= node_size;
 		counter		+= s64((s64((*it)->dwReference) - 1)*s64((*it)->dwLength));
 	}
-	cs.Leave		();
 
 	return			u32(s64(counter)/s64(1024));
 }
