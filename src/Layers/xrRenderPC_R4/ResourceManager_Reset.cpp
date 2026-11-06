@@ -87,6 +87,7 @@ CResourceManager::~CResourceManager		()
 {
 	WaitForTextureLoading();
 	DestroyNecessaryTextures	();
+	PinnedTextures.clear		();
 #ifdef DEBUG
 	Dump(false);
 #endif

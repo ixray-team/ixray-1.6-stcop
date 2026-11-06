@@ -439,6 +439,11 @@ void CResourceManager::DeferredUpload()
 	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD) && GRHI->APILevel != ERHI_API_LAYER::D3D12;
 	for (auto& [Name, Texture] : m_textures)
 	{
+		if (!ResourceLifetime::IsAlive(Texture))
+		{
+			continue;
+		}
+
 		if (!IsParallel || !Texture->StartLoading())
 		{
 			Texture->Load();

@@ -1378,7 +1378,7 @@ static void dv_tab_mix(BrushState& st, CDetailManager* D, bool& dirty)
 					const ClusterAssetDesc& a = assets[k - 1];
 					if (!a.tex_name.empty())
 					{
-						CTexture* t = dxRenderDeviceRender::Instance().Resources->_CreateTexture(a.tex_name.c_str());
+						CTexture* t = dxRenderDeviceRender::Instance().Resources->_GetPinnedTexture(a.tex_name.c_str());
 						if (t && t->get_SRView())
 							tex = t;
 					}

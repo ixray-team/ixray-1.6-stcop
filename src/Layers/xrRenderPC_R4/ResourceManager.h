@@ -92,6 +92,7 @@ private:
 	xr_vector<Shader*>									v_shaders;
 	
 	xr_vector<ref_texture>								m_necessary;
+	xr_vector<ref_texture>								PinnedTextures;
 
 	// misc
 	xrCriticalSection creationGuard;
@@ -124,7 +125,9 @@ public:
 	void							ED_UpdateTextures	(xr_vector<xr_string>* names);
 
 	// Low level resource creation
-	CTexture*						_CreateTexture		(const char* Name);
+	ref_texture						_CreateTexture		(const char* Name);
+	// For code that keeps only the surface: the texture stays until the manager is destroyed
+	CTexture*						_GetPinnedTexture	(const char* Name);
 	void							_DeleteTexture		(const CTexture* T);
 
 	CMatrix*						_CreateMatrix		(const char* Name);
@@ -223,7 +226,7 @@ public:
 	/// @param w width in pixels (like 1920)
 	/// @param h height in pixels (like 1080)
 	/// @return allocated CTexture instance
-	CTexture* _CreateEmptyTexture(const char* pName, u32 w, u32 h);
+	ref_texture _CreateEmptyTexture(const char* pName, u32 w, u32 h);
 	
 	CSVGStorage* GetSVGStorage() const;
 

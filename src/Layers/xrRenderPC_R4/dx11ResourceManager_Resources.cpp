@@ -735,11 +735,11 @@ void CResourceManager::DeleteGeom(const SGeometry* Geom)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CTexture* CResourceManager::_CreateTexture	(const char* _Name)
+ref_texture CResourceManager::_CreateTexture	(const char* _Name)
 {
 	PROF_EVENT("_CreateTexture");
 	// DBG_VerifyTextures	();
-	if (0==xr_strcmp(_Name,"null"))	return 0;
+	if (0==xr_strcmp(_Name,"null"))	return nullptr;
 	R_ASSERT		(_Name && _Name[0]);
 	string_path		Name;
 	xr_strcpy			(Name,_Name); //. andy if (strext(Name)) *strext(Name)=0;
@@ -750,19 +750,43 @@ CTexture* CResourceManager::_CreateTexture	(const char* _Name)
 	// ***** first pass - search already loaded texture
 	LPSTR N			= LPSTR(Name);
 	map_TextureIt I = m_textures.find	(N);
-	if (I!=m_textures.end())	return	I->second;
-	else
+	if (I!=m_textures.end())
 	{
-		CTexture *	T		=	new CTexture();
-		T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
-		m_textures.insert	(std::make_pair(T->set_name(Name),T));
-		T->Preload			();
-		LoadTexture(T);
-		return		T;
+		ref_texture Result;
+		if (ResourceLifetime::TryAcquire(I->second, Result))
+		{
+			return Result;
+		}
+		// Another thread released the last reference: this texture is being destroyed
+		m_textures.erase(I);
 	}
+
+	CTexture *	T		=	new CTexture();
+	ref_texture Result(T);
+	T->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
+	m_textures.insert	(std::make_pair(T->set_name(Name),T));
+	T->Preload			();
+	LoadTexture(T);
+	return		Result;
 }
 
-CTexture* CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)
+CTexture* CResourceManager::_GetPinnedTexture(const char* Name)
+{
+	ref_texture Texture = _CreateTexture(Name);
+	if (!Texture)
+	{
+		return nullptr;
+	}
+
+	xrCriticalSectionGuard guard(creationGuard);
+	if (std::find(PinnedTextures.begin(), PinnedTextures.end(), Texture) == PinnedTextures.end())
+	{
+		PinnedTextures.push_back(Texture);
+	}
+	return Texture._get();
+}
+
+ref_texture CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)
 {
 	// DBG_VerifyTextures	();
 
@@ -770,7 +794,7 @@ CTexture* CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)
 	R_ASSERT(w > 0 && "must be valid width!");
 	R_ASSERT(h > 0 && &"must be valid height!");
 
-	if (0 == xr_strcmp(_Name, "null") || w == 0 || h == 0)	
+	if (0 == xr_strcmp(_Name, "null") || w == 0 || h == 0)
 		return nullptr;
 
 	string_path		Name;
@@ -786,19 +810,27 @@ CTexture* CResourceManager::_CreateEmptyTexture(const char* _Name, u32 w, u32 h)
 	// ***** first pass - search already loaded texture
 	LPSTR N = LPSTR(Name);
 	map_TextureIt I = m_textures.find(N);
-	if (I != m_textures.end())	return	I->second;
-	else
+	if (I != m_textures.end())
 	{
-		CTexture* T = new CTexture();
-		T->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-		m_textures.insert(std::make_pair(T->set_name(Name), T));
-		T->Preload();
-		
-		if (Device.b_is_Ready) 
-			T->CreateEmpty(w,h);
-
-		return		T;
+		ref_texture Result;
+		if (ResourceLifetime::TryAcquire(I->second, Result))
+		{
+			return Result;
+		}
+		// Another thread released the last reference: this texture is being destroyed
+		m_textures.erase(I);
 	}
+
+	CTexture* T = new CTexture();
+	ref_texture Result(T);
+	T->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	m_textures.insert(std::make_pair(T->set_name(Name), T));
+	T->Preload();
+
+	if (Device.b_is_Ready)
+		T->CreateEmpty(w,h);
+
+	return		Result;
 }
 
 void	CResourceManager::_DeleteTexture		(const CTexture* T)
@@ -811,10 +843,14 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 
 	map_Texture::iterator I	= m_textures.find	(N);
 	if (I!=m_textures.end())	{
-		m_textures.erase(I);
+		// A dying texture may already have been replaced by a new one of the same name
+		if (I->second == T)
+		{
+			m_textures.erase(I);
+		}
 		return;
 	}
-	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
+	// Creation removes dying textures from the map, so a missing entry is not an error
 }
 
 //--------------------------------------------------------------------------------------------------------------
