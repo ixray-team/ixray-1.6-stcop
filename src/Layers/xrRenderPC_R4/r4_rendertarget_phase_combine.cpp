@@ -228,7 +228,7 @@ void CRenderTarget::phase_combine()
 			if(!phase_fsr4())
 			{
 				Msg("! FSR 4 failed, falling back to FSR 3 until video restart");
-				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+				ps_proxy_r_scale_mode = ps_r_scale_mode = 3;
 			}
 			break;
 		}
