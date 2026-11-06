@@ -39,7 +39,7 @@ public:
 	virtual float	CurrentZoomFactor		() override;
 	virtual void	FireStart				() override;
 	virtual void	FireEnd					() override;
-			void	LaunchGrenade_Correct	(Fvector3* v);
+			void	LaunchGrenadeCorrect	(Fvector& v);
 
 	virtual void	OnStateSwitch	(u8 S) override;
 
