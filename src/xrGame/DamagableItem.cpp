@@ -27,7 +27,7 @@ u16 CDamagableItem::DamageLevel()
 	}
 }
 
-float CDamagableItem::DamageLevelToHealth(u16 dl)
+float CDamagableItem::DamageLevelToHealth(u16 dl) const
 {
 	return m_max_health * (float(m_levels_num - dl) / m_levels_num);
 }

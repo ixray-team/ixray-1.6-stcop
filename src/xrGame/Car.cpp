@@ -1694,7 +1694,10 @@ void	CCar::net_Destroy()
 		m_pPhysicsShell->ZeroCallbacks();
 		xr_delete(m_pPhysicsShell);
 	}
+	const bool WasOwned = Owner() != nullptr;
 	CHolderCustom::detach_Actor();
+	if (WasOwned)
+		psSoundCarFactor = 1.f;
 	ClearExhausts();
 	for (auto& i_w : m_wheels_map)
 	{
@@ -2071,6 +2074,10 @@ void CCar::DrawCarInfo()
 	Font->OutSet(Device.TargetHeight / 2, 30);
 	Font->SetAligment(CGameFont::alLeft);
 	Font->OutNext("Health:            [%3.2f]", GetfHealth());
+	Font->OutNext("Mass:              [%3.2f]", m_pPhysicsShell->getMass());
+	Font->OutNext("Interior volume:   [%3.2f]", m_interior_volume);
+	Font->OutNext("Active car volume: [%3.2f]", psSoundCarFactor);
+	Font->OutNext("Open cabin door:   [%s]", HasOpenNormalDoor() ? "yes" : "no");
 	Font->OutNext("Vel magnitude:     [%3.2f]", GetVelocityM());
 	Font->OutNext("Vel:               [%3.2f]", GetVelocity().dotproduct(XFORM().k));
 	Font->OutNext("Accel magnitude:   [%3.2f]", m_acceleration);
@@ -2240,9 +2247,41 @@ void CCar::DrawCarInfo()
 	}
 }
 
+bool CCar::HasOpenNormalDoor() const
+{
+	for (const auto& DoorEntry : m_doors)
+	{
+		const SDoor& Door = DoorEntry.second;
+		if (Door.non_enterable || Door.non_exitable)
+			continue;
+
+		if (Door.state != SDoor::closed)
+			return true;
+	}
+
+	return false;
+}
+
+void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
+{
+	if (!Owner())
+		return;
+
+	float InteriorVolume = m_interior_volume;
+	clamp(InteriorVolume, 0.f, 1.f);
+
+	// An open normal door connects the cabin with the outside, so the
+	// interior volume moves halfway towards the exterior volume.
+	if (FirstPersonView && HasOpenNormalDoor())
+		InteriorVolume = 0.5f * (InteriorVolume + 1.f);
+
+	psSoundCarFactor = FirstPersonView ? InteriorVolume : 1.f;
+}
+
  void CCar::VisualUpdate(float fov)
 {
 	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+	UpdateInteriorSoundFactor(active_camera != nullptr && active_camera->tag == EctFirstCam);
 	if (rs_car_info)
 		DrawCarInfo();
 	if (e_state_drive == drive && ((!IsTransmissionSwitching() || b_transmission_switch_drive) || brp))
@@ -2770,6 +2809,7 @@ void CCar::detach_Actor()
 {
 	if(!Owner()) return;
 	Owner()->setVisible(1);
+	psSoundCarFactor = 1.f;
 	if (OwnerActor())
 	{
 		OwnerActor()->SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
@@ -3643,14 +3683,51 @@ void CCar::Drive()
 
 void CCar::StartEngine()
 {
-	if(m_fuel<EPS||b_engine_on) return;
+	if(b_engine_on || b_starting) return;
+
+	const bool HasFuel = m_fuel >= EPS;
+	bool StartSuccessful = HasFuel;
+	if (StartSuccessful && OwnerActor())
+	{
+		StartSuccessful = Random.randF(0.f, 1.f) <= EngineStartSuccessChance();
+	}
+
 	PlayExhausts();
 	m_car_sound->Start();
-	b_engine_on=true;
-	m_current_rpm=0.f;
+
+	b_engine_on = StartSuccessful;
+	m_current_rpm = 0.f;
 	m_current_engine_power = 0.f;
 	m_current_rpm_brp_n = 1.f;
 	Starter();
+}
+
+float CCar::EngineStartSuccessChance() const
+{
+	if (m_levels_num == 0 || m_max_health <= EPS)
+		return 1.f;
+
+	const auto LevelChance = [this](u16 Level)
+	{
+		return DamageLevelToHealth(Level) / m_max_health;
+	};
+
+	// The big smoke starts at the lower health threshold, so it must take
+	// priority when both damage particle stages are active.
+	if (m_damage_particles.IsPlaying2())
+	{
+		float Chance = LevelChance(2);
+		clamp(Chance, 0.f, 1.f);
+		return Chance;
+	}
+	if (m_damage_particles.IsPlaying1())
+	{
+		float Chance = LevelChance(1);
+		clamp(Chance, 0.f, 1.f);
+		return Chance;
+	}
+
+	return 1.f;
 }
 void CCar::StopEngine()
 {
@@ -4320,8 +4397,12 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 				else
 					return NULL;
 			}
-			b_start_close_recursive = false;
-			b_start_open_recursive = true;
+
+			// Recursive doors are toggled by using any of them: the first use
+			// opens the whole chain, the next one closes it in reverse order.
+			const bool CloseDoors = b_all_recurs_opened || AreRecursiveDoorsOpened();
+			b_start_open_recursive = !CloseDoors;
+			b_start_close_recursive = CloseDoors;
 			return NULL;
 		}
 		if (m_bone_trunk == bonebypoly_id)
@@ -4385,7 +4466,16 @@ bool CCar::TryTrunk()
 	float UseDistance = 2.f;
 	auto DoorIt = m_doors.find(m_bone_trunk);
 	if (DoorIt != m_doors.end())
-		UseDistance = DoorIt->second.dist_to_door_avlbl;
+	{
+		SDoor& Trunk = DoorIt->second;
+		UseDistance = Trunk.dist_to_door_avlbl;
+
+		// A recursive trunk must not bypass the configured door sequence.
+		// While it is not open yet, route the use through GetNearestDoor(),
+		// which starts or continues the chain from the first door.
+		if (Trunk.recursive_door && Trunk.state != SDoor::opened && Trunk.state != SDoor::broken)
+			return false;
+	}
 
 	// The trunk is usable only when the aim ray actually hits its bone.
 	// GetNearestBone scans the car bones and also adds trunk-specific ray hits,
@@ -4642,7 +4732,7 @@ float CCar::EnginePower()
 {
 
 	float value;value = Parabola(m_current_rpm);
-	if(b_starting)
+	if(b_starting && b_engine_on)
 	{
 		//if (m_current_rpm<m_min_rpm)
 		//else 
@@ -4906,90 +4996,117 @@ void CCar::Burnout()
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 
 
+bool CCar::AreRecursiveDoorsOpened() const
+{
+	if (m_doors_recurs.empty())
+		return false;
+
+	for (const auto& DoorEntry : m_doors_recurs)
+	{
+		const SDoor* Door = DoorEntry.second;
+		if (!Door || Door->state != SDoor::opened)
+			return false;
+	}
+
+	return true;
+}
+
+bool CCar::AreRecursiveDoorsClosed() const
+{
+	if (m_doors_recurs.empty())
+		return false;
+
+	for (const auto& DoorEntry : m_doors_recurs)
+	{
+		const SDoor* Door = DoorEntry.second;
+		if (!Door || Door->state != SDoor::closed)
+			return false;
+	}
+
+	return true;
+}
+
 void CCar::UpdateRecursiveDoors()
 {
-	if(b_start_open_recursive)
+	if (b_start_open_recursive)
 	{
-		for (int i = 0; i < m_doors_recurs.size(); ++i)
+		// Doors are processed in their configured order. Skipping already
+		// opened doors guarantees that a later door is never opened before
+		// all previous doors in the chain.
+		for (int i = 0; i < (int)m_doors_recurs.size(); ++i)
 		{
-			auto prev_dit = m_doors_recurs.find(i-1);
 			auto curr_dit = m_doors_recurs.find(i);
-			auto last_dit = m_doors_recurs.find(m_doors_recurs.size()-1);
+			if (curr_dit == m_doors_recurs.end())
+				continue;
 
-			if(!curr_dit->second->IsDistOfSight(Device.vCameraPosition) || !curr_dit->second->IsLineOfSight())
+			SDoor* Door = curr_dit->second;
+			if (!Door || Door->state == SDoor::opened)
+				continue;
+
+			if (Door->state == SDoor::opening)
+				break;
+
+			if (Door->state == SDoor::broken)
 			{
 				b_start_open_recursive = false;
 				break;
 			}
 
-			if (last_dit != m_doors_recurs.end())
+			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
 			{
-				if(last_dit->second->state == SDoor::opened)
-				{
-					ScriptUseTrunk(m_bone_trunk);
-					b_start_open_recursive = false;
-					b_all_recurs_opened = true;
-					break;
-				}
-
+				b_start_open_recursive = false;
+				break;
 			}
 
-			if(curr_dit != m_doors_recurs.end())
-			{
-				if(curr_dit->second->state == SDoor::closed || curr_dit->second->state == SDoor::closing)
-				{
-					if (prev_dit != m_doors_recurs.end())
-					{
-						if(prev_dit->second->state == SDoor::opened)
-							curr_dit->second->Open();
+			Door->Open();
+			break;
+		}
 
-					}
-					else
-						curr_dit->second->Open();
-				}
-			}
+		if (AreRecursiveDoorsOpened())
+		{
+			ScriptUseTrunk(m_bone_trunk);
+			b_start_open_recursive = false;
+			b_all_recurs_opened = true;
 		}
 	}
 
-	if(b_start_close_recursive)
+	if (b_start_close_recursive)
 	{
-		for (int i=m_doors_recurs.size()-1; i>=0; --i)
+		// Reverse order: the last door closes first, then the previous one,
+		// down to the first door of the chain.
+		for (int i = (int)m_doors_recurs.size() - 1; i >= 0; --i)
 		{
-			auto prev_dit = m_doors_recurs.find(i+1);
 			auto curr_dit = m_doors_recurs.find(i);
-			auto last_dit = m_doors_recurs.find(0);
+			if (curr_dit == m_doors_recurs.end())
+				continue;
 
-			if(!curr_dit->second->IsDistOfSight(Device.vCameraPosition) || !curr_dit->second->IsLineOfSight())
+			SDoor* Door = curr_dit->second;
+			if (!Door || Door->state == SDoor::closed)
+				continue;
+
+			if (Door->state == SDoor::closing)
+				break;
+
+			if (Door->state == SDoor::broken)
 			{
 				b_start_close_recursive = false;
 				break;
 			}
 
-			if (last_dit != m_doors_recurs.end())
+			if (!Door->IsDistOfSight(Device.vCameraPosition) || !Door->IsLineOfSight())
 			{
-				if(last_dit->second->state == SDoor::closed)
-				{
-					b_start_close_recursive = false;
-					b_all_recurs_opened = false;
-					break;
-				}
-
+				b_start_close_recursive = false;
+				break;
 			}
 
-			if(curr_dit != m_doors_recurs.end())
-			{
-				if(curr_dit->second->state == SDoor::opened || curr_dit->second->state == SDoor::opening)
-				{
-					if (prev_dit != m_doors_recurs.end())
-					{
-						if(prev_dit->second->state == SDoor::closed)
-							curr_dit->second->Close();
+			Door->Close();
+			break;
+		}
 
-					}
-					else
-						curr_dit->second->Close();
-				}
-			}
+		if (AreRecursiveDoorsClosed())
+		{
+			b_start_close_recursive = false;
+			b_all_recurs_opened = false;
 		}
 	}
 }
@@ -5547,14 +5664,27 @@ void CCar::UpdateWheelTractionTimeout(SWheel& Wheel)
 
 void CCar::UpdateWheelAirborneFriction(SWheel& Wheel)
 {
+	const bool Airborne = !Wheel.collision_params.traction;
+	const bool DrivenWheelWithThrottle =
+		e_state_drive == drive &&
+		b_engine_on &&
+		b_clutch &&
+		Wheel.WheelFlags.test(SWheel::eWheelType::wheel_drive);
+
 	// An airborne wheel has no contact friction. Apply the axle friction
 	// explicitly so engine torque cannot spin it forever while it hangs
 	// in the air. Braking already supplies a stronger wheel torque.
-	const bool Airborne = !Wheel.collision_params.traction;
-	if (Airborne && !b_breaks)
+	// A driven wheel under throttle must keep the engine drive torque,
+	// otherwise the wheels cannot spin in the air.
+	if (Airborne && !b_breaks && !DrivenWheelWithThrottle)
 	{
 		Wheel.Neutral();
 		Wheel.AirborneFriction = true;
+	}
+	else if (Airborne && DrivenWheelWithThrottle && !b_breaks)
+	{
+		// The wheel is driven again, so there is no neutral state to restore.
+		Wheel.AirborneFriction = false;
 	}
 	else if (!Airborne && Wheel.AirborneFriction && !b_breaks)
 	{

@@ -3477,6 +3477,9 @@ void CCC_RegisterCommands()
 	extern bool rs_car_info;
 	CMD2(CCC_Boolean, "rs_car_info", &rs_car_info);
 
+	extern bool rs_car_unlimitedfuel;
+	CMD2(CCC_Boolean, "rs_car_unlimitedfuel", &rs_car_unlimitedfuel);
+
 	extern float rs_car_steer_factor;
 	CMD4(CCC_Float, "rs_car_steer_factor", &rs_car_steer_factor, 0.5f, 3.f);
 

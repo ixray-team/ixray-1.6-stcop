@@ -214,42 +214,61 @@ void CCar::SCarSound::UpdateStarting()
 {	
 	VERIFY(!physics_world()->Processing());
 	SetEngineSoundPosition(snd_engine_start);
+	if (snd_engine_stop._p && snd_engine_stop.is_playing())
+		snd_engine_stop.stop_deffered(CarDeferredStopFade);
+
+	if (!pcar->b_engine_on)
+	{
+		// A failed start (including an attempt without fuel) plays the stop
+		// sound right after engine_sound_start_dellay, without waiting for the
+		// rest of the starter clip.
+		const bool AttemptTimeElapsed = time_state_start + engine_start_delay < Device.dwTimeGlobal;
+		if (AttemptTimeElapsed)
+		{
+			pcar->b_starting = false;
+			pcar->StopExhausts();
+			snd_engine_start.stop_deffered(CarDeferredStopFade);
+			Stop();
+		}
+		return;
+	}
+
 	if (time_state_start + engine_start_delay < Device.dwTimeGlobal)
 	{
 		if (snd_engine._p)
 		{
 			if (!snd_engine.is_playing())
-				snd_engine.play(pcar, sm_Looped);
+				snd_engine.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//turbo
 		if (snd_turbo._p)
 		{
 			if (!snd_turbo.is_playing())
-				snd_turbo.play(pcar, sm_Looped);
+				snd_turbo.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//idle
 		if (snd_idle._p)
 		{
 			if (!snd_idle.is_playing())
-				snd_idle.play(pcar, sm_Looped);
+				snd_idle.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//decel
 		if (snd_engine_decel._p)
 		{
 			if (!snd_engine_decel.is_playing())
-				snd_engine_decel.play(pcar, sm_Looped);
+				snd_engine_decel.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//heavy
 		if (snd_engine_heavy._p)
 		{
 			if (!snd_engine_heavy.is_playing())
-				snd_engine_heavy.play(pcar, sm_Looped);
+				snd_engine_heavy.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//low
 		if (snd_blower._p)
 		{
 			if (!snd_blower.is_playing())
-				snd_blower.play(pcar, sm_Looped);
+				snd_blower.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		//engine exhaust
 		//if (snd_engine_exhaust._p)
@@ -270,18 +289,17 @@ void CCar::SCarSound::UpdateStarting()
 		//		snd_engine_decel_exhaust.play(pcar, sm_Looped);
 		//}
 	}
-	if (snd_engine_stop._p && snd_engine_stop.is_playing())
-		snd_engine_stop.stop_deffered(CarDeferredStopFade);
 	UpdateDrive();
 	if(snd_engine_start._p && !snd_engine_start.is_playing())Drive();
 }
+
 void CCar::SCarSound::UpdateStoping()
 {
 	VERIFY(!physics_world()->Processing());
 	SetEngineSoundPosition(snd_engine_stop);
 	if (snd_engine_start._p && snd_engine_start.is_playing())
 		snd_engine_start.stop_deffered(CarDeferredStopFade);
-	if(snd_engine_stop._p && !snd_engine_stop.is_playing())SwitchOff();
+	if(!snd_engine_stop._p || !snd_engine_stop.is_playing())SwitchOff();
 }
 void CCar::SCarSound::UpdateStalling()
 {
@@ -289,7 +307,7 @@ void CCar::SCarSound::UpdateStalling()
 	SetEngineSoundPosition(snd_engine_stop);
 	if (snd_engine_start._p && snd_engine_start.is_playing())
 		snd_engine_start.stop_deffered(CarDeferredStopFade);
-	if(snd_engine_stop._p && !snd_engine_stop.is_playing())SwitchOff();
+	if(!snd_engine_stop._p || !snd_engine_stop.is_playing())SwitchOff();
 }
 void CCar::SCarSound::UpdateDrive()
 {
@@ -410,7 +428,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (pcar->m_limiter_volume > 0.f)
 			{
 				if (!snd_limiter.is_playing())
-					snd_limiter.play(pcar, sm_Looped);
+					snd_limiter.play(pcar, sm_Looped | sm_NoOCC);
 			}
 			else
 				if (snd_limiter.is_playing())
@@ -483,7 +501,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (engine_can_play)
 			{
 				if (!snd_engine.is_playing())
-					snd_engine.play(pcar, sm_Looped);
+					snd_engine.play(pcar, sm_Looped | sm_NoOCC);
 			}
 			else
 			{
@@ -509,7 +527,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (pcar->m_engine_heavy > 0.f && (time_state_start + engine_start_delay < Device.dwTimeGlobal || eCarSound != sndStarting))
 			{
 				if (!snd_engine_heavy.is_playing())
-					snd_engine_heavy.play(pcar, sm_Looped);
+					snd_engine_heavy.play(pcar, sm_Looped | sm_NoOCC);
 			}
 			else
 			{
@@ -533,7 +551,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (pcar->m_engine_decel_volume_scale > 0.f && (time_state_start + engine_start_delay < Device.dwTimeGlobal || eCarSound != sndStarting))
 			{
 				if (!snd_engine_decel.is_playing())
-					snd_engine_decel.play(pcar, sm_Looped);
+					snd_engine_decel.play(pcar, sm_Looped | sm_NoOCC);
 				//pcar->m_engine_decel_sound_stop_dt = Device.fTimeGlobal;
 			}
 			else
@@ -616,7 +634,7 @@ void CCar::SCarSound::UpdateDrive()
 			if (pcar->m_nitro_engage)
 			{
 				if (!snd_nitro.is_playing())
-					snd_nitro.play(pcar, sm_Looped);
+					snd_nitro.play(pcar, sm_Looped | sm_NoOCC);
 			}
 			else
 			{
@@ -714,7 +732,7 @@ void CCar::SCarSound::Start()
 	SwitchState(sndStarting);
 	if (snd_engine_start._p)
 	{
-		snd_engine_start.play(pcar);
+		snd_engine_start.play(pcar, sm_NoOCC);
 		snd_engine_start.set_volume(volume);
 	}
 	SetEngineSoundPosition(snd_engine_start);
@@ -753,7 +771,7 @@ void CCar::SCarSound::Stall()
 
 	if (snd_engine_stop._p)
 	{
-		snd_engine_stop.play(pcar);
+		snd_engine_stop.play(pcar, sm_NoOCC);
 		snd_engine_stop.set_volume(volume);
 	}
 	SetEngineSoundPosition(snd_engine_stop);
@@ -792,7 +810,7 @@ void CCar::SCarSound::Stop()
 
 	if (snd_engine_stop._p)
 	{
-		snd_engine_stop.play(pcar);
+		snd_engine_stop.play(pcar, sm_NoOCC);
 		snd_engine_stop.set_volume(volume);
 	}
 	SetEngineSoundPosition(snd_engine_stop);
@@ -813,10 +831,9 @@ void CCar::SCarSound::TransmissionSwitch()
 		//snd_transmission.set_volume(volume);
 		if (!snd_transmission.is_playing())
 		{
-			snd_transmission.play(pcar);
+			// Gearbox sounds are not attenuated by the car interior volume.
+			snd_transmission.play(pcar, sm_NoCarFactor | sm_NoOCC);
 			snd_transmission.set_frequency(Random.randF(0.93f, 1.07f));
-			if (pcar->m_interior_volume > 0.f && (ECarCamType(pcar->active_camera->tag) == EctFirstCam))
-				snd_transmission.set_volume(1.f / pcar->m_interior_volume);
 		}
 		SetSoundPosition(snd_transmission);
 	}
@@ -832,7 +849,7 @@ void CCar::SCarSound::Valve()
 		clamp(rpm_scale, 0.f, 1.f);
 		//Msg("rpm_scale %f", rpm_scale);
 		pcar->m_valve_volume_scale =  rpm_scale * ((pcar->m_turbo_scale - 0.5f * (pcar->m_turbo_scale - pcar->m_turbo_scale_min) - pcar->m_turbo_scale_min) / (pcar->m_turbo_scale_max - 0.5f * (pcar->m_turbo_scale - pcar->m_turbo_scale_min) - pcar->m_turbo_scale_min));
-		snd_valve.play(pcar);
+		snd_valve.play(pcar, sm_NoOCC);
 		pcar->m_engine_valve = 0;
 		float switch_vol = 1.f;
 		if (pcar->IsTransmissionSwitching())
@@ -861,7 +878,7 @@ void CCar::SCarSound::Gas()
 		//float state_time_gas = 1.f;
 		//Msg("gas time %f", pcar->m_engine_state_time);
 		//pcar->m_gas_volume_scale = state_time_gas;
-		snd_gas.play(pcar);
+		snd_gas.play(pcar, sm_NoOCC);
 		pcar->m_gas_volume_scale = volume;//(pcar->m_gas_volume_scale * 0.75f) / (0.5f + 0.5f * pcar->m_engine_sound_scale_absolute);
 		snd_gas.set_volume(pcar->m_gas_volume_scale);
 		snd_gas.set_frequency(1.f);
@@ -877,7 +894,7 @@ void CCar::SCarSound::BrakeRelease()
 		float brake_vol = (Device.fTimeGlobal - pcar->m_break_start) / pcar->m_break_time;
 		clamp(brake_vol, 0.f, 1.f);
 		brake_vol = powf(brake_vol, 1.4f);
-		snd_brake_release.play(pcar);
+		snd_brake_release.play(pcar, sm_NoOCC);
 		snd_brake_release.set_volume(volume * brake_vol);
 		snd_brake_release.set_frequency((0.8f + 0.2f * brake_vol) * Random.randF(0.91f, 1.09f));
 	}
@@ -889,7 +906,7 @@ void CCar::SCarSound::NitroStart()
 	VERIFY(!physics_world()->Processing());
 	if (snd_nitro_start._p)
 	{
-		snd_nitro_start.play(pcar);
+		snd_nitro_start.play(pcar, sm_NoOCC);
 		snd_nitro_start.set_volume(volume);
 	}
 	SetSoundPosition(snd_nitro_start);
@@ -900,7 +917,7 @@ void CCar::SCarSound::NitroStop()
 	VERIFY(!physics_world()->Processing());
 	if (snd_nitro_stop._p)
 	{
-		snd_nitro_stop.play(pcar);
+		snd_nitro_stop.play(pcar, sm_NoOCC);
 		snd_nitro_stop.set_volume(volume);
 	}
 	pcar->m_nitro_engage_time = Device.fTimeGlobal;
@@ -912,7 +929,7 @@ void CCar::SCarSound::PopSound()
 	VERIFY(!physics_world()->Processing());
 	if (snd_pop._p)
 	{
-		snd_pop.play(pcar);
+		snd_pop.play(pcar, sm_NoOCC);
 		snd_pop.set_volume(volume);
 		snd_pop.set_frequency(Random.randF(0.9f, 1.1f));
 	}
@@ -950,7 +967,7 @@ void CCar::SCarSound::Whine()
 		{
 			//Msg("GO");
 			if (!snd_whine.is_playing())
-				snd_whine.play(pcar, sm_Looped);
+				snd_whine.play(pcar, sm_Looped | sm_NoCarFactor | sm_NoOCC);
 
 			if (snd_whine.is_playing())
 			{
@@ -959,8 +976,6 @@ void CCar::SCarSound::Whine()
 					vol *= pcar->m_whine_exterior_volume;
 					//Msg("ext");
 				}
-				if (pcar->m_interior_volume > 0.f && (ECarCamType(pcar->active_camera->tag) == EctFirstCam))
-					vol /= pcar->m_interior_volume;
 				//Msg("vol1 %f", vol);
 				//vol *= pcar->m_engine_gas_sound_scale;
 				//Msg("vol2 %f", vol);
@@ -986,7 +1001,7 @@ void CCar::SCarSound::Horn(bool start)
 		if (start)
 		{
 			if (!snd_horn.is_playing())
-				snd_horn.play(pcar, sm_Looped);
+				snd_horn.play(pcar, sm_Looped | sm_NoOCC);
 		}
 		else
 		{

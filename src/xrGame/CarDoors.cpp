@@ -456,10 +456,8 @@ void CCar::SDoor::ClosedToOpening(bool obuser)
 	door_form.mulA_43(pcar->XFORM());
 	if (snd_door_open._p && obuser)
 	{
-		snd_door_open.play_at_pos(pcar, GetWorldPosition());
+		snd_door_open.play_at_pos(pcar, GetWorldPosition(), sm_NoCarFactor | sm_NoOCC);
 		snd_door_open.set_frequency(Random.randF(0.9f, 1.1f));
-		if (pcar->m_interior_volume > 0.f)
-			snd_door_open.set_volume(1.f);
 	}
 	real_open_time = Device.dwTimeGlobal;
 	real_close_time = 0;
@@ -489,10 +487,8 @@ void CCar::SDoor::ClosingToClosed(bool obuser)
 
 	if (snd_door_close._p && obuser)
 	{
-		snd_door_close.play_at_pos(pcar, GetWorldPosition());
+		snd_door_close.play_at_pos(pcar, GetWorldPosition(), sm_NoCarFactor | sm_NoOCC);
 		snd_door_close.set_frequency(Random.randF(0.9f, 1.1f));
-		if (pcar->m_interior_volume > 0.f)
-			snd_door_close.set_volume(1.f);
 	}
 	//joint->SetLimits(0,0,0);
 	joint->PSecond_element()->SetAirResistance(0.0f, 0.0f);

@@ -3,6 +3,7 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 #include "CarWeapon.h"
 #include "Inventory.h"
 #include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/ODE/ode_include.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/CameraManager.h"
@@ -62,6 +63,8 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 {
 	inited					= false;
 	m_bActive				= false;
+	m_bPhysicsParked		= false;
+	m_parkTime				= 0.f;
 	m_bMouseMoving_x		= false;
 	m_bMouseMoving_y		= false;
 	m_AvlblMgun				= false;
@@ -69,6 +72,8 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 	m_icur_gun_idx			= 0;
 	m_pcar					= pcar;
 	m_cur_gun				= NULL;
+	JointGun				= NULL;
+	JointTurret				= NULL;
 	IKinematics* K			= smart_cast<IKinematics*>(m_pcar->Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
 
@@ -105,18 +110,27 @@ CCarTurret::CCarTurret(CCar* pcar, LPCSTR definition)
 		m_cam_dir_rel = pSettings->r_fvector3(CarSection, "cam_dir_rel");
 	}
 
-	m_guns_size				= READ_IF_EXISTS(pUserData, r_u16, definition, "guns_size", 100);
-	for (u16 i = 0; i < m_guns_size; ++i)
+	const u16 GunSlots = READ_IF_EXISTS(pUserData, r_u16, definition, "guns_size", 100);
+	for (u16 i = 0; i < GunSlots; ++i)
 	{
-		m_turret_guns.push_back(new CCarWeapon(m_pcar, definition, i));
-		if(!m_turret_guns[i]->HasValid())
-		{
-			CCarWeapon*pwp = m_turret_guns[i];
-			m_turret_guns.erase(m_turret_guns.begin()+i);
-			--i;
-			xr_delete(pwp);
-			--m_guns_size;
-		}
+		string128 LineName;
+		if (i == 0)
+			xr_strcpy(LineName, "wpn_section");
+		else
+			xr_sprintf(LineName, "wpn_section_%u", i);
+
+		// A missing weapon section must not hide the later slots. Some
+		// vehicles define only the coaxial gun because the main one belongs
+		// to another addon; previously the loop erased the invalid entry and
+		// wrapped the unsigned index, dropping every valid gun after it.
+		if (!pUserData->line_exist(definition, LineName))
+			continue;
+
+		CCarWeapon* Gun = new CCarWeapon(m_pcar, definition, i);
+		if (Gun->HasValid())
+			m_turret_guns.push_back(Gun);
+		else
+			xr_delete(Gun);
 	}
 	SetGun(m_icur_gun_idx);
 	m_combine_input			= READ_IF_EXISTS(pUserData, r_bool, definition, "combine_input", TRUE);
@@ -306,6 +320,7 @@ void CCarTurret::cam_Update(float fov)
 
 void CCarTurret::OnMouseMove(int dx, int dy)
 {
+	WakePhysics();
 	CCameraBase* C	= camera;
 	float scale		= (C->f_fov/g_fov) * psMouseSens * psMouseSensScale/50.f;
 	float h,p;
@@ -366,10 +381,100 @@ void CCarTurret::OnMouseMove(int dx, int dy)
 
 #include "../xrPhysics/ODE/PHWorld.h"
 
+namespace
+{
+	constexpr float TurretParkSpeed = 0.15f;
+	constexpr float TurretParkAngularSpeed = 0.15f;
+	constexpr float TurretWakeSpeed = 0.25f;
+	constexpr float TurretWakeAngularSpeed = 0.25f;
+	constexpr float TurretParkDelay = 0.75f;
+}
+
+void CCarTurret::WakePhysics()
+{
+	if (!HasPhysical() || !m_pcar->m_pPhysicsShell)
+		return;
+
+	m_parkTime = 0.f;
+	const bool WasParked = m_bPhysicsParked;
+	if (WasParked || !JointGun->PSecond_element()->isEnabled() ||
+		!JointTurret->PSecond_element()->isEnabled())
+	{
+		// Waking only the turret elements leaves the chassis body disabled.
+		// The turret then rotates against a sleeping parent, its fire bone
+		// keeps a stale transform, and an AI/physics-driven gun may not
+		// update at all. Wake the whole shell and refresh the gun ammo view
+		// while the physics state is being restored.
+		m_pcar->m_pPhysicsShell->Enable();
+		JointGun->PSecond_element()->Enable();
+		JointTurret->PSecond_element()->Enable();
+		m_bPhysicsParked = false;
+
+		if (WasParked && m_cur_gun)
+			m_cur_gun->RefreshAmmoFromCar();
+	}
+}
+
+void CCarTurret::ParkPhysics()
+{
+	if (!HasPhysical())
+		return;
+
+	dJointSetHingeParam(JointGun->GetDJoint(), dParamFMax, 0.f);
+	dJointSetHingeParam(JointGun->GetDJoint(), dParamVel, 0.f);
+	dJointSetHingeParam(JointTurret->GetDJoint(), dParamFMax, 0.f);
+	dJointSetHingeParam(JointTurret->GetDJoint(), dParamVel, 0.f);
+
+	CPhysicsElement* GunElement = JointGun->PSecond_element();
+	CPhysicsElement* TurretElement = JointTurret->PSecond_element();
+	dBodySetLinearVel(GunElement->get_body(), 0.f, 0.f, 0.f);
+	dBodySetAngularVel(GunElement->get_body(), 0.f, 0.f, 0.f);
+	dBodySetLinearVel(TurretElement->get_body(), 0.f, 0.f, 0.f);
+	dBodySetAngularVel(TurretElement->get_body(), 0.f, 0.f, 0.f);
+	dBodyDisable(GunElement->get_body());
+	dBodyDisable(TurretElement->get_body());
+
+	m_bPhysicsParked = true;
+}
+
 void CCarTurret::PhDataUpdate()
 {
 	if(HasPhysical())
 	{
+		const float LinearSpeed = m_pcar->GetVelocityM();
+		const float AngularSpeed = m_pcar->GetAVelocityM();
+		const float SpeedLimit = m_bPhysicsParked ? TurretWakeSpeed : TurretParkSpeed;
+		const float AngularLimit = m_bPhysicsParked ? TurretWakeAngularSpeed : TurretParkAngularSpeed;
+		const bool CarMoving = LinearSpeed > SpeedLimit || AngularSpeed > AngularLimit;
+		const bool GunFiring = m_cur_gun != nullptr &&
+			(m_cur_gun->HasFire() || m_cur_gun->m_bAutoFire);
+
+		if (m_bActive || CarMoving || GunFiring)
+		{
+			WakePhysics();
+		}
+		else
+		{
+			if (m_bPhysicsParked)
+			{
+				// The shell can be enabled as a whole when the actor enters or
+				// after restoring a save. Keep the idle turret parked.
+				ParkPhysics();
+				return;
+			}
+
+			m_parkTime += fixed_step;
+			if (m_parkTime >= TurretParkDelay)
+			{
+				// An idle physical turret keeps applying motor torque to the car,
+				// so the chassis never disables and can jitter in place. Park its
+				// bodies when the car is standing still; they are woken again by
+				// movement or by activating the turret.
+				ParkPhysics();
+				return;
+			}
+		}
+
 		m_cur_x_rot = dJointGetHingeAngle(JointGun->GetDJoint());
 		m_cur_y_rot = dJointGetHingeAngle(JointTurret->GetDJoint());
 
@@ -604,6 +709,7 @@ void CCarTurret::Action(int id, u32 flags)
 		{
 			if(GetGunsSize())
 			{
+				WakePhysics();
 				if(flags==1)
 					m_cur_gun->StartFire();
 				else
@@ -614,7 +720,10 @@ void CCarTurret::Action(int id, u32 flags)
 		case eWpnActivate:
 		{
 			if(flags==1)
+			{
 				m_bActive = true;
+				WakePhysics();
+			}
 			else
 			{
 				m_bActive = false;
@@ -631,7 +740,10 @@ void CCarTurret::Action(int id, u32 flags)
 			if(GetGunsSize())
 			{
 				if(flags==1)
+				{
+					WakePhysics();
 					m_cur_gun->m_bAutoFire = true;
+				}
 				else
 					m_cur_gun->m_bAutoFire = false;
 			}
@@ -645,6 +757,7 @@ void CCarTurret::Action(int id, u32 flags)
 
 void CCarTurret::SetParam(int id, Fvector2 val)
 {
+	WakePhysics();
 	switch (id)
 	{
 		case eWpnDesiredDir:
@@ -658,6 +771,7 @@ void CCarTurret::SetParam(int id, Fvector2 val)
 
 void CCarTurret::SetParam(int id, Fvector val)
 {
+	WakePhysics();
 	if(!m_pcar->m_pPhysicsShell->isEnabled())
 		m_pcar->m_pPhysicsShell->Enable();
 
@@ -740,6 +854,7 @@ void CCarTurret::SetGunCircle()
 		return;
 	}
 
+	WakePhysics();
 	++m_icur_gun_idx;
 	if (m_icur_gun_idx >= GetGunsSize())
 	{

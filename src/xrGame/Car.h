@@ -1150,6 +1150,7 @@ private:
 	void				 Drive								()	;
 	void				 Starter							()	;
 	void				 StartEngine						()	;
+	float				 EngineStartSuccessChance			() const;
 	void				 Stall								()	;
 	void				 Clutch								()	;
 	void				 Unclutch							()	;
@@ -1362,6 +1363,8 @@ public:
 	bool					b_start_open_recursive;
 	bool					b_start_close_recursive;
 	bool					b_all_recurs_opened;
+	bool					AreRecursiveDoorsOpened		() const;
+	bool					AreRecursiveDoorsClosed		() const;
 	void					UpdateRecursiveDoors		();
 	bool					HasFirstCam(){return active_camera->tag == EctFirstCam;}
 	bool					AllowInventoryControl() const { return m_allow_inventory_control; }
@@ -1467,6 +1470,8 @@ public:
 	CInventory*				GetInventory				() override { return &inventory(); }
 		  void				VisualUpdate				(float fov=90.0f);
 		  void				DrawCarInfo				();
+		  bool				HasOpenNormalDoor			() const;
+		  void				UpdateInteriorSoundFactor	(bool FirstPersonView);
 // 	Fvector					GetTorqAxes					(u16 elem_id);
 // 	Fvector					GetForcAxes					(u16 elem_id);
 	Fvector					GetAvelAxes					(u16 elem_id);
