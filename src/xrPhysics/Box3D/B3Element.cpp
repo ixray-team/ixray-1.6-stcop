@@ -345,7 +345,14 @@ void CPHElement::PhTune(float Step)
 	const b3Vec3 Angular = b3Body_GetAngularVelocity(Body);
 	if (AirAngular > 0.f)
 	{
-		B3_SAFE(b3Body_ApplyTorque(Body, b3MulSV(-AirAngular, Angular), false));
+		// Implicit step: an explicit torque multiplies the velocity of a low-inertia limb on every
+		// step and reaches NaN. For ordinary bodies the result is the same as the explicit one.
+		b3Matrix3 Damping = b3MulSM(Step * AirAngular, b3Body_GetWorldInverseRotationalInertia(Body));
+		Damping.cx.x += 1.f;
+		Damping.cy.y += 1.f;
+		Damping.cz.z += 1.f;
+		const b3Vec3 Damped = b3Solve3(Damping, Angular);
+		B3_SAFE(b3Body_ApplyTorque(Body, b3MulSV(-AirAngular, Damped), false));
 	}
 }
 
