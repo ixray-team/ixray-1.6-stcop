@@ -2621,8 +2621,6 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 				hud_play_cycle(m_model, pid, M, part == 0 && pid == 0 && attached_item(1) ? true : bMixIn, speed, CycleFade, CycleMode);
 			}
 		}
-
-		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	}
 
 	return				motion_length(M, md, speed, itemModel);
