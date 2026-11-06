@@ -241,7 +241,8 @@ void CResourceManager::StoreNecessaryTextures()
 {
 	if (!m_necessary.empty())
 		return;
-	
+
+	xrCriticalSectionGuard Guard(creationGuard);
 	map_TextureIt it			= m_textures.begin();
 	map_TextureIt it_e			= m_textures.end();
 
@@ -252,9 +253,10 @@ void CResourceManager::StoreNecessaryTextures()
 		if(!strchr(texture_name,'\\'))			continue;
 
 		ref_texture				T;
-		T.create				(texture_name);
-		m_necessary.push_back	(T);
-		
+		if (ResourceLifetime::TryAcquire(it->second, T))
+		{
+			m_necessary.push_back(T);
+		}
 	}
 }
 

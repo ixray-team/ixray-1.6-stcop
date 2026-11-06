@@ -688,7 +688,7 @@ void CRender::set_Object(IRenderable* O)
 
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 {
-	auto texture = DEV->_CreateTexture(nameTexture);
+	CTexture* texture = DEV->_GetPinnedTexture(nameTexture);
 	texture->Load();
 	SurfaceParams surface = {};
 	surface.Surface = texture->GetView()->GetRawSRV();

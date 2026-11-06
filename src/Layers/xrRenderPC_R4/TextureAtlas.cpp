@@ -242,9 +242,13 @@ void CTextureAtlas::init(int width, int height, const char* pName)
 		R_ASSERT(m_p_atlas && "failed to create logical layout atlas!");
 	}
 
-	m_p_texture = DEV->_CreateEmptyTexture(pName, width, height);
+	ref_texture Texture = DEV->_CreateEmptyTexture(pName, width, height);
 
-	R_ASSERT(m_p_texture && "must be created a valid texture from resource manager, failed to create!");
+	R_ASSERT(Texture && "must be created a valid texture from resource manager, failed to create!");
+
+	// The header cannot use ref_texture, so the atlas owns this reference by hand
+	m_p_texture = Texture._get();
+	m_p_texture->dwReference++;
 
 #ifdef DEBUG
 	init_was_called = true;
@@ -257,7 +261,9 @@ void CTextureAtlas::uninit()
 	{
 		m_p_texture->can_unload = false;
 		DEV->_DeleteTexture(m_p_texture);
+		m_p_texture->dwFlags &= ~xr_resource_flagged::RF_REGISTERED;
 		m_p_texture->Unload();
+		ref_texture(m_p_texture, false);
 		m_p_texture = nullptr;
 	}
 

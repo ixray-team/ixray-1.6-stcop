@@ -549,8 +549,15 @@ void CResourceManager::DeferredUpload()
 
 	xrCriticalSectionGuard Guard(creationGuard);
 	const bool IsParallel = !Device.IsEditorMode() && ps_r__common_flags.test(RFLAG_MT_TEX_LOAD);
-	for (auto& [Name, Texture] : m_textures)
+	for (auto It = m_textures.begin(); It != m_textures.end();)
 	{
+		// Releasing this reference can erase the current entry, so advance first.
+		ref_texture Texture;
+		if (!ResourceLifetime::TryAcquire((It++)->second, Texture))
+		{
+			continue;
+		}
+
 		if (!IsParallel || !Texture->StartLoading())
 		{
 			Texture->Load();
