@@ -28,6 +28,7 @@ public:
 
 	void Request();
 	bool BeginFrame();
+	bool IsRequested() const { return Requested.load(); }
 	void BeginSector(CSector* Sector);
 	void EndSector();
 	void EndFrame();

@@ -200,6 +200,8 @@ public:
 	void		r_dsgraph_clear_aux();
 	void		r_dsgraph_clear_passes();
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);
+	void		CaptureStaticFrom(CPortalTraverser& Traverser);
+	void		TakeStatic(R_dsgraph_structure& Static);
 
 	// IDSGraphManager
 	void add_Static(IRenderVisual* Visual, CFrustum& Frustum, u32 Planes) override;
