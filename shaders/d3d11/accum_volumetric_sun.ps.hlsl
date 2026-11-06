@@ -102,7 +102,8 @@ float4 main(PSInput I) : SV_Target
 
     float fog = saturate(O.ViewDist * fog_params.w + fog_params.x);
     res = lerp(res, max_density, fog * lit / weight);
-
+    float ScatteringAmount = 1.0f - exp(-max(sun_shafts_intensity.w, 0.0f) * O.ViewDist * 0.95f);
+    res *= ScatteringAmount;
     float saturation = 0.4f * dot(O.View, -Ldynamic_dir.xyz) + 0.6f;
     res *= saturation;
 
