@@ -28,17 +28,14 @@ float4 main(PSInput I) : SV_Target
 	
 	int cascade_index;
 	float3 smap_texcoord;
-	bool is_in_bounds = calc_cascades(mul(m_invV, Point).xyz, m_shadow_sun, cascade_index, smap_texcoord);
-	
 	float Shadow = 1.0f;
 	
-	if(is_in_bounds)
-	{
+	bool is_in_bounds = calc_cascades(mul(m_invV, Point).xyz, m_shadow_sun, cascade_index, smap_texcoord);
+	if (is_in_bounds) {
 		Shadow *= shadow_sun(smap_texcoord, cascade_index);
 	}
 	
-	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
-	{
+	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds)) {
 		float3 Factor = smoothstep(0.5f, 0.49f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;
 	
@@ -60,27 +57,21 @@ float4 main(PSInput I) : SV_Target
 
 #ifdef USE_HUD_SHADOWS
 	// Contact shadows treat back-lit surfaces as occluded by themselves, so keep translucency out of them
-	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS)
-	{
+	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS) {
 		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz);
 	}
 #endif
 
-	// Direct light ends up scaled by min(Shadow, contact), so casters already in the shadow map are not darkened twice
-	if (Shadow > 0.0f)
-	{
-		Light *= GammaToLinear(min(1.0f, s_sun_contact.Load(int3(I.hpos.xy, 0)).x / Shadow));
-	}
-
-	if (O.MaterialID == FOLIAGE_ID || O.MaterialID == TERRAIN_ID)
-	{
+	if (O.MaterialID == FOLIAGE_ID || O.MaterialID == TERRAIN_ID) {
 		Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
-	}
-	else
-	{
+	} else {
 		const float HudSkinTranslucency = 0.35f;
 		float SkinScale = O.Depth < 0.02f ? HudSkinTranslucency : 1.0f;
 		Light += SkinTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal, O.View) * O.SSS * SkinScale * O.Color;
+	}
+
+	if (Shadow > 0.0f) {
+		Light *= GammaToLinear(min(1.0f, s_sun_contact.Load(int3(I.hpos.xy, 0)).x / Shadow));
 	}
 
 	Light *= GammaToLinear(Shadow);

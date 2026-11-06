@@ -5,8 +5,7 @@ float main(VSOutputFullscreen I) : SV_Target
 {
 	IXRayGbuffer O = (IXRayGbuffer)NULL;
 	GbufferUnpackDepth((uint2)I.hpos.xy, O);
-	if (O.Depth < 0.02f || O.Depth >= 1.0f)
-	{
+	if (O.Depth < 0.02f || O.Depth >= 1.0f) {
 		return 1.0f;
 	}
 
@@ -18,8 +17,15 @@ float main(VSOutputFullscreen I) : SV_Target
 		covered = max(covered, coverage.x * coverage.y * coverage.z);
 	}
 
-	float3 N = NormalDecode(s_normal.Load(int3(I.hpos.xy, 0)).xy * 2.0f - 1.0f);
-	float fade = (1.0f - covered) * saturate(-dot(N, Ldynamic_dir.xyz) * 5.0f);
+	float4 normal = s_normal.Load(int3(I.hpos.xy, 0));
+	float3 N = NormalDecode(normal.xy * 2.0f - 1.0f);
+	float nol = -dot(N, Ldynamic_dir.xyz);
+	if (uint(normal.w * MAX_ID) == FOLIAGE_ID) {
+		N *= sign(nol);
+		nol = abs(nol);
+	}
+
+	float fade = (1.0f - covered) * saturate(nol * 5.0f);
 	if (fade <= 0.0f) {
 		return 1.0f;
 	}

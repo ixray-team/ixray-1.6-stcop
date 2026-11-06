@@ -17,61 +17,55 @@
 	#define SUN_CONTACT_STEPS 16.0f
 #endif
 
-float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightDir)
+float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 L)
 {
 	Point.xyz *= 0.99f;
-	LightDir *= min(Point.z, HUD_SHADOWS_TRACE_LEN);
+	L *= min(Point.z, HUD_SHADOWS_TRACE_LEN);
 	
-	float4 StartProj = mul(m_P_hud, float4(Point, 1.0f)); StartProj.xyz /= StartProj.w;
-	float4 EndProj = mul(m_P_hud, float4(Point - LightDir, 1.0f)); EndProj.xyz /= EndProj.w;
+	float4 start = mul(m_P_hud, float4(Point, 1.0f)); start.xyz /= start.w;
+	float4 end = mul(m_P_hud, float4(Point - L, 1.0f)); end.xyz /= end.w;
 	
-	StartProj.xy = StartProj.xy * float2(0.5f, -0.5f) + 0.5f; StartProj.z *= 0.02f;
-	EndProj.xy = EndProj.xy * float2(0.5f, -0.5f) + 0.5f; EndProj.z *= 0.02f;
+	start.xy = start.xy * float2(0.5f, -0.5f) + 0.5f; start.z *= 0.02f;
+	end.xy = end.xy * float2(0.5f, -0.5f) + 0.5f; end.z *= 0.02f;
 	
-	LightDir = EndProj.xyz - StartProj.xyz;
-	StartProj.xy = TexCoord.xy;
+	L = end.xyz - start.xyz;
+	start.xy = TexCoord.xy;
 	
-	float Len = GetMaxDirLength(StartProj.xyz, rcp(LightDir));
+	L *= min(1.0f, GetMaxDirLength(start.xyz, rcp(L)));
+	L *= rcp(HUD_SHADOWS_STEPS);
 	
-	LightDir *= min(1.0f, Len);
-	LightDir *= rcp(HUD_SHADOWS_STEPS);
-	
-	float ContactShadow = 0.0f;	
+	float visibility = 0.0f;	
 	
 	[loop]
-	for (int i = 0; i < HUD_SHADOWS_STEPS; ++i)
-	{
-		StartProj.xyz += LightDir * float(0.8f + 0.4f * Hash(StartProj.xyz));
-		float HitDepth = s_position.SampleLevel(smp_nofilter, StartProj.xy, 0).x;
+	for (int i = 0; i < HUD_SHADOWS_STEPS; ++i) {
+		start.xyz += L * float(0.8f + 0.4f * Hash(start.xyz));
+		float depth = s_position.SampleLevel(smp_nofilter, start.xy, 0).x;
 		
-		if (HitDepth <= StartProj.z)
-		{
-			ContactShadow += 0.2f;
-			if (ContactShadow >= 1.0f)
-			{
-				ContactShadow = 1.0f;
+		if (depth <= start.z) {
+			visibility += 0.2f;
+			if (visibility >= 1.0f) {
+				visibility = 1.0f;
 				break;
 			}
 		}
 	}
 	
-	ContactShadow *= GetBorderAtten(StartProj.xy, 0.0125f);
-	return 1.0f - saturate(ContactShadow);
+	visibility *= GetBorderAtten(start.xy, 0.0125f);
+	return 1.0f - saturate(visibility);
 }
 
 // Depth march after raymarch.hlsl by Tomasz Stachowiak (Tiny Glade), dual licensed Apache-2.0 / MIT
 // Every term varies continuously with depth (fixed step count, no pixel-count clamp), so receding surfaces show no iso-depth lines
-float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 LightDir, float Jitter)
+float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L, float Jitter)
 {
 	float4 Start = mul(m_P, float4(Point, 1.0f));
-	float4 End = mul(m_P, float4(Point - LightDir * Point.z * 0.06f, 1.0f));
+	float4 End = mul(m_P, float4(Point - L * Point.z * 0.06f, 1.0f));
 
 	float3 Delta = float3((End.xy / End.w - Start.xy / Start.w) * float2(0.5f, -0.5f), rcp(End.w) - rcp(Start.w));
 	
 	// NOTE(vertver): far-distance shadow fade
 	float Pixels = length(Delta.xy * pos_decompression_params2.xy);
-	if (Pixels <= 8.0f)
-	{
+	if (Pixels <= 8.0f) {
 		return 0.0f;
 	}
 
@@ -87,14 +81,12 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 	float Occlusion = 0.0f;
 
 	[loop]
-	for (float Step = 0.0f; Step < SUN_CONTACT_STEPS && Occlusion < 1.0f; ++Step)
-	{
+	for (float Step = 0.0f; Step < SUN_CONTACT_STEPS && Occlusion < 1.0f; ++Step) {
 		float T = (Step + Jitter) / SUN_CONTACT_STEPS;
 		float3 Ray = float3(TexCoord, rcp(Start.w)) + Delta * lerp(StartT, 1.0f, T * T);
 		
 		float4 Raw = s_position.GatherRed(smp_nofilter, Ray.xy);
-		if (any(Raw < 0.02f))
-		{
+		if (any(Raw < 0.02f)) {
 			continue;
 		}
 
@@ -105,11 +97,12 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 		float RayZ = rcp(Ray.z);
 
 		// NOTE(vertver): grazing angle fix
+		/*
 		float2 Ndc = float2(Ray.x * 2.0f - 1.0f, 1.0f - Ray.y * 2.0f) - m_taa_jitter.xy;
-		if (min(Filtered, Nearest) * dot(Normal, float3(Ndc.x / m_P._11, Ndc.y / m_P._22, 1.0f)) - Plane < Bias)
-		{
+		if (min(Filtered, Nearest) * dot(Normal, float3(Ndc.x / m_P._11, Ndc.y / m_P._22, 1.0f)) - Plane < Bias) {
 			continue;
 		}
+			*/
 
 		float Edge = saturate(2.0f - (max(max(Z.x, Z.y), max(Z.z, Z.w)) - min(min(Z.x, Z.y), min(Z.z, Z.w))) / Thickness);
 		float Hit = saturate((RayZ - max(Filtered, Nearest)) / Bias - 1.0f) * smoothstep(Thickness, 0.5f * Thickness, RayZ - min(Filtered, Nearest));
