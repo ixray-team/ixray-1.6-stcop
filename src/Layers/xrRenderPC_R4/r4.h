@@ -183,7 +183,7 @@ private:
 	void PrepareSunCascade(u32 Index);
 	u32 GetSunCascadePlacement(u32 Index) const;
 	void ResetSunShadowCache();
-	void BeginSunShadowFrame();
+	void BeginSunShadowFrame(u32 Frame);
 
 	// Loading / Unloading
 	void							LoadVisuals					(IReader	*fs);
@@ -222,19 +222,24 @@ public:
 	int GetSunShadowCacheMode() const;
 	void GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const;
 	void DumpSunShadowCache() const;
+	GraphView MakeGraphView(u32 Phase) const;
+	GraphView ReflectionBaseView;
+	GraphView SunView;
+
 	void begin_reflection_collect();
 	void collect_reflections();
 	void render_reflections(GfxCmdList& Cmd);
 	void wait_reflection_collect();
 
-	void reset_sun_collect();
-	void ensure_sun_collect();
+	bool CanCollectSunOnWorker();
 	void begin_sun_collect();
 	void collect_sun_cascades();
+	void prepare_sun_collect(u32 Frame);
+	void collect_sun_graphs();
+	void RestoreSunCascadeChain();
 	void append_sun_dynamics();
 	void wait_sun_collect();
-	bool prepare_sun_cascade_xforms();
-	void publish_sun_collect(bool active);
+	bool prepare_sun_cascade_xforms(u32 Frame);
 
 	Fvector reflection_cam_pos;
 	Fvector reflection_cam_dir;
@@ -249,19 +254,17 @@ public:
 	xr_array<Fmatrix, 3> sun_cascade_xforms{};
 	Fvector sun_cull_cop{};
 	u32 sun_cascade_count = 0;
-	bool sun_kicked = false;
 	bool sun_restore_shafts = false;
 	bool sun_saved_reset_chain = false;
-	std::atomic<bool> sun_collect_active{ false };
-	std::atomic<u32> sun_ticket{ 0 };
-	std::atomic<u32> sun_done{ 0 };
-	u32 sun_seen = 0;
+	bool sun_collect_active = false;
+	u32 SunCollectFrame = u32(-1);
+	std::atomic<bool> SunCollectPending{ false };
 
 	bool is_render_cubemap = false;
 
 public:
-	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
-	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud = false);
+	ShaderElement*					rimp_select_sh_static		(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, float cdist_sq);
+	ShaderElement*					rimp_select_sh_dynamic		(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, float cdist_sq, bool is_hud = false);
 	GeometryAlloc					UploadLevelMesh				(bool Alternative, u32 VertexBuffer, u32 VertexBase, u32 VertexCount, u32 IndexBuffer, u32 IndexBase, u32 IndexCount);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
@@ -626,3 +629,8 @@ private:
 };
 
 extern RENDER_API CRender			RImplementation;
+
+ICF u32 R_dsgraph_structure::ViewPhase() const
+{
+	return OwnsView ? ViewParams.Phase : RImplementation.phase;
+}

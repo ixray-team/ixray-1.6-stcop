@@ -150,46 +150,71 @@ RENDER_API float r_ssaDISCARD;
 float r_ssaDONTSORT;
 float r_ssaLOD_A;
 float r_ssaLOD_B;
-float r_ssaLOD_MU0, r_ssaLOD_MU1, r_ssaLOD_MU2, r_ssaLOD_MU3, r_ssaLOD_MU4;
+float r_ssaLOD_MU[5];
 float r_ssaGLOD_start;
 float r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
 
-thread_local R_CullTLS g_r_cull_tls;
-
-ICF u32 R_Phase()
+ICF float ViewSsaDiscard(const R_dsgraph_structure& Graph)
 {
-	return g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
+	return Graph.OwnsView ? Graph.ViewParams.SsaDiscard : r_ssaDISCARD;
 }
 
-ICF float R_SsaDiscard()
+ICF float ViewSsaLodA(const R_dsgraph_structure& Graph)
 {
-	return g_r_cull_tls.active ? g_r_cull_tls.ssa_discard : r_ssaDISCARD;
+	return Graph.OwnsView ? Graph.ViewParams.SsaLodA : r_ssaLOD_A;
 }
 
-ICF float R_SsaLodA()
+ICF float ViewSsaLodB(const R_dsgraph_structure& Graph)
 {
-	return g_r_cull_tls.active ? g_r_cull_tls.ssa_lod_a : r_ssaLOD_A;
+	return Graph.OwnsView ? Graph.ViewParams.SsaLodB : r_ssaLOD_B;
 }
 
-ICF float R_SsaLodB()
+ICF const Fvector& ViewCamera(const R_dsgraph_structure& Graph)
 {
-	return g_r_cull_tls.active ? g_r_cull_tls.ssa_lod_b : r_ssaLOD_B;
+	return Graph.OwnsView ? Graph.ViewParams.CameraPosition : Device.vCameraPosition;
 }
 
-ICF bool R_Hud()
+ICF float ViewFov(const R_dsgraph_structure& Graph)
 {
-	return !g_r_cull_tls.active && RImplementation.GraphMain.val_bHUD;
+	return Graph.OwnsView ? Graph.ViewParams.Fov : Device.fFOV;
 }
 
-ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
+ICF bool ViewHasEnvironment(const R_dsgraph_structure& Graph)
+{
+	return Graph.OwnsView ? Graph.ViewParams.HasEnvironment : g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv;
+}
+
+ICF float ViewFarPlane(const R_dsgraph_structure& Graph)
+{
+	return Graph.OwnsView ? Graph.ViewParams.FarPlane : g_pGamePersistent->Environment().CurrentEnv->far_plane;
+}
+
+ICF float ViewFogDistance(const R_dsgraph_structure& Graph)
+{
+	return Graph.OwnsView ? Graph.ViewParams.FogDistance : g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+}
+
+// Distortion is switched by the forward pass and only the live view takes part in it
+ICF bool ViewDistortion(const R_dsgraph_structure& Graph)
+{
+	return !Graph.OwnsView && RImplementation.o.distortion;
+}
+
+// The statistics describe the main view; other graphs can run in parallel with it
+ICF CStaticTraversalStats::SectorCounters* ViewStats(const R_dsgraph_structure& Graph)
+{
+	return Graph.OwnsView ? nullptr : g_StaticTraversalStats.Current;
+}
+
+ICF bool FullDetailRejectStatic(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual)
 {
 	if (ps_r1_full_detail_distance_scale >= 1.f ||
-		R_Phase() != CRender::PHASE_NORMAL ||
-		pVisual->IsIgnoreOptimize || !g_pGamePersistent ||
+		Graph.ViewPhase() != CRender::PHASE_NORMAL ||
+		pVisual->IsIgnoreOptimize ||
 		(LightingModeIsStatic() && pVisual->Type == MT_HIERRARHY) ||
 		(pVisual->shader && pVisual->shader->E[0] && pVisual->shader->E[0]->flags.bLandscape) ||
-		!g_pGamePersistent->Environment().CurrentEnv)
+		!ViewHasEnvironment(Graph))
 		return false;
 
 	switch (pVisual->Type)
@@ -203,9 +228,9 @@ ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 		return false;
 	}
 
-	const float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+	const float far_plane = ViewFarPlane(Graph);
 	const float full_detail_distance = std::max(100.f, far_plane * ps_r1_full_detail_distance_scale);
-	const float dist_sq = Device.vCameraPosition.distance_to_sqr(pVisual->vis.sphere.P) + EPS;
+	const float dist_sq = ViewCamera(Graph).distance_to_sqr(pVisual->vis.sphere.P) + EPS;
 	const float nearest_distance = _sqrt(dist_sq) - pVisual->vis.sphere.R;
 	if (nearest_distance <= full_detail_distance)
 		return false;
@@ -213,20 +238,20 @@ ICF bool FullDetailRejectStatic(dxRender_Visual* pVisual)
 	const float transition_range = std::max(1.f, far_plane - full_detail_distance);
 	const float transition = clampr((nearest_distance - full_detail_distance) / transition_range, 0.f, 1.f);
 	const float ssa = pVisual->vis.sphere.R / dist_sq;
-	return ssa <= R_SsaDiscard() * (1.f + transition * 11.f);
+	return ssa <= ViewSsaDiscard(Graph) * (1.f + transition * 11.f);
 }
 
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
-ICF float GetDistFromCamera(const Fvector& from_position)
+ICF float GetDistFromCamera(const R_dsgraph_structure& Graph, const Fvector& from_position)
 {
-	float distance = Device.vCameraPosition.distance_to(from_position);
-	float fov_K = BASE_FOV / Device.fFOV;
+	float distance = ViewCamera(Graph).distance_to(from_position);
+	float fov_K = BASE_FOV / ViewFov(Graph);
 	float adjusted_distane = distance / fov_K;
 
 	return adjusted_distane;
 }
 
-ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
+ICF bool IsValuableToRender(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
 {
 	if (ignore_optimize || (isStatic &&
 		((LightingModeIsStatic() && pVisual->Type == MT_HIERRARHY) ||
@@ -239,7 +264,7 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 		return true;
 	}
 
-	if (!isStatic && R_Hud())
+	if (!isStatic && Graph.val_bHUD)
 	{
 		return true;
 	}
@@ -252,7 +277,7 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 		transform_matrix.transform_tiny(pos, pVisual->vis.sphere.P);
 	}
 
-	float adjusted_distance = GetDistFromCamera(pos);
+	float adjusted_distance = GetDistFromCamera(Graph, pos);
 
 	// Настройки для статических и динамических объектов
 	static Fvector4 static_sizes[12] =
@@ -327,7 +352,7 @@ ICF bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fm
 	return CheckLevelLabmda(dynamic_sizes, dynamic_dists, std::size(dynamic_sizes), opt_level, sphere_volume, adjusted_distance);
 }
 
-ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
+ICF R_dsgraph::_NormalItem MakeNormalItem(const R_dsgraph_structure& Graph, float ssa, dxRender_Visual* pVisual)
 {
 	R_dsgraph::_NormalItem I = { ssa, pVisual->vis.sphere.R, pVisual, nullptr, 0, 0, 0, 0 };
 
@@ -340,7 +365,7 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 #endif
 	IRender_Mesh* M = V;
 
-	if (V->m_fast && R_Phase() == CRender::PHASE_SMAP && V->fast_usable())
+	if (V->m_fast && Graph.ViewPhase() == CRender::PHASE_SMAP && V->fast_usable())
 		M = V->m_fast;
 
 	I.geom		= M->rm_geom._get();
@@ -352,32 +377,32 @@ ICF R_dsgraph::_NormalItem MakeNormalItem(float ssa, dxRender_Visual* pVisual)
 	return I;
 }
 
-ICF float CalcSSADistanceSQ(const Fvector& C)
+ICF float CalcSSADistanceSQ(const R_dsgraph_structure& Graph, const Fvector& C)
 {
-	if (R_Hud())
+	if (Graph.val_bHUD)
 	{
 		return C.square_magnitude() + EPS;
 	}
 
-	return Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	return ViewCamera(Graph).distance_to_sqr(C) + EPS;
 }
 
-ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
+ICF	float CalcSSA(const R_dsgraph_structure& Graph, float& distSQ, Fvector& C, dxRender_Visual* V)
 {
 	float R = V->vis.sphere.R + 0;
-	distSQ = CalcSSADistanceSQ(C);
+	distSQ = CalcSSADistanceSQ(Graph, C);
 	return	R / distSQ;
 }
 
-ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
+ICF	float CalcSSA(const R_dsgraph_structure& Graph, float& distSQ, Fvector& C, float R)
 {
-	distSQ = CalcSSADistanceSQ(C);
+	distSQ = CalcSSADistanceSQ(Graph, C);
 	return	R / distSQ;
 }
 
-ICF bool IsHudVisual(dxRender_Visual* pVisual)
+ICF bool IsHudVisual(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual)
 {
-	if (R_Hud())
+	if (Graph.val_bHUD)
 	{
 		return true;
 	}
@@ -442,10 +467,10 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	}
 
 	float distSQ;
-	float SSA = CalcSSA(distSQ, Center, pVisual);
-	if (SSA <= r_ssaDISCARD && !Force) return;
+	float SSA = CalcSSA(*this, distSQ, Center, pVisual);
+	if (SSA <= ViewSsaDiscard(*this) && !Force) return;
 
-	bool bHUD = IsHudVisual(pVisual);
+	bool bHUD = IsHudVisual(*this, pVisual);
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
@@ -460,7 +485,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		return;
 	}
 
-	if (!SpotShadowPass && !val_bUI && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
+	if (!SpotShadowPass && !val_bUI && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
 	{
 		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
 		mapSorted_Node* N = test.insertInAnyWay(distSQ);
@@ -479,7 +504,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		RequestSkin(pVisual, *val_pTransform);
 	}
 
-	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ, bHUD);
+	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(*this, pVisual, distSQ, bHUD);
 
 	if (!sh || val_bInvisible)
 	{
@@ -527,7 +552,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		}
 
 		// Shadows registering
-		if (RI.L_Shadows && R_Phase() == CRender::PHASE_NORMAL)
+		if (RI.L_Shadows && ViewPhase() == CRender::PHASE_NORMAL)
 		{
 			_MatrixItem item = { SSA, val_pObject, pVisual, *val_pTransform };
 			RI.L_Shadows->add_element(item);
@@ -605,7 +630,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		return;
 	}
 
-	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
+	CStaticTraversalStats::SectorCounters* Stats = ViewStats(*this);
 	if (Stats)
 	{
 		++Stats->InsertCalls;
@@ -640,8 +665,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	}
 
 	float distSQ = 0.f;
-	float SSA = SpotShadowBuild ? 1.f : CalcSSA(distSQ, pVisual->vis.sphere.P, pVisual);
-	if (!SpotShadowBuild && SSA <= R_SsaDiscard())
+	float SSA = SpotShadowBuild ? 1.f : CalcSSA(*this, distSQ, pVisual->vis.sphere.P, pVisual);
+	if (!SpotShadowBuild && SSA <= ViewSsaDiscard(*this))
 	{
 		if (Stats)
 		{
@@ -656,13 +681,13 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	if (!pVisual->shader._get()) return;
 	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
-	if (!SpotShadowPass && !SpotShadowBuild && RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
+	if (!SpotShadowPass && !SpotShadowBuild && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
 	{
 		mapDistort.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
 	}
 
 	// Select shader
-	ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ);
+	ShaderElement* sh = RImplementation.rimp_select_sh_static(*this, pVisual, distSQ);
 	if (!sh)
 	{
 		return;
@@ -750,7 +775,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 		mapNormalStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapNormalTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
 
-		Ntex->val.push_back(MakeNormalItem(SSA, pVisual));
+		Ntex->val.push_back(MakeNormalItem(*this, SSA, pVisual));
 	}
 }
 
@@ -759,7 +784,7 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 {
 	if (0 == pVisual) return;
 
-	if (!IsValuableToRender(pVisual, false, R_Phase() == CRender::PHASE_SMAP, *val_pTransform, IgnoreObject))
+	if (!IsValuableToRender(*this, pVisual, false, ViewPhase() == CRender::PHASE_SMAP, *val_pTransform, IgnoreObject))
 	{
 		return;
 	}
@@ -804,8 +829,8 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 			{
 				Fvector Tpos; float D;
 				val_pTransform->transform_tiny(Tpos, pV->vis.sphere.P);
-				float ssa =	CalcSSA(D,Tpos,pV->vis.sphere.R/2.f);// assume dynamics never consume full sphere
-				if (ssa<R_SsaLodA())
+				float ssa =	CalcSSA(*this, D,Tpos,pV->vis.sphere.R/2.f);// assume dynamics never consume full sphere
+				if (ssa<ViewSsaLodA(*this))
 					_use_lod= true;
 			}
 			if (_use_lod)				
@@ -834,16 +859,16 @@ ICF void r_dsgraph_insert_static_lod(dxRender_Visual* pVisual, R_dsgraph_structu
 {
 	CRender& RI = RImplementation;
 	FLOD* pV = (FLOD*)pVisual;
-	float D; float ssa = CalcSSA(D, pV->vis.sphere.P, pV);
+	float D; float ssa = CalcSSA(Graph, D, pV->vis.sphere.P, pV);
 	ssa *= pV->lod_factor;
-	if (ssa < R_SsaLodA() && !Graph.SpotShadowPass)
+	if (ssa < ViewSsaLodA(Graph) && !Graph.SpotShadowPass)
 	{
-		if (ssa < R_SsaDiscard())	return;
+		if (ssa < ViewSsaDiscard(Graph))	return;
 		mapLOD_Node* N = Graph.mapLOD.insertInAnyWay(D);
 		N->val.ssa = ssa;
 		N->val.pVisual = pVisual;
 	}
-	if (ssa > R_SsaLodB() || R_Phase() == CRender::PHASE_SMAP)
+	if (ssa > ViewSsaLodB(Graph) || Graph.ViewPhase() == CRender::PHASE_SMAP)
 	{
 		// Add all children, doesn't perform any tests
 		add_leafs_Static(pV->children, Graph);
@@ -878,42 +903,43 @@ IC float distance_to_aabb(const Fvector& point,const Fbox& box)
     return _sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-IC FMUMeshLOD* SelectLOD(float D, const xr_vector<dxRender_Visual*>& V)
+IC FMUMeshLOD* SelectLOD(const R_dsgraph_structure& Graph, float D, const xr_vector<dxRender_Visual*>& V)
 {
 	VERIFY(!V.empty());
+	const float* Mu = Graph.OwnsView ? Graph.ViewParams.LodMu : r_ssaLOD_MU;
 	switch (V.size())
 	{
 		case 5:
 		{
-			if (D >= r_ssaLOD_MU3 && D < (r_ssaLOD_MU4/(ps_r__LOD_MU4_discard * 0.001f)))
+			if (D >= Mu[3] && D < (Mu[4]/(ps_r__LOD_MU4_discard * 0.001f)))
 			{
 				return (FMUMeshLOD*)V[4];
 			}
 		}
 		case 4:
 		{
-			if (D >= r_ssaLOD_MU2 && D < r_ssaLOD_MU3)
+			if (D >= Mu[2] && D < Mu[3])
 			{
 				return (FMUMeshLOD*)V[3];
 			}
 		}
 		case 3:
 		{
-			if (D >= r_ssaLOD_MU1 && D < r_ssaLOD_MU2)
+			if (D >= Mu[1] && D < Mu[2])
 			{
 				return (FMUMeshLOD*)V[2];
 			}
 		}
 		case 2:
 		{
-			if (D >= r_ssaLOD_MU0 && D < r_ssaLOD_MU1)
+			if (D >= Mu[0] && D < Mu[1])
 			{
 				return (FMUMeshLOD*)V[1];
 			}
 		}
 		case 1:
 		{
-			if (D < r_ssaLOD_MU0)
+			if (D < Mu[0])
 			{
 				return (FMUMeshLOD*)V.at(0);
 			}
@@ -926,8 +952,8 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 {
 	//PROF_EVENT("add_leafs_Static")
 	CRender& RI = RImplementation;
-	float fog_distance = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
-	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
+	float fog_distance = ViewFogDistance(Graph);
+	CStaticTraversalStats::SectorCounters* Stats = ViewStats(Graph);
 	for(dxRender_Visual* pVisual : children)
 	{
 		vis_data& vis = pVisual->vis;
@@ -935,7 +961,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 		{
 			++Stats->Visited;
 		}
-		if (FullDetailRejectStatic(pVisual))
+		if (FullDetailRejectStatic(Graph, pVisual))
 		{
 			if (Stats)
 			{
@@ -944,7 +970,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 			continue;
 		}
 
-		if (R_Phase() == CRender::PHASE_NORMAL)
+		if (Graph.ViewPhase() == CRender::PHASE_NORMAL)
 		if (!RI.HOM.visible(vis))
 		{
 			if (Stats)
@@ -954,7 +980,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 			continue;
 		}
 
-		if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, R_Phase() == CRender::PHASE_SMAP, *Graph.val_pTransform))
+		if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(Graph, pVisual, true, Graph.ViewPhase() == CRender::PHASE_SMAP, *Graph.val_pTransform))
 		{
 			if (Stats)
 			{
@@ -963,7 +989,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 			continue;
 		}
 
-		if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_distance + vis.sphere.R))
+		if (ViewCamera(Graph).distance_to_sqr(vis.sphere.P) > _sqr(fog_distance + vis.sphere.R))
 		{
 			if (Stats)
 			{
@@ -972,7 +998,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 			continue;
 		}
 
-		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+		float D = distance_to_aabb(ViewCamera(Graph),pVisual->vis.box);
 
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
@@ -992,7 +1018,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 			}continue;
 			case MT_MESH_LODS:
 			{
-				FMUMeshLOD* SelectedLOD = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+				FMUMeshLOD* SelectedLOD = SelectLOD(Graph, D, static_cast<FMUMeshLODs*>(pVisual)->children);
 				if(SelectedLOD)
 				{
 					add_leafs_Static(SelectedLOD->children, Graph);
@@ -1016,8 +1042,13 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children, R_dsgraph_structure
 	}
 }
 
-IC float fog_cull_distance()
+IC float fog_cull_distance(const R_dsgraph_structure& Graph)
 {
+	if (Graph.OwnsView)
+	{
+		return Graph.ViewParams.FogDistance;
+	}
+
 	thread_local u32 frame = u32(-1);
 	thread_local float cached = 0.f;
 	if (frame != Device.dwFrame)
@@ -1036,12 +1067,12 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 	}
 	//PROF_EVENT("add_Static")
-	CStaticTraversalStats::SectorCounters* Stats = g_StaticTraversalStats.Current;
+	CStaticTraversalStats::SectorCounters* Stats = ViewStats(*this);
 	if (Stats)
 	{
 		++Stats->Visited;
 	}
-	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, R_Phase() == CRender::PHASE_SMAP, *val_pTransform))
+	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(*this, pVisual, true, ViewPhase() == CRender::PHASE_SMAP, *val_pTransform))
 	{
 		if (Stats)
 		{
@@ -1071,7 +1102,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 	}
 
-	if (FullDetailRejectStatic(pVisual))
+	if (FullDetailRejectStatic(*this, pVisual))
 	{
 		if (Stats)
 		{
@@ -1079,7 +1110,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		}
 		return;
 	}
-	if (R_Phase() == CRender::PHASE_NORMAL)
+	if (ViewPhase() == CRender::PHASE_NORMAL)
 	if (!RImplementation.HOM.visible(vis))
 	{
 		if (Stats)
@@ -1089,7 +1120,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 	}
 
-	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_cull_distance() + vis.sphere.R))
+	if (ViewCamera(*this).distance_to_sqr(vis.sphere.P) > _sqr(fog_cull_distance(*this) + vis.sphere.R))
 	{
 		if (Stats)
 		{
@@ -1098,7 +1129,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 	}
 
-	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+	float D = distance_to_aabb(ViewCamera(*this),pVisual->vis.box);
 
 	PROF_EVENT("add_Static switch")
 	// If we get here visual is visible or partially visible
@@ -1132,7 +1163,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		}return;
 		case MT_MESH_LODS:
 		{
-			auto Casted = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+			auto Casted = SelectLOD(*this, D, static_cast<FMUMeshLODs*>(pVisual)->children);
 			if (Casted)
 			{
 				add_leafs_Static(Casted->children, *this);

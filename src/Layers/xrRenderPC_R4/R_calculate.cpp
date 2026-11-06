@@ -15,11 +15,30 @@ extern float		r_ssaLOD_A		;
 extern float		r_ssaLOD_B		;
 extern float		r_ssaHZBvsTEX	;
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
-extern float		r_ssaLOD_MU0		;
-extern float		r_ssaLOD_MU1		;
-extern float		r_ssaLOD_MU2		;
-extern float		r_ssaLOD_MU3		;
-extern float		r_ssaLOD_MU4		;
+extern float		r_ssaLOD_MU[5]		;
+
+GraphView CRender::MakeGraphView(u32 Phase) const
+{
+	GraphView View;
+	View.Phase = Phase;
+	View.CameraPosition = Device.vCameraPosition;
+	View.Fov = Device.fFOV;
+	View.ViewportNear = Device.fViewportNear;
+	View.SsaDiscard = r_ssaDISCARD;
+	View.SsaLodA = r_ssaLOD_A;
+	View.SsaLodB = r_ssaLOD_B;
+	View.DetailTextureRange = r_dtex_range;
+	std::copy(std::begin(r_ssaLOD_MU), std::end(r_ssaLOD_MU), View.LodMu);
+
+	if (g_pGamePersistent && g_pGamePersistent->Environment().CurrentEnv)
+	{
+		const CEnvDescriptorMixer& Env = *g_pGamePersistent->Environment().CurrentEnv;
+		View.HasEnvironment = true;
+		View.FarPlane = Env.far_plane;
+		View.FogDistance = Env.fog_distance;
+	}
+	return View;
+}
 
 void CRender::Calculate		()
 {
@@ -40,11 +59,11 @@ void CRender::Calculate		()
 	r_ssaLOD_A						=	_sqr(ps_r2_ssaLOD_A/3)		/g_fSCREEN;
 	r_ssaLOD_B						=	_sqr(ps_r2_ssaLOD_B/3)		/g_fSCREEN;
 
-	r_ssaLOD_MU0					=	g_fSCREEN_MU0; //MU LOD0 (Original MU)
-	r_ssaLOD_MU1					=	g_fSCREEN_MU1; //MU LOD1
-	r_ssaLOD_MU2					=	g_fSCREEN_MU2; //MU LOD2
-	r_ssaLOD_MU3					=	g_fSCREEN_MU3; //MU LOD3
-	r_ssaLOD_MU4					=	g_fSCREEN_MU4; //MU LOD4
+	r_ssaLOD_MU[0]					=	g_fSCREEN_MU0; //MU LOD0 (Original MU)
+	r_ssaLOD_MU[1]					=	g_fSCREEN_MU1; //MU LOD1
+	r_ssaLOD_MU[2]					=	g_fSCREEN_MU2; //MU LOD2
+	r_ssaLOD_MU[3]					=	g_fSCREEN_MU3; //MU LOD3
+	r_ssaLOD_MU[4]					=	g_fSCREEN_MU4; //MU LOD4
 
 	r_ssaGLOD_start					=	_sqr(ps_r__GLOD_ssa_start/3)/g_fSCREEN;
 	r_ssaGLOD_end					=	_sqr(ps_r__GLOD_ssa_end/3)	/g_fSCREEN;

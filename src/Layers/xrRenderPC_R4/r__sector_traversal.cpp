@@ -46,7 +46,7 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 	i_mXFORM			= mXFORM;
 	i_mXFORM_01.mul		(m_viewport_01,mXFORM);
 	i_start				= (CSector*)start;
-	NearDistance		= Device.fViewportNear + EPS_L;
+	NearDistance		= (own_clips ? ViewportNear : Device.fViewportNear) + EPS_L;
 	r_sectors.clear		();
 	_scissor			scissor;
 	scissor.set			(0,0,1,1);

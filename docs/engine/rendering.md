@@ -61,7 +61,9 @@ Main order:
 9. `phase_occq` for lights, wallmarks, sun cascades (`render_sun_cascades`), light accumulation, and `phase_combine`.
 10. Within combine, the renderer calls `render_forward` for forward geometry, puddles, and volumetric combine. Postprocessing is in `r4_rendertarget_phase_*.cpp`.
 
-Reflections and sun cascades are called from this render path. `PreRenderThread` runs `seqParallelRender`, rain item updates, and particle updates; it has no `CollectSunCascades` or `CollectReflections` delegates in this branch. GPU submission and swapchain operations stay on the primary thread.
+`PreRenderThread` runs `seqParallelRender`, the `CollectReflections` and `CollectSunCascades` delegates, rain item updates, and particle updates. GPU submission and swapchain operations stay on the primary thread.
+
+Reflection and sun graphs collect their static geometry on `PreRenderThread`, in parallel with `FrameMove`. `on_idle` calls `BeginReflectionCollect` and `BeginSunCollect` before starting the thread, so these graphs use the camera of the previous frame. A `GraphView` holds a copy of everything the collection reads: phase, camera, FOV, fog and SSA thresholds. Accumulation samples the cascades with the matrices they were captured with, so only their coverage lags by one frame. `render_sun_cascades` joins the collection, appends dynamic objects on the primary thread, and draws. `Render` collects on the primary thread in the editors and on frames `CanCollectSunOnWorker` did not foresee. `GraphMain` has no copy and reads the live device state, because `UI3dStatic` replaces the camera while it submits icons. `level_Unload` and `reset_begin` wait for `PreRenderThread`: both can run inside `FrameMove`, and they delete what the collection reads.
 
 ## Screen-space AO and reflections
 

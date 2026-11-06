@@ -407,11 +407,22 @@ void CRender::LoadPlanars()
 
 void CRender::level_Unload()
 {
+	// The pre-render stage runs in parallel with FrameMove, where a disconnect unloads the level.
+	// It walks the sectors and static visuals deleted here.
+	Device.PreRenderThread.Wait();
 	ResetSunShadowCache();
 	if (0==g_pGameLevel)		return;
 	if (!GraphMain.b_loaded)
 	{
 		return;
+	}
+	for (R_dsgraph_structure& Graph : GraphSun)
+	{
+		Graph.r_dsgraph_clear_passes();
+	}
+	for (R_dsgraph_structure& Graph : GraphReflection)
+	{
+		Graph.r_dsgraph_clear_passes();
 	}
 	if (Target)
 	{

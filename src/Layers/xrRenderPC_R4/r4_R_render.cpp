@@ -441,6 +441,24 @@ void CRender::RenderUI(Fcolor* color)
 	++GraphMain.marker;
 }
 
+// What Render() needs to reach the sun pass, known before FrameMove. A wrong guess only costs a
+// collection nobody draws, or a collection on the primary thread.
+bool CRender::CanCollectSunOnWorker()
+{
+	if (Device.IsEditorMode() || LightingModeIsStaticRender() || m_bFirstFrameAfterReset || !GraphMain.b_loaded)
+	{
+		return false;
+	}
+
+	if (!g_pGameLevel || !g_hud || !g_pGamePersistent || g_pGamePersistent->OnRenderPPUI_query())
+	{
+		return false;
+	}
+
+	IMainMenu* pMainMenu = g_pGamePersistent->m_pMainMenu;
+	return !pMainMenu || !pMainMenu->CanSkipSceneRendering();
+}
+
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
@@ -502,9 +520,16 @@ void CRender::Render()
 	}
 
 	RImplementation.o.distortion = false;
-	BeginSunShadowFrame();
 
-	begin_sun_collect();
+	// Editors and frames the pre-render stage could not foresee collect on this thread
+	if (EditorMode || SunCollectFrame != Device.dwFrame)
+	{
+		prepare_sun_collect(Device.dwFrame);
+		collect_sun_graphs();
+	}
+
+	// Reflections can sample the captures before this frame's sun pass.
+	Cmd.Constants.UpdateSunShadows();
 
 	if (o.offscreen_reflecitons && !o.dx11_use_legacy_light)
 	{

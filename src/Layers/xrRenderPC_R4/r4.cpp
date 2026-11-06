@@ -43,18 +43,23 @@ public:
 
 float r_dtex_range = 50.f;
 
-ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq, bool is_hud)
+ICF float ViewDetailTextureRange(const R_dsgraph_structure& Graph)
 {
-	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
+	return Graph.OwnsView ? Graph.ViewParams.DetailTextureRange : r_dtex_range;
+}
+
+ShaderElement* CRender::rimp_select_sh_dynamic(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, float cdist_sq, bool is_hud)
+{
+	const u32 phase = Graph.ViewPhase();
 	if (LightingModeIsStaticRender())
 	{
-		if (GraphMain.val_bUI && pVisual->shader->E[ShaderVariant::UI])
+		if (Graph.val_bUI && pVisual->shader->E[ShaderVariant::UI])
 			return pVisual->shader->E[ShaderVariant::UI]._get();
 		if (phase == PHASE_NORMAL)
 			return pVisual->shader->E[L_Projector && L_Projector->shadowing() ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ]._get();
-		return rimp_select_sh_static(pVisual, cdist_sq);
+		return rimp_select_sh_static(Graph, pVisual, cdist_sq);
 	}
-	if (!!GraphMain.val_bUI)
+	if (Graph.val_bUI)
 	{
 		const auto& E = pVisual->shader->E;
 		return (E[ShaderVariant::UI] ? E[ShaderVariant::UI] : E[ShaderVariant::Special] ? E[ShaderVariant::Special] : E[ShaderVariant::NormalLQ])._get();
@@ -72,7 +77,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 			}
 		}
 
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < ViewDetailTextureRange(Graph) || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
 	}
 	else if (CRender::PHASE_REFLECT == phase)
 	{
@@ -82,23 +87,23 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 	return pVisual->shader->E[id]._get();
 }
 
-ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_static(const R_dsgraph_structure& Graph, dxRender_Visual* pVisual, float cdist_sq)
 {
-	const u32 phase = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
+	const u32 phase = Graph.ViewPhase();
 	if (LightingModeIsStaticRender())
 	{
 		int id = ShaderVariant::NormalLQ;
 		if (phase == PHASE_POINT) id = ShaderVariant::PointLight;
 		else if (phase == PHASE_SPOT) id = ShaderVariant::SpotLight;
 		else if (phase == PHASE_LMODELS) id = ShaderVariant::ModelLighting;
-		else if ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) id = ShaderVariant::NormalHQ;
+		else if ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < ViewDetailTextureRange(Graph)) id = ShaderVariant::NormalHQ;
 		return pVisual->shader->E[id]._get();
 	}
 	int id = ShaderVariant::Shadow;
 
 	if (CRender::PHASE_NORMAL == phase)
 	{
-		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
+		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < ViewDetailTextureRange(Graph) || psDeviceFlags.test(rsClearBB)) ? ShaderVariant::NormalHQ : ShaderVariant::NormalLQ;
 	}
 	else if (CRender::PHASE_REFLECT == phase)
 	{
@@ -115,9 +120,8 @@ void CRender::create()
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 	Device.BeginReflectionCollect = xr_make_delegate(this, &CRender::begin_reflection_collect);
 	Device.CollectReflections = xr_make_delegate(this, &CRender::collect_reflections);
-	Device.ResetSunCollect = xr_make_delegate(this, &CRender::reset_sun_collect);
+	Device.BeginSunCollect = xr_make_delegate(this, &CRender::begin_sun_collect);
 	Device.CollectSunCascades = xr_make_delegate(this, &CRender::collect_sun_cascades);
-	Device.EnsureSunCollect = xr_make_delegate(this, &CRender::ensure_sun_collect);
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
@@ -270,15 +274,16 @@ void CRender::destroy()
 	Device.ModelDefferClear = nullptr;
 	Device.BeginReflectionCollect = nullptr;
 	Device.CollectReflections = nullptr;
-	Device.ResetSunCollect = nullptr;
+	Device.BeginSunCollect = nullptr;
 	Device.CollectSunCascades = nullptr;
-	Device.EnsureSunCollect = nullptr;
 
 	if (LightingModeIsDynamicRender())
 		g_DLSSWrapper.Destroy();
 }
 
 void CRender::reset_begin() {
+	// The pre-render stage runs in parallel with FrameMove, where a reset can start
+	Device.PreRenderThread.Wait();
 	ResetSunShadowCache();
 	// Its compute pass reads the scene depth target, which is recreated
 	if (Device.IsEditorMode())

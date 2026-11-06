@@ -38,6 +38,7 @@ public:
 		bool OnPath;
 	};
 	bool own_clips = false;
+	float ViewportNear = 0.f; // used with own_clips, the device value can change under a worker
 	xr_vector<xr_vector<CFrustum>> local_frustums;
 	xr_vector<u32> local_sector_marker;
 	xr_vector<PortalState> local_portals;

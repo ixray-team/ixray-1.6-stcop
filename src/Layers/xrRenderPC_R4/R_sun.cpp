@@ -12,9 +12,6 @@ using namespace DirectX;
 
 constexpr float tweak_COP_initial_offs = 1200.0f;
 
-extern float r_ssaDISCARD;
-extern float r_ssaLOD_A;
-extern float r_ssaLOD_B;
 extern int ps_r2_sun_details_cascades;
  
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +102,7 @@ u32 CRender::GetSunCascadePlacement(u32 Index) const
 	return Placement;
 }
 
-void CRender::BeginSunShadowFrame()
+void CRender::BeginSunShadowFrame(u32 Frame)
 {
 	const int Mode = GetSunShadowCacheMode();
 	if (Mode > 0 && LastSunCacheMode == 0)
@@ -118,7 +115,7 @@ void CRender::BeginSunShadowFrame()
 	{
 		Fvector Direction = Sun->direction;
 		Direction.normalize_safe();
-		const bool HasGap = LastSunUpdateFrame != u32(-1) && Device.dwFrame - LastSunUpdateFrame > 1;
+		const bool HasGap = LastSunUpdateFrame != u32(-1) && Frame - LastSunUpdateFrame > 1;
 		for (u32 Index = 0; Index < m_sun_cascades.size(); ++Index)
 		{
 			sun::cascade& Cascade = m_sun_cascades[Index];
@@ -130,8 +127,6 @@ void CRender::BeginSunShadowFrame()
 			}
 		}
 	}
-	// Reflections can sample the captures before this frame's sun pass.
-	Imm().Constants.UpdateSunShadows();
 }
 
 void CRender::GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const
@@ -175,61 +170,50 @@ void CRender::DumpSunShadowCache() const
 	}
 }
 
-void CRender::reset_sun_collect()
+// The pre-render stage starts before FrameMove, so the cascades follow the camera of the previous
+// frame. The captures are sampled with the same matrices: only their coverage lags by a frame.
+void CRender::prepare_sun_collect(u32 Frame)
 {
-	sun_kicked = false;
-}
-
-void CRender::publish_sun_collect(bool active)
-{
-	sun_collect_active.store(active, std::memory_order_release);
-	sun_kicked = true;
-	sun_ticket.fetch_add(1, std::memory_order_release);
-	sun_ticket.notify_all();
-}
-
-void CRender::ensure_sun_collect()
-{
-	if (!sun_kicked)
-		publish_sun_collect(false);
+	SunCollectFrame = Frame;
+	RestoreSunCascadeChain();
+	BeginSunShadowFrame(Frame);
+	SunView = MakeGraphView(PHASE_SMAP);
+	sun_collect_active = prepare_sun_cascade_xforms(Frame);
 }
 
 void CRender::begin_sun_collect()
 {
-	publish_sun_collect(prepare_sun_cascade_xforms());
+	if (!CanCollectSunOnWorker())
+	{
+		return;
+	}
+
+	// FrameMove increments the counter after this point
+	prepare_sun_collect(Device.dwFrame + 1);
+	SunCollectPending.store(sun_collect_active, std::memory_order_release);
 }
 
 void CRender::wait_sun_collect()
 {
-	const u32 ticket = sun_ticket.load(std::memory_order_acquire);
-	u32 done = sun_done.load(std::memory_order_acquire);
-	while (done != ticket)
-	{
-		sun_done.wait(done, std::memory_order_acquire);
-		done = sun_done.load(std::memory_order_acquire);
-	}
+	SunCollectPending.wait(true, std::memory_order_acquire);
 }
 
 void CRender::collect_sun_cascades()
 {
-	u32 ticket = sun_ticket.load(std::memory_order_acquire);
-	while (ticket == sun_seen)
+	if (!SunCollectPending.load(std::memory_order_acquire))
 	{
-		sun_ticket.wait(sun_seen, std::memory_order_acquire);
-		ticket = sun_ticket.load(std::memory_order_acquire);
+		return;
 	}
-	sun_seen = ticket;
 
-	if (sun_collect_active.load(std::memory_order_acquire) && pOutdoorSector && sun_cascade_count > 0)
+	collect_sun_graphs();
+	SunCollectPending.store(false, std::memory_order_release);
+	SunCollectPending.notify_all();
+}
+
+void CRender::collect_sun_graphs()
+{
+	if (sun_collect_active && pOutdoorSector && sun_cascade_count > 0)
 	{
-		R_CullTLS cull;
-		cull.active = true;
-		cull.phase = PHASE_SMAP;
-		cull.ssa_discard = r_ssaDISCARD;
-		cull.ssa_lod_a = r_ssaLOD_A;
-		cull.ssa_lod_b = r_ssaLOD_B;
-		g_r_cull_tls = cull;
-
 		const u32 sector_count = (u32)Sectors.size();
 		const u32 portal_count = (u32)Portals.size();
 		const u32 count = std::min(sun_cascade_count, (u32)GraphSun.size());
@@ -240,6 +224,7 @@ void CRender::collect_sun_cascades()
 				continue;
 
 			R_dsgraph_structure& Graph = GraphSun[i];
+			Graph.BeginView(SunView);
 			Graph.private_marker = true;
 			Graph.val_pTransform = &Fidentity;
 			Graph.val_bHUD = false;
@@ -252,15 +237,21 @@ void CRender::collect_sun_cascades()
 			Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
 			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, false);
 		}
-
-		g_r_cull_tls.active = false;
 	}
-
-	sun_done.store(ticket, std::memory_order_release);
-	sun_done.notify_all();
 }
 
-bool CRender::prepare_sun_cascade_xforms()
+void CRender::RestoreSunCascadeChain()
+{
+	if (sun_restore_shafts)
+	{
+		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = sun_saved_reset_chain;
+		sun_restore_shafts = false;
+	}
+
+	m_sun_cascades[2].size = 160.0f;
+}
+
+bool CRender::prepare_sun_cascade_xforms(u32 Frame)
 {
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
 	if (!fuckingsun || o.sunstatic || u_diffuse2s(fuckingsun->color) <= EPS)
@@ -334,7 +325,7 @@ bool CRender::prepare_sun_cascade_xforms()
 		sun_saved_reset_chain = last_cascade_chain_mode;
 
 		const bool IsCached = GetSunShadowCacheMode() > 0;
-		const bool ShouldUpdate = !IsCached || LastSunUpdateFrame != Device.dwFrame;
+		const bool ShouldUpdate = !IsCached || LastSunUpdateFrame != Frame;
 		const bool ShouldRenderAll = !IsCached || !IsSunCacheInitialized;
 		SunUpdatedMask = 0;
 
@@ -491,7 +482,7 @@ void CRender::append_sun_dynamics()
 void CRender::render_sun_cascades(GfxCmdList& Cmd)
 {
 	wait_sun_collect();
-	if (!sun_collect_active.load(std::memory_order_acquire))
+	if (!sun_collect_active)
 		return;
 
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
@@ -596,15 +587,7 @@ void CRender::render_sun_cascades(GfxCmdList& Cmd)
 	GRHI->ApplyRenderTargetChange();
 	Target->accum_direct_cascade(Cmd);
 
-	if (sun_restore_shafts)
-	{
-		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = sun_saved_reset_chain;
-	}
-
-	if (psDeviceFlags.test(rsClearBB))
-	{
-		m_sun_cascades[2].size = 160.0f;
-	}
+	RestoreSunCascadeChain();
 }
 
 void CRender::PrepareSunCascade(u32 Index)

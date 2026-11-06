@@ -232,14 +232,14 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
-ICF void RenderNode(GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
+ICF void RenderNode(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
 {
 	dxRender_Visual* V = N.val.pVisual;
 
 	VERIFY(V && V->shader._get());
 	Cmd.SetPass(N.val.se);
 
-	const auto* Settings = RImplementation.GraphMain.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
+	const auto* Settings = Graph.val_bUI ? Device.m_pRender->GetUIIconLighting() : nullptr;
 	Hlsl::float4& Tint = Cmd.Constants.Write<CBUIIcon>().ui_emissive_tint;
 	if (Settings)
 	{
@@ -255,7 +255,7 @@ ICF void RenderNode(GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
 		Cmd.SetBlend(true, D3DBLEND_ONE, D3DBLEND_ONE);
 		Cmd.SetColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 	}
-	else if (RImplementation.GraphMain.val_bUI && N.val.se->flags.bEmissive)
+	else if (Graph.val_bUI && N.val.se->flags.bEmissive)
 	{
 		Cmd.SetColorWriteEnable();
 		Cmd.SetDepthWrite(true);
@@ -275,16 +275,16 @@ ICF void RenderNode(GfxCmdList& Cmd, mapSorted_Node& N, bool emissive = false)
 	V->Render(Cmd, calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
-ICF void sorted_L1(GfxCmdList& Cmd, mapSorted_Node* N)
+ICF void sorted_L1(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_Node* N)
 {
-	RenderNode(Cmd, *N);
+	RenderNode(Graph, Cmd, *N);
 }
 
-ICF void RenderMap(GfxCmdList& Cmd, mapSorted_T& Map, bool emissive = false)
+ICF void RenderMap(const R_dsgraph_structure& Graph, GfxCmdList& Cmd, mapSorted_T& Map, bool emissive = false)
 {
 	for (auto& Node : Map)
 	{
-		RenderNode(Cmd, Node, emissive);
+		RenderNode(Graph, Cmd, Node, emissive);
 	}
 
 	Map.clear();
@@ -293,15 +293,15 @@ ICF void RenderMap(GfxCmdList& Cmd, mapSorted_T& Map, bool emissive = false)
 void R_dsgraph_structure::r_dsgraph_render_ui()
 {
 	GfxCmdList& Cmd = *Backend;
-	RenderMap(Cmd, mapUI);
+	RenderMap(*this, Cmd, mapUI);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
 	GfxCmdList& Cmd = *Backend;
-	RenderMap(Cmd, mapUIEmissive);
+	RenderMap(*this, Cmd, mapUIEmissive);
 
-	mapUISorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
+	mapUISorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
 	mapUISorted.clear();
 }
 
@@ -311,7 +311,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 	GfxCmdList& Cmd = *Backend;
 	CHudInitializer initalizer(Cmd, true, true);
 
-	RenderMap(Cmd, mapHUD);
+	RenderMap(*this, Cmd, mapHUD);
 
 }
 
@@ -332,7 +332,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 	PROF_EVENT("r_dsgraph_render_sorted");
 	GfxCmdList& Cmd = *Backend;
 
-	mapSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
+	mapSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
 	mapSorted.clear();
 
 	if (render_hud)
@@ -349,7 +349,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	CHudInitializer initalizer(Cmd, true, true);
 	auto velocity_target = Cmd.GetRenderTarget(1);
 	Cmd.SetRenderTarget(nullptr, 1);
-	RenderMap(Cmd, mapHUDEmissive, true);
+	RenderMap(*this, Cmd, mapHUDEmissive, true);
 	Cmd.SetRenderTarget(velocity_target, 1);
 
 	if (g_hud && g_hud->RenderActiveItemUIQuery())
@@ -357,7 +357,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 		r_dsgraph_render_hud_ui();
 	}
 
-	mapHUDSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(Cmd, N); });
+	mapHUDSorted.traverseRL([&](mapSorted_Node* N) { sorted_L1(*this, Cmd, N); });
 	mapHUDSorted.clear();
 }
 
@@ -366,7 +366,7 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
 	PROF_EVENT("r_dsgraph_render_emissive");
 	GfxCmdList& Cmd = *Backend;
 
-	RenderMap(Cmd, mapEmissive);
+	RenderMap(*this, Cmd, mapEmissive);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_scope()
@@ -379,7 +379,7 @@ void R_dsgraph_structure::r_dsgraph_render_scope()
 	RImplementation.Target->u_setrt(Cmd, RImplementation.Target->rt_DofScopeMask, nullptr, RDepth);
 
 	CHudInitializer initalizer(Cmd, true);
-	RenderMap(Cmd, mapHUDScopeMask);
+	RenderMap(*this, Cmd, mapHUDScopeMask);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
@@ -387,17 +387,17 @@ void R_dsgraph_structure::r_dsgraph_render_wmarks()
 	PROF_EVENT("r_dsgraph_render_wmarks");
 	GfxCmdList& Cmd = *Backend;
 
-	RenderMap(Cmd, mapWmark);
+	RenderMap(*this, Cmd, mapWmark);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_distort()
 {
 	PROF_EVENT("r_dsgraph_render_distort");
 	GfxCmdList& Cmd = *Backend;
-	RenderMap(Cmd, mapDistort);
+	RenderMap(*this, Cmd, mapDistort);
 
 	CHudInitializer initalizer(Cmd, true, true);
-	RenderMap(Cmd, mapHUDDistort);
+	RenderMap(*this, Cmd, mapHUDDistort);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -499,8 +499,7 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
 			View = Item.Frustum;
 			if(O && O->dcast_Renderable()==Item.Renderable) continue;
 
-			const u32 phase_now = g_r_cull_tls.active ? g_r_cull_tls.phase : RImplementation.phase;
-			if (phase_now != CRender::PHASE_SMAP)
+			if (ViewPhase() != CRender::PHASE_SMAP)
 			{
 				RImplementation.set_Object(Item.Renderable, this);
 			}
@@ -535,8 +534,7 @@ void R_dsgraph_structure::CollectSubspaceDynamic(const CFrustum& MainView)
 	for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 	{
 		ISpatial*	spatial		= lstRenderables[o_it].get();
-		if (!g_r_cull_tls.active)
-			spatial->spatial_updatesector();
+		spatial->spatial_updatesector();
 		CSector*	sector		= (CSector*)spatial->sector;
 		if	(0==sector)										continue;	// disassociated from S/P structure
 		if (isolated)

@@ -15,16 +15,23 @@ class CPortal;
 
 #include "r__portal_traverser.h"
 
-struct R_CullTLS
+// Everything a collection reads about its view. A graph collected on a worker owns a copy,
+// because FrameMove and the UI change the camera, the environment and the thresholds under it.
+struct GraphView
 {
-	bool active = false;
-	u32 phase = 0;
-	float ssa_discard = 0.f;
-	float ssa_lod_a = 0.f;
-	float ssa_lod_b = 0.f;
+	u32 Phase = 0;
+	Fvector CameraPosition{};
+	float Fov = 90.f;
+	float ViewportNear = 0.f;
+	bool HasEnvironment = false;
+	float FarPlane = 0.f;
+	float FogDistance = 0.f;
+	float SsaDiscard = 0.f;
+	float SsaLodA = 0.f;
+	float SsaLodB = 0.f;
+	float DetailTextureRange = 0.f;
+	float LodMu[5] = {};
 };
-
-extern thread_local R_CullTLS g_r_cull_tls;
 
 class GfxCmdList;
 
@@ -73,6 +80,19 @@ public:
 
 	CFrustum* View = nullptr;
 	GfxCmdList* Backend = nullptr;
+
+	// GraphMain follows the live device state until it is described by a view of its own
+	GraphView ViewParams;
+	bool OwnsView = false;
+
+	u32 ViewPhase() const;
+	void BeginView(const GraphView& NewView)
+	{
+		ViewParams = NewView;
+		OwnsView = true;
+		PortalTraverser.ViewportNear = NewView.ViewportNear;
+	}
+
 	IRenderable* val_pObject;
 	Fmatrix* val_pTransform;
 	bool val_bHUD;

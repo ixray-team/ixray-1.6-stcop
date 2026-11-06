@@ -162,6 +162,7 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 void CRender::begin_reflection_collect()
 {
+	ReflectionBaseView = MakeGraphView(PHASE_REFLECT);
 	reflection_cam_pos = Device.vCameraPosition;
 	reflection_cam_dir = Device.vCameraDirection;
 	reflection_cam_top = Device.vCameraTop;
@@ -215,12 +216,10 @@ void CRender::collect_reflections()
 	const u32 dwSize = Target->rt_Reflection->dwSize;
 	const float screen = _sqr((float)dwSize) * (EPS_S + ps_r__LOD);
 
-	R_CullTLS cull;
-	cull.active = true;
-	cull.phase = PHASE_REFLECT;
-	cull.ssa_discard = _sqr(ps_r__ssaDISCARD) / screen;
-	cull.ssa_lod_a = _sqr(ps_r2_ssaLOD_A / 3) / screen;
-	cull.ssa_lod_b = _sqr(ps_r2_ssaLOD_B / 3) / screen;
+	GraphView ReflectionView = ReflectionBaseView;
+	ReflectionView.SsaDiscard = _sqr(ps_r__ssaDISCARD) / screen;
+	ReflectionView.SsaLodA = _sqr(ps_r2_ssaLOD_A / 3) / screen;
+	ReflectionView.SsaLodB = _sqr(ps_r2_ssaLOD_B / 3) / screen;
 
 	Fmatrix env_project;
 	env_project.build_projection(PI_DIV_2, 1.0f, reflection_near, reflection_far * 0.4f);
@@ -242,7 +241,6 @@ void CRender::collect_reflections()
 
 	const u32 sector_count = (u32)Sectors.size();
 	const u32 portal_count = (u32)Portals.size();
-	g_r_cull_tls = cull;
 
 	for (u32 i = 0; i < (u32)GraphReflection.size(); ++i)
 	{
@@ -252,6 +250,7 @@ void CRender::collect_reflections()
 		env_full.mul(env_project, env_view);
 
 		R_dsgraph_structure& Graph = GraphReflection[i];
+		Graph.BeginView(ReflectionView);
 		Graph.private_marker = true;
 		Graph.val_pTransform = &Fidentity;
 		Graph.private_visuals.clear();
@@ -259,8 +258,6 @@ void CRender::collect_reflections()
 		Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
 		Graph.r_dsgraph_render_subspace(reflection_sector, env_full, reflection_cam_pos, false, false);
 	}
-
-	g_r_cull_tls.active = false;
 
 	Device.Statistic->TEST2.End();
 	reflection_done.store(ticket, std::memory_order_release);
