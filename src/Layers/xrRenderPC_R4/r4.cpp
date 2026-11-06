@@ -18,7 +18,6 @@
 
 #include "RenderInterfaceShared.h"
 #include "OverlayAPI/DLSSWrapper.h"
-#include "OverlayAPI/FSR4Wrapper.h"
 #include "../../xrEngine/EngineAPI.h"
 #include "r1_LightPPA.h"
 
