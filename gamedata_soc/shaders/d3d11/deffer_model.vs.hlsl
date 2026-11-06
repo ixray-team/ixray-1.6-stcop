@@ -1,0 +1,78 @@
+#include "common.hlsli"
+#include "skin.hlsli"
+#include "editor_instancing.hlsli"
+
+void skinned_main(in v_model I, in float3 basis, out p_bumped_new O, in object_xforms X)
+{
+    float3 Nw = mul((float3x3)X.W, (float3)I.N);
+
+#ifdef USE_HUD_RAINDROPS
+    O.drops_basis = float4(basis, Nw.y);
+#endif
+    float3 hc_pos = (float3)hemi_cube_pos_faces;
+    float3 hc_neg = (float3)hemi_cube_neg_faces;
+    float3 hc_mixed = (Nw < 0.0f) ? -hc_neg : hc_pos;
+    float hemi_val = saturate(dot(hc_mixed, Nw));
+
+    O.tcdh = float4(I.tc.xy, hemi_val, L_material.y);
+
+#if defined(USE_HAIRMASK)
+#ifndef DISABLE_MOTION_VECTORS
+    hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.P_old.xyz, I.N);
+#else
+    hair_wave_anim(I.tc.xy, saturate(hemi_val * 4.0f - 1.0f), I.P.xyz, I.N);
+#endif
+#endif
+
+    float3 Pe = mul(X.WV, I.P);
+
+    O.position = float4(Pe, 1.0f);
+
+    float3 N = I.N * 2.0f;
+	
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
+    float3 T = I.T * 2.0f;
+    float3 B = I.B * 2.0f;
+
+    float3x3 xform = mul((float3x3)X.WV, float3x3(
+        T.x, B.x, N.x,
+        T.y, B.y, N.y,
+        T.z, B.z, N.z));
+
+    O.M1 = xform[0];
+    O.M2 = xform[1];
+    O.M3 = xform[2];
+#else
+	N = mul((float3x3)X.WV, N);
+
+    O.M1 = N.xxx;
+    O.M2 = N.yyy;
+    O.M3 = N.zzz;
+#endif
+
+    O.hpos = mul(X.WVP, I.P);
+
+#ifndef DISABLE_MOTION_VECTORS
+    O.hpos_curr = O.hpos;
+#ifdef USE_EDITOR_INSTANCING
+    // Placed copies do not move: the previous position is the same world point seen by the
+    // previous camera. Copying hpos would give a zero velocity while the camera moves, and the
+    // temporal upscaler would blend in whatever covered this pixel a frame ago.
+    O.hpos_old = mul(m_VP_old, float4(mul(X.W, I.P), 1.0f));
+#else
+    O.hpos_old = mul(m_WVP_old, I.P_old);
+#endif
+#endif
+
+#ifdef USE_LENGTH_BUFFER
+	O.lmap = 0.0f;
+#endif
+
+    O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
+}
+
+void main(PULL_INPUT, out p_bumped_new O)
+{
+    v_model I = PullModel(VertexId);
+    skinned_main(I, LoadSource(VertexId).P, O, object_get_xforms(DrawId));
+}

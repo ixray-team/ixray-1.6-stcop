@@ -1,0 +1,13 @@
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="model_distort4glass" ps="particle_hard" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<l_special sort="2" strict="1" distort="1">
+		<pass vs="model_distort4glass" ps="particle_distort_hard" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="pfx\pfx_dist_glass3"/>
+		</pass>
+	</l_special>
+</shader>

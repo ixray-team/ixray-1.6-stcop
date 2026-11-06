@@ -1,0 +1,10 @@
+<shader>
+	<normal>
+		<pass vs="debug_draw" ps="debug_draw_nodepth" zwrite="0"/>
+	</normal>
+	<l_special>
+		<pass vs="debug_draw" ps="debug_draw" zfunc="always" zwrite="0">
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</l_special>
+</shader>

@@ -1,0 +1,9 @@
+<shader>
+	<normal_hq sort="2">
+		<pass vs="accum_volumetric" ps="accum_volumetric" zwrite="0" blend="one,one">
+			<texture name="s_lmap" src="@base"/>
+			<texture name="s_smap" src="$user$smap_depth"/>
+			<texture name="s_noise" src="fx\fx_noise"/>
+		</pass>
+	</normal_hq>
+</shader>

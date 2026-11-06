@@ -1,0 +1,7 @@
+<shader>
+	<normal sort="2" strict="1">
+		<pass vs="models_reflex_reticle" ps="models_reflex_reticle" zwrite="0" blend="one,srcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

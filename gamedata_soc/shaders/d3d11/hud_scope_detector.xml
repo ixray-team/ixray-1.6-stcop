@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="stub_notransform_t" ps="scope_detector" zfunc="always" zwrite="0" blend="one,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

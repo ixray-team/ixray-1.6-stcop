@@ -1,0 +1,28 @@
+<shader r1_static="1">
+	<normal sort="1" wmark="1">
+		<pass vs="wmark" ps="simple" color="rgb">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal sort="1" wmark="1">
+			<pass vs="r1_wmark" ps="r1_wmark">
+				<texture name="s_base" src="@base"/>
+			</pass>
+		</normal>
+		<l_point>
+			<pass vs="r1_wmark_point" ps="add_point" zwrite="0" blend="one,one" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_lmap" src="internal\internal_light_attpoint"/>
+				<texture name="s_att" src="internal\internal_light_attpoint"/>
+			</pass>
+		</l_point>
+		<l_spot>
+			<pass vs="r1_wmark_spot" ps="add_spot" zwrite="0" blend="one,one" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_lmap" src="internal\internal_light_att"/>
+				<texture name="s_att" src="internal\internal_light_attclip"/>
+			</pass>
+		</l_spot>
+	</option>
+</shader>

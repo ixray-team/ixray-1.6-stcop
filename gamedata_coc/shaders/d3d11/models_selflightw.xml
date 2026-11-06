@@ -1,0 +1,12 @@
+<shader>
+	<normal_hq emissive="1">
+		<pass vs="deffer_model" ps="deffer_base" stencil="always,255,127,keep,replace,keep" stencil_ref="1">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal_hq>
+	<l_special emissive="1">
+		<pass vs="deffer_model" ps="accum_emissivew" zwrite="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</l_special>
+</shader>

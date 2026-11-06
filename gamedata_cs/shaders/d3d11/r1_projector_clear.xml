@@ -1,0 +1,5 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="r1_projector_clear" zfunc="always" zwrite="0"/>
+	</normal>
+</shader>

@@ -1,0 +1,8 @@
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="particle" ps="particle_hard" zfunc="always" zwrite="0" blend="srcalpha,one">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</normal>
+</shader>

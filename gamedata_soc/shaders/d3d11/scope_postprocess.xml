@@ -1,0 +1,20 @@
+<shader>
+	<normal>
+		<pass vs="stub_notransform_postpr" ps="scope_postprocess" zfunc="always" zwrite="0">
+			<texture name="s_base0" src="$user$generic0"/>
+			<texture name="s_base1" src="$user$generic0"/>
+			<texture name="s_noise" src="fx\fx_noise2"/>
+			<texture name="s_scope_tonemap" src="$user$tonemap"/>
+		</pass>
+	</normal>
+	<l_special>
+		<pass vs="stub_notransform_postpr" ps="scope_postprocess_cm" zfunc="always" zwrite="0">
+			<texture name="s_base0" src="$user$generic0"/>
+			<texture name="s_base1" src="$user$generic0"/>
+			<texture name="s_noise" src="fx\fx_noise2"/>
+			<texture name="s_scope_tonemap" src="$user$tonemap"/>
+			<texture name="s_grad0" src="$user$scope_cmap0"/>
+			<texture name="s_grad1" src="$user$scope_cmap1"/>
+		</pass>
+	</l_special>
+</shader>

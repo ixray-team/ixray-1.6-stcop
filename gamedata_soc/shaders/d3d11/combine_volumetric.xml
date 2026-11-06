@@ -1,0 +1,8 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="combine_volumetric" zfunc="always" zwrite="0" blend="one,one">
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_vollight" src="$user$generic2"/>
+		</pass>
+	</normal>
+</shader>

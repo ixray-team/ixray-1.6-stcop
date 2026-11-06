@@ -1,0 +1,14 @@
+<shader r1_static="1">
+	<normal>
+		<pass vs="effects_sun" ps="stub_srgb" zwrite="0" blend="srcalpha,one">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal>
+			<pass vs="effects_sun" ps="stub_default" zwrite="0" blend="srcalpha,one">
+				<texture name="s_base" src="@base"/>
+			</pass>
+		</normal>
+	</option>
+</shader>

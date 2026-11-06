@@ -1,0 +1,7 @@
+<shader>
+	<normal>
+		<pass vs="effects_wallmark" ps="stub_default_ma" zwrite="0" blend="destcolor,srccolor" color="rgb">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

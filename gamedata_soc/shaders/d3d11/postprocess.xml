@@ -1,0 +1,18 @@
+<shader>
+	<normal>
+		<pass vs="stub_notransform_postpr" ps="postprocess" zfunc="always" zwrite="0">
+			<texture name="s_base0" src="$user$backbuffer"/>
+			<texture name="s_base1" src="$user$backbuffer"/>
+			<texture name="s_noise" src="fx\fx_noise2"/>
+		</pass>
+	</normal>
+	<l_special>
+		<pass vs="stub_notransform_postpr" ps="postprocess_CM" zfunc="always" zwrite="0">
+			<texture name="s_base0" src="$user$backbuffer"/>
+			<texture name="s_base1" src="$user$backbuffer"/>
+			<texture name="s_noise" src="fx\fx_noise2"/>
+			<texture name="s_grad0" src="$user$cmap0"/>
+			<texture name="s_grad1" src="$user$cmap1"/>
+		</pass>
+	</l_special>
+</shader>

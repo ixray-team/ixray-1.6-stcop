@@ -1,0 +1,9 @@
+<shader>
+	<l_special sort="3" distort="1">
+		<pass vs="particle" ps="particle_distort" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="@base"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</l_special>
+</shader>

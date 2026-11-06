@@ -1,0 +1,7 @@
+<shader>
+	<normal sort="2" strict="1" distort="1">
+		<pass vs="model_distort" ps="model_green_energybar" zwrite="0" blend="srcalpha,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+</shader>

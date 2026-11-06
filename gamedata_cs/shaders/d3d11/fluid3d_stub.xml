@@ -1,0 +1,7 @@
+<shader>
+	<normal sort="2" strict="1">
+		<pass vs="stub_default" ps="stub_default" zwrite="0" blend="one,one">
+			<texture name="s_base" src="water\water_ryaska1"/>
+		</pass>
+	</normal>
+</shader>

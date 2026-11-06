@@ -1,0 +1,8 @@
+<shader>
+	<normal>
+		<pass vs="stub_notransform_t" ps="distort" zfunc="always" zwrite="0">
+			<texture name="s_base" src="$user$generic"/>
+			<texture name="s_distort" src="$user$generic1"/>
+		</pass>
+	</normal>
+</shader>

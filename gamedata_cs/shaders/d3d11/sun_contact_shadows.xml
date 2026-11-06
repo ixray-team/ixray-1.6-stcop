@@ -1,0 +1,9 @@
+<shader>
+	<normal>
+		<pass vs="stub_fullscreen_triangle" ps="sun_contact_shadows" zfunc="always" zwrite="0" cull="none" stencil="0" color="rgba">
+			<texture name="s_blue_noise" src="shaders\blue_noise_3x3"/>
+			<texture name="s_position" src="$user$position"/>
+			<texture name="s_normal" src="$user$normal"/>
+		</pass>
+	</normal>
+</shader>

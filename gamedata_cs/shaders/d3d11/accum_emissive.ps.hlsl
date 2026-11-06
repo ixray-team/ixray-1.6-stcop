@@ -1,0 +1,10 @@
+#include "common.hlsli"
+
+#include "shared\extra_cb.hlsli"
+
+float4 main(p_bumped_new I) : SV_Target
+{
+	float3 Color = s_base.Sample(smp_base, I.tcdh.xy).xyz * 4.0f;
+    return float4(GammaToLinear(Color) * ui_emissive_tint.xyz, 1.0f);
+}
+

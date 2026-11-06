@@ -1,0 +1,10 @@
+<shader>
+	<l_special>
+		<pass vs="editor_material_preview" ps="editor_material_preview">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_bump" src="@second"/>
+			<texture name="s_bumpX" src="@second#"/>
+			<texture name="s_detail" src="@detail"/>
+		</pass>
+	</l_special>
+</shader>

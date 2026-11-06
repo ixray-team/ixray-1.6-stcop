@@ -1,0 +1,22 @@
+<shader>
+	<normal sort="3" strict="1" distort="1">
+		<pass vs="particle" ps="particle_add" zwrite="0" blend="one,one">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</normal>
+	<normal_hud sort="3" strict="1" distort="1">
+		<pass vs="particle" ps="particle_add" zwrite="0" blend="one,one">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_position" src="$user$position"/>
+			<define name="DISABLE_SOFT_PARTICLES" value="1"/>
+		</pass>
+	</normal_hud>
+	<l_special sort="3" distort="1">
+		<pass vs="particle" ps="particle_distort" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="@second"/>
+			<texture name="s_position" src="$user$position"/>
+		</pass>
+	</l_special>
+</shader>

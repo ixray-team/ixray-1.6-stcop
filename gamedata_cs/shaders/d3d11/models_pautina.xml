@@ -1,0 +1,18 @@
+<shader>
+	<normal sort="3" strict="1">
+		<pass vs="model_distort4ghost" ps="particle_hard" zwrite="0" blend="srccolor,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<normal_ui sort="3" strict="1">
+		<pass vs="model_distort4ghost" ps="ui_particle" zwrite="0" blend="srccolor,invsrcalpha" aref="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal_ui>
+	<l_special sort="3" strict="1" distort="1">
+		<pass vs="model_distort4ghost" ps="particle_distort_hard" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_distort" src="pfx\pfx_dist_glass"/>
+		</pass>
+	</l_special>
+</shader>

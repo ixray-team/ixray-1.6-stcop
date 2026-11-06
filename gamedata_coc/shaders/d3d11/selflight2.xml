@@ -1,0 +1,38 @@
+<shader r1_static="1">
+	<normal emissive="1">
+		<pass vs="deffer_base" ps="deffer_base" stencil="always,255,127,keep,replace,keep" stencil_ref="1">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</normal>
+	<l_special emissive="1">
+		<pass vs="deffer_base" ps="accum_emissivel" zwrite="0">
+			<texture name="s_base" src="@base"/>
+		</pass>
+	</l_special>
+	<option name="USE_R1_STATIC_LIGHTING">
+		<normal>
+			<pass vs="r1_selflight" ps="r1_selflight">
+				<texture name="s_base" src="@base"/>
+			</pass>
+		</normal>
+		<l_point>
+			<pass vs="r1_selflight_point" ps="add_point" zwrite="0" blend="one,one" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_lmap" src="internal\internal_light_attpoint"/>
+				<texture name="s_att" src="internal\internal_light_attpoint"/>
+			</pass>
+		</l_point>
+		<l_spot>
+			<pass vs="r1_selflight_spot" ps="add_spot" zwrite="0" blend="one,one" aref="0">
+				<texture name="s_base" src="@base"/>
+				<texture name="s_lmap" src="internal\internal_light_att"/>
+				<texture name="s_att" src="internal\internal_light_attclip"/>
+			</pass>
+		</l_spot>
+		<l_special>
+			<pass vs="r1_selflight" ps="r1_selflight">
+				<texture name="s_base" src="@base"/>
+			</pass>
+		</l_special>
+	</option>
+</shader>

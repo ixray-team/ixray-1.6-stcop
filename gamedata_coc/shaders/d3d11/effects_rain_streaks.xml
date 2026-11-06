@@ -1,0 +1,9 @@
+<shader>
+	<normal>
+		<pass vs="effects_rain_streaks" ps="effects_rain_streaks" zwrite="0" blend="srcalpha,invsrcalpha">
+			<texture name="s_base" src="@base"/>
+			<texture name="s_rain_refraction" src="$user$rain_refraction"/>
+			<texture name="s_position" src="$user$rain_depth"/>
+		</pass>
+	</normal>
+</shader>

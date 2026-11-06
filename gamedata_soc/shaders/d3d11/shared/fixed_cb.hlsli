@@ -1,0 +1,137 @@
+#ifndef FIXED_CB_HLSLI
+#define FIXED_CB_HLSLI
+
+#ifndef __cplusplus
+#include "shared\cbuffer.hlsli"
+#endif
+
+CBUFFER(CBFrame, 0)
+	float4 timers;
+	float4 fog_plane;
+	float4 fog_params;
+	float4 fog_color;
+	float4 L_sun_color;
+	float4 L_sun_dir_w;
+	float4 L_sun_dir_e;
+	float4 L_hemi_color;
+	float4 L_ambient;
+	float4 L_sky_color;
+	float4 env_wind;
+	float4 water_intensity;
+	float4 sun_shafts_intensity;
+	float4 rain_params;
+	float4 nvg_color;
+	float4 m_hud_params;
+	float4 m_zoom_deviation;
+	float4 m_affects;
+	float4 m_actor_params;
+	float4 m_timearrow;
+	float4 m_timearrow2;
+	float4 test_exp_to_shaders_1;
+	float4 test_exp_to_shaders_2;
+	float4 color_params;
+	float4 color_grading;
+	float4 c_brightness;
+	float4 c_colormap;
+	float4 hud_rain;
+	float4 m_digiclock;
+	float def_aref;
+CBUFFER_END
+
+CBUFFER(CBView, 1)
+	float3x4 m_V;
+	float4x4 m_P;
+	float4x4 m_VP;
+	float3x4 m_invV;
+	float4x4 m_invP;
+	float4x4 m_VP_old;
+	float4x4 m_invVP_old;
+	float3 eye_position;
+	float3 eye_direction;
+	float3 eye_normal;
+	float4 m_taa_jitter;
+	float4 screen_res;
+	float4 scaled_screen_res;
+	float4 pos_decompression_params2;
+CBUFFER_END
+
+CBUFFER(CBObject, 2)
+	float3x4 m_W;
+	float3x4 m_WV;
+	float4x4 m_WVP;
+	float4x4 m_WVP_old;
+	float4 L_dynamic_props;
+	float4x4 m_plmap_xform;
+	float4 m_plmap_clamp[2];
+CBUFFER_END
+
+CBUFFER(CBMaterial, 3)
+	float4 dt_params;
+	float m_AlphaRef;
+	float4 m_lmap[2];
+	float4 tfactor;
+CBUFFER_END
+
+CBUFFER(CBLight, 4)
+	float4 Ldynamic_color;
+	float4 Ldynamic_pos;
+	float4 Ldynamic_dir;
+	int Ldynamic_hud;
+	float4x4 m_shadow_sun[3];
+	float4x4 m_shadow;
+	float3x4 m_sunmask;
+	float4x4 L_dynamic_xform;
+	float3 vMinBounds;
+	float3 vMaxBounds;
+	float4 FrustumClipPlane[6];
+	float4 SunCaptureDirectionDepth[3];
+	float4 SunReceiverWarpBias[3];
+	float4 SunCacheParams;
+	float4 sun_contact_ray;
+	float4 sun_contact_depth;
+	float4 sun_contact_fade;
+CBUFFER_END
+
+CBUFFER(CBPass, 5)
+	float4x4 m_P_hud;
+	float4x4 m_texgen;
+	float4x4 m_xform;
+	float4x4 m_xform_v;
+	float4 consts;
+	float4 wave;
+	float4 wind;
+	float4 consts_old;
+	float4 wave_old;
+	float4 wind_old;
+	float4 c_scale;
+	float4 c_bias;
+	float4 c_sun;
+	float4x4 m_invP_hud;
+	float4 mblur_params;
+CBUFFER_END
+
+CBUFFER(CBSkin, 6)
+	float4 skin_reserved;
+CBUFFER_END
+
+#define DRAW_SOURCE_STATIC 0u
+#define DRAW_SOURCE_SKINNED 1u
+#define DRAW_SOURCE_RING 2u
+#define DRAW_SOURCE_MASK 3u
+#define DRAW_PAGE_SHIFT 2u
+#define DRAW_PAGE_MASK 7u
+#define DRAW_QUADS 32u
+
+CBUFFER(CBDraw, 13)
+	float4 L_material;
+	float4 hemi_cube_pos_faces;
+	float4 hemi_cube_neg_faces;
+	float4 L_model_light_color;
+	float4 L_model_light_dir;
+	float triLOD;
+	uint draw_vertex_base;
+	uint draw_source_base;
+	uint draw_flags;
+CBUFFER_END
+
+#endif

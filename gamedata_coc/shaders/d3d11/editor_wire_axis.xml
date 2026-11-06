@@ -1,0 +1,5 @@
+<shader>
+	<normal_hq>
+		<pass vs="stub_notransform_t" ps="simple_color_axis"/>
+	</normal_hq>
+</shader>
