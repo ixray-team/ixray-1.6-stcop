@@ -6,8 +6,6 @@
 #include "../../xrEngine/Rain.h"
 #include "dxRenderDeviceRender.h"
 
-#include "OverlayAPI/FSR4Wrapper.h"
-
 void dxStatsRender::Copy(IStatsRender&_in)
 {
 	*this = *((dxStatsRender*)&_in);
