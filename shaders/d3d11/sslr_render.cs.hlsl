@@ -115,7 +115,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
-		if(SSLR.w < 1.0f && VslrStart >= 0.0f && SslrRoughTrace(GbufferRoughness(O)) < 1.0f)
+		if(SSLR.w < 1.0f && VslrStart >= 0.0f)
 		{
 			// The cube is coarser than the depth buffer: only the cube march starts at its surface
 			float VslrScale = min(1.0f, s_env_dist.SampleLevel(smp_linear, StartPoint, 0.0f).x / max(EPS, length(StartPoint)));
