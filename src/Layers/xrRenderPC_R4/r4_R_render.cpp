@@ -111,7 +111,9 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		// Traverse sector/portal structure
 		if (!dont_test_sectors)
 		{
-			GraphMain.PortalTraverser.traverse	
+			GraphMain.PortalTraverser.ViewportNear = Device.fViewportNear;
+			GraphMain.PortalTraverser.prepare_local_clips((u32)Sectors.size(), (u32)Portals.size());
+			GraphMain.PortalTraverser.traverse
 				(
 				pLastSector,
 				ViewBase,
@@ -157,9 +159,10 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 						dxRender_Visual* root = sector->root();
 						g_StaticTraversalStats.BeginSector(sector);
 
-						for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++) 
+						xr_vector<CFrustum>& Frustums = GraphMain.PortalTraverser.local_frustums[sector->index];
+						for (u32 v_it = 0; v_it < Frustums.size(); v_it++)
 						{
-							GraphMain.View = &(sector->r_frustums[v_it]);
+							GraphMain.View = &Frustums[v_it];
 							GraphMain.add_Static((dxRender_Visual*)root, GraphMain.View->getMask());
 						}
 						g_StaticTraversalStats.EndSector();
@@ -192,7 +195,7 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 	}
 }
 
-void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors)
+void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors, bool ParticlesOnly)
 {
 	PROF_EVENT("collect_dynamic")
 	MainDynamic.clear();
@@ -254,25 +257,26 @@ void CRender::CollectMainDynamic(bool deffered, bool dont_test_sectors)
 		}
 		if (dont_test_sectors)
 		{
-			CollectMainRenderable(spatial, deffered);
+			CollectMainRenderable(spatial, deffered, ParticlesOnly);
 		}
 		else
 		{
-			if	(GraphMain.PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
-			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
+			if	(!GraphMain.PortalTraverser.IsVisited(sector->index))	continue;	// inactive (untouched) sector
+			xr_vector<CFrustum>& Frustums = GraphMain.PortalTraverser.local_frustums[sector->index];
+			for (u32 v_it=0; v_it<Frustums.size(); v_it++)
 			{
-				CFrustum&	view	= sector->r_frustums[v_it];
+				CFrustum&	view	= Frustums[v_it];
 				if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
 
-				CollectMainRenderable(spatial, deffered);
+				CollectMainRenderable(spatial, deffered, ParticlesOnly);
 			}
 		}
 	}
 }
 
-void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered)
+void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered, bool ParticlesOnly)
 {
-	if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
+	if (!ParticlesOnly && (spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
 	{
 		// renderable
 		if (IRenderable* renderable = spatial->dcast_Renderable())
@@ -310,6 +314,21 @@ void CRender::CollectMainRenderable(ISpatial* spatial, bool deffered)
 			MainDynamic.push_back({ renderable, nullptr, nullptr });
 		}
 	}
+}
+
+// Particles are simulated in parallel with the frame, so they are collected right before they are
+// drawn. The rest of the scene is already in the graph.
+void CRender::CaptureMainParticles()
+{
+	PROF_EVENT("capture_particles");
+	if (!pLastSector)
+	{
+		return;
+	}
+
+	GraphMain.marker++;
+	CollectMainDynamic(false, Sectors.size() <= 1, true);
+	RenderMainDynamic();
 }
 
 void CRender::RenderMainDynamic()
@@ -443,7 +462,7 @@ void CRender::RenderUI(Fcolor* color)
 
 // What Render() needs to reach the sun pass, known before FrameMove. A wrong guess only costs a
 // collection nobody draws, or a collection on the primary thread.
-bool CRender::CanCollectSunOnWorker()
+bool CRender::CanCollectSceneOnWorker()
 {
 	if (Device.IsEditorMode() || LightingModeIsStaticRender() || m_bFirstFrameAfterReset || !GraphMain.b_loaded)
 	{
@@ -639,11 +658,16 @@ void CRender::Render()
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
 	Device.Statistic->RenderCALC.Begin			();
-	GraphMain.r_pmask(true, false, true); // enable priority "0",+ capture wmarks
+	// The editors collect the forward geometry in render_forward
+	GraphMain.CollectForwardTogether = !EditorMode;
+	o.distortion = !EditorMode && o.distortion_enabled;
+	GraphMain.r_pmask(true, !EditorMode, true); // priority "0", wmarks and, in one collection, priority "1"
 	phase										= PHASE_NORMAL;
 
 	render_main									(Cmd, true);
-	GraphMain.r_pmask(true, false); // disable priority "1"
+	GraphMain.r_pmask(true, false);
+	GraphMain.CollectForwardTogether = false;
+	o.distortion = false;
 	Device.Statistic->RenderCALC.End			();
 
 	bool	split_the_scene_to_minimize_wait		= false;
@@ -806,33 +830,8 @@ void CRender::Render()
 		Wallmarks->Render(Cmd);
 	}
 
-	// Update incremental shadowmap-visibility solver
-	{
-		GPU_EVENT(DEFER_FLUSH_OCCLUSION);
-
-		for (u32 it = 0; it < Lights_LastFrame.size(); it++)
-		{
-			if (0 == Lights_LastFrame[it])
-			{
-				continue;
-			}
-
-			try
-			{
-				Lights_LastFrame[it]->svis.flushoccq();
-			}
-			catch (...)
-			{
-				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-			}
-		}
-
-		Lights_LastFrame.clear	();
-	}
-
 	//	TODO: DX10: Implement DX10 rain.
-	const bool PbrRainPuddles = !o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES) && (o.HasRainPuddleMask || o.ProceduralRainPuddles);
-	if (ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF) || PbrRainPuddles)
+	if (IsRainPassEnabled())
 	{
 		GPU_EVENT(DEFER_RAIN);
 		render_rain(Cmd);
@@ -894,15 +893,21 @@ void CRender::Render()
 
 void CRender::render_forward(GfxCmdList& Cmd)
 {
-	VERIFY(0 == GraphMain.mapDistort.size() + GraphMain.mapHUDDistort.size());
 	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
 
 	// level enable priority "1"
 	GraphMain.r_pmask(false, true);
 	phase = PHASE_NORMAL;
 
-	render_main(Cmd, false);
-	GraphMain.mapLOD.clear();
+	if (Device.IsEditorMode())
+	{
+		render_main(Cmd, false);
+		GraphMain.mapLOD.clear();
+	}
+	else
+	{
+		CaptureMainParticles();
+	}
 
 	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size();
 	bSpecial |= GraphMain.mapNormalPasses[1][1].size() || GraphMain.mapMatrixPasses[1][1].size();

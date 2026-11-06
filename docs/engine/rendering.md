@@ -56,22 +56,30 @@ Main order:
 4. Clear `rt_Generic_0` and `rt_Velocity`, then render sky.
 5. Build `ViewBase`; run `HOM.Render` here unless `R2FLAG_EXP_MT_CALC` is set.
 6. Optional `R2FLAG_ZFILL` depth pass through `render_main(false, true)`.
-7. `render_main(true)` collects visible geometry; `r_dsgraph_render_graph` submits it.
+7. `render_main(true)` collects visible geometry of both priorities; `r_dsgraph_render_graph` submits it.
 8. G-buffer: `phase_scene_begin`, HUD, scope, graph 0, LODs, details, `phase_scene_end`. `R2FLAG_EXP_SPLIT_SCENE` draws graph 0 early; a scope mask disables splitting.
 9. `phase_occq` for lights, wallmarks, sun cascades (`render_sun_cascades`), light accumulation, and `phase_combine`.
 10. Within combine, the renderer calls `render_forward` for forward geometry, puddles, and volumetric combine. Postprocessing is in `r4_rendertarget_phase_*.cpp`.
 
-`PreRenderThread` runs `seqParallelRender`, the `CollectReflections` and `CollectSunCascades` delegates, rain item updates, and particle updates. GPU submission and swapchain operations stay on the primary thread.
+`PreRenderThread` runs `seqParallelRender`, the `CollectGraphs` delegate, rain item updates, and particle updates. GPU submission and swapchain operations stay on the primary thread.
 
-Reflection and sun graphs collect their static geometry on `PreRenderThread`, in parallel with `FrameMove`. `on_idle` calls `BeginReflectionCollect` and `BeginSunCollect` before starting the thread, so these graphs use the camera of the previous frame. A `GraphView` holds a copy of everything the collection reads: phase, camera, FOV, fog and SSA thresholds. Accumulation samples the cascades with the matrices they were captured with, so only their coverage lags by one frame. `render_sun_cascades` joins the collection, appends dynamic objects on the primary thread, and draws. `Render` collects on the primary thread in the editors and on frames `CanCollectSunOnWorker` did not foresee. `GraphMain` has no copy and reads the live device state, because `UI3dStatic` replaces the camera while it submits icons. `level_Unload` and `reset_begin` wait for `PreRenderThread`: both can run inside `FrameMove`, and they delete what the collection reads.
+### Render graphs
 
-## Screen-space AO and reflections
+A graph (`R_dsgraph_structure`) belongs to one view. `GraphView` describes it: phase, sector, frustum, transform, origin, pass mask, and a copy of what the collection reads (camera, FOV, fog, SSA thresholds). A new pass needs a description, not a new collection path:
 
-`phase_combine` runs `PhaseDepthPyramid`, then AO (`r2_ssao_mode`), then `phase_sslr`. `PhaseDepthPyramid` reads depth once in 16x16 tiles (`depth_pyramid.cs.hlsl`). It writes level 0 of the SSLR min-Z HiZ `rt_sslr_hiz`, where HUD pixels get the depth of the reflection cube (far plane without offscreen reflections), and the GTAO view-z pyramid `rt_ao_depth` (R32F, levels 0-4, XeGTAO depth filter) with HUD view-z stored negative. A UAV stays unbound when its consumer is off. `phase_sslr` reduces HiZ levels 1+ with the exact grid `HiZTraceSSR` expects: the last texel of a level folds the odd remainder.
+| Graph | Phase | Collected | Thread |
+| --- | --- | --- | --- |
+| `GraphMain` | normal | `render_main`, particles before forward | primary |
+| `GraphReflection[6]` | reflect | static, `Build` | `PreRenderThread` |
+| `GraphRain` | shadow map | static, `Build` | `PreRenderThread` |
+| `GraphSun[3]` | shadow map | static with `Build`, dynamic in `append_sun_dynamics` | `PreRenderThread`, then primary |
+| `GraphPass` | any | `BuildFull`: spot shadows, planar puddles, static-lighting dynamic lights | primary, one pass at a time |
 
-GTAO taps `rt_ao_depth` at level `log2(offset px) - 3.3`. `gtao_render` packs view-z and AO into `rt_gtao_0`; `gtao_filter.cs.hlsl` fits AO as a linear function of view-z over 5x5 texels in LDS and writes `rt_ssao_temp` through a UAV at full resolution. SSLR traces in `sslr_render` into `rt_sslr_temp` and `rt_sslr_data`; `sslr_filter` reuses the rays and applies history in one pass. History is clipped to mean ± gamma·sigma of the reused rays (1.0 HQ, 1.5 half resolution). `rt_sslr` and `rt_sslr_old` swap roles every frame (`SslrFlip`): the pass writes `SslrOutput()` and binds the other as `s_sslr_history`; combine binds `SslrOutput()` as `s_refl`, so there is no history copy. Water puddles draw into `rt_sslr_temp` after combine. Water and legacy rain puddles use `ScreenSpaceLocalReflections`, a fixed-point search of up to 15 depth reads that stops once the length along the ray changes by less than 1%. `HiZTraceSSR` returns `VslrStart`, the view-space length the on-screen trace covered; a missed ray continues in the cube march `FastViewReflections` from there (12 steps, one jitter per ray, refinement after the loop), and a ray traced to the fog distance on screen skips it. Rays behind the weapon cross the cube depth stored for HUD pixels and fall back to the cube. The sky irradiance in `sslr_render` is evaluated only where fog or a cube-less miss uses it. `SslrWeight` (`metalic_roughness_ambient.hlsli`) is the share of SSLR in the image from the luminance of the env-BRDF Fresnel term (none below 0.5%, full from 1%); `sslr_render` and `sslr_filter` skip pixels where it is 0, and `combine_1` blends SSLR with the prefiltered environment by it. `SslrRoughTrace` shortens the trace of rough pixels: the HiZ iteration cap falls from 128 to 24 between roughness 0.5 and 0.7, and above 0.7 misses take the probe colour without the cube march. Screen-space AO occludes only the env fallback of missed SSLR rays; `combine_1` applies it to diffuse, and material AO to traced reflections.
+`Build` is `Begin`, `Traverse`, `CaptureStatic`. `BuildFull` adds `CollectDynamic` before the static geometry, so worker threads calculate skeletons meanwhile, and `CaptureDynamic` after it. Traversal results stay in the graph's `CPortalTraverser`; `CSector` and `CPortal` hold no per-frame state.
 
-By default GTAO renders half resolution and SSLR traces one pixel of each 2x2 quad, rotating per frame, into the top-left quarter of `rt_sslr`/`rt_sslr_data`. `r4_gtao_hq` and `r4_sslr_hq` select full resolution (`o.GtaoHq` / `o.SslrHq`, shader defines `USE_GTAO_HQ` / `USE_SSLR_HQ`); both are read at renderer creation and `vid_restart`. Not compiled or measured yet.
+`on_idle` calls `BeginGraphCollect` before starting `PreRenderThread`. It fills `GraphJobs` in the order the frame draws them, so these views use the camera of the previous frame. Shadow accumulation samples with the matrices used for capture: only coverage lags by a frame. The primary thread calls `WaitGraphJobs` with the jobs it is about to draw. `Render` and `render_rain` collect on the primary thread in the editors and on frames `CanCollectSceneOnWorker` did not foresee. `level_Unload` and `reset_begin` wait for `PreRenderThread`: both can run inside `FrameMove` and delete what the collection reads.
+
+The main scene is collected once per frame: priority 0, priority 1 and wallmarks together. `render_forward` only adds particles through `CaptureMainParticles`, because they are simulated in parallel with the frame. The editors keep two collections. `GraphMain` has no `GraphView` copy and reads the live state, because `UI3dStatic` replaces the camera while it submits icons. It also uses `vis.marker`, while the other graphs deduplicate through `private_visuals`.
 
 ## 3D scope target detector
 

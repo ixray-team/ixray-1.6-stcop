@@ -201,6 +201,17 @@ ICF bool ViewDistortion(const R_dsgraph_structure& Graph)
 	return !Graph.OwnsView && RImplementation.o.distortion;
 }
 
+// With both priorities in one collection, these lists keep the priority they were filled at
+ICF bool IsDistortCollected(const R_dsgraph_structure& Graph, const ShaderElement& Element)
+{
+	return !Graph.CollectForwardTogether || Element.flags.iPriority / 2 == 1;
+}
+
+ICF bool IsWallmarkCollected(const R_dsgraph_structure& Graph, const ShaderElement& Element)
+{
+	return !Graph.CollectForwardTogether || Element.flags.iPriority / 2 == 0;
+}
+
 // The statistics describe the main view; other graphs can run in parallel with it
 ICF CStaticTraversalStats::SectorCounters* ViewStats(const R_dsgraph_structure& Graph)
 {
@@ -445,7 +456,13 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	if (private_marker)
 	{
 		if (!private_visuals.insert((void*)pVisual).second)
+		{
+			if (SpotShadowPass && !SpotShadowBuild)
+			{
+				++SpotShadowDuplicateSkips;
+			}
 			return;
+		}
 	}
 	else if (pVisual->vis.marker == marker)
 	{
@@ -485,7 +502,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		return;
 	}
 
-	if (!SpotShadowPass && !val_bUI && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && !psDeviceFlags.test(rsClearBB))
+	if (!SpotShadowPass && !val_bUI && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2] && IsDistortCollected(*this, *sh_d) && !psDeviceFlags.test(rsClearBB))
 	{
 		mapSorted_T& test = bHUD ? mapHUDDistort : mapDistort;
 		mapSorted_Node* N = test.insertInAnyWay(distSQ);
@@ -570,7 +587,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 			mapEmissive.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh_d });
 		}
 
-		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2] && IsWallmarkCollected(*this, *sh))
 		{
 			mapWmark.insertInAnyWay(distSQ, { SSA, val_pObject, pVisual, *val_pTransform, sh });
 			return;
@@ -639,7 +656,13 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	if (private_marker)
 	{
 		if (!private_visuals.insert((void*)pVisual).second)
+		{
+			if (SpotShadowPass && !SpotShadowBuild)
+			{
+				++SpotShadowDuplicateSkips;
+			}
 			return;
+		}
 	}
 	else
 	{
@@ -681,7 +704,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 	if (!pVisual->shader._get()) return;
 	ShaderElement* sh_d = pVisual->shader->E[ShaderVariant::Special]._get();
 
-	if (!SpotShadowPass && !SpotShadowBuild && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && !psDeviceFlags.test(rsClearBB))
+	if (!SpotShadowPass && !SpotShadowBuild && ViewDistortion(*this) && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2] && IsDistortCollected(*this, *sh_d) && !psDeviceFlags.test(rsClearBB))
 	{
 		mapDistort.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
 	}
@@ -734,18 +757,12 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 			mapEmissive.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh_d });
 		}
 
-		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2])
+		if (!SpotShadowPass && LightingModeIsDynamicRender() && sh->flags.bWmark && pmask[2] && IsWallmarkCollected(*this, *sh))
 		{
 			mapWmark.insertInAnyWay(distSQ, { SSA, nullptr, pVisual, Fidentity, sh });
 			return;
 		}
 
-		if (val_feedback && counter_S == val_feedback_breakp)
-		{
-			val_feedback->rfeedback_static(pVisual);
-		}
-
-		counter_S++;
 	}
 
 	for (u32 iPass = 0; iPass < sh->passes.size(); ++iPass)
@@ -1202,9 +1219,8 @@ void R_dsgraph_structure::CollectSpotShadowStatic(dxRender_Visual* Visual, u32 P
 		case MT_LOD:
 		{
 			// Keep the parent so per-frame collection can select the camera-dependent LOD.
-			if (Visual->vis.marker != marker)
+			if (private_visuals.insert((void*)Visual).second)
 			{
-				Visual->vis.marker = marker;
 				SpotShadowBuild->PerFrameCasters.push_back(Visual);
 				if (SpotShadowBuild->PerFrameReason.empty())
 				{

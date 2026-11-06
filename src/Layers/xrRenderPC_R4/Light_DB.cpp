@@ -221,10 +221,11 @@ void CLight_DB::add_light(light* L)
 			return;
 		if (RImplementation.SectorsCount() > 1)
 		{
-			if (RImplementation.GraphMain.PortalTraverser.i_marker != S->r_marker)
+			if (!RImplementation.GraphMain.PortalTraverser.IsVisited(S->index))
 				return;
 			const Fsphere& sphere = L->SpatialComponent->sphere;
-			if (std::none_of(S->r_frustums.begin(), S->r_frustums.end(), [&](CFrustum& F) { return F.testSphere_dirty(sphere.P, sphere.R); }))
+			xr_vector<CFrustum>& Frustums = RImplementation.GraphMain.PortalTraverser.local_frustums[S->index];
+			if (std::none_of(Frustums.begin(), Frustums.end(), [&](CFrustum& F) { return F.testSphere_dirty(sphere.P, sphere.R); }))
 				return;
 		}
 		RImplementation.L_Dynamic->add(L);

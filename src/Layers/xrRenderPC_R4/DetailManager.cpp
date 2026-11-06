@@ -215,7 +215,7 @@ void CDetailManager::Render(GfxCmdList& Cmd)
 		cache_ReInitialize();
 	}
 
-	in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.IsVisited(RImplementation.pOutdoorSector->index));
 	}
 
 	if(in_outdoor && task_finished.load())

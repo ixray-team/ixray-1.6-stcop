@@ -50,10 +50,6 @@ void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
 	poly.assign(V, vcnt);
 	pFace = face;
 	pBack = back;
-	marker = 0xffffffff;
-	FadeMarker = 0xffffffff;
-	Visits = 0;
-	OnPath = false;
 
 	Fvector N, T;
 
@@ -83,33 +79,18 @@ CSector::~CSector()
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
 
-void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& PortalTraverser)
+void CSector::traverse(CFrustum& F, CPortalTraverser& PortalTraverser)
 {
 	// Register traversal process
-	if (PortalTraverser.own_clips)
+	u32& SectorMarker = PortalTraverser.local_sector_marker[index];
+	xr_vector<CFrustum>& Frustums = PortalTraverser.local_frustums[index];
+	if (SectorMarker != PortalTraverser.i_marker)
 	{
-		u32& marker = PortalTraverser.local_sector_marker[index];
-		xr_vector<CFrustum>& frustums = PortalTraverser.local_frustums[index];
-		if (marker != PortalTraverser.i_marker)
-		{
-			marker = PortalTraverser.i_marker;
-			PortalTraverser.r_sectors.push_back(this);
-			frustums.clear();
-		}
-		frustums.push_back(F);
+		SectorMarker = PortalTraverser.i_marker;
+		PortalTraverser.r_sectors.push_back(this);
+		Frustums.clear();
 	}
-	else
-	{
-		if (r_marker != PortalTraverser.i_marker)
-		{
-			r_marker = PortalTraverser.i_marker;
-			PortalTraverser.r_sectors.push_back(this);
-			r_frustums.clear();
-			r_scissors.clear();
-		}
-		r_frustums.push_back(F);
-		r_scissors.push_back(R_scissor);
-	}
+	Frustums.push_back(F);
 
 	// Search visible portals and go through them
 	sPoly	S,D;
@@ -120,10 +101,10 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& Porta
 		// A portal may be crossed through several openings of one traversal: a sector reached by
 		// two paths needs both frustums. It is never crossed twice on one path, and the visit
 		// limit keeps traversal of dense portal graphs bounded.
-		CPortalTraverser::PortalState* LocalState = PortalTraverser.own_clips ? &PortalTraverser.local_portals[PORTAL->index] : nullptr;
-		u32& portal_marker = LocalState ? LocalState->Marker : PORTAL->marker;
-		u32& Visits = LocalState ? LocalState->Visits : PORTAL->Visits;
-		bool& OnPath = LocalState ? LocalState->OnPath : PORTAL->OnPath;
+		CPortalTraverser::PortalState& State = PortalTraverser.local_portals[PORTAL->index];
+		u32& portal_marker = State.Marker;
+		u32& Visits = State.Visits;
+		bool& OnPath = State.OnPath;
 		if (portal_marker != PortalTraverser.i_marker)
 		{
 			portal_marker	= PortalTraverser.i_marker;
@@ -154,7 +135,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& Porta
 		{
 			Visits++;
 			OnPath				= true;
-			pSector->traverse	(F,R_scissor,PortalTraverser);
+			pSector->traverse	(F,PortalTraverser);
 			OnPath				= false;
 			continue;
 		}
@@ -188,65 +169,10 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& Porta
 		sPoly* P			= F.ClipPoly(S,D);
 		if (0==P)			continue;
 
-		// Scissor and optimized HOM-testing
-		_scissor			scissor	;
-		if (PortalTraverser.i_options&CPortalTraverser::VQ_SCISSOR)
+		// Cull by HOM (slower algo)
+		if ((PortalTraverser.i_options&CPortalTraverser::VQ_HOM) && !RImplementation.HOM.visible(*P))
 		{
-			// Build scissor rectangle in projection-space
-			Fbox2	bb;	bb.invalidate(); float depth = flt_max;
-			sPoly&	p	= *P;
-			for		(u32 vit=0; vit<p.size(); vit++)	{
-				Fvector4	t;	
-				Fmatrix&	M	= PortalTraverser.i_mXFORM_01;
-				Fvector&	v	= p[vit];
-
-				t.x = v.x*M._11 + v.y*M._21 + v.z*M._31 + M._41;
-				t.y = v.x*M._12 + v.y*M._22 + v.z*M._32 + M._42;
-				t.z = v.x*M._13 + v.y*M._23 + v.z*M._33 + M._43;
-				t.w = v.x*M._14 + v.y*M._24 + v.z*M._34 + M._44;
-				t.mul	(1.f/t.w);
-
-				if (t.x < bb.min.x)	bb.min.x	= t.x; 
-				if (t.x > bb.max.x) bb.max.x	= t.x;
-				if (t.y < bb.min.y)	bb.min.y	= t.y; 
-				if (t.y > bb.max.y) bb.max.y	= t.y;
-				if (t.z < depth)	depth		= t.z;
-			}
-			if (depth<EPS)	{
-				scissor	= R_scissor;
-
-				// Cull by HOM (slower algo)
-				if  (
-					(PortalTraverser.i_options&CPortalTraverser::VQ_HOM) && 
-					(!RImplementation.HOM.visible(*P))
-					)	continue;
-			} else {
-				// perform intersection (this is just to be sure, it is probably clipped in 3D already)
-				if (bb.min.x > R_scissor.min.x)	scissor.min.x = bb.min.x; else scissor.min.x = R_scissor.min.x;
-				if (bb.min.y > R_scissor.min.y)	scissor.min.y = bb.min.y; else scissor.min.y = R_scissor.min.y;
-				if (bb.max.x < R_scissor.max.x) scissor.max.x = bb.max.x; else scissor.max.x = R_scissor.max.x;
-				if (bb.max.y < R_scissor.max.y) scissor.max.y = bb.max.y; else scissor.max.y = R_scissor.max.y;
-				scissor.depth	= depth;
-
-				// Msg	("scissor: (%f,%f)-(%f,%f)", scissor.min.x, scissor.min.y, scissor.max.x, scissor.max.y);
-				// Check if box is non-empty
-				if (scissor.min.x >= scissor.max.x)	continue;
-				if (scissor.min.y >= scissor.max.y)	continue;
-
-				// Cull by HOM (faster algo)
-				if  (
-					(PortalTraverser.i_options&CPortalTraverser::VQ_HOM) && 
-					(!RImplementation.HOM.visible(scissor,depth))
-					)	continue;
-			}
-		} else {
-			scissor	= R_scissor;
-
-			// Cull by HOM (slower algo)
-			if  (
-				(PortalTraverser.i_options&CPortalTraverser::VQ_HOM) && 
-				(!RImplementation.HOM.visible(*P))
-				)	continue;
+			continue;
 		}
 
 		// Create _new_ frustum and recurse
@@ -254,7 +180,7 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor, CPortalTraverser& Porta
 		Clip.CreateFromPortal	(P, PORTAL->P.n, PortalTraverser.i_vBase,PortalTraverser.i_mXFORM);
 		Visits++;
 		OnPath					= true;
-		pSector->traverse		(Clip,scissor,PortalTraverser);
+		pSector->traverse		(Clip,PortalTraverser);
 		OnPath					= false;
 	}
 }

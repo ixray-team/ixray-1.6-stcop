@@ -94,7 +94,6 @@ public:
 		u32		l_shadowed,	l_unshadowed;
 		s32		s_used,		s_merged,	s_finalclip;
 		u32		o_queries,	o_culled;
-		u32		ic_total,	ic_culled;
 	}			stats;
 public:
 	// Sector detection and visibility
@@ -118,6 +117,26 @@ public:
 	R_dsgraph_structure GraphMain;
 	xr_array<R_dsgraph_structure, 6> GraphReflection;
 	xr_array<R_dsgraph_structure, 3> GraphSun;
+	R_dsgraph_structure GraphRain;
+	R_dsgraph_structure GraphPass;	// primary thread passes that follow one another: lights, puddles
+
+	R_dsgraph_structure& BuildPassGraph(GfxCmdList& Cmd, const GraphView& View, CObject* Ignore = nullptr);
+
+	// Every graph with a view of its own
+	template <class Callback>
+	void ForEachViewGraph(Callback&& Function)
+	{
+		for (R_dsgraph_structure& Graph : GraphReflection)
+		{
+			Function(Graph);
+		}
+		for (R_dsgraph_structure& Graph : GraphSun)
+		{
+			Function(Graph);
+		}
+		Function(GraphRain);
+		Function(GraphPass);
+	}
 
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
@@ -153,7 +172,6 @@ public:
 	CRenderTarget*												Target;			// Render-target
 
 	CLight_DB													Lights;
-	xr_vector<light*>											Lights_LastFrame;
 	SMAP_Allocator												LP_smap_pool;
 	light_Package												LP_normal;
 	light_Package												LP_pending;
@@ -180,7 +198,6 @@ private:
 	int LastSunCacheMode = 0;
 	bool IsSunCacheInitialized = false;
 
-	void PrepareSunCascade(u32 Index);
 	u32 GetSunCascadePlacement(u32 Index) const;
 	void ResetSunShadowCache();
 	void BeginSunShadowFrame(u32 Frame);
@@ -204,8 +221,9 @@ private:
 	};
 	xr_vector<MainDynamicItem>		MainDynamic;
 
-	void							CollectMainDynamic			(bool deffered, bool dont_test_sectors);
-	void							CollectMainRenderable		(ISpatial* spatial, bool deffered);
+	void							CollectMainDynamic			(bool deffered, bool dont_test_sectors, bool ParticlesOnly = false);
+	void							CollectMainRenderable		(ISpatial* spatial, bool deffered, bool ParticlesOnly);
+	void							CaptureMainParticles		();
 	void							RenderMainDynamic			();
 
 public:
@@ -216,29 +234,41 @@ public:
 	void							render_menu					(GfxCmdList& Cmd);
 	void							render_rain					(GfxCmdList& Cmd);
 
-	void							render_sun_cascade			(GfxCmdList& Cmd, u32 cascade_ind);
 	void							init_cacades				();
 	void							render_sun_cascades			(GfxCmdList& Cmd);
 	int GetSunShadowCacheMode() const;
 	void GetSunShadowConstants(u32 Index, Fmatrix& Transform, Fvector4& Capture, Fvector4& Warp) const;
 	void DumpSunShadowCache() const;
 	GraphView MakeGraphView(u32 Phase) const;
-	GraphView ReflectionBaseView;
 	GraphView SunView;
 
-	void begin_reflection_collect();
-	void collect_reflections();
-	void render_reflections(GfxCmdList& Cmd);
-	void wait_reflection_collect();
+	// Graphs the pre-render stage collects in this frame, in order. The primary thread only waits
+	// for the jobs it is about to draw.
+	xr_vector<GraphCollectJob> GraphJobs;
+	std::atomic<u32> GraphJobsDone{ 0 };
+	u32 ReflectionJobsEnd = 0;
+	u32 RainJobsEnd = 0;
+	u32 SunJobsEnd = 0;
 
-	bool CanCollectSunOnWorker();
+	void BeginGraphCollect();
+	void CollectGraphs();
+	void WaitGraphJobs(u32 Count);
+
+	void begin_reflection_collect();
+	void render_reflections(GfxCmdList& Cmd);
+
+	bool CanCollectSceneOnWorker();
+	bool IsRainPassEnabled() const;
+	void begin_rain_collect();
+	bool prepare_rain_collect();
+	GraphView MakeRainView() const;
 	void begin_sun_collect();
-	void collect_sun_cascades();
 	void prepare_sun_collect(u32 Frame);
+	GraphView MakeSunView(u32 Cascade) const;
+	bool IsSunCascadeCollected(u32 Cascade) const;
 	void collect_sun_graphs();
 	void RestoreSunCascadeChain();
 	void append_sun_dynamics();
-	void wait_sun_collect();
 	bool prepare_sun_cascade_xforms(u32 Frame);
 
 	Fvector reflection_cam_pos;
@@ -248,8 +278,6 @@ public:
 	float reflection_near = 0.2f;
 	float reflection_far = 1000.f;
 	IRender_Sector* reflection_sector = nullptr;
-	std::atomic<u32> reflection_ticket{ 0 };
-	std::atomic<u32> reflection_done{ 0 };
 
 	xr_array<Fmatrix, 3> sun_cascade_xforms{};
 	Fvector sun_cull_cop{};
@@ -258,7 +286,12 @@ public:
 	bool sun_saved_reset_chain = false;
 	bool sun_collect_active = false;
 	u32 SunCollectFrame = u32(-1);
-	std::atomic<bool> SunCollectPending{ false };
+
+	Fmatrix RainTransform = Fidentity;
+	Fvector RainOrigin{};
+	float RainFov = 0.f;
+	bool RainActive = false;
+	u32 RainCollectFrame = u32(-1);
 
 	bool is_render_cubemap = false;
 

@@ -26,21 +26,48 @@ static int			facetable[6][4] = {
 	{ 3, 2, 4, 5 },		{ 1, 0, 7, 6 },
 };
 
-void CRender::render_rain(GfxCmdList& Cmd)
+bool CRender::IsRainPassEnabled() const
+{
+	const bool PbrRainPuddles = !o.dx11_use_legacy_light && ps_r2_ls_flags_ext.test(R4FLAG_RAIN_PUDDLES) && (o.HasRainPuddleMask || o.ProceduralRainPuddles);
+	return ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF) || PbrRainPuddles;
+}
+
+GraphView CRender::MakeRainView() const
+{
+	GraphView View = MakeGraphView(PHASE_SMAP);
+	View.SetSubspace(pOutdoorSector, RainTransform, RainOrigin);
+	return View;
+}
+
+void CRender::begin_rain_collect()
+{
+	if (!CanCollectSceneOnWorker() || !IsRainPassEnabled())
+	{
+		return;
+	}
+
+	// FrameMove increments the counter after this point
+	RainCollectFrame = Device.dwFrame + 1;
+	RainActive = prepare_rain_collect();
+	if (RainActive && pOutdoorSector)
+	{
+		GraphJobs.push_back({ &GraphRain, MakeRainView() });
+	}
+}
+
+// The matrices follow the camera of the previous frame, like the sun cascades
+bool CRender::prepare_rain_collect()
 {
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	static float fRainFov = Device.fFOV;
+	float& fRainFov = RainFov;
 
-	//bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 	float fWetnessFactor = g_pGamePersistent->Environment().wetness_factor;
 
 	if (std::max(fWetnessFactor, fRainFactor) < EPS_L)
 	{
 		fRainFov = Device.fFOV;
-		return;
+		return false;
 	}
-
-	GPU_EVENT(render_rain);
 
 	//	Use light as placeholder for rain data.
 	// нет необходимости создавать каждый кадр структуру размером почти в киллобайт на стеке.
@@ -194,36 +221,56 @@ void CRender::render_rain(GfxCmdList& Cmd)
 		RainLight.X.D.maxY = limit;
 	}
 
-	// Begin SMAP-render
-	bool bSpecialFull = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
-	VERIFY(!bSpecialFull);
+	RainTransform = cull_xform;
+	RainOrigin = cull_COP;
+	RainLight.X.D.combine = cull_xform;
+	return true;
+}
+
+void CRender::render_rain(GfxCmdList& Cmd)
+{
+	// Editors and frames the pre-render stage could not foresee collect on this thread
+	const bool EditorMode = Device.IsEditorMode();
+	if (EditorMode || RainCollectFrame != Device.dwFrame)
+	{
+		RainCollectFrame = Device.dwFrame;
+		RainActive = prepare_rain_collect();
+		if (RainActive && !EditorMode && pOutdoorSector)
+		{
+			GraphRain.Build(MakeRainView());
+		}
+	}
+	else
+	{
+		WaitGraphJobs(RainJobsEnd);
+	}
+
+	if (!RainActive)
+	{
+		return;
+	}
+
+	GPU_EVENT(render_rain);
+	light& RainLight = *Lights.rain_light;
 
 	HOM.Disable();
 	phase = PHASE_SMAP;
-	GraphMain.r_pmask(true, false);
 
-	// Fill the database
-	GraphMain.r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, false);
-
-	// Finalize & Cleanup
-	RainLight.X.D.combine = cull_xform;
+	R_dsgraph_structure& Graph = EditorMode ? BuildPassGraph(Cmd, MakeRainView()) : GraphRain;
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
 
-	bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
-	bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
+	bool bNormal = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
+	bool bSpecial = Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
 
-	if (bNormal || bSpecial) 
+	if (bNormal || bSpecial)
 	{
 		Target->phase_smap_direct(Cmd, &RainLight, SE_SUN_RAIN_SMAP);
 		Cmd.SetObjectTransform(Fidentity);
 		Cmd.SetView(Fidentity, RainLight.X.D.combine);
-		GraphMain.r_dsgraph_render_graph(0);
+		Graph.r_dsgraph_render_graph(0);
 	}
-
-	// End SMAP-render
-	GraphMain.r_pmask(true, false);
 
 	// Restore XForms
 	Cmd.SetObjectTransform(Fidentity);

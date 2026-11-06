@@ -10,7 +10,6 @@ public:
 	{
 		VQ_HOM = (1 << 0),
 		VQ_SSA = (1 << 1),
-		VQ_SCISSOR = (1 << 2),
 		VQ_FADE = (1 << 3), // requires SSA to work
 	};
 
@@ -22,23 +21,21 @@ public:
 	Fvector i_vBase;								 // input:	"view" point
 	float NearDistance;								 // portals closer to the view point are crossed without narrowing
 	Fmatrix i_mXFORM;								 // input:	4x4 xform
-	Fmatrix i_mXFORM_01;							 //
 	CSector* i_start;								 // input:	starting point
 	xr_vector<IRender_Sector*> r_sectors;			 // result
 	xr_vector<std::pair<CPortal*, float>> f_portals; //
 	ref_shader f_shader;
 	ref_geom f_geom;
 
-	// Reflection faces traverse together with the main view, so their clips
-	// stay here instead of on CSector / CPortal.
+	// Views can traverse in parallel, so the clips stay here instead of on CSector / CPortal.
 	struct PortalState
 	{
 		u32 Marker;
 		u32 Visits;
+		u32 FadeMarker;
 		bool OnPath;
 	};
-	bool own_clips = false;
-	float ViewportNear = 0.f; // used with own_clips, the device value can change under a worker
+	float ViewportNear = 0.f; // a copy: the device value can change under a worker
 	xr_vector<xr_vector<CFrustum>> local_frustums;
 	xr_vector<u32> local_sector_marker;
 	xr_vector<PortalState> local_portals;
@@ -48,6 +45,7 @@ public:
 	void initialize();
 	void destroy();
 	void prepare_local_clips(u32 sector_count, u32 portal_count);
+	bool IsVisited(u32 SectorIndex) const { return SectorIndex < local_sector_marker.size() && local_sector_marker[SectorIndex] == i_marker; }
 	void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
 	void fade_portal(CPortal* _p, float ssa);
 	void fade_render(GfxCmdList& Cmd);

@@ -183,59 +183,44 @@ void CRender::prepare_sun_collect(u32 Frame)
 
 void CRender::begin_sun_collect()
 {
-	if (!CanCollectSunOnWorker())
+	if (!CanCollectSceneOnWorker())
 	{
 		return;
 	}
 
 	// FrameMove increments the counter after this point
 	prepare_sun_collect(Device.dwFrame + 1);
-	SunCollectPending.store(sun_collect_active, std::memory_order_release);
-}
 
-void CRender::wait_sun_collect()
-{
-	SunCollectPending.wait(true, std::memory_order_acquire);
-}
-
-void CRender::collect_sun_cascades()
-{
-	if (!SunCollectPending.load(std::memory_order_acquire))
+	const u32 Count = std::min(sun_cascade_count, (u32)GraphSun.size());
+	for (u32 Cascade = 0; Cascade < Count; ++Cascade)
 	{
-		return;
+		if (IsSunCascadeCollected(Cascade))
+		{
+			GraphJobs.push_back({ &GraphSun[Cascade], MakeSunView(Cascade) });
+		}
 	}
+}
 
-	collect_sun_graphs();
-	SunCollectPending.store(false, std::memory_order_release);
-	SunCollectPending.notify_all();
+GraphView CRender::MakeSunView(u32 Cascade) const
+{
+	GraphView View = SunView;
+	View.SetSubspace(pOutdoorSector, sun_cascade_xforms[Cascade], sun_cull_cop);
+	return View;
+}
+
+bool CRender::IsSunCascadeCollected(u32 Cascade) const
+{
+	return sun_collect_active && pOutdoorSector && (SunUpdatedMask & (1u << Cascade));
 }
 
 void CRender::collect_sun_graphs()
 {
-	if (sun_collect_active && pOutdoorSector && sun_cascade_count > 0)
+	const u32 Count = std::min(sun_cascade_count, (u32)GraphSun.size());
+	for (u32 Cascade = 0; Cascade < Count; ++Cascade)
 	{
-		const u32 sector_count = (u32)Sectors.size();
-		const u32 portal_count = (u32)Portals.size();
-		const u32 count = std::min(sun_cascade_count, (u32)GraphSun.size());
-
-		for (u32 i = 0; i < count; ++i)
+		if (IsSunCascadeCollected(Cascade))
 		{
-			if (!(SunUpdatedMask & (1u << i)))
-				continue;
-
-			R_dsgraph_structure& Graph = GraphSun[i];
-			Graph.BeginView(SunView);
-			Graph.private_marker = true;
-			Graph.val_pTransform = &Fidentity;
-			Graph.val_bHUD = false;
-			Graph.val_bUI = false;
-			Graph.val_bInvisible = false;
-			Graph.val_pObject = nullptr;
-			Graph.private_visuals.clear();
-			Graph.r_dsgraph_clear_passes();
-			Graph.r_pmask(true, false);
-			Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
-			Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, false);
+			GraphSun[Cascade].Build(MakeSunView(Cascade));
 		}
 	}
 }
@@ -461,27 +446,17 @@ void CRender::append_sun_dynamics()
 	const u32 count = std::min(sun_cascade_count, (u32)GraphSun.size());
 	for (u32 i = 0; i < count; ++i)
 	{
-		if (!(SunUpdatedMask & (1u << i)))
-			continue;
-
-		R_dsgraph_structure& Graph = GraphSun[i];
-		if (!Graph.PortalTraverser.own_clips)
-			continue;
-
-		Graph.r_pmask(true, false);
-		Graph.val_pTransform = &Fidentity;
-		Graph.val_bHUD = false;
-		Graph.val_bUI = false;
-		Graph.val_bInvisible = false;
-		Graph.val_pObject = nullptr;
-		Graph.private_marker = true;
-		Graph.r_dsgraph_render_subspace(pOutdoorSector, sun_cascade_xforms[i], sun_cull_cop, R_dsgraph_structure::SubspaceGeometry::DynamicOnly);
+		if (IsSunCascadeCollected(i))
+		{
+			GraphSun[i].CollectDynamic();
+			GraphSun[i].CaptureDynamic();
+		}
 	}
 }
 
 void CRender::render_sun_cascades(GfxCmdList& Cmd)
 {
-	wait_sun_collect();
+	WaitGraphJobs(SunJobsEnd);
 	if (!sun_collect_active)
 		return;
 
@@ -588,300 +563,4 @@ void CRender::render_sun_cascades(GfxCmdList& Cmd)
 	Target->accum_direct_cascade(Cmd);
 
 	RestoreSunCascadeChain();
-}
-
-void CRender::PrepareSunCascade(u32 Index)
-{
-	CTimer PrepareTimer;
-	PrepareTimer.Start();
-	light* fuckingsun = (light*)Lights.sun_adapted._get();
-
-	Fvector cam_dir = Device.vCameraDirection;
-
-	if (Index == (m_sun_cascades.size() - 1) && !!RImplementation.o.offscreen_reflecitons && !psDeviceFlags.test(rsClearBB))
-	{
-		cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
-	}
-
-	CFrustum cull_frustum;
-	xr_vector<Fplane> cull_planes;
-	Fvector3 cull_COP;
-	Fmatrix cull_xform;
-	{
-		PROF_EVENT("Render Cascade: Prepass");
-
-		// calculate view-frustum bounds in world space
-		Fmatrix	ex_project, ex_full, ex_full_inverse;
-		{
-			ex_project = Device.mProject;
-			ex_full.mul(ex_project, Device.mView);
-			ex_full_inverse.invert44(ex_full);
-		}
-
-		// Compute volume(s) - something like a frustum for infinite directional light
-		// Also compute virtual light position and sector it is inside
-		{
-			// Lets begin from base frustum
-			Fmatrix		fullxform_inv = ex_full_inverse;
-#ifdef	_DEBUG
-			typedef		DumbConvexVolume<true>	t_volume;
-#else
-			typedef		DumbConvexVolume<false>	t_volume;
-#endif
-
-			//******************************* Need to be placed after cuboid built **************************
-
-			// COP - 100 km away
-			cull_COP.mad(Device.vCameraPosition, fuckingsun->direction, -tweak_COP_initial_offs);
-
-			// Create approximate ortho-xform
-			// view: auto find 'up' and 'right' vectors
-			Fmatrix						mdir_View, mdir_Project;
-			Fvector						L_dir, L_up, L_right, L_pos;
-			L_pos.set(fuckingsun->position);
-			L_dir.set(fuckingsun->direction).normalize();
-			L_right.set(1, 0, 0);					if (std::abs(L_right.dotproduct(L_dir)) > .99f)	L_right.set(0, 0, 1);
-			L_up.crossproduct(L_dir, L_right).normalize();
-			L_right.crossproduct(L_up, L_dir).normalize();
-			mdir_View.build_camera_dir(L_pos, L_dir, L_up);
-
-
-
-			//////////////////////////////////////////////////////////////////////////
-#ifdef	_DEBUG
-			typedef		FixedConvexVolume<true>		t_cuboid;
-#else
-			typedef		FixedConvexVolume<false>	t_cuboid;
-#endif
-
-			t_cuboid light_cuboid;
-			{
-				// Initialize the first cascade rays, then each cascade will initialize rays for next one.
-				if (Index == 0 || m_sun_cascades[Index].reset_chain)
-				{
-					Fvector3				near_p, edge_vec;
-					for (int p = 0; p < 4; p++)
-					{
-						near_p = wform(fullxform_inv, corners[facetable[4][p]]);
-
-						edge_vec = wform(fullxform_inv, corners[facetable[5][p]]);
-						edge_vec.sub(near_p);
-						edge_vec.normalize();
-
-						light_cuboid.view_frustum_rays.push_back(sun::ray(near_p, edge_vec));
-					}
-				}
-				else
-					light_cuboid.view_frustum_rays = m_sun_cascades[Index].rays;
-
-				light_cuboid.view_ray.P = Device.vCameraPosition;
-				light_cuboid.view_ray.D = cam_dir;
-				light_cuboid.light_ray.P = L_pos;
-				light_cuboid.light_ray.D = L_dir;
-			}
-
-			// THIS NEED TO BE A CONSTATNT
-			Fplane light_top_plane;
-			light_top_plane.build_unit_normal(L_pos, L_dir);
-			float dist = light_top_plane.classify(Device.vCameraPosition);
-
-			float map_size = m_sun_cascades[Index].size;
-
-			mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size);
-			PreparedSunCascades[Index].DepthRange = dist + 1.41421f * map_size - 0.1f;
-
-			// build viewport xform
-			float	view_dim = float(RImplementation.o.smapsize);
-			Fmatrix	m_viewport = {
-				view_dim / 2.f,	0.0f,				0.0f,		0.0f,
-				0.0f,			-view_dim / 2.f,		0.0f,		0.0f,
-				0.0f,			0.0f,				1.0f,		0.0f,
-				view_dim / 2.f,	view_dim / 2.f,		0.0f,		1.0f
-			};
-			Fmatrix m_viewport_inv{};
-			m_viewport_inv.invert44(m_viewport);
-
-			// snap view-position to pixel
-			cull_xform.mul(mdir_Project, mdir_View);
-			Fmatrix	cull_xform_inv; cull_xform_inv.invert(cull_xform);
-
-
-			//		light_cuboid.light_cuboid_points.reserve		(9);
-			for (int p = 0; p < 8; p++) {
-				Fvector3				xf = wform(cull_xform_inv, corners[p]);
-				light_cuboid.light_cuboid_points[p] = xf;
-			}
-
-			// only side planes
-			for (int plane = 0; plane < 4; plane++)
-				for (int pt = 0; pt < 4; pt++)
-				{
-					int asd = facetable[plane][pt];
-					light_cuboid.light_cuboid_polys[plane].points[pt] = asd;
-				}
-
-
-			Fvector lightXZshift;
-			light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[Index].size, m_sun_cascades[Index].reset_chain);
-			Fvector proj_view = cam_dir;
-			proj_view.y = 0;
-			proj_view.normalize();
-			//			lightXZshift.mad(proj_view, 20);
-
-						// Initialize rays for the next cascade
-			if (Index < m_sun_cascades.size() - 1)
-			{
-				m_sun_cascades[Index + 1].rays = light_cuboid.view_frustum_rays;
-			}
-
-#ifdef	_DEBUG
-			static bool draw_debug = false;
-			if (draw_debug && Index == 0)
-			{
-				for (u32 it = 0; it < cull_planes.size(); it++)
-					RImplementation.Target->dbg_addplane(cull_planes[it], it * 0xFFF);
-			}
-#endif
-
-			Fvector cam_shifted = L_pos;
-			cam_shifted.add(lightXZshift);
-
-			// rebuild the view transform with the shift.
-			mdir_View.identity();
-			mdir_View.build_camera_dir(cam_shifted, L_dir, L_up);
-			cull_xform.identity();
-			cull_xform.mul(mdir_Project, mdir_View);
-			cull_xform_inv.invert(cull_xform);
-
-			// Create frustum for query
-			cull_frustum._clear();
-
-			for (u32 p = 0; p < cull_planes.size(); p++)
-			{
-				cull_frustum._add(cull_planes[p]);
-			}
-
-			{
-				Fvector cam_proj = Device.vCameraPosition;
-				constexpr float		align_aim_step_coef = 4.f;
-				cam_proj.set(floorf(cam_proj.x / align_aim_step_coef) + align_aim_step_coef / 2, floorf(cam_proj.y / align_aim_step_coef) + align_aim_step_coef / 2, floorf(cam_proj.z / align_aim_step_coef) + align_aim_step_coef / 2);
-				cam_proj.mul(align_aim_step_coef);
-				Fvector	cam_pixel = wform(cull_xform, cam_proj);
-				cam_pixel = wform(m_viewport, cam_pixel);
-				Fvector shift_proj = lightXZshift;
-				cull_xform.transform_dir(shift_proj);
-				m_viewport.transform_dir(shift_proj);
-
-				constexpr float	align_granularity = 4.f;
-				shift_proj.x = shift_proj.x > 0 ? align_granularity : -align_granularity;
-				shift_proj.y = shift_proj.y > 0 ? align_granularity : -align_granularity;
-				shift_proj.z = 0;
-
-				cam_pixel.x = cam_pixel.x / align_granularity - floorf(cam_pixel.x / align_granularity);
-				cam_pixel.y = cam_pixel.y / align_granularity - floorf(cam_pixel.y / align_granularity);
-				cam_pixel.x *= align_granularity;
-				cam_pixel.y *= align_granularity;
-				cam_pixel.z = 0;
-
-				cam_pixel.sub(shift_proj);
-
-				m_viewport_inv.transform_dir(cam_pixel);
-				cull_xform_inv.transform_dir(cam_pixel);
-				Fvector diff = cam_pixel;
-				static float sign_test = -1.f;
-				diff.mul(sign_test);
-				Fmatrix adjust;		adjust.translate(diff);
-				cull_xform.mulB_44(adjust);
-			}
-
-		}
-	}
-	PreparedSunCascades[Index].Transform = cull_xform;
-	PreparedSunCascades[Index].CullPosition = cull_COP;
-	PreparedSunCascades[Index].PrepareMilliseconds = PrepareTimer.GetElapsed_sec() * 1000.f;
-}
-
-void CRender::render_sun_cascade(GfxCmdList& Cmd, u32 cascade_ind)
-{
-	PROF_EVENT("Render Cascade");
-	GPU_EVENT(RenderSunCascade);
-	CTimer RenderTimer;
-	RenderTimer.Start();
-	const sun::CascadePreparation& Prepared = PreparedSunCascades[cascade_ind];
-	light* fuckingsun = (light*)Lights.sun_adapted._get();
-	Fmatrix cull_xform = Prepared.Transform;
-	Fvector cull_COP = Prepared.CullPosition;
-	fuckingsun->X.D.minX = fuckingsun->X.D.minY = 0;
-	fuckingsun->X.D.maxX = fuckingsun->X.D.maxY = o.smapsize - 1;
-
-	// Begin SMAP-render
-	{
-		PROF_EVENT("Render Cascade: SMAP");
-		{
-			bool bSpecialFull = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
-			VERIFY(!bSpecialFull);
-			phase = PHASE_SMAP;
-			GraphMain.r_pmask(true, /*!!RImplementation.o.Tshadows &&*/ false);
-		}
-
-		// Fill the database
-		GraphMain.r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, true);
-
-		// Finalize & Cleanup
-		fuckingsun->X.D.combine = cull_xform;
-
-		Cmd.SetTextures(&SunShadowEmptyTextures);
-		GRHI->ShaderResourceCache->Apply();
-		Target->u_setrt(Cmd, Target->rt_smap_surf, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
-		GRHI->ApplyRenderTargetChange();
-		// Empty captures must discard the previous slice as well.
-		Cmd.ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
-
-		// Render shadow-map
-		//. !!! We should clip based on shrinked frustum (again)
-		{
-			bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
-			bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
-
-			if (bNormal || bSpecial)
-			{
-				Cmd.SetObjectTransform(Fidentity);
-				Cmd.SetView(Fidentity, fuckingsun->X.D.combine);
-
-				GraphMain.r_dsgraph_render_graph(0);
-
-				CDetailManager* ActiveDetails = GetDetails();
-				if (ActiveDetails && ActiveDetails->dtSlots && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (int)cascade_ind < ps_r2_sun_details_cascades)
-				{
-					ActiveDetails->hw_Render(Cmd, &fuckingsun->X.D.combine, cascade_ind > 0);
-				}
-
-				fuckingsun->X.D.transluent = false;
-
-				if (bSpecial)
-				{
-					fuckingsun->X.D.transluent = true;
-					Target->phase_smap_direct_tsh(Cmd, fuckingsun, SE_SUN_FAR);
-					GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
-					GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
-				}
-			}
-		}
-
-		// End SMAP-render
-		GraphMain.r_pmask(true, false);
-	}
-
-	sun::cascade& Cascade = m_sun_cascades[cascade_ind];
-	Cascade.xform = Prepared.Transform;
-	Cascade.CaptureDirection = fuckingsun->direction;
-	Cascade.CaptureDirection.normalize_safe();
-	Cascade.CaptureDepthRange = Prepared.DepthRange;
-	Cascade.CaptureBias = Cascade.bias;
-	Cascade.CaptureSize = Cascade.size;
-	Cascade.CaptureMapSize = o.smapsize;
-	Cascade.CapturePlacement = GetSunCascadePlacement(cascade_ind);
-	Cascade.CaptureFrame = Device.dwFrame;
-	Cascade.IsValid = true;
-	PreparedSunCascades[cascade_ind].RenderMilliseconds = RenderTimer.GetElapsed_sec() * 1000.f;
 }

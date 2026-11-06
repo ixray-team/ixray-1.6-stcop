@@ -57,9 +57,6 @@ light::~light	()
 	for (int f=0; f<6; f++)	xr_delete(omnipart[f]);
 	set_active		(false);
 
-	// remove from Lights_LastFrame
-	for (u32 it=0; it<RImplementation.Lights_LastFrame.size(); it++)
-		if (this==RImplementation.Lights_LastFrame[it])	RImplementation.Lights_LastFrame[it]=0;
 	m_sectors.clear();
 	ignore_object	= nullptr;
 	for (int f=0; f<6; f++)decor_object[f] = nullptr;
@@ -225,7 +222,7 @@ bool light::has_light_visible_from_sectors()
 			continue;
 
 		CSector* sector_ = (CSector*)IRsector;
-		if (sector_ != nullptr && RImplementation.GraphMain.PortalTraverser.i_marker == sector_->r_marker)
+		if (sector_ != nullptr && RImplementation.GraphMain.PortalTraverser.IsVisited(sector_->index))
 		{
 			return true;
 		}
@@ -274,7 +271,6 @@ void light::spatial_move()
 	// update spatial DB
 	ISpatialOwner::spatial_move();
 
-	svis.invalidate();
 	if((SpatialComponent->type&ESPATIAL_TYPE::LIGHTSOURCE)!=ESPATIAL_TYPE::NONE)
 		get_sectors();
 #endif

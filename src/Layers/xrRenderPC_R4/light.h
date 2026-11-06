@@ -5,7 +5,6 @@
 //#include "../../xrEngine/xr_object.h"
 #if !defined(_EDITOR)
 #	include "Light_Package.h"
-#	include "light_smapvis.h"
 #endif
 
 class light :	
@@ -48,7 +47,6 @@ public:
 
 #ifndef _EDITOR
 	light*						omnipart	[6]	;
-	smapvis			svis;		// used for 6-cubemap faces
 #endif
 
 	ref_shader		s_spot;

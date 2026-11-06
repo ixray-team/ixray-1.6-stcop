@@ -162,7 +162,6 @@ void CRenderTarget::phase_sslr(GfxCmdList& Cmd)
 
 void CRender::begin_reflection_collect()
 {
-	ReflectionBaseView = MakeGraphView(PHASE_REFLECT);
 	reflection_cam_pos = Device.vCameraPosition;
 	reflection_cam_dir = Device.vCameraDirection;
 	reflection_cam_top = Device.vCameraTop;
@@ -173,50 +172,19 @@ void CRender::begin_reflection_collect()
 	if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->CurrentEnv)
 		reflection_far = g_pGamePersistent->pEnvironment->CurrentEnv->far_plane;
 
-	const u32 ticket = reflection_ticket.fetch_add(1, std::memory_order_acq_rel) + 1;
-	reflection_done.store(ticket - 1, std::memory_order_release);
-	reflection_done.notify_all();
-}
-
-void CRender::wait_reflection_collect()
-{
-	const u32 ticket = reflection_ticket.load(std::memory_order_acquire);
-	u32 done = reflection_done.load(std::memory_order_acquire);
-	while (done != ticket)
+	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons || !Target || !Target->rt_Reflection || !reflection_sector)
 	{
-		reflection_done.wait(done, std::memory_order_acquire);
-		done = reflection_done.load(std::memory_order_acquire);
-	}
-}
-
-void CRender::collect_reflections()
-{
-	const u32 ticket = reflection_ticket.load(std::memory_order_acquire);
-	for (R_dsgraph_structure& Graph : GraphReflection)
-	{
-		Graph.r_dsgraph_clear_passes();
-	}
-
-	if (o.dx11_use_legacy_light || !o.offscreen_reflecitons || !Target || !Target->rt_Reflection)
-	{
-		reflection_done.store(ticket, std::memory_order_release);
-		reflection_done.notify_all();
+		for (R_dsgraph_structure& Graph : GraphReflection)
+		{
+			Graph.r_dsgraph_clear_passes();
+		}
 		return;
 	}
-
-	if (!reflection_sector)
-	{
-		reflection_done.store(ticket, std::memory_order_release);
-		reflection_done.notify_all();
-		return;
-	}
-
-	Device.Statistic->TEST2.Begin();
 
 	const u32 dwSize = Target->rt_Reflection->dwSize;
 	const float screen = _sqr((float)dwSize) * (EPS_S + ps_r__LOD);
 
-	GraphView ReflectionView = ReflectionBaseView;
+	GraphView ReflectionView = MakeGraphView(PHASE_REFLECT);
 	ReflectionView.SsaDiscard = _sqr(ps_r__ssaDISCARD) / screen;
 	ReflectionView.SsaLodA = _sqr(ps_r2_ssaLOD_A / 3) / screen;
 	ReflectionView.SsaLodB = _sqr(ps_r2_ssaLOD_B / 3) / screen;
@@ -239,9 +207,6 @@ void CRender::collect_reflections()
 	cm_norm[4].mul(reflection_cam_top, +1.0f);
 	cm_norm[5].mul(reflection_cam_top, +1.0f);
 
-	const u32 sector_count = (u32)Sectors.size();
-	const u32 portal_count = (u32)Portals.size();
-
 	for (u32 i = 0; i < (u32)GraphReflection.size(); ++i)
 	{
 		Fmatrix env_view;
@@ -249,19 +214,9 @@ void CRender::collect_reflections()
 		env_view.build_camera_dir(reflection_cam_pos, cm_dir[i], cm_norm[i]);
 		env_full.mul(env_project, env_view);
 
-		R_dsgraph_structure& Graph = GraphReflection[i];
-		Graph.BeginView(ReflectionView);
-		Graph.private_marker = true;
-		Graph.val_pTransform = &Fidentity;
-		Graph.private_visuals.clear();
-		Graph.r_pmask(true, false);
-		Graph.PortalTraverser.prepare_local_clips(sector_count, portal_count);
-		Graph.r_dsgraph_render_subspace(reflection_sector, env_full, reflection_cam_pos, false, false);
+		ReflectionView.SetSubspace(reflection_sector, env_full, reflection_cam_pos);
+		GraphJobs.push_back({ &GraphReflection[i], ReflectionView });
 	}
-
-	Device.Statistic->TEST2.End();
-	reflection_done.store(ticket, std::memory_order_release);
-	reflection_done.notify_all();
 }
 
 void CRender::render_reflections(GfxCmdList& Cmd)
@@ -271,7 +226,7 @@ void CRender::render_reflections(GfxCmdList& Cmd)
 		return;
 	}
 
-	wait_reflection_collect();
+	WaitGraphJobs(ReflectionJobsEnd);
 
 	GPU_EVENT(RENDER_REFLECTIONS);
 

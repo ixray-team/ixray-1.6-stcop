@@ -31,18 +31,33 @@ struct GraphView
 	float SsaLodB = 0.f;
 	float DetailTextureRange = 0.f;
 	float LodMu[5] = {};
+
+	IRender_Sector* Sector = nullptr;
+	CFrustum Frustum;
+	Fmatrix Transform = Fidentity;
+	Fvector Origin{};
+	u32 TraverseOptions = 0;
+	bool PassMask[3] = { true, false, false };	// deferred, forward, wallmarks
+	bool CalculateSkeletons = false;
+
+	void SetSubspace(IRender_Sector* NewSector, const Fmatrix& Combined, const Fvector& NewOrigin)
+	{
+		Sector = NewSector;
+		Transform = Combined;
+		Origin = NewOrigin;
+		Frustum.CreateFromMatrix(Transform, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
+	}
+};
+
+class R_dsgraph_structure;
+
+struct GraphCollectJob
+{
+	R_dsgraph_structure* Graph;
+	GraphView View;
 };
 
 class GfxCmdList;
-
-//////////////////////////////////////////////////////////////////////////
-// feedback	for receiving visuals										//
-//////////////////////////////////////////////////////////////////////////
-class R_feedback
-{
-public:
-	virtual void rfeedback_static(dxRender_Visual* V) = 0;
-};
 
 //////////////////////////////////////////////////////////////////////////
 // common part of interface implementation for all D3D renderers		//
@@ -50,13 +65,6 @@ public:
 class R_dsgraph_structure
 {
 public:
-	enum class SubspaceGeometry
-	{
-		All,
-		StaticOnly,
-		DynamicOnly
-	};
-
 	struct SpotShadowBuildContext
 	{
 		bool CollectOnly = true;
@@ -86,12 +94,15 @@ public:
 	bool OwnsView = false;
 
 	u32 ViewPhase() const;
-	void BeginView(const GraphView& NewView)
-	{
-		ViewParams = NewView;
-		OwnsView = true;
-		PortalTraverser.ViewportNear = NewView.ViewportNear;
-	}
+
+	// The collection of any view: static geometry can run on a worker, dynamic objects cannot
+	void Build(const GraphView& NewView);
+	void BuildFull(const GraphView& NewView, CObject* Ignore = nullptr);
+	void Begin(const GraphView& NewView);
+	void Traverse();
+	void CaptureStatic();
+	void CollectDynamic();
+	void CaptureDynamic(CObject* Ignore = nullptr);
 
 	IRenderable* val_pObject;
 	Fmatrix* val_pTransform;
@@ -99,13 +110,11 @@ public:
 	bool val_bUI;
 	bool val_bInvisible;
 
-	R_feedback*													val_feedback;		// feedback for geometry being rendered
-	u32															val_feedback_breakp;// breakpoint
-
-	// One counter for every graph. Visuals store a single vis.marker,
-	// so per-graph counters alias and drop casters between passes.
+	// Only GraphMain uses vis.marker: visuals store a single value, so a graph that can run in
+	// parallel or between main passes deduplicates through private_visuals instead.
 	inline static u32											marker = 0;
 	bool														pmask[3];
+	bool														CollectForwardTogether = false;	// both priorities in one collection
 
 	// Dynamic scene graph
 	R_dsgraph::mapNormalPasses_T								mapNormalPasses	[2]	;	// 2==(priority/2)
@@ -142,18 +151,12 @@ public:
 	// Skeletons of the current pass, calculated while static geometry is traversed
 	SkeletonBatch												SkeletonUpdates;
 
-	u32															counter_S	;
-	u32															counter_D	;
 	bool b_loaded;
 	CPortalTraverser PortalTraverser;
 	bool private_marker = false;
 	xr_hash_set<void*> private_visuals;
 
 public:
-				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
-				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
-				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
-
 public:
 	R_dsgraph_structure	()
 	{
@@ -162,8 +165,6 @@ public:
 		val_bHUD			= false	;
 		val_bUI				= false	;
 		val_bInvisible		= false	;
-		val_feedback		= 0;
-		val_feedback_breakp	= 0;
 		r_pmask				(true,true);
 		b_loaded			= false	;
 	};
@@ -220,17 +221,13 @@ public:
 	void		r_dsgraph_render_scope							();
 	void		r_dsgraph_render_wmarks							();
 	void		r_dsgraph_render_distort						();
-	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
-	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
-	void r_dsgraph_render_subspace(IRender_Sector* Sector, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, CObject* Ignore = nullptr);
-	void r_dsgraph_render_subspace(IRender_Sector* Sector, CFrustum* Frustum, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, bool PrecisePortals = false, CObject* Ignore = nullptr);
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 
 	void detectSectors_sphere(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, const Fsphere& sphere);
 	void detectSectors_frustum(CSector* sector, xr_vector<IRender_Sector*>& m_sectors, CFrustum* _frustum);
 
 private:
-	void		CollectSubspaceDynamic							(const CFrustum& MainView);
+	void		CollectSubspaceDynamic							();
 
 public:
 	virtual u32						memory_usage			()

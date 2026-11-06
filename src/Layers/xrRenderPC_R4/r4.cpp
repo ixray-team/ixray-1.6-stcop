@@ -118,10 +118,8 @@ ShaderElement* CRender::rimp_select_sh_static(const R_dsgraph_structure& Graph, 
 void CRender::create()
 {
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
-	Device.BeginReflectionCollect = xr_make_delegate(this, &CRender::begin_reflection_collect);
-	Device.CollectReflections = xr_make_delegate(this, &CRender::collect_reflections);
-	Device.BeginSunCollect = xr_make_delegate(this, &CRender::begin_sun_collect);
-	Device.CollectSunCascades = xr_make_delegate(this, &CRender::collect_sun_cascades);
+	Device.BeginGraphCollect = xr_make_delegate(this, &CRender::BeginGraphCollect);
+	Device.CollectGraphs = xr_make_delegate(this, &CRender::CollectGraphs);
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
@@ -205,17 +203,11 @@ void CRender::create()
 
 	GraphMain.marker = 0;
 
-	for (R_dsgraph_structure& Graph : GraphReflection)
+	ForEachViewGraph([](R_dsgraph_structure& Graph)
 	{
 		Graph.marker = 0;
 		Graph.PortalTraverser.initialize();
-	}
-
-	for (R_dsgraph_structure& Graph : GraphSun)
-	{
-		Graph.marker = 0;
-		Graph.PortalTraverser.initialize();
-	}
+	});
 
 	xrRender_apply_tf();
 	GraphMain.PortalTraverser.initialize();
@@ -259,26 +251,67 @@ void CRender::destroy()
 
 	GraphMain.r_dsgraph_destroy();
 
-	for (R_dsgraph_structure& Graph : GraphReflection)
+	ForEachViewGraph([](R_dsgraph_structure& Graph)
 	{
 		Graph.r_dsgraph_destroy();
 		Graph.PortalTraverser.destroy();
-	}
-
-	for (R_dsgraph_structure& Graph : GraphSun)
-	{
-		Graph.r_dsgraph_destroy();
-		Graph.PortalTraverser.destroy();
-	}
+	});
 
 	Device.ModelDefferClear = nullptr;
-	Device.BeginReflectionCollect = nullptr;
-	Device.CollectReflections = nullptr;
-	Device.BeginSunCollect = nullptr;
-	Device.CollectSunCascades = nullptr;
+	Device.BeginGraphCollect = nullptr;
+	Device.CollectGraphs = nullptr;
 
 	if (LightingModeIsDynamicRender())
 		g_DLSSWrapper.Destroy();
+}
+
+void CRender::BeginGraphCollect()
+{
+	GraphJobs.clear();
+	GraphJobsDone.store(0, std::memory_order_relaxed);
+
+	begin_reflection_collect();
+	ReflectionJobsEnd = (u32)GraphJobs.size();
+
+	begin_rain_collect();
+	RainJobsEnd = (u32)GraphJobs.size();
+
+	begin_sun_collect();
+	SunJobsEnd = (u32)GraphJobs.size();
+}
+
+void CRender::CollectGraphs()
+{
+	for (u32 Index = 0; Index < (u32)GraphJobs.size(); ++Index)
+	{
+		GraphCollectJob& Job = GraphJobs[Index];
+		Job.Graph->Build(Job.View);
+		GraphJobsDone.store(Index + 1, std::memory_order_release);
+		GraphJobsDone.notify_all();
+	}
+}
+
+void CRender::WaitGraphJobs(u32 Count)
+{
+	for (u32 Done = GraphJobsDone.load(std::memory_order_acquire); Done < Count; Done = GraphJobsDone.load(std::memory_order_acquire))
+	{
+		GraphJobsDone.wait(Done, std::memory_order_acquire);
+	}
+}
+
+R_dsgraph_structure& CRender::BuildPassGraph(GfxCmdList& Cmd, const GraphView& View, CObject* Ignore)
+{
+	if (Device.IsEditorMode())
+	{
+		// The editors have no sectors: their scene is collected into the main graph
+		GraphMain.r_pmask(View.PassMask[0], View.PassMask[1], View.PassMask[2]);
+		GraphView EditorView = View;
+		EditorRenderSubspace(Cmd, EditorView.Frustum);
+		return GraphMain;
+	}
+
+	GraphPass.BuildFull(View, Ignore);
+	return GraphPass;
 }
 
 void CRender::reset_begin() {
@@ -293,22 +326,6 @@ void CRender::reset_begin() {
 
 	xr_delete(L_Projector);
 	xr_delete(L_Shadows);
-	// Update incremental shadowmap-visibility solver
-	// BUG-ID: 10646
-	{
-		u32 it = 0;
-		for(it = 0; it < Lights_LastFrame.size(); it++) {
-			if(0 == Lights_LastFrame[it])	continue;
-			try {
-				Lights_LastFrame[it]->svis.resetoccq();
-			}
-			catch(...) {
-				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-			}
-		}
-		Lights_LastFrame.clear();
-	}
-
 	if (GraphMain.b_loaded)
 	{
 		Details->Unload();
@@ -510,14 +527,10 @@ CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 CRender::CRender() : m_bFirstFrameAfterReset(false)
 {
 	GraphMain.Backend = &Backend;
-	for (R_dsgraph_structure& Graph : GraphReflection)
+	ForEachViewGraph([this](R_dsgraph_structure& Graph)
 	{
 		Graph.Backend = &Backend;
-	}
-	for (R_dsgraph_structure& Graph : GraphSun)
-	{
-		Graph.Backend = &Backend;
-	}
+	});
 	init_cacades();
 }
 
@@ -545,10 +558,6 @@ void CRender::Statistics(CGameFont* _F) {
 	F.OutNext(" total  : %2d", stats.o_queries);	stats.o_queries = 0;
 	F.OutNext(" culled : %2d", stats.o_culled);	stats.o_culled = 0;
 	F.OutSkip();
-	u32	ict = stats.ic_total + stats.ic_culled;
-	F.OutNext(" **** iCULL(%03.1f) **** ", 100.f * f32(stats.ic_culled) / f32(ict ? ict : 1));
-	F.OutNext(" visible: %2d", stats.ic_total);	stats.ic_total = 0;
-	F.OutNext(" culled : %2d", stats.ic_culled);	stats.ic_culled = 0;
 #ifdef DEBUG
 	HOM.stats();
 #endif

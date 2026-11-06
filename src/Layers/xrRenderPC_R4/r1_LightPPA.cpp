@@ -66,10 +66,6 @@ void CLightR_Manager::render_point	(GfxCmdList& Cmd, u32 _priority)
 		Cmd.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
-		if (_priority == 1)
-		{
-			RImplementation.GraphMain.r_pmask(false, true);
-		}
 
 		static const Fvector axes[6] = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 		Fplane box[6];
@@ -80,21 +76,25 @@ void CLightR_Manager::render_point	(GfxCmdList& Cmd, u32 _priority)
 		CFrustum F;
 		F.CreateFromPlanes(box, 6);
 
-		RImplementation.GraphMain.r_dsgraph_render_subspace(L->SpatialComponent->sector, &F, L_combine, L_pos, true, true);
-
-		if (_priority == 1)
-		{
-			RImplementation.GraphMain.r_pmask(true, true);
-		}
+		GraphView LightView = RImplementation.MakeGraphView(RImplementation.phase);
+		LightView.SetSubspace(L->SpatialComponent->sector, L_combine, L_pos);
+		LightView.Frustum = F;
+		LightView.PassMask[0] = _priority == 0;
+		LightView.PassMask[1] = _priority == 1;
+		LightView.CalculateSkeletons = true;
+		R_dsgraph_structure& Graph = RImplementation.GraphPass;
+		Graph.BuildFull(LightView);
 
 		bool bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 
 		Cmd.SetConstantTable((R_constant_table*)0);
 		if (bHUD && _priority == 0)
 		{
+			// The HUD is already in the main graph: a new collection adds it for this light
+			RImplementation.GraphMain.marker++;
 			g_hud->Render_Last();
 		}
-		RImplementation.GraphMain.r_dsgraph_render_graph(_priority);
+		Graph.r_dsgraph_render_graph(_priority);
 		if (bHUD && _priority == 0)
 		{
 			RImplementation.GraphMain.r_dsgraph_render_hud();
@@ -148,24 +148,14 @@ void CLightR_Manager::render_spot	(GfxCmdList& Cmd, u32 _priority)
 		Cmd.Constants.Write<CBLight>().L_dynamic_xform = L_texgen;
 
 		VERIFY(L->SpatialComponent->sector);
-		
-		if (_priority == 1)
-		{
-			RImplementation.GraphMain.r_pmask(false, true);
-		}
 
-		RImplementation.GraphMain.r_dsgraph_render_subspace(
-			L->SpatialComponent->sector,
-			L_combine,
-			L_pos,
-			true,
-			true			
-		);
-
-		if (_priority == 1)
-		{
-			RImplementation.GraphMain.r_pmask(true, true);
-		}
+		GraphView LightView = RImplementation.MakeGraphView(RImplementation.phase);
+		LightView.SetSubspace(L->SpatialComponent->sector, L_combine, L_pos);
+		LightView.PassMask[0] = _priority == 0;
+		LightView.PassMask[1] = _priority == 1;
+		LightView.CalculateSkeletons = true;
+		R_dsgraph_structure& Graph = RImplementation.GraphPass;
+		Graph.BuildFull(LightView);
 
 		bool bHUD = false;
 		CFrustum F;
@@ -174,9 +164,12 @@ void CLightR_Manager::render_spot	(GfxCmdList& Cmd, u32 _priority)
 
 		Cmd.SetConstantTable(nullptr);
 		if (bHUD && _priority == 0)
+		{
+			RImplementation.GraphMain.marker++;
 			g_hud->Render_Last();
+		}
 
-		RImplementation.GraphMain.r_dsgraph_render_graph(_priority);
+		Graph.r_dsgraph_render_graph(_priority);
 
 		if (bHUD && _priority == 0)
 		{

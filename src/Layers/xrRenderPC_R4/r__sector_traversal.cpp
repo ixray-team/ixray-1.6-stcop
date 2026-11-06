@@ -14,26 +14,18 @@ xr_vector<IRender_Sector*>				dbg_sectors;
 
 void CPortalTraverser::prepare_local_clips(u32 sector_count, u32 portal_count)
 {
-	own_clips = true;
 	if (local_frustums.size() != sector_count)
 	{
 		local_frustums.assign(sector_count, {});
 		local_sector_marker.assign(sector_count, 0xffffffff);
 	}
 	if (local_portals.size() != portal_count)
-		local_portals.assign(portal_count, {0xffffffff, 0, false});
+		local_portals.assign(portal_count, {0xffffffff, 0, 0xffffffff, false});
 }
 
 void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options)
 {
 	PROF_EVENT("CPortalTraverser::traverse")
-	Fmatrix			m_viewport_01	= {
-		1.f/2.f,			0.0f,				0.0f,		0.0f,
-		0.0f,				-1.f/2.f,			0.0f,		0.0f,
-		0.0f,				0.0f,				1.0f,		0.0f,
-		1.f/2.f + 0 + 0,	1.f/2.f + 0 + 0,	0.0f,		1.0f
-	};
-
 	if (options & VQ_FADE)			{
 		f_portals.clear		();
 		f_portals.reserve	(16);
@@ -44,31 +36,10 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 	i_options			= options;
 	i_vBase				= vBase;
 	i_mXFORM			= mXFORM;
-	i_mXFORM_01.mul		(m_viewport_01,mXFORM);
 	i_start				= (CSector*)start;
-	NearDistance		= (own_clips ? ViewportNear : Device.fViewportNear) + EPS_L;
+	NearDistance		= ViewportNear + EPS_L;
 	r_sectors.clear		();
-	_scissor			scissor;
-	scissor.set			(0,0,1,1);
-	scissor.depth = 0;
-	i_start->traverse(F, scissor, *this);
-
-	if (options & VQ_SCISSOR)		{
-		// dbg_sectors					= r_sectors;
-		// merge scissor info
-		for (u32 s=0; s<r_sectors.size(); s++)
-		{
-			CSector*	S		= (CSector*)r_sectors[s];
-			S->r_scissor_merged.invalidate	();
-			S->r_scissor_merged.depth		= flt_max;
-			for (u32 it=0; it<S->r_scissors.size(); it++)
-			{
-				S->r_scissor_merged.merge(S->r_scissors[it]);
-				if (S->r_scissors[it].depth < S->r_scissor_merged.depth)
-					S->r_scissor_merged.depth = S->r_scissors[it].depth;
-			}
-		}
-	}
+	i_start->traverse(F, *this);
 }
 
 bool CPortalTraverser::IsNearPortal(const CPortal& Portal) const
@@ -83,9 +54,10 @@ bool CPortalTraverser::IsNearPortal(const CPortal& Portal) const
 void CPortalTraverser::fade_portal	(CPortal* _p, float ssa)
 {
 	// The portal may be reached by several traversal paths
-	if (_p->FadeMarker == i_marker)
+	u32& FadeMarker = local_portals[_p->index].FadeMarker;
+	if (FadeMarker == i_marker)
 		return;
-	_p->FadeMarker = i_marker;
+	FadeMarker = i_marker;
 
 	if(RImplementation.HOM.visible(_p->S) || psGameFlags.test(rsDrawPortals))
 		f_portals.push_back				(std::make_pair(_p,ssa));

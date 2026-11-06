@@ -85,7 +85,7 @@ void CStaticTraversalStats::BeginSector(CSector* Sector)
 
 	SectorCounters& Counters = Sectors.emplace_back();
 	Counters.Sector = Sector;
-	Counters.Frustums = u32(Sector->r_frustums.size());
+	Counters.Frustums = u32(RImplementation.GraphMain.PortalTraverser.local_frustums[Sector->index].size());
 	Current = &Counters;
 	SectorTimer.Start();
 }

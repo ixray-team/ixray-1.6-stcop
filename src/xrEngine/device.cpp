@@ -234,10 +234,8 @@ void CRenderDevice::on_idle		()
 			GActorInterface->UpdatePlayerHud();
 		}
 
-		if (BeginReflectionCollect)
-			BeginReflectionCollect();
-		if (BeginSunCollect)
-			BeginSunCollect();
+		if (BeginGraphCollect)
+			BeginGraphCollect();
 		PreRenderThread.Run();
 		FrameMove();
 	}

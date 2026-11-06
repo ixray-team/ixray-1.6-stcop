@@ -22,16 +22,10 @@ void XRay::Engine::PreRenderThread()
 			it();
 	}
 
-	if (Device.CollectReflections)
+	if (Device.CollectGraphs)
 	{
-		PROF_EVENT("Collect Reflections");
-		Device.CollectReflections();
-	}
-
-	if (Device.CollectSunCascades)
-	{
-		PROF_EVENT("Collect Sun Cascades");
-		Device.CollectSunCascades();
+		PROF_EVENT("Collect Graphs");
+		Device.CollectGraphs();
 	}
 
 	if (g_pGamePersistent && !g_pGamePersistent->m_pMainMenu->IsActive())

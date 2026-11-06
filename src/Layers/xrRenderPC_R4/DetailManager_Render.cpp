@@ -353,7 +353,7 @@ void CDetailManager::hw_Render_dump(GfxCmdList& Cmd, const Fvector4& wave, const
 
 	if (!EditorMode)
 	{
-		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+		bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && RImplementation.GraphMain.PortalTraverser.IsVisited(RImplementation.pOutdoorSector->index));
 		if (!in_outdoor)
 			return;
 	}

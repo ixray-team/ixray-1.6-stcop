@@ -238,10 +238,8 @@ public:
 
 	xr_delegate<void()> ModelDefferClear;
 	xr_delegate<void()> LuaGC;
-	xr_delegate<void()> BeginReflectionCollect;
-	xr_delegate<void()> CollectReflections;
-	xr_delegate<void()> BeginSunCollect;
-	xr_delegate<void()> CollectSunCascades;
+	xr_delegate<void()> BeginGraphCollect;
+	xr_delegate<void()> CollectGraphs;
 
 	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
 	ICF void callback(u32 cb_time, const std::function<void()>& func)

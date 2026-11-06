@@ -112,7 +112,6 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 
 				// render
 				phase = PHASE_SMAP;
-				GraphMain.r_pmask(true, ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS));
 
 				if (Target->CanCacheSpotShadow(*L))
 				{
@@ -129,43 +128,42 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 				else
 				{
 					Target->CountLegacySpotShadow();
-					if (L->flags.bOccq && !L->flags.bHudMode)
-					{
-						Lights_LastFrame.push_back(L);
-					}
 					PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
+
+					GraphView ShadowView = MakeGraphView(PHASE_SMAP);
+					ShadowView.SetSubspace(L->SpatialComponent->sector, L->X.S.combine, L->position);
+					ShadowView.PassMask[1] = ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS);
+					ShadowView.CalculateSkeletons = true;
+
+					const bool HasDecorObject = (L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy());
+
 					bool decorative_light = false;
+					R_dsgraph_structure* Graph = &GraphPass;
 					if (L->flags.bHudMode)
 					{
+						GraphPass.Begin(ShadowView);
 						L_spot_s.push_back(L);
 						decorative_light = true;
 					}
-					else if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
+					else if (HasDecorObject)
 					{
-						RImplementation.GraphMain.marker++; // !!! critical here
-						RImplementation.set_Object(0);
+						GraphPass.Begin(ShadowView);
 						for (int f = 0; f < 6; f++)
 						{
 							if (L->decor_object[f] && !L->decor_object[f]->getDestroy())
 							{
-								L->decor_object[f]->renderable_Render();
+								L->decor_object[f]->renderable_Render(&GraphPass);
 								decorative_light = true;
 							}
 						}
 					}
 					else
 					{
-						PROF_EVENT("r_dsgraph_render_subspace");
-						GraphMain.r_dsgraph_render_subspace(L->SpatialComponent->sector, L->X.S.combine, L->position, true, false, L->ignore_object);
+						Graph = &BuildPassGraph(Cmd, ShadowView, L->ignore_object);
 					}
 
-					if (L->flags.bOccq && !L->flags.bHudMode)
-					{
-						L->svis.begin();
-					}
-
-					bool bNormal = GraphMain.mapNormalPasses[0][0].size() || GraphMain.mapMatrixPasses[0][0].size();
-					bool bSpecial = GraphMain.mapNormalPasses[1][0].size() || GraphMain.mapMatrixPasses[1][0].size() || GraphMain.mapSorted.size();
+					bool bNormal = Graph->mapNormalPasses[0][0].size() || Graph->mapMatrixPasses[0][0].size();
+					bool bSpecial = Graph->mapNormalPasses[1][0].size() || Graph->mapMatrixPasses[1][0].size() || Graph->mapSorted.size();
 					if (bNormal || bSpecial)
 					{
 						stats.s_merged++;
@@ -173,7 +171,7 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 						Target->phase_smap_spot(Cmd, L);
 						Cmd.SetObjectTransform(Fidentity);
 						Cmd.SetView(L->X.S.view, L->X.S.project);
-						GraphMain.r_dsgraph_render_graph(0);
+						Graph->r_dsgraph_render_graph(0);
 
 						if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
 							psDeviceFlags.is(rsDetails) &&
@@ -191,12 +189,12 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 
 							{
 								PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
-								GraphMain.r_dsgraph_render_graph(1); // normal level, secondary priority
+								Graph->r_dsgraph_render_graph(1); // normal level, secondary priority
 							}
 
 							{
 								PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
-								GraphMain.r_dsgraph_render_sorted(); // strict-sorted geoms
+								Graph->r_dsgraph_render_sorted(false); // strict-sorted geoms
 							}
 						}
 					}
@@ -204,13 +202,7 @@ void	CRender::render_lights	(GfxCmdList& Cmd, light_Package& LP)
 					{
 						stats.s_finalclip++;
 					}
-
-					if (L->flags.bOccq && !L->flags.bHudMode)
-					{
-						L->svis.end();
-					}
 				}
-				GraphMain.r_pmask(true, false);
 			}
 			{
 				PROF_EVENT("UNSHADOWED_LIGHTS");

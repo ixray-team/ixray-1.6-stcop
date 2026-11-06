@@ -8,12 +8,6 @@
 class CPortal;
 class CSector;
 
-struct _scissor :
-	public Fbox2
-{
-	float	depth;
-};
-
 // Connector
 class CPortal :
 	public IRender_Portal
@@ -27,10 +21,6 @@ private:
 public:
 	Fplane							P;
 	Fsphere							S;
-	u32								marker;
-	u32								FadeMarker;
-	u32								Visits;			// crossings during the traversal with marker
-	bool							OnPath;			// crossed by the current traversal path
 	u32								index = 0;
 
 	void							Setup								(Fvector* V, int vcnt, CSector* face, CSector* back);
@@ -63,17 +53,13 @@ protected:
 	xr_vector<CPortal*> m_portals;
 
 public:
-	xr_vector<CFrustum> r_frustums;
-	xr_vector<_scissor> r_scissors;
-	_scissor r_scissor_merged;
-	u32 r_marker;
 	u32 index = 0;
 
 public:
 	// Main interface
 	dxRender_Visual* root() { return m_root; }
 	const xr_vector<CPortal*>& portals() const { return m_portals; }
-	void traverse(CFrustum& F, _scissor& R, CPortalTraverser&);
+	void traverse(CFrustum& F, CPortalTraverser&);
 	void load(IReader& fs);
 
 	CSector() { m_root = NULL; }

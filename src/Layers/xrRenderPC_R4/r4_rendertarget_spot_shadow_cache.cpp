@@ -268,7 +268,7 @@ CRenderTarget::SpotShadowCacheEntry* CRenderTarget::FindSpotShadowCache(const li
 void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntry& Entry)
 {
 	PROF_EVENT("SpotShadowCache::Classify");
-	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
+	R_dsgraph_structure& Renderer = RImplementation.GraphPass;
 	R_dsgraph_structure::SpotShadowBuildContext Context;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto* PreviousFrustum = Renderer.View;
@@ -285,7 +285,7 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 	if (Entry.Classified)
 	{
 		// Texture changes only require reclassifying the saved leaves and LOD parents.
-		++Renderer.marker;
+		Renderer.private_visuals.clear();
 		Renderer.View = &Frustum;
 		for (dxRender_Visual* Visual : Entry.CachedCasters)
 		{
@@ -299,7 +299,9 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 	}
 	else
 	{
-		Renderer.r_dsgraph_render_subspace(Entry.Key.Sector, &Frustum, Source.X.S.combine, Source.position, R_dsgraph_structure::SubspaceGeometry::StaticOnly, true);
+		Renderer.private_visuals.clear();
+		Renderer.Traverse();
+		Renderer.CaptureStatic();
 		++SpotShadowStatistics.Classifications;
 	}
 	Entry.CachedCasters = std::move(Context.CachedCasters);
@@ -340,7 +342,7 @@ void CRenderTarget::ClassifySpotShadowCasters(light& Source, SpotShadowCacheEntr
 bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& Entry)
 {
 	PROF_EVENT("SpotShadowCache::Build");
-	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
+	R_dsgraph_structure& Renderer = RImplementation.GraphPass;
 	R_dsgraph_structure::SpotShadowBuildContext Context;
 	auto* PreviousContext = Renderer.SpotShadowBuild;
 	auto RestoreContextLambda = [&]
@@ -385,7 +387,7 @@ bool CRenderTarget::BuildSpotShadowCache(light& Source, SpotShadowCacheEntry& En
 		}
 		GPU_EVENT(SpotShadowCacheBuild);
 		Context.CollectOnly = false;
-		++Renderer.marker;
+		Renderer.private_visuals.clear();
 		for (dxRender_Visual* Visual : Entry.CachedCasters)
 		{
 			Renderer.r_dsgraph_insert_static(Visual);
@@ -482,7 +484,7 @@ bool CRenderTarget::HasSpotShadowPendingTextureChanges(SpotShadowCacheEntry& Ent
 
 bool CRenderTarget::CheckSpotShadowGraph()
 {
-	if (!SpotShadowCacheUtils::HasGeometry(RImplementation.GraphMain, 0) && !SpotShadowCacheUtils::HasGeometry(RImplementation.GraphMain, 1) && !RImplementation.GraphMain.mapSorted.size())
+	if (!SpotShadowCacheUtils::HasGeometry(RImplementation.GraphPass, 0) && !SpotShadowCacheUtils::HasGeometry(RImplementation.GraphPass, 1) && !RImplementation.GraphPass.mapSorted.size())
 	{
 		return true;
 	}
@@ -508,7 +510,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		return false;
 	}
 
-	R_dsgraph_structure& Renderer = RImplementation.GraphMain;
+	R_dsgraph_structure& Renderer = RImplementation.GraphPass;
 	GfxCmdList& Cmd = RImplementation.Imm();
 	const Fmatrix World = Cmd.GetObjectTransform();
 	const GfxView View = Cmd.GetView();
@@ -522,8 +524,6 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	auto* PreviousFrustum = Renderer.View;
 	CFrustum ShadowFrustum;
 	ShadowFrustum.CreateFromMatrix(Source.X.S.combine, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
-	R_feedback* Feedback = Renderer.val_feedback;
-	const u32 FeedbackBreak = Renderer.val_feedback_breakp;
 	auto RestoreStateLambda = [&]
 	{
 		Renderer.SpotShadowPass = PreviousPass;
@@ -538,7 +538,6 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		Renderer.SpotShadowStaticItems = PreviousStaticItems;
 		Renderer.SpotShadowDynamicItems = PreviousDynamicItems;
 		Renderer.View = PreviousFrustum;
-		Renderer.set_Feedback(Feedback, FeedbackBreak);
 		Cmd.SetScissor(nullptr);
 		Cmd.SetObjectTransform(World);
 		Cmd.SetView(View);
@@ -551,7 +550,11 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 	Renderer.SpotShadowDuplicateSkips = 0;
 	Renderer.SpotShadowStaticItems = 0;
 	Renderer.SpotShadowDynamicItems = 0;
-	Renderer.set_Feedback(nullptr, 0);
+	GraphView ShadowView = RImplementation.MakeGraphView(CRender::PHASE_SMAP);
+	ShadowView.SetSubspace(Source.SpatialComponent->sector, Source.X.S.combine, Source.position);
+	ShadowView.PassMask[1] = ps_r2_ls_flags_ext.test(R4FLAG_TSHDOWS);
+	ShadowView.CalculateSkeletons = true;
+	Renderer.Begin(ShadowView);
 	SpotShadowCacheEntry Transient;
 	const SpotShadowCacheKey Key = MakeSpotShadowCacheKey(Source);
 	SpotShadowCacheEntry* Entry = FindSpotShadowCache(Source, Key);
@@ -630,7 +633,7 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 			Renderer.SpotShadowBuild = nullptr;
 		};
 		xr_scope_exit RestoreDirectContext(std::move(RestoreDirectContextLambda));
-		++Renderer.marker;
+		Renderer.private_visuals.clear();
 		for (dxRender_Visual* Visual : Entry->CachedCasters)
 		{
 			Renderer.r_dsgraph_insert_static(Visual);
@@ -641,13 +644,12 @@ bool CRenderTarget::RenderSpotShadow(light& Source)
 		Renderer.r_dsgraph_render_graph(0);
 	}
 	Renderer.SpotShadowCachedCasters = &Entry->CachedCasterSet;
+	Renderer.private_visuals.clear();
 	if (psDeviceFlags.test(rsDrawDynamic))
 	{
-		Renderer.r_dsgraph_render_subspace(Source.SpatialComponent->sector, Source.X.S.combine, Source.position, R_dsgraph_structure::SubspaceGeometry::DynamicOnly, Source.ignore_object);
-	}
-	else
-	{
-		++Renderer.marker;
+		Renderer.Traverse();
+		Renderer.CollectDynamic();
+		Renderer.CaptureDynamic(Source.ignore_object);
 	}
 	// Share the dynamic collection marker; keep LOD groups intact for normal per-frame selection.
 	Renderer.View = &ShadowFrustum;

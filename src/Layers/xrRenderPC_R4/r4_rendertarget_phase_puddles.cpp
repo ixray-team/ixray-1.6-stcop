@@ -100,15 +100,17 @@ void CRenderTarget::phase_planar(GfxCmdList& Cmd)
 		);
 
 		RImplementation.phase = CRender::PHASE_REFLECT;
-		RImplementation.GraphMain.r_pmask(true, false);
 
 		ApplyObliqueClipPlane(ReflectProject, PlanarPlane);
 		ReflectFullTransform.mul(ReflectProject, ReflectView);
 
-		RImplementation.GraphMain.r_dsgraph_render_subspace(RImplementation.pLastSector, ReflectFullTransform, P, true, false);
+		GraphView PlanarView = RImplementation.MakeGraphView(CRender::PHASE_REFLECT);
+		PlanarView.SetSubspace(RImplementation.pLastSector, ReflectFullTransform, P);
+		PlanarView.CalculateSkeletons = true;
+		R_dsgraph_structure& Graph = RImplementation.BuildPassGraph(Cmd, PlanarView);
 
-		bool IsRender = RImplementation.GraphMain.mapNormalPasses[0][0].size() || RImplementation.GraphMain.mapMatrixPasses[0][0].size();
-		IsRender |= RImplementation.GraphMain.mapNormalPasses[1][0].size() || RImplementation.GraphMain.mapMatrixPasses[1][0].size() || RImplementation.GraphMain.mapSorted.size();
+		bool IsRender = Graph.mapNormalPasses[0][0].size() || Graph.mapMatrixPasses[0][0].size();
+		IsRender |= Graph.mapNormalPasses[1][0].size() || Graph.mapMatrixPasses[1][0].size() || Graph.mapSorted.size();
 
 		if (IsRender)
 		{
@@ -126,15 +128,15 @@ void CRenderTarget::phase_planar(GfxCmdList& Cmd)
 
 			Cmd.SetView(ReflectView, ReflectProject);
 
-			RImplementation.GraphMain.r_dsgraph_render_graph(0);
+			Graph.r_dsgraph_render_graph(0);
 
 			ps_r_taa_jitter.x = -ps_r_taa_jitter.x;
 			ps_r_taa_jitter_full.x = -ps_r_taa_jitter_full.x;
 
 			Cmd.SetView(Device.mView, Device.mProject);
-
-			RImplementation.phase = CRender::PHASE_NORMAL;
 		}
+
+		RImplementation.phase = CRender::PHASE_NORMAL;
 
 		// HACK: nothing reads this target after combine, rt_sslr and rt_sslr_old hold the SSLR history
 		u_setrt(Cmd, rt_sslr_temp, 0, 0, 0);

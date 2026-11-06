@@ -416,14 +416,10 @@ void CRender::level_Unload()
 	{
 		return;
 	}
-	for (R_dsgraph_structure& Graph : GraphSun)
+	ForEachViewGraph([](R_dsgraph_structure& Graph)
 	{
 		Graph.r_dsgraph_clear_passes();
-	}
-	for (R_dsgraph_structure& Graph : GraphReflection)
-	{
-		Graph.r_dsgraph_clear_passes();
-	}
+	});
 	if (Target)
 	{
 		Target->InvalidateSpotShadowCache();

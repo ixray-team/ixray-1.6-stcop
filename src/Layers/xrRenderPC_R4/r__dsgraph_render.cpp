@@ -400,122 +400,117 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 	RenderMap(*this, Cmd, mapHUDDistort);
 }
 
-//////////////////////////////////////////////////////////////////////////
-// sub-space rendering - shortcut to render with frustum extracted from matrix
-void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
+void R_dsgraph_structure::Begin(const GraphView& NewView)
 {
-	CFrustum Frustum;
-	Frustum.CreateFromMatrix(mCombined, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
-	r_dsgraph_render_subspace(_sector, &Frustum, mCombined, _cop, _dynamic, _precise_portals, O);
+	ViewParams = NewView;
+	OwnsView = true;
+	PortalTraverser.ViewportNear = NewView.ViewportNear;
+	PortalTraverser.prepare_local_clips((u32)RImplementation.Sectors.size(), (u32)RImplementation.Portals.size());
+
+	private_marker = true;
+	private_visuals.clear();
+	val_pObject = nullptr;
+	val_pTransform = &Fidentity;
+	val_bHUD = false;
+	val_bUI = false;
+	val_bInvisible = false;
+	r_dsgraph_clear_passes();
+	r_pmask(NewView.PassMask[0], NewView.PassMask[1], NewView.PassMask[2]);
 }
 
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* Sector, Fmatrix& Combined, Fvector& Origin, SubspaceGeometry Geometry, CObject* Ignore)
+void R_dsgraph_structure::Traverse()
 {
-	CFrustum Frustum;
-	Frustum.CreateFromMatrix(Combined, FRUSTUM_P_ALL & ~FRUSTUM_P_NEAR);
-	r_dsgraph_render_subspace(Sector, &Frustum, Combined, Origin, Geometry, false, Ignore);
+	View = &ViewParams.Frustum;
+	PortalTraverser.traverse(ViewParams.Sector, ViewParams.Frustum, ViewParams.Origin, ViewParams.Transform, ViewParams.TraverseOptions);
 }
 
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* Sector, CFrustum* Frustum, Fmatrix& Combined, Fvector& Origin, bool Dynamic, bool PrecisePortals, CObject* Ignore)
+void R_dsgraph_structure::CaptureStatic()
 {
-	r_dsgraph_render_subspace(Sector, Frustum, Combined, Origin, Dynamic ? SubspaceGeometry::All : SubspaceGeometry::StaticOnly, PrecisePortals, Ignore);
-}
-
-void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, SubspaceGeometry Geometry, bool _precise_portals, CObject* O)
-{
-	// The editors have no sectors: collect their scene for the frustum
-	if (Device.IsEditorMode())
+	PROF_EVENT("add_static");
+	if (psDeviceFlags.test(rsDrawStatic))
 	{
-		RImplementation.EditorRenderSubspace(*Backend, *_frustum);
-		return;
-	}
-
-	PROF_EVENT("r_dsgraph_render_subspace")
-	if (!_sector)
-	{
-		return;
-	}
-	VERIFY							(_sector);
-
-	// Shadow passes replace the camera frustum. Reflection passes keep their own copy
-	// so they can run while the main view is using ViewBase.
-	const bool isolated = PortalTraverser.own_clips;
-	if (!isolated)
-		marker++;			// !!! critical here
-	CFrustum ViewSave;
-	CFrustum light_frustum = *_frustum;
-	if (!isolated)
-	{
-		ViewSave = RImplementation.ViewBase;
-		RImplementation.ViewBase = light_frustum;
-		View = &RImplementation.ViewBase;
-	}
-	else
-	{
-		View = &light_frustum;
-	}
-
-	// Traverse sector/portal structure
-	PortalTraverser.traverse(_sector, isolated ? light_frustum : RImplementation.ViewBase, _cop, mCombined, 0);
-
-	// Dynamic objects are collected before static geometry: worker threads calculate their skeletons
-	// while the static hierarchy is traversed
-	const bool DrawDynamic = Geometry != SubspaceGeometry::StaticOnly && psDeviceFlags.test(rsDrawDynamic);
-	if (DrawDynamic)
-	{
-		CollectSubspaceDynamic(ViewSave);
-		SkeletonUpdates.Launch();
-	}
-
-	{
-		PROF_EVENT("add_static");
-	// Determine visibility for static geometry hierrarhy
-		if (Geometry != SubspaceGeometry::DynamicOnly && psDeviceFlags.test(rsDrawStatic))
+		for (IRender_Sector* Item : PortalTraverser.r_sectors)
 		{
-			for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+			CSector* Sector = (CSector*)Item;
+			for (CFrustum& Frustum : PortalTraverser.local_frustums[Sector->index])
 			{
-				CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
-				dxRender_Visual* root = sector->root();
-				xr_vector<CFrustum>& frustums = isolated
-					? PortalTraverser.local_frustums[sector->index]
-					: sector->r_frustums;
-				for (u32 v_it = 0; v_it < frustums.size(); v_it++)
-				{
-					View = &frustums[v_it];
-					add_Static((dxRender_Visual*)root, View->getMask());
-				}
+				View = &Frustum;
+				add_Static(Sector->root(), Frustum.getMask());
 			}
 		}
 	}
-
-	if (DrawDynamic)
-	{
-		PROF_EVENT("add_dynamic")
-		RImplementation.set_Object(0, this);
-		SkeletonUpdates.Wait();
-
-		for (const SubspaceItem& Item : SubspaceDynamic)
-		{
-			View = Item.Frustum;
-			if(O && O->dcast_Renderable()==Item.Renderable) continue;
-
-			if (ViewPhase() != CRender::PHASE_SMAP)
-			{
-				RImplementation.set_Object(Item.Renderable, this);
-			}
-
-			Item.Renderable->renderable_Render(this);
-		}
-
-		RImplementation.set_Object(0, this);
-	}
-
-	if (!isolated)
-		RImplementation.ViewBase = ViewSave;
 	View = nullptr;
 }
 
-void R_dsgraph_structure::CollectSubspaceDynamic(const CFrustum& MainView)
+void R_dsgraph_structure::Build(const GraphView& NewView)
+{
+	PROF_EVENT("Build graph");
+	Begin(NewView);
+	Traverse();
+	CaptureStatic();
+}
+
+void R_dsgraph_structure::BuildFull(const GraphView& NewView, CObject* Ignore)
+{
+	PROF_EVENT("Build graph");
+	Begin(NewView);
+	if (!NewView.Sector)
+	{
+		return;
+	}
+
+	Traverse();
+	// Worker threads calculate the skeletons while the static hierarchy is traversed
+	CollectDynamic();
+	CaptureStatic();
+	if (psDeviceFlags.test(rsDrawDynamic))
+	{
+		CaptureDynamic(Ignore);
+	}
+}
+
+void R_dsgraph_structure::CollectDynamic()
+{
+	if (psDeviceFlags.test(rsDrawDynamic))
+	{
+		View = &ViewParams.Frustum;
+		CollectSubspaceDynamic();
+		View = nullptr;
+		SkeletonUpdates.Launch();
+	}
+	else
+	{
+		SubspaceDynamic.clear();
+	}
+}
+
+void R_dsgraph_structure::CaptureDynamic(CObject* Ignore)
+{
+	PROF_EVENT("add_dynamic")
+	RImplementation.set_Object(0, this);
+	SkeletonUpdates.Wait();
+
+	for (const SubspaceItem& Item : SubspaceDynamic)
+	{
+		View = Item.Frustum;
+		if (Ignore && Ignore->dcast_Renderable() == Item.Renderable)
+		{
+			continue;
+		}
+
+		if (ViewPhase() != CRender::PHASE_SMAP)
+		{
+			RImplementation.set_Object(Item.Renderable, this);
+		}
+
+		Item.Renderable->renderable_Render(this);
+	}
+
+	RImplementation.set_Object(0, this);
+	View = nullptr;
+}
+
+void R_dsgraph_structure::CollectSubspaceDynamic()
 {
 	PROF_EVENT("collect_dynamic");
 	SubspaceDynamic.clear();
@@ -529,34 +524,24 @@ void R_dsgraph_structure::CollectSubspaceDynamic(const CFrustum& MainView)
 		*View
 	);
 
+	const CFrustum& MainView = RImplementation.ViewBase;
+
 	// Determine visibility for dynamic part of scene
-	const bool isolated = PortalTraverser.own_clips;
 	for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 	{
 		ISpatial*	spatial		= lstRenderables[o_it].get();
 		spatial->spatial_updatesector();
 		CSector*	sector		= (CSector*)spatial->sector;
 		if	(0==sector)										continue;	// disassociated from S/P structure
-		if (isolated)
-		{
-			if (PortalTraverser.local_sector_marker[sector->index] != PortalTraverser.i_marker)
-				continue;
-		}
-		else if (PortalTraverser.i_marker != sector->r_marker)
-		{
-			continue; // inactive (untouched) sector
-		}
-		xr_vector<CFrustum>& frustums = isolated
-			? PortalTraverser.local_frustums[sector->index]
-			: sector->r_frustums;
-		for (CFrustum& view : frustums)
+		if	(!PortalTraverser.IsVisited(sector->index))		continue;	// inactive (untouched) sector
+		for (CFrustum& view : PortalTraverser.local_frustums[sector->index])
 		{
 			if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
 
 			// renderable
 			IRenderable* renderable = spatial->dcast_Renderable();
 			if (0 == renderable)				continue;					// unknown, but renderable object (r1_glow???)
-			if (!isolated && Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
+			if (ViewParams.CalculateSkeletons && Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
 			{
 				// Shadow casters, and objects the main view did not calculate
 				const bool ShadowCaster = (spatial->type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE;
