@@ -197,7 +197,7 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
-			g_hud->Render_Last();		// HUD
+			g_hud->Render_Last(&GraphMain);		// HUD
 		}
 	}
 	else
@@ -206,7 +206,7 @@ void CRender::render_main	(GfxCmdList& Cmd, bool deffered, bool zfill)
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase == PHASE_NORMAL))
 		{
 			PROF_EVENT("Render HUD");
-			g_hud->Render_Last();		// HUD
+			g_hud->Render_Last(&GraphMain);		// HUD
 		}
 	}
 }
@@ -364,7 +364,7 @@ void CRender::RenderMainDynamic()
 
 		// Rendering
 		set_Object(Item.Renderable);
-		Item.Renderable->renderable_Render();
+		Item.Renderable->renderable_Render(&GraphMain);
 		set_Object(0);
 	}
 }
@@ -460,10 +460,10 @@ void CRender::RenderUI(Fcolor* color)
 	}
 
 	bool ui_saved = GraphUI.val_bUI;
-	set_UI(true, &GraphUI);
+	GraphUI.set_UI(true);
 	GraphUI.r_dsgraph_render_ui();
 	GraphUI.r_dsgraph_render_sorted_ui();
-	set_UI(ui_saved, &GraphUI);
+	GraphUI.set_UI(ui_saved);
 
 	Scissor.div(2, 2);
 

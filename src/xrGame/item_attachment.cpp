@@ -176,7 +176,7 @@ void item_attachments_manager::disable_attachment(shared_str sect_name)
 	}
 }
 
-void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* parent_model, bool hud_mode, void* graph)
+void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* parent_model, bool hud_mode, IDSGraphManager* DM)
 {
 	Fmatrix attachment_offset;
 	for (auto& pair : m_attachments)
@@ -226,7 +226,6 @@ void item_attachments_manager::render_attachments(Fmatrix& xform, IKinematics* p
 		place.mTransform.mul_43(parent_model->LL_GetTransform(place.parent_bone_id), attachment_offset);
 		place.mTransform.mulA_43(xform);
 
-		::Render->set_Transform(&place.mTransform, graph);
-		::Render->add_Visual(place.m_model->dcast_RenderVisual(), false, graph);
+		DM->add_Dynamic(place.m_model->dcast_RenderVisual(), &place.mTransform);
 	}
 }

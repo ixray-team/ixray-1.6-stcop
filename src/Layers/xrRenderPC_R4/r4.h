@@ -510,9 +510,8 @@ public:
 
 	// Main 
 	virtual void					flush						() override;
-	virtual void					set_Object					(IRenderable* O, void* graph = nullptr) override;
+	void							set_Object					(IRenderable* O, R_dsgraph_structure* Graph = nullptr);
 	virtual void					add_Occluder				(Fbox2&	bb_screenspace	) override;			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual* V, bool Ignore, void* graph = nullptr, bool Force = false) override;			// add visual leaf	(no culling performed at all)
 
 	// wallmarks
 	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
@@ -560,7 +559,8 @@ public:
 	virtual void					Calculate					() override;
 	virtual void					Render						() override;
 	virtual void					RenderUI					(Fcolor* = nullptr) override;
-	virtual void*					GetUIGraph					() override { return &GraphUI; }
+	virtual IDSGraphManager*		GetMainGraph				() override { return &GraphMain; }
+	virtual IDSGraphManager*		GetUIGraph					() override { return &GraphUI; }
 
 	virtual void					Screenshot					(ScreenshotMode mode=SM_NORMAL, const char* name = 0) override;
 	virtual void					Screenshot					(ScreenshotMode mode, CMemoryWriter& memory_writer) override;
@@ -568,21 +568,6 @@ public:
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer) override;
 	virtual void		_BCL		OnFrame						() override;
 
-	R_dsgraph_structure& TargetGraph(void* graph) { return graph ? *static_cast<R_dsgraph_structure*>(graph) : GraphMain; }
-
-	virtual void set_Transform(Fmatrix* M, void* graph = nullptr) override
-	{
-		VERIFY(M);
-		TargetGraph(graph).val_pTransform = M;
-	}
-	virtual void set_LocalTransform(Fmatrix* M, void* graph = nullptr) override
-	{
-		VERIFY(M);
-	}
-	virtual void set_UI(bool V, void* graph = nullptr) override { TargetGraph(graph).val_bUI = V; }
-	virtual void set_HUD(bool V, void* graph = nullptr) override { TargetGraph(graph).val_bHUD = V; }
-	virtual bool get_HUD(void* graph = nullptr) override { return TargetGraph(graph).val_bHUD; }
-	virtual void set_Invisible(bool V, void* graph = nullptr) override { TargetGraph(graph).val_bInvisible = V; }
 	virtual CDB::MODEL* GetHOMModel() override;
 	virtual xr_vector<u32>* GetHOMInvaltids() override;
 

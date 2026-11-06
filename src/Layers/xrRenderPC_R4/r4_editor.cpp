@@ -353,8 +353,7 @@ void CRender::model_RenderSingle(IRenderVisual* V, const Fmatrix& Transform, flo
 		}
 
 		Fmatrix SubmitTransform = Transform;
-		set_Transform(&SubmitTransform);
-		add_Visual(V, true);
+		GraphMain.add_Dynamic(V, &SubmitTransform, true);
 		return;
 	}
 
@@ -505,7 +504,7 @@ void CRender::EditorCollect(GfxCmdList& Cmd, bool Deferred, bool Shadows)
 	// HUD of the played level (PIE)
 	if (!Shadows && g_pGameLevel != nullptr && g_hud != nullptr && phase == PHASE_NORMAL)
 	{
-		g_hud->Render_Last();
+		g_hud->Render_Last(&GraphMain);
 	}
 
 	// Not every editor creates the spatial database (the Actor Editor has none)
@@ -559,7 +558,7 @@ void CRender::EditorCollect(GfxCmdList& Cmd, bool Deferred, bool Shadows)
 		}
 
 		set_Object(Renderable);
-		Renderable->renderable_Render();
+		Renderable->renderable_Render(&GraphMain);
 		set_Object(nullptr);
 	}
 

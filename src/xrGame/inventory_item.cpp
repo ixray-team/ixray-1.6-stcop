@@ -1208,11 +1208,11 @@ void CInventoryItem::OnRender()
 }
 #endif
 
-void CInventoryItem::renderable_Render(void* graph)
+void CInventoryItem::renderable_Render(IDSGraphManager* DM)
 {
-	CAttachableItem::renderable_Render(graph);
+	CAttachableItem::renderable_Render(DM);
 
-	item_attachments_manager::render_attachments(object().XFORM(), PKinematics(object().Visual()), false, graph);
+	item_attachments_manager::render_attachments(object().XFORM(), PKinematics(object().Visual()), false, DM);
 }
 
 DLL_Pure* CInventoryItem::_construct()

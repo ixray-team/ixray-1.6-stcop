@@ -699,13 +699,12 @@ bool attachable_hud_item::need_renderable()
 	return m_parent_hud_item->need_renderable();
 }
 
-void attachable_hud_item::render()
+void attachable_hud_item::render(IDSGraphManager* DM)
 {
-	::Render->set_Transform		(&m_item_transform);
-	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
+	DM->add_Dynamic(m_model->dcast_RenderVisual(), &m_item_transform, true);
 	debug_draw_firedeps			();
 
-	m_parent_hud_item->item().render_attachments(m_item_transform, m_model, true);
+	m_parent_hud_item->item().render_attachments(m_item_transform, m_model, true, DM);
 	m_parent_hud_item->render_hud_mode();
 }
 
@@ -2079,7 +2078,7 @@ bool player_hud::need_render_hands()
 	return (b_r0 && !m_attached_items[0]->m_model_combined) || b_r1 || animatorPlaying || m_bhands_visible;
 }
 
-void player_hud::render_hud()
+void player_hud::render_hud(IDSGraphManager* DM)
 {
 	EnsureDefaultLoaded();
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
@@ -2090,27 +2089,25 @@ void player_hud::render_hud()
 	{
 		if (m_model || animatorPlaying)
 		{
-			::Render->set_Transform(&m_transform);
-			::Render->add_Visual(m_model->dcast_RenderVisual(), true);
+			DM->add_Dynamic(m_model->dcast_RenderVisual(), &m_transform, true);
 		}
 
 		if (m_watches_model)
 		{
-			::Render->set_Transform(&m_watches_transform);
-			::Render->add_Visual(m_watches_model->dcast_RenderVisual(), true);
+			DM->add_Dynamic(m_watches_model->dcast_RenderVisual(), &m_watches_transform, true);
 		}
 	}
 
 	if(b_r0) {
-		m_attached_items[0]->render();
+		m_attached_items[0]->render(DM);
 	}
 
 	if(b_r1) {
-		m_attached_items[1]->render();
+		m_attached_items[1]->render(DM);
 	}
 
 	if (m_animator_item && m_animator_item->IsPlaying)
-		m_animator_item->render();
+		m_animator_item->render(DM);
 
 	if(m_show_legs > 0 && Actor() && m_legs_model && Actor()->Holder() == nullptr && Actor()->active_cam() == eacFirstEye)
 	{
@@ -2157,13 +2154,12 @@ void player_hud::render_hud()
 				m_legs_model->Bone_Calculate(&BoneInstance, &m_legs_model->LL_GetTransform(BoneInstance.GetParentID()));
 			}
 
-			auto bHud = ::Render->get_HUD();
-			::Render->set_HUD(false);
+			auto bHud = DM->get_HUD();
+			DM->set_HUD(false);
 
-			::Render->set_Transform(&Actor()->XFORM());
-			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
+			DM->add_Dynamic(m_legs_model->dcast_RenderVisual(), &Actor()->XFORM(), true);
 
-			::Render->set_HUD(bHud);
+			DM->set_HUD(bHud);
 		}
 	}
 }
@@ -3654,15 +3650,14 @@ void animator_item::update(bool bForce)
 	}
 }
 
-void animator_item::render()
+void animator_item::render(IDSGraphManager* DM)
 {
 	if (!m_item)
 	{
 		return;
 	}
 
-	::Render->set_Transform(&m_item_transform);
-	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
+	DM->add_Dynamic(m_item->dcast_RenderVisual(), &m_item_transform, true);
 }
 
 void animator_item::anim_play(const shared_str& item_anm_name, bool bMixIn, float speed)

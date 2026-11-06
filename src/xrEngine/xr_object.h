@@ -312,7 +312,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	
 	// Update
 	virtual void						shedule_Update		(u32 dt) override;							// Called by sheduler
-	virtual void						renderable_Render(void* graph = nullptr) override;
+	virtual void						renderable_Render(IDSGraphManager* DM) override;
 
 	virtual void						UpdateCL			();									// Called each frame, so no need for dt
 	virtual bool						net_Spawn			(CSE_Abstract* data);
@@ -337,7 +337,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	virtual void						ForceTransform		(const Fmatrix& m)	{};
 
 	// HUD
-	virtual void						OnHUDDraw			(CCustomHUD* hud)	{};
+	virtual void						OnHUDDraw			(CCustomHUD* hud, IDSGraphManager* DM)	{};
 
 	// Active/non active
 	virtual void						OnH_B_Chield		();		// before

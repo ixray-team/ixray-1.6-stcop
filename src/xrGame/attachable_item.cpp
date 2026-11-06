@@ -75,10 +75,9 @@ void CAttachableItem::OnH_A_Chield()
 	}
 }
 
-void CAttachableItem::renderable_Render(void* graph)
+void CAttachableItem::renderable_Render(IDSGraphManager* DM)
 {
-	::Render->set_Transform			(&object().XFORM(), graph);
-	::Render->add_Visual			(object().Visual(), false, graph);
+	DM->add_Dynamic(object().Visual(), &object().XFORM());
 }
 
 void CAttachableItem::OnH_A_Independent()

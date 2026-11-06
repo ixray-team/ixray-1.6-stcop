@@ -258,7 +258,7 @@ public:
 	virtual void						feel_touch_new						(CObject* O) override;
 	virtual void						feel_touch_delete					(CObject* O) override;
 			void						on_ownership_reject					( CObject*O, bool just_before_destroy );
-	virtual void						renderable_Render(void* graph = nullptr) override;
+	virtual void						renderable_Render(IDSGraphManager* DM) override;
 	virtual void						Exec_Look							(float dt) override;
 	virtual void						Hit									(SHit* pHDS) override;
 	virtual void						PHHit								(SHit &H) override;
@@ -269,7 +269,7 @@ public:
 	virtual void OnChangeVisual() override;
 
 #ifdef DEBUG_DRAW
-	virtual void						OnHUDDraw							(CCustomHUD* hud) override;
+	virtual void						OnHUDDraw							(CCustomHUD* hud, IDSGraphManager* DM) override;
 	virtual void						OnRender							() override;
 			void						debug_text							();
 			bool						m_dbg_hud_draw						;

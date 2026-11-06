@@ -189,6 +189,24 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Renderer)
+// Render graph as the game sees it: objects add their visuals to the graph they are given
+class ENGINE_API IDSGraphManager
+{
+public:
+	virtual ~IDSGraphManager() = default;
+
+	virtual void add_Static(IRenderVisual* Visual, CFrustum& Frustum, u32 Planes) = 0;
+	virtual void add_Dynamic(IRenderVisual* Visual, Fmatrix* Xform, bool IgnoreOptimize = false, bool Force = false) = 0;
+
+	virtual void set_Object(IRenderable* O = nullptr) = 0;
+	virtual IRenderable* get_Object() const = 0;
+
+	virtual void set_HUD(bool V = false) = 0;
+	virtual bool get_HUD() const = 0;
+	virtual void set_Invisible(bool V = false) = 0;
+	virtual void set_UI(bool V = false) = 0;
+};
+
 class	ENGINE_API	IRender_interface
 {
 public:
@@ -259,16 +277,8 @@ public:
 	virtual SurfaceParams			getSurface(const char* nameTexture) { R_ASSERT(!"Method is not overridden"); return SurfaceParams(); };
 
 	// Main 
-	virtual void					set_Transform			(Fmatrix*	M, void* graph = nullptr)		{};
-	virtual void					set_LocalTransform		(Fmatrix*	M, void* graph = nullptr)		{};
-	virtual void					set_UI					(bool 		V, void* graph = nullptr)		= 0;
-	virtual void					set_HUD					(bool 		V, void* graph = nullptr)		{};
-	virtual bool					get_HUD					(void* graph = nullptr)						{ return 0; };
-	virtual void					set_Invisible			(bool 		V, void* graph = nullptr)		{};
 	virtual void					flush					()											{};	
-	virtual void					set_Object				(IRenderable* O, void* graph = nullptr)		{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, void* graph = nullptr, bool Force = false)	{};	// add visual leaf	(no culling performed at all)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 
 	//	Prefer this function when possible
@@ -313,8 +323,10 @@ public:
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
 	virtual void					RenderUI				(Fcolor* = nullptr)							= 0;
-	// Graph of the 3D icons: pass it to set_UI, set_Transform and add_Visual
-	virtual void*					GetUIGraph				()											{ return nullptr; }
+	// Graph of the main view
+	virtual IDSGraphManager*		GetMainGraph			()											{ return nullptr; }
+	// Graph of the 3D icons
+	virtual IDSGraphManager*		GetUIGraph				()											{ return nullptr; }
 	
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = 0) {};
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};

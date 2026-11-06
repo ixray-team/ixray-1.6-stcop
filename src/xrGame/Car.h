@@ -489,7 +489,7 @@ public:
 	virtual void			UpdateEx					(float fov) override; //called by owner
 
 	virtual void			shedule_Update				(u32 dt) override;
-	virtual void			renderable_Render(void* graph = nullptr) override;
+	virtual void			renderable_Render(IDSGraphManager* DM) override;
 	virtual bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction) override;
 	virtual bool			bfAssignObject				(CScriptEntityAction *tpEntityAction) override;
 	virtual bool			is_ai_obstacle() const override {return true;};
@@ -548,7 +548,7 @@ public:
 	virtual void			HitImpulse					(float /**amount/**/,		Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/) override {};
 	virtual ALife::_OBJECT_ID				Initiator					() override;
 	// HUD
-	virtual void			OnHUDDraw					(CCustomHUD* hud) override;
+	virtual void			OnHUDDraw					(CCustomHUD* hud, IDSGraphManager* DM) override;
 	
 	virtual CCameraBase*			Camera						() override {return active_camera;}
 	XPROPERTY(LuaCallable)

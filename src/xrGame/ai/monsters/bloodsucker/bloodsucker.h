@@ -201,7 +201,7 @@ public:
 
 	virtual char* get_monster_class_name () override { return (char*) "bloodsucker"; }
 
-	virtual void  renderable_Render(void* graph = nullptr) override;
+	virtual void  renderable_Render(IDSGraphManager* DM) override;
 
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info() override;

@@ -891,11 +891,11 @@ bool CAI_Bloodsucker::AlwaysTheCrow()
 	return inherited::AlwaysTheCrow();
 }
 
-void   CAI_Bloodsucker::renderable_Render(void* graph)
+void   CAI_Bloodsucker::renderable_Render(IDSGraphManager* DM)
 {
 	if ( m_visibility_state != no_visibility )
 	{
-		inherited::renderable_Render(graph);
+		inherited::renderable_Render(DM);
 	}
 }
 

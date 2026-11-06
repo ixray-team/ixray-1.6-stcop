@@ -131,9 +131,9 @@ void CHolderEntityObject::cam_Update(float dt, float fov)
 	Level().Cameras().UpdateFromCamera(Camera());
 }
 
-void CHolderEntityObject::renderable_Render(void* graph)
+void CHolderEntityObject::renderable_Render(IDSGraphManager* DM)
 {
-	inheritedPH::renderable_Render(graph);
+	inheritedPH::renderable_Render(DM);
 }
 
 void CHolderEntityObject::Action(u16 id, u32 flags)

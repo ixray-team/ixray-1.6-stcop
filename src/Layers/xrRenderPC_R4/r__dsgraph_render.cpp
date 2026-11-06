@@ -400,6 +400,25 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
 	RenderMap(*this, Cmd, mapHUDDistort);
 }
 
+void R_dsgraph_structure::add_Static(IRenderVisual* Visual, CFrustum& Frustum, u32 Planes)
+{
+	CFrustum* SavedView = View;
+	View = &Frustum;
+	add_Static((dxRender_Visual*)Visual, Planes);
+	View = SavedView;
+}
+
+void R_dsgraph_structure::add_Dynamic(IRenderVisual* Visual, Fmatrix* Xform, bool IgnoreOptimize, bool Force)
+{
+	val_pTransform = Xform;
+	add_leafs_Dynamic((dxRender_Visual*)Visual, IgnoreOptimize, Force);
+}
+
+void R_dsgraph_structure::set_Object(IRenderable* O)
+{
+	RImplementation.set_Object(O, this);
+}
+
 void R_dsgraph_structure::Begin(const GraphView& NewView)
 {
 	ViewParams = NewView;

@@ -3230,21 +3230,19 @@ public:
 		spatial_unregister();
 	}
 
-	void renderable_Render(void* graph = nullptr) override
+	void renderable_Render(IDSGraphManager* DM) override
 	{
 		if (renderable.visual == nullptr)
 		{
 			return;
 		}
 
-		::Render->set_Transform(&renderable.xform, graph);
-		::Render->add_Visual(renderable.visual, false, graph);
+		DM->add_Dynamic(renderable.visual, &renderable.xform);
 		renderable.visual->getVisData().hom_frame = Device.dwFrame;
 
 		if (ItemVisual != nullptr)
 		{
-			::Render->set_Transform(&ItemTransform, graph);
-			::Render->add_Visual(ItemVisual, false, graph);
+			DM->add_Dynamic(ItemVisual, &ItemTransform);
 			ItemVisual->getVisData().hom_frame = Device.dwFrame;
 		}
 	}
@@ -18203,7 +18201,7 @@ void CCinemaFilmMakerManager::DrawGizmo()
 
 }
 
-void CinemaFilmMaker_Render()
+void CinemaFilmMaker_Render(IDSGraphManager* DM)
 {
 	if (CinemaFilmMaker::g_CinemaFilmMaker != nullptr)
 	{

@@ -117,7 +117,7 @@ void CCutsceneManager::Update()
 #endif
 }
 
-void CCutsceneManager::Render()
+void CCutsceneManager::Render(IDSGraphManager* DM)
 {
 	if (m_pCurrentCutscene) {
 		if (m_bToDelete)
@@ -126,8 +126,8 @@ void CCutsceneManager::Render()
 			xr_delete(m_pCurrentCutscene);
 			return;
 		}
-		bool bHud = ::Render->get_HUD();
-		::Render->set_HUD(false);
+		bool bHud = DM->get_HUD();
+		DM->set_HUD(false);
 		Fmatrix	m_transform;
 		m_transform.identity();
 #ifndef MASTER_GOLD
@@ -173,9 +173,9 @@ void CCutsceneManager::Render()
 			}
 		}
 #endif
-		m_pCurrentCutscene->Update(m_transform);
+		m_pCurrentCutscene->Update(m_transform, DM);
 
-		::Render->set_HUD(bHud);
+		DM->set_HUD(bHud);
 	}
 }
 

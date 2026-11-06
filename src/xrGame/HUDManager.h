@@ -29,8 +29,8 @@ public:
 	virtual ~CHUDManager		() override;
 	virtual void		OnEvent				(EVENT E, u64 P1, u64 P2) override;
 
-	virtual void		Render_First		() override;
-	virtual void		Render_Last			() override;
+	virtual void		Render_First		(IDSGraphManager* DM) override;
+	virtual void		Render_Last			(IDSGraphManager* DM) override;
 	virtual void		OnFrame				() override;
 
 	virtual void		OnFrameMT			() override;

@@ -108,10 +108,10 @@ void CEatableItemObject::Serialize(ISaveObject& Object)
 	}
 }
 
-void CEatableItemObject::renderable_Render(void* graph)
+void CEatableItemObject::renderable_Render(IDSGraphManager* DM)
 {
-	CPhysicItem::renderable_Render(graph);
-	CEatableItem::renderable_Render(graph);
+	CPhysicItem::renderable_Render(DM);
+	CEatableItem::renderable_Render(DM);
 }
 
 void CEatableItemObject::reload(const char* section)

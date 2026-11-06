@@ -64,7 +64,7 @@ public:
 	virtual CInventory*		GetInventory		() override {return nullptr;};
 	virtual void			cam_Update			(float dt, float fov=90.0f) override;
 
-	virtual void			renderable_Render(void* graph = nullptr) override;
+	virtual void			renderable_Render(IDSGraphManager* DM) override;
 
 	virtual void			attach_actor_script(bool bForce = false);
 	virtual void			detach_actor_script(bool bForce = false);

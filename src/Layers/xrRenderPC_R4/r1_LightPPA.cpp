@@ -92,7 +92,7 @@ void CLightR_Manager::render_point	(GfxCmdList& Cmd, u32 _priority)
 		{
 			// The HUD is already in the main graph: a new collection adds it for this light
 			RImplementation.BeginMainCollect();
-			g_hud->Render_Last();
+			g_hud->Render_Last(&RImplementation.GraphMain);
 		}
 		Graph.r_dsgraph_render_graph(_priority);
 		if (bHUD && _priority == 0)
@@ -166,7 +166,7 @@ void CLightR_Manager::render_spot	(GfxCmdList& Cmd, u32 _priority)
 		if (bHUD && _priority == 0)
 		{
 			RImplementation.BeginMainCollect();
-			g_hud->Render_Last();
+			g_hud->Render_Last(&RImplementation.GraphMain);
 		}
 
 		Graph.r_dsgraph_render_graph(_priority);

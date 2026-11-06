@@ -50,11 +50,11 @@ void CAttachmentOwner::net_Destroy()
 	R_ASSERT(attached_objects().empty());
 }
 
-void CAttachmentOwner::renderable_Render(void* graph)
+void CAttachmentOwner::renderable_Render(IDSGraphManager* DM)
 {
 	for (CAttachableItem* item : m_attached_objects)
 	{
-		item->renderable_Render(graph);
+		item->renderable_Render(DM);
 	}
 }
 

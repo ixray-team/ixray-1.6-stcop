@@ -159,7 +159,7 @@ public:
 	// debug
 #ifdef DEBUG_DRAW
 	virtual void		OnRender				( ) override;
-	virtual void		OnHUDDraw				(CCustomHUD* hud) override;
+	virtual void		OnHUDDraw				(CCustomHUD* hud, IDSGraphManager* DM) override;
 #endif
 
 	virtual bool		bfExecMovement			(){return(false);};

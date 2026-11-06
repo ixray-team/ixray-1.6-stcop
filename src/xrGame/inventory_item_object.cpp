@@ -162,10 +162,10 @@ void CInventoryItemObject::Serialize(ISaveObject& Object)
 	}
 }
 
-void CInventoryItemObject::renderable_Render(void* graph)
+void CInventoryItemObject::renderable_Render(IDSGraphManager* DM)
 {
-	CPhysicItem::renderable_Render(graph);
-	CInventoryItem::renderable_Render(graph);
+	CPhysicItem::renderable_Render(DM);
+	CInventoryItem::renderable_Render(DM);
 }
 
 void CInventoryItemObject::reload(const char* section)

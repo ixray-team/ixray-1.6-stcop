@@ -22,7 +22,7 @@ public:
 	virtual void OnH_B_Independent	(bool just_before_destroy) override;
 
 	virtual void UpdateCL			() override;
-	virtual void renderable_Render(void* graph = nullptr) override;
+	virtual void renderable_Render(IDSGraphManager* DM) override;
 
 	virtual CSilencer* cast_addon_silencer() override {return this;}
 };

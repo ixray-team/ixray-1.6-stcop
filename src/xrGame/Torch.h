@@ -82,7 +82,7 @@ public:
 	virtual void setup_physic_shell() override;
 
 	virtual void afterDetach() override;
-	virtual void renderable_Render(void* graph = nullptr) override;
+	virtual void renderable_Render(IDSGraphManager* DM) override;
 
 	virtual CTorch* cast_torch() override { return this; }
 

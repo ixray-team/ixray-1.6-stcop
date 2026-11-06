@@ -579,7 +579,7 @@ struct attachable_hud_item final
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
 	void setup_firedeps				(firedeps& fd);
-	void render						();	
+	void render						(IDSGraphManager* DM);
 	void render_item_ui				();
 	bool render_item_ui_query		();
 	bool need_renderable			();
@@ -638,7 +638,7 @@ struct animator_item
 	animator_item(CHudAnimatorBase* animator, player_hud* pParent, const shared_str& section);
 	~animator_item();
 	void update(bool bForce);
-	void render();
+	void render(IDSGraphManager* DM);
 
 	Fvector& hands_attach_pos();
 	Fvector& hands_attach_rot();
@@ -978,7 +978,7 @@ public:
 	void			EnsureDefaultLoaded	() { if (PendingDefaultSect.size()) FinishDefaultLoad(true); }
 	void			ReloadRigParams		();
 	void			update				(const Fmatrix& world_cam_trans);
-	void			render_hud			();	
+	void			render_hud			(IDSGraphManager* DM);	
 	void			render_item_ui		();
 	bool			render_item_ui_query();
 

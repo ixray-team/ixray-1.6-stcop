@@ -30,12 +30,12 @@ bool CAI_Stalker::feel_vision_isRelevant(CObject* O)
 	return(true);
 }
 
-void CAI_Stalker::renderable_Render(void* graph)
+void CAI_Stalker::renderable_Render(IDSGraphManager* DM)
 {
-	inherited::renderable_Render(graph);
+	inherited::renderable_Render(DM);
 
 	if (!already_dead())
-		CInventoryOwner::renderable_Render(graph);
+		CInventoryOwner::renderable_Render(DM);
 
 #ifdef DEBUG
 	if (g_Alive()) {

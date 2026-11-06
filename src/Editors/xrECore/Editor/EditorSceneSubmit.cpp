@@ -161,8 +161,7 @@ void CEditorSceneSubmit::AddSingle(CCustomObject* Parent, CEditableMesh* Mesh, C
 	Box.getsphere(Visual->vis.sphere.P, Visual->vis.sphere.R);
 
 	Fmatrix SubmitTransform = Transform;
-	::Render->set_Transform(&SubmitTransform);
-	::Render->add_Visual(Visual, true);
+	::Render->GetMainGraph()->add_Dynamic(Visual, &SubmitTransform, true);
 }
 
 void CEditorSceneSubmit::AddSurface(CCustomObject* Parent, CEditableMesh* Mesh, CSurface* Surface, const ref_shader& Shader, const ref_shader& InstancedShader, const Fmatrix& Transform, bool Skeleton)
@@ -266,8 +265,7 @@ void CEditorSceneSubmit::Flush()
 		WorldBox.getsphere(Visual->vis.sphere.P, Visual->vis.sphere.R);
 
 		Fmatrix SubmitTransform = Fidentity;
-		::Render->set_Transform(&SubmitTransform);
-		::Render->add_Visual(Visual, true);
+		::Render->GetMainGraph()->add_Dynamic(Visual, &SubmitTransform, true);
 
 		RunStart = RunEnd;
 	}

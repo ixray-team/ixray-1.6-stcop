@@ -388,7 +388,7 @@ public:
 	virtual void OnRender() override;
 #endif
 
-	virtual void renderable_Render(void* graph = nullptr) override;
+	virtual void renderable_Render(IDSGraphManager* DM) override;
 
 public:
 	virtual DLL_Pure* _construct() override;

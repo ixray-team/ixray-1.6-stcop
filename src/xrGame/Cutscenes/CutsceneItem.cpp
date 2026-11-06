@@ -72,7 +72,7 @@ void SCutsceneObjectElement::Activate()
 #endif
 }
 
-void SCutsceneObjectElement::Update(Fvector Deviation)
+void SCutsceneObjectElement::Update(Fvector Deviation, IDSGraphManager* DM)
 {
     Fmatrix m_transform;
     m_transform.identity();
@@ -87,8 +87,7 @@ void SCutsceneObjectElement::Update(Fvector Deviation)
     //    m_transform = trans;
     //}
     HudModelKinematics->CalculateBones(true);
-    ::Render->set_Transform(&m_transform);
-    ::Render->add_Visual(HudModel, false, nullptr, true);
+    DM->add_Dynamic(HudModel, &m_transform, false, true);
 }
 
 #ifndef MASTER_GOLD
@@ -200,12 +199,12 @@ void CCutsceneItem::Activate()
     }
 }
 
-void CCutsceneItem::Update(Fmatrix matrix)
+void CCutsceneItem::Update(Fmatrix matrix, IDSGraphManager* DM)
 {
     auto pos = matrix.c;
     for (auto& elem : CutsceneElements)
     {
-        elem->Update(pos);
+        elem->Update(pos, DM);
     }
 }
 

@@ -164,7 +164,7 @@ public:
 	virtual float			evaluate						(const CItemManager *manager, const CGameObject *object) const override;
 
 	virtual void			OnEvent							(NET_Packet& P, u16 type) override;
-	virtual void			OnHUDDraw						(CCustomHUD* hud) override {return inherited::OnHUDDraw(hud);}
+	virtual void			OnHUDDraw						(CCustomHUD* hud, IDSGraphManager* DM) override {return inherited::OnHUDDraw(hud, DM);}
 	virtual u16				PHGetSyncItemsNumber			() override {return inherited::PHGetSyncItemsNumber();}
 	virtual CPHSynchronize*	PHGetSyncItem					(u16 item) override {return inherited::PHGetSyncItem(item);}
 	virtual void			PHUnFreeze						() override {return inherited::PHUnFreeze();}
@@ -178,7 +178,7 @@ public:
 	void					postprocess_packet(monster_interpolation::net_update_A& packet);
 
 	virtual const SRotation	Orientation						() const override {return inherited::Orientation();}
-	virtual void			renderable_Render(void* graph = nullptr) override {return inherited::renderable_Render(graph);}
+	virtual void			renderable_Render(IDSGraphManager* DM) override {return inherited::renderable_Render(DM);}
 
 	virtual void			on_restrictions_change			() override;
 

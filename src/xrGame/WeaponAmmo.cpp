@@ -223,10 +223,10 @@ bool CWeaponAmmo::IsValid() const
 	return m_boxCurr;
 }
 
-void CWeaponAmmo::renderable_Render(void* graph) 
+void CWeaponAmmo::renderable_Render(IDSGraphManager* DM) 
 {
 	if(!m_ready_to_destroy)
-		inherited::renderable_Render(graph);
+		inherited::renderable_Render(DM);
 }
 
 void CWeaponAmmo::UpdateCL() 

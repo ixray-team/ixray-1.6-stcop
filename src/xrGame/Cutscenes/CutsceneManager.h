@@ -30,7 +30,7 @@ public:
 	
 
 	void Update();
-	void Render();
+	void Render(IDSGraphManager* DM);
 	
 #ifndef MASTER_GOLD
 	inline void SetAdjust(bool Adjust) { this->Adjust = Adjust; }

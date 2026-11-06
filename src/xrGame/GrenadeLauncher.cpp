@@ -49,7 +49,7 @@ void CGrenadeLauncher::OnH_B_Independent(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 }
 
-void CGrenadeLauncher::renderable_Render(void* graph) 
+void CGrenadeLauncher::renderable_Render(IDSGraphManager* DM) 
 {
-	inherited::renderable_Render(graph);
+	inherited::renderable_Render(DM);
 }

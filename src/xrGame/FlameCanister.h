@@ -22,7 +22,7 @@ public:
 	void					OnH_B_Chield() override;
 	void					OnH_B_Independent(bool just_before_destroy) override;
 	void					UpdateCL() override;
-	void					renderable_Render(void* graph = nullptr) override;
+	void					renderable_Render(IDSGraphManager* DM) override;
 
 	bool					Useful() const override;
 	float					Weight() const override;

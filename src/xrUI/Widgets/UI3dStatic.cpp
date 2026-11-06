@@ -224,16 +224,15 @@ void CUI3dStatic::Draw()
 
 		UI().PushScissor(rect);
 		
-		void* Graph = ::Render->GetUIGraph();
-		::Render->set_UI(true, Graph);
+		IDSGraphManager* Graph = ::Render->GetUIGraph();
+		Graph->set_UI(true);
 
-		::Render->set_Transform(&matrix, Graph);
-		::Render->add_Visual(pCurrentVisual, true, Graph);
+		Graph->add_Dynamic(pCurrentVisual, &matrix, true);
 
 		Fcolor static_color { };
 		static_color.set(GetTextureColor());
 
-		::Render->set_UI(false, Graph);
+		Graph->set_UI(false);
 		::Render->RenderUI(&static_color);
 
 		UI().PopScissor();

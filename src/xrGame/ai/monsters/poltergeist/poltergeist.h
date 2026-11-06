@@ -86,7 +86,7 @@ public:
 	bool detected_enemy();
 	float get_fly_around_distance() const { return m_fly_around_distance; }
 	float get_fly_around_change_direction_time() const { return m_fly_around_change_direction_time; }
-	void renderable_Render(void* graph = nullptr) override;
+	void renderable_Render(IDSGraphManager* DM) override;
 
 	ICF IPolter* ability() { return m_poltergeist; }
 	ICF bool is_hidden() { return state_invisible; }

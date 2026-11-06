@@ -1,10 +1,28 @@
 #pragma once
+class CDS0_GraphManager final : public IDSGraphManager
+{
+	xr_vector<IKinematics*>& KinematicPool;
+
+public:
+	explicit CDS0_GraphManager(xr_vector<IKinematics*>& Pool) : KinematicPool(Pool) {}
+
+	void add_Static(IRenderVisual* Visual, CFrustum& Frustum, u32 Planes) override {}
+	void add_Dynamic(IRenderVisual* Visual, Fmatrix* Xform, bool IgnoreOptimize = false, bool Force = false) override;
+	void set_Object(IRenderable* O = nullptr) override {}
+	IRenderable* get_Object() const override { return nullptr; }
+	void set_HUD(bool V = false) override {}
+	bool get_HUD() const override { return false; }
+	void set_Invisible(bool V = false) override {}
+	void set_UI(bool V = false) override {}
+};
+
 class CDS0_RenderInterface :
 	public IRender_interface,
 	public pureFrame
 {
 	IRender_Target Target;
 	xr_vector<IKinematics*> KinematicPool;
+	CDS0_GraphManager MainGraph{ KinematicPool };
 
 public:
 	CDS0_RenderInterface();
@@ -27,16 +45,10 @@ public:
 	virtual IRender_Sector* detectSector(const Fvector& P) override;
 	virtual IRender_Target* getTarget() override;
 
-	virtual void set_Transform(Fmatrix* M, void* graph = nullptr) override;
-	virtual void set_HUD(bool V, void* graph = nullptr) override;
-	virtual void set_UI(bool V, void* graph = nullptr) override;
-	virtual bool get_HUD(void* graph = nullptr) override;
-	virtual void set_Invisible(bool V, void* graph = nullptr) override;
-	virtual void set_Object(IRenderable* O, void* graph = nullptr) override;
 	virtual GenerationLevel			get_generation() override { return GenerationLevel::GENERATION_R1; }
 
 	virtual void add_Occluder(Fbox2& bb_screenspace) override;
-	virtual void add_Visual(IRenderVisual* V, bool IgnoreOptimize = false, void* graph = nullptr, bool Force = false) override;
+	virtual IDSGraphManager* GetMainGraph() override { return &MainGraph; }
 	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) override;
 	virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
 	virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) override;

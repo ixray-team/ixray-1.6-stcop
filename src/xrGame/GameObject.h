@@ -239,7 +239,7 @@ public:
 	virtual void			shedule_Update		(u32 dt) override;
 	virtual bool			shedule_Needed		() override;
 	virtual float			shedule_Scale_Base	() override;
-	virtual void			renderable_Render(void* graph = nullptr) override;
+	virtual void			renderable_Render(IDSGraphManager* DM) override;
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 	virtual void			SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)	{};

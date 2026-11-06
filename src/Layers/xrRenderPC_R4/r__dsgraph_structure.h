@@ -65,7 +65,7 @@ class GfxCmdList;
 //////////////////////////////////////////////////////////////////////////
 // common part of interface implementation for all D3D renderers		//
 //////////////////////////////////////////////////////////////////////////
-class R_dsgraph_structure
+class R_dsgraph_structure : public IDSGraphManager
 {
 public:
 	struct SpotShadowBuildContext
@@ -200,6 +200,16 @@ public:
 	void		r_dsgraph_clear_aux();
 	void		r_dsgraph_clear_passes();
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);
+
+	// IDSGraphManager
+	void add_Static(IRenderVisual* Visual, CFrustum& Frustum, u32 Planes) override;
+	void add_Dynamic(IRenderVisual* Visual, Fmatrix* Xform, bool IgnoreOptimize = false, bool Force = false) override;
+	void set_Object(IRenderable* O = nullptr) override;
+	IRenderable* get_Object() const override { return val_pObject; }
+	void set_HUD(bool V = false) override { val_bHUD = V; }
+	bool get_HUD() const override { return val_bHUD; }
+	void set_Invisible(bool V = false) override { val_bInvisible = V; }
+	void set_UI(bool V = false) override { val_bUI = V; }
 	void CollectSpotShadowStatic(dxRender_Visual* Visual, u32 Planes);
 	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false, bool Force = false); // if detected node's full visibility
 

@@ -74,7 +74,7 @@ void CHUDManager::OnFrameMT()
 
 ENGINE_API extern float psHUD_FOV;
 
-void CHUDManager::Render_First()
+void CHUDManager::Render_First(IDSGraphManager* DM)
 {
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))
 	{
@@ -104,10 +104,10 @@ void CHUDManager::Render_First()
 	}
 
 	// only shadow 
-	::Render->set_Invisible			(true);
-	::Render->set_Object			(O->H_Root());
-	O->renderable_Render			();
-	::Render->set_Invisible			(false);
+	DM->set_Invisible				(true);
+	DM->set_Object					(O->H_Root());
+	O->renderable_Render			(DM);
+	DM->set_Invisible				(false);
 }
 
 bool need_render_hud()
@@ -132,17 +132,17 @@ bool need_render_hud()
 	return true;
 }
 
-void CHUDManager::Render_Last()
+void CHUDManager::Render_Last(IDSGraphManager* DM)
 {
-	CinemaFilmMaker_Render();
+	CinemaFilmMaker_Render(DM);
 
 	CObject* O = g_pGameLevel->CurrentViewEntity();
 	if (!O)
 	{
 		return;
 	}
-	::Render->set_Object(O->H_Root());
-	CCutsceneManager::GetInstance().Render();
+	DM->set_Object(O->H_Root());
+	CCutsceneManager::GetInstance().Render(DM);
 
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2|HUD_DRAW_RT2))return;
 	if (0==pUIGame)					return;
@@ -150,10 +150,10 @@ void CHUDManager::Render_Last()
 	if(!need_render_hud())			return;
 
 	// hud itself
-	::Render->set_HUD				(true);
-	::Render->set_Object			(O->H_Root());
-	O->OnHUDDraw					(this);
-	::Render->set_HUD				(false);
+	DM->set_HUD						(true);
+	DM->set_Object					(O->H_Root());
+	O->OnHUDDraw					(this, DM);
+	DM->set_HUD						(false);
 }
 
 #include "player_hud.h"

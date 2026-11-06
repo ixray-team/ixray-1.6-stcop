@@ -64,8 +64,8 @@ public:
 	virtual bool		ActivateItem		() override;
 	virtual void		DeactivateItem	() override;
 	virtual void		UpdateCL			() override;
-	virtual void		renderable_Render(void* graph = nullptr) override;
-	virtual void		on_renderable_Render(void* graph = nullptr) override;
+	virtual void		renderable_Render(IDSGraphManager* DM) override;
+	virtual void		on_renderable_Render(IDSGraphManager* DM) override;
 	virtual void		OnMoveToRuck		(const SInvItemPlace& prev) override;
 
 	virtual void Serialize(ISaveObject& Object) override { CInventoryItemObject::Serialize(Object); }

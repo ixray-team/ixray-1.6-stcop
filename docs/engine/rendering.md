@@ -74,12 +74,15 @@ A graph (`R_dsgraph_structure`) belongs to one view. `GraphView` describes it: p
 | `GraphRain` | shadow map | static, `Build` | `PreRenderThread` |
 | `GraphSun[3]` | shadow map | static with `Build`, dynamic in `append_sun_dynamics` | `PreRenderThread`, then primary |
 | `GraphPass` | any | `BuildFull`: spot shadows, planar puddles, static-lighting dynamic lights | primary, one pass at a time |
+| `GraphUI` | live | `UI3dStatic`, one icon at a time | primary |
 
 `Build` is `Begin`, `Traverse`, `CaptureStatic`. `BuildFull` adds `CollectDynamic` before the static geometry, so worker threads calculate skeletons meanwhile, and `CaptureDynamic` after it. Traversal results stay in the graph's `CPortalTraverser`; `CSector` and `CPortal` hold no per-frame state.
 
 `on_idle` calls `BeginGraphCollect` before starting `PreRenderThread`. It fills `GraphJobs` in the order the frame draws them, so these views use the camera of the previous frame. Shadow accumulation samples with the matrices used for capture: only coverage lags by a frame. The primary thread calls `WaitGraphJobs` with the jobs it is about to draw. `Render` and `render_rain` collect on the primary thread in the editors and on frames `CanCollectSceneOnWorker` did not foresee. `level_Unload` and `reset_begin` wait for `PreRenderThread`: both can run inside `FrameMove` and delete what the collection reads.
 
-The main scene is collected once per frame: priority 0, priority 1 and wallmarks together. `render_forward` only adds particles through `CaptureMainParticles`, because they are simulated in parallel with the frame. The editors keep two collections. `GraphMain` has no `GraphView` copy and reads the live state, because `UI3dStatic` replaces the camera while it submits icons. It also uses `vis.marker`, while the other graphs deduplicate through `private_visuals`.
+The main scene is collected once per frame: priority 0, priority 1 and wallmarks together. `render_forward` only adds particles through `CaptureMainParticles`, because they are simulated in parallel with the frame. The editors keep two collections. `BeginMainCollect` gives `GraphMain` a `GraphView` copy for each collection. All graphs deduplicate through `private_visuals`. `GraphUI` holds the 3D icons and is the only graph that reads the live camera, because `UI3dStatic` replaces it while it submits an icon.
+
+The game sees a graph through `IDSGraphManager` (`src/xrEngine/Render.h`). The renderer passes it to `renderable_Render(DM)`, `CCustomHUD::Render_First(DM)`, `Render_Last(DM)` and `OnHUDDraw(hud, DM)`, and objects add their visuals with `DM->add_Dynamic(visual, &xform)`. The parameter is required, so an object always adds to the graph that is collecting it. `::Render->GetMainGraph()` and `GetUIGraph()` return the graphs for code outside these calls: the editors and `UI3dStatic`.
 
 ## 3D scope target detector
 

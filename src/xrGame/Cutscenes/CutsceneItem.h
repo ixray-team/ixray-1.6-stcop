@@ -25,7 +25,7 @@ struct SCutsceneObjectElement
     void SetBonesWeapon(u16 BoneIDR, u16 BoneIDL);
 
     void Activate();
-    void Update(Fvector Deviation);
+    void Update(Fvector Deviation, IDSGraphManager* DM);
     
 #ifndef MASTER_GOLD
     void StopAnimation();
@@ -68,7 +68,7 @@ public:
     
     void Construct(LPCSTR Section);
     void Activate();
-    void Update(Fmatrix matrix);
+    void Update(Fmatrix matrix, IDSGraphManager* DM);
     LPCSTR GetName();
     XPROPERTY(LuaCallable, Name="create_object_element")
     SCutsceneObjectElement* CreateObjectElement(LPCSTR ObjectName);

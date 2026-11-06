@@ -430,7 +430,7 @@ CObject::SavedPosition CObject::ps_Element(u32 ID) const
 	return PositionStack[ID];
 }
 
-void CObject::renderable_Render(void* graph)
+void CObject::renderable_Render(IDSGraphManager* DM)
 {
 	MakeMeCrow	();
 }

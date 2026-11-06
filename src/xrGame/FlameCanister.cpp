@@ -63,10 +63,10 @@ bool CFlameCanister::Useful() const
 	return !!GetCondition();
 }
 
-void CFlameCanister::renderable_Render(void* graph)
+void CFlameCanister::renderable_Render(IDSGraphManager* DM)
 {
 	if (!m_ready_to_destroy)
-		inherited::renderable_Render(graph);
+		inherited::renderable_Render(DM);
 }
 
 void CFlameCanister::UpdateCL()

@@ -290,7 +290,7 @@ public:
 	virtual void					net_Save			(NET_Packet& P) override;
 	virtual bool					net_SaveRelevant	() override {return (inherited::net_SaveRelevant() && bool(PPhysicsShell()!=NULL))||m_exploded;};
 
-	virtual void					renderable_Render(void* graph = nullptr) override { inherited::renderable_Render(graph);};
+	virtual void					renderable_Render(IDSGraphManager* DM) override { inherited::renderable_Render(DM);};
 	virtual bool					renderable_ShadowGenerate		() override { return false;	}
 	virtual bool					renderable_ShadowReceive		() override { return true;	}
 

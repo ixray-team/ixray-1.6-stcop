@@ -691,7 +691,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 }
 
 #ifdef DEBUG_DRAW
-void CCreature::OnHUDDraw(CCustomHUD *hud)
+void CCreature::OnHUDDraw(CCustomHUD* hud, IDSGraphManager* DM)
 {
 }
 #endif

@@ -17,7 +17,7 @@ public:
 						CParticlesObject	(const char* p_name, bool bAutoRemove, bool destroy_on_game_load);
 	virtual ~CParticlesObject	() override;
 
-	virtual void		renderable_Render(void* graph = nullptr) override;
+	virtual void		renderable_Render(IDSGraphManager* DM) override;
 	virtual void		Update				(u32 dt, CFrustum* viewbase = nullptr);
 	virtual IRenderable* dcast_Renderable	() override { return this; }
 

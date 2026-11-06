@@ -116,7 +116,7 @@ public:
 	virtual void	net_Destroy					() override;
 	virtual bool	renderable_ShadowGenerate	() override { return false;	}
 	virtual bool	renderable_ShadowReceive	() override { return false;	}
-	virtual void	renderable_Render(void* graph = nullptr) override;
+	virtual void	renderable_Render(IDSGraphManager* DM) override;
 	virtual void	shedule_Update				(u32 DT) override;
 	virtual void	UpdateCL					() override;
 

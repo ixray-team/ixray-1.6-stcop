@@ -588,14 +588,14 @@ bool CScavengerCrow::SVisibleTracksCallback::operator()(float Dt, IKinematicsAni
 	return true;
 }
 
-void CScavengerCrow::renderable_Render(void* graph)
+void CScavengerCrow::renderable_Render(IDSGraphManager* DM)
 {
 	// Shadow/reflection submission must not wake animations outside the main view.
 	if (::Render->phase == IRender_interface::PHASE_NORMAL)
 	{
 		AnimationVisibleFrame = Device.dwFrame;
 	}
-	CFlyingMonster::renderable_Render(graph);
+	CFlyingMonster::renderable_Render(DM);
 }
 
 bool CScavengerCrow::UpdateAnimationLod(float Dt)

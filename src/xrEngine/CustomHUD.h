@@ -27,6 +27,7 @@ IC bool HUD_IsQuickSlotsAutoHide()
 	return psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS) || psHUD_Flags.test(HUD_CONTEXTUAL_STATUS);
 }
 
+class IDSGraphManager;
 class ENGINE_API IRender_Visual;
 class CUI;
 
@@ -39,8 +40,8 @@ public:
 					CCustomHUD				();
 	virtual ~CCustomHUD				() override;
 
-	virtual		void		Render_First			(){;}
-	virtual		void		Render_Last				(){;}
+	virtual		void		Render_First			(IDSGraphManager* DM){;}
+	virtual		void		Render_Last				(IDSGraphManager* DM){;}
 
 	virtual		void		OnFrame					(){;}
 	virtual		void		OnFrameMT				(){;}
