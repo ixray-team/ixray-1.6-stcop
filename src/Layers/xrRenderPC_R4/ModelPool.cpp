@@ -481,6 +481,7 @@ dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data)
 void CModelPool::Destroy()
 {
 	WaitRequests();
+	DeleteQueue();
 
 	// Pool
 	{
@@ -655,11 +656,10 @@ void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 	if (nullptr==V)
 		return;
 
-	if (g_bRendering)
+	if (g_bRendering || (g_AppInfo.MainThread && !g_AppInfo.IsPrimaryThread()))
 	{
-		VERIFY(!bDiscard);
 		xrCriticalSectionGuard Guard(PoolLock);
-		ModelsToDelete.push_back(V);
+		ModelsToDelete.emplace_back(V, bDiscard);
 	}
 	else
 	{
@@ -671,14 +671,14 @@ void CModelPool::Delete(dxRender_Visual* &V, bool bDiscard)
 
 void CModelPool::DeleteQueue()
 {
-	xr_vector<dxRender_Visual*> Queue;
+	xr_vector<std::pair<dxRender_Visual*, bool>> Queue;
 	{
 		xrCriticalSectionGuard Guard(PoolLock);
 		Queue.swap(ModelsToDelete);
 	}
 
-	for (dxRender_Visual*& V : Queue)
-		DeleteInternal(V);
+	for (auto& [V, Discard] : Queue)
+		DeleteInternal(V, Discard);
 }
 
 void CModelPool::DeleteQueuedDeffer()

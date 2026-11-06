@@ -41,7 +41,7 @@ private:
 	xrSRWLock									ModelsLock;
 
 	xrCriticalSection			PoolLock;
-	xr_vector<dxRender_Visual*>	ModelsToDelete;		//
+	xr_vector<std::pair<dxRender_Visual*, bool>>	ModelsToDelete;		// Visual, discard
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
 
