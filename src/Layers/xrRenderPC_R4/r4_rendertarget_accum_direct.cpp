@@ -69,16 +69,14 @@ void CRenderTarget::accum_direct_cascade(GfxCmdList& Cmd)
 		m_clouds_shadow.mulA_44(m_xform);
 	}
 
-	if (g_SunContactSteps > 0)
+	if (g_SunContactQuality > 0)
 	{
 		GPU_EVENT(sun_contact_shadows);
 		DrawSQ(Cmd, SunContactShader, SunContactTarget, 0, [&]
 		{
 			CBLight& Light = Cmd.Constants.Write<CBLight>();
 			Light.Ldynamic_dir.set(L_dir.x, L_dir.y, L_dir.z, 0.0f);
-			Light.sun_contact_ray.set(float(g_SunContactSteps), g_SunContactLength, g_SunContactStart, 0.0f);
-			Light.sun_contact_depth.set(g_SunContactThickness, g_SunContactThicknessScale, g_SunContactBias, g_SunContactBiasScale);
-			Light.sun_contact_fade.set(g_SunContactFar, 1.0f / g_SunContactFade, g_SunContactMinPixels, g_SunContactGrazing);
+			Light.SunContactStart = ps_r2_sun_details_cascades;
 		});
 	}
 	else

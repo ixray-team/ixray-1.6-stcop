@@ -9,6 +9,14 @@
 	#define HUD_SHADOWS_TRACE_LEN 0.07f
 #endif
 
+#if SUN_CONTACT_QUALITY == 1
+	#define SUN_CONTACT_STEPS 8.0f
+#elif SUN_CONTACT_QUALITY == 2
+	#define SUN_CONTACT_STEPS 12.0f
+#else
+	#define SUN_CONTACT_STEPS 16.0f
+#endif
+
 float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightDir)
 {
 	Point.xyz *= 0.99f;
@@ -56,13 +64,13 @@ float RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightDir)
 float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 LightDir, float Jitter)
 {
 	float4 Start = mul(m_P, float4(Point, 1.0f));
-	float4 End = mul(m_P, float4(Point - LightDir * min(Point.z * 0.5f, sun_contact_ray.y), 1.0f));
+	float4 End = mul(m_P, float4(Point - LightDir * Point.z * 0.06f, 1.0f));
 
 	float3 Delta = float3((End.xy / End.w - Start.xy / Start.w) * float2(0.5f, -0.5f), rcp(End.w) - rcp(Start.w));
 	
 	// NOTE(vertver): far-distance shadow fade
 	float Pixels = length(Delta.xy * pos_decompression_params2.xy);
-	if (Pixels <= sun_contact_fade.z)
+	if (Pixels <= 8.0f)
 	{
 		return 0.0f;
 	}
@@ -72,16 +80,16 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 	float2 Exit = max((1.0f - TexCoord) / Delta.xy, -TexCoord / Delta.xy);
 	Delta *= min(1.0f, min(Exit.x, Exit.y));
 
-	float StartT = min(sun_contact_ray.z * rcp(length(Delta.xy * pos_decompression_params2.xy)), 0.5f);
-	float Thickness = sun_contact_depth.x + Point.z * sun_contact_depth.y;
-	float Bias = sun_contact_depth.z + Point.z * sun_contact_depth.w;
+	float StartT = min(2.0f * rcp(length(Delta.xy * pos_decompression_params2.xy)), 0.5f);
+	float Thickness = 0.5f + Point.z * 0.03f;
+	float Bias = 0.02f + Point.z * 0.002f;
 	float Plane = dot(Normal, Point);
 	float Occlusion = 0.0f;
 
 	[loop]
-	for (float Step = 0.0f; Step < sun_contact_ray.x && Occlusion < 1.0f; ++Step)
+	for (float Step = 0.0f; Step < SUN_CONTACT_STEPS && Occlusion < 1.0f; ++Step)
 	{
-		float T = (Step + Jitter) / sun_contact_ray.x;
+		float T = (Step + Jitter) / SUN_CONTACT_STEPS;
 		float3 Ray = float3(TexCoord, rcp(Start.w)) + Delta * lerp(StartT, 1.0f, T * T);
 		
 		float4 Raw = s_position.GatherRed(smp_nofilter, Ray.xy);
@@ -108,7 +116,7 @@ float SunContactOcclusion(float2 TexCoord, float3 Point, float3 Normal, float3 L
 		Occlusion = max(Occlusion, Hit * Edge * GetBorderAtten(Ray.xy, 0.0125f));
 	}
 
-	return Occlusion * saturate(Pixels / max(sun_contact_fade.z, 1.0f) - 1.0f);
+	return Occlusion * saturate(Pixels * 0.125f - 1.0f);
 }
 #endif
 

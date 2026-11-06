@@ -87,9 +87,7 @@ CBUFFER(CBLight, 4)
 	float4 SunCaptureDirectionDepth[3];
 	float4 SunReceiverWarpBias[3];
 	float4 SunCacheParams;
-	float4 sun_contact_ray;
-	float4 sun_contact_depth;
-	float4 sun_contact_fade;
+	int SunContactStart;
 CBUFFER_END
 
 CBUFFER(CBPass, 5)

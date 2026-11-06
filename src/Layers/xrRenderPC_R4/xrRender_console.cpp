@@ -296,17 +296,7 @@ float		ps_r2_slight_fade			= 0.6f;				// 1.f
 
 float		ps_r4_vslr_distance			= 0.7f;				// 1.f
 
-int			g_SunContactSteps			= 12;
-float		g_SunContactLength			= 0.5f;
-float		g_SunContactThickness		= 0.5f;
-float		g_SunContactThicknessScale	= 0.01f;
-float		g_SunContactBias			= 0.02f;
-float		g_SunContactBiasScale		= 0.002f;
-float		g_SunContactStart			= 2.0f;
-float		g_SunContactFar				= 250.0f;
-float		g_SunContactFade			= 50.0f;
-float		g_SunContactMinPixels		= 8.0f;
-float		g_SunContactGrazing			= 0.2f;
+u32			g_SunContactQuality			= 2;
 float		g_SunShaftsFalloff			= 0.01f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
@@ -1322,17 +1312,7 @@ RENDER_API void		xrRender_initconsole	()
 	CMD3(CCC_Mask32, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 
 	CMD3(CCC_Mask32, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
-	CMD4(CCC_Integer, "r4_sun_contact_steps", &g_SunContactSteps, 0, 32);
-	CMD4(CCC_Float, "r4_sun_contact_length", &g_SunContactLength, 0.05f, 2.0f);
-	CMD4(CCC_Float, "r4_sun_contact_thickness", &g_SunContactThickness, 0.01f, 2.0f);
-	CMD4(CCC_Float, "r4_sun_contact_thickness_scale", &g_SunContactThicknessScale, 0.0f, 0.1f);
-	CMD4(CCC_Float, "r4_sun_contact_bias", &g_SunContactBias, 0.001f, 0.5f);
-	CMD4(CCC_Float, "r4_sun_contact_bias_scale", &g_SunContactBiasScale, 0.0f, 0.02f);
-	CMD4(CCC_Float, "r4_sun_contact_start", &g_SunContactStart, 0.0f, 8.0f);
-	CMD4(CCC_Float, "r4_sun_contact_far", &g_SunContactFar, 10.0f, 1000.0f);
-	CMD4(CCC_Float, "r4_sun_contact_fade", &g_SunContactFade, 1.0f, 500.0f);
-	CMD4(CCC_Float, "r4_sun_contact_min_pixels", &g_SunContactMinPixels, 0.0f, 64.0f);
-	CMD4(CCC_Float, "r4_sun_contact_grazing", &g_SunContactGrazing, 0.0f, 1.0f);
+	CMD3(CCC_Token, "r4_sun_contact_quality", &g_SunContactQuality, qsun_shafts_token);
 	CMD3(CCC_Mask32, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask32, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD3(CCC_Mask32, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);

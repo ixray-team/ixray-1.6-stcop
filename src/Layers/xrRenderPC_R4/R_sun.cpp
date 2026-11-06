@@ -11,8 +11,6 @@
 using namespace DirectX;
 
 constexpr float tweak_COP_initial_offs = 1200.0f;
-
-extern int ps_r2_sun_details_cascades;
  
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space

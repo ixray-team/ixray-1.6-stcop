@@ -597,10 +597,11 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 {
 	const bool Dynamic = LightingModeIsDynamicRender();
 	const bool Static = LightingModeIsStaticRender();
-	string16 SmapSize, SunShafts, SunQuality;
+	string16 SmapSize, SunShafts, SunQuality, SunContact;
 	xr_sprintf(SmapSize, "%04u", u32(o.smapsize));
 	xr_sprintf(SunShafts, "%d", ps_r_sun_shafts);
 	xr_sprintf(SunQuality, "%d", ps_r_sun_quality);
+	xr_sprintf(SunContact, "%u", g_SunContactQuality);
 
 	const struct
 	{
@@ -625,6 +626,7 @@ ShaderExternalMap CRender::GetShaderDefines(const ShaderExternalMap& Defines) co
 		{ Dynamic && ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WATER), "USE_SSLR_ON_WATER", "1" },
 		{ Dynamic && ps_r_sun_shafts > 0, "SUN_SHAFTS_QUALITY", SunShafts },
 		{ Dynamic && ps_r_sun_quality > 0, "SUN_QUALITY", SunQuality },
+		{ Dynamic && g_SunContactQuality > 0, "SUN_CONTACT_QUALITY", SunContact },
 		{ Dynamic && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX), "ALLOW_STEEPPARALLAX", "1" },
 		{ !!o.dx11_disable_motion_vectors, "DISABLE_MOTION_VECTORS", "1" },
 		{ Device.IsEditorMode(), "EDITOR_MODE", "1" },
