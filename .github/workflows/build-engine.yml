@@ -8,6 +8,7 @@ on:
       - '.github/workflows/**'
       - 'cmake/**'
       - 'gamedata*/**'
+      - 'shaders/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
@@ -20,6 +21,7 @@ on:
       - '.github/workflows/**'
       - 'cmake/**'
       - 'gamedata*/**'
+      - 'shaders/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
@@ -382,6 +384,7 @@ jobs:
           name: engine-assets-${{ matrix.variant }}-${{ github.sha }}
           path: |
             gamedata/
+            shaders/
             .xrignore
             fsgame.ltx
           include-hidden-files: true
@@ -422,6 +425,7 @@ jobs:
           path: |
             bin/
             gamedata/
+            shaders/
             .xrignore
             fsgame.ltx
           include-hidden-files: true

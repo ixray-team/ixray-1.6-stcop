@@ -21,6 +21,7 @@ if exist patch (
     xcopy /e /i patch gamedata >nul
     "%ProgramFiles%"\7-Zip\7z.exe a -tzip "publish\ixray-1.6-r%release%-assets-cop.zip" ^
         "gamedata" ^
+        "shaders" ^
         -ir!"fsgame.ltx" ^
         -ir!".xrignore" ^
         -xr!"temp\fsgame.ltx"
@@ -32,6 +33,7 @@ if exist patch_cs (
     xcopy /e /i patch_cs gamedata >nul
     "%ProgramFiles%"\7-Zip\7z.exe a -tzip "publish\ixray-1.6-r%release%-assets-cs.zip" ^
         "gamedata" ^
+        "shaders" ^
         -ir!"fsgame.ltx" ^
         -ir!".xrignore" ^
         -xr!"temp\fsgame.ltx"
@@ -43,6 +45,7 @@ if exist patch_soc (
     xcopy /e /i patch_soc gamedata >nul
     "%ProgramFiles%"\7-Zip\7z.exe a -tzip "publish\ixray-1.6-r%release%-assets-soc.zip" ^
         "gamedata" ^
+        "shaders" ^
         -ir!"fsgame.ltx" ^
         -ir!".xrignore" ^
         -xr!"temp\fsgame.ltx"

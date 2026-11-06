@@ -12,7 +12,7 @@ namespace ShaderBindings
 #define BIND_SAMPLER(Name, Slot)
 	inline constexpr Binding Textures[] =
 	{
-#include "../../../gamedata/shaders/d3d11/shared/bindings.hlsli"
+#include "../../../shaders/d3d11/shared/bindings.hlsli"
 	};
 #undef BIND_TEXTURE
 #undef BIND_SAMPLER
@@ -21,7 +21,7 @@ namespace ShaderBindings
 #define BIND_SAMPLER(Name, Slot) Binding{ #Name, Slot },
 	inline constexpr Binding Samplers[] =
 	{
-#include "../../../gamedata/shaders/d3d11/shared/bindings.hlsli"
+#include "../../../shaders/d3d11/shared/bindings.hlsli"
 	};
 #undef BIND_TEXTURE
 #undef BIND_SAMPLER

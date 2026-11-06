@@ -8,6 +8,7 @@ on:
       - '.github/workflows/**'
       - 'cmake/**'
       - 'gamedata*/**'
+      - 'shaders/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
@@ -20,6 +21,7 @@ on:
       - '.github/workflows/**'
       - 'cmake/**'
       - 'gamedata*/**'
+      - 'shaders/**'
       - 'sdk/**'
       - 'src/**'
       - '**/CMakeLists.txt'
@@ -141,6 +143,7 @@ jobs:
           name: editors-assets-cop-${{ github.sha }}
           path: |
             gamedata/
+            shaders/
             rawdata/
             .xrignore
             ActorEditorLevel.cform
@@ -157,6 +160,7 @@ jobs:
           name: editors-assets-cs-${{ github.sha }}
           path: |
             gamedata/
+            shaders/
             rawdata/
             .xrignore
             ActorEditorLevel.cform
@@ -173,6 +177,7 @@ jobs:
           name: editors-assets-soc-${{ github.sha }}
           path: |
             gamedata/
+            shaders/
             rawdata/
             .xrignore
             ActorEditorLevel.cform
@@ -216,6 +221,7 @@ jobs:
           path: |
             bin/
             gamedata/
+            shaders/
             rawdata/
             .xrignore
             ActorEditorLevel.cform

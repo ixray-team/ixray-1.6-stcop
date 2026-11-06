@@ -251,6 +251,9 @@ package_game() {
     if [ -d "${REPO_DIR}/gamedata" ]; then
         ditto "${REPO_DIR}/gamedata" "${res}/gamedata"
     fi
+    if [ -d "${REPO_DIR}/shaders" ]; then
+        ditto "${REPO_DIR}/shaders" "${res}/shaders"
+    fi
 
     cat > "${macos}/launch" <<'LAUNCH'
 #!/bin/sh

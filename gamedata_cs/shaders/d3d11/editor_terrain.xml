@@ -1,5 +1,0 @@
-<shader>
-	<normal>
-		<pass vs="editor" ps="simple_color" cull="none"/>
-	</normal>
-</shader>

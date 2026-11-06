@@ -101,7 +101,7 @@ indent_style = space
 insert_final_newline = true
 
 # X-Ray scripts
-[{gamedata/scripts/*.script,gamedata/scripts/*.lua,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_,gamedata/shaders/*/*.lua,gamedata/shaders/*/*.lua_}]
+[{gamedata/scripts/*.script,gamedata/scripts/*.lua,shaders/*/*.s,shaders/*/*.s_,shaders/*/*.lua,shaders/*/*.lua_}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
@@ -109,7 +109,7 @@ indent_style = space
 insert_final_newline = true
 
 # X-Ray scripts
-[{gamedata/shaders/*/*.h,gamedata/shaders/*/*.hlsli,gamedata/shaders/*/*.hlsl,gamedata/shaders/*/*.ps,gamedata/shaders/*/*.vs,gamedata/shaders/*/*.ds,gamedata/shaders/*/*.hs,gamedata/shaders/*/*.gs,gamedata/shaders/*/*.cs}]
+[{shaders/*/*.h,shaders/*/*.hlsli,shaders/*/*.hlsl,shaders/*/*.ps,shaders/*/*.vs,shaders/*/*.ds,shaders/*/*.hs,shaders/*/*.gs,shaders/*/*.cs}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4

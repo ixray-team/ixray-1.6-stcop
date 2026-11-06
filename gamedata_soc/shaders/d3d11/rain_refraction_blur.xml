@@ -1,7 +1,0 @@
-<shader>
-	<normal>
-		<pass vs="stub_fullscreen_triangle" ps="rain_refraction_blur" zfunc="always" zwrite="0">
-			<texture name="s_image" src="$user$generic0"/>
-		</pass>
-	</normal>
-</shader>

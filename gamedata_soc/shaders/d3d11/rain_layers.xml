@@ -1,8 +1,0 @@
-<shader>
-	<normal>
-		<pass vs="stub_fullscreen_triangle" ps="rain_layers" zfunc="always" zwrite="0" blend="srcalpha,invsrcalpha">
-			<texture name="s_rain_refraction" src="$user$rain_refraction"/>
-			<texture name="s_position" src="$user$rain_depth"/>
-		</pass>
-	</normal>
-</shader>

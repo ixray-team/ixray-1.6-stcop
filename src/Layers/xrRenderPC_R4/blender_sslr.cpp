@@ -25,6 +25,7 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
         C.r_dx10Texture("s_env", r2_RT_env);
+        C.r_dx10Texture("s_env_fwd", r2_RT_env_fwd);
 
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);

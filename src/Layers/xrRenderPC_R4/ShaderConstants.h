@@ -45,11 +45,11 @@ namespace Hlsl
 
 #define CBUFFER(name, slot) struct alignas(16) name { static constexpr u32 Slot = slot;
 #define CBUFFER_END };
-#include "../../../gamedata/shaders/d3d11/shared/fixed_cb.hlsli"
-#include "../../../gamedata/shaders/d3d11/shared/post_cb.hlsli"
-#include "../../../gamedata/shaders/d3d11/shared/detail_cb.hlsli"
-#include "../../../gamedata/shaders/d3d11/shared/fluid_cb.hlsli"
-#include "../../../gamedata/shaders/d3d11/shared/extra_cb.hlsli"
+#include "../../../shaders/d3d11/shared/fixed_cb.hlsli"
+#include "../../../shaders/d3d11/shared/post_cb.hlsli"
+#include "../../../shaders/d3d11/shared/detail_cb.hlsli"
+#include "../../../shaders/d3d11/shared/fluid_cb.hlsli"
+#include "../../../shaders/d3d11/shared/extra_cb.hlsli"
 #undef CBUFFER
 #undef CBUFFER_END
 }
