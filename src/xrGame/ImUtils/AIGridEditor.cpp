@@ -115,6 +115,8 @@ public:
 	u32 SourceCount = 0;
 	u32 RemovedCount = 0;
 	u32 Selected = Invalid;
+	bool EditHeight = false;
+	bool EditTilt = false;
 	float Radius = 2.f;
 	bool ConnectedOnly = true;
 	bool FilterAngle = false;
@@ -557,6 +559,72 @@ public:
 		{
 			Status = "Game graph anchor nodes are retained to preserve level/spawn bindings.";
 		}
+	}
+
+	void SetSelectedHeight(float Height)
+	{
+		if (Selected >= Nodes.size() || Nodes[Selected].Deleted || !std::isfinite(Height))
+		{
+			return;
+		}
+		auto& N = Nodes[Selected];
+		N.Position.y = Height;
+		N.Modified = true;
+		// X/Z indices and normal stay unchanged; update only the display plane.
+		Cache(Selected, false);
+		Dirty = true;
+		Status = "Selected node height changed. Links preserved; Apply realtime / Overwrite save to commit.";
+	}
+
+	void SetSelectedTilt(float AngleX, float AngleZ)
+	{
+		if (Selected >= Nodes.size() || Nodes[Selected].Deleted || !std::isfinite(AngleX) || !std::isfinite(AngleZ))
+		{
+			return;
+		}
+		auto& N = Nodes[Selected];
+		// Independent slopes about the world X/Z axes, with an upward normal.
+		// Avoid vertical planes, which cannot represent a height-field AI node.
+		N.Normal.set(-tanf(deg2rad(clampr(AngleZ, -89.f, 89.f))), 1.f, tanf(deg2rad(clampr(AngleX, -89.f, 89.f))));
+		N.Normal.normalize_safe();
+		N.Vertex.UncompressedNode.plane = pvCompress(N.Normal);
+		N.Modified = true;
+		Cache(Selected, false);
+		Dirty = true;
+		Status = "Selected node tilt changed. Position and links preserved; Apply realtime / Overwrite save to commit.";
+	}
+
+	void DeleteSelectedNode()
+	{
+		if (Selected >= Nodes.size() || Nodes[Selected].Deleted)
+		{
+			return;
+		}
+		if (ProtectedNodes.contains(Selected))
+		{
+			Status = "Cannot delete a game graph anchor: level/spawn bindings must be preserved.";
+			return;
+		}
+		const u32 ID = Selected;
+		auto& N = Nodes[ID];
+		N.Deleted = true;
+		N.Modified = true;
+		N.Vertex.UncompressedNode.high = {};
+		N.Vertex.UncompressedNode.low = {};
+		for (auto& Other : Nodes)
+		{
+			for (u8 D = 0; D < 4; ++D)
+			{
+				if (&Other == &N || Other.Vertex.link(D) == ID)
+				{
+					Other.Vertex.link(D, Invalid);
+				}
+			}
+		}
+		++RemovedCount;
+		Selected = Invalid;
+		Dirty = true;
+		Status = "Selected node deleted; incoming links cleared. Apply realtime / Overwrite save to commit.";
 	}
 
 	void DeleteInvalidNodes()
@@ -1847,6 +1915,32 @@ void RenderAIGridEditorWindow()
 		{
 			const u32 ID = Editor.Selected;
 			ImGui::Text("Selected node: %u", ID);
+			ImGui::Checkbox("Edit node height Y", &Editor.EditHeight);
+			if (Editor.EditHeight)
+			{
+				float Height = Editor.Nodes[ID].Position.y;
+				if (ImGui::DragFloat("Position Y (m)", &Height, .05f, 0.f, 0.f, "%.3f"))
+				{
+					Editor.SetSelectedHeight(Height);
+				}
+			}
+			ImGui::Checkbox("Edit node tilt X/Z", &Editor.EditTilt);
+			if (Editor.EditTilt)
+			{
+				const Fvector& Normal = Editor.Nodes[ID].Normal;
+				float AngleX = rad2deg(atan2f(Normal.z, Normal.y));
+				float AngleZ = rad2deg(atan2f(-Normal.x, Normal.y));
+				bool Changed = ImGui::DragFloat("Tilt around X (degrees)", &AngleX, .1f, -89.f, 89.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				Changed |= ImGui::DragFloat("Tilt around Z (degrees)", &AngleZ, .1f, -89.f, 89.f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+				if (Changed)
+				{
+					Editor.SetSelectedTilt(AngleX, AngleZ);
+				}
+				if (ImGui::Button("Reset node tilt"))
+				{
+					Editor.SetSelectedTilt(0.f, 0.f);
+				}
+			}
 			auto Arrow = [&](u8 D, ImGuiDir Direction)
 			{
 				ImGui::PushID(int(D));
@@ -1892,6 +1986,17 @@ void RenderAIGridEditorWindow()
 			ImGui::SameLine();
 			ImGui::TextUnformatted("-Z");
 			ImGui::Unindent(35.f);
+			const bool Protected = Editor.ProtectedNodes.contains(ID);
+			ImGui::BeginDisabled(Protected);
+			if (ImGui::Button("Delete selected node"))
+			{
+				Editor.DeleteSelectedNode();
+			}
+			ImGui::EndDisabled();
+			if (Protected)
+			{
+				ImGui::TextUnformatted("Game graph anchor: deletion is protected.");
+			}
 		}
 		if (ImGui::Button("Delete invalid nodes"))
 		{
