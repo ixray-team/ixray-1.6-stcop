@@ -181,6 +181,8 @@ void CRender::begin_reflection_collect()
 		return;
 	}
 
+	reflection_view.build_camera_dir(reflection_cam_pos, reflection_cam_dir, reflection_cam_top);
+
 	const u32 dwSize = Target->rt_Reflection->dwSize;
 	const float screen = _sqr((float)dwSize) * (EPS_S + ps_r__LOD);
 

@@ -153,6 +153,7 @@ BIND_TEXTURE(g_Vertices3, 60)
 BIND_TEXTURE(g_Vertices2, 61)
 BIND_TEXTURE(g_Vertices1, 62)
 BIND_TEXTURE(g_Vertices0, 63)
+BIND_TEXTURE(s_water_probe, 63)
 
 BIND_SAMPLER(smp_nofilter, 0)
 BIND_SAMPLER(smp_rtlinear, 1)

@@ -504,7 +504,9 @@ inline void GbufferUnpack(in uint2 HPos, inout IXRayGbuffer O)
 	GbufferUnpackNormal(HPos, O);
 	GbufferUnpackColor(HPos, O);
 	GbufferUnpackDepth(HPos, O);
-	O.Normal.xyz = normalize(O.Normal.xyz - O.View * max(0.0f, dot(O.Normal.xyz, O.View) + 0.01f));
+	if (O.MaterialID != FOLIAGE_ID) {
+		O.Normal.xyz = normalize(O.Normal.xyz - O.View * max(0.0f, dot(O.Normal.xyz, O.View) + 0.01f));
+	}
 }
 
 #endif

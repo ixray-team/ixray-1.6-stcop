@@ -175,7 +175,17 @@ void CRenderTarget::phase_combine(GfxCmdList& Cmd)
 		Cmd.SetStencil(FALSE);
 		Cmd.SetColorWriteEnable();
 
+		if (RImplementation.o.offscreen_reflecitons) {
+			Cmd.ClearTarget(rt_water_probe->pRT);
+			Cmd.SetUAV(rt_water_probe->pUAView, 4);
+		}
+
 		RImplementation.render_forward(Cmd);
+
+		if (RImplementation.o.offscreen_reflecitons) {
+			Cmd.SetUAV(nullptr, 4, true);
+			Cmd.CopySurface(rt_water_probe_prev->pSurface, rt_water_probe->pSurface);
+		}
 	}
 
 	//	Igor: for volumetric lights

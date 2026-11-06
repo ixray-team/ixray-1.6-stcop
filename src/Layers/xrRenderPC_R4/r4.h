@@ -287,6 +287,7 @@ public:
 	Fvector reflection_cam_dir;
 	Fvector reflection_cam_top;
 	Fvector reflection_cam_right;
+	Fmatrix reflection_view = Fidentity;
 	float reflection_near = 0.2f;
 	float reflection_far = 1000.f;
 	IRender_Sector* reflection_sector = nullptr;

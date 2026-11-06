@@ -176,35 +176,23 @@ void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* cons
 
 	ID3D11DepthStencilView* dsv = DepthStencilView ? (ID3D11DepthStencilView*)DepthStencilView->GetRawDSV() : nullptr;
 
-	bool hasUAVs = false;
-	for (u32 i = 0; i < NumViews; i++)
-	{
-		if (s_UAV[i] != nullptr)
-		{
-			hasUAVs = true;
-			break;
-		}
-	}
-
 	UINT numRTVs = 0;
-
+	UINT firstUAV = NumViews;
+	UINT endUAV = 0;
 	for (UINT i = 0; i < NumViews; i++)
 	{
-		if (s_RTV[i] != nullptr)
+		numRTVs = s_RTV[i] != nullptr ? i + 1 : numRTVs;
+		if (s_UAV[i] != nullptr)
 		{
-			numRTVs++;
+			firstUAV = firstUAV == NumViews ? i : firstUAV;
+			endUAV = i + 1;
 		}
 	}
 
-	if (hasUAVs)
+	if (firstUAV < endUAV)
 	{
-		HWRenderContext->OMSetRenderTargetsAndUnorderedAccessViews
-		(
-			NumViews, s_RTV, dsv,
-			numRTVs, NumViews, s_UAV,
-
-			nullptr
-		);
+		R_ASSERT(firstUAV >= numRTVs);
+		HWRenderContext->OMSetRenderTargetsAndUnorderedAccessViews(numRTVs, s_RTV, dsv, firstUAV, endUAV - firstUAV, s_UAV + firstUAV, nullptr);
 	}
 	else
 	{

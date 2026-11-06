@@ -24,7 +24,7 @@ float HiZDepth(uint2 Pixel, float Depth)
 #ifdef USE_OFFSCREEN_REFLECTIONS
 	float2 Ndc = (Pixel + 0.5f) * pos_decompression_params2.zw * float2(2.0f, -2.0f) + float2(-1.0f, 1.0f);
 	float3 Dir = normalize(float3(Ndc * m_invP._11_22, 1.0f));
-	float ViewZ = Dir.z * s_env_dist.SampleLevel(smp_linear, Dir, 0.0f).x;
+	float ViewZ = Dir.z * s_env_dist.SampleLevel(smp_linear, mul((float3x3)m_probe, Dir), 0.0f).x;
 
 	// Inverse of GbufferGetViewZ
 	return saturate((rcp(ViewZ) - m_invP._44) / m_invP._43);

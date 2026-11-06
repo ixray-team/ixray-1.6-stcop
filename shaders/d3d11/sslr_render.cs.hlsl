@@ -117,15 +117,13 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		// Rays the trace followed to the fog distance end in the sky, the cube can only add what left the screen
 		if(SSLR.w < 1.0f && VslrStart >= 0.0f)
 		{
-			// The cube is coarser than the depth buffer: only the cube march starts at its surface
-			float VslrScale = min(1.0f, s_env_dist.SampleLevel(smp_linear, StartPoint, 0.0f).x / max(EPS, length(StartPoint)));
-			float4 VSLR = FastViewReflections(StartPoint * VslrScale, Reflection.xyz, VslrStart, Jitter.z);
+			float4 VSLR = FastViewReflections(StartPoint, Reflection.xyz, VslrStart, Jitter.z);
 			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
 		}
 	} 
 	else
 	{
-		Point.xyz = Reflection.xyz * s_env_dist.SampleLevel(smp_linear, Point.xyz, 0.0f).x;
+		Point.xyz = Reflection.xyz * s_env_dist.SampleLevel(smp_linear, mul(m_probe, float4(Point.xyz, 1.0f)), 0.0f).x;
 #endif
 	}
 	
@@ -162,7 +160,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		[branch]
 		if (VslrStart >= 0.0f)
 		{
-			Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
+			Color = s_env.SampleLevel(smp_linear, mul(m_probe, float4(Point.xyz, 1.0f)), 0.0f);
 		}
 #endif
 

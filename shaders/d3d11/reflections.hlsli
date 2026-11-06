@@ -7,7 +7,6 @@
 
 #define USE_VASYAN_CUTOFF
 
-// #define SSLR_SLOW_BREAK
 
 float3 gbuf_unpack_position(float2 uv)
 {
@@ -75,10 +74,12 @@ float BinaryRefinementHUD(inout float3 EndProj, float3 Reflect)
 #define VSLR_STEPS 12
 #define VSLR_GROWTH 1.5f
 
-// Ray march against the distance cube centred at the camera, from LStart (the part already traced on screen) to the fog distance.
-// Samples grow geometrically, Noise shifts all of them once per ray in that log domain. The binary refinement runs once, after the loop.
 float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noise)
 {
+	// NOTE(vertver): temporal reprojection fix
+	Point = mul(m_probe, float4(Point, 1.0f));
+	Reflect = mul((float3x3)m_probe, Reflect);
+
 	float DistanceS = dot(Point, Point);
 	float Range = fog_params.z - sqrt(DistanceS) - LStart;
 
@@ -98,51 +99,57 @@ float4 FastViewReflections(float3 Point, float3 Reflect, float LStart, float Noi
 	float OldDelta = 0.0f;
 	float SampleHitPointLen = 0.0f;
 	float MaxLen = 0.0f;
-	bool Crossed = false;
+	bool Valid = false;
+	bool Fade = false;
 
 	[loop]
 	for (uint i = 0; i < VSLR_STEPS; ++i)
 	{
-		PrevL = L;
-		L = LStart + 0.011f + Scale * (Growth - 1.0f);
+		float NextL = LStart + 0.011f + Scale * (Growth - 1.0f);
 		Growth *= VSLR_GROWTH;
 
-		SamplePoint = Point + Reflect * L;
+		float3 CurrentSample = Point + Reflect * NextL;
+		float CurrentSampleLen = s_env_dist.SampleLevel(smp_nofilter, CurrentSample, 0).x;
+		CurrentSampleLen *= CurrentSampleLen;
 
-		SampleHitPointLen = s_env_dist.SampleLevel(smp_nofilter, SamplePoint, 0).x;
-		SampleHitPointLen *= SampleHitPointLen;
+		if (CurrentSampleLen < DistanceS)
+		{
+			continue;
+		}
+
+		PrevL = L;
+		L = NextL;
+		SamplePoint = CurrentSample;
+		SampleHitPointLen = CurrentSampleLen;
+		Valid = true;
 
 		MaxLen = max(MaxLen, SampleHitPointLen);
 		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
 
+		[branch]
 		if (Delta > 0 && OldDelta <= 0)
 		{
-			Crossed = true;
-			break;
+			float3 JReflect = Reflect * (L - PrevL) * 0.5f;
+			float3 HitPoint = SamplePoint - JReflect;
+			float HitLen = BinaryRefinement(HitPoint, JReflect);
+			float HitDist = sqrt(HitLen);
+
+			if (HitLen >= DistanceS && abs(length(HitPoint) - HitDist) < 0.25f + 0.02f * HitDist)
+			{
+				SamplePoint = HitPoint;
+				SampleHitPointLen = HitLen;
+				Fade = true;
+				break;
+			}
 		}
 
 		OldDelta = Delta;
 	}
 
-	bool Fade = false;
-
-	[branch]
-	if (Crossed)
-	{
-		float3 JReflect = Reflect * (L - PrevL) * 0.5f;
-		SamplePoint -= JReflect;
-
-		SampleHitPointLen = BinaryRefinement(SamplePoint, JReflect);
-		MaxLen = max(MaxLen, SampleHitPointLen);
-
-		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
-		Fade = abs(Delta) / max(dot(SamplePoint, SamplePoint), SampleHitPointLen) < 0.1f;
-	}
-
 	SamplePoint = normalize(SamplePoint) * sqrt(SampleHitPointLen);
-	MaxLen = Fade ? 1.0f : 1.0f - saturate(2.5f * sqrt(MaxLen) * fog_params.w + fog_params.x);
+	MaxLen = Fade ? 1.0f : (Valid ? 1.0f - saturate(2.5f * sqrt(MaxLen) * fog_params.w + fog_params.x) : 0.0f);
 
-	return float4(SamplePoint, MaxLen);
+	return float4(mul(SamplePoint - m_probe._14_24_34, (float3x3)m_probe), MaxLen);
 }
 
 float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
@@ -186,7 +193,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(EndProj.xyz * timers.x), float3(12.989, 42.364, 78.233))));
+		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(EndProj.xyz * (m_taa_jitter.z < 0.0f ? 1.0f : timers.x)), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
 		Step *= StepScale;
@@ -208,13 +215,14 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 			
 			HitDepth = BinaryRefinementHUD(EndProj.xyz, JReflect);
 			
-		 	Fade = is_hud || abs(HitDepth - EndProj.z) * rcp(max(EndProj.z, HitDepth)) < 0.01f;
+			float RayZ = GbufferGetViewZ(EndProj.z);
+		 	Fade = is_hud || abs(GbufferGetViewZ(HitDepth) - RayZ) < 0.03f * RayZ + 0.1f;
 			EndProj.z = HitDepth;
-			
-#ifdef SSLR_SLOW_BREAK
-			if(Fade)
-#endif
-			break;
+
+			if (Fade)
+			{
+				break;
+			}
 		}
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		else if(!is_hud && HitDepth < 0.02f)
@@ -370,49 +378,26 @@ float4 HiZTraceSSR(float3 Point, float3 Reflect, uint MaxIterations, out float V
 	return float4(HitPoint, Hit ? 1.0f : 0.0f);
 }
 
-// Water and legacy puddles: fixed-point search, the next length along the ray is the distance to the depth buffer point
-// under the current one
-float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
+float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect, bool MatchProbe)
 {
-    float2 ReflUV = 0.0;
-    float3 HitPos, TestPos;
-    float L = 0.025f, DeltaL = 0.0f;
-	
     float Fade = saturate(dot(Reflect, normalize(Point)) * 4.0f);
-	
     if (Fade < 0.001f)
     {
        return 0.0f;
     }
-	
-    [loop]
-    for (int i = 0; i < 15; i++)
+
+    float4 Hit = FastViewReflectionsSSR(Point, Reflect, false);
+    Fade *= Hit.w;
+
+    if (Fade <= 0.0f)
     {
-       TestPos = Point + Reflect * L;
-       ReflUV = gbuf_unpack_uv(TestPos);
-       HitPos = gbuf_unpack_position(ReflUV);
-       if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))))
-       {
-           float NewL = length(Point - HitPos);
-
-           // Converged: the remaining iterations would read the same depth
-           bool Converged = abs(NewL - L) < L * 0.01f;
-           L = NewL;
-
-           if (Converged)
-           {
-               break;
-           }
-       }
-       else
-       {
-           return 0.0f;
-       }
+       return 0.0f;
     }
-	
-    DeltaL = length(HitPos) - length(Point);
-    Fade *= step(-0.4f, DeltaL);
 
+    float3 HitPos = Hit.xyz;
+    Fade *= step(-0.4f, length(HitPos) - length(Point));
+
+    float2 ReflUV = gbuf_unpack_uv(HitPos);
     float Attention = GetBorderAtten(ReflUV, 0.125f);
 
 	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(HitPos.xyz, 1.0f)).xyz, 1.0f));
@@ -430,6 +415,21 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 #endif
 
     float3 Color = s_image.SampleLevel(smp_rtlinear, ReflUV, 0).xyz;
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	if (MatchProbe)
+	{
+		uint2 size;
+		s_env_dist.GetDimensions(size.x, size.y);
+
+		float2 coord = 0.5f * float2(m_P._11, m_P._22) / float(size.x);
+		float3 s0 = s_image.SampleLevel(smp_rtlinear, ReflUV + coord, 0).xyz;
+		float3 s1 = s_image.SampleLevel(smp_rtlinear, ReflUV - coord, 0).xyz;
+		float3 s2 = s_image.SampleLevel(smp_rtlinear, ReflUV + float2(coord.x, -coord.y), 0).xyz;
+		float3 s3 = s_image.SampleLevel(smp_rtlinear, ReflUV + float2(-coord.x, coord.y), 0).xyz;
+
+		Color = 0.25f * (s0 + s1 + s2 + s3);
+	}
+#endif
 	Color = clamp(Color, 0.0f, 20.0f);
 	
     return float4(Color, Fade);

@@ -204,6 +204,9 @@ public:
 	ref_rtc						rt_Reflection_temp;
 	ref_rt						rt_Reflection_forward;
 	ref_rt						rt_Depth;
+	
+	ref_rt						rt_water_probe;
+	ref_rt						rt_water_probe_prev;
 
 	IRHISurface*				rt_smap_depth_sun_tex;
 	IRHIDepthStencilView*		rt_smap_depth_sun_dsv[3];

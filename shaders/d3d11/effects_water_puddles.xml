@@ -7,6 +7,7 @@
 			<texture name="s_env1" src="$user$sky1"/>
 			<texture name="s_env" src="$user$env"/>
 			<texture name="s_env_dist" src="$user$env_temp"/>
+			<texture name="s_water_probe" src="$user$water_probe_prev"/>
 			<texture name="env_s0" src="$user$env_s0"/>
 			<texture name="env_s1" src="$user$env_s1"/>
 			<texture name="s_accumulator" src="$user$accum"/>
@@ -28,6 +29,7 @@
 				<texture name="s_env1" src="$user$sky1"/>
 				<texture name="s_env" src="$user$env"/>
 				<texture name="s_env_dist" src="$user$env_temp"/>
+				<texture name="s_water_probe" src="$user$water_probe_prev"/>
 				<texture name="env_s0" src="$user$env_s0"/>
 				<texture name="env_s1" src="$user$env_s1"/>
 				<texture name="s_accumulator" src="$user$accum"/>

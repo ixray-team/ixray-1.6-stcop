@@ -46,7 +46,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	#ifdef USE_SSLR_ON_WATER
 		float3 Point = GbufferGetPointRealUnjitter(I.texcoord, Gbuffer.Depth);
 		// Use the same trace and previous-frame reprojection as the water shader.
-		float4 ReflectedScene = ScreenSpaceLocalReflections(Point * 0.99f + Gbuffer.Normal * 0.07f, Reflection);
+		float4 ReflectedScene = ScreenSpaceLocalReflections(Point * 0.99f + Gbuffer.Normal * 0.07f, Reflection, false);
 		Color = lerp(Color, ReflectedScene.xyz, ReflectedScene.w);
 	#endif
 	

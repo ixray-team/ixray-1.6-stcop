@@ -33,7 +33,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	WrapOctP(TexCoord);
 	
 	float3 View = NormalDecode(TexCoord);	
-	View = mul((float3x3)m_V, View.xzy);
+	View = mul((float3x3)m_probe, mul((float3x3)m_V, View.xzy));
 	
 	float4 Env = s_env.SampleLevel(smp_linear, View.xyz, 0.0f);	
 	Env.w = s_env_dist.SampleLevel(smp_linear, View.xyz, 0.0f).x;

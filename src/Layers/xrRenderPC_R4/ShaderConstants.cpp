@@ -183,17 +183,25 @@ void CShaderConstants::UpdateFrame()
 void CShaderConstants::UpdateView(const GfxView& X)
 {
 	CBView& View = Write<CBView>();
+
 	Fmatrix VP;
 	VP.mul(X.Project, X.View);
+
 	Fmatrix VPOld;
 	VPOld.mul(X.ProjectOld, X.ViewOld);
 	View.m_V = X.View;
 	View.m_P = X.Project;
 	View.m_VP = VP;
-	View.m_invV = Inverse43(X.View);
+
+	const Fmatrix InvView = Inverse43(X.View);
+	View.m_invV = InvView;
 	View.m_invP = Inverse44(Device.mProject_saved);
 	View.m_VP_old = VPOld;
 	View.m_invVP_old = Inverse44(VPOld);
+
+	Fmatrix Probe;
+	View.m_probe = Probe.mul_43(RImplementation.reflection_view, InvView);
+
 	// The HUD view is camera-relative: its eye sits at the origin
 	const bool IsHudView = std::memcmp(&X.View, &Device.mView_hud, sizeof(Fmatrix)) == 0;
 	View.eye_position = IsHudView ? Fvector().set(0.f, 0.f, 0.f) : Device.vCameraPosition;

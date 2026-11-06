@@ -113,7 +113,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	if(O.Depth >= 1.0f)
 	{
-		u_sslr[DTid.xy] = float4(s_image.SampleLevel(smp_nofilter, I.texcoord * SSLR_TRACE_UV, 0.0f).xyz, O.Depth);
+		u_sslr[DTid.xy] = float4(s_image.SampleLevel(smp_nofilter, I.texcoord * SSLR_TRACE_UV, 0.0f).xyz, O.ViewDist);
 		return;
 	}
 
@@ -121,7 +121,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	[branch]
 	if (SslrWeight(O.Normal, O.View, GbufferSpecular(O), GbufferRoughness(O)) <= 0.0f)
 	{
-		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.Depth);
+		u_sslr[DTid.xy] = float4(0.0f, 0.0f, 0.0f, O.ViewDist);
 		return;
 	}
 
@@ -133,6 +133,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	float3 Moment1 = 0.0f;
 	float3 Moment2 = 0.0f;
+	float tested = 0.0f;
 	
 	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
 
@@ -149,7 +150,13 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = mul(Rotation, Disk32_Normalized[i]) * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * SampleRadius) * SSLR_TRACE_UV;
+		float2 nearest_sample = mirror(I.texcoord.xy + offset * SampleRadius);
+		offset = nearest_sample * SSLR_TRACE_UV;
+
+		float nearest_depth = s_position.SampleLevel(smp_nofilter, nearest_sample, 0).x;
+		float3 nearest_pos = GbufferGetPointRealUnjitter(nearest_sample, nearest_depth);
+		float mat_test = uint(s_normal.SampleLevel(smp_nofilter, nearest_sample, 0).w * MAX_ID) == O.MaterialID ? 1.0f : 0.0f;
+		mat_test *= saturate(1.0f - abs(dot(O.Normal, nearest_pos - ReflectPoint)) / (0.02f * O.ViewDist + 0.05f));
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
@@ -175,12 +182,14 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
+		SampleWeight *= max(mat_test, 1e-3f);
 
 		// Inverse luminance weighting against fireflies
 		SampleWeight *= rcp(1.0f + dot(Color.xyz, LUMINANCE_VECTOR));
 
-		Moment1 += Color.xyz;
-		Moment2 += Color.xyz * Color.xyz;
+		Moment1 += Color.xyz * mat_test;
+		Moment2 += Color.xyz * Color.xyz * mat_test;
+		tested += mat_test;
 
 		Color.w = Length;
 		FinalColor += Color * SampleWeight;
@@ -190,14 +199,14 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	FinalColor *= rcp(FinalWeight);
 
-	Moment1 *= 1.0f / NUM_SAMPLES;
-	Moment2 *= 1.0f / NUM_SAMPLES;
+	Moment1 *= rcp(max(tested, 1e-3f));
+	Moment2 *= rcp(max(tested, 1e-3f));
 
 	float3 Sigma = sqrt(max(Moment2 - Moment1 * Moment1, 0.0f)) * SSLR_HISTORY_GAMMA;
 	float3 BoxMin = Moment1 - Sigma;
 	float3 BoxMax = Moment1 + Sigma;
 
-	float4 Current = float4(saturate(FinalColor.xyz), O.Depth);
+	float4 Current = float4(saturate(FinalColor.xyz), O.ViewDist);
 
 	// Reflected point along the view ray at the mean hit distance, for the reprojection of mirror-like reflections
 	ReflectPoint = View * (FinalColor.w + O.ViewDist);
@@ -219,7 +228,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 	History.xyz = lerp(History.xyz, Current.xyz, HistoryClamp(History.xyz, Current.xyz, BoxMin, BoxMax));
 
-	float DepthClamp = 1.0f - saturate(50.0f * abs(History.w - O.Depth));
+	float DepthClamp = 1.0f - saturate(abs(History.w - O.ViewDist) / (0.02f * O.ViewDist + 0.05f));
 	Current.xyz = lerp(Current.xyz, History.xyz, DepthClamp * 0.98f);
 
 	u_sslr[DTid.xy] = Current;

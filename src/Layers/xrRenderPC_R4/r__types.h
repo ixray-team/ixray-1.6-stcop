@@ -33,6 +33,8 @@
 #define		r2_RT_env			"$user$env"
 #define		r2_RT_env_depth		"$user$env_depth"
 #define		r2_RT_env_fwd		"$user$env_fwd"
+#define		r2_RT_water_probe	"$user$water_probe"
+#define		r2_RT_water_probe_prev	"$user$water_probe_prev"
 #define		r2_RT_env_temp		"$user$env_temp"
 
 #define		r2_RT_upscaled_depth "$user$upscaled_depth"

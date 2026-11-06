@@ -29,12 +29,21 @@ TextureCube s_env1 : register(t49);
 Texture2D s_leaves : register(t55);
 Texture2D s_caustic : register(t28);
 
+#if defined(USE_SSLR_ON_WATER) && defined(USE_OFFSCREEN_REFLECTIONS)
+	#define USE_WATER_PROBE_HISTORY
+	Texture2D s_water_probe : register(t63);
+	RWTexture2D<float4> u_water_probe : register(u4);
+#endif
+
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {
 	return L_sun_color.xyz * pow(abs(dot(normalize(Point + Light), -Normal)), 256.0);
 }
 
 // Pixel
+#ifdef USE_WATER_PROBE_HISTORY
+[earlydepthstencil]
+#endif
 void main(vf I, out IXRayForward O)
 {
 	O = (IXRayForward)0;
@@ -77,28 +86,30 @@ void main(vf I, out IXRayForward O)
 #ifdef USE_SSLR_ON_WATER
 	float3 Reflect = mul((float3x3)m_V, vreflect);
 	
-	float3 ReflectPoint = I.tctexgen.xyz;
+	float3 ReflectPoint = I.tctexgen.xyz * 0.99f + Nw * 0.07f;
 	
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	float ReflectDist = s_env_dist.SampleLevel(smp_linear, ReflectPoint.xyz, 0.0f).x;
-	ReflectDist = min(ReflectDist, s_env_dist.SampleLevel(smp_nofilter, ReflectPoint.xyz, 0.0f).x);
-	
-	ReflectDist /= max(EPS, length(ReflectPoint));
-	
-	ReflectPoint *= min(1.0f, ReflectDist);
-#endif
-
-	ReflectPoint = ReflectPoint * 0.99f + Nw * 0.07f;
-	
-    float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
+    float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect, true);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 vslr = FastViewReflections(ReflectPoint, Reflect, 0.0f, Hash(I.hpos.xy + timers.x));
-		
+		float4 vslr = FastViewReflections(ReflectPoint, Reflect, 0.0f, Hash(I.hpos.xy));
+
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
-		
-		vslr.xyz = s_env.SampleLevel(smp_linear, vslr.xyz, 0.0f).xyz;
+
+		float t = vslr.w > 0.0f ? length(vslr.xyz - ReflectPoint) : fog_params.z;
+		float3 vpos = I.tctexgen.xyz * (1.0f + t * rcp(length(I.tctexgen.xyz)));
+
+		vslr.xyz = s_env.SampleLevel(smp_linear, mul(m_probe, float4(vslr.xyz, 1.0f)), 0.0f).xyz;
+
+		float4 prev_uv = mul(m_VP_old, float4(mul(m_invV, float4(vpos, 1.0f)).xyz, 1.0f));
+		prev_uv.xy = prev_uv.xy / prev_uv.w * float2(0.5f, -0.5f) + 0.5f;
+
+		float4 history = s_water_probe.SampleLevel(smp_rtlinear, prev_uv.xy, 0.0f);
+		float threshold = history.w >= 1.0f ? 0.75f * GetBorderAtten(prev_uv.xy, 0.0125f) : 0.0f;
+		vslr = lerp(float4(vslr.xyz * vslr.w, vslr.w), float4(history.xyz, history.w - 1.0f), threshold);
+
+		u_water_probe[uint2(I.hpos.xy)] = float4(vslr.xyz, vslr.w + 1.0f);
+		vslr.xyz *= rcp(max(vslr.w, 1e-4f));
 	#endif
 #endif
 
@@ -172,7 +183,7 @@ void main(vf I, out IXRayForward O)
 		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
 	}
 
-	if (cascade_index >= 2 && (SunCacheParams.x == 0.0f || is_in_bounds))
+	if (cascade_index >= 2)
 	{
 		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
 		float Fade = Factor.x * Factor.y * Factor.z;

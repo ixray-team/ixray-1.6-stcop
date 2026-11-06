@@ -666,12 +666,19 @@ CRenderTarget::CRenderTarget()
 			// Maybe remove rt_Depth? (like LV)
 			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::D16_UNORM);
 			rt_Reflection_forward.create(r2_RT_env_fwd, RefSize * 2u, RefSize * 2u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB, 1, CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS);
+
+			rt_water_probe.create(r2_RT_water_probe, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT, 1, CRT::USE_UAV_FLAG);
+			rt_water_probe_prev.create(r2_RT_water_probe_prev, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			Cmd.ClearTarget(rt_water_probe_prev->pRT);
 		}
 		else
 		{
 			rt_Reflection.create(r2_RT_env, 4u, ERHI_FORMAT::R11G11B10_FLOAT); // Color
 			rt_Reflection_temp.create(r2_RT_env_temp, 4u, ERHI_FORMAT::R16_FLOAT); // Distance2Point
 			rt_Reflection_forward.create(r2_RT_env_fwd, 4u, 4u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB);
+
+			rt_water_probe_prev.create(r2_RT_water_probe_prev, 4u, 4u, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			Cmd.ClearTarget(rt_water_probe_prev->pRT);
 
 			for(auto& pRT : rt_Reflection_temp->pRT)
 			{

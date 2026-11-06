@@ -46,6 +46,7 @@ CBUFFER(CBView, 1)
 	float4x4 m_invP;
 	float4x4 m_VP_old;
 	float4x4 m_invVP_old;
+	float3x4 m_probe;
 	float3 eye_position;
 	float3 eye_direction;
 	float3 eye_normal;
