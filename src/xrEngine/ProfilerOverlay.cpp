@@ -71,6 +71,7 @@ void CProfilerOverlay::Draw()
 	CFrameProfiler& Profiler = g_FrameProfiler;
 	const bool Visible = Engine.External.EditorStates[static_cast<u8>(EditorUI::Profiler)];
 	Profiler.SetEnabled(Visible);
+	GRHI->GPUStatsEnable = Visible || Engine.External.EditorStates[static_cast<u8>(EditorUI::Shaders)];
 	if (!Visible)
 	{
 		WasVisible = false;
@@ -205,7 +206,6 @@ void CProfilerOverlay::RecordGpu()
 		GpuTrack = g_FrameProfiler.AddTrack("GPU");
 	}
 
-	GRHI->GPUStatsEnable = true;
 	const RHI_GPU_EVENT& Events = GRHI->GPUStats();
 	for (u64 Index = 0; Index < Events.count; Index++)
 	{

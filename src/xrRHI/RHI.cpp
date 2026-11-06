@@ -400,11 +400,6 @@ void CRHI::GPUStatsEnd() const
     }
 #endif
 
-	if (!GPUStatsEnable)
-	{
-		return;
-	}
-
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 #if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
