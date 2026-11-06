@@ -104,7 +104,9 @@ CScriptParticles::~CScriptParticles()
 
 		m_particles->Destroy();
 
-		m_particles					= nullptr;
+		if (g_pGamePersistent != nullptr) {
+			GamePersistent().ps_active_deffer.push_back(std::move(m_particles));
+		}
 	}
 }
 

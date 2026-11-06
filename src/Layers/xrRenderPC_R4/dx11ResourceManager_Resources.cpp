@@ -697,16 +697,18 @@ void	CResourceManager::_DeleteRTC(const CRTC* RT) {
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 
-SGeometry* CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
+ref_geom CResourceManager::CreatePulledGeom(EGeomSource Source, u32 Page, IRHIBuffer* RingIndices)
 {
 	VERIFY(Source == EGeomSource::Ring ? Page == 0 : Page < RImplementation.Geometry.PageCount() && RingIndices == nullptr);
+	
+	ref_geom Result;
 	xrCriticalSectionGuard guard(creationGuard);
 	IRHIBuffer* Indices = Source == EGeomSource::Ring ? RingIndices : RImplementation.Geometry.IndexBuffer(Page);
 	for (SGeometry* G : v_geoms)
 	{
-		if (G->Source == Source && G->Page == Page && G->ib == Indices)
+		if (G->Source == Source && G->Page == Page && G->ib == Indices && ResourceLifetime::IsAlive(G) && ResourceLifetime::TryAcquire(G, Result))
 		{
-			return G;
+			return Result;
 		}
 	}
 
