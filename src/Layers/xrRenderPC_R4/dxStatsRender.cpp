@@ -71,19 +71,3 @@ void dxStatsRender::SetDrawParams (IRenderDeviceRender *pRender)
 //	RCache.set_c			("tfactor",1,1,1,1);
 	RCache.hemi.set_tfactor(1, 1, 1, 1);
 }
-
-void dxStatsRender::OutUpscalerStatus(CGameFont& F)
-{
-	if (!g_Fsr4Wrapper.IsCreated())
-	{
-		F.OutNext("Upscaler:    not created");
-		return;
-	}
-
-	if (g_Fsr4Wrapper.IsFsr4Active())
-		F.OutNext("Upscaler:    FSR 4 (%s)", g_Fsr4Wrapper.GetActiveVersionString().c_str());
-	else
-		F.OutNext("Upscaler:    FSR 3.1.x (%s)", g_Fsr4Wrapper.GetActiveVersionString().c_str());
-
-	F.OutNext("Status:      %s", Fsr4StatusToString(g_Fsr4Wrapper.GetStatus()));
-}

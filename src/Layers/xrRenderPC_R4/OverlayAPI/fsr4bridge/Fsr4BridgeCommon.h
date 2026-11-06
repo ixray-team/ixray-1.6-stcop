@@ -91,7 +91,7 @@ struct Fsr4DrawParameters
     float frameTimeDelta = 0.f;
     float nearPlane      = 1.f;
     float farPlane       = 10.f;
-    float fovH           = 90.f;
+    float fovYRadians    = 1.57f;
 
     // Fsr4Flags
     int flags = 0;

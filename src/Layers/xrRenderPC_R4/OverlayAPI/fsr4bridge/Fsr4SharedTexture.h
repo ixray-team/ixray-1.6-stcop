@@ -13,6 +13,10 @@
 // we instead create a colour-compatible R32_FLOAT intermediate, and the
 // backend fills it with a fullscreen depth→float pass. That is what the
 // `isDepthIntermediate` flag selects.
+//
+// Also used verbatim for color / mvec / output / opaque / afterAlpha /
+// reactive — anything that just needs an ordinary D3D11↔D3D12 aliased
+// texture. The class itself is source-agnostic.
 // ---------------------------------------------------------------------------
 class Fsr4SharedTexture
 {
@@ -39,8 +43,7 @@ private:
         return m_SourcePtr           == gameTexture
             && m_Width               == desc.Width
             && m_Height              == desc.Height
-            && m_SourceFormat        == desc.Format
-            && m_IsDepthIntermediate == m_IsDepthIntermediate;
+            && m_SourceFormat        == desc.Format;
     }
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_Tex11;

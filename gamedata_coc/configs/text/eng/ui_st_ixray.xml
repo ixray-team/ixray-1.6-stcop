@@ -60,9 +60,12 @@
 	<string id="st_filter_dlss">
 		<text>DLSS</text>
 	</string>
-	<string id="st_filter_fsr">
-		<text>FSR2</text>
-	</string>
+    <string id="st_filter_fsr">
+        <text>FSR3</text>
+    </string>
+    <string id="st_filter_fsr4">
+        <text>FSR4</text>
+    </string>
 	<string id="st_filter_xess">
 		<text>Intel XeSS</text>
 	</string>

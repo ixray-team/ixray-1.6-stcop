@@ -15,8 +15,12 @@
 //   • the cross-API timeline fence (D3D12Fence ↔ ID3D11Fence);
 //   • the ffx-api library, providers, and the upscale context;
 //   • a ring of D3D12 command allocators and one command list;
-//   • shared textures for color/depth/mvec/output (+opaque/afterAlpha);
+//   • shared textures for color/depth/mvec/output (+opaque/afterAlpha/reactive);
 //   • a D3D11 fullscreen depth→R32_FLOAT pass for the depth input.
+//
+// Reactive mask priority:
+//   1) game-provided reactiveMapResource (preferred, best quality);
+//   2) auto-generated via FFX (fallback when the game has no reactive map).
 //
 // The wrapper calls Initialize() once, then DrawFrame() per frame, Shutdown()
 // when done. No preset/render-scale logic lives here.
@@ -32,7 +36,8 @@ public:
 
     struct FrameTextures
     {
-        Microsoft::WRL::ComPtr<ID3D11Texture2D> color, depth, mvec, output, opaque, afterAlpha;
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> color, depth, mvec, output,
+                                                opaque, afterAlpha, reactive;
     };
 
     bool Initialize(ID3D11Device* d3d11Device, const wchar_t* ffxDllDir);
@@ -42,8 +47,8 @@ public:
 
     Fsr4Status GetStatus()    const { return m_Status; }
     bool       IsFsr4Active() const { return m_ChosenIsFsr4; }
-	
-	const xr_string& GetActiveVersionString() const { return m_ActiveVersionName; }
+
+    const xr_string& GetActiveVersionString() const { return m_ActiveVersionName; }
 
 private:
     // ---- frame pipeline steps ----
@@ -53,8 +58,9 @@ private:
     bool NeedsContextRebuild(const Fsr4DrawParameters& p) const;
     bool EnsureContext(const Fsr4DrawParameters& p);
     bool PrepareReactiveMask(const Fsr4DrawParameters& p, const FrameTextures& tex);
-    void CopyInputsToShared(const FrameTextures& tex, bool reactive);
-    bool RecordAndSubmit(const Fsr4DrawParameters& p, const FrameTextures& tex, bool reactive);
+    void CopyInputsToShared(const FrameTextures& tex, bool autoReactive, bool gameReactive);
+    bool RecordAndSubmit(const Fsr4DrawParameters& p, const FrameTextures& tex,
+                         bool autoReactive, bool gameReactive);
     void CopyOutputToGame(const FrameTextures& tex);
     bool HandleDispatchFailure(ffxReturnCode_t rc);
 
@@ -155,6 +161,7 @@ private:
     Fsr4SharedTexture m_Output;
     Fsr4SharedTexture m_Opaque;
     Fsr4SharedTexture m_AfterAlpha;
+    Fsr4SharedTexture m_Reactive;   // NEW: game-provided reactive map
 
     // Context sizing / state
     UINT m_CtxOutW    = 0;
@@ -164,7 +171,7 @@ private:
     int  m_CtxFlags   = -1;
     bool m_FirstDispatch = true;
 
-    // Reactive mask (D3D12-only, not shared with D3D11)
+    // Reactive mask (D3D12-only, not shared with D3D11) — used by auto-generate path
     Microsoft::WRL::ComPtr<ID3D12Resource> m_ReactiveMask;
     UINT                                   m_ReactiveW = 0;
     UINT                                   m_ReactiveH = 0;
@@ -186,6 +193,7 @@ private:
         ID3D11Resource* depthSrc      = nullptr;
         ID3D11Resource* mvecSrc       = nullptr;
         ID3D11Resource* outputSrc     = nullptr;
+        ID3D11Resource* reactiveSrc   = nullptr;   // NEW
         ID3D11Resource* opaqueSrc     = nullptr;
         ID3D11Resource* afterAlphaSrc = nullptr;
         FrameTextures   cached;
