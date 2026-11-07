@@ -384,21 +384,22 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 			PROF_START_THREAD((xr_string("LoadTaskGroup") + std::to_string(std::this_thread::get_id()._Get_underlying_id()).c_str()).c_str())
 			PROF_EVENT("CForm::CFormatInstanced::ReadData::Task")
 			size_t Index;
+			CDB::MODEL* Prototype;
 			{
 				xrCriticalSectionGuard g(Model.ModelsCS);
 				Index = Model.models.size();
-				auto& Prototype = Model.models.emplace_back(new CDB::MODEL);
-				auto& PrototypeData = Models[elem.first];
-				Prototype->get_verts().resize(PrototypeData.VertsCount);
-				std::memcpy(Prototype->get_verts().data(), PrototypeData.VertsPtr, PrototypeData.VertsCount * sizeof(Fvector));
-				Prototype->get_tris().resize(PrototypeData.TrisCount);
-				std::memcpy(Prototype->get_tris().data(), PrototypeData.TrisPtr, PrototypeData.TrisCount * sizeof(CDB::TRI));
-				if (bc)
-				{
-					bc(Prototype->get_verts().data(), Prototype->get_verts().size(), Prototype->get_tris().data(), Prototype->get_tris().size(), bcp);
-				}
-				Prototype->build_simple();
+				Prototype = Model.models.emplace_back(new CDB::MODEL);
 			}
+			auto& PrototypeData = Models.at(elem.first);
+			Prototype->get_verts().resize(PrototypeData.VertsCount);
+			std::memcpy(Prototype->get_verts().data(), PrototypeData.VertsPtr, PrototypeData.VertsCount * sizeof(Fvector));
+			Prototype->get_tris().resize(PrototypeData.TrisCount);
+			std::memcpy(Prototype->get_tris().data(), PrototypeData.TrisPtr, PrototypeData.TrisCount * sizeof(CDB::TRI));
+			if (bc)
+			{
+				bc(Prototype->get_verts().data(), Prototype->get_verts().size(), Prototype->get_tris().data(), Prototype->get_tris().size(), bcp);
+			}
+			Prototype->build_simple();
 			for(auto& trans : elem.second)
 			{
 				Fmatrix Inv = trans.xform;

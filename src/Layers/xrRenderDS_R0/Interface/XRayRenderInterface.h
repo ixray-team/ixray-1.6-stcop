@@ -96,10 +96,5 @@ public:
 	IRHISurface* load_texture(str_c fname, u32& msize, bool bStaging = false) override { return nullptr; };
 	bool get_texture_metadata(str_c absolute_path, RHITextureMetadata* p_data) override { return false; }
 	virtual void ScreenshotImpl(ScreenshotMode mode, str_c name, CMemoryWriter* memory_writer) override;
-	
-	//GeomData& GetMUSlot(shared_str Name) override;
-	//void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) override;
-	//void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) override;
-	//void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override;
 };
  extern CDS0_RenderInterface GRenderInterface;

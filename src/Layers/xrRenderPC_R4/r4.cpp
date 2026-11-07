@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "r4.h"
 
-#include "../xrRender/FTreeVisual_Prototype.h"
-
 #include "r1_GlowManager.h"
 #include "FBasicVisual.h"
 #include "../../xrEngine/xr_object.h"
@@ -580,16 +578,6 @@ IRenderVisual* CRender::model_Create(const char* name, IReader* data) {
 	return Models->Create(name, data);
 }
 
-IRenderVisual* CRender::model_GetPrototype(str_c name)
-{
-	return Models->GetPrototype(name);
-}
-
-CDB::MODEL* CRender::model_GetPrototypeCollision(str_c name)
-{
-	return ((FTreeVisual_Prototype*)model_GetPrototype(name))->GetCollisionModel();
-}
-
 IRenderVisual* CRender::model_CreateChild(const char* name, IReader* data) {
 	return Models->CreateChild(name, data);
 }
@@ -650,38 +638,35 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 {
 	if(_alt)
 	{
-		*Count = xGlobalData.DCL[id].size();
-		return xGlobalData.DCL[id].begin();
+		*Count = xDC[id].size();
+		return xDC[id].begin();
 	}
-	else
-	{
-		*Count = nGlobalData.DCL[id].size();
-		return nGlobalData.DCL[id].begin();
-	}
+	*Count = nDC[id].size();
+	return nDC[id].begin();
 }
 
 IRHIBuffer* CRender::getVB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xGlobalData.VB.size()));	
-		return xGlobalData.VB[id];
+		VERIFY(id<int(xVB.size()));	
+		return xVB[id];
 	}
-	VERIFY(id<int(nGlobalData.VB.size()));	
-	return nGlobalData.VB[id];
+	VERIFY(id<int(nVB.size()));	
+	return nVB[id];
 }
 
 IRHIBuffer* CRender::getIB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xGlobalData.IB.size()));	
-		return xGlobalData.IB[id];
+		VERIFY(id<int(xIB.size()));	
+		return xIB[id];
 	}
-	VERIFY(id<int(nGlobalData.IB.size()));	
-	return nGlobalData.IB[id];
+	VERIFY(id<int(nIB.size()));	
+	return nIB[id];
 }
 
 FSlideWindowItem* CRender::getSWI(int id)
 {
-	VERIFY(id<int(nGlobalData.SWIs.size()));
-	return &nGlobalData.SWIs[id];
+	VERIFY(id<int(SWIs.size()));
+	return &SWIs[id];
 }
 
 IRender_Light* CRender::light_create()
@@ -724,12 +709,12 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 CRender::~CRender()
 {
-	for(auto& it : nGlobalData.SWIs) {
+	for(auto& it : SWIs) {
 		xr_free(it.sw);
 		it.sw = nullptr;
 		it.count = 0;
 	}
-	nGlobalData.SWIs.clear();
+	SWIs.clear();
 }
 
 #include "../../xrEngine/GameFont.h"

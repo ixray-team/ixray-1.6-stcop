@@ -23,7 +23,6 @@ public:
 
 		OGF*	ogf;
 
-		shared_str external_path = nullptr;
 		u32		vb_id;
 		u32		vb_start;
 		u32		ib_id;
@@ -33,22 +32,12 @@ public:
 		bool bSharedMaterial;
 		
 		_subdiv() = default;
-		~_subdiv()
-		{
-			if (gCompilerMode.LC_UseExternalRefs)
-			{
-				external_path._set(nullptr);
-			}
-		}
+		~_subdiv() = default;
 		
 		_subdiv(const _subdiv& other)
 		{
 			if (this != &other)
 			{
-				if (gCompilerMode.LC_UseExternalRefs)
-				{
-					external_path = other.external_path;
-				}
 				std::memcpy(this, &other, sizeof(*this));
 			}
 		}
@@ -56,10 +45,6 @@ public:
 		{
 			if (this != &other)
 			{
-				if (gCompilerMode.LC_UseExternalRefs)
-				{
-					external_path = other.external_path;
-				}
 				std::memcpy(this, &other, sizeof(*this));
 			}
 		}
