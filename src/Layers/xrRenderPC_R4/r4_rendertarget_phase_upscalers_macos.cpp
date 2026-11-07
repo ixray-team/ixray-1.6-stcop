@@ -11,6 +11,15 @@ bool CRenderTarget::phase_fsr()
 	return false;
 }
 
+void CRenderTarget::init_fsr4()
+{
+}
+
+bool CRenderTarget::phase_fsr4()
+{
+	return false;
+}
+
 void CRenderTarget::init_dlss()
 {
 }
