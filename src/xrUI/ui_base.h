@@ -32,6 +32,8 @@ class UI_API ui_core:
 	Fvector2		m_scale_;
 	Fvector2*		m_current_scale;
 	ui_shader m_empty_default;
+	ui_shader BackgroundShader;
+	ui_shader BackgroundShaderLIT;
 public:
 	xr_stack<Frect> m_Scissors;
 	xr_stack<Irect> RenderScissors;
@@ -63,6 +65,7 @@ public:
 	void			pp_start						();
 	void			pp_stop							();
 	void			RenderFont						();
+	const ui_shader& GetBackgroundShader();
 
 	virtual void	OnDeviceReset					();
 	static	bool	is_widescreen					();

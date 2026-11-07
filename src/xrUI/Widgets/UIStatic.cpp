@@ -97,7 +97,9 @@ void CUIStatic::UpdateSmoothHeading(float Blend)
 
 bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
 {
-	if (!Heading() || !m_bTextureEnable || !GetShader() || !GetShader()->inited())
+	const bool TextureVisible = m_bTextureEnable && GetShader() && GetShader()->inited();
+	const bool BackgroundVisible = !TextureVisible && color_get_A(BackgroundColor) != 0;
+	if (!Heading() || (!TextureVisible && !BackgroundVisible))
 	{
 		return inherited::HitTestUntransformed(Position);
 	}
@@ -108,16 +110,29 @@ bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
 	Fvector2 Origin;
 	GetAbsolutePos(Origin);
 	Fvector2 Size = GetWndSize();
-	if (!m_bStretchTexture)
+	if (TextureVisible && !m_bStretchTexture)
 	{
 		Size.set(m_UIStaticItem.GetTextureRect().width(), m_UIStaticItem.GetTextureRect().height());
 	}
-	else if (m_UIStaticItem.GetFixedLTWhileHeading())
+	else if (TextureVisible && m_UIStaticItem.GetFixedLTWhileHeading())
 	{
 		std::swap(Size.x, Size.y);
 	}
 	const Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ?
 		m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
+	if (BackgroundVisible)
+	{
+		const bool ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
+		const float ScaleX = ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
+		const float ScaleY = ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
+		const float X = (Position.x - Origin.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) * ScaleX;
+		const float Y = (Position.y - Origin.y - m_UIStaticItem.vHeadingOffset.y - Pivot.y) * ScaleY;
+		const float Cos = std::cos(m_fHeading);
+		const float Sin = std::sin(m_fHeading);
+		const float LocalX = (X * Cos - Y * Sin) / ScaleX + Pivot.x;
+		const float LocalY = (X * Sin + Y * Cos) / ScaleY + Pivot.y;
+		return LocalX >= 0.0f && LocalY >= 0.0f && LocalX <= Size.x && LocalY <= Size.y;
+	}
 	const float X = (Position.x - Origin.x - m_TextureOffset.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) / UI().get_current_kx();
 	const float Y = Position.y - Origin.y - m_TextureOffset.y - m_UIStaticItem.vHeadingOffset.y - Pivot.y;
 	const float Cos = std::cos(m_fHeading);
@@ -254,8 +269,72 @@ bool CUIStatic::InitTextureEx(const char* texture, const char* shader, bool fata
     return result;
 }
 
+void CUIStatic::SetBackgroundColor(int R, int G, int B, int A)
+{
+	BackgroundColor = color_rgba(std::clamp(R, 0, 255), std::clamp(G, 0, 255), std::clamp(B, 0, 255), std::clamp(A, 0, 255));
+}
+
+void CUIStatic::DrawBackground()
+{
+	const u32 Color = BackgroundColor;
+	if (color_get_A(Color) == 0 || (m_bTextureEnable && GetShader() && GetShader()->inited()))
+	{
+		return;
+	}
+
+	Fvector2 Origin;
+	GetAbsolutePos(Origin);
+	const Fvector2 Size = GetWndSize();
+	Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ?
+		m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
+	if (Heading())
+	{
+		Origin.add(m_UIStaticItem.vHeadingOffset);
+	}
+	Pivot.add(Origin);
+	UI().ClientToScreenScaled(Pivot);
+
+	sPoly2D Polygon;
+	Polygon.resize(4);
+	Polygon[0].set(Origin.x, Origin.y, 0.0f, 0.0f);
+	Polygon[1].set(Origin.x + Size.x, Origin.y, 0.0f, 0.0f);
+	Polygon[2].set(Origin.x + Size.x, Origin.y + Size.y, 0.0f, 0.0f);
+	Polygon[3].set(Origin.x, Origin.y + Size.y, 0.0f, 0.0f);
+	const float Cos = std::cos(m_fHeading);
+	const float Sin = std::sin(m_fHeading);
+	for (auto& Vertex : Polygon)
+	{
+		UI().ClientToScreenScaled(Vertex.pt);
+		if (Heading())
+		{
+			Vertex.rotate_pt(Pivot, Cos, Sin, 1.0f);
+		}
+	}
+
+	sPoly2D Clipped;
+	sPoly2D* Result = UI().m_currentPointType == IUIRender::pttLIT ?
+		UI().ScreenFrustumLIT().ClipPoly(Polygon, Clipped) : UI().ScreenFrustum().ClipPoly(Polygon, Clipped);
+	if (!Result || Result->size() < 3)
+	{
+		return;
+	}
+	const ui_shader& Shader = UI().GetBackgroundShader();
+	UIRender->SetShader(*Shader);
+	UIRender->StartPrimitive((Result->size() - 2) * 3, IUIRender::ptTriList, UI().m_currentPointType);
+	for (u32 Index = 1; Index + 1 < Result->size(); ++Index)
+	{
+		for (const u32 VertexIndex : {u32(0), Index, Index + 1})
+		{
+			const Fvector2& Point = (*Result)[VertexIndex].pt;
+			UIRender->PushPoint(Point.x, Point.y, 0.0f, Color, 0.0f, 0.0f);
+		}
+	}
+	UIRender->FlushPrimitive();
+}
+
 void CUIStatic::Draw()
 {
+	DrawBackground();
 	DrawTexture();
 	inherited::Draw();
 	DrawWidgetText();

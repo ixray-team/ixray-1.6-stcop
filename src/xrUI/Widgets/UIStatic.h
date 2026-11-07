@@ -40,6 +40,8 @@ private:
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 	CUIVectorBinding _svgBinding;
 	bool MouseEventsEnabled = false;
+	u32 BackgroundColor = 0;
+	void DrawBackground();
 	float TargetHeading = 0.0f;
 	double HeadingProgress = 0.0;
 	bool HeadingPending = false;
@@ -60,6 +62,7 @@ public:
 	virtual void SetText(const char* txt);
 			void SetTextIfNodeExist(const char* txt);
 	virtual void SetTextST(const char* txt) { TextItemControl()->SetTextST(txt); }
+	void SetBackgroundColor(int R, int G, int B, int A);
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	void InitSVG(CUIXml& xml_doc, const char* path, int index) override;
 	bool isSVGPresented(void) const override;

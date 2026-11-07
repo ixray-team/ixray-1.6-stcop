@@ -501,6 +501,17 @@ bool ui_core::UIDebuggerMouseMove(CUIWindow* Selected, bool inside)
 
 #endif
 
+const ui_shader& ui_core::GetBackgroundShader()
+{
+	const bool LocalPlane = m_currentPointType == IUIRender::pttLIT;
+	ui_shader& Shader = LocalPlane ? BackgroundShaderLIT : BackgroundShader;
+	if (!Shader->inited())
+	{
+		Shader->create(LocalPlane ? "hud\\ui_color_lit" : "hud\\crosshair");
+	}
+	return Shader;
+}
+
 ui_core::ui_core()
 {
 	if(!g_dedicated_server)

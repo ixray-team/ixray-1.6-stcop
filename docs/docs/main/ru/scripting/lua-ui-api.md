@@ -18,6 +18,7 @@
 * `InitTexture`
 * `SetStretchTexture`
 * `SetTextureColor`
+* `SetBackgroundColor`
 * `TextureOn`
 * `TextureOff`
 * `SetFontByName`
@@ -120,6 +121,27 @@ retval: (void)
 parent:AttachChild(control)
 args:
   control (CUIWindow) - дочерний контрол; при ручном создании заранее установите SetAutoDelete(true)
+retval: (void)
+```
+
+### Цвет статика
+
+Задаёт заливку `CUIStatic` без текстуры в 2D и 3D UI.
+Метод вызывается одинаково; режим определяется местом отрисовки окна.
+По умолчанию цвет полностью прозрачный: RGBA `(0, 0, 0, 0)`.
+
+Включённая текстура имеет приоритет перед цветом. Если текстуры нет
+или вызван `TextureOff()`, рисуется заливка. Повороты и сглаживание
+применяются к заливке так же, как к изображению.
+
+```lua
+--// Задать цвет заливки без текстуры.
+control:SetBackgroundColor(r, g, b, a)
+args:
+  r (number) - красный компонент от 0 до 255
+  g (number) - зелёный компонент от 0 до 255
+  b (number) - синий компонент от 0 до 255
+  a (number) - прозрачность от 0 до 255; 0 полностью прозрачно, 255 непрозрачно
 retval: (void)
 ```
 
@@ -339,7 +361,7 @@ retval: (void)
 
 ### Вращение текстуры
 
-`SetHeading` поворачивает текстуру, не меняя текст и дочерние элементы.
+`SetHeading` поворачивает текстуру или заливку, не меняя текст и дочерние элементы.
 Для поворота всей ветки используется `SetTreeHeading`.
 Наведение и события мыши учитывают оба вида поворота.
 Угол задаётся в радианах. `SetSmothRotate(enabled, factor)` задаёт сглаживание
@@ -448,4 +470,26 @@ end)
 control:EnableHeading(true)
 control:SetHeadingPivot(vector2():set(0, 0), vector2():set(0, 0), false)
 control:SetHeading(math.pi / 4)
+```
+
+
+#### Статик с заливкой без текстуры
+
+```lua
+local xml = CScriptXmlInit()
+local control = xml:InitNoXmlStatic("control", 30, 30, 200, 100, window)
+control:SetBackgroundColor(255, 0, 0, 255)
+```
+
+#### Полупрозрачная заливка
+
+```lua
+control:SetBackgroundColor(255, 0, 0, 128)
+control:TextureOff()
+```
+
+#### Прозрачная заливка
+
+```lua
+control:SetBackgroundColor(0, 0, 0, 0)
 ```
