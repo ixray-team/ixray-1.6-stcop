@@ -37,6 +37,16 @@ void CUIStatic::script_register(lua_State *L)
        .def("GetText",				&CUIStatic::GetText)
 
 		.def("SetFont",				&CUIStatic::SetFont)
+		.def("SetFontByName", +[](CUIStatic* Self, const char* FontName)
+			{
+				Self->SetFont(UI().Font().GetFont(FontName));
+			})
+		.def("HighlightText", &CUIStatic::HighlightText)
+		.def("SetHighlightColor", &CUIStatic::SetHighlightColor)
+		.def("TextureOn", &CUIStatic::TextureOn)
+		.def("TextureOff", &CUIStatic::TextureOff)
+		.def("TextOn", &CUIStatic::TextOn)
+		.def("TextOff", &CUIStatic::TextOff)
 
        .def("SetTextX",				&CUIStatic::SetTextX)
        .def("SetTextY",				&CUIStatic::SetTextY)

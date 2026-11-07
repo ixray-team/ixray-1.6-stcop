@@ -54,6 +54,7 @@ public:
 	CUIFrameLineWnd*	InitFrameLine(const char* path, CUIWindow* parent);
 	CUIEditBox*			InitEditBox(const char* path, CUIWindow* parent);
 	CUIStatic*			InitStatic(const char* path, CUIWindow* parent);
+	CUIStatic* InitNoXmlStatic(const char* Name, float X, float Y, float Width, float Height, CUIWindow* Parent);
 	CUIStackPanel*		InitStackPanel(const char* path, CUIWindow* parent);
 	CUIGamepadLegend*	InitGamepadLegend(const char* path, CUIWindow* parent);
 	CUIStatic*			InitAnimStatic(const char* path, CUIWindow* parent);

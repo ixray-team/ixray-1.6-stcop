@@ -18,8 +18,15 @@
 #include "../../xrUI/Widgets/UITrackBar.h"
 #include "../../xrUI/Widgets/UIComboBox.h"
 #include "uiscriptwnd_script.h"
+#include <luabind/adopt_policy.hpp>
 
 using namespace luabind;
+
+static CUIDialogWndEx* CreateScriptWindow()
+{
+	// This window uses native virtual methods rather than the Lua inheritance wrapper.
+	return new CUIDialogWndEx();
+}
 
 extern export_class script_register_ui_window1(export_class &&);
 extern export_class script_register_ui_window2(export_class &&);
@@ -31,6 +38,7 @@ void CUIDialogWndEx::script_register(lua_State *L)
 
 	module(L)
 	[
+		def("CreateScriptWindow", &CreateScriptWindow, adopt<0>()),
 		script_register_ui_window2(
 			script_register_ui_window1(
 				std::move(instance)
@@ -47,6 +55,7 @@ export_class script_register_ui_window1(export_class &&instance)
 		.def(					constructor<>())
 
 		.def("AddCallback",		(void(BaseType::*)(const char*, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
+		.def("AddCallback", (void(BaseType::*)(const char*, s16, const luabind::functor<void>&))&BaseType::AddCallback)
 
 		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)
 		.def("Register",		(void (BaseType::*)(CUIWindow*,const char*))&BaseType::Register)

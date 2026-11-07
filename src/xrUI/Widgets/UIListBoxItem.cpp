@@ -32,7 +32,7 @@ void CUIListBoxItem::Draw()
 void CUIListBoxItem::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	GetMessageTarget()->SendMessage(this, LIST_ITEM_FOCUS_RECEIVED);
+	SendMessageToTarget(LIST_ITEM_FOCUS_RECEIVED);
 }
 
 void CUIListBoxItem::InitDefault()
@@ -60,7 +60,7 @@ bool CUIListBoxItem::OnMouseDown(int mouse_btn)
 	}
 	else if (mouse_btn == MOUSE_2)
 	{
-		GetMessageTarget()->SendMessage(this, WINDOW_RBUTTON_DOWN, &tag);
+		SendMessageToTarget(WINDOW_RBUTTON_DOWN, &tag);
 		return true;
 	}
 
@@ -148,10 +148,10 @@ const char* CUIListBoxItem::GetText()
 void CUIListBoxItem::SendSelectionCallback()
 {
 	GetParent()->GetParent()->ui_cast_scroll_view()->SetSelected(this);
-	GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, &tag);
+	SendMessageToTarget(LIST_ITEM_SELECT, &tag);
 }
 
 void CUIListBoxItem::SendClickCallback()
 {
-	GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, &tag);
+	SendMessageToTarget(LIST_ITEM_CLICKED, &tag);
 }

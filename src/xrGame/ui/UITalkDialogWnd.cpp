@@ -197,7 +197,7 @@ void CUITalkDialogWnd::Hide()
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
 {
 	m_ClickedQuestionID = ((CUIQuestionItem*)w)->m_s_value;
-	GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
+	SendMessageToTarget(TALK_DIALOG_QUESTION_CLICKED);
 }
 
 void CUITalkDialogWnd::OnExitClicked(CUIWindow* w, void*)
@@ -474,7 +474,7 @@ void CUIQuestionItem::Init			(const char* val, const char* text, bool isFinalize
 
 void	CUIQuestionItem::OnTextClicked(CUIWindow* w, void*)
 {
-	GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, (void*)this);
+	SendMessageToTarget(LIST_ITEM_CLICKED, (void*)this);
 }
 
 
@@ -717,7 +717,7 @@ bool CUITalkDialogWnd::TryClickFinalizerQuestion()
 		if (pQuestion && pQuestion->IsFinalizer())
 		{
 			m_ClickedQuestionID = pQuestion->m_s_value;
-			GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
+			SendMessageToTarget(TALK_DIALOG_QUESTION_CLICKED);
 			return true;
 		}
 	}

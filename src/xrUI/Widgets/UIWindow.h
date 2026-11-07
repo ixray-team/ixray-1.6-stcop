@@ -28,6 +28,11 @@ class CUIProgressShape;
 class CUIGamepadLegend;
 class CDialogHolder;
 
+namespace luabind
+{
+	template <typename TResult> class functor;
+}
+
 class UI_API CUIWindow  : 
 	public CUISimpleWindow,
 	public CUIActionRepeatersOwner
@@ -37,8 +42,13 @@ private:
 	xr_vector<CDialogHolder*> DialogHolders;
 	void RegisterDialogHolder(CDialogHolder* Holder);
 	void UnregisterDialogHolder(CDialogHolder* Holder);
+	struct SelfCallbackState;
+	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
+	bool DispatchSelfCallbacks(s16 Event);
 
 public:
+	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler);
+	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
 	void DetachFromDialogHolders();
 				CUIWindow						();
 	virtual		~CUIWindow						();

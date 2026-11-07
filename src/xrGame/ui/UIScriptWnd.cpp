@@ -3,6 +3,7 @@
 #include "UIScriptWnd.h"
 #include "object_broker.h"
 #include "../callback_info.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 
 CUIDialogWndEx::CUIDialogWndEx()
@@ -17,12 +18,16 @@ CUIDialogWndEx::~CUIDialogWndEx()
 void CUIDialogWndEx::Register			(CUIWindow* pChild)
 {
 	pChild->SetMessageTarget(this);
+	if (CUIStatic* Static = pChild->ui_cast_static())
+	{
+		Static->EnableMouseEvents(true);
+	}
 }
 
 void CUIDialogWndEx::Register(CUIWindow* pChild, const char* name)
 {
 	pChild->SetWindowName(name);
-	pChild->SetMessageTarget(this);
+	Register(pChild);
 }
 
 void CUIDialogWndEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -48,6 +53,14 @@ SCallbackInfo*	CUIDialogWndEx::NewCallback ()
 {
 	m_callbacks.push_back( new SCallbackInfo() );
 	return m_callbacks.back();
+}
+
+void CUIDialogWndEx::AddCallback(const char* ControlId, s16 Event, const luabind::functor<void>& Functor)
+{
+	SCallbackInfo* Callback = NewCallback();
+	Callback->m_callback.set(Functor);
+	Callback->m_control_name = ControlId;
+	Callback->m_event = Event;
 }
 
 void CUIDialogWndEx::AddCallback (const char* control_id, s16 evt, const luabind::functor<void> &functor, const luabind::object &object)

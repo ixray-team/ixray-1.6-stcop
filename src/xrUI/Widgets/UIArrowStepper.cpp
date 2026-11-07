@@ -420,7 +420,7 @@ void CUIArrowStepper::SetOptIBounds(int imin, int imax)
 	{
 		clamp					(m_i_val, m_i_min, m_i_max);
 		OnChangedOptValue	();
-		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_i_val);
+		SendMessageToTarget(TRACK_VALUE_CHANGED, &m_i_val);
 	}
 }
 
@@ -432,7 +432,7 @@ void CUIArrowStepper::SetOptFBounds(float fmin, float fmax)
 	{
 		clamp				(m_f_val, m_f_min, m_f_max);
 		OnChangedOptValue	();
-		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_f_val);
+		SendMessageToTarget(TRACK_VALUE_CHANGED, &m_f_val);
 	}
 }
 

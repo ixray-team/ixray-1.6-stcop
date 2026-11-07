@@ -7,6 +7,20 @@
 #include "../Include/xrRender/UIRender.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "UIBtnHint.h"
+#include "UIStatic.h"
+#include "../../xrScripts/script_callback_ex.h"
+
+struct CUIWindow::SelfCallbackState
+{
+	struct Subscription
+	{
+		s16 Event;
+		CScriptCallbackEx<void> Handler;
+	};
+	xr_vector<Subscription> Subscriptions;
+	bool Alive = true;
+	bool HasUpdateCallback = false;
+};
 
 // #define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
@@ -121,6 +135,11 @@ m_bCustomDraw(false)
 CUIWindow::~CUIWindow()
 {
 	DetachFromDialogHolders();
+	if (SelfCallbacks)
+	{
+		SelfCallbacks->Alive = false;
+		SelfCallbacks->Subscriptions.clear();
+	}
 	VERIFY( !(GetParent()&&IsAutoDelete()) );
 
 	CUIWindow* parent	= GetParent();
@@ -156,6 +175,83 @@ CUIWindow::~CUIWindow()
 }
 
 
+
+void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler)
+{
+	if (!SelfCallbacks)
+	{
+		SelfCallbacks = xr_make_shared<SelfCallbackState>();
+	}
+	SelfCallbackState::Subscription Subscription;
+	Subscription.Event = Event;
+	Subscription.Handler.set(Handler);
+	SelfCallbacks->Subscriptions.push_back(Subscription);
+	if (Event == WINDOW_UPDATE)
+	{
+		SelfCallbacks->HasUpdateCallback = true;
+	}
+	switch (Event)
+	{
+	case STATIC_MOUSE_LEFT_CLICK:
+	case STATIC_MOUSE_RIGHT_CLICK:
+	case STATIC_MOUSE_DRAG:
+	case STATIC_MOUSE_MOVE:
+	case STATIC_MOUSE_WHEEL_UP:
+	case STATIC_MOUSE_WHEEL_DOWN:
+		if (CUIStatic* Static = ui_cast_static())
+		{
+			Static->EnableMouseEvents(true);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+bool CUIWindow::DispatchSelfCallbacks(s16 Event)
+{
+	const auto State = SelfCallbacks;
+	if (State)
+	{
+		// A handler may subscribe another handler or delete this control.
+		xr_vector<CScriptCallbackEx<void>> Handlers;
+		for (const auto& Subscription : State->Subscriptions)
+		{
+			if (Subscription.Event == Event)
+			{
+				Handlers.push_back(Subscription.Handler);
+			}
+		}
+		for (auto& Handler : Handlers)
+		{
+			if (!State->Alive)
+			{
+				return false;
+			}
+			Handler(this);
+		}
+		if (!State->Alive)
+		{
+			return false;
+		}
+	}
+
+	return !State || State->Alive;
+}
+
+bool CUIWindow::SendMessageToTarget(s16 Event, void* Data)
+{
+	const auto State = SelfCallbacks;
+	if (!DispatchSelfCallbacks(Event))
+	{
+		return false;
+	}
+	if (CUIWindow* Target = GetMessageTarget())
+	{
+		Target->SendMessage(this, Event, Data);
+	}
+	return !State || State->Alive;
+}
 
 void CUIWindow::RegisterDialogHolder(CDialogHolder* Holder)
 {
@@ -256,12 +352,18 @@ void CUIWindow::Update()
 				OnFocusLost();
 		}
 	}
-	xrCriticalSectionGuard guard(csUi);
-	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
-		if (!(*it)->IsShown())
-			continue;
-		(*it)->Update();
+		xrCriticalSectionGuard guard(csUi);
+		for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+		{
+			if (!(*it)->IsShown())
+				continue;
+			(*it)->Update();
+		}
+	}
+	if (SelfCallbacks && SelfCallbacks->HasUpdateCallback)
+	{
+		DispatchSelfCallbacks(WINDOW_UPDATE);
 	}
 }
 
@@ -487,8 +589,7 @@ void CUIWindow::OnMouseScroll(float iDirection){
 }
 
 bool CUIWindow::OnDbClick(){
-	if (GetMessageTarget())
-		GetMessageTarget()->SendMessage(this, WINDOW_LBUTTON_DB_CLICK);
+	SendMessageToTarget(WINDOW_LBUTTON_DB_CLICK);
 	return false;
 }
 
@@ -504,8 +605,7 @@ void CUIWindow::OnFocusReceive()
 	m_dwFocusReceiveTime	= Device.dwTimeContinual;
 	m_bCursorOverWindow		= true;	
 
-	if (GetMessageTarget())
-        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_RECEIVED, nullptr);
+	SendMessageToTarget(WINDOW_FOCUS_RECEIVED, nullptr);
 }
 
 void CUIWindow::OnFocusLost()
@@ -513,8 +613,7 @@ void CUIWindow::OnFocusLost()
 	m_dwFocusReceiveTime	= 0;
 	m_bCursorOverWindow		= false;	
 
-	if (GetMessageTarget())
-        GetMessageTarget()->SendMessage(this, WINDOW_FOCUS_LOST, nullptr);
+	SendMessageToTarget(WINDOW_FOCUS_LOST, nullptr);
 }
 
 

@@ -120,12 +120,12 @@ void CUICustomSpin::Enable(bool status)
 
 void CUICustomSpin::OnBtnUpClick()
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	SendMessageToTarget(BUTTON_CLICKED);
 }
 
 void CUICustomSpin::OnBtnDownClick()
 {
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED);
+	SendMessageToTarget(BUTTON_CLICKED);
 }
 
 void CUICustomSpin::Draw()

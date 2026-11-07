@@ -150,6 +150,22 @@ CUIEditBox* CScriptXmlInit::InitEditBox(const char* path, CUIWindow* parent)
 	return pWnd;
 }
 
+CUIStatic* CScriptXmlInit::InitNoXmlStatic(const char* Name, float X, float Y, float Width, float Height, CUIWindow* Parent)
+{
+	if (!Parent)
+	{
+		return nullptr;
+	}
+
+	auto Static = xr_make_unique<CUIStatic>();
+	Static->SetWindowName(Name);
+	Static->SetWndPos(Fvector2().set(X, Y));
+	Static->SetWndSize(Fvector2().set(Width, Height));
+	Static->SetFont(UI().Font().pFontSystem16);
+	_attach_child(Static.get(), Parent);
+	return Static.release();
+}
+
 CUIStatic* CScriptXmlInit::InitStatic(const char* path, CUIWindow* parent)
 {
 	CUIStatic* pWnd = new CUIStatic();
@@ -378,6 +394,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitLabel",				&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
+		.def("InitNoXmlStatic", &CScriptXmlInit::InitNoXmlStatic)
 		.def("InitStackPanel",			&CScriptXmlInit::InitStackPanel)
 		.def("InitGamepadLegend",		&CScriptXmlInit::InitGamepadLegend)
 		.def("InitTextWnd",				&CScriptXmlInit::InitStatic)
