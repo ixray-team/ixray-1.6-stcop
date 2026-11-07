@@ -220,6 +220,7 @@ public:
 	CExpression             m_expression;
 	xrCriticalSection csUi;
 protected:
+	bool ProcessMouseAction(float X, float Y, EUIMessages& MouseAction);
 	IC void SafeRemoveChild(CUIWindow* child)
 	{
 		xrCriticalSectionGuard guard(csUi);

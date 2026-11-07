@@ -82,6 +82,12 @@ void CUIStatic::script_register(lua_State *L)
 
         .def("SetHeading",			&CUIStatic::SetHeading)
         .def("GetHeading",			&CUIStatic::GetHeading)
+		.def("EnableHeading", &CUIStatic::EnableHeading)
+		.def("Heading", &CUIStatic::Heading)
+		.def("SetHeadingPivot", &CUIStatic::SetHeadingPivot)
+		.def("ResetHeadingPivot", &CUIStatic::ResetHeadingPivot)
+		.def("SetConstHeading", &CUIStatic::SetConstHeading)
+		.def("GetConstHeading", &CUIStatic::GetConstHeading)
 		.def("SetHint", &CUIStatic::SetHint)
 
         .def("SetElipsis",			&CUIStatic::SetEllipsis)

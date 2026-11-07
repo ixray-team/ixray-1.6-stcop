@@ -194,6 +194,7 @@ void CUIWindow::AddSelfCallback(s16 Event, const luabind::functor<void>& Handler
 	switch (Event)
 	{
 	case STATIC_MOUSE_LEFT_CLICK:
+	case STATIC_MOUSE_DOUBLE_CLICK:
 	case STATIC_MOUSE_RIGHT_CLICK:
 	case STATIC_MOUSE_DRAG:
 	case STATIC_MOUSE_MOVE:
@@ -526,6 +527,11 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 #define DOUBLE_CLICK_TIME 250
 
 bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
+{
+	return ProcessMouseAction(x, y, mouse_action);
+}
+
+bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 {	
 	Frect	wndRect = GetWndRect();
 
