@@ -11,7 +11,9 @@ CUIDialogWnd:: CUIDialogWnd()
 }
 
 CUIDialogWnd::~CUIDialogWnd()
-{}
+{
+	DetachFromDialogHolders();
+}
 
 void CUIDialogWnd::Show(bool status)
 {

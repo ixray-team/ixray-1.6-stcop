@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UIWindow.h"
+#include "UIDialogHolder.h"
 #include "../UICursor.h"
 
 #include "../Include/xrRender/DebugRender.h"
@@ -119,6 +120,7 @@ m_bCustomDraw(false)
 
 CUIWindow::~CUIWindow()
 {
+	DetachFromDialogHolders();
 	VERIFY( !(GetParent()&&IsAutoDelete()) );
 
 	CUIWindow* parent	= GetParent();
@@ -154,6 +156,35 @@ CUIWindow::~CUIWindow()
 }
 
 
+
+void CUIWindow::RegisterDialogHolder(CDialogHolder* Holder)
+{
+	xrCriticalSectionGuard Guard(csUi);
+	if (std::find(DialogHolders.begin(), DialogHolders.end(), Holder) == DialogHolders.end())
+	{
+		DialogHolders.push_back(Holder);
+	}
+}
+
+void CUIWindow::UnregisterDialogHolder(CDialogHolder* Holder)
+{
+	xrCriticalSectionGuard Guard(csUi);
+	DialogHolders.erase(std::remove(DialogHolders.begin(), DialogHolders.end(), Holder), DialogHolders.end());
+}
+
+void CUIWindow::DetachFromDialogHolders()
+{
+	xr_vector<CDialogHolder*> Holders;
+	{
+		xrCriticalSectionGuard Guard(csUi);
+		Holders.swap(DialogHolders);
+	}
+	// Do not hold csUi while waiting for a holder's update/render lock.
+	for (CDialogHolder* Holder : Holders)
+	{
+		Holder->OnWindowDestroyed(this);
+	}
+}
 
 void CUIWindow::Draw()
 {

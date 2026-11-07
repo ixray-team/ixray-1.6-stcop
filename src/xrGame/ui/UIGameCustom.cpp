@@ -72,6 +72,7 @@ bool g_b_ClearGameCaptions = false;
 
 CUIGameCustom::~CUIGameCustom()
 {
+	ClearDialogs();
 	delete_data(m_custom_statics);
 	g_b_ClearGameCaptions	= false;
 	delete_data(TalkMenu);
@@ -533,6 +534,7 @@ void CUIGameCustom::SetClGame(game_cl_GameState* g)
 
 void CUIGameCustom::UnLoad()
 {
+	ClearDialogs();
 	xr_delete					(m_msgs_xml);
 	xr_delete					(m_pgameCaptions);
 	xr_delete					(m_ActorMenu);

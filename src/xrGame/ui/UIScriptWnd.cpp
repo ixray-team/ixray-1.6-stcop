@@ -10,6 +10,7 @@ CUIDialogWndEx::CUIDialogWndEx()
 
 CUIDialogWndEx::~CUIDialogWndEx()
 {
+	DetachFromDialogHolders();
 	delete_data(m_callbacks);
 }
 
