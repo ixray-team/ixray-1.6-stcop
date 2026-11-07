@@ -84,6 +84,37 @@ printf 'GUARD_POSITIVE_OK\\n'
             self.assertEqual((previous / name / 'keep').read_text(), 'preserve ' + name)
         self.assertTrue(list(self.target.parent.glob('IX-Ray-previous.*/IX-Ray.app')))
 
+    def test_partial_move_restores_exact_previous_bundle(self):
+        self.data(self.target / 'Contents/Resources')
+        self.data(self.build / 'IX-Ray.app/Contents/Resources')
+        old_marker = self.target / 'Contents/old-version'
+        old_marker.write_bytes(b'original bundle bytes')
+        def snapshot(path):
+            return {str(item.relative_to(path)): (item.read_bytes() if item.is_file() else None)
+                    for item in path.rglob('*')}
+        original = snapshot(self.target)
+        extra = r"""
+mv() {
+    if [ "$1" = "${BUILD_DIR}/IX-Ray.app" ] && [ "$2" = "${IXRAY_INSTALL_TARGET}" ]; then
+        /bin/mkdir -p "${IXRAY_INSTALL_TARGET}/Contents"
+        printf 'incomplete replacement' > "${IXRAY_INSTALL_TARGET}/Contents/partial"
+        echo FIXTURE_PARTIAL_MOVE_FAILURE >&2
+        return 7
+    fi
+    /bin/mv "$@"
+}
+"""
+        result = self.run_functions('install_to_applications', extra=extra)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn('FIXTURE_PARTIAL_MOVE_FAILURE', result.stderr)
+        self.assertIn('Previous bundle restored:', result.stderr)
+        self.assertNotIn('Установлено:', result.stdout)
+        self.assertEqual(snapshot(self.target), original)
+        incomplete = list(self.target.parent.glob('IX-Ray-incomplete.*/IX-Ray.app/Contents/partial'))
+        self.assertEqual(len(incomplete), 1)
+        self.assertEqual(incomplete[0].read_bytes(), b'incomplete replacement')
+        self.assertFalse((self.target / 'IX-Ray.app').exists())
+
     def test_invalid_explicit_data_does_not_fall_back(self):
         self.data(self.repo.parent / 'cop-baseline')
         result = self.run_functions('find_game_dir', self.root / 'missing')

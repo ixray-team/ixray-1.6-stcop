@@ -222,9 +222,26 @@ replace_bundle() {
         say "Previous bundle preserved: ${backup}/IX-Ray.app"
     fi
     if ! mv "${source}" "${target}"; then
+        # A cross-filesystem move can leave a partial destination. Move it aside
+        # before rollback so mv cannot nest the old app inside that directory.
+        if [ -e "${target}" ] || [ -L "${target}" ]; then
+            local partial
+            if ! partial="$(mktemp -d "${parent}/IX-Ray-incomplete.XXXXXX")" || \
+               ! mv "${target}" "${partial}/IX-Ray.app"; then
+                say "Cannot quarantine incomplete bundle at ${target}" >&2
+                if [ -n "${backup}" ]; then
+                    say "Restore the previous bundle from ${backup}/IX-Ray.app" >&2
+                fi
+                return 1
+            fi
+            say "Incomplete bundle preserved: ${partial}/IX-Ray.app" >&2
+        fi
         if [ -n "${backup}" ]; then
-            mv "${backup}/IX-Ray.app" "${target}" || \
+            if ! mv "${backup}/IX-Ray.app" "${target}"; then
                 say "Restore the previous bundle from ${backup}/IX-Ray.app" >&2
+                return 1
+            fi
+            say "Previous bundle restored: ${target}" >&2
         fi
         return 1
     fi
