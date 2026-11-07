@@ -515,6 +515,9 @@ using xr_stack_wstring = stack_string<wchar_t, StringLength>;
 #elif defined(IXR_LINUX)
 template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<char16_t, StringLength>;
+#elif defined(IXR_MACOS)
+template <xr_ssnt_t StringLength>
+using xr_stack_wstring = stack_string<wchar_t, StringLength>;
 #endif
 
 template<xr_ssnt_t StringLength>
@@ -592,3 +595,4 @@ ICF int __cdecl xr_sprintf	(xr_stack_wstring<StringLength>& destination, const c
 	va_start					( args, format_string);
 	return						vsnwprintf_s( destination.data(), StringLength, StringLength - 1, format_string, args );
 }
+

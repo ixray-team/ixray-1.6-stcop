@@ -15,7 +15,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
+#include <cstdlib>
 #pragma warning(pop)
 
 #ifndef AI_COMPILER
@@ -465,3 +465,4 @@ void CSE_Abstract::load_update				(NET_Packet &tNetPacket)
 	tNetPacket.r				(&m_next_spawn_time,sizeof(m_next_spawn_time));
 }
 /**/
+

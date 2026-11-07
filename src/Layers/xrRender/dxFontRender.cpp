@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#ifdef IXR_MACOS
+#include "../../xrCore/Platform/MacOS/TextEncoding.h"
+#endif
 #include "dxFontRender.h"
 #include "dxRenderDeviceRender.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -137,6 +140,12 @@ void dxFontRender::RenderBase(CGameFont& owner)
 			Y -= 0.5f;
 			Y2 -= 0.5f;
 
+#ifdef IXR_MACOS
+			const auto Codepoints = Platform::DecodeText(str.string);
+			const u32* UniStr = Codepoints.data();
+			const bool IsUTF8Str = true;
+			length = static_cast<int>(Codepoints.size());
+#else
 			const xr_special_char* UniStr = nullptr; 
 			bool IsUTF8Str = IsUTF8(str.string);
 			if (IsUTF8Str)
@@ -148,6 +157,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				UniStr = Platform::ANSI_TO_TCHAR(str.string_utf8.c_str());
 			}
 
+#endif
 			for(int i = 0; i < length; i++) 
 			{
 				CGameFont::Glyph* glyphInfo = nullptr;
@@ -340,3 +350,4 @@ void dxFontRender::RenderIcon(GamepadIcon icon)
 	RCache.set_Geometry(pGeom);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 }
+

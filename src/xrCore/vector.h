@@ -42,7 +42,7 @@ const	float		PI_DIV_6	= 0.5235987755982988730771072305466f;
 const	float		PI_DIV_8	= 0.3926990816987241548078304229099f;
 
 // Define types and namespaces (CPU & FPU)
-#include	"_types.h"
+#include "xrTypes.h"
 #include	"_math.h"
 #include	"_bitwise.h"
 #include	"_std_extensions.h"
@@ -459,3 +459,4 @@ IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 }
 
 #endif
+

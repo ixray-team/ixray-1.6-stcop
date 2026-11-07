@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xrCore/Platform/Atomic.h"
 #include "IGame_Level.h"
 
 #include "xr_object.h"
@@ -40,7 +41,7 @@ void CObject::MakeMeCrow			()
 	u32 const object_frame_id		= dwFrame_AsCrow;
 	if (
 			(u32)Platform::AtomicCompareExchange(
-				(long*)&dwFrame_AsCrow,
+				&dwFrame_AsCrow,
 				object_frame_id,
 				device_frame_id
 			) == device_frame_id
@@ -538,3 +539,4 @@ float CObject::shedule_Scale_Base()
 
 	return f_optimize_dist;
 }
+

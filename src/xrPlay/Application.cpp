@@ -114,11 +114,18 @@ int CApplication::BeginPlay()
 	EnumerateDisplayModes();
 
 	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
-#ifndef IXR_WINDOWS
+#if defined(IXR_MACOS)
+	WndFlags |= SDL_WINDOW_METAL;
+#elif !defined(IXR_WINDOWS)
 	WndFlags = SDL_WINDOW_VULKAN;
 #endif
 
+#ifdef IXR_MACOS
+	// Create a usable Metal view before the later window-mode reset.
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", psCurrentVidMode[0], psCurrentVidMode[1], WndFlags);
+#else
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
+#endif
 
 	splash::SetProgressStatus(20, "Initializing xrCore");
 	EngineLoadStage1(CommandLine.data());
@@ -271,3 +278,4 @@ Platform::CMutexHandle CApplication::CheckSingleInstance()
 	return Platform::CMutexHandle(nullptr);
 }
 #endif
+

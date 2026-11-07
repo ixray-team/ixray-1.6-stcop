@@ -3,6 +3,7 @@
 #include "FSR3Wrapper.h"
 #include "../../../xrCore/Platform/OSVersion.h"
 
+#ifdef IXR_WINDOWS
 Fsr3Wrapper g_Fsr3Wrapper;
 
 static void fsr3_message(FfxMsgType type, const wchar_t* message)
@@ -257,3 +258,31 @@ Fsr3Wrapper::~Fsr3Wrapper()
 {
 	Destroy();
 }
+#else
+Fsr3Wrapper g_Fsr3Wrapper;
+
+u32 Fsr3Wrapper::GetOptimalPresetForScale(float)
+{
+	return 0;
+}
+
+bool Fsr3Wrapper::GetRenderScale(float&)
+{
+	return false;
+}
+
+bool Fsr3Wrapper::Create(ContextParameters)
+{
+	return false;
+}
+
+void Fsr3Wrapper::Destroy() {}
+
+bool Fsr3Wrapper::Draw(const DrawParameters&)
+{
+	return false;
+}
+
+Fsr3Wrapper::~Fsr3Wrapper() = default;
+#endif
+

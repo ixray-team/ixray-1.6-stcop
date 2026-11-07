@@ -1,7 +1,12 @@
 #pragma once
 
+#ifdef IXR_WINDOWS
 #include <nvsdk_ngx.h>
 #include <nvsdk_ngx_helpers.h>
+#else
+struct NVSDK_NGX_Parameter;
+struct NVSDK_NGX_Handle;
+#endif
 
 class DLSSWrapper
 {
@@ -78,3 +83,4 @@ private:
 };
 
 extern DLSSWrapper g_DLSSWrapper;
+

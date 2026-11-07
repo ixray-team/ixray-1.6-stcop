@@ -20,6 +20,7 @@ extern XRCORE_API	void	_initialize_cpu			();
 extern XRCORE_API	void	_initialize_cpu_thread	();
 
 // threading
-using thread_t = void(void*);
+using ThreadEntry = void(void*);
 extern XRCORE_API void thread_name(const char* name);
-extern XRCORE_API ThreadID thread_spawn(thread_t* entry, const char* name, unsigned	stack, void* arglist);
+extern XRCORE_API ThreadID thread_spawn(ThreadEntry* entry, const char* name, unsigned stack, void* arglist);
+

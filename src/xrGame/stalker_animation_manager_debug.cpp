@@ -12,10 +12,12 @@
 #	include "stalker_animation_manager.h"
 #	include "ai/stalker/ai_stalker.h"
 
-#	pragma warning(push)
-#	pragma warning(disable:4995)
-#	include <malloc.h>
-#	pragma warning(pop)
+#pragma warning(push)
+#pragma warning(disable : 4995)
+#ifndef IXR_MACOS
+#include <malloc.h>
+#endif
+#pragma warning(pop)
 
 typedef std::pair<shared_str,shared_str>	ANIMATION_ID;
 
@@ -250,3 +252,4 @@ void CStalkerAnimationManager::add_animation_stats	()
 	add_animation_stats			(m_skeleton_animated->LL_MotionDefName_dbg(legs().animation()),legs().blend_id(m_skeleton_animated,blend),legs().m_just_started);
 }
 #endif // DEBUG
+

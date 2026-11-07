@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FS_internal.h"
 
+IReaderBase::~IReaderBase() = default;
+
 //////////////////////////////////////////////////////////////////////
 // Tools
 //////////////////////////////////////////////////////////////////////
@@ -548,3 +550,4 @@ CVirtualFileReader::~CVirtualFileReader()
 
     Platform::CloseFile(hSrcFile);
 }
+

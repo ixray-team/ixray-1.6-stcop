@@ -50,6 +50,22 @@ if(WIN32)
         endif()
     endforeach()
 else()
+    if(APPLE)
+        find_program(HOMEBREW_EXECUTABLE brew)
+        if(HOMEBREW_EXECUTABLE)
+            execute_process(
+                COMMAND ${HOMEBREW_EXECUTABLE} --prefix openal-soft
+                OUTPUT_VARIABLE OPENAL_SOFT_PREFIX
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                RESULT_VARIABLE OPENAL_SOFT_RESULT
+            )
+            if(OPENAL_SOFT_RESULT EQUAL 0)
+                set(OPENAL_INCLUDE_DIR "${OPENAL_SOFT_PREFIX}/include" CACHE PATH "" FORCE)
+                set(OPENAL_LIBRARY "${OPENAL_SOFT_PREFIX}/lib/libopenal.dylib" CACHE FILEPATH "" FORCE)
+            endif()
+        endif()
+    endif()
+
     # Не-Windows: сначала ищем системный OpenAL
     find_package(OpenAL QUIET)
 

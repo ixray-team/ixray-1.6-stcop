@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.26)
 project(IXRay)
 
+if(APPLE)
+    enable_language(OBJCXX)
+endif()
+
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_TESTS "Apply tests to solution" OFF)
@@ -86,7 +90,7 @@ set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_
 set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
 	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 else()
 	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)

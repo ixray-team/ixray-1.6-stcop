@@ -14,12 +14,11 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include <linux/limits.h>
-#include <bits/local_lim.h>
+#include <limits.h>
 
 #ifdef IXR_ARM64
-#	include <arm64_neon.h>
-#	include <sse2neon/sse2neon.h>
+#include <arm_neon.h>
+#include <sse2neon/sse2neon.hpp>
 #else
 #	include <xmmintrin.h>
 #   include <x86intrin.h>
@@ -70,6 +69,7 @@ using xr_special_char = char;
 using LPSTR = char*;
 using LPCSTR = const char*;
 using BYTE = unsigned char;
+using LPBYTE = BYTE*;
 using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
@@ -167,3 +167,4 @@ inline unsigned long GetLastError()
 #ifndef _In_reads_
 #define _In_reads_(x)
 #endif
+

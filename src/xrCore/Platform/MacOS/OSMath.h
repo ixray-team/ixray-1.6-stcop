@@ -19,12 +19,11 @@ inline unsigned char _bittest64(std::int64_t *a, std::int64_t b)
     return (unsigned char){ masked_value != 0 };
 }
 
-inline struct tm* _localtime64(const __time64_t* timer)
+inline struct tm* _localtime64(const time_t* timer)
 {
     static struct tm tm_storage;
-    time_t t = static_cast<time_t>(*timer);
-    localtime_r(&t, &tm_storage);
-    return &tm_storage;
+	localtime_r(timer, &tm_storage);
+	return &tm_storage;
 }
 
 struct SYSTEMTIME 
@@ -47,3 +46,4 @@ namespace Platform
         time(InVar);
     }
 }
+

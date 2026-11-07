@@ -1,4 +1,7 @@
 #include "RHI.h"
+#ifdef IXR_MACOS
+#include "Platform/RHIInputLayout.h"
+#endif
 
 #include "D3D9/Device.h"
 #include "D3D9/DX9ShaderDeclaration.h"
@@ -70,7 +73,7 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 	}
 #endif
 
-#if defined(IXR_LINUX) 
+#if defined(IXR_LINUX)
 	setenv("DXVK_WSI_DRIVER", "SDL3", 1);
 #endif
 
@@ -590,7 +593,11 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)Desc, DescSize, Offsets, Strides);
 		return Strides[0];
 	}
-	else
+#elif defined(IXR_MACOS)
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		return RHIPlatform::ComputeInputLayoutStride(Desc, DescSize);
+	}
 #endif
 	{
 		VERIFY(!"Implement me!");
@@ -598,6 +605,33 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 
 	return u32(-1);
 }
+
+#ifdef IXR_MACOS
+u32 RHIPlatform::ComputeInputLayoutStride(const RHIInputElementDesc* Desc, u32 DescSize)
+{
+	// DirectXMesh only builds its D3D12 overload on non-Windows hosts.
+	u32 Offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+	u32 Stride = 0;
+	for (u32 Index = 0; Index < DescSize; ++Index)
+	{
+		const RHIInputElementDesc& Element = Desc[Index];
+		const u32 Slot = Element.InputSlot;
+		const u32 Width = static_cast<u32>(DirectX::BytesPerElement(static_cast<DXGI_FORMAT>(Element.Format)));
+		if (Slot >= D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT || Width == 0)
+		{
+			return u32(-1);
+		}
+		const u32 Offset = Element.AlignedByteOffset == RHI_APPEND_ALIGNED_ELEMENT ? Offsets[Slot] : Element.AlignedByteOffset;
+		const u32 Alignment = Width == 1 ? 1 : (Width == 2 ? 2 : 4);
+		Offsets[Slot] = Offset + Width + Width % Alignment;
+		if (Slot == 0)
+		{
+			Stride = std::max(Stride, Offset + Width);
+		}
+	}
+	return Stride;
+}
+#endif
 
 HRESULT CRHI::BuildShader(const char* shader_dir, const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
 {
@@ -686,3 +720,4 @@ IRHIRenderTargetView* CRHI::GetRenderTargetView(size_t ID) const
 {
 	return GRHIRenderViewManager.RenderTargetViews[ID];
 }
+

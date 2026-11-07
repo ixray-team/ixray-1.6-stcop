@@ -1,5 +1,6 @@
 #include "Device.h"
 #include "../RHITopologyUtils.h"
+#include "../Platform/RHIWindow.h"
 
 #ifdef IXR_WINDOWS
 #	include "../Drivers/AMDGPUTransferee.h"
@@ -130,7 +131,7 @@ void InternalDevice11::SetTextureFactory(IRHITextureFactory* factory)
 
 bool InternalDevice11::UpdateBuffersD3D11()
 {
-	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+	HWND hwnd = (HWND)RHIPlatform::GetWindowHandle(g_AppInfo.Window);
 	// Create a render target view
 	ID3D11Texture2D* pBuffer = nullptr;
 	HRESULT R = HWSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
@@ -321,7 +322,7 @@ bool InternalDevice11::CreateD3D11()
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
-	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+	HWND hwnd = (HWND)RHIPlatform::GetWindowHandle(g_AppInfo.Window);
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -779,3 +780,4 @@ void InternalDevice11::ReleaseDeferredContext(ID3D11DeviceContext* context)
 		context->Release();
 	}
 }
+

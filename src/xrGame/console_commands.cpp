@@ -1964,7 +1964,7 @@ public:
 	CInifile* l_tpIniFile = NULL;
 	vecTips m_tips;
 	CCC_SpawnSquad(const char* N) : IConsole_Command(N){	bEmptyArgsHandled = false;};
-	~CCC_SpawnSquad() { IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
+	~CCC_SpawnSquad() { xr_delete(l_tpIniFile); }
 	const char* GetNearestSmartName()
 	{
 		const auto& objects = ai().alife().smart_terrains().objects();
@@ -2947,3 +2947,4 @@ void CCC_RegisterCommands()
 	register_mp_console_commands();
 #endif // XR_MP_BUILD
 }
+

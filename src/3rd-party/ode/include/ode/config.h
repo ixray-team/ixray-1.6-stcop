@@ -36,7 +36,11 @@ extern "C"
 
 #include <stdio.h>
 #include <stdarg.h>
+#ifdef WIN32
 #include <malloc.h>		// for alloca under windows
+#else
+#include <alloca.h>
+#endif
 #include <string.h>
 #include <math.h>
 #include <stdint.h>

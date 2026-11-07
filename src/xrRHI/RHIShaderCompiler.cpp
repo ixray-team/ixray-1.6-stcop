@@ -18,8 +18,8 @@ HRESULT CRHIShaderCompilerShell::Build([[maybe_unused]] const char* shader_dir,
     const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, 
 	const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
 {
-#ifdef IXR_WINDOWS
-    ID3DBlob* code_blob = nullptr;
+#if defined(IXR_WINDOWS) || defined(IXR_MACOS)
+	ID3DBlob* code_blob = nullptr;
     ID3DBlob* errors_blob = nullptr;
 	HRESULT hr = D3DCompile(srcData, srcSize, sourceName, (D3D_SHADER_MACRO*)defines, (ID3DInclude*)include, entryPoint, target, flags1, flags2, &code_blob, &errors_blob);
 
@@ -133,3 +133,4 @@ HRESULT CRHIShaderCompilerShell::Build([[maybe_unused]] const char* shader_dir,
     return result == 0 ? S_OK : E_FAIL;
 #endif
 }
+

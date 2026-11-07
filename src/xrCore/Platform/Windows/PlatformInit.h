@@ -1,5 +1,8 @@
 #pragma once
 
+// Preserve the legacy callback name on platforms where it is not an OS type.
+using thread_t = void(void*);
+
 #define VC_EXTRALEAN				// Exclude rarely-used stuff from Windows headers
 #define WIN32_LEAN_AND_MEAN			// Exclude rarely-used stuff from Windows headers
 #ifndef STRICT
@@ -79,3 +82,4 @@ using xr_special_char = wchar_t;
 
 #define xr_strerror(errno, buffer, bufferSize) strerror_s(buffer, sizeof(buffer), errno)
 #define xr_vectorcall _vectorcall
+

@@ -3,6 +3,7 @@
 #include "DLSSWrapper.h"
 #include "../../../xrCore/Platform/OSVersion.h"
 
+#ifdef IXR_WINDOWS
 DLSSWrapper g_DLSSWrapper;
 
 extern ENGINE_API u32 ps_render_scale_preset;
@@ -358,3 +359,37 @@ DLSSWrapper::~DLSSWrapper()
 {
 	Destroy();
 }
+#else
+DLSSWrapper g_DLSSWrapper;
+
+u32 DLSSWrapper::GetOptimalPresetForScale(float)
+{
+	return 0;
+}
+
+ID3D11Texture2D* DLSSWrapper::GetColorInput(ID3D11Texture2D*)
+{
+	return nullptr;
+}
+
+void DLSSWrapper::Create() {}
+void DLSSWrapper::Destroy() {}
+
+bool DLSSWrapper::GetRenderScale(float&)
+{
+	return false;
+}
+
+void DLSSWrapper::Resize(const ContextParameters& Parameters)
+{
+	DisplaySize = Parameters.displaySize;
+}
+
+bool DLSSWrapper::Draw(const DrawParameters&)
+{
+	return false;
+}
+
+DLSSWrapper::~DLSSWrapper() = default;
+#endif
+

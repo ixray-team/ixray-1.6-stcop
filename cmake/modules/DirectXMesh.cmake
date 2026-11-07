@@ -62,11 +62,18 @@ else()
     # -------------------------------------------------------------------------
     # 3. DirectXMesh
     # -------------------------------------------------------------------------
+    set(IXRAY_DIRECTXMESH_REVISION oct2023)
+    set(IXRAY_DIRECTXMESH_SHALLOW TRUE)
+    if(APPLE)
+        # This revision guards Windows-only malloc headers on native macOS.
+        set(IXRAY_DIRECTXMESH_REVISION 1e5a5e2bf005940202c3623bde57ea72ba76b416)
+        set(IXRAY_DIRECTXMESH_SHALLOW FALSE)
+    endif()
     FetchContent_Declare(
         DirectXMesh
         GIT_REPOSITORY https://github.com/microsoft/DirectXMesh.git
-        GIT_TAG        oct2023
-        GIT_SHALLOW    TRUE
+        GIT_TAG        ${IXRAY_DIRECTXMESH_REVISION}
+        GIT_SHALLOW    ${IXRAY_DIRECTXMESH_SHALLOW}
     )
 
     set(BUILD_X86 OFF CACHE BOOL "" FORCE)

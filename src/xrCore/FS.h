@@ -173,11 +173,11 @@ class CFileReader;
 class CVirtualFileReader;
 class IReader;
 
-class IReaderBase
+class XRCORE_API IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
-	virtual			~IReaderBase()			{}
+	virtual ~IReaderBase();
 
 	virtual CFileReader* cast_file_reader() { return nullptr; }
 	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }
@@ -446,3 +446,4 @@ public:
 	virtual void seek(intptr_t ptr) override;
 	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {R_ASSERT(false); return nullptr;} // Not implemented yet
 };
+

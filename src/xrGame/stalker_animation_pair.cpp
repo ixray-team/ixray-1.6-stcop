@@ -19,7 +19,9 @@
 #endif
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 void CStalkerAnimationPair::synchronize		(IKinematicsAnimated *skeleton_animated, const CStalkerAnimationPair &stalker_animation) const
@@ -267,3 +269,4 @@ void CStalkerAnimationPair::reset							()
 	m_array						= 0;
 	m_array_animation.invalidate();
 }
+

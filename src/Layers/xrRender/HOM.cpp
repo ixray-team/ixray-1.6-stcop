@@ -41,7 +41,10 @@ CHOM::CHOM()
 CHOM::~CHOM()
 {
 #ifdef DEBUG_DRAW
-	Device.seqRender.Remove(this);
+	if (DevicePtr != nullptr)
+	{
+		Device.seqRender.Remove(this);
+	}
 #endif
 }
 
@@ -343,3 +346,4 @@ void CHOM::stats()
 	}
 }
 #endif
+

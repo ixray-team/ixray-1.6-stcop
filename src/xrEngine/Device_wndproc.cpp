@@ -20,6 +20,12 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	// this is needed because default event handler that goes after if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID) is not reachable
 	switch (Event.type)
 	{
+		case SDL_EVENT_QUIT:
+		{
+			g_pEventManager->Event.Signal("KERNEL:disconnect");
+			g_pEventManager->Event.Signal("KERNEL:quit");
+			return false;
+		}
 		case SDL_EVENT_GAMEPAD_REMOVED:
 		{
 			GGamepadService->ResetHID();
@@ -218,7 +224,6 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			OnWM_Activate(false, true);
 			break;
 		}
-		case SDL_EVENT_QUIT:
 		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 		{
 			g_pEventManager->Event.Signal("KERNEL:disconnect");
@@ -297,3 +302,4 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 
 	return true;
 }
+

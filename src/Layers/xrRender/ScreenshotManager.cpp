@@ -7,7 +7,7 @@
 #	include <memory>
 #endif
 
-#ifdef IXR_LINUX
+#ifndef IXR_WINDOWS
 #	define STB_IMAGE_WRITE_IMPLEMENTATION
 #	define NULL 0
 #	include <stb/stb_image_write.h>
@@ -167,7 +167,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
-#ifdef IXR_WINDOWS
+#if defined(IXR_WINDOWS) || defined(IXR_MACOS)
 		Hr = SaveToDDSMemory(*Small.GetImage(0,0,0), DirectX::DDS_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
@@ -222,7 +222,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
-#ifdef IXR_WINDOWS
+#if defined(IXR_WINDOWS) || defined(IXR_MACOS)
 		Hr = SaveToDDSMemory(*Small.GetImage(0,0,0), DDS_FLAGS::DDS_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
@@ -495,3 +495,4 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 
 	return true;
 }
+

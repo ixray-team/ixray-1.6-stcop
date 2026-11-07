@@ -15,7 +15,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 shared_str g_active_task_id[eTaskTypeCount];
@@ -669,3 +671,4 @@ SGameTaskObjective* CGameTaskManager::ActiveObjective()
 
 	return (t) ? &t->ActiveObjective() : nullptr;
 }
+

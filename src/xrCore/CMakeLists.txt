@@ -144,6 +144,11 @@ else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
 	else()
 		list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+		if(APPLE)
+			list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/BSD/")
+		else()
+			list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/MacOS/")
+		endif()
 	endif()
 endif()
 
@@ -219,4 +224,8 @@ if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		BUILD_RPATH "$ORIGIN"
 	)
+endif()
+
+if(APPLE)
+    target_link_libraries(xrCore PRIVATE iconv)
 endif()

@@ -2,7 +2,9 @@
 
 
 #include <errno.h>
+#ifdef IXR_WINDOWS
 #include <malloc.h>
+#endif
 
 #include "xrMemory_align.h"
 
@@ -316,3 +318,4 @@ u32  xr_aligned_msize(void *memblock)
 	ptr = *((uintptr_t *)ptr);
 	return	(u32)	_msize	((void *)ptr);
 }
+

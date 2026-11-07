@@ -81,7 +81,7 @@ void CRenderTarget::PhaseGasmask()
 	}
 
 	size_t currentState = 4 - ((1.f * condition) * 4);
-	clamp(currentState, 0ull, 3ull);
+	clamp(currentState, size_t{0}, size_t{3});
 
 	// Set render target
 	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
@@ -121,3 +121,4 @@ void CRenderTarget::PhaseWinter()
 
 	RenderEffect(ScreenPostProcessType::Winter, false);
 }
+

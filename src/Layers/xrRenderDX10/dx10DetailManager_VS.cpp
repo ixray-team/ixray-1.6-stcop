@@ -55,9 +55,11 @@ void CDetailManager::hw_Render(light*L)
 		wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
 		wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
+#ifndef IXR_ARM64
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
 			hw_Render_dump<__m256>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 		else
+#endif
 			hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir1, wave_old.div(PI_MUL_2), wave_dir1_old, 1, LodHQ, L);
 	}
 
@@ -66,9 +68,11 @@ void CDetailManager::hw_Render(light*L)
 		PROF_EVENT("Wave1")
 		wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 		wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
+#ifndef IXR_ARM64
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
 			hw_Render_dump<__m256>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 		else
+#endif
 			hw_Render_dump<CDetail::SlotItem>(wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 2, LodHQ, L);
 	}
 
@@ -76,9 +80,11 @@ void CDetailManager::hw_Render(light*L)
 	if(RImplementation.phase != CRender::PHASE_SMAP)
 	{
 		PROF_EVENT("Still")
+#ifndef IXR_ARM64
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
 			hw_Render_dump<__m256>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 		else
+#endif
 			hw_Render_dump<CDetail::SlotItem>(wave, wave_dir2, wave_old, wave_dir2_old, 0, LodLQ, L);
 	}
 
@@ -149,6 +155,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				if (instanceCount == 0)
 					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
+#ifndef IXR_ARM64
 				if constexpr (std::is_same_v<T, __m256>)
 				{
 #ifdef IXR_CLANG_BUILD
@@ -160,6 +167,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 #endif
 				}
 				else
+#endif
 				{
 					static_cast<T*>(pSubRes.pData)[instanceCount++] = reinterpret_cast<T&>(Instance);
 				}
@@ -242,3 +250,4 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		}
 	}
 }
+

@@ -1,6 +1,9 @@
 // xrCore.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h"
+#ifdef IXR_MACOS
+#include "Platform/MacOS/CommandLine.h"
+#endif
 #include "FormatParsers/XML/Expression.h"
 #include "compression/ppmd/compression_ppmd_stream.h"
 
@@ -48,6 +51,9 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
 		_strlwr_s			(Params,sizeof(Params));
 
+		LoadParams();
+#elif defined(IXR_MACOS)
+		xr_strcpy(Params, sizeof(Params), Platform::GetProcessCommandLine());
 		LoadParams();
 #endif
 
@@ -158,3 +164,4 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
     return true;
 }
 #endif
+

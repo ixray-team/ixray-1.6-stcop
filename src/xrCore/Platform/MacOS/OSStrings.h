@@ -6,6 +6,7 @@
 #define _strcmpi strcasecmp
 #define stricmp strcasecmp
 #define _stricmp stricmp
+#define _strnicmp strncasecmp
 #define strcmpi stricmp
 #define lstrcpy strcpy
 #define _vsnprintf vsnprintf
@@ -121,24 +122,6 @@ inline int strcpy_s(char *dest, size_t num, const char *source)
     return ERANGE;
 }
 
-inline errno_t strncpy_s(char * dest, const char * src, size_t count)
-{
-    if (!dest || !src)
-        return EINVAL;
-
-    if (count == 0)
-        return ERANGE;
-
-    size_t len = strlen(src);
-    if (len >= count)
-        len = count - 1;
-
-    memcpy(dest, src, len);
-    dest[len] = '\0';
-
-    return 0;
-}
-
 inline int strncpy_s(char * dest, size_t dst_size, const char * source, size_t num)
 {
     if (!dest || (0 == dst_size))
@@ -174,6 +157,12 @@ inline int strncpy_s(char * dest, size_t dst_size, const char * source, size_t n
     dest[0] = '\0';
 
     return EINVAL;
+}
+
+template <size_t BufferSize>
+inline errno_t strncpy_s(char (&Destination)[BufferSize], const char* Source, size_t Count)
+{
+	return strncpy_s(Destination, BufferSize, Source, Count);
 }
 
 inline int strcat_s(char * dest, size_t num, const char * source)
@@ -464,3 +453,4 @@ IC char* _strlwr_s(char* strDestination, size_t sizeInBytes)
 {
     return _strlwr(strDestination);
 }
+

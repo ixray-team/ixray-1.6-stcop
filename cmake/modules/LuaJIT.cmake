@@ -27,12 +27,20 @@ if(WIN32)
 
 else()
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    set(IXRAY_LUAJIT_REVISION default)
+    if(APPLE)
+        set(IXRAY_LUAJIT_REVISION 015e23580d9f14ec1960beeebeaf0c5319d9135d)
+    endif()
     FetchContent_Declare(
         luajit
         GIT_REPOSITORY https://github.com/ixray-team/luajit-ixray.git
-        GIT_TAG default
+        GIT_TAG ${IXRAY_LUAJIT_REVISION}
     )
     FetchContent_MakeAvailable(luajit)
+    if(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
+        # The ARM64 Mach-O VM has no external unwind metadata in this revision.
+        target_compile_definitions(libluajit PRIVATE LUAJIT_UNWIND_INTERNAL)
+    endif()
 
     set(LUAJIT_INC "${luajit_SOURCE_DIR}/src")
     set(LUAJIT_LIB "libluajit")
@@ -56,3 +64,4 @@ else()
         )
     endif()
 endif()
+

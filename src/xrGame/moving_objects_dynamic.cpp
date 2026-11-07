@@ -21,7 +21,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 extern MagicBox3 MagicMinBox					(int iQuantity, const Fvector* akPoint);
@@ -595,3 +597,4 @@ void moving_objects::query_action_dynamic		(moving_object *object)
 
 #endif // MASTER_GOLD
 }
+

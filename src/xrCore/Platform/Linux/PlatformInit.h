@@ -1,5 +1,8 @@
 #pragma once
 
+// Preserve the legacy callback name on platforms where it is not an OS type.
+using thread_t = void(void*);
+
 #include <glob.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -169,3 +172,4 @@ inline unsigned long GetLastError()
 #ifndef _In_reads_
 #define _In_reads_(x)
 #endif
+

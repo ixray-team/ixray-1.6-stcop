@@ -55,3 +55,26 @@ endif()
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
+
+if(APPLE)
+    # LuaJIT is built outside the engine output directory.
+    add_custom_command(TARGET xrEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:libluajit>" "$<TARGET_FILE_DIR:xrEngine>/libluajit.2.dylib"
+    )
+    foreach(DXMT_LIBRARY IN ITEMS "${DXMT_D3D11_LIBRARY}" "${DXMT_DXGI_LIBRARY}" "${DXMT_METAL_LIBRARY}")
+        target_copy_dependency(xrEngine "${DXMT_LIBRARY}")
+    endforeach()
+    add_custom_command(TARGET xrEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:xrEngine>/licenses/DXMT" "$<TARGET_FILE_DIR:xrEngine>/licenses/vkd3d" "$<TARGET_FILE_DIR:xrEngine>/licenses/LLVM" "$<TARGET_FILE_DIR:xrEngine>/licenses/LuaJIT"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dxmt_SOURCE_DIR}/LICENSE" "${dxmt_SOURCE_DIR}/COPYING.LIB" "${dxmt_SOURCE_DIR}/LICENSE.OLD" "$<TARGET_FILE_DIR:xrEngine>/licenses/DXMT/"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/_deps/vkd3d/src/vkd3d_native/COPYING" "$<TARGET_FILE_DIR:xrEngine>/licenses/vkd3d/"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/doc/licenses/LLVM-15.0.7.txt" "$<TARGET_FILE_DIR:xrEngine>/licenses/LLVM/"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/doc/licenses/DirectXTex.txt" "$<TARGET_FILE_DIR:xrEngine>/licenses/DirectXTex.txt"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DirectXMesh_SOURCE_DIR}/LICENSE" "$<TARGET_FILE_DIR:xrEngine>/licenses/DirectXMesh.txt"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${luajit_SOURCE_DIR}/COPYRIGHT" "$<TARGET_FILE_DIR:xrEngine>/licenses/LuaJIT/"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dxvk_SOURCE_DIR}/LICENSE" "$<TARGET_FILE_DIR:xrEngine>/licenses/DXVK.txt"
+    )
+    set_property(TARGET xrEngine APPEND PROPERTY BUILD_RPATH "@executable_path;${VULKAN_LOADER_PREFIX}/lib")
+    add_dependencies(xrEngine xrGame xrRender_R4)
+endif()

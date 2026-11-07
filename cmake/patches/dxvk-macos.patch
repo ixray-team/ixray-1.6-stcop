@@ -1,0 +1,125 @@
+diff --git a/src/d3d10/meson.build b/src/d3d10/meson.build
+index 6a690c4..27166ac 100644
+--- a/src/d3d10/meson.build
++++ b/src/d3d10/meson.build
+@@ -10,8 +10,10 @@ d3d10_core_link_depends = []
+ if platform == 'windows'
+   d3d10_d3d11_dep = lib_d3d11
+ else
++  if platform != 'darwin'
+   d3d10_core_ld_args      += [ '-Wl,--version-script', join_paths(meson.current_source_dir(), 'd3d10core.sym') ]
+   d3d10_core_link_depends += files('d3d10core.sym')
++  endif
+   d3d10_d3d11_dep = d3d11_dep
+ endif
+ 
+diff --git a/src/d3d11/meson.build b/src/d3d11/meson.build
+index af2b7b2..33223b7 100644
+--- a/src/d3d11/meson.build
++++ b/src/d3d11/meson.build
+@@ -74,8 +74,10 @@ d3d11_link_depends = []
+ if platform == 'windows'
+   d3d11_dxgi_deps = [ lib_gdi32, lib_dxgi ]
+ else
++  if platform != 'darwin'
+   d3d11_ld_args      += [ '-Wl,--version-script', join_paths(meson.current_source_dir(), 'd3d11.sym') ]
+   d3d11_link_depends += files('d3d11.sym')
++  endif
+   d3d11_dxgi_deps = [ dxgi_dep ]
+ endif
+ 
+diff --git a/src/d3d8/meson.build b/src/d3d8/meson.build
+index 19064da..3f1f448 100644
+--- a/src/d3d8/meson.build
++++ b/src/d3d8/meson.build
+@@ -19,8 +19,10 @@ d3d8_link_depends = []
+ 
+ if platform != 'windows'
+   lib_d3d9 = d3d9_dep
++  if platform != 'darwin'
+   d3d8_ld_args      += [ '-Wl,--version-script', join_paths(meson.current_source_dir(), 'd3d8.sym') ]
+   d3d8_link_depends += files('d3d8.sym')
++  endif
+ endif
+ 
+ d3d8_dll = shared_library(dxvk_name_prefix+'d3d8', d3d8_src, d3d8_res,
+diff --git a/src/d3d9/meson.build b/src/d3d9/meson.build
+index 53d23a6..387ff4c 100644
+--- a/src/d3d9/meson.build
++++ b/src/d3d9/meson.build
+@@ -55,7 +55,7 @@ d3d9_src = [
+ d3d9_ld_args      = []
+ d3d9_link_depends = []
+ 
+-if platform != 'windows'
++if platform != 'windows' and platform != 'darwin'
+   d3d9_ld_args      += [ '-Wl,--version-script', join_paths(meson.current_source_dir(), 'd3d9.sym') ]
+   d3d9_link_depends += files('d3d9.sym')
+ endif
+diff --git a/src/dxgi/meson.build b/src/dxgi/meson.build
+index a9ed5e7..d4edffd 100644
+--- a/src/dxgi/meson.build
++++ b/src/dxgi/meson.build
+@@ -20,8 +20,10 @@ dxgi_extra_dep    = []
+ if platform == 'windows'
+   dxgi_extra_dep    += [ cpp.find_library('version') ]
+ else
++  if platform != 'darwin'
+   dxgi_ld_args      += [ '-Wl,--version-script', join_paths(meson.current_source_dir(), 'dxgi.sym') ]
+   dxgi_link_depends += files('dxgi.sym')
++  endif
+ endif
+ 
+ dxgi_dll = shared_library(dxvk_name_prefix+'dxgi', dxgi_src, dxgi_res,
+diff --git a/src/dxvk/dxvk_bind_mask.h b/src/dxvk/dxvk_bind_mask.h
+index e85fa07..f7da137 100644
+--- a/src/dxvk/dxvk_bind_mask.h
++++ b/src/dxvk/dxvk_bind_mask.h
+@@ -144,7 +144,7 @@ namespace dxvk {
+       if (!mask)
+         return -1;
+       
+-      return BitCount * intId + bit::tzcnt(mask);
++      return BitCount * intId + bit::tzcnt(uint64_t(mask));
+     }
+ 
+     bool operator == (const DxvkBindingSet& other) const {
+diff --git a/src/dxvk/dxvk_instance.cpp b/src/dxvk/dxvk_instance.cpp
+index a7cb07b..29a99c8 100644
+--- a/src/dxvk/dxvk_instance.cpp
++++ b/src/dxvk/dxvk_instance.cpp
+@@ -249,6 +249,9 @@ namespace dxvk {
+       appInfo.apiVersion            = DxvkVulkanApiVersion;
+ 
+       VkInstanceCreateInfo info = { VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
++#ifdef __APPLE__
++      info.flags                    = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
++#endif
+       info.pApplicationInfo         = &appInfo;
+       info.enabledLayerCount        = layerNames.size();
+       info.ppEnabledLayerNames      = layerNames.data();
+diff --git a/src/vulkan/vulkan_loader.cpp b/src/vulkan/vulkan_loader.cpp
+index a9d8ffb..8a88ebb 100644
+--- a/src/vulkan/vulkan_loader.cpp
++++ b/src/vulkan/vulkan_loader.cpp
+@@ -17,6 +17,7 @@ namespace dxvk::vk {
+ #elif defined(__APPLE__)
+       "libvulkan.1.dylib",
+       "libvulkan.dylib",
++      "@rpath/libvulkan.1.dylib",
+ #else
+       "libvulkan.so",
+       "libvulkan.so.1",
+diff --git a/src/wsi/sdl3/wsi_platform_sdl3.cpp b/src/wsi/sdl3/wsi_platform_sdl3.cpp
+index 9975cda..2d18552 100644
+--- a/src/wsi/sdl3/wsi_platform_sdl3.cpp
++++ b/src/wsi/sdl3/wsi_platform_sdl3.cpp
+@@ -14,7 +14,7 @@ namespace dxvk::wsi {
+ #if defined(_WIN32)
+         "SDL3.dll"
+ #elif defined(__APPLE__)
+-        "libSDL3.0.dylib"
++        "@rpath/libSDL3.0.dylib"
+ #else
+         "libSDL3.so.0"
+ #endif

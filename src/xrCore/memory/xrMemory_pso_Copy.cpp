@@ -7,7 +7,7 @@ void xrMemCopy_x86(LPVOID dest, const void* src, size_t n)
 	memcpy(dest, src, n);
 }
 
-#if defined(IXR_X64)
+#if defined(IXR_X64) || defined(IXR_ARM64)
 void  xrMemCopy_MMX(LPVOID dest, const void* src, size_t n)
 {
 	xrMemCopy_x86(dest, src, n);
@@ -222,3 +222,4 @@ $memcpy_final:
 	}
 }
 #endif
+

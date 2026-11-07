@@ -17,7 +17,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 const bool use_additional_radius	= true;
@@ -277,3 +279,4 @@ float ai_obstacle::distance_to		(const Fvector &position) const
 {
 	return						(position.distance_to(m_object->Position()));
 }
+

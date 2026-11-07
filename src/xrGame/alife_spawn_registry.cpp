@@ -16,7 +16,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #include <Actor.h>
 #pragma warning(pop)
 
@@ -309,3 +311,4 @@ void CALifeSpawnRegistry::build_story_spawns()
 		m_spawn_story_ids.insert		(std::make_pair(object->m_spawn_story_id,(*I).first));
 	}
 }
+

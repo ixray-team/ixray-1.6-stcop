@@ -1,7 +1,31 @@
 #pragma once
 
+#ifdef IXR_WINDOWS
 #include <FidelityFX/host/ffx_fsr3upscaler.h>
 #include <FidelityFX/host/backends/dx11/ffx_dx11.h>
+#else
+struct FfxDimensions2D
+{
+	uint32_t width;
+	uint32_t height;
+};
+struct FfxFsr3UpscalerContext
+{
+};
+struct FfxFsr3UpscalerContextDescription
+{
+	FfxDimensions2D maxUpscaleSize;
+};
+inline int32_t ffxFsr3UpscalerGetJitterPhaseCount(int32_t, int32_t)
+{
+	return 1;
+}
+inline void ffxFsr3UpscalerGetJitterOffset(float* x, float* y, uint32_t, int32_t)
+{
+	*x = 0.0f;
+	*y = 0.0f;
+}
+#endif
 
 class Fsr3Wrapper
 {
@@ -79,3 +103,4 @@ private:
 };
 
 extern Fsr3Wrapper g_Fsr3Wrapper;
+

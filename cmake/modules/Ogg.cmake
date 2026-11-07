@@ -14,7 +14,7 @@ else()
         add_library(Ogg::ogg INTERFACE IMPORTED)
         set_target_properties(Ogg::ogg PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${OGG_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${OGG_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${OGG_LINK_LIBRARIES}"
         )
     else()
         # FetchContent fallback

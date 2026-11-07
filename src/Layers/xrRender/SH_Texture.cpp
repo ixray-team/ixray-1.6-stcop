@@ -435,6 +435,11 @@ void CTexture::Load()
 		// Sequence
 		string256 buffer;
 		IReader* _fs = FS.r_open(fn);
+		if (!_fs)
+		{
+			R_ASSERT3(false, "Cannot open texture sequence", fn);
+			return;
+		}
 
 		flags.seqCycles = false;
 		_fs->r_string(buffer, sizeof(buffer));
@@ -644,3 +649,4 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 
 	can_unload = false;
 }
+

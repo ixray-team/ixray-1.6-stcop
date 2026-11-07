@@ -2,7 +2,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 template<typename _Object>
@@ -30,3 +32,4 @@ public:
 
 
 #include "group_state_eat_drag_inline.h"
+

@@ -821,6 +821,7 @@ CRenderTarget::CRenderTarget()
 		rt_LUM_D.create(r2_RT_luminance_cur, LW_D, LH_D, fmt);
 
 		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
+		f_luminance_adapt = 0.5f;
 
 		f_bloom_factor = 0.5f;
 	}
@@ -1227,3 +1228,4 @@ void CRenderTarget::copy_position()
 	GRHI->SetDepthStencilView(nullptr);
 	GRHI->CopySurface(rt_Position->pSurface, RDepth->GetSurface());
 }
+
