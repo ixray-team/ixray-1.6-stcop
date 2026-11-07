@@ -847,6 +847,7 @@ CRenderTarget::CRenderTarget()
 
 		GRHI->ClearTarget(rt_LUM_D->pRT, ERTColor::Gray);
 
+		f_luminance_adapt = 0.5f;
 		f_bloom_factor = 0.5f;
 	}
 	// new dof
