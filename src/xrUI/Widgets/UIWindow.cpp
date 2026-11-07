@@ -253,6 +253,51 @@ bool CUIWindow::SendMessageToTarget(s16 Event, void* Data)
 	return !State || State->Alive;
 }
 
+bool CUIWindow::ToFront()
+{
+	CUIWindow* Parent = GetParent();
+	return Parent && Parent->MoveChildInDrawOrder(this, true);
+}
+
+bool CUIWindow::ToBack()
+{
+	CUIWindow* Parent = GetParent();
+	return Parent && Parent->MoveChildInDrawOrder(this, false);
+}
+
+bool CUIWindow::MoveChildInDrawOrder(CUIWindow* Child, bool Front)
+{
+	xrCriticalSectionGuard Guard(csUi);
+	if (!Child || Child->GetParent() != this || std::find(m_ChildWndList.begin(), m_ChildWndList.end(), Child) == m_ChildWndList.end())
+	{
+		return false;
+	}
+	if (ChildDrawOrder.empty())
+	{
+		ChildDrawOrder = m_ChildWndList;
+	}
+	auto Position = std::find(ChildDrawOrder.begin(), ChildDrawOrder.end(), Child);
+	if (Position == ChildDrawOrder.end())
+	{
+		ChildDrawOrder.push_back(Child);
+		Position = ChildDrawOrder.end() - 1;
+	}
+	if (Front)
+	{
+		std::rotate(Position, Position + 1, ChildDrawOrder.end());
+	}
+	else
+	{
+		std::rotate(ChildDrawOrder.begin(), Position, Position + 1);
+	}
+	return true;
+}
+
+void CUIWindow::RemoveChildDrawOrder(CUIWindow* Child)
+{
+	ChildDrawOrder.erase(std::remove(ChildDrawOrder.begin(), ChildDrawOrder.end(), Child), ChildDrawOrder.end());
+}
+
 void CUIWindow::RegisterDialogHolder(CDialogHolder* Holder)
 {
 	xrCriticalSectionGuard Guard(csUi);
@@ -293,7 +338,9 @@ void CUIWindow::Draw()
 	}
 #endif
 
-	for (CUIWindow* W : m_ChildWndList)
+	const WINDOW_LIST OrderedChildren = ChildDrawOrder;
+	const WINDOW_LIST& Children = OrderedChildren.empty() ? m_ChildWndList : OrderedChildren;
+	for (CUIWindow* W : Children)
 	{
 		if (!W)		continue;
 		if (!W->IsShown())		continue;
@@ -377,6 +424,10 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	xrCriticalSectionGuard guard(csUi);
 	R_ASSERT(std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild) == m_ChildWndList.end());
 	m_ChildWndList.push_back(pChild);
+	if (!ChildDrawOrder.empty())
+	{
+		ChildDrawOrder.push_back(pChild);
+	}
 }
 
 void CUIWindow::DetachChild(CUIWindow* pChild)
@@ -396,6 +447,7 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 		{
 			m_ChildWndList.erase(it);
 		}
+		RemoveChildDrawOrder(pChild);
 	}
 
 	pChild->SetParent(nullptr);
@@ -427,6 +479,7 @@ bool CUIWindow::TryDetachChild(CUIWindow* pChild)
 	{
 		m_ChildWndList.erase(it);
 	}
+	RemoveChildDrawOrder(pChild);
 
 	csUi.Leave();
 
@@ -542,7 +595,8 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		return false;
 	}
 
-	xr_vector<CUIWindow*> childrenSnapshot(m_ChildWndList.begin(), m_ChildWndList.end());
+	const WINDOW_LIST& Children = GetChildDrawOrder();
+	xr_vector<CUIWindow*> childrenSnapshot(Children.begin(), Children.end());
 
 	csUi.Leave();
 
@@ -946,9 +1000,10 @@ CUIWindow* CUIWindow::GetChildMouseHandler(){
 	}
 
 	CUIWindow* pWndResult;
-	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
+	const WINDOW_LIST& Children = GetChildDrawOrder();
+	auto it = Children.rbegin();
 
-	for(; it!=m_ChildWndList.rend(); ++it)
+	for(; it!=Children.rend(); ++it)
 	{
 		Frect wndRect = (*it)->GetWndRect();
 		// very strange code.... i can't understand difference between

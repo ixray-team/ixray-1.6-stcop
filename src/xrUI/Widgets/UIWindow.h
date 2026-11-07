@@ -45,11 +45,16 @@ private:
 	struct SelfCallbackState;
 	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
 	bool DispatchSelfCallbacks(s16 Event);
+	xr_vector<CUIWindow*> ChildDrawOrder;
+	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
+	void RemoveChildDrawOrder(CUIWindow* Child);
 
 public:
 	void AddSelfCallback(s16 Event, const luabind::functor<void>& Handler);
 	bool SendMessageToTarget(s16 Event, void* Data = nullptr);
 	void DetachFromDialogHolders();
+	bool ToFront();
+	bool ToBack();
 				CUIWindow						();
 	virtual		~CUIWindow						();
 
@@ -172,6 +177,8 @@ public:
 
 	using WINDOW_LIST = xr_vector<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
+	const WINDOW_LIST& GetChildDrawOrder() const { return ChildDrawOrder.empty() ? m_ChildWndList : ChildDrawOrder; }
+	bool HasCustomChildDrawOrder() const { return !ChildDrawOrder.empty(); }
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }
 
@@ -211,7 +218,16 @@ public:
 	CExpression             m_expression;
 	xrCriticalSection csUi;
 protected:
-	IC void					SafeRemoveChild(CUIWindow* child) { xrCriticalSectionGuard guard(csUi); WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child); if (it != m_ChildWndList.end())m_ChildWndList.erase(it); };
+	IC void SafeRemoveChild(CUIWindow* child)
+	{
+		xrCriticalSectionGuard guard(csUi);
+		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), child);
+		if (it != m_ChildWndList.end())
+		{
+			m_ChildWndList.erase(it);
+		}
+		RemoveChildDrawOrder(child);
+	}
 
 	shared_str				m_windowName;
 	shared_str				m_windowNodeName;

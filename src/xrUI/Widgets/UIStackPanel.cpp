@@ -4,6 +4,7 @@
 void CUIStackPanel::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
+	const bool Ordered = HasCustomChildDrawOrder();
 
 	switch (SPAlignment)
 	{
@@ -21,7 +22,10 @@ void CUIStackPanel::Draw()
 				x += W->GetWndSize().x;
 				x += Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
@@ -52,7 +56,10 @@ void CUIStackPanel::Draw()
 				x -= W->GetWndSize().x;
 				x -= Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
@@ -70,7 +77,10 @@ void CUIStackPanel::Draw()
 				y += W->GetWndSize().y;
 				y += Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
@@ -101,7 +111,10 @@ void CUIStackPanel::Draw()
 				y -= W->GetWndSize().y;
 				y -= Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
@@ -131,7 +144,10 @@ void CUIStackPanel::Draw()
 				x += W->GetWndSize().x;
 				x += Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
@@ -161,12 +177,19 @@ void CUIStackPanel::Draw()
 				y += W->GetWndSize().y;
 				y += Spacing;
 
-				W->Draw();
+				if (!Ordered)
+				{
+					W->Draw();
+				}
 			}
 		}
 		break;
 	default:
 		R_ASSERT2(false, "not implemented :(");
 		break;
+	}
+	if (Ordered)
+	{
+		CUIWindow::Draw();
 	}
 }
