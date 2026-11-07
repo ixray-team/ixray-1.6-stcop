@@ -223,6 +223,14 @@ void CRenderTarget::phase_combine()
 
 	switch(ps_r_scale_mode)
 	{
+		case 5:
+		{
+			if(!phase_fsr4())
+			{
+				ps_proxy_r_scale_mode = ps_r_scale_mode = 1;
+			}
+			break;
+		}
 		case 4:
 		{
 			if(!phase_xess())

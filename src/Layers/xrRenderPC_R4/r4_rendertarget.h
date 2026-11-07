@@ -441,7 +441,9 @@ public:
 	void						u_DBT_disable			();
 
 	void						init_fsr				();
+	void						init_fsr4				();
 	bool						phase_fsr				();
+	bool						phase_fsr4				();
 	void						init_xess();
 	bool						phase_xess();
 	void						init_dlss();
