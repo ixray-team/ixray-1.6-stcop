@@ -271,7 +271,7 @@ float		ps_r2_ls_squality			= 10.0f;				// 1.00f
 
 float		ps_r2_sun_bias				= -0.01f;			// 
 float		ps_r2_sun_far				= 160.f;
-float		ps_r2_sun_near				= 20.f;
+float		ps_r2_sun_near				= 15.f;
 int			ps_r2_sun_details_cascades	= 2;
 float		ps_r2_sun_depth_far_scale	= 1.00000f;			// 1.00001f
 float		ps_r2_sun_depth_near_scale	= 1.0000f;			// 1.00001f
@@ -1122,7 +1122,7 @@ RENDER_API void		xrRender_initconsole	()
 	
 	CMD4(CCC_Float,		"r2_sun_bias",			&ps_r2_sun_bias,			-0.5,	+0.5	);
 	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	50.f	);
-	CMD4(CCC_Float,		"r2_sun_far",			&ps_r2_sun_far,				51.f,	180.f	);
+	CMD4(CCC_Float,		"r2_sun_far",			&ps_r2_sun_far,				51.f,	1000.f	);
 	CMD4(CCC_Float,		"r2_sun_depth_far_scale",&ps_r2_sun_depth_far_scale,0.5,	1.5		);
 	CMD4(CCC_Float,		"r2_sun_depth_near_scale",&ps_r2_sun_depth_near_scale,0.5,	1.5		);
 

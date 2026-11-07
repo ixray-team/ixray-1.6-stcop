@@ -6,11 +6,11 @@ namespace
 {
 	constexpr u32 Stride = sizeof(PackedVertex);
 	constexpr u32 IndexStride = sizeof(u16);
-	constexpr u32 MaxBytes = 128u << 20;
+	constexpr u32 MaxBytes = 512u << 20;
 	constexpr u32 MaxVertices = MaxBytes / Stride;
 	constexpr u32 MaxIndices = MaxBytes / IndexStride;
 	constexpr u32 DefaultVertices = (32u << 20) / Stride;
-	constexpr u32 DefaultIndices = 16 * DefaultVertices;
+	constexpr u32 DefaultIndices = 6 * DefaultVertices;
 	constexpr u32 ArenaKeep = 4u << 20;
 	constexpr u32 VertexSlot = ShaderBindings::Texture("g_Vertices0");
 	static_assert(ShaderBindings::Texture("g_Vertices4") + GeometryHeap::MaxPages - 1 == VertexSlot);
@@ -122,7 +122,7 @@ u32 GeometryHeap::OpenPage(u32 Vertices, u32 Indices)
 		FATAL(make_string<const char*>("GeometryHeap: all %u pages are full, %u vertices and %u indices do not fit", MaxPages, Vertices, Indices));
 	}
 	HeapPage& Item = Pages[Page];
-	const u32 Scale = 1u << std::min(Page, 2u);
+	const u32 Scale = 1u << Page;
 	Item.VertexCapacity = std::min(std::max(Vertices, ReservedVertices ? ReservedVertices : DefaultVertices * Scale), MaxVertices);
 	Item.IndexCapacity = std::min(std::max(Indices, ReservedIndices ? ReservedIndices : DefaultIndices * Scale), MaxIndices);
 	ReservedVertices = ReservedIndices = 0;

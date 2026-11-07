@@ -44,20 +44,8 @@ Fvector3		wform	(Fmatrix& m, Fvector3 const& v)
 
 void CRender::init_cacades()
 {
-	u32 cascade_count = 3;
-	m_sun_cascades.resize(cascade_count);
-
-	float fBias = -0.0000025f;
-
+	m_sun_cascades.resize(3);
 	m_sun_cascades[0].reset_chain = true;
-	m_sun_cascades[0].size = 15;
-	m_sun_cascades[0].bias = m_sun_cascades[0].size*fBias;
-
-	m_sun_cascades[1].size = 40;
-	m_sun_cascades[1].bias = m_sun_cascades[1].size*fBias;
-
-	m_sun_cascades[2].size = 160;
-	m_sun_cascades[2].bias = m_sun_cascades[2].size*fBias;
 	ResetSunShadowCache();
 }
 
@@ -231,7 +219,12 @@ void CRender::RestoreSunCascadeChain()
 		sun_restore_shafts = false;
 	}
 
-	m_sun_cascades[2].size = 160.0f;
+	m_sun_cascades[0].size = ps_r2_sun_near;
+	m_sun_cascades[1].size = _sqrt(ps_r2_sun_near * ps_r2_sun_far);
+	m_sun_cascades[2].size = ps_r2_sun_far;
+	for (auto& Cascade : m_sun_cascades) {
+		Cascade.bias = Cascade.size * -0.0000025f;
+	}
 }
 
 bool CRender::prepare_sun_cascade_xforms(u32 Frame)
