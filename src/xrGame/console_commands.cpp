@@ -2272,7 +2272,9 @@ public:
 	vecTips m_tips;
 	CCC_SpawnSquad(const char* N) : IConsole_Command(N){	bEmptyArgsHandled = false;};
 	virtual ~CCC_SpawnSquad() override
-	{ IConsole_Command ::~IConsole_Command(); xr_delete(l_tpIniFile); }
+	{
+		xr_delete(l_tpIniFile);
+	}
 	const char* GetNearestSmartName()
 	{
 		const auto& objects = ai().alife().smart_terrains().objects();
