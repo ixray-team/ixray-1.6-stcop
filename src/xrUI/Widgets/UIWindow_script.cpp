@@ -147,7 +147,8 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
 			
-		.def("IsCursorOverWindow",		&CUIWindow::CursorOverWindow)
+		.def("IsCursorOverWindow", (bool (CUIWindow::*)() const)&CUIWindow::CursorOverWindow)
+		.def("IsCursorOverWindow", (bool (CUIWindow::*)(bool))&CUIWindow::CursorOverWindow)
 		.def("FocusReceiveTime",		&CUIWindow::FocusReceiveTime)
 		.def("GetAbsoluteRect",			&CUIWindow::GetAbsoluteRect)
 
