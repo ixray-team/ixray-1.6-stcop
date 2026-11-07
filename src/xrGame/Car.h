@@ -1344,6 +1344,7 @@ public:
 	void					cam_Update					(float dt, float fov);
 	void					ZoomCamera					(int cmd, float free_step);
 	void					detach_Actor				();
+	void					RecalculateExitPosition		();
 	bool					attach_Actor				(CGameObject* actor);
 	bool					is_Door						(u16 id,xr_map<u16,SDoor>::iterator& i);
 	bool					is_Door						(u16 id);

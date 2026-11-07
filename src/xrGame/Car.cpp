@@ -970,7 +970,34 @@ void CCar::cb_Suspension(CBoneInstance* B)
 		{
 			Fvector dest_dir = Fvector().sub(right_transform.c, left_transform.c);
 			safe_normalize(dest_dir);
-			B->mTransform.i = dest_dir;
+			if (dest_dir.square_magnitude() < EPS_L)
+				return;
+
+			// Rotate the whole axle frame instead of assigning only the X axis.
+			// The old code left J/K untouched, so the skinned axle became a
+			// non-orthonormal (sheared) matrix and visibly stretched.
+			const float i_scale = B->mTransform.i.magnitude();
+			const float j_scale = B->mTransform.j.magnitude();
+			const float k_scale = B->mTransform.k.magnitude();
+
+			Fvector up = B->mTransform.j;
+			up.mad(dest_dir, -dest_dir.dotproduct(up));
+			if (up.square_magnitude() < EPS_L)
+			{
+				up = B->mTransform.k;
+				up.mad(dest_dir, -dest_dir.dotproduct(up));
+			}
+			if (up.square_magnitude() < EPS_L)
+				return;
+			up.normalize();
+
+			Fvector forward;
+			forward.crossproduct(dest_dir, up);
+			forward.normalize();
+
+			B->mTransform.i.set(dest_dir).mul(i_scale);
+			B->mTransform.j.set(up).mul(j_scale);
+			B->mTransform.k.set(forward).mul(k_scale);
 		}
 
 		if (C->move)
@@ -1345,6 +1372,7 @@ void CCar::CreateCharacterScraper(IKinematics* K, CInifile* ini)
 	characters_scraper_shell->set_PhysicsRefObject(nullptr);
 	characters_scraper_shell->add_ObjectContactCallback(CollisionDetectionCallback);
 	characters_scraper_shell->SetPrefereExactIntegration();
+	characters_scraper_shell->mXFORM.set(XFORM());
 	characters_scraper_shell->Activate();
 }
 
@@ -2365,6 +2393,8 @@ void CCar::UpdateInteriorSoundFactor(bool FirstPersonView)
 				else
 					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetRPM(0.f);
 				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetFuel(100.0f * (m_fuel / m_fuel_tank));
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetEngineLamp(b_engine_on);
+				CurrentGameUI()->UIMainIngameWnd->CarPanel().SetLightLamp(m_lights.IsOn());
 				if (CurrentTransmission() == 0)
 					CurrentGameUI()->UIMainIngameWnd->CarPanel().SetGear("R");
 				else
@@ -2805,9 +2835,33 @@ float CCar::SetfHealth(float value)
 	return result;
 }
 
+void CCar::RecalculateExitPosition()
+{
+	if (m_doors.empty() || bones_bind_forms.empty())
+	{
+		m_exit_position.set(Position());
+		return;
+	}
+
+	auto door = m_doors.find(m_exit_door_bone);
+	if (door == m_doors.end())
+	{
+		door = m_doors.begin();
+	}
+
+	door->second.GetExitPosition(m_exit_position);
+}
+
 void CCar::detach_Actor()
 {
 	if(!Owner()) return;
+
+	// The actor can be detached without a prior CCar::Exit() call (death,
+	// forced exit, vehicle destruction). Recompute the point from the current
+	// car transform, otherwise the body is moved to a stale exit position or
+	// to the world origin.
+	RecalculateExitPosition();
+
 	Owner()->setVisible(1);
 	psSoundCarFactor = 1.f;
 	if (OwnerActor())

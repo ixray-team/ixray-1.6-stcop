@@ -27,6 +27,7 @@ public:
 	virtual bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	virtual void net_Relcase(CObject* O) override;
+	virtual void feel_touch_delete(CObject* O) override;
 
 	//воздействие зоной на объект
 	virtual void Affect(SZoneObjectInfo* O) override;
