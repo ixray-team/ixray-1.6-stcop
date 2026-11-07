@@ -2,7 +2,7 @@
 
 
 #include <errno.h>
-#ifdef IXR_WINDOWS
+#ifndef IXR_MACOS
 #include <malloc.h>
 #endif
 
