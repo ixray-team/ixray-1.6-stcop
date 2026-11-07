@@ -377,7 +377,8 @@ function eva_gather_itm:evaluate()
 		return false
 	end
 
-	if (npc:best_enemy() and IsWeapon(npc:active_item())) then
+	-- Match the combat planner, including its post-combat wait state.
+	if (npc:motivation_action_manager():evaluator(stalker_ids.property_enemy):evaluate()) then
 		return false
 	end
 	

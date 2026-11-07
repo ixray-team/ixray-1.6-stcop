@@ -21,7 +21,7 @@ _G.log = function (str)
 end
 
 function register(object_factory)
-	class_registrator.cs_register(object_factory, "CCar", "se_car.se_car", "SCRPTCAR", "car_s")
+	-- CoC already registers SCRPTCAR in class_registrator.register.
 end
 
 _G.convert_class_name = function(obj)

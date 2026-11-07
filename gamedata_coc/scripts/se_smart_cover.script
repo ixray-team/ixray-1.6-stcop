@@ -52,6 +52,14 @@ function se_smart_cover:STATE_Read (packet, size)
 			end
 		end
 
+		-- Omitted flags inherit the description defaults, as in FillProps.
+		-- Explicit serialized false flags below still disable their loopholes.
+		for loophole_id in pairs(existing_loopholes) do
+			if self.loopholes[loophole_id] == nil then
+				self.loopholes[loophole_id] = true
+			end
+		end
+
 		local n = packet:r_u8()
 		for i = 1, n do
 			local loophole_id = packet:r_stringZ()

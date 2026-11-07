@@ -405,7 +405,11 @@ end
 function se_eatable:STATE_Read(stpk,size)
 	cse_alife_item.STATE_Read(self,stpk,size)
 	--printf("%s size[%s] r_tell[%s] se_eatable elapsed %s",self:section_name(),size,stpk:r_tell(),stpk:r_elapsed())
-	self.remaining_uses = stpk:r_u8()
+	-- Original CoC spawn records have no saved remaining-uses byte.
+	self.remaining_uses = 0
+	if stpk:r_elapsed() > 0 then
+		self.remaining_uses = stpk:r_u8()
+	end
 	--printf("self.remaining_uses = %s",self.remaining_uses)
 end
 function se_eatable:STATE_Write(stpk)
