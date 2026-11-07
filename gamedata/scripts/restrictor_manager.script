@@ -68,15 +68,9 @@ function Crestrictor_manager:reset_restrictions(st, section)
 		end
 	end
 
-	--'Удаляем старые аут рестрикторы. апплаим новые.
-	for k,v in pairs(del_restr) do
-		--printf("old out_restr [%s] deleted", v)
-		self.object:remove_restrictions(v, "")
-	end
-	for k,v in pairs(ins_restr) do
-		--printf("new out_restr [%s] added", v)
-		self.object:add_restrictions(v, "")
-	end
+	-- Save the OUT delta until the IN delta is ready.
+	local RemoveOutRestrictions = del_restr
+	local AddOutRestrictions = ins_restr
 
 	
 	
@@ -124,14 +118,13 @@ function Crestrictor_manager:reset_restrictions(st, section)
 		end
 	end
 
-	--'Удаляем старые аут рестрикторы. апплаим новые.
-	for k,v in pairs(del_restr) do
-		--printf("old in_restr [%s] deleted", v)
-		self.object:remove_restrictions("", v)
+	-- Each native call immediately recalculates movement restrictions.
+	-- Remove stale IN and OUT restrictions together before adding new ones.
+	if #RemoveOutRestrictions > 0 or #del_restr > 0 then
+		self.object:remove_restrictions(table.concat(RemoveOutRestrictions, ","), table.concat(del_restr, ","))
 	end
-	for k,v in pairs(ins_restr) do
-		--printf("new in_restr [%s] added", v)
-		self.object:add_restrictions("", v)
+	if #AddOutRestrictions > 0 or #ins_restr > 0 then
+		self.object:add_restrictions(table.concat(AddOutRestrictions, ","), table.concat(ins_restr, ","))
 	end
 	 
 end
