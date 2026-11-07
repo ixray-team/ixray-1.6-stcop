@@ -36,7 +36,7 @@ float4 main(PSInput I) : SV_Target
 	IXRayGbuffer O = (IXRayGbuffer)NULL;
 	GbufferUnpack((uint2)I.hpos.xy, O);
 	
-    float3 P = O.Point;
+    float3 P = O.PointReal;
 
     float4 J0 = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
 	float coeff = 1.0f / RAY_SAMPLES;
@@ -67,11 +67,12 @@ float4 main(PSInput I) : SV_Target
     }
 
     [loop] for (int i = 0; i < RAY_SAMPLES; i++) {
-        float sample = exp(-sun_shafts_intensity.w * O.ViewDist * coeff * (RAY_SAMPLES - 1 - i));
+        float sample = -sun_shafts_intensity.w * O.ViewDist * coeff * (RAY_SAMPLES - 1 - i);
         
 		if (depth > 0.3) {
 			float visibility = 0.0f;
 			float blend = 0.0f;
+
 			if (all(abs(current[0] - 0.5f) < 0.5f)) {
 				visibility = SampleSunShaft(current[0], 0);
 				float2 edge = 0.5f - abs(current[0].xy - 0.5f);
