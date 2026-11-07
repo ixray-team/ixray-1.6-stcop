@@ -103,6 +103,7 @@ endif()
 
 if(APPLE)
     add_executable(TestMacOSTexture EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/src/test/macos/TextureSmoke.cpp")
+    target_include_directories(TestMacOSTexture PRIVATE "${CMAKE_BINARY_DIR}/_deps_header_only")
     target_link_libraries(TestMacOSTexture PRIVATE DirectX::Tex)
     set_target_properties(TestMacOSTexture PROPERTIES FOLDER "Test" DISABLE_PRECOMPILE_HEADERS ON)
 endif()

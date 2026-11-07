@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "ScreenshotManager.h"
 #include "AsyncScreenshotService.h"
+#ifdef IXR_MACOS
+#include "ScreenshotEncoding.h"
+#endif
 
 #ifdef IXR_WINDOWS
 #	include <wincodec.h>
@@ -469,15 +472,18 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 				IWriter* fs;
 			} cbData = {Fs};
 			
-			stbi_write_tga_to_func(
-				[](void* context, void* data, int size) {
-					CallbackData* cb = (CallbackData*)context;
-					cb->fs->w(data, size);
-				},
-				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels
-			);
-			FS.w_close(Fs);
+			auto Write = [](void* Context, void* Data, int Size)
+			{
+				auto* Callback = static_cast<CallbackData*>(Context);
+				Callback->fs->w(Data, Size);
+			};
+#ifdef IXR_MACOS
+			Hr = ScreenshotEncoding::WriteBGRATGA(Write, &cbData, *SrcImg) ? S_OK : E_FAIL;
+#else
+			stbi_write_tga_to_func(Write, &cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels);
 			Hr = S_OK;
+#endif
+			FS.w_close(Fs);
 		}
 		else
 		{

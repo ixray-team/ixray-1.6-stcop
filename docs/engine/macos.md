@@ -64,9 +64,9 @@ signatures and compiler error reporting. The platform check also exercises
 concurrent path normalization, aliased path inputs, 32-bit atomics and UI shader-cache
 key ordering. The CoC script check executes the actual overlay readers and evaluator
 with controlled packets/NPC state: omitted cover flags, explicit disabled loopholes,
-optional remaining-use bytes and post-combat gathering. The texture check verifies native BGRA DDS encode/decode and accepts an optional
+optional remaining-use bytes and post-combat gathering. The texture check verifies native BGRA DDS encode/decode, synchronous level-map/cubemap TGA color order without changing the source image, and accepts an optional
 save-thumbnail path to verify engine output. The staging checks use temporary
-placeholder archives to verify ownership checks and mutable-setting preservation.
+placeholder archives to verify ownership checks, rejection of writable marker/filesystem/appdata/user-setting symlinks and mutable-setting preservation.
 These checks do not establish gameplay.
 
 ## Call of Chernobyl data
@@ -173,6 +173,10 @@ and a normal menu exited 0 through a queued global SDL quit event. These checks
 exercise normal teardown without desktop input. Real keyboard/mouse interaction
 and audible output remain unverified: the test desktop was locked. OpenAL
 initialized in the normal session, which does not establish audibility.
+The tested OpenAL context reports 255 mono plus 1 stereo source. The engine's
+992-target allocation request reaches that limit and logs a source-creation
+warning, retaining 256 targets; the normal menu had one playing source with
+three queued buffers. This verifies API playback state, not audible output.
 Windows and Linux builds were not run on this Mac.
 
 ## Current platform boundaries

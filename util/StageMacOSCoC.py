@@ -22,6 +22,13 @@ def main():
     if output in (base, patch, repository) or base in output.parents or patch in output.parents:
         parser.error("Output must be a separate runtime directory")
     marker = output / ".ixray-macos-stage"
+    filesystem = output / "fsgame.ltx"
+    appdata = output / "_appdata_ixray_"
+    settings = appdata / "user.ltx"
+    # These entries are written by staging or by the engine in the staged runtime.
+    for destination in (marker, filesystem, appdata, settings):
+        if destination.is_symlink():
+            raise FileExistsError(f"Refusing to write through a staging symlink: {destination}")
     if output.exists() and any(output.iterdir()) and not marker.is_file():
         parser.error("Output is not an IX-Ray staging directory; choose an empty directory")
     output.mkdir(parents=True, exist_ok=True)
@@ -71,10 +78,8 @@ def main():
         return str(destination)
 
     shutil.copytree(overlay_source / "configs", configs, dirs_exist_ok=True, copy_function=copy_config)
-    shutil.copyfile(repository / "fsgame_coc.ltx", output / "fsgame.ltx")
-    appdata = output / "_appdata_ixray_"
+    shutil.copyfile(repository / "fsgame_coc.ltx", filesystem)
     appdata.mkdir(exist_ok=True)
-    settings = appdata / "user.ltx"
     if not settings.exists():
         settings.write_text("renderer renderer_r4\nvid_mode 1280x720\nrs_v_sync on\nrs_main_menu_fps_limit 60\n", encoding="utf-8")
     print(f"Runtime: {output}")

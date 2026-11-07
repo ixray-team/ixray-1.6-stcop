@@ -64,6 +64,36 @@ class StagingTests(unittest.TestCase):
         self.assertNotEqual(self.stage().returncode, 0)
         self.assertEqual(list(outside.rglob("*")), [])
 
+    def test_mutable_file_symlinks_are_refused_without_external_writes(self):
+        for entry, existing_target in (("fsgame.ltx", True), ("fsgame.ltx", False), (".ixray-macos-stage", True),
+                                       ("_appdata_ixray_/user.ltx", False), ("_appdata_ixray_/user.ltx", True)):
+            with self.subTest(entry=entry, existing_target=existing_target):
+                self.output = self.root / ("runtime-" + entry.replace("/", "-") + str(existing_target))
+                self.mark_owned()
+                outside = self.root / (self.output.name + "-external")
+                if existing_target:
+                    outside.write_bytes(b"preserve external bytes")
+                destination = self.output / entry
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                if destination.exists():
+                    destination.unlink()
+                destination.symlink_to(outside)
+                result = self.stage()
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                if existing_target:
+                    self.assertEqual(outside.read_bytes(), b"preserve external bytes")
+                else:
+                    self.assertFalse(outside.exists())
+
+    def test_appdata_symlink_is_refused_without_external_writes(self):
+        self.mark_owned()
+        outside = self.root / "outside-appdata"
+        outside.mkdir()
+        (self.output / "_appdata_ixray_").symlink_to(outside, target_is_directory=True)
+        result = self.stage()
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(list(outside.iterdir()), [])
+
     def test_restage_preserves_mutable_settings(self):
         first = self.stage()
         self.assertEqual(first.returncode, 0, first.stderr)

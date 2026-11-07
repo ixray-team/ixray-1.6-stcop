@@ -1,4 +1,8 @@
 #include <DirectXTex.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#undef NULL
+#define NULL 0
+#include "../../Layers/xrRender/ScreenshotEncoding.h"
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -22,6 +26,20 @@ int main(int ArgumentCount, char** Arguments)
 		puts("FAIL: native BGRA DDS encode/decode");
 		return 2;
 	}
+	std::vector<uint8_t> TGA;
+	const auto WriteTGA = [](void* Context, void* Data, int Size)
+	{
+		auto& Bytes = *static_cast<std::vector<uint8_t>*>(Context);
+		const auto* First = static_cast<const uint8_t*>(Data);
+		Bytes.insert(Bytes.end(), First, First + Size);
+	};
+	const uint8_t ExpectedRGBA[] = {56, 34, 12, 255, 123, 78, 90, 255};
+	if (!ScreenshotEncoding::WriteBGRATGA(WriteTGA, &TGA, *Source.GetImage(0, 0, 0)) || FAILED(DirectX::LoadFromTGAMemory(TGA.data(), TGA.size(), DirectX::TGA_FLAGS_NONE, &Metadata, Decoded)) || Metadata.format != DXGI_FORMAT_R8G8B8A8_UNORM || Metadata.width != 2 || Metadata.height != 1 || memcmp(Decoded.GetPixels(), ExpectedRGBA, sizeof(ExpectedRGBA)) != 0 || memcmp(Source.GetPixels(), Pixels, sizeof(Pixels)) != 0)
+	{
+		puts("FAIL: synchronous BGRA TGA output colors or source preservation");
+		return 4;
+	}
+	puts("PASS: synchronous BGRA TGA output asymmetric colors and unchanged DDS source");
 	if (ArgumentCount > 1)
 	{
 		std::ifstream File(Arguments[1], std::ios::binary);
