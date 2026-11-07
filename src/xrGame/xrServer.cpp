@@ -2716,7 +2716,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		break;
 		case GEG_PLAYER_ACTIVATEARTEFACT:
 		{
-			Process_event_activate(P, sender, timestamp, destination, P.r_u16(), true);
+			Process_event_activate(P, sender, timestamp, destination, P.r_u32(), true);
 			break;
 		};
 		case GE_INV_ACTION:
@@ -2761,7 +2761,7 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
 		case GE_OWNERSHIP_REJECT:
 		case GE_LAUNCH_ROCKET:
 		{
-			Process_event_reject(P, sender, timestamp, destination, P.r_u16());
+			Process_event_reject(P, sender, timestamp, destination, P.r_u32());
 		}
 		break;
 		case GE_DESTROY:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Descs/DescRegistry.h"
+#include "alife_space.h"
 
 struct SDofOptions
 {
@@ -93,7 +94,7 @@ public:
 	void SetEffector(const Fvector& Values);
 	void RestoreEffector();
 	void SetPickable(bool Active);
-	void SetZoneActive(u16 Id, bool Active);
+	void SetZoneActive(ALife::_OBJECT_ID Id, bool Active);
 	void Update(float Delta);
 	void Reset();
 	void GetCurrent(Fvector& Result) const;
@@ -113,7 +114,7 @@ private:
 
 	const SHudDofDefaults* Defaults = nullptr;
 	Fvector4 Talk = {-1.0f, -1.0f, -1.0f, -1.0f};
-	xr_hash_set<u16> Zones;
+	xr_hash_set<ALife::_OBJECT_ID> Zones;
 	Fvector Base = {-1.25f, 1.4f, 600.0f};
 	Fvector Effector = Base;
 	Fvector Current = Base;

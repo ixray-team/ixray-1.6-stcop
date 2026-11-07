@@ -189,8 +189,9 @@ void 	demoplay_control::on_kill_impl(u32 message, u32 subtype, NET_Packet & pack
 		return;
 	}
 	packet.r_u8();	//kill type
-	packet.r_u16();	//killed_id
-	u16 killer_id	= packet.r_u16();
+	packet.r_u32();	//killed_id
+	ALife::_OBJECT_ID killer_id;
+	packet >> killer_id;
 	game_PlayerState* killerps = Game().GetPlayerByGameID(killer_id);
 	if (!killerps)
 		return;
@@ -216,7 +217,8 @@ void 	demoplay_control::on_die_impl(u32 message, u32 subtype, NET_Packet & packe
 		return;
 	}
 	packet.r_u8(); //kill type
-	u16 killed_id	= packet.r_u16();
+	ALife::_OBJECT_ID killed_id;
+	packet >> killed_id;
 	game_PlayerState* killedps = Game().GetPlayerByGameID(killed_id);
 	if (!killedps)
 		return;
@@ -242,15 +244,15 @@ void 	demoplay_control::on_artefactdelivering_impl(u32 message, u32 subtype, NET
 		return;
 	}
 	EGameIDs current_game_type = static_cast<EGameIDs>(GameID());
-	u16 deliverer_id = 0;	//who deliver the artefact
+	ALife::_OBJECT_ID deliverer_id = 0;	//who deliver the artefact
 	if (current_game_type == eGameIDCaptureTheArtefact)
 	{
 		u8 delivererTeam;
 		packet.r_u8(delivererTeam);
-		packet.r_u16(deliverer_id);
+		packet >> deliverer_id;
 	} else if (current_game_type == eGameIDArtefactHunt)
 	{
-		packet.r_u16(deliverer_id);
+		packet >> deliverer_id;
 	} else
 	{
 		FATAL("incorect event for current game type");
@@ -296,8 +298,8 @@ void 	demoplay_control::on_artefactcapturing_impl(u32 message, u32 subtype, NET_
 		}
 	} else if (current_game_type == eGameIDArtefactHunt)
 	{
-		u16 capturer_id;
-		packet.r_u16(capturer_id);
+		ALife::_OBJECT_ID capturer_id;
+		packet >> capturer_id;
 		capturerps = Game().GetPlayerByGameID(capturer_id);
 	} else
 	{
@@ -342,8 +344,8 @@ void 	demoplay_control::on_artefactloosing_impl(u32 message, u32 subtype, NET_Pa
 		}
 	} else if (current_game_type == eGameIDArtefactHunt)
 	{
-		u16 looser_id;
-		packet.r_u16(looser_id);
+		ALife::_OBJECT_ID looser_id;
+		packet >> looser_id;
 		looserps = Game().GetPlayerByGameID(looser_id);
 	} else
 	{

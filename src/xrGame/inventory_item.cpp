@@ -509,8 +509,8 @@ bool CInventoryItem::Attach(PIItem pIItem)
 
 	NET_Packet P;
 	if (pIItem->object().H_Parent())
-	{ // заставим парента выбросить предмет
-		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, parent_id());
+	{ // заставим текущего владельца аддона выбросить предмет
+		CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->parent_id());
 		P.w_u32(pIItem->object_id());
 		CGameObject::u_EventSend(P);
 	}

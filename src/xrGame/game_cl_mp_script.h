@@ -17,8 +17,8 @@ public:
 	virtual void				shedule_Update			(u32 dt) override;
 	virtual game_PlayerState*	createPlayerState(NET_Packet* account_info) override {return inherited::createPlayerState(account_info); };
 
-				void				EventGen				( NET_Packet* P, u16 type, u16 dest);
-				void				GameEventGen			( NET_Packet* P, u16 dest);
+				void				EventGen				( NET_Packet* P, u16 type, ALife::_OBJECT_ID dest);
+				void				GameEventGen			( NET_Packet* P, ALife::_OBJECT_ID dest);
 				void				EventSend				( NET_Packet* P);
 				const char*				GetRoundTime			();
 	DECLARE_SCRIPT_REGISTER_FUNCTION

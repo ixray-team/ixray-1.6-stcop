@@ -60,13 +60,13 @@ private:
 
 	//todo: transmit work with anomalies into other class...
 	//----------------------------------------------------
-	using TNameGameIDAnomalyPair = std::pair<xr_string, u16>;
+	using TNameGameIDAnomalyPair = std::pair<xr_string, ALife::_OBJECT_ID>;
 	using TAnomaliesVector = xr_vector<TNameGameIDAnomalyPair>;
 
 	using TAnomalyStartedPair = std::pair<TAnomaliesVector, u8>;
 	using TAnomalySet = xr_vector<TAnomalyStartedPair>;
 
-	using TGIDCPair = std::pair<u16, u8>; //GameIDCountPair
+	using TGIDCPair = std::pair<ALife::_OBJECT_ID, u8>; //GameIDCountPair
 	using TMultiMap = xr_multimap<xr_string, TGIDCPair>;
 
 	using TGameIDToBoughtFlag = xr_map<ClientID, int>;		//this map shows what player already bought items when he was dead...
@@ -110,7 +110,7 @@ private:
 	void	CheckAnomalyUpdate(u32 current_time);
 	void	CheckForWarmap(u32 current_time);
 	
-	u16		GetMinUsedAnomalyID(const char* zone_name);
+	ALife::_OBJECT_ID		GetMinUsedAnomalyID(const char* zone_name);
 	//----------------------------------------------------
 
 	void LoadTeamData(ETeam eteam, const shared_str& caSection);

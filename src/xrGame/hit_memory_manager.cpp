@@ -386,9 +386,9 @@ void CHitMemoryManager::SerializeSingle(ISaveObject& Object, CHitObject& Value)
 	{
 		Value.Serialize(Object);
 		if (Object.IsSave()) {
-			VERIFY(m_object);
-			u16 Value = m_object->ID();
-			Object << Value;
+			VERIFY(Value.m_object);
+			ALife::_OBJECT_ID object_id = Value.m_object->ID();
+			Object << object_id;
 		}
 		else {
 

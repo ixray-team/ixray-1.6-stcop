@@ -3,6 +3,7 @@
 
 #include "../xrCore/net_utils.h"
 #include "../xrCore/Containers/associative_vector.h"
+#include "alife_space.h"
 
 #define FILTERS_COUNT 32
 
@@ -28,7 +29,7 @@ private:
 			msg_type(type), msg_subtype(subtype), msg_receive_time(recv_time) { }
 
 		u16 msg_type;
-		u16	dest_obj_id;
+		ALife::_OBJECT_ID dest_obj_id;
 		u32 msg_subtype;
 		u32 msg_receive_time;
 		inline bool operator<(msg_type_subtype_t const & right) const

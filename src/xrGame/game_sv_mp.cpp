@@ -2396,7 +2396,7 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 		NET_Packet			P_;
 		GenerateGameMessage(P_);
 		P_.w_u32(GAME_EVENT_PLAYER_NAME);
-		P_.w_u16(pClient->owner->ID);
+		P_ << pClient->owner->ID;
 		P_.w_s16(ps->team);
 		P_.w_stringZ(old_name.c_str());
 		P_.w_stringZ(ps->getName());

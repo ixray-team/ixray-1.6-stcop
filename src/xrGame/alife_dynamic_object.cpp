@@ -55,7 +55,7 @@ void CSE_ALifeDynamicObject::on_unregister()
 		static const char* m_onCallbackName = pGameGlobals->r_string("callbacks", "OnUnregister");
 		luabind::functor<void> funct;
 		R_ASSERT2(ai().script_engine().functor(m_onCallbackName, funct), "failed to get OnUnregister functor");
-		funct((u16)ID);
+		funct(ID);
 	}
 
 

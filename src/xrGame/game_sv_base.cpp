@@ -731,7 +731,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			tNetPacket.r_clientID(ID);
 			string1024 PlayerName;
 			tNetPacket.r_stringZ(PlayerName);
-			u16		GameID = tNetPacket.r_u16();
+			ALife::_OBJECT_ID GameID = tNetPacket.r_u32();
 			OnPlayerDisconnect(ID, PlayerName, GameID);
 		}break;
 

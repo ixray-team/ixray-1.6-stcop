@@ -1153,7 +1153,7 @@ const CObject* CWeaponKnife::TryPick(Fvector const & start_pos, Fvector const & 
 
 //predicates implementation
 
-CWeaponKnife::victim_filter::victim_filter(u16 except_id,
+CWeaponKnife::victim_filter::victim_filter(ALife::_OBJECT_ID except_id,
 										   Fvector const & pos,
 										   float query_distance) :
 	m_except_id(except_id),

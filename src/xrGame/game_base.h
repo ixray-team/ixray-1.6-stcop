@@ -17,10 +17,10 @@ struct		RPoint
 	Fvector A;
 	u32		TimeToUnfreeze;
 	bool	bBlocked;
-	u16		BlockedByID;
+	ALife::_OBJECT_ID	BlockedByID;
 	u32		BlockTime;
 	RPoint(){P.set(.0f,0.f,.0f);A.set(.0f,0.f,.0f); TimeToUnfreeze = 0; bBlocked = false;}
-	bool	operator ==		(const u16& ID)	const			{ return (bBlocked && BlockedByID == ID);		}
+	bool	operator ==		(const ALife::_OBJECT_ID& ID)	const			{ return (bBlocked && BlockedByID == ID);		}
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

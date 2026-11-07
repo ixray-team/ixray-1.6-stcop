@@ -463,7 +463,7 @@ void CDofManager::SetPickable(bool Active)
 	Pickable = Active;
 }
 
-void CDofManager::SetZoneActive(u16 Id, bool Active)
+void CDofManager::SetZoneActive(ALife::_OBJECT_ID Id, bool Active)
 {
 	if (Active)
 	{
