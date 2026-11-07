@@ -99,4 +99,65 @@ check("unique CoC factory registration", function()
     overlay.register(factory)
     assert(entries.SCRPTCAR, "car registration was lost")
 end)
+check("develop ALife and skeleton packet fields", function()
+    net_packet = function() return {} end
+    dofile(root .. "/gamedata_coc/scripts/stpk_utils.script")
+    local function packet(fields)
+        local index = 0
+        local out = {}
+        local result = {written = out}
+        for _, kind in ipairs({"u8", "u16", "u32", "s32", "float", "stringZ"}) do
+            result["r_" .. kind] = function()
+                index = index + 1
+                local value = assert(fields[index], "packet overread")
+                assert(value[1] == kind, "expected " .. value[1] .. ", reader requested " .. kind)
+                return value[2]
+            end
+            result["w_" .. kind] = function(self, value) out[#out + 1] = {kind, value} end
+        end
+        result.complete = function() assert(index == #fields, "unread engine packet fields") end
+        return result
+    end
+    -- CSE_ALifeObject::STATE_Write includes m_script_story_ID after the two numeric IDs.
+    local fields = {{"u16", 1}, {"float", 2}, {"s32", 1}, {"s32", 3}, {"s32", 4},
+                    {"stringZ", "custom"}, {"s32", 5}, {"s32", 6}, {"stringZ", "heli_story"}}
+    local input = packet(fields)
+    local state = parse_cse_alife_object_properties_packet({}, input)
+    input.complete()
+    local output = packet({})
+    fill_cse_alife_object_properties_packet(state, output)
+    for index, field in ipairs(fields) do
+        assert(output.written[index][1] == field[1] and output.written[index][2] == field[2])
+    end
+    -- Empty and nonempty story IDs are both part of the current engine format.
+    fields[9][2] = ""
+    input = packet(fields)
+    state = parse_cse_alife_object_properties_packet({}, input)
+    input.complete()
+    output = packet({})
+    fill_cse_alife_object_properties_packet(state, output)
+    assert(output.written[9][2] == "")
+
+    -- Current skeleton source ID is u32. Optional SPHBonesData must survive too.
+    -- net_Save: mask8 + root2 + min/max24, count2, optional mask8, 8 bytes/bone.
+    for _, count in ipairs({-1, 0, 1, 65}) do
+        fields = {{"stringZ", "idle"}, {"u8", count < 0 and 0 or 4}, {"u32", 70000}}
+        if count >= 0 then
+            for i = 1, 34 do fields[#fields + 1] = {"u8", i} end
+            fields[#fields + 1] = {"u16", count}
+            for i = 1, count * 8 + (count > 64 and 8 or 0) do
+                fields[#fields + 1] = {"u8", i % 256}
+            end
+        end
+        input = packet(fields)
+        state = parse_cse_ph_skeleton_properties_packet({}, input)
+        input.complete()
+        output = packet({})
+        fill_cse_ph_skeleton_properties_packet(state, output)
+        assert(#output.written == #fields, "skeleton payload size changed")
+        for index, field in ipairs(fields) do
+            assert(output.written[index][1] == field[1] and output.written[index][2] == field[2])
+        end
+    end
+end)
 assert(failures == 0, tostring(failures) .. " CoC compatibility checks failed")
