@@ -39,9 +39,9 @@ constexpr s32 kCinemaSceneVersion = 4;
 constexpr const char* kCinemaSettingsFile = "cinema_editor\\settings.ltx";
 constexpr const char* kCinemaPresetsFile = "cinema_editor\\presets.ltx";
 constexpr s32 kCinemaPresetVersion = 1;
-constexpr u32 kCinemaMaxPresets = 128;
-constexpr u32 kCinemaSceneMaxActors = 1024;
-constexpr u32 kCinemaSceneMaxPlaylist = 256;
+constexpr u32 kCinemaMaxPresets = 65535;
+constexpr u32 kCinemaSceneMaxActors = 65535;
+constexpr u32 kCinemaSceneMaxPlaylist = 65535;
 
 bool IsCinemaParticle(const shared_str& name)
 {
@@ -9948,7 +9948,7 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		warnings.push_back("Too many light groups: the rest were ignored.");
 	}
 	const u32 lightCount = ini.read_if_exists<u32>("scene", "lights", 0);
-	for (u32 i = 0; i < std::min(lightCount, kCinemaSceneMaxActors); ++i)
+	for (u32 i = 0; i < std::min(lightCount, static_cast<u32>(ini.sections().size())); ++i)
 	{
 		string32 section = {};
 		xr_sprintf(section, "light_%03u", i);
@@ -10121,10 +10121,6 @@ void CCinemaFilmMakerManager::LoadSceneFile(const char* name)
 		}
 		light.Orientation.setHPB(deg2rad(rotation.x), deg2rad(rotation.y), deg2rad(rotation.z));
 		SceneLights.push_back(std::move(light));
-	}
-	if (lightCount > kCinemaSceneMaxActors)
-	{
-		warnings.push_back("Too many lights: the rest were ignored.");
 	}
 	if (SceneData.empty() && SceneParticles.empty() && SceneLights.empty() && SceneLightGroups.empty() && SceneCameras.empty())
 	{
@@ -13232,7 +13228,7 @@ void CCinemaFilmMakerManager::DuplicateLights(const xr_vector<s32>& indices)
 			copies.push_back(Lights[index]);
 		}
 	}
-	if (copies.empty() || copies.size() > kCinemaSceneMaxActors - Lights.size())
+	if (copies.empty())
 	{
 		return;
 	}
@@ -14075,7 +14071,6 @@ void CCinemaFilmMakerManager::DrawLightTab()
 {
 	ImGui::SeparatorText("Scene lights");
 	ImGui::TextDisabled("%u lights", static_cast<u32>(Lights.size()));
-	ImGui::BeginDisabled(Lights.size() >= kCinemaSceneMaxActors);
 	if (ImGui::Button("Add light"))
 	{
 		SCinemaLight light;
@@ -14106,7 +14101,6 @@ void CCinemaFilmMakerManager::DrawLightTab()
 			ShowSceneDialog(ESceneDialog::Info, "Add light", { "The renderer could not create a light." });
 		}
 	}
-	ImGui::EndDisabled();
 	if (Lights.empty())
 	{
 		CinemaHint("No lights yet. Choose Add light to place one in the scene.");
@@ -14129,13 +14123,10 @@ void CCinemaFilmMakerManager::DrawLightTab()
 		}
 		if (ImGui::BeginPopupContextItem())
 		{
-			const auto& affected = selected ? SelectedLights : xr_vector<s32>{ i };
-			ImGui::BeginDisabled(affected.size() > kCinemaSceneMaxActors - Lights.size());
 			if (ImGui::MenuItem("Duplicate"))
 			{
 				duplicate = i;
 			}
-			ImGui::EndDisabled();
 			if (ImGui::MenuItem("Remove"))
 			{
 				remove = i;
@@ -14205,14 +14196,11 @@ void CCinemaFilmMakerManager::DrawLightTab()
 	ImGui::SeparatorText("Selected light");
 	SToolbarLayout lightActions(ImGui::GetContentRegionAvail().x);
 	lightActions.Item(CinemaButtonWidth("Duplicate"));
-	ImGui::BeginDisabled(SelectedLights.size() > kCinemaSceneMaxActors - Lights.size());
 	if (ImGui::Button("Duplicate##light"))
 	{
 		DuplicateLights(SelectedLights);
-		ImGui::EndDisabled();
 		return;
 	}
-	ImGui::EndDisabled();
 	lightActions.Item(CinemaButtonWidth("Remove"));
 	if (ImGui::Button("Remove##light"))
 	{
@@ -15520,32 +15508,29 @@ void CCinemaFilmMakerManager::DrawMasterTimeline(bool& state)
 		const auto addLightPattern = [&](float start, s32 targetTrack)
 		{
 			const s32 track = targetTrack >= 0 ? targetTrack : FindAvailableMasterTrack(start, std::min(1.0f, MasterDuration - start));
-			if (Lights.size() < kCinemaSceneMaxActors)
+			SCinemaLight light;
+			light.Position = Device.vCameraPosition;
+			light.Position.mad(Device.vCameraDirection, 3.0f);
+			light.Light = ::Render->light_create();
+			if (light.Light)
 			{
-				SCinemaLight light;
-				light.Position = Device.vCameraPosition;
-				light.Position.mad(Device.vCameraDirection, 3.0f);
-				light.Light = ::Render->light_create();
-				if (light.Light)
-				{
-					light.MasterTrack = true;
-					light.PatternOwned = true;
-					SMasterLightClip clip;
-					clip.Track = track;
-					clip.Start = start;
-					clip.Duration = std::min(1.0f, MasterDuration - clip.Start);
-					light.MasterClips.push_back(clip);
-					MasterActive = true;
-					ApplyCinemaLight(light, true);
-					Lights.push_back(std::move(light));
-					MasterSelectedLight = static_cast<s32>(Lights.size()) - 1;
-					MasterSelectedLightClip = 0;
-					MasterSelectedActor = MasterSelectedParticle = -1;
-					MasterClipSelection = { { 2, MasterSelectedLight, 0 } };
-					MasterClipAnchor = MasterClipSelection.front();
-				}
-				else ShowSceneDialog(ESceneDialog::Info, "Add light pattern", { "The renderer could not create a light." });
+				light.MasterTrack = true;
+				light.PatternOwned = true;
+				SMasterLightClip clip;
+				clip.Track = track;
+				clip.Start = start;
+				clip.Duration = std::min(1.0f, MasterDuration - clip.Start);
+				light.MasterClips.push_back(clip);
+				MasterActive = true;
+				ApplyCinemaLight(light, true);
+				Lights.push_back(std::move(light));
+				MasterSelectedLight = static_cast<s32>(Lights.size()) - 1;
+				MasterSelectedLightClip = 0;
+				MasterSelectedActor = MasterSelectedParticle = -1;
+				MasterClipSelection = { { 2, MasterSelectedLight, 0 } };
+				MasterClipAnchor = MasterClipSelection.front();
 			}
+			else ShowSceneDialog(ESceneDialog::Info, "Add light pattern", { "The renderer could not create a light." });
 		};
 		const auto addCameraPattern = [&](float start, s32 targetTrack)
 		{
