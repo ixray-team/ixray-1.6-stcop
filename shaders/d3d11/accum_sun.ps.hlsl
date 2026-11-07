@@ -42,12 +42,14 @@ float4 main(PSInput I) : SV_Target
 		float2 edge = smoothstep(0.40f, 0.49f, abs(smap_texcoord.xy - 0.5f));
 		float blend = max(edge.x, edge.y);
 
-		[branch] if (cascade_index < 2 && blend > 0.0f) {
-			float4 next = mul(m_shadow_sun[cascade_index + 1], float4(world, 1.0f));
-			float3 coord = next.xyz / next.w;
-			bool valid = SunCacheParams.x > 0.0f ? CorrectSunShadowCoord(coord, m_shadow_sun[cascade_index + 1], cascade_index + 1, coord) : all(abs(coord - 0.5f) < 0.5f);
-			if (valid) {
-				Shadow = lerp(Shadow, shadow_sun(coord, cascade_index + 1), blend);
+		[unroll] for (int next_index = 1; next_index < 3; ++next_index) {
+			[branch] if (next_index == cascade_index + 1 && blend > 0.0f) {
+				float4 next = mul(m_shadow_sun[next_index], float4(world, 1.0f));
+				float3 coord = next.xyz / next.w;
+				bool valid = SunCacheParams.x > 0.0f ? CorrectSunShadowCoord(coord, m_shadow_sun[next_index], next_index, coord) : all(abs(coord - 0.5f) < 0.5f);
+				if (valid) {
+					Shadow = lerp(Shadow, shadow_sun(coord, next_index), blend);
+				}
 			}
 		}
 	}
