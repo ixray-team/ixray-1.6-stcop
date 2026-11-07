@@ -26,12 +26,20 @@ class CUISelectable;
 class CUIListItemServer;
 class CUIProgressShape;
 class CUIGamepadLegend;
+class CDialogHolder;
 
 class UI_API CUIWindow  : 
 	public CUISimpleWindow,
 	public CUIActionRepeatersOwner
 {
+private:
+	friend class CDialogHolder;
+	xr_vector<CDialogHolder*> DialogHolders;
+	void RegisterDialogHolder(CDialogHolder* Holder);
+	void UnregisterDialogHolder(CDialogHolder* Holder);
+
 public:
+	void DetachFromDialogHolders();
 				CUIWindow						();
 	virtual		~CUIWindow						();
 

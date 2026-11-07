@@ -136,6 +136,7 @@ void CLevel::net_Stop()
 	{
 		CurrentGameUI()->HideShownDialogs();
 		CurrentGameUI()->PdaMenu()->Reset();
+		CurrentGameUI()->ClearDialogs();
 	}
 
 	if(g_tutorial && !g_tutorial->Persistent())

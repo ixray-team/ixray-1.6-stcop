@@ -736,6 +736,13 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 void CActor::net_Destroy	()
 {
+	if (g_actor == this)
+	{
+		if (CUIGameCustom* UI = CurrentGameUI())
+		{
+			UI->ClearDialogs();
+		}
+	}
 	LightPerception.Reset();
 	ResetCameraFocus();
 	CActorAuraPostEffectsBalancer::clear_all	();
