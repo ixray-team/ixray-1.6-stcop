@@ -185,6 +185,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 							icon.pos = {X, Y};
 							icon.sz = owner.sizeOfImage(rect);
 							icon.alpha = color_get_A(owner.dwCurrentColor);
+							icon.Transform = str.Transform;
 
 							IconsToRender.push_back(icon);
 
@@ -215,6 +216,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 							icon.pos = {X, Y};
 							icon.sz = owner.sizeOfImage(rect);
 							icon.alpha = color_get_A(owner.dwCurrentColor);
+							icon.Transform = str.Transform;
 
 							IconsToRender.push_back(icon);
 
@@ -287,6 +289,17 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				X = X2 + glyphInfo->Abc.abcC * xs + owner.GetLetterSpacing() * xs;
 			}
 
+			if (!str.Transform.IsIdentity())
+			{
+				for (TLF* Quad = start; Quad != vertexes; ++Quad)
+				{
+					for (auto& Vertex : Quad->buff)
+					{
+						str.Transform.Apply(Vertex.p.x, Vertex.p.y);
+					}
+				}
+			}
+
 			// Unlock and draw
 			u32 vertexesCount = (u32)(vertexes - start) * 4;
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
@@ -340,6 +353,14 @@ void dxFontRender::RenderIcon(GamepadIcon icon)
 		Fvector4{X2, icon.pos.y,.0001f,.9999f}, clr, Fvector2{u2, v1}
 	};
 	++vertexes;
+
+	if (!icon.Transform.IsIdentity())
+	{
+		for (auto& Vertex : start->buff)
+		{
+			icon.Transform.Apply(Vertex.p.x, Vertex.p.y);
+		}
+	}
 
 	// Unlock and draw
 	u32 vertexesCount = (u32)(vertexes - start) * 4;

@@ -2071,7 +2071,7 @@ void CUIHudStatesWnd::DrawZoneIndicators()
     {
         if (m_indik[i] && m_indik[i]->IsShown())
         {
-            m_indik[i]->Draw();
+            m_indik[i]->DrawWithTransform();
         }
     }
 }

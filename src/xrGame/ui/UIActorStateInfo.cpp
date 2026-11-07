@@ -1126,7 +1126,7 @@ void ui_actor_state_wnd::Draw()
 	inherited::Draw();
 	if (m_hint_wnd)
 	{
-		m_hint_wnd->Draw();
+		m_hint_wnd->DrawWithTransform();
 	}
 }
 

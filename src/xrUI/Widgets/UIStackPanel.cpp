@@ -24,7 +24,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}
@@ -58,7 +58,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}
@@ -79,7 +79,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}
@@ -113,7 +113,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}
@@ -146,7 +146,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}
@@ -179,7 +179,7 @@ void CUIStackPanel::Draw()
 
 				if (!Ordered)
 				{
-					W->Draw();
+					W->DrawWithTransform();
 				}
 			}
 		}

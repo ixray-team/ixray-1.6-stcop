@@ -203,7 +203,7 @@ void  CHUDManager::RenderUI()
 	{
 		if (m_pPauseStatic)
 		{
-			m_pPauseStatic->Draw();
+			m_pPauseStatic->DrawWithTransform();
 		}
 		else
 		{

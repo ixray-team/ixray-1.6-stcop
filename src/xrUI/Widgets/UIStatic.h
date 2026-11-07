@@ -33,12 +33,18 @@ class UI_API CUIStatic :
 	public CUILightAnimColorConrollerImpl
 {
 	friend class CUIXmlInit;
+	friend class CUIWindow;
 private:
 	typedef CUIWindow inherited;
 	lanim_cont_xf			m_lanim_xform;
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 	CUIVectorBinding _svgBinding;
 	bool MouseEventsEnabled = false;
+	float TargetHeading = 0.0f;
+	double HeadingProgress = 0.0;
+	bool HeadingPending = false;
+	void UpdateSmoothHeading(float Blend);
+	bool HitTestUntransformed(const Fvector2& Position) override;
 public:
 
 							CUIStatic				();
@@ -146,10 +152,10 @@ public:
 			void			SetEllipsis				(int pos, int indent)	{ TextItemControl()->SetEllipsis(pos != 0); }
 			void			SetEllipsis_script		(bool mode)				{ TextItemControl()->SetEllipsis(mode); }
 
-			void			SetHeading				(float f)				{m_fHeading = f;};
+			void			SetHeading				(float Angle);
 			float			GetHeading				()						{return m_fHeading;}
-			bool			Heading					()						{return m_bHeading;}
-			void			EnableHeading			(bool b)				{m_bHeading = b;}
+			bool			Heading					()						{return m_bHeading && IsHeadingEnabled();}
+			void			EnableHeading			(bool b) override		{m_bHeading = b; inherited::EnableHeading(b);}
 
 			void			SetConstHeading			(bool b)				{m_bConstHeading = b;};
 			bool			GetConstHeading			()						{return m_bConstHeading;}

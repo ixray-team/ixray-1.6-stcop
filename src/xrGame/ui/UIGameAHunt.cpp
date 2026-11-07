@@ -128,7 +128,7 @@ void CUIGameAHunt::SetBuyMsgCaption(const char* str)
 void CUIGameAHunt::Render()
 {
 	if (m_pReinforcementInidcator_old)
-		m_pReinforcementInidcator_old->Draw();
+		m_pReinforcementInidcator_old->DrawWithTransform();
 	inherited::Render();
 }
 

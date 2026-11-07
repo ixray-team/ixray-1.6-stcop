@@ -187,7 +187,7 @@ void CUIArtefactDetectorElite::Draw()
 		pos.sub(rp);
 
 		item.pStatic->SetWndPos(pos);
-		item.pStatic->Draw();
+		item.pStatic->DrawWithTransform();
 	}
 
 	UI().m_currentPointType = bk;

@@ -2915,11 +2915,11 @@ void CActor::RenderItemUI()
 
 		if (PdaMenu->IsShown())
 		{
-			PdaMenu->Draw();
+			PdaMenu->DrawWithTransform();
 		}
 		if (PdaSpot && PdaSpot->IsShown())
 		{
-			PdaSpot->Draw();
+			PdaSpot->DrawWithTransform();
 		}
 		if (g_tutorial && g_tutorial->Need3DRender())
 		{

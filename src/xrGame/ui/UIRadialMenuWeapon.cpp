@@ -159,7 +159,7 @@ void	CUIRadialMenuWeapon::Draw()
 		for (RadialMenuItem itm : slotList)
 		{
 			CInventoryItem* item = GetSelectedItem(itm);
-			itm.background->Draw();
+			itm.background->DrawWithTransform();
 			if (item)
 			{
 				Irect grect = item->GetInvGridRect();
@@ -225,7 +225,7 @@ void	CUIRadialMenuWeapon::Draw()
 				itm.icon->SetWidth(itm.defaultSize.x * UI().get_current_kx());
 				itm.icon->SetHeight(itm.defaultSize.y);
 			}
-			itm.icon->Draw();
+			itm.icon->DrawWithTransform();
 		}
 	}
 }

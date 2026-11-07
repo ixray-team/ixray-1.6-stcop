@@ -104,7 +104,7 @@ void CUIStalkersRankingWnd::Init()
 void CUIStalkersRankingWnd::DrawHint()
 {
 	if (m_hint_wnd)
-		m_hint_wnd->Draw();
+		m_hint_wnd->DrawWithTransform();
 }
 
 void CUIStalkersRankingWnd::Show(bool status)

@@ -1531,7 +1531,7 @@ void CUICellContainer::Draw()
 			CUICell& cell = (*it);
 			if ( !cell.Empty() && (cell.m_item->m_drawn_frame != Device.dwFrame) )
 			{
-				cell.m_item->Draw();
+				cell.m_item->DrawWithTransform();
 			}
 		}
 	}

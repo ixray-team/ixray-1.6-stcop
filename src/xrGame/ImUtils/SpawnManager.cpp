@@ -105,7 +105,7 @@ static void SpawnManagerDrawIcon(const ImDrawList*, const ImDrawCmd* Command)
 	Clip.set((Command->ClipRect.x - Origin.x) / ScaleX, (Command->ClipRect.y - Origin.y) / ScaleY, (Command->ClipRect.z - Origin.x) / ScaleX, (Command->ClipRect.w - Origin.y) / ScaleY);
 	Device.m_pRender->InvalidateRenderCache();
 	UI().PushScissor(Clip);
-	Data.Icon->Draw();
+	Data.Icon->DrawWithTransform();
 	UI().PopScissor();
 }
 

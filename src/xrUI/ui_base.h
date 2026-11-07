@@ -34,6 +34,8 @@ class UI_API ui_core:
 	ui_shader m_empty_default;
 public:
 	xr_stack<Frect> m_Scissors;
+	xr_stack<Irect> RenderScissors;
+	xr_stack<bool> ProjectedScissors;
 
 #ifdef DEBUG_DRAW
 	xr_hash_set<CUIWindow*> LastFrameWidgets;

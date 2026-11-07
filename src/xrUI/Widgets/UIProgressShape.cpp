@@ -74,7 +74,7 @@ float calc_color(u32 idx, u32 total, float stage, float max_stage, bool blend)
 void CUIProgressShape::Draw()
 {
 	if (m_pBackground)
-		m_pBackground->Draw();
+		m_pBackground->DrawWithTransform();
 
 	if (m_bText)
 	{

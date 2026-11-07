@@ -119,11 +119,11 @@ void CUIArrowStepper::InitArrowStepper(Fvector2 pos, Fvector2 size)
 
 void CUIArrowStepper::Draw()
 {
-	m_FrameLine->Draw();
+	m_FrameLine->DrawWithTransform();
 	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
 		if ((*it))
-			(*it)->Draw();
+			(*it)->DrawWithTransform();
 	}
 }
 

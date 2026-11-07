@@ -37,7 +37,7 @@ void CUIGamepadLegend::Draw()
 		{
 			W->ui_cast_static()->AdjustWidthToText();
 		}
-		W->Draw();
+		W->DrawWithTransform();
 	}
 }
 

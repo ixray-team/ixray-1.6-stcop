@@ -340,16 +340,28 @@ void CUIScrollView::Draw()
 		UI().PushScissor(visible_rect);
 
 		xrCriticalSectionGuard guard(m_pad->csUi);
-		if (m_pad->HasCustomChildDrawOrder())
+		bool Transformed = !GetTreeTransform().IsIdentity();
+		if (!Transformed)
+		{
+			for (CUIWindow* Child : m_pad->GetChildWndList())
+			{
+				if (!Child->GetTreeTransform().IsIdentity())
+				{
+					Transformed = true;
+					break;
+				}
+			}
+		}
+		if (m_pad->HasCustomChildDrawOrder() || Transformed)
 		{
 			const WINDOW_LIST Children = m_pad->GetChildDrawOrder();
 			for (CUIWindow* Child : Children)
 			{
 				Frect ItemRect;
 				Child->GetAbsoluteRect(ItemRect);
-				if (Child->GetVisible() && visible_rect.intersected(ItemRect))
+				if (Child->GetVisible() && (Transformed || visible_rect.intersected(ItemRect)))
 				{
-					Child->Draw();
+					Child->DrawWithTransform();
 				}
 			}
 		}
@@ -367,7 +379,7 @@ void CUIScrollView::Draw()
 
 					if ((*it)->GetVisible())
 					{
-						(*it)->Draw();
+						(*it)->DrawWithTransform();
 					}
 				}
 			}
@@ -386,7 +398,7 @@ void CUIScrollView::Draw()
 
 					if ((*it)->GetVisible())
 					{
-						(*it)->Draw();
+						(*it)->DrawWithTransform();
 					}
 				}
 				else if (m_visible_rgn.x != -1)
@@ -413,12 +425,12 @@ void CUIScrollView::Draw()
 			{
 				if (Child->IsShown())
 				{
-					Child->Draw();
+					Child->DrawWithTransform();
 				}
 			}
 			else if (Child && Child->IsShown() && !Child->GetCustomDraw())
 			{
-				Child->Draw();
+				Child->DrawWithTransform();
 			}
 		}
 		return;
@@ -434,7 +446,7 @@ void CUIScrollView::Draw()
 		{
 			continue;
 		}
-		child->Draw();
+		child->DrawWithTransform();
 	}
 
 	DrawPad();
@@ -442,7 +454,7 @@ void CUIScrollView::Draw()
 
 	if (m_VScrollBar && m_VScrollBar->IsShown())
 	{
-		m_VScrollBar->Draw();
+		m_VScrollBar->DrawWithTransform();
 	}
 }
 

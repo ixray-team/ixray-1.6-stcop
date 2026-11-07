@@ -411,7 +411,7 @@ void CUIListWnd::DrawActiveBackFrame(const Frect& rect, CUIListItem* itm)
     if (m_ScrollBar->IsShown())
         _w -= m_ScrollBar->GetWidth();
     m_ActiveBackgroundFrame->SetWidth(_w);
-    m_ActiveBackgroundFrame->Draw();
+    m_ActiveBackgroundFrame->DrawWithTransform();
 }
 
 void CUIListWnd::Draw()

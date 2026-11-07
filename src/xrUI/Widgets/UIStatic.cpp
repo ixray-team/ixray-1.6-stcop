@@ -67,6 +67,66 @@ CUIStatic::~CUIStatic()
 	xr_delete(m_pTextControl);
 }
 
+void CUIStatic::SetHeading(float Angle)
+{
+	TargetHeading = Angle;
+	if (ShouldSmoothRotate())
+	{
+		HeadingPending = HeadingProgress != static_cast<double>(Angle);
+		if (HeadingPending)
+		{
+			QueueSmoothRotation();
+		}
+	}
+	else
+	{
+		HeadingProgress = Angle;
+		m_fHeading = Angle;
+		HeadingPending = false;
+	}
+}
+
+void CUIStatic::UpdateSmoothHeading(float Blend)
+{
+	if (HeadingPending)
+	{
+		HeadingPending = AdvanceSmoothHeading(HeadingProgress, TargetHeading, Blend);
+		m_fHeading = static_cast<float>(HeadingProgress);
+	}
+}
+
+bool CUIStatic::HitTestUntransformed(const Fvector2& Position)
+{
+	if (!Heading() || !m_bTextureEnable || !GetShader() || !GetShader()->inited())
+	{
+		return inherited::HitTestUntransformed(Position);
+	}
+	if (m_bTextEnable && m_pTextControl && m_pTextControl->GetText() && m_pTextControl->GetText()[0] && inherited::HitTestUntransformed(Position))
+	{
+		return true;
+	}
+	Fvector2 Origin;
+	GetAbsolutePos(Origin);
+	Fvector2 Size = GetWndSize();
+	if (!m_bStretchTexture)
+	{
+		Size.set(m_UIStaticItem.GetTextureRect().width(), m_UIStaticItem.GetTextureRect().height());
+	}
+	else if (m_UIStaticItem.GetFixedLTWhileHeading())
+	{
+		std::swap(Size.x, Size.y);
+	}
+	const Fvector2 Pivot = m_UIStaticItem.uFlags.test(CUIStaticItem::flValidHeadingPivot) ?
+		m_UIStaticItem.vHeadingPivot : Fvector2().set(Size.x / 2.0f, Size.y / 2.0f);
+	const float X = (Position.x - Origin.x - m_TextureOffset.x - m_UIStaticItem.vHeadingOffset.x - Pivot.x) / UI().get_current_kx();
+	const float Y = Position.y - Origin.y - m_TextureOffset.y - m_UIStaticItem.vHeadingOffset.y - Pivot.y;
+	const float Cos = std::cos(m_fHeading);
+	const float Sin = std::sin(m_fHeading);
+	const float LocalX = X * Cos - Y * Sin + Pivot.x;
+	const float LocalY = X * Sin + Y * Cos + Pivot.y;
+	return LocalX >= 0.0f && LocalY >= 0.0f && LocalX <= Size.x && LocalY <= Size.y;
+}
+
 bool CUIStatic::OnMouseAction(float X, float Y, EUIMessages MouseAction)
 {
 	if (inherited::ProcessMouseAction(X, Y, MouseAction))
@@ -80,9 +140,10 @@ bool CUIStatic::OnMouseAction(float X, float Y, EUIMessages MouseAction)
 	}
 
 	// Input can still reach a previously hovered window after the cursor leaves it.
-	const Frect Bounds = {0.0f, 0.0f, GetWidth(), GetHeight()};
-	const Fvector2 Position = GetParent() ? Fvector2().set(X, Y) : cursor_pos;
-	if (!Bounds.in(Position.x, Position.y))
+	Fvector2 Position;
+	GetAbsolutePos(Position);
+	Position.add(GetParent() ? Fvector2().set(X, Y) : cursor_pos);
+	if (!HitTestUntransformed(Position))
 	{
 		return false;
 	}

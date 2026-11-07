@@ -175,7 +175,7 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 void CUITrackBar::Draw()
 {
 	CUI_IB_FrameLineWnd::Draw();
-	m_pSlider->Draw();
+	m_pSlider->DrawWithTransform();
 }
 
 // Форматирование текущего значения

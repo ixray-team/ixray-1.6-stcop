@@ -765,7 +765,7 @@ void CUIMainIngameWnd::Draw()
 	}
 
 	UIMotionIcon->SetNoise((s16)(0xffff&iFloor(pActor->m_snd_noise*100)));
-	UIMotionIcon->Draw();
+	UIMotionIcon->DrawWithTransform();
 
 	DrawNavigationHud();
 
@@ -1963,65 +1963,65 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	if (should_show_panel)
 	{
 		for (const auto& slot : m_quick_slots_icons)
-			slot->Draw();
+			slot->DrawWithTransform();
 
 		if (m_QuickSlotText1)
-			m_QuickSlotText1->Draw();
+			m_QuickSlotText1->DrawWithTransform();
 		if (m_QuickSlotText2)
-			m_QuickSlotText2->Draw();
+			m_QuickSlotText2->DrawWithTransform();
 		if (m_QuickSlotText3)
-			m_QuickSlotText3->Draw();
+			m_QuickSlotText3->DrawWithTransform();
 		if (m_QuickSlotText4)
-			m_QuickSlotText4->Draw();
+			m_QuickSlotText4->DrawWithTransform();
 	}
 
 	// Бустеры и другие индикаторы всегда отрисовываются (они не связаны с панелью быстрого доступа)
 	if (m_ind_boost_psy && m_ind_boost_psy->IsShown())
 	{
 		m_ind_boost_psy->Update();
-		m_ind_boost_psy->Draw();
+		m_ind_boost_psy->DrawWithTransform();
 	}
 
 	if (m_ind_boost_radia && m_ind_boost_radia->IsShown())
 	{
 		m_ind_boost_radia->Update();
-		m_ind_boost_radia->Draw();
+		m_ind_boost_radia->DrawWithTransform();
 	}
 
 	if (m_ind_boost_chem && m_ind_boost_chem->IsShown())
 	{
 		m_ind_boost_chem->Update();
-		m_ind_boost_chem->Draw();
+		m_ind_boost_chem->DrawWithTransform();
 	}
 
 	if (m_ind_boost_wound && m_ind_boost_wound->IsShown())
 	{
 		m_ind_boost_wound->Update();
-		m_ind_boost_wound->Draw();
+		m_ind_boost_wound->DrawWithTransform();
 	}
 
 	if (m_ind_boost_weight && m_ind_boost_weight->IsShown())
 	{
 		m_ind_boost_weight->Update();
-		m_ind_boost_weight->Draw();
+		m_ind_boost_weight->DrawWithTransform();
 	}
 
 	if (m_ind_boost_health && m_ind_boost_health->IsShown())
 	{
 		m_ind_boost_health->Update();
-		m_ind_boost_health->Draw();
+		m_ind_boost_health->DrawWithTransform();
 	}
 
 	if (m_ind_boost_power && m_ind_boost_power->IsShown())
 	{
 		m_ind_boost_power->Update();
-		m_ind_boost_power->Draw();
+		m_ind_boost_power->DrawWithTransform();
 	}
 
 	if (m_ind_boost_rad && m_ind_boost_rad->IsShown())
 	{
 		m_ind_boost_rad->Update();
-		m_ind_boost_rad->Draw();
+		m_ind_boost_rad->DrawWithTransform();
 	}
 }
 

@@ -152,8 +152,8 @@ void CUIGameTDM::OnFrame()
 
 void CUIGameTDM::Render()
 {
-	m_team1_icon->Draw();
-	m_team2_icon->Draw();
+	m_team1_icon->DrawWithTransform();
+	m_team2_icon->DrawWithTransform();
 	inherited::Render();
 }
 

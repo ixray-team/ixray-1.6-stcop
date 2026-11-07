@@ -271,7 +271,7 @@ void CDialogHolder::DoRenderDialogs()
 		const dlgItem Item = m_dialogsToRender[Index];
 		if (Item.enabled && Item.wnd != nullptr && Item.wnd->IsShown())
 		{
-			Item.wnd->Draw();
+			Item.wnd->DrawWithTransform();
 		}
 	}
 }
@@ -402,7 +402,7 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
 		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_DOWN :(dik==MOUSE_2)?WINDOW_RBUTTON_DOWN:WINDOW_CBUTTON_DOWN;
-		if (TIR->OnMouseAction(cp.x,cp.y, action))
+		if (TIR->DispatchMouseAction(cp.x,cp.y, action))
             return true;
 	}
 
@@ -503,7 +503,7 @@ bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 	{
 		Fvector2 cp = GetUICursor().GetCursorPosition();
 		EUIMessages action = (dik==MOUSE_1)?WINDOW_LBUTTON_UP :(dik==MOUSE_2)?WINDOW_RBUTTON_UP:WINDOW_CBUTTON_UP;
-		if (TIR->OnMouseAction(cp.x, cp.y, action))
+		if (TIR->DispatchMouseAction(cp.x, cp.y, action))
             return true;
 	}
 

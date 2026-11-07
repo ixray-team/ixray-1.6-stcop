@@ -798,10 +798,10 @@ void CUIGameCTA::OnFrame()
 void CUIGameCTA::Render()
 {
 	if (m_pReinforcementInidcator_old)
-		m_pReinforcementInidcator_old->Draw();
+		m_pReinforcementInidcator_old->DrawWithTransform();
 
-	m_team1_icon->Draw();
-	m_team2_icon->Draw();
+	m_team1_icon->DrawWithTransform();
+	m_team2_icon->DrawWithTransform();
 
 	inherited::Render();
 

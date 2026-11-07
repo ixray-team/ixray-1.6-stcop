@@ -869,7 +869,7 @@ void CUIPdaWnd::Draw()
 	DrawUpdatedSections();
 	DrawHint();
 	if (UINoice)
-		UINoice->Draw(); // over all
+		UINoice->DrawWithTransform(); // over all
 }
 
 void CUIPdaWnd::DrawHint()
@@ -905,7 +905,7 @@ void CUIPdaWnd::DrawHint()
 	}
 	if (m_hint_wnd)
 	{
-		m_hint_wnd->Draw();
+		m_hint_wnd->DrawWithTransform();
 	}
 }
 

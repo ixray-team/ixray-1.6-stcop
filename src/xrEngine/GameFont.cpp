@@ -5,6 +5,7 @@
 #include "IGame_Persistent.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
+#include "../Include/xrRender/UIRender.h"
 #include <freetype/freetype.h>
 #include <freetype/ftfntfmt.h>
 
@@ -441,6 +442,7 @@ void CGameFont::MasterOut(
 		return;
 	
 	String rs;
+	rs.Transform = UIRender ? UIRender->Transform2D : UITransform2D{};
 
 	rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
 	rs.y = (bUseCoords ? (bScaleCoords ? (DI2PY(_y)) : _y) : fCurrentY);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Include/xrRender/FontRender.h"
+#include "../../Include/xrRender/UITransform.h"
 
 class dxFontRender : public IFontRender
 {
@@ -13,6 +14,7 @@ class dxFontRender : public IFontRender
 		Fvector2 sz;
 		ref_shader shader;
 		u8 alpha;
+		UITransform2D Transform;
 	};
 public:
 	dxFontRender();

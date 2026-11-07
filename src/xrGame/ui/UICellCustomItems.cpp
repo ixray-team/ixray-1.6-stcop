@@ -332,7 +332,7 @@ void CUIWeaponCellItem::Draw()
 {
 	if (GetIcon(eScope) && mScopeBack)
 	{
-		GetIcon(eScope)->Draw();
+		GetIcon(eScope)->DrawWithTransform();
 		GetIcon(eScope)->SetAutoDelete(false);
 		DetachChild(GetIcon(eScope));
 	}
@@ -347,7 +347,7 @@ void CUIWeaponCellItem::Draw()
 
 
 	if(m_upgrade && m_upgrade->IsShown())
-		m_upgrade->Draw();
+		m_upgrade->DrawWithTransform();
 };
 
 void CUIWeaponCellItem::Update()

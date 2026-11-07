@@ -40,7 +40,33 @@ void C2DFrustum::CreateFromRect	(const Frect& rect)
 	planes[3].build	(rect.rb, Fvector2().set( 0,+1));
 }
 
-sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
+sPoly2D* C2DFrustum::ClipPoly(sPoly2D& S, sPoly2D& D) const
+{
+	if (!UIRender || !m_pUI_core || UIRender->Transform2D.IsIdentity())
+	{
+		return ClipPolyUntransformed(S, D);
+	}
+	const UITransform2D Transform = UIRender->Transform2D;
+	if (this != &UI().ScreenFrustum() && this != &UI().ScreenFrustumLIT())
+	{
+		return ClipPolyUntransformed(S, D);
+	}
+	for (auto& Vertex : S)
+	{
+		Transform.Apply(Vertex.pt.x, Vertex.pt.y);
+	}
+	sPoly2D* Result = ClipPolyUntransformed(S, D);
+	if (Result)
+	{
+		for (auto& Vertex : *Result)
+		{
+			Transform.ApplyInverse(Vertex.pt.x, Vertex.pt.y);
+		}
+	}
+	return Result;
+}
+
+sPoly2D* C2DFrustum::ClipPolyUntransformed(sPoly2D& S, sPoly2D& D) const
 {
 	bool bFullTest		= false;
 	for (u32 j=0; j<S.size(); j++)
@@ -158,6 +184,44 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 	if(UI().m_currentPointType==IUIRender::pttLIT)
 		return;
 
+	if (!UIRender->Transform2D.IsIdentity() || (!ProjectedScissors.empty() && ProjectedScissors.top()))
+	{
+		Fvector2 Corners[4] = {{r_tgt.x1, r_tgt.y1}, {r_tgt.x2, r_tgt.y1}, {r_tgt.x2, r_tgt.y2}, {r_tgt.x1, r_tgt.y2}};
+		Frect Bounds = {0.0f, 0.0f, 0.0f, 0.0f};
+		for (size_t Index = 0; Index < 4; ++Index)
+		{
+			Corners[Index].x = ClientToScreenScaledX(Corners[Index].x);
+			Corners[Index].y = ClientToScreenScaledY(Corners[Index].y);
+			UIRender->Transform2D.Apply(Corners[Index].x, Corners[Index].y);
+			if (Index == 0)
+			{
+				Bounds.set(Corners[Index].x, Corners[Index].y, Corners[Index].x, Corners[Index].y);
+			}
+			else
+			{
+				Bounds.x1 = std::min(Bounds.x1, Corners[Index].x);
+				Bounds.y1 = std::min(Bounds.y1, Corners[Index].y);
+				Bounds.x2 = std::max(Bounds.x2, Corners[Index].x);
+				Bounds.y2 = std::max(Bounds.y2, Corners[Index].y);
+			}
+		}
+		Irect Rect = {iFloor(Bounds.x1), iFloor(Bounds.y1), iCeil(Bounds.x2), iCeil(Bounds.y2)};
+		Irect Parent = {0, 0, iCeil(ClientToScreenScaledX(UI_BASE_WIDTH)), iCeil(ClientToScreenScaledY(UI_BASE_HEIGHT))};
+		if (!RenderScissors.empty() && !overlapped)
+		{
+			Parent = RenderScissors.top();
+		}
+		Rect.x1 = std::clamp(Rect.x1, Parent.x1, Parent.x2);
+		Rect.y1 = std::clamp(Rect.y1, Parent.y1, Parent.y2);
+		Rect.x2 = std::max(Rect.x1, std::min(Rect.x2, Parent.x2));
+		Rect.y2 = std::max(Rect.y1, std::min(Rect.y2, Parent.y2));
+		m_Scissors.push(r_tgt);
+		RenderScissors.push(Rect);
+		ProjectedScissors.push(true);
+		UIRender->SetScissor(&Rect);
+		return;
+	}
+
 	Frect r_top			= {0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT};
 	Frect result		= r_tgt;
 	if (!m_Scissors.empty()&&!overlapped){
@@ -184,28 +248,29 @@ void ui_core::PushScissor(const Frect& r_tgt, bool overlapped)
 	r.x2 				= iFloor(result.x2+0.5f);
 	r.y1 				= iFloor(result.y1);
 	r.y2 				= iFloor(result.y2+0.5f);
+	RenderScissors.push(r);
+	ProjectedScissors.push(false);
 	UIRender->SetScissor(&r);
 }
 
 void ui_core::PopScissor()
 {
-	if(UI().m_currentPointType==IUIRender::pttLIT)
+	if (UI().m_currentPointType == IUIRender::pttLIT)
+	{
 		return;
-
-	VERIFY(!m_Scissors.empty());
-	m_Scissors.pop		();
-	
-	if(m_Scissors.empty())
+	}
+	VERIFY(!m_Scissors.empty() && !RenderScissors.empty() && !ProjectedScissors.empty());
+	m_Scissors.pop();
+	RenderScissors.pop();
+	ProjectedScissors.pop();
+	if (RenderScissors.empty())
+	{
 		UIRender->SetScissor(nullptr);
-	else{
-		const Frect& top= m_Scissors.top();
-		Irect tgt;
-		tgt.lt.x 		= iFloor(ClientToScreenScaledX(top.lt.x));
-		tgt.lt.y 		= iFloor(ClientToScreenScaledY(top.lt.y));
-		tgt.rb.x 		= iFloor(ClientToScreenScaledX(top.rb.x));
-		tgt.rb.y 		= iFloor(ClientToScreenScaledY(top.rb.y));
-
-		UIRender->SetScissor(&tgt);
+	}
+	else
+	{
+		Irect Rect = RenderScissors.top();
+		UIRender->SetScissor(&Rect);
 	}
 }
 

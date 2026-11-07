@@ -1,12 +1,15 @@
 #ifndef	UIRender_included
 #define	UIRender_included
 #pragma once
+#include "UITransform.h"
 
 class IUIShader;
 
 class IUIRender
 {
 public:
+	UITransform2D Transform2D;
+
 	enum	ePrimitiveType
 	{
 		ptNone = -1,

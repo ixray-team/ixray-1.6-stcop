@@ -144,7 +144,7 @@ void CUIGameCustom::Render()
 		}
 	}
 
-	m_window->Draw();
+	m_window->DrawWithTransform();
 
 	CEntity* pEntity = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity() : nullptr;
 	if (pEntity != nullptr)
@@ -167,11 +167,11 @@ void CUIGameCustom::Render()
 		bool renderHUD = noHUDonMaster ? (g_SingleGameDifficulty != egdMaster || (pActor && pActor->GetHelmet() && !fis_zero(pActor->GetHelmet()->m_fShowNearestEnemiesDistance))) : true;
 
 		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) && renderHUD )
-			UIMainIngameWnd->Draw();
+			UIMainIngameWnd->DrawWithTransform();
 	}
 
 	if (psHUD_Flags.is(HUD_DRAW))
-		m_pMessagesWnd->Draw();
+		m_pMessagesWnd->DrawWithTransform();
 
 	DoRenderDialogs();
 }
@@ -772,7 +772,7 @@ void SDrawStaticStruct::SetText(const char* text)
 void SDrawStaticStruct::Draw()
 {
 	if(m_static != nullptr && m_static->IsShown())
-		m_static->Draw();
+		m_static->DrawWithTransform();
 }
 
 void SDrawStaticStruct::Update()

@@ -168,7 +168,7 @@ void CUIItemStateDisplay::Draw()
 		_progressBar->ShowBackground(_showBackground);
 		_progressBar->m_bUseGradient = m_bUseGradient;
 		UI().PushScissor(rect);
-		_progressBar->Draw();
+		_progressBar->DrawWithTransform();
 		UI().PopScissor();
 		return;
 	}
@@ -178,7 +178,7 @@ void CUIItemStateDisplay::Draw()
 		if (_percentBackground)
 		{
 			UI().PushScissor(rect);
-			_percentBackground->Draw();
+			_percentBackground->DrawWithTransform();
 			UI().PopScissor();
 		}
 		return;

@@ -153,7 +153,7 @@ void CUIRankingsCoC::DrawHint()
 	GetAbsoluteRect(r);
 	Fvector2 pos = UI().GetUICursor().GetCursorPosition();
 	if(r.in(pos))
-		m_hint->Draw();
+		m_hint->DrawWithTransform();
 }
 
 void CUIRankingsCoC::Reset()

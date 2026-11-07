@@ -1049,7 +1049,7 @@ void CMissile::render_item_ui()
 
 	float k = (m_fThrowForce - m_fMinForce) / (m_fMaxForce - m_fMinForce);
 	g_MissileForceShape->SetPos(k);
-	g_MissileForceShape->Draw();
+	g_MissileForceShape->DrawWithTransform();
 }
 
 void CMissile::ExitContactCallback(bool& do_colide,bool bo1,CPHContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)

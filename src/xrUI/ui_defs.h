@@ -57,6 +57,7 @@ class UI_API C2DFrustum
 {
 	FixedVector<Fplane2, UI_FRUSTUM_MAXPLANES> planes;
 	Frect						m_rect;
+	sPoly2D* ClipPolyUntransformed(sPoly2D& S, sPoly2D& D) const;
 public:
 	void		CreateFromRect	(const Frect& rect);
 	sPoly2D*	ClipPoly		(sPoly2D& S, sPoly2D& D) const;

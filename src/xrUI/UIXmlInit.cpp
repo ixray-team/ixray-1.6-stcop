@@ -206,6 +206,9 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, const char* path, int index, CUISta
 		pWnd->SetHeading( deg2rad( heading_angle ) );
 	}
 
+	// XML selects the local heading mode; the shared rotation switch starts enabled.
+	pWnd->CUIWindow::EnableHeading(true);
+
 	const char* str_flag				= xml_doc.ReadAttrib	(path, index, "light_anim",	"");
 	int flag_cyclic				= xml_doc.ReadAttribInt	(path, index, "la_cyclic",	1);
 	int flag_text				= xml_doc.ReadAttribInt	(path, index, "la_text",	1);

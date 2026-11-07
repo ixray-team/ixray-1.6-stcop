@@ -1,5 +1,6 @@
 #pragma once
 #include "../Include/xrRender/FontRender.h"
+#include "../Include/xrRender/UITransform.h"
 
 struct FT_FaceRec_;
 using FT_Face = FT_FaceRec_*;
@@ -80,6 +81,7 @@ private:
 		EAligment align;
 		bool gradient;
 		EGradientMode gradientMode;
+		UITransform2D Transform;
 		u32 gradientColor;
 	};
 

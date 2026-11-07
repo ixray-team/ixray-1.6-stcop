@@ -136,13 +136,13 @@ void CUICursor::OnRender	()
     {
         m_3dstatic->SetWndPos(vPos);
         m_3dstatic->Update();
-        m_3dstatic->Draw();
+        m_3dstatic->DrawWithTransform();
     }
     else
     {
         m_static->SetWndPos(vPos);
         m_static->Update();
-        m_static->Draw();
+        m_static->DrawWithTransform();
     }
 }
 

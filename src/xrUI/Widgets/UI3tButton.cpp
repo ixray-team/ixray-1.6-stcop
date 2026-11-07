@@ -229,15 +229,15 @@ void CUI3tButton::DrawTexture()
 		if ( m_background )				
 		{
 			m_background->SetStretchTexture(true);
-			m_background->Draw();		
+			m_background->DrawWithTransform();
 		}
 		else if ( m_back_frameline )	
 		{	
-			m_back_frameline->Draw();	
+			m_back_frameline->DrawWithTransform();
 		}
 		else if (m_back_framewindow)
 		{
-			m_back_framewindow->Draw();
+			m_back_framewindow->DrawWithTransform();
 		}
 	}
 }

@@ -113,6 +113,24 @@ void** dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePoint
 
 void dxUIRender::FlushPrimitive()
 {
+	if (!Transform2D.IsIdentity())
+	{
+		auto TransformVertices = [this](auto* Begin, auto* End)
+		{
+			for (auto* Vertex = Begin; Vertex != End; ++Vertex)
+			{
+				Transform2D.Apply(Vertex->p.x, Vertex->p.y);
+			}
+		};
+		switch (m_PointType)
+		{
+		case pttTL: TransformVertices(TL_start_pv, TL_pv); break;
+		case pttLIT: TransformVertices(LIT_start_pv, LIT_pv); break;
+		case pttL: TransformVertices(L_start_pv, L_pv); break;
+		default: break;
+		}
+	}
+
 	u32 primCount					= 0;
 	ERHI_PRIMITIVE_TOPOLOGY d3dPrimType	= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	std::ptrdiff_t p_cnt			= 0;

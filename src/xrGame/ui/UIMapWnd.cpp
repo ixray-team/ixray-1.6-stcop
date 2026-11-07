@@ -504,13 +504,13 @@ void CUIMapWnd::Draw()
 	if (pInput->GetControllerMode())
 	{
 		UI().PushScissor(m_GlobalMap->WorkingArea());
-		m_controller_cursor->Draw();
+		m_controller_cursor->DrawWithTransform();
 		UI().PopScissor();
 	}
 
 	if (m_text_hint)
 	{
-		m_text_hint->Draw();
+		m_text_hint->DrawWithTransform();
 	}
 }
 

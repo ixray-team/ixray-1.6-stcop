@@ -329,6 +329,181 @@ void CUIWindow::DetachFromDialogHolders()
 	}
 }
 
+void CUIWindow::SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector2& Offset)
+{
+	TargetTreeHeading = Angle;
+	TreePivot = Pivot;
+	TreeOffset = Offset;
+	if (ShouldSmoothRotate())
+	{
+		TreeHeadingPending = TreeHeadingProgress != static_cast<double>(Angle);
+		if (TreeHeadingPending)
+		{
+			QueueSmoothRotation();
+		}
+	}
+	else
+	{
+		TreeHeadingProgress = Angle;
+		TreeHeading = Angle;
+		TreeHeadingPending = false;
+	}
+}
+
+void CUIWindow::SetSmothRotate(bool Enabled, float Factor)
+{
+	SmoothRotateEnabled = Enabled;
+	SmoothRotateFactor = std::isfinite(Factor) ? std::clamp(Factor, 0.0f, 1.0f) : 1.0f;
+	if (!ShouldSmoothRotate())
+	{
+		if (TreeHeadingPending)
+		{
+			TreeHeadingProgress = TargetTreeHeading;
+			TreeHeading = TargetTreeHeading;
+			TreeHeadingPending = false;
+		}
+		if (CUIStatic* Static = ui_cast_static())
+		{
+			Static->UpdateSmoothHeading(1.0f);
+		}
+		RotationSmoothingPending = false;
+	}
+}
+
+bool CUIWindow::AdvanceSmoothHeading(double& Current, float Target, float Blend)
+{
+	constexpr double AngleEpsilon = 0.0001;
+	const double Difference = static_cast<double>(Target) - Current;
+	if (Blend >= 1.0f || std::abs(Difference) <= AngleEpsilon)
+	{
+		Current = Target;
+		return false;
+	}
+	Current += Difference * static_cast<double>(Blend);
+	if (std::abs(static_cast<double>(Target) - Current) <= AngleEpsilon)
+	{
+		Current = Target;
+		return false;
+	}
+	return true;
+}
+
+void CUIWindow::UpdateSmoothRotation()
+{
+	if (!RotationSmoothingPending || !RotationEnabled || LastSmoothRotateFrame == Device.dwFrame)
+	{
+		return;
+	}
+	const float Delta = Device.fTimeDelta;
+	if (SmoothRotateFactor <= 0.0f || Delta <= 0.0f)
+	{
+		return;
+	}
+	LastSmoothRotateFrame = Device.dwFrame;
+	// Convert sharpness into an exponential time response, independent of frame rate.
+	const float Blend = ShouldSmoothRotate() ?
+		static_cast<float>(-std::expm1(std::log1p(-static_cast<double>(SmoothRotateFactor)) * 60.0 * Delta)) : 1.0f;
+	if (TreeHeadingPending)
+	{
+		TreeHeadingPending = AdvanceSmoothHeading(TreeHeadingProgress, TargetTreeHeading, Blend);
+		TreeHeading = static_cast<float>(TreeHeadingProgress);
+	}
+	bool LocalPending = false;
+	if (CUIStatic* Static = ui_cast_static())
+	{
+		Static->UpdateSmoothHeading(Blend);
+		LocalPending = Static->HeadingPending;
+	}
+	RotationSmoothingPending = TreeHeadingPending || LocalPending;
+}
+
+UITransform2D CUIWindow::GetLocalTreeTransform()
+{
+	UITransform2D Result;
+	if (!RotationEnabled || (TreeHeading == 0.0f && TreeOffset.x == 0.0f && TreeOffset.y == 0.0f))
+	{
+		return Result;
+	}
+	Fvector2 Pivot;
+	GetAbsolutePos(Pivot);
+	Pivot.add(TreePivot);
+	const bool ScreenSpace = UI().m_currentPointType != IUIRender::pttLIT;
+	const float ScaleX = ScreenSpace ? UI().ClientToScreenScaledX(1.0f) : 1.0f;
+	const float ScaleY = ScreenSpace ? UI().ClientToScreenScaledY(1.0f) : 1.0f;
+	Pivot.x *= ScaleX;
+	Pivot.y *= ScaleY;
+	const float Cos = std::cos(TreeHeading);
+	const float Sin = std::sin(TreeHeading);
+	Result.XX = Cos;
+	Result.XY = Sin;
+	Result.YX = -Sin;
+	Result.YY = Cos;
+	Result.TX = Pivot.x - Cos * Pivot.x - Sin * Pivot.y + TreeOffset.x * ScaleX;
+	Result.TY = Pivot.y + Sin * Pivot.x - Cos * Pivot.y + TreeOffset.y * ScaleY;
+	return Result;
+}
+
+UITransform2D CUIWindow::GetTreeTransform()
+{
+	const UITransform2D Local = GetLocalTreeTransform();
+	return GetParent() ? GetParent()->GetTreeTransform().Compose(Local) : Local;
+}
+
+void CUIWindow::DrawWithTransform()
+{
+	struct RestoreTransform
+	{
+		IUIRender* Render;
+		UITransform2D Previous;
+		~RestoreTransform() { Render->Transform2D = Previous; }
+	} Restore{UIRender, UIRender->Transform2D};
+	UIRender->Transform2D = GetTreeTransform();
+	Draw();
+}
+
+bool CUIWindow::HitTestUntransformed(const Fvector2& Position)
+{
+	Frect Bounds;
+	GetAbsoluteRect(Bounds);
+	return Bounds.in(Position.x, Position.y);
+}
+
+Fvector2 CUIWindow::ToUntransformedPoint(const Fvector2& Position)
+{
+	Fvector2 Point = Position;
+	const float ScaleX = UI().ClientToScreenScaledX(1.0f);
+	const float ScaleY = UI().ClientToScreenScaledY(1.0f);
+	Point.x *= ScaleX;
+	Point.y *= ScaleY;
+	GetTreeTransform().ApplyInverse(Point.x, Point.y);
+	Point.x /= ScaleX;
+	Point.y /= ScaleY;
+	return Point;
+}
+
+bool CUIWindow::HitTest(const Fvector2& Position)
+{
+	return HitTestUntransformed(ToUntransformedPoint(Position));
+}
+
+bool CUIWindow::DispatchMouseAction(float X, float Y, EUIMessages Action)
+{
+	// Ancestors have already converted the coordinates to their local frame.
+	Fvector2 InputOrigin = {0.0f, 0.0f};
+	if (GetParent())
+	{
+		GetAbsolutePos(InputOrigin);
+	}
+	const float ScaleX = UI().ClientToScreenScaledX(1.0f);
+	const float ScaleY = UI().ClientToScreenScaledY(1.0f);
+	X = (X + InputOrigin.x) * ScaleX;
+	Y = (Y + InputOrigin.y) * ScaleY;
+	GetLocalTreeTransform().ApplyInverse(X, Y);
+	X = X / ScaleX - InputOrigin.x;
+	Y = Y / ScaleY - InputOrigin.y;
+	return OnMouseAction(X, Y, Action);
+}
+
 void CUIWindow::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
@@ -347,7 +522,7 @@ void CUIWindow::Draw()
 		if (!W)		continue;
 		if (!W->IsShown())		continue;
 		if (W->GetCustomDraw())	continue;
-		W->Draw();
+		W->DrawWithTransform();
 	}
 
 #ifdef DEBUG
@@ -368,14 +543,13 @@ void CUIWindow::Draw(float x, float y)
 
 void CUIWindow::Update()
 {
+	UpdateSmoothRotation();
 	if (GetUICursor().IsVisible())
 	{
 		bool cursor_on_window;
 
 		Fvector2			temp = GetUICursor().GetCursorPosition();
-		Frect				r;
-		GetAbsoluteRect(r);
-		cursor_on_window = !!r.in(temp);
+		cursor_on_window = HitTest(temp);
 
 #ifdef DEBUG
 		if (cursor_on_window && g_show_wnd_rect2) {
@@ -555,7 +729,7 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 
 	if(GetParent()== nullptr)
 	{
-		if(!wndRect.in(cursor_pos))
+		if (!HitTestUntransformed(cursor_pos) && !CUIWindow::HitTestUntransformed(cursor_pos))
             return false;
 		//получить координаты относительно окна
 		cursor_pos.x -= wndRect.left;
@@ -567,7 +741,7 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 	//сообщение направляем ему сразу
 	if (CUIWindow* mouseCapturer = m_pMouseCapturer)
 	{
-		mouseCapturer->OnMouseAction(
+		mouseCapturer->DispatchMouseAction(
 			cursor_pos.x - mouseCapturer->GetWndRect().left,
 			cursor_pos.y - mouseCapturer->GetWndRect().top,
 			mouse_action);
@@ -607,6 +781,14 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 
 	csUi.Leave();
 
+	Fvector2 ScreenPoint;
+	GetAbsolutePos(ScreenPoint);
+	ScreenPoint.add(cursor_pos);
+	ScreenPoint.x = UI().ClientToScreenScaledX(ScreenPoint.x);
+	ScreenPoint.y = UI().ClientToScreenScaledY(ScreenPoint.y);
+	GetTreeTransform().Apply(ScreenPoint.x, ScreenPoint.y);
+	ScreenPoint.x /= UI().ClientToScreenScaledX(1.0f);
+	ScreenPoint.y /= UI().ClientToScreenScaledY(1.0f);
 	for (int idx = (int)childrenSnapshot.size() - 1; idx >= 0; --idx)
 	{
 		CUIWindow* w = childrenSnapshot[idx];
@@ -616,12 +798,11 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 		}
 		else
 		{
-			Frect wndRect_ = w->GetWndRect();
-			if (wndRect_.in(cursor_pos))
+			if (w->IsShown() && (w->HitTest(ScreenPoint) || w->CUIWindow::HitTestUntransformed(w->ToUntransformedPoint(ScreenPoint))))
 			{
 				if (w->IsEnabled())
 				{
-					if (w->OnMouseAction(cursor_pos.x - w->GetWndRect().left,
+					if (w->DispatchMouseAction(cursor_pos.x - w->GetWndRect().left,
 						cursor_pos.y - w->GetWndRect().top, mouse_action))
 					{
 						return true;
@@ -630,7 +811,7 @@ bool CUIWindow::ProcessMouseAction(float x, float y, EUIMessages& mouse_action)
 			}
 			else if (w->IsEnabled() && w->CursorOverWindow())
 			{
-				if (w->OnMouseAction(cursor_pos.x - w->GetWndRect().left,
+				if (w->DispatchMouseAction(cursor_pos.x - w->GetWndRect().left,
 					cursor_pos.y - w->GetWndRect().top, mouse_action))
 				{
 					return true;
@@ -667,9 +848,8 @@ CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
 	{
 		return nullptr;
 	}
-	Frect Bounds;
-	GetAbsoluteRect(Bounds);
-	if (!Bounds.in(Position.x, Position.y))
+	const bool OwnHit = HitTest(Position);
+	if (!OwnHit && !CUIWindow::HitTestUntransformed(ToUntransformedPoint(Position)))
 	{
 		return nullptr;
 	}
@@ -679,7 +859,7 @@ CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
 		return nullptr;
 	}
 
-	CUIWindow* Result = this;
+	CUIWindow* Result = OwnHit ? this : nullptr;
 	if (m_pMouseCapturer)
 	{
 		if (CUIWindow* Captured = m_pMouseCapturer->PickWindowAt(Position, Reliable))
@@ -1108,40 +1288,32 @@ CUIWindow* CUIWindow::GetCurrentMouseHandler(){
 	return GetTop()->GetChildMouseHandler();
 }
 
-CUIWindow* CUIWindow::GetChildMouseHandler(){
+CUIWindow* CUIWindow::GetChildMouseHandler()
+{
 	if (!csUi.TryEnter())
 	{
 		return this;
 	}
-
-	CUIWindow* pWndResult;
-	const WINDOW_LIST& Children = GetChildDrawOrder();
-	auto it = Children.rbegin();
-
-	for(; it!=Children.rend(); ++it)
+	const Fvector2 Position = GetUICursor().GetCursorPosition();
+	CUIWindow* Result = this;
+	if (m_pMouseCapturer)
 	{
-		Frect wndRect = (*it)->GetWndRect();
-		// very strange code.... i can't understand difference between
-		// first and second condition. I Got It from OnMouseAction() method;
-		if (wndRect.in(cursor_pos) )
+		Result = m_pMouseCapturer->GetChildMouseHandler();
+	}
+	else
+	{
+		const WINDOW_LIST& Children = GetChildDrawOrder();
+		for (auto Child = Children.rbegin(); Child != Children.rend(); ++Child)
 		{
-			if((*it)->IsEnabled())
+			if (*Child && (*Child)->IsShown() && (*Child)->IsEnabled() && (*Child)->HitTest(Position))
 			{
-				pWndResult = (*it)->GetChildMouseHandler();
-				csUi.Leave();
-				return pWndResult;
+				Result = (*Child)->GetChildMouseHandler();
+				break;
 			}
 		}
-		else if ((*it)->IsEnabled() && (*it)->CursorOverWindow())
-		{
-			pWndResult = (*it)->GetChildMouseHandler();
-			csUi.Leave();
-			return pWndResult;
-		}
 	}
-
 	csUi.Leave();
-	return this;
+	return Result;
 }
 
 //для перевода окна и потомков в исходное состояние

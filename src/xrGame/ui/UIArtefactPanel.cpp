@@ -91,7 +91,7 @@ void CUIArtefactPanel::Draw()
 		m_statics[i]->SetWndPos(Fvector2().set(x, y));
 		x = x + iIndent + iWidth;	
 		m_statics[i]->SetStretchTexture(true);
-		m_statics[i]->Draw();
+		m_statics[i]->DrawWithTransform();
 	}
 
 	CUIWindow::Draw();

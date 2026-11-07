@@ -12,6 +12,7 @@ class CUIWindow;
 #include "../../xrScripts/script_export_space.h"
 #include "../uiabstract.h"
 #include "UIActionRepeaters.h"
+#include "../../Include/xrRender/UITransform.h"
 
 class CUIStatic;
 class CUICellItem;
@@ -45,6 +46,19 @@ private:
 	struct SelfCallbackState;
 	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
 	bool DispatchSelfCallbacks(s16 Event);
+	float TreeHeading = 0.0f;
+	float TargetTreeHeading = 0.0f;
+	double TreeHeadingProgress = 0.0;
+	float SmoothRotateFactor = 1.0f;
+	bool SmoothRotateEnabled = true;
+	bool TreeHeadingPending = false;
+	bool RotationSmoothingPending = false;
+	u32 LastSmoothRotateFrame = u32(-1);
+	void UpdateSmoothRotation();
+	Fvector2 TreePivot = {0.0f, 0.0f};
+	Fvector2 TreeOffset = {0.0f, 0.0f};
+	bool RotationEnabled = true;
+	UITransform2D GetLocalTreeTransform();
 	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
 	xr_vector<CUIWindow*> ChildDrawOrder;
 	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
@@ -56,6 +70,14 @@ public:
 	void DetachFromDialogHolders();
 	bool ToFront();
 	bool ToBack();
+	void SetTreeHeading(float Angle, const Fvector2& Pivot, const Fvector2& Offset);
+	void SetSmothRotate(bool Enabled, float Factor);
+	virtual void EnableHeading(bool Enabled) { RotationEnabled = Enabled; }
+	bool IsHeadingEnabled() const { return RotationEnabled; }
+	UITransform2D GetTreeTransform();
+	bool HitTest(const Fvector2& Position);
+	void DrawWithTransform();
+	bool DispatchMouseAction(float X, float Y, EUIMessages Action);
 				CUIWindow						();
 	virtual		~CUIWindow						();
 
@@ -221,6 +243,11 @@ public:
 	xrCriticalSection csUi;
 protected:
 	bool ProcessMouseAction(float X, float Y, EUIMessages& MouseAction);
+	virtual bool HitTestUntransformed(const Fvector2& Position);
+	Fvector2 ToUntransformedPoint(const Fvector2& Position);
+	bool ShouldSmoothRotate() const { return SmoothRotateEnabled && SmoothRotateFactor < 1.0f; }
+	void QueueSmoothRotation() { RotationSmoothingPending = true; }
+	static bool AdvanceSmoothHeading(double& Current, float Target, float Blend);
 	IC void SafeRemoveChild(CUIWindow* child)
 	{
 		xrCriticalSectionGuard guard(csUi);

@@ -1337,7 +1337,7 @@ void CHudItem::render_item_3d_ui()
 		UIRender->CacheSetXformWorld(LM);
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 
-		ScriptWindow->Draw();
+		ScriptWindow->DrawWithTransform();
 
 		UI().m_currentPointType = bk;
 	}

@@ -343,7 +343,7 @@ void CUISequencer::OnRender	()
 
 	if (m_UIWindow->IsShown())
 	{
-		m_UIWindow->Draw();
+		m_UIWindow->DrawWithTransform();
 	}
 
 	VERIFY(m_sequencer_items.size());
