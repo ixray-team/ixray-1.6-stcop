@@ -214,22 +214,31 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_nofilter, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);
 
 	float4 History = s_sslr_history.SampleLevel(smp_rtlinear, PrevDiffuseUV.xy, 0.0f);
+
+	float4 Taps = abs(s_sslr_history.GatherAlpha(smp_rtlinear, PrevDiffuseUV.xy) - O.ViewDist);
+	History.w = O.ViewDist + min(min(Taps.x, Taps.y), min(Taps.z, Taps.w));
 	History = lerp(Current, History, GetBorderAtten(PrevDiffuseUV));
+	float Feedback = 0.98f;
 
 #ifndef USE_LEGACY_LIGHT
 	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
 
 	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;
+
+	float Parallax = O.Roughness > 0.1f && O.Depth >= 0.02f ? length((PrevSpecularUV.xy - PrevDiffuseUV) * pos_decompression_params2.xy) : 0.0f;
+	Feedback = lerp(0.98f, 0.85f, saturate(Parallax * 0.5f));
+
 	PrevSpecularUV.xy = (O.Roughness > 0.1f || O.Depth < 0.02f) ? PrevDiffuseUV.xy : PrevSpecularUV.xy;
 
 	float3 HistorySpecular = s_sslr_history.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0f).xyz;
 	History.xyz = lerp(History.xyz, HistorySpecular, GetBorderAtten(PrevSpecularUV.xy));
 #endif
 
-	History.xyz = lerp(History.xyz, Current.xyz, HistoryClamp(History.xyz, Current.xyz, BoxMin, BoxMax));
+	// NOTE(vertver): rejection fixes
+	History.xyz = lerp(History.xyz, Current.xyz, 0.5f * HistoryClamp(History.xyz, Current.xyz, BoxMin, BoxMax));
 
-	float DepthClamp = 1.0f - saturate(abs(History.w - O.ViewDist) / (0.02f * O.ViewDist + 0.05f));
-	Current.xyz = lerp(Current.xyz, History.xyz, DepthClamp * 0.98f);
+	float DepthClamp = saturate((4.0f - abs(History.w - O.ViewDist) / (0.02f * O.ViewDist + 0.05f)) / 3.0f);
+	Current.xyz = lerp(Current.xyz, History.xyz, DepthClamp * Feedback);
 
 	u_sslr[DTid.xy] = Current;
 }

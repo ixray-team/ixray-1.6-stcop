@@ -128,7 +128,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	}
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	O.Hemi = 1.0f; // isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
+	O.Hemi = isHUDRender ? 1.0f : O.Hemi;
 #endif
 	
 	float3 HitPoint = lerp(Point.xyz, SSLR.xyz, SSLR.w);
