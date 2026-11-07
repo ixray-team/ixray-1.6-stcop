@@ -147,6 +147,7 @@ public:
 	virtual bool	UseIndicators					() override {return false;}
 
 	virtual CDialogHolder* GetDialogHolder() override { return this; }
+	CUIDialogWnd* GetWindow() const { return m_startDialog; }
 	void			OnDeviceCreate					();
 
 	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, const char* name = 0);
