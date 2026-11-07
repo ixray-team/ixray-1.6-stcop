@@ -104,6 +104,7 @@ xrEngine.exe -autotest -autotest_frames 120 -autotest_warmup 150 -autotest_timeo
 | `-autotest` | — | Hide the game window every frame, force windowed mode, suppress the error window, disable sound and mouse capture, set `fps_limit` and `main_menu_fps_limit` to 0, gather statistics and write the report |
 | `-autotest_frames N` | 120 | Measured frames |
 | `-autotest_warmup N` | 150 | Level frames skipped before measuring |
+| `-autotest_menu` | — | Measure and capture the active main menu; this does not establish level loading or gameplay |
 | `-autotest_timeout S` | 300 | `exit` after this many seconds |
 | `-autotest_out <path>` | `$logs$\autotest.csv` | Timing report. One path token |
 | `-autotest_hash` | off | Per-frame CRC of the swapchain into the `hash` column |
