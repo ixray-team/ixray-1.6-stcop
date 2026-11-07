@@ -58,7 +58,6 @@ public:
 	virtual void			net_Import			(NET_Packet& P) override;
 	virtual void			net_Relcase			(CObject* object) override;
 	virtual void			net_AfterSpawn		(CSE_Abstract* DC) override;
-	virtual void			net_AlifeSwitch		(CSE_Abstract* DC) override;
 
 	virtual bool			AlwaysTheCrow       () override;
 	virtual CWeapon			*cast_weapon			() override {return this;}
@@ -334,6 +333,8 @@ public:
 	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
+	// Spawn addon items for the weapon addon flags so they are stored in children and saved.
+	void EnsureAddonItems(CSE_ALifeItemWeapon* Ent = nullptr);
 
 	//для отоброажения иконок апгрейдов в интерфейсе
 	void LoadScopeXY();

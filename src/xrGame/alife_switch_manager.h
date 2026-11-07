@@ -23,6 +23,9 @@ protected:
 
 private:
 	OBJECT_VECTOR	m_saved_chidren;
+	using SavedChildrenTree = xr_hash_map<ALife::_OBJECT_ID, OBJECT_VECTOR>;
+	SavedChildrenTree SavedChildrenTreeData;
+	void CollectChildrenTree(CSE_ALifeDynamicObject* Object);
 
 protected:
 			bool	synchronize_location	(CSE_ALifeDynamicObject	*object);
@@ -34,6 +37,7 @@ public:
 			void	switch_offline			(CSE_ALifeDynamicObject	*object);
 			void	remove_online			(CSE_ALifeDynamicObject	*object, bool update_registries = true);
 			void	add_online				(CSE_ALifeDynamicObject	*object, bool update_registries = true);
+			const ALife::OBJECT_VECTOR* SavedChildren(ALife::_OBJECT_ID Id) const;
 
 public:
 	IC				CALifeSwitchManager		(xrServer *server, const char* section);

@@ -205,6 +205,10 @@ void CSE_ALifeTraderAbstract::add_offline	(const xr_vector<ALife::_OBJECT_ID> &s
 		{
 			child->add_offline(child->children, update_registries); // thx hozar2002
 		}
+		else if (const ALife::OBJECT_VECTOR* Saved = object->alife().SavedChildren(child->ID); Saved && !Saved->empty())
+		{
+			child->add_offline(*Saved, update_registries); // thx hozar2002
+		}
 #ifdef DEBUG
 		//		if (psAI_Flags.test(aiALife))
 		//			Msg					("[LSS] Destroying item [%s][%s][%d]",inventory_item->base()->name_replace(),*inventory_item->base()->s_name,inventory_item->base()->ID);

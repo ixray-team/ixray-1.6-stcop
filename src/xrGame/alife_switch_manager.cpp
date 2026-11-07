@@ -12,6 +12,7 @@
 #include "alife_graph_registry.h"
 #include "alife_object_registry.h"
 #include "alife_schedule_registry.h"
+#include "alife_simulator.h"
 #include "../game_level_cross_table.h"
 #include "xrServer.h"
 #include "ai_space.h"
@@ -72,12 +73,32 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update
 	object->add_online				(update_registries);
 }
 
+void CALifeSwitchManager::CollectChildrenTree(CSE_ALifeDynamicObject* Object)
+{
+	SavedChildrenTreeData[Object->ID] = Object->children;
+	for (const ALife::_OBJECT_ID ChildID : Object->children)
+	{
+		if (CSE_ALifeDynamicObject* Child = ai().get_alife()->objects().object(ChildID))
+		{
+			CollectChildrenTree(Child);
+		}
+	}
+}
+
+const ALife::OBJECT_VECTOR* CALifeSwitchManager::SavedChildren(const ALife::_OBJECT_ID Id) const
+{
+	const auto It = SavedChildrenTreeData.find(Id);
+	return It != SavedChildrenTreeData.end() ? &It->second : nullptr;
+}
+
 void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool update_registries)
 {
 	PROF_EVENT("ALife/remove_online");
 	object->m_bOnline			= false;
 	
 	m_saved_chidren				= object->children;
+	SavedChildrenTreeData.clear();
+	CollectChildrenTree			(object);
 	CSE_ALifeTraderAbstract		*inventory_owner = object->cast_trader_abstract();
 	if (inventory_owner) {
 		m_saved_chidren.erase	(
@@ -102,6 +123,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 #endif
 
 	object->add_offline			(m_saved_chidren,update_registries);
+	SavedChildrenTreeData.clear();
 }
 
 void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject *object)
@@ -198,7 +220,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 
 	I->try_switch_offline();
 }
-#include "Level.h"
+
 void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 {
 	if (I->redundant())
@@ -217,10 +239,4 @@ void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 
 	if (I->redundant())
 		release				(I);
-
-	CObject* O = Level().Objects.net_Find(I->ID);
-	if (O && !O->getDestroy())
-	{
-		O->net_AlifeSwitch(I);
-	}
 }

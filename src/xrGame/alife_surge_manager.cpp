@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "alife_surge_manager.h"
+#include "../xrEngine/EngineApp.h"
 #include "alife_object_registry.h"
 #include "alife_spawn_registry.h"
 #include "alife_time_manager.h"
