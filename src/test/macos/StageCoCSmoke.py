@@ -54,6 +54,41 @@ class StagingTests(unittest.TestCase):
         self.assertIn("separate runtime directory", result.stderr)
         self.assertFalse((self.root / "fsgame.ltx").exists())
 
+    def test_output_inside_overlay_is_refused_before_mutation(self):
+        # Execute the actual script in an owned miniature repository. Intercept
+        # copytree so a regression cannot recursively copy its generated output.
+        fixture = self.root / "repository"
+        script = fixture / "util/StageMacOSCoC.py"
+        script.parent.mkdir(parents=True)
+        script.write_bytes((self.repository / "util/StageMacOSCoC.py").read_bytes())
+        overlay = fixture / "gamedata_coc"
+        configs = overlay / "configs"
+        configs.mkdir(parents=True)
+        sentinel = configs / "keep.ltx"
+        sentinel.write_bytes(b"original overlay config")
+        output = configs / "runtime"
+        bounded_runner = """
+import runpy, shutil, sys
+script = sys.argv[1]
+sys.argv = sys.argv[1:]
+def reject_recursive_copy(*args, **kwargs):
+    raise SystemExit("BOUNDED_COPY_SENTINEL: early overlap rejection missing")
+shutil.copytree = reject_recursive_copy
+runpy.run_path(script, run_name="__main__")
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", bounded_runner, str(script), "--base", str(self.base),
+             "--patch", str(self.patch), "--output", str(output)],
+            capture_output=True, text=True, timeout=10,
+        )
+        self.assertEqual(result.returncode, 2, result.stderr + f"output_created={output.exists()}")
+        self.assertIn("separate runtime directory", result.stderr)
+        self.assertNotIn("BOUNDED_COPY_SENTINEL", result.stderr)
+        self.assertFalse(output.exists(), "staging mutated its overlay source")
+        self.assertEqual(sentinel.read_bytes(), b"original overlay config")
+        self.assertEqual(sorted(str(path.relative_to(overlay)) for path in overlay.rglob("*")),
+                         ["configs", "configs/keep.ltx"])
+
     def test_regular_archive_is_preserved(self):
         self.mark_owned()
         archive = self.output / "database/config/scripts.db"

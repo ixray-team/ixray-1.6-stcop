@@ -16,13 +16,16 @@ def main():
     if args.output.is_symlink():
         parser.error("Output must be a real runtime directory, not a symlink")
     base, patch, output = args.base.resolve(), args.patch.resolve(), args.output.resolve()
+    overlay_source = (repository / "gamedata_coc").resolve()
     for name in ("config", "maps", "resource", "sound"):
         if not (base / "database" / name).is_dir():
             parser.error(f"Base installation is missing database/{name}")
     if not (patch / "database/config/scripts.db").is_file():
         parser.error("Patch is missing database/config/scripts.db")
-    if (output in (base, patch, repository) or base in output.parents or patch in output.parents
-            or output in base.parents or output in patch.parents or output in repository.parents):
+    if (output in (base, patch, repository, overlay_source)
+            or any(source in output.parents or output in source.parents
+                   for source in (base, patch, overlay_source))
+            or output in repository.parents):
         parser.error("Output must be a separate runtime directory")
     marker = output / ".ixray-macos-stage"
     filesystem = output / "fsgame.ltx"
@@ -56,7 +59,6 @@ def main():
         for source in sorted((installation / "database").rglob("*")):
             if source.is_file():
                 link(source, output / "database" / source.relative_to(installation / "database"))
-    overlay_source = repository / "gamedata_coc"
     overlay = output / "gamedata"
     if overlay.is_symlink():
         raise FileExistsError(f"Overlay output must be a staging directory: {overlay}")
