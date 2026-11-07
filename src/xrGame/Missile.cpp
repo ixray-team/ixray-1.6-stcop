@@ -583,11 +583,14 @@ void CMissile::OnAnimationEnd(u8 state)
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
 {
-	XFORM().mul		(trans,offset());
+	Fmatrix AttachmentOffset = offset();
+	AttachmentOffset.c.mul(GetAttachmentOwnerScale());
+	XFORM().mul(trans, AttachmentOffset);
 }
 
 void CMissile::UpdateXForm	()
 {
+	UpdateAttachmentVisualScale();
 	if (Device.dwFrame!=dwXF_Frame)
 	{
 		dwXF_Frame			= Device.dwFrame;

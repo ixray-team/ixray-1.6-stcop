@@ -67,6 +67,7 @@ CWeapon::~CWeapon()
 
 void CWeapon::UpdateXForm	()
 {
+	UpdateAttachmentVisualScale();
 	if (!H_Parent())
 		return;
 
@@ -201,9 +202,13 @@ void CWeapon::UpdateFireDependencies_internal(bool need_invalidate)
 			parent.i.invert();
 		}
 
-		Fvector& fp = vLoadedFirePoint;
-		Fvector& fp2 = vLoadedFirePoint2;
-		Fvector& sp = vLoadedShellPoint;
+		const float EffectiveScale = GetVisualScale() * GetAttachmentOwnerScale();
+		Fvector fp = vLoadedFirePoint;
+		Fvector fp2 = vLoadedFirePoint2;
+		Fvector sp = vLoadedShellPoint;
+		fp.mul(EffectiveScale);
+		fp2.mul(EffectiveScale);
+		sp.mul(EffectiveScale);
 
 		parent.transform_tiny(m_current_firedeps.vLastFP, fp);
 		parent.transform_tiny(m_current_firedeps.vLastFP2, fp2);
@@ -1908,6 +1913,10 @@ void CWeapon::UpdatePosition(const Fmatrix& trans)
 		XFORM().mul(trans, m_ActiveOffset.GetXFORM());
 	}
 
+	Fvector AttachmentOffset;
+	AttachmentOffset.sub(XFORM().c, trans.c).mul(GetAttachmentOwnerScale());
+	XFORM().c.add(trans.c, AttachmentOffset);
+
 	VERIFY(!fis_zero(DET(renderable.xform)));
 }
 
@@ -1923,6 +1932,10 @@ void CWeapon::UpdatePosition_alt(const Fmatrix& trans)
 	{
 		XFORM().mul(trans, m_ActiveOffset.GetXFORM());
 	}
+
+	Fvector AttachmentOffset;
+	AttachmentOffset.sub(XFORM().c, trans.c).mul(GetAttachmentOwnerScale());
+	XFORM().c.add(trans.c, AttachmentOffset);
 
 	VERIFY(!fis_zero(DET(renderable.xform)));
 }

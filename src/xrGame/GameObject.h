@@ -110,6 +110,7 @@ class CGameObject :
 protected:
 
 	float VisualScale = 1.f;
+	bool InheritAttachmentScale = true;
 	CAI_ObjectLocation				*m_ai_location;
 	animation_movement_controller	*m_anim_mov_ctrl;
 	CPHSoundPlayer					*m_ph_sound_player;
@@ -213,6 +214,8 @@ public:
 
 	float GetVisualScale() const { return VisualScale; }
 	bool SetVisualScale(float Scale);
+	float GetAttachmentOwnerScale();
+	void UpdateAttachmentVisualScale();
 
 	// Utilities
 	static void				u_EventGen			(NET_Packet& P, u32 type, ALife::_OBJECT_ID dest	);

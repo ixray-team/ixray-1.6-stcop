@@ -1117,6 +1117,7 @@ void CInventoryItem::setControlInertionFactor(float value)
 
 void CInventoryItem::UpdateXForm()
 {
+	object().UpdateAttachmentVisualScale();
 	CObject* obj_parent = object().H_Parent();
 	if (obj_parent == nullptr)
 	{

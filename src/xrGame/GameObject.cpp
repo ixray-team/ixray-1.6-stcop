@@ -83,6 +83,31 @@ void CGameObject::init			()
 	m_spawned					= false;
 }
 
+float CGameObject::GetAttachmentOwnerScale()
+{
+	CGameObject* Owner = InheritAttachmentScale && H_Parent() ? H_Parent()->cast_game_object() : nullptr;
+	return Owner && Owner->cast_inventory_owner() && !Owner->cast_actor() ? Owner->GetVisualScale() : 1.f;
+}
+
+void CGameObject::UpdateAttachmentVisualScale()
+{
+	if (IKinematics* Kinematics = PKinematics(Visual()))
+	{
+		const float EffectiveScale = VisualScale * GetAttachmentOwnerScale();
+		if (Kinematics->GetVisualScale() != EffectiveScale)
+		{
+			Kinematics->SetVisualScale(EffectiveScale);
+			if (CFORM())
+			{
+				if (CCF_Skeleton* Skeleton = CFORM()->cast_cff_skeleton())
+				{
+					Skeleton->InvalidateScale();
+				}
+			}
+		}
+	}
+}
+
 bool CGameObject::SetVisualScale(float Scale)
 {
 	if (!_valid(Scale) || Scale < 0.01f || Scale > 100.f || !g_pGameLevel || !Level().Server || getDestroy())
@@ -98,6 +123,7 @@ bool CGameObject::SetVisualScale(float Scale)
 	}
 	if (Scale == VisualScale)
 	{
+		UpdateAttachmentVisualScale();
 		AlifeObject->VisualScale = Scale;
 		return true;
 	}
@@ -108,8 +134,9 @@ bool CGameObject::SetVisualScale(float Scale)
 		return false;
 	}
 	const float Ratio = Scale / VisualScale;
-	Kinematics->SetVisualScale(Scale);
-	if (Kinematics->GetVisualScale() != Scale)
+	const float EffectiveScale = Scale * GetAttachmentOwnerScale();
+	Kinematics->SetVisualScale(EffectiveScale);
+	if (Kinematics->GetVisualScale() != EffectiveScale)
 	{
 		return false;
 	}
@@ -873,12 +900,16 @@ void CGameObject::u_EventSend(NET_Packet& P, u32 dwFlags )
 #include "Bolt.h"
 void CGameObject::OnH_B_Chield()
 {
+	InheritAttachmentScale = true;
 	inherited::OnH_B_Chield();
 	///PHSetPushOut();????
 }
 
 void CGameObject::OnH_B_Independent(bool just_before_destroy)
 {
+	// Restore the item's own scale before independent physics is created.
+	InheritAttachmentScale = false;
+	UpdateAttachmentVisualScale();
 	inherited::OnH_B_Independent(just_before_destroy);
 
 	setup_parent_ai_locations	(false);
@@ -1098,10 +1129,7 @@ bool CGameObject::is_ai_obstacle	() const
 void	CGameObject::OnChangeVisual	( )
 {
 	inherited::OnChangeVisual( );
-	if (IKinematics* Kinematics = PKinematics(Visual()))
-	{
-		Kinematics->SetVisualScale(VisualScale);
-	}
+	UpdateAttachmentVisualScale();
 	if ( m_anim_mov_ctrl )
 		destroy_anim_mov_ctrl( );
 }

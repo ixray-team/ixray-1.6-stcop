@@ -79,7 +79,10 @@ void AttachmentCallback(IKinematics* tpKinematics)
 	{
 		Fmatrix bone_mtx;
 		kinematics->Bone_GetAnimPos(bone_mtx, it->bone_id(), u8(-1), false);
-		it->item().object().XFORM().mul_43(bone_mtx, it->offset());
+		it->item().object().UpdateAttachmentVisualScale();
+		Fmatrix AttachmentOffset = it->offset();
+		AttachmentOffset.c.mul(it->item().object().GetAttachmentOwnerScale());
+		it->item().object().XFORM().mul_43(bone_mtx, AttachmentOffset);
 		it->item().object().XFORM().mulA_43(game_object->XFORM());
 	}
 }
