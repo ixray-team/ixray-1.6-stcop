@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "alife_object_registry.h"
 #include "ai_debug.h"
+#include "../xrEngine/EngineApp.h"
 
 CALifeObjectRegistry::CALifeObjectRegistry	(const char* section)
 {

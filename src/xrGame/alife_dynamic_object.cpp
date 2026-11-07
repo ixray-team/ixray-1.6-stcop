@@ -149,6 +149,10 @@ void CSE_ALifeDynamicObject::add_offline(const xr_vector<ALife::_OBJECT_ID>& sav
 		{
 			child->add_offline(child->children, update_registries);
 		}
+		else if (const ALife::OBJECT_VECTOR* Saved = alife().SavedChildren(child->ID); Saved && !Saved->empty())
+		{
+			child->add_offline(*Saved, update_registries);
+		}
 
 		// #pragma todo ("hozar to ???: Make a miscalculation of the synchronization of children")
 		ALife::_OBJECT_ID item_id = inventory_item->base()->ID;

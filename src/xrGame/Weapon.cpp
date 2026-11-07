@@ -40,6 +40,11 @@
 #include "Silencer.h"
 #include "GrenadeLauncher.h"
 #include "ui/UIGameCustom.h"
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
+#include "alife_graph_registry.h"
+#include "ai_space.h"
+#include "../xrServerEntities/xrServer_Objects_ALife.h"
 #include "../xrEngine/xr_input.h"
 #include <algorithm>
 
@@ -1449,56 +1454,176 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 	}
 };
 
-void CWeapon::net_AfterSpawn(CSE_Abstract* DC)
+static CSE_Abstract* GetAddonChildEntity(const ALife::_OBJECT_ID ChildID)
 {
-	if (IsGameTypeSingle())
+	if (CALifeSimulator* Simulator = ai().get_alife())
+	{
+		if (CSE_ALifeDynamicObject* Child = Simulator->objects().object(ChildID))
+		{
+			return Child;
+		}
+	}
+
+	return Level().Server ? Level().Server->ID_to_entity(ChildID) : nullptr;
+}
+
+void CWeapon::EnsureAddonItems(CSE_ALifeItemWeapon* Ent)
+{
+	if (getDestroy() || !OnServer())
 	{
 		return;
 	}
-	if (getDestroy())
+
+	if (!Ent)
+	{
+		Ent = Level().Server ? smart_cast<CSE_ALifeItemWeapon*>(Level().Server->ID_to_entity(ID())) : nullptr;
+	}
+	else if (CSE_ALifeItemWeapon* ServerEnt = Level().Server ? smart_cast<CSE_ALifeItemWeapon*>(Level().Server->ID_to_entity(ID())) : nullptr)
+	{
+		// The entity passed to net_AfterSpawn is deserialized from the spawn packet and has no runtime children.
+		Ent = ServerEnt;
+	}
+
+	if (!Ent)
 	{
 		return;
 	}
-	CSE_ALifeItemWeapon* Ent = smart_cast<CSE_ALifeItemWeapon*>(DC);
-	if (OnServer() && Ent && Ent->children.empty())
-	{ // спауним в инвентарь пушки аддоны в соответствии с флагом в том случае когда алайф не загружен
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)
+
+	const auto FindAttachmentSection = [this](const EattachmentType Type) -> shared_str
+	{
+		for (const auto& Pair : m_attachments)
 		{
-			Level().spawn_item(m_scopes.empty() ? m_sScopeName.c_str() : bUseAltScope ? m_scopes[Ent->cur_scope].c_str() : pSettings->r_string(m_scopes[Ent->cur_scope], "scope_name"), Position(), ai_location().level_vertex_id(), ID());
+			if (Pair.second.attachment_type == Type)
+			{
+				return Pair.first;
+			}
 		}
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer && m_sSilencerName.size())
+		return shared_str();
+	};
+
+	const auto HasAttachmentChild = [this, Ent](const EattachmentType Type) -> bool
+	{
+		if (!Level().Server)
 		{
-			Level().spawn_item(m_sSilencerName.c_str(), Position(), ai_location().level_vertex_id(), ID());
+			return false;
 		}
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher && m_sGrenadeLauncherName.size())
+
+		for (const ALife::_OBJECT_ID ChildID : Ent->children)
 		{
-			Level().spawn_item(m_sGrenadeLauncherName.c_str(), Position(), ai_location().level_vertex_id(), ID());
+			CSE_Abstract* Child = GetAddonChildEntity(ChildID);
+			if (Child && get_attachment(Child->s_name, Type))
+			{
+				return true;
+			}
 		}
+		return false;
+	};
+
+	const auto HasAddonChild = [this, Ent](const CLASS_ID Primary, const CLASS_ID Secondary) -> bool
+	{
+		if (!Level().Server)
+		{
+			return false;
+		}
+
+		for (const ALife::_OBJECT_ID ChildID : Ent->children)
+		{
+			CSE_Abstract* Child = GetAddonChildEntity(ChildID);
+			if (!Child || !pSettings->line_exist(Child->s_name, "class"))
+			{
+				continue;
+			}
+			const CLASS_ID ChildClass = TEXT2CLSID(pSettings->r_string(Child->s_name, "class"));
+			if (ChildClass == Primary || ChildClass == Secondary)
+			{
+				return true;
+			}
+		}
+		return false;
+	};
+
+	const auto SpawnAddon = [this, Ent](const shared_str& Section)
+	{
+		if (!Section.size())
+		{
+			return;
+		}
+
+		CALifeSimulator* Simulator = ai().get_alife();
+		const bool Saveable = Simulator && Level().Server && Level().Server->ID_to_entity(ID()) && Simulator->objects().object(ID());
+		if (Saveable)
+		{
+			CSE_Abstract* Item = Simulator->spawn_item(Section.c_str(), Ent->o_Position, Ent->m_tNodeID, Ent->m_tGraphID, ID());
+			CSE_ALifeDynamicObject* Dynamic = Item ? Item->cast_alife_dynamic_object() : nullptr;
+			if (Dynamic)
+			{
+				// Register the item in the ALife registry (done by spawn_item) and create its online copy.
+				// Do not call switch_online(): attached items are not present in the offline graph.
+				Dynamic->s_flags.bor(M_SPAWN_UPDATE);
+				CSE_Abstract* Abstract = Dynamic;
+				Simulator->server().entity_Destroy(Abstract);
+				NET_Packet Packet;
+				ClientID Client;
+				Client.set(Simulator->server().GetServerClient() ? Simulator->server().GetServerClient()->ID.value() : 0);
+				Simulator->server().Process_spawn(Packet, Client, false, Abstract);
+				Dynamic->s_flags.band(u16(-1) ^ M_SPAWN_UPDATE);
+				Dynamic->m_bOnline = true;
+			}
+			return;
+		}
+
+		Level().spawn_item(Section.c_str(), Position(), ai_location().level_vertex_id(), ID());
+	};
+
+	if (IsScopeAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope) && !HasAttachmentChild(eTypeScope) && !HasAddonChild(CLSID_OBJECT_W_SCOPE, TEXT2CLSID("WP_SCOPE")))
+	{
+		shared_str ScopeSection = FindAttachmentSection(eTypeScope);
+		if (!ScopeSection.size())
+		{
+			ScopeSection = m_sScopeName;
+			if (!m_scopes.empty())
+			{
+				const u32 Index = std::min<u32>(Ent->cur_scope, u32(m_scopes.size() - 1));
+				if (bUseAltScope)
+				{
+					ScopeSection = m_scopes[Index];
+				}
+				else if (pSettings->line_exist(m_scopes[Index], "scope_name"))
+				{
+					ScopeSection = pSettings->r_string(m_scopes[Index], "scope_name");
+				}
+			}
+		}
+		SpawnAddon(ScopeSection);
+	}
+
+	if (IsSilencerAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer) && !HasAttachmentChild(eTypeMuzzle) && !HasAddonChild(CLSID_OBJECT_W_SILENCER, TEXT2CLSID("WP_SILEN")))
+	{
+		shared_str SilencerSection = FindAttachmentSection(eTypeMuzzle);
+		SpawnAddon(SilencerSection.size() ? SilencerSection : m_sSilencerName);
+	}
+
+	if (IsGrenadeLauncherAttachable() && (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !HasAttachmentChild(eTypeGLauncher) && !HasAddonChild(CLSID_OBJECT_W_GLAUNCHER, TEXT2CLSID("WP_GLAUN")))
+	{
+		shared_str LauncherSection = FindAttachmentSection(eTypeGLauncher);
+		SpawnAddon(LauncherSection.size() ? LauncherSection : m_sGrenadeLauncherName);
 	}
 }
 
-void CWeapon::net_AlifeSwitch(CSE_Abstract* DC)
+void CWeapon::net_AfterSpawn(CSE_Abstract* DC)
 {
 	if (getDestroy())
 	{
 		return;
 	}
+
 	CSE_ALifeItemWeapon* Ent = smart_cast<CSE_ALifeItemWeapon*>(DC);
-	if (OnServer() && Ent && Ent->children.empty())
-	{ // спауним в инвентарь пушки аддоны в соответствии с флагом в том случае когда алайф загружен
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonScope)
-		{
-			Level().spawn_item(m_scopes.empty() ? m_sScopeName.c_str() : bUseAltScope ? m_scopes[Ent->cur_scope].c_str() : pSettings->r_string(m_scopes[Ent->cur_scope], "scope_name"), Position(), ai_location().level_vertex_id(), ID());
-		}
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonSilencer && m_sSilencerName.size())
-		{
-			Level().spawn_item(m_sSilencerName.c_str(), Position(), ai_location().level_vertex_id(), ID());
-		}
-		if (m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher && m_sGrenadeLauncherName.size())
-		{
-			Level().spawn_item(m_sGrenadeLauncherName.c_str(), Position(), ai_location().level_vertex_id(), ID());
-		}
+	if (!Ent)
+	{
+		return;
 	}
+
+	EnsureAddonItems(Ent);
 }
 
 void CWeapon::shedule_Update	(u32 dT)
@@ -4688,7 +4813,7 @@ void CWeapon::UpdateAltScope()
 		m_3d_static_visual_name = pSettings->read_if_exists<str_c>(sectionNeedLoad, "3d_static_visual_name", pSettings->r_string(sectionNeedLoad, "visual"));
 	}
 
-	shared_str new_hud = pSettings->r_string(sectionNeedLoad, "hud");
+	shared_str new_hud = pSettings->read_if_exists<str_c>(sectionNeedLoad, "hud", *hud_sect);
 
 	for (shared_str& upgrade_sect : m_upgrades)
 	{
