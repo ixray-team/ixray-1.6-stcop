@@ -1,5 +1,6 @@
 #pragma once
 #include "ai_monster_defs.h"
+#include "../../../xrEngine/AI/alife_space.h"
 
 class CBaseMonster;
 
@@ -50,7 +51,7 @@ class CMonsterEnemyManager {
 	u32 NextCallSoundTime = 0;
 	u32 NavigationTargetID = u32(-1), NavigationCheckTime = 0, NavigationVertex = u32(-1);
 	Fvector NavigationPosition = {0.f, 0.f, 0.f}, NavigationObservedPosition = {0.f, 0.f, 0.f};
-	xr_vector<u16> CalledEnemyIds;
+	xr_vector<ALife::_OBJECT_ID> CalledEnemyIds;
 	u32					m_time_start_see_enemy;
 
 public:

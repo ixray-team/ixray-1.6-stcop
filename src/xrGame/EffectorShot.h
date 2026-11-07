@@ -100,5 +100,5 @@ public:
 	virtual void	SetActor(CActor* pActor) { m_pActor = pActor; };
 
 	virtual CCameraShotEffector* cast_effector_shot() { return this; }
-	u16				m_WeaponID;
+	ALife::_OBJECT_ID	m_WeaponID;
 };

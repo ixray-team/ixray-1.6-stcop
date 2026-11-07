@@ -139,8 +139,9 @@ void game_cl_TeamDeathmatch::TranslateGameMessage	(u32 msg, NET_Packet& P)
 
 	case PLAYER_CHANGE_TEAM://tdm
 		{
-			u16 PlayerID, OldTeam, NewTeam;
-			P.r_u16 (PlayerID);
+			ALife::_OBJECT_ID PlayerID;
+			u16 OldTeam, NewTeam;
+			P >> PlayerID;
 			P.r_u16 (OldTeam);
 			P.r_u16 (NewTeam);
 

@@ -827,7 +827,7 @@ bool CUIActorMenuBase::TryUseItem( CUICellItem* cell_itm )
 		return false;
 	}
 
-	u16 recipient = GetInventoryOwner()->object_id();
+	ALife::_OBJECT_ID recipient = GetInventoryOwner()->object_id();
 	if ( item->parent_id() != recipient )
 	{
 		if (!GetInventoryOwner()->inventory().CanTakeItem(item))

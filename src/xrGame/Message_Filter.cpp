@@ -42,7 +42,7 @@ void message_filter::msg_type_subtype_t::import(NET_Packet& packet)
 			u16				tmp_subtype;
 			packet.r_u32			(msg_receive_time);
 			packet.r_u16			(tmp_subtype);
-			packet.r_u16			(dest_obj_id);
+			packet >> dest_obj_id;
 			msg_subtype		= static_cast<u32>(tmp_subtype);
 		}break;
 	case M_GAMEMESSAGE:

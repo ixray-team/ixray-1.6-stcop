@@ -1259,7 +1259,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 			//-----------------------------------------------
 			NET_Packet P;
 			P.B.data.clear();
-			tmpP.w_u16(pA->ID);
+			tmpP << pA->ID;
 			tmpP.w_vec3(pA->o_Position);
 			tmpP.w_vec3(pA->o_Angle);
 			//------------------------------------------------

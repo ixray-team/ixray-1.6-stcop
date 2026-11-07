@@ -193,7 +193,7 @@ private:
 	class victim_filter
 	{
 	public:
-		victim_filter	(u16 except_id,
+		victim_filter	(ALife::_OBJECT_ID except_id,
 						 Fvector const & pos,
 						 float query_distance);
 		victim_filter	(victim_filter const & copy);
@@ -201,7 +201,7 @@ private:
 	private:
 		victim_filter & operator=(victim_filter const & copy) = delete;
 
-		u16				m_except_id;
+		ALife::_OBJECT_ID	m_except_id;
 		CWeaponKnife*	m_owner;
 		Fvector			m_start_pos;
 		float			m_query_distance;

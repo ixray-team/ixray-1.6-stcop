@@ -303,12 +303,12 @@ void game_sv_CaptureTheArtefact::net_Export_State(NET_Packet& P, ClientID id_to)
 
 	if (greenTeam.artefact && blueTeam.artefact)
 	{
-		P.w_u16(greenTeam.artefact->ID);
-		P.w_u16(blueTeam.artefact->ID);
+		P.w_u32(greenTeam.artefact->ID);
+		P.w_u32(blueTeam.artefact->ID);
 	} else
 	{
-		P.w_u16(0);
-		P.w_u16(0);
+		P.w_u32(0);
+		P.w_u32(0);
 	}
 	
 	P.w_vec3(greenTeam.artefactRPoint.P);
@@ -1017,7 +1017,7 @@ bool game_sv_CaptureTheArtefact::LoadAnomaliesItems(
 	char*		temp_str = static_cast<char*>(_alloca(buffer_size));
 	for (u32 i = 0; i < items_count; ++i) {
 		_GetItem				(anomaly_string, i, temp_str, buffer_size);
-		u16 anomaly_id			= GetMinUsedAnomalyID(temp_str);
+		ALife::_OBJECT_ID anomaly_id = GetMinUsedAnomalyID(temp_str);
 		if (anomaly_id)
 			destination.push_back	(std::make_pair(temp_str, anomaly_id));
 	}
@@ -1989,7 +1989,7 @@ void game_sv_CaptureTheArtefact::MoveArtefactToPoint(CSE_ALifeItemArtefact *arte
 	NET_Packet MovePacket;
 	MovePacket.w_begin(M_MOVE_ARTEFACTS);
 	MovePacket.w_u8(1);
-	MovePacket.w_u16(artefact->ID);
+	MovePacket << artefact->ID;
 	MovePacket.w_vec3(toPoint.P);
 	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(true, true));	//and to all clients, because it will freeze and will not send updates...
 }
@@ -2025,7 +2025,7 @@ void game_sv_CaptureTheArtefact::MoveLifeActors()
 			if (l_pC->ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				return;
 			VERIFY2(tempPacket.w_tell() < (NET_PacketSizeLimit - 256), "max packet size exceeds !");
-			tempPacket.w_u16(l_pC->owner->ID);
+			tempPacket << l_pC->owner->ID;
 			tempPacket.w_vec3(l_pC->owner->o_Position);
 			tempPacket.w_vec3(l_pC->owner->o_Angle);
 			++lifeActors;
@@ -2515,7 +2515,7 @@ void game_sv_CaptureTheArtefact::ReadOptions(shared_str &options)
 	};
 }
 
-u16 game_sv_CaptureTheArtefact::GetMinUsedAnomalyID(const char* zone_name)
+ALife::_OBJECT_ID game_sv_CaptureTheArtefact::GetMinUsedAnomalyID(const char* zone_name)
 {
 	typedef TMultiMap::iterator TMultiMIter;
 	

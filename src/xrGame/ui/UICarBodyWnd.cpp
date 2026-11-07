@@ -227,7 +227,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		{
 			NET_Packet		P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, m_pOurObject->object_id());
-			P.w_u16						(0);//not used
+			P.w_u32						(0);//not used
 			P.w_stringZ					(info.info_id);			//сообщение
 			P.w_u8						(1);						//добавление сообщения
 			CGameObject::u_EventSend	(P);

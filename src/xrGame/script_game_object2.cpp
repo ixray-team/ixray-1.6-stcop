@@ -164,7 +164,7 @@ void CScriptGameObject::Hit(CScriptHit* tpLuaHit)
 
 	HS.GenHeader(GE_HIT, object().ID());										//	object().u_EventGen(P,GE_HIT,object().ID());
 	THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator??!");	//	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
-	HS.whoID = u16(tLuaHit.m_tpDraftsman->ID());							//	P.w_u16			(u16(tLuaHit.m_tpDraftsman->ID()));
+	HS.whoID = tLuaHit.m_tpDraftsman->ID();									//	P.w_u16			(u16(tLuaHit.m_tpDraftsman->ID()));
 	HS.weaponID = 0;														//	P.w_u16			(0);
 	HS.dir = tLuaHit.m_tDirection;											//	P.w_dir			(tLuaHit.m_tDirection);
 	HS.power = tLuaHit.m_fPower;											//	P.w_float		(tLuaHit.m_fPower);

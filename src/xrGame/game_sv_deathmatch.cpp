@@ -2029,7 +2029,7 @@ void game_sv_Deathmatch::ConsoleCommands_Clear	()
 
 void game_sv_Deathmatch::OnPlayerFire (ClientID id_who, NET_Packet &P)
 {
-	u16 PlayerID = P.r_u16();
+	ALife::_OBJECT_ID PlayerID = P.r_u32();
 	game_PlayerState*	ps	=	get_eid	(PlayerID);
 	if (!ps || ps->IsSkip()) return;
 	if (ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))

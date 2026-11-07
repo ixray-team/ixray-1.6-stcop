@@ -355,8 +355,8 @@ void game_cl_CaptureTheArtefact::TranslateGameMessage(u32 msg, NET_Packet& P)
 		{
 			u8 delivererTeam;
 			P.r_u8(delivererTeam);
-			u16 deliverer_id;	//who deliver the artefact
-			P.r_u16(deliverer_id);
+			ALife::_OBJECT_ID deliverer_id;	//who deliver the artefact
+			P >> deliverer_id;
 			game_PlayerState const * ps = GetPlayerByGameID(deliverer_id);
 
 			if (!local_player) //can be nullptr, because not actor or spectator spawned yet...
