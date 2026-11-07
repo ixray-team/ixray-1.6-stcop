@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "TextureDescrManager.h"
+#include "TextureDescriptionName.h"
 
 // eye-params
 float					r__dtex_range	= 50;
@@ -17,6 +18,7 @@ public:
 
 void fix_texture_thm_name(LPSTR fn)
 {
+	TextureDescription::NormalizeSeparators(fn);
 	LPSTR _ext = strext(fn);
 	if(  _ext					&&
 	  (0==_stricmp(_ext,".tga")	||

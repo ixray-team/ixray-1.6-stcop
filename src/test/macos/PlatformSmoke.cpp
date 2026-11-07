@@ -8,10 +8,27 @@
 #include "../../xrRHI/Platform/RHIInputLayout.h"
 #include "../../xrUI/stdafx.h"
 #include "../../xrUI/UITextureMaster.h"
+#include "../../Layers/xrRender/TextureDescriptionName.h"
 
 int main(int ArgumentCount, char** Arguments)
 {
 	Memory._initialize();
+	// Filesystem listings use native separators; compiled assets retain backslashes.
+	const char* MetadataFiles[] = {"terrain/terrain_escape", "terrain\\terrain_escape", "nested/terrain\\terrain_escape"};
+	const char* RendererNames[] = {"terrain\\terrain_escape", "terrain\\terrain_escape", "nested\\terrain\\terrain_escape"};
+	for (u32 Index = 0; Index < std::size(MetadataFiles); ++Index)
+	{
+		xr_string MetadataName = MetadataFiles[Index];
+		TextureDescription::NormalizeSeparators(MetadataName.data());
+		xr_map<shared_str, float> DetailScales;
+		DetailScales.emplace(shared_str(MetadataName.c_str()), 144.0f);
+		const auto Found = DetailScales.find(shared_str(RendererNames[Index]));
+		if (Found == DetailScales.end() || Found->second != 144.0f)
+		{
+			puts("FAIL: texture detail metadata lookup lost the authored scale across path separators");
+			return 17;
+		}
+	}
 	const shared_str Textures[] = {"ui/cache_texture_a", "ui/cache_texture_b"};
 	const shared_str Shaders[] = {"hud/cache_shader_a", "hud/cache_shader_b"};
 	xr_vector<sh_pair> Keys;
@@ -142,7 +159,7 @@ int main(int ArgumentCount, char** Arguments)
 	{
 		return 13;
 	}
-	puts("PASS: macOS bounded strings, absolute paths input layout strides CP1251/Unicode text 32-bit atomics UI cache ordering and concurrent/repeated path normalization");
+	puts("PASS: macOS bounded strings, absolute paths input layout strides CP1251/Unicode text 32-bit atomics UI cache ordering texture detail metadata lookup and concurrent/repeated path normalization");
 	return 0;
 }
 

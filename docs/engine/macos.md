@@ -183,6 +183,21 @@ three queued buffers. This verifies API playback state; audible output is suppor
 by the user report, without an independent audio recording.
 Windows and Linux builds were not run on this Mac.
 
+## Terrain and grass texture validation
+
+Texture-description keys use the backslashes stored in compiled material names,
+including when macOS lists THM files with forward slashes. Without that
+canonicalization, terrain can load its DDS images but miss its authored detail
+scale, bump and material metadata, producing an almost uniform ground surface.
+The platform check covers metadata lookup from native, backslash and mixed paths.
+
+Inspect near-ground and instanced-grass views as well as buildings/HUD. The
+CoC Cordon regression used the validation save and a grass patch near
+`(-218.344, -9.4, -30.171)`, with paired views, a camera pan and sustained frame
+captures. These restored continuous soil/grass microtexture using the authored
+scale; the instanced plants were checked against the level's `build_details`
+atlas. Building textures alone did not expose this failure.
+
 ## Current platform boundaries
 
 Use windowed rendering. DXMT's native upstream monitor/fullscreen helpers and
