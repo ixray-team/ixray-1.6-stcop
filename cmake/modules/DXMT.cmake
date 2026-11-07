@@ -69,6 +69,9 @@ else()
                     --buildtype=release
                     --prefix=${DXMT_INSTALL_DIR}
                     -Dnative_llvm_path=${DXMT_LLVM_PATH}
+                    # sccache does not preserve DXMT's -ObjC language selection.
+                    # Explicit language selection also works for the native C shims.
+                    "-Dc_args=-x objective-c"
                     -Denable_tests=false
             RESULT_VARIABLE DXMT_SETUP_RESULT
             OUTPUT_VARIABLE DXMT_SETUP_OUTPUT
@@ -80,7 +83,7 @@ else()
         endif()
 
         execute_process(
-            COMMAND ${MESON} compile -C ${DXMT_BUILD_DIR}
+            COMMAND ${MESON} compile -C ${DXMT_BUILD_DIR} -j4
             RESULT_VARIABLE DXMT_COMPILE_RESULT
             ERROR_VARIABLE  DXMT_COMPILE_ERROR
         )

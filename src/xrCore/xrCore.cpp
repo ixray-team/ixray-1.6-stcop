@@ -48,8 +48,8 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
 		_strlwr_s			(Params,sizeof(Params));
 
-		LoadParams();
 #endif
+		LoadParams();
 
 		// application path
 		std::string ApplicationPath = Platform::GetBinaryFolderPath().string();
