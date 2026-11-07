@@ -69,7 +69,7 @@ CUIStatic::~CUIStatic()
 
 bool CUIStatic::OnMouseAction(float X, float Y, EUIMessages MouseAction)
 {
-	if (inherited::OnMouseAction(X, Y, MouseAction))
+	if (inherited::ProcessMouseAction(X, Y, MouseAction))
 	{
 		return true;
 	}
@@ -90,8 +90,10 @@ bool CUIStatic::OnMouseAction(float X, float Y, EUIMessages MouseAction)
 	switch (MouseAction)
 	{
 	case WINDOW_LBUTTON_DOWN:
-	case WINDOW_LBUTTON_DB_CLICK:
 		SendMessageToTarget(STATIC_MOUSE_LEFT_CLICK);
+		break;
+	case WINDOW_LBUTTON_DB_CLICK:
+		SendMessageToTarget(STATIC_MOUSE_DOUBLE_CLICK);
 		break;
 	case WINDOW_RBUTTON_DOWN:
 		SendMessageToTarget(STATIC_MOUSE_RIGHT_CLICK);

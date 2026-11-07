@@ -269,6 +269,7 @@ void CUIWindow::script_register(lua_State *L)
 			[
 	// CUIWindow
 				value("MOUSE_LEFT_CLICK", int(STATIC_MOUSE_LEFT_CLICK)),
+				value("MOUSE_DOUBLE_CLICK", int(STATIC_MOUSE_DOUBLE_CLICK)),
 				value("MOUSE_RIGHT_CLICK", int(STATIC_MOUSE_RIGHT_CLICK)),
 				value("MOUSE_ENTER", int(WINDOW_FOCUS_RECEIVED)),
 				value("MOUSE_LEAVE", int(WINDOW_FOCUS_LOST)),

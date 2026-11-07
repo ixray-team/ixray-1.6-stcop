@@ -1,6 +1,5 @@
--- Requires xrUI with GetCurrentDialogHolder exported.
 local holder = GetCurrentDialogHolder()
-assert(holder, "No active UI holder")
+assert(holder, "Интерфейс недоступен")
 
 if ui_state then
     ui_state.holder:RemoveDialogToRender(ui_state.control)
@@ -14,11 +13,10 @@ control:SetFont(GetFontLetterica16Russian())
 control:SetText("Text")
 control:SetTextColor(GetARGB(255, 255, 255, 255))
 
--- No parent owns this control; retain its Lua reference while it is rendered.
+-- Сохраняем ссылку на статик, пока он отображается.
 ui_state = { holder = holder, control = control }
 holder:AddDialogToRender(control)
-log1("Control added")
 
--- To remove, run separately:
+-- Для удаления выполните отдельно:
 -- ui_state.holder:RemoveDialogToRender(ui_state.control)
 -- ui_state = nil
