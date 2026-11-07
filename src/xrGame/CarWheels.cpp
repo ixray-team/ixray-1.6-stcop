@@ -49,19 +49,48 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 		Fmatrix wheel_bind_xform = cp.pwheel->car->bones_bind_forms[cp.pwheel->bone_id];
 		wheel_bind_xform.mulA_43(cp.pwheel->car->XFORM());
 
+		Fvector fdir;
 		if (rs_car_wheel_friction_direction || (cp.pwheel->car->b_awd && cp.pwheel->car->e_state_drive == drive))
 		{
-			Fvector wheel_dir = Fvector().crossproduct(cp.pwheel->joint->PSecond_element()->XFORM().k, wheel_bind_xform.i);
-			c.fdir1[0] = wheel_dir.x;
-			c.fdir1[1] = wheel_dir.y;
-			c.fdir1[2] = wheel_dir.z;
+			fdir.crossproduct(cp.pwheel->joint->PSecond_element()->XFORM().k, wheel_bind_xform.i);
 		}
 		else
 		{
-			c.fdir1[0] = cp.pwheel->car->XFORM().k.x;
-			c.fdir1[1] = cp.pwheel->car->XFORM().k.y;
-			c.fdir1[2] = cp.pwheel->car->XFORM().k.z;
+			fdir.set(cp.pwheel->car->XFORM().k);
 		}
+
+		// ODE expects fdir1 to be a unit tangent to the contact plane. The car
+		// forward/right axes are not tangent on slopes; using them as-is makes
+		// the friction rows degenerate and can trigger an LCP solver warning on
+		// the first wheel contact after a car is spawned.
+		Fvector contact_normal = cast_fv(c.geom.normal);
+		if (safe_normalize(contact_normal))
+		{
+			fdir.mad(contact_normal, -contact_normal.dotproduct(fdir));
+			if (!safe_normalize(fdir))
+			{
+				fdir = cp.pwheel->car->XFORM().i;
+				fdir.mad(contact_normal, -contact_normal.dotproduct(fdir));
+				if (!safe_normalize(fdir))
+				{
+					fdir.crossproduct(contact_normal, cp.pwheel->car->XFORM().j);
+					if (!safe_normalize(fdir))
+					{
+						const Fvector axis = _abs(contact_normal.x) < 0.9f ? Fvector().set(1.f, 0.f, 0.f) : Fvector().set(0.f, 1.f, 0.f);
+						fdir.crossproduct(contact_normal, axis);
+						safe_normalize(fdir);
+					}
+				}
+			}
+		}
+		else
+		{
+			safe_normalize(fdir);
+		}
+
+		c.fdir1[0] = fdir.x;
+		c.fdir1[1] = fdir.y;
+		c.fdir1[2] = fdir.z;
 
 		if (!(cp.buxe || cp.breaking || cp.slide))
 			cp.pwheel->tire_particle_scale = cp.pwheel->tire_particle_scale + (cp.pwheel->tire_particle_scale_min - cp.pwheel->tire_particle_scale) * 2.f * 0.4f * fixed_step;

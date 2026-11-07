@@ -91,6 +91,18 @@ void CTelekinesis::clear_deactivate()
 
 	for (STelekineticObject* object : telekinetic_objects)
 	{
+		// clear_deactivate stops holding objects without throwing them (for
+		// example when the Mincer blowout ends). Restore gravity explicitly:
+		// kept objects have it disabled, and otherwise they stay suspended in
+		// the air after the anomaly releases them.
+		if (CPhysicsShellHolder* holder = object->get_object())
+		{
+			if (CPhysicsShell* shell = holder->PPhysicsShell())
+			{
+				shell->set_ApplyByGravity(true);
+			}
+		}
+
 		object->switch_state(ETelekineticState::TS_NONE);
 		xr_delete(object);
 	}

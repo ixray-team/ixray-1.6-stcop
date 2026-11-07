@@ -277,3 +277,23 @@ void CBaseGraviZone::net_Relcase(CObject* O)
 	inherited::net_Relcase(O);
 	telekinesis()->remove_links(O);
 }
+
+void CBaseGraviZone::feel_touch_delete(CObject* O)
+{
+	if (O && !O->getDestroy())
+	{
+		if (CPhysicsShellHolder* GO = O->cast_physics_shell_holder())
+		{
+			// Telekinesis keeps an explicit list of held objects and does not
+			// know when they leave the shape. Release the object here, otherwise
+			// a car lifted by a Mincer stays suspended after leaving the zone.
+			if (telekinesis()->is_active_object(GO))
+			{
+				StopTeleParticles(GO);
+				telekinesis()->deactivate(GO);
+			}
+		}
+	}
+
+	inherited::feel_touch_delete(O);
+}

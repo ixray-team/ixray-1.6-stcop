@@ -87,8 +87,14 @@ void CDamagableHealthItem::Hit(float P)
 
 void CDamagableItem::RestoreEffect()
 {
-	u16 dl = DamageLevel();
-	for (u16 i = 1; i <= dl; i++)
+	const u16 dl = DamageLevel();
+	if (m_level_applied == u16(-1))
+		m_level_applied = 0;
+
+	// Only add the stages that are not applied yet. Re-applying already active
+	// stages used to call Stop2() and Play2() in the same frame on load, which
+	// could leave the big damage particles stopped while stage 1 stayed active.
+	for (u16 i = m_level_applied + 1; i <= dl; i++)
 	{
 		ApplyDamage(i);
 	}

@@ -37,9 +37,20 @@ void CUICarPanel::Init()
     UICarHealthBar->SetAutoDelete(true);
     
     UICarFuelBar = UIHelper::CreateProgressBar(uiXml, "car_panel:car_fuel_progress_bar", UIStaticCarHealth);
-    UICarHealthBar->SetAutoDelete(true);
+    UICarFuelBar->SetAutoDelete(true);
+
+    SetEngineLamp(false);
+    SetLightLamp(false);
 
     Show(false);
+}
+
+void CUICarPanel::ShowPanel(bool value)
+{
+    // The compact ixray HUD has no separate speedometer/tachometer sub-panel:
+    // the whole static carries the bars, lamps and gear readout. LA's
+    // firsteye_panel flag hides that content from the first-person camera.
+    UIStaticCarHealth->Show(value);
 }
 
 void CUICarPanel::SetEngineLamp(bool On)

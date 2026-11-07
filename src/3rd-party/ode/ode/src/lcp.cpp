@@ -1147,6 +1147,7 @@ void dSolveLCP (int n, dReal *A, dReal *x, dReal *b,
   // when that happens.
 
   for (i=nub; i<n; i++) {
+    int zero_step_count = 0;
     // the index i is the driving index and indexes i+1..n-1 are "dont care",
     // i.e. when we make changes to the system those x's will be zero and we
     // don't care what happens to those w's. in other words, we only consider
@@ -1302,13 +1303,19 @@ void dSolveLCP (int n, dReal *A, dReal *x, dReal *b,
 	// if s <= 0 then we've got a problem. if we just keep going then
 	// we're going to get stuck in an infinite loop. instead, just cross
 	// our fingers and exit with the current solution.
+	// A zero step is valid when the blocking variable is already at its
+	// bound (for example a friction row that reached +/-mu). Apply the state
+	// switch below and continue; the guard prevents a degenerate loop.
 	if (s <= 0) {
-	  dMessage (d_ERR_LCP, "LCP internal error, s <= 0 (s=%.4e)",s);
-	  if (i < (n-1)) {
-	    dSetZero (x+i,n-i);
-	    dSetZero (w+i,n-i);
+	  if (s != 0 || zero_step_count >= 8) {
+	    dMessage (d_ERR_LCP, "LCP internal error, s <= 0 (s=%.4e)",s);
+	    if (i < (n-1)) {
+	      dSetZero (x+i,n-i);
+	      dSetZero (w+i,n-i);
+	    }
+	    goto done;
 	  }
-	  goto done;
+	  ++zero_step_count;
 	}
 
 	// apply x = x + s * delta_x
