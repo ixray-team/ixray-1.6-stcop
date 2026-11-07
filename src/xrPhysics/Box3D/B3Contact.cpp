@@ -94,6 +94,15 @@ void CPHContact::SetFriction(float Mu)
 	Contact.Friction = Mu;
 }
 
+void CPHContact::SetFlotation(bool First, SGameMtl* Material, float Factor)
+{
+	(void)First;
+	(void)Material;
+	(void)Factor;
+	// Box3D applies liquid flotation in CB3World::ProcessLiquidContacts.
+	// Contact-level overrides are not wired to that path yet.
+}
+
 void CPHContact::SetBounce(float Bounce, float BounceVel)
 {
 	Contact.Bounce = Bounce;

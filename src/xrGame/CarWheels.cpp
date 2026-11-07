@@ -20,6 +20,9 @@ CCar::SWheel::SWheelCollisionParams::SWheelCollisionParams()
 		spring_factor								=1.0f	;
 		damping_factor								=1.0f	;
 		mu_factor									=1.0f	;
+		surface_friction							=1.0f	;
+		surface_flotation							=1.0f	;
+		surface_material							=nullptr;
 		friction_slip_factor						=1.0f	;
 		friction2_slip_factor						=1.0f	;
 		friction_nitro_factor						=1.0f	;
@@ -100,10 +103,49 @@ IC void CCar::SWheel::applywheelCollisionParams(const dxGeomUserData *ud,bool& d
 			else
 				cp.pwheel->tire_particle_scale = cp.pwheel->tire_particle_scale + (cp.pwheel->tire_particle_scale_max - cp.pwheel->tire_particle_scale) * 0.5f * 0.4f * fixed_step;
 
-		if(material_1 && !material_2)
-			sp.mu						=		material_1->fPHFriction						;
-		if(material_2 && !material_1)
-			sp.mu						=		material_2->fPHFriction						;
+		const dxGeomUserData* Geom1UserData = retrieveGeomUserData(c.geom.g1);
+		const bool OwnerIsFirst = (ud == Geom1UserData);
+		SGameMtl* SurfaceMaterial = OwnerIsFirst ? material_2 : material_1;
+		cp.surface_material = SurfaceMaterial;
+		cp.surface_flotation = SurfaceMaterial ? SurfaceMaterial->fFlotationFactor : 1.f;
+
+		float MaterialFriction = 1.f;
+		if (material_1)
+			MaterialFriction *= material_1->fPHFriction;
+		if (material_2)
+			MaterialFriction *= material_2->fPHFriction;
+		cp.surface_friction = MaterialFriction;
+
+		const bool LiquidSurface = SurfaceMaterial && SurfaceMaterial->Flags.test(SGameMtl::flLiquid);
+		if (LiquidSurface)
+		{
+			// Water drag is applied by CCar::UpdateWaterDrag() from the wheel
+			// immersion, including the gradual factor for a wheel that only
+			// touches the surface. Do not add the full per-surface flotation
+			// from vehicles.ltx as a contact override.
+			cp.surface_flotation = 1.f;
+			cphc.SetFlotation(OwnerIsFirst, SurfaceMaterial, 1.f);
+			if (cp.pwheel && cp.pwheel->car)
+				cp.pwheel->car->WheelsInWater = true;
+		}
+
+		const bool LevelContact = (cphc.GetObject(!OwnerIsFirst) == nullptr);
+		const SSurfaceParams* Params = (LevelContact && cp.pwheel && cp.pwheel->car) ? cp.pwheel->car->FindSurfaceParams(SurfaceMaterial) : nullptr;
+		if (Params)
+		{
+			if (Params->HasFriction)
+			{
+				MaterialFriction = Params->Friction;
+				cp.surface_friction = Params->Friction;
+			}
+			if (Params->HasFlotation && !LiquidSurface)
+			{
+				cp.surface_flotation = Params->Flotation;
+				cphc.SetFlotation(OwnerIsFirst, SurfaceMaterial, Params->Flotation);
+			}
+		}
+
+		sp.mu						=		MaterialFriction								;
 		sp.mu						*=		cp.mu_factor									;
 		if (material_2 || !material_1)
 			sp.mu						*=		cp.friction_rain_factor * cp.friction_nitro_factor;
@@ -166,7 +208,7 @@ void CCar::SWheel::Init()
 	R_ASSERT2(bone->second.element,"No Element was created for wheel. Check collision is set");
 	CPhysicsElement	*e=bone->second.element	;
 	CPhysicsJoint	*j=bone->second.joint	;
-	radius=e->getRadius();
+	radius=e->getRadius()*radius_factor;
 	R_ASSERT2(j,"No wheel joint was set for a wheel");
 	joint=j;
 	joint->SetBackRef(&joint);
@@ -184,15 +226,8 @@ void CCar::SWheel::Init()
 	// The driving loop is cloned from the surface-specific sound in Play().
 	inited=true;
 	collision_params.pwheel = this;
-	IKinematics* K = PKinematics(car->Visual());
-	CInifile* ini = K->LL_UserData();
-	if (ini->section_exist(K->LL_BoneName_dbg(bone_id)))
-	{
-		if (joint->PSecond_element())
-		{
-			// Gyroscopic mode is not available in IXRAY's ODE build; the config key is accepted but ignored.
-		}
-	}
+	// gyroscopic_mode is parsed in Load() for config compatibility, but has no
+	// effect: IXRAY's ODE fork does not expose dBodySetGyroscopicMode.
 	WheelFlags.set(eWheelType::wheel, TRUE);
 
 	joint->GetJointSDfactors(spring_factor_default, damping_factor_default);
@@ -210,6 +245,10 @@ void CCar::SWheel::Load(LPCSTR section)
 	suspension_spring_factor = 1.0f;
 	suspension_damping_factor = 1.0f;
 	suspension_inertia = 0.5f;
+	radius_factor = 1.f;
+	wheel_vel_factor = 1.f;
+	wheel_trq_factor = 1.f;
+	gyroscopic_mode = false;
 
 	if (ini->section_exist("wheels_params"))
 	{
@@ -221,15 +260,20 @@ void CCar::SWheel::Load(LPCSTR section)
 		suspension_inertia = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_inertia", suspension_inertia);
 		suspension_spring_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_spring_factor", suspension_spring_factor);
 		suspension_damping_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "suspension_damping_factor", suspension_damping_factor);
+		radius_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "radius_factor", radius_factor);
+		wheel_vel_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "velocity_factor", wheel_vel_factor);
+		wheel_trq_factor = READ_IF_EXISTS(ini, r_float, "wheels_params", "torque_factor", wheel_trq_factor);
+		gyroscopic_mode = READ_IF_EXISTS(ini, r_bool, "wheels_params", "gyroscopic_mode", gyroscopic_mode);
 	}
 	if(ini->section_exist(section))
 	{
 		collision_params.damping_factor	=READ_IF_EXISTS(ini,r_float,section,"damping_factor",collision_params.damping_factor);
 		collision_params.spring_factor	=READ_IF_EXISTS(ini,r_float,section,"spring_factor",collision_params.spring_factor);
 		collision_params.mu_factor		=READ_IF_EXISTS(ini,r_float,section,"friction_factor",collision_params.mu_factor);
-		radius *= READ_IF_EXISTS(ini, r_float, section, "radius_factor", 1.0f);
-		wheel_vel_factor = READ_IF_EXISTS(ini, r_float, section, "velocity_factor", 1.0f);
-		wheel_trq_factor = READ_IF_EXISTS(ini, r_float, section, "torque_factor", 1.0f);
+		radius_factor = READ_IF_EXISTS(ini, r_float, section, "radius_factor", radius_factor);
+		wheel_vel_factor = READ_IF_EXISTS(ini, r_float, section, "velocity_factor", wheel_vel_factor);
+		wheel_trq_factor = READ_IF_EXISTS(ini, r_float, section, "torque_factor", wheel_trq_factor);
+		gyroscopic_mode = READ_IF_EXISTS(ini, r_bool, section, "gyroscopic_mode", gyroscopic_mode);
 		wheel_diff_power = 1.f;
 		suspension_distance = READ_IF_EXISTS(ini, r_float, section, "suspension_distance", suspension_distance);
 		suspension_force_inc = READ_IF_EXISTS(ini, r_float, section, "suspension_force_inc", suspension_force_inc);
@@ -237,6 +281,14 @@ void CCar::SWheel::Load(LPCSTR section)
 		suspension_spring_factor = READ_IF_EXISTS(ini, r_float, section, "suspension_spring_factor", suspension_spring_factor);
 		suspension_damping_factor = READ_IF_EXISTS(ini, r_float, section, "suspension_damping_factor", suspension_damping_factor);
 	} 
+	if (!ini->line_exist(section, "bind_position_add") && ini->line_exist("wheels_params", "bind_position_add"))
+	{
+		xr_vector<Fmatrix> BindGlobals;
+		K->LL_GetBindTransform(BindGlobals);
+		car->ApplyBindPositionAdd(K, BindGlobals, bone_id, ini->r_fvector3("wheels_params", "bind_position_add"));
+	}
+	if (!ini->line_exist(section, "bind_direction_add") && ini->line_exist("wheels_params", "bind_direction_add"))
+		car->ApplyBindDirectionAdd(K, bone_id, ini->r_fvector3("wheels_params", "bind_direction_add"));
 	clamp(suspension_inertia, 0.f, 1.f);
 	tire_trail_wallmark_size = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_wallmark_size", 0.15f);
 	tire_trail_simulars_factor = READ_IF_EXISTS(pSettings, r_float, car->cNameSect_str(), "tire_trail_similars",  0.005f);

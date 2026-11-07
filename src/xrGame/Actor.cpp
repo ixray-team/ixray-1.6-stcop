@@ -2059,8 +2059,6 @@ void CActor::UpdateCL()
 				}
 				else if (m_pVehicleWeLookingAt)
 				{
-					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
-
 					if (CCar* pCar = m_pVehicleWeLookingAt->cast_car())
 					{
 						if (pCar->TryTrunk())
@@ -2071,6 +2069,18 @@ void CActor::UpdateCL()
 						{
 							m_sDefaultObjAction = m_sCarUse;
 						}
+						else if (pCar->IsDoorInSight(Device.vCameraPosition, Device.vCameraDirection))
+						{
+							m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
+						}
+						else
+						{
+							m_sDefaultObjAction = nullptr;
+						}
+					}
+					else
+					{
+						m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
 					}
 				}
 				else if (m_pObjectWeLookingAt &&

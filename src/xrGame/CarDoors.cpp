@@ -632,7 +632,111 @@ bool CCar::SDoor::IsInArea(const Fvector& pos,const Fvector& dir)
 bool CCar::SDoor::CanExit(const Fvector& pos,const Fvector& dir)
 {
 	if(state==closed&&joint||(pcar->GetTrunkBone()==bone_id)||non_exitable)return false;
+	// An open door still limits the exit to the doorway area. TestPass() can
+	// miss a transparent upper insert because it lies outside the door element
+	// extents, so also test the cached visual bounds of the closed door.
+	if(state == opened || state == opening || state == broken)
+		return TestPass(pos,dir) || IsExitThroughDoor(pos,dir);
 	return TestPass(pos,dir);
+}
+
+void CCar::SDoor::BuildExitArea()
+{
+	ExitArea.invalidate();
+	ExitAreaValid = false;
+
+	IKinematics* K = PKinematics(pcar->Visual());
+	if (!K || bone_id == BI_NONE || bone_id >= K->LL_BoneCount())
+		return;
+
+	// Cache the visual bounds in the door's bind space, not in the current
+	// model pose. A car loaded from a save may already have this door open, and
+	// the doorway must still be where the closed door was.
+	Fmatrix DoorCurrent = K->LL_GetTransform(bone_id);
+	Fmatrix DoorCurrentInv;
+	DoorCurrentInv.invert(DoorCurrent);
+
+	u32 VertexCount = 0;
+	for (auto& Bone : *K->LL_Bones())
+	{
+		const u16 TestBone = Bone.second;
+		if (pcar->GetDoorBone(TestBone) != bone_id)
+			continue;
+
+		xr_vector<Fvector> Vertices;
+		K->EnumBoneVertices(Vertices, TestBone);
+		VertexCount += u32(Vertices.size());
+		for (const Fvector& Vertex : Vertices)
+		{
+			Fvector Local;
+			DoorCurrentInv.transform_tiny(Local, Vertex);
+			ExitArea.modify(Local);
+		}
+	}
+
+	ExitAreaValid = VertexCount > 0;
+}
+
+bool CCar::SDoor::IsExitThroughDoor(const Fvector& pos, const Fvector& dir)
+{
+	if (pcar->bones_bind_forms.empty() || bone_id == BI_NONE || bone_id >= pcar->bones_bind_forms.size())
+		return false;
+
+	IKinematics* K = PKinematics(pcar->Visual());
+	if (!K || bone_id >= K->LL_BoneCount())
+		return false;
+
+	Fvector RayDir = dir;
+	if (!safe_normalize(RayDir))
+		return false;
+
+	// The visual door bounds include the transparent upper insert, which may
+	// not be part of the physics bone OBB. BuildExitArea() caches the bounds in
+	// the door's bind space, so the test stays inside the place where the door
+	// was even when the door itself is already open.
+	if (ExitAreaValid)
+	{
+		Fvector Center, Half;
+		ExitArea.get_CD(Center, Half);
+
+		Fobb LocalOBB;
+		LocalOBB.m_rotate.identity();
+		LocalOBB.m_translate = Center;
+		LocalOBB.m_halfsize = Half;
+
+		Fmatrix DoorForm;
+		DoorForm.mul(pcar->XFORM(), pcar->bones_bind_forms[bone_id]);
+
+		Fobb WorldOBB;
+		WorldOBB.transform(LocalOBB, DoorForm);
+
+		float Distance = dist_to_door_avlbl;
+		if (WorldOBB.intersect(pos, RayDir, Distance))
+			return true;
+	}
+
+	// Fallback for models/renderers without bone vertices: test the closed bind
+	// OBB of the door and its child bones.
+	for (auto& Bone : *K->LL_Bones())
+	{
+		const u16 TestBone = Bone.second;
+		if (TestBone >= pcar->bones_bind_forms.size())
+			continue;
+		if (pcar->GetDoorBone(TestBone) != bone_id)
+			continue;
+
+		Fmatrix BoneForm;
+		BoneForm.mul(pcar->XFORM(), pcar->bones_bind_forms[TestBone]);
+
+		Fobb BoneOBB;
+		BoneOBB.transform(K->LL_GetData(TestBone).obb, BoneForm);
+
+		float Distance = dist_to_door_avlbl;
+		if (BoneOBB.intersect(pos, RayDir, Distance))
+			return true;
+	}
+
+	return false;
 }
 
 void CCar::SDoor::GetExitPosition(Fvector& pos)
@@ -852,6 +956,12 @@ void CCar::SDoor::RestoreNetState(const CSE_ALifeCar::SDoorState& a_state)
 	}
 	if (lstate == opening || lstate == opened || lstate == closing)
 	{
+		// These runtime timers are not saved. Restart them after load so a
+		// spring-loaded door receives the full opening torque first and does
+		// not immediately switch to the weak hold with a stale timestamp.
+		open_time = Device.dwTimeGlobal;
+		real_open_time = Device.dwTimeGlobal;
+		real_close_time = 0;
 		PlaceInUpdate();
 		//joint->SetLimits(default_opened_angle,default_closed_angle,0);
 		if (joint && joint->bActive)

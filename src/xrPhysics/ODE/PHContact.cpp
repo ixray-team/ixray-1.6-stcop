@@ -3,6 +3,7 @@
 #include "ExtendedGeom.h"
 #include "PHCharacter.h"
 #include "CalculateTriangle.h"
+#include "Physics.h"
 
 static dxGeomUserData* GetUserData(const dContact& Contact, bool First)
 {
@@ -108,6 +109,16 @@ float CPHContact::GetFriction() const
 void CPHContact::SetFriction(float Mu)
 {
 	Contact.surface.mu = Mu;
+}
+
+void CPHContact::SetFlotation(bool First, SGameMtl* Material, float Factor)
+{
+	dGeomID Geom = First ? Contact.geom.g1 : Contact.geom.g2;
+	dBodyID Body = dGeomGetBody(Geom);
+	if (!Body || !Material)
+		return;
+
+	::SetContactBodyFlotation(Body, Contact, Material, Factor);
 }
 
 void CPHContact::SetBounce(float Bounce, float BounceVel)

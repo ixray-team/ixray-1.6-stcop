@@ -72,6 +72,21 @@ IC void add_contact_body_effector(dBodyID body,const dContact& c,SGameMtl* mater
 	}
 }
 
+void SetContactBodyFlotation(dBodyID Body, const dContact& Contact, SGameMtl* Material, float Factor)
+{
+	if (!Body || !Material)
+		return;
+
+	CPHContactBodyEffector* Effector = (CPHContactBodyEffector*)dBodyGetData(Body);
+	if (!Effector)
+	{
+		Effector = ContactEffectors.add();
+		Effector->Init(Body, Contact, Material);
+		dBodySetData(Body, (void*)Effector);
+	}
+	Effector->SetFlotationOverride(Factor);
+}
+
 IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,CPHIsland* world,const int &MAX_CONTACTS, bool SelfCollide = false)
 {
 	constexpr dReal SelfContactErp = 0.2f;

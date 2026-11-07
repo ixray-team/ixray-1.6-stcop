@@ -232,6 +232,7 @@ static	const u16				cAsCallsnum						= 3;
 	xr_set<u16>							pribor_arrows;
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	static	void 						CollisionDetectionCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
+	static	void						CarBodySurfaceCallback		(bool& do_colide,bool bo1,CPHContact& cphc,SGameMtl* material_1,SGameMtl* material_2);
 	virtual void						PhDataUpdate				(float step)			;
 	void						UpdatePhDataObjects		();
 	void						UpdateEngineAndBrakes		(float step);
@@ -252,6 +253,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateWheelAirborneFriction	(SWheel& Wheel);
 	float						CalculateRainFrictionFactor	();
 	void						UpdateTractionAndSuspension	(bool slip);
+	void						UpdateWaterDrag				(float step);
 	virtual void						PhTune						(float step)			;
 /////////////////////////////////////////////////////////////////////////
 	virtual void						ApplyDamage					(u16 level)				;
@@ -401,6 +403,8 @@ public:
 		u16									bone_id				;
 		bool								inited				;
 		float								radius				;
+		float								radius_factor		;
+		bool								gyroscopic_mode		;
 		float								wheel_vel_factor	;
 		float								wheel_trq_factor	;
 		float								wheel_diff_power	;
@@ -446,6 +450,14 @@ public:
 			float							spring_factor		;
 			float							damping_factor		;
 			float							mu_factor			;
+			// Applied base friction for this car on the surface, before wheel,
+			// weather and slip multipliers. Equal to the material pair product
+			// when there is no car surface override.
+			float							surface_friction	;
+			// Applied flotation factor: car surface override or the raw value.
+			float							surface_flotation	;
+			// Material under the wheel, for debug output.
+			const SGameMtl*					surface_material	;
 			bool							slide				;
 			bool							was_slide			;
 			bool							buxe				;
@@ -504,6 +516,8 @@ virtual void ApplyDamage			(u16 level);
 			car=acar;
 			joint=NULL;
 			inited=false;
+			radius_factor = 1.f;
+			gyroscopic_mode = false;
 			drive_wheel = false;
 			break_wheel = false;
 			steer_wheel = false;
@@ -614,6 +628,8 @@ virtual void ApplyDamage			(u16 level);
 		float			dist_to_door_avlbl;
 		float			opened_angle;
 		float			closed_angle;
+		Fbox			ExitArea;
+		bool			ExitAreaValid;
 
 		float			default_opened_angle;
 		float			default_closed_angle;
@@ -667,6 +683,8 @@ virtual void ApplyDamage(u16 level);
 		bool IsFront (const Fvector& pos,const Fvector& dir);
 		bool CanExit(const Fvector& pos,const Fvector& dir);
 		bool TestPass(const Fvector& pos,const Fvector& dir);
+		bool IsExitThroughDoor(const Fvector& pos,const Fvector& dir);
+		void BuildExitArea();
 		//bool TestPass1(const Fvector& pos,const Fvector& dir);
 		void GetExitPosition(Fvector& pos);
 		Fvector GetWorldPosition();
@@ -705,6 +723,8 @@ virtual void ApplyDamage(u16 level);
 			a_vel_factor_closing = 1.f;
 // 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;
+			ExitArea.invalidate();
+			ExitAreaValid = false;
 
 			non_enterable = false;
 			non_exitable = false;
@@ -715,6 +735,7 @@ virtual void ApplyDamage(u16 level);
 
 			real_close_time = 0;
 			real_open_time = 0;
+			open_time = 0;
 			recursive_door = false;
 			no_deactivate = false;
 			default_lin_resist =0.f;
@@ -822,6 +843,25 @@ private:
 	////////////////////////////////////////////////////
 	friend struct SWheel;
 	friend struct SDoor;
+
+	struct SSurfaceParams
+	{
+		bool	HasFriction		= false;
+		float	Friction		= 1.f;
+		bool	HasFlotation	= false;
+		float	Flotation		= 1.f;
+	};
+
+	// Per-material overrides loaded from the car surface params section.
+	xr_map<int, SSurfaceParams>	m_surface_params;
+	// Last static-level surface touched by the car body, for debug output.
+	float						m_body_surface_friction		= 1.f;
+	float						m_body_surface_flotation	= 1.f;
+	const SGameMtl*				m_body_surface_material		= nullptr;
+	// True when at least one wheel touches the water. While it is set,
+	// UpdateWaterDrag() owns the water drag and the body liquid contact
+	// flotation is suppressed to avoid two drag sources at the surface.
+	bool						WheelsInWater				= false;
 
 	xr_map   <u16,SWheel>	m_wheels_map;
 	xr_vector <SWheelDrive> m_driving_wheels;
@@ -1356,6 +1396,8 @@ public:
 	bool					Exit						(const Fvector& pos,const Fvector& dir);
 	bool					IsHeadLightsAvailable		(){return m_lights.IsAvailable();};
 	SDoor*					Get_Door					(u16 id, bool all = false);
+	u16						GetDoorBone					(u16 id);
+	bool					IsDoorInSight				(const Fvector& look_pos, const Fvector& look_dir);
 // 	bool					All_Doors_closed			();
 	SDoor*					GetNearestDoor				(Fvector look_pos, Fvector look_dir, bool special = false);
 	u16						GetNearestBone				(Fvector look_pos, Fvector look_dir, float &range, bool trunk_test = false);
@@ -1398,6 +1440,10 @@ public:
 	void					LoadSoundDefinitions	(CInifile* ini);
 	void					LoadTransmissionDefinitions	(CInifile* ini);
 	void					LoadVisualDefinitions	(CInifile* ini);
+	void					LoadSurfaceParams			();
+	const SSurfaceParams*	FindSurfaceParams			(const SGameMtl* Material) const;
+	static void				ApplyBindPositionAdd		(IKinematics* K, const xr_vector<Fmatrix>& BindGlobals, u16 BoneID, const Fvector& Offset);
+	static void				ApplyBindDirectionAdd		(IKinematics* K, u16 BoneID, const Fvector& Angles);
 	virtual bool			net_Spawn					( CSE_Abstract* DC ) override;
 	virtual void			net_Destroy					();
 	virtual void			UpdateCL					( ); 
