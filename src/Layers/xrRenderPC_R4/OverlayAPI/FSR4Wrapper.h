@@ -1,32 +1,17 @@
 #pragma once
 
+#if defined(IXR_APPLE_SERIES)
+class FSR4Wrapper
+{
+public:
+	bool GetRenderScale(float&) { return false; }
+	void Destroy() {}
+};
+inline FSR4Wrapper g_Fsr4Wrapper;
+#else
 #include "fsr4bridge/Fsr4Backend.h"
-
 #include <FidelityFX/api/include/ffx_api_types.h>
 
-/**
- * @file FSR4Wrapper.h
- * @brief Публичный фасад для FSR 4 / FSR 3.1.x в движке IX-Ray.
- *
- * Единственный заголовок, который видит остальной движок (рендер-таргеты,
- * UI, консольные команды). Полностью скрывает FFX-специфику, D3D12-мост
- * и ленивую инициализацию контекста внутри `Fsr4Backend`.
- *
- * Ключевые обязанности фасада:
- *  - перевод пользовательского пресета качества (`ps_render_scale_preset`)
- *    в конкретный render-scale (`GetRenderScale`);
- *  - управление жизненным циклом backend'а (`Create` / `Destroy`);
- *  - делегирование кадра (`Draw`);
- *  - проброс read-only статусов наверх (`IsFsr4Active`, `GetStatus`,
- *    `GetActiveVersionString`).
- *
- * Вся логика выбора провайдера (FSR 4 vs FSR 3.1.x fallback), пересоздания
- * FFX-контекста, cross-API синхронизации и обработки device-lost живёт
- * в `Fsr4Backend`.
- *
- * @note Singleton-подобный объект (`g_Fsr4Wrapper`), но НЕ потокобезопасный —
- *       все вызовы должны идти с рендер-потока.
- */
 class FSR4Wrapper
 {
 public:
@@ -142,3 +127,4 @@ private:
  * как `extern FSR4Wrapper g_Fsr4Wrapper`.
  */
 extern FSR4Wrapper g_Fsr4Wrapper;
+#endif

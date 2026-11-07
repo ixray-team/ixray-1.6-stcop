@@ -6,28 +6,6 @@
 #include <FidelityFX/api/include/ffx_api.h>
 #include <FidelityFX/api/include/ffx_api_types.h>
 
-/**
- * @file Fsr4BridgeCommon.h
- * @brief Общие типы, разделяемые между `FSR4Wrapper` (публичный фасад) и
- *        `Fsr4Backend` (внутренняя реализация).
- *
- * Здесь живёт только то, что не зависит от конкретного API-провайдера:
- *  - enum статусов (`Fsr4Status`);
- *  - собственные биты флагов (`Fsr4Flags`);
- *  - публичные структуры параметров (`Fsr4ContextParameters`, `Fsr4DrawParameters`);
- *  - константы, используемые обеими сторонами (`Fsr4PerDispatchFlagsMask`,
- *    `Fsr4FfxSehCrashCode`).
- *
- * FFX-специфичные типы (`ffxContext`, `ffxDispatchDescUpscale` и т.п.)
- * сюда **не** попадают — они изолированы в `Fsr4Backend` и `Fsr4SharedTexture`.
- */
-
-/**
- * @brief Текущий статус backend'а FSR 4.
- *
- * Возвращается через `FSR4Wrapper::GetStatus()` / `Fsr4Backend::GetStatus()`
- * и предназначен для логов, консольных команд и UI-индикаторов.
- */
 enum class Fsr4Status : int
 {
     Ok                 = 0,  ///< Кадр обработан штатно (или ожидание первого кадра).

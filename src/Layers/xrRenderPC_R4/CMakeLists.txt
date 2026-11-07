@@ -51,8 +51,9 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
 # xrRender_R4 project
 if(APPLE)
-    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/(DLSS|FSR3)Wrapper\\.cpp$")
-    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "r4_rendertarget_phase_(dlss|fsr)\\.cpp$")
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/(DLSS|FSR3|FSR4)Wrapper\\.cpp$")
+    list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "r4_rendertarget_phase_(dlss|fsr|fsr4)\\.cpp$")
+	list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "OverlayAPI/fsr4bridge/")
     list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/r4_rendertarget_phase_upscalers_macos.cpp")
     list(APPEND XRR4_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/DirectXTexD3D11_macos.cpp")
 endif()
