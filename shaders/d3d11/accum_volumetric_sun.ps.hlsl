@@ -41,7 +41,7 @@ float4 main(PSInput I) : SV_Target
     float4 J0 = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
 	float coeff = 1.0f / RAY_SAMPLES;
 	float3 direction = P * coeff;
-	P.z -= direction.z * J0.x;
+	P -= direction * J0.x;
 
     float depth = P.z;
     float dt_depth = direction.z;
