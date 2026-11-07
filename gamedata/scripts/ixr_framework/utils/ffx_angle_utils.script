@@ -1,0 +1,21 @@
+--[[
+Description:
+  Переводит угол из градусов в радианы без ограничения диапазона.
+Parameters:
+  degrees (number) - угол в градусах.
+Returns: number - угол в радианах.
+]]
+function degrees_to_radians(degrees)
+	return math.rad(degrees)
+end
+
+--[[
+Description:
+  Переводит угол из радиан в градусы без ограничения диапазона.
+Parameters:
+  radians (number) - угол в радианах.
+Returns: number - угол в градусах.
+]]
+function radians_to_degrees(radians)
+	return math.deg(radians)
+end
