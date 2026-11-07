@@ -26,6 +26,10 @@ const	dReal	*dJointGetPositionContact	(dJointID joint);
 extern class CBlockAllocator<dJointFeedback,128> ContactFeedBacks;
 extern CBlockAllocator<CPHContactBodyEffector,128> ContactEffectors;
 
+// Sets a per-contact flotation override on the dynamic body. The override
+// takes precedence over the material fFlotationFactor for this physics step.
+void SetContactBodyFlotation(dBodyID Body, const dContact& Contact, SGameMtl* Material, float Factor);
+
 void NearCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
 void CollideStatic(dGeomID o2,CPHObject* obj2);
 int CollideSelfGeoms(dGeomID o1, dGeomID o2, CPHObject* obj);

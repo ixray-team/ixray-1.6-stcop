@@ -10,6 +10,8 @@ void CPHContactBodyEffector::Init(dBodyID body,const dContact& contact,SGameMtl*
 	CPHBaseBodyEffector::Init(body);
 	m_contact=contact;
 	m_recip_flotation=1.f-material->fFlotationFactor;
+	m_flotation_override=0.f;
+	m_has_flotation_override=false;
 	m_material=material;
 }
 void CPHContactBodyEffector::Merge(const dContact& contact, SGameMtl* material)
@@ -17,12 +19,28 @@ void CPHContactBodyEffector::Merge(const dContact& contact, SGameMtl* material)
 	m_recip_flotation= std::max(1.f-material->fFlotationFactor,m_recip_flotation);
 }
 
+void CPHContactBodyEffector::SetFlotationOverride(float factor)
+{
+	clamp(factor, 0.f, 1.f);
+	const float recip_flotation = 1.f - factor;
+	if (!m_has_flotation_override)
+	{
+		m_flotation_override = recip_flotation;
+		m_has_flotation_override = true;
+	}
+	else
+	{
+		m_flotation_override = std::max(m_flotation_override, recip_flotation);
+	}
+}
+
 void CPHContactBodyEffector::Apply()
 {
 	const dReal*	linear_velocity				=dBodyGetLinearVel(m_body);
 	dReal			linear_velocity_smag		=dDOT(linear_velocity,linear_velocity);
 	dReal			linear_velocity_mag			=_sqrt(linear_velocity_smag);
-	dReal			effect						=10000.f*m_recip_flotation*m_recip_flotation;
+	const float		recip_flotation				= m_has_flotation_override ? m_flotation_override : m_recip_flotation;
+	dReal			effect						=10000.f*recip_flotation*recip_flotation;
 	dMass mass;
 	dBodyGetMass(m_body,&mass);
 	dReal l_air=linear_velocity_mag*effect;//force/velocity !!!

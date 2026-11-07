@@ -7,10 +7,13 @@ class CPHContactBodyEffector : public CPHBaseBodyEffector
 {
 dContact m_contact;
 float	 m_recip_flotation;
+float	 m_flotation_override;
+bool	 m_has_flotation_override;
 SGameMtl* m_material;
 public:
 void	Init(dBodyID body,const dContact& contact,SGameMtl* material);
 void	Merge(const dContact& contact, SGameMtl* material);
+void	SetFlotationOverride(float factor);
 void	Apply();
 };
 #endif	//PH_CONTACT_BODY_EFFECTOR_H

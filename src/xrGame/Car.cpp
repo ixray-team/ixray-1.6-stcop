@@ -1045,6 +1045,45 @@ void	CCar::Load					( LPCSTR section )
 	CInventoryOwner::Load(section);
 }
 
+void CCar::ApplyBindPositionAdd(IKinematics* K, const xr_vector<Fmatrix>& BindGlobals, u16 BoneID, const Fvector& Offset)
+{
+	if (!K || BoneID == BI_NONE)
+		return;
+
+	CBoneData& Bone = K->LL_GetData(BoneID);
+	Fvector ParentOffset = Offset;
+
+	// bind_transform is local to the parent bone. Config values are authored in
+	// model space, so convert the offset by the inverse parent bind rotation.
+	// This matters for steering wheels: their suspension parent can be rotated.
+	const u16 ParentID = Bone.GetParentID();
+	if (ParentID != BI_NONE && ParentID < BindGlobals.size())
+	{
+		const Fmatrix& Parent = BindGlobals[ParentID];
+		ParentOffset.set(Offset.dotproduct(Parent.i), Offset.dotproduct(Parent.j), Offset.dotproduct(Parent.k));
+	}
+
+	Bone.bind_transform.c.add(ParentOffset);
+}
+
+void CCar::ApplyBindDirectionAdd(IKinematics* K, u16 BoneID, const Fvector& Angles)
+{
+	if (!K || BoneID == BI_NONE)
+		return;
+
+	CBoneData& Bone = K->LL_GetData(BoneID);
+	const Fvector LastC = Bone.bind_transform.c;
+
+	Fmatrix rX; rX.rotateX(Angles.x);
+	Bone.bind_transform.mulB_43(rX);
+	Fmatrix rY; rY.rotateY(Angles.y);
+	Bone.bind_transform.mulB_43(rY);
+	Fmatrix rZ; rZ.rotateZ(Angles.z);
+	Bone.bind_transform.mulB_43(rZ);
+
+	Bone.bind_transform.c.set(LastC);
+}
+
 bool	CCar::net_Spawn				(CSE_Abstract* DC)
 {
 #ifdef DEBUG
@@ -1059,6 +1098,9 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	CInifile* ini = pKinematics->LL_UserData();
+
+	xr_vector<Fmatrix> BindGlobals;
+	pKinematics->LL_GetBindTransform(BindGlobals);
 
 	for (auto& Bone : *pKinematics->LL_Bones())
 	{
@@ -1075,15 +1117,7 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 
 			if (ini->line_exist(b_name, "bind_direction_add"))
 			{
-				Fvector dir_add = ini->r_fvector3(b_name, "bind_direction_add");
-				Fvector last_c = bd.bind_transform.c;
-				Fmatrix rX; rX.rotateX(dir_add.x);
-				bd.bind_transform.mulB_43(rX);
-				Fmatrix rY; rY.rotateY(dir_add.y);
-				bd.bind_transform.mulB_43(rY);
-				Fmatrix rZ; rZ.rotateZ(dir_add.z);
-				bd.bind_transform.mulB_43(rZ);
-				bd.bind_transform.c.set(last_c);
+				ApplyBindDirectionAdd(pKinematics, Bone.second, ini->r_fvector3(b_name, "bind_direction_add"));
 			}
 
 			if (ini->line_exist(b_name, "bind_position"))
@@ -1093,7 +1127,7 @@ bool	CCar::net_Spawn				(CSE_Abstract* DC)
 
 			if (ini->line_exist(b_name, "bind_position_add"))
 			{
-				bd.bind_transform.c.add(ini->r_fvector3(b_name, "bind_position_add"));
+				ApplyBindPositionAdd(pKinematics, BindGlobals, Bone.second, ini->r_fvector3(b_name, "bind_position_add"));
 			}
 
 			if (ini->line_exist(b_name, "bind_mass_pos"))
@@ -1297,6 +1331,59 @@ void CCar::CollisionDetectionCallback					(bool& do_colide,bool bo1,CPHContact& 
 		return;
 	}
 }
+
+void CCar::CarBodySurfaceCallback(bool& do_colide, bool bo1, CPHContact& cphc, SGameMtl* material_1, SGameMtl* material_2)
+{
+	// Wheels are handled by WheellCollisionCallback, where the surface friction
+	// override is applied before the wheel-specific multipliers.
+	if (cphc.HasObjectCallback(bo1, &CCar::SWheel::WheellCollisionCallback))
+		return;
+
+	CPhysicsShellHolder* Holder = smart_cast<CPhysicsShellHolder*>(cphc.GetObject(bo1));
+	CCar* Car = Holder ? smart_cast<CCar*>(Holder) : nullptr;
+	if (!Car || Car->getDestroy())
+		return;
+
+	// The car surface table describes static level surfaces only. Other cars,
+	// characters and dynamic props keep their normal material behaviour.
+	if (cphc.GetObject(!bo1) != nullptr)
+		return;
+
+	SGameMtl* SurfaceMaterial = bo1 ? material_2 : material_1;
+	if (!SurfaceMaterial)
+		return;
+
+	Car->m_body_surface_material = SurfaceMaterial;
+	Car->m_body_surface_friction = cphc.GetFriction();
+	Car->m_body_surface_flotation = SurfaceMaterial->fFlotationFactor;
+
+	// While a wheel is in the water, UpdateWaterDrag() applies the drag for
+	// the whole car. Suppress the body water contact flotation so the body and
+	// the wheels do not fight each other when the body touches the surface.
+	if (SurfaceMaterial->Flags.test(SGameMtl::flLiquid) && Car->WheelsInWater)
+	{
+		Car->m_body_surface_flotation = 1.f;
+		cphc.SetFlotation(bo1, SurfaceMaterial, 1.f);
+		return;
+	}
+
+	const SSurfaceParams* Params = Car->FindSurfaceParams(SurfaceMaterial);
+	if (!Params)
+		return;
+
+	if (Params->HasFriction)
+	{
+		Car->m_body_surface_friction = Params->Friction;
+		cphc.SetFriction(Params->Friction);
+	}
+
+	if (Params->HasFlotation)
+	{
+		Car->m_body_surface_flotation = Params->Flotation;
+		cphc.SetFlotation(bo1, SurfaceMaterial, Params->Flotation);
+	}
+}
+
 void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 {
 	CSE_PHSkeleton		*so = smart_cast<CSE_PHSkeleton*>(D);
@@ -1310,6 +1397,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	K->CalculateBones	(TRUE);
 	Init							();//inits m_driving_wheels,m_steering_wheels,m_breaking_wheels values using recieved in ParceDefinitions & from bone_map
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
+	PPhysicsShell()->add_ObjectContactCallback(CarBodySurfaceCallback);
 	SetDefaultNetState				(so);
 	CPHUpdateObject::Activate       ();
 
@@ -1331,6 +1419,12 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	smart_cast<IKinematics*>(Visual())->CalculateBones(TRUE);
 
 	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
+
+	for (auto& Door : m_doors)
+	{
+		Door.second.BuildExitArea();
+	}
+
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
@@ -2106,6 +2200,9 @@ void CCar::DrawCarInfo()
 	Font->OutNext("Interior volume:   [%3.2f]", m_interior_volume);
 	Font->OutNext("Active car volume: [%3.2f]", psSoundCarFactor);
 	Font->OutNext("Open cabin door:   [%s]", HasOpenNormalDoor() ? "yes" : "no");
+	Font->OutNext("Body surface:      [%s]", m_body_surface_material ? m_body_surface_material->m_Name.c_str() : "none");
+	Font->OutNext("Body friction:     [%3.2f]", m_body_surface_friction);
+	Font->OutNext("Body flotation:    [%3.2f]", m_body_surface_flotation);
 	Font->OutNext("Vel magnitude:     [%3.2f]", GetVelocityM());
 	Font->OutNext("Vel:               [%3.2f]", GetVelocity().dotproduct(XFORM().k));
 	Font->OutNext("Accel magnitude:   [%3.2f]", m_acceleration);
@@ -2212,54 +2309,29 @@ void CCar::DrawCarInfo()
 			auto BoneIt = bone_map.find(Wheel.bone_id);
 			if (BoneIt != bone_map.end() && BoneIt->second.element)
 			{
-				Fvector LinearVelocity;
-				Fvector AngularVelocityWheel;
 				CPhysicsElement* Element = BoneIt->second.element;
-				Element->get_AngularVel(AngularVelocityWheel);
-				Font->OutNext("global_angular_velocity: %f", AngularVelocityWheel.magnitude());
+				Fvector LinearVelocity;
 				Element->get_LinearVel(LinearVelocity);
-				Font->OutNext("global_linear_velocity:  %f", LinearVelocity.magnitude());
+				Font->OutNext("global_linear_velocity:   %f", LinearVelocity.magnitude());
+				Fvector AngularVelocityWheel;
+				Element->get_AngularVel(AngularVelocityWheel);
+				Font->OutNext("global_angular_velocity:  %f", AngularVelocityWheel.magnitude());
 			}
 
 			dJointID Joint = Wheel.joint->GetDJoint();
-			Font->OutNext("torque_by_engine:       %f", Wheel.EngineTorque);
-			Font->OutNext("applied_torque_limit:   %f", dJointGetHinge2Param(Joint, dParamFMax2));
-			Font->OutNext("diff power:             %f", Wheel.wheel_diff_power);
-
-			if (Wheel.collision_params.buxe)
-				Font->SetColor(color_rgba(255, 0, 0, 255));
-			if (Wheel.collision_params.breaking)
-				Font->SetColor(color_rgba(255, 255, 0, 255));
-			if (Wheel.collision_params.slide)
-				Font->SetColor(color_rgba(0, 0, 255, 255));
-
-			Font->OutNext("velocity_by_engine_max: %f", dJointGetHinge2Param(Joint, dParamVel2));
-			Font->OutNext("velocity_current:       %f", dJointGetHinge2Angle2Rate(Joint));
+			Font->OutNext("torque_by_engine:         %f", Wheel.EngineTorque);
+			Font->OutNext("applied_torque_limit:     %f", dJointGetHinge2Param(Joint, dParamFMax2));
+			Font->OutNext("diff_power:               %f", Wheel.wheel_diff_power);
+			Font->OutNext("velocity_by_engine_max:   %f", dJointGetHinge2Param(Joint, dParamVel2));
+			Font->OutNext("velocity_current:         %f", dJointGetHinge2Angle2Rate(Joint));
 			if (Wheel.max_control_velocity > 0.f)
-				Font->OutNext("velocity_maximum:       %f", Wheel.max_control_velocity);
+				Font->OutNext("velocity_maximum:         %f", Wheel.max_control_velocity);
 
-			if (Wheel.collision_params.slide || Wheel.collision_params.buxe || Wheel.collision_params.breaking)
-				Font->SetColor(color_rgba(0, 255, 0, 255));
-
-			Font->OutNext("steering_angle:         %f", dJointGetHinge2Angle1(Joint));
-			Font->OutNext("steering_velocity:      %f", dJointGetHinge2Angle1Rate(Joint));
-			Font->OutNext("steering_velocity_max:  %f", dJointGetHinge2Param(Joint, dParamVel));
-			Font->OutNext("steering_torque:        %f", dJointGetHinge2Param(Joint, dParamFMax));
-			Font->OutNext("breaking_torque:        %f", Wheel.BrakeTorque);
-
-			float SpringFactor, DampingFactor;
-			Wheel.joint->GetJointSDfactors(SpringFactor, DampingFactor);
-			Font->OutNext("current_friction_factor: %f", Wheel.collision_params.current_friction_factor);
-			Font->OutNext("current_friction2_factor:%f", Wheel.collision_params.current_friction2_factor);
-			Font->OutNext("friction_slip_factor:   %f", Wheel.collision_params.friction_slip_factor);
-			Font->OutNext("friction2_slip_factor:  %f", Wheel.collision_params.friction2_slip_factor);
-			Font->OutNext("friction_rain_factor:   %f", Wheel.collision_params.friction_rain_factor);
-			Font->OutNext("wheel_spring_factor:    %f", SpringFactor);
-			Font->OutNext("wheel_damping_factor:   %f", DampingFactor);
-
-			if (!Wheel.collision_params.traction)
-				Font->SetColor(color_rgba(255, 0, 0, 255));
-			Font->OutNext("traction");
+			Font->OutNext("steering_angle:           %f", dJointGetHinge2Angle1(Joint));
+			Font->OutNext("steering_velocity:        %f", dJointGetHinge2Angle1Rate(Joint));
+			Font->OutNext("steering_velocity_max:    %f", dJointGetHinge2Param(Joint, dParamVel));
+			Font->OutNext("steering_torque:          %f", dJointGetHinge2Param(Joint, dParamFMax));
+			Font->OutNext("breaking_torque:          %f", Wheel.BrakeTorque);
 
 			if (m_break_abs)
 			{
@@ -2268,7 +2340,40 @@ void CCar::DrawCarInfo()
 				else
 					Font->SetColor(color_rgba(0, 255, 0, 255));
 				Font->OutNext("ABS");
+				Font->SetColor(color_rgba(0, 255, 0, 255));
 			}
+
+			// Contact friction chain: material pair, then wheel, weather,
+			// nitro and slip multipliers, then the value passed to ODE.
+			if (!Wheel.collision_params.traction)
+				Font->SetColor(color_rgba(255, 0, 0, 255));
+			Font->OutNext("traction");
+			Font->SetColor(color_rgba(0, 255, 0, 255));
+
+			if (Wheel.collision_params.buxe)
+				Font->SetColor(color_rgba(255, 0, 0, 255));
+			if (Wheel.collision_params.breaking)
+				Font->SetColor(color_rgba(255, 255, 0, 255));
+			if (Wheel.collision_params.slide)
+				Font->SetColor(color_rgba(0, 0, 255, 255));
+
+			LPCSTR SurfaceMaterialName = Wheel.collision_params.surface_material ? Wheel.collision_params.surface_material->m_Name.c_str() : "none";
+			Font->OutNext("surface_material:         %s", SurfaceMaterialName);
+			Font->OutNext("surface_friction:         %f", Wheel.collision_params.surface_friction);
+			Font->OutNext("surface_flotation:        %f", Wheel.collision_params.surface_flotation);
+			Font->OutNext("mu_factor:                %f", Wheel.collision_params.mu_factor);
+			Font->OutNext("friction_rain_factor:     %f", Wheel.collision_params.friction_rain_factor);
+			Font->OutNext("friction_nitro_factor:    %f", Wheel.collision_params.friction_nitro_factor);
+			Font->OutNext("friction_slip_factor:     %f", Wheel.collision_params.friction_slip_factor);
+			Font->OutNext("friction2_slip_factor:    %f", Wheel.collision_params.friction2_slip_factor);
+			Font->OutNext("current_friction_factor:  %f", Wheel.collision_params.current_friction_factor);
+			Font->OutNext("current_friction2_factor: %f", Wheel.collision_params.current_friction2_factor);
+
+			Font->SetColor(color_rgba(0, 255, 0, 255));
+			float SpringFactor, DampingFactor;
+			Wheel.joint->GetJointSDfactors(SpringFactor, DampingFactor);
+			Font->OutNext("wheel_spring_factor:      %f", SpringFactor);
+			Font->OutNext("wheel_damping_factor:     %f", DampingFactor);
 
 			++ActiveWheelIndex;
 		}
@@ -2950,46 +3055,71 @@ void CCar::TeleportCarAndDriver(Fvector3 pos)
 	
 }
 */
-CCar::SDoor* CCar::Get_Door(u16 id, bool all)
+u16 CCar::GetDoorBone(u16 id)
 {
-	auto i = m_doors.find(id);
-	if (i != m_doors.end())
-	{
-		if(all)
-			return &i->second;
+	IKinematics* K = PKinematics(Visual());
+	if (!K)
+		return BI_NONE;
 
-		if(i->second.joint)
-			return &i->second;
+	const u16 bone_count = K->LL_BoneCount();
+	while (id != BI_NONE && id < bone_count)
+	{
+		if (m_doors.find(id) != m_doors.end())
+			return id;
+
+		id = K->LL_GetData(id).GetParentID();
 	}
 
-	return NULL;
+	return BI_NONE;
+}
+
+CCar::SDoor* CCar::Get_Door(u16 id, bool all)
+{
+	const u16 door_id = GetDoorBone(id);
+	if (door_id == BI_NONE)
+		return nullptr;
+
+	auto i = m_doors.find(door_id);
+	if (i == m_doors.end())
+		return nullptr;
+
+	if (all || i->second.joint)
+		return &i->second;
+
+	return nullptr;
 }
 
 
 bool CCar::is_Door(u16 id,xr_map<u16,SDoor>::iterator& i)
 {
-	i	= m_doors.find(id);
-	if (i == m_doors.end()) 
+	const u16 door_id = GetDoorBone(id);
+	if (door_id == BI_NONE)
+	{
+		i = m_doors.end();
+		return false;
+	}
+
+	i = m_doors.find(door_id);
+	if (i == m_doors.end())
 	{
 		return false;
 	}
-	else
-	{
-		if(i->second.joint)//temp for fake doors
-			return true;
-		else
-			return false;
-	}
+
+	return i->second.joint != nullptr;
 }
 bool CCar::is_Door(u16 id)
 {
-	xr_map<u16,SDoor>::iterator i;
-	i	= m_doors.find(id);
-	if (i == m_doors.end()) 
-	{
-		return false;
-	}
-	return true;
+	return GetDoorBone(id) != BI_NONE;
+}
+
+bool CCar::IsDoorInSight(const Fvector& look_pos, const Fvector& look_dir)
+{
+	float distance = 0.f;
+	const u16 bone = GetNearestBone(look_pos, look_dir, distance);
+	(void)distance;
+
+	SDoor* door = Get_Door(bone);
+	return door != nullptr && door->bone_id != m_bone_trunk && door->IsDistOfSight(look_pos);
 }
 
 bool CCar::Enter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
@@ -3007,15 +3137,45 @@ bool CCar::Enter(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos)
 
 bool CCar::Exit(const Fvector& pos,const Fvector& dir)
 {
+	SDoor* BestDoor = nullptr;
+	float BestScore = -1.0e30f;
+
+	Fvector LookDir = dir;
+	LookDir.y = 0.f;
+	const bool HasLookDir = safe_normalize(LookDir);
+
 	for (auto& Door : m_doors)
 	{
-		if (Door.second.CanExit(pos, dir))
+		if (!Door.second.CanExit(pos, dir))
+			continue;
+
+		// Prefer the door the player is actually looking through. Without this,
+		// several open doors (for example a previously opened left door) make
+		// Exit pick the first one in map order instead of the intended door.
+		float Score = Door.second.TestPass(pos, dir) ? 2.f : 0.f;
+		if (HasLookDir)
 		{
-			Door.second.GetExitPosition(m_exit_position);
-			return true;
+			Fvector ToDoor = Door.second.GetWorldPosition();
+			ToDoor.sub(pos);
+			ToDoor.y = 0.f;
+			if (safe_normalize(ToDoor))
+				Score += ToDoor.dotproduct(LookDir);
+		}
+
+		if (!BestDoor || Score > BestScore)
+		{
+			BestDoor = &Door.second;
+			BestScore = Score;
 		}
 	}
-	return false;
+
+	if (!BestDoor)
+		return false;
+
+	// detach_Actor() recalculates the exit point from m_exit_door_bone.
+	m_exit_door_bone = BestDoor->bone_id;
+	BestDoor->GetExitPosition(m_exit_position);
+	return true;
 
 }
 
@@ -3061,6 +3221,8 @@ static void loadcamera(LPCSTR section, CInifile *ini, CCameraBase* cam)
 }
 void CCar::ParseDefinitions()
 {
+	LoadSurfaceParams();
+
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	CInifile* ini = pKinematics->LL_UserData();
 	if (ini)
@@ -3072,6 +3234,56 @@ void CCar::ParseDefinitions()
 		LoadTransmissionDefinitions(ini);
 		LoadVisualDefinitions(ini);
 	}
+}
+
+void CCar::LoadSurfaceParams()
+{
+	m_surface_params.clear();
+
+	if (!pSettings || !pSettings->line_exist(cNameSect_str(), "surface_params"))
+		return;
+
+	LPCSTR SectionName = pSettings->r_string(cNameSect_str(), "surface_params");
+	if (!pSettings->section_exist(SectionName))
+	{
+		Msg("! [%s] surface_params section '%s' does not exist", cNameSect_str(), SectionName);
+		return;
+	}
+
+	const CInifile::Sect& Section = pSettings->r_section(SectionName);
+	for (const CInifile::Item& Item : Section.Data)
+	{
+		auto MaterialIt = GMLib.GetMaterialIt(Item.first.c_str());
+		if (MaterialIt == GMLib.LastMaterial())
+		{
+			Msg("! [%s] unknown surface material '%s' in section '%s'", cNameSect_str(), Item.first.c_str(), SectionName);
+			continue;
+		}
+
+		const Fvector2 Values = pSettings->r_fvector2(SectionName, Item.first.c_str());
+
+		SSurfaceParams Params;
+		Params.HasFriction = Values.x >= 0.f;
+		Params.Friction = Params.HasFriction ? Values.x : 1.f;
+		Params.HasFlotation = Values.y >= 0.f;
+		Params.Flotation = Params.HasFlotation ? Values.y : 1.f;
+
+		if (Params.HasFriction)
+			clamp(Params.Friction, 0.f, 10.f);
+		if (Params.HasFlotation)
+			clamp(Params.Flotation, 0.f, 1.f);
+
+		m_surface_params[(*MaterialIt)->ID] = Params;
+	}
+}
+
+const CCar::SSurfaceParams* CCar::FindSurfaceParams(const SGameMtl* Material) const
+{
+	if (!Material)
+		return nullptr;
+
+	auto It = m_surface_params.find(Material->ID);
+	return It == m_surface_params.end() ? nullptr : &It->second;
 }
 
 void CCar::LoadExplosionAndDriverDefinitions(CInifile* ini, IKinematics* pKinematics)
@@ -4438,6 +4650,7 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 	float dist;
 
 	u16 bonebypoly_id = GetNearestBone(look_pos, look_dir, dist, true);
+	const u16 door_bone_id = GetDoorBone(bonebypoly_id);
 	SDoor* door = Get_Door(bonebypoly_id);
 
 	if(door)
@@ -4459,7 +4672,7 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 			b_start_close_recursive = CloseDoors;
 			return NULL;
 		}
-		if (m_bone_trunk == bonebypoly_id)
+		if (m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
 		{
 			if(special)
 			{
@@ -4468,13 +4681,13 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 				else
 					return NULL;
 			}
-			ScriptUseTrunk(bonebypoly_id);
+			ScriptUseTrunk(door_bone_id);
 			return NULL;
 		}
 	}
 	else
 	{
-		if((m_doors_recurs.empty() || (!b_start_close_recursive && b_all_recurs_opened)) && m_bone_trunk == bonebypoly_id)
+		if((m_doors_recurs.empty() || (!b_start_close_recursive && b_all_recurs_opened)) && m_bone_trunk != BI_NONE && m_bone_trunk == door_bone_id)
 		{
 			if(special)
 			{
@@ -4483,7 +4696,7 @@ CCar::SDoor* CCar::GetNearestDoor(Fvector look_pos, Fvector look_dir, bool speci
 				else
 					return NULL;
 			}
-			ScriptUseTrunk(bonebypoly_id);
+			ScriptUseTrunk(door_bone_id);
 			return NULL;
 		}
 	}
@@ -4536,7 +4749,7 @@ bool CCar::TryTrunk()
 	// so it works from any side but does not trigger while aiming at a door.
 	float distance = 0.f;
 	const u16 bone = GetNearestBone(Device.vCameraPosition, Device.vCameraDirection, distance, true);
-	if (bone != m_bone_trunk || distance > UseDistance)
+	if (GetDoorBone(bone) != m_bone_trunk || distance > UseDistance)
 	{
 		return false;
 	}
@@ -5183,6 +5396,7 @@ void CCar::PhDataUpdate(float step)
 
 	const bool Slip = UpdateWheelPhysics();
 	UpdateTractionAndSuspension(Slip);
+	UpdateWaterDrag(step);
 }
 
 void CCar::UpdatePhDataObjects()
@@ -5792,6 +6006,111 @@ void CCar::UpdateTractionAndSuspension(bool slip)
 	m_last_velocity = GetVelocityM();
 	m_last_avelocity_j = GetAVelocity().dotproduct(XFORM().j);
 }
+
+void CCar::UpdateWaterDrag(float step)
+{
+	WheelsInWater = false;
+
+	if (!m_pPhysicsShell || step <= 0.f || m_wheels_map.empty())
+		return;
+
+	const Fvector CarVelocity = GetVelocity();
+	const float Speed = CarVelocity.magnitude();
+	if (Speed < EPS_L)
+		return;
+
+	const float Mass = m_pPhysicsShell->getMass();
+	if (Mass <= 0.f)
+		return;
+
+	collide::rq_results Results;
+	const Fvector Down = { 0.f, -1.f, 0.f };
+	float DragFactorSum = 0.f;
+	float Flotation = 1.f;
+
+	for (auto& WheelEntry : m_wheels_map)
+	{
+		SWheel& Wheel = WheelEntry.second;
+		if (!Wheel.joint || !Wheel.joint->bActive)
+			continue;
+
+		CPhysicsElement* Element = Wheel.joint->PSecond_element();
+		if (!Element || !Element->isActive())
+			continue;
+
+		const Fvector Center = Element->XFORM().c;
+		const float Radius = Wheel.radius > 0.f ? Wheel.radius : Element->getRadius();
+		if (Radius <= 0.f)
+			continue;
+
+		// Find the first liquid triangle above the wheel. The probe starts
+		// several metres above it so deep water is detected as well, and then
+		// scans the hits instead of taking the nearest solid triangle (a bridge,
+		// a rock or the bottom) for the water surface.
+		const float ProbeUp = Radius + 4.f;
+		const Fvector From(Center.x, Center.y + ProbeUp, Center.z);
+		const float Range = ProbeUp + Radius + 0.5f;
+
+		collide::ray_defs Ray(From, Down, Range, 0, collide::rqtStatic);
+		Level().ObjectSpace.RayQuery(Results, Ray, nullptr, nullptr, nullptr, this);
+
+		SGameMtl* WaterMaterial = nullptr;
+		float WheelWaterY = -flt_max;
+		for (auto It = Results.r_begin(); It != Results.r_end(); ++It)
+		{
+			if (It->O || It->element < 0)
+				continue;
+
+			const CDB::TRI& Tri = Level().ObjectSpace.GetStaticTris()[It->element];
+			SGameMtl* Material = GMLib.GetMaterialByIdx(Tri.material);
+			if (!Material || !Material->Flags.test(SGameMtl::flLiquid))
+				continue;
+
+			WheelWaterY = From.y - It->range;
+			WaterMaterial = Material;
+			break;
+		}
+
+		if (!WaterMaterial)
+			continue;
+
+		const float Bottom = Center.y - Radius;
+		float Immersion = (WheelWaterY - Bottom) / (2.f * Radius);
+		if (Immersion < 0.f)
+			continue;
+		if (Immersion > 1.f)
+			Immersion = 1.f;
+
+		WheelsInWater = true;
+
+		// The drag factor follows the submerged part of the wheel: 0 when it
+		// only touches the surface, 1 when it is fully submerged.
+		DragFactorSum += Immersion;
+
+		Flotation = WaterMaterial->fFlotationFactor;
+		if (const SSurfaceParams* Params = FindSurfaceParams(WaterMaterial))
+		{
+			if (Params->HasFlotation)
+				Flotation = Params->Flotation;
+		}
+	}
+
+	if (DragFactorSum <= 0.f)
+		return;
+
+	clamp(Flotation, 0.f, 1.f);
+	const float Recip = 1.f - Flotation;
+	const float Effect = 10000.f * Recip * Recip * DragFactorSum;
+	float Drag = Speed * Effect;
+	const float MaxDrag = Mass / step;
+	if (Drag > MaxDrag)
+		Drag = MaxDrag;
+
+	Fvector Force;
+	Force.mul(CarVelocity, -Drag);
+	m_pPhysicsShell->applyForce(Force.x, Force.y, Force.z);
+}
+
 bool CCar::UsedAI_Locations()
 {
 	return					(FALSE);

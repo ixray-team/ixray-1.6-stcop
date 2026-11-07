@@ -28,6 +28,9 @@ public:
 
 	float GetFriction() const;
 	void SetFriction(float Mu);
+	// Overrides the flotation drag of the dynamic body on this contact side.
+	// Used by vehicles to apply per-surface values from vehicles.ltx.
+	void SetFlotation(bool First, SGameMtl* Material, float Factor);
 	void SetBounce(float Bounce, float BounceVel);
 	void ScaleSpringDamping(float Spring, float Damping);
 
