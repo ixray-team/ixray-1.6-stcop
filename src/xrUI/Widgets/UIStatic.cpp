@@ -9,6 +9,7 @@
 
 #include "UIBtnHint.h"
 #include "UICursor.h"
+#include "../../xrEngine/xr_input.h"
 
 bool is_in2(const Frect& b1, const Frect& b2);
 
@@ -40,6 +41,8 @@ m_textureShadowColor(0)
 	m_TextureOffset.set		(0.0f,0.0f);
 	m_lanim_xform.set_defaults	();
 	m_bEnableTextHighlighting = false;
+	m_HighlightColor = 0xffffffff;
+	m_text_control_exists = false;
 }
 
 void CUIStatic::SetTextureShadow(bool enabled, float thickness, u32 color)
@@ -62,6 +65,62 @@ void CUIStatic::SetTextShadow(const SUIOutlineParams& params)
 CUIStatic::~CUIStatic()
 {
 	xr_delete(m_pTextControl);
+}
+
+bool CUIStatic::OnMouseAction(float X, float Y, EUIMessages MouseAction)
+{
+	if (inherited::OnMouseAction(X, Y, MouseAction))
+	{
+		return true;
+	}
+
+	if (!MouseEventsEnabled || !IsEnabled() || !IsShown())
+	{
+		return false;
+	}
+
+	// Input can still reach a previously hovered window after the cursor leaves it.
+	const Frect Bounds = {0.0f, 0.0f, GetWidth(), GetHeight()};
+	const Fvector2 Position = GetParent() ? Fvector2().set(X, Y) : cursor_pos;
+	if (!Bounds.in(Position.x, Position.y))
+	{
+		return false;
+	}
+
+	switch (MouseAction)
+	{
+	case WINDOW_LBUTTON_DOWN:
+	case WINDOW_LBUTTON_DB_CLICK:
+		SendMessageToTarget(STATIC_MOUSE_LEFT_CLICK);
+		break;
+	case WINDOW_RBUTTON_DOWN:
+		SendMessageToTarget(STATIC_MOUSE_RIGHT_CLICK);
+		break;
+	case WINDOW_MOUSE_MOVE:
+	{
+		const bool Dragging = pInput && (pInput->iGetAsyncBtnState(0) || pInput->iGetAsyncBtnState(1));
+		if (!SendMessageToTarget(STATIC_MOUSE_MOVE))
+		{
+			return false;
+		}
+		if (Dragging)
+		{
+			SendMessageToTarget(STATIC_MOUSE_DRAG);
+		}
+		break;
+	}
+	case WINDOW_MOUSE_WHEEL_UP:
+		SendMessageToTarget(STATIC_MOUSE_WHEEL_UP);
+		break;
+	case WINDOW_MOUSE_WHEEL_DOWN:
+		SendMessageToTarget(STATIC_MOUSE_WHEEL_DOWN);
+		break;
+	default:
+		break;
+	}
+
+	// Keep the input propagation used by statics and their derived controls.
+	return false;
 }
 
 void CUIStatic::SetXformLightAnim(const char* lanim, bool bCyclic)
@@ -352,7 +411,10 @@ void CUIStatic::AdjustHeightToText()
 
 void CUIStatic::AdjustWidthToText()
 {
-	if(!m_pTextControl)	return;
+	if (!m_pTextControl || !m_pTextControl->GetFont())
+	{
+		return;
+	}
 	float _len		= m_pTextControl->GetFont()->SizeOf_(m_pTextControl->GetText());
 	UI().ClientToScreenScaledWidth(_len);
 	SetWidth		(_len);

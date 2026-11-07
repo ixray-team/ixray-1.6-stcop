@@ -97,7 +97,7 @@ void CUITrackBar::StepLeft()
 			m_i_val -= GetInvert() ? -1 : 1; // for bool and token it will be 1 always
 		clamp(m_i_val, m_i_min, m_i_max);
 	}
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+	SendMessageToTarget(BUTTON_CLICKED, nullptr);
 	UpdatePos();
 	OnChangedOptValue();
 }
@@ -117,7 +117,7 @@ void CUITrackBar::StepRight()
 			m_i_val += GetInvert() ? -1 : 1;  // for bool and token it will be 1 always
 		clamp(m_i_val, m_i_min, m_i_max);
 	}
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+	SendMessageToTarget(BUTTON_CLICKED, nullptr);
 	UpdatePos();
 	OnChangedOptValue();
 
@@ -425,24 +425,24 @@ void CUITrackBar::UpdatePosRelativeToMouse()
 	if (IsTokenMode())
 	{
 		b_ch = !fsimilar(_bki - 1, m_i_val - 1);
-		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_i_val - 1);
+		SendMessageToTarget(TRACK_VALUE_CHANGED, &m_i_val - 1);
 	}
 	else
 	{
 		if (IsFltMode())
 		{
 			b_ch = !fsimilar(_bkf, m_f_val);
-			GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_f_val);
+			SendMessageToTarget(TRACK_VALUE_CHANGED, &m_f_val);
 		}
 		else
 		{
 			b_ch = (_bki != m_i_val);
-			GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_i_val);
+			SendMessageToTarget(TRACK_VALUE_CHANGED, &m_i_val);
 		}
 	}
 
 	if (b_ch)
-		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+		SendMessageToTarget(BUTTON_CLICKED, nullptr);
 
 	UpdatePos			();
 	OnChangedOptValue	();
@@ -559,7 +559,7 @@ void CUITrackBar::SetOptIBounds(int imin, int imax)
 	{
 		clamp					(m_i_val, m_i_min, m_i_max);
 		OnChangedOptValue	();
-		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_i_val);
+		SendMessageToTarget(TRACK_VALUE_CHANGED, &m_i_val);
 	}
 }
 
@@ -571,7 +571,7 @@ void CUITrackBar::SetOptFBounds(float fmin, float fmax)
 	{
 		clamp				(m_f_val, m_f_min, m_f_max);
 		OnChangedOptValue	();
-		GetMessageTarget()->SendMessage(this, TRACK_VALUE_CHANGED, &m_f_val);
+		SendMessageToTarget(TRACK_VALUE_CHANGED, &m_f_val);
 	}
 }
 

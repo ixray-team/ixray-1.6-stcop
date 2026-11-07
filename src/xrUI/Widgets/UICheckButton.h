@@ -40,7 +40,7 @@ public:
 	}
 	IC	void	SendClickCallback()
 	{
-		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
+		SendMessageToTarget(BUTTON_CLICKED, nullptr);
 	}
 
 	void SetDependControl(CUIWindow* pWnd);

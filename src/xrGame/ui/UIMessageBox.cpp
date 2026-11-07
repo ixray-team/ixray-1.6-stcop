@@ -285,7 +285,7 @@ void CUIMessageBox::OnYesOk()
 	case 		MESSAGEBOX_OK:
 	case 		MESSAGEBOX_INFO:
 		GetMessageTarget()->SendMessage(m_UIButtonYesOk, MESSAGE_BOX_OK_CLICKED);
-		GetMessageTarget()->SendMessage(this, MESSAGE_BOX_OK_CLICKED);
+		SendMessageToTarget(MESSAGE_BOX_OK_CLICKED);
 		break;
 
 	case 		MESSAGEBOX_DIRECT_IP: 
@@ -295,13 +295,13 @@ void CUIMessageBox::OnYesOk()
 	case 		MESSAGEBOX_PASSWORD:
 	case 		MESSAGEBOX_YES_NO:
 		GetMessageTarget()->SendMessage(m_UIButtonYesOk, MESSAGE_BOX_YES_CLICKED);
-		GetMessageTarget()->SendMessage(this, MESSAGE_BOX_YES_CLICKED);
+		SendMessageToTarget(MESSAGE_BOX_YES_CLICKED);
 		break;
 	case 		MESSAGEBOX_QUIT_WINDOWS:
-		GetMessageTarget()->SendMessage(this, MESSAGE_BOX_QUIT_WIN_CLICKED);
+		SendMessageToTarget(MESSAGE_BOX_QUIT_WIN_CLICKED);
 		break;
 	case 		MESSAGEBOX_QUIT_GAME:
-		GetMessageTarget()->SendMessage(this, MESSAGE_BOX_QUIT_GAME_CLICKED);
+		SendMessageToTarget(MESSAGE_BOX_QUIT_GAME_CLICKED);
 		break;
 	};
 }
@@ -309,7 +309,7 @@ void CUIMessageBox::OnYesOk()
 void CUIMessageBox::OnNo()
 {
 	GetMessageTarget()->SendMessage(m_UIButtonNo, MESSAGE_BOX_NO_CLICKED);
-	GetMessageTarget()->SendMessage(this, MESSAGE_BOX_NO_CLICKED);
+	SendMessageToTarget(MESSAGE_BOX_NO_CLICKED);
 }
 
 void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -351,7 +351,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			else if(pWnd == m_UIButtonCancel)
 			{
 				GetMessageTarget()->SendMessage(m_UIButtonCancel, MESSAGE_BOX_CANCEL_CLICKED);
-				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_CANCEL_CLICKED);
+				SendMessageToTarget(MESSAGE_BOX_CANCEL_CLICKED);
 			}
 			break;
 		case MESSAGEBOX_YES_NO_COPY:
@@ -366,7 +366,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 			else if(pWnd == m_UIButtonCopy)
 			{
 				GetMessageTarget()->SendMessage(m_UIButtonCopy, MESSAGE_BOX_COPY_CLICKED);
-				GetMessageTarget()->SendMessage(this, MESSAGE_BOX_COPY_CLICKED);
+				SendMessageToTarget(MESSAGE_BOX_COPY_CLICKED);
 			}
 			break;
 		};

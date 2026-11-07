@@ -91,10 +91,10 @@ void CUIListBox::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	{
 		switch (msg){
 			case LIST_ITEM_SELECT:	
-				GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, pData);
+				SendMessageToTarget(LIST_ITEM_SELECT, pData);
 				break;
 			case LIST_ITEM_CLICKED:
-				GetMessageTarget()->SendMessage(this, LIST_ITEM_CLICKED, pData);
+				SendMessageToTarget(LIST_ITEM_CLICKED, pData);
 				break;
 			case LIST_ITEM_FOCUS_RECEIVED:
 				if (m_bImmediateSelection)

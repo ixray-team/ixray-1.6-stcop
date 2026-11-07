@@ -285,11 +285,11 @@ void CUIScrollBar::NotifyScrollChanged()
 	}
 	if (_isHorizontal)
 	{
-		GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
+		SendMessageToTarget(SCROLLBAR_HSCROLL);
 	}
 	else
 	{
-		GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+		SendMessageToTarget(SCROLLBAR_VSCROLL);
 	}
 }
 

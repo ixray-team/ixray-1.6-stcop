@@ -181,7 +181,7 @@ void UITaskListWnd::OnMouseScroll( float iDirection )
 void UITaskListWnd::Show( bool status )
 {
 	inherited::Show( status );
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
+	SendMessageToTarget(PDA_TASK_HIDE_HINT, nullptr );
 	if(status)
 		UpdateList();
 }
@@ -189,13 +189,13 @@ void UITaskListWnd::Show( bool status )
 void UITaskListWnd::OnFocusReceive()
 {
 	inherited::OnFocusReceive();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
+	SendMessageToTarget(PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWnd::OnFocusLost()
 {
 	inherited::OnFocusLost();
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
+	SendMessageToTarget(PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWnd::Update()
@@ -252,7 +252,7 @@ void UITaskListWnd::OnStorylineTaskFocus(CUIWindow* w, void* d)
 	CGameTask* task = StorylineTask();
 	if (task)
 	{
-		GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)task);
+		SendMessageToTarget(PDA_TASK_SET_TARGET_MAP, (void*)task);
 	}
 }
 
@@ -357,9 +357,7 @@ void UITaskListWnd::SetFilterMode(ETaskListFilter mode)
 
 	if (m_filter_tabs)
 	{
-		GetMessageTarget()->SendMessage(
-			this,
-			PDA_TASK_LIST_FILTER_CHANGED,
+		SendMessageToTarget(PDA_TASK_LIST_FILTER_CHANGED,
 			reinterpret_cast<void*>(static_cast<intptr_t>(mode))
 		);
 	}
@@ -448,7 +446,7 @@ bool UITaskListWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			CGameTask* pActiveTask = taskManager->ActiveTask(taskType);
 			if (pActiveTask)
 			{
-				GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)pActiveTask);
+				SendMessageToTarget(PDA_TASK_SET_TARGET_MAP, (void*)pActiveTask);
 			}
 			return true;
 		}
@@ -585,14 +583,14 @@ void UITaskListWndItem::hide_hint()
 {
 	show_hint_can   = false;
 	show_hint       = false;
-	GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_HINT, nullptr );
+	SendMessageToTarget(PDA_TASK_HIDE_HINT, nullptr );
 }
 
 void UITaskListWndItem::showHint()
 {
 	show_hint_can   = true;
 	show_hint       = true;
-	GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_HINT, (void*)m_task );
+	SendMessageToTarget(PDA_TASK_SHOW_HINT, (void*)m_task );
 }
 
 void UITaskListWndItem::Update()
@@ -722,7 +720,7 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 
 	if (isFocusControl && (msg == BUTTON_DOWN || msg == BUTTON_CLICKED))
 	{
-		GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)m_task);
+		SendMessageToTarget(PDA_TASK_SET_TARGET_MAP, (void*)m_task);
 		return;
 	}
 
@@ -730,12 +728,12 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 	{
 		if ( m_bt_view->GetCheck() && msg == BUTTON_CLICKED )
 		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_HIDE_MAP_SPOT, (void*)m_task );
+			SendMessageToTarget(PDA_TASK_HIDE_MAP_SPOT, (void*)m_task );
 			return;
 		}
 		if ( !m_bt_view->GetCheck() && msg == BUTTON_CLICKED )
 		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SHOW_MAP_SPOT, (void*)m_task );
+			SendMessageToTarget(PDA_TASK_SHOW_MAP_SPOT, (void*)m_task );
 			return;
 		}
 	}
@@ -750,7 +748,7 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 
 		if ( msg == WINDOW_LBUTTON_DB_CLICK )
 		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SET_TARGET_MAP, (void*)m_task );
+			SendMessageToTarget(PDA_TASK_SET_TARGET_MAP, (void*)m_task );
 		}
 	}
 

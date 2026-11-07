@@ -297,7 +297,7 @@ void CUICellItem::Update()
 		m_pParentList->GetClientArea(clientArea);
 		Fvector2 cp			= GetUICursor().GetCursorPosition();
 		if(clientArea.in(cp))
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_FOCUSED_UPDATE, nullptr);
+			SendMessageToTarget(DRAG_DROP_ITEM_FOCUSED_UPDATE, nullptr);
 	}
 	
 	PIItem item = (PIItem)m_pData;
@@ -610,8 +610,8 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if ( mouse_action == WINDOW_LBUTTON_DOWN )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, nullptr );
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_SELECTED, nullptr );
+		SendMessageToTarget(DRAG_DROP_ITEM_LBUTTON_CLICK, nullptr );
+		SendMessageToTarget(DRAG_DROP_ITEM_SELECTED, nullptr );
 		m_mouse_selected_item = this;
 		return EngineExternal()[EEngineExternalGame::EnableStackWindow];
 	}
@@ -619,18 +619,18 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if ( pInput->LeftMouseButtonPressed() && m_mouse_selected_item && m_mouse_selected_item == this )
 		{
-			GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DRAG, nullptr );
+			SendMessageToTarget(DRAG_DROP_ITEM_DRAG, nullptr );
 			return true;
 		}
 	}
 	else if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DB_CLICK, nullptr );
+		SendMessageToTarget(DRAG_DROP_ITEM_DB_CLICK, nullptr );
 		return true;
 	}
 	else if ( mouse_action == WINDOW_RBUTTON_DOWN )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_RBUTTON_CLICK, nullptr );
+		SendMessageToTarget(DRAG_DROP_ITEM_RBUTTON_CLICK, nullptr );
 		return true;
 	}
 	
@@ -678,7 +678,7 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
         }
 		if (GetAccelerator() == dik)
 		{
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
+			SendMessageToTarget(DRAG_DROP_ITEM_DB_CLICK, NULL);
 			return		true;
 		}
 	}
@@ -1029,4 +1029,3 @@ Fvector2 CUIDragItem::GetPosition()
 {
 	return Fvector2().add(m_pos_offset, GetUICursor().GetCursorPosition());
 }
-
