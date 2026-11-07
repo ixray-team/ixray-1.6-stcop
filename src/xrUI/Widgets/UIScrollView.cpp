@@ -331,6 +331,99 @@ void CUIScrollView::Draw()
 		RecalcSize();
 	}
 
+	auto DrawPad = [this]()
+	{
+		Frect visible_rect;
+		GetAbsoluteRect(visible_rect);
+		visible_rect.top += m_upIndent;
+		visible_rect.bottom -= m_downIndent;
+		UI().PushScissor(visible_rect);
+
+		xrCriticalSectionGuard guard(m_pad->csUi);
+		if (m_pad->HasCustomChildDrawOrder())
+		{
+			const WINDOW_LIST Children = m_pad->GetChildDrawOrder();
+			for (CUIWindow* Child : Children)
+			{
+				Frect ItemRect;
+				Child->GetAbsoluteRect(ItemRect);
+				if (Child->GetVisible() && visible_rect.intersected(ItemRect))
+				{
+					Child->Draw();
+				}
+			}
+		}
+		else
+		{
+			WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
+
+			if (!Empty() && m_visible_rgn.x != -1)
+			{
+				std::advance(it, m_visible_rgn.x);
+				for (int idx = m_visible_rgn.x; idx <= m_visible_rgn.y; ++it, ++idx)
+				{
+					CUIScrollView* sw = (*it)->ui_cast_scroll_view();
+					VERIFY(sw == nullptr);
+
+					if ((*it)->GetVisible())
+					{
+						(*it)->Draw();
+					}
+				}
+			}
+			else for (int idx = 0; it != m_pad->GetChildWndList().end(); ++it, ++idx)
+			{
+				Frect item_rect;
+				(*it)->GetAbsoluteRect(item_rect);
+				if (visible_rect.intersected(item_rect))
+				{
+					if (m_visible_rgn.x == -1) //first visible
+					{
+						m_visible_rgn.x = idx;
+					}
+
+					m_visible_rgn.y = idx;
+
+					if ((*it)->GetVisible())
+					{
+						(*it)->Draw();
+					}
+				}
+				else if (m_visible_rgn.x != -1)
+				{
+					break;
+				}
+			}
+		}
+
+		UI().PopScissor();
+	};
+
+	if (HasCustomChildDrawOrder())
+	{
+		xrCriticalSectionGuard Guard(csUi);
+		const WINDOW_LIST Children = GetChildDrawOrder();
+		for (CUIWindow* Child : Children)
+		{
+			if (Child == m_pad)
+			{
+				DrawPad();
+			}
+			else if (Child == m_VScrollBar)
+			{
+				if (Child->IsShown())
+				{
+					Child->Draw();
+				}
+			}
+			else if (Child && Child->IsShown() && !Child->GetCustomDraw())
+			{
+				Child->Draw();
+			}
+		}
+		return;
+	}
+
 	for (CUIWindow* child : m_ChildWndList)
 	{
 		if (!child || child == m_pad || child == m_VScrollBar)
@@ -344,54 +437,8 @@ void CUIScrollView::Draw()
 		child->Draw();
 	}
 
-	Frect visible_rect;
-	GetAbsoluteRect(visible_rect);
-	visible_rect.top += m_upIndent;
-	visible_rect.bottom -= m_downIndent;
-	UI().PushScissor(visible_rect);
+	DrawPad();
 
-	xrCriticalSectionGuard guard(m_pad->csUi);
-	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
-
-	if (!Empty() && m_visible_rgn.x != -1)
-	{
-		std::advance(it, m_visible_rgn.x);
-		for (int idx = m_visible_rgn.x; idx <= m_visible_rgn.y; ++it, ++idx)
-		{
-			CUIScrollView* sw = (*it)->ui_cast_scroll_view();
-			VERIFY(sw == nullptr);
-
-			if ((*it)->GetVisible())
-			{
-				(*it)->Draw();
-			}
-		}
-	}
-	else for (int idx = 0; it != m_pad->GetChildWndList().end(); ++it, ++idx)
-	{
-		Frect item_rect;
-		(*it)->GetAbsoluteRect(item_rect);
-		if (visible_rect.intersected(item_rect))
-		{
-			if (m_visible_rgn.x == -1) //first visible
-			{
-				m_visible_rgn.x = idx;
-			}
-
-			m_visible_rgn.y = idx;
-
-			if ((*it)->GetVisible())
-			{
-				(*it)->Draw();
-			}
-		}
-		else if (m_visible_rgn.x != -1)
-		{
-			break;
-		}
-	}
-
-	UI().PopScissor();
 
 	if (m_VScrollBar && m_VScrollBar->IsShown())
 	{
