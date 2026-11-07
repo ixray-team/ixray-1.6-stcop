@@ -298,8 +298,6 @@ public:
 	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return nullptr;}
 	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=nullptr)				{return nullptr;}
 	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return nullptr;}
-	virtual IRenderVisual*			model_GetPrototype		(const char* name)				{return nullptr;}
-	virtual CDB::MODEL*				model_GetPrototypeCollision(const char* name)				{return nullptr;}
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return nullptr;}
 	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=false)	{}
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{}

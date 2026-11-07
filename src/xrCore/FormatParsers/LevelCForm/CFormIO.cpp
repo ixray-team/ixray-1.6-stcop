@@ -251,13 +251,6 @@ void CForm::CFormatVanillaChunked::ReadData(CDB::MODEL& Model, CDB::build_callba
 	Model.build_simple();
 }
 
-CDB::MODEL* CForm::CFormatInstanced::ReadInstance(shared_str Path, CDB::build_callback* bc, void* bcp) const
-{
-	xr_stack_string_path FixedPath = "static\\";
-	FixedPath.append(Path.c_str());
-	return ::Render->model_GetPrototypeCollision(FixedPath.c_str());
-}
-
 CForm::CFormatInstanced::CFormatInstanced()
 {
 	Header.version = CFormVersions::Instanced;
@@ -290,27 +283,15 @@ bool CForm::CFormatInstanced::Write(xr_string_view FileName)
 	for (auto& elem : instances)
 	{
 		Writer->w_stringZ(elem.first);
+		
+		auto Model = Models[elem.first];
+		Writer->w_u64(Model.VertsCount);
+		Writer->w(Model.VertsPtr, Model.VertsCount*sizeof(Fvector));
+		Writer->w_u64(Model.TrisCount);
+		Writer->w(Model.TrisPtr, Model.TrisCount*sizeof(CDB::TRI));
+		
 		Writer->w_u64(elem.second.size());
 		Writer->w(elem.second.data(), elem.second.size()*sizeof(decltype(elem.second)::value_type));
-	}
-	
-	CDB::MODEL PreBuild;
-	PreBuild.verts.resize(Header.vertcount);
-	std::memcpy(PreBuild.verts.data(), VertsPtr, Header.vertcount*sizeof(Fvector));
-	PreBuild.tris.resize(Header.facecount);
-	std::memcpy(PreBuild.tris.data(), TrisPtr, Header.facecount*sizeof(CDB::TRI));
-	
-	for (auto& [Name, Vec] : instances)
-	{
-		auto Index = PreBuild.models.size();
-		auto Model = Models[Name];
-		PreBuild.models.push_back(Model);
-		for (auto& Inst : Vec)
-		{
-			auto Inv = Inst.xform;
-			Inv.invert();
-			PreBuild.instances.emplace_back(Inst.xform, Inv, Inst.AABB, Index, Inst.Sector);
-		}
 	}
     
 	return true;
@@ -339,18 +320,28 @@ bool CForm::CFormatInstanced::Read(xr_string_view FileName)
 	TrisPtr = (CDB::TRI*)FileReader->pointer();
 	FileReader->advance(Header.facecount*sizeof(CDB::TRI));
 	
+	xr_task_group LoadTaskGroup;
 	size_t InstancesCount = FileReader->r_u64();
 	for (size_t i = 0; i < InstancesCount; ++i)
 	{
 		shared_str ObjectName;
 		FileReader->r_stringZ(ObjectName);
-		auto& Slot = instances[ObjectName];
 		
+		auto& Model = Models[ObjectName];
+		Model.VertsCount = FileReader->r_u64();
+		Model.VertsPtr = (Fvector*)FileReader->pointer();
+		FileReader->advance(Model.VertsCount*sizeof(Fvector));
+		Model.TrisCount = FileReader->r_u64();
+		Model.TrisPtr = (CDB::TRI*)FileReader->pointer();
+		FileReader->advance(Model.TrisCount*sizeof(CDB::TRI));
+		
+		auto& Slot = instances[ObjectName];
 		size_t xformCount = FileReader->r_u64();
 		Slot.resize(xformCount);
 		std::memcpy(Slot.data(), FileReader->pointer(), xformCount * sizeof(decltype(instances)::mapped_type::value_type));
 		FileReader->advance(xformCount * sizeof(decltype(instances)::mapped_type::value_type));
 	}
+	LoadTaskGroup.wait();
 
 	return true;
 }
@@ -368,10 +359,14 @@ void CForm::CFormatInstanced::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB:
 	TrisPtr = Tris.data();
 }
 
-void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, CDB::MODEL& Collsion, u16 Sector)
+void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, const CDB::MODEL& Collsion, u16 Sector)
 {
 	instances.try_emplace(Path).first->second.emplace_back(xform, AABB, Sector);
-	Models.try_emplace(Path).first->second = &Collsion;
+	auto& Data = Models.try_emplace(Path).first->second;
+	Data.VertsPtr = Collsion.get_verts().data();
+	Data.TrisPtr = Collsion.get_tris().data();
+	Data.VertsCount = Collsion.get_tris().size();
+	Data.TrisCount = Collsion.get_tris().size();
 }
 
 void CForm::CFormatInstanced::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
@@ -390,10 +385,19 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 			PROF_EVENT("CForm::CFormatInstanced::ReadData::Task")
 			size_t Index;
 			{
-				auto InstanceMesh = ReadInstance(elem.first, bc, bcp);
 				xrCriticalSectionGuard g(Model.ModelsCS);
 				Index = Model.models.size();
-				Model.models.emplace_back(InstanceMesh);
+				auto& Prototype = Model.models.emplace_back(new CDB::MODEL);
+				auto& PrototypeData = Models[elem.first];
+				Prototype->get_verts().resize(PrototypeData.VertsCount);
+				std::memcpy(Prototype->get_verts().data(), PrototypeData.VertsPtr, PrototypeData.VertsCount * sizeof(Fvector));
+				Prototype->get_tris().resize(PrototypeData.TrisCount);
+				std::memcpy(Prototype->get_tris().data(), PrototypeData.TrisPtr, PrototypeData.TrisCount * sizeof(CDB::TRI));
+				if (bc)
+				{
+					bc(Prototype->get_verts().data(), Prototype->get_verts().size(), Prototype->get_tris().data(), Prototype->get_tris().size(), bcp);
+				}
+				Prototype->build_simple();
 			}
 			for(auto& trans : elem.second)
 			{
@@ -404,14 +408,6 @@ void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* b
 			}
 			PROF_STOP_THREAD()
 		});
-		/*auto InstanceMesh = ReadInstance(elem.first, bc, bcp);
-		Model.models.emplace_back(InstanceMesh);
-		for(auto& trans : elem.second)
-		{
-			Fmatrix Inv = trans.xform;
-			Inv.invert();
-			Model.instances.emplace_back(trans.xform, Inv, trans.AABB, Model.models.size()-1, trans.Sector);
-		}*/
 	}
 	LoadTaskGroup.wait();
 	
