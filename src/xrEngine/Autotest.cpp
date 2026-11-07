@@ -24,12 +24,13 @@ namespace
 
 	u32					s_target	= 120;
 	u32					s_warmup	= 150;
-	u32					s_timeout	= 300;
-	bool				s_hash		= false;
-	string_path			s_out		= { 0 };
-	string_path			s_cmd		= { 0 };
-	string_path			s_post_cmd	= { 0 };
-	bool				s_post_pending = false;
+	u32 s_timeout = 300;
+	bool s_hash = false;
+	bool g_MenuCapture = false;
+	string_path s_out = {0};
+	string_path s_cmd = {0};
+	string_path s_post_cmd = {0};
+	bool s_post_pending = false;
 	string_path			s_shot		= { 0 };
 	u32					s_shot_every = 0;
 
@@ -208,16 +209,19 @@ namespace Autotest
 
 		if (!s_started)
 		{
-			s_started	= true;
-			s_target	= ReadParam("-autotest_frames ", 120);
-			s_warmup	= ReadParam("-autotest_warmup ", 150);
-			s_timeout	= ReadParam("-autotest_timeout ", 300);
-			s_hash		= !!strstr(Core.Params, "-autotest_hash");
+			s_started = true;
+			s_target = ReadParam("-autotest_frames ", 120);
+			s_warmup = ReadParam("-autotest_warmup ", 150);
+			s_timeout = ReadParam("-autotest_timeout ", 300);
+			s_hash = !!strstr(Core.Params, "-autotest_hash");
+			g_MenuCapture = !!strstr(Core.Params, "-autotest_menu");
 
 			string_path leaf;
 			const char* name = strstr(Core.Params, "-autotest_out ");
 			if (name && 1 == sscanf(name + xr_strlen("-autotest_out "), "%259[^ ]", leaf))
+			{
 				xr_strcpy(s_out, leaf);
+			}
 			else
 				FS.update_path(s_out, "$logs$", "autotest.csv");
 
@@ -305,8 +309,13 @@ namespace Autotest
 			Finish();
 		}
 
-		if (!g_pGameLevel || Device.dwPrecacheFrame || !g_loading_events.empty())
+		const bool SceneReady = g_MenuCapture
+									? g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()
+									: g_pGameLevel != nullptr;
+		if (!SceneReady || Device.dwPrecacheFrame || !g_loading_events.empty())
+		{
 			return;
+		}
 
 		if (s_seen == s_warmup && s_post_cmd[0])
 		{
@@ -314,7 +323,9 @@ namespace Autotest
 		}
 
 		if (s_seen++ < s_warmup)
+		{
 			return;
+		}
 
 		Device.m_pRender->GetCacheStats(S.calls, S.verts, S.polys, S.dips);
 
@@ -353,3 +364,4 @@ namespace Autotest
 		return 0;
 	}
 }
+

@@ -15,12 +15,12 @@ extern int	psSkeletonUpdate;
 using	namespace animation;
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
-void		CBlendInstance::construct()
-{	
-	ZeroMemory			(this,sizeof(*this));
+void CBlendInstance::construct()
+{
+	Blend.clear();
 }
-void		CBlendInstance::blend_add	(CBlend* H)
-{	
+void CBlendInstance::blend_add(CBlend* H)
+{
 	xrSRWLockGuard guard(&blend_lock, false);
 	if ( Blend.size() == MAX_BLENDED )	{
 		if(H->fall_at_end)
@@ -665,28 +665,28 @@ CKinematicsAnimated::CKinematicsAnimated():
 	
 }
 
-void	CKinematicsAnimated::IBoneInstances_Create()
+void CKinematicsAnimated::IBoneInstances_Create()
 {
-    inherited::IBoneInstances_Create();
-	u32				size	= (u32)bones->size();
-	blend_instances			= xr_alloc<CBlendInstance>(size);
-	for (u32 i=0; i<size; i++)
+	inherited::IBoneInstances_Create();
+	u32 size = (u32)bones->size();
+	// xr_unique_ptr<T[]> frees raw storage without running element destructors.
+	blend_instances = std::make_unique<CBlendInstance[]>(size);
+	for (u32 i = 0; i < size; i++)
+	{
 		blend_instances[i].construct();
-}
-
-void	CKinematicsAnimated::IBoneInstances_Destroy()
-{
-    inherited::IBoneInstances_Destroy();
-	if (blend_instances) {
-		xr_free(blend_instances);
-		blend_instances = nullptr;
 	}
 }
 
-#define PCOPY(a)	a = pFrom->a
-void CKinematicsAnimated::Copy(dxRender_Visual *P) 
+void CKinematicsAnimated::IBoneInstances_Destroy()
 {
-	inherited::Copy	(P);
+	inherited::IBoneInstances_Destroy();
+	blend_instances.reset();
+}
+
+#define PCOPY(a) a = pFrom->a
+void CKinematicsAnimated::Copy(dxRender_Visual* P)
+{
+	inherited::Copy(P);
 
 	CKinematicsAnimated* pFrom = (CKinematicsAnimated*)P;
 	PCOPY			(m_Motions);
@@ -1055,3 +1055,4 @@ CBlend* CKinematicsAnimated::PlayFX_Safe(const char* N, float power_scale)
 		return PlayFX(motion_ID, power_scale);
 	return nullptr;
 }
+

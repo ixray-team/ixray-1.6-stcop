@@ -14,6 +14,7 @@ Current branch uses separate `xrRender_R1`, `xrRender_R2`, and `xrRender_R4` cli
 | [camera-focus.md](camera-focus.md) | Actor camera focus, Lua API, input ownership, transitions |
 | [item-parameters.md](item-parameters.md) | Inventory parameter rows, signs, icon colors |
 | [build.md](build.md) | Targets and CMake options |
+| [macos.md](macos.md) | Native Apple Silicon build, dependencies and CoC runtime staging |
 | [style.md](style.md) | RAII, types, platform split |
 
 Agent entry: [AGENTS.md](../../AGENTS.md).

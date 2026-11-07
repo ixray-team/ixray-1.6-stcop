@@ -16,7 +16,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 CSE_ALifeItemWeapon	*CSE_ALifeAnomalousZone::tpfGetBestWeapon(ALife::EHitType &tHitType, float &fHitPower)

@@ -1,6 +1,9 @@
 
 #include "stdafx.h"
 #include "GameFont.h"
+#ifdef IXR_MACOS
+#include "../xrCore/Platform/MacOS/TextEncoding.h"
+#endif
 #include "string_table.h"
 #include "IGame_Persistent.h"
 #include "../xrCore/API/xrAPI.h"
@@ -637,8 +640,14 @@ float CGameFont::WidthOf(const char* str)
 	float size = 0;
 	const float spacing = GetLetterSpacing() * g_current_font_scale.x;
 
+#ifdef IXR_MACOS
+	const auto Codepoints = Platform::DecodeText(str);
+	const u32* wideStr = Codepoints.data();
+	const int length = static_cast<int>(Codepoints.size());
+#else
 	auto wideStr = Platform::ANSI_TO_TCHAR(str);
 	const int length = DynamicFontLen(wideStr);
+#endif
 	for (int i = 0; i < length; i++)
 	{
 		if (g_FontManager->GamepadButtonMappings[wideStr[i]] &&
@@ -747,3 +756,4 @@ wchar_t TranslateSymbolUsingCP1251(char Symbol)
 
 	return wchar_t(RawSymbol - 0xc0) + 0x410;
 }
+

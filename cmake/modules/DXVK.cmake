@@ -2,13 +2,47 @@ if(NOT SDL3_SOURCE_DIR)
     message(FATAL_ERROR "SDL3_SOURCE_DIR not set. Please include SDL3 configuration first.")
 endif()
 
-find_package(Vulkan)
+if(APPLE)
+    find_program(HOMEBREW_EXECUTABLE brew)
+    if(HOMEBREW_EXECUTABLE)
+        execute_process(
+            COMMAND ${HOMEBREW_EXECUTABLE} --prefix vulkan-loader
+            OUTPUT_VARIABLE VULKAN_LOADER_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE VULKAN_LOADER_RESULT
+        )
+        execute_process(
+            COMMAND ${HOMEBREW_EXECUTABLE} --prefix vulkan-headers
+            OUTPUT_VARIABLE VULKAN_HEADERS_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE VULKAN_HEADERS_RESULT
+        )
+        if(VULKAN_LOADER_RESULT EQUAL 0 AND VULKAN_HEADERS_RESULT EQUAL 0)
+            set(Vulkan_LIBRARY "${VULKAN_LOADER_PREFIX}/lib/libvulkan.dylib" CACHE FILEPATH "" FORCE)
+            set(Vulkan_INCLUDE_DIR "${VULKAN_HEADERS_PREFIX}/include" CACHE PATH "" FORCE)
+        endif()
+    endif()
+endif()
+
+find_package(Vulkan REQUIRED)
+
+set(DXVK_PATCH_COMMAND)
+set(IXRAY_DXVK_REVISION master)
+set(IXRAY_DXVK_SHALLOW TRUE)
+set(DXVK_COMPILE_ARGS)
+if(APPLE)
+    set(IXRAY_DXVK_REVISION 829e377d2d5cf4b07455412fcabed66a1bf4390c)
+    set(IXRAY_DXVK_SHALLOW FALSE)
+    set(DXVK_COMPILE_ARGS -j4)
+    set(DXVK_PATCH_COMMAND bash -c "git apply '${CMAKE_SOURCE_DIR}/cmake/patches/dxvk-macos.patch' || git apply --reverse --check '${CMAKE_SOURCE_DIR}/cmake/patches/dxvk-macos.patch'")
+endif()
 
 FetchContent_Declare(
     dxvk
     GIT_REPOSITORY https://github.com/doitsujin/dxvk.git
-    GIT_TAG        master
-    GIT_SHALLOW    TRUE
+    GIT_TAG        ${IXRAY_DXVK_REVISION}
+    GIT_SHALLOW    ${IXRAY_DXVK_SHALLOW}
+    PATCH_COMMAND  ${DXVK_PATCH_COMMAND}
 )
 
 FetchContent_GetProperties(dxvk)
@@ -87,7 +121,7 @@ Cflags: -I\${includedir}
     
     # Компиляция
     execute_process(
-        COMMAND ${MESON} compile -C ${DXVK_BUILD_DIR}
+        COMMAND ${MESON} compile -C ${DXVK_BUILD_DIR} ${DXVK_COMPILE_ARGS}
         RESULT_VARIABLE MESON_COMPILE_RESULT
         ERROR_VARIABLE  MESON_COMPILE_ERROR
     )
@@ -96,63 +130,47 @@ Cflags: -I\${includedir}
         message(FATAL_ERROR "meson compile failed: ${MESON_COMPILE_ERROR}")
     endif()
     
-    # Установка
     execute_process(
         COMMAND ${MESON} install -C ${DXVK_BUILD_DIR}
         RESULT_VARIABLE MESON_INSTALL_RESULT
-        ERROR_VARIABLE  MESON_INSTALL_ERROR
-    )
-    
-    # install
-    execute_process(
-        COMMAND ${MESON} install -C ${DXVK_BUILD_DIR}
-        RESULT_VARIABLE MESON_INSTALL_RESULT
+        ERROR_VARIABLE MESON_INSTALL_ERROR
     )
 
     if(NOT MESON_INSTALL_RESULT EQUAL 0)
-        message(FATAL_ERROR "meson install failed")
+        message(FATAL_ERROR "meson install failed: ${MESON_INSTALL_ERROR}")
     endif()
-
-    # detect actual lib dir
-    find_library(DXVK_D3D9
-        NAMES dxvk_d3d9 libdxvk_d3d9
-        PATHS
-            ${DXVK_INSTALL_DIR}/lib
-            ${DXVK_INSTALL_DIR}/lib64
-            ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
-        NO_DEFAULT_PATH
-        REQUIRED
-    )
-
-    find_library(DXVK_D3D11
-        NAMES dxvk_d3d11 libdxvk_d3d11
-        PATHS
-            ${DXVK_INSTALL_DIR}/lib
-            ${DXVK_INSTALL_DIR}/lib64
-            ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
-        NO_DEFAULT_PATH
-        REQUIRED
-    )
-
-    set(DXVK_LIBRARIES 
-        ${DXVK_D3D9}
-        ${DXVK_D3D11}
-        CACHE PATH "kal" FORCE
-    )
-
-    ##if(NOT MESON_INSTALL_RESULT EQUAL 0)
-    ##    message(FATAL_ERROR "meson install failed: ${MESON_INSTALL_ERROR}")
-    ##endif()
-    ##
-    ##set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib64")
-    ##
-    ##if(NOT EXISTS ${DXVK_LIB_DIR})
-    ##    set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib")
-    ##endif()
-
-    ##set(DXVK_LIBRARIES ${DXVK_LIB_DIR}/libdxvk_d3d9.so ${DXVK_LIB_DIR}/libdxvk_d3d11.so CACHE FILEPATH "DXVK native libraries" FORCE)
-    set(DXVK_INCLUDE_DIRS 
-        "${DXVK_INSTALL_DIR}/include/dxvk" 
-        CACHE PATH "DXVK native include directories" FORCE
-    )
 endif()
+
+set(DXVK_BUILD_DIR "${dxvk_BINARY_DIR}/build-native")
+set(DXVK_INSTALL_DIR "${dxvk_BINARY_DIR}/install")
+
+find_library(DXVK_D3D9
+    NAMES dxvk_d3d9 libdxvk_d3d9
+    PATHS
+        ${DXVK_INSTALL_DIR}/lib
+        ${DXVK_INSTALL_DIR}/lib64
+        ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+find_library(DXVK_D3D11
+    NAMES dxvk_d3d11 libdxvk_d3d11
+    PATHS
+        ${DXVK_INSTALL_DIR}/lib
+        ${DXVK_INSTALL_DIR}/lib64
+        ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+set(DXVK_LIBRARIES
+    ${DXVK_D3D9}
+    ${DXVK_D3D11}
+    CACHE STRING "DXVK native libraries" FORCE
+)
+
+set(DXVK_INCLUDE_DIRS
+    "${DXVK_INSTALL_DIR}/include/dxvk"
+    CACHE PATH "DXVK native include directories" FORCE
+)

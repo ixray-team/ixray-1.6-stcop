@@ -2,7 +2,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
+#include <cstdlib>
 #pragma warning(pop)
 
 class XRCORE_API trivial_encryptor
@@ -50,3 +50,4 @@ public:
 };
 
 extern XRCORE_API trivial_encryptor g_trivial_encryptor;
+

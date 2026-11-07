@@ -17,7 +17,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 constexpr u32 rest_time_to_delete = 300000;
@@ -224,3 +226,4 @@ IC	void CSpaceRestrictionHolder::collect_garbage			()
 			++I;
 	}
 }
+

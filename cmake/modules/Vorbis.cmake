@@ -24,13 +24,13 @@ else()
         add_library(Vorbis::vorbis INTERFACE IMPORTED)
         set_target_properties(Vorbis::vorbis PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${VORBIS_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${VORBIS_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${VORBIS_LINK_LIBRARIES}"
         )
 
         add_library(Vorbis::vorbisfile INTERFACE IMPORTED)
         set_target_properties(Vorbis::vorbisfile PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${VORBISFILE_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${VORBISFILE_LIBRARIES}"
+            INTERFACE_LINK_LIBRARIES "${VORBISFILE_LINK_LIBRARIES}"
         )
     else()
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)

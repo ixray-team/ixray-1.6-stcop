@@ -89,14 +89,14 @@ extern "C" {
 	} GSICriticalSection;
 	typedef void (*GSThreadFunc)(void *arg);
 
-#elif defined(IXR_LINUX) //_LINUX || _MACOSX
-	typedef pthread_mutex_t GSICriticalSection;
-	typedef struct
-	{
-		pthread_mutex_t mLock;
-		gsi_i32 mValue;
-		gsi_i32 mMax;
-	} GSISemaphoreID;
+#elif defined(IXR_LINUX) || defined(IXR_MACOS) //_LINUX || _MACOSX
+typedef pthread_mutex_t GSICriticalSection;
+typedef struct
+{
+	pthread_mutex_t mLock;
+	gsi_i32 mValue;
+	gsi_i32 mMax;
+} GSISemaphoreID;
 	typedef struct  
 	{
 		pthread_t thread;
@@ -195,3 +195,4 @@ extern "C" {
 #endif
 
 #endif // __GSPLATFORMTHREAD_H__
+

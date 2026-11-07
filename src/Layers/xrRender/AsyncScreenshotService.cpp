@@ -97,6 +97,23 @@ class AsyncScreenshotService::State
 		File->w(Encoded.GetBufferPointer(), static_cast<u32>(Encoded.GetBufferSize()));
 		return true;
 #else
+#ifdef IXR_MACOS
+		if (Capture.IsThumbnail)
+		{
+			Blob Encoded;
+			if (FAILED(SaveToDDSMemory(*Pixels, DDS_FLAGS_NONE, Encoded)))
+			{
+				return false;
+			}
+			auto File = FS.wg_open(Capture.Path.c_str());
+			if (!File || !File->valid())
+			{
+				return false;
+			}
+			File->w(Encoded.GetBufferPointer(), static_cast<u32>(Encoded.GetBufferSize()));
+			return true;
+		}
+#endif
 		// stb expects RGBA, while the game targets are BGRA.
 		for (size_t Y = 0; Y < Pixels->height; ++Y)
 		{

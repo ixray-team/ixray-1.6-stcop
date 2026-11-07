@@ -24,10 +24,15 @@
 #	include "BSD/PlatformInit.h"
 #elif defined(__APPLE__)
 #	define IXR_MACOS
-#	define IXR_X64
+#if defined(__aarch64__) || defined(__arm64__)
+#define IXR_ARM64
+#else
+#define IXR_X64
+#endif
 #	include "MacOS/PlatformInit.h"
 #endif
 
 #ifdef __clang__
 #	define IXR_CLANG_BUILD
 #endif
+

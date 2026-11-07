@@ -15,7 +15,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 void obstacles_query::set_intersection	(const obstacles_query &query)
@@ -173,3 +175,4 @@ void obstacles_query::remove_links		(CObject *object)
 
 	m_obstacles.erase			(I);
 }
+

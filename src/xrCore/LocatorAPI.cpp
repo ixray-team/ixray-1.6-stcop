@@ -71,8 +71,8 @@ CLocatorAPI::~CLocatorAPI()
 }
 
 void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
-{	
-	xr_string TempPath = name;
+{
+	xr_string TempPath = Platform::ValidPath(name);
 	xr_strlwr(TempPath);
 
 	file desc;
@@ -2061,3 +2061,4 @@ void CLocatorAPI::ProcessExternalArch()
 		ProcessArchive		(full_mod_name, _path);
 	}
 }
+

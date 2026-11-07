@@ -53,7 +53,7 @@ void split_time(u64 time, u32& years, u32& months, u32& days, u32& hours, u32& m
 	time -= p1 * (100 * 365 + 25 - 1);
 	u64 const p2 = time / (4 * 365 + 1);
 	time -= p2 * (4 * 365 + 1);
-	u64 const p3 = std::min(time / 365u, 3ui64);
+	u64 const p3 = std::min(time / 365u, u64{3});
 	time -= p3 * 365;
 	years = u32(400 * p0 + 100 * p1 + 4 * p2 + p3 + 1);
 	++time;
@@ -74,3 +74,4 @@ void split_time(u64 time, u32& years, u32& months, u32& days, u32& hours, u32& m
 	}
 	days = u32(time);
 }
+

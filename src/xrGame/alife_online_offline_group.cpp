@@ -21,7 +21,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 extern void	setup_location_types_line	(GameGraph::TERRAIN_VECTOR &m_vertex_types, const char* string);
@@ -374,3 +376,4 @@ void CSE_ALifeOnlineOfflineGroup::on_failed_switch_online()
 		(*I).second->clear_client_data();
 	}
 }
+

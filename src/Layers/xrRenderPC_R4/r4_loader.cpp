@@ -17,7 +17,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
+#include <cstdlib>
 
 #include <FlexibleVertexFormat.h>
 
@@ -519,3 +519,4 @@ void CRender::Load3DFluid()
 		FS.r_close(F);
 	}
 }
+

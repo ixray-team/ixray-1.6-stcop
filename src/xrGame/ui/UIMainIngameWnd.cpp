@@ -113,22 +113,39 @@ constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 #define				MAININGAME_XML				"maingame.xml"
 
 CUIMainIngameWnd::CUIMainIngameWnd()
-:/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
+	: /*m_pGrenade(nullptr),m_pItem(nullptr),*/ m_pPickUpItem(nullptr), m_pMPChatWnd(nullptr), UIArtefactIcon(nullptr), m_pMPLogWnd(nullptr)
 {
-	UIStaticDiskIO				= nullptr;
+	// Optional XML indicators remain absent in some supported HUD layouts.
+	m_ind_boost_psy = nullptr;
+	m_ind_boost_radia = nullptr;
+	m_ind_boost_chem = nullptr;
+	m_ind_boost_wound = nullptr;
+	m_ind_boost_weight = nullptr;
+	m_ind_boost_health = nullptr;
+	m_ind_boost_power = nullptr;
+	m_ind_boost_rad = nullptr;
+	m_ind_weapon_broken = nullptr;
+	m_ind_helmet_broken = nullptr;
+	m_ind_outfit_broken = nullptr;
+	m_ind_overweight = nullptr;
+	m_ind_overvolume = nullptr;
+	m_ind_bleeding = nullptr;
+	m_ind_radiation = nullptr;
+	m_ind_starvation = nullptr;
+	UIStaticDiskIO = nullptr;
 	UIZoneMap = new CUIZoneMap();
 	UICompassBar = nullptr;
 	m_navigationHud = new CUINavigationHudController(*this);
-	UIWeaponJammedIcon			= nullptr;
-	UIInvincibleIcon			= nullptr;
-	UIArtefactIcon				= nullptr;
-	UIPsyHealthIcon				= nullptr;
-	UIStarvationIcon			= nullptr;
-	UIRadiaitionIcon			= nullptr;
-	UIWoundIcon					= nullptr;
-	UIPdaOnline					= nullptr;
-	UIStackPanelBoosters		= nullptr;
-	UIStackPanelIndicators		= nullptr;
+	UIWeaponJammedIcon = nullptr;
+	UIInvincibleIcon = nullptr;
+	UIArtefactIcon = nullptr;
+	UIPsyHealthIcon = nullptr;
+	UIStarvationIcon = nullptr;
+	UIRadiaitionIcon = nullptr;
+	UIWoundIcon = nullptr;
+	UIPdaOnline = nullptr;
+	UIStackPanelBoosters = nullptr;
+	UIStackPanelIndicators = nullptr;
 	m_ind_bleeding_svg_inited = false;
 	m_ind_weapon_broken_svg_inited = false;
 	m_ind_helmet_broken_svg_inited = false;
@@ -2212,3 +2229,4 @@ void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBoost
 		}
 	}
 }
+

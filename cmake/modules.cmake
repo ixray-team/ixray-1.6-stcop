@@ -35,8 +35,13 @@ if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/FSR3.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")
-elseif(LINUX)
+elseif(LINUX OR APPLE)
     include("${CMAKE_MODULE_PATHEX}/DXVK.cmake")
+endif()
+
+if(APPLE)
+    include("${CMAKE_MODULE_PATHEX}/VKD3D.cmake")
+    include("${CMAKE_MODULE_PATHEX}/DXMT.cmake")
 endif()
 
 # Headers only libraries

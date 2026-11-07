@@ -27,7 +27,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 const float wounded_enemy_reached_distance = 3.f;
@@ -737,3 +739,4 @@ bool CAgentEnemyManager::useful_enemy			(const CEntityAlive *enemy, const CAI_St
 
 	return							(!!(*I).m_distribute_mask.test(object().member().mask(member)));
 }
+

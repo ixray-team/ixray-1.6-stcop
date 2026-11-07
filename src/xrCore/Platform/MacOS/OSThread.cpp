@@ -17,7 +17,7 @@ size_t Platform::GetThreadId(ThreadID ID)
 
 void Platform::SetThreadName(const char* name)
 {
-    pthread_setname_np(pthread_self(), name);
+	pthread_setname_np(name);
 }
 
 long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
@@ -35,3 +35,4 @@ long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
 
     return old;
 }
+

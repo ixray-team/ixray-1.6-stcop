@@ -134,36 +134,36 @@
 	#endif // INSOCK
 
 // LINUX and MACOSX
-#elif defined(IXR_LINUX)
-	#include <unistd.h>
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <stdio.h>
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <sys/ioctl.h>
-	#include <netinet/in.h>
+#elif defined(IXR_LINUX) || defined(IXR_MACOS)
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
 
-	// MACOSX Warning!! netdb.h has it's own NOFILE define.
-	// GameSpy uses NOFILE to determine if an HD is available
-	#ifndef NOFILE
+// MACOSX Warning!! netdb.h has it's own NOFILE define.
+// GameSpy uses NOFILE to determine if an HD is available
+#ifndef NOFILE
 		// Since GameSpy NOFILE is not defined, include netdb.h then undef NOFILE
-		#include <netdb.h>
-		#undef NOFILE
-	#else
+#include <netdb.h>
+#undef NOFILE
+#else
 		// Otherwise leave NOFILE defined
-		#include <netdb.h>
-	#endif
+#include <netdb.h>
+#endif
 
-	#include <arpa/inet.h>
-	#include <errno.h>
-	#include <sys/time.h>
-	#include <limits.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <sys/time.h>
+#include <limits.h>
 	//#include <sys/syslimits.h>
-	#include <netinet/tcp.h>
+#include <netinet/tcp.h>
 
     // ICMP ping support is unsupported on Linux/MacOSX due to needing super-user access for raw sockets
-    #define SB_NO_ICMP_SUPPORT
+#define SB_NO_ICMP_SUPPORT
 
 // Nintendo DS
 #elif defined(_NITRO)

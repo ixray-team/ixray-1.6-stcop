@@ -309,6 +309,26 @@
             "displayName": "Compressor-x64-Linux",
             "inherits": "Compressor-Base-Linux",
             "binaryDir": "build/x64/Compressor-Linux"
+        },
+        {
+            "name": "Engine-arm64-macOS",
+            "displayName": "Native Apple Silicon engine (Debug)",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/arm64/Engine-macOS",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_POLICY_VERSION_MINIMUM": "3.5",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF",
+                "IXRAY_UNITYBUILD": "OFF",
+                "IXRAY_PROFILER": "OFF"
+            }
         }
     ],
     "buildPresets": [
@@ -476,6 +496,15 @@
             "displayName": "Compressor-x64-Linux-Release",
             "configurePreset": "Compressor-x64-Linux",
             "configuration": "Release"
+        },
+        {
+            "name": "Engine-arm64-macOS-Debug",
+            "configurePreset": "Engine-arm64-macOS",
+            "targets": [
+                "xrEngine"
+            ],
+            "jobs": 6
         }
     ]
 }
+

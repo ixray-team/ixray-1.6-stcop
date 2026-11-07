@@ -70,7 +70,7 @@ public:
 public:
 	u32											Update_LastTime;
 
-	CBlendInstance*								blend_instances;
+	std::unique_ptr<CBlendInstance[]>				blend_instances;
 
 	struct SMotionsSlot{
 		shared_motions							motions;
@@ -185,7 +185,7 @@ public:
 
 	virtual u32					mem_usage		(bool bInstance)
 	{
-		u32 sz					= CKinematics::mem_usage(bInstance)+sizeof(*this)+(bInstance&&blend_instances?blend_instances->mem_usage():0);
+		u32 sz					= CKinematics::mem_usage(bInstance)+sizeof(*this)+(bInstance&&blend_instances?blend_instances[0].mem_usage():0);
 		return sz;
 	}
 
@@ -201,3 +201,4 @@ public:
 IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():nullptr; }
 //---------------------------------------------------------------------------
 #endif
+

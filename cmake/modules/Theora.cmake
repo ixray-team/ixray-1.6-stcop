@@ -19,15 +19,28 @@ else()
         file(MAKE_DIRECTORY ${THEORA_INSTALL_DIR}/include)
         file(MAKE_DIRECTORY ${THEORA_INSTALL_DIR}/lib)
 
+        set(THEORA_ARCHIVE ${THEORA_BUILD_DIR}/libtheora-1.1.1.tar.gz)
+        if(NOT EXISTS ${THEORA_ARCHIVE})
+            file(MAKE_DIRECTORY ${THEORA_BUILD_DIR})
+            file(DOWNLOAD
+                https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.gz
+                ${THEORA_ARCHIVE}
+                TLS_VERIFY ON
+                STATUS THEORA_DOWNLOAD_STATUS
+            )
+            list(GET THEORA_DOWNLOAD_STATUS 0 THEORA_DOWNLOAD_RESULT)
+            if(NOT THEORA_DOWNLOAD_RESULT EQUAL 0)
+                message(FATAL_ERROR "Failed to download Theora: ${THEORA_DOWNLOAD_STATUS}")
+            endif()
+        endif()
+
         add_custom_command(
             OUTPUT 
                 ${THEORA_INSTALL_DIR}/lib/libtheora.a
                 ${THEORA_INSTALL_DIR}/include/theora/theora.h
             COMMAND ${CMAKE_COMMAND} -E make_directory ${THEORA_BUILD_DIR}
-            COMMAND cd ${THEORA_BUILD_DIR} &&
-                wget -q -nc https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.gz &&
-                tar -xzf libtheora-1.1.1.tar.gz &&
-                cd libtheora-1.1.1 &&
+            COMMAND ${CMAKE_COMMAND} -E chdir ${THEORA_BUILD_DIR} ${CMAKE_COMMAND} -E tar xzf ${THEORA_ARCHIVE}
+            COMMAND cd ${THEORA_BUILD_DIR}/libtheora-1.1.1 &&
                 CC=${CMAKE_C_COMPILER}
                 CXX=${CMAKE_CXX_COMPILER}
                 CFLAGS=${CMAKE_C_FLAGS}
@@ -48,7 +61,7 @@ else()
     add_dependencies(Theora::theora theora_build_target)
     
     target_include_directories(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/include> $<INSTALL_INTERFACE:include>)
-    target_link_libraries(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/lib/libtheora.a> $<INSTALL_INTERFACE:-ltheora> ogg)
+    target_link_libraries(Theora::theora INTERFACE $<BUILD_INTERFACE:${THEORA_INSTALL_DIR}/lib/libtheora.a> $<INSTALL_INTERFACE:-ltheora> Ogg::ogg)
     
     message(STATUS "Theora will be built during compilation")
 endif()

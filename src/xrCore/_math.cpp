@@ -192,7 +192,7 @@ void thread_name(const char* name)
 
 struct	THREAD_STARTUP
 {
-	thread_t*	entry	;
+	ThreadEntry* entry;
 	char*		name	;
 	void*		args	;
 };
@@ -201,7 +201,7 @@ void	__cdecl thread_entry	(void*	_params )	{
 	// initialize
 	THREAD_STARTUP*		startup	= (THREAD_STARTUP*)_params	;
 	thread_name			(startup->name);
-	thread_t*			entry	= startup->entry;
+	ThreadEntry* entry = startup->entry;
 	void*				arglist	= startup->args;
 
 	free(startup->name);
@@ -220,7 +220,7 @@ void* pthread_entry(void* params)
 }
 #endif
 
-ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
+ThreadID thread_spawn(ThreadEntry* entry, const char* name, unsigned stack, void* arglist)
 {
 	THREAD_STARTUP*		startup	= new THREAD_STARTUP	();
 	startup->entry		= entry;
@@ -306,3 +306,4 @@ void spline3( float t, Fvector *p, Fvector *ret )
 	ret->y = p[0].y*b0+p[1].y*b1+p[2].y*b2+p[3].y*b3;
 	ret->z = p[0].z*b0+p[1].z*b1+p[2].z*b2+p[3].z*b3;
 }
+

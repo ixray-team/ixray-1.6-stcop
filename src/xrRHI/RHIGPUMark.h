@@ -1,6 +1,6 @@
 #pragma once
 #include "../xrCore/xrCore.h"
-#include "../xrCore/_types.h"
+#include "../xrCore/xrTypes.h"
 
 extern RHI_API void* g_pAnnotation;
 
@@ -63,3 +63,4 @@ struct RHI_GPU_EVENT
 #	define PROF_GPU_CTX_DESTROY()
 #	define GPU_EVENT(name)
 #endif
+

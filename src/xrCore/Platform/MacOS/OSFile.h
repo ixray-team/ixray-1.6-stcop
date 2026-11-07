@@ -1,11 +1,13 @@
 #pragma once
 
+#include <mach-o/dyld.h>
+
 using errno_t = int;
 
 #define _MAX_PATH PATH_MAX + 1
 #define MAX_PATH PATH_MAX + 1
 
-#define _lseek64 lseek64
+#define _lseek64 lseek
 #define _O_RDONLY O_RDONLY
 #define _open open
 #define _fdopen fdopen
@@ -136,71 +138,75 @@ namespace Platform
 {
     constexpr const char* kPreferredSeparator = "/";
 
-    IC const char* ValidPath(const char* In)
+	IC const char* ValidPath(const char* In)
+	{
+		// Callers may pass the previous result back into this function.
+		const std::string Input = In ? In : "";
+		static thread_local std::string NewPath;
+		NewPath.clear();
+
+		bool LastWasSlash = false;
+		int pos = 0;
+
+		for (const char* p = Input.c_str(); *p; ++p)
+		{
+			char c = *p;
+
+			if (c == '\\')
+			{
+				c = '/';
+			}
+
+			if (c == '/')
+			{
+				if (!LastWasSlash || pos < 2)
+				{
+					NewPath += c;
+					LastWasSlash = true;
+					pos++;
+				}
+			}
+			else
+			{
+				NewPath += c;
+				LastWasSlash = false;
+				pos++;
+			}
+		}
+
+		return NewPath.c_str();
+	}
+
+	IC const char* RestorePath(const char* In)
+	{
+		static thread_local std::string NewPath;
+		NewPath = In ? In : "";
+
+		std::replace(NewPath.begin(), NewPath.end(), '/', '\\');
+		return NewPath.c_str();
+	}
+
+	IC std::filesystem::path GetBinaryFolderPath()
     {
-        static std::string NewPath;
-        NewPath.clear();
-
-        bool LastWasSlash = false;
-        int pos = 0;
-
-        for (const char* p = In; *p; ++p)
-        {
-            char c = *p;
-
-            if (c == '\\')
-                c = '/';
-            
-            if (c == '/')
-            {
-                if (!LastWasSlash || pos < 2)
-                {
-                    NewPath += c;
-                    LastWasSlash = true;
-                    pos++;
-                }
-            }
-            else
-            {
-                NewPath += c;
-                LastWasSlash = false;
-                pos++;
-            }
-        }
-
-        return NewPath.c_str();
-    }
-
-    IC const char* RestorePath(const char* In)
-    {
-        static std::string NewPath;
-        NewPath = In;
-
-        std::replace(NewPath.begin(), NewPath.end(), '/', '\\');
-        return NewPath.c_str();
-    }
-
-    IC std::filesystem::path GetBinaryFolderPath()
-    {
-        char result[PATH_MAX];
-        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-        if (count == -1)
-        {
+		char Result[PATH_MAX];
+		uint32_t Size = sizeof(Result);
+		if (_NSGetExecutablePath(Result, &Size) != 0)
+		{
             return {};
         }
-        return std::filesystem::path(std::string(result, count)).parent_path();
-    }
+		return std::filesystem::path(Result).parent_path();
+	}
 
-    IC std::string GetModuleName() 
+    IC std::string GetModuleName()
     {
-        char result[PATH_MAX];
-        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-        if (count == -1) 
-        {
+		char Result[PATH_MAX];
+		uint32_t Size = sizeof(Result);
+		if (_NSGetExecutablePath(Result, &Size) != 0)
+		{
             return {};
         }
-        return std::string(result, count);
-    }
+		return std::string(Result);
+	}
 	
     IC std::string GetModuleNameForAddress(uintptr_t address) 
     {
@@ -212,20 +218,20 @@ namespace Platform
         return {};
     }
 	
-    IC std::string GetUsrName() 
+    IC std::string GetUsrName()
     {
-        char UserName[LOGIN_NAME_MAX];
-        if (getlogin_r(UserName, sizeof(UserName)) == 0) 
+		char UserName[256];
+		if (getlogin_r(UserName, sizeof(UserName)) == 0)
         {
             return std::string(UserName);
         }
         return {};
     }
 
-    IC std::string GetCompName() 
+    IC std::string GetCompName()
     {
-        char CompName[HOST_NAME_MAX];
-        if (gethostname(CompName, sizeof(CompName)) == 0) 
+		char CompName[256];
+		if (gethostname(CompName, sizeof(CompName)) == 0) 
         {
             return std::string(CompName);
         }
@@ -337,12 +343,23 @@ namespace Platform
         return (size_t)bytesRead;
     }
 
-    IC void GetAbsolutePath(char* in_path, char* out_buffer, [[maybe_unused]] size_t BufferSize)
-    {
-        char* tmp_path = realpath(out_buffer, 0);
-        strcpy(in_path, tmp_path);
-        free(tmp_path);
-    }
+	IC void GetAbsolutePath(char* Destination, char* Input, size_t BufferSize)
+	{
+		if (BufferSize == 0)
+		{
+			return;
+		}
+
+		std::error_code Error;
+		const auto Path = std::filesystem::absolute(ValidPath(Input[0] ? Input : "."), Error).lexically_normal().string();
+		if (Error || Path.size() >= BufferSize)
+		{
+			Destination[0] = '\0';
+			return;
+		}
+
+		memcpy(Destination, Path.c_str(), Path.size() + 1);
+	}
 }
 
 inline int _rmdir(const char *path)
@@ -365,3 +382,4 @@ inline void _splitpath_s(
 {
     _splitpath(path, drive, dir, fname, ext);
 }
+

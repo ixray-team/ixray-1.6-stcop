@@ -17,7 +17,9 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
+#ifndef IXR_MACOS
 #include <malloc.h>
+#endif
 #pragma warning(pop)
 
 #if 0
@@ -263,3 +265,4 @@ bool moving_objects::collided_dynamic			(moving_object *object0, const Fvector &
 	resolve_collision			(current, object0, position0, object1, position1, action);
 	return						(true);
 }
+

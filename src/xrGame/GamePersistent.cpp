@@ -1017,7 +1017,7 @@ bool CGamePersistent::OnRenderPPUI_query()
 extern UI_API void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
-	if (g_pGameLevel != nullptr)
+	if (g_pGameLevel != nullptr && g_pGameLevel->bReady)
 	{
 		Level().BulletManager().Render();
 
@@ -1163,7 +1163,7 @@ void CGamePersistent::OnAssetsChanged()
 }
 
 void CGamePersistent::SetDiscordStatus() const {
-	if (g_pGameLevel != nullptr)
+	if (g_pGameLevel != nullptr && g_pGameLevel->bReady)
 	{	
 		// Get level name
 		xr_string levelName = g_pStringTable->translate("st_discord_level").c_str();
@@ -1193,3 +1193,4 @@ void CGamePersistent::ChangeCursorPosition(Fvector2 value)
 	}
 	UI().GetUICursor().UpdateCursorPosition(value.x, value.y);
 }
+
