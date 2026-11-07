@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UIWindow.h"
 #include "UIDialogHolder.h"
+#include "UIDialogWnd.h"
 #include "../UICursor.h"
 
 #include "../Include/xrRender/DebugRender.h"
@@ -652,6 +653,114 @@ bool CUIWindow::OnMouseDown(int mouse_btn){
 }
 
 void CUIWindow::OnMouseUp(int mouse_btn){
+}
+
+CUIWindow* CUIWindow::PickWindowAt(const Fvector2& Position, bool& Reliable)
+{
+	if (!IsShown() || !IsEnabled())
+	{
+		return nullptr;
+	}
+	Frect Bounds;
+	GetAbsoluteRect(Bounds);
+	if (!Bounds.in(Position.x, Position.y))
+	{
+		return nullptr;
+	}
+	if (!csUi.TryEnter())
+	{
+		Reliable = false;
+		return nullptr;
+	}
+
+	CUIWindow* Result = this;
+	if (m_pMouseCapturer)
+	{
+		if (CUIWindow* Captured = m_pMouseCapturer->PickWindowAt(Position, Reliable))
+		{
+			Result = Captured;
+		}
+	}
+	else
+	{
+		const WINDOW_LIST& Children = GetChildDrawOrder();
+		for (auto Child = Children.rbegin(); Child != Children.rend(); ++Child)
+		{
+			if (*Child)
+			{
+				if (CUIWindow* Hit = (*Child)->PickWindowAt(Position, Reliable))
+				{
+					Result = Hit;
+					break;
+				}
+			}
+		}
+	}
+	csUi.Leave();
+	return Result;
+}
+
+bool CUIWindow::CursorOverWindow(bool Precise)
+{
+	if (!Precise)
+	{
+		return CursorOverWindow();
+	}
+	if (!GetUICursor().IsVisible())
+	{
+		return false;
+	}
+
+	const Fvector2 Position = GetUICursor().GetCursorPosition();
+	bool Reliable = true;
+	CUIWindow* Root = GetTop();
+	CDialogHolder* Holder = CurrentDialogHolder();
+	// A retained window from an inactive holder cannot receive mouse focus.
+	if (!Root->DialogHolders.empty() &&
+		std::find(Root->DialogHolders.begin(), Root->DialogHolders.end(), Holder) == Root->DialogHolders.end())
+	{
+		return false;
+	}
+	if (Holder)
+	{
+		if (!Holder->DialogsLock.TryEnter())
+		{
+			return false;
+		}
+		CUIDialogWnd* Receiver = Holder->TopInputReceiver();
+		bool Blocked = Receiver && Receiver->GetTop() != Root;
+		// Render-only overlays can cover the active dialog as well.
+		for (auto Item = Holder->m_dialogsToRender.rbegin(); !Blocked && Item != Holder->m_dialogsToRender.rend(); ++Item)
+		{
+			if (!Item->enabled || !Item->wnd)
+			{
+				continue;
+			}
+			if (Item->wnd == Root)
+			{
+				break;
+			}
+			// Registrations inside this tree are resolved by the child draw order below.
+			if (Item->wnd->GetTop() != Root && Item->wnd->PickWindowAt(Position, Reliable))
+			{
+				Blocked = true;
+			}
+		}
+		Holder->DialogsLock.Leave();
+		if (Blocked || !Reliable)
+		{
+			return false;
+		}
+	}
+
+	for (CUIWindow* Hit = Root->PickWindowAt(Position, Reliable); Reliable && Hit; Hit = Hit->GetParent())
+	{
+		if (Hit == this)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void CUIWindow::OnFocusReceive()

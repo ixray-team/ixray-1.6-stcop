@@ -45,6 +45,7 @@ private:
 	struct SelfCallbackState;
 	xr_shared_ptr<SelfCallbackState> SelfCallbacks;
 	bool DispatchSelfCallbacks(s16 Event);
+	CUIWindow* PickWindowAt(const Fvector2& Position, bool& Reliable);
 	xr_vector<CUIWindow*> ChildDrawOrder;
 	bool MoveChildInDrawOrder(CUIWindow* Child, bool Front);
 	void RemoveChildDrawOrder(CUIWindow* Child);
@@ -208,6 +209,7 @@ public:
 	void					SetWindowNodeName	(const char* wn)					{ m_windowNodeName = wn; }
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
+	bool CursorOverWindow(bool Precise);
 	IC u32					FocusReceiveTime	() const					{ return m_dwFocusReceiveTime; }
 	
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}
