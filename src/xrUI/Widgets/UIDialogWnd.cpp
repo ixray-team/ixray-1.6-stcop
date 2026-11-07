@@ -105,10 +105,15 @@ bool CUIDialogWnd::IR_process()
 
 UI_API CDialogHolder* CurrentDialogHolder()
 {
-	if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-		return g_pGamePersistent->m_pMainMenu->GetDialogHolder();
+	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+	{
+		if (CDialogHolder* Holder = g_pGamePersistent->m_pMainMenu->GetDialogHolder())
+		{
+			return Holder;
+		}
+	}
 
-	return g_pGameCustom->GetDialogHolder();
+	return g_pGameCustom ? g_pGameCustom->GetDialogHolder() : nullptr;
 }
 
 void CUIDialogWnd::ShowOrHideDialog(bool bDoHideIndicators)
