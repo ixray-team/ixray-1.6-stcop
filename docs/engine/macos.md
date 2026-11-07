@@ -189,7 +189,9 @@ Texture-description keys use the backslashes stored in compiled material names,
 including when macOS lists THM files with forward slashes. Without that
 canonicalization, terrain can load its DDS images but miss its authored detail
 scale, bump and material metadata, producing an almost uniform ground surface.
-The platform check covers metadata lookup from native, backslash and mixed paths.
+The platform check calls the actual THM loader name function, covering native,
+backslash and mixed paths, all supported texture extensions, case-insensitive
+extension stripping and preservation of unsupported suffixes.
 
 Inspect near-ground and instanced-grass views as well as buildings/HUD. The
 CoC Cordon regression used the validation save and a grass patch near

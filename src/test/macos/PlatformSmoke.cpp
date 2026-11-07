@@ -14,18 +14,49 @@ int main(int ArgumentCount, char** Arguments)
 {
 	Memory._initialize();
 	// Filesystem listings use native separators; compiled assets retain backslashes.
-	const char* MetadataFiles[] = {"terrain/terrain_escape", "terrain\\terrain_escape", "nested/terrain\\terrain_escape"};
-	const char* RendererNames[] = {"terrain\\terrain_escape", "terrain\\terrain_escape", "nested\\terrain\\terrain_escape"};
+	const char* MetadataFiles[] =
+		{
+			"terrain/terrain_escape.thm",
+			"terrain\\terrain_escape.THM",
+			"nested/terrain\\terrain_escape.DDS",
+			"ground/soil.tga",
+			"ground\\soil.BMP",
+			"movies/ambient.ogm",
+			"terrain/terrain_escape",
+			"terrain\\terrain_escape",
+			"nested/terrain\\terrain_escape",
+			"terrain/terrain_escape.ltx",
+			"terrain/terrain_escape.diffuse.dds",
+			"folder.with.dots/terrain_escape",
+			"terrain/terrain_escape.dds.backup"
+		};
+	const char* RendererNames[] =
+		{
+			"terrain\\terrain_escape",
+			"terrain\\terrain_escape",
+			"nested\\terrain\\terrain_escape",
+			"ground\\soil",
+			"ground\\soil",
+			"movies\\ambient",
+			"terrain\\terrain_escape",
+			"terrain\\terrain_escape",
+			"nested\\terrain\\terrain_escape",
+			"terrain\\terrain_escape.ltx",
+			"terrain\\terrain_escape.diffuse",
+			"folder.with.dots\\terrain_escape",
+			"terrain\\terrain_escape.dds.backup"
+		};
+	static_assert(std::size(MetadataFiles) == std::size(RendererNames));
 	for (u32 Index = 0; Index < std::size(MetadataFiles); ++Index)
 	{
 		xr_string MetadataName = MetadataFiles[Index];
-		TextureDescription::NormalizeSeparators(MetadataName.data());
+		fix_texture_thm_name(MetadataName.data());
 		xr_map<shared_str, float> DetailScales;
 		DetailScales.emplace(shared_str(MetadataName.c_str()), 144.0f);
 		const auto Found = DetailScales.find(shared_str(RendererNames[Index]));
 		if (Found == DetailScales.end() || Found->second != 144.0f)
 		{
-			puts("FAIL: texture detail metadata lookup lost the authored scale across path separators");
+			printf("FAIL: production THM name '%s' became '%s', expected '%s'\n", MetadataFiles[Index], MetadataName.c_str(), RendererNames[Index]);
 			return 17;
 		}
 	}

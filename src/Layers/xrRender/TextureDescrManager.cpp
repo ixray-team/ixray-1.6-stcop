@@ -16,18 +16,6 @@ public:
 	}
 };
 
-void fix_texture_thm_name(LPSTR fn)
-{
-	TextureDescription::NormalizeSeparators(fn);
-	LPSTR _ext = strext(fn);
-	if(  _ext					&&
-	  (0==_stricmp(_ext,".tga")	||
-		0==_stricmp(_ext,".thm")	||
-		0==_stricmp(_ext,".dds")	||
-		0==_stricmp(_ext,".bmp")	||
-		0==_stricmp(_ext,".ogm")	) )
-		*_ext = 0;
-}
 void CTextureDescrMngr::LoadLTX()
 {
 	string_path				fname;		
