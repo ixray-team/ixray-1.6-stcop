@@ -170,13 +170,17 @@ The generated save thumbnail decoded as a 128×128 DDS.
 
 A normal loaded-level session exited 0 through a queued SDL window-close event,
 and a normal menu exited 0 through a queued global SDL quit event. These checks
-exercise normal teardown without desktop input. Real keyboard/mouse interaction
-and audible output remain unverified: the test desktop was locked. OpenAL
-initialized in the normal session, which does not establish audibility.
+exercise normal teardown without desktop input. After the desktop was unlocked,
+the user reported that movement, mouse look and game audio worked. A held OS
+Escape event visibly opened the in-game menu. Repeatable automated movement and
+interaction attribution remained inconclusive: other OS movement-key and mouse
+events arrived during a quiet baseline, and their source was not identified.
+Those unsolicited changes are not attributed to the automated test.
 The tested OpenAL context reports 255 mono plus 1 stereo source. The engine's
 992-target allocation request reaches that limit and logs a source-creation
 warning, retaining 256 targets; the normal menu had one playing source with
-three queued buffers. This verifies API playback state, not audible output.
+three queued buffers. This verifies API playback state; audible output is supported
+by the user report, without an independent audio recording.
 Windows and Linux builds were not run on this Mac.
 
 ## Current platform boundaries
