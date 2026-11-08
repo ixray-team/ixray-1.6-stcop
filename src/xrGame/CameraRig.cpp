@@ -2110,22 +2110,24 @@ bool player_hud::HandsIkBegin(SHandsIkFrame& F, CActor* actor)
 
 	const u8 OverlayMask = u8(~(1 << ADDITIVE_CHANNEL));
 	F.AdditiveBase = item->AdditivePlaying && hud_channel_weight(m_model, ADDITIVE_CHANNEL) > 0.f && m_model->LL_GetBoneTransformMasked(ancor, OverlayMask, F.AdditiveAncorBase);
-	const bool Overlay = item->AdditiveOverlay && F.AdditiveBase;
+	const u8 OverlayHandMask = u8(~((1 << ADDITIVE_CHANNEL) | (1 << LAYER_ADDITIVE_CHANNEL)));
+	Fmatrix OverlayAncorBase;
+	const bool Overlay = item->AdditiveOverlay && F.AdditiveBase && m_model->LL_GetBoneTransformMasked(ancor, OverlayHandMask, OverlayAncorBase);
 	F.Overlay = Overlay;
 	if (Overlay)
 	{
-		F.OverlayAncorDelta.mul_43(model->LL_GetTransform(ancor), Fmatrix().invert(F.AdditiveAncorBase));
+		F.OverlayAncorDelta.mul_43(model->LL_GetTransform(ancor), Fmatrix().invert(OverlayAncorBase));
 	}
 
-	F.OverlayRight = Overlay && has_right && !ancor_in_right_hand && m_model->LL_GetBoneTransformMasked(RightIkChain[2], OverlayMask, F.OverlayRightBase);
-	F.OverlayLeft = Overlay && has_left && !item->LeftHandFree && m_model->LL_GetBoneTransformMasked(LeftIkChain[2], OverlayMask, F.OverlayLeftBase);
+	F.OverlayRight = Overlay && has_right && !ancor_in_right_hand && m_model->LL_GetBoneTransformMasked(RightIkChain[2], OverlayHandMask, F.OverlayRightBase);
+	F.OverlayLeft = Overlay && has_left && !item->LeftHandFree && m_model->LL_GetBoneTransformMasked(LeftIkChain[2], OverlayHandMask, F.OverlayLeftBase);
 
 	const auto OverlayHand = [&](u16 Wrist, Fmatrix& Base)
 	{
-		const Fmatrix Relative = Fmatrix().mul_43(Fmatrix().invert(F.AdditiveAncorBase), Base);
+		const Fmatrix Relative = Fmatrix().mul_43(Fmatrix().invert(OverlayAncorBase), Base);
 		Fmatrix Moved;
 		HudOverlayHandRelative(m_model, ancor, Wrist, Relative, Moved);
-		Base.mul_43(F.AdditiveAncorBase, Moved);
+		Base.mul_43(OverlayAncorBase, Moved);
 	};
 
 	if (F.OverlayRight)
