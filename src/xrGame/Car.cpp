@@ -53,6 +53,8 @@ namespace
 	constexpr float WaterParticleMinSpeed = 0.2f;
 	constexpr float WaterParticleMinImmersion = 0.02f;
 	constexpr float WaterParticleMaxDistance = 70.f;
+	// Do not wake a return bone for sub-milliradian joint noise.
+	constexpr float ReturnBoneAngleEpsilon = 0.001f;
 
 	bool ParticleEffectExists(const char* Name)
 	{
@@ -140,6 +142,7 @@ CCar::CCar()
 
 	inventory().SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
+	m_doors_vel_factor = 1.f;
 	m_power_increment_factor = 0.5f;
 	m_power_decrement_factor = 0.5f;
 	m_rpm_increment_factor = 0.5f;
@@ -357,6 +360,7 @@ CCar::CCar()
 	m_diff_lock_overpower = 0.f;
 	m_firsteye_panel = false;
 	m_allow_inventory_control = false;
+	m_allow_mutant_bite_in_car = false;
 	m_interior_volume = 0.7f;
 	m_hit_stall_threshold = 1.f;
 	m_hit_anomaly_scale = 1.f;
@@ -1559,6 +1563,13 @@ void CCar::ApplyBonePhysicsParams(IKinematics* K, CInifile* ini)
 						else
 							Bone.second.joint->SetForceAndVelocity(force_, velocity_, axis_);
 					}
+
+					if (ini->line_exist(b_name, "return_force"))
+					{
+						const float ReturnForce = ini->r_float(b_name, "return_force");
+						if (ReturnForce > 0.f)
+							return_bones.push_back(SReturnBone(Bone.second.joint, Bone.second.element, ReturnForce));
+					}
 				}
 			}
 		}
@@ -1823,6 +1834,7 @@ void	CCar::net_Destroy()
 	m_suspension_params.clear();
 	m_gauge_bones.clear();
 	m_suspension_bones.clear();
+	return_bones.clear();
 	m_lights.TurnOffLights();
 	m_stoplights.TurnOffLights();
 	m_indoorlights.TurnOffLights();
@@ -2384,6 +2396,7 @@ void CCar::DrawCarInfo()
 			Font->OutNext("surface_friction:         %f", Wheel.collision_params.surface_friction);
 			Font->OutNext("surface_flotation:        %f", Wheel.collision_params.surface_flotation);
 			Font->OutNext("mu_factor:                %f", Wheel.collision_params.mu_factor);
+			Font->OutNext("wheel_in_water:           [%s]", Wheel.InWater ? "yes" : "no");
 			Font->OutNext("friction_rain_factor:     %f", Wheel.collision_params.friction_rain_factor);
 			Font->OutNext("friction_nitro_factor:    %f", Wheel.collision_params.friction_nitro_factor);
 			Font->OutNext("friction_slip_factor:     %f", Wheel.collision_params.friction_slip_factor);
@@ -3419,6 +3432,7 @@ void CCar::LoadHandlingAndCameraDefinitions(CInifile* ini)
 	m_wheels_sound_delay = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "wheels_sound_delay", m_wheels_sound_delay);
 	m_firsteye_panel = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "firsteye_panel", m_firsteye_panel);
 	m_allow_inventory_control = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_inventory_control", m_allow_inventory_control);
+	m_allow_mutant_bite_in_car = READ_IF_EXISTS(pSettings, r_bool, cNameSect_str(), "allow_mutant_bite_in_car", m_allow_mutant_bite_in_car);
 	m_interior_volume = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "interior_volume", m_interior_volume);
 	m_hit_stall_threshold = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_stall_threshold", m_hit_stall_threshold);
 	m_hit_anomaly_scale = READ_IF_EXISTS(pSettings, r_float, cNameSect_str(), "hit_anomaly_scale", m_hit_anomaly_scale);
@@ -3644,7 +3658,10 @@ void CCar::LoadVisualDefinitions(CInifile* ini)
 	}
 
 	if (ini->section_exist("doors"))
-		m_doors_torque_factor = ini->r_u16("doors", "open_torque_factor");
+	{
+		m_doors_torque_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_torque_factor", m_doors_torque_factor);
+		m_doors_vel_factor = READ_IF_EXISTS(ini, r_float, "doors", "open_vel_factor", m_doors_vel_factor);
+	}
 
 	m_damage_particles.Init(this);
 
@@ -5471,6 +5488,7 @@ void CCar::PhDataUpdate(float step)
 	const bool Slip = UpdateWheelPhysics();
 	UpdateTractionAndSuspension(Slip);
 	UpdateWaterDrag(step);
+	UpdateReturnBones();
 }
 
 void CCar::UpdatePhDataObjects()
@@ -5731,6 +5749,45 @@ void CCar::UpdateEngineShake()
 				SetAvelAxes(0, angular_velocity);
 			}
 		}
+	}
+}
+
+void CCar::UpdateReturnBones()
+{
+	if (!m_pPhysicsShell || !m_pPhysicsShell->isActive())
+		return;
+
+	for (const SReturnBone& ReturnBone : return_bones)
+	{
+		CPhysicsJoint* Joint = ReturnBone.joint;
+		CPhysicsElement* Element = ReturnBone.element;
+		if (Joint == nullptr || Element == nullptr || !Joint->bActive || !Element->isActive())
+			continue;
+
+		// Hinge2 exposes the wheel spin rate instead of a second angle, sliders
+		// return a linear position and balls report no angle at all.
+		if (Joint->eType != CPhysicsJoint::hinge && Joint->eType != CPhysicsJoint::full_control)
+			continue;
+
+		// full_control always drives three AMotor axes even if the IK data
+		// contains more limit entries; hinge has a single angular axis.
+		const u16 AxisCount = Joint->eType == CPhysicsJoint::full_control ? 3 : 1;
+		Fvector Torque = { 0.f, 0.f, 0.f };
+		for (u16 AxisNum = 0; AxisNum < AxisCount; ++AxisNum)
+		{
+			const float Angle = Joint->GetAxisAngle(AxisNum);
+			if (!_valid(Angle) || fabsf(Angle) < ReturnBoneAngleEpsilon)
+				continue;
+
+			Fvector Axis;
+			Joint->GetAxisDirDynamic(AxisNum, Axis);
+			Torque.mad(Axis, -Angle * ReturnBone.force);
+		}
+
+		if (Torque.magnitude() < EPS_L)
+			continue;
+
+		Element->setTorque(Torque);
 	}
 }
 
@@ -6161,6 +6218,7 @@ void CCar::UpdateWaterDrag(float step)
 	for (auto& WheelEntry : m_wheels_map)
 	{
 		SWheel& Wheel = WheelEntry.second;
+		Wheel.InWater = false;
 		if (!Wheel.joint || !Wheel.joint->bActive)
 			continue;
 
@@ -6212,6 +6270,8 @@ void CCar::UpdateWaterDrag(float step)
 			continue;
 		if (Immersion > 1.f)
 			Immersion = 1.f;
+
+		Wheel.InWater = true;
 
 		if (Speed > EPS_L)
 			WheelsInWater = true;

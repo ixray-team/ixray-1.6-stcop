@@ -242,6 +242,7 @@ static	const u16				cAsCallsnum						= 3;
 	void						UpdateWheelieBoost		();
 	void						UpdateDriftBoost			();
 	void						UpdateEngineShake		();
+	void						UpdateReturnBones		();
 	void						UpdateSteeringWheels		();
 	void						UpdateSteerAnimation		();
 	bool						UpdateWheelPhysics		();
@@ -338,6 +339,7 @@ public:
 	bool	b_awd;
 	bool	m_firsteye_panel;
 	bool	m_allow_inventory_control;
+	bool	m_allow_mutant_bite_in_car;
 	float	m_interior_volume;
 	float	m_hit_stall_threshold;
 	float	m_hit_anomaly_scale;
@@ -397,6 +399,22 @@ public:
 	};
 	xr_vector<SSuspension> suspension_joints;
 
+	// A bone that is pulled back to its bind pose by a torque proportional to
+	// its joint angles. One force value is shared by all joint axes.
+	struct SReturnBone
+	{
+		CPhysicsJoint* joint;
+		CPhysicsElement* element;
+		float force;
+		SReturnBone(CPhysicsJoint* joint_ = nullptr, CPhysicsElement* element_ = nullptr, float force_ = 0.f)
+		{
+			joint = joint_;
+			element = element_;
+			force = force_;
+		}
+	};
+	xr_vector<SReturnBone> return_bones;
+
 	struct SWheel: 
 	public CDamagableHealthItem
 	{
@@ -439,6 +457,9 @@ public:
 		float								tire_particle_scale_min;
 		float								tire_particle_scale_max;
 		u32									WaterParticleTime;
+		// True when the wheel touches the water surface or is fully submerged.
+		// Rain friction must not reduce grip in that case.
+		bool								InWater;
 		float								max_control_velocity;
 		// The drive motor was switched to zero-velocity axle friction while
 		// the wheel had no ground contact. Restore the drive target on landing.
@@ -526,6 +547,7 @@ virtual void ApplyDamage			(u16 level);
 			steer_wheel = false;
 			tire_drive_source = nullptr;
 			WaterParticleTime = 0;
+			InWater = false;
 			WheelFlags = {0};
 			max_control_velocity = 0.f;
 			AirborneFriction = false;
@@ -615,10 +637,6 @@ virtual void ApplyDamage			(u16 level);
 		CPhysicsJoint*  joint;
 		float			torque;
 		float			a_vel;
-		float			torque_factor_opening;
-		float			a_vel_factor_opening;
-		float			torque_factor_closing;
-		float			a_vel_factor_closing;
 		float			pos_open;
 
 		bool			non_enterable;
@@ -722,10 +740,6 @@ virtual void ApplyDamage(u16 level);
 			state=closed;
 			torque=500.f;
 			a_vel=M_PI;
-			torque_factor_opening = 1.f;
-			a_vel_factor_opening = 1.f;
-			torque_factor_closing = 1.f;
-			a_vel_factor_closing = 1.f;
 // 			dist_to_door = 0.0f;
 			dist_to_door_avlbl = 3.0f;
 			ExitArea.invalidate();
@@ -897,6 +911,7 @@ private:
 	bool					b_nitro_engage;
 	/////////////////////////////////////////////////////////////
 	float					m_doors_torque_factor;
+	float					m_doors_vel_factor;
 	/////////////////////////////////////////////////////////////
 	// Cars-Ext tire trails use dedicated wallmark arrays because the stock
 	// IXRAY material library has no collide marks for objects\car_wheel.
@@ -1429,6 +1444,7 @@ public:
 	void					UpdateRecursiveDoors		();
 	bool					HasFirstCam(){return active_camera->tag == EctFirstCam;}
 	bool					AllowInventoryControl() const { return m_allow_inventory_control; }
+	bool					AllowMutantBiteInCar() const { return m_allow_mutant_bite_in_car; }
 
 	bool					Use							(const Fvector& pos,const Fvector& dir,const Fvector& foot_pos);
 	void					DoExit						();

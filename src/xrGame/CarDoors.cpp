@@ -34,6 +34,7 @@ void CCar::SDoor::Init()
 {
 	update=false;
 	float OpenTorqueFactor = pcar->m_doors_torque_factor;
+	float OpenVelFactor = pcar->m_doors_vel_factor;
 	joint= pcar->bone_map.find(bone_id)->second.joint;
 	if(!joint) return;
 	R_ASSERT2(dJointGetType(joint->GetDJoint())==dJointTypeHinge,"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
@@ -67,6 +68,7 @@ void CCar::SDoor::Init()
 				if (ini->line_exist(bone_name, "use_distance"))
 					dist_to_door_avlbl = ini->r_float(bone_name, "use_distance");
 				OpenTorqueFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_torque_factor", OpenTorqueFactor);
+				OpenVelFactor = READ_IF_EXISTS(ini, r_float, bone_name, "open_vel_factor", OpenVelFactor);
 
 				if (ini->line_exist(bone_name, "non_enterable"))
 					non_enterable = !!ini->r_bool(bone_name, "non_enterable");
@@ -81,15 +83,6 @@ void CCar::SDoor::Init()
 				if (ini->line_exist(bone_name, "vertical_door"))
 					vertical_door = !!ini->r_bool(bone_name, "vertical_door");
 
-				if (ini->line_exist(bone_name, "torque_factor_opening"))
-					torque_factor_opening = ini->r_float(bone_name, "torque_factor_opening");
-				if (ini->line_exist(bone_name, "a_vel_factor_opening"))
-					a_vel_factor_opening = ini->r_float(bone_name, "a_vel_factor_opening");
-
-				if (ini->line_exist(bone_name, "torque_factor_closing"))
-					torque_factor_closing = ini->r_float(bone_name, "torque_factor_closing");
-				if (ini->line_exist(bone_name, "a_vel_factor_closing"))
-					a_vel_factor_closing = ini->r_float(bone_name, "a_vel_factor_closing");
 				if (ini->line_exist(bone_name, "no_deactivate"))
 					no_deactivate = !!ini->r_bool(bone_name, "no_deactivate");
 			}
@@ -268,6 +261,7 @@ void CCar::SDoor::Init()
 
 	shoulder.sub(door_transform.c,joint->PSecond_element()->mass_Center());
 	torque=shoulder.magnitude()*joint->PSecond_element()->getMass()*OpenTorqueFactor*10.f;
+	a_vel=M_PI*OpenVelFactor;
 	state=opened;
 //	Close();
 }
@@ -288,7 +282,7 @@ void CCar::SDoor::Open()
 			PlaceInUpdate();
 	case closing:
 			state=opening;
-			ApplyTorque(torque*torque_factor_opening, a_vel*a_vel_factor_opening);
+			ApplyTorque(torque, a_vel);
 	case opened:
 	case opening: break;
 	case broken : break;
@@ -311,7 +305,7 @@ void CCar::SDoor::Close()
 		PlaceInUpdate();
 	case opening:
 		state=closing;
-		ApplyTorque(torque*torque_factor_closing, -a_vel*a_vel_factor_closing);
+		ApplyTorque(torque, -a_vel);
 		PlaceInUpdate();
 	case closed:
 	case closing:
@@ -365,7 +359,7 @@ void CCar::SDoor::Update()
 				{
 					if (Device.dwTimeGlobal - open_time > 1000)
 					{
-						ApplyTorque((torque*torque_factor_opening) / 5.f, a_vel*a_vel_factor_opening);
+						ApplyTorque(torque / 5.f, a_vel);
 						RemoveFromUpdate();
 					}
 					break;
@@ -483,7 +477,7 @@ void CCar::SDoor::ClosingToClosed(bool obuser)
 	if(!joint) return;
 	if (!joint->bActive)return;
 	real_close_time = Device.dwTimeGlobal;
-	ApplyTorque(torque*torque_factor_closing, -a_vel*a_vel_factor_closing);
+	ApplyTorque(torque, -a_vel);
 
 	if (snd_door_close._p && obuser)
 	{
@@ -970,9 +964,9 @@ void CCar::SDoor::RestoreNetState(const CSE_ALifeCar::SDoorState& a_state)
 			joint->PSecond_element()->set_ApplyByGravity(TRUE);
 		}
 		if(lstate == closing)
-			ApplyTorque(torque*torque_factor_closing, -a_vel*a_vel_factor_closing);
+			ApplyTorque(torque, -a_vel);
 		if(lstate == opening || lstate == opened)
-			ApplyTorque(torque*torque_factor_opening, a_vel*a_vel_factor_opening);
+			ApplyTorque(torque, a_vel);
 	}
 	state=lstate;
 	SetHealth(a_state.health);

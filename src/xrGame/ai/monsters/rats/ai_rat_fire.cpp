@@ -15,6 +15,7 @@
 #include "../../../enemy_manager.h"
 #include "../../../item_manager.h"
 #include "../../../sound_player.h"
+#include "../../../Actor.h"
 
 using namespace RatSpace;
 
@@ -36,6 +37,9 @@ void CAI_Rat::Exec_Action(float /**dt/**/)
 				if (this->Local() && memory().enemy().selected()) {
 					CEntityAlive	*entity_alive = const_cast<CEntityAlive*>(memory().enemy().selected());
 					VERIFY			(entity_alive);
+
+					if (entity_alive == Actor() && Actor()->IsMutantBiteBlocked())
+						break;
 
 //					entity_alive->Hit(m_fHitPower,tDirection,this,0,position_in_bone_space,0);
 					auto			id_to = entity_alive->ID();
